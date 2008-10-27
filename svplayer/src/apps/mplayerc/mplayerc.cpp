@@ -1943,7 +1943,7 @@ void SetDispMode(dispmode& dm)
 #include <afxsock.h>
 #include <atlsync.h>
 #include <atlutil.h> // put this before the first detours macro above to see an ICE with vc71 :)
-#include <C:\Program Files (x86)\Microsoft Visual Studio 8\VC\atlmfc\include\atlrx.h>
+#include <D:\-=SVN=-\ATL Server\include\atlrx.h> // http://www.codeplex.com/AtlServer/
 
 typedef CAtlRegExp<CAtlRECharTraits> CAtlRegExpT;
 typedef CAtlREMatchContext<CAtlRECharTraits> CAtlREMatchContextT;

@@ -218,7 +218,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="delayimp.lib strmbaseRU.lib dsutilRU.lib subtitlesRU.lib subpicRU.lib basevideofilterRU.lib libssfRU.lib winmm.lib"
+				AdditionalDependencies="delayimp.lib strmbaseRU.lib dsutilRU.lib subtitlesRU.lib subpicRU.lib basevideofilterRU.lib libssfRU.lib svplibRU.lib winmm.lib"
 				OutputFile="$(OutDir)/$(ProjectName).dll"
 				Version=""
 				AdditionalLibraryDirectories="..\..\..\..\lib"
@@ -488,6 +488,10 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\TODO_NOTE.txt"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

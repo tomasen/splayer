@@ -1362,7 +1362,7 @@ bool CDirectVobSubFilter::Open()
 	}
 
 	CAtlArray<SubFile> ret;
-	GetSubFileNames(m_FileName, paths, ret);
+	GetSubFileNames(m_FileName, paths, ret); //根据文件名寻找字幕
 
 	for(int i = 0; i < ret.GetCount(); i++)
 	{

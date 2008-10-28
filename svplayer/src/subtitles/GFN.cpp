@@ -23,6 +23,7 @@
 #include <io.h>
 #include "TextFile.h"
 #include "GFN.h"
+#include "../svplib/svplib.h"
 
 TCHAR* exttypestr[] = 
 {
@@ -56,6 +57,7 @@ void GetSubFileNames(CString fn, CAtlArray<CString>& paths, CAtlArray<SubFile>& 
 {
 	ret.RemoveAll();
 
+	SVP_LogMsg(_T("Finding Sub for ") + fn);
 	int extlistnum = countof(ext);
 	int extsubnum = countof(ext[0]);
 

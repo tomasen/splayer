@@ -1471,6 +1471,10 @@
 				</File>
 			</Filter>
 		</Filter>
+		<File
+			RelativePath=".\NOTE.txt"
+			>
+		</File>
 	</Files>
 	<Globals>
 		<Global

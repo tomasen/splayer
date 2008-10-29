@@ -11,7 +11,7 @@
 #include <afxwin.h>         // MFC core and standard components
 
 
-
+#define SVP_DEBUG_LOGFILEPATH _T("D:\\-=SVN=-\\SVPDebug.log")
 
 extern void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath);
 

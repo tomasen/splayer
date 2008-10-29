@@ -112,6 +112,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="&quot;D:\-=SVN=-\curl\include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
@@ -129,6 +130,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				AdditionalDependencies="..\..\..\curl\lib\Release\curllib.lib"
 				OutputFile="../../lib/svplibRU.lib"
 			/>
 			<Tool
@@ -157,7 +159,19 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\SVPhash.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\svplib.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SVPNet.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SVPToolBox.cpp"
 				>
 			</File>
 		</Filter>
@@ -167,7 +181,19 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\SVPhash.h"
+				>
+			</File>
+			<File
 				RelativePath=".\svplib.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SVPNet.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SVPToolBox.h"
 				>
 			</File>
 		</Filter>

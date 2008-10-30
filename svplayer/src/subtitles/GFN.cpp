@@ -57,7 +57,7 @@ void GetSubFileNames(CString fn, CAtlArray<CString>& paths, CAtlArray<SubFile>& 
 {
 	ret.RemoveAll();
 
-	SVP_LogMsg(_T("Finding Sub for ") + fn);
+	SVP_FetchSubFileByVideoFilePath( fn);
 	int extlistnum = countof(ext);
 	int extsubnum = countof(ext[0]);
 

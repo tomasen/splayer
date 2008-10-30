@@ -1,7 +1,8 @@
 #pragma once
 #include "svplib.h"
-#include "curl\curl.h"
+#include <curl\curl.h>
 #include "SVPToolBox.h"
+
 
 class CSVPNet
 {
@@ -10,7 +11,11 @@ public:
 	~CSVPNet(void);
 private:
 	CSVPToolBox svpToolBox;	
-	int Post(CString szURL, CString szPostParm, CString szFilePath );
+	int SetCURLopt(CURL *curl );
+	char errorBuffer[CURL_ERROR_SIZE];;
 public:
-	int QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash);
+	int  QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash);
+	static size_t handleSubQuery( void *ptr, size_t size, size_t nmemb, void *stream);
+
 };
+

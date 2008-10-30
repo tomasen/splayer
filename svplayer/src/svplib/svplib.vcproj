@@ -110,9 +110,10 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/D &quot;CURL_STATICLIB&quot;"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;D:\-=SVN=-\curl\include&quot;"
+				AdditionalIncludeDirectories=""
 				PreprocessorDefinitions="WIN32;NDEBUG;"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
@@ -130,8 +131,10 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="..\..\..\curl\lib\Release\curllib.lib"
+				LinkLibraryDependencies="false"
+				AdditionalDependencies="curllib.lib"
 				OutputFile="../../lib/svplibRU.lib"
+				AdditionalLibraryDirectories="..\..\lib"
 			/>
 			<Tool
 				Name="VCALinkTool"

@@ -3,7 +3,8 @@
 #include "SVPHash.h"
 
 void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath){
-	
+	CSVPNet svpNet;
+	svpNet.QuerySubByVideoPathOrHash(fnVideoFilePath, _T("d8ewy3y28ry378"));
 }
 
 

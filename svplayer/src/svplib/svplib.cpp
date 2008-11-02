@@ -4,7 +4,9 @@
 
 void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath){
 	CSVPNet svpNet;
-	svpNet.QuerySubByVideoPathOrHash(fnVideoFilePath, _T("d8ewy3y28ry378"));
+	CSVPhash svpHash;
+	CString szFileHash  = svpHash.ComputerFileHash(fnVideoFilePath);
+	svpNet.QuerySubByVideoPathOrHash(fnVideoFilePath,szFileHash);
 }
 
 

@@ -6,4 +6,5 @@ class CSVPhash
 public:
 	CSVPhash(void);
 	~CSVPhash(void);
+	CString ComputerFileHash(CString szFilePath);
 };

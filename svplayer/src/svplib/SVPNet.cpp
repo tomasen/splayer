@@ -26,6 +26,7 @@ size_t CSVPNet::handleSubQuery( void *ptr, size_t size, size_t nmemb, void *stre
 	
 	
 	size_t realsize = size * nmemb;
+	/*
 	CSVPNet *svpNet = (CSVPNet *)stream;
 
 	if (svpNet->mainBuffer){
@@ -37,23 +38,32 @@ size_t CSVPNet::handleSubQuery( void *ptr, size_t size, size_t nmemb, void *stre
 		memcpy(&(svpNet->mainBuffer[svpNet->mainBufferSize]), ptr, realsize);
 		svpNet->mainBufferSize += realsize;
 		svpNet->mainBuffer[svpNet->mainBufferSize] = 0;
-	}
+	}*/
+	fwrite(ptr, size ,nmemb,(FILE*)stream);
 	return realsize;
 }
-int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, CString szVHash = _T("") )
+int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, CString szVHash  )
 {
 	CURL *curl;
 	CURLcode res;
 	CString szPostPerm = _T( "pathinfo=" ) + szFilePath + _T("&filehash=") + szFileHash + _T("&vhash=") + szVHash;
 	
+	FILE *stream_http_recv_buffer = svpToolBox.getTmpFileSteam();
+	if(!stream_http_recv_buffer){
+		SVP_LogMsg(_T("TmpFile Creation for http recv buff fail")); //// TODO: 1. warning!! OR switch to memfile system
+		return -1;
+	}
+
+
 	curl = curl_easy_init();
 	if(curl) {
 		long respcode;
-		this->SetCURLopt(curl);
 		
+		this->SetCURLopt(curl);
+
 		curl_easy_setopt(curl, CURLOPT_URL, "http://www.svplayer.cn/api/subapi.php");
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION , &(this->handleSubQuery));
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)this);
+		//curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION , &(this->handleSubQuery));
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)stream_http_recv_buffer);
 		res = curl_easy_perform(curl);
 		if(res == 0){
 			curl_easy_getinfo(curl,CURLINFO_RESPONSE_CODE, &respcode);
@@ -75,6 +85,13 @@ int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, C
 		curl_easy_cleanup(curl);
 
 		//if not error, process data
+		
+		if ( this->ExtractDataFromAiSubRecvBuffer(szFilePath, stream_http_recv_buffer) ){
+			SVP_LogMsg(_T("Error On Extract DataFromAiSubRecvBuffer ")); //TODO handle this
+			
+		}
+
+		/*
 		if (this->mainBufferSize > 0){
 			char statCode = this->mainBuffer[0];
 			if(statCode <= 0){
@@ -87,13 +104,47 @@ int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, C
 		}
 		if (this->mainBuffer){
 			free(this->mainBuffer);
-		}
+		}*/
 	}
 	
-	this->mainBuffer = NULL;
-	this->mainBufferSize = 0;
+	//this->mainBuffer = NULL;
+	//this->mainBufferSize = 0;
 
 	return 0;
 }
 
+int  CSVPNet::ExtractDataFromAiSubRecvBuffer(CString szFilePath, FILE* sAiSubRecvBuff){
 
+	char szSBuff[256];
+	int ret = 0;
+	fseek(sAiSubRecvBuff,0,SEEK_SET); // move point yo begining of file
+	
+	if ( fread(szSBuff , sizeof(char), 1, sAiSubRecvBuff) < 1){
+		SVP_LogMsg(_T("Fail to retrive First Stat Code"));
+	}
+	
+	int iStatCode = szSBuff[0];
+	if(iStatCode <= 0){
+		//TODO error handle
+		SVP_LogMsg(_T("First Stat Code 显示有错误发生"));
+		ret = -1;
+		goto releaseALL;
+	}
+	
+	//handle SubFiles
+
+	//Extract Package
+	if ( fread(szSBuff , sizeof(char), 4, sAiSubRecvBuff) < 4){
+		SVP_LogMsg(_T("Fail to retrive Package Data Length"));
+		ret = -2;
+		goto releaseALL;
+	}
+	int PackageLength = svpToolBox.Char4ToInt(szSBuff);
+	
+
+releaseALL:
+	fclose(sAiSubRecvBuff);
+
+	svpToolBox.ClearTmpFiles();
+	return ret;
+}

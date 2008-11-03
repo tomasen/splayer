@@ -10,7 +10,7 @@ void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath){
 }
 
 
-void SVP_LogMsg(CString logmsg){
+void SVP_LogMsg(CString logmsg, int level){
 
 
 	CStdioFile f;

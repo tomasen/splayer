@@ -15,6 +15,6 @@
 
 extern void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath);
 
-extern void SVP_LogMsg(CString logmsg);
+extern void SVP_LogMsg(CString logmsg, int level = 15);
 
 

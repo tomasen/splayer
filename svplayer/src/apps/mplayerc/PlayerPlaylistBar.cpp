@@ -29,6 +29,7 @@
 #include "..\..\DSUtil\DSUtil.h"
 #include "SaveTextFileDialog.h"
 #include ".\playerplaylistbar.h"
+#include "../../svplib/svplib.h"
 
 IMPLEMENT_DYNAMIC(CPlayerPlaylistBar, CSizingControlBarG)
 CPlayerPlaylistBar::CPlayerPlaylistBar()
@@ -181,7 +182,9 @@ void CPlayerPlaylistBar::AddItem(CAtlList<CString>& fns, CAtlList<CString>* subs
 		paths.Add(_T("c:\\subtitles"));
 
 		CAtlArray<SubFile> ret;
+		
 		GetSubFileNames(fn, paths, ret);
+		SVP_FetchSubFileByVideoFilePath(fn,&pli.m_subs);
 
 		for(int i = 0; i < ret.GetCount(); i++)
 		{

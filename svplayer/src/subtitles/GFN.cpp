@@ -23,7 +23,7 @@
 #include <io.h>
 #include "TextFile.h"
 #include "GFN.h"
-#include "../svplib/svplib.h"
+
 
 TCHAR* exttypestr[] = 
 {
@@ -57,7 +57,6 @@ void GetSubFileNames(CString fn, CAtlArray<CString>& paths, CAtlArray<SubFile>& 
 {
 	ret.RemoveAll();
 
-	SVP_FetchSubFileByVideoFilePath( fn);
 	int extlistnum = countof(ext);
 	int extsubnum = countof(ext[0]);
 

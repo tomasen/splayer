@@ -88,8 +88,9 @@ int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, C
 		
 		if ( this->ExtractDataFromAiSubRecvBuffer(szFilePath, stream_http_recv_buffer) ){
 			SVP_LogMsg(_T("Error On Extract DataFromAiSubRecvBuffer ")); //TODO handle this
-			
 		}
+		
+		
 
 		/*
 		if (this->mainBufferSize > 0){
@@ -115,7 +116,7 @@ int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, C
 
 int  CSVPNet::ExtractDataFromAiSubRecvBuffer(CString szFilePath, FILE* sAiSubRecvBuff){
 
-	char szSBuff[256];
+	char szSBuff[2];
 	int ret = 0;
 	fseek(sAiSubRecvBuff,0,SEEK_SET); // move point yo begining of file
 	
@@ -133,15 +134,15 @@ int  CSVPNet::ExtractDataFromAiSubRecvBuffer(CString szFilePath, FILE* sAiSubRec
 	
 	//handle SubFiles
 
-	//Extract Package
-	if ( fread(szSBuff , sizeof(char), 4, sAiSubRecvBuff) < 4){
-		SVP_LogMsg(_T("Fail to retrive Package Data Length"));
-		ret = -2;
-		goto releaseALL;
+	for(int j = 0; j < iStatCode; j++){
+		int exterr = svpToolBox.HandleSubPackage(sAiSubRecvBuff);
+		if(exterr){
+			ret = exterr;
+			break;
+		}
 	}
-	int PackageLength = svpToolBox.Char4ToInt(szSBuff);
 	
-
+	
 releaseALL:
 	fclose(sAiSubRecvBuff);
 

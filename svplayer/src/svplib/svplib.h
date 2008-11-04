@@ -9,11 +9,14 @@
 
 #include <afx.h>
 #include <afxwin.h>         // MFC core and standard components
+#include <atlcoll.h>
 
+#define SVP_MIN(a, b)  (((a) < (b)) ? (a) : (b)) 
+#define SVP_MAX(a, b)  (((a) > (b)) ? (a) : (b)) 
 
 #define SVP_DEBUG_LOGFILEPATH _T(".\\SVPDebug.log")
 
-extern void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath);
+extern void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath, CAtlList<CString>* mSubLists);
 
 extern void SVP_LogMsg(CString logmsg, int level = 15);
 

@@ -11,8 +11,9 @@ public:
 	~CSVPNet(void);
 	char *mainBuffer ;
 	size_t mainBufferSize ;
-private:
 	CSVPToolBox svpToolBox;	
+
+private:
 	int SetCURLopt(CURL *curl );
 	char errorBuffer[CURL_ERROR_SIZE];;
 public:

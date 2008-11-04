@@ -132,7 +132,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				LinkLibraryDependencies="false"
-				AdditionalDependencies="curllib.lib"
+				AdditionalDependencies="curllib.lib Kernel32.lib"
 				OutputFile="../../lib/svplibRU.lib"
 				AdditionalLibraryDirectories="..\..\lib"
 			/>

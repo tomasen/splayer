@@ -2,7 +2,7 @@
 #include "SVPNet.h"
 #include "SVPHash.h"
 
-void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath, CAtlList<CString>* mSubLists){
+void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath, CStringArray* szSubArray){
 	CSVPNet svpNet;
 	CSVPhash svpHash;
 	CString szFileHash  = svpHash.ComputerFileHash(fnVideoFilePath);
@@ -12,9 +12,10 @@ void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath, CAtlList<CString>*
 
 		//load sub file to sublist
 		for(int i = 0; i < svpNet.svpToolBox.szaSubTmpFileList.GetCount(); i++){
-			mSubLists->AddTail( svpNet.svpToolBox.getSubFileByTempid(i, fnVideoFilePath) );
+			//mSubLists->AddTail( svpNet.svpToolBox.getSubFileByTempid(i, fnVideoFilePath) );
+			szSubArray->Add(svpNet.svpToolBox.getSubFileByTempid(i, fnVideoFilePath));
 		}
-	
+	return;
 }
 
 

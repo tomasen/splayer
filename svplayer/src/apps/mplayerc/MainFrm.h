@@ -181,13 +181,7 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 
 	void SetBalance(int balance);
 
-	// subtitles
-
-	CCritSec m_csSubLock;
-	CInterfaceList<ISubStream> m_pSubStreams;
-	int m_iSubtitleSel; // if(m_iSubtitleSel&(1<<31)): disabled
-	DWORD_PTR m_nSubtitleId;
-
+	
 	friend class CTextPassThruFilter;
 
 	// windowing
@@ -288,6 +282,13 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 	CAutoPtr<CWebServer> m_pWebServer;
 
 public:
+	// subtitles
+
+	CCritSec m_csSubLock;
+	CInterfaceList<ISubStream> m_pSubStreams;
+	int m_iSubtitleSel; // if(m_iSubtitleSel&(1<<31)): disabled
+	DWORD_PTR m_nSubtitleId;
+
 	void StartWebServer(int nPort);
 	void StopWebServer();
 

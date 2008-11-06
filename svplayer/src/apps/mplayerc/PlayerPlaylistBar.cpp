@@ -70,7 +70,7 @@ BOOL CPlayerPlaylistBar::Create(CWnd* pParentWnd)
 
     m_fakeImageList.Create(1, 16, ILC_COLOR4, 10, 10);
 	m_list.SetImageList(&m_fakeImageList, LVSIL_SMALL);
-
+	this->m_pMaindFrame = pParentWnd;
 	return TRUE;
 }
 
@@ -109,6 +109,28 @@ void CPlayerPlaylistBar::AddItem(CString fn, CAtlList<CString>* subs)
 	sl.AddTail(fn);
 	AddItem(sl, subs);
 }
+
+class CSVPThreadLoadThreadData{
+	public:
+		CString szVidPath;
+		CMainFrame* pFrame;
+};
+
+UINT __cdecl SVPThreadLoadThread( LPVOID lpParam ) 
+{ 
+
+	CSVPThreadLoadThreadData* pData = (CSVPThreadLoadThreadData*)lpParam;
+
+	// Print the parameter values using thread-safe functions.
+	CStringArray szSubArray;
+
+	SVP_FetchSubFileByVideoFilePath( pData->szVidPath, &szSubArray) ;
+	for(INT i = 0 ;i < szSubArray.GetCount(); i++){
+		pData->pFrame->LoadSubtitle(szSubArray[i]);
+	}
+
+	return 0; 
+} 
 
 void CPlayerPlaylistBar::AddItem(CAtlList<CString>& fns, CAtlList<CString>* subs)
 {
@@ -174,7 +196,7 @@ void CPlayerPlaylistBar::AddItem(CAtlList<CString>& fns, CAtlList<CString>* subs
 		}
 	}
 
-	//if(AfxGetAppSettings().fAutoloadSubtitles) //always aotuload subtitles
+	//if(AfxGetAppSettings().fAutoloadSubtitles) //always autoload subtitles
 	//{
 		CAtlArray<CString> paths;
 		paths.Add(_T("."));
@@ -185,9 +207,20 @@ void CPlayerPlaylistBar::AddItem(CAtlList<CString>& fns, CAtlList<CString>* subs
 		
 		GetSubFileNames(fn, paths, ret);
 		if (ret.GetCount() <= 0){
-			SVP_FetchSubFileByVideoFilePath(fn,&pli.m_subs);
+			//异步下载后自动调入
+			CSVPThreadLoadThreadData* pData = new CSVPThreadLoadThreadData();
+			pData->pFrame = (CMainFrame*)this->m_pMaindFrame;
+			pData->szVidPath = fn;
+			AfxBeginThread(SVPThreadLoadThread, pData); 
+			/*
+			CStringArray szSubArray;  //同步下载
+			CMainFrame* pFrame = (CMainFrame*)this->m_pMaindFrame;
+			SVP_FetchSubFileByVideoFilePath( fn, &szSubArray) ;
+			for(INT i = 0 ;i < szSubArray.GetCount(); i++){
+				pFrame->LoadSubtitle(szSubArray[i]);
+			}*/
 		}
-		for(int i = 0; i < ret.GetCount(); i++)
+		for(size_t i = 0; i < ret.GetCount(); i++)
 		{
 			if(!FindFileInList(pli.m_subs, ret[i].fn))
 				pli.m_subs.AddTail(ret[i].fn);
@@ -196,6 +229,7 @@ void CPlayerPlaylistBar::AddItem(CAtlList<CString>& fns, CAtlList<CString>* subs
 
 	m_pl.AddTail(pli);
 }
+
 
 static bool SearchFiles(CString mask, CAtlList<CString>& sl)
 {
@@ -361,7 +395,7 @@ bool CPlayerPlaylistBar::ParseMPCPlayList(CString fn)
 	}
 
 	qsort(idx.GetData(), idx.GetCount(), sizeof(int), s_int_comp);
-	for(int i = 0; i < idx.GetCount(); i++)
+	for(size_t i = 0; i < idx.GetCount(); i++)
 		m_pl.AddTail(pli[idx[i]]);
 
 	return pli.GetCount() > 0;

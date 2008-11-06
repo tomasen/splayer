@@ -35,7 +35,7 @@ private:
 
 	CImageList m_fakeImageList;
 	CPlayerListCtrl m_list;
-
+	CWnd* m_pMaindFrame;
 	int m_nTimeColWidth;
 	void ResizeListColumn();
 

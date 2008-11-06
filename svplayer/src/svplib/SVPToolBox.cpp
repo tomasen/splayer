@@ -29,7 +29,7 @@ WCHAR* CSVPToolBox::getTmpFileName(){
 		SVP_LogMsg(_T("TMP FILE name genarater error")); 
 		return 0;
 	}else{
-		SVP_LogMsg(tmpnamex);
+		//SVP_LogMsg(tmpnamex);
 		return tmpnamex;
 	}
 }
@@ -43,7 +43,7 @@ FILE* CSVPToolBox::getTmpFileSteam(){
 		return 0;
 	}else{
 		
-		err = _wfopen_s(&stream, tmpnamex, _T("w+"));
+		err = _wfopen_s(&stream, tmpnamex, _T("wb+"));
 		if(err){
 			SVP_LogMsg(_T("TMP FILE stream Open for Write error")); 
 			stream = 0;
@@ -178,7 +178,7 @@ int CSVPToolBox::ExtractEachSubFile(FILE* fp, int iSubPosId){
 		return -5;
 	}
 	FILE* fpt;
-	errno_t err = _wfopen_s(&fpt, otmpfilename, _T("w"));
+	errno_t err = _wfopen_s(&fpt, otmpfilename, _T("wb"));
 	if(err){
 		SVP_LogMsg(_T("TMP FILE stream for sub file  Write error")); 
 		free(otmpfilename);
@@ -202,7 +202,11 @@ int CSVPToolBox::ExtractEachSubFile(FILE* fp, int iSubPosId){
 	fclose( fpt );
 
 	// add filename and tmp name to szaTmpFileNames
-	this->szaSubTmpFileList[iSubPosId].Append( this->UTF8ToCString(szExtName, iExtLength)+_T(";")+ otmpfilename + _T(";"));
+	this->szaSubTmpFileList[iSubPosId].Append( this->UTF8ToCString(szExtName, iExtLength)); //why cant use + ???
+	this->szaSubTmpFileList[iSubPosId].Append(_T("|") );
+	this->szaSubTmpFileList[iSubPosId].Append(otmpfilename);
+	this->szaSubTmpFileList[iSubPosId].Append( _T(";"));
+	//SVP_LogMsg(this->szaSubTmpFileList[iSubPosId] + _T(" is the szaTmpFileName"));
 	//this->szaSubTmpFileList[iSubPosId].SetString( otmpfilename);
 	
 	free(szExtName);
@@ -210,22 +214,100 @@ int CSVPToolBox::ExtractEachSubFile(FILE* fp, int iSubPosId){
 
 	return 0;
 }
-CString CSVPToolBox::getSubFileByTempid(int iTmpID, CString szVidPath){
-	//Many work to do
-	
-	//get current path
+CString CSVPToolBox::getVideoFileBasename(CString szVidPath){
 
-	//set new file name
-	szVidPath.Append( _T(".srt") );
-	SVP_LogMsg(this->szaSubTmpFileList[iTmpID] + _T(" to ") + szVidPath + _T("fail"));
-	//copy tmp to new file name
+	int posDot = szVidPath.ReverseFind(_T('.'));
 	
-	CopyFile(this->szaSubTmpFileList[iTmpID] , szVidPath, FALSE) ;
-		
-	
-	//clean tmp file
+	int posSlash = szVidPath.ReverseFind(_T('\\'));
+	int posSlash2 = szVidPath.ReverseFind(_T('/'));
+
+	if(posDot > posSlash && posDot > posSlash ){
+		return szVidPath.Left(posDot);
+	}
 
 	return szVidPath;
+}
+int CSVPToolBox::Explode(CString szIn, CString szTok, CStringArray* szaOut){
+	szaOut->RemoveAll();
+
+	CString resToken;
+	int curPos= 0;
+
+	resToken= szIn.Tokenize(szTok, curPos);
+	while (resToken != "")
+	{
+		szaOut->Add(resToken);
+		resToken= szIn.Tokenize(szTok,curPos);
+	};
+
+	return 0;
+}
+BOOL CSVPToolBox::ifFileExist(CString szPathname){
+	FILE* fp = NULL;
+
+	
+	fp = _wfopen( szPathname, _T("rb") );
+	if( fp != NULL )
+	{
+		fclose( fp );
+		return true;
+	}
+	return false;
+}
+CString CSVPToolBox::getSubFileByTempid(int iTmpID, CString szVidPath){
+	//get base path name
+	CString szBasename = this->getVideoFileBasename(szVidPath);
+
+	//set new file name
+	CStringArray szSubfiles;
+	this->Explode(this->szaSubTmpFileList[iTmpID], _T(";"), &szSubfiles);
+
+	if( szSubfiles.GetCount() < 1){
+		SVP_LogMsg( _T("Not enough files in tmp array"));
+		
+	}
+	CString szTargetBaseName = _T("");
+	CString szDefaultSubPath = _T("");
+	for(int i = 0; i < szSubfiles.GetCount(); i++){
+		CStringArray szSubTmpDetail;
+		this->Explode(szSubfiles[i], _T("|"), &szSubTmpDetail);
+		if (szSubTmpDetail.GetCount() < 2){
+			SVP_LogMsg( _T("Not enough detail in sub tmp string") + szSubfiles[i]);
+			continue;
+		}
+		CString szSource = szSubTmpDetail[1];
+		CString szLangExt  = _T(".chn"); //TODO: use correct language perm 
+		if (szSubTmpDetail[0].GetAt(0) != _T('.')){
+			szSubTmpDetail[0] = CString(_T(".")) + szSubTmpDetail[0];
+		}
+		CString szTarget = szBasename + szLangExt + szSubTmpDetail[0];
+		if(szTargetBaseName.IsEmpty()){
+			szTargetBaseName = szBasename + szLangExt ;
+			//check if target exist
+			CString szTmp = _T("") ;
+			int ilan = 1;
+			while( this->ifFileExist(szTarget) ){ 
+				//TODO: compare if its the same file
+				
+				szTmp.Format(_T("%d"), ilan);
+				szTarget = szBasename + szLangExt + szTmp + szSubTmpDetail[0]; 
+				szTargetBaseName = szBasename + szLangExt + szTmp;
+				ilan++;
+			}
+			
+		}else{
+			szTarget = szTargetBaseName + szSubTmpDetail[0];
+		}
+		if(szDefaultSubPath.IsEmpty()){
+			szDefaultSubPath = szTarget;
+		}
+		if( !CopyFile( szSource, szTarget, true) ){
+			SVP_LogMsg( szSource + _T(" to ") + szTarget + _T(" Fail to copy subtitle file to position"));
+		}
+		_wremove(szSource);
+	}
+	
+	return szDefaultSubPath;
 	
 }
 int CSVPToolBox::Char4ToInt(char* szBuf){

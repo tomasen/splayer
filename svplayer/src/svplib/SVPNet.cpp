@@ -70,7 +70,7 @@ int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, C
 
 			if(respcode == 200){
 				//good to go
-				SVP_LogMsg(_T("HTTP return code 200"));
+				//SVP_LogMsg(_T("HTTP return code 200"));
 			}else{
 				//error
 				SVP_LogMsg(_T("HTTP return code is not 200"));

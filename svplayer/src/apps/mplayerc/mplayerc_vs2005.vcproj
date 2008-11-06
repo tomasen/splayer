@@ -48,6 +48,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/D &quot;CURL_STATICLIB&quot;"
+				Optimization="2"
 				AdditionalIncludeDirectories="..\..\..\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;WINVER=0x501"
 				PrecompiledHeaderThrough="stdafx.h"

@@ -17,7 +17,7 @@ int CSVPNet::SetCURLopt(CURL *curl )
 {
 	curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1);
 	curl_easy_setopt(curl, CURLOPT_USERAGENT, _T("SVPlayer 0.1") );
-	curl_easy_setopt(curl, CURLOPT_POST, 1);
+	//curl_easy_setopt(curl, CURLOPT_POST, 1);
 	
 	return 0;
 }
@@ -64,6 +64,10 @@ int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, C
 		curl_easy_setopt(curl, CURLOPT_URL, "http://www.svplayer.cn/api/subapi.php");
 		//curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION , &(this->handleSubQuery));
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)stream_http_recv_buffer);
+		int iDescLen = 0;
+		char* szPostFields = svpToolBox.CStringToUTF8(szPostPerm, &iDescLen) ;
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, (void *)szPostFields);
+		//curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, iDescLen);
 		res = curl_easy_perform(curl);
 		if(res == 0){
 			curl_easy_getinfo(curl,CURLINFO_RESPONSE_CODE, &respcode);
@@ -83,6 +87,7 @@ int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, C
 
 		/* always cleanup */
 		curl_easy_cleanup(curl);
+		free(szPostFields);
 
 		//if not error, process data
 		

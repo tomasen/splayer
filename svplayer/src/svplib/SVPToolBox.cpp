@@ -324,14 +324,15 @@ int CSVPToolBox::Char4ToInt(char* szBuf){
 	
 	return iData;
 }
-int CSVPToolBox::CStringToUTF8(CString szIn, char* szOut)
+char* CSVPToolBox::CStringToUTF8(CString szIn, int* iDescLen)
 {
+	char* szOut;
 	int   targetLen = ::WideCharToMultiByte(CP_UTF8,0,szIn,-1,szOut,0,NULL,NULL);
 	szOut   =   new   char[targetLen+1];          
 	memset(szOut,0,targetLen+1);                
-	::WideCharToMultiByte(CP_UTF8,0,szIn,-1,szOut,targetLen,NULL,NULL);                
-	
-	return 0;
+	targetLen = ::WideCharToMultiByte(CP_UTF8,0,szIn,-1,szOut,targetLen,NULL,NULL);                
+	*iDescLen = targetLen;
+	return szOut;
 }
 
 CString CSVPToolBox::UTF8ToCString(char* szIn, int iLength)

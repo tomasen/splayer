@@ -6,7 +6,7 @@ class CSVPToolBox
 public:
 	CSVPToolBox(void);
 	~CSVPToolBox(void);
-	int CStringToUTF8(CString szIn, char* szOut);
+	char* CStringToUTF8(CString szIn, int* iDescLen);
 	CString UTF8ToCString(char* szIn, int iLength);
 	FILE* getTmpFileSteam();
 	WCHAR* getTmpFileName();

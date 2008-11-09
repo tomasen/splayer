@@ -12,13 +12,26 @@ void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath, CStringArray* szSu
 
 		//load sub file to sublist
 		for(int i = 0; i < svpNet.svpToolBox.szaSubTmpFileList.GetCount(); i++){
-			//mSubLists->AddTail( svpNet.svpToolBox.getSubFileByTempid(i, fnVideoFilePath) );
 			szSubArray->Add(svpNet.svpToolBox.getSubFileByTempid(i, fnVideoFilePath));
 		}
 	return;
 }
 
+void SVP_UploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString szSubPath){
+		CSVPNet svpNet;
+		CSVPhash svpHash;
+		CSVPToolBox svpToolBox;
+		CString szFileHash  = svpHash.ComputerFileHash(fnVideoFilePath);
+		//TODO: Find all sub files
+		CStringArray szaSubFiles;
+		svpToolBox.FindAllSubfile(szSubPath, &szaSubFiles);
+		//TODO: Computer Subfile hash
+		//TODO: Build Subfile Package
 
+		if ( svpNet.UploadSubFileByVideoAndHash(fnVideoFilePath,szFileHash,szSubPath) ){
+			return ;
+		}
+}
 void SVP_LogMsg(CString logmsg, int level){
 
 

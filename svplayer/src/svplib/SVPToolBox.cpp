@@ -310,6 +310,14 @@ CString CSVPToolBox::getSubFileByTempid(int iTmpID, CString szVidPath){
 	return szDefaultSubPath;
 	
 }
+int CSVPToolBox::FindAllSubfile(CString szSubPath , CStringArray* szaSubFiles){
+	szaSubFiles->RemoveAll();
+	szaSubFiles->Add(szSubPath);
+	
+	CString szBaseName = this->getVideoFileBasename( szSubPath );
+	
+	//TODO: finding other subfile
+}
 int CSVPToolBox::Char4ToInt(char* szBuf){
 
 	int iData;

@@ -219,6 +219,9 @@ void CPlayerPlaylistBar::AddItem(CAtlList<CString>& fns, CAtlList<CString>* subs
 			for(INT i = 0 ;i < szSubArray.GetCount(); i++){
 				pFrame->LoadSubtitle(szSubArray[i]);
 			}*/
+		}else{
+			//TODO: remove this and put it in conditions
+			SVP_UploadSubFileByVideoAndSubFilePath( fn, ret[0].fn) ;
 		}
 		for(size_t i = 0; i < ret.GetCount(); i++)
 		{

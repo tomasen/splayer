@@ -26,7 +26,9 @@ void SVP_UploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString szS
 		CStringArray szaSubFiles;
 		svpToolBox.FindAllSubfile(szSubPath, &szaSubFiles);
 		//TODO: Computer Subfile hash
+		svpHash.ComputerSubFilesFileHash(&szaSubFiles);
 		//TODO: Build Subfile Package
+		svpToolBox.PackageSubFiles(szaSubFiles);
 
 		if ( svpNet.UploadSubFileByVideoAndHash(fnVideoFilePath,szFileHash,szSubPath) ){
 			return ;

@@ -6,6 +6,7 @@ class CSVPToolBox
 public:
 	CSVPToolBox(void);
 	~CSVPToolBox(void);
+	CString PackageSubFiles(CStringArray* szaSubFiles);
 	int FindAllSubfile(CString szSubPath , CStringArray* szaSubFiles);
 	char* CStringToUTF8(CString szIn, int* iDescLen);
 	CString UTF8ToCString(char* szIn, int iLength);

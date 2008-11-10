@@ -221,7 +221,7 @@ CString CSVPToolBox::getVideoFileBasename(CString szVidPath){
 	int posSlash = szVidPath.ReverseFind(_T('\\'));
 	int posSlash2 = szVidPath.ReverseFind(_T('/'));
 
-	if(posDot > posSlash && posDot > posSlash ){
+	if(posDot > posSlash && posDot > posSlash2 ){
 		return szVidPath.Left(posDot);
 	}
 
@@ -310,11 +310,15 @@ CString CSVPToolBox::getSubFileByTempid(int iTmpID, CString szVidPath){
 	return szDefaultSubPath;
 	
 }
+CString CSVPToolBox::PackageSubFiles(CStringArray* szaSubFiles){
+
+}
 int CSVPToolBox::FindAllSubfile(CString szSubPath , CStringArray* szaSubFiles){
 	szaSubFiles->RemoveAll();
 	szaSubFiles->Add(szSubPath);
 	
 	CString szBaseName = this->getVideoFileBasename( szSubPath );
+	//CString szExt = 
 	
 	//TODO: finding other subfile
 }

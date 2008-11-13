@@ -309,7 +309,7 @@ public:
 	//constructor/destructor
 	CMD5Checksum();
 	virtual ~CMD5Checksum() {};
-
+	void Clean();
 protected:
 	
 	//RSA MD5 implementation

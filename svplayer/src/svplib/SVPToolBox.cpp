@@ -79,7 +79,7 @@ int CSVPToolBox::HandleSubPackage(FILE* fp){
 	szaSubTmpFileList.RemoveAll();
 
 	size_t iDescLength = this->Char4ToInt(szSBuff);
-
+	
 	char * szDescData = this->ReadToPTCharByLength(fp, iDescLength);
 	if(!szDescData){
 		SVP_LogMsg(_T("Fail to retrive Desc Data"));
@@ -169,8 +169,9 @@ int CSVPToolBox::ExtractEachSubFile(FILE* fp, int iSubPosId){
 		SVP_LogMsg(_T("Fail to retrive File Data Length"));
 		return -1;
 	}
-	size_t iFileLength = this->Char4ToInt(szSBuff);
 
+	size_t iFileLength = this->Char4ToInt(szSBuff);
+	
 	// gen tmp name and tmp file point
 	WCHAR* otmpfilename = this->getTmpFileName();
 	if(!otmpfilename){
@@ -214,14 +215,21 @@ int CSVPToolBox::ExtractEachSubFile(FILE* fp, int iSubPosId){
 
 	return 0;
 }
-CString CSVPToolBox::getVideoFileBasename(CString szVidPath){
+CString CSVPToolBox::getVideoFileBasename(CString szVidPath, CStringArray* szaPathInfo = NULL){
 
 	int posDot = szVidPath.ReverseFind(_T('.'));
 	
 	int posSlash = szVidPath.ReverseFind(_T('\\'));
 	int posSlash2 = szVidPath.ReverseFind(_T('/'));
+	if(posSlash2 > posSlash){posSlash = posSlash2;}
 
-	if(posDot > posSlash && posDot > posSlash2 ){
+	if(posDot > posSlash ){
+		if (szaPathInfo != NULL){
+			szaPathInfo->RemoveAll();
+			szaPathInfo->Add(szVidPath.Left(posDot)); // Base Name
+			szaPathInfo->Add(szVidPath.Right(szVidPath.GetLength() - posDot).MakeLower() ); //ExtName
+			szaPathInfo->Add(szVidPath.Left(posSlash) ); //Dir Name
+		}
 		return szVidPath.Left(posDot);
 	}
 
@@ -311,28 +319,33 @@ CString CSVPToolBox::getSubFileByTempid(int iTmpID, CString szVidPath){
 	
 }
 CString CSVPToolBox::PackageSubFiles(CStringArray* szaSubFiles){
-
+	return _T("");
 }
 int CSVPToolBox::FindAllSubfile(CString szSubPath , CStringArray* szaSubFiles){
 	szaSubFiles->RemoveAll();
 	szaSubFiles->Add(szSubPath);
-	
-	CString szBaseName = this->getVideoFileBasename( szSubPath );
-	//CString szExt = 
+	CStringArray szaPathInfo ;
+	CString szBaseName = this->getVideoFileBasename( szSubPath, &szaPathInfo );
+	CString szExt = szaPathInfo.GetAt(1);
+
+	if(szExt == _T(".idx")){
+		szSubPath = szBaseName + _T(".sub");
+		if(this->ifFileExist(szSubPath)){
+			szaSubFiles->Add(szSubPath);
+		}else{
+			szSubPath = szBaseName + _T(".rar");
+			if(this->ifFileExist(szSubPath)){
+				szaSubFiles->Add(szSubPath);
+			}
+		}
+	}
 	
 	//TODO: finding other subfile
+	return 0;
 }
 int CSVPToolBox::Char4ToInt(char* szBuf){
 
-	int iData;
-
-	iData = szBuf[0];
-	iData = iData << 8;
-	iData |= szBuf[1];
-	iData = iData << 8;
-	iData |= szBuf[2];
-	iData = iData << 8;
-	iData |= szBuf[3];
+	int iData =   ( ((int)szBuf[0] & 0xff) << 24) |  ( ((int)szBuf[1] & 0xff) << 16) | ( ((int)szBuf[2] & 0xff) << 8) |  szBuf[3] & 0xff;;
 	
 	return iData;
 }

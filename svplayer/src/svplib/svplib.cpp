@@ -12,7 +12,9 @@ void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath, CStringArray* szSu
 
 		//load sub file to sublist
 		for(int i = 0; i < svpNet.svpToolBox.szaSubTmpFileList.GetCount(); i++){
-			szSubArray->Add(svpNet.svpToolBox.getSubFileByTempid(i, fnVideoFilePath));
+			CString szSubFilePath = svpNet.svpToolBox.getSubFileByTempid(i, fnVideoFilePath);
+			szSubArray->Add(szSubFilePath);
+			SVP_LogMsg(CString(_T("Adding sub file ")) + szSubFilePath ); //TODO: if its vobsub, load perfered language
 		}
 	return;
 }
@@ -26,9 +28,10 @@ void SVP_UploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString szS
 		CStringArray szaSubFiles;
 		svpToolBox.FindAllSubfile(szSubPath, &szaSubFiles);
 		//TODO: Computer Subfile hash
-		svpHash.ComputerSubFilesFileHash(&szaSubFiles);
+		CString szSubHash = svpHash.ComputerSubFilesFileHash(&szaSubFiles);
+		SVP_LogMsg(CString("Got Sub Hash ") + szSubHash + szaSubFiles.GetAt(0) + CString(" | ") + szaSubFiles.GetAt(1));
 		//TODO: Build Subfile Package
-		svpToolBox.PackageSubFiles(szaSubFiles);
+		svpToolBox.PackageSubFiles(&szaSubFiles);
 
 		if ( svpNet.UploadSubFileByVideoAndHash(fnVideoFilePath,szFileHash,szSubPath) ){
 			return ;
@@ -44,6 +47,7 @@ void SVP_LogMsg(CString logmsg, int level){
 	{
 		f.SeekToEnd();
 		f.WriteString(logmsg+_T("\r\n"));
+		f.Flush();
 		f.Close();
 	}
 		

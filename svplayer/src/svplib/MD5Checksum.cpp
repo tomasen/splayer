@@ -115,7 +115,6 @@ CString CMD5Checksum::GetMD5(CFile& File)
 {
 	try
 	{
-		CMD5Checksum MD5Checksum;		//checksum object	
 		int nLength = 0;				//number of bytes read from the file
 		const int nBufferSize = 1024;	//checksum the file in blocks of 1024 bytes
 		BYTE Buffer[nBufferSize];		//buffer for data read from the file
@@ -123,11 +122,11 @@ CString CMD5Checksum::GetMD5(CFile& File)
 		//checksum the file in blocks of 1024 bytes
 		while ((nLength = File.Read( Buffer, nBufferSize )) > 0 )
 		{
-			MD5Checksum.Update( Buffer, nLength );
+			this->Update( Buffer, nLength );
 		}
 
 		//finalise the checksum and return it
-		return MD5Checksum.Final();
+		return this->Final();
 	}
 
 	//report any file exceptions in debug mode only
@@ -159,9 +158,8 @@ CString CMD5Checksum::GetMD5(BYTE* pBuf, UINT nLength)
 	AfxIsValidAddress(pBuf,nLength,FALSE);
 
 	//calculate and return the checksum
-	CMD5Checksum MD5Checksum;
-	MD5Checksum.Update( pBuf, nLength );
-	return MD5Checksum.Final();
+	this->Update( pBuf, nLength );
+	return this->Final();
 }
 
 
@@ -408,6 +406,10 @@ NOTES:			None
 *****************************************************************************************/
 CMD5Checksum::CMD5Checksum()
 {
+	this->Clean();
+}
+void CMD5Checksum::Clean()
+{
 	// zero members
 	memset( m_lpszBuffer, 0, 64 );
 	m_nCount[0] = m_nCount[1] = 0;
@@ -418,7 +420,6 @@ CMD5Checksum::CMD5Checksum()
 	m_lMD5[2] = MD5_INIT_STATE_2;
 	m_lMD5[3] = MD5_INIT_STATE_3;
 }
-
 /*****************************************************************************************
 FUNCTION:		CMD5Checksum::DWordToByte
 DETAILS:		private
@@ -481,27 +482,28 @@ CString CMD5Checksum::Final()
 	//Store final state in 'lpszMD5'
 	const int nMD5Size = 16;
 	
-	DWordToByte( lpszMD5, m_lMD5, nMD5Size );
+	DWordToByte( this->lpszMD5, m_lMD5, nMD5Size );
 
 	//Convert the hexadecimal checksum to a CString
 	CString strMD5;
 	for ( int i=0; i < nMD5Size; i++) 
 	{
 		CString Str;
-		if (lpszMD5[i] == 0) {
+		if (this->lpszMD5[i] == 0) {
 			Str = CString(_T("00"));
 		}
-		else if (lpszMD5[i] <= 15) 	{
-			Str.Format(_T("0%x"),lpszMD5[i]);
+		else if (this->lpszMD5[i] <= 15) 	{
+			Str.Format(_T("0%x"),this->lpszMD5[i]);
 		}
 		else {
-			Str.Format(_T("%x"),lpszMD5[i]);
+			Str.Format(_T("%x"),this->lpszMD5[i]);
 		}
 
 		ASSERT( Str.GetLength() == 2 );
 		strMD5 += Str;
 	}
 	ASSERT( strMD5.GetLength() == 32 );
+	this->Clean();
 	return strMD5;
 }
 

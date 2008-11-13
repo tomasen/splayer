@@ -21,7 +21,7 @@ public:
 	int ExtractSubFiles(FILE* fp);
 	int ExtractEachSubFile(FILE* fp, int iSubPosId);
 	char* ReadToPTCharByLength(FILE* fp, size_t length);
-	CString getVideoFileBasename(CString szVidPath);
+	CString getVideoFileBasename(CString szVidPath, CStringArray* szaPathInfo);
 	int Explode(CString szIn, CString szTok, CStringArray* szaOut);
 	BOOL ifFileExist(CString szPathname);
 private:

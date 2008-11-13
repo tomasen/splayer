@@ -9,18 +9,23 @@ CSVPhash::~CSVPhash(void)
 {
 }
 CString CSVPhash::ComputerSubFilesFileHash(CStringArray* szaSubFiles){
-	CMD5Checksum cmd5 ;
+	
 	BYTE md5buf[16];
 	for (int i = 0; i < szaSubFiles->GetCount(); i++)
 	{
-		if ( !cmd5.GetMD5(szaSubFiles->GetAt(i)).IsEmpty() ){
+		CMD5Checksum cmd5 ;
+		CString szBuf = cmd5.GetMD5(szaSubFiles->GetAt(i));
+		if ( !szBuf.IsEmpty() ){
+			SVP_LogMsg(szBuf);
 			if ( i == 0){
-				memcpy(md5buf, cmd5.lpszMD5, 16);
+				memcpy_s(md5buf, 16, cmd5.lpszMD5, 16);
 			}else{
 				for(int j = 0; j < 16; j++){
 					md5buf[j] ^= cmd5.lpszMD5[j];
 				}
 			}
+		}else{
+			SVP_LogMsg(_T("md5 error"));
 		}
 	}
 	return this->HexToString(md5buf);

@@ -29,11 +29,11 @@ void SVP_UploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString szS
 		svpToolBox.FindAllSubfile(szSubPath, &szaSubFiles);
 		//TODO: Computer Subfile hash
 		CString szSubHash = svpHash.ComputerSubFilesFileHash(&szaSubFiles);
-		SVP_LogMsg(CString("Got Sub Hash ") + szSubHash + szaSubFiles.GetAt(0) + CString(" | ") + szaSubFiles.GetAt(1));
+		SVP_LogMsg(CString("Got Sub Hash ") + szSubHash );
 		//TODO: Build Subfile Package
 		svpToolBox.PackageSubFiles(&szaSubFiles);
-
-		if ( svpNet.UploadSubFileByVideoAndHash(fnVideoFilePath,szFileHash,szSubPath) ){
+		svpNet.WetherNeedUploadSub(fnVideoFilePath,szFileHash, szSubHash);
+		if ( svpNet.UploadSubFileByVideoAndHash(fnVideoFilePath,szFileHash, szSubHash, &szaSubFiles) ){
 			return ;
 		}
 }

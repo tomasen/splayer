@@ -12166,9 +12166,9 @@ _TEXT	SEGMENT
 _TEXT	ENDS
 ;	COMDAT ?Lookup@?$Cache@PAVRenderedSubtitle@ssf@@@ssf@@QAE_NABV?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@AAPAVRenderedSubtitle@2@@Z
 _TEXT	SEGMENT
-_nHash$257290 = -8					; size = 4
-_iBin$257289 = -4					; size = 4
-_pPrev$257292 = 8					; size = 4
+_nHash$257300 = -8					; size = 4
+_iBin$257299 = -4					; size = 4
+_pPrev$257302 = 8					; size = 4
 _this$ = 8						; size = 4
 _val$ = 12						; size = 4
 ?Lookup@?$Cache@PAVRenderedSubtitle@ssf@@@ssf@@QAE_NABV?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@AAPAVRenderedSubtitle@2@@Z PROC ; ssf::Cache<ssf::RenderedSubtitle *>::Lookup, COMDAT
@@ -12178,11 +12178,11 @@ _val$ = 12						; size = 4
 
 	mov	eax, DWORD PTR [eax]
 	sub	esp, 8
-	lea	ecx, DWORD PTR _pPrev$257292[esp+4]
+	lea	ecx, DWORD PTR _pPrev$257302[esp+4]
 	push	ecx
-	lea	edx, DWORD PTR _nHash$257290[esp+12]
+	lea	edx, DWORD PTR _nHash$257300[esp+12]
 	push	edx
-	lea	ecx, DWORD PTR _iBin$257289[esp+16]
+	lea	ecx, DWORD PTR _iBin$257299[esp+16]
 	push	ecx
 	push	eax
 	mov	eax, DWORD PTR _this$[esp+20]
@@ -12272,10 +12272,10 @@ PUBLIC	?Draw@RenderedSubtitle@ssf@@QBE?AVCRect@@AAUSubPicDesc@@@Z ; ssf::Rendere
 ; Function compile flags: /Ogtpy
 ;	COMDAT ?Draw@RenderedSubtitle@ssf@@QBE?AVCRect@@AAUSubPicDesc@@@Z
 _TEXT	SEGMENT
-$T257320 = -56						; size = 16
-$T257317 = -56						; size = 16
-$T257322 = -40						; size = 16
-$T257321 = -40						; size = 16
+$T257330 = -56						; size = 16
+$T257327 = -56						; size = 16
+$T257332 = -40						; size = 16
+$T257331 = -40						; size = 16
 _sw$127163 = -24					; size = 24
 _sw$127148 = -24					; size = 24
 _sw$127139 = -24					; size = 24
@@ -12397,7 +12397,7 @@ $LN16@Draw@3:
 	push	eax
 	push	ecx
 	mov	ecx, DWORD PTR [esi+392]
-	lea	edx, DWORD PTR $T257317[esp+88]
+	lea	edx, DWORD PTR $T257327[esp+88]
 	push	edx
 	lea	eax, DWORD PTR [esi+680]
 	push	eax
@@ -12507,7 +12507,7 @@ $LN18@Draw@3:
 	push	eax
 	push	ecx
 	mov	ecx, DWORD PTR [esi+384]
-	lea	edx, DWORD PTR $T257320[esp+88]
+	lea	edx, DWORD PTR $T257330[esp+88]
 	push	edx
 	lea	eax, DWORD PTR [esi+400]
 	push	eax
@@ -12600,7 +12600,7 @@ $LN4@Draw@3:
 	push	edx
 	push	eax
 	mov	eax, DWORD PTR [esi+388]
-	lea	ecx, DWORD PTR $T257321[esp+88]
+	lea	ecx, DWORD PTR $T257331[esp+88]
 	push	ecx
 	mov	ecx, DWORD PTR [esi+384]
 	lea	edx, DWORD PTR [esi+540]
@@ -12676,7 +12676,7 @@ $LN205@Draw@3:
 	mov	eax, DWORD PTR _spd$[esp+80]
 	push	eax
 	mov	eax, DWORD PTR [esi+388]
-	lea	ecx, DWORD PTR $T257322[esp+88]
+	lea	ecx, DWORD PTR $T257332[esp+88]
 	push	ecx
 	mov	ecx, DWORD PTR [esi+384]
 	lea	edx, DWORD PTR [esi+400]
@@ -15883,7 +15883,7 @@ $LN33@RemoveHead:
 _TEXT	ENDS
 ;	COMDAT ?RemoveTail@?$CAtlList@V?$CAutoPtr@VGlyph@ssf@@@ATL@@V?$CAutoPtrElementTraits@VGlyph@ssf@@@2@@ATL@@QAE?AV?$CAutoPtr@VGlyph@ssf@@@2@XZ
 _TEXT	SEGMENT
-$T313058 = -4						; size = 4
+$T313068 = -4						; size = 4
 ___$ReturnUdt$ = 8					; size = 4
 ?RemoveTail@?$CAtlList@V?$CAutoPtr@VGlyph@ssf@@@ATL@@V?$CAutoPtrElementTraits@VGlyph@ssf@@@2@@ATL@@QAE?AV?$CAutoPtr@VGlyph@ssf@@@2@XZ PROC ; ATL::CAtlList<ATL::CAutoPtr<ssf::Glyph>,ATL::CAutoPtrElementTraits<ssf::Glyph> >::RemoveTail, COMDAT
 ; _this$ = edi
@@ -15899,7 +15899,7 @@ ___$ReturnUdt$ = 8					; size = 4
 	xor	eax, eax
 	test	esi, esi
 	setne	al
-	mov	DWORD PTR $T313058[esp+8], 0
+	mov	DWORD PTR $T313068[esp+8], 0
 	test	eax, eax
 	jne	SHORT $LN5@RemoveTail@2
 	push	-2147467259				; 80004005H
@@ -15985,7 +15985,7 @@ $LN38@RemoveTail@2:
 _TEXT	ENDS
 ;	COMDAT ?RemoveHead@?$CAtlList@V?$CAutoPtr@VGlyph@ssf@@@ATL@@V?$CAutoPtrElementTraits@VGlyph@ssf@@@2@@ATL@@QAE?AV?$CAutoPtr@VGlyph@ssf@@@2@XZ
 _TEXT	SEGMENT
-$T313165 = -4						; size = 4
+$T313175 = -4						; size = 4
 ___$ReturnUdt$ = 8					; size = 4
 ?RemoveHead@?$CAtlList@V?$CAutoPtr@VGlyph@ssf@@@ATL@@V?$CAutoPtrElementTraits@VGlyph@ssf@@@2@@ATL@@QAE?AV?$CAutoPtr@VGlyph@ssf@@@2@XZ PROC ; ATL::CAtlList<ATL::CAutoPtr<ssf::Glyph>,ATL::CAutoPtrElementTraits<ssf::Glyph> >::RemoveHead, COMDAT
 ; _this$ = edi
@@ -16003,7 +16003,7 @@ ___$ReturnUdt$ = 8					; size = 4
 	xor	eax, eax
 	cmp	esi, ebx
 	setne	al
-	mov	DWORD PTR $T313165[esp+12], ebx
+	mov	DWORD PTR $T313175[esp+12], ebx
 	cmp	eax, ebx
 	jne	SHORT $LN5@RemoveHead@2
 	push	-2147467259				; 80004005H
@@ -16440,7 +16440,7 @@ __ehfuncinfo$??HATL@@YA?AV?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@
 xdata$x	ENDS
 ;	COMDAT ??HATL@@YA?AV?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@0@ABV10@_W@Z
 _TEXT	SEGMENT
-$T313488 = -16						; size = 4
+$T313498 = -16						; size = 4
 __$EHRec$ = -12						; size = 12
 ___$ReturnUdt$ = 8					; size = 4
 _chTemp$ = 12						; size = 2
@@ -16457,7 +16457,7 @@ _ch2$ = 16						; size = 2
 	mov	DWORD PTR fs:0, esp
 	push	ecx
 	mov	DWORD PTR __$EHRec$[esp+24], 0
-	mov	DWORD PTR $T313488[esp+16], 0
+	mov	DWORD PTR $T313498[esp+16], 0
 	push	edi
 
 ; 2062 : 		CStringT strResult( str1.GetManager() );
@@ -16514,7 +16514,7 @@ $LN20@operator@24:
 	push	ecx
 	push	eax
 	push	esi
-	mov	DWORD PTR $T313488[esp+44], 1
+	mov	DWORD PTR $T313498[esp+44], 1
 	call	?Concatenate@?$CSimpleStringT@_W$0A@@ATL@@KAXAAV12@PB_WH1H@Z ; ATL::CSimpleStringT<wchar_t,0>::Concatenate
 
 ; 2068 : 	}
@@ -16532,10 +16532,10 @@ _TEXT	ENDS
 ;	COMDAT text$x
 text$x	SEGMENT
 __unwindfunclet$??HATL@@YA?AV?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@0@ABV10@_W@Z$0:
-	mov	eax, DWORD PTR $T313488[ebp]
+	mov	eax, DWORD PTR $T313498[ebp]
 	and	eax, 1
 	je	$LN4@operator@24
-	and	DWORD PTR $T313488[ebp], -2		; fffffffeH
+	and	DWORD PTR $T313498[ebp], -2		; fffffffeH
 	mov	ecx, DWORD PTR ___$ReturnUdt$[ebp-4]
 	jmp	??1?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@QAE@XZ ; ATL::CStringT<wchar_t,StrTraitMFC<wchar_t,ATL::ChTraitsCRT<wchar_t> > >::~CStringT<wchar_t,StrTraitMFC<wchar_t,ATL::ChTraitsCRT<wchar_t> > >
 $LN4@operator@24:
@@ -16951,7 +16951,7 @@ __ehfuncinfo$?NewNode@?$CAtlMap@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W
 xdata$x	ENDS
 ;	COMDAT ?NewNode@?$CAtlMap@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@_NV?$CStringElementTraits@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@@2@V?$CElementTraits@_N@2@@ATL@@AAEPAVCNode@12@PB_WII@Z
 _TEXT	SEGMENT
-$T341944 = -28						; size = 4
+$T341954 = -28						; size = 4
 _pNewNode$ = -24					; size = 4
 _this$ = -20						; size = 4
 __$EHRec$ = -16						; size = 16
@@ -17085,7 +17085,7 @@ $LN5@NewNode@3:
 
 ; 2540 : 		::new( pNewNode ) CNode( key, nHash );
 
-	mov	DWORD PTR $T341944[ebp], edi
+	mov	DWORD PTR $T341954[ebp], edi
 	mov	ecx, DWORD PTR _key$[ebp]
 	push	ecx
 	mov	ebx, 1
@@ -17184,7 +17184,7 @@ text$x	SEGMENT
 __unwindfunclet$?NewNode@?$CAtlMap@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@_NV?$CStringElementTraits@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@@2@V?$CElementTraits@_N@2@@ATL@@AAEPAVCNode@12@PB_WII@Z$2:
 	mov	eax, DWORD PTR _pNewNode$[ebp]
 	push	eax
-	mov	ecx, DWORD PTR $T341944[ebp]
+	mov	ecx, DWORD PTR $T341954[ebp]
 	push	ecx
 	call	??3@YAXPAX0@Z				; operator delete
 	add	esp, 8
@@ -17223,7 +17223,7 @@ __ehfuncinfo$?NewNode@?$CAtlMap@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W
 xdata$x	ENDS
 ;	COMDAT ?NewNode@?$CAtlMap@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@VSubRect@ssf@@V?$CStringElementTraits@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@@2@V?$CElementTraits@VSubRect@ssf@@@2@@ATL@@AAEPAVCNode@12@PB_WII@Z
 _TEXT	SEGMENT
-$T342025 = -20						; size = 4
+$T342035 = -20						; size = 4
 __$EHRec$ = -16						; size = 16
 _this$ = 8						; size = 4
 _key$ = 12						; size = 4
@@ -17356,7 +17356,7 @@ $LN5@NewNode@4:
 
 ; 2540 : 		::new( pNewNode ) CNode( key, nHash );
 
-	mov	DWORD PTR $T342025[ebp], edi
+	mov	DWORD PTR $T342035[ebp], edi
 	mov	ecx, DWORD PTR _key$[ebp]
 	push	ecx
 	mov	ecx, edi
@@ -17445,7 +17445,7 @@ text$x	SEGMENT
 __unwindfunclet$?NewNode@?$CAtlMap@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@VSubRect@ssf@@V?$CStringElementTraits@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@@2@V?$CElementTraits@VSubRect@ssf@@@2@@ATL@@AAEPAVCNode@12@PB_WII@Z$2:
 	mov	eax, DWORD PTR _pNewNode$[ebp]
 	push	eax
-	mov	ecx, DWORD PTR $T342025[ebp]
+	mov	ecx, DWORD PTR $T342035[ebp]
 	push	ecx
 	call	??3@YAXPAX0@Z				; operator delete
 	add	esp, 8
@@ -17484,7 +17484,7 @@ __ehfuncinfo$?NewNode@?$CAtlMap@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W
 xdata$x	ENDS
 ;	COMDAT ?NewNode@?$CAtlMap@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@PAVRenderedSubtitle@ssf@@V?$CStringElementTraits@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@@2@V?$CElementTraits@PAVRenderedSubtitle@ssf@@@2@@ATL@@AAEPAVCNode@12@PB_WII@Z
 _TEXT	SEGMENT
-$T342106 = -20						; size = 4
+$T342116 = -20						; size = 4
 __$EHRec$ = -16						; size = 16
 _this$ = 8						; size = 4
 _key$ = 12						; size = 4
@@ -17617,7 +17617,7 @@ $LN5@NewNode@5:
 
 ; 2540 : 		::new( pNewNode ) CNode( key, nHash );
 
-	mov	DWORD PTR $T342106[ebp], edi
+	mov	DWORD PTR $T342116[ebp], edi
 	mov	ecx, DWORD PTR _key$[ebp]
 	push	ecx
 	mov	ecx, edi
@@ -17706,7 +17706,7 @@ text$x	SEGMENT
 __unwindfunclet$?NewNode@?$CAtlMap@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@PAVRenderedSubtitle@ssf@@V?$CStringElementTraits@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@@2@V?$CElementTraits@PAVRenderedSubtitle@ssf@@@2@@ATL@@AAEPAVCNode@12@PB_WII@Z$2:
 	mov	eax, DWORD PTR _pNewNode$[ebp]
 	push	eax
-	mov	ecx, DWORD PTR $T342106[ebp]
+	mov	ecx, DWORD PTR $T342116[ebp]
 	push	ecx
 	call	??3@YAXPAX0@Z				; operator delete
 	add	esp, 8
@@ -17745,7 +17745,7 @@ __ehfuncinfo$?NewNode@?$CAtlMap@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W
 xdata$x	ENDS
 ;	COMDAT ?NewNode@?$CAtlMap@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@PAVGlyphPath@ssf@@V?$CStringElementTraits@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@@2@V?$CElementTraits@PAVGlyphPath@ssf@@@2@@ATL@@AAEPAVCNode@12@PB_WII@Z
 _TEXT	SEGMENT
-$T342187 = -20						; size = 4
+$T342197 = -20						; size = 4
 __$EHRec$ = -16						; size = 16
 _this$ = 8						; size = 4
 _key$ = 12						; size = 4
@@ -17878,7 +17878,7 @@ $LN5@NewNode@6:
 
 ; 2540 : 		::new( pNewNode ) CNode( key, nHash );
 
-	mov	DWORD PTR $T342187[ebp], edi
+	mov	DWORD PTR $T342197[ebp], edi
 	mov	ecx, DWORD PTR _key$[ebp]
 	push	ecx
 	mov	ecx, edi
@@ -17967,7 +17967,7 @@ text$x	SEGMENT
 __unwindfunclet$?NewNode@?$CAtlMap@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@PAVGlyphPath@ssf@@V?$CStringElementTraits@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@@2@V?$CElementTraits@PAVGlyphPath@ssf@@@2@@ATL@@AAEPAVCNode@12@PB_WII@Z$2:
 	mov	eax, DWORD PTR _pNewNode$[ebp]
 	push	eax
-	mov	ecx, DWORD PTR $T342187[ebp]
+	mov	ecx, DWORD PTR $T342197[ebp]
 	push	ecx
 	call	??3@YAXPAX0@Z				; operator delete
 	add	esp, 8
@@ -18006,7 +18006,7 @@ __ehfuncinfo$?NewNode@?$CAtlMap@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W
 xdata$x	ENDS
 ;	COMDAT ?NewNode@?$CAtlMap@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@PAVFontWrapper@ssf@@V?$CStringElementTraits@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@@2@V?$CElementTraits@PAVFontWrapper@ssf@@@2@@ATL@@AAEPAVCNode@12@PB_WII@Z
 _TEXT	SEGMENT
-$T342268 = -20						; size = 4
+$T342278 = -20						; size = 4
 __$EHRec$ = -16						; size = 16
 _this$ = 8						; size = 4
 _key$ = 12						; size = 4
@@ -18139,7 +18139,7 @@ $LN5@NewNode@7:
 
 ; 2540 : 		::new( pNewNode ) CNode( key, nHash );
 
-	mov	DWORD PTR $T342268[ebp], edi
+	mov	DWORD PTR $T342278[ebp], edi
 	mov	ecx, DWORD PTR _key$[ebp]
 	push	ecx
 	mov	ecx, edi
@@ -18228,7 +18228,7 @@ text$x	SEGMENT
 __unwindfunclet$?NewNode@?$CAtlMap@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@PAVFontWrapper@ssf@@V?$CStringElementTraits@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@@2@V?$CElementTraits@PAVFontWrapper@ssf@@@2@@ATL@@AAEPAVCNode@12@PB_WII@Z$2:
 	mov	eax, DWORD PTR _pNewNode$[ebp]
 	push	eax
-	mov	ecx, DWORD PTR $T342268[ebp]
+	mov	ecx, DWORD PTR $T342278[ebp]
 	push	ecx
 	call	??3@YAXPAX0@Z				; operator delete
 	add	esp, 8
@@ -19175,9 +19175,9 @@ xdata$x	ENDS
 ;	COMDAT ?Flush@?$Cache@PAVRenderedSubtitle@ssf@@@ssf@@QAEXXZ
 _TEXT	SEGMENT
 _key$127539 = -28					; size = 4
-_nHash$342842 = -24					; size = 4
-_iBin$342841 = -20					; size = 4
-_pPrev$342843 = -16					; size = 4
+_nHash$342852 = -24					; size = 4
+_iBin$342851 = -20					; size = 4
+_pPrev$342853 = -16					; size = 4
 __$EHRec$ = -12						; size = 12
 _this$ = 8						; size = 4
 ?Flush@?$Cache@PAVRenderedSubtitle@ssf@@@ssf@@QAEXXZ PROC ; ssf::Cache<ssf::RenderedSubtitle *>::Flush, COMDAT
@@ -19215,11 +19215,11 @@ $LL2@Flush:
 ; 64   : 				ASSERT(m_key2obj.Lookup(key));
 ; 65   : 				delete m_key2obj[key];
 
-	lea	ecx, DWORD PTR _pPrev$342843[esp+40]
+	lea	ecx, DWORD PTR _pPrev$342853[esp+40]
 	push	ecx
-	lea	edx, DWORD PTR _nHash$342842[esp+44]
+	lea	edx, DWORD PTR _nHash$342852[esp+44]
 	push	edx
-	lea	eax, DWORD PTR _iBin$342841[esp+48]
+	lea	eax, DWORD PTR _iBin$342851[esp+48]
 	mov	DWORD PTR __$EHRec$[esp+56], 0
 	mov	edi, DWORD PTR _key$127539[esp+48]
 	push	eax
@@ -19238,8 +19238,8 @@ $LL2@Flush:
 	test	al, al
 	je	SHORT $LN33@Flush
 $LN15@Flush:
-	mov	edx, DWORD PTR _nHash$342842[esp+40]
-	mov	eax, DWORD PTR _iBin$342841[esp+40]
+	mov	edx, DWORD PTR _nHash$342852[esp+40]
+	mov	eax, DWORD PTR _iBin$342851[esp+40]
 	push	edx
 	push	eax
 	push	edi
@@ -19332,9 +19332,9 @@ xdata$x	ENDS
 ;	COMDAT ?Flush@?$Cache@PAVGlyphPath@ssf@@@ssf@@QAEXXZ
 _TEXT	SEGMENT
 _key$127519 = -28					; size = 4
-_nHash$342927 = -24					; size = 4
-_iBin$342926 = -20					; size = 4
-_pPrev$342928 = -16					; size = 4
+_nHash$342937 = -24					; size = 4
+_iBin$342936 = -20					; size = 4
+_pPrev$342938 = -16					; size = 4
 __$EHRec$ = -12						; size = 12
 _this$ = 8						; size = 4
 ?Flush@?$Cache@PAVGlyphPath@ssf@@@ssf@@QAEXXZ PROC	; ssf::Cache<ssf::GlyphPath *>::Flush, COMDAT
@@ -19372,11 +19372,11 @@ $LL2@Flush@2:
 ; 64   : 				ASSERT(m_key2obj.Lookup(key));
 ; 65   : 				delete m_key2obj[key];
 
-	lea	ecx, DWORD PTR _pPrev$342928[esp+40]
+	lea	ecx, DWORD PTR _pPrev$342938[esp+40]
 	push	ecx
-	lea	edx, DWORD PTR _nHash$342927[esp+44]
+	lea	edx, DWORD PTR _nHash$342937[esp+44]
 	push	edx
-	lea	eax, DWORD PTR _iBin$342926[esp+48]
+	lea	eax, DWORD PTR _iBin$342936[esp+48]
 	mov	DWORD PTR __$EHRec$[esp+56], 0
 	mov	edi, DWORD PTR _key$127519[esp+48]
 	push	eax
@@ -19395,8 +19395,8 @@ $LL2@Flush@2:
 	test	al, al
 	je	SHORT $LN33@Flush@2
 $LN15@Flush@2:
-	mov	edx, DWORD PTR _nHash$342927[esp+40]
-	mov	eax, DWORD PTR _iBin$342926[esp+40]
+	mov	edx, DWORD PTR _nHash$342937[esp+40]
+	mov	eax, DWORD PTR _iBin$342936[esp+40]
 	push	edx
 	push	eax
 	push	edi
@@ -19565,9 +19565,9 @@ $LN22@CAutoPtr@5:
 _TEXT	ENDS
 ;	COMDAT ?Invalidate@?$Cache@PAVRenderedSubtitle@ssf@@@ssf@@QAEXABV?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@@Z
 _TEXT	SEGMENT
-_pPrev$343090 = -12					; size = 4
-_nHash$343088 = -8					; size = 4
-_iBin$343087 = -4					; size = 4
+_pPrev$343100 = -12					; size = 4
+_nHash$343098 = -8					; size = 4
+_iBin$343097 = -4					; size = 4
 ?Invalidate@?$Cache@PAVRenderedSubtitle@ssf@@@ssf@@QAEXABV?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@@Z PROC ; ssf::Cache<ssf::RenderedSubtitle *>::Invalidate, COMDAT
 ; _this$ = ecx
 ; _key$ = eax
@@ -19582,13 +19582,13 @@ _iBin$343087 = -4					; size = 4
 ; 78   : 			if(m_key2obj.Lookup(key, val))
 
 	mov	esi, ecx
-	lea	ecx, DWORD PTR _pPrev$343090[esp+20]
+	lea	ecx, DWORD PTR _pPrev$343100[esp+20]
 	push	ecx
-	lea	edx, DWORD PTR _nHash$343088[esp+24]
+	lea	edx, DWORD PTR _nHash$343098[esp+24]
 	mov	edi, eax
 	mov	eax, DWORD PTR [edi]
 	push	edx
-	lea	ecx, DWORD PTR _iBin$343087[esp+28]
+	lea	ecx, DWORD PTR _iBin$343097[esp+28]
 	push	ecx
 	add	esi, 4
 	push	eax
@@ -19629,13 +19629,13 @@ $LN1@Invalidate:
 _TEXT	ENDS
 ;	COMDAT ?Add@?$Cache@PAVRenderedSubtitle@ssf@@@ssf@@QAEXABV?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@AAPAVRenderedSubtitle@2@_N@Z
 _TEXT	SEGMENT
-_pPrev$343149 = -4					; size = 4
-_iBin$343112 = -4					; size = 4
-_iBin$343147 = 8					; size = 4
-_nHash$343113 = 8					; size = 4
+_pPrev$343159 = -4					; size = 4
+_iBin$343122 = -4					; size = 4
+_iBin$343157 = 8					; size = 4
+_nHash$343123 = 8					; size = 4
 _this$ = 8						; size = 4
-_nHash$343148 = 12					; size = 4
-_pPrev$343115 = 12					; size = 4
+_nHash$343158 = 12					; size = 4
+_pPrev$343125 = 12					; size = 4
 _key$ = 12						; size = 4
 _obj$ = 16						; size = 4
 ?Add@?$Cache@PAVRenderedSubtitle@ssf@@@ssf@@QAEXABV?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@AAPAVRenderedSubtitle@2@_N@Z PROC ; ssf::Cache<ssf::RenderedSubtitle *>::Add, COMDAT
@@ -19652,11 +19652,11 @@ _obj$ = 16						; size = 4
 	push	ebp
 	mov	ebp, DWORD PTR _this$[esp+8]
 	push	edi
-	lea	ecx, DWORD PTR _pPrev$343115[esp+12]
+	lea	ecx, DWORD PTR _pPrev$343125[esp+12]
 	push	ecx
-	lea	edx, DWORD PTR _nHash$343113[esp+16]
+	lea	edx, DWORD PTR _nHash$343123[esp+16]
 	push	edx
-	lea	ecx, DWORD PTR _iBin$343112[esp+24]
+	lea	ecx, DWORD PTR _iBin$343122[esp+24]
 	push	ecx
 	lea	edi, DWORD PTR [ebp+4]
 	push	eax
@@ -19701,11 +19701,11 @@ $LN27@Add@2:
 ; 54   : 			m_key2obj[key] = obj;
 
 	mov	ebx, DWORD PTR [ebx]
-	lea	edx, DWORD PTR _pPrev$343149[esp+16]
+	lea	edx, DWORD PTR _pPrev$343159[esp+16]
 	push	edx
-	lea	eax, DWORD PTR _nHash$343148[esp+16]
+	lea	eax, DWORD PTR _nHash$343158[esp+16]
 	push	eax
-	lea	ecx, DWORD PTR _iBin$343147[esp+20]
+	lea	ecx, DWORD PTR _iBin$343157[esp+20]
 	push	ecx
 	push	ebx
 	mov	eax, edi
@@ -19725,8 +19725,8 @@ $LN27@Add@2:
 	call	?AtlThrowImpl@ATL@@YGXJ@Z		; ATL::AtlThrowImpl
 $LN29@Add@2:
 $LN21@Add@2:
-	mov	eax, DWORD PTR _nHash$343148[esp+12]
-	mov	ecx, DWORD PTR _iBin$343147[esp+12]
+	mov	eax, DWORD PTR _nHash$343158[esp+12]
+	mov	ecx, DWORD PTR _iBin$343157[esp+12]
 	push	eax
 	push	ecx
 	push	ebx
@@ -19756,13 +19756,13 @@ $LN28@Add@2:
 _TEXT	ENDS
 ;	COMDAT ?Add@?$Cache@PAVGlyphPath@ssf@@@ssf@@QAEXABV?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@AAPAVGlyphPath@2@_N@Z
 _TEXT	SEGMENT
-_pPrev$343208 = -4					; size = 4
-_iBin$343171 = -4					; size = 4
-_iBin$343206 = 8					; size = 4
-_nHash$343172 = 8					; size = 4
+_pPrev$343218 = -4					; size = 4
+_iBin$343181 = -4					; size = 4
+_iBin$343216 = 8					; size = 4
+_nHash$343182 = 8					; size = 4
 _this$ = 8						; size = 4
-_nHash$343207 = 12					; size = 4
-_pPrev$343174 = 12					; size = 4
+_nHash$343217 = 12					; size = 4
+_pPrev$343184 = 12					; size = 4
 _key$ = 12						; size = 4
 _obj$ = 16						; size = 4
 ?Add@?$Cache@PAVGlyphPath@ssf@@@ssf@@QAEXABV?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@AAPAVGlyphPath@2@_N@Z PROC ; ssf::Cache<ssf::GlyphPath *>::Add, COMDAT
@@ -19779,11 +19779,11 @@ _obj$ = 16						; size = 4
 	push	ebp
 	mov	ebp, DWORD PTR _this$[esp+8]
 	push	edi
-	lea	ecx, DWORD PTR _pPrev$343174[esp+12]
+	lea	ecx, DWORD PTR _pPrev$343184[esp+12]
 	push	ecx
-	lea	edx, DWORD PTR _nHash$343172[esp+16]
+	lea	edx, DWORD PTR _nHash$343182[esp+16]
 	push	edx
-	lea	ecx, DWORD PTR _iBin$343171[esp+24]
+	lea	ecx, DWORD PTR _iBin$343181[esp+24]
 	push	ecx
 	lea	edi, DWORD PTR [ebp+4]
 	push	eax
@@ -19828,11 +19828,11 @@ $LN27@Add@3:
 ; 54   : 			m_key2obj[key] = obj;
 
 	mov	ebx, DWORD PTR [ebx]
-	lea	edx, DWORD PTR _pPrev$343208[esp+16]
+	lea	edx, DWORD PTR _pPrev$343218[esp+16]
 	push	edx
-	lea	eax, DWORD PTR _nHash$343207[esp+16]
+	lea	eax, DWORD PTR _nHash$343217[esp+16]
 	push	eax
-	lea	ecx, DWORD PTR _iBin$343206[esp+20]
+	lea	ecx, DWORD PTR _iBin$343216[esp+20]
 	push	ecx
 	push	ebx
 	mov	eax, edi
@@ -19852,8 +19852,8 @@ $LN27@Add@3:
 	call	?AtlThrowImpl@ATL@@YGXJ@Z		; ATL::AtlThrowImpl
 $LN29@Add@3:
 $LN21@Add@3:
-	mov	eax, DWORD PTR _nHash$343207[esp+12]
-	mov	ecx, DWORD PTR _iBin$343206[esp+12]
+	mov	eax, DWORD PTR _nHash$343217[esp+12]
+	mov	ecx, DWORD PTR _iBin$343216[esp+12]
 	push	eax
 	push	ecx
 	push	ebx
@@ -19898,9 +19898,9 @@ xdata$x	ENDS
 ;	COMDAT ?Flush@?$Cache@PAVFontWrapper@ssf@@@ssf@@QAEXXZ
 _TEXT	SEGMENT
 _key$127310 = -28					; size = 4
-_nHash$343246 = -24					; size = 4
-_iBin$343245 = -20					; size = 4
-_pPrev$343247 = -16					; size = 4
+_nHash$343256 = -24					; size = 4
+_iBin$343255 = -20					; size = 4
+_pPrev$343257 = -16					; size = 4
 __$EHRec$ = -12						; size = 12
 _this$ = 8						; size = 4
 ?Flush@?$Cache@PAVFontWrapper@ssf@@@ssf@@QAEXXZ PROC	; ssf::Cache<ssf::FontWrapper *>::Flush, COMDAT
@@ -19938,11 +19938,11 @@ $LL2@Flush@3:
 ; 64   : 				ASSERT(m_key2obj.Lookup(key));
 ; 65   : 				delete m_key2obj[key];
 
-	lea	ecx, DWORD PTR _pPrev$343247[esp+40]
+	lea	ecx, DWORD PTR _pPrev$343257[esp+40]
 	push	ecx
-	lea	edx, DWORD PTR _nHash$343246[esp+44]
+	lea	edx, DWORD PTR _nHash$343256[esp+44]
 	push	edx
-	lea	eax, DWORD PTR _iBin$343245[esp+48]
+	lea	eax, DWORD PTR _iBin$343255[esp+48]
 	mov	DWORD PTR __$EHRec$[esp+56], 0
 	mov	edi, DWORD PTR _key$127310[esp+48]
 	push	eax
@@ -19961,8 +19961,8 @@ $LL2@Flush@3:
 	test	al, al
 	je	SHORT $LN33@Flush@3
 $LN15@Flush@3:
-	mov	edx, DWORD PTR _nHash$343246[esp+40]
-	mov	eax, DWORD PTR _iBin$343245[esp+40]
+	mov	edx, DWORD PTR _nHash$343256[esp+40]
+	mov	eax, DWORD PTR _iBin$343255[esp+40]
 	push	edx
 	push	eax
 	push	edi
@@ -20040,12 +20040,12 @@ text$x	ENDS
 ; Function compile flags: /Ogtpy
 ;	COMDAT ?Add@?$Cache@PAVFontWrapper@ssf@@@ssf@@QAEXABV?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@AAPAVFontWrapper@2@_N@Z
 _TEXT	SEGMENT
-_iBin$343343 = -8					; size = 4
-_nHash$343317 = -8					; size = 4
-_pPrev$343345 = -4					; size = 4
-_iBin$343316 = -4					; size = 4
-_nHash$343344 = 8					; size = 4
-_pPrev$343313 = 8					; size = 4
+_iBin$343353 = -8					; size = 4
+_nHash$343327 = -8					; size = 4
+_pPrev$343355 = -4					; size = 4
+_iBin$343326 = -4					; size = 4
+_nHash$343354 = 8					; size = 4
+_pPrev$343323 = 8					; size = 4
 _key$ = 8						; size = 4
 _obj$ = 12						; size = 4
 ?Add@?$Cache@PAVFontWrapper@ssf@@@ssf@@QAEXABV?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@AAPAVFontWrapper@2@_N@Z PROC ; ssf::Cache<ssf::FontWrapper *>::Add, COMDAT
@@ -20061,13 +20061,13 @@ _obj$ = 12						; size = 4
 
 ; 51   : 			if(StringMapW<T>::CPair* p = m_key2obj.Lookup(key)) delete p->m_value;
 
-	lea	ecx, DWORD PTR _pPrev$343313[esp+16]
+	lea	ecx, DWORD PTR _pPrev$343323[esp+16]
 	push	ecx
-	lea	edx, DWORD PTR _nHash$343317[esp+24]
+	lea	edx, DWORD PTR _nHash$343327[esp+24]
 	mov	esi, eax
 	mov	eax, DWORD PTR [ebx]
 	push	edx
-	lea	ecx, DWORD PTR _iBin$343316[esp+28]
+	lea	ecx, DWORD PTR _iBin$343326[esp+28]
 	push	ecx
 	lea	edi, DWORD PTR [esi+4]
 	push	eax
@@ -20110,11 +20110,11 @@ $LN14@Add@4:
 ; 54   : 			m_key2obj[key] = obj;
 
 	mov	ebx, DWORD PTR [ebx]
-	lea	edx, DWORD PTR _pPrev$343345[esp+20]
+	lea	edx, DWORD PTR _pPrev$343355[esp+20]
 	push	edx
-	lea	eax, DWORD PTR _nHash$343344[esp+20]
+	lea	eax, DWORD PTR _nHash$343354[esp+20]
 	push	eax
-	lea	ecx, DWORD PTR _iBin$343343[esp+28]
+	lea	ecx, DWORD PTR _iBin$343353[esp+28]
 	push	ecx
 	push	ebx
 	mov	eax, edi
@@ -20134,8 +20134,8 @@ $LN14@Add@4:
 	call	?AtlThrowImpl@ATL@@YGXJ@Z		; ATL::AtlThrowImpl
 $LN28@Add@4:
 $LN21@Add@4:
-	mov	eax, DWORD PTR _nHash$343344[esp+16]
-	mov	ecx, DWORD PTR _iBin$343343[esp+20]
+	mov	eax, DWORD PTR _nHash$343354[esp+16]
+	mov	ecx, DWORD PTR _iBin$343353[esp+20]
 	push	eax
 	push	ecx
 	push	ebx
@@ -20180,11 +20180,11 @@ __ehfuncinfo$?Create@GlyphPathCache@ssf@@QAEPAVGlyphPath@2@PAUHDC__@@PBVFontWrap
 xdata$x	ENDS
 ;	COMDAT ?Create@GlyphPathCache@ssf@@QAEPAVGlyphPath@2@PAUHDC__@@PBVFontWrapper@2@_W@Z
 _TEXT	SEGMENT
-$T343362 = -28						; size = 4
-_pPrev$343423 = -24					; size = 4
+$T343372 = -28						; size = 4
+_pPrev$343433 = -24					; size = 4
 _path$ = -24						; size = 4
-_nHash$343421 = -20					; size = 4
-_iBin$343420 = -16					; size = 4
+_nHash$343431 = -20					; size = 4
+_iBin$343430 = -16					; size = 4
 __$EHRec$ = -12						; size = 12
 _this$ = 8						; size = 4
 _hDC$ = 12						; size = 4
@@ -20210,7 +20210,7 @@ _c$ = 20						; size = 2
 	push	ebp
 	push	esi
 	push	eax
-	lea	ecx, DWORD PTR $T343362[esp+44]
+	lea	ecx, DWORD PTR $T343372[esp+44]
 	call	??0?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@QAE@PB_W@Z ; ATL::CStringT<wchar_t,StrTraitMFC<wchar_t,ATL::ChTraitsCRT<wchar_t> > >::CStringT<wchar_t,StrTraitMFC<wchar_t,ATL::ChTraitsCRT<wchar_t> > >
 	xor	ebx, ebx
 	mov	DWORD PTR __$EHRec$[esp+48], ebx
@@ -20222,7 +20222,7 @@ _c$ = 20						; size = 2
 	call	??HATL@@YA?AV?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@0@ABV10@_W@Z ; ATL::operator+
 	add	esp, 12					; 0000000cH
 	mov	BYTE PTR __$EHRec$[esp+48], 2
-	mov	eax, DWORD PTR $T343362[esp+40]
+	mov	eax, DWORD PTR $T343372[esp+40]
 	add	eax, -16				; fffffff0H
 	or	ebp, -1
 	lea	ecx, DWORD PTR [eax+12]
@@ -20243,12 +20243,12 @@ $LN24@Create:
 ; 787  : 
 ; 788  : 		if(m_key2obj.Lookup(key, path))
 
-	lea	ecx, DWORD PTR _pPrev$343423[esp+40]
+	lea	ecx, DWORD PTR _pPrev$343433[esp+40]
 	push	ecx
 	mov	ecx, DWORD PTR _key$[esp+40]
-	lea	edx, DWORD PTR _nHash$343421[esp+44]
+	lea	edx, DWORD PTR _nHash$343431[esp+44]
 	push	edx
-	lea	eax, DWORD PTR _iBin$343420[esp+48]
+	lea	eax, DWORD PTR _iBin$343430[esp+48]
 	push	eax
 	mov	eax, DWORD PTR _this$[esp+48]
 	push	ecx
@@ -20492,7 +20492,7 @@ _TEXT	ENDS
 ;	COMDAT text$x
 text$x	SEGMENT
 __unwindfunclet$?Create@GlyphPathCache@ssf@@QAEPAVGlyphPath@2@PAUHDC__@@PBVFontWrapper@2@_W@Z$0:
-	lea	ecx, DWORD PTR $T343362[ebp]
+	lea	ecx, DWORD PTR $T343372[ebp]
 	jmp	??1?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@QAE@XZ ; ATL::CStringT<wchar_t,StrTraitMFC<wchar_t,ATL::ChTraitsCRT<wchar_t> > >::~CStringT<wchar_t,StrTraitMFC<wchar_t,ATL::ChTraitsCRT<wchar_t> > >
 __unwindfunclet$?Create@GlyphPathCache@ssf@@QAEPAVGlyphPath@2@PAUHDC__@@PBVFontWrapper@2@_W@Z$1:
 	lea	ecx, DWORD PTR _key$[ebp-4]
@@ -20524,11 +20524,11 @@ __ehfuncinfo$?Create@FontCache@ssf@@QAEPAVFontWrapper@2@PAUHDC__@@ABUtagLOGFONTW
 xdata$x	ENDS
 ;	COMDAT ?Create@FontCache@ssf@@QAEPAVFontWrapper@2@PAUHDC__@@ABUtagLOGFONTW@@@Z
 _TEXT	SEGMENT
-_pPrev$343662 = -24					; size = 4
-$T343571 = -24						; size = 4
-_nHash$343660 = -20					; size = 4
-_iBin$343659 = -16					; size = 4
-$T343575 = -16						; size = 4
+_pPrev$343672 = -24					; size = 4
+$T343581 = -24						; size = 4
+_nHash$343670 = -20					; size = 4
+_iBin$343669 = -16					; size = 4
+$T343585 = -16						; size = 4
 __$EHRec$ = -12						; size = 12
 _key$ = 8						; size = 4
 _this$ = 8						; size = 4
@@ -20576,7 +20576,7 @@ $LN16@Create@2:
 
 	lea	ecx, DWORD PTR [esi+28]
 	push	ecx
-	lea	ecx, DWORD PTR $T343571[esp+36]
+	lea	ecx, DWORD PTR $T343581[esp+36]
 	mov	DWORD PTR __$EHRec$[esp+44], 0
 	call	??0?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@QAE@PB_W@Z ; ATL::CStringT<wchar_t,StrTraitMFC<wchar_t,ATL::ChTraitsCRT<wchar_t> > >::CStringT<wchar_t,StrTraitMFC<wchar_t,ATL::ChTraitsCRT<wchar_t> > >
 	mov	BYTE PTR __$EHRec$[esp+40], 1
@@ -20602,7 +20602,7 @@ $LN16@Create@2:
 	push	eax
 	call	?Format@?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@QAAXPB_WZZ ; ATL::CStringT<wchar_t,StrTraitMFC<wchar_t,ATL::ChTraitsCRT<wchar_t> > >::Format
 	mov	BYTE PTR __$EHRec$[esp+64], 0
-	mov	eax, DWORD PTR $T343571[esp+56]
+	mov	eax, DWORD PTR $T343581[esp+56]
 	add	eax, -16				; fffffff0H
 	add	esp, 24					; 00000018H
 	lea	ecx, DWORD PTR [eax+12]
@@ -20625,11 +20625,11 @@ $LN32@Create@2:
 ; 760  : 		if(m_key2obj.Lookup(key, pFW))
 
 	mov	edi, DWORD PTR _key$[esp+32]
-	lea	ecx, DWORD PTR _pPrev$343662[esp+36]
+	lea	ecx, DWORD PTR _pPrev$343672[esp+36]
 	push	ecx
-	lea	edx, DWORD PTR _nHash$343660[esp+40]
+	lea	edx, DWORD PTR _nHash$343670[esp+40]
 	push	edx
-	lea	eax, DWORD PTR _iBin$343659[esp+44]
+	lea	eax, DWORD PTR _iBin$343669[esp+44]
 	push	eax
 	push	edi
 	lea	eax, DWORD PTR [ebp+4]
@@ -20701,7 +20701,7 @@ $LN1@Create@2:
 	push	120					; 00000078H
 	call	??2@YAPAXI@Z				; operator new
 	add	esp, 4
-	mov	DWORD PTR $T343575[esp+36], eax
+	mov	DWORD PTR $T343585[esp+36], eax
 	mov	BYTE PTR __$EHRec$[esp+44], 2
 	test	eax, eax
 	je	SHORT $LN5@Create@2
@@ -20767,10 +20767,10 @@ __unwindfunclet$?Create@FontCache@ssf@@QAEPAVFontWrapper@2@PAUHDC__@@ABUtagLOGFO
 	lea	ecx, DWORD PTR _key$[ebp-4]
 	jmp	??1?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@QAE@XZ ; ATL::CStringT<wchar_t,StrTraitMFC<wchar_t,ATL::ChTraitsCRT<wchar_t> > >::~CStringT<wchar_t,StrTraitMFC<wchar_t,ATL::ChTraitsCRT<wchar_t> > >
 __unwindfunclet$?Create@FontCache@ssf@@QAEPAVFontWrapper@2@PAUHDC__@@ABUtagLOGFONTW@@@Z$1:
-	lea	ecx, DWORD PTR $T343571[ebp]
+	lea	ecx, DWORD PTR $T343581[ebp]
 	jmp	??1?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@QAE@XZ ; ATL::CStringT<wchar_t,StrTraitMFC<wchar_t,ATL::ChTraitsCRT<wchar_t> > >::~CStringT<wchar_t,StrTraitMFC<wchar_t,ATL::ChTraitsCRT<wchar_t> > >
 __unwindfunclet$?Create@FontCache@ssf@@QAEPAVFontWrapper@2@PAUHDC__@@ABUtagLOGFONTW@@@Z$2:
-	mov	eax, DWORD PTR $T343575[ebp]
+	mov	eax, DWORD PTR $T343585[ebp]
 	push	eax
 	call	??3@YAXPAX@Z				; operator delete
 	pop	ecx
@@ -20785,11 +20785,11 @@ PUBLIC	?GetRect@SubRectAllocator@ssf@@QAEXAAVCRect@@PBVSubtitle@2@ABUAlign@2@HH@
 ;	COMDAT ?GetRect@SubRectAllocator@ssf@@QAEXAAVCRect@@PBVSubtitle@2@ABUAlign@2@HH@Z
 _TEXT	SEGMENT
 _fOK$127200 = -49					; size = 1
-_nHash$343780 = -48					; size = 4
-_iBin$343779 = -44					; size = 4
-$T343764 = -40						; size = 16
+_nHash$343790 = -48					; size = 4
+_iBin$343789 = -44					; size = 4
+$T343774 = -40						; size = 16
 _sr$ = -24						; size = 20
-_pPrev$343782 = 8					; size = 4
+_pPrev$343792 = 8					; size = 4
 _vertical$127199 = 8					; size = 1
 _this$ = 8						; size = 4
 _rect$ = 12						; size = 4
@@ -20830,14 +20830,14 @@ _brb$ = 28						; size = 4
 ; 683  : 
 ; 684  : 		StringMapW<SubRect>::CPair* pPair = Lookup(s->m_name);
 
-	lea	ecx, DWORD PTR _pPrev$343782[esp+64]
+	lea	ecx, DWORD PTR _pPrev$343792[esp+64]
 	push	ecx
 	mov	DWORD PTR _sr$[esp+80], edx
-	lea	edx, DWORD PTR _nHash$343780[esp+72]
+	lea	edx, DWORD PTR _nHash$343790[esp+72]
 	add	esi, eax
 	mov	eax, DWORD PTR [edi+8]
 	push	edx
-	lea	ecx, DWORD PTR _iBin$343779[esp+76]
+	lea	ecx, DWORD PTR _iBin$343789[esp+76]
 	push	ecx
 	push	eax
 	mov	eax, ebx
@@ -20954,10 +20954,10 @@ $LN43@GetRect:
 	push	esi
 	lea	ecx, DWORD PTR _sr$[esp+72]
 	push	ecx
-	lea	edx, DWORD PTR $T343764[esp+76]
+	lea	edx, DWORD PTR $T343774[esp+76]
 	push	edx
 	call	DWORD PTR __imp__IntersectRect@12
-	lea	eax, DWORD PTR $T343764[esp+68]
+	lea	eax, DWORD PTR $T343774[esp+68]
 	push	eax
 	call	DWORD PTR __imp__IsRectEmpty@4
 	test	eax, eax
@@ -21275,16 +21275,16 @@ xdata$x	ENDS
 ;	COMDAT ?NextSegment@Renderer@ssf@@QAEXABV?$CAutoPtrList@VSubtitle@ssf@@@ATL@@@Z
 _TEXT	SEGMENT
 tv465 = -76						; size = 4
-_iBin$343996 = -76					; size = 4
-_pPrev$344080 = -72					; size = 4
-_pPrev$343998 = -72					; size = 4
-_nHash$344078 = -68					; size = 4
-_iBin$344077 = -64					; size = 4
+_iBin$344006 = -76					; size = 4
+_pPrev$344089 = -72					; size = 4
+_pPrev$344008 = -72					; size = 4
+_nHash$344087 = -68					; size = 4
+_iBin$344086 = -64					; size = 4
 _names$ = -60						; size = 48
 __$EHRec$ = -12						; size = 12
 tv629 = 8						; size = 4
 _this$ = 8						; size = 4
-_nHash$343997 = 12					; size = 4
+_nHash$344007 = 12					; size = 4
 _cur$126349 = 12					; size = 4
 _subs$ = 12						; size = 4
 ?NextSegment@Renderer@ssf@@QAEXABV?$CAutoPtrList@VSubtitle@ssf@@@ATL@@@Z PROC ; ssf::Renderer::NextSegment, COMDAT
@@ -21338,11 +21338,11 @@ $LN140@NextSegmen:
 	mov	ecx, DWORD PTR [eax+8]
 	mov	edi, DWORD PTR [ecx+8]
 	mov	esi, DWORD PTR [esi]
-	lea	edx, DWORD PTR _pPrev$343998[esp+92]
+	lea	edx, DWORD PTR _pPrev$344008[esp+92]
 	push	edx
-	lea	eax, DWORD PTR _nHash$343997[esp+92]
+	lea	eax, DWORD PTR _nHash$344007[esp+92]
 	push	eax
-	lea	ecx, DWORD PTR _iBin$343996[esp+100]
+	lea	ecx, DWORD PTR _iBin$344006[esp+100]
 	push	ecx
 	push	edi
 	lea	ecx, DWORD PTR _names$[esp+108]
@@ -21359,8 +21359,8 @@ $LN140@NextSegmen:
 	test	al, al
 	je	SHORT $LN126@NextSegmen
 $LN41@NextSegmen:
-	mov	eax, DWORD PTR _nHash$343997[esp+88]
-	mov	ecx, DWORD PTR _iBin$343996[esp+92]
+	mov	eax, DWORD PTR _nHash$344007[esp+88]
+	mov	ecx, DWORD PTR _iBin$344006[esp+92]
 	push	eax
 	push	ecx
 	push	edi
@@ -21469,11 +21469,11 @@ $LN68@NextSegmen:
 ; 92   : 			if(!names.Lookup(name)) m_sra.RemoveAtPos(cur);
 
 	mov	eax, DWORD PTR [ebp]
-	lea	ecx, DWORD PTR _pPrev$344080[esp+92]
+	lea	ecx, DWORD PTR _pPrev$344089[esp+92]
 	push	ecx
-	lea	edx, DWORD PTR _nHash$344078[esp+96]
+	lea	edx, DWORD PTR _nHash$344087[esp+96]
 	push	edx
-	lea	ecx, DWORD PTR _iBin$344077[esp+100]
+	lea	ecx, DWORD PTR _iBin$344086[esp+100]
 	push	ecx
 	push	eax
 	lea	ecx, DWORD PTR _names$[esp+108]
@@ -22513,12 +22513,12 @@ _g0$ = -360						; size = 4
 _pos$127054 = -360					; size = 4
 _pos$127007 = -360					; size = 4
 _gpos$126983 = -360					; size = 4
-$T394915 = -360						; size = 4
+$T395087 = -360						; size = 4
 _maxwidth$126761 = -360					; size = 4
 _rpos$126740 = -360					; size = 4
 _g$126724 = -360					; size = 4
 tv5659 = -356						; size = 4
-$T394928 = -356						; size = 4
+$T395100 = -356						; size = 4
 _fill_width$ = -356					; size = 4
 _brpos$126769 = -356					; size = 4
 _c$126429 = -356					; size = 4
@@ -22534,7 +22534,7 @@ tv4835 = -344						; size = 4
 _p$ = -344						; size = 8
 _h$127019 = -344					; size = 4
 _pos$126978 = -344					; size = 4
-$T394914 = -344						; size = 4
+$T395086 = -344						; size = 4
 _minwidth$126763 = -344					; size = 4
 _hOldFont$126424 = -344					; size = 4
 tv1534 = -336						; size = 4
@@ -22544,16 +22544,16 @@ _rs$ = -336						; size = 4
 tv7406 = -332						; size = 4
 tv7401 = -332						; size = 4
 tv4768 = -332						; size = 4
-$T398294 = -332						; size = 4
-$T398038 = -332						; size = 4
-$T397829 = -332						; size = 4
+$T398466 = -332						; size = 4
+$T398210 = -332						; size = 4
+$T398001 = -332						; size = 4
 _row$ = -328						; size = 4
-$T394949 = -324						; size = 8
+$T395121 = -324						; size = 8
 _rsize$127059 = -324					; size = 8
 _size$ = -324						; size = 8
 _o$127101 = -316					; size = 8
 _org$ = -316						; size = 8
-$T394907 = -316						; size = 8
+$T395079 = -316						; size = 8
 _extent$126477 = -316					; size = 8
 _scale$ = -308						; size = 8
 tv5654 = -300						; size = 4
@@ -22565,7 +22565,7 @@ tv5892 = -296						; size = 4
 tv5636 = -296						; size = 4
 tv5474 = -296						; size = 4
 tv5435 = -296						; size = 4
-_size$397581 = -296					; size = 8
+_size$397753 = -296					; size = 8
 _w$126990 = -296					; size = 4
 _fill_id$ = -296					; size = 4
 _g$126476 = -296					; size = 4
@@ -22574,21 +22574,21 @@ tv5886 = -264						; size = 4
 tv5813 = -264						; size = 4
 tv4807 = -264						; size = 4
 _r$127090 = -260					; size = 16
-$T394944 = -260						; size = 8
+$T395116 = -260						; size = 8
 _r$127045 = -260					; size = 16
 _glypsh2fill$ = -244					; size = 24
-$T394951 = -220						; size = 16
+$T395123 = -220						; size = 16
 _frame$ = -220						; size = 16
-$T394884 = -220						; size = 16
+$T395056 = -220						; size = 16
 _spdrc$ = -204						; size = 16
 _clip$ = -188						; size = 16
 tv4887 = -172						; size = 4
 _glyphs$ = -168						; size = 24
 tv4796 = -144						; size = 4
-$T394946 = -140						; size = 16
+$T395118 = -140						; size = 16
 _subrect$ = -140					; size = 16
 _lf$126410 = -124					; size = 92
-$T394943 = -24						; size = 8
+$T395115 = -24						; size = 8
 __$EHRec$ = -12						; size = 12
 _this$ = 8						; size = 4
 _s$ = 12						; size = 4
@@ -22672,11 +22672,11 @@ $LN118@Lookup@5:
 	mov	eax, DWORD PTR [edi]
 	mov	ecx, DWORD PTR [edi+4]
 	xor	edx, edx
-	mov	DWORD PTR $T394884[esp+376], edx
-	mov	DWORD PTR $T394884[esp+384], eax
-	mov	DWORD PTR $T394884[esp+380], edx
-	mov	DWORD PTR $T394884[esp+388], ecx
-	lea	ebx, DWORD PTR $T394884[esp+376]
+	mov	DWORD PTR $T395056[esp+376], edx
+	mov	DWORD PTR $T395056[esp+384], eax
+	mov	DWORD PTR $T395056[esp+380], edx
+	mov	DWORD PTR $T395056[esp+388], ecx
+	lea	ebx, DWORD PTR $T395056[esp+376]
 $LN122@Lookup@5:
 	mov	eax, DWORD PTR [ebx+4]
 	mov	edx, DWORD PTR [ebx]
@@ -23848,9 +23848,9 @@ $LN689@Lookup@5:
 ; 289  : 						g2->path.MovePoints(CPoint(size, 0));
 
 	lea	eax, DWORD PTR [ebp+296]
-	lea	edi, DWORD PTR $T394907[esp+376]
-	mov	DWORD PTR $T394907[esp+376], esi
-	mov	DWORD PTR $T394907[esp+380], 0
+	lea	edi, DWORD PTR $T395079[esp+376]
+	mov	DWORD PTR $T395079[esp+376], esi
+	mov	DWORD PTR $T395079[esp+380], 0
 	call	?MovePoints@GlyphPath@ssf@@QAEXABVCPoint@@@Z ; ssf::GlyphPath::MovePoints
 
 ; 290  : 						g2->width += size;
@@ -24484,10 +24484,10 @@ $LN53@Lookup@5:
 
 ; 368  : 				r->RemoveHead();
 
-	lea	edx, DWORD PTR $T394914[esp+376]
+	lea	edx, DWORD PTR $T395086[esp+376]
 	push	edx
 	call	?RemoveHead@?$CAtlList@V?$CAutoPtr@VGlyph@ssf@@@ATL@@V?$CAutoPtrElementTraits@VGlyph@ssf@@@2@@ATL@@QAE?AV?$CAutoPtr@VGlyph@ssf@@@2@XZ ; ATL::CAtlList<ATL::CAutoPtr<ssf::Glyph>,ATL::CAutoPtrElementTraits<ssf::Glyph> >::RemoveHead
-	mov	esi, DWORD PTR $T394914[esp+376]
+	mov	esi, DWORD PTR $T395086[esp+376]
 	cmp	esi, ebx
 	je	SHORT $LN1031@Lookup@5
 	push	esi
@@ -24496,7 +24496,7 @@ $LN53@Lookup@5:
 	call	??3@YAXPAX@Z				; operator delete
 	add	esp, 4
 $LN1031@Lookup@5:
-	mov	DWORD PTR $T394914[esp+376], ebx
+	mov	DWORD PTR $T395086[esp+376], ebx
 	cmp	DWORD PTR [edi+8], ebx
 	jne	SHORT $LN53@Lookup@5
 $LN1766@Lookup@5:
@@ -24519,10 +24519,10 @@ $LN51@Lookup@5:
 
 ; 371  : 				r->RemoveTail();
 
-	lea	eax, DWORD PTR $T394915[esp+376]
+	lea	eax, DWORD PTR $T395087[esp+376]
 	push	eax
 	call	?RemoveTail@?$CAtlList@V?$CAutoPtr@VGlyph@ssf@@@ATL@@V?$CAutoPtrElementTraits@VGlyph@ssf@@@2@@ATL@@QAE?AV?$CAutoPtr@VGlyph@ssf@@@2@XZ ; ATL::CAtlList<ATL::CAutoPtr<ssf::Glyph>,ATL::CAutoPtrElementTraits<ssf::Glyph> >::RemoveTail
-	mov	esi, DWORD PTR $T394915[esp+376]
+	mov	esi, DWORD PTR $T395087[esp+376]
 	cmp	esi, ebx
 	je	SHORT $LN1056@Lookup@5
 	push	esi
@@ -24531,7 +24531,7 @@ $LN51@Lookup@5:
 	call	??3@YAXPAX@Z				; operator delete
 	add	esp, 4
 $LN1056@Lookup@5:
-	mov	DWORD PTR $T394915[esp+376], ebx
+	mov	DWORD PTR $T395087[esp+376], ebx
 	cmp	DWORD PTR [edi+8], ebx
 	jne	SHORT $LN51@Lookup@5
 $LN55@Lookup@5:
@@ -25225,7 +25225,7 @@ $LN35@Lookup@5:
 	mov	DWORD PTR [eax+52], ebx
 	mov	DWORD PTR [eax+56], 10			; 0000000aH
 	mov	ebp, eax
-	mov	DWORD PTR $T394928[esp+376], eax
+	mov	DWORD PTR $T395100[esp+376], eax
 	jmp	SHORT $LN152@Lookup@5
 $LN1963@Lookup@5:
 
@@ -25246,7 +25246,7 @@ $LN151@Lookup@5:
 ; 471  : 		rs = new RenderedSubtitle(spdrc, clip);
 
 	xor	ebp, ebp
-	mov	DWORD PTR $T394928[esp+376], ebp
+	mov	DWORD PTR $T395100[esp+376], ebp
 $LN152@Lookup@5:
 
 ; 472  : 
@@ -25266,14 +25266,14 @@ $LN152@Lookup@5:
 
 ; 474  : 		CPoint org = GetAlignPoint(style.placement, scale, frame);
 
-	lea	eax, DWORD PTR _size$397581[esp+376]
+	lea	eax, DWORD PTR _size$397753[esp+376]
 	push	eax
 	lea	ecx, DWORD PTR _scale$[esp+380]
 	push	ecx
 	lea	edx, DWORD PTR _org$[esp+384]
 	push	edx
-	mov	DWORD PTR _size$397581[esp+388], ebx
-	mov	DWORD PTR _size$397581[esp+392], ebx
+	mov	DWORD PTR _size$397753[esp+388], ebx
+	mov	DWORD PTR _size$397753[esp+392], ebx
 	call	?GetAlignPoint@ssf@@YA?AVCPoint@@ABUPlacement@1@ABUSize@1@ABVCRect@@ABVCSize@@@Z ; ssf::GetAlignPoint
 
 ; 475  : 
@@ -25431,7 +25431,7 @@ $LL1350@Lookup@5:
 	push	edx
 	lea	eax, DWORD PTR _scale$[esp+380]
 	push	eax
-	lea	ecx, DWORD PTR $T394943[esp+384]
+	lea	ecx, DWORD PTR $T395115[esp+384]
 	push	ecx
 	call	?GetAlignPoint@ssf@@YA?AVCPoint@@ABUPlacement@1@ABUSize@1@ABVCRect@@ABVCSize@@@Z ; ssf::GetAlignPoint
 
@@ -25485,7 +25485,7 @@ $LN1368@Lookup@5:
 ; 509  : 					p.y += g->width + g->spacing;
 ; 510  : 					rs->m_glyphs.AddTail(g);
 
-	mov	esi, DWORD PTR $T394928[esp+376]
+	mov	esi, DWORD PTR $T395100[esp+376]
 	mov	edx, eax
 	mov	eax, DWORD PTR _p$[esp+380]
 	add	edx, eax
@@ -25496,7 +25496,7 @@ $LN1368@Lookup@5:
 	add	esi, 36					; 00000024H
 	add	eax, ecx
 	mov	DWORD PTR _p$[esp+380], eax
-	mov	DWORD PTR $T397829[esp+376], edx
+	mov	DWORD PTR $T398001[esp+376], edx
 	call	?GetFreeNode@?$CAtlList@V?$CAutoPtr@VGlyph@ssf@@@ATL@@V?$CAutoPtrElementTraits@VGlyph@ssf@@@2@@ATL@@AAEXXZ ; ATL::CAtlList<ATL::CAutoPtr<ssf::Glyph>,ATL::CAutoPtrElementTraits<ssf::Glyph> >::GetFreeNode
 	mov	eax, DWORD PTR [esi+16]
 	mov	ecx, DWORD PTR [eax]
@@ -25506,7 +25506,7 @@ $LN1368@Lookup@5:
 	mov	DWORD PTR [eax+8], edi
 $LN1448@Lookup@5:
 	mov	DWORD PTR [esi+16], ecx
-	mov	ecx, DWORD PTR $T397829[esp+376]
+	mov	ecx, DWORD PTR $T398001[esp+376]
 	mov	DWORD PTR [eax+4], ecx
 	mov	DWORD PTR [eax], 0
 	mov	ecx, DWORD PTR [esi+4]
@@ -25563,7 +25563,7 @@ $LN18@Lookup@5:
 	push	eax
 	lea	ecx, DWORD PTR _scale$[esp+380]
 	push	ecx
-	lea	edx, DWORD PTR $T394944[esp+384]
+	lea	edx, DWORD PTR $T395116[esp+384]
 	push	edx
 	call	?GetAlignPoint@ssf@@YA?AVCPoint@@ABUPlacement@1@ABUSize@1@ABVCRect@@ABVCSize@@@Z ; ssf::GetAlignPoint
 
@@ -25626,10 +25626,10 @@ $LN1474@Lookup@5:
 
 ; 525  : 					rs->m_glyphs.AddTail(g);
 
-	mov	esi, DWORD PTR $T394928[esp+376]
+	mov	esi, DWORD PTR $T395100[esp+376]
 	mov	eax, DWORD PTR [esi+40]
 	add	esi, 36					; 00000024H
-	mov	DWORD PTR $T398038[esp+376], eax
+	mov	DWORD PTR $T398210[esp+376], eax
 	call	?GetFreeNode@?$CAtlList@V?$CAutoPtr@VGlyph@ssf@@@ATL@@V?$CAutoPtrElementTraits@VGlyph@ssf@@@2@@ATL@@AAEXXZ ; ATL::CAtlList<ATL::CAutoPtr<ssf::Glyph>,ATL::CAutoPtrElementTraits<ssf::Glyph> >::GetFreeNode
 	mov	eax, DWORD PTR [esi+16]
 	mov	ecx, DWORD PTR [eax]
@@ -25639,7 +25639,7 @@ $LN1474@Lookup@5:
 	mov	DWORD PTR [eax+8], edi
 $LN1554@Lookup@5:
 	mov	DWORD PTR [esi+16], ecx
-	mov	ecx, DWORD PTR $T398038[esp+376]
+	mov	ecx, DWORD PTR $T398210[esp+376]
 	mov	DWORD PTR [eax+4], ecx
 	mov	DWORD PTR [eax], 0
 	mov	ecx, DWORD PTR [esi+4]
@@ -25705,7 +25705,7 @@ $LN20@Lookup@5:
 ; 597  : 		pos = rs->m_glyphs.GetHeadPosition();
 ; 598  : 		while(pos) rs->m_glyphs.GetNext(pos)->Rasterize();
 
-	mov	ebp, DWORD PTR $T394928[esp+376]
+	mov	ebp, DWORD PTR $T395100[esp+376]
 	xor	ebx, ebx
 $LN19@Lookup@5:
 	mov	esi, DWORD PTR [ebp+36]
@@ -25886,10 +25886,10 @@ $LL8@Lookup@5:
 	lea	eax, DWORD PTR _r$127090[esp+380]
 	mov	DWORD PTR _r$127090[esp+392], ecx
 	push	eax
-	lea	ecx, DWORD PTR $T394946[esp+384]
+	lea	ecx, DWORD PTR $T395118[esp+384]
 	push	ecx
 	call	DWORD PTR __imp__IntersectRect@12
-	lea	edx, DWORD PTR $T394946[esp+376]
+	lea	edx, DWORD PTR $T395118[esp+376]
 	push	edx
 	call	DWORD PTR __imp__IsRectEmpty@4
 	test	eax, eax
@@ -25898,7 +25898,7 @@ $LL8@Lookup@5:
 ; 568  : 			{
 ; 569  : 				rs->m_glyphs.RemoveAt(cur);
 
-	mov	esi, DWORD PTR $T394928[esp+376]
+	mov	esi, DWORD PTR $T395100[esp+376]
 	add	esi, 36					; 00000024H
 	cmp	ebx, DWORD PTR [esi]
 	jne	SHORT $LN1613@Lookup@5
@@ -25935,7 +25935,7 @@ $LN1638@Lookup@5:
 	add	DWORD PTR [esi+8], -1
 	mov	DWORD PTR [esi+16], ebx
 	jne	$LN3@Lookup@5
-	mov	ecx, DWORD PTR $T394928[esp+376]
+	mov	ecx, DWORD PTR $T395100[esp+376]
 	add	ecx, 36					; 00000024H
 	call	?RemoveAll@?$CAtlList@V?$CAutoPtr@VGlyph@ssf@@@ATL@@V?$CAutoPtrElementTraits@VGlyph@ssf@@@2@@ATL@@QAEXXZ ; ATL::CAtlList<ATL::CAutoPtr<ssf::Glyph>,ATL::CAutoPtrElementTraits<ssf::Glyph> >::RemoveAll
 	jmp	$LN3@Lookup@5
@@ -25963,7 +25963,7 @@ $LN6@Lookup@5:
 	sub	eax, ecx
 	mov	ecx, DWORD PTR [ebp+384]
 	sub	ecx, edx
-	mov	DWORD PTR $T398294[esp+376], eax
+	mov	DWORD PTR $T398466[esp+376], eax
 	mov	DWORD PTR _o$127101[esp+380], eax
 
 ; 574  : 
@@ -25971,7 +25971,7 @@ $LN6@Lookup@5:
 
 	lea	eax, DWORD PTR [ebp+296]
 	lea	edi, DWORD PTR _o$127101[esp+376]
-	mov	DWORD PTR $T394949[esp+376], ecx
+	mov	DWORD PTR $T395121[esp+376], ecx
 	mov	DWORD PTR _o$127101[esp+376], ecx
 	call	?MovePoints@GlyphPath@ssf@@QAEXABVCPoint@@@Z ; ssf::GlyphPath::MovePoints
 
@@ -26017,19 +26017,19 @@ $LN6@Lookup@5:
 	mov	eax, DWORD PTR [ebp+372]
 	mov	edx, DWORD PTR [ebp+368]
 	mov	ecx, DWORD PTR [ebp+376]
-	mov	DWORD PTR $T394951[esp+376], edx
+	mov	DWORD PTR $T395123[esp+376], edx
 	mov	edx, DWORD PTR [ebp+380]
-	mov	DWORD PTR $T394951[esp+380], eax
-	mov	eax, DWORD PTR $T398294[esp+376]
-	mov	DWORD PTR $T394951[esp+384], ecx
-	mov	ecx, DWORD PTR $T394949[esp+376]
+	mov	DWORD PTR $T395123[esp+380], eax
+	mov	eax, DWORD PTR $T398466[esp+376]
+	mov	DWORD PTR $T395123[esp+384], ecx
+	mov	ecx, DWORD PTR $T395121[esp+376]
 	push	eax
-	mov	DWORD PTR $T394951[esp+392], edx
+	mov	DWORD PTR $T395123[esp+392], edx
 	push	ecx
-	lea	edx, DWORD PTR $T394951[esp+384]
+	lea	edx, DWORD PTR $T395123[esp+384]
 	push	edx
 	call	DWORD PTR __imp__OffsetRect@12
-	lea	eax, DWORD PTR $T394951[esp+376]
+	lea	eax, DWORD PTR $T395123[esp+376]
 	push	eax
 	add	esi, 368				; 00000170H
 	push	esi
@@ -26039,7 +26039,7 @@ $LN6@Lookup@5:
 ; 586  : 
 ; 587  : 				rs->m_glyphs.RemoveAt(cur);
 
-	mov	esi, DWORD PTR $T394928[esp+376]
+	mov	esi, DWORD PTR $T395100[esp+376]
 	add	esi, 36					; 00000024H
 	cmp	ebx, DWORD PTR [esi]
 	jne	SHORT $LN1656@Lookup@5
@@ -26104,7 +26104,7 @@ $LN3@Lookup@5:
 ; 597  : 		pos = rs->m_glyphs.GetHeadPosition();
 ; 598  : 		while(pos) rs->m_glyphs.GetNext(pos)->Rasterize();
 
-	mov	ebp, DWORD PTR $T394928[esp+376]
+	mov	ebp, DWORD PTR $T395100[esp+376]
 	xor	ebx, ebx
 $LN7@Lookup@5:
 	mov	esi, DWORD PTR [ebp+36]

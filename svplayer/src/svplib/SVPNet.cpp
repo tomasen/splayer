@@ -15,10 +15,15 @@ CSVPNet::~CSVPNet(void)
 
 int CSVPNet::SetCURLopt(CURL *curl )
 {
+	//struct curl_slist *headerlist=NULL;
+	//static const char buf[] = "Expect:";
+
 	curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1);
-	curl_easy_setopt(curl, CURLOPT_USERAGENT, _T("SVPlayer 0.1") );
-	//curl_easy_setopt(curl, CURLOPT_POST, 1);
+	curl_easy_setopt(curl, CURLOPT_USERAGENT, "SVPlayer 0.1");
+	// MUST not have this line curl_easy_setopt(curl, CURLOPT_POST, ....);
 	
+	//headerlist = curl_slist_append(headerlist, buf); //WTF ??
+	//curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headerlist);
 	return 0;
 }
 
@@ -42,7 +47,8 @@ size_t CSVPNet::handleSubQuery( void *ptr, size_t size, size_t nmemb, void *stre
 	fwrite(ptr, size ,nmemb,(FILE*)stream);
 	return realsize;
 }
-int CSVPNet::UploadSubFileByVideoAndHash(CString fnVideoFilePath, CString szFileHash,CString fnSubPath){
+
+int CSVPNet::WetherNeedUploadSub(CString fnVideoFilePath, CString szFileHash,CString fnSubHash){
 	CURL *curl;
 	CURLcode res;
 	CString szPostPerm = _T( "pathinfo=" ) + fnVideoFilePath + _T("&filehash=") + szFileHash ;
@@ -64,7 +70,7 @@ int CSVPNet::UploadSubFileByVideoAndHash(CString fnVideoFilePath, CString szFile
 
 			if(respcode == 200){
 				//good to go // continues to upload sub
-				
+
 			}else{
 				//error
 				SVP_LogMsg(_T("Already Have same sub in databases"));
@@ -74,6 +80,75 @@ int CSVPNet::UploadSubFileByVideoAndHash(CString fnVideoFilePath, CString szFile
 			SVP_LogMsg(_T("HTTP connection error  ")); //TODO handle this
 		}
 	}
+	return 0;
+}
+int CSVPNet::UploadSubFileByVideoAndHash(CString fnVideoFilePath, CString szFileHash, CString szSubHash,CStringArray* fnSubPaths){
+	CURL *curl;
+	CURLcode res;
+	CString szPostPerm = _T( "pathinfo=" ) + fnVideoFilePath + _T("&filehash=") + szFileHash ;
+	int iTotalFiles = fnSubPaths->GetCount();
+	SVP_LogMsg(_T("Upload Begin"));
+	struct curl_httppost *formpost=NULL;
+	struct curl_httppost *lastptr=NULL;
+
+
+	curl_global_init(CURL_GLOBAL_ALL);
+	SVP_LogMsg(_T("Upload Begin"));
+	char* szTerm1 ;
+	char* szTerm2;
+	int iDescLen = 0;
+
+	szTerm2 = svpToolBox.CStringToUTF8(fnVideoFilePath, &iDescLen);
+	curl_formadd(&formpost,	&lastptr, CURLFORM_COPYNAME, "pathinfo", CURLFORM_COPYCONTENTS, szTerm2,CURLFORM_END);
+	free(szTerm2);
+
+	szTerm2 = svpToolBox.CStringToUTF8(szFileHash, &iDescLen);
+	curl_formadd(&formpost,	&lastptr, CURLFORM_COPYNAME, "filehash", CURLFORM_COPYCONTENTS, szTerm2,CURLFORM_END);
+	free(szTerm2);
+
+
+	for(int i = 0; i < fnSubPaths->GetCount(); i++){
+		/* Fill in the file upload field */
+		
+		szTerm2 = svpToolBox.CStringToUTF8(fnSubPaths->GetAt(i), &iDescLen);
+		SVP_LogMsg(fnSubPaths->GetAt(i));
+		curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "subfile[]", CURLFORM_FILE, szTerm2,CURLFORM_END);
+		free(szTerm2);
+		
+	}
+	
+
+	curl = curl_easy_init();
+	if(curl) {
+		long respcode;
+
+		this->SetCURLopt(curl);
+
+		curl_easy_setopt(curl, CURLOPT_URL, "http://www.svplayer.cn/api/subup.php");
+
+		curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
+		
+		res = curl_easy_perform(curl);
+		if(res == 0){
+			curl_easy_getinfo(curl,CURLINFO_RESPONSE_CODE, &respcode);
+
+			if(respcode == 200){
+				//good to go // continues to upload sub
+				SVP_LogMsg(_T("Upload Finished"));
+			}else{
+				//error
+				SVP_LogMsg(_T("Already Have same sub in databases"));
+			}
+		}else{
+			//error
+			SVP_LogMsg(_T("HTTP connection error  ")); //TODO handle this
+		}
+		curl_easy_cleanup(curl);
+
+	}
+	/* then cleanup the formpost chain */
+	curl_formfree(formpost);
+
 	return 0;
 }
 int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, CString szVHash  )
@@ -87,7 +162,7 @@ int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, C
 		SVP_LogMsg(_T("TmpFile Creation for http recv buff fail")); //// TODO: 1. warning!! OR switch to memfile system
 		return -1;
 	}
-
+	curl_global_init(CURL_GLOBAL_ALL);
 
 	curl = curl_easy_init();
 	if(curl) {
@@ -121,6 +196,7 @@ int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, C
 
 		/* always cleanup */
 		curl_easy_cleanup(curl);
+
 		free(szPostFields);
 
 		//if not error, process data

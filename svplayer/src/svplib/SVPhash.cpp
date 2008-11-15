@@ -54,5 +54,5 @@ CString CSVPhash::HexToString(BYTE* lpszMD5){
 }
 CString CSVPhash::ComputerFileHash(CString szFilePath)
 {
-	return 0;
+	return _T("7ey71eyhhduwque326jii");
 }

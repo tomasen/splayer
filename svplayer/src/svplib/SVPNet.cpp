@@ -51,7 +51,8 @@ size_t CSVPNet::handleSubQuery( void *ptr, size_t size, size_t nmemb, void *stre
 int CSVPNet::WetherNeedUploadSub(CString fnVideoFilePath, CString szFileHash,CString fnSubHash){
 	CURL *curl;
 	CURLcode res;
-	CString szPostPerm = _T( "pathinfo=" ) + fnVideoFilePath + _T("&filehash=") + szFileHash ;
+	CString szPostPerm = _T( "pathinfo=" ) + fnVideoFilePath + _T("&filehash=") + szFileHash  + _T("&subhash=") + fnSubHash;
+	int rret = 0;
 	curl = curl_easy_init();
 	if(curl) {
 		long respcode;
@@ -70,7 +71,7 @@ int CSVPNet::WetherNeedUploadSub(CString fnVideoFilePath, CString szFileHash,CSt
 
 			if(respcode == 200){
 				//good to go // continues to upload sub
-
+				rret = 1;
 			}else{
 				//error
 				SVP_LogMsg(_T("Already Have same sub in databases"));
@@ -79,13 +80,14 @@ int CSVPNet::WetherNeedUploadSub(CString fnVideoFilePath, CString szFileHash,CSt
 			//error
 			SVP_LogMsg(_T("HTTP connection error  ")); //TODO handle this
 		}
+		curl_easy_cleanup(curl);
 	}
-	return 0;
+	return rret;
 }
 int CSVPNet::UploadSubFileByVideoAndHash(CString fnVideoFilePath, CString szFileHash, CString szSubHash,CStringArray* fnSubPaths){
 	CURL *curl;
 	CURLcode res;
-	CString szPostPerm = _T( "pathinfo=" ) + fnVideoFilePath + _T("&filehash=") + szFileHash ;
+	//CString szPostPerm = _T( "pathinfo=" ) + fnVideoFilePath + _T("&filehash=") + szFileHash ;
 	int iTotalFiles = fnSubPaths->GetCount();
 	SVP_LogMsg(_T("Upload Begin"));
 	struct curl_httppost *formpost=NULL;
@@ -94,12 +96,15 @@ int CSVPNet::UploadSubFileByVideoAndHash(CString fnVideoFilePath, CString szFile
 
 	curl_global_init(CURL_GLOBAL_ALL);
 	SVP_LogMsg(_T("Upload Begin"));
-	char* szTerm1 ;
 	char* szTerm2;
 	int iDescLen = 0;
 
 	szTerm2 = svpToolBox.CStringToUTF8(fnVideoFilePath, &iDescLen);
 	curl_formadd(&formpost,	&lastptr, CURLFORM_COPYNAME, "pathinfo", CURLFORM_COPYCONTENTS, szTerm2,CURLFORM_END);
+	free(szTerm2);
+
+	szTerm2 = svpToolBox.CStringToUTF8(szSubHash, &iDescLen);
+	curl_formadd(&formpost,	&lastptr, CURLFORM_COPYNAME, "subhash", CURLFORM_COPYCONTENTS, szTerm2,CURLFORM_END);
 	free(szTerm2);
 
 	szTerm2 = svpToolBox.CStringToUTF8(szFileHash, &iDescLen);
@@ -109,7 +114,6 @@ int CSVPNet::UploadSubFileByVideoAndHash(CString fnVideoFilePath, CString szFile
 
 	for(int i = 0; i < fnSubPaths->GetCount(); i++){
 		/* Fill in the file upload field */
-		
 		szTerm2 = svpToolBox.CStringToUTF8(fnSubPaths->GetAt(i), &iDescLen);
 		SVP_LogMsg(fnSubPaths->GetAt(i));
 		curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "subfile[]", CURLFORM_FILE, szTerm2,CURLFORM_END);

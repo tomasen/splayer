@@ -351,7 +351,7 @@ int CSVPToolBox::Char4ToInt(char* szBuf){
 }
 char* CSVPToolBox::CStringToUTF8(CString szIn, int* iDescLen)
 {
-	char* szOut;
+	char* szOut = 0;
 	int   targetLen = ::WideCharToMultiByte(CP_UTF8,0,szIn,-1,szOut,0,NULL,NULL);
 	szOut   =   new   char[targetLen+1];          
 	memset(szOut,0,targetLen+1);                

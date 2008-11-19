@@ -24,6 +24,8 @@ public:
 	CString getVideoFileBasename(CString szVidPath, CStringArray* szaPathInfo);
 	int Explode(CString szIn, CString szTok, CStringArray* szaOut);
 	BOOL ifFileExist(CString szPathname);
+	BOOL ifDirWritable(CString szDir);
+	CString GetTempDir();
 private:
 	CStringArray szaTmpFileNames;
 };

@@ -127,6 +127,8 @@ UINT __cdecl SVPThreadLoadThread( LPVOID lpParam )
 	SVP_FetchSubFileByVideoFilePath( pData->szVidPath, &szSubArray) ;
 	for(INT i = 0 ;i < szSubArray.GetCount(); i++){
 		pData->pFrame->LoadSubtitle(szSubArray[i]);
+		//TODO: enable subtitle
+		//TODO: select correct language for idx+sub
 	}
 
 	return 0; 

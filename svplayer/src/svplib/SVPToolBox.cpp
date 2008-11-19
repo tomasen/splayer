@@ -20,7 +20,7 @@ WCHAR* CSVPToolBox::getTmpFileName(){
 
 	for (i = 0; i < 5; i++) //try 5 times for tmpfile creation
 	{
-		tmpnamex = _wtempnam( _T("%TEMP%"), _T("svp") );
+		tmpnamex = _wtempnam( this->GetTempDir(), _T("svp") );
 		if (tmpnamex)
 			break;
 
@@ -56,15 +56,13 @@ FILE* CSVPToolBox::getTmpFileSteam(){
 }
 int CSVPToolBox::HandleSubPackage(FILE* fp){
 	//Extract Package
+	SVP_LogMsg( _T("Extracting Package") );
+
+
 	char szSBuff[8];
 	int err;
 	if ( fread(szSBuff , sizeof(char), 4, fp) < 4){
-		fpos_t pos;
-		if( fsetpos( fp, &pos ) != 0 ) {
-			CString szErr;
-			szErr.Format(_T("Reading %d") , pos);
-			SVP_LogMsg(szErr);
-		}
+		
 		SVP_LogMsg( _T("Fail to retrive Package Data Length ") );
 		return -1;
 	}
@@ -77,24 +75,29 @@ int CSVPToolBox::HandleSubPackage(FILE* fp){
 
 	szaSubDescs.RemoveAll();
 	szaSubTmpFileList.RemoveAll();
-
+	
 	size_t iDescLength = this->Char4ToInt(szSBuff);
-	
-	char * szDescData = this->ReadToPTCharByLength(fp, iDescLength);
-	if(!szDescData){
-		SVP_LogMsg(_T("Fail to retrive Desc Data"));
-		return -4;
+
+	if(iDescLength > 0){
+		SVP_LogMsg(_T("retriving Desc Data"));
+		char * szDescData = this->ReadToPTCharByLength(fp, iDescLength);
+		if(!szDescData){
+			SVP_LogMsg(_T("Fail to retrive Desc Data"));
+			return -4;
+		}
+		// convert szDescData to Unicode and save to CString
+		szaSubDescs.Add(this->UTF8ToCString( szDescData , iDescLength));
+		free(szDescData);
 	}
-	// convert szDescData to Unicode and save to CString
-	szaSubDescs.Add(this->UTF8ToCString( szDescData , iDescLength));
-	free(szDescData);
-	
-	//extract files
 	err = this->ExtractSubFiles(fp);
-	if(err){
-		SVP_LogMsg(_T("Fail to extract Sub Files"));
-		return err;
-	}
+	
+// 	fpos_t pos;
+// 	fgetpos( fp, &pos ) ;
+// 	CString szErr;
+// 	szErr.Format(_T("Reading At %d got next %ld") , pos,iDescLength);
+// 	SVP_LogMsg(szErr);
+
+	
 
 	return 0;
 
@@ -151,6 +154,11 @@ char* CSVPToolBox::ReadToPTCharByLength(FILE* fp, size_t length){
 int CSVPToolBox::ExtractEachSubFile(FILE* fp, int iSubPosId){
 	// get file ext name
 	char szSBuff[4096];
+	if ( fread(szSBuff , sizeof(char), 4, fp) < 4){
+		SVP_LogMsg(_T("Fail to retrive Single File Pack Length"));
+		return -1;
+	}
+
 	if ( fread(szSBuff , sizeof(char), 4, fp) < 4){
 		SVP_LogMsg(_T("Fail to retrive File Ext Name Length"));
 		return -1;
@@ -215,6 +223,10 @@ int CSVPToolBox::ExtractEachSubFile(FILE* fp, int iSubPosId){
 
 	return 0;
 }
+#define SVPATH_BASENAME 0  //Without Dot
+#define SVPATH_EXTNAME 1  //With Dot
+#define SVPATH_DIRNAME 2 //With Slash
+#define SVPATH_FILENAME 3  //Without Dot
 CString CSVPToolBox::getVideoFileBasename(CString szVidPath, CStringArray* szaPathInfo = NULL){
 
 	int posDot = szVidPath.ReverseFind(_T('.'));
@@ -228,7 +240,9 @@ CString CSVPToolBox::getVideoFileBasename(CString szVidPath, CStringArray* szaPa
 			szaPathInfo->RemoveAll();
 			szaPathInfo->Add(szVidPath.Left(posDot)); // Base Name
 			szaPathInfo->Add(szVidPath.Right(szVidPath.GetLength() - posDot).MakeLower() ); //ExtName
-			szaPathInfo->Add(szVidPath.Left(posSlash) ); //Dir Name
+			szaPathInfo->Add(szVidPath.Left(posSlash + 1) ); //Dir Name ()
+			szaPathInfo->Add(szVidPath.Mid(posSlash+1, (posDot - posSlash - 1))); // file name only
+			SVP_LogMsg(szaPathInfo->GetAt(0) + _T(" | ") + szaPathInfo->GetAt(1) + _T(" | ") + szaPathInfo->GetAt(2) + _T(" | ") + szaPathInfo->GetAt(3) );
 		}
 		return szVidPath.Left(posDot);
 	}
@@ -242,7 +256,7 @@ int CSVPToolBox::Explode(CString szIn, CString szTok, CStringArray* szaOut){
 	int curPos= 0;
 
 	resToken= szIn.Tokenize(szTok, curPos);
-	while (resToken != "")
+	while (resToken != _T(""))
 	{
 		szaOut->Add(resToken);
 		resToken= szIn.Tokenize(szTok,curPos);
@@ -262,13 +276,27 @@ BOOL CSVPToolBox::ifFileExist(CString szPathname){
 	}
 	return false;
 }
+BOOL CSVPToolBox::ifDirWritable(CString szDir){
+	FILE* fp = NULL;
+	fp = _wfopen( szDir + _T("svpwrtst"), _T("wb") );
+	if( fp != NULL )
+	{
+		fclose( fp );
+		_wremove(szDir + _T("svpwrtst"));
+		return true;
+	}
+	return false;
+}
 CString CSVPToolBox::getSubFileByTempid(int iTmpID, CString szVidPath){
 	//get base path name
-	CString szBasename = this->getVideoFileBasename(szVidPath);
-
+	CStringArray szVidPathInfo ;
+	CString szBasename = this->getVideoFileBasename(szVidPath, &szVidPathInfo);
+	if(!this->ifDirWritable(szVidPathInfo.GetAt(SVPATH_DIRNAME)) ){
+		szBasename = this->GetTempDir() + szVidPathInfo.GetAt(SVPATH_FILENAME);
+	}
 	//set new file name
 	CStringArray szSubfiles;
-	this->Explode(this->szaSubTmpFileList[iTmpID], _T(";"), &szSubfiles);
+	this->Explode(this->szaSubTmpFileList.GetAt(iTmpID), _T(";"), &szSubfiles);
 
 	if( szSubfiles.GetCount() < 1){
 		SVP_LogMsg( _T("Not enough files in tmp array"));
@@ -320,6 +348,16 @@ CString CSVPToolBox::getSubFileByTempid(int iTmpID, CString szVidPath){
 }
 CString CSVPToolBox::PackageSubFiles(CStringArray* szaSubFiles){
 	return _T("");
+}
+CString CSVPToolBox::GetTempDir(){
+	TCHAR lpPathBuffer[MAX_PATH];
+	GetTempPath(MAX_PATH,  lpPathBuffer); 
+	CString szTmpPath (lpPathBuffer);
+	if (szTmpPath.Right(1) != _T("\\") && szTmpPath.Right(1) != _T("/")){
+		szTmpPath.Append(_T("\\"));
+	}
+		
+	return szTmpPath;
 }
 int CSVPToolBox::FindAllSubfile(CString szSubPath , CStringArray* szaSubFiles){
 	szaSubFiles->RemoveAll();

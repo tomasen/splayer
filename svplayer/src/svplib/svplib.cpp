@@ -24,16 +24,15 @@ void SVP_UploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString szS
 		CSVPhash svpHash;
 		CSVPToolBox svpToolBox;
 		CString szFileHash  = svpHash.ComputerFileHash(fnVideoFilePath);
-		//TODO: Find all sub files
+		
 		CStringArray szaSubFiles;
 		svpToolBox.FindAllSubfile(szSubPath, &szaSubFiles);
-		//TODO: Computer Subfile hash
+		
 		CString szSubHash = svpHash.ComputerSubFilesFileHash(&szaSubFiles);
 		SVP_LogMsg(CString("Got Sub Hash ") + szSubHash );
-		//TODO: Build Subfile Package
-		svpToolBox.PackageSubFiles(&szaSubFiles);
-		svpNet.WetherNeedUploadSub(fnVideoFilePath,szFileHash, szSubHash);
-		if ( svpNet.UploadSubFileByVideoAndHash(fnVideoFilePath,szFileHash, szSubHash, &szaSubFiles) ){
+		
+		if ( svpNet.WetherNeedUploadSub(fnVideoFilePath,szFileHash, szSubHash) ){
+			svpNet.UploadSubFileByVideoAndHash(fnVideoFilePath,szFileHash, szSubHash, &szaSubFiles);
 			return ;
 		}
 }

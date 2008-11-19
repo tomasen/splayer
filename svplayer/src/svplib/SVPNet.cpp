@@ -95,7 +95,7 @@ int CSVPNet::UploadSubFileByVideoAndHash(CString fnVideoFilePath, CString szFile
 
 
 	curl_global_init(CURL_GLOBAL_ALL);
-	SVP_LogMsg(_T("Upload Begin"));
+	
 	char* szTerm2;
 	int iDescLen = 0;
 
@@ -160,13 +160,33 @@ int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, C
 	CURL *curl;
 	CURLcode res;
 	CString szPostPerm = _T( "pathinfo=" ) + szFilePath + _T("&filehash=") + szFileHash + _T("&vhash=") + szVHash;
-	
+	struct curl_httppost *formpost=NULL;
+	struct curl_httppost *lastptr=NULL;
+
+
+	curl_global_init(CURL_GLOBAL_ALL);
+	char* szTerm2;
+	int iDescLen = 0;
+	szTerm2 = svpToolBox.CStringToUTF8(szFilePath, &iDescLen);
+	curl_formadd(&formpost,	&lastptr, CURLFORM_COPYNAME, "pathinfo", CURLFORM_COPYCONTENTS, szTerm2,CURLFORM_END);
+	free(szTerm2);
+
+	szTerm2 = svpToolBox.CStringToUTF8(szFileHash, &iDescLen);
+	curl_formadd(&formpost,	&lastptr, CURLFORM_COPYNAME, "filehash", CURLFORM_COPYCONTENTS, szTerm2,CURLFORM_END);
+	free(szTerm2);
+
+	if(!szVHash.IsEmpty()){
+		szTerm2 = svpToolBox.CStringToUTF8(szVHash, &iDescLen);
+		curl_formadd(&formpost,	&lastptr, CURLFORM_COPYNAME, "vhash", CURLFORM_COPYCONTENTS, szTerm2,CURLFORM_END);
+		free(szTerm2);
+	}
+
 	FILE *stream_http_recv_buffer = svpToolBox.getTmpFileSteam();
 	if(!stream_http_recv_buffer){
 		SVP_LogMsg(_T("TmpFile Creation for http recv buff fail")); //// TODO: 1. warning!! OR switch to memfile system
 		return -1;
 	}
-	curl_global_init(CURL_GLOBAL_ALL);
+
 
 	curl = curl_easy_init();
 	if(curl) {
@@ -176,10 +196,12 @@ int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, C
 
 		curl_easy_setopt(curl, CURLOPT_URL, "http://www.svplayer.cn/api/subapi.php");
 		//curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION , &(this->handleSubQuery));
+		curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
+
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)stream_http_recv_buffer);
-		int iDescLen = 0;
-		char* szPostFields = svpToolBox.CStringToUTF8(szPostPerm, &iDescLen) ;
-		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, (void *)szPostFields);
+		//int iDescLen = 0;
+		//char* szPostFields = svpToolBox.CStringToUTF8(szPostPerm, &iDescLen) ;
+		//curl_easy_setopt(curl, CURLOPT_POSTFIELDS, (void *)szPostFields);
 		//curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, iDescLen);
 		res = curl_easy_perform(curl);
 		if(res == 0){
@@ -201,7 +223,7 @@ int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, C
 		/* always cleanup */
 		curl_easy_cleanup(curl);
 
-		free(szPostFields);
+		//free(szPostFields);
 
 		//if not error, process data
 		

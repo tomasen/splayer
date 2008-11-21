@@ -118,13 +118,12 @@ static CString GetFileName(CString str)
 void COpenDlg::OnBnClickedBrowsebutton()
 {
 	UpdateData();
-
+	
 	CString filter;
 	CAtlArray<CString> mask;
 	AfxGetAppSettings().Formats.GetFilter(filter, mask);
-
-	COpenFileDlg fd(mask, true, NULL, m_path, 
-		OFN_EXPLORER|OFN_ENABLESIZING|OFN_HIDEREADONLY|OFN_ALLOWMULTISELECT|OFN_ENABLEINCLUDENOTIFY, 
+	COpenFileDlg fd(mask, true, NULL,  m_path, 
+		OFN_ENABLESIZING|OFN_HIDEREADONLY|OFN_ALLOWMULTISELECT|OFN_ENABLEINCLUDENOTIFY, 
 		filter, this);
 	if(fd.DoModal() != IDOK) return;
 

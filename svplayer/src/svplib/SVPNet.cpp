@@ -92,7 +92,7 @@ int CSVPNet::UploadSubFileByVideoAndHash(CString fnVideoFilePath, CString szFile
 	SVP_LogMsg(_T("Upload Begin"));
 	struct curl_httppost *formpost=NULL;
 	struct curl_httppost *lastptr=NULL;
-
+	char errorbuf[CURL_ERROR_SIZE];
 
 	curl_global_init(CURL_GLOBAL_ALL);
 	
@@ -114,7 +114,7 @@ int CSVPNet::UploadSubFileByVideoAndHash(CString fnVideoFilePath, CString szFile
 
 	for(int i = 0; i < fnSubPaths->GetCount(); i++){
 		/* Fill in the file upload field */
-		szTerm2 = svpToolBox.CStringToUTF8(fnSubPaths->GetAt(i), &iDescLen);
+		szTerm2 = svpToolBox.CStringToUTF8(fnSubPaths->GetAt(i), &iDescLen, CP_ACP);
 		SVP_LogMsg(fnSubPaths->GetAt(i));
 		curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "subfile[]", CURLFORM_FILE, szTerm2,CURLFORM_END);
 		free(szTerm2);
@@ -127,7 +127,7 @@ int CSVPNet::UploadSubFileByVideoAndHash(CString fnVideoFilePath, CString szFile
 		long respcode;
 
 		this->SetCURLopt(curl);
-
+		curl_easy_setopt(curl,  CURLOPT_ERRORBUFFER, errorbuf );
 		curl_easy_setopt(curl, CURLOPT_URL, "http://www.svplayer.cn/api/subup.php");
 
 		curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
@@ -145,7 +145,7 @@ int CSVPNet::UploadSubFileByVideoAndHash(CString fnVideoFilePath, CString szFile
 			}
 		}else{
 			//error
-			SVP_LogMsg(_T("HTTP connection error  ")); //TODO handle this
+			SVP_LogMsg(_T("HTTP connection error ") + this->svpToolBox.UTF8ToCString( errorbuf , strlen(errorbuf))); //TODO handle this
 		}
 		curl_easy_cleanup(curl);
 
@@ -268,7 +268,7 @@ int  CSVPNet::ExtractDataFromAiSubRecvBuffer(CString szFilePath, FILE* sAiSubRec
 	int iStatCode = szSBuff[0];
 	if(iStatCode <= 0){
 		//TODO error handle
-		SVP_LogMsg(_T("First Stat Code 显示有错误发生"));
+		SVP_LogMsg(_T("First Stat Code TODO: 显示有错误发生"));
 		ret = -1;
 		goto releaseALL;
 	}

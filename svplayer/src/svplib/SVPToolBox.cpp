@@ -237,11 +237,16 @@ CString CSVPToolBox::getVideoFileBasename(CString szVidPath, CStringArray* szaPa
 
 	if(posDot > posSlash ){
 		if (szaPathInfo != NULL){
+			CString szBaseName = szVidPath.Left(posDot);
+			CString szExtName = szVidPath.Right(szVidPath.GetLength() - posDot).MakeLower();
+			CString szFileName = szVidPath.Mid(posSlash+1, (posDot - posSlash - 1));
+			CString szDirName = szVidPath.Left(posSlash + 1) ;
 			szaPathInfo->RemoveAll();
-			szaPathInfo->Add(szVidPath.Left(posDot)); // Base Name
-			szaPathInfo->Add(szVidPath.Right(szVidPath.GetLength() - posDot).MakeLower() ); //ExtName
-			szaPathInfo->Add(szVidPath.Left(posSlash + 1) ); //Dir Name ()
-			szaPathInfo->Add(szVidPath.Mid(posSlash+1, (posDot - posSlash - 1))); // file name only
+			szaPathInfo->Add(szBaseName); // Base Name
+			szaPathInfo->Add(szExtName ); //ExtName
+			szaPathInfo->Add(szDirName); //Dir Name ()
+			szaPathInfo->Add(szFileName); // file name only
+			SVP_LogMsg(szBaseName);
 			SVP_LogMsg(szaPathInfo->GetAt(0) + _T(" | ") + szaPathInfo->GetAt(1) + _T(" | ") + szaPathInfo->GetAt(2) + _T(" | ") + szaPathInfo->GetAt(3) );
 		}
 		return szVidPath.Left(posDot);
@@ -387,13 +392,13 @@ int CSVPToolBox::Char4ToInt(char* szBuf){
 	
 	return iData;
 }
-char* CSVPToolBox::CStringToUTF8(CString szIn, int* iDescLen)
+char* CSVPToolBox::CStringToUTF8(CString szIn, int* iDescLen, UINT codePage)
 {
 	char* szOut = 0;
-	int   targetLen = ::WideCharToMultiByte(CP_UTF8,0,szIn,-1,szOut,0,NULL,NULL);
+	int   targetLen = ::WideCharToMultiByte(codePage,0,szIn,-1,szOut,0,NULL,NULL);
 	szOut   =   new   char[targetLen+1];          
 	memset(szOut,0,targetLen+1);                
-	targetLen = ::WideCharToMultiByte(CP_UTF8,0,szIn,-1,szOut,targetLen,NULL,NULL);                
+	targetLen = ::WideCharToMultiByte(codePage,0,szIn,-1,szOut,targetLen,NULL,NULL);                
 	*iDescLen = targetLen;
 	return szOut;
 }

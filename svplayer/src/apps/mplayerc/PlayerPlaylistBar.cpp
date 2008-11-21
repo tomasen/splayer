@@ -125,12 +125,16 @@ UINT __cdecl SVPThreadLoadThread( LPVOID lpParam )
 	CStringArray szSubArray;
 
 	SVP_FetchSubFileByVideoFilePath( pData->szVidPath, &szSubArray) ;
+	BOOL bSubSelected = false;
 	for(INT i = 0 ;i < szSubArray.GetCount(); i++){
-		pData->pFrame->LoadSubtitle(szSubArray[i]);
-		//TODO: enable subtitle
-		//TODO: select correct language for idx+sub
+		if(pData->pFrame->LoadSubtitle(szSubArray[i]) && !bSubSelected){
+			pData->pFrame->SetSubtitle( pData->pFrame->m_pSubStreams.GetTail()  ); //Enable Subtitle
+			//TODO: select correct language for idx+sub
+			bSubSelected = true;
+		}
+		
 	}
-
+	delete pData;
 	return 0; 
 } 
 

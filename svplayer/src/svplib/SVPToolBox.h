@@ -8,7 +8,7 @@ public:
 	~CSVPToolBox(void);
 	CString PackageSubFiles(CStringArray* szaSubFiles);
 	int FindAllSubfile(CString szSubPath , CStringArray* szaSubFiles);
-	char* CStringToUTF8(CString szIn, int* iDescLen);
+	char* CStringToUTF8(CString szIn, int* iDescLen, UINT codePage = CP_UTF8);
 	CString UTF8ToCString(char* szIn, int iLength);
 	FILE* getTmpFileSteam();
 	WCHAR* getTmpFileName();

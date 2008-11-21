@@ -31,7 +31,7 @@ class COpenFileDlg : public CFileDialog
 private:
 	TCHAR* m_buff;
 	CAtlArray<CString>& m_mask;
-
+	CPath* spInitialDir;
 public:
 	COpenFileDlg(CAtlArray<CString>& mask, bool fAllowDirSelection,
 		LPCTSTR lpszDefExt = NULL,

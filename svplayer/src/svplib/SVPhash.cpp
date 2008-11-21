@@ -1,10 +1,6 @@
 #include "SVPhash.h"
 #include "MD5Checksum.h"
-#include <io.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <share.h>
+
 
 CSVPhash::CSVPhash(void)
 {
@@ -21,7 +17,7 @@ CString CSVPhash::ComputerSubFilesFileHash(CStringArray* szaSubFiles){
 		CMD5Checksum cmd5 ;
 		CString szBuf = cmd5.GetMD5(szaSubFiles->GetAt(i));
 		if ( !szBuf.IsEmpty() ){
-			SVP_LogMsg(szBuf);
+			//SVP_LogMsg(szBuf);
 			if ( i == 0){
 				memcpy_s(md5buf, 16, cmd5.lpszMD5, 16);
 			}else{

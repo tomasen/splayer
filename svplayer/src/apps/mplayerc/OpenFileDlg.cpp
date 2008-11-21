@@ -41,7 +41,10 @@ COpenFileDlg::COpenFileDlg(CAtlArray<CString>& mask, bool fAllowDirSelection, LP
 	, m_mask(mask)
 {
 	m_fAllowDirSelection = fAllowDirSelection;
-	m_pOFN->lpstrInitialDir = lpszFileName;
+	spInitialDir = new CPath(lpszFileName);
+	spInitialDir->RemoveFileSpec();
+	spInitialDir->AddBackslash();
+	m_pOFN->lpstrInitialDir = spInitialDir->m_strPath;//lpszFileName;
 
 	m_buff = new TCHAR[10000];
 	m_buff[0] = 0;
@@ -52,6 +55,7 @@ COpenFileDlg::COpenFileDlg(CAtlArray<CString>& mask, bool fAllowDirSelection, LP
 COpenFileDlg::~COpenFileDlg()
 {
 	delete [] m_buff;
+	delete spInitialDir;
 }
 
 BEGIN_MESSAGE_MAP(COpenFileDlg, CFileDialog)

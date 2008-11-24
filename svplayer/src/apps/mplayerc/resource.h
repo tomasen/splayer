@@ -454,7 +454,6 @@
 #define IDC_CHECK_MPEGINTERLACED        12132
 #define IDC_DSVMR9YUVMIXER              12133
 #define IDC_VERSION                     12134
-
 #define IDS_R_SETTINGS                  13000
 #define IDS_RS_TITLEBARTEXTSTYLE        13001
 #define IDS_RS_USEWMASFREADER           13002
@@ -726,13 +725,32 @@
 #define ID_SUB_DELAY_DOWN               14191
 #define ID_SUB_DELAY_UP                 14192
 #define IDS_RS_SUBDELAYINTERVAL         14193
+#define ID_32768                        32768
+#define ID_32769                        32769
+#define ID_32770                        32770
+#define ID_32771                        32771
+#define ID_32772                        32772
+#define ID_32773                        32773
+#define ID__FAVORITES                   32774
+#define ID__FILTERS                     32775
+#define ID__32776                       32776
+#define ID__32777                       32777
+#define ID__SHADERS                     32778
+#define ID__FAVORITES32779              32779
+#define ID__FILTERS32780                32780
+#define ID__SHADERS32781                32781
+#define ID__AUDIO                       32782
+#define ID__SUBTITLES                   32783
+#define ID_DVD32784                     32784
+#define ID_DVD32785                     32785
+#define ID_DVD32786                     32786
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        20000
-#define _APS_NEXT_COMMAND_VALUE         32768
+#define _APS_NEXT_COMMAND_VALUE         32787
 #define _APS_NEXT_CONTROL_VALUE         22000
 #define _APS_NEXT_SYMED_VALUE           24000
 #endif

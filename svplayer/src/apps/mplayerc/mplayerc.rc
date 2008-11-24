@@ -7,51 +7,18 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#include "afxres.h"
+#include "afxres.h"
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// Chinese (P.R.C.) resources
 
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
 #ifdef _WIN32
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-#pragma code_page(1252)
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+#pragma code_page(936)
 #endif //_WIN32
-
-#ifdef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
-//
-// TEXTINCLUDE
-//
-
-1 TEXTINCLUDE 
-BEGIN
-    "resource.h\0"
-END
-
-2 TEXTINCLUDE 
-BEGIN
-    "#include ""afxres.h""\r\0"
-END
-
-3 TEXTINCLUDE 
-BEGIN
-    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
-    "#define _AFX_NO_OLE_RESOURCES\r\n"
-    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
-    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
-    "\r\n"
-    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
-    "LANGUAGE 9, 1\r\n"
-    "#pragma code_page(1252)\r\n"
-    "#include ""afxres.rc""     // Standard components\r\n"
-    "#endif\0"
-END
-
-#endif    // APSTUDIO_INVOKED
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -186,15 +153,15 @@ END
 
 IDD_ABOUTBOX DIALOGEX 0, 0, 222, 89
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "About"
+CAPTION "¹ØÓÚ"
 FONT 8, "MS Shell Dlg", 400, 0, 0xB1
 BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
     LTEXT           "Media Player Classic",IDC_STATIC1,40,12,126,8,SS_NOPREFIX
-    LTEXT           "Copyright (C) 2002-2008 Gabest",IDC_STATIC,40,26,170,8
+    LTEXT           "Copyright (C) 2002-2008 Tomasen & Gabest",IDC_STATIC,40,26,170,8
     LTEXT           "Version: 6.4.9.1 ",IDC_VERSION,40,40,170,8
-    PUSHBUTTON      "OK",IDOK,160,8,50,14,WS_GROUP
-    LTEXT           "This program is freeware and released under the GNU General Public License.",IDC_STATIC,40,62,170,25
+    PUSHBUTTON      "¹Ø±Õ",IDOK,160,8,50,14,WS_GROUP
+    LTEXT           "±¾Èí¼þÎªÃâ·ÑÈí¼þ(freeware)\nÍ¬Ê±²ÉÓÃGNUÊÚÈ¨Ð­Òé",IDC_STATIC,40,62,170,25
 END
 
 IDD_PLAYERSTATUSBAR DIALOGEX 0, 0, 183, 15
@@ -534,14 +501,14 @@ END
 
 IDD_SAVE_DLG DIALOGEX 0, 0, 250, 84
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Saving..."
+CAPTION "ÕýÔÚ±£´æ..."
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     CONTROL         "",IDC_ANIMATE1,"SysAnimate32",ACS_CENTER | ACS_TRANSPARENT | WS_TABSTOP,7,3,187,30
     CONTROL         "Static",IDC_FROMTO,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,7,38,235,17
     CONTROL         "",IDC_PROGRESS1,"msctls_progress32",WS_BORDER,7,63,190,8
     LTEXT           "",IDC_REPORT,7,74,189,8
-    PUSHBUTTON      "Cancel",IDCANCEL,203,62,39,14
+    PUSHBUTTON      "È¡Ïû",IDCANCEL,203,62,39,14
 END
 
 IDD_SAVETEXTFILEDIALOGTEMPL DIALOGEX 0, 0, 304, 20
@@ -621,7 +588,7 @@ BEGIN
     LTEXT           "Spacing",IDC_STATIC,11,50,26,8
     EDITTEXT        IDC_EDIT3,66,48,35,13,ES_RIGHT | ES_AUTOHSCROLL
     CONTROL         "",IDC_SPIN3,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,93,48,11,14
-    LTEXT           "Angle (z,°)",IDC_STATIC,11,69,36,8
+    LTEXT           "Angle (z,¡ã)",IDC_STATIC,11,69,36,8
     EDITTEXT        IDC_EDIT4,66,67,35,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "",IDC_SPIN10,"msctls_updown32",UDS_WRAP | UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,93,67,11,14
     LTEXT           "Scale (x,%)",IDC_STATIC,11,88,39,8
@@ -1437,301 +1404,6 @@ END
 // Menu
 //
 
-IDR_MAINFRAME MENU 
-BEGIN
-    POPUP "&File"
-    BEGIN
-        MENUITEM "&Quick Open File...\tCtrl+Q", ID_FILE_OPENQUICK
-        MENUITEM SEPARATOR
-        MENUITEM "&Open File...\tCtrl+O",       ID_FILE_OPENMEDIA
-        MENUITEM "Open &DVD...\tCtrl+D",        ID_FILE_OPENDVD
-        MENUITEM "Open De&vice...\tCtrl+V",     ID_FILE_OPENDEVICE
-        MENUITEM "O&pen Disc",                  65535
-        MENUITEM "&Close",                      ID_FILE_CLOSEPLAYLIST
-        MENUITEM SEPARATOR
-        MENUITEM "&Save As...",                 ID_FILE_SAVE_COPY
-        MENUITEM "Save &Image...",              ID_FILE_SAVE_IMAGE
-        MENUITEM "Save Thumbnails...",          ID_FILE_SAVE_THUMBNAILS
-        MENUITEM SEPARATOR
-        MENUITEM "&Load Subtitle...\tCtrl+L",   ID_FILE_LOAD_SUBTITLE
-        MENUITEM "Save Subtitle...\tCtrl+S",    ID_FILE_SAVE_SUBTITLE
-        POPUP "Subtitle Database"
-        BEGIN
-            MENUITEM "Search...",                   ID_FILE_ISDB_SEARCH
-            MENUITEM "Upload...",                   ID_FILE_ISDB_UPLOAD
-            MENUITEM "Download...",                 ID_FILE_ISDB_DOWNLOAD
-        END
-        MENUITEM SEPARATOR
-        MENUITEM "P&roperties",                 ID_FILE_PROPERTIES
-        MENUITEM SEPARATOR
-        POPUP "Utils"
-        BEGIN
-            MENUITEM "DSM Co&nverter...",           ID_FILE_CONVERT
-        END
-        MENUITEM SEPARATOR
-        MENUITEM "E&xit\tAlt+X",                ID_FILE_EXIT
-    END
-    POPUP "&View"
-    BEGIN
-        MENUITEM "Caption&&Menu\tCtrl+0",       ID_VIEW_CAPTIONMENU
-        MENUITEM "&Seek Bar\tCtrl+1",           ID_VIEW_SEEKER
-        MENUITEM "Cont&rols\tCtrl+2",           ID_VIEW_CONTROLS
-        MENUITEM "&Information\tCtrl+3",        ID_VIEW_INFORMATION
-        MENUITEM "S&tatistics\tCtrl+4",         ID_VIEW_STATISTICS
-        MENUITEM "St&atus\tCtrl+5",             ID_VIEW_STATUS
-        MENUITEM "Subresync\tCtrl+6",           ID_VIEW_SUBRESYNC
-        MENUITEM "Playlist\tCtrl+7",            ID_VIEW_PLAYLIST
-        MENUITEM "Capture\tCtrl+8",             ID_VIEW_CAPTURE
-        MENUITEM "Shader Editor\tCtrl+9",       ID_VIEW_SHADEREDITOR
-        POPUP "Presets..."
-        BEGIN
-            MENUITEM "Minimal",                     ID_VIEW_PRESETS_MINIMAL
-            MENUITEM "Compact",                     ID_VIEW_PRESETS_COMPACT
-            MENUITEM "Normal",                      ID_VIEW_PRESETS_NORMAL
-        END
-        MENUITEM SEPARATOR
-        MENUITEM "Fu&ll Screen\tAlt+Enter",     ID_VIEW_FULLSCREEN
-        POPUP "&Zoom"
-        BEGIN
-            MENUITEM "&50%\tAlt+1",                 ID_VIEW_ZOOM_50
-            MENUITEM "&100%\tAlt+2",                ID_VIEW_ZOOM_100
-            MENUITEM "&200%\tAlt+3",                ID_VIEW_ZOOM_200
-            MENUITEM "Auto Fit\tAlt+4",             ID_VIEW_ZOOM_AUTOFIT
-        END
-        MENUITEM SEPARATOR
-        POPUP "&Video Frame"
-        BEGIN
-            MENUITEM "&Half Size",                  ID_VIEW_VF_HALF
-            MENUITEM "&Normal Size",                ID_VIEW_VF_NORMAL
-            MENUITEM "&Double Size",                ID_VIEW_VF_DOUBLE
-            MENUITEM "&Stretch To Window",          ID_VIEW_VF_STRETCH
-            MENUITEM "Touch Window From &Inside",   ID_VIEW_VF_FROMINSIDE
-            MENUITEM "Touch Window From &Outside",  ID_VIEW_VF_FROMOUTSIDE
-            MENUITEM SEPARATOR
-            MENUITEM "&Keep Aspect Ratio",          ID_VIEW_VF_KEEPASPECTRATIO
-            POPUP "Override Aspect Ratio"
-            BEGIN
-                MENUITEM "Default",                     ID_ASPECTRATIO_SOURCE
-                MENUITEM "4:3",                         ID_ASPECTRATIO_4_3
-                MENUITEM "5:4",                         ID_ASPECTRATIO_5_4
-                MENUITEM "16:9",                        ID_ASPECTRATIO_16_9
-            END
-            MENUITEM "Correct Monitor/Desktop AR Diff", ID_VIEW_VF_COMPMONDESKARDIFF
-        END
-        POPUP "Pan&&S&can"
-        BEGIN
-            MENUITEM "Increase Size\tNumpad 9",     ID_VIEW_INCSIZE
-            MENUITEM "Decrease Size\tNumpad 1",     ID_VIEW_DECSIZE
-            MENUITEM "Increase Width\tNumpad 6",    ID_VIEW_INCWIDTH
-            MENUITEM "Decrease Width\tNumpad 4",    ID_VIEW_DECWIDTH
-            MENUITEM "Increase Height\tNumpad 8",   ID_VIEW_INCHEIGHT
-            MENUITEM "Decrease Height\tNumpad 2",   ID_VIEW_DECHEIGHT
-            MENUITEM SEPARATOR
-            MENUITEM "Move Right\tCtrl+Numpad 6",   ID_PANSCAN_MOVERIGHT
-            MENUITEM "Move Left\tCtrl+Numpad 4",    ID_PANSCAN_MOVELEFT
-            MENUITEM "Move Up\tCtrl+Numpad 8",      ID_PANSCAN_MOVEUP
-            MENUITEM "Move Down\tCtrl+Numpad 2",    ID_PANSCAN_MOVEDOWN
-            MENUITEM "Center\tCtrl+Numpad 5",       ID_PANSCAN_CENTER
-            MENUITEM SEPARATOR
-            MENUITEM "Reset\tNumpad 5",             ID_VIEW_RESET
-        END
-        MENUITEM SEPARATOR
-        POPUP "On Top"
-        BEGIN
-            MENUITEM "Never",                       ID_ONTOP_NEVER
-            MENUITEM "Always",                      ID_ONTOP_ALWAYS
-            MENUITEM "While Playing",               ID_ONTOP_WHILEPLAYING
-        END
-        MENUITEM "&Options...",                 ID_VIEW_OPTIONS
-    END
-    POPUP "&Play"
-    BEGIN
-        MENUITEM "&Play/Pause\tSpace",          ID_PLAY_PLAYPAUSE
-        MENUITEM "&Stop\tPeriod",               ID_PLAY_STOP
-        MENUITEM "F&rame Step\tRight",          ID_PLAY_FRAMESTEP
-        MENUITEM "&Go To...\tCtrl+G",           ID_PLAY_GOTO
-        MENUITEM SEPARATOR
-        MENUITEM "&Decrease Rate\tCtrl+Down",   ID_PLAY_DECRATE
-        MENUITEM "&Increase Rate\tCtrl+Up",     ID_PLAY_INCRATE
-        MENUITEM "Reset Rate\tCtrl+R",          ID_PLAY_RESETRATE
-        MENUITEM SEPARATOR
-        MENUITEM "&Filters",                    65535
-        MENUITEM "S&haders",                    65535
-        MENUITEM SEPARATOR
-        MENUITEM "&Audio",                      65535
-        MENUITEM "Su&btitles",                  65535
-        MENUITEM SEPARATOR
-        POPUP "Vol&ume"
-        BEGIN
-            MENUITEM "&Up\tUp Arrow",               ID_VOLUME_UP
-            MENUITEM "&Down\tDown Arrow",           ID_VOLUME_DOWN
-            MENUITEM "&Mute\tCtrl+M",               ID_VOLUME_MUTE
-        END
-        POPUP "After Playback"
-        BEGIN
-            MENUITEM "Close ",                      ID_AFTERPLAYBACK_CLOSE
-            MENUITEM "Stand By",                    ID_AFTERPLAYBACK_STANDBY
-            MENUITEM "Hibernate",                   ID_AFTERPLAYBACK_HIBERNATE
-            MENUITEM "Shutdown",                    ID_AFTERPLAYBACK_SHUTDOWN
-            MENUITEM "Log Off",                     ID_AFTERPLAYBACK_LOGOFF
-            MENUITEM SEPARATOR
-            MENUITEM "Do Nothing",                  ID_AFTERPLAYBACK_DONOTHING
-        END
-    END
-    POPUP "&Navigate"
-    BEGIN
-        MENUITEM "&Previous\tPage Up",          ID_NAVIGATE_SKIPBACK
-        MENUITEM "&Next\tPage Down",            ID_NAVIGATE_SKIPFORWARD
-        MENUITEM "&Jump To...",                 65535
-        MENUITEM SEPARATOR
-        MENUITEM "A&udio Language",             65535
-        MENUITEM "Su&btitle Language",          65535
-        MENUITEM "Video Ang&le",                65535
-        MENUITEM SEPARATOR
-        MENUITEM "Title Menu",                  ID_NAVIGATE_TITLEMENU
-        MENUITEM "&Root Menu",                  ID_NAVIGATE_ROOTMENU
-        MENUITEM "&Subtitle Menu",              ID_NAVIGATE_SUBPICTUREMENU
-        MENUITEM "&Audio Menu",                 ID_NAVIGATE_AUDIOMENU
-        MENUITEM "An&gle Menu",                 ID_NAVIGATE_ANGLEMENU
-        MENUITEM "&Chapter Menu",               ID_NAVIGATE_CHAPTERMENU
-    END
-    MENUITEM "F&avorites",                  ID_FAVORITES
-    POPUP "&Help"
-    BEGIN
-        MENUITEM "Home Page",                   ID_HELP_HOMEPAGE
-        MENUITEM "Documentation (sf.net)",      ID_HELP_DOCUMENTATION
-        MENUITEM "Command Line Switches",       ID_HELP_SHOWCOMMANDLINESWITCHES
-        MENUITEM SEPARATOR
-        MENUITEM "&About...",                   ID_HELP_ABOUT
-    END
-END
-
-IDR_POPUP MENU 
-BEGIN
-    POPUP ""
-    BEGIN
-        MENUITEM "&Play/Pause",                 ID_PLAY_PLAYPAUSE
-        MENUITEM "&Stop",                       ID_PLAY_STOP
-        MENUITEM SEPARATOR
-        MENUITEM "Fu&ll Screen",                ID_VIEW_FULLSCREEN
-        POPUP "&Zoom"
-        BEGIN
-            MENUITEM "&50%\tAlt+1",                 ID_VIEW_ZOOM_50
-            MENUITEM "&100%\tAlt+2",                ID_VIEW_ZOOM_100
-            MENUITEM "&200%\tAlt+3",                ID_VIEW_ZOOM_200
-            MENUITEM "Auto Fit\tAlt+4",             ID_VIEW_ZOOM_AUTOFIT
-        END
-        MENUITEM SEPARATOR
-        POPUP "&Video Frame"
-        BEGIN
-            MENUITEM "&Half Size",                  ID_VIEW_VF_HALF
-            MENUITEM "&Normal Size",                ID_VIEW_VF_NORMAL
-            MENUITEM "&Double Size",                ID_VIEW_VF_DOUBLE
-            MENUITEM "&Stretch To Window",          ID_VIEW_VF_STRETCH
-            MENUITEM "Touch Window From &Inside",   ID_VIEW_VF_FROMINSIDE
-            MENUITEM "Touch Window From &Outside",  ID_VIEW_VF_FROMOUTSIDE
-            MENUITEM SEPARATOR
-            MENUITEM "&Keep Aspect Ratio",          ID_VIEW_VF_KEEPASPECTRATIO
-            POPUP "Override Aspect Ratio"
-            BEGIN
-                MENUITEM "Default",                     ID_ASPECTRATIO_SOURCE
-                MENUITEM "4:3",                         ID_ASPECTRATIO_4_3
-                MENUITEM "5:4",                         ID_ASPECTRATIO_5_4
-                MENUITEM "16:9",                        ID_ASPECTRATIO_16_9
-            END
-            MENUITEM "Correct Monitor/Desktop AR Diff", ID_VIEW_VF_COMPMONDESKARDIFF
-        END
-        POPUP "Pan&&S&can"
-        BEGIN
-            MENUITEM "Increase Size\tNumpad 9",     ID_VIEW_INCSIZE
-            MENUITEM "Decrease Size\tNumpad 1",     ID_VIEW_DECSIZE
-            MENUITEM "Increase Width\tNumpad 6",    ID_VIEW_INCWIDTH
-            MENUITEM "Decrease Width\tNumpad 4",    ID_VIEW_DECWIDTH
-            MENUITEM "Increase Height\tNumpad 8",   ID_VIEW_INCHEIGHT
-            MENUITEM "Decrease Height\tNumpad 2",   ID_VIEW_DECHEIGHT
-            MENUITEM SEPARATOR
-            MENUITEM "Move Right\tCtrl+Numpad 6",   ID_PANSCAN_MOVERIGHT
-            MENUITEM "Move Left\tCtrl+Numpad 4",    ID_PANSCAN_MOVELEFT
-            MENUITEM "Move Up\tCtrl+Numpad 8",      ID_PANSCAN_MOVEUP
-            MENUITEM "Move Down\tCtrl+Numpad 2",    ID_PANSCAN_MOVEDOWN
-            MENUITEM "Center\tCtrl+Numpad 5",       ID_PANSCAN_CENTER
-            MENUITEM SEPARATOR
-            MENUITEM "Reset\tNumpad 5",             ID_VIEW_RESET
-        END
-        MENUITEM SEPARATOR
-        POPUP "&Navigate"
-        BEGIN
-            MENUITEM "&Previous\tPage Up",          ID_NAVIGATE_SKIPBACK
-            MENUITEM "&Next\tPage Down",            ID_NAVIGATE_SKIPFORWARD
-            MENUITEM "&Jump To...",                 65535
-            MENUITEM SEPARATOR
-            MENUITEM "A&udio Language",             65535
-            MENUITEM "Su&btitle Language",          65535
-            MENUITEM "Video Ang&le",                65535
-            MENUITEM SEPARATOR
-            MENUITEM "&Title Menu",                 ID_NAVIGATE_TITLEMENU
-            MENUITEM "&Root Menu",                  ID_NAVIGATE_ROOTMENU
-            MENUITEM "&Subtitle Menu",              ID_NAVIGATE_SUBPICTUREMENU
-            MENUITEM "&Audio Menu",                 ID_NAVIGATE_AUDIOMENU
-            MENUITEM "An&gle Menu",                 ID_NAVIGATE_ANGLEMENU
-            MENUITEM "&Chapter Menu",               ID_NAVIGATE_CHAPTERMENU
-        END
-        MENUITEM "&Favorites",                  65535
-        MENUITEM SEPARATOR
-        MENUITEM "F&ilters",                    65535
-        MENUITEM "S&haders",                    65535
-        MENUITEM SEPARATOR
-        MENUITEM "&Audio",                      65535
-        MENUITEM "Su&btitles",                  65535
-        MENUITEM SEPARATOR
-        POPUP "Vol&ume"
-        BEGIN
-            MENUITEM "&Up\tUp Arrow",               ID_VOLUME_UP
-            MENUITEM "&Down\tDown Arrow",           ID_VOLUME_DOWN
-            MENUITEM "&Mute\tCtrl+M",               ID_VOLUME_MUTE
-        END
-        POPUP "After Playback"
-        BEGIN
-            MENUITEM "Close ",                      ID_AFTERPLAYBACK_CLOSE
-            MENUITEM "Stand By",                    ID_AFTERPLAYBACK_STANDBY
-            MENUITEM "Hibernate",                   ID_AFTERPLAYBACK_HIBERNATE
-            MENUITEM "Shutdown",                    ID_AFTERPLAYBACK_SHUTDOWN
-            MENUITEM "Log Off",                     ID_AFTERPLAYBACK_LOGOFF
-            MENUITEM SEPARATOR
-            MENUITEM "Do Nothing",                  ID_AFTERPLAYBACK_DONOTHING
-        END
-        MENUITEM SEPARATOR
-        POPUP "Vi&ew"
-        BEGIN
-            POPUP "On Top"
-            BEGIN
-                MENUITEM "Never",                       ID_ONTOP_NEVER
-                MENUITEM "Always",                      ID_ONTOP_ALWAYS
-                MENUITEM "While Playing",               ID_ONTOP_WHILEPLAYING
-            END
-            MENUITEM SEPARATOR
-            MENUITEM "Caption&&Menu",               ID_VIEW_CAPTIONMENU
-            MENUITEM "Seek Bar",                    ID_VIEW_SEEKER
-            MENUITEM "Cont&rols",                   ID_VIEW_CONTROLS
-            MENUITEM "&Information",                ID_VIEW_INFORMATION
-            MENUITEM "St&atistics",                 ID_VIEW_STATISTICS
-            MENUITEM "S&tatus",                     ID_VIEW_STATUS
-            MENUITEM "Subresync",                   ID_VIEW_SUBRESYNC
-            MENUITEM "Playlist",                    ID_VIEW_PLAYLIST
-            MENUITEM "Capture",                     ID_VIEW_CAPTURE
-            MENUITEM "Shader Editor",               ID_VIEW_SHADEREDITOR
-            POPUP "Presets..."
-            BEGIN
-                MENUITEM "Minimal",                     ID_VIEW_PRESETS_MINIMAL
-                MENUITEM "Compact",                     ID_VIEW_PRESETS_COMPACT
-                MENUITEM "Normal",                      ID_VIEW_PRESETS_NORMAL
-            END
-        END
-        MENUITEM "P&roperties",                 ID_FILE_PROPERTIES
-        MENUITEM "&Options...",                 ID_VIEW_OPTIONS
-    END
-END
-
 IDR_POPUPMAIN MENU 
 BEGIN
     POPUP ""
@@ -1743,7 +1415,7 @@ BEGIN
             MENUITEM "&Open File...\tCtrl+O",       ID_FILE_OPENMEDIA
             MENUITEM "Open &DVD...\tCtrl+D",        ID_FILE_OPENDVD
             MENUITEM "Open De&vice...\tCtrl+V",     ID_FILE_OPENDEVICE
-            MENUITEM "O&pen Disc",                  65535
+            MENUITEM "O&pen Disc",                  0
             MENUITEM "&Close",                      ID_FILE_CLOSEPLAYLIST
             MENUITEM SEPARATOR
             MENUITEM "&Save As...",                 ID_FILE_SAVE_COPY
@@ -1854,11 +1526,11 @@ BEGIN
         BEGIN
             MENUITEM "&Previous\tPage Up",          ID_NAVIGATE_SKIPBACK
             MENUITEM "&Next\tPage Down",            ID_NAVIGATE_SKIPFORWARD
-            MENUITEM "&Jump To...",                 65535
+            MENUITEM "&Jump To...",                 0
             MENUITEM SEPARATOR
-            MENUITEM "A&udio Language",             65535
-            MENUITEM "Su&btitle Language",          65535
-            MENUITEM "Video Ang&le",                65535
+            MENUITEM "A&udio Language",             0
+            MENUITEM "Su&btitle Language",          0
+            MENUITEM "Video Ang&le",                0
             MENUITEM SEPARATOR
             MENUITEM "Title Menu",                  ID_NAVIGATE_TITLEMENU
             MENUITEM "&Root Menu",                  ID_NAVIGATE_ROOTMENU
@@ -1867,7 +1539,7 @@ BEGIN
             MENUITEM "An&gle Menu",                 ID_NAVIGATE_ANGLEMENU
             MENUITEM "&Chapter Menu",               ID_NAVIGATE_CHAPTERMENU
         END
-        MENUITEM "&Favorites",                  65535
+        MENUITEM "&Favorites",                  ID__FAVORITES32779
         POPUP "&Help"
         BEGIN
             MENUITEM "Home Page",                   ID_HELP_HOMEPAGE
@@ -1876,13 +1548,13 @@ BEGIN
             MENUITEM "&About...",                   ID_HELP_ABOUT
         END
         MENUITEM SEPARATOR
-        MENUITEM "&Filters",                    65535
-        MENUITEM "S&haders",                    65535
+        MENUITEM "×ÖÄ»Ñ¡Ôñ(&b)",                    ID__SUBTITLES
+        MENUITEM "ÒôÆµÑ¡Ôñ(&A)",                    ID__AUDIO
         MENUITEM SEPARATOR
-        MENUITEM "&Audio",                      65535
-        MENUITEM "Su&btitles",                  65535
+        MENUITEM "ÂË¾µ(&Filters)",                ID__FILTERS32780
+        MENUITEM "ÌØÐ§(S&haders)",                ID__SHADERS32781
         MENUITEM SEPARATOR
-        POPUP "Vol&ume"
+        POPUP "ÒôÁ¿(&u)"
         BEGIN
             MENUITEM "&Up\tUp Arrow",               ID_VOLUME_UP
             MENUITEM "&Down\tDown Arrow",           ID_VOLUME_DOWN
@@ -1899,7 +1571,304 @@ BEGIN
             MENUITEM "Do Nothing",                  ID_AFTERPLAYBACK_DONOTHING
         END
         MENUITEM SEPARATOR
-        MENUITEM "E&xit\tAlt+X",                ID_FILE_EXIT
+        MENUITEM "ÍË³ö(&x)\tAlt+X",               ID_FILE_EXIT
+    END
+END
+
+IDR_POPUP MENU 
+BEGIN
+    POPUP ""
+    BEGIN
+        MENUITEM "ÒôÆµ(&A)",                      ID__32777
+        MENUITEM "×ÖÄ»(&b)",                      ID__32776
+        MENUITEM SEPARATOR
+        MENUITEM "È«ÆÁÄ»(&l)",                     ID_VIEW_FULLSCREEN
+        POPUP "Ëõ·Å(&Z)"
+        BEGIN
+            MENUITEM "&50%\tAlt+1",                 ID_VIEW_ZOOM_50
+            MENUITEM "&100%\tAlt+2",                ID_VIEW_ZOOM_100
+            MENUITEM "&200%\tAlt+3",                ID_VIEW_ZOOM_200
+            MENUITEM "Auto Fit\tAlt+4",             ID_VIEW_ZOOM_AUTOFIT
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "ÂË¾µ(F&ilters)",                ID__FILTERS
+        MENUITEM "ÌØÐ§(S&haders)",                ID__SHADERS
+        MENUITEM SEPARATOR
+        POPUP "&Video Frame"
+        BEGIN
+            MENUITEM "&Half Size",                  ID_VIEW_VF_HALF
+            MENUITEM "&Normal Size",                ID_VIEW_VF_NORMAL
+            MENUITEM "&Double Size",                ID_VIEW_VF_DOUBLE
+            MENUITEM "&Stretch To Window",          ID_VIEW_VF_STRETCH
+            MENUITEM "Touch Window From &Inside",   ID_VIEW_VF_FROMINSIDE
+            MENUITEM "Touch Window From &Outside",  ID_VIEW_VF_FROMOUTSIDE
+            MENUITEM SEPARATOR
+            MENUITEM "&Keep Aspect Ratio",          ID_VIEW_VF_KEEPASPECTRATIO
+            POPUP "Override Aspect Ratio"
+            BEGIN
+                MENUITEM "Default",                     ID_ASPECTRATIO_SOURCE
+                MENUITEM "4:3",                         ID_ASPECTRATIO_4_3
+                MENUITEM "5:4",                         ID_ASPECTRATIO_5_4
+                MENUITEM "16:9",                        ID_ASPECTRATIO_16_9
+            END
+            MENUITEM "Correct Monitor/Desktop AR Diff", ID_VIEW_VF_COMPMONDESKARDIFF
+        END
+        POPUP "Pan&&S&can"
+        BEGIN
+            MENUITEM "Increase Size\tNumpad 9",     ID_VIEW_INCSIZE
+            MENUITEM "Decrease Size\tNumpad 1",     ID_VIEW_DECSIZE
+            MENUITEM "Increase Width\tNumpad 6",    ID_VIEW_INCWIDTH
+            MENUITEM "Decrease Width\tNumpad 4",    ID_VIEW_DECWIDTH
+            MENUITEM "Increase Height\tNumpad 8",   ID_VIEW_INCHEIGHT
+            MENUITEM "Decrease Height\tNumpad 2",   ID_VIEW_DECHEIGHT
+            MENUITEM SEPARATOR
+            MENUITEM "Move Right\tCtrl+Numpad 6",   ID_PANSCAN_MOVERIGHT
+            MENUITEM "Move Left\tCtrl+Numpad 4",    ID_PANSCAN_MOVELEFT
+            MENUITEM "Move Up\tCtrl+Numpad 8",      ID_PANSCAN_MOVEUP
+            MENUITEM "Move Down\tCtrl+Numpad 2",    ID_PANSCAN_MOVEDOWN
+            MENUITEM "Center\tCtrl+Numpad 5",       ID_PANSCAN_CENTER
+            MENUITEM SEPARATOR
+            MENUITEM "Reset\tNumpad 5",             ID_VIEW_RESET
+        END
+        MENUITEM SEPARATOR
+        POPUP "µ¼º½(&N)"
+        BEGIN
+            MENUITEM "&Previous\tPage Up",          ID_NAVIGATE_SKIPBACK
+            MENUITEM "&Next\tPage Down",            ID_NAVIGATE_SKIPFORWARD
+            MENUITEM "&Jump To...",                 65535
+            MENUITEM SEPARATOR
+            MENUITEM "A&udio Language",             65535
+            MENUITEM "Su&btitle Language",          65535
+            MENUITEM "Video Ang&le",                65535
+            MENUITEM SEPARATOR
+            MENUITEM "&Title Menu",                 ID_NAVIGATE_TITLEMENU
+            MENUITEM "&Root Menu",                  ID_NAVIGATE_ROOTMENU
+            MENUITEM "&Subtitle Menu",              ID_NAVIGATE_SUBPICTUREMENU
+            MENUITEM "&Audio Menu",                 ID_NAVIGATE_AUDIOMENU
+            MENUITEM "An&gle Menu",                 ID_NAVIGATE_ANGLEMENU
+            MENUITEM "&Chapter Menu",               ID_NAVIGATE_CHAPTERMENU
+        END
+        POPUP "½çÃæ(&e)"
+        BEGIN
+            POPUP "Ç°¶ËÏÔÊ¾"
+            BEGIN
+                MENUITEM "´Ó²»",                          ID_ONTOP_NEVER
+                MENUITEM "×ÜÔÚ×îÇ°",                        ID_ONTOP_ALWAYS
+                MENUITEM "½ö²¥·ÅÊ±",                        ID_ONTOP_WHILEPLAYING
+            END
+            MENUITEM SEPARATOR
+            MENUITEM "Caption&&Menu",               ID_VIEW_CAPTIONMENU
+            MENUITEM "Seek Bar",                    ID_VIEW_SEEKER
+            MENUITEM "Cont&rols",                   ID_VIEW_CONTROLS
+            MENUITEM "&Information",                ID_VIEW_INFORMATION
+            MENUITEM "St&atistics",                 ID_VIEW_STATISTICS
+            MENUITEM "S&tatus",                     ID_VIEW_STATUS
+            MENUITEM "Subresync",                   ID_VIEW_SUBRESYNC
+            MENUITEM "Playlist",                    ID_VIEW_PLAYLIST
+            MENUITEM "Capture",                     ID_VIEW_CAPTURE
+            MENUITEM "Shader Editor",               ID_VIEW_SHADEREDITOR
+            POPUP "Presets..."
+            BEGIN
+                MENUITEM "Minimal",                     ID_VIEW_PRESETS_MINIMAL
+                MENUITEM "Compact",                     ID_VIEW_PRESETS_COMPACT
+                MENUITEM "Normal",                      ID_VIEW_PRESETS_NORMAL
+            END
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "ÊôÐÔ(&r)",                      ID_FILE_PROPERTIES
+        MENUITEM "ÊÕ²Ø¼Ð(&F)",                     ID__FAVORITES
+        MENUITEM SEPARATOR
+        MENUITEM "²¥·Å/ÔÝÍ£(&P)",                   ID_PLAY_PLAYPAUSE
+        MENUITEM "Í£Ö¹²¥·Å(&S)",                    ID_PLAY_STOP
+        MENUITEM SEPARATOR
+        POPUP "²¥·Å½áÊøºó"
+        BEGIN
+            MENUITEM "Close ",                      ID_AFTERPLAYBACK_CLOSE
+            MENUITEM "Stand By",                    ID_AFTERPLAYBACK_STANDBY
+            MENUITEM "Hibernate",                   ID_AFTERPLAYBACK_HIBERNATE
+            MENUITEM "Shutdown",                    ID_AFTERPLAYBACK_SHUTDOWN
+            MENUITEM "Log Off",                     ID_AFTERPLAYBACK_LOGOFF
+            MENUITEM SEPARATOR
+            MENUITEM "Do Nothing",                  ID_AFTERPLAYBACK_DONOTHING
+        END
+        POPUP "ÒôÁ¿(&u)"
+        BEGIN
+            MENUITEM "Ìá¸ßÒôÁ¿(&U)\t¡ü",                 ID_VOLUME_UP
+            MENUITEM "½µµÍÒôÁ¿(&D)\t¡ý",                 ID_VOLUME_DOWN
+            MENUITEM "¾²Òô(&M)\tCtrl+M",              ID_VOLUME_MUTE
+        END
+        MENUITEM "¸ß¼¶ÉèÖÃ(&O)...",                 ID_VIEW_OPTIONS
+    END
+END
+
+IDR_MAINFRAME MENU 
+BEGIN
+    POPUP "ÎÄ¼þ(&F)"
+    BEGIN
+        MENUITEM "¿ìËÙ´ò¿ªÎÄ¼þ(&Q)\tCtrl+Q",          ID_FILE_OPENQUICK
+        MENUITEM SEPARATOR
+        MENUITEM "´ò¿ªÎÄ¼þ(&O)...\tCtrl+O",         ID_FILE_OPENMEDIA
+        MENUITEM "´ò¿ªDVD(&D)...\tCtrl+D",        ID_FILE_OPENDVD
+        MENUITEM "´ò¿ªÉè±¸(&V)...\tCtrl+V",         ID_FILE_OPENDEVICE
+        MENUITEM "´ò¿ªµúÆ¬(&P)",                    ID_32768
+        MENUITEM "¹Ø±Õ(&C)",                      ID_FILE_CLOSEPLAYLIST
+        MENUITEM SEPARATOR
+        MENUITEM "Áí´æÎª(&S)...",                  ID_FILE_SAVE_COPY
+        MENUITEM "×¥È¡¿ìÕÕ(&I)...",                 ID_FILE_SAVE_IMAGE
+        MENUITEM "Éú³ÉËõÂÔÍ¼...",                    ID_FILE_SAVE_THUMBNAILS
+        MENUITEM SEPARATOR
+        MENUITEM "µ÷ÓÃ×ÖÄ»(&L)...\tCtrl+L",         ID_FILE_LOAD_SUBTITLE
+        MENUITEM "Áí´æ×ÖÄ»ÎÄ¼þ...\tCtrl+S",           ID_FILE_SAVE_SUBTITLE
+        MENUITEM SEPARATOR
+        MENUITEM "ÊÓÆµÊôÐÔ(P&)",                    ID_FILE_PROPERTIES
+        MENUITEM SEPARATOR
+        MENUITEM "ÍË³ö(&x)\tAlt+X",               ID_FILE_EXIT
+    END
+    POPUP "½çÃæ(&V)"
+    BEGIN
+        MENUITEM "ÏÔÊ¾±êÌâºÍ²Ëµ¥(&M)\tCtrl+0",         ID_VIEW_CAPTIONMENU
+        MENUITEM "Ê±¼äÀ¸(&S)\tCtrl+1",             ID_VIEW_SEEKER
+        MENUITEM "ÏÔÊ¾¿ØÖÆ°´Å¥(&r)\tCtrl+2",          ID_VIEW_CONTROLS
+        MENUITEM "ÏÔÊ¾ÊÓÆµÐÅÏ¢(&I)\tCtrl+3",          ID_VIEW_INFORMATION
+        MENUITEM "ÏÔÊ¾²¥·ÅÐÅÏ¢(&t)\tCtrl+4",          ID_VIEW_STATISTICS
+        MENUITEM "ÏÔÊ¾×´Ì¬À¸(&a)\tCtrl+5",           ID_VIEW_STATUS
+        MENUITEM "×ÖÄ»µ÷Õû\tCtrl+6",                ID_VIEW_SUBRESYNC
+        MENUITEM "ÏÔÊ¾²¥·ÅÁÐ±í\tCtrl+7",              ID_VIEW_PLAYLIST
+        MENUITEM "ÆÁÄ»×¥È¡\tCtrl+8",                ID_VIEW_CAPTURE
+        MENUITEM "ÌØÐ§(Shader)±à¼­Æ÷\tCtrl+9",       ID_VIEW_SHADEREDITOR
+        POPUP "Ô¤Éè½çÃæ..."
+        BEGIN
+            MENUITEM "Ð¡ÇÉ",                          ID_VIEW_PRESETS_MINIMAL
+            MENUITEM "¾«¼ò",                          ID_VIEW_PRESETS_COMPACT
+            MENUITEM "±ê×¼",                          ID_VIEW_PRESETS_NORMAL
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "È«ÆÁÄ»(&l)\tAlt+Enter",          ID_VIEW_FULLSCREEN
+        POPUP "½çÃæËõ·Å(&Z)"
+        BEGIN
+            MENUITEM "&50%\tAlt+1",                 ID_VIEW_ZOOM_50
+            MENUITEM "&100%\tAlt+2",                ID_VIEW_ZOOM_100
+            MENUITEM "&200%\tAlt+3",                ID_VIEW_ZOOM_200
+            MENUITEM "×Ô¶¯Ëõ·Å\tAlt+4",                 ID_VIEW_ZOOM_AUTOFIT
+        END
+        MENUITEM SEPARATOR
+        POPUP "ÊÓÆµ³ß´ç(&V)"
+        BEGIN
+            MENUITEM "50% (&H)",                    ID_VIEW_VF_HALF
+            MENUITEM "100% (&N)",                   ID_VIEW_VF_NORMAL
+            MENUITEM "200% (&D)",                   ID_VIEW_VF_DOUBLE
+            MENUITEM "ÆÌÂú²¥·Å´°¿Ú(&S)",                  ID_VIEW_VF_STRETCH
+            MENUITEM "È«´°¿ÚÄÚËõ(&I)",                   ID_VIEW_VF_FROMINSIDE
+            MENUITEM "È«´°¿ÚÍâ·Å(&O)",                   ID_VIEW_VF_FROMOUTSIDE
+            MENUITEM SEPARATOR
+            MENUITEM "±£³Ö»­Ãæ±ÈÀý(&K)",                  ID_VIEW_VF_KEEPASPECTRATIO
+            POPUP "Ç¿ÖÆ»­Ãæ±ÈÀý"
+            BEGIN
+                MENUITEM "Ä¬ÈÏ",                          ID_ASPECTRATIO_SOURCE
+                MENUITEM "4:3",                         ID_ASPECTRATIO_4_3
+                MENUITEM "5:4",                         ID_ASPECTRATIO_5_4
+                MENUITEM "16:9",                        ID_ASPECTRATIO_16_9
+            END
+            MENUITEM "ÖÇÄÜÏÔÊ¾Æ÷Ð£Õý",                     ID_VIEW_VF_COMPMONDESKARDIFF
+        END
+        POPUP "»­ÃæÎ¢µ÷(&c)"
+        BEGIN
+            MENUITEM "·Å´ó\tÊý×Ö¼üÅÌ 9",                  ID_VIEW_INCSIZE
+            MENUITEM "ËõÐ¡\tÊý×Ö¼üÅÌ 1",                  ID_VIEW_DECSIZE
+            MENUITEM "¸ü¿í\tÊý×Ö¼üÅÌ 6",                  ID_VIEW_INCWIDTH
+            MENUITEM "¸üÕ­\tÊý×Ö¼üÅÌ 4",                  ID_VIEW_DECWIDTH
+            MENUITEM "¸ü¸ß\tÊý×Ö¼üÅÌ 8",                  ID_VIEW_INCHEIGHT
+            MENUITEM "¸ü°«\tÊý×Ö¼üÅÌ 2",                  ID_VIEW_DECHEIGHT
+            MENUITEM SEPARATOR
+            MENUITEM "ÏòÓÒÆ½ÒÆ\tCtrl+Êý×Ö¼üÅÌ 6",           ID_PANSCAN_MOVERIGHT
+            MENUITEM "Ïò×óÆ½ÒÆ\tCtrl+Êý×Ö¼üÅÌ 4",           ID_PANSCAN_MOVELEFT
+            MENUITEM "ÏòÉÏÒÆ¶¯\tCtrl+Êý×Ö¼üÅÌ 8",           ID_PANSCAN_MOVEUP
+            MENUITEM "ÏòÏÂÒÆ¶¯\tCtrl+Êý×Ö¼üÅÌ 2",           ID_PANSCAN_MOVEDOWN
+            MENUITEM "»Øµ½ÖÐ¼ä\tCtrl+Êý×Ö¼üÅÌ 5",           ID_PANSCAN_CENTER
+            MENUITEM SEPARATOR
+            MENUITEM "»Ö¸´Ä¬ÈÏÖµ\tÊý×Ö¼üÅÌ 5",               ID_VIEW_RESET
+        END
+        MENUITEM SEPARATOR
+        POPUP "Ç°¶ËÏÔÊ¾"
+        BEGIN
+            MENUITEM "´Ó²»",                          ID_ONTOP_NEVER
+            MENUITEM "×ÜÔÚ×îÇ°",                        ID_ONTOP_ALWAYS
+            MENUITEM "½ö²¥·ÅÊ±",                        ID_ONTOP_WHILEPLAYING
+        END
+    END
+    POPUP "²¥·Å(&P)"
+    BEGIN
+        MENUITEM "²¥·Å/ÔÝÍ£(&P)\t¿Õ¸ñ¼ü",              ID_PLAY_PLAYPAUSE
+        MENUITEM "Í£Ö¹&S\tºóÍË¼ü(¡û)",                ID_PLAY_STOP
+        MENUITEM "ÖðÖ¡²¥·Å(F&)\tÓÒ¼ü(¡ú)",             ID_PLAY_FRAMESTEP
+        MENUITEM "ÌøÔ¾(&G)...\tCtrl+G",           ID_PLAY_GOTO
+        MENUITEM SEPARATOR
+        MENUITEM "¼Ó¿ì²¥·ÅËÙ¶È(&D)\tCtrl+¡ü",          ID_PLAY_DECRATE
+        MENUITEM "¼õÂý²¥·ÅËÙ¶È(&I)\tCtrl+¡ý",          ID_PLAY_INCRATE
+        MENUITEM "»Ö¸´Õý³£ËÙ¶È\tCtrl+R",              ID_PLAY_RESETRATE
+        MENUITEM SEPARATOR
+        MENUITEM "ÂË¾µ(&Filters)",                ID_32772
+        MENUITEM "ÌØÐ§(S&haders)",                ID_32771
+        MENUITEM SEPARATOR
+        MENUITEM "ÒôÆµ(&A)",                      ID_32769
+        MENUITEM "×ÖÄ»(&b)",                      ID_32770
+        MENUITEM SEPARATOR
+        POPUP "ÒôÁ¿(&u)"
+        BEGIN
+            MENUITEM "Ìá¸ßÒôÁ¿(&U)\t¡ü",                 ID_VOLUME_UP
+            MENUITEM "½µµÍÒôÁ¿(&D)\t¡ý",                 ID_VOLUME_DOWN
+            MENUITEM "¾²Òô(&M)\tCtrl+M",              ID_VOLUME_MUTE
+        END
+        POPUP "²¥·Å½áÊøºó"
+        BEGIN
+            MENUITEM "ÍË³öÊÓÆµ",                        ID_AFTERPLAYBACK_CLOSE
+            MENUITEM "½øÈë´ý»ú",                        ID_AFTERPLAYBACK_STANDBY
+            MENUITEM "½øÈëÐÝÃß",                        ID_AFTERPLAYBACK_HIBERNATE
+            MENUITEM "¹Ø»ú",                          ID_AFTERPLAYBACK_SHUTDOWN
+            MENUITEM "×¢Ïúµ±Ç°ÓÃ»§",                      ID_AFTERPLAYBACK_LOGOFF
+            MENUITEM SEPARATOR
+            MENUITEM "Ê²Ã´¶¼²»×ö",                       ID_AFTERPLAYBACK_DONOTHING
+        END
+    END
+    POPUP "DVDµ¼º½(&N)"
+    BEGIN
+        MENUITEM "ÉÏÒ»¶Î(&P)\tÉÏÒ»Ò³",                ID_NAVIGATE_SKIPBACK
+        MENUITEM "ÏÂÒ»¶Î(&N)\tÏÂÒ»Ò³",                ID_NAVIGATE_SKIPFORWARD
+        MENUITEM "ÌøÖÁ(&J)...",                   ID_DVD32784
+        MENUITEM SEPARATOR
+        MENUITEM "Éù¹ìÑ¡Ôñ",                        ID_32773
+        MENUITEM "×ÖÄ»ÓïÑÔ",                        ID_DVD32785
+        MENUITEM "ÊÓ½ÇÇÐ»»(&l)",                    ID_DVD32786
+        MENUITEM SEPARATOR
+        MENUITEM "Ö÷²Ëµ¥(&R)",                     ID_NAVIGATE_ROOTMENU
+        MENUITEM "±êÌâÑ¡µ¥(&T)",                    ID_NAVIGATE_TITLEMENU
+        MENUITEM "×ÖÄ»Ñ¡µ¥(&S)",                    ID_NAVIGATE_SUBPICTUREMENU
+        MENUITEM "ÒôÆµÑ¡µ¥(&A)",                    ID_NAVIGATE_AUDIOMENU
+        MENUITEM "ÊÓ½ÇÑ¡µ¥(&g)",                    ID_NAVIGATE_ANGLEMENU
+        MENUITEM "ÕÂ½ÚÑ¡µ¥(&C)",                    ID_NAVIGATE_CHAPTERMENU
+    END
+    MENUITEM "ÊÕ²Ø¼Ð(&a)",                     ID_FAVORITES
+    POPUP "¸ß¼¶(&A)"
+    BEGIN
+        MENUITEM "Ñ¡Ïî(&O)...",                   ID_VIEW_OPTIONS
+        POPUP "¹¤¾ß"
+        BEGIN
+            MENUITEM "DSM×ª»»Æ÷(&n)...",               ID_FILE_CONVERT
+        END
+    END
+    POPUP "×ÖÄ»(&S)"
+    BEGIN
+        MENUITEM "ËÑË÷×ÖÄ»...",                     ID_FILE_ISDB_SEARCH
+        MENUITEM "ÉÏ´«×ÖÄ»...",                     ID_FILE_ISDB_UPLOAD
+        MENUITEM "ÏÂÔØ×ÖÄ»...",                     ID_FILE_ISDB_DOWNLOAD
+    END
+    POPUP "°ïÖú(&H)"
+    BEGIN
+        MENUITEM "Ö÷Ò³",                          ID_HELP_HOMEPAGE
+        MENUITEM "Ê¹ÓÃËµÃ÷",                        ID_HELP_DOCUMENTATION
+        MENUITEM "ÃüÁîÐÐÓÃ·¨",                       ID_HELP_SHOWCOMMANDLINESWITCHES
+        MENUITEM SEPARATOR
+        MENUITEM "¹ØÓÚ(&A)...",                   ID_HELP_ABOUT
     END
 END
 
@@ -1934,7 +1903,7 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_R_SETTINGS          "Settings"
+    IDS_R_SETTINGS          "ÉèÖÃ"
     IDS_RS_TITLEBARTEXTSTYLE "TitleBarTextStyle"
     IDS_RS_USEWMASFREADER   "UseWMASFReader"
     IDS_RS_CONTROLSTATE     "ControlState"
@@ -1956,20 +1925,21 @@ BEGIN
     IDS_RS_VMR9MIXERYUV     "VMRMixerYUV"
     IDS_RS_TITLEBARTEXTTITLE "TitleBarTextTitle"
     IDS_RS_SHADERLIST       "Shaders List"
+    IDS_RS_BLOCKVSFILTER    "BlockVSFilter"
 END
 
 STRINGTABLE 
 BEGIN
     IDS_VIDRENDDESC         "Move the mouse pointer over the choices to see their description."
-    IDS_CONVERT_ADDFILE     "Add File..."
-    IDS_CONVERT_PROPERTIES  "Properties..."
+    IDS_CONVERT_ADDFILE     "Ìí¼ÓÎÄ¼þ..."
+    IDS_CONVERT_PROPERTIES  "ÊôÐÔ..."
     IDS_CONVERT_REMOVE      "Remove"
     IDS_CONVERT_ENABLESTREAM "Enable Stream"
     IDS_CONVERT_DISABLESTREAM "Disable Stream"
     IDS_CONVERT_PINPROPERTIES "Pin Properties..."
     IDS_CONVERT_ADDRESOURCE "Add Resource..."
     IDS_CONVERT_REMOVEALL   "Remove All"
-    IDS_CONVERT_SAVEAS      "Save As..."
+    IDS_CONVERT_SAVEAS      "Áí´æÎª..."
     IDS_CONVERT_RESOURCEPROPERTIES "Resource Properties..."
     IDS_CONVERT_LAUNCHINBROWSER "Launch in Browser..."
 END
@@ -2050,17 +2020,21 @@ BEGIN
     IDS_RS_QUICKTIMERENDERER "QuickTimeRenderer"
     IDS_RS_REALMEDIAFPS     "RealMediaFPS"
     IDS_RS_AUDIOTIMESHIFT   "AudioTimeShift"
+END
+
+STRINGTABLE 
+BEGIN
     IDS_RS_SUBDELAYINTERVAL "SubDelayInterval"
 END
 
 STRINGTABLE 
 BEGIN
-    IDD_PPAGEPLAYBACK       "Playback"
-    IDD_PPAGEPLAYER         "Player"
-    IDD_PPAGEDVD            "Playback::DVD/OGM"
-    IDD_PPAGESUBTITLES      "Subtitles"
-    IDD_PPAGEFORMATS        "Player::Formats"
-    IDD_PPAGETWEAKS         "Tweaks"
+    IDD_PPAGEPLAYBACK       "»Ø·Å"
+    IDD_PPAGEPLAYER         "²¥·ÅÆ÷"
+    IDD_PPAGEDVD            "²¥·Å::DVD/OGM"
+    IDD_PPAGESUBTITLES      "×ÖÄ»"
+    IDD_PPAGEFORMATS        "²¥·ÅÆ÷::Ö§³Ö¸ñÊ½"
+    IDD_PPAGETWEAKS         "¸ß¼¶µ÷Õû"
     IDD_PPAGEAUDIOSWITCHER  "Internal Filters::Audio Switcher"
     IDD_PPAGEEXTERNALFILTERS "External Filters"
 END
@@ -2074,19 +2048,19 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDD_PPAGEACCELTBL       "Player::Keys"
-    IDD_PPAGESUBSTYLE       "Subtitles::Default Style"
+    IDD_PPAGEACCELTBL       "²¥·ÅÆ÷::Keys"
+    IDD_PPAGESUBSTYLE       "×ÖÄ»::Ä¬ÈÏ·ç¸ñ"
     IDD_PPAGEINTERNALFILTERS "Internal Filters"
-    IDD_PPAGELOGO           "Player::Logo"
-    IDD_PPAGEOUTPUT         "Playback::Output"
-    IDD_PPAGEWEBSERVER      "Player::Web Interface"
+    IDD_PPAGELOGO           "²¥·ÅÆ÷::Logo"
+    IDD_PPAGEOUTPUT         "²¥·ÅÆ÷::Êä³ö"
+    IDD_PPAGEWEBSERVER      "²¥·ÅÆ÷::Ô¶³Ì¹ÜÀí"
     IDD_PPAGEAUDIODEC       "Internal Filters::Audio Decoders"
-    IDD_PPAGESUBDB          "Subtitles::Database"
+    IDD_PPAGESUBDB          "×ÖÄ»::ÍøÕ¾"
 END
 
 STRINGTABLE 
 BEGIN
-    IDD_FILEPROPDETAILS     "Details"
+    IDD_FILEPROPDETAILS     "ÏêÏ¸ÐÅÏ¢"
     IDD_FILEPROPCLIP        "Clip"
 END
 
@@ -2112,9 +2086,9 @@ END
 STRINGTABLE 
 BEGIN
     IDS_RS_ENABLEAUDIOTIMESHIFT "EnableAudioTimeShift"
-    IDS_R_FAVFILES          "Favorites\\Files"
-    IDS_R_FAVDVDS           "Favorites\\DVDs"
-    IDS_R_FAVDEVICES        "Favorites\\Devices"
+    IDS_R_FAVFILES          "ÊÕ²Ø¼Ð\\ÎÄ¼þÊÓÆµ"
+    IDS_R_FAVDVDS           "ÊÕ²Ø¼Ð\\DVD"
+    IDS_R_FAVDEVICES        "ÊÕ²Ø¼Ð\\Éè±¸"
     IDS_RS_LOGOFILE         "LogoFile"
     IDS_RS_ENABLEWORKERTHREADFOROPENING "EnableWorkerThreadForOpening"
     IDS_RS_PNSPRESETS       "PnSPresets"
@@ -2127,7 +2101,6 @@ BEGIN
     IDS_RS_WINLIRCADDR      "WinLircAddr"
     IDS_R_COMMANDS          "Commands2"
     IDS_RS_WINLIRC          "UseWinLirc"
-    IDS_RS_BLOCKVSFILTER    "BlockVSFilter"
 END
 
 STRINGTABLE 
@@ -2291,9 +2264,9 @@ END
 
 STRINGTABLE 
 BEGIN
-    ID_PLAY_PLAY            "Play\nPlay"
-    ID_PLAY_PAUSE           "Pause\nPause"
-    ID_PLAY_STOP            "Stop\nStop"
+    ID_PLAY_PLAY            "²¥·Å\n²¥·Å"
+    ID_PLAY_PAUSE           "ÔÝÍ£\nÔÝÍ£"
+    ID_PLAY_STOP            "Í£Ö¹\nÍ£Ö¹"
     ID_PLAY_FRAMESTEP       "Step\nStep"
     ID_PLAY_DECRATE         "Decrease speed\nDecrease speed"
     ID_PLAY_INCRATE         "Increase speed\nIncrease speed"
@@ -2301,15 +2274,15 @@ END
 
 STRINGTABLE 
 BEGIN
-    ID_VOLUME_MUTE          "Mute\nMute"
-    ID_VOLUME_MUTE_ON       "Mute\nMute"
-    ID_VOLUME_MUTE_DISABLED "No audio\nNo audio"
+    ID_VOLUME_MUTE          "¾²Òô\n¾²Òô"
+    ID_VOLUME_MUTE_ON       "¾²Òô\n¾²Òô"
+    ID_VOLUME_MUTE_DISABLED "ÎÞÉùÒô\nÎÞÉùÒô"
 END
 
 STRINGTABLE 
 BEGIN
     ID_NAVIGATE_SKIPBACK    "Skip back\nSkip back"
-    ID_NAVIGATE_SKIPFORWARD "Skip forward\nSkip forward"
+    ID_NAVIGATE_SKIPFORWARD "¿ì½ø\n¿ì½ø"
 END
 
 STRINGTABLE 
@@ -2325,7 +2298,7 @@ BEGIN
     IDS_SHADER_COMBINE      "&Combine..."
     IDS_SHADER_OFF          "Off"
     IDS_SHADER_POPUP        "Shaders"
-    IDS_FAVORITES_POPUP     "F&avorites"
+    IDS_FAVORITES_POPUP     "ÊÕ²Ø¼Ð(&a)"
     IDS_JUMPTO_POPUP        "Jump To..."
     IDS_VIDEOANGLE_POPUP    "Video Angle"
     IDS_SUBTITLELANGUAGE_POPUP "Subtitle Language"
@@ -2352,23 +2325,23 @@ BEGIN
     IDS_FAVORITES_ORGANIZE  "&Organize Favorites..."
     IDS_PLAYLIST_SHUFFLE    "Shuffle"
     IDS_PLAYLIST_REMEBERITEMS "Remember items"
-    IDS_CONTROLS_CLOSING    "Closing..."
-    IDS_CONTROLS_PLAYING    "Playing"
-    IDS_CONTROLS_PAUSED     "Paused"
+    IDS_CONTROLS_CLOSING    "ÕýÔÚ¹Ø±Õ..."
+    IDS_CONTROLS_PLAYING    "ÕýÔÚ²¥·Å"
+    IDS_CONTROLS_PAUSED     "ÒÑÔÝÍ£"
 END
 
 STRINGTABLE 
 BEGIN
-    IDS_CONTROLS_STOPPED    "Stopped"
-    IDS_CONTROLS_BUFFERING  "Buffering... (%d%%)"
+    IDS_CONTROLS_STOPPED    "ÒÑÍ£Ö¹"
+    IDS_CONTROLS_BUFFERING  "ÕýÔÚ»º³å... (%d%%)"
     IDS_CONTROLS_CAPTURING  "Capturing..."
-    IDS_CONTROLS_OPENING    "Opening..."
-    IDS_CONTROLS_CLOSED     "Closed"
+    IDS_CONTROLS_OPENING    "ÕýÔÚ´ò¿ª..."
+    IDS_CONTROLS_CLOSED     "ÒÑ¹Ø±Õ"
     IDS_SUBTITLES_OPTIONS   "&Options..."
     IDS_SUBTITLES_STYLES    "&Styles..."
     IDS_SUBTITLES_RELOAD    "&Reload"
     IDS_SUBTITLES_ENABLE    "&Enable"
-    IDS_PANSCAN_EDIT        "Edit..."
+    IDS_PANSCAN_EDIT        "±à¼­..."
     IDS_INFOBAR_TITLE       "Title"
     IDS_INFOBAR_AUTHOR      "Author"
     IDS_INFOBAR_COPYRIGHT   "Copyright"
@@ -2376,6 +2349,51 @@ BEGIN
     IDS_INFOBAR_DESCRIPTION "Description"
     IDS_INFOBAR_DOMAIN      "Domain"
 END
+
+#endif    // Chinese (P.R.C.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#include ""afxres.rc""     // Standard components\r\n"
+    "#endif\0"
+END
+
+#endif    // APSTUDIO_INVOKED
 
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////

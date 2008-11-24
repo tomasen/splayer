@@ -4104,7 +4104,7 @@ void CMainFrame::OnUpdateFileSavesubtitle(CCmdUI* pCmdUI)
 
 void CMainFrame::OnFileISDBSearch()
 {
-	CStringA url = "http://" + AfxGetAppSettings().ISDb + "/index.php?";
+	CStringA url = "http://shooter.cn/?";
 	CStringA args = makeargs(m_wndPlaylistBar.m_pl);
 	ShellExecute(m_hWnd, _T("open"), CString(url+args), NULL, NULL, SW_SHOWDEFAULT);
 }
@@ -4116,7 +4116,7 @@ void CMainFrame::OnUpdateFileISDBSearch(CCmdUI *pCmdUI)
 
 void CMainFrame::OnFileISDBUpload()
 {
-	CStringA url = "http://" + AfxGetAppSettings().ISDb + "/ul.php?";
+	CStringA url = "http://shooter.cn/sub/upload.html?";
 	CStringA args = makeargs(m_wndPlaylistBar.m_pl);
 	ShellExecute(m_hWnd, _T("open"), CString(url+args), NULL, NULL, SW_SHOWDEFAULT);
 }
@@ -4128,6 +4128,9 @@ void CMainFrame::OnUpdateFileISDBUpload(CCmdUI *pCmdUI)
 
 void CMainFrame::OnFileISDBDownload()
 {
+	CStringA url = "http://shooter.cn/sub/?";
+	ShellExecute(m_hWnd, _T("open"), CString(url), NULL, NULL, SW_SHOWDEFAULT);
+/*
 	filehash fh;
 	if(!hash(m_wndPlaylistBar.GetCur(), fh))
 	{
@@ -4137,9 +4140,9 @@ void CMainFrame::OnFileISDBDownload()
 
 	// TODO: put this on a worker thread
 
-	CStringA url = "http://" + AfxGetAppSettings().ISDb + "/index.php?";
+	CStringA url = "http://shooter.cn/index.php?";
 	CStringA args;
-	args.Format("player=mpc&name[0]=%s&size[0]=%016I64x&hash[0]=%016I64x", 
+	args.Format("player=mpc&searchword=%s&size[0]=%016I64x&hash[0]=%016I64x", 
 		UrlEncode(CStringA(fh.name)), fh.size, fh.hash);
 
 	try
@@ -4223,6 +4226,7 @@ void CMainFrame::OnFileISDBDownload()
 		ie->Delete();
 		return;
 	}
+	*/
 }
 
 void CMainFrame::OnUpdateFileISDBDownload(CCmdUI *pCmdUI)

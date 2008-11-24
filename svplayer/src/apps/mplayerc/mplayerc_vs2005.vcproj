@@ -1474,7 +1474,47 @@
 			</Filter>
 		</Filter>
 		<File
+			RelativePath=".\res\shaders\EdgeSharpen.psh"
+			>
+		</File>
+		<File
+			RelativePath=".\res\logo.0.png"
+			>
+		</File>
+		<File
+			RelativePath=".\res\logo.1.png"
+			>
+		</File>
+		<File
+			RelativePath=".\res\logo.2.png"
+			>
+		</File>
+		<File
+			RelativePath=".\res\logo.3.png"
+			>
+		</File>
+		<File
+			RelativePath=".\res\logo.4.png"
+			>
+		</File>
+		<File
+			RelativePath=".\res\logo.5.png"
+			>
+		</File>
+		<File
+			RelativePath=".\res\logo.6.png"
+			>
+		</File>
+		<File
+			RelativePath=".\res\logo.7.png"
+			>
+		</File>
+		<File
 			RelativePath=".\NOTE.txt"
+			>
+		</File>
+		<File
+			RelativePath=".\res\shaders\SharpenComplex.psh"
 			>
 		</File>
 	</Files>

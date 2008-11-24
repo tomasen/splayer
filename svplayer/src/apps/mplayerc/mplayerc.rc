@@ -1717,41 +1717,25 @@ BEGIN
         MENUITEM "抓取快照(&I)...",                 ID_FILE_SAVE_IMAGE
         MENUITEM "生成缩略图...",                    ID_FILE_SAVE_THUMBNAILS
         MENUITEM SEPARATOR
-        MENUITEM "调用字幕(&L)...\tCtrl+L",         ID_FILE_LOAD_SUBTITLE
+        MENUITEM "调入字幕(&L)...\tCtrl+L",         ID_FILE_LOAD_SUBTITLE
         MENUITEM "另存字幕文件...\tCtrl+S",           ID_FILE_SAVE_SUBTITLE
         MENUITEM SEPARATOR
-        MENUITEM "视频属性(P&)",                    ID_FILE_PROPERTIES
+        POPUP "播放结束后"
+        BEGIN
+            MENUITEM "退出视频",                        ID_AFTERPLAYBACK_CLOSE
+            MENUITEM "进入待机",                        ID_AFTERPLAYBACK_STANDBY
+            MENUITEM "进入休眠",                        ID_AFTERPLAYBACK_HIBERNATE
+            MENUITEM "关机",                          ID_AFTERPLAYBACK_SHUTDOWN
+            MENUITEM "注销当前用户",                      ID_AFTERPLAYBACK_LOGOFF
+            MENUITEM SEPARATOR
+            MENUITEM "什么都不做",                       ID_AFTERPLAYBACK_DONOTHING
+        END
+        MENUITEM "视频信息(P&)",                    ID_FILE_PROPERTIES
         MENUITEM SEPARATOR
         MENUITEM "退出(&x)\tAlt+X",               ID_FILE_EXIT
     END
     POPUP "界面(&V)"
     BEGIN
-        MENUITEM "显示标题和菜单(&M)\tCtrl+0",         ID_VIEW_CAPTIONMENU
-        MENUITEM "时间栏(&S)\tCtrl+1",             ID_VIEW_SEEKER
-        MENUITEM "显示控制按钮(&r)\tCtrl+2",          ID_VIEW_CONTROLS
-        MENUITEM "显示视频信息(&I)\tCtrl+3",          ID_VIEW_INFORMATION
-        MENUITEM "显示播放信息(&t)\tCtrl+4",          ID_VIEW_STATISTICS
-        MENUITEM "显示状态栏(&a)\tCtrl+5",           ID_VIEW_STATUS
-        MENUITEM "字幕调整\tCtrl+6",                ID_VIEW_SUBRESYNC
-        MENUITEM "显示播放列表\tCtrl+7",              ID_VIEW_PLAYLIST
-        MENUITEM "屏幕抓取\tCtrl+8",                ID_VIEW_CAPTURE
-        MENUITEM "特效(Shader)编辑器\tCtrl+9",       ID_VIEW_SHADEREDITOR
-        POPUP "预设界面..."
-        BEGIN
-            MENUITEM "小巧",                          ID_VIEW_PRESETS_MINIMAL
-            MENUITEM "精简",                          ID_VIEW_PRESETS_COMPACT
-            MENUITEM "标准",                          ID_VIEW_PRESETS_NORMAL
-        END
-        MENUITEM SEPARATOR
-        MENUITEM "全屏幕(&l)\tAlt+Enter",          ID_VIEW_FULLSCREEN
-        POPUP "界面缩放(&Z)"
-        BEGIN
-            MENUITEM "&50%\tAlt+1",                 ID_VIEW_ZOOM_50
-            MENUITEM "&100%\tAlt+2",                ID_VIEW_ZOOM_100
-            MENUITEM "&200%\tAlt+3",                ID_VIEW_ZOOM_200
-            MENUITEM "自动缩放\tAlt+4",                 ID_VIEW_ZOOM_AUTOFIT
-        END
-        MENUITEM SEPARATOR
         POPUP "视频尺寸(&V)"
         BEGIN
             MENUITEM "50% (&H)",                    ID_VIEW_VF_HALF
@@ -1795,9 +1779,38 @@ BEGIN
             MENUITEM "总在最前",                        ID_ONTOP_ALWAYS
             MENUITEM "仅播放时",                        ID_ONTOP_WHILEPLAYING
         END
+        POPUP "界面缩放(&Z)"
+        BEGIN
+            MENUITEM "&50%\tAlt+1",                 ID_VIEW_ZOOM_50
+            MENUITEM "&100%\tAlt+2",                ID_VIEW_ZOOM_100
+            MENUITEM "&200%\tAlt+3",                ID_VIEW_ZOOM_200
+            MENUITEM "自动缩放\tAlt+4",                 ID_VIEW_ZOOM_AUTOFIT
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "全屏幕(&l)\tAlt+Enter",          ID_VIEW_FULLSCREEN
+        MENUITEM SEPARATOR
+        POPUP "预设界面..."
+        BEGIN
+            MENUITEM "小巧",                          ID_VIEW_PRESETS_MINIMAL
+            MENUITEM "精简",                          ID_VIEW_PRESETS_COMPACT
+            MENUITEM "标准",                          ID_VIEW_PRESETS_NORMAL
+        END
+        MENUITEM "显示标题和菜单(&M)\tCtrl+0",         ID_VIEW_CAPTIONMENU
+        MENUITEM "时间栏(&S)\tCtrl+1",             ID_VIEW_SEEKER
+        MENUITEM "显示控制按钮(&r)\tCtrl+2",          ID_VIEW_CONTROLS
+        MENUITEM "显示视频信息(&I)\tCtrl+3",          ID_VIEW_INFORMATION
+        MENUITEM "显示播放信息(&t)\tCtrl+4",          ID_VIEW_STATISTICS
+        MENUITEM "显示状态栏(&a)\tCtrl+5",           ID_VIEW_STATUS
+        MENUITEM "字幕调整\tCtrl+6",                ID_VIEW_SUBRESYNC
+        MENUITEM "显示播放列表\tCtrl+7",              ID_VIEW_PLAYLIST
+        MENUITEM "屏幕抓取\tCtrl+8",                ID_VIEW_CAPTURE
+        MENUITEM "特效(Shader)编辑器\tCtrl+9",       ID_VIEW_SHADEREDITOR
     END
     POPUP "播放(&P)"
     BEGIN
+        MENUITEM "字幕(&b)",                      ID_32770
+        MENUITEM "音频(&A)",                      ID_32769
+        MENUITEM SEPARATOR
         MENUITEM "播放/暂停(&P)\t空格键",              ID_PLAY_PLAYPAUSE
         MENUITEM "停止&S\t后退键(←)",                ID_PLAY_STOP
         MENUITEM "逐帧播放(F&)\t右键(→)",             ID_PLAY_FRAMESTEP
@@ -1810,24 +1823,11 @@ BEGIN
         MENUITEM "滤镜(&Filters)",                ID_32772
         MENUITEM "特效(S&haders)",                ID_32771
         MENUITEM SEPARATOR
-        MENUITEM "音频(&A)",                      ID_32769
-        MENUITEM "字幕(&b)",                      ID_32770
-        MENUITEM SEPARATOR
         POPUP "音量(&u)"
         BEGIN
             MENUITEM "提高音量(&U)\t↑",                 ID_VOLUME_UP
             MENUITEM "降低音量(&D)\t↓",                 ID_VOLUME_DOWN
             MENUITEM "静音(&M)\tCtrl+M",              ID_VOLUME_MUTE
-        END
-        POPUP "播放结束后"
-        BEGIN
-            MENUITEM "退出视频",                        ID_AFTERPLAYBACK_CLOSE
-            MENUITEM "进入待机",                        ID_AFTERPLAYBACK_STANDBY
-            MENUITEM "进入休眠",                        ID_AFTERPLAYBACK_HIBERNATE
-            MENUITEM "关机",                          ID_AFTERPLAYBACK_SHUTDOWN
-            MENUITEM "注销当前用户",                      ID_AFTERPLAYBACK_LOGOFF
-            MENUITEM SEPARATOR
-            MENUITEM "什么都不做",                       ID_AFTERPLAYBACK_DONOTHING
         END
     END
     POPUP "DVD导航(&N)"
@@ -1856,7 +1856,7 @@ BEGIN
             MENUITEM "DSM转换器(&n)...",               ID_FILE_CONVERT
         END
     END
-    POPUP "字幕(&S)"
+    POPUP "网络字幕(&S)"
     BEGIN
         MENUITEM "搜索字幕...",                     ID_FILE_ISDB_SEARCH
         MENUITEM "上传字幕...",                     ID_FILE_ISDB_UPLOAD
@@ -2066,21 +2066,21 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_INFOBAR_LOCATION    "Location"
-    IDS_INFOBAR_VIDEO       "Video"
-    IDS_INFOBAR_AUDIO       "Audio"
-    IDS_INFOBAR_SUBTITLES   "Subtitles"
+    IDS_INFOBAR_LOCATION    "地址"
+    IDS_INFOBAR_VIDEO       "视频"
+    IDS_INFOBAR_AUDIO       "音频"
+    IDS_INFOBAR_SUBTITLES   "字幕"
     IDS_CONTROLS_COMPLETING "Completing..."
-    IDS_AUTOPLAY_PLAYVIDEO  "Play Video"
-    IDS_AUTOPLAY_PLAYMUSIC  "Play Music"
-    IDS_AUTOPLAY_PLAYAUDIOCD "Play Audio CD"
-    IDS_AUTOPLAY_PLAYDVDMOVIE "Play DVD Movie"
+    IDS_AUTOPLAY_PLAYVIDEO  "播放视频"
+    IDS_AUTOPLAY_PLAYMUSIC  "播放音乐"
+    IDS_AUTOPLAY_PLAYAUDIOCD "播放音频CD"
+    IDS_AUTOPLAY_PLAYDVDMOVIE "播放DVD"
     IDS_PROPSHEET_PROPERTIES "Properties"
     IDS_GRAPHBUILDER_AUDIOSWITCHER "Audio Switcher"
     IDS_SHADER_EDIT         "&Edit..."
-    IDS_FAVFILES            "Files"
-    IDS_FAVDVDS             "DVDs"
-    IDS_FAVDEVICES          "Devices"
+    IDS_FAVFILES            "视频文件"
+    IDS_FAVDVDS             "DVD"
+    IDS_FAVDEVICES          "设备"
 END
 
 STRINGTABLE 
@@ -2321,8 +2321,8 @@ BEGIN
     IDS_PANSCAN_POPUP       "Pan&&Scan"
     IDS_ASPECTRATIO_POPUP   "Aspect Ratio"
     IDS_ZOOM_POPUP          "Zoom"
-    IDS_FAVORITES_ADD       "&Add to Favorites..."
-    IDS_FAVORITES_ORGANIZE  "&Organize Favorites..."
+    IDS_FAVORITES_ADD       "添加至收藏夹(&A)..."
+    IDS_FAVORITES_ORGANIZE  "管理收藏夹(&O)..."
     IDS_PLAYLIST_SHUFFLE    "Shuffle"
     IDS_PLAYLIST_REMEBERITEMS "Remember items"
     IDS_CONTROLS_CLOSING    "正在关闭..."
@@ -2342,12 +2342,12 @@ BEGIN
     IDS_SUBTITLES_RELOAD    "&Reload"
     IDS_SUBTITLES_ENABLE    "&Enable"
     IDS_PANSCAN_EDIT        "编辑..."
-    IDS_INFOBAR_TITLE       "Title"
-    IDS_INFOBAR_AUTHOR      "Author"
-    IDS_INFOBAR_COPYRIGHT   "Copyright"
-    IDS_INFOBAR_RATING      "Rating"
-    IDS_INFOBAR_DESCRIPTION "Description"
-    IDS_INFOBAR_DOMAIN      "Domain"
+    IDS_INFOBAR_TITLE       "标题"
+    IDS_INFOBAR_AUTHOR      "作者"
+    IDS_INFOBAR_COPYRIGHT   "版权"
+    IDS_INFOBAR_RATING      "评分"
+    IDS_INFOBAR_DESCRIPTION "描述"
+    IDS_INFOBAR_DOMAIN      "域名"
 END
 
 #endif    // Chinese (P.R.C.) resources

@@ -33,6 +33,7 @@ private:
 	CAtlArray<CString>& m_mask;
 	CPath* spInitialDir;
 public:
+	BOOL GetDirectoryLeft(CPath* tPath, int rCount );
 	COpenFileDlg(CAtlArray<CString>& mask, bool fAllowDirSelection,
 		LPCTSTR lpszDefExt = NULL,
 		LPCTSTR lpszFileName = NULL,

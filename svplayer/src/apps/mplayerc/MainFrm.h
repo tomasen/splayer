@@ -256,6 +256,8 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 
 	bool m_fUpdateInfoBar;
 
+	bool bOpenedAsUrl;
+
 	void SendStatusMessage(CString msg, int nTimeOut);
 	CString m_playingmsg, m_closingmsg;
 
@@ -338,6 +340,7 @@ protected:
 	void SendNowPlayingTomIRC();
 
 	void OpenCreateGraphObject(OpenMediaData* pOMD);
+	HRESULT OpenMMSUrlStream(CString szFn);
 	void OpenFile(OpenFileData* pOFD);
 	void OpenDVD(OpenDVDData* pODD);
 	void OpenCapture(OpenDeviceData* pODD);
@@ -526,6 +529,7 @@ public:
 
 	// menu item handlers
 
+	afx_msg void OnFileOpenUrlStream();
 	afx_msg void OnFileOpenQuick();
 	afx_msg void OnFileOpenmedia();
 	afx_msg void OnUpdateFileOpen(CCmdUI* pCmdUI);

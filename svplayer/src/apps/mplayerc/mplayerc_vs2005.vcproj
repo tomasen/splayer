@@ -511,6 +511,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\OpenURLDlg.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\PixelShaderCompiler.cpp"
 				>
 			</File>
@@ -917,6 +921,10 @@
 			</File>
 			<File
 				RelativePath=".\OpenFileDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OpenURLDlg.h"
 				>
 			</File>
 			<File

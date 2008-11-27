@@ -135,20 +135,20 @@ END
 
 IDD_OPEN_DLG DIALOGEX 0, 0, 241, 87
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Open"
+CAPTION "打开视频"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    ICON            IDR_MAINFRAME,IDC_STATIC,9,8,21,20
-    LTEXT           "Type the address of a movie or audio file (on the Internet or your computer) and the player will open it for you.",IDC_STATIC1,33,9,149,28
-    LTEXT           "Open:",IDC_STATIC,7,52,21,8
+    ICON            IDR_MAINFRAME,IDC_STATIC,9,8,20,20
+    LTEXT           "键入视频文件地址，即可开始播放。还可添加格外的音轨文件替代原文件的配音。",IDC_STATIC1,33,9,149,28
+    LTEXT           "视频:",IDC_STATIC,7,52,20,8
     COMBOBOX        IDC_COMBO1,33,50,149,76,CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Browse...",IDC_BUTTON1,187,49,47,14
-    LTEXT           "Dub:",IDC_STATIC,7,71,16,8
+    PUSHBUTTON      "浏览...",IDC_BUTTON1,187,49,47,14
+    LTEXT           "音轨:",IDC_STATIC,7,71,20,8
     COMBOBOX        IDC_COMBO2,33,68,149,20,CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Browse...",IDC_BUTTON2,187,67,47,14
-    DEFPUSHBUTTON   "OK",IDOK,187,9,47,14,WS_GROUP
-    PUSHBUTTON      "Cancel",IDCANCEL,187,25,47,14
-    CONTROL         "Add to playlist without opening",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,33,37,115,10
+    PUSHBUTTON      "浏览...",IDC_BUTTON2,187,67,47,14
+    DEFPUSHBUTTON   "确定",IDOK,187,9,47,14,WS_GROUP
+    PUSHBUTTON      "取消",IDCANCEL,187,25,47,14
+    CONTROL         "仅添加至播放列表 (不立即播放)",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,33,37,127,10
 END
 
 IDD_ABOUTBOX DIALOGEX 0, 0, 222, 89
@@ -862,6 +862,19 @@ BEGIN
     EDITTEXT        IDC_EDIT1,7,7,61,13,ES_AUTOHSCROLL
 END
 
+IDD_OPENURL_DLG DIALOGEX 0, 0, 333, 46
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "打开视频"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    ICON            IDR_MAINFRAME,-1,9,8,21,20
+    LTEXT           "键入视频文件地址，即可开始播放。还可添加格外的音轨文件替代原文件的配音。",IDC_STATIC1,33,9,245,28
+    LTEXT           "视频:",-1,7,33,20,8
+    COMBOBOX        IDC_COMBO1,33,30,245,76,CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "确定",IDOK,283,9,47,14,WS_GROUP
+    PUSHBUTTON      "取消",IDCANCEL,283,25,47,14
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1200,6 +1213,18 @@ BEGIN
         RIGHTMARGIN, 206
         TOPMARGIN, 7
         BOTTOMMARGIN, 39
+    END
+
+    IDD_OPENURL_DLG, DIALOG
+    BEGIN
+        RIGHTMARGIN, 330
+        VERTGUIDE, 7
+        VERTGUIDE, 33
+        VERTGUIDE, 278
+        VERTGUIDE, 283
+        VERTGUIDE, 330
+        BOTTOMMARGIN, 43
+        HORZGUIDE, 9
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -1579,8 +1604,8 @@ IDR_POPUP MENU
 BEGIN
     POPUP ""
     BEGIN
-        MENUITEM "音频(&A)",                      ID__32777
-        MENUITEM "字幕(&b)",                      ID__32776
+        MENUITEM "音频",                          ID__32777
+        MENUITEM "字幕",                          ID__32776
         MENUITEM SEPARATOR
         MENUITEM "全屏幕(&l)",                     ID_VIEW_FULLSCREEN
         POPUP "缩放(&Z)"
@@ -1591,8 +1616,8 @@ BEGIN
             MENUITEM "Auto Fit\tAlt+4",             ID_VIEW_ZOOM_AUTOFIT
         END
         MENUITEM SEPARATOR
-        MENUITEM "滤镜(F&ilters)",                ID__FILTERS
-        MENUITEM "特效(S&haders)",                ID__SHADERS
+        MENUITEM "滤镜(Filters)",                 ID__FILTERS
+        MENUITEM "特效(Shaders)",                 ID__SHADERS
         MENUITEM SEPARATOR
         POPUP "&Video Frame"
         BEGIN
@@ -1708,6 +1733,7 @@ BEGIN
         MENUITEM "快速打开文件(&Q)\tCtrl+Q",          ID_FILE_OPENQUICK
         MENUITEM SEPARATOR
         MENUITEM "打开文件(&O)...\tCtrl+O",         ID_FILE_OPENMEDIA
+        MENUITEM "打开网址(&U)...\tCtrl+U",         ID_FILE_OPENURLSTREAM
         MENUITEM "打开DVD(&D)...\tCtrl+D",        ID_FILE_OPENDVD
         MENUITEM "打开设备(&V)...\tCtrl+V",         ID_FILE_OPENDEVICE
         MENUITEM "打开碟片(&P)",                    ID_32768
@@ -1742,8 +1768,8 @@ BEGIN
             MENUITEM "100% (&N)",                   ID_VIEW_VF_NORMAL
             MENUITEM "200% (&D)",                   ID_VIEW_VF_DOUBLE
             MENUITEM "铺满播放窗口(&S)",                  ID_VIEW_VF_STRETCH
-            MENUITEM "全窗口内缩(&I)",                   ID_VIEW_VF_FROMINSIDE
-            MENUITEM "全窗口外放(&O)",                   ID_VIEW_VF_FROMOUTSIDE
+            MENUITEM "信箱模式(&I)",                    ID_VIEW_VF_FROMINSIDE
+            MENUITEM "全景模式(&O)",                    ID_VIEW_VF_FROMOUTSIDE
             MENUITEM SEPARATOR
             MENUITEM "保持画面比例(&K)",                  ID_VIEW_VF_KEEPASPECTRATIO
             POPUP "强制画面比例"
@@ -1903,7 +1929,7 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_R_SETTINGS          "设置"
+    IDS_R_SETTINGS          "Settings"
     IDS_RS_TITLEBARTEXTSTYLE "TitleBarTextStyle"
     IDS_RS_USEWMASFREADER   "UseWMASFReader"
     IDS_RS_CONTROLSTATE     "ControlState"
@@ -2086,9 +2112,9 @@ END
 STRINGTABLE 
 BEGIN
     IDS_RS_ENABLEAUDIOTIMESHIFT "EnableAudioTimeShift"
-    IDS_R_FAVFILES          "收藏夹\\文件视频"
-    IDS_R_FAVDVDS           "收藏夹\\DVD"
-    IDS_R_FAVDEVICES        "收藏夹\\设备"
+    IDS_R_FAVFILES          "Favorites\\Files"
+    IDS_R_FAVDVDS           "Favorites\\DVDs"
+    IDS_R_FAVDEVICES        "Favorites\\Devices"
     IDS_RS_LOGOFILE         "LogoFile"
     IDS_RS_ENABLEWORKERTHREADFOROPENING "EnableWorkerThreadForOpening"
     IDS_RS_PNSPRESETS       "PnSPresets"
@@ -2297,12 +2323,12 @@ BEGIN
     IDS_OPTIONS_CAPTION     "Options"
     IDS_SHADER_COMBINE      "&Combine..."
     IDS_SHADER_OFF          "Off"
-    IDS_SHADER_POPUP        "Shaders"
+    IDS_SHADER_POPUP        "特效(Shader)"
     IDS_FAVORITES_POPUP     "收藏夹(&a)"
-    IDS_JUMPTO_POPUP        "Jump To..."
-    IDS_VIDEOANGLE_POPUP    "Video Angle"
-    IDS_SUBTITLELANGUAGE_POPUP "Subtitle Language"
-    IDS_AUDIOLANGUAGE_POPUP "Audio Language"
+    IDS_JUMPTO_POPUP        "跳至(J)..."
+    IDS_VIDEOANGLE_POPUP    "视角切换"
+    IDS_SUBTITLELANGUAGE_POPUP "字幕语言"
+    IDS_AUDIOLANGUAGE_POPUP "声轨选择"
 END
 
 STRINGTABLE 
@@ -2312,15 +2338,15 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_SUBTITLES_POPUP     "Subtitles"
-    IDS_AUDIO_POPUP         "Audio"
-    IDS_FILTERS_POPUP       "Filters"
-    IDS_OPENCDROM_POPUP     "O&pen Disc"
-    IDS_NAVIGATE_POPUP      "Navigate"
-    IDS_VIDEOFRAME_POPUP    "Video Frame"
-    IDS_PANSCAN_POPUP       "Pan&&Scan"
-    IDS_ASPECTRATIO_POPUP   "Aspect Ratio"
-    IDS_ZOOM_POPUP          "Zoom"
+    IDS_SUBTITLES_POPUP     "字幕"
+    IDS_AUDIO_POPUP         "音频"
+    IDS_FILTERS_POPUP       "滤镜(Filters)"
+    IDS_OPENCDROM_POPUP     "打开碟片"
+    IDS_NAVIGATE_POPUP      "DVD导航"
+    IDS_VIDEOFRAME_POPUP    "视频尺寸"
+    IDS_PANSCAN_POPUP       "画面微调"
+    IDS_ASPECTRATIO_POPUP   "强制画面比例"
+    IDS_ZOOM_POPUP          "界面缩放"
     IDS_FAVORITES_ADD       "添加至收藏夹(&A)..."
     IDS_FAVORITES_ORGANIZE  "管理收藏夹(&O)..."
     IDS_PLAYLIST_SHUFFLE    "Shuffle"

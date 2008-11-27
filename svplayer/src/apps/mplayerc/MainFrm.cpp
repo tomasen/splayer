@@ -37,6 +37,7 @@
 
 #include "OpenFileDlg.h"
 #include "OpenDlg.h"
+#include "OpenURLDlg.h"
 #include "SaveDlg.h"
 #include "GoToDlg.h"
 #include "PnSPresetsDlg.h"
@@ -215,6 +216,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI(ID_FILE_OPENMEDIA, OnUpdateFileOpen)
 	ON_COMMAND(ID_FILE_OPENMEDIA, OnFileOpenmedia)
 	ON_UPDATE_COMMAND_UI(ID_FILE_OPENMEDIA, OnUpdateFileOpen)
+	ON_COMMAND(ID_FILE_OPENURLSTREAM, OnFileOpenUrlStream)
+	ON_UPDATE_COMMAND_UI(ID_FILE_OPENURLSTREAM, OnUpdateFileOpen)
 	ON_WM_COPYDATA()
 	ON_COMMAND(ID_FILE_OPENDVD, OnFileOpendvd)
 	ON_UPDATE_COMMAND_UI(ID_FILE_OPENDVD, OnUpdateFileOpen)
@@ -2290,6 +2293,21 @@ void CMainFrame::OnInitMenuPopup(CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu)
 		transl[_T("PanScan")] = IDS_PANSCAN_POPUP;
 		transl[_T("Aspect Ratio")] = IDS_ASPECTRATIO_POPUP;
 		transl[_T("Zoom")] = IDS_ZOOM_POPUP;
+		transl[_T("DVD导航")] = IDS_NAVIGATE_POPUP;
+		transl[_T("打开碟片")] = IDS_OPENCDROM_POPUP;
+		transl[_T("滤镜(Filters)")] = IDS_FILTERS_POPUP;
+		transl[_T("音频")] = IDS_AUDIO_POPUP;
+		transl[_T("字幕")] = IDS_SUBTITLES_POPUP;
+		transl[_T("音轨选择")] = IDS_AUDIOLANGUAGE_POPUP;
+		transl[_T("字幕语言")] = IDS_SUBTITLELANGUAGE_POPUP;
+		transl[_T("视角切换")] = IDS_VIDEOANGLE_POPUP;
+		transl[_T("跳至...")] = IDS_JUMPTO_POPUP;
+		transl[_T("收藏夹")] = IDS_FAVORITES_POPUP;
+		transl[_T("特效(Shaders)")] = IDS_SHADER_POPUP;
+		transl[_T("视频尺寸")] = IDS_VIDEOFRAME_POPUP;
+		transl[_T("画面微调")] = IDS_PANSCAN_POPUP;
+		transl[_T("强制画面比例")] = IDS_ASPECTRATIO_POPUP;
+		transl[_T("界面缩放")] = IDS_ZOOM_POPUP;
 	}
 
 	MENUITEMINFO mii;
@@ -2317,7 +2335,7 @@ void CMainFrame::OnInitMenuPopup(CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu)
 			pPopupMenu->SetMenuItemInfo(i, &mii, TRUE);
 		}
 
-		if(str == ResStr(IDS_NAVIGATE_POPUP))
+		if(str == ResStr(IDS_NAVIGATE_POPUP) )
 		{
 			UINT fState = (m_iMediaLoadState == MLS_LOADED 
 				&& (1/*m_iPlaybackMode == PM_DVD *//*|| (m_iPlaybackMode == PM_FILE && m_PlayList.GetCount() > 0)*/)) 
@@ -2357,7 +2375,7 @@ void CMainFrame::OnInitMenuPopup(CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu)
 			SetupSubtitlesSubMenu();
 			pSubMenu = &m_subtitles;
 		}
-		else if(str == ResStr(IDS_AUDIOLANGUAGE_POPUP))
+		else if(str == ResStr(IDS_AUDIOLANGUAGE_POPUP) )
 		{
 			SetupNavAudioSubMenu();
 			pSubMenu = &m_navaudio;
@@ -2382,7 +2400,7 @@ void CMainFrame::OnInitMenuPopup(CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu)
 			SetupFavoritesSubMenu();
 			pSubMenu = &m_favorites;
 		}
-		else if(str == ResStr(IDS_SHADER_POPUP))
+		else if(str == ResStr(IDS_SHADER_POPUP) )
 		{
 			SetupShadersSubMenu();
 			pSubMenu = &m_shaders;
@@ -3020,6 +3038,8 @@ void CMainFrame::OnFileOpenQuick()
 		filter, this);
 	if(fd.DoModal() != IDOK) return;
 
+	this->bOpenedAsUrl = false;
+
 	CAtlList<CString> fns;
 
 	POSITION pos = fd.GetStartPosition();
@@ -3049,13 +3069,38 @@ void CMainFrame::OnFileOpenQuick()
 
 	OpenCurPlaylistItem();
 }
+void CMainFrame::OnFileOpenUrlStream(){
+	if(m_iMediaLoadState == MLS_LOADING || !IsWindow(m_wndPlaylistBar)) return;
+	
+	COpenURLDlg dlg;
+	if(dlg.DoModal() != IDOK || dlg.m_fns.GetCount() == 0) return;
 
+	bool fMultipleFiles = false;
+	
+	this->bOpenedAsUrl = true;
+	
+	SendMessage(WM_COMMAND, ID_FILE_CLOSEMEDIA);
+
+	ShowWindow(SW_SHOW);
+	SetForegroundWindow();
+
+	m_wndPlaylistBar.Open(dlg.m_fns, fMultipleFiles);
+
+	if(m_wndPlaylistBar.GetCount() == 1 && m_wndPlaylistBar.IsWindowVisible() && !m_wndPlaylistBar.IsFloating())
+	{
+		ShowControlBar(&m_wndPlaylistBar, FALSE, TRUE);
+	}
+
+	OpenCurPlaylistItem();
+}
 void CMainFrame::OnFileOpenmedia()
 {
 	if(m_iMediaLoadState == MLS_LOADING || !IsWindow(m_wndPlaylistBar)) return;
 
 	COpenDlg dlg;
 	if(dlg.DoModal() != IDOK || dlg.m_fns.GetCount() == 0) return;
+
+	this->bOpenedAsUrl = false;
 
 	if(dlg.m_fAppendPlaylist)
 	{
@@ -6939,6 +6984,65 @@ void CMainFrame::OpenCreateGraphObject(OpenMediaData* pOMD)
 
 	m_pCB = new CDSMChapterBag(NULL, NULL);
 }
+HRESULT CMainFrame::OpenMMSUrlStream(CString szFn){
+	HRESULT ret = E_FAIL;
+	IBaseFilter* pSrcFilter;
+	IFileSourceFilter* pReader;
+	CoCreateInstance(CLSID_WMAsfReader, NULL, CLSCTX_INPROC, IID_IBaseFilter, 
+		(LPVOID *)&pSrcFilter);
+	pGB->AddFilter(pSrcFilter,_T( "WMASFReader" ));
+
+	ret = pSrcFilter->QueryInterface( IID_IFileSourceFilter, (LPVOID *)&pReader );
+	if (FAILED(ret))
+	{
+		pSrcFilter->Release();
+		return ret;
+	}
+
+	pReader->Load(szFn, NULL);
+	{
+		IEnumPins  *pEnum = NULL;
+		IPin       *pPin = NULL;
+		HRESULT    hr;
+		
+		hr = pSrcFilter->EnumPins(&pEnum);
+		if (FAILED(hr))
+		{
+			return hr;
+		}
+		while(pEnum->Next(1, &pPin, 0) == S_OK)
+		{
+			PIN_DIRECTION PinDirThis;
+			hr = pPin->QueryDirection(&PinDirThis);
+			if (FAILED(hr))
+			{
+				pPin->Release();
+				ret = hr;
+				break;
+			}
+			if (PINDIR_OUTPUT == PinDirThis)
+			{
+				// Found a match. Return the IPin pointer to the caller.
+				HRESULT hr2 = pGB->Render(pPin);
+				if (SUCCEEDED(hr2))
+				{
+					ret = S_OK;
+				}else{
+
+				}
+			}
+				// Release the pin for the next time through the loop.
+			pPin->Release();
+			
+		}
+		// No more pins. We did not find a match.
+		pEnum->Release();
+
+	}
+	pSrcFilter->Release();
+	pReader->Release();
+	return ret;
+}
 
 void CMainFrame::OpenFile(OpenFileData* pOFD)
 {
@@ -6958,8 +7062,12 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 		if(fn.IsEmpty() && !fFirst)
 			break;
 
+		
 		HRESULT hr = pGB->RenderFile(CStringW(fn), NULL);
-
+		if(FAILED(hr) && ( fn.MakeLower().Find(_T("mms://")) == 0 || fn.MakeLower().Find(_T("mmsh://")) == 0 )){
+			//render mms our own way
+			hr = OpenMMSUrlStream(fn);
+		}
 		if(FAILED(hr))
 		{
 			if(fFirst)
@@ -6975,7 +7083,9 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 				switch(hr)
 				{
 				case E_ABORT: err = _T("Opening aborted"); break;
-				case E_FAIL: case E_POINTER: default: err = _T("Failed to render the file"); break;
+				case E_FAIL: case E_POINTER: default: 
+					err.Format(_T("Failed to render the file , %X") , hr);
+					break;
 				case E_INVALIDARG: err = _T("Invalid file name"); break;
 				case E_OUTOFMEMORY: err = _T("Out of memory"); break;
 				case VFW_E_CANNOT_CONNECT: err = _T("Cannot connect the filters"); break;
@@ -6993,10 +7103,18 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 
 		if(s.fKeepHistory)
 		{
-			CRecentFileList* pMRU = fFirst ? &s.MRU : &s.MRUDub;
-			pMRU->ReadList();
-			pMRU->Add(fn);
-			pMRU->WriteList();
+			if(bOpenedAsUrl){
+				CRecentFileList* pMRU = &s.MRUUrl;
+				pMRU->ReadList();
+				pMRU->Add(fn);
+				pMRU->WriteList();
+				bOpenedAsUrl = FALSE;
+			}else{
+				CRecentFileList* pMRU = fFirst ? &s.MRU : &s.MRUDub;
+				pMRU->ReadList();
+				pMRU->Add(fn);
+				pMRU->WriteList();
+			}
 		}
 
 		if(fFirst)
@@ -7816,7 +7934,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 
 		if(OpenFileData* pOFD = dynamic_cast<OpenFileData*>(pOMD.m_p))
 		{
-			if(pOFD->fns.IsEmpty()) throw _T("File not found");
+			if(pOFD->fns.IsEmpty()) throw _T("没有找到文件");
 
 			CString fn = pOFD->fns.GetHead();
 

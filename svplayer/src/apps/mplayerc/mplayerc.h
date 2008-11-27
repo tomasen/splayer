@@ -359,6 +359,7 @@ public:
 
 		CRecentFileAndURLList MRU;
 		CRecentFileAndURLList MRUDub;
+		CRecentFileAndURLList MRUUrl;
 
 		CAutoPtrList<FilterOverride> filters;
 

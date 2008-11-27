@@ -320,6 +320,8 @@
 #define IDD_FILEPROPRES                 10049
 #define IDD_SAVETHUMBSDIALOGTEMPL       10050
 #define IDD_SAVETHUMBSDIALOGTEMPL_400   10051
+#define IDD_OPEN_DLG1                   10052
+#define IDD_OPENURL_DLG                 10052
 #define IDC_COMBO1                      11000
 #define IDC_COMBO2                      11001
 #define IDC_COMBO3                      11002
@@ -744,13 +746,15 @@
 #define ID_DVD32784                     32784
 #define ID_DVD32785                     32785
 #define ID_DVD32786                     32786
+#define ID_32787                        32787
+#define ID_FILE_OPENURLSTREAM           32788
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        20000
-#define _APS_NEXT_COMMAND_VALUE         32787
+#define _APS_NEXT_COMMAND_VALUE         32789
 #define _APS_NEXT_CONTROL_VALUE         22000
 #define _APS_NEXT_SYMED_VALUE           24000
 #endif

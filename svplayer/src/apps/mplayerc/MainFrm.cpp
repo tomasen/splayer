@@ -3038,8 +3038,6 @@ void CMainFrame::OnFileOpenQuick()
 		filter, this);
 	if(fd.DoModal() != IDOK) return;
 
-	this->bOpenedAsUrl = false;
-
 	CAtlList<CString> fns;
 
 	POSITION pos = fd.GetStartPosition();
@@ -3077,7 +3075,7 @@ void CMainFrame::OnFileOpenUrlStream(){
 
 	bool fMultipleFiles = false;
 	
-	this->bOpenedAsUrl = true;
+	this->m_lastUrl = dlg.m_fns.GetTail();
 	
 	SendMessage(WM_COMMAND, ID_FILE_CLOSEMEDIA);
 
@@ -3099,8 +3097,6 @@ void CMainFrame::OnFileOpenmedia()
 
 	COpenDlg dlg;
 	if(dlg.DoModal() != IDOK || dlg.m_fns.GetCount() == 0) return;
-
-	this->bOpenedAsUrl = false;
 
 	if(dlg.m_fAppendPlaylist)
 	{
@@ -7103,12 +7099,12 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 
 		if(s.fKeepHistory)
 		{
-			if(bOpenedAsUrl){
+			if(this->m_lastUrl == fn){
 				CRecentFileList* pMRU = &s.MRUUrl;
 				pMRU->ReadList();
 				pMRU->Add(fn);
 				pMRU->WriteList();
-				bOpenedAsUrl = FALSE;
+				this->m_lastUrl.Empty();
 			}else{
 				CRecentFileList* pMRU = fFirst ? &s.MRU : &s.MRUDub;
 				pMRU->ReadList();
@@ -9456,7 +9452,7 @@ void CMainFrame::SeekTo(REFERENCE_TIME rtPos, bool fSeekToKeyFrame)
 		{
 			if(!m_kfs.IsEmpty())
 			{
-				int i = rangebsearch(rtPos, m_kfs);
+				UINT i = rangebsearch(rtPos, m_kfs);
 				if(i >= 0 && i < m_kfs.GetCount())
 					rtPos = m_kfs[i];
 			}

@@ -256,10 +256,10 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 
 	bool m_fUpdateInfoBar;
 
-	bool bOpenedAsUrl;
-
+	
 	void SendStatusMessage(CString msg, int nTimeOut);
 	CString m_playingmsg, m_closingmsg;
+	CString m_lastUrl;
 
 	REFERENCE_TIME m_rtDurationOverride;
 

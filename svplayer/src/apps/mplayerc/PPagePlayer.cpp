@@ -145,8 +145,10 @@ BOOL CPPagePlayer::OnApply()
 	{
 		for(int i = 0; i < s.MRU.GetSize(); i++) s.MRU.Remove(i);
 		for(int i = 0; i < s.MRUDub.GetSize(); i++) s.MRUDub.Remove(i);
+		for(int i = 0; i < s.MRUUrl.GetSize(); i++) s.MRUUrl.Remove(i);
 		s.MRU.WriteList();
 		s.MRUDub.WriteList();
+		s.MRUUrl.WriteList();
 	}
 
 	((CMainFrame*)AfxGetMainWnd())->ShowTrayIcon(s.fTrayIcon);

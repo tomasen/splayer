@@ -943,6 +943,7 @@ CMPlayerCApp::Settings::Settings()
 	: fInitialized(false)
 	, MRU(0, _T("Recent File List"), _T("File%d"), 20)
 	, MRUDub(0, _T("Recent Dub List"), _T("Dub%d"), 20)
+	, MRUUrl(0, _T("Recent Url List"), _T("Url%d"), 20)
 	, hAccel(NULL)
 {
 #define ADDCMD(cmd) wmcmds.AddTail(wmcmd##cmd)

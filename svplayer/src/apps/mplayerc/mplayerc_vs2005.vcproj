@@ -751,6 +751,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\UESettingPanel.cpp"
+				>
+			</File>
+			<File
 				RelativePath="VolumeCtrl.cpp"
 				>
 			</File>
@@ -1140,6 +1144,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\UESettingPanel.h"
+				>
+			</File>
+			<File
 				RelativePath="VolumeCtrl.h"
 				>
 			</File>
@@ -1166,6 +1174,14 @@
 			</File>
 			<File
 				RelativePath=".\res\authhdrpic.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\default1.bin"
+				>
+			</File>
+			<File
+				RelativePath=".\res\default2.bin"
 				>
 			</File>
 			<File
@@ -1408,6 +1424,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\res\web\UESettingPanel.html"
+					>
+				</File>
+				<File
 					RelativePath=".\res\web\vbg.gif"
 					>
 				</File>
@@ -1523,6 +1543,14 @@
 		</File>
 		<File
 			RelativePath=".\res\shaders\SharpenComplex.psh"
+			>
+		</File>
+		<File
+			RelativePath=".\res\web\uesetbg.png"
+			>
+		</File>
+		<File
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 	</Files>

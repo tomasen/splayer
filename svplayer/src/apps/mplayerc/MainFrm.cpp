@@ -48,6 +48,7 @@
 #include "FavoriteOrganizeDlg.h"
 #include "ConvertDlg.h"
 #include "ShaderCombineDlg.h"
+#include "UESettingPanel.h"
 
 #include <mtype.h>
 #include <Mpconfig.h>
@@ -4145,9 +4146,12 @@ void CMainFrame::OnUpdateFileSavesubtitle(CCmdUI* pCmdUI)
 
 void CMainFrame::OnFileISDBSearch()
 {
-	CStringA url = "http://shooter.cn/?";
-	CStringA args = makeargs(m_wndPlaylistBar.m_pl);
-	ShellExecute(m_hWnd, _T("open"), CString(url+args), NULL, NULL, SW_SHOWDEFAULT);
+	
+	CStringA url = "http://shooter.cn/sub/?searchword=";
+	
+	
+
+	ShellExecute(m_hWnd, _T("open"), CString(url)+m_wndPlaylistBar.GetCur(), NULL, NULL, SW_SHOWDEFAULT);
 }
 
 void CMainFrame::OnUpdateFileISDBSearch(CCmdUI *pCmdUI)
@@ -4158,8 +4162,8 @@ void CMainFrame::OnUpdateFileISDBSearch(CCmdUI *pCmdUI)
 void CMainFrame::OnFileISDBUpload()
 {
 	CStringA url = "http://shooter.cn/sub/upload.html?";
-	CStringA args = makeargs(m_wndPlaylistBar.m_pl);
-	ShellExecute(m_hWnd, _T("open"), CString(url+args), NULL, NULL, SW_SHOWDEFAULT);
+	
+	ShellExecute(m_hWnd, _T("open"), CString(url), NULL, NULL, SW_SHOWDEFAULT);
 }
 
 void CMainFrame::OnUpdateFileISDBUpload(CCmdUI *pCmdUI)
@@ -9903,10 +9907,10 @@ bool CMainFrame::StopCapture()
 void CMainFrame::ShowOptions(int idPage)
 {
 	AppSettings& s = AfxGetAppSettings();
-
-	CPPageSheet options(ResStr(IDS_OPTIONS_CAPTION), pGB, this, idPage);
-
-	if(options.DoModal() == IDOK)
+	
+	CUESettingPanel ueOption;
+	ueOption.idPage = idPage;
+	if(ueOption.DoModal() == IDOK)
 	{
 		if(!m_fFullScreen)
 			SetAlwaysOnTop(s.iOnTop);
@@ -9914,7 +9918,20 @@ void CMainFrame::ShowOptions(int idPage)
 		m_wndView.LoadLogo();
 
 		s.UpdateData(true);
+	}else if(ueOption.bOpenAdvancePanel){
+		CPPageSheet options(ResStr(IDS_OPTIONS_CAPTION), pGB, this, idPage);
+
+		if(options.DoModal() == IDOK)
+		{
+			if(!m_fFullScreen)
+				SetAlwaysOnTop(s.iOnTop);
+
+			m_wndView.LoadLogo();
+
+			s.UpdateData(true);
+		}		
 	}
+
 }
 
 void CMainFrame::StartWebServer(int nPort)

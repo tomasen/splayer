@@ -727,6 +727,9 @@
 #define ID_SUB_DELAY_DOWN               14191
 #define ID_SUB_DELAY_UP                 14192
 #define IDS_RS_SUBDELAYINTERVAL         14193
+#define IDD_DHTML_SETTING               20000
+#define IDR_DEFAULT1                    20006
+#define IDR_HTML_UESETTINGPANEL         24000
 #define ID_32768                        32768
 #define ID_32769                        32769
 #define ID_32770                        32770
@@ -748,14 +751,20 @@
 #define ID_DVD32786                     32786
 #define ID_32787                        32787
 #define ID_FILE_OPENURLSTREAM           32788
+#define ID_DVD32789                     32789
+#define ID_DVD32790                     32790
+#define ID_DVD32791                     32791
+#define ID_DVD32792                     32792
+#define ID_32793                        32793
+#define ID_32794                        32794
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        20000
-#define _APS_NEXT_COMMAND_VALUE         32789
+#define _APS_NEXT_RESOURCE_VALUE        20007
+#define _APS_NEXT_COMMAND_VALUE         32795
 #define _APS_NEXT_CONTROL_VALUE         22000
-#define _APS_NEXT_SYMED_VALUE           24000
+#define _APS_NEXT_SYMED_VALUE           24001
 #endif
 #endif

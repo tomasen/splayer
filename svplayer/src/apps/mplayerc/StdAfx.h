@@ -65,6 +65,7 @@
 #include "..\..\..\include\qt\qt.h"
 #include "..\..\ui\ui.h"
 #include "..\..\DSUtil\DSUtil.h"
+#include <afxdhtml.h>
 
 template <class T = CString, class S = CString>
 class CAtlStringMap : public CAtlMap<S, T, CStringElementTraits<S> > {};

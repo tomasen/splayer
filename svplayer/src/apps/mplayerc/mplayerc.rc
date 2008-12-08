@@ -1921,7 +1921,7 @@ IDR_HTML_UESETTINGPANEL HTML                    "res\\web\\UESettingPanel.html"
 //
 
 UESETBG.PNG             2110                    "res\\web\\uesetbg.png"
-
+blank.gif				2110					"res\\web\\blank.gif"
 /////////////////////////////////////////////////////////////////////////////
 //
 // String Table
@@ -1936,6 +1936,7 @@ STRINGTABLE
 BEGIN
     IDS_R_SETTINGS          "Settings"
     IDS_RS_TITLEBARTEXTSTYLE "TitleBarTextStyle"
+	IDS_RS_CHECKFILEASSCONSTARTUP "CheckFileAsscOnStartup"
     IDS_RS_USEWMASFREADER   "UseWMASFReader"
     IDS_RS_CONTROLSTATE     "ControlState"
     IDS_RS_VOLUME           "Volume"

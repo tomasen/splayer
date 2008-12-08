@@ -352,6 +352,7 @@ public:
 		int iDXVer;
 
 		int nCS;
+		bool fCheckFileAsscOnStartup;
 		bool fHideCaptionMenu;
 		int iDefaultVideoSize;
 		bool fKeepAspectRatio;

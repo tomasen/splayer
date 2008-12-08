@@ -603,6 +603,7 @@
 #define IDS_RS_TITLEBARTEXTTITLE        13144
 #define IDS_RS_SHADERLIST               13145
 #define IDS_RS_BLOCKVSFILTER            13146
+#define IDS_RS_CHECKFILEASSCONSTARTUP	13147
 #define IDS_SRC_RADGT                   14000
 #define IDS_SRC_CDDA                    14001
 #define IDS_SRC_AVI                     14002

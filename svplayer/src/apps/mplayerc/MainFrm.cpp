@@ -9917,7 +9917,7 @@ void CMainFrame::ShowOptions(int idPage)
 
 		m_wndView.LoadLogo();
 
-		s.UpdateData(true);
+		
 	}else if(ueOption.bOpenAdvancePanel){
 		CPPageSheet options(ResStr(IDS_OPTIONS_CAPTION), pGB, this, idPage);
 

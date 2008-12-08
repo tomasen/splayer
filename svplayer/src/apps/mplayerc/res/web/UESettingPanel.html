@@ -1,0 +1,217 @@
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+<style type="text/css">
+input {	font: 12px 微软雅黑,宋体,Arial ; vertical-align:middle;}
+div{ font: 12px 微软雅黑,宋体,Arial ; }
+td { font: 12px 微软雅黑,宋体,Arial ; }
+input.percent
+{
+	text-align:right;
+	width:70px;
+}
+a.subcolor
+{
+	background-color:white;
+	border:solid 1px Black;
+}
+body
+{
+	background-color:ThreeDFace;
+	font-size: 12px;
+	font-family: 微软雅黑,宋体,Arial ;
+	margin: 0px 0px 0px 0px;
+	padding: 0px 0px 0px 0px;
+}
+label{font: 12px 微软雅黑,宋体,Arial;}
+div.panelbutton
+{
+	background-image: url(uesetbg.png);
+	text-align:center;
+	color: #000000;
+	height: 18px;
+	width: 100%;
+	font: 12px 微软雅黑,宋体,Arial;
+	border: solid 1px #000000;
+	margin: 1px;
+}
+a.panelbutton
+{
+	display:block;
+	width:100%;
+	color: #000000;
+}
+a:hover{color: #000000; text-decoration :none;}
+a:link{color: #000000; text-decoration :none;}
+a:visited{color: #000000; text-decoration :none;}
+div.hiddenarea{display:none;padding:2px 20px 5px 20px;}
+</style>
+<script type="text/javascript">
+function UESAPI(){
+	this.posobj = null;
+	this.mouseX = -1;
+	this.mouseY = -1;
+	this.curblock = ""; 
+}
+UESAPI.prototype = {
+    setcurblock:function(idname){
+        this.curblock = idname;
+        setTimeout("ueAPI.setcurblockchk('"+idname+"')" , 300) ;
+    },
+    setcurblockchk:function(idname){
+        if(idname == this.curblock){
+            this.realsetcurblock(idname);
+        }
+    },
+    realsetcurblock:function(idname){
+        var pannelset = this.fobj("pannelset");
+        if(pannelset){
+        
+            var panchild = pannelset.childNodes;
+            for(var i = 0; i < panchild.length; i++){
+           
+                   if ( panchild[i].id == idname){
+                     panchild[i].style.display = "block";
+                   }else{
+                     panchild[i].style.display = "none";
+                   }
+            }
+        }
+        
+    },
+    showblock:function(idname){
+        var tobj = this.fobj(idname);
+        obt.style.display = "block";
+    },
+    hideobj:function(idname){
+        var tobj = this.fobj(idname);
+        obt.style.display = "none";
+    },
+    fobj : function(idname){
+		if(typeof(idname) == 'object'){
+			return idname;
+		}
+		if(!this.cDOMtype){
+			if (document.getElementById)
+			{
+				this.cDOMtype = "std";
+			}
+			else if (document.all)
+			{
+				this.cDOMtype = "ie4";
+			}
+			else if (document.layers)
+			{
+				this.cDOMtype = "ns4";
+			}
+		}
+		switch (this.cDOMtype)
+		{
+			case "std":
+			{
+				return document.getElementById(idname);
+			}
+			break;
+
+			case "ie4":
+			{
+				return document.all[idname];
+			}
+			break;
+
+			case "ns4":
+			{
+				return document.layers[idname];
+			}
+			break;
+		}
+	}
+};
+var ueAPI = new UESAPI();
+
+function myInit(){
+    var ueg_DefaultBlock = "generalseting";
+    var to = ueAPI.fobj('initvarblock');
+    if(to){
+        if(to.innerHTML != ""){
+            ueg_DefaultBlock = to.innerHTML;
+        }
+    }
+    if (typeof(ueg_DefaultBlock) == 'string' ){
+        ueAPI.realsetcurblock(ueg_DefaultBlock);
+    }
+    //alert(typeof(ueg_DefaultBlock));
+}
+</script>
+</head>
+<body id="CUESettingPanel" onload="myInit();" >
+<table width="100%" style="height:100%;">
+<tr >
+<td width="30%"  valign="top" onmouseout="ueAPI.curblock='';">
+<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('generalseting');"  class="panelbutton"  href="#" onclick="ueAPI.realsetcurblock('generalseting');">播放习惯</a></div>
+<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('videosetting');" href="#" onclick="ueAPI.realsetcurblock('videosetting');" class="panelbutton">视频设置</a></div>
+<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('audiosetting');" href="#" onclick="ueAPI.realsetcurblock('audiosetting');" class="panelbutton">音频设置</a></div>
+<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('subsetting');" href="#" onclick="ueAPI.realsetcurblock('subsetting');" class="panelbutton">字幕设置</a></div>
+<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('fileass');" href="#" onclick="ueAPI.realsetcurblock('fileass');" class="panelbutton">文件关联</a></div>
+<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('hotkeysetting');" href="#" onclick="ueAPI.realsetcurblock('hotkeysetting');" class="panelbutton">热键绑定</a></div>
+</td><td width="70%" valign="top" id="pannelset">
+<div id="generalseting" class="hiddenarea">
+<input type="checkbox" id="chkremwinpos" /><label for="chkremwinpos">记忆窗口位置和尺寸</label><br />
+<input type="checkbox" id="chkcdromenu" /><label for="chkcdromenu" title="在“文件”菜单下显示光盘驱动器列表菜单
+可能会影响菜单打开的速度">隐藏光盘驱动器菜单</label><br />
+<input type="checkbox" id="chkuseini" /><label for="chkuseini" title="不将配置文件写入注册表">将设置保存至ini</label><br />
+<input type="checkbox" id="chkfileass" /><label for="chkfileass">启动时检查文件关联</label><br />
+<input type="checkbox" id="chkplayrepeat" /><label for="chkplayrepeat">循环播放</label><br />
+<input type="checkbox" id="chkexitfullscreen" /><label for="chkexitfullscreen">播放结束后自动退出全屏</label><br />
+<input type="checkbox" id="chkabnormal" /><label for="chkabnormal" title="允许播放器使用更多的CPU运算资源
+但播放时也有可能影响其他软件运行效率，特别是在低配置的电脑上。">提高进程优先级</label><br />
+
+</div>
+<div id="videosetting" class="hiddenarea">
+显示输出方式：<select id="videorender"><option>DirectX 7</option><option>DirectX 9</option></select><br />
+
+<input type="checkbox" id="lockbackbuff" /><label for="lockbackbuff" title="解决运动画面中水平错位的问题">锁定画面后台缓存</label>
+</div>
+<div id="audiosetting" class="hiddenarea">
+<input type="checkbox" id="normalize" /><label for="normalize" title="">智能音量放大</label><br />
+<input type="checkbox" id="downsample44k" /><label for="downsample44k" title="部分声卡不支持48kHz音频时
+可选择此选项">以44kHz输出</label><br />
+
+声道变换：<select id="channelsetting"><option>正常方式</option><option>将左声道映射到全部声道</option><option>将右声道映射到全部声道</option></select>
+</div>
+<div id="subsetting" class="hiddenarea">
+<table width="100%"><tr><td><fieldset><legend>第一字幕</legend>
+字体： <input type="button" id="subfont" value="黑体"/><br />
+颜色： 
+<a href="#" class="subcolor" id="sub1c1" ><img src='blank.gif' width="8" height="8" border="0" alt="字幕颜色" /></a> 
+<a href="#" class="subcolor" id="sub1c2" ><img src='blank.gif' width="8" height="8" border="0" alt="字幕颜色" /></a> 
+<a href="#" class="subcolor" id="sub1c3" ><img src='blank.gif' width="8" height="8" border="0" alt="字幕颜色" /></a> 
+<a href="#" class="subcolor" id="sub1c4" ><img src='blank.gif' width="8" height="8" border="0" alt="字幕颜色" /></a> 
+<br />
+水平位置： <input class="percent" type="text" id="subhpos" value="%"/><br />
+垂直位置： <input class="percent" type="text" id="subvpos" value="%"/><br />
+</fieldset></td><td><fieldset><legend>第二字幕</legend>
+字体： <input type="button" id="subfont2" value="黑体"/><br />
+水平位置： <input class="percent" type="text" id="subhpos2" value="%"/><br />
+垂直位置： <input class="percent" type="text" id="subvpos2" value="%"/><br />
+</fieldset></td></tr>
+<tr><td><fieldset><legend>第三字幕</legend>
+字体： <input  type="button" id="subfont3" value="黑体"/><br />
+水平位置： <input class="percent" type="text" id="subhpos3" value="%"/><br />
+垂直位置： <input class="percent" type="text" id="subvpos3" value="%"/><br />
+</fieldset></td><td></td></tr></table>
+</div>
+<div id="fileass" class="hiddenarea"><input type="button" value="重建文件关联"/></div>
+<div id="hotkeysetting" class="hiddenarea">热键设置</div>
+</td>
+</tr><tr height="8%">
+<td align="left"> &nbsp; <input type="button" style="width:100px;" id="ButtonAdvanceSetting" value="高级设置" />  </td>
+<td align="right" nowrap="nowrap">
+<input type="button" style="width:100px;" id="ButtonOK" value="确定" /> &nbsp; 
+<input type="button" style="width:100px;" id="ButtonCancel" value="取消" /> &nbsp; <input type="button" style="width:100px;" id="ButtonApply" value="应用" /> 
+</td>
+</tr>
+</table>
+<div id='initvarblock' style="display:none"></div>
+</body>
+</html>

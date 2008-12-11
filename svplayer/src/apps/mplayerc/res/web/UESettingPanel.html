@@ -168,16 +168,23 @@ function myInit(){
 
 </div>
 <div id="videosetting" class="hiddenarea">
-显示输出方式：<select id="videorender"><option>DirectX 7</option><option>DirectX 9</option></select><br />
+显示输出方式：<select id="videorender"><option value="DX9">DirectX 9</option>
+<option value="DX7">DirectX 7</option>
+<option value="ADV">使用自定义高级设置</option></select><br />
 
-<input type="checkbox" id="lockbackbuff" /><label for="lockbackbuff" title="解决运动画面中水平错位的问题">锁定画面后台缓存</label>
+<input type="checkbox" id="lockbackbuff" /><label for="lockbackbuff" title="解决运动画面中水平错位的问题">修正画面横向错位问题（Lock back-buffer）</label>
 </div>
 <div id="audiosetting" class="hiddenarea">
-<input type="checkbox" id="normalize" /><label for="normalize" title="">智能音量放大</label><br />
-<input type="checkbox" id="downsample44k" /><label for="downsample44k" title="部分声卡不支持48kHz音频时
-可选择此选项">以44kHz输出</label><br />
+<select id="audiodevice" style="display:none;"><option value='default'>系统默认</option></select><br />
+<input type="checkbox" id="normalize" /><label for="normalize" title="Audio normalization is the process of increasing (or decreasing) the amplitude of an entire audio signal so that the resulting peak amplitude matches a desired target. Typically, normalization increases the amplitude of the audio waveform to a maximum level that does not introduce any new distortion.
 
-声道变换：<select id="channelsetting"><option>正常方式</option><option>将左声道映射到全部声道</option><option>将右声道映射到全部声道</option></select>
+Specifically, normalization applies a constant amount of gain to the selected region of the recording to bring the highest peak to a target level, usually 98% (-0.3 dB) or 100% (0 dB). This differs from dynamics compression, which applies varying levels of gain over a recording to fit the level within a minimum and maximum range. Normalization applies the same amount of gain across the selected region of the recording so that the relative dynamics (and signal to noise ratio) are preserved.
+
+Normalization may require two passes, depending upon the software employed. A first pass would determine the highest peak, and the second pass applies the gain to the entire recording.
+
+Normalization is often used when remastering audio tapes for CD production, in order to maximize the signal level while not changing the signal to noise ratio. It is often combined with dynamic range compression and hard limiting to increase the apparent volume of a CD. It is typically applied along with other audio and digital processing, such as dithering.">智能音量放大</label><br />
+<input type="checkbox" id="downsample44k" /><label for="downsample44k" title="部分声卡不支持48kHz音频时
+可选择此选项">以44kHz输出</label>
 </div>
 <div id="subsetting" class="hiddenarea">
 <table width="100%"><tr><td><fieldset><legend>第一字幕</legend>
@@ -190,15 +197,17 @@ function myInit(){
 <br />
 水平位置： <input class="percent" type="text" id="subhpos" value="%"/><br />
 垂直位置： <input class="percent" type="text" id="subvpos" value="%"/><br />
-</fieldset></td><td><fieldset><legend>第二字幕</legend>
+</fieldset></td><td></td></tr>
+<tr><td><fieldset><legend>第二字幕</legend>
 字体： <input type="button" id="subfont2" value="黑体"/><br />
+颜色： 
+<a href="#" class="subcolor" id="sub2c1" ><img src='blank.gif' width="8" height="8" border="0" alt="字幕颜色" /></a> 
+<a href="#" class="subcolor" id="sub2c2" ><img src='blank.gif' width="8" height="8" border="0" alt="字幕颜色" /></a> 
+<a href="#" class="subcolor" id="sub2c3" ><img src='blank.gif' width="8" height="8" border="0" alt="字幕颜色" /></a> 
+<a href="#" class="subcolor" id="sub2c4" ><img src='blank.gif' width="8" height="8" border="0" alt="字幕颜色" /></a> 
+<br />
 水平位置： <input class="percent" type="text" id="subhpos2" value="%"/><br />
 垂直位置： <input class="percent" type="text" id="subvpos2" value="%"/><br />
-</fieldset></td></tr>
-<tr><td><fieldset><legend>第三字幕</legend>
-字体： <input  type="button" id="subfont3" value="黑体"/><br />
-水平位置： <input class="percent" type="text" id="subhpos3" value="%"/><br />
-垂直位置： <input class="percent" type="text" id="subvpos3" value="%"/><br />
 </fieldset></td><td></td></tr></table>
 </div>
 <div id="fileass" class="hiddenarea"><input type="button" value="重建文件关联"/></div>

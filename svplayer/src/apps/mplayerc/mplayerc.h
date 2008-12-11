@@ -412,11 +412,14 @@ public:
 		bool fAutoSpeakerConf;
 
 		STSStyle subdefstyle;
+		STSStyle subdefstyle2;
 		bool fOverridePlacement;
 		int nHorPos, nVerPos;
+		int nHorPos2, nVerPos2;
 		int nSPCSize;
 		int nSPCMaxRes;
 		int nSubDelayInterval;
+		int nSubDelayInterval2;
 		bool fSPCPow2Tex;
 		bool fEnableSubtitles;
 

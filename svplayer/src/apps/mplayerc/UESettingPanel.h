@@ -4,11 +4,12 @@
 #error "CDHtmlDialog is not supported for Windows CE."
 #endif 
 
+#include "..\..\filters\switcher\AudioSwitcher\AudioSwitcher.h"
 // CUESettingPanel dialog
 
 class CUESettingPanel : public CDHtmlDialog
 {
-	DECLARE_DYNCREATE(CUESettingPanel)
+	DECLARE_DYNAMIC(CUESettingPanel)
 	virtual HRESULT STDMETHODCALLTYPE  GetHostInfo(DOCHOSTUIINFO *pInfo);
 	virtual HRESULT STDMETHODCALLTYPE  ShowContextMenu(DWORD /*dwID*/, POINT *ppt, IUnknown* /*pcmdtReserved*/, IDispatch* /*pdispReserved*/);
 	void ApplyAllSetting();
@@ -28,8 +29,18 @@ class CUESettingPanel : public CDHtmlDialog
 	int m_sgi_chkautoplay;
 	CString m_sgs_initblock;
 	
+	CString m_sgs_videorender;
+	long m_sgi_videorender;
+	int m_sgi_lockbackbuff;
+
+	int m_sgi_normalize;
+	int m_sgi_downsample44k;
+
+	long m_sgi_channelsetting;
+private:
+	CComQIPtr<IAudioSwitcherFilter> m_pASF;
 public:
-	CUESettingPanel(CWnd* pParent = NULL);   // standard constructor
+	CUESettingPanel(IFilterGraph* pFG, CWnd* pParentWnd, UINT idPagein);   // standard constructor
 	virtual ~CUESettingPanel();
 // Overrides
 	HRESULT OnButtonOK(IHTMLElement *pElement);

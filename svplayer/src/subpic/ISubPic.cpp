@@ -710,7 +710,8 @@ ISubPicAllocatorPresenterImpl::ISubPicAllocatorPresenterImpl(HWND hWnd, HRESULT&
 	, m_NativeVideoSize(0, 0), m_AspectRatio(0, 0)
 	, m_VideoRect(0, 0, 0, 0), m_WindowRect(0, 0, 0, 0)
 	, m_fps(25.0)
-	, m_lSubtitleDelay(0)
+	, m_lSubtitleDelay(0) , m_lSubtitleDelay2(0)
+	, m_pSubPicQueue(NULL) , m_pSubPicQueue2(NULL)
 {
     if(!IsWindow(m_hWnd)) {hr = E_INVALIDARG; return;}
 	GetWindowRect(m_hWnd, &m_WindowRect);
@@ -732,6 +733,30 @@ STDMETHODIMP ISubPicAllocatorPresenterImpl::NonDelegatingQueryInterface(REFIID r
 void ISubPicAllocatorPresenterImpl::AlphaBltSubPic(CSize size, SubPicDesc* pTarget)
 {
 	CComPtr<ISubPic> pSubPic;
+	REFERENCE_TIME rtNow = m_rtNow;
+	CComPtr<ISubPic> pSubPic2;
+	if(m_pSubPicQueue2 && m_pSubPicQueue2->LookupSubPic(rtNow, &pSubPic2))
+	{
+		SubPicDesc spd;
+		pSubPic2->GetDesc(spd);
+
+		if(spd.w > 0 && spd.h > 0)
+		{
+			CRect r;
+			pSubPic2->GetDirtyRect(r);
+
+			// FIXME
+			r.DeflateRect(1, 1);
+
+			CRect rDstText(
+				r.left * size.cx / spd.w,
+				(r.top - 100) * size.cy / spd.h,
+				r.right * size.cx / spd.w,
+				(r.bottom - 100) * size.cy / spd.h);
+
+			pSubPic2->AlphaBlt(r, rDstText, pTarget);
+		}
+	}
 	if(m_pSubPicQueue->LookupSubPic(m_rtNow, &pSubPic))
 	{
 		SubPicDesc spd;
@@ -754,6 +779,7 @@ void ISubPicAllocatorPresenterImpl::AlphaBltSubPic(CSize size, SubPicDesc* pTarg
 			pSubPic->AlphaBlt(r, rDstText, pTarget);
 		}
 	}
+	
 }
 
 // ISubPicAllocatorPresenter
@@ -791,6 +817,10 @@ STDMETHODIMP_(void) ISubPicAllocatorPresenterImpl::SetPosition(RECT w, RECT v)
 		{
 			m_pSubPicQueue->Invalidate();
 		}
+		if(m_pSubPicQueue2)
+		{
+			m_pSubPicQueue2->Invalidate();
+		}
 	}
 
 	if(fWindowPosChanged || fVideoRectChanged)
@@ -804,10 +834,16 @@ STDMETHODIMP_(void) ISubPicAllocatorPresenterImpl::SetTime(REFERENCE_TIME rtNow)
 		return;
 */
 	m_rtNow = rtNow - m_lSubtitleDelay;
+	m_rtNow2 = rtNow - m_lSubtitleDelay2;
 
 	if(m_pSubPicQueue)
 	{
 		m_pSubPicQueue->SetTime(m_rtNow);
+	}
+
+	if(m_pSubPicQueue2)
+	{
+		m_pSubPicQueue2->SetTime(m_rtNow2);
 	}
 }
 
@@ -819,6 +855,16 @@ STDMETHODIMP_(void) ISubPicAllocatorPresenterImpl::SetSubtitleDelay(int delay_ms
 STDMETHODIMP_(int) ISubPicAllocatorPresenterImpl::GetSubtitleDelay()
 {
 	return (m_lSubtitleDelay/10000);
+}
+
+STDMETHODIMP_(void) ISubPicAllocatorPresenterImpl::SetSubtitleDelay2(int delay_ms)
+{
+	m_lSubtitleDelay2 = delay_ms*10000;
+}
+
+STDMETHODIMP_(int) ISubPicAllocatorPresenterImpl::GetSubtitleDelay2()
+{
+	return (m_lSubtitleDelay2/10000);
 }
 
 STDMETHODIMP_(double) ISubPicAllocatorPresenterImpl::GetFPS()
@@ -833,11 +879,21 @@ STDMETHODIMP_(void) ISubPicAllocatorPresenterImpl::SetSubPicProvider(ISubPicProv
 	if(m_pSubPicQueue)
 		m_pSubPicQueue->SetSubPicProvider(pSubPicProvider);
 }
+STDMETHODIMP_(void) ISubPicAllocatorPresenterImpl::SetSubPicProvider2(ISubPicProvider* pSubPicProvider)
+{
+	m_SubPicProvider2 = pSubPicProvider;
 
+	if(m_pSubPicQueue2)
+		m_pSubPicQueue2->SetSubPicProvider(pSubPicProvider);
+}
 STDMETHODIMP_(void) ISubPicAllocatorPresenterImpl::Invalidate(REFERENCE_TIME rtInvalidate)
 {
 	if(m_pSubPicQueue)
 		m_pSubPicQueue->Invalidate(rtInvalidate);
+
+
+	if(m_pSubPicQueue2)
+		m_pSubPicQueue2->Invalidate(rtInvalidate);
 }
 
 #include <math.h>

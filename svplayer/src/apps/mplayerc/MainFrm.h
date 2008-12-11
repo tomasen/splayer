@@ -178,6 +178,7 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 	CComPtr<IAMDroppedFrames> pAMDF;
 
 	CComPtr<ISubPicAllocatorPresenter> m_pCAP;
+	CComPtr<ISubPicAllocatorPresenter> m_pCAP2;
 
 	void SetBalance(int balance);
 
@@ -289,7 +290,9 @@ public:
 	CCritSec m_csSubLock;
 	CInterfaceList<ISubStream> m_pSubStreams;
 	int m_iSubtitleSel; // if(m_iSubtitleSel&(1<<31)): disabled
+	int m_iSubtitleSel2;
 	DWORD_PTR m_nSubtitleId;
+	DWORD_PTR m_nSubtitleId2;
 
 	void StartWebServer(int nPort);
 	void StopWebServer();
@@ -384,6 +387,7 @@ public:
 	bool LoadSubtitle(CString fn);
 	void UpdateSubtitle(bool fApplyDefStyle = false);
 	void SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle = false);
+	void SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle = false);
 	void ReplaceSubtitle(ISubStream* pSubStreamOld, ISubStream* pSubStreamNew);
 	void InvalidateSubtitle(DWORD_PTR nSubtitleId = -1, REFERENCE_TIME rtInvalidate = -1);
 	void ReloadSubtitle();
@@ -548,6 +552,7 @@ public:
 	afx_msg void OnFileConvert();
 	afx_msg void OnUpdateFileConvert(CCmdUI* pCmdUI);
 	afx_msg void OnFileLoadsubtitle();
+	afx_msg void OnFileLoadsubtitle2();
 	afx_msg void OnUpdateFileLoadsubtitle(CCmdUI* pCmdUI);
 	afx_msg void OnFileSavesubtitle();
 	afx_msg void OnUpdateFileSavesubtitle(CCmdUI* pCmdUI);
@@ -642,6 +647,7 @@ public:
 	afx_msg void OnUpdateAfterplayback(CCmdUI* pCmdUI);
 	
 	afx_msg void OnSubtitleDelay(UINT nID);
+	afx_msg void OnSubtitleDelay2(UINT nID);
 
 	afx_msg void OnNavigateSkip(UINT nID);
 	afx_msg void OnUpdateNavigateSkip(CCmdUI* pCmdUI);
@@ -673,4 +679,5 @@ public:
 	afx_msg void OnClose();
 	
 	void		SetSubtitleDelay(int delay_ms);
+	void		SetSubtitleDelay2(int delay_ms);
 };

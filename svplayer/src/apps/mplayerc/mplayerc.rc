@@ -106,7 +106,7 @@ BEGIN
     EDITTEXT        IDC_EDIT2,107,47,46,13,ES_AUTOHSCROLL,WS_EX_RIGHT
     CONTROL         "",IDC_SPIN2,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS | UDS_HOTTRACK,155,46,11,14
     CONTROL         "启用自定义声道映射规则",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,61,117,10
-    LTEXT           "您的系统有",IDC_STATIC1,7,76,41,8
+    LTEXT           "当前的音频有",IDC_STATIC1,7,76,41,8
     EDITTEXT        IDC_EDIT1,53,74,29,13,ES_CENTER | ES_AUTOHSCROLL
     CONTROL         "",IDC_SPIN1,"msctls_updown32",UDS_WRAP | UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS | UDS_HOTTRACK,183,73,11,14
     LTEXT           "个声道:",IDC_STATIC2,89,76,51,8
@@ -1742,6 +1742,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "调入字幕(&L)...\tCtrl+L",         ID_FILE_LOAD_SUBTITLE
         MENUITEM "另存字幕文件...\tCtrl+S",           ID_FILE_SAVE_SUBTITLE
+        MENUITEM "调入第二字幕...",                   ID_FILE_LOAD_SUBTITLE2
         MENUITEM SEPARATOR
         POPUP "播放结束后"
         BEGIN
@@ -1921,7 +1922,8 @@ IDR_HTML_UESETTINGPANEL HTML                    "res\\web\\UESettingPanel.html"
 //
 
 UESETBG.PNG             2110                    "res\\web\\uesetbg.png"
-blank.gif				2110					"res\\web\\blank.gif"
+BLANK.GIF               2110                    "res\\web\\blank.gif"
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // String Table
@@ -1936,7 +1938,6 @@ STRINGTABLE
 BEGIN
     IDS_R_SETTINGS          "Settings"
     IDS_RS_TITLEBARTEXTSTYLE "TitleBarTextStyle"
-	IDS_RS_CHECKFILEASSCONSTARTUP "CheckFileAsscOnStartup"
     IDS_RS_USEWMASFREADER   "UseWMASFReader"
     IDS_RS_CONTROLSTATE     "ControlState"
     IDS_RS_VOLUME           "Volume"
@@ -1958,6 +1959,7 @@ BEGIN
     IDS_RS_TITLEBARTEXTTITLE "TitleBarTextTitle"
     IDS_RS_SHADERLIST       "Shaders List"
     IDS_RS_BLOCKVSFILTER    "BlockVSFilter"
+    IDS_RS_CHECKFILEASSCONSTARTUP "CheckFileAsscOnStartup"
 END
 
 STRINGTABLE 
@@ -2017,6 +2019,14 @@ END
 
 STRINGTABLE 
 BEGIN
+    IDS_RS_SUBDELAYINTERVAL "SubDelayInterval"
+    IDS_RS_SPLOGFONT2       "SPDefaultStyle2"
+    IDS_RS_SPHORPOS2        "SPHorPos2"
+    IDS_RS_SPVERPOS2        "SPVerPos2"
+END
+
+STRINGTABLE 
+BEGIN
     IDS_RS_SPOVERRIDEPLACEMENT "SPOverridePlacement"
     IDS_RS_SPHORPOS         "SPHorPos"
     IDS_RS_SPVERPOS         "SPVerPos"
@@ -2052,11 +2062,6 @@ BEGIN
     IDS_RS_QUICKTIMERENDERER "QuickTimeRenderer"
     IDS_RS_REALMEDIAFPS     "RealMediaFPS"
     IDS_RS_AUDIOTIMESHIFT   "AudioTimeShift"
-END
-
-STRINGTABLE 
-BEGIN
-    IDS_RS_SUBDELAYINTERVAL "SubDelayInterval"
 END
 
 STRINGTABLE 

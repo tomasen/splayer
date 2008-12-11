@@ -603,7 +603,7 @@
 #define IDS_RS_TITLEBARTEXTTITLE        13144
 #define IDS_RS_SHADERLIST               13145
 #define IDS_RS_BLOCKVSFILTER            13146
-#define IDS_RS_CHECKFILEASSCONSTARTUP	13147
+#define IDS_RS_CHECKFILEASSCONSTARTUP   13147
 #define IDS_SRC_RADGT                   14000
 #define IDS_SRC_CDDA                    14001
 #define IDS_SRC_AVI                     14002
@@ -728,6 +728,11 @@
 #define ID_SUB_DELAY_DOWN               14191
 #define ID_SUB_DELAY_UP                 14192
 #define IDS_RS_SUBDELAYINTERVAL         14193
+#define IDS_RS_SPLOGFONT2               14194
+#define IDS_RS_SPHORPOS2                14195
+#define IDS_RS_SPVERPOS2                14196
+#define ID_SUB_DELAY_DOWN2              14197
+#define ID_SUB_DELAY_UP2                14198
 #define IDD_DHTML_SETTING               20000
 #define IDR_DEFAULT1                    20006
 #define IDR_HTML_UESETTINGPANEL         24000
@@ -758,13 +763,14 @@
 #define ID_DVD32792                     32792
 #define ID_32793                        32793
 #define ID_32794                        32794
+#define ID_FILE_LOAD_SUBTITLE2          32795
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        20007
-#define _APS_NEXT_COMMAND_VALUE         32795
+#define _APS_NEXT_COMMAND_VALUE         32796
 #define _APS_NEXT_CONTROL_VALUE         22000
 #define _APS_NEXT_SYMED_VALUE           24001
 #endif

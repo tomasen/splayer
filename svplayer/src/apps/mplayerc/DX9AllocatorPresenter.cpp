@@ -458,6 +458,8 @@ HRESULT CDX9AllocatorPresenter::CreateDevice()
 						GetAdapter(m_pD3D), D3DDEVTYPE_HAL, m_hWnd,
 						D3DCREATE_SOFTWARE_VERTEXPROCESSING|D3DCREATE_MULTITHREADED, //D3DCREATE_MANAGED 
 						&pp, &m_pD3DDev);
+
+	HRESULT hr2 = S_OK;
 /*
 	HRESULT hr = m_pD3D->CreateDevice(
 						m_pD3D->GetAdapterCount()-1, D3DDEVTYPE_REF, m_hWnd,
@@ -489,6 +491,9 @@ HRESULT CDX9AllocatorPresenter::CreateDevice()
 	CComPtr<ISubPicProvider> pSubPicProvider;
 	if(m_pSubPicQueue) m_pSubPicQueue->GetSubPicProvider(&pSubPicProvider);
 
+	CComPtr<ISubPicProvider> pSubPicProvider2;
+	if(m_pSubPicQueue2) m_pSubPicQueue2->GetSubPicProvider(&pSubPicProvider2);
+
 	CSize size;
 	switch(AfxGetAppSettings().nSPCMaxRes)
 	{
@@ -515,10 +520,16 @@ HRESULT CDX9AllocatorPresenter::CreateDevice()
 	m_pSubPicQueue = AfxGetAppSettings().nSPCSize > 0 
 		? (ISubPicQueue*)new CSubPicQueue(AfxGetAppSettings().nSPCSize, m_pAllocator, &hr)
 		: (ISubPicQueue*)new CSubPicQueueNoThread(m_pAllocator, &hr);
-	if(!m_pSubPicQueue || FAILED(hr))
+	m_pSubPicQueue2 = AfxGetAppSettings().nSPCSize > 0 
+		? (ISubPicQueue*)new CSubPicQueue(AfxGetAppSettings().nSPCSize, m_pAllocator, &hr2)
+		: (ISubPicQueue*)new CSubPicQueueNoThread(m_pAllocator, &hr2);
+
+	if( ( !m_pSubPicQueue && !m_pSubPicQueue2 ) || ( FAILED(hr) && FAILED(hr2) ))
 		return E_FAIL;
 
-	if(pSubPicProvider) m_pSubPicQueue->SetSubPicProvider(pSubPicProvider);
+	if(m_pSubPicQueue && pSubPicProvider) m_pSubPicQueue->SetSubPicProvider(pSubPicProvider);
+
+	if(m_pSubPicQueue2 && pSubPicProvider2) m_pSubPicQueue2->SetSubPicProvider(pSubPicProvider2);
 
 	return S_OK;
 } 
@@ -1664,6 +1675,16 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 				__super::SetTime(g_tSegmentStart + g_tSampleStart);
 			}
 		}
+
+		if(m_pSubPicQueue2)
+		{
+			m_pSubPicQueue2->SetFPS(m_fps);
+
+			if(m_fUseInternalTimer)
+			{
+				__super::SetTime(g_tSegmentStart + g_tSampleStart);
+			}
+		}
 	}
 
 	CSize VideoSize = m_NativeVideoSize;
@@ -2069,6 +2090,7 @@ CDXRAllocatorPresenter::~CDXRAllocatorPresenter()
 
 	// the order is important here
 	m_pSubPicQueue = NULL;
+	m_pSubPicQueue2 = NULL;
 	m_pAllocator = NULL;
 	m_pDXR = NULL;
 }
@@ -2126,14 +2148,22 @@ HRESULT CDXRAllocatorPresenter::SetDevice(IDirect3DDevice9* pD3DDev)
 	}
 
 	HRESULT hr = S_OK;
+	HRESULT hr2 = S_OK;
 
 	m_pSubPicQueue = AfxGetAppSettings().nSPCSize > 0 
 		? (ISubPicQueue*)new CSubPicQueue(AfxGetAppSettings().nSPCSize, m_pAllocator, &hr)
 		: (ISubPicQueue*)new CSubPicQueueNoThread(m_pAllocator, &hr);
-	if(!m_pSubPicQueue || FAILED(hr))
+	
+	m_pSubPicQueue2 = AfxGetAppSettings().nSPCSize > 0 
+		? (ISubPicQueue*)new CSubPicQueue(AfxGetAppSettings().nSPCSize, m_pAllocator, &hr2)
+		: (ISubPicQueue*)new CSubPicQueueNoThread(m_pAllocator, &hr2);
+
+	if( (!m_pSubPicQueue && !m_pSubPicQueue2)  || ( FAILED(hr) && FAILED(hr2)))
 		return E_FAIL;
 
-	if(m_SubPicProvider) m_pSubPicQueue->SetSubPicProvider(m_SubPicProvider);
+	if(m_pSubPicQueue && m_SubPicProvider) m_pSubPicQueue->SetSubPicProvider(m_SubPicProvider);
+
+	if(m_pSubPicQueue2 && m_SubPicProvider2) m_pSubPicQueue2->SetSubPicProvider(m_SubPicProvider2);
 
 	return S_OK;
 }
@@ -2145,6 +2175,7 @@ HRESULT CDXRAllocatorPresenter::Render(
 	__super::SetPosition(CRect(0, 0, width, height), CRect(left, top, right, bottom)); // needed? should be already set by the player
 	SetTime(rtStart);
 	if(atpf > 0 && m_pSubPicQueue) m_pSubPicQueue->SetFPS(10000000.0 / atpf);
+	if(atpf > 0 && m_pSubPicQueue2) m_pSubPicQueue2->SetFPS(10000000.0 / atpf);
 	AlphaBltSubPic(CSize(width, height));
 	return S_OK;
 }

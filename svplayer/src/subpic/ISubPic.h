@@ -325,9 +325,12 @@ interface ISubPicAllocatorPresenter : public IUnknown
 	STDMETHOD_(void, SetTime) (REFERENCE_TIME rtNow) PURE;
 	STDMETHOD_(void, SetSubtitleDelay) (int delay_ms) PURE;
 	STDMETHOD_(int, GetSubtitleDelay) () PURE;
+	STDMETHOD_(void, SetSubtitleDelay2) (int delay_ms) PURE;
+	STDMETHOD_(int, GetSubtitleDelay2) () PURE;
 	STDMETHOD_(double, GetFPS) () PURE;
 
 	STDMETHOD_(void, SetSubPicProvider) (ISubPicProvider* pSubPicProvider) PURE;
+	STDMETHOD_(void, SetSubPicProvider2) (ISubPicProvider* pSubPicProvider) PURE;
 	STDMETHOD_(void, Invalidate) (REFERENCE_TIME rtInvalidate = -1) PURE;
 
 	STDMETHOD (GetDIB) (BYTE* lpDib, DWORD* size) PURE;
@@ -346,16 +349,21 @@ protected:
 	CSize m_spMaxSize; // TODO:
 	int m_spMaxQueued; // TODO:
 	REFERENCE_TIME m_lSubtitleDelay;
+	REFERENCE_TIME m_lSubtitleDelay2;
 
 	CSize m_NativeVideoSize, m_AspectRatio;
 	CRect m_VideoRect, m_WindowRect;
 
 	REFERENCE_TIME m_rtNow;
+	REFERENCE_TIME m_rtNow2;
 	double m_fps;
 
 	CComPtr<ISubPicProvider> m_SubPicProvider;
 	CComPtr<ISubPicAllocator> m_pAllocator;
 	CComPtr<ISubPicQueue> m_pSubPicQueue;
+
+	CComPtr<ISubPicProvider> m_SubPicProvider2;
+	CComPtr<ISubPicQueue> m_pSubPicQueue2;
 
 	void AlphaBltSubPic(CSize size, SubPicDesc* pTarget = NULL);
 
@@ -380,9 +388,12 @@ public:
 	STDMETHODIMP_(void) SetTime(REFERENCE_TIME rtNow);
 	STDMETHODIMP_(void) SetSubtitleDelay(int delay_ms);
 	STDMETHODIMP_(int) GetSubtitleDelay();
+	STDMETHODIMP_(void) SetSubtitleDelay2(int delay_ms);
+	STDMETHODIMP_(int) GetSubtitleDelay2();
 	STDMETHODIMP_(double) GetFPS();
 
 	STDMETHODIMP_(void) SetSubPicProvider(ISubPicProvider* pSubPicProvider);	
+	STDMETHODIMP_(void) SetSubPicProvider2(ISubPicProvider* pSubPicProvider);	
 	STDMETHODIMP_(void) Invalidate(REFERENCE_TIME rtInvalidate = -1);
 
 	STDMETHODIMP GetDIB(BYTE* lpDib, DWORD* size) {return E_NOTIMPL;}

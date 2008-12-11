@@ -315,7 +315,7 @@ HRESULT CDX7AllocatorPresenter::CreateDevice()
 
 	m_ScreenSize.SetSize(ddsd.dwWidth, ddsd.dwHeight);
 
-	HRESULT hr;
+	HRESULT hr, hr2;
 
 	// m_pPrimary
 
@@ -361,6 +361,9 @@ HRESULT CDX7AllocatorPresenter::CreateDevice()
 	CComPtr<ISubPicProvider> pSubPicProvider;
 	if(m_pSubPicQueue) m_pSubPicQueue->GetSubPicProvider(&pSubPicProvider);
 
+	CComPtr<ISubPicProvider> pSubPicProvider2;
+	if(m_pSubPicQueue2) m_pSubPicQueue2->GetSubPicProvider(&pSubPicProvider2);
+
 	CSize size;
 	switch(AfxGetAppSettings().nSPCMaxRes)
 	{
@@ -384,13 +387,21 @@ HRESULT CDX7AllocatorPresenter::CreateDevice()
 	}
 
 	hr = S_OK;
+	hr2 = S_OK;
 	m_pSubPicQueue = AfxGetAppSettings().nSPCSize > 0 
 		? (ISubPicQueue*)new CSubPicQueue(AfxGetAppSettings().nSPCSize, m_pAllocator, &hr)
 		: (ISubPicQueue*)new CSubPicQueueNoThread(m_pAllocator, &hr);
-	if(!m_pSubPicQueue || FAILED(hr))
+	
+	m_pSubPicQueue2 = AfxGetAppSettings().nSPCSize > 0 
+		? (ISubPicQueue*)new CSubPicQueue(AfxGetAppSettings().nSPCSize, m_pAllocator, &hr2)
+		: (ISubPicQueue*)new CSubPicQueueNoThread(m_pAllocator, &hr2);
+
+	if( ( !m_pSubPicQueue && !m_pSubPicQueue2 ) || ( FAILED(hr) && FAILED(hr2) ))
 		return E_FAIL;
 
 	if(pSubPicProvider) m_pSubPicQueue->SetSubPicProvider(pSubPicProvider);
+
+	if(pSubPicProvider2) m_pSubPicQueue2->SetSubPicProvider(pSubPicProvider2);
 
 	return S_OK;
 }

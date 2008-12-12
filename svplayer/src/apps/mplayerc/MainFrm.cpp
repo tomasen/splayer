@@ -2326,6 +2326,7 @@ void CMainFrame::OnInitMenuPopup(CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu)
 		lookupstr.Remove('&');
 
 		CMenu* pSubMenu = NULL;
+		
 
 		UINT id;
 		if(transl.Lookup(lookupstr, id))
@@ -2378,6 +2379,11 @@ void CMainFrame::OnInitMenuPopup(CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu)
 		{
 			SetupSubtitlesSubMenu();
 			pSubMenu = &m_subtitles;
+		}
+		else if(str == ResStr(IDS_SUBTITLES_POPUP2))
+		{
+			SetupSubtitlesSubMenu(2);
+			pSubMenu = &m_subtitles2;
 		}
 		else if(str == ResStr(IDS_AUDIOLANGUAGE_POPUP) )
 		{
@@ -8562,9 +8568,14 @@ void CMainFrame::SetupAudioSwitcherSubMenu()
 	}
 }
 
-void CMainFrame::SetupSubtitlesSubMenu()
+void CMainFrame::SetupSubtitlesSubMenu(int subid)
 {
-	CMenu* pSub = &m_subtitles;
+	CMenu* pSub ;
+	if (subid == 2){
+		pSub = &m_subtitles2;
+	}else{
+		pSub = &m_subtitles;
+	}
 
 	if(!IsMenu(pSub->m_hMenu)) pSub->CreatePopupMenu();
 	else while(pSub->RemoveMenu(0, MF_BYPOSITION));

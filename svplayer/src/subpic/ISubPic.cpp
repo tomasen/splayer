@@ -235,7 +235,7 @@ STDMETHODIMP ISubPicProviderImpl::Unlock()
 ISubPicQueueImpl::ISubPicQueueImpl(ISubPicAllocator* pAllocator, HRESULT* phr) 
 	: CUnknown(NAME("ISubPicQueueImpl"), NULL)
 	, m_pAllocator(pAllocator)
-	, m_rtNow(0)
+	, m_rtNow(0) 
 	, m_fps(25.0)
 {
 	if(phr) *phr = S_OK;
@@ -750,9 +750,9 @@ void ISubPicAllocatorPresenterImpl::AlphaBltSubPic(CSize size, SubPicDesc* pTarg
 
 			CRect rDstText(
 				r.left * size.cx / spd.w,
-				(r.top - 100) * size.cy / spd.h,
+				r.top * size.cy / spd.h,
 				r.right * size.cx / spd.w,
-				(r.bottom - 100) * size.cy / spd.h);
+				r.bottom  * size.cy / spd.h);
 
 			pSubPic2->AlphaBlt(r, rDstText, pTarget);
 		}

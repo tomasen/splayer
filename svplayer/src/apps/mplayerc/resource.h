@@ -733,6 +733,7 @@
 #define IDS_RS_SPVERPOS2                14196
 #define ID_SUB_DELAY_DOWN2              14197
 #define ID_SUB_DELAY_UP2                14198
+#define IDS_SUBTITLES_POPUP2             14199
 #define IDD_DHTML_SETTING               20000
 #define IDR_DEFAULT1                    20006
 #define IDR_HTML_UESETTINGPANEL         24000
@@ -764,7 +765,8 @@
 #define ID_32793                        32793
 #define ID_32794                        32794
 #define ID_FILE_LOAD_SUBTITLE2          32795
-
+#define ID__32796                       32796
+#define ID_32797                       32797
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED

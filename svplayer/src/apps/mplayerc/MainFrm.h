@@ -178,7 +178,7 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 	CComPtr<IAMDroppedFrames> pAMDF;
 
 	CComPtr<ISubPicAllocatorPresenter> m_pCAP;
-	CComPtr<ISubPicAllocatorPresenter> m_pCAP2;
+	
 
 	void SetBalance(int balance);
 
@@ -206,7 +206,7 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 	void SetupOpenCDSubMenu();
 	void SetupFiltersSubMenu();
 	void SetupAudioSwitcherSubMenu();
-	void SetupSubtitlesSubMenu();
+	void SetupSubtitlesSubMenu(int subid = 1);
 	void SetupNavAudioSubMenu();
 	void SetupNavSubtitleSubMenu();
 	void SetupNavAngleSubMenu();
@@ -219,7 +219,7 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 
 	CMenu m_popupmain, m_popup;
 	CMenu m_opencds;
-	CMenu m_filters, m_subtitles, m_audios;
+	CMenu m_filters, m_subtitles, m_subtitles2, m_audios;
 	CAutoPtrArray<CMenu> m_filterpopups;
 	CMenu m_navaudio, m_navsubtitle, m_navangle;
 	CMenu m_navchapters, m_navtitles;

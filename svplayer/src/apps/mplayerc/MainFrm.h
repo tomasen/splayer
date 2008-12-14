@@ -386,9 +386,10 @@ public:
 
 	bool LoadSubtitle(CString fn);
 	void UpdateSubtitle(bool fApplyDefStyle = false);
+	void UpdateSubtitle2(bool fApplyDefStyle = false);
 	void SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle = false);
 	void SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle = false);
-	void ReplaceSubtitle(ISubStream* pSubStreamOld, ISubStream* pSubStreamNew);
+	void ReplaceSubtitle(ISubStream* pSubStreamOld, ISubStream* pSubStreamNew, int secondSub = 0);
 	void InvalidateSubtitle(DWORD_PTR nSubtitleId = -1, REFERENCE_TIME rtInvalidate = -1);
 	void ReloadSubtitle();
 

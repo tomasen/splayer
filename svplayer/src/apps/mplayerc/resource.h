@@ -270,6 +270,8 @@
 #define ID_PANNSCAN_PRESETS_END         4199
 #define ID_SHADERS_START                4200
 #define ID_SHADERS_END                  4299
+#define ID_SUBTITLES_SUBITEM_START2      4300
+#define ID_SUBTITLES_SUBITEM_END2        4399
 #define IDD_OPEN_DLG                    10000
 #define IDD_OPENCAPDEVICE_DLG           10001
 #define IDD_MEDIATYPES_DLG              10002
@@ -604,6 +606,7 @@
 #define IDS_RS_SHADERLIST               13145
 #define IDS_RS_BLOCKVSFILTER            13146
 #define IDS_RS_CHECKFILEASSCONSTARTUP   13147
+#define IDS_RS_ENABLESUBTITLES2          13148
 #define IDS_SRC_RADGT                   14000
 #define IDS_SRC_CDDA                    14001
 #define IDS_SRC_AVI                     14002

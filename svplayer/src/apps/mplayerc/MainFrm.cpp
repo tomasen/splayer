@@ -332,6 +332,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_AUDIO_SUBITEM_START, ID_AUDIO_SUBITEM_END, OnUpdatePlayAudio)
 	ON_COMMAND_RANGE(ID_SUBTITLES_SUBITEM_START, ID_SUBTITLES_SUBITEM_END, OnPlaySubtitles)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_SUBTITLES_SUBITEM_START, ID_SUBTITLES_SUBITEM_END, OnUpdatePlaySubtitles)
+	ON_COMMAND_RANGE(ID_SUBTITLES_SUBITEM_START2, ID_SUBTITLES_SUBITEM_END2, OnPlaySubtitles)
+	ON_UPDATE_COMMAND_UI_RANGE(ID_SUBTITLES_SUBITEM_START2, ID_SUBTITLES_SUBITEM_END2, OnUpdatePlaySubtitles)
 	ON_COMMAND_RANGE(ID_FILTERSTREAMS_SUBITEM_START, ID_FILTERSTREAMS_SUBITEM_END, OnPlayLanguage)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_FILTERSTREAMS_SUBITEM_START, ID_FILTERSTREAMS_SUBITEM_END, OnUpdatePlayLanguage)
 	ON_COMMAND_RANGE(ID_VOLUME_UP, ID_VOLUME_MUTE, OnPlayVolume)
@@ -5462,6 +5464,11 @@ void CMainFrame::OnUpdatePlayAudio(CCmdUI* pCmdUI)
 void CMainFrame::OnPlaySubtitles(UINT nID)
 {
 	int i = (int)nID - (4 + ID_SUBTITLES_SUBITEM_START);
+	int secondSub = 0;
+	if(i > 100){
+		secondSub = 1;
+		i -= 2000;
+	}
 
 	if(i == -4)
 	{
@@ -5470,6 +5477,8 @@ void CMainFrame::OnPlaySubtitles(UINT nID)
 	else if(i == -3)
 	{
 		int i = m_iSubtitleSel;
+		if(secondSub)
+			i = m_iSubtitleSel2;
 
 		POSITION pos = m_pSubStreams.GetHeadPosition();
 		while(pos && i >= 0)
@@ -5521,28 +5530,47 @@ void CMainFrame::OnPlaySubtitles(UINT nID)
 		}
 	}
 	else if(i == -2)
-	{
+	{	
 		ReloadSubtitle();
 	}
 	else if(i == -1)
 	{
-		if(m_iSubtitleSel == -1) m_iSubtitleSel = 0;
-		else m_iSubtitleSel ^= (1<<31);
-		UpdateSubtitle();
+		if(secondSub){
+			if(m_iSubtitleSel2 == -1) m_iSubtitleSel2 = 0;
+			else m_iSubtitleSel2 ^= (1<<31);
+			UpdateSubtitle2();
+		}else{
+			if(m_iSubtitleSel == -1) m_iSubtitleSel = 0;
+			else m_iSubtitleSel ^= (1<<31);
+			UpdateSubtitle();
+		}
 	}
 	else if(i >= 0)
 	{
-		m_iSubtitleSel = i;
-		UpdateSubtitle();
+		if(secondSub){
+			m_iSubtitleSel2 = i;
+			UpdateSubtitle2();
+		}else{
+			m_iSubtitleSel = i;
+			UpdateSubtitle();
+		}
 	}
-
-	AfxGetAppSettings().fEnableSubtitles = !(m_iSubtitleSel & 0x80000000);
+	if(secondSub){
+		AfxGetAppSettings().fEnableSubtitles2 = !(m_iSubtitleSel2 & 0x80000000);
+	}else{
+		AfxGetAppSettings().fEnableSubtitles = !(m_iSubtitleSel & 0x80000000);
+	}
 }
 
 void CMainFrame::OnUpdatePlaySubtitles(CCmdUI* pCmdUI)
 {
 	UINT nID = pCmdUI->m_nID;
 	int i = (int)nID - (4 + ID_SUBTITLES_SUBITEM_START);
+	int secondSub = 0;
+	if(i > 100){
+		secondSub = 1;
+		i -= 2000;
+	}
 
 	pCmdUI->Enable(m_pCAP && !m_fAudioOnly);
 
@@ -5551,6 +5579,8 @@ void CMainFrame::OnUpdatePlaySubtitles(CCmdUI* pCmdUI)
 		pCmdUI->Enable(FALSE);
 
 		int i = m_iSubtitleSel;
+		if(secondSub)
+			i = m_iSubtitleSel2;
 
 		POSITION pos = m_pSubStreams.GetHeadPosition();
 		while(pos && i >= 0)
@@ -5575,11 +5605,17 @@ void CMainFrame::OnUpdatePlaySubtitles(CCmdUI* pCmdUI)
 	}
 	else if(i == -1)
 	{
-		pCmdUI->SetCheck(m_iSubtitleSel >= 0);
+		if(secondSub){
+			pCmdUI->SetCheck(m_iSubtitleSel2 >= 0);
+		}else
+			pCmdUI->SetCheck(m_iSubtitleSel >= 0);
 	}
 	else if(i >= 0)
 	{
-		pCmdUI->SetRadio(i == abs(m_iSubtitleSel));
+		if(secondSub){
+			pCmdUI->SetRadio(i == abs(m_iSubtitleSel2));
+		}else
+			pCmdUI->SetRadio(i == abs(m_iSubtitleSel));
 	}
 }
 
@@ -8583,7 +8619,12 @@ void CMainFrame::SetupSubtitlesSubMenu(int subid)
 	if(m_iMediaLoadState != MLS_LOADED || m_fAudioOnly || !m_pCAP)
 		return;
 
-	UINT id = ID_SUBTITLES_SUBITEM_START;
+	UINT id ;
+	if (subid == 2){
+		id = ID_SUBTITLES_SUBITEM_START2;
+	}else{
+		id = ID_SUBTITLES_SUBITEM_START;
+	}
 
 	POSITION pos = m_pSubStreams.GetHeadPosition();
 
@@ -9322,7 +9363,30 @@ bool CMainFrame::LoadSubtitle(CString fn)
 
 	return(!!pSubStream);
 }
+void CMainFrame::UpdateSubtitle2(bool fApplyDefStyle)
+{
+	if(!m_pCAP) return;
 
+	int i = m_iSubtitleSel2;
+
+	POSITION pos = m_pSubStreams.GetHeadPosition();
+	while(pos && i >= 0)
+	{
+		CComPtr<ISubStream> pSubStream = m_pSubStreams.GetNext(pos);
+
+		if(i < pSubStream->GetStreamCount()) 
+		{
+			CAutoLock cAutoLock(&m_csSubLock);
+			pSubStream->SetStream(i);
+			SetSubtitle2(pSubStream, fApplyDefStyle);
+			return;
+		}
+
+		i -= pSubStream->GetStreamCount();
+	}
+
+	m_pCAP->SetSubPicProvider2(NULL);
+}
 void CMainFrame::UpdateSubtitle(bool fApplyDefStyle)
 {
 	if(!m_pCAP) return;
@@ -9540,7 +9604,7 @@ void CMainFrame::SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle)
 	}
 }
 
-void CMainFrame::ReplaceSubtitle(ISubStream* pSubStreamOld, ISubStream* pSubStreamNew)
+void CMainFrame::ReplaceSubtitle(ISubStream* pSubStreamOld, ISubStream* pSubStreamNew, int secondSub)
 {
 	POSITION pos = m_pSubStreams.GetHeadPosition();
 	while(pos) 
@@ -9549,7 +9613,10 @@ void CMainFrame::ReplaceSubtitle(ISubStream* pSubStreamOld, ISubStream* pSubStre
 		if(pSubStreamOld == m_pSubStreams.GetNext(pos))
 		{
 			m_pSubStreams.SetAt(cur, pSubStreamNew);
-			UpdateSubtitle();
+			if(secondSub){
+				UpdateSubtitle2();
+			}else
+				UpdateSubtitle();
 			break;
 		}
 	}
@@ -9569,7 +9636,9 @@ void CMainFrame::ReloadSubtitle()
 	POSITION pos = m_pSubStreams.GetHeadPosition();
 	while(pos) m_pSubStreams.GetNext(pos)->Reload();
 	UpdateSubtitle();
+	UpdateSubtitle2();
 }
+
 
 REFERENCE_TIME CMainFrame::GetPos()
 {

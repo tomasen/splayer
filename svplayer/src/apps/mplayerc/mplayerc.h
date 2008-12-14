@@ -422,6 +422,7 @@ public:
 		int nSubDelayInterval2;
 		bool fSPCPow2Tex;
 		bool fEnableSubtitles;
+		bool fEnableSubtitles2;
 
 		bool fDisabeXPToolbars;
 		bool fUseWMASFReader;

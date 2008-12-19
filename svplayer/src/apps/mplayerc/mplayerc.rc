@@ -1833,8 +1833,8 @@ BEGIN
     END
     POPUP "播放(&P)"
     BEGIN
-        MENUITEM "第一字幕(&b)",                      ID_32770
-		MENUITEM "第二字幕(&n)",                          ID_32797
+        MENUITEM "第一字幕",                      ID_32770
+		MENUITEM "第二字幕",                          ID_32797
         MENUITEM "音频(&A)",                      ID_32769
         MENUITEM SEPARATOR
         MENUITEM "播放/暂停(&P)\t空格键",              ID_PLAY_PLAYPAUSE

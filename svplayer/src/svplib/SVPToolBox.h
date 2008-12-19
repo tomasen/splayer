@@ -26,6 +26,7 @@ public:
 	BOOL ifFileExist(CString szPathname);
 	BOOL ifDirWritable(CString szDir);
 	CString GetTempDir();
+	int DetectFileCharset(CString fn);
 private:
 	CStringArray szaTmpFileNames;
 };

@@ -7,6 +7,57 @@ CSVPToolBox::CSVPToolBox(void)
 CSVPToolBox::~CSVPToolBox(void)
 {
 }
+int CSVPToolBox::DetectFileCharset(CString fn){
+// 	;
+// 	;
+	//
+	FILE *stream ;
+	if ( _wfopen_s( &stream, fn, _T("rb") ) == 0 ){
+		//detect bom?
+
+		int totalWideChar = 0;
+		int totalGBKChar = 0;
+		int totalBig5Char = 0;
+		
+		int ch, ch2;
+		int xch;
+
+		for( int i=0; (i < 4096 ) && ( feof( stream ) == 0 ); i++ )
+		{
+			ch = 0xff & fgetc( stream );
+			if (ch >= 0x80 ){
+				totalWideChar++;
+				ch2 = 0xff & fgetc( stream );
+
+				if ( ch >= 0xA1 && ch < 0xA9 && ch2 >= 0xA1 && ch2 <= 0xFE ){
+					totalGBKChar++;
+				}else if ( ch >= 0xB0 && ch < 0xF7 && ch2 >= 0xA1 && ch2 <= 0xFE){
+					totalGBKChar++;
+				}
+				
+				xch = ch << 8 | ch2;
+				if ( xch >= 0xa440 && xch <= 0xc67e){
+					totalBig5Char++;
+				}
+
+			}
+			
+		}
+
+		fclose( stream );
+		if ( totalGBKChar > totalBig5Char && totalGBKChar > totalWideChar/2 && totalWideChar > 500){
+			return GB2312_CHARSET;
+		}else if ( totalGBKChar < totalBig5Char && totalBig5Char > totalWideChar/2 && totalWideChar > 500 ){
+			return CHINESEBIG5_CHARSET;
+		}
+
+	}
+	
+	
+
+
+	return DEFAULT_CHARSET;
+}
 int CSVPToolBox::ClearTmpFiles(){
 	int i;
 	for( i = 0; i < this->szaTmpFileNames.GetCount(); i++){

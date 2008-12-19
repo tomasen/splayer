@@ -5213,8 +5213,8 @@ $LN10@Sort:
 _TEXT	ENDS
 ;	COMDAT ??$_Allocate@H@std@@YAPAHIPAH@Z
 _TEXT	SEGMENT
-$T235603 = -12						; size = 12
-$T235607 = 8						; size = 4
+$T235615 = -12						; size = 12
+$T235619 = 8						; size = 4
 __Count$ = 8						; size = 4
 ___formal$ = 12						; size = 4
 ??$_Allocate@H@std@@YAPAHIPAH@Z PROC			; std::_Allocate<int>, COMDAT
@@ -5256,15 +5256,15 @@ $LN3@Allocate:
 
 ; 40   : 		_THROW_NCEE(std::bad_alloc, NULL);
 
-	lea	eax, DWORD PTR $T235607[esp+8]
+	lea	eax, DWORD PTR $T235619[esp+8]
 	push	eax
-	lea	ecx, DWORD PTR $T235603[esp+16]
-	mov	DWORD PTR $T235607[esp+12], 0
+	lea	ecx, DWORD PTR $T235615[esp+16]
+	mov	DWORD PTR $T235619[esp+12], 0
 	call	??0exception@std@@QAE@ABQBD@Z		; std::exception::exception
 	push	OFFSET __TI2?AVbad_alloc@std@@
-	lea	ecx, DWORD PTR $T235603[esp+16]
+	lea	ecx, DWORD PTR $T235615[esp+16]
 	push	ecx
-	mov	DWORD PTR $T235603[esp+20], OFFSET ??_7bad_alloc@std@@6B@
+	mov	DWORD PTR $T235615[esp+20], OFFSET ??_7bad_alloc@std@@6B@
 	call	__CxxThrowException@8
 $LN9@Allocate:
 $LN8@Allocate:
@@ -5430,8 +5430,8 @@ $LN17@unchecked_@5:
 _TEXT	ENDS
 ;	COMDAT ??$_Allocate@U?$pair@_K_K@std@@@std@@YAPAU?$pair@_K_K@0@IPAU10@@Z
 _TEXT	SEGMENT
-$T236063 = -16						; size = 4
-$T236055 = -12						; size = 12
+$T236075 = -16						; size = 4
+$T236067 = -12						; size = 12
 ??$_Allocate@U?$pair@_K_K@std@@@std@@YAPAU?$pair@_K_K@0@IPAU10@@Z PROC ; std::_Allocate<std::pair<unsigned __int64,unsigned __int64> >, COMDAT
 ; __Count$ = ecx
 
@@ -5448,15 +5448,15 @@ $T236055 = -12						; size = 12
 
 ; 40   : 		_THROW_NCEE(std::bad_alloc, NULL);
 
-	lea	eax, DWORD PTR $T236063[esp+16]
+	lea	eax, DWORD PTR $T236075[esp+16]
 	push	eax
-	lea	ecx, DWORD PTR $T236055[esp+20]
-	mov	DWORD PTR $T236063[esp+20], 0
+	lea	ecx, DWORD PTR $T236067[esp+20]
+	mov	DWORD PTR $T236075[esp+20], 0
 	call	??0exception@std@@QAE@ABQBD@Z		; std::exception::exception
 	push	OFFSET __TI2?AVbad_alloc@std@@
-	lea	ecx, DWORD PTR $T236055[esp+20]
+	lea	ecx, DWORD PTR $T236067[esp+20]
 	push	ecx
-	mov	DWORD PTR $T236055[esp+24], OFFSET ??_7bad_alloc@std@@6B@
+	mov	DWORD PTR $T236067[esp+24], OFFSET ??_7bad_alloc@std@@6B@
 	call	__CxxThrowException@8
 $LN13@Allocate@2:
 $LN1@Allocate@2:
@@ -5481,8 +5481,8 @@ $LN12@Allocate@2:
 _TEXT	ENDS
 ;	COMDAT ??$unchecked_uninitialized_fill_n@PAU?$pair@_K_K@std@@IU12@V?$allocator@U?$pair@_K_K@std@@@2@@stdext@@YAXPAU?$pair@_K_K@std@@IABU12@AAV?$allocator@U?$pair@_K_K@std@@@2@@Z
 _TEXT	SEGMENT
-$T236069 = -4						; size = 1
-__Cat$236073 = -4					; size = 1
+$T236081 = -4						; size = 1
+__Cat$236085 = -4					; size = 1
 __Count$ = 8						; size = 4
 __Val$ = 12						; size = 4
 ??$unchecked_uninitialized_fill_n@PAU?$pair@_K_K@std@@IU12@V?$allocator@U?$pair@_K_K@std@@@2@@stdext@@YAXPAU?$pair@_K_K@std@@IABU12@AAV?$allocator@U?$pair@_K_K@std@@@2@@Z PROC ; stdext::unchecked_uninitialized_fill_n<std::pair<unsigned __int64,unsigned __int64> *,unsigned int,std::pair<unsigned __int64,unsigned __int64>,std::allocator<std::pair<unsigned __int64,unsigned __int64> > >, COMDAT
@@ -5495,9 +5495,9 @@ __Val$ = 12						; size = 4
 ; 921  : 		_STD _Uninit_fill_n(_First, _Count, _Val, _Al,
 ; 922  : 			_STD _Ptr_cat(_First, _First), _STD _Range_checked_iterator_tag());
 
-	mov	BYTE PTR $T236069[esp+4], 0
-	mov	eax, DWORD PTR $T236069[esp+4]
-	mov	ecx, DWORD PTR __Cat$236073[esp+4]
+	mov	BYTE PTR $T236081[esp+4], 0
+	mov	eax, DWORD PTR $T236081[esp+4]
+	mov	ecx, DWORD PTR __Cat$236085[esp+4]
 	push	eax
 	push	ecx
 	mov	ecx, DWORD PTR __Count$[esp+8]
@@ -6033,8 +6033,8 @@ $LN26@Ufill:
 _TEXT	ENDS
 ;	COMDAT ?allocate@?$allocator@U?$pair@_K_K@std@@@std@@QAEPAU?$pair@_K_K@2@I@Z
 _TEXT	SEGMENT
-$T236564 = -16						; size = 4
-$T236566 = -12						; size = 12
+$T236576 = -16						; size = 4
+$T236578 = -12						; size = 12
 ?allocate@?$allocator@U?$pair@_K_K@std@@@std@@QAEPAU?$pair@_K_K@2@I@Z PROC ; std::allocator<std::pair<unsigned __int64,unsigned __int64> >::allocate, COMDAT
 ; __Count$ = ecx
 
@@ -6066,15 +6066,15 @@ $LN5@allocate:
 	div	ecx
 	cmp	eax, 16					; 00000010H
 	jae	SHORT $LN3@allocate
-	lea	eax, DWORD PTR $T236564[esp+16]
+	lea	eax, DWORD PTR $T236576[esp+16]
 	push	eax
-	lea	ecx, DWORD PTR $T236566[esp+20]
-	mov	DWORD PTR $T236564[esp+20], 0
+	lea	ecx, DWORD PTR $T236578[esp+20]
+	mov	DWORD PTR $T236576[esp+20], 0
 	call	??0exception@std@@QAE@ABQBD@Z		; std::exception::exception
 	push	OFFSET __TI2?AVbad_alloc@std@@
-	lea	ecx, DWORD PTR $T236566[esp+20]
+	lea	ecx, DWORD PTR $T236578[esp+20]
 	push	ecx
-	mov	DWORD PTR $T236566[esp+24], OFFSET ??_7bad_alloc@std@@6B@
+	mov	DWORD PTR $T236578[esp+24], OFFSET ??_7bad_alloc@std@@6B@
 	call	__CxxThrowException@8
 $LN12@allocate:
 $LN11@allocate:
@@ -6106,8 +6106,8 @@ _TEXT	SEGMENT
 _TEXT	ENDS
 ;	COMDAT ?_Ufill@?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@IAEPAU?$pair@_K_K@2@PAU32@IABU32@@Z
 _TEXT	SEGMENT
-$T236599 = -4						; size = 1
-__Cat$236603 = -4					; size = 1
+$T236611 = -4						; size = 1
+__Cat$236614 = -4					; size = 1
 ?_Ufill@?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@IAEPAU?$pair@_K_K@2@PAU32@IABU32@@Z PROC ; std::vector<std::pair<unsigned __int64,unsigned __int64>,std::allocator<std::pair<unsigned __int64,unsigned __int64> > >::_Ufill, COMDAT
 ; __Ptr$ = edi
 ; __Count$ = esi
@@ -6119,9 +6119,9 @@ __Cat$236603 = -4					; size = 1
 
 ; 1252 : 		_STDEXT unchecked_uninitialized_fill_n(_Ptr, _Count, _Val, this->_Alval);
 
-	mov	BYTE PTR $T236599[esp+4], 0
-	mov	eax, DWORD PTR $T236599[esp+4]
-	mov	ecx, DWORD PTR __Cat$236603[esp+4]
+	mov	BYTE PTR $T236611[esp+4], 0
+	mov	eax, DWORD PTR $T236611[esp+4]
+	mov	ecx, DWORD PTR __Cat$236614[esp+4]
 	push	eax
 	push	ecx
 	push	edi
@@ -6598,10 +6598,10 @@ _sw$131265 = -60					; size = 4
 _sw$131201 = -60					; size = 4
 tv4580 = -56						; size = 4
 tv3837 = -56						; size = 4
-_ia$237273 = -56					; size = 4
-_ia$237218 = -56					; size = 4
-_ia$237107 = -56					; size = 4
-_ia$237054 = -56					; size = 4
+_ia$237285 = -56					; size = 4
+_ia$237230 = -56					; size = 4
+_ia$237119 = -56					; size = 4
+_ia$237066 = -56					; size = 4
 _wt$131296 = -56					; size = 4
 _wt$131287 = -56					; size = 4
 _wt$131268 = -56					; size = 4
@@ -6626,9 +6626,9 @@ tv4334 = -48						; size = 4
 tv4051 = -48						; size = 4
 tv3589 = -48						; size = 4
 tv3377 = -48						; size = 4
-_ia$237304 = -48					; size = 4
-_ia$237188 = -48					; size = 4
-_ia$237135 = -48					; size = 4
+_ia$237316 = -48					; size = 4
+_ia$237200 = -48					; size = 4
+_ia$237147 = -48					; size = 4
 _wt$131255 = -48					; size = 4
 _wt$131244 = -48					; size = 4
 _wt$131204 = -48					; size = 4
@@ -6636,14 +6636,14 @@ _wt$131191 = -48					; size = 4
 _wt$131185 = -48					; size = 4
 tv5012 = -44						; size = 4
 tv4469 = -44						; size = 4
-_ia$237358 = -44					; size = 4
+_ia$237370 = -44					; size = 4
 tv5010 = -40						; size = 4
-_r$237316 = -40						; size = 4
-_r$237230 = -40						; size = 4
-_a$237134 = -40						; size = 4
-_a$237357 = -36						; size = 4
+_r$237328 = -40						; size = 4
+_r$237242 = -40						; size = 4
+_a$237146 = -40						; size = 4
+_a$237369 = -36						; size = 4
 _r$ = -32						; size = 16
-$T237003 = -16						; size = 16
+$T237015 = -16						; size = 16
 _this$ = 8						; size = 4
 ___$ReturnUdt$ = 12					; size = 4
 _spd$ = 16						; size = 4
@@ -6824,18 +6824,18 @@ $LN107@Draw:
 ; 958  : 	bbox &= CRect(0, 0, spd.w, spd.h);
 
 	xor	eax, eax
-	mov	DWORD PTR $T237003[esp+112], eax
-	mov	DWORD PTR $T237003[esp+116], eax
+	mov	DWORD PTR $T237015[esp+112], eax
+	mov	DWORD PTR $T237015[esp+116], eax
 	mov	eax, DWORD PTR _spd$[ebp]
 	mov	ecx, DWORD PTR [eax+4]
 	mov	edx, DWORD PTR [eax+8]
-	lea	eax, DWORD PTR $T237003[esp+112]
+	lea	eax, DWORD PTR $T237015[esp+112]
 	push	eax
 	mov	eax, DWORD PTR ___$ReturnUdt$[ebp]
 	push	eax
 	push	eax
-	mov	DWORD PTR $T237003[esp+132], ecx
-	mov	DWORD PTR $T237003[esp+136], edx
+	mov	DWORD PTR $T237015[esp+132], ecx
+	mov	DWORD PTR $T237015[esp+136], edx
 	call	DWORD PTR __imp__IntersectRect@12
 
 ; 959  : 
@@ -7038,7 +7038,7 @@ $LN94@Draw:
 	mov	esi, 256				; 00000100H
 	sub	esi, edx
 	imul	edi, esi
-	mov	DWORD PTR _ia$237054[esp+112], esi
+	mov	DWORD PTR _ia$237066[esp+112], esi
 	mov	esi, DWORD PTR tv1933[esp+112]
 	inc	edx
 	imul	esi, edx
@@ -7047,7 +7047,7 @@ $LN94@Draw:
 	mov	DWORD PTR tv3138[esp+112], ebx
 	imul	esi, edx
 	and	ebx, -65281				; ffff00ffH
-	imul	ebx, DWORD PTR _ia$237054[esp+112]
+	imul	ebx, DWORD PTR _ia$237066[esp+112]
 	add	ebx, esi
 	mov	esi, DWORD PTR tv3138[esp+112]
 	xor	edi, ebx
@@ -7055,10 +7055,10 @@ $LN94@Draw:
 	imul	ebx, edx
 	mov	edx, DWORD PTR tv3138[esp+112]
 	and	esi, 16711935				; 00ff00ffH
-	imul	esi, DWORD PTR _ia$237054[esp+112]
+	imul	esi, DWORD PTR _ia$237066[esp+112]
 	shr	edx, 8
 	and	edx, 16711680				; 00ff0000H
-	imul	edx, DWORD PTR _ia$237054[esp+112]
+	imul	edx, DWORD PTR _ia$237066[esp+112]
 	add	esi, ebx
 	mov	ebx, DWORD PTR _wt$131185[esp+112]
 	and	edi, 16711680				; 00ff0000H
@@ -7194,7 +7194,7 @@ $LN85@Draw:
 	mov	edi, 256				; 00000100H
 	sub	edi, edx
 	imul	esi, edi
-	mov	DWORD PTR _ia$237107[esp+112], edi
+	mov	DWORD PTR _ia$237119[esp+112], edi
 	mov	edi, DWORD PTR tv1933[esp+112]
 	inc	edx
 	imul	edi, edx
@@ -7203,7 +7203,7 @@ $LN85@Draw:
 	mov	DWORD PTR tv3377[esp+112], ebx
 	imul	edi, edx
 	and	ebx, -65281				; ffff00ffH
-	imul	ebx, DWORD PTR _ia$237107[esp+112]
+	imul	ebx, DWORD PTR _ia$237119[esp+112]
 	add	ebx, edi
 	mov	edi, DWORD PTR tv3377[esp+112]
 	xor	esi, ebx
@@ -7211,10 +7211,10 @@ $LN85@Draw:
 	imul	ebx, edx
 	mov	edx, DWORD PTR tv3377[esp+112]
 	and	edi, 16711935				; 00ff00ffH
-	imul	edi, DWORD PTR _ia$237107[esp+112]
+	imul	edi, DWORD PTR _ia$237119[esp+112]
 	shr	edx, 8
 	and	edx, 16711680				; 00ff0000H
-	imul	edx, DWORD PTR _ia$237107[esp+112]
+	imul	edx, DWORD PTR _ia$237119[esp+112]
 	and	esi, 16711680				; 00ff0000H
 	add	edi, ebx
 	mov	ebx, DWORD PTR _wt$131196[esp+112]
@@ -7380,10 +7380,10 @@ $LN69@Draw:
 	mov	esi, 256				; 00000100H
 	sub	esi, edx
 	inc	edx
-	mov	DWORD PTR _ia$237135[esp+112], esi
+	mov	DWORD PTR _ia$237147[esp+112], esi
 	mov	esi, ebx
 	and	esi, -65281				; ffff00ffH
-	imul	esi, DWORD PTR _ia$237135[esp+112]
+	imul	esi, DWORD PTR _ia$237147[esp+112]
 	mov	edi, ecx
 	and	edi, -65281				; ffff00ffH
 	imul	edi, edx
@@ -7394,9 +7394,9 @@ $LN69@Draw:
 	mov	DWORD PTR tv3570[esp+112], ebx
 	and	ebx, 65280				; 0000ff00H
 	mov	DWORD PTR tv5012[esp+112], esi
-	mov	esi, DWORD PTR _ia$237135[esp+112]
+	mov	esi, DWORD PTR _ia$237147[esp+112]
 	imul	ebx, esi
-	mov	DWORD PTR _a$237134[esp+112], edx
+	mov	DWORD PTR _a$237146[esp+112], edx
 	mov	edx, DWORD PTR tv5012[esp+112]
 	add	edx, ebx
 	mov	ebx, DWORD PTR tv3570[esp+112]
@@ -7405,7 +7405,7 @@ $LN69@Draw:
 	mov	edx, ecx
 	imul	ebx, esi
 	and	edx, 16711935				; 00ff00ffH
-	imul	edx, DWORD PTR _a$237134[esp+112]
+	imul	edx, DWORD PTR _a$237146[esp+112]
 	add	edx, ebx
 	mov	ebx, DWORD PTR _wt$131213[esp+112]
 	and	edi, 16711680				; 00ff0000H
@@ -7581,7 +7581,7 @@ $LN54@Draw:
 	mov	ebx, DWORD PTR tv3837[esp+112]
 	and	ebx, 65280				; 0000ff00H
 	imul	ebx, esi
-	mov	DWORD PTR _ia$237188[esp+112], esi
+	mov	DWORD PTR _ia$237200[esp+112], esi
 	mov	esi, ecx
 	and	esi, 65280				; 0000ff00H
 	imul	esi, edx
@@ -7593,10 +7593,10 @@ $LN54@Draw:
 	imul	ebx, edx
 	mov	edx, DWORD PTR tv3837[esp+112]
 	and	esi, 16711935				; 00ff00ffH
-	imul	esi, DWORD PTR _ia$237188[esp+112]
+	imul	esi, DWORD PTR _ia$237200[esp+112]
 	shr	edx, 8
 	and	edx, 16711680				; 00ff0000H
-	imul	edx, DWORD PTR _ia$237188[esp+112]
+	imul	edx, DWORD PTR _ia$237200[esp+112]
 	and	edi, 16711680				; 00ff0000H
 	add	esi, ebx
 	mov	ebx, DWORD PTR _wt$131232[esp+112]
@@ -7741,7 +7741,7 @@ $LN43@Draw:
 	mov	esi, 256				; 00000100H
 	sub	esi, edx
 	imul	edi, esi
-	mov	DWORD PTR _ia$237218[esp+112], esi
+	mov	DWORD PTR _ia$237230[esp+112], esi
 	mov	esi, DWORD PTR tv1933[esp+112]
 	inc	edx
 	imul	esi, edx
@@ -7750,7 +7750,7 @@ $LN43@Draw:
 	mov	DWORD PTR tv4051[esp+112], ebx
 	imul	esi, edx
 	and	ebx, -65281				; ffff00ffH
-	imul	ebx, DWORD PTR _ia$237218[esp+112]
+	imul	ebx, DWORD PTR _ia$237230[esp+112]
 	add	ebx, esi
 	mov	esi, DWORD PTR tv4051[esp+112]
 	xor	edi, ebx
@@ -7758,10 +7758,10 @@ $LN43@Draw:
 	imul	ebx, edx
 	mov	edx, DWORD PTR tv4051[esp+112]
 	and	esi, 16711935				; 00ff00ffH
-	imul	esi, DWORD PTR _ia$237218[esp+112]
+	imul	esi, DWORD PTR _ia$237230[esp+112]
 	shr	edx, 8
 	and	edx, 16711680				; 00ff0000H
-	imul	edx, DWORD PTR _ia$237218[esp+112]
+	imul	edx, DWORD PTR _ia$237230[esp+112]
 	add	esi, ebx
 	mov	ebx, DWORD PTR _wt$131249[esp+112]
 	and	edi, 16711680				; 00ff0000H
@@ -7812,12 +7812,12 @@ $LL241@Draw:
 	movzx	edx, BYTE PTR [edi+ebx*2]
 	movd	mm1, edx
 	psubusw	mm0, mm1
-	movd	DWORD PTR _r$237230[esp+112], mm0
+	movd	DWORD PTR _r$237242[esp+112], mm0
 	emms
 	mov	edx, DWORD PTR _am$[esp+112]
 	movzx	edx, BYTE PTR [ebx+edx]
 	imul	edx, DWORD PTR tv1917[esp+112]
-	imul	edx, DWORD PTR _r$237230[esp+112]
+	imul	edx, DWORD PTR _r$237242[esp+112]
 	mov	edi, DWORD PTR [eax+ebx*4]
 	shr	edx, 12					; 0000000cH
 	and	edx, 255				; 000000ffH
@@ -7892,7 +7892,7 @@ $LN34@Draw:
 	mov	edi, 256				; 00000100H
 	sub	edi, edx
 	imul	esi, edi
-	mov	DWORD PTR _ia$237273[esp+112], edi
+	mov	DWORD PTR _ia$237285[esp+112], edi
 	mov	edi, DWORD PTR tv1933[esp+112]
 	inc	edx
 	imul	edi, edx
@@ -7901,7 +7901,7 @@ $LN34@Draw:
 	mov	DWORD PTR tv4334[esp+112], ebx
 	imul	edi, edx
 	and	ebx, -65281				; ffff00ffH
-	imul	ebx, DWORD PTR _ia$237273[esp+112]
+	imul	ebx, DWORD PTR _ia$237285[esp+112]
 	add	ebx, edi
 	mov	edi, DWORD PTR tv4334[esp+112]
 	xor	esi, ebx
@@ -7909,10 +7909,10 @@ $LN34@Draw:
 	imul	ebx, edx
 	mov	edx, DWORD PTR tv4334[esp+112]
 	and	edi, 16711935				; 00ff00ffH
-	imul	edi, DWORD PTR _ia$237273[esp+112]
+	imul	edi, DWORD PTR _ia$237285[esp+112]
 	shr	edx, 8
 	and	edx, 16711680				; 00ff0000H
-	imul	edx, DWORD PTR _ia$237273[esp+112]
+	imul	edx, DWORD PTR _ia$237285[esp+112]
 	and	esi, 16711680				; 00ff0000H
 	add	edi, ebx
 	mov	ebx, DWORD PTR _wt$131260[esp+112]
@@ -8105,7 +8105,7 @@ $LN18@Draw:
 	mov	ebx, DWORD PTR tv4580[esp+112]
 	and	ebx, 65280				; 0000ff00H
 	imul	ebx, esi
-	mov	DWORD PTR _ia$237304[esp+112], esi
+	mov	DWORD PTR _ia$237316[esp+112], esi
 	mov	esi, ecx
 	and	esi, 65280				; 0000ff00H
 	imul	esi, edx
@@ -8117,10 +8117,10 @@ $LN18@Draw:
 	imul	ebx, edx
 	mov	edx, DWORD PTR tv4580[esp+112]
 	and	esi, 16711935				; 00ff00ffH
-	imul	esi, DWORD PTR _ia$237304[esp+112]
+	imul	esi, DWORD PTR _ia$237316[esp+112]
 	shr	edx, 8
 	and	edx, 16711680				; 00ff0000H
-	imul	edx, DWORD PTR _ia$237304[esp+112]
+	imul	edx, DWORD PTR _ia$237316[esp+112]
 	and	edi, 16711680				; 00ff0000H
 	add	esi, ebx
 	mov	ebx, DWORD PTR _wt$131277[esp+112]
@@ -8198,7 +8198,7 @@ $LN10@Draw:
 	movzx	edx, BYTE PTR [edi+ebx*2]
 	movd	mm1, edx
 	psubusw	mm0, mm1
-	movd	DWORD PTR _r$237316[esp+112], mm0
+	movd	DWORD PTR _r$237328[esp+112], mm0
 	emms
 	mov	edi, DWORD PTR tv4601[esp+112]
 	mov	edx, DWORD PTR tv4428[esp+112]
@@ -8206,7 +8206,7 @@ $LN10@Draw:
 	mov	edi, ecx
 	shr	edi, 24					; 00000018H
 	imul	edx, edi
-	imul	edx, DWORD PTR _r$237316[esp+112]
+	imul	edx, DWORD PTR _r$237328[esp+112]
 	mov	edi, DWORD PTR [eax+ebx*4]
 	movd	xmm0, edi
 	shr	edx, 12					; 0000000cH
@@ -8308,10 +8308,10 @@ $LN3@Draw:
 	mov	esi, 256				; 00000100H
 	sub	esi, edx
 	inc	edx
-	mov	DWORD PTR _ia$237358[esp+112], esi
+	mov	DWORD PTR _ia$237370[esp+112], esi
 	mov	esi, ebx
 	and	esi, -65281				; ffff00ffH
-	imul	esi, DWORD PTR _ia$237358[esp+112]
+	imul	esi, DWORD PTR _ia$237370[esp+112]
 	mov	edi, ecx
 	and	edi, -65281				; ffff00ffH
 	imul	edi, edx
@@ -8322,9 +8322,9 @@ $LN3@Draw:
 	mov	DWORD PTR tv4909[esp+112], ebx
 	and	ebx, 65280				; 0000ff00H
 	mov	DWORD PTR tv5010[esp+112], esi
-	mov	esi, DWORD PTR _ia$237358[esp+112]
+	mov	esi, DWORD PTR _ia$237370[esp+112]
 	imul	ebx, esi
-	mov	DWORD PTR _a$237357[esp+112], edx
+	mov	DWORD PTR _a$237369[esp+112], edx
 	mov	edx, DWORD PTR tv5010[esp+112]
 	add	edx, ebx
 	mov	ebx, DWORD PTR tv4909[esp+112]
@@ -8333,7 +8333,7 @@ $LN3@Draw:
 	mov	edx, ecx
 	imul	ebx, esi
 	and	edx, 16711935				; 00ff00ffH
-	imul	edx, DWORD PTR _a$237357[esp+112]
+	imul	edx, DWORD PTR _a$237369[esp+112]
 	add	edx, ebx
 	mov	ebx, DWORD PTR _wt$131296[esp+112]
 	and	edi, 16711680				; 00ff0000H
@@ -9844,8 +9844,8 @@ $LN4@Uninit_cop@3:
 _TEXT	ENDS
 ;	COMDAT ??$unchecked_uninitialized_copy@PAU?$pair@_K_K@std@@PAU12@V?$allocator@U?$pair@_K_K@std@@@2@@stdext@@YAPAU?$pair@_K_K@std@@PAU12@00AAV?$allocator@U?$pair@_K_K@std@@@2@@Z
 _TEXT	SEGMENT
-$T259956 = -4						; size = 1
-__Cat$259960 = 8					; size = 1
+$T259614 = -4						; size = 1
+__Cat$259618 = 8					; size = 1
 __Last$ = 8						; size = 4
 __Dest$ = 12						; size = 4
 ??$unchecked_uninitialized_copy@PAU?$pair@_K_K@std@@PAU12@V?$allocator@U?$pair@_K_K@std@@@2@@stdext@@YAPAU?$pair@_K_K@std@@PAU12@00AAV?$allocator@U?$pair@_K_K@std@@@2@@Z PROC ; stdext::unchecked_uninitialized_copy<std::pair<unsigned __int64,unsigned __int64> *,std::pair<unsigned __int64,unsigned __int64> *,std::allocator<std::pair<unsigned __int64,unsigned __int64> > >, COMDAT
@@ -9858,9 +9858,9 @@ __Dest$ = 12						; size = 4
 ; 810  : 		return (_STD _Uninit_copy(_CHECKED_BASE(_First), _CHECKED_BASE(_Last), _Dest, _Al,
 ; 811  : 			_STD _Ptr_cat(_First, _Dest), _STD _Range_checked_iterator_tag()));
 
-	mov	ecx, DWORD PTR __Cat$259960[esp]
-	mov	BYTE PTR $T259956[esp+4], 0
-	mov	eax, DWORD PTR $T259956[esp+4]
+	mov	ecx, DWORD PTR __Cat$259618[esp]
+	mov	BYTE PTR $T259614[esp+4], 0
+	mov	eax, DWORD PTR $T259614[esp+4]
 	push	eax
 	mov	eax, DWORD PTR __Dest$[esp+4]
 	push	ecx
@@ -9877,8 +9877,8 @@ __Dest$ = 12						; size = 4
 _TEXT	ENDS
 ;	COMDAT ??$unchecked_uninitialized_copy@V?$_Vector_const_iterator@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@PAU?$pair@_K_K@2@V?$allocator@U?$pair@_K_K@std@@@2@@stdext@@YAPAU?$pair@_K_K@std@@V?$_Vector_const_iterator@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@2@0PAU12@AAV?$allocator@U?$pair@_K_K@std@@@2@@Z
 _TEXT	SEGMENT
-$T259985 = -4						; size = 1
-__Cat$259989 = 8					; size = 1
+$T259643 = -4						; size = 1
+__Cat$259647 = 8					; size = 1
 __First$ = 8						; size = 8
 __Last$ = 16						; size = 8
 __Dest$ = 24						; size = 4
@@ -9891,10 +9891,10 @@ __Dest$ = 24						; size = 4
 ; 810  : 		return (_STD _Uninit_copy(_CHECKED_BASE(_First), _CHECKED_BASE(_Last), _Dest, _Al,
 ; 811  : 			_STD _Ptr_cat(_First, _Dest), _STD _Range_checked_iterator_tag()));
 
-	mov	ecx, DWORD PTR __Cat$259989[esp]
+	mov	ecx, DWORD PTR __Cat$259647[esp]
 	mov	edx, DWORD PTR __First$[esp+4]
-	mov	BYTE PTR $T259985[esp+4], 0
-	mov	eax, DWORD PTR $T259985[esp+4]
+	mov	BYTE PTR $T259643[esp+4], 0
+	mov	eax, DWORD PTR $T259643[esp+4]
 	push	eax
 	mov	eax, DWORD PTR __Dest$[esp+4]
 	push	ecx
@@ -9947,9 +9947,9 @@ $LN5@operator@7:
 _TEXT	ENDS
 ;	COMDAT ??$_Ucopy@PAU?$pair@_K_K@std@@@?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@IAEPAU?$pair@_K_K@1@PAU21@00@Z
 _TEXT	SEGMENT
-$T260078 = -4						; size = 1
+$T259736 = -4						; size = 1
 __Last$ = 8						; size = 4
-__Cat$260081 = 12					; size = 1
+__Cat$259739 = 12					; size = 1
 __Ptr$ = 12						; size = 4
 ??$_Ucopy@PAU?$pair@_K_K@std@@@?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@IAEPAU?$pair@_K_K@1@PAU21@00@Z PROC ; std::vector<std::pair<unsigned __int64,unsigned __int64>,std::allocator<std::pair<unsigned __int64,unsigned __int64> > >::_Ucopy<std::pair<unsigned __int64,unsigned __int64> *>, COMDAT
 ; __First$ = edx
@@ -9962,9 +9962,9 @@ __Ptr$ = 12						; size = 4
 ; 1145 : 		return (_STDEXT unchecked_uninitialized_copy(_First, _Last,
 ; 1146 : 			_Ptr, this->_Alval));
 
-	mov	ecx, DWORD PTR __Cat$260081[esp]
-	mov	BYTE PTR $T260078[esp+4], 0
-	mov	eax, DWORD PTR $T260078[esp+4]
+	mov	ecx, DWORD PTR __Cat$259739[esp]
+	mov	BYTE PTR $T259736[esp+4], 0
+	mov	eax, DWORD PTR $T259736[esp+4]
 	push	eax
 	mov	eax, DWORD PTR __Ptr$[esp+4]
 	push	ecx
@@ -9981,8 +9981,8 @@ __Ptr$ = 12						; size = 4
 _TEXT	ENDS
 ;	COMDAT ??$_Ucopy@V?$_Vector_const_iterator@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@@?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@IAEPAU?$pair@_K_K@1@V?$_Vector_const_iterator@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@1@0PAU21@@Z
 _TEXT	SEGMENT
-$T260141 = -4						; size = 1
-__Cat$260145 = 8					; size = 1
+$T259799 = -4						; size = 1
+__Cat$259802 = 8					; size = 1
 __Ptr$ = 8						; size = 4
 __First$ = 12						; size = 8
 __Last$ = 20						; size = 8
@@ -9996,10 +9996,10 @@ __Last$ = 20						; size = 8
 ; 1145 : 		return (_STDEXT unchecked_uninitialized_copy(_First, _Last,
 ; 1146 : 			_Ptr, this->_Alval));
 
-	mov	ecx, DWORD PTR __Cat$260145[esp]
+	mov	ecx, DWORD PTR __Cat$259802[esp]
 	mov	edx, DWORD PTR __First$[esp+4]
-	mov	BYTE PTR $T260141[esp+4], 0
-	mov	eax, DWORD PTR $T260141[esp+4]
+	mov	BYTE PTR $T259799[esp+4], 0
+	mov	eax, DWORD PTR $T259799[esp+4]
 	push	eax
 	mov	eax, DWORD PTR __Ptr$[esp+4]
 	push	ecx
@@ -11206,7 +11206,7 @@ $LN22@operator@22:
 _TEXT	ENDS
 ;	COMDAT ?clear@?$vector@HV?$allocator@H@std@@@std@@QAEXXZ
 _TEXT	SEGMENT
-$T261506 = -8						; size = 8
+$T261164 = -8						; size = 8
 ?clear@?$vector@HV?$allocator@H@std@@@std@@QAEXXZ PROC	; std::vector<int,std::allocator<int> >::clear, COMDAT
 ; _this$ = ecx
 
@@ -11240,7 +11240,7 @@ $LN28@clear:
 	push	ebx
 	push	edi
 	push	eax
-	lea	eax, DWORD PTR $T261506[esp+40]
+	lea	eax, DWORD PTR $T261164[esp+40]
 	push	eax
 	mov	ecx, esi
 	call	?erase@?$vector@HV?$allocator@H@std@@@std@@QAE?AV?$_Vector_iterator@HV?$allocator@H@std@@@2@V?$_Vector_const_iterator@HV?$allocator@H@std@@@2@0@Z ; std::vector<int,std::allocator<int> >::erase
@@ -11280,7 +11280,7 @@ _width$ = -60						; size = 4
 tv1631 = -56						; size = 4
 _x1$129720 = -56					; size = 4
 _height$ = -56						; size = 4
-$T261803 = -52						; size = 4
+$T261461 = -52						; size = 4
 _tmp$129773 = -52					; size = 4
 _border$129777 = -48					; size = 4
 _last$129726 = -48					; size = 4
@@ -11546,7 +11546,7 @@ $LN47@Rasterize:
 	mov	eax, DWORD PTR [esi+16]
 	mov	ebx, DWORD PTR [esi]
 	mov	DWORD PTR _it$129711[esp+72], ebx
-	mov	DWORD PTR $T261803[esp+72], eax
+	mov	DWORD PTR $T261461[esp+72], eax
 	cmp	DWORD PTR [esi+12], eax
 	jbe	SHORT $LN66@Rasterize
 	call	__invalid_parameter_noinfo
@@ -11566,7 +11566,7 @@ $LL89@Rasterize:
 $LN104@Rasterize:
 	call	__invalid_parameter_noinfo
 $LN103@Rasterize:
-	cmp	ebp, DWORD PTR $T261803[esp+72]
+	cmp	ebp, DWORD PTR $T261461[esp+72]
 	je	$LN24@Rasterize
 
 ; 745  : 		{
@@ -12153,9 +12153,9 @@ $LN21@length_err:
 ; File c:\program files (x86)\microsoft visual studio 9.0\vc\include\memory
 ;	COMDAT ??$_Uninit_move@PAU?$pair@_K_K@std@@PAU12@V?$allocator@U?$pair@_K_K@std@@@2@U_Undefined_move_tag@2@@std@@YAPAU?$pair@_K_K@0@PAU10@00AAV?$allocator@U?$pair@_K_K@std@@@0@U_Undefined_move_tag@0@U_Range_checked_iterator_tag@0@@Z
 _TEXT	SEGMENT
-$T290226 = -4						; size = 1
+$T288633 = -4						; size = 1
 __Last$ = 8						; size = 4
-__Cat$290229 = 12					; size = 1
+__Cat$288636 = 12					; size = 1
 __Dest$ = 12						; size = 4
 ___formal$ = 16						; size = 1
 ___formal$ = 20						; size = 1
@@ -12168,9 +12168,9 @@ ___formal$ = 20						; size = 1
 
 ; 205  : 	return _STDEXT unchecked_uninitialized_copy(_First, _Last, _Dest, _Al);
 
-	mov	ecx, DWORD PTR __Cat$290229[esp]
-	mov	BYTE PTR $T290226[esp+4], 0
-	mov	eax, DWORD PTR $T290226[esp+4]
+	mov	ecx, DWORD PTR __Cat$288636[esp]
+	mov	BYTE PTR $T288633[esp+4], 0
+	mov	eax, DWORD PTR $T288633[esp+4]
 	push	eax
 	mov	eax, DWORD PTR __Dest$[esp+4]
 	push	ecx
@@ -12187,9 +12187,9 @@ ___formal$ = 20						; size = 1
 _TEXT	ENDS
 ;	COMDAT ??$_Unchecked_uninitialized_move@PAU?$pair@_K_K@std@@PAU12@V?$allocator@U?$pair@_K_K@std@@@2@@stdext@@YAPAU?$pair@_K_K@std@@PAU12@00AAV?$allocator@U?$pair@_K_K@std@@@2@@Z
 _TEXT	SEGMENT
-$T290325 = -4						; size = 1
+$T288732 = -4						; size = 1
 __Last$ = 8						; size = 4
-__Cat$290328 = 12					; size = 1
+__Cat$288735 = 12					; size = 1
 __Dest$ = 12						; size = 4
 ??$_Unchecked_uninitialized_move@PAU?$pair@_K_K@std@@PAU12@V?$allocator@U?$pair@_K_K@std@@@2@@stdext@@YAPAU?$pair@_K_K@std@@PAU12@00AAV?$allocator@U?$pair@_K_K@std@@@2@@Z PROC ; stdext::_Unchecked_uninitialized_move<std::pair<unsigned __int64,unsigned __int64> *,std::pair<unsigned __int64,unsigned __int64> *,std::allocator<std::pair<unsigned __int64,unsigned __int64> > >, COMDAT
 ; __First$ = edx
@@ -12201,9 +12201,9 @@ __Dest$ = 12						; size = 4
 ; 850  : 		return (_STD _Uninit_move(_CHECKED_BASE(_First), _CHECKED_BASE(_Last), _Dest, _Al,
 ; 851  : 			_STD _Move_cat(_Dest), _STD _Range_checked_iterator_tag()));
 
-	mov	ecx, DWORD PTR __Cat$290328[esp]
-	mov	BYTE PTR $T290325[esp+4], 0
-	mov	eax, DWORD PTR $T290325[esp+4]
+	mov	ecx, DWORD PTR __Cat$288735[esp]
+	mov	BYTE PTR $T288732[esp+4], 0
+	mov	eax, DWORD PTR $T288732[esp+4]
 	push	eax
 	mov	eax, DWORD PTR __Dest$[esp+4]
 	push	ecx
@@ -12220,10 +12220,10 @@ __Dest$ = 12						; size = 4
 _TEXT	ENDS
 ;	COMDAT ??$_Unchecked_uninitialized_move@V?$_Vector_iterator@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@PAU?$pair@_K_K@2@V?$allocator@U?$pair@_K_K@std@@@2@@stdext@@YAPAU?$pair@_K_K@std@@V?$_Vector_iterator@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@2@0PAU12@AAV?$allocator@U?$pair@_K_K@std@@@2@@Z
 _TEXT	SEGMENT
-$T290437 = -4						; size = 1
+$T288842 = -4						; size = 1
 __First$ = 8						; size = 8
 __Last$ = 16						; size = 8
-__Cat$290440 = 24					; size = 1
+__Cat$288846 = 24					; size = 1
 __Dest$ = 24						; size = 4
 ??$_Unchecked_uninitialized_move@V?$_Vector_iterator@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@PAU?$pair@_K_K@2@V?$allocator@U?$pair@_K_K@std@@@2@@stdext@@YAPAU?$pair@_K_K@std@@V?$_Vector_iterator@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@2@0PAU12@AAV?$allocator@U?$pair@_K_K@std@@@2@@Z PROC ; stdext::_Unchecked_uninitialized_move<std::_Vector_iterator<std::pair<unsigned __int64,unsigned __int64>,std::allocator<std::pair<unsigned __int64,unsigned __int64> > >,std::pair<unsigned __int64,unsigned __int64> *,std::allocator<std::pair<unsigned __int64,unsigned __int64> > >, COMDAT
 
@@ -12234,10 +12234,10 @@ __Dest$ = 24						; size = 4
 ; 850  : 		return (_STD _Uninit_move(_CHECKED_BASE(_First), _CHECKED_BASE(_Last), _Dest, _Al,
 ; 851  : 			_STD _Move_cat(_Dest), _STD _Range_checked_iterator_tag()));
 
-	mov	ecx, DWORD PTR __Cat$290440[esp]
+	mov	ecx, DWORD PTR __Cat$288846[esp]
 	mov	edx, DWORD PTR __First$[esp+4]
-	mov	BYTE PTR $T290437[esp+4], 0
-	mov	eax, DWORD PTR $T290437[esp+4]
+	mov	BYTE PTR $T288842[esp+4], 0
+	mov	eax, DWORD PTR $T288842[esp+4]
 	push	eax
 	mov	eax, DWORD PTR __Dest$[esp+4]
 	push	ecx
@@ -12255,9 +12255,9 @@ __Dest$ = 24						; size = 4
 _TEXT	ENDS
 ;	COMDAT ??$_Umove@PAU?$pair@_K_K@std@@@?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@IAEPAU?$pair@_K_K@1@PAU21@00@Z
 _TEXT	SEGMENT
-$T290574 = -4						; size = 1
+$T288979 = -4						; size = 1
 __Last$ = 8						; size = 4
-__Cat$290577 = 12					; size = 1
+__Cat$288982 = 12					; size = 1
 __Ptr$ = 12						; size = 4
 ??$_Umove@PAU?$pair@_K_K@std@@@?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@IAEPAU?$pair@_K_K@1@PAU21@00@Z PROC ; std::vector<std::pair<unsigned __int64,unsigned __int64>,std::allocator<std::pair<unsigned __int64,unsigned __int64> > >::_Umove<std::pair<unsigned __int64,unsigned __int64> *>, COMDAT
 ; __First$ = edx
@@ -12270,9 +12270,9 @@ __Ptr$ = 12						; size = 4
 ; 1152 : 		return (_STDEXT _Unchecked_uninitialized_move(_First, _Last,
 ; 1153 : 			_Ptr, this->_Alval));
 
-	mov	ecx, DWORD PTR __Cat$290577[esp]
-	mov	BYTE PTR $T290574[esp+4], 0
-	mov	eax, DWORD PTR $T290574[esp+4]
+	mov	ecx, DWORD PTR __Cat$288982[esp]
+	mov	BYTE PTR $T288979[esp+4], 0
+	mov	eax, DWORD PTR $T288979[esp+4]
 	push	eax
 	mov	eax, DWORD PTR __Ptr$[esp+4]
 	push	ecx
@@ -12289,8 +12289,8 @@ __Ptr$ = 12						; size = 4
 _TEXT	ENDS
 ;	COMDAT ??$_Umove@V?$_Vector_iterator@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@@?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@IAEPAU?$pair@_K_K@1@V?$_Vector_iterator@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@1@0PAU21@@Z
 _TEXT	SEGMENT
-$T290730 = -4						; size = 1
-__Cat$290733 = 8					; size = 1
+$T289135 = -4						; size = 1
+__Cat$289138 = 8					; size = 1
 __Ptr$ = 8						; size = 4
 __First$ = 12						; size = 8
 __Last$ = 20						; size = 8
@@ -12304,10 +12304,10 @@ __Last$ = 20						; size = 8
 ; 1152 : 		return (_STDEXT _Unchecked_uninitialized_move(_First, _Last,
 ; 1153 : 			_Ptr, this->_Alval));
 
-	mov	ecx, DWORD PTR __Cat$290733[esp]
+	mov	ecx, DWORD PTR __Cat$289138[esp]
 	mov	edx, DWORD PTR __First$[esp+4]
-	mov	BYTE PTR $T290730[esp+4], 0
-	mov	eax, DWORD PTR $T290730[esp+4]
+	mov	BYTE PTR $T289135[esp+4], 0
+	mov	eax, DWORD PTR $T289135[esp+4]
 	push	eax
 	mov	eax, DWORD PTR __Ptr$[esp+4]
 	push	ecx
@@ -12512,7 +12512,7 @@ $LN24@operator@23:
 _TEXT	ENDS
 ;	COMDAT ?clear@?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@QAEXXZ
 _TEXT	SEGMENT
-$T291117 = -12						; size = 8
+$T289524 = -12						; size = 8
 ?clear@?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@QAEXXZ PROC ; std::vector<std::pair<unsigned __int64,unsigned __int64>,std::allocator<std::pair<unsigned __int64,unsigned __int64> > >::clear, COMDAT
 ; _this$ = esi
 
@@ -12541,7 +12541,7 @@ $LN28@clear@2:
 	push	ebx
 	push	edi
 	push	eax
-	lea	eax, DWORD PTR $T291117[esp+44]
+	lea	eax, DWORD PTR $T289524[esp+44]
 	push	eax
 	push	esi
 	call	?erase@?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@QAE?AV?$_Vector_iterator@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@2@V?$_Vector_const_iterator@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@2@0@Z ; std::vector<std::pair<unsigned __int64,unsigned __int64>,std::allocator<std::pair<unsigned __int64,unsigned __int64> > >::erase
@@ -12627,8 +12627,8 @@ __ehfuncinfo$?_Xlen@?$vector@HV?$allocator@H@std@@@std@@KAXXZ DD 019930522H
 xdata$x	ENDS
 ;	COMDAT ?_Xlen@?$vector@HV?$allocator@H@std@@@std@@KAXXZ
 _TEXT	SEGMENT
-$T310212 = -84						; size = 28
-$T310211 = -56						; size = 40
+$T310419 = -84						; size = 28
+$T310418 = -56						; size = 40
 __$EHRec$ = -12						; size = 12
 ?_Xlen@?$vector@HV?$allocator@H@std@@@std@@KAXXZ PROC	; std::vector<int,std::allocator<int> >::_Xlen, COMDAT
 
@@ -12648,20 +12648,20 @@ __$EHRec$ = -12						; size = 12
 
 	push	18					; 00000012H
 	push	OFFSET ??_C@_0BD@OLBABOEK@vector?$DMT?$DO?5too?5long?$AA@
-	lea	ecx, DWORD PTR $T310212[esp+96]
-	mov	DWORD PTR $T310212[esp+120], 15		; 0000000fH
-	mov	DWORD PTR $T310212[esp+116], 0
-	mov	BYTE PTR $T310212[esp+100], 0
+	lea	ecx, DWORD PTR $T310419[esp+96]
+	mov	DWORD PTR $T310419[esp+120], 15		; 0000000fH
+	mov	DWORD PTR $T310419[esp+116], 0
+	mov	BYTE PTR $T310419[esp+100], 0
 	call	?assign@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAEAAV12@PBDI@Z ; std::basic_string<char,std::char_traits<char>,std::allocator<char> >::assign
-	lea	eax, DWORD PTR $T310212[esp+88]
+	lea	eax, DWORD PTR $T310419[esp+88]
 	push	eax
-	lea	ecx, DWORD PTR $T310211[esp+92]
+	lea	ecx, DWORD PTR $T310418[esp+92]
 	mov	DWORD PTR __$EHRec$[esp+100], 0
 	call	??0logic_error@std@@QAE@ABV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@1@@Z ; std::logic_error::logic_error
 	push	OFFSET __TI3?AVlength_error@std@@
-	lea	ecx, DWORD PTR $T310211[esp+92]
+	lea	ecx, DWORD PTR $T310418[esp+92]
 	push	ecx
-	mov	DWORD PTR $T310211[esp+96], OFFSET ??_7length_error@std@@6B@
+	mov	DWORD PTR $T310418[esp+96], OFFSET ??_7length_error@std@@6B@
 	call	__CxxThrowException@8
 $LN45@Xlen:
 $LN44@Xlen:
@@ -12670,7 +12670,7 @@ _TEXT	ENDS
 ;	COMDAT text$x
 text$x	SEGMENT
 __unwindfunclet$?_Xlen@?$vector@HV?$allocator@H@std@@@std@@KAXXZ$0:
-	lea	ecx, DWORD PTR $T310212[ebp]
+	lea	ecx, DWORD PTR $T310419[ebp]
 	jmp	??1?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAE@XZ ; std::basic_string<char,std::char_traits<char>,std::allocator<char> >::~basic_string<char,std::char_traits<char>,std::allocator<char> >
 __ehhandler$?_Xlen@?$vector@HV?$allocator@H@std@@@std@@KAXXZ:
 	mov	eax, OFFSET __ehfuncinfo$?_Xlen@?$vector@HV?$allocator@H@std@@@std@@KAXXZ
@@ -13094,7 +13094,7 @@ $LN15@Buy:
 _TEXT	ENDS
 ;	COMDAT ?insert@?$vector@HV?$allocator@H@std@@@std@@QAE?AV?$_Vector_iterator@HV?$allocator@H@std@@@2@V?$_Vector_const_iterator@HV?$allocator@H@std@@@2@ABH@Z
 _TEXT	SEGMENT
-__Tmp$310763 = -8					; size = 8
+__Tmp$310943 = -8					; size = 8
 ___$ReturnUdt$ = 8					; size = 4
 __Where$ = 12						; size = 8
 __Val$ = 20						; size = 4
@@ -13161,8 +13161,8 @@ $LN4@insert:
 	call	__invalid_parameter_noinfo
 $LN43@insert:
 	mov	esi, DWORD PTR [esi]
-	mov	DWORD PTR __Tmp$310763[esp+24], esi
-	mov	DWORD PTR __Tmp$310763[esp+28], edi
+	mov	DWORD PTR __Tmp$310943[esp+24], esi
+	mov	DWORD PTR __Tmp$310943[esp+28], edi
 	test	esi, esi
 	jne	SHORT $LN85@insert
 	call	__invalid_parameter_noinfo
@@ -13187,7 +13187,7 @@ $LN63@insert:
 	call	__invalid_parameter_noinfo
 $LN62@insert:
 	mov	eax, DWORD PTR ___$ReturnUdt$[ebp]
-	mov	edx, DWORD PTR __Tmp$310763[esp+24]
+	mov	edx, DWORD PTR __Tmp$310943[esp+24]
 	mov	DWORD PTR [eax+4], edi
 
 ; 879  : 		}
@@ -13218,8 +13218,8 @@ __ehfuncinfo$?_Xlen@?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2
 xdata$x	ENDS
 ;	COMDAT ?_Xlen@?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@KAXXZ
 _TEXT	SEGMENT
-$T310768 = -84						; size = 28
-$T310767 = -56						; size = 40
+$T310975 = -84						; size = 28
+$T310974 = -56						; size = 40
 __$EHRec$ = -12						; size = 12
 ?_Xlen@?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@KAXXZ PROC ; std::vector<std::pair<unsigned __int64,unsigned __int64>,std::allocator<std::pair<unsigned __int64,unsigned __int64> > >::_Xlen, COMDAT
 
@@ -13239,20 +13239,20 @@ __$EHRec$ = -12						; size = 12
 
 	push	18					; 00000012H
 	push	OFFSET ??_C@_0BD@OLBABOEK@vector?$DMT?$DO?5too?5long?$AA@
-	lea	ecx, DWORD PTR $T310768[esp+96]
-	mov	DWORD PTR $T310768[esp+120], 15		; 0000000fH
-	mov	DWORD PTR $T310768[esp+116], 0
-	mov	BYTE PTR $T310768[esp+100], 0
+	lea	ecx, DWORD PTR $T310975[esp+96]
+	mov	DWORD PTR $T310975[esp+120], 15		; 0000000fH
+	mov	DWORD PTR $T310975[esp+116], 0
+	mov	BYTE PTR $T310975[esp+100], 0
 	call	?assign@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAEAAV12@PBDI@Z ; std::basic_string<char,std::char_traits<char>,std::allocator<char> >::assign
-	lea	eax, DWORD PTR $T310768[esp+88]
+	lea	eax, DWORD PTR $T310975[esp+88]
 	push	eax
-	lea	ecx, DWORD PTR $T310767[esp+92]
+	lea	ecx, DWORD PTR $T310974[esp+92]
 	mov	DWORD PTR __$EHRec$[esp+100], 0
 	call	??0logic_error@std@@QAE@ABV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@1@@Z ; std::logic_error::logic_error
 	push	OFFSET __TI3?AVlength_error@std@@
-	lea	ecx, DWORD PTR $T310767[esp+92]
+	lea	ecx, DWORD PTR $T310974[esp+92]
 	push	ecx
-	mov	DWORD PTR $T310767[esp+96], OFFSET ??_7length_error@std@@6B@
+	mov	DWORD PTR $T310974[esp+96], OFFSET ??_7length_error@std@@6B@
 	call	__CxxThrowException@8
 $LN45@Xlen@2:
 $LN44@Xlen@2:
@@ -13261,7 +13261,7 @@ _TEXT	ENDS
 ;	COMDAT text$x
 text$x	SEGMENT
 __unwindfunclet$?_Xlen@?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@KAXXZ$0:
-	lea	ecx, DWORD PTR $T310768[ebp]
+	lea	ecx, DWORD PTR $T310975[ebp]
 	jmp	??1?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAE@XZ ; std::basic_string<char,std::char_traits<char>,std::allocator<char> >::~basic_string<char,std::char_traits<char>,std::allocator<char> >
 __ehhandler$?_Xlen@?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@KAXXZ:
 	mov	eax, OFFSET __ehfuncinfo$?_Xlen@?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@KAXXZ
@@ -13325,7 +13325,7 @@ $LN17@Buy@2:
 _TEXT	ENDS
 ;	COMDAT ??4?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@QAEAAV01@ABV01@@Z
 _TEXT	SEGMENT
-$T311113 = -8						; size = 8
+$T311338 = -8						; size = 8
 __Right$ = 8						; size = 4
 ??4?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@QAEAAV01@ABV01@@Z PROC ; std::vector<std::pair<unsigned __int64,unsigned __int64>,std::allocator<std::pair<unsigned __int64,unsigned __int64> > >::operator=, COMDAT
 ; _this$ = eax
@@ -13379,7 +13379,7 @@ $LN41@operator@24:
 	push	ebx
 	push	esi
 	push	eax
-	lea	eax, DWORD PTR $T311113[esp+40]
+	lea	eax, DWORD PTR $T311338[esp+40]
 	push	eax
 	push	edi
 	call	?erase@?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@QAE?AV?$_Vector_iterator@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@2@V?$_Vector_const_iterator@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@2@0@Z ; std::vector<std::pair<unsigned __int64,unsigned __int64>,std::allocator<std::pair<unsigned __int64,unsigned __int64> > >::erase
@@ -13590,11 +13590,11 @@ __ehfuncinfo$??0?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@st
 xdata$x	ENDS
 ;	COMDAT ??0?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@QAE@ABV01@@Z
 _TEXT	SEGMENT
-$T311396 = -20						; size = 4
+$T311603 = -20						; size = 4
 __$EHRec$ = -16						; size = 16
-__Cat$311540 = 8					; size = 1
+__Cat$311747 = 8					; size = 1
 _this$ = 8						; size = 4
-$T311536 = 12						; size = 1
+$T311743 = 12						; size = 1
 __Right$ = 12						; size = 4
 ??0?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@QAE@ABV01@@Z PROC ; std::vector<std::pair<unsigned __int64,unsigned __int64>,std::allocator<std::pair<unsigned __int64,unsigned __int64> > >::vector<std::pair<unsigned __int64,unsigned __int64>,std::allocator<std::pair<unsigned __int64,unsigned __int64> > >, COMDAT
 
@@ -13658,7 +13658,7 @@ $LN46@vector@3:
 ; 503  : 			_Mylast = _Ucopy(_Right.begin(), _Right.end(), _Myfirst);
 
 	mov	eax, DWORD PTR [ebx+16]
-	mov	DWORD PTR $T311396[ebp], eax
+	mov	DWORD PTR $T311603[ebp], eax
 	cmp	DWORD PTR [ebx+12], eax
 	jbe	SHORT $LN61@vector@3
 	call	__invalid_parameter_noinfo
@@ -13668,13 +13668,13 @@ $LN61@vector@3:
 	jbe	SHORT $LN78@vector@3
 	call	__invalid_parameter_noinfo
 $LN78@vector@3:
-	mov	edx, DWORD PTR __Cat$311540[ebp]
+	mov	edx, DWORD PTR __Cat$311747[ebp]
 	mov	eax, DWORD PTR [edi+12]
-	mov	BYTE PTR $T311536[ebp], 0
-	mov	ecx, DWORD PTR $T311536[ebp]
+	mov	BYTE PTR $T311743[ebp], 0
+	mov	ecx, DWORD PTR $T311743[ebp]
 	push	ecx
 	push	edx
-	mov	edx, DWORD PTR $T311396[ebp]
+	mov	edx, DWORD PTR $T311603[ebp]
 	push	esi
 	call	??$_Uninit_copy@PBU?$pair@_K_K@std@@PAU12@V?$allocator@U?$pair@_K_K@std@@@2@@std@@YAPAU?$pair@_K_K@0@PBU10@0PAU10@AAV?$allocator@U?$pair@_K_K@std@@@0@U_Nonscalar_ptr_iterator_tag@0@U_Range_checked_iterator_tag@0@@Z ; std::_Uninit_copy<std::pair<unsigned __int64,unsigned __int64> const *,std::pair<unsigned __int64,unsigned __int64> *,std::allocator<std::pair<unsigned __int64,unsigned __int64> > >
 	add	esp, 12					; 0000000cH
@@ -13723,7 +13723,7 @@ text$x	ENDS
 ; Function compile flags: /Ogtpy
 ;	COMDAT ?push_back@?$vector@HV?$allocator@H@std@@@std@@QAEXABH@Z
 _TEXT	SEGMENT
-$T311576 = -8						; size = 8
+$T311783 = -8						; size = 8
 __Val$ = 8						; size = 4
 ?push_back@?$vector@HV?$allocator@H@std@@@std@@QAEXABH@Z PROC ; std::vector<int,std::allocator<int> >::push_back, COMDAT
 ; _this$ = ecx
@@ -13796,7 +13796,7 @@ $LN40@push_back:
 	push	edx
 	push	edi
 	push	eax
-	lea	eax, DWORD PTR $T311576[esp+28]
+	lea	eax, DWORD PTR $T311783[esp+28]
 	push	eax
 	mov	ecx, esi
 	call	?insert@?$vector@HV?$allocator@H@std@@@std@@QAE?AV?$_Vector_iterator@HV?$allocator@H@std@@@2@V?$_Vector_const_iterator@HV?$allocator@H@std@@@2@ABH@Z ; std::vector<int,std::allocator<int> >::insert
@@ -14006,10 +14006,10 @@ xdata$x	ENDS
 ;	COMDAT ?reserve@?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@QAEXI@Z
 _TEXT	SEGMENT
 __Ptr$131696 = -24					; size = 4
-$T312433 = -20						; size = 1
-$T312257 = -20						; size = 4
+$T312663 = -20						; size = 1
+$T312464 = -20						; size = 4
 __$EHRec$ = -16						; size = 16
-__Cat$312437 = 8					; size = 1
+__Cat$312666 = 8					; size = 1
 __Count$ = 8						; size = 4
 ?reserve@?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@QAEXI@Z PROC ; std::vector<std::pair<unsigned __int64,unsigned __int64>,std::allocator<std::pair<unsigned __int64,unsigned __int64> > >::reserve, COMDAT
 ; _this$ = ecx
@@ -14077,15 +14077,15 @@ $LN21@reserve:
 	call	__invalid_parameter_noinfo
 $LN28@reserve:
 	mov	eax, DWORD PTR [edi+12]
-	mov	DWORD PTR $T312257[ebp], eax
+	mov	DWORD PTR $T312464[ebp], eax
 	cmp	eax, DWORD PTR [edi+16]
 	jbe	SHORT $LN47@reserve
 	call	__invalid_parameter_noinfo
-	mov	eax, DWORD PTR $T312257[ebp]
+	mov	eax, DWORD PTR $T312464[ebp]
 $LN47@reserve:
-	mov	edx, DWORD PTR __Cat$312437[ebp]
-	mov	BYTE PTR $T312433[ebp], 0
-	mov	ecx, DWORD PTR $T312433[ebp]
+	mov	edx, DWORD PTR __Cat$312666[ebp]
+	mov	BYTE PTR $T312663[ebp], 0
+	mov	ecx, DWORD PTR $T312663[ebp]
 	push	ecx
 	push	edx
 	push	eax
@@ -14269,8 +14269,8 @@ __ehfuncinfo$??0Rasterizer@@QAE@XZ DD 019930522H
 xdata$x	ENDS
 ;	COMDAT ??0Rasterizer@@QAE@XZ
 _TEXT	SEGMENT
-$T313201 = -20						; size = 4
-$T312952 = -16						; size = 4
+$T313408 = -20						; size = 4
+$T313159 = -16						; size = 4
 __$EHRec$ = -12						; size = 12
 _this$ = 8						; size = 4
 ??0Rasterizer@@QAE@XZ PROC				; Rasterizer::Rasterizer, COMDAT
@@ -14348,7 +14348,7 @@ _TEXT	ENDS
 ;	COMDAT text$x
 text$x	SEGMENT
 __unwindfunclet$??0Rasterizer@@QAE@XZ$2:
-	mov	eax, DWORD PTR $T312952[ebp]
+	mov	eax, DWORD PTR $T313159[ebp]
 	jmp	??1?$_Vector_val@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@QAE@XZ
 __unwindfunclet$??0Rasterizer@@QAE@XZ$0:
 	mov	eax, DWORD PTR _this$[ebp-4]
@@ -14357,7 +14357,7 @@ __unwindfunclet$??0Rasterizer@@QAE@XZ$0:
 	call	??1?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@QAE@XZ ; std::vector<std::pair<unsigned __int64,unsigned __int64>,std::allocator<std::pair<unsigned __int64,unsigned __int64> > >::~vector<std::pair<unsigned __int64,unsigned __int64>,std::allocator<std::pair<unsigned __int64,unsigned __int64> > >
 	ret	0
 __unwindfunclet$??0Rasterizer@@QAE@XZ$5:
-	mov	eax, DWORD PTR $T313201[ebp]
+	mov	eax, DWORD PTR $T313408[ebp]
 	jmp	??1?$_Vector_val@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@QAE@XZ
 __ehhandler$??0Rasterizer@@QAE@XZ:
 	mov	eax, OFFSET __ehfuncinfo$??0Rasterizer@@QAE@XZ
@@ -14408,16 +14408,16 @@ xdata$x	ENDS
 _TEXT	SEGMENT
 __Tmp$132564 = -44					; size = 16
 __Tmp$132546 = -44					; size = 16
-$T348694 = -28						; size = 1
-$T348656 = -28						; size = 1
+$T348536 = -28						; size = 1
+$T348498 = -28						; size = 1
 __Newvec$132534 = -24					; size = 4
 __$EHRec$ = -16						; size = 16
-$T348905 = 8						; size = 1
-__Cat$348908 = 8					; size = 1
-$T348858 = 8						; size = 1
-__Cat$348861 = 8					; size = 1
-__Cat$348697 = 8					; size = 1
-__Cat$348659 = 8					; size = 1
+$T348747 = 8						; size = 1
+__Cat$348750 = 8					; size = 1
+$T348700 = 8						; size = 1
+__Cat$348703 = 8					; size = 1
+__Cat$348539 = 8					; size = 1
+__Cat$348501 = 8					; size = 1
 __Val$ = 8						; size = 4
 __Where$ = 12						; size = 8
 ?_Insert_n@?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@IAEXV?$_Vector_const_iterator@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@2@IABU?$pair@_K_K@2@@Z PROC ; std::vector<std::pair<unsigned __int64,unsigned __int64>,std::allocator<std::pair<unsigned __int64,unsigned __int64> > >::_Insert_n, COMDAT
@@ -14526,10 +14526,10 @@ $LN7@Insert_n@2:
 ; 1183 : 				_Newvec);	// copy prefix
 
 	mov	ecx, DWORD PTR [esi+12]
-	mov	BYTE PTR $T348656[ebp], 0
-	mov	edx, DWORD PTR $T348656[ebp]
+	mov	BYTE PTR $T348498[ebp], 0
+	mov	edx, DWORD PTR $T348498[ebp]
 	push	edx
-	mov	edx, DWORD PTR __Cat$348659[ebp]
+	mov	edx, DWORD PTR __Cat$348501[ebp]
 	push	edx
 	mov	edx, DWORD PTR __Where$[ebp+4]
 	push	ecx
@@ -14538,12 +14538,12 @@ $LN7@Insert_n@2:
 
 ; 1184 : 			_Ptr = _Ufill(_Ptr, _Count, _Val);	// add new stuff
 
-	mov	ecx, DWORD PTR __Cat$348697[ebp]
+	mov	ecx, DWORD PTR __Cat$348539[ebp]
 	mov	edx, DWORD PTR __Val$[ebp]
 	mov	edi, eax
 	add	esp, 12					; 0000000cH
-	mov	BYTE PTR $T348694[ebp], 0
-	mov	eax, DWORD PTR $T348694[ebp]
+	mov	BYTE PTR $T348536[ebp], 0
+	mov	eax, DWORD PTR $T348536[ebp]
 	push	eax
 	push	ecx
 	push	edi
@@ -14554,9 +14554,9 @@ $LN7@Insert_n@2:
 
 	mov	edx, DWORD PTR [esi+16]
 	add	esp, 12					; 0000000cH
-	mov	BYTE PTR $T348858[ebp], 0
-	mov	eax, DWORD PTR $T348858[ebp]
-	mov	ecx, DWORD PTR __Cat$348861[ebp]
+	mov	BYTE PTR $T348700[ebp], 0
+	mov	eax, DWORD PTR $T348700[ebp]
+	mov	ecx, DWORD PTR __Cat$348703[ebp]
 	push	eax
 	mov	eax, DWORD PTR __Where$[ebp+4]
 	push	ecx
@@ -14691,10 +14691,10 @@ $LN8@Insert_n@2:
 	mov	ecx, 1
 	sar	edx, 4
 	sub	ecx, edx
-	mov	BYTE PTR $T348905[ebp], 0
-	mov	edx, DWORD PTR $T348905[ebp]
+	mov	BYTE PTR $T348747[ebp], 0
+	mov	edx, DWORD PTR $T348747[ebp]
 	push	edx
-	mov	edx, DWORD PTR __Cat$348908[ebp]
+	mov	edx, DWORD PTR __Cat$348750[ebp]
 	push	edx
 	push	eax
 	lea	edx, DWORD PTR __Tmp$132546[ebp]
@@ -14795,7 +14795,7 @@ text$x	ENDS
 ; Function compile flags: /Ogtpy
 ;	COMDAT ?insert@?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@QAE?AV?$_Vector_iterator@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@2@V?$_Vector_const_iterator@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@2@ABU?$pair@_K_K@2@@Z
 _TEXT	SEGMENT
-__Tmp$349187 = -8					; size = 8
+__Tmp$349028 = -8					; size = 8
 ___$ReturnUdt$ = 8					; size = 4
 __Val$ = 12						; size = 4
 __Where$ = 16						; size = 8
@@ -14860,7 +14860,7 @@ $LN4@insert@2:
 $LN43@insert@2:
 	mov	esi, DWORD PTR [esi]
 	mov	ebp, esi
-	mov	DWORD PTR __Tmp$349187[esp+32], ebx
+	mov	DWORD PTR __Tmp$349028[esp+32], ebx
 	test	esi, esi
 	jne	SHORT $LN85@insert@2
 	call	__invalid_parameter_noinfo
@@ -14902,9 +14902,9 @@ $LN62@insert@2:
 _TEXT	ENDS
 ;	COMDAT ?push_back@?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@QAEXABU?$pair@_K_K@2@@Z
 _TEXT	SEGMENT
-$T349221 = -8						; size = 8
-$T349250 = 8						; size = 1
-__Cat$349254 = 8					; size = 1
+$T349063 = -8						; size = 8
+$T349094 = 8						; size = 1
+__Cat$349097 = 8					; size = 1
 __Val$ = 8						; size = 4
 ?push_back@?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@QAEXABU?$pair@_K_K@2@@Z PROC ; std::vector<std::pair<unsigned __int64,unsigned __int64>,std::allocator<std::pair<unsigned __int64,unsigned __int64> > >::push_back, COMDAT
 ; _this$ = edi
@@ -14942,9 +14942,9 @@ $LN10@push_back@2:
 ; 818  :  #else /* _HAS_ITERATOR_DEBUGGING */
 ; 819  : 			_Mylast = _Ufill(_Mylast, 1, _Val);
 
-	mov	BYTE PTR $T349250[esp+12], 0
-	mov	eax, DWORD PTR $T349250[esp+12]
-	mov	ecx, DWORD PTR __Cat$349254[esp+12]
+	mov	BYTE PTR $T349094[esp+12], 0
+	mov	eax, DWORD PTR $T349094[esp+12]
+	mov	ecx, DWORD PTR __Cat$349097[esp+12]
 	push	eax
 	push	ecx
 	push	esi
@@ -14976,7 +14976,7 @@ $LN23@push_back@2:
 	push	esi
 	push	eax
 	push	ebx
-	lea	edx, DWORD PTR $T349221[esp+28]
+	lea	edx, DWORD PTR $T349063[esp+28]
 	push	edx
 	mov	eax, edi
 	call	?insert@?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@QAE?AV?$_Vector_iterator@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@2@V?$_Vector_const_iterator@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@2@ABU?$pair@_K_K@2@@Z ; std::vector<std::pair<unsigned __int64,unsigned __int64>,std::allocator<std::pair<unsigned __int64,unsigned __int64> > >::insert
@@ -15014,19 +15014,19 @@ _itB$ = -172						; size = 8
 _offset1$ = -164					; size = 8
 _x2$129611 = -156					; size = 8
 _x2$129638 = -148					; size = 8
-$T349727 = -140						; size = 4
-$T349873 = -136						; size = 4
+$T349569 = -140						; size = 4
+$T349715 = -136						; size = 4
 _offset2$ = -132					; size = 8
 _itAE$ = -124						; size = 8
 _itBE$ = -116						; size = 8
-$T349343 = -108						; size = 16
-$T349341 = -108						; size = 16
+$T349185 = -108						; size = 16
+$T349183 = -108						; size = 16
 _temp$ = -92						; size = 24
 _x1$129637 = -68					; size = 8
 _x1$129610 = -60					; size = 8
-$T349335 = -52						; size = 8
-$T349338 = -44						; size = 8
-$T349337 = -36						; size = 16
+$T349177 = -52						; size = 8
+$T349180 = -44						; size = 8
+$T349179 = -36						; size = 16
 __$EHRec$ = -12						; size = 12
 _dst$ = 8						; size = 4
 _dx$ = 12						; size = 4
@@ -15108,7 +15108,7 @@ $LN110@OverlapReg:
 
 ; 552  : 	tSpanBuffer::iterator itAE = temp.end();
 
-	mov	DWORD PTR $T349727[esp+200], ecx
+	mov	DWORD PTR $T349569[esp+200], ecx
 	cmp	eax, ecx
 	jbe	SHORT $LN129@OverlapReg
 	call	__invalid_parameter_noinfo
@@ -15130,7 +15130,7 @@ $LN148@OverlapReg:
 	mov	edi, DWORD PTR [esi]
 	mov	DWORD PTR _itB$[esp+200], edi
 	mov	ebp, ebx
-	mov	DWORD PTR $T349873[esp+200], eax
+	mov	DWORD PTR $T349715[esp+200], eax
 	cmp	DWORD PTR [esi+12], eax
 	jbe	SHORT $LN167@OverlapReg
 	call	__invalid_parameter_noinfo
@@ -15181,7 +15181,7 @@ $LN1014@OverlapReg:
 $LN185@OverlapReg:
 	call	__invalid_parameter_noinfo
 $LN184@OverlapReg:
-	cmp	esi, DWORD PTR $T349727[esp+200]
+	cmp	esi, DWORD PTR $T349569[esp+200]
 	je	$LL4@OverlapReg
 	test	edi, edi
 	je	SHORT $LN198@OverlapReg
@@ -15190,7 +15190,7 @@ $LN184@OverlapReg:
 $LN198@OverlapReg:
 	call	__invalid_parameter_noinfo
 $LN197@OverlapReg:
-	cmp	ebp, DWORD PTR $T349873[esp+200]
+	cmp	ebp, DWORD PTR $T349715[esp+200]
 	je	$LL4@OverlapReg
 
 ; 562  : 	{
@@ -15302,7 +15302,7 @@ $LN309@OverlapReg:
 	call	__invalid_parameter_noinfo
 $LN308@OverlapReg:
 	mov	ebx, DWORD PTR _itA$[esp+204]
-	cmp	ebx, DWORD PTR $T349727[esp+200]
+	cmp	ebx, DWORD PTR $T349569[esp+200]
 	je	$LN949@OverlapReg
 	test	esi, esi
 	jne	$LN978@OverlapReg
@@ -15373,7 +15373,7 @@ $LN388@OverlapReg:
 	call	__invalid_parameter_noinfo
 $LN387@OverlapReg:
 	mov	edx, DWORD PTR _itA$[esp+204]
-	cmp	edx, DWORD PTR $T349727[esp+200]
+	cmp	edx, DWORD PTR $T349569[esp+200]
 	je	SHORT $LN26@OverlapReg
 	mov	eax, DWORD PTR _itA$[esp+200]
 	test	eax, eax
@@ -15411,7 +15411,7 @@ $LN26@OverlapReg:
 $LN419@OverlapReg:
 	call	__invalid_parameter_noinfo
 $LN418@OverlapReg:
-	cmp	ebp, DWORD PTR $T349873[esp+200]
+	cmp	ebp, DWORD PTR $T349715[esp+200]
 	je	$LN949@OverlapReg
 	mov	eax, DWORD PTR _itB$[esp+200]
 	test	eax, eax
@@ -15462,15 +15462,15 @@ $LN473@OverlapReg:
 	add	ecx, DWORD PTR _offset2$[esp+200]
 	mov	eax, DWORD PTR [esi+12]
 	adc	eax, DWORD PTR _offset2$[esp+204]
-	mov	DWORD PTR $T349335[esp+200], ecx
-	mov	DWORD PTR $T349335[esp+204], eax
+	mov	DWORD PTR $T349177[esp+200], ecx
+	mov	DWORD PTR $T349177[esp+204], eax
 	cmp	edi, eax
 	ja	SHORT $LN491@OverlapReg
 	jb	SHORT $LN995@OverlapReg
 	cmp	DWORD PTR _x2$129611[esp+200], ecx
 	jae	SHORT $LN491@OverlapReg
 $LN995@OverlapReg:
-	lea	eax, DWORD PTR $T349335[esp+200]
+	lea	eax, DWORD PTR $T349177[esp+200]
 	jmp	SHORT $LN492@OverlapReg
 $LN983@OverlapReg:
 
@@ -15576,7 +15576,7 @@ $LN492@OverlapReg:
 $LN498@OverlapReg:
 	call	__invalid_parameter_noinfo
 $LN497@OverlapReg:
-	cmp	ebp, DWORD PTR $T349873[esp+200]
+	cmp	ebp, DWORD PTR $T349715[esp+200]
 	je	$LL33@OverlapReg
 	mov	eax, DWORD PTR _itB$[esp+200]
 	test	eax, eax
@@ -15617,9 +15617,9 @@ $LN949@OverlapReg:
 	mov	edx, DWORD PTR _x1$129610[esp+200]
 	mov	eax, DWORD PTR _x1$129610[esp+204]
 	mov	ecx, DWORD PTR _x2$129611[esp+200]
-	mov	DWORD PTR $T349337[esp+200], edx
-	lea	edx, DWORD PTR $T349337[esp+200]
-	mov	DWORD PTR $T349337[esp+212], edi
+	mov	DWORD PTR $T349179[esp+200], edx
+	lea	edx, DWORD PTR $T349179[esp+200]
+	mov	DWORD PTR $T349179[esp+212], edi
 
 ; 634  : 
 ; 635  : 			// Flush span.
@@ -15628,8 +15628,8 @@ $LN949@OverlapReg:
 
 	mov	edi, DWORD PTR _dst$[esp+196]
 	push	edx
-	mov	DWORD PTR $T349337[esp+208], eax
-	mov	DWORD PTR $T349337[esp+212], ecx
+	mov	DWORD PTR $T349179[esp+208], eax
+	mov	DWORD PTR $T349179[esp+212], ecx
 	call	?push_back@?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@QAEXABU?$pair@_K_K@2@@Z ; std::vector<std::pair<unsigned __int64,unsigned __int64>,std::allocator<std::pair<unsigned __int64,unsigned __int64> > >::push_back
 	mov	edi, DWORD PTR _itB$[esp+200]
 	mov	ebx, DWORD PTR _offset1$[esp+204]
@@ -15712,7 +15712,7 @@ $LL18@OverlapReg:
 $LN591@OverlapReg:
 	call	__invalid_parameter_noinfo
 $LN590@OverlapReg:
-	cmp	ebp, DWORD PTR $T349873[esp+200]
+	cmp	ebp, DWORD PTR $T349715[esp+200]
 	je	$LN951@OverlapReg
 	test	esi, esi
 	jne	$LN967@OverlapReg
@@ -15763,15 +15763,15 @@ $LN645@OverlapReg:
 	add	ecx, DWORD PTR _offset2$[esp+200]
 	mov	eax, DWORD PTR [esi+12]
 	adc	eax, DWORD PTR _offset2$[esp+204]
-	mov	DWORD PTR $T349338[esp+200], ecx
-	mov	DWORD PTR $T349338[esp+204], eax
+	mov	DWORD PTR $T349180[esp+200], ecx
+	mov	DWORD PTR $T349180[esp+204], eax
 	cmp	edi, eax
 	ja	SHORT $LN663@OverlapReg
 	jb	SHORT $LN998@OverlapReg
 	cmp	DWORD PTR _x2$129638[esp+200], ecx
 	jae	SHORT $LN663@OverlapReg
 $LN998@OverlapReg:
-	lea	eax, DWORD PTR $T349338[esp+200]
+	lea	eax, DWORD PTR $T349180[esp+200]
 	jmp	SHORT $LN664@OverlapReg
 $LN970@OverlapReg:
 
@@ -15841,7 +15841,7 @@ $LN664@OverlapReg:
 $LN670@OverlapReg:
 	call	__invalid_parameter_noinfo
 $LN669@OverlapReg:
-	cmp	ebp, DWORD PTR $T349873[esp+200]
+	cmp	ebp, DWORD PTR $T349715[esp+200]
 	je	SHORT $LN11@OverlapReg
 	mov	eax, DWORD PTR _itB$[esp+200]
 	test	eax, eax
@@ -15879,7 +15879,7 @@ $LN11@OverlapReg:
 $LN701@OverlapReg:
 	call	__invalid_parameter_noinfo
 $LN700@OverlapReg:
-	mov	edx, DWORD PTR $T349727[esp+200]
+	mov	edx, DWORD PTR $T349569[esp+200]
 	cmp	DWORD PTR _itA$[esp+204], edx
 	je	$LN951@OverlapReg
 	mov	eax, DWORD PTR _itA$[esp+200]
@@ -15955,7 +15955,7 @@ $LN780@OverlapReg:
 	call	__invalid_parameter_noinfo
 $LN779@OverlapReg:
 	mov	edx, DWORD PTR _itA$[esp+204]
-	cmp	edx, DWORD PTR $T349727[esp+200]
+	cmp	edx, DWORD PTR $T349569[esp+200]
 	je	$LL18@OverlapReg
 	mov	eax, DWORD PTR _itA$[esp+200]
 	test	eax, eax
@@ -16024,13 +16024,13 @@ $LN951@OverlapReg:
 	mov	ecx, DWORD PTR _x1$129637[esp+200]
 	mov	edx, DWORD PTR _x1$129637[esp+204]
 	mov	eax, DWORD PTR _x2$129638[esp+200]
-	mov	DWORD PTR $T349341[esp+200], ecx
-	lea	ecx, DWORD PTR $T349341[esp+200]
-	mov	DWORD PTR $T349341[esp+212], edi
+	mov	DWORD PTR $T349183[esp+200], ecx
+	lea	ecx, DWORD PTR $T349183[esp+200]
+	mov	DWORD PTR $T349183[esp+212], edi
 	mov	edi, DWORD PTR _dst$[esp+196]
 	push	ecx
-	mov	DWORD PTR $T349341[esp+208], edx
-	mov	DWORD PTR $T349341[esp+212], eax
+	mov	DWORD PTR $T349183[esp+208], edx
+	mov	DWORD PTR $T349183[esp+212], eax
 	call	?push_back@?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@QAEXABU?$pair@_K_K@2@@Z ; std::vector<std::pair<unsigned __int64,unsigned __int64>,std::allocator<std::pair<unsigned __int64,unsigned __int64> > >::push_back
 	mov	edi, DWORD PTR _itB$[esp+200]
 	mov	ebx, DWORD PTR _offset1$[esp+204]
@@ -16052,7 +16052,7 @@ $LL4@OverlapReg:
 $LN815@OverlapReg:
 	call	__invalid_parameter_noinfo
 $LN814@OverlapReg:
-	cmp	esi, DWORD PTR $T349727[esp+200]
+	cmp	esi, DWORD PTR $T349569[esp+200]
 	je	SHORT $LL2@OverlapReg
 
 ; 644  : 		dst.push_back(*itA++);
@@ -16104,7 +16104,7 @@ $LL2@OverlapReg:
 $LN870@OverlapReg:
 	call	__invalid_parameter_noinfo
 $LN869@OverlapReg:
-	cmp	ebp, DWORD PTR $T349873[esp+200]
+	cmp	ebp, DWORD PTR $T349715[esp+200]
 	je	$LN1@OverlapReg
 
 ; 647  : 	{
@@ -16137,12 +16137,12 @@ $LN902@OverlapReg:
 	mov	eax, DWORD PTR [ebp+4]
 	adc	eax, DWORD PTR _offset1$[esp+204]
 	mov	edi, DWORD PTR _dst$[esp+196]
-	lea	ecx, DWORD PTR $T349343[esp+200]
+	lea	ecx, DWORD PTR $T349185[esp+200]
 	push	ecx
-	mov	DWORD PTR $T349343[esp+204], edx
-	mov	DWORD PTR $T349343[esp+208], eax
-	mov	DWORD PTR $T349343[esp+212], esi
-	mov	DWORD PTR $T349343[esp+216], ebx
+	mov	DWORD PTR $T349185[esp+204], edx
+	mov	DWORD PTR $T349185[esp+208], eax
+	mov	DWORD PTR $T349185[esp+212], esi
+	mov	DWORD PTR $T349185[esp+216], ebx
 	call	?push_back@?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@QAEXABU?$pair@_K_K@2@@Z ; std::vector<std::pair<unsigned __int64,unsigned __int64>,std::allocator<std::pair<unsigned __int64,unsigned __int64> > >::push_back
 
 ; 649  : 		++itB;
@@ -16235,25 +16235,25 @@ xdata$x	ENDS
 _TEXT	SEGMENT
 _count$129166 = -108					; size = 4
 _maxx$ = -108						; size = 4
-$T353731 = -104						; size = 1
+$T353572 = -104						; size = 1
 _lastmoveto$ = -104					; size = 4
 _x2$129350 = -100					; size = 4
 _maxy$ = -100						; size = 4
 tv2105 = -96						; size = 4
-$T353433 = -96						; size = 4
-__Cat$353734 = -92					; size = 1
+$T353275 = -96						; size = 4
+__Cat$353575 = -92					; size = 1
 tv406 = -92						; size = 4
 _x1$129349 = -92					; size = 4
 _miny$ = -92						; size = 4
 _y$ = -88						; size = 8
-$T352481 = -80						; size = 8
-$T352303 = -80						; size = 8
+$T352343 = -80						; size = 8
+$T352126 = -80						; size = 8
 _itX1$129341 = -80					; size = 8
-$T352484 = -72						; size = 8
-$T352306 = -72						; size = 8
+$T352346 = -72						; size = 8
+$T352129 = -72						; size = 8
 _itX2$129347 = -72					; size = 8
-$T353720 = -64						; size = 8
-$T352122 = -56						; size = 16
+$T353562 = -64						; size = 8
+$T351964 = -56						; size = 16
 _heap$ = -36						; size = 24
 __$EHRec$ = -12						; size = 12
 ?ScanConvert@Rasterizer@@QAE_NXZ PROC			; Rasterizer::ScanConvert, COMDAT
@@ -16289,18 +16289,18 @@ __$EHRec$ = -12						; size = 12
 $LN56@ScanConver:
 	mov	ebp, DWORD PTR [edi+12]
 	mov	eax, DWORD PTR [edi]
-	mov	DWORD PTR $T352303[esp+124], eax
+	mov	DWORD PTR $T352126[esp+124], eax
 	cmp	ebp, DWORD PTR [edi+16]
 	jbe	SHORT $LN75@ScanConver
 	call	__invalid_parameter_noinfo
 $LN75@ScanConver:
-	mov	ecx, DWORD PTR $T352303[esp+124]
+	mov	ecx, DWORD PTR $T352126[esp+124]
 	mov	eax, DWORD PTR [edi]
 	push	ebx
 	push	ecx
 	push	ebp
 	push	eax
-	lea	edx, DWORD PTR $T352306[esp+140]
+	lea	edx, DWORD PTR $T352129[esp+140]
 	push	edx
 	push	edi
 	call	?erase@?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@QAE?AV?$_Vector_iterator@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@2@V?$_Vector_const_iterator@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@2@0@Z ; std::vector<std::pair<unsigned __int64,unsigned __int64>,std::allocator<std::pair<unsigned __int64,unsigned __int64> > >::erase
@@ -16315,18 +16315,18 @@ $LN75@ScanConver:
 $LN96@ScanConver:
 	mov	ebp, DWORD PTR [edi+12]
 	mov	eax, DWORD PTR [edi]
-	mov	DWORD PTR $T352481[esp+124], eax
+	mov	DWORD PTR $T352343[esp+124], eax
 	cmp	ebp, DWORD PTR [edi+16]
 	jbe	SHORT $LN115@ScanConver
 	call	__invalid_parameter_noinfo
 $LN115@ScanConver:
-	mov	ecx, DWORD PTR $T352481[esp+124]
+	mov	ecx, DWORD PTR $T352343[esp+124]
 	mov	eax, DWORD PTR [edi]
 	push	ebx
 	push	ecx
 	push	ebp
 	push	eax
-	lea	edx, DWORD PTR $T352484[esp+140]
+	lea	edx, DWORD PTR $T352346[esp+140]
 	push	edx
 	push	edi
 	call	?erase@?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@QAE?AV?$_Vector_iterator@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@2@V?$_Vector_const_iterator@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@2@0@Z ; std::vector<std::pair<unsigned __int64,unsigned __int64>,std::allocator<std::pair<unsigned __int64,unsigned __int64> > >::erase
@@ -16939,7 +16939,7 @@ $LN327@ScanConver:
 
 ; 503  : 		std::vector<int>::iterator itX2 = heap.end(); // begin() + heap.size();
 
-	mov	DWORD PTR $T353433[esp+124], eax
+	mov	DWORD PTR $T353275[esp+124], eax
 	cmp	ecx, eax
 	jbe	SHORT $LN346@ScanConver
 	call	__invalid_parameter_noinfo
@@ -16961,7 +16961,7 @@ $LN529@ScanConver:
 $LN384@ScanConver:
 	call	__invalid_parameter_noinfo
 $LN383@ScanConver:
-	cmp	ebx, DWORD PTR $T353433[esp+124]
+	cmp	ebx, DWORD PTR $T353275[esp+124]
 	je	$LN6@ScanConver
 
 ; 508  : 		{
@@ -17060,12 +17060,12 @@ $LN528@ScanConver:
 	add	eax, ebp
 	adc	edx, ebx
 	add	eax, 1073741824				; 40000000H
-	mov	DWORD PTR $T352122[esp+132], eax
+	mov	DWORD PTR $T351964[esp+132], eax
 	mov	eax, DWORD PTR [esi+56]
 	adc	edx, 1073741824				; 40000000H
-	mov	DWORD PTR $T352122[esp+124], ecx
-	mov	DWORD PTR $T352122[esp+128], edi
-	mov	DWORD PTR $T352122[esp+136], edx
+	mov	DWORD PTR $T351964[esp+124], ecx
+	mov	DWORD PTR $T351964[esp+128], edi
+	mov	DWORD PTR $T351964[esp+136], edx
 	test	eax, eax
 	jne	SHORT $LN424@ScanConver
 	xor	ecx, ecx
@@ -17082,13 +17082,13 @@ $LN425@ScanConver:
 	sar	edx, 4
 	cmp	edx, ecx
 	jae	SHORT $LN417@ScanConver
-	mov	ecx, DWORD PTR __Cat$353734[esp+124]
-	mov	BYTE PTR $T353731[esp+124], 0
-	mov	eax, DWORD PTR $T353731[esp+124]
+	mov	ecx, DWORD PTR __Cat$353575[esp+124]
+	mov	BYTE PTR $T353572[esp+124], 0
+	mov	eax, DWORD PTR $T353572[esp+124]
 	push	eax
 	push	ecx
 	push	edi
-	lea	edx, DWORD PTR $T352122[esp+136]
+	lea	edx, DWORD PTR $T351964[esp+136]
 	mov	ecx, 1
 	call	??$_Uninit_fill_n@PAU?$pair@_K_K@std@@IU12@V?$allocator@U?$pair@_K_K@std@@@2@@std@@YAXPAU?$pair@_K_K@0@IABU10@AAV?$allocator@U?$pair@_K_K@std@@@0@U_Nonscalar_ptr_iterator_tag@0@U_Range_checked_iterator_tag@0@@Z ; std::_Uninit_fill_n<std::pair<unsigned __int64,unsigned __int64> *,unsigned int,std::pair<unsigned __int64,unsigned __int64>,std::allocator<std::pair<unsigned __int64,unsigned __int64> > >
 	add	esp, 12					; 0000000cH
@@ -17103,9 +17103,9 @@ $LN438@ScanConver:
 	mov	eax, DWORD PTR [ebx]
 	push	edi
 	push	eax
-	lea	edx, DWORD PTR $T352122[esp+132]
+	lea	edx, DWORD PTR $T351964[esp+132]
 	push	edx
-	lea	eax, DWORD PTR $T353720[esp+136]
+	lea	eax, DWORD PTR $T353562[esp+136]
 	push	eax
 	mov	eax, ebx
 	call	?insert@?$vector@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@std@@QAE?AV?$_Vector_iterator@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@2@V?$_Vector_const_iterator@U?$pair@_K_K@std@@V?$allocator@U?$pair@_K_K@std@@@2@@2@ABU?$pair@_K_K@2@@Z ; std::vector<std::pair<unsigned __int64,unsigned __int64>,std::allocator<std::pair<unsigned __int64,unsigned __int64> > >::insert

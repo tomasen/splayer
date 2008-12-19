@@ -83,6 +83,8 @@ static UINT WM_NOTIFYICON = RegisterWindowMessage(TEXT("MYWM_NOTIFYICON"));
 
 #include "..\..\filters\transform\vsfilter\IDirectVobSub.h"
 
+#include "..\..\svplib\SVPToolBox.h"
+
 class CSubClock : public CUnknown, public ISubClock
 {
 	STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void** ppv)
@@ -5505,8 +5507,8 @@ void CMainFrame::OnPlaySubtitles(UINT nID)
 						STSStyle* val;
 						pRTS->m_styles.GetNextAssoc(pos, key, val);
 
-						CAutoPtr<CPPageSubStyle> page(new CPPageSubStyle());
-						page->InitStyle(key, *val);
+						CAutoPtr<CPPageSubStyle> page(new CPPageSubStyle(secondSub));
+						//page->InitStyle(key, *val);
 						pages.Add(page);
 						styles.Add(val);
 					}
@@ -5519,7 +5521,11 @@ void CMainFrame::OnPlaySubtitles(UINT nID)
 					{
 						for(int j = 0; j < (int)pages.GetCount(); j++)
 							pages[j]->GetStyle(*styles[j]);
-						UpdateSubtitle(false);
+						if(secondSub){
+							UpdateSubtitle2(true);
+						}else{
+							UpdateSubtitle(true);
+						}
 					}
 
 					return;
@@ -5579,8 +5585,9 @@ void CMainFrame::OnUpdatePlaySubtitles(CCmdUI* pCmdUI)
 		pCmdUI->Enable(FALSE);
 
 		int i = m_iSubtitleSel;
-		if(secondSub)
+		if(secondSub){
 			i = m_iSubtitleSel2;
+		}
 
 		POSITION pos = m_pSubStreams.GetHeadPosition();
 		while(pos && i >= 0)
@@ -5607,15 +5614,17 @@ void CMainFrame::OnUpdatePlaySubtitles(CCmdUI* pCmdUI)
 	{
 		if(secondSub){
 			pCmdUI->SetCheck(m_iSubtitleSel2 >= 0);
-		}else
+		}else{
 			pCmdUI->SetCheck(m_iSubtitleSel >= 0);
+		}
 	}
 	else if(i >= 0)
 	{
 		if(secondSub){
 			pCmdUI->SetRadio(i == abs(m_iSubtitleSel2));
-		}else
+		}else{
 			pCmdUI->SetRadio(i == abs(m_iSubtitleSel));
+		}
 	}
 }
 
@@ -9347,7 +9356,11 @@ bool CMainFrame::LoadSubtitle(CString fn)
 		if(!pSubStream)
 		{
 			CAutoPtr<CRenderedTextSubtitle> p(new CRenderedTextSubtitle(&m_csSubLock));
-			if(p && p->Open(fn, DEFAULT_CHARSET) && p->GetStreamCount() > 0)
+			//detect fn charst
+			CSVPToolBox svt;
+			int cset = svt.DetectFileCharset(fn);
+			
+			if(p && p->Open(fn, cset) && p->GetStreamCount() > 0)
 				pSubStream = p.Detach();
 		}
 	}
@@ -9376,7 +9389,7 @@ void CMainFrame::UpdateSubtitle2(bool fApplyDefStyle)
 
 		if(i < pSubStream->GetStreamCount()) 
 		{
-			CAutoLock cAutoLock(&m_csSubLock);
+			CAutoLock cAutoLock(&m_csSubLock2);
 			pSubStream->SetStream(i);
 			SetSubtitle2(pSubStream, fApplyDefStyle);
 			return;
@@ -9463,7 +9476,7 @@ void CMainFrame::SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle)
 				pRTS->SetDefaultStyle(style);
 			}
 
-			if(pRTS->GetDefaultStyle(style) && style.relativeTo == 2)
+			if(pRTS->GetDefaultStyle(style) && style.relativeTo == 8)
 			{
 				style.relativeTo = s.subdefstyle2.relativeTo;
 				pRTS->SetDefaultStyle(style);
@@ -9473,8 +9486,8 @@ void CMainFrame::SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle)
 		}
 	}
 
-	if(!fApplyDefStyle)
-	{
+// 	if(!fApplyDefStyle)
+// 	{
 		m_iSubtitleSel2 = -1;
 
 		if(pSubStream)
@@ -9497,7 +9510,7 @@ void CMainFrame::SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle)
 			}
 
 		}
-	}
+	/*}*/
 
 	m_nSubtitleId2 = (DWORD_PTR)pSubStream;
 
@@ -9568,8 +9581,8 @@ void CMainFrame::SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle)
 		}
 	}
 
-	if(!fApplyDefStyle)
-	{
+	//if(!fApplyDefStyle) // no idea why doing this?? -- Tomas
+	//{
 		m_iSubtitleSel = -1;
 
 		if(pSubStream)
@@ -9592,7 +9605,7 @@ void CMainFrame::SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle)
 		}
 
 		}
-	}
+	//}
 
 	m_nSubtitleId = (DWORD_PTR)pSubStream;
 

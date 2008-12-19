@@ -59,9 +59,9 @@ private:
 	bool m_fUseDefaultStyle;
 
 	void AskColor(int i);
-
+	int m_2ndsub;
 public:
-	CPPageSubStyle();
+	CPPageSubStyle(int exsubid = 0);
 	virtual ~CPPageSubStyle();
 
 	void InitStyle(CString title, STSStyle& stss);

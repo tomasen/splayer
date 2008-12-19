@@ -399,9 +399,9 @@ HRESULT CDX7AllocatorPresenter::CreateDevice()
 	if( ( !m_pSubPicQueue && !m_pSubPicQueue2 ) || ( FAILED(hr) && FAILED(hr2) ))
 		return E_FAIL;
 
-	if(pSubPicProvider) m_pSubPicQueue->SetSubPicProvider(pSubPicProvider);
+	if(m_pSubPicQueue && pSubPicProvider) m_pSubPicQueue->SetSubPicProvider(pSubPicProvider);
 
-	if(pSubPicProvider2) m_pSubPicQueue2->SetSubPicProvider(pSubPicProvider2);
+	if(m_pSubPicQueue2 && pSubPicProvider2) m_pSubPicQueue2->SetSubPicProvider(pSubPicProvider2);
 
 	return S_OK;
 }
@@ -840,6 +840,15 @@ STDMETHODIMP CVMR7AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMRPRESEN
 			if(m_pSubPicQueue) 
 			{
 				m_pSubPicQueue->SetFPS(m_fps);
+
+				if(m_fUseInternalTimer)
+				{
+					__super::SetTime(g_tSegmentStart + g_tSampleStart);
+				}
+			}
+			if(m_pSubPicQueue2)
+			{
+				m_pSubPicQueue2->SetFPS(m_fps);
 
 				if(m_fUseInternalTimer)
 				{

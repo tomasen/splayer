@@ -1128,119 +1128,6 @@ $LN1@FreeNode:
 	ret	4
 ?FreeNode@?$CAtlList@V?$CAutoPtr@VSubtitle@ssf@@@ATL@@V?$CAutoPtrElementTraits@VSubtitle@ssf@@@2@@ATL@@AAEXPAVCNode@12@@Z ENDP ; ATL::CAtlList<ATL::CAutoPtr<ssf::Subtitle>,ATL::CAutoPtrElementTraits<ssf::Subtitle> >::FreeNode
 ; Function compile flags: /Ogtpy
-; File d:\-=svn=-\svplayer\src\subtitles\ssf.cpp
-_TEXT	ENDS
-;	COMDAT ?GetStreamInfo@CRenderer@ssf@@UAGJHPAPA_WPAK@Z
-_TEXT	SEGMENT
-_this$ = 8						; size = 4
-_iStream$ = 12						; size = 4
-_ppName$ = 16						; size = 4
-_pLCID$ = 20						; size = 4
-?GetStreamInfo@CRenderer@ssf@@UAGJHPAPA_WPAK@Z PROC	; ssf::CRenderer::GetStreamInfo, COMDAT
-
-; 205  : 		if(iStream != 0) return E_INVALIDARG;
-
-	cmp	DWORD PTR _iStream$[esp-4], 0
-	je	SHORT $LN4@GetStreamI
-	mov	eax, -2147024809			; 80070057H
-
-; 221  : 	}
-
-	ret	16					; 00000010H
-$LN4@GetStreamI:
-	push	esi
-
-; 206  : 
-; 207  : 		if(ppName)
-
-	mov	esi, DWORD PTR _ppName$[esp]
-	push	edi
-	test	esi, esi
-	je	SHORT $LN32@GetStreamI
-
-; 208  : 		{
-; 209  : 			if(!(*ppName = (WCHAR*)CoTaskMemAlloc((m_name.GetLength()+1)*sizeof(WCHAR))))
-
-	mov	edi, DWORD PTR _this$[esp+4]
-	mov	eax, DWORD PTR [edi+8]
-	mov	eax, DWORD PTR [eax-12]
-	lea	ecx, DWORD PTR [eax+eax+2]
-	push	ecx
-	call	DWORD PTR __imp__CoTaskMemAlloc@4
-	mov	DWORD PTR [esi], eax
-	test	eax, eax
-	jne	SHORT $LN2@GetStreamI
-	pop	edi
-
-; 210  : 				return E_OUTOFMEMORY;
-
-	mov	eax, -2147024882			; 8007000eH
-	pop	esi
-
-; 221  : 	}
-
-	ret	16					; 00000010H
-$LN2@GetStreamI:
-
-; 211  : 
-; 212  : 			wcscpy(*ppName, CStringW(m_name));
-
-	mov	eax, DWORD PTR [edi+8]
-	sub	eax, 16					; 00000010H
-	push	eax
-	call	?CloneData@?$CSimpleStringT@_W$0A@@ATL@@CAPAUCStringData@2@PAU32@@Z ; ATL::CSimpleStringT<wchar_t,0>::CloneData
-	mov	esi, DWORD PTR [esi]
-	add	esp, 4
-	add	eax, 16					; 00000010H
-	mov	edx, eax
-$LL7@GetStreamI:
-	movzx	ecx, WORD PTR [edx]
-	mov	WORD PTR [esi], cx
-	add	edx, 2
-	add	esi, 2
-	test	cx, cx
-	jne	SHORT $LL7@GetStreamI
-	add	eax, -16				; fffffff0H
-	lea	edx, DWORD PTR [eax+12]
-	or	ecx, -1
-	lock	 xadd	 DWORD PTR [edx], ecx
-	dec	ecx
-	test	ecx, ecx
-	jg	SHORT $LN32@GetStreamI
-	mov	ecx, DWORD PTR [eax]
-	mov	edx, DWORD PTR [ecx]
-	push	eax
-	mov	eax, DWORD PTR [edx+4]
-	call	eax
-$LN32@GetStreamI:
-
-; 213  : 		}
-; 214  : 
-; 215  : 		if(pLCID)
-
-	mov	eax, DWORD PTR _pLCID$[esp+4]
-	test	eax, eax
-	je	SHORT $LN1@GetStreamI
-
-; 216  : 		{
-; 217  : 			*pLCID = 0; // TODO
-
-	mov	DWORD PTR [eax], 0
-$LN1@GetStreamI:
-	pop	edi
-
-; 218  : 		}
-; 219  : 
-; 220  : 		return S_OK;
-
-	xor	eax, eax
-	pop	esi
-
-; 221  : 	}
-
-	ret	16					; 00000010H
-?GetStreamInfo@CRenderer@ssf@@UAGJHPAPA_WPAK@Z ENDP	; ssf::CRenderer::GetStreamInfo
-; Function compile flags: /Ogtpy
 _TEXT	ENDS
 ;	COMDAT ??1WCharInputStream@ssf@@UAE@XZ
 _TEXT	SEGMENT
@@ -1272,6 +1159,7 @@ $LN9@WCharInput:
 _TEXT	ENDS
 PUBLIC	??1CRenderer@ssf@@UAE@XZ			; ssf::CRenderer::~CRenderer
 ; Function compile flags: /Ogtpy
+; File d:\-=svn=-\svplayer\src\subtitles\ssf.cpp
 ;	COMDAT ??1CRenderer@ssf@@UAE@XZ
 _TEXT	SEGMENT
 ??1CRenderer@ssf@@UAE@XZ PROC				; ssf::CRenderer::~CRenderer, COMDAT
@@ -1419,6 +1307,118 @@ $LN39@CRenderer@2:
 $LN52@CRenderer@2:
 ??0CRenderer@ssf@@QAE@PAVCCritSec@@@Z ENDP		; ssf::CRenderer::CRenderer
 ; Function compile flags: /Ogtpy
+;	COMDAT ?GetStreamInfo@CRenderer@ssf@@UAGJHPAPA_WPAK@Z
+_TEXT	SEGMENT
+_this$ = 8						; size = 4
+_iStream$ = 12						; size = 4
+_ppName$ = 16						; size = 4
+_pLCID$ = 20						; size = 4
+?GetStreamInfo@CRenderer@ssf@@UAGJHPAPA_WPAK@Z PROC	; ssf::CRenderer::GetStreamInfo, COMDAT
+
+; 205  : 		if(iStream != 0) return E_INVALIDARG;
+
+	cmp	DWORD PTR _iStream$[esp-4], 0
+	je	SHORT $LN4@GetStreamI
+	mov	eax, -2147024809			; 80070057H
+
+; 221  : 	}
+
+	ret	16					; 00000010H
+$LN4@GetStreamI:
+	push	esi
+
+; 206  : 
+; 207  : 		if(ppName)
+
+	mov	esi, DWORD PTR _ppName$[esp]
+	push	edi
+	test	esi, esi
+	je	SHORT $LN32@GetStreamI
+
+; 208  : 		{
+; 209  : 			if(!(*ppName = (WCHAR*)CoTaskMemAlloc((m_name.GetLength()+1)*sizeof(WCHAR))))
+
+	mov	edi, DWORD PTR _this$[esp+4]
+	mov	eax, DWORD PTR [edi+8]
+	mov	eax, DWORD PTR [eax-12]
+	lea	ecx, DWORD PTR [eax+eax+2]
+	push	ecx
+	call	DWORD PTR __imp__CoTaskMemAlloc@4
+	mov	DWORD PTR [esi], eax
+	test	eax, eax
+	jne	SHORT $LN2@GetStreamI
+	pop	edi
+
+; 210  : 				return E_OUTOFMEMORY;
+
+	mov	eax, -2147024882			; 8007000eH
+	pop	esi
+
+; 221  : 	}
+
+	ret	16					; 00000010H
+$LN2@GetStreamI:
+
+; 211  : 
+; 212  : 			wcscpy(*ppName, CStringW(m_name));
+
+	mov	eax, DWORD PTR [edi+8]
+	sub	eax, 16					; 00000010H
+	push	eax
+	call	?CloneData@?$CSimpleStringT@_W$0A@@ATL@@CAPAUCStringData@2@PAU32@@Z ; ATL::CSimpleStringT<wchar_t,0>::CloneData
+	mov	esi, DWORD PTR [esi]
+	add	esp, 4
+	add	eax, 16					; 00000010H
+	mov	edx, eax
+$LL7@GetStreamI:
+	movzx	ecx, WORD PTR [edx]
+	mov	WORD PTR [esi], cx
+	add	edx, 2
+	add	esi, 2
+	test	cx, cx
+	jne	SHORT $LL7@GetStreamI
+	add	eax, -16				; fffffff0H
+	lea	edx, DWORD PTR [eax+12]
+	or	ecx, -1
+	lock	 xadd	 DWORD PTR [edx], ecx
+	dec	ecx
+	test	ecx, ecx
+	jg	SHORT $LN32@GetStreamI
+	mov	ecx, DWORD PTR [eax]
+	mov	edx, DWORD PTR [ecx]
+	push	eax
+	mov	eax, DWORD PTR [edx+4]
+	call	eax
+$LN32@GetStreamI:
+
+; 213  : 		}
+; 214  : 
+; 215  : 		if(pLCID)
+
+	mov	eax, DWORD PTR _pLCID$[esp+4]
+	test	eax, eax
+	je	SHORT $LN1@GetStreamI
+
+; 216  : 		{
+; 217  : 			*pLCID = 0; // TODO
+
+	mov	DWORD PTR [eax], 0
+$LN1@GetStreamI:
+	pop	edi
+
+; 218  : 		}
+; 219  : 
+; 220  : 		return S_OK;
+
+	xor	eax, eax
+	pop	esi
+
+; 221  : 	}
+
+	ret	16					; 00000010H
+?GetStreamInfo@CRenderer@ssf@@UAGJHPAPA_WPAK@Z ENDP	; ssf::CRenderer::GetStreamInfo
+; Function compile flags: /Ogtpy
+_TEXT	ENDS
 ;	COMDAT ?GetStartPosition@CRenderer@ssf@@UAGPAU__POSITION@@_JN@Z
 _TEXT	SEGMENT
 tv144 = 8						; size = 4
@@ -1631,13 +1631,13 @@ __ehfuncinfo$?Append@CRenderer@ssf@@QAEX_J0PB_W@Z DD 019930522H
 xdata$x	ENDS
 ;	COMDAT ?Append@CRenderer@ssf@@QAEX_J0PB_W@Z
 _TEXT	SEGMENT
-$T432870 = -68						; size = 48
+$T432843 = -68						; size = 48
 __$EHRec$ = -16						; size = 16
 _rtStart$ = 8						; size = 8
 _rtStop$ = 16						; size = 8
 tv215 = 20						; size = 4
 tv213 = 20						; size = 4
-$T432871 = 20						; size = 4
+$T432844 = 20						; size = 4
 _str$ = 24						; size = 4
 ?Append@CRenderer@ssf@@QAEX_J0PB_W@Z PROC		; ssf::CRenderer::Append, COMDAT
 ; _this$ = ecx
@@ -1687,17 +1687,17 @@ _str$ = 24						; size = 4
 	fstp	DWORD PTR tv213[ebp]
 	fld	DWORD PTR tv213[ebp]
 	fstp	DWORD PTR [esp+4]
-	mov	DWORD PTR $T432871[ebp], esp
+	mov	DWORD PTR $T432844[ebp], esp
 	push	eax
 	call	??0?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@QAE@PB_W@Z ; ATL::CStringT<wchar_t,StrTraitMFC<wchar_t,ATL::ChTraitsCRT<wchar_t> > >::CStringT<wchar_t,StrTraitMFC<wchar_t,ATL::ChTraitsCRT<wchar_t> > >
-	lea	ecx, DWORD PTR $T432870[ebp]
+	lea	ecx, DWORD PTR $T432843[ebp]
 	call	??0WCharInputStream@ssf@@QAE@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@@Z ; ssf::WCharInputStream::WCharInputStream
 	mov	BYTE PTR __$EHRec$[ebp+12], 1
 	mov	ecx, DWORD PTR [esi+32]
 	push	eax
 	call	?Append@SubtitleFile@ssf@@QAEXAAVInputStream@2@MM_N@Z ; ssf::SubtitleFile::Append
 	mov	BYTE PTR __$EHRec$[ebp+12], bl
-	mov	eax, DWORD PTR $T432870[ebp+40]
+	mov	eax, DWORD PTR $T432843[ebp+40]
 	add	eax, -16				; fffffff0H
 	lea	ecx, DWORD PTR [eax+12]
 	or	edx, -1
@@ -1711,8 +1711,8 @@ _str$ = 24						; size = 4
 	mov	eax, DWORD PTR [edx+4]
 	call	eax
 $LN29@Append:
-	lea	ecx, DWORD PTR $T432870[ebp+16]
-	mov	DWORD PTR $T432870[ebp], OFFSET ??_7InputStream@ssf@@6B@
+	lea	ecx, DWORD PTR $T432843[ebp+16]
+	mov	DWORD PTR $T432843[ebp], OFFSET ??_7InputStream@ssf@@6B@
 	call	?RemoveAll@?$CAtlList@HV?$CElementTraits@H@ATL@@@ATL@@QAEXXZ ; ATL::CAtlList<int,ATL::CElementTraits<int> >::RemoveAll
 $LN10@Append:
 
@@ -1740,7 +1740,7 @@ _TEXT	ENDS
 ;	COMDAT text$x
 text$x	SEGMENT
 __unwindfunclet$?Append@CRenderer@ssf@@QAEX_J0PB_W@Z$3:
-	lea	ecx, DWORD PTR $T432870[ebp]
+	lea	ecx, DWORD PTR $T432843[ebp]
 	jmp	??1WCharInputStream@ssf@@UAE@XZ
 __ehhandler$?Append@CRenderer@ssf@@QAEX_J0PB_W@Z:
 	mov	eax, OFFSET __ehfuncinfo$?Append@CRenderer@ssf@@QAEX_J0PB_W@Z
@@ -1783,7 +1783,7 @@ xdata$x	ENDS
 _TEXT	SEGMENT
 tv257 = -20						; size = 4
 __$EHRec$ = -16						; size = 16
-$T432985 = 8						; size = 4
+$T432958 = 8						; size = 4
 _s$ = 8							; size = 4
 _name$ = 12						; size = 4
 ?Open@CRenderer@ssf@@QAE_NAAVInputStream@2@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@@Z PROC ; ssf::CRenderer::Open, COMDAT
@@ -1885,7 +1885,7 @@ $LN5@Open:
 	call	??2@YAPAXI@Z				; operator new
 	mov	ecx, eax
 	add	esp, 4
-	mov	DWORD PTR $T432985[ebp], ecx
+	mov	DWORD PTR $T432958[ebp], ecx
 	mov	BYTE PTR __$EHRec$[ebp+12], 2
 	cmp	ecx, ebx
 	je	SHORT $LN6@Open
@@ -1967,7 +1967,7 @@ __unwindfunclet$?Open@CRenderer@ssf@@QAE_NAAVInputStream@2@V?$CStringT@_WV?$StrT
 	lea	ecx, DWORD PTR _name$[ebp]
 	jmp	??1?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@QAE@XZ ; ATL::CStringT<wchar_t,StrTraitMFC<wchar_t,ATL::ChTraitsCRT<wchar_t> > >::~CStringT<wchar_t,StrTraitMFC<wchar_t,ATL::ChTraitsCRT<wchar_t> > >
 __unwindfunclet$?Open@CRenderer@ssf@@QAE_NAAVInputStream@2@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@@Z$4:
-	mov	eax, DWORD PTR $T432985[ebp]
+	mov	eax, DWORD PTR $T432958[ebp]
 	push	eax
 	call	??3@YAXPAX@Z				; operator delete
 	pop	ecx
@@ -2025,13 +2025,13 @@ __ehfuncinfo$?Open@CRenderer@ssf@@QAE_NV?$CStringT@_WV?$StrTraitMFC@_WV?$ChTrait
 xdata$x	ENDS
 ;	COMDAT ?Open@CRenderer@ssf@@QAE_NV?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@0@Z
 _TEXT	SEGMENT
-$T433127 = -76						; size = 44
+$T433100 = -76						; size = 44
 tv576 = -32						; size = 4
 _this$ = -28						; size = 4
-$T433126 = -24						; size = 4
-$T433124 = -24						; size = 4
-$T433123 = -24						; size = 4
-$T433122 = -24						; size = 4
+$T433099 = -24						; size = 4
+$T433097 = -24						; size = 4
+$T433096 = -24						; size = 4
+$T433095 = -24						; size = 4
 _str$125002 = -20					; size = 4
 __$EHRec$ = -16						; size = 16
 _fn$ = 8						; size = 4
@@ -2136,7 +2136,7 @@ $LN45@Open@2:
 	sar	eax, 1
 $LN46@Open@2:
 	push	eax
-	lea	ecx, DWORD PTR $T433122[ebp]
+	lea	ecx, DWORD PTR $T433095[ebp]
 	push	ecx
 	lea	ecx, DWORD PTR _str$125002[ebp]
 	call	?Left@?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@QBE?AV12@H@Z ; ATL::CStringT<wchar_t,StrTraitMFC<wchar_t,ATL::ChTraitsCRT<wchar_t> > >::Left
@@ -2145,7 +2145,7 @@ $LN46@Open@2:
 	mov	BYTE PTR __$EHRec$[ebp+12], 3
 	call	??4?$CSimpleStringT@_W$0A@@ATL@@QAEAAV01@ABV01@@Z ; ATL::CSimpleStringT<wchar_t,0>::operator=
 	mov	BYTE PTR __$EHRec$[ebp+12], bl
-	mov	eax, DWORD PTR $T433122[ebp]
+	mov	eax, DWORD PTR $T433095[ebp]
 	add	eax, -16				; fffffff0H
 	lea	edx, DWORD PTR [eax+12]
 	or	ecx, -1
@@ -2177,7 +2177,7 @@ $LN66@Open@2:
 $LN67@Open@2:
 	inc	eax
 	push	eax
-	lea	edx, DWORD PTR $T433123[ebp]
+	lea	edx, DWORD PTR $T433096[ebp]
 	push	edx
 	lea	ecx, DWORD PTR _name$[ebp]
 	call	?Mid@?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@QBE?AV12@H@Z ; ATL::CStringT<wchar_t,StrTraitMFC<wchar_t,ATL::ChTraitsCRT<wchar_t> > >::Mid
@@ -2186,7 +2186,7 @@ $LN67@Open@2:
 	mov	BYTE PTR __$EHRec$[ebp+12], 4
 	call	??4?$CSimpleStringT@_W$0A@@ATL@@QAEAAV01@ABV01@@Z ; ATL::CSimpleStringT<wchar_t,0>::operator=
 	mov	BYTE PTR __$EHRec$[ebp+12], bl
-	mov	eax, DWORD PTR $T433123[ebp]
+	mov	eax, DWORD PTR $T433096[ebp]
 	add	eax, -16				; fffffff0H
 	lea	ecx, DWORD PTR [eax+12]
 	or	edx, -1
@@ -2218,7 +2218,7 @@ $LN87@Open@2:
 $LN88@Open@2:
 	inc	eax
 	push	eax
-	lea	edx, DWORD PTR $T433124[ebp]
+	lea	edx, DWORD PTR $T433097[ebp]
 	push	edx
 	lea	ecx, DWORD PTR _name$[ebp]
 	call	?Mid@?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@QBE?AV12@H@Z ; ATL::CStringT<wchar_t,StrTraitMFC<wchar_t,ATL::ChTraitsCRT<wchar_t> > >::Mid
@@ -2227,7 +2227,7 @@ $LN88@Open@2:
 	mov	BYTE PTR __$EHRec$[ebp+12], 5
 	call	??4?$CSimpleStringT@_W$0A@@ATL@@QAEAAV01@ABV01@@Z ; ATL::CSimpleStringT<wchar_t,0>::operator=
 	mov	BYTE PTR __$EHRec$[ebp+12], bl
-	mov	eax, DWORD PTR $T433124[ebp]
+	mov	eax, DWORD PTR $T433097[ebp]
 	add	eax, -16				; fffffff0H
 	lea	ecx, DWORD PTR [eax+12]
 	or	edx, -1
@@ -2270,14 +2270,14 @@ $LN112@Open@2:
 	mov	eax, DWORD PTR _name$[ebp]
 	push	ecx
 	add	eax, -16				; fffffff0H
-	mov	DWORD PTR $T433126[ebp], esp
+	mov	DWORD PTR $T433099[ebp], esp
 	mov	esi, esp
 	push	eax
 	call	?CloneData@?$CSimpleStringT@_W$0A@@ATL@@CAPAUCStringData@2@PAU32@@Z ; ATL::CSimpleStringT<wchar_t,0>::CloneData
 	add	eax, 16					; 00000010H
 	add	esp, 4
 	mov	DWORD PTR [esi], eax
-	lea	ecx, DWORD PTR $T433127[ebp]
+	lea	ecx, DWORD PTR $T433100[ebp]
 	mov	BYTE PTR __$EHRec$[ebp+12], 7
 	mov	edi, DWORD PTR _fn$[ebp]
 	push	ecx
@@ -2289,17 +2289,17 @@ $LN112@Open@2:
 	call	?Open@CRenderer@ssf@@QAE_NAAVInputStream@2@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@@Z ; ssf::CRenderer::Open
 	mov	BYTE PTR __$EHRec$[ebp+12], 6
 	mov	bl, al
-	mov	eax, DWORD PTR $T433127[ebp+40]
-	mov	DWORD PTR $T433127[ebp], OFFSET ??_7FileInputStream@ssf@@6B@
+	mov	eax, DWORD PTR $T433100[ebp+40]
+	mov	DWORD PTR $T433100[ebp], OFFSET ??_7FileInputStream@ssf@@6B@
 	test	eax, eax
 	je	SHORT $LN128@Open@2
 	push	eax
 	call	_fclose
 	add	esp, 4
-	mov	DWORD PTR $T433127[ebp+40], 0
+	mov	DWORD PTR $T433100[ebp+40], 0
 $LN128@Open@2:
-	lea	ecx, DWORD PTR $T433127[ebp+16]
-	mov	DWORD PTR $T433127[ebp], OFFSET ??_7InputStream@ssf@@6B@
+	lea	ecx, DWORD PTR $T433100[ebp+16]
+	mov	DWORD PTR $T433100[ebp], OFFSET ??_7InputStream@ssf@@6B@
 	call	?RemoveAll@?$CAtlList@HV?$CElementTraits@H@ATL@@@ATL@@QAEXXZ ; ATL::CAtlList<int,ATL::CElementTraits<int> >::RemoveAll
 	test	bl, bl
 	je	SHORT $LN1@Open@2
@@ -2430,19 +2430,19 @@ __unwindfunclet$?Open@CRenderer@ssf@@QAE_NV?$CStringT@_WV?$StrTraitMFC@_WV?$ChTr
 	lea	ecx, DWORD PTR _str$125002[ebp]
 	jmp	??1?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@QAE@XZ ; ATL::CStringT<wchar_t,StrTraitMFC<wchar_t,ATL::ChTraitsCRT<wchar_t> > >::~CStringT<wchar_t,StrTraitMFC<wchar_t,ATL::ChTraitsCRT<wchar_t> > >
 __unwindfunclet$?Open@CRenderer@ssf@@QAE_NV?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@0@Z$5:
-	lea	ecx, DWORD PTR $T433122[ebp]
+	lea	ecx, DWORD PTR $T433095[ebp]
 	jmp	??1?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@QAE@XZ ; ATL::CStringT<wchar_t,StrTraitMFC<wchar_t,ATL::ChTraitsCRT<wchar_t> > >::~CStringT<wchar_t,StrTraitMFC<wchar_t,ATL::ChTraitsCRT<wchar_t> > >
 __unwindfunclet$?Open@CRenderer@ssf@@QAE_NV?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@0@Z$6:
-	lea	ecx, DWORD PTR $T433123[ebp]
+	lea	ecx, DWORD PTR $T433096[ebp]
 	jmp	??1?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@QAE@XZ ; ATL::CStringT<wchar_t,StrTraitMFC<wchar_t,ATL::ChTraitsCRT<wchar_t> > >::~CStringT<wchar_t,StrTraitMFC<wchar_t,ATL::ChTraitsCRT<wchar_t> > >
 __unwindfunclet$?Open@CRenderer@ssf@@QAE_NV?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@0@Z$7:
-	lea	ecx, DWORD PTR $T433124[ebp]
+	lea	ecx, DWORD PTR $T433097[ebp]
 	jmp	??1?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@QAE@XZ ; ATL::CStringT<wchar_t,StrTraitMFC<wchar_t,ATL::ChTraitsCRT<wchar_t> > >::~CStringT<wchar_t,StrTraitMFC<wchar_t,ATL::ChTraitsCRT<wchar_t> > >
 __unwindfunclet$?Open@CRenderer@ssf@@QAE_NV?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@0@Z$8:
-	mov	ecx, DWORD PTR $T433126[ebp]
+	mov	ecx, DWORD PTR $T433099[ebp]
 	jmp	??1?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@QAE@XZ ; ATL::CStringT<wchar_t,StrTraitMFC<wchar_t,ATL::ChTraitsCRT<wchar_t> > >::~CStringT<wchar_t,StrTraitMFC<wchar_t,ATL::ChTraitsCRT<wchar_t> > >
 __unwindfunclet$?Open@CRenderer@ssf@@QAE_NV?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@0@Z$9:
-	lea	esi, DWORD PTR $T433127[ebp]
+	lea	esi, DWORD PTR $T433100[ebp]
 	jmp	??1FileInputStream@ssf@@UAE@XZ		; ssf::FileInputStream::~FileInputStream
 __ehhandler$?Open@CRenderer@ssf@@QAE_NV?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@0@Z:
 	mov	eax, OFFSET __ehfuncinfo$?Open@CRenderer@ssf@@QAE_NV?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@0@Z
@@ -2468,8 +2468,8 @@ __ehfuncinfo$?Reload@CRenderer@ssf@@UAGJXZ DD 019930522H
 xdata$x	ENDS
 ;	COMDAT ?Reload@CRenderer@ssf@@UAGJXZ
 _TEXT	SEGMENT
-$T441564 = -20						; size = 4
-$T441565 = -16						; size = 4
+$T441705 = -20						; size = 4
+$T441706 = -16						; size = 4
 __$EHRec$ = -12						; size = 12
 _csAutoLock$ = 8					; size = 4
 _this$ = 8						; size = 4
@@ -2507,7 +2507,7 @@ _this$ = 8						; size = 4
 	mov	eax, DWORD PTR [esi+8]
 	push	ecx
 	sub	eax, 16					; 00000010H
-	mov	DWORD PTR $T441564[esp+40], esp
+	mov	DWORD PTR $T441705[esp+40], esp
 	mov	edi, esp
 	push	eax
 	call	?CloneData@?$CSimpleStringT@_W$0A@@ATL@@CAPAUCStringData@2@PAU32@@Z ; ATL::CSimpleStringT<wchar_t,0>::CloneData
@@ -2516,7 +2516,7 @@ _this$ = 8						; size = 4
 	mov	BYTE PTR __$EHRec$[esp+52], 1
 	mov	eax, DWORD PTR [esi+4]
 	sub	eax, 16					; 00000010H
-	mov	DWORD PTR $T441565[esp+44], esp
+	mov	DWORD PTR $T441706[esp+44], esp
 	mov	edi, esp
 	push	eax
 	call	?CloneData@?$CSimpleStringT@_W$0A@@ATL@@CAPAUCStringData@2@PAU32@@Z ; ATL::CSimpleStringT<wchar_t,0>::CloneData
@@ -2552,7 +2552,7 @@ __unwindfunclet$?Reload@CRenderer@ssf@@UAGJXZ$0:
 	lea	ecx, DWORD PTR _csAutoLock$[ebp-4]
 	jmp	??1CAutoLock@@QAE@XZ			; CAutoLock::~CAutoLock
 __unwindfunclet$?Reload@CRenderer@ssf@@UAGJXZ$1:
-	mov	ecx, DWORD PTR $T441564[ebp]
+	mov	ecx, DWORD PTR $T441705[ebp]
 	jmp	??1?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@QAE@XZ ; ATL::CStringT<wchar_t,StrTraitMFC<wchar_t,ATL::ChTraitsCRT<wchar_t> > >::~CStringT<wchar_t,StrTraitMFC<wchar_t,ATL::ChTraitsCRT<wchar_t> > >
 __ehhandler$?Reload@CRenderer@ssf@@UAGJXZ:
 	mov	eax, OFFSET __ehfuncinfo$?Reload@CRenderer@ssf@@UAGJXZ
@@ -2579,13 +2579,13 @@ xdata$x	ENDS
 ;	COMDAT ?Render@CRenderer@ssf@@UAGJAAUSubPicDesc@@_JNAAUtagRECT@@@Z
 _TEXT	SEGMENT
 tv420 = -108						; size = 4
-$T441692 = -108						; size = 16
-$T441690 = -108						; size = 8
+$T441833 = -108						; size = 16
+$T441831 = -108						; size = 8
 _csAutoLock$ = -92					; size = 4
-$T441693 = -88						; size = 16
-$T441689 = -88						; size = 16
+$T441834 = -88						; size = 16
+$T441830 = -88						; size = 16
 _bbox2$ = -72						; size = 16
-$T441691 = -56						; size = 16
+$T441832 = -56						; size = 16
 _subs$ = -40						; size = 24
 __$EHRec$ = -12						; size = 12
 _this$ = 8						; size = 4
@@ -2728,18 +2728,18 @@ $LN94@Render:
 
 	lea	eax, DWORD PTR [esi+36]
 	push	eax
-	lea	ecx, DWORD PTR $T441689[esp+124]
+	lea	ecx, DWORD PTR $T441830[esp+124]
 	push	ecx
 	call	DWORD PTR __imp__CopyRect@8
 	mov	edx, DWORD PTR [esi+4]
 	mov	eax, DWORD PTR [esi+8]
 	mov	ecx, DWORD PTR _this$[ebp]
 	mov	ecx, DWORD PTR [ecx+24]
-	mov	DWORD PTR $T441690[esp+120], edx
-	lea	edx, DWORD PTR $T441689[esp+120]
-	mov	DWORD PTR $T441690[esp+124], eax
+	mov	DWORD PTR $T441831[esp+120], edx
+	lea	edx, DWORD PTR $T441830[esp+120]
+	mov	DWORD PTR $T441831[esp+124], eax
 	push	edx
-	lea	eax, DWORD PTR $T441690[esp+124]
+	lea	eax, DWORD PTR $T441831[esp+124]
 	push	eax
 	push	ebx
 	call	?Lookup@Renderer@ssf@@QAEPAVRenderedSubtitle@2@PBVSubtitle@2@ABVCSize@@ABVCRect@@@Z ; ssf::Renderer::Lookup
@@ -2749,7 +2749,7 @@ $LN94@Render:
 	test	eax, eax
 	je	SHORT $LN66@Render
 	push	esi
-	lea	ecx, DWORD PTR $T441691[esp+124]
+	lea	ecx, DWORD PTR $T441832[esp+124]
 	push	ecx
 	mov	ecx, eax
 	call	?Draw@RenderedSubtitle@ssf@@QBE?AVCRect@@AAUSubPicDesc@@@Z ; ssf::RenderedSubtitle::Draw
@@ -2774,24 +2774,24 @@ $LN2@Render:
 	mov	ecx, DWORD PTR [esi+4]
 	mov	edx, DWORD PTR [esi+8]
 	xor	eax, eax
-	mov	DWORD PTR $T441692[esp+120], eax
-	mov	DWORD PTR $T441692[esp+124], eax
-	lea	eax, DWORD PTR $T441692[esp+120]
-	mov	DWORD PTR $T441692[esp+128], ecx
+	mov	DWORD PTR $T441833[esp+120], eax
+	mov	DWORD PTR $T441833[esp+124], eax
+	lea	eax, DWORD PTR $T441833[esp+120]
+	mov	DWORD PTR $T441833[esp+128], ecx
 	push	eax
 	lea	ecx, DWORD PTR _bbox2$[esp+124]
-	mov	DWORD PTR $T441692[esp+136], edx
+	mov	DWORD PTR $T441833[esp+136], edx
 	push	ecx
-	lea	edx, DWORD PTR $T441693[esp+128]
+	lea	edx, DWORD PTR $T441834[esp+128]
 	push	edx
 	call	DWORD PTR __imp__IntersectRect@12
 	mov	eax, DWORD PTR _bbox$[ebp]
-	mov	ecx, DWORD PTR $T441693[esp+120]
-	mov	edx, DWORD PTR $T441693[esp+124]
+	mov	ecx, DWORD PTR $T441834[esp+120]
+	mov	edx, DWORD PTR $T441834[esp+124]
 	mov	DWORD PTR [eax], ecx
-	mov	ecx, DWORD PTR $T441693[esp+128]
+	mov	ecx, DWORD PTR $T441834[esp+128]
 	mov	DWORD PTR [eax+4], edx
-	mov	edx, DWORD PTR $T441693[esp+132]
+	mov	edx, DWORD PTR $T441834[esp+132]
 	mov	DWORD PTR [eax+8], ecx
 
 ; 185  : 

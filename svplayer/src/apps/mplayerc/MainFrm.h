@@ -288,6 +288,7 @@ public:
 	// subtitles
 
 	CCritSec m_csSubLock;
+	CCritSec m_csSubLock2;
 	CInterfaceList<ISubStream> m_pSubStreams;
 	int m_iSubtitleSel; // if(m_iSubtitleSel&(1<<31)): disabled
 	int m_iSubtitleSel2;
@@ -385,10 +386,10 @@ public:
 	void SeekTo(REFERENCE_TIME rt, bool fSeekToKeyFrame = false);
 
 	bool LoadSubtitle(CString fn);
-	void UpdateSubtitle(bool fApplyDefStyle = false);
-	void UpdateSubtitle2(bool fApplyDefStyle = false);
-	void SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle = false);
-	void SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle = false);
+	void UpdateSubtitle(bool fApplyDefStyle = true);
+	void UpdateSubtitle2(bool fApplyDefStyle = true);
+	void SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle = true);
+	void SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle = true);
 	void ReplaceSubtitle(ISubStream* pSubStreamOld, ISubStream* pSubStreamNew, int secondSub = 0);
 	void InvalidateSubtitle(DWORD_PTR nSubtitleId = -1, REFERENCE_TIME rtInvalidate = -1);
 	void ReloadSubtitle();

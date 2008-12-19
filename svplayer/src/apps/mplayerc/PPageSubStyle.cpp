@@ -38,7 +38,7 @@
 // CPPageSubStyle dialog
 
 IMPLEMENT_DYNAMIC(CPPageSubStyle, CPPageBase)
-CPPageSubStyle::CPPageSubStyle()
+CPPageSubStyle::CPPageSubStyle(int exsubid )
 	: CPPageBase(CPPageSubStyle::IDD, CPPageSubStyle::IDD)
 	, m_iCharset(0)
 	, m_spacing(0)
@@ -52,9 +52,17 @@ CPPageSubStyle::CPPageSubStyle()
 	, m_margin(0,0,0,0)
 	, m_linkalphasliders(FALSE)
 	, m_relativeTo(FALSE)
+	, m_2ndsub(0)
 {
-	m_stss = AfxGetAppSettings().subdefstyle;
+	if (exsubid) { m_2ndsub = exsubid;}
+	if(exsubid ){
+		m_stss = AfxGetAppSettings().subdefstyle2;
+	}else{
+		m_stss = AfxGetAppSettings().subdefstyle;
+	}
+
 	m_fUseDefaultStyle = true;
+	
 }
 
 CPPageSubStyle::~CPPageSubStyle()
@@ -218,7 +226,9 @@ BOOL CPPageSubStyle::OnApply()
 
 	if(m_fUseDefaultStyle)
 	{
-		STSStyle& stss = AfxGetAppSettings().subdefstyle;
+
+		STSStyle& stss = m_2ndsub ? AfxGetAppSettings().subdefstyle2 : AfxGetAppSettings().subdefstyle;
+		
 		if(!(stss == m_stss))
 		{
 			stss = m_stss;

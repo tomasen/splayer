@@ -47,7 +47,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/D &quot;CURL_STATICLIB&quot;"
+				AdditionalOptions="/D &quot;CURL_STATICLIB&quot; /D &quot;WINVER=0x0600&quot; /D &quot;_WIN32_WINNT=0x0600&quot; /D &quot;NTDDI_VERSION=NTDDI_VISTA&quot;"
 				Optimization="2"
 				AdditionalIncludeDirectories="..\..\..\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;WINVER=0x501"
@@ -68,7 +68,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="/MACHINE:I386  "
+				AdditionalOptions="/MACHINE:I386  /LTCG"
 				AdditionalDependencies="curllib.lib svplibRU.lib Delayimp.lib psapi.lib detours.lib qtmlClient.lib wmstub.lib dxguid.lib Dsound.lib strmbaseRU.lib dsutilRU.lib subpicRU.lib subtitlesRU.lib libssfRU.lib asyncreaderRU.lib audioswitcherRU.lib avi2ac3filterRU.lib bufferfilterRU.lib cddareaderRU.lib cdxareaderRU.lib d2vsourceRU.lib decssfilterRU.lib flicsourceRU.lib dtsac3sourceRU.lib basesourceRU.lib wavdestRU.lib shoutcastsourceRU.lib streamdrivethruRU.lib vtsreaderRU.lib basesplitterRU.lib MatroskaSplitterRU.lib MatroskaMuxerRU.lib RealMediaSplitterRU.lib AviSplitterRU.lib Mpeg2DecFilterRU.lib MpaDecFilterRU.lib RoQSplitterRU.lib OggSplitterRU.lib NutSplitterRU.lib MpegSplitterRU.lib DiracSplitterRU.lib MpaSplitterRU.lib DSMSplitterRU.lib MP4SplitterRU.lib BaseMuxerRU.lib DSMMuxerRU.lib UDPReaderRU.lib FLVSplitterRU.lib zlibR.lib subtitlesourceRU.lib filtersRU.lib libvorbisidecR.lib SSFSplitterRU.lib libpngR.lib comsuppw.lib Winmm.lib"
 				OutputFile="..\..\..\..\$(ProjectName).exe"
 				AdditionalLibraryDirectories="../../../lib;../../../lib/wm7;../../../lib/qt6;../../../lib/detours"
@@ -376,6 +376,10 @@
 			</File>
 			<File
 				RelativePath=".\ChildView.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ChkDefPlayer.cpp"
 				>
 			</File>
 			<File
@@ -785,6 +789,10 @@
 			</File>
 			<File
 				RelativePath=".\ChildView.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ChkDefPlayer.h"
 				>
 			</File>
 			<File

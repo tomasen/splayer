@@ -29,6 +29,7 @@
 #include "MainFrm.h"
 #include "..\..\DSUtil\DSUtil.h"
 #include "revision.h"
+#include "ChkDefPlayer.h"
 
 /////////
 
@@ -657,6 +658,19 @@ BOOL CMPlayerCApp::InitInstance()
 
 	m_s.UpdateData(false);
 	
+	//检查文件关联
+	if ( m_s.fCheckFileAsscOnStartup ){
+		CChkDefPlayer dlg_chkdefplayer;
+		if( ! dlg_chkdefplayer.b_isDefaultPlayer() ){
+			if(m_s.fPopupStartUpExtCheck){
+				dlg_chkdefplayer.DoModal();
+			}else{
+				dlg_chkdefplayer.setDefaultPlayer();
+			}
+		}
+	}
+
+
 	if((m_s.nCLSwitches&CLSW_REGEXTVID) || (m_s.nCLSwitches&CLSW_REGEXTAUD))
 	{
 		CMediaFormats& mf = m_s.Formats;
@@ -716,6 +730,7 @@ BOOL CMPlayerCApp::InitInstance()
 			return FALSE;
 		}
 	}
+
 
 	if(!__super::InitInstance())
 	{
@@ -1099,6 +1114,9 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		if(!fInitialized) return;
 
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_CHECKFILEASSCONSTARTUP), fCheckFileAsscOnStartup);
+		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_POPSTARTUPEXTCHECK), fPopupStartUpExtCheck);
+		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_CHECKFILEEXTSASSCONSTARTUP), szStartUPCheckExts);
+		
 
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_HIDECAPTIONMENU), fHideCaptionMenu);
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_CONTROLSTATE), nCS);
@@ -1361,6 +1379,9 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		}
 		
 		fCheckFileAsscOnStartup = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_CHECKFILEASSCONSTARTUP), 1);
+		szStartUPCheckExts = pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_CHECKFILEEXTSASSCONSTARTUP), _T(".mkv .avi .rmvb .rm .wmv .asf .mov .mp4 .mpeg .mpg .3gp"));
+		fPopupStartUpExtCheck = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_POPSTARTUPEXTCHECK), 1);
+		
 
 		fHideCaptionMenu = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_HIDECAPTIONMENU), 0);
 		nCS = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_CONTROLSTATE), CS_SEEKBAR|CS_TOOLBAR|CS_STATUSBAR);
@@ -1615,6 +1636,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		fNotifyGTSdll = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_NOTIFYGTSDLL), FALSE);
 
 		Formats.UpdateData(false);
+
 
 		SrcFilters = pApp->GetProfileInt(ResStr(IDS_R_INTERNAL_FILTERS), ResStr(IDS_RS_SRCFILTERS), ~0^SRC_MATROSKA^SRC_MP4^SRC_MPEG^SRC_OGG);
 		TraFilters = pApp->GetProfileInt(ResStr(IDS_R_INTERNAL_FILTERS), ResStr(IDS_RS_TRAFILTERS), ~0^TRA_MPEG1^TRA_AAC^TRA_AC3^TRA_DTS^TRA_LPCM^TRA_MPEG2^TRA_VORBIS);

@@ -270,8 +270,8 @@
 #define ID_PANNSCAN_PRESETS_END         4199
 #define ID_SHADERS_START                4200
 #define ID_SHADERS_END                  4299
-#define ID_SUBTITLES_SUBITEM_START2      4300
-#define ID_SUBTITLES_SUBITEM_END2        4399
+#define ID_SUBTITLES_SUBITEM_START2     4300
+#define ID_SUBTITLES_SUBITEM_END2       4399
 #define IDD_OPEN_DLG                    10000
 #define IDD_OPENCAPDEVICE_DLG           10001
 #define IDD_MEDIATYPES_DLG              10002
@@ -606,7 +606,7 @@
 #define IDS_RS_SHADERLIST               13145
 #define IDS_RS_BLOCKVSFILTER            13146
 #define IDS_RS_CHECKFILEASSCONSTARTUP   13147
-#define IDS_RS_ENABLESUBTITLES2          13148
+#define IDS_RS_ENABLESUBTITLES2         13148
 #define IDS_SRC_RADGT                   14000
 #define IDS_SRC_CDDA                    14001
 #define IDS_SRC_AVI                     14002
@@ -736,9 +736,18 @@
 #define IDS_RS_SPVERPOS2                14196
 #define ID_SUB_DELAY_DOWN2              14197
 #define ID_SUB_DELAY_UP2                14198
-#define IDS_SUBTITLES_POPUP2             14199
+#define IDS_SUBTITLES_POPUP2            14199
+#define IDS_RS_CHECKDEFAULLTPLAYER      14200
+#define IDS_RS_CHECKFILEEXTSASSCONSTARTUP 14201
+#define IDS_ADD_TO_PLAYLIST             14202
+#define IDS_OPEN_WITH_MPC               14203
+#define IDS_APP_DESCRIPTION             14204
+#define IDS_RS_POPSTARTUPEXTCHECK       14205
 #define IDD_DHTML_SETTING               20000
 #define IDR_DEFAULT1                    20006
+#define IDD_DEFAULT_PLAYER              20007
+#define IDC_CHK_NOMOREQUES              22000
+#define IDC_CHECK_DEFAULTPLAYER         22001
 #define IDR_HTML_UESETTINGPANEL         24000
 #define ID_32768                        32768
 #define ID_32769                        32769
@@ -769,14 +778,15 @@
 #define ID_32794                        32794
 #define ID_FILE_LOAD_SUBTITLE2          32795
 #define ID__32796                       32796
-#define ID_32797                       32797
+#define ID_32797                        32797
+
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        20007
+#define _APS_NEXT_RESOURCE_VALUE        20008
 #define _APS_NEXT_COMMAND_VALUE         32796
-#define _APS_NEXT_CONTROL_VALUE         22000
+#define _APS_NEXT_CONTROL_VALUE         22002
 #define _APS_NEXT_SYMED_VALUE           24001
 #endif
 #endif

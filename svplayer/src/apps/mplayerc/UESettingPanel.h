@@ -28,7 +28,7 @@ class CUESettingPanel : public CDHtmlDialog
 	int m_sgi_chkabnormal;
 	int m_sgi_chkautoplay;
 	CString m_sgs_initblock;
-	
+	CString m_sgi_startupcheckexts;
 	CString m_sgs_videorender;
 	long m_sgi_videorender;
 	int m_sgi_lockbackbuff;

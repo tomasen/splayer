@@ -353,6 +353,8 @@ public:
 
 		int nCS;
 		bool fCheckFileAsscOnStartup;
+		CString szStartUPCheckExts;
+		bool fPopupStartUpExtCheck;
 		bool fHideCaptionMenu;
 		int iDefaultVideoSize;
 		bool fKeepAspectRatio;
@@ -461,7 +463,7 @@ public:
 		CUIceClient UIceClient;
 
 		CMediaFormats Formats;
-
+		
 		UINT SrcFilters, TraFilters;
 
 		CString logofn;

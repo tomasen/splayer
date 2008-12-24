@@ -79,13 +79,25 @@ UESAPI.prototype = {
         }
         
     },
+    toggelblock:function(idname){
+        var tobj = this.fobj(idname);
+        if (tobj.style.display != 'none'){
+            tobj.style.display = "none";
+        }else{
+            tobj.style.display = "block";
+        }
+    },
+    showinline:function(idname){
+        var tobj = this.fobj(idname);
+        tobj.style.display = "inline";
+    },
     showblock:function(idname){
         var tobj = this.fobj(idname);
-        obt.style.display = "block";
+        tobj.style.display = "block";
     },
     hideobj:function(idname){
         var tobj = this.fobj(idname);
-        obt.style.display = "none";
+        tobj.style.display = "none";
     },
     fobj : function(idname){
 		if(typeof(idname) == 'object'){
@@ -160,7 +172,8 @@ function myInit(){
 <input type="checkbox" id="chkcdromenu" /><label for="chkcdromenu" title="在“文件”菜单下显示光盘驱动器列表菜单
 可能会影响菜单打开的速度">隐藏光盘驱动器菜单</label><br />
 <input type="checkbox" id="chkuseini" /><label for="chkuseini" title="不将配置文件写入注册表">将设置保存至ini</label><br />
-<input type="checkbox" id="chkfileass" /><label for="chkfileass">启动时检查文件关联</label><br />
+<input type="checkbox" id="chkfileass" /><label for="chkfileass">启动时检查文件关联</label> <input type="button" value="*" style="font-size:7px;" onclick="ueAPI.showinline('startupcheckextsdiv');" /><br />
+<span id='startupcheckextsdiv' style="display:none;width:60%;"><textarea rows="2" id="startupcheckexts" style="margin-left:20px;width:60%;" wrap="hard"></textarea> <br /></span>
 <input type="checkbox" id="chkplayrepeat" /><label for="chkplayrepeat">循环播放</label><br />
 <input type="checkbox" id="chkexitfullscreen" /><label for="chkexitfullscreen">播放结束后自动退出全屏</label><br />
 <input type="checkbox" id="chkabnormal" /><label for="chkabnormal" title="允许播放器使用更多的CPU运算资源

@@ -25,8 +25,16 @@
 #include "stdafx.h"
 #include "mplayerc.h"
 #include "PPageFormats.h"
+#define CINTERFACE
+#include <shobjidl.h>
 
+CString			g_strRegisteredAppName =  _T("Media Player Classic");
+CString			g_strOldAssoc		  = _T("PreviousRegistration");
+CString			g_strRegisteredKey	= _T("Software\\Clients\\Media\\Media Player Classic\\Capabilities");// _T("Software\\Clients\\Media\\…‰ ÷”∞“Ù≤•∑≈∆˜\\Capabilities");
+BOOL f_setContextFiles  = true;
+BOOL f_setAssociatedWithIcon  = true;
 // CPPageFormats dialog
+CComPtr<IApplicationAssociationRegistration>	CPPageFormats::m_pAAR;
 
 IMPLEMENT_DYNAMIC(CPPageFormats, CPPageBase)
 CPPageFormats::CPPageFormats()
@@ -36,6 +44,7 @@ CPPageFormats::CPPageFormats()
 	, m_iRtspHandler(0)
 	, m_fRtspFileExtFirst(FALSE)
 {
+
 }
 
 CPPageFormats::~CPPageFormats()
@@ -54,6 +63,7 @@ void CPPageFormats::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CHECK4, m_apdvd);
 	DDX_Radio(pDX, IDC_RADIO1, m_iRtspHandler);
 	DDX_Check(pDX, IDC_CHECK5, m_fRtspFileExtFirst);
+	DDX_Check(pDX, IDC_CHECK_DEFAULTPLAYER, m_bCheckDefaultPlayer);
 }
 
 int CPPageFormats::GetChecked(int iItem)
@@ -100,216 +110,362 @@ static bool MakeRegParams(CString ext, CString& path, CString& fn, CString& extf
 
 bool CPPageFormats::IsRegistered(CString ext)
 {
-	CString path, fn, extfile, cmd;
-	if(!MakeRegParams(ext, path, fn, extfile, cmd))
-		return(false);
+	BOOL	bIsDefault = FALSE;
+	CString strProgID = _T("mplayerc") + ext;
 
-	TCHAR buff[256];
-	ULONG len = sizeof(buff);
-	memset(buff, 0, len);
-
-	CRegKey key;
-
-	CString ExplExt = _T("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\") + ext;
-	if(ERROR_SUCCESS == key.Open(HKEY_CURRENT_USER, ExplExt, KEY_READ))
+	if (m_pAAR == NULL)
 	{
-		len = sizeof(buff);
-		memset(buff, 0, len);
-		if(ERROR_SUCCESS == key.QueryStringValue(_T("Application"), buff, &len))
-			return(CString(buff).Trim() == cmd);
+		// Default manager (requiered at least Vista)
+		HRESULT hr = CoCreateInstance(CLSID_ApplicationAssociationRegistration,
+			NULL,
+			CLSCTX_INPROC,
+			__uuidof(IApplicationAssociationRegistration),
+			(void**)&m_pAAR);
 	}
 
-	if(ERROR_SUCCESS != key.Open(HKEY_CLASSES_ROOT, ext, KEY_READ))
-		return(false);
+	if (m_pAAR)
+	{
+		// The Vista way
+		HRESULT	hr;
+		hr = m_pAAR->QueryAppIsDefault(ext, AT_FILEEXTENSION, AL_EFFECTIVE, g_strRegisteredAppName, &bIsDefault);
+	}
+	else
+	{
+		// The 2000/XP way
+		CRegKey		key;
+		TCHAR		buff[256];
+		ULONG		len = sizeof(buff);
+		memset(buff, 0, len);
 
-	len = sizeof(buff);
+		if(ERROR_SUCCESS != key.Open(HKEY_CLASSES_ROOT, ext))
+			return false;
+
+		if(ERROR_SUCCESS != key.QueryStringValue(NULL, buff, &len) && !CString(buff).Trim().IsEmpty())
+			return false;
+
+		bIsDefault = (buff == strProgID);
+	}
+	if(!f_setContextFiles)
+	{
+		CRegKey		key;
+		TCHAR		buff[MAX_PATH];
+		ULONG		len = sizeof(buff);
+
+		if(ERROR_SUCCESS == key.Open(HKEY_CLASSES_ROOT, strProgID + _T("\\shell\\open"), KEY_READ))
+		{
+			CString		strCommand = ResStr(IDS_OPEN_WITH_MPC);
+			if (ERROR_SUCCESS == key.QueryStringValue(NULL, buff, &len))
+				f_setContextFiles = (strCommand.CompareNoCase(CString(buff)) == 0);
+		}
+	}
+
+	// Check if association is for this instance of MPC
+	if (bIsDefault)
+	{
+		CRegKey		key;
+		TCHAR		buff[MAX_PATH];
+		ULONG		len = sizeof(buff);
+
+		bIsDefault = FALSE;
+		if(ERROR_SUCCESS == key.Open(HKEY_CLASSES_ROOT, strProgID + _T("\\shell\\open\\command"), KEY_READ))
+		{
+			CString		strCommand = GetOpenCommand();
+			if (ERROR_SUCCESS == key.QueryStringValue(NULL, buff, &len))
+				bIsDefault = (strCommand.CompareNoCase(CString(buff)) == 0);
+		}
+
+	}
+
+	return !!bIsDefault;
+}
+BOOL CPPageFormats::SetFileAssociation(CString strExt, CString strProgID, bool fRegister)
+{
+	CString         extoldreg, extOldIcon;
+	CRegKey         key;
+	HRESULT         hr = S_OK;
+	TCHAR           buff[256];
+	ULONG           len = sizeof(buff);
 	memset(buff, 0, len);
-	if(ERROR_SUCCESS != key.QueryStringValue(NULL, buff, &len) || (extfile = buff).Trim().IsEmpty())
-		return(false);
 
-	if(ERROR_SUCCESS != key.Open(HKEY_CLASSES_ROOT, extfile + _T("\\shell\\open\\command"), KEY_READ))
-		return(false);
+	if (m_pAAR == NULL)
+	{
+		// Default manager (requiered at least Vista)
+		HRESULT hr = CoCreateInstance(CLSID_ApplicationAssociationRegistration,
+			NULL,
+			CLSCTX_INPROC,
+			__uuidof(IApplicationAssociationRegistration),
+			(void**)&m_pAAR);
+		if (FAILED(hr))
+		{
+			m_pAAR = NULL;
+		}
+	}
 
-	len = sizeof(buff);
-	memset(buff, 0, len);
+	if (m_pAAR)
+	{
+		    // Register MPC for the windows "Default application" manager
+		
+			if(ERROR_SUCCESS == key.Open(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\RegisteredApplications")))
+			{
+				key.SetStringValue(_T("Media Player Classic"), g_strRegisteredKey);
 
-	CRegKey key2;
-	if(ERROR_SUCCESS == key2.Open(HKEY_CLASSES_ROOT, extfile + _T("\\shell\\open"), KEY_READ)
-	&& ERROR_SUCCESS == key2.QueryStringValue(_T("LegacyDisable"), buff, &len))
-		return(false);
+				if(ERROR_SUCCESS != key.Create(HKEY_LOCAL_MACHINE, g_strRegisteredKey))
+					return(false);
 
-	len = sizeof(buff);
-	memset(buff, 0, len);
+				// ==>>  TODO icon !!!
+				key.SetStringValue(_T("ApplicationDescription"), ResStr(IDS_APP_DESCRIPTION), REG_EXPAND_SZ);
+				//key.SetStringValue(_T("ApplicationIcon"), AppIcon, REG_EXPAND_SZ);
+				key.SetStringValue(_T("ApplicationName"), ResStr(IDR_MAINFRAME), REG_EXPAND_SZ);
+			}
+		
+		// The Vista way
+		CString         strNewApp;
+		if (fRegister)
+		{
+			// Create non existing file type
+			if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, strExt)) return(false);
 
-	if(ERROR_SUCCESS == key2.Open(HKEY_CLASSES_ROOT, extfile + _T("\\shell\\open\\DropTarget"), KEY_READ))
-		return(false);
+			WCHAR*          pszCurrentAssociation;
+			// Save current application associated
+			if (SUCCEEDED (m_pAAR->QueryCurrentDefault (strExt, AT_FILEEXTENSION, AL_EFFECTIVE, &pszCurrentAssociation)))
+			{
+				if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, strProgID))
+					return(false);
 
-	len = sizeof(buff);
-	memset(buff, 0, len);
+				key.SetStringValue(g_strOldAssoc, pszCurrentAssociation);
 
-	return(ERROR_SUCCESS == key.QueryStringValue(NULL, buff, &len) 
-		&& !CString(buff).CompareNoCase(cmd));
+				// Get current icon for file type
+				/*
+				if (ERROR_SUCCESS == key.Open(HKEY_CLASSES_ROOT, CString(pszCurrentAssociation) + _T("\\DefaultIcon")))
+				{
+				len = sizeof(buff);
+				memset(buff, 0, len);
+				if(ERROR_SUCCESS == key.QueryStringValue(NULL, buff, &len) && !CString(buff).Trim().IsEmpty())
+				{
+				if (ERROR_SUCCESS == key.Create(HKEY_CLASSES_ROOT, strProgID + _T("\\DefaultIcon")))
+				key.SetStringValue (NULL, buff);
+				}
+				}
+				*/
+				CoTaskMemFree (pszCurrentAssociation);
+			}
+			strNewApp = g_strRegisteredAppName;
+		}
+		else
+		{
+			if(ERROR_SUCCESS != key.Open(HKEY_CLASSES_ROOT, strProgID))
+				return(false);
+
+			if(ERROR_SUCCESS == key.QueryStringValue(g_strOldAssoc, buff, &len))
+				strNewApp = buff;
+
+			// TODO : retrieve registered app name from previous association (or find Bill function for that...)
+		}
+
+		hr = m_pAAR->SetAppAsDefault(strNewApp, strExt, AT_FILEEXTENSION);
+		if(hr != S_OK){
+			return false;
+		}
+	}
+	else
+	{
+		// The 2000/XP way
+		if (fRegister)
+		{
+			// Set new association
+			if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, strExt))
+				return(false);
+
+			len = sizeof(buff);
+			memset(buff, 0, len);
+			if(ERROR_SUCCESS == key.QueryStringValue(NULL, buff, &len) && !CString(buff).Trim().IsEmpty())
+				extoldreg = buff;
+			if(ERROR_SUCCESS != key.SetStringValue(NULL, strProgID)) return(false);
+
+			// Get current icon for file type
+			/*
+			if (!extoldreg.IsEmpty())
+			{
+			if (ERROR_SUCCESS == key.Open(HKEY_CLASSES_ROOT, extoldreg + _T("\\DefaultIcon")))
+			{
+			len = sizeof(buff);
+			memset(buff, 0, len);
+			if(ERROR_SUCCESS == key.QueryStringValue(NULL, buff, &len) && !CString(buff).Trim().IsEmpty())
+			extOldIcon = buff;
+			}
+			}
+			*/
+
+			// Save old association
+			if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, strProgID))
+				return(false);
+			key.SetStringValue(g_strOldAssoc, extoldreg);
+
+			/*
+			if (!extOldIcon.IsEmpty() && (ERROR_SUCCESS == key.Create(HKEY_CLASSES_ROOT, strProgID + _T("\\DefaultIcon"))))
+			key.SetStringValue (NULL, extOldIcon);
+			*/
+		}
+		else
+		{
+			// Get previous association
+			len = sizeof(buff);
+			memset(buff, 0, len);
+			if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, strProgID))
+				return(false);
+			if(ERROR_SUCCESS == key.QueryStringValue(g_strOldAssoc, buff, &len) && !CString(buff).Trim().IsEmpty())
+				extoldreg = buff;
+
+			// Set previous association
+			if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, strExt))
+				return(false);
+			key.SetStringValue(NULL, extoldreg);
+		}
+
+	}
+
+	return SUCCEEDED (hr);
 }
 
 bool CPPageFormats::RegisterExt(CString ext, bool fRegister)
 {
-	if(fRegister == IsRegistered(ext))
-		return(true);
+	CRegKey         key;
+	bool            bSetValue;
+	CString strProgID = _T("mplayerc") + ext;
+	CString strLabel = _T("");
+	
 
-	CString path, fn, extfile, cmd;
-	if(!MakeRegParams(ext, path, fn, extfile, cmd))
+	CString path, fn, cmd;
+	if(!MakeRegParams(ext, path, fn, strLabel, cmd))
 		return(false);
 
-	TCHAR buff[256];
-	ULONG len = sizeof(buff);
-	memset(buff, 0, len);
-
-	CRegKey key;
 
 	if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, ext))
 		return(false);
+	TCHAR buff[256];
+	ULONG len = sizeof(buff);
 
 	len = sizeof(buff);
 	memset(buff, 0, len);
 
 	if(ERROR_SUCCESS == key.QueryStringValue(NULL, buff, &len) && !CString(buff).Trim().IsEmpty())
 	{
-		extfile = buff;
+		strLabel = buff;
+	}
+
+
+	if(!fRegister)
+	{
+		if(fRegister != IsRegistered(ext))
+			SetFileAssociation (ext, strProgID, fRegister);
+		key.Attach(HKEY_CLASSES_ROOT);
+		key.RecurseDeleteKey(strProgID);
+		return(true);
+	}
+
+	bSetValue = fRegister || (ERROR_SUCCESS != key.Open(HKEY_CLASSES_ROOT, strProgID + _T("\\shell\\open\\command"), KEY_READ));
+
+	// Create ProgID for this file type
+	if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, strProgID)) return(false);
+	if(ERROR_SUCCESS != key.SetStringValue(NULL, strLabel)) return(false);
+
+	// Add to playlist option
+	if(f_setContextFiles)
+	{
+		if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, strProgID + _T("\\shell\\enqueue"))) return(false);
+		if(ERROR_SUCCESS != key.SetStringValue(NULL, ResStr(IDS_ADD_TO_PLAYLIST))) return(false);
+
+		if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, strProgID + _T("\\shell\\enqueue\\command"))) return(false);
+		if(bSetValue && (ERROR_SUCCESS != key.SetStringValue(NULL, GetEnqueueCommand()))) return(false);
 	}
 	else
 	{
-		if(!fRegister) return(true);
-		else if(ERROR_SUCCESS != key.SetStringValue(NULL, extfile)) return(false);
+		key.Attach(HKEY_CLASSES_ROOT);
+		key.RecurseDeleteKey(strProgID + _T("\\shell\\enqueue"));
 	}
 
-	if(fRegister)
+	// Play option
+	if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, strProgID + _T("\\shell\\open"))) return(false);
+	if(f_setContextFiles)
 	{
-		if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, extfile + _T("\\shell")))
-			return(false);
-
-		len = sizeof(buff);
-		memset(buff, 0, len);
-
-		key.QueryStringValue(NULL, buff, &len);
-
-		if(ERROR_SUCCESS != key.SetStringValue(fn + _T(".bak"), buff))
-			return(false);
-
-		if(ERROR_SUCCESS != key.SetStringValue(NULL, _T("open")))
-		{
-			key.SetStringValue(NULL, buff);
-			key.DeleteValue(fn + _T(".bak"));
-			return(false);
-		}
-
-		if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, extfile + _T("\\shell\\open")))
-			return(false);
-
-		len = sizeof(buff);
-		memset(buff, 0, len);
-
-		if(ERROR_SUCCESS != key.SetStringValue(NULL, _T("&Open")))
-			return(false);
-
-		if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, extfile + _T("\\shell\\open\\command")))
-			return(false);
-
-		len = sizeof(buff);
-		memset(buff, 0, len);
-
-		key.QueryStringValue(NULL, buff, &len);
-
-		if(CString(buff).MakeLower() == cmd)
-			return(true);
-
-		if(ERROR_SUCCESS != key.SetStringValue(fn + _T(".bak"), buff))
-			return(false);
-
-		if(ERROR_SUCCESS != key.SetStringValue(NULL, cmd))
-		{
-			key.SetStringValue(NULL, buff);
-			key.DeleteValue(fn + _T(".bak"));
-			return(false);
-		}
-
-		len = sizeof(buff);
-		memset(buff, 0, len);
-
-		if(ERROR_SUCCESS == key.Open(HKEY_CLASSES_ROOT, extfile + _T("\\shell\\open")))
-		{
-			if(ERROR_SUCCESS == key.QueryStringValue(_T("LegacyDisable"), buff, &len))
-			{
-				key.DeleteValue(_T("LegacyDisable"));
-				key.SetStringValue(_T("LegacyDisable.bak"), _T(""));
-			}
-
-			key.RecurseDeleteKey(_T("ddeexec"));
-			key.RecurseDeleteKey(_T("DropTarget"));
-		}
-
-		if(ERROR_SUCCESS == key.Open(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\") + ext))
-		{
-			key.DeleteValue(_T("Application"));
-		}
+		if(ERROR_SUCCESS != key.SetStringValue(NULL, ResStr(IDS_OPEN_WITH_MPC))) return(false);
 	}
 	else
 	{
-		if(ERROR_SUCCESS != key.Open(HKEY_CLASSES_ROOT, extfile + _T("\\shell\\open\\command")))
-			return(true);
-
-		len = sizeof(buff);
-		memset(buff, 0, len);
-
-		if(ERROR_SUCCESS != key.QueryStringValue(fn + _T(".bak"), buff, &len))
-			buff[0] = 0; //return(true);
-
-		if(CString(buff).Trim().IsEmpty())
-		{
-			if(ERROR_SUCCESS != key.Open(HKEY_CLASSES_ROOT, extfile + _T("\\shell\\open"))
-			|| ERROR_SUCCESS != key.RecurseDeleteKey(_T("command")))
-				return(false);
-		}
-		else
-		{
-			if(ERROR_SUCCESS != key.SetStringValue(NULL, buff)
-			|| ERROR_SUCCESS != key.DeleteValue(fn + _T(".bak")))
-				return(false);
-
-			len = sizeof(buff);
-			memset(buff, 0, len);
-
-			if(ERROR_SUCCESS == key.Open(HKEY_CLASSES_ROOT, extfile + _T("\\shell\\open"))
-			&& ERROR_SUCCESS == key.QueryStringValue(_T("LegacyDisable.bak"), buff, &len))
-			{
-				key.DeleteValue(_T("LegacyDisable.bak"));
-				key.SetStringValue(_T("LegacyDisable"), _T(""));
-			}
-		}
-
-		if(ERROR_SUCCESS != key.Open(HKEY_CLASSES_ROOT, extfile + _T("\\shell")))
-			return(true);
-
-		len = sizeof(buff);
-		memset(buff, 0, len);
-
-		if(ERROR_SUCCESS != key.QueryStringValue(fn + _T(".bak"), buff, &len))
-			return(true);
-
-		if(CString(buff).Trim().IsEmpty())
-		{
-			if(ERROR_SUCCESS != key.Open(HKEY_CLASSES_ROOT, extfile)
-			|| ERROR_SUCCESS != key.RecurseDeleteKey(_T("shell")))
-				return(false);
-		}
-		else
-		{
-			if(ERROR_SUCCESS != key.SetStringValue(NULL, buff)
-			|| ERROR_SUCCESS != key.DeleteValue(fn + _T(".bak")))
-				return(false);
-		}
+		if(ERROR_SUCCESS != key.SetStringValue(NULL, _T(""))) return(false);
 	}
+
+	if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, strProgID + _T("\\shell\\open\\command"))) return(false);
+	if(bSetValue && (ERROR_SUCCESS != key.SetStringValue(NULL, GetOpenCommand()))) return(false);
+
+	if(ERROR_SUCCESS != key.Create(HKEY_LOCAL_MACHINE, g_strRegisteredKey + _T("\\FileAssociations"))) return(false);
+	if(ERROR_SUCCESS != key.SetStringValue(ext, strProgID)) return(false);
+
+	if(f_setAssociatedWithIcon)
+	{
+ 		CString AppIcon = _T("");
+ 		TCHAR buff[MAX_PATH];
+// 
+// 		CString mpciconlib = GetProgramDir() + _T("\\mpciconlib.dll");
+// 
+// 		if(FileExists(mpciconlib))
+// 		{
+// 			int icon_index = GetIconIndex(ext);
+// 			CString m_typeicon = mpciconlib;
+// 
+// 			/* icon_index value -1 means no icon was found in the iconlib for the file extension */
+// 			if((icon_index >= 0) && ExtractIcon(AfxGetApp()->m_hInstance,(LPCWSTR)m_typeicon, icon_index))
+// 			{
+// 				m_typeicon = "\""+mpciconlib+"\"";
+// 				AppIcon.Format(_T("%s,%d"), m_typeicon, icon_index);
+// 			}
+// 		}
+
+		/* no icon was found for the file extension, so use MPC's icon */
+		if((AppIcon.IsEmpty()) && (::GetModuleFileName(AfxGetInstanceHandle(), buff, MAX_PATH)))
+		{
+			AppIcon = buff;
+			AppIcon = "\""+AppIcon+"\"";
+			AppIcon += _T(",0");
+		}
+
+		if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, strProgID + _T("\\DefaultIcon"))) return(false);
+		if(bSetValue && (ERROR_SUCCESS != key.SetStringValue(NULL, AppIcon))) return(false);
+	}
+	else
+	{
+		key.Attach(HKEY_CLASSES_ROOT);
+		key.RecurseDeleteKey(strProgID + _T("\\DefaultIcon"));
+	}
+
+	if(fRegister != IsRegistered(ext))
+		SetFileAssociation (ext, strProgID, fRegister);
 
 	return(true);
+
+}
+CString CPPageFormats::GetEnqueueCommand()
+{
+	CString          path;
+
+	TCHAR buff[MAX_PATH];
+	if(::GetModuleFileName(AfxGetInstanceHandle(), buff, MAX_PATH) == 0)
+		return _T("");
+
+	path = buff;
+	return _T("\"") + path + _T("\" /add \"%1\"");
+}
+
+CString CPPageFormats::GetOpenCommand()
+{
+	CString          path;
+	TCHAR buff[MAX_PATH];
+
+	if(::GetModuleFileName(AfxGetInstanceHandle(), buff, MAX_PATH) == 0)
+		return _T("");
+
+	path = buff;
+	return _T("\"") + path + _T("\" \"%1\"");
 }
 
 static struct {LPCSTR verb, cmd; UINT action;} handlers[] =
@@ -447,7 +603,7 @@ BOOL CPPageFormats::OnInitDialog()
 	m_list.SetImageList(&m_onoff, LVSIL_SMALL);
 
 	CMediaFormats& mf = AfxGetAppSettings().Formats;
-	for(int i = 0; i < mf.GetCount(); i++)
+	for(size_t i = 0; i < mf.GetCount(); i++)
 	{
 		CString label = mf[i].GetLabel();
 		// HACK: sorry, mpc is just not an image viewer :)
@@ -474,6 +630,7 @@ BOOL CPPageFormats::OnInitDialog()
 	engine_t e = s.Formats.GetRtspHandler(fRtspFileExtFirst);
 	m_iRtspHandler = (e==RealMedia?0:e==QuickTime?1:2);
 	m_fRtspFileExtFirst = fRtspFileExtFirst;
+	m_bCheckDefaultPlayer = s.fCheckFileAsscOnStartup;
 
 	UpdateData(FALSE);
 
@@ -547,7 +704,7 @@ BOOL CPPageFormats::OnApply()
 
 	AppSettings& s = AfxGetAppSettings();
 	s.Formats.SetRtspHandler(m_iRtspHandler==0?RealMedia:m_iRtspHandler==1?QuickTime:DirectShow, !!m_fRtspFileExtFirst);
-
+	s.fCheckFileAsscOnStartup = !!m_bCheckDefaultPlayer;
 	return __super::OnApply();
 }
 

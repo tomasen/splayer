@@ -46,6 +46,7 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_DHtml_CheckBox(pDX, _T("chkplayrepeat"), m_sgi_chkplayrepeat);
 	DDX_DHtml_CheckBox(pDX, _T("chkexitfullscreen"), m_sgi_chkexitfullscreen);
 	DDX_DHtml_CheckBox(pDX, _T("chkabnormal"), m_sgi_chkabnormal);
+	DDX_DHtml_ElementInnerHtml (pDX, _T("startupcheckexts"), m_sgi_startupcheckexts);
 	
 	DDX_DHtml_SelectValue( pDX, _T("videorender"), m_sgs_videorender);
 	DDX_DHtml_SelectIndex( pDX, _T("videorender"), m_sgi_videorender);
@@ -74,7 +75,7 @@ BOOL CUESettingPanel::OnInitDialog()
 	m_sgi_chkfileass = s.fCheckFileAsscOnStartup ;
 	m_sgi_chkabnormal = s.priority != NORMAL_PRIORITY_CLASS;
  	m_sgi_chkuseini = ((CMPlayerCApp*)AfxGetApp())->IsIniValid();
-	
+	m_sgi_startupcheckexts = s.szStartUPCheckExts;
 	//Video Setting
 	if(s.iDSVideoRendererType == 6 && s.iRMVideoRendererType == 2 && s.iQTVideoRendererType == 2){
 		m_sgi_videorender = 0; //DX9
@@ -113,7 +114,7 @@ void CUESettingPanel::ApplyAllSetting(){
 	s.fLoopForever = !!m_sgi_chkplayrepeat;
 	s.fCheckFileAsscOnStartup = !!m_sgi_chkfileass ;
 	s.priority = !m_sgi_chkabnormal ? NORMAL_PRIORITY_CLASS : GetVersion() < 0 ? HIGH_PRIORITY_CLASS : ABOVE_NORMAL_PRIORITY_CLASS;
-	
+	s.szStartUPCheckExts = m_sgi_startupcheckexts ;
 	m_sgi_chkuseini = ((CMPlayerCApp*)AfxGetApp())->IsIniValid();
 
 	//Video Setting

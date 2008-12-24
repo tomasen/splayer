@@ -205,7 +205,7 @@ void CMediaFormats::UpdateData(bool fSave)
 		ADDFMT((_T("Smacker/Bink Media file"), _T("smk bik"), false, _T("smackw32/binkw32.dll in dll path")));
 		ADDFMT((_T("ratdvd file"), _T("ratdvd"), false, _T("ratdvd media file")));
 		ADDFMT((_T("RoQ Media file"), _T("roq"), false));
-		ADDFMT((_T("Real Media file"), _T("rm ram rpm rmm"), false, _T("RealPlayer or Real Alternative"), RealMedia));
+		ADDFMT((_T("Real Media file"), _T("rm rmvb ram rpm rmm"), false, _T("RealPlayer or Real Alternative"), RealMedia));
 		ADDFMT((_T("Real Audio file"), _T("ra"), true, _T("RealPlayer or Real Alternative"), RealMedia));
 		ADDFMT((_T("Real Script file"), _T("rt rp smi smil"), false, _T("RealPlayer or Real Alternative"), RealMedia));
 		ADDFMT((_T("Dirac Video file"), _T("drc"), false));

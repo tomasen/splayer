@@ -32,7 +32,7 @@ class CPPageFormats : public CPPageBase
 
 private:
 	CImageList m_onoff;
-
+	BOOL m_bCheckDefaultPlayer;
 	int GetChecked(int iItem);
 	void SetChecked(int iItem, int fChecked);
 
@@ -41,14 +41,19 @@ private:
 	bool IsAutoPlayRegistered(autoplay_t ap);
 
 	void SetListItemState(int nItem);
-
+	static CString GetEnqueueCommand();
+	static CString GetOpenCommand();
+	static CComPtr<IApplicationAssociationRegistration>	m_pAAR;
+	static BOOL SetFileAssociation(CString strExt, CString strProgID, bool fRegister);
+	
 public:
+
 	CPPageFormats();
 	virtual ~CPPageFormats();
 
 	static bool IsRegistered(CString ext);
 	static bool RegisterExt(CString ext, bool fRegister);
-
+	
 	enum {COL_CATEGORY, COL_ENGINE};
 	CPlayerListCtrl m_list;
 	CString m_exts;

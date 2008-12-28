@@ -20,6 +20,7 @@ int CSVPNet::SetCURLopt(CURL *curl )
 
 	curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1);
 	curl_easy_setopt(curl, CURLOPT_USERAGENT, "SVPlayer 0.1");
+	//curl_easy_setopt(curl, CURLOPT_ENCODING, "gzip"); not native supported. so dont use this option
 	// MUST not have this line curl_easy_setopt(curl, CURLOPT_POST, ....);
 	
 	//headerlist = curl_slist_append(headerlist, buf); //WTF ??
@@ -114,8 +115,12 @@ int CSVPNet::UploadSubFileByVideoAndHash(CString fnVideoFilePath, CString szFile
 
 	for(int i = 0; i < fnSubPaths->GetCount(); i++){
 		/* Fill in the file upload field */
-		szTerm2 = svpToolBox.CStringToUTF8(fnSubPaths->GetAt(i), &iDescLen, CP_ACP);
-		SVP_LogMsg(fnSubPaths->GetAt(i));
+		CString szgzFile = svpToolBox.getSameTmpName(fnSubPaths->GetAt(i)) ;
+		SVP_LogMsg( CString(_T("Gziping ")) +  fnSubPaths->GetAt(i) + _T(" to ") + szgzFile );
+		svpToolBox.packGZfile( fnSubPaths->GetAt(i) , szgzFile);
+		
+		szTerm2 = svpToolBox.CStringToUTF8(szgzFile, &iDescLen, CP_ACP);
+		//SVP_LogMsg(fnSubPaths->GetAt(i));
 		curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "subfile[]", CURLFORM_FILE, szTerm2,CURLFORM_END);
 		free(szTerm2);
 		

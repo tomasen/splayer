@@ -18,7 +18,7 @@ void SVP_RealUploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString
 	svpToolBox.FindAllSubfile(szSubPath, &szaSubFiles);
 
 	CString szSubHash = svpHash.ComputerSubFilesFileHash(&szaSubFiles);
-	SVP_LogMsg(CString("Got Sub Hash ") + szSubHash );
+	SVP_LogMsg(CString("Got Sub Hash ") + svpToolBox.Implode( _T(" | "), &szaSubFiles) + _T(" -> ") + szSubHash );
 
 	if ( svpNet.WetherNeedUploadSub(fnVideoFilePath,szFileHash, szSubHash) ){
 		svpNet.UploadSubFileByVideoAndHash(fnVideoFilePath,szFileHash, szSubHash, &szaSubFiles);

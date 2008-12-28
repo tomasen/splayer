@@ -1,4 +1,6 @@
 #include "SVPToolBox.h"
+#include "..\..\include\unrar\unrar.h"
+#include "..\zlib\zlib.h"
 
 CSVPToolBox::CSVPToolBox(void)
 {
@@ -6,6 +8,224 @@ CSVPToolBox::CSVPToolBox(void)
 
 CSVPToolBox::~CSVPToolBox(void)
 {
+}
+CString CSVPToolBox::getSameTmpName(CString fnin )
+{
+	CStringArray szaPathinfo;
+	this->getVideoFileBasename(fnin, &szaPathinfo);
+	CString fntdir = this->GetTempDir();
+	CString fnout = fntdir + szaPathinfo.GetAt(3) + szaPathinfo.GetAt(1) ;
+	int i = 0;
+	while(this->ifFileExist(fnout)){
+		i++;
+		CString szBuf;
+		szBuf.Format(_T(".svr%d"), i);
+		fnout = fntdir + szaPathinfo.GetAt(3) + szBuf + szaPathinfo.GetAt(1) ;
+	}
+	return fnout;
+}
+CString CSVPToolBox::getSameTmpExt(CString fnin )
+{
+	CStringArray szaPathinfo;
+	this->getVideoFileBasename(fnin, &szaPathinfo);
+	CString fnout = this->getTmpFileName();
+	fnout += szaPathinfo.GetAt(1) ;
+	return fnout;
+}
+int CSVPToolBox::packGZfile(CString fnin , CString fnout)
+{
+	
+	FILE* fp;
+	int ret = 0;
+	if ( _wfopen_s( &fp, fnin, _T("rb") ) != 0){
+		return -1; //input file open error
+	}
+	int iDescLen;
+	char * szFnout = this->CStringToUTF8(fnout, &iDescLen, CP_ACP);
+
+	gzFile gzfOut = gzopen( szFnout , "wb9");	
+	if (gzfOut){
+
+		char buff[4096];
+		int iBuffReadLen ;
+		do{
+			iBuffReadLen = fread( buff, sizeof( char), 4096 ,fp);
+			if(iBuffReadLen > 0 ){
+				if( gzwrite( gzfOut , buff,  iBuffReadLen ) <= 0 ){
+					//gz file compress write error
+					ret = 1;
+				}
+			}else if(iBuffReadLen < 0){
+				ret = -3; //file read error
+				break;
+			}else{
+				break;
+			}
+		}while(1);
+
+		fclose(fp);
+		gzclose(gzfOut);
+	}else{
+		ret = -2; //gz file open error
+	}
+	free(szFnout);
+
+	if (ret != 0 ){
+		CString szLog ; 
+		szLog.Format(_T("Gz pack file fail: %s to %s ret %d"), fnin , fnout, ret);
+		SVP_LogMsg(szLog);
+	}
+	return ret;
+}
+int CSVPToolBox::unpackGZfile(CString fnin , CString fnout)
+{
+	
+	FILE* fout;
+	int ret = 0;
+	if ( _wfopen_s( &fout, fnout, _T("wb") ) != 0){
+		return -1; //output file open error
+	}
+	int iDescLen;
+	char * szFnin = this->CStringToUTF8(fnin, &iDescLen, CP_ACP);
+	
+	gzFile gzfIn = gzopen( szFnin , "rb");	
+	if (gzfIn){
+	
+		char buff[4096];
+		int iBuffReadLen ;
+		do{
+			iBuffReadLen = gzread(gzfIn, buff, 4096 );
+			if(iBuffReadLen > 0 ){
+				if( fwrite(buff, sizeof( char ),  iBuffReadLen, fout) <= 0 ){
+				    //file write error
+					ret = 1;
+				}
+			}else if(iBuffReadLen < 0){
+				ret = -3; //decompress error
+				break;
+			}else{
+				break;
+			}
+		}while(1);
+
+		fclose(fout);
+		gzclose(gzfIn);
+	}else{
+		ret = -2; //gz file open error
+	}
+	free(szFnin);
+	if (ret != 0 ){
+		CString szLog ; 
+		szLog.Format(_T("Gz unpack file fail: %s to %s ret %d"), fnin , fnout, ret);
+		SVP_LogMsg(szLog);
+	}
+	return ret;
+}
+static unsigned char* RARbuff = NULL;
+static unsigned int RARpos = 0;
+
+static int PASCAL MyProcessDataProc(unsigned char* Addr, int Size)
+{
+	ASSERT(RARbuff);
+
+	memcpy(&RARbuff[RARpos], Addr, Size);
+	RARpos += Size;
+
+	return(1);
+}
+CString CSVPToolBox::extractRarFile(CString rarfn){
+	CString szRet = _T("");
+	HMODULE h = LoadLibrary(_T("unrar.dll"));
+	if(!h) return szRet;
+
+	RAROpenArchiveEx OpenArchiveEx = (RAROpenArchiveEx)GetProcAddress(h, "RAROpenArchiveEx");
+	RARCloseArchive CloseArchive = (RARCloseArchive)GetProcAddress(h, "RARCloseArchive");
+	RARReadHeaderEx ReadHeaderEx = (RARReadHeaderEx)GetProcAddress(h, "RARReadHeaderEx");
+	RARProcessFile ProcessFile = (RARProcessFile)GetProcAddress(h, "RARProcessFile");
+	RARSetChangeVolProc SetChangeVolProc = (RARSetChangeVolProc)GetProcAddress(h, "RARSetChangeVolProc");
+	RARSetProcessDataProc SetProcessDataProc = (RARSetProcessDataProc)GetProcAddress(h, "RARSetProcessDataProc");
+	RARSetPassword SetPassword = (RARSetPassword)GetProcAddress(h, "RARSetPassword");
+
+	if(!(OpenArchiveEx && CloseArchive && ReadHeaderEx && ProcessFile 
+		&& SetChangeVolProc && SetProcessDataProc && SetPassword))
+	{
+		FreeLibrary(h);
+		return szRet;
+	}
+
+	struct RAROpenArchiveDataEx ArchiveDataEx;
+	memset(&ArchiveDataEx, 0, sizeof(ArchiveDataEx));
+
+	ArchiveDataEx.ArcNameW = (LPTSTR)(LPCTSTR)rarfn;
+	char fnA[MAX_PATH];
+	if(wcstombs(fnA, rarfn, rarfn.GetLength()+1) == -1) fnA[0] = 0;
+	ArchiveDataEx.ArcName = fnA;
+
+	ArchiveDataEx.OpenMode = RAR_OM_EXTRACT;
+	ArchiveDataEx.CmtBuf = 0;
+	HANDLE hrar = OpenArchiveEx(&ArchiveDataEx);
+	if(!hrar) 
+	{
+		FreeLibrary(h);
+		return szRet;
+	}
+
+	SetProcessDataProc(hrar, MyProcessDataProc);
+
+	struct RARHeaderDataEx HeaderDataEx;
+	HeaderDataEx.CmtBuf = NULL;
+	szRet = this->getTmpFileName() ;
+	szRet += _T(".sub");
+	CFile m_sub ( szRet, CFile::modeCreate|CFile::modeReadWrite|CFile::typeBinary );
+
+
+	while(ReadHeaderEx(hrar, &HeaderDataEx) == 0)
+	{
+
+		CString subfn(HeaderDataEx.FileNameW);
+
+
+		if(!subfn.Right(4).CompareNoCase(_T(".sub")))
+		{
+			CAutoVectorPtr<BYTE> buff;
+			if(!buff.Allocate(HeaderDataEx.UnpSize))
+			{
+				CloseArchive(hrar);
+				FreeLibrary(h);
+				return szRet;
+			}
+
+			RARbuff = buff;
+			RARpos = 0;
+
+			if(ProcessFile(hrar, RAR_TEST, NULL, NULL))
+			{
+				CloseArchive(hrar);
+				FreeLibrary(h);
+
+				return szRet;
+			}
+
+			m_sub.SetLength(HeaderDataEx.UnpSize);
+			m_sub.SeekToBegin();
+			m_sub.Write(buff, HeaderDataEx.UnpSize);
+			m_sub.Flush();
+			m_sub.SeekToBegin();
+			m_sub.Close();
+
+			//free(buff);
+			RARbuff = NULL;
+			RARpos = 0;
+
+			break;
+		}
+
+		ProcessFile(hrar, RAR_SKIP, NULL, NULL);
+	}
+
+	CloseArchive(hrar);
+	FreeLibrary(h);
+	return szRet;
 }
 int CSVPToolBox::DetectFileCharset(CString fn){
 // 	;
@@ -261,10 +481,16 @@ int CSVPToolBox::ExtractEachSubFile(FILE* fp, int iSubPosId){
 	}while(leftoread > 0);
 	fclose( fpt );
 
+	WCHAR* otmpfilenameraw = this->getTmpFileName();
+	CString szLogmsg;
+	int gzret = this->unpackGZfile( otmpfilename , otmpfilenameraw );
+	szLogmsg.Format(_T(" Gzip decompress %s -> %s : %d "),  otmpfilename , otmpfilenameraw , gzret );
+
+	SVP_LogMsg(szLogmsg);
 	// add filename and tmp name to szaTmpFileNames
 	this->szaSubTmpFileList[iSubPosId].Append( this->UTF8ToCString(szExtName, iExtLength)); //why cant use + ???
 	this->szaSubTmpFileList[iSubPosId].Append(_T("|") );
-	this->szaSubTmpFileList[iSubPosId].Append(otmpfilename);
+	this->szaSubTmpFileList[iSubPosId].Append(otmpfilenameraw);
 	this->szaSubTmpFileList[iSubPosId].Append( _T(";"));
 	//SVP_LogMsg(this->szaSubTmpFileList[iSubPosId] + _T(" is the szaTmpFileName"));
 	//this->szaSubTmpFileList[iSubPosId].SetString( otmpfilename);
@@ -304,6 +530,14 @@ CString CSVPToolBox::getVideoFileBasename(CString szVidPath, CStringArray* szaPa
 	}
 
 	return szVidPath;
+}
+CString CSVPToolBox::Implode(CString szTok, CStringArray* szaOut){
+	CString szRet;
+	for(int i = 0; i < szaOut->GetCount(); i++){
+		if(i > 0) { szRet.Append(szTok); }
+		szRet.Append(szaOut->GetAt(i));
+	}
+	return szRet;
 }
 int CSVPToolBox::Explode(CString szIn, CString szTok, CStringArray* szaOut){
 	szaOut->RemoveAll();
@@ -352,7 +586,14 @@ CString CSVPToolBox::getSubFileByTempid(int iTmpID, CString szVidPath){
 	}
 	//set new file name
 	CStringArray szSubfiles;
-	this->Explode(this->szaSubTmpFileList.GetAt(iTmpID), _T(";"), &szSubfiles);
+	CString szXTmpdata = this->szaSubTmpFileList.GetAt(iTmpID);
+	this->Explode(szXTmpdata, _T(";"), &szSubfiles);
+	bool bIsIdxSub = FALSE;
+	if ( szXTmpdata.Find(_T("idx|")) >= 0 && szXTmpdata.Find(_T("sub|")) >= 0){
+		if ( !this->ifFileExist( szBasename + _T(".idx") ) && !this->ifFileExist( szBasename + _T(".sub") ) ){
+			bIsIdxSub = TRUE;
+		}
+	}
 
 	if( szSubfiles.GetCount() < 1){
 		SVP_LogMsg( _T("Not enough files in tmp array"));
@@ -369,6 +610,9 @@ CString CSVPToolBox::getSubFileByTempid(int iTmpID, CString szVidPath){
 		}
 		CString szSource = szSubTmpDetail[1];
 		CString szLangExt  = _T(".chn"); //TODO: use correct language perm 
+		if(bIsIdxSub){
+			szLangExt  = _T("");
+		}
 		if (szSubTmpDetail[0].GetAt(0) != _T('.')){
 			szSubTmpDetail[0] = CString(_T(".")) + szSubTmpDetail[0];
 		}
@@ -421,7 +665,7 @@ int CSVPToolBox::FindAllSubfile(CString szSubPath , CStringArray* szaSubFiles){
 	CStringArray szaPathInfo ;
 	CString szBaseName = this->getVideoFileBasename( szSubPath, &szaPathInfo );
 	CString szExt = szaPathInfo.GetAt(1);
-
+	
 	if(szExt == _T(".idx")){
 		szSubPath = szBaseName + _T(".sub");
 		if(this->ifFileExist(szSubPath)){
@@ -429,7 +673,13 @@ int CSVPToolBox::FindAllSubfile(CString szSubPath , CStringArray* szaSubFiles){
 		}else{
 			szSubPath = szBaseName + _T(".rar");
 			if(this->ifFileExist(szSubPath)){
-				szaSubFiles->Add(szSubPath);
+				CString szSubFilepath = this->extractRarFile(szSubPath);
+				if(!szSubFilepath.IsEmpty()){
+					SVP_LogMsg(szSubFilepath + _T(" unrar ed"));
+					szaSubFiles->Add(szSubFilepath);
+				}else{
+					SVP_LogMsg(_T("Unrar error"));
+				}
 			}
 		}
 	}

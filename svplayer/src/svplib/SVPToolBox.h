@@ -6,6 +6,11 @@ class CSVPToolBox
 public:
 	CSVPToolBox(void);
 	~CSVPToolBox(void);
+	CString getSameTmpName(CString fnin );
+	CString getSameTmpExt(CString fnin );
+	int packGZfile(CString fnin , CString fnout );
+	int unpackGZfile(CString fnin , CString fnout );
+	CString extractRarFile(CString rarfn);
 	CString PackageSubFiles(CStringArray* szaSubFiles);
 	int FindAllSubfile(CString szSubPath , CStringArray* szaSubFiles);
 	char* CStringToUTF8(CString szIn, int* iDescLen, UINT codePage = CP_UTF8);
@@ -23,6 +28,7 @@ public:
 	char* ReadToPTCharByLength(FILE* fp, size_t length);
 	CString getVideoFileBasename(CString szVidPath, CStringArray* szaPathInfo);
 	int Explode(CString szIn, CString szTok, CStringArray* szaOut);
+	CString Implode(CString szTok, CStringArray* szaOut);
 	BOOL ifFileExist(CString szPathname);
 	BOOL ifDirWritable(CString szDir);
 	CString GetTempDir();

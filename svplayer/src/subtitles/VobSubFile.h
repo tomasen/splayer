@@ -68,8 +68,7 @@ public:
 class CVobSubFile : public CVobSubSettings, public ISubStream, public ISubPicProviderImpl
 {
 protected:
-	CString m_title;
-
+	
 	void TrimExtension(CString& fn);
 	bool ReadIdx(CString fn, int& ver), ReadSub(CString fn), ReadRar(CString fn), ReadIfo(CString fn);
 	bool WriteIdx(CString fn), WriteSub(CString fn);
@@ -87,6 +86,8 @@ protected:
 	bool SaveMaestro(CString fn);
 
 public:
+	CString m_title;
+
 	typedef struct
 	{
 		__int64 filepos;

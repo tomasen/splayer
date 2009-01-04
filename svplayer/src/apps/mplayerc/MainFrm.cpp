@@ -1237,7 +1237,43 @@ LRESULT CMainFrame::OnAppCommand(WPARAM wParam, LPARAM lParam)
 
 	return Default();
 }
+CString CMainFrame::getCurPlayingSubfile(){
+	CString fnSubtitleFile = _T("");
+	if(m_pCAP) {
 
+		int i = m_iSubtitleSel;
+		CComPtr<ISubStream> pSubStream;
+		POSITION pos = m_pSubStreams.GetHeadPosition();
+		while(pos && i >= 0)
+		{
+			pSubStream = m_pSubStreams.GetNext(pos);
+
+			if(i < pSubStream->GetStreamCount())
+			{
+				break;
+			}
+
+			i -= pSubStream->GetStreamCount();
+		}
+		if (pSubStream){
+			CLSID clsid;
+			pSubStream->GetClassID(&clsid);
+
+			if(clsid == __uuidof(CVobSubFile))
+			{
+				CVobSubFile* pVSF = (CVobSubFile*)(ISubStream*)pSubStream;
+
+				fnSubtitleFile = pVSF->m_title + _T(".idx");
+			}
+			else if(clsid == __uuidof(CRenderedTextSubtitle))
+			{
+				CRenderedTextSubtitle* pRTS = (CRenderedTextSubtitle*)(ISubStream*)pSubStream;
+				fnSubtitleFile = pRTS->m_path;
+			}
+		}
+	}
+	return fnSubtitleFile;
+}
 void CMainFrame::OnTimer(UINT nIDEvent)
 {
 	if(nIDEvent == TIMER_STREAMPOSPOLLER && m_iMediaLoadState == MLS_LOADED)
@@ -1249,6 +1285,44 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 			pMS->GetCurrentPosition(&rtNow);
 			pMS->GetDuration(&rtDur);
 
+			//如果视频长度大于1分钟， 而且是文件模式，而且正在播放中
+			if ( rtDur >  600000000 && m_iPlaybackMode == PM_FILE && GetMediaState() == State_Running) {
+				
+				time_t time_now = time(NULL);
+				
+				int totalplayedtime =  time_now - m_tPlayStartTime;
+
+				if( time_now > ( m_tLastLogTick + 60 )){ //如果和上次检查已经超n秒
+					CString fnVideoFile , fnSubtitleFile; 
+					fnVideoFile = m_fnCurPlayingFile;
+					fnSubtitleFile = getCurPlayingSubfile();
+					
+					if (!fnSubtitleFile.IsEmpty()){ //如果有字幕
+
+						CString szLog;
+						szLog.Format(_T(" %s ( with sub %s ) %d sec of %d sec ( 1/2 length video ) ") , fnVideoFile, fnSubtitleFile, totalplayedtime , rtDur/20000000  );
+						SVP_LogMsg(szLog);
+						
+						//if time > 50%
+						if (totalplayedtime > (rtDur/20000000) ){
+							//是否已经上传过呢
+							if(m_fnsAlreadyUploadedSubfile.Find( fnVideoFile+fnSubtitleFile ) < 0 ){
+								//upload subtitle
+								szLog.Format(_T("Uploading sub %s of %s since user played %d sec of %d sec ( more than 1/2 length video ) ") , fnSubtitleFile, fnVideoFile , totalplayedtime , rtDur/20000000  );
+								SVP_LogMsg(szLog);
+								SVP_UploadSubFileByVideoAndSubFilePath(fnVideoFile , fnSubtitleFile) ;
+								m_fnsAlreadyUploadedSubfile.Append( fnVideoFile+fnSubtitleFile+_T(";") );
+							}
+
+						}
+					}
+					
+
+					m_tLastLogTick = time_now;
+				}
+	
+				
+			}
 			if(m_rtDurationOverride >= 0) rtDur = m_rtDurationOverride;
 
 			m_wndSeekBar.Enable(rtDur > 0);
@@ -1606,6 +1680,8 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 				SystemParametersInfo(SPI_SETPOWEROFFACTIVE, 0, 0, SPIF_SENDWININICHANGE); // this might not be needed at all...
 				SystemParametersInfo(SPI_SETPOWEROFFACTIVE, fSaverActive, 0, SPIF_SENDWININICHANGE);
 			}
+
+			SetThreadExecutionState(ES_DISPLAY_REQUIRED|ES_SYSTEM_REQUIRED); //this is the right way, only this work under vista . no ES_CONTINUOUS  so it can goes to sleep when not playing
 		}
 	}
 	else if(nIDEvent == TIMER_STATUSERASER)
@@ -4214,6 +4290,26 @@ void CMainFrame::OnUpdateFileISDBUpload(CCmdUI *pCmdUI)
 
 void CMainFrame::OnFileISDBDownload()
 {
+
+	CString fnVideoFile , fnSubtitleFile; 
+	fnVideoFile = m_fnCurPlayingFile;
+	fnSubtitleFile = getCurPlayingSubfile();
+
+	if (!fnSubtitleFile.IsEmpty() ){ //如果有字幕
+		CString szUploadMsg;
+		szUploadMsg.Format(_T("本操作将上传您正在播放中的字幕： \r\n %s \r\n是否继续？"), fnSubtitleFile);
+
+		if ( AfxMessageBox(szUploadMsg, MB_YESNO) == IDYES){
+
+			CString szLog;
+
+			szLog.Format(_T("Uploading sub %s of %s because user demand to ") , fnSubtitleFile, fnVideoFile  );
+			SVP_LogMsg(szLog);
+			SVP_UploadSubFileByVideoAndSubFilePath(fnVideoFile , fnSubtitleFile) ;
+			return;
+		}
+	}
+
 	CStringA url = "http://shooter.cn/sub/?";
 	ShellExecute(m_hWnd, _T("open"), CString(url), NULL, NULL, SW_SHOWDEFAULT);
 /*
@@ -4741,10 +4837,15 @@ void CMainFrame::OnPlayPlay()
 {
 	if(m_iMediaLoadState == MLS_LOADED)
 	{
-		if(GetMediaState() == State_Stopped) m_iSpeedLevel = 0;
+		if(GetMediaState() == State_Stopped) {  m_iSpeedLevel = 0; time(&m_tPlayStartTime);}
 
 		if(m_iPlaybackMode == PM_FILE)
 		{
+			time_t ttNow;
+			time(&ttNow);
+			if( m_tPlayPauseTime > m_tPlayStartTime){
+				m_tPlayStartTime += (ttNow - m_tPlayPauseTime);
+			}
 			if(m_fEndOfStream) SendMessage(WM_COMMAND, ID_PLAY_STOP);
 			pMC->Run();
 		}
@@ -4811,6 +4912,7 @@ void CMainFrame::OnPlayPause()
 {
 	// Support ffdshow queueing.
 	// To avoid black out on pause, we have to lock g_ffdshowReceive to synchronize with ReceiveMine.
+	time(&m_tPlayPauseTime);
 	if(queueu_ffdshow_support)
 	{
 		CAutoLock lck(&g_ffdshowReceive);
@@ -7208,6 +7310,7 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 		if(fFirst)
 		{
 			pOFD->title = fn;
+			m_fnCurPlayingFile = fn;
 		}
 
 		fFirst = false;
@@ -8118,6 +8221,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 		}
 
 		// PostMessage instead of SendMessage because the user might call CloseMedia and then we would deadlock
+		time(&m_tPlayStartTime);
 
 		PostMessage(WM_COMMAND, ID_PLAY_PAUSE);
 

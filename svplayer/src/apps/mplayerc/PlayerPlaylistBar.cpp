@@ -227,7 +227,7 @@ void CPlayerPlaylistBar::AddItem(CAtlList<CString>& fns, CAtlList<CString>* subs
 			}*/
 		}else{
 			//TODO: remove this and put it in conditions
-			SVP_UploadSubFileByVideoAndSubFilePath( fn, ret[0].fn) ;
+			//
 		}
 		for(size_t i = 0; i < ret.GetCount(); i++)
 		{

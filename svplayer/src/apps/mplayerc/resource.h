@@ -746,6 +746,8 @@
 #define IDD_DHTML_SETTING               20000
 #define IDR_DEFAULT1                    20006
 #define IDD_DEFAULT_PLAYER              20007
+#define IDD_DIALOG1                     20008
+#define IDD_SUBUPLOAD                   20008
 #define IDC_CHK_NOMOREQUES              22000
 #define IDC_CHECK_DEFAULTPLAYER         22001
 #define IDR_HTML_UESETTINGPANEL         24000
@@ -784,7 +786,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        20008
+#define _APS_NEXT_RESOURCE_VALUE        20009
 #define _APS_NEXT_COMMAND_VALUE         32796
 #define _APS_NEXT_CONTROL_VALUE         22002
 #define _APS_NEXT_SYMED_VALUE           24001

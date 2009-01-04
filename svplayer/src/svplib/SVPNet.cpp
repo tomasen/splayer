@@ -60,7 +60,7 @@ int CSVPNet::WetherNeedUploadSub(CString fnVideoFilePath, CString szFileHash,CSt
 
 		this->SetCURLopt(curl);
 
-		curl_easy_setopt(curl, CURLOPT_URL, "http://www.svplayer.cn/api/subup.php");
+		curl_easy_setopt(curl, CURLOPT_URL, "http://svplayer.shooter.cn/api/subup.php");
 
 		int iDescLen = 0;
 		char* szPostFields = svpToolBox.CStringToUTF8(szPostPerm, &iDescLen) ;
@@ -133,7 +133,7 @@ int CSVPNet::UploadSubFileByVideoAndHash(CString fnVideoFilePath, CString szFile
 
 		this->SetCURLopt(curl);
 		curl_easy_setopt(curl,  CURLOPT_ERRORBUFFER, errorbuf );
-		curl_easy_setopt(curl, CURLOPT_URL, "http://www.svplayer.cn/api/subup.php");
+		curl_easy_setopt(curl, CURLOPT_URL, "http://svplayer.shooter.cn/api/subup.php");
 
 		curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
 		
@@ -199,7 +199,7 @@ int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, C
 		
 		this->SetCURLopt(curl);
 
-		curl_easy_setopt(curl, CURLOPT_URL, "http://www.svplayer.cn/api/subapi.php");
+		curl_easy_setopt(curl, CURLOPT_URL, "http://svplayer.shooter.cn/api/subapi.php");
 		//curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION , &(this->handleSubQuery));
 		curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
 
@@ -272,8 +272,12 @@ int  CSVPNet::ExtractDataFromAiSubRecvBuffer(CString szFilePath, FILE* sAiSubRec
 	
 	int iStatCode = szSBuff[0];
 	if(iStatCode <= 0){
-		//TODO error handle
-		SVP_LogMsg(_T("First Stat Code TODO: 显示有错误发生"));
+		if (iStatCode == -1){
+			SVP_LogMsg(_T("没有找到字幕"));
+		}else{
+			//TODO error handle
+			SVP_LogMsg(_T("First Stat Code TODO: 显示有错误发生"));
+		}
 		ret = -1;
 		goto releaseALL;
 	}

@@ -256,7 +256,12 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 	bool m_fLiveWM;
 
 	bool m_fUpdateInfoBar;
-
+	
+	time_t  m_tPlayStartTime;
+	time_t  m_tPlayPauseTime;
+	time_t  m_tLastLogTick;
+	CString m_fnCurPlayingFile;
+	CString m_fnsAlreadyUploadedSubfile;
 	
 	void SendStatusMessage(CString msg, int nTimeOut);
 	CString m_playingmsg, m_closingmsg;
@@ -283,7 +288,8 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 	friend class CWebClientSocket;
 	friend class CWebServer;
 	CAutoPtr<CWebServer> m_pWebServer;
-
+private:
+	CString getCurPlayingSubfile();
 public:
 	// subtitles
 

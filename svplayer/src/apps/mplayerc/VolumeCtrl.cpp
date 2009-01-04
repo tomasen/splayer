@@ -59,12 +59,24 @@ void CVolumeCtrl::SetPosInternal(int pos)
 
 void CVolumeCtrl::IncreaseVolume()
 {
-	SetPosInternal(GetPos() + GetPageSize());
+	if (GetPos() > 20 ){
+		SetPosInternal(GetPos() + GetPageSize());
+	}else if (GetPos() > 10 ){
+		SetPosInternal(GetPos() + 3);
+	}else{
+		SetPosInternal(GetPos() + 1);
+	}
 }
 
 void CVolumeCtrl::DecreaseVolume()
 {
-	SetPosInternal(GetPos() - GetPageSize());
+	if (GetPos() > 20 ){
+		SetPosInternal(GetPos() - GetPageSize());
+	}else if (GetPos() > 10 ){
+		SetPosInternal(GetPos() - 3);
+	}else{
+		SetPosInternal(GetPos() - 1);
+	}
 }
 
 BEGIN_MESSAGE_MAP(CVolumeCtrl, CSliderCtrl)

@@ -885,6 +885,15 @@ BEGIN
     PUSHBUTTON      "高级设置",IDC_BUTTON2,159,63,45,14
 END
 
+IDD_SUBUPLOAD DIALOGEX 0, 0, 316, 184
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "上传字幕",IDOK,88,163,50,14
+    PUSHBUTTON      "取消",IDCANCEL,163,163,50,14
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1243,6 +1252,14 @@ BEGIN
         RIGHTMARGIN, 217
         TOPMARGIN, 7
         BOTTOMMARGIN, 77
+    END
+
+    IDD_SUBUPLOAD, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 309
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 177
     END
 END
 #endif    // APSTUDIO_INVOKED

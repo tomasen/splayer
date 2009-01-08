@@ -1286,7 +1286,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 			pMS->GetDuration(&rtDur);
 
 			//如果视频长度大于1分钟， 而且是文件模式，而且正在播放中
-			if ( rtDur >  600000000 && m_iPlaybackMode == PM_FILE && GetMediaState() == State_Running) {
+			if ( rtDur >  400000000 && m_iPlaybackMode == PM_FILE && GetMediaState() == State_Running) {
 				
 				time_t time_now = time(NULL);
 				
@@ -1300,7 +1300,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 					if (!fnSubtitleFile.IsEmpty()){ //如果有字幕
 
 						CString szLog;
-						szLog.Format(_T(" %s ( with sub %s ) %d sec of %d sec ( 1/2 length video ) ") , fnVideoFile, fnSubtitleFile, totalplayedtime , rtDur/20000000  );
+						szLog.Format(_T(" %s ( with sub %s ) %d sec of %d sec ( 1/2 length video = %d ) ") , fnVideoFile, fnSubtitleFile, totalplayedtime , rtDur/20000000  );
 						SVP_LogMsg(szLog);
 						
 						//if time > 50%
@@ -7234,6 +7234,34 @@ HRESULT CMainFrame::OpenMMSUrlStream(CString szFn){
 	return ret;
 }
 
+class CSVPThreadLoadThreadData{
+public:
+	CString szVidPath;
+	CMainFrame* pFrame;
+};
+
+UINT __cdecl SVPThreadLoadThread( LPVOID lpParam ) 
+{ 
+
+	CSVPThreadLoadThreadData* pData = (CSVPThreadLoadThreadData*)lpParam;
+
+	// Print the parameter values using thread-safe functions.
+	CStringArray szSubArray;
+
+	SVP_FetchSubFileByVideoFilePath( pData->szVidPath, &szSubArray) ;
+	BOOL bSubSelected = false;
+	for(INT i = 0 ;i < szSubArray.GetCount(); i++){
+		if(pData->pFrame->LoadSubtitle(szSubArray[i]) && !bSubSelected){
+			pData->pFrame->SetSubtitle( pData->pFrame->m_pSubStreams.GetTail()  ); //Enable Subtitle
+			//TODO: select correct language for idx+sub
+			bSubSelected = true;
+		}
+
+	}
+	delete pData;
+	return 0; 
+} 
+
 void CMainFrame::OpenFile(OpenFileData* pOFD)
 {
 	if(pOFD->fns.IsEmpty())
@@ -7311,6 +7339,14 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 		{
 			pOFD->title = fn;
 			m_fnCurPlayingFile = fn;
+			//是否有字幕？ 沒有则下载字幕
+			if ( pOFD->subs.GetCount() <= 0){
+				CSVPThreadLoadThreadData* pData = new CSVPThreadLoadThreadData();
+				pData->pFrame = (CMainFrame*)this;
+				pData->szVidPath = fn;
+				AfxBeginThread(SVPThreadLoadThread, pData); 
+			}
+
 		}
 
 		fFirst = false;

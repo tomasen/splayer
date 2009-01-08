@@ -344,8 +344,6 @@ int CSVPToolBox::HandleSubPackage(FILE* fp){
 		return -2;
 	}
 
-	szaSubDescs.RemoveAll();
-	szaSubTmpFileList.RemoveAll();
 	
 	size_t iDescLength = this->Char4ToInt(szSBuff);
 
@@ -634,7 +632,8 @@ CString CSVPToolBox::getSubFileByTempid(int iTmpID, CString szVidPath){
 		}else{
 			szTarget = szTargetBaseName + szSubTmpDetail[0];
 		}
-		if(szDefaultSubPath.IsEmpty()){
+		if ( ( (bIsIdxSub && szSubTmpDetail[0].CompareNoCase(_T(".idx")) == 0) || !bIsIdxSub )
+				&& szDefaultSubPath.IsEmpty()){
 			szDefaultSubPath = szTarget;
 		}
 		if( !CopyFile( szSource, szTarget, true) ){

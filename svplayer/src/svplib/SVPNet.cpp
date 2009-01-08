@@ -283,6 +283,8 @@ int  CSVPNet::ExtractDataFromAiSubRecvBuffer(CString szFilePath, FILE* sAiSubRec
 	}
 	
 	//handle SubFiles
+	svpToolBox.szaSubDescs.RemoveAll();
+	svpToolBox.szaSubTmpFileList.RemoveAll();
 
 	for(int j = 0; j < iStatCode; j++){
 		int exterr = svpToolBox.HandleSubPackage(sAiSubRecvBuff);

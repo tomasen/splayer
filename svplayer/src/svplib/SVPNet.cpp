@@ -48,7 +48,59 @@ size_t CSVPNet::handleSubQuery( void *ptr, size_t size, size_t nmemb, void *stre
 	fwrite(ptr, size ,nmemb,(FILE*)stream);
 	return realsize;
 }
+BOOL CSVPNet::CheckUpdaterExe(CString szFileVerHash, CString szPath){
+	FILE* stream_updater_exe;
+	CString szTmpFilename = this->svpToolBox.getTmpFileName();
+	if ( _wfopen_s( &stream_updater_exe, szTmpFilename, _T("wb") ) != 0){
+		return 0; //input file open error
+	}
+	CURL *curl;
+	CURLcode res;
+	CString szPostPerm = _T( "current=" ) + szFileVerHash;
+	int rret = 0;
+	curl = curl_easy_init();
+	if(curl) {
+		long respcode;
 
+		this->SetCURLopt(curl);
+
+		curl_easy_setopt(curl, CURLOPT_URL, "http://svplayer.shooter.cn/api/updater.php");
+
+		int iDescLen = 0;
+		char* szPostFields = svpToolBox.CStringToUTF8(szPostPerm, &iDescLen) ;
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, (void *)szPostFields);
+		
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)stream_updater_exe);
+
+		res = curl_easy_perform(curl);
+		if(res == 0){
+			curl_easy_getinfo(curl,CURLINFO_RESPONSE_CODE, &respcode);
+
+			if(respcode == 200){
+				//good to go // continues to upload sub
+				rret = 1;
+				
+			}else{
+				//error
+				SVP_LogMsg(_T("None Update Required For Updater"));
+			}
+		}else{
+			//error
+			SVP_LogMsg(_T("HTTP connection error  ")); //TODO handle this
+		}
+		curl_easy_cleanup(curl);
+	}
+	fclose(stream_updater_exe);
+	if (rret){
+		if ( CopyFile(szTmpFilename, szPath, FALSE ) ){	
+			SVP_LogMsg(_T("Copy Updater.exe Sucesssed"));
+		}else{
+			SVP_LogMsg(_T("Copy Updater.exe Failed"));
+			rret = 0;
+		}
+	}
+	return rret;
+}
 int CSVPNet::WetherNeedUploadSub(CString fnVideoFilePath, CString szFileHash,CString fnSubHash){
 	CURL *curl;
 	CURLcode res;
@@ -164,6 +216,7 @@ int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, C
 {
 	CURL *curl;
 	CURLcode res;
+	int ret = 0;
 	CString szPostPerm = _T( "pathinfo=" ) + szFilePath + _T("&filehash=") + szFileHash + _T("&vhash=") + szVHash;
 	struct curl_httppost *formpost=NULL;
 	struct curl_httppost *lastptr=NULL;
@@ -215,6 +268,7 @@ int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, C
 			if(respcode == 200){
 				//good to go
 				SVP_LogMsg(_T("HTTP return code 200"));
+				ret = 1;
 			}else{
 				//error
 				SVP_LogMsg(_T("HTTP return code is not 200"));
@@ -231,11 +285,11 @@ int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, C
 		//free(szPostFields);
 
 		//if not error, process data
-		
-		if ( this->ExtractDataFromAiSubRecvBuffer(szFilePath, stream_http_recv_buffer) ){
-			SVP_LogMsg(_T("Error On Extract DataFromAiSubRecvBuffer ")); //TODO handle this
+		if (ret){
+			if ( this->ExtractDataFromAiSubRecvBuffer(szFilePath, stream_http_recv_buffer) ){
+				SVP_LogMsg(_T("Error On Extract DataFromAiSubRecvBuffer ")); //TODO handle this
+			}
 		}
-		
 		
 
 		/*
@@ -256,6 +310,7 @@ int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, C
 	
 	//this->mainBuffer = NULL;
 	//this->mainBufferSize = 0;
+	fclose(stream_http_recv_buffer);
 
 	return 0;
 }

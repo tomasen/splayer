@@ -1,6 +1,9 @@
 #include "SVPToolBox.h"
 #include "..\..\include\unrar\unrar.h"
 #include "..\zlib\zlib.h"
+#include <atlpath.h>
+#include <io.h> 
+#include <wchar.h> 
 
 CSVPToolBox::CSVPToolBox(void)
 {
@@ -8,6 +11,61 @@ CSVPToolBox::CSVPToolBox(void)
 
 CSVPToolBox::~CSVPToolBox(void)
 {
+}
+CString CSVPToolBox::getFileVersionHash(CString szPath){
+	DWORD             dwHandle;
+	UINT              dwLen;
+	UINT              uLen;
+	LPVOID            lpBuffer;
+	VS_FIXEDFILEINFO  *lpBuffer2;
+	DWORD             dwMajor   = 0;
+	DWORD             dwMinor   = 0;
+	DWORD             dwRelease = 0;
+	DWORD             dwBuild   = 0;
+
+	dwLen  = GetFileVersionInfoSize(szPath, &dwHandle);
+
+	TCHAR * lpData = (TCHAR*) malloc(dwLen);
+	if(!lpData)
+		return _T("");
+	memset((char*)lpData, 0 , dwLen);
+
+	/* GetFileVersionInfo() requires a char *, but the api doesn't
+	* indicate that it will modify it */
+	if(GetFileVersionInfo(szPath, dwHandle, dwLen, lpData) != 0)
+	{
+		if(VerQueryValue(lpData, _T("\\"), &lpBuffer, &uLen) != 0)
+		{
+			lpBuffer2 = (VS_FIXEDFILEINFO *)lpBuffer;
+			dwMajor   = HIWORD(lpBuffer2->dwFileVersionMS);
+			dwMinor   = LOWORD(lpBuffer2->dwFileVersionMS);
+			dwRelease = HIWORD(lpBuffer2->dwFileVersionLS);
+			dwBuild   = LOWORD(lpBuffer2->dwFileVersionLS);
+		}
+	}
+	long iFileLen;
+	int fp;
+	if( _wsopen_s ( &fp, szPath, _O_RDONLY, _SH_DENYNO,
+		_S_IREAD ) == 0 )
+	{
+
+		iFileLen = filelength(fp);
+		_close( fp);
+
+	}
+	
+	CString szRet;
+	szRet.Format(_T("%d.%d.%d.%d.%d"), dwMajor, dwMinor, dwRelease, dwBuild,iFileLen);
+	return szRet;
+}
+BOOL CSVPToolBox::isWriteAble(CString szPath){
+	FILE* fp;
+	if ( _wfopen_s( &fp, szPath, _T("ab") ) != 0){
+		return 0; //input file open error
+	}else{
+		fclose(fp);
+	}
+	return 1;
 }
 CString CSVPToolBox::getSameTmpName(CString fnin )
 {
@@ -324,6 +382,20 @@ FILE* CSVPToolBox::getTmpFileSteam(){
 		}
 	}
 	return stream;
+}
+CString CSVPToolBox::GetPlayerPath(CString progName){
+	CString path;
+	GetModuleFileName(AfxGetInstanceHandle(), path.GetBuffer(MAX_PATH), MAX_PATH);
+	path.ReleaseBuffer();
+	if (progName.IsEmpty()){
+		return path;
+	}else{
+		CPath cpath(path);
+		cpath.RemoveFileSpec();
+		cpath.AddBackslash();
+		cpath.Append(progName);
+		return cpath;
+	}
 }
 int CSVPToolBox::HandleSubPackage(FILE* fp){
 	//Extract Package

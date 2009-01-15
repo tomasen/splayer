@@ -33,6 +33,9 @@ public:
 	BOOL ifDirWritable(CString szDir);
 	CString GetTempDir();
 	int DetectFileCharset(CString fn);
+	CString GetPlayerPath(CString progName = _T(""));
+	BOOL isWriteAble(CString szPath);
+	CString getFileVersionHash(CString szPath);
 private:
 	CStringArray szaTmpFileNames;
 };

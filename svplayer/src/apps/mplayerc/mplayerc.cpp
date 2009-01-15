@@ -669,7 +669,7 @@ BOOL CMPlayerCApp::InitInstance()
 			}
 		}
 	}
-
+	SVP_CheckUpdaterExe();
 
 	if((m_s.nCLSwitches&CLSW_REGEXTVID) || (m_s.nCLSwitches&CLSW_REGEXTAUD))
 	{

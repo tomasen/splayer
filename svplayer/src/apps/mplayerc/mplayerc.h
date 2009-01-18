@@ -308,6 +308,7 @@ public:
 	bool GetAppDataPath(CString& path);
 	
 	static bool	IsVista();
+	static bool	IsDX9();
 	static bool	IsVSFilterInstalled();
 
 // Overrides

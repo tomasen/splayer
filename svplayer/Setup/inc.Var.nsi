@@ -22,6 +22,10 @@ InstallDir "$PROGRAMFILES\SVPlayer"
 
 InstallDirRegKey HKLM "Software\SVPlayer "Install_Dir"
 
+!include registry.nsh
+
+!insertmacro COPY_REGISTRY_KEY
+
 
 
 ;--------------------------------
@@ -66,7 +70,37 @@ InstallDirRegKey HKLM "Software\SVPlayer "Install_Dir"
 ;Installer Sections
 
 ;--------------------------------
+!macro IfKeyExists ROOT MAIN_KEY KEY
+push $R0
+push $R1
 
+!define Index 'Line${__LINE__}'
+
+StrCpy $R1 "0"
+
+"${Index}-Loop:"
+; Check for Key
+EnumRegKey $R0 ${ROOT} "${MAIN_KEY}" "$R1"
+StrCmp $R0 "" "${Index}-False"
+  IntOp $R1 $R1 + 1
+  StrCmp $R0 "${KEY}" "${Index}-True" "${Index}-Loop"
+
+"${Index}-True:"
+;Return 1 if found
+push "1"
+goto "${Index}-End"
+
+"${Index}-False:"
+;Return 0 if not found
+push "0"
+goto "${Index}-End"
+
+"${Index}-End:"
+!undef Index
+exch 2
+pop $R0
+pop $R1
+!macroend
 
 ; Pages
 /*
@@ -87,7 +121,13 @@ Section  "射手影音播放器" mplayerc
 
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR
-
+  !insertmacro IfKeyExists "HKCU" "SOFTWARE\SVPlayer\射手影音播放器" "Recent Dub List"
+  Pop $R0
+  StrCmp $R0 1 skipcopy
+  ${COPY_REGISTRY_KEY} HKCU "SOFTWARE\Gabest\Media Player Classic\Recent Dub List" HKCU "SOFTWARE\SVPlayer\射手影音播放器\Recent Dub List"
+  ${COPY_REGISTRY_KEY} HKCU "SOFTWARE\Gabest\Media Player Classic\Recent File List" HKCU "SOFTWARE\SVPlayer\射手影音播放器\Recent File List"
+  ${COPY_REGISTRY_KEY} HKCU "SOFTWARE\Gabest\Media Player Classic\Recent Url List" HKCU "SOFTWARE\SVPlayer\射手影音播放器\Recent Url List"
+  skipcopy:
   ; Put file there
   File "..\..\svplayer.bin\mplayerc.exe"
   File "..\..\svplayer.bin\Updater.exe"

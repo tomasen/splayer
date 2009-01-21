@@ -371,6 +371,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_HELP_HOMEPAGE, OnHelpHomepage)
 	ON_COMMAND(ID_HELP_DOCUMENTATION, OnHelpDocumentation)
 
+	ON_COMMAND(ID_ADV_OPTIONS, &CMainFrame::OnAdvOptions)
 	END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1285,30 +1286,31 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 			pMS->GetCurrentPosition(&rtNow);
 			pMS->GetDuration(&rtDur);
 
+			UINT iTotalLenSec = (UINT)( (INT64) rtDur / 20000000 );
 			//如果视频长度大于1分钟， 而且是文件模式，而且正在播放中
-			if ( rtDur >  400000000 && m_iPlaybackMode == PM_FILE && GetMediaState() == State_Running) {
+			if ( iTotalLenSec >  30 && m_iPlaybackMode == PM_FILE && GetMediaState() == State_Running) {
 				
 				time_t time_now = time(NULL);
 				
-				int totalplayedtime =  time_now - m_tPlayStartTime;
+				UINT totalplayedtime =  time_now - m_tPlayStartTime;
 
 				if( time_now > ( m_tLastLogTick + 60 )){ //如果和上次检查已经超n秒
 					CString fnVideoFile , fnSubtitleFile; 
 					fnVideoFile = m_fnCurPlayingFile;
 					fnSubtitleFile = getCurPlayingSubfile();
 					
+					
 					if (!fnSubtitleFile.IsEmpty()){ //如果有字幕
 
 						CString szLog;
-						szLog.Format(_T(" %s ( with sub %s ) %d sec of %d sec ( 1/2 length video = %d ) ") , fnVideoFile, fnSubtitleFile, totalplayedtime , rtDur/20000000  );
+						szLog.Format(_T(" %s ( with sub %s ) %d sec of %d sec ( 1/2 length video = %d ) ") , fnVideoFile, fnSubtitleFile, totalplayedtime , iTotalLenSec, (UINT)(iTotalLenSec/2)  );
 						SVP_LogMsg(szLog);
-						
 						//if time > 50%
-						if (totalplayedtime > (rtDur/20000000) ){
+						if (totalplayedtime > (UINT)(iTotalLenSec/2)){
 							//是否已经上传过呢
 							if(m_fnsAlreadyUploadedSubfile.Find( fnVideoFile+fnSubtitleFile ) < 0 ){
 								//upload subtitle
-								szLog.Format(_T("Uploading sub %s of %s since user played %d sec of %d sec ( more than 1/2 length video ) ") , fnSubtitleFile, fnVideoFile , totalplayedtime , rtDur/20000000  );
+								szLog.Format(_T("Uploading sub %s of %s since user played %d sec of %d sec ( more than 1/2 length video ) ") , fnSubtitleFile, fnVideoFile , totalplayedtime , iTotalLenSec  );
 								SVP_LogMsg(szLog);
 								SVP_UploadSubFileByVideoAndSubFilePath(fnVideoFile , fnSubtitleFile) ;
 								m_fnsAlreadyUploadedSubfile.Append( fnVideoFile+fnSubtitleFile+_T(";") );
@@ -10269,6 +10271,26 @@ bool CMainFrame::StopCapture()
 }
 
 //
+void CMainFrame::OnAdvOptions()
+{
+	AppSettings& s = AfxGetAppSettings();
+
+	
+
+	
+		CPPageSheet options(ResStr(IDS_OPTIONS_CAPTION), pGB, this, NULL);
+
+		if(options.DoModal() == IDOK)
+		{
+			if(!m_fFullScreen)
+				SetAlwaysOnTop(s.iOnTop);
+
+			m_wndView.LoadLogo();
+
+			s.UpdateData(true);
+		}		
+	
+}
 
 void CMainFrame::ShowOptions(int idPage)
 {

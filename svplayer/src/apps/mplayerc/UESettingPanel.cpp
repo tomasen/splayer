@@ -63,7 +63,9 @@ BOOL CUESettingPanel::OnInitDialog()
 {
 	CDHtmlDialog::OnInitDialog();
 	
-	//m_sgs_initblock = _T("subsetting");
+	if (this->idPage == IDD_PPAGEAUDIOSWITCHER){
+		m_sgs_initblock = _T("audiosetting");
+	}
 
 
  	AppSettings& s = AfxGetAppSettings();

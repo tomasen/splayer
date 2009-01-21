@@ -1443,12 +1443,12 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "CompanyName", "shooter.cn & Gabest"
-            VALUE "FileDescription", "Media Player Classic"
-            VALUE "FileVersion", "6, 4, 9, 1"
-            VALUE "InternalName", "Media Player Classic"
-            VALUE "LegalCopyright", "Copyright (C) 2002-2008 shooter.cn & Gabest"
+            VALUE "FileDescription", "射手影音播放器"
+            VALUE "FileVersion", "1.0 alpha"
+            VALUE "InternalName", "射手影音播放器"
+            VALUE "LegalCopyright", "Copyright (C) 2002-2009 shooter.cn & Gabest"
             VALUE "OriginalFilename", "mplayerc.exe"
-            VALUE "ProductName", "Media Player Classic"
+            VALUE "ProductName", "射手影音播放器"
             VALUE "ProductVersion", "6, 4, 9, 1"
         END
     END
@@ -1760,7 +1760,8 @@ BEGIN
             MENUITEM "降低音量(&D)\t↓",                 ID_VOLUME_DOWN
             MENUITEM "静音(&M)\tCtrl+M",              ID_VOLUME_MUTE
         END
-        MENUITEM "高级设置(&O)...",                 ID_VIEW_OPTIONS
+        MENUITEM "选项(&O)...",                   ID_VIEW_OPTIONS
+        MENUITEM "高级设置(&A)...",                 ID_ADV_OPTIONS
     END
 END
 
@@ -1917,6 +1918,7 @@ BEGIN
     POPUP "高级(&A)"
     BEGIN
         MENUITEM "选项(&O)...",                   ID_VIEW_OPTIONS
+        MENUITEM "高级设置(&A)...",                 ID_32797
         POPUP "工具"
         BEGIN
             MENUITEM "DSM转换器(&n)...",               ID_FILE_CONVERT
@@ -2073,6 +2075,7 @@ BEGIN
     IDS_OPEN_WITH_MPC       "使用射手影音播放"
     IDS_APP_DESCRIPTION     "射手影音播放器"
     IDS_RS_POPSTARTUPEXTCHECK "PouStartupExtCheck"
+    IDD_PPAGESUBSTYLE2      "字幕::第二字幕"
 END
 
 STRINGTABLE 
@@ -2122,7 +2125,7 @@ BEGIN
     IDD_PPAGESUBTITLES      "字幕"
     IDD_PPAGEFORMATS        "播放器::文件关联"
     IDD_PPAGETWEAKS         "高级调整"
-    IDD_PPAGEAUDIOSWITCHER  "内置滤镜::音频设置"
+    IDD_PPAGEAUDIOSWITCHER  "音频设置"
     IDD_PPAGEEXTERNALFILTERS "外部滤镜"
 END
 
@@ -2136,7 +2139,7 @@ END
 STRINGTABLE 
 BEGIN
     IDD_PPAGEACCELTBL       "播放器::热键定义"
-    IDD_PPAGESUBSTYLE       "字幕::默认风格"
+    IDD_PPAGESUBSTYLE       "字幕::第一字幕"
     IDD_PPAGEINTERNALFILTERS "内置滤镜"
     IDD_PPAGELOGO           "播放器::界面背景"
     IDD_PPAGEOUTPUT         "播放器::输出"

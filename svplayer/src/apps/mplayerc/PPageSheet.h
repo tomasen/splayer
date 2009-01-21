@@ -71,6 +71,7 @@ private:
 	CPPageWebServer m_webserver;
 	CPPageSubtitles m_subtitles;
 	CPPageSubStyle m_substyle;
+	CPPageSubStyle m_substyle2;
 	//CPPageSubDB m_subdb;
 	CPPageInternalFilters m_internalfilters;
 	CPPageAudioSwitcher m_audioswitcher;

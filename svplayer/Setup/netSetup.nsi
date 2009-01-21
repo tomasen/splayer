@@ -5,7 +5,7 @@ Function .onInit
 
 FunctionEnd
 
-OutFile "..\..\NetSetup.exe"
+OutFile "..\..\netSetup.exe"
 
 ; Uninstaller
 

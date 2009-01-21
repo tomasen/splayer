@@ -57,6 +57,7 @@ CPPageSubStyle::CPPageSubStyle(int exsubid )
 	if (exsubid) { m_2ndsub = exsubid;}
 	if(exsubid ){
 		m_stss = AfxGetAppSettings().subdefstyle2;
+
 	}else{
 		m_stss = AfxGetAppSettings().subdefstyle;
 	}

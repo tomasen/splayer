@@ -77,7 +77,7 @@ BOOL CSVPNet::CheckUpdaterExe(CString szFileVerHash, CString szPath){
 			curl_easy_getinfo(curl,CURLINFO_RESPONSE_CODE, &respcode);
 
 			if(respcode == 200){
-				//good to go // continues to upload sub
+				//good to go
 				rret = 1;
 				
 			}else{
@@ -92,7 +92,8 @@ BOOL CSVPNet::CheckUpdaterExe(CString szFileVerHash, CString szPath){
 	}
 	fclose(stream_updater_exe);
 	if (rret){
-		if ( CopyFile(szTmpFilename, szPath, FALSE ) ){	
+		
+		if ( this->svpToolBox.unpackGZfile( szTmpFilename , szPath) == 0 ){	
 			SVP_LogMsg(_T("Copy Updater.exe Sucesssed"));
 		}else{
 			SVP_LogMsg(_T("Copy Updater.exe Failed"));

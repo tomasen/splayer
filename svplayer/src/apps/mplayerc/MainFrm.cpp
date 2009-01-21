@@ -372,6 +372,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_HELP_DOCUMENTATION, OnHelpDocumentation)
 
 	ON_COMMAND(ID_ADV_OPTIONS, &CMainFrame::OnAdvOptions)
+	ON_COMMAND(ID_MANUALCHECKUPDATE, &CMainFrame::OnManualcheckupdate)
 	END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -4284,7 +4285,10 @@ void CMainFrame::OnFileISDBUpload()
 	
 	ShellExecute(m_hWnd, _T("open"), CString(url), NULL, NULL, SW_SHOWDEFAULT);
 }
-
+void CMainFrame::OnManualcheckupdate()
+{
+	SVP_RealCheckUpdaterExe();
+}
 void CMainFrame::OnUpdateFileISDBUpload(CCmdUI *pCmdUI)
 {
 	pCmdUI->Enable(m_wndPlaylistBar.GetCount() > 0);
@@ -6384,12 +6388,12 @@ void CMainFrame::OnUpdateFavoritesDevice(CCmdUI* pCmdUI)
 
 void CMainFrame::OnHelpHomepage()
 {
-	ShellExecute(m_hWnd, _T("open"), _T("http://sourceforge.net/projects/guliverkli2/"), NULL, NULL, SW_SHOWDEFAULT);
+	ShellExecute(m_hWnd, _T("open"), _T("http://shooter.cn/svplayer/"), NULL, NULL, SW_SHOWDEFAULT);
 }
 
 void CMainFrame::OnHelpDocumentation()
 {
-	ShellExecute(m_hWnd, _T("open"), _T("http://sourceforge.net/project/showfiles.php?group_id=82303&package_id=144472"), NULL, NULL, SW_SHOWDEFAULT);
+	ShellExecute(m_hWnd, _T("open"), _T("http://shooter.cn/svplayer/"), NULL, NULL, SW_SHOWDEFAULT);
 }
 
 //////////////////////////////////
@@ -10560,3 +10564,5 @@ afx_msg void CMainFrame::OnSubtitleDelay2(UINT nID)
 		SetSubtitleDelay2(newDelay);
 	}
 }
+
+

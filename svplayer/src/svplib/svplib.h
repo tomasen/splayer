@@ -26,5 +26,5 @@ extern void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath, CStringArra
 extern void SVP_UploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString szSubPath);
 extern void SVP_LogMsg(CString logmsg, int level = 15);
 extern void SVP_CheckUpdaterExe();
-
+extern void SVP_RealCheckUpdaterExe();
 

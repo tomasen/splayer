@@ -34,8 +34,12 @@ UINT __cdecl SVPThreadUploadSubFile( LPVOID lpParam )
 	delete pData;
 	return 0; 
 } 
-
-void SVP_CheckUpdaterExe(){
+UINT __cdecl SVPThreadCheckUpdaterExe( LPVOID lpParam ) 
+{ 
+	SVP_RealCheckUpdaterExe();
+	return 0; 
+}
+void SVP_RealCheckUpdaterExe(){
 	//检查 updater.exe 是否可写
 	CSVPToolBox svpToolBox;
 	CSVPNet svpNet;
@@ -47,12 +51,15 @@ void SVP_CheckUpdaterExe(){
 
 		// 服务器判断是否需要升级 updater.exe 。 如果不需要升级，返回404。如果需要升级，则返回updater.exe供下载
 		if ( svpNet.CheckUpdaterExe(FileVersionHash, szUpdaterPath) ){
-			
+
 		}
 		//运行升级程序
 		ShellExecute( NULL, _T("open"), szUpdaterPath, _T("") , _T(""), SW_SHOW);	
 	}
-
+}
+void SVP_CheckUpdaterExe(){
+	
+	AfxBeginThread( SVPThreadCheckUpdaterExe, NULL);
 }
 
 void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath, CStringArray* szSubArray){

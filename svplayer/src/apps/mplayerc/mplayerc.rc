@@ -157,9 +157,9 @@ CAPTION "关于"
 FONT 8, "MS Shell Dlg", 400, 0, 0xB1
 BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
-    LTEXT           "SVPlayer (Based on MPC)",IDC_STATIC1,40,12,126,8,SS_NOPREFIX
-    LTEXT           "Copyright (C) 2002-2008 Tomasen & Honored Gabest",IDC_STATIC,40,26,170,8
-    LTEXT           "Version: 1.0 ",IDC_VERSION,40,40,170,8
+    LTEXT           "射手影音播放器(Based on MPC)",IDC_STATIC1,40,12,126,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2002-2009 Tomasen \n                                  In honor of Gabest",IDC_STATIC,40,26,170,19
+    LTEXT           "Version: 1.0 预览版",IDC_VERSION,40,50,170,8
     PUSHBUTTON      "关闭",IDOK,160,8,50,14,WS_GROUP
     LTEXT           "本软件为免费软件(freeware)\n同时采用GNU授权协议",IDC_STATIC,40,62,170,25
 END
@@ -1598,12 +1598,15 @@ BEGIN
             MENUITEM "搜索字幕...",                     ID_FILE_ISDB_SEARCH
             MENUITEM "上传字幕...",                     ID_FILE_ISDB_UPLOAD
             MENUITEM "下载字幕...",                     ID_FILE_ISDB_DOWNLOAD
+            MENUITEM SEPARATOR
+            MENUITEM "调入字幕(&L)...\tCtrl+L",         ID_FILE_LOAD_SUBTITLE
         END
         POPUP "帮助(&H)"
         BEGIN
             MENUITEM "主页",                          ID_HELP_HOMEPAGE
             MENUITEM "使用说明",                        ID_HELP_DOCUMENTATION
             MENUITEM "命令行用法",                       ID_HELP_SHOWCOMMANDLINESWITCHES
+            MENUITEM "检查更新...",                     ID_MANUALCHECKUPDATE
             MENUITEM SEPARATOR
             MENUITEM "关于(&A)...",                   ID_HELP_ABOUT
         END
@@ -1642,6 +1645,7 @@ BEGIN
         MENUITEM "音频",                          ID__32777
         MENUITEM "第一字幕",                        ID__32776
         MENUITEM "第二字幕",                        ID__32796
+        MENUITEM "调入字幕(&L)...\tCtrl+L",         ID_FILE_LOAD_SUBTITLE
         MENUITEM SEPARATOR
         MENUITEM "全屏幕(&l)",                     ID_VIEW_FULLSCREEN
         MENUITEM "信箱模式(&I)",                    ID_VIEW_VF_FROMINSIDE
@@ -1929,12 +1933,15 @@ BEGIN
         MENUITEM "搜索字幕...",                     ID_FILE_ISDB_SEARCH
         MENUITEM "上传字幕...",                     ID_FILE_ISDB_UPLOAD
         MENUITEM "下载字幕...",                     ID_FILE_ISDB_DOWNLOAD
+        MENUITEM SEPARATOR
+        MENUITEM "调入字幕(&L)...\tCtrl+L",         ID_FILE_LOAD_SUBTITLE
     END
     POPUP "帮助(&H)"
     BEGIN
         MENUITEM "主页",                          ID_HELP_HOMEPAGE
         MENUITEM "使用说明",                        ID_HELP_DOCUMENTATION
         MENUITEM "命令行用法",                       ID_HELP_SHOWCOMMANDLINESWITCHES
+        MENUITEM "检查更新...",                     ID_MANUALCHECKUPDATE
         MENUITEM SEPARATOR
         MENUITEM "关于(&A)...",                   ID_HELP_ABOUT
     END
@@ -2076,6 +2083,7 @@ BEGIN
     IDS_APP_DESCRIPTION     "射手影音播放器"
     IDS_RS_POPSTARTUPEXTCHECK "PouStartupExtCheck"
     IDD_PPAGESUBSTYLE2      "字幕::第二字幕"
+    IDS_RS_CHECKUPDATERINTERLEAVE "CheckUpdaterInterleave"
 END
 
 STRINGTABLE 
@@ -2438,6 +2446,11 @@ BEGIN
     IDS_INFOBAR_RATING      "评分"
     IDS_INFOBAR_DESCRIPTION "描述"
     IDS_INFOBAR_DOMAIN      "域名"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_RS_LASTCHECKUPDATER "LastCheckUpdater"
 END
 
 #endif    // Chinese (P.R.C.) resources

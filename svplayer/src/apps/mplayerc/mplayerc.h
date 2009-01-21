@@ -353,6 +353,8 @@ public:
 		int iDXVer;
 
 		int nCS;
+		UINT tLastCheckUpdater;
+		UINT tCheckUpdaterInterleave;
 		bool fCheckFileAsscOnStartup;
 		CString szStartUPCheckExts;
 		bool fPopupStartUpExtCheck;

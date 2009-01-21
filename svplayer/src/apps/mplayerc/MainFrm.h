@@ -689,4 +689,5 @@ public:
 	void		SetSubtitleDelay(int delay_ms);
 	void		SetSubtitleDelay2(int delay_ms);
 	afx_msg void OnAdvOptions();
+	afx_msg void OnManualcheckupdate();
 };

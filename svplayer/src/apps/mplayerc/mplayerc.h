@@ -308,7 +308,6 @@ public:
 	bool GetAppDataPath(CString& path);
 	
 	static bool	IsVista();
-	static bool	IsDX9();
 	static bool	IsVSFilterInstalled();
 
 // Overrides
@@ -374,6 +373,7 @@ public:
 		int iQTVideoRendererType;
 		int iAPSurfaceUsage;
 		bool fVMRSyncFix;
+		int useGPUAcel;
 		int iDX9Resizer;
 		bool fVMR9MixerMode;
 		bool fVMR9MixerYUV;

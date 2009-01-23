@@ -2451,6 +2451,7 @@ END
 STRINGTABLE 
 BEGIN
     IDS_RS_LASTCHECKUPDATER "LastCheckUpdater"
+    IDS_RS_USEGPUACEL       "USEGPUAcel"
 END
 
 #endif    // Chinese (P.R.C.) resources

@@ -51,6 +51,7 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_DHtml_SelectValue( pDX, _T("videorender"), m_sgs_videorender);
 	DDX_DHtml_SelectIndex( pDX, _T("videorender"), m_sgi_videorender);
 	DDX_DHtml_CheckBox(pDX, _T("lockbackbuff"), m_sgi_lockbackbuff);
+	DDX_DHtml_CheckBox(pDX, _T("gpuacel"), m_sgi_gpuacel);
 
 
 	DDX_DHtml_CheckBox(pDX, _T("normalize"), m_sgi_normalize);
@@ -87,7 +88,7 @@ BOOL CUESettingPanel::OnInitDialog()
 		m_sgi_videorender = 2; //×Ô¶¨Òå
 	}
 	m_sgi_lockbackbuff = s.fVMRSyncFix;
-
+	m_sgi_gpuacel = s.useGPUAcel;
 	//Audio Setting
 	m_sgi_normalize = s.fAudioNormalize;
 	m_sgi_downsample44k = s.fDownSampleTo441;
@@ -96,6 +97,8 @@ BOOL CUESettingPanel::OnInitDialog()
 		m_sgi_channelsetting = 0;
 	}
 	 
+	
+
 	UpdateData(FALSE);
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
@@ -133,7 +136,7 @@ void CUESettingPanel::ApplyAllSetting(){
 
 	}
 	s.fVMRSyncFix = !!m_sgi_lockbackbuff;
-
+	 s.useGPUAcel = !!m_sgi_gpuacel;
 	//Audio Setting
 	s.fAudioNormalize = m_sgi_normalize  ;
 	s.fDownSampleTo441 = m_sgi_downsample44k ;

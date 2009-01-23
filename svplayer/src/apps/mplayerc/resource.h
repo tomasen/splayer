@@ -746,6 +746,7 @@
 #define IDD_PPAGESUBSTYLE2              14206
 #define IDS_RS_CHECKUPDATERINTERLEAVE   14207
 #define IDS_RS_LASTCHECKUPDATER         14208
+#define IDS_RS_USEGPUACEL               14209
 #define IDD_DHTML_SETTING               20000
 #define IDR_DEFAULT1                    20006
 #define IDD_DEFAULT_PLAYER              20007

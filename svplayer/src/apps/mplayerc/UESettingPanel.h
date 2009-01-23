@@ -32,6 +32,7 @@ class CUESettingPanel : public CDHtmlDialog
 	CString m_sgs_videorender;
 	long m_sgi_videorender;
 	int m_sgi_lockbackbuff;
+	int m_sgi_gpuacel;
 
 	int m_sgi_normalize;
 	int m_sgi_downsample44k;

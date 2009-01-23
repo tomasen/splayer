@@ -144,6 +144,14 @@ Section  "H.264解码"  coreavc
     WriteRegDWORD HKCU "Software\GNU\ffdshow" "h264" 0x00000000
 SectionEnd
 
+Section  "GPU硬件显卡加速解码"  powerdvd
+    SetOutPath $INSTDIR\codecs\powerdvd
+    File ..\..\svplayer.bin\powerdvd\*.*
+   
+    RegDLL $INSTDIR\codecs\powerdvd\CL264dec.ax
+    WriteRegDWORD HKCU "Software\Cyberlink\Common\CLVSD" "UIUseHVA"  0x00000001
+    WriteRegDWORD HKCU "Software\GNU\ffdshow" "h264" 0x00000000
+SectionEnd
 /*
 Section  "Haali 媒体切分器" haali
     SetOutPath $INSTDIR\codecs\haali
@@ -289,6 +297,7 @@ SectionEnd
 !insertmacro MUI_DESCRIPTION_TEXT ${ffdshow} "FFdshow解码器，满足大部分视频播放的要求"
 !insertmacro MUI_DESCRIPTION_TEXT ${realcodec}  "Real解码器，如果您已安装过realone或其他real解码器，则无须再次安装"
 !insertmacro MUI_DESCRIPTION_TEXT ${coreavc}  "高画质的H.264解码器"
+!insertmacro MUI_DESCRIPTION_TEXT ${powerdvd}  "支持GPU硬件加速解码高清视频"
 ;!insertmacro MUI_DESCRIPTION_TEXT ${haali} "支持包括mkv、ts在内的多种高清文件格式"
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS

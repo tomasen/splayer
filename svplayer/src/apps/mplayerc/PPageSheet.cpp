@@ -33,7 +33,7 @@ IMPLEMENT_DYNAMIC(CPPageSheet, CTreePropSheet)
 CPPageSheet::CPPageSheet(LPCTSTR pszCaption, IFilterGraph* pFG, CWnd* pParentWnd, UINT idPage)
 	: CTreePropSheet(pszCaption, pParentWnd, 0)
 	, m_audioswitcher(pFG)
-	, m_substyle2(1)
+	, m_substyle2(2)
 {
 	AddPage(&m_player);
 	AddPage(&m_formats);
@@ -48,8 +48,8 @@ CPPageSheet::CPPageSheet(LPCTSTR pszCaption, IFilterGraph* pFG, CWnd* pParentWnd
 	AddPage(&m_externalfilters);
 	AddPage(&m_subtitles);
 	AddPage(&m_substyle);
-	
-	//AddPage(&m_substyle2);
+	//m_substyle2.m_2ndsub = 2;
+ 	//AddPage(&m_substyle2);
 	//AddPage(&m_subdb);
 	AddPage(&m_tweaks);
 

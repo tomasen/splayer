@@ -27,6 +27,8 @@ BEGIN_DHTML_EVENT_MAP(CUESettingPanel)
 	DHTML_EVENT_ONCLICK(_T("ButtonCancel"), OnButtonCancel)
 	DHTML_EVENT_ONCLICK(_T("ButtonApply"), OnButtonApply)
 	DHTML_EVENT_ONCLICK(_T("ButtonAdvanceSetting"), OnButtonAdvanceSetting)
+	DHTML_EVENT_ONCLICK(_T("sub1c1"), OnColorSub)
+	
 END_DHTML_EVENT_MAP()
 
 
@@ -59,7 +61,10 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_DHtml_SelectIndex( pDX, _T("channelsetting"), m_sgi_channelsetting);
 
 }
+HRESULT CUESettingPanel::OnColorSub(IHTMLElement *pElement){
 
+	return S_OK;
+}
 BOOL CUESettingPanel::OnInitDialog()
 {
 	CDHtmlDialog::OnInitDialog();
@@ -97,11 +102,34 @@ BOOL CUESettingPanel::OnInitDialog()
 		m_sgi_channelsetting = 0;
 	}
 	 
-	
 
 	UpdateData(FALSE);
 
+
+
 	return TRUE;  // return TRUE  unless you set the focus to a control
+}
+
+void CUESettingPanel::OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl)
+{
+	CDHtmlDialog::OnDocumentComplete(pDisp, szUrl);
+	m_stss = AfxGetAppSettings().subdefstyle;
+	m_stss2 = AfxGetAppSettings().subdefstyle2;
+	IHTMLElement *pElement;
+	GetElement( _T("sub1c1"), &pElement	);
+	if (pElement){
+		IHTMLStyle *phtmlStyle;
+		pElement->get_style(&phtmlStyle);
+		if (phtmlStyle)
+		{
+			VARIANT varColor;
+			varColor.vt = VT_I4;
+			varColor.lVal =  m_stss.colors[0];
+			phtmlStyle->put_backgroundColor(varColor);
+			phtmlStyle->Release();
+		} 
+	}
+
 }
 void CUESettingPanel::ApplyAllSetting(){
 	UpdateData();

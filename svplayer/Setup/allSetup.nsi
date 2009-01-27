@@ -149,6 +149,7 @@ Section  "GPU硬件显卡加速解码"  powerdvd
     File ..\..\svplayer.bin\powerdvd\*.*
    
     RegDLL $INSTDIR\codecs\powerdvd\CL264dec.ax
+    WriteRegDWORD HKCU "Software\Cyberlink\Common\cl264dec\mplayerc" "UIUseHVA"  0x00000001
     WriteRegDWORD HKCU "Software\Cyberlink\Common\CLVSD" "UIUseHVA"  0x00000001
     WriteRegDWORD HKCU "Software\GNU\ffdshow" "h264" 0x00000000
 SectionEnd

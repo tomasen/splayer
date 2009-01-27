@@ -59,8 +59,9 @@ private:
 	bool m_fUseDefaultStyle;
 
 	void AskColor(int i);
-	int m_2ndsub;
+
 public:
+	int m_2ndsub;
 	CPPageSubStyle(int exsubid = 0);
 	virtual ~CPPageSubStyle();
 
@@ -112,3 +113,9 @@ protected:
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 public:
 };
+// 
+// class CPPageSubStyle2 : public CPPageSubStyle{
+// 	DECLARE_DYNAMIC(CPPageSubStyle2)
+// 
+// 	enum { IDD = IDD_PPAGESUBSTYLE2 };
+// };

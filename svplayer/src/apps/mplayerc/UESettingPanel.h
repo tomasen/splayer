@@ -12,6 +12,7 @@ class CUESettingPanel : public CDHtmlDialog
 	DECLARE_DYNAMIC(CUESettingPanel)
 	virtual HRESULT STDMETHODCALLTYPE  GetHostInfo(DOCHOSTUIINFO *pInfo);
 	virtual HRESULT STDMETHODCALLTYPE  ShowContextMenu(DWORD /*dwID*/, POINT *ppt, IUnknown* /*pcmdtReserved*/, IDispatch* /*pdispReserved*/);
+	virtual void OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl);
 	void ApplyAllSetting();
 	void ApplyGeneralSetting();
 	void ApplyVideoSetting();
@@ -38,6 +39,9 @@ class CUESettingPanel : public CDHtmlDialog
 	int m_sgi_downsample44k;
 
 	long m_sgi_channelsetting;
+
+	STSStyle m_stss;
+	STSStyle m_stss2;
 private:
 	CComQIPtr<IAudioSwitcherFilter> m_pASF;
 public:
@@ -48,6 +52,7 @@ public:
 	HRESULT OnButtonCancel(IHTMLElement *pElement);
 	HRESULT OnButtonApply(IHTMLElement *pElement);
 	HRESULT OnButtonAdvanceSetting(IHTMLElement *pElement);
+	HRESULT OnColorSub(IHTMLElement *pElement);
 	bool bOpenAdvancePanel;
 	int idPage;
 // Dialog Data

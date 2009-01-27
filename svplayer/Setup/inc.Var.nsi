@@ -129,8 +129,8 @@ Section  "射手影音播放器" mplayerc
   ${COPY_REGISTRY_KEY} HKCU "SOFTWARE\Gabest\Media Player Classic\Recent Url List" HKCU "SOFTWARE\SVPlayer\射手影音播放器\Recent Url List"
   skipcopy:
   ; Put file there
-  File "..\..\svplayer.bin\mplayerc.exe"
-  File "..\..\svplayer.bin\Updater.exe"
+  File "..\..\mplayerc.exe"
+  File "..\..\Updater.exe"
   File "..\..\svplayer.bin\unrar.dll"
 ;  File "..\..\svplayer.bin\VSFilter.dll"
 ;  RegDLL $INSTDIR\VSFilter.dll

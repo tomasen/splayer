@@ -1647,9 +1647,12 @@ BEGIN
         MENUITEM "第二字幕",                        ID__32796
         MENUITEM "调入字幕(&L)...\tCtrl+L",         ID_FILE_LOAD_SUBTITLE
         MENUITEM SEPARATOR
-        MENUITEM "全屏幕(&l)",                     ID_VIEW_FULLSCREEN
+        MENUITEM "铺满播放窗口(&S)",                  ID_VIEW_VF_STRETCH
         MENUITEM "信箱模式(&I)",                    ID_VIEW_VF_FROMINSIDE
         MENUITEM "全景模式(&O)",                    ID_VIEW_VF_FROMOUTSIDE
+        MENUITEM SEPARATOR
+        MENUITEM "滤镜(Filters)",                 ID__FILTERS
+        MENUITEM "特效(Shaders)",                 ID__SHADERS
         MENUITEM SEPARATOR
         POPUP "视频尺寸(&V)"
         BEGIN
@@ -1695,8 +1698,7 @@ BEGIN
             MENUITEM "自动缩放\tAlt+4",                 ID_32794
         END
         MENUITEM SEPARATOR
-        MENUITEM "滤镜(Filters)",                 ID__FILTERS
-        MENUITEM "特效(Shaders)",                 ID__SHADERS
+        MENUITEM "全屏幕(&l)",                     ID_VIEW_FULLSCREEN
         MENUITEM SEPARATOR
         POPUP "DVD导航(&N)"
         BEGIN

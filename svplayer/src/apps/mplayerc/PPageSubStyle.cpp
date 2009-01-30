@@ -35,11 +35,12 @@
 //BEGIN_MESSAGE_MAP(CColorStatic, CStatic)
 //END_MESSAGE_MAP()
 
+
 // CPPageSubStyle dialog
 
 IMPLEMENT_DYNAMIC(CPPageSubStyle, CPPageBase)
-CPPageSubStyle::CPPageSubStyle(int exsubid )
-	: CPPageBase(CPPageSubStyle::IDD, CPPageSubStyle::IDD)
+CPPageSubStyle::CPPageSubStyle(int exsubid , int iCharset, UINT CapID)
+	: CPPageBase(CPPageSubStyle::IDD, CapID)
 	, m_iCharset(0)
 	, m_spacing(0)
 	, m_angle(0)
@@ -54,6 +55,8 @@ CPPageSubStyle::CPPageSubStyle(int exsubid )
 	, m_relativeTo(FALSE)
 	, m_2ndsub(0)
 {
+	
+	m_iCharset = iCharset;
 	if (exsubid) { m_2ndsub = exsubid;}
 	if(exsubid ){
 		m_stss = AfxGetAppSettings().subdefstyle2;
@@ -312,3 +315,4 @@ void CPPageSubStyle::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 
 	__super::OnHScroll(nSBCode, nPos, pScrollBar);
 }
+

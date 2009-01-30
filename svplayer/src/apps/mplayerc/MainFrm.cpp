@@ -5614,8 +5614,7 @@ void CMainFrame::OnPlaySubtitles(UINT nID)
 						CString key;
 						STSStyle* val;
 						pRTS->m_styles.GetNextAssoc(pos, key, val);
-
-						CAutoPtr<CPPageSubStyle> page(new CPPageSubStyle(secondSub));
+						CAutoPtr<CPPageSubStyle> page(new CPPageSubStyle(secondSub,pRTS->m_sCharSet ));
 						//page->InitStyle(key, *val);
 						pages.Add(page);
 						styles.Add(val);
@@ -9608,7 +9607,7 @@ void CMainFrame::SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle)
 			{
 				style = s.subdefstyle2;
 
-				if(s.fOverridePlacement)
+				if(s.fOverridePlacement2)
 				{
 					style.scrAlignment = 8; // 1 - 9: as on the numpad, 0: default
 					int w = pRTS->m_dstScreenSize.cx;

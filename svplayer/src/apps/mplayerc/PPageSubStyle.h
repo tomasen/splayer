@@ -62,7 +62,7 @@ private:
 
 public:
 	int m_2ndsub;
-	CPPageSubStyle(int exsubid = 0);
+	CPPageSubStyle(int exsubid = 0, int iCharset = DEFAULT_CHARSET, UINT CapID = IDD_PPAGESUBSTYLE);
 	virtual ~CPPageSubStyle();
 
 	void InitStyle(CString title, STSStyle& stss);
@@ -113,9 +113,8 @@ protected:
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 public:
 };
-// 
-// class CPPageSubStyle2 : public CPPageSubStyle{
-// 	DECLARE_DYNAMIC(CPPageSubStyle2)
-// 
-// 	enum { IDD = IDD_PPAGESUBSTYLE2 };
-// };
+ 
+//  class CPPageSubStyle2 : public CPPageSubStyle{
+//  	CPPageSubStyle2(int exsubid = 0, int iCharset = DEFAULT_CHARSET);
+//  	enum { IDD = IDD_PPAGESUBSTYLE2 };
+//  };

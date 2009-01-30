@@ -419,6 +419,7 @@ public:
 		STSStyle subdefstyle;
 		STSStyle subdefstyle2;
 		bool fOverridePlacement;
+		bool fOverridePlacement2;
 		int nHorPos, nVerPos;
 		int nHorPos2, nVerPos2;
 		int nSPCSize;

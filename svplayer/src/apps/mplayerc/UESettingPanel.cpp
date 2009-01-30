@@ -28,6 +28,15 @@ BEGIN_DHTML_EVENT_MAP(CUESettingPanel)
 	DHTML_EVENT_ONCLICK(_T("ButtonApply"), OnButtonApply)
 	DHTML_EVENT_ONCLICK(_T("ButtonAdvanceSetting"), OnButtonAdvanceSetting)
 	DHTML_EVENT_ONCLICK(_T("sub1c1"), OnColorSub)
+	DHTML_EVENT_ONCLICK(_T("sub1c2"), OnColorSub)
+	DHTML_EVENT_ONCLICK(_T("sub1c3"), OnColorSub)
+	DHTML_EVENT_ONCLICK(_T("sub1c4"), OnColorSub)
+	DHTML_EVENT_ONCLICK(_T("sub2c1"), OnColorSub)
+	DHTML_EVENT_ONCLICK(_T("sub2c2"), OnColorSub)
+	DHTML_EVENT_ONCLICK(_T("sub2c3"), OnColorSub)
+	DHTML_EVENT_ONCLICK(_T("sub2c4"), OnColorSub)
+	DHTML_EVENT_ONCLICK(_T("subfont1"), OnFontSetting)
+	DHTML_EVENT_ONCLICK(_T("subfont2"), OnFontSetting)
 	
 END_DHTML_EVENT_MAP()
 
@@ -48,8 +57,22 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_DHtml_CheckBox(pDX, _T("chkplayrepeat"), m_sgi_chkplayrepeat);
 	DDX_DHtml_CheckBox(pDX, _T("chkexitfullscreen"), m_sgi_chkexitfullscreen);
 	DDX_DHtml_CheckBox(pDX, _T("chkabnormal"), m_sgi_chkabnormal);
+	DDX_DHtml_CheckBox(pDX, _T("chkautozoom"), m_sgi_chkautozoom);
+	
 	DDX_DHtml_ElementInnerHtml (pDX, _T("startupcheckexts"), m_sgi_startupcheckexts);
 	
+	DDX_DHtml_ElementValue (pDX, _T("subfont1"), m_sgs_subfont1);
+	DDX_DHtml_SelectValue( pDX, _T("subalign1"), m_sgs_subalign1);
+	DDX_DHtml_CheckBox(pDX, _T("suboveride1"), m_sgi_suboveride1);
+	DDX_DHtml_ElementValue (pDX, _T("subhpos1"), m_sgs_subhpos1);
+	DDX_DHtml_ElementValue (pDX, _T("subvpos1"), m_sgs_subvpos1);
+
+	DDX_DHtml_ElementValue (pDX, _T("subfont2"), m_sgs_subfont2);
+	DDX_DHtml_SelectValue( pDX, _T("subalign2"), m_sgs_subalign2);
+	DDX_DHtml_CheckBox(pDX, _T("suboveride2"), m_sgi_suboveride2);
+	DDX_DHtml_ElementValue (pDX, _T("subhpos2"), m_sgs_subhpos2);
+	DDX_DHtml_ElementValue (pDX, _T("subvpos2"), m_sgs_subvpos2);
+
 	DDX_DHtml_SelectValue( pDX, _T("videorender"), m_sgs_videorender);
 	DDX_DHtml_SelectIndex( pDX, _T("videorender"), m_sgi_videorender);
 	DDX_DHtml_CheckBox(pDX, _T("lockbackbuff"), m_sgi_lockbackbuff);
@@ -63,8 +86,61 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 }
 HRESULT CUESettingPanel::OnColorSub(IHTMLElement *pElement){
 
+	CString szId = this->GetIDfromElement(pElement);
+
+	int iSub, iCol;
+	swscanf(szId, _T("sub%dc%d") , &iSub, &iCol);
+	if ( iCol > 0 && iCol < 5)
+		iCol--;
+	else
+		return S_FALSE;
+
+	STSStyle sts;
+	if(iSub == 2){sts = m_stss2;}else{sts = m_stss;}
+
+	int i = 0;
+	CColorDialog dlg(sts.colors[iCol]);
+	dlg.m_cc.Flags |= CC_FULLOPEN;
+	if(dlg.DoModal() == IDOK)
+	{
+		if(iSub == 2){
+			m_stss2.colors[iCol] = dlg.m_cc.rgbResult;
+		}else{
+			m_stss.colors[iCol] = dlg.m_cc.rgbResult;
+		}
+		this->setBackgdColorByID( szId , dlg.m_cc.rgbResult);
+	}
 	return S_OK;
 }
+CString CUESettingPanel::GetIDfromElement(IHTMLElement *pElement){
+	CComBSTR sId;
+	pElement->get_id( &sId );
+	return CString(sId);
+}
+HRESULT CUESettingPanel::OnFontSetting(IHTMLElement *pElement){
+
+
+	CString szId = this->GetIDfromElement(pElement);
+
+	LOGFONT lf;
+	if (szId == _T("subfont2") ){lf <<= m_stss2;}else{lf <<= m_stss;}
+	STSStyle sts ;
+
+	CFontDialog dlg(&lf, CF_SCREENFONTS|CF_INITTOLOGFONTSTRUCT|CF_FORCEFONTEXIST|CF_SCALABLEONLY|CF_EFFECTS);
+	if(dlg.DoModal() == IDOK)
+	{
+		CString str;
+		sts = lf;
+		str.Format( _T("%s(%d)"), lf.lfFaceName ,sts.fontSize );
+		
+		if (szId == _T("subfont2") ){m_stss2 = lf; m_sgs_subfont2 = str;}else{	m_stss = lf; m_sgs_subfont1 = str;}
+		UpdateData(FALSE);
+		
+	}
+	return S_OK;
+}
+
+
 BOOL CUESettingPanel::OnInitDialog()
 {
 	CDHtmlDialog::OnInitDialog();
@@ -98,10 +174,22 @@ BOOL CUESettingPanel::OnInitDialog()
 	m_sgi_normalize = s.fAudioNormalize;
 	m_sgi_downsample44k = s.fDownSampleTo441;
 
+	m_sgi_chkautozoom = s.fRememberZoomLevel;
 	if (s.fCustomChannelMapping == FALSE){
 		m_sgi_channelsetting = 0;
 	}
-	 
+	 //Sub Setting
+	m_sgs_subfont1.Format( _T("%s(%d)"), s.subdefstyle.fontName , (INT)s.subdefstyle.fontSize);
+	m_sgs_subalign1.Format( _T("%d") , s.subdefstyle.scrAlignment ); 
+	m_sgi_suboveride1 = s.fOverridePlacement;
+	m_sgs_subhpos1.Format( _T("%d") , s.nHorPos );
+	m_sgs_subvpos1.Format( _T("%d") , s.nVerPos );
+
+	m_sgs_subfont2.Format( _T("%s(%d)"), s.subdefstyle2.fontName , (INT)s.subdefstyle2.fontSize);
+	m_sgs_subalign2.Format( _T("%d") , s.subdefstyle2.scrAlignment );
+	m_sgi_suboveride2 = s.fOverridePlacement2;
+	m_sgs_subhpos2.Format( _T("%d") , s.nHorPos2 );
+	m_sgs_subvpos2.Format( _T("%d") , s.nVerPos2 );
 
 	UpdateData(FALSE);
 
@@ -115,8 +203,19 @@ void CUESettingPanel::OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl)
 	CDHtmlDialog::OnDocumentComplete(pDisp, szUrl);
 	m_stss = AfxGetAppSettings().subdefstyle;
 	m_stss2 = AfxGetAppSettings().subdefstyle2;
+	setBackgdColorByID(_T("sub1c1"), m_stss.colors[0]);
+	setBackgdColorByID(_T("sub1c2"), m_stss.colors[1]);
+	setBackgdColorByID(_T("sub1c3"), m_stss.colors[2]);
+	setBackgdColorByID(_T("sub1c4"), m_stss.colors[3]);
+	setBackgdColorByID(_T("sub2c1"), m_stss2.colors[0]);
+	setBackgdColorByID(_T("sub2c2"), m_stss2.colors[1]);
+	setBackgdColorByID(_T("sub2c3"), m_stss2.colors[2]);
+	setBackgdColorByID(_T("sub2c4"), m_stss2.colors[3]);
+
+}
+COLORREF CUESettingPanel::getBackgdColorByID(CString szId){
 	IHTMLElement *pElement;
-	GetElement( _T("sub1c1"), &pElement	);
+	GetElement( szId, &pElement	);
 	if (pElement){
 		IHTMLStyle *phtmlStyle;
 		pElement->get_style(&phtmlStyle);
@@ -124,12 +223,29 @@ void CUESettingPanel::OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl)
 		{
 			VARIANT varColor;
 			varColor.vt = VT_I4;
-			varColor.lVal =  m_stss.colors[0];
+			phtmlStyle->get_backgroundColor(&varColor);
+			phtmlStyle->Release();
+			return   RGB( GetBValue(varColor.lVal) ,  GetGValue(varColor.lVal) ,  GetRValue(varColor.lVal));
+			
+		} 
+	}
+	return 0;
+}
+void CUESettingPanel::setBackgdColorByID(CString szId, COLORREF color){
+	IHTMLElement *pElement;
+	GetElement( szId, &pElement	);
+	if (pElement){
+		IHTMLStyle *phtmlStyle;
+		pElement->get_style(&phtmlStyle);
+		if (phtmlStyle)
+		{
+			VARIANT varColor;
+			varColor.vt = VT_I4;
+			varColor.lVal =  RGB( GetBValue(color) ,  GetGValue(color) ,  GetRValue(color));
 			phtmlStyle->put_backgroundColor(varColor);
 			phtmlStyle->Release();
 		} 
 	}
-
 }
 void CUESettingPanel::ApplyAllSetting(){
 	UpdateData();
@@ -149,7 +265,7 @@ void CUESettingPanel::ApplyAllSetting(){
 	s.priority = !m_sgi_chkabnormal ? NORMAL_PRIORITY_CLASS : GetVersion() < 0 ? HIGH_PRIORITY_CLASS : ABOVE_NORMAL_PRIORITY_CLASS;
 	s.szStartUPCheckExts = m_sgi_startupcheckexts ;
 	m_sgi_chkuseini = ((CMPlayerCApp*)AfxGetApp())->IsIniValid();
-
+	s.fRememberZoomLevel = !!m_sgi_chkautozoom ;
 	//Video Setting
 	
 	if(m_sgs_videorender == _T("DX9")){
@@ -166,8 +282,8 @@ void CUESettingPanel::ApplyAllSetting(){
 	s.fVMRSyncFix = !!m_sgi_lockbackbuff;
 	 s.useGPUAcel = !!m_sgi_gpuacel;
 	//Audio Setting
-	s.fAudioNormalize = m_sgi_normalize  ;
-	s.fDownSampleTo441 = m_sgi_downsample44k ;
+	s.fAudioNormalize = !!m_sgi_normalize  ;
+	s.fDownSampleTo441 = !!m_sgi_downsample44k ;
 
 	switch(m_sgi_channelsetting ){
 		case 0:
@@ -198,6 +314,19 @@ void CUESettingPanel::ApplyAllSetting(){
 		m_pASF->SetAudioTimeShift(s.fAudioTimeShift ? 10000i64*s.tAudioTimeShift : 0);
 		m_pASF->SetNormalizeBoost(s.fAudioNormalize, s.fAudioNormalizeRecover, s.AudioBoost);
 	}
+
+	//Sub Setting
+	s.fOverridePlacement = !!m_sgi_suboveride1  ;
+	s.fOverridePlacement2 = !!m_sgi_suboveride2  ;
+	
+	s.subdefstyle = m_stss;
+	s.subdefstyle2 = m_stss2;
+
+	s.nHorPos = _wtoi(m_sgs_subhpos1);
+	s.nVerPos = _wtoi(m_sgs_subvpos1);
+	s.nHorPos2 = _wtoi(m_sgs_subhpos2);
+	s.nVerPos2 = _wtoi(m_sgs_subvpos2);
+	
 	s.UpdateData(true);
 }
 

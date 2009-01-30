@@ -13,6 +13,8 @@ class CUESettingPanel : public CDHtmlDialog
 	virtual HRESULT STDMETHODCALLTYPE  GetHostInfo(DOCHOSTUIINFO *pInfo);
 	virtual HRESULT STDMETHODCALLTYPE  ShowContextMenu(DWORD /*dwID*/, POINT *ppt, IUnknown* /*pcmdtReserved*/, IDispatch* /*pdispReserved*/);
 	virtual void OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl);
+	void setBackgdColorByID(CString szId, COLORREF color);
+	COLORREF getBackgdColorByID(CString szId);
 	void ApplyAllSetting();
 	void ApplyGeneralSetting();
 	void ApplyVideoSetting();
@@ -28,9 +30,23 @@ class CUESettingPanel : public CDHtmlDialog
 	int m_sgi_chkexitfullscreen;
 	int m_sgi_chkabnormal;
 	int m_sgi_chkautoplay;
+	int m_sgi_chkautozoom;
 	CString m_sgs_initblock;
 	CString m_sgi_startupcheckexts;
 	CString m_sgs_videorender;
+
+	CString  m_sgs_subfont1;
+	CString  m_sgs_subfont2;
+	CString m_sgs_subalign1;
+	int m_sgi_suboveride1;
+	CString m_sgs_subhpos1;
+	CString m_sgs_subvpos1;
+	
+	CString m_sgs_subalign2;
+	int m_sgi_suboveride2;
+	CString m_sgs_subhpos2;
+	CString m_sgs_subvpos2;
+
 	long m_sgi_videorender;
 	int m_sgi_lockbackbuff;
 	int m_sgi_gpuacel;
@@ -44,6 +60,7 @@ class CUESettingPanel : public CDHtmlDialog
 	STSStyle m_stss2;
 private:
 	CComQIPtr<IAudioSwitcherFilter> m_pASF;
+	CString GetIDfromElement(IHTMLElement *pElement);
 public:
 	CUESettingPanel(IFilterGraph* pFG, CWnd* pParentWnd, UINT idPagein);   // standard constructor
 	virtual ~CUESettingPanel();
@@ -53,6 +70,7 @@ public:
 	HRESULT OnButtonApply(IHTMLElement *pElement);
 	HRESULT OnButtonAdvanceSetting(IHTMLElement *pElement);
 	HRESULT OnColorSub(IHTMLElement *pElement);
+	HRESULT OnFontSetting(IHTMLElement *pElement);
 	bool bOpenAdvancePanel;
 	int idPage;
 // Dialog Data

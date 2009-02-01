@@ -53,7 +53,7 @@ static int SubFileCompare(const void* elem1, const void* elem2)
 	return(((SubFile*)elem1)->fn.CompareNoCase(((SubFile*)elem2)->fn));
 }
 
-void GetSubFileNames(CString fn, CAtlArray<CString>& paths, CAtlArray<SubFile>& ret)
+void GetSubFileNames(CString fn, CAtlArray<CString>& paths, CAtlArray<SubFile>& ret, BOOL byDir)
 {
 	ret.RemoveAll();
 
@@ -76,6 +76,13 @@ void GetSubFileNames(CString fn, CAtlArray<CString>& paths, CAtlArray<SubFile>& 
 
 	CString orgpath = fn.Left(l);
 	CString title = fn.Mid(l, l2-l);
+	
+	if (byDir){
+		orgpath = fn;
+		title = _T("");
+		
+	}
+
 	CString filename = title + _T(".nooneexpectsthespanishinquisition");
 
 	if(!fWeb)
@@ -111,6 +118,7 @@ void GetSubFileNames(CString fn, CAtlArray<CString>& paths, CAtlArray<SubFile>& 
 					{
 						fEmpty = false;
 						// sl.AddTail(path + file.name);
+						
 					}
 				}
 				while(FindNextFile(hFile, &wfd));
@@ -125,7 +133,9 @@ void GetSubFileNames(CString fn, CAtlArray<CString>& paths, CAtlArray<SubFile>& 
 			{
 				for(int i = 0; i < extsubnum; i++)
 				{
-					if((hFile = FindFirstFile(path + title + ext[j][i], &wfd)) != INVALID_HANDLE_VALUE)
+					CString szBuf = path + title + ext[j][i];
+					if(byDir){szBuf = path + _T("*") + ext[j][i];}
+					if((hFile = FindFirstFile(szBuf, &wfd)) != INVALID_HANDLE_VALUE)
 					{
 						do
 						{

@@ -23,7 +23,7 @@
 //#define SVP_DEBUG_LOGFILEPATH _T(".\\SVPDebug.log")
 
 extern void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath, CStringArray* szSubArray);
-extern void SVP_UploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString szSubPath);
+extern void SVP_UploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString szSubPath, int iDelayMS);
 extern void SVP_LogMsg(CString logmsg, int level = 15);
 extern void SVP_CheckUpdaterExe();
 extern void SVP_RealCheckUpdaterExe();

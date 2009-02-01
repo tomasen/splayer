@@ -415,6 +415,9 @@ interface ISubStream : public IPersist
 	STDMETHOD (SetStream) (int iStream) PURE;
 	STDMETHOD (Reload) () PURE;
 
+	public:
+	int sub_delay_ms ;
+	BOOL notSaveDelay;
 	// TODO: get rid of IPersist to identify type and use only 
 	// interface functions to modify the settings of the substream
 };

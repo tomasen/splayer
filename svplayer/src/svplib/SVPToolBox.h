@@ -36,6 +36,9 @@ public:
 	CString GetPlayerPath(CString progName = _T(""));
 	BOOL isWriteAble(CString szPath);
 	CString getFileVersionHash(CString szPath);
+	void filePutContent(CString szFilePath, CString szData, BOOL bAppend = 0);
+	CString fileGetContent(CString szFilePath);
+	CString GetDirFromPath(CString path);
 private:
 	CStringArray szaTmpFileNames;
 };

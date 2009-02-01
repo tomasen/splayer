@@ -12,6 +12,28 @@ CSVPToolBox::CSVPToolBox(void)
 CSVPToolBox::~CSVPToolBox(void)
 {
 }
+CString CSVPToolBox::fileGetContent(CString szFilePath){
+	CStdioFile f;
+
+	CString szBuf;
+	if(f.Open(szFilePath, CFile::modeRead | CFile::typeText))
+	{
+		f.ReadString(szBuf);
+		f.Close();
+	}
+	return szBuf;
+}
+void CSVPToolBox::filePutContent(CString szFilePath, CString szData, BOOL bAppend){
+	CStdioFile f;
+	
+	if(f.Open(szFilePath, CFile::modeCreate | CFile::modeWrite | CFile::typeText))
+	{
+		f.WriteString(szData);
+
+		
+		f.Close();
+	}
+}
 CString CSVPToolBox::getFileVersionHash(CString szPath){
 	DWORD             dwHandle;
 	UINT              dwLen;
@@ -397,6 +419,13 @@ CString CSVPToolBox::GetPlayerPath(CString progName){
 		return cpath;
 	}
 }
+CString CSVPToolBox::GetDirFromPath(CString path){
+	CPath cpath(path);
+	cpath.RemoveFileSpec();
+	cpath.AddBackslash();
+	return cpath;
+}
+
 int CSVPToolBox::HandleSubPackage(FILE* fp){
 	//Extract Package
 	SVP_LogMsg( _T("Extracting Package") );

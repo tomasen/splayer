@@ -30,6 +30,7 @@
 #include "SaveTextFileDialog.h"
 #include ".\playerplaylistbar.h"
 #include "../../svplib/svplib.h"
+#include "../../svplib/SVPToolBox.h"
 
 IMPLEMENT_DYNAMIC(CPlayerPlaylistBar, CSizingControlBarG)
 CPlayerPlaylistBar::CPlayerPlaylistBar()
@@ -479,6 +480,54 @@ void CPlayerPlaylistBar::Refresh()
 {
 	SetupList();
 	ResizeListColumn();
+
+	if( m_pl.GetCount() > 0 ){ //playlist 包含多文件
+		BOOL bHasSubtitles = 0 , bAllInSameDir = 1; //检查是否有playlist字幕
+		int iFileTotal = 0;
+		CString szDir, szBuf;
+		POSITION pos = m_pl.GetHeadPosition();
+		CSVPToolBox svpTool;
+		while(pos){
+			CPlaylistItem pli = m_pl.GetNext(pos);
+			POSITION pos1 = pli.m_fns.GetHeadPosition();
+			while(pos1){
+				iFileTotal++;
+				szBuf = pli.m_fns.GetNext(pos1);
+				szBuf = svpTool.GetDirFromPath( szBuf );
+				if(szDir.IsEmpty()){
+					szDir = szBuf;
+				}else if(szDir != szBuf){
+					//Not all in same dir
+					bAllInSameDir = 0;
+					break;
+				}
+			}
+
+			if ( pli.m_subs.GetCount() > 0 ){
+				bHasSubtitles = 1;
+				break;
+			}
+		}    
+
+		if(!bHasSubtitles && bAllInSameDir && iFileTotal > 1){ 
+			//Playlist的所在文件目录中是否有字幕文件
+
+			CAtlArray<CString> paths;
+			paths.Add(_T("."));
+			paths.Add(_T(".\\subtitles"));
+			paths.Add(_T(".\\Subs"));
+
+			CAtlArray<SubFile> ret;
+			GetSubFileNames( szDir,paths, ret, 1);
+
+			if(ret.GetCount() == 1){
+				//Set As Playlist Sub;
+				SubFile xSub =  ret.GetAt(0);
+				m_pl.szPlayListSub = xSub.fn;
+			}
+		}
+
+	}
 }
 	
 void CPlayerPlaylistBar::Empty()
@@ -762,6 +811,7 @@ void CPlayerPlaylistBar::SavePlaylist()
 			SaveMPCPlayList(p, CTextFile::UTF8, false);
 		}
 	}
+	
 }
 
 BEGIN_MESSAGE_MAP(CPlayerPlaylistBar, CSizingControlBarG)

@@ -289,10 +289,10 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 	friend class CWebServer;
 	CAutoPtr<CWebServer> m_pWebServer;
 private:
-	CString getCurPlayingSubfile();
+	CString getCurPlayingSubfile(int * iSubDelayMS = NULL,int subid = 0 );
 public:
 	// subtitles
-
+	
 	CCritSec m_csSubLock;
 	CCritSec m_csSubLock2;
 	CInterfaceList<ISubStream> m_pSubStreams;
@@ -391,7 +391,7 @@ public:
 	REFERENCE_TIME GetPos(), GetDur();
 	void SeekTo(REFERENCE_TIME rt, bool fSeekToKeyFrame = false);
 
-	bool LoadSubtitle(CString fn);
+	bool LoadSubtitle(CString fn, int sub_delay_ms = 0, BOOL bIsForPlayList = false);
 	void UpdateSubtitle(bool fApplyDefStyle = true);
 	void UpdateSubtitle2(bool fApplyDefStyle = true);
 	void SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle = true);

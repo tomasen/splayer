@@ -1239,11 +1239,12 @@ LRESULT CMainFrame::OnAppCommand(WPARAM wParam, LPARAM lParam)
 
 	return Default();
 }
-CString CMainFrame::getCurPlayingSubfile(){
+CString CMainFrame::getCurPlayingSubfile(int * iSubDelayMS,int subid ){
 	CString fnSubtitleFile = _T("");
 	if(m_pCAP) {
 
 		int i = m_iSubtitleSel;
+		if(subid){ i = m_iSubtitleSel2;}
 		CComPtr<ISubStream> pSubStream;
 		POSITION pos = m_pSubStreams.GetHeadPosition();
 		while(pos && i >= 0)
@@ -1258,19 +1259,31 @@ CString CMainFrame::getCurPlayingSubfile(){
 			i -= pSubStream->GetStreamCount();
 		}
 		if (pSubStream){
+			int iSubDelay_ms;
+			iSubDelay_ms = m_pCAP->GetSubtitleDelay();			
+			if(subid){	iSubDelay_ms = m_pCAP->GetSubtitleDelay2();	}
+			if (iSubDelay_ms){
+				*iSubDelayMS = iSubDelay_ms;
+			}
 			CLSID clsid;
 			pSubStream->GetClassID(&clsid);
 
 			if(clsid == __uuidof(CVobSubFile))
 			{
 				CVobSubFile* pVSF = (CVobSubFile*)(ISubStream*)pSubStream;
-
 				fnSubtitleFile = pVSF->m_title + _T(".idx");
 			}
 			else if(clsid == __uuidof(CRenderedTextSubtitle))
 			{
 				CRenderedTextSubtitle* pRTS = (CRenderedTextSubtitle*)(ISubStream*)pSubStream;
 				fnSubtitleFile = pRTS->m_path;
+
+			}
+			if( iSubDelay_ms && !pSubStream->notSaveDelay ){
+				CSVPToolBox svpTool;
+				CString szBuf;
+				szBuf.Format(_T("%d"), iSubDelay_ms);
+				svpTool.filePutContent(fnSubtitleFile+_T(".delay"),szBuf );
 			}
 		}
 	}
@@ -1297,8 +1310,9 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 
 				if( time_now > ( m_tLastLogTick + 60 )){ //如果和上次检查已经超n秒
 					CString fnVideoFile , fnSubtitleFile; 
+					int subDelayMS;
 					fnVideoFile = m_fnCurPlayingFile;
-					fnSubtitleFile = getCurPlayingSubfile();
+					fnSubtitleFile = getCurPlayingSubfile(&subDelayMS);
 					
 					
 					if (!fnSubtitleFile.IsEmpty()){ //如果有字幕
@@ -1311,9 +1325,9 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 							//是否已经上传过呢
 							if(m_fnsAlreadyUploadedSubfile.Find( fnVideoFile+fnSubtitleFile ) < 0 ){
 								//upload subtitle
-								szLog.Format(_T("Uploading sub %s of %s since user played %d sec of %d sec ( more than 1/2 length video ) ") , fnSubtitleFile, fnVideoFile , totalplayedtime , iTotalLenSec  );
+								szLog.Format(_T("Uploading sub %s of %s width delay %d ms since user played %d sec of %d sec ( more than 1/2 length video ) ") , fnSubtitleFile, fnVideoFile ,subDelayMS, totalplayedtime , iTotalLenSec  );
 								SVP_LogMsg(szLog);
-								SVP_UploadSubFileByVideoAndSubFilePath(fnVideoFile , fnSubtitleFile) ;
+								SVP_UploadSubFileByVideoAndSubFilePath(fnVideoFile , fnSubtitleFile, subDelayMS) ;
 								m_fnsAlreadyUploadedSubfile.Append( fnVideoFile+fnSubtitleFile+_T(";") );
 							}
 
@@ -4299,7 +4313,8 @@ void CMainFrame::OnFileISDBDownload()
 
 	CString fnVideoFile , fnSubtitleFile; 
 	fnVideoFile = m_fnCurPlayingFile;
-	fnSubtitleFile = getCurPlayingSubfile();
+	int subDelayMS;
+	fnSubtitleFile = getCurPlayingSubfile(&subDelayMS);
 
 	if (!fnSubtitleFile.IsEmpty() ){ //如果有字幕
 		CString szUploadMsg;
@@ -4309,9 +4324,9 @@ void CMainFrame::OnFileISDBDownload()
 
 			CString szLog;
 
-			szLog.Format(_T("Uploading sub %s of %s because user demand to ") , fnSubtitleFile, fnVideoFile  );
+			szLog.Format(_T("Uploading sub %s of %s with delay %d ms because user demand to ") , fnSubtitleFile, fnVideoFile ,subDelayMS );
 			SVP_LogMsg(szLog);
-			SVP_UploadSubFileByVideoAndSubFilePath(fnVideoFile , fnSubtitleFile) ;
+			SVP_UploadSubFileByVideoAndSubFilePath(fnVideoFile , fnSubtitleFile, subDelayMS) ;
 			return;
 		}
 	}
@@ -5394,12 +5409,14 @@ void CMainFrame::SetSubtitleDelay(int delay_ms)
 {
 	if(m_pCAP) {
 		m_pCAP->SetSubtitleDelay(delay_ms);
+		getCurPlayingSubfile();
 	}
 }
 void CMainFrame::SetSubtitleDelay2(int delay_ms)
 {
 	if(m_pCAP) {
 		m_pCAP->SetSubtitleDelay2(delay_ms);
+		getCurPlayingSubfile(NULL, 2);
 	}
 }
 
@@ -7252,6 +7269,7 @@ UINT __cdecl SVPThreadLoadThread( LPVOID lpParam )
 
 	// Print the parameter values using thread-safe functions.
 	CStringArray szSubArray;
+	CUIntArray siSubDelayArray;
 
 	SVP_FetchSubFileByVideoFilePath( pData->szVidPath, &szSubArray) ;
 	BOOL bSubSelected = false;
@@ -9477,7 +9495,7 @@ void CMainFrame::AddTextPassThruFilter()
 	EndEnumFilters
 }
 
-bool CMainFrame::LoadSubtitle(CString fn)
+bool CMainFrame::LoadSubtitle(CString fn, int sub_delay_ms, BOOL bIsForPlayList)
 {
 	CComPtr<ISubStream> pSubStream;
 
@@ -9516,7 +9534,23 @@ bool CMainFrame::LoadSubtitle(CString fn)
 
 	if(pSubStream)
 	{
+		pSubStream->notSaveDelay = bIsForPlayList;
+
+		CSVPToolBox svTool;
+		if(!sub_delay_ms){
+			//如果没有预设字幕延迟，视图读取 字幕.delay 获得delay参数
+			sub_delay_ms = _wtoi ( svTool.fileGetContent( fn+_T(".delay")) );
+		}else{
+			//如果有字幕延迟， 而且不是playlist subtitles， 保存到.delay文件
+			if(!bIsForPlayList){
+				CString szBuf;
+				szBuf.Format(_T("%d"), sub_delay_ms);
+				svTool.filePutContent(  fn+_T(".delay"), szBuf );
+			}
+		}
+		pSubStream->sub_delay_ms = sub_delay_ms;
 		m_pSubStreams.AddTail(pSubStream);
+		
 	}
 
 	return(!!pSubStream);
@@ -9663,6 +9697,7 @@ void CMainFrame::SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle)
 	{
 		m_pCAP->SetSubPicProvider2(CComQIPtr<ISubPicProvider>(pSubStream));
 		//m_wndSubresyncBar.SetSubtitle(pSubStream, m_pCAP->GetFPS());
+		if (pSubStream->sub_delay_ms){ SetSubtitleDelay2(pSubStream->sub_delay_ms); }
 	}
 }
 void CMainFrame::SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle)
@@ -9733,21 +9768,21 @@ void CMainFrame::SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle)
 		if(pSubStream)
 		{
 
-		int i = 0;
+			int i = 0;
 
-		POSITION pos = m_pSubStreams.GetHeadPosition();
-		while(pos)
-		{
-			CComPtr<ISubStream> pSubStream2 = m_pSubStreams.GetNext(pos);
-
-			if(pSubStream == pSubStream2)
+			POSITION pos = m_pSubStreams.GetHeadPosition();
+			while(pos)
 			{
-				m_iSubtitleSel = i + pSubStream2->GetStream();
-				break;
-			}
+				CComPtr<ISubStream> pSubStream2 = m_pSubStreams.GetNext(pos);
 
-			i += pSubStream2->GetStreamCount();
-		}
+				if(pSubStream == pSubStream2)
+				{
+					m_iSubtitleSel = i + pSubStream2->GetStream();
+					break;
+				}
+
+				i += pSubStream2->GetStreamCount();
+			}
 
 		}
 	//}
@@ -9759,6 +9794,7 @@ void CMainFrame::SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle)
 		//m_pCAP->SetSubPicProvider2(CComQIPtr<ISubPicProvider>(pSubStream));
 		m_pCAP->SetSubPicProvider(CComQIPtr<ISubPicProvider>(pSubStream));
 		m_wndSubresyncBar.SetSubtitle(pSubStream, m_pCAP->GetFPS());
+		if (pSubStream->sub_delay_ms){ SetSubtitleDelay(pSubStream->sub_delay_ms); }
 	}
 }
 
@@ -10365,7 +10401,10 @@ void CMainFrame::OpenCurPlaylistItem(REFERENCE_TIME rtStart)
 	if(!m_wndPlaylistBar.GetCur(pli)) return;
 
 	CAutoPtr<OpenMediaData> p(m_wndPlaylistBar.GetCurOMD(rtStart));
+	
+
 	if(p) OpenMedia(p);
+
 }
 
 void CMainFrame::AddCurDevToPlaylist()

@@ -102,10 +102,12 @@ BOOL CSVPNet::CheckUpdaterExe(CString szFileVerHash, CString szPath){
 	}
 	return rret;
 }
-int CSVPNet::WetherNeedUploadSub(CString fnVideoFilePath, CString szFileHash,CString fnSubHash){
+int CSVPNet::WetherNeedUploadSub(CString fnVideoFilePath, CString szFileHash,CString fnSubHash, int iDelayMS){
 	CURL *curl;
 	CURLcode res;
-	CString szPostPerm = _T( "pathinfo=" ) + fnVideoFilePath + _T("&filehash=") + szFileHash  + _T("&subhash=") + fnSubHash;
+	CString szPostPerm ;
+	szPostPerm.Format(_T( "pathinfo=%s&filehash=%s&subhash=%s&subdelay=%d" ) , fnVideoFilePath ,szFileHash , fnSubHash, iDelayMS);
+	
 	int rret = 0;
 	curl = curl_easy_init();
 	if(curl) {
@@ -138,7 +140,7 @@ int CSVPNet::WetherNeedUploadSub(CString fnVideoFilePath, CString szFileHash,CSt
 	}
 	return rret;
 }
-int CSVPNet::UploadSubFileByVideoAndHash(CString fnVideoFilePath, CString szFileHash, CString szSubHash,CStringArray* fnSubPaths){
+int CSVPNet::UploadSubFileByVideoAndHash(CString fnVideoFilePath, CString szFileHash, CString szSubHash,CStringArray* fnSubPaths, int iDelayMS){
 	CURL *curl;
 	CURLcode res;
 	//CString szPostPerm = _T( "pathinfo=" ) + fnVideoFilePath + _T("&filehash=") + szFileHash ;
@@ -165,6 +167,10 @@ int CSVPNet::UploadSubFileByVideoAndHash(CString fnVideoFilePath, CString szFile
 	curl_formadd(&formpost,	&lastptr, CURLFORM_COPYNAME, "filehash", CURLFORM_COPYCONTENTS, szTerm2,CURLFORM_END);
 	free(szTerm2);
 
+	szTerm2 = (char*)malloc(64);
+	_itoa_s( iDelayMS , szTerm2, 64, 10);
+	curl_formadd(&formpost,	&lastptr, CURLFORM_COPYNAME, "subdelay", CURLFORM_COPYCONTENTS,szTerm2 ,CURLFORM_END);
+	free(szTerm2);
 
 	for(int i = 0; i < fnSubPaths->GetCount(); i++){
 		/* Fill in the file upload field */

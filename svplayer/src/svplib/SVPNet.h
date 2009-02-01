@@ -18,8 +18,8 @@ private:
 	int SetCURLopt(CURL *curl );
 	char errorBuffer[CURL_ERROR_SIZE];;
 public:
-	int WetherNeedUploadSub(CString fnVideoFilePath, CString szFileHash,CString fnSubHash);
-	int UploadSubFileByVideoAndHash(CString fnVideoFilePath, CString szFileHash, CString szSubHash,CStringArray* fnSubPaths);
+	int WetherNeedUploadSub(CString fnVideoFilePath, CString szFileHash,CString fnSubHash, int iDelayMS);
+	int UploadSubFileByVideoAndHash(CString fnVideoFilePath, CString szFileHash, CString szSubHash,CStringArray* fnSubPaths, int iDelayMS);
 	int  QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, CString szVHash = _T(""));
 	static size_t handleSubQuery( void *ptr, size_t size, size_t nmemb, void *stream);
 	int  ExtractDataFromAiSubRecvBuffer(CString szFilePath, FILE* sAiSubRecvBuff);

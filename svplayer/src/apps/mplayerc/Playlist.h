@@ -72,4 +72,6 @@ public:
 	CPlaylistItem& GetPrevWrap(POSITION& pos);
 
 	POSITION Shuffle();
+
+	CString szPlayListSub;
 };

@@ -203,6 +203,8 @@ CVobSubFile::CVobSubFile(CCritSec* pLock)
 	: ISubPicProviderImpl(pLock)
 	, m_sub(1024*1024)
 {
+	sub_delay_ms = 0;
+	notSaveDelay = 0;
 }
 
 CVobSubFile::~CVobSubFile()
@@ -2133,6 +2135,9 @@ bool CVobSubFile::SaveMaestro(CString fn)
 CVobSubStream::CVobSubStream(CCritSec* pLock)
 	: ISubPicProviderImpl(pLock)
 {
+	sub_delay_ms = 0;
+	notSaveDelay = 0;
+
 }
 
 CVobSubStream::~CVobSubStream()

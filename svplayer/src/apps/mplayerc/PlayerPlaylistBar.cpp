@@ -475,13 +475,9 @@ bool CPlayerPlaylistBar::SaveMPCPlayList(CString fn, CTextFile::enc e, bool fRem
 
 	return true;
 }
-
-void CPlayerPlaylistBar::Refresh()
-{
-	SetupList();
-	ResizeListColumn();
-
-	if( m_pl.GetCount() > 0 ){ //playlist 包含多文件
+void CPlayerPlaylistBar::CheckForPlaylistSubtitle(){
+	
+	if( m_pl.GetCount() > 1 ){ //playlist 包含多文件
 		BOOL bHasSubtitles = 0 , bAllInSameDir = 1; //检查是否有playlist字幕
 		int iFileTotal = 0;
 		CString szDir, szBuf;
@@ -529,6 +525,13 @@ void CPlayerPlaylistBar::Refresh()
 
 	}
 }
+void CPlayerPlaylistBar::Refresh()
+{
+	SetupList();
+	ResizeListColumn();
+
+	
+}
 	
 void CPlayerPlaylistBar::Empty()
 {
@@ -555,6 +558,7 @@ void CPlayerPlaylistBar::Append(CAtlList<CString>& fns, bool fMulti, CAtlList<CS
 	{
 		ParsePlayList(fns, subs);
 	}
+	CheckForPlaylistSubtitle();
 
 	Refresh();
 	SavePlaylist();
@@ -657,7 +661,21 @@ bool CPlayerPlaylistBar::IsAtEnd()
 {
 	return(m_pl.GetPos() && m_pl.GetPos() == m_pl.GetTailPosition());
 }
-
+int CPlayerPlaylistBar::GetTotalTimeBeforeCur(){
+	POSITION pos = m_pl.GetHeadPosition();
+	int totalDelay_ms = 0;
+	while(pos){
+		if( pos != m_pl.GetPos()){
+			CPlaylistItem& pli = m_pl.GetAt(pos);
+			
+			totalDelay_ms += (int)(pli.m_duration/10000);
+		}else{
+			break;
+		}
+		m_pl.GetNext(pos);
+	}
+	return totalDelay_ms;
+}
 bool CPlayerPlaylistBar::GetCur(CPlaylistItem& pli)
 {
 	if(!m_pl.GetPos()) return(false);

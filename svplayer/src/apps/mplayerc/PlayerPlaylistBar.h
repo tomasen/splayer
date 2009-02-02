@@ -68,6 +68,8 @@ public:
 
 	CPlaylist m_pl;
 
+	void CheckForPlaylistSubtitle();
+
 	int GetCount();
 	int GetSelIdx();
 	void SetSelIdx(int i);
@@ -77,7 +79,7 @@ public:
 	void SetNext(), SetPrev(), SetFirst(), SetLast();
 	void SetCurValid(bool fValid);
 	void SetCurTime(REFERENCE_TIME rt);
-
+	int GetTotalTimeBeforeCur();
 	void Refresh();
 	void Empty();
 

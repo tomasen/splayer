@@ -849,7 +849,7 @@ STDMETHODIMP_(void) ISubPicAllocatorPresenterImpl::SetTime(REFERENCE_TIME rtNow)
 
 STDMETHODIMP_(void) ISubPicAllocatorPresenterImpl::SetSubtitleDelay(int delay_ms)
 {
-	m_lSubtitleDelay = delay_ms*10000;
+	m_lSubtitleDelay = (REFERENCE_TIME)delay_ms*10000;
 }
 
 STDMETHODIMP_(int) ISubPicAllocatorPresenterImpl::GetSubtitleDelay()
@@ -859,7 +859,7 @@ STDMETHODIMP_(int) ISubPicAllocatorPresenterImpl::GetSubtitleDelay()
 
 STDMETHODIMP_(void) ISubPicAllocatorPresenterImpl::SetSubtitleDelay2(int delay_ms)
 {
-	m_lSubtitleDelay2 = delay_ms*10000;
+	m_lSubtitleDelay2 = (REFERENCE_TIME)delay_ms*10000;
 }
 
 STDMETHODIMP_(int) ISubPicAllocatorPresenterImpl::GetSubtitleDelay2()

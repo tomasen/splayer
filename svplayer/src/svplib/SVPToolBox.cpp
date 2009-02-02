@@ -458,6 +458,8 @@ int CSVPToolBox::HandleSubPackage(FILE* fp){
 		// convert szDescData to Unicode and save to CString
 		szaSubDescs.Add(this->UTF8ToCString( szDescData , iDescLength));
 		free(szDescData);
+	}else{
+		szaSubDescs.Add(_T(""));
 	}
 	err = this->ExtractSubFiles(fp);
 	
@@ -740,6 +742,20 @@ CString CSVPToolBox::getSubFileByTempid(int iTmpID, CString szVidPath){
 		if( !CopyFile( szSource, szTarget, true) ){
 			SVP_LogMsg( szSource + _T(" to ") + szTarget + _T(" Fail to copy subtitle file to position"));
 		}
+		CStringArray szaDesclines;
+		this->Explode( szaSubDescs.GetAt(i) , _T("\x0b\x0b") , &szaDesclines);
+		if(szaDesclines.GetCount() > 0){
+			int iDelay = 0;
+			 swscanf_s(szaDesclines.GetAt(0), _T("delay=%d"), &iDelay);
+			 if(iDelay){
+				 CString szBuf;
+				 szBuf.Format(_T("%d"), iDelay);
+				 filePutContent( szTarget + _T(".delay"), szBuf );
+				 SVP_LogMsg(szTarget + _T(" has delay ") + szBuf);
+			 }
+			
+		}
+		
 		_wremove(szSource);
 	}
 	

@@ -1262,7 +1262,7 @@ CString CMainFrame::getCurPlayingSubfile(int * iSubDelayMS,int subid ){
 			int iSubDelay_ms;
 			iSubDelay_ms = m_pCAP->GetSubtitleDelay();			
 			if(subid){	iSubDelay_ms = m_pCAP->GetSubtitleDelay2();	}
-			if (iSubDelay_ms){
+			if (iSubDelayMS && iSubDelay_ms){
 				*iSubDelayMS = iSubDelay_ms;
 			}
 			CLSID clsid;
@@ -1310,7 +1310,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 
 				if( time_now > ( m_tLastLogTick + 60 )){ //如果和上次检查已经超n秒
 					CString fnVideoFile , fnSubtitleFile; 
-					int subDelayMS;
+					int subDelayMS = 0;
 					fnVideoFile = m_fnCurPlayingFile;
 					fnSubtitleFile = getCurPlayingSubfile(&subDelayMS);
 					
@@ -1318,7 +1318,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 					if (!fnSubtitleFile.IsEmpty()){ //如果有字幕
 
 						CString szLog;
-						szLog.Format(_T(" %s ( with sub %s ) %d sec of %d sec ( 1/2 length video = %d ) ") , fnVideoFile, fnSubtitleFile, totalplayedtime , iTotalLenSec, (UINT)(iTotalLenSec/2)  );
+						szLog.Format(_T(" %s ( with sub %s delay %d ) %d sec of %d sec ( 1/2 length video = %d ) ") , fnVideoFile, fnSubtitleFile,subDelayMS, totalplayedtime , iTotalLenSec, (UINT)(iTotalLenSec/2)  );
 						SVP_LogMsg(szLog);
 						//if time > 50%
 						if (totalplayedtime > (UINT)(iTotalLenSec/2)){
@@ -2807,7 +2807,7 @@ void CMainFrame::OnFilePostOpenmedia()
 //		ShowControlBar(&m_wndCaptureBar, TRUE, TRUE);
 	}
 
-	if(m_pCAP) m_pCAP->SetSubtitleDelay(0);
+	//if(m_pCAP) m_pCAP->SetSubtitleDelay(0); remove since we need set the delay while setSubTitle
 	m_iMediaLoadState = MLS_LOADED;
 
 	// IMPORTANT: must not call any windowing msgs before
@@ -4295,9 +4295,36 @@ void CMainFrame::OnUpdateFileISDBSearch(CCmdUI *pCmdUI)
 
 void CMainFrame::OnFileISDBUpload()
 {
-	CStringA url = "http://shooter.cn/sub/upload.html?";
+	CString fnVideoFile , fnSubtitleFile; 
+	fnVideoFile = m_fnCurPlayingFile;
+	int subDelayMS = 0;
+	fnSubtitleFile = getCurPlayingSubfile(&subDelayMS);
+
+	if (!fnSubtitleFile.IsEmpty() ){ //如果有字幕
+		CString szBuf;
+		if(subDelayMS){
+			szBuf.Format(_T("字幕延时：%d ms\r\n"),subDelayMS );
+		}
+		CString szUploadMsg;
+		szUploadMsg.Format(_T("本操作将上传您正在播放中的字幕： \r\n %s \r\n%s\r\n是否继续？"), fnSubtitleFile,szBuf);
+
+		if ( AfxMessageBox(szUploadMsg, MB_YESNO) == IDYES){
+
+			CString szLog;
+
+			szLog.Format(_T("Uploading sub %s of %s with delay %d ms because user demand to ") , fnSubtitleFile, fnVideoFile ,subDelayMS );
+			SVP_LogMsg(szLog);
+			SVP_UploadSubFileByVideoAndSubFilePath(fnVideoFile , fnSubtitleFile, subDelayMS) ;
+			if( AfxMessageBox(_T("字幕已经上传到播放器系统。建议您通过上传网页丰富相关信息。"), MB_YESNO) != IDYES){
+			return;
+			}
+		}else
+			return;
+	}
 	
-	ShellExecute(m_hWnd, _T("open"), CString(url), NULL, NULL, SW_SHOWDEFAULT);
+		CStringA url = "http://shooter.cn/sub/upload.html?";
+		ShellExecute(m_hWnd, _T("open"), CString(url), NULL, NULL, SW_SHOWDEFAULT);
+	
 }
 void CMainFrame::OnManualcheckupdate()
 {
@@ -4311,25 +4338,33 @@ void CMainFrame::OnUpdateFileISDBUpload(CCmdUI *pCmdUI)
 void CMainFrame::OnFileISDBDownload()
 {
 
-	CString fnVideoFile , fnSubtitleFile; 
-	fnVideoFile = m_fnCurPlayingFile;
-	int subDelayMS;
-	fnSubtitleFile = getCurPlayingSubfile(&subDelayMS);
+	CString fnVideoFile = m_fnCurPlayingFile;
+	
 
-	if (!fnSubtitleFile.IsEmpty() ){ //如果有字幕
+	
+	
 		CString szUploadMsg;
-		szUploadMsg.Format(_T("本操作将上传您正在播放中的字幕： \r\n %s \r\n是否继续？"), fnSubtitleFile);
+		szUploadMsg.Format(_T("本操作将尝试为您正在播放中的视频下载字幕： \r\n %s \r\n\r\n是否继续？"), fnVideoFile);
 
 		if ( AfxMessageBox(szUploadMsg, MB_YESNO) == IDYES){
 
 			CString szLog;
 
-			szLog.Format(_T("Uploading sub %s of %s with delay %d ms because user demand to ") , fnSubtitleFile, fnVideoFile ,subDelayMS );
+			szLog.Format(_T("Downloading sub for %s  because user demand to ") , fnVideoFile );
 			SVP_LogMsg(szLog);
-			SVP_UploadSubFileByVideoAndSubFilePath(fnVideoFile , fnSubtitleFile, subDelayMS) ;
+			CStringArray szaSubarr;
+			SVP_FetchSubFileByVideoFilePath(fnVideoFile , &szaSubarr);
+			if( szaSubarr.GetCount() > 0){
+				if( LoadSubtitle(szaSubarr.GetAt(0)) )
+					SetSubtitle(m_pSubStreams.GetTail());
+				szUploadMsg.Format(_T("%d 个字幕已经下载成功"),szaSubarr.GetCount());
+				AfxMessageBox(szUploadMsg, MB_OK);
+			}else{
+				AfxMessageBox(_T("没有下载到匹配的字幕。"), MB_OK);
+			}
+			
+		}else
 			return;
-		}
-	}
 
 	CStringA url = "http://shooter.cn/sub/?";
 	ShellExecute(m_hWnd, _T("open"), CString(url), NULL, NULL, SW_SHOWDEFAULT);
@@ -8253,7 +8288,13 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 		if(m_pCAP && (!m_fAudioOnly || m_fRealMediaGraph))
 		{
 			POSITION pos = pOMD->subs.GetHeadPosition();
-			while(pos) LoadSubtitle(pOMD->subs.GetNext(pos));
+			while(pos){ LoadSubtitle(pOMD->subs.GetNext(pos));}
+			if(m_pSubStreams.GetCount() == 0){
+				if ( !m_wndPlaylistBar.m_pl.szPlayListSub.IsEmpty() ){
+					int delayms = 0 - m_wndPlaylistBar.GetTotalTimeBeforeCur();
+					LoadSubtitle(m_wndPlaylistBar.m_pl.szPlayListSub, delayms , true); 
+				}
+			}
 
 			if(AfxGetAppSettings().fEnableSubtitles && m_pSubStreams.GetCount() > 0)
 				SetSubtitle(m_pSubStreams.GetHead());
@@ -9497,6 +9538,10 @@ void CMainFrame::AddTextPassThruFilter()
 
 bool CMainFrame::LoadSubtitle(CString fn, int sub_delay_ms, BOOL bIsForPlayList)
 {
+	CString szBuf;
+	szBuf.Format(_T("Loading subtile %s delay %d %s"), fn , sub_delay_ms , ( bIsForPlayList ? _T("for playlist") : _T("") ) );
+	SVP_LogMsg(szBuf);
+
 	CComPtr<ISubStream> pSubStream;
 
 	// TMP: maybe this will catch something for those who get a runtime error dialog when opening subtitles from cds
@@ -9543,7 +9588,6 @@ bool CMainFrame::LoadSubtitle(CString fn, int sub_delay_ms, BOOL bIsForPlayList)
 		}else{
 			//如果有字幕延迟， 而且不是playlist subtitles， 保存到.delay文件
 			if(!bIsForPlayList){
-				CString szBuf;
 				szBuf.Format(_T("%d"), sub_delay_ms);
 				svTool.filePutContent(  fn+_T(".delay"), szBuf );
 			}
@@ -9697,7 +9741,7 @@ void CMainFrame::SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle)
 	{
 		m_pCAP->SetSubPicProvider2(CComQIPtr<ISubPicProvider>(pSubStream));
 		//m_wndSubresyncBar.SetSubtitle(pSubStream, m_pCAP->GetFPS());
-		if (pSubStream->sub_delay_ms){ SetSubtitleDelay2(pSubStream->sub_delay_ms); }
+		SetSubtitleDelay2(pSubStream->sub_delay_ms); 
 	}
 }
 void CMainFrame::SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle)
@@ -9789,12 +9833,16 @@ void CMainFrame::SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle)
 
 	m_nSubtitleId = (DWORD_PTR)pSubStream;
 
-	if(m_pCAP)
+	if(m_pCAP && pSubStream)
 	{
 		//m_pCAP->SetSubPicProvider2(CComQIPtr<ISubPicProvider>(pSubStream));
 		m_pCAP->SetSubPicProvider(CComQIPtr<ISubPicProvider>(pSubStream));
 		m_wndSubresyncBar.SetSubtitle(pSubStream, m_pCAP->GetFPS());
-		if (pSubStream->sub_delay_ms){ SetSubtitleDelay(pSubStream->sub_delay_ms); }
+		CString szBuf;
+		szBuf.Format(_T("%d delay for sub"), pSubStream->sub_delay_ms);
+		SVP_LogMsg(szBuf);
+		SetSubtitleDelay(pSubStream->sub_delay_ms); 
+		
 	}
 }
 

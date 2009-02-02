@@ -1190,7 +1190,8 @@ CRenderedTextSubtitle::CRenderedTextSubtitle(CCritSec* pLock)
 	: ISubPicProviderImpl(pLock)
 {
 	m_size = CSize(0, 0);
-
+	sub_delay_ms = 0;
+	notSaveDelay = 0;
 	if(g_hDC_refcnt == 0) 
 	{
 		g_hDC = CreateCompatibleDC(NULL);

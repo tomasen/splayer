@@ -418,6 +418,15 @@ interface ISubStream : public IPersist
 	public:
 	int sub_delay_ms ;
 	BOOL notSaveDelay;
+
+	/*
+	STDMETHOD_(int, GetSubDelayMS) () PURE;
+		STDMETHOD (SetSubDelayMS) (int iSubDelayMS) PURE;
+	
+		STDMETHOD_(BOOL, IfSaveDelayMS) () PURE;
+		STDMETHOD (SetSaveDelayMS) (BOOL bSaveDelayMS) PURE;
+	*/
+	
 	// TODO: get rid of IPersist to identify type and use only 
 	// interface functions to modify the settings of the substream
 };

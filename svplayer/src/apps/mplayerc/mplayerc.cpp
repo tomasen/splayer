@@ -30,6 +30,7 @@
 #include "..\..\DSUtil\DSUtil.h"
 #include "revision.h"
 #include "ChkDefPlayer.h"
+#include <locale.h> 
 
 /////////
 
@@ -1481,6 +1482,15 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		// TODO: rename subdefstyle -> defStyle, IDS_RS_SPLOGFONT -> IDS_RS_SPSTYLE
 		subdefstyle <<= pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPLOGFONT), _T("20,20,20,20,2,0,2.000000,2.000000,3.000000,3.000000,0x00ecec,0x00ffff,0x000000,0x000000,0x00,0x00,0x00,0x80,0,黑体,22.000000,100.000000,100.000000,0.000000,700,0,0,0,0,0.000000,0.000000,0.000000,0.000000,1"));
 		subdefstyle2 <<= pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPLOGFONT2), _T("20,20,20,20,8,0,2.000000,2.000000,3.000000,3.000000,0x00ecec,0x00ffff,0x000000,0x000000,0x00,0x00,0x00,0x80,1,黑体,22.000000,100.000000,100.000000,0.000000,700,0,0,0,0,0.000000,0.000000,0.000000,0.000000,2"));
+
+		
+		
+		if( GetThreadLocale() == 1028 ){
+			if(subdefstyle.fontName.CompareNoCase(_T("黑体") ) == 0 )
+				subdefstyle.fontName = _T("SimHei");
+			if(subdefstyle2.fontName.CompareNoCase(_T("黑体") ) == 0 )
+				subdefstyle2.fontName = _T("SimHei");
+		}
 		fOverridePlacement = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPOVERRIDEPLACEMENT), 0);
 		fOverridePlacement2 = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPOVERRIDEPLACEMENT)+_T("2"), TRUE);
 		nHorPos = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPHORPOS), 50);

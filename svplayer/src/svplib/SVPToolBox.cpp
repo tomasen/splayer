@@ -5,12 +5,31 @@
 #include <io.h> 
 #include <wchar.h> 
 
+BOOL CALLBACK EnumFamCallBack(LPLOGFONT lplf, LPNEWTEXTMETRIC lpntm, DWORD FontType, LPVOID aFontCount) 
+{ 
+	int * aiFontCount = (int *)aFontCount;
+	*aiFontCount = 1;
+	
+	return TRUE;  
+} 
+
 CSVPToolBox::CSVPToolBox(void)
 {
 }
 
 CSVPToolBox::~CSVPToolBox(void)
 {
+}
+BOOL CSVPToolBox::bFontExist(CString szFontName){
+	int aFontCount = 0;
+	BOOL ret;
+	HDC hdc = CreateDC(_T("DISPLAY"), NULL, NULL, NULL);
+
+	ret =  EnumFontFamilies(hdc,szFontName, (FONTENUMPROC) EnumFamCallBack, (LPARAM) &aFontCount) ;
+
+	CancelDC(hdc);
+	DeleteDC(hdc);
+	return !!aFontCount;
 }
 CString CSVPToolBox::fileGetContent(CString szFilePath){
 	CStdioFile f;

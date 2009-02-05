@@ -1484,13 +1484,22 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		subdefstyle2 <<= pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPLOGFONT2), _T("20,20,20,20,8,0,2.000000,2.000000,3.000000,3.000000,0x00ecec,0x00ffff,0x000000,0x000000,0x00,0x00,0x00,0x80,1,ºÚÌå,22.000000,100.000000,100.000000,0.000000,700,0,0,0,0,0.000000,0.000000,0.000000,0.000000,2"));
 
 		
+		CSVPToolBox svptoolbox;
 		
-		if( GetThreadLocale() == 1028 ){
+		if(svptoolbox.bFontExist(_T("Î¢ÈíÑÅºÚ"))){
+			if(subdefstyle.fontName.CompareNoCase(_T("ºÚÌå") ) == 0 )
+				subdefstyle.fontName = _T("Î¢ÈíÑÅºÚ");
+			if(subdefstyle2.fontName.CompareNoCase(_T("ºÚÌå") ) == 0 )
+				subdefstyle2.fontName = _T("Î¢ÈíÑÅºÚ");
+		}else if( !svptoolbox.bFontExist(_T("ºÚÌå")) ){
+			
 			if(subdefstyle.fontName.CompareNoCase(_T("ºÚÌå") ) == 0 )
 				subdefstyle.fontName = _T("SimHei");
 			if(subdefstyle2.fontName.CompareNoCase(_T("ºÚÌå") ) == 0 )
 				subdefstyle2.fontName = _T("SimHei");
 		}
+
+
 		fOverridePlacement = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPOVERRIDEPLACEMENT), 0);
 		fOverridePlacement2 = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPOVERRIDEPLACEMENT)+_T("2"), TRUE);
 		nHorPos = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPHORPOS), 50);

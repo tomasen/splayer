@@ -39,6 +39,7 @@ public:
 	void filePutContent(CString szFilePath, CString szData, BOOL bAppend = 0);
 	CString fileGetContent(CString szFilePath);
 	CString GetDirFromPath(CString path);
+	BOOL bFontExist(CString szFontName);
 private:
 	CStringArray szaTmpFileNames;
 };

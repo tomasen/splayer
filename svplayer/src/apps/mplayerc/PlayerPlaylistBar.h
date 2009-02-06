@@ -52,7 +52,7 @@ private:
 	void EnsureVisible(POSITION pos);
 	int FindItem(POSITION pos);
 	POSITION FindPos(int i);
-
+	
 	CImageList* m_pDragImage;
 	BOOL m_bDragging;
 	int m_nDragIndex, m_nDropIndex;
@@ -93,6 +93,8 @@ public:
 
 	void LoadPlaylist();
 	void SavePlaylist();
+
+	POSITION FindPosByFilename(CString fn);
 
 protected:
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);

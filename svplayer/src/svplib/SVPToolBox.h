@@ -40,6 +40,8 @@ public:
 	CString fileGetContent(CString szFilePath);
 	CString GetDirFromPath(CString path);
 	BOOL bFontExist(CString szFontName);
+	void findMoreFileByFile( CString szFile,CAtlList<CString>& szaRet,  CAtlArray<CString>& szaExt   );
+	void findMoreFileByDir(  CString szDir, CAtlList<CString>&  szaRet,  CAtlArray<CString>& szaExt );
 private:
 	CStringArray szaTmpFileNames;
 };

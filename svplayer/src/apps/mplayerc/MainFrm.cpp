@@ -3211,12 +3211,26 @@ void CMainFrame::OnFileOpenmedia()
 		return;
 	}
 
+
 	SendMessage(WM_COMMAND, ID_FILE_CLOSEMEDIA);
 
 	ShowWindow(SW_SHOW);
 	SetForegroundWindow();
 
-	m_wndPlaylistBar.Open(dlg.m_fns, dlg.m_fMultipleFiles);
+	CString szMediaFile = dlg.m_fns.GetHead();
+	//check if dir has more files
+	CAtlList<CString> szaRet;
+	CAtlArray<CString> mask;
+	AfxGetAppSettings().Formats.GetExtsArray(mask);
+	CSVPToolBox svptool;
+	svptool.findMoreFileByFile(szMediaFile, szaRet, mask);
+	m_wndPlaylistBar.Empty();  //add them all
+	m_wndPlaylistBar.Append(szaRet, szaRet.GetCount());
+	//m_wndPlaylistBar.Open(dlg.m_fns, dlg.m_fMultipleFiles);
+	POSITION pos = m_wndPlaylistBar.FindPosByFilename(szMediaFile);
+	m_wndPlaylistBar.m_pl.SetPos(pos);;
+
+	//set current f
 
 	if(m_wndPlaylistBar.GetCount() == 1 && m_wndPlaylistBar.IsWindowVisible() && !m_wndPlaylistBar.IsFloating())
 	{

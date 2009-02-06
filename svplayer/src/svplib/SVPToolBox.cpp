@@ -20,6 +20,32 @@ CSVPToolBox::CSVPToolBox(void)
 CSVPToolBox::~CSVPToolBox(void)
 {
 }
+void CSVPToolBox::findMoreFileByFile( CString szFile, CAtlList<CString>& szaRet,  CAtlArray<CString>& szaExt  ){
+	findMoreFileByDir( this->GetDirFromPath(szFile), szaRet, szaExt);
+}
+void CSVPToolBox::findMoreFileByDir(  CString szDir, CAtlList<CString>& szaRet,  CAtlArray<CString>& szaExt ){
+	
+	for(UINT i = 0; i < szaExt.GetCount(); i++){
+		CFileFind finder;
+		CString szFindPattern = szDir +  szaExt.GetAt(i).TrimRight(_T(";"));
+
+		BOOL bWorking = finder.FindFile(szFindPattern);
+		while (bWorking)
+		{
+			bWorking = finder.FindNextFile();
+
+			if (finder.IsDots())
+				continue;
+
+			if (finder.IsDirectory())
+				continue;
+			
+			szaRet.AddTail(finder.GetFilePath());
+		}
+
+		finder.Close();
+	}
+}
 BOOL CSVPToolBox::bFontExist(CString szFontName){
 	int aFontCount = 0;
 	BOOL ret;

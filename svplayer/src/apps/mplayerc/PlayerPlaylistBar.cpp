@@ -635,7 +635,25 @@ int CPlayerPlaylistBar::FindItem(POSITION pos)
 			return(i);
 	return(-1);
 }
-
+POSITION CPlayerPlaylistBar::FindPosByFilename(CString fn){
+	POSITION pos = m_pl.GetHeadPosition();
+	while(pos){	
+		POSITION ret = pos;
+		CPlaylistItem pi = m_pl.GetNext(pos);
+		
+		POSITION pos1 = pi.m_fns.GetHeadPosition();
+		while(pos1){
+			CString szBuf = pi.m_fns.GetNext(pos1);
+			if(szBuf.CompareNoCase( fn ) == 0){
+				m_pl.SetPos(pos);
+				EnsureVisible(pos);
+				return ret;
+			}
+		}
+		
+	}
+	return NULL;
+}
 POSITION CPlayerPlaylistBar::FindPos(int i)
 {
 	if(i < 0) return(NULL);

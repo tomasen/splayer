@@ -56,6 +56,7 @@ public:
 	CString GetLabel() {return m_label;}
 	CString GetFilter();
 	CString GetExts(bool fAppendEngine = false);
+	void GetExtArray(CAtlArray<CString>& szaExts);
 	CString GetExtsWithPeriod(bool fAppendEngine = false);
 	CString GetBackupExtsWithPeriod(bool fAppendEngine = false);
 	CString GetSpecReqNote() {return m_specreqnote;}
@@ -83,7 +84,7 @@ public:
 	engine_t GetEngine(CString path);
 
 	bool FindExt(CString ext, bool fAudioOnly = false);
-
+	void GetExtsArray(CAtlArray<CString>& mask,  bool noAudio = TRUE);
 	void GetFilter(CString& filter, CAtlArray<CString>& mask);
 	void GetAudioFilter(CString& filter, CAtlArray<CString>& mask);
 };

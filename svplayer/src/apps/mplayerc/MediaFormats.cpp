@@ -118,16 +118,22 @@ void CMediaFormatCategory::SetExts(CString exts)
 		else ext.TrimLeft('.');
 	}
 }
-
+void CMediaFormatCategory::GetExtArray(CAtlArray<CString>& szaExts)
+{
+	CString filter;
+	POSITION pos = m_exts.GetHeadPosition();
+	while(pos){
+		szaExts.Add(_T("*.") + m_exts.GetNext(pos) );
+	}
+}
 CString CMediaFormatCategory::GetFilter()
 {
 	CString filter;
 	POSITION pos = m_exts.GetHeadPosition();
 	while(pos) filter += _T("*.") + m_exts.GetNext(pos) + _T(";");
-	filter.TrimRight(_T(";")); // cheap...
+	filter.TrimRight(_T(";")); // cheap... 
 	return(filter);
 }
-
 CString CMediaFormatCategory::GetExts(bool fAppendEngine)
 {
 	CString exts = Implode(m_exts, ' ');
@@ -295,7 +301,17 @@ bool CMediaFormats::FindExt(CString ext, bool fAudioOnly)
 
 	return(false);
 }
+void CMediaFormats::GetExtsArray(CAtlArray<CString>& mask, bool noAudio){
 
+	for(int i = 0; i < GetCount(); i++) 
+	{
+		CMediaFormatCategory& mfc = GetAt(i);
+		if( noAudio && mfc.IsAudioOnly() ) continue;
+		if( mfc.GetEngineType() != DirectShow) continue;
+		mfc.GetExtArray(mask);
+	}
+
+}
 void CMediaFormats::GetFilter(CString& filter, CAtlArray<CString>& mask)
 {
 	CString		strTemp;

@@ -41,11 +41,13 @@ class CUESettingPanel : public CDHtmlDialog
 	int m_sgi_suboveride1;
 	CString m_sgs_subhpos1;
 	CString m_sgs_subvpos1;
+	CString m_sgs_engsubradio1;
 	
 	CString m_sgs_subalign2;
 	int m_sgi_suboveride2;
 	CString m_sgs_subhpos2;
 	CString m_sgs_subvpos2;
+	CString m_sgs_engsubradio2;
 
 	long m_sgi_videorender;
 	int m_sgi_lockbackbuff;

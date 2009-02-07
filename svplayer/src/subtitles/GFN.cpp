@@ -47,7 +47,16 @@ static TCHAR* ext[2][countof(exttypestr)] =
 };
 
 #define WEBSUBEXT _T(".wse")
-
+BOOL isSubtitleFile(CString szFn){
+	int extsubnum = countof(ext[0]);
+	szFn.MakeLower();
+	for(int i = 0; i < extsubnum; i++){
+		if( szFn.Find( ext[0][i] ) + CString(ext[0][i]).GetLength() == szFn.GetLength() ){
+			return true;
+		}
+	}
+	return false;
+}
 static int SubFileCompare(const void* elem1, const void* elem2)
 {
 	return(((SubFile*)elem1)->fn.CompareNoCase(((SubFile*)elem2)->fn));
@@ -93,7 +102,7 @@ void GetSubFileNames(CString fn, CAtlArray<CString>& paths, CAtlArray<SubFile>& 
 		WIN32_FIND_DATA wfd, wfd2;
 		HANDLE hFile, hFile2;
 
-		for(int k = 0; k < paths.GetCount(); k++)
+		for(UINT k = 0; k < paths.GetCount(); k++)
 		{
 			CString path = paths[k];
 			path.Replace('\\', '/');

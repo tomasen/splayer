@@ -175,7 +175,7 @@ function myInit(){
 可能会影响菜单打开的速度">隐藏光盘驱动器菜单</label><br />
 <input type="checkbox" id="chkuseini" /><label for="chkuseini" title="不将配置文件写入注册表">将设置保存至ini</label><br />
 <input type="checkbox" id="chkfileass" /><label for="chkfileass">启动时检查文件关联</label> <input type="button" value="*" style="font-size:7px;" onclick="ueAPI.showinline('startupcheckextsdiv');" /><br />
-<span id='startupcheckextsdiv' style="display:none;width:60%;"><textarea rows="2" id="startupcheckexts" style="margin-left:20px;width:60%;" wrap="hard"></textarea> <br /></span>
+<div id='startupcheckextsdiv' style="display:none;width:60%;"><textarea rows="2" id="startupcheckexts" style="margin-left:20px;width:60%;" wrap="hard"></textarea> <br /></div>
 <input type="checkbox" id="chkplayrepeat" /><label for="chkplayrepeat">循环播放</label><br />
 <input type="checkbox" id="chkexitfullscreen" /><label for="chkexitfullscreen">播放结束后自动退出全屏</label><br />
 <input type="checkbox" id="chkautozoom" /><label for="chkautozoom">根据视频画面尺寸改变窗口大小</label><br />
@@ -218,6 +218,7 @@ Normalization is often used when remastering audio tapes for CD production, in o
 <fieldset><legend><input type="checkbox" id="suboveride1" /><label for="suboveride1">强制字幕显示位置</label></legend>
 水平位置： <input class="percent" type="text" id="subhpos1" value="" size="3" maxlength="3" />%<br />
 垂直位置： <input class="percent" type="text" id="subvpos1" value="" size="3" maxlength="3" />%<br /></fieldset>
+英文字幕字体：<input class="percent" type="text" id="engsizeratio1" value="" size="5" maxlength="5" />
 </fieldset></td><td width="50%"><fieldset><legend>第二字幕</legend>
 字体： <input type="button" id="subfont2" value="黑体"/><br />
 颜色： 
@@ -225,7 +226,6 @@ Normalization is often used when remastering audio tapes for CD production, in o
 <input type="image" src="blank.gif" class="subcolor" id="sub2c2" alt="字幕颜色" />
 <input type="image" src="blank.gif" class="subcolor" id="sub2c3" alt="字幕颜色" />
 <input type="image" src="blank.gif" class="subcolor" id="sub2c4" alt="字幕颜色" />
-
 <br />
 字幕位置： <select id="subalign2"><option value="1">左上</option><option value="2">上方</option><option value="3">右上</option>
 <option value="4">左边</option><option value="5">中心</option><option value="6">右边</option>
@@ -233,7 +233,9 @@ Normalization is often used when remastering audio tapes for CD production, in o
 <fieldset><legend><input type="checkbox" id="suboveride2" /><label for="suboveride2">强制字幕显示位置</label></legend>
 水平位置： <input class="percent" type="text" id="subhpos2" value="" size="3" maxlength="3" />%<br />
 垂直位置： <input class="percent" type="text" id="subvpos2" value="" size="3" maxlength="3" />%<br /></fieldset>
-</fieldset></td><td></td></tr></table>
+英文字幕字体：<input class="percent" type="text" id="engsizeratio2" value="" size="5" maxlength="5" />
+</fieldset>
+</td></tr></table>
 </div>
 <div id="fileass" class="hiddenarea"><input type="button" value="重建文件关联"/></div>
 <div id="hotkeysetting" class="hiddenarea">热键设置</div>

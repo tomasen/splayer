@@ -43,7 +43,7 @@ public:
 	CString m_path2;
 	CStatic m_label2;
 	BOOL m_fAppendPlaylist;
-
+	BOOL m_fOpenDirAutomatic;
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	virtual BOOL OnInitDialog();

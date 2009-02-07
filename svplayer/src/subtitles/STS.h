@@ -52,7 +52,7 @@ public:
 	double	fontAngleZ, fontAngleX, fontAngleY;
 	double	fontShiftX, fontShiftY;
 	int		relativeTo; // 0: window, 1: video, 2: undefined (~window)
-
+	double  engRatio;
 	STSStyle();
 
 	void SetDefault();

@@ -66,12 +66,14 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_DHtml_CheckBox(pDX, _T("suboveride1"), m_sgi_suboveride1);
 	DDX_DHtml_ElementValue (pDX, _T("subhpos1"), m_sgs_subhpos1);
 	DDX_DHtml_ElementValue (pDX, _T("subvpos1"), m_sgs_subvpos1);
+	DDX_DHtml_ElementValue (pDX, _T("engsizeratio1"), m_sgs_engsubradio1);
 
 	DDX_DHtml_ElementValue (pDX, _T("subfont2"), m_sgs_subfont2);
 	DDX_DHtml_SelectValue( pDX, _T("subalign2"), m_sgs_subalign2);
 	DDX_DHtml_CheckBox(pDX, _T("suboveride2"), m_sgi_suboveride2);
 	DDX_DHtml_ElementValue (pDX, _T("subhpos2"), m_sgs_subhpos2);
 	DDX_DHtml_ElementValue (pDX, _T("subvpos2"), m_sgs_subvpos2);
+	DDX_DHtml_ElementValue (pDX, _T("engsizeratio2"), m_sgs_engsubradio2);
 
 	DDX_DHtml_SelectValue( pDX, _T("videorender"), m_sgs_videorender);
 	DDX_DHtml_SelectIndex( pDX, _T("videorender"), m_sgi_videorender);
@@ -184,13 +186,14 @@ BOOL CUESettingPanel::OnInitDialog()
 	m_sgi_suboveride1 = s.fOverridePlacement;
 	m_sgs_subhpos1.Format( _T("%d") , s.nHorPos );
 	m_sgs_subvpos1.Format( _T("%d") , s.nVerPos );
+	m_sgs_engsubradio1.Format(_T("%.3f"), s.subdefstyle.engRatio);
 
 	m_sgs_subfont2.Format( _T("%s(%d)"), s.subdefstyle2.fontName , (INT)s.subdefstyle2.fontSize);
 	m_sgs_subalign2.Format( _T("%d") , s.subdefstyle2.scrAlignment );
 	m_sgi_suboveride2 = s.fOverridePlacement2;
 	m_sgs_subhpos2.Format( _T("%d") , s.nHorPos2 );
 	m_sgs_subvpos2.Format( _T("%d") , s.nVerPos2 );
-
+	m_sgs_engsubradio2.Format(_T("%.3f"), s.subdefstyle2.engRatio);
 	UpdateData(FALSE);
 
 
@@ -319,6 +322,9 @@ void CUESettingPanel::ApplyAllSetting(){
 	s.fOverridePlacement = !!m_sgi_suboveride1  ;
 	s.fOverridePlacement2 = !!m_sgi_suboveride2  ;
 	
+	m_stss.engRatio = _wtof( m_sgs_engsubradio1 );
+	m_stss2.engRatio = _wtof( m_sgs_engsubradio2 );
+
 	s.subdefstyle = m_stss;
 	s.subdefstyle2 = m_stss2;
 

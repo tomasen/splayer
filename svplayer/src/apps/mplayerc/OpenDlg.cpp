@@ -36,6 +36,7 @@ COpenDlg::COpenDlg(CWnd* pParent /*=NULL*/)
 	, m_path2(_T(""))
 	, m_fMultipleFiles(false)
 	, m_fAppendPlaylist(FALSE)
+	, m_fOpenDirAutomatic(TRUE)
 {
 }
 
@@ -52,6 +53,8 @@ void COpenDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_CBString(pDX, IDC_COMBO2, m_path2);
 	DDX_Control(pDX, IDC_STATIC1, m_label2);
 	DDX_Check(pDX, IDC_CHECK1, m_fAppendPlaylist);
+	DDX_Check(pDX, IDC_CHECK2, m_fOpenDirAutomatic);
+	
 }
 
 
@@ -104,6 +107,7 @@ BOOL COpenDlg::OnInitDialog()
 	s.cx = 1000;
 	SetMaxTrackSize(s);
 
+	UpdateData(FALSE);
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }

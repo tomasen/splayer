@@ -40,8 +40,10 @@ public:
 	CString fileGetContent(CString szFilePath);
 	CString GetDirFromPath(CString path);
 	BOOL bFontExist(CString szFontName);
+	void MergeAltList( CAtlList<CString>& szaRet,  CAtlList<CString>& szaIn  );
 	void findMoreFileByFile( CString szFile,CAtlList<CString>& szaRet,  CAtlArray<CString>& szaExt   );
 	void findMoreFileByDir(  CString szDir, CAtlList<CString>&  szaRet,  CAtlArray<CString>& szaExt );
+	static BOOL isAlaphbet(WCHAR wchr);
 private:
 	CStringArray szaTmpFileNames;
 };

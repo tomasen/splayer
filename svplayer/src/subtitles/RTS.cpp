@@ -23,6 +23,7 @@
 #include <math.h>
 #include <time.h>
 #include "RTS.h"
+#include "../svplib/SVPToolBox.h"
 
 // WARNING: this isn't very thread safe, use only one RTS a time.
 static HDC g_hDC;
@@ -1331,15 +1332,47 @@ void CRenderedTextSubtitle::ParseString(CSubtitle* sub, CStringW str, STSStyle& 
 	str.Replace(L"\\n", (sub->m_wrapStyle < 2 || sub->m_wrapStyle == 3) ? L" " : L"\n");
 	str.Replace(L"\\h", L"\x00A0");
 
+	CAtlList<CString> szaEachLines;
+	Explode(str, szaEachLines, _T("\n"));
+	
+	double orgFontSize = style.fontSize;
+	 
+	BOOL bNeedChkEngLine = true;
+	BOOL bIsEngLine = true;
 	for(int i = 0, j = 0, len = str.GetLength(); j <= len; j++)
 	{
 		WCHAR c = str[j];
+		
+		if(bNeedChkEngLine){
+			//检测当前行是否英文行
+			bIsEngLine = true;
+			for(int s1 = j; s1 <= len; s1++){
+				WCHAR c1 = str[s1];
+				if(c1 == '\n'){
+					break;
+				}
+				if( !CSVPToolBox::isAlaphbet(c) ){
+					bIsEngLine = false;
+					break;
+				}
+			}
+			bNeedChkEngLine = false;
+		}
+		if(bIsEngLine){
+			style.fontSize = orgFontSize* style.engRatio;
+		}else{
+			style.fontSize = orgFontSize;
+		}
+		
+					
+		
 
 		if(c != '\n' && c != ' ' && c != '\x00A0' && c != 0)
 			continue;
 
 		if(i < j)
 		{
+
 			if(CWord* w = new CText(style, str.Mid(i, j-i), m_ktype, m_kstart, m_kend))
 			{
 				sub->m_words.AddTail(w); 
@@ -1354,6 +1387,7 @@ void CRenderedTextSubtitle::ParseString(CSubtitle* sub, CStringW str, STSStyle& 
 				sub->m_words.AddTail(w); 
 				m_kstart = m_kend;
 			}
+			bNeedChkEngLine = true; 
 		}
 		else if(c == ' ' || c == '\x00A0')
 		{

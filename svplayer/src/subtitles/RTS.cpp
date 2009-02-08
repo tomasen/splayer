@@ -1351,7 +1351,7 @@ void CRenderedTextSubtitle::ParseString(CSubtitle* sub, CStringW str, STSStyle& 
 				if(c1 == '\n'){
 					break;
 				}
-				if( !CSVPToolBox::isAlaphbet(c) ){
+				if( !CSVPToolBox::isAlaphbet(c1) ){
 					bIsEngLine = false;
 					break;
 				}

@@ -74,6 +74,8 @@ BOOL COpenDlg::OnInitDialog()
 {
 	__super::OnInitDialog();
 
+	UpdateData(FALSE);
+
 	CRecentFileList& MRU = AfxGetAppSettings().MRU;
 	MRU.ReadList();
 	m_mrucombo.ResetContent();
@@ -90,7 +92,9 @@ BOOL COpenDlg::OnInitDialog()
 			m_mrucombo2.AddString(MRUDub[i]);
 	CorrectComboListWidth(m_mrucombo2, GetFont());
 
-	if(m_mrucombo.GetCount() > 0) m_mrucombo.SetCurSel(0);
+	if(m_mrucombo.GetCount() > 0) {
+		m_mrucombo.SetCurSel(0);
+	}
 
 	AddAnchor(m_mrucombo, TOP_LEFT, TOP_RIGHT);
 	AddAnchor(m_mrucombo2, TOP_LEFT, TOP_RIGHT);
@@ -107,7 +111,7 @@ BOOL COpenDlg::OnInitDialog()
 	s.cx = 1000;
 	SetMaxTrackSize(s);
 
-	UpdateData(FALSE);
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }

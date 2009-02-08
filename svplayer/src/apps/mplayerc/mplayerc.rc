@@ -637,7 +637,7 @@ BEGIN
     CONTROL         "使用Alpha通道(32bits色时效果更好)",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,195,161,76,10
     LTEXT           "100%",IDC_STATIC,265,83,20,8
     LTEXT           "0%",IDC_STATIC,190,83,12,8
-    CONTROL         "字幕相对于视频边界的距离",IDC_CHECK_RELATIVETO,"Button",BS_AUTO3STATE | WS_TABSTOP,125,51,157,10
+    CONTROL         "限制字幕在视频画面内显示",IDC_CHECK_RELATIVETO,"Button",BS_AUTO3STATE | WS_TABSTOP,125,51,157,10
 END
 
 IDD_PPAGEINTERNALFILTERS DIALOGEX 0, 0, 296, 200
@@ -1361,7 +1361,7 @@ IDI_UNKNOWN             ICON                    "res\\Icon_116.ico"
 // Toolbar
 //
 
-IDB_PLAYERTOOLBAR TOOLBAR  16, 16
+IDB_PLAYERTOOLBAR TOOLBAR  30, 26
 BEGIN
     BUTTON      ID_PLAY_PLAY
     BUTTON      ID_PLAY_PAUSE
@@ -1373,6 +1373,14 @@ BEGIN
     BUTTON      ID_NAVIGATE_SKIPFORWARD
     BUTTON      ID_BUTTONSEP
     BUTTON      ID_PLAY_FRAMESTEP
+    BUTTON      ID_BUTTONSEP
+    BUTTON      ID_SUBDELAYDEC
+    BUTTON      ID_SUBLANGSWITCH
+    BUTTON      ID_SUBDELAYINC
+    BUTTON      ID_BUTTONSEP
+    BUTTON      ID_SUB2DELAYDEC
+    BUTTON      ID_SUB2LANGSWITCH
+    BUTTON      ID_SUB2DELAYINC
     BUTTON      ID_BUTTONSEP
     BUTTON      ID_DUMMYSEPARATOR
     BUTTON      ID_VOLUME_MUTE
@@ -2371,6 +2379,20 @@ BEGIN
     ID_PLAY_FRAMESTEP       "步进\n步进"
     ID_PLAY_DECRATE         "加速\n减速"
     ID_PLAY_INCRATE         "加速\n减速"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_SUBDELAYDEC          "减少主字幕延时\n减少主字幕延时"
+    ID_SUBLANGSWITCH        "重置主字幕延时\n重置主字幕延时"
+    ID_SUBDELAYINC          "增加主字幕延时\n增加主字幕延时"
+    ID_SUB2DELAYDEC         "减少第二字幕延时\n减少第二字幕延时"
+    ID_SUB2LANGSWITCH       "重置第二字幕延时\n重置第二字幕延时"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_SUB2DELAYINC         "增加第二字幕延时\n增加第二字幕延时"
 END
 
 STRINGTABLE 

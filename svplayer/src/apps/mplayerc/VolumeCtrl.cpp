@@ -59,9 +59,9 @@ void CVolumeCtrl::SetPosInternal(int pos)
 
 void CVolumeCtrl::IncreaseVolume()
 {
-	if (GetPos() > 20 ){
+	if (GetPos() > 25 ){
 		SetPosInternal(GetPos() + GetPageSize());
-	}else if (GetPos() > 10 ){
+	}else if (GetPos() > 15 ){
 		SetPosInternal(GetPos() + 3);
 	}else{
 		SetPosInternal(GetPos() + 1);
@@ -70,9 +70,9 @@ void CVolumeCtrl::IncreaseVolume()
 
 void CVolumeCtrl::DecreaseVolume()
 {
-	if (GetPos() > 20 ){
+	if (GetPos() > 25 ){
 		SetPosInternal(GetPos() - GetPageSize());
-	}else if (GetPos() > 10 ){
+	}else if (GetPos() > 15 ){
 		SetPosInternal(GetPos() - 3);
 	}else{
 		SetPosInternal(GetPos() - 1);
@@ -110,7 +110,7 @@ void CVolumeCtrl::OnNMCustomdraw(NMHDR* pNMHDR, LRESULT* pResult)
 
 				CRect r;
 				GetClientRect(r);
-				r.DeflateRect(8, 4, 10, 6);
+				r.DeflateRect(8, 4, 10, 11);
 				CopyRect(&pNMCD->rc, &r);
 				CPen shadow(PS_SOLID, 1, GetSysColor(COLOR_3DSHADOW));
 				CPen light(PS_SOLID, 1, GetSysColor(COLOR_3DHILIGHT));
@@ -131,7 +131,7 @@ void CVolumeCtrl::OnNMCustomdraw(NMHDR* pNMHDR, LRESULT* pResult)
 			dc.Attach(pNMCD->hdc);
 			pNMCD->rc.bottom--;
 			CRect r(pNMCD->rc);
-			r.DeflateRect(0, 0, 1, 0);
+			r.DeflateRect(0, 3, 1, 0);
 		
 				COLORREF shadow = GetSysColor(COLOR_3DSHADOW);
 				COLORREF light = GetSysColor(COLOR_3DHILIGHT);
@@ -139,8 +139,8 @@ void CVolumeCtrl::OnNMCustomdraw(NMHDR* pNMHDR, LRESULT* pResult)
 				r.DeflateRect(0, 0, 1, 1);
 				dc.Draw3dRect(&r, light, shadow);
 				r.DeflateRect(1, 1, 1, 1);
-				dc.FillSolidRect(&r, GetSysColor(COLOR_BTNFACE));
-				dc.SetPixel(r.left+7, r.top-1, GetSysColor(COLOR_BTNFACE));
+				dc.FillSolidRect(&r, GetSysColor(COLOR_3DFACE));
+				dc.SetPixel(r.left+7, r.top-1, GetSysColor(COLOR_3DFACE));
 		
 			dc.Detach();
 			lr = CDRF_SKIPDEFAULT;

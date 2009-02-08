@@ -625,6 +625,11 @@ public:
 	afx_msg void OnPlayPlaypause();
 	afx_msg void OnPlayStop();
 	afx_msg void OnUpdatePlayPauseStop(CCmdUI* pCmdUI);
+	afx_msg void OnPlaySubDelay(UINT nID); //SubDelay Button
+	afx_msg void OnUpdatePlaySubDelay(CCmdUI* pCmdUI);
+	afx_msg void OnPlaySub2Delay(UINT nID);
+	afx_msg void OnUpdatePlaySub2Delay(CCmdUI* pCmdUI);
+
 	afx_msg void OnPlayFramestep(UINT nID);
 	afx_msg void OnUpdatePlayFramestep(CCmdUI* pCmdUI);
 	afx_msg void OnPlaySeek(UINT nID);

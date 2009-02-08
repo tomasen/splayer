@@ -67,6 +67,10 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 		TBBS_SEPARATOR,
 		TBBS_BUTTON/*|TBSTYLE_DROPDOWN*/, 
 		TBBS_SEPARATOR,
+		TBBS_BUTTON, TBBS_BUTTON, TBBS_BUTTON, 
+		TBBS_SEPARATOR,
+		TBBS_BUTTON, TBBS_BUTTON, TBBS_BUTTON, 
+		TBBS_SEPARATOR,
 		TBBS_SEPARATOR,
 		TBBS_CHECKBOX, 
 		/*TBBS_SEPARATOR,*/
@@ -112,7 +116,7 @@ void CPlayerToolBar::ArrangeControls()
 	CRect br = GetBorders();
 
 	CRect r10;
-	GetItemRect(10, &r10);
+	GetItemRect(18, &r10);
 
 	CRect vr;
 	m_volctrl.GetClientRect(&vr);
@@ -122,8 +126,8 @@ void CPlayerToolBar::ArrangeControls()
 	UINT nID;
 	UINT nStyle;
 	int iImage;
-	GetButtonInfo(12, nID, nStyle, iImage);
-	SetButtonInfo(11, GetItemID(11), TBBS_SEPARATOR, vr2.left - iImage - r10.right - 11);
+	GetButtonInfo(20, nID, nStyle, iImage);
+	SetButtonInfo(19, GetItemID(19), TBBS_SEPARATOR, vr2.left - iImage - r10.right - 19);
 }
 
 void CPlayerToolBar::SetMute(bool fMute)
@@ -132,7 +136,7 @@ void CPlayerToolBar::SetMute(bool fMute)
 	TBBUTTONINFO bi;
 	bi.cbSize = sizeof(bi);
 	bi.dwMask = TBIF_IMAGE;
-	bi.iImage = fMute?13:12;
+	bi.iImage = fMute?21:20;
 	tb.SetButtonInfo(ID_VOLUME_MUTE, &bi);
 
 	AfxGetAppSettings().fMute = fMute;
@@ -145,7 +149,7 @@ bool CPlayerToolBar::IsMuted()
 	bi.cbSize = sizeof(bi);
 	bi.dwMask = TBIF_IMAGE;
 	tb.GetButtonInfo(ID_VOLUME_MUTE, &bi);
-	return(bi.iImage==13);
+	return(bi.iImage==21);
 }
 
 int CPlayerToolBar::GetVolume()
@@ -192,9 +196,9 @@ void CPlayerToolBar::OnPaint()
 		UINT nID;
 		UINT nStyle = 0;
 		int iImage = 0;
-		GetButtonInfo(11, nID, nStyle, iImage);
+		GetButtonInfo(19, nID, nStyle, iImage);
 		CRect ItemRect;
-		GetItemRect(11, ItemRect);
+		GetItemRect(19, ItemRect);
 		dc.FillSolidRect(ItemRect, GetSysColor(COLOR_BTNFACE));
 	}
 }

@@ -312,6 +312,12 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI(ID_PLAY_PAUSE, OnUpdatePlayPauseStop)
 	ON_UPDATE_COMMAND_UI(ID_PLAY_PLAYPAUSE, OnUpdatePlayPauseStop)
 	ON_UPDATE_COMMAND_UI(ID_PLAY_STOP, OnUpdatePlayPauseStop)
+	//Sub Delay Button
+	ON_COMMAND_RANGE(ID_SUBDELAYDEC,ID_SUBDELAYINC, OnPlaySubDelay )
+	ON_UPDATE_COMMAND_UI_RANGE(ID_SUBDELAYDEC, ID_SUBDELAYINC, OnUpdatePlaySubDelay )
+	ON_COMMAND_RANGE(ID_SUB2DELAYDEC,ID_SUB2DELAYINC, OnPlaySub2Delay )
+	ON_UPDATE_COMMAND_UI_RANGE(ID_SUB2DELAYDEC, ID_SUB2DELAYINC, OnUpdatePlaySub2Delay )
+
 	ON_COMMAND_RANGE(ID_PLAY_FRAMESTEP, ID_PLAY_FRAMESTEPCANCEL, OnPlayFramestep)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_PLAY_FRAMESTEP, ID_PLAY_FRAMESTEPCANCEL, OnUpdatePlayFramestep)
 	ON_COMMAND_RANGE(ID_PLAY_SEEKBACKWARDSMALL, ID_PLAY_SEEKFORWARDLARGE, OnPlaySeek)
@@ -403,7 +409,8 @@ CMainFrame::CMainFrame() :
 	m_fOpeningAborted(false),
 	m_fBuffering(false),
 	m_fileDropTarget(this),
-	m_fTrayIcon(false)
+	m_fTrayIcon(false),
+	m_iSubtitleSel2(-1)
 {
 }
 
@@ -1238,6 +1245,60 @@ LRESULT CMainFrame::OnAppCommand(WPARAM wParam, LPARAM lParam)
 	}
 
 	return Default();
+}
+//Play Toolbar Set Sub Delay
+void CMainFrame::OnPlaySubDelay(UINT nID)
+{
+	int oldDelay = m_pCAP->GetSubtitleDelay();
+
+	int newDelay = 0;
+		
+	switch(nID - ID_SUBDELAYDEC){
+		case 0:
+			newDelay = oldDelay-AfxGetAppSettings().nSubDelayInterval;
+			break;
+		case 2:
+			newDelay = oldDelay+AfxGetAppSettings().nSubDelayInterval;
+			break;
+		default:
+			//getCurPlayingSubfile(&newDelay);
+			break;
+	}
+	this->SetSubtitleDelay(newDelay);
+}
+void CMainFrame::OnUpdatePlaySubDelay(CCmdUI* pCmdUI)
+{
+	bool fEnable = false;
+	if(m_pSubStreams.GetCount() > 0 && m_iSubtitleSel >= 0 ) 
+		fEnable = true;
+	pCmdUI->Enable(fEnable);
+}
+void CMainFrame::OnPlaySub2Delay(UINT nID)
+{
+	int oldDelay = m_pCAP->GetSubtitleDelay2();
+
+	int newDelay = 0;
+
+	switch(nID - ID_SUB2DELAYDEC){
+		case 0:
+			newDelay = oldDelay-AfxGetAppSettings().nSubDelayInterval;
+			break;
+		case 2:
+			newDelay = oldDelay+AfxGetAppSettings().nSubDelayInterval;
+			break;
+		default:
+			//getCurPlayingSubfile(&newDelay, 2);
+			break;
+	}
+	this->SetSubtitleDelay2(newDelay);
+}
+void CMainFrame::OnUpdatePlaySub2Delay(CCmdUI* pCmdUI)
+{
+	bool fEnable = false;
+	if(m_pSubStreams.GetCount() > 0 && m_iSubtitleSel2 >= 0 && m_iSubtitleSel2 != m_iSubtitleSel) {
+		fEnable = true;
+	}
+	pCmdUI->Enable(fEnable);
 }
 CString CMainFrame::getCurPlayingSubfile(int * iSubDelayMS,int subid ){
 	CString fnSubtitleFile = _T("");
@@ -2876,6 +2937,7 @@ void CMainFrame::OnFilePostClosemedia()
 	SetupFiltersSubMenu();
 	SetupAudioSwitcherSubMenu();
 	SetupSubtitlesSubMenu();
+	SetupSubtitlesSubMenu(2);
 	SetupNavAudioSubMenu();
 	SetupNavSubtitleSubMenu();
 	SetupNavAngleSubMenu();
@@ -4381,14 +4443,16 @@ void CMainFrame::OnFileISDBDownload()
 				szUploadMsg.Format(_T("%d 个字幕已经下载成功"),szaSubarr.GetCount());
 				AfxMessageBox(szUploadMsg, MB_OK);
 			}else{
-				AfxMessageBox(_T("没有下载到匹配的字幕。"), MB_OK);
+				if ( AfxMessageBox(_T("没有下载到匹配的字幕。\n要不要试试看通过网页搜索？"), MB_YESNO) == IDYES){
+					CStringA url = "http://shooter.cn/sub/?";
+					ShellExecute(m_hWnd, _T("open"), CString(url), NULL, NULL, SW_SHOWDEFAULT);
+				}
 			}
 			
 		}else
 			return;
 
-	CStringA url = "http://shooter.cn/sub/?";
-	ShellExecute(m_hWnd, _T("open"), CString(url), NULL, NULL, SW_SHOWDEFAULT);
+	
 /*
 	filehash fh;
 	if(!hash(m_wndPlaylistBar.GetCur(), fh))
@@ -5466,6 +5530,9 @@ void CMainFrame::SetSubtitleDelay(int delay_ms)
 	if(m_pCAP) {
 		m_pCAP->SetSubtitleDelay(delay_ms);
 		getCurPlayingSubfile();
+		CString str;
+		str.Format(_T("主字幕延时已经设为： %d ms"), delay_ms);
+		SendStatusMessage(str, 5000);
 	}
 }
 void CMainFrame::SetSubtitleDelay2(int delay_ms)
@@ -5473,6 +5540,9 @@ void CMainFrame::SetSubtitleDelay2(int delay_ms)
 	if(m_pCAP) {
 		m_pCAP->SetSubtitleDelay2(delay_ms);
 		getCurPlayingSubfile(NULL, 2);
+		CString str;
+		str.Format(_T("第二字幕延时已经设为： %d ms"), delay_ms);
+		SendStatusMessage(str, 5000);
 	}
 }
 
@@ -5719,27 +5789,59 @@ void CMainFrame::OnPlaySubtitles(UINT nID)
 	{	
 		ReloadSubtitle();
 	}
-	else if(i == -1)
+	else if(i == -1) //禁用或启用
 	{
 		if(secondSub){
-			if(m_iSubtitleSel2 == -1) m_iSubtitleSel2 = 0;
+			if(m_iSubtitleSel2 == -1){
+				m_iSubtitleSel2 = 0;
+				
+				if(m_iSubtitleSel == 0 && m_pSubStreams.GetCount() > 1){
+					m_iSubtitleSel2 = m_iSubtitleSel + 1;
+				}else{
+					m_iSubtitleSel2 = 0;
+					m_iSubtitleSel ^= (1<<31);
+				}
+				
+			}
 			else m_iSubtitleSel2 ^= (1<<31);
-			UpdateSubtitle2();
+			
 		}else{
-			if(m_iSubtitleSel == -1) m_iSubtitleSel = 0;
+			if(m_iSubtitleSel == -1){
+				m_iSubtitleSel = 0;
+				
+				if(m_iSubtitleSel2 == 0 && m_pSubStreams.GetCount() > 1)
+				{
+					m_iSubtitleSel = m_iSubtitleSel2 + 1;
+				}else{
+					m_iSubtitleSel = 0;
+					m_iSubtitleSel2 ^= (1<<31);
+				}
+				
+			}
 			else m_iSubtitleSel ^= (1<<31);
-			UpdateSubtitle();
+				
 		}
+		UpdateSubtitle2();
+		UpdateSubtitle();		
 	}
-	else if(i >= 0)
+	else if(i >= 0) //选择字幕
 	{
 		if(secondSub){
 			m_iSubtitleSel2 = i;
-			UpdateSubtitle2();
+ 			if(m_iSubtitleSel == m_iSubtitleSel2){
+ 				m_iSubtitleSel ^= (1<<31);
+ 			}
+			
 		}else{
-			m_iSubtitleSel = i;
-			UpdateSubtitle();
+ 			m_iSubtitleSel = i;
+ 			if(m_iSubtitleSel == m_iSubtitleSel2){
+ 				m_iSubtitleSel2 ^= (1<<31);
+ 			}
+		
 		}
+		UpdateSubtitle2();
+		UpdateSubtitle();	
+
 	}
 	if(secondSub){
 		AfxGetAppSettings().fEnableSubtitles2 = !(m_iSubtitleSel2 & 0x80000000);

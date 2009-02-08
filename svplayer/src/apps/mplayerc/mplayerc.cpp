@@ -1369,6 +1369,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 			// WINBUG: on win2k this would crash WritePrivateProfileString
 			pApp->WriteProfileInt(_T(""), _T(""), pApp->GetProfileInt(_T(""), _T(""), 0)?0:1);
 		}
+		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("LastVersion"), 49);		
 	}
 	else
 	{
@@ -1378,7 +1379,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		vi.dwOSVersionInfoSize = sizeof(vi);
 		GetVersionEx(&vi);
 		fXpOrBetter = (vi.dwMajorVersion >= 5 && vi.dwMinorVersion >= 1 || vi.dwMajorVersion >= 6);
-
+		int iUpgradeReset =  pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), _T("LastVersion"), 1) ;
 		/*/	RegQueryStringValue( HKLM, 'SOFTWARE\Microsoft\DirectX', 'Version', sVersion );
 		DirectX 8.0 is 4.8.0
 		DirectX 8.1 is 4.8.1
@@ -1480,25 +1481,28 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		idSubtitlesLang = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SUBTITLESLANG), ::GetUserDefaultLCID());
 		fAutoSpeakerConf = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUTOSPEAKERCONF), 1);
 		// TODO: rename subdefstyle -> defStyle, IDS_RS_SPLOGFONT -> IDS_RS_SPSTYLE
-		subdefstyle <<= pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPLOGFONT), _T("20,20,20,20,2,0,2.000000,2.000000,3.000000,3.000000,0x00ecec,0x00ffff,0x000000,0x000000,0x00,0x00,0x00,0x80,0,ºÚÌå,22.000000,100.000000,100.000000,0.000000,700,0,0,0,0,0.000000,0.000000,0.000000,0.000000,1,0.700000"));
-		subdefstyle2 <<= pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPLOGFONT2), _T("20,20,20,20,8,0,2.000000,2.000000,3.000000,3.000000,0x00ecec,0x00ffff,0x000000,0x000000,0x00,0x00,0x00,0x80,1,ºÚÌå,22.000000,100.000000,100.000000,0.000000,700,0,0,0,0,0.000000,0.000000,0.000000,0.000000,2,0.700000"));
+		subdefstyle <<= pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPLOGFONT), _T("20,20,20,20,2,0,2.000000,2.000000,3.000000,3.000000,0x00ecec,0x00ffff,0x000000,0x000000,0x00,0x00,0x00,0x80,0,ºÚÌå,22.000000,100.000000,100.000000,0.000000,700,0,0,0,0,0.000000,0.000000,0.000000,0.000000,0,0.700000"));
+		subdefstyle2 <<= pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPLOGFONT2), _T("20,20,20,20,8,0,2.000000,2.000000,3.000000,3.000000,0x00ecec,0x00ffff,0x000000,0x000000,0x00,0x00,0x00,0x80,1,ºÚÌå,22.000000,100.000000,100.000000,0.000000,700,0,0,0,0,0.000000,0.000000,0.000000,0.000000,0,0.700000"));
 
+		if(iUpgradeReset < 49){
+			subdefstyle.relativeTo = 0;
+			CSVPToolBox svptoolbox;
 		
-		CSVPToolBox svptoolbox;
-		
-		if(svptoolbox.bFontExist(_T("Î¢ÈíÑÅºÚ"))){
-			if(subdefstyle.fontName.CompareNoCase(_T("ºÚÌå") ) == 0 )
-				subdefstyle.fontName = _T("Î¢ÈíÑÅºÚ");
-			if(subdefstyle2.fontName.CompareNoCase(_T("ºÚÌå") ) == 0 )
-				subdefstyle2.fontName = _T("Î¢ÈíÑÅºÚ");
-		}else if( !svptoolbox.bFontExist(_T("ºÚÌå")) ){
-			
-			if(subdefstyle.fontName.CompareNoCase(_T("ºÚÌå") ) == 0 )
-				subdefstyle.fontName = _T("SimHei");
-			if(subdefstyle2.fontName.CompareNoCase(_T("ºÚÌå") ) == 0 )
-				subdefstyle2.fontName = _T("SimHei");
+			if(svptoolbox.bFontExist(_T("Î¢ÈíÑÅºÚ"))){
+				if(subdefstyle.fontName.CompareNoCase(_T("ºÚÌå") ) == 0 )
+					subdefstyle.fontName = _T("Î¢ÈíÑÅºÚ");
+				if(subdefstyle2.fontName.CompareNoCase(_T("ºÚÌå") ) == 0 )
+					subdefstyle2.fontName = _T("Î¢ÈíÑÅºÚ");
+				if(subdefstyle.fontName == _T("Î¢ÈíÑÅºÚ")){
+					subdefstyle.fontWeight = 260;
+				}
+			}else if( !svptoolbox.bFontExist(_T("ºÚÌå")) ){
+				if(subdefstyle.fontName.CompareNoCase(_T("ºÚÌå") ) == 0 )
+					subdefstyle.fontName = _T("SimHei");
+				if(subdefstyle2.fontName.CompareNoCase(_T("ºÚÌå") ) == 0 )
+					subdefstyle2.fontName = _T("SimHei");
+			}
 		}
-
 
 		fOverridePlacement = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPOVERRIDEPLACEMENT), 0);
 		fOverridePlacement2 = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPOVERRIDEPLACEMENT)+_T("2"), TRUE);

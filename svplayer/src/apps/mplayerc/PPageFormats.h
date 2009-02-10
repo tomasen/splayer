@@ -36,10 +36,7 @@ private:
 	int GetChecked(int iItem);
 	void SetChecked(int iItem, int fChecked);
 
-	typedef enum {AP_VIDEO=0,AP_MUSIC,AP_AUDIOCD,AP_DVDMOVIE} autoplay_t;
-	void AddAutoPlayToRegistry(autoplay_t ap, bool fRegister);
-	bool IsAutoPlayRegistered(autoplay_t ap);
-
+	
 	void SetListItemState(int nItem);
 	static CString GetEnqueueCommand();
 	static CString GetOpenCommand();
@@ -47,6 +44,10 @@ private:
 	static BOOL SetFileAssociation(CString strExt, CString strProgID, bool fRegister);
 	
 public:
+	typedef enum {AP_VIDEO=0,AP_MUSIC,AP_AUDIOCD,AP_DVDMOVIE} autoplay_t;
+	void AddAutoPlayToRegistry(autoplay_t ap, bool fRegister);
+	bool IsAutoPlayRegistered(autoplay_t ap);
+
 
 	CPPageFormats();
 	virtual ~CPPageFormats();

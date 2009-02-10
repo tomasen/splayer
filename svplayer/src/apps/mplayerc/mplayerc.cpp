@@ -668,6 +668,8 @@ BOOL CMPlayerCApp::InitInstance()
 			}else{
 				dlg_chkdefplayer.setDefaultPlayer();
 			}
+		}else{
+			dlg_chkdefplayer.setDefaultPlayer();
 		}
 	}
 	if ( time(NULL) > m_s.tLastCheckUpdater + m_s.tCheckUpdaterInterleave){
@@ -1494,7 +1496,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 				if(subdefstyle2.fontName.CompareNoCase(_T("ºÚÌå") ) == 0 )
 					subdefstyle2.fontName = _T("Î¢ÈíÑÅºÚ");
 				if(subdefstyle.fontName == _T("Î¢ÈíÑÅºÚ")){
-					subdefstyle.fontWeight = 260;
+					subdefstyle.fontWeight = 300;
 				}
 			}else if( !svptoolbox.bFontExist(_T("ºÚÌå")) ){
 				if(subdefstyle.fontName.CompareNoCase(_T("ºÚÌå") ) == 0 )

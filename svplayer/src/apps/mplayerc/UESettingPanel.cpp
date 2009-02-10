@@ -337,7 +337,7 @@ void CUESettingPanel::ApplyAllSetting(){
 }
 
 HRESULT STDMETHODCALLTYPE CUESettingPanel::GetHostInfo(DOCHOSTUIINFO *pInfo){
-	pInfo->dwFlags |= DOCHOSTUIFLAG_THEME ;
+	pInfo->dwFlags |= DOCHOSTUIFLAG_THEME | DOCHOSTUIFLAG_SCROLL_NO ;
 	return S_OK;
 }
 // CUESettingPanel message handlers

@@ -1572,6 +1572,9 @@ BEGIN
             MENUITEM "显示播放列表\tCtrl+7",              ID_VIEW_PLAYLIST
             MENUITEM "视频捕捉控制面板\tCtrl+8",            ID_VIEW_CAPTURE
             MENUITEM "特效(Shader)编辑器\tCtrl+9",       ID_VIEW_SHADEREDITOR
+            MENUITEM SEPARATOR
+            MENUITEM "选项(&O)...",                   ID_VIEW_OPTIONS
+            MENUITEM "高级设置(&A)...",                 ID_32797
         END
         POPUP "播放(&P)"
         BEGIN
@@ -1886,6 +1889,9 @@ BEGIN
         MENUITEM "显示播放列表\tCtrl+7",              ID_VIEW_PLAYLIST
         MENUITEM "视频捕捉控制面板\tCtrl+8",            ID_VIEW_CAPTURE
         MENUITEM "特效(Shader)编辑器\tCtrl+9",       ID_VIEW_SHADEREDITOR
+        MENUITEM SEPARATOR
+        MENUITEM "选项(&O)...",                   ID_VIEW_OPTIONS
+        MENUITEM "高级设置(&A)...",                 ID_32797
     END
     POPUP "播放(&P)"
     BEGIN

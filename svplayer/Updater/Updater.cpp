@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "Updater.h"
 #include "UpdaterDlg.h"
+#include "cupdatenetlib.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -57,6 +58,8 @@ BOOL CUpdaterApp::InitInstance()
 	// such as the name of your company or organization
 	//SetRegistryKey(_T("Local AppWizard-Generated Applications"));
 	
+
+	//Background downloader
 
 	CUpdaterDlg dlg;
 	m_pMainWnd = &dlg;

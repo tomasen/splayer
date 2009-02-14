@@ -390,8 +390,8 @@ STDMETHODIMP CSubPicQueue::SetTime(REFERENCE_TIME rtNow)
 STDMETHODIMP CSubPicQueue::Invalidate(REFERENCE_TIME rtInvalidate)
 {
 	{
-//		CAutoLock cQueueLock(&m_csQueueLock);
-//		RemoveAll();
+		CAutoLock cQueueLock(&m_csQueueLock);
+		RemoveAll();
 
 		m_rtInvalidate = rtInvalidate;
 		m_fBreakBuffering = true;
@@ -735,50 +735,67 @@ void ISubPicAllocatorPresenterImpl::AlphaBltSubPic(CSize size, SubPicDesc* pTarg
 	CComPtr<ISubPic> pSubPic;
 	REFERENCE_TIME rtNow = m_rtNow;
 	CComPtr<ISubPic> pSubPic2;
-	if(m_pSubPicQueue2 && m_pSubPicQueue2->LookupSubPic(rtNow, &pSubPic2))
-	{
-		SubPicDesc spd;
-		pSubPic2->GetDesc(spd);
+	CRect rDstText;
+	SubPicDesc spd;
+	CRect r;
+	CRect rDstText2;
+	SubPicDesc spd2;
+	CRect r2;
+	BOOL bSub1 = false, bSub2 = false;
 
-		if(spd.w > 0 && spd.h > 0)
-		{
-			CRect r;
-			pSubPic2->GetDirtyRect(r);
-
-			// FIXME
-			r.DeflateRect(1, 1);
-
-			CRect rDstText(
-				r.left * size.cx / spd.w,
-				r.top * size.cy / spd.h,
-				r.right * size.cx / spd.w,
-				r.bottom  * size.cy / spd.h);
-
-			pSubPic2->AlphaBlt(r, rDstText, pTarget);
-		}
-	}
 	if(m_pSubPicQueue->LookupSubPic(m_rtNow, &pSubPic))
 	{
-		SubPicDesc spd;
 		pSubPic->GetDesc(spd);
 
 		if(spd.w > 0 && spd.h > 0)
 		{
-			CRect r;
 			pSubPic->GetDirtyRect(r);
 
 			// FIXME
 			r.DeflateRect(1, 1);
 
-			CRect rDstText(
+			rDstText = CRect (
 				r.left * size.cx / spd.w,
 				r.top * size.cy / spd.h,
 				r.right * size.cx / spd.w,
 				r.bottom * size.cy / spd.h);
 
-			pSubPic->AlphaBlt(r, rDstText, pTarget);
+			bSub1 = true;
+			
 		}
 	}
+	if(m_pSubPicQueue2 && m_pSubPicQueue2->LookupSubPic(rtNow, &pSubPic2))
+	{
+		pSubPic2->GetDesc(spd2);
+
+		if(spd2.w > 0 && spd2.h > 0)
+		{
+			pSubPic2->GetDirtyRect(r2);
+
+			// FIXME
+			r2.DeflateRect(1, 1);
+
+			rDstText2 = CRect(
+				r2.left * size.cx / spd2.w,
+				r2.top * size.cy / spd2.h,
+				r2.right * size.cx / spd2.w,
+				r2.bottom  * size.cy / spd2.h);
+
+			
+			bSub2 = true;
+			
+		}
+	}
+	if (bSub1 && bSub2){
+		//TODO: check overlap
+		
+		
+	}
+
+	
+	if(bSub1)	pSubPic->AlphaBlt(r, rDstText, pTarget);
+	if(bSub2)	pSubPic2->AlphaBlt(r2, rDstText2, pTarget);
+	
 	
 }
 

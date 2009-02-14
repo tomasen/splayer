@@ -1295,7 +1295,7 @@ void CMainFrame::OnPlaySub2Delay(UINT nID)
 void CMainFrame::OnUpdatePlaySub2Delay(CCmdUI* pCmdUI)
 {
 	bool fEnable = false;
-	if(m_pSubStreams.GetCount() > 0 && m_iSubtitleSel2 >= 0 && m_iSubtitleSel2 != m_iSubtitleSel) {
+	if(m_pSubStreams2.GetCount() > 0 && m_iSubtitleSel2 >= 0 && m_iSubtitleSel2 != m_iSubtitleSel) {
 		fEnable = true;
 	}
 	pCmdUI->Enable(fEnable);
@@ -2994,7 +2994,7 @@ void CMainFrame::OnStreamAudio(UINT nID)
 	else if(m_iPlaybackMode == PM_DVD) SendMessage(WM_COMMAND, ID_DVD_AUDIO_NEXT+nID);
 }
 
-void CMainFrame::OnStreamSub(UINT nID)
+void CMainFrame::OnStreamSub(UINT nID) //need work on 2nd sub
 {
 	nID -= ID_STREAM_SUB_NEXT;
 
@@ -4279,7 +4279,7 @@ void CMainFrame::OnFileLoadsubtitle2()
 	if(fd.DoModal() != IDOK) return;
 
 	if(LoadSubtitle(fd.GetPathName()))
-		SetSubtitle2(m_pSubStreams.GetTail());
+		SetSubtitle2(m_pSubStreams2.GetTail());
 }
 
 void CMainFrame::OnUpdateFileLoadsubtitle(CCmdUI *pCmdUI)
@@ -5723,21 +5723,22 @@ void CMainFrame::OnPlaySubtitles(UINT nID)
 		i -= 2000;
 	}
 
-	if(i == -4)
+	if(i == -4)  //设置
 	{
-		ShowOptions(CPPageSubtitles::IDD);
+		ShowOptions(CPPageSubtitles::IDD); 
 	}
 	else if(i == -3)
-	{
+	{   //字幕风格设置
 		int i = m_iSubtitleSel;
 		if(secondSub)
 			i = m_iSubtitleSel2;
 
 		POSITION pos = m_pSubStreams.GetHeadPosition();
+		if(secondSub){pos = m_pSubStreams2.GetHeadPosition();}
 		while(pos && i >= 0)
 		{
-			CComPtr<ISubStream> pSubStream = m_pSubStreams.GetNext(pos);
-
+			CComPtr<ISubStream> pSubStream ;
+			if(secondSub){pSubStream = m_pSubStreams2.GetNext(pos);}else{ pSubStream = m_pSubStreams.GetNext(pos); }
 			if(i < pSubStream->GetStreamCount())
 			{
 				CLSID clsid;
@@ -5793,17 +5794,15 @@ void CMainFrame::OnPlaySubtitles(UINT nID)
 	{
 		if(secondSub){
 			if(m_iSubtitleSel2 == -1){
-				m_iSubtitleSel2 = 0;
 				
-				if(m_iSubtitleSel == 0 && m_pSubStreams.GetCount() > 1){
+				if(m_iSubtitleSel == 0 && m_pSubStreams2.GetCount() > 1){
 					m_iSubtitleSel2 = m_iSubtitleSel + 1;
 				}else{
 					m_iSubtitleSel2 = 0;
-					m_iSubtitleSel ^= (1<<31);
 				}
-				
 			}
 			else m_iSubtitleSel2 ^= (1<<31);
+			UpdateSubtitle2();
 			
 		}else{
 			if(m_iSubtitleSel == -1){
@@ -5814,33 +5813,25 @@ void CMainFrame::OnPlaySubtitles(UINT nID)
 					m_iSubtitleSel = m_iSubtitleSel2 + 1;
 				}else{
 					m_iSubtitleSel = 0;
-					m_iSubtitleSel2 ^= (1<<31);
 				}
 				
 			}
 			else m_iSubtitleSel ^= (1<<31);
 				
+			UpdateSubtitle();		
 		}
-		UpdateSubtitle2();
-		UpdateSubtitle();		
 	}
 	else if(i >= 0) //选择字幕
 	{
 		if(secondSub){
 			m_iSubtitleSel2 = i;
- 			if(m_iSubtitleSel == m_iSubtitleSel2){
- 				m_iSubtitleSel ^= (1<<31);
- 			}
-			
+			UpdateSubtitle2();
+ 			
 		}else{
  			m_iSubtitleSel = i;
- 			if(m_iSubtitleSel == m_iSubtitleSel2){
- 				m_iSubtitleSel2 ^= (1<<31);
- 			}
-		
+			UpdateSubtitle();	
+ 			
 		}
-		UpdateSubtitle2();
-		UpdateSubtitle();	
 
 	}
 	if(secondSub){
@@ -5872,9 +5863,11 @@ void CMainFrame::OnUpdatePlaySubtitles(CCmdUI* pCmdUI)
 		}
 
 		POSITION pos = m_pSubStreams.GetHeadPosition();
+		if(secondSub){pos = m_pSubStreams2.GetHeadPosition();}
 		while(pos && i >= 0)
 		{
-			CComPtr<ISubStream> pSubStream = m_pSubStreams.GetNext(pos);
+			CComPtr<ISubStream> pSubStream ;
+			if(secondSub){ pSubStream = m_pSubStreams2.GetNext(pos); } else { pSubStream = m_pSubStreams.GetNext(pos); }
 
 			if(i < pSubStream->GetStreamCount())
 			{
@@ -8558,6 +8551,9 @@ void CMainFrame::CloseMediaPrivate()
 	{
 		CAutoLock cAutoLock(&m_csSubLock);
 		m_pSubStreams.RemoveAll();
+
+		CAutoLock cAutoLock2(&m_csSubLock2);
+		m_pSubStreams2.RemoveAll();
 	}
 
 	m_VidDispName.Empty();
@@ -8963,6 +8959,7 @@ void CMainFrame::SetupSubtitlesSubMenu(int subid)
 	}
 
 	POSITION pos = m_pSubStreams.GetHeadPosition();
+	if (subid == 2){ pos = m_pSubStreams2.GetHeadPosition(); }
 
 	if(pos)
 	{
@@ -8977,7 +8974,8 @@ void CMainFrame::SetupSubtitlesSubMenu(int subid)
 
 	while(pos)
 	{
-		CComPtr<ISubStream> pSubStream = m_pSubStreams.GetNext(pos);
+		CComPtr<ISubStream> pSubStream ;
+		if (subid == 2){ pSubStream = m_pSubStreams2.GetNext(pos); } else { pSubStream = m_pSubStreams.GetNext(pos); }
 		if(!pSubStream) continue;
 
 		for(int i = 0, j = pSubStream->GetStreamCount(); i < j; i++)
@@ -8998,11 +8996,14 @@ void CMainFrame::SetupSubtitlesSubMenu(int subid)
 		}
 
 		// TODO: find a better way to group these entries
-		if(pos && m_pSubStreams.GetAt(pos))
+		if(pos && ( ( (subid == 2) && m_pSubStreams2.GetAt(pos) ) || ( (subid != 2) && m_pSubStreams.GetAt(pos) ) ) )
 		{
 			CLSID cur, next;
 			pSubStream->GetClassID(&cur);
-			m_pSubStreams.GetAt(pos)->GetClassID(&next);
+			if (subid == 2)
+				m_pSubStreams2.GetAt(pos)->GetClassID(&next);
+			else
+				m_pSubStreams.GetAt(pos)->GetClassID(&next);
 
 			if(cur != next)
 				pSub->AppendMenu(MF_SEPARATOR);
@@ -9651,8 +9652,10 @@ void CMainFrame::AddTextPassThruFilter()
 			if(FAILED(hr = pGB->ConnectDirect(pPin, GetFirstPin(pTPTF, PINDIR_INPUT), NULL))
 			|| FAILED(hr = pGB->ConnectDirect(GetFirstPin(pTPTF, PINDIR_OUTPUT), pPinTo, NULL)))
 				hr = pGB->ConnectDirect(pPin, pPinTo, NULL);
-			else
+			else{
 				m_pSubStreams.AddTail(CComQIPtr<ISubStream>(pTPTF));
+				m_pSubStreams2.AddTail(CComQIPtr<ISubStream>(pTPTF));
+			}
 		}
 		EndEnumPins
 	}
@@ -9666,6 +9669,7 @@ bool CMainFrame::LoadSubtitle(CString fn, int sub_delay_ms, BOOL bIsForPlayList)
 	SVP_LogMsg(szBuf);
 
 	CComPtr<ISubStream> pSubStream;
+	CComPtr<ISubStream> pSubStream2;
 
 	// TMP: maybe this will catch something for those who get a runtime error dialog when opening subtitles from cds
 	try
@@ -9675,6 +9679,10 @@ bool CMainFrame::LoadSubtitle(CString fn, int sub_delay_ms, BOOL bIsForPlayList)
 			CAutoPtr<CVobSubFile> p(new CVobSubFile(&m_csSubLock));
 			if(CString(CPath(fn).GetExtension()).MakeLower() == _T(".idx") && p && p->Open(fn) && p->GetStreamCount() > 0)
 				pSubStream = p.Detach();
+
+			CAutoPtr<CVobSubFile> p2(new CVobSubFile(&m_csSubLock2));
+			if(CString(CPath(fn).GetExtension()).MakeLower() == _T(".idx") && p2 && p2->Open(fn) && p2->GetStreamCount() > 0)
+				pSubStream2 = p2.Detach();
 		}
 
 		if(!pSubStream)
@@ -9682,6 +9690,10 @@ bool CMainFrame::LoadSubtitle(CString fn, int sub_delay_ms, BOOL bIsForPlayList)
 			CAutoPtr<ssf::CRenderer> p(new ssf::CRenderer(&m_csSubLock));
 			if(p && p->Open(fn) && p->GetStreamCount() > 0)
 				pSubStream = p.Detach();
+
+			CAutoPtr<ssf::CRenderer> p2(new ssf::CRenderer(&m_csSubLock2));
+			if(p2 && p2->Open(fn) && p2->GetStreamCount() > 0)
+				pSubStream2 = p2.Detach();
 		}
 
 		if(!pSubStream)
@@ -9693,6 +9705,10 @@ bool CMainFrame::LoadSubtitle(CString fn, int sub_delay_ms, BOOL bIsForPlayList)
 			
 			if(p && p->Open(fn, cset) && p->GetStreamCount() > 0)
 				pSubStream = p.Detach();
+
+			CAutoPtr<CRenderedTextSubtitle> p2(new CRenderedTextSubtitle(&m_csSubLock2));
+			if(p2 && p2->Open(fn, cset) && p2->GetStreamCount() > 0)
+				pSubStream2 = p2.Detach();
 		}
 	}
 	catch(CException* e)
@@ -9700,24 +9716,31 @@ bool CMainFrame::LoadSubtitle(CString fn, int sub_delay_ms, BOOL bIsForPlayList)
 		e->Delete();
 	}
 
+	
+	CSVPToolBox svTool;
+	if(!sub_delay_ms){
+		//如果没有预设字幕延迟，视图读取 字幕.delay 获得delay参数
+		sub_delay_ms = _wtoi ( svTool.fileGetContent( fn+_T(".delay")) );
+	}else{
+		//如果有字幕延迟， 而且不是playlist subtitles， 保存到.delay文件
+		if(!bIsForPlayList){
+			szBuf.Format(_T("%d"), sub_delay_ms);
+			svTool.filePutContent(  fn+_T(".delay"), szBuf );
+		}
+	}
+
 	if(pSubStream)
 	{
 		pSubStream->notSaveDelay = bIsForPlayList;
-
-		CSVPToolBox svTool;
-		if(!sub_delay_ms){
-			//如果没有预设字幕延迟，视图读取 字幕.delay 获得delay参数
-			sub_delay_ms = _wtoi ( svTool.fileGetContent( fn+_T(".delay")) );
-		}else{
-			//如果有字幕延迟， 而且不是playlist subtitles， 保存到.delay文件
-			if(!bIsForPlayList){
-				szBuf.Format(_T("%d"), sub_delay_ms);
-				svTool.filePutContent(  fn+_T(".delay"), szBuf );
-			}
-		}
 		pSubStream->sub_delay_ms = sub_delay_ms;
 		m_pSubStreams.AddTail(pSubStream);
-		
+	}
+
+	if(pSubStream2)
+	{
+		pSubStream2->notSaveDelay = bIsForPlayList;
+		pSubStream2->sub_delay_ms = sub_delay_ms;
+		m_pSubStreams2.AddTail(pSubStream2);
 	}
 
 	return(!!pSubStream);
@@ -9728,10 +9751,10 @@ void CMainFrame::UpdateSubtitle2(bool fApplyDefStyle)
 
 	int i = m_iSubtitleSel2;
 
-	POSITION pos = m_pSubStreams.GetHeadPosition();
+	POSITION pos = m_pSubStreams2.GetHeadPosition();
 	while(pos && i >= 0)
 	{
-		CComPtr<ISubStream> pSubStream = m_pSubStreams.GetNext(pos);
+		CComPtr<ISubStream> pSubStream = m_pSubStreams2.GetNext(pos);
 
 		if(i < pSubStream->GetStreamCount()) 
 		{
@@ -9779,6 +9802,11 @@ void CMainFrame::SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle)
 		CLSID clsid;
 		pSubStream->GetClassID(&clsid);
 
+		int xalign = 1, yalign = 0;
+		if(s.subdefstyle2.scrAlignment > 0){
+			xalign = (s.subdefstyle2.scrAlignment - 1) % 3;
+			yalign = 2 - (int)( (s.subdefstyle2.scrAlignment - 1) / 3 );
+		}
 		if(clsid == __uuidof(CVobSubFile))
 		{
 			CVobSubFile* pVSF = (CVobSubFile*)(ISubStream*)pSubStream;
@@ -9786,7 +9814,7 @@ void CMainFrame::SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle)
 			if(fApplyDefStyle)
 			{
 				// 0: left/top, 1: center, 2: right/bottom
-				pVSF->SetAlignment(TRUE, s.nHorPos2, s.nVerPos2, 1, 0);
+				pVSF->SetAlignment(TRUE, s.nHorPos2, s.nVerPos2,xalign, yalign);// 1, 0);
 			}
 		}
 		else if(clsid == __uuidof(CVobSubStream))
@@ -9795,7 +9823,7 @@ void CMainFrame::SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle)
 
 			if(fApplyDefStyle)
 			{
-				pVSS->SetAlignment(TRUE, s.nHorPos2, s.nVerPos2, 1, 0);
+				pVSS->SetAlignment(TRUE, s.nHorPos2, s.nVerPos2, xalign, yalign);// 1, 0);
 			}
 		}
 		else if(clsid == __uuidof(CRenderedTextSubtitle))
@@ -9810,7 +9838,7 @@ void CMainFrame::SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle)
 
 				if(s.fOverridePlacement2)
 				{
-					style.scrAlignment = 8; // 1 - 9: as on the numpad, 0: default
+					//style.scrAlignment = 8; // 1 - 9: as on the numpad, 0: default
 					int w = pRTS->m_dstScreenSize.cx;
 					int h = pRTS->m_dstScreenSize.cy;
 					int mw = w - style.marginRect.left - style.marginRect.right;
@@ -9822,11 +9850,13 @@ void CMainFrame::SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle)
 				pRTS->SetDefaultStyle(style);
 			}
 
-			if(pRTS->GetDefaultStyle(style) && style.relativeTo == 8)
+
+			if(pRTS->GetDefaultStyle(style)/* && style.relativeTo == 8*/)
 			{
 				style.relativeTo = s.subdefstyle2.relativeTo;
 				pRTS->SetDefaultStyle(style);
 			}
+
 
 			pRTS->Deinit();
 		}
@@ -9841,10 +9871,10 @@ void CMainFrame::SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle)
 
 			int i = 0;
 
-			POSITION pos = m_pSubStreams.GetHeadPosition();
+			POSITION pos = m_pSubStreams2.GetHeadPosition();
 			while(pos)
 			{
-				CComPtr<ISubStream> pSubStream2 = m_pSubStreams.GetNext(pos);
+				CComPtr<ISubStream> pSubStream2 = m_pSubStreams2.GetNext(pos);
 
 				if(pSubStream == pSubStream2)
 				{
@@ -9876,13 +9906,19 @@ void CMainFrame::SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle)
 		CLSID clsid;
 		pSubStream->GetClassID(&clsid);
 
+		int xalign = 1, yalign = 1;
+		if(s.subdefstyle.scrAlignment > 0){
+			xalign = (s.subdefstyle.scrAlignment - 1) % 3;
+			yalign = 2 - (int)( (s.subdefstyle.scrAlignment - 1) / 3 );
+		}
+
 		if(clsid == __uuidof(CVobSubFile))
 		{
 			CVobSubFile* pVSF = (CVobSubFile*)(ISubStream*)pSubStream;
 
 			if(fApplyDefStyle)
 			{
-				pVSF->SetAlignment(s.fOverridePlacement, s.nHorPos, s.nVerPos, 1, 1);
+				pVSF->SetAlignment(s.fOverridePlacement, s.nHorPos, s.nVerPos,  xalign, yalign);//1, 1);
 			}
 		}
 		else if(clsid == __uuidof(CVobSubStream))
@@ -9891,7 +9927,7 @@ void CMainFrame::SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle)
 
 			if(fApplyDefStyle)
 			{
-				pVSS->SetAlignment(s.fOverridePlacement, s.nHorPos, s.nVerPos, 1, 1);
+				pVSS->SetAlignment(s.fOverridePlacement, s.nHorPos, s.nVerPos, xalign, yalign);// 1, 1);
 			}
 		}
 		else if(clsid == __uuidof(CRenderedTextSubtitle))
@@ -9906,7 +9942,7 @@ void CMainFrame::SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle)
 
 				if(s.fOverridePlacement)
 				{
-					style.scrAlignment = 2;
+					//style.scrAlignment = 2;
 					int w = pRTS->m_dstScreenSize.cx;
 					int h = pRTS->m_dstScreenSize.cy;
 					int mw = w - style.marginRect.left - style.marginRect.right;
@@ -9918,7 +9954,7 @@ void CMainFrame::SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle)
 				pRTS->SetDefaultStyle(style);
 			}
 
-			if(pRTS->GetDefaultStyle(style) && style.relativeTo == 2)
+			if(pRTS->GetDefaultStyle(style) /*&& style.relativeTo == 2*/)
 			{
 				style.relativeTo = s.subdefstyle.relativeTo;
 				pRTS->SetDefaultStyle(style);
@@ -9972,17 +10008,24 @@ void CMainFrame::SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle)
 void CMainFrame::ReplaceSubtitle(ISubStream* pSubStreamOld, ISubStream* pSubStreamNew, int secondSub)
 {
 	POSITION pos = m_pSubStreams.GetHeadPosition();
+	if(secondSub){ pos = m_pSubStreams2.GetHeadPosition();}
 	while(pos) 
 	{
 		POSITION cur = pos;
-		if(pSubStreamOld == m_pSubStreams.GetNext(pos))
-		{
-			m_pSubStreams.SetAt(cur, pSubStreamNew);
-			if(secondSub){
+		if(secondSub){
+			if(pSubStreamOld == m_pSubStreams2.GetNext(pos))
+			{
+				m_pSubStreams2.SetAt(cur, pSubStreamNew);
 				UpdateSubtitle2();
-			}else
+				break;
+			}
+		}else{
+			if(pSubStreamOld == m_pSubStreams.GetNext(pos))
+			{
+				m_pSubStreams.SetAt(cur, pSubStreamNew);
 				UpdateSubtitle();
-			break;
+				break;
+			}
 		}
 	}
 }
@@ -10000,6 +10043,8 @@ void CMainFrame::ReloadSubtitle()
 {
 	POSITION pos = m_pSubStreams.GetHeadPosition();
 	while(pos) m_pSubStreams.GetNext(pos)->Reload();
+	pos = m_pSubStreams2.GetHeadPosition();
+	while(pos) m_pSubStreams2.GetNext(pos)->Reload();
 	UpdateSubtitle();
 	UpdateSubtitle2();
 }
@@ -10514,7 +10559,9 @@ void CMainFrame::ShowOptions(int idPage)
 			SetAlwaysOnTop(s.iOnTop);
 
 		m_wndView.LoadLogo();
-
+		UpdateSubtitle(true);
+		UpdateSubtitle2(true);	
+		
 		
 	}else if(ueOption.bOpenAdvancePanel){
 		CPPageSheet options(ResStr(IDS_OPTIONS_CAPTION), pGB, this, idPage);
@@ -10527,8 +10574,12 @@ void CMainFrame::ShowOptions(int idPage)
 			m_wndView.LoadLogo();
 
 			s.UpdateData(true);
+
+			UpdateSubtitle(true);
+			UpdateSubtitle2(true);
 		}		
 	}
+
 
 }
 

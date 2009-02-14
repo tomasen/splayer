@@ -15,6 +15,9 @@ CUESettingPanel::CUESettingPanel(IFilterGraph* pFG, CWnd* pParentWnd, UINT idPag
 	this->bOpenAdvancePanel = FALSE;
 	m_pASF = FindFilter(__uuidof(CAudioSwitcherFilter), pFG);
 	this->idPage = idPagein;
+	m_stss = AfxGetAppSettings().subdefstyle;
+	m_stss2 = AfxGetAppSettings().subdefstyle2;
+
 }
 
 BEGIN_MESSAGE_MAP(CUESettingPanel, CDHtmlDialog)
@@ -147,9 +150,16 @@ BOOL CUESettingPanel::OnInitDialog()
 {
 	CDHtmlDialog::OnInitDialog();
 	
-	if (this->idPage == IDD_PPAGEAUDIOSWITCHER){
-		m_sgs_initblock = _T("audiosetting");
+	switch(this->idPage){
+		case IDD_PPAGEAUDIOSWITCHER:
+			m_sgs_initblock = _T("audiosetting");
+			break;
+		case IDD_PPAGESUBTITLES:
+			m_sgs_initblock = _T("subsetting");
+			break;
 	}
+
+	
 
 
  	AppSettings& s = AfxGetAppSettings();
@@ -204,8 +214,6 @@ BOOL CUESettingPanel::OnInitDialog()
 void CUESettingPanel::OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl)
 {
 	CDHtmlDialog::OnDocumentComplete(pDisp, szUrl);
-	m_stss = AfxGetAppSettings().subdefstyle;
-	m_stss2 = AfxGetAppSettings().subdefstyle2;
 	setBackgdColorByID(_T("sub1c1"), m_stss.colors[0]);
 	setBackgdColorByID(_T("sub1c2"), m_stss.colors[1]);
 	setBackgdColorByID(_T("sub1c3"), m_stss.colors[2]);
@@ -325,6 +333,9 @@ void CUESettingPanel::ApplyAllSetting(){
 	m_stss.engRatio = _wtof( m_sgs_engsubradio1 );
 	m_stss2.engRatio = _wtof( m_sgs_engsubradio2 );
 
+	m_stss.scrAlignment = _wtoi(m_sgs_subalign1);
+	m_stss2.scrAlignment = _wtoi(m_sgs_subalign2);
+	
 	s.subdefstyle = m_stss;
 	s.subdefstyle2 = m_stss2;
 

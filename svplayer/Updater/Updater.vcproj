@@ -147,8 +147,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="curllib.lib svplibRU.lib zlibR.lib Version.lib"
 				OutputFile="..\..\$(ProjectName).exe"
 				LinkIncremental="1"
+				AdditionalLibraryDirectories="../lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"

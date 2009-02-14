@@ -41,7 +41,7 @@
 IMPLEMENT_DYNAMIC(CPPageSubStyle, CPPageBase)
 CPPageSubStyle::CPPageSubStyle(int exsubid , int iCharset, UINT CapID)
 	: CPPageBase(CPPageSubStyle::IDD, CapID)
-	, m_iCharset(0)
+	, m_iCharset(1)
 	, m_spacing(0)
 	, m_angle(0)
 	, m_scalex(0)
@@ -55,7 +55,7 @@ CPPageSubStyle::CPPageSubStyle(int exsubid , int iCharset, UINT CapID)
 	, m_relativeTo(FALSE)
 	, m_2ndsub(0)
 {
-	
+	if(iCharset == 0){iCharset = 1;}
 	m_iCharset = iCharset;
 	if (exsubid) { m_2ndsub = exsubid;}
 	if(exsubid ){

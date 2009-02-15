@@ -275,5 +275,9 @@
 		</File>
 	</Files>
 	<Globals>
+		<Global
+			Name="RESOURCE_FILE"
+			Value="Updater.rc"
+		/>
 	</Globals>
 </VisualStudioProject>

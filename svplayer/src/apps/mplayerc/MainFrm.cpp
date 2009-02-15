@@ -563,7 +563,7 @@ void CMainFrame::OnClose()
 	m_wndPlaylistBar.SavePlaylist();
 
 	SaveControlBars();
-
+ 
 	ShowWindow(SW_HIDE);
 
 	CloseMedia();

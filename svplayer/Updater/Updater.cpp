@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "Updater.h"
 #include "UpdaterDlg.h"
-#include "cupdatenetlib.h"
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -36,7 +36,14 @@ CUpdaterApp theApp;
 
 BOOL CUpdaterApp::InitInstance()
 {
-	return FALSE;
+	//禁止多个副本 
+	HANDLE hObject = CreateMutex(NULL,FALSE,_T("SVPLAYER_UPDATER"));
+	if(GetLastError() == ERROR_ALREADY_EXISTS)
+	{
+		return FALSE;
+	}
+	//END 禁止多个副本
+
 	// InitCommonControlsEx() is required on Windows XP if an application
 	// manifest specifies use of ComCtl32.dll version 6 or later to enable
 	// visual styles.  Otherwise, any window creation will fail.

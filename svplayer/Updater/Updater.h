@@ -9,6 +9,7 @@
 
 #include "resource.h"		// main symbols
 
+#include "cupdatenetlib.h"
 
 // CUpdaterApp:
 // See Updater.cpp for the implementation of this class

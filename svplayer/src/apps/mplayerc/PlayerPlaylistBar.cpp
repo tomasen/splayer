@@ -927,7 +927,7 @@ void CPlayerPlaylistBar::OnLvnKeyDown(NMHDR* pNMHDR, LRESULT* pResult)
 	{
 		m_pl.SetPos(FindPos(items.GetHead()));
 
-		((CMainFrame*)AfxGetMainWnd())->OpenCurPlaylistItem();
+		((CMainFrame*)AfxGetMainWnd())->OpenCurPlaylistItem(); //should we use recent rStart time?
 
 		*pResult = TRUE;
 	}
@@ -941,7 +941,7 @@ void CPlayerPlaylistBar::OnNMDblclkList(NMHDR* pNMHDR, LRESULT* pResult)
 	{
 		m_pl.SetPos(FindPos(lpnmlv->iItem));
 		m_list.Invalidate();
-		((CMainFrame*)AfxGetMainWnd())->OpenCurPlaylistItem();
+		((CMainFrame*)AfxGetMainWnd())->OpenCurPlaylistItem(); //should we use recent rStart time
 	}
 
 	*pResult = 0;

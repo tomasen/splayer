@@ -3258,7 +3258,7 @@ void CMainFrame::OnFileOpenUrlStream(){
 		ShowControlBar(&m_wndPlaylistBar, FALSE, TRUE);
 	}
 
-	OpenCurPlaylistItem();
+	OpenCurPlaylistItem(-1);
 }
 void CMainFrame::OnFileOpenmedia()
 {
@@ -6131,7 +6131,7 @@ void CMainFrame::OnNavigateSkipPlaylistItem(UINT nID)
 				m_wndPlaylistBar.SetNext();
 			}
 
-			OpenCurPlaylistItem();
+			OpenCurPlaylistItem( -1);
 		}
 	}
 }
@@ -6363,13 +6363,17 @@ public:
 };
 
 
-void CMainFrame::OnFavoritesAdd()
+void CMainFrame::OnFavoritesAdd(){
+	OnFavoritesAddReal();
+}
+void CMainFrame::OnFavoritesAddReal( BOOL bRecent)
 {
 	AppSettings& s = AfxGetAppSettings();
 
 	if(m_iPlaybackMode == PM_FILE)
 	{
-		CString fn =  m_wndPlaylistBar.GetCur();
+		CString fn = m_wndPlaylistBar.GetCur();//m_fnCurPlayingFile;// 
+		if(fn.IsEmpty()) {fn = m_fnCurPlayingFile;}
 		if(fn.IsEmpty()) return;
 
 		CString desc = fn;
@@ -6378,27 +6382,35 @@ void CMainFrame::OnFavoritesAdd()
 		if(i >= 0) desc = j >= 0 ? desc.Left(j) : desc;
 		else if(k >= 0) desc = desc.Mid(k+1);
 
-		CFavoriteAddDlg dlg(desc, fn);
-		if(dlg.DoModal() != IDOK) return;
-
-		CString str = dlg.m_name;
-		str.Remove(';');
-
+		CString str;
+		BOOL bRememberPos = TRUE;
+		if(bRecent){
+			str = fn;
+			
+		}else{
+			CFavoriteAddDlg dlg(desc, fn);
+			if(dlg.DoModal() != IDOK) return;
+			str = dlg.m_name;
+			str.Remove(';');
+			bRememberPos = dlg.m_fRememberPos;
+		}
 		CString pos(_T("0"));
-		if(dlg.m_fRememberPos)
+		if(bRememberPos)
 			pos.Format(_T("%I64d"), GetPos());
-
+		
 		str += ';';
 		str += pos;
 
-		CPlaylistItem pli;
-		if(m_wndPlaylistBar.GetCur(pli))
-		{
-			POSITION pos = pli.m_fns.GetHeadPosition();
-			while(pos) str += _T(";") + pli.m_fns.GetNext(pos);
+		if(!bRecent){
+			CPlaylistItem pli;
+			if(m_wndPlaylistBar.GetCur(pli))
+			{
+				POSITION pos = pli.m_fns.GetHeadPosition();
+				while(pos) str += _T(";") + pli.m_fns.GetNext(pos);
+			}
 		}
 
-		s.AddFav(FAV_FILE, str);
+		s.AddFav(FAV_FILE, str, bRecent,fn);
 	}
 	else if(m_iPlaybackMode == PM_DVD)
 	{
@@ -6414,14 +6426,22 @@ void CMainFrame::OnFavoritesAdd()
 		desc.Format(_T("%s - T%02d C%02d - %02d:%02d:%02d"), fn, Location.TitleNum, Location.ChapterNum, 
 			Location.TimeCode.bHours, Location.TimeCode.bMinutes, Location.TimeCode.bSeconds);
 
-		CFavoriteAddDlg dlg(fn, desc);
-		if(dlg.DoModal() != IDOK) return;
+		CString str;
+		BOOL bRememberPos = FALSE;
+		if(bRecent){
+			str = fn;
+			bRememberPos = TRUE;
+		}else{
+			CFavoriteAddDlg dlg(fn, desc);
+			if(dlg.DoModal() != IDOK) return;
 
-		CString str = dlg.m_name;
-		str.Remove(';');
+			str = dlg.m_name;
+			str.Remove(';');
 
+			bRememberPos = dlg.m_fRememberPos;
+		}
 		CString pos(_T("0"));
-		if(dlg.m_fRememberPos)
+		if(bRememberPos)
 		{
 			CDVDStateStream stream;
 			stream.AddRef();
@@ -6438,11 +6458,12 @@ void CMainFrame::OnFavoritesAdd()
 
 		str += ';';
 		str += pos;
+		if(!bRecent){
+			str += ';';
+			str += fn;
+		}
 
-		str += ';';
-		str += fn;
-
-		s.AddFav(FAV_DVD, str);
+		s.AddFav(FAV_DVD, str,bRecent,fn);
 	}
 	else if(m_iPlaybackMode == PM_CAPTURE)
 	{
@@ -10621,7 +10642,40 @@ void CMainFrame::OpenCurPlaylistItem(REFERENCE_TIME rtStart)
 	CPlaylistItem pli;
 	if(!m_wndPlaylistBar.GetCur(pli)) m_wndPlaylistBar.SetFirst();
 	if(!m_wndPlaylistBar.GetCur(pli)) return;
+	AppSettings& s = AfxGetAppSettings();
+	
+	if(rtStart == 0){
+		CString fn;
+		fn = pli.m_fns.GetHead();
+		favtype ft ;
+		ft = FAV_FILE;
+		if (!fn.IsEmpty()){
+			CAtlList<CString> sl;
+			s.GetFav(ft, sl, TRUE);
+			CString PosStr ;
+			POSITION pos = sl.GetHeadPosition();
+			while(pos){
+				PosStr = sl.GetNext(pos) ;
+				if( PosStr.Find(fn + _T(";")) == 0 ){
+					break;
+				}else{
+					PosStr.Empty();
+				}
+			}
+			if(!PosStr.IsEmpty()){
 
+				int iPos = PosStr.ReverseFind( _T(';') );
+				if(iPos >= 0){
+					CString s2 = PosStr.Right( PosStr.GetLength() - iPos - 1 );
+					_stscanf(s2, _T("%I64d"), &rtStart); // pos
+				}
+				
+			}
+				
+		}
+	}else if(rtStart == -1){
+		rtStart = 0;
+	}
 	CAutoPtr<OpenMediaData> p(m_wndPlaylistBar.GetCurOMD(rtStart));
 	
 
@@ -10699,16 +10753,27 @@ void CMainFrame::OpenMedia(CAutoPtr<OpenMediaData> pOMD)
 
 void CMainFrame::CloseMedia()
 {
+
+	CString fnx = m_wndPlaylistBar.GetCur();
+
 	if(m_iMediaLoadState == MLS_CLOSING)
 	{
 		TRACE(_T("WARNING: CMainFrame::CloseMedia() called twice or more\n"));
 		return;
+	}
+	if( m_iMediaLoadState == MLS_LOADED){
+		if(GetPos() < (GetDur() * 0.9) ){
+			//save time for next play
+			OnFavoritesAddReal(TRUE);
+		}
 	}
 
 	int nTimeWaited = 0;
 
 	while(m_iMediaLoadState == MLS_LOADING)
 	{
+	
+
 		m_fOpeningAborted = true;
 
 		if(pGB) pGB->Abort(); // TODO: lock on graph objects somehow, this is not thread safe
@@ -10727,6 +10792,7 @@ void CMainFrame::CloseMedia()
 
 		nTimeWaited += 50;
 	}
+
 
 	m_fOpeningAborted = false;
 

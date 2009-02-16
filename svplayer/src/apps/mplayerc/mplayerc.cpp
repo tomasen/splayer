@@ -1878,7 +1878,7 @@ void CMPlayerCApp::Settings::ParseCommandLine(CAtlList<CString>& cmdln)
 	}
 }
 
-void CMPlayerCApp::Settings::GetFav(favtype ft, CAtlList<CString>& sl)
+void CMPlayerCApp::Settings::GetFav(favtype ft, CAtlList<CString>& sl, BOOL bRecent)
 {
 	sl.RemoveAll();
 
@@ -1892,6 +1892,8 @@ void CMPlayerCApp::Settings::GetFav(favtype ft, CAtlList<CString>& sl)
 	default: return;
 	}
 
+	if (bRecent){ root += _T("_Recent"); }
+
 	for(int i = 0; ; i++)
 	{
 		CString s;
@@ -1902,7 +1904,7 @@ void CMPlayerCApp::Settings::GetFav(favtype ft, CAtlList<CString>& sl)
 	}
 }
 
-void CMPlayerCApp::Settings::SetFav(favtype ft, CAtlList<CString>& sl)
+void CMPlayerCApp::Settings::SetFav(favtype ft, CAtlList<CString>& sl, BOOL bRecent)
 {
 	CString root;
 
@@ -1914,6 +1916,7 @@ void CMPlayerCApp::Settings::SetFav(favtype ft, CAtlList<CString>& sl)
 	default: return;
 	}
 
+	if (bRecent){ root += _T("_Recent"); }
 	AfxGetApp()->WriteProfileString(root, NULL, NULL);
 
 	int i = 0;
@@ -1926,13 +1929,27 @@ void CMPlayerCApp::Settings::SetFav(favtype ft, CAtlList<CString>& sl)
 	}
 }
 
-void CMPlayerCApp::Settings::AddFav(favtype ft, CString s)
+void CMPlayerCApp::Settings::AddFav(favtype ft, CString s, BOOL bRecent, CString szMatch)
 {
 	CAtlList<CString> sl;
-	GetFav(ft, sl);
-	if(sl.Find(s)) return;
+	GetFav(ft, sl, bRecent);
+	if(bRecent){
+		POSITION pos = sl.GetHeadPosition();
+		while(pos){
+			if( sl.GetAt(pos).Find(szMatch) >= 0 ){
+				sl.RemoveAt(pos);
+				break;
+			}
+			sl.GetNext(pos);
+		}
+		if(sl.GetCount() > 10){
+			sl.RemoveHead();
+		}
+	}else{
+		if(sl.Find(s)) return;
+	}
 	sl.AddTail(s);
-	SetFav(ft, sl);
+	SetFav(ft, sl , bRecent);
 }
 
 // CMPlayerCApp::Settings::CRecentFileAndURLList

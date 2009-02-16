@@ -33,6 +33,10 @@ CUpdaterDlg::CUpdaterDlg(CWnd* pParent /*=NULL*/)
 void CUpdaterDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
+	DDX_Control(pDX, STATIC_CURRENT, csCurFile);
+	DDX_Control(pDX, STATIC_TOTAL, csTotalProgress);
+	DDX_Control(pDX, IDC_PROGRESS2, prg_curfile);
+	DDX_Control(pDX, IDC_PROGRESS1, prg_total);
 }
 
 BEGIN_MESSAGE_MAP(CUpdaterDlg, CDialog)
@@ -58,6 +62,9 @@ BOOL CUpdaterDlg::OnInitDialog()
 	//  when the application's main window is not a dialog
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
+
+	prg_total.SetRange(0, 1000);
+	prg_curfile.SetRange(0, 1000);
 
 	// TODO: Add extra initialization here
 	if(cup.downloadList()){
@@ -154,10 +161,33 @@ void CUpdaterDlg::OnTimer(UINT_PTR nIDEvent)
 				tnid.uCallbackMessage = WM_NOTIFYICON; 
 				tnid.hIcon = this->m_hIcon; 
 
-				szTmp.Format( _T("射手影音自动更新程序\n文件：%d/%d 下载：%0.2f%%") , cup.iSVPCU_CURRETN_FILE , iSVPCU_TOTAL_FILE , (double)iSVPCU_TOTAL_FILEBYTE_DONE/cup.iSVPCU_TOTAL_FILEBYTE);
+				if(cup.iSVPCU_TOTAL_FILEBYTE < cup.iSVPCU_TOTAL_FILEBYTE_DONE + cup.iSVPCU_CURRENT_FILEBYTE_DONE){
+					cup.iSVPCU_TOTAL_FILEBYTE = cup.iSVPCU_TOTAL_FILEBYTE_DONE + cup.iSVPCU_CURRENT_FILEBYTE_DONE;
+				}
+				if (cup.iSVPCU_TOTAL_FILEBYTE  <= 0){
+					cup.iSVPCU_TOTAL_FILEBYTE = 1;
+				}
+				double progress = (double)( cup.iSVPCU_TOTAL_FILEBYTE_DONE + cup.iSVPCU_CURRENT_FILEBYTE_DONE ) * 100/ (cup.iSVPCU_TOTAL_FILEBYTE);
+				szTmp.Format( _T("射手影音自动更新程序\n文件：%d/%d 下载：%0.2f%%") , cup.iSVPCU_CURRETN_FILE , cup.iSVPCU_TOTAL_FILE ,progress );
+				//SVP_LogMsg(szTmp);
 
-				//SetWindowText(szTmp);
+				if(cup.bWaiting){
+					szTmp = _T("射手影音自动更新程序\n文件正在被占用，关闭播放器或重新启动后将自动更新到最新版本");
+				}
 				wcscpy_s(tnid.szTip, szTmp);
+
+
+				if(!cup.bWaiting){
+					szTmp.Format( _T("正在下载文件： %s （%d / %d）") , cup.szCurFilePath , cup.iSVPCU_CURRETN_FILE , cup.iSVPCU_TOTAL_FILE);
+				}
+				csCurFile.SetWindowText(szTmp);
+				//SetWindowText(szTmp);
+
+				szTmp.Format( _T("总进度：%0.2f%%") , progress);
+				csTotalProgress.SetWindowText(szTmp);
+
+				prg_curfile.SetPos(cup.iSVPCU_CURRENT_FILEBYTE_DONE * 1000/ cup.iSVPCU_CURRENT_FILEBYTE  )	;
+				prg_total.SetPos(int(progress * 10));
 
 				Shell_NotifyIcon(NIM_ADD, &tnid); 
 				Shell_NotifyIcon(NIM_MODIFY,&tnid);

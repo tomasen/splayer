@@ -677,6 +677,7 @@ public:
 	afx_msg void OnUpdateNavigateMenuItem(CCmdUI* pCmdUI);
 
 	afx_msg void OnFavoritesAdd();
+	void OnFavoritesAddReal( BOOL bRecent = FALSE );
 	afx_msg void OnUpdateFavoritesAdd(CCmdUI* pCmdUI);
 	afx_msg void OnFavoritesOrganize();
 	afx_msg void OnUpdateFavoritesOrganize(CCmdUI* pCmdUI);

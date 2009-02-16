@@ -503,9 +503,9 @@ public:
 		virtual ~Settings();
 		void UpdateData(bool fSave);
 
-		void GetFav(favtype ft, CAtlList<CString>& sl);
-		void SetFav(favtype ft, CAtlList<CString>& sl);
-		void AddFav(favtype ft, CString s);
+		void GetFav(favtype ft, CAtlList<CString>& sl, BOOL bRecent = FALSE);
+		void SetFav(favtype ft, CAtlList<CString>& sl, BOOL bRecent = FALSE);
+		void AddFav(favtype ft, CString s, BOOL bRecent = FALSE, CString szMatch = _T(""));
 	} m_s;
 
 public:

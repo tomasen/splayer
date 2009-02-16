@@ -101,7 +101,7 @@
 			ConfigurationType="1"
 			UseOfMFC="1"
 			CharacterSet="1"
-			WholeProgramOptimization="1"
+			WholeProgramOptimization="0"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -123,13 +123,21 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="1"
+				AdditionalOptions="/D &quot;CURL_STATICLIB&quot; /D &quot;WINVER=0x0600&quot; /D &quot;_WIN32_WINNT=0x0600&quot; /D &quot;NTDDI_VERSION=NTDDI_VISTA&quot;"
+				Optimization="2"
+				InlineFunctionExpansion="2"
 				EnableIntrinsicFunctions="true"
+				FavorSizeOrSpeed="2"
+				OmitFramePointers="true"
+				EnableFiberSafeOptimizations="false"
+				WholeProgramOptimization="false"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG"
+				StringPooling="true"
 				MinimalRebuild="false"
 				RuntimeLibrary="0"
+				BufferSecurityCheck="false"
 				EnableFunctionLevelLinking="true"
-				UsePrecompiledHeader="2"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 			/>
@@ -147,15 +155,20 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalOptions="/MACHINE:I386  /LTCG"
 				AdditionalDependencies="curllib.lib svplibRU.lib zlibR.lib Version.lib"
 				OutputFile="..\..\$(ProjectName).exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="../lib"
+				IgnoreDefaultLibraryNames="MSVCRT"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				TargetMachine="1"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
+				SupportUnloadOfDelayLoadedDLL="true"
+				TargetMachine="0"
 			/>
 			<Tool
 				Name="VCALinkTool"

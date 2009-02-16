@@ -53,8 +53,3 @@
 #endif
 #endif
 
-
-static int iSVPCU_TOTAL_FILE = 0 ;
-static  size_t iSVPCU_TOTAL_FILEBYTE_DONE = 0 ;
-static  size_t iSVPCU_CURRENT_FILEBYTE_DONE = 0 ;
-

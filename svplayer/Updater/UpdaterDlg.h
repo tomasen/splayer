@@ -2,6 +2,8 @@
 //
 
 #pragma once
+#include "afxwin.h"
+#include "afxcmn.h"
 
 
 // CUpdaterDlg dialog
@@ -37,4 +39,8 @@ public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnClose();
 	afx_msg void OnBnClickedButton1();
+	CStatic csCurFile;
+	CStatic csTotalProgress;
+	CProgressCtrl prg_curfile;
+	CProgressCtrl prg_total;
 };

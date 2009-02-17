@@ -37,6 +37,7 @@ void CUpdaterDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, STATIC_TOTAL, csTotalProgress);
 	DDX_Control(pDX, IDC_PROGRESS2, prg_curfile);
 	DDX_Control(pDX, IDC_PROGRESS1, prg_total);
+	DDX_Control(pDX, IDC_STATIC_DONE, cs_stat);
 }
 
 BEGIN_MESSAGE_MAP(CUpdaterDlg, CDialog)
@@ -172,21 +173,25 @@ void CUpdaterDlg::OnTimer(UINT_PTR nIDEvent)
 				//SVP_LogMsg(szTmp);
 
 				if(cup.bWaiting){
-					szTmp = _T("射手影音自动更新程序\n文件正在被占用，关闭播放器或重新启动后将自动更新到最新版本");
+					szTmp = _T("文件正在被占用，关闭播放器或重新启动后将自动更新到最新版本");
+					csCurFile.ShowWindow(SW_HIDE);
+					prg_curfile.ShowWindow(SW_HIDE);
+					cs_stat.ShowWindow(SW_SHOW);
+					cs_stat.SetWindowText(szTmp);
 				}
 				wcscpy_s(tnid.szTip, szTmp);
 
 
 				if(!cup.bWaiting){
 					szTmp.Format( _T("正在下载文件： %s （%d / %d）") , cup.szCurFilePath , cup.iSVPCU_CURRETN_FILE , cup.iSVPCU_TOTAL_FILE);
+					csCurFile.SetWindowText(szTmp);
+					prg_curfile.SetPos(cup.iSVPCU_CURRENT_FILEBYTE_DONE * 1000/ cup.iSVPCU_CURRENT_FILEBYTE  )	;
 				}
-				csCurFile.SetWindowText(szTmp);
 				//SetWindowText(szTmp);
 
 				szTmp.Format( _T("总进度：%0.2f%%") , progress);
 				csTotalProgress.SetWindowText(szTmp);
 
-				prg_curfile.SetPos(cup.iSVPCU_CURRENT_FILEBYTE_DONE * 1000/ cup.iSVPCU_CURRENT_FILEBYTE  )	;
 				prg_total.SetPos(int(progress * 10));
 
 				Shell_NotifyIcon(NIM_ADD, &tnid); 

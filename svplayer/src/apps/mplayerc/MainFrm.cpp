@@ -304,6 +304,9 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND_RANGE(ID_SUB_DELAY_DOWN, ID_SUB_DELAY_UP, OnSubtitleDelay)
 	ON_COMMAND_RANGE(ID_SUB_DELAY_DOWN2, ID_SUB_DELAY_UP2, OnSubtitleDelay2)
 
+	ON_COMMAND_RANGE(ID_SUBMOVEUP, ID_SUB2MOVERIGHT, OnSubtitleMove)
+	ON_COMMAND_RANGE(ID_SUBFONTUPBOTH, ID_SUB2FONTDOWN, OnSubtitleFontChange)
+
 	ON_COMMAND(ID_PLAY_PLAY, OnPlayPlay)
 	ON_COMMAND(ID_PLAY_PAUSE, OnPlayPause)
 	ON_COMMAND(ID_PLAY_PLAYPAUSE, OnPlayPlaypause)
@@ -10890,5 +10893,122 @@ afx_msg void CMainFrame::OnSubtitleDelay2(UINT nID)
 		SetSubtitleDelay2(newDelay);
 	}
 }
+afx_msg void CMainFrame::OnSubtitleMove(UINT nID)
+{
+	if(m_pCAP)
+	{
+		BOOL bSubChg1 = FALSE;
+		BOOL bSubChg2 = FALSE;
+		AppSettings& s = AfxGetAppSettings();
+	
+		if(nID >= ID_SUBMOVEUP && nID <= ID_SUBMOVERIGHT)
+			bSubChg1 = TRUE;
+		if(nID >= ID_SUB2MOVEUP && nID <= ID_SUB2MOVERIGHT)
+			bSubChg2 = TRUE;
 
+		CString str;
 
+		switch(nID){
+			case ID_SUBMOVEUP:
+				s.nVerPos -= 2;
+				if(s.nVerPos < 2){s.nVerPos = 2;}
+				s.fOverridePlacement = true;
+				str.Format(_T("主字幕高度已经设为：%d %%"), s.nVerPos);
+				break;
+			case  ID_SUBMOVEDOWN:
+				s.nVerPos += 2;
+				if(s.nVerPos > 98){s.nVerPos = 98;}
+				s.fOverridePlacement = true;
+				str.Format(_T("主字幕高度已经设为：%d %%"), s.nVerPos);
+				break;
+			case  ID_SUBMOVELEFT:
+				break;
+			case  ID_SUBMOVERIGHT:
+				break;
+			case  ID_SUB2MOVEUP:
+				s.nVerPos2 -= 2;
+				if(s.nVerPos2 < 2){s.nVerPos2 = 2;}
+				s.fOverridePlacement2 = true;
+				str.Format(_T("第二字幕高度已经设为：%d %%"), s.nVerPos2);
+				break;
+			case  ID_SUB2MOVEDOWN:
+				s.nVerPos2 += 2;
+				if(s.nVerPos2 > 98){s.nVerPos2 = 98;}
+				s.fOverridePlacement2 = true;
+				str.Format(_T("第二字幕高度已经设为：%d %%"), s.nVerPos2);
+				break;
+			case  ID_SUB2MOVELEFT:
+				break;
+			case  ID_SUB2MOVERIGHT:
+				break;
+		}
+		
+		SendStatusMessage(str, 5000);
+
+		if(bSubChg1)
+			UpdateSubtitle(true); 
+		if(bSubChg2)
+			UpdateSubtitle2(true);
+		
+		
+// 		if(bSubChg1 || bSubChg2)
+// 			m_pCAP->Invalidate();
+	}
+}
+
+afx_msg void CMainFrame::OnSubtitleFontChange(UINT nID)
+{
+	if(m_pCAP)
+	{
+		BOOL bSubChg1 = FALSE;
+		BOOL bSubChg2 = FALSE;
+		AppSettings& s = AfxGetAppSettings();
+		CString str, str2;
+
+		if(nID >= ID_SUBFONTUPBOTH && nID <= ID_SUBFONTDOWNBOTH)
+			bSubChg1 = TRUE; bSubChg2 = TRUE;
+		if(nID >= ID_SUB1FONTUP && nID <= ID_SUB1FONTDOWN)
+			bSubChg1 = TRUE;
+		if(nID >= ID_SUB2MOVEUP && nID <= ID_SUB2MOVERIGHT)
+			bSubChg2 = TRUE;
+
+		switch(nID){
+			case ID_SUBFONTUPBOTH:
+				
+			case ID_SUB1FONTUP:
+				s.subdefstyle.fontSize += 1;
+				if(nID != ID_SUBFONTUPBOTH)
+					break;
+			case ID_SUB2FONTUP:
+				s.subdefstyle2.fontSize += 1;
+				
+				break;
+			case ID_SUBFONTDOWNBOTH:
+				
+			case ID_SUB1FONTDOWN:
+				s.subdefstyle.fontSize -= 1;
+				if(s.subdefstyle.fontSize < 3)
+					s.subdefstyle.fontSize = 3;
+				if(nID != ID_SUBFONTDOWNBOTH)
+					break;
+			case ID_SUB2FONTDOWN:
+				s.subdefstyle2.fontSize -= 1;
+				if(s.subdefstyle2.fontSize < 3)
+					s.subdefstyle2.fontSize = 3;
+				break;
+		}
+
+		if(bSubChg1){
+			str.Format(_T("主字幕字体已经设为：%0.1f %% "), s.subdefstyle.fontSize);
+			UpdateSubtitle(true); 
+		}
+		if(bSubChg2){
+			str2.Format(_T("第二字幕字体已经设为：%0.1f %% "), s.subdefstyle.fontSize);
+			UpdateSubtitle2(true);
+		}
+		SendStatusMessage(str + str2, 5000);
+
+		// 		if(bSubChg1 || bSubChg2)
+		// 			m_pCAP->Invalidate();
+	}
+}

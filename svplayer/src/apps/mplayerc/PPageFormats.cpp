@@ -110,9 +110,10 @@ static bool MakeRegParams(CString ext, CString& path, CString& fn, CString& extf
 
 bool CPPageFormats::IsRegistered(CString ext)
 {
+
 	BOOL	bIsDefault = FALSE;
 	CString strProgID = _T("SVPlayer") + ext;
-
+	CString FileIcon = GetFileIcon(ext);
 	if (m_pAAR == NULL)
 	{
 		// Default manager (requiered at least Vista)
@@ -176,14 +177,66 @@ bool CPPageFormats::IsRegistered(CString ext)
 
 	}
 
+	if(bIsDefault){
+		SetFileAssociation(ext, strProgID, TRUE);
+	}
+
 	return !!bIsDefault;
+}
+CString CPPageFormats::GetFileIcon(CString strExt){
+	TCHAR           buff[MAX_PATH];
+	ULONG           len = sizeof(buff);
+	memset(buff, 0, len);
+	CString FileIcon;
+	int iconId = IDI_UNKNOWN;
+
+	if(isSubtitleFile(strExt)){
+		iconId = IDI_SUBTITLE_FILE;
+	}else{
+		CMediaFormats& mf = AfxGetAppSettings().Formats;
+		for(size_t i = 0; i < mf.GetCount(); i++)
+		{
+			if ( mf[i].FindExt(strExt) ){
+				if(mf[i].IsAudioOnly()){
+					iconId = IDI_AUDIO_FILE;
+				}else{
+					iconId = IDI_DV_VIDEO;
+				}
+					CString szType = mf[i].GetLabel();
+					if(szType.Find(_T("Real")) >= 0){
+						iconId = IDI_REAL_FILE;
+					}else if(szType.Find(_T("Quicktime")) >= 0){
+						iconId = IDI_QUICKTIME_FILE;
+					}else if(szType.Find(_T("MIDI")) >= 0){
+						iconId = IDI_MIDI_FILE;
+					}else if(szType.Find(_T("MPEG4")) >= 0){
+						iconId = IDI_MOBILE_VIDEO;
+					}else if(szType.Find(_T("MP3")) >= 0){
+						iconId = IDI_MP3_FILE;
+					}else if(szType.Find(_T("CD")) >= 0){
+						iconId = IDI_NORMAL_CD;
+					}else if(szType.Find(_T("Flash")) >= 0){
+						iconId = IDI_FLASH;
+					}else if(szType.Find(_T("DVD")) >= 0){
+						iconId = IDI_DVD;
+					}
+				
+				break;
+			}
+			
+		}
+	}
+
+	::GetModuleFileName(AfxGetInstanceHandle(), buff, MAX_PATH);
+	FileIcon.Format(_T("\"%s\",%d"), buff, iconId - IDI_SINGLE + 1);
+	return FileIcon;
 }
 BOOL CPPageFormats::SetFileAssociation(CString strExt, CString strProgID, bool fRegister)
 {
 	CString         extoldreg, extOldIcon;
 	CRegKey         key;
 	HRESULT         hr = S_OK;
-	TCHAR           buff[256];
+	TCHAR           buff[MAX_PATH];
 	ULONG           len = sizeof(buff);
 	memset(buff, 0, len);
 
@@ -200,6 +253,7 @@ BOOL CPPageFormats::SetFileAssociation(CString strExt, CString strProgID, bool f
 			m_pAAR = NULL;
 		}
 	}
+	CString FileIcon = GetFileIcon(strExt);
 
 	if (m_pAAR)
 	{
@@ -232,21 +286,23 @@ BOOL CPPageFormats::SetFileAssociation(CString strExt, CString strProgID, bool f
 				if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, strProgID))
 					return(false);
 
-				key.SetStringValue(g_strOldAssoc, pszCurrentAssociation);
+				key.SetStringValue( NULL , pszCurrentAssociation);
+				//key.SetStringValue(g_strOldAssoc, pszCurrentAssociation);
 
 				// Get current icon for file type
-				/*
+				
 				if (ERROR_SUCCESS == key.Open(HKEY_CLASSES_ROOT, CString(pszCurrentAssociation) + _T("\\DefaultIcon")))
 				{
-				len = sizeof(buff);
-				memset(buff, 0, len);
-				if(ERROR_SUCCESS == key.QueryStringValue(NULL, buff, &len) && !CString(buff).Trim().IsEmpty())
-				{
+					
+					if(ERROR_SUCCESS == key.QueryStringValue(NULL, buff, &len) && !FileIcon.Trim().IsEmpty())
+					{
+						
+					}
+				}
+				
 				if (ERROR_SUCCESS == key.Create(HKEY_CLASSES_ROOT, strProgID + _T("\\DefaultIcon")))
-				key.SetStringValue (NULL, buff);
-				}
-				}
-				*/
+					key.SetStringValue (NULL, FileIcon);
+
 				CoTaskMemFree (pszCurrentAssociation);
 			}
 			strNewApp = g_strRegisteredAppName;
@@ -296,10 +352,21 @@ BOOL CPPageFormats::SetFileAssociation(CString strExt, CString strProgID, bool f
 			}
 			*/
 
+			
 			// Save old association
 			if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, strProgID))
 				return(false);
+
 			key.SetStringValue(g_strOldAssoc, extoldreg);
+
+			if (ERROR_SUCCESS == key.Create(HKEY_CLASSES_ROOT, strProgID + _T("\\DefaultIcon")))
+				key.SetStringValue (NULL, FileIcon);
+/*
+			if (ERROR_SUCCESS == key.Open(HKEY_CLASSES_ROOT, strProgID + _T("\\DefaultIcon")))
+			{
+				key.SetStringValue(NULL, FileIcon);
+			}
+*/
 
 			/*
 			if (!extOldIcon.IsEmpty() && (ERROR_SUCCESS == key.Create(HKEY_CLASSES_ROOT, strProgID + _T("\\DefaultIcon"))))

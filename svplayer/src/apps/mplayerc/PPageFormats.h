@@ -42,7 +42,7 @@ private:
 	static CString GetOpenCommand();
 	static CComPtr<IApplicationAssociationRegistration>	m_pAAR;
 	static BOOL SetFileAssociation(CString strExt, CString strProgID, bool fRegister);
-	
+	static CString GetFileIcon(CString strExt);
 public:
 	typedef enum {AP_VIDEO=0,AP_MUSIC,AP_AUDIOCD,AP_DVDMOVIE} autoplay_t;
 	void AddAutoPlayToRegistry(autoplay_t ap, bool fRegister);

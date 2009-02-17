@@ -43,4 +43,5 @@ public:
 	CStatic csTotalProgress;
 	CProgressCtrl prg_curfile;
 	CProgressCtrl prg_total;
+	CStatic cs_stat;
 };

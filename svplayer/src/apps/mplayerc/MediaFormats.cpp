@@ -211,9 +211,9 @@ void CMediaFormats::UpdateData(bool fSave)
 		ADDFMT((_T("Smacker/Bink Media file"), _T("smk bik"), false, _T("smackw32/binkw32.dll in dll path")));
 		ADDFMT((_T("ratdvd file"), _T("ratdvd"), false, _T("ratdvd media file")));
 		ADDFMT((_T("RoQ Media file"), _T("roq"), false));
-		ADDFMT((_T("Real Media file"), _T("rm rmvb ram rpm rmm"), false, _T("RealPlayer or Real Alternative"), RealMedia));
-		ADDFMT((_T("Real Audio file"), _T("ra"), true, _T("RealPlayer or Real Alternative"), RealMedia));
-		ADDFMT((_T("Real Script file"), _T("rt rp smi smil"), false, _T("RealPlayer or Real Alternative"), RealMedia));
+		ADDFMT((_T("Real Media file"), _T("rm rmvb ram rpm rmm"), false, _T("RealPlayer or Real Alternative") )); //RealMedia
+		ADDFMT((_T("Real Audio file"), _T("ra"), true, _T("RealPlayer or Real Alternative"))); // RealMedia
+		ADDFMT((_T("Real Script file"), _T("rt rp smi smil"), false, _T("RealPlayer or Real Alternative"))); // RealMedia
 		ADDFMT((_T("Dirac Video file"), _T("drc"), false));
 		ADDFMT((_T("DirectShow Media file"), _T("dsm dsv dsa dss")));
 		ADDFMT((_T("Musepack file"), _T("mpc"), true));
@@ -221,13 +221,13 @@ void CMediaFormats::UpdateData(bool fSave)
 		ADDFMT((_T("ALAC Audio file"), _T("alac"), true));
 		ADDFMT((_T("Flash Video file"), _T("flv")));
 		ADDFMT((_T("Shockwave Flash file"), _T("swf"), false, _T("ShockWave ActiveX control"), ShockWave));
-		ADDFMT((_T("Quicktime file"), _T("mov qt amr 3g2 3gp2"), false, _T("QuickTime or codec pack"), QuickTime));
+		ADDFMT((_T("Quicktime file"), _T("mov qt amr 3g2 3gp2"), false, _T("QuickTime or codec pack")));//QuickTime
 		ADDFMT((_T("Image file"), _T("jpeg jpg bmp gif pic png dib tiff tif")));
 		ADDFMT((_T("Playlist file"), _T("asx m3u pls wvx wax wmx mpcpl")));
 		ADDFMT((_T("Other"), _T("divx vp6 rmvb amv")));
 #undef ADDFMT
 
-		m_iRtspHandler = (engine_t)AfxGetApp()->GetProfileInt(_T("FileFormats"), _T("RtspHandler"), (int)RealMedia);
+		m_iRtspHandler = (engine_t)AfxGetApp()->GetProfileInt(_T("FileFormats"), _T("RtspHandler"), (int)DirectShow); //RealMedia
 		m_fRtspFileExtFirst = !!AfxGetApp()->GetProfileInt(_T("FileFormats"), _T("RtspFileExtFirst"), 1);
 	}
 

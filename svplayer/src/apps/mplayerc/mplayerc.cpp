@@ -1384,7 +1384,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 			// WINBUG: on win2k this would crash WritePrivateProfileString
 			pApp->WriteProfileInt(_T(""), _T(""), pApp->GetProfileInt(_T(""), _T(""), 0)?0:1);
 		}
-		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("LastVersion"), 49);		
+		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("LastVersion"), 50);		
 	}
 	else
 	{
@@ -1704,6 +1704,14 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		fNotifyGTSdll = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_NOTIFYGTSDLL), FALSE);
 
 		Formats.UpdateData(false);
+		if(iUpgradeReset < 50){
+			for(int i = 0; i < Formats.GetCount(); i++){
+				if( Formats[i].GetEngineType() == RealMedia || Formats[i].GetEngineType() == QuickTime){
+					Formats[i].SetEngineType(DirectShow);
+				}
+			}
+			Formats.UpdateData(true);
+		}
 
 
 		SrcFilters = pApp->GetProfileInt(ResStr(IDS_R_INTERNAL_FILTERS), ResStr(IDS_RS_SRCFILTERS), ~0);//^SRC_MATROSKA^SRC_MP4^SRC_MPEG^SRC_OGG

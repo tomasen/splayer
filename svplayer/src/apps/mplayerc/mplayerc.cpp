@@ -1529,7 +1529,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		nSPCMaxRes = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPCMAXRES), 2);
 		nSubDelayInterval = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SUBDELAYINTERVAL), 500);
 		fSPCPow2Tex = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_POW2TEX), TRUE);
-		fEnableSubtitles = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_ENABLESUBTITLES), TRUE);
+		fEnableSubtitles = TRUE;//always enable subtitle!!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_ENABLESUBTITLES), TRUE);
 		fEnableSubtitles2 = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_ENABLESUBTITLES2), TRUE);
 		fEnableAudioSwitcher = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_ENABLEAUDIOSWITCHER), TRUE);
 		fAudioTimeShift = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_ENABLEAUDIOTIMESHIFT), 0);
@@ -1949,7 +1949,27 @@ void CMPlayerCApp::Settings::SetFav(favtype ft, CAtlList<CString>& sl, BOOL bRec
 		AfxGetApp()->WriteProfileString(root, s, sl.GetNext(pos));
 	}
 }
-
+void CMPlayerCApp::Settings::DelFavByFn(favtype ft, BOOL bRecent, CString szMatch){
+	CAtlList<CString> sl;
+	GetFav(ft, sl, bRecent);
+	if(bRecent){
+		POSITION pos = sl.GetHeadPosition();
+		while(pos){
+			if( sl.GetAt(pos).Find(szMatch) >= 0 ){
+				sl.RemoveAt(pos);
+				break;
+			}
+			sl.GetNext(pos);
+		}
+		if(sl.GetCount() > 10){
+			sl.RemoveHead();
+		}
+	}else{
+		//if(sl.Find(s)) return;
+	}
+	
+	SetFav(ft, sl , bRecent);
+}
 void CMPlayerCApp::Settings::AddFav(favtype ft, CString s, BOOL bRecent, CString szMatch)
 {
 	CAtlList<CString> sl;

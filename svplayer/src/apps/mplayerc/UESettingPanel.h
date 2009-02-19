@@ -22,6 +22,7 @@ class CUESettingPanel : public CDHtmlDialog
 	void ApplySubSetting();
 	void ApplyFileAsscSetting();
 	void ApplyHotkeySetting();
+	int m_sgs_chkremhistory;
 	int m_sgi_chkremwinpos;
 	int m_sgi_chkcdromenu;
 	int m_sgi_chkuseini;
@@ -55,8 +56,10 @@ class CUESettingPanel : public CDHtmlDialog
 
 	int m_sgi_normalize;
 	int m_sgi_downsample44k;
-
 	long m_sgi_channelsetting;
+
+	int m_sgi_autoupdate;
+
 
 	STSStyle m_stss;
 	STSStyle m_stss2;
@@ -66,6 +69,9 @@ private:
 public:
 	CUESettingPanel(IFilterGraph* pFG, CWnd* pParentWnd, UINT idPagein);   // standard constructor
 	virtual ~CUESettingPanel();
+	
+	HRESULT OnFileAss(IHTMLElement *pElement);
+	HRESULT OnHotKey(IHTMLElement *pElement);
 // Overrides
 	HRESULT OnButtonOK(IHTMLElement *pElement);
 	HRESULT OnButtonCancel(IHTMLElement *pElement);

@@ -4,7 +4,8 @@
 #include "stdafx.h"
 #include "mplayerc.h"
 #include "UESettingPanel.h"
-
+#include "PPageAccelTbl.h"
+#include "PPageFormats.h"
 
 // CUESettingPanel dialog
 
@@ -40,7 +41,8 @@ BEGIN_DHTML_EVENT_MAP(CUESettingPanel)
 	DHTML_EVENT_ONCLICK(_T("sub2c4"), OnColorSub)
 	DHTML_EVENT_ONCLICK(_T("subfont1"), OnFontSetting)
 	DHTML_EVENT_ONCLICK(_T("subfont2"), OnFontSetting)
-	
+	DHTML_EVENT_ONCLICK(_T("IDFileAss"), OnFileAss)
+	DHTML_EVENT_ONCLICK(_T("IDHotKey"), OnHotKey)
 END_DHTML_EVENT_MAP()
 
 
@@ -52,6 +54,8 @@ CUESettingPanel::~CUESettingPanel()
 void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 {
 	CDHtmlDialog::DoDataExchange(pDX);
+
+	DDX_DHtml_CheckBox(pDX, _T("chkremhistory") , m_sgs_chkremhistory);
 	DDX_DHtml_ElementInnerText(pDX, _T("initvarblock") , m_sgs_initblock);
 	DDX_DHtml_CheckBox(pDX, _T("chkremwinpos"), m_sgi_chkremwinpos);
 	DDX_DHtml_CheckBox(pDX, _T("chkcdromenu"), m_sgi_chkcdromenu);
@@ -87,6 +91,8 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_DHtml_CheckBox(pDX, _T("normalize"), m_sgi_normalize);
 	DDX_DHtml_CheckBox(pDX, _T("downsample44k"), m_sgi_downsample44k);
 	DDX_DHtml_SelectIndex( pDX, _T("channelsetting"), m_sgi_channelsetting);
+
+	DDX_DHtml_CheckBox(pDX, _T("chkautoupdate"), m_sgi_autoupdate );
 
 }
 HRESULT CUESettingPanel::OnColorSub(IHTMLElement *pElement){
@@ -164,6 +170,7 @@ BOOL CUESettingPanel::OnInitDialog()
 
  	AppSettings& s = AfxGetAppSettings();
 	//Genral Setting
+	m_sgs_chkremhistory = s.fKeepHistory;
 	m_sgi_chkexitfullscreen = s.fExitFullScreenAtTheEnd;
 	m_sgi_chkremwinpos = s.fRememberWindowPos || s.fRememberWindowSize;
 	m_sgi_chkcdromenu = s.fHideCDROMsSubMenu;
@@ -204,10 +211,9 @@ BOOL CUESettingPanel::OnInitDialog()
 	m_sgs_subhpos2.Format( _T("%d") , s.nHorPos2 );
 	m_sgs_subvpos2.Format( _T("%d") , s.nVerPos2 );
 	m_sgs_engsubradio2.Format(_T("%.3f"), s.subdefstyle2.engRatio);
+
+	m_sgi_autoupdate = (s.tLastCheckUpdater < 2000000000);//
 	UpdateData(FALSE);
-
-
-
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -266,6 +272,16 @@ void CUESettingPanel::ApplyAllSetting(){
 	//Genral Setting
 	if(m_sgi_chkuseini) ((CMPlayerCApp*)AfxGetApp())->StoreSettingsToIni();
 	else ((CMPlayerCApp*)AfxGetApp())->StoreSettingsToRegistry();
+
+	s.fKeepHistory = !!m_sgs_chkremhistory ;
+	if(!s.fKeepHistory){
+		for(int i = 0; i < s.MRU.GetSize(); i++) s.MRU.Remove(i);
+		for(int i = 0; i < s.MRUDub.GetSize(); i++) s.MRUDub.Remove(i);
+		for(int i = 0; i < s.MRUUrl.GetSize(); i++) s.MRUUrl.Remove(i);
+		s.MRU.WriteList();
+		s.MRUDub.WriteList();
+		s.MRUUrl.WriteList();
+	}
 
 	s.fExitFullScreenAtTheEnd = !!m_sgi_chkexitfullscreen ;
 	s.fRememberWindowPos = !!m_sgi_chkremwinpos;
@@ -344,6 +360,11 @@ void CUESettingPanel::ApplyAllSetting(){
 	s.nHorPos2 = _wtoi(m_sgs_subhpos2);
 	s.nVerPos2 = _wtoi(m_sgs_subvpos2);
 	
+	if(m_sgi_autoupdate){
+	 s.tLastCheckUpdater = time(NULL) - 100000;
+	}else{
+	 s.tLastCheckUpdater = 2000000000;
+	}
 	s.UpdateData(true);
 }
 
@@ -373,7 +394,21 @@ HRESULT CUESettingPanel::OnButtonApply(IHTMLElement* /*pElement*/)
 	this->ApplyAllSetting();
 	return S_OK;
 }
+HRESULT CUESettingPanel::OnHotKey(IHTMLElement *pElement){
+	CAutoPtr<CPPageAccelTbl> page(new CPPageAccelTbl());
+	CPropertySheet dlg(_T("快捷键设置..."), this);
+	dlg.AddPage(page);
+	dlg.DoModal() ;
 
+	return S_OK;
+}
+HRESULT CUESettingPanel::OnFileAss(IHTMLElement* /*pElement*/){
+	CAutoPtr<CPPageFormats> page(new CPPageFormats());
+	CPropertySheet dlg(_T("文件关联设置..."), this);
+	dlg.AddPage(page);
+	dlg.DoModal() ;
+	return S_OK;
+}
 HRESULT CUESettingPanel::OnButtonOK(IHTMLElement* /*pElement*/)
 {
 	this->ApplyAllSetting();

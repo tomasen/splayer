@@ -73,10 +73,15 @@ void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath, CStringArray* szSu
 	}
 
 		//load sub file to sublist
+		CString szSubFilePath;
 		for(int i = 0; i < svpNet.svpToolBox.szaSubTmpFileList.GetCount(); i++){
-			CString szSubFilePath = svpNet.svpToolBox.getSubFileByTempid(i, fnVideoFilePath);
-			szSubArray->Add(szSubFilePath);
-			SVP_LogMsg(CString(_T("Adding sub file ")) + szSubFilePath ); //TODO: if its vobsub, load perfered language
+			szSubFilePath = svpNet.svpToolBox.getSubFileByTempid(i, fnVideoFilePath);
+			if(szSubFilePath){
+				szSubArray->Add(szSubFilePath);
+				SVP_LogMsg(CString(_T("Adding sub file ")) + szSubFilePath ); //TODO: if its vobsub, load perfered language
+			}else{
+				SVP_LogMsg(_T("Fail to get sub file name"));
+			}
 		}
 	return;
 }

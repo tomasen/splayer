@@ -75,6 +75,8 @@
 				GenerateManifest="false"
 				IgnoreDefaultLibraryNames="MSVCRT"
 				DelayLoadDLLs="d3d9.dll;gdiplus.dll;psapi.dll"
+				GenerateMapFile="true"
+				MapFileName="$(TargetDir)$(TargetName).map"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
@@ -1606,11 +1608,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 	</Files>

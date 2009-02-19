@@ -505,6 +505,7 @@ public:
 
 		void GetFav(favtype ft, CAtlList<CString>& sl, BOOL bRecent = FALSE);
 		void SetFav(favtype ft, CAtlList<CString>& sl, BOOL bRecent = FALSE);
+		void DelFavByFn(favtype ft, BOOL bRecent, CString szMatch);
 		void AddFav(favtype ft, CString s, BOOL bRecent = FALSE, CString szMatch = _T(""));
 	} m_s;
 

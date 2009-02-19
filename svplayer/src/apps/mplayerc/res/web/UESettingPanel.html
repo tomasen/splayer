@@ -2,6 +2,10 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title></title>
 <style type="text/css">
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, code, form, fieldset, legend, input, button, textarea, p, blockquote, th, td {
+margin:0;
+padding:0;
+}
 input {	font: 12px 微软雅黑,宋体,Arial ; vertical-align:middle;}
 div{ font: 12px 微软雅黑,宋体,Arial ; }
 td { font: 12px 微软雅黑,宋体,Arial ; }
@@ -19,7 +23,7 @@ input.percent
 }
 body
 {
-	background-color:ThreeDFace;
+	background-color:#d6e7f7;
 	font-size: 12px;
 	font-family: 微软雅黑,宋体,Arial ;
 	margin: 0px 0px 0px 0px;
@@ -31,16 +35,19 @@ div.panelbutton
 	background-image: url(uesetbg.png);
 	text-align:center;
 	color: #000000;
-	height: 18px;
-	width: 100%;
+	width: 160px;
+	height:30px;
 	font: 12px 微软雅黑,宋体,Arial;
-	border: solid 1px #000000;
+	border: 0px;
 	margin: 1px;
 }
 a.panelbutton
 {
 	display:block;
-	width:100%;
+	width:160px;
+	height:28px;
+	font-size: 14px;
+	line-height:28px;
 	color: #000000;
 }
 a:hover{color: #000000; text-decoration :none;}
@@ -161,15 +168,17 @@ function myInit(){
 <body id="CUESettingPanel" onload="myInit();" >
 <table width="100%" style="height:100%;">
 <tr >
-<td width="30%"  valign="top" onmouseout="ueAPI.curblock='';">
+<td style="width:140px !important;" valign="top" onmouseout="ueAPI.curblock='';">
 <div class="panelbutton"><a onmouseover="ueAPI.setcurblock('generalseting');"  class="panelbutton"  href="#" onclick="ueAPI.realsetcurblock('generalseting');">播放习惯</a></div>
 <div class="panelbutton"><a onmouseover="ueAPI.setcurblock('videosetting');" href="#" onclick="ueAPI.realsetcurblock('videosetting');" class="panelbutton">视频设置</a></div>
 <div class="panelbutton"><a onmouseover="ueAPI.setcurblock('audiosetting');" href="#" onclick="ueAPI.realsetcurblock('audiosetting');" class="panelbutton">音频设置</a></div>
 <div class="panelbutton"><a onmouseover="ueAPI.setcurblock('subsetting');" href="#" onclick="ueAPI.realsetcurblock('subsetting');" class="panelbutton">字幕设置</a></div>
-<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('fileass');" href="#" onclick="ueAPI.realsetcurblock('fileass');" class="panelbutton">文件关联</a></div>
-<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('hotkeysetting');" href="#" onclick="ueAPI.realsetcurblock('hotkeysetting');" class="panelbutton">热键绑定</a></div>
-</td><td width="70%" valign="top" id="pannelset">
+<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('updatesetting');" href="#" onclick="ueAPI.realsetcurblock('updatesetting');" class="panelbutton">自动升级</a></div>
+<div class="panelbutton"><a  id="IDFileAss" href="#"  class="panelbutton">文件关联</a></div>
+<div class="panelbutton"><a id="IDHotKey" href="#"  class="panelbutton">热键绑定</a></div>
+</td><td  valign="top" align="left" id="pannelset">
 <div id="generalseting" class="hiddenarea">
+<input type="checkbox" id="chkremhistory" /><label for="chkremhistory">保存播放记录</label><br />
 <input type="checkbox" id="chkremwinpos" /><label for="chkremwinpos">记忆窗口位置和尺寸</label><br />
 <input type="checkbox" id="chkcdromenu" /><label for="chkcdromenu" title="在“文件”菜单下显示光盘驱动器列表菜单
 可能会影响菜单打开的速度">隐藏光盘驱动器菜单</label><br />
@@ -206,7 +215,7 @@ Normalization is often used when remastering audio tapes for CD production, in o
 可选择此选项">以44kHz输出</label>
 </div>
 <div id="subsetting" class="hiddenarea">
-<table width="100%"><tr><td width="50%"><fieldset><legend>第一字幕</legend>
+<table width="96%"><tr><td width="50%"><fieldset><legend>第一字幕</legend>
 字体： <input type="button" id="subfont1" value="黑体"/><br />
 颜色： 
 <input type="image" src="blank.gif" class="subcolor" id="sub1c1" alt="字幕颜色" />
@@ -241,6 +250,10 @@ Normalization is often used when remastering audio tapes for CD production, in o
 </div>
 <div id="fileass" class="hiddenarea"><input type="button" value="重建文件关联"/></div>
 <div id="hotkeysetting" class="hiddenarea">热键设置</div>
+<div id="updatesetting" class="hiddenarea">
+<input type="checkbox" id="chkautoupdate" /><label for="chkautoupdate">通过网络自动升级播放器和各项组件</label><br />
+
+</div>
 </td>
 </tr><tr height="8%">
 <td align="left"> &nbsp; <input type="button" style="width:100px;" id="ButtonAdvanceSetting" value="高级设置" />  </td>

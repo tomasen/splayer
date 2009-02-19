@@ -6373,6 +6373,16 @@ void CMainFrame::OnFavoritesAddReal( BOOL bRecent)
 {
 	AppSettings& s = AfxGetAppSettings();
 
+	REFERENCE_TIME rtCurPos; 
+	REFERENCE_TIME rtDurT; 
+	BOOL bDelFav = FALSE;
+	if(bRecent){
+		rtCurPos = GetPos();
+		rtDurT = GetDur();
+		if( rtCurPos > (rtDurT * 0.93) || rtCurPos < (rtDurT * 0.07)){
+			bDelFav = TRUE;
+		}
+	}
 	if(m_iPlaybackMode == PM_FILE)
 	{
 		CString fn = m_wndPlaylistBar.GetCur();//m_fnCurPlayingFile;// 
@@ -6413,7 +6423,10 @@ void CMainFrame::OnFavoritesAddReal( BOOL bRecent)
 			}
 		}
 
-		s.AddFav(FAV_FILE, str, bRecent,fn);
+		if(bDelFav)
+			s.DelFavByFn(FAV_FILE, bRecent,fn);
+		else
+			s.AddFav(FAV_FILE, str, bRecent,fn);
 	}
 	else if(m_iPlaybackMode == PM_DVD)
 	{
@@ -6466,7 +6479,10 @@ void CMainFrame::OnFavoritesAddReal( BOOL bRecent)
 			str += fn;
 		}
 
-		s.AddFav(FAV_DVD, str,bRecent,fn);
+		if(bDelFav)
+			s.DelFavByFn(FAV_DVD, bRecent,fn);
+		else
+			s.AddFav(FAV_DVD, str,bRecent,fn);
 	}
 	else if(m_iPlaybackMode == PM_CAPTURE)
 	{
@@ -7543,6 +7559,7 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 				pData->pFrame = (CMainFrame*)this;
 				pData->szVidPath = fn;
 				AfxBeginThread(SVPThreadLoadThread, pData); 
+				//SVPThreadLoadThread(pData);
 			}
 
 		}
@@ -10765,10 +10782,8 @@ void CMainFrame::CloseMedia()
 		return;
 	}
 	if( m_iMediaLoadState == MLS_LOADED){
-		if(GetPos() < (GetDur() * 0.9) ){
 			//save time for next play
 			OnFavoritesAddReal(TRUE);
-		}
 	}
 
 	int nTimeWaited = 0;

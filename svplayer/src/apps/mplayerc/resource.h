@@ -25,17 +25,17 @@
 #define IDI_DVD                         302
 #define IDI_AUDIOCD                     303
 #define IDI_UNKNOWN                     304
-#define IDI_AUDIO_FILE					305
-#define IDI_DV_VIDEO      				306
-#define IDI_FLASH         				307
-#define IDI_MIDI_FILE     				308
-#define IDI_MOBILE_VIDEO  				309
-#define IDI_MP3_FILE      				310
-#define IDI_NORMAL_CD     				311
-#define IDI_QUICKTIME_FILE				312
-#define IDI_REAL_FILE    				313 
-#define IDI_SUBTITLE_FILE 				314
-#define IDI_VIDEO_CD      				315
+#define IDI_AUDIO_FILE                  305
+#define IDI_DV_VIDEO                    306
+#define IDI_FLASH                       307
+#define IDI_MIDI_FILE                   308
+#define IDI_MOBILE_VIDEO                309
+#define IDI_MP3_FILE                    310
+#define IDI_NORMAL_CD                   311
+#define IDI_QUICKTIME_FILE              312
+#define IDI_REAL_FILE                   313
+#define IDI_SUBTITLE_FILE               314
+#define IDI_VIDEO_CD                    315
 #define IDR_AVI_FILECOPY                400
 #define IDR_HTML_INDEX                  500
 #define IDR_HTML_404                    501
@@ -253,27 +253,26 @@
 #define ID_VOLUME_BOOST_DEC             970
 #define ID_VOLUME_BOOST_MIN             971
 #define ID_VOLUME_BOOST_MAX             972
-#define ID_SUBDELAYDEC					980
-#define ID_SUBLANGSWITCH				981
-#define ID_SUBDELAYINC					982
-#define ID_SUB2DELAYDEC					990
-#define ID_SUB2LANGSWITCH				991
-#define ID_SUB2DELAYINC					992
-#define ID_SUBMOVEUP					993
-#define ID_SUBMOVEDOWN					994
-#define ID_SUBMOVELEFT					995
-#define ID_SUBMOVERIGHT					996
-#define ID_SUB2MOVEUP					997
-#define ID_SUB2MOVEDOWN					998
-#define ID_SUB2MOVELEFT					999
-#define ID_SUB2MOVERIGHT				1000
-#define ID_SUBFONTUPBOTH				1001
-#define ID_SUBFONTDOWNBOTH				1002
-#define ID_SUB1FONTUP					1003
-#define ID_SUB1FONTDOWN					1004
-#define ID_SUB2FONTUP					1005
-#define ID_SUB2FONTDOWN					1006
-
+#define ID_SUBDELAYDEC                  980
+#define ID_SUBLANGSWITCH                981
+#define ID_SUBDELAYINC                  982
+#define ID_SUB2DELAYDEC                 990
+#define ID_SUB2LANGSWITCH               991
+#define ID_SUB2DELAYINC                 992
+#define ID_SUBMOVEUP                    993
+#define ID_SUBMOVEDOWN                  994
+#define ID_SUBMOVELEFT                  995
+#define ID_SUBMOVERIGHT                 996
+#define ID_SUB2MOVEUP                   997
+#define ID_SUB2MOVEDOWN                 998
+#define ID_SUB2MOVELEFT                 999
+#define ID_SUB2MOVERIGHT                1000
+#define ID_SUBFONTUPBOTH                1001
+#define ID_SUBFONTDOWNBOTH              1002
+#define ID_SUB1FONTUP                   1003
+#define ID_SUB1FONTDOWN                 1004
+#define ID_SUB2FONTUP                   1005
+#define ID_SUB2FONTDOWN                 1006
 #define ID_FILTERS_SUBITEM_START        2000
 #define ID_FILTERS_SUBITEM_END          2099
 #define ID_FILTERSTREAMS_SUBITEM_START  2100
@@ -779,6 +778,7 @@
 #define IDS_RS_CHECKUPDATERINTERLEAVE   14207
 #define IDS_RS_LASTCHECKUPDATER         14208
 #define IDS_RS_USEGPUACEL               14209
+#define IDS_RS_AUTODOWNLAODSVPSUB       14210
 #define IDD_DHTML_SETTING               20000
 #define IDR_DEFAULT1                    20006
 #define IDD_DEFAULT_PLAYER              20007
@@ -822,13 +822,15 @@
 #define ID_32798                        32798
 #define ID_MUNECHECKUPDATE              32799
 #define ID_MANUALCHECKUPDATE            32800
+#define ID_32801                        32801
+#define ID_SVPSUB_MENUENABLE            32802
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        20009
-#define _APS_NEXT_COMMAND_VALUE         32801
+#define _APS_NEXT_COMMAND_VALUE         32803
 #define _APS_NEXT_CONTROL_VALUE         22002
 #define _APS_NEXT_SYMED_VALUE           24001
 #endif

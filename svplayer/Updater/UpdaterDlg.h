@@ -43,5 +43,9 @@ public:
 	CStatic csTotalProgress;
 	CProgressCtrl prg_curfile;
 	CProgressCtrl prg_total;
-	CStatic cs_stat;
+	CEdit cs_stat;
+	CLinkCtrl cslink;
+	afx_msg void OnNMClickSyslink1(NMHDR *pNMHDR, LRESULT *pResult);
+	CButton cb_stop;
+	CButton cb_backgd;
 };

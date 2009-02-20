@@ -374,6 +374,7 @@ public:
 		int iAPSurfaceUsage;
 		bool fVMRSyncFix;
 		int useGPUAcel;
+		int autoDownloadSVPSub;
 		int iDX9Resizer;
 		bool fVMR9MixerMode;
 		bool fVMR9MixerYUV;

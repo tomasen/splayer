@@ -38,6 +38,9 @@ void CUpdaterDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_PROGRESS2, prg_curfile);
 	DDX_Control(pDX, IDC_PROGRESS1, prg_total);
 	DDX_Control(pDX, IDC_STATIC_DONE, cs_stat);
+	DDX_Control(pDX, IDC_SYSLINK1, cslink);
+	DDX_Control(pDX, IDC_BUTTON1, cb_stop);
+	DDX_Control(pDX, IDOK, cb_backgd);
 }
 
 BEGIN_MESSAGE_MAP(CUpdaterDlg, CDialog)
@@ -50,6 +53,7 @@ BEGIN_MESSAGE_MAP(CUpdaterDlg, CDialog)
 	ON_BN_CLICKED(IDOK, &CUpdaterDlg::OnBnClickedOk)
 	ON_WM_CLOSE()
 	ON_BN_CLICKED(IDC_BUTTON1, &CUpdaterDlg::OnBnClickedButton1)
+	ON_NOTIFY(NM_CLICK, IDC_SYSLINK1, &CUpdaterDlg::OnNMClickSyslink1)
 END_MESSAGE_MAP()
 
 
@@ -168,7 +172,10 @@ void CUpdaterDlg::OnTimer(UINT_PTR nIDEvent)
 				if (cup.iSVPCU_TOTAL_FILEBYTE  <= 0){
 					cup.iSVPCU_TOTAL_FILEBYTE = 1;
 				}
-				double progress = (double)( cup.iSVPCU_TOTAL_FILEBYTE_DONE + cup.iSVPCU_CURRENT_FILEBYTE_DONE ) * 100/ (cup.iSVPCU_TOTAL_FILEBYTE);
+				double progress = 0;
+				if(cup.iSVPCU_TOTAL_FILEBYTE){
+					progress = (double)( cup.iSVPCU_TOTAL_FILEBYTE_DONE + cup.iSVPCU_CURRENT_FILEBYTE_DONE ) * 100/ (cup.iSVPCU_TOTAL_FILEBYTE);
+				}
 				szTmp.Format( _T("射手影音自动更新程序\n文件：%d/%d 下载：%0.2f%%") , cup.iSVPCU_CURRETN_FILE , cup.iSVPCU_TOTAL_FILE ,progress );
 				//SVP_LogMsg(szTmp);
 
@@ -185,7 +192,9 @@ void CUpdaterDlg::OnTimer(UINT_PTR nIDEvent)
 				if(!cup.bWaiting){
 					szTmp.Format( _T("正在下载文件： %s （%d / %d）") , cup.szCurFilePath , cup.iSVPCU_CURRETN_FILE , cup.iSVPCU_TOTAL_FILE);
 					csCurFile.SetWindowText(szTmp);
-					prg_curfile.SetPos(cup.iSVPCU_CURRENT_FILEBYTE_DONE * 1000/ cup.iSVPCU_CURRENT_FILEBYTE  )	;
+					if( cup.iSVPCU_CURRENT_FILEBYTE ){
+						prg_curfile.SetPos(cup.iSVPCU_CURRENT_FILEBYTE_DONE * 1000/ cup.iSVPCU_CURRENT_FILEBYTE  )	;
+					}
 				}
 				//SetWindowText(szTmp);
 
@@ -199,7 +208,17 @@ void CUpdaterDlg::OnTimer(UINT_PTR nIDEvent)
 
 				if(cup.bSVPCU_DONE){
 					KillTimer(IDT_REFRESH_STAT);
-					SetTimer(IDT_CLOSE_DLG, 5000, NULL);
+					szTmp = _T("射手影音播放器已经更新到最新版本！\r\n关闭播放器或重新启动后将自动完成更新");
+					csCurFile.ShowWindow(SW_HIDE);
+					prg_curfile.ShowWindow(SW_HIDE);
+					csTotalProgress.ShowWindow(SW_HIDE);
+					prg_total.ShowWindow(SW_HIDE);
+					cs_stat.ShowWindow(SW_SHOW);
+					cslink.ShowWindow(SW_SHOW);
+					cb_stop.SetWindowText(_T("关闭"));
+					cs_stat.SetWindowText(szTmp);
+					cb_backgd.SetWindowText(_T("隐藏"));
+					SetTimer(IDT_CLOSE_DLG, 300000, NULL);
 				}
 			}
 			break;
@@ -229,4 +248,13 @@ void CUpdaterDlg::OnBnClickedButton1()
 {
 	Shell_NotifyIcon(NIM_DELETE, &tnid); 
 	OnOK();
+}
+
+void CUpdaterDlg::OnNMClickSyslink1(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	// TODO: Add your control notification handler code here
+
+	ShellExecute( NULL, _T("open"), _T("http://blog.svplayer.cn"), _T("") , NULL , SW_SHOW);
+
+	*pResult = 0;
 }

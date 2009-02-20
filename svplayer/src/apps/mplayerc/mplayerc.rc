@@ -1354,19 +1354,18 @@ IDI_SINGLE              ICON                    "res\\single.ico"
 IDI_MULTI               ICON                    "res\\multi.ico"
 IDI_AUDIOCD             ICON                    "res\\Icon_41.ico"
 IDI_UNKNOWN             ICON                    "res\\Icon_116.ico"
-IDI_AUDIO_FILE			ICON					"res\\Icon\\Audio_File.ico"
-IDI_DVD 				ICON					"res\\Icon\\DVD.ico"           
-IDI_DV_VIDEO       			ICON					"res\\Icon\\DV_Video.ico"      
-IDI_FLASH          			ICON					"res\\Icon\\Flash.ico"         
-IDI_MIDI_FILE      			ICON					"res\\Icon\\Midi_File.ico"     
-IDI_MOBILE_VIDEO   			ICON					"res\\Icon\\Mobile_Video.ico"
-IDI_MP3_FILE       			ICON					"res\\Icon\\MP3_File.ico"
-IDI_NORMAL_CD      			ICON					"res\\Icon\\Normal_CD.ico"
-IDI_QUICKTIME_FILE 			ICON					"res\\Icon\\Quicktime_File.ico"
-IDI_REAL_FILE      			ICON					"res\\Icon\\Real_File.ico"
-IDI_SUBTITLE_FILE  			ICON					"res\\Icon\\Subtitle_File.ico"
-IDI_VIDEO_CD       			ICON					"res\\Icon\\Video_CD.ico"
-    
+IDI_AUDIO_FILE          ICON                    "res\\Icon\\Audio_File.ico"
+IDI_DVD                 ICON                    "res\\Icon\\DVD.ico"
+IDI_DV_VIDEO            ICON                    "res\\Icon\\DV_Video.ico"
+IDI_FLASH               ICON                    "res\\Icon\\Flash.ico"
+IDI_MIDI_FILE           ICON                    "res\\Icon\\Midi_File.ico"
+IDI_MOBILE_VIDEO        ICON                    "res\\Icon\\Mobile_Video.ico"
+IDI_MP3_FILE            ICON                    "res\\Icon\\MP3_File.ico"
+IDI_NORMAL_CD           ICON                    "res\\Icon\\Normal_CD.ico"
+IDI_QUICKTIME_FILE      ICON                    "res\\Icon\\Quicktime_File.ico"
+IDI_REAL_FILE           ICON                    "res\\Icon\\Real_File.ico"
+IDI_SUBTITLE_FILE       ICON                    "res\\Icon\\Subtitle_File.ico"
+IDI_VIDEO_CD            ICON                    "res\\Icon\\Video_CD.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1619,6 +1618,8 @@ BEGIN
         MENUITEM "ÊÕ²Ø¼Ð(&a)",                     ID__FAVORITES32779
         POPUP "ÍøÂç×ÖÄ»(&S)"
         BEGIN
+            MENUITEM "ÆôÓÃÖÇÄÜÍøÂç×ÖÄ»Æ¥Åä",                  ID_SVPSUB_MENUENABLE
+            MENUITEM SEPARATOR
             MENUITEM "ËÑË÷×ÖÄ»...",                     ID_FILE_ISDB_SEARCH
             MENUITEM "ÉÏ´«×ÖÄ»...",                     ID_FILE_ISDB_UPLOAD
             MENUITEM "ÏÂÔØ×ÖÄ»...",                     ID_FILE_ISDB_DOWNLOAD
@@ -1959,6 +1960,8 @@ BEGIN
     END
     POPUP "ÍøÂç×ÖÄ»(&S)"
     BEGIN
+        MENUITEM "ÆôÓÃÖÇÄÜÍøÂç×ÖÄ»Æ¥Åä",                  ID_SVPSUB_MENUENABLE
+        MENUITEM SEPARATOR
         MENUITEM "ËÑË÷×ÖÄ»...",                     ID_FILE_ISDB_SEARCH
         MENUITEM "ÉÏ´«×ÖÄ»...",                     ID_FILE_ISDB_UPLOAD
         MENUITEM "ÏÂÔØ×ÖÄ»...",                     ID_FILE_ISDB_DOWNLOAD
@@ -2232,6 +2235,13 @@ END
 
 STRINGTABLE 
 BEGIN
+    IDS_RS_LASTCHECKUPDATER "LastCheckUpdater"
+    IDS_RS_USEGPUACEL       "USEGPUAcel"
+    IDS_RS_AUTODOWNLAODSVPSUB "AutoDownloadSVPSub"
+END
+
+STRINGTABLE 
+BEGIN
     IDS_RS_TRAYICON         "TrayIcon"
     IDS_RS_KEEPASPECTRATIO  "KeepAspectRatio"
     IDS_RS_UICEADDR         "UICEAddr"
@@ -2489,12 +2499,6 @@ BEGIN
     IDS_INFOBAR_RATING      "ÆÀ·Ö"
     IDS_INFOBAR_DESCRIPTION "ÃèÊö"
     IDS_INFOBAR_DOMAIN      "ÓòÃû"
-END
-
-STRINGTABLE 
-BEGIN
-    IDS_RS_LASTCHECKUPDATER "LastCheckUpdater"
-    IDS_RS_USEGPUACEL       "USEGPUAcel"
 END
 
 #endif    // Chinese (P.R.C.) resources

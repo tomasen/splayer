@@ -382,6 +382,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 
 	ON_COMMAND(ID_ADV_OPTIONS, &CMainFrame::OnAdvOptions)
 	ON_COMMAND(ID_MANUALCHECKUPDATE, &CMainFrame::OnManualcheckupdate)
+	ON_COMMAND(ID_SVPSUB_MENUENABLE, &CMainFrame::OnSvpsubMenuenable)
+	ON_UPDATE_COMMAND_UI(ID_SVPSUB_MENUENABLE, &CMainFrame::OnUpdateSvpsubMenuenable)
 	END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -7555,11 +7557,13 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 			m_fnCurPlayingFile = fn;
 			//是否有字幕？ 沒有则下载字幕
 			if ( pOFD->subs.GetCount() <= 0){
-				CSVPThreadLoadThreadData* pData = new CSVPThreadLoadThreadData();
-				pData->pFrame = (CMainFrame*)this;
-				pData->szVidPath = fn;
-				AfxBeginThread(SVPThreadLoadThread, pData); 
-				//SVPThreadLoadThread(pData);
+				if(AfxGetAppSettings().autoDownloadSVPSub){
+					CSVPThreadLoadThreadData* pData = new CSVPThreadLoadThreadData();
+					pData->pFrame = (CMainFrame*)this;
+					pData->szVidPath = fn;
+					AfxBeginThread(SVPThreadLoadThread, pData); 
+					//SVPThreadLoadThread(pData);
+				}
 			}
 
 		}
@@ -11026,4 +11030,14 @@ afx_msg void CMainFrame::OnSubtitleFontChange(UINT nID)
 		// 		if(bSubChg1 || bSubChg2)
 		// 			m_pCAP->Invalidate();
 	}
+}
+void CMainFrame::OnSvpsubMenuenable()
+{
+	AppSettings& s = AfxGetAppSettings();
+	s.autoDownloadSVPSub = !s.autoDownloadSVPSub;
+}
+
+void CMainFrame::OnUpdateSvpsubMenuenable(CCmdUI *pCmdUI)
+{
+	pCmdUI->SetCheck(!!(AfxGetAppSettings().autoDownloadSVPSub ));
 }

@@ -23,6 +23,7 @@
 //
 
 #include "stdafx.h"
+#include <imagehlp.h>
 #include "mplayerc.h"
 #include <atlsync.h>
 #include <Tlhelp32.h>
@@ -33,6 +34,108 @@
 #include <locale.h> 
 
 /////////
+typedef BOOL (WINAPI* MINIDUMPWRITEDUMP)(HANDLE hProcess, DWORD dwPid, HANDLE hFile, MINIDUMP_TYPE DumpType,
+										 CONST PMINIDUMP_EXCEPTION_INFORMATION ExceptionParam,
+										 CONST PMINIDUMP_USER_STREAM_INFORMATION UserStreamParam,
+										 CONST PMINIDUMP_CALLBACK_INFORMATION CallbackParam);
+static LONG WINAPI  DebugMiniDumpFilter( struct _EXCEPTION_POINTERS *pExceptionInfo )
+{
+	LONG retval = EXCEPTION_CONTINUE_SEARCH;
+	HWND hParent = NULL;                        // find a better value for your app
+
+	// firstly see if dbghelp.dll is around and has the function we need
+	// look next to the EXE first, as the one in System32 might be old
+	// (e.g. Windows 2000)
+	HMODULE hDll = NULL;
+	TCHAR szDbgHelpPath[_MAX_PATH];
+
+	if (GetModuleFileName( NULL, szDbgHelpPath, _MAX_PATH ))
+	{
+		TCHAR *pSlash = _tcsrchr( szDbgHelpPath, _T('\\') );
+		if (pSlash)
+		{
+			_tcscpy(pSlash+1, _T("DBGHELP.DLL"));
+			hDll = ::LoadLibrary( szDbgHelpPath );
+		}
+	}
+
+	if (hDll==NULL)
+	{
+		// load any version we can
+		hDll = ::LoadLibrary(_T("DBGHELP.DLL"));
+	}
+
+	LPCTSTR szResult = NULL;
+
+	if (hDll)
+	{
+		MINIDUMPWRITEDUMP pDump = (MINIDUMPWRITEDUMP)::GetProcAddress(hDll,"MiniDumpWriteDump");
+		if (pDump)
+		{
+			TCHAR szDumpPath[_MAX_PATH];
+			TCHAR szScratch [_MAX_PATH];
+
+			// work out a good place for the dump file
+			_tgetcwd(szDumpPath,_MAX_PATH);
+			_tcscat( szDumpPath, _T("\\"));
+
+			_tcscat( szDumpPath, ResStr(IDR_MAINFRAME) );
+			_tcscat( szDumpPath, _T(".dmp"));
+
+			// ask the user if they want to save a dump file
+			if (::MessageBox(NULL,_T("程序发生意外,是否保存一个文件用于诊断?"), ResStr(IDR_MAINFRAME) ,MB_YESNO)==IDYES)
+			{
+				// create the file
+				HANDLE hFile = ::CreateFile( szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS,
+					FILE_ATTRIBUTE_NORMAL, NULL );
+
+				if (hFile!=INVALID_HANDLE_VALUE)
+				{
+					_MINIDUMP_EXCEPTION_INFORMATION ExInfo;
+					ExInfo.ThreadId = ::GetCurrentThreadId();
+					ExInfo.ExceptionPointers = pExceptionInfo;
+					ExInfo.ClientPointers = NULL;
+
+					// write the dump
+					BOOL bOK = pDump( GetCurrentProcess(),GetCurrentProcessId(),hFile,MiniDumpNormal,&ExInfo,NULL,NULL);
+					if (bOK)
+					{
+						_stprintf( szScratch, _T("保存文件到:'%s'\n请将该文件发送至tomasen@gmail.com或https://bbs.shooter.cn\n以便我们不断完善"), szDumpPath );
+						szResult = szScratch;
+						retval = EXCEPTION_EXECUTE_HANDLER;
+					}
+					else
+					{
+						_stprintf( szScratch, _T("保存文件到 '%s'失败,(错误号: %d)"), szDumpPath, GetLastError() );
+						szResult = szScratch;
+					}
+					::CloseHandle(hFile);
+				}
+				else
+				{
+					_stprintf( szScratch, _T("在'%s'创建 dump 文件失败,(错误号 %d)"), szDumpPath, GetLastError() );
+					szResult = szScratch;
+				}
+			}
+		}
+		else
+		{
+			szResult = _T("dbghelp.dll 文件太旧,不能支持MiniDumpWriteDump函数");
+		}
+	}
+	else
+	{
+		szResult = _T("dbghelp.dll 文件不存在");
+	}
+
+	if (szResult)
+	{
+		::MessageBox( NULL, szResult, ResStr(IDR_MAINFRAME), MB_OK );
+	}
+
+	return retval;
+}
+
 
 void CorrectComboListWidth(CComboBox& box, CFont* pWndFont)
 {
@@ -257,6 +360,7 @@ END_MESSAGE_MAP()
 CMPlayerCApp::CMPlayerCApp()
 //	: m_hMutexOneInstance(NULL)
 {
+	::SetUnhandledExceptionFilter(DebugMiniDumpFilter);
 }
 
 void CMPlayerCApp::ShowCmdlnSwitches()
@@ -1172,6 +1276,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_ASPECTRATIO_Y), AspectRatio.cy);
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_KEEPHISTORY), fKeepHistory);
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEGPUACEL), useGPUAcel);
+		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUTODOWNLAODSVPSUB), autoDownloadSVPSub);
 		if (useGPUAcel){
 
 		}else{
@@ -1441,6 +1546,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		iQTVideoRendererType = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_QTVIDEORENDERERTYPE),  ((iDXVer >= 9) ? VIDRNDT_QT_DX9 : VIDRNDT_QT_DX7 ) );
 		iAPSurfaceUsage = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_APSURACEFUSAGE), VIDRNDT_AP_TEXTURE2D);
 		useGPUAcel = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEGPUACEL), 0);
+		autoDownloadSVPSub = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUTODOWNLAODSVPSUB), 1);
 		fVMRSyncFix = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VMRSYNCFIX), TRUE);
 		iDX9Resizer = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DX9_RESIZER), 1);
 		fVMR9MixerMode = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VMR9MIXERMODE), FALSE);
@@ -1529,7 +1635,10 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		nSPCMaxRes = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPCMAXRES), 2);
 		nSubDelayInterval = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SUBDELAYINTERVAL), 500);
 		fSPCPow2Tex = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_POW2TEX), TRUE);
-		fEnableSubtitles = TRUE;//always enable subtitle!!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_ENABLESUBTITLES), TRUE);
+		fEnableSubtitles = TRUE;
+		if(!autoDownloadSVPSub){
+		  fEnableSubtitles = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_ENABLESUBTITLES), TRUE);
+		}
 		fEnableSubtitles2 = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_ENABLESUBTITLES2), TRUE);
 		fEnableAudioSwitcher = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_ENABLEAUDIOSWITCHER), TRUE);
 		fAudioTimeShift = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_ENABLEAUDIOTIMESHIFT), 0);
@@ -1705,7 +1814,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 
 		Formats.UpdateData(false);
 		if(iUpgradeReset < 50){
-			for(int i = 0; i < Formats.GetCount(); i++){
+			for(size_t i = 0; i < Formats.GetCount(); i++){
 				if( Formats[i].GetEngineType() == RealMedia || Formats[i].GetEngineType() == QuickTime){
 					Formats[i].SetEngineType(DirectShow);
 				}

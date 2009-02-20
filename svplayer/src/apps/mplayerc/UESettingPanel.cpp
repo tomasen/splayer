@@ -65,7 +65,8 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_DHtml_CheckBox(pDX, _T("chkexitfullscreen"), m_sgi_chkexitfullscreen);
 	DDX_DHtml_CheckBox(pDX, _T("chkabnormal"), m_sgi_chkabnormal);
 	DDX_DHtml_CheckBox(pDX, _T("chkautozoom"), m_sgi_chkautozoom);
-	
+	DDX_DHtml_CheckBox(pDX, _T("chkautodownloadsvpsub"), m_sgi_chkautodownloadsvpsub);
+
 	DDX_DHtml_ElementInnerHtml (pDX, _T("startupcheckexts"), m_sgi_startupcheckexts);
 	
 	DDX_DHtml_ElementValue (pDX, _T("subfont1"), m_sgs_subfont1);
@@ -155,7 +156,6 @@ HRESULT CUESettingPanel::OnFontSetting(IHTMLElement *pElement){
 BOOL CUESettingPanel::OnInitDialog()
 {
 	CDHtmlDialog::OnInitDialog();
-	
 	switch(this->idPage){
 		case IDD_PPAGEAUDIOSWITCHER:
 			m_sgs_initblock = _T("audiosetting");
@@ -197,7 +197,9 @@ BOOL CUESettingPanel::OnInitDialog()
 	if (s.fCustomChannelMapping == FALSE){
 		m_sgi_channelsetting = 0;
 	}
+
 	 //Sub Setting
+	m_sgi_chkautodownloadsvpsub = s.autoDownloadSVPSub;
 	m_sgs_subfont1.Format( _T("%s(%d)"), s.subdefstyle.fontName , (INT)s.subdefstyle.fontSize);
 	m_sgs_subalign1.Format( _T("%d") , s.subdefstyle.scrAlignment ); 
 	m_sgi_suboveride1 = s.fOverridePlacement;
@@ -343,6 +345,7 @@ void CUESettingPanel::ApplyAllSetting(){
 	}
 
 	//Sub Setting
+	s.autoDownloadSVPSub = m_sgi_chkautodownloadsvpsub ;
 	s.fOverridePlacement = !!m_sgi_suboveride1  ;
 	s.fOverridePlacement2 = !!m_sgi_suboveride2  ;
 	
@@ -361,7 +364,7 @@ void CUESettingPanel::ApplyAllSetting(){
 	s.nVerPos2 = _wtoi(m_sgs_subvpos2);
 	
 	if(m_sgi_autoupdate){
-	 s.tLastCheckUpdater = time(NULL) - 100000;
+	 s.tLastCheckUpdater = (UINT)time(NULL) - 100000;
 	}else{
 	 s.tLastCheckUpdater = 2000000000;
 	}

@@ -699,4 +699,6 @@ public:
 	void		SetSubtitleDelay2(int delay_ms);
 	afx_msg void OnAdvOptions();
 	afx_msg void OnManualcheckupdate();
+	afx_msg void OnSvpsubMenuenable();
+	afx_msg void OnUpdateSvpsubMenuenable(CCmdUI *pCmdUI);
 };

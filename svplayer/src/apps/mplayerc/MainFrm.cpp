@@ -10673,7 +10673,7 @@ void CMainFrame::OpenCurPlaylistItem(REFERENCE_TIME rtStart)
 		fn = pli.m_fns.GetHead();
 		favtype ft ;
 		ft = FAV_FILE;
-		if (!fn.IsEmpty()){
+		if (!fn.IsEmpty() && s.autoResumePlay){
 			CAtlList<CString> sl;
 			s.GetFav(ft, sl, TRUE);
 			CString PosStr ;

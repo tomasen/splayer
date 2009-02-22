@@ -7,6 +7,8 @@
 #include "PPageAccelTbl.h"
 #include "PPageFormats.h"
 
+#include "..\..\svplib\svplib.h"
+
 // CUESettingPanel dialog
 
 IMPLEMENT_DYNAMIC(CUESettingPanel, CDHtmlDialog)
@@ -66,6 +68,7 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_DHtml_CheckBox(pDX, _T("chkabnormal"), m_sgi_chkabnormal);
 	DDX_DHtml_CheckBox(pDX, _T("chkautozoom"), m_sgi_chkautozoom);
 	DDX_DHtml_CheckBox(pDX, _T("chkautodownloadsvpsub"), m_sgi_chkautodownloadsvpsub);
+	DDX_DHtml_CheckBox(pDX, _T("chkautoresumeplay"), m_sgi_chkautoresumeplay);
 
 	DDX_DHtml_ElementInnerHtml (pDX, _T("startupcheckexts"), m_sgi_startupcheckexts);
 	
@@ -87,6 +90,7 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_DHtml_SelectIndex( pDX, _T("videorender"), m_sgi_videorender);
 	DDX_DHtml_CheckBox(pDX, _T("lockbackbuff"), m_sgi_lockbackbuff);
 	DDX_DHtml_CheckBox(pDX, _T("gpuacel"), m_sgi_gpuacel);
+	DDX_DHtml_CheckBox(pDX, _T("gpuacelcuda"), m_sgi_gpuacelcuda);
 
 
 	DDX_DHtml_CheckBox(pDX, _T("normalize"), m_sgi_normalize);
@@ -94,6 +98,7 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_DHtml_SelectIndex( pDX, _T("channelsetting"), m_sgi_channelsetting);
 
 	DDX_DHtml_CheckBox(pDX, _T("chkautoupdate"), m_sgi_autoupdate );
+	DDX_DHtml_SelectValue(pDX, _T("updateversion"), m_sgs_updateversion);
 
 }
 HRESULT CUESettingPanel::OnColorSub(IHTMLElement *pElement){
@@ -179,6 +184,7 @@ BOOL CUESettingPanel::OnInitDialog()
 	m_sgi_chkabnormal = s.priority != NORMAL_PRIORITY_CLASS;
  	m_sgi_chkuseini = ((CMPlayerCApp*)AfxGetApp())->IsIniValid();
 	m_sgi_startupcheckexts = s.szStartUPCheckExts;
+	m_sgi_chkautoresumeplay = s.autoResumePlay;
 	//Video Setting
 	if(s.iDSVideoRendererType == 6 && s.iRMVideoRendererType == 2 && s.iQTVideoRendererType == 2){
 		m_sgi_videorender = 0; //DX9
@@ -189,6 +195,7 @@ BOOL CUESettingPanel::OnInitDialog()
 	}
 	m_sgi_lockbackbuff = s.fVMRSyncFix;
 	m_sgi_gpuacel = s.useGPUAcel;
+	m_sgi_gpuacelcuda = s.useGPUCUDA;
 	//Audio Setting
 	m_sgi_normalize = s.fAudioNormalize;
 	m_sgi_downsample44k = s.fDownSampleTo441;
@@ -285,6 +292,12 @@ void CUESettingPanel::ApplyAllSetting(){
 		s.MRUUrl.WriteList();
 	}
 
+	s.autoResumePlay = !!m_sgi_chkautoresumeplay;
+	if(!s.autoResumePlay ){
+		CAtlList<CString> sl;
+		s.SetFav(FAV_FILE, sl, 1);
+		s.SetFav(FAV_DVD, sl, 1);
+	}
 	s.fExitFullScreenAtTheEnd = !!m_sgi_chkexitfullscreen ;
 	s.fRememberWindowPos = !!m_sgi_chkremwinpos;
 	s.fRememberWindowSize = !!m_sgi_chkremwinpos;
@@ -309,7 +322,8 @@ void CUESettingPanel::ApplyAllSetting(){
 
 	}
 	s.fVMRSyncFix = !!m_sgi_lockbackbuff;
-	 s.useGPUAcel = !!m_sgi_gpuacel;
+	s.useGPUAcel = !!m_sgi_gpuacel;
+	s.useGPUCUDA = !!m_sgi_gpuacelcuda;
 	//Audio Setting
 	s.fAudioNormalize = !!m_sgi_normalize  ;
 	s.fDownSampleTo441 = !!m_sgi_downsample44k ;
@@ -368,6 +382,7 @@ void CUESettingPanel::ApplyAllSetting(){
 	}else{
 	 s.tLastCheckUpdater = 2000000000;
 	}
+	SVP_SetCoreAvcCUDA(s.useGPUCUDA);
 	s.UpdateData(true);
 }
 

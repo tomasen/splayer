@@ -6,9 +6,9 @@ body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, code, form, fiel
 margin:0;
 padding:0;
 }
-input {	font: 12px 微软雅黑,宋体,Arial ; vertical-align:middle;}
-div{ font: 12px 微软雅黑,宋体,Arial ; }
-td { font: 12px 微软雅黑,宋体,Arial ; }
+input {	font: 13px 微软雅黑,宋体,Arial ; vertical-align:middle;}
+div{ font: 13px 微软雅黑,宋体,Arial ; }
+td { font: 13px 微软雅黑,宋体,Arial ; }
 input.percent
 {
 	text-align:right;
@@ -24,12 +24,12 @@ input.percent
 body
 {
 	background-color:#d6e7f7;
-	font-size: 12px;
+	font-size: 13px;
 	font-family: 微软雅黑,宋体,Arial ;
 	margin: 0px 0px 0px 0px;
 	padding: 0px 0px 0px 0px;
 }
-label{font: 12px 微软雅黑,宋体,Arial;}
+label{font: 13px 微软雅黑,宋体,Arial;}
 div.panelbutton
 {
 	background-image: url(uesetbg.png);
@@ -37,7 +37,7 @@ div.panelbutton
 	color: #000000;
 	width: 160px;
 	height:30px;
-	font: 12px 微软雅黑,宋体,Arial;
+	font: 13px 微软雅黑,宋体,Arial;
 	border: 0px;
 	margin: 1px;
 }
@@ -179,6 +179,7 @@ function myInit(){
 </td><td  valign="top" align="left" id="pannelset">
 <div id="generalseting" class="hiddenarea">
 <input type="checkbox" id="chkremhistory" /><label for="chkremhistory">保存播放记录</label><br />
+<input type="checkbox" id="chkautoresumeplay" /><label for="chkautoresumeplay" title="从上次关闭的位置打开文件">启用断点播放功能</label><br />
 <input type="checkbox" id="chkremwinpos" /><label for="chkremwinpos">记忆窗口位置和尺寸</label><br />
 <input type="checkbox" id="chkcdromenu" /><label for="chkcdromenu" title="在“文件”菜单下显示光盘驱动器列表菜单
 可能会影响菜单打开的速度">隐藏光盘驱动器菜单</label><br />
@@ -200,7 +201,9 @@ function myInit(){
 <option value="ADV">使用自定义高级设置</option></select><br />
 
 <input type="checkbox" id="lockbackbuff" /><label for="lockbackbuff" title="解决运动画面中水平错位的问题">修正画面横向错位问题（Lock back-buffer）</label><br />
-<input type="checkbox" id="gpuacel" /><label for="gpuacel" title="优先使用GPU加速高清解码">优先使用GPU加速高清解码</label>
+<input type="checkbox" id="gpuacel" /><label for="gpuacel" title="优先使用GPU加速高清解码">优先使用GPU加速高清解码</label><br />
+<input type="checkbox" id="gpuacelcuda" /><label for="gpuacelcuda" title="优先使用NVIDIA的CUDA技术加速高清解码">优先使用NVIDIA加速高清解码</label><br />
+　　(需要182.05以上版本驱动，否则无效)
 </div>
 <div id="audiosetting" class="hiddenarea">
 <select id="audiodevice" style="display:none;"><option value='default'>系统默认</option></select><br />
@@ -252,8 +255,8 @@ Normalization is often used when remastering audio tapes for CD production, in o
 <div id="fileass" class="hiddenarea"><input type="button" value="重建文件关联"/></div>
 <div id="hotkeysetting" class="hiddenarea">热键设置</div>
 <div id="updatesetting" class="hiddenarea">
-<input type="checkbox" id="chkautoupdate" /><label for="chkautoupdate">通过网络自动升级播放器和各项组件</label><br />
-
+<input type="checkbox" id="chkautoupdate" /><label for="chkautoupdate">通过网络自动升级播放器和各项组件</label><br /><br />
+　　自动升级到最新的　<select id="updateversion"><option value="stable">稳定版</option><option value="beta">前卫版</option></select>　<br />
 </div>
 </td>
 </tr><tr height="8%">

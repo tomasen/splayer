@@ -33,6 +33,7 @@ class CUESettingPanel : public CDHtmlDialog
 	int m_sgi_chkautoplay;
 	int m_sgi_chkautozoom;
 	int m_sgi_chkautodownloadsvpsub;
+	int m_sgi_chkautoresumeplay;
 	CString m_sgs_initblock;
 	CString m_sgi_startupcheckexts;
 	CString m_sgs_videorender;
@@ -54,11 +55,13 @@ class CUESettingPanel : public CDHtmlDialog
 	long m_sgi_videorender;
 	int m_sgi_lockbackbuff;
 	int m_sgi_gpuacel;
+	int m_sgi_gpuacelcuda;
 
 	int m_sgi_normalize;
 	int m_sgi_downsample44k;
 	long m_sgi_channelsetting;
 
+	CString m_sgs_updateversion;
 	int m_sgi_autoupdate;
 
 

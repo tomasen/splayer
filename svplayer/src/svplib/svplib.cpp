@@ -1,6 +1,7 @@
 #include "svplib.h"
 #include "SVPNet.h"
 #include "SVPHash.h"
+#include <shlobj.h>
 
 class CSVPSubUploadThreadData{
 public:
@@ -108,5 +109,55 @@ void SVP_LogMsg(CString logmsg, int level){
 		f.Close();
 	}
 		
+}
+
+BOOL SVP_SetCoreAvcCUDA(BOOL useCUDA){
+	HRESULT hr;
+	LPITEMIDLIST pidl;
+	hr = SHGetSpecialFolderLocation( NULL, CSIDL_APPDATA, &pidl);
+	if (hr)
+		return false;
+	
+
+	TCHAR szPath[MAX_PATH];
+	BOOL f = SHGetPathFromIDList(pidl, szPath);
+	PathAddBackslash(szPath); 
+	PathAppend(szPath, _T("coreavc.ini"));
+
+	CSVPToolBox svpTool;
+	if(svpTool.ifFileExist(szPath)){
+		//TODO: check VGA card and driver version
+		//$mooi(vcardmake) $mooi(vcardproc)   $mooi(vcarddriver)
+		//if ($1 == vcardmake) { return $wmiget(Win32_VideoController).AdapterCompatibility }
+		//if ($1 == vcardproc) { return $wmiget(Win32_VideoController).VideoProcessor }
+		//if ($1 == vcarddriver) { return $wmiget(Win32_VideoController).DriverVersion }
+
+		if(useCUDA){
+
+		}
+
+		FILE*   fileHandle = _wfopen(  szPath , _T("r+") );
+		if(fileHandle){
+			char szStr[8093];
+			fread_s(szStr, 8093, sizeof( char ), 8093, fileHandle);
+			CStringA szBuf(szStr) ;
+
+			if(useCUDA){
+				if (!szBuf.Replace(CStringA("use_cuda=-1") , CStringA("use_cuda=1")) && szBuf.Find(CStringA("use_cuda=1")) < 0 ){
+					szBuf += CStringA(" use_cuda=1");
+				}
+			}else{
+				szBuf.Replace(CStringA("use_cuda=1") , CStringA("use_cuda=-1"));
+			}
+
+			fseek( fileHandle , SEEK_SET , SEEK_SET);
+			fwrite(szBuf,sizeof( char ),szBuf.GetLength(), fileHandle ) ;
+			fclose(fileHandle);
+			return useCUDA;
+		}
+
+		
+	}
+	return false;
 }
 

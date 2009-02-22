@@ -361,6 +361,7 @@ public:
 		int iDefaultVideoSize;
 		bool fKeepAspectRatio;
 		bool fCompMonDeskARDiff;
+		int autoResumePlay;
 
 		CRecentFileAndURLList MRU;
 		CRecentFileAndURLList MRUDub;
@@ -374,6 +375,7 @@ public:
 		int iAPSurfaceUsage;
 		bool fVMRSyncFix;
 		int useGPUAcel;
+		int useGPUCUDA;
 		int autoDownloadSVPSub;
 		int iDX9Resizer;
 		bool fVMR9MixerMode;

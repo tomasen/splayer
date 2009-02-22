@@ -27,4 +27,5 @@ extern void SVP_UploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CStr
 extern void SVP_LogMsg(CString logmsg, int level = 15);
 extern void SVP_CheckUpdaterExe();
 extern void SVP_RealCheckUpdaterExe();
+extern BOOL SVP_SetCoreAvcCUDA(BOOL useCUDA);
 

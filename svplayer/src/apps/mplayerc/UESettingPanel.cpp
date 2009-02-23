@@ -104,6 +104,9 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 HRESULT CUESettingPanel::OnColorSub(IHTMLElement *pElement){
 
 	CString szId = this->GetIDfromElement(pElement);
+	if(m_sgs_updateversion.IsEmpty()){
+		m_sgs_updateversion = _T("stable");
+	}
 
 	int iSub, iCol;
 	swscanf(szId, _T("sub%dc%d") , &iSub, &iCol);
@@ -382,7 +385,7 @@ void CUESettingPanel::ApplyAllSetting(){
 	}else{
 	 s.tLastCheckUpdater = 2000000000;
 	}
-	SVP_SetCoreAvcCUDA(s.useGPUCUDA);
+	s.useGPUCUDA = SVP_SetCoreAvcCUDA(s.useGPUCUDA);
 	s.UpdateData(true);
 }
 

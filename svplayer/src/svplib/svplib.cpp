@@ -125,7 +125,7 @@ BOOL SVP_SetCoreAvcCUDA(BOOL useCUDA){
 	PathAppend(szPath, _T("coreavc.ini"));
 
 	CSVPToolBox svpTool;
-	if(svpTool.ifFileExist(szPath)){
+	
 		//TODO: check VGA card and driver version
 		//$mooi(vcardmake) $mooi(vcardproc)   $mooi(vcarddriver)
 		//if ($1 == vcardmake) { return $wmiget(Win32_VideoController).AdapterCompatibility }
@@ -133,31 +133,76 @@ BOOL SVP_SetCoreAvcCUDA(BOOL useCUDA){
 		//if ($1 == vcarddriver) { return $wmiget(Win32_VideoController).DriverVersion }
 
 		if(useCUDA){
+			HMODULE hDll = ::LoadLibrary(_T("nvcuda.dll"));
+			
+			if (hDll)
+			{
+				CString dllpath;
+				GetModuleFileName(hDll, dllpath.GetBuffer(MAX_PATH), MAX_PATH);
+				dllpath.ReleaseBuffer();
 
+				//get build
+				svpTool.getFileVersionHash(dllpath);
+				if ( svpTool.dwBuild ){
+					if(svpTool.dwBuild > 8205 || svpTool.dwBuild < 1105){ // not sure when will build version over 200.xx
+						//ok
+						useCUDA = true;
+					}else{
+						useCUDA = false;
+					}
+				}
+
+				//get version
+				/*
+					NvAPI_Status nvapiStatus;
+					NV_DISPLAY_DRIVER_VERSION version = {0};
+					version.version = NV_DISPLAY_DRIVER_VERSION_VER;
+					nvapiStatus = NvAPI_Initialize();
+					nvapiStatus = NvAPI_GetDisplayDriverVersion (NVAPI_DEFAULT_HANDLE, &version);
+					if(nvapiStatus != NVAPI_OK) {... inform user nvidia card not found ...}
+					if(version.drvVersion < DESIRED_NVIDIA_DRIVER_VERSION) {... inform user nvidia driver version not the one you wanted ...}
+				*/
+
+				
+				
+			}else{
+				useCUDA = false;
+			}
 		}
 
 		FILE*   fileHandle = _wfopen(  szPath , _T("r+") );
 		if(fileHandle){
 			char szStr[8093];
-			fread_s(szStr, 8093, sizeof( char ), 8093, fileHandle);
-			CStringA szBuf(szStr) ;
+			int iRead = fread_s(szStr, 8093, sizeof( char ), 8093, fileHandle);
+			CStringA szBuf(szStr , iRead) ;
 
-			if(useCUDA){
-				if (!szBuf.Replace(CStringA("use_cuda=-1") , CStringA("use_cuda=1")) && szBuf.Find(CStringA("use_cuda=1")) < 0 ){
-					szBuf += CStringA(" use_cuda=1");
+			if(szBuf.IsEmpty()){
+				szBuf =  "[CoreAVC]\r\n";
+				if(useCUDA){
+					szBuf += "use_cuda=1";
+				}else{
+					szBuf += "use_cuda=-1";
 				}
 			}else{
-				szBuf.Replace(CStringA("use_cuda=1") , CStringA("use_cuda=-1"));
+				if(useCUDA){
+					if (!szBuf.Replace(CStringA("use_cuda=-1") , CStringA("use_cuda=1")) && szBuf.Find(CStringA("use_cuda=1")) < 0 ){
+						szBuf += CStringA(" use_cuda=1");
+					}
+				}else{
+					szBuf.Replace(CStringA("use_cuda=1") , CStringA("use_cuda=-1"));
+				}
 			}
 
+			szBuf.Trim();
 			fseek( fileHandle , SEEK_SET , SEEK_SET);
 			fwrite(szBuf,sizeof( char ),szBuf.GetLength(), fileHandle ) ;
+			SetEndOfFile(fileHandle);
 			fclose(fileHandle);
-			return useCUDA;
+		
 		}
 
 		
-	}
-	return false;
+	
+	return useCUDA;
 }
 

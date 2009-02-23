@@ -2408,8 +2408,8 @@ BEGIN
     ID_PLAY_PAUSE           "暂停\n暂停"
     ID_PLAY_STOP            "停止\n停止"
     ID_PLAY_FRAMESTEP       "步进\n步进"
-    ID_PLAY_DECRATE         "加速\n减速"
-    ID_PLAY_INCRATE         "加速\n减速"
+    ID_PLAY_DECRATE         "快退\n快退"
+    ID_PLAY_INCRATE         "快进\n快进"
 END
 
 STRINGTABLE 

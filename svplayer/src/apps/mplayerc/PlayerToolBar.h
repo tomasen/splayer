@@ -32,11 +32,14 @@ class CPlayerToolBar : public CToolBar
 private:
 	bool IsMuted();
 	void SetMute(bool fMute = true); 
+	UINT iBottonClicked;
+	
 
 public:
 	CPlayerToolBar();
 	virtual ~CPlayerToolBar();
 
+	UINT iFastFFWCount;
 	int GetVolume();
 	void SetVolume(int volume);
 	__declspec(property(get=GetVolume, put=SetVolume)) int Volume;
@@ -64,6 +67,8 @@ protected:
 	afx_msg BOOL OnVolumeDown(UINT nID);
 	afx_msg void OnNcPaint();
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+	afx_msg void OnTimer(UINT nIDEvent);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

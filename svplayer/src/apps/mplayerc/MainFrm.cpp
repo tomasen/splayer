@@ -2211,11 +2211,11 @@ void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 			PostMessage(WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM(point.x, point.y));
 		}
 		else
-{
-s_fLDown = true;
+		{
+			s_fLDown = true;
 			if(OnButton(wmcmd::LDOWN, nFlags, point))
-				return;
-}
+			return;
+		}
 	}
 
 	__super::OnLButtonDown(nFlags, point);
@@ -5400,6 +5400,9 @@ void CMainFrame::OnPlayChangeRate(UINT nID)
 	if(m_iMediaLoadState != MLS_LOADED)
 		return;
 
+	if(m_wndToolBar.iFastFFWCount != 0)
+		return;
+	
 	if(m_iPlaybackMode == PM_CAPTURE)
 	{
 		if(GetMediaState() != State_Running)

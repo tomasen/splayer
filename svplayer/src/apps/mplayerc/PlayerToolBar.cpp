@@ -179,6 +179,8 @@ BEGIN_MESSAGE_MAP(CPlayerToolBar, CToolBar)
 	ON_COMMAND_EX(ID_VOLUME_DOWN, OnVolumeDown)
 	ON_WM_NCPAINT()
 	ON_WM_LBUTTONDOWN()
+	ON_WM_LBUTTONUP()
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 // CPlayerToolBar message handlers
@@ -254,9 +256,12 @@ void CPlayerToolBar::OnNcPaint() // when using XP styles the NC area isn't drawn
 
 	// Do not call CToolBar::OnNcPaint() for painting messages
 }
-
+#define TIMER_FASTFORWORD 251
 void CPlayerToolBar::OnLButtonDown(UINT nFlags, CPoint point)
 {
+	iBottonClicked = -1;
+	KillTimer(TIMER_FASTFORWORD);
+
 	for(int i = 0, j = GetToolBarCtrl().GetButtonCount(); i < j; i++)
 	{
 		if(GetButtonStyle(i)&(TBBS_SEPARATOR|TBBS_DISABLED))
@@ -266,7 +271,16 @@ void CPlayerToolBar::OnLButtonDown(UINT nFlags, CPoint point)
 		GetItemRect(i, r);
 		if(r.PtInRect(point))
 		{
+			UINT iButtonID , iStyle ;
+			int iImage ;
+			GetButtonInfo(i,iButtonID,iStyle,iImage );
+			if(iButtonID == ID_PLAY_DECRATE || iButtonID == ID_PLAY_INCRATE){
+				iBottonClicked = iButtonID;
+				iFastFFWCount = 0;
+				SetTimer(TIMER_FASTFORWORD, 350, NULL);
+			}
 			__super::OnLButtonDown(nFlags, point);
+			
 			return;
 		}
 	}
@@ -277,4 +291,54 @@ void CPlayerToolBar::OnLButtonDown(UINT nFlags, CPoint point)
 		MapWindowPoints(pFrame, &point, 1);
 		pFrame->PostMessage(WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM(point.x, point.y));
 	}
+}
+void CPlayerToolBar::OnTimer(UINT nIDEvent){
+	switch(nIDEvent){
+		case TIMER_FASTFORWORD:
+			if(iBottonClicked < 0 ){
+				KillTimer(TIMER_FASTFORWORD);
+				break;
+			}
+			iFastFFWCount++;
+			//fast forward or backword
+			{
+				CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
+				int iMsg; 
+				if(iBottonClicked == ID_PLAY_DECRATE){
+					iMsg = ID_PLAY_SEEKKEYBACKWARD;
+				}else if(iBottonClicked == ID_PLAY_INCRATE){
+					iMsg = ID_PLAY_SEEKKEYFORWARD;
+				}
+				pFrame->PostMessage( WM_COMMAND, iMsg);
+			}
+			break;
+	}
+
+	__super::OnTimer(nIDEvent);
+}
+void CPlayerToolBar::OnLButtonUp(UINT nFlags, CPoint point)
+{
+	KillTimer(TIMER_FASTFORWORD);
+	for(int i = 0, j = GetToolBarCtrl().GetButtonCount(); i < j; i++)
+	{
+		CRect r;
+		GetItemRect(i, r);
+		if(r.PtInRect(point))
+		{
+			UINT iButtonID, iStyle ;
+			int iImage ;
+			GetButtonInfo(i,iButtonID, iStyle , iImage );
+			if(iButtonID == iBottonClicked ){
+				if(iFastFFWCount != 0){
+					// not increase or decrease play rate
+					
+				}
+			}
+			break;
+		}
+	}
+	iBottonClicked = -1;
+	
+	__super::OnLButtonUp(nFlags, point);
+	return;
 }

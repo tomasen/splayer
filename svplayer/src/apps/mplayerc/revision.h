@@ -4,6 +4,6 @@
 
 #pragma once
 
-#define SVP_REV_STR	_T("62")
-#define SVP_REV_NUMBER	62
-#define SVP_VER_STR	"1, 0, 0, 62"
+#define SVP_REV_STR	_T("67")
+#define SVP_REV_NUMBER	67
+#define SVP_VER_STR	"1, 0, 0, 67"

@@ -331,6 +331,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI(ID_PLAY_GOTO, OnUpdateGoto)
 	ON_COMMAND_RANGE(ID_PLAY_DECRATE, ID_PLAY_INCRATE, OnPlayChangeRate)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_PLAY_DECRATE, ID_PLAY_INCRATE, OnUpdatePlayChangeRate)
+	ON_UPDATE_COMMAND_UI_RANGE(ID_PLAY_BWD, ID_PLAY_FWD, OnUpdatePlayChangeRate)
 	ON_COMMAND(ID_PLAY_RESETRATE, OnPlayResetRate)	
 	ON_UPDATE_COMMAND_UI(ID_PLAY_RESETRATE, OnUpdatePlayResetRate)	
 	ON_COMMAND_RANGE(ID_PLAY_INCAUDDELAY, ID_PLAY_DECAUDDELAY, OnPlayChangeAudDelay)
@@ -535,6 +536,8 @@ void CMainFrame::OnDestroy()
 	ShowTrayIcon(false);
 
 	m_fileDropTarget.Revoke();
+	
+	CloseMedia();
 
 	if(m_pGraphThread)
 	{
@@ -5400,8 +5403,16 @@ void CMainFrame::OnPlayChangeRate(UINT nID)
 	if(m_iMediaLoadState != MLS_LOADED)
 		return;
 
-	if(m_wndToolBar.iFastFFWCount != 0)
-		return;
+	/* //need no more since tool bar dont have this anymore
+	if(m_wndToolBar.iFastFFWCount == 0){
+			if(nID == ID_PLAY_DECRATE)
+				PostMessage( WM_COMMAND, ID_PLAY_SEEKFORWARDMED);
+			else if(nID == ID_PLAY_DECRATE)
+				PostMessage( WM_COMMAND, ID_PLAY_SEEKBACKWARDMED);
+		}else if(m_wndToolBar.iFastFFWCount > 0)
+			return;
+		*/
+	
 	
 	if(m_iPlaybackMode == PM_CAPTURE)
 	{
@@ -5490,7 +5501,7 @@ void CMainFrame::OnUpdatePlayChangeRate(CCmdUI* pCmdUI)
 
 	if(m_iMediaLoadState == MLS_LOADED)
 	{
-		bool fInc = pCmdUI->m_nID == ID_PLAY_INCRATE;
+		bool fInc = (pCmdUI->m_nID == ID_PLAY_INCRATE || pCmdUI->m_nID == ID_PLAY_FWD );
 
 		fEnable = true;
 		if(fInc && m_iSpeedLevel >= 3) fEnable = false;
@@ -5542,6 +5553,7 @@ void CMainFrame::SetSubtitleDelay(int delay_ms)
 		str.Format(_T("主字幕延时已经设为： %d ms"), delay_ms);
 		SendStatusMessage(str, 5000);
 	}
+	time(&m_tPlayStartTime);
 }
 void CMainFrame::SetSubtitleDelay2(int delay_ms)
 {
@@ -5552,6 +5564,7 @@ void CMainFrame::SetSubtitleDelay2(int delay_ms)
 		str.Format(_T("第二字幕延时已经设为： %d ms"), delay_ms);
 		SendStatusMessage(str, 5000);
 	}
+	time(&m_tPlayStartTime);
 }
 
 void CMainFrame::OnPlayChangeAudDelay(UINT nID)
@@ -10133,7 +10146,7 @@ void CMainFrame::SeekTo(REFERENCE_TIME rtPos, bool fSeekToKeyFrame)
 			}
 		}
 
-		hr = pMS->SetPositions(&rtPos, AM_SEEKING_AbsolutePositioning, NULL, AM_SEEKING_NoPositioning);
+		hr = pMS->SetPositions(&rtPos, AM_SEEKING_AbsolutePositioning|AM_SEEKING_SeekToKeyFrame, NULL, AM_SEEKING_NoPositioning);
 	}
 	else if(m_iPlaybackMode == PM_DVD && m_iDVDDomain == DVD_DOMAIN_Title)
 	{

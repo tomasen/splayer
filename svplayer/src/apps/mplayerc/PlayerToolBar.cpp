@@ -274,7 +274,7 @@ void CPlayerToolBar::OnLButtonDown(UINT nFlags, CPoint point)
 			UINT iButtonID , iStyle ;
 			int iImage ;
 			GetButtonInfo(i,iButtonID,iStyle,iImage );
-			if(iButtonID == ID_PLAY_DECRATE || iButtonID == ID_PLAY_INCRATE){
+			if(iButtonID == ID_PLAY_BWD || iButtonID == ID_PLAY_FWD){
 				iBottonClicked = iButtonID;
 				iFastFFWCount = 0;
 				SetTimer(TIMER_FASTFORWORD, 350, NULL);
@@ -283,7 +283,7 @@ void CPlayerToolBar::OnLButtonDown(UINT nFlags, CPoint point)
 			
 			return;
 		}
-	}
+	} 
 
 	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
 	if(!pFrame->m_fFullScreen)
@@ -303,11 +303,19 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
 			//fast forward or backword
 			{
 				CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
-				int iMsg; 
-				if(iBottonClicked == ID_PLAY_DECRATE){
-					iMsg = ID_PLAY_SEEKKEYBACKWARD;
-				}else if(iBottonClicked == ID_PLAY_INCRATE){
-					iMsg = ID_PLAY_SEEKKEYFORWARD;
+				int iMsg;
+				if(iFastFFWCount > 10){
+					if(iBottonClicked == ID_PLAY_BWD){
+						iMsg = ID_PLAY_SEEKBACKWARDLARGE;
+					}else if(iBottonClicked == ID_PLAY_FWD){
+						iMsg = ID_PLAY_SEEKFORWARDLARGE;
+					}
+				}else{
+					if(iBottonClicked == ID_PLAY_BWD){
+						iMsg = ID_PLAY_SEEKKEYBACKWARD;
+					}else if(iBottonClicked == ID_PLAY_FWD){
+						iMsg = ID_PLAY_SEEKKEYFORWARD;
+					}
 				}
 				pFrame->PostMessage( WM_COMMAND, iMsg);
 			}
@@ -329,9 +337,16 @@ void CPlayerToolBar::OnLButtonUp(UINT nFlags, CPoint point)
 			int iImage ;
 			GetButtonInfo(i,iButtonID, iStyle , iImage );
 			if(iButtonID == iBottonClicked ){
-				if(iFastFFWCount != 0){
+				if(iFastFFWCount == 0){
+					int iMsg;
+					CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
 					// not increase or decrease play rate
-					
+					if(iBottonClicked == ID_PLAY_BWD){
+						iMsg = ID_PLAY_SEEKBACKWARDMED;
+					}else if(iBottonClicked == ID_PLAY_FWD){
+						iMsg = ID_PLAY_SEEKFORWARDMED;
+					}
+					pFrame->PostMessage( WM_COMMAND, iMsg);
 				}
 			}
 			break;

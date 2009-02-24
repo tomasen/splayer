@@ -1,7 +1,6 @@
 // Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
-#include "revision.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -1380,8 +1379,8 @@ BEGIN
     BUTTON      ID_PLAY_STOP
     BUTTON      ID_BUTTONSEP
     BUTTON      ID_NAVIGATE_SKIPBACK
-    BUTTON      ID_PLAY_DECRATE
-    BUTTON      ID_PLAY_INCRATE
+    BUTTON      ID_PLAY_BWD
+    BUTTON      ID_PLAY_FWD
     BUTTON      ID_NAVIGATE_SKIPFORWARD
     BUTTON      ID_BUTTONSEP
     BUTTON      ID_PLAY_FRAMESTEP
@@ -1447,8 +1446,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,SVP_REV_NUMBER
- PRODUCTVERSION 1,0,0,SVP_REV_NUMBER
+ FILEVERSION 1,0,0,68
+ PRODUCTVERSION 1,0,0,68
  FILEFLAGSMASK 0x1fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -1470,7 +1469,7 @@ BEGIN
             VALUE "LegalCopyright", "Copyright (C) 2002-2009 shooter.cn & Gabest"
             VALUE "OriginalFilename", "mplayerc.exe"
             VALUE "ProductName", "…‰ ÷”∞“Ù≤•∑≈∆˜"
-            VALUE "ProductVersion", SVP_VER_STR
+            VALUE "ProductVersion", "1, 0, 0, 68"
         END
     END
     BLOCK "VarFileInfo"
@@ -2238,9 +2237,9 @@ STRINGTABLE
 BEGIN
     IDS_RS_LASTCHECKUPDATER "LastCheckUpdater"
     IDS_RS_USEGPUACEL       "USEGPUAcel"
-	IDS_RS_USEGPUCUDA		"USEGPUCUDA"
-	IDS_RS_AUTORESUMEPLAY	"autoResumePlay"
     IDS_RS_AUTODOWNLAODSVPSUB "AutoDownloadSVPSub"
+    IDS_RS_USEGPUCUDA       "USEGPUCUDA"
+    IDS_RS_AUTORESUMEPLAY   "autoResumePlay"
 END
 
 STRINGTABLE 

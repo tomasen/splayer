@@ -273,6 +273,8 @@
 #define ID_SUB1FONTDOWN                 1004
 #define ID_SUB2FONTUP                   1005
 #define ID_SUB2FONTDOWN                 1006
+#define ID_PLAY_BWD						1007
+#define ID_PLAY_FWD						1008
 #define ID_FILTERS_SUBITEM_START        2000
 #define ID_FILTERS_SUBITEM_END          2099
 #define ID_FILTERSTREAMS_SUBITEM_START  2100

@@ -167,12 +167,24 @@ public:
 		DWORD sync;
 		BYTE frametype:1;
 		BYTE deficitsamplecount:5;
-        BYTE fcrc:1;
+		BYTE fcrc:1;
 		BYTE nblocks:7;
 		WORD framebytes;
 		BYTE amode:6;
 		BYTE sfreq:4;
 		BYTE rate:5;
+
+		BYTE downmix:1;
+		BYTE dynrange:1;
+		BYTE timestamp:1;
+		BYTE aux_data:1;
+		BYTE hdcd:1;
+		BYTE ext_descr:3;
+		BYTE ext_coding:1;
+		BYTE aspf:1;
+		BYTE lfe:2;
+		BYTE predictor_history:1;
+
 	};
 
 	class lpcmhdr
@@ -189,7 +201,22 @@ public:
 		BYTE drc; // 0x80: off
 	};
 
+	class hdmvlpcmhdr
+	{
+	public:
+		WORD size;
+		BYTE channels:4;
+		BYTE samplerate:4;
+		BYTE bitpersample:2;
+	};
+
 	class dvdspuhdr
+	{
+	public:
+		// nothing ;)
+	};
+
+	class hdmvsubhdr
 	{
 	public:
 		// nothing ;)
@@ -288,6 +315,36 @@ public:
 	{
 		BYTE profile, level;
 		unsigned int width, height;
+		__int64 spspos, spslen;
+		__int64 ppspos, ppslen;
+		__int64 AvgTimePerFrame;
+
+		avchdr()
+		{
+			spspos = 0;
+			spslen = 0;
+			ppspos = 0;
+			ppslen = 0;
+			AvgTimePerFrame = 0;
+		}
+	};
+
+	struct vc1hdr
+	{
+		BYTE		profile;
+		BYTE		level;
+		BYTE		chromaformat;
+		BYTE		frmrtq_postproc;
+		BYTE		bitrtq_postproc;
+		BYTE		postprocflag;
+		BYTE		broadcast;
+		BYTE		interlace;
+		BYTE		tfcntrflag;
+		BYTE		finterpflag;
+		BYTE		psf;
+		UINT		ArX;
+		UINT		ArY;
+		unsigned int width, height;
 	};
 
 #pragma pack(pop)
@@ -301,7 +358,9 @@ public:
 	bool Read(ac3hdr& h, int len, CMediaType* pmt = NULL);
 	bool Read(dtshdr& h, int len, CMediaType* pmt = NULL);
 	bool Read(lpcmhdr& h, CMediaType* pmt = NULL);
+	bool Read(hdmvlpcmhdr& h, CMediaType* pmt = NULL);
 	bool Read(dvdspuhdr& h, CMediaType* pmt = NULL);
+	bool Read(hdmvsubhdr& h, CMediaType* pmt = NULL, const char* language_code = NULL);
 	bool Read(svcdspuhdr& h, CMediaType* pmt = NULL);
 	bool Read(cvdspuhdr& h, CMediaType* pmt = NULL);
 	bool Read(ps2audhdr& h, CMediaType* pmt = NULL);
@@ -310,4 +369,5 @@ public:
 	bool Read(trsechdr& h);
 	bool Read(pvahdr& h, bool fSync = true);
 	bool Read(avchdr& h, int len, CMediaType* pmt = NULL);
+	bool Read(vc1hdr& h, int len, CMediaType* pmt = NULL);
 };

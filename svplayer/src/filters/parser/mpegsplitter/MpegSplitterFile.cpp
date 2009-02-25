@@ -24,17 +24,19 @@
 #include "MpegSplitterFile.h"
 
 #include <initguid.h>
-#include "..\..\..\..\include\moreuuids.h"
+#include <moreuuids.h>
 
 #define MEGABYTE 1024*1024
 #define ISVALIDPID(pid) (pid >= 0x10 && pid < 0x1fff)
 
-CMpegSplitterFile::CMpegSplitterFile(IAsyncReader* pAsyncReader, HRESULT& hr)
+CMpegSplitterFile::CMpegSplitterFile(IAsyncReader* pAsyncReader, HRESULT& hr, bool bIsHdmv, CHdmvClipInfo &ClipInfo)
 	: CBaseSplitterFileEx(pAsyncReader, hr, DEFAULT_CACHE_LENGTH, false, true)
 	, m_type(us)
 	, m_rate(0)
 	, m_rtMin(0), m_rtMax(0)
 	, m_posMin(0), m_posMax(0)
+	, m_bIsHdmv(bIsHdmv)
+	, m_ClipInfo(ClipInfo)
 
 {
 	if(SUCCEEDED(hr)) hr = Init();
@@ -80,7 +82,7 @@ HRESULT CMpegSplitterFile::Init()
 				if(Read(h)) 
 				{
 					m_type = ps;
-					m_rate = h.bitrate/8;
+					m_rate = int(h.bitrate/8);
 					break;
 				}
 			}
@@ -105,10 +107,7 @@ HRESULT CMpegSplitterFile::Init()
 		return E_FAIL;
 	}
 
-	//
-
 	// min/max pts & bitrate
-
 	m_rtMin = m_posMin = _I64_MAX;
 	m_rtMax = m_posMax = 0;
 
@@ -144,7 +143,7 @@ HRESULT CMpegSplitterFile::Init()
 		return E_FAIL;
 
 	int indicated_rate = m_rate;
-	int detected_rate = 10000000i64 * (m_posMax - m_posMin) / (m_rtMax - m_rtMin);
+	int detected_rate = int(10000000i64 * (m_posMax - m_posMin) / (m_rtMax - m_rtMin));
 	// normally "detected" should always be less than "indicated", but sometimes it can be a few percent higher (+10% is allowed here)
 	// (update: also allowing +/-50k/s)
 	if(indicated_rate == 0 || ((float)detected_rate / indicated_rate) < 1.1
@@ -152,16 +151,24 @@ HRESULT CMpegSplitterFile::Init()
 		m_rate = detected_rate;
 	else ; // TODO: in this case disable seeking, or try doing something less drastical...
 
-#ifndef DEBUG
-	if(m_streams[video].GetCount() && m_streams[subpic].GetCount())
+//#ifndef DEBUG
+	if(m_streams[video].GetCount())
 	{
-		stream s;
-		s.mt.majortype = MEDIATYPE_Video;
-		s.mt.subtype = MEDIASUBTYPE_DVD_SUBPICTURE;
-		s.mt.formattype = FORMAT_None;
-		m_streams[subpic].Insert(s);
+		if (m_streams[subpic].GetCount())
+		{
+			stream s;
+			s.mt.majortype = MEDIATYPE_Video;
+			s.mt.subtype = MEDIASUBTYPE_DVD_SUBPICTURE;
+			s.mt.formattype = FORMAT_None;
+			m_streams[subpic].Insert(s, this);
+		}
+		else
+		{
+			// Add fake stream for "No subtitle"
+			AddHdmvPGStream (NO_SUBTITLE_PID, "---");
+		}
 	}
-#endif
+//#endif
 
 	Seek(0);
 
@@ -175,7 +182,7 @@ void CMpegSplitterFile::OnComplete()
 	if(SUCCEEDED(SearchStreams(GetLength() - 500*1024, GetLength())))
 	{
 		int indicated_rate = m_rate;
-		int detected_rate = m_rtMax > m_rtMin ? 10000000i64 * (m_posMax - m_posMin) / (m_rtMax - m_rtMin) : 0;
+		int detected_rate = int(m_rtMax > m_rtMin ? 10000000i64 * (m_posMax - m_posMin) / (m_rtMax - m_rtMin) : 0);
 		// normally "detected" should always be less than "indicated", but sometimes it can be a few percent higher (+10% is allowed here)
 		// (update: also allowing +/-50k/s)
 		if(indicated_rate == 0 || ((float)detected_rate / indicated_rate) < 1.1
@@ -203,7 +210,11 @@ REFERENCE_TIME CMpegSplitterFile::NextPTS(DWORD TrackNum)
 
 			rtpos = GetPos()-4;
 
+#if (EVO_SUPPORT == 0)
 			if(b >= 0xbd && b < 0xf0)
+#else
+			if((b >= 0xbd && b < 0xf0) || (b == 0xfd))
+#endif
 			{
 				peshdr h;
 				if(!Read(h, b) || !h.len) continue;
@@ -232,7 +243,7 @@ REFERENCE_TIME CMpegSplitterFile::NextPTS(DWORD TrackNum)
 				peshdr h2;
 				if(NextMpegStartCode(b, 4) && Read(h2, b)) // pes packet
 				{
-					if(h2.fpts && AddStream(h.pid, b, h.bytes - (GetPos() - rtpos)) == TrackNum)
+					if(h2.fpts && AddStream(h.pid, b, DWORD(h.bytes - (GetPos() - rtpos)) == TrackNum))
 					{
 						ASSERT(h2.pts >= m_rtMin && h2.pts <= m_rtMax);
 						rt = h2.pts;
@@ -285,7 +296,11 @@ HRESULT CMpegSplitterFile::SearchStreams(__int64 start, __int64 stop)
 				pssyshdr h;
 				if(!Read(h)) continue;
 			}
+#if (EVO_SUPPORT == 0)
 			else if(b >= 0xbd && b < 0xf0) // pes packet
+#else
+			else if((b >= 0xbd && b < 0xf0) || (b == 0xfd)) // pes packet
+#endif
 			{
 				peshdr h;
 				if(!Read(h, b)) continue;
@@ -341,7 +356,7 @@ m_rate = rate;
 					b = 0;
 				}
 
-				AddStream(h.pid, b, h.bytes - (GetPos() - pos));
+				AddStream(h.pid, b, DWORD(h.bytes - (GetPos() - pos)));
 			}
 
 			Seek(h.next);
@@ -393,11 +408,10 @@ DWORD CMpegSplitterFile::AddStream(WORD pid, BYTE pesid, DWORD len)
 		}
 
 		Seek(pos);
-
 		if(type == unknown)
 		{
-			CMpegSplitterFile::avchdr h;
-			if(!m_streams[video].Find(s) && Read(h, len, &s.mt))
+//			CMpegSplitterFile::avchdr h;	<= PPS and SPS can be present on differents packets !
+			if(!m_streams[video].Find(s) && Read(avch, len, &s.mt))
 				type = video;
 		}
 	}
@@ -425,10 +439,11 @@ DWORD CMpegSplitterFile::AddStream(WORD pid, BYTE pesid, DWORD len)
 	{
 		if(s.pid)
 		{
-			if(!m_streams[audio].Find(s))
+			if(!m_streams[audio].Find(s) && !m_streams[video].Find(s))
 			{
 				__int64 pos = GetPos();
 
+				// AC3
 				if(type == unknown)
 				{
 					CMpegSplitterFile::ac3hdr h;
@@ -436,16 +451,62 @@ DWORD CMpegSplitterFile::AddStream(WORD pid, BYTE pesid, DWORD len)
 						type = audio;
 				}
 
+				// DTS
 				Seek(pos);
-
 				if(type == unknown)
 				{
 					CMpegSplitterFile::dtshdr h;
 					if(Read(h, len, &s.mt))
 						type = audio;
 				}
+
+				// VC1
+				Seek(pos);				
+				if(type == unknown)
+				{
+					CMpegSplitterFile::vc1hdr h;
+					if(!m_streams[video].Find(s) && Read(h, len, &s.mt))
+						type = video;
+				}
+
+				int iProgram;
+				const CHdmvClipInfo::Stream *pClipInfo;
+				const program* pProgram = FindProgram (s.pid, iProgram, pClipInfo);
+				if((type == unknown) && (pProgram != NULL))
+				{
+					ElementaryStreamTypes	StreamType = INVALID;
+					
+					Seek(pos);
+					StreamType = pProgram->streams[iProgram].type;
+
+					switch (StreamType)
+					{
+					case AUDIO_STREAM_LPCM :
+						{
+							CMpegSplitterFile::hdmvlpcmhdr h;
+							if(!m_streams[audio].Find(s) && Read(h, &s.mt))
+								type = audio;
+						}
+						break;
+					case PRESENTATION_GRAPHICS_STREAM :
+						{
+							CMpegSplitterFile::hdmvsubhdr h;
+							if(!m_streams[subpic].Find(s) && Read(h, &s.mt, pClipInfo ? pClipInfo->m_LanguageCode : NULL))
+								type = subpic;
+						}
+						break;
+					}
+				}
 			}
 		}
+#if (EVO_SUPPORT != 0)
+		else if (pesid == 0xfd)		// TODO EVO SUPPORT
+		{
+			CMpegSplitterFile::vc1hdr h;
+			if(!m_streams[video].Find(s) && Read(h, len, &s.mt))
+				type = video;
+		}
+#endif
 		else
 		{
 			BYTE b = (BYTE)BitRead(8, true);
@@ -529,6 +590,22 @@ DWORD CMpegSplitterFile::AddStream(WORD pid, BYTE pesid, DWORD len)
 						type = subpic;
 				}
 			}
+#if (EVO_SUPPORT != 0)
+			else if(b >= 0xc0 && b < 0xc8) // dolby digital +
+			{
+				s.ps1id = (BYTE)BitRead(8);
+				s.pid = (WORD)((BitRead(8) << 8) | BitRead(16)); // pid = 0x9000 | track id
+
+				w = (WORD)BitRead(16, true);
+
+				if(w == 0x0b77)
+				{
+					CMpegSplitterFile::ac3hdr h;
+					if(!m_streams[audio].Find(s) && Read(h, len, &s.mt))
+						type = audio;
+				}
+			}
+#endif
 		}
 	}
 	else if(pesid == 0xbe) // padding
@@ -548,11 +625,28 @@ DWORD CMpegSplitterFile::AddStream(WORD pid, BYTE pesid, DWORD len)
 			}
 		}
 
-		m_streams[type].Insert(s);
+		m_streams[type].Insert(s, this);
 	}
 
 	return s;
 }
+
+
+void CMpegSplitterFile::AddHdmvPGStream(WORD pid, const char* language_code)
+{
+	stream s;
+
+	s.pid		= pid;
+	s.pesid		= 0xbd;
+
+	CMpegSplitterFile::hdmvsubhdr h;
+	if(!m_streams[subpic].Find(s) && Read(h, &s.mt, language_code))
+	{
+		m_streams[subpic].Insert(s, this);
+	}
+}
+
+
 
 CAtlList<CMpegSplitterFile::stream>* CMpegSplitterFile::GetMasterStream()
 {
@@ -605,7 +699,7 @@ void CMpegSplitterFile::UpdatePrograms(const trhdr& h)
 		trsechdr h2;
 		if(Read(h2) && h2.table_id == 2)
 		{
-			memset(pPair->m_value.pid, 0, sizeof(pPair->m_value.pid));
+			memset(pPair->m_value.streams, 0, sizeof(pPair->m_value.streams));
 
 			int len = h2.section_length;
 			len -= 5+4;
@@ -615,7 +709,7 @@ void CMpegSplitterFile::UpdatePrograms(const trhdr& h)
 			WORD program_info_length = (WORD)BitRead(12);
 			len -= 4+program_info_length;
 			while(program_info_length-- > 0) BitRead(8);
-			for(int i = 0; i < countof(pPair->m_value.pid) && len >= 5; i++)
+			for(int i = 0; i < countof(pPair->m_value.streams) && len >= 5; i++)
 			{
 				BYTE stream_type = (BYTE)BitRead(8);
 				BYTE reserved1 = (BYTE)BitRead(3);
@@ -624,20 +718,41 @@ void CMpegSplitterFile::UpdatePrograms(const trhdr& h)
 				WORD ES_info_length = (WORD)BitRead(12);
 				len -= 5+ES_info_length;
 				while(ES_info_length-- > 0) BitRead(8);
-				pPair->m_value.pid[i] = pid;
+				pPair->m_value.streams[i].pid			= pid;
+				pPair->m_value.streams[i].type	= (ElementaryStreamTypes)stream_type;
 			}
 		}
 	}
 }
 
-const CMpegSplitterFile::program* CMpegSplitterFile::FindProgram(WORD pid)
+
+uint32 SwapLE(const uint32 &_Value)
 {
+	return (_Value & 0xFF) << 24 | ((_Value>>8) & 0xFF) << 16 | ((_Value>>16) & 0xFF) << 8 | ((_Value>>24) & 0xFF) << 0;
+}
+
+uint16 SwapLE(const uint16 &_Value)
+{
+	return (_Value & 0xFF) << 8 | ((_Value>>8) & 0xFF) << 0;
+}
+
+const CMpegSplitterFile::program* CMpegSplitterFile::FindProgram(WORD pid, int &iStream, const CHdmvClipInfo::Stream * &_pClipInfo)
+{
+	_pClipInfo = m_ClipInfo.FindStream(pid);
+
+	iStream = -1;
 	POSITION pos = m_programs.GetStartPosition();
 	while(pos)
 	{
-		const program* p = &m_programs.GetNextValue(pos);
-		for(int i = 0; i < countof(p->pid); i++)
-			if(p->pid[i] == pid) return p;
+		program* p = &m_programs.GetNextValue(pos);
+		for(int i = 0; i < countof(p->streams); i++)
+		{
+			if(p->streams[i].pid == pid) 
+			{
+				iStream = i;
+				return p;
+			}
+		}
 	}
 
 	return NULL;

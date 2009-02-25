@@ -24,7 +24,7 @@
 #include <mmreg.h>
 #include "..\..\..\DSUtil\DSUtil.h"
 #include <initguid.h>
-#include "..\..\..\..\include\moreuuids.h"
+#include "../../../../include/moreuuids.h"
 
 //
 // CBaseSplitterFileEx
@@ -589,6 +589,9 @@ bool CBaseSplitterFileEx::Read(ac3hdr& h, int len, CMediaType* pmt)
 		return(false);
 
 	h.sync = (WORD)BitRead(16);
+	if(h.sync != 0x0B77)
+		return(false);
+
 	h.crc1 = (WORD)BitRead(16);
 	h.fscod = BitRead(2);
 	h.frmsizecod = BitRead(6);
@@ -600,7 +603,7 @@ bool CBaseSplitterFileEx::Read(ac3hdr& h, int len, CMediaType* pmt)
 	if(h.acmod == 2) h.dsurmod = BitRead(2);
 	h.lfeon = BitRead(1);
 
-	if(h.bsid >= 12 || h.fscod == 3 || h.frmsizecod >= 38)
+	if(h.bsid >= 17 || h.fscod == 3 || h.frmsizecod >= 48)
 		return(false);
 
 	if(!pmt) return(true);
@@ -623,9 +626,9 @@ bool CBaseSplitterFileEx::Read(ac3hdr& h, int len, CMediaType* pmt)
 	default: break;
 	}
 
-	static int rate[] = {32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 384, 448, 512, 576, 640};
+	static int rate[] = {32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 384, 448, 512, 576, 640, 768, 896, 1024, 1152, 1280};
 
-	wfe.nAvgBytesPerSec = rate[h.frmsizecod>>1] * 1000 / 8;
+	wfe.nAvgBytesPerSec = (rate[h.frmsizecod>>1] * 1000) / 8;
 	wfe.nBlockAlign = (WORD)(1536 * wfe.nAvgBytesPerSec / wfe.nSamplesPerSec);
 
 	pmt->majortype = MEDIATYPE_Audio;
@@ -656,6 +659,18 @@ bool CBaseSplitterFileEx::Read(dtshdr& h, int len, CMediaType* pmt)
 	h.sfreq = BitRead(4);
 	h.rate = BitRead(5);
 
+    h.downmix = BitRead(1);
+    h.dynrange = BitRead(1);
+    h.timestamp = BitRead(1);
+    h.aux_data = BitRead(1);
+    h.hdcd = BitRead(1);
+    h.ext_descr = BitRead(3);
+    h.ext_coding = BitRead(1);
+    h.aspf = BitRead(1);
+    h.lfe = BitRead(2);
+    h.predictor_history = BitRead(1);
+
+
 	if(!pmt) return(true);
 
 	WAVEFORMATEX wfe;
@@ -663,7 +678,13 @@ bool CBaseSplitterFileEx::Read(dtshdr& h, int len, CMediaType* pmt)
 	wfe.wFormatTag = WAVE_FORMAT_DVD_DTS;
 
 	static int channels[] = {1, 2, 2, 2, 2, 3, 3, 4, 4, 5, 6, 6, 6, 7, 8, 8};
-	if(h.amode < countof(channels)) wfe.nChannels = channels[h.amode];
+
+	if(h.amode < countof(channels)) 
+	{
+		wfe.nChannels = channels[h.amode];
+		if (h.lfe > 0)
+			++wfe.nChannels;
+	}
 
 	static int freq[] = {0,8000,16000,32000,0,0,11025,22050,44100,0,0,12000,24000,48000,0,0};
 	wfe.nSamplesPerSec = freq[h.sfreq];
@@ -675,12 +696,52 @@ bool CBaseSplitterFileEx::Read(dtshdr& h, int len, CMediaType* pmt)
 		960000,1024000,1152000,1280000,1344000,1408000,1411200,1472000,
 		1509750,1920000,2048000,3072000,3840000,0,0,0
 	};
-	
-	wfe.nAvgBytesPerSec = rate[h.rate] * 1000 / 8;
+
+	wfe.nAvgBytesPerSec = (rate[h.rate] + 4) / 8;
 	wfe.nBlockAlign = h.framebytes;
 
 	pmt->majortype = MEDIATYPE_Audio;
 	pmt->subtype = MEDIASUBTYPE_DTS;
+	pmt->formattype = FORMAT_WaveFormatEx;
+	pmt->SetFormat((BYTE*)&wfe, sizeof(wfe));
+
+	return(true);
+}
+
+bool CBaseSplitterFileEx::Read(hdmvlpcmhdr& h, CMediaType* pmt)
+{
+	memset(&h, 0, sizeof(h));
+
+	h.size			= BitRead(16);
+	h.channels		= BitRead(4);
+	h.samplerate	= BitRead(4);
+	h.bitpersample	= BitRead(2);
+
+	if (h.channels==0 || h.channels==2 || 
+	    (h.samplerate != 1 && h.samplerate!= 4  && h.samplerate!= 5) || 
+		h.bitpersample<0 || h.bitpersample>3)
+		return(false);
+
+	if(!pmt) return(true);
+
+	WAVEFORMATEX_HDMV_LPCM wfe;
+	wfe.wFormatTag = WAVE_FORMAT_PCM;
+
+	static int channels[] = {0, 1, 0, 2, 3, 3, 4, 4, 5, 6, 7, 8};
+	wfe.nChannels	 = channels[h.channels];
+	wfe.channel_conf = h.channels;
+
+	static int freq[] = {0, 48000, 0, 0, 96000, 192000};
+	wfe.nSamplesPerSec = freq[h.samplerate];
+
+	static int bitspersample[] = {0, 16, 20, 24};
+	wfe.wBitsPerSample = bitspersample[h.bitpersample];
+
+	wfe.nBlockAlign		= wfe.nChannels*wfe.wBitsPerSample>>3;
+	wfe.nAvgBytesPerSec = wfe.nBlockAlign*wfe.nSamplesPerSec;
+
+	pmt->majortype	= MEDIATYPE_Audio;
+	pmt->subtype	= MEDIASUBTYPE_HDMV_LPCM_AUDIO;
 	pmt->formattype = FORMAT_WaveFormatEx;
 	pmt->SetFormat((BYTE*)&wfe, sizeof(wfe));
 
@@ -701,7 +762,7 @@ bool CBaseSplitterFileEx::Read(lpcmhdr& h, CMediaType* pmt)
 	h.channels = BitRead(3);
 	h.drc = (BYTE)BitRead(8);
 
-	if(h.channels > 2 || h.reserved1 || h.reserved2)
+	if(h.quantwordlen == 3 || h.reserved1 || h.reserved2)
 		return(false);
 
 	if(!pmt) return(true);
@@ -712,9 +773,20 @@ bool CBaseSplitterFileEx::Read(lpcmhdr& h, CMediaType* pmt)
 	wfe.nChannels = h.channels+1;
 	static int freq[] = {48000, 96000, 44100, 32000};
 	wfe.nSamplesPerSec = freq[h.freq];
-	wfe.wBitsPerSample = 16;
-	wfe.nBlockAlign = wfe.nChannels*wfe.wBitsPerSample>>3;
-	wfe.nAvgBytesPerSec = wfe.nBlockAlign*wfe.nSamplesPerSec;
+	switch (h.quantwordlen)
+	{
+	case 0:
+		wfe.wBitsPerSample = 16;
+		break;
+	case 1:
+		wfe.wBitsPerSample = 20;
+		break;
+	case 2:
+		wfe.wBitsPerSample = 24;
+		break;
+	}
+	wfe.nBlockAlign = (wfe.nChannels*2*wfe.wBitsPerSample) / 8;
+	wfe.nAvgBytesPerSec = (wfe.nBlockAlign*wfe.nSamplesPerSec) / 2;
 
 	pmt->majortype = MEDIATYPE_Audio;
 	pmt->subtype = MEDIASUBTYPE_DVD_LPCM_AUDIO;
@@ -735,6 +807,26 @@ bool CBaseSplitterFileEx::Read(dvdspuhdr& h, CMediaType* pmt)
 	pmt->majortype = MEDIATYPE_Video;
 	pmt->subtype = MEDIASUBTYPE_DVD_SUBPICTURE;
 	pmt->formattype = FORMAT_None;
+
+	return(true);
+}
+
+bool CBaseSplitterFileEx::Read(hdmvsubhdr& h, CMediaType* pmt, const char* language_code)
+{
+	memset(&h, 0, sizeof(h));
+
+	if(!pmt) return(true);
+
+	pmt->majortype = MEDIATYPE_Subtitle;
+	pmt->subtype = MEDIASUBTYPE_HDMVSUB;
+	pmt->formattype = FORMAT_None;
+
+	SUBTITLEINFO* psi = (SUBTITLEINFO*)pmt->AllocFormatBuffer(sizeof(SUBTITLEINFO));
+	if (psi)
+	{
+		memset(psi, 0, pmt->FormatLength());
+		strcpy(psi->IsoLang, language_code ? language_code : "eng");
+	}
 
 	return(true);
 }
@@ -848,9 +940,9 @@ bool CBaseSplitterFileEx::Read(trhdr& h, bool fSync)
 			{
 				__int64 pos = GetPos();
 				Seek(pos + 188);
-				if(BitRead(8, true) == 0x47) {m_tslen = 188; break;}
+				if(BitRead(8, true) == 0x47) {m_tslen = 188; break;}	// TS stream
 				Seek(pos + 192);
-				if(BitRead(8, true) == 0x47) {m_tslen = 192; break;}
+				if(BitRead(8, true) == 0x47) {m_tslen = 192; break;}	// M2TS stream
 			}
 
 			BitRead(8);
@@ -1015,22 +1107,23 @@ bool CBaseSplitterFileEx::Read(avchdr& h, int len, CMediaType* pmt)
 {
 	__int64 endpos = GetPos() + len; // - sequence header length
 
-	__int64 spspos = 0, spslen = 0;
-	__int64 ppspos = 0, ppslen = 0;
+	DWORD	dwStartCode;
 
-	while(GetPos() < endpos+4 && BitRead(32, true) == 0x00000001)
+	// TODO : manage H264 escape codes (see "remove escapes (very rare 1:2^22)" in ffmpeg h264.c file)
+	while(GetPos() < endpos+4 && BitRead(32, true) == 0x00000001 && (!h.spslen || !h.ppslen))
 	{
 		__int64 pos = GetPos();
 
 		BitRead(32);
 		BYTE id = BitRead(8);
-
-		if(spspos != 0 && spslen == 0) spslen = pos - spspos;
-		else if(ppspos != 0 && ppslen == 0) ppslen = pos - ppspos;
 		
 		if((id&0x9f) == 0x07 && (id&0x60) != 0)
 		{
-			spspos = pos;
+			__int64	num_units_in_tick;
+			__int64	time_scale;
+			long	fixed_frame_rate_flag;
+
+			h.spspos = pos;
 
 			h.profile = (BYTE)BitRead(8);
 			BitRead(8);
@@ -1084,25 +1177,107 @@ bool CBaseSplitterFileEx::Read(avchdr& h, int len, CMediaType* pmt)
 
 			h.width = (pic_width_in_mbs_minus1 + 1) * 16;
 			h.height = (2 - frame_mbs_only_flag) * (pic_height_in_map_units_minus1 + 1) * 16;
+
+			if (h.height == 1088) h.height = 1080;	// Prevent blur lines 
+
+			if (!frame_mbs_only_flag) 
+				BitRead(1);							// mb_adaptive_frame_field_flag
+			BitRead(1);								// direct_8x8_inference_flag
+			if (BitRead(1))							// frame_cropping_flag
+			{
+				UExpGolombRead();					// frame_cropping_rect_left_offset
+				UExpGolombRead();					// frame_cropping_rect_right_offset
+				UExpGolombRead();					// frame_cropping_rect_top_offset
+				UExpGolombRead();					// frame_cropping_rect_bottom_offset
+			}
+			
+			if (BitRead(1))							// vui_parameters_present_flag
+			{
+				if (BitRead(1))						// aspect_ratio_info_present_flag
+				{
+					if (255==(BYTE)BitRead(8))		// aspect_ratio_idc)
+					{
+						BitRead(16);				// sar_width
+						BitRead(16);				// sar_height
+					}
+				}
+
+				if (BitRead(1))						// overscan_info_present_flag
+				{
+					BitRead(1);						// overscan_appropriate_flag
+				}
+
+				if (BitRead(1))						// video_signal_type_present_flag
+				{
+					BitRead(3);						// video_format
+					BitRead(1);						// video_full_range_flag
+					if(BitRead(1))					// colour_description_present_flag
+					{
+						BitRead(8);					// colour_primaries
+						BitRead(8);					// transfer_characteristics
+						BitRead(8);					// matrix_coefficients
+					}
+				}
+				if(BitRead(1))						// chroma_location_info_present_flag
+				{
+					UExpGolombRead();				// chroma_sample_loc_type_top_field
+					UExpGolombRead();				// chroma_sample_loc_type_bottom_field
+				}
+				if (BitRead(1))						// timing_info_present_flag
+				{
+					num_units_in_tick		= BitRead(32);
+					time_scale				= BitRead(32);
+					fixed_frame_rate_flag	= BitRead(1);
+
+					// Trick for weird parameters (10x to Madshi)!
+					if ((num_units_in_tick < 1000) || (num_units_in_tick > 1001))
+					{
+						if  ((time_scale % num_units_in_tick != 0) && ((time_scale*1001) % num_units_in_tick == 0))
+						{
+							time_scale			= (time_scale * 1001) / num_units_in_tick;
+							num_units_in_tick	= 1001;
+						}
+						else
+						{
+							time_scale			= (time_scale * 1000) / num_units_in_tick;
+							num_units_in_tick	= 1000;
+						}
+					}
+					time_scale = time_scale / 2;	// VUI consider fields even for progressive stream : divide by 2!
+
+					if (time_scale)
+						h.AvgTimePerFrame = (10000000I64*num_units_in_tick)/time_scale;
+				}
+			}
 		}
 		else if((id&0x9f) == 0x08 && (id&0x60) != 0)
 		{
-			ppspos = pos;
+			h.ppspos = pos;
 		}
 
 		BitByteAlign();
 
-		while(GetPos() < endpos+4 && BitRead(32, true) != 0x00000001)
+		dwStartCode = BitRead(32, true);
+		while(GetPos() < endpos+4 && (dwStartCode != 0x00000001) && (dwStartCode & 0xFFFFFF00) != 0x00000100)		    
+		{
 			BitRead(8);
+			dwStartCode = BitRead(32, true);
+		}
+
+		if(h.spspos != 0 && h.spslen == 0)
+			h.spslen = GetPos() - h.spspos;
+		else if(h.ppspos != 0 && h.ppslen == 0) 
+			h.ppslen = GetPos() - h.ppspos;
+
 	}
 
-	if(!spspos || !spslen || !ppspos || !ppslen) 
+	if(!h.spspos || !h.spslen || !h.ppspos || !h.ppslen) 
 		return(false);
 
 	if(!pmt) return(true);
 
 	{
-		int extra = 2+spslen-4 + 2+ppslen-4;
+		int extra = 2+h.spslen-4 + 2+h.ppslen-4;
 
 		pmt->majortype = MEDIATYPE_Video;
 		pmt->subtype = FOURCCMap('1CVA');
@@ -1111,7 +1286,7 @@ bool CBaseSplitterFileEx::Read(avchdr& h, int len, CMediaType* pmt)
 		MPEG2VIDEOINFO* vi = (MPEG2VIDEOINFO*)new BYTE[len];
 		memset(vi, 0, len);
 		// vi->hdr.dwBitRate = ;
-		// vi->hdr.AvgTimePerFrame = ;
+		vi->hdr.AvgTimePerFrame = h.AvgTimePerFrame;
 		vi->hdr.dwPictAspectRatioX = h.width;
 		vi->hdr.dwPictAspectRatioY = h.height;
 		vi->hdr.bmiHeader.biSize = sizeof(vi->hdr.bmiHeader);
@@ -1123,19 +1298,173 @@ bool CBaseSplitterFileEx::Read(avchdr& h, int len, CMediaType* pmt)
 		vi->dwLevel = h.level;
 		vi->cbSequenceHeader = extra;
 		BYTE* p = (BYTE*)&vi->dwSequenceHeader[0];
-		*p++ = (spslen-4) >> 8;
-		*p++ = (spslen-4) & 0xff;
-		Seek(spspos+4);
-		ByteRead(p, spslen-4);
-		p += spslen-4;
-		*p++ = (ppslen-4) >> 8;
-		*p++ = (ppslen-4) & 0xff;
-		Seek(ppspos+4);
-		ByteRead(p, ppslen-4);
-		p += ppslen-4;
+		*p++ = (h.spslen-4) >> 8;
+		*p++ = (h.spslen-4) & 0xff;
+		Seek(h.spspos+4);
+		ByteRead(p, h.spslen-4);
+		p += h.spslen-4;
+		*p++ = (h.ppslen-4) >> 8;
+		*p++ = (h.ppslen-4) & 0xff;
+		Seek(h.ppspos+4);
+		ByteRead(p, h.ppslen-4);
+		p += h.ppslen-4;
 		pmt->SetFormat((BYTE*)vi, len);
 		delete [] vi;
 	}
 
 	return(true);
 }
+
+
+bool CBaseSplitterFileEx::Read(vc1hdr& h, int len, CMediaType* pmt)
+{
+	__int64 endpos = GetPos() + len; // - sequence header length
+	__int64 extrapos = 0, extralen = 0;
+	int		nFrameRateNum = 0, nFrameRateDen = 1;
+
+	if (GetPos() < endpos+4 && BitRead(32, true) == 0x0000010F)
+	{
+		extrapos = GetPos();
+
+		BitRead(32);
+
+		h.profile	= BitRead(2);
+
+		// Check if advanced profile
+		if (h.profile != 3) return(false);
+
+		h.level = BitRead (3);
+		h.chromaformat = BitRead (2);
+
+		// (fps-2)/4 (->30)
+		h.frmrtq_postproc	= BitRead (3); //common
+		// (bitrate-32kbps)/64kbps
+		h.bitrtq_postproc	= BitRead (5); //common
+		h.postprocflag		= BitRead (1); //common
+
+		h.width				= (BitRead (12) + 1) << 1;
+		h.height			= (BitRead (12) + 1) << 1;
+
+		h.broadcast			= BitRead (1);
+		h.interlace			= BitRead (1);
+		h.tfcntrflag		= BitRead (1);
+		h.finterpflag		= BitRead (1);
+		BitRead (1); // reserved
+		h.psf				= BitRead (1);
+		if(BitRead (1))
+		{
+			int ar = 0;
+			h.ArX  = BitRead (14) + 1;
+			h.ArY  = BitRead (14) + 1;
+			if(BitRead (1))
+				ar = BitRead (4);
+			// TODO : next is not the true A/R! 
+			if(ar && ar < 14)
+			{
+//				h.ArX = ff_vc1_pixel_aspect[ar].num;
+//				h.ArY = ff_vc1_pixel_aspect[ar].den;
+			}
+			else if(ar == 15)
+			{
+				/*h.ArX =*/ BitRead (8);
+				/*h.ArY =*/ BitRead (8);
+			}
+
+			// Read framerate
+			const int	ff_vc1_fps_nr[5] = { 24, 25, 30, 50, 60 },
+						ff_vc1_fps_dr[2] = { 1000, 1001 };
+
+			if(BitRead (1))
+			{
+				if(BitRead (1)) 
+				{
+					nFrameRateNum = 32;
+					nFrameRateDen = BitRead (16) + 1;
+				} else {
+					int nr, dr;
+					nr = BitRead (8);
+					dr = BitRead (4);
+					if(nr && nr < 8 && dr && dr < 3)
+					{
+						nFrameRateNum = ff_vc1_fps_dr[dr - 1];
+						nFrameRateDen = ff_vc1_fps_nr[nr - 1] * 1000;
+					}
+				}
+			}
+
+		}
+
+		Seek(extrapos+4);
+		extralen = 0;
+		long	parse = 0;
+
+		while (GetPos() < endpos+4 && ((parse == 0x0000010E) || (parse & 0xFFFFFF00) != 0x00000100))
+		{
+			parse = (parse<<8) | BitRead(8);
+			extralen++;
+		}
+	}
+
+	if(!extrapos || !extralen) 
+		return(false);
+
+	if(!pmt) return(true);
+
+	{
+		//pmt->majortype = MEDIATYPE_Video;
+		//pmt->subtype = FOURCCMap('1CVW');
+		//pmt->formattype = FORMAT_MPEG2_VIDEO;
+		//int len = FIELD_OFFSET(MPEG2VIDEOINFO, dwSequenceHeader) + extralen + 1;
+		//MPEG2VIDEOINFO* vi = (MPEG2VIDEOINFO*)new BYTE[len];
+		//memset(vi, 0, len);
+		//// vi->hdr.dwBitRate = ;
+		//vi->hdr.AvgTimePerFrame = (10000000I64*nFrameRateNum)/nFrameRateDen;
+		//vi->hdr.dwPictAspectRatioX = h.width;
+		//vi->hdr.dwPictAspectRatioY = h.height;
+		//vi->hdr.bmiHeader.biSize = sizeof(vi->hdr.bmiHeader);
+		//vi->hdr.bmiHeader.biWidth = h.width;
+		//vi->hdr.bmiHeader.biHeight = h.height;
+		//vi->hdr.bmiHeader.biCompression = '1CVW';
+		//vi->dwProfile = h.profile;
+		//vi->dwFlags = 4; // ?
+		//vi->dwLevel = h.level;
+		//vi->cbSequenceHeader = extralen+1;
+		//BYTE* p = (BYTE*)&vi->dwSequenceHeader[0];
+		//*p++ = 0;
+		//Seek(extrapos);
+		//ByteRead(p, extralen);
+		//pmt->SetFormat((BYTE*)vi, len);
+		//delete [] vi;
+
+		pmt->majortype = MEDIATYPE_Video;
+		pmt->subtype = FOURCCMap('1CVW');
+		pmt->formattype = FORMAT_VIDEOINFO2;
+		int len = sizeof(VIDEOINFOHEADER2) + extralen + 1;
+		VIDEOINFOHEADER2* vi = (VIDEOINFOHEADER2*)new BYTE[len];
+		memset(vi, 0, len);
+		vi->AvgTimePerFrame = (10000000I64*nFrameRateNum)/nFrameRateDen;
+		vi->dwPictAspectRatioX = h.width;
+		vi->dwPictAspectRatioY = h.height;
+		vi->bmiHeader.biSize = sizeof(vi->bmiHeader);
+		vi->bmiHeader.biWidth = h.width;
+		vi->bmiHeader.biHeight = h.height;
+		vi->bmiHeader.biCompression = '1CVW';
+		BYTE* p = (BYTE*)vi + sizeof(VIDEOINFOHEADER2);
+		*p++ = 0;
+		Seek(extrapos);
+		ByteRead(p, extralen);
+		pmt->SetFormat((BYTE*)vi, len);
+		delete [] vi;
+	}
+
+	return(true);
+}
+
+
+/*
+
+To see working buffer in debugger, look :
+	- m_pCache.m_p	 for the cached buffer
+	- m_pos			 for current read position
+
+*/

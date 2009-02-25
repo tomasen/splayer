@@ -34,7 +34,7 @@
 #include "..\..\..\DSUtil\MediaTypes.h"
 
 #include <initguid.h>
-#include "..\..\..\..\include\moreuuids.h"
+#include <moreuuids.h>
 
 #define EPSILON 1e-4
 
@@ -66,9 +66,9 @@ const AMOVIESETUP_PIN sudpPins[] =
 const AMOVIESETUP_FILTER sudFilter[] =
 {
 	#ifdef MPEG2ONLY
-	{&__uuidof(CMpeg2DecFilter), L"MPEG-2 Video Decoder (Gabest)", 0x00600001, countof(sudpPins), sudpPins},
+	{&__uuidof(CMpeg2DecFilter), L"MPC - MPEG-2 Video Decoder (Gabest)", 0x00600001, countof(sudpPins), sudpPins},
 	#else
-	{&__uuidof(CMpeg2DecFilter), L"MPEG Video Decoder (Gabest)", 0x00600001, countof(sudpPins), sudpPins},
+	{&__uuidof(CMpeg2DecFilter), L"MPC - MPEG Video Decoder (Gabest)", 0x00600001, countof(sudpPins), sudpPins},
 	#endif
 };
 
@@ -92,17 +92,32 @@ STDAPI DllUnregisterServer()
 
 //
 
-#include "..\..\..\..\include\detours\detours.h"
+#include <detours\detours.h>
 
-DETOUR_TRAMPOLINE(BOOL WINAPI Real_IsDebuggerPresent(), IsDebuggerPresent);
+BOOL (__stdcall * Real_IsDebuggerPresent)(void)
+    = IsDebuggerPresent;
+
+LONG (__stdcall * Real_ChangeDisplaySettingsExA)(LPCSTR a0,
+                                                 LPDEVMODEA a1,
+                                                 HWND a2,
+                                                 DWORD a3,
+                                                 LPVOID a4)
+    = ChangeDisplaySettingsExA;
+
+LONG (__stdcall * Real_ChangeDisplaySettingsExW)(LPCWSTR a0,
+                                                 LPDEVMODEW a1,
+                                                 HWND a2,
+                                                 DWORD a3,
+                                                 LPVOID a4)
+    = ChangeDisplaySettingsExW;
+
+
 BOOL WINAPI Mine_IsDebuggerPresent()
 {
 	TRACE(_T("Oops, somebody was trying to be naughty! (called IsDebuggerPresent)\n")); 
 	return FALSE;
 }
 
-DETOUR_TRAMPOLINE(LONG WINAPI Real_ChangeDisplaySettingsExA(LPCSTR lpszDeviceName, LPDEVMODEA lpDevMode, HWND hwnd, DWORD dwFlags, LPVOID lParam), ChangeDisplaySettingsExA);
-DETOUR_TRAMPOLINE(LONG WINAPI Real_ChangeDisplaySettingsExW(LPCWSTR lpszDeviceName, LPDEVMODEW lpDevMode, HWND hwnd, DWORD dwFlags, LPVOID lParam), ChangeDisplaySettingsExW);
 LONG WINAPI Mine_ChangeDisplaySettingsEx(LONG ret, DWORD dwFlags, LPVOID lParam)
 {
 	if(dwFlags&CDS_VIDEOPARAMETERS)
@@ -148,10 +163,21 @@ class CMpeg2DecFilterApp : public CFilterApp
 public:
 	BOOL InitInstance()
 	{
+		long		lError;
+
 		if(!__super::InitInstance()) return FALSE;
-		DetourFunctionWithTrampoline((PBYTE)Real_IsDebuggerPresent, (PBYTE)Mine_IsDebuggerPresent);
-		DetourFunctionWithTrampoline((PBYTE)Real_ChangeDisplaySettingsExA, (PBYTE)Mine_ChangeDisplaySettingsExA);
-		DetourFunctionWithTrampoline((PBYTE)Real_ChangeDisplaySettingsExW, (PBYTE)Mine_ChangeDisplaySettingsExW);
+
+		DetourRestoreAfterWith();
+		DetourTransactionBegin();
+		DetourUpdateThread(GetCurrentThread());
+
+		DetourAttach(&(PVOID&)Real_IsDebuggerPresent, (PVOID)Mine_IsDebuggerPresent);
+		DetourAttach(&(PVOID&)Real_ChangeDisplaySettingsExA, (PVOID)Mine_ChangeDisplaySettingsExA);
+		DetourAttach(&(PVOID&)Real_ChangeDisplaySettingsExW, (PVOID)Mine_ChangeDisplaySettingsExW);
+
+		lError = DetourTransactionCommit();
+		ASSERT (lError == NOERROR);
+
 		return TRUE;
 	}
 };
@@ -438,9 +464,9 @@ HRESULT CMpeg2DecFilter::Transform(IMediaSample* pIn)
 	while(len >= 0)
 	{
 		mpeg2_state_t state = m_dec->mpeg2_parse();
-
+#ifndef _WIN64
 		__asm emms; // this one is missing somewhere in the precompiled mmx obj files
-
+#endif
 		switch(state)
 		{
 		case STATE_BUFFER:
@@ -511,7 +537,7 @@ HRESULT CMpeg2DecFilter::Transform(IMediaSample* pIn)
 	return S_OK;
 }
 
-HRESULT CMpeg2DecFilter::IsVideoInterlaced()
+bool CMpeg2DecFilter::IsVideoInterlaced()
 {
 	return IsInterlacedEnabled();
 }
@@ -783,7 +809,7 @@ HRESULT CMpeg2DecFilter::Deliver(bool fRepeatLast)
 	return hr;
 }
 
-#include "..\..\..\..\include\IFilterVersion.h"
+#include <IFilterVersion.h>
 
 HRESULT CMpeg2DecFilter::CheckConnect(PIN_DIRECTION dir, IPin* pPin)
 {

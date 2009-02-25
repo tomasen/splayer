@@ -11,6 +11,7 @@
  ********************************************************************
 
  function: toplevel libogg include
+ last mod: $Id: ogg.h 7188 2004-07-20 07:26:04Z xiphmont $
 
  ********************************************************************/
 #ifndef _OGG_H
@@ -20,7 +21,7 @@
 extern "C" {
 #endif
 
-#include "os_types.h"
+#include <ogg/os_types.h>
 
 typedef struct {
   long endbyte;
@@ -146,7 +147,7 @@ extern unsigned char *oggpackB_get_buffer(oggpack_buffer *b);
 
 /* Ogg BITSTREAM PRIMITIVES: encoding **************************/
 
-extern int      ogg_stream_packetin(ogg_stream_state *os, const ogg_packet *op);
+extern int      ogg_stream_packetin(ogg_stream_state *os, ogg_packet *op);
 extern int      ogg_stream_pageout(ogg_stream_state *os, ogg_page *og);
 extern int      ogg_stream_flush(ogg_stream_state *os, ogg_page *og);
 

@@ -131,10 +131,7 @@ HRESULT CBaseSplitterFile::Read(BYTE* pData, __int64 len)
 	{
 		__int64 minlen = min(len, m_cachelen - (m_pos - m_cachepos));
 
-		if(pData && len > 0)
-			memcpy(pData, &pCache[m_pos - m_cachepos], (size_t)minlen);
-		else
-			return S_FALSE;
+		memcpy(pData, &pCache[m_pos - m_cachepos], (size_t)minlen);
 
 		len -= minlen;
 		m_pos += minlen;
@@ -163,10 +160,8 @@ HRESULT CBaseSplitterFile::Read(BYTE* pData, __int64 len)
 
 		m_cachepos = m_pos;
 		m_cachelen = maxlen;
-		if(pData && len > 0)
-			memcpy(pData, pCache, (size_t)minlen);
-		else
-			return S_FALSE;
+
+		memcpy(pData, pCache, (size_t)minlen);
 
 		len -= minlen;
 		m_pos += minlen;

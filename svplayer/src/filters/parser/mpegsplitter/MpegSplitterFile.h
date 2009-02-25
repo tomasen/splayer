@@ -25,16 +25,23 @@
 #include <atlcoll.h>
 #include "..\BaseSplitter\BaseSplitter.h"
 
+#define NO_SUBTITLE_PID			1		// Fake PID use for the "No subtitle" entry
+
+
 class CMpegSplitterFile : public CBaseSplitterFileEx
 {
 	CAtlMap<WORD, BYTE> m_pid2pes;
+	CMpegSplitterFile::avchdr avch;
+	bool m_bIsHdmv;
+
 
 	HRESULT Init();
 
 	void OnComplete();
 
 public:
-	CMpegSplitterFile(IAsyncReader* pAsyncReader, HRESULT& hr);
+	CHdmvClipInfo &m_ClipInfo;
+	CMpegSplitterFile(IAsyncReader* pAsyncReader, HRESULT& hr, bool bIsHdmv, CHdmvClipInfo &ClipInfo);
 
 	REFERENCE_TIME NextPTS(DWORD TrackNum);
 
@@ -48,9 +55,11 @@ public:
 
 	struct stream
 	{
+		CMpegSplitterFile *m_pFile;
 		CMediaType mt;
 		WORD pid;
 		BYTE pesid, ps1id;
+		bool operator < (const stream &_Other) const;
 		struct stream() {pid = pesid = ps1id = 0;}
 		operator DWORD() const {return pid ? pid : ((pesid<<8)|ps1id);}
 		bool operator == (const struct stream& s) const {return (DWORD)*this == (DWORD)s;}
@@ -61,8 +70,9 @@ public:
 	class CStreamList : public CAtlList<stream>
 	{
 	public:
-		void Insert(stream& s)
+		void Insert(stream& s, CMpegSplitterFile *_pFile)
 		{
+			s.m_pFile = _pFile;
 			for(POSITION pos = GetHeadPosition(); pos; GetNext(pos))
 			{
 				stream& s2 = GetAt(pos);
@@ -96,17 +106,26 @@ public:
 
 	HRESULT SearchStreams(__int64 start, __int64 stop);
 	DWORD AddStream(WORD pid, BYTE pesid, DWORD len);
+	void  AddHdmvPGStream(WORD pid, const char* language_code);
 	CAtlList<stream>* GetMasterStream();
 
 	struct program
 	{
-		WORD program_number;
-		WORD pid[16];
+		WORD					program_number;
+		struct stream
+		{
+			WORD					pid;
+			ElementaryStreamTypes	type;
+
+		};
+		stream streams[64];
 		struct program() {memset(this, 0, sizeof(*this));}
 	};
 
 	CAtlMap<WORD, program> m_programs;
 
 	void UpdatePrograms(const trhdr& h);
-	const program* FindProgram(WORD pid);
+	const program* FindProgram(WORD pid, int &iStream, const CHdmvClipInfo::Stream * &_pClipInfo);
+
+	
 };

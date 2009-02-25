@@ -219,7 +219,7 @@ void CPlayerToolBar::OnInitialUpdate()
 
 BOOL CPlayerToolBar::OnVolumeMute(UINT nID)
 {
-	SetMute(!IsMuted());
+	SetMute(!IsMuted()); 
 	return FALSE;
 }
 

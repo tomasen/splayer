@@ -173,6 +173,7 @@ int CSVPNet::UploadSubFileByVideoAndHash(CString fnVideoFilePath, CString szFile
 	free(szTerm2);
 
 	for(int i = 0; i < fnSubPaths->GetCount(); i++){
+		char szFname[22];
 		/* Fill in the file upload field */
 		CString szgzFile = svpToolBox.getSameTmpName(fnSubPaths->GetAt(i)) ;
 		SVP_LogMsg( CString(_T("Gziping ")) +  fnSubPaths->GetAt(i) + _T(" to ") + szgzFile );
@@ -180,7 +181,8 @@ int CSVPNet::UploadSubFileByVideoAndHash(CString fnVideoFilePath, CString szFile
 		
 		szTerm2 = svpToolBox.CStringToUTF8(szgzFile, &iDescLen, CP_ACP);
 		//SVP_LogMsg(fnSubPaths->GetAt(i));
-		curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "subfile[]", CURLFORM_FILE, szTerm2,CURLFORM_END);
+		sprintf_s(szFname, 22, "subfile[%d]", i);
+		curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, szFname, CURLFORM_FILE, szTerm2,CURLFORM_END);
 		free(szTerm2);
 		
 	}

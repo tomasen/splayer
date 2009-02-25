@@ -21,11 +21,19 @@
 
 #pragma once
 
+
+typedef struct
+{
+	const GUID*		subtype;
+	WORD			biPlanes;
+	WORD			biBitCount;
+	DWORD			biCompression;
+} VIDEO_OUTPUT_FORMATS;
+
 class CBaseVideoFilter : public CTransformFilter
 {
 private:
     HRESULT Receive(IMediaSample* pIn);
-	HRESULT ReconnectOutput(int w, int h);
 
 	// these are private for a reason, don't bother them
 	DWORD m_win, m_hin, m_arxin, m_aryin;
@@ -44,12 +52,14 @@ protected:
 
 	virtual void GetOutputSize(int& w, int& h, int& arx, int& ary) {}
 	virtual HRESULT Transform(IMediaSample* pIn) = 0;
-	virtual HRESULT IsVideoInterlaced() {return false;}
+	virtual bool IsVideoInterlaced() {return false;}
+	virtual void GetOutputFormats (int& nNumber, VIDEO_OUTPUT_FORMATS** ppFormats);
 
 public:
 	CBaseVideoFilter(TCHAR* pName, LPUNKNOWN lpunk, HRESULT* phr, REFCLSID clsid, long cBuffers = 1);
 	virtual ~CBaseVideoFilter();
 
+	HRESULT ReconnectOutput(int w, int h, bool bSendSample = true);
 	int GetPinCount();
 	CBasePin* GetPin(int n);
 
@@ -59,6 +69,8 @@ public:
     HRESULT DecideBufferSize(IMemAllocator* pAllocator, ALLOCATOR_PROPERTIES* pProperties);
     HRESULT GetMediaType(int iPosition, CMediaType* pMediaType);
 	HRESULT SetMediaType(PIN_DIRECTION dir, const CMediaType* pmt);
+
+	void SetAspect(CSize aspect);
 };
 
 class CBaseVideoInputAllocator : public CMemAllocator

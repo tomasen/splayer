@@ -20,15 +20,23 @@
  */
 
 #include "stdafx.h"
+#include "resource.h"
 #include "MpaDecSettingsWnd.h"
 #include "..\..\..\dsutil\dsutil.h"
+
+
+// ==>>> Resource identifier from "resource.h" present in mplayerc project!
+#define ResStr(id) CString(MAKEINTRESOURCE(id))
 
 //
 // CMpaDecSettingsWnd
 //
 
+static TCHAR m_strDecodeToSpeaker[50];
+
 CMpaDecSettingsWnd::CMpaDecSettingsWnd()
 {
+	wcscpy (m_strDecodeToSpeaker, ResStr(IDS_MPADECSETTINGSWND_5));
 }
 
 bool CMpaDecSettingsWnd::OnConnect(const CInterfaceList<IUnknown, &IID_IUnknown>& pUnks)
@@ -48,6 +56,7 @@ bool CMpaDecSettingsWnd::OnConnect(const CInterfaceList<IUnknown, &IID_IUnknown>
 	m_dtsspkcfg = m_pMDF->GetSpeakerConfig(IMpaDecFilter::dts);
 	m_dtsdrc = m_pMDF->GetDynamicRangeControl(IMpaDecFilter::dts);
 	m_aacdownmix = !!m_pMDF->GetSpeakerConfig(IMpaDecFilter::aac);
+	m_ddmode = m_pMDF->GetDolbyDigitalMode();
 
 	return true;
 }
@@ -55,6 +64,21 @@ bool CMpaDecSettingsWnd::OnConnect(const CInterfaceList<IUnknown, &IID_IUnknown>
 void CMpaDecSettingsWnd::OnDisconnect()
 {
 	m_pMDF.Release();
+}
+
+LPCTSTR CMpaDecSettingsWnd::GetDolbyMode (DolbyDigitalMode ddmode)
+{
+	switch (ddmode)
+	{
+	case DD_AC3 :
+		return _T(" (AC3)");
+	case DD_EAC3 :
+		return _T(" (Dolby Digital+)");
+	case DD_TRUEHD :
+		return _T(" (Dolby True HD)");
+	default :
+		return _T("");
+	}
 }
 
 bool CMpaDecSettingsWnd::OnActivate()
@@ -65,7 +89,7 @@ bool CMpaDecSettingsWnd::OnActivate()
 
 	CPoint p(10, 10);
 
-	m_outputformat_static.Create(_T("Output sample format:"), dwStyle, CRect(p, CSize(120, m_fontheight)), this);
+	m_outputformat_static.Create(ResStr(IDS_MPADECSETTINGSWND_0), dwStyle, CRect(p, CSize(120, m_fontheight)), this);
 
 	p.y += m_fontheight + 5;
 
@@ -82,7 +106,9 @@ bool CMpaDecSettingsWnd::OnActivate()
 
 	p.y += 30;
 
-	m_ac3spkcfg_static.Create(_T("AC3 Decoder Settings"), dwStyle, CRect(p, CSize(120, m_fontheight)), this);
+	CString	strSpeak;
+	strSpeak.Format (_T("%s%s"), ResStr(IDS_MPADECSETTINGSWND_1), GetDolbyMode(m_ddmode));
+	m_ac3spkcfg_static.Create(ResStr(IDS_MPADECSETTINGSWND_1) + GetDolbyMode(m_ddmode), dwStyle, CRect(p, CSize(220, m_fontheight)), this);
 
 	p.y += m_fontheight + 5;
 
@@ -91,13 +117,13 @@ bool CMpaDecSettingsWnd::OnActivate()
 	m_ac3spkcfg_combo.SetItemData(m_ac3spkcfg_combo.AddString(_T("Dual Mono")), A52_CHANNEL);
 	m_ac3spkcfg_combo.SetItemData(m_ac3spkcfg_combo.AddString(_T("Stereo")), A52_STEREO);
 	m_ac3spkcfg_combo.SetItemData(m_ac3spkcfg_combo.AddString(_T("Dolby Stereo")), A52_DOLBY);
-	m_ac3spkcfg_combo.SetItemData(m_ac3spkcfg_combo.AddString(_T("3 Front")), A52_3F);
-	m_ac3spkcfg_combo.SetItemData(m_ac3spkcfg_combo.AddString(_T("2 Front + 1 Rear")), A52_2F1R);
-	m_ac3spkcfg_combo.SetItemData(m_ac3spkcfg_combo.AddString(_T("3 Front + 1 Rear")), A52_3F1R);
-	m_ac3spkcfg_combo.SetItemData(m_ac3spkcfg_combo.AddString(_T("2 Front + 2 Rear")), A52_2F2R);
-	m_ac3spkcfg_combo.SetItemData(m_ac3spkcfg_combo.AddString(_T("3 Front + 2 Rear")), A52_3F2R);
-	m_ac3spkcfg_combo.SetItemData(m_ac3spkcfg_combo.AddString(_T("Channel 1")), A52_CHANNEL1);
-	m_ac3spkcfg_combo.SetItemData(m_ac3spkcfg_combo.AddString(_T("Channel 2")), A52_CHANNEL2);
+	m_ac3spkcfg_combo.SetItemData(m_ac3spkcfg_combo.AddString(ResStr(IDS_MPA_3F)), A52_3F);
+	m_ac3spkcfg_combo.SetItemData(m_ac3spkcfg_combo.AddString(ResStr(IDS_MPA_2F_1R)), A52_2F1R);
+	m_ac3spkcfg_combo.SetItemData(m_ac3spkcfg_combo.AddString(ResStr(IDS_MPA_3F_1R)), A52_3F1R);
+	m_ac3spkcfg_combo.SetItemData(m_ac3spkcfg_combo.AddString(ResStr(IDS_MPA_2F_2R)), A52_2F2R);
+	m_ac3spkcfg_combo.SetItemData(m_ac3spkcfg_combo.AddString(ResStr(IDS_MPA_3F_2R)), A52_3F2R);
+	m_ac3spkcfg_combo.SetItemData(m_ac3spkcfg_combo.AddString(ResStr(IDS_MPA_CHANNEL_1)), A52_CHANNEL1);
+	m_ac3spkcfg_combo.SetItemData(m_ac3spkcfg_combo.AddString(ResStr(IDS_MPA_CHANNEL_2)), A52_CHANNEL2);
 
 	for(int i = 0, sel = abs(m_ac3spkcfg) & A52_CHANNEL_MASK; i < m_ac3spkcfg_combo.GetCount(); i++)
 		if((int)m_ac3spkcfg_combo.GetItemData(i) == sel)
@@ -111,7 +137,7 @@ bool CMpaDecSettingsWnd::OnActivate()
 
 	for(int i = 0, h = max(20, m_fontheight)+1; i < countof(m_ac3spkcfg_radio); i++, p.y += h)
 	{
-		static const TCHAR* labels[] = {_T("Decode to speakers"), _T("SPDIF")};
+		static const TCHAR* labels[] = {m_strDecodeToSpeaker, _T("SPDIF")};
 		m_ac3spkcfg_radio[i].Create(labels[i], dwStyle|BS_AUTORADIOBUTTON|(i == 0 ? WS_GROUP : 0), CRect(p + CPoint(10, 0), CSize(140, h)), this, IDC_PP_RADIO1+i);
 	}
 
@@ -119,12 +145,12 @@ bool CMpaDecSettingsWnd::OnActivate()
 
 	p.y += 5;
 
-	m_ac3spkcfg_check.Create(_T("Dynamic Range Control"), dwStyle|BS_AUTOCHECKBOX, CRect(p + CPoint(10, 0), CSize(150, m_fontheight)), this, IDC_PP_CHECK1);
+	m_ac3spkcfg_check.Create(ResStr(IDS_MPA_DYNRANGE), dwStyle|BS_AUTOCHECKBOX, CRect(p + CPoint(10, 0), CSize(150, m_fontheight)), this, IDC_PP_CHECK1);
 	m_ac3spkcfg_check.SetCheck(m_ac3drc);
 
 	p.y += m_fontheight + 10;
 
-	m_dtsspkcfg_static.Create(_T("DTS Decoder Settings"), dwStyle, CRect(p, CSize(120, m_fontheight)), this);
+	m_dtsspkcfg_static.Create(ResStr(IDS_MPADECSETTINGSWND_7), dwStyle, CRect(p, CSize(120, m_fontheight)), this);
 
 	p.y += m_fontheight + 5;
 
@@ -134,11 +160,11 @@ bool CMpaDecSettingsWnd::OnActivate()
 	m_dtsspkcfg_combo.SetItemData(m_dtsspkcfg_combo.AddString(_T("Stereo")), DTS_STEREO);
 	//m_dtsspkcfg_combo.SetItemData(m_dtsspkcfg_combo.AddString(_T("Stereo ..")), DTS_STEREO_SUMDIFF);
 	//m_dtsspkcfg_combo.SetItemData(m_dtsspkcfg_combo.AddString(_T("Stereo ..")), DTS_STEREO_TOTAL);
-	m_dtsspkcfg_combo.SetItemData(m_dtsspkcfg_combo.AddString(_T("3 Front")), DTS_3F);
-	m_dtsspkcfg_combo.SetItemData(m_dtsspkcfg_combo.AddString(_T("2 Front + 1 Rear")), DTS_2F1R);
-	m_dtsspkcfg_combo.SetItemData(m_dtsspkcfg_combo.AddString(_T("3 Front + 1 Rear")), DTS_3F1R);
-	m_dtsspkcfg_combo.SetItemData(m_dtsspkcfg_combo.AddString(_T("2 Front + 2 Rear")), DTS_2F2R);
-	m_dtsspkcfg_combo.SetItemData(m_dtsspkcfg_combo.AddString(_T("3 Front + 2 Rear")), DTS_3F2R);
+	m_dtsspkcfg_combo.SetItemData(m_dtsspkcfg_combo.AddString(ResStr(IDS_MPA_3F)), DTS_3F);
+	m_dtsspkcfg_combo.SetItemData(m_dtsspkcfg_combo.AddString(ResStr(IDS_MPA_2F_1R)), DTS_2F1R);
+	m_dtsspkcfg_combo.SetItemData(m_dtsspkcfg_combo.AddString(ResStr(IDS_MPA_3F_1R)), DTS_3F1R);
+	m_dtsspkcfg_combo.SetItemData(m_dtsspkcfg_combo.AddString(ResStr(IDS_MPA_2F_2R)), DTS_2F2R);
+	m_dtsspkcfg_combo.SetItemData(m_dtsspkcfg_combo.AddString(ResStr(IDS_MPA_3F_2R)), DTS_3F2R);
 
 	for(int i = 0, sel = abs(m_dtsspkcfg) & DTS_CHANNEL_MASK; i < m_dtsspkcfg_combo.GetCount(); i++)
 		if((int)m_dtsspkcfg_combo.GetItemData(i) == sel)
@@ -152,7 +178,7 @@ bool CMpaDecSettingsWnd::OnActivate()
 
 	for(int i = 0, h = max(20, m_fontheight)+1; i < countof(m_dtsspkcfg_radio); i++, p.y += h)
 	{
-		static const TCHAR* labels[] = {_T("Decode to speakers"), _T("SPDIF")};
+		static const TCHAR* labels[] = {m_strDecodeToSpeaker, _T("SPDIF")};
 		m_dtsspkcfg_radio[i].Create(labels[i], dwStyle|BS_AUTORADIOBUTTON|(i == 0 ? WS_GROUP : 0), CRect(p + CPoint(10, 0), CSize(140, h)), this, IDC_PP_RADIO3+i);
 	}
 
@@ -160,16 +186,16 @@ bool CMpaDecSettingsWnd::OnActivate()
 
 	p.y += 5;
 
-	m_dtsspkcfg_check.Create(_T("Dynamic Range Control"), dwStyle|WS_DISABLED|BS_AUTOCHECKBOX, CRect(p + CPoint(10, 0), CSize(150, m_fontheight)), this, IDC_PP_CHECK2);
+	m_dtsspkcfg_check.Create(ResStr(IDS_MPA_DYNRANGE), dwStyle|WS_DISABLED|BS_AUTOCHECKBOX, CRect(p + CPoint(10, 0), CSize(150, m_fontheight)), this, IDC_PP_CHECK2);
 	m_dtsspkcfg_check.SetCheck(m_dtsdrc);
 
 	p.y += m_fontheight + 10;
 
-	m_aacspkcfg_static.Create(_T("AAC Decoder Settings"), dwStyle, CRect(p, CSize(120, m_fontheight)), this);
+	m_aacspkcfg_static.Create(ResStr(IDS_MPADECSETTINGSWND_11), dwStyle, CRect(p, CSize(120, m_fontheight)), this);
 
 	p.y += m_fontheight + 5;
 
-	m_aacdownmix_check.Create(_T("Downmix to stereo"), dwStyle|BS_AUTOCHECKBOX, CRect(p + CPoint(10, 0), CSize(150, m_fontheight)), this, IDC_PP_CHECK3);
+	m_aacdownmix_check.Create(ResStr(IDS_MPADECSETTINGSWND_12), dwStyle|BS_AUTOCHECKBOX, CRect(p + CPoint(10, 0), CSize(150, m_fontheight)), this, IDC_PP_CHECK3);
 	m_aacdownmix_check.SetCheck(m_aacdownmix);
 
 	for(CWnd* pWnd = GetWindow(GW_CHILD); pWnd; pWnd = pWnd->GetNextWindow())
@@ -198,7 +224,7 @@ bool CMpaDecSettingsWnd::OnApply()
 
 	if(m_pMDF)
 	{
-		m_pMDF->SetSampleFormat((SampleFormat)m_outputformat);
+		m_pMDF->SetSampleFormat((MPCSampleFormat)m_outputformat);
 		m_pMDF->SetSpeakerConfig(IMpaDecFilter::ac3, m_ac3spkcfg);
 		m_pMDF->SetDynamicRangeControl(IMpaDecFilter::ac3, m_ac3drc);
 		m_pMDF->SetSpeakerConfig(IMpaDecFilter::dts, m_dtsspkcfg);

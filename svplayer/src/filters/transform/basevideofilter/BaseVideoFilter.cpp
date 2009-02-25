@@ -26,7 +26,7 @@
 #include "..\..\..\DSUtil\MediaTypes.h"
 
 #include <initguid.h>
-#include "..\..\..\..\include\moreuuids.h"
+#include <moreuuids.h>
 
 //
 // CBaseVideoFilter
@@ -54,6 +54,12 @@ CBaseVideoFilter::~CBaseVideoFilter()
 {
 }
 
+void CBaseVideoFilter::SetAspect(CSize aspect)
+{
+	m_arx = aspect.cx;
+	m_ary = aspect.cy;
+}
+
 int CBaseVideoFilter::GetPinCount()
 {
 	return 2;
@@ -71,7 +77,10 @@ CBasePin* CBaseVideoFilter::GetPin(int n)
 
 HRESULT CBaseVideoFilter::Receive(IMediaSample* pIn)
 {
+#ifndef _WIN64
+	// TODOX64 : fixme!
 	_mm_empty(); // just for safety
+#endif
 
 	CAutoLock cAutoLock(&m_csReceive);
 
@@ -126,7 +135,7 @@ HRESULT CBaseVideoFilter::GetDeliveryBuffer(int w, int h, IMediaSample** ppOut)
 	return S_OK;
 }
 
-HRESULT CBaseVideoFilter::ReconnectOutput(int w, int h)
+HRESULT CBaseVideoFilter::ReconnectOutput(int w, int h, bool bSendSample)
 {
 	CMediaType& mt = m_pOutput->CurrentMediaType();
 
@@ -180,27 +189,32 @@ HRESULT CBaseVideoFilter::ReconnectOutput(int w, int h)
 		ASSERT(SUCCEEDED(hr)); // should better not fail, after all "mt" is the current media type, just with a different resolution
 HRESULT hr1 = 0, hr2 = 0;
 		CComPtr<IMediaSample> pOut;
-		if(SUCCEEDED(hr1 = m_pOutput->GetConnected()->ReceiveConnection(m_pOutput, &mt))
-		&& SUCCEEDED(hr2 = m_pOutput->GetDeliveryBuffer(&pOut, NULL, NULL, 0)))
+		if(SUCCEEDED(hr1 = m_pOutput->GetConnected()->ReceiveConnection(m_pOutput, &mt)))
 		{
-			AM_MEDIA_TYPE* pmt;
-			if(SUCCEEDED(pOut->GetMediaType(&pmt)) && pmt)
+			if (bSendSample)
 			{
-				CMediaType mt = *pmt;
-				m_pOutput->SetMediaType(&mt);
-				DeleteMediaType(pmt);
+				if (SUCCEEDED(hr2 = m_pOutput->GetDeliveryBuffer(&pOut, NULL, NULL, 0)))
+				{
+					AM_MEDIA_TYPE* pmt;
+					if(SUCCEEDED(pOut->GetMediaType(&pmt)) && pmt)
+					{
+						CMediaType mt = *pmt;
+						m_pOutput->SetMediaType(&mt);
+						DeleteMediaType(pmt);
+					}
+					else // stupid overlay mixer won't let us know the new pitch...
+					{
+						long size = pOut->GetSize();
+						bmi->biWidth = size / bmi->biHeight * 8 / bmi->biBitCount;
+					}
+				}
+				else
+				{
+					m_w = w_org;
+					m_h = h_org;
+					return E_FAIL;
+				}
 			}
-			else // stupid overlay mixer won't let us know the new pitch...
-			{
-				long size = pOut->GetSize();
-				bmi->biWidth = size / bmi->biHeight * 8 / bmi->biBitCount;
-			}
-		}
-		else
-		{
-			m_w = w_org;
-			m_h = h_org;
-			return E_FAIL;
 		}
 
 		m_wout = m_w;
@@ -429,27 +443,39 @@ HRESULT CBaseVideoFilter::DecideBufferSize(IMemAllocator* pAllocator, ALLOCATOR_
 		: NOERROR;
 }
 
+
+VIDEO_OUTPUT_FORMATS DefaultFormats[] =
+{
+	{&MEDIASUBTYPE_YV12, 3, 12, '21VY'},
+	{&MEDIASUBTYPE_I420, 3, 12, '024I'},
+	{&MEDIASUBTYPE_IYUV, 3, 12, 'VUYI'},
+	{&MEDIASUBTYPE_YUY2, 1, 16, '2YUY'},
+	{&MEDIASUBTYPE_ARGB32, 1, 32, BI_RGB},
+	{&MEDIASUBTYPE_RGB32, 1, 32, BI_RGB},
+	{&MEDIASUBTYPE_RGB24, 1, 24, BI_RGB},
+	{&MEDIASUBTYPE_RGB565, 1, 16, BI_RGB},
+	{&MEDIASUBTYPE_RGB555, 1, 16, BI_RGB},
+	{&MEDIASUBTYPE_ARGB32, 1, 32, BI_BITFIELDS},
+	{&MEDIASUBTYPE_RGB32, 1, 32, BI_BITFIELDS},
+	{&MEDIASUBTYPE_RGB24, 1, 24, BI_BITFIELDS},
+	{&MEDIASUBTYPE_RGB565, 1, 16, BI_BITFIELDS},
+	{&MEDIASUBTYPE_RGB555, 1, 16, BI_BITFIELDS},
+};
+
+void CBaseVideoFilter::GetOutputFormats (int& nNumber, VIDEO_OUTPUT_FORMATS** ppFormats)
+{
+	nNumber		= countof(DefaultFormats);
+	*ppFormats	= DefaultFormats;
+}
+
+
 HRESULT CBaseVideoFilter::GetMediaType(int iPosition, CMediaType* pmt)
 {
+	VIDEO_OUTPUT_FORMATS*	fmts;
+	int						nFormatCount;
+
     if(m_pInput->IsConnected() == FALSE) return E_UNEXPECTED;
 
-	struct {const GUID* subtype; WORD biPlanes, biBitCount; DWORD biCompression;} fmts[] =
-	{
-		{&MEDIASUBTYPE_YV12, 3, 12, '21VY'},
-		{&MEDIASUBTYPE_I420, 3, 12, '024I'},
-		{&MEDIASUBTYPE_IYUV, 3, 12, 'VUYI'},
-		{&MEDIASUBTYPE_YUY2, 1, 16, '2YUY'},
-		{&MEDIASUBTYPE_ARGB32, 1, 32, BI_RGB},
-		{&MEDIASUBTYPE_RGB32, 1, 32, BI_RGB},
-		{&MEDIASUBTYPE_RGB24, 1, 24, BI_RGB},
-		{&MEDIASUBTYPE_RGB565, 1, 16, BI_RGB},
-		{&MEDIASUBTYPE_RGB555, 1, 16, BI_RGB},
-		{&MEDIASUBTYPE_ARGB32, 1, 32, BI_BITFIELDS},
-		{&MEDIASUBTYPE_RGB32, 1, 32, BI_BITFIELDS},
-		{&MEDIASUBTYPE_RGB24, 1, 24, BI_BITFIELDS},
-		{&MEDIASUBTYPE_RGB565, 1, 16, BI_BITFIELDS},
-		{&MEDIASUBTYPE_RGB555, 1, 16, BI_BITFIELDS},
-	};
 
 	// this will make sure we won't connect to the old renderer in dvd mode
 	// that renderer can't switch the format dynamically
@@ -464,9 +490,9 @@ HRESULT CBaseVideoFilter::GetMediaType(int iPosition, CMediaType* pmt)
 		iPosition = iPosition*2;
 
 	//
-
+	GetOutputFormats (nFormatCount, &fmts);
 	if(iPosition < 0) return E_INVALIDARG;
-	if(iPosition >= 2*countof(fmts)) return VFW_S_NO_MORE_ITEMS;
+	if(iPosition >= 2*nFormatCount) return VFW_S_NO_MORE_ITEMS;
 
 	pmt->majortype = MEDIATYPE_Video;
 	pmt->subtype = *fmts[iPosition/2].subtype;
@@ -501,7 +527,7 @@ HRESULT CBaseVideoFilter::GetMediaType(int iPosition, CMediaType* pmt)
 		vih->bmiHeader = bihOut;
 		vih->dwPictAspectRatioX = arx;
 		vih->dwPictAspectRatioY = ary;
-		if(IsVideoInterlaced()) vih->dwInterlaceFlags = AMINTERLACE_IsInterlaced;
+		if(IsVideoInterlaced()) vih->dwInterlaceFlags = AMINTERLACE_IsInterlaced | AMINTERLACE_DisplayModeBobOrWeave;
 	}
 
 	CMediaType& mt = m_pInput->CurrentMediaType();
@@ -512,6 +538,22 @@ HRESULT CBaseVideoFilter::GetMediaType(int iPosition, CMediaType* pmt)
 	((VIDEOINFOHEADER*)pmt->Format())->dwBitErrorRate = ((VIDEOINFOHEADER*)mt.Format())->dwBitErrorRate;
 
 	CorrectMediaType(pmt);
+
+	// copy source and target rectangles from input pin
+	CMediaType&		pmtInput	= m_pInput->CurrentMediaType();
+	VIDEOINFOHEADER* vih      = (VIDEOINFOHEADER*)pmt->Format();
+	VIDEOINFOHEADER* vihInput = (VIDEOINFOHEADER*)pmtInput.Format();
+
+	if (vih && vihInput && (vihInput->rcSource.right != 0) && (vihInput->rcSource.bottom != 0))
+	{
+		memcpy (&vih->rcSource, &vihInput->rcSource, sizeof(RECT));
+		memcpy (&vih->rcTarget, &vihInput->rcTarget, sizeof(RECT));
+	}
+	else
+	{
+		vih->rcSource.right  = vih->rcTarget.right  = m_win;
+		vih->rcSource.bottom = vih->rcTarget.bottom = m_hin;
+	}
 
 	return S_OK;
 }

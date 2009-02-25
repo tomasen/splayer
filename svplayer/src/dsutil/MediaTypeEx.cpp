@@ -4,7 +4,7 @@
 
 #include <mmreg.h>
 #include <initguid.h>
-#include "..\..\include\moreuuids.h"
+#include <moreuuids.h>
 
 #pragma pack(push, 1)
 typedef struct
@@ -156,7 +156,7 @@ CString CMediaTypeEx::ToString(IPin* pPin)
 			rtDur /= 60;
 			int m = rtDur%60;
 			rtDur /= 60;
-			int h = rtDur;
+			int h = (int)rtDur;
 			if(h) dur.Format(_T("%d:%02d:%02d"), h, m, s);
 			else if(m) dur.Format(_T("%02d:%02d"), m, s);
 			else if(s) dur.Format(_T("%ds"), s);
@@ -188,7 +188,12 @@ CString CMediaTypeEx::GetVideoCodecName(const GUID& subtype, DWORD biCompression
 		names['WMV2'] = _T("Windows Media Video 8");
 		names['WMV3'] = _T("Windows Media Video 9");
 		names['DIV3'] = _T("DivX 3");
+		names['MP43'] = _T("MSMPEG4v3");
+		names['MP42'] = _T("MSMPEG4v2");
+		names['MP41'] = _T("MSMPEG4v1");
 		names['DX50'] = _T("DivX 5");
+		names['DIVX'] = _T("DivX 6");
+		names['XVID'] = _T("Xvid");
 		names['MP4V'] = _T("MPEG4 Video");
 		names['AVC1'] = _T("MPEG4 Video (H264)");
 		names['H264'] = _T("MPEG4 Video (H264)");
@@ -197,6 +202,12 @@ CString CMediaTypeEx::GetVideoCodecName(const GUID& subtype, DWORD biCompression
 		names['RV30'] = _T("RealVideo 3");
 		names['RV40'] = _T("RealVideo 4");
 		names['FLV1'] = _T("Flash Video 1");
+		names['FLV4'] = _T("Flash Video 4");
+		names['VP50'] = _T("On2 VP5");
+		names['VP60'] = _T("On2 VP6");
+		names['SVQ3'] = _T("SVQ3");
+		names['SVQ1'] = _T("SVQ1");
+		names['H263'] = _T("H263");
 		// names[''] = _T("");
 	}
 
@@ -611,21 +622,21 @@ void CMediaTypeEx::Dump(CAtlList<CString>& sl)
 		{
 			str.Format(_T("%04x:"), i);
 
-			for(int k = i, l = min(i + 16, cbFormat); k < l; k++)
+			for(int k = i, l = min(i + 16, (int)cbFormat); k < l; k++)
 			{
 				CString byte;
 				byte.Format(_T("%c%02x"), fmtsize > 0 && fmtsize == k ? '|' : ' ', pbFormat[k]);
 				str += byte;
 			}
 
-			for(int k = min(i + 16, cbFormat), l = i + 16; k < l; k++)
+			for(int k = min(i + 16, (int)cbFormat), l = i + 16; k < l; k++)
 			{
 				str += _T("   ");
 			}
 
 			str += ' ';
 
-			for(int k = i, l = min(i + 16, cbFormat); k < l; k++)
+			for(int k = i, l = min(i + 16, (int)cbFormat); k < l; k++)
 			{
 				unsigned char c = (unsigned char)pbFormat[k];
 				CStringA ch;

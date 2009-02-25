@@ -382,21 +382,17 @@ extern void mpeg2_idct_add_sse2(const int last, int16_t* block, uint8_t* dest, c
 
 extern mpeg2_mc_t mpeg2_mc_sse2;
 
-// idct (null)
+// idct (c)
 
-static void mpeg2_idct_init_null() {}
-static void mpeg2_idct_copy_null(int16_t* block, uint8_t* dest, const int stride) {}
-static void mpeg2_idct_add_null(const int last, int16_t* block, uint8_t* dest, const int stride) {}
+static void mpeg2_idct_init_c();
+static void mpeg2_idct_copy_c(int16_t* block, uint8_t* dest, const int stride);
+static void mpeg2_idct_add_c(const int last, int16_t* block, uint8_t* dest, const int stride);
 
-// mc (null)
+ // mc (c)
 
-static void MC_null(uint8_t* dest, const uint8_t* ref, const int stride, int height) {}
+static void MC_c(uint8_t* dest, const uint8_t* ref, const int stride, int height);
 
-mpeg2_mc_t mpeg2_mc_null = 
-{
-	{MC_null, MC_null, MC_null, MC_null, MC_null, MC_null, MC_null, MC_null},
-	{MC_null, MC_null, MC_null, MC_null, MC_null, MC_null, MC_null, MC_null}
-};
+extern mpeg2_mc_t mpeg2_mc_c;
 
 //
 
@@ -501,7 +497,7 @@ int CMpeg2Dec::copy_chunk(int bytes)
 	// this assembly gives us a nice speed up
 	// 36 sec down to 32 sec decoding the ts.stream.tpr test file
 	// (idtc, mc was set to null)
-
+#ifndef _WIN64
 	__asm
 	{
 		mov ebx, this
@@ -542,7 +538,7 @@ int CMpeg2Dec::copy_chunk(int bytes)
 		mov [ebx].m_buf_start, esi
 		mov [ebx].m_shift, edx
 	}
-/*
+#else
 	uint8_t* chunk_ptr = m_chunk_ptr;
 	uint8_t* current = m_buf_start;
 	uint8_t* limit = current + bytes;
@@ -561,7 +557,7 @@ int CMpeg2Dec::copy_chunk(int bytes)
 	}
 
 	m_buf_start = current;
-*/
+#endif
 	return len;
 }
 
@@ -1963,6 +1959,7 @@ CMpeg2Decoder::CMpeg2Decoder()
 
 //	//
 /**/
+#ifndef _WIN64
 	if(g_cpuid.m_flags&CCpuID::sse2)
 	{
 		m_idct_init = mpeg2_idct_init_sse2;
@@ -1978,18 +1975,13 @@ CMpeg2Decoder::CMpeg2Decoder()
 		m_mc = &mpeg2_mc_mmx;
 	}
 	else
+#endif
 	{
 		m_idct_init = mpeg2_idct_init_c;
 		m_idct_copy = mpeg2_idct_copy_c;
 		m_idct_add = mpeg2_idct_add_c;
 		m_mc = &mpeg2_mc_c;
 	}
-/*
-m_idct_init = mpeg2_idct_init_null;
-m_idct_copy = mpeg2_idct_copy_null;
-m_idct_add = mpeg2_idct_add_null;
-m_mc = &mpeg2_mc_null;
-*/
 	if(!m_idct_initialized)
 	{
 		m_idct_init();

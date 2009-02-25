@@ -4,6 +4,7 @@
 
 #pragma once
 
-#define SVP_REV_STR	_T("68")
-#define SVP_REV_NUMBER	68
-#define SVP_VER_STR	"1, 0, 0, 68"
+#define VERSION_MAJOR		1
+#define VERSION_MINOR		2
+#define VERSION_REV			1002
+#define VERSION_PATCH		0

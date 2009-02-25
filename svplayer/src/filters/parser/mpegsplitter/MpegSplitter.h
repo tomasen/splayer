@@ -27,7 +27,9 @@
 [uuid("DC257063-045F-4BE2-BD5B-E12279C464F0")]
 class CMpegSplitterFilter : public CBaseSplitterFilter, public IAMStreamSelect
 {
-	REFERENCE_TIME m_rtStartOffset;
+	REFERENCE_TIME	m_rtStartOffset;
+	bool			m_pPipoBimbo;
+	CHdmvClipInfo	m_ClipInfo;
 
 protected:
 	CAutoPtr<CMpegSplitterFile> m_pFile;
@@ -41,9 +43,12 @@ protected:
 
 public:
 	CMpegSplitterFilter(LPUNKNOWN pUnk, HRESULT* phr, const CLSID& clsid = __uuidof(CMpegSplitterFilter));
+	void SetPipo(bool bPipo) { m_pPipoBimbo = bPipo; };
 
 	DECLARE_IUNKNOWN
     STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void** ppv);
+	STDMETHODIMP GetClassID(CLSID* pClsID);
+	STDMETHODIMP Load(LPCOLESTR pszFileName, const AM_MEDIA_TYPE* pmt);
 
 	// IAMStreamSelect
 
@@ -63,7 +68,7 @@ class CMpegSplitterOutputPin : public CBaseSplitterOutputPin, protected CCritSec
 {
 	CAutoPtr<Packet> m_p;
 	CAutoPtrList<Packet> m_pl;
-	REFERENCE_TIME m_rtPrev, m_rtOffset;
+	REFERENCE_TIME m_rtPrev, m_rtOffset, m_rtMaxShift;
 	bool m_fHasAccessUnitDelimiters;
 
 protected:
@@ -74,4 +79,6 @@ protected:
 public:
 	CMpegSplitterOutputPin(CAtlArray<CMediaType>& mts, LPCWSTR pName, CBaseFilter* pFilter, CCritSec* pLock, HRESULT* phr);
 	virtual ~CMpegSplitterOutputPin();
+	STDMETHODIMP	Connect(IPin* pReceivePin, const AM_MEDIA_TYPE* pmt);
+	void			SetMaxShift(REFERENCE_TIME rtMaxShift) { m_rtMaxShift = rtMaxShift; };
 };

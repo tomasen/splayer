@@ -22,14 +22,14 @@
 #include "StdAfx.h"
 #include "..\..\..\DSUtil\DSUtil.h"
 #include <initguid.h>
-#include "..\..\..\..\include\moreuuids.h"
+#include "../../../../include/moreuuids.h"
 #include "..\..\switcher\AudioSwitcher\AudioSwitcher.h"
 #include "BaseSplitter.h"
 
 #pragma warning(disable: 4355)
 
-#define MINPACKETS 10
-#define MINPACKETSIZE 100*1024
+#define MINPACKETS 100			// Beliyaal: Changed the min number of packets to allow Bluray playback over network
+#define MINPACKETSIZE 256*1024	// Beliyaal: Changed the min packet size to allow Bluray playback over network
 #define MAXPACKETS 10000
 #define MAXPACKETSIZE 1024*1024*5
 
@@ -1148,16 +1148,19 @@ STDMETHODIMP CBaseSplitterFilter::Load(LPCOLESTR pszFileName, const AM_MEDIA_TYP
 {
 	CheckPointer(pszFileName, E_POINTER);
 
+	m_fn = pszFileName;
 	HRESULT hr = E_FAIL;
 	CComPtr<IAsyncReader> pAsyncReader = (IAsyncReader*)new CAsyncFileReader(CString(pszFileName), hr);
 	if(FAILED(hr)
 	|| FAILED(hr = DeleteOutputs())
 	|| FAILED(hr = CreateOutputs(pAsyncReader)))
+	{
+		m_fn = "";
 		return hr;
+	}
 
 	ChapSort();
 
-	m_fn = pszFileName;
 	m_pSyncReader = pAsyncReader;
 
 	return S_OK;

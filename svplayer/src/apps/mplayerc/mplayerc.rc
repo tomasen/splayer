@@ -669,16 +669,16 @@ STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0xEE
 BEGIN
     GROUPBOX        "DirectShow Video",IDC_STATIC,5,2,95,126
-    CONTROL         "系统默认",IDC_DSSYSDEF,"Button",BS_AUTORADIOBUTTON | WS_GROUP,13,15,65,10
-    CONTROL         "旧版渲染器",IDC_DSOLD,"Button",BS_AUTORADIOBUTTON,13,26,59,10
-    CONTROL         "Overlay Mixer *",IDC_DSOVERLAYMIXER,"Button",BS_AUTORADIOBUTTON,13,37,67,10
-    CONTROL         "VMR7 (windowed)",IDC_DSVMR7WIN,"Button",BS_AUTORADIOBUTTON,13,48,73,10
-    CONTROL         "VMR9 (windowed)",IDC_DSVMR9WIN,"Button",BS_AUTORADIOBUTTON,13,59,73,10
+    CONTROL         "系统默认",IDC_DSSYSDEF,"Button",BS_AUTORADIOBUTTON | WS_DISABLED | WS_GROUP,13,15,65,10
+    CONTROL         "旧版渲染器",IDC_DSOLD,"Button",BS_AUTORADIOBUTTON | WS_DISABLED,13,26,59,10
+    CONTROL         "Overlay Mixer *",IDC_DSOVERLAYMIXER,"Button",BS_AUTORADIOBUTTON | WS_DISABLED,13,37,67,10
+    CONTROL         "VMR7 (windowed)",IDC_DSVMR7WIN,"Button",BS_AUTORADIOBUTTON | WS_DISABLED,13,48,73,10
+    CONTROL         "VMR9 (windowed)",IDC_DSVMR9WIN,"Button",BS_AUTORADIOBUTTON | WS_DISABLED,13,59,73,10
     CONTROL         "VMR7 (renderless) **",IDC_DSVMR7REN,"Button",BS_AUTORADIOBUTTON,13,70,85,10
     CONTROL         "VMR9 (renderless) **",IDC_DSVMR9REN,"Button",BS_AUTORADIOBUTTON,13,81,85,10
     CONTROL         "Haali Renderer **",IDC_DSDXR,"Button",BS_AUTORADIOBUTTON,13,92,83,10
-    CONTROL         "Null (anything)",IDC_DSNULL_COMP,"Button",BS_AUTORADIOBUTTON,13,103,63,10
-    CONTROL         "Null (uncompressed)",IDC_DSNULL_UNCOMP,"Button",BS_AUTORADIOBUTTON,13,114,81,10
+    CONTROL         "Null (anything)",IDC_DSNULL_COMP,"Button",BS_AUTORADIOBUTTON | WS_DISABLED,13,103,63,10
+    CONTROL         "Null (uncompressed)",IDC_DSNULL_UNCOMP,"Button",BS_AUTORADIOBUTTON | WS_DISABLED,13,114,81,10
     GROUPBOX        "RealMedia Video",IDC_STATIC,105,2,89,50
     CONTROL         "系统默认 *",IDC_RMSYSDEF,"Button",BS_AUTORADIOBUTTON | WS_GROUP,113,14,71,10
     CONTROL         "DirectX 7 **",IDC_RMDX7,"Button",BS_AUTORADIOBUTTON,113,25,55,10
@@ -2031,6 +2031,18 @@ END
 
 STRINGTABLE 
 BEGIN
+    IDS_RS_LASTCHECKUPDATER "LastCheckUpdater"
+    IDS_RS_USEGPUACEL       "USEGPUAcel"
+    IDS_RS_AUTODOWNLAODSVPSUB "AutoDownloadSVPSub"
+    IDS_RS_USEGPUCUDA       "USEGPUCUDA"
+    IDS_RS_AUTORESUMEPLAY   "autoResumePlay"
+    IDS_TRA_FFMPEG          "6.4.0.2\nBased on FFmpeg, http://ffmpeg.mplayerhq.hu/"
+    IDS_RS_DXVAFILTERS      "DXVAFilters"
+    IDS_RS_FFMPEGFILTERS    "FFmpegFilters"
+END
+
+STRINGTABLE 
+BEGIN
     IDS_RS_SNAPTODESKTOPEDGES "SnapToDesktopEdges"
     IDS_RS_ENABLESUBTITLES  "EnableSubtitles"
     IDS_RS_MPEGINTERLACED   "MPEGInterlaced"
@@ -2235,15 +2247,6 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_RS_LASTCHECKUPDATER "LastCheckUpdater"
-    IDS_RS_USEGPUACEL       "USEGPUAcel"
-    IDS_RS_AUTODOWNLAODSVPSUB "AutoDownloadSVPSub"
-    IDS_RS_USEGPUCUDA       "USEGPUCUDA"
-    IDS_RS_AUTORESUMEPLAY   "autoResumePlay"
-END
-
-STRINGTABLE 
-BEGIN
     IDS_RS_TRAYICON         "TrayIcon"
     IDS_RS_KEEPASPECTRATIO  "KeepAspectRatio"
     IDS_RS_UICEADDR         "UICEAddr"
@@ -2392,6 +2395,87 @@ BEGIN
     IDS_RS_VMR9MIXERMODE    "VMR9MixerMode"
     IDS_RS_THUMBROWS        "ThumbRows"
     IDS_RS_THUMBCOLS        "ThumbCols"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_VDF_IDCT_SIMPLE_MMX "Simple MMX"
+    IDS_VDF_IDCT_XVID       "XVID"
+    IDS_VDF_IDCT_SIMPLE     "Simple"
+    IDS_VDF_DXVA_SETTING    "DXVA settings"
+    IDS_VDF_DXVA_MODE       "DXVA Mode"
+    IDS_D3DFS_WARNING       "This option is designed to avoid tearing. However, it will also prevent MPC-HC from displaying context menus and dialog boxes during playback.\n\nTo exit Direct3D fullscreen and stop playback, you must press: Ctrl + C.\n\nDo you really want to activate this option?"
+    IDS_MAINFRM_139         "Sub delay: %ld ms"
+    IDS_REALVIDEO_INCOMPATIBLE 
+                            "Filename contains unsupported characters (use only A-Z, 0-9)"
+    IDS_VDF_VIDEOCARD       "Video card"
+    IDS_THUMB_ROWNUMBER     "Rows:"
+    IDS_THUMB_COLNUMBER     "Columns:"
+    IDS_THUMB_IMAGE_WIDTH   "Image width:"
+    IDS_PPSDB_URLCORRECT    "The URL appears to be correct!"
+    IDS_PPSDB_PROTOCOLERR   "Protocol version mismatch, please upgrade your player or choose a different address!"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_MPADECSETTINGSWND_0 "Output sample format:"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_MPADECSETTINGSWND_1 "AC3 Decoder Settings"
+    IDS_MPA_CHANNEL_1       "Channel 1"
+    IDS_MPA_CHANNEL_2       "Channel 2"
+    IDS_MPADECSETTINGSWND_5 "Decode to speakers"
+    IDS_MPADECSETTINGSWND_7 "DTS Decoder Settings"
+    IDS_MPADECSETTINGSWND_11 "AAC Decoder Settings"
+    IDS_MPADECSETTINGSWND_12 "Downmix to stereo"
+    IDS_AG_SETTINGS         "Settings"
+    IDS_MPEG2DECSETTINGSWND_0 
+                            "Enable planar YUV media types (VY12, I420, IYUY)"
+    IDS_MPEG2DECSETTINGSWND_1 "Set interlaced flag in output media type"
+    IDS_MPEG2DECSETTINGSWND_2 "Always display forced subtitles"
+    IDS_MPEG2_DEINTERLACING "Deinterlacing"
+    IDS_MPEG2_BRIGHTNESS    "Brightness"
+    IDS_MPEG2_RESET         "Reset"
+    IDS_MPEG2DECSETTINGSWND_7 
+                            "Note: Using a non-planar output format, bob deinterlacer, or adjusting color properies "
+    IDS_MPA_3F              "3 Front"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_MPA_2F_1R           "2 Front + 1 Rear"
+    IDS_MPA_3F_1R           "3 Front + 1 Rear"
+    IDS_MPA_2F_2R           "2 Front + 2 Rear"
+    IDS_MPA_3F_2R           "3 Front + 2 Rear"
+    IDS_MPA_DYNRANGE        "Dynamic Range Control"
+    IDS_VDF_FFSETTINGS      "FFMpeg settings"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_VDF_THREADNUMBER    "Decoding thread number"
+    IDS_VDF_SKIPDEBLOCK     "H264 skip deblocking mode"
+    IDS_VDF_DBLK_NONE       "None"
+    IDS_VDF_DBLK_DEFAULT    "Default"
+    IDS_VDF_DBLK_NONREF     "Non Reference"
+    IDS_VDF_DBLK_BIDIR      "Bidirectional"
+    IDS_VDF_DBLK_NONKFRM    "Non keyframes"
+    IDS_VDF_DBLK_ALL        "All frames"
+    IDS_VDF_ERROR_RECOGNITION "Error recognition"
+    IDS_VDF_ERR_CAREFUL     "Careful"
+    IDS_VDF_ERR_COMPLIANT   "Compliant"
+    IDS_VDF_ERR_AGGRESSIVE  "Aggressive"
+    IDS_VDF_ERR_VERYAGGRESSIVE "Very aggressive"
+    IDS_VDF_IDCT_ALGO       "IDCT Algorithm"
+    IDS_VDF_IDCT_AUTO       "Auto"
+    IDS_VDF_IDCT_LIBMPG2    "libmpeg2 MMX"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_VDF_AR_MODE         "Read AR from stream"
 END
 
 STRINGTABLE 

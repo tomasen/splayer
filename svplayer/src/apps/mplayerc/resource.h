@@ -783,6 +783,9 @@
 #define IDS_RS_AUTODOWNLAODSVPSUB       14210
 #define IDS_RS_USEGPUCUDA               14211
 #define IDS_RS_AUTORESUMEPLAY			14212
+#define IDS_TRA_FFMPEG					14213
+#define	IDS_RS_DXVAFILTERS				14214
+#define IDS_RS_FFMPEGFILTERS			14215
 #define IDD_DHTML_SETTING               20000
 #define IDR_DEFAULT1                    20006
 #define IDD_DEFAULT_PLAYER              20007
@@ -828,7 +831,78 @@
 #define ID_MANUALCHECKUPDATE            32800
 #define ID_32801                        32801
 #define ID_SVPSUB_MENUENABLE            32802
+#define IDS_VOLUME_BOOST_INC            33129
+#define IDS_VOLUME_BOOST_DEC            33130
+#define IDS_VOLUME_BOOST_MIN            33131
+#define IDS_VOLUME_BOOST_MAX            33132
+#define IDS_USAGE                       33133
+#define IDS_UNKNOWN_SWITCH              33134
+#define IDS_MPADECSETTINGSWND_0         33135
+#define IDS_MPADECSETTINGSWND_1         33136
+#define IDS_MPA_CHANNEL_1               33137
+#define IDS_MPA_CHANNEL_2               33138
+#define IDS_MPADECSETTINGSWND_5         33139
+#define IDS_MPADECSETTINGSWND_7         33140
+#define IDS_MPADECSETTINGSWND_11        33141
+#define IDS_MPADECSETTINGSWND_12        33142
+#define IDS_AG_SETTINGS                 33143
+#define IDS_MPEG2DECSETTINGSWND_0       33144
+#define IDS_MPEG2DECSETTINGSWND_1       33145
+#define IDS_MPEG2DECSETTINGSWND_2       33146
+#define IDS_MPEG2_DEINTERLACING         33147
+#define IDS_MPEG2_BRIGHTNESS            33148
+#define IDS_MPEG2_RESET                 33149
+#define IDS_MPEG2DECSETTINGSWND_7       33150
+#define IDS_MPA_3F                      33151
+#define IDS_MPA_2F_1R                   33152
+#define IDS_MPA_3F_1R                   33153
+#define IDS_MPA_2F_2R                   33154
+#define IDS_MPA_3F_2R                   33155
+#define IDS_MPA_DYNRANGE                33156
+#define IDS_MPEG2_CONTRAST              33157
+#define IDS_MPEG2_HUE                   33158
+#define IDS_MPEG2_SATURATION            33159
+#define IDS_MPEG2DECSETTINGSWND_8       33160
+#define IDS_CANNOT_CHANGE_FORMAT        33163
+#define IDS_MAINFRM_12                  33165
+#define IDS_MAINFRM_13                  33166
 
+#define IDS_D3DFS_WARNING               33190
+#define IDS_MAINFRM_139                 33191
+#define IDS_REALVIDEO_INCOMPATIBLE      33193
+
+#define IDS_THUMB_ROWNUMBER             33195
+#define IDS_THUMB_COLNUMBER             33196
+#define IDS_THUMB_IMAGE_WIDTH           33197
+#define IDS_PPSDB_URLCORRECT            33198
+#define IDS_PPSDB_PROTOCOLERR           33199
+#define IDS_PPSDB_BADURL                33200
+
+
+#define IDS_VDF_FFSETTINGS				33167
+#define IDS_VDF_THREADNUMBER			33168
+#define IDS_VDF_SKIPDEBLOCK				33169
+#define IDS_VDF_DBLK_NONE				33170
+#define IDS_VDF_DBLK_DEFAULT			33171
+#define IDS_VDF_DBLK_NONREF				33172
+#define IDS_VDF_DBLK_BIDIR				33173
+#define IDS_VDF_DBLK_NONKFRM			33174
+#define IDS_VDF_DBLK_ALL				33175
+#define IDS_VDF_ERROR_RECOGNITION		33176
+#define IDS_VDF_ERR_CAREFUL				33177
+#define IDS_VDF_ERR_COMPLIANT			33178
+#define IDS_VDF_ERR_AGGRESSIVE			33179
+#define IDS_VDF_ERR_VERYAGGRESSIVE		33180
+#define IDS_VDF_IDCT_ALGO				33181
+#define IDS_VDF_IDCT_AUTO				33182
+#define IDS_VDF_IDCT_LIBMPG2			33183
+#define IDS_VDF_IDCT_SIMPLE_MMX			33184
+#define IDS_VDF_IDCT_XVID				33185
+#define IDS_VDF_IDCT_SIMPLE				33186
+#define IDS_VDF_DXVA_SETTING			33187
+#define IDS_VDF_DXVA_MODE				33189
+#define IDS_VDF_VIDEOCARD				33194
+#define IDS_VDF_AR_MODE					33211
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED

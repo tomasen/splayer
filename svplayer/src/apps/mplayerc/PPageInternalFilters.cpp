@@ -29,6 +29,7 @@
 #include "PPageInternalFilters.h"
 #include "ComPropertySheet.h"
 #include "..\..\filters\filters.h"
+#include "internal_filter_config.h"
 
 static struct filter_t
 {
@@ -74,6 +75,49 @@ s_filters[] =
 	{_T("RealAudio"), 1, TRA_RA, IDS_TRA_RA, NULL},
 	{_T("Vorbis"), 1, TRA_VORBIS, 0, NULL /* TODO: CreateInstance<CMpaDecFilter>*/},
 	//{_T("VP62"), 1, TRA_VP62, 0, NULL},
+
+#if INTERNAL_DECODER_H264_DXVA
+	{_T("H264/AVC (DXVA)"), 2, DXVA_H264, IDS_TRA_FFMPEG, CreateInstance<CMPCVideoDecFilter>},
+#endif
+#if INTERNAL_DECODER_H264
+	{_T("H264/AVC (FFmpeg)"), 3, FFM_H264, IDS_TRA_FFMPEG, CreateInstance<CMPCVideoDecFilter>},
+#endif
+#if INTERNAL_DECODER_VC1_DXVA
+	{_T("VC1 (DXVA)"), 2, DXVA_VC1, IDS_TRA_FFMPEG, CreateInstance<CMPCVideoDecFilter>},
+#endif
+#if INTERNAL_DECODER_VC1
+	{_T("VC1 (FFmpeg)"), 3, FFM_VC1, IDS_TRA_FFMPEG, CreateInstance<CMPCVideoDecFilter>},
+#endif
+#if INTERNAL_DECODER_XVID
+	{_T("Xvid/MPEG-4"), 3, FFM_XVID, IDS_TRA_FFMPEG, CreateInstance<CMPCVideoDecFilter>},
+#endif
+#if INTERNAL_DECODER_DIVX
+	{_T("DivX"), 3, FFM_DIVX, IDS_TRA_FFMPEG, CreateInstance<CMPCVideoDecFilter>},
+#endif
+#if INTERNAL_DECODER_MSMPEG4
+	{_T("MS MPEG-4"), 3, FFM_MSMPEG4, IDS_TRA_FFMPEG, CreateInstance<CMPCVideoDecFilter>},
+#endif
+#if INTERNAL_DECODER_FLV
+	{_T("FLV1/4"), 3, FFM_FLV4, IDS_TRA_FFMPEG, CreateInstance<CMPCVideoDecFilter>},
+#endif
+#if INTERNAL_DECODER_VP6
+	{_T("VP5/6"), 3, FFM_VP62, IDS_TRA_FFMPEG, CreateInstance<CMPCVideoDecFilter>},	
+#endif
+#if INTERNAL_DECODER_WMV
+	{_T("WMV1/2/3"), 3, FFM_WMV, IDS_TRA_FFMPEG, CreateInstance<CMPCVideoDecFilter>},	
+#endif
+#if INTERNAL_DECODER_SVQ
+	{_T("SVQ1/3"), 3, FFM_SVQ3, IDS_TRA_FFMPEG, CreateInstance<CMPCVideoDecFilter>},
+#endif
+#if INTERNAL_DECODER_H263
+	{_T("H263"), 3, FFM_H263, IDS_TRA_FFMPEG, CreateInstance<CMPCVideoDecFilter>},
+#endif
+#if INTERNAL_DECODER_AMVV
+	{_T("AMV video"), 3, FFM_AMVV, IDS_TRA_FFMPEG, CreateInstance<CMPCVideoDecFilter>},
+#endif
+#if INTERNAL_DECODER_THEORA
+	{_T("Theora"), 3, FFM_THEORA, IDS_TRA_FFMPEG, CreateInstance<CMPCVideoDecFilter>},
+#endif
 };
 
 IMPLEMENT_DYNAMIC(CPPageInternalFiltersListBox, CCheckListBox)
@@ -202,15 +246,31 @@ BOOL CPPageInternalFilters::OnInitDialog()
 
 	for(int i = 0; i < countof(s_filters); i++)
 	{
-		CCheckListBox* l = 
-			s_filters[i].type == 0 ? &m_listSrc : 
-			s_filters[i].type == 1 ? &m_listTra : 
-			NULL; 
+		CCheckListBox* l;
+		UINT* pflags;
 
-		UINT* pflags = 
-			s_filters[i].type == 0 ? &s.SrcFilters : 
-			s_filters[i].type == 1 ? &s.TraFilters : 
-			NULL; 
+		switch(s_filters[i].type)
+		{
+		case 0: // source filter
+			l = &m_listSrc;
+			pflags = &s.SrcFilters;
+			break;
+		case 1: // decoder
+			l = &m_listTra;
+			pflags = &s.TraFilters;
+			break;
+		case 2: // dxva decoder
+			l = &m_listTra;
+			pflags = &s.DXVAFilters;
+			break;
+		case 3: // ffmpeg decoder
+			l = &m_listTra;
+			pflags = &s.FFmpegFilters;
+			break;
+		default:
+			l = NULL;
+			pflags = NULL;
+		}
 
 		if(l && pflags)
 		{

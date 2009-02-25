@@ -183,6 +183,30 @@ enum
 
 enum
 {
+	DXVA_H264  = 1,
+	DXVA_VC1   = DXVA_H264<<1,
+	DXVA_LAST  = DXVA_VC1<<1
+};
+
+enum
+{
+	FFM_H264    = 1,
+	FFM_VC1     = FFM_H264<<1,	
+	FFM_FLV4    = FFM_VC1<<1,
+	FFM_VP62    = FFM_FLV4<<1,
+	FFM_XVID    = FFM_VP62<<1,
+	FFM_DIVX    = FFM_XVID<<1,
+	FFM_MSMPEG4 = FFM_DIVX<<1,
+	FFM_WMV     = FFM_MSMPEG4<<1,
+	FFM_SVQ3    = FFM_WMV<<1,
+	FFM_H263    = FFM_SVQ3<<1,
+	FFM_THEORA  = FFM_H263<<1,
+	FFM_AMVV    = FFM_THEORA<<1,	
+	FFM_LAST    = FFM_AMVV<<1
+};
+
+enum
+{
 	DVS_HALF, 
 	DVS_NORMAL, 
 	DVS_DOUBLE, 
@@ -471,7 +495,7 @@ public:
 
 		CMediaFormats Formats;
 		
-		UINT SrcFilters, TraFilters;
+		UINT SrcFilters, TraFilters, DXVAFilters, FFmpegFilters;
 
 		CString logofn;
 		UINT logoid;

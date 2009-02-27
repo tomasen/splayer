@@ -1567,22 +1567,23 @@ BEGIN
             MENUITEM SEPARATOR
             MENUITEM "全屏幕(&l)\tAlt+Enter",          ID_VIEW_FULLSCREEN
             MENUITEM SEPARATOR
-            POPUP "预设界面..."
+            POPUP "界面..."
             BEGIN
                 MENUITEM "小巧",                          ID_VIEW_PRESETS_MINIMAL
                 MENUITEM "精简",                          ID_VIEW_PRESETS_COMPACT
                 MENUITEM "标准",                          ID_VIEW_PRESETS_NORMAL
+                MENUITEM SEPARATOR
+                MENUITEM "显示标题和菜单(&M)\tCtrl+0",         ID_VIEW_CAPTIONMENU
+                MENUITEM "时间栏(&S)\tCtrl+1",             ID_VIEW_SEEKER
+                MENUITEM "显示控制按钮(&r)\tCtrl+2",          ID_VIEW_CONTROLS
+                MENUITEM "显示视频信息(&I)\tCtrl+3",          ID_VIEW_INFORMATION
+                MENUITEM "显示播放信息(&t)\tCtrl+4",          ID_VIEW_STATISTICS
+                MENUITEM "显示状态栏(&a)\tCtrl+5",           ID_VIEW_STATUS
+                MENUITEM "字幕调整\tCtrl+6",                ID_VIEW_SUBRESYNC
+                MENUITEM "显示播放列表\tCtrl+7",              ID_VIEW_PLAYLIST
+                MENUITEM "视频捕捉控制面板\tCtrl+8",            ID_VIEW_CAPTURE
+                MENUITEM "特效(Shader)编辑器\tCtrl+9",       ID_VIEW_SHADEREDITOR
             END
-            MENUITEM "显示标题和菜单(&M)\tCtrl+0",         ID_VIEW_CAPTIONMENU
-            MENUITEM "时间栏(&S)\tCtrl+1",             ID_VIEW_SEEKER
-            MENUITEM "显示控制按钮(&r)\tCtrl+2",          ID_VIEW_CONTROLS
-            MENUITEM "显示视频信息(&I)\tCtrl+3",          ID_VIEW_INFORMATION
-            MENUITEM "显示播放信息(&t)\tCtrl+4",          ID_VIEW_STATISTICS
-            MENUITEM "显示状态栏(&a)\tCtrl+5",           ID_VIEW_STATUS
-            MENUITEM "字幕调整\tCtrl+6",                ID_VIEW_SUBRESYNC
-            MENUITEM "显示播放列表\tCtrl+7",              ID_VIEW_PLAYLIST
-            MENUITEM "视频捕捉控制面板\tCtrl+8",            ID_VIEW_CAPTURE
-            MENUITEM "特效(Shader)编辑器\tCtrl+9",       ID_VIEW_SHADEREDITOR
             MENUITEM SEPARATOR
             MENUITEM "选项(&O)...",                   ID_VIEW_OPTIONS
             MENUITEM "高级设置(&A)...",                 ID_32797
@@ -1886,22 +1887,23 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "全屏幕(&l)\tAlt+Enter",          ID_VIEW_FULLSCREEN
         MENUITEM SEPARATOR
-        POPUP "预设界面..."
+        POPUP "界面..."
         BEGIN
             MENUITEM "小巧",                          ID_VIEW_PRESETS_MINIMAL
             MENUITEM "精简",                          ID_VIEW_PRESETS_COMPACT
             MENUITEM "标准",                          ID_VIEW_PRESETS_NORMAL
+            MENUITEM SEPARATOR
+            MENUITEM "显示标题和菜单(&M)\tCtrl+0",         ID_VIEW_CAPTIONMENU
+            MENUITEM "时间栏(&S)\tCtrl+1",             ID_VIEW_SEEKER
+            MENUITEM "显示控制按钮(&r)\tCtrl+2",          ID_VIEW_CONTROLS
+            MENUITEM "显示视频信息(&I)\tCtrl+3",          ID_VIEW_INFORMATION
+            MENUITEM "显示播放信息(&t)\tCtrl+4",          ID_VIEW_STATISTICS
+            MENUITEM "显示状态栏(&a)\tCtrl+5",           ID_VIEW_STATUS
+            MENUITEM "字幕调整\tCtrl+6",                ID_VIEW_SUBRESYNC
+            MENUITEM "显示播放列表\tCtrl+7",              ID_VIEW_PLAYLIST
+            MENUITEM "视频捕捉控制面板\tCtrl+8",            ID_VIEW_CAPTURE
+            MENUITEM "特效(Shader)编辑器\tCtrl+9",       ID_VIEW_SHADEREDITOR
         END
-        MENUITEM "显示标题和菜单(&M)\tCtrl+0",         ID_VIEW_CAPTIONMENU
-        MENUITEM "时间栏(&S)\tCtrl+1",             ID_VIEW_SEEKER
-        MENUITEM "显示控制按钮(&r)\tCtrl+2",          ID_VIEW_CONTROLS
-        MENUITEM "显示视频信息(&I)\tCtrl+3",          ID_VIEW_INFORMATION
-        MENUITEM "显示播放信息(&t)\tCtrl+4",          ID_VIEW_STATISTICS
-        MENUITEM "显示状态栏(&a)\tCtrl+5",           ID_VIEW_STATUS
-        MENUITEM "字幕调整\tCtrl+6",                ID_VIEW_SUBRESYNC
-        MENUITEM "显示播放列表\tCtrl+7",              ID_VIEW_PLAYLIST
-        MENUITEM "视频捕捉控制面板\tCtrl+8",            ID_VIEW_CAPTURE
-        MENUITEM "特效(Shader)编辑器\tCtrl+9",       ID_VIEW_SHADEREDITOR
         MENUITEM SEPARATOR
         MENUITEM "选项(&O)...",                   ID_VIEW_OPTIONS
         MENUITEM "高级设置(&A)...",                 ID_32797

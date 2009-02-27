@@ -204,7 +204,7 @@ int CSVPNet::UploadSubFileByVideoAndHash(CString fnVideoFilePath, CString szFile
 
 			if(respcode == 200){
 				//good to go // continues to upload sub
-				SVP_LogMsg(_T("Upload Finished"));
+				SVP_LogMsg(_T("字幕上传完毕"), 31);
 			}else{
 				//error
 				SVP_LogMsg(_T("Already Have same sub in databases"));
@@ -337,7 +337,7 @@ int  CSVPNet::ExtractDataFromAiSubRecvBuffer(CString szFilePath, FILE* sAiSubRec
 	int iStatCode = szSBuff[0];
 	if(iStatCode <= 0){
 		if (iStatCode == -1){
-			SVP_LogMsg(_T("没有找到字幕"));
+			SVP_LogMsg(_T("没有找到字幕"), 31);
 		}else{
 			//TODO error handle
 			SVP_LogMsg(_T("First Stat Code TODO: 显示有错误发生"));

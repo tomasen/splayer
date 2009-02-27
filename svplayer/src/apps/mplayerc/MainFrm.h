@@ -143,7 +143,8 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 		TIMER_FULLSCREENMOUSEHIDER, 
 		TIMER_STATS,
 		TIMER_LEFTCLICK,
-		TIMER_STATUSERASER
+		TIMER_STATUSERASER,
+		TIMER_STATUSCHECKER
 	};
 
 	friend class CPPageFileInfoSheet;
@@ -264,6 +265,7 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 	CString m_fnsAlreadyUploadedSubfile;
 	
 	void SendStatusMessage(CString msg, int nTimeOut);
+	CAtlList<CString> m_statusmsgs;
 	CString m_playingmsg, m_closingmsg;
 	CString m_lastUrl;
 

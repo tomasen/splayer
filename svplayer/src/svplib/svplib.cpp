@@ -9,6 +9,7 @@ public:
 	CString szSubPath;
 	int iDelayMS;
 };
+static CAtlList<CString> * szGStatMsg = NULL;
 void SVP_RealUploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString szSubPath, int iDelayMS){
 
 	CSVPNet svpNet;
@@ -38,7 +39,11 @@ UINT __cdecl SVPThreadUploadSubFile( LPVOID lpParam )
 } 
 UINT __cdecl SVPThreadCheckUpdaterExe( LPVOID lpParam ) 
 { 
+	if(lpParam){
+		szGStatMsg = (CAtlList<CString> *) lpParam;
+	}
 	SVP_RealCheckUpdaterExe();
+	szGStatMsg = NULL;
 	return 0; 
 }
 void SVP_RealCheckUpdaterExe(){
@@ -55,6 +60,7 @@ void SVP_RealCheckUpdaterExe(){
 		if ( svpNet.CheckUpdaterExe(FileVersionHash, szUpdaterPath) ){
 
 		}
+		SVP_LogMsg( _T("检测到新的版本，升级程序已启动") ); 
 		//运行升级程序
 		ShellExecute( NULL, _T("open"), szUpdaterPath, _T("") , _T(""), SW_SHOW);	
 	}
@@ -64,8 +70,10 @@ void SVP_CheckUpdaterExe(){
 	AfxBeginThread( SVPThreadCheckUpdaterExe, NULL);
 }
 
-void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath, CStringArray* szSubArray){
+void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath, CStringArray* szSubArray, CAtlList<CString> * szStatMsg){
 	
+	szGStatMsg = szStatMsg;
+	SVP_LogMsg(_T("正在通过射手影音字幕智能匹配系统寻找字幕"), 31);
 	CSVPNet svpNet;
 	CSVPhash svpHash;
 	CString szFileHash  = svpHash.ComputerFileHash(fnVideoFilePath);
@@ -75,15 +83,25 @@ void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath, CStringArray* szSu
 
 		//load sub file to sublist
 		CString szSubFilePath;
+		int iSubTotal = 0;
 		for(int i = 0; i < svpNet.svpToolBox.szaSubTmpFileList.GetCount(); i++){
 			szSubFilePath = svpNet.svpToolBox.getSubFileByTempid(i, fnVideoFilePath);
 			if(szSubFilePath){
 				szSubArray->Add(szSubFilePath);
-				SVP_LogMsg(CString(_T("Adding sub file ")) + szSubFilePath ); //TODO: if its vobsub, load perfered language
+				SVP_LogMsg(CString(_T("成功下载到字幕文件 ")) + szSubFilePath , 31 ); //TODO: if its vobsub, load perfered language
+				iSubTotal++;
 			}else{
 				SVP_LogMsg(_T("Fail to get sub file name"));
 			}
 		}
+
+	if(iSubTotal) {
+		CString szLog;
+		szLog.Format(_T("通过射手影音字幕智能匹配系统成功下载到 %d 个字幕文件 "), iSubTotal);
+		SVP_LogMsg( szLog, 31 ); 
+	}
+
+	szGStatMsg = NULL;
 	return;
 }
 void SVP_UploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString szSubPath, int iDelayMS){
@@ -96,7 +114,9 @@ void SVP_UploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString szS
 
 void SVP_LogMsg(CString logmsg, int level){
 
-
+	if(szGStatMsg && (level & 16) ){
+		szGStatMsg->AddTail(logmsg);
+	}
 	CStdioFile f;
 	CSVPToolBox svpToolBox;
 	CString szLogPath = svpToolBox.GetPlayerPath(_T("SVPDebug.log"));

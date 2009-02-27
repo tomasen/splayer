@@ -527,6 +527,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	};
 	// end
 	
+	SetTimer(TIMER_STATUSCHECKER , 10000, NULL);
 
 	return 0;
 }
@@ -1774,6 +1775,19 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 	{
 		KillTimer(TIMER_STATUSERASER);
 		m_playingmsg.Empty();
+		
+		if(m_wndStatusBar.IsVisible() && m_fFullScreen){
+			SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
+		}
+	}else if(TIMER_STATUSCHECKER == nIDEvent){
+		KillTimer(TIMER_STATUSCHECKER);
+		if(m_statusmsgs.GetCount() > 0 ){
+			if ( m_playingmsg != m_statusmsgs.GetHead()){
+				SendStatusMessage( m_statusmsgs.GetHead() , 10000);
+				m_statusmsgs.RemoveHead();
+			}
+		}
+		SetTimer(TIMER_STATUSCHECKER, 1000, NULL);
 	}
 
 	__super::OnTimer(nIDEvent);
@@ -4444,7 +4458,7 @@ void CMainFrame::OnFileISDBDownload()
 			szLog.Format(_T("Downloading sub for %s  because user demand to ") , fnVideoFile );
 			SVP_LogMsg(szLog);
 			CStringArray szaSubarr;
-			SVP_FetchSubFileByVideoFilePath(fnVideoFile , &szaSubarr);
+			SVP_FetchSubFileByVideoFilePath(fnVideoFile , &szaSubarr, &m_statusmsgs);
 			if( szaSubarr.GetCount() > 0){
 				if( LoadSubtitle(szaSubarr.GetAt(0)) )
 					SetSubtitle(m_pSubStreams.GetTail());
@@ -7469,6 +7483,7 @@ class CSVPThreadLoadThreadData{
 public:
 	CString szVidPath;
 	CMainFrame* pFrame;
+	CAtlList<CString>* statusmsgs;
 };
 
 UINT __cdecl SVPThreadLoadThread( LPVOID lpParam ) 
@@ -7480,7 +7495,7 @@ UINT __cdecl SVPThreadLoadThread( LPVOID lpParam )
 	CStringArray szSubArray;
 	CUIntArray siSubDelayArray;
 
-	SVP_FetchSubFileByVideoFilePath( pData->szVidPath, &szSubArray) ;
+	SVP_FetchSubFileByVideoFilePath( pData->szVidPath, &szSubArray , pData->statusmsgs) ;
 	BOOL bSubSelected = false;
 	for(INT i = 0 ;i < szSubArray.GetCount(); i++){
 		if(pData->pFrame->LoadSubtitle(szSubArray[i]) && !bSubSelected){
@@ -7577,6 +7592,7 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 					CSVPThreadLoadThreadData* pData = new CSVPThreadLoadThreadData();
 					pData->pFrame = (CMainFrame*)this;
 					pData->szVidPath = fn;
+					pData->statusmsgs = &m_statusmsgs;
 					AfxBeginThread(SVPThreadLoadThread, pData); 
 					//SVPThreadLoadThread(pData);
 				}
@@ -9648,13 +9664,15 @@ void CMainFrame::ShowControls(int nCS, bool fSave)
 	wp.length = sizeof(wp);
 	GetWindowPlacement(&wp);
 
+	/* Hold Position
 	if(wp.showCmd != SW_SHOWMAXIMIZED && !m_fFullScreen)
-	{
-		CRect r;
-		GetWindowRect(r);
-		MoveWindow(r.left, r.top, r.Width(), r.Height()+(hafter-hbefore));
-	}
-
+		{
+			CRect r;
+			GetWindowRect(r);
+			MoveWindow(r.left, r.top, r.Width(), r.Height()+(hafter-hbefore));
+		}
+	*/
+	
     if(fSave)
 		AfxGetAppSettings().nCS = nCS;
 
@@ -10671,6 +10689,15 @@ void CMainFrame::SendStatusMessage(CString msg, int nTimeOut)
 	if(nTimeOut <= 0) return;
 
 	m_playingmsg = msg;
+	
+	if(!m_wndStatusBar.IsVisible()){
+		if(m_fFullScreen){
+			ShowControls(CS_STATUSBAR, false);
+		}else{
+			ShowControls(AfxGetAppSettings().nCS | CS_STATUSBAR, false);
+		}
+	}
+
 	SetTimer(TIMER_STATUSERASER, nTimeOut, NULL);
 }
 

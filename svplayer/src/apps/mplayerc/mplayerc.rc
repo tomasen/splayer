@@ -2560,7 +2560,7 @@ BEGIN
     IDS_ZOOM_POPUP          "界面缩放"
     IDS_FAVORITES_ADD       "添加至收藏夹(&A)..."
     IDS_FAVORITES_ORGANIZE  "管理收藏夹(&O)..."
-    IDS_PLAYLIST_SHUFFLE    "Shuffle"
+    IDS_PLAYLIST_SHUFFLE    "乱序"
     IDS_PLAYLIST_REMEBERITEMS "Remember items"
     IDS_CONTROLS_CLOSING    "正在关闭..."
     IDS_CONTROLS_PLAYING    "正在播放"

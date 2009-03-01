@@ -2017,6 +2017,7 @@ BLANK.GIF               2110                    "res\\web\\blank.gif"
 STRINGTABLE 
 BEGIN
     IDR_MAINFRAME           "射手影音播放器"
+    IDS_STRING129           "QuickTime"
 END
 
 STRINGTABLE 
@@ -2310,7 +2311,7 @@ END
 STRINGTABLE 
 BEGIN
     IDC_DSSYSDEF            "默认的DirectShow渲染器。如果其他渲染器渲染失败，会自动使用本渲染器。在Windown XP下等同于VMR7 (windowed)."
-    IDC_DSOLD               "Windows 9x/me/2k的默认渲染器。取决于系统设置，在 GDI, DirectDraw, Overlay之间动态切换"
+    IDC_DSOLD               "Windows 9x/me/2k的默认渲染器。取决于系统设置，在 GDI, DirectDraw, Overlay之间动态切换。"
     IDC_DSOVERLAYMIXER      "总是使用overlay渲染. Generally only YUV formats are allowed, but they are presented directly without any color conversion to RGB. This is the fastest rendering method of all and the only where you can be sure about full screen video mirroring to tv-out activating."
     IDC_DSVMR7WIN           "Windows XP的默认渲染器。非常稳定，比Overlay混合器稍慢。在可行的时候使用DirectDraw 并运行于Overlay下。"
     IDC_DSVMR9WIN           "仅在你安装了DirectX 9以后可用。 和 VMR7 (windowed)作用相同，但是并不使用 Overlay 渲染，也因此它可能要比VMR7 (windowed) 稍慢。"
@@ -2323,11 +2324,11 @@ END
 STRINGTABLE 
 BEGIN
     IDC_RMSYSDEF            "Real自带渲染器。 SMIL脚本可用，交互功能不可用。在可行的时候使用DirectDraw 并运行于Overlay下。"
-    IDC_RMDX7               "The output of Real's engine rendered by the DX7-based Allocator-Presenter of VMR7 (renderless)."
-    IDC_RMDX9               "The output of Real's engine rendered by the DX9-based Allocator-Presenter of VMR9 (renderless)."
-    IDC_QTSYSDEF            "QuickTime's own renderer. Gets a little slow when its video area is resized or partially covered by another window. When Overlay is not available it likes to fall back to GDI."
-    IDC_QTDX7               "The output of QuickTime's engine rendered by the DX7-based Allocator-Presenter of VMR7 (renderless)."
-    IDC_QTDX9               "The output of QuickTime's engine rendered by the DX9-based Allocator-Presenter of VMR9 (renderless)."
+    IDC_RMDX7               "使用基于DX7的VMR7 (renderless)的Allocator-Presenter渲染的Real引擎输出。"
+    IDC_RMDX9               "使用基于DX9的VMR9 (renderless)的Allocator-Presenter渲染的Real引擎输出。"
+    IDC_QTSYSDEF            "QuickTime自带的渲染器。 当视频区域重缩放或者被另外窗体部分遮盖的时候，会稍微变慢。当Overlay不可用的时候，将使用GDI。"
+    IDC_QTDX7               "使用基于DX7的VMR7 (renderless)的Allocator-Presenter渲染的QuickTime引擎输出。"
+    IDC_QTDX9               "使用基于DX9的VMR9 (renderless)的Allocator-Presenter渲染的QuickTime引擎输出。"
     IDC_REGULARSURF         "Video surface will be allocated as a regular offscreen surface."
 END
 

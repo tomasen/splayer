@@ -233,7 +233,7 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 	// chapters (file mode)
 	CComPtr<IDSMChapterBag> m_pCB;
 	void SetupChapters();
-
+	
 	//
 
 	void SetupIViAudReg();
@@ -265,7 +265,6 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 	CString m_fnsAlreadyUploadedSubfile;
 	
 	void SendStatusMessage(CString msg, int nTimeOut);
-	CAtlList<CString> m_statusmsgs;
 	CString m_playingmsg, m_closingmsg;
 	CString m_lastUrl;
 
@@ -292,9 +291,15 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 	CAutoPtr<CWebServer> m_pWebServer;
 private:
 	CString getCurPlayingSubfile(int * iSubDelayMS = NULL,int subid = 0 );
+	
 public:
 	// subtitles
-	
+	void SVPSubDownloadByVPath(CString szVPath, CAtlList<CString>* szaStatMsgs = NULL);
+	CAtlList<CString> m_statusmsgs;
+
+	BOOL m_bSubDownloading;
+	BOOL m_bSubUploading;
+
 	CCritSec m_csSubLock;
 	CCritSec m_csSubLock2;
 	CInterfaceList<ISubStream> m_pSubStreams;

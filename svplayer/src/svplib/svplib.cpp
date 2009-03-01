@@ -86,7 +86,9 @@ void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath, CStringArray* szSu
 		int iSubTotal = 0;
 		for(int i = 0; i < svpNet.svpToolBox.szaSubTmpFileList.GetCount(); i++){
 			szSubFilePath = svpNet.svpToolBox.getSubFileByTempid(i, fnVideoFilePath);
-			if(szSubFilePath){
+			if(szSubFilePath == _T("EXIST")){
+				SVP_LogMsg(_T("射手影音字幕智能匹配系统中的字幕与当前字幕相同 "), 31);
+			}else if(szSubFilePath){
 				szSubArray->Add(szSubFilePath);
 				SVP_LogMsg(CString(_T("成功下载到字幕文件 ")) + szSubFilePath , 31 ); //TODO: if its vobsub, load perfered language
 				iSubTotal++;

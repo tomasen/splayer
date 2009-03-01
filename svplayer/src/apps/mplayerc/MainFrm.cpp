@@ -74,6 +74,7 @@
 #include "DX9AllocatorPresenter.h"
 
 #include "..\..\subtitles\SSF.h"
+#include "SVPSubDownUpDialog.h"
 
 #define DEFCLIENTW 292
 #define DEFCLIENTH 200
@@ -416,7 +417,9 @@ CMainFrame::CMainFrame() :
 	m_fBuffering(false),
 	m_fileDropTarget(this),
 	m_fTrayIcon(false),
-	m_iSubtitleSel2(-1)
+	m_iSubtitleSel2(-1),
+	m_bSubUploading(false),
+	m_bSubDownloading(false)
 {
 }
 
@@ -1387,13 +1390,13 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 					
 					if (!fnSubtitleFile.IsEmpty()){ //如果有字幕
 
-						CString szLog;
-						szLog.Format(_T(" %s ( with sub %s delay %d ) %d sec of %d sec ( 1/2 length video = %d ) ") , fnVideoFile, fnSubtitleFile,subDelayMS, totalplayedtime , iTotalLenSec, (UINT)(iTotalLenSec/2)  );
-						SVP_LogMsg(szLog);
+						//szLog.Format(_T(" %s ( with sub %s delay %d ) %d sec of %d sec ( 1/2 length video = %d ) ") , fnVideoFile, fnSubtitleFile,subDelayMS, totalplayedtime , iTotalLenSec, (UINT)(iTotalLenSec/2)  );
+						//SVP_LogMsg(szLog);
 						//if time > 50%
 						if (totalplayedtime > (UINT)(iTotalLenSec/2)){
 							//是否已经上传过呢
 							if(m_fnsAlreadyUploadedSubfile.Find( fnVideoFile+fnSubtitleFile ) < 0 ){
+								CString szLog;
 								//upload subtitle
 								szLog.Format(_T("Uploading sub %s of %s width delay %d ms since user played %d sec of %d sec ( more than 1/2 length video ) ") , fnSubtitleFile, fnVideoFile ,subDelayMS, totalplayedtime , iTotalLenSec  );
 								SVP_LogMsg(szLog);
@@ -1777,7 +1780,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 		m_playingmsg.Empty();
 		
 		if(m_wndStatusBar.IsVisible() && m_fFullScreen){
-			SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
+			SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL); 
 		}
 	}else if(TIMER_STATUSCHECKER == nIDEvent){
 		KillTimer(TIMER_STATUSCHECKER);
@@ -4437,7 +4440,7 @@ void CMainFrame::OnManualcheckupdate()
 }
 void CMainFrame::OnUpdateFileISDBUpload(CCmdUI *pCmdUI)
 {
-	pCmdUI->Enable(m_wndPlaylistBar.GetCount() > 0);
+	pCmdUI->Enable(m_wndPlaylistBar.GetCount() > 0 && !m_bSubUploading);
 }
 
 void CMainFrame::OnFileISDBDownload()
@@ -4448,31 +4451,41 @@ void CMainFrame::OnFileISDBDownload()
 
 	
 	
-		CString szUploadMsg;
-		szUploadMsg.Format(_T("本操作将尝试为您正在播放中的视频下载字幕： \r\n %s \r\n\r\n是否继续？"), fnVideoFile);
+		//CString szUploadMsg;
+		//szUploadMsg.Format(_T("本操作将尝试为您正在播放中的视频下载字幕： \r\n %s \r\n\r\n是否继续？"), fnVideoFile);
 
-		if ( AfxMessageBox(szUploadMsg, MB_YESNO) == IDYES){
+		CSVPSubDownUpDialog csdu;
+		csdu.szVidFilePath = fnVideoFile;
+		csdu.pFrame = this;
 
-			CString szLog;
+		csdu.DoModal();
 
-			szLog.Format(_T("Downloading sub for %s  because user demand to ") , fnVideoFile );
-			SVP_LogMsg(szLog);
-			CStringArray szaSubarr;
-			SVP_FetchSubFileByVideoFilePath(fnVideoFile , &szaSubarr, &m_statusmsgs);
-			if( szaSubarr.GetCount() > 0){
-				if( LoadSubtitle(szaSubarr.GetAt(0)) )
-					SetSubtitle(m_pSubStreams.GetTail());
-				szUploadMsg.Format(_T("%d 个字幕已经下载成功"),szaSubarr.GetCount());
-				AfxMessageBox(szUploadMsg, MB_OK);
-			}else{
-				if ( AfxMessageBox(_T("没有下载到匹配的字幕。\n要不要试试看通过网页搜索？"), MB_YESNO) == IDYES){
-					CStringA url = "http://shooter.cn/sub/?";
-					ShellExecute(m_hWnd, _T("open"), CString(url), NULL, NULL, SW_SHOWDEFAULT);
-				}
-			}
+		/*
+			if ( AfxMessageBox(szUploadMsg, MB_YESNO) == IDYES){
 			
-		}else
-			return;
+						CString szLog;
+			
+						szLog.Format(_T("Downloading sub for %s  because user demand to ") , fnVideoFile );
+						SVP_LogMsg(szLog);
+						CStringArray szaSubarr;
+						m_bSubDownloading = TRUE;
+						SVP_FetchSubFileByVideoFilePath(fnVideoFile , &szaSubarr, &m_statusmsgs);
+						m_bSubDownloading = FALSE;
+						if( szaSubarr.GetCount() > 0){
+							if( LoadSubtitle(szaSubarr.GetAt(0)) )
+								SetSubtitle(m_pSubStreams.GetTail());
+							szUploadMsg.Format(_T("%d 个字幕已经下载成功"),szaSubarr.GetCount());
+							AfxMessageBox(szUploadMsg, MB_OK);
+						}else{
+							if ( AfxMessageBox(_T("没有下载到匹配的字幕。\n要不要试试看通过网页搜索？"), MB_YESNO) == IDYES){
+								CStringA url = "http://shooter.cn/sub/?";
+								ShellExecute(m_hWnd, _T("open"), CString(url), NULL, NULL, SW_SHOWDEFAULT);
+							}
+						}
+						
+					}else
+						return;*/
+			
 
 	
 /*
@@ -4576,7 +4589,7 @@ void CMainFrame::OnFileISDBDownload()
 
 void CMainFrame::OnUpdateFileISDBDownload(CCmdUI *pCmdUI)
 {
-	pCmdUI->Enable(m_iMediaLoadState == MLS_LOADED && m_pCAP && !m_fAudioOnly);
+	pCmdUI->Enable(m_iMediaLoadState == MLS_LOADED && m_pCAP && !m_fAudioOnly && !m_bSubDownloading);
 }
 
 void CMainFrame::OnFileProperties()
@@ -7494,8 +7507,9 @@ UINT __cdecl SVPThreadLoadThread( LPVOID lpParam )
 	// Print the parameter values using thread-safe functions.
 	CStringArray szSubArray;
 	CUIntArray siSubDelayArray;
-
+	pData->pFrame->m_bSubDownloading = TRUE;
 	SVP_FetchSubFileByVideoFilePath( pData->szVidPath, &szSubArray , pData->statusmsgs) ;
+	pData->pFrame->m_bSubDownloading = FALSE;
 	BOOL bSubSelected = false;
 	for(INT i = 0 ;i < szSubArray.GetCount(); i++){
 		if(pData->pFrame->LoadSubtitle(szSubArray[i]) && !bSubSelected){
@@ -7589,12 +7603,8 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 			//是否有字幕？ 沒有则下载字幕
 			if ( pOFD->subs.GetCount() <= 0){
 				if(AfxGetAppSettings().autoDownloadSVPSub){
-					CSVPThreadLoadThreadData* pData = new CSVPThreadLoadThreadData();
-					pData->pFrame = (CMainFrame*)this;
-					pData->szVidPath = fn;
-					pData->statusmsgs = &m_statusmsgs;
-					AfxBeginThread(SVPThreadLoadThread, pData); 
-					//SVPThreadLoadThread(pData);
+					
+					SVPSubDownloadByVPath(fn);
 				}
 			}
 
@@ -7637,7 +7647,17 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 
 	m_iPlaybackMode = PM_FILE;
 }
-
+void CMainFrame::SVPSubDownloadByVPath(CString szVPath, CAtlList<CString>* szaStatMsgs){
+	CSVPThreadLoadThreadData* pData = new CSVPThreadLoadThreadData();
+	pData->pFrame = (CMainFrame*)this;
+	pData->szVidPath = szVPath;
+	if( szaStatMsgs == NULL){
+		pData->statusmsgs = &m_statusmsgs;
+	}else{
+		pData->statusmsgs = szaStatMsgs;
+	}
+	AfxBeginThread(SVPThreadLoadThread, pData); 
+}
 void CMainFrame::SetupChapters()
 {
 	ASSERT(m_pCB);

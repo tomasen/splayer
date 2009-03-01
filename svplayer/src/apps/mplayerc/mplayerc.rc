@@ -895,6 +895,22 @@ BEGIN
     PUSHBUTTON      "取消",IDCANCEL,163,163,50,14
 END
 
+IDD_SVPSUBDOWNUPDLG DIALOGEX 0, 0, 341, 124
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+EXSTYLE WS_EX_TOOLWINDOW
+CAPTION "射手网字幕智能匹配"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "下载",IDOK,99,103,50,14
+    PUSHBUTTON      "关闭",IDCANCEL,192,103,50,14
+    CONTROL         "",IDC_PROGRESS1,"msctls_progress32",PBS_SMOOTH | WS_BORDER,23,77,293,13
+    LTEXT           "视频文件：",IDC_STATIC_VFILE,7,32,49,14
+    EDITTEXT        IDC_EDIT1,53,32,281,37,ES_MULTILINE | ES_READONLY | NOT WS_BORDER
+    LTEXT           "本操作将尝试为您的视频文件下载对应的中文字幕文件：",IDC_STATIC,7,8,327,16
+    PUSHBUTTON      "浏览...",IDC_BUTTON1,7,44,37,17
+    EDITTEXT        IDC_EDIT2,7,26,327,46,ES_MULTILINE | ES_AUTOHSCROLL | ES_READONLY | NOT WS_VISIBLE
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1262,6 +1278,14 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 177
     END
+
+    IDD_SVPSUBDOWNUPDLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 334
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 117
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -1446,8 +1470,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,68
- PRODUCTVERSION 1,0,0,68
+ FILEVERSION 1,0,0,76
+ PRODUCTVERSION 1,0,0,76
  FILEFLAGSMASK 0x1fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -1469,7 +1493,6 @@ BEGIN
             VALUE "LegalCopyright", "Copyright (C) 2002-2009 shooter.cn & Gabest"
             VALUE "OriginalFilename", "mplayerc.exe"
             VALUE "ProductName", "射手影音播放器"
-            VALUE "ProductVersion", "1, 0, 0, 68"
         END
     END
     BLOCK "VarFileInfo"
@@ -2017,7 +2040,6 @@ BLANK.GIF               2110                    "res\\web\\blank.gif"
 STRINGTABLE 
 BEGIN
     IDR_MAINFRAME           "射手影音播放器"
-    IDS_STRING129           "QuickTime"
 END
 
 STRINGTABLE 

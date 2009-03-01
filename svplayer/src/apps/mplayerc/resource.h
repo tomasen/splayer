@@ -2,6 +2,7 @@
 // Microsoft Visual C++ generated include file.
 // Used by mplayerc.rc
 //
+#define SVP_REV_NUMBER                  76
 #define IDR_MAINFRAME                   128
 #define IDR_POPUP                       129
 #define IDR_POPUPMAIN                   130
@@ -273,8 +274,8 @@
 #define ID_SUB1FONTDOWN                 1004
 #define ID_SUB2FONTUP                   1005
 #define ID_SUB2FONTDOWN                 1006
-#define ID_PLAY_BWD						1007
-#define ID_PLAY_FWD						1008
+#define ID_PLAY_BWD                     1007
+#define ID_PLAY_FWD                     1008
 #define ID_FILTERS_SUBITEM_START        2000
 #define ID_FILTERS_SUBITEM_END          2099
 #define ID_FILTERSTREAMS_SUBITEM_START  2100
@@ -782,17 +783,20 @@
 #define IDS_RS_USEGPUACEL               14209
 #define IDS_RS_AUTODOWNLAODSVPSUB       14210
 #define IDS_RS_USEGPUCUDA               14211
-#define IDS_RS_AUTORESUMEPLAY			14212
-#define IDS_TRA_FFMPEG					14213
-#define	IDS_RS_DXVAFILTERS				14214
-#define IDS_RS_FFMPEGFILTERS			14215
+#define IDS_RS_AUTORESUMEPLAY           14212
+#define IDS_TRA_FFMPEG                  14213
+#define IDS_RS_DXVAFILTERS              14214
+#define IDS_RS_FFMPEGFILTERS            14215
 #define IDD_DHTML_SETTING               20000
 #define IDR_DEFAULT1                    20006
 #define IDD_DEFAULT_PLAYER              20007
 #define IDD_DIALOG1                     20008
 #define IDD_SUBUPLOAD                   20008
+#define IDD_DIALOG2                     20009
+#define IDD_SVPSUBDOWNUPDLG             20009
 #define IDC_CHK_NOMOREQUES              22000
 #define IDC_CHECK_DEFAULTPLAYER         22001
+#define IDC_STATIC_VFILE                22002
 #define IDR_HTML_UESETTINGPANEL         24000
 #define ID_32768                        32768
 #define ID_32769                        32769
@@ -866,50 +870,47 @@
 #define IDS_CANNOT_CHANGE_FORMAT        33163
 #define IDS_MAINFRM_12                  33165
 #define IDS_MAINFRM_13                  33166
-
+#define IDS_VDF_FFSETTINGS              33167
+#define IDS_VDF_THREADNUMBER            33168
+#define IDS_VDF_SKIPDEBLOCK             33169
+#define IDS_VDF_DBLK_NONE               33170
+#define IDS_VDF_DBLK_DEFAULT            33171
+#define IDS_VDF_DBLK_NONREF             33172
+#define IDS_VDF_DBLK_BIDIR              33173
+#define IDS_VDF_DBLK_NONKFRM            33174
+#define IDS_VDF_DBLK_ALL                33175
+#define IDS_VDF_ERROR_RECOGNITION       33176
+#define IDS_VDF_ERR_CAREFUL             33177
+#define IDS_VDF_ERR_COMPLIANT           33178
+#define IDS_VDF_ERR_AGGRESSIVE          33179
+#define IDS_VDF_ERR_VERYAGGRESSIVE      33180
+#define IDS_VDF_IDCT_ALGO               33181
+#define IDS_VDF_IDCT_AUTO               33182
+#define IDS_VDF_IDCT_LIBMPG2            33183
+#define IDS_VDF_IDCT_SIMPLE_MMX         33184
+#define IDS_VDF_IDCT_XVID               33185
+#define IDS_VDF_IDCT_SIMPLE             33186
+#define IDS_VDF_DXVA_SETTING            33187
+#define IDS_VDF_DXVA_MODE               33189
 #define IDS_D3DFS_WARNING               33190
 #define IDS_MAINFRM_139                 33191
 #define IDS_REALVIDEO_INCOMPATIBLE      33193
-
+#define IDS_VDF_VIDEOCARD               33194
 #define IDS_THUMB_ROWNUMBER             33195
 #define IDS_THUMB_COLNUMBER             33196
 #define IDS_THUMB_IMAGE_WIDTH           33197
 #define IDS_PPSDB_URLCORRECT            33198
 #define IDS_PPSDB_PROTOCOLERR           33199
 #define IDS_PPSDB_BADURL                33200
+#define IDS_VDF_AR_MODE                 33211
 
-
-#define IDS_VDF_FFSETTINGS				33167
-#define IDS_VDF_THREADNUMBER			33168
-#define IDS_VDF_SKIPDEBLOCK				33169
-#define IDS_VDF_DBLK_NONE				33170
-#define IDS_VDF_DBLK_DEFAULT			33171
-#define IDS_VDF_DBLK_NONREF				33172
-#define IDS_VDF_DBLK_BIDIR				33173
-#define IDS_VDF_DBLK_NONKFRM			33174
-#define IDS_VDF_DBLK_ALL				33175
-#define IDS_VDF_ERROR_RECOGNITION		33176
-#define IDS_VDF_ERR_CAREFUL				33177
-#define IDS_VDF_ERR_COMPLIANT			33178
-#define IDS_VDF_ERR_AGGRESSIVE			33179
-#define IDS_VDF_ERR_VERYAGGRESSIVE		33180
-#define IDS_VDF_IDCT_ALGO				33181
-#define IDS_VDF_IDCT_AUTO				33182
-#define IDS_VDF_IDCT_LIBMPG2			33183
-#define IDS_VDF_IDCT_SIMPLE_MMX			33184
-#define IDS_VDF_IDCT_XVID				33185
-#define IDS_VDF_IDCT_SIMPLE				33186
-#define IDS_VDF_DXVA_SETTING			33187
-#define IDS_VDF_DXVA_MODE				33189
-#define IDS_VDF_VIDEOCARD				33194
-#define IDS_VDF_AR_MODE					33211
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        20009
+#define _APS_NEXT_RESOURCE_VALUE        20010
 #define _APS_NEXT_COMMAND_VALUE         32803
-#define _APS_NEXT_CONTROL_VALUE         22002
+#define _APS_NEXT_CONTROL_VALUE         22003
 #define _APS_NEXT_SYMED_VALUE           24001
 #endif
 #endif

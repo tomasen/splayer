@@ -111,35 +111,6 @@ void CPlayerPlaylistBar::AddItem(CString fn, CAtlList<CString>* subs)
 	AddItem(sl, subs);
 }
 
-/*
-class CSVPThreadLoadThreadData{
-	public:
-		CString szVidPath;
-		CMainFrame* pFrame;
-};
-
-UINT __cdecl SVPThreadLoadThread( LPVOID lpParam ) 
-{ 
-
-	CSVPThreadLoadThreadData* pData = (CSVPThreadLoadThreadData*)lpParam;
-
-	// Print the parameter values using thread-safe functions.
-	CStringArray szSubArray;
-
-	SVP_FetchSubFileByVideoFilePath( pData->szVidPath, &szSubArray) ;
-	BOOL bSubSelected = false;
-	for(INT i = 0 ;i < szSubArray.GetCount(); i++){
-		if(pData->pFrame->LoadSubtitle(szSubArray[i]) && !bSubSelected){
-			pData->pFrame->SetSubtitle( pData->pFrame->m_pSubStreams.GetTail()  ); //Enable Subtitle
-			//TODO: select correct language for idx+sub
-			bSubSelected = true;
-		}
-		
-	}
-	delete pData;
-	return 0; 
-} */
-
 
 void CPlayerPlaylistBar::AddItem(CAtlList<CString>& fns, CAtlList<CString>* subs)
 {
@@ -216,26 +187,7 @@ void CPlayerPlaylistBar::AddItem(CAtlList<CString>& fns, CAtlList<CString>* subs
 		CAtlArray<SubFile> ret;
 		
 		GetSubFileNames(fn, paths, ret);
-		if (ret.GetCount() <= 0){
-			//异步下载后自动调入
-/*
-			
-			CSVPThreadLoadThreadData* pData = new CSVPThreadLoadThreadData();
-			pData->pFrame = (CMainFrame*)this->m_pMaindFrame;
-			pData->szVidPath = fn;
-			AfxBeginThread(SVPThreadLoadThread, pData); 
-*/
-			/*
-			CStringArray szSubArray;  //同步下载
-			CMainFrame* pFrame = (CMainFrame*)this->m_pMaindFrame;
-			SVP_FetchSubFileByVideoFilePath( fn, &szSubArray) ;
-			for(INT i = 0 ;i < szSubArray.GetCount(); i++){
-				pFrame->LoadSubtitle(szSubArray[i]);
-			}*/
-		}else{
-			//TODO: remove this and put it in conditions
-			//
-		}
+
 		for(size_t i = 0; i < ret.GetCount(); i++)
 		{
 			if(!FindFileInList(pli.m_subs, ret[i].fn))

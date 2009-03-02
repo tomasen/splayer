@@ -118,12 +118,16 @@ HRESULT CBaseSplitterFile::Read(BYTE* pData, __int64 len)
 		if(total == available) {m_fRandomAccess = true; OnComplete();}
 	}
 
+	if(!pData)
+		return S_FALSE;
+
 	if(m_cachetotal == 0 || !m_pCache)
 	{
 		hr = m_pAsyncReader->SyncRead(m_pos, (long)len, pData);
 		m_pos += len;
 		return hr;
 	}
+
 
 	BYTE* pCache = m_pCache;
 

@@ -1131,6 +1131,9 @@ CAutoPtr<CMatroskaNode> CMatroskaNode::Copy()
 CAutoPtr<CMatroskaNode> CMatroskaNode::GetFirstBlock()
 {
 	CAutoPtr<CMatroskaNode> pNode = Child();
+	if(!pNode){
+		return CAutoPtr<CMatroskaNode>();
+	}
 	do {if(pNode->m_id == 0xA0 || pNode->m_id == 0xA3) return pNode;}
 	while(pNode->Next());
 	return CAutoPtr<CMatroskaNode>();

@@ -1,8 +1,10 @@
 #pragma once
 
-#include "MainFrm.h"
 #include "afxwin.h"
 #include "afxcmn.h"
+
+#include "MainFrm.h"
+
 // CSVPSubDownUpDialog dialog
 
 class CSVPSubDownUpDialog : public CResizableDialog
@@ -36,4 +38,6 @@ public:
 	CButton cb_download;
 	CStatic cs_vftitle;
 	CButton cb_ovfile;
+	CButton cb_close;
+	afx_msg void OnClose();
 };

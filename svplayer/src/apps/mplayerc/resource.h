@@ -791,11 +791,13 @@
 #define IDD_DEFAULT_PLAYER              20007
 #define IDD_DIALOG1                     20008
 #define IDD_SUBUPLOAD                   20008
+#define IDD_SVPSUBUPLOAD                20008
 #define IDD_DIALOG2                     20009
 #define IDD_SVPSUBDOWNUPDLG             20009
 #define IDC_CHK_NOMOREQUES              22000
 #define IDC_CHECK_DEFAULTPLAYER         22001
 #define IDC_STATIC_VFILE                22002
+#define IDC_STATIC_DONE                 22003
 #define IDR_HTML_UESETTINGPANEL         24000
 #define ID_32768                        32768
 #define ID_32769                        32769
@@ -909,7 +911,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        20010
 #define _APS_NEXT_COMMAND_VALUE         32803
-#define _APS_NEXT_CONTROL_VALUE         22003
+#define _APS_NEXT_CONTROL_VALUE         22004
 #define _APS_NEXT_SYMED_VALUE           24001
 #endif
 #endif

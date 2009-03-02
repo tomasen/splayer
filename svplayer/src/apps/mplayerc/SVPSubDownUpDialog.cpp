@@ -22,13 +22,14 @@ CSVPSubDownUpDialog::~CSVPSubDownUpDialog()
 
 void CSVPSubDownUpDialog::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
+	__super::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_EDIT1, cs_vfpath);
 	DDX_Control(pDX, IDC_PROGRESS1, cprog);
 	DDX_Control(pDX, IDC_EDIT2, ce_log);
 	DDX_Control(pDX, IDOK, cb_download);
 	DDX_Control(pDX, IDC_STATIC_VFILE, cs_vftitle);
 	DDX_Control(pDX, IDC_BUTTON1, cb_ovfile);
+	DDX_Control(pDX, IDCANCEL, cb_close);
 }
 
 
@@ -37,6 +38,7 @@ BEGIN_MESSAGE_MAP(CSVPSubDownUpDialog, CDialog)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_BUTTON1, &CSVPSubDownUpDialog::OnBnClickedButton1)
 	ON_BN_CLICKED(IDCANCEL, &CSVPSubDownUpDialog::OnBnClickedCancel)
+	ON_WM_CLOSE()
 END_MESSAGE_MAP()
 
 
@@ -63,6 +65,7 @@ void CSVPSubDownUpDialog::OnBnClickedOk()
 	cs_vfpath.ShowWindow(SW_HIDE);
 	cb_ovfile.ShowWindow(SW_HIDE);
 	ce_log.ShowWindow(SW_SHOW);
+	cb_close.EnableWindow(FALSE);
 }
 
 void CSVPSubDownUpDialog::OnTimer(UINT_PTR nIDEvent)
@@ -84,6 +87,7 @@ void CSVPSubDownUpDialog::OnTimer(UINT_PTR nIDEvent)
 		}
 		if(!pFrame->m_bSubDownloading){
 			pos = 1000;
+			cb_close.EnableWindow(TRUE);
 			KillTimer(IDT_SVPDOWNTICK);
 		}
 		CString szLogs ;
@@ -97,7 +101,7 @@ void CSVPSubDownUpDialog::OnTimer(UINT_PTR nIDEvent)
 		cprog.SetPos(pos);
 	}
 
-	CResizableDialog::OnTimer(nIDEvent);
+	__super::OnTimer(nIDEvent);
 }
 
 void CSVPSubDownUpDialog::OnBnClickedButton1()
@@ -106,8 +110,9 @@ void CSVPSubDownUpDialog::OnBnClickedButton1()
 	CString filter;
 	CAtlArray<CString> mask;
 	AfxGetAppSettings().Formats.GetFilter(filter, mask);
-
-	COpenFileDlg fd(mask, true, NULL, NULL, 
+	CString m_path;
+	cs_vfpath.GetWindowText(m_path);
+	COpenFileDlg fd(mask, true, NULL, m_path, 
 		OFN_EXPLORER|OFN_ENABLESIZING|OFN_HIDEREADONLY|OFN_ENABLEINCLUDENOTIFY, 
 		filter, this);
 	if(fd.DoModal() != IDOK) return;
@@ -121,6 +126,16 @@ void CSVPSubDownUpDialog::OnBnClickedButton1()
 
 void CSVPSubDownUpDialog::OnBnClickedCancel()
 {
-	// TODO: Ìø³ö
-	__super::OnCancel();
+	//  Ìø³ö
+	if(!pFrame->m_bSubDownloading){
+		__super::OnCancel();
+	}
+}
+
+void CSVPSubDownUpDialog::OnClose()
+{
+	// TODO: Add your message handler code here and/or call default
+	if(!pFrame->m_bSubDownloading){
+		__super::OnClose();
+	}
 }

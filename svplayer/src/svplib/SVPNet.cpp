@@ -140,7 +140,7 @@ int CSVPNet::WetherNeedUploadSub(CString fnVideoFilePath, CString szFileHash,CSt
 	}
 	return rret;
 }
-int CSVPNet::UploadSubFileByVideoAndHash(CString fnVideoFilePath, CString szFileHash, CString szSubHash,CStringArray* fnSubPaths, int iDelayMS){
+int CSVPNet::UploadSubFileByVideoAndHash(CString fnVideoFilePath, CString szFileHash, CString szSubHash,CStringArray* fnSubPaths, int iDelayMS, CStringArray* szaPostTerms){
 	CURL *curl;
 	CURLcode res;
 	//CString szPostPerm = _T( "pathinfo=" ) + fnVideoFilePath + _T("&filehash=") + szFileHash ;

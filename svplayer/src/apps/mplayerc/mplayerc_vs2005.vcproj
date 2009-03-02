@@ -757,6 +757,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SVPSubUploadDlg.cpp"
+				>
+			</File>
+			<File
 				RelativePath="TextPassThruFilter.cpp"
 				>
 			</File>
@@ -1159,6 +1163,10 @@
 			</File>
 			<File
 				RelativePath=".\SVPSubDownUpDialog.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SVPSubUploadDlg.h"
 				>
 			</File>
 			<File
@@ -1620,11 +1628,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 	</Files>

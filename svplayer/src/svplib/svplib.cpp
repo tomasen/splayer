@@ -3,14 +3,9 @@
 #include "SVPHash.h"
 #include <shlobj.h>
 
-class CSVPSubUploadThreadData{
-public:
-	CString fnVideoFilePath;
-	CString szSubPath;
-	int iDelayMS;
-};
+
 static CAtlList<CString> * szGStatMsg = NULL;
-void SVP_RealUploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString szSubPath, int iDelayMS){
+void SVP_RealUploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString szSubPath, int iDelayMS, CStringArray* szaPostTerms){
 
 	CSVPNet svpNet;
 	CSVPhash svpHash;
@@ -24,19 +19,10 @@ void SVP_RealUploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString
 	SVP_LogMsg(CString("Got Sub Hash ") + svpToolBox.Implode( _T(" | "), &szaSubFiles) + _T(" -> ") + szSubHash );
 
 	if ( svpNet.WetherNeedUploadSub(fnVideoFilePath,szFileHash, szSubHash,iDelayMS) ){
-		svpNet.UploadSubFileByVideoAndHash(fnVideoFilePath,szFileHash, szSubHash, &szaSubFiles,iDelayMS);
+		svpNet.UploadSubFileByVideoAndHash(fnVideoFilePath,szFileHash, szSubHash, &szaSubFiles,iDelayMS, szaPostTerms);
 		return ;
 	}
 }
-UINT __cdecl SVPThreadUploadSubFile( LPVOID lpParam ) 
-{ 
-
-	CSVPSubUploadThreadData* pData = (CSVPSubUploadThreadData*)lpParam;
-	SVP_RealUploadSubFileByVideoAndSubFilePath(pData->fnVideoFilePath,  pData->szSubPath, pData->iDelayMS);
-
-	delete pData;
-	return 0; 
-} 
 UINT __cdecl SVPThreadCheckUpdaterExe( LPVOID lpParam ) 
 { 
 	if(lpParam){
@@ -106,13 +92,7 @@ void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath, CStringArray* szSu
 	szGStatMsg = NULL;
 	return;
 }
-void SVP_UploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString szSubPath, int iDelayMS){
-	CSVPSubUploadThreadData* pData = new CSVPSubUploadThreadData();
-	pData->fnVideoFilePath = fnVideoFilePath;
-	pData->szSubPath = szSubPath;
-	pData->iDelayMS = iDelayMS;
-	AfxBeginThread(SVPThreadUploadSubFile, pData); 
-}
+
 
 void SVP_LogMsg(CString logmsg, int level){
 

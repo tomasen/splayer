@@ -75,6 +75,7 @@
 
 #include "..\..\subtitles\SSF.h"
 #include "SVPSubDownUpDialog.h"
+#include "SVPSubUploadDlg.h"
 
 #define DEFCLIENTW 292
 #define DEFCLIENTH 200
@@ -1362,6 +1363,7 @@ CString CMainFrame::getCurPlayingSubfile(int * iSubDelayMS,int subid ){
 	}
 	return fnSubtitleFile;
 }
+
 void CMainFrame::OnTimer(UINT nIDEvent)
 {
 	if(nIDEvent == TIMER_STREAMPOSPOLLER && m_iMediaLoadState == MLS_LOADED)
@@ -4413,21 +4415,30 @@ void CMainFrame::OnFileISDBUpload()
 		if(subDelayMS){
 			szBuf.Format(_T("字幕延时：%d ms\r\n"),subDelayMS );
 		}
+		/*
 		CString szUploadMsg;
-		szUploadMsg.Format(_T("本操作将上传您正在播放中的字幕： \r\n %s \r\n%s\r\n是否继续？"), fnSubtitleFile,szBuf);
+				szUploadMsg.Format(_T("本操作将上传您正在播放中的字幕： \r\n %s \r\n%s\r\n是否继续？"), fnSubtitleFile,szBuf);
+		
+				if ( AfxMessageBox(szUploadMsg, MB_YESNO) == IDYES){
+		
+					CString szLog;
+		
+					szLog.Format(_T("Uploading sub %s of %s with delay %d ms because user demand to ") , fnSubtitleFile, fnVideoFile ,subDelayMS );
+					SVP_LogMsg(szLog);
+					SVP_UploadSubFileByVideoAndSubFilePath(fnVideoFile , fnSubtitleFile, subDelayMS) ;
+					if( AfxMessageBox(_T("字幕已经上传到播放器系统。建议您通过上传网页丰富相关信息。"), MB_YESNO) != IDYES){
+					return;
+					}
+				}else*/
+		
+		CSVPSubUploadDlg upDlg;
+		upDlg.m_szVideoPath = fnVideoFile;
+		upDlg.m_szSubPath = fnSubtitleFile;
+		upDlg.m_iDelayMs = subDelayMS;
+		upDlg.pFrame = this;
+		upDlg.DoModal();
 
-		if ( AfxMessageBox(szUploadMsg, MB_YESNO) == IDYES){
-
-			CString szLog;
-
-			szLog.Format(_T("Uploading sub %s of %s with delay %d ms because user demand to ") , fnSubtitleFile, fnVideoFile ,subDelayMS );
-			SVP_LogMsg(szLog);
-			SVP_UploadSubFileByVideoAndSubFilePath(fnVideoFile , fnSubtitleFile, subDelayMS) ;
-			if( AfxMessageBox(_T("字幕已经上传到播放器系统。建议您通过上传网页丰富相关信息。"), MB_YESNO) != IDYES){
-			return;
-			}
-		}else
-			return;
+		return;
 	}
 	
 		CStringA url = "http://shooter.cn/sub/upload.html?";
@@ -7522,6 +7533,51 @@ UINT __cdecl SVPThreadLoadThread( LPVOID lpParam )
 	delete pData;
 	return 0; 
 } 
+void CMainFrame::SVPSubDownloadByVPath(CString szVPath, CAtlList<CString>* szaStatMsgs){
+	CSVPThreadLoadThreadData* pData = new CSVPThreadLoadThreadData();
+	pData->pFrame = (CMainFrame*)this;
+	pData->szVidPath = szVPath;
+	if( szaStatMsgs == NULL){
+		pData->statusmsgs = &m_statusmsgs;
+	}else{
+		pData->statusmsgs = szaStatMsgs;
+	}
+	AfxBeginThread(SVPThreadLoadThread, pData); 
+}
+class CSVPSubUploadThreadData{
+public:
+	CString fnVideoFilePath;
+	CString szSubPath;
+	int iDelayMS;
+	CMainFrame* pFrame;
+	CAtlList<CString>* statusmsgs;
+	CStringArray* szaPostTerms;
+};
+
+UINT __cdecl SVPThreadUploadSubFile( LPVOID lpParam ) 
+{ 
+
+	CSVPSubUploadThreadData* pData = (CSVPSubUploadThreadData*)lpParam;
+	pData->pFrame->m_bSubUploading = TRUE;
+	SVP_RealUploadSubFileByVideoAndSubFilePath(pData->fnVideoFilePath,  pData->szSubPath, pData->iDelayMS, pData->szaPostTerms);
+	pData->pFrame->m_bSubUploading = FALSE;
+	delete pData;
+	return 0; 
+} 
+void CMainFrame::SVP_UploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString szSubPath, int iDelayMS, CAtlList<CString>* szaStatMsgs, CStringArray* szaPostTerms){
+	CSVPSubUploadThreadData* pData = new CSVPSubUploadThreadData();
+	pData->fnVideoFilePath = fnVideoFilePath;
+	pData->szSubPath = szSubPath;
+	pData->iDelayMS = iDelayMS;
+	if( szaStatMsgs == NULL){
+		pData->statusmsgs = &m_statusmsgs;
+	}else{
+		pData->statusmsgs = szaStatMsgs;
+	}
+	pData->pFrame = (CMainFrame*)this;
+	pData->szaPostTerms = szaPostTerms;
+	AfxBeginThread(SVPThreadUploadSubFile, pData); 
+}
 
 void CMainFrame::OpenFile(OpenFileData* pOFD)
 {
@@ -7647,17 +7703,7 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 
 	m_iPlaybackMode = PM_FILE;
 }
-void CMainFrame::SVPSubDownloadByVPath(CString szVPath, CAtlList<CString>* szaStatMsgs){
-	CSVPThreadLoadThreadData* pData = new CSVPThreadLoadThreadData();
-	pData->pFrame = (CMainFrame*)this;
-	pData->szVidPath = szVPath;
-	if( szaStatMsgs == NULL){
-		pData->statusmsgs = &m_statusmsgs;
-	}else{
-		pData->statusmsgs = szaStatMsgs;
-	}
-	AfxBeginThread(SVPThreadLoadThread, pData); 
-}
+
 void CMainFrame::SetupChapters()
 {
 	ASSERT(m_pCB);

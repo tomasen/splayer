@@ -2,7 +2,6 @@
 // Microsoft Visual C++ generated include file.
 // Used by mplayerc.rc
 //
-#define SVP_REV_NUMBER                  76
 #define IDR_MAINFRAME                   128
 #define IDR_POPUP                       129
 #define IDR_POPUPMAIN                   130

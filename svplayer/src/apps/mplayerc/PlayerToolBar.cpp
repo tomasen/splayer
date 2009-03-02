@@ -312,7 +312,7 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
 					}
 				}else{
 					if(iBottonClicked == ID_PLAY_BWD){
-						iMsg = ID_PLAY_SEEKKEYBACKWARD;
+						iMsg = ID_PLAY_SEEKBACKWARDMED;
 					}else if(iBottonClicked == ID_PLAY_FWD){
 						iMsg = ID_PLAY_SEEKKEYFORWARD;
 					}

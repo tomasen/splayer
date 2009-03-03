@@ -786,6 +786,7 @@
 #define IDS_TRA_FFMPEG                  14213
 #define IDS_RS_DXVAFILTERS              14214
 #define IDS_RS_FFMPEGFILTERS            14215
+#define IDS_SRC_FLAC					14216
 #define IDD_DHTML_SETTING               20000
 #define IDR_DEFAULT1                    20006
 #define IDD_DEFAULT_PLAYER              20007

@@ -113,10 +113,10 @@ bool CMpaDecSettingsWnd::OnActivate()
 	p.y += m_fontheight + 5;
 
 	m_ac3spkcfg_combo.Create(dwStyle|CBS_DROPDOWNLIST, CRect(p + CSize(150, 0), CSize(100, 200)), this, IDC_PP_COMBO2);
-	m_ac3spkcfg_combo.SetItemData(m_ac3spkcfg_combo.AddString(_T("Mono")), A52_MONO);
-	m_ac3spkcfg_combo.SetItemData(m_ac3spkcfg_combo.AddString(_T("Dual Mono")), A52_CHANNEL);
-	m_ac3spkcfg_combo.SetItemData(m_ac3spkcfg_combo.AddString(_T("Stereo")), A52_STEREO);
-	m_ac3spkcfg_combo.SetItemData(m_ac3spkcfg_combo.AddString(_T("Dolby Stereo")), A52_DOLBY);
+	m_ac3spkcfg_combo.SetItemData(m_ac3spkcfg_combo.AddString(_T("单声道")), A52_MONO);
+	m_ac3spkcfg_combo.SetItemData(m_ac3spkcfg_combo.AddString(_T("双单声道")), A52_CHANNEL);
+	m_ac3spkcfg_combo.SetItemData(m_ac3spkcfg_combo.AddString(_T("立体声")), A52_STEREO);
+	m_ac3spkcfg_combo.SetItemData(m_ac3spkcfg_combo.AddString(_T("杜比立体声")), A52_DOLBY);
 	m_ac3spkcfg_combo.SetItemData(m_ac3spkcfg_combo.AddString(ResStr(IDS_MPA_3F)), A52_3F);
 	m_ac3spkcfg_combo.SetItemData(m_ac3spkcfg_combo.AddString(ResStr(IDS_MPA_2F_1R)), A52_2F1R);
 	m_ac3spkcfg_combo.SetItemData(m_ac3spkcfg_combo.AddString(ResStr(IDS_MPA_3F_1R)), A52_3F1R);
@@ -155,9 +155,9 @@ bool CMpaDecSettingsWnd::OnActivate()
 	p.y += m_fontheight + 5;
 
 	m_dtsspkcfg_combo.Create(dwStyle|CBS_DROPDOWNLIST, CRect(p + CSize(150, 0), CSize(100, 200)), this, IDC_PP_COMBO3);
-	m_dtsspkcfg_combo.SetItemData(m_dtsspkcfg_combo.AddString(_T("Mono")), DTS_MONO);
-	m_dtsspkcfg_combo.SetItemData(m_dtsspkcfg_combo.AddString(_T("Dual Mono")), DTS_CHANNEL);
-	m_dtsspkcfg_combo.SetItemData(m_dtsspkcfg_combo.AddString(_T("Stereo")), DTS_STEREO);
+	m_dtsspkcfg_combo.SetItemData(m_dtsspkcfg_combo.AddString(_T("单声道")), DTS_MONO);
+	m_dtsspkcfg_combo.SetItemData(m_dtsspkcfg_combo.AddString(_T("双单声道")), DTS_CHANNEL);
+	m_dtsspkcfg_combo.SetItemData(m_dtsspkcfg_combo.AddString(_T("立体声")), DTS_STEREO);
 	//m_dtsspkcfg_combo.SetItemData(m_dtsspkcfg_combo.AddString(_T("Stereo ..")), DTS_STEREO_SUMDIFF);
 	//m_dtsspkcfg_combo.SetItemData(m_dtsspkcfg_combo.AddString(_T("Stereo ..")), DTS_STEREO_TOTAL);
 	m_dtsspkcfg_combo.SetItemData(m_dtsspkcfg_combo.AddString(ResStr(IDS_MPA_3F)), DTS_3F);

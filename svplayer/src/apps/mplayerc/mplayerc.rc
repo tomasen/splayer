@@ -2079,7 +2079,6 @@ BEGIN
     IDS_RS_AUTODOWNLAODSVPSUB "AutoDownloadSVPSub"
     IDS_RS_USEGPUCUDA       "USEGPUCUDA"
     IDS_RS_AUTORESUMEPLAY   "autoResumePlay"
-    IDS_TRA_FFMPEG          "6.4.0.2\nBased on FFmpeg, http://ffmpeg.mplayerhq.hu/"
     IDS_RS_DXVAFILTERS      "DXVAFilters"
     IDS_RS_FFMPEGFILTERS    "FFmpegFilters"
 END
@@ -2383,40 +2382,43 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_SRC_RADGT           "6.4.0.0\n需要 smackw32.dll 和 binkw32.dll"
-    IDS_SRC_CDDA            "6.4.0.2\n限2K/XP以上"
-    IDS_SRC_AVI             "6.4.0.9\n逐行文件有兼容问题"
-    IDS_SRC_CDXA            "6.4.0.2"
-    IDS_SRC_VTS             "6.4.0.0\n支持直接打开VTS_xx_0.ifo"
-    IDS_SRC_FLIC            "6.4.0.1"
-    IDS_SRC_D2V             "6.4.0.0"
-    IDS_SRC_DTSAC3          "6.4.0.2"
-    IDS_SRC_SHOUTCAST       "6.4.0.1"
-    IDS_SRC_REALMEDIA       "6.4.1.2\nRealMedia format categories must be set to 'DirectShow' to make it load\nDoesn't support streaming!"
-    IDS_SRC_MATROSKA        "6.4.3.0"
-    IDS_SRC_ROQ             "6.4.0.0"
-    IDS_SRC_OGG             "6.4.0.1"
-    IDS_SRC_NUT             "6.4.0.0\nBased on ""NUT Open Container Format DRAFT 20030906""\nStill very incomplete, if you have or can make test files, please contact me."
-    IDS_SRC_DIRAC           "6.4.0.1\nBased on libdirac 0.5.0"
-    IDS_SRC_DSM             "6.4.0.5"
+    IDS_SRC_RADGT            "6.4.0.0\n需要 smackw32.dll 和 binkw32.dll"
+    IDS_SRC_CDDA             "6.4.0.1\n仅 2K/XP"
+    IDS_SRC_AVI              "6.4.0.7\n对非隔行扫描文件无法很好的支持"
+    IDS_SRC_CDXA             "6.4.0.1"
+    IDS_SRC_VTS              "6.4.0.0\n打开 VTS_xx_0.ifo 以在同一处载入 VTS_xx_x.vob 文件"
+    IDS_SRC_FLIC             "6.4.0.0"
+    IDS_SRC_FLAC            "1.2.1.0"
+    IDS_SRC_D2V              "6.4.0.0"
+    IDS_SRC_DTSAC3           "6.4.0.1"
+    IDS_SRC_SHOUTCAST        "6.4.0.1"
+    IDS_SRC_REALMEDIA        "6.4.1.1\nRealMeida 格式种类必须设置为 ""DirectShow"" 来使其被装载\n不支持流"
+    IDS_SRC_MATROSKA         "6.4.2.9"
+    IDS_SRC_ROQ              "6.4.0.0"
+    IDS_SRC_OGG              "6.4.0.2"
+    IDS_SRC_NUT              "6.4.0.0\n基于 ""NUT 开放容器格式 DRAFT 20030906""\n仍然非常不完善, 如果您有或能够制作测试文件,请联系我。"
+    IDS_SRC_DIRAC            "6.4.0.1\n基于 libdirac 0.5.0"
+    IDS_SRC_DSM              "6.4.0.5"
 END
 
 STRINGTABLE 
 BEGIN
-    IDS_SRC_MPA             "6.4.0.2\nSource filter for mp3 and aac"
-    IDS_SRC_MP4             "6.4.0.4"
-    IDS_TRA_RV              "6.4.1.0\nRequires RealVideo decoder dlls, RV10 also works with ffdshow"
-    IDS_TRA_RA              "6.4.1.0\nRequires RealAudio decoder dlls, DNET also works with ac3filter"
-    IDS_TRA_MPEG1           "6.4.0.4\nBased on libmpeg2 (mpeg1 video decoding is bogus)"
-    IDS_TRA_MPEG2           "6.4.0.4\nBased on libmpeg2"
-    IDS_TRA_MPA             "6.4.0.4\nBased on libmad, liba52, libdts, libfaad"
-    IDS_TRA_LPCM            "6.4.0.1"
-    IDS_TRA_AC3             "6.4.0.1\nBased on liba52 0.7.4, http://liba52.sourceforge.net/"
-    IDS_TRA_DTS             "6.4.0.1\nBased on libdts 0.0.2, http://www.videolan.org/dtsdec.html"
-    IDS_TRA_AAC             "6.4.0.2\nBased on libfaad 2.6, http://www.audiocoding.com/"
-    IDS_TRA_DIRAC           "6.4.0.1\nBased on libdirac 0.5.0"
-    IDS_TRA_PS2AUD          "6.4.0.1\nDecodes audio streams of PSS files"
+    IDS_SRC_MPA              "6.4.0.2\nmp3 和 aac 的源滤镜"
+    IDS_SRC_MP4              "6.4.0.2"
+    IDS_TRA_RV               "6.4.1.0\n需要 RealVideo 解码 dll, RV10 也可以工作在 ffdshow 下"
+    IDS_TRA_RA               "6.4.1.0\n需要 RealAudio 解码器 dll, DNET 也可由 ac3filter 实现"
+    IDS_TRA_MPEG1            "6.4.0.3\n基于 libmpeg2 (mpeg1 视频解码器是伪造的)"
+    IDS_TRA_MPEG2            "6.4.0.3\n基于 libmpeg2"
+    IDS_TRA_MPA              "6.4.0.3\n基于 libmad, 可解码所有版本和层次的 MPEG 音频"
+    IDS_TRA_LPCM             "6.4.0.1"
+    IDS_TRA_AC3              "6.4.0.1\n基于 liba52 0.7.4, http://liba52.sourceforge.net/"
+    IDS_TRA_DTS              "6.4.0.1\n基于 libdts 0.0.2, http://www.videolan.org/dtsdec.html"
+    IDS_TRA_AAC              "6.4.0.1\n基于 libfaad 2.0, http://www.audiocoding.com/"
+    IDS_TRA_DIRAC            "6.4.0.1\n基于 libdirac 0.8.0"
+    IDS_TRA_PS2AUD           "6.4.0.1\n解码 PSS 文件的音频流"
     IDS_SRC_FLV             "6.4.0.4"
+	IDS_TRA_FFMPEG			"6.4.0.1\n基于 ffmpeg 编码器, http://ffmpeg.mplayerhq.hu/"
+    
 END
 
 STRINGTABLE 
@@ -2441,90 +2443,84 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_VDF_IDCT_SIMPLE_MMX "Simple MMX"
-    IDS_VDF_IDCT_XVID       "XVID"
-    IDS_VDF_IDCT_SIMPLE     "Simple"
-    IDS_VDF_DXVA_SETTING    "DXVA settings"
-    IDS_VDF_DXVA_MODE       "DXVA Mode"
-    IDS_D3DFS_WARNING       "This option is designed to avoid tearing. However, it will also prevent MPC-HC from displaying context menus and dialog boxes during playback.\n\nTo exit Direct3D fullscreen and stop playback, you must press: Ctrl + C.\n\nDo you really want to activate this option?"
-    IDS_MAINFRM_139         "Sub delay: %ld ms"
-    IDS_REALVIDEO_INCOMPATIBLE 
-                            "Filename contains unsupported characters (use only A-Z, 0-9)"
-    IDS_VDF_VIDEOCARD       "Video card"
-    IDS_THUMB_ROWNUMBER     "Rows:"
-    IDS_THUMB_COLNUMBER     "Columns:"
-    IDS_THUMB_IMAGE_WIDTH   "Image width:"
-    IDS_PPSDB_URLCORRECT    "The URL appears to be correct!"
-    IDS_PPSDB_PROTOCOLERR   "Protocol version mismatch, please upgrade your player or choose a different address!"
+    IDS_VDF_IDCT_SIMPLE_MMX  "简易 MMX"
+    IDS_VDF_IDCT_XVID        "SKAL"
+    IDS_VDF_IDCT_SIMPLE      "简易"
+    IDS_VDF_DXVA_SETTING     "DXVA 设置"
+    IDS_VDF_DXVA_MODE        "DXVA 模式"
+    IDS_D3DFS_WARNING        "此选项被涉及用于减少图像撕裂,但是会在视频被载入后无法显示 MPC-HC 显示关联菜单和对话框 (请至 http://tibrium.neuf.fr 查阅详细说明)。\n\n您确实要开启此选项吗?"
+    IDS_MAINFRM_139         "字幕延时设为: %ld ms"
+    IDS_REALVIDEO_INCOMPATIBLE "文件名含有不支持的字符 (只能使用 A-Z, 0-9)"
+    IDS_VDF_VIDEOCARD        "显卡"
+    IDS_THUMB_ROWNUMBER      "行:"
+    IDS_THUMB_COLNUMBER      "列:"
+    IDS_THUMB_IMAGE_WIDTH    "图像宽度:"
+    IDS_PPSDB_URLCORRECT     "URL 看上去不正确!"
+    IDS_PPSDB_PROTOCOLERR    "协议版本不匹配,请升级您的播放器或选择一个不同的地址!"
 END
 
 STRINGTABLE 
 BEGIN
-    IDS_MPADECSETTINGSWND_0 "Output sample format:"
+    IDS_MPADECSETTINGSWND_0  "输出采样格式:"
 END
 
 STRINGTABLE 
 BEGIN
-    IDS_MPADECSETTINGSWND_1 "AC3 Decoder Settings"
-    IDS_MPA_CHANNEL_1       "Channel 1"
-    IDS_MPA_CHANNEL_2       "Channel 2"
-    IDS_MPADECSETTINGSWND_5 "Decode to speakers"
-    IDS_MPADECSETTINGSWND_7 "DTS Decoder Settings"
-    IDS_MPADECSETTINGSWND_11 "AAC Decoder Settings"
-    IDS_MPADECSETTINGSWND_12 "Downmix to stereo"
-    IDS_AG_SETTINGS         "Settings"
-    IDS_MPEG2DECSETTINGSWND_0 
-                            "Enable planar YUV media types (VY12, I420, IYUY)"
-    IDS_MPEG2DECSETTINGSWND_1 "Set interlaced flag in output media type"
-    IDS_MPEG2DECSETTINGSWND_2 "Always display forced subtitles"
-    IDS_MPEG2_DEINTERLACING "Deinterlacing"
-    IDS_MPEG2_BRIGHTNESS    "Brightness"
-    IDS_MPEG2_RESET         "Reset"
-    IDS_MPEG2DECSETTINGSWND_7 
-                            "Note: Using a non-planar output format, bob deinterlacer, or adjusting color properies "
-    IDS_MPA_3F              "3 Front"
+    IDS_MPADECSETTINGSWND_1  "AC3 解码器设置"
+    IDS_MPA_CHANNEL_1        "声道 1"
+    IDS_MPA_CHANNEL_2        "声道 2"
+    IDS_MPADECSETTINGSWND_5  "解码到扬声器"
+    IDS_MPADECSETTINGSWND_7  "DTS 解码器设置"
+    IDS_MPADECSETTINGSWND_11 "AAC 解码器设置"
+    IDS_MPADECSETTINGSWND_12 "混缩至立体声"
+    IDS_AG_SETTINGS          "设置"
+    IDS_MPEG2DECSETTINGSWND_0 "开启平面 YUV 媒体类型 (VY12, I420, IYUY)"
+    IDS_MPEG2DECSETTINGSWND_1 "在输出媒体类型中设置交错标志"
+    IDS_MPEG2DECSETTINGSWND_2 "总是强制显示字幕"
+    IDS_MPEG2_DEINTERLACING  "反交错"
+    IDS_MPEG2_BRIGHTNESS     "亮度"
+    IDS_MPEG2_RESET          "重置"
+    IDS_MPEG2DECSETTINGSWND_7 "说明: 使用一个非平面输出格式, bob 反交错, 或自定义色彩属性"
+    IDS_MPA_3F               "3 前置音箱"
 END
 
 STRINGTABLE 
 BEGIN
-    IDS_MPA_2F_1R           "2 Front + 1 Rear"
-    IDS_MPA_3F_1R           "3 Front + 1 Rear"
-    IDS_MPA_2F_2R           "2 Front + 2 Rear"
-    IDS_MPA_3F_2R           "3 Front + 2 Rear"
-    IDS_MPA_DYNRANGE        "Dynamic Range Control"
-    IDS_VDF_FFSETTINGS      "FFMpeg settings"
+    IDS_MPA_2F_1R            "2 前置 + 1 后置音箱"
+    IDS_MPA_3F_1R            "3 前置 + 1 后置音箱"
+    IDS_MPA_2F_2R            "2 前置 + 2 后置音箱"
+    IDS_MPA_3F_2R            "3 前置 + 2 后置音箱"
+    IDS_MPA_DYNRANGE         "动态范围控制"
+    IDS_VDF_FFSETTINGS      "FFMpeg 设置"
 END
 
 STRINGTABLE 
 BEGIN
-    IDS_VDF_THREADNUMBER    "Decoding thread number"
-    IDS_VDF_SKIPDEBLOCK     "H264 skip deblocking mode"
-    IDS_VDF_DBLK_NONE       "None"
-    IDS_VDF_DBLK_DEFAULT    "Default"
-    IDS_VDF_DBLK_NONREF     "Non Reference"
-    IDS_VDF_DBLK_BIDIR      "Bidirectional"
-    IDS_VDF_DBLK_NONKFRM    "Non keyframes"
-    IDS_VDF_DBLK_ALL        "All frames"
-    IDS_VDF_ERROR_RECOGNITION "Error recognition"
-    IDS_VDF_ERR_CAREFUL     "Careful"
-    IDS_VDF_ERR_COMPLIANT   "Compliant"
-    IDS_VDF_ERR_AGGRESSIVE  "Aggressive"
-    IDS_VDF_ERR_VERYAGGRESSIVE "Very aggressive"
-    IDS_VDF_IDCT_ALGO       "IDCT Algorithm"
-    IDS_VDF_IDCT_AUTO       "Auto"
-    IDS_VDF_IDCT_LIBMPG2    "libmpeg2 MMX"
+    IDS_VDF_THREADNUMBER     "解码线程数"
+    IDS_VDF_SKIPDEBLOCK      "H264 跳过去块模式"
+    IDS_VDF_DBLK_NONE        "无"
+    IDS_VDF_DBLK_DEFAULT     "默认"
+    IDS_VDF_DBLK_NONREF      "无参考"
+    IDS_VDF_DBLK_BIDIR       "双向性"
+    IDS_VDF_DBLK_NONKFRM     "无关键帧"
+    IDS_VDF_DBLK_ALL         "所有帧"
+    IDS_VDF_ERROR_RECOGNITION "误码识别"
+    IDS_VDF_ERR_CAREFUL      "仔细"
+    IDS_VDF_ERR_COMPLIANT    "适应"
+    IDS_VDF_ERR_AGGRESSIVE   "激进"
+    IDS_VDF_ERR_VERYAGGRESSIVE "非常激进"
+    IDS_VDF_IDCT_ALGO        "IDCT 算法"
+    IDS_VDF_IDCT_AUTO        "自动"
+    IDS_VDF_IDCT_LIBMPG2     "Lib Mpeg2 MMX"
+    IDS_VDF_AR_MODE				"从流读取AR"
 END
+
 
 STRINGTABLE 
 BEGIN
-    IDS_VDF_AR_MODE         "Read AR from stream"
-END
-
-STRINGTABLE 
-BEGIN
-    IDC_CHECK_RELATIVETO    "Default state gets inherited to other styles where it is still undefined"
-    IDC_CHECK_SPCPOW2TEX    "Unchecking this frees up a little video memory and saves bandwidth on local to video memory transfers, but it may not work with older video cards."
-    IDC_BUTTON_EXT_SET      "After clicking this button, the checked state of the format group will reflect the actual file association for mpc. A newly added extension will usually make it grayed, so don't forget to check it again before closing this dialog!"
+    IDC_CHECK_RELATIVETO     "仍未定义从其它风格获取的默认区域"
+    IDC_CHECK_SPCPOW2TEX     "取消此选项来释放一些显存并为本地视频内存传输节省带宽,但是它可能无法在一些旧显卡上正常工作。"
+    IDC_BUTTON_EXT_SET       "在点击此按钮后,被选中的格式组的状态将会对射手影音的实际文件关联做出更改。最新添加的扩展名通常会变灰,所以请不要忘记在关闭此对话框前再次选中此类型的文件。"
 END
 
 STRINGTABLE 

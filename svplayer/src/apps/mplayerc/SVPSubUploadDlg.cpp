@@ -105,7 +105,7 @@ void CSVPSubUploadDlg::OnBnClickedOk()
 
 void CSVPSubUploadDlg::OnBnClickedButton1()
 {
-	// TODO: Add your control notification handler code here
+	// TODO: Add your control notification handler code here 
 	CString url = _T("http://shooter.cn/sub/upload.html?videohash=");
 	ShellExecute(m_hWnd, _T("open"), CString(url), NULL, NULL, SW_SHOWDEFAULT);
 }

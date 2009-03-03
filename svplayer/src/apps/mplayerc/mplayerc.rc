@@ -7,7 +7,7 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#include "afxres.h"
+#include "afxres.h"
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
@@ -282,28 +282,28 @@ BEGIN
     GROUPBOX        "延时",IDC_STATIC,201,3,88,38
     LTEXT           "毫秒",IDC_STATIC,266,20,15,11
     EDITTEXT        IDC_EDIT4,220,18,41,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
-    GROUPBOX        "Texture settings (open the video again to see the changes)",IDC_STATIC,5,43,284,55
+    GROUPBOX        "纹理设置(重新打开视频见效)",IDC_STATIC,5,43,284,55
     LTEXT           "对字幕图片进行缓存处理:",IDC_STATIC,14,60,128,8
     EDITTEXT        IDC_EDIT1,147,58,32,12,ES_CENTER | ES_AUTOHSCROLL | ES_READONLY | ES_NUMBER
     CONTROL         "",IDC_SPIN1,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS | UDS_HOTTRACK,168,63,11,14
     LTEXT           "设为 0 时即禁用缓存\n(不推荐)",IDC_STATIC,191,55,90,17
-    LTEXT           "Maximum texture resolution:",IDC_STATIC,14,79,92,8
-    LTEXT           "Subtitling for DirectShow is available when one of the following video renderers is selected in MPC's output options: ""VMR7 (renderless)"", ""VMR9 (renderless)"" or ""Haali Video Renderer"".",IDC_STATIC,14,148,267,25
-    GROUPBOX        "Before you ask",IDC_STATIC,5,136,284,65
-    LTEXT           "If you override and enable full-screen antialiasing somewhere at your videocard's settings, subtitles aren't going to look any better but it will surely eat your cpu.",IDC_STATIC,14,110,267,19
+    LTEXT           "最大纹理分辨率:",IDC_STATIC,14,79,92,8
+    LTEXT           "当在播放器的输出项中选择以下视频渲染器时，DirectShow下的字幕功能才可用：""VMR7 (renderless)"", ""VMR9 (renderless)"" 或 ""Haali Video 渲染器""。",IDC_STATIC,14,148,267,25
+    GROUPBOX        "使用须知",IDC_STATIC,5,136,284,65
+    LTEXT           "如果在显卡的一些设置中重写和启用了全屏反锯齿，除了占用CPU使用率外，字幕不会变得更美观。",IDC_STATIC,14,110,267,19
     COMBOBOX        IDC_COMBO1,111,77,68,45,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "Warning",IDC_STATIC,5,99,284,35
-    LTEXT           "RealMedia and QuickTime formats can be subtitled by setting their special DirectX 7 or DirectX 9 renderers.",IDC_STATIC,14,178,267,16
-    CONTROL         "Round up to power of two",IDC_CHECK_SPCPOW2TEX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,184,79,97,10
+    GROUPBOX        "警告",IDC_STATIC,5,99,284,35
+    LTEXT           "使用各自的DirectX 7或DirectX 9渲染器，RealMedia和QuickTime格式的视频也可以加载字幕。",IDC_STATIC,14,178,267,16
+    CONTROL         "舍入到2的幂次倍",IDC_CHECK_SPCPOW2TEX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,184,79,97,10
 END
 
 IDD_PPAGESUBDB DIALOGEX 0, 0, 296, 203
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0xEE
 BEGIN
-    LTEXT           "Base URL of the online subtitle database:",IDC_STATIC,5,8,133,8
+    LTEXT           "在线字幕数据库的基础URL:",IDC_STATIC,5,8,133,8
     COMBOBOX        IDC_COMBO1,29,22,205,30,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Test",IDC_BUTTON1,239,21,50,14
+    PUSHBUTTON      "测试",IDC_BUTTON1,239,21,50,14
     LTEXT           "http://",IDC_STATIC,5,24,22,8
 END
 
@@ -668,7 +668,7 @@ IDD_PPAGEOUTPUT DIALOGEX 0, 0, 296, 203
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0xEE
 BEGIN
-    GROUPBOX        "DirectShow Video",IDC_STATIC,5,2,95,126
+    GROUPBOX        "DirectShow 视频",IDC_STATIC,5,2,95,126
     CONTROL         "系统默认",IDC_DSSYSDEF,"Button",BS_AUTORADIOBUTTON | WS_DISABLED | WS_GROUP,13,15,65,10
     CONTROL         "旧版渲染器",IDC_DSOLD,"Button",BS_AUTORADIOBUTTON | WS_DISABLED,13,26,59,10
     CONTROL         "Overlay Mixer *",IDC_DSOVERLAYMIXER,"Button",BS_AUTORADIOBUTTON | WS_DISABLED,13,37,67,10
@@ -687,21 +687,21 @@ BEGIN
     CONTROL         "系统默认 *",IDC_QTSYSDEF,"Button",BS_AUTORADIOBUTTON | WS_GROUP,207,14,71,10
     CONTROL         "DirectX 7 **",IDC_QTDX7,"Button",BS_AUTORADIOBUTTON,207,25,55,10
     CONTROL         "DirectX 9 **",IDC_QTDX9,"Button",BS_AUTORADIOBUTTON,207,36,55,10
-    GROUPBOX        """VMR7/9 (renderless)"" && ""DirectX 7/9"" settings",IDC_STATIC,105,53,183,75
-    CONTROL         "Use regular offscreen plain surfaces",IDC_REGULARSURF,
+    GROUPBOX        """VMR7/9 (renderless)"" && ""DirectX 7/9"" 设置",IDC_STATIC,105,53,183,75
+    CONTROL         "使用常规屏幕外简单表面",IDC_REGULARSURF,
                     "Button",BS_AUTORADIOBUTTON | WS_GROUP,113,64,131,10
-    CONTROL         "Use texture surfaces and render video in 2D",IDC_TEXTURESURF2D,
+    CONTROL         "使用纹理表面并在二维下渲染视频",IDC_TEXTURESURF2D,
                     "Button",BS_AUTORADIOBUTTON,113,75,158,10
-    CONTROL         "Use texture surfaces and render video in 3D ***",IDC_TEXTURESURF3D,
+    CONTROL         "使用纹理表面并在三维下渲染视频 ***",IDC_TEXTURESURF3D,
                     "Button",BS_AUTORADIOBUTTON,113,86,172,10
     LTEXT           "缩放处理方式:",IDC_STATIC,134,99,27,8
     COMBOBOX        IDC_DX9RESIZER_COMBO,163,98,94,49,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "DirectShow Audio",IDC_STATIC,5,129,283,28
+    GROUPBOX        "DirectShow 音频",IDC_STATIC,5,129,283,28
     COMBOBOX        IDC_COMBO1,14,139,266,66,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     CONTROL         "锁定后台缓存，修正画面横向错位的问题",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,160,263,10
     LTEXT           "* 将无法抓取或另存图片",IDC_STATIC,13,171,158,8
     LTEXT           "** 字幕必须使用",IDC_STATIC,13,181,104,8
-    LTEXT           "*** 画面翻转和pixelshaders(限DX9)必须",IDC_STATIC,13,190,195,8
+    LTEXT           "*** 画面翻转和像素着色引擎(限DX9)必须",IDC_STATIC,13,190,195,8
     CONTROL         "VMR9 mixer模式",IDC_DSVMR9LOADMIXER,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,113,112,73,10
     CONTROL         "YUV mixing模式",IDC_DSVMR9YUVMIXER,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,189,112,49,10
 END

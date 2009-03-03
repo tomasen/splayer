@@ -2376,10 +2376,9 @@ STRINGTABLE
 BEGIN
     IDC_TEXTURESURF2D       "视频表面将被分配为纹理，二维功能将被用于复制和拉伸视频表面到后台缓冲区上。需要至少在视频的分辨率内能分配32位RGBA，尺寸非二的幂(non-power-of-two)的纹理的显卡。 "
     IDC_TEXTURESURF3D       "视频表面将被分配为纹理且在三维下被绘制成二个三角形。在显示设置中启用反锯齿功能对渲染速度有影响。"
-    IDC_DX9RESIZER_COMBO    "如果不支持像素着色2.0(Pixel Shader 2.0) ，将自动使用简单双线性缩放。"
+    IDC_DX9RESIZER_COMBO    "如果不支持像素着色引擎2.0(Pixel Shader 2.0) ，将自动使用简单双线性缩放。"
     IDC_DSVMR9LOADMIXER     "VMR9 (renderless) 置于混合器模式，即属性页上的大多数控制项可用，且使用分离的工作线程渲染帧。"
-    IDC_CHECK_MPEGINTERLACED 
-                            "Use it together with ""Weave"" if the video renderer can also deinterlace. The currently loaded file has to be opened again."
+    IDC_CHECK_MPEGINTERLACED "如果视频渲染器能够去隔行扫描线，和""Weave"" 配合使用。当前加载的文件需要重新打开。"
 END
 
 STRINGTABLE 

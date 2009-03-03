@@ -3278,7 +3278,7 @@ void CMainFrame::OnFileOpenUrlStream(){
 	ShowWindow(SW_SHOW);
 	SetForegroundWindow();
 
-	m_wndPlaylistBar.Open(dlg.m_fns, fMultipleFiles);
+	m_wndPlaylistBar.Open(dlg.m_fns, fMultipleFiles, NULL, 0);
 
 	if(m_wndPlaylistBar.GetCount() == 1 && m_wndPlaylistBar.IsWindowVisible() && !m_wndPlaylistBar.IsFloating())
 	{
@@ -3287,6 +3287,8 @@ void CMainFrame::OnFileOpenUrlStream(){
 
 	OpenCurPlaylistItem(-1);
 }
+
+
 void CMainFrame::OnFileOpenmedia()
 {
 	if(m_iMediaLoadState == MLS_LOADING || !IsWindow(m_wndPlaylistBar)) return;
@@ -3306,26 +3308,7 @@ void CMainFrame::OnFileOpenmedia()
 	ShowWindow(SW_SHOW);
 	SetForegroundWindow();
 
-	if(!dlg.m_fOpenDirAutomatic)
-	{
-		m_wndPlaylistBar.Open(dlg.m_fns, dlg.m_fMultipleFiles);
-		
-	}else{
-		CString szMediaFile = dlg.m_fns.GetHead();
-		//check if dir has more files
-		CAtlList<CString> szaRet;
-		CAtlArray<CString> mask;
-		AfxGetAppSettings().Formats.GetExtsArray(mask);
-		CSVPToolBox svptool;
-		svptool.findMoreFileByFile(szMediaFile, szaRet, mask);
-		svptool.MergeAltList(szaRet, dlg.m_fns);
-
-		m_wndPlaylistBar.Empty();  //add them all
-		m_wndPlaylistBar.Append(szaRet, !!szaRet.GetCount());
-
-		POSITION pos = m_wndPlaylistBar.FindPosByFilename(szMediaFile);
-		m_wndPlaylistBar.m_pl.SetPos(pos);
-	}
+	m_wndPlaylistBar.Open(dlg.m_fns, dlg.m_fMultipleFiles, NULL, dlg.m_fOpenDirAutomatic);
 	//set current f
 
 	if(m_wndPlaylistBar.GetCount() == 1 && m_wndPlaylistBar.IsWindowVisible() && !m_wndPlaylistBar.IsFloating())
@@ -3571,7 +3554,7 @@ void CMainFrame::OnFileOpenCD(UINT nID)
 
 			ShowWindow(SW_SHOW);
 
-			m_wndPlaylistBar.Open(sl, true);
+			m_wndPlaylistBar.Open(sl, true, NULL, 0);
 			OpenCurPlaylistItem();
 
 			break;

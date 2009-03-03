@@ -63,7 +63,7 @@ void CSVPSubDownUpDialog::OnBnClickedOk()
 	cb_download.EnableWindow(FALSE);
 	cs_vftitle.ShowWindow(SW_HIDE);
 	cs_vfpath.ShowWindow(SW_HIDE);
-	cb_ovfile.ShowWindow(SW_HIDE);
+	cb_ovfile.ShowWindow(SW_HIDE); 
 	ce_log.ShowWindow(SW_SHOW);
 	cb_close.EnableWindow(FALSE);
 }

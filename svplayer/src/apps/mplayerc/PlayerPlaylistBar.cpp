@@ -491,11 +491,29 @@ void CPlayerPlaylistBar::Empty()
 	m_list.DeleteAllItems();
 	SavePlaylist();
 }
+void CPlayerPlaylistBar::FindMoreFileFromOneFileAndPutIntoPlaylist(CString szMediaFile , CAtlList<CString>& szaIn ){
+	//check if dir has more files
+	CAtlList<CString> szaRet;
+	CAtlArray<CString> mask;
+	AfxGetAppSettings().Formats.GetExtsArray(mask);
+	CSVPToolBox svptool;
+	svptool.findMoreFileByFile(szMediaFile, szaRet, mask);
+	svptool.MergeAltList(szaRet, szaIn);
 
-void CPlayerPlaylistBar::Open(CAtlList<CString>& fns, bool fMulti, CAtlList<CString>* subs)
+	Empty();  //add them all
+	Append(szaRet, !!szaRet.GetCount());
+
+	POSITION pos = FindPosByFilename(szMediaFile);
+	m_pl.SetPos(pos);
+}
+void CPlayerPlaylistBar::Open(CAtlList<CString>& fns, bool fMulti, CAtlList<CString>* subs, int smartAddMorefile)
 {
-	Empty();
-	Append(fns, fMulti, subs);
+	if(smartAddMorefile){
+		FindMoreFileFromOneFileAndPutIntoPlaylist( fns.GetHead(), fns);
+	}else{
+		Empty();
+		Append(fns, fMulti, subs);
+	}
 }
 
 void CPlayerPlaylistBar::Append(CAtlList<CString>& fns, bool fMulti, CAtlList<CString>* subs)

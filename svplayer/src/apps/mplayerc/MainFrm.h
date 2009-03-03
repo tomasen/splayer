@@ -385,6 +385,7 @@ public:
 	void OpenMedia(CAutoPtr<OpenMediaData> pOMD);
 	void CloseMedia();
 
+	
 	void AddCurDevToPlaylist();
 
 	bool m_fTrayIcon;

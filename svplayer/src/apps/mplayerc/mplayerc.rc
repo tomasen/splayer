@@ -2355,8 +2355,8 @@ BEGIN
     IDC_DSOVERLAYMIXER      "总是使用overlay渲染. Generally only YUV formats are allowed, but they are presented directly without any color conversion to RGB. This is the fastest rendering method of all and the only where you can be sure about full screen video mirroring to tv-out activating."
     IDC_DSVMR7WIN           "Windows XP的默认渲染器。非常稳定，比Overlay混合器稍慢。在可行的时候使用DirectDraw 并运行于Overlay下。"
     IDC_DSVMR9WIN           "仅在你安装了DirectX 9以后可用。 和 VMR7 (windowed)作用相同，但是并不使用 Overlay 渲染，也因此它可能要比VMR7 (windowed) 稍慢。"
-    IDC_DSVMR7REN           "同VMR7 (windowed)，但是使用播放器的Allocator-Presenter 插件显示字幕。 Overlay 视频镜像功能不工作于此模式下。桌面颜色深度推荐使用“真彩色”。"
-    IDC_DSVMR9REN           "同VMR9 (windowed)，但是使用播放器的Allocator-Presenter 插件显示字幕。 Overlay 视频镜像功能可能工作于此模式下。桌面颜色深度推荐使用“真彩色”。"
+    IDC_DSVMR7REN           "同VMR7 (windowed)，但是使用播放器的分配演示器插件显示字幕。 Overlay 视频镜像功能不工作于此模式下。桌面颜色深度推荐使用“真彩色”。"
+    IDC_DSVMR9REN           "同VMR9 (windowed)，但是使用播放器的分配演示器插件显示字幕。 Overlay 视频镜像功能可能工作于此模式下。桌面颜色深度推荐使用“真彩色”。"
     IDC_DSNULL_COMP         "连接到任何视频类媒体类型，不输出任何传入样本。在不需要视频显示且希望节省不必要的CPU占用的情况下使用。"
     IDC_DSNULL_UNCOMP       "同正常Null 渲染器，但是只连接到未压缩类型。"
 END
@@ -2364,20 +2364,20 @@ END
 STRINGTABLE 
 BEGIN
     IDC_RMSYSDEF            "Real自带渲染器。 SMIL脚本可用，交互功能不可用。在可行的时候使用DirectDraw 并运行于Overlay下。"
-    IDC_RMDX7               "使用基于DX7的VMR7 (renderless)的Allocator-Presenter渲染的Real引擎输出。"
-    IDC_RMDX9               "使用基于DX9的VMR9 (renderless)的Allocator-Presenter渲染的Real引擎输出。"
+    IDC_RMDX7               "使用基于DX7的VMR7 (renderless)的分配演示器渲染的Real引擎输出。"
+    IDC_RMDX9               "使用基于DX9的VMR9 (renderless)的分配演示器渲染的Real引擎输出。"
     IDC_QTSYSDEF            "QuickTime自带的渲染器。 当视频区域重缩放或者被另外窗体部分遮盖的时候，会稍微变慢。当Overlay不可用的时候，将使用GDI。"
-    IDC_QTDX7               "使用基于DX7的VMR7 (renderless)的Allocator-Presenter渲染的QuickTime引擎输出。"
-    IDC_QTDX9               "使用基于DX9的VMR9 (renderless)的Allocator-Presenter渲染的QuickTime引擎输出。"
-    IDC_REGULARSURF         "Video surface will be allocated as a regular offscreen surface."
+    IDC_QTDX7               "使用基于DX7的VMR7 (renderless)的分配演示器渲染的QuickTime引擎输出。"
+    IDC_QTDX9               "使用基于DX9的VMR9 (renderless)的分配演示器渲染的QuickTime引擎输出。"
+    IDC_REGULARSURF         "视频表面将被分配为常规屏幕外表面。"
 END
 
 STRINGTABLE 
 BEGIN
-    IDC_TEXTURESURF2D       "Video surface will be allocated as a texture but still the 2d functions will be used to copy and stretch it onto the backbuffer. Requires a video card which can allocate 32bit, RGBA, non-power-of-two sized textures and at least in the resolution of the video."
-    IDC_TEXTURESURF3D       "Video surface will be allocated as a texture and drawn as two triangles in 3d. Antialiasing turned on at the display settings may have a bad effect on the rendering speed."
-    IDC_DX9RESIZER_COMBO    "If there is no Pixel Shader 2.0 support, simple bilinear is used automatically."
-    IDC_DSVMR9LOADMIXER     "Puts VMR9 (renderless) into mixer mode, this means most of the controls on its property page will work and it will use a separate worker thread to renderer frames."
+    IDC_TEXTURESURF2D       "视频表面将被分配为纹理，二维功能将被用于复制和拉伸视频表面到后台缓冲区上。需要至少在视频的分辨率内能分配32位RGBA，尺寸非二的幂(non-power-of-two)的纹理的显卡。 "
+    IDC_TEXTURESURF3D       "视频表面将被分配为纹理且在三维下被绘制成二个三角形。在显示设置中启用反锯齿功能对渲染速度有影响。"
+    IDC_DX9RESIZER_COMBO    "如果不支持像素着色2.0(Pixel Shader 2.0) ，将自动使用简单双线性缩放。"
+    IDC_DSVMR9LOADMIXER     "VMR9 (renderless) 置于混合器模式，即属性页上的大多数控制项可用，且使用分离的工作线程渲染帧。"
     IDC_CHECK_MPEGINTERLACED 
                             "Use it together with ""Weave"" if the video renderer can also deinterlace. The currently loaded file has to be opened again."
 END

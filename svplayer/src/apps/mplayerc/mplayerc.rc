@@ -7,7 +7,7 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#include "afxres.h"
+#include "afxres.h"
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
@@ -688,12 +688,9 @@ BEGIN
     CONTROL         "DirectX 7 **",IDC_QTDX7,"Button",BS_AUTORADIOBUTTON,207,25,55,10
     CONTROL         "DirectX 9 **",IDC_QTDX9,"Button",BS_AUTORADIOBUTTON,207,36,55,10
     GROUPBOX        """VMR7/9 (renderless)"" && ""DirectX 7/9"" 设置",IDC_STATIC,105,53,183,75
-    CONTROL         "使用常规屏幕外简单表面",IDC_REGULARSURF,
-                    "Button",BS_AUTORADIOBUTTON | WS_GROUP,113,64,131,10
-    CONTROL         "使用纹理表面并在二维下渲染视频",IDC_TEXTURESURF2D,
-                    "Button",BS_AUTORADIOBUTTON,113,75,158,10
-    CONTROL         "使用纹理表面并在三维下渲染视频 ***",IDC_TEXTURESURF3D,
-                    "Button",BS_AUTORADIOBUTTON,113,86,172,10
+    CONTROL         "使用常规屏幕外简单表面",IDC_REGULARSURF,"Button",BS_AUTORADIOBUTTON | WS_GROUP,113,64,131,10
+    CONTROL         "使用纹理表面并在二维下渲染视频",IDC_TEXTURESURF2D,"Button",BS_AUTORADIOBUTTON,113,75,158,10
+    CONTROL         "使用纹理表面并在三维下渲染视频 ***",IDC_TEXTURESURF3D,"Button",BS_AUTORADIOBUTTON,113,86,172,10
     LTEXT           "缩放处理方式:",IDC_STATIC,134,99,27,8
     COMBOBOX        IDC_DX9RESIZER_COMBO,163,98,94,49,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     GROUPBOX        "DirectShow 音频",IDC_STATIC,5,129,283,28
@@ -1408,6 +1405,7 @@ IDI_QUICKTIME_FILE      ICON                    "res\\Icon\\Quicktime_File.ico"
 IDI_REAL_FILE           ICON                    "res\\Icon\\Real_File.ico"
 IDI_SUBTITLE_FILE       ICON                    "res\\Icon\\Subtitle_File.ico"
 IDI_VIDEO_CD            ICON                    "res\\Icon\\Video_CD.ico"
+IDI_PLAY                ICON                    "res\\play.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1425,8 +1423,6 @@ BEGIN
     BUTTON      ID_PLAY_FWD
     BUTTON      ID_NAVIGATE_SKIPFORWARD
     BUTTON      ID_BUTTONSEP
-    BUTTON      ID_PLAY_FRAMESTEP
-    BUTTON      ID_BUTTONSEP
     BUTTON      ID_SUBDELAYDEC
     BUTTON      ID_SUBLANGSWITCH
     BUTTON      ID_SUBDELAYINC
@@ -1435,7 +1431,9 @@ BEGIN
     BUTTON      ID_SUB2LANGSWITCH
     BUTTON      ID_SUB2DELAYINC
     BUTTON      ID_BUTTONSEP
-    BUTTON      ID_DUMMYSEPARATOR
+    BUTTON      ID_VIEW_PLAYLIST
+    BUTTON      ID_BUTTONSEP
+    BUTTON      ID_BUTTONSEP
     BUTTON      ID_VOLUME_MUTE
     BUTTON      ID_VOLUME_MUTE_ON
     BUTTON      ID_VOLUME_MUTE_DISABLED
@@ -1561,8 +1559,8 @@ BEGIN
                 MENUITEM "100% (&N)",                   ID_VIEW_VF_NORMAL
                 MENUITEM "200% (&D)",                   ID_VIEW_VF_DOUBLE
                 MENUITEM "铺满播放窗口(&S)",                  ID_VIEW_VF_STRETCH
-                MENUITEM "信箱模式(&I)",                    ID_VIEW_VF_FROMINSIDE
-                MENUITEM "全景模式(&O)",                    ID_VIEW_VF_FROMOUTSIDE
+                MENUITEM "标准画面(&I)",                    ID_VIEW_VF_FROMINSIDE
+                MENUITEM "智能去黑边(&O)",                    ID_VIEW_VF_FROMOUTSIDE
                 MENUITEM SEPARATOR
                 MENUITEM "保持画面比例(&K)",                  ID_VIEW_VF_KEEPASPECTRATIO
                 POPUP "强制画面比例"
@@ -1727,8 +1725,8 @@ BEGIN
             MENUITEM "100% (&N)",                   ID_VIEW_VF_NORMAL
             MENUITEM "200% (&D)",                   ID_VIEW_VF_DOUBLE
             MENUITEM "铺满播放窗口(&S)",                  ID_VIEW_VF_STRETCH
-            MENUITEM "信箱模式(&I)",                    ID_VIEW_VF_FROMINSIDE
-            MENUITEM "全景模式(&O)",                    ID_VIEW_VF_FROMOUTSIDE
+            MENUITEM "标准画面(&I)",                    ID_VIEW_VF_FROMINSIDE
+            MENUITEM "智能去黑边(&O)",                    ID_VIEW_VF_FROMOUTSIDE
             MENUITEM SEPARATOR
             MENUITEM "保持画面比例(&K)",                  ID_VIEW_VF_KEEPASPECTRATIO
             POPUP "强制画面比例"
@@ -1881,8 +1879,8 @@ BEGIN
             MENUITEM "100% (&N)",                   ID_VIEW_VF_NORMAL
             MENUITEM "200% (&D)",                   ID_VIEW_VF_DOUBLE
             MENUITEM "铺满播放窗口(&S)",                  ID_VIEW_VF_STRETCH
-            MENUITEM "信箱模式(&I)",                    ID_VIEW_VF_FROMINSIDE
-            MENUITEM "全景模式(&O)",                    ID_VIEW_VF_FROMOUTSIDE
+            MENUITEM "标准画面(&I)",                    ID_VIEW_VF_FROMINSIDE
+            MENUITEM "智能去黑边(&O)",                    ID_VIEW_VF_FROMOUTSIDE
             MENUITEM SEPARATOR
             MENUITEM "保持画面比例(&K)",                  ID_VIEW_VF_KEEPASPECTRATIO
             POPUP "强制画面比例"
@@ -2079,8 +2077,10 @@ BEGIN
     IDS_RS_AUTODOWNLAODSVPSUB "AutoDownloadSVPSub"
     IDS_RS_USEGPUCUDA       "USEGPUCUDA"
     IDS_RS_AUTORESUMEPLAY   "autoResumePlay"
+    IDS_TRA_FFMPEG          "6.4.0.1\n基于 ffmpeg 编码器, http://ffmpeg.mplayerhq.hu/"
     IDS_RS_DXVAFILTERS      "DXVAFilters"
     IDS_RS_FFMPEGFILTERS    "FFmpegFilters"
+    IDS_SRC_FLAC            "1.2.1.0"
 END
 
 STRINGTABLE 
@@ -2382,43 +2382,40 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_SRC_RADGT            "6.4.0.0\n需要 smackw32.dll 和 binkw32.dll"
-    IDS_SRC_CDDA             "6.4.0.1\n仅 2K/XP"
-    IDS_SRC_AVI              "6.4.0.7\n对非隔行扫描文件无法很好的支持"
-    IDS_SRC_CDXA             "6.4.0.1"
-    IDS_SRC_VTS              "6.4.0.0\n打开 VTS_xx_0.ifo 以在同一处载入 VTS_xx_x.vob 文件"
-    IDS_SRC_FLIC             "6.4.0.0"
-    IDS_SRC_FLAC            "1.2.1.0"
-    IDS_SRC_D2V              "6.4.0.0"
-    IDS_SRC_DTSAC3           "6.4.0.1"
-    IDS_SRC_SHOUTCAST        "6.4.0.1"
-    IDS_SRC_REALMEDIA        "6.4.1.1\nRealMeida 格式种类必须设置为 ""DirectShow"" 来使其被装载\n不支持流"
-    IDS_SRC_MATROSKA         "6.4.2.9"
-    IDS_SRC_ROQ              "6.4.0.0"
-    IDS_SRC_OGG              "6.4.0.2"
-    IDS_SRC_NUT              "6.4.0.0\n基于 ""NUT 开放容器格式 DRAFT 20030906""\n仍然非常不完善, 如果您有或能够制作测试文件,请联系我。"
-    IDS_SRC_DIRAC            "6.4.0.1\n基于 libdirac 0.5.0"
-    IDS_SRC_DSM              "6.4.0.5"
+    IDS_SRC_RADGT           "6.4.0.0\n需要 smackw32.dll 和 binkw32.dll"
+    IDS_SRC_CDDA            "6.4.0.1\n仅 2K/XP"
+    IDS_SRC_AVI             "6.4.0.7\n对非隔行扫描文件无法很好的支持"
+    IDS_SRC_CDXA            "6.4.0.1"
+    IDS_SRC_VTS             "6.4.0.0\n打开 VTS_xx_0.ifo 以在同一处载入 VTS_xx_x.vob 文件"
+    IDS_SRC_FLIC            "6.4.0.0"
+    IDS_SRC_D2V             "6.4.0.0"
+    IDS_SRC_DTSAC3          "6.4.0.1"
+    IDS_SRC_SHOUTCAST       "6.4.0.1"
+    IDS_SRC_REALMEDIA       "6.4.1.1\nRealMeida 格式种类必须设置为 ""DirectShow"" 来使其被装载\n不支持流"
+    IDS_SRC_MATROSKA        "6.4.2.9"
+    IDS_SRC_ROQ             "6.4.0.0"
+    IDS_SRC_OGG             "6.4.0.2"
+    IDS_SRC_NUT             "6.4.0.0\n基于 ""NUT 开放容器格式 DRAFT 20030906""\n仍然非常不完善, 如果您有或能够制作测试文件,请联系我。"
+    IDS_SRC_DIRAC           "6.4.0.1\n基于 libdirac 0.5.0"
+    IDS_SRC_DSM             "6.4.0.5"
 END
 
 STRINGTABLE 
 BEGIN
-    IDS_SRC_MPA              "6.4.0.2\nmp3 和 aac 的源滤镜"
-    IDS_SRC_MP4              "6.4.0.2"
-    IDS_TRA_RV               "6.4.1.0\n需要 RealVideo 解码 dll, RV10 也可以工作在 ffdshow 下"
-    IDS_TRA_RA               "6.4.1.0\n需要 RealAudio 解码器 dll, DNET 也可由 ac3filter 实现"
-    IDS_TRA_MPEG1            "6.4.0.3\n基于 libmpeg2 (mpeg1 视频解码器是伪造的)"
-    IDS_TRA_MPEG2            "6.4.0.3\n基于 libmpeg2"
-    IDS_TRA_MPA              "6.4.0.3\n基于 libmad, 可解码所有版本和层次的 MPEG 音频"
-    IDS_TRA_LPCM             "6.4.0.1"
-    IDS_TRA_AC3              "6.4.0.1\n基于 liba52 0.7.4, http://liba52.sourceforge.net/"
-    IDS_TRA_DTS              "6.4.0.1\n基于 libdts 0.0.2, http://www.videolan.org/dtsdec.html"
-    IDS_TRA_AAC              "6.4.0.1\n基于 libfaad 2.0, http://www.audiocoding.com/"
-    IDS_TRA_DIRAC            "6.4.0.1\n基于 libdirac 0.8.0"
-    IDS_TRA_PS2AUD           "6.4.0.1\n解码 PSS 文件的音频流"
+    IDS_SRC_MPA             "6.4.0.2\nmp3 和 aac 的源滤镜"
+    IDS_SRC_MP4             "6.4.0.2"
+    IDS_TRA_RV              "6.4.1.0\n需要 RealVideo 解码 dll, RV10 也可以工作在 ffdshow 下"
+    IDS_TRA_RA              "6.4.1.0\n需要 RealAudio 解码器 dll, DNET 也可由 ac3filter 实现"
+    IDS_TRA_MPEG1           "6.4.0.3\n基于 libmpeg2 (mpeg1 视频解码器是伪造的)"
+    IDS_TRA_MPEG2           "6.4.0.3\n基于 libmpeg2"
+    IDS_TRA_MPA             "6.4.0.3\n基于 libmad, 可解码所有版本和层次的 MPEG 音频"
+    IDS_TRA_LPCM            "6.4.0.1"
+    IDS_TRA_AC3             "6.4.0.1\n基于 liba52 0.7.4, http://liba52.sourceforge.net/"
+    IDS_TRA_DTS             "6.4.0.1\n基于 libdts 0.0.2, http://www.videolan.org/dtsdec.html"
+    IDS_TRA_AAC             "6.4.0.1\n基于 libfaad 2.0, http://www.audiocoding.com/"
+    IDS_TRA_DIRAC           "6.4.0.1\n基于 libdirac 0.8.0"
+    IDS_TRA_PS2AUD          "6.4.0.1\n解码 PSS 文件的音频流"
     IDS_SRC_FLV             "6.4.0.4"
-	IDS_TRA_FFMPEG			"6.4.0.1\n基于 ffmpeg 编码器, http://ffmpeg.mplayerhq.hu/"
-    
 END
 
 STRINGTABLE 
@@ -2443,84 +2440,87 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_VDF_IDCT_SIMPLE_MMX  "简易 MMX"
-    IDS_VDF_IDCT_XVID        "SKAL"
-    IDS_VDF_IDCT_SIMPLE      "简易"
-    IDS_VDF_DXVA_SETTING     "DXVA 设置"
-    IDS_VDF_DXVA_MODE        "DXVA 模式"
-    IDS_D3DFS_WARNING        "此选项被涉及用于减少图像撕裂,但是会在视频被载入后无法显示 MPC-HC 显示关联菜单和对话框 (请至 http://tibrium.neuf.fr 查阅详细说明)。\n\n您确实要开启此选项吗?"
+    IDS_VDF_IDCT_SIMPLE_MMX "简易 MMX"
+    IDS_VDF_IDCT_XVID       "SKAL"
+    IDS_VDF_IDCT_SIMPLE     "简易"
+    IDS_VDF_DXVA_SETTING    "DXVA 设置"
+    IDS_VDF_DXVA_MODE       "DXVA 模式"
+    IDS_D3DFS_WARNING       "此选项被涉及用于减少图像撕裂,但是会在视频被载入后无法显示 MPC-HC 显示关联菜单和对话框 (请至 http://tibrium.neuf.fr 查阅详细说明)。\n\n您确实要开启此选项吗?"
     IDS_MAINFRM_139         "字幕延时设为: %ld ms"
     IDS_REALVIDEO_INCOMPATIBLE "文件名含有不支持的字符 (只能使用 A-Z, 0-9)"
-    IDS_VDF_VIDEOCARD        "显卡"
-    IDS_THUMB_ROWNUMBER      "行:"
-    IDS_THUMB_COLNUMBER      "列:"
-    IDS_THUMB_IMAGE_WIDTH    "图像宽度:"
-    IDS_PPSDB_URLCORRECT     "URL 看上去不正确!"
-    IDS_PPSDB_PROTOCOLERR    "协议版本不匹配,请升级您的播放器或选择一个不同的地址!"
+    IDS_VDF_VIDEOCARD       "显卡"
+    IDS_THUMB_ROWNUMBER     "行:"
+    IDS_THUMB_COLNUMBER     "列:"
+    IDS_THUMB_IMAGE_WIDTH   "图像宽度:"
+    IDS_PPSDB_URLCORRECT    "URL 看上去不正确!"
+    IDS_PPSDB_PROTOCOLERR   "协议版本不匹配,请升级您的播放器或选择一个不同的地址!"
 END
 
 STRINGTABLE 
 BEGIN
-    IDS_MPADECSETTINGSWND_0  "输出采样格式:"
+    IDS_MPADECSETTINGSWND_0 "输出采样格式:"
 END
 
 STRINGTABLE 
 BEGIN
-    IDS_MPADECSETTINGSWND_1  "AC3 解码器设置"
-    IDS_MPA_CHANNEL_1        "声道 1"
-    IDS_MPA_CHANNEL_2        "声道 2"
-    IDS_MPADECSETTINGSWND_5  "解码到扬声器"
-    IDS_MPADECSETTINGSWND_7  "DTS 解码器设置"
+    IDS_MPADECSETTINGSWND_1 "AC3 解码器设置"
+    IDS_MPA_CHANNEL_1       "声道 1"
+    IDS_MPA_CHANNEL_2       "声道 2"
+    IDS_MPADECSETTINGSWND_5 "解码到扬声器"
+    IDS_MPADECSETTINGSWND_7 "DTS 解码器设置"
     IDS_MPADECSETTINGSWND_11 "AAC 解码器设置"
     IDS_MPADECSETTINGSWND_12 "混缩至立体声"
-    IDS_AG_SETTINGS          "设置"
+    IDS_AG_SETTINGS         "设置"
     IDS_MPEG2DECSETTINGSWND_0 "开启平面 YUV 媒体类型 (VY12, I420, IYUY)"
     IDS_MPEG2DECSETTINGSWND_1 "在输出媒体类型中设置交错标志"
     IDS_MPEG2DECSETTINGSWND_2 "总是强制显示字幕"
-    IDS_MPEG2_DEINTERLACING  "反交错"
-    IDS_MPEG2_BRIGHTNESS     "亮度"
-    IDS_MPEG2_RESET          "重置"
+    IDS_MPEG2_DEINTERLACING "反交错"
+    IDS_MPEG2_BRIGHTNESS    "亮度"
+    IDS_MPEG2_RESET         "重置"
     IDS_MPEG2DECSETTINGSWND_7 "说明: 使用一个非平面输出格式, bob 反交错, 或自定义色彩属性"
-    IDS_MPA_3F               "3 前置音箱"
+    IDS_MPA_3F              "3 前置音箱"
 END
 
 STRINGTABLE 
 BEGIN
-    IDS_MPA_2F_1R            "2 前置 + 1 后置音箱"
-    IDS_MPA_3F_1R            "3 前置 + 1 后置音箱"
-    IDS_MPA_2F_2R            "2 前置 + 2 后置音箱"
-    IDS_MPA_3F_2R            "3 前置 + 2 后置音箱"
-    IDS_MPA_DYNRANGE         "动态范围控制"
+    IDS_MPA_2F_1R           "2 前置 + 1 后置音箱"
+    IDS_MPA_3F_1R           "3 前置 + 1 后置音箱"
+    IDS_MPA_2F_2R           "2 前置 + 2 后置音箱"
+    IDS_MPA_3F_2R           "3 前置 + 2 后置音箱"
+    IDS_MPA_DYNRANGE        "动态范围控制"
     IDS_VDF_FFSETTINGS      "FFMpeg 设置"
 END
 
 STRINGTABLE 
 BEGIN
-    IDS_VDF_THREADNUMBER     "解码线程数"
-    IDS_VDF_SKIPDEBLOCK      "H264 跳过去块模式"
-    IDS_VDF_DBLK_NONE        "无"
-    IDS_VDF_DBLK_DEFAULT     "默认"
-    IDS_VDF_DBLK_NONREF      "无参考"
-    IDS_VDF_DBLK_BIDIR       "双向性"
-    IDS_VDF_DBLK_NONKFRM     "无关键帧"
-    IDS_VDF_DBLK_ALL         "所有帧"
+    IDS_VDF_THREADNUMBER    "解码线程数"
+    IDS_VDF_SKIPDEBLOCK     "H264 跳过去块模式"
+    IDS_VDF_DBLK_NONE       "无"
+    IDS_VDF_DBLK_DEFAULT    "默认"
+    IDS_VDF_DBLK_NONREF     "无参考"
+    IDS_VDF_DBLK_BIDIR      "双向性"
+    IDS_VDF_DBLK_NONKFRM    "无关键帧"
+    IDS_VDF_DBLK_ALL        "所有帧"
     IDS_VDF_ERROR_RECOGNITION "误码识别"
-    IDS_VDF_ERR_CAREFUL      "仔细"
-    IDS_VDF_ERR_COMPLIANT    "适应"
-    IDS_VDF_ERR_AGGRESSIVE   "激进"
+    IDS_VDF_ERR_CAREFUL     "仔细"
+    IDS_VDF_ERR_COMPLIANT   "适应"
+    IDS_VDF_ERR_AGGRESSIVE  "激进"
     IDS_VDF_ERR_VERYAGGRESSIVE "非常激进"
-    IDS_VDF_IDCT_ALGO        "IDCT 算法"
-    IDS_VDF_IDCT_AUTO        "自动"
-    IDS_VDF_IDCT_LIBMPG2     "Lib Mpeg2 MMX"
-    IDS_VDF_AR_MODE				"从流读取AR"
+    IDS_VDF_IDCT_ALGO       "IDCT 算法"
+    IDS_VDF_IDCT_AUTO       "自动"
+    IDS_VDF_IDCT_LIBMPG2    "Lib Mpeg2 MMX"
 END
-
 
 STRINGTABLE 
 BEGIN
-    IDC_CHECK_RELATIVETO     "仍未定义从其它风格获取的默认区域"
-    IDC_CHECK_SPCPOW2TEX     "取消此选项来释放一些显存并为本地视频内存传输节省带宽,但是它可能无法在一些旧显卡上正常工作。"
-    IDC_BUTTON_EXT_SET       "在点击此按钮后,被选中的格式组的状态将会对射手影音的实际文件关联做出更改。最新添加的扩展名通常会变灰,所以请不要忘记在关闭此对话框前再次选中此类型的文件。"
+    IDS_VDF_AR_MODE         "从流读取AR"
+END
+
+STRINGTABLE 
+BEGIN
+    IDC_CHECK_RELATIVETO    "仍未定义从其它风格获取的默认区域"
+    IDC_CHECK_SPCPOW2TEX    "取消此选项来释放一些显存并为本地视频内存传输节省带宽,但是它可能无法在一些旧显卡上正常工作。"
+    IDC_BUTTON_EXT_SET      "在点击此按钮后,被选中的格式组的状态将会对射手影音的实际文件关联做出更改。最新添加的扩展名通常会变灰,所以请不要忘记在关闭此对话框前再次选中此类型的文件。"
 END
 
 STRINGTABLE 

@@ -459,6 +459,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;      // fail to create
 	}
 
+
 	m_bars.AddTail(&m_wndSeekBar);
 	m_bars.AddTail(&m_wndToolBar);
 	m_bars.AddTail(&m_wndInfoBar);
@@ -482,8 +483,8 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_wndPlaylistBar.Create(this);
 	m_wndPlaylistBar.SetBarStyle(m_wndPlaylistBar.GetBarStyle() | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
 	m_wndPlaylistBar.EnableDocking(CBRS_ALIGN_ANY);
-	m_wndPlaylistBar.SetHeight(100);
-	LoadControlBar(&m_wndPlaylistBar, AFX_IDW_DOCKBAR_BOTTOM);
+	//m_wndPlaylistBar.SetHeight(100);
+	LoadControlBar(&m_wndPlaylistBar, AFX_IDW_DOCKBAR_RIGHT);
 	m_wndPlaylistBar.LoadPlaylist();
 
 	m_wndCaptureBar.Create(this);
@@ -4732,7 +4733,7 @@ void CMainFrame::OnViewNormal()
 {
 	if(AfxGetAppSettings().fHideCaptionMenu)
 		SendMessage(WM_COMMAND, ID_VIEW_CAPTIONMENU);
-	ShowControls(CS_SEEKBAR|CS_TOOLBAR|CS_STATUSBAR|CS_INFOBAR);
+	ShowControls(CS_SEEKBAR|CS_TOOLBAR|CS_STATUSBAR);//CS_INFOBAR
 }
 
 void CMainFrame::OnUpdateViewNormal(CCmdUI* pCmdUI)
@@ -6584,7 +6585,7 @@ void CMainFrame::OnFavoritesDVD(UINT nID)
 	CAtlList<CString> sl;
 	AfxGetAppSettings().GetFav(FAV_DVD, sl);
 
-	if(POSITION pos = sl.FindIndex(nID))
+	if(POSITION pos = sl.FindIndex(nID)) 
 	{
 		CString fn;
 

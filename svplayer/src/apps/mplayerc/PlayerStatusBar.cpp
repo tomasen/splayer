@@ -251,15 +251,19 @@ BOOL CPlayerStatusBar::OnEraseBkgnd(CDC* pDC)
 
 	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
 	
+	
 	if(pFrame->m_pLastBar != this || pFrame->m_fFullScreen)
-		r.InflateRect(0, 0, 0, 1);
-
+			r.InflateRect(0, 0, 0, 1);
+	
 	if(pFrame->m_fFullScreen) 
 		r.InflateRect(1, 0, 1, 0);
-
-	pDC->Draw3dRect(&r, GetSysColor(COLOR_3DSHADOW), GetSysColor(COLOR_3DHILIGHT)); 
-
-	r.DeflateRect(1, 1);
+	else{
+	
+		pDC->Draw3dRect(&r, GetSysColor(COLOR_3DSHADOW), GetSysColor(COLOR_3DHILIGHT)); 
+	
+		r.DeflateRect(1, 1);
+	}
+	
 
 	pDC->FillSolidRect(&r, 0);
 

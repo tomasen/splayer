@@ -33,7 +33,8 @@ private:
 	bool IsMuted();
 	void SetMute(bool fMute = true); 
 	UINT iBottonClicked;
-	
+	CImageList m_ToolBarImages;
+	CImageList m_ToolBarDisabledImages;
 
 public:
 	CPlayerToolBar();

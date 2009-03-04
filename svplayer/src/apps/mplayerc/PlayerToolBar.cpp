@@ -64,14 +64,15 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 		TBBS_CHECKGROUP, TBBS_CHECKGROUP, TBBS_CHECKGROUP, 
 		TBBS_SEPARATOR,
 		TBBS_BUTTON, TBBS_BUTTON, TBBS_BUTTON, TBBS_BUTTON, 
-		TBBS_SEPARATOR,
-		TBBS_BUTTON/*|TBSTYLE_DROPDOWN*/, 
-		TBBS_SEPARATOR,
-		TBBS_BUTTON, TBBS_BUTTON, TBBS_BUTTON, 
+		//TBBS_SEPARATOR,
+		//TBBS_BUTTON/*|TBSTYLE_DROPDOWN*/, 
 		TBBS_SEPARATOR,
 		TBBS_BUTTON, TBBS_BUTTON, TBBS_BUTTON, 
 		TBBS_SEPARATOR,
+		TBBS_BUTTON, TBBS_BUTTON, TBBS_BUTTON, 
 		TBBS_SEPARATOR,
+		TBBS_BUTTON,
+		TBBS_DISABLED,TBBS_DISABLED,
 		TBBS_CHECKBOX, 
 		/*TBBS_SEPARATOR,*/
 	};
@@ -79,8 +80,37 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 	for(int i = 0; i < countof(styles); i++)
 		SetButtonStyle(i, styles[i]|TBBS_DISABLED);
 
-	m_volctrl.Create(this);
+	/*
+	SetButtonStyle(0, GetButtonStyle(0)|BS_ICON );
+		CWnd* hWndBtn = GetToolBarCtrl().GetDlgItem( ID_PLAY_PLAY );
+		if(hWndBtn){
+			HICON hIcon = (HICON)LoadImage(AfxGetApp()->m_hInstance,  MAKEINTRESOURCE(IDI_PLAY), IMAGE_ICON, 32, 32, LR_SHARED);
+			if(hIcon){
+				::SendMessage( hWndBtn->m_hWnd,  BM_SETIMAGE,      IMAGE_ICON , (LPARAM)(hIcon) );  
+				DestroyIcon(hIcon);
+			}else{
+				AfxMessageBox(_T("f"));
+			}
+		}else{
+			AfxMessageBox(_T("s"));
+		}*/
+	/*
+	CWinApp* aa = AfxGetApp();
+		m_ToolBarImages.Create(32, 32, ILC_COLOR32, 4, 4);
+		m_ToolBarImages.Add(aa->LoadIcon(IDI_PLAY));
+	
+		m_ToolBarDisabledImages.Create(32, 32, ILC_COLOR32, 4, 4);
+		m_ToolBarDisabledImages.Add(aa->LoadIcon(IDI_PLAY));
+	
+		tb.SetImageList(&m_ToolBarImages);
+		tb.SetDisabledImageList(&m_ToolBarDisabledImages);
+	*/
+	
 
+	
+
+	m_volctrl.Create(this);
+	
 	if(AfxGetAppSettings().fDisabeXPToolbars)
 	{
 		if(HMODULE h = LoadLibrary(_T("uxtheme.dll")))
@@ -202,9 +232,27 @@ void CPlayerToolBar::OnPaint()
 		CRect ItemRect;
 		GetItemRect(19, ItemRect);
 		dc.FillSolidRect(ItemRect, GetSysColor(COLOR_BTNFACE));
+		//dc.FillSolidRect(ItemRect, RGB(214,219,239) );   
 	}
 }
+void CPlayerToolBar::OnNcPaint() // when using XP styles the NC area isn't drawn for our toolbar...
+{
+	CRect wr, cr;
 
+	CWindowDC dc(this);
+	GetClientRect(&cr);
+	ClientToScreen(&cr);
+	GetWindowRect(&wr);
+	cr.OffsetRect(-wr.left, -wr.top);
+	wr.OffsetRect(-wr.left, -wr.top);
+	dc.ExcludeClipRect(&cr);
+	dc.FillSolidRect(wr, GetSysColor(COLOR_BTNFACE));
+
+	//Ìî³ä±³¾°-----------------------------------------   
+	//dc.FillSolidRect(wr, RGB(214,219,239) );   
+
+	// Do not call CToolBar::OnNcPaint() for painting messages
+}
 void CPlayerToolBar::OnSize(UINT nType, int cx, int cy)
 {
 	__super::OnSize(nType, cx, cy);
@@ -241,21 +289,7 @@ BOOL CPlayerToolBar::OnVolumeDown(UINT nID)
 	return FALSE;
 }
 
-void CPlayerToolBar::OnNcPaint() // when using XP styles the NC area isn't drawn for our toolbar...
-{
-	CRect wr, cr;
 
-	CWindowDC dc(this);
-	GetClientRect(&cr);
-	ClientToScreen(&cr);
-	GetWindowRect(&wr);
-	cr.OffsetRect(-wr.left, -wr.top);
-	wr.OffsetRect(-wr.left, -wr.top);
-	dc.ExcludeClipRect(&cr);
-	dc.FillSolidRect(wr, GetSysColor(COLOR_BTNFACE));
-
-	// Do not call CToolBar::OnNcPaint() for painting messages
-}
 #define TIMER_FASTFORWORD 251
 void CPlayerToolBar::OnLButtonDown(UINT nFlags, CPoint point)
 {

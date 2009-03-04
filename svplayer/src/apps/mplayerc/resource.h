@@ -36,6 +36,7 @@
 #define IDI_REAL_FILE                   313
 #define IDI_SUBTITLE_FILE               314
 #define IDI_VIDEO_CD                    315
+#define IDI_PLAY                    316
 #define IDR_AVI_FILECOPY                400
 #define IDR_HTML_INDEX                  500
 #define IDR_HTML_404                    501

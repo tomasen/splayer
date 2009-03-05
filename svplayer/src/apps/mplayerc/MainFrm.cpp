@@ -449,11 +449,12 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	// static bars
 
-	if(!m_wndStatusBar.Create(this)
-	|| !m_wndStatsBar.Create(this)
+	if(!m_wndStatsBar.Create(this)
 	|| !m_wndInfoBar.Create(this)
 	|| !m_wndToolBar.Create(this)
-	|| !m_wndSeekBar.Create(this))
+	|| !m_wndSeekBar.Create(this)
+	|| !m_wndStatusBar.Create(this)
+	)
 	{
 		TRACE0("Failed to create all control bars\n");
 		return -1;      // fail to create
@@ -531,7 +532,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		strRes = strList.Tokenize(_T("|"),curPos);
 	};
 	// end
-	
+
 	SetTimer(TIMER_STATUSCHECKER , 10000, NULL);
 
 	return 0;
@@ -2385,11 +2386,17 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 				if(AfxGetAppSettings().fShowBarsWhenFullScreen)
 					ShowControls(AfxGetAppSettings().nCS);
 			}
-			else
-			{
+			else{
 				if(AfxGetAppSettings().fShowBarsWhenFullScreen)
 					ShowControls(CS_NONE, false);
 			}
+			HMENU hMenu;
+			if(point.y < 10){
+				hMenu = m_hMenuDefault;
+			}else{
+				hMenu = NULL;
+			}
+			::SetMenu(m_hWnd, hMenu);
 
 			SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
 		}

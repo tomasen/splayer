@@ -55,8 +55,10 @@ BOOL CChildView::PreCreateWindow(CREATESTRUCT& cs)
 		return FALSE;
 
 	cs.style &= ~WS_BORDER;
+	
 	cs.lpszClass = AfxRegisterWndClass(CS_HREDRAW|CS_VREDRAW|CS_DBLCLKS, 
 		::LoadCursor(NULL, IDC_HAND), HBRUSH(COLOR_WINDOW+1), NULL);
+
 
 	return TRUE;
 }
@@ -198,7 +200,6 @@ BOOL CChildView::OnEraseBkgnd(CDC* pDC)
 	CRect r;
 
 	CAutoLock cAutoLock(&m_csLogo);
-
 	if(((CMainFrame*)GetParentFrame())->IsSomethingLoaded())
 	{
 		pDC->ExcludeClipRect(m_vrect);
@@ -225,6 +226,7 @@ BOOL CChildView::OnEraseBkgnd(CDC* pDC)
 		pDC->ExcludeClipRect(r);
 	}
 
+	
 	GetClientRect(r);
 	pDC->FillSolidRect(r, 0);
 
@@ -266,7 +268,7 @@ void CChildView::OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp)
 {
 	if(!((CMainFrame*)GetParentFrame())->IsFrameLessWindow()) 
 	{
-		InflateRect(&lpncsp->rgrc[0], -1, -1);
+		//InflateRect(&lpncsp->rgrc[0], -1, -1);
 	}
 
 	CWnd::OnNcCalcSize(bCalcValidRects, lpncsp);
@@ -276,11 +278,11 @@ void CChildView::OnNcPaint()
 {
 	if(!((CMainFrame*)GetParentFrame())->IsFrameLessWindow()) 
 	{
-		CRect r;
-		GetWindowRect(r);
-		r.OffsetRect(-r.left, -r.top);
-
-		CWindowDC(this).Draw3dRect(&r, GetSysColor(COLOR_3DSHADOW), GetSysColor(COLOR_3DHILIGHT)); 
+// 		CRect r;
+// 		GetWindowRect(r);
+// 		r.OffsetRect(-r.left, -r.top);
+// 
+// 		CWindowDC(this).Draw3dRect(&r, GetSysColor(COLOR_3DSHADOW), GetSysColor(COLOR_3DHILIGHT)); 
 	}
 }
 

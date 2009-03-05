@@ -57,6 +57,7 @@ BOOL CPlayerStatusBar::PreCreateWindow(CREATESTRUCT& cs)
 
 	m_dwStyle &= ~CBRS_BORDER_TOP;
 	m_dwStyle &= ~CBRS_BORDER_BOTTOM;
+	cs.dwExStyle |= WS_EX_TRANSPARENT;
 
 	return TRUE;
 }
@@ -255,14 +256,12 @@ BOOL CPlayerStatusBar::OnEraseBkgnd(CDC* pDC)
 	if(pFrame->m_pLastBar != this || pFrame->m_fFullScreen)
 			r.InflateRect(0, 0, 0, 1);
 	
-	if(pFrame->m_fFullScreen) 
-		r.InflateRect(1, 0, 1, 0);
-	else{
-	
-		pDC->Draw3dRect(&r, GetSysColor(COLOR_3DSHADOW), GetSysColor(COLOR_3DHILIGHT)); 
-	
-		r.DeflateRect(1, 1);
-	}
+	//if(pFrame->m_fFullScreen) 
+		r.InflateRect(1, 1, 1, 0);
+// 	else{
+// 		pDC->Draw3dRect(&r, GetSysColor(COLOR_3DSHADOW), GetSysColor(COLOR_3DHILIGHT)); 
+// 		r.DeflateRect(1, 1);
+// 	}
 	
 
 	pDC->FillSolidRect(&r, 0);
@@ -308,30 +307,33 @@ void CPlayerStatusBar::OnSize(UINT nType, int cx, int cy)
 
 void CPlayerStatusBar::OnLButtonDown(UINT nFlags, CPoint point)
 {
+	/*
 	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
-
-	WINDOWPLACEMENT wp;
-	wp.length = sizeof(wp);
-	pFrame->GetWindowPlacement(&wp);
-
-	if(!pFrame->m_fFullScreen && wp.showCmd != SW_SHOWMAXIMIZED)
-	{
-		CRect r;
-		GetClientRect(r);
-		CPoint p = point;
-
-		MapWindowPoints(pFrame, &point, 1);
-		pFrame->PostMessage(WM_NCLBUTTONDOWN, 
-//			(p.x+p.y >= r.Width()) ? HTBOTTOMRIGHT : HTCAPTION, 
-			(p.x >= r.Width()-r.Height()) ? HTBOTTOMRIGHT :
-			HTCAPTION,
-			MAKELPARAM(point.x, point.y));
-	}
+	
+		WINDOWPLACEMENT wp;
+		wp.length = sizeof(wp);
+		pFrame->GetWindowPlacement(&wp);
+	
+		if(!pFrame->m_fFullScreen && wp.showCmd != SW_SHOWMAXIMIZED)
+		{
+			CRect r;
+			GetClientRect(r);
+			CPoint p = point;
+	
+			MapWindowPoints(pFrame, &point, 1);
+			pFrame->PostMessage(WM_NCLBUTTONDOWN, 
+	//			(p.x+p.y >= r.Width()) ? HTBOTTOMRIGHT : HTCAPTION, 
+				(p.x >= r.Width()-r.Height()) ? HTBOTTOMRIGHT :
+				HTCAPTION,
+				MAKELPARAM(point.x, point.y));
+		}*/
+	
 }
 
 BOOL CPlayerStatusBar::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 {
-	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
+	/*
+CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
 
 	WINDOWPLACEMENT wp;
 	wp.length = sizeof(wp);
@@ -351,6 +353,7 @@ BOOL CPlayerStatusBar::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 			return TRUE;
 		}
 	}
+*/
 
 	return CDialogBar::OnSetCursor(pWnd, nHitTest, message);
 }

@@ -228,7 +228,7 @@ CString CPPageFormats::GetFileIcon(CString strExt){
 	}
 
 	::GetModuleFileName(AfxGetInstanceHandle(), buff, MAX_PATH);
-	FileIcon.Format(_T("\"%s\",%d"), buff, iconId - IDI_SINGLE + 1);
+	FileIcon.Format(_T("\"%s\",%d"), buff, iconId - IDI_SINGLE + 1); 
 	return FileIcon;
 }
 BOOL CPPageFormats::SetFileAssociation(CString strExt, CString strProgID, bool fRegister)

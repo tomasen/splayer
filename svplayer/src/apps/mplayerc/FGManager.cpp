@@ -1386,7 +1386,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	if(src & SRC_MATROSKA) {
 		pFGF = new CFGFilterInternal<CMatroskaSplitterFilter>(L"Matroska Splitter", MERIT64_ABOVE_DSHOW);
 	} else {
-		pFGF = new CFGFilterInternal<CMatroskaSplitterFilter>(L"Matroska Splitter (low merit)", MERIT64_DO_USE);
+		pFGF = new CFGFilterInternal<CMatroskaSplitterFilter>(L"Matroska Splitter (low merit)", MERIT64_UNLIKELY);
 	}
 	pFGF->AddType(MEDIATYPE_Stream, MEDIASUBTYPE_Matroska);
 	pFGF->AddType(MEDIATYPE_Stream, GUID_NULL);
@@ -1395,7 +1395,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	if(src & SRC_REALMEDIA)	{
 		pFGF = new CFGFilterInternal<CRealMediaSplitterFilter>(L"RealMedia Splitter", MERIT64_ABOVE_DSHOW);
 	} else {
-		pFGF = new CFGFilterInternal<CRealMediaSplitterFilter>(L"RealMedia Splitter (low merit)", MERIT64_DO_USE);
+		pFGF = new CFGFilterInternal<CRealMediaSplitterFilter>(L"RealMedia Splitter (low merit)", MERIT64_UNLIKELY);
 	}
 	pFGF->AddType(MEDIATYPE_Stream, MEDIASUBTYPE_RealMedia);
 	pFGF->AddType(MEDIATYPE_Stream, GUID_NULL);
@@ -1813,7 +1813,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	// Low merit MPC Video Decoder
 	pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(_T("MPC Video Decoder (low merit)"), MERIT64_DO_USE);
 #if INTERNAL_DECODER_FLV
-	if (!(ffmpeg_filters & FFM_FLV4))
+	if ((ffmpeg_filters & FFM_FLV4))
 	{
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_FLV1);
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_flv1);
@@ -1823,7 +1823,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 #endif
 
 #if INTERNAL_DECODER_VP6
-	if (!(ffmpeg_filters & FFM_VP62))
+	if ((ffmpeg_filters & FFM_VP62))
 	{
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_VP50);
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_vp50);
@@ -1840,7 +1840,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	}
 #endif
 #if INTERNAL_DECODER_H264 | INTERNAL_DECODER_H264_DXVA
-	if (!(ffmpeg_filters & FFM_H264) && !(dxva_filters & DXVA_H264))
+	if ((ffmpeg_filters & FFM_H264) || (dxva_filters & DXVA_H264))
 	{
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_H264);
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_h264);
@@ -1856,16 +1856,18 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_avc1);
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_H264_bis);
 	}
+	
 #endif
+	
 #if INTERNAL_DECODER_VC1 | INTERNAL_DECODER_VC1_DXVA
-	if (!(ffmpeg_filters & FFM_VC1) && !(dxva_filters & DXVA_VC1))
+	if ((ffmpeg_filters & FFM_VC1) && (dxva_filters & DXVA_VC1))
 	{
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_WVC1);
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_wvc1);
 	}
 #endif
 #if INTERNAL_DECODER_XVID
-	if (!(ffmpeg_filters & FFM_XVID))
+	if ((ffmpeg_filters & FFM_XVID))
 	{
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_XVID);
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_xvid);
@@ -1910,7 +1912,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	}
 #endif
 #if INTERNAL_DECODER_DIVX
-	if (!(ffmpeg_filters & FFM_DIVX))
+	if ((ffmpeg_filters & FFM_DIVX))
 	{
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_DIVX);
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_divx);
@@ -1919,7 +1921,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	}
 #endif
 #if INTERNAL_DECODER_WMV
-	if (!(ffmpeg_filters & FFM_WMV))
+	if ((ffmpeg_filters & FFM_WMV))
 	{
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_WMV1);
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_wmv1);
@@ -1930,7 +1932,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	}
 #endif
 #if INTERNAL_DECODER_MSMPEG4
-	if (!(ffmpeg_filters & FFM_MSMPEG4))
+	if ((ffmpeg_filters & FFM_MSMPEG4))
 	{
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_DIV3);
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_div3);
@@ -1963,28 +1965,28 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	}
 #endif
 #if INTERNAL_DECODER_SVQ
-	if (!(ffmpeg_filters & FFM_SVQ3))
+	if ((ffmpeg_filters & FFM_SVQ3))
 	{
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_SVQ3);
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_SVQ1);
 	}
 #endif
 #if INTERNAL_DECODER_H263
-	if (!(ffmpeg_filters & FFM_H263))
+	if ((ffmpeg_filters & FFM_H263))
 	{
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_H263);
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_h263);
 	}
 #endif
 #if INTERNAL_DECODER_THEORA
-	if (!(ffmpeg_filters & FFM_THEORA))
+	if ((ffmpeg_filters & FFM_THEORA))
 	{
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_THEORA);
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_theora);
 	}
 #endif
 #if INTERNAL_DECODER_AMVV
-	if (!(ffmpeg_filters & FFM_AMVV))
+	if ((ffmpeg_filters & FFM_AMVV))
 	{
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_AMVV);
 	}

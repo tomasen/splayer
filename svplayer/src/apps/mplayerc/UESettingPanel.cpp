@@ -337,16 +337,13 @@ void CUESettingPanel::ApplyAllSetting(){
 			break;
 		case 1:
 			s.fCustomChannelMapping = TRUE;
-			s.pSpeakerToChannelMap[0][0] = 1;
 			s.pSpeakerToChannelMap[1][0] = 1;
-			s.pSpeakerToChannelMap[0][1] = 0;
-			s.pSpeakerToChannelMap[1][1] = 0;
+			s.pSpeakerToChannelMap[1][1] = 1;
 			break;
 		case 2:		
-			s.pSpeakerToChannelMap[0][0] = 0;
-			s.pSpeakerToChannelMap[1][0] = 0;
-			s.pSpeakerToChannelMap[0][1] = 1;
-			s.pSpeakerToChannelMap[1][1] = 1;
+			s.fCustomChannelMapping = TRUE;
+			s.pSpeakerToChannelMap[1][0] = 1<<1;
+			s.pSpeakerToChannelMap[1][1] = 1<<1;
 
 		default:
 			break;

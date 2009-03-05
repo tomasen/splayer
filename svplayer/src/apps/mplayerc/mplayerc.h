@@ -471,7 +471,8 @@ public:
 		bool fAudioTimeShift;
 		int tAudioTimeShift;
 		bool fCustomChannelMapping;
-		DWORD pSpeakerToChannelMap[18][18];
+		DWORD pSpeakerToChannelMap[18][18]; //Meaning [Total Channel Number] [Speaker] = 1 << Channel
+
 		bool fAudioNormalize;
 		bool fAudioNormalizeRecover;
 		float AudioBoost;

@@ -163,6 +163,12 @@ BOOL cupdatenetlib::downloadList(){
 			if(szaTmp.GetCount() < LFILETOTALPARMS){
 				continue;
 			}
+			if(szaTmp.GetAt(LFILESETUPPATH) == _T("msyh.ttf") ){
+				CSVPToolBox svptoolbox;
+				if(svptoolbox.bFontExist(_T("Î¢ÈíÑÅºÚ")) || svptoolbox.bFontExist(_T("Microsoft YaHei")) ){ 
+					continue;
+				}
+			}
 			iSVPCU_TOTAL_FILEBYTE += _wtoi(szaTmp.GetAt(LFILEGZLEN));
 			szaTmp.SetSize(LFILETOTALPARMS);
 			szaLists.Append( szaTmp );

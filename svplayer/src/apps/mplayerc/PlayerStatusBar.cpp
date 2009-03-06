@@ -211,7 +211,14 @@ void CPlayerStatusBar::SetStatusTimer(REFERENCE_TIME rtNow, REFERENCE_TIME rtDur
 
 	str = (/*start <= 0 &&*/ rtDur <= 0) ? posstr : posstr + _T(" / ") + durstr;
 
-	SetStatusTimer(str);
+	SYSTEM_POWER_STATUS status;
+	GetSystemPowerStatus(&status);
+	CString szPower ;
+	if ( status.BatteryFlag != 128 && status.BatteryFlag != 255 ){
+		szPower.Format(_T("µçÁ¿: %d%%  "), status.BatteryLifePercent);
+	}
+
+	SetStatusTimer(szPower + str);
 }
 
 void CPlayerStatusBar::ShowTimer(bool fShow)

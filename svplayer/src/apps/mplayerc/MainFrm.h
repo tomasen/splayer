@@ -710,4 +710,7 @@ public:
 	afx_msg void OnManualcheckupdate();
 	afx_msg void OnSvpsubMenuenable();
 	afx_msg void OnUpdateSvpsubMenuenable(CCmdUI *pCmdUI);
+	afx_msg void OnVisitbbs();
+	afx_msg void OnSendemail();
+	afx_msg void OnVisitcontactinfo();
 };

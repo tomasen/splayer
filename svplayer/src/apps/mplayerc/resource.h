@@ -36,7 +36,7 @@
 #define IDI_REAL_FILE                   313
 #define IDI_SUBTITLE_FILE               314
 #define IDI_VIDEO_CD                    315
-#define IDI_PLAY                    316
+#define IDI_PLAY                        316
 #define IDR_AVI_FILECOPY                400
 #define IDR_HTML_INDEX                  500
 #define IDR_HTML_404                    501
@@ -787,7 +787,7 @@
 #define IDS_TRA_FFMPEG                  14213
 #define IDS_RS_DXVAFILTERS              14214
 #define IDS_RS_FFMPEGFILTERS            14215
-#define IDS_SRC_FLAC					14216
+#define IDS_SRC_FLAC                    14216
 #define IDD_DHTML_SETTING               20000
 #define IDR_DEFAULT1                    20006
 #define IDD_DEFAULT_PLAYER              20007
@@ -796,6 +796,8 @@
 #define IDD_SVPSUBUPLOAD                20008
 #define IDD_DIALOG2                     20009
 #define IDD_SVPSUBDOWNUPDLG             20009
+#define IDD_DIALOG3                     20010
+#define IDD_SEARCHSUBDLG                20010
 #define IDC_CHK_NOMOREQUES              22000
 #define IDC_CHECK_DEFAULTPLAYER         22001
 #define IDC_STATIC_VFILE                22002
@@ -838,6 +840,13 @@
 #define ID_MANUALCHECKUPDATE            32800
 #define ID_32801                        32801
 #define ID_SVPSUB_MENUENABLE            32802
+#define ID_32803                        32803
+#define ID_32804                        32804
+#define ID_32805                        32805
+#define ID_VISTBBS                      32806
+#define ID_SENDEMAIL                    32807
+#define ID_VISITCONTACTINFO             32808
+#define ID_VISITBBS                     32809
 #define IDS_VOLUME_BOOST_INC            33129
 #define IDS_VOLUME_BOOST_DEC            33130
 #define IDS_VOLUME_BOOST_MIN            33131
@@ -911,8 +920,8 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        20010
-#define _APS_NEXT_COMMAND_VALUE         32803
+#define _APS_NEXT_RESOURCE_VALUE        20011
+#define _APS_NEXT_COMMAND_VALUE         32810
 #define _APS_NEXT_CONTROL_VALUE         22004
 #define _APS_NEXT_SYMED_VALUE           24001
 #endif

@@ -1494,7 +1494,8 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 			// WINBUG: on win2k this would crash WritePrivateProfileString
 			pApp->WriteProfileInt(_T(""), _T(""), pApp->GetProfileInt(_T(""), _T(""), 0)?0:1);
 		}
-		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("LastVersion"), 51);		
+		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("LastVersion"), 90);		
+		
 	}
 	else
 	{
@@ -1619,24 +1620,45 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 
 		if(iUpgradeReset < 49){
 			subdefstyle.relativeTo = 0;
+			
+		}
+		{
+			BOOL bHadYaheiDownloaded = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS),  _T("HasYaheiDownloaded"), 0); //默认检查是否使用旧字体
 			CSVPToolBox svptoolbox;
-		
-			if(svptoolbox.bFontExist(_T("微软雅黑"))){
-				if(subdefstyle.fontName.CompareNoCase(_T("黑体") ) == 0 )
-					subdefstyle.fontName = _T("微软雅黑");
-				if(subdefstyle2.fontName.CompareNoCase(_T("黑体") ) == 0 )
-					subdefstyle2.fontName = _T("微软雅黑");
-				if(subdefstyle.fontName == _T("微软雅黑")){
-					subdefstyle.fontWeight = 300;
+			if(!svptoolbox.bFontExist(_T("微软雅黑")) && !svptoolbox.bFontExist(_T("Microsoft YaHei")) ){ 
+				CString szTTFPath = svptoolbox.GetPlayerPath( _T("msyh.ttf") );
+				if( svptoolbox.ifFileExist(szTTFPath)) {
+					if( AddFontResourceEx( szTTFPath , FR_PRIVATE, 0) ){
+						
+						if(bHadYaheiDownloaded != 1)  //首次成功调入了外部字体，下次不再检查是否使用旧字体
+							pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("HasYaheiDownloaded"), 1 );	
+					}else{
+						if(bHadYaheiDownloaded != 0)  //没有成功调入外部字体，下次检查是否使用旧字体
+							pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("HasYaheiDownloaded"), 0 );	
+					}
 				}
-			}else if( !svptoolbox.bFontExist(_T("黑体")) ){
-				if(subdefstyle.fontName.CompareNoCase(_T("黑体") ) == 0 )
-					subdefstyle.fontName = _T("SimHei");
-				if(subdefstyle2.fontName.CompareNoCase(_T("黑体") ) == 0 )
-					subdefstyle2.fontName = _T("SimHei");
+			}
+			if(!bHadYaheiDownloaded || iUpgradeReset < 90){
+				if(svptoolbox.bFontExist(_T("微软雅黑"))){ //
+					if(subdefstyle.fontName.CompareNoCase(_T("黑体") ) == 0 )
+						subdefstyle.fontName = _T("微软雅黑");
+					if(subdefstyle2.fontName.CompareNoCase(_T("黑体") ) == 0 )
+						subdefstyle2.fontName = _T("微软雅黑");
+					
+				}else if( !svptoolbox.bFontExist(_T("黑体")) ){
+					if(subdefstyle.fontName.CompareNoCase(_T("黑体") ) == 0 )
+						subdefstyle.fontName = _T("SimHei");
+					if(subdefstyle2.fontName.CompareNoCase(_T("黑体") ) == 0 )
+						subdefstyle2.fontName = _T("SimHei");
+				}
+				if(svptoolbox.bFontExist(_T("Microsoft YaHei"))){ //Microsoft YaHei
+					if(subdefstyle.fontName.CompareNoCase(_T("SimHei") ) == 0 )
+						subdefstyle.fontName = _T("Microsoft YaHei");
+					if(subdefstyle2.fontName.CompareNoCase(_T("SimHei") ) == 0 )
+						subdefstyle2.fontName = _T("Microsoft YaHei");
+				}
 			}
 		}
-
 		fOverridePlacement = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPOVERRIDEPLACEMENT), 0);
 		fOverridePlacement2 = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPOVERRIDEPLACEMENT)+_T("2"), TRUE);
 		nHorPos = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPHORPOS), 50);

@@ -926,6 +926,18 @@ BEGIN
     EDITTEXT        IDC_EDIT2,7,26,327,45,ES_MULTILINE | ES_AUTOHSCROLL | ES_READONLY | NOT WS_VISIBLE
 END
 
+IDD_SEARCHSUBDLG DIALOGEX 0, 0, 316, 99
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_TOOLWINDOW
+CAPTION "射手网字幕搜索"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "搜索",IDOK,76,78,50,14
+    PUSHBUTTON      "关闭",IDCANCEL,190,78,50,14
+    EDITTEXT        IDC_EDIT1,33,40,249,18,ES_AUTOHSCROLL
+    LTEXT           "通过射手网搜索字幕：",IDC_STATIC,7,15,114,19
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1301,6 +1313,14 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 117
     END
+
+    IDD_SEARCHSUBDLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 309
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 92
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -1560,7 +1580,7 @@ BEGIN
                 MENUITEM "200% (&D)",                   ID_VIEW_VF_DOUBLE
                 MENUITEM "铺满播放窗口(&S)",                  ID_VIEW_VF_STRETCH
                 MENUITEM "标准画面(&I)",                    ID_VIEW_VF_FROMINSIDE
-                MENUITEM "智能去黑边(&O)",                    ID_VIEW_VF_FROMOUTSIDE
+                MENUITEM "智能去黑边(&O)",                   ID_VIEW_VF_FROMOUTSIDE
                 MENUITEM SEPARATOR
                 MENUITEM "保持画面比例(&K)",                  ID_VIEW_VF_KEEPASPECTRATIO
                 POPUP "强制画面比例"
@@ -1714,7 +1734,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "铺满播放窗口(&S)",                  ID_VIEW_VF_STRETCH
         MENUITEM "标准画面(&I)",                    ID_VIEW_VF_FROMINSIDE
-        MENUITEM "智能去黑边(&O)",                    ID_VIEW_VF_FROMOUTSIDE
+        MENUITEM "智能去黑边(&O)",                   ID_VIEW_VF_FROMOUTSIDE
         MENUITEM SEPARATOR
         MENUITEM "滤镜(Filters)",                 ID__FILTERS
         MENUITEM "特效(Shaders)",                 ID__SHADERS
@@ -1726,7 +1746,7 @@ BEGIN
             MENUITEM "200% (&D)",                   ID_VIEW_VF_DOUBLE
             MENUITEM "铺满播放窗口(&S)",                  ID_VIEW_VF_STRETCH
             MENUITEM "标准画面(&I)",                    ID_VIEW_VF_FROMINSIDE
-            MENUITEM "智能去黑边(&O)",                    ID_VIEW_VF_FROMOUTSIDE
+            MENUITEM "智能去黑边(&O)",                   ID_VIEW_VF_FROMOUTSIDE
             MENUITEM SEPARATOR
             MENUITEM "保持画面比例(&K)",                  ID_VIEW_VF_KEEPASPECTRATIO
             POPUP "强制画面比例"
@@ -1880,7 +1900,7 @@ BEGIN
             MENUITEM "200% (&D)",                   ID_VIEW_VF_DOUBLE
             MENUITEM "铺满播放窗口(&S)",                  ID_VIEW_VF_STRETCH
             MENUITEM "标准画面(&I)",                    ID_VIEW_VF_FROMINSIDE
-            MENUITEM "智能去黑边(&O)",                    ID_VIEW_VF_FROMOUTSIDE
+            MENUITEM "智能去黑边(&O)",                   ID_VIEW_VF_FROMOUTSIDE
             MENUITEM SEPARATOR
             MENUITEM "保持画面比例(&K)",                  ID_VIEW_VF_KEEPASPECTRATIO
             POPUP "强制画面比例"
@@ -2017,6 +2037,12 @@ BEGIN
         MENUITEM "检查更新...",                     ID_MANUALCHECKUPDATE
         MENUITEM SEPARATOR
         MENUITEM "关于(&A)...",                   ID_HELP_ABOUT
+    END
+    POPUP "意见和反馈"
+    BEGIN
+        MENUITEM "论坛发表反馈",                      ID_VISITBBS
+        MENUITEM "Email发表意见",                   ID_SENDEMAIL
+        MENUITEM "QQ或MSN聊聊想法",                  ID_VISITCONTACTINFO
     END
 END
 

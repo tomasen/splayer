@@ -387,6 +387,9 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_MANUALCHECKUPDATE, &CMainFrame::OnManualcheckupdate)
 	ON_COMMAND(ID_SVPSUB_MENUENABLE, &CMainFrame::OnSvpsubMenuenable)
 	ON_UPDATE_COMMAND_UI(ID_SVPSUB_MENUENABLE, &CMainFrame::OnUpdateSvpsubMenuenable)
+	ON_COMMAND(ID_VISITBBS, &CMainFrame::OnVisitbbs)
+	ON_COMMAND(ID_SENDEMAIL, &CMainFrame::OnSendemail)
+	ON_COMMAND(ID_VISITCONTACTINFO, &CMainFrame::OnVisitcontactinfo)
 	END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -2391,7 +2394,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 					ShowControls(CS_NONE, false);
 			}
 			HMENU hMenu;
-			if(point.y < 10){
+			if(point.y < 10 && point.x < 690){
 				hMenu = m_hMenuDefault;
 			}else{
 				hMenu = NULL;
@@ -4379,15 +4382,6 @@ void CMainFrame::OnUpdateFileSavesubtitle(CCmdUI* pCmdUI)
 #include "SubtitleDlDlg.h"
 #include "ISDb.h"
 
-void CMainFrame::OnFileISDBSearch()
-{
-	
-	CStringA url = "http://shooter.cn/sub/?searchword=";
-	
-	
-
-	ShellExecute(m_hWnd, _T("open"), CString(url)+m_wndPlaylistBar.GetCur(), NULL, NULL, SW_SHOWDEFAULT);
-}
 
 void CMainFrame::OnUpdateFileISDBSearch(CCmdUI *pCmdUI)
 {
@@ -10750,6 +10744,7 @@ void CMainFrame::SendStatusMessage(CString msg, int nTimeOut)
 	if(!m_wndStatusBar.IsVisible()){
 		if(m_fFullScreen){
 			ShowControls(CS_STATUSBAR, false);
+			SetTimer( TIMER_FULLSCREENCONTROLBARHIDER , 10000, NULL); // auto close it when full screen
 		}else{
 			ShowControls(AfxGetAppSettings().nCS | CS_STATUSBAR, false);
 		}
@@ -11140,4 +11135,34 @@ void CMainFrame::OnSvpsubMenuenable()
 void CMainFrame::OnUpdateSvpsubMenuenable(CCmdUI *pCmdUI)
 {
 	pCmdUI->SetCheck(!!(AfxGetAppSettings().autoDownloadSVPSub ));
+}
+
+void CMainFrame::OnVisitbbs()
+{
+	//Visit BBS
+	ShellExecute(m_hWnd, _T("open"), _T("https://bbs.shooter.cn/forumdisplay.php?fid=6"), NULL, NULL, SW_SHOWDEFAULT);
+}
+#include "SearchSubDlg.h"
+void CMainFrame::OnFileISDBSearch()
+{
+	CSearchSubDlg ssub;
+	CSVPToolBox svpTool;
+	CStringArray szaPathArr;
+	svpTool.getVideoFileBasename(m_fnCurPlayingFile, &szaPathArr);
+	if(szaPathArr.GetCount() >= 4){
+		ssub.m_skeywords = szaPathArr.GetAt(3);
+		
+	}
+	ssub.DoModal();
+}
+
+void CMainFrame::OnSendemail()
+{
+	ShellExecute(m_hWnd, _T("open"), _T("mailto:tomasen@gmail.com"), NULL, NULL, SW_SHOWDEFAULT);
+}
+
+void CMainFrame::OnVisitcontactinfo()
+{
+	// TODO: Add your command handler code here
+	ShellExecute(m_hWnd, _T("open"), _T("http://shooter.cn/svplayer/contact.html"), NULL, NULL, SW_SHOWDEFAULT);
 }

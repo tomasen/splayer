@@ -685,6 +685,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SearchSubDlg.cpp"
+				>
+			</File>
+			<File
 				RelativePath="SelectMediaType.cpp"
 				>
 			</File>
@@ -1126,6 +1130,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SearchSubDlg.h"
+				>
+			</File>
+			<File
 				RelativePath="SelectMediaType.h"
 				>
 			</File>
@@ -1324,6 +1332,10 @@
 			</File>
 			<File
 				RelativePath="res\onoff.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\play.ico"
 				>
 			</File>
 			<File
@@ -1628,11 +1640,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 	</Files>

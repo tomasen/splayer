@@ -144,7 +144,8 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 		TIMER_STATS,
 		TIMER_LEFTCLICK,
 		TIMER_STATUSERASER,
-		TIMER_STATUSCHECKER
+		TIMER_STATUSCHECKER,
+		TIMER_MOUSELWOWN
 	};
 
 	friend class CPPageFileInfoSheet;

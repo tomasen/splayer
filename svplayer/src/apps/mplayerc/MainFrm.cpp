@@ -397,6 +397,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 
 #pragma warning(disable : 4355)
 
+static bool s_fLDown = false;
+
 CMainFrame::CMainFrame() : 
 	m_dwRegister(0),
 	m_iMediaLoadState(MLS_CLOSED),
@@ -456,7 +458,6 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	|| !m_wndInfoBar.Create(this)
 	|| !m_wndToolBar.Create(this)
 	|| !m_wndSeekBar.Create(this)
-	|| !m_wndStatusBar.Create(this)
 	)
 	{
 		TRACE0("Failed to create all control bars\n");
@@ -468,8 +469,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_bars.AddTail(&m_wndToolBar);
 	m_bars.AddTail(&m_wndInfoBar);
 	m_bars.AddTail(&m_wndStatsBar);
-	m_bars.AddTail(&m_wndStatusBar);
-
+	
 	m_wndSeekBar.Enable(false);
 
 	// dockable bars
@@ -481,11 +481,11 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_wndSubresyncBar.Create(this, &m_csSubLock);
 	m_wndSubresyncBar.SetBarStyle(m_wndSubresyncBar.GetBarStyle() | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
 	m_wndSubresyncBar.EnableDocking(CBRS_ALIGN_ANY);
-	m_wndSubresyncBar.SetHeight(200);
+//	m_wndSubresyncBar.SetHeight(200);
 	LoadControlBar(&m_wndSubresyncBar, AFX_IDW_DOCKBAR_TOP);
 
 	m_wndPlaylistBar.Create(this);
-	m_wndPlaylistBar.SetBarStyle(m_wndPlaylistBar.GetBarStyle() | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
+	m_wndPlaylistBar.SetBarStyle(m_wndPlaylistBar.GetBarStyle() | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC | CBRS_BORDER_3D);
 	m_wndPlaylistBar.EnableDocking(CBRS_ALIGN_ANY);
 	//m_wndPlaylistBar.SetHeight(100);
 	LoadControlBar(&m_wndPlaylistBar, AFX_IDW_DOCKBAR_RIGHT);
@@ -500,6 +500,9 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_wndShaderEditorBar.SetBarStyle(m_wndShaderEditorBar.GetBarStyle() | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
 	m_wndShaderEditorBar.EnableDocking(CBRS_ALIGN_ANY);
 	LoadControlBar(&m_wndShaderEditorBar, AFX_IDW_DOCKBAR_TOP);
+	if(m_wndStatusBar.Create(this)){
+		m_bars.AddTail(&m_wndStatusBar);
+	}
 
 	m_fileDropTarget.Register(this);
 
@@ -1371,7 +1374,12 @@ CString CMainFrame::getCurPlayingSubfile(int * iSubDelayMS,int subid ){
 
 void CMainFrame::OnTimer(UINT nIDEvent)
 {
-	if(nIDEvent == TIMER_STREAMPOSPOLLER && m_iMediaLoadState == MLS_LOADED)
+	if(TIMER_MOUSELWOWN == nIDEvent){
+		if(s_fLDown){
+			OnButton(wmcmd::LDOWN, NULL, NULL);
+		}
+		KillTimer(TIMER_MOUSELWOWN);
+	}else if(nIDEvent == TIMER_STREAMPOSPOLLER && m_iMediaLoadState == MLS_LOADED)
 	{
 		REFERENCE_TIME rtNow = 0, rtDur = 0;
 
@@ -2206,8 +2214,6 @@ BOOL CMainFrame::OnButton(UINT id, UINT nFlags, CPoint point)
 	return ret;
 }
 
-static bool s_fLDown = false;
-
 void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	SetFocus();
@@ -2240,7 +2246,8 @@ void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 		else
 		{
 			s_fLDown = true;
-			if(OnButton(wmcmd::LDOWN, nFlags, point))
+			//if(OnButton(wmcmd::LDOWN, nFlags, point))
+			SetTimer(TIMER_MOUSELWOWN, 300, NULL);
 			return;
 		}
 	}

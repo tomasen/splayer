@@ -1077,6 +1077,10 @@ CMPlayerCApp::Settings::Settings()
 	, hAccel(NULL)
 {
 #define ADDCMD(cmd) wmcmds.AddTail(wmcmd##cmd)
+	ADDCMD((ID_PLAY_PLAYPAUSE, VK_SPACE, FVIRTKEY|FNOINVERT, _T("播放/暂停"), APPCOMMAND_MEDIA_PLAY_PAUSE, wmcmd::LDOWN));
+	ADDCMD((ID_PLAY_SEEKFORWARDMED, VK_RIGHT, FVIRTKEY|FNOINVERT, _T("快进")));
+	ADDCMD((ID_PLAY_SEEKBACKWARDMED, VK_LEFT, FVIRTKEY|FNOINVERT, _T("快退")));
+
 	ADDCMD((ID_FILE_OPENQUICK, 'Q', FVIRTKEY|FCONTROL|FNOINVERT, _T("快速打开文件")));
 	ADDCMD((ID_FILE_OPENURLSTREAM, 'U', FVIRTKEY|FCONTROL|FNOINVERT, _T("打开网址")));
 	ADDCMD((ID_FILE_OPENMEDIA, 'O', FVIRTKEY|FCONTROL|FNOINVERT, _T("打开文件")));
@@ -1105,7 +1109,6 @@ CMPlayerCApp::Settings::Settings()
 	ADDCMD((ID_FILE_CLOSEPLAYLIST, 'C', FVIRTKEY|FCONTROL|FNOINVERT, _T("关闭")));
 	ADDCMD((ID_FILE_PROPERTIES, VK_F10, FVIRTKEY|FSHIFT|FNOINVERT, _T("属性")));
 	ADDCMD((ID_FILE_EXIT, 'X', FVIRTKEY|FALT|FNOINVERT, _T("退出")));
-	ADDCMD((ID_PLAY_PLAYPAUSE, VK_SPACE, FVIRTKEY|FNOINVERT, _T("播放/暂停"), APPCOMMAND_MEDIA_PLAY_PAUSE, wmcmd::LDOWN));
 	ADDCMD((ID_PLAY_PLAY, 0, FVIRTKEY|FNOINVERT, _T("Play")));
 	ADDCMD((ID_PLAY_PAUSE, 0, FVIRTKEY|FNOINVERT, _T("Pause")));
 	ADDCMD((ID_PLAY_STOP, VK_OEM_PERIOD, FVIRTKEY|FNOINVERT, _T("Stop"), APPCOMMAND_MEDIA_STOP));
@@ -1119,8 +1122,6 @@ CMPlayerCApp::Settings::Settings()
 	ADDCMD((ID_PLAY_DECAUDDELAY, VK_SUBTRACT, FVIRTKEY|FNOINVERT, _T("Audio Delay -10ms")));
 	ADDCMD((ID_PLAY_SEEKFORWARDSMALL, 0, FVIRTKEY|FNOINVERT, _T("Jump Forward (small)")));
 	ADDCMD((ID_PLAY_SEEKBACKWARDSMALL, 0, FVIRTKEY|FNOINVERT, _T("Jump Backward (small)")));
-	ADDCMD((ID_PLAY_SEEKFORWARDMED, VK_RIGHT, FVIRTKEY|FNOINVERT, _T("快进")));
-	ADDCMD((ID_PLAY_SEEKBACKWARDMED, VK_LEFT, FVIRTKEY|FNOINVERT, _T("快退")));
 	ADDCMD((ID_PLAY_SEEKFORWARDMED, VK_RIGHT, FVIRTKEY|FCONTROL|FNOINVERT, _T("Jump Forward (medium)")));
 	ADDCMD((ID_PLAY_SEEKBACKWARDMED, VK_LEFT, FVIRTKEY|FCONTROL|FNOINVERT, _T("Jump Backward (medium)")));
 	ADDCMD((ID_PLAY_SEEKFORWARDLARGE, VK_RIGHT, FVIRTKEY|FALT|FNOINVERT, _T("Jump Forward (large)")));
@@ -1494,7 +1495,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 			// WINBUG: on win2k this would crash WritePrivateProfileString
 			pApp->WriteProfileInt(_T(""), _T(""), pApp->GetProfileInt(_T(""), _T(""), 0)?0:1);
 		}
-		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("LastVersion"), 90);		
+		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("LastVersion"), 92);		
 		
 	}
 	else
@@ -1538,6 +1539,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		autoResumePlay = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUTORESUMEPLAY), 1);
 		fHideCaptionMenu = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_HIDECAPTIONMENU), 0);
 		nCS = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_CONTROLSTATE), CS_SEEKBAR|CS_TOOLBAR|CS_STATUSBAR);
+
 		iDefaultVideoSize = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DEFAULTVIDEOFRAME), DVS_FROMINSIDE);
 		fKeepAspectRatio = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_KEEPASPECTRATIO), TRUE);
 		fCompMonDeskARDiff = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_COMPMONDESKARDIFF), FALSE);
@@ -1619,9 +1621,11 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		subdefstyle2 <<= pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPLOGFONT2), _T("20,20,20,20,8,0,2.000000,2.000000,3.000000,3.000000,0x00ecec,0x00ffff,0x000000,0x000000,0x00,0x00,0x00,0x80,1,黑体,20.000000,100.000000,100.000000,0.000000,700,0,0,0,0,0.000000,0.000000,0.000000,0.000000,0,0.700000"));
 
 		if(iUpgradeReset < 49){
-			subdefstyle.relativeTo = 0;
-			
+			subdefstyle.relativeTo = 0;	
+		}else if(iUpgradeReset < 92){
+			nCS |= CS_STATUSBAR;
 		}
+
 		{
 			BOOL bHadYaheiDownloaded = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS),  _T("HasYaheiDownloaded"), 0); //默认检查是否使用旧字体
 			CSVPToolBox svptoolbox;

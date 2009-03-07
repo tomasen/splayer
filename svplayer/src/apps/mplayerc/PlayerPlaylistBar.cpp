@@ -44,6 +44,9 @@ CPlayerPlaylistBar::~CPlayerPlaylistBar()
 {
 }
 
+#define CBUTTONWIDTH 30
+#define CBUTTONHEIGHT 18
+
 BOOL CPlayerPlaylistBar::Create(CWnd* pParentWnd)
 {
 	if(!CSizingControlBarG::Create(_T("Playlist"), pParentWnd, 0))
@@ -56,22 +59,39 @@ BOOL CPlayerPlaylistBar::Create(CWnd* pParentWnd)
 			|LVS_NOCOLUMNHEADER
 			|LVS_EDITLABELS
 			|LVS_REPORT|LVS_SINGLESEL|LVS_AUTOARRANGE|LVS_NOSORTHEADER, // TODO: remove LVS_SINGLESEL and implement multiple item repositioning (dragging is ready)
-		CRect(0,0,100,100), this, IDC_PLAYLIST);
+		CRect(0,0,100,80), this, IDC_PLAYLIST);
 
 	m_list.SetExtendedStyle(m_list.GetExtendedStyle()|LVS_EX_FULLROWSELECT|LVS_EX_DOUBLEBUFFER);
 
-	m_list.InsertColumn(COL_NAME, _T("Name"), LVCFMT_LEFT, 380);
+	m_list.InsertColumn(COL_NAME, _T("文件名"), LVCFMT_LEFT, 380);
 
 	CDC* pDC = m_list.GetDC();
 	CFont* old = pDC->SelectObject(GetFont());
 	m_nTimeColWidth = pDC->GetTextExtent(_T("000:00:00")).cx + 5;
 	pDC->SelectObject(old);
 	m_list.ReleaseDC(pDC);
-	m_list.InsertColumn(COL_TIME, _T("Time"), LVCFMT_RIGHT, m_nTimeColWidth);
+	m_list.InsertColumn(COL_TIME, _T("片长"), LVCFMT_RIGHT, m_nTimeColWidth);
 
     m_fakeImageList.Create(1, 16, ILC_COLOR4, 10, 10);
 	m_list.SetImageList(&m_fakeImageList, LVSIL_SMALL);
 	this->m_pMaindFrame = pParentWnd;
+	m_clearall.Create( _T("清空"), WS_VISIBLE|WS_CHILD|BS_FLAT|BS_VCENTER|BS_CENTER , CRect(0,83,40,100), this, IDC_BUTTONCLEARALL );
+	font.CreateFont(
+		12, // nHeight
+		0, // nWidth
+		0, // nEscapement
+		0, // nOrientation
+		FW_NORMAL, // nWeight
+		FALSE, // bItalic
+		FALSE, // bUnderline
+		0, // cStrikeOut
+		DEFAULT_CHARSET, // nCharSet
+		OUT_DEFAULT_PRECIS, // nOutPrecision
+		CLIP_DEFAULT_PRECIS, // nClipPrecision
+		DEFAULT_QUALITY, // nQuality
+		DEFAULT_PITCH | FF_SWISS, // nPitchAndFamily
+		_T("宋体"));
+	m_clearall.SetFont(&font);
 	return TRUE;
 }
 
@@ -837,11 +857,15 @@ BEGIN_MESSAGE_MAP(CPlayerPlaylistBar, CSizingControlBarG)
 	ON_WM_TIMER()
 	ON_WM_CONTEXTMENU()
 	ON_NOTIFY(LVN_ENDLABELEDIT, IDC_PLAYLIST, OnLvnEndlabeleditList)
+	ON_BN_CLICKED(IDC_BUTTONCLEARALL, OnButtonClearAll)
+
 END_MESSAGE_MAP()
 
 
 // CPlayerPlaylistBar message handlers
-
+void CPlayerPlaylistBar::OnButtonClearAll(){
+	Empty();
+}
 void CPlayerPlaylistBar::ResizeListColumn()
 {
 	if(::IsWindow(m_list.m_hWnd))
@@ -849,11 +873,15 @@ void CPlayerPlaylistBar::ResizeListColumn()
 		CRect r;
 		GetClientRect(r);
 		r.DeflateRect(2, 2);
+		r.bottom = r.bottom - CBUTTONHEIGHT - 5;
 		m_list.SetRedraw(FALSE);
 		m_list.MoveWindow(r);
+		m_clearall.MoveWindow(CRect(r.left , r.bottom + 4 , r.left + CBUTTONWIDTH , (r.bottom + 4 + CBUTTONHEIGHT ) ) );
+		
 		m_list.GetClientRect(r);
 		m_list.SetColumnWidth(COL_NAME, r.Width()-m_nTimeColWidth); //LVSCW_AUTOSIZE_USEHEADER
 		m_list.SetRedraw(TRUE);
+		
 	}
 }
 

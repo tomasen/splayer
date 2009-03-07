@@ -149,7 +149,7 @@ BEGIN
     DEFPUSHBUTTON   "确定",IDOK,187,9,47,14,WS_GROUP
     PUSHBUTTON      "取消",IDCANCEL,187,25,47,14
     CONTROL         "仅添加至播放列表 (不立即播放)",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,33,37,127,10
-    CONTROL         "智能加入顺序关联文件",IDC_CHECK2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,33,86,149,10
+    CONTROL         "智能加入顺序关联文件(连续剧模式)",IDC_CHECK2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,33,86,149,10
 END
 
 IDD_ABOUTBOX DIALOGEX 0, 0, 222, 89
@@ -935,7 +935,7 @@ BEGIN
     DEFPUSHBUTTON   "搜索",IDOK,76,78,50,14
     PUSHBUTTON      "关闭",IDCANCEL,190,78,50,14
     EDITTEXT        IDC_EDIT1,33,40,249,18,ES_AUTOHSCROLL
-    LTEXT           "通过射手网搜索字幕：",IDC_STATIC,7,15,114,19
+    LTEXT           "如果智能匹配系统没能下载到合适的字幕 \r\n              您可能需要通过射手网手动搜索字幕：",IDC_STATIC,7,15,302,19
 END
 
 
@@ -1680,11 +1680,12 @@ BEGIN
         BEGIN
             MENUITEM "启用智能网络字幕匹配",                  ID_SVPSUB_MENUENABLE
             MENUITEM SEPARATOR
-            MENUITEM "搜索字幕...",                     ID_FILE_ISDB_SEARCH
+            MENUITEM "智能字幕匹配下载...",                 ID_FILE_ISDB_DOWNLOAD
             MENUITEM "上传字幕...",                     ID_FILE_ISDB_UPLOAD
-            MENUITEM "下载字幕...",                     ID_FILE_ISDB_DOWNLOAD
             MENUITEM SEPARATOR
             MENUITEM "调入字幕(&L)...\tCtrl+L",         ID_FILE_LOAD_SUBTITLE
+            MENUITEM SEPARATOR
+            MENUITEM "网页搜索字幕...",                   ID_FILE_ISDB_SEARCH
         END
         POPUP "帮助(&H)"
         BEGIN
@@ -2023,11 +2024,12 @@ BEGIN
     BEGIN
         MENUITEM "启用智能网络字幕匹配",                  ID_SVPSUB_MENUENABLE
         MENUITEM SEPARATOR
-        MENUITEM "搜索字幕...",                     ID_FILE_ISDB_SEARCH
+        MENUITEM "智能字幕匹配下载...",                 ID_FILE_ISDB_DOWNLOAD
         MENUITEM "上传字幕...",                     ID_FILE_ISDB_UPLOAD
-        MENUITEM "下载字幕...",                     ID_FILE_ISDB_DOWNLOAD
         MENUITEM SEPARATOR
         MENUITEM "调入字幕(&L)...\tCtrl+L",         ID_FILE_LOAD_SUBTITLE
+        MENUITEM SEPARATOR
+        MENUITEM "网页搜索字幕...",                   ID_FILE_ISDB_SEARCH
     END
     POPUP "帮助(&H)"
     BEGIN

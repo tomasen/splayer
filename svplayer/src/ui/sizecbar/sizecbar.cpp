@@ -1,14 +1,14 @@
 /////////////////////////////////////////////////////////////////////////
 //
-// CSizingControlBar            Version 2.43
+// CSizingControlBar            Version 2.44
 //
-// Created: Jan 24, 1998        Last Modified: August 03, 2000
+// Created: Jan 24, 1998        Last Modified: March 31, 2002
 //
 // See the official site at www.datamekanix.com for documentation and
 // the latest news.
 //
 /////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1998-2000 by Cristi Posea. All rights reserved.
+// Copyright (C) 1998-2002 by Cristi Posea. All rights reserved.
 //
 // This code is free for personal and commercial use, providing this 
 // notice remains intact in the source files and all eventual changes are
@@ -30,7 +30,7 @@
 // the version to be sure you get the latest one ;)
 //
 // Hint: These classes are intended to be used as base classes. Do not
-// simply add your code to these file - instead create a new class
+// simply add your code to these files - instead create a new class
 // derived from one of CSizingControlBarXX classes and put there what
 // you need. See CMyBar classes in the demo projects for examples.
 // Modify this file only to fix bugs, and don't forget to send me a copy.
@@ -46,7 +46,8 @@
 //      dialgonal resizing is based.
 //  o   Thanks to the following people for various bug fixes and/or
 //      enhancements: Chris Maunder, Jakawan Ratiwanich, Udo Schaefer,
-//      Anatoly Ivasyuk, Peter Hauptmann.
+//      Anatoly Ivasyuk, Peter Hauptmann, DJ(?), Pat Kusbel, Aleksey
+//      Malyshev.
 //  o   And, of course, many thanks to all of you who used this code,
 //      for the invaluable feedback I received.
 /////////////////////////////////////////////////////////////////////////
@@ -511,7 +512,7 @@ void CSizingControlBar::NcCalcClient(LPRECT pRc, UINT nDockBarID)
 void CSizingControlBar::OnNcPaint()
 {
     // get window DC that is clipped to the non-client area
-    CWindowDC dc(this);
+    CWindowDC dc(this); // the HDC will be released by the destructor
 
     CRect rcClient, rcBar;
     GetClientRect(rcClient);
@@ -552,8 +553,6 @@ void CSizingControlBar::OnNcPaint()
 
     dc.BitBlt(0, 0, rcBar.Width(), rcBar.Height(), &mdc, 0, 0, SRCCOPY);
 
-    ReleaseDC(&dc);
-
     mdc.SelectObject(pOldBm);
     bm.DeleteObject();
     mdc.DeleteDC();
@@ -571,7 +570,7 @@ void CSizingControlBar::OnPaint()
     CPaintDC dc(this);
 }
 
-HITTEST_RET CSizingControlBar::OnNcHitTest(CPoint point)
+LRESULT CSizingControlBar::OnNcHitTest(CPoint point)
 {
     CRect rcBar, rcEdge;
     GetWindowRect(rcBar);
@@ -1360,7 +1359,9 @@ void CSCBMiniDockFrameWnd::OnSize(UINT nType, int cx, int cy)
 {
     CSizingControlBar* pBar = GetSizingControlBar();
     if ((pBar != NULL) && (GetStyle() & MFS_4THICKFRAME) == 0
-        && pBar->IsVisible())
+        && pBar->IsVisible() &&
+        cx + 4 >= pBar->m_szMinFloat.cx &&
+        cy + 4 >= pBar->m_szMinFloat.cy)
         pBar->m_szFloat = CSize(cx + 4, cy + 4);
 
     baseCSCBMiniDockFrameWnd::OnSize(nType, cx, cy);
@@ -1381,14 +1382,6 @@ void CSCBMiniDockFrameWnd::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 #endif //_SCB_MINIFRAME_CAPTION
         lpMMI->ptMinTrackSize.x = r.Width();
         lpMMI->ptMinTrackSize.y = r.Height();
-
-		if(pBar->m_bFixedFloat)
-		{
-			lpMMI->ptMinTrackSize.x = pBar->m_szFixedFloat.cx;
-			lpMMI->ptMinTrackSize.y = pBar->m_szFixedFloat.cy;
-			lpMMI->ptMaxTrackSize.x = pBar->m_szFixedFloat.cx;
-			lpMMI->ptMaxTrackSize.y = pBar->m_szFixedFloat.cy;
-		}
     }
 }
 
@@ -1402,12 +1395,15 @@ void CSCBMiniDockFrameWnd::OnWindowPosChanging(WINDOWPOS FAR* lpwndpos)
             lpwndpos->flags |= SWP_NOSIZE; // don't size this time
             // prevents flicker
             pBar->m_pDockBar->ModifyStyle(0, WS_CLIPCHILDREN);
+
             // enable diagonal resizing
-            ModifyStyle(MFS_4THICKFRAME, 0);
+            DWORD dwStyleRemove = MFS_4THICKFRAME;
 #ifndef _SCB_MINIFRAME_CAPTION
             // remove caption
-            ModifyStyle(WS_SYSMENU|WS_CAPTION, 0);
+            dwStyleRemove |= WS_SYSMENU|WS_CAPTION;
 #endif
+            ModifyStyle(dwStyleRemove, 0);
+
             DelayRecalcLayout();
             pBar->PostMessage(WM_NCPAINT);
         }

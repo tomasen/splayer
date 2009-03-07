@@ -216,6 +216,8 @@ void CPlayerStatusBar::SetStatusTimer(REFERENCE_TIME rtNow, REFERENCE_TIME rtDur
 	CString szPower ;
 	if ( status.BatteryFlag != 128 && status.BatteryFlag != 255 ){
 		szPower.Format(_T("电量: %d%%  "), status.BatteryLifePercent);
+	}else{
+		szPower = _T("电量: 100%  ");
 	}
 
 	SetStatusTimer(szPower + str);

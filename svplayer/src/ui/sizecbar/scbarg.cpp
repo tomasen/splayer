@@ -1,14 +1,14 @@
 /////////////////////////////////////////////////////////////////////////
 //
-// CSizingControlBarG           Version 2.43
+// CSizingControlBarG           Version 2.44
 // 
-// Created: Jan 24, 1998        Last Modified: August 03, 2000
+// Created: Jan 24, 1998        Last Modified: March 31, 2002
 //
 // See the official site at www.datamekanix.com for documentation and
 // the latest news.
 //
 /////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1998-2000 by Cristi Posea. All rights reserved.
+// Copyright (C) 1998-2002 by Cristi Posea. All rights reserved.
 //
 // This code is free for personal and commercial use, providing this 
 // notice remains intact in the source files and all eventual changes are
@@ -30,7 +30,6 @@
 //
 
 #include "stdafx.h"
-
 #include "scbarg.h"
 
 #ifdef _DEBUG
@@ -144,12 +143,12 @@ void CSizingControlBarG::NcPaintGripper(CDC* pDC, CRect rcClient)
     m_biHide.Paint(pDC);
 }
 
-HITTEST_RET CSizingControlBarG::OnNcHitTest(CPoint point)
+LRESULT CSizingControlBarG::OnNcHitTest(CPoint point)
 {
     CRect rcBar;
     GetWindowRect(rcBar);
 
-    LRESULT nRet = baseCSizingControlBarG::OnNcHitTest(point);
+    UINT nRet = baseCSizingControlBarG::OnNcHitTest(point);
     if (nRet != HTCLIENT)
         return nRet;
 

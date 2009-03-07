@@ -1,14 +1,14 @@
 /////////////////////////////////////////////////////////////////////////
 //
-// CSizingControlBar            Version 2.43
+// CSizingControlBar            Version 2.44
 //
-// Created: Jan 24, 1998        Last Modified: August 03, 2000
+// Created: Jan 24, 1998        Last Modified: March 31, 2002
 //
 // See the official site at www.datamekanix.com for documentation and
 // the latest news.
 //
 /////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1998-2000 by Cristi Posea. All rights reserved.
+// Copyright (C) 1998-2002 by Cristi Posea. All rights reserved.
 //
 // This code is free for personal and commercial use, providing this 
 // notice remains intact in the source files and all eventual changes are
@@ -104,13 +104,6 @@ public:
     void SetSCBStyle(DWORD dwSCBStyle)
         {m_dwSCBStyle = (dwSCBStyle & ~SCBS_EDGEALL);}
 
-	void SetHeight(const int nHeight)
-	{
-		m_szFloat.cy = m_szHorz.cy = m_szVert.cy = nHeight;
-		m_pDockSite->DelayRecalcLayout();
-	}
-
-
 // Overridables
     virtual void OnUpdateCmdUI(CFrameWnd* pTarget, BOOL bDisableIfNoHndler);
 
@@ -165,16 +158,13 @@ protected:
     UINT    m_nDockBarID;
     int     m_cxEdge;
 
-	BOOL	m_bFixedFloat;
-	CSize	m_szFixedFloat;
-
 // Generated message map functions
 protected:
     //{{AFX_MSG(CSizingControlBar)
     afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
     afx_msg void OnNcPaint();
     afx_msg void OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS FAR* lpncsp);
-	afx_msg HITTEST_RET OnNcHitTest(CPoint point);
+    afx_msg LRESULT OnNcHitTest(CPoint point);
     afx_msg void OnCaptureChanged(CWnd *pWnd);
     afx_msg void OnSettingChange(UINT uFlags, LPCTSTR lpszSection);
     afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
@@ -246,5 +236,4 @@ public:
 #endif //_SCB_REPLACE_MINIFRAME
 
 #endif // !defined(__SIZECBAR_H__)
-
 

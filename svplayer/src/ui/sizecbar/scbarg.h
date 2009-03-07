@@ -1,14 +1,14 @@
 /////////////////////////////////////////////////////////////////////////
 //
-// CSizingControlBarG           Version 2.43
+// CSizingControlBarG           Version 2.44
 //
-// Created: Jan 24, 1998        Last Modified: August 03, 2000
+// Created: Jan 24, 1998        Last Modified: March 31, 2002
 //
 // See the official site at www.datamekanix.com for documentation and
 // the latest news.
 //
 /////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1998-2000 by Cristi Posea. All rights reserved.
+// Copyright (C) 1998-2002 by Cristi Posea. All rights reserved.
 //
 // This code is free for personal and commercial use, providing this 
 // notice remains intact in the source files and all eventual changes are
@@ -34,7 +34,6 @@
 #endif // _MSC_VER >= 1000
 
 #include "sizecbar.h"
-
 /////////////////////////////////////////////////////////////////////////
 // CSCBButton (button info) helper class
 
@@ -102,7 +101,7 @@ protected:
 // Generated message map functions
 protected:
     //{{AFX_MSG(CSizingControlBarG)
-    afx_msg HITTEST_RET OnNcHitTest(CPoint point);
+    afx_msg LRESULT OnNcHitTest(CPoint point);
     afx_msg void OnNcLButtonUp(UINT nHitTest, CPoint point);
     //}}AFX_MSG
 
@@ -110,5 +109,4 @@ protected:
 };
 
 #endif // !defined(__SCBARG_H__)
-
 

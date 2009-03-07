@@ -35,6 +35,7 @@ private:
 
 	CImageList m_fakeImageList;
 	CPlayerListCtrl m_list;
+	CButton m_clearall;
 	CWnd* m_pMaindFrame;
 	int m_nTimeColWidth;
 	void ResizeListColumn();
@@ -57,6 +58,7 @@ private:
 	BOOL m_bDragging;
 	int m_nDragIndex, m_nDropIndex;
 	CPoint m_ptDropPoint;
+	CFont font;
 
 	void DropItemOnList();
 
@@ -104,6 +106,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 public:
+	afx_msg void OnButtonClearAll();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnLvnKeyDown(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnNMDblclkList(NMHDR* pNMHDR, LRESULT* pResult);

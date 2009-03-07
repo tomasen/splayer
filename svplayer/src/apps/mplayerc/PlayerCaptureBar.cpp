@@ -52,8 +52,8 @@ BOOL CPlayerCaptureBar::Create(CWnd* pParentWnd)
 	m_szMinVert = m_szVert = r.Size();
 	m_szMinHorz = m_szHorz = r.Size();
 	m_szMinFloat = m_szFloat = r.Size();
-	m_bFixedFloat = true;
-	m_szFixedFloat = r.Size();
+//	m_bFixedFloat = true;
+	m_szFloat = r.Size();
 
 	return TRUE;
 }

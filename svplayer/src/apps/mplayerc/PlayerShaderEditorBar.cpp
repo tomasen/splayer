@@ -49,7 +49,7 @@ BOOL CPlayerShaderEditorBar::Create(CWnd* pParentWnd)
 	m_szMinVert = m_szVert = r.Size();
 	m_szMinHorz = m_szHorz = r.Size();
 	m_szMinFloat = m_szFloat = r.Size();
-	m_bFixedFloat = false;
+	//m_bFixedFloat = false;
 
 	return TRUE;
 }

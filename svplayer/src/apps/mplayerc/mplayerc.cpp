@@ -1495,7 +1495,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 			// WINBUG: on win2k this would crash WritePrivateProfileString
 			pApp->WriteProfileInt(_T(""), _T(""), pApp->GetProfileInt(_T(""), _T(""), 0)?0:1);
 		}
-		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("LastVersion"), 92);		
+		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("LastVersion"), 95);		
 		
 	}
 	else
@@ -1620,12 +1620,8 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		subdefstyle <<= pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPLOGFONT), _T("20,20,20,20,2,0,2.000000,2.000000,3.000000,3.000000,0x00ecec,0x00ffff,0x000000,0x000000,0x00,0x00,0x00,0x80,0,黑体,20.000000,100.000000,100.000000,0.000000,700,0,0,0,0,0.000000,0.000000,0.000000,0.000000,0,0.700000"));
 		subdefstyle2 <<= pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPLOGFONT2), _T("20,20,20,20,8,0,2.000000,2.000000,3.000000,3.000000,0x00ecec,0x00ffff,0x000000,0x000000,0x00,0x00,0x00,0x80,1,黑体,20.000000,100.000000,100.000000,0.000000,700,0,0,0,0,0.000000,0.000000,0.000000,0.000000,0,0.700000"));
 
-		if(iUpgradeReset < 49){
-			subdefstyle.relativeTo = 0;	
-		}else if(iUpgradeReset < 92){
-			nCS |= CS_STATUSBAR;
-		}
-
+	
+		
 		{
 			BOOL bHadYaheiDownloaded = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS),  _T("HasYaheiDownloaded"), 0); //默认检查是否使用旧字体
 			CSVPToolBox svptoolbox;
@@ -1683,6 +1679,13 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		tAudioTimeShift = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUDIOTIMESHIFT), 0);
 		fDownSampleTo441 = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DOWNSAMPLETO441), 0);
 		fCustomChannelMapping = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_CUSTOMCHANNELMAPPING), 0);
+		if(iUpgradeReset < 49){
+			subdefstyle.relativeTo = 0;	
+		}
+		if(iUpgradeReset < 95){
+			nCS |= CS_STATUSBAR;
+			fCustomChannelMapping = FALSE;
+		}
 		if(pApp->GetProfileBinary(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPEAKERTOCHANNELMAPPING), &ptr, &len))
 		{
 			memcpy(pSpeakerToChannelMap, ptr, sizeof(pSpeakerToChannelMap));

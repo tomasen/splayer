@@ -331,6 +331,7 @@ void CUESettingPanel::ApplyAllSetting(){
 	s.fAudioNormalize = !!m_sgi_normalize  ;
 	s.fDownSampleTo441 = !!m_sgi_downsample44k ;
 
+/*
 	switch(m_sgi_channelsetting ){
 		case 0:
 			s.fCustomChannelMapping = FALSE;
@@ -347,12 +348,13 @@ void CUESettingPanel::ApplyAllSetting(){
 
 		default:
 			break;
-	}
+	}*/
+
 	//s.fCustomChannelMapping = !!m_fCustomChannelMapping;
 	//memcpy(s.pSpeakerToChannelMap, m_pSpeakerToChannelMap, sizeof(m_pSpeakerToChannelMap));
 	if(m_pASF)
 	{
-		m_pASF->SetSpeakerConfig(s.fCustomChannelMapping, s.pSpeakerToChannelMap);
+		//m_pASF->SetSpeakerConfig(s.fCustomChannelMapping, s.pSpeakerToChannelMap);
 		m_pASF->EnableDownSamplingTo441(s.fDownSampleTo441);
 		m_pASF->SetAudioTimeShift(s.fAudioTimeShift ? 10000i64*s.tAudioTimeShift : 0);
 		m_pASF->SetNormalizeBoost(s.fAudioNormalize, s.fAudioNormalizeRecover, s.AudioBoost);

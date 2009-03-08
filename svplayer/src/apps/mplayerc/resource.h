@@ -306,6 +306,11 @@
 #define ID_SHADERS_END                  4299
 #define ID_SUBTITLES_SUBITEM_START2     4300
 #define ID_SUBTITLES_SUBITEM_END2       4399
+#define IDS_AUDIOCHANNALMAPNORMAL		4400
+#define IDS_AUDIOCHANNALMAPLEFT			4401
+#define IDS_AUDIOCHANNALMAPRIGHT		4402
+#define IDS_AUDIOCHANNALMAPCENTER		4403
+#define IDS_AUDIOCHANNALMAPEND			4403
 #define IDD_OPEN_DLG                    10000
 #define IDD_OPENCAPDEVICE_DLG           10001
 #define IDD_MEDIATYPES_DLG              10002
@@ -492,7 +497,7 @@
 #define IDC_CHECK_MPEGINTERLACED        12132
 #define IDC_DSVMR9YUVMIXER              12133
 #define IDC_VERSION                     12134
-#define IDC_BUTTONCLEARALL				12135
+#define IDC_BUTTONCLEARALL              12135
 #define IDS_R_SETTINGS                  13000
 #define IDS_RS_TITLEBARTEXTSTYLE        13001
 #define IDS_RS_USEWMASFREADER           13002
@@ -848,6 +853,11 @@
 #define ID_SENDEMAIL                    32807
 #define ID_VISITCONTACTINFO             32808
 #define ID_VISITBBS                     32809
+#define ID_32810                        32810
+#define ID_32811                        32811
+#define ID_DONATE                       32812
+#define ID_JOINTEAM                     32813
+#define ID__32814                       32814
 #define IDS_VOLUME_BOOST_INC            33129
 #define IDS_VOLUME_BOOST_DEC            33130
 #define IDS_VOLUME_BOOST_MIN            33131
@@ -922,7 +932,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        20011
-#define _APS_NEXT_COMMAND_VALUE         32810
+#define _APS_NEXT_COMMAND_VALUE         32815
 #define _APS_NEXT_CONTROL_VALUE         22004
 #define _APS_NEXT_SYMED_VALUE           24001
 #endif

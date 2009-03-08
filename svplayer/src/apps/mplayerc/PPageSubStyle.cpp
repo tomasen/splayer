@@ -213,6 +213,7 @@ BOOL CPPageSubStyle::OnApply()
 	UpdateData();
 
 	if(m_iCharset >= 0) m_stss.charSet = m_charset.GetItemData(m_iCharset);
+	
 	m_stss.fontSpacing = m_spacing;
 	m_stss.fontAngleZ = m_angle;
 	m_stss.fontScaleX = m_scalex;
@@ -235,9 +236,15 @@ BOOL CPPageSubStyle::OnApply()
 		
 		if(!(stss == m_stss))
 		{
+			//m_stss.charSet = stss.charSet;
 			stss = m_stss;
-			if(CMainFrame* pFrame = dynamic_cast<CMainFrame*>(AfxGetMainWnd()))
-				pFrame->UpdateSubtitle(true);
+			if(CMainFrame* pFrame = dynamic_cast<CMainFrame*>(AfxGetMainWnd())){
+				
+				if(m_2ndsub)
+					pFrame->UpdateSubtitle2(true);
+				else
+					pFrame->UpdateSubtitle(true);
+			}
 		}
 	}
 

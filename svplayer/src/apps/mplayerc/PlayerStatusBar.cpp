@@ -47,7 +47,7 @@ CPlayerStatusBar::~CPlayerStatusBar()
 
 BOOL CPlayerStatusBar::Create(CWnd* pParentWnd)
 {
-	return CDialogBar::Create(pParentWnd, IDD_PLAYERSTATUSBAR, WS_CHILD|WS_VISIBLE|CBRS_ALIGN_BOTTOM, IDD_PLAYERSTATUSBAR);
+	return CDialogBar::Create(pParentWnd, IDD_PLAYERSTATUSBAR, WS_CHILD|WS_VISIBLE|CBRS_ALIGN_BOTTOM|CBRS_FLOATING, IDD_PLAYERSTATUSBAR);
 }
 
 BOOL CPlayerStatusBar::PreCreateWindow(CREATESTRUCT& cs)
@@ -57,7 +57,8 @@ BOOL CPlayerStatusBar::PreCreateWindow(CREATESTRUCT& cs)
 
 	m_dwStyle &= ~CBRS_BORDER_TOP;
 	m_dwStyle &= ~CBRS_BORDER_BOTTOM;
-	cs.dwExStyle |= WS_EX_TRANSPARENT;
+	cs.dwExStyle |= WS_EX_TRANSPARENT ;
+
 
 	return TRUE;
 }
@@ -272,7 +273,7 @@ BOOL CPlayerStatusBar::OnEraseBkgnd(CDC* pDC)
 // 		r.DeflateRect(1, 1);
 // 	}
 	
-
+	//pDC->SetBkMode(TRANSPARENT );
 	pDC->FillSolidRect(&r, 0);
 
 	return TRUE;

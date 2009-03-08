@@ -292,7 +292,7 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 	CAutoPtr<CWebServer> m_pWebServer;
 private:
 	CString getCurPlayingSubfile(int * iSubDelayMS = NULL,int subid = 0 );
-	
+	CPoint m_pLastClickPoint;
 public:
 	// subtitles
 	void SVPSubDownloadByVPath(CString szVPath, CAtlList<CString>* szaStatMsgs = NULL);
@@ -711,7 +711,12 @@ public:
 	afx_msg void OnManualcheckupdate();
 	afx_msg void OnSvpsubMenuenable();
 	afx_msg void OnUpdateSvpsubMenuenable(CCmdUI *pCmdUI);
+	UINT m_iAudioChannelMaping;
+	afx_msg void OnAudioChannalMapMenu(UINT nID);
+	afx_msg void OnUpdateChannalMapMenu(CCmdUI *pCmdUI);
 	afx_msg void OnVisitbbs();
 	afx_msg void OnSendemail();
 	afx_msg void OnVisitcontactinfo();
+	afx_msg void OnDonate();
+	afx_msg void OnJointeam();
 };

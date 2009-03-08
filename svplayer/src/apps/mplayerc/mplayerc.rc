@@ -1689,10 +1689,14 @@ BEGIN
         END
         POPUP "帮助(&H)"
         BEGIN
+            MENUITEM "检查更新...",                     ID_MANUALCHECKUPDATE
+            MENUITEM SEPARATOR
             MENUITEM "主页",                          ID_HELP_HOMEPAGE
+            MENUITEM "捐助开发",                        ID_DONATE
+            MENUITEM "参与开发",                        ID_JOINTEAM
+            MENUITEM SEPARATOR
             MENUITEM "使用说明",                        ID_HELP_DOCUMENTATION
             MENUITEM "命令行用法",                       ID_HELP_SHOWCOMMANDLINESWITCHES
-            MENUITEM "检查更新...",                     ID_MANUALCHECKUPDATE
             MENUITEM SEPARATOR
             MENUITEM "关于(&A)...",                   ID_HELP_ABOUT
         END
@@ -1728,7 +1732,7 @@ IDR_POPUP MENU
 BEGIN
     POPUP ""
     BEGIN
-        MENUITEM "音频",                          ID__32777
+        MENUITEM "音频与声道切换",                     ID__32777
         MENUITEM "第一字幕",                        ID__32776
         MENUITEM "第二字幕",                        ID__32796
         MENUITEM "调入字幕(&L)...\tCtrl+L",         ID_FILE_LOAD_SUBTITLE
@@ -1736,124 +1740,126 @@ BEGIN
         MENUITEM "铺满播放窗口(&S)",                  ID_VIEW_VF_STRETCH
         MENUITEM "标准画面(&I)",                    ID_VIEW_VF_FROMINSIDE
         MENUITEM "智能去黑边(&O)",                   ID_VIEW_VF_FROMOUTSIDE
-        MENUITEM SEPARATOR
-        MENUITEM "滤镜(Filters)",                 ID__FILTERS
-        MENUITEM "特效(Shaders)",                 ID__SHADERS
-        MENUITEM SEPARATOR
-        POPUP "视频尺寸(&V)"
-        BEGIN
-            MENUITEM "50% (&H)",                    ID_VIEW_VF_HALF
-            MENUITEM "100% (&N)",                   ID_VIEW_VF_NORMAL
-            MENUITEM "200% (&D)",                   ID_VIEW_VF_DOUBLE
-            MENUITEM "铺满播放窗口(&S)",                  ID_VIEW_VF_STRETCH
-            MENUITEM "标准画面(&I)",                    ID_VIEW_VF_FROMINSIDE
-            MENUITEM "智能去黑边(&O)",                   ID_VIEW_VF_FROMOUTSIDE
-            MENUITEM SEPARATOR
-            MENUITEM "保持画面比例(&K)",                  ID_VIEW_VF_KEEPASPECTRATIO
-            POPUP "强制画面比例"
-            BEGIN
-                MENUITEM "默认",                          ID_ASPECTRATIO_SOURCE
-                MENUITEM "4:3",                         ID_ASPECTRATIO_4_3
-                MENUITEM "5:4",                         ID_ASPECTRATIO_5_4
-                MENUITEM "16:9",                        ID_ASPECTRATIO_16_9
-            END
-            MENUITEM "智能显示器校正",                     ID_VIEW_VF_COMPMONDESKARDIFF
-        END
-        POPUP "画面微调(&c)"
-        BEGIN
-            MENUITEM "Increase Size\tNumpad 9",     ID_VIEW_INCSIZE
-            MENUITEM "Decrease Size\tNumpad 1",     ID_VIEW_DECSIZE
-            MENUITEM "Increase Width\tNumpad 6",    ID_VIEW_INCWIDTH
-            MENUITEM "Decrease Width\tNumpad 4",    ID_VIEW_DECWIDTH
-            MENUITEM "Increase Height\tNumpad 8",   ID_VIEW_INCHEIGHT
-            MENUITEM "Decrease Height\tNumpad 2",   ID_VIEW_DECHEIGHT
-            MENUITEM SEPARATOR
-            MENUITEM "Move Right\tCtrl+Numpad 6",   ID_PANSCAN_MOVERIGHT
-            MENUITEM "Move Left\tCtrl+Numpad 4",    ID_PANSCAN_MOVELEFT
-            MENUITEM "Move Up\tCtrl+Numpad 8",      ID_PANSCAN_MOVEUP
-            MENUITEM "Move Down\tCtrl+Numpad 2",    ID_PANSCAN_MOVEDOWN
-            MENUITEM "Center\tCtrl+Numpad 5",       ID_PANSCAN_CENTER
-            MENUITEM SEPARATOR
-            MENUITEM "Reset\tNumpad 5",             ID_VIEW_RESET
-        END
-        POPUP "界面缩放(&Z)"
-        BEGIN
-            MENUITEM "&50%\tAlt+1",                 ID_VIEW_ZOOM_50
-            MENUITEM "&100%\tAlt+2",                ID_VIEW_ZOOM_100
-            MENUITEM "&200%\tAlt+3",                ID_VIEW_ZOOM_200
-            MENUITEM "自动缩放\tAlt+4",                 ID_32794
-        END
-        MENUITEM SEPARATOR
         MENUITEM "全屏幕(&l)",                     ID_VIEW_FULLSCREEN
         MENUITEM SEPARATOR
-        POPUP "DVD导航(&N)"
+        POPUP "更多..."
         BEGIN
-            MENUITEM "上一段(&P)\t上一页",                ID_NAVIGATE_SKIPBACK
-            MENUITEM "下一段(&N)\t下一页",                ID_NAVIGATE_SKIPFORWARD
-            MENUITEM "跳至(&J)...",                   ID_DVD32789
+            MENUITEM "滤镜(Filters)",                 ID__FILTERS
+            MENUITEM "特效(Shaders)",                 ID__SHADERS
             MENUITEM SEPARATOR
-            MENUITEM "声轨选择(&u)",                    ID_DVD32790
-            MENUITEM "字幕语言(&b)",                    ID_DVD32791
-            MENUITEM "视角切换(&l)",                    ID_DVD32792
-            MENUITEM SEPARATOR
-            MENUITEM "标题选单(&T)",                    ID_NAVIGATE_TITLEMENU
-            MENUITEM "主菜单(&R)",                     ID_NAVIGATE_ROOTMENU
-            MENUITEM "字幕选单(&S)",                    ID_NAVIGATE_SUBPICTUREMENU
-            MENUITEM "音频选单(&A)",                    ID_NAVIGATE_AUDIOMENU
-            MENUITEM "视角选单(&g)",                    ID_NAVIGATE_ANGLEMENU
-            MENUITEM "章节选单(&C)",                    ID_NAVIGATE_CHAPTERMENU
-        END
-        POPUP "界面(&e)"
-        BEGIN
-            POPUP "前端显示"
+            POPUP "视频尺寸(&V)"
             BEGIN
-                MENUITEM "从不",                          ID_ONTOP_NEVER
-                MENUITEM "总在最前",                        ID_ONTOP_ALWAYS
-                MENUITEM "仅播放时",                        ID_ONTOP_WHILEPLAYING
+                MENUITEM "50% (&H)",                    ID_VIEW_VF_HALF
+                MENUITEM "100% (&N)",                   ID_VIEW_VF_NORMAL
+                MENUITEM "200% (&D)",                   ID_VIEW_VF_DOUBLE
+                MENUITEM "铺满播放窗口(&S)",                  ID_VIEW_VF_STRETCH
+                MENUITEM "标准画面(&I)",                    ID_VIEW_VF_FROMINSIDE
+                MENUITEM "智能去黑边(&O)",                   ID_VIEW_VF_FROMOUTSIDE
+                MENUITEM SEPARATOR
+                MENUITEM "保持画面比例(&K)",                  ID_VIEW_VF_KEEPASPECTRATIO
+                POPUP "强制画面比例"
+                BEGIN
+                    MENUITEM "默认",                          ID_ASPECTRATIO_SOURCE
+                    MENUITEM "4:3",                         ID_ASPECTRATIO_4_3
+                    MENUITEM "5:4",                         ID_ASPECTRATIO_5_4
+                    MENUITEM "16:9",                        ID_ASPECTRATIO_16_9
+                END
+                MENUITEM "智能显示器校正",                     ID_VIEW_VF_COMPMONDESKARDIFF
+            END
+            POPUP "画面微调(&c)"
+            BEGIN
+                MENUITEM "Increase Size\tNumpad 9",     ID_VIEW_INCSIZE
+                MENUITEM "Decrease Size\tNumpad 1",     ID_VIEW_DECSIZE
+                MENUITEM "Increase Width\tNumpad 6",    ID_VIEW_INCWIDTH
+                MENUITEM "Decrease Width\tNumpad 4",    ID_VIEW_DECWIDTH
+                MENUITEM "Increase Height\tNumpad 8",   ID_VIEW_INCHEIGHT
+                MENUITEM "Decrease Height\tNumpad 2",   ID_VIEW_DECHEIGHT
+                MENUITEM SEPARATOR
+                MENUITEM "Move Right\tCtrl+Numpad 6",   ID_PANSCAN_MOVERIGHT
+                MENUITEM "Move Left\tCtrl+Numpad 4",    ID_PANSCAN_MOVELEFT
+                MENUITEM "Move Up\tCtrl+Numpad 8",      ID_PANSCAN_MOVEUP
+                MENUITEM "Move Down\tCtrl+Numpad 2",    ID_PANSCAN_MOVEDOWN
+                MENUITEM "Center\tCtrl+Numpad 5",       ID_PANSCAN_CENTER
+                MENUITEM SEPARATOR
+                MENUITEM "Reset\tNumpad 5",             ID_VIEW_RESET
+            END
+            POPUP "界面缩放(&Z)"
+            BEGIN
+                MENUITEM "&50%\tAlt+1",                 ID_VIEW_ZOOM_50
+                MENUITEM "&100%\tAlt+2",                ID_VIEW_ZOOM_100
+                MENUITEM "&200%\tAlt+3",                ID_VIEW_ZOOM_200
+                MENUITEM "自动缩放\tAlt+4",                 ID_32794
             END
             MENUITEM SEPARATOR
-            POPUP "预设界面..."
+            POPUP "DVD导航(&N)"
             BEGIN
-                MENUITEM "小巧",                          ID_VIEW_PRESETS_MINIMAL
-                MENUITEM "精简",                          ID_VIEW_PRESETS_COMPACT
-                MENUITEM "标准",                          ID_VIEW_PRESETS_NORMAL
+                MENUITEM "上一段(&P)\t上一页",                ID_NAVIGATE_SKIPBACK
+                MENUITEM "下一段(&N)\t下一页",                ID_NAVIGATE_SKIPFORWARD
+                MENUITEM "跳至(&J)...",                   ID_DVD32789
+                MENUITEM SEPARATOR
+                MENUITEM "声轨选择(&u)",                    ID_DVD32790
+                MENUITEM "字幕语言(&b)",                    ID_DVD32791
+                MENUITEM "视角切换(&l)",                    ID_DVD32792
+                MENUITEM SEPARATOR
+                MENUITEM "标题选单(&T)",                    ID_NAVIGATE_TITLEMENU
+                MENUITEM "主菜单(&R)",                     ID_NAVIGATE_ROOTMENU
+                MENUITEM "字幕选单(&S)",                    ID_NAVIGATE_SUBPICTUREMENU
+                MENUITEM "音频选单(&A)",                    ID_NAVIGATE_AUDIOMENU
+                MENUITEM "视角选单(&g)",                    ID_NAVIGATE_ANGLEMENU
+                MENUITEM "章节选单(&C)",                    ID_NAVIGATE_CHAPTERMENU
             END
-            MENUITEM "显示标题和菜单(&M)\tCtrl+0",         ID_VIEW_CAPTIONMENU
-            MENUITEM "时间栏(&S)\tCtrl+1",             ID_VIEW_SEEKER
-            MENUITEM "显示控制按钮(&r)\tCtrl+2",          ID_VIEW_CONTROLS
-            MENUITEM "显示视频信息(&I)\tCtrl+3",          ID_VIEW_INFORMATION
-            MENUITEM "显示播放信息(&t)\tCtrl+4",          ID_VIEW_STATISTICS
-            MENUITEM "显示状态栏(&a)\tCtrl+5",           ID_VIEW_STATUS
-            MENUITEM "字幕调整\tCtrl+6",                ID_VIEW_SUBRESYNC
-            MENUITEM "显示播放列表\tCtrl+7",              ID_VIEW_PLAYLIST
-            MENUITEM "视频捕捉控制面板\tCtrl+8",            ID_VIEW_CAPTURE
-            MENUITEM "特效(Shader)编辑器\tCtrl+9",       ID_VIEW_SHADEREDITOR
-        END
-        MENUITEM SEPARATOR
-        MENUITEM "属性(&r)",                      ID_FILE_PROPERTIES
-        MENUITEM "收藏夹(&F)",                     ID__FAVORITES
-        MENUITEM SEPARATOR
-        MENUITEM "播放/暂停(&P)",                   ID_PLAY_PLAYPAUSE
-        MENUITEM "停止播放(&S)",                    ID_PLAY_STOP
-        MENUITEM SEPARATOR
-        POPUP "播放结束后"
-        BEGIN
-            MENUITEM "退出视频",                        ID_AFTERPLAYBACK_CLOSE
-            MENUITEM "进入待机",                        ID_AFTERPLAYBACK_STANDBY
-            MENUITEM "进入休眠",                        ID_AFTERPLAYBACK_HIBERNATE
-            MENUITEM "关机",                          ID_AFTERPLAYBACK_SHUTDOWN
-            MENUITEM "注销当前用户",                      ID_AFTERPLAYBACK_LOGOFF
+            POPUP "界面(&e)"
+            BEGIN
+                POPUP "前端显示"
+                BEGIN
+                    MENUITEM "从不",                          ID_ONTOP_NEVER
+                    MENUITEM "总在最前",                        ID_ONTOP_ALWAYS
+                    MENUITEM "仅播放时",                        ID_ONTOP_WHILEPLAYING
+                END
+                MENUITEM SEPARATOR
+                POPUP "预设界面..."
+                BEGIN
+                    MENUITEM "小巧",                          ID_VIEW_PRESETS_MINIMAL
+                    MENUITEM "精简",                          ID_VIEW_PRESETS_COMPACT
+                    MENUITEM "标准",                          ID_VIEW_PRESETS_NORMAL
+                END
+                MENUITEM "显示标题和菜单(&M)\tCtrl+0",         ID_VIEW_CAPTIONMENU
+                MENUITEM "时间栏(&S)\tCtrl+1",             ID_VIEW_SEEKER
+                MENUITEM "显示控制按钮(&r)\tCtrl+2",          ID_VIEW_CONTROLS
+                MENUITEM "显示视频信息(&I)\tCtrl+3",          ID_VIEW_INFORMATION
+                MENUITEM "显示播放信息(&t)\tCtrl+4",          ID_VIEW_STATISTICS
+                MENUITEM "显示状态栏(&a)\tCtrl+5",           ID_VIEW_STATUS
+                MENUITEM "字幕调整\tCtrl+6",                ID_VIEW_SUBRESYNC
+                MENUITEM "显示播放列表\tCtrl+7",              ID_VIEW_PLAYLIST
+                MENUITEM "视频捕捉控制面板\tCtrl+8",            ID_VIEW_CAPTURE
+                MENUITEM "特效(Shader)编辑器\tCtrl+9",       ID_VIEW_SHADEREDITOR
+            END
             MENUITEM SEPARATOR
-            MENUITEM "什么都不做",                       ID_AFTERPLAYBACK_DONOTHING
+            MENUITEM "属性(&r)",                      ID_FILE_PROPERTIES
+            MENUITEM "收藏夹(&F)",                     ID__FAVORITES
+            MENUITEM SEPARATOR
+            MENUITEM "播放/暂停(&P)",                   ID_PLAY_PLAYPAUSE
+            MENUITEM "停止播放(&S)",                    ID_PLAY_STOP
+            MENUITEM SEPARATOR
+            POPUP "播放结束后"
+            BEGIN
+                MENUITEM "退出视频",                        ID_AFTERPLAYBACK_CLOSE
+                MENUITEM "进入待机",                        ID_AFTERPLAYBACK_STANDBY
+                MENUITEM "进入休眠",                        ID_AFTERPLAYBACK_HIBERNATE
+                MENUITEM "关机",                          ID_AFTERPLAYBACK_SHUTDOWN
+                MENUITEM "注销当前用户",                      ID_AFTERPLAYBACK_LOGOFF
+                MENUITEM SEPARATOR
+                MENUITEM "什么都不做",                       ID_AFTERPLAYBACK_DONOTHING
+            END
+            POPUP "音量(&u)"
+            BEGIN
+                MENUITEM "提高音量(&U)\t↑",                 ID_VOLUME_UP
+                MENUITEM "降低音量(&D)\t↓",                 ID_VOLUME_DOWN
+                MENUITEM "静音(&M)\tCtrl+M",              ID_VOLUME_MUTE
+            END
+            MENUITEM "选项(&O)...",                   ID_VIEW_OPTIONS
+            MENUITEM "高级设置(&A)...",                 ID_ADV_OPTIONS
         END
-        POPUP "音量(&u)"
-        BEGIN
-            MENUITEM "提高音量(&U)\t↑",                 ID_VOLUME_UP
-            MENUITEM "降低音量(&D)\t↓",                 ID_VOLUME_DOWN
-            MENUITEM "静音(&M)\tCtrl+M",              ID_VOLUME_MUTE
-        END
-        MENUITEM "选项(&O)...",                   ID_VIEW_OPTIONS
-        MENUITEM "高级设置(&A)...",                 ID_ADV_OPTIONS
     END
 END
 
@@ -2033,10 +2039,14 @@ BEGIN
     END
     POPUP "帮助(&H)"
     BEGIN
+        MENUITEM "检查更新...",                     ID_MANUALCHECKUPDATE
+        MENUITEM SEPARATOR
         MENUITEM "主页",                          ID_HELP_HOMEPAGE
+        MENUITEM "捐助开发",                        ID_DONATE
+        MENUITEM "参与开发",                        ID_JOINTEAM
+        MENUITEM SEPARATOR
         MENUITEM "使用说明",                        ID_HELP_DOCUMENTATION
         MENUITEM "命令行用法",                       ID_HELP_SHOWCOMMANDLINESWITCHES
-        MENUITEM "检查更新...",                     ID_MANUALCHECKUPDATE
         MENUITEM SEPARATOR
         MENUITEM "关于(&A)...",                   ID_HELP_ABOUT
     END

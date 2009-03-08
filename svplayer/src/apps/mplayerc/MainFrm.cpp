@@ -185,7 +185,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_MESSAGE(WM_XBUTTONDBLCLK, OnXButtonDblClk)
 	ON_WM_MOUSEWHEEL()
 	ON_WM_MOUSEMOVE()
-
 	ON_WM_NCHITTEST()
 
 	ON_WM_HSCROLL()
@@ -387,9 +386,13 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_MANUALCHECKUPDATE, &CMainFrame::OnManualcheckupdate)
 	ON_COMMAND(ID_SVPSUB_MENUENABLE, &CMainFrame::OnSvpsubMenuenable)
 	ON_UPDATE_COMMAND_UI(ID_SVPSUB_MENUENABLE, &CMainFrame::OnUpdateSvpsubMenuenable)
+	ON_COMMAND_RANGE(IDS_AUDIOCHANNALMAPNORMAL,IDS_AUDIOCHANNALMAPEND , &CMainFrame::OnAudioChannalMapMenu)
+	ON_UPDATE_COMMAND_UI_RANGE(IDS_AUDIOCHANNALMAPNORMAL, IDS_AUDIOCHANNALMAPEND, &CMainFrame::OnUpdateChannalMapMenu)
 	ON_COMMAND(ID_VISITBBS, &CMainFrame::OnVisitbbs)
 	ON_COMMAND(ID_SENDEMAIL, &CMainFrame::OnSendemail)
 	ON_COMMAND(ID_VISITCONTACTINFO, &CMainFrame::OnVisitcontactinfo)
+	ON_COMMAND(ID_DONATE, &CMainFrame::OnDonate)
+	ON_COMMAND(ID_JOINTEAM, &CMainFrame::OnJointeam)
 	END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -398,7 +401,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 #pragma warning(disable : 4355)
 
 static bool s_fLDown = false;
-
+static int s_mDragFuc = 0;
+static bool s_mDragFucOn = false;
 CMainFrame::CMainFrame() : 
 	m_dwRegister(0),
 	m_iMediaLoadState(MLS_CLOSED),
@@ -425,7 +429,8 @@ CMainFrame::CMainFrame() :
 	m_fTrayIcon(false),
 	m_iSubtitleSel2(-1),
 	m_bSubUploading(false),
-	m_bSubDownloading(false)
+	m_bSubDownloading(false),
+	m_iAudioChannelMaping(0)
 {
 }
 
@@ -2218,12 +2223,22 @@ void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	SetFocus();
 
+	m_pLastClickPoint = point;
+	CRect rVideo = m_wndView.GetVideoRect();
+	CPoint p = point - rVideo.TopLeft();
+
+	int xPercent = 0, yPercent = 0;
+	if(rVideo.Width()){
+		xPercent = p.x * 100 / rVideo.Width();
+	}
+	if(rVideo.Height()){
+		yPercent = p.y * 100 / rVideo.Height();
+	}
 	bool fClicked = false;
 
 	if(m_iPlaybackMode == PM_DVD)
 	{
-		CPoint p = point - m_wndView.GetVideoRect().TopLeft();
-
+		
 		if(SUCCEEDED(pDVDC->ActivateAtPosition(p))
 		|| m_iDVDDomain == DVD_DOMAIN_VideoManagerMenu 
 		|| m_iDVDDomain == DVD_DOMAIN_VideoTitleSetMenu)
@@ -2239,15 +2254,22 @@ void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 			if(s.wmcmds.GetNext(pos).mouse == wmcmd::LDOWN)
 				fLeftMouseBtnUnassigned = false;
 
-		if(!m_fFullScreen && (IsCaptionMenuHidden() || fLeftMouseBtnUnassigned))
+		if(!m_fFullScreen && ( (IsCaptionMenuHidden() || (xPercent < 25 && yPercent < 25) ) || fLeftMouseBtnUnassigned))
 		{
 			PostMessage(WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM(point.x, point.y));
 		}
 		else
 		{
 			s_fLDown = true;
+			if(xPercent > 40  && xPercent < 60 && yPercent > 40  && yPercent < 60 ){ //画面中心
+				//移动画面
+				s_mDragFuc = 1;
+			}else if(xPercent > 65 && yPercent < 65){ // 画面右上角
+				//缩放画面
+				s_mDragFuc = 2;
+			}
 			//if(OnButton(wmcmd::LDOWN, nFlags, point))
-			SetTimer(TIMER_MOUSELWOWN, 300, NULL);
+			//SetTimer(TIMER_MOUSELWOWN, 300, NULL);
 			return;
 		}
 	}
@@ -2257,17 +2279,122 @@ void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 
 void CMainFrame::OnLButtonUp(UINT nFlags, CPoint point)
 {
+	int iDistance = sqrt( pow( (double)abs(point.x - m_pLastClickPoint.x) , 2)  + pow( (double)abs( point.y - m_pLastClickPoint.y ) , 2) );
+
+	if( s_fLDown && iDistance < 30){
+		SetTimer(TIMER_MOUSELWOWN, 300, NULL);
+	}
+	s_mDragFuc = 0;
+	s_mDragFucOn = false;
+
 	if(!OnButton(wmcmd::LUP, nFlags, point))
 		__super::OnLButtonUp(nFlags, point);
 }
 
+void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
+{
+	CRect CVideoRect = m_wndView.GetVideoRect();
+	if(m_iPlaybackMode == PM_DVD)
+	{
+		CPoint vp = point - CVideoRect.TopLeft();
+		pDVDC->SelectAtPosition(vp);
+	}
+
+	CSize diff = m_lastMouseMove - point;
+
+	int iDistance = sqrt( pow( (double)abs(point.x - m_pLastClickPoint.x) , 2)  + pow( (double)abs( point.y - m_pLastClickPoint.y ) , 2) );
+	if( ( iDistance > 30 || s_mDragFucOn) && s_mDragFuc){
+		if(s_mDragFuc == 1){ //移动画面
+			m_PosX = (double)(point.x - m_pLastClickPoint.x) / CVideoRect.Width() + 0.5;
+			m_PosY = (double)(point.y - m_pLastClickPoint.y)/ CVideoRect.Height() + 0.5;
+		}else if(s_mDragFuc == 2){//缩放画面
+			m_ZoomX = (double)(point.x - m_pLastClickPoint.x) / CVideoRect.Width() + 1;
+			m_ZoomY = (double)(m_pLastClickPoint.y - point.y ) / CVideoRect.Height() + 1;
+		}
+		s_mDragFucOn = true;
+		s_fLDown = false;
+		MoveVideoWindow(true);
+	}
+
+	if(m_fFullScreen && (abs(diff.cx)+abs(diff.cy)) >= 1)
+	{
+		int nTimeOut = AfxGetAppSettings().nShowBarsWhenFullScreenTimeOut;
+
+		if(nTimeOut < 0)
+		{
+			m_fHideCursor = false;
+			if(AfxGetAppSettings().fShowBarsWhenFullScreen)
+				ShowControls(AfxGetAppSettings().nCS);
+
+			KillTimer(TIMER_FULLSCREENCONTROLBARHIDER);
+			SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
+		}
+		else if(nTimeOut == 0)
+		{
+			CRect r;
+			GetClientRect(r);
+			r.top = r.bottom;
+
+			POSITION pos = m_bars.GetHeadPosition();
+			for(int i = 1; pos; i <<= 1)
+			{
+				CControlBar* pNext = m_bars.GetNext(pos);
+				CSize s = pNext->CalcFixedLayout(FALSE, TRUE);
+				if(AfxGetAppSettings().nCS&i) r.top -= s.cy;
+			}
+
+			// HACK: the controls would cover the menu too early hiding some buttons
+			if(m_iPlaybackMode == PM_DVD
+				&& (m_iDVDDomain == DVD_DOMAIN_VideoManagerMenu
+				|| m_iDVDDomain == DVD_DOMAIN_VideoTitleSetMenu))
+				r.top = r.bottom - 10;
+
+			m_fHideCursor = false;
+
+			if(r.PtInRect(point))
+			{
+				if(AfxGetAppSettings().fShowBarsWhenFullScreen)
+					ShowControls(AfxGetAppSettings().nCS);
+			}
+			else{
+				if(AfxGetAppSettings().fShowBarsWhenFullScreen)
+					ShowControls(CS_NONE, false);
+			}
+			HMENU hMenu;
+			if(point.y < 10 && point.x < 690){
+				hMenu = m_hMenuDefault;
+			}else{
+				hMenu = NULL;
+			}
+			::SetMenu(m_hWnd, hMenu);
+
+			SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
+		}
+		else
+		{
+			m_fHideCursor = false;
+			if(AfxGetAppSettings().fShowBarsWhenFullScreen)
+				ShowControls(AfxGetAppSettings().nCS);
+
+			SetTimer(TIMER_FULLSCREENCONTROLBARHIDER, nTimeOut*1000, NULL);
+			SetTimer(TIMER_FULLSCREENMOUSEHIDER, max(nTimeOut*1000, 2000), NULL);
+		}
+	}
+
+	m_lastMouseMove = point;
+
+	__super::OnMouseMove(nFlags, point);
+}
 void CMainFrame::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
-if(s_fLDown)
-{
-	SendMessage(WM_LBUTTONDOWN, nFlags, MAKELPARAM(point.x, point.y));
-s_fLDown = false;
-}
+	if(s_fLDown)
+	{
+		SendMessage(WM_LBUTTONDOWN, nFlags, MAKELPARAM(point.x, point.y));
+		s_fLDown = false;
+	}
+	s_mDragFuc = 0;
+	s_mDragFucOn = false;
+
 	if(!OnButton(wmcmd::LDBLCLK, nFlags, point))
 		__super::OnLButtonDblClk(nFlags, point);
 }
@@ -2346,85 +2473,6 @@ BOOL CMainFrame::OnMouseWheel(UINT nFlags, short zDelta, CPoint point)
 	return fRet;
 }
 
-void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
-{
-	if(m_iPlaybackMode == PM_DVD)
-	{
-		CPoint vp = point - m_wndView.GetVideoRect().TopLeft();
-		pDVDC->SelectAtPosition(vp);
-	}
-
-	CSize diff = m_lastMouseMove - point;
-
-	if(m_fFullScreen && (abs(diff.cx)+abs(diff.cy)) >= 1)
-	{
-		int nTimeOut = AfxGetAppSettings().nShowBarsWhenFullScreenTimeOut;
-
-		if(nTimeOut < 0)
-		{
-			m_fHideCursor = false;
-			if(AfxGetAppSettings().fShowBarsWhenFullScreen)
-				ShowControls(AfxGetAppSettings().nCS);
-
-			KillTimer(TIMER_FULLSCREENCONTROLBARHIDER);
-			SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
-		}
-		else if(nTimeOut == 0)
-		{
-			CRect r;
-			GetClientRect(r);
-			r.top = r.bottom;
-
-			POSITION pos = m_bars.GetHeadPosition();
-			for(int i = 1; pos; i <<= 1)
-			{
-				CControlBar* pNext = m_bars.GetNext(pos);
-				CSize s = pNext->CalcFixedLayout(FALSE, TRUE);
-				if(AfxGetAppSettings().nCS&i) r.top -= s.cy;
-			}
-
-			// HACK: the controls would cover the menu too early hiding some buttons
-			if(m_iPlaybackMode == PM_DVD
-			&& (m_iDVDDomain == DVD_DOMAIN_VideoManagerMenu
-			|| m_iDVDDomain == DVD_DOMAIN_VideoTitleSetMenu))
-				r.top = r.bottom - 10;
-
-			m_fHideCursor = false;
-
-			if(r.PtInRect(point))
-			{
-				if(AfxGetAppSettings().fShowBarsWhenFullScreen)
-					ShowControls(AfxGetAppSettings().nCS);
-			}
-			else{
-				if(AfxGetAppSettings().fShowBarsWhenFullScreen)
-					ShowControls(CS_NONE, false);
-			}
-			HMENU hMenu;
-			if(point.y < 10 && point.x < 690){
-				hMenu = m_hMenuDefault;
-			}else{
-				hMenu = NULL;
-			}
-			::SetMenu(m_hWnd, hMenu);
-
-			SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
-		}
-		else
-		{
-			m_fHideCursor = false;
-			if(AfxGetAppSettings().fShowBarsWhenFullScreen)
-				ShowControls(AfxGetAppSettings().nCS);
-
-			SetTimer(TIMER_FULLSCREENCONTROLBARHIDER, nTimeOut*1000, NULL);
-			SetTimer(TIMER_FULLSCREENMOUSEHIDER, max(nTimeOut*1000, 2000), NULL);
-		}
-	}
-
-	m_lastMouseMove = point;
-
-	__super::OnMouseMove(nFlags, point);
-}
 
 LRESULT CMainFrame::OnNcHitTest(CPoint point)
 {
@@ -2503,7 +2551,7 @@ void CMainFrame::OnInitMenuPopup(CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu)
 		transl[_T("DVD导航")] = IDS_NAVIGATE_POPUP;
 		transl[_T("打开碟片")] = IDS_OPENCDROM_POPUP;
 		transl[_T("滤镜(Filters)")] = IDS_FILTERS_POPUP;
-		transl[_T("音频")] = IDS_AUDIO_POPUP;
+		transl[_T("音频与声道切换")] = IDS_AUDIO_POPUP;
 		transl[_T("字幕")] = IDS_SUBTITLES_POPUP;
 		transl[_T("音轨选择")] = IDS_AUDIOLANGUAGE_POPUP;
 		transl[_T("字幕语言")] = IDS_SUBTITLELANGUAGE_POPUP;
@@ -7030,7 +7078,7 @@ void CMainFrame::MoveVideoWindow(bool fShowStats)
 
 		wr |= CRect(0,0,0,0);
 		vr |= CRect(0,0,0,0);
-
+		
 		if(m_pCAP)
 		{
 			m_pCAP->SetPosition(wr, vr);
@@ -9047,6 +9095,12 @@ void CMainFrame::SetupAudioSwitcherSubMenu()
 
 		if(pSS)
 		{
+			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPNORMAL, _T("系统默认"));
+			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPLEFT,  _T("只播放左声道"));
+			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPRIGHT,  _T("只播放右声道"));
+			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPCENTER,  _T("只播放中置声道"));
+			pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED);
+
 			DWORD cStreams = 0;
 			if(SUCCEEDED(pSS->Count(&cStreams)) && cStreams > 0)
 			{
@@ -9069,6 +9123,69 @@ void CMainFrame::SetupAudioSwitcherSubMenu()
 			}
 		}
 	}
+}
+void CMainFrame::OnAudioChannalMapMenu(UINT nID){
+	CComQIPtr<IAudioSwitcherFilter>  pSS = FindFilter(__uuidof(CAudioSwitcherFilter), pGB);
+	if(!pSS) pSS = FindFilter(L"{D3CD7858-971A-4838-ACEC-40CA5D529DC8}", pGB);
+
+	if(pSS)
+	{
+		m_iAudioChannelMaping = nID - IDS_AUDIOCHANNALMAPNORMAL;
+		DWORD pSpeakerToChannelMap[18][18]; //Meaning [Total Channel Number] [Speaker] = 1 << Channel
+		memset(pSpeakerToChannelMap, 0, sizeof(pSpeakerToChannelMap));
+		BOOL bCustomChannelMapping = FALSE;
+		UINT iMapedChannel = 0;
+		switch(m_iAudioChannelMaping ){
+			case 0:
+				bCustomChannelMapping = FALSE;
+				break;
+			case 1:
+				bCustomChannelMapping = TRUE;
+				iMapedChannel = 0;
+				break;
+			case 2:		
+				iMapedChannel = 1;
+				bCustomChannelMapping = TRUE;
+			default:
+				break;
+		}
+		if(bCustomChannelMapping){
+			int iCurChs = pSS->GetNumberOfInputChannels() - 1;
+			for(int i = 0; i < 18; i++){
+				pSpeakerToChannelMap[iCurChs][i] = 1<<iMapedChannel;
+			}
+		}
+		if(pSS)
+		{
+			pSS->SetSpeakerConfig(bCustomChannelMapping, pSpeakerToChannelMap);
+		}
+	}
+
+}
+void CMainFrame::OnUpdateChannalMapMenu(CCmdUI *pCmdUI){
+	//pCmdUI->m_nID
+	int iAudioChannelMaping  = (pCmdUI->m_nID - IDS_AUDIOCHANNALMAPNORMAL);
+	if( m_iAudioChannelMaping == iAudioChannelMaping ){
+		pCmdUI->SetCheck(TRUE);
+	}else{
+		pCmdUI->SetCheck(FALSE);
+	}
+	if (iAudioChannelMaping > 1){
+		CComQIPtr<IAudioSwitcherFilter>  pSS = FindFilter(__uuidof(CAudioSwitcherFilter), pGB);
+		if(!pSS) pSS = FindFilter(L"{D3CD7858-971A-4838-ACEC-40CA5D529DC8}", pGB);
+		if(pSS)
+		{
+			int iCurChs = pSS->GetNumberOfInputChannels();
+			if( iCurChs  < iAudioChannelMaping ){
+				pCmdUI->Enable(FALSE);
+			}else{
+				pCmdUI->Enable(TRUE);
+			}
+		}
+	}else{
+		pCmdUI->Enable(TRUE);
+	}
+
 }
 
 void CMainFrame::SetupSubtitlesSubMenu(int subid)
@@ -11144,6 +11261,7 @@ void CMainFrame::OnUpdateSvpsubMenuenable(CCmdUI *pCmdUI)
 	pCmdUI->SetCheck(!!(AfxGetAppSettings().autoDownloadSVPSub ));
 }
 
+
 void CMainFrame::OnVisitbbs()
 {
 	//Visit BBS
@@ -11170,6 +11288,17 @@ void CMainFrame::OnSendemail()
 
 void CMainFrame::OnVisitcontactinfo()
 {
-	// TODO: Add your command handler code here
+	
 	ShellExecute(m_hWnd, _T("open"), _T("http://shooter.cn/svplayer/contact.html"), NULL, NULL, SW_SHOWDEFAULT);
+}
+
+void CMainFrame::OnDonate()
+{
+	
+	ShellExecute(m_hWnd, _T("open"), _T("http://shooter.cn/donate/"), NULL, NULL, SW_SHOWDEFAULT);
+}
+
+void CMainFrame::OnJointeam()
+{
+	ShellExecute(m_hWnd, _T("open"), _T("http://shooter.cn/svplayer/join.html"), NULL, NULL, SW_SHOWDEFAULT);
 }

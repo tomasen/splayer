@@ -2304,14 +2304,17 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 
 	int iDistance = sqrt( pow( (double)abs(point.x - m_pLastClickPoint.x) , 2)  + pow( (double)abs( point.y - m_pLastClickPoint.y ) , 2) );
 	if( ( iDistance > 30 || s_mDragFucOn) && s_mDragFuc){
-		if(s_mDragFuc == 1){ //移动画面
-			m_PosX = (double)(point.x - m_pLastClickPoint.x) / CVideoRect.Width() + 0.5;
-			m_PosY = (double)(point.y - m_pLastClickPoint.y)/ CVideoRect.Height() + 0.5;
-		}else if(s_mDragFuc == 2){//缩放画面
-			m_ZoomX = (double)(point.x - m_pLastClickPoint.x) / CVideoRect.Width() + 1;
-			m_ZoomY = (double)(m_pLastClickPoint.y - point.y ) / CVideoRect.Height() + 1;
+		if(!s_mDragFucOn){
+			m_pDragFuncStartPoint = m_pLastClickPoint;
+			s_mDragFucOn = true;
 		}
-		s_mDragFucOn = true;
+		if(s_mDragFuc == 1){ //移动画面
+			m_PosX = (double)(point.x - m_pDragFuncStartPoint.x) / CVideoRect.Width() + 0.5;
+			m_PosY = (double)(point.y - m_pDragFuncStartPoint.y)/ CVideoRect.Height() + 0.5;
+		}else if(s_mDragFuc == 2){//缩放画面
+			m_ZoomX = (double)(point.x - m_pDragFuncStartPoint.x) / CVideoRect.Width() + 1;
+			m_ZoomY = (double)(m_pDragFuncStartPoint.y - point.y ) / CVideoRect.Height() + 1;
+		}
 		s_fLDown = false;
 		MoveVideoWindow(true);
 	}
@@ -4487,7 +4490,7 @@ void CMainFrame::OnFileISDBUpload()
 }
 void CMainFrame::OnManualcheckupdate()
 {
-	SVP_RealCheckUpdaterExe();
+	SVP_CheckUpdaterExe();
 }
 void CMainFrame::OnUpdateFileISDBUpload(CCmdUI *pCmdUI)
 {

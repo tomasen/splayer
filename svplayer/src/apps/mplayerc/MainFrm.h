@@ -51,6 +51,8 @@
 #include "..\..\..\include\IChapterInfo.h"
 #include "..\..\..\include\IKeyFrameInfo.h"
 #include "..\..\..\include\IBufferInfo.h"
+#include <D3d9.h>
+#include <Vmr9.h>
 
 #include "WebServer.h"
 
@@ -293,8 +295,11 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 private:
 	CString getCurPlayingSubfile(int * iSubDelayMS = NULL,int subid = 0 );
 	CPoint m_pLastClickPoint;
+	CPoint m_pDragFuncStartPoint;
 public:
 	// subtitles
+	CComPtr<IVMRMixerControl9>	m_pMC;
+
 	void SVPSubDownloadByVPath(CString szVPath, CAtlList<CString>* szaStatMsgs = NULL);
 	void SVP_UploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString szSubPath, int iDelayMS = 0, CAtlList<CString>* szaStatMsgs = NULL, CStringArray* szaPostTerms = NULL);
 	CAtlList<CString> m_statusmsgs;

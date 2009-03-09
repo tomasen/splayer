@@ -122,7 +122,7 @@ int CInPlaceEdit::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	SetFont(font);
 
 	SetWindowText(m_sInitText);
-	SetFocus();
+	//SetFocus();
 	SetSel(0, -1);
 	return 0;
 }
@@ -639,7 +639,7 @@ CListBox* CPlayerListCtrl::ShowInPlaceListBox(int nItem, int nCol, CAtlList<CStr
 BEGIN_MESSAGE_MAP(CPlayerListCtrl, CListCtrl)
 	ON_WM_VSCROLL()
 	ON_WM_HSCROLL()
-	ON_WM_MOUSEWHEEL()
+	//ON_WM_MOUSEWHEEL()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_TIMER()
 	ON_WM_LBUTTONDBLCLK()
@@ -654,10 +654,13 @@ BEGIN_MESSAGE_MAP(CPlayerListCtrl, CListCtrl)
 	ON_NOTIFY_EX(HDN_ITEMCHANGINGW, 0, OnHdnItemchanging)
 	ON_NOTIFY_EX_RANGE(TTN_NEEDTEXTW, 0, 0xFFFF, OnToolTipNotify)
 	ON_NOTIFY_EX_RANGE(TTN_NEEDTEXTA, 0, 0xFFFF, OnToolTipNotify)
+	ON_WM_SETFOCUS()
 END_MESSAGE_MAP()
 
 // CPlayerListCtrl message handlers
-
+void CPlayerListCtrl::OnSetFocus(CWnd* pOldWnd){
+	AfxGetApp()->GetMainWnd()->SetFocus();
+}
 void CPlayerListCtrl::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
 	if(GetFocus() != this) SetFocus();

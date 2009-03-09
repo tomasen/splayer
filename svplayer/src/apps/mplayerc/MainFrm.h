@@ -299,6 +299,7 @@ private:
 public:
 	// subtitles
 	CComPtr<IVMRMixerControl9>	m_pMC;
+	void		SetVMR9ColorControl(float Brightness, float Contrast, float Hue, float Saturation);
 
 	void SVPSubDownloadByVPath(CString szVPath, CAtlList<CString>* szaStatMsgs = NULL);
 	void SVP_UploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString szSubPath, int iDelayMS = 0, CAtlList<CString>* szaStatMsgs = NULL, CStringArray* szaPostTerms = NULL);
@@ -724,4 +725,6 @@ public:
 	afx_msg void OnVisitcontactinfo();
 	afx_msg void OnDonate();
 	afx_msg void OnJointeam();
+
+	afx_msg void OnColorControl(UINT nID);
 };

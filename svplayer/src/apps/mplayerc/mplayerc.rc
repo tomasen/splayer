@@ -699,7 +699,7 @@ BEGIN
     LTEXT           "* 将无法抓取或另存图片",IDC_STATIC,13,171,158,8
     LTEXT           "** 字幕必须使用",IDC_STATIC,13,181,104,8
     LTEXT           "*** 画面翻转和像素着色引擎(限DX9)必须",IDC_STATIC,13,190,195,8
-    CONTROL         "VMR9 mixer模式",IDC_DSVMR9LOADMIXER,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,113,112,73,10
+    CONTROL         "VMR9 mixer模式 (全局亮度调节必须)",IDC_DSVMR9LOADMIXER,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,113,112,220,10
     CONTROL         "YUV mixing模式",IDC_DSVMR9YUVMIXER,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,189,112,49,10
 END
 
@@ -2136,6 +2136,10 @@ BEGIN
     IDS_RS_BLOCKVSFILTER    "BlockVSFilter"
     IDS_RS_CHECKFILEASSCONSTARTUP "CheckFileAsscOnStartup"
     IDS_RS_ENABLESUBTITLES2 "EnableSubtitles2"
+	IDS_RS_COLOR_BRIGHTNESS "Color Brightness"
+    IDS_RS_COLOR_CONTRAST   "Color Contrast"
+    IDS_RS_COLOR_HUE        "Color Hue"
+    IDS_RS_COLOR_SATURATION "Color Saturation"
 END
 
 STRINGTABLE 

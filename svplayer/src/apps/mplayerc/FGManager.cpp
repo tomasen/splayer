@@ -724,6 +724,9 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 					if(CComQIPtr<IVMRAspectRatioControl9> pARC = pBF)
 						pARC->SetAspectRatioMode(VMR_ARMODE_NONE);
 
+					if(CComQIPtr<IVMRMixerControl9> pMC = pBF)
+						m_pUnks.AddTail (pMC);
+
 					return hr;
 				}
 			}

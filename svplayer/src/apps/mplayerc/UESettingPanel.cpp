@@ -92,6 +92,9 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_DHtml_CheckBox(pDX, _T("gpuacel"), m_sgi_gpuacel);
 	DDX_DHtml_CheckBox(pDX, _T("gpuacelcuda"), m_sgi_gpuacelcuda);
 
+	DDX_DHtml_CheckBox(pDX, _T("vmr9mixer"), m_sgi_uservmrmixer);
+	
+
 
 	DDX_DHtml_CheckBox(pDX, _T("normalize"), m_sgi_normalize);
 	DDX_DHtml_CheckBox(pDX, _T("downsample44k"), m_sgi_downsample44k);
@@ -189,6 +192,7 @@ BOOL CUESettingPanel::OnInitDialog()
 	m_sgi_startupcheckexts = s.szStartUPCheckExts;
 	m_sgi_chkautoresumeplay = s.autoResumePlay;
 	//Video Setting
+	m_sgi_uservmrmixer = s.fVMR9MixerMode;
 	if(s.iDSVideoRendererType == 6 && s.iRMVideoRendererType == 2 && s.iQTVideoRendererType == 2){
 		m_sgi_videorender = 0; //DX9
 	}else if(s.iDSVideoRendererType == 5 && s.iRMVideoRendererType == 1 && s.iQTVideoRendererType == 1){
@@ -313,6 +317,10 @@ void CUESettingPanel::ApplyAllSetting(){
 	s.fRememberZoomLevel = !!m_sgi_chkautozoom ;
 	//Video Setting
 	
+	s.fVMR9MixerMode = m_sgi_uservmrmixer ;
+	if(s.fVMR9MixerMode){
+		m_sgs_videorender = _T("DX9");
+	}
 	if(m_sgs_videorender == _T("DX9")){
 		s.iDSVideoRendererType = 6;
 		s.iRMVideoRendererType = 2;
@@ -324,6 +332,7 @@ void CUESettingPanel::ApplyAllSetting(){
 	}else{
 
 	}
+	
 	s.fVMRSyncFix = !!m_sgi_lockbackbuff;
 	s.useGPUAcel = !!m_sgi_gpuacel;
 	s.useGPUCUDA = !!m_sgi_gpuacelcuda;

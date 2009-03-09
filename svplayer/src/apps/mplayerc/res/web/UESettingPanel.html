@@ -146,6 +146,16 @@ UESAPI.prototype = {
 			}
 			break;
 		}
+	},
+	useDX9:function(usieit){
+	    var obs = this.fobj("videorender");
+	    if(obs){
+	        if(usieit){
+    	        obs.selectedIndex = 0;  
+	        } else {
+	            obs.selectedIndex = 1;
+	        }
+	    }
 	}
 };
 var ueAPI = new UESAPI();
@@ -196,10 +206,10 @@ function myInit(){
 
 </div>
 <div id="videosetting" class="hiddenarea">
-显示输出方式：<select id="videorender"><option value="DX9">DirectX 9</option>
+显示输出方式：<select id="videorender" ><option value="DX9" >DirectX 9</option>
 <option value="DX7">DirectX 7</option>
 <option value="ADV">使用自定义高级设置</option></select><br />
-
+<input type="checkbox" id="vmr9mixer" onclick="ueAPI.useDX9(this.checked);"  /><label for="vmr9mixer" title="启用播放器的亮度调节功能">启用内置亮度调节(需DX9)</label><br />
 <input type="checkbox" id="lockbackbuff" /><label for="lockbackbuff" title="解决运动画面中水平错位的问题">修正画面横向错位问题（Lock back-buffer）</label><br />
 <input type="checkbox" id="gpuacel" /><label for="gpuacel" title="优先使用GPU加速高清解码">优先使用GPU加速高清解码</label><br />
 <input type="checkbox" id="gpuacelcuda" /><label for="gpuacelcuda" title="优先使用NVIDIA的CUDA技术加速高清解码

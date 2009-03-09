@@ -1490,11 +1490,11 @@ if(CComQIPtr<IAMVideoAccelerator> pAMVA = pPin)
 			break;
 
 		AppSettings& s = AfxGetAppSettings();
-
 		if(s.fVMR9MixerMode)
 		{
 			if(FAILED(hr = pConfig->SetNumberOfStreams(1)))
 				break;
+
 
 			if(s.fVMR9MixerYUV && !AfxGetMyApp()->IsVista())
 			{

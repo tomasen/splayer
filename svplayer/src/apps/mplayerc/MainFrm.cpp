@@ -393,6 +393,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_VISITCONTACTINFO, &CMainFrame::OnVisitcontactinfo)
 	ON_COMMAND(ID_DONATE, &CMainFrame::OnDonate)
 	ON_COMMAND(ID_JOINTEAM, &CMainFrame::OnJointeam)
+	ON_COMMAND_RANGE(ID_BRIGHTINC, ID_BRIGHTDEC, OnColorControl )
 	END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -2305,7 +2306,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 	int iDistance = sqrt( pow( (double)abs(point.x - m_pLastClickPoint.x) , 2)  + pow( (double)abs( point.y - m_pLastClickPoint.y ) , 2) );
 	if( ( iDistance > 30 || s_mDragFucOn) && s_mDragFuc){
 		if(!s_mDragFucOn){
-			m_pDragFuncStartPoint = m_pLastClickPoint;
+			m_pDragFuncStartPoint = point;
 			s_mDragFucOn = true;
 		}
 		if(s_mDragFuc == 1){ //移动画面
@@ -8498,8 +8499,51 @@ void CMainFrame::OpenSetupWindowTitle(CString fn)
 	SetWindowText(title);
 }
 
+void CMainFrame::OnColorControl(UINT nID){
+	int act = nID - ID_BRIGHTINC;
+	if(m_pMC){
+		AppSettings& s = AfxGetAppSettings();
+		VMR9ProcAmpControlRange ClrRange;
+		ClrRange.dwProperty = ProcAmpControl9_Brightness;
+		ClrRange.dwSize = sizeof(VMR9ProcAmpControlRange);
+		m_pMC->GetProcAmpControlRange(0, &ClrRange);
+
+		if(act == 2){
+			s.dBrightness = ClrRange.DefaultValue;
+		}else if(act == 1){
+			s.dBrightness -= ClrRange.StepSize; 
+		}else{
+			s.dBrightness += ClrRange.StepSize; 
+		}
+		s.dBrightness = min( max(s.dBrightness, ClrRange.MinValue) , ClrRange.MaxValue);
+		SetVMR9ColorControl(s.dBrightness,1,1,1);
+	}
+	}
+void CMainFrame::SetVMR9ColorControl(float dBrightness, float dContrast, float dHue, float dSaturation)
+{
+	VMR9ProcAmpControl		ClrControl;
+
+	if(m_pMC ) // Fuck fVMR9MixerYUV && !AfxGetAppSettings().fVMR9MixerYUV
+	{
+		
+		ClrControl.dwSize		= sizeof(ClrControl);
+		ClrControl.dwFlags		= ProcAmpControl9_Mask;
+		ClrControl.Brightness	= dBrightness;
+		ClrControl.Contrast		= dContrast;
+		ClrControl.Hue			= 0;
+		ClrControl.Saturation	= 1;
+
+		m_pMC->SetProcAmpControl (0, &ClrControl);
+
+		CString szMsg;
+		szMsg.Format(_T("亮度: %f  对比度: %f "),dBrightness,dContrast);
+		SendStatusMessage( szMsg , 3000);
+	}
+}
 bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 {
+	AppSettings& s = AfxGetAppSettings();
+
 	if(m_iMediaLoadState != MLS_CLOSED && m_iMediaLoadState != MLS_LOADING)
 	{
 		ASSERT(0);
@@ -8572,7 +8616,11 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 		else throw _T("Can't open, invalid input parameters");
 
 		pGB->FindInterface(__uuidof(ISubPicAllocatorPresenter), (void**)&m_pCAP, TRUE);
-
+		pGB->FindInterface(__uuidof(IVMRMixerControl9),			(void**)&m_pMC,  TRUE);
+		if (m_pMC)
+		{
+			SetVMR9ColorControl(s.dBrightness, s.dContrast, s.dHue, s.dSaturation);
+		}
 		if(m_fOpeningAborted) throw aborted;
 
 		OpenCustomizeGraph();
@@ -9160,7 +9208,7 @@ void CMainFrame::OnAudioChannalMapMenu(UINT nID){
 		}
 		if(pSS)
 		{
-			pSS->SetSpeakerConfig(bCustomChannelMapping, pSpeakerToChannelMap);
+			pSS->SetSpeakerConfig(!!bCustomChannelMapping, pSpeakerToChannelMap);
 		}
 	}
 

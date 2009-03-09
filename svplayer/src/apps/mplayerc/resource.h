@@ -647,6 +647,10 @@
 #define IDS_RS_BLOCKVSFILTER            13146
 #define IDS_RS_CHECKFILEASSCONSTARTUP   13147
 #define IDS_RS_ENABLESUBTITLES2         13148
+#define IDS_RS_COLOR_BRIGHTNESS         13149
+#define IDS_RS_COLOR_CONTRAST           13150
+#define IDS_RS_COLOR_HUE                13151
+#define IDS_RS_COLOR_SATURATION         13152
 #define IDS_SRC_RADGT                   14000
 #define IDS_SRC_CDDA                    14001
 #define IDS_SRC_AVI                     14002
@@ -794,6 +798,8 @@
 #define IDS_RS_DXVAFILTERS              14214
 #define IDS_RS_FFMPEGFILTERS            14215
 #define IDS_SRC_FLAC                    14216
+
+
 #define IDD_DHTML_SETTING               20000
 #define IDR_DEFAULT1                    20006
 #define IDD_DEFAULT_PLAYER              20007
@@ -858,6 +864,8 @@
 #define ID_DONATE                       32812
 #define ID_JOINTEAM                     32813
 #define ID__32814                       32814
+#define ID_BRIGHTINC                     32815
+#define ID_BRIGHTDEC                     32816
 #define IDS_VOLUME_BOOST_INC            33129
 #define IDS_VOLUME_BOOST_DEC            33130
 #define IDS_VOLUME_BOOST_MIN            33131

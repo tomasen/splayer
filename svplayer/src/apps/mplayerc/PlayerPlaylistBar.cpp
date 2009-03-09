@@ -608,6 +608,7 @@ void CPlayerPlaylistBar::UpdateList()
 		m_list.SetItemText(i, COL_TIME, pli.GetLabel(1));
 		m_pl.GetNext(pos);
 	}
+	
 }
 
 void CPlayerPlaylistBar::EnsureVisible(POSITION pos)
@@ -858,10 +859,16 @@ BEGIN_MESSAGE_MAP(CPlayerPlaylistBar, CSizingControlBarG)
 	ON_WM_CONTEXTMENU()
 	ON_NOTIFY(LVN_ENDLABELEDIT, IDC_PLAYLIST, OnLvnEndlabeleditList)
 	ON_BN_CLICKED(IDC_BUTTONCLEARALL, OnButtonClearAll)
-
+	ON_WM_SETFOCUS()
 END_MESSAGE_MAP()
 
 
+void CPlayerPlaylistBar::OnSetFocus(CWnd* pOldWnd )
+{
+	//pOldWnd->SetFocus();
+	this->m_pMaindFrame->SetFocus();
+	
+}
 // CPlayerPlaylistBar message handlers
 void CPlayerPlaylistBar::OnButtonClearAll(){
 	Empty();

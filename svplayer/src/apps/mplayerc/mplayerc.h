@@ -466,6 +466,11 @@ public:
 		bool fNotifyMSN;
 		bool fNotifyGTSdll;
 
+		float			dBrightness;
+		float			dContrast;
+		float			dHue;
+		float			dSaturation;
+
 		bool fEnableAudioSwitcher;
 		bool fDownSampleTo441;
 		bool fAudioTimeShift;

@@ -8517,8 +8517,10 @@ void CMainFrame::OnColorControl(UINT nID){
 		}
 		s.dBrightness = min( max(s.dBrightness, ClrRange.MinValue) , ClrRange.MaxValue);
 		SetVMR9ColorControl(s.dBrightness,1,1,1);
+	}else{
+		SendStatusMessage(_T("您需要在选项面板中启用内置亮度\\色彩控制器") , 5000);
 	}
-	}
+}
 void CMainFrame::SetVMR9ColorControl(float dBrightness, float dContrast, float dHue, float dSaturation)
 {
 	VMR9ProcAmpControl		ClrControl;

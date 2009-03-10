@@ -2310,12 +2310,14 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 			s_mDragFucOn = true;
 		}
 		if(s_mDragFuc == 1){ //移动画面
-			m_PosX = (double)(point.x - m_pDragFuncStartPoint.x) / CVideoRect.Width() + 0.5;
-			m_PosY = (double)(point.y - m_pDragFuncStartPoint.y)/ CVideoRect.Height() + 0.5;
+			m_PosX += (double)(point.x - m_pDragFuncStartPoint.x) / CVideoRect.Width() ;
+			m_PosY += (double)(point.y - m_pDragFuncStartPoint.y)/ CVideoRect.Height() ;
 		}else if(s_mDragFuc == 2){//缩放画面
-			m_ZoomX = (double)(point.x - m_pDragFuncStartPoint.x) / CVideoRect.Width() + 1;
-			m_ZoomY = (double)(m_pDragFuncStartPoint.y - point.y ) / CVideoRect.Height() + 1;
+			m_ZoomX += (double)(point.x - m_pDragFuncStartPoint.x) / CVideoRect.Width() ;
+			m_ZoomY += (double)(m_pDragFuncStartPoint.y - point.y ) / CVideoRect.Height() ;
 		}
+		m_pDragFuncStartPoint = point;
+
 		s_fLDown = false;
 		MoveVideoWindow(true);
 	}
@@ -8727,8 +8729,8 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 				m_wndPlaylistBar.GetCur(pli[1]);
 				if(pli[0].m_id != pli[1].m_id)
 				{
-					CAutoPtr<OpenMediaData> p(m_wndPlaylistBar.GetCurOMD());
-					if(p) OpenMediaPrivate(p);
+					//CAutoPtr<OpenMediaData> p(m_wndPlaylistBar.GetCurOMD());
+					//if(p) OpenMediaPrivate(p);
 				}
 			}
 		}

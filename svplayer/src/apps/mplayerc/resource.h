@@ -363,6 +363,7 @@
 #define IDD_SAVETHUMBSDIALOGTEMPL_400   10051
 #define IDD_OPEN_DLG1                   10052
 #define IDD_OPENURL_DLG                 10052
+#define IDD_PLAYERCOLORCONTROLSBAR      10053
 #define IDC_COMBO1                      11000
 #define IDC_COMBO2                      11001
 #define IDC_COMBO3                      11002

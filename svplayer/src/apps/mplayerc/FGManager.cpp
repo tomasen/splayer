@@ -1815,7 +1815,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	m_transform.AddTail(pFGF);
 
 	// Low merit MPC Video Decoder
-	pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(_T("MPC Video Decoder (low merit)"), MERIT64_UNLIKELY);
+	pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(_T("MPC Video Decoder (low merit)"), MERIT64_NORMAL);
 #if INTERNAL_DECODER_FLV
 	if ((ffmpeg_filters & FFM_FLV4))
 	{

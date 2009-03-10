@@ -5116,8 +5116,7 @@ void CMainFrame::OnPlayPauseI()
 {
 	if(m_iMediaLoadState == MLS_LOADED)
 	{
-		SetAlwaysOnTop(AfxGetAppSettings().iOnTop);
-
+		
 		if(m_iPlaybackMode == PM_FILE)
 		{
 			pMC->Pause();
@@ -5134,6 +5133,9 @@ void CMainFrame::OnPlayPauseI()
 		SetTimer(TIMER_STREAMPOSPOLLER, 40, NULL);
 		SetTimer(TIMER_STREAMPOSPOLLER2, 500, NULL);
 		SetTimer(TIMER_STATS, 1000, NULL);
+
+		SetAlwaysOnTop(AfxGetAppSettings().iOnTop);
+
 	}
 
 	MoveVideoWindow();
@@ -8518,7 +8520,7 @@ void CMainFrame::OnColorControl(UINT nID){
 		s.dBrightness = min( max(s.dBrightness, ClrRange.MinValue) , ClrRange.MaxValue);
 		SetVMR9ColorControl(s.dBrightness,1,1,1);
 	}else{
-		SendStatusMessage(_T("您需要在选项面板中启用内置亮度\\色彩控制器") , 5000);
+		SendStatusMessage(_T("您需要在选项面板中启用内置亮度\\色彩控制器才能控制亮度") , 5000);
 	}
 }
 void CMainFrame::SetVMR9ColorControl(float dBrightness, float dContrast, float dHue, float dSaturation)

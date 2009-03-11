@@ -34,39 +34,46 @@ END_MESSAGE_MAP()
 // CPlayerColorControlBar message handlers
 
 
+int CPlayerColorControlBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
+{
+	if(CDialogBar::OnCreate(lpCreateStruct) == -1)
+		return -1;
+
+	CRect r;
+	r.SetRectEmpty();
+
+	csBrightLabel.Create( _T("亮度: "), WS_CHILD|WS_VISIBLE|SS_ICON, 
+		r, this, IDC_STATIC);
+
+	csConstLabel.Create( _T("对比度"), WS_CHILD|WS_VISIBLE|SS_ICON, 
+		r, this, IDC_STATIC);
+	Relayout();
+
+	return 0;
+}
+
 void CPlayerColorControlBar::Relayout()
 {
+	CRect r, r2;
+	GetClientRect(r);
+
 	
+	r2 = r;
+	r2.right = r2.left + 80;
+	csBrightLabel.MoveWindow(&r2);
+
+	r2 = r;
+	r2.left += (r.Width() - 50) / 2;
+	r2.right = r2.left + 80;
+	csConstLabel.MoveWindow(&r2);
+
 	Invalidate();
 }
 
 
 BOOL CPlayerColorControlBar::OnEraseBkgnd(CDC* pDC)
 {
-	for(CWnd* pChild = GetWindow(GW_CHILD); pChild; pChild = pChild->GetNextWindow())
-	{
-		if(!pChild->IsWindowVisible()) continue;
-
-		CRect r;
-		pChild->GetClientRect(&r);
-		pChild->MapWindowPoints(this, &r);
-		pDC->ExcludeClipRect(&r);
-	}
-
-	CRect r;
-	GetClientRect(&r);
-
-	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
-
-
-	if(pFrame->m_pLastBar != this || pFrame->m_fFullScreen)
-		r.InflateRect(0, 0, 0, 1);
-
-
-	r.InflateRect(1, 1, 1, 0);
-
-	pDC->FillSolidRect(&r, 0);
-
+	
 	return TRUE;
 }
 
@@ -89,7 +96,7 @@ void CPlayerColorControlBar::OnSize(UINT nType, int cx, int cy)
 
 BOOL CPlayerColorControlBar::Create(CWnd* pParentWnd)
 {
-	return CDialogBar::Create(pParentWnd, IDD_PLAYERCOLORCONTROLSBAR, WS_CHILD|WS_VISIBLE|CBRS_ALIGN_BOTTOM|CBRS_FLOATING, IDD_PLAYERCOLORCONTROLSBAR);
+	return CDialogBar::Create(pParentWnd, IDD_PLAYERCOLORCONTROLSBAR, WS_CHILD|WS_VISIBLE|CBRS_ALIGN_BOTTOM|CBRS_FLOATING, IDD_PLAYERCOLORCONTROLSBAR); //not visible default
 }
 
 BOOL CPlayerColorControlBar::PreCreateWindow(CREATESTRUCT& cs)
@@ -103,18 +110,4 @@ BOOL CPlayerColorControlBar::PreCreateWindow(CREATESTRUCT& cs)
 
 
 	return TRUE;
-}
-
-int CPlayerColorControlBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
-{
-	if(CDialogBar::OnCreate(lpCreateStruct) == -1)
-		return -1;
-
-	CRect r;
-	r.SetRectEmpty();
-
-
-	Relayout();
-
-	return 0;
 }

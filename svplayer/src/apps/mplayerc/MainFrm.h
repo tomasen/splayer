@@ -32,6 +32,7 @@
 #include "PlayerPlaylistBar.h"
 #include "PlayerCaptureBar.h"
 #include "PlayerShaderEditorBar.h"
+#include "PlayerColorControlBar.h"
 #include "PPageSheet.h"
 #include "PPageFileInfoSheet.h"
 #include "OpenCapDeviceDlg.h"
@@ -455,6 +456,7 @@ protected:  // control bar embedded members
 	CPlayerInfoBar m_wndInfoBar;
 	CPlayerInfoBar m_wndStatsBar;
 	CPlayerStatusBar m_wndStatusBar;
+	CPlayerColorControlBar m_wndColorControlBar;
 	CList<CControlBar*> m_bars;
 
 	CPlayerSubresyncBar m_wndSubresyncBar;

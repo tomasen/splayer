@@ -36,7 +36,7 @@ protected:
 	CStringW m_name;
 	struct {union {UINT64 val; struct {UINT64 low:16, mid:32, high:16;};};} m_merit;
 	CAtlList<GUID> m_types;
-
+	CAtlList<GUID> m_denytypes;
 public:
 	CFGFilter(const CLSID& clsid, CStringW name = L"", UINT64 merit = MERIT64_DO_USE);
 	virtual ~CFGFilter() {}
@@ -48,6 +48,7 @@ public:
 	const CAtlList<GUID>& GetTypes() const;
 	void SetTypes(const CAtlList<GUID>& types);
 	void AddType(const GUID& majortype, const GUID& subtype);
+	void RemoveType(const GUID& majortype, const GUID& subtype);
 	bool CheckTypes(const CAtlArray<GUID>& types, bool fExactMatch);
 
 	CAtlList<CString> m_protocols, m_extensions, m_chkbytes; // TODO: subtype?

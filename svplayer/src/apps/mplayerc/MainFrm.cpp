@@ -506,10 +506,15 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_wndShaderEditorBar.SetBarStyle(m_wndShaderEditorBar.GetBarStyle() | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
 	m_wndShaderEditorBar.EnableDocking(CBRS_ALIGN_ANY);
 	LoadControlBar(&m_wndShaderEditorBar, AFX_IDW_DOCKBAR_TOP);
+
+
+	//if(m_wndColorControlBar.Create(this)){
+		//m_bars.AddTail(&m_wndColorControlBar);
+	//}
 	if(m_wndStatusBar.Create(this)){
 		m_bars.AddTail(&m_wndStatusBar);
 	}
-
+	
 	m_fileDropTarget.Register(this);
 
 	GetDesktopWindow()->GetWindowRect(&m_rcDesktop);

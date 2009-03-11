@@ -48,6 +48,12 @@ void CFGFilter::SetTypes(const CAtlList<GUID>& types)
 	m_types.AddTailList(&types);
 }
 
+void CFGFilter::RemoveType(const GUID& majortype, const GUID& subtype)
+{
+	m_denytypes.AddTail(majortype);
+	m_denytypes.AddTail(subtype);
+
+}
 void CFGFilter::AddType(const GUID& majortype, const GUID& subtype)
 {
 	m_types.AddTail(majortype);
@@ -56,6 +62,38 @@ void CFGFilter::AddType(const GUID& majortype, const GUID& subtype)
 
 bool CFGFilter::CheckTypes(const CAtlArray<GUID>& types, bool fExactMatch)
 {
+	//BOOL isPowerDVD = (this->GetCLSID() ==  GUIDFromCString(_T("{C16541FF-49ED-4DEA-9126-862F57722E31}")) );
+	//CString szFAddr;
+	//szFAddr.Format(_T("%d "), m_denytypes.GetCount());
+	{
+		POSITION pos = m_denytypes.GetHeadPosition();
+		while(pos)
+		{
+			const GUID& majortype = m_denytypes.GetNext(pos);
+			if(!pos) {ASSERT(0); break;}
+			const GUID& subtype = m_denytypes.GetNext(pos);
+
+			for(int i = 0, len = types.GetCount() & ~1; i < len; i += 2)
+			{
+				if(fExactMatch)
+				{
+					if(majortype == types[i] && majortype != GUID_NULL
+						&& subtype == types[i+1] && subtype != GUID_NULL){
+							//if(debug){AfxMessageBox(_T("1"));}
+							return false;
+					}
+				}
+				else
+				{
+					if((majortype == GUID_NULL || types[i] == GUID_NULL || majortype == types[i])
+						&& (subtype == GUID_NULL || types[i+1] == GUID_NULL || subtype == types[i+1])){
+							//if(debug){AfxMessageBox(szFAddr + _T("2"));}
+							return false;
+					}
+				}
+			}
+		}
+	}
 	POSITION pos = m_types.GetHeadPosition();
 	while(pos)
 	{
@@ -68,14 +106,19 @@ bool CFGFilter::CheckTypes(const CAtlArray<GUID>& types, bool fExactMatch)
 			if(fExactMatch)
 			{
 				if(majortype == types[i] && majortype != GUID_NULL
-				&& subtype == types[i+1] && subtype != GUID_NULL)
-            		return true;
+					&& subtype == types[i+1] && subtype != GUID_NULL){
+						//if(debug){AfxMessageBox(szFAddr + CStringFromGUID(majortype) + CStringFromGUID(subtype) + _T("3"));}
+	        		return true;
+				}
 			}
 			else
 			{
 				if((majortype == GUID_NULL || types[i] == GUID_NULL || majortype == types[i])
-				&& (subtype == GUID_NULL || types[i+1] == GUID_NULL || subtype == types[i+1]))
+					&& (subtype == GUID_NULL || types[i+1] == GUID_NULL || subtype == types[i+1])){
+					//if(debug){AfxMessageBox(_T("4"));}
+						
 					return true;
+				}
 			}
 		}
 	}

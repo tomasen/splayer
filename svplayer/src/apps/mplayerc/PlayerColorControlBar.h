@@ -20,6 +20,8 @@ public:
 	virtual BOOL Create(CWnd* pParentWnd);
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 
+	CStatic csBrightLabel;
+	CStatic csConstLabel;
 
 protected:
 

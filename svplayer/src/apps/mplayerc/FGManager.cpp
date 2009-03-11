@@ -657,7 +657,17 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 			for(CComPtr<IMoniker> pMoniker; S_OK == pEM->Next(1, &pMoniker, NULL); pMoniker = NULL)
 			{
 				CFGFilterRegistry* pFGF = new CFGFilterRegistry(pMoniker);
-				fl.Insert(pFGF, 0, pFGF->CheckTypes(types, true));
+				BOOL alreadyOverrided = false; //not adding it if its overrided
+				pos = m_override.GetHeadPosition();
+				while(pos)
+				{
+					CFGFilter* pFGFo = m_override.GetNext(pos);
+					if(pFGF->GetCLSID() == pFGFo->GetCLSID()){
+						alreadyOverrided = true;
+					}
+				}
+				if(!alreadyOverrided)
+					fl.Insert(pFGF, 0, pFGF->CheckTypes(types, true));
 			}
 		}
 
@@ -2050,9 +2060,13 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	//m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{04FE9017-F873-410E-871E-AB91661A4EF7}")), MERIT64_UNLIKELY)); //ffdshow
 	
 	if (s.useGPUAcel && !s.useGPUCUDA) {
-		m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{09571A4B-F1FE-4C60-9760-DE6D310C7C31}")), MERIT64_UNLIKELY));
+		m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{09571A4B-F1FE-4C60-9760-DE6D310C7C31}")), MERIT64_UNLIKELY)); //not use CoreAVC
+		CFGFilter* pFGFR = new CFGFilterRegistry(GUIDFromCString(_T("{C16541FF-49ED-4DEA-9126-862F57722E31}")), MERIT64_PREFERRED);
+ 		//disable AVC1 for powerdvd because of bugs https://bbs.shooter.cn/viewthread.php?tid=264
+ 		pFGFR->RemoveType( MEDIATYPE_Video, MEDIASUBTYPE_avc1 ); 
+ 		m_override.AddTail(pFGFR); 
 	}else{
-		m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{C16541FF-49ED-4DEA-9126-862F57722E31}")), MERIT64_UNLIKELY));
+		m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{C16541FF-49ED-4DEA-9126-862F57722E31}")), MERIT64_UNLIKELY) ); //not use POWERDVD
 	}
 
 	// Overrides

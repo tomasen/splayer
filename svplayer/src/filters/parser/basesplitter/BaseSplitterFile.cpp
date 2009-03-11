@@ -118,8 +118,6 @@ HRESULT CBaseSplitterFile::Read(BYTE* pData, __int64 len)
 		if(total == available) {m_fRandomAccess = true; OnComplete();}
 	}
 
-	if(!pData)
-		return S_FALSE;
 
 	if(m_cachetotal == 0 || !m_pCache)
 	{
@@ -134,7 +132,9 @@ HRESULT CBaseSplitterFile::Read(BYTE* pData, __int64 len)
 	if(m_cachepos <= m_pos && m_pos < m_cachepos + m_cachelen)
 	{
 		__int64 minlen = min(len, m_cachelen - (m_pos - m_cachepos));
-
+ 		
+		if(!pData)
+			return S_OK;
 		memcpy(pData, &pCache[m_pos - m_cachepos], (size_t)minlen);
 
 		len -= minlen;
@@ -151,7 +151,8 @@ HRESULT CBaseSplitterFile::Read(BYTE* pData, __int64 len)
 		m_pos += m_cachetotal;
 		pData += m_cachetotal;
 	}
-
+	
+	
 	while(len > 0)
 	{
 		__int64 tmplen = GetLength();
@@ -165,6 +166,8 @@ HRESULT CBaseSplitterFile::Read(BYTE* pData, __int64 len)
 		m_cachepos = m_pos;
 		m_cachelen = maxlen;
 
+		if(!pData)
+			return S_OK;
 		memcpy(pData, pCache, (size_t)minlen);
 
 		len -= minlen;

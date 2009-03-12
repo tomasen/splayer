@@ -1686,7 +1686,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	UINT dxva_filters = s.DXVAFilters;
 	UINT ffmpeg_filters = s.FFmpegFilters;
 #if INCLUDE_MPC_VIDEO_DECODER | INCLUDE_MPC_DXVA_VIDEO_DECODER
-	pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(_T("MPC Video Decoder"), MERIT64_NORMAL);
+	pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(_T("MPC Video Decoder"), MERIT64_PREFERRED-1);
 #if INTERNAL_DECODER_FLV
 	if (ffmpeg_filters & FFM_FLV4)
 	{
@@ -1825,7 +1825,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	m_transform.AddTail(pFGF);
 
 	// Low merit MPC Video Decoder
-	pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(_T("MPC Video Decoder (low merit)"), MERIT64_NORMAL);
+	pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(_T("MPC Video Decoder (low merit)"),  MERIT64_PREFERRED-1);
 #if INTERNAL_DECODER_FLV
 	if ((ffmpeg_filters & FFM_FLV4))
 	{
@@ -2059,7 +2059,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	
 	//m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{04FE9017-F873-410E-871E-AB91661A4EF7}")), MERIT64_UNLIKELY)); //ffdshow
 	
-	if (s.useGPUAcel && !s.useGPUCUDA) {
+	if ( (s.useGPUAcel && !s.useGPUCUDA) || s.fVMR9MixerMode ) {
 		m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{09571A4B-F1FE-4C60-9760-DE6D310C7C31}")), MERIT64_UNLIKELY)); //not use CoreAVC
 		CFGFilter* pFGFR = new CFGFilterRegistry(GUIDFromCString(_T("{C16541FF-49ED-4DEA-9126-862F57722E31}")), MERIT64_PREFERRED);
  		//disable AVC1 for powerdvd because of bugs https://bbs.shooter.cn/viewthread.php?tid=264

@@ -404,6 +404,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 static bool s_fLDown = false;
 static int s_mDragFuc = 0;
 static bool s_mDragFucOn = false;
+static bool bRecentFocused = FALSE;
+
 CMainFrame::CMainFrame() : 
 	m_dwRegister(0),
 	m_iMediaLoadState(MLS_CLOSED),
@@ -508,9 +510,9 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	LoadControlBar(&m_wndShaderEditorBar, AFX_IDW_DOCKBAR_TOP);
 
 
-	//if(m_wndColorControlBar.Create(this)){
+	if(m_wndColorControlBar.Create(this)){
 		//m_bars.AddTail(&m_wndColorControlBar);
-	//}
+	}
 	if(m_wndStatusBar.Create(this)){
 		m_bars.AddTail(&m_wndStatusBar);
 	}
@@ -934,7 +936,6 @@ void CMainFrame::Dump(CDumpContext& dc) const
 }
 
 #endif //_DEBUG
-
 /////////////////////////////////////////////////////////////////////////////
 // CMainFrame message handlers
 void CMainFrame::OnSetFocus(CWnd* pOldWnd)
@@ -1195,6 +1196,9 @@ void CMainFrame::OnSysCommand(UINT nID, LPARAM lParam)
 
 void CMainFrame::OnActivateApp(BOOL bActive, DWORD dwThreadID)
 {
+	if(bActive){
+		this->PreFocused();
+	}
 	__super::OnActivateApp(bActive, dwThreadID);
 
 	MONITORINFO mi;
@@ -1385,7 +1389,10 @@ CString CMainFrame::getCurPlayingSubfile(int * iSubDelayMS,int subid ){
 
 void CMainFrame::OnTimer(UINT nIDEvent)
 {
-	if(TIMER_MOUSELWOWN == nIDEvent){
+	if(TIMER_RECENTFOCUSED== nIDEvent){
+		bRecentFocused = FALSE;
+		KillTimer(TIMER_RECENTFOCUSED);
+	}else if(TIMER_MOUSELWOWN == nIDEvent){
 		if(s_fLDown){
 			OnButton(wmcmd::LDOWN, NULL, NULL);
 		}
@@ -2224,10 +2231,15 @@ BOOL CMainFrame::OnButton(UINT id, UINT nFlags, CPoint point)
 
 	return ret;
 }
-
+void CMainFrame::PreFocused(){
+	bRecentFocused = TRUE;
+	SetTimer(TIMER_RECENTFOCUSED, 100, NULL);
+}
 void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 {
+	
 	SetFocus();
+	
 
 	m_pLastClickPoint = point;
 	CRect rVideo = m_wndView.GetVideoRect();
@@ -2260,13 +2272,15 @@ void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 			if(s.wmcmds.GetNext(pos).mouse == wmcmd::LDOWN)
 				fLeftMouseBtnUnassigned = false;
 
-		if(!m_fFullScreen && ( (IsCaptionMenuHidden() || (xPercent < 25 && yPercent < 25) ) || fLeftMouseBtnUnassigned))
+		if(!m_fFullScreen && ( ((xPercent < 25 && yPercent < 25) ) || fLeftMouseBtnUnassigned)) //IsCaptionMenuHidden() || 
 		{
 			PostMessage(WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM(point.x, point.y));
 		}
 		else
 		{
-			s_fLDown = true;
+			if(!bRecentFocused)
+				s_fLDown = true;
+
 			if(xPercent > 40  && xPercent < 60 && yPercent > 40  && yPercent < 60 ){ //画面中心
 				//移动画面
 				s_mDragFuc = 1;
@@ -2274,6 +2288,7 @@ void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 				//缩放画面
 				s_mDragFuc = 2;
 			}
+			
 			//if(OnButton(wmcmd::LDOWN, nFlags, point))
 			//SetTimer(TIMER_MOUSELWOWN, 300, NULL);
 			return;
@@ -2287,7 +2302,7 @@ void CMainFrame::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	int iDistance = sqrt( pow( (double)abs(point.x - m_pLastClickPoint.x) , 2)  + pow( (double)abs( point.y - m_pLastClickPoint.y ) , 2) );
 
-	if( s_fLDown && iDistance < 30){
+	if( !bRecentFocused && s_fLDown && iDistance < 30){
 		SetTimer(TIMER_MOUSELWOWN, 300, NULL);
 	}
 	s_mDragFuc = 0;
@@ -2312,6 +2327,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 	if( ( iDistance > 30 || s_mDragFucOn) && s_mDragFuc){
 		if(!s_mDragFucOn){
 			m_pDragFuncStartPoint = point;
+			SetAlwaysOnTop(AfxGetAppSettings().iOnTop , FALSE);
 			s_mDragFucOn = true;
 		}
 		if(s_mDragFuc == 1){ //移动画面
@@ -2390,8 +2406,27 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 			SetTimer(TIMER_FULLSCREENCONTROLBARHIDER, nTimeOut*1000, NULL);
 			SetTimer(TIMER_FULLSCREENMOUSEHIDER, max(nTimeOut*1000, 2000), NULL);
 		}
+	}else if(IsCaptionMenuHidden() && (abs(diff.cx)+abs(diff.cy)) >= 1)
+	{
+
+		HMENU hMenu;
+		if(point.y < 10 && point.x < 690){
+			hMenu = m_hMenuDefault;
+		}else{
+			hMenu = NULL;
+		}
+		::SetMenu(m_hWnd, hMenu);
+
 	}
 
+	CRect cvr = m_wndView.GetVideoRect();
+	cvr.top = cvr.bottom - 15;
+	cvr.right = cvr.left + cvr.Width()/2;
+	if(cvr.PtInRect(point)){
+		//ShowControlBar(&m_wndColorControlBar, SW_SHOW, FALSE);
+	}else{
+		ShowControlBar(&m_wndColorControlBar, SW_HIDE, TRUE);
+	}
 	m_lastMouseMove = point;
 
 	__super::OnMouseMove(nFlags, point);
@@ -2782,14 +2817,16 @@ BOOL CMainFrame::OnMenu(CMenu* pMenu)
 
 void CMainFrame::OnMenuPlayerShort()
 {
+	/*
 	if(IsCaptionMenuHidden())
-	{
-		OnMenu(m_popupmain.GetSubMenu(0));
-	}
-	else
-	{
+		{
+			OnMenu(m_popupmain.GetSubMenu(0));
+		}
+		else
+		{*/
+	
 		OnMenu(m_popup.GetSubMenu(0));
-	}
+	//}
 }
 
 void CMainFrame::OnMenuPlayerLong()
@@ -5115,6 +5152,8 @@ void CMainFrame::OnPlayPlay()
 
 		SetAlwaysOnTop(AfxGetAppSettings().iOnTop);
 	}
+
+	m_wndColorControlBar.CheckAbility();
 
 	MoveVideoWindow();
 }
@@ -9916,9 +9955,11 @@ void CMainFrame::ShowControls(int nCS, bool fSave)
 	RecalcLayout();
 }
 
-void CMainFrame::SetAlwaysOnTop(int i)
+void CMainFrame::SetAlwaysOnTop(int i, BOOL setSetting)
 {
-	AfxGetAppSettings().iOnTop = i;
+	if(setSetting){
+		AfxGetAppSettings().iOnTop = i;
+	}
 
 	if(!m_fFullScreen)
 	{

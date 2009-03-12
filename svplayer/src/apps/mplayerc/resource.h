@@ -434,6 +434,8 @@
 #define IDC_BUTTON6                     11125
 #define IDC_BUTTON7                     11126
 #define IDC_BUTTON8                     11127
+#define IDC_BUTTONRESETCOLORCONTROL     11128
+#define IDC_BUTTONENABLECOLORCONTROL    11129
 #define IDC_TREE1                       11140
 #define IDC_TREE2                       11141
 #define IDC_LIST1                       11160

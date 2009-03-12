@@ -76,21 +76,7 @@ BOOL CPlayerPlaylistBar::Create(CWnd* pParentWnd)
 	m_list.SetImageList(&m_fakeImageList, LVSIL_SMALL);
 	this->m_pMaindFrame = pParentWnd;
 	m_clearall.Create( _T("Çå¿Õ"), WS_VISIBLE|WS_CHILD|BS_FLAT|BS_VCENTER|BS_CENTER , CRect(0,83,40,100), this, IDC_BUTTONCLEARALL );
-	font.CreateFont(
-		12, // nHeight
-		0, // nWidth
-		0, // nEscapement
-		0, // nOrientation
-		FW_NORMAL, // nWeight
-		FALSE, // bItalic
-		FALSE, // bUnderline
-		0, // cStrikeOut
-		DEFAULT_CHARSET, // nCharSet
-		OUT_DEFAULT_PRECIS, // nOutPrecision
-		CLIP_DEFAULT_PRECIS, // nClipPrecision
-		DEFAULT_QUALITY, // nQuality
-		DEFAULT_PITCH | FF_SWISS, // nPitchAndFamily
-		_T("ËÎÌå"));
+	GetSystemFontWithScale(&font);
 	m_clearall.SetFont(&font);
 	return TRUE;
 }

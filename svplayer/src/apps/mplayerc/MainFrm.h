@@ -148,7 +148,8 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 		TIMER_LEFTCLICK,
 		TIMER_STATUSERASER,
 		TIMER_STATUSCHECKER,
-		TIMER_MOUSELWOWN
+		TIMER_MOUSELWOWN,
+		TIMER_RECENTFOCUSED
 	};
 
 	friend class CPPageFileInfoSheet;
@@ -204,7 +205,7 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 	void ZoomVideoWindow(double scale = -1);
 	double GetZoomAutoFitScale();
 
-	void SetAlwaysOnTop(int i);
+	void SetAlwaysOnTop(int i, BOOL setSetting = TRUE);
 
 	// dynamic menus
 
@@ -486,6 +487,10 @@ protected:  // control bar embedded members
 	DECLARE_MESSAGE_MAP()
 
 public:
+
+	//Mouse Relate
+	void PreFocused();
+
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnDestroy();
 

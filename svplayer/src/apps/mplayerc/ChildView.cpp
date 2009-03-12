@@ -179,6 +179,7 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_WM_SETCURSOR()
 	ON_WM_NCCALCSIZE()
 	ON_WM_NCPAINT()
+	ON_WM_SETFOCUS()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -194,7 +195,9 @@ void CChildView::OnPaint()
 
 	// Do not call CWnd::OnPaint() for painting messages
 }
-
+void CChildView::OnSetFocus(CWnd* pOldWnd){
+	
+}
 BOOL CChildView::OnEraseBkgnd(CDC* pDC)
 {
 	CRect r;

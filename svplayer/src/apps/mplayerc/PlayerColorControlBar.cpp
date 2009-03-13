@@ -27,23 +27,32 @@ BEGIN_MESSAGE_MAP(CPlayerColorControlBar, CDialogBar)
 	ON_WM_PAINT()
 	ON_WM_SIZE()
 	ON_WM_CREATE()
-	ON_BN_CLICKED(IDC_BUTTON1, OnButtonReset)
-	ON_BN_CLICKED(IDC_BUTTON2, OnButtonEnable)
 	ON_WM_HSCROLL()
+
 END_MESSAGE_MAP()
-
-
 
 // CPlayerColorControlBar message handlers
 void CPlayerColorControlBar::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
-	if (nSBCode &  TB_THUMBTRACK) {
-		if (pScrollBar == GetDlgItem(IDC_SLIDER1)){
-			
-		}else if (pScrollBar == GetDlgItem(IDC_SLIDER2)){
+	
+	AppSettings& s = AfxGetAppSettings();
+	CMainFrame* pMFrame = (CMainFrame*)GetParentFrame();
 
+		if(pMFrame->m_pMC){
+			BOOL bChanged = FALSE;
+			if (pScrollBar == GetDlgItem(IDC_SLIDER1) && s.dBrightness != csl_bright.GetPos()){
+				s.dBrightness = csl_bright.GetPos();
+				bChanged = TRUE;
+			}else if (pScrollBar == GetDlgItem(IDC_SLIDER2) && s.dContrast != csl_const.GetPos()){
+				s.dContrast = (float)csl_const.GetPos() / 100;
+				bChanged = TRUE;
+			}
+			if(bChanged){
+				pMFrame->SetVMR9ColorControl(s.dBrightness,s.dContrast,fDefaultHue,fDefaultSaturation);
+			}
 		}
-	}
+		
+	
 
 }
 
@@ -57,11 +66,11 @@ int CPlayerColorControlBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	GetSystemFontWithScale(&m_font);
 
-	csBrightLabel.Create( _T("亮度: "),WS_CHILD|WS_VISIBLE, 
+	csBrightLabel.Create( _T("亮度: "),WS_CHILD|WS_VISIBLE|SS_CENTERIMAGE , 
 		r, this, IDC_STATIC);
 	csBrightLabel.SetFont(&m_font);
 
-	csConstLabel.Create( _T("对比度: "),  WS_CHILD|WS_VISIBLE, 
+	csConstLabel.Create( _T("对比度: "),  WS_CHILD|WS_VISIBLE|SS_CENTERIMAGE, 
 		r, this, IDC_STATIC);
 	csConstLabel.SetFont(&m_font);
 
@@ -69,10 +78,8 @@ int CPlayerColorControlBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	csl_const.Create( WS_CHILD|WS_VISIBLE|TBS_AUTOTICKS|TBS_HORZ|TBS_NOTICKS|TBS_TOOLTIPS  , r, this, IDC_SLIDER2);
 
 	cb_reset.Create( _T("重置"), BS_PUSHBUTTON|WS_CHILD|WS_VISIBLE, r , this, IDC_BUTTONRESETCOLORCONTROL);
-	cb_reset.EnableWindow(1);
 	cb_reset.SetFont(&m_font);
 	
-
 	cb_enablectrl.Create( _T("启用"), BS_PUSHBUTTON|WS_CHILD|WS_VISIBLE, r , this, IDC_BUTTONENABLECOLORCONTROL);
 	cb_enablectrl.SetFont(&m_font);
 
@@ -82,21 +89,64 @@ int CPlayerColorControlBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	return 0;
 }
 void CPlayerColorControlBar::OnButtonReset(){
-
+	CMainFrame* pMFrame = (CMainFrame*)GetParentFrame();
+	AppSettings& s = AfxGetAppSettings();
+	if(!!pMFrame->m_pMC ){
+		CheckAbility();
+		
+		
+		s.dBrightness = fDefaultBright;
+		csl_bright.SetPos(fDefaultBright);
+		s.dContrast = fDefaultConst;
+		csl_const.SetPos(fDefaultConst * 100);
+		pMFrame->SetVMR9ColorControl(fDefaultBright,fDefaultConst,fDefaultHue,fDefaultSaturation);
+	}
 }
 void CPlayerColorControlBar::OnButtonEnable(){
-
+	
 }
 void CPlayerColorControlBar::CheckAbility(){
-	m_bAbleControl = !!((CMainFrame*)GetParentFrame())->m_pMC ;
+	CMainFrame* pMFrame = (CMainFrame*)GetParentFrame();
+	AppSettings& s = AfxGetAppSettings();
+	m_bAbleControl = (!!pMFrame->m_pMC);
 	
-
 	csl_bright.EnableWindow(m_bAbleControl);
 	csl_const.EnableWindow(m_bAbleControl);
 	csConstLabel.EnableWindow(m_bAbleControl);
 	csBrightLabel.EnableWindow(m_bAbleControl);
-	cb_enablectrl.EnableWindow(!m_bAbleControl);
-	cb_reset.EnableWindow(m_bAbleControl);
+
+	if(m_bAbleControl){
+		VMR9ProcAmpControlRange ClrRangeBright;
+		ClrRangeBright.dwProperty = ProcAmpControl9_Brightness;
+		ClrRangeBright.dwSize = sizeof(VMR9ProcAmpControlRange);
+		pMFrame->m_pMC->GetProcAmpControlRange(0, &ClrRangeBright);
+		fDefaultBright = ClrRangeBright.DefaultValue; 
+		csl_bright.SetRange(ClrRangeBright.MinValue,  ClrRangeBright.MaxValue, 1);
+		csl_bright.SetTic( ClrRangeBright.StepSize );
+		csl_bright.SetPos( s.dBrightness );
+
+		VMR9ProcAmpControlRange ClrRangeConst;
+		ClrRangeConst.dwProperty = ProcAmpControl9_Contrast;
+		ClrRangeConst.dwSize = sizeof(VMR9ProcAmpControlRange);
+		pMFrame->m_pMC->GetProcAmpControlRange(0, &ClrRangeConst);
+		fDefaultConst = ClrRangeConst.DefaultValue; 
+		
+		csl_const.SetRange(ClrRangeConst.MinValue * 100,  ClrRangeConst.MaxValue* 100, 1);
+		csl_const.SetTic( ClrRangeConst.StepSize * 100);
+		csl_const.SetPos( s.dContrast* 100 );
+		
+		VMR9ProcAmpControlRange ClrRangeHue;
+		ClrRangeHue.dwProperty = ProcAmpControl9_Hue;
+		ClrRangeHue.dwSize = sizeof(VMR9ProcAmpControlRange);
+		pMFrame->m_pMC->GetProcAmpControlRange(0, &ClrRangeHue);
+		fDefaultHue = ClrRangeHue.DefaultValue; 
+
+		VMR9ProcAmpControlRange ClrRangeSat;
+		ClrRangeSat.dwProperty = ProcAmpControl9_Saturation;
+		ClrRangeSat.dwSize = sizeof(VMR9ProcAmpControlRange);
+		pMFrame->m_pMC->GetProcAmpControlRange(0, &ClrRangeSat);
+		fDefaultSaturation = ClrRangeSat.DefaultValue; 
+	}
 
 }
 void CPlayerColorControlBar::Relayout()
@@ -123,22 +173,24 @@ void CPlayerColorControlBar::Relayout()
 	csl_bright.MoveWindow(&r2);
 	
 	r2 = r;
-	r2.top += 1;
+	r2.top += 4;
 	r2.left += (r.Width() - 50) / 2 + 30;
 	r2.right = r2.left + r.Width() / 2 - 110;
 	csl_const.MoveWindow(&r2);
 
 	r2 = r;
-	r2.top += 1;
+	r2.top += 4;
 	r2.right -= 10;
 	r2.left = r2.right - 35;
 	cb_reset.MoveWindow(&r2);
-	
+	cb_reset.EnableWindow(TRUE);
+
 	r2 = r;
 	r2.top += 1;
 	r2.right -= 48;
 	r2.left = r2.right - 35;
 	cb_enablectrl.MoveWindow(&r2);
+	cb_enablectrl.EnableWindow(TRUE);
 
 	Invalidate();
 }
@@ -189,19 +241,19 @@ void CPlayerColorControlBar::OnSize(UINT nType, int cx, int cy)
 
 BOOL CPlayerColorControlBar::Create(CWnd* pParentWnd)
 {
-	return CDialogBar::Create(pParentWnd, IDD_PLAYERCOLORCONTROLSBAR, WS_CHILD|WS_VISIBLE|CBRS_ALIGN_BOTTOM|CBRS_FLOATING, IDD_PLAYERCOLORCONTROLSBAR); //not visible default
+	return CDialogBar::Create(pParentWnd, IDD_PLAYERCOLORCONTROLSBAR, WS_CHILD|WS_VISIBLE|CBRS_ALIGN_BOTTOM|SW_HIDE, IDD_PLAYERCOLORCONTROLSBAR); //not visible default
 }
 
 BOOL CPlayerColorControlBar::PreCreateWindow(CREATESTRUCT& cs)
 {
-	
+	//cs.dwExStyle |= WS_EX_TRANSPARENT ;
+	if(!CDialogBar::PreCreateWindow(cs))
+		return FALSE;
+
 	m_dwStyle &= ~CBRS_BORDER_TOP;
 	m_dwStyle &= ~CBRS_BORDER_BOTTOM;
 	m_dwStyle &= ~WS_VISIBLE;
-	//cs.dwExStyle |= WS_EX_TRANSPARENT ;
-
-	if(!CDialogBar::PreCreateWindow(cs))
-		return FALSE;
+	
 
 	return TRUE;
 }

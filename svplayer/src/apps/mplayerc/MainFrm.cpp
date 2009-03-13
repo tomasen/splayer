@@ -195,7 +195,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_MENU_PLAYER_SHORT, OnMenuPlayerShort)
 	ON_COMMAND(ID_MENU_PLAYER_LONG, OnMenuPlayerLong)
 	ON_COMMAND(ID_MENU_FILTERS, OnMenuFilters)
-
 	ON_UPDATE_COMMAND_UI(IDC_PLAYERSTATUS, OnUpdatePlayerStatus)
 
 	ON_COMMAND(ID_FILE_POST_OPENMEDIA, OnFilePostOpenmedia)
@@ -394,6 +393,13 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_DONATE, &CMainFrame::OnDonate)
 	ON_COMMAND(ID_JOINTEAM, &CMainFrame::OnJointeam)
 	ON_COMMAND_RANGE(ID_BRIGHTINC, ID_BRIGHTDEC, OnColorControl )
+
+	ON_BN_CLICKED(IDC_BUTTONRESETCOLORCONTROL,  OnColorControlButtonReset)
+	ON_BN_CLICKED(IDC_BUTTONENABLECOLORCONTROL, OnColorControlButtonEnable)
+	ON_UPDATE_COMMAND_UI( IDC_BUTTONRESETCOLORCONTROL,  OnColorControlUpdateButtonReset)
+	ON_UPDATE_COMMAND_UI( IDC_BUTTONENABLECOLORCONTROL,  OnColorControlUpdateButtonEnable)
+
+
 	END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -441,6 +447,7 @@ CMainFrame::~CMainFrame()
 {
 //	m_owner.DestroyWindow();
 }
+
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
@@ -511,11 +518,13 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 
 	if(m_wndColorControlBar.Create(this)){
-		//m_bars.AddTail(&m_wndColorControlBar);
+		m_wndColorControlBar.ShowWindow(SW_HIDE);
 	}
 	if(m_wndStatusBar.Create(this)){
 		m_bars.AddTail(&m_wndStatusBar);
 	}
+	m_bars.AddTail(&m_wndColorControlBar);
+
 	
 	m_fileDropTarget.Register(this);
 
@@ -2350,8 +2359,10 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 		if(nTimeOut < 0)
 		{
 			m_fHideCursor = false;
-			if(AfxGetAppSettings().fShowBarsWhenFullScreen)
-				ShowControls(AfxGetAppSettings().nCS);
+			if(AfxGetAppSettings().fShowBarsWhenFullScreen){
+				ShowControls(AfxGetAppSettings().nCS | CS_COLORCONTROLBAR);
+				//m_wndColorControlBar.ShowWindow(SW_SHOW);
+			}
 
 			KillTimer(TIMER_FULLSCREENCONTROLBARHIDER);
 			SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
@@ -2369,7 +2380,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 				CSize s = pNext->CalcFixedLayout(FALSE, TRUE);
 				if(AfxGetAppSettings().nCS&i) r.top -= s.cy;
 			}
-
+			
 			// HACK: the controls would cover the menu too early hiding some buttons
 			if(m_iPlaybackMode == PM_DVD
 				&& (m_iDVDDomain == DVD_DOMAIN_VideoManagerMenu
@@ -2380,33 +2391,33 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 
 			if(r.PtInRect(point))
 			{
-				if(AfxGetAppSettings().fShowBarsWhenFullScreen)
-					ShowControls(AfxGetAppSettings().nCS);
+				if(AfxGetAppSettings().fShowBarsWhenFullScreen){
+					ShowControls(AfxGetAppSettings().nCS | CS_COLORCONTROLBAR );
+					//m_wndColorControlBar.ShowWindow(SW_SHOW);
+				}
 			}
 			else{
 				if(AfxGetAppSettings().fShowBarsWhenFullScreen)
 					ShowControls(CS_NONE, false);
+				
 			}
-			HMENU hMenu;
-			if(point.y < 10 && point.x < 690){
-				hMenu = m_hMenuDefault;
-			}else{
-				hMenu = NULL;
-			}
-			::SetMenu(m_hWnd, hMenu);
+			
 
 			SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
 		}
 		else
 		{
 			m_fHideCursor = false;
-			if(AfxGetAppSettings().fShowBarsWhenFullScreen)
-				ShowControls(AfxGetAppSettings().nCS);
-
+			if(AfxGetAppSettings().fShowBarsWhenFullScreen){
+				ShowControls(AfxGetAppSettings().nCS | CS_COLORCONTROLBAR);
+				//m_wndColorControlBar.ShowWindow(SW_SHOW);
+			}
+				
 			SetTimer(TIMER_FULLSCREENCONTROLBARHIDER, nTimeOut*1000, NULL);
 			SetTimer(TIMER_FULLSCREENMOUSEHIDER, max(nTimeOut*1000, 2000), NULL);
 		}
-	}else if(IsCaptionMenuHidden() && (abs(diff.cx)+abs(diff.cy)) >= 1)
+	}
+	if((m_fFullScreen || IsCaptionMenuHidden() ) && (abs(diff.cx)+abs(diff.cy)) >= 1)
 	{
 
 		HMENU hMenu;
@@ -2419,14 +2430,16 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 
 	}
 
-	CRect cvr = m_wndView.GetVideoRect();
-	cvr.top = cvr.bottom - 15;
-	cvr.right = cvr.left + cvr.Width()/2;
-	if(cvr.PtInRect(point)){
-		//ShowControlBar(&m_wndColorControlBar, SW_SHOW, FALSE);
-	}else{
-		ShowControlBar(&m_wndColorControlBar, SW_HIDE, TRUE);
+	if(!m_fFullScreen){
+		CRect cvr = m_wndView.GetVideoRect(); //show and hide Color Control Bar when not full screen
+		cvr.top = cvr.bottom - 20;
+		if(cvr.PtInRect(point)){
+			ShowControlBar(&m_wndColorControlBar, SW_SHOW, FALSE);
+		}else{
+			ShowControlBar(&m_wndColorControlBar, SW_HIDE, TRUE);
+		}
 	}
+	
 	m_lastMouseMove = point;
 
 	__super::OnMouseMove(nFlags, point);
@@ -2997,6 +3010,8 @@ void CMainFrame::OnFilePostOpenmedia()
 	// OpenSetupToolBar();
 
 	OpenSetupCaptureBar();
+
+	m_wndColorControlBar.CheckAbility();
 
 	__int64 rtDur = 0;
 	pMS->GetDuration(&rtDur);
@@ -8559,16 +8574,50 @@ void CMainFrame::OnColorControl(UINT nID){
 		if(act == 2){
 			s.dBrightness = ClrRange.DefaultValue;
 		}else if(act == 1){
-			s.dBrightness -= ClrRange.StepSize; 
+			s.dBrightness -= 1; 
 		}else{
-			s.dBrightness += ClrRange.StepSize; 
+			s.dBrightness += 1; 
 		}
 		s.dBrightness = min( max(s.dBrightness, ClrRange.MinValue) , ClrRange.MaxValue);
-		SetVMR9ColorControl(s.dBrightness,1,1,1);
+		SetVMR9ColorControl(s.dBrightness,s.dContrast,s.dHue,s.dSaturation);
 	}else{
 		SendStatusMessage(_T("您需要在选项面板中启用内置亮度\\色彩控制器才能控制亮度") , 5000);
 	}
 }
+void CMainFrame::OnColorControlButtonReset(){
+	m_wndColorControlBar.OnButtonReset();
+}
+void CMainFrame::OnColorControlButtonEnable(){
+	AppSettings& s = AfxGetAppSettings();
+	s.fVMR9MixerMode = TRUE;
+	s.iDSVideoRendererType = 6;
+	s.iRMVideoRendererType = 2;
+	s.iQTVideoRendererType = 2;
+
+	int iPlaybackMode = m_iPlaybackMode;
+	
+	CloseMedia();
+	
+	if(iPlaybackMode == PM_FILE)
+	{
+		OpenCurPlaylistItem();
+	} 
+}
+void CMainFrame::OnColorControlUpdateButtonReset(CCmdUI* pCmdUI)
+{
+	pCmdUI->Enable(!!m_pMC);
+}
+
+void CMainFrame::OnColorControlUpdateButtonEnable(CCmdUI* pCmdUI)
+{
+	AppSettings& s  = AfxGetAppSettings();
+	bool bEnable = (s.iDSVideoRendererType != VIDRNDT_DS_VMR9RENDERLESS) || !s.fVMR9MixerMode;
+	if( GetMediaState() == State_Running ){
+		bEnable = !m_pMC;
+	}
+	pCmdUI->Enable(bEnable);
+}
+
 void CMainFrame::SetVMR9ColorControl(float dBrightness, float dContrast, float dHue, float dSaturation)
 {
 	VMR9ProcAmpControl		ClrControl;
@@ -8586,7 +8635,7 @@ void CMainFrame::SetVMR9ColorControl(float dBrightness, float dContrast, float d
 		m_pMC->SetProcAmpControl (0, &ClrControl);
 
 		CString szMsg;
-		szMsg.Format(_T("亮度: %f  对比度: %f "),dBrightness,dContrast);
+		szMsg.Format(_T("亮度: %0.2f  对比度: %0.2f "),dBrightness,dContrast);
 		SendStatusMessage( szMsg , 3000);
 	}
 }
@@ -11155,6 +11204,9 @@ void CMainFrame::CloseMedia()
 	else
 	{
 		CloseMediaPrivate();
+	}
+	if(m_pMC){
+		m_pMC = NULL;
 	}
 
 	UnloadExternalObjects();

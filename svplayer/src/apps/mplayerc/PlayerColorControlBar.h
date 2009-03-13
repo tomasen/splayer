@@ -33,11 +33,19 @@ public:
 
 	void CheckAbility();
 private:
+
+	float fDefaultBright;
+	float fDefaultConst;
+	float fDefaultHue;
+	float fDefaultSaturation;
+
 	bool m_bAbleControl;
 
 protected:
 
 	DECLARE_MESSAGE_MAP()
+
+public:
 	afx_msg void OnButtonReset();
 	afx_msg void OnButtonEnable();
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
@@ -45,7 +53,7 @@ protected:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
-
+	
 };
 
 

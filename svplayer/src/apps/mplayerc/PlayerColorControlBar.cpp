@@ -77,10 +77,10 @@ int CPlayerColorControlBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	csl_bright.Create( WS_CHILD|WS_VISIBLE|TBS_AUTOTICKS|TBS_HORZ|TBS_NOTICKS|TBS_TOOLTIPS  , r, this, IDC_SLIDER1);
 	csl_const.Create( WS_CHILD|WS_VISIBLE|TBS_AUTOTICKS|TBS_HORZ|TBS_NOTICKS|TBS_TOOLTIPS  , r, this, IDC_SLIDER2);
 
-	cb_reset.Create( _T("重置"), WS_CHILD|WS_VISIBLE, r , this, IDC_BUTTONRESETCOLORCONTROL);
+	cb_reset.Create( _T("重置"), WS_VISIBLE|WS_CHILD|BS_FLAT|BS_VCENTER|BS_CENTER, r , this, IDC_BUTTONRESETCOLORCONTROL);
 	cb_reset.SetFont(&m_font);
 	
-	cb_enablectrl.Create( _T("启用"), WS_CHILD|WS_VISIBLE, r , this, IDC_BUTTONENABLECOLORCONTROL);
+	cb_enablectrl.Create( _T("启用"), WS_VISIBLE|WS_CHILD|BS_FLAT|BS_VCENTER|BS_CENTER, r , this, IDC_BUTTONENABLECOLORCONTROL);
 	cb_enablectrl.SetFont(&m_font);
 
 	Relayout();
@@ -198,15 +198,7 @@ void CPlayerColorControlBar::Relayout()
 
 BOOL CPlayerColorControlBar::OnEraseBkgnd(CDC* pDC)
 {
-	for(CWnd* pChild = GetWindow(GW_CHILD); pChild; pChild = pChild->GetNextWindow())
-	{
-		if(!pChild->IsWindowVisible()) continue;
-
-		CRect r;
-		pChild->GetClientRect(&r);
-		pChild->MapWindowPoints(this, &r);
-		pDC->ExcludeClipRect(&r);
-	}
+	
 
 	CRect r;
 	GetClientRect(&r);

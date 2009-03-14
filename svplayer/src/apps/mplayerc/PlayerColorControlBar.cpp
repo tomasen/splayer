@@ -77,10 +77,10 @@ int CPlayerColorControlBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	csl_bright.Create( WS_CHILD|WS_VISIBLE|TBS_AUTOTICKS|TBS_HORZ|TBS_NOTICKS|TBS_TOOLTIPS  , r, this, IDC_SLIDER1);
 	csl_const.Create( WS_CHILD|WS_VISIBLE|TBS_AUTOTICKS|TBS_HORZ|TBS_NOTICKS|TBS_TOOLTIPS  , r, this, IDC_SLIDER2);
 
-	cb_reset.Create( _T("重置"), BS_PUSHBUTTON|WS_CHILD|WS_VISIBLE, r , this, IDC_BUTTONRESETCOLORCONTROL);
+	cb_reset.Create( _T("重置"), WS_CHILD|WS_VISIBLE, r , this, IDC_BUTTONRESETCOLORCONTROL);
 	cb_reset.SetFont(&m_font);
 	
-	cb_enablectrl.Create( _T("启用"), BS_PUSHBUTTON|WS_CHILD|WS_VISIBLE, r , this, IDC_BUTTONENABLECOLORCONTROL);
+	cb_enablectrl.Create( _T("启用"), WS_CHILD|WS_VISIBLE, r , this, IDC_BUTTONENABLECOLORCONTROL);
 	cb_enablectrl.SetFont(&m_font);
 
 	Relayout();
@@ -179,7 +179,7 @@ void CPlayerColorControlBar::Relayout()
 	csl_const.MoveWindow(&r2);
 
 	r2 = r;
-	r2.top += 4;
+	r2.top += 1;
 	r2.right -= 10;
 	r2.left = r2.right - 35;
 	cb_reset.MoveWindow(&r2);

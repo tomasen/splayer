@@ -1482,9 +1482,13 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 
 		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_ISDB), ISDb);
 
+		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SHOWCONTROLBAR),bShowControlBar);
+
 		pApp->WriteProfileString(_T("Shaders"), NULL, NULL);
 		pApp->WriteProfileInt(_T("Shaders"), _T("Initialized"), 1);
 		pApp->WriteProfileString(_T("Shaders"), _T("Combine"), m_shadercombine);
+
+		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_NOTCHANGEFONTTOYH), bNotChangeFontToYH);
 
 		pos = m_shaders.GetHeadPosition();
 		for(int i = 0; pos; i++)
@@ -1552,6 +1556,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		autoResumePlay = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUTORESUMEPLAY), 1);
 		fHideCaptionMenu = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_HIDECAPTIONMENU), 0);
 		nCS = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_CONTROLSTATE), CS_SEEKBAR|CS_TOOLBAR|CS_STATUSBAR) & ~CS_COLORCONTROLBAR;
+
 
 		iDefaultVideoSize = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DEFAULTVIDEOFRAME), DVS_FROMINSIDE);
 		fKeepAspectRatio = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_KEEPASPECTRATIO), TRUE);
@@ -1633,13 +1638,15 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		subdefstyle <<= pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPLOGFONT), _T("20,20,20,20,2,0,2.000000,2.000000,3.000000,3.000000,0x00ecec,0x00ffff,0x000000,0x000000,0x00,0x00,0x00,0x80,0,黑体,20.000000,100.000000,100.000000,0.000000,700,0,0,0,0,0.000000,0.000000,0.000000,0.000000,0,0.700000"));
 		subdefstyle2 <<= pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPLOGFONT2), _T("20,20,20,20,8,0,2.000000,2.000000,3.000000,3.000000,0x00ecec,0x00ffff,0x000000,0x000000,0x00,0x00,0x00,0x80,1,黑体,20.000000,100.000000,100.000000,0.000000,700,0,0,0,0,0.000000,0.000000,0.000000,0.000000,0,0.700000"));
 
-	
+		bShowControlBar = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SHOWCONTROLBAR), 0);
 		dBrightness		= (float)_tstof(pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_COLOR_BRIGHTNESS),	_T("1")));
 		dContrast		= (float)_tstof(pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_COLOR_CONTRAST),		_T("1")));
 		dHue			= (float)_tstof(pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_COLOR_HUE),			_T("0")));
 		dSaturation		= (float)_tstof(pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_COLOR_SATURATION),	_T("1")));
 
-		{
+		bNotChangeFontToYH = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_NOTCHANGEFONTTOYH), 0);
+
+		if(!bNotChangeFontToYH){
 			BOOL bHadYaheiDownloaded = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS),  _T("HasYaheiDownloaded"), 0); //默认检查是否使用旧字体
 			CSVPToolBox svptoolbox;
 			if(!svptoolbox.bFontExist(_T("微软雅黑")) && !svptoolbox.bFontExist(_T("Microsoft YaHei")) ){ 

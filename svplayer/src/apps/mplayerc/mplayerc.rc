@@ -1453,10 +1453,10 @@ BEGIN
     BUTTON      ID_SUBLANGSWITCH
     BUTTON      ID_SUBDELAYINC
     BUTTON      ID_BUTTONSEP
-    BUTTON      ID_SUB2DELAYDEC
-    BUTTON      ID_SUB2LANGSWITCH
-    BUTTON      ID_SUB2DELAYINC
+    BUTTON      ID_SUBFONTDOWNBOTH
+    BUTTON      ID_SUBFONTUPBOTH
     BUTTON      ID_BUTTONSEP
+    BUTTON      ID_SHOWCOLORCONTROLBAR
     BUTTON      ID_VIEW_PLAYLIST
     BUTTON      ID_BUTTONSEP
     BUTTON      ID_BUTTONSEP
@@ -1840,6 +1840,7 @@ BEGIN
                 MENUITEM "视频捕捉控制面板\tCtrl+8",            ID_VIEW_CAPTURE
                 MENUITEM "特效(Shader)编辑器\tCtrl+9",       ID_VIEW_SHADEREDITOR
             END
+            MENUITEM "显示亮度控制栏",                     ID_SHOWCOLORCONTROLBAR
             MENUITEM SEPARATOR
             MENUITEM "属性(&r)",                      ID_FILE_PROPERTIES
             MENUITEM "收藏夹(&F)",                     ID__FAVORITES
@@ -1976,6 +1977,7 @@ BEGIN
             MENUITEM "视频捕捉控制面板\tCtrl+8",            ID_VIEW_CAPTURE
             MENUITEM "特效(Shader)编辑器\tCtrl+9",       ID_VIEW_SHADEREDITOR
         END
+        MENUITEM "显示亮度控制栏",                     ID_SHOWCOLORCONTROLBAR
         MENUITEM SEPARATOR
         MENUITEM "选项(&O)...",                   ID_VIEW_OPTIONS
         MENUITEM "高级设置(&A)...",                 ID_32797
@@ -2150,6 +2152,8 @@ END
 STRINGTABLE 
 BEGIN
     IDS_RS_COLOR_SATURATION "Color Saturation"
+    IDS_RS_SHOWCONTROLBAR   "ShowControlBar"
+    IDS_RS_NOTCHANGEFONTTOYH "NotChangeFontToYH"
 END
 
 STRINGTABLE 
@@ -2588,7 +2592,7 @@ END
 STRINGTABLE 
 BEGIN
     ID_SUBDELAYDEC          "减少主字幕延时\n减少主字幕延时"
-    ID_SUBLANGSWITCH        "重置主字幕延时\n重置主字幕延时"
+    ID_SUBLANGSWITCH        "切换主字幕\n切换主字幕"
     ID_SUBDELAYINC          "增加主字幕延时\n增加主字幕延时"
     ID_SUB2DELAYDEC         "减少第二字幕延时\n减少第二字幕延时"
     ID_SUB2LANGSWITCH       "重置第二字幕延时\n重置第二字幕延时"
@@ -2597,6 +2601,8 @@ END
 STRINGTABLE 
 BEGIN
     ID_SUB2DELAYINC         "增加第二字幕延时\n增加第二字幕延时"
+    ID_SUBFONTUPBOTH        "缩小字幕字体\n缩小字幕字体"
+    ID_SUBFONTDOWNBOTH      "放大字幕字体\n放大字幕字体"
 END
 
 STRINGTABLE 
@@ -2675,6 +2681,16 @@ BEGIN
     IDS_INFOBAR_RATING      "评分"
     IDS_INFOBAR_DESCRIPTION "描述"
     IDS_INFOBAR_DOMAIN      "域名"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_VIEW_PLAYLIST        "播放列表\n播放列表"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_SHOWCOLORCONTROLBAR  "亮度控制\n亮度控制"
 END
 
 #endif    // Chinese (P.R.C.) resources

@@ -389,6 +389,9 @@ public:
 		bool fCompMonDeskARDiff;
 		int autoResumePlay;
 
+		bool bShowControlBar;
+		bool bNotChangeFontToYH;
+
 		CRecentFileAndURLList MRU;
 		CRecentFileAndURLList MRUDub;
 		CRecentFileAndURLList MRUUrl;

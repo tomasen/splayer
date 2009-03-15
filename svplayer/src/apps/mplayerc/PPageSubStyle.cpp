@@ -238,6 +238,12 @@ BOOL CPPageSubStyle::OnApply()
 		{
 			//m_stss.charSet = stss.charSet;
 			stss = m_stss;
+
+			if ( (m_stss.fontName == _T("Î¢ÈíÑÅºÚ") || m_stss.fontName == _T("Microsoft YaHei") ) && stss.fontName != m_stss.fontName ) 
+			{
+				AfxGetAppSettings().bNotChangeFontToYH = TRUE;
+			}
+
 			if(CMainFrame* pFrame = dynamic_cast<CMainFrame*>(AfxGetMainWnd())){
 				
 				if(m_2ndsub)

@@ -306,6 +306,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 
 	ON_COMMAND_RANGE(ID_SUBMOVEUP, ID_SUB2MOVERIGHT, OnSubtitleMove)
 	ON_COMMAND_RANGE(ID_SUBFONTUPBOTH, ID_SUB2FONTDOWN, OnSubtitleFontChange)
+	ON_UPDATE_COMMAND_UI_RANGE(ID_SUBFONTUPBOTH, ID_SUB2FONTDOWN, OnUpdateSubtitleFontChange)
 
 	ON_COMMAND(ID_PLAY_PLAY, OnPlayPlay)
 	ON_COMMAND(ID_PLAY_PAUSE, OnPlayPause)
@@ -400,6 +401,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI( IDC_BUTTONENABLECOLORCONTROL,  OnColorControlUpdateButtonEnable)
 
 
+	ON_COMMAND(ID_SHOWCOLORCONTROLBAR, &CMainFrame::OnShowColorControlBar)
+	ON_UPDATE_COMMAND_UI(ID_SHOWCOLORCONTROLBAR, &CMainFrame::OnUpdateShowColorControlBar)
 	END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -411,6 +414,7 @@ static bool s_fLDown = false;
 static int s_mDragFuc = 0;
 static bool s_mDragFucOn = false;
 static bool bRecentFocused = FALSE;
+static bool bNotHideColorControlBar = FALSE;
 #define  SINGLECLICK_INTERLEAVE_MS 200
 
 CMainFrame::CMainFrame() : 
@@ -1308,14 +1312,37 @@ void CMainFrame::OnPlaySubDelay(UINT nID)
 			break;
 		default:
 			//getCurPlayingSubfile(&newDelay);
+			if(m_iSubtitleSel < 0){
+				m_iSubtitleSel = 0;
+			}else{
+				POSITION pos = m_pSubStreams.GetHeadPosition();
+				int iTotalSub = 0;
+				while(pos )
+				{
+					iTotalSub += m_pSubStreams.GetNext(pos)->GetStreamCount();
+				}
+				m_iSubtitleSel++;
+				if(m_iSubtitleSel >= iTotalSub ){
+					m_iSubtitleSel ^= (1<<31);
+				}
+			}
+			UpdateSubtitle();	
+			return;
 			break;
 	}
 	this->SetSubtitleDelay(newDelay);
 }
-void CMainFrame::OnUpdatePlaySubDelay(CCmdUI* pCmdUI)
+void CMainFrame::OnUpdateSubtitleFontChange(CCmdUI* pCmdUI)
 {
 	bool fEnable = false;
 	if(m_pSubStreams.GetCount() > 0 && m_iSubtitleSel >= 0 ) 
+		fEnable = true;
+	pCmdUI->Enable(fEnable);
+}
+void CMainFrame::OnUpdatePlaySubDelay(CCmdUI* pCmdUI)
+{
+	bool fEnable = false;
+	if(m_pSubStreams.GetCount() > 0 && ( m_iSubtitleSel >= 0 || pCmdUI->m_nID == ID_SUBLANGSWITCH ) ) 
 		fEnable = true;
 	pCmdUI->Enable(fEnable);
 }
@@ -1369,7 +1396,7 @@ CString CMainFrame::getCurPlayingSubfile(int * iSubDelayMS,int subid ){
 			int iSubDelay_ms;
 			iSubDelay_ms = m_pCAP->GetSubtitleDelay();			
 			if(subid){	iSubDelay_ms = m_pCAP->GetSubtitleDelay2();	}
-			if (iSubDelayMS && iSubDelay_ms){
+			if (iSubDelayMS ){
 				*iSubDelayMS = iSubDelay_ms;
 			}
 			CLSID clsid;
@@ -1386,11 +1413,14 @@ CString CMainFrame::getCurPlayingSubfile(int * iSubDelayMS,int subid ){
 				fnSubtitleFile = pRTS->m_path;
 
 			}
-			if( iSubDelay_ms && !pSubStream->notSaveDelay ){
+			if(  !pSubStream->notSaveDelay ){
 				CSVPToolBox svpTool;
 				CString szBuf;
 				szBuf.Format(_T("%d"), iSubDelay_ms);
 				svpTool.filePutContent(fnSubtitleFile+_T(".delay"),szBuf );
+				if(!iSubDelay_ms){
+					_wunlink(fnSubtitleFile+_T(".delay"));
+				}
 			}
 		}
 	}
@@ -1526,6 +1556,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 		if (!( AfxGetAppSettings().nCS & CS_STATUSBAR)){
 			ShowControlBar(&m_wndStatusBar, false, false);
 		}
+		bNotHideColorControlBar = false;
 		KillTimer(TIMER_STATUSBARHIDER);
 	}
 	else if(nIDEvent == TIMER_FULLSCREENCONTROLBARHIDER)
@@ -2352,6 +2383,11 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 
 	CSize diff = m_lastMouseMove - point;
 	BOOL bMouseMoved =  (abs(diff.cx)+abs(diff.cy)) >= 1;
+	if(bMouseMoved){
+		m_fHideCursor = false;
+		KillTimer(TIMER_FULLSCREENMOUSEHIDER);
+		SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
+	}
 	int iDistance = sqrt( pow( (double)abs(point.x - m_pLastClickPoint.x) , 2)  + pow( (double)abs( point.y - m_pLastClickPoint.y ) , 2) );
 	if( ( iDistance > 30 || s_mDragFucOn) && s_mDragFuc){
 		if(!s_mDragFucOn){
@@ -2389,7 +2425,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 			}
 
 			KillTimer(TIMER_FULLSCREENCONTROLBARHIDER);
-			SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
+//			SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
 		}
 		else if(nTimeOut == 0)
 		{
@@ -2427,7 +2463,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 			}
 			
 
-			SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
+			//SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
 		}
 		else
 		{
@@ -2438,7 +2474,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 			}
 				
 			SetTimer(TIMER_FULLSCREENCONTROLBARHIDER, nTimeOut*1000, NULL);
-			SetTimer(TIMER_FULLSCREENMOUSEHIDER, max(nTimeOut*1000, 2000), NULL);
+			//SetTimer(TIMER_FULLSCREENMOUSEHIDER, max(nTimeOut*1000, 2000), NULL);
 		}
 	}
 	if((m_fFullScreen || IsCaptionMenuHidden() ) && bMouseMoved)
@@ -2454,22 +2490,43 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 
 	}
 
-	if(!m_fFullScreen && bMouseMoved){
+
+
+	if(!m_fFullScreen && bMouseMoved && AfxGetAppSettings().bShowControlBar){
 		CRect cvr = m_wndView.GetVideoRect(); //show and hide Color Control Bar when not full screen
 		cvr.top = cvr.bottom - 30;
 		if(cvr.PtInRect(point)){
 			ShowControlBar(&m_wndColorControlBar, SW_SHOW, FALSE);
-		}else{
+		}else if(!bNotHideColorControlBar){
 			ShowControlBar(&m_wndColorControlBar, SW_HIDE, TRUE);
 		}
-		m_fHideCursor = false;
-		SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
+		
 	}
-	
+
+
+
 	m_lastMouseMove = point;
 
 	__super::OnMouseMove(nFlags, point);
 }
+
+
+void CMainFrame::OnShowColorControlBar()
+{
+	AppSettings &s = AfxGetAppSettings();
+	s.bShowControlBar = !s.bShowControlBar;
+	ShowControlBar(&m_wndColorControlBar, (s.bShowControlBar ? SW_SHOW : SW_HIDE) , false);
+	if(s.bShowControlBar){
+		bNotHideColorControlBar = TRUE;
+		SetTimer(TIMER_STATUSBARHIDER, 3000 , NULL);
+	}
+}
+
+void CMainFrame::OnUpdateShowColorControlBar(CCmdUI *pCmdUI)
+{
+	pCmdUI->SetCheck(!!AfxGetAppSettings().bShowControlBar);
+}
+
 void CMainFrame::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
 	if(s_fLDown)
@@ -10210,7 +10267,7 @@ void CMainFrame::UpdateSubtitle2(bool fApplyDefStyle)
 
 		i -= pSubStream->GetStreamCount();
 	}
-
+	SendStatusMessage(_T("第二字幕已关闭") , 4000 );
 	m_pCAP->SetSubPicProvider2(NULL);
 }
 void CMainFrame::UpdateSubtitle(bool fApplyDefStyle)
@@ -10234,7 +10291,7 @@ void CMainFrame::UpdateSubtitle(bool fApplyDefStyle)
 
 		i -= pSubStream->GetStreamCount();
 	}
-
+	SendStatusMessage(_T("主字幕已关闭") , 4000 );
 	m_pCAP->SetSubPicProvider(NULL);
 }
 void CMainFrame::SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle)
@@ -10305,7 +10362,7 @@ void CMainFrame::SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle)
 			pRTS->Deinit();
 		}
 	}
-
+	
 // 	if(!fApplyDefStyle)
 // 	{
 		m_iSubtitleSel2 = -1;
@@ -10339,6 +10396,22 @@ void CMainFrame::SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle)
 		m_pCAP->SetSubPicProvider2(CComQIPtr<ISubPicProvider>(pSubStream));
 		//m_wndSubresyncBar.SetSubtitle(pSubStream, m_pCAP->GetFPS());
 		SetSubtitleDelay2(pSubStream->sub_delay_ms); 
+		CString szBuf;
+		CString subName;
+		WCHAR* pName = NULL;
+		if(SUCCEEDED(pSubStream->GetStreamInfo(pSubStream->GetStream(), &pName, NULL)))
+		{
+			subName = CString(pName);
+			subName.Replace(_T("&"), _T("&&"));
+			CoTaskMemFree(pName);
+		}
+
+		szBuf.Format(_T("正在显示第二字幕 %s 延时设为 %d 毫秒"), subName, pSubStream->sub_delay_ms);
+		SVP_LogMsg(szBuf);
+		SetSubtitleDelay(pSubStream->sub_delay_ms); 
+		SendStatusMessage(szBuf , 4000 );
+	}else{
+		SendStatusMessage(_T("第二字幕已关闭") , 4000 );
 	}
 }
 void CMainFrame::SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle)
@@ -10442,10 +10515,23 @@ void CMainFrame::SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle)
 		m_pCAP->SetSubPicProvider(CComQIPtr<ISubPicProvider>(pSubStream));
 		m_wndSubresyncBar.SetSubtitle(pSubStream, m_pCAP->GetFPS());
 		CString szBuf;
-		szBuf.Format(_T("%d delay for sub"), pSubStream->sub_delay_ms);
+		CString subName;
+		WCHAR* pName = NULL;
+		if(SUCCEEDED(pSubStream->GetStreamInfo(pSubStream->GetStream(), &pName, NULL)))
+		{
+			subName = CString(pName);
+			subName.Replace(_T("&"), _T("&&"));
+			CoTaskMemFree(pName);
+		}
+		
+		
+		szBuf.Format(_T("正在显示主字幕 %s 延时设为 %d 毫秒"), subName,  pSubStream->sub_delay_ms);
 		SVP_LogMsg(szBuf);
 		SetSubtitleDelay(pSubStream->sub_delay_ms); 
+		SendStatusMessage(szBuf , 4000 );
 		
+	}else{
+		SendStatusMessage(_T("主字幕已关闭") , 4000 );
 	}
 }
 
@@ -11433,11 +11519,11 @@ afx_msg void CMainFrame::OnSubtitleFontChange(UINT nID)
 		}
 
 		if(bSubChg1){
-			str.Format(_T("主字幕字体已经设为：%0.1f %% "), s.subdefstyle.fontSize);
+			str.Format(_T("主字幕字体已经设为：%0.0f  "), s.subdefstyle.fontSize);
 			UpdateSubtitle(true); 
 		}
 		if(bSubChg2){
-			str2.Format(_T("第二字幕字体已经设为：%0.1f %% "), s.subdefstyle.fontSize);
+			str2.Format(_T("第二字幕字体已经设为：%0.0f  "), s.subdefstyle.fontSize);
 			UpdateSubtitle2(true);
 		}
 		SendStatusMessage(str + str2, 5000);

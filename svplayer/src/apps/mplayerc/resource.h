@@ -306,11 +306,11 @@
 #define ID_SHADERS_END                  4299
 #define ID_SUBTITLES_SUBITEM_START2     4300
 #define ID_SUBTITLES_SUBITEM_END2       4399
-#define IDS_AUDIOCHANNALMAPNORMAL		4400
-#define IDS_AUDIOCHANNALMAPLEFT			4401
-#define IDS_AUDIOCHANNALMAPRIGHT		4402
-#define IDS_AUDIOCHANNALMAPCENTER		4403
-#define IDS_AUDIOCHANNALMAPEND			4403
+#define IDS_AUDIOCHANNALMAPNORMAL       4400
+#define IDS_AUDIOCHANNALMAPLEFT         4401
+#define IDS_AUDIOCHANNALMAPRIGHT        4402
+#define IDS_AUDIOCHANNALMAPCENTER       4403
+#define IDS_AUDIOCHANNALMAPEND          4403
 #define IDD_OPEN_DLG                    10000
 #define IDD_OPENCAPDEVICE_DLG           10001
 #define IDD_MEDIATYPES_DLG              10002
@@ -654,6 +654,8 @@
 #define IDS_RS_COLOR_CONTRAST           13150
 #define IDS_RS_COLOR_HUE                13151
 #define IDS_RS_COLOR_SATURATION         13152
+#define IDS_RS_SHOWCONTROLBAR           13153
+#define IDS_RS_NOTCHANGEFONTTOYH        13154
 #define IDS_SRC_RADGT                   14000
 #define IDS_SRC_CDDA                    14001
 #define IDS_SRC_AVI                     14002
@@ -801,8 +803,6 @@
 #define IDS_RS_DXVAFILTERS              14214
 #define IDS_RS_FFMPEGFILTERS            14215
 #define IDS_SRC_FLAC                    14216
-
-
 #define IDD_DHTML_SETTING               20000
 #define IDR_DEFAULT1                    20006
 #define IDD_DEFAULT_PLAYER              20007
@@ -867,8 +867,10 @@
 #define ID_DONATE                       32812
 #define ID_JOINTEAM                     32813
 #define ID__32814                       32814
-#define ID_BRIGHTINC                     32815
-#define ID_BRIGHTDEC                     32816
+#define ID_BRIGHTINC                    32815
+#define ID_32815                        32815
+#define ID_BRIGHTDEC                    32816
+#define ID_SHOWCOLORCONTROLBAR          32817
 #define IDS_VOLUME_BOOST_INC            33129
 #define IDS_VOLUME_BOOST_DEC            33130
 #define IDS_VOLUME_BOOST_MIN            33131
@@ -943,7 +945,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        20011
-#define _APS_NEXT_COMMAND_VALUE         32815
+#define _APS_NEXT_COMMAND_VALUE         32817
 #define _APS_NEXT_CONTROL_VALUE         22004
 #define _APS_NEXT_SYMED_VALUE           24001
 #endif

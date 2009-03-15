@@ -2388,11 +2388,12 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 		KillTimer(TIMER_FULLSCREENMOUSEHIDER);
 		SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
 	}
+	AppSettings& s = AfxGetAppSettings();
 	int iDistance = sqrt( pow( (double)abs(point.x - m_pLastClickPoint.x) , 2)  + pow( (double)abs( point.y - m_pLastClickPoint.y ) , 2) );
 	if( ( iDistance > 30 || s_mDragFucOn) && s_mDragFuc){
 		if(!s_mDragFucOn){
 			m_pDragFuncStartPoint = point;
-			SetAlwaysOnTop(AfxGetAppSettings().iOnTop , FALSE);
+			SetAlwaysOnTop(s.iOnTop , FALSE);
 			s_mDragFucOn = true;
 		}
 		if(s_mDragFuc == 1){ //ÒÆ¶¯»­Ãæ
@@ -2414,13 +2415,13 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 
 	if(m_fFullScreen && bMouseMoved)
 	{
-		int nTimeOut = AfxGetAppSettings().nShowBarsWhenFullScreenTimeOut;
+		int nTimeOut = s.nShowBarsWhenFullScreenTimeOut;
 
 		if(nTimeOut < 0)
 		{
 			m_fHideCursor = false;
-			if(AfxGetAppSettings().fShowBarsWhenFullScreen){
-				ShowControls(AfxGetAppSettings().nCS | CS_COLORCONTROLBAR);
+			if(s.fShowBarsWhenFullScreen){
+				ShowControls(s.nCS | (s.bShowControlBar ? CS_COLORCONTROLBAR : 0));
 				//m_wndColorControlBar.ShowWindow(SW_SHOW);
 			}
 
@@ -2437,8 +2438,8 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 			for(int i = 1; pos; i <<= 1)
 			{
 				CControlBar* pNext = m_bars.GetNext(pos);
-				CSize s = pNext->CalcFixedLayout(FALSE, TRUE);
-				if(AfxGetAppSettings().nCS&i) r.top -= s.cy;
+				CSize sz = pNext->CalcFixedLayout(FALSE, TRUE);
+				if(s.nCS&i) r.top -= sz.cy;
 			}
 			
 			// HACK: the controls would cover the menu too early hiding some buttons
@@ -2451,13 +2452,13 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 
 			if(r.PtInRect(point))
 			{
-				if(AfxGetAppSettings().fShowBarsWhenFullScreen){
-					ShowControls(AfxGetAppSettings().nCS | CS_COLORCONTROLBAR );
+				if(s.fShowBarsWhenFullScreen){
+					ShowControls(s.nCS | ( s.bShowControlBar ? CS_COLORCONTROLBAR : 0) );
 					//m_wndColorControlBar.ShowWindow(SW_SHOW);
 				}
 			}
 			else{
-				if(AfxGetAppSettings().fShowBarsWhenFullScreen)
+				if(s.fShowBarsWhenFullScreen)
 					ShowControls(CS_NONE, false);
 				
 			}
@@ -2468,8 +2469,8 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 		else
 		{
 			m_fHideCursor = false;
-			if(AfxGetAppSettings().fShowBarsWhenFullScreen){
-				ShowControls(AfxGetAppSettings().nCS | CS_COLORCONTROLBAR);
+			if(s.fShowBarsWhenFullScreen){
+				ShowControls(s.nCS |  ( s.bShowControlBar ? CS_COLORCONTROLBAR : 0) );
 				//m_wndColorControlBar.ShowWindow(SW_SHOW);
 			}
 				
@@ -2492,7 +2493,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 
 
 
-	if(!m_fFullScreen && bMouseMoved && AfxGetAppSettings().bShowControlBar){
+	if(!m_fFullScreen && bMouseMoved && s.bShowControlBar){
 		CRect cvr = m_wndView.GetVideoRect(); //show and hide Color Control Bar when not full screen
 		cvr.top = cvr.bottom - 30;
 		if(cvr.PtInRect(point)){
@@ -2519,6 +2520,8 @@ void CMainFrame::OnShowColorControlBar()
 	if(s.bShowControlBar){
 		bNotHideColorControlBar = TRUE;
 		SetTimer(TIMER_STATUSBARHIDER, 3000 , NULL);
+	}else{
+		bNotHideColorControlBar = false;
 	}
 }
 

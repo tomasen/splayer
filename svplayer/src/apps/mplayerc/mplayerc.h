@@ -425,6 +425,7 @@ public:
 		bool fEnableWorkerThreadForOpening;
 		bool fReportFailedPins;
 
+		bool bUsePowerDVD;
 		bool fAllowMultipleInst;
 		int iTitleBarTextStyle;
 		bool fTitleBarTextTitle;

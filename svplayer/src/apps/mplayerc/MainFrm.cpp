@@ -403,6 +403,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 
 	ON_COMMAND(ID_SHOWCOLORCONTROLBAR, &CMainFrame::OnShowColorControlBar)
 	ON_UPDATE_COMMAND_UI(ID_SHOWCOLORCONTROLBAR, &CMainFrame::OnUpdateShowColorControlBar)
+	ON_COMMAND(ID_SETSNAPSHOTPATH, &CMainFrame::OnSetsnapshotpath)
 	END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -523,7 +524,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 
 	if(m_wndColorControlBar.Create(this)){
-		m_wndColorControlBar.ShowWindow(SW_HIDE);
+		m_wndColorControlBar.ShowWindow( SW_HIDE);
 	}
 	if(m_wndStatusBar.Create(this)){
 		m_bars.AddTail(&m_wndStatusBar);
@@ -537,7 +538,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	AppSettings& s = AfxGetAppSettings();
 
-	ShowControls(s.nCS);
+	ShowControls(s.nCS | (s.bShowControlBar ? CS_COLORCONTROLBAR : 0));
 
 	SetAlwaysOnTop(s.iOnTop);
 
@@ -2421,7 +2422,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 		{
 			m_fHideCursor = false;
 			if(s.fShowBarsWhenFullScreen){
-				ShowControls(s.nCS | (s.bShowControlBar ? CS_COLORCONTROLBAR : 0));
+				ShowControls(s.nCS | (s.bShowControlBar ? CS_COLORCONTROLBAR : 0), false);
 				//m_wndColorControlBar.ShowWindow(SW_SHOW);
 			}
 
@@ -2453,7 +2454,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 			if(r.PtInRect(point))
 			{
 				if(s.fShowBarsWhenFullScreen){
-					ShowControls(s.nCS | ( s.bShowControlBar ? CS_COLORCONTROLBAR : 0) );
+					ShowControls(s.nCS | ( s.bShowControlBar ? CS_COLORCONTROLBAR : 0) , false);
 					//m_wndColorControlBar.ShowWindow(SW_SHOW);
 				}
 			}
@@ -2470,7 +2471,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 		{
 			m_fHideCursor = false;
 			if(s.fShowBarsWhenFullScreen){
-				ShowControls(s.nCS |  ( s.bShowControlBar ? CS_COLORCONTROLBAR : 0) );
+				ShowControls(s.nCS |  ( s.bShowControlBar ? CS_COLORCONTROLBAR : 0), false );
 				//m_wndColorControlBar.ShowWindow(SW_SHOW);
 			}
 				
@@ -2492,6 +2493,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 	}
 
 
+/*
 
 	if(!m_fFullScreen && bMouseMoved && s.bShowControlBar){
 		CRect cvr = m_wndView.GetVideoRect(); //show and hide Color Control Bar when not full screen
@@ -2504,6 +2506,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 		
 	}
 
+*/
 
 
 	m_lastMouseMove = point;
@@ -8687,19 +8690,24 @@ void CMainFrame::OnColorControlButtonReset(){
 }
 void CMainFrame::OnColorControlButtonEnable(){
 	AppSettings& s = AfxGetAppSettings();
-	s.fVMR9MixerMode = TRUE;
-	s.iDSVideoRendererType = 6;
-	s.iRMVideoRendererType = 2;
-	s.iQTVideoRendererType = 2;
+	s.fVMR9MixerMode = !s.fVMR9MixerMode;
+	if(s.fVMR9MixerMode){
+		s.iDSVideoRendererType = 6;
+		s.iRMVideoRendererType = 2;
+		s.iQTVideoRendererType = 2;
+	}
 
-	int iPlaybackMode = m_iPlaybackMode;
-	
-	CloseMedia();
-	
-	if(iPlaybackMode == PM_FILE)
-	{
-		OpenCurPlaylistItem();
-	} 
+	if( m_iMediaLoadState != MLS_CLOSED){
+		int iPlaybackMode = m_iPlaybackMode;
+		CloseMedia();
+		m_wndColorControlBar.CheckAbility();
+		if(iPlaybackMode == PM_FILE)
+		{
+			OpenCurPlaylistItem();
+		} 
+	}else{
+		m_wndColorControlBar.CheckAbility();
+	}
 }
 void CMainFrame::OnColorControlUpdateButtonReset(CCmdUI* pCmdUI)
 {
@@ -8713,7 +8721,12 @@ void CMainFrame::OnColorControlUpdateButtonEnable(CCmdUI* pCmdUI)
 	if( GetMediaState() == State_Running ){
 		bEnable = !m_pMC;
 	}
-	pCmdUI->Enable(bEnable);
+	//pCmdUI->Enable(bEnable);
+	if(bEnable)
+		pCmdUI->SetText(_T("启用"));
+	else
+		pCmdUI->SetText(_T("禁用"));
+	
 }
 
 void CMainFrame::SetVMR9ColorControl(float dBrightness, float dContrast, float dHue, float dSaturation)
@@ -11249,13 +11262,19 @@ void CMainFrame::OpenMedia(CAutoPtr<OpenMediaData> pOMD)
 	AppSettings& s = AfxGetAppSettings();
 
 	bool fUseThread = true;
-
+	s.bUsePowerDVD = true;
 	if(OpenFileData* p = dynamic_cast<OpenFileData*>(pOMD.m_p))
 	{
 		if(p->fns.GetCount() > 0)
 		{
 			engine_t e = s.Formats.GetEngine(p->fns.GetHead());
 			fUseThread = e == DirectShow /*|| e == RealMedia || e == QuickTime*/;
+
+			CString szVPathExt = p->fns.GetHead();
+			szVPathExt = szVPathExt.Right(4).MakeLower();
+			if( szVPathExt == _T(".flv") ||  szVPathExt == _T(".mp4")){
+				s.bUsePowerDVD = false;
+			}
 		}
 	}
 	else if(OpenDeviceData* p = dynamic_cast<OpenDeviceData*>(pOMD.m_p))
@@ -11586,4 +11605,35 @@ void CMainFrame::OnDonate()
 void CMainFrame::OnJointeam()
 {
 	ShellExecute(m_hWnd, _T("open"), _T("http://shooter.cn/svplayer/join.html"), NULL, NULL, SW_SHOWDEFAULT);
+}
+
+static int __stdcall BrowseCtrlCallback(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData)
+{
+	if(uMsg == BFFM_INITIALIZED && lpData)
+		::SendMessage(hwnd, BFFM_SETSELECTION, TRUE, lpData);
+	return 0;
+}
+void CMainFrame::OnSetsnapshotpath()
+{
+	TCHAR buff[MAX_PATH];
+	AppSettings& s = AfxGetAppSettings();
+
+	BROWSEINFO bi;
+	bi.hwndOwner = m_hWnd;
+	bi.pidlRoot = NULL;
+	bi.pszDisplayName = buff;
+	bi.lpszTitle = _T("选择截图默认保存文件夹");
+	bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_VALIDATE | BIF_USENEWUI;
+	bi.lpfn = BrowseCtrlCallback;
+	bi.lParam = (LPARAM)(LPCTSTR)s.SnapShotPath;
+	bi.iImage = 0; 
+
+	LPITEMIDLIST iil;
+	if(iil = SHBrowseForFolder(&bi))
+	{
+		SHGetPathFromIDList(iil, buff);
+		s.SnapShotPath = buff;
+		return ;
+	}
+
 }

@@ -1884,8 +1884,13 @@ BEGIN
         MENUITEM "关闭(&C)",                      ID_FILE_CLOSEPLAYLIST
         MENUITEM SEPARATOR
         MENUITEM "另存为(&S)...",                  ID_FILE_SAVE_COPY
-        MENUITEM "抓取快照(&I)...",                 ID_FILE_SAVE_IMAGE
-        MENUITEM "生成缩略图...",                    ID_FILE_SAVE_THUMBNAILS
+        POPUP "截取图片"
+        BEGIN
+            MENUITEM "抓取快照(&I)...\tF5",             ID_FILE_SAVE_IMAGE
+            MENUITEM "生成缩略图...",                    ID_FILE_SAVE_THUMBNAILS
+            MENUITEM SEPARATOR
+            MENUITEM "设置默认保存文件夹",                   ID_SETSNAPSHOTPATH
+        END
         MENUITEM SEPARATOR
         MENUITEM "调入字幕(&L)...\tCtrl+L",         ID_FILE_LOAD_SUBTITLE
         MENUITEM "另存字幕文件...\tCtrl+S",           ID_FILE_SAVE_SUBTITLE

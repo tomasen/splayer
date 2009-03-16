@@ -871,6 +871,8 @@
 #define ID_32815                        32815
 #define ID_BRIGHTDEC                    32816
 #define ID_SHOWCOLORCONTROLBAR          32817
+#define ID_32818                        32818
+#define ID_SETSNAPSHOTPATH              32819
 #define IDS_VOLUME_BOOST_INC            33129
 #define IDS_VOLUME_BOOST_DEC            33130
 #define IDS_VOLUME_BOOST_MIN            33131
@@ -945,7 +947,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        20011
-#define _APS_NEXT_COMMAND_VALUE         32817
+#define _APS_NEXT_COMMAND_VALUE         32820
 #define _APS_NEXT_CONTROL_VALUE         22004
 #define _APS_NEXT_SYMED_VALUE           24001
 #endif

@@ -457,6 +457,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\..\mpc-hc\trunk\src\apps\mplayerc\Ifo.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\IPinHook.cpp"
 				>
 			</File>
@@ -886,6 +890,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\..\mpc-hc\trunk\src\apps\mplayerc\Ifo.h"
+				>
+			</File>
+			<File
 				RelativePath=".\IGraphBuilder2.h"
 				>
 			</File>
@@ -1171,6 +1179,10 @@
 			</File>
 			<File
 				RelativePath=".\StdAfx.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Struct.h"
 				>
 			</File>
 			<File
@@ -1648,11 +1660,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 	</Files>

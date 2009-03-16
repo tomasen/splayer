@@ -33,7 +33,7 @@
 #include <dmodshow.h>
 #include <D3d9.h>
 #include <Vmr9.h>
-
+#include "../../svplib/SVPToolBox.h"
 //
 // CFGManager
 //
@@ -42,8 +42,12 @@ CFGManager::CFGManager(LPCTSTR pName, LPUNKNOWN pUnk)
 	: CUnknown(pName, pUnk)
 	, m_dwRegister(0)
 {
-	m_pUnkInner.CoCreateInstance(CLSID_FilterGraph, GetOwner());
-	m_pFM.CoCreateInstance(CLSID_FilterMapper2);
+	if( S_OK != m_pUnkInner.CoCreateInstance(CLSID_FilterGraph, GetOwner()) ){
+		m_pUnkInner = NULL;
+	}
+	if( S_OK != m_pFM.CoCreateInstance(CLSID_FilterMapper2) ){
+		m_pFM = NULL;
+	}
 }
 
 CFGManager::~CFGManager()
@@ -479,18 +483,25 @@ STDMETHODIMP CFGManager::ConnectDirect(IPin* pPinOut, IPin* pPinIn, const AM_MED
 	if(!m_pUnkInner) return E_UNEXPECTED;
 
 	CAutoLock cAutoLock(this);
+	HRESULT ret;
+	try {
+		CComPtr<IBaseFilter> pBF = GetFilterFromPin(pPinIn);
+		CLSID clsid = GetCLSID(pBF);
 
-	CComPtr<IBaseFilter> pBF = GetFilterFromPin(pPinIn);
-	CLSID clsid = GetCLSID(pBF);
-
-	// TODO: GetUpStreamFilter goes up on the first input pin only
-	for(CComPtr<IBaseFilter> pBFUS = GetFilterFromPin(pPinOut); pBFUS; pBFUS = GetUpStreamFilter(pBFUS))
-	{
-		if(pBFUS == pBF) return VFW_E_CIRCULAR_GRAPH;
-        if(GetCLSID(pBFUS) == clsid) return VFW_E_CANNOT_CONNECT;
+		// TODO: GetUpStreamFilter goes up on the first input pin only
+		for(CComPtr<IBaseFilter> pBFUS = GetFilterFromPin(pPinOut); pBFUS; pBFUS = GetUpStreamFilter(pBFUS))
+		{
+			if(pBFUS == pBF) return VFW_E_CIRCULAR_GRAPH;
+			if(GetCLSID(pBFUS) == clsid) return VFW_E_CANNOT_CONNECT;
+		}
+		
+		ret = CComQIPtr<IFilterGraph2>(m_pUnkInner)->ConnectDirect(pPinOut, pPinIn, pmt);
+		
 	}
-
-	return CComQIPtr<IFilterGraph2>(m_pUnkInner)->ConnectDirect(pPinOut, pPinIn, pmt);
+	catch (CException* e){
+		ret = E_UNEXPECTED;
+	}
+	return ret;
 }
 
 STDMETHODIMP CFGManager::Reconnect(IPin* ppin)
@@ -2066,6 +2077,8 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	// palm demuxer crashes (even crashes graphedit when dropping an .ac3 onto it)
 	m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{BE2CF8A7-08CE-4A2C-9A25-FD726A999196}")), MERIT64_DO_NOT_USE));
 
+	// MainConcept (Adobe2) MPEG Splitter crash on pmp if splitter not exist
+	m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{25AD5720-4DE0-4CF8-952A-2AEF53AC4321}")), MERIT64_DO_NOT_USE));
 	// DCDSPFilter (early versions crash mpc)
 	{
 		CRegKey key;
@@ -2117,6 +2130,21 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{C16541FF-49ED-4DEA-9126-862F57722E31}")), MERIT64_UNLIKELY) ); //not use POWERDVD
 	}
 
+	{
+		CSVPToolBox svptoolbox;
+		CString szFPath = svptoolbox.GetPlayerPath(_T("PMPSplitter.ax")); //以文件模式调入解码器
+		if(svptoolbox.ifFileExist(szFPath)){
+			CFilterMapper2 fm2(false);
+			fm2.Register(szFPath);
+			POSITION pos = fm2.m_filters.GetHeadPosition();
+			while(pos){
+				FilterOverride* fo = fm2.m_filters.GetNext(pos);
+				CFGFilter* pFGF = new CFGFilterFile(fo->clsid, fo->path, CStringW(fo->name), MERIT64_ABOVE_DSHOW);
+				pFGF->SetTypes(fo->guids);
+				m_transform.AddTail(pFGF);
+			}
+		}
+	}
 	// Overrides
 
 	WORD merit_low = 1;

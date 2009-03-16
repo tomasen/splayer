@@ -2608,6 +2608,7 @@ BEGIN
     ID_SUB2DELAYINC         "增加第二字幕延时\n增加第二字幕延时"
     ID_SUBFONTUPBOTH        "缩小字幕字体\n缩小字幕字体"
     ID_SUBFONTDOWNBOTH      "放大字幕字体\n放大字幕字体"
+    ID_PLAY_BWD             "快退"
 END
 
 STRINGTABLE 
@@ -2696,6 +2697,11 @@ END
 STRINGTABLE 
 BEGIN
     ID_SHOWCOLORCONTROLBAR  "亮度控制\n亮度控制"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_PLAY_FWD             "快进"
 END
 
 #endif    // Chinese (P.R.C.) resources

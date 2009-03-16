@@ -1,27 +1,30 @@
-/* 
- *	Copyright (C) 2003-2006 Gabest
- *	http://www.gabest.org
- *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *   
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *   
- *  You should have received a copy of the GNU General Public License
- *  along with GNU Make; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. 
- *  http://www.gnu.org/copyleft/gpl.html
- *
- */
+/*
+* $Id: FakeFilterMapper2.h 193 2007-09-09 09:12:21Z alexwild $
+*
+* (C) 2003-2006 Gabest
+* (C) 2006-2007 see AUTHORS
+*
+* This file is part of mplayerc.
+*
+* Mplayerc is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 3 of the License, or
+* (at your option) any later version.
+*
+* Mplayerc is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*
+*/
 
 #pragma once
 
 #include <atlbase.h>
+
 
 class FilterOverride
 {
@@ -58,33 +61,33 @@ public:
 /*
 class CFilterMapper2 : protected CUnknown, protected IFilterMapper2
 {
-	static bool fInitialized;
+static bool fInitialized;
 
-	CComPtr<IFilterMapper2> m_pFM2;
-	CString m_path;
+CComPtr<IFilterMapper2> m_pFM2;
+CString m_path;
 
 protected:
-	DECLARE_IUNKNOWN;
-	STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void** ppv);
+DECLARE_IUNKNOWN;
+STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void** ppv);
 
-	// IFilterMapper2
-	
-	STDMETHODIMP CreateCategory(REFCLSID clsidCategory, DWORD dwCategoryMerit, LPCWSTR Description);
-	STDMETHODIMP UnregisterFilter(const CLSID* pclsidCategory, const OLECHAR* szInstance, REFCLSID Filter);	
-	STDMETHODIMP RegisterFilter(REFCLSID clsidFilter, LPCWSTR Name, IMoniker** ppMoniker, const CLSID* pclsidCategory, const OLECHAR* szInstance, const REGFILTER2* prf2);
-	STDMETHODIMP EnumMatchingFilters(IEnumMoniker** ppEnum, DWORD dwFlags, BOOL bExactMatch, DWORD dwMerit, 
-		BOOL bInputNeeded, DWORD cInputTypes, const GUID* pInputTypes, const REGPINMEDIUM* pMedIn, const CLSID* pPinCategoryIn, BOOL bRender, 
-		BOOL bOutputNeeded, DWORD cOutputTypes, const GUID* pOutputTypes, const REGPINMEDIUM* pMedOut, const CLSID* pPinCategoryOut);
+// IFilterMapper2
+
+STDMETHODIMP CreateCategory(REFCLSID clsidCategory, DWORD dwCategoryMerit, LPCWSTR Description);
+STDMETHODIMP UnregisterFilter(const CLSID* pclsidCategory, const OLECHAR* szInstance, REFCLSID Filter);	
+STDMETHODIMP RegisterFilter(REFCLSID clsidFilter, LPCWSTR Name, IMoniker** ppMoniker, const CLSID* pclsidCategory, const OLECHAR* szInstance, const REGFILTER2* prf2);
+STDMETHODIMP EnumMatchingFilters(IEnumMoniker** ppEnum, DWORD dwFlags, BOOL bExactMatch, DWORD dwMerit, 
+BOOL bInputNeeded, DWORD cInputTypes, const GUID* pInputTypes, const REGPINMEDIUM* pMedIn, const CLSID* pPinCategoryIn, BOOL bRender, 
+BOOL bOutputNeeded, DWORD cOutputTypes, const GUID* pOutputTypes, const REGPINMEDIUM* pMedOut, const CLSID* pPinCategoryOut);
 
 public: 
-	CFilterMapper2();
-	virtual ~CFilterMapper2();
+CFilterMapper2();
+virtual ~CFilterMapper2();
 
-	static void Init();
+static void Init();
 
-	static IFilterMapper2* m_pFilterMapper2;
-	CList<Filter*> m_filters;
-	void Register(CString path);
+static IFilterMapper2* m_pFilterMapper2;
+CList<Filter*> m_filters;
+void Register(CString path);
 };
 */
 
@@ -102,7 +105,7 @@ protected:
 	STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void** ppv);
 
 	// IFilterMapper2
-	
+
 	STDMETHODIMP CreateCategory(REFCLSID clsidCategory, DWORD dwCategoryMerit, LPCWSTR Description);
 	STDMETHODIMP UnregisterFilter(const CLSID* pclsidCategory, const OLECHAR* szInstance, REFCLSID Filter);	
 	STDMETHODIMP RegisterFilter(REFCLSID clsidFilter, LPCWSTR Name, IMoniker** ppMoniker, const CLSID* pclsidCategory, const OLECHAR* szInstance, const REGFILTER2* prf2);

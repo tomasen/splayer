@@ -537,7 +537,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	GetDesktopWindow()->GetWindowRect(&m_rcDesktop);
 
 	AppSettings& s = AfxGetAppSettings();
-
+	
 	ShowControls(s.nCS | (s.bShowControlBar ? CS_COLORCONTROLBAR : 0));
 
 	SetAlwaysOnTop(s.iOnTop);
@@ -11262,7 +11262,7 @@ void CMainFrame::OpenMedia(CAutoPtr<OpenMediaData> pOMD)
 	AppSettings& s = AfxGetAppSettings();
 
 	bool fUseThread = true;
-	s.bUsePowerDVD = true;
+	s.bUsePowerDVD = false;
 	if(OpenFileData* p = dynamic_cast<OpenFileData*>(pOMD.m_p))
 	{
 		if(p->fns.GetCount() > 0)
@@ -11271,15 +11271,16 @@ void CMainFrame::OpenMedia(CAutoPtr<OpenMediaData> pOMD)
 			fUseThread = e == DirectShow /*|| e == RealMedia || e == QuickTime*/;
 
 			CString szVPathExt = p->fns.GetHead();
-			szVPathExt = szVPathExt.Right(4).MakeLower();
-			if( szVPathExt == _T(".flv") ||  szVPathExt == _T(".mp4")){
-				s.bUsePowerDVD = false;
+			szVPathExt = szVPathExt.Right(3).MakeLower();
+			if( szVPathExt == _T("mkv") ||  szVPathExt == _T("avi") ||  szVPathExt == _T(".ts") ){
+				s.bUsePowerDVD = true;
 			}
 		}
 	}
 	else if(OpenDeviceData* p = dynamic_cast<OpenDeviceData*>(pOMD.m_p))
 	{
 		fUseThread = false;
+		s.bUsePowerDVD = true;
 	}
 
 	if(m_pGraphThread && fUseThread

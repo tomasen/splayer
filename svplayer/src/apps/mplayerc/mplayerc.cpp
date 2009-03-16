@@ -83,7 +83,7 @@ static LONG WINAPI  DebugMiniDumpFilter( struct _EXCEPTION_POINTERS *pExceptionI
 			_tcscat( szDumpPath, _T(".dmp"));
 
 			// ask the user if they want to save a dump file
-			if (::MessageBox(NULL,_T("程序发生意外,是否保存一个文件用于诊断?"), ResStr(IDR_MAINFRAME) ,MB_YESNO)==IDYES)
+			//if (::MessageBox(NULL,_T("程序发生意外,是否保存一个文件用于诊断?"), ResStr(IDR_MAINFRAME) ,MB_YESNO)==IDYES)
 			{
 				// create the file
 				HANDLE hFile = ::CreateFile( szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS,
@@ -100,7 +100,7 @@ static LONG WINAPI  DebugMiniDumpFilter( struct _EXCEPTION_POINTERS *pExceptionI
 					BOOL bOK = pDump( GetCurrentProcess(),GetCurrentProcessId(),hFile,MiniDumpNormal,&ExInfo,NULL,NULL);
 					if (bOK)
 					{
-						_stprintf( szScratch, _T("保存文件到:'%s'\n请将该文件发送至tomasen@gmail.com或https://bbs.shooter.cn\n以便我们不断完善"), szDumpPath );
+						_stprintf( szScratch, _T("程序发生意外,诊断文件已经保存到:'%s'\n请将该文件发送至tomasen@gmail.com或https://bbs.shooter.cn\n以便我们不断完善"), szDumpPath );
 						szResult = szScratch;
 						retval = EXCEPTION_EXECUTE_HANDLER;
 					}
@@ -538,15 +538,99 @@ void CMPlayerCApp::SendCommandLine(HWND hWnd)
 #include "..\..\..\include\detours\detours.h"
 #include "..\..\..\include\winddk\ntddcdvd.h"
 
-DETOUR_TRAMPOLINE(BOOL WINAPI Real_IsDebuggerPresent(), IsDebuggerPresent);
+BOOL (__stdcall * Real_IsDebuggerPresent)(void)
+= IsDebuggerPresent;
+
+LONG (__stdcall * Real_ChangeDisplaySettingsExA)(LPCSTR a0,
+												 LPDEVMODEA a1,
+												 HWND a2,
+												 DWORD a3,
+												 LPVOID a4)
+												 = ChangeDisplaySettingsExA;
+
+LONG (__stdcall * Real_ChangeDisplaySettingsExW)(LPCWSTR a0,
+												 LPDEVMODEW a1,
+												 HWND a2,
+												 DWORD a3,
+												 LPVOID a4)
+												 = ChangeDisplaySettingsExW;
+
+HANDLE (__stdcall * Real_CreateFileA)(LPCSTR a0,
+									  DWORD a1,
+									  DWORD a2,
+									  LPSECURITY_ATTRIBUTES a3,
+									  DWORD a4,
+									  DWORD a5,
+									  HANDLE a6)
+									  = CreateFileA;
+
+HANDLE (__stdcall * Real_CreateFileW)(LPCWSTR a0,
+									  DWORD a1,
+									  DWORD a2,
+									  LPSECURITY_ATTRIBUTES a3,
+									  DWORD a4,
+									  DWORD a5,
+									  HANDLE a6)
+									  = CreateFileW;
+
+BOOL (__stdcall * Real_DeviceIoControl)(HANDLE a0,
+										DWORD a1,
+										LPVOID a2,
+										DWORD a3,
+										LPVOID a4,
+										DWORD a5,
+										LPDWORD a6,
+										LPOVERLAPPED a7)
+										= DeviceIoControl;
+
+MMRESULT  (__stdcall * Real_mixerSetControlDetails)( HMIXEROBJ hmxobj, 
+													LPMIXERCONTROLDETAILS pmxcd, 
+													DWORD fdwDetails)
+													= mixerSetControlDetails;
+
+#include <Winternl.h>
+typedef NTSTATUS (WINAPI *FUNC_NTQUERYINFORMATIONPROCESS)(HANDLE ProcessHandle, PROCESSINFOCLASS ProcessInformationClass, PVOID ProcessInformation, ULONG ProcessInformationLength, PULONG ReturnLength);
+static FUNC_NTQUERYINFORMATIONPROCESS		Real_NtQueryInformationProcess = NULL;
+/*
+NTSTATUS (* Real_NtQueryInformationProcess) (HANDLE				ProcessHandle, 
+PROCESSINFOCLASS	ProcessInformationClass, 
+PVOID				ProcessInformation, 
+ULONG				ProcessInformationLength, 
+PULONG				ReturnLength)
+= NULL;*/
+
 BOOL WINAPI Mine_IsDebuggerPresent()
 {
 	TRACE(_T("Oops, somebody was trying to be naughty! (called IsDebuggerPresent)\n")); 
 	return FALSE;
 }
+#include "Struct.h"
+NTSTATUS WINAPI Mine_NtQueryInformationProcess(HANDLE ProcessHandle, PROCESSINFOCLASS ProcessInformationClass, PVOID ProcessInformation, ULONG ProcessInformationLength, PULONG ReturnLength)
+{
+	NTSTATUS		nRet;
 
-DETOUR_TRAMPOLINE(LONG WINAPI Real_ChangeDisplaySettingsExA(LPCSTR lpszDeviceName, LPDEVMODEA lpDevMode, HWND hwnd, DWORD dwFlags, LPVOID lParam), ChangeDisplaySettingsExA);
-DETOUR_TRAMPOLINE(LONG WINAPI Real_ChangeDisplaySettingsExW(LPCWSTR lpszDeviceName, LPDEVMODEW lpDevMode, HWND hwnd, DWORD dwFlags, LPVOID lParam), ChangeDisplaySettingsExW);
+	nRet = Real_NtQueryInformationProcess(ProcessHandle, ProcessInformationClass, ProcessInformation, ProcessInformationLength, ReturnLength);
+
+	if (ProcessInformationClass == ProcessBasicInformation)
+	{
+		PROCESS_BASIC_INFORMATION*		pbi = (PROCESS_BASIC_INFORMATION*)ProcessInformation;
+		PEB_NT*							pPEB;
+		PEB_NT							PEB;
+
+		pPEB = (PEB_NT*)pbi->PebBaseAddress;
+		ReadProcessMemory(ProcessHandle, pPEB, &PEB, sizeof(PEB), NULL);
+		PEB.BeingDebugged = 0;
+		WriteProcessMemory(ProcessHandle, pPEB, &PEB, sizeof(PEB), NULL);
+	}
+	else if (ProcessInformationClass == 7) // ProcessDebugPort
+	{
+		BOOL*		pDebugPort = (BOOL*)ProcessInformation;
+		*pDebugPort = FALSE;
+	}
+
+	return nRet;
+}
+
 LONG WINAPI Mine_ChangeDisplaySettingsEx(LONG ret, DWORD dwFlags, LPVOID lParam)
 {
 	if(dwFlags&CDS_VIDEOPARAMETERS)
@@ -554,12 +638,12 @@ LONG WINAPI Mine_ChangeDisplaySettingsEx(LONG ret, DWORD dwFlags, LPVOID lParam)
 		VIDEOPARAMETERS* vp = (VIDEOPARAMETERS*)lParam;
 
 		if(vp->Guid == GUIDFromCString(_T("{02C62061-1097-11d1-920F-00A024DF156E}"))
-		&& (vp->dwFlags&VP_FLAGS_COPYPROTECT))
+			&& (vp->dwFlags&VP_FLAGS_COPYPROTECT))
 		{
 			if(vp->dwCommand == VP_COMMAND_GET)
 			{
 				if((vp->dwTVStandard&VP_TV_STANDARD_WIN_VGA)
-				&& vp->dwTVStandard != VP_TV_STANDARD_WIN_VGA)
+					&& vp->dwTVStandard != VP_TV_STANDARD_WIN_VGA)
 				{
 					TRACE(_T("Ooops, tv-out enabled? macrovision checks suck..."));
 					vp->dwTVStandard = VP_TV_STANDARD_WIN_VGA;
@@ -590,30 +674,63 @@ LONG WINAPI Mine_ChangeDisplaySettingsExW(LPCWSTR lpszDeviceName, LPDEVMODEW lpD
 		lParam);
 }
 
-DETOUR_TRAMPOLINE(HANDLE WINAPI Real_CreateFileA(LPCSTR p1, DWORD p2, DWORD p3, LPSECURITY_ATTRIBUTES p4, DWORD p5, DWORD p6, HANDLE p7), CreateFileA);
-DETOUR_TRAMPOLINE(HANDLE WINAPI Real_CreateFileW(LPCWSTR p1, DWORD p2, DWORD p3, LPSECURITY_ATTRIBUTES p4, DWORD p5, DWORD p6, HANDLE p7), CreateFileW);
 HANDLE WINAPI Mine_CreateFileA(LPCSTR p1, DWORD p2, DWORD p3, LPSECURITY_ATTRIBUTES p4, DWORD p5, DWORD p6, HANDLE p7)
 {
 	//CStringA fn(p1);
 	//fn.MakeLower();
 	//int i = fn.Find(".part");
 	//if(i > 0 && i == fn.GetLength() - 5)
-		p3 |= FILE_SHARE_WRITE;
+	p3 |= FILE_SHARE_WRITE;
 
 	return Real_CreateFileA(p1, p2, p3, p4, p5, p6, p7);
 }
-HANDLE WINAPI Mine_CreateFileW(LPCWSTR p1, DWORD p2, DWORD p3, LPSECURITY_ATTRIBUTES p4, DWORD p5, DWORD p6, HANDLE p7)
+#include "Ifo.h"
+BOOL CreateFakeVideoTS(LPCWSTR strIFOPath, LPWSTR strFakeFile, size_t nFakeFileSize)
 {
-	//CStringW fn(p1);
-	//fn.MakeLower();
-	//int i = fn.Find(L".part");
-	//if(i > 0 && i == fn.GetLength() - 5)
-		p3 |= FILE_SHARE_WRITE;
+	BOOL		bRet = FALSE;
+	WCHAR		szTempPath[MAX_PATH];
+	WCHAR		strFileName[MAX_PATH];
+	WCHAR		strExt[10];
+	CIfo		Ifo;
 
-	return Real_CreateFileW(p1, p2, p3, p4, p5, p6, p7);
+	if (!GetTempPathW(MAX_PATH, szTempPath)) return FALSE;
+
+	_wsplitpath_s (strIFOPath, NULL, 0, NULL, 0, strFileName, countof(strFileName), strExt, countof(strExt));
+	_snwprintf_s  (strFakeFile, nFakeFileSize, _TRUNCATE, L"%sMPC%s%s", szTempPath, strFileName, strExt);
+
+	if (Ifo.OpenFile (strIFOPath) &&
+		Ifo.RemoveUOPs()  &&
+		Ifo.SaveFile (strFakeFile))
+	{
+		bRet = TRUE;
+	}
+
+	return bRet;
 }
 
-DETOUR_TRAMPOLINE(MMRESULT WINAPI Real_mixerSetControlDetails(HMIXEROBJ hmxobj, LPMIXERCONTROLDETAILS pmxcd, DWORD fdwDetails), mixerSetControlDetails);
+HANDLE WINAPI Mine_CreateFileW(LPCWSTR p1, DWORD p2, DWORD p3, LPSECURITY_ATTRIBUTES p4, DWORD p5, DWORD p6, HANDLE p7)
+{
+	HANDLE	hFile = INVALID_HANDLE_VALUE;
+	WCHAR	strFakeFile[MAX_PATH];
+	int		nLen  = wcslen(p1);
+
+	p3 |= FILE_SHARE_WRITE;
+
+	if (nLen>=4 && _wcsicmp (p1 + nLen-4, L".ifo") == 0)
+	{
+		if (CreateFakeVideoTS(p1, strFakeFile, countof(strFakeFile)))
+		{
+			hFile = Real_CreateFileW(strFakeFile, p2, p3, p4, p5, p6, p7);
+		}
+	}
+
+	if (hFile == INVALID_HANDLE_VALUE)
+		hFile = Real_CreateFileW(p1, p2, p3, p4, p5, p6, p7);
+
+	return hFile;
+}
+
+
 MMRESULT WINAPI Mine_mixerSetControlDetails(HMIXEROBJ hmxobj, LPMIXERCONTROLDETAILS pmxcd, DWORD fdwDetails)
 {
 	if(fdwDetails == (MIXER_OBJECTF_HMIXER|MIXER_SETCONTROLDETAILSF_VALUE)) 
@@ -621,13 +738,12 @@ MMRESULT WINAPI Mine_mixerSetControlDetails(HMIXEROBJ hmxobj, LPMIXERCONTROLDETA
 	return Real_mixerSetControlDetails(hmxobj, pmxcd, fdwDetails);
 }
 
-DETOUR_TRAMPOLINE(BOOL WINAPI Real_DeviceIoControl(HANDLE hDevice, DWORD dwIoControlCode, LPVOID lpInBuffer, DWORD nInBufferSize, LPVOID lpOutBuffer, DWORD nOutBufferSize, LPDWORD lpBytesReturned, LPOVERLAPPED lpOverlapped), DeviceIoControl);
 BOOL WINAPI Mine_DeviceIoControl(HANDLE hDevice, DWORD dwIoControlCode, LPVOID lpInBuffer, DWORD nInBufferSize, LPVOID lpOutBuffer, DWORD nOutBufferSize, LPDWORD lpBytesReturned, LPOVERLAPPED lpOverlapped)
 {
 	BOOL ret = Real_DeviceIoControl(hDevice, dwIoControlCode, lpInBuffer, nInBufferSize, lpOutBuffer, nOutBufferSize, lpBytesReturned, lpOverlapped);
 
 	if(IOCTL_DVD_GET_REGION == dwIoControlCode && lpOutBuffer
-	&& lpBytesReturned && *lpBytesReturned == sizeof(DVD_REGION))
+		&& lpBytesReturned && *lpBytesReturned == sizeof(DVD_REGION))
 	{
 		DVD_REGION* pDVDRegion = (DVD_REGION*)lpOutBuffer;
 		pDVDRegion->SystemRegion = ~pDVDRegion->RegionData;
@@ -702,16 +818,34 @@ BOOL CMPlayerCApp::InitInstance()
 {
 	//ssftest s;
 
-	
-	DetourFunctionWithTrampoline((PBYTE)Real_IsDebuggerPresent, (PBYTE)Mine_IsDebuggerPresent);
-	DetourFunctionWithTrampoline((PBYTE)Real_ChangeDisplaySettingsExA, (PBYTE)Mine_ChangeDisplaySettingsExA);
-	DetourFunctionWithTrampoline((PBYTE)Real_ChangeDisplaySettingsExW, (PBYTE)Mine_ChangeDisplaySettingsExW);
-	DetourFunctionWithTrampoline((PBYTE)Real_CreateFileA, (PBYTE)Mine_CreateFileA);
-	DetourFunctionWithTrampoline((PBYTE)Real_CreateFileW, (PBYTE)Mine_CreateFileW);
-	DetourFunctionWithTrampoline((PBYTE)Real_mixerSetControlDetails, (PBYTE)Mine_mixerSetControlDetails);
-	DetourFunctionWithTrampoline((PBYTE)Real_DeviceIoControl, (PBYTE)Mine_DeviceIoControl);
+	long		lError;
+	DetourRestoreAfterWith();
+	DetourTransactionBegin();
+	DetourUpdateThread(GetCurrentThread());
+
+	DetourAttach(&(PVOID&)Real_IsDebuggerPresent, (PVOID)Mine_IsDebuggerPresent);
+	DetourAttach(&(PVOID&)Real_ChangeDisplaySettingsExA, (PVOID)Mine_ChangeDisplaySettingsExA);
+	DetourAttach(&(PVOID&)Real_ChangeDisplaySettingsExW, (PVOID)Mine_ChangeDisplaySettingsExW);
+	DetourAttach(&(PVOID&)Real_CreateFileA, (PVOID)Mine_CreateFileA);
+	DetourAttach(&(PVOID&)Real_CreateFileW, (PVOID)Mine_CreateFileW);
+	DetourAttach(&(PVOID&)Real_mixerSetControlDetails, (PVOID)Mine_mixerSetControlDetails);
+	DetourAttach(&(PVOID&)Real_DeviceIoControl, (PVOID)Mine_DeviceIoControl);
+#ifndef _DEBUG
+	HMODULE hNTDLL	=	LoadLibrary (_T("ntdll.dll"));
+	if (hNTDLL)
+	{
+		Real_NtQueryInformationProcess = (FUNC_NTQUERYINFORMATIONPROCESS)GetProcAddress (hNTDLL, "NtQueryInformationProcess");
+
+		if (Real_NtQueryInformationProcess)
+			DetourAttach(&(PVOID&)Real_NtQueryInformationProcess, (PVOID)Mine_NtQueryInformationProcess);
+	}
+#endif
 	CFilterMapper2::Init();
 
+#if !defined(_DEBUG) || !defined(_WIN64)
+	lError = DetourTransactionCommit();
+	ASSERT (lError == NOERROR);
+#endif
 	HRESULT hr;
     if(FAILED(hr = OleInitialize(0)))
 	{
@@ -854,7 +988,7 @@ BOOL CMPlayerCApp::InitInstance()
 	}
 
 	CRegKey key;
-	if(ERROR_SUCCESS == key.Create(HKEY_LOCAL_MACHINE, _T("Software\\Gabest\\Media Player Classic")))
+	if(ERROR_SUCCESS == key.Create(HKEY_LOCAL_MACHINE, _T("Software\\SVPlayer\\射手影音播放器")))
 	{
 		CString path;
 		GetModuleFileName(AfxGetInstanceHandle(), path.GetBuffer(MAX_PATH), MAX_PATH);
@@ -1455,6 +1589,9 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		pApp->WriteProfileInt(ResStr(IDS_R_INTERNAL_FILTERS), ResStr(IDS_RS_SRCFILTERS), SrcFilters|~(SRC_LAST-1));
 		pApp->WriteProfileInt(ResStr(IDS_R_INTERNAL_FILTERS), ResStr(IDS_RS_TRAFILTERS), TraFilters|~(TRA_LAST-1));
 
+		//pApp->WriteProfileInt(ResStr(IDS_R_INTERNAL_FILTERS), ResStr(IDS_RS_DXVAFILTERS), DXVAFilters|~(DXVA_LAST-1));
+		//pApp->WriteProfileInt(ResStr(IDS_R_INTERNAL_FILTERS), ResStr(IDS_RS_FFMPEGFILTERS), FFmpegFilters|~(FFM_LAST-1));
+
 		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LOGOFILE), logofn);
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LOGOID), logoid);
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LOGOEXT), logoext);
@@ -1645,10 +1782,10 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		dSaturation		= (float)_tstof(pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_COLOR_SATURATION),	_T("1")));
 
 		bNotChangeFontToYH = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_NOTCHANGEFONTTOYH), 0);
+		CSVPToolBox svptoolbox;
 
 		if(!bNotChangeFontToYH){
 			BOOL bHadYaheiDownloaded = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS),  _T("HasYaheiDownloaded"), 0); //默认检查是否使用旧字体
-			CSVPToolBox svptoolbox;
 			if(!svptoolbox.bFontExist(_T("微软雅黑")) && !svptoolbox.bFontExist(_T("Microsoft YaHei")) ){ 
 				CString szTTFPath = svptoolbox.GetPlayerPath( _T("msyh.ttf") );
 				if( svptoolbox.ifFileExist(szTTFPath)) {
@@ -1936,6 +2073,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("LastUsedPage"), 0);
 
+		
 		//
 
 		m_shaders.RemoveAll();

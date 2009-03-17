@@ -2300,6 +2300,11 @@ void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 	if(rVideo.Height()){
 		yPercent = p.y * 100 / rVideo.Height();
 	}
+
+	if( m_iMediaLoadState == MLS_CLOSED   ){
+		OnFileOpenQuick();
+		return;
+	}
 	bool fClicked = false;
 
 	if(m_iPlaybackMode == PM_DVD)

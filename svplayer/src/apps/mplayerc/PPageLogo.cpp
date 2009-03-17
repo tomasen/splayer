@@ -38,8 +38,8 @@ CPPageLogo::CPPageLogo()
 {
 	m_logoids.AddTail(IDF_LOGO0);
 	m_logoids.AddTail(IDF_LOGO1);
-	m_logoids.AddTail(IDF_LOGO2);
-	m_logoids.AddTail(IDF_LOGO3);
+	//m_logoids.AddTail(IDF_LOGO2);
+	//m_logoids.AddTail(IDF_LOGO3);
 	m_logoids.AddTail(IDF_LOGO4);
 	m_logoids.AddTail(IDF_LOGO5);
 	m_logoids.AddTail(IDF_LOGO6);

@@ -42,6 +42,7 @@ CChildView::CChildView() : m_vrect(0,0,0,0)
 	m_lastlmdowntime = 0;
 	m_lastlmdownpoint.SetPoint(0, 0);
 
+	m_watermark.LoadFromResource(IDF_LOGO2);
 	LoadLogo();
 }
 
@@ -138,7 +139,7 @@ void CChildView::LoadLogo()
 	CAutoLock cAutoLock(&m_csLogo);
 
 	m_logo.Destroy();
-
+	
 	if(s.logoext)
 	{
 		if(AfxGetAppSettings().fXpOrBetter)
@@ -150,9 +151,12 @@ void CChildView::LoadLogo()
 	if(m_logo.IsNull())
 	{
 		m_logo.LoadFromResource(s.logoid);
-		// m_logo.LoadFromResource(AfxGetInstanceHandle(), s.logoid);
 	}
 
+	if(m_logo.IsNull())
+	{
+		m_logo.LoadFromResource(IDF_LOGO7);
+	}
 	if(m_hWnd) Invalidate();
 }
 
@@ -212,6 +216,7 @@ BOOL CChildView::OnEraseBkgnd(CDC* pDC)
 		BITMAP bm;
 		GetObject(m_logo, sizeof(bm), &bm);
 
+		
 		GetClientRect(r);
 		int w = min(bm.bmWidth, r.Width());
 		int h = min(abs(bm.bmHeight), r.Height());
@@ -223,10 +228,23 @@ BOOL CChildView::OnEraseBkgnd(CDC* pDC)
 
 		int oldmode = pDC->SetStretchBltMode(STRETCH_HALFTONE);
 		m_logo.StretchBlt(*pDC, r, CRect(0,0,bm.bmWidth,abs(bm.bmHeight)));
+
+		if(!m_watermark.IsNull()){
+			BITMAP bmw;
+			GetObject(m_watermark, sizeof(bmw), &bmw);
+			CRect rw;
+			GetClientRect(rw);
+			int ww = min(bmw.bmWidth, rw.Width());
+			int hw = min(abs(bmw.bmHeight), rw.Height());
+			rw = CRect(CPoint(rw.Width() - ww , rw.Height() - hw), CSize(ww, hw));
+			m_watermark.StretchBlt( *pDC ,  rw,  CRect(0,0,bmw.bmWidth,abs(bmw.bmHeight)));
+			pDC->ExcludeClipRect(rw);
+		}
 //		m_logo.Draw(*pDC, r);
 		pDC->SetStretchBltMode(oldmode);
 
 		pDC->ExcludeClipRect(r);
+		
 	}
 
 	

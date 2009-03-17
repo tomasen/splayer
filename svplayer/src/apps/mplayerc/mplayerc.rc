@@ -1401,7 +1401,6 @@ IDF_SHADER_RESIZER      FILE                    "res\\shaders\\resizer.psh"
 IDF_LOGO0               FILE                    "res\\logo.0.png"
 IDF_LOGO1               FILE                    "res\\logo.1.png"
 IDF_LOGO2               FILE                    "res\\logo.2.png"
-IDF_LOGO3               FILE                    "res\\logo.3.png"
 IDF_LOGO4               FILE                    "res\\logo.4.png"
 IDF_LOGO5               FILE                    "res\\logo.5.png"
 IDF_LOGO6               FILE                    "res\\logo.6.png"
@@ -2286,6 +2285,7 @@ END
 
 STRINGTABLE 
 BEGIN
+	IDF_LOGO1               "…‰ ÷”∞“Ù"
     IDF_LOGO3               "Andrew S. Gildehaus, agildehaus@runbox.com"
     IDF_LOGO4               "Marcel Hoffs, marcelhoffs@hotmail.com"
     IDF_LOGO7               "Steven W. Smith, smith78@sbcglobal.net"

@@ -32,7 +32,7 @@ class CChildView : public CWnd
 
 	CCritSec m_csLogo;
 	CPngImage m_logo;
-
+	CPngImage m_watermark;
 public:
 	CChildView();
 	virtual ~CChildView();

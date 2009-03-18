@@ -71,7 +71,7 @@ BOOL CUpdaterDlg::OnInitDialog()
 	prg_total.SetRange(0, 1000);
 	prg_curfile.SetRange(0, 1000);
 
-	// TODO: Add extra initialization here
+	
 	if(cup.downloadList()){
 		AfxBeginThread(ThreadCheckUpdate , (LPVOID)&cup);
 	}

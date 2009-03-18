@@ -2301,10 +2301,7 @@ void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 		yPercent = p.y * 100 / rVideo.Height();
 	}
 
-	if( m_iMediaLoadState == MLS_CLOSED   ){
-		OnFileOpenQuick();
-		return;
-	}
+
 	bool fClicked = false;
 
 	if(m_iPlaybackMode == PM_DVD)
@@ -2358,7 +2355,11 @@ void CMainFrame::OnLButtonUp(UINT nFlags, CPoint point)
 	int iDistance = sqrt( pow( (double)abs(point.x - m_pLastClickPoint.x) , 2)  + pow( (double)abs( point.y - m_pLastClickPoint.y ) , 2) );
 
 	if( !bRecentFocused && s_fLDown && iDistance < 30){
-
+		if( m_iMediaLoadState == MLS_CLOSED   ){
+			OnFileOpenQuick();
+			__super::OnLButtonUp(nFlags, point);
+			return;
+		}
 		bool fDBLMouseClickUnassigned = true;
 		AppSettings& s = AfxGetAppSettings();
 		POSITION pos = s.wmcmds.GetHeadPosition();

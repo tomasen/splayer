@@ -34,6 +34,8 @@ public:
 	CString GetTempDir();
 	int DetectFileCharset(CString fn);
 	CString GetPlayerPath(CString progName = _T(""));
+	BOOL CreatDirForFile(CString cPath);
+	BOOL CreatDirRecursive(CString cPath);
 	BOOL isWriteAble(CString szPath);
 	CString getFileVersionHash(CString szPath);
 	DWORD             dwMajor   ;

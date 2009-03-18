@@ -2285,10 +2285,10 @@ END
 
 STRINGTABLE 
 BEGIN
-	IDF_LOGO1               "射手影音"
+	IDF_LOGO1               "Steven W. Smith, smith78@sbcglobal.net"
     IDF_LOGO3               "Andrew S. Gildehaus, agildehaus@runbox.com"
     IDF_LOGO4               "Marcel Hoffs, marcelhoffs@hotmail.com"
-    IDF_LOGO7               "Steven W. Smith, smith78@sbcglobal.net"
+    IDF_LOGO7               "射手影音"
 END
 
 STRINGTABLE 

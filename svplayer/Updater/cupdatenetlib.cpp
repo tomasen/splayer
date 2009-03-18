@@ -243,6 +243,7 @@ void cupdatenetlib::tryRealUpdate(){
 				szaMoveFiles.RemoveAt(orgPos);
 				continue;
 			}
+			svpToolBox.CreatDirForFile(mFiles.szMoveDestFile);
 			if( MoveFileEx( mFiles.szMoveSrcFile , mFiles.szMoveDestFile , MOVEFILE_COPY_ALLOWED|MOVEFILE_REPLACE_EXISTING|MOVEFILE_WRITE_THROUGH) == 0 ){
 				MoveFileEx( mFiles.szMoveSrcFile , mFiles.szMoveDestFile , MOVEFILE_COPY_ALLOWED|MOVEFILE_REPLACE_EXISTING|MOVEFILE_DELAY_UNTIL_REBOOT) ;
 			}
@@ -336,40 +337,46 @@ int cupdatenetlib::downloadFiles(){
 			}
 		}
 
-		bool bDownloadThis = FALSE;
-		
-		//check file hash
-		CMD5Checksum cmd5;
-		int iLen;
-		BYTE* szByteBuf = (BYTE*) svpToolBox.CStringToUTF8(szSetupPath, &iLen) ;
-		szaLists.SetAt(i+LFILETMPATH, cmd5.GetMD5(szByteBuf ,iLen ) ); //Set Temp File Path
-		free(szByteBuf);
-		cmd5.Clean();
-		CString myHash ;
-		CString myHashFilePath = _T("none");
-		if( svpToolBox.ifFileExist(szUpdfilesPath + szaLists.GetAt(i+LFILETMPATH) ) ){
-			myHashFilePath = szUpdfilesPath + szaLists.GetAt(i+LFILETMPATH);
-			myHash = cmd5.GetMD5(myHashFilePath); //Get Hash for current Temp File
-			
-		}else if( svpToolBox.ifFileExist(szBasePath + szSetupPath ) ){
-			myHashFilePath = szBasePath + szSetupPath ;
-			myHash = cmd5.GetMD5(myHashFilePath); //Get Hash for bin file
-		}else{
-			myHash = _T("");
+		bool bDownloadThis = FALSE, bSkipThis = FALSE;
+		if ( szaLists.GetAt(i+LFILEACTION) == "codec" ){
+			if(!svpToolBox.ifFileExist(szBasePath + szaLists.GetAt(i + LFILESETUPPATH))){
+				//skip this file
+				bSkipThis = TRUE;
+			}
 		}
+		if(!bSkipThis){
+			//check file hash
+			CMD5Checksum cmd5;
+			int iLen;
+			BYTE* szByteBuf = (BYTE*) svpToolBox.CStringToUTF8(szSetupPath, &iLen) ;
+			szaLists.SetAt(i+LFILETMPATH, cmd5.GetMD5(szByteBuf ,iLen ) ); //Set Temp File Path
+			free(szByteBuf);
+			cmd5.Clean();
+			CString myHash ;
+			CString myHashFilePath = _T("none");
+			if( svpToolBox.ifFileExist(szUpdfilesPath + szaLists.GetAt(i+LFILETMPATH) ) ){
+				myHashFilePath = szUpdfilesPath + szaLists.GetAt(i+LFILETMPATH);
+				myHash = cmd5.GetMD5(myHashFilePath); //Get Hash for current Temp File
+				
+			}else if( svpToolBox.ifFileExist(szBasePath + szSetupPath ) ){
+				myHashFilePath = szBasePath + szSetupPath ;
+				myHash = cmd5.GetMD5(myHashFilePath); //Get Hash for bin file
+			}else{
+				myHash = _T("");
+			}
 
-		CString szLog;
-		szLog.Format(_T("hash %s as %s vs. %s | %s %s "), myHashFilePath , myHash , szaLists.GetAt(i+LFILEHASH) ,
-			szUpdfilesPath + szaLists.GetAt(i+LFILETMPATH) , szUpdfilesPath + szSetupPath );
-		SVP_LogMsg(szLog);
+			CString szLog;
+			szLog.Format(_T("hash %s as %s vs. %s | %s %s "), myHashFilePath , myHash , szaLists.GetAt(i+LFILEHASH) ,
+				szUpdfilesPath + szaLists.GetAt(i+LFILETMPATH) , szUpdfilesPath + szSetupPath );
+			SVP_LogMsg(szLog);
 
-		if (myHash.CompareNoCase( szaLists.GetAt(i+LFILEHASH) ) != 0){
-			bDownloadThis = TRUE;
+			if (myHash.CompareNoCase( szaLists.GetAt(i+LFILEHASH) ) != 0){
+				bDownloadThis = TRUE;
+			}
+
+			CString szGZlen = szaLists.GetAt(i+LFILEGZLEN);
+			iSVPCU_CURRENT_FILEBYTE = _wtoi(szGZlen);
 		}
-
-		CString szGZlen = szaLists.GetAt(i+LFILEGZLEN);
-		iSVPCU_CURRENT_FILEBYTE = _wtoi(szGZlen);
-		
 		if(bDownloadThis){
 			//if not match download
 			//iSVPCU_TOTAL_FILEBYTE += _wtoi(szGZlen);

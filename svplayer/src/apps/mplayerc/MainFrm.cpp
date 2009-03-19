@@ -3804,16 +3804,17 @@ void CMainFrame::OnDropFiles(HDROP hDropInfo)
 	{
 		CString fn;
 		fn.ReleaseBuffer(::DragQueryFile(hDropInfo, iFile, fn.GetBuffer(MAX_PATH), MAX_PATH));
-		sl.AddTail(fn);
+		if(isSubtitleFile(fn)){
+			LoadSubtitle(fn);
+		}else
+			sl.AddTail(fn);
 	}
 
 	::DragFinish(hDropInfo);
 
-	if(sl.IsEmpty()) return;
+	
 
-	if(sl.GetCount() == 1 && isSubtitleFile(sl.GetHead())) //m_iMediaLoadState == MLS_LOADED && 
-	{
-		if(LoadSubtitle(sl.GetHead()))
+		if(m_pSubStreams.GetCount() > 0);
 		{
 			SetSubtitle(m_pSubStreams.GetTail());
 			CPath p(sl.GetHead());
@@ -3821,7 +3822,8 @@ void CMainFrame::OnDropFiles(HDROP hDropInfo)
 			SendStatusMessage(CString((LPCTSTR)p) + _T(" loaded successfully"), 3000);
 			return;
 		}
-	}
+	
+	if(sl.IsEmpty()) return;
 
 	m_wndPlaylistBar.Open(sl, true);
 	OpenCurPlaylistItem();
@@ -4480,7 +4482,7 @@ void CMainFrame::OnFileLoadsubtitle()
 
 	CFileDialog fd(TRUE, NULL, NULL, 
 		OFN_EXPLORER | OFN_ENABLESIZING | OFN_HIDEREADONLY, 
-		szFilter, this, 0);
+		szFilter, this, 0, 1);
 
 	if(fd.DoModal() != IDOK) return;
 

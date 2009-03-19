@@ -36,6 +36,7 @@ private:
 	CImageList m_fakeImageList;
 	CPlayerListCtrl m_list;
 	CButton m_clearall;
+	CButton m_addsubforplaylist;
 	CWnd* m_pMaindFrame;
 	int m_nTimeColWidth;
 	void ResizeListColumn();
@@ -107,6 +108,8 @@ protected:
 
 public:
 	afx_msg void OnButtonClearAll();
+	afx_msg void OnButtonAddSubForPlayList();
+	afx_msg void OnUpdateButtonAddSubForPlayList(CCmdUI* pCmdUI);
 	afx_msg void OnSetFocus( CWnd* pOldWnd );
 
 	afx_msg void OnSize(UINT nType, int cx, int cy);

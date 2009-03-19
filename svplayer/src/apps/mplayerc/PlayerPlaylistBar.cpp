@@ -45,7 +45,7 @@ CPlayerPlaylistBar::~CPlayerPlaylistBar()
 }
 
 #define CBUTTONWIDTH 30
-#define CBUTTONHEIGHT 18
+#define CBUTTONHEIGHT 22
 
 BOOL CPlayerPlaylistBar::Create(CWnd* pParentWnd)
 {
@@ -78,6 +78,9 @@ BOOL CPlayerPlaylistBar::Create(CWnd* pParentWnd)
 	m_clearall.Create( _T("清空"), WS_VISIBLE|WS_CHILD|BS_FLAT|BS_VCENTER|BS_CENTER , CRect(0,83,40,100), this, IDC_BUTTONCLEARALL );
 	GetSystemFontWithScale(&font);
 	m_clearall.SetFont(&font);
+
+	m_addsubforplaylist.Create( _T("为多段视频调入一段字幕"), WS_VISIBLE|WS_CHILD|BS_FLAT|BS_VCENTER|BS_CENTER , CRect(0,83,40,100), this, IDC_BUTTONADDSUBFORPLAYLIST );
+	m_addsubforplaylist.SetFont(&font);
 	return TRUE;
 }
 
@@ -468,13 +471,11 @@ void CPlayerPlaylistBar::CheckForPlaylistSubtitle(){
 
 			CAtlArray<CString> paths;
 			paths.Add(_T("."));
-			paths.Add(_T(".\\subtitles"));
-			paths.Add(_T(".\\Subs"));
-
+			
 			CAtlArray<SubFile> ret;
 			GetSubFileNames( szDir,paths, ret, 1);
 
-			if(ret.GetCount() == 1){
+			if(ret.GetCount() >= 1){
 				//Set As Playlist Sub;
 				SubFile xSub =  ret.GetAt(0);
 				m_pl.szPlayListSub = xSub.fn;
@@ -482,6 +483,28 @@ void CPlayerPlaylistBar::CheckForPlaylistSubtitle(){
 		}
 
 	}
+}
+void CPlayerPlaylistBar::OnUpdateButtonAddSubForPlayList(CCmdUI* pCmdUI){
+	pCmdUI->Enable((m_pl.GetCount() > 1));
+}
+void CPlayerPlaylistBar::OnButtonAddSubForPlayList(){
+	static TCHAR BASED_CODE szFilter[] = 
+		_T(".srt .sub .ssa .ass .smi .psb .txt .idx .usf .xss .ssf|")
+		_T("*.srt;*.sub;*.ssa;*.ass;*smi;*.psb;*.txt;*.idx;*.usf;*.xss;*.ssf|")
+		_T("All files (*.*)|")
+		_T("*.*||");
+
+	CFileDialog fd(TRUE, NULL, NULL, 
+		OFN_EXPLORER | OFN_ENABLESIZING | OFN_HIDEREADONLY, 
+		szFilter, this, 0, 1);
+
+	if(fd.DoModal() != IDOK) return;
+
+	m_pl.szPlayListSub = fd.GetPathName();
+
+	m_pl.SetPos(m_pl.GetHeadPosition());
+	m_list.Invalidate();
+	((CMainFrame*)AfxGetMainWnd())->OpenCurPlaylistItem(); 
 }
 void CPlayerPlaylistBar::Refresh()
 {
@@ -845,6 +868,8 @@ BEGIN_MESSAGE_MAP(CPlayerPlaylistBar, CSizingControlBarG)
 	ON_WM_CONTEXTMENU()
 	ON_NOTIFY(LVN_ENDLABELEDIT, IDC_PLAYLIST, OnLvnEndlabeleditList)
 	ON_BN_CLICKED(IDC_BUTTONCLEARALL, OnButtonClearAll)
+	ON_BN_CLICKED(IDC_BUTTONADDSUBFORPLAYLIST, OnButtonAddSubForPlayList)
+	ON_UPDATE_COMMAND_UI(IDC_BUTTONADDSUBFORPLAYLIST, OnUpdateButtonAddSubForPlayList)
 	ON_WM_SETFOCUS()
 END_MESSAGE_MAP()
 
@@ -859,6 +884,7 @@ void CPlayerPlaylistBar::OnSetFocus(CWnd* pOldWnd )
 void CPlayerPlaylistBar::OnButtonClearAll(){
 	Empty();
 }
+
 void CPlayerPlaylistBar::ResizeListColumn()
 {
 	if(::IsWindow(m_list.m_hWnd))
@@ -869,7 +895,8 @@ void CPlayerPlaylistBar::ResizeListColumn()
 		r.bottom = r.bottom - CBUTTONHEIGHT - 5;
 		m_list.SetRedraw(FALSE);
 		m_list.MoveWindow(r);
-		m_clearall.MoveWindow(CRect(r.left , r.bottom + 4 , r.left + CBUTTONWIDTH , (r.bottom + 4 + CBUTTONHEIGHT ) ) );
+		m_clearall.MoveWindow(CRect(r.left , r.bottom + 2 , r.left + CBUTTONWIDTH , (r.bottom + 2 + CBUTTONHEIGHT ) ) );
+		m_addsubforplaylist.MoveWindow(CRect( r.left + CBUTTONWIDTH +4 , r.bottom + 2 , r.right - 4 , (r.bottom + 2 + CBUTTONHEIGHT ) ) );
 		
 		m_list.GetClientRect(r);
 		m_list.SetColumnWidth(COL_NAME, r.Width()-m_nTimeColWidth); //LVSCW_AUTOSIZE_USEHEADER
@@ -1053,17 +1080,29 @@ void CPlayerPlaylistBar::OnDropFiles(HDROP hDropInfo)
 	SetActiveWindow();
 
 	CAtlList<CString> sl;
+	BOOL setCurToHead = FALSE;
 
 	UINT nFiles = ::DragQueryFile(hDropInfo, (UINT)-1, NULL, 0);
 	for(UINT iFile = 0; iFile < nFiles; iFile++)
 	{
 		TCHAR szFileName[_MAX_PATH];
 		::DragQueryFile(hDropInfo, iFile, szFileName, _MAX_PATH);
-		sl.AddTail(szFileName);
+		if(isSubtitleFile(szFileName) ){
+			m_pl.szPlayListSub = szFileName;
+			setCurToHead = TRUE;
+		}else{
+			sl.AddTail(szFileName);
+		}
 	}
 	::DragFinish(hDropInfo);
 
 	Append(sl, true);
+
+	if(setCurToHead){
+		m_pl.SetPos(m_pl.GetHeadPosition());
+		m_list.Invalidate();
+		((CMainFrame*)AfxGetMainWnd())->OpenCurPlaylistItem(); 
+	}
 }
 
 void CPlayerPlaylistBar::OnBeginDrag(NMHDR* pNMHDR, LRESULT* pResult)

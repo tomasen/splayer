@@ -1449,13 +1449,13 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 
 			UINT iTotalLenSec = (UINT)( (INT64) rtDur / 20000000 );
 			//如果视频长度大于1分钟， 而且是文件模式，而且正在播放中
-			if ( iTotalLenSec >  30 && m_iPlaybackMode == PM_FILE && GetMediaState() == State_Running) {
+			if ( iTotalLenSec >  180 && m_iPlaybackMode == PM_FILE && GetMediaState() == State_Running) {
 				
 				time_t time_now = time(NULL);
 				
 				UINT totalplayedtime =  time_now - m_tPlayStartTime;
 
-				if( time_now > ( m_tLastLogTick + 60 )){ //如果和上次检查已经超n秒
+				if( time_now > ( m_tLastLogTick + 180 )){ //如果和上次检查已经超n秒
 					CString fnVideoFile , fnSubtitleFile; 
 					int subDelayMS = 0;
 					fnVideoFile = m_fnCurPlayingFile;
@@ -1463,14 +1463,14 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 					
 					
 					if (!fnSubtitleFile.IsEmpty()){ //如果有字幕
+						CString szLog;
 
-						//szLog.Format(_T(" %s ( with sub %s delay %d ) %d sec of %d sec ( 1/2 length video = %d ) ") , fnVideoFile, fnSubtitleFile,subDelayMS, totalplayedtime , iTotalLenSec, (UINT)(iTotalLenSec/2)  );
-						//SVP_LogMsg(szLog);
+						szLog.Format(_T(" %s ( with sub %s delay %d ) %d sec of %d sec ( 1/2 length video = %d ) ") , fnVideoFile, fnSubtitleFile,subDelayMS, totalplayedtime , iTotalLenSec, (UINT)(iTotalLenSec/2)  );
+						SVP_LogMsg(szLog);
 						//if time > 50%
 						if (totalplayedtime > (UINT)(iTotalLenSec/2)){
 							//是否已经上传过呢
 							if(m_fnsAlreadyUploadedSubfile.Find( fnVideoFile+fnSubtitleFile ) < 0 ){
-								CString szLog;
 								//upload subtitle
 								szLog.Format(_T("Uploading sub %s of %s width delay %d ms since user played %d sec of %d sec ( more than 1/2 length video ) ") , fnSubtitleFile, fnVideoFile ,subDelayMS, totalplayedtime , iTotalLenSec  );
 								SVP_LogMsg(szLog);

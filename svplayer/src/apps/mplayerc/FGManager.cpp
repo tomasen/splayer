@@ -1556,10 +1556,13 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	pFGF = new CFGFilterInternal<CMpaDecFilter>(
 		(tra & TRA_MPA) ? L"MPEG-1 Audio Decoder" : L"MPEG-1 Audio Decoder (low merit)",
 		(tra & TRA_MPA) ? MERIT64_ABOVE_DSHOW : MERIT64_UNLIKELY);
-	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_MP3);
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_MPEG1AudioPayload);
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_MPEG1Payload);
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_MPEG1Packet);
+	m_transform.AddTail(pFGF);
+
+	pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MP3 Audio Decoder"  , MERIT64_UNLIKELY);
+		pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_MP3); // Some MP3 just cant handler by MPA, maybe because of sample rate
 	m_transform.AddTail(pFGF);
 
 	pFGF = new CFGFilterInternal<CMpaDecFilter>(

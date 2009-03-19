@@ -80,6 +80,8 @@ static LONG WINAPI  DebugMiniDumpFilter( struct _EXCEPTION_POINTERS *pExceptionI
 			_tcscat( szDumpPath, _T("\\"));
 
 			_tcscat( szDumpPath, ResStr(IDR_MAINFRAME) );
+			_tcscat( szDumpPath, _T("_") );
+			_tcscat( szDumpPath, SVP_REV_STR );
 			_tcscat( szDumpPath, _T(".dmp"));
 
 			// ask the user if they want to save a dump file

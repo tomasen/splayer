@@ -1378,6 +1378,7 @@ continue;
 			if(m_synth.pcm.channels == 2) *pDataOut++ = fscale(*right_ch++);
 		}
 
+
 		HRESULT hr;
 		if(S_OK != (hr = Deliver(pBuff, m_synth.pcm.samplerate, m_synth.pcm.channels)))
 			return hr;

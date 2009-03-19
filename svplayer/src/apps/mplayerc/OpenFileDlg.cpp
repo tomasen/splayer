@@ -49,7 +49,7 @@ BOOL COpenFileDlg::GetDirectoryLeft(CPath* tPath, int rCount ){
 IMPLEMENT_DYNAMIC(COpenFileDlg, CFileDialog)
 COpenFileDlg::COpenFileDlg(CAtlArray<CString>& mask, bool fAllowDirSelection, LPCTSTR lpszDefExt, LPCTSTR lpszFileName,
 		DWORD dwFlags, LPCTSTR lpszFilter, CWnd* pParentWnd)
-	: CFileDialog(TRUE, lpszDefExt, lpszFileName, dwFlags|OFN_NOVALIDATE, lpszFilter, pParentWnd, 0)
+	: CFileDialog(TRUE, lpszDefExt, lpszFileName, dwFlags|OFN_NOVALIDATE, lpszFilter, pParentWnd, 0,  1)
 	, m_mask(mask)
 {
 	m_fAllowDirSelection = fAllowDirSelection;

@@ -51,11 +51,12 @@ BOOL isSubtitleFile(CString szFn){
 	int extsubnum = countof(ext[0]);
 	szFn.MakeLower();
 	for(int i = 0; i < extsubnum; i++){
-		if( szFn.Find( ext[0][i] ) + CString(ext[0][i]).GetLength() == szFn.GetLength() ){
-			return true;
+		int iPos = szFn.Find( ext[0][i] );
+		if( iPos >= 0 && ( iPos + CString(ext[0][i]).GetLength() ) == szFn.GetLength() ){
+			return TRUE;
 		}
 	}
-	return false;
+	return FALSE;
 }
 static int SubFileCompare(const void* elem1, const void* elem2)
 {

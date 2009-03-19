@@ -2417,7 +2417,12 @@ void CMpaDecFilter::ffmpeg_stream_finish()
 		m_pParser	= NULL;
 	}
 
-	if (m_pPCMData) FF_aligned_free (m_pPCMData);
+	if (m_pPCMData) {
+		try {
+			FF_aligned_free (m_pPCMData); //some time this will crash
+		}
+		catch (...) {}
+	}
 }
 
 #pragma endregion

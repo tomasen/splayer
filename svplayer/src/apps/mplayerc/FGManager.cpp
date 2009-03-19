@@ -2129,10 +2129,18 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 
 		m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{C16541FF-49ED-4DEA-9126-862F57722E31}")), MERIT64_UNLIKELY) ); //not use POWERDVD
 	}
+	CStringArray szaExtFilterPaths;
+	CSVPToolBox svptoolbox;
 
-	{
-		CSVPToolBox svptoolbox;
-		CString szFPath = svptoolbox.GetPlayerPath(_T("PMPSplitter.ax")); //以文件模式调入解码器
+	szaExtFilterPaths.RemoveAll();
+	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("PMPSplitter.ax")) );
+	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("svplayer.bin\\real\\RealMediaSplitter2000.ax")) );
+	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("svplayer.bin\\real\\rmoc3260.dll")) );
+	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("svplayer.bin\\real\\Codecs\\rv40.dll")) );
+	
+
+	for(int l = 0; l < szaExtFilterPaths.GetCount(); l++){
+		CString szFPath = szaExtFilterPaths.GetAt(l); //以文件模式调入解码器
 		if(svptoolbox.ifFileExist(szFPath)){
 			CFilterMapper2 fm2(false);
 			fm2.Register(szFPath);

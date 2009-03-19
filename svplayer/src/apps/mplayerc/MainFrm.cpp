@@ -3790,40 +3790,55 @@ void CMainFrame::OnDropFiles(HDROP hDropInfo)
 {
 	SetForegroundWindow();
 
-	if(m_wndPlaylistBar.IsWindowVisible())
-	{
-		m_wndPlaylistBar.OnDropFiles(hDropInfo);
-		return;
-	}
+// 	if(m_wndPlaylistBar.IsWindowVisible())
+// 	{
+// 		m_wndPlaylistBar.OnDropFiles(hDropInfo);
+// 		return;
+// 	}
 
 	CAtlList<CString> sl;
-
+	BOOL bHasSubAdded = false;
+	CString lastSubFile;
 	UINT nFiles = ::DragQueryFile(hDropInfo, (UINT)-1, NULL, 0);
 
 	for(UINT iFile = 0; iFile < nFiles; iFile++)
 	{
 		CString fn;
 		fn.ReleaseBuffer(::DragQueryFile(hDropInfo, iFile, fn.GetBuffer(MAX_PATH), MAX_PATH));
-		if(isSubtitleFile(fn)){
-			LoadSubtitle(fn);
-		}else
+		bHasSubAdded = isSubtitleFile(fn);
+		if(bHasSubAdded){
+			if(LoadSubtitle(fn)){
+				lastSubFile = fn;
+			}else{
+				bHasSubAdded = FALSE;
+			}
+		}
+
+		if(!bHasSubAdded)
 			sl.AddTail(fn);
+			
+		
 	}
 
 	::DragFinish(hDropInfo);
 
 	
 
-		if(m_pSubStreams.GetCount() > 0);
-		{
-			SetSubtitle(m_pSubStreams.GetTail());
-			CPath p(sl.GetHead());
-			p.StripPath();
-			SendStatusMessage(CString((LPCTSTR)p) + _T(" loaded successfully"), 3000);
+
+		if(sl.IsEmpty()){
+
+			if(bHasSubAdded && m_pSubStreams.GetCount() > 0);
+			{
+				SetSubtitle(m_pSubStreams.GetTail());
+				CPath p(lastSubFile);
+				p.StripPath();
+				SendStatusMessage(CString((LPCTSTR)p) + _T(" loaded successfully"), 3000);
+
+			}
 			return;
+
 		}
-	
-	if(sl.IsEmpty()) return;
+
 
 	m_wndPlaylistBar.Open(sl, true);
 	OpenCurPlaylistItem();

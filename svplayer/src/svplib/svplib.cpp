@@ -33,6 +33,12 @@ UINT __cdecl SVPThreadCheckUpdaterExe( LPVOID lpParam )
 	return 0; 
 }
 void SVP_RealCheckUpdaterExe(){
+
+	HANDLE hObject = CreateMutex(NULL,FALSE,_T("SVPLAYER_UPDATER"));
+	if(GetLastError() == ERROR_ALREADY_EXISTS)
+	{
+		return ;
+	}
 	//检查 updater.exe 是否可写
 	CSVPToolBox svpToolBox;
 	CSVPNet svpNet;
@@ -48,12 +54,15 @@ void SVP_RealCheckUpdaterExe(){
 		}
 		SVP_LogMsg( _T("检测到新的版本，升级程序已启动") ); 
 		//运行升级程序
+		ReleaseMutex(hObject);
 		ShellExecute( NULL, _T("open"), szUpdaterPath, _T("") , _T(""), SW_SHOW);	
+	}else{
+		ReleaseMutex(hObject);
 	}
 }
 void SVP_CheckUpdaterExe(){
 	
-	AfxBeginThread( SVPThreadCheckUpdaterExe, NULL);
+	AfxBeginThread( SVPThreadCheckUpdaterExe, NULL, THREAD_PRIORITY_LOWEST);
 }
 
 void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath, CStringArray* szSubArray, CAtlList<CString> * szStatMsg){

@@ -537,6 +537,13 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	GetDesktopWindow()->GetWindowRect(&m_rcDesktop);
 
 	AppSettings& s = AfxGetAppSettings();
+
+	if ( time(NULL) > (s.tLastCheckUpdater + s.tCheckUpdaterInterleave)){
+		s.tLastCheckUpdater = (UINT)time(NULL); 
+		s.UpdateData(true);
+		SetTimer(TIMER_START_CHECKUPDATER, 30000, NULL);
+	}
+
 	
 	ShowControls(s.nCS | (s.bShowControlBar ? CS_COLORCONTROLBAR : 0));
 
@@ -1430,7 +1437,10 @@ CString CMainFrame::getCurPlayingSubfile(int * iSubDelayMS,int subid ){
 
 void CMainFrame::OnTimer(UINT nIDEvent)
 {
-	if(TIMER_RECENTFOCUSED== nIDEvent){
+	if(TIMER_START_CHECKUPDATER == nIDEvent){
+		KillTimer(TIMER_START_CHECKUPDATER);
+		SVP_CheckUpdaterExe();
+	}else if(TIMER_RECENTFOCUSED== nIDEvent){
 		bRecentFocused = FALSE;
 		KillTimer(TIMER_RECENTFOCUSED);
 	}else if(TIMER_MOUSELWOWN == nIDEvent){

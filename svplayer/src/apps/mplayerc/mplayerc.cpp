@@ -79,8 +79,7 @@ static LONG WINAPI  DebugMiniDumpFilter( struct _EXCEPTION_POINTERS *pExceptionI
 			_tgetcwd(szDumpPath,_MAX_PATH);
 			_tcscat( szDumpPath, _T("\\"));
 
-			_tcscat( szDumpPath, ResStr(IDR_MAINFRAME) );
-			_tcscat( szDumpPath, _T("_") );
+			_tcscat( szDumpPath, _T("splayer_") );
 			_tcscat( szDumpPath, SVP_REV_STR );
 			_tcscat( szDumpPath, _T(".dmp"));
 
@@ -915,12 +914,7 @@ BOOL CMPlayerCApp::InitInstance()
 			dlg_chkdefplayer.setDefaultPlayer();
 		}
 	}
-	if ( time(NULL) > (m_s.tLastCheckUpdater + m_s.tCheckUpdaterInterleave)){
-		m_s.tLastCheckUpdater = (UINT)time(NULL); 
-		m_s.UpdateData(true);
-		SVP_CheckUpdaterExe(); 
-	}
-	
+
 
 	if((m_s.nCLSwitches&CLSW_REGEXTVID) || (m_s.nCLSwitches&CLSW_REGEXTAUD))
 	{

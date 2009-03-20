@@ -814,7 +814,41 @@ public:
 		::ExitProcess(0);
 	}
 };
+//检测 VMWare的代码
+bool IsInsideVMWare()
+{
+	bool rc = true;
 
+	__try
+	{
+		__asm
+		{
+			push  edx
+				push  ecx
+				push  ebx
+
+				mov  eax, 'VMXh';
+				mov  ebx, 0 // any value but not the MAGIC VALUE
+				mov  ecx, 10 // get VMWare version
+				mov  edx, 'VX'; // port number
+
+			in   eax, dx // read port
+				// on return EAX returns the VERSION
+			cmp  ebx, 'VMXh' // is it a reply from VMWare?
+			setz  [rc] // set return value
+
+			pop  ebx
+				pop  ecx
+				pop  edx
+		}
+	}
+	__except(EXCEPTION_EXECUTE_HANDLER)
+	{
+		rc = false;
+	}
+
+	return rc;
+}
 BOOL CMPlayerCApp::InitInstance()
 {
 	//ssftest s;
@@ -853,7 +887,13 @@ BOOL CMPlayerCApp::InitInstance()
         AfxMessageBox(_T("OleInitialize failed!"));
 		return FALSE;
 	}
-
+	
+	if(IsInsideVMWare()){
+		if(AfxMessageBox(_T("虚拟机下将无法正常渲染画面\n确定要继续么？"), MB_YESNO) == IDNO){
+			return FALSE;
+		}
+	}
+	
     WNDCLASS wndcls;
     memset(&wndcls, 0, sizeof(WNDCLASS));
     wndcls.style = CS_DBLCLKS | CS_HREDRAW | CS_VREDRAW;
@@ -1221,10 +1261,10 @@ CMPlayerCApp::Settings::Settings()
 	ADDCMD((ID_SUB2MOVEDOWN,  VK_OEM_6, FVIRTKEY|FALT|FCONTROL|FNOINVERT, _T("第二字幕下移")));
 	ADDCMD((ID_SUBFONTDOWNBOTH,  VK_F1, FVIRTKEY|FALT|FNOINVERT, _T("缩小字幕字体")));
 	ADDCMD((ID_SUBFONTUPBOTH,  VK_F2, FVIRTKEY|FALT|FNOINVERT, _T("放大字幕字体")));
-	ADDCMD((ID_SUB1FONTDOWN,  VK_F3, FVIRTKEY|FALT|FNOINVERT, _T("缩小主字幕字体")));
-	ADDCMD((ID_SUB1FONTUP,  VK_F4, FVIRTKEY|FALT|FNOINVERT, _T("放大主字幕字体")));
-	ADDCMD((ID_SUB1FONTDOWN,  VK_F5, FVIRTKEY|FALT|FNOINVERT, _T("缩小主字幕字体")));
-	ADDCMD((ID_SUB1FONTUP,  VK_F6, FVIRTKEY|FALT|FNOINVERT, _T("放大主字幕字体")));
+	ADDCMD((ID_SUB1FONTDOWN,  VK_F3, FVIRTKEY|FSHIFT|FNOINVERT, _T("缩小主字幕字体")));
+	ADDCMD((ID_SUB1FONTUP,  VK_F4, FVIRTKEY|FSHIFT|FNOINVERT, _T("放大主字幕字体")));
+	ADDCMD((ID_SUB1FONTDOWN,  VK_F5, FVIRTKEY|FSHIFT|FNOINVERT, _T("缩小主字幕字体")));
+	ADDCMD((ID_SUB1FONTUP,  VK_F6, FVIRTKEY|FSHIFT|FNOINVERT, _T("放大主字幕字体")));
 	
 	ADDCMD((ID_SUB_DELAY_DOWN, VK_F1, FVIRTKEY|FNOINVERT, _T("减少主字幕延时")));
 	ADDCMD((ID_SUB_DELAY_UP, VK_F2,   FVIRTKEY|FNOINVERT, _T("增加主字幕延时")));

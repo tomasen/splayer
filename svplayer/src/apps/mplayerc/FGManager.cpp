@@ -153,6 +153,9 @@ bool CFGManager::CheckBytes(HANDLE hFile, CString chkbytes)
 				return false;
 		}
 	}
+	if(sl.IsEmpty()){
+		SVP_LogMsg( chkbytes + _T(" CheckBytes Success ") );
+	}
 
 	return sl.IsEmpty();
 }
@@ -1361,15 +1364,16 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	}
 	}
 
-	if(src & SRC_MPEG)
+	if(src & SRC_MPEG )
 	{
 		pFGF = new CFGFilterInternal<CMpegSourceFilter>();
 		pFGF->m_chkbytes.AddTail(_T("0,16,FFFFFFFFF100010001800001FFFFFFFF,000001BA2100010001800001000001BB"));
 		pFGF->m_chkbytes.AddTail(_T("0,5,FFFFFFFFC0,000001BA40"));
-		pFGF->m_chkbytes.AddTail(_T("0,1,,47,188,1,,47,376,1,,47"));
+		//pFGF->m_chkbytes.AddTail(_T("0,1,,47,188,1,,47,376,1,,47")); //some file cant play for this
 		pFGF->m_chkbytes.AddTail(_T("4,1,,47,196,1,,47,388,1,,47"));
 		pFGF->m_chkbytes.AddTail(_T("0,4,,54467263,1660,1,,47"));
 		pFGF->m_chkbytes.AddTail(_T("0,8,fffffc00ffe00000,4156000055000000"));
+		
 		m_source.AddTail(pFGF);
 	}
 
@@ -1477,15 +1481,25 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	m_transform.AddTail(pFGF);
 	}
 
-	if(src & SRC_MPEG) {
-		pFGF = new CFGFilterInternal<CMpegSplitterFilter>(L"Mpeg Splitter", MERIT64_ABOVE_DSHOW);
-	} else {
-		pFGF = new CFGFilterInternal<CMpegSplitterFilter>(L"Mpeg Splitter (low merit)", MERIT64_UNLIKELY);
-	}
+ 	/*
+ 	if(src & SRC_MPEG) {
+ 	 		pFGF = new CFGFilterInternal<CMpegSplitterFilter>(L"Mpeg Splitter", MERIT64_ABOVE_DSHOW);
+ 	 	} else {
+ 	 		pFGF = new CFGFilterInternal<CMpegSplitterFilter>(L"Mpeg Splitter (low merit)", MERIT64_UNLIKELY);
+ 	 	}
+ 	 	pFGF->AddType(MEDIATYPE_Stream, MEDIASUBTYPE_MPEG1System);
+ 	 	pFGF->AddType(MEDIATYPE_Stream, MEDIASUBTYPE_MPEG2_PROGRAM);
+ 	 	pFGF->AddType(MEDIATYPE_Stream, MEDIASUBTYPE_MPEG2_PVA);
+ 		pFGF->AddType(MEDIATYPE_Stream, MEDIASUBTYPE_MPEG2_TRANSPORT);
+ 		pFGF->AddType(MEDIATYPE_Stream, GUID_NULL);
+ 	 	m_transform.AddTail(pFGF);*/
+ 	
+
+	pFGF = new CFGFilterInternal<CMpegSplitterFilter>(L"Mpeg Splitter (Plan-B)", MERIT64_UNLIKELY);
 	pFGF->AddType(MEDIATYPE_Stream, MEDIASUBTYPE_MPEG1System);
 	pFGF->AddType(MEDIATYPE_Stream, MEDIASUBTYPE_MPEG2_PROGRAM);
-	pFGF->AddType(MEDIATYPE_Stream, MEDIASUBTYPE_MPEG2_TRANSPORT);
 	pFGF->AddType(MEDIATYPE_Stream, MEDIASUBTYPE_MPEG2_PVA);
+	pFGF->AddType(MEDIATYPE_Stream, MEDIASUBTYPE_MPEG2_TRANSPORT);
 	pFGF->AddType(MEDIATYPE_Stream, GUID_NULL);
 	m_transform.AddTail(pFGF);
 
@@ -1561,7 +1575,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_MPEG1Packet);
 	m_transform.AddTail(pFGF);
 
-	pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MP3 Audio Decoder"  , MERIT64_UNLIKELY);
+	pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MP3 Audio Decoder"  , MERIT64_ABOVE_DSHOW); //MERIT64_ABOVE_DSHOW  MERIT64_UNLIKELY
 		pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_MP3); // Some MP3 just cant handler by MPA, maybe because of sample rate
 	m_transform.AddTail(pFGF);
 
@@ -2138,6 +2152,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	szaExtFilterPaths.RemoveAll();
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("PMPSplitter.ax")) );
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("rms.ax")) );
+	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("NeSplitter.ax")) );
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("svplayer.bin\\real\\rmoc3260.dll")) );
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("svplayer.bin\\real\\Codecs\\rv40.dll")) );
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("svplayer.bin\\real\\Codecs\\drvc.dll")) );

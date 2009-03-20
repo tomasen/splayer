@@ -343,7 +343,10 @@ m_rate = rate;
 				peshdr h2;
 				if(h.payloadstart && NextMpegStartCode(b, 4) && Read(h2, b)) // pes packet
 				{
-					if(h2.type == mpeg2 && h2.scrambling) {ASSERT(0); return E_FAIL;}
+					if(h2.type == mpeg2 && h2.scrambling) {
+						ASSERT(0); 
+						return E_FAIL;
+					}
 
 					if(h2.fpts)
 					{
@@ -410,10 +413,12 @@ DWORD CMpegSplitterFile::AddStream(WORD pid, BYTE pesid, DWORD len)
 		Seek(pos);
 		if(type == unknown)
 		{
-//			CMpegSplitterFile::avchdr h;	<= PPS and SPS can be present on differents packets !
-			if(!m_streams[video].Find(s) && Read(avch, len, &s.mt))
+			//		
+			//CMpegSplitterFile::avchdr h;	//<= PPS and SPS can be present on differents packets !
+			if(!m_streams[video].Find(s) && Read(avch, len, &s.mt))//avch
 				type = video;
 		}
+		
 	}
 	else if(pesid >= 0xc0 && pesid < 0xe0) // mpeg audio
 	{

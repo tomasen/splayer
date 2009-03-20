@@ -6222,6 +6222,9 @@ void CMainFrame::OnPlayVolume(UINT nID)
 	if(m_iMediaLoadState == MLS_LOADED) 
 	{
 		pBA->put_Volume(m_wndToolBar.Volume);
+		CString szStat;
+		szStat.Format(_T("“Ù¡ø: %d%%") , (int)((10000 + m_wndToolBar.Volume) / 100));
+		SendStatusMessage(szStat , 2000);
 	}
 }
 

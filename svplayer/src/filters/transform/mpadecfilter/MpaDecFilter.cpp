@@ -1325,16 +1325,18 @@ HRESULT CMpaDecFilter::ProcessFlac()
 HRESULT CMpaDecFilter::ProcessMPA()
 {
 	mad_stream_buffer(&m_stream, m_buff.GetData(), m_buff.GetCount());
-
 	while(1)
 	{
 		if(mad_frame_decode(&m_frame, &m_stream) == -1)
 		{
-			if(m_stream.error == MAD_ERROR_BUFLEN)
+			if(m_stream.error == MAD_ERROR_BUFLEN  )
 			{
 				memmove(m_buff.GetData(), m_stream.this_frame, m_stream.bufend - m_stream.this_frame);
 				m_buff.SetCount(m_stream.bufend - m_stream.this_frame);
 				break;
+			}
+			if( m_stream.error == MAD_ERROR_BADDATAPTR){
+				continue;
 			}
 
 			if(!MAD_RECOVERABLE(m_stream.error))
@@ -1344,7 +1346,7 @@ HRESULT CMpaDecFilter::ProcessMPA()
 			}
 
 			// FIXME: the renderer doesn't like this
-			// m_fDiscontinuity = true;
+			//TRACE(_T("*m_stream.error == %d\n"), m_stream.error);
 			
 			continue;
 		}

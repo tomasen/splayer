@@ -231,11 +231,11 @@ CString CPPageAccelTbl::MakeAccelVkeyLabel(WORD key, bool fVirtKey)
 	case VK_OEM_MINUS: str = _T("-"); break;
 	case VK_OEM_PERIOD: str = _T("."); break;
 	case VK_OEM_2: str = _T("/"); break;
-	case VK_OEM_3: str = _T("["); break;
-	case VK_OEM_4: str = _T("\\"); break;
-	case VK_OEM_5: str = _T("]"); break;
-	case VK_OEM_6: str = _T("ÒýºÅ¼ü"); break;
-	case VK_OEM_7: str = _T("VK_OEM_7"); break;
+	case VK_OEM_3: str = _T("`"); break;
+	case VK_OEM_4: str = _T("["); break;
+	case VK_OEM_5: str = _T("\\"); break;
+	case VK_OEM_6: str = _T("]"); break;
+	case VK_OEM_7: str = _T("ÒýºÅ¼ü"); break;
 	case VK_OEM_8: str = _T("VK_OEM_8"); break;
 	case VK_OEM_AX: str = _T("VK_OEM_AX"); break;
 	case VK_OEM_102: str = _T("VK_OEM_102"); break;

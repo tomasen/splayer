@@ -24,7 +24,6 @@
 #include "TextFile.h"
 #include "GFN.h"
 
-
 TCHAR* exttypestr[] = 
 {
 	_T("srt"), _T("sub"), _T("smi"), _T("psb"), 
@@ -86,13 +85,11 @@ void GetSubFileNames(CString fn, CAtlArray<CString>& paths, CAtlArray<SubFile>& 
 
 	CString orgpath = fn.Left(l);
 	CString title = fn.Mid(l, l2-l);
-	
 	if (byDir){
 		orgpath = fn;
 		title = _T("");
-		
-	}
 
+	}
 	CString filename = title + _T(".nooneexpectsthespanishinquisition");
 
 	if(!fWeb)
@@ -103,7 +100,7 @@ void GetSubFileNames(CString fn, CAtlArray<CString>& paths, CAtlArray<SubFile>& 
 		WIN32_FIND_DATA wfd, wfd2;
 		HANDLE hFile, hFile2;
 
-		for(UINT k = 0; k < paths.GetCount(); k++)
+		for(int k = 0; k < paths.GetCount(); k++)
 		{
 			CString path = paths[k];
 			path.Replace('\\', '/');
@@ -128,7 +125,6 @@ void GetSubFileNames(CString fn, CAtlArray<CString>& paths, CAtlArray<SubFile>& 
 					{
 						fEmpty = false;
 						// sl.AddTail(path + file.name);
-						
 					}
 				}
 				while(FindNextFile(hFile, &wfd));

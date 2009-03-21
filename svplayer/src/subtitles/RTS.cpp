@@ -24,7 +24,6 @@
 #include <time.h>
 #include "RTS.h"
 #include "../svplib/SVPToolBox.h"
-
 // WARNING: this isn't very thread safe, use only one RTS a time.
 static HDC g_hDC;
 static int g_hDC_refcnt = 0;
@@ -1191,8 +1190,7 @@ CRenderedTextSubtitle::CRenderedTextSubtitle(CCritSec* pLock)
 	: ISubPicProviderImpl(pLock)
 {
 	m_size = CSize(0, 0);
-	sub_delay_ms = 0;
-	notSaveDelay = 0;
+
 	if(g_hDC_refcnt == 0) 
 	{
 		g_hDC = CreateCompatibleDC(NULL);
@@ -1331,18 +1329,17 @@ void CRenderedTextSubtitle::ParseString(CSubtitle* sub, CStringW str, STSStyle& 
 	str.Replace(L"\\N", L"\n");
 	str.Replace(L"\\n", (sub->m_wrapStyle < 2 || sub->m_wrapStyle == 3) ? L" " : L"\n");
 	str.Replace(L"\\h", L"\x00A0");
-
+	
 	CAtlList<CString> szaEachLines;
 	Explode(str, szaEachLines, _T("\n"));
-	
 	double orgFontSize = style.fontSize;
-	 
 	BOOL bNeedChkEngLine = true;
 	BOOL bIsEngLine = true;
+	
 	for(int i = 0, j = 0, len = str.GetLength(); j <= len; j++)
 	{
 		WCHAR c = str[j];
-		
+
 		if(bNeedChkEngLine){
 			//检测当前行是否英文行
 			bIsEngLine = true;
@@ -1363,16 +1360,12 @@ void CRenderedTextSubtitle::ParseString(CSubtitle* sub, CStringW str, STSStyle& 
 		}else{
 			style.fontSize = orgFontSize;
 		}
-		
-					
-		
 
 		if(c != '\n' && c != ' ' && c != '\x00A0' && c != 0)
 			continue;
 
 		if(i < j)
 		{
-
 			if(CWord* w = new CText(style, str.Mid(i, j-i), m_ktype, m_kstart, m_kend))
 			{
 				sub->m_words.AddTail(w); 

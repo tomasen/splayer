@@ -257,6 +257,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\HdmvSub.cpp"
+				>
+			</File>
+			<File
 				RelativePath="Rasterizer.cpp"
 				>
 				<FileConfiguration
@@ -278,6 +282,10 @@
 			</File>
 			<File
 				RelativePath="RealTextParser.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\RenderedHdmvSubtitle.cpp"
 				>
 			</File>
 			<File
@@ -438,11 +446,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\HdmvSub.h"
+				>
+			</File>
+			<File
 				RelativePath="Rasterizer.h"
 				>
 			</File>
 			<File
 				RelativePath="RealTextParser.h"
+				>
+			</File>
+			<File
+				RelativePath=".\RenderedHdmvSubtitle.h"
 				>
 			</File>
 			<File

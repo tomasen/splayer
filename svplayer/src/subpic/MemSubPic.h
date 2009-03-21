@@ -60,4 +60,3 @@ public:
 	CMemSubPicAllocator(int type, SIZE maxsize);
 };
 
-

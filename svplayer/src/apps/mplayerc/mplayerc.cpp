@@ -1883,7 +1883,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 			nCS |= CS_STATUSBAR;
 			fCustomChannelMapping = FALSE;
 		}
-		if(pApp->GetProfileBinary(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPEAKERTOCHANNELMAPPING), &ptr, &len))
+		if(pApp->GetProfileBinary(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPEAKERTOCHANNELMAPPING), &ptr, &len) && fCustomChannelMapping )
 		{
 			memcpy(pSpeakerToChannelMap, ptr, sizeof(pSpeakerToChannelMap));
 			delete [] ptr;

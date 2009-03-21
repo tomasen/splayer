@@ -75,6 +75,9 @@ CPPageSubStyle::~CPPageSubStyle()
 
 void CPPageSubStyle::InitStyle(CString title, STSStyle& stss)
 {
+	if(title == _T("SVPDefault"))
+		title  = _T("²¥·ÅÆ÷Ä¬ÈÏÉèÖÃ");
+	
 	m_pPSP->pszTitle = (m_title = title);
 	m_psp.dwFlags |= PSP_USETITLE;
 

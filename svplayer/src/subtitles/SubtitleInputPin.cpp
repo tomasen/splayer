@@ -24,9 +24,10 @@
 #include "VobSubFile.h"
 #include "RTS.h"
 #include "SSF.h"
+#include "RenderedHdmvSubtitle.h"
 
 #include <initguid.h>
-#include "..\..\include\moreuuids.h"
+#include <moreuuids.h>
 
 // our first format id
 #define __GAB1__ "GAB1"
@@ -62,6 +63,7 @@ HRESULT CSubtitleInputPin::CheckMediaType(const CMediaType* pmt)
 		|| pmt->majortype == MEDIATYPE_Subtitle && (pmt->subtype == MEDIASUBTYPE_SSA || pmt->subtype == MEDIASUBTYPE_ASS || pmt->subtype == MEDIASUBTYPE_ASS2)
 		|| pmt->majortype == MEDIATYPE_Subtitle && pmt->subtype == MEDIASUBTYPE_SSF
 		|| pmt->majortype == MEDIATYPE_Subtitle && (pmt->subtype == MEDIASUBTYPE_VOBSUB)
+		|| pmt->majortype == MEDIATYPE_Subtitle && pmt->subtype == MEDIASUBTYPE_HDMVSUB
 		? S_OK 
 		: E_FAIL;
 }
@@ -82,7 +84,8 @@ HRESULT CSubtitleInputPin::CompleteConnect(IPin* pReceivePin)
 		DWORD dwOffset = psi->dwOffset;
 
 		CString name = ISO6392ToLanguage(psi->IsoLang);
-		if(name.IsEmpty()) name = _T("English");
+		LCID	lcid = ISO6392ToLcid(psi->IsoLang);
+		if(name.IsEmpty()) name = _T("Unknown");
 		if(wcslen(psi->TrackName) > 0) name += _T(" (") + CString(psi->TrackName) + _T(")");
 
 		if(m_mt.subtype == MEDIASUBTYPE_UTF8 
@@ -94,6 +97,7 @@ HRESULT CSubtitleInputPin::CompleteConnect(IPin* pReceivePin)
 			if(!(m_pSubStream = new CRenderedTextSubtitle(m_pSubLock))) return E_FAIL;
 			CRenderedTextSubtitle* pRTS = (CRenderedTextSubtitle*)(ISubStream*)m_pSubStream;
 			pRTS->m_name = name;
+			pRTS->m_lcid = lcid;
 			pRTS->m_dstScreenSize = CSize(384, 288);
 			pRTS->CreateDefaultStyle(DEFAULT_CHARSET);
 
@@ -125,6 +129,10 @@ HRESULT CSubtitleInputPin::CompleteConnect(IPin* pReceivePin)
 			if(!(m_pSubStream = new CVobSubStream(m_pSubLock))) return E_FAIL;
 			CVobSubStream* pVSS = (CVobSubStream*)(ISubStream*)m_pSubStream;
 			pVSS->Open(name, m_mt.pbFormat + dwOffset, m_mt.cbFormat - dwOffset);
+		}
+		else if (m_mt.subtype == MEDIASUBTYPE_HDMVSUB)
+		{
+			if(!(m_pSubStream = new CRenderedHdmvSubtitle(m_pSubLock))) return E_FAIL;
 		}
 	}
 
@@ -188,6 +196,12 @@ STDMETHODIMP CSubtitleInputPin::NewSegment(REFERENCE_TIME tStart, REFERENCE_TIME
 		CAutoLock cAutoLock(m_pSubLock);
 		CVobSubStream* pVSS = (CVobSubStream*)(ISubStream*)m_pSubStream;
 		pVSS->RemoveAll();
+	}
+	else if (m_mt.majortype == MEDIATYPE_Subtitle && m_mt.subtype == MEDIASUBTYPE_HDMVSUB)
+	{
+		CAutoLock cAutoLock(m_pSubLock);
+		CRenderedHdmvSubtitle* pHdmvSubtitle = (CRenderedHdmvSubtitle*)(ISubStream*)m_pSubStream;
+		pHdmvSubtitle->NewSegment (tStart, tStop, dRate);
 	}
 
 	return __super::NewSegment(tStart, tStop, dRate);
@@ -355,6 +369,12 @@ STDMETHODIMP CSubtitleInputPin::Receive(IMediaSample* pSample)
 			CVobSubStream* pVSS = (CVobSubStream*)(ISubStream*)m_pSubStream;
 			pVSS->Add(tStart, tStop, pData, len);
 		}
+		else if (m_mt.subtype == MEDIASUBTYPE_HDMVSUB)
+		{
+			CAutoLock cAutoLock(m_pSubLock);
+			CRenderedHdmvSubtitle* pHdmvSubtitle = (CRenderedHdmvSubtitle*)(ISubStream*)m_pSubStream;
+			pHdmvSubtitle->ParseSample (pSample);
+		}
 	}
 
 	if(fInvalidate)
@@ -368,4 +388,5 @@ STDMETHODIMP CSubtitleInputPin::Receive(IMediaSample* pSample)
 
     return hr;
 }
+
 

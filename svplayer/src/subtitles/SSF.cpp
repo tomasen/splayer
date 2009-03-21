@@ -36,7 +36,6 @@ namespace ssf
 	{
 		sub_delay_ms = 0;
 		notSaveDelay = 0;
-
 	}
 
 	CRenderer::~CRenderer()
@@ -69,6 +68,7 @@ namespace ssf
 		}
 		catch(Exception& e)
 		{
+			UNREFERENCED_PARAMETER(e);
 			TRACE(_T("%s\n"), e.ToString());
 		}
 
@@ -92,6 +92,7 @@ namespace ssf
 		}
 		catch(Exception& e)
 		{
+			UNREFERENCED_PARAMETER(e);
 			TRACE(_T("%s\n"), e.ToString());
 		}
 
@@ -108,6 +109,7 @@ namespace ssf
 		}
 		catch(Exception& e)
 		{
+			UNREFERENCED_PARAMETER(e);
 			TRACE(_T("%s\n"), e.ToString());
 		}
 	}

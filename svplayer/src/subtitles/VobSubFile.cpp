@@ -22,7 +22,7 @@
 #include "stdafx.h"
 #include <winioctl.h>
 #include "TextFile.h"
-#include "..\..\include\unrar\unrar.h"
+#include <unrar\unrar.h>
 #include "VobSubFile.h"
 
 //
@@ -2137,7 +2137,6 @@ CVobSubStream::CVobSubStream(CCritSec* pLock)
 {
 	sub_delay_ms = 0;
 	notSaveDelay = 0;
-
 }
 
 CVobSubStream::~CVobSubStream()

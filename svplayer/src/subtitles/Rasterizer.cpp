@@ -1124,7 +1124,7 @@ CRect Rasterizer::Draw(SubPicDesc& spd, CRect& clipRect, byte* pAlphaMask, int x
 						if(wt+xo >= sw[1]) {
 							while(wt+xo >= sw[1])
 								sw += 2; color = sw[-2];
-						} 
+						}
 						pixmix2_sse2(&dst[wt], color, safe_subtract(src[wt*2+1], src[wt*2]), am[wt]);
 					}
 					else
@@ -1133,7 +1133,7 @@ CRect Rasterizer::Draw(SubPicDesc& spd, CRect& clipRect, byte* pAlphaMask, int x
 						if(wt+xo >= sw[1]) {
 							while(wt+xo >= sw[1])
 								sw += 2; color = sw[-2];
-						} 
+						}
 						pixmix2(&dst[wt], color, safe_subtract(src[wt*2+1], src[wt*2]), am[wt]);
 					}
 				}
@@ -1152,4 +1152,22 @@ CRect Rasterizer::Draw(SubPicDesc& spd, CRect& clipRect, byte* pAlphaMask, int x
 	_mm_empty();
 
 	return bbox;
+}
+
+
+void Rasterizer::FillSolidRect(SubPicDesc& spd, int x, int y, int nWidth, int nHeight, long lColor, long lAlpha)
+{
+	bool fSSE2 = !!(g_cpuid.m_flags & CCpuID::sse2);
+
+	for (int wy=y; wy<y+nHeight; wy++)
+	{
+		DWORD* dst = (DWORD*)((BYTE*)spd.bits + spd.pitch * wy) + x;
+
+		if(fSSE2)
+			for(int wt=0; wt<nWidth; ++wt)
+				pixmix_sse2(&dst[wt], lColor, lAlpha);
+		else
+			for(int wt=0; wt<nWidth; ++wt)
+				pixmix(&dst[wt], lColor, lAlpha);
+	}
 }

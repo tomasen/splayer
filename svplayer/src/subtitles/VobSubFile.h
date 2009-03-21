@@ -87,7 +87,6 @@ protected:
 
 public:
 	CString m_title;
-
 	typedef struct
 	{
 		__int64 filepos;

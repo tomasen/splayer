@@ -201,7 +201,7 @@ bool CUSFSubtitles::Read(LPCTSTR fn)
 	{
 		style_t* def = styles.GetNext(pos);
 
-		if(def->name.CompareNoCase(L"Default"))
+		if(def->name.CompareNoCase(L"SVPDefault"))
 			continue;
 
 		POSITION pos2 = styles.GetHeadPosition();
@@ -209,7 +209,7 @@ bool CUSFSubtitles::Read(LPCTSTR fn)
 		{
 			style_t* s = styles.GetNext(pos2);
 
-			if(!s->name.CompareNoCase(L"Default"))
+			if(!s->name.CompareNoCase(L"SVPDefault"))
 				continue;
 
 			if(s->fontstyle.face.IsEmpty()) s->fontstyle.face = def->fontstyle.face;
@@ -241,7 +241,7 @@ bool CUSFSubtitles::Read(LPCTSTR fn)
 	while(pos)
 	{
 		text_t* t = texts.GetNext(pos);
-		if(t->style.IsEmpty()) t->style = L"Default";
+		if(t->style.IsEmpty()) t->style = L"SVPDefault";
 	}
 
 	return(true);
@@ -263,7 +263,7 @@ bool CUSFSubtitles::ConvertToSTS(CSimpleTextSubtitle& sts)
 	{
 		style_t* s = styles.GetNext(pos);
 
-		if(!s->name.CompareNoCase(L"Default") && !s->fontstyle.wrap.IsEmpty())
+		if(!s->name.CompareNoCase(L"SVPDefault") && !s->fontstyle.wrap.IsEmpty())
 		{
 			sts.m_defaultWrapStyle = 
 				!s->fontstyle.wrap.CompareNoCase(L"no") ? 2 :
@@ -352,7 +352,7 @@ bool CUSFSubtitles::ConvertToSTS(CSimpleTextSubtitle& sts)
 			}
 		}
 
-		if(t->style.CompareNoCase(L"Default") != 0)
+		if(t->style.CompareNoCase(L"SVPDefault") != 0)
 		{
 			POSITION pos = styles.GetHeadPosition();
 			while(pos)

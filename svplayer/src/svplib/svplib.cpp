@@ -25,20 +25,14 @@ void SVP_RealUploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString
 }
 UINT __cdecl SVPThreadCheckUpdaterExe( LPVOID lpParam ) 
 { 
-	if(lpParam){
-		szGStatMsg = (CAtlList<CString> *) lpParam;
-	}
-	SVP_RealCheckUpdaterExe();
+	
+	SVP_RealCheckUpdaterExe((int*)lpParam);
 	szGStatMsg = NULL;
 	return 0; 
 }
-void SVP_RealCheckUpdaterExe(){
+void SVP_RealCheckUpdaterExe(BOOL* bCheckingUpdater){
 
-	HANDLE hObject = CreateMutex(NULL,FALSE,_T("SVPLAYER_UPDATER"));
-	if(GetLastError() == ERROR_ALREADY_EXISTS)
-	{
-		return ;
-	}
+	
 	//检查 updater.exe 是否可写
 	CSVPToolBox svpToolBox;
 	CSVPNet svpNet;
@@ -54,15 +48,16 @@ void SVP_RealCheckUpdaterExe(){
 		}
 		SVP_LogMsg( _T("检测到新的版本，升级程序已启动") ); 
 		//运行升级程序
-		ReleaseMutex(hObject);
-		ShellExecute( NULL, _T("open"), szUpdaterPath, _T("") , _T(""), SW_SHOW);	
-	}else{
-		ReleaseMutex(hObject);
+		ShellExecute( NULL, _T("open"), szUpdaterPath, _T("") , _T(""), SW_HIDE);	
 	}
+	*bCheckingUpdater = true;
 }
-void SVP_CheckUpdaterExe(){
-	
-	AfxBeginThread( SVPThreadCheckUpdaterExe, NULL, THREAD_PRIORITY_LOWEST);
+void SVP_CheckUpdaterExe(BOOL* bCheckingUpdater){
+	if(*bCheckingUpdater){
+		return;
+	}
+	*bCheckingUpdater = true;
+	AfxBeginThread( SVPThreadCheckUpdaterExe, (LPVOID)bCheckingUpdater, THREAD_PRIORITY_LOWEST);
 }
 
 void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath, CStringArray* szSubArray, CAtlList<CString> * szStatMsg){

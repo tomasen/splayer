@@ -20,6 +20,7 @@ public:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
 
 	cupdatenetlib cup;
+	BOOL m_bGoodToGo;
 	BOOL bHide;
 	NOTIFYICONDATA tnid;
 
@@ -48,4 +49,5 @@ public:
 	afx_msg void OnNMClickSyslink1(NMHDR *pNMHDR, LRESULT *pResult);
 	CButton cb_stop;
 	CButton cb_backgd;
+	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 };

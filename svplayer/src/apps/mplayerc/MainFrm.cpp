@@ -445,7 +445,8 @@ CMainFrame::CMainFrame() :
 	m_iSubtitleSel2(-1),
 	m_bSubUploading(false),
 	m_bSubDownloading(false),
-	m_iAudioChannelMaping(0)
+	m_iAudioChannelMaping(0),
+	m_bCheckingUpdater(false)
 {
 }
 
@@ -1439,7 +1440,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 {
 	if(TIMER_START_CHECKUPDATER == nIDEvent){
 		KillTimer(TIMER_START_CHECKUPDATER);
-		SVP_CheckUpdaterExe();
+		SVP_CheckUpdaterExe( &m_bCheckingUpdater );
 	}else if(TIMER_RECENTFOCUSED== nIDEvent){
 		bRecentFocused = FALSE;
 		KillTimer(TIMER_RECENTFOCUSED);
@@ -2332,7 +2333,7 @@ void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 			if(s.wmcmds.GetNext(pos).mouse == wmcmd::LDOWN)
 				fLeftMouseBtnUnassigned = false;
 
-		if(!bRecentFocused)
+		if(!bRecentFocused || s.iOnTop != 0);  //&& 
 			s_fLDown = true;
 
 		if(!m_fFullScreen && ( ((xPercent < 25 && yPercent < 25) ) || fLeftMouseBtnUnassigned)) //IsCaptionMenuHidden() || 
@@ -4672,7 +4673,7 @@ void CMainFrame::OnFileISDBUpload()
 }
 void CMainFrame::OnManualcheckupdate()
 {
-	SVP_CheckUpdaterExe();
+	SVP_CheckUpdaterExe(&m_bCheckingUpdater);
 }
 void CMainFrame::OnUpdateFileISDBUpload(CCmdUI *pCmdUI)
 {

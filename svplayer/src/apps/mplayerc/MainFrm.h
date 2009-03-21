@@ -421,6 +421,7 @@ public:
 	void InvalidateSubtitle(DWORD_PTR nSubtitleId = -1, REFERENCE_TIME rtInvalidate = -1);
 	void ReloadSubtitle();
 
+	BOOL m_bCheckingUpdater;
 	// shaders
 	CAtlList<CString> m_shaderlabels;
 	void SetShaders();

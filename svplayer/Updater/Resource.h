@@ -6,6 +6,8 @@
 #define IDD_UPDATER_DIALOG              102
 #define IDT_REFRESH_STAT                103
 #define IDT_CLOSE_DLG                   104
+#define IDT_START_CHECK				    105
+#define IDT_REAL_START_CHECK			106
 #define IDR_MAINFRAME                   128
 #define IDC_PROGRESS1                   1000
 #define IDC_PROGRESS2                   1001

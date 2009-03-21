@@ -26,6 +26,7 @@ UINT __cdecl ThreadCheckUpdate( LPVOID lpParam )
 CUpdaterDlg::CUpdaterDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CUpdaterDlg::IDD, pParent)
 ,bHide(1)
+,m_bGoodToGo(0)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -54,6 +55,7 @@ BEGIN_MESSAGE_MAP(CUpdaterDlg, CDialog)
 	ON_WM_CLOSE()
 	ON_BN_CLICKED(IDC_BUTTON1, &CUpdaterDlg::OnBnClickedButton1)
 	ON_NOTIFY(NM_CLICK, IDC_SYSLINK1, &CUpdaterDlg::OnNMClickSyslink1)
+	ON_WM_CREATE()
 END_MESSAGE_MAP()
 
 
@@ -71,14 +73,11 @@ BOOL CUpdaterDlg::OnInitDialog()
 	prg_total.SetRange(0, 1000);
 	prg_curfile.SetRange(0, 1000);
 
-	
-	if(cup.downloadList()){
-		AfxBeginThread(ThreadCheckUpdate , (LPVOID)&cup);
-	}
-	
-	SetTimer(IDT_REFRESH_STAT, 700, NULL);
+	SetTimer(IDT_START_CHECK, 1000, NULL);
 
-	return TRUE;  // return TRUE  unless you set the focus to a control
+	
+
+	return FALSE;  // return TRUE  unless you set the focus to a control
 }
 
 // If you add a minimize button to your dialog, you will need the code below
@@ -156,15 +155,57 @@ void CUpdaterDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO: Add your message handler code here and/or call default
 	switch(nIDEvent){
+		case IDT_START_CHECK:
+			{
+				KillTimer(IDT_START_CHECK);
+				
+				if(cup.downloadList()){
+					tnid.cbSize = sizeof(NOTIFYICONDATA); 
+					tnid.hWnd = this->m_hWnd; 
+					tnid.uID = IDR_MAINFRAME; 
+					tnid.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP; 
+					tnid.uCallbackMessage = WM_NOTIFYICON; 
+					tnid.hIcon = this->m_hIcon; 
+					wcscpy_s(tnid.szTip, _T("射手影音播放器自动更新程序"));
+					Shell_NotifyIcon(NIM_ADD, &tnid); 
+					
+					csCurFile.ShowWindow(SW_HIDE);
+					prg_curfile.ShowWindow(SW_HIDE);
+					csTotalProgress.ShowWindow(SW_HIDE);
+					prg_total.ShowWindow(SW_HIDE);
+					cs_stat.ShowWindow(SW_SHOW);
+					cslink.ShowWindow(SW_SHOW);
+					cs_stat.SetWindowText(_T("射手影音播放器智能更新程序将稍后开始检查是否存在可供升级的新版本，以获得最新的功能和改进..."));
+					SetTimer(IDT_REAL_START_CHECK, 30000, NULL);
+					cb_backgd.EnableWindow();
+					m_bGoodToGo = true;
+				}else{
+					SetTimer(IDT_CLOSE_DLG, 300, NULL);
+				}
+
+			}
+			break;
+		case IDT_REAL_START_CHECK:
+			{
+				m_bGoodToGo = false;
+				KillTimer(IDT_REAL_START_CHECK);
+				csCurFile.ShowWindow(SW_SHOW);
+				prg_curfile.ShowWindow(SW_SHOW);
+				csCurFile.ShowWindow(SW_SHOW);
+				prg_curfile.ShowWindow(SW_SHOW);
+				csTotalProgress.ShowWindow(SW_SHOW);
+				prg_total.ShowWindow(SW_SHOW);
+				cs_stat.ShowWindow(SW_HIDE);
+				cslink.ShowWindow(SW_HIDE);
+				cb_backgd.SetWindowText(_T("后台运行"));
+				AfxBeginThread(ThreadCheckUpdate , (LPVOID)&cup);
+				SetTimer(IDT_REFRESH_STAT, 700, NULL);
+			}
+			break;
 		case IDT_REFRESH_STAT:
 			{
 				CString szTmp;
-				tnid.cbSize = sizeof(NOTIFYICONDATA); 
-				tnid.hWnd = this->m_hWnd; 
-				tnid.uID = IDR_MAINFRAME; 
-				tnid.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP; 
-				tnid.uCallbackMessage = WM_NOTIFYICON; 
-				tnid.hIcon = this->m_hIcon; 
+				
 
 				if(cup.iSVPCU_TOTAL_FILEBYTE < cup.iSVPCU_TOTAL_FILEBYTE_DONE + cup.iSVPCU_CURRENT_FILEBYTE_DONE){
 					cup.iSVPCU_TOTAL_FILEBYTE = cup.iSVPCU_TOTAL_FILEBYTE_DONE + cup.iSVPCU_CURRENT_FILEBYTE_DONE;
@@ -203,7 +244,7 @@ void CUpdaterDlg::OnTimer(UINT_PTR nIDEvent)
 
 				prg_total.SetPos(int(progress * 10));
 
-				Shell_NotifyIcon(NIM_ADD, &tnid); 
+				
 				Shell_NotifyIcon(NIM_MODIFY,&tnid);
 
 				if(cup.bSVPCU_DONE){
@@ -223,6 +264,7 @@ void CUpdaterDlg::OnTimer(UINT_PTR nIDEvent)
 			}
 			break;
 		case IDT_CLOSE_DLG:
+			KillTimer(IDT_CLOSE_DLG);
 			Shell_NotifyIcon(NIM_DELETE, &tnid); 
 			OnOK();
 			break;
@@ -234,7 +276,12 @@ void CUpdaterDlg::OnBnClickedOk()
 {
 	
 	//OnOK();
-	ShowWindow(SW_MINIMIZE);
+	if(m_bGoodToGo){
+		KillTimer(IDT_REAL_START_CHECK);
+		SetTimer(IDT_REAL_START_CHECK, 1700, NULL);
+	}else{
+		ShowWindow(SW_MINIMIZE);
+	}
 }
 
 void CUpdaterDlg::OnClose()
@@ -257,4 +304,15 @@ void CUpdaterDlg::OnNMClickSyslink1(NMHDR *pNMHDR, LRESULT *pResult)
 	ShellExecute( NULL, _T("open"), _T("http://blog.svplayer.cn"), _T("") , NULL , SW_SHOW);
 
 	*pResult = 0;
+}
+
+int CUpdaterDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
+{
+	lpCreateStruct->style &= ~WS_VISIBLE;;
+	if (CDialog::OnCreate(lpCreateStruct) == -1)
+		return -1;
+
+	// TODO:  Add your specialized creation code here
+
+	return 0;
 }

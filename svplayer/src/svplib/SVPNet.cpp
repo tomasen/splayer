@@ -1,4 +1,5 @@
 #include "SVPNet.h"
+#include "../apps/mplayerc/revision.h"
 
 
 CSVPNet::CSVPNet(void)

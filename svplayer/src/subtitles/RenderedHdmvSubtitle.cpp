@@ -27,6 +27,8 @@
 CRenderedHdmvSubtitle::CRenderedHdmvSubtitle(CCritSec* pLock)
 					 : ISubPicProviderImpl(pLock)
 {
+	sub_delay_ms = 0;
+	notSaveDelay = 0;
 }
 
 CRenderedHdmvSubtitle::~CRenderedHdmvSubtitle(void)

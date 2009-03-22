@@ -1200,6 +1200,9 @@ CRenderedTextSubtitle::CRenderedTextSubtitle(CCritSec* pLock)
 	}
 
 	g_hDC_refcnt++;
+
+	sub_delay_ms = 0;
+	notSaveDelay = 0;
 }
 
 CRenderedTextSubtitle::~CRenderedTextSubtitle()

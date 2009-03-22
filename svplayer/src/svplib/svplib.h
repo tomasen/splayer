@@ -17,7 +17,6 @@
 #include <sys/stat.h>
 #include <share.h>
 
-#include "../apps/mplayerc/revision.h"
 #define SVP_MIN(a, b)  (((a) < (b)) ? (a) : (b)) 
 #define SVP_MAX(a, b)  (((a) > (b)) ? (a) : (b)) 
 

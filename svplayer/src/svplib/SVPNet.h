@@ -19,6 +19,7 @@ private:
 	char errorBuffer[CURL_ERROR_SIZE];;
 public:
 	int WetherNeedUploadSub(CString fnVideoFilePath, CString szFileHash,CString fnSubHash, int iDelayMS);
+	int UploadPinRenderDeadEndReport(CString szPinName, CString szReport);
 	int UploadSubFileByVideoAndHash(CString fnVideoFilePath, CString szFileHash, CString szSubHash,CStringArray* fnSubPaths, int iDelayMS, CStringArray* szaPostTerms);
 	int  QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, CString szVHash = _T(""));
 	static size_t handleSubQuery( void *ptr, size_t size, size_t nmemb, void *stream);

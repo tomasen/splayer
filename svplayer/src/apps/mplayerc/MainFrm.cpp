@@ -2333,8 +2333,8 @@ void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 			if(s.wmcmds.GetNext(pos).mouse == wmcmd::LDOWN)
 				fLeftMouseBtnUnassigned = false;
 
-		if(!bRecentFocused || s.iOnTop != 0);  //&& 
-			s_fLDown = true;
+		//if(!bRecentFocused || s.iOnTop != 0);  //&& 
+		s_fLDown = true;
 
 		if(!m_fFullScreen && ( ((xPercent < 25 && yPercent < 25) ) || fLeftMouseBtnUnassigned)) //IsCaptionMenuHidden() || 
 		{
@@ -5186,7 +5186,7 @@ void CMainFrame::OnUpdateViewRotate(CCmdUI* pCmdUI)
 }
 
 // FIXME
-const static SIZE s_ar[] = {{0,0}, {4,3}, {5,4}, {16,9}};
+const static SIZE s_ar[] = {{0,0}, {4,3}, {5,4}, {16,9}, {235, 100}};
 
 void CMainFrame::OnViewAspectRatio(UINT nID)
 {
@@ -10572,7 +10572,7 @@ void CMainFrame::SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle)
 
 	if(m_pCAP && pSubStream)
 	{
-		m_wndSubresyncBar.SetSubtitle(pSubStream, m_pCAP->GetFPS());
+		//m_wndSubresyncBar.SetSubtitle(pSubStream, m_pCAP->GetFPS());
 		CString szBuf;
 		CString subName;
 		WCHAR* pName = NULL;

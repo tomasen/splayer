@@ -65,6 +65,11 @@ BOOL CUpdaterApp::InitInstance()
 	// such as the name of your company or organization
 	//SetRegistryKey(_T("Local AppWizard-Generated Applications"));
 	
+	if(0){
+		//Upload DMP
+		CString szDmpPath, szLogPath;
+		SVP_UploadCrashDmp(szDmpPath, szLogPath);
+	}
 
 	//Background downloader
 

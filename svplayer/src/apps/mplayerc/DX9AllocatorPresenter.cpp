@@ -1775,6 +1775,7 @@ HRESULT CRM9AllocatorPresenter::AllocSurfaces()
 
 	m_pD3DDev->ColorFill(m_pVideoSurfaceOff, NULL, 0);
 
+
 	if(FAILED(hr = m_pD3DDev->CreateOffscreenPlainSurface(
 		m_NativeVideoSize.cx, m_NativeVideoSize.cy, D3DFMT_YUY2, 
 		D3DPOOL_DEFAULT, &m_pVideoSurfaceYUY2, NULL)))

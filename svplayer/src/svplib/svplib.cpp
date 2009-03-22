@@ -60,6 +60,32 @@ void SVP_CheckUpdaterExe(BOOL* bCheckingUpdater){
 	AfxBeginThread( SVPThreadCheckUpdaterExe, (LPVOID)bCheckingUpdater, THREAD_PRIORITY_LOWEST);
 }
 
+class CSVPPinRenderDeadEndData{
+public:
+	CString szPinName;
+	CString szReport;
+};
+
+void SVP_RealUploadPinRenderDeadEnd(CString szPinName, CString szReport){
+	CSVPNet svpNet;
+	svpNet.UploadPinRenderDeadEndReport(  szPinName,  szReport);
+}
+UINT __cdecl SVPThreadUploadPinRenderDeadEnd( LPVOID lpParam ) 
+{ 
+	CSVPPinRenderDeadEndData * svpdata = (CSVPPinRenderDeadEndData *) lpParam;
+	SVP_RealUploadPinRenderDeadEnd(svpdata->szPinName, svpdata->szReport);
+	delete svpdata;
+	return 0; 
+}
+void SVP_UploadPinRenderDeadEnd(CString szPinName, CString szReport){
+	CSVPPinRenderDeadEndData * svpdata = new CSVPPinRenderDeadEndData();
+	svpdata->szPinName = szPinName;
+	svpdata->szReport = szReport;
+	AfxBeginThread( SVPThreadUploadPinRenderDeadEnd, (LPVOID)svpdata, THREAD_PRIORITY_LOWEST);
+}
+void SVP_UploadCrashDmp(CString szDmppath, CString szLogPath){
+
+}
 void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath, CStringArray* szSubArray, CAtlList<CString> * szStatMsg){
 	
 	szGStatMsg = szStatMsg;

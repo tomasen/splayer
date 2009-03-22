@@ -17,6 +17,7 @@
 #include <sys/stat.h>
 #include <share.h>
 
+#include "../apps/mplayerc/revision.h"
 #define SVP_MIN(a, b)  (((a) < (b)) ? (a) : (b)) 
 #define SVP_MAX(a, b)  (((a) > (b)) ? (a) : (b)) 
 
@@ -29,4 +30,5 @@ extern void SVP_LogMsg(CString logmsg, int level = 15);
 extern void SVP_CheckUpdaterExe(BOOL* bCheckingUpdater);
 extern void SVP_RealCheckUpdaterExe(BOOL* bCheckingUpdater);
 extern BOOL SVP_SetCoreAvcCUDA(BOOL useCUDA);
-
+extern void SVP_UploadPinRenderDeadEnd(CString szPinName, CString szReport);
+extern void SVP_UploadCrashDmp(CString szDmppath, CString szLogPath);

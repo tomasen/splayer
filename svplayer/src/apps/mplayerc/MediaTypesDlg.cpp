@@ -27,6 +27,7 @@
 #include "MediaTypesDlg.h"
 #include "..\..\DSUtil\DSUtil.h"
 #include "..\..\..\include\moreuuids.h"
+#include "..\..\svplib\svplib.h"
 
 // CMediaTypesDlg dialog
 
@@ -85,14 +86,22 @@ BOOL CMediaTypesDlg::OnInitDialog()
 	CAtlList<CStringW> path;
 	CAtlList<CMediaType> mts;
 
+	CString szDeadPin;
+	CString szReport;
+
 	for(int i = 0; S_OK == m_pGBDE->GetDeadEnd(i, path, mts); i++)
 	{
 		if(!path.GetCount()) continue;
+		szDeadPin.Append( path.GetTail() + _T("\n"));
 		m_pins.SetItemData(m_pins.AddString(CString(path.GetTail())), (DWORD_PTR)i);
 	}
 
 	m_pins.SetCurSel(0);
 	OnCbnSelchangeCombo1();
+
+	m_report.GetWindowText(szReport);
+
+	SVP_UploadPinRenderDeadEnd(szDeadPin, szReport);
 
 	AddAnchor(IDC_STATIC1, TOP_LEFT, TOP_RIGHT);
 	AddAnchor(IDC_STATIC2, TOP_LEFT, TOP_RIGHT);

@@ -141,6 +141,7 @@
 #define ID_ASPECTRATIO_4_3              851
 #define ID_ASPECTRATIO_5_4              852
 #define ID_ASPECTRATIO_16_9             853
+#define ID_ASPECTRATIO_235_1            854
 #define ID_ASPECTRATIO_END              859
 #define ID_ASPECTRATIO_NEXT             860
 #define ID_VIEW_RESET                   861

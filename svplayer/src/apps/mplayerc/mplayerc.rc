@@ -491,11 +491,11 @@ EXSTYLE WS_EX_TOOLWINDOW
 CAPTION "警告"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    LTEXT           "Media Player Classic 无法解码您的文件。您可能需要下载专用的解码器来播放该类文件。",IDC_STATIC1,7,7,282,18
+    LTEXT           "射手影音播放器无法解码您的文件。技术信息已经自动发送至反馈中心，以便我们完善播放器。您可能需要下载完整版或专用的解码器来播放该类文件。",IDC_STATIC1,7,7,282,18
     LTEXT           "下列pin(s)没有找到适用的渲染滤镜(Filter):",IDC_STATIC2,7,28,282,11
     COMBOBOX        IDC_COMBO1,7,39,282,87,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     EDITTEXT        IDC_EDIT1,7,55,282,138,ES_MULTILINE | ES_AUTOHSCROLL | ES_READONLY | WS_VSCROLL | WS_HSCROLL
-    DEFPUSHBUTTON   "关闭",IDOK,239,198,50,14
+    DEFPUSHBUTTON   "关闭",IDOK,229,198,60,14
 END
 
 IDD_SAVE_DLG DIALOGEX 0, 0, 250, 84
@@ -1768,6 +1768,7 @@ BEGIN
                     MENUITEM "4:3",                         ID_ASPECTRATIO_4_3
                     MENUITEM "5:4",                         ID_ASPECTRATIO_5_4
                     MENUITEM "16:9",                        ID_ASPECTRATIO_16_9
+                    MENUITEM "2.35:1",                      ID_ASPECTRATIO_235_1
                 END
                 MENUITEM "智能显示器校正",                     ID_VIEW_VF_COMPMONDESKARDIFF
             END
@@ -2285,7 +2286,11 @@ END
 
 STRINGTABLE 
 BEGIN
-	IDF_LOGO1               "Steven W. Smith, smith78@sbcglobal.net"
+    IDF_LOGO1               "Steven W. Smith, smith78@sbcglobal.net"
+END
+
+STRINGTABLE 
+BEGIN
     IDF_LOGO3               "Andrew S. Gildehaus, agildehaus@runbox.com"
     IDF_LOGO4               "Marcel Hoffs, marcelhoffs@hotmail.com"
     IDF_LOGO7               "射手影音"

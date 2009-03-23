@@ -23,13 +23,7 @@ void SVP_RealUploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString
 		return ;
 	}
 }
-UINT __cdecl SVPThreadCheckUpdaterExe( LPVOID lpParam ) 
-{ 
-	
-	SVP_RealCheckUpdaterExe((int*)lpParam);
-	szGStatMsg = NULL;
-	return 0; 
-}
+
 void SVP_RealCheckUpdaterExe(BOOL* bCheckingUpdater){
 
 	
@@ -51,6 +45,13 @@ void SVP_RealCheckUpdaterExe(BOOL* bCheckingUpdater){
 		ShellExecute( NULL, _T("open"), szUpdaterPath, _T("") , _T(""), SW_HIDE);	
 	}
 	*bCheckingUpdater = true;
+}
+UINT __cdecl SVPThreadCheckUpdaterExe( LPVOID lpParam ) 
+{ 
+
+	SVP_RealCheckUpdaterExe((int*)lpParam);
+	szGStatMsg = NULL;
+	return 0; 
 }
 void SVP_CheckUpdaterExe(BOOL* bCheckingUpdater){
 	if(*bCheckingUpdater){
@@ -83,8 +84,27 @@ void SVP_UploadPinRenderDeadEnd(CString szPinName, CString szReport){
 	svpdata->szReport = szReport;
 	AfxBeginThread( SVPThreadUploadPinRenderDeadEnd, (LPVOID)svpdata, THREAD_PRIORITY_LOWEST);
 }
+class CSVPCrashDmpData{
+public:
+	CString szDmpPath;
+	CString szLogPath;
+};
+void SVP_RealUploadCrashDmp(CString szDmppath, CString szLogPath){
+	CSVPNet svpNet;
+	svpNet.UploadCrashDmp(  szDmppath,  szLogPath);
+}
+UINT __cdecl SVPThreadUploadCrashDmp( LPVOID lpParam ) 
+{ 
+	CSVPCrashDmpData * svpdata = (CSVPCrashDmpData *) lpParam;
+	SVP_RealUploadCrashDmp(svpdata->szDmpPath, svpdata->szLogPath);
+	delete svpdata;
+	return 0; 
+}
 void SVP_UploadCrashDmp(CString szDmppath, CString szLogPath){
-
+	CSVPCrashDmpData * svpdata = new CSVPCrashDmpData();
+	svpdata->szDmpPath = szDmppath;
+	svpdata->szLogPath = szLogPath;
+	AfxBeginThread( SVPThreadUploadCrashDmp, (LPVOID)svpdata, THREAD_PRIORITY_LOWEST);
 }
 void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath, CStringArray* szSubArray, CAtlList<CString> * szStatMsg){
 	

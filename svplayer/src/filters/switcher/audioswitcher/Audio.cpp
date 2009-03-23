@@ -258,7 +258,10 @@ long AudioStreamResampler::Downsample(void* input, long samplesin, void* output,
 		srcSamples = min(srcSamples, samplesin);
 		if(!srcSamples) break;
 
-		memcpy((char*)cbuffer + holdover*bps, (char*)input, srcSamples*bps);
+		if(sizeof(cbuffer) <= holdover*bps)
+			break;
+		
+		memcpy_s((char*)cbuffer + holdover*bps, sizeof(cbuffer) - holdover*bps, (char*)input, srcSamples*bps);
 		input = (void *)((char *)input + srcSamples*bps);
 
 		// Figure out how many destination samples we'll get out of what we

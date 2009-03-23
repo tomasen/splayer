@@ -205,7 +205,7 @@ BOOL CUESettingPanel::OnInitDialog()
 	m_sgi_gpuacelcuda = s.useGPUCUDA;
 	//Audio Setting
 	m_sgi_normalize = s.fAudioNormalize;
-	m_sgi_downsample44k = s.fDownSampleTo441;
+	//m_sgi_downsample44k = s.fDownSampleTo441;
 
 	m_sgi_chkautozoom = s.fRememberZoomLevel;
 	if (s.fCustomChannelMapping == FALSE){
@@ -338,7 +338,7 @@ void CUESettingPanel::ApplyAllSetting(){
 	s.useGPUCUDA = !!m_sgi_gpuacelcuda;
 	//Audio Setting
 	s.fAudioNormalize = !!m_sgi_normalize  ;
-	s.fDownSampleTo441 = !!m_sgi_downsample44k ;
+	//s.fDownSampleTo441 = !!m_sgi_downsample44k ;
 
 /*
 	switch(m_sgi_channelsetting ){

@@ -144,6 +144,55 @@ int CSVPNet::WetherNeedUploadSub(CString fnVideoFilePath, CString szFileHash,CSt
 	}
 	return rret;
 }
+int CSVPNet::UploadCrashDmp(CString szDmppath, CString szLogPath){
+	CURL *curl;
+	CURLcode res;
+	int ret = 0;
+	struct curl_httppost *formpost=NULL;
+	struct curl_httppost *lastptr=NULL;
+
+
+	curl_global_init(CURL_GLOBAL_ALL);
+	char* szTerm2;
+	int iDescLen = 0;
+	szTerm2 = svpToolBox.CStringToUTF8(szDmppath, &iDescLen);
+	curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "dmpfile", CURLFORM_FILE, szTerm2,CURLFORM_END);
+	free(szTerm2);
+
+// 	szTerm2 = svpToolBox.CStringToUTF8(szLogPath, &iDescLen);
+// 	curl_formadd(&formpost,	&lastptr, CURLFORM_COPYNAME, "logfile", CURLFORM_COPYCONTENTS, szTerm2,CURLFORM_END);
+// 	free(szTerm2);
+
+	curl = curl_easy_init();
+	if(curl) {
+		long respcode;
+
+		this->SetCURLopt(curl);
+
+		curl_easy_setopt(curl, CURLOPT_URL, "http://svplayer.shooter.cn/api/dmpreport.php");
+		curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
+
+		res = curl_easy_perform(curl);
+		if(res == 0){
+			curl_easy_getinfo(curl,CURLINFO_RESPONSE_CODE, &respcode);
+
+			if(respcode == 200){
+				ret = 1;
+			}else{
+				//error
+			}
+		}else{
+			//error
+		}
+
+		/* always cleanup */
+		curl_easy_cleanup(curl);
+	}
+
+	//fclose(stream_http_recv_buffer);
+
+	return ret;
+}
 int CSVPNet::UploadPinRenderDeadEndReport(CString szPinName, CString szReport){
 	CURL *curl;
 	CURLcode res;

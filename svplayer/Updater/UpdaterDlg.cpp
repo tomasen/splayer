@@ -176,7 +176,7 @@ void CUpdaterDlg::OnTimer(UINT_PTR nIDEvent)
 					cs_stat.ShowWindow(SW_SHOW);
 					cslink.ShowWindow(SW_SHOW);
 					cs_stat.SetWindowText(_T("射手影音播放器智能更新程序将稍后开始检查是否存在可供升级的新版本，以获得最新的功能和改进..."));
-					SetTimer(IDT_REAL_START_CHECK, 30000, NULL);
+					SetTimer(IDT_REAL_START_CHECK, 24500, NULL);
 					cb_backgd.EnableWindow();
 					m_bGoodToGo = true;
 				}else{

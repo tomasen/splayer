@@ -23,6 +23,9 @@ public:
 // Overrides
 	public:
 	virtual BOOL InitInstance();
+	void PreProcessCommandLine();
+	CAtlList<CString> m_cmdln;
+
 
 // Implementation
 

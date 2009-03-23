@@ -414,7 +414,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 static bool s_fLDown = false;
 static int s_mDragFuc = 0;
 static bool s_mDragFucOn = false;
-static bool bRecentFocused = FALSE;
+//static bool bRecentFocused = FALSE;
 static bool bNotHideColorControlBar = FALSE;
 #define  SINGLECLICK_INTERLEAVE_MS 200
 
@@ -1442,8 +1442,8 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 		KillTimer(TIMER_START_CHECKUPDATER);
 		SVP_CheckUpdaterExe( &m_bCheckingUpdater );
 	}else if(TIMER_RECENTFOCUSED== nIDEvent){
-		bRecentFocused = FALSE;
-		KillTimer(TIMER_RECENTFOCUSED);
+		//bRecentFocused = FALSE;
+		//KillTimer(TIMER_RECENTFOCUSED);
 	}else if(TIMER_MOUSELWOWN == nIDEvent){
 		if(s_fLDown){
 			OnButton(wmcmd::LDOWN, NULL, NULL);
@@ -2291,8 +2291,8 @@ BOOL CMainFrame::OnButton(UINT id, UINT nFlags, CPoint point)
 	return ret;
 }
 void CMainFrame::PreFocused(){
-	bRecentFocused = TRUE;
-	SetTimer(TIMER_RECENTFOCUSED, 100, NULL);
+	//bRecentFocused = TRUE;
+	//SetTimer(TIMER_RECENTFOCUSED, 100, NULL);
 }
 void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 {
@@ -2364,8 +2364,8 @@ void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 void CMainFrame::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	int iDistance = sqrt( pow( (double)abs(point.x - m_pLastClickPoint.x) , 2)  + pow( (double)abs( point.y - m_pLastClickPoint.y ) , 2) );
-
-	if( !bRecentFocused && s_fLDown && iDistance < 30){
+	//!bRecentFocused &&
+	if(  s_fLDown && iDistance < 30){
 		if( m_iMediaLoadState == MLS_CLOSED   ){
 			OnFileOpenQuick();
 			__super::OnLButtonUp(nFlags, point);

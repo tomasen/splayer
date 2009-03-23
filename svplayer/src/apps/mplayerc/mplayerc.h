@@ -465,6 +465,7 @@ public:
 
 		bool fDisabeXPToolbars;
 		bool fUseWMASFReader;
+		int fForceRGBrender;
 		int nJumpDistS;
 		int nJumpDistM;
 		int nJumpDistL;

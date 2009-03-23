@@ -104,6 +104,17 @@ static LONG WINAPI  DebugMiniDumpFilter( struct _EXCEPTION_POINTERS *pExceptionI
 						_stprintf( szScratch, _T("程序发生意外,诊断文件已经保存到:'%s'\n请将该文件发送至tomasen@gmail.com或https://bbs.shooter.cn\n以便我们不断完善"), szDumpPath );
 						szResult = szScratch;
 						retval = EXCEPTION_EXECUTE_HANDLER;
+						{
+							TCHAR sUpdaterPath[_MAX_PATH];
+							TCHAR sUpPerm[_MAX_PATH];
+							if (GetModuleFileName( NULL, sUpdaterPath, _MAX_PATH ))
+							{
+								_tcscat( sUpdaterPath, _T("\\Updater.exe"));
+								_stprintf( sUpPerm, _T("/dmp "), szDumpPath );
+								ShellExecute(NULL, _T("open"), sUpdaterPath, sUpPerm, NULL, SW_HIDE);
+
+							}
+						}
 					}
 					else
 					{
@@ -134,9 +145,45 @@ static LONG WINAPI  DebugMiniDumpFilter( struct _EXCEPTION_POINTERS *pExceptionI
 		::MessageBox( NULL, szResult, ResStr(IDR_MAINFRAME), MB_OK );
 	}
 
+	
 	return retval;
 }
 
+//检测 VMWare的代码
+bool IsInsideVMWare()
+{
+	bool rc = true;
+
+	__try
+	{
+		__asm
+		{
+			push  edx
+				push  ecx
+				push  ebx
+
+				mov  eax, 'VMXh';
+			mov  ebx, 0 // any value but not the MAGIC VALUE
+				mov  ecx, 10 // get VMWare version
+				mov  edx, 'VX'; // port number
+
+			in   eax, dx // read port
+				// on return EAX returns the VERSION
+				cmp  ebx, 'VMXh' // is it a reply from VMWare?
+				setz  [rc] // set return value
+
+			pop  ebx
+				pop  ecx
+				pop  edx
+		}
+	}
+	__except(EXCEPTION_EXECUTE_HANDLER)
+	{
+		rc = false;
+	}
+
+	return rc;
+}
 
 void CorrectComboListWidth(CComboBox& box, CFont* pWndFont)
 {
@@ -814,41 +861,7 @@ public:
 		::ExitProcess(0);
 	}
 };
-//检测 VMWare的代码
-bool IsInsideVMWare()
-{
-	bool rc = true;
 
-	__try
-	{
-		__asm
-		{
-			push  edx
-				push  ecx
-				push  ebx
-
-				mov  eax, 'VMXh';
-				mov  ebx, 0 // any value but not the MAGIC VALUE
-				mov  ecx, 10 // get VMWare version
-				mov  edx, 'VX'; // port number
-
-			in   eax, dx // read port
-				// on return EAX returns the VERSION
-			cmp  ebx, 'VMXh' // is it a reply from VMWare?
-			setz  [rc] // set return value
-
-			pop  ebx
-				pop  ecx
-				pop  edx
-		}
-	}
-	__except(EXCEPTION_EXECUTE_HANDLER)
-	{
-		rc = false;
-	}
-
-	return rc;
-}
 BOOL CMPlayerCApp::InitInstance()
 {
 	//ssftest s;
@@ -888,11 +901,7 @@ BOOL CMPlayerCApp::InitInstance()
 		return FALSE;
 	}
 	
-	if(IsInsideVMWare()){
-		if(AfxMessageBox(_T("虚拟机下将无法正常渲染画面\n确定要继续么？"), MB_YESNO) == IDNO){
-			return FALSE;
-		}
-	}
+
 	
     WNDCLASS wndcls;
     memset(&wndcls, 0, sizeof(WNDCLASS));
@@ -1685,7 +1694,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 			// WINBUG: on win2k this would crash WritePrivateProfileString
 			pApp->WriteProfileInt(_T(""), _T(""), pApp->GetProfileInt(_T(""), _T(""), 0)?0:1);
 		}
-		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("LastVersion"), 95);		
+		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("LastVersion"), 122);		
 		
 	}
 	else
@@ -1741,9 +1750,15 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		fLoopForever = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LOOP), 0);
 		fRewind = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_REWIND), FALSE);
 		iZoomLevel = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_ZOOM), 1);
-		iDSVideoRendererType = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DSVIDEORENDERERTYPE), (IsVista() ? VIDRNDT_DS_VMR9RENDERLESS : VIDRNDT_DS_VMR7RENDERLESS) );
-		iRMVideoRendererType = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_RMVIDEORENDERERTYPE), ((iDXVer >= 9) ? VIDRNDT_RM_DX9 : VIDRNDT_RM_DX7 ) );
-		iQTVideoRendererType = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_QTVIDEORENDERERTYPE),  ((iDXVer >= 9) ? VIDRNDT_QT_DX9 : VIDRNDT_QT_DX7 ) );
+
+		fForceRGBrender = 0;
+		if(IsInsideVMWare() ){
+			fForceRGBrender = 1;
+			iDXVer = 7;
+		}
+		iDSVideoRendererType = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DSVIDEORENDERERTYPE), ( (IsVista() || iDXVer >= 9) ? VIDRNDT_DS_VMR9RENDERLESS : VIDRNDT_DS_VMR7RENDERLESS) );
+		iRMVideoRendererType = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_RMVIDEORENDERERTYPE), ( (IsVista() || iDXVer >= 9) ? VIDRNDT_RM_DX9 : VIDRNDT_RM_DX7 ) );
+		iQTVideoRendererType = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_QTVIDEORENDERERTYPE),  ( (IsVista() || iDXVer >= 9) ? VIDRNDT_QT_DX9 : VIDRNDT_QT_DX7 ) );
 		iAPSurfaceUsage = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_APSURACEFUSAGE), VIDRNDT_AP_TEXTURE2D);
 		useGPUAcel = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEGPUACEL), 0);
 		useGPUCUDA = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEGPUCUDA), 0);
@@ -1856,6 +1871,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 				}
 			}
 		}
+		
 		fOverridePlacement = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPOVERRIDEPLACEMENT), 0);
 		fOverridePlacement2 = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPOVERRIDEPLACEMENT)+_T("2"), TRUE);
 		nHorPos = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPHORPOS), 50);
@@ -1882,6 +1898,9 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		if(iUpgradeReset < 95){
 			nCS |= CS_STATUSBAR;
 			fCustomChannelMapping = FALSE;
+		}
+		if(iUpgradeReset < 122){
+			fDownSampleTo441 = 0;
 		}
 		if(pApp->GetProfileBinary(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPEAKERTOCHANNELMAPPING), &ptr, &len) && fCustomChannelMapping )
 		{

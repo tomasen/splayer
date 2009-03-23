@@ -6,10 +6,27 @@
 #include "UpdaterDlg.h"
 
 
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
+
+BOOL CFileGetStatus(LPCTSTR lpszFileName, CFileStatus& status)
+{
+	try
+	{
+		return CFile::GetStatus(lpszFileName, status);
+	}
+	catch(CException* e)
+	{
+		// MFCBUG: E_INVALIDARG / "Parameter is incorrect" is thrown for certain cds (vs2003)
+		// http://groups.google.co.uk/groups?hl=en&lr=&ie=UTF-8&threadm=OZuXYRzWDHA.536%40TK2MSFTNGP10.phx.gbl&rnum=1&prev=/groups%3Fhl%3Den%26lr%3D%26ie%3DISO-8859-1
+		TRACE(_T("CFile::GetStatus has thrown an exception\n"));
+		e->Delete();
+		return false;
+	}
+}
 
 // CUpdaterApp
 
@@ -33,7 +50,25 @@ CUpdaterApp theApp;
 
 
 // CUpdaterApp initialization
+void CUpdaterApp::PreProcessCommandLine()
+{
+	m_cmdln.RemoveAll();
+	for(int i = 1; i < __argc; i++)
+	{
+		CString str = CString(__targv[i]).Trim(_T(" \""));
 
+		if(str[0] != '/' && str[0] != '-' && str.Find(_T(":")) < 0)
+		{
+			LPTSTR p = NULL;
+			CString str2;
+			str2.ReleaseBuffer(GetFullPathName(str, MAX_PATH, str2.GetBuffer(MAX_PATH), &p));
+			CFileStatus fs;
+			if(!str2.IsEmpty() && CFileGetStatus(str2, fs)) str = str2;
+		}
+
+		m_cmdln.AddTail(str);
+	}
+}
 BOOL CUpdaterApp::InitInstance()
 {
 	//禁止多个副本 
@@ -64,11 +99,33 @@ BOOL CUpdaterApp::InitInstance()
 	// TODO: You should modify this string to be something appropriate
 	// such as the name of your company or organization
 	//SetRegistryKey(_T("Local AppWizard-Generated Applications"));
-	
-	if(0){
+	PreProcessCommandLine();
+
+	CString szDmpFile;
+
+	POSITION pos = m_cmdln.GetHeadPosition();
+	while(pos)
+	{
+		CString param = m_cmdln.GetNext(pos);
+		if(param.IsEmpty()) continue;
+
+		if((param[0] == '-' || param[0] == '/') && param.GetLength() > 1)
+		{
+			CString sw = param.Mid(1).MakeLower();
+			if(sw == _T("dmp") && pos) {
+				szDmpFile = m_cmdln.GetNext(pos);
+				break;
+			}
+		}
+		
+	}
+	if(!szDmpFile.IsEmpty()){
 		//Upload DMP
-		CString szDmpPath, szLogPath;
-		SVP_UploadCrashDmp(szDmpPath, szLogPath);
+		CString szLogPath;
+		CSVPToolBox svpTool;
+		svpTool.GetPlayerPath(_T("SVPDebug.log"));
+		SVP_UploadCrashDmp(szDmpFile, szLogPath);
+		return;
 	}
 
 	//Background downloader

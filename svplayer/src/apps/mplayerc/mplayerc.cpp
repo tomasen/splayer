@@ -110,7 +110,7 @@ static LONG WINAPI  DebugMiniDumpFilter( struct _EXCEPTION_POINTERS *pExceptionI
 							if (GetModuleFileName( NULL, sUpdaterPath, _MAX_PATH ))
 							{
 								_tcscat( sUpdaterPath, _T("\\Updater.exe"));
-								_stprintf( sUpPerm, _T("/dmp "), szDumpPath );
+								_stprintf( sUpPerm, _T(" /dmp splayer_%s.dmp "), SVP_REV_STR );
 								ShellExecute(NULL, _T("open"), sUpdaterPath, sUpPerm, NULL, SW_HIDE);
 
 							}

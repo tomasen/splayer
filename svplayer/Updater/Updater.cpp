@@ -124,8 +124,8 @@ BOOL CUpdaterApp::InitInstance()
 		CString szLogPath;
 		CSVPToolBox svpTool;
 		svpTool.GetPlayerPath(_T("SVPDebug.log"));
-		SVP_UploadCrashDmp(szDmpFile, szLogPath);
-		return;
+		SVP_UploadCrashDmp(svpTool.GetPlayerPath(szDmpFile), szLogPath);
+		return FALSE;
 	}
 
 	//Background downloader

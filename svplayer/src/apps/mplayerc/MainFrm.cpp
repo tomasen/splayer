@@ -4574,7 +4574,7 @@ void CMainFrame::OnFileSavesubtitle()
 
 				CFileDialog fd(FALSE, NULL, NULL, 
 					OFN_EXPLORER|OFN_ENABLESIZING|OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT|OFN_PATHMUSTEXIST, 
-					_T("VobSub (*.idx, *.sub)|*.idx;*.sub||"), this, 0);
+					_T("VobSub (*.idx, *.sub)|*.idx;*.sub||"), this, 0, 1);
 		
 				if(fd.DoModal() == IDOK)
 				{

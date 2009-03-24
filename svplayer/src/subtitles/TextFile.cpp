@@ -24,6 +24,8 @@
 #include <afxinet.h>
 #include "TextFile.h"
 
+#include "../svplib/SVPToolBox.h"
+
 CTextFile::CTextFile(enc e)
 {
 	m_encoding = m_defaultencoding = e;
@@ -68,6 +70,22 @@ bool CTextFile::Open(LPCTSTR lpszFileName)
 		}
 	}
 
+/*
+		if(m_encoding == m_defaultencoding)
+		{
+			CSVPToolBox svpTool;
+			switch( svpTool.DetectFileCharset(lpszFileName ) ){
+				case GB2312_CHARSET:
+					break;
+				case CHINESEBIG5_CHARSET:
+					break;
+				default:
+					m_encoding = UTF8;
+					break;
+			}
+			
+		}*/
+	
 	if(m_encoding == m_defaultencoding)
 	{
 		__super::Close(); // CWebTextFile::Close() would delete the temp file if we called it...

@@ -38,7 +38,7 @@ CSaveThumbnailsDialog::CSaveThumbnailsDialog(
 			OFN_EXPLORER|OFN_ENABLESIZING|OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT|OFN_PATHMUSTEXIST, 
 			lpszFilter, pParentWnd, 0
 #if (_MSC_VER >= 1500)	// <= Parameter added after Visual Studio 2008!
-			, TRUE
+			, 0
 #endif
 			),
 	m_rows(rows), m_cols(cols), m_width(width)

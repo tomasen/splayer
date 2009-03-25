@@ -77,6 +77,8 @@
 #include "SVPSubDownUpDialog.h"
 #include "SVPSubUploadDlg.h"
 
+#include "revision.h"
+
 #define DEFCLIENTW 292
 #define DEFCLIENTH 200
 
@@ -343,6 +345,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_SHADERS_START, ID_SHADERS_END, OnUpdatePlayShaders)
 	ON_COMMAND_RANGE(ID_AUDIO_SUBITEM_START, ID_AUDIO_SUBITEM_END, OnPlayAudio)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_AUDIO_SUBITEM_START, ID_AUDIO_SUBITEM_END, OnUpdatePlayAudio)
+	ON_COMMAND(ID_TOGGLE_SUBTITLE, OnToogleSubtitle )
 	ON_COMMAND_RANGE(ID_SUBTITLES_SUBITEM_START, ID_SUBTITLES_SUBITEM_END, OnPlaySubtitles)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_SUBTITLES_SUBITEM_START, ID_SUBTITLES_SUBITEM_END, OnUpdatePlaySubtitles)
 	ON_COMMAND_RANGE(ID_SUBTITLES_SUBITEM_START2, ID_SUBTITLES_SUBITEM_END2, OnPlaySubtitles)
@@ -3190,8 +3193,9 @@ void CMainFrame::OnFilePostClosemedia()
 	}
 
 	RecalcLayout();
-
-	SetWindowText(ResStr(IDR_MAINFRAME));
+	CString szBuild;
+	szBuild.Format( _T(" (Build %s)"),SVP_REV_STR);
+	SetWindowText(CString(ResStr(IDR_MAINFRAME)) + szBuild);
 
 	SetAlwaysOnTop(AfxGetAppSettings().iOnTop);
 
@@ -6002,7 +6006,16 @@ void CMainFrame::OnUpdatePlayAudio(CCmdUI* pCmdUI)
 		}
 	}
 }
-
+void CMainFrame::OnToogleSubtitle(){
+	
+	m_iSubtitleSel ^= (1<<31);
+	if(m_iSubtitleSel < 0 && m_iSubtitleSel2 >= 0){
+		m_iSubtitleSel2 ^= (1<<31);
+		UpdateSubtitle2();
+	}
+	UpdateSubtitle();		
+	
+}
 void CMainFrame::OnPlaySubtitles(UINT nID)
 {
 	int i = (int)nID - (4 + ID_SUBTITLES_SUBITEM_START);
@@ -7852,7 +7865,7 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 		{
 			if(fFirst)
 			{
-				if(s.fReportFailedPins)
+				//if(s.fReportFailedPins)
 				{
 					CComQIPtr<IGraphBuilderDeadEnd> pGBDE = pGB;
 					if(pGBDE && pGBDE->GetCount()) CMediaTypesDlg(pGBDE, this).DoModal();
@@ -7916,7 +7929,7 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 		if(m_fCustomGraph) break;
 	}
 
-	if(s.fReportFailedPins)
+	//if(s.fReportFailedPins)
 	{
 		CComQIPtr<IGraphBuilderDeadEnd> pGBDE = pGB;
 		if(pGBDE && pGBDE->GetCount()) CMediaTypesDlg(pGBDE, this).DoModal();
@@ -8090,7 +8103,7 @@ void CMainFrame::OpenDVD(OpenDVDData* pODD)
 
 	AppSettings& s = AfxGetAppSettings();
 
-	if(s.fReportFailedPins)
+	//if(s.fReportFailedPins)
 	{
 		CComQIPtr<IGraphBuilderDeadEnd> pGBDE = pGB;
 		if(pGBDE && pGBDE->GetCount()) CMediaTypesDlg(pGBDE, this).DoModal();
@@ -8696,7 +8709,9 @@ void CMainFrame::OpenSetupWindowTitle(CString fn)
 
 		title = fn + _T(" - ") + title;
 	}
-
+	CString szBuild;
+	szBuild.Format(_T(" (Build %s)"),SVP_REV_STR);
+	title += szBuild;
 	SetWindowText(title);
 }
 

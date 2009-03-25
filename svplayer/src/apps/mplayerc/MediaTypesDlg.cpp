@@ -35,6 +35,7 @@
 CMediaTypesDlg::CMediaTypesDlg(IGraphBuilderDeadEnd* pGBDE, CWnd* pParent /*=NULL*/)
 	: CResizableDialog(CMediaTypesDlg::IDD, pParent)
 	, m_pGBDE(pGBDE)
+	, m_nomoreport(FALSE)
 {
 	m_subtype = GUID_NULL;
 	m_type = UNKNOWN;
@@ -49,6 +50,7 @@ void CMediaTypesDlg::DoDataExchange(CDataExchange* pDX)
 	CResizableDialog::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_COMBO1, m_pins);
 	DDX_Control(pDX, IDC_EDIT1, m_report);
+	DDX_Check(pDX, IDC_CHECK1, m_nomoreport);
 }
 
 void CMediaTypesDlg::AddLine(CString str)
@@ -74,11 +76,19 @@ void CMediaTypesDlg::AddMediaType(AM_MEDIA_TYPE* pmt)
 
 BEGIN_MESSAGE_MAP(CMediaTypesDlg, CResizableDialog)
 	ON_CBN_SELCHANGE(IDC_COMBO1, OnCbnSelchangeCombo1)
+	ON_BN_CLICKED(IDOK, &CMediaTypesDlg::OnBnClickedOk)
 END_MESSAGE_MAP()
 
 
 // CMediaTypesDlg message handlers
-
+BOOL CMediaTypesDlg::PreCreateWindow(CREATESTRUCT& cs){
+	AppSettings & s = AfxGetAppSettings();
+	if(!s.fReportFailedPins){
+		cs.style &= ~WS_VISIBLE;
+		cs.style &= ~WS_POPUP;
+	}
+	return __super::PreCreateWindow(cs);
+}
 BOOL CMediaTypesDlg::OnInitDialog()
 {
 	__super::OnInitDialog();
@@ -101,15 +111,24 @@ BOOL CMediaTypesDlg::OnInitDialog()
 
 	m_report.GetWindowText(szReport);
 
-	SVP_UploadPinRenderDeadEnd(szDeadPin, szReport);
+	AppSettings & s = AfxGetAppSettings();
+	if(s.fUploadFailedPinsInfo)
+		SVP_UploadPinRenderDeadEnd(szDeadPin, szReport);
 
+	
+	if(!s.fReportFailedPins){
+		OnOK();
+		return FALSE;
+	}
 	AddAnchor(IDC_STATIC1, TOP_LEFT, TOP_RIGHT);
 	AddAnchor(IDC_STATIC2, TOP_LEFT, TOP_RIGHT);
 	AddAnchor(IDC_COMBO1, TOP_LEFT, TOP_RIGHT);
 	AddAnchor(IDC_EDIT1, TOP_LEFT, BOTTOM_RIGHT);
 	AddAnchor(IDOK, BOTTOM_RIGHT);
-
+	AddAnchor(IDC_CHECK1, BOTTOM_LEFT);
 	SetMinTrackSize(CSize(300, 200));
+
+	
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -147,4 +166,14 @@ void CMediaTypesDlg::OnCbnSelchangeCombo1()
 	}
 
 	m_report.SetSel(0, 0);
+}
+
+void CMediaTypesDlg::OnBnClickedOk()
+{
+	UpdateData();
+	if(m_nomoreport){
+		AppSettings & s = AfxGetAppSettings();
+		s.fReportFailedPins = FALSE;
+	}
+	OnOK();
 }

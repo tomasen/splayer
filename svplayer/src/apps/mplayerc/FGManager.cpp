@@ -1876,8 +1876,11 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	{
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_H263);
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_h263);
+		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_S263);
+		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_s263);
 	}
 #endif
+	
 #if INTERNAL_DECODER_THEORA
 	if (ffmpeg_filters & FFM_THEORA)
 	{

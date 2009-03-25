@@ -47,6 +47,8 @@ public:
 	CComboBox m_pins;
 	CEdit m_report;
 
+	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
+
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	virtual BOOL OnInitDialog();
@@ -54,4 +56,6 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnCbnSelchangeCombo1();
+	afx_msg void OnBnClickedOk();
+	BOOL m_nomoreport;
 };

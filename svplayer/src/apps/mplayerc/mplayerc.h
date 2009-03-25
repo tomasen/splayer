@@ -424,6 +424,7 @@ public:
 		bool fBlockVSFilter;
 		bool fEnableWorkerThreadForOpening;
 		bool fReportFailedPins;
+		bool fUploadFailedPinsInfo;
 
 		bool bUsePowerDVD;
 		bool fAllowMultipleInst;

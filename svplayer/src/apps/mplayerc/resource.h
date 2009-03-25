@@ -312,6 +312,7 @@
 #define IDS_AUDIOCHANNALMAPRIGHT        4402
 #define IDS_AUDIOCHANNALMAPCENTER       4403
 #define IDS_AUDIOCHANNALMAPEND          4403
+#define ID_TOGGLE_SUBTITLE				4410
 #define IDD_OPEN_DLG                    10000
 #define IDD_OPENCAPDEVICE_DLG           10001
 #define IDD_MEDIATYPES_DLG              10002
@@ -658,6 +659,7 @@
 #define IDS_RS_COLOR_SATURATION         13152
 #define IDS_RS_SHOWCONTROLBAR           13153
 #define IDS_RS_NOTCHANGEFONTTOYH        13154
+#define IDS_RS_UPLOADFAILEDPINS			13155
 #define IDS_SRC_RADGT                   14000
 #define IDS_SRC_CDDA                    14001
 #define IDS_SRC_AVI                     14002

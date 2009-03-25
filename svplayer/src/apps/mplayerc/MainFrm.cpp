@@ -578,6 +578,10 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	};
 	// end
 
+	CString szBuild;
+	szBuild.Format( _T(" (Build %s)"),SVP_REV_STR);
+	SetWindowText(CString(ResStr(IDR_MAINFRAME)) + szBuild);
+
 	SetTimer(TIMER_STATUSCHECKER , 10000, NULL);
 
 	return 0;

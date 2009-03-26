@@ -111,7 +111,7 @@ static LONG WINAPI  DebugMiniDumpFilter( struct _EXCEPTION_POINTERS *pExceptionI
 							{
 								_tcscat( sUpdaterPath, _T("\\Updater.exe"));
 								_stprintf( sUpPerm, _T(" /dmp splayer_%s.dmp "), SVP_REV_STR );
-								ShellExecute(NULL, _T("open"), sUpdaterPath, sUpPerm, NULL, SW_HIDE);
+								(int)::ShellExecute(NULL, _T("open"), sUpdaterPath, sUpPerm, NULL, SW_HIDE);
 
 							}
 						}
@@ -142,7 +142,7 @@ static LONG WINAPI  DebugMiniDumpFilter( struct _EXCEPTION_POINTERS *pExceptionI
 
 	if (szResult)
 	{
-		::MessageBox( NULL, szResult, ResStr(IDR_MAINFRAME), MB_OK );
+		//::MessageBox( NULL, szResult, ResStr(IDR_MAINFRAME), MB_OK );
 	}
 
 	

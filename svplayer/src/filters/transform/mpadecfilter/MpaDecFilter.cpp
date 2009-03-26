@@ -2413,8 +2413,10 @@ void CMpaDecFilter::ffmpeg_stream_finish()
 	m_pAVCodec	= NULL;
 	if (m_pAVCtx)
 	{
-		avcodec_close (m_pAVCtx);
-		av_free (m_pAVCtx);
+		__try {
+			avcodec_close (m_pAVCtx);
+			av_free (m_pAVCtx);
+		}__except (EXCEPTION_EXECUTE_HANDLER ) {}
 		m_pAVCtx	= NULL;
 	}
 
@@ -2425,10 +2427,9 @@ void CMpaDecFilter::ffmpeg_stream_finish()
 	}
 
 	if (m_pPCMData) {
-		try {
+		__try {
 			FF_aligned_free (m_pPCMData); //some time this will crash
-		}
-		catch (...) {}
+		}__except (EXCEPTION_EXECUTE_HANDLER) {}
 	}
 }
 

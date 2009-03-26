@@ -1564,7 +1564,9 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 		}
 		else
 		{
-			m_wndStatusBar.SetStatusTimer(pos, stop, !!m_wndSubresyncBar.IsWindowVisible(), &tf);
+			double pRate;
+			pMS->GetRate(&pRate);
+			m_wndStatusBar.SetStatusTimer(pos, stop, !!m_wndSubresyncBar.IsWindowVisible(), &tf , pRate); 
 		}
 
 		m_wndSubresyncBar.SetTime(pos);
@@ -2696,6 +2698,32 @@ void CMainFrame::OnInitMenu(CMenu* pMenu)
 		}
 	}
 }
+void MenuMerge(CMenu* Org, CMenu* New){
+	if(!Org || !New){ return;};
+	if(Org->GetMenuItemCount() > 0){
+		Org->AppendMenu(MF_SEPARATOR);
+	}
+	for(int j = 0; j < New->GetMenuItemCount(); j++){
+		MENUITEMINFO mii;
+		memset(&mii, 0, sizeof(MENUITEMINFO));
+		mii.cbSize = sizeof(MENUITEMINFO);
+		mii.fMask = MIIM_STATE | MIIM_TYPE;
+		
+		New->GetMenuItemInfo(j, &mii, TRUE);
+		if(mii.fType & MFT_SEPARATOR){
+			Org->AppendMenu(MF_SEPARATOR);
+		}else{
+			CString szMStr;
+			New->GetMenuString(j, szMStr, MF_BYPOSITION); 
+			UINT mflag = 0;
+			if(MFS_CHECKED & mii.fState){
+				mflag = MF_CHECKED;
+			}
+
+			Org->AppendMenu(MF_ENABLED | MF_STRING | mflag, New->GetMenuItemID(j), szMStr);
+		}
+	}
+}
 
 void CMainFrame::OnInitMenuPopup(CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu)
 {
@@ -2720,7 +2748,7 @@ void CMainFrame::OnInitMenuPopup(CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu)
 		transl[_T("PanScan")] = IDS_PANSCAN_POPUP;
 		transl[_T("Aspect Ratio")] = IDS_ASPECTRATIO_POPUP;
 		transl[_T("Zoom")] = IDS_ZOOM_POPUP;
-		transl[_T("DVD导航")] = IDS_NAVIGATE_POPUP;
+		transl[_T("DVD选单")] = IDS_NAVIGATE_POPUP;
 		transl[_T("打开碟片")] = IDS_OPENCDROM_POPUP;
 		transl[_T("滤镜(Filters)")] = IDS_FILTERS_POPUP;
 		transl[_T("音频与声道切换")] = IDS_AUDIO_POPUP;
@@ -2796,11 +2824,15 @@ void CMainFrame::OnInitMenuPopup(CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu)
 		else if(str == ResStr(IDS_AUDIO_POPUP))
 		{
 			SetupAudioSwitcherSubMenu();
+			SetupNavAudioSubMenu();
+			MenuMerge( &m_audios ,  &m_navaudio );
 			pSubMenu = &m_audios;
 		}
 		else if(str == ResStr(IDS_SUBTITLES_POPUP))
 		{
 			SetupSubtitlesSubMenu();
+			SetupNavSubtitleSubMenu();
+			MenuMerge( &m_subtitles ,  &m_navsubtitle );
 			pSubMenu = &m_subtitles;
 		}
 		else if(str == ResStr(IDS_SUBTITLES_POPUP2))
@@ -2817,6 +2849,7 @@ void CMainFrame::OnInitMenuPopup(CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu)
 		{
 			SetupNavSubtitleSubMenu();
 			pSubMenu = &m_navsubtitle;
+			
 		}
 		else if(str == ResStr(IDS_VIDEOANGLE_POPUP))
 		{
@@ -5738,7 +5771,7 @@ void CMainFrame::OnPlayChangeRate(UINT nID)
 
 		HRESULT hr = E_FAIL;
 
-		if(iNewSpeedLevel == -4)
+		if(iNewSpeedLevel <= -10)
 		{
 			if(GetMediaState() != State_Paused)
 				SendMessage(WM_COMMAND, ID_PLAY_PAUSE);
@@ -5747,7 +5780,7 @@ void CMainFrame::OnPlayChangeRate(UINT nID)
 		}
 		else
 		{
-			double dRate = pow(2.0, iNewSpeedLevel >= -3 ? iNewSpeedLevel : (-iNewSpeedLevel - 8));
+			double dRate = 1 + 0.1*iNewSpeedLevel;;//pow(2.0, iNewSpeedLevel >= -3 ? iNewSpeedLevel : (-iNewSpeedLevel - 8));
 			if(fabs(dRate - 1.0) < 0.01) dRate = 1.0;
 
 			if(GetMediaState() != State_Running)
@@ -5764,6 +5797,9 @@ void CMainFrame::OnPlayChangeRate(UINT nID)
 				else
 					hr = pDVDC->PlayBackwards(dRate, DVD_CMD_FLAG_Block, NULL);
 			}
+			CString szMsg ;
+			szMsg.Format(_T("播放速度变为 %0.1f"), dRate);
+			SendStatusMessage(szMsg, 3000);
 		}
 
 		if(SUCCEEDED(hr))

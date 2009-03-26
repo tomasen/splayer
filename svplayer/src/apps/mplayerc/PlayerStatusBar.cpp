@@ -173,7 +173,7 @@ void CPlayerStatusBar::SetStatusTimer(CString str)
 	Relayout();
 }
 
-void CPlayerStatusBar::SetStatusTimer(REFERENCE_TIME rtNow, REFERENCE_TIME rtDur, bool fHighPrecision, const GUID* pTimeFormat)
+void CPlayerStatusBar::SetStatusTimer(REFERENCE_TIME rtNow, REFERENCE_TIME rtDur, bool fHighPrecision, const GUID* pTimeFormat, double playRate)
 {
 	ASSERT(pTimeFormat);
 
@@ -220,8 +220,12 @@ void CPlayerStatusBar::SetStatusTimer(REFERENCE_TIME rtNow, REFERENCE_TIME rtDur
 	}else{
 		//szPower = _T("电量: ∽ ");
 	}
+	CString szPlayrate;
+	if(fabs(playRate - 1.0) > 0.02)	{
+		szPlayrate.Format(_T("速率 %0.1fx "), playRate);
+	}
 
-	SetStatusTimer(szPower + str);
+	SetStatusTimer(szPlayrate + szPower + str);
 }
 
 void CPlayerStatusBar::ShowTimer(bool fShow)

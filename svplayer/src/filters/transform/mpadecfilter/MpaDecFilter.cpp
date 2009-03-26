@@ -97,6 +97,8 @@ const AMOVIESETUP_MEDIATYPE sudPinTypesIn[] =
 	{&MEDIATYPE_MPEG2_PACK,			&MEDIASUBTYPE_mp4a},
 	{&MEDIATYPE_MPEG2_PES,			&MEDIASUBTYPE_mp4a},
 	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_mp4a},
+	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_AMR},
+	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_SAMR},
 	{&MEDIATYPE_DVD_ENCRYPTED_PACK, &MEDIASUBTYPE_PS2_PCM},
 	{&MEDIATYPE_MPEG2_PACK,			&MEDIASUBTYPE_PS2_PCM},
 	{&MEDIATYPE_MPEG2_PES,			&MEDIASUBTYPE_PS2_PCM},
@@ -438,6 +440,8 @@ HRESULT CMpaDecFilter::Receive(IMediaSample* pIn)
 		hr = ProcessFlac();
 	else if(subtype == MEDIASUBTYPE_NELLYMOSER)
 		hr = ProcessFfmpeg(CODEC_ID_NELLYMOSER);
+	else if(subtype == MEDIASUBTYPE_AMR || subtype == MEDIASUBTYPE_SAMR)
+		hr = ProcessFfmpeg(CODEC_ID_AMR_NB);
 	else // if(.. the rest ..)
 		hr = ProcessMPA();
 

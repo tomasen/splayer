@@ -506,7 +506,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="libfaad2R.lib libmadR.lib libdtsR.lib liba52R.lib libflac.lib"
+				AdditionalDependencies="libfaad2R.lib libmadR.lib libdtsR.lib liba52R.lib libflac.lib libavcodec_gcc.lib libgcc.a libmingwex.a"
 				OutputFile="../../../../lib/$(ProjectName)RU.lib"
 				AdditionalLibraryDirectories="../../../../lib"
 			/>

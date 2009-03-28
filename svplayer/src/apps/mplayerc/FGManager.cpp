@@ -2138,27 +2138,34 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	}
 	
 	//m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{04FE9017-F873-410E-871E-AB91661A4EF7}")), MERIT64_UNLIKELY)); //ffdshow
-	
-	if ( s.bUsePowerDVD && ((s.useGPUAcel && !s.useGPUCUDA) || s.fVMR9MixerMode )) {
-		//m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{09571A4B-F1FE-4C60-9760-DE6D310C7C31}")), MERIT64_ABOVE_DSHOW+1)); //not use CoreAVC
-		
-		
-			//use powerdvd
-			//disable FLV MP4 for powerdvd because of bugs https://bbs.shooter.cn/viewthread.php?tid=264
- 			//pFGFR->RemoveType( MEDIATYPE_Video, MEDIASUBTYPE_avc1 ); 
-			//pFGFR->RemoveType( MEDIATYPE_Video, MEDIASUBTYPE_AVC1 ); 
- 			m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{C16541FF-49ED-4DEA-9126-862F57722E31}")), MERIT64_ABOVE_DSHOW+2));
-		
-	}else{
-		CFGFilter* pFGFR = new CFGFilterRegistry(GUIDFromCString(_T("{09571A4B-F1FE-4C60-9760-DE6D310C7C31}")), MERIT64_ABOVE_DSHOW+1); //use CoreAVC
-		m_transform.AddTail(pFGFR); 
-
-		m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{C16541FF-49ED-4DEA-9126-862F57722E31}")), MERIT64_UNLIKELY) ); //not use POWERDVD
-	}
 	CStringArray szaExtFilterPaths;
 	CSVPToolBox svptoolbox;
-
 	szaExtFilterPaths.RemoveAll();
+
+	if ( s.bUsePowerDVD && ((s.useGPUAcel && !s.useGPUCUDA) || s.fVMR9MixerMode )) {
+		//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("codecs\\powerdvd\\CL264dec.ax")) );
+		
+		
+		//m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{09571A4B-F1FE-4C60-9760-DE6D310C7C31}")), MERIT64_ABOVE_DSHOW+1)); //not use CoreAVC
+				//use powerdvd
+				//disable FLV MP4 for powerdvd because of bugs https://bbs.shooter.cn/viewthread.php?tid=264
+				//pFGFR->RemoveType( MEDIATYPE_Video, MEDIASUBTYPE_avc1 ); 
+				//pFGFR->RemoveType( MEDIATYPE_Video, MEDIASUBTYPE_AVC1 ); 
+		m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{C16541FF-49ED-4DEA-9126-862F57722E31}")), MERIT64_ABOVE_DSHOW+2)); //PDVD8
+				
+		
+		m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{3EAE534B-A98F-4452-8F2A-4BCA1CD4F319}")), MERIT64_ABOVE_DSHOW+4)); //PDVD9
+		
+	}else{
+		//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("codecs\\CoreAVCDecoder.ax")) ); //will crash without why
+  		
+  		CFGFilter* pFGFR = new CFGFilterRegistry(GUIDFromCString(_T("{09571A4B-F1FE-4C60-9760-DE6D310C7C31}")), MERIT64_ABOVE_DSHOW+20); //use CoreAVC
+  		  		m_transform.AddTail(pFGFR); 
+  		  		m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{C16541FF-49ED-4DEA-9126-862F57722E31}")), MERIT64_UNLIKELY) ); //not use POWERDVD
+  		
+  		
+	}
+	
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("PMPSplitter.ax")) );
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("rms.ax")) );
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("NeSplitter.ax")) );
@@ -2170,13 +2177,16 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 
 	for(int l = 0; l < szaExtFilterPaths.GetCount(); l++){
 		CString szFPath = szaExtFilterPaths.GetAt(l); //以文件模式调入解码器
+		CString szLog ; 
 		if(svptoolbox.ifFileExist(szFPath)){
 			CFilterMapper2 fm2(false);
 			fm2.Register(szFPath);
 			POSITION pos = fm2.m_filters.GetHeadPosition();
 			while(pos){
 				FilterOverride* fo = fm2.m_filters.GetNext(pos);
-				CFGFilter* pFGF = new CFGFilterFile(fo->clsid, fo->path, CStringW(fo->name), MERIT64_ABOVE_DSHOW);
+				CFGFilter* pFGF = new CFGFilterFile(fo->clsid, fo->path, CStringW(fo->name), MERIT64_ABOVE_DSHOW + 1);
+				szLog.Format(_T("Loading Filter %s %s %s "), CStringFromGUID(fo->clsid) ,fo->path, CStringW(fo->name) );
+				SVP_LogMsg(szLog);
 				if(pFGF){
 					pFGF->SetTypes(fo->guids);
 					m_transform.AddTail(pFGF);

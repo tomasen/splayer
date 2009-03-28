@@ -946,6 +946,7 @@ bool CMatroskaSplitterFilter::DemuxLoop()
 				if(!(bg->Block.Lacing & 0x80)) bg->ReferenceBlock.Set(0); // not a kf
 				bgn.AddTail(bg);
 			}
+			
 
 			while(bgn.GetCount() && SUCCEEDED(hr))
 			{
@@ -955,18 +956,28 @@ bool CMatroskaSplitterFilter::DemuxLoop()
 				p->bSyncPoint = !p->bg->ReferenceBlock.IsValid();
 				p->TrackNumber = (DWORD)p->bg->Block.TrackNumber;
 
-				TrackEntry* pTE = m_pTrackEntryMap[p->TrackNumber];
+				TrackEntry* pTE;
+				if(!m_pTrackEntryMap.Lookup(p->TrackNumber, pTE))
+					continue;
+
+				//pTE = m_pTrackEntryMap[p->TrackNumber];
 				if(!pTE) continue;
 
 				p->rtStart = m_pFile->m_segment.GetRefTime((REFERENCE_TIME)c.TimeCode + p->bg->Block.TimeCode);
 				p->rtStop = p->rtStart + (p->bg->BlockDuration.IsValid() ? m_pFile->m_segment.GetRefTime(p->bg->BlockDuration) : 1);
 
 				// Fix subtitle with duration = 0
-				if(pTE->TrackType == TrackEntry::TypeSubtitle && !p->bg->BlockDuration.IsValid())
+				int TEntry = TrackEntry::TypeSubtitle;
+				try{
+					TEntry = pTE->TrackType;
+				}
+				catch(...){}
+				if( TEntry == TrackEntry::TypeSubtitle && !p->bg->BlockDuration.IsValid())
 				{
 					p->bg->BlockDuration.Set(1); // just setting it to be valid
 					p->rtStop = p->rtStart;
 				}
+				
 
 				POSITION pos = p->bg->Block.BlockData.GetHeadPosition();
 				while(pos)
@@ -981,6 +992,7 @@ bool CMatroskaSplitterFilter::DemuxLoop()
 
 				hr = DeliverPacket(p);
 			}
+			
 		}
 		while(m_pBlock->NextBlock() && SUCCEEDED(hr) && !CheckRequest(NULL));
 

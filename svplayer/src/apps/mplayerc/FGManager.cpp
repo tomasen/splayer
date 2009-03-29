@@ -2142,7 +2142,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	CSVPToolBox svptoolbox;
 	szaExtFilterPaths.RemoveAll();
 
-	if ( s.bUsePowerDVD && ((s.useGPUAcel && !s.useGPUCUDA) || s.fVMR9MixerMode )) {
+	if ( s.bUsePowerDVD && s.useGPUAcel && !s.useGPUCUDA ) {
 		//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("codecs\\powerdvd\\CL264dec.ax")) );
 		
 		
@@ -2156,8 +2156,9 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		
 		m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{3EAE534B-A98F-4452-8F2A-4BCA1CD4F319}")), MERIT64_ABOVE_DSHOW+4)); //PDVD9
 		
-	}else{
+	}else if( ! s.fVMR9MixerMode ) {
 		//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("codecs\\CoreAVCDecoder.ax")) ); //will crash without why
+		////VMR9 seems not work with coreplayer
   		
   		CFGFilter* pFGFR = new CFGFilterRegistry(GUIDFromCString(_T("{09571A4B-F1FE-4C60-9760-DE6D310C7C31}")), MERIT64_ABOVE_DSHOW+20); //use CoreAVC
   		  		m_transform.AddTail(pFGFR); 

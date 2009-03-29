@@ -340,6 +340,7 @@ public:
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CMPlayerCApp)
 	public:
+	void InitInstanceThreaded();
 	virtual BOOL InitInstance();
 	virtual int ExitInstance();
 	//}}AFX_VIRTUAL
@@ -397,6 +398,8 @@ public:
 		CRecentFileAndURLList MRUUrl;
 
 		CAutoPtrList<FilterOverride> filters;
+
+		CString CheckSVPSubExts;
 
 		int iDSVideoRendererType;
 		int iRMVideoRendererType;

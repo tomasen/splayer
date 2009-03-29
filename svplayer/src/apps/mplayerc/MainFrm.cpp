@@ -2376,7 +2376,8 @@ void CMainFrame::OnLButtonUp(UINT nFlags, CPoint point)
 	//!bRecentFocused &&
 	if(  s_fLDown && iDistance < 30){
 		if( m_iMediaLoadState == MLS_CLOSED   ){
-			OnFileOpenQuick();
+			//OnFileOpenQuick();
+			OnFileOpenmedia();
 			__super::OnLButtonUp(nFlags, point);
 			return;
 		}
@@ -7956,9 +7957,18 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 			m_fnCurPlayingFile = fn;
 			//是否有字幕？ 沒有则下载字幕
 			if ( pOFD->subs.GetCount() <= 0){
-				if(AfxGetAppSettings().autoDownloadSVPSub){
+				AppSettings & s = AfxGetAppSettings();
+				if(s.autoDownloadSVPSub){
+					CPath fPath(fn);
+					CString szExt;
+					szExt.Format(_T(" %s;"),fPath.GetExtension());
+					if(s.CheckSVPSubExts.Find(szExt) >= 0 ){
+						SVPSubDownloadByVPath(fn);
+					}else{
+						SendStatusMessage(  _T("正在播放的文件类型看来不需要字幕，终止自动智能匹配"), 1000);
+					}
+
 					
-					SVPSubDownloadByVPath(fn);
 				}
 			}
 

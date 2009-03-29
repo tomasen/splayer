@@ -2,7 +2,7 @@
 #include "SVPNet.h"
 #include "SVPHash.h"
 #include <shlobj.h>
-
+//#include "../apps/mplayerc/mplayerc.h"
 
 static CAtlList<CString> * szGStatMsg = NULL;
 void SVP_RealUploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString szSubPath, int iDelayMS, CStringArray* szaPostTerms){
@@ -107,7 +107,7 @@ void SVP_UploadCrashDmp(CString szDmppath, CString szLogPath){
 	AfxBeginThread( SVPThreadUploadCrashDmp, (LPVOID)svpdata, THREAD_PRIORITY_LOWEST);
 }
 void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath, CStringArray* szSubArray, CAtlList<CString> * szStatMsg){
-	
+		
 	szGStatMsg = szStatMsg;
 	SVP_LogMsg(_T("正在通过射手影音字幕智能匹配系统寻找字幕"), 31);
 	CSVPNet svpNet;

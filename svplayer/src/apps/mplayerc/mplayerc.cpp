@@ -330,6 +330,20 @@ bool LoadResource(UINT resid, CStringA& str, LPCTSTR restype)
 	return(true);
 }
 
+bool RegSvr32(CString szDllPath){
+	//LoadLibrary(path))
+	if(HMODULE h = LoadLibraryEx(  szDllPath , 0, LOAD_WITH_ALTERED_SEARCH_PATH))
+	{
+		typedef HRESULT (__stdcall * PDllRegisterServer)();
+		if(PDllRegisterServer p = (PDllRegisterServer)GetProcAddress(h, "DllRegisterServer"))
+		{
+			p();
+		}
+
+		FreeLibrary(h);
+	}
+	return true;
+}
 /////////////////////////////////////////////////////////////////////////////
 // CAboutDlg dialog used for App About
 
@@ -861,7 +875,41 @@ public:
 		::ExitProcess(0);
 	}
 };
+void CMPlayerCApp::InitInstanceThreaded(){
+	CSVPToolBox svpTool;
+	//检查文件关联
+	if ( m_s.fCheckFileAsscOnStartup ){
+		CChkDefPlayer dlg_chkdefplayer;
+		if( ! dlg_chkdefplayer.b_isDefaultPlayer() ){
+			if(m_s.fPopupStartUpExtCheck){
+				dlg_chkdefplayer.DoModal();
+			}else{
+				dlg_chkdefplayer.setDefaultPlayer();
+			}
+		}else{
+			dlg_chkdefplayer.setDefaultPlayer();
+		}
+	}
 
+	CSVPToolBox svpToolBox;
+	CStringArray csaDll;
+	csaDll.Add( _T("codecs\\CoreAVCDecoder.ax"));
+	csaDll.Add( _T("codecs\\powerdvd\\CL264dec.ax"));
+	for(int i = 0; i < csaDll.GetCount(); i++){
+		CString szDllPath = svpToolBox.GetPlayerPath( csaDll.GetAt(i) );
+		if(svpToolBox.ifFileExist(szDllPath))
+			RegSvr32( szDllPath );
+	}
+
+}
+UINT __cdecl Thread_InitInstance( LPVOID lpParam ) 
+{ 
+	CMPlayerCApp * ma =(CMPlayerCApp*) lpParam;
+	CoInitialize(NULL);
+	ma->InitInstanceThreaded();
+	CoUninitialize();
+	return 0; 
+}
 BOOL CMPlayerCApp::InitInstance()
 {
 	//ssftest s;
@@ -950,21 +998,6 @@ BOOL CMPlayerCApp::InitInstance()
 
 	m_s.UpdateData(false);
 	
-	//检查文件关联
-	if ( m_s.fCheckFileAsscOnStartup ){
-		CChkDefPlayer dlg_chkdefplayer;
-		if( ! dlg_chkdefplayer.b_isDefaultPlayer() ){
-			if(m_s.fPopupStartUpExtCheck){
-				dlg_chkdefplayer.DoModal();
-			}else{
-				dlg_chkdefplayer.setDefaultPlayer();
-			}
-		}else{
-			dlg_chkdefplayer.setDefaultPlayer();
-		}
-	}
-
-
 	if((m_s.nCLSwitches&CLSW_REGEXTVID) || (m_s.nCLSwitches&CLSW_REGEXTAUD))
 	{
 		CMediaFormats& mf = m_s.Formats;
@@ -1026,11 +1059,14 @@ BOOL CMPlayerCApp::InitInstance()
 	}
 
 
+	
 	if(!__super::InitInstance())
 	{
 		AfxMessageBox(_T("InitInstance failed!"));
 		return FALSE;
 	}
+
+	AfxBeginThread(Thread_InitInstance , this,  THREAD_PRIORITY_LOWEST);
 
 	CRegKey key;
 	if(ERROR_SUCCESS == key.Create(HKEY_LOCAL_MACHINE, _T("Software\\SVPlayer\\射手影音播放器")))
@@ -1830,6 +1866,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		subdefstyle <<= pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPLOGFONT), _T("20,20,20,20,2,0,2.000000,2.000000,3.000000,3.000000,0x00ecec,0x00ffff,0x000000,0x000000,0x00,0x00,0x00,0x80,0,黑体,20.000000,100.000000,100.000000,0.000000,700,0,0,0,0,0.000000,0.000000,0.000000,0.000000,0,0.700000"));
 		subdefstyle2 <<= pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPLOGFONT2), _T("20,20,20,20,8,0,2.000000,2.000000,3.000000,3.000000,0x00ecec,0x00ffff,0x000000,0x000000,0x00,0x00,0x00,0x80,1,黑体,20.000000,100.000000,100.000000,0.000000,700,0,0,0,0,0.000000,0.000000,0.000000,0.000000,0,0.700000"));
 
+		CheckSVPSubExts = _T(" .ts; .avi; .mkv;");
 		bShowControlBar = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SHOWCONTROLBAR), 0);
 		dBrightness		= (float)_tstof(pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_COLOR_BRIGHTNESS),	_T("1")));
 		dContrast		= (float)_tstof(pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_COLOR_CONTRAST),		_T("1")));

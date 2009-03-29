@@ -114,16 +114,17 @@ bool CPPageFormats::IsRegistered(CString ext)
 	BOOL	bIsDefault = FALSE;
 	CString strProgID = _T("SVPlayer") + ext;
 	CString FileIcon = GetFileIcon(ext);
-	if (m_pAAR == NULL)
+	if ( m_pAAR == NULL)
 	{
 		// Default manager (requiered at least Vista)
 		HRESULT hr = CoCreateInstance(CLSID_ApplicationAssociationRegistration,
 			NULL,
-			CLSCTX_INPROC,
+			CLSCTX_INPROC ,
 			__uuidof(IApplicationAssociationRegistration),
 			(void**)&m_pAAR);
+		
 	}
-
+	
 	if (m_pAAR)
 	{
 		// The Vista way

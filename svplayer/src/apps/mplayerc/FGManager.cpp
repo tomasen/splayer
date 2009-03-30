@@ -1524,6 +1524,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	pFGF->AddType(MEDIATYPE_Stream, GUID_NULL);
 	m_transform.AddTail(pFGF);
 
+	
 	if(src & SRC_DSM) {
 		pFGF = new CFGFilterInternal<CDSMSplitterFilter>(L"DSM Splitter", MERIT64_ABOVE_DSHOW);
 	} else {
@@ -1575,6 +1576,10 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_MPEG1Packet);
 	m_transform.AddTail(pFGF);
 
+	pFGF = new CFGFilterInternal<CMpaDecFilter>(L"IMA Decoder", MERIT64_UNLIKELY);
+	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_IMA4);
+	m_transform.AddTail(pFGF);
+
 	pFGF = new CFGFilterInternal<CMpaDecFilter>(
 		L"AMR Audio Decoder" ,MERIT64_ABOVE_DSHOW );
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_SAMR);
@@ -1612,6 +1617,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	pFGF->AddType(MEDIATYPE_MPEG2_PES, MEDIASUBTYPE_DOLBY_AC3);
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_DOLBY_AC3);
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_WAVE_DOLBY_AC3);
+	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_DOLBY_EAC3);
 	m_transform.AddTail(pFGF);
 
 	pFGF = new CFGFilterInternal<CMpaDecFilter>(
@@ -1667,6 +1673,12 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		(tra & TRA_VORBIS) ? L"Vorbis Audio Decoder" : L"Vorbis Audio Decoder (low merit)",
 		(tra & TRA_VORBIS) ? MERIT64_ABOVE_DSHOW : MERIT64_UNLIKELY);
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_Vorbis2);
+	m_transform.AddTail(pFGF);
+
+	pFGF = new CFGFilterInternal<CMpaDecFilter>(
+		(tra & TRA_NELLY) ? L"Nellymoser Audio Decoder" : L"Nellymoser Audio Decoder (low merit)",		// TODO : put in resource !
+		(tra & TRA_NELLY) ? MERIT64_ABOVE_DSHOW : MERIT64_DO_USE);
+	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_NELLYMOSER);
 	m_transform.AddTail(pFGF);
 
 	pFGF = new CFGFilterInternal<CRoQVideoDecoder>(

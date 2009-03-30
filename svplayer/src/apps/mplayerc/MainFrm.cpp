@@ -7438,7 +7438,7 @@ void CMainFrame::ZoomVideoWindow(double scale)
 		GetWindowRect(r);
 
 		w = r.Width(); // mmi.ptMinTrackSize.x;
-		h = mmi.ptMinTrackSize.y;
+		h = r.Height();//mmi.ptMinTrackSize.y;
 	}
 
 	// center window

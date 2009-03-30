@@ -34,6 +34,8 @@ SRCS_C=\
 		$(LAVC_DIR)/jpeglsdec.c \
 		$(LAVC_DIR)/jrevdct.c \
 		$(LAVC_DIR)/libamr.c \
+		$(LAVC_DIR)/amr_float/interf_dec.c \
+		$(LAVC_DIR)/amr_float/sp_dec.c \
 		$(LAVC_DIR)/mjpeg.c \
 		$(LAVC_DIR)/mjpegdec.c \
 		$(LAVC_DIR)/mpeg4video_parser.c \
@@ -41,6 +43,7 @@ SRCS_C=\
 		$(LAVC_DIR)/msmpeg4.c \
 		$(LAVC_DIR)/msmpeg4data.c \
 		$(LAVC_DIR)/parser.c \
+		$(LAVC_DIR)/qtrle.c \
 		$(LAVC_DIR)/simple_idct.c \
 		$(LAVC_DIR)/sp5xdec.c \
 		$(LAVC_DIR)/svq1.c \
@@ -77,15 +80,12 @@ SRCS_C=\
 		$(LAVC_DIR)/mlpdec.c \
 		$(LAVC_DIR)/nellymoser.c \
 		$(LAVC_DIR)/nellymoserdec.c \
+		$(LAVC_DIR)/adpcm.c \
 		$(LAVC_DIR)/ratecontrol.c
 
 #SRCS_C+=\
 #		$(LAVC_DIR)/8bps.c \
 #		$(LAVC_DIR)/aasc.c \
-#		$(LAVC_DIR)/adpcm.c \
-#		$(LAVC_DIR)/libamr.c \
-#		$(LAVC_DIR)/amr_float/interf_dec.c \
-#		$(LAVC_DIR)/amr_float/sp_dec.c \
 #		$(LAVC_DIR)/atrac3.c \
 #		$(LAVC_DIR)/asv1.c \
 #		$(LAVC_DIR)/avs.c \
@@ -137,7 +137,6 @@ SRCS_C=\
 #		$(LAVC_DIR)/rv10.c \
 #		$(LAVC_DIR)/qdm2.c \
 #		$(LAVC_DIR)/qpeg.c \
-#		$(LAVC_DIR)/qtrle.c \
 #		$(LAVC_DIR)/ra144.c \
 #		$(LAVC_DIR)/ra288.c \
 #		$(LAVC_DIR)/rpza.c \

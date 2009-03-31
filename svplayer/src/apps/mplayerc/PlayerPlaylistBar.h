@@ -86,6 +86,7 @@ public:
 	void Refresh();
 	void Empty();
 
+	void RealFindMoreFileFromOneFileAndPutIntoPlaylist(CString szMediaFile , CAtlList<CString>& szaIn );
 	void FindMoreFileFromOneFileAndPutIntoPlaylist(CString szMediaFile , CAtlList<CString>& szaIn );
 	void Open(CAtlList<CString>& fns, bool fMulti, CAtlList<CString>* subs = NULL, int smartAddMorefile = 1);
 	void Append(CAtlList<CString>& fns, bool fMulti, CAtlList<CString>* subs = NULL);

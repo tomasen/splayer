@@ -520,29 +520,67 @@ void CPlayerPlaylistBar::Empty()
 	m_list.DeleteAllItems();
 	SavePlaylist();
 }
-void CPlayerPlaylistBar::FindMoreFileFromOneFileAndPutIntoPlaylist(CString szMediaFile , CAtlList<CString>& szaIn ){
+void CPlayerPlaylistBar::RealFindMoreFileFromOneFileAndPutIntoPlaylist(CString szMediaFile , CAtlList<CString>& szaIn ){
 	//check if dir has more files
 	CAtlList<CString> szaRet;
 	CAtlArray<CString> mask;
 	AfxGetAppSettings().Formats.GetExtsArray(mask);
 	CSVPToolBox svptool;
 	svptool.findMoreFileByFile(szMediaFile, szaRet, mask);
-	svptool.MergeAltList(szaRet, szaIn);
 
-	Empty();  //add them all
-	Append(szaRet, !!szaRet.GetCount());
+	//check is szaIn still in playlist
+	BOOL bPlayListHavntChanged = true;
+	POSITION pos = szaIn.GetHeadPosition();
+	while(pos){
+		CString szFile = szaIn.GetNext(pos);
+		if(FindPosByFilename(szFile) == NULL ){
+			bPlayListHavntChanged = false;
+		}
+	}
+	if(bPlayListHavntChanged){
+		svptool.MergeAltList(szaRet, szaIn);
 
-	POSITION pos = FindPosByFilename(szMediaFile);
-	m_pl.SetPos(pos);
+		Empty();  //add them all
+		Append(szaRet, !!szaRet.GetCount());
+
+		POSITION pos = FindPosByFilename(szMediaFile);
+		m_pl.SetPos(pos);
+	}
+}
+
+class CFFindMoreFiles{
+public:
+	CPlayerPlaylistBar* wndPlaylist;
+	CString szMediaFile;
+	CAtlList<CString> szaIn;
+};
+
+
+UINT __cdecl Thread_FindMoreFileFromOneFileAndPutIntoPlaylist( LPVOID lpParam ) 
+{ 
+	CFFindMoreFiles * ma =(CFFindMoreFiles*) lpParam;
+	ma->wndPlaylist->RealFindMoreFileFromOneFileAndPutIntoPlaylist( ma->szMediaFile, ma->szaIn);
+	delete ma;
+	return 0; 
+}
+void CPlayerPlaylistBar::FindMoreFileFromOneFileAndPutIntoPlaylist(CString szMediaFile , CAtlList<CString>& szaIn ){
+	//check if dir has more files
+	CFFindMoreFiles * mFFiles = new CFFindMoreFiles( );
+	mFFiles->wndPlaylist = this;
+	mFFiles->szMediaFile = szMediaFile;
+	CSVPToolBox svptool;
+	svptool.MergeAltList(mFFiles->szaIn , szaIn);
+
+	AfxBeginThread( Thread_FindMoreFileFromOneFileAndPutIntoPlaylist , mFFiles, THREAD_PRIORITY_LOWEST);
+	
 }
 void CPlayerPlaylistBar::Open(CAtlList<CString>& fns, bool fMulti, CAtlList<CString>* subs, int smartAddMorefile)
 {
-	if(smartAddMorefile){
-		FindMoreFileFromOneFileAndPutIntoPlaylist( fns.GetHead(), fns);
-	}else{
 		Empty();
 		Append(fns, fMulti, subs);
-	}
+		if(smartAddMorefile){
+			FindMoreFileFromOneFileAndPutIntoPlaylist( fns.GetHead(), fns);
+		}
 }
 
 void CPlayerPlaylistBar::Append(CAtlList<CString>& fns, bool fMulti, CAtlList<CString>* subs)

@@ -1660,8 +1660,8 @@ BEGIN
             MENUITEM "逐帧播放(F&)\t右键(→)",             ID_PLAY_FRAMESTEP
             MENUITEM "跳跃(&G)...\tCtrl+G",           ID_PLAY_GOTO
             MENUITEM SEPARATOR
-            MENUITEM "加快播放速度(&D)\tCtrl+↑",          ID_PLAY_DECRATE
-            MENUITEM "减慢播放速度(&I)\tCtrl+↓",          ID_PLAY_INCRATE
+            MENUITEM "加快播放速度(&D)\tCtrl+↑",          ID_PLAY_INCRATE
+            MENUITEM "减慢播放速度(&I)\tCtrl+↓",          ID_PLAY_DECRATE
             MENUITEM "恢复正常速度\tCtrl+R",              ID_PLAY_RESETRATE
         END
         POPUP "DVD选单(&N)"
@@ -2009,8 +2009,8 @@ BEGIN
         MENUITEM "逐帧播放(F&)\t右键(→)",             ID_PLAY_FRAMESTEP
         MENUITEM "跳跃(&G)...\tCtrl+G",           ID_PLAY_GOTO
         MENUITEM SEPARATOR
-        MENUITEM "加快播放速度(&D)\tCtrl+↑",          ID_PLAY_DECRATE
-        MENUITEM "减慢播放速度(&I)\tCtrl+↓",          ID_PLAY_INCRATE
+        MENUITEM "加快播放速度(&D)\tCtrl+↑",          ID_PLAY_INCRATE
+        MENUITEM "减慢播放速度(&I)\tCtrl+↓",          ID_PLAY_DECRATE
         MENUITEM "恢复正常速度\tCtrl+R",              ID_PLAY_RESETRATE
         MENUITEM SEPARATOR
         MENUITEM "滤镜(&Filters)",                ID_32772

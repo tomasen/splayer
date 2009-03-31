@@ -547,6 +547,7 @@ public:
 	public:
 		Settings();
 		virtual ~Settings();
+		void ThreadedLoading();
 		void UpdateData(bool fSave);
 
 		void GetFav(favtype ft, CAtlList<CString>& sl, BOOL bRecent = FALSE);

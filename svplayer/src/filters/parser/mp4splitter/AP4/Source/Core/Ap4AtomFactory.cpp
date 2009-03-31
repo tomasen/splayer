@@ -401,6 +401,10 @@ AP4_AtomFactory::CreateAtomFromStream(AP4_ByteStream& stream,
         atom = new AP4_AudioSampleEntry(type, size, stream, *this);
         break;
 
+	  case AP4_ATOM_TYPE__AC3:
+        atom = new AP4_AC3SampleEntry(size, stream, *this);
+        break;
+
       case AP4_ATOM_TYPE_CHPL:
         atom = new AP4_ChplAtom(size, stream);
         break;

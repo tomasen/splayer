@@ -25,7 +25,7 @@
 #include "..\..\..\DSUtil\DSUtil.h"
 
 #include <initguid.h>
-#include "..\..\..\..\include\moreuuids.h"
+#include <moreuuids.h>
 
 #include "Ap4.h"
 #include "Ap4File.h"
@@ -53,10 +53,10 @@ const AMOVIESETUP_PIN sudpPins[] =
 
 const AMOVIESETUP_FILTER sudFilter[] =
 {
-	{&__uuidof(CMP4SplitterFilter), L"MP4 Splitter", MERIT_NORMAL+1, countof(sudpPins), sudpPins},
-	{&__uuidof(CMP4SourceFilter), L"MP4 Source", MERIT_NORMAL, 0, NULL},
-	{&__uuidof(CMPEG4VideoSplitterFilter), L"MPEG4 Video Splitter", MERIT_NORMAL, countof(sudpPins), sudpPins},
-	{&__uuidof(CMPEG4VideoSourceFilter), L"MPEG4 Video Source", MERIT_NORMAL, 0, NULL},	
+	{&__uuidof(CMP4SplitterFilter), L"MPC - MP4 Splitter", MERIT_NORMAL, countof(sudpPins), sudpPins},
+	{&__uuidof(CMP4SourceFilter), L"MPC - MP4 Source", MERIT_NORMAL, 0, NULL},
+	{&__uuidof(CMPEG4VideoSplitterFilter), L"MPC - MPEG4 Video Splitter", MERIT_NORMAL, countof(sudpPins), sudpPins},
+	{&__uuidof(CMPEG4VideoSourceFilter), L"MPC - MPEG4 Video Source", MERIT_NORMAL, 0, NULL},	
 };
 
 CFactoryTemplate g_Templates[] =
@@ -419,6 +419,8 @@ HRESULT CMP4SplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 					vih->hdr.bmiHeader.biBitCount = 24;
 					vih->hdr.dwPictAspectRatioX = vih->hdr.bmiHeader.biWidth;
 					vih->hdr.dwPictAspectRatioY = vih->hdr.bmiHeader.biHeight;
+					if (item->GetData()->GetSampleCount() > 1)
+						vih->hdr.AvgTimePerFrame = item->GetData()->GetDurationMs()*10000 / (item->GetData()->GetSampleCount()-1);
 					vih->dwProfile = data[1];
 					vih->dwLevel = data[3];
 					vih->dwFlags = (data[4] & 3) + 1;
@@ -470,6 +472,10 @@ HRESULT CMP4SplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 					else if(type == AP4_ATOM_TYPE__MP3)
 					{
 						type = 0x0055;
+					}
+					else if(type == AP4_ATOM_TYPE__AC3)
+					{
+						type = 0x2000;
 					}
 					else
 					{

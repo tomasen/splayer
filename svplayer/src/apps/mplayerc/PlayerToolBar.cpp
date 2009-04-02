@@ -386,17 +386,16 @@ void CPlayerToolBar::OnLButtonUp(UINT nFlags, CPoint point)
 			GetButtonInfo(i,iButtonID, iStyle , iImage );
 			if(iButtonID == iBottonClicked ){
 				if(iFastFFWCount == 0){
-					int iMsg;
+					int iMsg = 0;
 					CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
 					// not increase or decrease play rate
 					if(iBottonClicked == ID_PLAY_BWD){
 						iMsg = ID_PLAY_SEEKBACKWARDSMALL;
 					}else if(iBottonClicked == ID_PLAY_FWD){
 						iMsg = ID_PLAY_SEEKFORWARDSMALL;
-					}else{
-						iMsg = iButtonID;
 					}
-					pFrame->PostMessage( WM_COMMAND, iMsg);
+					if(iMsg)
+						pFrame->PostMessage( WM_COMMAND, iMsg);
 // 					if( iBottonClicked == ID_PLAY_BWD || iBottonClicked == ID_PLAY_FWD) 
 // 						pFrame->PostMessage( WM_COMMAND, ID_PLAY_PLAY);
 				}

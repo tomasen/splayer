@@ -504,6 +504,7 @@ public:
 
 		CList<wmcmd> wmcmds;
 		HACCEL hAccel;
+		int disableSmartDrag;
 
 		bool fWinLirc;
 		CString WinLircAddr;

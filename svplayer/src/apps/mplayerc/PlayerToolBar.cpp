@@ -290,7 +290,7 @@ BOOL CPlayerToolBar::OnVolumeDown(UINT nID)
 }
 
 
-#define TIMER_FASTFORWORD 251
+
 void CPlayerToolBar::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	iBottonClicked = -1;
@@ -307,8 +307,14 @@ void CPlayerToolBar::OnLButtonDown(UINT nFlags, CPoint point)
 		{
 			UINT iButtonID , iStyle ;
 			int iImage ;
+			CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
 			GetButtonInfo(i,iButtonID,iStyle,iImage );
 			if(iButtonID == ID_PLAY_BWD || iButtonID == ID_PLAY_FWD){
+				//pFrame->PostMessage( WM_COMMAND, ID_PLAY_PAUSE);
+				iBottonClicked = iButtonID;
+				iFastFFWCount = 0;
+				SetTimer(TIMER_FASTFORWORD, 350, NULL);
+			}else if(iButtonID == ID_SUBDELAYDEC || iButtonID == ID_SUBDELAYINC){
 				iBottonClicked = iButtonID;
 				iFastFFWCount = 0;
 				SetTimer(TIMER_FASTFORWORD, 350, NULL);
@@ -328,6 +334,14 @@ void CPlayerToolBar::OnLButtonDown(UINT nFlags, CPoint point)
 }
 void CPlayerToolBar::OnTimer(UINT nIDEvent){
 	switch(nIDEvent){
+		case TIMER_STOPFASTFORWORD:
+			iFastFFWCount = 0;
+			KillTimer(TIMER_STOPFASTFORWORD);
+			{
+// 				CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
+// 				pFrame->PostMessage( WM_COMMAND, ID_PLAY_PLAY);
+			}
+			break;
 		case TIMER_FASTFORWORD:
 			if(iBottonClicked < 0 ){
 				KillTimer(TIMER_FASTFORWORD);
@@ -338,18 +352,18 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
 			{
 				CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
 				int iMsg;
-				if(iFastFFWCount > 10){
-					if(iBottonClicked == ID_PLAY_BWD){
-						iMsg = ID_PLAY_SEEKBACKWARDLARGE;
-					}else if(iBottonClicked == ID_PLAY_FWD){
-						iMsg = ID_PLAY_SEEKFORWARDLARGE;
-					}
+				if(iBottonClicked == ID_PLAY_BWD){
+					iMsg = ID_PLAY_SEEKBACKWARDSMALL;
+				}else if(iBottonClicked == ID_PLAY_FWD){
+					iMsg = ID_PLAY_SEEKFORWARDSMALL;
 				}else{
-					if(iBottonClicked == ID_PLAY_BWD){
-						iMsg = ID_PLAY_SEEKBACKWARDMED;
-					}else if(iBottonClicked == ID_PLAY_FWD){
-						iMsg = ID_PLAY_SEEKKEYFORWARD;
-					}
+					iMsg = iBottonClicked;
+				}
+				if(iFastFFWCount > 5 && ( iBottonClicked == ID_PLAY_BWD || iBottonClicked == ID_PLAY_FWD) ){
+
+					int iStepPow = (int)(iFastFFWCount / 5) * 2;
+					iStepPow = min(8, iStepPow);
+					iMsg += iStepPow;
 				}
 				pFrame->PostMessage( WM_COMMAND, iMsg);
 			}
@@ -376,11 +390,15 @@ void CPlayerToolBar::OnLButtonUp(UINT nFlags, CPoint point)
 					CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
 					// not increase or decrease play rate
 					if(iBottonClicked == ID_PLAY_BWD){
-						iMsg = ID_PLAY_SEEKBACKWARDMED;
+						iMsg = ID_PLAY_SEEKBACKWARDSMALL;
 					}else if(iBottonClicked == ID_PLAY_FWD){
-						iMsg = ID_PLAY_SEEKFORWARDMED;
+						iMsg = ID_PLAY_SEEKFORWARDSMALL;
+					}else{
+						iMsg = iButtonID;
 					}
 					pFrame->PostMessage( WM_COMMAND, iMsg);
+// 					if( iBottonClicked == ID_PLAY_BWD || iBottonClicked == ID_PLAY_FWD) 
+// 						pFrame->PostMessage( WM_COMMAND, ID_PLAY_PLAY);
 				}
 			}
 			break;

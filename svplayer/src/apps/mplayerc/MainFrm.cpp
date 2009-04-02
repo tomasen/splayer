@@ -326,9 +326,10 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 
 	ON_COMMAND_RANGE(ID_PLAY_FRAMESTEP, ID_PLAY_FRAMESTEPCANCEL, OnPlayFramestep)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_PLAY_FRAMESTEP, ID_PLAY_FRAMESTEPCANCEL, OnUpdatePlayFramestep)
-	ON_COMMAND_RANGE(ID_PLAY_SEEKBACKWARDSMALL, ID_PLAY_SEEKFORWARDLARGE, OnPlaySeek)
+	ON_COMMAND_RANGE(ID_PLAY_BWD, ID_PLAY_FWD, OnSmartSeek)
+	ON_COMMAND_RANGE(ID_PLAY_SEEKBACKWARDSMALL, ID_PLAY_SEEKFORWARDLARGE4, OnPlaySeek)
 	ON_COMMAND_RANGE(ID_PLAY_SEEKKEYBACKWARD, ID_PLAY_SEEKKEYFORWARD, OnPlaySeekKey)
-	ON_UPDATE_COMMAND_UI_RANGE(ID_PLAY_SEEKBACKWARDSMALL, ID_PLAY_SEEKFORWARDLARGE, OnUpdatePlaySeek)
+	ON_UPDATE_COMMAND_UI_RANGE(ID_PLAY_SEEKBACKWARDSMALL, ID_PLAY_SEEKFORWARDLARGE4, OnUpdatePlaySeek)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_PLAY_SEEKKEYBACKWARD, ID_PLAY_SEEKKEYFORWARD, OnUpdatePlaySeek)
 	ON_COMMAND(ID_PLAY_GOTO, OnPlayGoto)
 	ON_UPDATE_COMMAND_UI(ID_PLAY_GOTO, OnUpdateGoto)
@@ -2344,15 +2345,13 @@ void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 
 		//if(!bRecentFocused || s.iOnTop != 0);  //&& 
 		s_fLDown = true;
-
-		if(!m_fFullScreen && ( ((xPercent < 25 && yPercent < 25) ) || fLeftMouseBtnUnassigned)) //IsCaptionMenuHidden() || 
+		
+		if(!m_fFullScreen && ( ((xPercent < 25 && yPercent < 25) ) || s.disableSmartDrag > 0 )) //IsCaptionMenuHidden() || 
 		{
 			s_mDragFuc = 3; //PostMessage(WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM(point.x, point.y));
 		}
-		else
+		else if( s.disableSmartDrag <= 0)
 		{
-			
-
 			if(xPercent > 40  && xPercent < 60 && yPercent > 40  && yPercent < 60 ){ //画面中心
 				//移动画面
 				s_mDragFuc = 1;
@@ -5555,7 +5554,29 @@ void CMainFrame::OnUpdatePlayFramestep(CCmdUI* pCmdUI)
 
 	pCmdUI->Enable(fEnable);
 }
+void CMainFrame::OnSmartSeek(UINT nID){
+	//PostMessage( WM_COMMAND, ID_PLAY_PAUSE);
+	m_wndToolBar.iBottonClicked = nID;
+	m_wndToolBar.KillTimer(TIMER_STOPFASTFORWORD);
+	m_wndToolBar.iFastFFWCount++;
+	//fast forward or backword
+	{
+		int iMsg;
+		if(nID == ID_PLAY_BWD){
+			iMsg = ID_PLAY_SEEKBACKWARDSMALL;
+		}else if(nID == ID_PLAY_FWD){
+			iMsg = ID_PLAY_SEEKFORWARDSMALL;
+		}
+		if(m_wndToolBar.iFastFFWCount > 5   ){
+			int iStepPow = (int)(m_wndToolBar.iFastFFWCount / 5) * 2;
+			iStepPow = min(6, iStepPow);
+			iMsg += iStepPow;
+		}
+		PostMessage( WM_COMMAND, iMsg);
+	}
 
+	m_wndToolBar.SetTimer(TIMER_STOPFASTFORWORD, 150, NULL);
+}
 void CMainFrame::OnPlaySeek(UINT nID)
 {
 	AppSettings& s = AfxGetAppSettings();
@@ -5568,6 +5589,14 @@ void CMainFrame::OnPlaySeek(UINT nID)
 		nID == ID_PLAY_SEEKBACKWARDLARGE ? -10000i64*s.nJumpDistL : 
 		nID == ID_PLAY_SEEKFORWARDLARGE ? +10000i64*s.nJumpDistL : 
 		0;
+	if(nID > ID_PLAY_SEEKFORWARDLARGE){
+		int jumpStep = (int) ( ( nID - ID_PLAY_SEEKFORWARDLARGE + 1) / 2 );
+		dt = 10000i64*s.nJumpDistL*( pow( 2.0, jumpStep) );
+		if ((nID - ID_PLAY_SEEKBACKWARDSMALL) % 2 == 0) { //Backward
+			dt = 0 - dt;
+		}
+
+	}
 
 	if(!dt) return;
 

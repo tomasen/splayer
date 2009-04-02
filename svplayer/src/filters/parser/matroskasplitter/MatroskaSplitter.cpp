@@ -997,8 +997,7 @@ bool CMatroskaSplitterFilter::DemuxLoop()
 				int TEntry = TrackEntry::TypeSubtitle;
 				try{
 					TEntry = pTE->TrackType;
-				}
-				catch(...){}
+				}catch(...){}
 				if( TEntry == TrackEntry::TypeSubtitle && !p->bg->BlockDuration.IsValid())
 				{
 					p->bg->BlockDuration.Set(1); // just setting it to be valid
@@ -1010,7 +1009,9 @@ bool CMatroskaSplitterFilter::DemuxLoop()
 				while(pos)
 				{
 					CBinary* pb = p->bg->Block.BlockData.GetNext(pos);
-					pTE->Expand(*pb, ContentEncoding::AllFrameContents);
+					try{
+						pTE->Expand(*pb, ContentEncoding::AllFrameContents);
+					}catch(...){}
 				}
 
 				// HACK

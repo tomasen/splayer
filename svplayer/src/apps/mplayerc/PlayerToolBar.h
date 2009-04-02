@@ -32,7 +32,6 @@ class CPlayerToolBar : public CToolBar
 private:
 	bool IsMuted();
 	void SetMute(bool fMute = true); 
-	UINT iBottonClicked;
 	CImageList m_ToolBarImages;
 	CImageList m_ToolBarDisabledImages;
 
@@ -40,6 +39,7 @@ public:
 	CPlayerToolBar();
 	virtual ~CPlayerToolBar();
 
+	UINT iBottonClicked;
 	UINT iFastFFWCount;
 	int GetVolume();
 	void SetVolume(int volume);

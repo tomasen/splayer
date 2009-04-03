@@ -38,6 +38,7 @@ CDX7SubPic::CDX7SubPic(IDirect3DDevice7* pD3DDev, IDirectDrawSurface7* pSurface)
 	{
 		m_maxsize.SetSize(ddsd.dwWidth, ddsd.dwHeight);
 		m_rcDirty.SetRect(0, 0, ddsd.dwWidth, ddsd.dwHeight);
+		ClearDirtyRect(0xFF000000);
 	}
 }
 

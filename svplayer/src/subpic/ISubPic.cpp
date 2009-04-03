@@ -784,45 +784,81 @@ STDMETHODIMP ISubPicAllocatorPresenterImpl::NonDelegatingQueryInterface(REFIID r
 		QI(ISubPicAllocatorPresenter)
 		__super::NonDelegatingQueryInterface(riid, ppv);
 }
-
+#include "..\svplib\svplib.h"
 void ISubPicAllocatorPresenterImpl::AlphaBltSubPic(CSize size, SubPicDesc* pTarget)
 {
 	CComPtr<ISubPic> pSubPic;
 	CComPtr<ISubPic> pSubPic2;
+	BOOL bltSub1 = false, bltSub2 = false;
+	CRect rcSource1, rcSource2, rcDest1, rcDest2;
+#ifdef LOGSUBRECT
+	CString szD1, szD2;
+#endif
 	if(m_pSubPicQueue->LookupSubPic(m_rtNow, &pSubPic))
 	{
-		CRect rcSource, rcDest;
-		if (SUCCEEDED (pSubPic->GetSourceAndDest(&size, rcSource, rcDest)))
-			pSubPic->AlphaBlt(rcSource, rcDest, pTarget);
-/*		SubPicDesc spd;
-		pSubPic->GetDesc(spd);
+		if (SUCCEEDED (pSubPic->GetSourceAndDest(&size, rcSource1, rcDest1))){
+			//pSubPic->AlphaBlt(rcSource, rcDest, pTarget);
+			bltSub1 = true;
+		}
+#ifdef LOGSUBRECT
+		UINT iTotalLenSec = (UINT)( (INT64) m_rtNow / 10000000 );
+		szD1.Format(_T("  sub1 size %d %d   , source %d %d %d %d , dest  %d %d %d %d , time %d:%02d") , 
+			size.cx, size.cy, rcSource1.top, rcSource1.right, rcSource1.bottom, rcSource1.left, 
+			 rcDest1.top, rcDest1.right, rcDest1.bottom, rcDest1.left,(int)iTotalLenSec/60, iTotalLenSec % 60 );
+#endif
 
-		if(spd.w > 0 && spd.h > 0)
-		{
-			CRect r;
-			pSubPic->GetDirtyRect(r);
-
-			// FIXME
-			r.DeflateRect(1, 1);
-
-			CRect rDstText(
-				r.left * size.cx / spd.w,
-				r.top * size.cy / spd.h,
-				r.right * size.cx / spd.w,
-				r.bottom * size.cy / spd.h);
-
-			pSubPic->AlphaBlt(r, rDstText, pTarget);
-		}*/
 	}
 	
 	if(m_pSubPicQueue2->LookupSubPic(m_rtNow2, &pSubPic2))
-		{
-			CRect rcSource, rcDest;
-			if (SUCCEEDED (pSubPic2->GetSourceAndDest(&size, rcSource, rcDest)))
-				pSubPic2->AlphaBlt(rcSource, rcDest, pTarget);
-			
+	{
+		if (SUCCEEDED (pSubPic2->GetSourceAndDest(&size, rcSource2, rcDest2))){
+			bltSub2 = true;
 		}
-	
+#ifdef LOGSUBRECT
+		UINT iTotalLenSec = (UINT)( (INT64) m_rtNow2 / 10000000 );
+		szD2.Format(_T("  sub2 size %d %d   , source %d %d %d %d , dest  %d %d %d %d , time %d:%02d") , 
+			size.cx, size.cy, rcSource2.top, rcSource2.right, rcSource2.bottom, rcSource2.left, 
+			rcDest2.top, rcDest2.right, rcDest2.bottom, rcDest2.left,(int)iTotalLenSec/60, iTotalLenSec % 60 );
+#endif			
+	}
+
+	if(bltSub1 && bltSub2){
+		//avoid overlap
+		CRect rectInter;
+		if(rectInter.IntersectRect(rcDest1, rcDest2) ){
+			//there is overlap
+			CPoint cent1 = rcDest1.CenterPoint(); // sub1 center
+			CPoint cent2 = rcDest2.CenterPoint(); // sub2 center
+			CPoint vcent( size.cx /2 , size.cy /2)  ; //video center
+			
+			//which one is closer to border?
+			if  ( abs(cent1.y - vcent.y) > abs(cent2.y - vcent.y) ){ 
+				//rcDest1 is outer(fixed) , move rcDest2
+				if(cent2.y > cent1.y ){ //sub2 is under sub1 and there are on top area of sreen
+					rcDest2.MoveToY(rcDest1.bottom);  //moving down
+				}else{
+					rcDest2.MoveToY(rcDest1.top - rcDest2.Height()); //moving up
+				}
+			}else{
+				//rcDest2 is outer(fixed) , move rcDest1
+				if(cent1.y > cent2.y ){ //sub1 is under sub2 and there are on top area of sreen
+					rcDest1.MoveToY(rcDest2.bottom);  //moving down
+				}else{
+					rcDest1.MoveToY(rcDest2.top - rcDest1.Height()); //moving up
+				}
+			}
+
+		}
+	}
+	if(bltSub1)
+		pSubPic->AlphaBlt(rcSource1, rcDest1, pTarget);
+	if(bltSub2)
+		pSubPic2->AlphaBlt(rcSource2, rcDest2, pTarget);
+#ifdef LOGSUBRECT
+	if(bltSub1 || bltSub2){
+		SVP_LogMsg(szD1 + szD2);
+	}
+#endif
 }
 
 // ISubPicAllocatorPresenter

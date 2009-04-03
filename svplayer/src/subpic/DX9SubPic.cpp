@@ -37,6 +37,7 @@ CDX9SubPic::CDX9SubPic(IDirect3DSurface9* pSurface)
 	{
 		m_maxsize.SetSize(d3dsd.Width, d3dsd.Height);
 		m_rcDirty.SetRect(0, 0, d3dsd.Width, d3dsd.Height);
+		ClearDirtyRect(0xFF000000); //Fix  前后字幕重叠问题 ??
 	}
 }
 
@@ -89,7 +90,7 @@ STDMETHODIMP CDX9SubPic::CopyTo(ISubPic* pSubPic)
 
 	return SUCCEEDED(hr) ? S_OK : E_FAIL;
 }
-
+//#include "..\svplib\svplib.h"
 STDMETHODIMP CDX9SubPic::ClearDirtyRect(DWORD color)
 {
 	if(m_rcDirty.IsRectEmpty())
@@ -99,42 +100,53 @@ STDMETHODIMP CDX9SubPic::ClearDirtyRect(DWORD color)
 	if(!m_pSurface || FAILED(m_pSurface->GetDevice(&pD3DDev)) || !pD3DDev)
 		return E_FAIL;
 
-	SubPicDesc spd;
-	if(SUCCEEDED(Lock(spd)))
-	{
-		int h = m_rcDirty.Height();
-
-		BYTE* ptr = (BYTE*)spd.bits + spd.pitch*m_rcDirty.top + (m_rcDirty.left*spd.bpp>>3);
-
-		if(spd.bpp == 16)
+	//LARGE_INTEGER timeTick[3];
+	//QueryPerformanceCounter(&timeTick[0]);
+	//why not just use color fill??
+	if(FAILED(pD3DDev->ColorFill(m_pSurface, m_rcDirty, color))){
+		SubPicDesc spd;
+		if(SUCCEEDED(Lock(spd)))
 		{
-			while(h-- > 0)
+			int h = m_rcDirty.Height();
+
+			BYTE* ptr = (BYTE*)spd.bits + spd.pitch*m_rcDirty.top + (m_rcDirty.left*spd.bpp>>3);
+
+			if(spd.bpp == 16)
 			{
-				WORD* start = (WORD*)ptr;
-				WORD* end = start + m_rcDirty.Width();
-				while(start < end) *start++ = (WORD)color;
-				ptr += spd.pitch;
+				while(h-- > 0)
+				{
+					WORD* start = (WORD*)ptr;
+					WORD* end = start + m_rcDirty.Width();
+					while(start < end) *start++ = (WORD)color;
+					ptr += spd.pitch;
+				}
 			}
-		}
-		else if(spd.bpp == 32)
-		{
-			while(h-- > 0)
+			else if(spd.bpp == 32)
 			{
-				DWORD* start = (DWORD*)ptr;
-				DWORD* end = start + m_rcDirty.Width();
-				while(start < end) *start++ = color;
-				ptr += spd.pitch;
+				while(h-- > 0)
+				{
+					DWORD* start = (DWORD*)ptr;
+					DWORD* end = start + m_rcDirty.Width();
+					while(start < end) *start++ = color;
+					ptr += spd.pitch;
+				}
 			}
+	/*
+			DWORD* ptr = (DWORD*)bm.bits;
+			DWORD* end = ptr + bm.h*bm.wBytes/4;
+			while(ptr < end) *ptr++ = color;
+	*/
+			Unlock(NULL);
 		}
-/*
-		DWORD* ptr = (DWORD*)bm.bits;
-		DWORD* end = ptr + bm.h*bm.wBytes/4;
-		while(ptr < end) *ptr++ = color;
-*/
-		Unlock(NULL);
 	}
-
-//		HRESULT hr = pD3DDev->ColorFill(m_pSurface, m_rcDirty, color);
+	/*
+		QueryPerformanceCounter(&timeTick[1]);
+		HRESULT hr = pD3DDev->ColorFill(m_pSurface, m_rcDirty, color);
+		QueryPerformanceCounter(&timeTick[2]);
+	
+		CString szLog;
+		szLog.Format(_T("%I64d %I64d "), (timeTick[1].QuadPart - timeTick[0].QuadPart), (timeTick[2].QuadPart - timeTick[1].QuadPart));
+		SVP_LogMsg(szLog);*/
 	
 	m_rcDirty.SetRectEmpty();
 
@@ -148,10 +160,10 @@ STDMETHODIMP CDX9SubPic::Lock(SubPicDesc& spd)
 	if(FAILED(m_pSurface->GetDesc(&d3dsd)))
 		return E_FAIL;
 
-	D3DLOCKED_RECT LockedRect;
-	ZeroMemory(&LockedRect, sizeof(LockedRect));
-	if(FAILED(m_pSurface->LockRect(&LockedRect, NULL, 0)))
-		return E_FAIL;
+ 	D3DLOCKED_RECT LockedRect;
+ 	ZeroMemory(&LockedRect, sizeof(LockedRect));
+ 	if(FAILED(m_pSurface->LockRect(&LockedRect, NULL, 0)))
+ 		return E_FAIL;
 
 	spd.type = 0;
 	spd.w = m_size.cx;
@@ -159,7 +171,7 @@ STDMETHODIMP CDX9SubPic::Lock(SubPicDesc& spd)
 	spd.bpp = 
 		d3dsd.Format == D3DFMT_A8R8G8B8 ? 32 : 
 		d3dsd.Format == D3DFMT_A4R4G4B4 ? 16 : 0;
-	spd.pitch = LockedRect.Pitch;
+	spd.pitch = LockedRect.Pitch; 
 	spd.bits = LockedRect.pBits;
 	spd.vidrect = m_vidrect;
 
@@ -174,10 +186,10 @@ STDMETHODIMP CDX9SubPic::Unlock(RECT* pDirtyRect)
 	{
 		m_rcDirty = *pDirtyRect;
 		m_rcDirty.InflateRect(1, 1);
-		m_rcDirty.left &= ~127;
-		m_rcDirty.top &= ~63;
-		m_rcDirty.right = (m_rcDirty.right + 127) & ~127;
-		m_rcDirty.bottom = (m_rcDirty.bottom + 63) & ~63;
+//  		m_rcDirty.left &= ~127; // Not sure why doing this.. remove by tomasen
+//  		m_rcDirty.top &= ~63;
+//  		m_rcDirty.right = (m_rcDirty.right + 127) & ~127;
+//  		m_rcDirty.bottom = (m_rcDirty.bottom + 63) & ~63;
 		m_rcDirty &= CRect(CPoint(0, 0), m_size);
 	}
 	else

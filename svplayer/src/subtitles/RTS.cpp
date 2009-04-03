@@ -1364,6 +1364,10 @@ void CRenderedTextSubtitle::ParseString(CSubtitle* sub, CStringW str, STSStyle& 
 			style.fontSize = orgFontSize;
 		}
 
+// 		if(c == '\n') {
+// 			str.SetAt(j, ' '); continue;;
+// 		}
+		
 		if(c != '\n' && c != ' ' && c != '\x00A0' && c != 0)
 			continue;
 

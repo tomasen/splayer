@@ -533,7 +533,7 @@ void CSubPicQueue::AppendQueue(ISubPic* pSubPic)
 
 DWORD CSubPicQueue::ThreadProc()
 {	
-	SetThreadPriority(m_hThread, THREAD_PRIORITY_LOWEST/*THREAD_PRIORITY_BELOW_NORMAL*/);
+	SetThreadPriority(m_hThread, THREAD_PRIORITY_NORMAL/*THREAD_PRIORITY_BELOW_NORMAL*/);
 
 	while((WaitForMultipleObjects(EVENT_COUNT, m_ThreadEvents, FALSE, INFINITE) - WAIT_OBJECT_0) == EVENT_TIME)
 	{

@@ -3220,7 +3220,9 @@ void CMainFrame::OnFilePostClosemedia()
 	{
 		ShowControlBar(&m_wndSubresyncBar, FALSE, TRUE); 
 		SetSubtitle(NULL);
-	}
+	} 
+//	AfxGetAppSettings().fEnableSubtitles2 = FALSE;
+	m_iSubtitleSel2 = -1;
 
 	if(IsWindow(m_wndCaptureBar.m_hWnd))
 	{

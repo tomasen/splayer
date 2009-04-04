@@ -97,7 +97,7 @@ BOOL CPPageOutput::OnInitDialog()
 	m_fVMR9MixerYUV = s.fVMR9MixerYUV;
 
 	m_AudioRendererDisplayNames.Add(_T(""));
-	m_iAudioRendererTypeCtrl.AddString(_T("System Default"));
+	m_iAudioRendererTypeCtrl.AddString(_T("ÏµÍ³Ä¬ÈÏ"));
 	m_iAudioRendererType = 0;
 
 	BeginEnumSysDev(CLSID_AudioRendererCategory, pMoniker)

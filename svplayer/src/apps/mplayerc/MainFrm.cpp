@@ -399,6 +399,9 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_JOINTEAM, &CMainFrame::OnJointeam)
 	ON_COMMAND_RANGE(ID_BRIGHTINC, ID_BRIGHTDEC, OnColorControl )
 
+	ON_COMMAND_RANGE(IDS_CHANGE_AUDIO_DEVICE, IDS_CHANGE_AUDIO_DEVICE_END, OnAudioDeviceChange )
+	ON_UPDATE_COMMAND_UI_RANGE(IDS_CHANGE_AUDIO_DEVICE, IDS_CHANGE_AUDIO_DEVICE_END, OnUpdateAudioDeviceChange )
+
 	ON_BN_CLICKED(IDC_BUTTONRESETCOLORCONTROL,  OnColorControlButtonReset)
 	ON_BN_CLICKED(IDC_BUTTONENABLECOLORCONTROL, OnColorControlButtonEnable)
 	ON_UPDATE_COMMAND_UI( IDC_BUTTONRESETCOLORCONTROL,  OnColorControlUpdateButtonReset)
@@ -2700,7 +2703,7 @@ void CMainFrame::OnInitMenu(CMenu* pMenu)
 }
 void MenuMerge(CMenu* Org, CMenu* New){
 	if(!Org || !New){ return;};
-	if(Org->GetMenuItemCount() > 0){
+	if(Org->GetMenuItemCount() > 0 && New->GetMenuItemCount() > 0 ){
 		Org->AppendMenu(MF_SEPARATOR);
 	}
 	for(int j = 0; j < New->GetMenuItemCount(); j++){
@@ -8821,6 +8824,15 @@ void CMainFrame::OnColorControl(UINT nID){
 void CMainFrame::OnColorControlButtonReset(){
 	m_wndColorControlBar.OnButtonReset();
 }
+void CMainFrame::ReRenderOrLoadMedia(){
+	int iPlaybackMode = m_iPlaybackMode;
+	CloseMedia();
+	m_wndColorControlBar.CheckAbility();
+	if(iPlaybackMode == PM_FILE)
+	{
+		OpenCurPlaylistItem();
+	} 
+}
 void CMainFrame::OnColorControlButtonEnable(){
 	AppSettings& s = AfxGetAppSettings();
 	s.fVMR9MixerMode = !s.fVMR9MixerMode;
@@ -8831,13 +8843,8 @@ void CMainFrame::OnColorControlButtonEnable(){
 	}
 
 	if( m_iMediaLoadState != MLS_CLOSED){
-		int iPlaybackMode = m_iPlaybackMode;
-		CloseMedia();
-		m_wndColorControlBar.CheckAbility();
-		if(iPlaybackMode == PM_FILE)
-		{
-			OpenCurPlaylistItem();
-		} 
+		ReRenderOrLoadMedia();
+		
 	}else{
 		m_wndColorControlBar.CheckAbility();
 	}
@@ -9472,13 +9479,99 @@ void CMainFrame::SetupFiltersSubMenu()
 		EndEnumFilters
 	}
 }
+void CMainFrame::OnUpdateAudioDeviceChange(CCmdUI *pCmdUI){
+	AppSettings& s = AfxGetAppSettings();
+	if( IDS_CHANGE_AUDIO_DEVICE == pCmdUI->m_nID ){
+		BOOL bNotDefault = false;
+		if(!s.AudioRendererDisplayName.IsEmpty()){
+			for(int i = 0; i < m_AudioDevice.GetCount() ; i+=2){
+				if( s.AudioRendererDisplayName == m_AudioDevice.GetAt(i + 1) ){
+					bNotDefault = true;
+					break;
+				}
+			}
+			if(!bNotDefault){s.AudioRendererDisplayName = _T("");}
+		}
+		
+		pCmdUI->SetRadio(!bNotDefault);
+	}else{
+		if( m_AudioDevice.GetAt( ( pCmdUI->m_nID - IDS_CHANGE_AUDIO_DEVICE -1 ) * 2 + 1 ) == s.AudioRendererDisplayName ){
+			pCmdUI->SetRadio(TRUE);
+		}else{
+			pCmdUI->SetRadio(FALSE);
+		}
+	}
+}
+void CMainFrame::OnAudioDeviceChange(UINT nID){
+	AppSettings& s = AfxGetAppSettings();
 
+	if(nID == IDS_CHANGE_AUDIO_DEVICE)
+		s.AudioRendererDisplayName = _T("");
+	else
+		s.AudioRendererDisplayName = m_AudioDevice.GetAt((nID - IDS_CHANGE_AUDIO_DEVICE - 1) * 2 + 1);
+
+	ReRenderOrLoadMedia();
+}
+void CMainFrame::SetupAudioDeviceSubMenu(){
+	CMenu* pSub = &m_audiodevices;
+	if(!IsMenu(pSub->m_hMenu)) pSub->CreatePopupMenu();
+	else while(pSub->RemoveMenu(0, MF_BYPOSITION));
+
+	UINT idstart = IDS_CHANGE_AUDIO_DEVICE;
+	//m_AudioDevice.RemoveAll();
+	if(m_AudioDevice.GetCount() <= 0 ){
+		BeginEnumSysDev(CLSID_AudioRendererCategory, pMoniker)
+		{
+			LPOLESTR olestr = NULL;
+			if(FAILED(pMoniker->GetDisplayName(0, 0, &olestr)))
+				continue;
+
+			CStringW str(olestr);
+			CoTaskMemFree(olestr);
+
+			
+
+			CComPtr<IPropertyBag> pPB;
+			if(SUCCEEDED(pMoniker->BindToStorage(0, 0, IID_IPropertyBag, (void**)&pPB)))
+			{
+				CComVariant var;
+				pPB->Read(CComBSTR(_T("FriendlyName")), &var, NULL);
+
+				CString fstr(var.bstrVal);
+
+				m_AudioDevice.Add(fstr);
+				m_AudioDevice.Add(CString(str));
+			}
+		}
+		EndEnumSysDev
+	}
+	
+	pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, idstart++, _T("系统默认"));
+	if(m_AudioDevice.GetCount())
+		pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED);
+
+	for(int i = 0 ; i < m_AudioDevice.GetCount(); i+=2){
+		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, idstart++, m_AudioDevice.GetAt(i));
+		if(idstart > IDS_CHANGE_AUDIO_DEVICE_END){
+			//too many device...
+			break;
+		}
+	}
+}
 void CMainFrame::SetupAudioSwitcherSubMenu()
 {
 	CMenu* pSub = &m_audios;
 
 	if(!IsMenu(pSub->m_hMenu)) pSub->CreatePopupMenu();
 	else while(pSub->RemoveMenu(0, MF_BYPOSITION));
+
+	SetupAudioDeviceSubMenu();
+
+	CMenu* pSubMenu = &m_audiodevices;
+	if(pSubMenu ){
+		pSub->AppendMenu(MF_POPUP, (UINT_PTR) pSubMenu->m_hMenu, _T("输出设备"));
+		
+	}
 
 	if(m_iMediaLoadState == MLS_LOADED)
 	{
@@ -9489,6 +9582,9 @@ void CMainFrame::SetupAudioSwitcherSubMenu()
 
 		if(pSS)
 		{
+			if(pSubMenu )
+				pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED);
+
 			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPNORMAL, _T("系统默认"));
 			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPLEFT,  _T("只播放左声道"));
 			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPRIGHT,  _T("只播放右声道"));

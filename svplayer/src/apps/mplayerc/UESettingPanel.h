@@ -30,6 +30,7 @@ class CUESettingPanel : public CDHtmlDialog
 	int m_sgi_chkplayrepeat;
 	int m_sgi_chkexitfullscreen;
 	int m_sgi_chkabnormal;
+	int m_sgi_noaudioboost;
 	int m_sgi_chkautoplay;
 	int m_sgi_chkautozoom;
 	int m_sgi_chkautodownloadsvpsub;

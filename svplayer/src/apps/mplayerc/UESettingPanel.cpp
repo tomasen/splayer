@@ -66,6 +66,7 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_DHtml_CheckBox(pDX, _T("chkplayrepeat"), m_sgi_chkplayrepeat);
 	DDX_DHtml_CheckBox(pDX, _T("chkexitfullscreen"), m_sgi_chkexitfullscreen);
 	DDX_DHtml_CheckBox(pDX, _T("chkabnormal"), m_sgi_chkabnormal);
+	DDX_DHtml_CheckBox(pDX, _T("noaudioboost"), m_sgi_noaudioboost);
 	DDX_DHtml_CheckBox(pDX, _T("chkautozoom"), m_sgi_chkautozoom);
 	DDX_DHtml_CheckBox(pDX, _T("chkautodownloadsvpsub"), m_sgi_chkautodownloadsvpsub);
 	DDX_DHtml_CheckBox(pDX, _T("chkautoresumeplay"), m_sgi_chkautoresumeplay);
@@ -205,6 +206,9 @@ BOOL CUESettingPanel::OnInitDialog()
 	m_sgi_gpuacelcuda = s.useGPUCUDA;
 	//Audio Setting
 	m_sgi_normalize = s.fAudioNormalize;
+	if( s.AudioBoost > 1 ){
+		m_sgi_noaudioboost = 0;
+	}
 	//m_sgi_downsample44k = s.fDownSampleTo441;
 
 	m_sgi_chkautozoom = s.fRememberZoomLevel;
@@ -338,6 +342,11 @@ void CUESettingPanel::ApplyAllSetting(){
 	s.useGPUCUDA = !!m_sgi_gpuacelcuda;
 	//Audio Setting
 	s.fAudioNormalize = !!m_sgi_normalize  ;
+	s.fAudioNormalizeRecover = TRUE;
+	if(m_sgi_noaudioboost)
+		s.AudioBoost = 1;
+	else
+		s.AudioBoost = 70;
 	//s.fDownSampleTo441 = !!m_sgi_downsample44k ;
 
 /*
@@ -364,8 +373,8 @@ void CUESettingPanel::ApplyAllSetting(){
 	if(m_pASF)
 	{
 		//m_pASF->SetSpeakerConfig(s.fCustomChannelMapping, s.pSpeakerToChannelMap);
-		m_pASF->EnableDownSamplingTo441(s.fDownSampleTo441);
-		m_pASF->SetAudioTimeShift(s.fAudioTimeShift ? 10000i64*s.tAudioTimeShift : 0);
+		//m_pASF->EnableDownSamplingTo441(s.fDownSampleTo441);
+		//m_pASF->SetAudioTimeShift(s.fAudioTimeShift ? 10000i64*s.tAudioTimeShift : 0);
 		m_pASF->SetNormalizeBoost(s.fAudioNormalize, s.fAudioNormalizeRecover, s.AudioBoost);
 	}
 

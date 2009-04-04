@@ -227,7 +227,8 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 
 	CMenu m_popupmain, m_popup;
 	CMenu m_opencds;
-	CMenu m_filters, m_subtitles, m_subtitles2, m_audios;
+	CMenu m_filters, m_subtitles, m_subtitles2, m_audios, m_audiodevices;
+	CStringArray m_AudioDevice;
 	CAutoPtrArray<CMenu> m_filterpopups;
 	CMenu m_navaudio, m_navsubtitle, m_navangle;
 	CMenu m_navchapters, m_navtitles;
@@ -241,6 +242,7 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 	CComPtr<IDSMChapterBag> m_pCB;
 	void SetupChapters();
 	
+	void SetupAudioDeviceSubMenu();
 	//
 
 	void SetupIViAudReg();
@@ -547,6 +549,7 @@ public:
 	afx_msg void OnMenuFilters();
 	afx_msg void OnColorControlButtonReset();
 	afx_msg void OnColorControlButtonEnable();
+	void ReRenderOrLoadMedia();
 	afx_msg void OnColorControlUpdateButtonReset(CCmdUI* pCmdUI);
 	afx_msg void OnColorControlUpdateButtonEnable(CCmdUI* pCmdUI);
 
@@ -737,6 +740,8 @@ public:
 	UINT m_iAudioChannelMaping;
 	afx_msg void OnAudioChannalMapMenu(UINT nID);
 	afx_msg void OnUpdateChannalMapMenu(CCmdUI *pCmdUI);
+	afx_msg void OnAudioDeviceChange(UINT nID);
+	afx_msg void OnUpdateAudioDeviceChange(CCmdUI *pCmdUI);
 	afx_msg void OnVisitbbs();
 	afx_msg void OnSendemail();
 	afx_msg void OnVisitcontactinfo();

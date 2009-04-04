@@ -533,7 +533,7 @@ void CPlayerPlaylistBar::RealFindMoreFileFromOneFileAndPutIntoPlaylist(CString s
 	POSITION pos = szaIn.GetHeadPosition();
 	while(pos){
 		CString szFile = szaIn.GetNext(pos);
-		if(FindPosByFilename(szFile) == NULL ){
+		if(!szFile.IsEmpty() && FindPosByFilename(szFile) == NULL ){
 			bPlayListHavntChanged = false;
 		}
 	}

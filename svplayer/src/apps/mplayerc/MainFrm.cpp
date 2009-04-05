@@ -6320,13 +6320,13 @@ void CMainFrame::OnPlayVolume(UINT nID)
 		if( s.AudioBoost < 1 || iPlayerVol < 100)
 			s.AudioBoost = 1;
 		else
-			iPlayerVol *=  s.AudioBoost / 10;
+			iPlayerVol *=  (s.AudioBoost + 10) / 11;
 
 		CComQIPtr<IAudioSwitcherFilter> pASF = FindFilter(__uuidof(CAudioSwitcherFilter), pGB);
 		if(pASF)
 			pASF->SetNormalizeBoost(s.fAudioNormalize, s.fAudioNormalizeRecover, s.AudioBoost);
 
-		szStat.Format(_T("“Ù¡ø: %d%% %f ") , iPlayerVol, s.AudioBoost);
+		szStat.Format(_T("“Ù¡ø: %d%%  ") , iPlayerVol );
 		SendStatusMessage(szStat , 2000);
 	}
 }

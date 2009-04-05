@@ -67,7 +67,9 @@ void CVolumeCtrl::IncreaseVolume()
 // 			WaveOutVol = (HIWORD(plVolume) + LOWORD(plVolume)) * 100 / 2 / 0xFFFF;
 // 		}
 		if( WaveOutVol > 90){
-			s.AudioBoost += 8;
+			int iBVol = (int)(50.0f*log10(s.AudioBoost));
+			iBVol = min(iBVol + 8, 100);
+			s.AudioBoost = pow(10.0f, (float)iBVol/50);
 			if( s.AudioBoost > 100)
 				s.AudioBoost = 100;
 		}else{
@@ -93,7 +95,10 @@ void CVolumeCtrl::DecreaseVolume()
 	AppSettings& s = AfxGetAppSettings();
 	
 	if( s.AudioBoost > 1){
-		s.AudioBoost -= 8;
+		int iBVol = (int)(50.0f*log10(s.AudioBoost));
+		iBVol = max(iBVol - 8, 0);
+		s.AudioBoost = pow(10.0f, (float)iBVol/50);
+
 		if( s.AudioBoost < 1)
 			s.AudioBoost = 1;
 	}else{

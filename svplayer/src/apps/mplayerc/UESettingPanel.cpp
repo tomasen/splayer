@@ -343,10 +343,10 @@ void CUESettingPanel::ApplyAllSetting(){
 	//Audio Setting
 	s.fAudioNormalize = !!m_sgi_normalize  ;
 	s.fAudioNormalizeRecover = TRUE;
-	if(m_sgi_noaudioboost)
-		s.AudioBoost = 1;
-	else
-		s.AudioBoost = 70;
+// 	if(m_sgi_noaudioboost)
+// 		s.AudioBoost = 1;
+// 	else
+// 		s.AudioBoost = 70;
 	//s.fDownSampleTo441 = !!m_sgi_downsample44k ;
 
 /*

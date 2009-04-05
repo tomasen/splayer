@@ -59,23 +59,51 @@ void CVolumeCtrl::SetPosInternal(int pos)
 
 void CVolumeCtrl::IncreaseVolume()
 {
-	if (GetPos() > 25 ){
-		SetPosInternal(GetPos() + GetPageSize());
-	}else if (GetPos() > 15 ){
-		SetPosInternal(GetPos() + 3);
+	AppSettings& s = AfxGetAppSettings();
+	if(GetPos() > 99){
+		DWORD plVolume;
+		int WaveOutVol = 100;
+// 		if(MMSYSERR_NOERROR == waveOutGetVolume(0, (DWORD*)plVolume) ){
+// 			WaveOutVol = (HIWORD(plVolume) + LOWORD(plVolume)) * 100 / 2 / 0xFFFF;
+// 		}
+		if( WaveOutVol > 90){
+			s.AudioBoost += 8;
+			if( s.AudioBoost > 100)
+				s.AudioBoost = 100;
+		}else{
+			//increaseWaveOut
+			
+			//plVolume = (min( (HIWORD(plVolume) + 0x0FFF), 0xFFFF) << 16) |  min( (LOWORD(plVolume) + 0x0FFF), 0xFFFF) ;
+			//waveOutSetVolume(0, plVolume);
+			
+		}
 	}else{
-		SetPosInternal(GetPos() + 1);
+		if (GetPos() > 25 ){
+			SetPosInternal(GetPos() + GetPageSize());
+		}else if (GetPos() > 15 ){
+			SetPosInternal(GetPos() + 3);
+		}else{
+			SetPosInternal(GetPos() + 1);
+		}
 	}
 }
 
 void CVolumeCtrl::DecreaseVolume()
 {
-	if (GetPos() > 25 ){
-		SetPosInternal(GetPos() - GetPageSize());
-	}else if (GetPos() > 15 ){
-		SetPosInternal(GetPos() - 3);
+	AppSettings& s = AfxGetAppSettings();
+	
+	if( s.AudioBoost > 1){
+		s.AudioBoost -= 8;
+		if( s.AudioBoost < 1)
+			s.AudioBoost = 1;
 	}else{
-		SetPosInternal(GetPos() - 1);
+		if (GetPos() > 25 ){
+			SetPosInternal(GetPos() - GetPageSize());
+		}else if (GetPos() > 15 ){
+			SetPosInternal(GetPos() - 3);
+		}else{
+			SetPosInternal(GetPos() - 1);
+		}
 	}
 }
 

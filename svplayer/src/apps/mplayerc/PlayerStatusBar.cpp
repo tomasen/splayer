@@ -221,7 +221,7 @@ void CPlayerStatusBar::SetStatusTimer(REFERENCE_TIME rtNow, REFERENCE_TIME rtDur
 		//szPower = _T("电量: ∽ ");
 	}
 	CString szPlayrate;
-	if(fabs(playRate - 1.0) > 0.02)	{
+	if(fabs(playRate - 1.0) > 0.02 && playRate > 0.01)	{
 		szPlayrate.Format(_T("速率 %0.1fx "), playRate);
 	}
 

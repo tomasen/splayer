@@ -1988,10 +1988,8 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		}
 		fAudioNormalize = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUDIONORMALIZE), FALSE);
 		fAudioNormalizeRecover = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUDIONORMALIZERECOVER), TRUE);
-		AudioBoost = (float)pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUDIOBOOST), 50);
-// 		if(iUpgradeReset < 142){
-// 			AudioBoost = 70;
-// 		}
+		AudioBoost = (float)pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUDIOBOOST), 1);
+
 
 		{
 			for(int i = 0; ; i++)

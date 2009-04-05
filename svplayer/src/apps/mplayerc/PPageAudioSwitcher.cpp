@@ -168,11 +168,11 @@ BOOL CPPageAudioSwitcher::OnApply()
 
 	AppSettings& s = AfxGetAppSettings();
 
-	s.fEnableAudioSwitcher = !!m_fEnableAudioSwitcher;
+	s.fEnableAudioSwitcher = true;//!!m_fEnableAudioSwitcher; alaways enable
 	s.fAudioNormalize = !!m_fAudioNormalize;
 	s.fAudioNormalizeRecover = !!m_fAudioNormalizeRecover;
 	s.AudioBoost = (float)pow(10.0, (double)m_AudioBoost/50);
-	s.fDownSampleTo441 = !!m_fDownSampleTo441;
+	s.fDownSampleTo441 = false; //!!m_fDownSampleTo441; alaways disable
 	s.fAudioTimeShift = !!m_fAudioTimeShift;
 	s.tAudioTimeShift = m_tAudioTimeShift;
 	s.fCustomChannelMapping = !!m_fCustomChannelMapping;

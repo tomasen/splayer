@@ -1569,7 +1569,9 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 		else
 		{
 			double pRate;
-			pMS->GetRate(&pRate);
+			if(E_NOTIMPL == pMS->GetRate(&pRate)){
+				pRate = 0;
+			}
 			m_wndStatusBar.SetStatusTimer(pos, stop, !!m_wndSubresyncBar.IsWindowVisible(), &tf , pRate); 
 		}
 
@@ -6311,8 +6313,20 @@ void CMainFrame::OnPlayVolume(UINT nID)
 	if(m_iMediaLoadState == MLS_LOADED) 
 	{
 		pBA->put_Volume(m_wndToolBar.Volume);
+		
 		CString szStat;
-		szStat.Format(_T("“Ù¡ø: %d%%") , (int)((10000 + m_wndToolBar.Volume) / 100));
+		int iPlayerVol =  m_wndToolBar.m_volctrl.GetPos();
+		AppSettings& s = AfxGetAppSettings();
+		if( s.AudioBoost < 1 || iPlayerVol < 100)
+			s.AudioBoost = 1;
+		else
+			iPlayerVol *=  s.AudioBoost / 10;
+
+		CComQIPtr<IAudioSwitcherFilter> pASF = FindFilter(__uuidof(CAudioSwitcherFilter), pGB);
+		if(pASF)
+			pASF->SetNormalizeBoost(s.fAudioNormalize, s.fAudioNormalizeRecover, s.AudioBoost);
+
+		szStat.Format(_T("“Ù¡ø: %d%% %f ") , iPlayerVol, s.AudioBoost);
 		SendStatusMessage(szStat , 2000);
 	}
 }

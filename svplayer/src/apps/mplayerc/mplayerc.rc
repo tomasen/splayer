@@ -1612,7 +1612,7 @@ BEGIN
                 MENUITEM "100% (&N)",                   ID_VIEW_VF_NORMAL
                 MENUITEM "200% (&D)",                   ID_VIEW_VF_DOUBLE
                 MENUITEM "铺满播放窗口(&S)",                  ID_VIEW_VF_STRETCH
-                MENUITEM "标准画面(&I)",                    ID_VIEW_VF_FROMINSIDE
+                MENUITEM "标准画面\tC",                    ID_VIEW_VF_FROMINSIDE
                 MENUITEM "智能去黑边(&O)",                   ID_VIEW_VF_FROMOUTSIDE
                 MENUITEM SEPARATOR
                 MENUITEM "保持画面比例(&K)",                  ID_VIEW_VF_KEEPASPECTRATIO
@@ -1771,7 +1771,7 @@ BEGIN
         MENUITEM "调入字幕(&L)...\tCtrl+L",         ID_FILE_LOAD_SUBTITLE
         MENUITEM SEPARATOR
         MENUITEM "铺满播放窗口(&S)",                  ID_VIEW_VF_STRETCH
-        MENUITEM "标准画面(&I)",                    ID_VIEW_VF_FROMINSIDE
+        MENUITEM "标准画面\tC",                    ID_VIEW_VF_FROMINSIDE
         MENUITEM "智能去黑边(&O)",                   ID_VIEW_VF_FROMOUTSIDE
         MENUITEM "全屏幕(&l)",                     ID_VIEW_FULLSCREEN
         POPUP "强制画面比例"
@@ -1813,7 +1813,7 @@ BEGIN
                 MENUITEM "100% (&N)",                   ID_VIEW_VF_NORMAL
                 MENUITEM "200% (&D)",                   ID_VIEW_VF_DOUBLE
                 MENUITEM "铺满播放窗口(&S)",                  ID_VIEW_VF_STRETCH
-                MENUITEM "标准画面(&I)",                    ID_VIEW_VF_FROMINSIDE
+                MENUITEM "标准画面\tC",                    ID_VIEW_VF_FROMINSIDE
                 MENUITEM "智能去黑边(&O)",                   ID_VIEW_VF_FROMOUTSIDE
                 MENUITEM SEPARATOR
                 MENUITEM "保持画面比例(&K)",                  ID_VIEW_VF_KEEPASPECTRATIO
@@ -1956,7 +1956,7 @@ BEGIN
             MENUITEM "100% (&N)",                   ID_VIEW_VF_NORMAL
             MENUITEM "200% (&D)",                   ID_VIEW_VF_DOUBLE
             MENUITEM "铺满播放窗口(&S)",                  ID_VIEW_VF_STRETCH
-            MENUITEM "标准画面(&I)",                    ID_VIEW_VF_FROMINSIDE
+            MENUITEM "标准画面\tC",                    ID_VIEW_VF_FROMINSIDE
             MENUITEM "智能去黑边(&O)",                   ID_VIEW_VF_FROMOUTSIDE
             MENUITEM SEPARATOR
             MENUITEM "保持画面比例(&K)",                  ID_VIEW_VF_KEEPASPECTRATIO

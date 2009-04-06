@@ -1328,6 +1328,7 @@ CMPlayerCApp::Settings::Settings()
 	ADDCMD((ID_FILE_PROPERTIES, VK_F10, FVIRTKEY|FSHIFT|FNOINVERT, _T("属性")));
 	ADDCMD((ID_FILE_EXIT, 'X', FVIRTKEY|FALT|FNOINVERT, _T("退出")));
 	ADDCMD((ID_TOGGLE_SUBTITLE, 'H', FVIRTKEY|FNOINVERT, _T("隐藏或显示字幕")));
+	ADDCMD((ID_VIEW_VF_FROMINSIDE, 'C', FVIRTKEY|FNOINVERT, _T("重置画面位置")));
 	ADDCMD((ID_PLAY_PLAY, 0, FVIRTKEY|FNOINVERT, _T("Play")));
 	ADDCMD((ID_PLAY_PAUSE, 0, FVIRTKEY|FNOINVERT, _T("Pause")));
 	ADDCMD((ID_PLAY_STOP, VK_OEM_PERIOD, FVIRTKEY|FNOINVERT, _T("Stop"), APPCOMMAND_MEDIA_STOP));
@@ -2126,9 +2127,9 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 
 		fDisabeXPToolbars = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DISABLEXPTOOLBARS), 0);
 		fUseWMASFReader = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEWMASFREADER), FALSE);
-		nJumpDistS = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_JUMPDISTS), 1000);
-		nJumpDistM = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_JUMPDISTM), 5000);
-		nJumpDistL = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_JUMPDISTL), 20000);
+		nJumpDistS = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_JUMPDISTS), 5000);
+		nJumpDistM = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_JUMPDISTM), 30000);
+		nJumpDistL = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_JUMPDISTL), 60000);
 		fFreeWindowResizing = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_FREEWINDOWRESIZING), TRUE);
 		fNotifyMSN = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_NOTIFYMSN), FALSE);
 		fNotifyGTSdll = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_NOTIFYGTSDLL), FALSE);

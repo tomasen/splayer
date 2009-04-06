@@ -450,6 +450,9 @@ public:
 		CSize AspectRatio;
 		bool fKeepHistory;
 
+		bool useSmartDrag;
+		bool onlyUseInternalDec;
+
 		CString sDVDPath;
 		bool fUseDVDPath;
 		LCID idMenuLang, idAudioLang, idSubtitlesLang;
@@ -504,7 +507,7 @@ public:
 
 		CList<wmcmd> wmcmds;
 		HACCEL hAccel;
-		int disableSmartDrag;
+		//int disableSmartDrag;
 
 		bool fWinLirc;
 		CString WinLircAddr;

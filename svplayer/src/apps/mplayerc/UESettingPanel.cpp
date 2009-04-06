@@ -71,6 +71,10 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_DHtml_CheckBox(pDX, _T("chkautodownloadsvpsub"), m_sgi_chkautodownloadsvpsub);
 	DDX_DHtml_CheckBox(pDX, _T("chkautoresumeplay"), m_sgi_chkautoresumeplay);
 
+	DDX_DHtml_CheckBox(pDX, _T("chkusesmartdrag"), m_sgi_chkuseSmartDrag);
+	DDX_DHtml_CheckBox(pDX, _T("internaldeconly"), m_sgi_chkonlyUseInternalDec);
+	
+
 	DDX_DHtml_ElementInnerHtml (pDX, _T("startupcheckexts"), m_sgi_startupcheckexts);
 	
 	DDX_DHtml_ElementValue (pDX, _T("subfont1"), m_sgs_subfont1);
@@ -192,6 +196,8 @@ BOOL CUESettingPanel::OnInitDialog()
  	m_sgi_chkuseini = ((CMPlayerCApp*)AfxGetApp())->IsIniValid();
 	m_sgi_startupcheckexts = s.szStartUPCheckExts;
 	m_sgi_chkautoresumeplay = s.autoResumePlay;
+	m_sgi_chkuseSmartDrag = s.useSmartDrag;
+	
 	//Video Setting
 	m_sgi_uservmrmixer = s.fVMR9MixerMode;
 	if(s.iDSVideoRendererType == 6 && s.iRMVideoRendererType == 2 && s.iQTVideoRendererType == 2){
@@ -202,6 +208,7 @@ BOOL CUESettingPanel::OnInitDialog()
 		m_sgi_videorender = 2; //×Ô¶¨Òå
 	}
 	m_sgi_lockbackbuff = s.fVMRSyncFix;
+	m_sgi_chkonlyUseInternalDec = s.onlyUseInternalDec;
 	m_sgi_gpuacel = s.useGPUAcel;
 	m_sgi_gpuacelcuda = s.useGPUCUDA;
 	//Audio Setting
@@ -315,10 +322,11 @@ void CUESettingPanel::ApplyAllSetting(){
 	s.fHideCDROMsSubMenu = !!m_sgi_chkcdromenu;
 	s.fLoopForever = !!m_sgi_chkplayrepeat;
 	s.fCheckFileAsscOnStartup = !!m_sgi_chkfileass ;
-	s.priority = !m_sgi_chkabnormal ? NORMAL_PRIORITY_CLASS : GetVersion() < 0 ? HIGH_PRIORITY_CLASS : ABOVE_NORMAL_PRIORITY_CLASS;
+	//s.priority = !m_sgi_chkabnormal ? NORMAL_PRIORITY_CLASS : GetVersion() < 0 ? HIGH_PRIORITY_CLASS : ABOVE_NORMAL_PRIORITY_CLASS;
 	s.szStartUPCheckExts = m_sgi_startupcheckexts ;
 	m_sgi_chkuseini = ((CMPlayerCApp*)AfxGetApp())->IsIniValid();
 	s.fRememberZoomLevel = !!m_sgi_chkautozoom ;
+	s.useSmartDrag = !!m_sgi_chkuseSmartDrag ;
 	//Video Setting
 	
 	s.fVMR9MixerMode = m_sgi_uservmrmixer ;
@@ -338,6 +346,7 @@ void CUESettingPanel::ApplyAllSetting(){
 	}
 	
 	s.fVMRSyncFix = !!m_sgi_lockbackbuff;
+	s.onlyUseInternalDec = !!m_sgi_chkonlyUseInternalDec;
 	s.useGPUAcel = !!m_sgi_gpuacel;
 	s.useGPUCUDA = !!m_sgi_gpuacelcuda;
 	//Audio Setting

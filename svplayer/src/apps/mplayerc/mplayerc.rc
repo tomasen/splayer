@@ -1339,6 +1339,7 @@ END
 
 IDB_ONOFF               BITMAP                  "res\\onoff.bmp"
 IDB_PLAYERTOOLBAR       BITMAP                  "res\\toolbar1.bmp"
+IDB_PLAYERTOOLBAR_SMALL    BITMAP               "res\\toolbar2.bmp"
 IDB_MONO                BITMAP                  "res\\mono.bmp"
 IDB_STEREO              BITMAP                  "res\\stereo.bmp"
 IDB_NOAUDIO             BITMAP                  "res\\noaudio.bmp"
@@ -1465,6 +1466,32 @@ BEGIN
     BUTTON      ID_VOLUME_MUTE_DISABLED
 END
 
+IDB_PLAYERTOOLBAR_SMALL TOOLBAR  20, 17
+BEGIN
+    BUTTON      ID_PLAY_PLAY
+    BUTTON      ID_PLAY_PAUSE
+    BUTTON      ID_PLAY_STOP
+    BUTTON      ID_BUTTONSEP
+    BUTTON      ID_NAVIGATE_SKIPBACK
+    BUTTON      ID_PLAY_BWD
+    BUTTON      ID_PLAY_FWD
+    BUTTON      ID_NAVIGATE_SKIPFORWARD
+    BUTTON      ID_BUTTONSEP
+    BUTTON      ID_SUBDELAYDEC
+    BUTTON      ID_SUBLANGSWITCH
+    BUTTON      ID_SUBDELAYINC
+    BUTTON      ID_BUTTONSEP
+    BUTTON      ID_SUBFONTDOWNBOTH
+    BUTTON      ID_SUBFONTUPBOTH
+    BUTTON      ID_BUTTONSEP
+    BUTTON      ID_SHOWCOLORCONTROLBAR
+    BUTTON      ID_VIEW_PLAYLIST
+    BUTTON      ID_BUTTONSEP
+    BUTTON      ID_BUTTONSEP
+    BUTTON      ID_VOLUME_MUTE
+    BUTTON      ID_VOLUME_MUTE_ON
+    BUTTON      ID_VOLUME_MUTE_DISABLED
+END
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -2424,6 +2451,8 @@ BEGIN
     IDS_RS_MPABOOST         "MpaBoost"
     IDS_RS_AACSC            "AACSpeakerConfig"
     IDS_RS_VMRSYNCFIX       "VMRSyncFix"
+	IDS_RS_ONLYUSEINTERNALDEC "onlyUseInternalDec"
+	IDS_RS_USESMARTDRAG		"userSmartDrag"
 END
 
 STRINGTABLE 

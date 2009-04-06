@@ -893,7 +893,7 @@ void CMPlayerCApp::InitInstanceThreaded(){
 
 	CSVPToolBox svpToolBox;
 	CStringArray csaDll;
-	csaDll.Add( _T("codecs\\CoreAVCDecoder.ax"));
+	//csaDll.Add( _T("codecs\\CoreAVCDecoder.ax")); avoid missing reg key problem
 	csaDll.Add( _T("codecs\\powerdvd\\CL264dec.ax"));
 	for(int i = 0; i < csaDll.GetCount(); i++){
 		CString szDllPath = svpToolBox.GetPlayerPath( csaDll.GetAt(i) );
@@ -1576,6 +1576,10 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUDIOLANG), idAudioLang);
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SUBTITLESLANG), idSubtitlesLang);
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUTOSPEAKERCONF), fAutoSpeakerConf);
+
+		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_ONLYUSEINTERNALDEC), onlyUseInternalDec);
+		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USESMARTDRAG), useSmartDrag);
+
 		CString style;
 		CString style2;
 		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPLOGFONT), style <<= subdefstyle);
@@ -1602,7 +1606,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUDIONORMALIZERECOVER), fAudioNormalizeRecover);		
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUDIOBOOST), (int)AudioBoost);
 
-		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DISABLESMARTDRAG),  disableSmartDrag );
+		//pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DISABLESMARTDRAG),  disableSmartDrag );
 		
 		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SHADERLIST), strShaderList);
 
@@ -1922,7 +1926,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		dSaturation		= (float)_tstof(pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_COLOR_SATURATION),	_T("1")));
 
 		bNotChangeFontToYH = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_NOTCHANGEFONTTOYH), 0);
-		disableSmartDrag = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DISABLESMARTDRAG),  -1 );
+//		disableSmartDrag = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DISABLESMARTDRAG),  -1 );
 
 		CSVPToolBox svptoolbox;
 		AfxBeginThread( Thread_AppSettingLoadding, this, THREAD_PRIORITY_LOWEST );
@@ -1947,6 +1951,10 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		tAudioTimeShift = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUDIOTIMESHIFT), 0);
 		fDownSampleTo441 = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DOWNSAMPLETO441), 0);
 		fCustomChannelMapping = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_CUSTOMCHANNELMAPPING), 0);
+
+		onlyUseInternalDec = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_ONLYUSEINTERNALDEC), FALSE);
+		useSmartDrag = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USESMARTDRAG), FALSE);
+
 		if(iUpgradeReset < 49){
 			subdefstyle.relativeTo = 0;	
 		}

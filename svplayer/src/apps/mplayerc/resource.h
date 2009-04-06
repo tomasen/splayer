@@ -20,6 +20,7 @@
 #define IDF_LOGO7                       213
 #define IDB_AUTHHDRPIC                  214
 #define IDB_STREAMTYPES                 215
+#define IDB_PLAYERTOOLBAR_SMALL			216
 #define IDI_SINGLE                      300
 #define IDI_MULTI                       301
 #define IDI_DVD                         302
@@ -818,6 +819,8 @@
 #define IDS_RS_FFMPEGFILTERS            14215
 #define IDS_SRC_FLAC                    14216
 #define IDS_RS_DISABLESMARTDRAG         14217
+#define IDS_RS_ONLYUSEINTERNALDEC		14218
+#define IDS_RS_USESMARTDRAG				14219
 #define IDD_DHTML_SETTING               20000
 #define IDR_DEFAULT1                    20006
 #define IDD_DEFAULT_PLAYER              20007

@@ -88,6 +88,25 @@ UESAPI.prototype = {
         }
         
     },
+    SetInternalDecOnly:function(ochk){
+        var benable = !!ochk.checked;
+        var fontcolor = "";
+        if(benable)
+            fontcolor = "#666666";
+        var t1 = this.fobj('gpuacel');
+        var t2 = this.fobj('gpuacelcuda');
+        var c1 = this.fobj('forgpuacel');
+        var c2 = this.fobj('forgpuacelcuda');
+        
+        if(t1)
+            t1.disabled = benable;
+        if(t2)
+            t2.disabled = benable;
+        if(c1)
+            c1.style.color = fontcolor;
+        if(c2)
+            c2.style.color = fontcolor;
+    },
     toggelblock:function(idname){
         var tobj = this.fobj(idname);
         if (tobj.style.display != 'none'){
@@ -188,6 +207,7 @@ function myInit(){
 <div id="generalseting" class="hiddenarea">
 <input type="checkbox" id="chkremhistory" /><label for="chkremhistory">保存播放记录</label><br />
 <input type="checkbox" id="chkautoresumeplay" /><label for="chkautoresumeplay" title="从上次关闭的位置打开文件">启用断点播放功能</label><br />
+<input type="checkbox" id="chkusesmartdrag" /><label for="chkusesmartdrag">启用智能拖拽功能</label><br />
 <input type="checkbox" id="chkremwinpos" /><label for="chkremwinpos">记忆窗口位置和尺寸</label><br />
 <input type="checkbox" id="chkcdromenu" /><label for="chkcdromenu" title="在“文件”菜单下显示光盘驱动器列表菜单
 可能会影响菜单打开的速度">隐藏光盘驱动器菜单</label><br />
@@ -199,8 +219,8 @@ function myInit(){
 <input type="checkbox" id="chkplayrepeat" /><label for="chkplayrepeat">循环播放</label><br />
 <input type="checkbox" id="chkexitfullscreen" /><label for="chkexitfullscreen">播放结束后自动退出全屏</label><br />
 <input type="checkbox" id="chkautozoom" /><label for="chkautozoom">根据视频画面尺寸改变窗口大小</label><br />
-<input type="checkbox" id="chkabnormal" /><label for="chkabnormal" title="允许播放器使用更多的CPU运算资源
-但播放时也有可能影响其他软件运行效率，特别是在低配置的电脑上。">提高进程优先级</label><br />
+<!--<input type="checkbox" id="chkabnormal" /><label for="chkabnormal" title="允许播放器使用更多的CPU运算资源
+但播放时也有可能影响其他软件运行效率，特别是在低配置的电脑上。">提高进程优先级</label><br />-->
 
 </div>
 <div id="videosetting" class="hiddenarea">
@@ -209,13 +229,15 @@ function myInit(){
 <option value="ADV">使用自定义高级设置</option></select><br />
 <input type="checkbox" id="vmr9mixer" onclick="ueAPI.useDX9(this.checked);"  /><label for="vmr9mixer" title="启用播放器的亮度调节功能">启用内置亮度调节(需DX9，不能使用CoreAVC解码器)</label><br />
 <input type="checkbox" id="lockbackbuff" /><label for="lockbackbuff" title="解决运动画面中水平错位的问题">修正画面横向错位问题（Lock back-buffer）</label><br />
-<input type="checkbox" id="gpuacel" /><label for="gpuacel" title="优先使用GPU加速高清解码">优先使用GPU加速高清解码（PDVD8）</label><br />
-<input type="checkbox" id="gpuacelcuda" /><label for="gpuacelcuda" title="优先使用NVIDIA的CUDA技术加速高清解码
+<input type="checkbox" id="internaldeconly" onclick="ueAPI.SetInternalDecOnly(this);" /><label for="internaldeconly" title="优先使用GPU加速高清解码">仅使用内置解码器（禁用CoreAVC或PDVD8）</label><br />
+<input type="checkbox" id="gpuacel" /><label  id="forgpuacel" for="gpuacel" title="优先使用GPU加速高清解码">优先使用GPU加速高清解码（PDVD8）</label><br />
+<input type="checkbox" id="gpuacelcuda" /><label id="forgpuacelcuda" for="gpuacelcuda" title="优先使用NVIDIA的CUDA技术加速高清解码
 仅限NVIDIA下列显卡：
 NVIDIA GeForce GTX 260/280, 9800, 9600, 9500, 8800 GT, 8700, 8600, 8500, 8400, 
 Tesla S1070/C1060, Quadro FX 3700, Quadro FX 3600M, 
-Quadro FX 1700/FX 570/ NVS 320M/FX 1600M/FX 570M/FX 370/NVS 290/NVS 140M/NVS 135M/FX 360M/NVS 130M">优先使用NVIDIA加速高清解码（CoreAVC）</label><br />
-　　(需要182.05以上版本驱动，否则无效)<br /><br />
+Quadro FX 1700/FX 570/ NVS 320M/FX 1600M/FX 570M/FX 370/NVS 290/NVS 140M/NVS 135M/FX 360M/NVS 130M">优先使用NVIDIA加速高清解码（CoreAVC）
+<br />　　(需要182.05以上版本驱动，否则无效)</label><br />
+<br />
 
 　<i>小窍门：播放时通过鼠标在画面右上角拖拽可以缩放画面，在画面中心拖拽可以移动画面</i>
 </div>

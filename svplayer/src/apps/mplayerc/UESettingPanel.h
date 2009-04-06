@@ -35,6 +35,10 @@ class CUESettingPanel : public CDHtmlDialog
 	int m_sgi_chkautozoom;
 	int m_sgi_chkautodownloadsvpsub;
 	int m_sgi_chkautoresumeplay;
+
+	int m_sgi_chkuseSmartDrag;
+	int m_sgi_chkonlyUseInternalDec;
+
 	CString m_sgs_initblock;
 	CString m_sgi_startupcheckexts;
 	CString m_sgs_videorender;

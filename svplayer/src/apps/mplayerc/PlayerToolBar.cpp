@@ -37,6 +37,7 @@ typedef HRESULT (__stdcall * SetWindowThemeFunct)(HWND hwnd, LPCWSTR pszSubAppNa
 IMPLEMENT_DYNAMIC(CPlayerToolBar, CToolBar)
 CPlayerToolBar::CPlayerToolBar()
 {
+	iButtonWidth = 30;
 }
 
 CPlayerToolBar::~CPlayerToolBar()
@@ -45,10 +46,19 @@ CPlayerToolBar::~CPlayerToolBar()
 
 BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 {
+	int iToolBarID = IDB_PLAYERTOOLBAR;
+	CRect rcDesktop;
+	GetDesktopWindow()->GetWindowRect(&rcDesktop);
+
+	if( rcDesktop.Width() < 1200){
+		iToolBarID = IDB_PLAYERTOOLBAR_SMALL;
+		iButtonWidth = 20;
+	}
+
 	if(!__super::CreateEx(pParentWnd,
 		TBSTYLE_FLAT|TBSTYLE_TRANSPARENT|TBSTYLE_AUTOSIZE,
 		WS_CHILD|WS_VISIBLE|CBRS_ALIGN_BOTTOM|CBRS_TOOLTIPS, CRect(2,2,0,3)) 
-	|| !LoadToolBar(IDB_PLAYERTOOLBAR))
+	|| !LoadToolBar(iToolBarID))
 		return FALSE;
 
 	GetToolBarCtrl().SetExtendedStyle(TBSTYLE_EX_DRAWDDARROWS);
@@ -150,7 +160,7 @@ void CPlayerToolBar::ArrangeControls()
 
 	CRect vr;
 	m_volctrl.GetClientRect(&vr);
-	CRect vr2(r.right+br.right-60, r.top-1, r.right+br.right+6, r.bottom);
+	CRect vr2(r.right+br.right-iButtonWidth*2, r.top-1, r.right+br.right+6, r.bottom);
 	m_volctrl.MoveWindow(vr2);
 
 	UINT nID;

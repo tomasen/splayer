@@ -2377,8 +2377,14 @@ bool CMpaDecFilter::InitFfmpeg(int nCodecId)
 	if (m_pAVCodec)
 	{
 		m_pAVCtx						= avcodec_alloc_context();
+		if (nCodecId==CODEC_ID_AMR_NB) //HACK: splitter doesn't report correct frequency/number of channels
+		{
+			wfein->nChannels = 1;
+			wfein->nSamplesPerSec=8000;
+		}
 		m_pAVCtx->sample_rate			= wfein->nSamplesPerSec;
 		m_pAVCtx->channels				= wfein->nChannels;
+		
 		m_pAVCtx->bit_rate				= wfein->nAvgBytesPerSec*8;
 		m_pAVCtx->bits_per_coded_sample	= wfein->wBitsPerSample;
 		m_pAVCtx->block_align			= wfein->nBlockAlign;

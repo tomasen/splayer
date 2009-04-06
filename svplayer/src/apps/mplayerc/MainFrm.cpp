@@ -2351,19 +2351,20 @@ void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 		//if(!bRecentFocused || s.iOnTop != 0);  //&& 
 		s_fLDown = true;
 		
-		if(!m_fFullScreen && ( ((xPercent < 25 && yPercent < 25) ) || s.disableSmartDrag > 0 )) //IsCaptionMenuHidden() || 
+		if(!m_fFullScreen && ( ((xPercent < 25 && yPercent < 25) ) || !s.useSmartDrag )) //IsCaptionMenuHidden() || 
 		{
 			s_mDragFuc = 3; //PostMessage(WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM(point.x, point.y));
 		}
-		else if( s.disableSmartDrag <= 0)
+		else if( s.useSmartDrag )
 		{
-			if(xPercent > 40  && xPercent < 60 && yPercent > 40  && yPercent < 60 ){ //画面中心
-				//移动画面
-				s_mDragFuc = 1;
-			}else if(xPercent > 65 && yPercent < 65){ // 画面右上角
-				//缩放画面
-				s_mDragFuc = 2;
-			}
+				if(xPercent > 40  && xPercent < 60 && yPercent > 40  && yPercent < 60 ){ //画面中心
+					//移动画面
+					s_mDragFuc = 1;
+				}else if(xPercent > 65 && yPercent < 65){ // 画面右上角
+					//缩放画面
+					s_mDragFuc = 2;
+				}
+			
 			
 			//if(OnButton(wmcmd::LDOWN, nFlags, point))
 			//SetTimer(TIMER_MOUSELWOWN, 300, NULL);
@@ -7421,8 +7422,11 @@ void CMainFrame::ZoomVideoWindow(double scale)
 
 	AppSettings& s = AfxGetAppSettings();
 
+	BOOL bThisIsAutoZoom = false;
+
 	if(scale <= 0)
 	{
+		bThisIsAutoZoom = true;
 		scale = 
 			s.iZoomLevel == 0 ? 0.5 : 
 			s.iZoomLevel == 1 ? 1.0 : 
@@ -7459,6 +7463,7 @@ void CMainFrame::ZoomVideoWindow(double scale)
 				+ r1.Width() - r2.Width()
 				+ lWidth;
 
+		
 		MENUBARINFO mbi;
 		memset(&mbi, 0, sizeof(mbi));
 		mbi.cbSize = sizeof(mbi);
@@ -7480,6 +7485,11 @@ void CMainFrame::ZoomVideoWindow(double scale)
 
 		w = max(w, mmi.ptMinTrackSize.x);
 		h = max(h, mmi.ptMinTrackSize.y);
+
+		if(bThisIsAutoZoom){
+			double mratio = (double)lHeight/lWidth;
+			h = max(h , w * mratio + (h - lHeight));
+		}
 	}
 	else
 	{

@@ -36,6 +36,7 @@ private:
 	CImageList m_ToolBarDisabledImages;
 
 public:
+	int iButtonWidth;
 	CPlayerToolBar();
 	virtual ~CPlayerToolBar();
 

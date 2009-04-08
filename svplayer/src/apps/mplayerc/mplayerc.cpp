@@ -990,8 +990,8 @@ BOOL CMPlayerCApp::InitInstance()
 
 	if(m_s.nCLSwitches&(CLSW_HELP|CLSW_UNRECOGNIZEDSWITCH))
 	{
-		if(m_s.nCLSwitches&CLSW_HELP)
-			ShowCmdlnSwitches();
+		//if(m_s.nCLSwitches&CLSW_HELP)
+			//ShowCmdlnSwitches();
 
 		return FALSE;
 	}

@@ -72,6 +72,7 @@
 
 #include "DX7AllocatorPresenter.h"
 #include "DX9AllocatorPresenter.h"
+#include "EVRAllocatorPresenter.h"
 
 #include "..\..\subtitles\SSF.h"
 #include "SVPSubDownUpDialog.h"
@@ -4535,17 +4536,13 @@ void CMainFrame::OnUpdateFileConvert(CCmdUI* pCmdUI)
 {
 	// TODO: Add your command update UI handler code here
 }
-
+#define NOTSUPPORTSUB  _T("启用播放器内置字幕功能需要DX7或DX9中的一些高级功能\n如果您看到本提示，可能说明您需要升级显卡驱动\n或者您的显卡没有能力支持所需功能(VMR7或9)")
 void CMainFrame::OnFileLoadsubtitle()
 {
 #ifndef DEBUG
 	if(!m_pCAP)
 	{
-		AfxMessageBox(_T("您需要修改视频输出方式才能打开字幕\n")
-					_T("- 一般视频文件: VMR7/VMR9(renderless) 或 Haali Video Renderer\n")
-					_T("- RealMedia: 需设置以 DirectShow 方式打开或其他\n")
-					_T("- Quicktime: 需 DX7 或者 DX9\n")
-					, MB_OK);
+		AfxMessageBox(NOTSUPPORTSUB , MB_OK);
 		return;
 	}
 #endif
@@ -4569,11 +4566,7 @@ void CMainFrame::OnFileLoadsubtitle2()
 #ifndef DEBUG
 	if(!m_pCAP)
 	{
-		AfxMessageBox(_T("您需要修改视频输出方式才能打开字幕\n")
-			_T("- 一般视频文件: VMR7/VMR9(renderless) 或 Haali Video Renderer\n")
-			_T("- RealMedia: 需设置以 DirectShow 方式打开或其他\n")
-			_T("- Quicktime: 需 DX7 或者 DX9\n")
-			, MB_OK);
+		AfxMessageBox(NOTSUPPORTSUB, MB_OK);
 		return;
 	}
 #endif
@@ -5588,7 +5581,7 @@ void CMainFrame::OnSmartSeek(UINT nID){
 void CMainFrame::OnPlaySeek(UINT nID)
 {
 	AppSettings& s = AfxGetAppSettings();
-	
+	int iDirect = 1;
 	REFERENCE_TIME dt = 
 		nID == ID_PLAY_SEEKBACKWARDSMALL ? -10000i64*s.nJumpDistS : 
 		nID == ID_PLAY_SEEKFORWARDSMALL ? +10000i64*s.nJumpDistS : 
@@ -5605,16 +5598,20 @@ void CMainFrame::OnPlaySeek(UINT nID)
 		}
 
 	}
+	if ((nID - ID_PLAY_SEEKBACKWARDSMALL) % 2 == 0) { //Backward
+		iDirect = -1;
+	}
+
 
 	if(!dt) return;
 
 	// HACK: the custom graph should support frame based seeking instead
 	if(m_fShockwaveGraph) dt /= 10000i64*100;
 
-	SeekTo(m_wndSeekBar.GetPos() + dt);
+	SeekTo(m_wndSeekBar.GetPos() + dt, iDirect);
 }
 
-static int rangebsearch(REFERENCE_TIME val, CAtlArray<REFERENCE_TIME>& rta)
+static int rangebsearch(REFERENCE_TIME val, CAtlArray<REFERENCE_TIME>& rta, int iDirect = 1)
 {
 	int i = 0, j = rta.GetCount() - 1, ret = -1;
 
@@ -5624,11 +5621,26 @@ static int rangebsearch(REFERENCE_TIME val, CAtlArray<REFERENCE_TIME>& rta)
 	{
 		int mid = (i + j) >> 1;
 		REFERENCE_TIME midt = rta[mid];
+		if(iDirect == 1){
+			if(val > midt) {
+				i = ++mid;
+				ret = mid;
+				continue;
+			}
+		}else if(iDirect == -1){
+			if(val < midt) {
+				j = --mid;
+				ret = mid;
+				continue;
+			}
+		}
 		if(val == midt) {ret = mid; break;}
-		else if(val < midt) {ret = -1; if(j == mid) mid--; j = mid;}
+		else if(val < midt) {ret = mid; if(j == mid) mid--; j = mid;}
 		else if(val > midt) {ret = mid; if(i == mid) mid++; i = mid;}
 	}
-
+	if(ret >= (rta.GetCount() - 1)){
+		return rta.GetCount() - 1;
+	}
 	return(ret);
 }
 
@@ -5646,14 +5658,16 @@ void CMainFrame::OnPlaySeekKey(UINT nID)
 		hr = pMS->GetDuration(&rtDur);
 
 		int dec = 1;
-		int i = rangebsearch(rtCurrent, m_kfs);
-		if(i > 0) dec = (UINT)max(min(rtCurrent - m_kfs[i-1], 10000000), 0);
-
-		rtCurrent = 
-			nID == ID_PLAY_SEEKKEYBACKWARD ? max(rtCurrent - dec, 0) : 
-			nID == ID_PLAY_SEEKKEYFORWARD ? rtCurrent : 0;
-
-		i = rangebsearch(rtCurrent, m_kfs);
+		if(nID == ID_PLAY_SEEKKEYBACKWARD)
+			dec = -1;
+		int i = rangebsearch(rtCurrent, m_kfs, dec);
+// 		if(i > 0) dec = (UINT)max(min(rtCurrent - m_kfs[i-1], 10000000), 0);
+// 
+// 		rtCurrent = 
+// 			nID == ID_PLAY_SEEKKEYBACKWARD ? max(rtCurrent - dec, 0) : 
+// 			nID == ID_PLAY_SEEKKEYFORWARD ? rtCurrent : 0;
+// 
+// 		i = rangebsearch(rtCurrent, m_kfs);
 
 		if(nID == ID_PLAY_SEEKKEYBACKWARD)
 			rtCurrent = m_kfs[max(i, 0)];
@@ -5672,6 +5686,51 @@ void CMainFrame::OnPlaySeekKey(UINT nID)
 			&rtCurrent, AM_SEEKING_AbsolutePositioning|AM_SEEKING_SeekToKeyFrame, 
 			NULL, AM_SEEKING_NoPositioning);
 	}
+}
+
+void CMainFrame::SeekTo(REFERENCE_TIME rtPos, int fSeekToKeyFrame)
+{
+	OAFilterState fs = GetMediaState();
+
+	if(rtPos < 0) rtPos = 0;
+
+	if(m_iPlaybackMode == PM_FILE)
+	{
+		if(fs == State_Stopped)
+			SendMessage(WM_COMMAND, ID_PLAY_PAUSE);
+
+		HRESULT hr;
+		int iKeyFlag = 0;
+		if(fSeekToKeyFrame)
+		{
+			if(!m_kfs.IsEmpty())
+			{
+				UINT i = rangebsearch(rtPos, m_kfs, fSeekToKeyFrame);
+				if(i >= 0 && i < m_kfs.GetCount())
+					rtPos = m_kfs[i];
+			}
+			iKeyFlag = AM_SEEKING_SeekToKeyFrame;
+		}
+
+		hr = pMS->SetPositions(&rtPos, AM_SEEKING_AbsolutePositioning|iKeyFlag, NULL, AM_SEEKING_NoPositioning);
+	}
+	else if(m_iPlaybackMode == PM_DVD && m_iDVDDomain == DVD_DOMAIN_Title)
+	{
+		if(fs != State_Running)
+			SendMessage(WM_COMMAND, ID_PLAY_PLAY);
+
+		DVD_HMSF_TIMECODE tc = RT2HMSF(rtPos);
+		pDVDC->PlayAtTime(&tc, DVD_CMD_FLAG_Block|DVD_CMD_FLAG_Flush, NULL);
+
+		//		if(fs != State_Running)
+		//			SendMessage(WM_COMMAND, ID_PLAY_PAUSE);
+	}
+	else if(m_iPlaybackMode == PM_CAPTURE)
+	{
+		TRACE(_T("Warning (CMainFrame::SeekTo): Trying to seek in capture mode"));
+	}
+
+	m_fEndOfStream = false;
 }
 
 void CMainFrame::OnUpdatePlaySeek(CCmdUI* pCmdUI)
@@ -7173,7 +7232,11 @@ CSize CMainFrame::GetVideoSize()
 
 	CSize wh(0, 0), arxy(0, 0);
 
-	if(m_pCAP)
+	if (m_pMFVDC)
+	{
+		m_pMFVDC->GetNativeVideoSize(&wh, &arxy);	// TODO : check AR !!
+	}
+	else if(m_pCAP)
 	{
 		wh = m_pCAP->GetVideoSize(false);
 		arxy = m_pCAP->GetVideoSize(fKeepAspectRatio);
@@ -7398,6 +7461,8 @@ void CMainFrame::MoveVideoWindow(bool fShowStats)
 			hr = pBV->SetDefaultSourcePosition();
 			hr = pBV->SetDestinationPosition(vr.left, vr.top, vr.Width(), vr.Height());
 			hr = pVW->SetWindowPosition(wr.left, wr.top, wr.Width(), wr.Height());
+
+			if (m_pMFVDC) m_pMFVDC->SetVideoPosition (NULL, wr);
 		}
 
 		m_wndView.SetVideoRect(wr);
@@ -8507,7 +8572,11 @@ void CMainFrame::OpenSetupVideo()
 {
 	m_fAudioOnly = true;
 
-	if(m_pCAP)
+	if (m_pMFVDC)		// EVR 
+	{
+		m_fAudioOnly = false;
+	}
+	else if(m_pCAP)
 	{
 		CSize vs = m_pCAP->GetVideoSize();
 		m_fAudioOnly = (vs.cx <= 0 || vs.cy <= 0);
@@ -8995,6 +9064,16 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 		{
 			SetVMR9ColorControl(s.dBrightness, s.dContrast, s.dHue, s.dSaturation);
 		}
+		// === EVR !
+		pGB->FindInterface(__uuidof(IMFVideoDisplayControl), (void**)&m_pMFVDC,  TRUE);
+		if (m_pMFVDC)
+		{
+			RECT		Rect;
+			::GetClientRect (m_wndView.m_hWnd, &Rect);
+			m_pMFVDC->SetVideoWindow (m_wndView.m_hWnd);
+			m_pMFVDC->SetVideoPosition(NULL, &Rect);
+		}
+
 		if(m_fOpeningAborted) throw aborted;
 
 		OpenCustomizeGraph();
@@ -9136,6 +9215,8 @@ void CMainFrame::CloseMediaPrivate()
 //	if(pVW) pVW->put_MessageDrain((OAHWND)NULL), pVW->put_Owner((OAHWND)NULL);
 
 	m_pCAP = NULL; // IMPORTANT: IVMRSurfaceAllocatorNotify/IVMRSurfaceAllocatorNotify9 has to be released before the VMR/VMR9, otherwise it will crash in Release()
+	m_pMC	 = NULL;
+	m_pMFVDC = NULL;
 
 	pAMXBar.Release(); pAMTuner.Release(); pAMDF.Release();
 	pAMVCCap.Release(); pAMVCPrev.Release(); pAMVSCCap.Release(); pAMVSCPrev.Release(); pAMASC.Release();
@@ -10868,50 +10949,6 @@ REFERENCE_TIME CMainFrame::GetDur()
 	__int64 start, stop;
 	m_wndSeekBar.GetRange(start, stop);
 	return(m_iMediaLoadState == MLS_LOADED ? stop : 0);
-}
-
-void CMainFrame::SeekTo(REFERENCE_TIME rtPos, bool fSeekToKeyFrame)
-{
-	OAFilterState fs = GetMediaState();
-
-	if(rtPos < 0) rtPos = 0;
-
-	if(m_iPlaybackMode == PM_FILE)
-	{
-		if(fs == State_Stopped)
-			SendMessage(WM_COMMAND, ID_PLAY_PAUSE);
-
-		HRESULT hr;
-
-		if(fSeekToKeyFrame)
-		{
-			if(!m_kfs.IsEmpty())
-			{
-				UINT i = rangebsearch(rtPos, m_kfs);
-				if(i >= 0 && i < m_kfs.GetCount())
-					rtPos = m_kfs[i];
-			}
-		}
-
-		hr = pMS->SetPositions(&rtPos, AM_SEEKING_AbsolutePositioning|AM_SEEKING_SeekToKeyFrame, NULL, AM_SEEKING_NoPositioning);
-	}
-	else if(m_iPlaybackMode == PM_DVD && m_iDVDDomain == DVD_DOMAIN_Title)
-	{
-		if(fs != State_Running)
-			SendMessage(WM_COMMAND, ID_PLAY_PLAY);
-
-		DVD_HMSF_TIMECODE tc = RT2HMSF(rtPos);
-		pDVDC->PlayAtTime(&tc, DVD_CMD_FLAG_Block|DVD_CMD_FLAG_Flush, NULL);
-
-//		if(fs != State_Running)
-//			SendMessage(WM_COMMAND, ID_PLAY_PAUSE);
-	}
-	else if(m_iPlaybackMode == PM_CAPTURE)
-	{
-		TRACE(_T("Warning (CMainFrame::SeekTo): Trying to seek in capture mode"));
-	}
-
-	m_fEndOfStream = false;
 }
 
 void CMainFrame::CleanGraph()

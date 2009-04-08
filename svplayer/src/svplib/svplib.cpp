@@ -1,6 +1,7 @@
 #include "svplib.h"
 #include "SVPNet.h"
 #include "SVPHash.h"
+#include <stdio.h> 
 #include <shlobj.h>
 //#include "../apps/mplayerc/mplayerc.h"
 
@@ -161,6 +162,44 @@ void SVP_LogMsg(CString logmsg, int level){
 		f.Close();
 	}
 		
+}
+void SVP_LogMsg2(LPCTSTR fmt, ...)
+{
+	va_list args;
+	va_start(args, fmt);
+	CSVPToolBox svpToolBox;
+	CString szLogPath = svpToolBox.GetPlayerPath(_T("SVPDebug.log"));
+	if(TCHAR* buff = new TCHAR[_vsctprintf(fmt, args) + 1])
+	{
+		_vstprintf(buff, fmt, args);
+		if(FILE* f = _tfopen(szLogPath, _T("at")))
+		{
+			fseek(f, 0, 2);
+			_ftprintf(f, _T("%s\n"), buff);
+			fclose(f);
+		}
+		delete [] buff;
+	}
+	va_end(args);
+}
+void SVP_LogMsg3(LPCSTR fmt, ...)
+{
+	va_list args;
+	va_start(args, fmt);
+	CSVPToolBox svpToolBox;
+	CString szLogPath = svpToolBox.GetPlayerPath(_T("SVPDebug.log"));
+	if(CHAR* buff = new CHAR[_vscprintf(fmt, args) + 1])
+	{
+		vsprintf(buff, fmt, args);
+		if(FILE* f = _tfopen(szLogPath, _T("at")))
+		{
+			fseek(f, 0, 2);
+			_ftprintf(f, _T("%s\n"), CA2T(buff));
+			fclose(f);
+		}
+		delete [] buff;
+	}
+	va_end(args);
 }
 
 BOOL SVP_SetCoreAvcCUDA(BOOL useCUDA){

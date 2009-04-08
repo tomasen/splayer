@@ -26,6 +26,7 @@
 #include "..\..\Filters\Filters.h"
 #include "DX7AllocatorPresenter.h"
 #include "DX9AllocatorPresenter.h"
+#include "EVRAllocatorPresenter.h"
 #include "DeinterlacerFilter.h"
 #include "internal_filter_config.h"
 #include <initguid.h>
@@ -34,6 +35,8 @@
 #include <D3d9.h>
 #include <Vmr9.h>
 #include "../../svplib/SVPToolBox.h"
+#include <evr.h>
+#include <evr9.h>
 //
 // CFGManager
 //
@@ -751,6 +754,20 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 					if(CComQIPtr<IVMRMixerControl9> pMC = pBF)
 						m_pUnks.AddTail (pMC);
 
+					if(CComQIPtr<IVMRMixerBitmap9> pMB = pBF)
+						m_pUnks.AddTail (pMB);
+
+					if(CComQIPtr<IMFGetService, &__uuidof(IMFGetService)> pMFGS = pBF)
+					{
+						CComPtr<IMFVideoDisplayControl>		pMFVDC;
+						CComPtr<IMFVideoMixerBitmap>		pMFMB;
+						if (SUCCEEDED (pMFGS->GetService (MR_VIDEO_RENDER_SERVICE, IID_IMFVideoDisplayControl, (void**)&pMFVDC)))
+							m_pUnks.AddTail (pMFVDC);
+
+						if (SUCCEEDED (pMFGS->GetService (MR_VIDEO_MIXER_SERVICE, IID_IMFVideoMixerBitmap, (void**)&pMFMB)))
+							m_pUnks.AddTail (pMFMB);
+
+					}
 					return hr;
 				}
 			}
@@ -2360,7 +2377,11 @@ CFGManagerPlayer::CFGManagerPlayer(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	else if(s.iDSVideoRendererType == VIDRNDT_DS_VMR7RENDERLESS)
 		m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VMR7AllocatorPresenter, L"Video Mixing Render 7 (Renderless)", m_vrmerit));
 	else if(s.iDSVideoRendererType == VIDRNDT_DS_VMR9RENDERLESS)
-		m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VMR9AllocatorPresenter, L"Video Mixing Render 9 (Renderless)", m_vrmerit));
+		if(CMPlayerCApp::IsVista() && 0){
+			m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_EVRAllocatorPresenter, L"Enhanced Video Renderer (custom presenter)", m_vrmerit));
+		}else{
+			m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VMR9AllocatorPresenter, L"Video Mixing Render 9 (Renderless)", m_vrmerit));
+		}
 	else if(s.iDSVideoRendererType == VIDRNDT_DS_DXR)
 		m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_DXRAllocatorPresenter, L"Haali's Video Renderer", m_vrmerit));
 	else if(s.iDSVideoRendererType == VIDRNDT_DS_NULL_COMP)

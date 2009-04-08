@@ -32,6 +32,9 @@
 #include "revision.h"
 #include "ChkDefPlayer.h"
 #include <locale.h> 
+#include <d3d9.h>
+#include <d3dx9.h>
+
 
 /////////
 typedef BOOL (WINAPI* MINIDUMPWRITEDUMP)(HANDLE hProcess, DWORD dwPid, HANDLE hFile, MINIDUMP_TYPE DumpType,
@@ -987,7 +990,9 @@ BOOL CMPlayerCApp::InitInstance()
 
 	if(m_s.nCLSwitches&(CLSW_HELP|CLSW_UNRECOGNIZEDSWITCH))
 	{
-		ShowCmdlnSwitches();
+		if(m_s.nCLSwitches&CLSW_HELP)
+			ShowCmdlnSwitches();
+
 		return FALSE;
 	}
 
@@ -2170,6 +2175,8 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		WebDefIndex = pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_WEBDEFINDEX), _T("index.html;index.php"));
 		WebServerCGI = pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_WEBSERVERCGI), _T(""));
 
+		iEvrBuffers		= pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_EVR_BUFFERS), 5);
+
 		CString MyPictures;
 
 		CRegKey key;
@@ -2873,4 +2880,42 @@ bool CMPlayerCApp::IsVSFilterInstalled()
 	}
 	
 	return result;
+}
+
+HINSTANCE CMPlayerCApp::GetD3X9Dll()
+{
+	if (m_hD3DX9Dll == NULL)
+	{
+		m_nDXSdkRelease = 0;
+		// Try to load latest DX9 available
+		for (int i=D3DX_SDK_VERSION; i>23; i--)
+		{
+			if (i != 33)	// Prevent using DXSDK April 2007 (crash sometimes during shader compilation)
+			{
+				m_strD3DX9Version.Format(_T("d3dx9_%d.dll"), i);
+				m_hD3DX9Dll = LoadLibrary (m_strD3DX9Version);
+				if (m_hD3DX9Dll) 
+				{
+					m_nDXSdkRelease = i;
+					break;
+				}
+			}
+		}
+	}
+
+	return m_hD3DX9Dll;
+}
+
+LONGLONG CMPlayerCApp::GetPerfCounter()
+{
+	LONGLONG		i64Ticks100ns;
+	if (m_PerfFrequency != 0)
+	{
+		QueryPerformanceCounter ((LARGE_INTEGER*)&i64Ticks100ns);
+		i64Ticks100ns	= i64Ticks100ns * 10000000;
+		i64Ticks100ns	= i64Ticks100ns / m_PerfFrequency;
+
+		return i64Ticks100ns;
+	}
+	return 0;
 }

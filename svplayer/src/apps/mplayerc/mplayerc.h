@@ -322,10 +322,14 @@ class CMPlayerCApp : public CWinApp
 	CAtlList<CString> m_cmdln;
 	void PreProcessCommandLine();
 	void SendCommandLine(HWND hWnd);
+	HINSTANCE				m_hD3DX9Dll;
+	int						m_nDXSdkRelease;
 
 public:
 	CMPlayerCApp();
 
+	CString		m_strD3DX9Version;
+	LONGLONG	m_PerfFrequency;
 	void ShowCmdlnSwitches();
 
 	bool StoreSettingsToIni();
@@ -337,6 +341,10 @@ public:
 	
 	static bool	IsVista();
 	static bool	IsVSFilterInstalled();
+	HINSTANCE					GetD3X9Dll();
+	LONGLONG					GetPerfCounter();
+	int							GetDXSdkRelease() { return m_nDXSdkRelease; };
+
 
 // Overrides
 	// ClassWizard generated virtual function overrides
@@ -481,6 +489,8 @@ public:
 		bool fFreeWindowResizing;
 		bool fNotifyMSN;
 		bool fNotifyGTSdll;
+
+		int				iEvrBuffers;
 
 		float			dBrightness;
 		float			dContrast;

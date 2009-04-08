@@ -54,7 +54,8 @@
 #include "..\..\..\include\IBufferInfo.h"
 #include <D3d9.h>
 #include <Vmr9.h>
-
+#include <evr.h>
+#include <evr9.h>
 #include "WebServer.h"
 
 enum {PM_NONE, PM_FILE, PM_DVD, PM_CAPTURE};
@@ -305,6 +306,7 @@ private:
 public:
 	// subtitles
 	CComPtr<IVMRMixerControl9>	m_pMC;
+	CComPtr<IMFVideoDisplayControl>	m_pMFVDC;
 	void		SetVMR9ColorControl(float Brightness, float Contrast, float Hue, float Saturation);
 
 	void SVPSubDownloadByVPath(CString szVPath, CAtlList<CString>* szaStatMsgs = NULL);
@@ -412,7 +414,7 @@ public:
 
 	OAFilterState GetMediaState();
 	REFERENCE_TIME GetPos(), GetDur();
-	void SeekTo(REFERENCE_TIME rt, bool fSeekToKeyFrame = false);
+	void SeekTo(REFERENCE_TIME rt, int fSeekToKeyFrame = 1); // -1 => bwd , 1 => fwd
 
 	bool LoadSubtitle(CString fn, int sub_delay_ms = 0, BOOL bIsForPlayList = false);
 	void UpdateSubtitle(bool fApplyDefStyle = true);

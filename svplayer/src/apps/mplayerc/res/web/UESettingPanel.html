@@ -173,6 +173,14 @@ UESAPI.prototype = {
     	        obs.selectedIndex = 0;  
 	        } 
 	    }
+	},
+	useDX9Mixer:function(usieit){
+	    var obs = this.fobj("vmr9mixer");
+	    if(obs){
+	        if(!usieit){
+    	        obs.checked = 0;  
+	        } 
+	    }
 	}
 };
 var ueAPI = new UESAPI();
@@ -224,7 +232,7 @@ function myInit(){
 
 </div>
 <div id="videosetting" class="hiddenarea">
-显示输出方式：<select id="videorender" ><option value="DX9" >DirectX 9</option>
+显示输出方式：<select id="videorender" onchange="ueAPI.useDX9Mixer(this.value == 'DX9' )"><option value="DX9" >DirectX 9</option>
 <option value="DX7">DirectX 7</option>
 <option value="ADV">使用自定义高级设置</option></select><br />
 <input type="checkbox" id="vmr9mixer" onclick="ueAPI.useDX9(this.checked);"  /><label for="vmr9mixer" title="启用播放器的亮度调节功能">启用内置亮度调节(需DX9，不能使用CoreAVC解码器)</label><br />

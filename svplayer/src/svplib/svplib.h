@@ -31,3 +31,5 @@ extern void SVP_CheckUpdaterExe(BOOL* bCheckingUpdater);
 extern BOOL SVP_SetCoreAvcCUDA(BOOL useCUDA);
 extern void SVP_UploadPinRenderDeadEnd(CString szPinName, CString szReport);
 extern void SVP_UploadCrashDmp(CString szDmppath, CString szLogPath);
+extern void SVP_LogMsg2(LPCTSTR fmt, ...);
+extern void SVP_LogMsg3(LPCSTR fmt, ...);

@@ -425,6 +425,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\EVRAllocatorPresenter.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\FakeFilterMapper2.cpp"
 				>
 			</File>
@@ -802,6 +806,10 @@
 			Filter="h;hpp;hxx;hm;inl"
 			>
 			<File
+				RelativePath=".\AllocatorCommon.h"
+				>
+			</File>
+			<File
 				RelativePath=".\AuthDlg.h"
 				>
 			</File>
@@ -855,6 +863,10 @@
 			</File>
 			<File
 				RelativePath="DX9AllocatorPresenter.h"
+				>
+			</File>
+			<File
+				RelativePath=".\EVRAllocatorPresenter.h"
 				>
 			</File>
 			<File
@@ -1660,11 +1672,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 	</Files>

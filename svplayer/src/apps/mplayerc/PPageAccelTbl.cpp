@@ -678,6 +678,7 @@ BOOL CPPageAccelTbl::OnApply()
 	s.UIceAddr = m_UIceAddr;
 	if(s.fUIce) s.UIceClient.Connect(m_UIceAddr);
 
+	s.RegGlobalAccelKey(NULL);
 	return __super::OnApply();
 }
 

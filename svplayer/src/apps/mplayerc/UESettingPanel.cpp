@@ -74,6 +74,7 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_DHtml_CheckBox(pDX, _T("chkusesmartdrag"), m_sgi_chkuseSmartDrag);
 	DDX_DHtml_CheckBox(pDX, _T("internaldeconly"), m_sgi_chkonlyUseInternalDec);
 	
+	DDX_DHtml_SelectValue( pDX, _T("speaker"), m_sgs_speaker);
 
 	DDX_DHtml_ElementInnerHtml (pDX, _T("startupcheckexts"), m_sgi_startupcheckexts);
 	
@@ -216,6 +217,7 @@ BOOL CUESettingPanel::OnInitDialog()
 	if( s.AudioBoost > 1 ){
 		m_sgi_noaudioboost = 0;
 	}
+	m_sgs_speaker.Format(_T("%d") ,  s.iDecSpeakers );
 	//m_sgi_downsample44k = s.fDownSampleTo441;
 
 	m_sgi_chkautozoom = s.fRememberZoomLevel;
@@ -240,6 +242,7 @@ BOOL CUESettingPanel::OnInitDialog()
 	m_sgs_engsubradio2.Format(_T("%.3f"), s.subdefstyle2.engRatio);
 
 	m_sgi_autoupdate = (s.tLastCheckUpdater < 2000000000);//
+
 	UpdateData(FALSE);
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -291,6 +294,10 @@ void CUESettingPanel::setBackgdColorByID(CString szId, COLORREF color){
 		} 
 	}
 }
+
+#include "..\..\filters\transform\mpadecfilter\a52dec-0.7.4\include\a52.h"
+#include "..\..\filters\transform\mpadecfilter\dtsdec-0.0.1\include\dts.h"
+
 void CUESettingPanel::ApplyAllSetting(){
 	UpdateData();
 
@@ -385,6 +392,71 @@ void CUESettingPanel::ApplyAllSetting(){
 		//m_pASF->EnableDownSamplingTo441(s.fDownSampleTo441);
 		//m_pASF->SetAudioTimeShift(s.fAudioTimeShift ? 10000i64*s.tAudioTimeShift : 0);
 		m_pASF->SetNormalizeBoost(s.fAudioNormalize, s.fAudioNormalizeRecover, s.AudioBoost);
+	}
+
+	
+	
+	{
+		int iSS = _wtoi(m_sgs_speaker);
+		int iFRS = iSS/10;
+		BOOL iLFE = iSS % 10;
+		m_aacdownmix = FALSE;
+
+		switch(iFRS){
+			case 20:
+				m_ac3spkcfg = A52_STEREO ;
+				m_dtsspkcfg = DTS_STEREO ;
+				m_aacdownmix = TRUE;
+				break;
+			case 21:
+				m_ac3spkcfg = A52_2F1R  ;
+				m_dtsspkcfg = DTS_2F1R  ;
+				m_aacdownmix = TRUE;
+				break;
+			case 22:
+				m_ac3spkcfg = A52_2F2R  ;
+				m_dtsspkcfg = DTS_2F2R  ;
+				break;
+			case 30:
+				m_ac3spkcfg = A52_3F  ;
+				m_dtsspkcfg = DTS_3F  ;
+				m_aacdownmix = TRUE;
+				break;
+			case 31:
+				m_ac3spkcfg = A52_3F1R  ;
+				m_dtsspkcfg = DTS_3F1R  ;
+				m_aacdownmix = TRUE;
+				break;
+			case 32:
+				m_ac3spkcfg = A52_3F2R  ;
+				m_dtsspkcfg = DTS_3F2R  ;
+				break;
+			
+		}
+
+		if(iLFE){
+			m_ac3spkcfg |= A52_LFE;
+			m_dtsspkcfg |= DTS_LFE;
+		}
+
+		s.iDecSpeakers = iSS;
+		if(m_pMDF){
+			//m_pMDF->SetSampleFormat((MPCSampleFormat)m_outputformat);
+			m_pMDF->SetSpeakerConfig(IMpaDecFilter::ac3, m_ac3spkcfg);
+			//m_pMDF->SetDynamicRangeControl(IMpaDecFilter::ac3, m_ac3drc);
+			m_pMDF->SetSpeakerConfig(IMpaDecFilter::dts, m_dtsspkcfg);
+			//m_pMDF->SetDynamicRangeControl(IMpaDecFilter::dts, m_dtsdrc);
+			m_pMDF->SetSpeakerConfig(IMpaDecFilter::aac, m_aacdownmix);
+		}
+
+		CRegKey key;
+		if(ERROR_SUCCESS == key.Create(HKEY_CURRENT_USER, _T("Software\\SVPlayer\\Filters\\MPEG Audio Decoder")))
+		{
+			key.SetDWORDValue(_T("Ac3SpeakerConfig"), m_ac3spkcfg);
+			key.SetDWORDValue(_T("DtsSpeakerConfig"), m_dtsspkcfg);
+			key.SetDWORDValue(_T("AacSpeakerConfig"), m_aacdownmix);
+			
+		}
 	}
 
 	//Sub Setting

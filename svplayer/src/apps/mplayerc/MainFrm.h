@@ -501,6 +501,11 @@ public:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnDestroy();
 
+	afx_msg LRESULT OnHotKey(WPARAM wParam, LPARAM lParam);
+	afx_msg void OnEnterMenuLoop( BOOL bIsTrackPopupMenu );
+	afx_msg void OnExitMenuLoop( BOOL bIsTrackPopupMenu );
+
+
 	afx_msg LRESULT OnTaskBarRestart(WPARAM, LPARAM);
 	afx_msg LRESULT OnNotifyIcon(WPARAM, LPARAM);
 

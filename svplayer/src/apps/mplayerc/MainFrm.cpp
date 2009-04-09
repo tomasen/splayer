@@ -152,7 +152,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_WM_CREATE()
 	ON_WM_DESTROY()
 	ON_WM_CLOSE()
-
+	
 	ON_REGISTERED_MESSAGE(s_uTaskbarRestart, OnTaskBarRestart)
 	ON_REGISTERED_MESSAGE(WM_NOTIFYICON, OnNotifyIcon)
 
@@ -412,6 +412,10 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_SHOWCOLORCONTROLBAR, &CMainFrame::OnShowColorControlBar)
 	ON_UPDATE_COMMAND_UI(ID_SHOWCOLORCONTROLBAR, &CMainFrame::OnUpdateShowColorControlBar)
 	ON_COMMAND(ID_SETSNAPSHOTPATH, &CMainFrame::OnSetsnapshotpath)
+
+	ON_MESSAGE(WM_HOTKEY,OnHotKey)
+	ON_WM_ENTERMENULOOP()
+	ON_WM_EXITMENULOOP()
 	END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -425,6 +429,7 @@ static bool s_mDragFucOn = false;
 //static bool bRecentFocused = FALSE;
 static bool bNotHideColorControlBar = FALSE;
 #define  SINGLECLICK_INTERLEAVE_MS 200
+
 
 CMainFrame::CMainFrame() : 
 	m_dwRegister(0),
@@ -589,6 +594,8 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	SetTimer(TIMER_STATUSCHECKER , 10000, NULL);
 
+	s.RegGlobalAccelKey(this->m_hWnd);
+
 	return 0;
 }
 
@@ -638,6 +645,16 @@ void CMainFrame::OnClose()
 	CloseMedia();
 
 	__super::OnClose();
+}
+
+static bool bNoMoreHideMouse = false;
+void CMainFrame::OnEnterMenuLoop( BOOL bIsTrackPopupMenu ){
+	bNoMoreHideMouse = true;
+	//SendStatusMessage(_T("Meni Enter"), 2000);
+}
+void CMainFrame::OnExitMenuLoop( BOOL bIsTrackPopupMenu ){
+	bNoMoreHideMouse = false;
+	//SendStatusMessage(_T("Meni Exit"), 2000);
 }
 
 DROPEFFECT CMainFrame::OnDragEnter(COleDataObject* pDataObject, DWORD dwKeyState, CPoint point)
@@ -1605,18 +1622,20 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 	}
 	else if(nIDEvent == TIMER_FULLSCREENMOUSEHIDER)
 	{
-		CPoint p;
-		GetCursorPos(&p);
+		if(!bNoMoreHideMouse){
+			CPoint p;
+			GetCursorPos(&p);
 
-		CRect r;
-		GetWindowRect(r);
-		bool fCursorOutside = !r.PtInRect(p);
+			CRect r;
+			GetWindowRect(r);
+			bool fCursorOutside = !r.PtInRect(p);
 
-		CWnd* pWnd = WindowFromPoint(p);
-		if(pWnd && (m_wndView == *pWnd || m_wndView.IsChild(pWnd) || fCursorOutside))
-		{
-			m_fHideCursor = true;
-			SetCursor(NULL);
+			CWnd* pWnd = WindowFromPoint(p);
+			if(pWnd && (m_wndView == *pWnd || m_wndView.IsChild(pWnd) || fCursorOutside))
+			{
+				m_fHideCursor = true;
+				SetCursor(NULL);
+			}
 		}
 	}
 	else if(nIDEvent == TIMER_STATS)
@@ -2420,7 +2439,8 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 	if(bMouseMoved){
 		m_fHideCursor = false;
 		KillTimer(TIMER_FULLSCREENMOUSEHIDER);
-		SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
+		if(!bNoMoreHideMouse && m_iMediaLoadState == MLS_LOADED)
+			SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
 	}
 	AppSettings& s = AfxGetAppSettings();
 	int iDistance = sqrt( pow( (double)abs(point.x - m_pLastClickPoint.x) , 2)  + pow( (double)abs( point.y - m_pLastClickPoint.y ) , 2) );
@@ -2446,6 +2466,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 		s_fLDown = false;
 		
 	}
+
 
 	if(m_fFullScreen && bMouseMoved)
 	{
@@ -3262,6 +3283,11 @@ void CMainFrame::OnFilePostClosemedia()
 void CMainFrame::OnUpdateFilePostClosemedia(CCmdUI* pCmdUI)
 {
 	pCmdUI->Enable(!!m_hWnd && m_iMediaLoadState == MLS_CLOSING);
+}
+
+LRESULT CMainFrame::OnHotKey(WPARAM wParam, LPARAM lParam){
+	SendMessage(WM_COMMAND, wParam);
+	return S_OK;
 }
 
 void CMainFrame::OnBossKey()

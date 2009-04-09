@@ -5,11 +5,22 @@
 #endif 
 
 #include "..\..\filters\switcher\AudioSwitcher\AudioSwitcher.h"
+#include "..\..\filters\transform\mpadecfilter\MpaDecFilter.h"
 // CUESettingPanel dialog
 
 class CUESettingPanel : public CDHtmlDialog
 {
 	DECLARE_DYNAMIC(CUESettingPanel)
+
+	CComQIPtr<IMpaDecFilter> m_pMDF;
+	int m_outputformat;
+	int m_ac3spkcfg;
+	bool m_ac3drc;
+	int m_dtsspkcfg;
+	bool m_dtsdrc;
+	bool m_aacdownmix;
+	DolbyDigitalMode m_ddmode;
+
 	virtual HRESULT STDMETHODCALLTYPE  GetHostInfo(DOCHOSTUIINFO *pInfo);
 	virtual HRESULT STDMETHODCALLTYPE  ShowContextMenu(DWORD /*dwID*/, POINT *ppt, IUnknown* /*pcmdtReserved*/, IDispatch* /*pdispReserved*/);
 	virtual void OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl);
@@ -38,6 +49,8 @@ class CUESettingPanel : public CDHtmlDialog
 
 	int m_sgi_chkuseSmartDrag;
 	int m_sgi_chkonlyUseInternalDec;
+
+	CString m_sgs_speaker;
 
 	CString m_sgs_initblock;
 	CString m_sgi_startupcheckexts;

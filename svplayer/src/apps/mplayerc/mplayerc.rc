@@ -2545,6 +2545,7 @@ BEGIN
     IDS_RS_VMR9MIXERMODE    "VMR9MixerMode"
     IDS_RS_THUMBROWS        "ThumbRows"
     IDS_RS_THUMBCOLS        "ThumbCols"
+	IDS_RS_DECSPEAKERS		"DecSpeakers"
 END
 
 STRINGTABLE 

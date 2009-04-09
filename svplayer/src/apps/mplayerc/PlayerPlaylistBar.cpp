@@ -561,7 +561,7 @@ UINT __cdecl Thread_FindMoreFileFromOneFileAndPutIntoPlaylist( LPVOID lpParam )
 	CFFindMoreFiles * ma =(CFFindMoreFiles*) lpParam;
 	Sleep(2000); // Detect If File is already opened
 	ma->wndPlaylist->RealFindMoreFileFromOneFileAndPutIntoPlaylist( ma->szMediaFile, ma->szaIn);
-	delete ma;
+	//delete ma;
 	return 0; 
 }
 void CPlayerPlaylistBar::FindMoreFileFromOneFileAndPutIntoPlaylist(CString szMediaFile , CAtlList<CString>& szaIn ){

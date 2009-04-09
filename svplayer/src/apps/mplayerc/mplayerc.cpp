@@ -1297,6 +1297,7 @@ CMPlayerCApp::Settings::Settings()
 	, hAccel(NULL)
 {
 #define ADDCMD(cmd) wmcmds.AddTail(wmcmd##cmd)
+	ADDCMD((ID_BOSS, VK_OEM_3, FVIRTKEY|FCONTROL|FNOINVERT, _T("老板键")));
 	ADDCMD((ID_PLAY_PLAYPAUSE, VK_SPACE, FVIRTKEY|FNOINVERT, _T("播放/暂停"), APPCOMMAND_MEDIA_PLAY_PAUSE, wmcmd::LDOWN));
 	ADDCMD((ID_PLAY_SEEKFORWARDMED, VK_RIGHT, FVIRTKEY|FNOINVERT, _T("快进")));//
 	ADDCMD((ID_PLAY_SEEKBACKWARDMED, VK_LEFT, FVIRTKEY|FNOINVERT, _T("快退")));//
@@ -1427,7 +1428,7 @@ CMPlayerCApp::Settings::Settings()
 	ADDCMD((ID_NAVIGATE_MENU_ACTIVATE, 0, FVIRTKEY|FNOINVERT, _T("DVD Menu Activate")));
 	ADDCMD((ID_NAVIGATE_MENU_BACK, 0, FVIRTKEY|FNOINVERT, _T("DVD Menu Back")));
 	ADDCMD((ID_NAVIGATE_MENU_LEAVE, 0, FVIRTKEY|FNOINVERT, _T("DVD Menu Leave")));
-	ADDCMD((ID_BOSS, 'B', FVIRTKEY|FNOINVERT, _T("Boss key")));
+	
 	ADDCMD((ID_MENU_PLAYER_SHORT, 0, FVIRTKEY|FNOINVERT, _T("Player Menu (short)"), 0, wmcmd::RUP));
 	ADDCMD((ID_MENU_PLAYER_LONG, 0, FVIRTKEY|FNOINVERT, _T("Player Menu (long)")));
 	ADDCMD((ID_MENU_FILTERS, 0, FVIRTKEY|FNOINVERT, _T("Filters Menu")));
@@ -1456,6 +1457,28 @@ CMPlayerCApp::Settings::~Settings()
 {
 	if(hAccel)
 		DestroyAcceleratorTable(hAccel);
+}
+void CMPlayerCApp::Settings::RegGlobalAccelKey(HWND hWnd){
+	if(!hWnd) {
+		if(AfxGetMyApp()->m_pMainWnd)
+			hWnd = AfxGetMyApp()->m_pMainWnd->m_hWnd;
+		if(!hWnd) 
+			return;
+	}
+
+
+	POSITION pos = wmcmds.GetHeadPosition();
+	while(pos){
+		wmcmd& wc = wmcmds.GetNext(pos);
+		if(wc.name == _T("老板键")){
+			UINT modKey = 0;
+			if( wc.fVirt & FCONTROL) {modKey |= MOD_CONTROL;}
+			if( wc.fVirt & FALT) {modKey |= MOD_ALT;}
+			if( wc.fVirt & FSHIFT) {modKey |= MOD_SHIFT;}
+			UnregisterHotKey(hWnd, ID_BOSS);
+			RegisterHotKey(hWnd, ID_BOSS, modKey, wc.key); 
+		}
+	}
 }
 void CMPlayerCApp::Settings::ThreadedLoading(){
 	CSVPToolBox svptoolbox;
@@ -1585,6 +1608,9 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_ONLYUSEINTERNALDEC), onlyUseInternalDec);
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USESMARTDRAG), useSmartDrag);
+
+		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DECSPEAKERS), iDecSpeakers);
+		
 
 		CString style;
 		CString style2;
@@ -1933,6 +1959,8 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 
 		bNotChangeFontToYH = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_NOTCHANGEFONTTOYH), 0);
 //		disableSmartDrag = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DISABLESMARTDRAG),  -1 );
+
+		iDecSpeakers = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DECSPEAKERS), 200);
 
 		CSVPToolBox svptoolbox;
 		AfxBeginThread( Thread_AppSettingLoadding, this, THREAD_PRIORITY_LOWEST );

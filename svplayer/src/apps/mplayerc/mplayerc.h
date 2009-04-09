@@ -400,6 +400,8 @@ public:
 		bool fCompMonDeskARDiff;
 		int autoResumePlay;
 
+		int iDecSpeakers;
+
 		bool bShowControlBar;
 		bool bNotChangeFontToYH;
 
@@ -562,6 +564,7 @@ public:
 		Settings();
 		virtual ~Settings();
 		void ThreadedLoading();
+		void RegGlobalAccelKey(HWND hWnd = NULL);
 		void UpdateData(bool fSave);
 
 		void GetFav(favtype ft, CAtlList<CString>& sl, BOOL bRecent = FALSE);

@@ -482,6 +482,8 @@ public:
 		bool fEnableSubtitles;
 		bool fEnableSubtitles2;
 
+		bool fUseInternalTSSpliter;
+
 		bool fDisabeXPToolbars;
 		bool fUseWMASFReader;
 		int fForceRGBrender;

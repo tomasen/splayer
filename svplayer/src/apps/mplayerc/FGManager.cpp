@@ -2200,7 +2200,10 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	}
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("PMPSplitter.ax")) );
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("rms.ax")) );
-	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("NeSplitter.ax")) );
+	
+	if(!s.fUseInternalTSSpliter)
+		szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("NeSplitter.ax")) );
+
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("scmpack.dll")) );
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("svplayer.bin\\real\\rmoc3260.dll")) );
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("svplayer.bin\\real\\Codecs\\rv40.dll")) );

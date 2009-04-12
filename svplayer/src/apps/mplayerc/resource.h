@@ -824,6 +824,7 @@
 #define IDS_RS_USESMARTDRAG				14219
 #define IDS_RS_EVR_BUFFERS				14220
 #define IDS_RS_DECSPEAKERS				14221
+#define IDS_RS_USEINTERNALTSSPLITER		14222
 #define IDD_DHTML_SETTING               20000
 #define IDR_DEFAULT1                    20006
 #define IDD_DEFAULT_PLAYER              20007

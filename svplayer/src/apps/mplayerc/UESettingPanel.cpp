@@ -73,6 +73,7 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 
 	DDX_DHtml_CheckBox(pDX, _T("chkusesmartdrag"), m_sgi_chkuseSmartDrag);
 	DDX_DHtml_CheckBox(pDX, _T("internaldeconly"), m_sgi_chkonlyUseInternalDec);
+	DDX_DHtml_CheckBox(pDX, _T("internaltspliteronly"), m_sgi_chkinternaltspliteronly);
 	
 	DDX_DHtml_SelectValue( pDX, _T("speaker"), m_sgs_speaker);
 
@@ -212,6 +213,7 @@ BOOL CUESettingPanel::OnInitDialog()
 	m_sgi_chkonlyUseInternalDec = s.onlyUseInternalDec;
 	m_sgi_gpuacel = s.useGPUAcel;
 	m_sgi_gpuacelcuda = s.useGPUCUDA;
+	m_sgi_chkinternaltspliteronly = s.fUseInternalTSSpliter;
 	//Audio Setting
 	m_sgi_normalize = s.fAudioNormalize;
 	if( s.AudioBoost > 1 ){
@@ -334,6 +336,7 @@ void CUESettingPanel::ApplyAllSetting(){
 	m_sgi_chkuseini = ((CMPlayerCApp*)AfxGetApp())->IsIniValid();
 	s.fRememberZoomLevel = !!m_sgi_chkautozoom ;
 	s.useSmartDrag = !!m_sgi_chkuseSmartDrag ;
+	s.fUseInternalTSSpliter = m_sgi_chkinternaltspliteronly;
 	//Video Setting
 	
 	s.fVMR9MixerMode = m_sgi_uservmrmixer ;

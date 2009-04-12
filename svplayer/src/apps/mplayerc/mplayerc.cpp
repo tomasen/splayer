@@ -1481,6 +1481,7 @@ void CMPlayerCApp::Settings::RegGlobalAccelKey(HWND hWnd){
 	}
 }
 void CMPlayerCApp::Settings::ThreadedLoading(){
+	Sleep(4000);
 	CSVPToolBox svptoolbox;
 	CWinApp* pApp = AfxGetApp();
 	if(!bNotChangeFontToYH){

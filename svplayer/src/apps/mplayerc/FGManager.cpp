@@ -1498,18 +1498,19 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	m_transform.AddTail(pFGF);
 	}
 
- 	/*
- 	if(src & SRC_MPEG) {
- 	 		pFGF = new CFGFilterInternal<CMpegSplitterFilter>(L"Mpeg Splitter", MERIT64_ABOVE_DSHOW);
+ 	
+ 		if(src & SRC_MPEG) {
+ 	 		pFGF = new CFGFilterInternal<CMpegSplitterFilter>(L"Mpeg 分离器", MERIT64_ABOVE_DSHOW);
  	 	} else {
- 	 		pFGF = new CFGFilterInternal<CMpegSplitterFilter>(L"Mpeg Splitter (low merit)", MERIT64_UNLIKELY);
+ 	 		pFGF = new CFGFilterInternal<CMpegSplitterFilter>(L"Mpeg 分离器 (备用方案)", MERIT64_UNLIKELY);
  	 	}
  	 	pFGF->AddType(MEDIATYPE_Stream, MEDIASUBTYPE_MPEG1System);
  	 	pFGF->AddType(MEDIATYPE_Stream, MEDIASUBTYPE_MPEG2_PROGRAM);
  	 	pFGF->AddType(MEDIATYPE_Stream, MEDIASUBTYPE_MPEG2_PVA);
  		pFGF->AddType(MEDIATYPE_Stream, MEDIASUBTYPE_MPEG2_TRANSPORT);
  		pFGF->AddType(MEDIATYPE_Stream, GUID_NULL);
- 	 	m_transform.AddTail(pFGF);*/
+ 	 	m_transform.AddTail(pFGF);
+/*
  	
 
 	pFGF = new CFGFilterInternal<CMpegSplitterFilter>(L"Mpeg Splitter (Plan-B)", MERIT64_UNLIKELY);
@@ -1519,6 +1520,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	pFGF->AddType(MEDIATYPE_Stream, MEDIASUBTYPE_MPEG2_TRANSPORT);
 	pFGF->AddType(MEDIATYPE_Stream, GUID_NULL);
 	m_transform.AddTail(pFGF);
+*/
 
 	__if_exists(CDiracSplitterFilter)
 	{

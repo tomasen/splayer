@@ -246,9 +246,9 @@ FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     GROUPBOX        "音频",IDC_STATIC,5,7,284,58
     LTEXT           "音量",IDC_STATIC,66,19,24,8
-    LTEXT           "最小",IDC_STATIC,27,38,12,8
+    LTEXT           "最小",IDC_STATIC,21,38,24,8
     CONTROL         "",IDC_SLIDER1,"msctls_trackbar32",TBS_AUTOTICKS | TBS_BOTH | WS_TABSTOP,41,31,75,24
-    LTEXT           "最大",IDC_STATIC,123,38,14,8
+    LTEXT           "最大",IDC_STATIC,122,38,23,8
     LTEXT           "平衡器",IDC_STATIC,196,19,26,8
     LTEXT           "左",IDC_STATIC,160,39,8,8
     CONTROL         "",IDC_SLIDER2,"msctls_trackbar32",TBS_AUTOTICKS | WS_TABSTOP,172,36,75,19
@@ -260,9 +260,9 @@ BEGIN
     EDITTEXT        IDC_EDIT1,52,85,20,13,ES_AUTOHSCROLL | ES_NUMBER
     LTEXT           "次",IDC_STATIC1,81,87,23,8
     GROUPBOX        "输出",IDC_STATIC,126,67,163,71
-    CONTROL         "自动缩放:",IDC_CHECK5,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,137,85,48,10
+    CONTROL         "自动缩放:",IDC_CHECK5,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,136,85,48,10
     COMBOBOX        IDC_COMBO1,193,83,49,47,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    CONTROL         "全屏时改变屏幕分辨率:",IDC_CHECK4,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,137,102,109,10
+    CONTROL         "全屏时改变屏幕分辨率:",IDC_CHECK4,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,136,102,109,10
     COMBOBOX        IDC_COMBO2,156,116,112,64,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     GROUPBOX        "播放设置",IDC_STATIC,5,140,284,43
     CONTROL         "使用子线程打开视频",IDC_CHECK7,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,153,166,10
@@ -286,8 +286,8 @@ BEGIN
     CONTROL         "",IDC_SPIN3,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS | UDS_HOTTRACK,159,26,11,14
     LTEXT           "%",IDC_STATIC4,173,22,8,8
     GROUPBOX        "延时",IDC_STATIC,201,3,88,38
-    LTEXT           "毫秒",IDC_STATIC,266,20,15,11
-    EDITTEXT        IDC_EDIT4,220,18,41,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "毫秒",IDC_STATIC,253,20,28,11
+    EDITTEXT        IDC_EDIT4,207,18,41,13,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
     GROUPBOX        "纹理设置(重新打开视频见效)",IDC_STATIC,5,43,284,55
     LTEXT           "对字幕图片进行缓存处理:",IDC_STATIC,14,60,128,8
     EDITTEXT        IDC_EDIT1,147,58,32,12,ES_CENTER | ES_AUTOHSCROLL | ES_READONLY | ES_NUMBER
@@ -641,7 +641,7 @@ BEGIN
     LTEXT           "阴影",IDC_STATIC,123,146,26,8
     CONTROL         "",IDC_COLORSHAD,"Static",SS_OWNERDRAW | SS_NOTIFY,165,143,16,14,WS_EX_DLGMODALFRAME
     CONTROL         "",IDC_SLIDER4,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,187,145,92,12
-    CONTROL         "使用Alpha通道(32bits色时效果更好)",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,195,161,76,10
+    CONTROL         "使用Alpha通道(32位色屏幕下效果更好)",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,127,160,150,10
     LTEXT           "100%",IDC_STATIC,265,83,20,8
     LTEXT           "0%",IDC_STATIC,190,83,12,8
     CONTROL         "限制字幕在视频画面内显示",IDC_CHECK_RELATIVETO,"Button",BS_AUTO3STATE | WS_TABSTOP,125,51,157,10
@@ -1040,7 +1040,7 @@ BEGIN
     BEGIN
         VERTGUIDE, 5
         VERTGUIDE, 13
-        VERTGUIDE, 137
+        VERTGUIDE, 136
         VERTGUIDE, 193
         VERTGUIDE, 289
     END
@@ -1339,7 +1339,7 @@ END
 
 IDB_ONOFF               BITMAP                  "res\\onoff.bmp"
 IDB_PLAYERTOOLBAR       BITMAP                  "res\\toolbar1.bmp"
-IDB_PLAYERTOOLBAR_SMALL    BITMAP               "res\\toolbar2.bmp"
+IDB_PLAYERTOOLBAR_SMALL BITMAP                  "res\\toolbar2.bmp"
 IDB_MONO                BITMAP                  "res\\mono.bmp"
 IDB_STEREO              BITMAP                  "res\\stereo.bmp"
 IDB_NOAUDIO             BITMAP                  "res\\noaudio.bmp"
@@ -1493,6 +1493,7 @@ BEGIN
     BUTTON      ID_VOLUME_MUTE_DISABLED
 END
 
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog Info
@@ -1612,7 +1613,7 @@ BEGIN
                 MENUITEM "100% (&N)",                   ID_VIEW_VF_NORMAL
                 MENUITEM "200% (&D)",                   ID_VIEW_VF_DOUBLE
                 MENUITEM "铺满播放窗口(&S)",                  ID_VIEW_VF_STRETCH
-                MENUITEM "标准画面\tC",                    ID_VIEW_VF_FROMINSIDE
+                MENUITEM "标准画面\tC",                     ID_VIEW_VF_FROMINSIDE
                 MENUITEM "智能去黑边(&O)",                   ID_VIEW_VF_FROMOUTSIDE
                 MENUITEM SEPARATOR
                 MENUITEM "保持画面比例(&K)",                  ID_VIEW_VF_KEEPASPECTRATIO
@@ -1708,7 +1709,7 @@ BEGIN
             MENUITEM "视角选单(&g)",                    ID_NAVIGATE_ANGLEMENU
             MENUITEM "章节选单(&C)",                    ID_NAVIGATE_CHAPTERMENU
         END
-        MENUITEM "收藏夹(&a)",                     ID__FAVORITES32779
+        MENUITEM "收藏夹",                     ID__FAVORITES32779
         POPUP "网络字幕(&S)"
         BEGIN
             MENUITEM "启用智能网络字幕匹配",                  ID_SVPSUB_MENUENABLE
@@ -1771,7 +1772,7 @@ BEGIN
         MENUITEM "调入字幕(&L)...\tCtrl+L",         ID_FILE_LOAD_SUBTITLE
         MENUITEM SEPARATOR
         MENUITEM "铺满播放窗口(&S)",                  ID_VIEW_VF_STRETCH
-        MENUITEM "标准画面\tC",                    ID_VIEW_VF_FROMINSIDE
+        MENUITEM "标准画面\tC",                     ID_VIEW_VF_FROMINSIDE
         MENUITEM "智能去黑边(&O)",                   ID_VIEW_VF_FROMOUTSIDE
         MENUITEM "全屏幕(&l)",                     ID_VIEW_FULLSCREEN
         POPUP "强制画面比例"
@@ -1813,7 +1814,7 @@ BEGIN
                 MENUITEM "100% (&N)",                   ID_VIEW_VF_NORMAL
                 MENUITEM "200% (&D)",                   ID_VIEW_VF_DOUBLE
                 MENUITEM "铺满播放窗口(&S)",                  ID_VIEW_VF_STRETCH
-                MENUITEM "标准画面\tC",                    ID_VIEW_VF_FROMINSIDE
+                MENUITEM "标准画面\tC",                     ID_VIEW_VF_FROMINSIDE
                 MENUITEM "智能去黑边(&O)",                   ID_VIEW_VF_FROMOUTSIDE
                 MENUITEM SEPARATOR
                 MENUITEM "保持画面比例(&K)",                  ID_VIEW_VF_KEEPASPECTRATIO
@@ -1881,7 +1882,7 @@ BEGIN
             MENUITEM "显示亮度控制栏",                     ID_SHOWCOLORCONTROLBAR
             MENUITEM SEPARATOR
             MENUITEM "属性(&r)",                      ID_FILE_PROPERTIES
-            MENUITEM "收藏夹(&F)",                     ID__FAVORITES
+            MENUITEM "收藏夹",                     ID__FAVORITES
             MENUITEM SEPARATOR
             MENUITEM "播放/暂停(&P)",                   ID_PLAY_PLAYPAUSE
             MENUITEM "停止播放(&S)",                    ID_PLAY_STOP
@@ -1956,7 +1957,7 @@ BEGIN
             MENUITEM "100% (&N)",                   ID_VIEW_VF_NORMAL
             MENUITEM "200% (&D)",                   ID_VIEW_VF_DOUBLE
             MENUITEM "铺满播放窗口(&S)",                  ID_VIEW_VF_STRETCH
-            MENUITEM "标准画面\tC",                    ID_VIEW_VF_FROMINSIDE
+            MENUITEM "标准画面\tC",                     ID_VIEW_VF_FROMINSIDE
             MENUITEM "智能去黑边(&O)",                   ID_VIEW_VF_FROMOUTSIDE
             MENUITEM SEPARATOR
             MENUITEM "保持画面比例(&K)",                  ID_VIEW_VF_KEEPASPECTRATIO
@@ -2067,7 +2068,7 @@ BEGIN
         MENUITEM "视角选单(&g)",                    ID_NAVIGATE_ANGLEMENU
         MENUITEM "章节选单(&C)",                    ID_NAVIGATE_CHAPTERMENU
     END
-    MENUITEM "收藏夹(&a)",                     ID_FAVORITES
+    MENUITEM "收藏夹",                     ID_FAVORITES
     POPUP "高级(&A)"
     BEGIN
         MENUITEM "选项(&O)...",                   ID_VIEW_OPTIONS
@@ -2171,6 +2172,10 @@ BEGIN
     IDS_RS_FFMPEGFILTERS    "FFmpegFilters"
     IDS_SRC_FLAC            "1.2.1.0"
     IDS_RS_DISABLESMARTDRAG "DisableSmartDrag"
+    IDS_RS_ONLYUSEINTERNALDEC "onlyUseInternalDec"
+    IDS_RS_USESMARTDRAG     "userSmartDrag"
+    IDS_RS_EVR_BUFFERS      "EVRBuffers"
+    IDS_RS_DECSPEAKERS      "DecSpeakers"
 END
 
 STRINGTABLE 
@@ -2310,7 +2315,6 @@ BEGIN
     IDS_RS_QUICKTIMERENDERER "QuickTimeRenderer"
     IDS_RS_REALMEDIAFPS     "RealMediaFPS"
     IDS_RS_AUDIOTIMESHIFT   "AudioTimeShift"
-	IDS_RS_EVR_BUFFERS		"EVRBuffers"
 END
 
 STRINGTABLE 
@@ -2452,8 +2456,6 @@ BEGIN
     IDS_RS_MPABOOST         "MpaBoost"
     IDS_RS_AACSC            "AACSpeakerConfig"
     IDS_RS_VMRSYNCFIX       "VMRSyncFix"
-	IDS_RS_ONLYUSEINTERNALDEC "onlyUseInternalDec"
-	IDS_RS_USESMARTDRAG		"userSmartDrag"
 END
 
 STRINGTABLE 
@@ -2545,7 +2547,6 @@ BEGIN
     IDS_RS_VMR9MIXERMODE    "VMR9MixerMode"
     IDS_RS_THUMBROWS        "ThumbRows"
     IDS_RS_THUMBCOLS        "ThumbCols"
-	IDS_RS_DECSPEAKERS		"DecSpeakers"
 END
 
 STRINGTABLE 
@@ -2686,7 +2687,7 @@ BEGIN
     IDS_SHADER_COMBINE      "合并(&C)..."
     IDS_SHADER_OFF          "关闭"
     IDS_SHADER_POPUP        "特效(Shader)"
-    IDS_FAVORITES_POPUP     "收藏夹(&a)"
+    IDS_FAVORITES_POPUP     "收藏夹"
     IDS_JUMPTO_POPUP        "跳至(&J)..."
     IDS_VIDEOANGLE_POPUP    "视角切换"
     IDS_SUBTITLELANGUAGE_POPUP "字幕语言"

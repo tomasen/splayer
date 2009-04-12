@@ -1399,6 +1399,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\toolbar2.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\icon\Video_CD.ico"
 				>
 			</File>
@@ -1672,11 +1676,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 	</Files>

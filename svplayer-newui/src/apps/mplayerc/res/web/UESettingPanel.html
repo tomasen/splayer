@@ -1,0 +1,330 @@
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+<style type="text/css">
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, code, form, fieldset, legend, input, button, textarea, p, blockquote, th, td {
+margin:0;
+padding:0;
+}
+input {	font: 10pt 微软雅黑,宋体,Arial ; vertical-align:middle;}
+div{ font: 10pt 微软雅黑,宋体,Arial ; }
+td { font: 10pt 微软雅黑,宋体,Arial ; }
+input.percent
+{
+	text-align:right;
+	width:50px;
+}
+.subcolor
+{
+	background-color:white;
+	border:solid 1px Black;
+	width: 6pt;
+	height: 6pt;
+}
+body
+{
+	background-color:#d6e7f7;
+	font-size: 10pt;
+	font-family: 微软雅黑,宋体,Arial ;
+	margin: 0px 0px 0px 0px;
+	padding: 0px 0px 0px 0px;
+}
+label{font: 10pt 微软雅黑,宋体,Arial;}
+div.panelbutton
+{
+	background-image: url(uesetbg.png);
+	text-align:center;
+	color: #000000;
+	width: 160px;
+	height:30px;
+	font: 10pt 微软雅黑,宋体,Arial;
+	border: 0px;
+	margin: 1px;
+}
+a.panelbutton
+{
+	display:block;
+	width:160px;
+	height:28px;
+	font-size: 11pt;
+	line-height:28px;
+	color: #000000;
+}
+a:hover{color: #000000; text-decoration :none;}
+a:link{color: #000000; text-decoration :none;}
+a:visited{color: #000000; text-decoration :none;}
+div.hiddenarea{display:none;padding:2px 20px 5px 20px;}
+</style>
+<script type="text/javascript">
+function UESAPI(){
+	this.posobj = null;
+	this.mouseX = -1;
+	this.mouseY = -1;
+	this.curblock = ""; 
+}
+UESAPI.prototype = {
+    setcurblock:function(idname){
+        this.curblock = idname;
+        setTimeout("ueAPI.setcurblockchk('"+idname+"')" , 300) ;
+    },
+    setcurblockchk:function(idname){
+        if(idname == this.curblock){
+            this.realsetcurblock(idname);
+        }
+    },
+    realsetcurblock:function(idname){
+        var pannelset = this.fobj("pannelset");
+        if(pannelset){
+        
+            var panchild = pannelset.childNodes;
+            for(var i = 0; i < panchild.length; i++){
+           
+                   if ( panchild[i].id == idname){
+                     panchild[i].style.display = "block";
+                   }else{
+                     panchild[i].style.display = "none";
+                   }
+            }
+        }
+        
+    },
+    SetInternalDecOnly:function(ochk){
+        var benable = !!ochk.checked;
+        var fontcolor = "";
+        if(benable)
+            fontcolor = "#666666";
+        var t1 = this.fobj('gpuacel');
+        var t2 = this.fobj('gpuacelcuda');
+        var c1 = this.fobj('forgpuacel');
+        var c2 = this.fobj('forgpuacelcuda');
+        
+        if(t1)
+            t1.disabled = benable;
+        if(t2)
+            t2.disabled = benable;
+        if(c1)
+            c1.style.color = fontcolor;
+        if(c2)
+            c2.style.color = fontcolor;
+    },
+    toggelblock:function(idname){
+        var tobj = this.fobj(idname);
+        if (tobj.style.display != 'none'){
+            tobj.style.display = "none";
+        }else{
+            tobj.style.display = "block";
+        }
+    },
+    showinline:function(idname){
+        var tobj = this.fobj(idname);
+        tobj.style.display = "inline";
+    },
+    showblock:function(idname){
+        var tobj = this.fobj(idname);
+        tobj.style.display = "block";
+    },
+    hideobj:function(idname){
+        var tobj = this.fobj(idname);
+        tobj.style.display = "none";
+    },
+    fobj : function(idname){
+		if(typeof(idname) == 'object'){
+			return idname;
+		}
+		if(!this.cDOMtype){
+			if (document.getElementById)
+			{
+				this.cDOMtype = "std";
+			}
+			else if (document.all)
+			{
+				this.cDOMtype = "ie4";
+			}
+			else if (document.layers)
+			{
+				this.cDOMtype = "ns4";
+			}
+		}
+		switch (this.cDOMtype)
+		{
+			case "std":
+			{
+				return document.getElementById(idname);
+			}
+			break;
+
+			case "ie4":
+			{
+				return document.all[idname];
+			}
+			break;
+
+			case "ns4":
+			{
+				return document.layers[idname];
+			}
+			break;
+		}
+	},
+	useDX9:function(usieit){
+	    var obs = this.fobj("videorender");
+	    if(obs){
+	        if(usieit){
+    	        obs.selectedIndex = 0;  
+	        } 
+	    }
+	},
+	useDX9Mixer:function(usieit){
+	    var obs = this.fobj("vmr9mixer");
+	    if(obs){
+	        if(!usieit){
+    	        obs.checked = 0;  
+	        } 
+	    }
+	}
+};
+var ueAPI = new UESAPI();
+
+function myInit(){
+    var ueg_DefaultBlock = "generalseting";
+    var to = ueAPI.fobj('initvarblock');
+    if(to){
+        if(to.innerHTML != ""){
+            ueg_DefaultBlock = to.innerHTML;
+        }
+    }
+    if (typeof(ueg_DefaultBlock) == 'string' ){
+        ueAPI.realsetcurblock(ueg_DefaultBlock);
+    }
+    //alert(typeof(ueg_DefaultBlock));
+}
+</script>
+</head>
+<body id="CUESettingPanel" onload="myInit();" >
+<table width="100%" style="height:100%;">
+<tr >
+<td style="width:140px !important;" valign="top" onmouseout="ueAPI.curblock='';">
+<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('generalseting');"  class="panelbutton"  href="#" onclick="ueAPI.realsetcurblock('generalseting');">播放习惯</a></div>
+<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('videosetting');" href="#" onclick="ueAPI.realsetcurblock('videosetting');" class="panelbutton">视频设置</a></div>
+<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('audiosetting');" href="#" onclick="ueAPI.realsetcurblock('audiosetting');" class="panelbutton">音频设置</a></div>
+<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('subsetting');" href="#" onclick="ueAPI.realsetcurblock('subsetting');" class="panelbutton">字幕设置</a></div>
+<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('updatesetting');" href="#" onclick="ueAPI.realsetcurblock('updatesetting');" class="panelbutton">自动升级</a></div>
+<div class="panelbutton"><a  id="IDFileAss" href="#"  class="panelbutton">文件关联</a></div>
+<div class="panelbutton"><a id="IDHotKey" href="#"  class="panelbutton">热键绑定</a></div>
+</td><td  valign="top" align="left" id="pannelset">
+<div id="generalseting" class="hiddenarea">
+<input type="checkbox" id="chkremhistory" /><label for="chkremhistory">保存播放记录</label><br />
+<input type="checkbox" id="chkautoresumeplay" /><label for="chkautoresumeplay" title="从上次关闭的位置打开文件">启用断点播放功能</label><br />
+<input type="checkbox" id="chkusesmartdrag" /><label for="chkusesmartdrag">启用智能拖拽功能 [<a href="http://blog.svplayer.cn/?page_id=796" target="_blank"><b>?</b></a>]</label><br />
+<input type="checkbox" id="chkremwinpos" /><label for="chkremwinpos">记忆窗口位置和尺寸</label><br />
+<input type="checkbox" id="chkcdromenu" /><label for="chkcdromenu" title="在“文件”菜单下显示光盘驱动器列表菜单
+可能会影响菜单打开的速度">隐藏光盘驱动器菜单</label><br />
+<input type="checkbox" id="chkuseini" /><label for="chkuseini" title="不将配置文件写入注册表">将设置保存至ini</label><br />
+<input type="checkbox" id="chkfileass" /><label for="chkfileass">启动时检查文件关联</label> <input type="button" value="*" style="font-size:7px;margin-left:5px;width:12px;" onclick="ueAPI.toggelblock('startupcheckextsdiv');" /><br />
+<div id='startupcheckextsdiv' style="display:none;margin:auto;">
+    <textarea rows="3" id="startupcheckexts" style="margin-left:20px;margin-right:auto;" wrap="hard"></textarea>
+</div>
+<input type="checkbox" id="chkplayrepeat" /><label for="chkplayrepeat">循环播放</label><br />
+<input type="checkbox" id="chkexitfullscreen" /><label for="chkexitfullscreen">播放结束后自动退出全屏</label><br />
+<input type="checkbox" id="chkautozoom" /><label for="chkautozoom">根据视频画面尺寸改变窗口大小</label><br />
+<!--<input type="checkbox" id="chkabnormal" /><label for="chkabnormal" title="允许播放器使用更多的CPU运算资源
+但播放时也有可能影响其他软件运行效率，特别是在低配置的电脑上。">提高进程优先级</label><br />-->
+
+</div>
+<div id="videosetting" class="hiddenarea">
+显示输出方式：<select id="videorender" onchange="ueAPI.useDX9Mixer(this.value == 'DX9' )"><option value="DX9" >DirectX 9</option>
+<option value="DX7">DirectX 7</option>
+<option value="ADV">使用自定义高级设置</option></select><br />
+<input type="checkbox" id="vmr9mixer" onclick="ueAPI.useDX9(this.checked);"  /><label for="vmr9mixer" title="启用播放器的亮度调节功能">启用内置亮度调节(需DX9，不能使用CoreAVC解码器)</label><br />
+<input type="checkbox" id="lockbackbuff" /><label for="lockbackbuff" title="解决运动画面中水平错位的问题">修正画面横向错位问题（Lock back-buffer）</label><br />
+<input type="checkbox" id="gpuacel" /><label  id="forgpuacel" for="gpuacel" title="优先使用GPU加速高清解码">优先使用GPU加速高清解码（PDVD8）</label><br />
+<input type="checkbox" id="gpuacelcuda" /><label id="forgpuacelcuda" for="gpuacelcuda" title="优先使用NVIDIA的CUDA技术加速高清解码
+仅限NVIDIA下列显卡：
+NVIDIA GeForce GTX 260/280, 9800, 9600, 9500, 8800 GT, 8700, 8600, 8500, 8400, 
+Tesla S1070/C1060, Quadro FX 3700, Quadro FX 3600M, 
+Quadro FX 1700/FX 570/ NVS 320M/FX 1600M/FX 570M/FX 370/NVS 290/NVS 140M/NVS 135M/FX 360M/NVS 130M">优先使用NVIDIA加速高清解码（CoreAVC）
+<br />　　(需要182.05以上版本驱动，否则无效)</label><br />
+<br />
+<fieldset ><legend>专家设置</legend>
+<input type="checkbox" id="internaldeconly" onclick="ueAPI.SetInternalDecOnly(this);" /><label for="internaldeconly" title="优先使用GPU加速高清解码">仅使用内置解码器（禁用CoreAVC或PDVD8）</label><br />
+<input type="checkbox" id="internaltspliteronly" /><label for="internaltspliteronly" title="使用内置TS分离器">仅使用内置TS分离器（别于选择音轨等，但不兼容某些TS）</label><br />
+</fieldset>
+<!--　<i>小窍门：播放时通过鼠标在画面右上角拖拽可以缩放画面，在画面中心拖拽可以移动画面</i>-->
+</div>
+<div id="audiosetting" class="hiddenarea">
+<select id="audiodevice" style="display:none;"><option value='default'>系统默认</option></select><br />
+<input type="checkbox" id="normalize" /><label for="normalize" title="智能提高音频音量">智能音量放大 (当视频声音较轻时提高音量)</label><br />
+<!--- <input type="checkbox" id="noaudioboost" /><label for="noaudioboost" title="不对音频进行额外的增益处理">高音质模式 (不使用任何音量增益效果，对一般用户可能会觉得音量较轻)</label><br />
+<!--- <input type="checkbox" id="downsample44k" /><label for="downsample44k" title="部分声卡不支持48kHz音频时
+可选择此选项">以44kHz输出</label><br /><br /> --><br />
+扬声器配置：<select id="speaker"  ><option value='200'>2.0立体声音箱(2 前置)</option>
+<option value='201'>2.1音箱(2 前置 + 1 重低音)</option>
+<option value='220'>4 音箱(2 前置 + 2 后置)</option>
+<option value='321'>5.1 音箱</option>
+<option value='301'>3 前置 + 1 重低音音箱</option>
+<option value='210'>2 前置 + 1 后置音箱</option>
+<option value='310'>3 前置 + 1 后置音箱</option>
+<option value='320'>3 前置 + 2 后置音箱</option>
+</select><br /><br />
+<i>小窍门：<br />
+ 播放时通过鼠标右键菜单 → “音频” 中 可以选择仅播放左声道或右声道<br />
+ 鼠标右键菜单 → “音频” → “输出设备”中 可以快速切换音频输出设备<br />
+ </i>
+<!--双声道音频设置：<select id="channelsetting"><option value='0'>系统默认</option><option value='1'>仅仅左声道</option><option value='2'>仅仅右声道</option></select><br />-->
+</div>
+<div id="subsetting" class="hiddenarea">
+<input type="checkbox" id="chkautodownloadsvpsub" /><label for="chkautodownloadsvpsub">自动通过射手影音字幕智能匹配系统下载字幕</label><br />
+<table width="96%"><tr><td width="50%"><fieldset><legend>第一字幕</legend>
+字体： <input type="button" id="subfont1" value="黑体"/><br />
+颜色： 
+<input type="image" src="blank.gif" class="subcolor" id="sub1c1" alt="字幕颜色" />
+<input type="image" src="blank.gif" class="subcolor" id="sub1c2" alt="字幕颜色" />
+<input type="image" src="blank.gif" class="subcolor" id="sub1c3" alt="字幕颜色" />
+<input type="image" src="blank.gif" class="subcolor" id="sub1c4" alt="字幕颜色" />
+<br />
+字幕位置： <select id="subalign1"><option value="7">左上</option><option value="8">上方</option><option value="9">右上</option>
+<option value="4">左边</option><option value="5">中心</option><option value="6">右边</option>
+<option value="1">左下</option><option value="2">下方</option><option value="3">右下</option></select><br />
+<fieldset><legend><input type="checkbox" id="suboveride1" /><label for="suboveride1">强制字幕显示位置</label></legend>
+水平位置： <input class="percent" type="text" id="subhpos1" value="" size="3" maxlength="3" />%<br />
+垂直位置： <input class="percent" type="text" id="subvpos1" value="" size="3" maxlength="3" />%<br /></fieldset>
+英文字幕字体：<input class="percent" type="text" id="engsizeratio1" value="" size="5" maxlength="5" />
+</fieldset></td><td width="50%"><fieldset><legend>第二字幕</legend>
+字体： <input type="button" id="subfont2" value="黑体"/><br />
+颜色： 
+<input type="image" src="blank.gif" class="subcolor" id="sub2c1" alt="字幕颜色" />
+<input type="image" src="blank.gif" class="subcolor" id="sub2c2" alt="字幕颜色" />
+<input type="image" src="blank.gif" class="subcolor" id="sub2c3" alt="字幕颜色" />
+<input type="image" src="blank.gif" class="subcolor" id="sub2c4" alt="字幕颜色" />
+<br />
+字幕位置： <select id="subalign2"><option value="7">左上</option><option value="8">上方</option><option value="9">右上</option>
+<option value="4">左边</option><option value="5">中心</option><option value="6">右边</option>
+<option value="1">左下</option><option value="2">下方</option><option value="3">右下</option></select><br />
+<fieldset><legend><input type="checkbox" id="suboveride2" /><label for="suboveride2">强制字幕显示位置</label></legend>
+水平位置： <input class="percent" type="text" id="subhpos2" value="" size="3" maxlength="3" />%<br />
+垂直位置： <input class="percent" type="text" id="subvpos2" value="" size="3" maxlength="3" />%<br /></fieldset>
+英文字幕字体：<input class="percent" type="text" id="engsizeratio2" value="" size="5" maxlength="5" />
+</fieldset>
+</td></tr></table>
+</div>
+<div id="fileass" class="hiddenarea"><input type="button" value="重建文件关联"/></div>
+<div id="hotkeysetting" class="hiddenarea">热键设置</div>
+<div id="updatesetting" class="hiddenarea">
+<input type="checkbox" id="chkautoupdate" /><label for="chkautoupdate">通过网络自动升级播放器和各项组件</label><br /><br />
+　　自动升级到最新的　<select id="updateversion"><option value="stable">稳定版</option><option value="beta">前卫版</option></select>　<br />
+</div>
+</td>
+</tr><tr height="10"><td align="left"> </td>
+<td align="center"><a href="https://bbs.shooter.cn/forumdisplay.php?fid=6" target="_blank" style="font-size:10px;color:Blue;">没有找到您需要的设置？请告诉我们你想要它出现在哪</a> </td>
+</tr>
+<tr height="8%">
+<td align="left"> &nbsp; <input type="button" style="width:100px;" id="ButtonAdvanceSetting" value="高级设置" />  </td>
+<td align="right"  nowrap="nowrap">
+<input type="button" style="width:100px;" id="ButtonOK" value="确定" /> &nbsp; 
+<input type="button" style="width:100px;" id="ButtonCancel" value="取消" /> &nbsp; <input type="button" style="width:100px;" id="ButtonApply" value="应用" /> 
+</td>
+</tr>
+</table>
+<div id='initvarblock' style="display:none"></div>
+</body>
+</html>

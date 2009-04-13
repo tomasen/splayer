@@ -461,7 +461,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\mpc-hc\trunk\src\apps\mplayerc\Ifo.cpp"
+				RelativePath=".\Ifo.cpp"
 				>
 			</File>
 			<File
@@ -1676,11 +1676,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 	</Files>

@@ -2377,32 +2377,44 @@ bool CMpaDecFilter::InitFfmpeg(int nCodecId)
 	if (m_pAVCodec)
 	{
 		m_pAVCtx						= avcodec_alloc_context();
-		if (nCodecId==CODEC_ID_AMR_NB) //HACK: splitter doesn't report correct frequency/number of channels
-		{
-			wfein->nChannels = 1;
-			wfein->nSamplesPerSec=8000;
-		}
-		m_pAVCtx->sample_rate			= wfein->nSamplesPerSec;
-		m_pAVCtx->channels				= wfein->nChannels;
-		
-		m_pAVCtx->bit_rate				= wfein->nAvgBytesPerSec*8;
-		m_pAVCtx->bits_per_coded_sample	= wfein->wBitsPerSample;
-		m_pAVCtx->block_align			= wfein->nBlockAlign;
-		m_pAVCtx->flags				   |= CODEC_FLAG_TRUNCATED;
-
-		m_pAVCtx->codec_id		= (CodecID)nCodecId;
 		m_pParser				= av_parser_init(nCodecId);
 
-		if (avcodec_open(m_pAVCtx,m_pAVCodec)>=0)
-		{
-			m_pPCMData	= (BYTE*)FF_aligned_malloc (AVCODEC_MAX_AUDIO_FRAME_SIZE+FF_INPUT_BUFFER_PADDING_SIZE, 64);
-			bRet		= true;
+		for( int ii = 0; ii <= 1; ii++){
+			m_pAVCtx->sample_rate			= wfein->nSamplesPerSec;
+			m_pAVCtx->channels				= wfein->nChannels;
+			
+			m_pAVCtx->bit_rate				= wfein->nAvgBytesPerSec*8;
+			m_pAVCtx->bits_per_coded_sample	= wfein->wBitsPerSample;
+			m_pAVCtx->block_align			= wfein->nBlockAlign;
+			m_pAVCtx->flags				   |= CODEC_FLAG_TRUNCATED;
 
-			int iSpeakerConfig = GetSpeakerConfig(ac3);
-			if (iSpeakerConfig >= 0)
+			m_pAVCtx->codec_id		= (CodecID)nCodecId;
+			
+			if (avcodec_open(m_pAVCtx,m_pAVCodec)>=0)
 			{
-				scmap_t& scmap				= s_scmap_ac3[iSpeakerConfig&A52_CHANNEL_MASK+ ((iSpeakerConfig&A52_LFE)?(countof(s_scmap_ac3)/2):0)];
-				m_pAVCtx->request_channels	= scmap.nChannels;
+				m_pPCMData	= (BYTE*)FF_aligned_malloc (AVCODEC_MAX_AUDIO_FRAME_SIZE+FF_INPUT_BUFFER_PADDING_SIZE, 64);
+				bRet		= true;
+
+				int iSpeakerConfig = GetSpeakerConfig(ac3);
+				if (iSpeakerConfig >= 0)
+				{
+					scmap_t& scmap				= s_scmap_ac3[iSpeakerConfig&A52_CHANNEL_MASK+ ((iSpeakerConfig&A52_LFE)?(countof(s_scmap_ac3)/2):0)];
+					m_pAVCtx->request_channels	= scmap.nChannels;
+				}
+				break;
+			}else{
+				if (nCodecId==CODEC_ID_AMR_NB) //HACK: splitter doesn't report correct frequency/number of channels
+				{
+					if(wfein->nChannels > 1){
+						wfein->nSamplesPerSec= wfein->nSamplesPerSec / wfein->nChannels ;
+						wfein->nChannels = 1;
+					}else{
+						wfein->nChannels = 1;
+						wfein->nSamplesPerSec=4000;
+					}
+				}else{
+					break;
+				}
 			}
 		}
 	}

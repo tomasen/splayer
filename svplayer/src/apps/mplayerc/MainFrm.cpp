@@ -5634,7 +5634,7 @@ void CMainFrame::OnPlaySeek(UINT nID)
 	// HACK: the custom graph should support frame based seeking instead
 	if(m_fShockwaveGraph) dt /= 10000i64*100;
 
-	SeekTo(m_wndSeekBar.GetPos() + dt, iDirect);
+	SeekTo(m_wndSeekBar.GetPos() + dt, iDirect, dt);
 }
 
 static int rangebsearch(REFERENCE_TIME val, CAtlArray<REFERENCE_TIME>& rta, int iDirect = 1)
@@ -5714,7 +5714,7 @@ void CMainFrame::OnPlaySeekKey(UINT nID)
 	}
 }
 
-void CMainFrame::SeekTo(REFERENCE_TIME rtPos, int fSeekToKeyFrame)
+void CMainFrame::SeekTo(REFERENCE_TIME rtPos, int fSeekToKeyFrame, REFERENCE_TIME maxStep)
 {
 	OAFilterState fs = GetMediaState();
 
@@ -5732,10 +5732,15 @@ void CMainFrame::SeekTo(REFERENCE_TIME rtPos, int fSeekToKeyFrame)
 			if(!m_kfs.IsEmpty())
 			{
 				UINT i = rangebsearch(rtPos, m_kfs, fSeekToKeyFrame);
-				if(i >= 0 && i < m_kfs.GetCount())
-					rtPos = m_kfs[i];
+				if(i >= 0 && i < m_kfs.GetCount()){
+					if( maxStep <= 0 || ( maxStep > 0 && _abs64( m_kfs[i] - rtPos ) < maxStep ) ){
+						rtPos = m_kfs[i];
+						iKeyFlag = AM_SEEKING_SeekToKeyFrame;
+					}
+					
+				}
 			}
-			iKeyFlag = AM_SEEKING_SeekToKeyFrame;
+			
 		}
 
 		hr = pMS->SetPositions(&rtPos, AM_SEEKING_AbsolutePositioning|iKeyFlag, NULL, AM_SEEKING_NoPositioning);

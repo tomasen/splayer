@@ -75,6 +75,10 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_DHtml_CheckBox(pDX, _T("internaldeconly"), m_sgi_chkonlyUseInternalDec);
 	DDX_DHtml_CheckBox(pDX, _T("internaltspliteronly"), m_sgi_chkinternaltspliteronly);
 	
+	DDX_DHtml_ElementValue (pDX, _T("stepsmall"), m_sgs_stepsmall);
+	DDX_DHtml_ElementValue (pDX, _T("stepmed"), m_sgs_stepmed);
+	DDX_DHtml_ElementValue (pDX, _T("stepbig"), m_sgs_stepbig);
+
 	DDX_DHtml_SelectValue( pDX, _T("speaker"), m_sgs_speaker);
 
 	DDX_DHtml_ElementInnerHtml (pDX, _T("startupcheckexts"), m_sgi_startupcheckexts);
@@ -200,6 +204,10 @@ BOOL CUESettingPanel::OnInitDialog()
 	m_sgi_chkautoresumeplay = s.autoResumePlay;
 	m_sgi_chkuseSmartDrag = s.useSmartDrag;
 	
+	m_sgs_stepsmall.Format(_T("%d"), s.nJumpDistS/1000) ;
+	m_sgs_stepmed.Format(_T("%d"), s.nJumpDistM/1000) ;
+	m_sgs_stepbig.Format(_T("%d"), s.nJumpDistL/1000) ;
+
 	//Video Setting
 	m_sgi_uservmrmixer = s.fVMR9MixerMode;
 	if(s.iDSVideoRendererType == 6 && s.iRMVideoRendererType == 2 && s.iQTVideoRendererType == 2){
@@ -337,6 +345,11 @@ void CUESettingPanel::ApplyAllSetting(){
 	s.fRememberZoomLevel = !!m_sgi_chkautozoom ;
 	s.useSmartDrag = !!m_sgi_chkuseSmartDrag ;
 	s.fUseInternalTSSpliter = m_sgi_chkinternaltspliteronly;
+
+	s.nJumpDistS = _wtof(m_sgs_stepsmall) * 1000;
+	s.nJumpDistM = _wtof(m_sgs_stepmed) * 1000;
+	s.nJumpDistL = _wtof(m_sgs_stepbig) * 1000;
+	
 	//Video Setting
 	
 	s.fVMR9MixerMode = m_sgi_uservmrmixer ;

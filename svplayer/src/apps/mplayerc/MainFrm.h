@@ -414,7 +414,7 @@ public:
 
 	OAFilterState GetMediaState();
 	REFERENCE_TIME GetPos(), GetDur();
-	void SeekTo(REFERENCE_TIME rt, int fSeekToKeyFrame = 1); // -1 => bwd , 1 => fwd
+	void SeekTo(REFERENCE_TIME rt, int fSeekToKeyFrame = 1, REFERENCE_TIME maxStep = 0); // -1 => bwd , 1 => fwd
 
 	bool LoadSubtitle(CString fn, int sub_delay_ms = 0, BOOL bIsForPlayList = false);
 	void UpdateSubtitle(bool fApplyDefStyle = true);

@@ -1953,7 +1953,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		fAutoSpeakerConf = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUTOSPEAKERCONF), 1);
 		// TODO: rename subdefstyle -> defStyle, IDS_RS_SPLOGFONT -> IDS_RS_SPSTYLE
 		subdefstyle <<= pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPLOGFONT), _T("20,20,20,20,2,0,2.000000,2.000000,3.000000,3.000000,0x00ecec,0x00ffff,0x000000,0x000000,0x00,0x00,0x00,0x80,0,ºÚÌå,20.000000,100.000000,100.000000,0.000000,700,0,0,0,0,0.000000,0.000000,0.000000,0.000000,0,0.700000"));
-		subdefstyle2 <<= pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPLOGFONT2), _T("20,20,20,20,8,0,2.000000,2.000000,3.000000,3.000000,0x00ecec,0x00ffff,0x000000,0x000000,0x00,0x00,0x00,0x80,1,ºÚÌå,20.000000,100.000000,100.000000,0.000000,700,0,0,0,0,0.000000,0.000000,0.000000,0.000000,0,0.700000"));
+		subdefstyle2 <<= pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPLOGFONT2), _T("20,20,20,20,2,0,2.000000,2.000000,3.000000,3.000000,0x00ecec,0x00ffff,0x000000,0x000000,0x00,0x00,0x00,0x80,1,ºÚÌå,20.000000,100.000000,100.000000,0.000000,700,0,0,0,0,0.000000,0.000000,0.000000,0.000000,0,0.700000"));
 
 		CheckSVPSubExts = _T(" .ts; .avi; .mkv;");
 		bShowControlBar = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SHOWCONTROLBAR), 0);
@@ -1976,7 +1976,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		nHorPos = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPHORPOS), 50);
 		nVerPos = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPVERPOS), 90);
 		nHorPos2 = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPHORPOS2), 50);
-		nVerPos2 = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPVERPOS2), 10);
+		nVerPos2 = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPVERPOS2), 95);
 		nSPCSize = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPCSIZE), 3);
 		nSPCMaxRes = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPCMAXRES), 2);
 		nSubDelayInterval = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SUBDELAYINTERVAL), 500);

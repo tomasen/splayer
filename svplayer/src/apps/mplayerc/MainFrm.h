@@ -540,6 +540,8 @@ public:
 	afx_msg LRESULT OnXButtonDown(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnXButtonUp(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnXButtonDblClk(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnMouseMoveIn(WPARAM /*wparam*/, LPARAM /*lparam*/) ;
+	afx_msg LRESULT OnMouseMoveOut(WPARAM /*wparam*/, LPARAM /*lparam*/) ;
 	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 

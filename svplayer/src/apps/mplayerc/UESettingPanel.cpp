@@ -105,6 +105,7 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 
 	DDX_DHtml_CheckBox(pDX, _T("vmr9mixer"), m_sgi_uservmrmixer);
 	
+	DDX_DHtml_CheckBox(pDX, _T("usespdif"), m_sgi_usespdif);
 
 
 	DDX_DHtml_CheckBox(pDX, _T("normalize"), m_sgi_normalize);
@@ -227,7 +228,8 @@ BOOL CUESettingPanel::OnInitDialog()
 	if( s.AudioBoost > 1 ){
 		m_sgi_noaudioboost = 0;
 	}
-	m_sgs_speaker.Format(_T("%d") ,  s.iDecSpeakers );
+	m_sgs_speaker.Format(_T("%d") ,  s.iDecSpeakers % 1000 );
+	m_sgi_usespdif = !!( s.iDecSpeakers >= 1000 );
 	//m_sgi_downsample44k = s.fDownSampleTo441;
 
 	m_sgi_chkautozoom = s.fRememberZoomLevel;
@@ -454,7 +456,11 @@ void CUESettingPanel::ApplyAllSetting(){
 			m_ac3spkcfg |= A52_LFE;
 			m_dtsspkcfg |= DTS_LFE;
 		}
-
+		if(m_sgi_usespdif){
+			iSS += 1000;
+			m_ac3spkcfg = -m_ac3spkcfg;
+			m_dtsspkcfg = -m_dtsspkcfg;
+		}
 		s.iDecSpeakers = iSS;
 		if(m_pMDF){
 			//m_pMDF->SetSampleFormat((MPCSampleFormat)m_outputformat);
@@ -473,6 +479,7 @@ void CUESettingPanel::ApplyAllSetting(){
 			key.SetDWORDValue(_T("AacSpeakerConfig"), m_aacdownmix);
 			
 		}
+		
 	}
 
 	//Sub Setting

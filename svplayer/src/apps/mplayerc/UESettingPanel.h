@@ -80,6 +80,7 @@ class CUESettingPanel : public CDHtmlDialog
 	int m_sgi_gpuacel;
 	int m_sgi_gpuacelcuda;
 	int m_sgi_uservmrmixer;
+	int m_sgi_usespdif;
 
 	int m_sgi_normalize;
 	int m_sgi_downsample44k;

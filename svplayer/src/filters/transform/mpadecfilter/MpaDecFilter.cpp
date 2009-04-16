@@ -696,14 +696,19 @@ HRESULT CMpaDecFilter::ProcessA52(BYTE* p, int buffsize, int& size, bool& fEnoug
 		if(fEnoughData)
 		{
 			int iSpeakerConfig = GetSpeakerConfig(ac3);
-
+			BOOL decIt = true;
 			if(iSpeakerConfig < 0)
 			{
 				HRESULT hr;
-				if(S_OK != (hr = Deliver(p, size, bit_rate, 0x0001)))
-					return hr;
+				if(S_OK == (hr = Deliver(p, size, bit_rate, 0x0001))){
+					//return hr;
+					decIt = false;
+				}else{
+					iSpeakerConfig = -iSpeakerConfig;
+					
+				}
 			}
-			else
+			if(decIt)
 			{
 				flags = iSpeakerConfig&(A52_CHANNEL_MASK|A52_LFE);
 				flags |= A52_ADJUST_LEVEL;
@@ -956,13 +961,19 @@ HRESULT CMpaDecFilter::ProcessDTS()
 			{
 				int iSpeakerConfig = GetSpeakerConfig(dts);
 
+				BOOL decIt = true;
 				if(iSpeakerConfig < 0)
 				{
 					HRESULT hr;
-					if(S_OK != (hr = Deliver(p, size, bit_rate, 0x000b)))
-						return hr;
+					if(S_OK != (hr = Deliver(p, size, bit_rate, 0x000b))){
+						//return hr;
+						iSpeakerConfig = -iSpeakerConfig;
+						
+					}else{
+						decIt = false;
+					}
 				}
-				else
+				if(decIt)
 				{
 					flags = iSpeakerConfig&(DTS_CHANNEL_MASK|DTS_LFE);
 					flags |= DTS_ADJUST_LEVEL;

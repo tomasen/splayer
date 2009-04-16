@@ -416,6 +416,10 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_MESSAGE(WM_HOTKEY,OnHotKey)
 	ON_WM_ENTERMENULOOP()
 	ON_WM_EXITMENULOOP()
+
+	ON_REGISTERED_MESSAGE(WM_MOUSEMOVEIN, OnMouseMoveIn)
+	ON_REGISTERED_MESSAGE(WM_MOUSEMOVEOUT, OnMouseMoveOut)
+
 	END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -2424,6 +2428,29 @@ void CMainFrame::OnLButtonUp(UINT nFlags, CPoint point)
 	if(!OnButton(wmcmd::LUP, nFlags, point))
 		__super::OnLButtonUp(nFlags, point);
 }
+LRESULT CMainFrame::OnMouseMoveIn(WPARAM /*wparam*/, LPARAM /*lparam*/) {
+	TRACE("OnMouseMoveIn\n");
+
+	return 0;
+}
+
+LRESULT CMainFrame::OnMouseMoveOut(WPARAM /*wparam*/, LPARAM /*lparam*/) {
+	TRACE("OnMouseMoveOut\n");
+	AppSettings&s = AfxGetAppSettings();
+	if (m_fFullScreen || !(s.nCS & CS_TOOLBAR) ) {
+		ShowControls(CS_NONE, false);
+	}
+
+	if(m_fFullScreen || IsCaptionMenuHidden() )  
+	{
+
+		HMENU hMenu = NULL;
+		
+		::SetMenu(m_hWnd, hMenu);
+
+	}
+	return 0;
+}
 
 void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 {
@@ -2468,7 +2495,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 	}
 
 
-	if(m_fFullScreen && bMouseMoved)
+	if( (m_fFullScreen || !(s.nCS & CS_TOOLBAR) ) && bMouseMoved)
 	{
 		int nTimeOut = s.nShowBarsWhenFullScreenTimeOut;
 
@@ -2492,9 +2519,13 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 			POSITION pos = m_bars.GetHeadPosition();
 			for(int i = 1; pos; i <<= 1)
 			{
+
+
+
+
 				CControlBar* pNext = m_bars.GetNext(pos);
 				CSize sz = pNext->CalcFixedLayout(FALSE, TRUE);
-				if(s.nCS&i) r.top -= sz.cy;
+				if( ( s.nCS | CS_TOOLBAR | CS_SEEKBAR ) &i) r.top -= sz.cy;
 			}
 			
 			// HACK: the controls would cover the menu too early hiding some buttons
@@ -2508,7 +2539,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 			if(r.PtInRect(point))
 			{
 				if(s.fShowBarsWhenFullScreen){
-					ShowControls(s.nCS | ( s.bShowControlBar ? CS_COLORCONTROLBAR : 0) , false);
+					ShowControls(s.nCS | CS_TOOLBAR | CS_SEEKBAR | ( s.bShowControlBar ? CS_COLORCONTROLBAR : 0) , false);
 					//m_wndColorControlBar.ShowWindow(SW_SHOW);
 				}
 			}
@@ -2537,7 +2568,9 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 	{
 
 		HMENU hMenu;
-		if(point.y < 10 && point.x < 690){
+		CRect r;
+		m_wndView.GetClientRect(r);
+		if(point.y < 10 && point.x < (r.Width() * 4/5)){
 			hMenu = m_hMenuDefault;
 		}else{
 			hMenu = NULL;
@@ -5032,7 +5065,7 @@ void CMainFrame::OnViewCompact()
 {
 	if(AfxGetAppSettings().fHideCaptionMenu)
 		SendMessage(WM_COMMAND, ID_VIEW_CAPTIONMENU);
-	ShowControls(CS_TOOLBAR);
+	ShowControls(CS_SEEKBAR|CS_TOOLBAR);
 }
 
 void CMainFrame::OnUpdateViewCompact(CCmdUI* pCmdUI)
@@ -7401,7 +7434,7 @@ void CMainFrame::MoveVideoWindow(bool fShowStats)
 	{
 		AppSettings &s = AfxGetAppSettings();
 		CRect wr;
-		if(!m_fFullScreen)
+		if(!m_fFullScreen && ( s.nCS & CS_TOOLBAR ) )
 		{
 			m_wndView.GetClientRect(wr);
 			if(!s.fHideCaptionMenu)

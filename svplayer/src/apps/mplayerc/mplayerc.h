@@ -580,7 +580,14 @@ public:
 	afx_msg void OnAppAbout();
 	afx_msg void OnFileExit();
 	afx_msg void OnHelpShowcommandlineswitches();
+
+	bool m_bMouseIn;
+	bool m_bMouseInOutUnknown;
+	bool m_bGenerateMouseInOutMessages;
+	virtual BOOL PumpMessage();
 };
+extern const UINT WM_MOUSEMOVEIN;
+extern const UINT WM_MOUSEMOVEOUT;
 
 #define AfxGetMyApp() ((CMPlayerCApp*)AfxGetApp())
 #define AfxGetAppSettings() ((CMPlayerCApp*)AfxGetApp())->m_s

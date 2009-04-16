@@ -4311,7 +4311,7 @@ void CMainFrame::SaveThumbnails(LPCTSTR fn)
 		{
 			delete [] pData;
 			CString str;
-			str.Format(_T("Invalid image format, cannot create thumbnails out of %d bpp dibs."), bi->bmiHeader.biBitCount);
+			str.Format(_T("你选择的图片输出格式和视频不兼容, 未能创建缩略图 (%d bpp dibs)."), bi->bmiHeader.biBitCount);
 			AfxMessageBox(str);
 			return;
 		}
@@ -4375,7 +4375,7 @@ void CMainFrame::SaveThumbnails(LPCTSTR fn)
 		rts.AddStyle(_T("thumbs"), style);
 
 		CStringW str;
-		str.Format(L"{\\an9\\fs%d\\b1\\bord0\\shad0\\1c&Hffffff&}%s", infoheight-10, width >= 550 ? L"Media Player Classic" : L"MPC");
+		str.Format(L"{\\an9\\fs%d\\b1\\bord0\\shad0\\1c&Hffffff&}%s", infoheight-10, width >= 550 ? L"射手影音播放器" : L"射手播放器");
 
 		rts.Add(str, true, 0, 1, _T("thumbs"), _T(""), _T(""), CRect(0,0,0,0), -1);
 
@@ -4398,14 +4398,14 @@ void CMainFrame::SaveThumbnails(LPCTSTR fn)
 			if(shortsize > 10240) shortsize /= 1024, measure = L"KB";
 			if(shortsize > 10240) shortsize /= 1024, measure = L"MB";
 			if(shortsize > 10240) shortsize /= 1024, measure = L"GB";
-			fs.Format(L"File Size: %I64d%s (%I64d bytes)\\N", shortsize, measure, size);
+			fs.Format(L"文件尺寸: %I64d%s (%I64d bytes)\\N", shortsize, measure, size);
 		}
 
 		CStringW ar;
 		if(arxy.cx > 0 && arxy.cy > 0 && arxy.cx != wh.cx && arxy.cy != wh.cy)
 			ar.Format(L"(%d:%d)", arxy.cx, arxy.cy);
 
-		str.Format(L"{\\an7\\1c&H000000&\\fs16\\b0\\bord0\\shad0}File Name: %s\\N%sResolution: %dx%d %s\\NDuration: %02d:%02d:%02d", 
+		str.Format(L"{\\an7\\1c&H000000&\\fs16\\b0\\bord0\\shad0}文件名: %s\\N%s分辨率: %dx%d %s\\N总长度: %02d:%02d:%02d", 
 			fn, fs, wh.cx, wh.cy, ar, hmsf.bHours, hmsf.bMinutes, hmsf.bSeconds);
 		rts.Add(str, true, 0, 1, _T("thumbs"));
 

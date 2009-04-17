@@ -437,37 +437,40 @@ CMPlayerCApp::CMPlayerCApp()
 
 BOOL CMPlayerCApp::PumpMessage() {
 	BOOL ok = CWinApp::PumpMessage();
+	
 	if (ok && m_bGenerateMouseInOutMessages) {
-		//If mouse is in then check if it has gone out. If
-		//mouse is not in then check if it has come in.
-		MSG m_msgCur;
-		
-			//As long as there is no message for this application
-			//track the mouse cursor position.
-			while(!PeekMessage(&m_msgCur, 0, 0, 0, PM_NOREMOVE)) {
-				CWnd* pMainWnd = ::AfxGetMainWnd();
-				if (pMainWnd) {
-					CPoint pt; GetCursorPos(&pt);
-					CWnd* pMsgWnd = CWnd::WindowFromPoint(pt);
-					//If window at mouse cursor position is not this
-					//app's window and not any of its child windows
-					//then it means mouse has left the app area.
-					m_bMouseInOutUnknown = FALSE;
-					if ( pMsgWnd != pMainWnd && !pMainWnd->IsChild(pMsgWnd)) {
-						if( (m_bMouseIn || m_bMouseInOutUnknown) ){
-							m_bMouseIn = FALSE;
-							pMainWnd->PostMessage(WM_MOUSEMOVEOUT, 0, 0L);
+			//If mouse is in then check if it has gone out. If
+			//mouse is not in then check if it has come in.
+			MSG m_msgCur;
+			CWnd* pMainWnd = ::AfxGetMainWnd();
+			if (pMainWnd) {
+				//As long as there is no message for this application
+				//track the mouse cursor position.
+				while(!PeekMessage(&m_msgCur, 0, 0, 0, PM_NOREMOVE)) {
+					
+						CPoint pt; GetCursorPos(&pt);
+						CWnd* pMsgWnd = CWnd::WindowFromPoint(pt);
+						//If window at mouse cursor position is not this
+						//app's window and not any of its child windows
+						//then it means mouse has left the app area.
+						m_bMouseInOutUnknown = FALSE;
+						if ( pMsgWnd != pMainWnd && !pMainWnd->IsChild(pMsgWnd)) {
+							if( (m_bMouseIn || m_bMouseInOutUnknown) ){
+								m_bMouseIn = FALSE;
+								pMainWnd->PostMessage(WM_MOUSEMOVEOUT, 0, 0L);
+							}
+							break;
+						}else if( !m_bMouseIn|| m_bMouseInOutUnknown){
+							m_bMouseIn = TRUE;
+							pMainWnd->PostMessage(WM_MOUSEMOVEIN, 0, 0L);
+							break;
 						}
 						break;
-					}else if( !m_bMouseIn|| m_bMouseInOutUnknown){
-						m_bMouseIn = TRUE;
-						pMainWnd->PostMessage(WM_MOUSEMOVEIN, 0, 0L);
-						break;
-					}
+					
 				}
 			}
-		
-	}
+		}
+	
 	return ok;
 }
 void CMPlayerCApp::ShowCmdlnSwitches()

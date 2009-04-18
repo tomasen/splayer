@@ -2419,6 +2419,12 @@ CFGManagerPlayer::CFGManagerPlayer(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		pFGF = new CFGFilterRegistry(s.AudioRendererDisplayName, m_armerit);
 		pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_NULL);
 		m_transform.AddTail(pFGF);
+	}else if(s.bUseWaveOutDeviceByDefault){
+
+		//E30629D1-27E5-11CE-875D-00608CB78066
+		pFGF = new CFGFilterRegistry(CLSID_AudioRender, m_armerit);
+		pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_NULL);
+		m_transform.AddTail(pFGF);
 	}
 }
 

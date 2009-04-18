@@ -223,6 +223,7 @@ function myInit(){
 <input type="checkbox" id="chkplayrepeat" /><label for="chkplayrepeat">循环播放</label><br />
 <input type="checkbox" id="chkexitfullscreen" /><label for="chkexitfullscreen">播放结束后自动退出全屏</label><br />
 <input type="checkbox" id="chkautozoom" /><label for="chkautozoom">根据视频画面尺寸改变窗口大小</label><br />
+<input type="checkbox" id="UseWaveOutDeviceByDefault" /><label for="UseWaveOutDeviceByDefault" title="优先使用WaveOut而非DirectSound音频设备">使变速播放支持2倍以上速度快进</label><br />
  小幅快进： <input type="text" id="stepsmall" size="2"/>秒<br />
  中幅快进： <input type="text" id="stepmed" size="2"/>秒<br />
  大幅快进： <input type="text" id="stepbig" size="2"/>秒<br /><br />
@@ -279,6 +280,7 @@ Quadro FX 1700/FX 570/ NVS 320M/FX 1600M/FX 570M/FX 370/NVS 290/NVS 140M/NVS 135
 <option value='320'>3 前置 + 2 后置音箱</option>
 </select><br />
 <input type="checkbox" id="usespdif" /><label for="usespdif" title="通过光纤或同轴发送数字信号至外部功放进行音频解码">优先使用SPDIF输出</label><br />
+
 <br /><input type="checkbox" id="normalize" /><label for="normalize" title="当视频声音较轻时自动提高音量">智能音量放大 (试验阶段)</label><br />
 <br />
 <i>小窍门：<br />

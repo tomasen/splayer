@@ -401,6 +401,7 @@ public:
 		int autoResumePlay;
 
 		int iDecSpeakers;
+		int bUseWaveOutDeviceByDefault;
 
 		bool bShowControlBar;
 		bool bNotChangeFontToYH;

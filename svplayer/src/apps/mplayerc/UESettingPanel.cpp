@@ -80,6 +80,7 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_DHtml_ElementValue (pDX, _T("stepbig"), m_sgs_stepbig);
 
 	DDX_DHtml_SelectValue( pDX, _T("speaker"), m_sgs_speaker);
+	DDX_DHtml_CheckBox(pDX, _T("UseWaveOutDeviceByDefault"), m_sgi_UseWaveOutDeviceByDefault);
 
 	DDX_DHtml_ElementInnerHtml (pDX, _T("startupcheckexts"), m_sgi_startupcheckexts);
 	
@@ -228,6 +229,7 @@ BOOL CUESettingPanel::OnInitDialog()
 	if( s.AudioBoost > 1 ){
 		m_sgi_noaudioboost = 0;
 	}
+	m_sgi_UseWaveOutDeviceByDefault = s.bUseWaveOutDeviceByDefault;
 	m_sgs_speaker.Format(_T("%d") ,  s.iDecSpeakers % 1000 );
 	m_sgi_usespdif = !!( s.iDecSpeakers >= 1000 );
 	//m_sgi_downsample44k = s.fDownSampleTo441;
@@ -412,7 +414,7 @@ void CUESettingPanel::ApplyAllSetting(){
 		m_pASF->SetNormalizeBoost(s.fAudioNormalize, s.fAudioNormalizeRecover, s.AudioBoost);
 	}
 
-	
+	s.bUseWaveOutDeviceByDefault = m_sgi_UseWaveOutDeviceByDefault ;
 	
 	{
 		int iSS = _wtoi(m_sgs_speaker);

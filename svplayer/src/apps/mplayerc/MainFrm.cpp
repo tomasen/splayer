@@ -1647,6 +1647,9 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 		if(pQP)
 		{
 			CString rate;
+			rate.Format(_T("(%0.1fx)"), 1.0 + (m_iSpeedLevel * 0.1) );
+			
+			/*
 			if(m_iSpeedLevel >= -11 && m_iSpeedLevel <= 3 && m_iSpeedLevel != -4)
 			{
 				CString speeds[] = {_T("1/8"),_T("1/4"),_T("1/2"),_T("1"),_T("2"),_T("4"),_T("8")};
@@ -1654,6 +1657,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 				if(m_iSpeedLevel < -4) rate = _T("-") + rate;
 				if(!rate.IsEmpty()) rate = _T("(") + rate + _T("X)");
 			}
+			*/
 
 			CString info;
 			int val;
@@ -2519,10 +2523,6 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 			POSITION pos = m_bars.GetHeadPosition();
 			for(int i = 1; pos; i <<= 1)
 			{
-
-
-
-
 				CControlBar* pNext = m_bars.GetNext(pos);
 				CSize sz = pNext->CalcFixedLayout(FALSE, TRUE);
 				if( ( s.nCS | CS_TOOLBAR | CS_SEEKBAR ) &i) r.top -= sz.cy;
@@ -5366,8 +5366,9 @@ void CMainFrame::OnPlayPlay()
 		else if(m_iPlaybackMode == PM_DVD)
 		{
 			double dRate = 1.0;
-			if(m_iSpeedLevel != -4 && m_iSpeedLevel != 0)
-				dRate = pow(2.0, m_iSpeedLevel >= -3 ? m_iSpeedLevel : (-m_iSpeedLevel - 8));
+			//if(m_iSpeedLevel != -4 && m_iSpeedLevel != 0)
+			//	dRate = pow(2.0, m_iSpeedLevel >= -3 ? m_iSpeedLevel : (-m_iSpeedLevel - 8));
+			dRate = 1.0 + m_iSpeedLevel * 0.1;
 
 			pDVDC->PlayForwards(dRate, DVD_CMD_FLAG_Block, NULL);
 			pDVDC->Pause(FALSE);
@@ -5926,13 +5927,27 @@ void CMainFrame::OnPlayChangeRate(UINT nID)
 	{
 		int iNewSpeedLevel;
 
-		if(nID == ID_PLAY_INCRATE) iNewSpeedLevel = m_iSpeedLevel+1;
-		else if(nID == ID_PLAY_DECRATE) iNewSpeedLevel = m_iSpeedLevel-1;
-		else return;
-
+		if(nID == ID_PLAY_INCRATE) {
+			if(m_iSpeedLevel < 10 && m_iSpeedLevel > -30){
+				iNewSpeedLevel = m_iSpeedLevel+1;
+			}else{
+				iNewSpeedLevel = m_iSpeedLevel+5;
+			}
+		}
+		else if(nID == ID_PLAY_DECRATE) {
+			if(m_iSpeedLevel < 10 && m_iSpeedLevel > -30){
+				iNewSpeedLevel = m_iSpeedLevel-1;
+			}else{
+				iNewSpeedLevel = m_iSpeedLevel-5;
+			}
+			
+		}
+		//else return;
+		
 		HRESULT hr = E_FAIL;
+		CString szMsg ;
 
-		if(iNewSpeedLevel <= -10)
+		if(iNewSpeedLevel == -10)
 		{
 			if(GetMediaState() != State_Paused)
 				SendMessage(WM_COMMAND, ID_PLAY_PAUSE);
@@ -5941,9 +5956,9 @@ void CMainFrame::OnPlayChangeRate(UINT nID)
 		}
 		else
 		{
-			double dRate = 1 + 0.1*iNewSpeedLevel;;//pow(2.0, iNewSpeedLevel >= -3 ? iNewSpeedLevel : (-iNewSpeedLevel - 8));
+			double dRate = 1.0 + 0.1*iNewSpeedLevel;;//pow(2.0, iNewSpeedLevel >= -3 ? iNewSpeedLevel : (-iNewSpeedLevel - 8));
 			if(fabs(dRate - 1.0) < 0.01) dRate = 1.0;
-
+			
 			if(GetMediaState() != State_Running)
 				SendMessage(WM_COMMAND, ID_PLAY_PLAY);
 
@@ -5953,18 +5968,31 @@ void CMainFrame::OnPlayChangeRate(UINT nID)
 			}
 			else if(m_iPlaybackMode == PM_DVD)
 			{
-				if(iNewSpeedLevel >= -3)
+				if(iNewSpeedLevel >= -10)
 					hr = pDVDC->PlayForwards(dRate, DVD_CMD_FLAG_Block, NULL);
 				else
 					hr = pDVDC->PlayBackwards(dRate, DVD_CMD_FLAG_Block, NULL);
 			}
-			CString szMsg ;
 			szMsg.Format(_T("播放速度变为 %0.1f"), dRate);
-			SendStatusMessage(szMsg, 3000);
+			
+			if(FAILED(hr)){
+				AppSettings& s = AfxGetAppSettings();
+				if(!s.bUseWaveOutDeviceByDefault){
+					s.AudioRendererDisplayName = _T("");
+					s.bUseWaveOutDeviceByDefault = true;
+					//TODO: switch to waveOut Device
+					szMsg.Format( _T("正在切换设置以允许高速播放...") );
+					SendStatusMessage(szMsg, 3000);
+					ReRenderOrLoadMedia();
+				}else{
+					szMsg.Format( _T("建议使用WaveOut而非DirectSound类音频输出选项以支持此速率 (%0.1f)"), dRate);
+				}
+			}
 		}
 
-		if(SUCCEEDED(hr))
+		//if(SUCCEEDED(hr))
 			m_iSpeedLevel = iNewSpeedLevel;
+		SendStatusMessage(szMsg, 3000);
 	}
 }
 
@@ -5977,10 +6005,10 @@ void CMainFrame::OnUpdatePlayChangeRate(CCmdUI* pCmdUI)
 		bool fInc = (pCmdUI->m_nID == ID_PLAY_INCRATE || pCmdUI->m_nID == ID_PLAY_FWD );
 
 		fEnable = true;
-		if(fInc && m_iSpeedLevel >= 3) fEnable = false;
-		else if(!fInc && m_iPlaybackMode == PM_FILE && m_iSpeedLevel <= -4) fEnable = false;
-		else if(!fInc && m_iPlaybackMode == PM_DVD && m_iSpeedLevel <= -11) fEnable = false;
-		else if(m_iPlaybackMode == PM_DVD && m_iDVDDomain != DVD_DOMAIN_Title) fEnable = false;
+		//if(fInc && m_iSpeedLevel >= 3) fEnable = false;
+		//if(!fInc && m_iPlaybackMode == PM_FILE && m_iSpeedLevel <= -4) fEnable = false;
+		//else if(!fInc && m_iPlaybackMode == PM_DVD && m_iSpeedLevel <= -11) fEnable = false;
+		if(m_iPlaybackMode == PM_DVD && m_iDVDDomain != DVD_DOMAIN_Title) fEnable = false;
 		else if(m_fRealMediaGraph || m_fShockwaveGraph) fEnable = false;
 		else if(m_iPlaybackMode == PM_CAPTURE && (!m_wndCaptureBar.m_capdlg.IsTunerActive() || m_fCapturing)) fEnable = false;
 		else if(m_fLiveWM) fEnable = false;
@@ -8983,12 +9011,18 @@ void CMainFrame::OnColorControlButtonReset(){
 }
 void CMainFrame::ReRenderOrLoadMedia(){
 	int iPlaybackMode = m_iPlaybackMode;
+	int iSpeed = m_iSpeedLevel;
 	CloseMedia();
 	m_wndColorControlBar.CheckAbility();
 	if(iPlaybackMode == PM_FILE)
 	{
 		OpenCurPlaylistItem();
-	} 
+	}else if(iPlaybackMode == PM_DVD)
+	{
+		OnFileOpendvd();
+	}
+	m_iSpeedLevel = iSpeed;
+	OnPlayChangeRate(0);
 }
 void CMainFrame::OnColorControlButtonEnable(){
 	AppSettings& s = AfxGetAppSettings();

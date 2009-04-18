@@ -50,6 +50,7 @@ class CUESettingPanel : public CDHtmlDialog
 	int m_sgi_chkuseSmartDrag;
 	int m_sgi_chkonlyUseInternalDec;
 	int m_sgi_chkinternaltspliteronly;
+	int m_sgi_UseWaveOutDeviceByDefault;
 
 	CString m_sgs_speaker;
 

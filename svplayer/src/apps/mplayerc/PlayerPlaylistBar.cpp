@@ -518,6 +518,7 @@ void CPlayerPlaylistBar::Empty()
 {
 	m_pl.RemoveAll();
 	m_list.DeleteAllItems();
+	m_pl.szPlayListSub.Empty();
 	SavePlaylist();
 }
 void CPlayerPlaylistBar::RealFindMoreFileFromOneFileAndPutIntoPlaylist(CString szMediaFile , CAtlList<CString>& szaIn ){

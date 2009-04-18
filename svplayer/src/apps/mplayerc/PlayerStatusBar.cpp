@@ -225,7 +225,14 @@ void CPlayerStatusBar::SetStatusTimer(REFERENCE_TIME rtNow, REFERENCE_TIME rtDur
 		szPlayrate.Format(_T("ËÙÂÊ %0.1fx "), playRate);
 	}
 
-	SetStatusTimer(szPlayrate + szPower + str);
+	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
+	CString szPlayingFileName = pFrame->GetCurPlayingFileName();
+	if(!szPlayingFileName.IsEmpty()){
+		szPlayingFileName.Append(_T("  "));
+	}
+	
+	
+	SetStatusTimer(szPlayingFileName + szPlayrate + szPower + str);
 }
 
 void CPlayerStatusBar::ShowTimer(bool fShow)

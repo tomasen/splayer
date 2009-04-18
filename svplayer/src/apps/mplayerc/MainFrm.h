@@ -352,6 +352,8 @@ public:
 
 	CControlBar* m_pLastBar;
 
+	CString GetCurPlayingFileName();
+
 protected: 
 	enum {MLS_CLOSED, MLS_LOADING, MLS_LOADED, MLS_CLOSING};
 	int m_iMediaLoadState;

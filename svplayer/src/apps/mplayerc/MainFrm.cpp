@@ -6050,9 +6050,9 @@ void CMainFrame::SetSubtitleDelay(int delay_ms)
 	if(m_pCAP) {
 		m_pCAP->SetSubtitleDelay(delay_ms);
 		getCurPlayingSubfile();
-		CString str;
-		str.Format(_T("主字幕延时已经设为： %d ms"), delay_ms);
-		SendStatusMessage(str, 5000);
+		//CString str;
+		//str.Format(_T("主字幕延时已经设为： %d ms"), delay_ms);
+		//SendStatusMessage(str, 5000);
 	}
 	time(&m_tPlayStartTime);
 }
@@ -6061,9 +6061,9 @@ void CMainFrame::SetSubtitleDelay2(int delay_ms)
 	if(m_pCAP) {
 		m_pCAP->SetSubtitleDelay2(delay_ms);
 		getCurPlayingSubfile(NULL, 2);
-		CString str;
-		str.Format(_T("第二字幕延时已经设为： %d ms"), delay_ms);
-		SendStatusMessage(str, 5000);
+// 		CString str;
+// 		str.Format(_T("第二字幕延时已经设为： %d ms"), delay_ms);
+// 		SendStatusMessage(str, 5000);
 	}
 	time(&m_tPlayStartTime);
 }
@@ -8226,7 +8226,20 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 
 	m_iPlaybackMode = PM_FILE;
 }
-
+CString CMainFrame::GetCurPlayingFileName(){
+	CString szPlayingFileName;
+	if( m_iMediaLoadState == MLS_LOADED ){
+		if(m_iPlaybackMode == PM_FILE){
+			szPlayingFileName = PathFindFileName(m_fnCurPlayingFile);
+			//szPlayingFileName =  m_fnCurPlayingFile;
+		}else if(m_iPlaybackMode == PM_DVD){
+			szPlayingFileName = _T("DVD");
+		}else{
+			szPlayingFileName = _T("未知");
+		}
+	}
+	return szPlayingFileName;
+}
 void CMainFrame::SetupChapters()
 {
 	ASSERT(m_pCB);
@@ -11815,6 +11828,9 @@ afx_msg void CMainFrame::OnSubtitleDelay(UINT nID)
 		else
 			newDelay = oldDelay+AfxGetAppSettings().nSubDelayInterval;
 
+		CString str;
+		str.Format(_T("主字幕延时已经设为： %d ms"), newDelay);
+		SendStatusMessage(str, 5000);
 		SetSubtitleDelay(newDelay);
 	}
 }
@@ -11830,6 +11846,9 @@ afx_msg void CMainFrame::OnSubtitleDelay2(UINT nID)
 		else
 			newDelay = oldDelay+AfxGetAppSettings().nSubDelayInterval;
 
+		CString str;
+		str.Format(_T("第二字幕延时已经设为： %d ms"), newDelay);
+		SendStatusMessage(str, 5000);
 		SetSubtitleDelay2(newDelay);
 	}
 }

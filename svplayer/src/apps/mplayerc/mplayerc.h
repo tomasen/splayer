@@ -461,6 +461,7 @@ public:
 		CSize AspectRatio;
 		bool fKeepHistory;
 
+		bool bDisableEVR;
 		bool useSmartDrag;
 		bool onlyUseInternalDec;
 

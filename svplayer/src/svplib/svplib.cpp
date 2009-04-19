@@ -187,7 +187,7 @@ void SVP_LogMsg3(LPCSTR fmt, ...)
 	va_list args;
 	va_start(args, fmt);
 	CSVPToolBox svpToolBox;
-	CString szLogPath = svpToolBox.GetPlayerPath(_T("SVPDebug.log"));
+	CString szLogPath = svpToolBox.GetPlayerPath(_T("SVPDebug2.log"));
 	if(CHAR* buff = new CHAR[_vscprintf(fmt, args) + 1])
 	{
 		vsprintf(buff, fmt, args);

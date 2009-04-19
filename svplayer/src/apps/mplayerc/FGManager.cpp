@@ -1301,7 +1301,13 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		pFGF->m_extensions.AddTail(_T(".flc"));
 		m_source.AddTail(pFGF);
 	}
-
+	//if(src & SRC_FLAC)
+	{
+		pFGF = new CFGFilterInternal<CFlacSource>();
+		pFGF->m_chkbytes.AddTail(_T("0,4,,664C6143"));
+		pFGF->m_extensions.AddTail(_T(".flac"));
+		m_source.AddTail(pFGF);
+	}
 	if(src & SRC_CDDA)
 	{
 		pFGF = new CFGFilterInternal<CCDDAReader>();
@@ -1674,7 +1680,17 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	pFGF->AddType(MEDIATYPE_MPEG2_PES, MEDIASUBTYPE_PS2_PCM);
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_PS2_PCM);
 	m_transform.AddTail(pFGF);
+/*
 
+	pFGF = new CFGFilterInternal<CRealVideoDecoder>(
+		(tra & TRA_RV) ? ResStr(IDS_FGMANAGER_9) : L"RealVideo Decoder (low merit)",
+		(tra & TRA_RV) ? MERIT64_ABOVE_DSHOW : MERIT64_DO_USE);
+	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RV10);
+	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RV20);
+	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RV30);
+	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RV40);
+	m_transform.AddTail(pFGF);
+*/
 
 	pFGF = new CFGFilterInternal<CRealAudioDecoder>(
 		(tra & TRA_RA) ? L"MPC RealAudio Decoder" : L"RealAudio Decoder (low merit)",
@@ -1686,6 +1702,12 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_DNET);
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_SIPR);
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_RAAC);
+	m_transform.AddTail(pFGF);
+	
+	pFGF = new CFGFilterInternal<CMpaDecFilter>(
+		(tra & TRA_FLAC) ? L"Flac Audio Decoder" : L"Flac Audio Decoder (low merit)",		// TODO : put in resource !
+		(tra & TRA_FLAC) ? MERIT64_ABOVE_DSHOW : MERIT64_DO_USE);
+	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_FLAC_FRAMED);
 	m_transform.AddTail(pFGF);
 
 	pFGF = new CFGFilterInternal<CMpaDecFilter>(
@@ -2116,6 +2138,15 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 #endif
 	m_transform.AddTail(pFGF);
 #endif
+
+	/*
+	CMPCVideoDecFilter::m_ref_frame_count_check_skip = false;
+		if((!AfxGetMyApp()->IsVistaOrAbove()) && ((s.iDSVideoRendererType == VIDRNDT_DS_DEFAULT) || (s.iDSVideoRendererType == VIDRNDT_DS_DXR)))
+		{
+			CMPCVideoDecFilter::m_ref_frame_count_check_skip = true;
+		}
+	*/
+	
 	// Blocked filters
 
 	// "Subtitle Mixer" makes an access violation around the 
@@ -2380,12 +2411,12 @@ CFGManagerPlayer::CFGManagerPlayer(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	else if(s.iDSVideoRendererType == VIDRNDT_DS_VMR9WINDOWED)
 		m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VideoMixingRenderer9, L"Video Mixing Render 9 (Windowed)", m_vrmerit));
 	else if(s.iDSVideoRendererType == VIDRNDT_DS_VMR7RENDERLESS)
-		m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VMR7AllocatorPresenter, L"Video Mixing Render 7 (Renderless)", m_vrmerit));
+		m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VMR7AllocatorPresenter, L"DX7(VMR)äÖÈ¾Æ÷", m_vrmerit));
 	else if(s.iDSVideoRendererType == VIDRNDT_DS_VMR9RENDERLESS)
-		if(CMPlayerCApp::IsVista() && 0){
-			m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_EVRAllocatorPresenter, L"Enhanced Video Renderer (custom presenter)", m_vrmerit));
+		if(CMPlayerCApp::IsVista() && !s.bDisableEVR){
+			m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_EVRAllocatorPresenter, L"EVRäÖÈ¾Æ÷", m_vrmerit));
 		}else{
-			m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VMR9AllocatorPresenter, L"Video Mixing Render 9 (Renderless)", m_vrmerit));
+			m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VMR9AllocatorPresenter, L"DX9(VMR)äÖÈ¾Æ÷", m_vrmerit));
 		}
 	else if(s.iDSVideoRendererType == VIDRNDT_DS_DXR)
 		m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_DXRAllocatorPresenter, L"Haali's Video Renderer", m_vrmerit));

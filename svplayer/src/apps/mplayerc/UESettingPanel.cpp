@@ -98,6 +98,7 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_DHtml_ElementValue (pDX, _T("subvpos2"), m_sgs_subvpos2);
 	DDX_DHtml_ElementValue (pDX, _T("engsizeratio2"), m_sgs_engsubradio2);
 
+	DDX_DHtml_CheckBox(pDX, _T("disableevr"), m_sgi_disableevr);
 	DDX_DHtml_SelectValue( pDX, _T("videorender"), m_sgs_videorender);
 	DDX_DHtml_SelectIndex( pDX, _T("videorender"), m_sgi_videorender);
 	DDX_DHtml_CheckBox(pDX, _T("lockbackbuff"), m_sgi_lockbackbuff);
@@ -224,6 +225,7 @@ BOOL CUESettingPanel::OnInitDialog()
 	m_sgi_gpuacel = s.useGPUAcel;
 	m_sgi_gpuacelcuda = s.useGPUCUDA;
 	m_sgi_chkinternaltspliteronly = s.fUseInternalTSSpliter;
+	m_sgi_disableevr = s.bDisableEVR;
 	//Audio Setting
 	m_sgi_normalize = s.fAudioNormalize;
 	if( s.AudioBoost > 1 ){
@@ -256,6 +258,10 @@ BOOL CUESettingPanel::OnInitDialog()
 	m_sgs_engsubradio2.Format(_T("%.3f"), s.subdefstyle2.engRatio);
 
 	m_sgi_autoupdate = (s.tLastCheckUpdater < 2000000000);//
+
+	if(CMPlayerCApp::IsVista()){
+		DisplayNodeByID(_T("disableevrline"), FALSE);
+	}
 
 	UpdateData(FALSE);
 	return TRUE;  // return TRUE  unless you set the focus to a control
@@ -308,7 +314,22 @@ void CUESettingPanel::setBackgdColorByID(CString szId, COLORREF color){
 		} 
 	}
 }
-
+void CUESettingPanel::DisplayNodeByID(CString szId, BOOL bBlock){
+	IHTMLElement *pElement;
+	GetElement( szId, &pElement	);
+	if (pElement){
+		IHTMLStyle *phtmlStyle;
+		pElement->get_style(&phtmlStyle);
+		if (phtmlStyle)
+		{
+			if(bBlock)
+				phtmlStyle->put_display(_T("block"));
+			else
+				phtmlStyle->put_display(_T("inline"));
+			
+		} 
+	}
+}
 #include "..\..\filters\transform\mpadecfilter\a52dec-0.7.4\include\a52.h"
 #include "..\..\filters\transform\mpadecfilter\dtsdec-0.0.1\include\dts.h"
 
@@ -349,13 +370,15 @@ void CUESettingPanel::ApplyAllSetting(){
 	s.fRememberZoomLevel = !!m_sgi_chkautozoom ;
 	s.useSmartDrag = !!m_sgi_chkuseSmartDrag ;
 	s.fUseInternalTSSpliter = m_sgi_chkinternaltspliteronly;
-
+	
 	s.nJumpDistS = _wtof(m_sgs_stepsmall) * 1000;
 	s.nJumpDistM = _wtof(m_sgs_stepmed) * 1000;
 	s.nJumpDistL = _wtof(m_sgs_stepbig) * 1000;
 	
 	//Video Setting
 	
+	s.bDisableEVR = m_sgi_disableevr ;
+
 	s.fVMR9MixerMode = m_sgi_uservmrmixer ;
 	if(s.fVMR9MixerMode){
 		m_sgs_videorender = _T("DX9");

@@ -25,6 +25,7 @@ class CUESettingPanel : public CDHtmlDialog
 	virtual HRESULT STDMETHODCALLTYPE  ShowContextMenu(DWORD /*dwID*/, POINT *ppt, IUnknown* /*pcmdtReserved*/, IDispatch* /*pdispReserved*/);
 	virtual void OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl);
 	void setBackgdColorByID(CString szId, COLORREF color);
+	void DisplayNodeByID(CString szId, BOOL bBlock);
 	COLORREF getBackgdColorByID(CString szId);
 	void ApplyAllSetting();
 	void ApplyGeneralSetting();
@@ -57,6 +58,7 @@ class CUESettingPanel : public CDHtmlDialog
 	CString m_sgs_initblock;
 	CString m_sgi_startupcheckexts;
 	CString m_sgs_videorender;
+	int m_sgi_disableevr;
 
 	CString  m_sgs_subfont1;
 	CString  m_sgs_subfont2;

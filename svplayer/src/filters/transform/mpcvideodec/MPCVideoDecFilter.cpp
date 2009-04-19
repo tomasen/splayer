@@ -481,7 +481,7 @@ CMPCVideoDecFilter::CMPCVideoDecFilter(LPUNKNOWN lpunk, HRESULT* phr)
 	m_nErrorConcealment		= FF_EC_DEBLOCK | FF_EC_GUESS_MVS;
 
 	m_nThreadNumber			= m_pCpuId->GetProcessorNumber();
-	m_nDiscardMode			= AVDISCARD_ALL;
+	m_nDiscardMode			= AVDISCARD_DEFAULT;
 	m_nErrorRecognition		= FF_ER_CAREFUL;
 	m_nIDCTAlgo				= FF_IDCT_AUTO;
 	m_bDXVACompatible		= true;

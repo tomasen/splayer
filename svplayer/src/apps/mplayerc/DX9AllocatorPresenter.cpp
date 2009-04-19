@@ -201,7 +201,7 @@ CDX9AllocatorPresenter::CDX9AllocatorPresenter(HWND hWnd, HRESULT& hr)
 , m_RefreshRate(0)
 , m_bicubicA(0)
 , m_nTearingPos(0)
-, m_nNbDXSurface(1)
+, m_nNbDXSurface(5)
 , m_nCurSurface(0)
 , m_rtTimePerFrame(0)
 , m_nUsedBuffer(0)
@@ -929,7 +929,6 @@ HRESULT CDX9AllocatorPresenter::AlphaBlt(RECT* pSrc, RECT* pDst, CComPtr<IDirect
 	return E_FAIL;
 }
 
-
 STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 {
 	AppSettings& s = AfxGetAppSettings();
@@ -1133,6 +1132,7 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 		for (int i=0; i<NB_JITTER; i++)
 			llJitterSum += m_pllJitter[i];
 		m_fAvrFps = 10000000.0/(llJitterSum/125 + m_rtTimePerFrame);
+
 	}
 
 	m_llLastPerf = llPerf;

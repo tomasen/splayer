@@ -433,6 +433,8 @@ CMPlayerCApp::CMPlayerCApp()
 , m_bGenerateMouseInOutMessages(TRUE) 
 {
 	::SetUnhandledExceptionFilter(DebugMiniDumpFilter);
+
+	QueryPerformanceFrequency ((LARGE_INTEGER*)&m_PerfFrequency);
 }
 
 BOOL CMPlayerCApp::PumpMessage() {
@@ -1682,6 +1684,8 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUDIONORMALIZERECOVER), fAudioNormalizeRecover);		
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUDIOBOOST), (int)AudioBoost);
 
+		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DISABLE_EVR), bDisableEVR);
+
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEINTERNALTSSPLITER), fUseInternalTSSpliter);
 		
 
@@ -2008,7 +2012,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 
 		bNotChangeFontToYH = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_NOTCHANGEFONTTOYH), 0);
 //		disableSmartDrag = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DISABLESMARTDRAG),  -1 );
-		
+		bDisableEVR = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DISABLE_EVR), 0);
 		bUseWaveOutDeviceByDefault = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEWAVEOUTDEVICEBYDEFAULT), 0);
 		iDecSpeakers = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DECSPEAKERS), 200);
 		fUseInternalTSSpliter = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEINTERNALTSSPLITER), 0);

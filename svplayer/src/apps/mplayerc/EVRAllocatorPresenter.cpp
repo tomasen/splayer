@@ -51,7 +51,7 @@
 
 #include "AllocatorCommon.h"
 
-#if (1)		// Set to 1 to activate EVR traces
+#if (0)		// Set to 1 to activate EVR traces
 #include "../../svplib/svplib.h"
 	#define TRACE_EVR		SVP_LogMsg3
 #else
@@ -396,6 +396,11 @@ CEVRAllocatorPresenter::CEVRAllocatorPresenter(HWND hWnd, HRESULT& hr)
 
 	if (FAILED (hr)) return;
 
+	// Bufferize frame only with 3D texture!
+	s.iAPSurfaceUsage = VIDRNDT_AP_TEXTURE3D; //must use 3D texture
+	m_nNbDXSurface	= max (min (s.iEvrBuffers, MAX_PICTURE_SLOTS-2), 5);
+
+
 	// Load EVR specifics DLLs
 	hLib = LoadLibrary (L"dxva2.dll");
 	pfDXVA2CreateDirect3DDeviceManager9	= hLib ? (PTR_DXVA2CreateDirect3DDeviceManager9) GetProcAddress (hLib, "DXVA2CreateDirect3DDeviceManager9") : NULL;
@@ -441,12 +446,7 @@ CEVRAllocatorPresenter::CEVRAllocatorPresenter(HWND hWnd, HRESULT& hr)
 	}
 
 
-	// Bufferize frame only with 3D texture!
-	if (s.iAPSurfaceUsage == VIDRNDT_AP_TEXTURE3D)
-		m_nNbDXSurface	= max (min (s.iEvrBuffers, MAX_PICTURE_SLOTS-2), 1);
-	else
-		m_nNbDXSurface = 1;
-
+	
 	ResetStats();
 	m_nRenderState				= Shutdown;
 	m_fUseInternalTimer			= false;
@@ -549,8 +549,12 @@ STDMETHODIMP CEVRAllocatorPresenter::CreateRenderer(IUnknown** ppRenderer)
 		CComQIPtr<IMFGetService, &__uuidof(IMFGetService)> pMFGS = pBF;
 
 		hr = pMFGS->GetService (MR_VIDEO_RENDER_SERVICE, IID_IMFVideoRenderer, (void**)&pMFVR);
-		if(SUCCEEDED(hr)) hr = QueryInterface (__uuidof(IMFVideoPresenter), (void**)&pVP);
-		if(SUCCEEDED(hr)) hr = pMFVR->InitializeRenderer (NULL, pVP);
+		if(SUCCEEDED(hr)) {
+			hr = QueryInterface (__uuidof(IMFVideoPresenter), (void**)&pVP);
+		}
+		if(SUCCEEDED(hr)) {
+			hr = pMFVR->InitializeRenderer (NULL, pVP);
+		}
 
 		CComPtr<IPin>			pPin = GetFirstPin(pBF);
 		CComQIPtr<IMemInputPin> pMemInputPin = pPin;
@@ -835,6 +839,7 @@ STDMETHODIMP CEVRAllocatorPresenter::ProcessMessage(MFVP_MESSAGE_TYPE eMessage, 
 			3) The presenter sets the media type on the mixer's output stream.
 			4) The EVR sets the media type on the substreams.
 		*/
+		TRACE_EVR ("RenegotiateMediaType\n");
 		RenegotiateMediaType();		
 		break;
 
@@ -886,8 +891,9 @@ HRESULT CEVRAllocatorPresenter::CreateProposedOutputType(IMFMediaType* pMixerTyp
 	VideoFormat = (MFVIDEOFORMAT*)pAMMedia->pbFormat;
 	hr = pfMFCreateVideoMediaType  (VideoFormat, &m_pMediaType);
 
-	if (VideoFormat->videoInfo.FramesPerSecond.Numerator != 0)
+	if (VideoFormat->videoInfo.FramesPerSecond.Numerator != 0){
 		m_rtTimePerFrame = (20000000I64*VideoFormat->videoInfo.FramesPerSecond.Denominator)/VideoFormat->videoInfo.FramesPerSecond.Numerator;
+	}
 
 	m_AspectRatio.cx	= VideoFormat->videoInfo.PixelAspectRatio.Numerator;
 	m_AspectRatio.cy	= VideoFormat->videoInfo.PixelAspectRatio.Denominator;
@@ -1466,6 +1472,7 @@ void CEVRAllocatorPresenter::RenderThread()
 		{
 		case WAIT_OBJECT_0 :
 			bQuit = true;
+			TRACE_EVR ("Quit!\n");
 			break;
 		case WAIT_OBJECT_0 + 1 :
 			// Flush pending samples!
@@ -1480,12 +1487,14 @@ void CEVRAllocatorPresenter::RenderThread()
 		case WAIT_OBJECT_0 + 2 :
 		case WAIT_OBJECT_0 + 3 :
 			// Discard timer events if playback stop
+			TRACE_EVR ("RenderThread ==>> Waiting buffer1\n");
 			if ((dwObject == WAIT_OBJECT_0 + 3) && (m_nRenderState != Started)) continue;
 
-//			TRACE_EVR ("RenderThread ==>> Waiting buffer\n");
+			TRACE_EVR ("RenderThread ==>> Waiting buffer2\n");
 			
 			if (WaitForMultipleObjects (countof(hEvtsBuff), hEvtsBuff, FALSE, INFINITE) == WAIT_OBJECT_0+2)
 			{
+				TRACE_EVR ("RenderThread ==>> Got waiting buffer\n");
 				CComPtr<IMFSample>		pMFSample;
 				if (SUCCEEDED (GetScheduledSample(&pMFSample)))
 				{
@@ -1536,6 +1545,9 @@ void CEVRAllocatorPresenter::RenderThread()
 				TRACE_EVR ("RenderThread ==>> Flush before rendering frame!\n");
 			}
 
+			break;
+		default:
+			TRACE_EVR ("WTF is this!\n");
 			break;
 		}
 	}

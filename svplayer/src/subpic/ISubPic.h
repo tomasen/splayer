@@ -159,6 +159,8 @@ interface ISubPicAllocator : public IUnknown
 
 	STDMETHOD_(bool, IsDynamicWriteOnly) () PURE;
 
+	STDMETHOD (Lock) () PURE;
+	STDMETHOD (Unlock) () PURE;
 	STDMETHOD (ChangeDevice) (IUnknown* pDev) PURE;
 	STDMETHOD (SetMaxTextureSize) (SIZE MaxTextureSize) PURE;
 };
@@ -177,7 +179,7 @@ private:
 
 protected:
 	bool m_fPow2Textures;
-
+	CCritSec m_pLock;
 public:
 	ISubPicAllocatorImpl(SIZE cursize, bool fDynamicWriteOnly, bool fPow2Textures);
 
@@ -185,6 +187,9 @@ public:
 	STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void** ppv);
 
 	// ISubPicAllocator
+
+	STDMETHODIMP Lock();
+	STDMETHODIMP Unlock();
 
 	STDMETHODIMP SetCurSize(SIZE cursize);
 	STDMETHODIMP SetCurVidRect(RECT curvidrect);
@@ -274,7 +279,7 @@ protected:
 	REFERENCE_TIME m_rtNow;
 
 	CComPtr<ISubPicAllocator> m_pAllocator;
-
+	
 	HRESULT RenderTo(ISubPic* pSubPic, REFERENCE_TIME rtStart, REFERENCE_TIME rtStop, double fps);
 
 public:
@@ -406,6 +411,7 @@ protected:
 	CComPtr<ISubPicQueue> m_pSubPicQueue;
 
 	CComPtr<ISubPicProvider> m_SubPicProvider2;
+	CComPtr<ISubPicAllocator> m_pAllocator2;
 	CComPtr<ISubPicQueue> m_pSubPicQueue2;
 
 	void AlphaBltSubPic(CSize size, SubPicDesc* pTarget = NULL);

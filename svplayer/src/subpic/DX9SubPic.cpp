@@ -37,7 +37,7 @@ CDX9SubPic::CDX9SubPic(IDirect3DSurface9* pSurface)
 	{
 		m_maxsize.SetSize(d3dsd.Width, d3dsd.Height);
 		m_rcDirty.SetRect(0, 0, d3dsd.Width, d3dsd.Height);
-		ClearDirtyRect(0xFF000000); //Fix  前后字幕重叠问题 ??
+		
 	}
 }
 
@@ -103,7 +103,7 @@ STDMETHODIMP CDX9SubPic::ClearDirtyRect(DWORD color)
 	//LARGE_INTEGER timeTick[3];
 	//QueryPerformanceCounter(&timeTick[0]);
 	//why not just use color fill??
-	if(FAILED(pD3DDev->ColorFill(m_pSurface, m_rcDirty, color))){
+	if(FAILED(pD3DDev->ColorFill(m_pSurface, m_rcDirty, color))){//CRect(CPoint(0,0),m_VirtualTextureSize)
 		SubPicDesc spd;
 		if(SUCCEEDED(Lock(spd)))
 		{
@@ -160,11 +160,13 @@ STDMETHODIMP CDX9SubPic::Lock(SubPicDesc& spd)
 	if(FAILED(m_pSurface->GetDesc(&d3dsd)))
 		return E_FAIL;
 
+ 	
  	D3DLOCKED_RECT LockedRect;
- 	ZeroMemory(&LockedRect, sizeof(LockedRect));
- 	if(FAILED(m_pSurface->LockRect(&LockedRect, NULL, 0)))
- 		return E_FAIL;
-
+ 	 	ZeroMemory(&LockedRect, sizeof(LockedRect));
+ 	 	if(FAILED(m_pSurface->LockRect(&LockedRect, NULL, 0)))
+ 	 		return E_FAIL;
+ 	
+ 	
 	spd.type = 0;
 	spd.w = m_size.cx;
 	spd.h = m_size.cy;
@@ -213,6 +215,8 @@ STDMETHODIMP CDX9SubPic::AlphaBlt(RECT* pSrc, RECT* pDst, SubPicDesc* pTarget)
 	CComPtr<IDirect3DTexture9> pTexture = (IDirect3DTexture9*)GetObject();
 	if(!pTexture || FAILED(pTexture->GetDevice(&pD3DDev)) || !pD3DDev)
 		return E_NOINTERFACE;
+
+	//pD3DDev->ColorFill(m_pSurface, m_rcDirty, 0xff000000); //Fix  前后字幕重叠问题 ??
 
 	HRESULT hr;
 

@@ -167,6 +167,7 @@ ISubPicAllocatorImpl::ISubPicAllocatorImpl(SIZE cursize, bool fDynamicWriteOnly,
 	, m_fPow2Textures(fPow2Textures)
 {
 	m_curvidrect = CRect(CPoint(0,0), m_cursize);
+	
 }
 
 STDMETHODIMP ISubPicAllocatorImpl::NonDelegatingQueryInterface(REFIID riid, void** ppv)
@@ -177,7 +178,14 @@ STDMETHODIMP ISubPicAllocatorImpl::NonDelegatingQueryInterface(REFIID riid, void
 }
 
 // ISubPicAllocator
-
+STDMETHODIMP ISubPicAllocatorImpl::Lock(){
+	m_pLock.Lock();
+	return  S_OK;
+}
+STDMETHODIMP ISubPicAllocatorImpl::Unlock(){
+	m_pLock.Unlock();
+	return  S_OK ;
+}
 STDMETHODIMP ISubPicAllocatorImpl::SetCurSize(SIZE cursize)
 {
 	m_cursize = cursize; 
@@ -544,7 +552,7 @@ DWORD CSubPicQueue::ThreadProc()
 
 		CComPtr<ISubPicProvider> pSubPicProvider;
 		if(SUCCEEDED(GetSubPicProvider(&pSubPicProvider)) && pSubPicProvider
-		&& SUCCEEDED(pSubPicProvider->Lock()))
+		&& SUCCEEDED(pSubPicProvider->Lock()) && SUCCEEDED(m_pAllocator->Lock()))
 		{
 			for(POSITION pos = pSubPicProvider->GetStartPosition(rtNow, fps); 
 				pos && !m_fBreakBuffering && GetCount() < (size_t)nMaxSubPic; 
@@ -595,6 +603,7 @@ DWORD CSubPicQueue::ThreadProc()
 			}
 
 			pSubPicProvider->Unlock();
+			m_pAllocator->Unlock();
 		}
 
 		if(m_fBreakBuffering)
@@ -852,8 +861,11 @@ void ISubPicAllocatorPresenterImpl::AlphaBltSubPic(CSize size, SubPicDesc* pTarg
 	}
 	if(bltSub1)
 		pSubPic->AlphaBlt(rcSource1, rcDest1, pTarget);
-	if(bltSub2)
+	if(bltSub2){
 		pSubPic2->AlphaBlt(rcSource2, rcDest2, pTarget);
+	}
+
+	
 #ifdef LOGSUBRECT
 	if(bltSub1 || bltSub2){
 		SVP_LogMsg(szD1 + szD2);
@@ -892,6 +904,11 @@ STDMETHODIMP_(void) ISubPicAllocatorPresenterImpl::SetPosition(RECT w, RECT v)
 			m_pAllocator->SetCurVidRect(m_VideoRect);
 		}
 
+		if(m_pAllocator2)
+		{
+			m_pAllocator2->SetCurSize(m_WindowRect.Size());
+			m_pAllocator2->SetCurVidRect(m_VideoRect);
+		}
 		if(m_pSubPicQueue)
 		{
 			m_pSubPicQueue->Invalidate();

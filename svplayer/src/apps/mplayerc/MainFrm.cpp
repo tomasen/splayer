@@ -1372,6 +1372,9 @@ void CMainFrame::OnPlaySubDelay(UINT nID)
 			return;
 			break;
 	}
+	CString str;
+	str.Format(_T("主字幕延时已经设为： %d ms"), newDelay);
+	SendStatusMessage(str, 5000);
 	this->SetSubtitleDelay(newDelay);
 }
 void CMainFrame::OnUpdateSubtitleFontChange(CCmdUI* pCmdUI)
@@ -1405,6 +1408,9 @@ void CMainFrame::OnPlaySub2Delay(UINT nID)
 			//getCurPlayingSubfile(&newDelay, 2);
 			break;
 	}
+	CString str;
+	str.Format(_T("第二字幕延时已经设为： %d ms"), newDelay);
+	SendStatusMessage(str, 5000);
 	this->SetSubtitleDelay2(newDelay);
 }
 void CMainFrame::OnUpdatePlaySub2Delay(CCmdUI* pCmdUI)
@@ -4198,7 +4204,11 @@ void CMainFrame::SaveThumbnails(LPCTSTR fn)
 
 	CSize video, wh(0, 0), arxy(0, 0);
 
-	if(m_pCAP)
+	if (m_pMFVDC)
+	{
+		m_pMFVDC->GetNativeVideoSize(&wh, &arxy);
+	}
+	else if(m_pCAP)
 	{
 		wh = m_pCAP->GetVideoSize(false);
 		arxy = m_pCAP->GetVideoSize(true);

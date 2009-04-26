@@ -162,6 +162,14 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_WM_MOVING()
 	ON_WM_SIZE()
 	ON_WM_SIZING()
+	/*NEW UI*/
+	ON_MESSAGE(WM_NCPAINT, OnNcPaint)
+	ON_MESSAGE(WM_NCACTIVATE, OnNcActivate)
+	ON_MESSAGE(WM_NCLBUTTONDOWN, OnNcLButtonDown)
+	ON_MESSAGE(WM_NCLBUTTONUP, OnNcLButtonUp)
+	ON_MESSAGE(WM_NCHITTEST, OnNcHitTestNewUI)
+	
+	/*NEW UI END*/
 	ON_MESSAGE_VOID(WM_DISPLAYCHANGE, OnDisplayChange)
 
 	ON_WM_SYSCOMMAND()
@@ -188,7 +196,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_MESSAGE(WM_XBUTTONDBLCLK, OnXButtonDblClk)
 	ON_WM_MOUSEWHEEL()
 	ON_WM_MOUSEMOVE()
-	ON_WM_NCHITTEST()
+	//ON_WM_NCHITTEST() Merge to NEW UI
 
 	ON_WM_HSCROLL()
 
@@ -596,9 +604,287 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	s.RegGlobalAccelKey(this->m_hWnd);
 
+
+	/*NEW UI*/
+	ZeroMemory(m_nBoxStatus, sizeof(m_nBoxStatus));
+	m_bmpCaption.LoadBitmap(L"CAPTION.BMP");
+	//////////////////////////////////////////////////////////////////////////
+	// an alternative way of pre-multiplying bitmap data
+	m_bmpClose.Attach((HBITMAP)::LoadImage(GetModuleHandle(NULL), L"CLOSE.BMP", IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION));
+ 	m_bmpMaximize.Attach((HBITMAP)::LoadImage(GetModuleHandle(NULL), L"MAXIMIZE.BMP", IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION));
+ 	m_bmpMinimize.Attach((HBITMAP)::LoadImage(GetModuleHandle(NULL), L"MINIMIZE.BMP", IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION));
+ 	m_bmpRestore.Attach((HBITMAP)::LoadImage(GetModuleHandle(NULL), L"RESTORE.BMP", IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION));
+	PreMultiplyBitmap(m_bmpClose);
+ 	PreMultiplyBitmap(m_bmpMaximize);
+ 	PreMultiplyBitmap(m_bmpMinimize);
+ 	PreMultiplyBitmap(m_bmpRestore);
+
+	/*NEW UI END*/
 	return 0;
 }
+/*NEW UI*/
 
+class CMemoryDC : public CDC
+{
+public:
+	// Data members
+	HDC m_hDCOriginal;
+	RECT m_rcPaint;
+	CBitmap m_bmp;
+	HBITMAP m_hBmpOld;
+
+	// Constructor/destructor
+	CMemoryDC(HDC hDC, RECT& rcPaint) : m_hDCOriginal(hDC), m_hBmpOld(NULL)
+	{
+		m_rcPaint = rcPaint;
+		CreateCompatibleDC((CDC*)m_hDCOriginal);
+		ATLASSERT(m_hDC != NULL);
+		m_bmp.CreateCompatibleBitmap((CDC*)m_hDCOriginal, m_rcPaint.right - m_rcPaint.left, m_rcPaint.bottom - m_rcPaint.top);
+		ATLASSERT(m_bmp.m_hBitmap != NULL);
+		m_hBmpOld = (HBITMAP)((CBitmap*)SelectObject(m_bmp)) ; 
+		SetViewportOrg(-m_rcPaint.left, -m_rcPaint.top);
+	}
+
+	~CMemoryDC()
+	{
+		::BitBlt(m_hDCOriginal, m_rcPaint.left, m_rcPaint.top, m_rcPaint.right - m_rcPaint.left, m_rcPaint.bottom - m_rcPaint.top, m_hDC, m_rcPaint.left, m_rcPaint.top, SRCCOPY);
+		SelectObject( m_hBmpOld);
+	}
+};
+
+LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
+{
+	//////////////////////////////////////////////////////////////////////////
+	// Typically, we'll need the window placement information
+	// and its rect to perform painting
+	WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
+	GetWindowPlacement(&wp);
+	CRect rc;
+	GetWindowRect(&rc);
+	rc-=rc.TopLeft();
+	if(wp.showCmd!=SW_MAXIMIZE)
+		rc.InflateRect(GetSystemMetrics(SM_CXBORDER), GetSystemMetrics(SM_CYBORDER));
+
+	//////////////////////////////////////////////////////////////////////////
+	// This is an undocumented (or not very clearly documented)
+	// trick. When wParam==1, documents says that the entire
+	// window needs to be repainted, so in order to paint, we get
+	// the DC by calling GetWindowDC. Otherwise, the wParam
+	// parameter should contain the region, we make sure anything
+	// outside the region is excluded from update because it's
+	// actually possible to paint outside the region
+	CDC* dc;
+	if(wParam == 1)
+		dc = GetWindowDC();
+	else
+	{
+		CRgn* rgn = ((CRgn*)(HRGN)wParam);
+		dc = GetDCEx(rgn, DCX_WINDOW|DCX_INTERSECTRGN|0x10000);
+	}
+
+	if (dc->m_hDC)
+	{
+		// when updating the window frame, we exclude the client area
+		// because we don't want to interfere with the client WM_PAINT
+		// process and cause extra cost
+		RECT rcClient = {0};
+		GetClientRect(&rcClient);
+		rcClient.top+=GetSystemMetrics(SM_CYCAPTION)+GetSystemMetrics(SM_CYFRAME);
+		rcClient.left+=GetSystemMetrics(SM_CXFRAME);
+		rcClient.bottom+=GetSystemMetrics(SM_CYCAPTION)+GetSystemMetrics(SM_CYFRAME);
+		rcClient.right+=GetSystemMetrics(SM_CXFRAME);
+		dc->ExcludeClipRect(&rcClient);
+
+		// establish double buffered painting
+		CMemoryDC hdc(dc->m_hDC, rc);
+
+		// some basic styles
+		CPen pen, penBright, penDark;
+		pen.CreatePen(PS_SOLID, 1, RGB(64,64,64));
+		penBright.CreatePen(PS_SOLID, 1, RGB(255,255,255));
+		penDark.CreatePen(PS_SOLID, 1, RGB(154,154,154));
+		CBrush brush;
+		brush.CreateSolidBrush(RGB(209,209,209));
+		HPEN holdpen = (HPEN)hdc.SelectObject(pen);
+		HBRUSH holdbrush = (HBRUSH)hdc.SelectObject(brush);
+		if (wp.showCmd != SW_MAXIMIZE)
+			hdc.RoundRect(rc.left+1, rc.top+1, rc.right-1, rc.bottom-1, 9, 9);
+		else
+			hdc.FillRect(&rc, &brush);
+		hdc.SelectObject(penBright);
+		hdc.MoveTo(rc.left+2, rc.bottom-3);
+		hdc.LineTo(rc.left+2, rc.top+2);
+		hdc.LineTo(rc.right-3, rc.top+2);
+		hdc.SelectObject(penDark);
+		hdc.MoveTo(rc.left+2, rc.bottom-3);
+		hdc.LineTo(rc.right-3, rc.bottom-3);
+		hdc.LineTo(rc.right-3, rc.top+2);
+		hdc.SelectObject(holdpen);
+		hdc.SelectObject(holdbrush);
+
+		hdc.SelectObject((HBRUSH) GetStockObject(NULL_BRUSH));
+		if (wp.showCmd != SW_MAXIMIZE)
+			hdc.RoundRect(rc.left+1, rc.top+1, rc.right-1, rc.bottom-1, 9, 9);
+
+		// painting the caption bar
+		CDC dcBmp;
+		dcBmp.CreateCompatibleDC(&hdc);
+		HBITMAP hbmpold = (HBITMAP)dcBmp.SelectObject(m_bmpCaption);
+		hdc.SetStretchBltMode(HALFTONE);
+		hdc.SetBrushOrg(0, 0);
+		int nTotalCaptionHeight = GetSystemMetrics(SM_CYCAPTION)+GetSystemMetrics(SM_CYFRAME);
+		hdc.StretchBlt(0, 0, nTotalCaptionHeight, nTotalCaptionHeight, &dcBmp, 0, 0, 29, 29, SRCCOPY);
+		hdc.StretchBlt(nTotalCaptionHeight, 0, rc.Width()-nTotalCaptionHeight*2, nTotalCaptionHeight, &dcBmp, 29, 0, 8, 29, SRCCOPY);
+		hdc.StretchBlt(rc.Width()-nTotalCaptionHeight-2, 0, nTotalCaptionHeight, nTotalCaptionHeight, &dcBmp, 37, 0, 29, 29, SRCCOPY);
+
+		// and the title
+		CFont hft;
+		GetSystemFontWithScale(&hft);
+
+		HFONT holdft = (HFONT)hdc.SelectObject(hft);
+
+		RECT rcWindowText = {0};
+		rcWindowText.top = rc.top+GetSystemMetrics(SM_CYFRAME)/2;
+		rcWindowText.left = rc.left+GetSystemMetrics(SM_CXFRAME);
+		rcWindowText.bottom = rc.top+nTotalCaptionHeight;
+		rcWindowText.right = rc.right;
+		CString szWindowText;
+		GetWindowText(szWindowText);
+		::DrawShadowText(hdc, szWindowText, szWindowText.GetLength(), &rcWindowText, DT_LEFT|DT_SINGLELINE | DT_VCENTER, RGB(255,255,255), RGB(64,64,64), 2,2);
+		hdc.SelectObject(holdft);
+
+		// min/max/close buttons
+		LONG lPaintParamArray[][5] = {{1,0},{1,1},{1,2},{1,3}};
+		int nVertPos = wp.showCmd == SW_MAXIMIZE?(GetSystemMetrics(SM_CYFRAME)-1):1;
+		long nImagePositions[] = {0, 18, 36, 54};
+		dcBmp.SelectObject(m_bmpClose);
+		BLENDFUNCTION bf = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
+		hdc.AlphaBlend(rc.right-43-15, nVertPos, 43, 18, &dcBmp, 0, nImagePositions[m_nBoxStatus[0]], 43, 18, bf);
+		dcBmp.SelectObject(wp.showCmd==SW_MAXIMIZE?m_bmpRestore:m_bmpMaximize);
+		hdc.AlphaBlend(rc.right-43-15-25, nVertPos, 25, 18, &dcBmp, 0, nImagePositions[m_nBoxStatus[1]], 25, 18, bf);
+		dcBmp.SelectObject(m_bmpMinimize);
+		hdc.AlphaBlend(rc.right-43-15-25-27, nVertPos, 27, 18, &dcBmp, 0, nImagePositions[m_nBoxStatus[2]], 27, 18, bf);
+
+		dcBmp.SelectObject(hbmpold);
+
+		ReleaseDC(&hdc);
+		
+	}
+	return FALSE ;
+}
+
+LRESULT CMainFrame::OnNcActivate( WPARAM wParam, LPARAM lParam)
+{
+	RedrawWindow();
+	return TRUE;
+}
+
+LRESULT CMainFrame::OnNcLButtonDown( WPARAM wParam, LPARAM lParam )
+{
+	// custom processing of our min/max/close buttons
+	if (wParam == HTCLOSE || wParam == HTMAXBUTTON || wParam == HTMINBUTTON)
+	{
+		RedrawNonClientArea();
+		return FALSE;
+	}
+	return DefWindowProc(WM_NCLBUTTONDOWN, wParam, lParam);
+}
+
+LRESULT CMainFrame::OnNcLButtonUp( WPARAM wParam, LPARAM lParam )
+{
+	// custom processing of our min/max/close buttons
+	if (wParam == HTCLOSE || wParam == HTMAXBUTTON || wParam == HTMINBUTTON)
+	{
+		RedrawNonClientArea();
+		WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
+		GetWindowPlacement(&wp);
+		if (wParam == HTCLOSE)
+			PostMessage(WM_CLOSE);
+		else if(wParam == HTMAXBUTTON)
+		{
+			m_nBoxStatus[0] = m_nBoxStatus[1] =m_nBoxStatus[2] = 0;
+			if (wp.showCmd == SW_MAXIMIZE)
+				ShowWindow(SW_NORMAL);
+			else
+				ShowWindow(SW_MAXIMIZE);
+		}
+		else if (wParam == HTMINBUTTON)
+		{
+			m_nBoxStatus[0] = m_nBoxStatus[1] =m_nBoxStatus[2] = 0;
+			ShowWindow(SW_MINIMIZE);
+		}
+		return FALSE;
+	}
+	return DefWindowProc(WM_NCLBUTTONUP, wParam, lParam);
+}
+
+LRESULT CMainFrame::OnNcHitTestNewUI(WPARAM wParam, LPARAM lParam )
+{
+	// custom processing of our min/max/close buttons
+	long nBoxStatus[3];
+	memcpy(nBoxStatus, m_nBoxStatus, sizeof(nBoxStatus));
+
+	CRect rc;
+	GetWindowRect(&rc);
+
+	CRect rcClose (rc.right-43-15, rc.top+1, rc.right-15, rc.top+19);
+	CRect rcMax (rc.right-43-25-15, rc.top+1, rc.right-15-43, rc.top+19);
+	CRect rcMin (rc.right-43-25-27-15, rc.top+1, rc.right-43-25-15, rc.top+19);
+
+	CPoint pt(lParam);
+	SHORT bLBtnDown = GetAsyncKeyState(VK_LBUTTON);
+	if (rcClose.PtInRect(pt) && bLBtnDown) m_nBoxStatus[0] = 2; else if (rcClose.PtInRect(pt)) m_nBoxStatus[0] = 1; else m_nBoxStatus[0] = 0;
+	if (rcMax.PtInRect(pt) && bLBtnDown) m_nBoxStatus[1] = 2; else if (rcMax.PtInRect(pt)) m_nBoxStatus[1] = 1; else m_nBoxStatus[1] = 0;
+	if (rcMin.PtInRect(pt) && bLBtnDown) m_nBoxStatus[2] = 2; else if (rcMin.PtInRect(pt)) m_nBoxStatus[2] = 1; else m_nBoxStatus[2] = 0;
+
+	if (m_nBoxStatus[0] != nBoxStatus[0] || m_nBoxStatus[1] != nBoxStatus[1] || m_nBoxStatus[2] != nBoxStatus[2])
+		RedrawNonClientArea();
+	if (m_nBoxStatus[0]!=0) return HTCLOSE;
+	else if (m_nBoxStatus[1]!=0) return HTMAXBUTTON;
+	else if (m_nBoxStatus[2]!=0) return HTMINBUTTON;
+	return DefWindowProc(WM_NCHITTEST, wParam, lParam);
+}
+
+void CMainFrame::RedrawNonClientArea()
+{
+	// We can't use InvalidateRect to repaint the frame, it's for client area.
+	// To repaint the frame (or non-client area), we call SetWindowPos with
+	// flag SWP_FRAMECHANGED.
+	//
+	// This function is written for convenience.
+	//
+	// Note that Windows doesn't always send WM_NCPAINT when the frame needs to be painted.
+	// It's either a bug or problematic code or faulty design that certain API calls may attempt to draw
+	// the window frame without WM_NCPAINT. An example of this is the SetWindowText API.
+	// When SetWindowText API is called, it uses GetWindowDC, and DrawText to paint directly. Yes,
+	// it doesn't send WM_NCPAINT like it should. This is important information for this custom window
+	// painting sample because we certainly don't want Windows to paint our window ugly.
+	// However, there are no great cure for this problem. We'll have to remember call this
+	// RedrawNonClientArea function every time after SetWindowText, or other similar calls.
+	// In certain situations this might cause a flicker because two painting processes are done.
+	// So it's better to use less or avoid these types of calls.
+	SetWindowPos(NULL,0,0,0,0, SWP_FRAMECHANGED|SWP_NOMOVE|SWP_NOSIZE|SWP_NOZORDER);
+}
+
+void CMainFrame::PreMultiplyBitmap( CBitmap& bmp )
+{
+	// this is only possible when the bitmap is loaded using the
+	// ::LoadImage API with flag LR_CREATEDIBSECTION
+	BITMAP bm;
+	bmp.GetBitmap(&bm);
+	for (int y=0; y<bm.bmHeight; y++)
+	{
+		BYTE * pPixel = (BYTE *) bm.bmBits + bm.bmWidth * 4 * y;
+		for (int x=0; x<bm.bmWidth; x++)
+		{
+			pPixel[0] = pPixel[0] * pPixel[3] / 255; 
+			pPixel[1] = pPixel[1] * pPixel[3] / 255; 
+			pPixel[2] = pPixel[2] * pPixel[3] / 255; 
+			pPixel += 4;
+		}
+	}
+}
+/*NEW UI END*/
 void CMainFrame::OnDestroy()
 {
 	ShowTrayIcon(false);
@@ -1129,7 +1415,36 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 		if(nType != SIZE_MAXIMIZED && nType != SIZE_MINIMIZED)
 			GetWindowRect(s.rcLastWindowPos);
 		s.lastWindowType = nType;
+
+		{
+			CRect rc;
+			WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
+			GetWindowPlacement(&wp);
+			GetWindowRect(&rc);
+			rc-=rc.TopLeft();
+
+			rc.InflateRect(GetSystemMetrics(SM_CXBORDER), GetSystemMetrics(SM_CYBORDER));
+
+			// destroy old region
+			if((HRGN)m_rgn)
+			{
+				m_rgn.DeleteObject();
+				//m_rgn.m_hRgn = NULL;
+			}
+			// create rounded rect region based on new window size
+			if (wp.showCmd != SW_MAXIMIZE )
+			{
+				m_rgn.CreateRoundRectRgn(0,0,rc.Width()-1,rc.Height()-1, 9,9);                 // rounded rect w/50 pixel corners
+				SetWindowRgn(m_rgn,TRUE);  // set window region to make rounded window
+			}
+			else
+				SetWindowRgn(NULL,TRUE);  // set window region to make rounded window
+
+			Invalidate();
+		}
 	}
+
+	
 }
 
 void CMainFrame::OnSizing(UINT fwSide, LPRECT pRect)

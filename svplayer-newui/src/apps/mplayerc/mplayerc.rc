@@ -1346,6 +1346,12 @@ IDB_NOAUDIO             BITMAP                  "res\\noaudio.bmp"
 IDB_AUTHHDRPIC          BITMAP                  "res\\authhdrpic.bmp"
 IDB_STREAMTYPES         BITMAP                  "res\\streamtypes.bmp"
 
+CAPTION.BMP             BITMAP                  "res\\newui\\IMAGE_813.bmp"
+CLOSE.BMP               BITMAP                  "res\\newui\\PNG_7031.bmp"
+MAXIMIZE.BMP            BITMAP                  "res\\newui\\PNG_7032.bmp"
+MINIMIZE.BMP            BITMAP                  "res\\newui\\PNG_7033.bmp"
+RESTORE.BMP             BITMAP                  "res\\newui\\PNG_7034.bmp"
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // FILE

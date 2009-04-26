@@ -759,4 +759,20 @@ public:
 	afx_msg void OnShowColorControlBar();
 	afx_msg void OnUpdateShowColorControlBar(CCmdUI *pCmdUI);
 	afx_msg void OnSetsnapshotpath();
+
+	/*NEW UI*/
+	LRESULT OnNcPaint( WPARAM wParam, LPARAM lParam );
+	LRESULT OnNcActivate( WPARAM wParam, LPARAM lParam);
+	LRESULT OnNcLButtonDown(  WPARAM wParam, LPARAM lParam);
+	LRESULT OnNcLButtonUp(  WPARAM wParam, LPARAM lParam);
+	LRESULT OnNcHitTestNewUI(  WPARAM wParam, LPARAM lParam);
+
+	void RedrawNonClientArea();
+	void PreMultiplyBitmap(CBitmap& bmp);
+
+private:
+	CBitmap m_bmpCaption, m_bmpClose, m_bmpMaximize, m_bmpMinimize, m_bmpRestore;
+	CRgn m_rgn;
+	long m_nBoxStatus[3];
+	/*NEW UI END*/
 };

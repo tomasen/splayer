@@ -29,6 +29,7 @@
 #include "..\..\..\DSUtil\MediaTypes.h"
 #include "RealMediaSplitter.h"
 #include "..\..\..\subtitles\SubtitleInputPin.h"
+#include "..\..\..\svplib\SVPToolBox.h"
 
 //
 
@@ -2148,38 +2149,43 @@ HRESULT CRealAudioDecoder::CheckInputType(const CMediaType* mtIn)
 
 		olddll.Format(_T("%s3260.dll"), fourcc);
 		newdll.Format(_T("%s.dll"), fourcc);
+		CSVPToolBox svpTool;
+		m_hDrvDll = LoadLibrary(svpTool.GetPlayerPath(newdll));
+		SVP_LogMsg( svpTool.GetPlayerPath(newdll) + _T(" real decoder dll loading"));
+		if(!m_hDrvDll){
 
-		CRegKey key;
-		TCHAR buff[MAX_PATH];
-		ULONG len = sizeof(buff);
-		if(ERROR_SUCCESS == key.Open(HKEY_CLASSES_ROOT, _T("Software\\RealNetworks\\Preferences\\DT_Codecs"), KEY_READ)
-			&& ERROR_SUCCESS == key.QueryStringValue(NULL, buff, &len) && _tcslen(buff) > 0)
-		{
-			oldpath = buff;
-			TCHAR c = oldpath[oldpath.GetLength()-1];
-			if(c != '\\' && c != '/') oldpath += '\\';
-			key.Close();
+			CRegKey key;
+			TCHAR buff[MAX_PATH];
+			ULONG len = sizeof(buff);
+			if(ERROR_SUCCESS == key.Open(HKEY_CLASSES_ROOT, _T("Software\\RealNetworks\\Preferences\\DT_Codecs"), KEY_READ)
+				&& ERROR_SUCCESS == key.QueryStringValue(NULL, buff, &len) && _tcslen(buff) > 0)
+			{
+				oldpath = buff;
+				TCHAR c = oldpath[oldpath.GetLength()-1];
+				if(c != '\\' && c != '/') oldpath += '\\';
+				key.Close();
+			}
+			len = sizeof(buff);
+			if(ERROR_SUCCESS == key.Open(HKEY_CLASSES_ROOT, _T("Helix\\HelixSDK\\10.0\\Preferences\\DT_Codecs"), KEY_READ)
+				&& ERROR_SUCCESS == key.QueryStringValue(NULL, buff, &len) && _tcslen(buff) > 0)
+			{
+				newpath = buff;
+				TCHAR c = newpath[newpath.GetLength()-1];
+				if(c != '\\' && c != '/') newpath += '\\';
+				key.Close();
+			}
+
+			if(!newpath.IsEmpty()) paths.AddTail(newpath + newdll);
+			if(!oldpath.IsEmpty()) paths.AddTail(oldpath + newdll);
+			paths.AddTail(newdll); // default dll paths
+			if(!newpath.IsEmpty()) paths.AddTail(newpath + olddll);
+			if(!oldpath.IsEmpty()) paths.AddTail(oldpath + olddll);
+			paths.AddTail(olddll); // default dll paths
+
+			POSITION pos = paths.GetHeadPosition();
+			while(pos && !(m_hDrvDll = LoadLibrary(paths.GetNext(pos))));
+
 		}
-		len = sizeof(buff);
-		if(ERROR_SUCCESS == key.Open(HKEY_CLASSES_ROOT, _T("Helix\\HelixSDK\\10.0\\Preferences\\DT_Codecs"), KEY_READ)
-			&& ERROR_SUCCESS == key.QueryStringValue(NULL, buff, &len) && _tcslen(buff) > 0)
-		{
-			newpath = buff;
-			TCHAR c = newpath[newpath.GetLength()-1];
-			if(c != '\\' && c != '/') newpath += '\\';
-			key.Close();
-		}
-
-		if(!newpath.IsEmpty()) paths.AddTail(newpath + newdll);
-		if(!oldpath.IsEmpty()) paths.AddTail(oldpath + newdll);
-		paths.AddTail(newdll); // default dll paths
-		if(!newpath.IsEmpty()) paths.AddTail(newpath + olddll);
-		if(!oldpath.IsEmpty()) paths.AddTail(oldpath + olddll);
-		paths.AddTail(olddll); // default dll paths
-
-		POSITION pos = paths.GetHeadPosition();
-		while(pos && !(m_hDrvDll = LoadLibrary(paths.GetNext(pos))));
-
 		if(m_hDrvDll)
 		{
 			RACloseCodec = (PCloseCodec)GetProcAddress(m_hDrvDll, "RACloseCodec");

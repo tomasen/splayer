@@ -564,6 +564,8 @@ public:
 	afx_msg void OnColorControlUpdateButtonReset(CCmdUI* pCmdUI);
 	afx_msg void OnColorControlUpdateButtonEnable(CCmdUI* pCmdUI);
 
+	afx_msg void OnResetSetting();
+
 	afx_msg void OnUpdatePlayerStatus(CCmdUI* pCmdUI);
 
 	afx_msg void OnFilePostOpenmedia();

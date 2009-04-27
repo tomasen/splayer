@@ -336,6 +336,7 @@ public:
 	bool StoreSettingsToRegistry();
 	CString GetIniPath();
 	bool IsIniValid();
+	void RemoveAllSetting();
 
 	bool GetAppDataPath(CString& path);
 	

@@ -50,7 +50,10 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 	CRect rcDesktop;
 	GetDesktopWindow()->GetWindowRect(&rcDesktop);
 
-	if( rcDesktop.Width() < 1200){
+	dispmode dm ;
+	GetCurDispMode(dm);
+	
+	if( dm.size.cx < 1200){
 		iToolBarID = IDB_PLAYERTOOLBAR_SMALL;
 		iButtonWidth = 20;
 	}

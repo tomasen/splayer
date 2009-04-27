@@ -563,7 +563,23 @@ bool CMPlayerCApp::IsIniValid()
 	CFileStatus fs;
 	return CFileGetStatus(GetIniPath(), fs) && fs.m_size > 0;
 }
+void CMPlayerCApp::RemoveAllSetting(){
+	_tremove(GetIniPath());
+	
+	HKEY hKey;
+	LONG ec = ::RegOpenKeyEx(HKEY_CURRENT_USER, _T("Software"), 0, KEY_ALL_ACCESS, &hKey);
+	if(ec == ERROR_SUCCESS)
+	{
+		
+		ec = ::RegDeleteKey(hKey, _T("SVPlayer"));
 
+		::RegCloseKey(hKey);
+	}
+	AppSettings& s = AfxGetAppSettings();
+	s.fInitialized = FALSE;
+	s.UpdateData(FALSE);
+
+}
 bool CMPlayerCApp::GetAppDataPath(CString& path)
 {
 	path.Empty();
@@ -1374,7 +1390,7 @@ CMPlayerCApp::Settings::Settings()
 	ADDCMD((ID_FILE_SAVE_IMAGE_AUTO, VK_F5, FVIRTKEY|FNOINVERT, _T("自动保存图片")));
 	ADDCMD((ID_FILE_LOAD_SUBTITLE, 'L', FVIRTKEY|FCONTROL|FNOINVERT, _T("读取字幕")));
 	ADDCMD((ID_FILE_SAVE_SUBTITLE, 'S', FVIRTKEY|FCONTROL|FNOINVERT, _T("保存字幕")));
-	ADDCMD((ID_FILE_CLOSEPLAYLIST, 'C', FVIRTKEY|FCONTROL|FNOINVERT, _T("关闭")));
+	ADDCMD((ID_FILE_CLOSEPLAYLIST, 'C', FVIRTKEY|FCONTROL|FNOINVERT, _T("关闭播放列表")));
 	ADDCMD((ID_FILE_PROPERTIES, VK_F10, FVIRTKEY|FSHIFT|FNOINVERT, _T("属性")));
 	ADDCMD((ID_FILE_EXIT, 'X', FVIRTKEY|FALT|FNOINVERT, _T("退出")));
 	ADDCMD((ID_TOGGLE_SUBTITLE, 'H', FVIRTKEY|FNOINVERT, _T("隐藏或显示字幕")));
@@ -1388,7 +1404,8 @@ CMPlayerCApp::Settings::Settings()
 	ADDCMD((ID_PLAY_DECRATE, VK_DOWN, FVIRTKEY|FCONTROL|FNOINVERT, _T("减速播放")));
 	ADDCMD((ID_VIEW_FULLSCREEN, VK_RETURN, FVIRTKEY|FALT|FNOINVERT, _T("切换全屏"), 0, wmcmd::LDBLCLK));
 	ADDCMD((ID_VIEW_FULLSCREEN, VK_RETURN, FVIRTKEY|FNOINVERT, _T("切换全屏"), 0, wmcmd::MUP));
-
+	ADDCMD((ID_VIEW_PLAYLIST, 'P', FVIRTKEY|FCONTROL|FNOINVERT, _T("打开播放列表")));
+	ADDCMD((ID_VIEW_PLAYLIST, '7', FVIRTKEY|FCONTROL|FNOINVERT, _T("Toggle Playlist Bar")));
 	ADDCMD((ID_PLAY_GOTO, 'G', FVIRTKEY|FCONTROL|FNOINVERT, _T("Go To")));
 	ADDCMD((ID_PLAY_RESETRATE, 'R', FVIRTKEY|FCONTROL|FNOINVERT, _T("Reset Rate")));
 	ADDCMD((ID_PLAY_INCAUDDELAY, VK_ADD, FVIRTKEY|FNOINVERT, _T("Audio Delay +10ms")));
@@ -1412,7 +1429,6 @@ CMPlayerCApp::Settings::Settings()
 	ADDCMD((ID_VIEW_STATISTICS, '4', FVIRTKEY|FCONTROL|FNOINVERT, _T("Toggle Statistics")));
 	ADDCMD((ID_VIEW_STATUS, '5', FVIRTKEY|FCONTROL|FNOINVERT, _T("Toggle Status")));
 	ADDCMD((ID_VIEW_SUBRESYNC, '6', FVIRTKEY|FCONTROL|FNOINVERT, _T("Toggle Subresync Bar")));
-	ADDCMD((ID_VIEW_PLAYLIST, '7', FVIRTKEY|FCONTROL|FNOINVERT, _T("Toggle Playlist Bar")));
 	ADDCMD((ID_VIEW_CAPTURE, '8', FVIRTKEY|FCONTROL|FNOINVERT, _T("Toggle Capture Bar")));
 	ADDCMD((ID_VIEW_SHADEREDITOR, '9', FVIRTKEY|FCONTROL|FNOINVERT, _T("Toggle Shader Editor Bar")));
 	ADDCMD((ID_VIEW_PRESETS_MINIMAL, '1', FVIRTKEY|FNOINVERT, _T("View Minimal")));

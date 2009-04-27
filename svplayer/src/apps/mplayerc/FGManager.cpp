@@ -1680,24 +1680,22 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	pFGF->AddType(MEDIATYPE_MPEG2_PES, MEDIASUBTYPE_PS2_PCM);
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_PS2_PCM);
 	m_transform.AddTail(pFGF);
-/*
 
-	pFGF = new CFGFilterInternal<CRealVideoDecoder>(
-		(tra & TRA_RV) ? ResStr(IDS_FGMANAGER_9) : L"RealVideo Decoder (low merit)",
-		(tra & TRA_RV) ? MERIT64_ABOVE_DSHOW : MERIT64_DO_USE);
-	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RV10);
-	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RV20);
-	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RV30);
-	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RV40);
+/*
+	pFGF = new CFGFilterInternal<CMpaDecFilter>(
+		  L"FFMpeg Real Audio Decoder" ,
+		 MERIT64_ABOVE_DSHOW);
+	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_COOK);
 	m_transform.AddTail(pFGF);
 */
 
+
 	pFGF = new CFGFilterInternal<CRealAudioDecoder>(
-		(tra & TRA_RA) ? L"MPC RealAudio Decoder" : L"RealAudio Decoder (low merit)",
-		(tra & TRA_RA) ? MERIT64_ABOVE_DSHOW : MERIT64_UNLIKELY);
+		 L"MPC RealAudio Decoder" ,
+		MERIT64_ABOVE_DSHOW );
+	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_ATRC);
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_14_4);
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_28_8);
-	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_ATRC);
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_COOK);
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_DNET);
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_SIPR);
@@ -1761,8 +1759,8 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	}	
 
 	pFGF = new CFGFilterInternal<CRealVideoDecoder>(
-		(tra & TRA_RV) ? L"MPC RealVideo Decoder" : L"MPC RealVideo Decoder (low merit)",
-		(tra & TRA_RV) ? MERIT64_ABOVE_DSHOW : MERIT64_UNLIKELY);
+		 L"MPC RealVideo Decoder",
+		 MERIT64_ABOVE_DSHOW );
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RV10);
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RV20);
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RV30);
@@ -2230,10 +2228,10 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		}
 	}
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("PMPSplitter.ax")) );
-	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("rms.ax")) );
+	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("rms.ax")) );
 	
 	if(!s.fUseInternalTSSpliter)
-		szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("NeSplitter.ax")) );
+		szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("NeSplitter.ax")) ); 
 
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("scmpack.dll")) );
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("svplayer.bin\\real\\rmoc3260.dll")) );
@@ -2250,6 +2248,9 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 			POSITION pos = fm2.m_filters.GetHeadPosition();
 			while(pos){
 				FilterOverride* fo = fm2.m_filters.GetNext(pos);
+				if(fo->name == _T("RealAudio Decoder")){
+					continue;
+				}
 				CFGFilter* pFGF = new CFGFilterFile(fo->clsid, fo->path, CStringW(fo->name), MERIT64_ABOVE_DSHOW + 1);
 				szLog.Format(_T("Loading Filter %s %s %s "), CStringFromGUID(fo->clsid) ,fo->path, CStringW(fo->name) );
 				SVP_LogMsg(szLog);

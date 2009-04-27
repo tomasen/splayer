@@ -116,7 +116,7 @@ REGISTER_DECODER  (qtrle);
   REGISTER_DECODER 	(nellymoser);
 //REGISTER_DECODER    (atrac3);
 REGISTER_DECODER    (libamr_nb);
-//REGISTER_DECODER    (cook);
+REGISTER_DECODER    (cook);
 //REGISTER_DECODER    (flac);
 //#ifdef __GNUC__
 //REGISTER_DECODER    (imc);

@@ -420,6 +420,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_REGISTERED_MESSAGE(WM_MOUSEMOVEIN, OnMouseMoveIn)
 	ON_REGISTERED_MESSAGE(WM_MOUSEMOVEOUT, OnMouseMoveOut)
 
+	ON_COMMAND(ID_RESET_SETTING,  OnResetSetting)
+
 	END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -603,6 +605,13 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	return 0;
 }
 
+void CMainFrame::OnResetSetting(){
+	if(AfxMessageBox(_T("此操作将清除射手播放器的\n所有设置和播放记录，您确定么？"), MB_YESNO) == IDYES){
+
+		CMPlayerCApp* mApp = (CMPlayerCApp*)AfxGetApp();
+		mApp->RemoveAllSetting();
+	}
+}
 void CMainFrame::OnDestroy()
 {
 	ShowTrayIcon(false);

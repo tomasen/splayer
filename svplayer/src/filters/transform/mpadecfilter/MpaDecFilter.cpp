@@ -112,6 +112,9 @@ const AMOVIESETUP_MEDIATYPE sudPinTypesIn[] =
 	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_Vorbis2},
 	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_FLAC_FRAMED},
 	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_NELLYMOSER},
+	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_COOK},
+	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_14_4},
+	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_28_8},
 };
 
 #ifdef REGISTER_FILTER
@@ -447,6 +450,12 @@ HRESULT CMpaDecFilter::Receive(IMediaSample* pIn)
 		hr = ProcessFfmpeg(CODEC_ID_AMR_NB);
 	else if(subtype == MEDIASUBTYPE_IMA4)
 		hr = ProcessFfmpeg(CODEC_ID_ADPCM_IMA_QT);
+	else if(subtype ==MEDIASUBTYPE_COOK)
+		hr = ProcessFfmpeg(CODEC_ID_COOK);
+	else if(subtype ==MEDIASUBTYPE_14_4)
+		hr = ProcessFfmpeg(CODEC_ID_RA_144);
+	else if(subtype ==MEDIASUBTYPE_28_8)
+		hr = ProcessFfmpeg(CODEC_ID_RA_288);
 	else // if(.. the rest ..)
 		hr = ProcessMPA();
 
@@ -2390,6 +2399,21 @@ bool CMpaDecFilter::InitFfmpeg(int nCodecId)
 		m_pAVCtx						= avcodec_alloc_context();
 		m_pParser				= av_parser_init(nCodecId);
 
+		if (nCodecId==CODEC_ID_COOK )
+		{
+			/* this code needs fixing */
+			
+			m_pAVCtx->extradata=m_pInput->CurrentMediaType().Format()+sizeof(WAVEFORMATEX); 
+			m_pAVCtx->extradata_size=m_pInput->CurrentMediaType().FormatLength()-sizeof(WAVEFORMATEX);
+			for (;m_pAVCtx->extradata_size;m_pAVCtx->extradata=(uint8_t*)m_pAVCtx->extradata+1,m_pAVCtx->extradata_size--){
+				if (memcmp(m_pAVCtx->extradata,"cook",4)==0)
+				{
+					m_pAVCtx->extradata=(uint8_t*)m_pAVCtx->extradata+12;
+					m_pAVCtx->extradata_size-=12;
+					break;
+				}
+			}
+		}
 		for( int ii = 0; ii <= 1; ii++){
 			m_pAVCtx->sample_rate			= wfein->nSamplesPerSec;
 			m_pAVCtx->channels				= wfein->nChannels;
@@ -2406,11 +2430,13 @@ bool CMpaDecFilter::InitFfmpeg(int nCodecId)
 				m_pPCMData	= (BYTE*)FF_aligned_malloc (AVCODEC_MAX_AUDIO_FRAME_SIZE+FF_INPUT_BUFFER_PADDING_SIZE, 64);
 				bRet		= true;
 
-				int iSpeakerConfig = GetSpeakerConfig(ac3);
-				if (iSpeakerConfig >= 0)
-				{
-					scmap_t& scmap				= s_scmap_ac3[iSpeakerConfig&A52_CHANNEL_MASK+ ((iSpeakerConfig&A52_LFE)?(countof(s_scmap_ac3)/2):0)];
-					m_pAVCtx->request_channels	= scmap.nChannels;
+				if (nCodecId!=CODEC_ID_COOK ){
+					int iSpeakerConfig = GetSpeakerConfig(ac3);
+					if (iSpeakerConfig >= 0)
+					{
+						scmap_t& scmap				= s_scmap_ac3[iSpeakerConfig&A52_CHANNEL_MASK+ ((iSpeakerConfig&A52_LFE)?(countof(s_scmap_ac3)/2):0)];
+						m_pAVCtx->request_channels	= scmap.nChannels;
+					}
 				}
 				break;
 			}else{

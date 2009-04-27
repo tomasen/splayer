@@ -2073,6 +2073,8 @@ BEGIN
     BEGIN
         MENUITEM "选项(&O)...",                   ID_VIEW_OPTIONS
         MENUITEM "高级设置(&A)...",                 ID_32797
+		MENUITEM SEPARATOR
+		MENUITEM "恢复默认设置",                 ID_RESET_SETTING
         POPUP "工具"
         BEGIN
             MENUITEM "DSM转换器(&n)...",               ID_FILE_CONVERT

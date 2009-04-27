@@ -81,6 +81,7 @@ SRCS_C=\
 		$(LAVC_DIR)/nellymoser.c \
 		$(LAVC_DIR)/nellymoserdec.c \
 		$(LAVC_DIR)/adpcm.c \
+		$(LAVC_DIR)/cook.c \
 		$(LAVC_DIR)/ratecontrol.c
 
 #SRCS_C+=\
@@ -93,7 +94,6 @@ SRCS_C=\
 #		$(LAVC_DIR)/cavsdec.c \
 #		$(LAVC_DIR)/cavsdsp.c \
 #		$(LAVC_DIR)/cinepak.c \
-#		$(LAVC_DIR)/cook.c \
 #		$(LAVC_DIR)/corepng.c \
 #		$(LAVC_DIR)/cscd.c \
 #		$(LAVC_DIR)/cyuv.c \

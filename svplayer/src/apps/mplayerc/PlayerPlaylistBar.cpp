@@ -560,7 +560,7 @@ public:
 UINT __cdecl Thread_FindMoreFileFromOneFileAndPutIntoPlaylist( LPVOID lpParam ) 
 { 
 	CFFindMoreFiles * ma =(CFFindMoreFiles*) lpParam;
-	Sleep(2000); // Detect If File is already opened
+	// Detect If File is already opened
 	ma->wndPlaylist->RealFindMoreFileFromOneFileAndPutIntoPlaylist( ma->szMediaFile, ma->szaIn);
 	//delete ma;
 	return 0; 
@@ -597,7 +597,14 @@ void CPlayerPlaylistBar::Append(CAtlList<CString>& fns, bool fMulti, CAtlList<CS
 	{
 		ParsePlayList(fns, subs);
 	}
-	CheckForPlaylistSubtitle();
+	if(this->GetCount() < 7){
+		CString szFile = fns.GetTail();
+		if(szFile.Right(3).CompareNoCase(_T(".rm")) == 0 || szFile.Right(5).CompareNoCase(_T(".rmvb")) == 0){
+
+		}else{
+			CheckForPlaylistSubtitle();
+		}
+	}
 
 	Refresh();
 	SavePlaylist();
@@ -1054,7 +1061,7 @@ void CPlayerPlaylistBar::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruc
 	CRect rcItem = lpDrawItemStruct->rcItem;
 	POSITION pos = FindPos(nItem);
 	bool fSelected = pos == m_pl.GetPos();
-	CPlaylistItem& pli = m_pl.GetAt(pos);
+	
 
 	CDC* pDC = CDC::FromHandle(lpDrawItemStruct->hDC);
 
@@ -1067,11 +1074,18 @@ void CPlayerPlaylistBar::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruc
 	{
 		FillRect(pDC->m_hDC, rcItem, CBrush(GetSysColor(COLOR_WINDOW)));
 	}
-
+	CString time = _T("Invalid");
 	COLORREF textcolor = fSelected?0xff:0;
-	if(pli.m_fInvalid) textcolor |= 0xA0A0A0;
+	try {
+		CPlaylistItem& pli = m_pl.GetAt(pos); // not sure is this a proper way to avoid crash after this
+		if(pli.m_fInvalid) textcolor |= 0xA0A0A0;
+		else time = m_list.GetItemText(nItem, COL_TIME);
+	}catch(...){
+		
+	}
+	
 
-	CString time = !pli.m_fInvalid ? m_list.GetItemText(nItem, COL_TIME) : _T("Invalid");
+	
 	CSize timesize(0, 0);
 	CPoint timept(rcItem.right, 0);
 	if(time.GetLength() > 0)

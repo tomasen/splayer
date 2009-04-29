@@ -593,6 +593,22 @@
 				>
 			</File>
 			<File
+				RelativePath=".\libavcodec\mpegaudio_parser.c"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\mpegaudiodata.c"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\mpegaudiodec.c"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\mpegaudiodecheader.c"
+				>
+			</File>
+			<File
 				RelativePath=".\libavcodec\mpegvideo.c"
 				>
 			</File>

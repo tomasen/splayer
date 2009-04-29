@@ -82,14 +82,14 @@
  CODEC_OP(CODEC_ID_AMV               ,71,"amv") \
  \
  /* Well-known audio codecs */ \
- CODEC_OP(CODEC_ID_MP2               ,100,"") \
- CODEC_OP(CODEC_ID_MP3               ,101,"") \
+ CODEC_OP(CODEC_ID_MP2               ,100,"mp2") \
+ CODEC_OP(CODEC_ID_MP3               ,101,"mp3") \
  CODEC_OP(CODEC_ID_VORBIS            ,102,"vorbis") \
- CODEC_OP(CODEC_ID_AC3               ,103,"") \
+ CODEC_OP(CODEC_ID_AC3               ,103,"ac3") \
  CODEC_OP(CODEC_ID_WMAV1             ,104,"wmav1") \
  CODEC_OP(CODEC_ID_WMAV2             ,105,"wmav2") \
- CODEC_OP(CODEC_ID_AAC               ,106,"") \
- CODEC_OP(CODEC_ID_DTS               ,107,"") \
+ CODEC_OP(CODEC_ID_AAC               ,106,"aac") \
+ CODEC_OP(CODEC_ID_DTS               ,107,"dts") \
  CODEC_OP(CODEC_ID_IMC               ,108,"imc") \
  CODEC_OP(CODEC_ID_PCM_U16LE         ,109,"") \
  CODEC_OP(CODEC_ID_PCM_U16BE         ,110,"") \

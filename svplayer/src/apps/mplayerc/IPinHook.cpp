@@ -273,6 +273,7 @@ static HRESULT ( STDMETHODCALLTYPE *DisplayFrameOrg )( IAMVideoAcceleratorC * Th
 
 static void LOG_TOFILE(LPCTSTR FileName, LPCTSTR fmt, ...)
 {
+	return;
 	va_list args;
 	va_start(args, fmt);
 	if(TCHAR* buff = new TCHAR[_vsctprintf(fmt, args) + 1])

@@ -82,7 +82,13 @@ SRCS_C=\
 		$(LAVC_DIR)/nellymoserdec.c \
 		$(LAVC_DIR)/adpcm.c \
 		$(LAVC_DIR)/cook.c \
-		$(LAVC_DIR)/ratecontrol.c
+		$(LAVC_DIR)/ratecontrol.c \
+		$(LAVC_DIR)/mpegaudio_parser.c \
+		$(LAVC_DIR)/ra144.c \
+		$(LAVC_DIR)/ra288.c \
+		$(LAVC_DIR)/mpegaudiodata.c \
+		$(LAVC_DIR)/mpegaudiodec.c \
+		$(LAVC_DIR)/mpegaudiodecheader.c \
 
 #SRCS_C+=\
 #		$(LAVC_DIR)/8bps.c \
@@ -123,10 +129,6 @@ SRCS_C=\
 #		$(LAVC_DIR)/mpeg12.c \
 #		$(LAVC_DIR)/mpeg12data.c \
 #		$(LAVC_DIR)/mpeg4audio.c \
-#		$(LAVC_DIR)/mpegaudio_parser.c \
-#		$(LAVC_DIR)/mpegaudiodata.c \
-#		$(LAVC_DIR)/mpegaudiodec.c \
-#		$(LAVC_DIR)/mpegaudiodecheader.c \
 #		$(LAVC_DIR)/mpegvideo_parser.c \
 #		$(LAVC_DIR)/msrle.c \
 #		$(LAVC_DIR)/msvideo1.c \
@@ -137,8 +139,6 @@ SRCS_C=\
 #		$(LAVC_DIR)/rv10.c \
 #		$(LAVC_DIR)/qdm2.c \
 #		$(LAVC_DIR)/qpeg.c \
-#		$(LAVC_DIR)/ra144.c \
-#		$(LAVC_DIR)/ra288.c \
 #		$(LAVC_DIR)/rpza.c \
 #		$(LAVC_DIR)/rtjpeg.c \
 #		$(LAVC_DIR)/truemotion1.c \

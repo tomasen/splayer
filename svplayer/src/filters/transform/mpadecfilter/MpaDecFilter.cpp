@@ -456,8 +456,10 @@ HRESULT CMpaDecFilter::Receive(IMediaSample* pIn)
 		hr = ProcessFfmpeg(CODEC_ID_RA_144);
 	else if(subtype ==MEDIASUBTYPE_28_8)
 		hr = ProcessFfmpeg(CODEC_ID_RA_288);
-	else // if(.. the rest ..)
+	else {// if(.. the rest ..)
 		hr = ProcessMPA();
+		//hr = ProcessFfmpeg(CODEC_ID_MP3);
+	}
 
 	return hr;
 }

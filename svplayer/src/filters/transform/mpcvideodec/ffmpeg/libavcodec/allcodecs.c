@@ -72,6 +72,7 @@ void avcodec_register_all(void)
 //REGISTER_DECODER  (mpeg1video);
 //REGISTER_DECODER  (mpeg2video);
   REGISTER_DECODER  (mpeg4);
+//  REGISTER_DECODER  (mp3);
 //REGISTER_DECODER  (mpegvideo);
   REGISTER_DECODER  (msmpeg4v1);
   REGISTER_DECODER  (msmpeg4v2);

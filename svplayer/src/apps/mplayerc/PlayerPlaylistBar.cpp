@@ -561,7 +561,7 @@ UINT __cdecl Thread_FindMoreFileFromOneFileAndPutIntoPlaylist( LPVOID lpParam )
 { 
 	CFFindMoreFiles * ma =(CFFindMoreFiles*) lpParam;
 	// Detect If File is already opened
-	Sleep(4000);
+	Sleep(1000);
 	ma->wndPlaylist->RealFindMoreFileFromOneFileAndPutIntoPlaylist( ma->szMediaFile, ma->szaIn);
 	//delete ma;
 	return 0; 
@@ -970,33 +970,35 @@ void CPlayerPlaylistBar::OnLvnKeyDown(NMHDR* pNMHDR, LRESULT* pResult)
 	POSITION pos = m_list.GetFirstSelectedItemPosition();
 	while(pos) items.AddHead(m_list.GetNextSelectedItem(pos));
 
-	if(pLVKeyDown->wVKey == VK_DELETE && items.GetCount() > 0) 
-	{
-		pos = items.GetHeadPosition();
-		while(pos) 
+	try{
+		if(pLVKeyDown->wVKey == VK_DELETE && items.GetCount() > 0) 
 		{
-			int i = items.GetNext(pos);
-			if(m_pl.RemoveAt(FindPos(i))) ((CMainFrame*)AfxGetMainWnd())->CloseMedia();
-			m_list.DeleteItem(i);
+			pos = items.GetHeadPosition();
+			while(pos) 
+			{
+				int i = items.GetNext(pos);
+				if(m_pl.RemoveAt(FindPos(i))) ((CMainFrame*)AfxGetMainWnd())->CloseMedia();
+				m_list.DeleteItem(i);
+			}
+
+			m_list.SetItemState(-1, 0, LVIS_SELECTED);
+			m_list.SetItemState(
+				max(min(items.GetTail(), m_list.GetItemCount()-1), 0), 
+				LVIS_SELECTED, LVIS_SELECTED);
+
+			ResizeListColumn();
+
+			*pResult = TRUE;
 		}
+		else if(pLVKeyDown->wVKey == VK_SPACE && items.GetCount() == 1) 
+		{
+			m_pl.SetPos(FindPos(items.GetHead()));
 
-		m_list.SetItemState(-1, 0, LVIS_SELECTED);
-		m_list.SetItemState(
-			max(min(items.GetTail(), m_list.GetItemCount()-1), 0), 
-			LVIS_SELECTED, LVIS_SELECTED);
+			((CMainFrame*)AfxGetMainWnd())->OpenCurPlaylistItem(); //should we use recent rStart time?
 
-		ResizeListColumn();
-
-		*pResult = TRUE;
-	}
-	else if(pLVKeyDown->wVKey == VK_SPACE && items.GetCount() == 1) 
-	{
-		m_pl.SetPos(FindPos(items.GetHead()));
-
-		((CMainFrame*)AfxGetMainWnd())->OpenCurPlaylistItem(); //should we use recent rStart time?
-
-		*pResult = TRUE;
-	}
+			*pResult = TRUE;
+		}
+	}catch(...){*pResult = FALSE;}
 }
 
 void CPlayerPlaylistBar::OnNMDblclkList(NMHDR* pNMHDR, LRESULT* pResult)
@@ -1005,9 +1007,11 @@ void CPlayerPlaylistBar::OnNMDblclkList(NMHDR* pNMHDR, LRESULT* pResult)
 
 	if(lpnmlv->iItem >= 0 && lpnmlv->iSubItem >= 0)
 	{
-		m_pl.SetPos(FindPos(lpnmlv->iItem));
-		m_list.Invalidate();
-		((CMainFrame*)AfxGetMainWnd())->OpenCurPlaylistItem(); //should we use recent rStart time
+		try{
+			m_pl.SetPos(FindPos(lpnmlv->iItem));
+			m_list.Invalidate();
+			((CMainFrame*)AfxGetMainWnd())->OpenCurPlaylistItem(); //should we use recent rStart time
+		}catch(...){}
 	}
 
 	*pResult = 0;
@@ -1309,9 +1313,11 @@ void CPlayerPlaylistBar::DropItemOnList()
 	for(int i = 0; i < m_list.GetItemCount(); i++)
 	{
 		POSITION pos = (POSITION)m_list.GetItemData(i);
-		CPlaylistItem& pli = m_pl.GetAt(pos);
-		tmp.AddTail(pli);
-		if(pos == m_pl.GetPos()) id = pli.m_id;
+		try{
+			CPlaylistItem& pli = m_pl.GetAt(pos);
+			tmp.AddTail(pli);
+			if(pos == m_pl.GetPos()) id = pli.m_id;
+		}catch(...){}
 	}
 	m_pl.RemoveAll();
 	POSITION pos = tmp.GetHeadPosition();
@@ -1341,48 +1347,49 @@ BOOL CPlayerPlaylistBar::OnToolTipNotify(UINT id, NMHDR* pNMHDR, LRESULT* pResul
 	if(row < 0 || row >= m_pl.GetCount())
 		return FALSE;
 
-	CPlaylistItem& pli = m_pl.GetAt(FindPos(row));
+	try{
+		CPlaylistItem& pli = m_pl.GetAt(FindPos(row));
 
-	CString strTipText;
+		CString strTipText;
 
-	if(col == COL_NAME)
-	{
-		POSITION pos = pli.m_fns.GetHeadPosition();
-		while(pos) strTipText += _T("\n") + pli.m_fns.GetNext(pos);
-		strTipText.Trim();
-		
-		if(pli.m_type == CPlaylistItem::device)
+		if(col == COL_NAME)
 		{
-			CString str;
-			str.Format(_T("Video Input %d"), pli.m_vinput);
-			if(pli.m_vinput >= 0) strTipText += _T("\n") + str;
-			str.Format(_T("Video Channel %d"), pli.m_vchannel);
-			if(pli.m_vchannel >= 0) strTipText += _T("\n") + str;
-			str.Format(_T("Audio Input %d"), pli.m_ainput);
-			if(pli.m_ainput >= 0) strTipText += _T("\n") + str;
+			POSITION pos = pli.m_fns.GetHeadPosition();
+			while(pos) strTipText += _T("\n") + pli.m_fns.GetNext(pos);
+			strTipText.Trim();
+			
+			if(pli.m_type == CPlaylistItem::device)
+			{
+				CString str;
+				str.Format(_T("Video Input %d"), pli.m_vinput);
+				if(pli.m_vinput >= 0) strTipText += _T("\n") + str;
+				str.Format(_T("Video Channel %d"), pli.m_vchannel);
+				if(pli.m_vchannel >= 0) strTipText += _T("\n") + str;
+				str.Format(_T("Audio Input %d"), pli.m_ainput);
+				if(pli.m_ainput >= 0) strTipText += _T("\n") + str;
+			}
+
+			::SendMessage(pNMHDR->hwndFrom, TTM_SETMAXTIPWIDTH, 0, (LPARAM)(INT)1000);
 		}
+		else if(col == COL_TIME)
+		{
+			return FALSE;
+		}
+	
+		static CStringA m_strTipTextA;
+		static CStringW m_strTipTextW;
 
-		::SendMessage(pNMHDR->hwndFrom, TTM_SETMAXTIPWIDTH, 0, (LPARAM)(INT)1000);
-	}
-	else if(col == COL_TIME)
-	{
-		return FALSE;
-	}
-
-	static CStringA m_strTipTextA;
-	static CStringW m_strTipTextW;
-
-	if(pNMHDR->code == TTN_NEEDTEXTA)
-	{
-		m_strTipTextA = strTipText;
-		pTTTA->lpszText = (LPSTR)(LPCSTR)m_strTipTextA;
-	}
-	else
-	{
-		m_strTipTextW = strTipText;
-		pTTTW->lpszText = (LPWSTR)(LPCWSTR)m_strTipTextW;
-	}
-
+		if(pNMHDR->code == TTN_NEEDTEXTA)
+		{
+			m_strTipTextA = strTipText;
+			pTTTA->lpszText = (LPSTR)(LPCSTR)m_strTipTextA;
+		}
+		else
+		{
+			m_strTipTextW = strTipText;
+			pTTTW->lpszText = (LPWSTR)(LPCWSTR)m_strTipTextW;
+		}
+	}catch(...){}
 	*pResult = 0;
 
 	return TRUE;    // message was handled
@@ -1425,207 +1432,209 @@ void CPlayerPlaylistBar::OnContextMenu(CWnd* /*pWnd*/, CPoint p)
 	m.AppendMenu(MF_STRING|MF_ENABLED|(AfxGetApp()->GetProfileInt(ResStr(IDS_R_SETTINGS), _T("RememberPlaylistItems"), TRUE)?MF_CHECKED:0), M_REMEMBERPLAYLIST, ResStr(IDS_PLAYLIST_REMEBERITEMS));
 
 	CMainFrame* pMainFrm = (CMainFrame*)AfxGetMainWnd();
-
-	int nID = (int)m.TrackPopupMenu(TPM_LEFTBUTTON|TPM_RETURNCMD, p.x, p.y, this);
-	switch(nID)
-	{
-	case M_OPEN:
-		m_pl.SetPos(pos);
-		m_list.Invalidate();
-		pMainFrm->OpenCurPlaylistItem();
-		break;
-	case M_ADD:
-		pMainFrm->AddCurDevToPlaylist();
-		m_pl.SetPos(m_pl.GetTailPosition());
-		break;
-	case M_REMOVE:
-		if(m_pl.RemoveAt(pos)) pMainFrm->CloseMedia();
-		m_list.DeleteItem(lvhti.iItem);
-		SavePlaylist();
-		break;
-	case M_SORTBYID:
-		m_pl.SortById();
-		SetupList();
-		SavePlaylist();
-		break;
-	case M_SORTBYNAME:
-		m_pl.SortByName();
-		SetupList();
-		SavePlaylist();
-		break;
-	case M_SORTBYPATH:
-		m_pl.SortByPath();
-		SetupList();
-		SavePlaylist();
-		break;
-	case M_RANDOMIZE:
-		m_pl.Randomize();
-		SetupList();
-		SavePlaylist();
-		break;
-	case M_CLIPBOARD:
-		if(OpenClipboard() && EmptyClipboard())
+		try{
+		
+		int nID = (int)m.TrackPopupMenu(TPM_LEFTBUTTON|TPM_RETURNCMD, p.x, p.y, this);
+		switch(nID)
 		{
-			CString str;
-
-			CPlaylistItem& pli = m_pl.GetAt(pos);
-			POSITION pos = pli.m_fns.GetHeadPosition();
-			while(pos) str += _T("\r\n") + pli.m_fns.GetNext(pos);
-			str.Trim();
-
-			if(HGLOBAL h = GlobalAlloc(GMEM_MOVEABLE, (str.GetLength()+1)*sizeof(TCHAR)))
+		case M_OPEN:
+			m_pl.SetPos(pos);
+			m_list.Invalidate();
+			pMainFrm->OpenCurPlaylistItem();
+			break;
+		case M_ADD:
+			pMainFrm->AddCurDevToPlaylist();
+			m_pl.SetPos(m_pl.GetTailPosition());
+			break;
+		case M_REMOVE:
+			if(m_pl.RemoveAt(pos)) pMainFrm->CloseMedia();
+			m_list.DeleteItem(lvhti.iItem);
+			SavePlaylist();
+			break;
+		case M_SORTBYID:
+			m_pl.SortById();
+			SetupList();
+			SavePlaylist();
+			break;
+		case M_SORTBYNAME:
+			m_pl.SortByName();
+			SetupList();
+			SavePlaylist();
+			break;
+		case M_SORTBYPATH:
+			m_pl.SortByPath();
+			SetupList();
+			SavePlaylist();
+			break;
+		case M_RANDOMIZE:
+			m_pl.Randomize();
+			SetupList();
+			SavePlaylist();
+			break;
+		case M_CLIPBOARD:
+			if(OpenClipboard() && EmptyClipboard())
 			{
-				if(TCHAR* s = (TCHAR*)GlobalLock(h))
+				CString str;
+
+				CPlaylistItem& pli = m_pl.GetAt(pos);
+				POSITION pos = pli.m_fns.GetHeadPosition();
+				while(pos) str += _T("\r\n") + pli.m_fns.GetNext(pos);
+				str.Trim();
+
+				if(HGLOBAL h = GlobalAlloc(GMEM_MOVEABLE, (str.GetLength()+1)*sizeof(TCHAR)))
 				{
-					_tcscpy(s, str);
-					GlobalUnlock(h);
-#ifdef UNICODE
-					SetClipboardData(CF_UNICODETEXT, h);
-#else
-					SetClipboardData(CF_TEXT, h);
-#endif
-				}
-			}
-			CloseClipboard(); 
-		}
-		break;
-	case M_SAVEAS:
-		{
-			CSaveTextFileDialog fd(
-				CTextFile::ASCII, NULL, NULL,
-				_T("Media Player Classic playlist (*.mpcpl)|*.mpcpl|Playlist (*.pls)|*.pls|WinAmp playlist (*.m3u)|*.m3u|Windows Media Playlist (*.asx)|*.asx||"), 
-				this);
-	
-			if(fd.DoModal() != IDOK)
-				break;
-
-			CTextFile::enc encoding = (CTextFile::enc)fd.GetEncoding();
-			if(encoding == CTextFile::ASCII) encoding = CTextFile::ANSI;
-
-			int idx = fd.m_pOFN->nFilterIndex;
-
-			CPath path(fd.GetPathName());
-
-			switch(idx)
-			{
-			case 1: path.AddExtension(_T(".mpcpl")); break;
-			case 2: path.AddExtension(_T(".pls")); break;
-			case 3: path.AddExtension(_T(".m3u")); break;
-			case 4: path.AddExtension(_T(".asx")); break;
-			default: break;
-			}
-
-			bool fRemovePath = true;
-
-			CPath p(path);
-			p.RemoveFileSpec();
-			CString base = (LPCTSTR)p;
-
-			pos = m_pl.GetHeadPosition();
-			while(pos && fRemovePath)
-			{
-				CPlaylistItem& pli = m_pl.GetNext(pos);
-
-				if(pli.m_type != CPlaylistItem::file) fRemovePath = false;
-				else
-				{
-					POSITION pos;
-
-					pos = pli.m_fns.GetHeadPosition();
-					while(pos && fRemovePath)
+					if(TCHAR* s = (TCHAR*)GlobalLock(h))
 					{
-						CString fn = pli.m_fns.GetNext(pos);
-
-						CPath p(fn);
-						p.RemoveFileSpec();
-						if(base != (LPCTSTR)p) fRemovePath = false;
-					}
-
-					pos = pli.m_subs.GetHeadPosition();
-					while(pos && fRemovePath)
-					{
-						CString fn = pli.m_subs.GetNext(pos);
-
-						CPath p(fn);
-						p.RemoveFileSpec();
-						if(base != (LPCTSTR)p) fRemovePath = false;
+						_tcscpy(s, str);
+						GlobalUnlock(h);
+	#ifdef UNICODE
+						SetClipboardData(CF_UNICODETEXT, h);
+	#else
+						SetClipboardData(CF_TEXT, h);
+	#endif
 					}
 				}
+				CloseClipboard(); 
 			}
-
-			if(idx == 1)
+			break;
+		case M_SAVEAS:
 			{
-				SaveMPCPlayList(path, encoding, fRemovePath);
-				break;
-			}
+				CSaveTextFileDialog fd(
+					CTextFile::ASCII, NULL, NULL,
+					_T("Media Player Classic playlist (*.mpcpl)|*.mpcpl|Playlist (*.pls)|*.pls|WinAmp playlist (*.m3u)|*.m3u|Windows Media Playlist (*.asx)|*.asx||"), 
+					this);
+		
+				if(fd.DoModal() != IDOK)
+					break;
 
-			CTextFile f;
-			if(!f.Save(path, encoding))
-				break;
+				CTextFile::enc encoding = (CTextFile::enc)fd.GetEncoding();
+				if(encoding == CTextFile::ASCII) encoding = CTextFile::ANSI;
 
-			if (idx == 2)
-			{
-				f.WriteString(_T("[playlist]\n"));
-			}
-			else if (idx == 4)
-			{
-				f.WriteString(_T("<ASX version = \"3.0\">\n"));
-			}
+				int idx = fd.m_pOFN->nFilterIndex;
 
-			pos = m_pl.GetHeadPosition();
-			CString str;
-			int i;
-			for(i = 0; pos; i++)
-			{
-				CPlaylistItem& pli = m_pl.GetNext(pos);
-
-				if(pli.m_type != CPlaylistItem::file) 
-					continue;
-
-				CString fn = pli.m_fns.GetHead();
-
-				/*
-				if(fRemovePath)
-				{
-					CPath p(path);
-					p.StripPath();
-					fn = (LPCTSTR)p;
-				}
-				*/
+				CPath path(fd.GetPathName());
 
 				switch(idx)
 				{
-				case 2: str.Format(_T("File%d=%s\n"), i+1, fn); break;
-				case 3: str.Format(_T("%s\n"), fn); break;
-				case 4: str.Format(_T("<Entry><Ref href = \"%s\"/></Entry>\n"), fn); break;
+				case 1: path.AddExtension(_T(".mpcpl")); break;
+				case 2: path.AddExtension(_T(".pls")); break;
+				case 3: path.AddExtension(_T(".m3u")); break;
+				case 4: path.AddExtension(_T(".asx")); break;
 				default: break;
 				}
-				f.WriteString(str);
-			}
 
-			if (idx == 2)
-			{
-				str.Format(_T("NumberOfEntries=%d\n"), i);
-				f.WriteString(str);
-				f.WriteString(_T("Version=2\n"));
+				bool fRemovePath = true;
+
+				CPath p(path);
+				p.RemoveFileSpec();
+				CString base = (LPCTSTR)p;
+
+				pos = m_pl.GetHeadPosition();
+				while(pos && fRemovePath)
+				{
+					CPlaylistItem& pli = m_pl.GetNext(pos);
+
+					if(pli.m_type != CPlaylistItem::file) fRemovePath = false;
+					else
+					{
+						POSITION pos;
+
+						pos = pli.m_fns.GetHeadPosition();
+						while(pos && fRemovePath)
+						{
+							CString fn = pli.m_fns.GetNext(pos);
+
+							CPath p(fn);
+							p.RemoveFileSpec();
+							if(base != (LPCTSTR)p) fRemovePath = false;
+						}
+
+						pos = pli.m_subs.GetHeadPosition();
+						while(pos && fRemovePath)
+						{
+							CString fn = pli.m_subs.GetNext(pos);
+
+							CPath p(fn);
+							p.RemoveFileSpec();
+							if(base != (LPCTSTR)p) fRemovePath = false;
+						}
+					}
+				}
+
+				if(idx == 1)
+				{
+					SaveMPCPlayList(path, encoding, fRemovePath);
+					break;
+				}
+
+				CTextFile f;
+				if(!f.Save(path, encoding))
+					break;
+
+				if (idx == 2)
+				{
+					f.WriteString(_T("[playlist]\n"));
+				}
+				else if (idx == 4)
+				{
+					f.WriteString(_T("<ASX version = \"3.0\">\n"));
+				}
+
+				pos = m_pl.GetHeadPosition();
+				CString str;
+				int i;
+				for(i = 0; pos; i++)
+				{
+					CPlaylistItem& pli = m_pl.GetNext(pos);
+
+					if(pli.m_type != CPlaylistItem::file) 
+						continue;
+
+					CString fn = pli.m_fns.GetHead();
+
+					/*
+					if(fRemovePath)
+					{
+						CPath p(path);
+						p.StripPath();
+						fn = (LPCTSTR)p;
+					}
+					*/
+
+					switch(idx)
+					{
+					case 2: str.Format(_T("File%d=%s\n"), i+1, fn); break;
+					case 3: str.Format(_T("%s\n"), fn); break;
+					case 4: str.Format(_T("<Entry><Ref href = \"%s\"/></Entry>\n"), fn); break;
+					default: break;
+					}
+					f.WriteString(str);
+				}
+
+				if (idx == 2)
+				{
+					str.Format(_T("NumberOfEntries=%d\n"), i);
+					f.WriteString(str);
+					f.WriteString(_T("Version=2\n"));
+				}
+				else if (idx == 4)
+				{
+					f.WriteString(_T("</ASX>\n"));
+				}
 			}
-			else if (idx == 4)
-			{
-				f.WriteString(_T("</ASX>\n"));
-			}
+			break;
+		case M_REMEMBERPLAYLIST:
+			AfxGetApp()->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("RememberPlaylistItems"), 
+				!AfxGetApp()->GetProfileInt(ResStr(IDS_R_SETTINGS), _T("RememberPlaylistItems"), TRUE));
+			break;
+		case M_SHUFFLE:
+			AfxGetApp()->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("ShufflePlaylistItems"), 
+				!AfxGetApp()->GetProfileInt(ResStr(IDS_R_SETTINGS), _T("ShufflePlaylistItems"), FALSE));
+			break;
+		default:
+			break;
 		}
-		break;
-	case M_REMEMBERPLAYLIST:
-		AfxGetApp()->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("RememberPlaylistItems"), 
-			!AfxGetApp()->GetProfileInt(ResStr(IDS_R_SETTINGS), _T("RememberPlaylistItems"), TRUE));
-		break;
-	case M_SHUFFLE:
-		AfxGetApp()->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("ShufflePlaylistItems"), 
-			!AfxGetApp()->GetProfileInt(ResStr(IDS_R_SETTINGS), _T("ShufflePlaylistItems"), FALSE));
-		break;
-	default:
-		break;
-	}
+	}catch(...){}
 }
 
 void CPlayerPlaylistBar::OnLvnEndlabeleditList(NMHDR* pNMHDR, LRESULT* pResult)
@@ -1634,9 +1643,11 @@ void CPlayerPlaylistBar::OnLvnEndlabeleditList(NMHDR* pNMHDR, LRESULT* pResult)
 
 	if(pDispInfo->item.iItem >= 0 && pDispInfo->item.pszText)
 	{
-		CPlaylistItem& pli = m_pl.GetAt((POSITION)m_list.GetItemData(pDispInfo->item.iItem));
-		pli.m_label = pDispInfo->item.pszText;
-		m_list.SetItemText(pDispInfo->item.iItem, 0, pDispInfo->item.pszText);
+		try{
+			CPlaylistItem& pli = m_pl.GetAt((POSITION)m_list.GetItemData(pDispInfo->item.iItem));
+			pli.m_label = pDispInfo->item.pszText;
+			m_list.SetItemText(pDispInfo->item.iItem, 0, pDispInfo->item.pszText);
+		}catch(...){}
 	}
 
 	*pResult = 0;

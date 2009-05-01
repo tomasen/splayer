@@ -36,7 +36,9 @@ IMPLEMENT_DYNAMIC(CPlayerPlaylistBar, CSizingControlBarG)
 CPlayerPlaylistBar::CPlayerPlaylistBar()
 	: m_list(0)
 	, m_nTimeColWidth(0)
+	, m_csDataLock(0)
 {
+	m_csDataLock = new CCritSec();
 	m_bDragging = FALSE;
 }
 
@@ -522,10 +524,13 @@ void CPlayerPlaylistBar::Empty()
 	SavePlaylist();
 }
 void CPlayerPlaylistBar::RealFindMoreFileFromOneFileAndPutIntoPlaylist(CString szMediaFile , CAtlList<CString>& szaIn ){
+	
 	//check if dir has more files
 	CAtlList<CString> szaRet;
 	CAtlArray<CString> mask;
-	AfxGetAppSettings().Formats.GetExtsArray(mask);
+	bool noAudio = !AfxGetAppSettings().Formats.IsAudioFile(szMediaFile);
+
+	AfxGetAppSettings().Formats.GetExtsArray(mask, noAudio);
 	CSVPToolBox svptool;
 	svptool.findMoreFileByFile(szMediaFile, szaRet, mask);
 
@@ -539,13 +544,22 @@ void CPlayerPlaylistBar::RealFindMoreFileFromOneFileAndPutIntoPlaylist(CString s
 		}
 	}
 	if(bPlayListHavntChanged){
-		svptool.MergeAltList(szaRet, szaIn);
+		{
+			//delete m_csDataLock;
+			//m_csDataLock = new CCritSec();
+			CAutoLock dataLock(m_csDataLock);
+			svptool.MergeAltList(szaRet, szaIn);
 
-		Empty();  //add them all
-		Append(szaRet, !!szaRet.GetCount());
+			Empty();  //add them all
+			POSITION posx = szaRet.GetHeadPosition();
+			while(posx) ParsePlayList(szaRet.GetNext(posx), NULL); 
 
+		}
 		POSITION pos = FindPosByFilename(szMediaFile);
 		m_pl.SetPos(pos);
+
+		Refresh();
+		SavePlaylist();
 	}
 }
 
@@ -965,12 +979,14 @@ void CPlayerPlaylistBar::OnLvnKeyDown(NMHDR* pNMHDR, LRESULT* pResult)
 	LPNMLVKEYDOWN pLVKeyDown = reinterpret_cast<LPNMLVKEYDOWN>(pNMHDR);
 
 	*pResult = FALSE;
+	CAutoLock dataLock(m_csDataLock);
 
 	CList<int> items;
 	POSITION pos = m_list.GetFirstSelectedItemPosition();
 	while(pos) items.AddHead(m_list.GetNextSelectedItem(pos));
 
-	try{
+	{
+		
 		if(pLVKeyDown->wVKey == VK_DELETE && items.GetCount() > 0) 
 		{
 			pos = items.GetHeadPosition();
@@ -998,7 +1014,7 @@ void CPlayerPlaylistBar::OnLvnKeyDown(NMHDR* pNMHDR, LRESULT* pResult)
 
 			*pResult = TRUE;
 		}
-	}catch(...){*pResult = FALSE;}
+	}
 }
 
 void CPlayerPlaylistBar::OnNMDblclkList(NMHDR* pNMHDR, LRESULT* pResult)
@@ -1007,11 +1023,21 @@ void CPlayerPlaylistBar::OnNMDblclkList(NMHDR* pNMHDR, LRESULT* pResult)
 
 	if(lpnmlv->iItem >= 0 && lpnmlv->iSubItem >= 0)
 	{
-		try{
-			m_pl.SetPos(FindPos(lpnmlv->iItem));
+			CAutoLock dataLock(m_csDataLock);
+			POSITION pt = FindPos(lpnmlv->iItem);
+			POSITION pos = m_pl.GetHeadPosition();
+			while (pos)
+			{
+				if(pos == pt){
+					m_pl.SetPos(pos);
+					break;
+				}
+				m_pl.GetNext(pos);
+			}
+			
 			m_list.Invalidate();
 			((CMainFrame*)AfxGetMainWnd())->OpenCurPlaylistItem(); //should we use recent rStart time
-		}catch(...){}
+		
 	}
 
 	*pResult = 0;
@@ -1060,6 +1086,7 @@ void CPlayerPlaylistBar::OnCustomdrawList(NMHDR* pNMHDR, LRESULT* pResult)
 
 void CPlayerPlaylistBar::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct)
 {
+	
 	if(nIDCtl != IDC_PLAYLIST) return;
 
 	int nItem = lpDrawItemStruct->itemID;
@@ -1081,13 +1108,29 @@ void CPlayerPlaylistBar::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruc
 	}
 	CString time = _T("Invalid");
 	COLORREF textcolor = fSelected?0xff:0;
-	try {
-		CPlaylistItem& pli = m_pl.GetAt(pos); // not sure is this a proper way to avoid crash after this
-		if(pli.m_fInvalid) textcolor |= 0xA0A0A0;
-		else time = m_list.GetItemText(nItem, COL_TIME);
-	}catch(...){
-		
+	{
+		CAutoLock dataLock(m_csDataLock);
+		try 
+		{
+			POSITION pt = m_pl.GetHeadPosition();
+			bool bHasPos = false;
+			while(pt){
+				if(pt == pos){
+					bHasPos = m_pl.GetAt(pos).m_fInvalid;
+					break;
+				}
+				m_pl.GetNext(pt);
+			}
+			//CPlaylistItem& pli = ; // not sure is this a proper way to avoid crash after this
+			if(bHasPos) {
+				textcolor |= 0xA0A0A0;
+			}
+			else time = m_list.GetItemText(nItem, COL_TIME);
+			
+		}
+		catch(...){}
 	}
+
 	
 
 	
@@ -1310,14 +1353,26 @@ void CPlayerPlaylistBar::DropItemOnList()
 
 	CList<CPlaylistItem> tmp;
 	UINT id = -1;
+	
+	CAutoLock dataLock(m_csDataLock);
+
 	for(int i = 0; i < m_list.GetItemCount(); i++)
 	{
 		POSITION pos = (POSITION)m_list.GetItemData(i);
-		try{
-			CPlaylistItem& pli = m_pl.GetAt(pos);
-			tmp.AddTail(pli);
-			if(pos == m_pl.GetPos()) id = pli.m_id;
-		}catch(...){}
+		POSITION pt = m_pl.GetHeadPosition();
+		while (pt)
+		{
+			if(pos == pt){
+				CPlaylistItem& pli = m_pl.GetAt(pos);
+				tmp.AddTail(pli);
+				if(pos == m_pl.GetPos()) id = pli.m_id;
+				break;
+			}
+			m_pl.GetNext(pt);
+		}
+		
+		
+		
 	}
 	m_pl.RemoveAll();
 	POSITION pos = tmp.GetHeadPosition();
@@ -1347,8 +1402,21 @@ BOOL CPlayerPlaylistBar::OnToolTipNotify(UINT id, NMHDR* pNMHDR, LRESULT* pResul
 	if(row < 0 || row >= m_pl.GetCount())
 		return FALSE;
 
-	try{
-		CPlaylistItem& pli = m_pl.GetAt(FindPos(row));
+	CAutoLock dataLock(m_csDataLock);
+
+	POSITION pt = FindPos(row);
+	POSITION pos = m_pl.GetHeadPosition();
+	bool bMatch = false;
+	while (pos)
+	{
+		if(pos == pt){
+			bMatch = true;
+			break;
+		}
+		m_pl.GetNext(pos);
+	}
+	if(bMatch){
+		CPlaylistItem& pli = m_pl.GetAt(pos);
 
 		CString strTipText;
 
@@ -1389,7 +1457,7 @@ BOOL CPlayerPlaylistBar::OnToolTipNotify(UINT id, NMHDR* pNMHDR, LRESULT* pResul
 			m_strTipTextW = strTipText;
 			pTTTW->lpszText = (LPWSTR)(LPCWSTR)m_strTipTextW;
 		}
-	}catch(...){}
+	}	
 	*pResult = 0;
 
 	return TRUE;    // message was handled
@@ -1432,7 +1500,8 @@ void CPlayerPlaylistBar::OnContextMenu(CWnd* /*pWnd*/, CPoint p)
 	m.AppendMenu(MF_STRING|MF_ENABLED|(AfxGetApp()->GetProfileInt(ResStr(IDS_R_SETTINGS), _T("RememberPlaylistItems"), TRUE)?MF_CHECKED:0), M_REMEMBERPLAYLIST, ResStr(IDS_PLAYLIST_REMEBERITEMS));
 
 	CMainFrame* pMainFrm = (CMainFrame*)AfxGetMainWnd();
-		try{
+	CAutoLock dataLock(m_csDataLock);
+
 		
 		int nID = (int)m.TrackPopupMenu(TPM_LEFTBUTTON|TPM_RETURNCMD, p.x, p.y, this);
 		switch(nID)
@@ -1634,7 +1703,7 @@ void CPlayerPlaylistBar::OnContextMenu(CWnd* /*pWnd*/, CPoint p)
 		default:
 			break;
 		}
-	}catch(...){}
+	
 }
 
 void CPlayerPlaylistBar::OnLvnEndlabeleditList(NMHDR* pNMHDR, LRESULT* pResult)
@@ -1643,11 +1712,24 @@ void CPlayerPlaylistBar::OnLvnEndlabeleditList(NMHDR* pNMHDR, LRESULT* pResult)
 
 	if(pDispInfo->item.iItem >= 0 && pDispInfo->item.pszText)
 	{
-		try{
-			CPlaylistItem& pli = m_pl.GetAt((POSITION)m_list.GetItemData(pDispInfo->item.iItem));
+		CAutoLock dataLock(m_csDataLock);
+		POSITION pt = (POSITION)m_list.GetItemData(pDispInfo->item.iItem);
+		POSITION pos = m_pl.GetHeadPosition();
+		bool bMatch = false;
+		while (pos)
+		{
+			if(pos == pt){
+				bMatch = true;
+				break;
+			}
+			m_pl.GetNext(pos);
+		}
+		if(bMatch){
+			CPlaylistItem& pli = m_pl.GetAt(pos);
 			pli.m_label = pDispInfo->item.pszText;
 			m_list.SetItemText(pDispInfo->item.iItem, 0, pDispInfo->item.pszText);
-		}catch(...){}
+		}
+		
 	}
 
 	*pResult = 0;

@@ -87,4 +87,5 @@ public:
 	void GetExtsArray(CAtlArray<CString>& mask,  bool noAudio = TRUE);
 	void GetFilter(CString& filter, CAtlArray<CString>& mask);
 	void GetAudioFilter(CString& filter, CAtlArray<CString>& mask);
+	BOOL IsAudioFile(CString szFilename);
 };

@@ -61,6 +61,8 @@ private:
 	CPoint m_ptDropPoint;
 	CFont font;
 
+	CCritSec* m_csDataLock;
+
 	void DropItemOnList();
 
 public:

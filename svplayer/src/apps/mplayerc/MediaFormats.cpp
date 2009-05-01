@@ -342,7 +342,20 @@ void CMediaFormats::GetFilter(CString& filter, CAtlArray<CString>& mask)
 
 	filter += _T("|");
 }
+BOOL CMediaFormats::IsAudioFile(CString szFilename){
+	CPath fPath(szFilename);
+	CString szThisExtention = fPath.GetExtension();
 
+	for(int i = 0; i < GetCount(); i++)
+	{
+		CMediaFormatCategory& mfc = GetAt(i);
+		if(!mfc.IsAudioOnly() || mfc.GetEngineType() != DirectShow) continue;
+		if( mfc.FindExt(szThisExtention) ){
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
 void CMediaFormats::GetAudioFilter(CString& filter, CAtlArray<CString>& mask)
 {
 	CString		strTemp;

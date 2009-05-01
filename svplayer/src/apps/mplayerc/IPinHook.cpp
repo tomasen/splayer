@@ -25,9 +25,9 @@
 #include <d3dx9.h>
 #include <dxva.h>
 #include <dxva2api.h>
-#define LOG_FILE				_T("D:\\-=SVN=-\\dxva.log")
+//#define LOG_FILE				_T("D:\\-=SVN=-\\dxva.log")
 
-#define _DEBUG
+//#define _DEBUG
 
 //#define LOG_BITSTREAM
 //#define LOG_MATRIX

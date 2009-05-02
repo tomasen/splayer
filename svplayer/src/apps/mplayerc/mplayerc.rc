@@ -1739,7 +1739,7 @@ BEGIN
         MENUITEM "音频选择(&A)",                    ID__AUDIO
         MENUITEM SEPARATOR
         MENUITEM "滤镜(&Filters)",                ID__FILTERS32780
-        MENUITEM "特效(S&haders)",                ID__SHADERS32781
+        MENUITEM "画面增益",                ID__SHADERS32781
         MENUITEM SEPARATOR
         POPUP "音量(&u)"
         BEGIN
@@ -1802,12 +1802,13 @@ BEGIN
             MENUITEM "视角选单(&g)",                    ID_NAVIGATE_ANGLEMENU
             MENUITEM "章节选单(&C)",                    ID_NAVIGATE_CHAPTERMENU
         END
+		MENUITEM SEPARATOR
+        MENUITEM "画面增益",                 ID__SHADERS
         MENUITEM SEPARATOR
         POPUP "更多..."
         BEGIN
-            MENUITEM "滤镜(Filters)",                 ID__FILTERS
-            MENUITEM "特效(Shaders)",                 ID__SHADERS
-            MENUITEM SEPARATOR
+			MENUITEM "滤镜(Filters)",                 ID__FILTERS
+			MENUITEM SEPARATOR
             POPUP "视频尺寸(&V)"
             BEGIN
                 MENUITEM "50% (&H)",                    ID_VIEW_VF_HALF
@@ -2042,7 +2043,7 @@ BEGIN
         MENUITEM "恢复正常速度\tCtrl+R",              ID_PLAY_RESETRATE
         MENUITEM SEPARATOR
         MENUITEM "滤镜(&Filters)",                ID_32772
-        MENUITEM "特效(S&haders)",                ID_32771
+        MENUITEM "画面增益",                ID_32771
         MENUITEM SEPARATOR
         POPUP "音量(&u)"
         BEGIN
@@ -2445,6 +2446,25 @@ END
 
 STRINGTABLE 
 BEGIN
+	IDF_SHADER_LEVELS  "色彩修正（16-235 -> 0-255）"
+	IDF_SHADER_DEINTERLACE  "抗锯齿 (交错)"
+	IDF_SHADER_SHARPEN "锐化"
+	IDF_SHADER_EDGE_SHARPEN  "边缘锐化"
+	IDF_SHADER_SHARPEN_COMPLEX  "智能锐化"
+	IDF_SHADER_GRAYSCALE  "黑白片"
+	IDF_SHADER_CONTOUR  "contour"
+	IDF_SHADER_EMBOSS  "emboss"
+	IDF_SHADER_INVERT  "反转片"
+	IDF_SHADER_LETTERBOX  "letterbox"
+	IDF_SHADER_NIGHTVISION  "nightvision"
+	IDF_SHADER_PROCAMP  "procamp"
+	IDF_SHADER_SPHERE  "sphere"
+	IDF_SHADER_SPOTLIGHT  "spotlight"
+	IDF_SHADER_WAVE  "wave"
+END
+
+STRINGTABLE 
+BEGIN
     IDS_RS_ONTOP            "OnTop"
     IDS_RS_MPASF            "MPASampleFormat"
     IDS_RS_AC3SC            "AC3SpeakerConfig"
@@ -2691,7 +2711,7 @@ BEGIN
     IDS_OPTIONS_CAPTION     "选项"
     IDS_SHADER_COMBINE      "合并(&C)..."
     IDS_SHADER_OFF          "关闭"
-    IDS_SHADER_POPUP        "特效(Shader)"
+    IDS_SHADER_POPUP        "画面增益"
     IDS_FAVORITES_POPUP     "收藏夹"
     IDS_JUMPTO_POPUP        "跳至(&J)..."
     IDS_VIDEOANGLE_POPUP    "视角切换"

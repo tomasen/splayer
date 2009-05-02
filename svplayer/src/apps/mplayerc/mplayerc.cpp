@@ -2307,28 +2307,51 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 
 		m_shaders.RemoveAll();
 
+		CAtlList<UINT> shader_ids;
+		shader_ids.AddTail(IDF_SHADER_LEVELS);
+		shader_ids.AddTail(IDF_SHADER_DEINTERLACE);
+		shader_ids.AddTail(IDF_SHADER_SHARPEN);
+		shader_ids.AddTail(IDF_SHADER_EDGE_SHARPEN);
+		shader_ids.AddTail(IDF_SHADER_SHARPEN_COMPLEX);
+		shader_ids.AddTail(IDF_SHADER_GRAYSCALE);
+		shader_ids.AddTail(IDF_SHADER_INVERT);
+		shader_ids.AddTail(IDF_SHADER_CONTOUR);
+		shader_ids.AddTail(IDF_SHADER_EMBOSS);
+		shader_ids.AddTail(IDF_SHADER_LETTERBOX);
+		shader_ids.AddTail(IDF_SHADER_NIGHTVISION);
+		shader_ids.AddTail(IDF_SHADER_PROCAMP);
+		shader_ids.AddTail(IDF_SHADER_SPHERE);
+		shader_ids.AddTail(IDF_SHADER_SPOTLIGHT);
+		shader_ids.AddTail(IDF_SHADER_WAVE);
+
 		CAtlStringMap<UINT> shaders;
-
-		shaders[_T("16-235 -> 0-255")] = IDF_SHADER_LEVELS;
-		shaders[_T("contour")] = IDF_SHADER_CONTOUR;
-		shaders[_T("deinterlace (blend)")] = IDF_SHADER_DEINTERLACE;
-		shaders[_T("edge sharpen")] = IDF_SHADER_EDGE_SHARPEN;
-		shaders[_T("emboss")] = IDF_SHADER_EMBOSS;
-		shaders[_T("grayscale")] = IDF_SHADER_GRAYSCALE;
-		shaders[_T("invert")] = IDF_SHADER_INVERT;
-		shaders[_T("letterbox")] = IDF_SHADER_LETTERBOX;
-		shaders[_T("nightvision")] = IDF_SHADER_NIGHTVISION;
-		shaders[_T("procamp")] = IDF_SHADER_PROCAMP;
-		shaders[_T("sharpen")] = IDF_SHADER_SHARPEN;
-		shaders[_T("sharpen complex")] = IDF_SHADER_SHARPEN_COMPLEX;
-		shaders[_T("sphere")] = IDF_SHADER_SPHERE;
-		shaders[_T("spotlight")] = IDF_SHADER_SPOTLIGHT;
-		shaders[_T("wave")] = IDF_SHADER_WAVE;
-
+		pos = shader_ids.GetHeadPosition();
+		while(pos){
+			UINT idf = shader_ids.GetNext(pos);
+			shaders[ResStr(idf)] = idf;
+		}
+		
 		int iShader = 0;
+
+		pos = shader_ids.GetHeadPosition();
+		while(pos)
+		{
+			UINT idf = shader_ids.GetNext(pos);
+			
+			CStringA srcdata;
+			if(LoadResource(idf, srcdata, _T("FILE")))
+			{
+				Shader s;
+				s.label = ResStr(idf);
+				s.target = _T("ps_2_0");
+				s.srcdata = CString(srcdata);
+				m_shaders.AddTail(s);
+			}
+		}
 
 		for(; ; iShader++)
 		{
+			
 			CString str;
 			str.Format(_T("%d"), iShader);
 			str = pApp->GetProfileString(_T("Shaders"), str);
@@ -2344,27 +2367,15 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 			s.srcdata = sl.RemoveHead();
 			s.srcdata.Replace(_T("\\n"), _T("\n"));
 			s.srcdata.Replace(_T("\\t"), _T("\t"));
-			m_shaders.AddTail(s);
-
-			shaders.RemoveKey(s.label);
-		}
-
-		pos = shaders.GetStartPosition();
-		for(; pos; iShader++)
-		{
-			CAtlStringMap<UINT>::CPair* pPair = shaders.GetNext(pos);
-
-			CStringA srcdata;
-			if(LoadResource(pPair->m_value, srcdata, _T("FILE")))
-			{
-				Shader s;
-				s.label = pPair->m_key;
-				s.target = _T("ps_2_0");
-				s.srcdata = CString(srcdata);
+			UINT iTmp;
+			if( !shaders.Lookup( s.label, iTmp )){
 				m_shaders.AddTail(s);
+				shaders.RemoveKey(s.label);
 			}
+			
 		}
-		
+
+
 		strShaderList	= pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SHADERLIST), _T(""));
 
 		// TODO: sort shaders by label
@@ -2983,14 +2994,14 @@ bool CMPlayerCApp::IsVSFilterInstalled()
 	
 	return result;
 }
-
+#define D3D_MAX_SDKVERSION 45
 HINSTANCE CMPlayerCApp::GetD3X9Dll()
 {
 	if (m_hD3DX9Dll == NULL)
 	{
 		m_nDXSdkRelease = 0;
 		// Try to load latest DX9 available
-		for (int i=D3DX_SDK_VERSION; i>23; i--)
+		for (int i= D3D_MAX_SDKVERSION ; i>23; i--)
 		{
 			if (i != 33)	// Prevent using DXSDK April 2007 (crash sometimes during shader compilation)
 			{

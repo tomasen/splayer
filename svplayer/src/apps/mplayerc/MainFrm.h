@@ -560,6 +560,7 @@ public:
 	afx_msg void OnMenuFilters();
 	afx_msg void OnColorControlButtonReset();
 	afx_msg void OnColorControlButtonEnable();
+	afx_msg void OnEnableDX9();
 	void ReRenderOrLoadMedia();
 	afx_msg void OnColorControlUpdateButtonReset(CCmdUI* pCmdUI);
 	afx_msg void OnColorControlUpdateButtonEnable(CCmdUI* pCmdUI);

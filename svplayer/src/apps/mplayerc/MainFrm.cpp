@@ -409,6 +409,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI( IDC_BUTTONENABLECOLORCONTROL,  OnColorControlUpdateButtonEnable)
 
 
+	ON_COMMAND(ID_SHADERS_SETDX9, OnEnableDX9)
+
 	ON_COMMAND(ID_SHOWCOLORCONTROLBAR, &CMainFrame::OnShowColorControlBar)
 	ON_UPDATE_COMMAND_UI(ID_SHOWCOLORCONTROLBAR, &CMainFrame::OnUpdateShowColorControlBar)
 	ON_COMMAND(ID_SETSNAPSHOTPATH, &CMainFrame::OnSetsnapshotpath)
@@ -2834,7 +2836,7 @@ void CMainFrame::OnInitMenuPopup(CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu)
 		transl[_T("视角切换")] = IDS_VIDEOANGLE_POPUP;
 		transl[_T("跳至...")] = IDS_JUMPTO_POPUP;
 		transl[_T("收藏夹")] = IDS_FAVORITES_POPUP;
-		transl[_T("特效(Shaders)")] = IDS_SHADER_POPUP;
+		transl[_T("画面增益")] = IDS_SHADER_POPUP;
 		transl[_T("视频尺寸")] = IDS_VIDEOFRAME_POPUP;
 		transl[_T("画面微调")] = IDS_PANSCAN_POPUP;
 		transl[_T("强制画面比例")] = IDS_ASPECTRATIO_POPUP;
@@ -7755,7 +7757,7 @@ void CMainFrame::SetShaders()
 			if(FAILED(hr))
 			{
 				m_pCAP->SetPixelShader(NULL, NULL);
-				SendStatusMessage(_T("Could not load shader: ") + pShader->label, 3000);
+				SendStatusMessage(_T("无法启用DX9特效: ") + pShader->label, 3000);
 				return;
 			}
 
@@ -9055,6 +9057,16 @@ void CMainFrame::ReRenderOrLoadMedia(){
 	}
 	m_iSpeedLevel = iSpeed;
 	OnPlayChangeRate(0);
+}
+void CMainFrame::OnEnableDX9(){
+	AppSettings& s = AfxGetAppSettings();
+		s.iDSVideoRendererType = 6;
+		s.iRMVideoRendererType = 2;
+		s.iQTVideoRendererType = 2;
+	
+	if( m_iMediaLoadState != MLS_CLOSED){
+		ReRenderOrLoadMedia();
+	}
 }
 void CMainFrame::OnColorControlButtonEnable(){
 	AppSettings& s = AfxGetAppSettings();
@@ -10510,6 +10522,12 @@ void CMainFrame::SetupShadersSubMenu()
 	else while(pSub->RemoveMenu(0, MF_BYPOSITION));
 
 	CWinApp* pApp = AfxGetApp();
+	AppSettings& s = AfxGetAppSettings();
+	
+	if(s.iDSVideoRendererType != 6){
+		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_SHADERS_SETDX9,_T("需要启用DX9..."));
+		return;
+	}
 
 	pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_SHADERS_START, ResStr(IDS_SHADER_OFF));
 

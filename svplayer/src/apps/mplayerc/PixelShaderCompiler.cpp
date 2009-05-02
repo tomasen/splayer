@@ -1,80 +1,68 @@
-/* 
- *	Copyright (C) 2003-2006 Gabest
- *	http://www.gabest.org
- *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *   
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *   
- *  You should have received a copy of the GNU General Public License
- *  along with GNU Make; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. 
- *  http://www.gnu.org/copyleft/gpl.html
- *
- */
+/*
+* $Id: PixelShaderCompiler.cpp 193 2007-09-09 09:12:21Z alexwild $
+*
+* (C) 2003-2006 Gabest
+* (C) 2006-2007 see AUTHORS
+*
+* This file is part of mplayerc.
+*
+* Mplayerc is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 3 of the License, or
+* (at your option) any later version.
+*
+* Mplayerc is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*
+*/
 
 #include "stdafx.h"
+#include "mplayerc.h"
 #include "PixelShaderCompiler.h"
 
+
 CPixelShaderCompiler::CPixelShaderCompiler(IDirect3DDevice9* pD3DDev, bool fStaySilent)
-	: m_pD3DDev(pD3DDev)
-	, m_hDll(NULL)
-	, m_pD3DXCompileShader(NULL)
-	, m_pD3DXDisassembleShader(NULL)
+: m_pD3DDev(pD3DDev)
+, m_pD3DXCompileShader(NULL)
+, m_pD3DXDisassembleShader(NULL)
 {
-	CString d3dx9_dll;	
-	
-	// Load first available dll
-	// Older versions are preffered because those still have PS1.X support 
-	for (int i=24; i<=D3DX_SDK_VERSION; i++)
+	HINSTANCE		hDll;
+	hDll = AfxGetMyApp()->GetD3X9Dll();
+
+	if(hDll)
 	{
-		if (i!=33)	// Don't use DXSDK April 2007 (crashes sometimes during shader compilation)
-		{
-			d3dx9_dll.Format(_T("d3dx9_%d.dll"), i);
-			m_hDll = LoadLibrary(d3dx9_dll);
-			
-			if(m_hDll) {
-				break;
-			}
-		}
-	}
-	
-	if(m_hDll)
-	{
-		m_pD3DXCompileShader = (D3DXCompileShaderPtr)GetProcAddress(m_hDll, "D3DXCompileShader");
-		m_pD3DXDisassembleShader = (D3DXDisassembleShaderPtr)GetProcAddress(m_hDll, "D3DXDisassembleShader");
+		m_pD3DXCompileShader = (D3DXCompileShaderPtr)GetProcAddress(hDll, "D3DXCompileShader");
+		m_pD3DXDisassembleShader = (D3DXDisassembleShaderPtr)GetProcAddress(hDll, "D3DXDisassembleShader");
 	}
 
-	if(!fStaySilent)
+	if( !fStaySilent)
 	{
-		if(!m_hDll)
+		if(!hDll)
 		{
-			AfxMessageBox(_T("Cannot load ") + d3dx9_dll + _T(", pixel shaders will not work."), MB_OK);
+			AfxMessageBox(_T("未能调入DX9文件DLL"), MB_OK);
 		}
 		else if(!m_pD3DXCompileShader || !m_pD3DXDisassembleShader) 
 		{
-			AfxMessageBox(_T("Cannot find necessary function entry points in ") + d3dx9_dll + _T(", pixel shaders will not work."), MB_OK);
+			AfxMessageBox(_T("未能找到正确的DLL入口"), MB_OK);
 		}
 	}
 }
 
 CPixelShaderCompiler::~CPixelShaderCompiler()
 {
-	if(m_hDll) FreeLibrary(m_hDll);
 }
 
 HRESULT CPixelShaderCompiler::CompileShader(
-    LPCSTR pSrcData,
-    LPCSTR pFunctionName,
-    LPCSTR pProfile,
-    DWORD Flags,
-    IDirect3DPixelShader9** ppPixelShader,
+	LPCSTR pSrcData,
+	LPCSTR pFunctionName,
+	LPCSTR pProfile,
+	DWORD Flags,
+	IDirect3DPixelShader9** ppPixelShader,
 	CString* disasm,
 	CString* errmsg)
 {

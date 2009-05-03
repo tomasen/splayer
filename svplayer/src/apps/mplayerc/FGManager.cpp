@@ -2234,6 +2234,8 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("NeSplitter.ax")) ); 
 
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("scmpack.dll")) );
+	
+	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("rlapedec.ax")) ); 
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("svplayer.bin\\real\\rmoc3260.dll")) );
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("svplayer.bin\\real\\Codecs\\rv40.dll")) );
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("svplayer.bin\\real\\Codecs\\drvc.dll")) );
@@ -2255,8 +2257,12 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 				szLog.Format(_T("Loading Filter %s %s %s "), CStringFromGUID(fo->clsid) ,fo->path, CStringW(fo->name) );
 				SVP_LogMsg(szLog);
 				if(pFGF){
-					pFGF->SetTypes(fo->guids);
-					m_transform.AddTail(pFGF);
+					if(szFPath.Find(_T("rlapedec.ax")) > 0){
+						m_source.AddTail(pFGF);
+					}else{
+						pFGF->SetTypes(fo->guids);
+						m_transform.AddTail(pFGF);
+					}
 				}
 			}
 		}

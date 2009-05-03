@@ -613,8 +613,8 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	//////////////////////////////////////////////////////////////////////////
 	// an alternative way of pre-multiplying bitmap data
 	m_bmpClose.Attach((HBITMAP)::LoadImage(GetModuleHandle(NULL), L"CLOSE.BMP", IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION));
- 	m_bmpMaximize.Attach((HBITMAP)::LoadImage(GetModuleHandle(NULL), L"MAXIMIZE.BMP", IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION));
- 	m_bmpMinimize.Attach((HBITMAP)::LoadImage(GetModuleHandle(NULL), L"MINIMIZE.BMP", IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION));
+	m_bmpMaximize.Attach( (HBITMAP)::LoadImage(GetModuleHandle(NULL), L"MAXIMIZE.BMP", IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION) );
+	m_bmpMinimize.Attach((HBITMAP)::LoadImage(GetModuleHandle(NULL), L"MINIMIZE.BMP", IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION));
  	m_bmpRestore.Attach((HBITMAP)::LoadImage(GetModuleHandle(NULL), L"RESTORE.BMP", IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION));
 	PreMultiplyBitmap(m_bmpClose);
  	PreMultiplyBitmap(m_bmpMaximize);
@@ -804,16 +804,16 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 		hdc.SelectObject(holdft);
 
 		// min/max/close buttons
-		LONG lPaintParamArray[][5] = {{1,0},{1,1},{1,2},{1,3}};
-		int nVertPos = wp.showCmd == SW_MAXIMIZE?(GetSystemMetrics(SM_CYFRAME)-1):1;
-		long nImagePositions[] = {0, 18, 36, 54};
+		//LONG lPaintParamArray[][5] = {{1,0},{1,1},{1,2},{1,3}};
+		int nVertPos = 4;
+		long nImagePositions[] = {0, 12, 24, 36};
 		dcBmp.SelectObject(m_bmpClose);
-		BLENDFUNCTION bf = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
-		hdc.AlphaBlend(rc.right-43-15, nVertPos, 43, 18, &dcBmp, 0, nImagePositions[m_nBoxStatus[0]], 43, 18, bf);
-		dcBmp.SelectObject(wp.showCmd==SW_MAXIMIZE?m_bmpRestore:m_bmpMaximize);
-		hdc.AlphaBlend(rc.right-43-15-25, nVertPos, 25, 18, &dcBmp, 0, nImagePositions[m_nBoxStatus[1]], 25, 18, bf);
+		BLENDFUNCTION bf = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};//
+		hdc.AlphaBlend(rc.right-13*2, nVertPos, 13, 12, &dcBmp, 0, nImagePositions[m_nBoxStatus[0]], 13, 12, bf);
+		dcBmp.SelectObject( (wp.showCmd==SW_MAXIMIZE)?m_bmpRestore:m_bmpMaximize);
+		hdc.AlphaBlend(rc.right-13*3, nVertPos, 13, 12, &dcBmp, 2, nImagePositions[m_nBoxStatus[1]], 13, 12, bf);
 		dcBmp.SelectObject(m_bmpMinimize);
-		hdc.AlphaBlend(rc.right-43-15-25-27, nVertPos, 27, 18, &dcBmp, 0, nImagePositions[m_nBoxStatus[2]], 27, 18, bf);
+		hdc.AlphaBlend(rc.right-13*4, nVertPos, 13, 12, &dcBmp, 2, nImagePositions[m_nBoxStatus[2]], 13, 12, bf);
 
 		dcBmp.SelectObject(hbmpold);
 
@@ -878,9 +878,9 @@ LRESULT CMainFrame::OnNcHitTestNewUI(WPARAM wParam, LPARAM lParam )
 	CRect rc;
 	GetWindowRect(&rc);
 
-	CRect rcClose (rc.right-43-15, rc.top+1, rc.right-15, rc.top+19);
-	CRect rcMax (rc.right-43-25-15, rc.top+1, rc.right-15-43, rc.top+19);
-	CRect rcMin (rc.right-43-25-27-15, rc.top+1, rc.right-43-25-15, rc.top+19);
+	CRect rcClose (rc.right-13*2, rc.top+5, rc.right-13, rc.top+17);
+	CRect rcMax (rc.right-13*3, rc.top+5, rc.right-13*2, rc.top+17);
+	CRect rcMin (rc.right-13*4, rc.top+5, rc.right-13*3, rc.top+17);
 
 	CPoint pt(lParam);
 	SHORT bLBtnDown = GetAsyncKeyState(VK_LBUTTON);
@@ -921,6 +921,7 @@ void CMainFrame::PreMultiplyBitmap( CBitmap& bmp )
 {
 	// this is only possible when the bitmap is loaded using the
 	// ::LoadImage API with flag LR_CREATEDIBSECTION
+
 	BITMAP bm;
 	bmp.GetBitmap(&bm);
 	for (int y=0; y<bm.bmHeight; y++)

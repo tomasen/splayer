@@ -1630,6 +1630,18 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="newui"
+				>
+				<File
+					RelativePath=".\res\newui\BTN_CLOSE.bmp"
+					>
+				</File>
+				<File
+					RelativePath=".\res\newui\PNG_7034.bmp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<File
 			RelativePath=".\res\shaders\EdgeSharpen.psh"
@@ -1676,11 +1688,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 	</Files>

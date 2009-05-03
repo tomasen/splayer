@@ -485,7 +485,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_popup.LoadMenu(IDR_POPUP);
 	m_popupmain.LoadMenu(IDR_POPUPMAIN);
 
-	GetMenu()->ModifyMenu(ID_FAVORITES, MF_BYCOMMAND|MF_STRING, IDR_MAINFRAME, ResStr(IDS_FAVORITES_POPUP));
+	//GetMenu()->ModifyMenu(ID_FAVORITES, MF_BYCOMMAND|MF_STRING, IDR_MAINFRAME, ResStr(IDS_FAVORITES_POPUP)); NEW UI
 
 	// create a view to occupy the client area of the frame
 	if(!m_wndView.Create(NULL, NULL, AFX_WS_DEFAULT_VIEW,
@@ -606,6 +606,8 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 
 	/*NEW UI*/
+	SetMenu(  NULL);
+
 	ZeroMemory(m_nBoxStatus, sizeof(m_nBoxStatus));
 	m_bmpCaption.LoadBitmap(L"CAPTION.BMP");
 	//////////////////////////////////////////////////////////////////////////
@@ -628,29 +630,76 @@ class CMemoryDC : public CDC
 {
 public:
 	// Data members
-	HDC m_hDCOriginal;
+	CDC* m_hDCOriginal;
 	RECT m_rcPaint;
 	CBitmap m_bmp;
 	HBITMAP m_hBmpOld;
 
 	// Constructor/destructor
-	CMemoryDC(HDC hDC, RECT& rcPaint) : m_hDCOriginal(hDC), m_hBmpOld(NULL)
+	CMemoryDC(CDC* hDC, RECT& rcPaint) : m_hDCOriginal(hDC), m_hBmpOld(NULL)
 	{
 		m_rcPaint = rcPaint;
-		CreateCompatibleDC((CDC*)m_hDCOriginal);
+		CreateCompatibleDC(m_hDCOriginal);
 		ATLASSERT(m_hDC != NULL);
-		m_bmp.CreateCompatibleBitmap((CDC*)m_hDCOriginal, m_rcPaint.right - m_rcPaint.left, m_rcPaint.bottom - m_rcPaint.top);
-		ATLASSERT(m_bmp.m_hBitmap != NULL);
-		m_hBmpOld = (HBITMAP)((CBitmap*)SelectObject(m_bmp)) ; 
+		m_bmp.CreateCompatibleBitmap( m_hDCOriginal, m_rcPaint.right - m_rcPaint.left, m_rcPaint.bottom - m_rcPaint.top);
+		ATLASSERT( (HBITMAP)m_bmp != NULL);
+		m_hBmpOld = (HBITMAP)SelectObject(m_bmp);
 		SetViewportOrg(-m_rcPaint.left, -m_rcPaint.top);
 	}
 
 	~CMemoryDC()
 	{
-		::BitBlt(m_hDCOriginal, m_rcPaint.left, m_rcPaint.top, m_rcPaint.right - m_rcPaint.left, m_rcPaint.bottom - m_rcPaint.top, m_hDC, m_rcPaint.left, m_rcPaint.top, SRCCOPY);
-		SelectObject( m_hBmpOld);
+		m_hDCOriginal->BitBlt( m_rcPaint.left, m_rcPaint.top, m_rcPaint.right - m_rcPaint.left, m_rcPaint.bottom - m_rcPaint.top, CDC::FromHandle(m_hDC), m_rcPaint.left, m_rcPaint.top, SRCCOPY);
+		SelectObject(m_hBmpOld);
 	}
 };
+
+void CMainFrame::OnSize(UINT nType, int cx, int cy)
+{
+	 __super::OnSize(nType, cx, cy);
+
+	if(nType == SIZE_RESTORED && m_fTrayIcon)
+	{
+		ShowWindow(SW_SHOW);
+	}
+
+	if(!m_fFullScreen)
+	{
+		AppSettings& s = AfxGetAppSettings();
+		if(nType != SIZE_MAXIMIZED && nType != SIZE_MINIMIZED)
+			GetWindowRect(s.rcLastWindowPos);
+		s.lastWindowType = nType;
+
+		{ //New UI
+			CRect rc;
+			WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
+			GetWindowPlacement(&wp);
+			GetWindowRect(&rc);
+			rc-=rc.TopLeft();
+
+			rc.InflateRect(GetSystemMetrics(SM_CXBORDER), GetSystemMetrics(SM_CYBORDER));
+			
+			// destroy old region
+			if((HRGN)m_rgn)
+			{
+				m_rgn.DeleteObject();
+			}
+			// create rounded rect region based on new window size
+			if (wp.showCmd != SW_MAXIMIZE )
+			{
+				m_rgn.CreateRoundRectRgn(0,0,rc.Width()-1,rc.Height()-1, 9,9);                 // rounded rect w/50 pixel corners
+				
+				SetWindowRgn(m_rgn,TRUE);  // set window region to make rounded window
+			}
+			else
+				SetWindowRgn(NULL,TRUE);  // set window region to make rounded window
+
+			Invalidate();
+		}
+	}
+
+
+}
 
 LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 {
@@ -673,16 +722,17 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 	// parameter should contain the region, we make sure anything
 	// outside the region is excluded from update because it's
 	// actually possible to paint outside the region
+
 	CDC* dc;
 	if(wParam == 1)
 		dc = GetWindowDC();
 	else
 	{
-		CRgn* rgn = ((CRgn*)(HRGN)wParam);
+		CRgn* rgn = CRgn::FromHandle((HRGN)wParam);
 		dc = GetDCEx(rgn, DCX_WINDOW|DCX_INTERSECTRGN|0x10000);
 	}
 
-	if (dc->m_hDC)
+	if ((HDC)dc)
 	{
 		// when updating the window frame, we exclude the client area
 		// because we don't want to interfere with the client WM_PAINT
@@ -696,7 +746,7 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 		dc->ExcludeClipRect(&rcClient);
 
 		// establish double buffered painting
-		CMemoryDC hdc(dc->m_hDC, rc);
+		CMemoryDC hdc(dc, rc);
 
 		// some basic styles
 		CPen pen, penBright, penDark;
@@ -704,7 +754,7 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 		penBright.CreatePen(PS_SOLID, 1, RGB(255,255,255));
 		penDark.CreatePen(PS_SOLID, 1, RGB(154,154,154));
 		CBrush brush;
-		brush.CreateSolidBrush(RGB(209,209,209));
+		brush.CreateSolidBrush(RGB(214,214,214));
 		HPEN holdpen = (HPEN)hdc.SelectObject(pen);
 		HBRUSH holdbrush = (HBRUSH)hdc.SelectObject(brush);
 		if (wp.showCmd != SW_MAXIMIZE)
@@ -739,7 +789,7 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 
 		// and the title
 		CFont hft;
-		GetSystemFontWithScale(&hft);
+		GetSystemFontWithScale(&hft, 14.0);
 
 		HFONT holdft = (HFONT)hdc.SelectObject(hft);
 
@@ -768,8 +818,9 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 		dcBmp.SelectObject(hbmpold);
 
 		ReleaseDC(&hdc);
-		
+
 	}
+
 	return FALSE ;
 }
 
@@ -1398,53 +1449,6 @@ void CMainFrame::OnMoving(UINT fwSide, LPRECT pRect)
 		if(wr.bottom < r1.bottom && wr.bottom > r2.bottom)
 			wr.top = (wr.bottom = r0.bottom) - ws.cy;
 	}
-}
-
-void CMainFrame::OnSize(UINT nType, int cx, int cy)
-{
-	__super::OnSize(nType, cx, cy);
-
-	if(nType == SIZE_RESTORED && m_fTrayIcon)
-	{
-		ShowWindow(SW_SHOW);
-	}
-
-	if(!m_fFullScreen)
-	{
-		AppSettings& s = AfxGetAppSettings();
-		if(nType != SIZE_MAXIMIZED && nType != SIZE_MINIMIZED)
-			GetWindowRect(s.rcLastWindowPos);
-		s.lastWindowType = nType;
-
-		{
-			CRect rc;
-			WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
-			GetWindowPlacement(&wp);
-			GetWindowRect(&rc);
-			rc-=rc.TopLeft();
-
-			rc.InflateRect(GetSystemMetrics(SM_CXBORDER), GetSystemMetrics(SM_CYBORDER));
-
-			// destroy old region
-			if((HRGN)m_rgn)
-			{
-				m_rgn.DeleteObject();
-				//m_rgn.m_hRgn = NULL;
-			}
-			// create rounded rect region based on new window size
-			if (wp.showCmd != SW_MAXIMIZE )
-			{
-				m_rgn.CreateRoundRectRgn(0,0,rc.Width()-1,rc.Height()-1, 9,9);                 // rounded rect w/50 pixel corners
-				SetWindowRgn(m_rgn,TRUE);  // set window region to make rounded window
-			}
-			else
-				SetWindowRgn(NULL,TRUE);  // set window region to make rounded window
-
-			Invalidate();
-		}
-	}
-
-	
 }
 
 void CMainFrame::OnSizing(UINT fwSide, LPRECT pRect)
@@ -2853,7 +2857,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 
 		HMENU hMenu;
 		if(point.y < 10 && point.x < 690){
-			hMenu = m_hMenuDefault;
+			hMenu = NULL;// hMenu = m_hMenuDefault; NEW UI
 		}else{
 			hMenu = NULL;
 		}
@@ -5260,7 +5264,7 @@ void CMainFrame::OnViewCaptionmenu()
 	else
 	{
 		dwAdd = WS_CAPTION;
-		hMenu = m_hMenuDefault;
+		hMenu = NULL;//NEW UI m_hMenuDefault;
 	}
 
 	ModifyStyle(dwRemove, dwAdd, SWP_NOZORDER);
@@ -7682,7 +7686,7 @@ void CMainFrame::ToggleFullscreen(bool fToNearest, bool fSwitchScreenResWhenHasT
 
 	ModifyStyle(dwRemove, dwAdd, SWP_NOZORDER);
 	ModifyStyleEx(dwRemoveEx, dwAddEx, SWP_NOZORDER);
-	::SetMenu(m_hWnd, hMenu);
+	::SetMenu(m_hWnd, NULL);//NEW UI hMenu);
 	SetWindowPos(NULL, r.left, r.top, r.Width(), r.Height(), SWP_NOZORDER|SWP_NOSENDCHANGING /*SWP_FRAMECHANGED*/);
 
 	if(m_fFullScreen)

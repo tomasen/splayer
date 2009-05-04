@@ -241,7 +241,7 @@ void CPlayerToolBar::OnPaint()
 		GetButtonInfo(19, nID, nStyle, iImage);
 		CRect ItemRect;
 		GetItemRect(19, ItemRect);
-		dc.FillSolidRect(ItemRect, GetSysColor(COLOR_BTNFACE));
+		dc.FillSolidRect(ItemRect, RGB(214,214,214));;//New UI GetSysColor(COLOR_BTNFACE)
 		//dc.FillSolidRect(ItemRect, RGB(214,219,239) );   
 	}
 }
@@ -256,7 +256,7 @@ void CPlayerToolBar::OnNcPaint() // when using XP styles the NC area isn't drawn
 	cr.OffsetRect(-wr.left, -wr.top);
 	wr.OffsetRect(-wr.left, -wr.top);
 	dc.ExcludeClipRect(&cr);
-	dc.FillSolidRect(wr, GetSysColor(COLOR_BTNFACE));
+	dc.FillSolidRect(wr, RGB(214,214,214));//New UI GetSysColor(COLOR_BTNFACE)
 
 	//Ìî³ä±³¾°-----------------------------------------   
 	//dc.FillSolidRect(wr, RGB(214,219,239) );   

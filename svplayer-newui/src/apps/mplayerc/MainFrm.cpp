@@ -168,7 +168,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_MESSAGE(WM_NCLBUTTONDOWN, OnNcLButtonDown)
 	ON_MESSAGE(WM_NCLBUTTONUP, OnNcLButtonUp)
 	ON_MESSAGE(WM_NCHITTEST, OnNcHitTestNewUI)
-	
+	ON_WM_NCCALCSIZE()
 	/*NEW UI END*/
 	ON_MESSAGE_VOID(WM_DISPLAYCHANGE, OnDisplayChange)
 
@@ -654,6 +654,12 @@ public:
 	}
 };
 
+void CMainFrame::OnNcCalcSize( BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp){
+	CRect rc = lpncsp->rgrc[0];
+	rc.InflateRect( GetSystemMetrics(SM_CXFRAME) - 3, 0,   GetSystemMetrics(SM_CXFRAME) - 3, GetSystemMetrics(SM_CXFRAME) - 2);
+	lpncsp->rgrc[0] = rc;
+	__super::OnNcCalcSize(bCalcValidRects, lpncsp);
+}
 void CMainFrame::OnSize(UINT nType, int cx, int cy)
 {
 	 __super::OnSize(nType, cx, cy);
@@ -740,9 +746,9 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 		RECT rcClient = {0};
 		GetClientRect(&rcClient);
 		rcClient.top+=GetSystemMetrics(SM_CYCAPTION)+GetSystemMetrics(SM_CYFRAME);
-		rcClient.left+=GetSystemMetrics(SM_CXFRAME);
-		rcClient.bottom+=GetSystemMetrics(SM_CYCAPTION)+GetSystemMetrics(SM_CYFRAME);
-		rcClient.right+=GetSystemMetrics(SM_CXFRAME);
+		rcClient.left+=3;
+		rcClient.bottom+=GetSystemMetrics(SM_CYCAPTION)+2;
+		rcClient.right+=3;
 		dc->ExcludeClipRect(&rcClient);
 
 		// establish double buffered painting

@@ -152,17 +152,17 @@ BEGIN
     CONTROL         "智能加入顺序关联文件(连续剧模式)",IDC_CHECK2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,33,86,149,10
 END
 
-IDD_ABOUTBOX DIALOGEX 0, 0, 222, 89
+IDD_ABOUTBOX DIALOGEX 0, 0, 222, 99
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "关于"
 FONT 8, "MS Shell Dlg", 400, 0, 0xB1
 BEGIN
-    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,21,20
     LTEXT           "射手影音播放器(Based on MPC)",IDC_STATIC1,40,12,126,8,SS_NOPREFIX
-    LTEXT           "Copyright (C) 2002-2009 Tomasen \n                                  In honor of Gabest",IDC_STATIC,40,26,170,19
-    LTEXT           "Version: 1.0 预览版",IDC_VERSION,40,50,170,8
+    LTEXT           "Copyright (C) 2008-2009 Tomasen \n  Thanks for Gabest, casimir666, ffmpeg and\n    everyone with them",IDC_STATIC,40,26,170,29
+    LTEXT           "Version: 1.0 预览版",IDC_VERSION,40,57,170,8
     PUSHBUTTON      "关闭",IDOK,160,8,50,14,WS_GROUP
-    LTEXT           "本软件为免费软件(freeware)\n同时采用GNU授权协议",IDC_STATIC,40,62,170,25
+    LTEXT           "本软件为免费软件(freeware)\n同时采用GNU授权协议",IDC_STATIC,40,69,170,25
 END
 
 IDD_PLAYERSTATUSBAR DIALOGEX 0, 0, 183, 15
@@ -1018,6 +1018,7 @@ BEGIN
     BEGIN
         VERTGUIDE, 40
         VERTGUIDE, 210
+        BOTTOMMARGIN, 89
     END
 
     IDD_PPAGEPLAYER, DIALOG
@@ -1709,7 +1710,7 @@ BEGIN
             MENUITEM "视角选单(&g)",                    ID_NAVIGATE_ANGLEMENU
             MENUITEM "章节选单(&C)",                    ID_NAVIGATE_CHAPTERMENU
         END
-        MENUITEM "收藏夹",                     ID__FAVORITES32779
+        MENUITEM "收藏夹",                         ID__FAVORITES32779
         POPUP "网络字幕(&S)"
         BEGIN
             MENUITEM "启用智能网络字幕匹配",                  ID_SVPSUB_MENUENABLE
@@ -1739,7 +1740,7 @@ BEGIN
         MENUITEM "音频选择(&A)",                    ID__AUDIO
         MENUITEM SEPARATOR
         MENUITEM "滤镜(&Filters)",                ID__FILTERS32780
-        MENUITEM "画面增益",                ID__SHADERS32781
+        MENUITEM "画面增益",                        ID__SHADERS32781
         MENUITEM SEPARATOR
         POPUP "音量(&u)"
         BEGIN
@@ -1802,13 +1803,13 @@ BEGIN
             MENUITEM "视角选单(&g)",                    ID_NAVIGATE_ANGLEMENU
             MENUITEM "章节选单(&C)",                    ID_NAVIGATE_CHAPTERMENU
         END
-		MENUITEM SEPARATOR
-        MENUITEM "画面增益",                 ID__SHADERS
+        MENUITEM SEPARATOR
+        MENUITEM "画面增益",                        ID__SHADERS
         MENUITEM SEPARATOR
         POPUP "更多..."
         BEGIN
-			MENUITEM "滤镜(Filters)",                 ID__FILTERS
-			MENUITEM SEPARATOR
+            MENUITEM "滤镜(Filters)",                 ID__FILTERS
+            MENUITEM SEPARATOR
             POPUP "视频尺寸(&V)"
             BEGIN
                 MENUITEM "50% (&H)",                    ID_VIEW_VF_HALF
@@ -1883,7 +1884,7 @@ BEGIN
             MENUITEM "显示亮度控制栏",                     ID_SHOWCOLORCONTROLBAR
             MENUITEM SEPARATOR
             MENUITEM "属性(&r)",                      ID_FILE_PROPERTIES
-            MENUITEM "收藏夹",                     ID__FAVORITES
+            MENUITEM "收藏夹",                         ID__FAVORITES
             MENUITEM SEPARATOR
             MENUITEM "播放/暂停(&P)",                   ID_PLAY_PLAYPAUSE
             MENUITEM "停止播放(&S)",                    ID_PLAY_STOP
@@ -2043,7 +2044,7 @@ BEGIN
         MENUITEM "恢复正常速度\tCtrl+R",              ID_PLAY_RESETRATE
         MENUITEM SEPARATOR
         MENUITEM "滤镜(&Filters)",                ID_32772
-        MENUITEM "画面增益",                ID_32771
+        MENUITEM "画面增益",                        ID_32771
         MENUITEM SEPARATOR
         POPUP "音量(&u)"
         BEGIN
@@ -2069,13 +2070,13 @@ BEGIN
         MENUITEM "视角选单(&g)",                    ID_NAVIGATE_ANGLEMENU
         MENUITEM "章节选单(&C)",                    ID_NAVIGATE_CHAPTERMENU
     END
-    MENUITEM "收藏夹",                     ID_FAVORITES
+    MENUITEM "收藏夹",                         ID_FAVORITES
     POPUP "高级(&A)"
     BEGIN
         MENUITEM "选项(&O)...",                   ID_VIEW_OPTIONS
         MENUITEM "高级设置(&A)...",                 ID_32797
-		MENUITEM SEPARATOR
-		MENUITEM "恢复默认设置",                 ID_RESET_SETTING
+        MENUITEM SEPARATOR
+        MENUITEM "恢复默认设置",                      ID_RESET_SETTING
         POPUP "工具"
         BEGIN
             MENUITEM "DSM转换器(&n)...",               ID_FILE_CONVERT
@@ -2179,6 +2180,8 @@ BEGIN
     IDS_RS_USESMARTDRAG     "userSmartDrag"
     IDS_RS_EVR_BUFFERS      "EVRBuffers"
     IDS_RS_DECSPEAKERS      "DecSpeakers"
+    IDS_RS_USEINTERNALTSSPLITER "UseInternalTSSpliter"
+    IDS_RS_USEWAVEOUTDEVICEBYDEFAULT "UseWaveOutDeviceByDefault"
 END
 
 STRINGTABLE 
@@ -2279,7 +2282,11 @@ BEGIN
     IDS_RS_POPSTARTUPEXTCHECK "PouStartupExtCheck"
     IDD_PPAGESUBSTYLE2      "字幕::第二字幕"
     IDS_RS_CHECKUPDATERINTERLEAVE "CheckUpdaterInterleave"
-	IDS_RS_DISABLE_EVR		"DisableEVR"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_RS_DISABLE_EVR      "DisableEVR"
 END
 
 STRINGTABLE 
@@ -2319,7 +2326,6 @@ BEGIN
     IDS_RS_QUICKTIMERENDERER "QuickTimeRenderer"
     IDS_RS_REALMEDIAFPS     "RealMediaFPS"
     IDS_RS_AUDIOTIMESHIFT   "AudioTimeShift"
-	IDS_RS_USEWAVEOUTDEVICEBYDEFAULT	"UseWaveOutDeviceByDefault"
 END
 
 STRINGTABLE 
@@ -2441,26 +2447,29 @@ BEGIN
     IDS_RS_ENABLEWEBSERVER  "EnableWebServer"
     IDS_RS_WEBSERVERPORT    "WebServerPort"
     IDS_RS_LASTWINDOWTYPE   "LastWindowType"
-	IDS_RS_USEINTERNALTSSPLITER "UseInternalTSSpliter"
 END
 
 STRINGTABLE 
 BEGIN
-	IDF_SHADER_LEVELS  "色彩修正（16-235 -> 0-255）"
-	IDF_SHADER_DEINTERLACE  "抗锯齿 (交错)"
-	IDF_SHADER_SHARPEN "锐化"
-	IDF_SHADER_EDGE_SHARPEN  "边缘锐化"
-	IDF_SHADER_SHARPEN_COMPLEX  "智能锐化"
-	IDF_SHADER_GRAYSCALE  "黑白片"
-	IDF_SHADER_CONTOUR  "contour"
-	IDF_SHADER_EMBOSS  "emboss"
-	IDF_SHADER_INVERT  "反转片"
-	IDF_SHADER_LETTERBOX  "letterbox"
-	IDF_SHADER_NIGHTVISION  "nightvision"
-	IDF_SHADER_PROCAMP  "procamp"
-	IDF_SHADER_SPHERE  "sphere"
-	IDF_SHADER_SPOTLIGHT  "spotlight"
-	IDF_SHADER_WAVE  "wave"
+    IDF_SHADER_EMBOSS       "emboss"
+    IDF_SHADER_GRAYSCALE    "黑白片"
+    IDF_SHADER_INVERT       "反转片"
+    IDF_SHADER_LETTERBOX    "letterbox"
+    IDF_SHADER_SHARPEN      "锐化"
+    IDF_SHADER_SPHERE       "sphere"
+    IDF_SHADER_SPOTLIGHT    "spotlight"
+    IDF_SHADER_WAVE         "wave"
+    IDF_SHADER_PROCAMP      "procamp"
+    IDF_SHADER_LEVELS       "色彩修正（16-235 -> 0-255）"
+    IDF_SHADER_NIGHTVISION  "nightvision"
+    IDF_SHADER_EDGE_SHARPEN "边缘锐化"
+    IDF_SHADER_SHARPEN_COMPLEX "智能锐化"
+END
+
+STRINGTABLE 
+BEGIN
+    IDF_SHADER_CONTOUR      "contour"
+    IDF_SHADER_DEINTERLACE  "抗锯齿 (交错)"
 END
 
 STRINGTABLE 

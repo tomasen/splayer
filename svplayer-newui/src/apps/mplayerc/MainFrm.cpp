@@ -484,8 +484,10 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	m_popup.LoadMenu(IDR_POPUP);
 	m_popupmain.LoadMenu(IDR_POPUPMAIN);
-
+	
 	//GetMenu()->ModifyMenu(ID_FAVORITES, MF_BYCOMMAND|MF_STRING, IDR_MAINFRAME, ResStr(IDS_FAVORITES_POPUP)); NEW UI
+	m_mainMenu.LoadMenu(IDR_MAINFRAME);
+
 
 	// create a view to occupy the client area of the frame
 	if(!m_wndView.Create(NULL, NULL, AFX_WS_DEFAULT_VIEW,
@@ -616,10 +618,12 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_bmpMaximize.Attach( (HBITMAP)::LoadImage(GetModuleHandle(NULL), L"MAXIMIZE.BMP", IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION) );
 	m_bmpMinimize.Attach((HBITMAP)::LoadImage(GetModuleHandle(NULL), L"MINIMIZE.BMP", IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION));
  	m_bmpRestore.Attach((HBITMAP)::LoadImage(GetModuleHandle(NULL), L"RESTORE.BMP", IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION));
+	m_bmpMenu.Attach((HBITMAP)::LoadImage(GetModuleHandle(NULL), L"MENU.BMP", IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION));
 	PreMultiplyBitmap(m_bmpClose);
  	PreMultiplyBitmap(m_bmpMaximize);
  	PreMultiplyBitmap(m_bmpMinimize);
  	PreMultiplyBitmap(m_bmpRestore);
+	PreMultiplyBitmap(m_bmpMenu);
 
 	/*NEW UI END*/
 	return 0;
@@ -655,9 +659,14 @@ public:
 };
 
 void CMainFrame::OnNcCalcSize( BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp){
-	CRect rc = lpncsp->rgrc[0];
-	rc.InflateRect( GetSystemMetrics(SM_CXFRAME) - 3, 0,   GetSystemMetrics(SM_CXFRAME) - 3, GetSystemMetrics(SM_CXFRAME) - 2);
-	lpncsp->rgrc[0] = rc;
+	if(bCalcValidRects){
+		//先把rect[1]拷贝到rect[2]，rect[0]拷贝到rect[1]
+		//lpncsp->rgrc[2] = (CRect)lpncsp->rgrc[1];
+		//lpncsp->rgrc[1] = (CRect)lpncsp->rgrc[0];
+		CRect rc = lpncsp->rgrc[0];
+		rc.InflateRect( GetSystemMetrics(SM_CXFRAME) - 3, 0,   GetSystemMetrics(SM_CXFRAME) - 3, GetSystemMetrics(SM_CXFRAME) - 2);
+		lpncsp->rgrc[0] = rc;
+	}
 	__super::OnNcCalcSize(bCalcValidRects, lpncsp);
 }
 void CMainFrame::OnSize(UINT nType, int cx, int cy)
@@ -706,7 +715,10 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 
 
 }
-
+#define NEWUI_BTN_WIDTH 21
+#define NEWUI_BTN_HEIGTH 17
+#define NEWUI_BTN_MARGIN_TOP 7
+#define NEWUI_BTN_MARGIN_RIGHT 15
 LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 {
 	//////////////////////////////////////////////////////////////////////////
@@ -801,7 +813,7 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 
 		RECT rcWindowText = {0};
 		rcWindowText.top = rc.top+GetSystemMetrics(SM_CYFRAME)/2;
-		rcWindowText.left = rc.left+GetSystemMetrics(SM_CXFRAME);
+		rcWindowText.left = rc.left+7+GetSystemMetrics(SM_CXFRAME);
 		rcWindowText.bottom = rc.top+nTotalCaptionHeight;
 		rcWindowText.right = rc.right;
 		CString szWindowText;
@@ -811,15 +823,17 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 
 		// min/max/close buttons
 		//LONG lPaintParamArray[][5] = {{1,0},{1,1},{1,2},{1,3}};
-		int nVertPos = 4;
-		long nImagePositions[] = {0, 12, 24, 36};
+		int nVertPos = NEWUI_BTN_MARGIN_TOP;
+		long nImagePositions[] = {0, NEWUI_BTN_HEIGTH, NEWUI_BTN_HEIGTH*2, NEWUI_BTN_HEIGTH*3};  // 正常 ; hove ; 按下 ; disabled
 		dcBmp.SelectObject(m_bmpClose);
 		BLENDFUNCTION bf = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};//
-		hdc.AlphaBlend(rc.right-13*2, nVertPos, 13, 12, &dcBmp, 0, nImagePositions[m_nBoxStatus[0]], 13, 12, bf);
+		hdc.AlphaBlend(rc.right-NEWUI_BTN_MARGIN_RIGHT-NEWUI_BTN_WIDTH, nVertPos, NEWUI_BTN_WIDTH, NEWUI_BTN_HEIGTH, &dcBmp, 0, nImagePositions[m_nBoxStatus[0]], NEWUI_BTN_WIDTH, NEWUI_BTN_HEIGTH, bf);
 		dcBmp.SelectObject( (wp.showCmd==SW_MAXIMIZE)?m_bmpRestore:m_bmpMaximize);
-		hdc.AlphaBlend(rc.right-13*3, nVertPos, 13, 12, &dcBmp, 2, nImagePositions[m_nBoxStatus[1]], 13, 12, bf);
+		hdc.AlphaBlend(rc.right-NEWUI_BTN_MARGIN_RIGHT-NEWUI_BTN_WIDTH*2, nVertPos, NEWUI_BTN_WIDTH, NEWUI_BTN_HEIGTH, &dcBmp, 0, nImagePositions[m_nBoxStatus[1]], NEWUI_BTN_WIDTH, NEWUI_BTN_HEIGTH, bf);
 		dcBmp.SelectObject(m_bmpMinimize);
-		hdc.AlphaBlend(rc.right-13*4, nVertPos, 13, 12, &dcBmp, 2, nImagePositions[m_nBoxStatus[2]], 13, 12, bf);
+		hdc.AlphaBlend(rc.right-NEWUI_BTN_MARGIN_RIGHT-NEWUI_BTN_WIDTH*3, nVertPos, NEWUI_BTN_WIDTH, NEWUI_BTN_HEIGTH, &dcBmp, 0, nImagePositions[m_nBoxStatus[2]], NEWUI_BTN_WIDTH, NEWUI_BTN_HEIGTH, bf);
+		dcBmp.SelectObject(m_bmpMenu);
+		hdc.AlphaBlend(rc.right-NEWUI_BTN_MARGIN_RIGHT-NEWUI_BTN_WIDTH*4, nVertPos, NEWUI_BTN_WIDTH, NEWUI_BTN_HEIGTH, &dcBmp, 0, nImagePositions[m_nBoxStatus[3]], NEWUI_BTN_WIDTH, NEWUI_BTN_HEIGTH, bf);
 
 		dcBmp.SelectObject(hbmpold);
 
@@ -850,7 +864,7 @@ LRESULT CMainFrame::OnNcLButtonDown( WPARAM wParam, LPARAM lParam )
 LRESULT CMainFrame::OnNcLButtonUp( WPARAM wParam, LPARAM lParam )
 {
 	// custom processing of our min/max/close buttons
-	if (wParam == HTCLOSE || wParam == HTMAXBUTTON || wParam == HTMINBUTTON)
+	if (wParam == HTCLOSE || wParam == HTMAXBUTTON || wParam == HTMINBUTTON || wParam == HTMENU)
 	{
 		RedrawNonClientArea();
 		WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
@@ -870,6 +884,10 @@ LRESULT CMainFrame::OnNcLButtonUp( WPARAM wParam, LPARAM lParam )
 			m_nBoxStatus[0] = m_nBoxStatus[1] =m_nBoxStatus[2] = 0;
 			ShowWindow(SW_MINIMIZE);
 		}
+		else if (wParam == HTMENU)
+		{
+			OnMenu(m_mainMenu.GetSubMenu(0));
+		}
 		return FALSE;
 	}
 	return DefWindowProc(WM_NCLBUTTONUP, wParam, lParam);
@@ -884,21 +902,24 @@ LRESULT CMainFrame::OnNcHitTestNewUI(WPARAM wParam, LPARAM lParam )
 	CRect rc;
 	GetWindowRect(&rc);
 
-	CRect rcClose (rc.right-13*2, rc.top+5, rc.right-13, rc.top+17);
-	CRect rcMax (rc.right-13*3, rc.top+5, rc.right-13*2, rc.top+17);
-	CRect rcMin (rc.right-13*4, rc.top+5, rc.right-13*3, rc.top+17);
+	CRect rcClose (rc.right-NEWUI_BTN_MARGIN_RIGHT-NEWUI_BTN_WIDTH, rc.top+NEWUI_BTN_MARGIN_TOP, rc.right-NEWUI_BTN_WIDTH, rc.top+NEWUI_BTN_MARGIN_TOP+NEWUI_BTN_HEIGTH);
+	CRect rcMax (rc.right-NEWUI_BTN_MARGIN_RIGHT-NEWUI_BTN_WIDTH*2, rc.top+NEWUI_BTN_MARGIN_TOP, rc.right-NEWUI_BTN_WIDTH*2, rc.top+NEWUI_BTN_MARGIN_TOP+NEWUI_BTN_HEIGTH);
+	CRect rcMin (rc.right-NEWUI_BTN_MARGIN_RIGHT-NEWUI_BTN_WIDTH*3, rc.top+NEWUI_BTN_MARGIN_TOP, rc.right-NEWUI_BTN_WIDTH*3, rc.top+NEWUI_BTN_MARGIN_TOP+NEWUI_BTN_HEIGTH);
+	CRect rcMenu (rc.right-NEWUI_BTN_MARGIN_RIGHT-NEWUI_BTN_WIDTH*4, rc.top+NEWUI_BTN_MARGIN_TOP, rc.right-NEWUI_BTN_WIDTH*4, rc.top+NEWUI_BTN_MARGIN_TOP+NEWUI_BTN_HEIGTH);
 
 	CPoint pt(lParam);
-	SHORT bLBtnDown = GetAsyncKeyState(VK_LBUTTON);
+	SHORT bLBtnDown = GetAsyncKeyState(VK_LBUTTON);  
 	if (rcClose.PtInRect(pt) && bLBtnDown) m_nBoxStatus[0] = 2; else if (rcClose.PtInRect(pt)) m_nBoxStatus[0] = 1; else m_nBoxStatus[0] = 0;
 	if (rcMax.PtInRect(pt) && bLBtnDown) m_nBoxStatus[1] = 2; else if (rcMax.PtInRect(pt)) m_nBoxStatus[1] = 1; else m_nBoxStatus[1] = 0;
 	if (rcMin.PtInRect(pt) && bLBtnDown) m_nBoxStatus[2] = 2; else if (rcMin.PtInRect(pt)) m_nBoxStatus[2] = 1; else m_nBoxStatus[2] = 0;
+	if (rcMenu.PtInRect(pt) && bLBtnDown) m_nBoxStatus[3] = 2; else if (rcMenu.PtInRect(pt)) m_nBoxStatus[3] = 1; else m_nBoxStatus[3] = 0;
 
-	if (m_nBoxStatus[0] != nBoxStatus[0] || m_nBoxStatus[1] != nBoxStatus[1] || m_nBoxStatus[2] != nBoxStatus[2])
+	if (m_nBoxStatus[0] != nBoxStatus[0] || m_nBoxStatus[1] != nBoxStatus[1] || m_nBoxStatus[2] != nBoxStatus[2] || m_nBoxStatus[3] != nBoxStatus[3])
 		RedrawNonClientArea();
 	if (m_nBoxStatus[0]!=0) return HTCLOSE;
 	else if (m_nBoxStatus[1]!=0) return HTMAXBUTTON;
 	else if (m_nBoxStatus[2]!=0) return HTMINBUTTON;
+	else if (m_nBoxStatus[3]!=0) return HTMENU;
 	return DefWindowProc(WM_NCHITTEST, wParam, lParam);
 }
 
@@ -927,7 +948,7 @@ void CMainFrame::PreMultiplyBitmap( CBitmap& bmp )
 {
 	// this is only possible when the bitmap is loaded using the
 	// ::LoadImage API with flag LR_CREATEDIBSECTION
-
+	
 	BITMAP bm;
 	bmp.GetBitmap(&bm);
 	for (int y=0; y<bm.bmHeight; y++)

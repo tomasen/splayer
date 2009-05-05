@@ -1349,8 +1349,9 @@ IDB_STREAMTYPES         BITMAP                  "res\\streamtypes.bmp"
 CAPTION.BMP             BITMAP                  "res\\newui\\IMAGE_813.bmp"
 CLOSE.BMP               BITMAP                  "res\\newui\\BTN_CLOSE.bmp"
 MAXIMIZE.BMP            BITMAP                  "res\\newui\\BTN_MAX.bmp"
-MINIMIZE.BMP            BITMAP                  "res\\newui\\PNG_7033.bmp"
-RESTORE.BMP             BITMAP                  "res\\newui\\PNG_7034.bmp"
+MINIMIZE.BMP            BITMAP                  "res\\newui\\BTN_MIN.bmp"
+RESTORE.BMP             BITMAP                  "res\\newui\\BTN_RESTORE.bmp"
+MENU.BMP			     BITMAP                 "res\\newui\\BTN_MENU.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1915,7 +1916,9 @@ BEGIN
     END
 END
 
-IDR_MAINFRAME MENU 
+IDR_MAINFRAME MENU
+BEGIN
+    POPUP ""
 BEGIN
     POPUP "文件(&F)"
     BEGIN
@@ -2115,7 +2118,7 @@ BEGIN
         MENUITEM "QQ或MSN聊聊想法",                  ID_VISITCONTACTINFO
     END
 END
-
+END
 
 /////////////////////////////////////////////////////////////////////////////
 //

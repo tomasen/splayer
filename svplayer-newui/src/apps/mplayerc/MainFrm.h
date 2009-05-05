@@ -226,7 +226,7 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 	void SetupNavStreamSelectSubMenu(CMenu* pSub, UINT id, DWORD dwSelGroup);
 	void OnNavStreamSelectSubMenu(UINT id, DWORD dwSelGroup);
 
-	CMenu m_popupmain, m_popup;
+	CMenu m_popupmain, m_popup, m_mainMenu;
 	CMenu m_opencds;
 	CMenu m_filters, m_subtitles, m_subtitles2, m_audios, m_audiodevices;
 	CStringArray m_AudioDevice;
@@ -772,8 +772,8 @@ public:
 	void PreMultiplyBitmap(CBitmap& bmp);
 
 private:
-	CBitmap m_bmpCaption, m_bmpClose, m_bmpMaximize, m_bmpMinimize, m_bmpRestore;
+	CBitmap m_bmpCaption, m_bmpClose, m_bmpMaximize, m_bmpMinimize, m_bmpRestore, m_bmpMenu;
 	CRgn m_rgn;
-	long m_nBoxStatus[3];
+	long m_nBoxStatus[4];
 	/*NEW UI END*/
 };

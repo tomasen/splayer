@@ -423,6 +423,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_REGISTERED_MESSAGE(WM_MOUSEMOVEOUT, OnMouseMoveOut)
 
 	ON_COMMAND(ID_RESET_SETTING,  OnResetSetting)
+	ON_COMMAND(ID_VIEW_SETHOTKEY, OnSetHotkey)
 
 	END_MESSAGE_MAP()
 
@@ -606,7 +607,12 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	return 0;
 }
-
+void CMainFrame::OnSetHotkey(){
+	CAutoPtr<CPPageAccelTbl> page(new CPPageAccelTbl());
+	CPropertySheet dlg(_T("快捷键设置..."), this);
+	dlg.AddPage(page);
+	dlg.DoModal() ;
+}
 void CMainFrame::OnResetSetting(){
 	if(AfxMessageBox(_T("此操作将清除射手播放器的\n所有设置和播放记录，您确定么？"), MB_YESNO) == IDYES){
 

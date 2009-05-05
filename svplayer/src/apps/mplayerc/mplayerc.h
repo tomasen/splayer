@@ -572,6 +572,9 @@ public:
 		void RegGlobalAccelKey(HWND hWnd = NULL);
 		void UpdateData(bool fSave);
 
+		int  FindWmcmdsIDXofCmdid(UINT cmdid, POSITION pos);
+		POSITION  FindWmcmdsPosofCmdidByIdx(INT cmdid, int idx);
+
 		void GetFav(favtype ft, CAtlList<CString>& sl, BOOL bRecent = FALSE);
 		void SetFav(favtype ft, CAtlList<CString>& sl, BOOL bRecent = FALSE);
 		void DelFavByFn(favtype ft, BOOL bRecent, CString szMatch);

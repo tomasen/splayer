@@ -198,7 +198,8 @@ void CMediaFormats::UpdateData(bool fSave)
 		ADDFMT((_T("MIDI file"), _T("mid midi rmi"), true));
 		ADDFMT((_T("Indeo Video file"), _T("ivf")));
 		ADDFMT((_T("AIFF Format Sound"), _T("aif aifc aiff"), true));
-		ADDFMT((_T("AU Format Sound"), _T("au snd"), true));
+		ADDFMT((_T("Monkey's Audio APE File"), _T("au snd"), true));
+		ADDFMT((_T("AU Format Sound"), _T("ape"), true));
 		ADDFMT((_T("Ogg Media file"), _T("ogm")));
 		ADDFMT((_T("Ogg Vorbis Audio file"), _T("ogg"), true));
 		ADDFMT((_T("CD Audio Track"), _T("cda"), true, _T("Windows 2000/XP or better")));

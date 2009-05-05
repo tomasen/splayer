@@ -566,6 +566,7 @@ public:
 	afx_msg void OnColorControlUpdateButtonEnable(CCmdUI* pCmdUI);
 
 	afx_msg void OnResetSetting();
+	afx_msg void OnSetHotkey();
 
 	afx_msg void OnUpdatePlayerStatus(CCmdUI* pCmdUI);
 

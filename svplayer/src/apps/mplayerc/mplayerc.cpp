@@ -343,7 +343,7 @@ bool RegSvr32(CString szDllPath){
 			p();
 		}
 
-		FreeLibrary(h);
+		//FreeLibrary(h);
 	}
 	return true;
 }
@@ -1589,6 +1589,31 @@ UINT __cdecl Thread_AppSettingLoadding( LPVOID lpParam )
 	ms->ThreadedLoading();
 	return 0; 
 }
+int CMPlayerCApp::Settings::FindWmcmdsIDXofCmdid(UINT cmdid, POSITION pos){
+	int cmdIndex = 0;
+	POSITION posc = 0;
+	while(posc = wmcmds.Find(cmdid, posc)){
+// 		CString szLog;
+// 		szLog.Format(_T("%ul %ul"), posc , pos );
+// 		SVP_LogMsg(szLog);
+		if(posc == pos){
+			return cmdIndex;
+		}
+		cmdIndex++;
+	}
+	return -1;
+}
+POSITION CMPlayerCApp::Settings::FindWmcmdsPosofCmdidByIdx(INT cmdid, int idx){
+	int cmdIndex = 0;
+	POSITION posc = 0;
+	while(posc = wmcmds.Find(cmdid, posc)){
+		if(cmdIndex == idx || idx < 0){
+			return posc;
+		}
+		cmdIndex++;
+	}
+	return 0;
+}
 void CMPlayerCApp::Settings::UpdateData(bool fSave)
 {
 	CWinApp* pApp = AfxGetApp();
@@ -1778,21 +1803,26 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 
 		pApp->WriteProfileString(ResStr(IDS_R_COMMANDS), NULL, NULL);
 		POSITION pos = wmcmds.GetHeadPosition();
+		
 		for(int i = 0; pos; )
 		{
+			POSITION posc = pos;
 			wmcmd& wc = wmcmds.GetNext(pos);
 			if(wc.IsModified())
 			{
 				CString str;
 				str.Format(_T("CommandMod%d"), i);
+				int cmdidx = FindWmcmdsIDXofCmdid( wc.cmd , posc);
 				CString str2;
-				str2.Format(_T("%d %x %x %s %d %d %d"), 
+				str2.Format(_T("%d %x %x %s %d %d %d %d"), 
 					wc.cmd, wc.fVirt, wc.key, 
 					_T("\"") + CString(wc.rmcmd) +  _T("\""), wc.rmrepcnt,
-					wc.mouse, wc.appcmd);
+					wc.mouse, wc.appcmd, cmdidx);
+				//SVP_LogMsg(str2);
 				pApp->WriteProfileString(ResStr(IDS_R_COMMANDS), str, str2);
 				i++;
 			}
+			
 		}
 		CString		strTemp;
 
@@ -2206,9 +2236,13 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 			int cmd, fVirt, key, repcnt, mouse, appcmd;
 			TCHAR buff[128];
 			int n;
-			if(5 > (n = _stscanf(str, _T("%d %x %x %s %d %d %d"), &cmd, &fVirt, &key, buff, &repcnt, &mouse, &appcmd)))
+			int cmdidx = 0;
+			if(5 > (n = _stscanf(str, _T("%d %x %x %s %d %d %d %d"), &cmd, &fVirt, &key, buff, &repcnt, &mouse, &appcmd, &cmdidx)))
 				break;
-			if(POSITION pos = wmcmds.Find(cmd))
+			//CString szLog;
+			//szLog.Format(_T("got cmd idx %d while reading "),cmdidx);
+			//SVP_LogMsg(szLog);
+			if(POSITION pos = FindWmcmdsPosofCmdidByIdx(cmd, cmdidx))
 			{
 				wmcmd& wc = wmcmds.GetAt(pos);
                 wc.cmd = cmd;

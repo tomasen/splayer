@@ -4801,7 +4801,8 @@ void CMainFrame::OnFileISDBUpload()
 }
 void CMainFrame::OnManualcheckupdate()
 {
-	SVP_CheckUpdaterExe(&m_bCheckingUpdater);
+	//AfxMessageBox(_T("自动升级程序正在启动，请稍后..") );
+	SVP_CheckUpdaterExe(&m_bCheckingUpdater, 1);
 }
 void CMainFrame::OnUpdateFileISDBUpload(CCmdUI *pCmdUI)
 {

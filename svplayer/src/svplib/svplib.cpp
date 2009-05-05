@@ -25,7 +25,7 @@ void SVP_RealUploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString
 	}
 }
 
-void SVP_RealCheckUpdaterExe(BOOL* bCheckingUpdater){
+void SVP_RealCheckUpdaterExe(BOOL* bCheckingUpdater, UINT verbose = 0){
 
 	
 	//检查 updater.exe 是否可写
@@ -42,24 +42,43 @@ void SVP_RealCheckUpdaterExe(BOOL* bCheckingUpdater){
 
 		}
 		SVP_LogMsg( _T("检测到新的版本，升级程序已启动") ); 
+		CString szPerm = _T("");
+		if(verbose){
+			szPerm = _T(" /verbose ");
+		}
 		//运行升级程序
-		ShellExecute( NULL, _T("open"), szUpdaterPath, _T("") , _T(""), SW_HIDE);	
+		ShellExecute( NULL, _T("open"), szUpdaterPath, szPerm , _T(""), SW_HIDE);	
+	}else{
+		if( verbose ){
+			AfxMessageBox(_T("目录无法写入，升级程序暂停"));
+		}
 	}
 	*bCheckingUpdater = true;
 }
+class CCheckUpdaterPerm{
+public:
+	BOOL* bCheckingUpdater;
+	UINT verbose;
+};
+
 UINT __cdecl SVPThreadCheckUpdaterExe( LPVOID lpParam ) 
 { 
 
-	SVP_RealCheckUpdaterExe((int*)lpParam);
+	CCheckUpdaterPerm * ccup =(CCheckUpdaterPerm*) lpParam;
+	SVP_RealCheckUpdaterExe( ccup->bCheckingUpdater, ccup->verbose);
 	szGStatMsg = NULL;
+	delete ccup;
 	return 0; 
 }
-void SVP_CheckUpdaterExe(BOOL* bCheckingUpdater){
+void SVP_CheckUpdaterExe(BOOL* bCheckingUpdater , UINT verbose){
 	if(*bCheckingUpdater){
 		return;
 	}
 	*bCheckingUpdater = true;
-	AfxBeginThread( SVPThreadCheckUpdaterExe, (LPVOID)bCheckingUpdater, THREAD_PRIORITY_LOWEST);
+	CCheckUpdaterPerm * ccup = new CCheckUpdaterPerm( );
+	ccup->bCheckingUpdater = bCheckingUpdater;
+	ccup->verbose = verbose;
+	AfxBeginThread( SVPThreadCheckUpdaterExe, (LPVOID)ccup, THREAD_PRIORITY_LOWEST);
 }
 
 class CSVPPinRenderDeadEndData{

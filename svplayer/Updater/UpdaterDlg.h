@@ -12,6 +12,8 @@ class CUpdaterDlg : public CDialog
 // Construction
 public:
 	CUpdaterDlg(CWnd* pParent = NULL);	// standard constructor
+	UINT verbose;
+	BOOL bHide;
 
 // Dialog Data
 	enum { IDD = IDD_UPDATER_DIALOG };
@@ -21,7 +23,6 @@ public:
 
 	cupdatenetlib cup;
 	BOOL m_bGoodToGo;
-	BOOL bHide;
 	NOTIFYICONDATA tnid;
 
 	LRESULT On_WM_NOTIFYICON(WPARAM wParam, LPARAM lParam);

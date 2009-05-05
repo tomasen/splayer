@@ -27,6 +27,7 @@ CUpdaterDlg::CUpdaterDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CUpdaterDlg::IDD, pParent)
 ,bHide(1)
 ,m_bGoodToGo(0)
+,verbose(0)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -176,7 +177,11 @@ void CUpdaterDlg::OnTimer(UINT_PTR nIDEvent)
 					cs_stat.ShowWindow(SW_SHOW);
 					cslink.ShowWindow(SW_SHOW);
 					cs_stat.SetWindowText(_T("射手影音播放器智能更新程序将稍后开始检查是否存在可供升级的新版本，以获得最新的功能和改进..."));
-					SetTimer(IDT_REAL_START_CHECK, 24500, NULL);
+					int timedelay = 24500;
+					if(verbose){
+						timedelay = 10;
+					}
+					SetTimer(IDT_REAL_START_CHECK, timedelay, NULL);
 					cb_backgd.EnableWindow();
 					m_bGoodToGo = true;
 				}else{

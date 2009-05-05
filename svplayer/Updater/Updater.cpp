@@ -102,6 +102,7 @@ BOOL CUpdaterApp::InitInstance()
 	PreProcessCommandLine();
 
 	CString szDmpFile;
+	UINT m_verbose = 0;
 
 	POSITION pos = m_cmdln.GetHeadPosition();
 	while(pos)
@@ -114,7 +115,9 @@ BOOL CUpdaterApp::InitInstance()
 			CString sw = param.Mid(1).MakeLower();
 			if(sw == _T("dmp") && pos) {
 				szDmpFile = m_cmdln.GetNext(pos);
-				break;
+				
+			}else if(sw == _T("verbose") ) {
+				m_verbose = 1;
 			}
 		}
 		
@@ -131,6 +134,10 @@ BOOL CUpdaterApp::InitInstance()
 	//Background downloader
 
 	CUpdaterDlg dlg;
+	if(m_verbose){
+		dlg.bHide  = FALSE;
+		dlg.verbose = m_verbose;
+	}
 	m_pMainWnd = &dlg;
 	INT_PTR nResponse = dlg.DoModal();
 	if (nResponse == IDOK)

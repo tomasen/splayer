@@ -26,7 +26,7 @@ extern void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath, CStringArra
 //extern void SVP_UploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString szSubPath, int iDelayMS );
 extern void SVP_RealUploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString szSubPath, int iDelayMS, CStringArray* szaPostTerms);
 extern void SVP_LogMsg(CString logmsg, int level = 15);
-extern void SVP_CheckUpdaterExe(BOOL* bCheckingUpdater);
+extern void SVP_CheckUpdaterExe(BOOL* bCheckingUpdater, UINT verbose = 0);
 //extern void SVP_RealCheckUpdaterExe(BOOL* bCheckingUpdater);
 extern BOOL SVP_SetCoreAvcCUDA(BOOL useCUDA);
 extern void SVP_UploadPinRenderDeadEnd(CString szPinName, CString szReport);

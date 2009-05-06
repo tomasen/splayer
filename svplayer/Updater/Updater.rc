@@ -119,12 +119,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Shooter.cn"
             VALUE "FileDescription", "射手影音播放器自动升级程序"
-            VALUE "FileVersion", "1.0.0.9"
+            VALUE "FileVersion", "1.0.0.10"
             VALUE "InternalName", "Updater.exe"
             VALUE "LegalCopyright", "(c) Shooter.cn.  All rights reserved."
             VALUE "OriginalFilename", "Updater.exe"
             VALUE "ProductName", "射手影音播放器自动升级程序"
-            VALUE "ProductVersion", "1.0.0.9"
+            VALUE "ProductVersion", "1.0.0.10"
         END
     END
     BLOCK "VarFileInfo"

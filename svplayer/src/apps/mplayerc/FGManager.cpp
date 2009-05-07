@@ -2258,6 +2258,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 				SVP_LogMsg(szLog);
 				if(pFGF){
 					if(szFPath.Find(_T("rlapedec.ax")) > 0){
+						pFGF->m_extensions.AddTail(_T(".ape"));
 						m_source.AddTail(pFGF);
 					}else{
 						pFGF->SetTypes(fo->guids);

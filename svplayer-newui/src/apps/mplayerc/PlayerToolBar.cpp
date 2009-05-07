@@ -47,48 +47,52 @@ CPlayerToolBar::~CPlayerToolBar()
 BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 {
 	int iToolBarID = IDB_PLAYERTOOLBAR;
+	/*
 	CRect rcDesktop;
-	GetDesktopWindow()->GetWindowRect(&rcDesktop);
-
-	if( rcDesktop.Width() < 1200){
-		iToolBarID = IDB_PLAYERTOOLBAR_SMALL;
-		iButtonWidth = 20;
-	}
+		GetDesktopWindow()->GetWindowRect(&rcDesktop);
+	
+		if( rcDesktop.Width() < 1200){
+			iToolBarID = IDB_PLAYERTOOLBAR_SMALL;
+			iButtonWidth = 20;
+		}*/
+	
 
 	if(!__super::CreateEx(pParentWnd,
 		TBSTYLE_FLAT|TBSTYLE_TRANSPARENT|TBSTYLE_AUTOSIZE,
-		WS_CHILD|WS_VISIBLE|CBRS_ALIGN_BOTTOM|CBRS_TOOLTIPS, CRect(2,2,0,3)) 
-	|| !LoadToolBar(iToolBarID))
+		WS_CHILD|WS_VISIBLE|CBRS_ALIGN_BOTTOM , CRect(2,2,0,3))  //CBRS_TOOLTIPS NEW UI
+	) //|| !LoadToolBar(iToolBarID)
 		return FALSE;
 
 	GetToolBarCtrl().SetExtendedStyle(TBSTYLE_EX_DRAWDDARROWS);
 
-	CToolBarCtrl& tb = GetToolBarCtrl();
-	tb.DeleteButton(tb.GetButtonCount()-1);
-	tb.DeleteButton(tb.GetButtonCount()-1);
-
-	SetMute(AfxGetAppSettings().fMute);
-
-	UINT styles[] = 
-	{
-		TBBS_CHECKGROUP, TBBS_CHECKGROUP, TBBS_CHECKGROUP, 
-		TBBS_SEPARATOR,
-		TBBS_BUTTON, TBBS_BUTTON, TBBS_BUTTON, TBBS_BUTTON, 
-		//TBBS_SEPARATOR,
-		//TBBS_BUTTON/*|TBSTYLE_DROPDOWN*/, 
-		TBBS_SEPARATOR,
-		TBBS_BUTTON, TBBS_BUTTON, TBBS_BUTTON, 
-		TBBS_SEPARATOR,
-		TBBS_BUTTON, TBBS_BUTTON, TBBS_SEPARATOR, 
-		TBBS_BUTTON,
-		TBBS_BUTTON,
-		TBBS_DISABLED,TBBS_DISABLED,
-		TBBS_CHECKBOX, 
-		/*TBBS_SEPARATOR,*/
-	};
-
-	for(int i = 0; i < countof(styles); i++)
-		SetButtonStyle(i, styles[i]|TBBS_DISABLED);
+	/*
+		CToolBarCtrl& tb = GetToolBarCtrl();
+			tb.DeleteButton(tb.GetButtonCount()-1);
+			tb.DeleteButton(tb.GetButtonCount()-1);
+		
+			SetMute(AfxGetAppSettings().fMute);
+		
+			UINT styles[] = 
+			{
+				TBBS_CHECKGROUP, TBBS_CHECKGROUP, TBBS_CHECKGROUP, 
+				TBBS_SEPARATOR,
+				TBBS_BUTTON, TBBS_BUTTON, TBBS_BUTTON, TBBS_BUTTON, 
+				//TBBS_SEPARATOR,
+				//TBBS_BUTTON/ *|TBSTYLE_DROPDOWN* /, 
+				TBBS_SEPARATOR,
+				TBBS_BUTTON, TBBS_BUTTON, TBBS_BUTTON, 
+				TBBS_SEPARATOR,
+				TBBS_BUTTON, TBBS_BUTTON, TBBS_SEPARATOR, 
+				TBBS_BUTTON,
+				TBBS_BUTTON,
+				TBBS_DISABLED,TBBS_DISABLED,
+				TBBS_CHECKBOX, 
+				/ *TBBS_SEPARATOR,* /
+			};
+		
+			for(int i = 0; i < countof(styles); i++)
+				SetButtonStyle(i, styles[i]|TBBS_DISABLED);*/
+		
 
 	/*
 	SetButtonStyle(0, GetButtonStyle(0)|BS_ICON );
@@ -119,17 +123,19 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 
 	
 
-	m_volctrl.Create(this);
 	
-	if(AfxGetAppSettings().fDisabeXPToolbars)
-	{
-		if(HMODULE h = LoadLibrary(_T("uxtheme.dll")))
+		m_volctrl.Create(this);
+		/*
+		if(AfxGetAppSettings().fDisabeXPToolbars)
 		{
-			SetWindowThemeFunct f = (SetWindowThemeFunct)GetProcAddress(h, "SetWindowTheme");
-			if(f) f(m_hWnd, L" ", L" ");
-			FreeLibrary(h);
-		}
-	}
+			if(HMODULE h = LoadLibrary(_T("uxtheme.dll")))
+			{
+				SetWindowThemeFunct f = (SetWindowThemeFunct)GetProcAddress(h, "SetWindowTheme");
+				if(f) f(m_hWnd, L" ", L" ");
+				FreeLibrary(h);
+			}
+		}*/
+	
 
 	return TRUE;
 }
@@ -140,6 +146,8 @@ BOOL CPlayerToolBar::PreCreateWindow(CREATESTRUCT& cs)
 		return FALSE;
 
 	m_dwStyle &= ~CBRS_BORDER_TOP;
+	m_dwStyle &= ~CBRS_BORDER_LEFT;
+	m_dwStyle &= ~CBRS_BORDER_RIGHT;
 	m_dwStyle &= ~CBRS_BORDER_BOTTOM;
 //	m_dwStyle |= CBRS_SIZE_FIXED;
 
@@ -150,24 +158,26 @@ void CPlayerToolBar::ArrangeControls()
 {
 	if(!::IsWindow(m_volctrl.m_hWnd)) return;
 
+	/*
 	CRect r;
-	GetClientRect(&r);
-
-	CRect br = GetBorders();
-
-	CRect r10;
-	GetItemRect(18, &r10);
-
-	CRect vr;
-	m_volctrl.GetClientRect(&vr);
-	CRect vr2(r.right+br.right-iButtonWidth*2, r.top-1, r.right+br.right+6, r.bottom);
-	m_volctrl.MoveWindow(vr2);
-
-	UINT nID;
-	UINT nStyle;
-	int iImage;
-	GetButtonInfo(20, nID, nStyle, iImage);
-	SetButtonInfo(19, GetItemID(19), TBBS_SEPARATOR, vr2.left - iImage - r10.right - 19);
+		GetClientRect(&r);
+	
+		CRect br = GetBorders();
+	
+		CRect r10;
+		GetItemRect(18, &r10);
+	
+		CRect vr;
+		m_volctrl.GetClientRect(&vr);
+		CRect vr2(r.right+br.right-iButtonWidth*2, r.top-1, r.right+br.right+6, r.bottom);
+		m_volctrl.MoveWindow(vr2);
+	
+		UINT nID;
+		UINT nStyle;
+		int iImage;
+		GetButtonInfo(20, nID, nStyle, iImage);
+		SetButtonInfo(19, GetItemID(19), TBBS_SEPARATOR, vr2.left - iImage - r10.right - 19);*/
+	
 }
 
 void CPlayerToolBar::SetMute(bool fMute)
@@ -224,7 +234,15 @@ BEGIN_MESSAGE_MAP(CPlayerToolBar, CToolBar)
 END_MESSAGE_MAP()
 
 // CPlayerToolBar message handlers
+#define NEWUI_COLOR_BG RGB(214,214,214)
 
+CSize CPlayerToolBar::CalcFixedLayout(BOOL bStretch,BOOL bHorz ){
+
+	
+	return CSize(0,0);
+
+	//return __super::CalcFixedLayout(bStretch,bHorz);
+}
 void CPlayerToolBar::OnPaint()
 {
 	if(m_bDelayedButtonLayout)
@@ -241,7 +259,7 @@ void CPlayerToolBar::OnPaint()
 		GetButtonInfo(19, nID, nStyle, iImage);
 		CRect ItemRect;
 		GetItemRect(19, ItemRect);
-		dc.FillSolidRect(ItemRect, RGB(214,214,214));;//New UI GetSysColor(COLOR_BTNFACE)
+		dc.FillSolidRect(ItemRect, NEWUI_COLOR_BG);;//New UI GetSysColor(COLOR_BTNFACE)
 		//dc.FillSolidRect(ItemRect, RGB(214,219,239) );   
 	}
 }
@@ -256,7 +274,7 @@ void CPlayerToolBar::OnNcPaint() // when using XP styles the NC area isn't drawn
 	cr.OffsetRect(-wr.left, -wr.top);
 	wr.OffsetRect(-wr.left, -wr.top);
 	dc.ExcludeClipRect(&cr);
-	dc.FillSolidRect(wr, RGB(214,214,214));//New UI GetSysColor(COLOR_BTNFACE)
+	dc.FillSolidRect(wr, NEWUI_COLOR_BG);//New UI GetSysColor(COLOR_BTNFACE)
 
 	//Ìî³ä±³¾°-----------------------------------------   
 	//dc.FillSolidRect(wr, RGB(214,219,239) );   

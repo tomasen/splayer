@@ -71,6 +71,8 @@ protected:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg CSize CalcFixedLayout(BOOL bStretch,BOOL bHorz );
+
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

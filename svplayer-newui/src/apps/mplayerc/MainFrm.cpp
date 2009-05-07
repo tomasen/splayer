@@ -661,8 +661,9 @@ public:
 void CMainFrame::OnNcCalcSize( BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp){
 	if(bCalcValidRects){
 		//先把rect[1]拷贝到rect[2]，rect[0]拷贝到rect[1]
-		//lpncsp->rgrc[2] = (CRect)lpncsp->rgrc[1];
-		//lpncsp->rgrc[1] = (CRect)lpncsp->rgrc[0];
+		//memcpy( &lpncsp->rgrc[2] ,  &lpncsp->rgrc[1] , sizeof(RECT));
+		//memcpy( &lpncsp->rgrc[1] ,  &lpncsp->rgrc[0] , sizeof(RECT));
+		
 		CRect rc = lpncsp->rgrc[0];
 		rc.InflateRect( GetSystemMetrics(SM_CXFRAME) - 3, 0,   GetSystemMetrics(SM_CXFRAME) - 3, GetSystemMetrics(SM_CXFRAME) - 2);
 		lpncsp->rgrc[0] = rc;
@@ -702,15 +703,17 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 			// create rounded rect region based on new window size
 			if (wp.showCmd != SW_MAXIMIZE )
 			{
-				m_rgn.CreateRoundRectRgn(0,0,rc.Width()-1,rc.Height()-1, 9,9);                 // rounded rect w/50 pixel corners
+				m_rgn.CreateRoundRectRgn(0,0,rc.Width()-1,rc.Height()-1, 3,3);                 // rounded rect w/50 pixel corners
 				
 				SetWindowRgn(m_rgn,TRUE);  // set window region to make rounded window
 			}
 			else
-				SetWindowRgn(NULL,TRUE);  // set window region to make rounded window
+				SetWindowRgn(NULL,TRUE);   
 
 			Invalidate();
 		}
+	}else{
+		SetWindowRgn(NULL,TRUE);   
 	}
 
 
@@ -719,6 +722,10 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 #define NEWUI_BTN_HEIGTH 17
 #define NEWUI_BTN_MARGIN_TOP 7
 #define NEWUI_BTN_MARGIN_RIGHT 15
+#define NEWUI_COLOR_BG RGB(214,214,214)
+#define NEWUI_COLOR_PEN  RGB(0x7f,0x7f,0x7f)
+#define NEWUI_COLOR_PEN_BRIGHT RGB(0xe9,0xe9,0xe9)
+#define NEWUI_COLOR_PEN_DARK RGB(154,154,154)
 LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 {
 	//////////////////////////////////////////////////////////////////////////
@@ -768,15 +775,15 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 
 		// some basic styles
 		CPen pen, penBright, penDark;
-		pen.CreatePen(PS_SOLID, 1, RGB(64,64,64));
-		penBright.CreatePen(PS_SOLID, 1, RGB(255,255,255));
-		penDark.CreatePen(PS_SOLID, 1, RGB(154,154,154));
+		pen.CreatePen(PS_SOLID, 1, NEWUI_COLOR_PEN );
+		penBright.CreatePen(PS_SOLID, 1, NEWUI_COLOR_PEN_BRIGHT);
+		penDark.CreatePen(PS_SOLID, 1,NEWUI_COLOR_PEN_BRIGHT);
 		CBrush brush;
-		brush.CreateSolidBrush(RGB(214,214,214));
+		brush.CreateSolidBrush(NEWUI_COLOR_BG);
 		HPEN holdpen = (HPEN)hdc.SelectObject(pen);
 		HBRUSH holdbrush = (HBRUSH)hdc.SelectObject(brush);
 		if (wp.showCmd != SW_MAXIMIZE)
-			hdc.RoundRect(rc.left+1, rc.top+1, rc.right-1, rc.bottom-1, 9, 9);
+			hdc.RoundRect(rc.left+1, rc.top+1, rc.right-1, rc.bottom-1, 3, 3);
 		else
 			hdc.FillRect(&rc, &brush);
 		hdc.SelectObject(penBright);
@@ -790,9 +797,9 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 		hdc.SelectObject(holdpen);
 		hdc.SelectObject(holdbrush);
 
-		hdc.SelectObject((HBRUSH) GetStockObject(NULL_BRUSH));
-		if (wp.showCmd != SW_MAXIMIZE)
-			hdc.RoundRect(rc.left+1, rc.top+1, rc.right-1, rc.bottom-1, 9, 9);
+// 		hdc.SelectObject((HBRUSH) GetStockObject(NULL_BRUSH));
+// 		if (wp.showCmd != SW_MAXIMIZE)
+// 			hdc.RoundRect(rc.left+1, rc.top+1, rc.right-1, rc.bottom-1, 3, 3);
 
 		// painting the caption bar
 		CDC dcBmp;
@@ -801,9 +808,9 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 		hdc.SetStretchBltMode(HALFTONE);
 		hdc.SetBrushOrg(0, 0);
 		int nTotalCaptionHeight = GetSystemMetrics(SM_CYCAPTION)+GetSystemMetrics(SM_CYFRAME);
-		hdc.StretchBlt(0, 0, nTotalCaptionHeight, nTotalCaptionHeight, &dcBmp, 0, 0, 29, 29, SRCCOPY);
-		hdc.StretchBlt(nTotalCaptionHeight, 0, rc.Width()-nTotalCaptionHeight*2, nTotalCaptionHeight, &dcBmp, 29, 0, 8, 29, SRCCOPY);
-		hdc.StretchBlt(rc.Width()-nTotalCaptionHeight-2, 0, nTotalCaptionHeight, nTotalCaptionHeight, &dcBmp, 37, 0, 29, 29, SRCCOPY);
+		hdc.StretchBlt(0, 0, 4, nTotalCaptionHeight, &dcBmp, 0, 0, 4, 25, SRCCOPY);
+		hdc.StretchBlt(4, 0, rc.Width()-4*2, nTotalCaptionHeight, &dcBmp, 4, 0, 6, 25, SRCCOPY);
+		hdc.StretchBlt(rc.Width()-2-4, 0, 4, nTotalCaptionHeight, &dcBmp, 10, 0, 4, 25, SRCCOPY);
 
 		// and the title
 		CFont hft;
@@ -846,6 +853,7 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 
 LRESULT CMainFrame::OnNcActivate( WPARAM wParam, LPARAM lParam)
 {
+	SVP_LogMsg(_T("OnNcActivate"));
 	RedrawWindow();
 	return TRUE;
 }
@@ -896,9 +904,9 @@ LRESULT CMainFrame::OnNcLButtonUp( WPARAM wParam, LPARAM lParam )
 LRESULT CMainFrame::OnNcHitTestNewUI(WPARAM wParam, LPARAM lParam )
 {
 	// custom processing of our min/max/close buttons
-	long nBoxStatus[3];
+	long nBoxStatus[4];
 	memcpy(nBoxStatus, m_nBoxStatus, sizeof(nBoxStatus));
-
+	//SVP_LogMsg(_T("OnNcHitTestNewUI"));
 	CRect rc;
 	GetWindowRect(&rc);
 
@@ -914,14 +922,20 @@ LRESULT CMainFrame::OnNcHitTestNewUI(WPARAM wParam, LPARAM lParam )
 	if (rcMin.PtInRect(pt) && bLBtnDown) m_nBoxStatus[2] = 2; else if (rcMin.PtInRect(pt)) m_nBoxStatus[2] = 1; else m_nBoxStatus[2] = 0;
 	if (rcMenu.PtInRect(pt) && bLBtnDown) m_nBoxStatus[3] = 2; else if (rcMenu.PtInRect(pt)) m_nBoxStatus[3] = 1; else m_nBoxStatus[3] = 0;
 
-	if (m_nBoxStatus[0] != nBoxStatus[0] || m_nBoxStatus[1] != nBoxStatus[1] || m_nBoxStatus[2] != nBoxStatus[2] || m_nBoxStatus[3] != nBoxStatus[3])
+	if (m_nBoxStatus[0] != nBoxStatus[0] || m_nBoxStatus[1] != nBoxStatus[1] || m_nBoxStatus[2] != nBoxStatus[2] || m_nBoxStatus[3] != nBoxStatus[3]){
+		//SVP_LogMsg(_T("RedrawNonClientArea"));
 		RedrawNonClientArea();
+	}
 	if (m_nBoxStatus[0]!=0) return HTCLOSE;
 	else if (m_nBoxStatus[1]!=0) return HTMAXBUTTON;
 	else if (m_nBoxStatus[2]!=0) return HTMINBUTTON;
 	else if (m_nBoxStatus[3]!=0) return HTMENU;
-	return DefWindowProc(WM_NCHITTEST, wParam, lParam);
-}
+	LRESULT lHTESTID = DefWindowProc(WM_NCHITTEST, wParam, lParam);
+	if(lHTESTID == HTCLOSE || lHTESTID == HTMAXBUTTON || lHTESTID == HTMINBUTTON || lHTESTID == HTMENU  ){
+		return HTCAPTION;
+	}
+	return lHTESTID;
+} 
 
 void CMainFrame::RedrawNonClientArea()
 {

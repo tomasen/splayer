@@ -2137,13 +2137,11 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	m_transform.AddTail(pFGF);
 #endif
 
-	/*
+	CMPCVideoDecFilter::FFmpegFilters = s.FFmpegFilters;
+	CMPCVideoDecFilter::DXVAFilters = s.DXVAFilters;
+	
 	CMPCVideoDecFilter::m_ref_frame_count_check_skip = false;
-		if((!AfxGetMyApp()->IsVistaOrAbove()) && ((s.iDSVideoRendererType == VIDRNDT_DS_DEFAULT) || (s.iDSVideoRendererType == VIDRNDT_DS_DXR)))
-		{
-			CMPCVideoDecFilter::m_ref_frame_count_check_skip = true;
-		}
-	*/
+	
 	
 	// Blocked filters
 
@@ -2202,7 +2200,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	CSVPToolBox svptoolbox;
 	szaExtFilterPaths.RemoveAll();
 	if(!s.onlyUseInternalDec){
-		if ( s.bUsePowerDVD && s.useGPUAcel && !s.useGPUCUDA ) {
+		if ( s.bUsePowerDVD && ( s.optionDecoder == _T("PDVDGPUdec") || s.optionDecoder.IsEmpty() ) && s.useGPUAcel && !s.useGPUCUDA ) {
 			//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("codecs\\powerdvd\\CL264dec.ax")) );
 			
 			

@@ -421,6 +421,7 @@ public:
 		int iAPSurfaceUsage;
 		bool fVMRSyncFix;
 		int useGPUAcel;
+		CString optionDecoder;
 		int useGPUCUDA;
 		int autoDownloadSVPSub;
 		int iDX9Resizer;

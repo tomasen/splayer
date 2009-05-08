@@ -72,8 +72,6 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_DHtml_CheckBox(pDX, _T("chkautoresumeplay"), m_sgi_chkautoresumeplay);
 
 	DDX_DHtml_CheckBox(pDX, _T("chkusesmartdrag"), m_sgi_chkuseSmartDrag);
-	DDX_DHtml_CheckBox(pDX, _T("internaldeconly"), m_sgi_chkonlyUseInternalDec);
-	DDX_DHtml_CheckBox(pDX, _T("internaltspliteronly"), m_sgi_chkinternaltspliteronly);
 	
 	DDX_DHtml_ElementValue (pDX, _T("stepsmall"), m_sgs_stepsmall);
 	DDX_DHtml_ElementValue (pDX, _T("stepmed"), m_sgs_stepmed);
@@ -98,12 +96,12 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_DHtml_ElementValue (pDX, _T("subvpos2"), m_sgs_subvpos2);
 	DDX_DHtml_ElementValue (pDX, _T("engsizeratio2"), m_sgs_engsubradio2);
 
-	DDX_DHtml_CheckBox(pDX, _T("disableevr"), m_sgi_disableevr);
 	DDX_DHtml_SelectValue( pDX, _T("videorender"), m_sgs_videorender);
+	DDX_DHtml_SelectValue( pDX, _T("decoder"), m_sgs_decoder);
 	DDX_DHtml_SelectIndex( pDX, _T("videorender"), m_sgi_videorender);
 	DDX_DHtml_CheckBox(pDX, _T("lockbackbuff"), m_sgi_lockbackbuff);
-	DDX_DHtml_CheckBox(pDX, _T("gpuacel"), m_sgi_gpuacel);
-	DDX_DHtml_CheckBox(pDX, _T("gpuacelcuda"), m_sgi_gpuacelcuda);
+	DDX_DHtml_CheckBox(pDX, _T("gpuacelbase"), m_sgi_gpuacel);
+	DDX_DHtml_CheckBox(pDX, _T("internaltspliteronly"), m_sgi_chkinternaltspliteronly);
 
 	DDX_DHtml_CheckBox(pDX, _T("vmr9mixer"), m_sgi_uservmrmixer);
 	
@@ -221,11 +219,18 @@ BOOL CUESettingPanel::OnInitDialog()
 		m_sgi_videorender = 2; //×Ô¶¨Òå
 	}
 	m_sgi_lockbackbuff = s.fVMRSyncFix;
-	m_sgi_chkonlyUseInternalDec = s.onlyUseInternalDec;
 	m_sgi_gpuacel = s.useGPUAcel;
-	m_sgi_gpuacelcuda = s.useGPUCUDA;
+	m_sgs_decoder = s.optionDecoder;
+	if(m_sgs_decoder.IsEmpty()){
+		if(m_sgi_gpuacel){
+			m_sgs_decoder = _T("internalGPUdec");
+		}else{
+			m_sgs_decoder = _T("internaldec");
+		}
+	}
 	m_sgi_chkinternaltspliteronly = s.fUseInternalTSSpliter;
-	m_sgi_disableevr = s.bDisableEVR;
+	
+
 	//Audio Setting
 	m_sgi_normalize = s.fAudioNormalize;
 	if( s.AudioBoost > 1 ){
@@ -376,8 +381,7 @@ void CUESettingPanel::ApplyAllSetting(){
 	s.nJumpDistL = _wtof(m_sgs_stepbig) * 1000;
 	
 	//Video Setting
-	
-	s.bDisableEVR = m_sgi_disableevr ;
+	s.bDisableEVR = !m_sgi_gpuacel;
 
 	s.fVMR9MixerMode = m_sgi_uservmrmixer ;
 	if(s.fVMR9MixerMode){
@@ -396,9 +400,27 @@ void CUESettingPanel::ApplyAllSetting(){
 	}
 	
 	s.fVMRSyncFix = !!m_sgi_lockbackbuff;
-	s.onlyUseInternalDec = !!m_sgi_chkonlyUseInternalDec;
 	s.useGPUAcel = !!m_sgi_gpuacel;
-	s.useGPUCUDA = !!m_sgi_gpuacelcuda;
+	s.optionDecoder = m_sgs_decoder;
+	s.useGPUCUDA = 0;
+	s.onlyUseInternalDec = 0;		
+
+
+	if(m_sgs_decoder == _T("internalGPUdec") ){
+			s.onlyUseInternalDec = 1;
+			s.DXVAFilters = ~0;
+	}else if(m_sgs_decoder == _T("PDVDGPUdec") ){
+	}else if(m_sgs_decoder == _T("CoreAVCGPUdec") ){
+			s.useGPUCUDA = 1;
+		
+	}else if(m_sgs_decoder == _T("internaldec") ){
+			s.DXVAFilters = ~3;
+			s.onlyUseInternalDec = 1;
+		
+	}else if(m_sgs_decoder == _T("CoreAVCdec") ){
+		
+	}
+
 	//Audio Setting
 	s.fAudioNormalize = !!m_sgi_normalize  ;
 	s.fAudioNormalizeRecover = TRUE;

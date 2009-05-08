@@ -49,7 +49,6 @@ class CUESettingPanel : public CDHtmlDialog
 	int m_sgi_chkautoresumeplay;
 
 	int m_sgi_chkuseSmartDrag;
-	int m_sgi_chkonlyUseInternalDec;
 	int m_sgi_chkinternaltspliteronly;
 	int m_sgi_UseWaveOutDeviceByDefault;
 
@@ -58,8 +57,8 @@ class CUESettingPanel : public CDHtmlDialog
 	CString m_sgs_initblock;
 	CString m_sgi_startupcheckexts;
 	CString m_sgs_videorender;
-	int m_sgi_disableevr;
-
+	CString m_sgs_decoder;
+	
 	CString  m_sgs_subfont1;
 	CString  m_sgs_subfont2;
 	CString m_sgs_subalign1;
@@ -81,7 +80,6 @@ class CUESettingPanel : public CDHtmlDialog
 	long m_sgi_videorender;
 	int m_sgi_lockbackbuff;
 	int m_sgi_gpuacel;
-	int m_sgi_gpuacelcuda;
 	int m_sgi_uservmrmixer;
 	int m_sgi_usespdif;
 

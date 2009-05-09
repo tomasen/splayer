@@ -199,29 +199,29 @@ UESAPI.prototype = {
 	        if(usieGPUAcel){
     	        var oOption = document.createElement("OPTION");
                 oSelect.options.add(oOption);
-                oOption.innerText = "ffmpeg(内置)";
-                oOption.value = "internalGPUdec";
-
-                oOption = document.createElement("OPTION");
-                oSelect.options.add(oOption);
-                oOption.innerText = "PowerDVD";
-                oOption.value = "PDVDGPUdec";
+                oOption.innerText = "CoreAVC";
+                oOption.value = "CoreAVCGPUdec";
                 
                 oOption = document.createElement("OPTION");
                 oSelect.options.add(oOption);
-                oOption.innerText = "CoreAVC";
-                oOption.value = "CoreAVCGPUdec";
+                oOption.innerText = "ffmpeg(内置)";
+                oOption.value = "internalGPUdec";
+
+                
 	        }else{
-	            var oOption = document.createElement("OPTION");
+	            var  oOption = document.createElement("OPTION");
+                oSelect.options.add(oOption);
+                oOption.innerText = "CoreAVC";
+                oOption.value = "CoreAVCdec";
+                
+                
+                oOption = document.createElement("OPTION");
 	            oSelect.options.add(oOption);
                 oOption.innerText = "ffmpeg(内置)";
                 oOption.value = "internaldec";
 
                 
-                oOption = document.createElement("OPTION");
-                oSelect.options.add(oOption);
-                oOption.innerText = "CoreAVC";
-                oOption.value = "CoreAVCdec";
+               
 	        
 	        }
 	        this.selectDecoder(oSelect.value);

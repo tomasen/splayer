@@ -954,15 +954,17 @@ void CMPlayerCApp::InitInstanceThreaded(){
 		}
 	}
 
-	CSVPToolBox svpToolBox;
+	/*CSVPToolBox svpToolBox;
 	CStringArray csaDll;
 	//csaDll.Add( _T("codecs\\CoreAVCDecoder.ax")); avoid missing reg key problem
+	
 	csaDll.Add( _T("codecs\\powerdvd\\CL264dec.ax"));
-	for(int i = 0; i < csaDll.GetCount(); i++){
-		CString szDllPath = svpToolBox.GetPlayerPath( csaDll.GetAt(i) );
-		if(svpToolBox.ifFileExist(szDllPath))
-			RegSvr32( szDllPath );
-	}
+		for(int i = 0; i < csaDll.GetCount(); i++){
+			CString szDllPath = svpToolBox.GetPlayerPath( csaDll.GetAt(i) );
+			if(svpToolBox.ifFileExist(szDllPath))
+				RegSvr32( szDllPath );
+		}*/
+	
 
 }
 UINT __cdecl Thread_InitInstance( LPVOID lpParam ) 
@@ -1975,16 +1977,20 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		iZoomLevel = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_ZOOM), 1);
 
 		fForceRGBrender = 0;
-		if(IsInsideVMWare() ){
-			fForceRGBrender = 1;
-			iDXVer = 7;
+		useGPUAcel = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEGPUACEL), 0);
+		optionDecoder = pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_OPTIONDECODER), _T(""));
+		iDXVer = 7;
+		if(useGPUAcel){
+			iDXVer = 9;
 		}
+// 		if(IsInsideVMWare() ){
+// 			fForceRGBrender = 1;
+// 			iDXVer = 7;
+// 		}
 		iDSVideoRendererType = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DSVIDEORENDERERTYPE), ( (IsVista() || iDXVer >= 9) ? VIDRNDT_DS_VMR9RENDERLESS : VIDRNDT_DS_VMR7RENDERLESS) );
 		iRMVideoRendererType = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_RMVIDEORENDERERTYPE), ( (IsVista() || iDXVer >= 9) ? VIDRNDT_RM_DX9 : VIDRNDT_RM_DX7 ) );
 		iQTVideoRendererType = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_QTVIDEORENDERERTYPE),  ( (IsVista() || iDXVer >= 9) ? VIDRNDT_QT_DX9 : VIDRNDT_QT_DX7 ) );
 		iAPSurfaceUsage = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_APSURACEFUSAGE), VIDRNDT_AP_TEXTURE2D);
-		useGPUAcel = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEGPUACEL), 0);
-		optionDecoder = pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_OPTIONDECODER), _T(""));
 		useGPUCUDA = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEGPUCUDA), 0);
 		useGPUCUDA = SVP_SetCoreAvcCUDA(useGPUCUDA);
 
@@ -2345,7 +2351,11 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 
 		CAtlList<UINT> shader_ids;
 		shader_ids.AddTail(IDF_SHADER_LEVELS);
+		shader_ids.AddTail(IDF_SHADER_LEVELS2);
+		shader_ids.AddTail(IDF_SHADER_BT601_BT701);
+		shader_ids.AddTail(IDF_SHADER_YV12CHROMAUP);
 		shader_ids.AddTail(IDF_SHADER_DEINTERLACE);
+		shader_ids.AddTail(IDF_SHADER_DENOISE);
 		shader_ids.AddTail(IDF_SHADER_SHARPEN);
 		shader_ids.AddTail(IDF_SHADER_EDGE_SHARPEN);
 		shader_ids.AddTail(IDF_SHADER_SHARPEN_COMPLEX);
@@ -2359,6 +2369,8 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		shader_ids.AddTail(IDF_SHADER_SPHERE);
 		shader_ids.AddTail(IDF_SHADER_SPOTLIGHT);
 		shader_ids.AddTail(IDF_SHADER_WAVE);
+
+		
 
 		CAtlStringMap<UINT> shaders;
 		pos = shader_ids.GetHeadPosition();

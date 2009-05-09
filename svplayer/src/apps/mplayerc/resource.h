@@ -94,6 +94,10 @@
 #define IDF_SHADER_NIGHTVISION          714
 #define IDF_SHADER_EDGE_SHARPEN         715
 #define IDF_SHADER_SHARPEN_COMPLEX      716
+#define IDF_SHADER_LEVELS2				717
+#define IDF_SHADER_BT601_BT701  		718
+#define IDF_SHADER_DENOISE     			719
+#define IDF_SHADER_YV12CHROMAUP 		720
 #define ID_FILE_OPENMEDIA               800
 #define ID_FILE_OPENDVD                 801
 #define ID_FILE_OPENDEVICE              802

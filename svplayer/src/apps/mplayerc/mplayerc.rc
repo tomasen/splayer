@@ -1922,6 +1922,7 @@ BEGIN
         MENUITEM "快速打开文件(&Q)\tCtrl+Q",          ID_FILE_OPENQUICK
         MENUITEM SEPARATOR
         MENUITEM "打开文件(&O)...\tCtrl+O",         ID_FILE_OPENMEDIA
+		MENUITEM "打开文件夹(&F)...\tCtrl+F",         ID_FILE_OPENFOLDER
         MENUITEM "打开网址(&U)...\tCtrl+U",         ID_FILE_OPENURLSTREAM
         MENUITEM "打开DVD(&D)...\tCtrl+D",        ID_FILE_OPENDVD
         MENUITEM "视频捕捉(&V)...\tCtrl+V",         ID_FILE_OPENDEVICE

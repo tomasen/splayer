@@ -577,7 +577,7 @@ UINT __cdecl Thread_FindMoreFileFromOneFileAndPutIntoPlaylist( LPVOID lpParam )
 	// Detect If File is already opened
 	Sleep(1000);
 	ma->wndPlaylist->RealFindMoreFileFromOneFileAndPutIntoPlaylist( ma->szMediaFile, ma->szaIn);
-	//delete ma;
+	delete ma;
 	return 0; 
 }
 void CPlayerPlaylistBar::FindMoreFileFromOneFileAndPutIntoPlaylist(CString szMediaFile , CAtlList<CString>& szaIn ){
@@ -598,6 +598,73 @@ void CPlayerPlaylistBar::Open(CAtlList<CString>& fns, bool fMulti, CAtlList<CStr
 		if(smartAddMorefile){
 			FindMoreFileFromOneFileAndPutIntoPlaylist( fns.GetHead(), fns);
 		}
+}
+
+class CFFindByDir{
+public:
+	CPlayerPlaylistBar* wndPlaylist;
+	CString szFolderPath;
+	
+};
+
+UINT __cdecl Thread_FindMoreFileByDirAndPutIntoPlaylist( LPVOID lpParam ) 
+{ 
+	CFFindByDir * ma =(CFFindByDir*) lpParam;
+	// Detect If File is already opened
+	Sleep(1000);
+	ma->wndPlaylist->AddFolder( ma->szFolderPath , true);
+	delete ma;
+	return 0; 
+}
+
+
+void CPlayerPlaylistBar::AddFolder(CString szFPath, BOOL bWithSubDirByDefault ){
+	CAtlList<CString> szaRet;
+	CAtlArray<CString> mask;
+	AfxGetAppSettings().Formats.GetExtsArray(mask, 0);
+
+	CString szMediaFile ;
+	if(bWithSubDirByDefault){
+		szMediaFile = GetCur();
+	}
+	CSVPToolBox svpTool;
+	CPath szFolderPath(szFPath);
+	szFolderPath.AddBackslash();
+	szFolderPath.Append(_T("*"));
+	CAtlList<CString> fns;
+	svpTool.findMoreFileByDir( szFolderPath , fns, mask ,bWithSubDirByDefault);
+	BOOL bUseThreadForSubDir = false;
+	if(fns.GetCount() <= 0 && !bWithSubDirByDefault){
+		svpTool.findMoreFileByDir( szFolderPath , fns, mask , true);
+	}else{
+		bUseThreadForSubDir = true;
+	}
+	{
+		CAutoLock dataLock(m_csDataLock);
+		Empty();
+		POSITION posx = fns.GetHeadPosition();
+		while(posx) ParsePlayList(fns.GetNext(posx), NULL); 
+
+	}
+	
+
+	if(bWithSubDirByDefault  ){
+		if(szMediaFile){
+			POSITION pos = FindPosByFilename(szMediaFile);
+			m_pl.SetPos(pos);
+		}else{
+			m_pl.SetPos(0);
+		}
+	}
+
+	Refresh();
+	SavePlaylist();
+	if(bUseThreadForSubDir && !bWithSubDirByDefault ){
+		CFFindByDir* ma = new CFFindByDir();
+		ma->szFolderPath = szFPath;
+		ma->wndPlaylist = this;
+		AfxBeginThread( Thread_FindMoreFileByDirAndPutIntoPlaylist , ma, THREAD_PRIORITY_LOWEST);
+	}
 }
 
 void CPlayerPlaylistBar::Append(CAtlList<CString>& fns, bool fMulti, CAtlList<CString>* subs)
@@ -656,6 +723,7 @@ void CPlayerPlaylistBar::Append(CStringW vdn, CStringW adn, int vinput, int vcha
 
 void CPlayerPlaylistBar::SetupList()
 {
+	
 	m_list.DeleteAllItems();
 
 	POSITION pos = m_pl.GetHeadPosition();
@@ -670,6 +738,7 @@ void CPlayerPlaylistBar::SetupList()
 
 void CPlayerPlaylistBar::UpdateList()
 {
+	CAutoLock dataLock(m_csDataLock);
 	POSITION pos = m_pl.GetHeadPosition();
 	for(int i = 0, j = m_list.GetItemCount(); pos && i < j; i++)
 	{

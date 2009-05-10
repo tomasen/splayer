@@ -92,7 +92,7 @@ public:
 	void FindMoreFileFromOneFileAndPutIntoPlaylist(CString szMediaFile , CAtlList<CString>& szaIn );
 	void Open(CAtlList<CString>& fns, bool fMulti, CAtlList<CString>* subs = NULL, int smartAddMorefile = 1);
 	void Append(CAtlList<CString>& fns, bool fMulti, CAtlList<CString>* subs = NULL);
-
+	void AddFolder(CString szFPath , BOOL bWithSubDirByDefault = false);
 	void Open(CStringW vdn, CStringW adn, int vinput, int vchannel, int ainput);
 	void Append(CStringW vdn, CStringW adn, int vinput, int vchannel, int ainput);
 

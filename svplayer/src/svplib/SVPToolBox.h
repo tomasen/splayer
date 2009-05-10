@@ -49,7 +49,7 @@ public:
 	BOOL bFontExist(CString szFontName, BOOL chkExtFontFile = 1);
 	void MergeAltList( CAtlList<CString>& szaRet,  CAtlList<CString>& szaIn  );
 	void findMoreFileByFile( CString szFile,CAtlList<CString>& szaRet,  CAtlArray<CString>& szaExt   );
-	void findMoreFileByDir(  CString szDir, CAtlList<CString>&  szaRet,  CAtlArray<CString>& szaExt );
+	void findMoreFileByDir(  CString szDir, CAtlList<CString>&  szaRet,  CAtlArray<CString>& szaExt , BOOL bSubDir = false);
 	static BOOL isAlaphbet(WCHAR wchr);
 private:
 	CStringArray szaTmpFileNames;

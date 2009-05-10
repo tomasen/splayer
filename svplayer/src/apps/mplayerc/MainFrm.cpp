@@ -222,6 +222,10 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI(ID_FILE_OPENMEDIA, OnUpdateFileOpen)
 	ON_COMMAND(ID_FILE_OPENMEDIA, OnFileOpenmedia)
 	ON_UPDATE_COMMAND_UI(ID_FILE_OPENMEDIA, OnUpdateFileOpen)
+	
+	ON_COMMAND(ID_FILE_OPENFOLDER, OnFileOpenFolder)
+	ON_UPDATE_COMMAND_UI(ID_FILE_OPENFOLDER, OnUpdateFileOpen)
+	
 	ON_COMMAND(ID_FILE_OPENURLSTREAM, OnFileOpenUrlStream)
 	ON_UPDATE_COMMAND_UI(ID_FILE_OPENURLSTREAM, OnUpdateFileOpen)
 	ON_WM_COPYDATA()
@@ -958,7 +962,7 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
 		if(pMsg->wParam == VK_ESCAPE && m_iMediaLoadState == MLS_LOADED && m_fFullScreen)
 		{
 			OnViewFullscreen();
-			PostMessage(WM_COMMAND, ID_PLAY_PAUSE);
+			//PostMessage(WM_COMMAND, ID_PLAY_PAUSE);
 			return TRUE;
 		}
 		else if(pMsg->wParam == VK_ESCAPE && (IsCaptionMenuHidden()))
@@ -3655,7 +3659,53 @@ void CMainFrame::OnFileOpenUrlStream(){
 	OpenCurPlaylistItem(-1);
 }
 
+static int __stdcall BrowseCtrlCallback(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData)
+{
+	if(uMsg == BFFM_INITIALIZED && lpData)
+		::SendMessage(hwnd, BFFM_SETSELECTION, TRUE, lpData);
+	return 0;
+}
+void CMainFrame::OnFileOpenFolder(){
+	if(m_iMediaLoadState == MLS_LOADING || !IsWindow(m_wndPlaylistBar)) return;
 
+	CString szFolderPath;
+
+	TCHAR buff[MAX_PATH];
+
+	BROWSEINFO bi;
+	bi.hwndOwner = m_hWnd;
+	bi.pidlRoot = NULL;
+	bi.pszDisplayName = buff;
+	bi.lpszTitle = _T("选择截图默认保存文件夹");
+	bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_VALIDATE | BIF_USENEWUI | BIF_NONEWFOLDERBUTTON;
+	bi.lpfn = BrowseCtrlCallback;
+	bi.lParam = (LPARAM)(LPCTSTR)szFolderPath;
+	bi.iImage = 0; 
+
+	
+	LPITEMIDLIST iil;
+	if(iil = SHBrowseForFolder(&bi))
+	{
+		if( SHGetPathFromIDList(iil, buff) )
+			szFolderPath = buff;
+	}
+	if(szFolderPath.IsEmpty()){
+		return;
+	}
+	SendMessage(WM_COMMAND, ID_FILE_CLOSEMEDIA);
+
+	ShowWindow(SW_SHOW);
+	SetForegroundWindow();
+
+	m_wndPlaylistBar.AddFolder(szFolderPath);
+
+	if(m_wndPlaylistBar.GetCount() == 1 && m_wndPlaylistBar.IsWindowVisible() && !m_wndPlaylistBar.IsFloating())
+	{
+		ShowControlBar(&m_wndPlaylistBar, FALSE, TRUE);
+	}
+
+	OpenCurPlaylistItem();
+}
 void CMainFrame::OnFileOpenmedia()
 {
 	if(m_iMediaLoadState == MLS_LOADING || !IsWindow(m_wndPlaylistBar)) return;
@@ -7970,7 +8020,7 @@ void CMainFrame::OpenCreateGraphObject(OpenMediaData* pOMD)
 	|| !(pVW && pBV)
 	|| !(pBA))
 	{
-		throw _T("Failed to query the needed interfaces for playback");
+		throw _T("DirectX系统组件受损，您可能需要重新重新安装DirextX 9+");
 	}
 
 	if(FAILED(pME->SetNotifyWindow((OAHWND)m_hWnd, WM_GRAPHNOTIFY, 0)))
@@ -12068,12 +12118,6 @@ void CMainFrame::OnJointeam()
 	ShellExecute(m_hWnd, _T("open"), _T("http://shooter.cn/svplayer/join.html"), NULL, NULL, SW_SHOWDEFAULT);
 }
 
-static int __stdcall BrowseCtrlCallback(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData)
-{
-	if(uMsg == BFFM_INITIALIZED && lpData)
-		::SendMessage(hwnd, BFFM_SETSELECTION, TRUE, lpData);
-	return 0;
-}
 void CMainFrame::OnSetsnapshotpath()
 {
 	TCHAR buff[MAX_PATH];
@@ -12092,8 +12136,8 @@ void CMainFrame::OnSetsnapshotpath()
 	LPITEMIDLIST iil;
 	if(iil = SHBrowseForFolder(&bi))
 	{
-		SHGetPathFromIDList(iil, buff);
-		s.SnapShotPath = buff;
+		if( SHGetPathFromIDList(iil, buff) )
+			s.SnapShotPath = buff;
 		return ;
 	}
 

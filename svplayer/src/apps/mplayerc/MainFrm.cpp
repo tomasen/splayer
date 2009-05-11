@@ -1487,6 +1487,7 @@ CString CMainFrame::getCurPlayingSubfile(int * iSubDelayMS,int subid ){
 				CString szBuf;
 				szBuf.Format(_T("%d"), iSubDelay_ms);
 				svpTool.filePutContent(fnSubtitleFile+_T(".delay"),szBuf );
+				pSubStream->sub_delay_ms = iSubDelay_ms;
 				if(!iSubDelay_ms){
 					_wunlink(fnSubtitleFile+_T(".delay"));
 				}
@@ -10905,7 +10906,7 @@ void CMainFrame::SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle)
 
 					nPosRect = style.marginRect;
 				}
-
+				
 				pRTS->SetDefaultStyle(style);
 				pRTS->SetAliPos(  style.scrAlignment, nPosRect);
 			}

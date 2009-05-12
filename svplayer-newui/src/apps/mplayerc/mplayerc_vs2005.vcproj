@@ -769,6 +769,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SUIButton.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\SVPSubDownUpDialog.cpp"
 				>
 			</File>
@@ -1199,6 +1203,10 @@
 			</File>
 			<File
 				RelativePath=".\SubtitleDlDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SUIButton.h"
 				>
 			</File>
 			<File

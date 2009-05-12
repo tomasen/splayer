@@ -59,7 +59,7 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 
 	if(!__super::CreateEx(pParentWnd,
 		TBSTYLE_FLAT|TBSTYLE_TRANSPARENT|TBSTYLE_AUTOSIZE,
-		WS_CHILD|WS_VISIBLE|CBRS_ALIGN_BOTTOM , CRect(2,2,0,3))  //CBRS_TOOLTIPS NEW UI
+		WS_CHILD|WS_VISIBLE|CBRS_ALIGN_BOTTOM , CRect(0,0,0,0))  //CBRS_TOOLTIPS NEW UI
 	) //|| !LoadToolBar(iToolBarID)
 		return FALSE;
 
@@ -231,50 +231,57 @@ BEGIN_MESSAGE_MAP(CPlayerToolBar, CToolBar)
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()
 	ON_WM_TIMER()
+	ON_WM_NCCALCSIZE()
 END_MESSAGE_MAP()
 
 // CPlayerToolBar message handlers
-#define NEWUI_COLOR_BG RGB(214,214,214)
+#define NEWUI_COLOR_BG  RGB(214,214,214)
+#define NEWUI_COLOR_TOOLBAR_UPPERBG  RGB(0x17,0x17,0x17)
+void CPlayerToolBar::OnNcCalcSize( BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp){
+	if(bCalcValidRects){
+		//ÏÈ°Ñrect[1]¿½±´µ½rect[2]£¬rect[0]¿½±´µ½rect[1]
+		//memcpy( &lpncsp->rgrc[2] ,  &lpncsp->rgrc[1] , sizeof(RECT));
+		//memcpy( &lpncsp->rgrc[1] ,  &lpncsp->rgrc[0] , sizeof(RECT));
 
+		
+	}
+	__super::OnNcCalcSize(bCalcValidRects, lpncsp);
+}
 CSize CPlayerToolBar::CalcFixedLayout(BOOL bStretch,BOOL bHorz ){
 
 	
-	return CSize(0,0);
+	CSize size( 32767, 36 );
+
+	if ( CWnd* pParent = AfxGetMainWnd() )
+	{
+		CRect rc;
+		pParent->GetWindowRect( &rc );
+		size.cx = rc.Width() - 2;
+	}
+
+	return size;
+
+
 
 	//return __super::CalcFixedLayout(bStretch,bHorz);
 }
 void CPlayerToolBar::OnPaint()
 {
-	if(m_bDelayedButtonLayout)
-		Layout();
 
 	CPaintDC dc(this); // device context for painting
+	CRect rcClient;
+	GetClientRect(&rcClient);
+	CRect rcBottomSqu = rcClient;
+	rcBottomSqu.top = rcBottomSqu.bottom - 10;
+	dc.FillSolidRect(rcBottomSqu, NEWUI_COLOR_BG);
 
-	DefWindowProc(WM_PAINT, WPARAM(dc.m_hDC), 0);
-
-	{
-		UINT nID;
-		UINT nStyle = 0;
-		int iImage = 0;
-		GetButtonInfo(19, nID, nStyle, iImage);
-		CRect ItemRect;
-		GetItemRect(19, ItemRect);
-		dc.FillSolidRect(ItemRect, NEWUI_COLOR_BG);;//New UI GetSysColor(COLOR_BTNFACE)
-		//dc.FillSolidRect(ItemRect, RGB(214,219,239) );   
-	}
+	CRect rcUpperSqu = rcClient;
+	rcUpperSqu.bottom = rcUpperSqu.bottom - 10;
+	dc.FillSolidRect(rcUpperSqu, NEWUI_COLOR_TOOLBAR_UPPERBG);
 }
 void CPlayerToolBar::OnNcPaint() // when using XP styles the NC area isn't drawn for our toolbar...
 {
-	CRect wr, cr;
-
-	CWindowDC dc(this);
-	GetClientRect(&cr);
-	ClientToScreen(&cr);
-	GetWindowRect(&wr);
-	cr.OffsetRect(-wr.left, -wr.top);
-	wr.OffsetRect(-wr.left, -wr.top);
-	dc.ExcludeClipRect(&cr);
-	dc.FillSolidRect(wr, NEWUI_COLOR_BG);//New UI GetSysColor(COLOR_BTNFACE)
+	//New UI GetSysColor(COLOR_BTNFACE)
 
 	//Ìî³ä±³¾°-----------------------------------------   
 	//dc.FillSolidRect(wr, RGB(214,219,239) );   

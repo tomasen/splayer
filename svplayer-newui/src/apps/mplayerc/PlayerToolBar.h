@@ -72,6 +72,7 @@ protected:
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnTimer(UINT nIDEvent);
 	afx_msg CSize CalcFixedLayout(BOOL bStretch,BOOL bHorz );
+	afx_msg void OnNcCalcSize( BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp);
 
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()

@@ -21,7 +21,10 @@ class CSUIButton {
 
 	void LoadImage(LPCTSTR szBmpName);
 
-	void PreMultiplyBitmap( CBitmap& bmp );
-
 	void OnSize(CRect WndRect);
+
+private:
+	void PreMultiplyBitmap( CBitmap& bmp );
+	LONG CalcRealMargin(LONG Mlen, LONG bW, LONG wW)
+
 };

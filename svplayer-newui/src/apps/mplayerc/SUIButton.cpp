@@ -10,22 +10,57 @@ m_stat(0)
 	this->LoadImage(szBmpName);
 }
 
+LONG CSUIButton::CalcRealMargin(LONG Mlen, LONG bW, LONG wW)
+{
+	if(Mlen >= 0){
+		return Mlen;
+	}
+	else
+	{
+		MLen = -MLen;
+		return ( wW * MLen / 100) - bW / 2;
+	}
+}
+
 void CSUIButton::OnSize(CRect WndRect)
 {
 
+	LONG left = CalcRealMargin(m_marginTownd.left , m_btnSize.cx , WndRect.Width());
+	LONG top = CalcRealMargin(m_marginTownd.top , m_btnSize.cy , WndRect.Height());
+	LONG right = CalcRealMargin(m_marginTownd.right , m_btnSize.cx , WndRect.Width());
+	LONG bottom =  CalcRealMargin(m_marginTownd.bottom , m_btnSize.cy , WndRect.Height());
+	
 	switch (m_iAlign){
 		case ALIGN_TOPLEFT:
+			m_rcHitest = CRect ( WndRect.left + left,
+								WndRect.top + top,
+								WndRect.left + m_btnSize.cx + left,
+								WndRect.top+ top+m_btnSize.cy);
+			
 			break;
 		case ALIGN_TOPRIGHT:
+			m_rcHitest = CRect ( WndRect.right - m_btnSize.cx - right,
+								WndRect.top + top,
+								WndRect.right-right,
+								WndRect.top+ top+m_btnSize.cy);
+
 			break;
 		case ALIGN_BOTTOMLEFT:
+			m_rcHitest = CRect ( WndRect.left + left,
+								WndRect.bottom - m_btnSize.cy - bottom,
+								WndRect.left + m_btnSize.cx + left,
+								WndRect.bottom - bottom);
+			
 			break;
 		case ALIGN_BOTTOMRIGHT:
+			m_rcHitest = CRect ( WndRect.right - m_btnSize.cx - right,
+								WndRect.bottom - m_btnSize.cy - bottom,
+								WndRect.right-right,
+								WndRect.bottom - bottom);
+			
 			break;
 	}
-	m_rcHitest = CRect ( WndRect.right - m_btnSize.cx - m_marginTownd.right, WndRect.top + m_marginTownd.top,
-		WndRect.right-m_marginTownd.right, WndRect.top+ m_marginTownd.top+m_btnSize.cy);
-
+	
 
 }
 void CSUIButton::LoadImage(LPCTSTR szBmpName){

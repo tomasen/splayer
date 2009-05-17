@@ -610,53 +610,38 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	/*NEW UI*/
 	SetMenu(  NULL);
 
-	ZeroMemory(m_nBoxStatus, sizeof(m_nBoxStatus));
+	//ZeroMemory(m_nBoxStatus, sizeof(m_nBoxStatus));
 	m_bmpCaption.LoadBitmap(L"CAPTION.BMP");
 	//////////////////////////////////////////////////////////////////////////
 	// an alternative way of pre-multiplying bitmap data
+	CRect btnMargin(3,7,15,3);
+	CSUIButton* bClose = new CSUIButton(L"CLOSE.BMP" , ALIGN_TOPRIGHT, btnMargin  , 0, 0, HTCLOSE);
+	m_btnList.AddTail(bClose );
+	btnMargin.right = 3;
+
+	m_btnList.AddTail( new CSUIButton(L"MAXIMIZE.BMP" , ALIGN_TOPRIGHT, btnMargin  , bClose, 0, HTMAXBUTTON));
+	m_btnList.AddTail( new CSUIButton(L"RESTORE.BMP" , ALIGN_TOPRIGHT, btnMargin  , bClose, 0, HTMAXBUTTON, TRUE));
+
+	m_btnList.AddTail( new CSUIButton(L"MINIMIZE.BMP" , ALIGN_TOPRIGHT, btnMargin  , m_btnList.GetTail(), 0, HTMINBUTTON));
+	m_btnList.AddTail( new CSUIButton(L"MENU.BMP" , ALIGN_TOPRIGHT, btnMargin  , m_btnList.GetTail(), 0, HTMENU));
+	/*
 	m_bmpClose.Attach((HBITMAP)::LoadImage(GetModuleHandle(NULL) L"CLOSE.BMP", IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION));
-	m_bmpMaximize.Attach( (HBITMAP)::LoadImage(GetModuleHandle(NULL), L"MAXIMIZE.BMP", IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION) );
-	m_bmpMinimize.Attach((HBITMAP)::LoadImage(GetModuleHandle(NULL), L"MINIMIZE.BMP", IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION));
- 	m_bmpRestore.Attach((HBITMAP)::LoadImage(GetModuleHandle(NULL), L"RESTORE.BMP", IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION));
-	m_bmpMenu.Attach((HBITMAP)::LoadImage(GetModuleHandle(NULL), L"MENU.BMP", IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION));
-	PreMultiplyBitmap(m_bmpClose);
- 	PreMultiplyBitmap(m_bmpMaximize);
- 	PreMultiplyBitmap(m_bmpMinimize);
- 	PreMultiplyBitmap(m_bmpRestore);
-	PreMultiplyBitmap(m_bmpMenu);
+		m_bmpMaximize.Attach( (HBITMAP)::LoadImage(GetModuleHandle(NULL), L"MAXIMIZE.BMP", IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION) );
+		m_bmpMinimize.Attach((HBITMAP)::LoadImage(GetModuleHandle(NULL), L"MINIMIZE.BMP", IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION));
+	 	m_bmpRestore.Attach((HBITMAP)::LoadImage(GetModuleHandle(NULL), L"RESTORE.BMP", IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION));
+		m_bmpMenu.Attach((HBITMAP)::LoadImage(GetModuleHandle(NULL), L"MENU.BMP", IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION));
+		PreMultiplyBitmap(m_bmpClose);
+	 	PreMultiplyBitmap(m_bmpMaximize);
+	 	PreMultiplyBitmap(m_bmpMinimize);
+	 	PreMultiplyBitmap(m_bmpRestore);
+		PreMultiplyBitmap(m_bmpMenu);*/
+	
 
 	/*NEW UI END*/
 	return 0;
 }
 /*NEW UI*/
 
-class CMemoryDC : public CDC
-{
-public:
-	// Data members
-	CDC* m_hDCOriginal;
-	RECT m_rcPaint;
-	CBitmap m_bmp;
-	HBITMAP m_hBmpOld;
-
-	// Constructor/destructor
-	CMemoryDC(CDC* hDC, RECT& rcPaint) : m_hDCOriginal(hDC), m_hBmpOld(NULL)
-	{
-		m_rcPaint = rcPaint;
-		CreateCompatibleDC(m_hDCOriginal);
-		ATLASSERT(m_hDC != NULL);
-		m_bmp.CreateCompatibleBitmap( m_hDCOriginal, m_rcPaint.right - m_rcPaint.left, m_rcPaint.bottom - m_rcPaint.top);
-		ATLASSERT( (HBITMAP)m_bmp != NULL);
-		m_hBmpOld = (HBITMAP)SelectObject(m_bmp);
-		SetViewportOrg(-m_rcPaint.left, -m_rcPaint.top);
-	}
-
-	~CMemoryDC()
-	{
-		m_hDCOriginal->BitBlt( m_rcPaint.left, m_rcPaint.top, m_rcPaint.right - m_rcPaint.left, m_rcPaint.bottom - m_rcPaint.top, CDC::FromHandle(m_hDC), m_rcPaint.left, m_rcPaint.top, SRCCOPY);
-		SelectObject(m_hBmpOld);
-	}
-};
 
 void CMainFrame::OnNcCalcSize( BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp){
 	if(bCalcValidRects){
@@ -853,7 +838,7 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 
 LRESULT CMainFrame::OnNcActivate( WPARAM wParam, LPARAM lParam)
 {
-	SVP_LogMsg(_T("OnNcActivate"));
+	//SVP_LogMsg(_T("OnNcActivate"));
 	RedrawWindow();
 	return TRUE;
 }

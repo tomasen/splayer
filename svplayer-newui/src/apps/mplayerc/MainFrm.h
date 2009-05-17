@@ -58,6 +58,8 @@
 #include <evr9.h>
 #include "WebServer.h"
 
+#include "SUIButton.h"
+
 enum {PM_NONE, PM_FILE, PM_DVD, PM_CAPTURE};
 
 class OpenMediaData
@@ -769,11 +771,13 @@ public:
 	
 	afx_msg void OnNcCalcSize( BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp);
 	void RedrawNonClientArea();
-	void PreMultiplyBitmap(CBitmap& bmp);
+	
+	//void PreMultiplyBitmap(CBitmap& bmp);
 
 private:
-	CBitmap m_bmpCaption, m_bmpClose, m_bmpMaximize, m_bmpMinimize, m_bmpRestore, m_bmpMenu;
+	CBitmap m_bmpCaption;//, m_bmpClose, m_bmpMaximize, m_bmpMinimize, m_bmpRestore, m_bmpMenu;
+	CSUIBtnList m_btnList;
 	CRgn m_rgn;
-	long m_nBoxStatus[4];
+	//long m_nBoxStatus[4];
 	/*NEW UI END*/
 };

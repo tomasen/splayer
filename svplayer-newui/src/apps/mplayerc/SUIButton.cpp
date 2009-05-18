@@ -1,7 +1,8 @@
 
 #include "SUIButton.h"
+#include "../../svplib/svplib.h"
 
-CSUIButton::CSUIButton(LPCTSTR szBmpName , int iAlign, CRect marginTownd , CSUIButton * relativeto 
+CSUIButton::CSUIButton(LPCTSTR szBmpName, CSize bmpSize , int iAlign, CRect marginTownd , CSUIButton * relativeto 
 					   , BOOL bNotButton, UINT htMsgID, BOOL bHide) : 
 m_stat(0)
 {
@@ -13,6 +14,7 @@ m_stat(0)
 	this->LoadImage(szBmpName);
 	m_szBmpName = szBmpName;
 	m_hide = bHide;
+	//m_btnSize = bmpSize;
 }
 
 LONG CSUIButton::CalcRealMargin(LONG Mlen, LONG bW, LONG wW)
@@ -78,26 +80,31 @@ void CSUIButton::OnSize(CRect WndRect)
 			break;
 	}
 	
-
+	CString szLog;
+	szLog.Format(_T("%d %d %d %d %d %d %d %d %s"), WndRect.left, WndRect.top, WndRect.right, WndRect.bottom,
+		m_rcHitest.left, m_rcHitest.top, m_rcHitest.right, m_rcHitest.bottom, m_szBmpName);
+	SVP_LogMsg(szLog);
 }
-void CSUIButton::OnPaint(CMemoryDC *hDC){
+void CSUIButton::OnPaint(CMemoryDC *hDC, CRect rc){
 	if(m_hide) return;
+	rc = m_rcHitest - rc.TopLeft();
 	BLENDFUNCTION bf = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};//
 	CDC dcBmp;
 	dcBmp.CreateCompatibleDC(hDC);
 	dcBmp.SelectObject(m_bitmap);
-	hDC->AlphaBlend(m_rcHitest.left, m_rcHitest.top, m_rcHitest.Width(), m_rcHitest.Height(),
+	BOOL ret = hDC->AlphaBlend(rc.left, rc.top, rc.Width(), rc.Height(),
 		&dcBmp, 0, m_btnSize.cy * m_stat, m_btnSize.cx, m_btnSize.cy, bf);
 	
+	CString szLog;
+	szLog.Format(_T("%d %d %d %d %d %d %d %d %d Paint %s"),ret , rc.left, rc.top, rc.Width(), rc.Height(),
+		0, m_btnSize.cy * m_stat, m_btnSize.cx, m_btnSize.cy, m_szBmpName);
+	SVP_LogMsg(szLog);
 }
 void CSUIButton::LoadImage(LPCTSTR szBmpName){
 
 	m_bitmap.Attach((HBITMAP)::LoadImage(GetModuleHandle(NULL), szBmpName, IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION));
 	PreMultiplyBitmap(m_bitmap);
-	m_btnSize = m_bitmap.GetBitmapDimension();
-	if(!m_NotButton){
-		m_btnSize.cy = m_btnSize.cy / 4;
-	}
+	
 }
 
 void CSUIButton::PreMultiplyBitmap( CBitmap& bmp )
@@ -105,6 +112,11 @@ void CSUIButton::PreMultiplyBitmap( CBitmap& bmp )
 
 	BITMAP bm;
 	bmp.GetBitmap(&bm);
+	m_btnSize.cx = bm.bmWidth;
+	m_btnSize.cy = bm.bmHeight;
+	if(!m_NotButton){
+		m_btnSize.cy = m_btnSize.cy /4;
+	}
 	for (int y=0; y<bm.bmHeight; y++)
 	{
 		BYTE * pPixel = (BYTE *) bm.bmBits + bm.bmWidth * 4 * y;
@@ -154,17 +166,27 @@ void CSUIBtnList::SetHideStat(LPCTSTR szBmpName, BOOL bHide){
 	}
 }
 
-UINT CSUIBtnList::OnHitTest(CPoint pt ){
+UINT CSUIBtnList::OnHitTest(CPoint pt , CRect rc){
 	SHORT bLBtnDown = GetAsyncKeyState(VK_LBUTTON);  
 	POSITION pos = GetHeadPosition();
 	UINT iMsg = 0;
+	HTRedrawRequired = FALSE;
 	while(pos){
 		CSUIButton* cBtn =  GetNext(pos);
 		if( cBtn->OnHitTest(pt , bLBtnDown) ){
-			iMsg = cBtn->m_htMsgID;
+			HTRedrawRequired = TRUE;
 		}
+		iMsg = cBtn->m_htMsgID;
+
 	}
 	return iMsg;
+}
+void CSUIBtnList::ClearStat(){
+	POSITION pos = GetHeadPosition();
+	while(pos){
+		CSUIButton* cBtn =  GetNext(pos);
+		cBtn->m_stat = 0;
+	}
 }
 void CSUIBtnList::OnSize(CRect WndRect){
 	POSITION pos = GetHeadPosition();
@@ -173,11 +195,11 @@ void CSUIBtnList::OnSize(CRect WndRect){
 		cBtn->OnSize(WndRect);
 	}
 }	
-void CSUIBtnList::PaintAll(CMemoryDC *hDC){
+void CSUIBtnList::PaintAll(CMemoryDC *hDC, CRect rc){
 
 	POSITION pos = GetHeadPosition();
 	while(pos){
 		CSUIButton* cBtn =  GetNext(pos);
-		cBtn->OnPaint(hDC);
+		cBtn->OnPaint(hDC,  rc);
 	}
 }

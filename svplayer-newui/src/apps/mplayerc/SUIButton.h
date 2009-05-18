@@ -53,15 +53,15 @@ public:
 	CRect m_marginToBtn;//相对于另一个按钮的位置
 	CString m_szBmpName;
 
-	CSUIButton(LPCTSTR szBmpName , int iAlign, CRect marginTownd , CSUIButton * relativeto = NULL
+	CSUIButton(LPCTSTR szBmpName, CSize bmpSize , int iAlign, CRect marginTownd , CSUIButton * relativeto = NULL
 		, BOOL bNotButton = false, UINT htMsgID = NULL , BOOL bHide = FALSE);
 
 	void LoadImage(LPCTSTR szBmpName);
 
 	void OnSize(CRect WndRect);
 
-	void OnPaint(CMemoryDC *hDC);
-
+	void OnPaint(CMemoryDC *hDC, CRect rc);
+	
 	BOOL OnHitTest(CPoint pt , BOOL bLBtnDown);
 
 	BOOL m_NotButton;
@@ -80,15 +80,18 @@ class CSUIBtnList : public CList<CSUIButton*>
 public:
 	CSUIBtnList();
 	virtual ~CSUIBtnList();
+	BOOL HTRedrawRequired ;
 
-	void PaintAll(CMemoryDC *hDC);
+	void PaintAll(CMemoryDC *hDC, CRect rc);
 	
 	void OnSize(CRect WndRect);
 
-	UINT OnHitTest(CPoint pt );
+	UINT OnHitTest(CPoint pt , CRect rc);
 
 	void SetHideStat(POSITION pos, BOOL bHide); //By Position
 	void SetHideStat(UINT iMsgID, BOOL bHide); //By HT MSG ID
 	void SetHideStat(LPCTSTR szBmpName, BOOL bHide); //By BitMapName
+
+	void ClearStat();
 };
 

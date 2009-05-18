@@ -15,9 +15,12 @@
     #define ARCH_X86_32 1
   #endif
 #else
-	#define ENABLE_MMX 0
-	#define ENABLE_SSE 0
-	#define ENABLE_SSSE3 0
+	#define HAVE_MMX 1
+	#define HAVE_SSE 1
+	#define HAVE_SSSE3 1
+	#define ENABLE_MMX 1
+	#define ENABLE_SSE 1
+	#define ENABLE_SSSE3 1
 #endif
 
 

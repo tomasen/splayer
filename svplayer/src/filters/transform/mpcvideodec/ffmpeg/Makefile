@@ -216,7 +216,7 @@ NOINTRIN=1
 
 include makefile_c.inc
 
-OPTFLAGS+= -fno-math-errno
+OPTFLAGS+= -fno-math-errno 
 
 .all: $(SLIB)
 

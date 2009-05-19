@@ -616,16 +616,17 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	//////////////////////////////////////////////////////////////////////////
 	// an alternative way of pre-multiplying bitmap data
 	CRect btnMargin(3,7,15,3);
-	CSize btnSize(21,17);
-	CSUIButton* bClose = new CSUIButton(L"CLOSE.BMP" ,btnSize, ALIGN_TOPRIGHT, btnMargin  , 0, 0, HTCLOSE);
+	CSize btnSize(21,17);//IDM_CLOSE_PNG
+	CSUIButton* bClose = new CSUIButton( L"CLOSE.BMP",ALIGN_TOPRIGHT, btnMargin  , 0,  HTCLOSE);
 	m_btnList.AddTail(bClose );
 	btnMargin.right = 3;
 
-// 	m_btnList.AddTail( new CSUIButton(L"MAXIMIZE.BMP" ,btnSize, ALIGN_TOPRIGHT, btnMargin  , bClose, 0, HTMAXBUTTON));
-// 	m_btnList.AddTail( new CSUIButton(L"RESTORE.BMP" ,btnSize, ALIGN_TOPRIGHT, btnMargin  , bClose, 0, HTMAXBUTTON, TRUE));
+ 	m_btnList.AddTail( new CSUIButton(L"MAXIMIZE.BMP" , ALIGN_TOPRIGHT, btnMargin  , 0, HTMAXBUTTON, FALSE, ALIGN_RIGHT, bClose ));
+	m_btnList.AddTail( new CSUIButton(L"RESTORE.BMP" , ALIGN_TOPRIGHT, btnMargin  , 0, HTMAXBUTTON, TRUE, ALIGN_RIGHT, bClose ));
+ 	
 // 
-// 	m_btnList.AddTail( new CSUIButton(L"MINIMIZE.BMP",btnSize , ALIGN_TOPRIGHT, btnMargin  , m_btnList.GetTail(), 0, HTMINBUTTON));
-// 	m_btnList.AddTail( new CSUIButton(L"MENU.BMP",btnSize , ALIGN_TOPRIGHT, btnMargin  , m_btnList.GetTail(), 0, HTMENU));
+ 	m_btnList.AddTail( new CSUIButton(L"MINIMIZE.BMP", ALIGN_TOPRIGHT, btnMargin  ,  0, HTMINBUTTON ,FALSE, ALIGN_RIGHT, m_btnList.GetTail()));
+ 	m_btnList.AddTail( new CSUIButton(L"MENU.BMP", ALIGN_TOPRIGHT, btnMargin  ,  0, HTMENU, FALSE, ALIGN_RIGHT, m_btnList.GetTail()));
 	/*
 	m_bmpClose.Attach((HBITMAP)::LoadImage(GetModuleHandle(NULL) L"CLOSE.BMP", IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION));
 		m_bmpMaximize.Attach( (HBITMAP)::LoadImage(GetModuleHandle(NULL), L"MAXIMIZE.BMP", IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION) );
@@ -686,7 +687,7 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 
 	{//New UI
 
-		if(m_fFullScreen)
+		if(m_fFullScreen || SIZE_MAXIMIZED == nType)
 		{
 			m_btnList.SetHideStat(L"MAXIMIZE.BMP", TRUE);
 			m_btnList.SetHideStat(L"RESTORE.BMP", false);

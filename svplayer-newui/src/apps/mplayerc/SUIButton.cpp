@@ -2,20 +2,48 @@
 #include "SUIButton.h"
 #include "../../svplib/svplib.h"
 
-CSUIButton::CSUIButton(LPCTSTR szBmpName, CSize bmpSize , int iAlign, CRect marginTownd , CSUIButton * relativeto 
-					   , BOOL bNotButton, UINT htMsgID, BOOL bHide) : 
+CSUIButton::CSUIButton(LPCTSTR szBmpName, int iAlign, CRect marginTownd 
+					   , BOOL bNotButton, UINT htMsgID, BOOL bHide 
+					   ,UINT alignToButton  , CSUIButton * relativeToButton ) : 
 m_stat(0)
 {
 	m_NotButton = bNotButton;
 	m_marginTownd  = marginTownd;
-	m_relativeto = relativeto;
 	m_iAlign = iAlign;
 	m_htMsgID = htMsgID;
 	this->LoadImage(szBmpName);
 	m_szBmpName = szBmpName;
 	m_hide = bHide;
-	//m_btnSize = bmpSize;
+
+
+	
+	addAlignRelButton(alignToButton, relativeToButton);
+	
 }
+
+CSUIButton::CSUIButton(UINT Imgid, int iAlign, CRect marginTownd 
+					   , BOOL bNotButton, UINT htMsgID, BOOL bHide 
+					   ,UINT alignToButton  , CSUIButton * relativeToButton ) : 
+m_stat(0)
+{
+	m_NotButton = bNotButton;
+	m_marginTownd  = marginTownd;
+	m_iAlign = iAlign;
+	m_htMsgID = htMsgID;
+	
+	if( m_png.LoadFromResource( Imgid ) ){
+		if(m_png.IsDIBSection()){
+			this->Attach((HBITMAP)m_png);
+		}
+	}
+	
+	//m_szBmpName = MAKEINTRESOURCE(Imgid);
+
+	m_hide = bHide;
+	addAlignRelButton(alignToButton, relativeToButton);
+
+}
+
 
 LONG CSUIButton::CalcRealMargin(LONG Mlen, LONG bW, LONG wW)
 {
@@ -33,13 +61,20 @@ BOOL CSUIButton::OnHitTest(CPoint pt , BOOL bLBtnDown){
 		return FALSE;
 	}
 	int old_stat = m_stat;
-	if (m_rcHitest.PtInRect(pt) && bLBtnDown) m_stat = 2; else if (m_rcHitest.PtInRect(pt)) m_stat = 1; else m_stat = 0;
+	if (m_rcHitest.PtInRect(pt) && bLBtnDown)  m_stat = 2; else if (m_rcHitest.PtInRect(pt)) m_stat = 1; else m_stat = 0;
+	
 	if(m_stat == old_stat){
 		return FALSE;
 	}else{
 		return TRUE; //require redraw
 	}
 	
+}
+void CSUIButton::addAlignRelButton( UINT alignToButton  , CSUIButton * relativeToButton ){
+	if(alignToButton && relativeToButton){
+		btnAlignList.AddTail(new CBtnAlign(alignToButton , (INT_PTR)relativeToButton) );
+	}
+
 }
 void CSUIButton::OnSize(CRect WndRect)
 {
@@ -80,6 +115,45 @@ void CSUIButton::OnSize(CRect WndRect)
 			break;
 	}
 	
+	POSITION pos = btnAlignList.GetHeadPosition();
+	while(pos){
+		CBtnAlign* bAlignInfo = btnAlignList.GetNext(pos);
+
+		if( bAlignInfo->iAlign&ALIGN_TOP){
+			CSUIButton* bRBtn = (CSUIButton*) bAlignInfo->bBtn;
+			int mTop = m_marginTownd.top;
+			if(mTop <= 0){ mTop = DEFAULT_MARGIN; }
+			if( (bRBtn->m_rcHitest.bottom + mTop) > m_rcHitest.top){
+				m_rcHitest.MoveToY( bRBtn->m_rcHitest.bottom  + mTop);
+			}
+		}
+		if(bAlignInfo->iAlign&ALIGN_BOTTOM){
+			CSUIButton* bRBtn = (CSUIButton*) bAlignInfo->bBtn;
+			int mBottom = m_marginTownd.bottom;
+			if(mBottom <= 0){ mBottom = DEFAULT_MARGIN; }
+			if( (bRBtn->m_rcHitest.top - mBottom)  < m_rcHitest.bottom){
+				m_rcHitest.MoveToY( bRBtn->m_rcHitest.top - mBottom - m_rcHitest.Height() );
+			}
+		}
+		if(bAlignInfo->iAlign&ALIGN_LEFT){
+			CSUIButton* bRBtn = (CSUIButton*) bAlignInfo->bBtn;
+			int mLeft = m_marginTownd.left;
+			if(mLeft <= 0){ mLeft = DEFAULT_MARGIN; }
+			if( (bRBtn->m_rcHitest.right + mLeft) > m_rcHitest.left){
+				m_rcHitest.MoveToX( bRBtn->m_rcHitest.right + mLeft);
+			}
+		}
+		if(bAlignInfo->iAlign&ALIGN_RIGHT){
+			CSUIButton* bRBtn = (CSUIButton*) bAlignInfo->bBtn;
+			int mRight = m_marginTownd.right;
+			if(mRight <= 0){ mRight = DEFAULT_MARGIN; }
+			if( (bRBtn->m_rcHitest.left - mRight)  < m_rcHitest.right){
+				m_rcHitest.MoveToX( bRBtn->m_rcHitest.left - mRight - m_rcHitest.Width() );
+			}
+		}
+
+	}
+
 	CString szLog;
 	szLog.Format(_T("%d %d %d %d %d %d %d %d %s"), WndRect.left, WndRect.top, WndRect.right, WndRect.bottom,
 		m_rcHitest.left, m_rcHitest.top, m_rcHitest.right, m_rcHitest.bottom, m_szBmpName);
@@ -102,11 +176,14 @@ void CSUIButton::OnPaint(CMemoryDC *hDC, CRect rc){
 }
 void CSUIButton::LoadImage(LPCTSTR szBmpName){
 
-	m_bitmap.Attach((HBITMAP)::LoadImage(GetModuleHandle(NULL), szBmpName, IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION));
-	PreMultiplyBitmap(m_bitmap);
-	
+	this->Attach((HBITMAP)::LoadImage(GetModuleHandle(NULL), szBmpName, IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION));
 }
 
+void CSUIButton::Attach(HBITMAP bmp){
+	m_bitmap.Attach(bmp);
+	
+	PreMultiplyBitmap(m_bitmap);
+}
 void CSUIButton::PreMultiplyBitmap( CBitmap& bmp )
 {
 
@@ -143,13 +220,15 @@ void CSUIBtnList::SetHideStat(POSITION pos, BOOL bHide){
 	CSUIButton* cBtn = GetAt(pos);
 	if(cBtn)
 		cBtn->m_hide = bHide;
+
+	
 }
 void CSUIBtnList::SetHideStat(UINT iMsgID, BOOL bHide){
 	POSITION pos = GetHeadPosition();
 	while(pos){
 		CSUIButton* cBtn =  GetNext(pos);
 		if( iMsgID == cBtn->m_htMsgID ){
-			SetHideStat(pos,  bHide);
+			cBtn->m_hide = bHide;
 			break;
 		}
 	}
@@ -160,7 +239,7 @@ void CSUIBtnList::SetHideStat(LPCTSTR szBmpName, BOOL bHide){
 	while(pos){
 		CSUIButton* cBtn =  GetNext(pos);
 		if( cBtn->m_szBmpName.Compare(szBmpName) == 0 ){
-			SetHideStat(pos,  bHide);
+			cBtn->m_hide = bHide;
 			break;
 		}
 	}
@@ -176,7 +255,8 @@ UINT CSUIBtnList::OnHitTest(CPoint pt , CRect rc){
 		if( cBtn->OnHitTest(pt , bLBtnDown) ){
 			HTRedrawRequired = TRUE;
 		}
-		iMsg = cBtn->m_htMsgID;
+		if(cBtn->m_stat)
+			iMsg = cBtn->m_htMsgID;
 
 	}
 	return iMsg;

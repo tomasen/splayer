@@ -34,10 +34,30 @@ public:
 	}
 };
 
+class CBtnAlign{
+public:
+	CBtnAlign(UINT ia, INT_PTR pb){
+		iAlign = ia;
+		bBtn = pb;
+	}
+	UINT iAlign;
+	INT_PTR bBtn;
+};
+
 #define ALIGN_TOPLEFT 1
 #define ALIGN_TOPRIGHT 2
 #define ALIGN_BOTTOMLEFT 3
 #define ALIGN_BOTTOMRIGHT 4
+
+#define ALIGN_TOP 1
+#define ALIGN_LEFT 2
+#define ALIGN_RIGHT 4
+#define ALIGN_BOTTOM 8
+
+#define DEFAULT_MARGIN 3
+
+#include "libpng.h"
+
 class CSUIButton {
 
 public:
@@ -49,14 +69,25 @@ public:
 	int m_stat; //0 normal ; 1 hove ; 2 clicked ; 3 disabled; 4 hide
 	UINT m_htMsgID;
 	BOOL m_hide;
-	CSUIButton * m_relativeto;
 	CRect m_marginToBtn;//相对于另一个按钮的位置
 	CString m_szBmpName;
 
-	CSUIButton(LPCTSTR szBmpName, CSize bmpSize , int iAlign, CRect marginTownd , CSUIButton * relativeto = NULL
-		, BOOL bNotButton = false, UINT htMsgID = NULL , BOOL bHide = FALSE);
+	CList<CBtnAlign*> btnAlignList;
 
+	CSUIButton(LPCTSTR szBmpName,  int iAlign, CRect marginTownd 
+		, BOOL bNotButton = false, UINT htMsgID = NULL , BOOL bHide = FALSE, 
+		UINT alignToButton = 0 , CSUIButton * relativeToButton = 0);
+	CSUIButton(UINT Imgid,  int iAlign, CRect marginTownd 
+		, BOOL bNotButton = false, UINT htMsgID = NULL , BOOL bHide = FALSE, 
+		UINT alignToButton = 0 , CSUIButton * relativeToButton = 0);
+
+	CPngImage m_png;
+
+	
 	void LoadImage(LPCTSTR szBmpName);
+	void Attach(HBITMAP bmp);
+
+	void addAlignRelButton(UINT alignToButton  , CSUIButton * relativeToButton );
 
 	void OnSize(CRect WndRect);
 

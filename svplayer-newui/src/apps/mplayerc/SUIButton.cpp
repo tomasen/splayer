@@ -24,7 +24,7 @@ m_stat(0)
 CSUIButton::CSUIButton(UINT Imgid, int iAlign, CRect marginTownd 
 					   , BOOL bNotButton, UINT htMsgID, BOOL bHide 
 					   ,UINT alignToButton  , CSUIButton * relativeToButton ) : 
-m_stat(0)
+m_stat(0) 
 {
 	m_NotButton = bNotButton;
 	m_marginTownd  = marginTownd;
@@ -57,7 +57,7 @@ LONG CSUIButton::CalcRealMargin(LONG Mlen, LONG bW, LONG wW)
 	}
 }
 BOOL CSUIButton::OnHitTest(CPoint pt , BOOL bLBtnDown){
-	if(m_hide || m_NotButton){
+	if(m_hide || m_NotButton || m_stat == 4){
 		return FALSE;
 	}
 	int old_stat = m_stat;
@@ -215,6 +215,28 @@ CSUIBtnList::CSUIBtnList()
 
 CSUIBtnList::~CSUIBtnList()
 {
+}
+
+void CSUIBtnList::SetDisableStat(UINT iMsgID, BOOL bDisable){
+	POSITION pos = GetHeadPosition();
+	while(pos){
+		CSUIButton* cBtn =  GetNext(pos);
+		if( iMsgID == cBtn->m_htMsgID ){
+			cBtn->m_stat = 4;
+			break;
+		}
+	}
+
+}
+void CSUIBtnList::SetClickedStat(UINT iMsgID, BOOL bClicked){
+	POSITION pos = GetHeadPosition();
+	while(pos){
+		CSUIButton* cBtn =  GetNext(pos);
+		if( iMsgID == cBtn->m_htMsgID ){
+			cBtn->m_stat = 3;
+			break;
+		}
+	}
 }
 void CSUIBtnList::SetHideStat(POSITION pos, BOOL bHide){
 	CSUIButton* cBtn = GetAt(pos);

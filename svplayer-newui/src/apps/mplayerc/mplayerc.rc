@@ -1351,13 +1351,12 @@ CLOSE.BMP               BITMAP                  "res\\newui\\BTN_CLOSE.bmp"
 MAXIMIZE.BMP            BITMAP                  "res\\newui\\BTN_MAX.bmp"
 MINIMIZE.BMP            BITMAP                  "res\\newui\\BTN_MIN.bmp"
 RESTORE.BMP             BITMAP                  "res\\newui\\BTN_RESTORE.bmp"
-MENU.BMP			     BITMAP                 "res\\newui\\BTN_MENU.bmp"
-
+MENU.BMP			    BITMAP                 "res\\newui\\BTN_MENU.bmp"
+BTN_PLAY.BMP			BITMAP                 "res\\newui\\BTN_PLAY.bmp"
 /////////////////////////////////////////////////////////////////////////////
 //
 // FILE
 //
-IDM_CLOSE_PNG			FILE					 "res\\newui\\CLOSE.png"
 
 IDF_SHADER_EMPTY        FILE                    "res\\shaders\\empty.psh"
 IDF_SHADER_CONTOUR      FILE                    "res\\shaders\\contour.psh"

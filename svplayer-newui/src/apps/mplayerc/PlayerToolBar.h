@@ -21,7 +21,10 @@
 
 #pragma once
 
+#include "SUIButton.h"
+
 #include "VolumeCtrl.h"
+
 
 // CPlayerToolBar
 
@@ -34,8 +37,13 @@ private:
 	void SetMute(bool fMute = true); 
 	CImageList m_ToolBarImages;
 	CImageList m_ToolBarDisabledImages;
+	
+	UINT m_nItemToTrack;
+	BOOL m_hovering;
+	HCURSOR cursorHand;
 
 public:
+	CSUIBtnList m_btnList;
 	int iButtonWidth;
 	CPlayerToolBar();
 	virtual ~CPlayerToolBar();
@@ -72,8 +80,8 @@ protected:
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnTimer(UINT nIDEvent);
 	afx_msg CSize CalcFixedLayout(BOOL bStretch,BOOL bHorz );
-	afx_msg void OnNcCalcSize( BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp);
-
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

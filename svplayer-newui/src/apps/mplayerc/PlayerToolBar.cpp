@@ -35,9 +35,11 @@ typedef HRESULT (__stdcall * SetWindowThemeFunct)(HWND hwnd, LPCWSTR pszSubAppNa
 // CPlayerToolBar
 
 IMPLEMENT_DYNAMIC(CPlayerToolBar, CToolBar)
-CPlayerToolBar::CPlayerToolBar()
+CPlayerToolBar::CPlayerToolBar() :
+m_hovering(0),
+iButtonWidth (30)
 {
-	iButtonWidth = 30;
+
 }
 
 CPlayerToolBar::~CPlayerToolBar()
@@ -65,6 +67,9 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 
 	GetToolBarCtrl().SetExtendedStyle(TBSTYLE_EX_DRAWDDARROWS);
 
+	m_btnList.AddTail( new CSUIButton(L"BTN_PLAY.BMP" , ALIGN_TOPLEFT, CRect(-50 , 10, 3,3)  , 0, ID_PLAY_PLAY, FALSE, 0, 0 ) );
+
+	cursorHand = ::LoadCursor(NULL, IDC_HAND);
 	/*
 		CToolBarCtrl& tb = GetToolBarCtrl();
 			tb.DeleteButton(tb.GetButtonCount()-1);
@@ -220,8 +225,6 @@ void CPlayerToolBar::SetVolume(int volume)
 }
 
 BEGIN_MESSAGE_MAP(CPlayerToolBar, CToolBar)
-	ON_WM_PAINT()
-	ON_WM_SIZE()
 	ON_MESSAGE_VOID(WM_INITIALUPDATE, OnInitialUpdate)
 	ON_COMMAND_EX(ID_VOLUME_MUTE, OnVolumeMute)
 	ON_UPDATE_COMMAND_UI(ID_VOLUME_MUTE, OnUpdateVolumeMute)
@@ -230,22 +233,41 @@ BEGIN_MESSAGE_MAP(CPlayerToolBar, CToolBar)
 	ON_WM_NCPAINT()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()
+	ON_WM_PAINT()
+	ON_WM_SIZE()
 	ON_WM_TIMER()
 	ON_WM_NCCALCSIZE()
+	ON_WM_MOUSEMOVE()
+	ON_WM_SETCURSOR()
 END_MESSAGE_MAP()
 
 // CPlayerToolBar message handlers
 #define NEWUI_COLOR_BG  RGB(214,214,214)
 #define NEWUI_COLOR_TOOLBAR_UPPERBG  RGB(0x17,0x17,0x17)
-void CPlayerToolBar::OnNcCalcSize( BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp){
-	if(bCalcValidRects){
-		//先把rect[1]拷贝到rect[2]，rect[0]拷贝到rect[1]
-		//memcpy( &lpncsp->rgrc[2] ,  &lpncsp->rgrc[1] , sizeof(RECT));
-		//memcpy( &lpncsp->rgrc[1] ,  &lpncsp->rgrc[0] , sizeof(RECT));
-
-		
+BOOL CPlayerToolBar::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message){
+	
+	if(m_hovering){	
+		SetCursor(cursorHand );
+		return TRUE;
 	}
-	__super::OnNcCalcSize(bCalcValidRects, lpncsp);
+	return CWnd::OnSetCursor(pWnd, nHitTest, message);
+}
+void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point){
+	CRect rc;
+	GetWindowRect(&rc);
+
+	point += rc.TopLeft() ;
+	UINT ret = m_btnList.OnHitTest(point,rc);
+	if( m_btnList.HTRedrawRequired ){
+		Invalidate();
+	}
+	m_hovering = !!ret;
+	if(ret != m_nItemToTrack){
+		m_nItemToTrack = ret;
+	}
+	
+
+	return;
 }
 CSize CPlayerToolBar::CalcFixedLayout(BOOL bStretch,BOOL bHorz ){
 
@@ -259,6 +281,10 @@ CSize CPlayerToolBar::CalcFixedLayout(BOOL bStretch,BOOL bHorz ){
 		size.cx = rc.Width() - 2;
 	}
 
+	CRect rc;
+	GetWindowRect(&rc);
+	m_btnList.OnSize( rc);
+
 	return size;
 
 
@@ -271,13 +297,18 @@ void CPlayerToolBar::OnPaint()
 	CPaintDC dc(this); // device context for painting
 	CRect rcClient;
 	GetClientRect(&rcClient);
+	CMemoryDC hdc(&dc, rcClient);
 	CRect rcBottomSqu = rcClient;
 	rcBottomSqu.top = rcBottomSqu.bottom - 10;
-	dc.FillSolidRect(rcBottomSqu, NEWUI_COLOR_BG);
+	hdc.FillSolidRect(rcBottomSqu, NEWUI_COLOR_BG);
 
 	CRect rcUpperSqu = rcClient;
 	rcUpperSqu.bottom = rcUpperSqu.bottom - 10;
-	dc.FillSolidRect(rcUpperSqu, NEWUI_COLOR_TOOLBAR_UPPERBG);
+	hdc.FillSolidRect(rcUpperSqu, NEWUI_COLOR_TOOLBAR_UPPERBG);
+
+ 	CRect rc;
+	GetWindowRect(&rc);
+ 	m_btnList.PaintAll(&hdc, rc);
 }
 void CPlayerToolBar::OnNcPaint() // when using XP styles the NC area isn't drawn for our toolbar...
 {
@@ -293,6 +324,10 @@ void CPlayerToolBar::OnSize(UINT nType, int cx, int cy)
 	__super::OnSize(nType, cx, cy);
 
 	ArrangeControls();
+
+	CRect rc;
+	GetWindowRect(&rc);
+	m_btnList.OnSize( rc);
 }
 
 void CPlayerToolBar::OnInitialUpdate()
@@ -328,6 +363,21 @@ BOOL CPlayerToolBar::OnVolumeDown(UINT nID)
 
 void CPlayerToolBar::OnLButtonDown(UINT nFlags, CPoint point)
 {
+	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
+	
+	
+	switch(m_nItemToTrack)
+	{
+		case ID_PLAY_PLAY:
+		case ID_PLAY_PAUSE:
+			//SetCapture();
+			
+			Invalidate();
+			
+			break;
+	}
+
+	return;
 	iBottonClicked = -1;
 	KillTimer(TIMER_FASTFORWORD);
 
@@ -360,7 +410,6 @@ void CPlayerToolBar::OnLButtonDown(UINT nFlags, CPoint point)
 		}
 	} 
 
-	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
 	if(!pFrame->m_fFullScreen)
 	{
 		MapWindowPoints(pFrame, &point, 1);
@@ -409,6 +458,19 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
 }
 void CPlayerToolBar::OnLButtonUp(UINT nFlags, CPoint point)
 {
+	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
+
+
+	switch(m_nItemToTrack)
+	{
+		case ID_PLAY_PLAY:
+		case ID_PLAY_PAUSE:
+			//ReleaseCapture();
+			pFrame->PostMessage( WM_COMMAND, m_nItemToTrack);
+			Invalidate();
+			break;
+	}
+
 	KillTimer(TIMER_FASTFORWORD);
 	for(int i = 0, j = GetToolBarCtrl().GetButtonCount(); i < j; i++)
 	{

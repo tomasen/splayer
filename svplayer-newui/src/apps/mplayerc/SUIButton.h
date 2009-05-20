@@ -69,6 +69,7 @@ public:
 	int m_stat; //0 normal ; 1 hove ; 2 clicked ; 3 disabled; 4 hide
 	UINT m_htMsgID;
 	BOOL m_hide;
+	
 	CRect m_marginToBtn;//相对于另一个按钮的位置
 	CString m_szBmpName;
 
@@ -119,6 +120,8 @@ public:
 
 	UINT OnHitTest(CPoint pt , CRect rc);
 
+	void SetDisableStat(UINT iMsgID, BOOL bDisable);
+	void SetClickedStat(UINT iMsgID, BOOL bClicked);
 	void SetHideStat(POSITION pos, BOOL bHide); //By Position
 	void SetHideStat(UINT iMsgID, BOOL bHide); //By HT MSG ID
 	void SetHideStat(LPCTSTR szBmpName, BOOL bHide); //By BitMapName

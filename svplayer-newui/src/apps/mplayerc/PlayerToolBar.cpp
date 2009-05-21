@@ -67,7 +67,13 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 
 	GetToolBarCtrl().SetExtendedStyle(TBSTYLE_EX_DRAWDDARROWS);
 
-	m_btnList.AddTail( new CSUIButton(L"BTN_PLAY.BMP" , ALIGN_TOPLEFT, CRect(-50 , 10, 3,3)  , 0, ID_PLAY_PLAY, FALSE, 0, 0 ) );
+	CSUIButton* btnPlay = new CSUIButton(L"BTN_PLAY.BMP" , ALIGN_TOPLEFT, CRect(-50 , 10, 3,3)  , 0, ID_PLAY_PLAY, FALSE, 0, 0 );
+	//btnPlay->m_stat = 3; //disabled
+	m_btnList.AddTail( btnPlay );
+
+	CSUIButton* btnPause = new CSUIButton(L"BTN_PAUSE.BMP" , ALIGN_TOPLEFT, CRect(-50 , 10, 3,3)  , 0, ID_PLAY_PAUSE, TRUE, 0, 0 );
+	//btnPlay->m_stat = 3; //disabled
+	m_btnList.AddTail( btnPause );
 
 	cursorHand = ::LoadCursor(NULL, IDC_HAND);
 	/*
@@ -244,31 +250,21 @@ END_MESSAGE_MAP()
 // CPlayerToolBar message handlers
 #define NEWUI_COLOR_BG  RGB(214,214,214)
 #define NEWUI_COLOR_TOOLBAR_UPPERBG  RGB(0x17,0x17,0x17)
+
+
 BOOL CPlayerToolBar::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message){
 	
-	if(m_hovering){	
+	CPoint pt;
+	::GetCursorPos (&pt);
+	ScreenToClient (&pt);
+
+	if(m_nItemToTrack){	
 		SetCursor(cursorHand );
 		return TRUE;
 	}
-	return CWnd::OnSetCursor(pWnd, nHitTest, message);
+	return CWnd::OnSetCursor(pWnd, 0, 0);
 }
-void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point){
-	CRect rc;
-	GetWindowRect(&rc);
 
-	point += rc.TopLeft() ;
-	UINT ret = m_btnList.OnHitTest(point,rc);
-	if( m_btnList.HTRedrawRequired ){
-		Invalidate();
-	}
-	m_hovering = !!ret;
-	if(ret != m_nItemToTrack){
-		m_nItemToTrack = ret;
-	}
-	
-
-	return;
-}
 CSize CPlayerToolBar::CalcFixedLayout(BOOL bStretch,BOOL bHorz ){
 
 	
@@ -308,7 +304,14 @@ void CPlayerToolBar::OnPaint()
 
  	CRect rc;
 	GetWindowRect(&rc);
+	UpdateButtonStat();
  	m_btnList.PaintAll(&hdc, rc);
+}
+void CPlayerToolBar::UpdateButtonStat(){
+	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
+	BOOL fShow = pFrame->GetUIStat( ID_PLAY_PAUSE );
+	m_btnList.SetHideStat( ID_PLAY_PLAY , fShow );
+	m_btnList.SetHideStat( ID_PLAY_PAUSE , !fShow );
 }
 void CPlayerToolBar::OnNcPaint() // when using XP styles the NC area isn't drawn for our toolbar...
 {
@@ -359,25 +362,38 @@ BOOL CPlayerToolBar::OnVolumeDown(UINT nID)
 	return FALSE;
 }
 
+void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point){
+	CRect rc;
+	GetWindowRect(&rc);
 
+	point += rc.TopLeft() ;
+	UINT ret = m_btnList.OnHitTest(point,rc);
+	m_nItemToTrack = ret;
+	if( m_btnList.HTRedrawRequired ){
+		Invalidate();
+	}
+	
+	return;
+}
 
 void CPlayerToolBar::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
 	
-	
-	switch(m_nItemToTrack)
-	{
-		case ID_PLAY_PLAY:
-		case ID_PLAY_PAUSE:
-			//SetCapture();
-			
-			Invalidate();
-			
-			break;
-	}
+	CRect rc;
+	GetWindowRect(&rc);
 
+	point += rc.TopLeft() ;
+	UINT ret = m_btnList.OnHitTest(point,rc);
+	if( m_btnList.HTRedrawRequired ){
+		if(ret)
+			SetCapture();
+		Invalidate();
+	}
+	m_nItemToTrack = ret;
+	
 	return;
+	//New UI End
 	iBottonClicked = -1;
 	KillTimer(TIMER_FASTFORWORD);
 
@@ -415,6 +431,61 @@ void CPlayerToolBar::OnLButtonDown(UINT nFlags, CPoint point)
 		MapWindowPoints(pFrame, &point, 1);
 		pFrame->PostMessage(WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM(point.x, point.y));
 	}
+}
+
+void CPlayerToolBar::OnLButtonUp(UINT nFlags, CPoint point)
+{
+	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
+
+	ReleaseCapture();
+
+	CRect rc;
+	GetWindowRect(&rc);
+
+	CPoint xpoint = point + rc.TopLeft() ;
+	UINT ret = m_btnList.OnHitTest(xpoint,rc);
+	if( m_btnList.HTRedrawRequired ){
+		if(ret)
+			pFrame->PostMessage( WM_COMMAND, ret);
+		Invalidate();
+	}
+	m_nItemToTrack = ret;
+//	__super::OnLButtonUp(nFlags, point);
+	return;//New UI End
+
+	KillTimer(TIMER_FASTFORWORD);
+	for(int i = 0, j = GetToolBarCtrl().GetButtonCount(); i < j; i++)
+	{
+		CRect r;
+		GetItemRect(i, r);
+		if(r.PtInRect(point))
+		{
+			UINT iButtonID, iStyle ;
+			int iImage ;
+			GetButtonInfo(i,iButtonID, iStyle , iImage );
+			if(iButtonID == iBottonClicked ){
+				if(iFastFFWCount == 0){
+					int iMsg = 0;
+					CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
+					// not increase or decrease play rate
+					if(iBottonClicked == ID_PLAY_BWD){
+						iMsg = ID_PLAY_SEEKBACKWARDSMALL;
+					}else if(iBottonClicked == ID_PLAY_FWD){
+						iMsg = ID_PLAY_SEEKFORWARDSMALL;
+					}
+					if(iMsg)
+						pFrame->PostMessage( WM_COMMAND, iMsg);
+					// 					if( iBottonClicked == ID_PLAY_BWD || iBottonClicked == ID_PLAY_FWD) 
+					// 						pFrame->PostMessage( WM_COMMAND, ID_PLAY_PLAY);
+				}
+			}
+			break;
+		}
+	}
+	iBottonClicked = -1;
+
+	__super::OnLButtonUp(nFlags, point);
+	return;
 }
 void CPlayerToolBar::OnTimer(UINT nIDEvent){
 	switch(nIDEvent){
@@ -455,53 +526,4 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
 	}
 
 	__super::OnTimer(nIDEvent);
-}
-void CPlayerToolBar::OnLButtonUp(UINT nFlags, CPoint point)
-{
-	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
-
-
-	switch(m_nItemToTrack)
-	{
-		case ID_PLAY_PLAY:
-		case ID_PLAY_PAUSE:
-			//ReleaseCapture();
-			pFrame->PostMessage( WM_COMMAND, m_nItemToTrack);
-			Invalidate();
-			break;
-	}
-
-	KillTimer(TIMER_FASTFORWORD);
-	for(int i = 0, j = GetToolBarCtrl().GetButtonCount(); i < j; i++)
-	{
-		CRect r;
-		GetItemRect(i, r);
-		if(r.PtInRect(point))
-		{
-			UINT iButtonID, iStyle ;
-			int iImage ;
-			GetButtonInfo(i,iButtonID, iStyle , iImage );
-			if(iButtonID == iBottonClicked ){
-				if(iFastFFWCount == 0){
-					int iMsg = 0;
-					CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
-					// not increase or decrease play rate
-					if(iBottonClicked == ID_PLAY_BWD){
-						iMsg = ID_PLAY_SEEKBACKWARDSMALL;
-					}else if(iBottonClicked == ID_PLAY_FWD){
-						iMsg = ID_PLAY_SEEKFORWARDSMALL;
-					}
-					if(iMsg)
-						pFrame->PostMessage( WM_COMMAND, iMsg);
-// 					if( iBottonClicked == ID_PLAY_BWD || iBottonClicked == ID_PLAY_FWD) 
-// 						pFrame->PostMessage( WM_COMMAND, ID_PLAY_PLAY);
-				}
-			}
-			break;
-		}
-	}
-	iBottonClicked = -1;
-	
-	__super::OnLButtonUp(nFlags, point);
-	return;
 }

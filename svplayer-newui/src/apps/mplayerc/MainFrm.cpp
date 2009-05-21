@@ -5754,6 +5754,9 @@ void CMainFrame::OnPlayPlay()
 	m_wndColorControlBar.CheckAbility();
 
 	MoveVideoWindow();
+
+	//New UI
+	m_wndToolBar.Invalidate();
 }
 
 void CMainFrame::OnPlayPauseI()
@@ -5783,6 +5786,9 @@ void CMainFrame::OnPlayPauseI()
 	}
 
 	MoveVideoWindow();
+
+	//New UI
+	m_wndToolBar.Invalidate();
 }
 
 void CMainFrame::OnPlayPause()
@@ -5883,6 +5889,19 @@ void CMainFrame::OnPlayStop()
 	}
 }
 
+DWORD CMainFrame::GetUIStat(UINT n_CmdID)
+{ //New UI
+	DWORD fShow = false;
+	if(n_CmdID >= ID_PLAY_PLAY && n_CmdID <= ID_PLAY_STOP ){
+		OAFilterState fs = m_fFrameSteppingActive ? State_Paused : GetMediaState();
+		if(fs >= 0){
+			if(fs != State_Stopped && fs != State_Paused && n_CmdID == ID_PLAY_PAUSE) fShow = true;
+			}
+		
+	
+	}
+	return fShow ;
+}
 void CMainFrame::OnUpdatePlayPauseStop(CCmdUI* pCmdUI)
 {
 	OAFilterState fs = m_fFrameSteppingActive ? State_Paused : GetMediaState();

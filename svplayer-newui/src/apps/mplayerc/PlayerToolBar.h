@@ -39,12 +39,13 @@ private:
 	CImageList m_ToolBarDisabledImages;
 	
 	UINT m_nItemToTrack;
-	BOOL m_hovering;
+	bool m_hovering;
 	HCURSOR cursorHand;
 
 public:
 	CSUIBtnList m_btnList;
 	int iButtonWidth;
+	void UpdateButtonStat();
 	CPlayerToolBar();
 	virtual ~CPlayerToolBar();
 
@@ -76,6 +77,7 @@ protected:
 	afx_msg BOOL OnVolumeUp(UINT nID);
 	afx_msg BOOL OnVolumeDown(UINT nID);
 	afx_msg void OnNcPaint();
+	
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnTimer(UINT nIDEvent);

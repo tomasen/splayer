@@ -56,17 +56,17 @@ LONG CSUIButton::CalcRealMargin(LONG Mlen, LONG bW, LONG wW)
 		return ( wW * Mlen / 100) - bW / 2;
 	}
 }
-BOOL CSUIButton::OnHitTest(CPoint pt , BOOL bLBtnDown){
-	if(m_hide || m_NotButton || m_stat == 4){
-		return FALSE;
+int CSUIButton::OnHitTest(CPoint pt , BOOL bLBtnDown){
+	if(m_hide || m_NotButton || m_stat == 3){
+		return 0;
 	}
 	int old_stat = m_stat;
 	if (m_rcHitest.PtInRect(pt) && bLBtnDown)  m_stat = 2; else if (m_rcHitest.PtInRect(pt)) m_stat = 1; else m_stat = 0;
 	
 	if(m_stat == old_stat){
-		return FALSE;
+		return -1;
 	}else{
-		return TRUE; //require redraw
+		return 1; //require redraw
 	}
 	
 }
@@ -274,10 +274,11 @@ UINT CSUIBtnList::OnHitTest(CPoint pt , CRect rc){
 	HTRedrawRequired = FALSE;
 	while(pos){
 		CSUIButton* cBtn =  GetNext(pos);
-		if( cBtn->OnHitTest(pt , bLBtnDown) ){
+		int ret = cBtn->OnHitTest(pt , bLBtnDown) ;
+		if(ret == 1)
 			HTRedrawRequired = TRUE;
-		}
-		if(cBtn->m_stat)
+		
+		if(ret != 0 && cBtn->m_stat != 0)
 			iMsg = cBtn->m_htMsgID;
 
 	}

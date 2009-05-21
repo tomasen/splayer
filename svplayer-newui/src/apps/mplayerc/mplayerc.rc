@@ -1353,6 +1353,7 @@ MINIMIZE.BMP            BITMAP                  "res\\newui\\BTN_MIN.bmp"
 RESTORE.BMP             BITMAP                  "res\\newui\\BTN_RESTORE.bmp"
 MENU.BMP			    BITMAP                 "res\\newui\\BTN_MENU.bmp"
 BTN_PLAY.BMP			BITMAP                 "res\\newui\\BTN_PLAY.bmp"
+BTN_PAUSE.BMP			BITMAP                 "res\\newui\\BTN_PAUSE.bmp"
 /////////////////////////////////////////////////////////////////////////////
 //
 // FILE

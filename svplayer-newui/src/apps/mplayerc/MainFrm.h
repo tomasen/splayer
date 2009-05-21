@@ -771,7 +771,7 @@ public:
 	
 	afx_msg void OnNcCalcSize( BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp);
 	void RedrawNonClientArea();
-	
+	DWORD GetUIStat(UINT n_CmdID);
 	//void PreMultiplyBitmap(CBitmap& bmp);
 
 private:

@@ -66,7 +66,7 @@ public:
 	CRect m_marginTownd; //按钮相对于窗口的位置， 0为不强制 负数为百分比
 	CRect m_rcHitest; //按钮的有效范围，用于hittest
 	CBitmap m_bitmap; //图片存储位置
-	int m_stat; //0 normal ; 1 hove ; 2 clicked ; 3 disabled; 4 hide
+	int m_stat; //0 normal ; 1 hove ; 2 clicked ; 3 disabled
 	UINT m_htMsgID;
 	BOOL m_hide;
 	
@@ -94,7 +94,7 @@ public:
 
 	void OnPaint(CMemoryDC *hDC, CRect rc);
 	
-	BOOL OnHitTest(CPoint pt , BOOL bLBtnDown);
+	int OnHitTest(CPoint pt , BOOL bLBtnDown);
 
 	BOOL m_NotButton;
 

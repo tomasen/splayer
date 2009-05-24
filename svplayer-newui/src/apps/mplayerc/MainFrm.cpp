@@ -644,6 +644,165 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	return 0;
 }
 /*NEW UI*/
+static bool bNoMoreHideMouse = false;
+
+void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
+{
+	CRect CVideoRect = m_wndView.GetVideoRect();
+	if(m_iPlaybackMode == PM_DVD)
+	{
+		CPoint vp = point - CVideoRect.TopLeft();
+		pDVDC->SelectAtPosition(vp);
+	}
+
+	CSize diff = m_lastMouseMove - point;
+	BOOL bMouseMoved =  (abs(diff.cx)+abs(diff.cy)) >= 1;
+	if(bMouseMoved){
+		m_fHideCursor = false;
+		KillTimer(TIMER_FULLSCREENMOUSEHIDER);
+		if(!bNoMoreHideMouse && m_iMediaLoadState == MLS_LOADED)
+			SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
+	}
+	AppSettings& s = AfxGetAppSettings();
+	int iDistance = sqrt( pow( (double)abs(point.x - m_pLastClickPoint.x) , 2)  + pow( (double)abs( point.y - m_pLastClickPoint.y ) , 2) );
+	if( ( iDistance > 30 || s_mDragFucOn) && s_mDragFuc){
+		if(!s_mDragFucOn){
+			m_pDragFuncStartPoint = point;
+			SetAlwaysOnTop(s.iOnTop , FALSE);
+			s_mDragFucOn = true;
+		}
+		if(s_mDragFuc == 1){ //移动画面
+			m_PosX += (double)(point.x - m_pDragFuncStartPoint.x) / CVideoRect.Width() ;
+			m_PosY += (double)(point.y - m_pDragFuncStartPoint.y)/ CVideoRect.Height() ;
+			MoveVideoWindow(true);
+		}else if(s_mDragFuc == 2){//缩放画面
+			m_ZoomX += (double)(point.x - m_pDragFuncStartPoint.x) / CVideoRect.Width() ;
+			m_ZoomY += (double)(m_pDragFuncStartPoint.y - point.y ) / CVideoRect.Height() ;
+			MoveVideoWindow(true);
+		}else if(s_mDragFuc == 3){
+			PostMessage(WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM(point.x, point.y));
+		}
+		m_pDragFuncStartPoint = point;
+
+		s_fLDown = false;
+
+	}
+
+
+	if(m_fFullScreen && bMouseMoved)
+	{
+		int nTimeOut = s.nShowBarsWhenFullScreenTimeOut;
+
+		if(nTimeOut < 0)
+		{
+			m_fHideCursor = false;
+			if(s.fShowBarsWhenFullScreen){
+				ShowControls(s.nCS | (s.bShowControlBar ? CS_COLORCONTROLBAR : 0), false);
+				//m_wndColorControlBar.ShowWindow(SW_SHOW);
+			}
+
+			KillTimer(TIMER_FULLSCREENCONTROLBARHIDER);
+			//			SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
+		}
+		else if(nTimeOut == 0)
+		{
+			CRect r;
+			GetClientRect(r);
+			r.top = r.bottom;
+
+			POSITION pos = m_bars.GetHeadPosition();
+			for(int i = 1; pos; i <<= 1)
+			{
+				CControlBar* pNext = m_bars.GetNext(pos);
+				CSize sz = pNext->CalcFixedLayout(FALSE, TRUE);
+				if(s.nCS&i) r.top -= sz.cy;
+			}
+
+			// HACK: the controls would cover the menu too early hiding some buttons
+			if(m_iPlaybackMode == PM_DVD
+				&& (m_iDVDDomain == DVD_DOMAIN_VideoManagerMenu
+				|| m_iDVDDomain == DVD_DOMAIN_VideoTitleSetMenu))
+				r.top = r.bottom - 10;
+
+			m_fHideCursor = false;
+
+			if(r.PtInRect(point))
+			{
+				if(s.fShowBarsWhenFullScreen){
+					ShowControls(s.nCS | ( s.bShowControlBar ? CS_COLORCONTROLBAR : 0) , false);
+					//m_wndColorControlBar.ShowWindow(SW_SHOW);
+				}
+			}
+			else{
+				if(s.fShowBarsWhenFullScreen)
+					ShowControls(CS_NONE, false);
+
+			}
+
+
+			//SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
+		}
+		else
+		{
+			m_fHideCursor = false;
+			if(s.fShowBarsWhenFullScreen){
+				ShowControls(s.nCS |  ( s.bShowControlBar ? CS_COLORCONTROLBAR : 0), false );
+				//m_wndColorControlBar.ShowWindow(SW_SHOW);
+			}
+
+			SetTimer(TIMER_FULLSCREENCONTROLBARHIDER, nTimeOut*1000, NULL);
+			//SetTimer(TIMER_FULLSCREENMOUSEHIDER, max(nTimeOut*1000, 2000), NULL);
+		}
+	}
+	if((m_fFullScreen || IsCaptionMenuHidden() ) && bMouseMoved) //New UI
+	{
+
+		HMENU hMenu;
+		DWORD dwRemove = 0, dwAdd = 0;
+		DWORD currentStyle =  GetStyle( );
+
+		if(point.y < 20 ){
+			if( !(WS_CAPTION&currentStyle) ){
+				dwAdd = WS_CAPTION;
+				hMenu = NULL;// hMenu = m_hMenuDefault; NEW UI
+			}
+
+		}else if(WS_CAPTION&currentStyle) {
+			dwRemove = WS_CAPTION;
+			hMenu = NULL;
+		}
+			
+		::SetMenu(m_hWnd, hMenu);
+
+		if ( dwAdd || dwRemove){
+			ModifyStyle(dwRemove, dwAdd, SWP_NOZORDER);
+			RedrawNonClientArea();
+
+		}
+
+	}
+
+
+	/*
+
+	if(!m_fFullScreen && bMouseMoved && s.bShowControlBar){
+	CRect cvr = m_wndView.GetVideoRect(); //show and hide Color Control Bar when not full screen
+	cvr.top = cvr.bottom - 30;
+	if(cvr.PtInRect(point)){
+	ShowControlBar(&m_wndColorControlBar, SW_SHOW, FALSE);
+	}else if(!bNotHideColorControlBar){
+	ShowControlBar(&m_wndColorControlBar, SW_HIDE, TRUE);
+	}
+
+	}
+
+	*/
+
+
+	m_lastMouseMove = point;
+
+	__super::OnMouseMove(nFlags, point);
+}
 
 
 void CMainFrame::OnNcCalcSize( BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp){
@@ -653,6 +812,10 @@ void CMainFrame::OnNcCalcSize( BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp){
 		//memcpy( &lpncsp->rgrc[1] ,  &lpncsp->rgrc[0] , sizeof(RECT));
 		
 		CRect rc = lpncsp->rgrc[0];
+		DWORD currentStyle = GetStyle();
+		if(currentStyle&WS_CAPTION){
+
+		}
 		rc.InflateRect( GetSystemMetrics(SM_CXFRAME) - 3, 0,   GetSystemMetrics(SM_CXFRAME) - 3, GetSystemMetrics(SM_CXFRAME) - 2);
 		lpncsp->rgrc[0] = rc;
 	}
@@ -759,8 +922,11 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 	CRect rc;
 	GetWindowRect(&rc);
 	rc-=rc.TopLeft();
-	if(wp.showCmd!=SW_MAXIMIZE)
+	if(wp.showCmd!=SW_MAXIMIZE && !m_fFullScreen){
 		rc.InflateRect(GetSystemMetrics(SM_CXBORDER), GetSystemMetrics(SM_CYBORDER));
+	}
+	DWORD currentStyle = GetStyle();
+	
 
 	//////////////////////////////////////////////////////////////////////////
 	// This is an undocumented (or not very clearly documented)
@@ -787,7 +953,10 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 		// process and cause extra cost
 		RECT rcClient = {0};
 		GetClientRect(&rcClient);
-		rcClient.top+=GetSystemMetrics(SM_CYCAPTION)+GetSystemMetrics(SM_CYFRAME);
+		rcClient.top+=GetSystemMetrics(SM_CYFRAME);
+		if(currentStyle&WS_CAPTION){
+			rcClient.top+=GetSystemMetrics(SM_CYCAPTION);
+		}
 		rcClient.left+=3;
 		rcClient.bottom+=GetSystemMetrics(SM_CYCAPTION)+2;
 		rcClient.right+=3;
@@ -795,66 +964,78 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 
 		// establish double buffered painting
 		CMemoryDC hdc(dc, rc);
-
-		// some basic styles
-		CPen pen, penBright, penDark;
-		pen.CreatePen(PS_SOLID, 1, NEWUI_COLOR_PEN );
-		penBright.CreatePen(PS_SOLID, 1, NEWUI_COLOR_PEN_BRIGHT);
-		penDark.CreatePen(PS_SOLID, 1,NEWUI_COLOR_PEN_BRIGHT);
 		CBrush brush;
 		brush.CreateSolidBrush(NEWUI_COLOR_BG);
-		HPEN holdpen = (HPEN)hdc.SelectObject(pen);
-		HBRUSH holdbrush = (HBRUSH)hdc.SelectObject(brush);
-		if (wp.showCmd != SW_MAXIMIZE)
+		if (wp.showCmd != SW_MAXIMIZE && !m_fFullScreen)
 			hdc.RoundRect(rc.left+1, rc.top+1, rc.right-1, rc.bottom-1, 3, 3);
-		else
+		else if(currentStyle&WS_CAPTION) {
 			hdc.FillRect(&rc, &brush);
-		hdc.SelectObject(penBright);
-		hdc.MoveTo(rc.left+2, rc.bottom-3);
-		hdc.LineTo(rc.left+2, rc.top+2);
-		hdc.LineTo(rc.right-3, rc.top+2);
-		hdc.SelectObject(penDark);
-		hdc.MoveTo(rc.left+2, rc.bottom-3);
-		hdc.LineTo(rc.right-3, rc.bottom-3);
-		hdc.LineTo(rc.right-3, rc.top+2);
-		hdc.SelectObject(holdpen);
-		hdc.SelectObject(holdbrush);
+		}
 
+		int nTotalCaptionHeight = GetSystemMetrics(SM_CYCAPTION)+GetSystemMetrics(SM_CYFRAME);
+
+		if(m_fFullScreen){
+			nTotalCaptionHeight -= 4;
+		}
+		// some basic styles
+		if(!m_fFullScreen){
+			CPen pen, penBright, penDark;
+			pen.CreatePen(PS_SOLID, 1, NEWUI_COLOR_PEN );
+			penBright.CreatePen(PS_SOLID, 1, NEWUI_COLOR_PEN_BRIGHT);
+			penDark.CreatePen(PS_SOLID, 1,NEWUI_COLOR_PEN_BRIGHT);
+			HPEN holdpen = (HPEN)hdc.SelectObject(pen);
+			HBRUSH holdbrush = (HBRUSH)hdc.SelectObject(brush);
+			hdc.SelectObject(penBright);
+			hdc.MoveTo(rc.left+2, rc.bottom-3);
+			hdc.LineTo(rc.left+2, rc.top+2);
+			hdc.LineTo(rc.right-3, rc.top+2);
+			hdc.SelectObject(penDark);
+			hdc.MoveTo(rc.left+2, rc.bottom-3);
+			hdc.LineTo(rc.right-3, rc.bottom-3);
+			hdc.LineTo(rc.right-3, rc.top+2);
+			hdc.SelectObject(holdpen);
+			hdc.SelectObject(holdbrush);
+		
 // 		hdc.SelectObject((HBRUSH) GetStockObject(NULL_BRUSH));
 // 		if (wp.showCmd != SW_MAXIMIZE)
 // 			hdc.RoundRect(rc.left+1, rc.top+1, rc.right-1, rc.bottom-1, 3, 3);
 
-		// painting the caption bar
-		CDC dcBmp;
-		dcBmp.CreateCompatibleDC(&hdc);
-		HBITMAP hbmpold = (HBITMAP)dcBmp.SelectObject(m_bmpCaption);
-		hdc.SetStretchBltMode(HALFTONE);
-		hdc.SetBrushOrg(0, 0);
-		int nTotalCaptionHeight = GetSystemMetrics(SM_CYCAPTION)+GetSystemMetrics(SM_CYFRAME);
-		hdc.StretchBlt(0, 0, 4, nTotalCaptionHeight, &dcBmp, 0, 0, 4, 25, SRCCOPY);
-		hdc.StretchBlt(4, 0, rc.Width()-4*2, nTotalCaptionHeight, &dcBmp, 4, 0, 6, 25, SRCCOPY);
-		hdc.StretchBlt(rc.Width()-2-4, 0, 4, nTotalCaptionHeight, &dcBmp, 10, 0, 4, 25, SRCCOPY);
+			// painting the caption bar
+			CDC dcBmp;
+			dcBmp.CreateCompatibleDC(&hdc);
+			HBITMAP hbmpold = (HBITMAP)dcBmp.SelectObject(m_bmpCaption);
+			hdc.SetStretchBltMode(HALFTONE);
+			hdc.SetBrushOrg(0, 0);
+			hdc.StretchBlt(0, 0, 4, nTotalCaptionHeight, &dcBmp, 0, 0, 4, 25, SRCCOPY);
+			hdc.StretchBlt(4, 0, rc.Width()-4*2, nTotalCaptionHeight, &dcBmp, 4, 0, 6, 25, SRCCOPY);
+			hdc.StretchBlt(rc.Width()-2-4, 0, 4, nTotalCaptionHeight, &dcBmp, 10, 0, 4, 25, SRCCOPY);
+			dcBmp.SelectObject(hbmpold);
+		}
+		if(currentStyle&WS_CAPTION){
+			// and the title
+			CFont hft;
+			GetSystemFontWithScale(&hft, 14.0);
 
-		// and the title
-		CFont hft;
-		GetSystemFontWithScale(&hft, 14.0);
+			HFONT holdft = (HFONT)hdc.SelectObject(hft);
 
-		HFONT holdft = (HFONT)hdc.SelectObject(hft);
+			RECT rcWindowText = {0};
+			rcWindowText.top = rc.top+GetSystemMetrics(SM_CYFRAME)/2;
+			rcWindowText.left = rc.left+7+GetSystemMetrics(SM_CXFRAME);
+			rcWindowText.bottom = rc.top+nTotalCaptionHeight;
+			rcWindowText.right = rc.right;
+			CString szWindowText;
+			GetWindowText(szWindowText);
+			::DrawShadowText(hdc, szWindowText, szWindowText.GetLength(), &rcWindowText, DT_LEFT|DT_SINGLELINE | DT_VCENTER, RGB(255,255,255), RGB(64,64,64), 2,2);
+			hdc.SelectObject(holdft);
 
-		RECT rcWindowText = {0};
-		rcWindowText.top = rc.top+GetSystemMetrics(SM_CYFRAME)/2;
-		rcWindowText.left = rc.left+7+GetSystemMetrics(SM_CXFRAME);
-		rcWindowText.bottom = rc.top+nTotalCaptionHeight;
-		rcWindowText.right = rc.right;
-		CString szWindowText;
-		GetWindowText(szWindowText);
-		::DrawShadowText(hdc, szWindowText, szWindowText.GetLength(), &rcWindowText, DT_LEFT|DT_SINGLELINE | DT_VCENTER, RGB(255,255,255), RGB(64,64,64), 2,2);
-		hdc.SelectObject(holdft);
-
-		// min/max/close buttons
-		//LONG lPaintParamArray[][5] = {{1,0},{1,1},{1,2},{1,3}};
-		GetWindowRect(&rc);
-		m_btnList.PaintAll(&hdc, rc);
+			// min/max/close buttons
+			//LONG lPaintParamArray[][5] = {{1,0},{1,1},{1,2},{1,3}};
+			GetWindowRect(&rc);
+			if(wp.showCmd==SW_MAXIMIZE || m_fFullScreen){
+				//rc.top -= 8;
+			}
+			m_btnList.PaintAll(&hdc, rc);
+		}
 		/*
 
 		int nVertPos = NEWUI_BTN_MARGIN_TOP;
@@ -870,7 +1051,7 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 		hdc.AlphaBlend(rc.right-NEWUI_BTN_MARGIN_RIGHT-NEWUI_BTN_WIDTH*4, nVertPos, NEWUI_BTN_WIDTH, NEWUI_BTN_HEIGTH, &dcBmp, 0, nImagePositions[m_nBoxStatus[3]], NEWUI_BTN_WIDTH, NEWUI_BTN_HEIGTH, bf);
 */
 
-		dcBmp.SelectObject(hbmpold);
+		
 
 		ReleaseDC(&hdc);
 
@@ -1069,7 +1250,6 @@ void CMainFrame::OnClose()
 	__super::OnClose();
 }
 
-static bool bNoMoreHideMouse = false;
 void CMainFrame::OnEnterMenuLoop( BOOL bIsTrackPopupMenu ){
 	bNoMoreHideMouse = true;
 	//SendStatusMessage(_T("Meni Enter"), 2000);
@@ -2815,149 +2995,6 @@ void CMainFrame::OnLButtonUp(UINT nFlags, CPoint point)
 
 	if(!OnButton(wmcmd::LUP, nFlags, point))
 		__super::OnLButtonUp(nFlags, point);
-}
-
-void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
-{
-	CRect CVideoRect = m_wndView.GetVideoRect();
-	if(m_iPlaybackMode == PM_DVD)
-	{
-		CPoint vp = point - CVideoRect.TopLeft();
-		pDVDC->SelectAtPosition(vp);
-	}
-
-	CSize diff = m_lastMouseMove - point;
-	BOOL bMouseMoved =  (abs(diff.cx)+abs(diff.cy)) >= 1;
-	if(bMouseMoved){
-		m_fHideCursor = false;
-		KillTimer(TIMER_FULLSCREENMOUSEHIDER);
-		if(!bNoMoreHideMouse && m_iMediaLoadState == MLS_LOADED)
-			SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
-	}
-	AppSettings& s = AfxGetAppSettings();
-	int iDistance = sqrt( pow( (double)abs(point.x - m_pLastClickPoint.x) , 2)  + pow( (double)abs( point.y - m_pLastClickPoint.y ) , 2) );
-	if( ( iDistance > 30 || s_mDragFucOn) && s_mDragFuc){
-		if(!s_mDragFucOn){
-			m_pDragFuncStartPoint = point;
-			SetAlwaysOnTop(s.iOnTop , FALSE);
-			s_mDragFucOn = true;
-		}
-		if(s_mDragFuc == 1){ //移动画面
-			m_PosX += (double)(point.x - m_pDragFuncStartPoint.x) / CVideoRect.Width() ;
-			m_PosY += (double)(point.y - m_pDragFuncStartPoint.y)/ CVideoRect.Height() ;
-			MoveVideoWindow(true);
-		}else if(s_mDragFuc == 2){//缩放画面
-			m_ZoomX += (double)(point.x - m_pDragFuncStartPoint.x) / CVideoRect.Width() ;
-			m_ZoomY += (double)(m_pDragFuncStartPoint.y - point.y ) / CVideoRect.Height() ;
-			MoveVideoWindow(true);
-		}else if(s_mDragFuc == 3){
-			PostMessage(WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM(point.x, point.y));
-		}
-		m_pDragFuncStartPoint = point;
-
-		s_fLDown = false;
-		
-	}
-
-
-	if(m_fFullScreen && bMouseMoved)
-	{
-		int nTimeOut = s.nShowBarsWhenFullScreenTimeOut;
-
-		if(nTimeOut < 0)
-		{
-			m_fHideCursor = false;
-			if(s.fShowBarsWhenFullScreen){
-				ShowControls(s.nCS | (s.bShowControlBar ? CS_COLORCONTROLBAR : 0), false);
-				//m_wndColorControlBar.ShowWindow(SW_SHOW);
-			}
-
-			KillTimer(TIMER_FULLSCREENCONTROLBARHIDER);
-//			SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
-		}
-		else if(nTimeOut == 0)
-		{
-			CRect r;
-			GetClientRect(r);
-			r.top = r.bottom;
-
-			POSITION pos = m_bars.GetHeadPosition();
-			for(int i = 1; pos; i <<= 1)
-			{
-				CControlBar* pNext = m_bars.GetNext(pos);
-				CSize sz = pNext->CalcFixedLayout(FALSE, TRUE);
-				if(s.nCS&i) r.top -= sz.cy;
-			}
-			
-			// HACK: the controls would cover the menu too early hiding some buttons
-			if(m_iPlaybackMode == PM_DVD
-				&& (m_iDVDDomain == DVD_DOMAIN_VideoManagerMenu
-				|| m_iDVDDomain == DVD_DOMAIN_VideoTitleSetMenu))
-				r.top = r.bottom - 10;
-
-			m_fHideCursor = false;
-
-			if(r.PtInRect(point))
-			{
-				if(s.fShowBarsWhenFullScreen){
-					ShowControls(s.nCS | ( s.bShowControlBar ? CS_COLORCONTROLBAR : 0) , false);
-					//m_wndColorControlBar.ShowWindow(SW_SHOW);
-				}
-			}
-			else{
-				if(s.fShowBarsWhenFullScreen)
-					ShowControls(CS_NONE, false);
-				
-			}
-			
-
-			//SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
-		}
-		else
-		{
-			m_fHideCursor = false;
-			if(s.fShowBarsWhenFullScreen){
-				ShowControls(s.nCS |  ( s.bShowControlBar ? CS_COLORCONTROLBAR : 0), false );
-				//m_wndColorControlBar.ShowWindow(SW_SHOW);
-			}
-				
-			SetTimer(TIMER_FULLSCREENCONTROLBARHIDER, nTimeOut*1000, NULL);
-			//SetTimer(TIMER_FULLSCREENMOUSEHIDER, max(nTimeOut*1000, 2000), NULL);
-		}
-	}
-	if((m_fFullScreen || IsCaptionMenuHidden() ) && bMouseMoved)
-	{
-
-		HMENU hMenu;
-		if(point.y < 10 && point.x < 690){
-			hMenu = NULL;// hMenu = m_hMenuDefault; NEW UI
-		}else{
-			hMenu = NULL;
-		}
-		::SetMenu(m_hWnd, hMenu);
-
-	}
-
-
-/*
-
-	if(!m_fFullScreen && bMouseMoved && s.bShowControlBar){
-		CRect cvr = m_wndView.GetVideoRect(); //show and hide Color Control Bar when not full screen
-		cvr.top = cvr.bottom - 30;
-		if(cvr.PtInRect(point)){
-			ShowControlBar(&m_wndColorControlBar, SW_SHOW, FALSE);
-		}else if(!bNotHideColorControlBar){
-			ShowControlBar(&m_wndColorControlBar, SW_HIDE, TRUE);
-		}
-		
-	}
-
-*/
-
-
-	m_lastMouseMove = point;
-
-	__super::OnMouseMove(nFlags, point);
 }
 
 

@@ -4,7 +4,7 @@
 
 CSUIButton::CSUIButton(LPCTSTR szBmpName, int iAlign, CRect marginTownd 
 					   , BOOL bNotButton, UINT htMsgID, BOOL bHide 
-					   ,UINT alignToButton  , CSUIButton * relativeToButton ) : 
+					   ,UINT alignToButton  , CSUIButton * relativeToButton , CRect marginToBtn ) : 
 m_stat(0)
 {
 	m_NotButton = bNotButton;
@@ -16,14 +16,15 @@ m_stat(0)
 	m_hide = bHide;
 
 
+
 	
-	addAlignRelButton(alignToButton, relativeToButton);
+	addAlignRelButton(alignToButton, relativeToButton , marginToBtn);
 	
 }
 
 CSUIButton::CSUIButton(UINT Imgid, int iAlign, CRect marginTownd 
 					   , BOOL bNotButton, UINT htMsgID, BOOL bHide 
-					   ,UINT alignToButton  , CSUIButton * relativeToButton ) : 
+					   ,UINT alignToButton  , CSUIButton * relativeToButton  , CRect marginToBtn) : 
 m_stat(0) 
 {
 	m_NotButton = bNotButton;
@@ -37,10 +38,11 @@ m_stat(0)
 		}
 	}
 	
+	
 	//m_szBmpName = MAKEINTRESOURCE(Imgid);
 
 	m_hide = bHide;
-	addAlignRelButton(alignToButton, relativeToButton);
+	addAlignRelButton(alignToButton, relativeToButton , marginToBtn);
 
 }
 
@@ -70,9 +72,9 @@ int CSUIButton::OnHitTest(CPoint pt , BOOL bLBtnDown){
 	}
 	
 }
-void CSUIButton::addAlignRelButton( UINT alignToButton  , CSUIButton * relativeToButton ){
+void CSUIButton::addAlignRelButton( UINT alignToButton  , CSUIButton * relativeToButton , CRect rmToBtn){
 	if(alignToButton && relativeToButton){
-		btnAlignList.AddTail(new CBtnAlign(alignToButton , (INT_PTR)relativeToButton) );
+		btnAlignList.AddTail(new CBtnAlign(alignToButton , (INT_PTR)relativeToButton , rmToBtn) );
 	}
 
 }
@@ -121,7 +123,7 @@ void CSUIButton::OnSize(CRect WndRect)
 
 		if( bAlignInfo->iAlign&ALIGN_TOP){
 			CSUIButton* bRBtn = (CSUIButton*) bAlignInfo->bBtn;
-			int mTop = m_marginTownd.top;
+			int mTop = bAlignInfo->marginToBtn.top;
 			if(mTop <= 0){ mTop = DEFAULT_MARGIN; }
 			if( (bRBtn->m_rcHitest.bottom + mTop) > m_rcHitest.top){
 				m_rcHitest.MoveToY( bRBtn->m_rcHitest.bottom  + mTop);
@@ -129,7 +131,7 @@ void CSUIButton::OnSize(CRect WndRect)
 		}
 		if(bAlignInfo->iAlign&ALIGN_BOTTOM){
 			CSUIButton* bRBtn = (CSUIButton*) bAlignInfo->bBtn;
-			int mBottom = m_marginTownd.bottom;
+			int mBottom = bAlignInfo->marginToBtn.bottom;
 			if(mBottom <= 0){ mBottom = DEFAULT_MARGIN; }
 			if( (bRBtn->m_rcHitest.top - mBottom)  < m_rcHitest.bottom){
 				m_rcHitest.MoveToY( bRBtn->m_rcHitest.top - mBottom - m_rcHitest.Height() );
@@ -137,7 +139,7 @@ void CSUIButton::OnSize(CRect WndRect)
 		}
 		if(bAlignInfo->iAlign&ALIGN_LEFT){
 			CSUIButton* bRBtn = (CSUIButton*) bAlignInfo->bBtn;
-			int mLeft = m_marginTownd.left;
+			int mLeft = bAlignInfo->marginToBtn.left;
 			if(mLeft <= 0){ mLeft = DEFAULT_MARGIN; }
 			if( (bRBtn->m_rcHitest.right + mLeft) > m_rcHitest.left){
 				m_rcHitest.MoveToX( bRBtn->m_rcHitest.right + mLeft);
@@ -145,7 +147,7 @@ void CSUIButton::OnSize(CRect WndRect)
 		}
 		if(bAlignInfo->iAlign&ALIGN_RIGHT){
 			CSUIButton* bRBtn = (CSUIButton*) bAlignInfo->bBtn;
-			int mRight = m_marginTownd.right;
+			int mRight = bAlignInfo->marginToBtn.right;
 			if(mRight <= 0){ mRight = DEFAULT_MARGIN; }
 			if( (bRBtn->m_rcHitest.left - mRight)  < m_rcHitest.right){
 				m_rcHitest.MoveToX( bRBtn->m_rcHitest.left - mRight - m_rcHitest.Width() );
@@ -157,7 +159,7 @@ void CSUIButton::OnSize(CRect WndRect)
 	CString szLog;
 	szLog.Format(_T("%d %d %d %d %d %d %d %d %s"), WndRect.left, WndRect.top, WndRect.right, WndRect.bottom,
 		m_rcHitest.left, m_rcHitest.top, m_rcHitest.right, m_rcHitest.bottom, m_szBmpName);
-	SVP_LogMsg(szLog);
+	//SVP_LogMsg(szLog);
 }
 void CSUIButton::OnPaint(CMemoryDC *hDC, CRect rc){
 	if(m_hide) return;
@@ -172,7 +174,7 @@ void CSUIButton::OnPaint(CMemoryDC *hDC, CRect rc){
 	CString szLog;
 	szLog.Format(_T("%d %d %d %d %d %d %d %d %d Paint %s"),ret , rc.left, rc.top, rc.Width(), rc.Height(),
 		0, m_btnSize.cy * m_stat, m_btnSize.cx, m_btnSize.cy, m_szBmpName);
-	SVP_LogMsg(szLog);
+	//SVP_LogMsg(szLog);
 }
 void CSUIButton::LoadImage(LPCTSTR szBmpName){
 

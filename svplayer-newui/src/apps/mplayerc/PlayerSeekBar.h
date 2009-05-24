@@ -21,6 +21,7 @@
 
 #pragma once
 
+#include "SUIButton.h"
 // CPlayerSeekBar
 
 class CPlayerSeekBar : public CDialogBar

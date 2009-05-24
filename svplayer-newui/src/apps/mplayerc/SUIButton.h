@@ -4,7 +4,16 @@
 #include "stdafx.h"
 
 #include <atlbase.h>
-
+#define NEWUI_BTN_WIDTH 21
+#define NEWUI_BTN_HEIGTH 17
+#define NEWUI_BTN_MARGIN_TOP 7
+#define NEWUI_BTN_MARGIN_RIGHT 15
+#define NEWUI_COLOR_BG RGB(214,214,214)
+#define NEWUI_COLOR_PEN  RGB(0x7f,0x7f,0x7f)
+#define NEWUI_COLOR_PEN_BRIGHT RGB(0xe9,0xe9,0xe9)
+#define NEWUI_COLOR_PEN_DARK RGB(154,154,154)
+#define NEWUI_COLOR_TOOLBAR_UPPERBG  RGB(0x17,0x17,0x17)
+#define NEWUI_COLOR_SEEKBAR_PLAYED RGB(0x54,0x54,0x54)
 
 class CMemoryDC : public CDC
 {
@@ -36,12 +45,14 @@ public:
 
 class CBtnAlign{
 public:
-	CBtnAlign(UINT ia, INT_PTR pb){
+	CBtnAlign(UINT ia, INT_PTR pb, CRect rmToBtn){
 		iAlign = ia;
 		bBtn = pb;
+		marginToBtn = rmToBtn;
 	}
 	UINT iAlign;
 	INT_PTR bBtn;
+	CRect marginToBtn; //相对于另一个按钮的位置
 };
 
 #define ALIGN_TOPLEFT 1
@@ -55,6 +66,8 @@ public:
 #define ALIGN_BOTTOM 8
 
 #define DEFAULT_MARGIN 3
+
+#define DEFAULT_MARGIN_TOBUTTON CRect(3,3,3,3)
 
 #include "libpng.h"
 
@@ -70,17 +83,17 @@ public:
 	UINT m_htMsgID;
 	BOOL m_hide;
 	
-	CRect m_marginToBtn;//相对于另一个按钮的位置
+	
 	CString m_szBmpName;
 
 	CList<CBtnAlign*> btnAlignList;
 
 	CSUIButton(LPCTSTR szBmpName,  int iAlign, CRect marginTownd 
 		, BOOL bNotButton = false, UINT htMsgID = NULL , BOOL bHide = FALSE, 
-		UINT alignToButton = 0 , CSUIButton * relativeToButton = 0);
+		UINT alignToButton = 0 , CSUIButton * relativeToButton = 0, CRect marginToBtn = DEFAULT_MARGIN_TOBUTTON);
 	CSUIButton(UINT Imgid,  int iAlign, CRect marginTownd 
 		, BOOL bNotButton = false, UINT htMsgID = NULL , BOOL bHide = FALSE, 
-		UINT alignToButton = 0 , CSUIButton * relativeToButton = 0);
+		UINT alignToButton = 0 , CSUIButton * relativeToButton = 0 , CRect marginToBtn = DEFAULT_MARGIN_TOBUTTON);
 
 	CPngImage m_png;
 
@@ -88,7 +101,7 @@ public:
 	void LoadImage(LPCTSTR szBmpName);
 	void Attach(HBITMAP bmp);
 
-	void addAlignRelButton(UINT alignToButton  , CSUIButton * relativeToButton );
+	void addAlignRelButton(UINT alignToButton  , CSUIButton * relativeToButton , CRect rmToBtn);
 
 	void OnSize(CRect WndRect);
 

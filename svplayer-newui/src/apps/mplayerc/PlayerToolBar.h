@@ -41,7 +41,8 @@ private:
 	UINT m_nItemToTrack;
 	bool m_hovering;
 	HCURSOR cursorHand;
-
+	CSUIButton* m_btnVolTm ;
+	CSUIButton* m_btnVolBG;
 public:
 	CSUIBtnList m_btnList;
 	int iButtonWidth;

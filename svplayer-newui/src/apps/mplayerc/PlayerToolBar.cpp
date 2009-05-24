@@ -29,6 +29,7 @@
 #include <afxpriv.h>
 #include "PlayerToolBar.h"
 #include "MainFrm.h"
+#include "../../svplib/svplib.h"
 
 typedef HRESULT (__stdcall * SetWindowThemeFunct)(HWND hwnd, LPCWSTR pszSubAppName, LPCWSTR pszSubIdList);
 
@@ -67,13 +68,29 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 
 	GetToolBarCtrl().SetExtendedStyle(TBSTYLE_EX_DRAWDDARROWS);
 
-	CSUIButton* btnPlay = new CSUIButton(L"BTN_PLAY.BMP" , ALIGN_TOPLEFT, CRect(-50 , 10, 3,3)  , 0, ID_PLAY_PLAY, FALSE, 0, 0 );
+	CSUIButton* btnPlay = new CSUIButton(L"BTN_PLAY.BMP" , ALIGN_TOPLEFT, CRect(-50 , 7, 3,3)  , 0, ID_PLAY_PLAY, FALSE, 0, 0 );
 	//btnPlay->m_stat = 3; //disabled
 	m_btnList.AddTail( btnPlay );
 
-	CSUIButton* btnPause = new CSUIButton(L"BTN_PAUSE.BMP" , ALIGN_TOPLEFT, CRect(-50 , 10, 3,3)  , 0, ID_PLAY_PAUSE, TRUE, 0, 0 );
+	CSUIButton* btnPause = new CSUIButton(L"BTN_PAUSE.BMP" , ALIGN_TOPLEFT, CRect(-50 , 7, 3,3)  , 0, ID_PLAY_PAUSE, TRUE, 0, 0 );
 	//btnPlay->m_stat = 3; //disabled
 	m_btnList.AddTail( btnPause );
+
+	m_btnList.AddTail( new CSUIButton(L"FAST_FORWORD.BMP" , ALIGN_TOPLEFT, CRect(-52 , 9, 3,3)  , 0, ID_PLAY_FWD, FALSE, ALIGN_LEFT, btnPause , CRect(20 , 10 , 20, 10)) );
+	m_btnList.AddTail( new CSUIButton(L"FAST_BACKWORD.BMP" , ALIGN_TOPLEFT, CRect(-48 , 9, 3,3)  , 0, ID_PLAY_FWD, FALSE, ALIGN_RIGHT, btnPause , CRect(20 , 10 , 20, 10) ) );
+
+	m_btnList.AddTail( new CSUIButton(L"SPLAYER.BMP" , ALIGN_TOPLEFT, CRect(20 , 7, 3,3)  , TRUE, 0, FALSE ) );
+	
+	BOOL bIsMuted = IsMuted();
+	m_btnList.AddTail( new CSUIButton(L"MUTED.BMP" , ALIGN_TOPRIGHT, CRect(3 , 9, 105,3)  , FALSE, ID_VOLUME_MUTE, !bIsMuted ) );
+
+	m_btnList.AddTail( new CSUIButton(L"VOLUME.BMP" , ALIGN_TOPRIGHT, CRect(3 , 9, 105,3)  , FALSE, ID_VOLUME_MUTE, bIsMuted ) );
+	
+	m_btnVolBG = new CSUIButton(L"VOLUME_BG.BMP" , ALIGN_TOPRIGHT, CRect(3 , 10, 20,3)  , TRUE, 0, FALSE ) ;
+	m_btnList.AddTail( m_btnVolBG );
+	
+	m_btnVolTm = new CSUIButton(L"VOLUME_TM.BMP" , ALIGN_TOPRIGHT, CRect(3 , 9, 65,3)  , FALSE, 0, FALSE );
+	m_btnList.AddTail( m_btnVolTm );
 
 	cursorHand = ::LoadCursor(NULL, IDC_HAND);
 	/*
@@ -193,24 +210,36 @@ void CPlayerToolBar::ArrangeControls()
 
 void CPlayerToolBar::SetMute(bool fMute)
 {
-	CToolBarCtrl& tb = GetToolBarCtrl();
+	/*
+CToolBarCtrl& tb = GetToolBarCtrl();
 	TBBUTTONINFO bi;
 	bi.cbSize = sizeof(bi);
 	bi.dwMask = TBIF_IMAGE;
 	bi.iImage = fMute?21:20;
 	tb.SetButtonInfo(ID_VOLUME_MUTE, &bi);
-
+*/
+	if(fMute){
+		m_btnList.SetHideStat(L"VOLUME.BMP", TRUE);
+		m_btnList.SetHideStat(L"MUTED.BMP", FALSE);
+	}else{
+		m_btnList.SetHideStat(L"VOLUME.BMP", FALSE);
+		m_btnList.SetHideStat(L"MUTED.BMP", TRUE);
+	}
 	AfxGetAppSettings().fMute = fMute;
 }
 
 bool CPlayerToolBar::IsMuted()
 {
+/*
 	CToolBarCtrl& tb = GetToolBarCtrl();
 	TBBUTTONINFO bi;
 	bi.cbSize = sizeof(bi);
 	bi.dwMask = TBIF_IMAGE;
 	tb.GetButtonInfo(ID_VOLUME_MUTE, &bi);
 	return(bi.iImage==21);
+*/
+
+	return AfxGetAppSettings().fMute;
 }
 
 int CPlayerToolBar::GetVolume()
@@ -228,6 +257,7 @@ void CPlayerToolBar::SetVolume(int volume)
 	volume = max(min(volume, 100), 1);
 */
 	m_volctrl.SetPosInternal(volume);
+	OnPaint();
 }
 
 BEGIN_MESSAGE_MAP(CPlayerToolBar, CToolBar)
@@ -248,8 +278,6 @@ BEGIN_MESSAGE_MAP(CPlayerToolBar, CToolBar)
 END_MESSAGE_MAP()
 
 // CPlayerToolBar message handlers
-#define NEWUI_COLOR_BG  RGB(214,214,214)
-#define NEWUI_COLOR_TOOLBAR_UPPERBG  RGB(0x17,0x17,0x17)
 
 
 BOOL CPlayerToolBar::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message){
@@ -268,7 +296,7 @@ BOOL CPlayerToolBar::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message){
 CSize CPlayerToolBar::CalcFixedLayout(BOOL bStretch,BOOL bHorz ){
 
 	
-	CSize size( 32767, 36 );
+	CSize size( 32767, 33 );
 
 	if ( CWnd* pParent = AfxGetMainWnd() )
 	{
@@ -305,7 +333,16 @@ void CPlayerToolBar::OnPaint()
  	CRect rc;
 	GetWindowRect(&rc);
 	UpdateButtonStat();
+	int volume = min( m_volctrl.GetPos() , m_volctrl.GetRangeMax() );
+	
+	m_btnVolTm->m_rcHitest.MoveToX(m_btnVolBG->m_rcHitest.left + volume * ( m_btnVolBG->m_btnSize.cx - m_btnVolTm->m_btnSize.cx)/ m_volctrl.GetRangeMax());
+
+	CString szLog;
+	szLog.Format(_T("TM POS %d %d"), volume , m_btnVolTm->m_rcHitest.left );
+	SVP_LogMsg(szLog);
  	m_btnList.PaintAll(&hdc, rc);
+
+	
 }
 void CPlayerToolBar::UpdateButtonStat(){
 	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());

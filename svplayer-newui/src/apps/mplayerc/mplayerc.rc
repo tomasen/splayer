@@ -177,7 +177,7 @@ FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
 END
 
-IDD_PLAYERSEEKBAR DIALOGEX 0, 0, 254, 12
+IDD_PLAYERSEEKBAR DIALOGEX 0, 0, 254, 3
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
@@ -1354,6 +1354,13 @@ RESTORE.BMP             BITMAP                  "res\\newui\\BTN_RESTORE.bmp"
 MENU.BMP			    BITMAP                 "res\\newui\\BTN_MENU.bmp"
 BTN_PLAY.BMP			BITMAP                 "res\\newui\\BTN_PLAY.bmp"
 BTN_PAUSE.BMP			BITMAP                 "res\\newui\\BTN_PAUSE.bmp"
+FAST_FORWORD.BMP			BITMAP                 "res\\newui\\FAST_FORWORD.bmp"
+FAST_BACKWORD.BMP			BITMAP                 "res\\newui\\FAST_BACKWORD.bmp"
+SPLAYER.BMP			BITMAP                 "res\\newui\\SPLAYER.bmp"
+MUTED.BMP			BITMAP                 "res\\newui\\MUTED.bmp"
+VOLUME.BMP			BITMAP                 "res\\newui\\VOLUME.bmp"
+VOLUME_BG.BMP			BITMAP                 "res\\newui\\VOLUME_BG.bmp"
+VOLUME_TM.BMP			BITMAP                 "res\\newui\\VOLUME_TM.bmp"
 /////////////////////////////////////////////////////////////////////////////
 //
 // FILE

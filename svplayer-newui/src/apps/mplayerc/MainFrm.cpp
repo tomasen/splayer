@@ -904,14 +904,7 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 
 
 }
-#define NEWUI_BTN_WIDTH 21
-#define NEWUI_BTN_HEIGTH 17
-#define NEWUI_BTN_MARGIN_TOP 7
-#define NEWUI_BTN_MARGIN_RIGHT 15
-#define NEWUI_COLOR_BG RGB(214,214,214)
-#define NEWUI_COLOR_PEN  RGB(0x7f,0x7f,0x7f)
-#define NEWUI_COLOR_PEN_BRIGHT RGB(0xe9,0xe9,0xe9)
-#define NEWUI_COLOR_PEN_DARK RGB(154,154,154)
+
 LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 {
 	//////////////////////////////////////////////////////////////////////////
@@ -1075,6 +1068,10 @@ LRESULT CMainFrame::OnNcLButtonDown( WPARAM wParam, LPARAM lParam )
 		RedrawNonClientArea();
 		return FALSE;
 	}
+	if(wParam == HTMENU){
+		OnMenu(m_mainMenu.GetSubMenu(0));
+		return FALSE;
+	}
 	return DefWindowProc(WM_NCLBUTTONDOWN, wParam, lParam);
 }
 
@@ -1105,7 +1102,7 @@ LRESULT CMainFrame::OnNcLButtonUp( WPARAM wParam, LPARAM lParam )
 		}
 		else if (wParam == HTMENU)
 		{
-			OnMenu(m_mainMenu.GetSubMenu(0));
+			//OnMenu(m_mainMenu.GetSubMenu(0));
 		}
 		return FALSE;
 	}
@@ -1706,6 +1703,12 @@ void CMainFrame::OnMoving(UINT fwSide, LPRECT pRect)
 
 void CMainFrame::OnSizing(UINT fwSide, LPRECT pRect)
 {
+	if( (pRect->right - pRect->left) <  480 ){
+		pRect->right = pRect->left + 480;
+	}
+	if( (	pRect->bottom - pRect->top) <  360 ){
+		pRect->bottom = pRect->top + 360;
+	}
 	__super::OnSizing(fwSide, pRect);
 	
 	AppSettings& s = AfxGetAppSettings();

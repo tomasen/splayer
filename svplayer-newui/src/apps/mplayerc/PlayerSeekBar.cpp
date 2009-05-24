@@ -114,7 +114,7 @@ CRect CPlayerSeekBar::GetChannelRect()
 {
 	CRect r;
 	GetClientRect(&r);
-	r.DeflateRect(8, 9, 9, 0);
+	r.DeflateRect(5, 1, 5, 8); //
 	r.bottom = r.top + 5;
 	return(r);
 }
@@ -182,13 +182,14 @@ void CPlayerSeekBar::OnPaint()
 	bool fEnabled = m_fEnabled && m_start < m_stop;
 
 	COLORREF 
-		white = GetSysColor(COLOR_WINDOW),
-		shadow = GetSysColor(COLOR_3DSHADOW), 
-		light = GetSysColor(COLOR_3DHILIGHT), 
-		bkg = GetSysColor(COLOR_BTNFACE);
+		white = NEWUI_COLOR_SEEKBAR_PLAYED,
+		shadow = NEWUI_COLOR_BG, 
+		light = NEWUI_COLOR_BG, 
+		bkg = NEWUI_COLOR_TOOLBAR_UPPERBG;
 
+	CBrush bBkg(bkg);
 	// thumb
-	{
+	if(0){
 		CRect r = GetThumbRect(), r2 = GetInnerThumbRect();
 		CRect rt = r, rit = r2;
 
@@ -235,9 +236,17 @@ void CPlayerSeekBar::OnPaint()
 	{
 		CRect r = GetChannelRect();
 
-		dc.FillSolidRect(&r, fEnabled ? white : bkg);
-		r.InflateRect(1, 1);
-		dc.Draw3dRect(&r, shadow, light);
+		dc.FillSolidRect(&r,  white ); //fEnabled ?
+
+		int cur = r.left + (int)((m_start < m_stop /*&& fEnabled*/) ? (__int64)r.Width() * (m_pos - m_start) / (m_stop - m_start) : 0);
+		
+		for(int drawPos = cur + 1; drawPos < r.right; drawPos += 2){
+			CRect step(drawPos,r.top, drawPos+1, r.bottom);
+
+			dc.FillSolidRect( &step, NEWUI_COLOR_TOOLBAR_UPPERBG);
+		}
+		//r.InflateRect(1, 1);
+		//dc.Draw3dRect(&r, shadow, light);
 		dc.ExcludeClipRect(&r);
 	}
 
@@ -245,8 +254,7 @@ void CPlayerSeekBar::OnPaint()
 	{
 		CRect r;
 		GetClientRect(&r);
-		CBrush b(bkg);
-		dc.FillRect(&r, &b);
+		dc.FillRect(&r, &bBkg);
 	}
 
 

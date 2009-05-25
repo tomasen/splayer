@@ -249,7 +249,7 @@ BOOL CChildView::OnEraseBkgnd(CDC* pDC)
 
 	
 	GetClientRect(r);
-	pDC->FillSolidRect(r, 0);
+	pDC->FillSolidRect(r, 0); //RGB(0x33,0xdd,0x00)
 
 	return TRUE;
 }

@@ -276,7 +276,6 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 	CString m_fnCurPlayingFile;
 	CString m_fnsAlreadyUploadedSubfile;
 	
-	void SendStatusMessage(CString msg, int nTimeOut);
 	CString m_playingmsg, m_closingmsg;
 	CString m_lastUrl;
 
@@ -307,6 +306,7 @@ private:
 	CPoint m_pDragFuncStartPoint;
 public:
 	// subtitles
+	void SendStatusMessage(CString msg, int nTimeOut); //New UI
 	CComPtr<IVMRMixerControl9>	m_pMC;
 	CComPtr<IMFVideoDisplayControl>	m_pMFVDC;
 	void		SetVMR9ColorControl(float Brightness, float Contrast, float Hue, float Saturation);

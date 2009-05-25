@@ -183,6 +183,12 @@ FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
 END
 
+IDB_PLAYERTOOLBAR DIALOGEX 0, 0, 254, 33
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+END
+
 IDD_PLAYERINFOBAR DIALOGEX 0, 0, 183, 12
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
@@ -1361,6 +1367,8 @@ MUTED.BMP			BITMAP                 "res\\newui\\MUTED.bmp"
 VOLUME.BMP			BITMAP                 "res\\newui\\VOLUME.bmp"
 VOLUME_BG.BMP			BITMAP                 "res\\newui\\VOLUME_BG.bmp"
 VOLUME_TM.BMP			BITMAP                 "res\\newui\\VOLUME_TM.bmp"
+BTN_NEXT.BMP			BITMAP                 "res\\newui\\BTN_NEXT.bmp"
+BTN_PREV.BMP			BITMAP                 "res\\newui\\BTN_PREV.bmp"
 /////////////////////////////////////////////////////////////////////////////
 //
 // FILE

@@ -46,6 +46,7 @@ iButtonWidth (30)
 CPlayerToolBar::~CPlayerToolBar()
 {
 }
+#define ID_VOLUME_THUMB 126356
 
 BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 {
@@ -76,8 +77,17 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 	//btnPlay->m_stat = 3; //disabled
 	m_btnList.AddTail( btnPause );
 
-	m_btnList.AddTail( new CSUIButton(L"FAST_FORWORD.BMP" , ALIGN_TOPLEFT, CRect(-52 , 9, 3,3)  , 0, ID_PLAY_FWD, FALSE, ALIGN_LEFT, btnPause , CRect(20 , 10 , 20, 10)) );
-	m_btnList.AddTail( new CSUIButton(L"FAST_BACKWORD.BMP" , ALIGN_TOPLEFT, CRect(-48 , 9, 3,3)  , 0, ID_PLAY_FWD, FALSE, ALIGN_RIGHT, btnPause , CRect(20 , 10 , 20, 10) ) );
+	CSUIButton* btnFFwd = new CSUIButton(L"FAST_FORWORD.BMP" , ALIGN_TOPLEFT, CRect(-52 , 9, 3,3)  , 0, ID_PLAY_FWD, FALSE, ALIGN_LEFT, btnPause , CRect(20 , 10 , 20, 10));
+	m_btnList.AddTail( btnFFwd );
+
+	
+	CSUIButton* btnFFBack = new CSUIButton(L"FAST_BACKWORD.BMP" , ALIGN_TOPLEFT, CRect(-48 , 9, 3,3)  , 0, ID_PLAY_FWD, FALSE, ALIGN_RIGHT, btnPause , CRect(20 , 10 , 20, 10) );
+	m_btnList.AddTail( btnFFBack );
+
+	m_btnList.AddTail( new CSUIButton(L"BTN_PREV.BMP" , ALIGN_TOPLEFT, CRect(-48 , 9, 3,3)  , 0, ID_NAVIGATE_SKIPBACK, FALSE, ALIGN_RIGHT, btnFFBack , CRect(20 , 10 , 20, 10) ) );
+
+	m_btnList.AddTail( new CSUIButton(L"BTN_NEXT.BMP" , ALIGN_TOPLEFT, CRect(-48 , 9, 3,3)  , 0, ID_NAVIGATE_SKIPFORWARD, FALSE, ALIGN_LEFT, btnFFwd , CRect(20 , 10 , 20, 10) ) );
+	
 
 	m_btnList.AddTail( new CSUIButton(L"SPLAYER.BMP" , ALIGN_TOPLEFT, CRect(20 , 7, 3,3)  , TRUE, 0, FALSE ) );
 	
@@ -89,7 +99,7 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 	m_btnVolBG = new CSUIButton(L"VOLUME_BG.BMP" , ALIGN_TOPRIGHT, CRect(3 , 10, 20,3)  , TRUE, 0, FALSE ) ;
 	m_btnList.AddTail( m_btnVolBG );
 	
-	m_btnVolTm = new CSUIButton(L"VOLUME_TM.BMP" , ALIGN_TOPRIGHT, CRect(3 , 9, 65,3)  , FALSE, 0, FALSE );
+	m_btnVolTm = new CSUIButton(L"VOLUME_TM.BMP" , ALIGN_TOPRIGHT, CRect(3 , 9, 65,3)  , FALSE, ID_VOLUME_THUMB, FALSE );
 	m_btnList.AddTail( m_btnVolTm );
 
 	cursorHand = ::LoadCursor(NULL, IDC_HAND);
@@ -257,7 +267,7 @@ void CPlayerToolBar::SetVolume(int volume)
 	volume = max(min(volume, 100), 1);
 */
 	m_volctrl.SetPosInternal(volume);
-	OnPaint();
+	
 }
 
 BEGIN_MESSAGE_MAP(CPlayerToolBar, CToolBar)
@@ -339,7 +349,7 @@ void CPlayerToolBar::OnPaint()
 
 	CString szLog;
 	szLog.Format(_T("TM POS %d %d"), volume , m_btnVolTm->m_rcHitest.left );
-	SVP_LogMsg(szLog);
+	//SVP_LogMsg(szLog);
  	m_btnList.PaintAll(&hdc, rc);
 
 	
@@ -398,16 +408,30 @@ BOOL CPlayerToolBar::OnVolumeDown(UINT nID)
 	m_volctrl.DecreaseVolume();
 	return FALSE;
 }
-
+static BOOL m_bMouseDown = FALSE;
 void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point){
 	CRect rc;
+	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
 	GetWindowRect(&rc);
-
 	point += rc.TopLeft() ;
-	UINT ret = m_btnList.OnHitTest(point,rc);
-	m_nItemToTrack = ret;
-	if( m_btnList.HTRedrawRequired ){
-		Invalidate();
+
+	if( m_nItemToTrack == ID_VOLUME_THUMB && m_bMouseDown){
+		long nTBPos = point.x - m_btnVolBG->m_rcHitest.left;
+		long TBMax = m_btnVolBG->m_rcHitest.right-m_btnVolBG->m_rcHitest.left;
+		nTBPos = max(0 , min(TBMax , nTBPos) );
+		int Vol = 	nTBPos * 100 / TBMax;
+		
+		m_volctrl.SetPosInternal( nTBPos * m_volctrl.GetRangeMax() / TBMax);
+		
+		
+		pFrame->OnPlayVolume(0);
+	}else{
+
+		UINT ret = m_btnList.OnHitTest(point,rc);
+		m_nItemToTrack = ret;
+		if( m_btnList.HTRedrawRequired ){
+			Invalidate();
+		}
 	}
 	
 	return;
@@ -415,8 +439,10 @@ void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point){
 
 void CPlayerToolBar::OnLButtonDown(UINT nFlags, CPoint point)
 {
+	KillTimer(TIMER_FASTFORWORD);
 	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
-	
+	iBottonClicked = -1;
+	m_bMouseDown = TRUE;
 	CRect rc;
 	GetWindowRect(&rc);
 
@@ -429,9 +455,20 @@ void CPlayerToolBar::OnLButtonDown(UINT nFlags, CPoint point)
 	}
 	m_nItemToTrack = ret;
 	
+
+	if(m_nItemToTrack == ID_PLAY_BWD || m_nItemToTrack == ID_PLAY_FWD){
+		//pFrame->PostMessage( WM_COMMAND, ID_PLAY_PAUSE);
+		iBottonClicked = m_nItemToTrack;
+		iFastFFWCount = 0;
+		SetTimer(TIMER_FASTFORWORD, 350, NULL);
+	}else if(m_nItemToTrack == ID_SUBDELAYDEC || m_nItemToTrack == ID_SUBDELAYINC){
+		iBottonClicked = m_nItemToTrack;
+		iFastFFWCount = 0;
+		SetTimer(TIMER_FASTFORWORD, 350, NULL);
+	}
 	return;
 	//New UI End
-	iBottonClicked = -1;
+	
 	KillTimer(TIMER_FASTFORWORD);
 
 	for(int i = 0, j = GetToolBarCtrl().GetButtonCount(); i < j; i++)
@@ -473,7 +510,7 @@ void CPlayerToolBar::OnLButtonDown(UINT nFlags, CPoint point)
 void CPlayerToolBar::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
-
+	KillTimer(TIMER_FASTFORWORD);
 	ReleaseCapture();
 
 	CRect rc;
@@ -487,7 +524,25 @@ void CPlayerToolBar::OnLButtonUp(UINT nFlags, CPoint point)
 		Invalidate();
 	}
 	m_nItemToTrack = ret;
+
+	if(m_nItemToTrack == iBottonClicked ){
+		if(iFastFFWCount == 0){
+			int iMsg = 0;
+			CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
+			// not increase or decrease play rate
+			if(iBottonClicked == ID_PLAY_BWD){
+				iMsg = ID_PLAY_SEEKBACKWARDSMALL;
+			}else if(iBottonClicked == ID_PLAY_FWD){
+				iMsg = ID_PLAY_SEEKFORWARDSMALL;
+			}
+			if(iMsg)
+				pFrame->PostMessage( WM_COMMAND, iMsg);
+			
+		}
+	}
+
 //	__super::OnLButtonUp(nFlags, point);
+	m_bMouseDown = FALSE;
 	return;//New UI End
 
 	KillTimer(TIMER_FASTFORWORD);

@@ -45,6 +45,7 @@ BOOL CPlayerSeekBar::Create(CWnd* pParentWnd)
 	if(!CDialogBar::Create(pParentWnd, IDD_PLAYERSEEKBAR, WS_CHILD|WS_VISIBLE|CBRS_ALIGN_BOTTOM, IDD_PLAYERSEEKBAR))
 		return FALSE;
 
+	cursorHand = ::LoadCursor(NULL, IDC_HAND);
 	return TRUE;
 }
 
@@ -170,8 +171,16 @@ BEGIN_MESSAGE_MAP(CPlayerSeekBar, CDialogBar)
 	ON_WM_ERASEBKGND()
 	//}}AFX_MSG_MAP
 	ON_COMMAND_EX(ID_PLAY_STOP, OnPlayStop)
+	ON_WM_SETCURSOR()
 END_MESSAGE_MAP()
 
+BOOL CPlayerSeekBar::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message){
+
+	SetCursor(cursorHand );
+	return TRUE;
+	
+	//return CWnd::OnSetCursor(pWnd, 0, 0);
+}
 
 // CPlayerSeekBar message handlers
 

@@ -80,8 +80,8 @@
 
 #include "revision.h"
 
-#define DEFCLIENTW 292
-#define DEFCLIENTH 200
+#define DEFCLIENTW 480
+#define DEFCLIENTH 360
 
 static UINT s_uTaskbarRestart = RegisterWindowMessage(TEXT("TaskbarCreated"));
 static UINT WM_NOTIFYICON = RegisterWindowMessage(TEXT("MYWM_NOTIFYICON"));
@@ -772,11 +772,11 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 			hMenu = NULL;
 		}
 			
-		::SetMenu(m_hWnd, hMenu);
+		//::SetMenu(m_hWnd, hMenu);
 
 		if ( dwAdd || dwRemove){
-			ModifyStyle(dwRemove, dwAdd, SWP_NOZORDER);
-			RedrawNonClientArea();
+			//ModifyStyle(dwRemove, dwAdd, SWP_NOZORDER);
+			//RedrawNonClientArea();
 
 		}
 
@@ -806,6 +806,8 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 
 
 void CMainFrame::OnNcCalcSize( BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp){
+	WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
+	GetWindowPlacement(&wp);
 	if(bCalcValidRects){
 		//先把rect[1]拷贝到rect[2]，rect[0]拷贝到rect[1]
 		//memcpy( &lpncsp->rgrc[2] ,  &lpncsp->rgrc[1] , sizeof(RECT));
@@ -816,10 +818,24 @@ void CMainFrame::OnNcCalcSize( BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp){
 		if(currentStyle&WS_CAPTION){
 
 		}
-		rc.InflateRect( GetSystemMetrics(SM_CXFRAME) - 3, 0,   GetSystemMetrics(SM_CXFRAME) - 3, GetSystemMetrics(SM_CXFRAME) - 2);
+		if(m_fFullScreen){
+
+		}else if(wp.showCmd!=SW_MAXIMIZE ){
+			rc.InflateRect( GetSystemMetrics(SM_CXFRAME) - 3, 0,   GetSystemMetrics(SM_CXFRAME) - 3, GetSystemMetrics(SM_CXFRAME) - 2);
+		}else{
+			//rc.InflateRect( GetSystemMetrics(SM_CXFRAME) - 3, 0,   GetSystemMetrics(SM_CXFRAME) - 3, GetSystemMetrics(SM_CXFRAME) - 2);
+		}
+
+		
 		lpncsp->rgrc[0] = rc;
 	}
 	__super::OnNcCalcSize(bCalcValidRects, lpncsp);
+
+	 if(wp.showCmd==SW_MAXIMIZE ){
+		 CString szLog;
+		 szLog.Format(_T("Max Client Rect %d %d %d %d") , lpncsp->rgrc[0].left, lpncsp->rgrc[0].top, lpncsp->rgrc[0].right, lpncsp->rgrc[0].bottom);
+		 //SVP_LogMsg(szLog);
+	 }
 }
 
 
@@ -862,6 +878,7 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 		GetWindowRect(&rc);
 		m_btnList.OnSize( rc);
 	}
+	
 	if(!m_fFullScreen)
 	{
 		AppSettings& s = AfxGetAppSettings();
@@ -876,7 +893,7 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 			GetWindowRect(&rc);
 			rc-=rc.TopLeft();
 
-			rc.InflateRect(GetSystemMetrics(SM_CXBORDER), GetSystemMetrics(SM_CYBORDER));
+			
 			
 			// destroy old region
 			if((HRGN)m_rgn)
@@ -886,13 +903,16 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 			// create rounded rect region based on new window size
 			if (wp.showCmd != SW_MAXIMIZE )
 			{
+				rc.InflateRect(GetSystemMetrics(SM_CXBORDER), GetSystemMetrics(SM_CYBORDER));
 				m_rgn.CreateRoundRectRgn(0,0,rc.Width()-1,rc.Height()-1, 3,3);                 // rounded rect w/50 pixel corners
 				
-				SetWindowRgn(m_rgn,TRUE);  // set window region to make rounded window
+				  // set window region to make rounded window
 			}
-			else
-				SetWindowRgn(NULL,TRUE);   
-
+			else{
+				m_rgn.CreateRectRgn( 0,0, rc.Width(), rc.Height() );
+				
+			}
+			SetWindowRgn(m_rgn,TRUE);
 			Invalidate();
 		}
 	}else{
@@ -947,9 +967,7 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 		RECT rcClient = {0};
 		GetClientRect(&rcClient);
 		rcClient.top+=GetSystemMetrics(SM_CYFRAME);
-		if(currentStyle&WS_CAPTION){
-			rcClient.top+=GetSystemMetrics(SM_CYCAPTION);
-		}
+		rcClient.top+=GetSystemMetrics(SM_CYCAPTION);
 		rcClient.left+=3;
 		rcClient.bottom+=GetSystemMetrics(SM_CYCAPTION)+2;
 		rcClient.right+=3;
@@ -1197,6 +1215,73 @@ void CMainFrame::PreMultiplyBitmap( CBitmap& bmp )
 		}
 	}
 }*/
+void CMainFrame::OnViewCompact()
+{
+	if(AfxGetAppSettings().fHideCaptionMenu)
+		SendMessage(WM_COMMAND, ID_VIEW_CAPTIONMENU);
+	ShowControls(CS_TOOLBAR|CS_SEEKBAR);
+}
+
+void CMainFrame::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
+{
+	DWORD style = GetStyle();
+
+	/*
+	MENUBARINFO mbi;
+	memset(&mbi, 0, sizeof(mbi));
+	mbi.cbSize = sizeof(mbi);
+	::GetMenuBarInfo(m_hWnd, OBJID_MENU, 0, &mbi);
+	*/
+
+	lpMMI->ptMinTrackSize.x = 100;
+	if(!IsCaptionMenuHidden())
+	{
+		lpMMI->ptMinTrackSize.x = 10;
+		CRect r;
+		//for(int i = 0; ::GetMenuItemRect(m_hWnd, mbi.hMenu, i, &r); i++)
+		//lpMMI->ptMinTrackSize.x += r.Width();
+		lpMMI->ptMinTrackSize.x = max(DEFCLIENTW, lpMMI->ptMinTrackSize.x);
+	}
+	if(style&WS_THICKFRAME) lpMMI->ptMinTrackSize.x += GetSystemMetrics((style&WS_CAPTION)?SM_CXSIZEFRAME:SM_CXFIXEDFRAME)*2;
+
+	/*
+	memset(&mbi, 0, sizeof(mbi));
+	mbi.cbSize = sizeof(mbi);
+	::GetMenuBarInfo(m_hWnd, OBJID_MENU, 0, &mbi);*/
+
+
+	lpMMI->ptMinTrackSize.y = 0;
+	if(style&WS_CAPTION) lpMMI->ptMinTrackSize.y += GetSystemMetrics(SM_CYCAPTION);
+	if(style&WS_THICKFRAME) lpMMI->ptMinTrackSize.y += GetSystemMetrics((style&WS_CAPTION)?SM_CYSIZEFRAME:SM_CYFIXEDFRAME)*2;
+	//lpMMI->ptMinTrackSize.y += (mbi.rcBar.bottom - mbi.rcBar.top);
+	if(!AfxGetAppSettings().fHideCaptionMenu) lpMMI->ptMinTrackSize.y += 3;
+
+	POSITION pos = m_bars.GetHeadPosition();
+	while(pos) 
+	{
+		CControlBar* pCB = m_bars.GetNext(pos);
+		if(!IsWindow(pCB->m_hWnd) || !pCB->IsVisible()) continue;
+
+		lpMMI->ptMinTrackSize.y += pCB->CalcFixedLayout(TRUE, TRUE).cy;
+	}
+
+	pos = m_dockingbars.GetHeadPosition();
+	while(pos)
+	{
+		CSizingControlBar* pCB = m_dockingbars.GetNext(pos);
+		if(IsWindow(pCB->m_hWnd) && pCB->IsWindowVisible() && !pCB->IsFloating())
+			lpMMI->ptMinTrackSize.y += pCB->CalcFixedLayout(TRUE, TRUE).cy-2;
+	}
+	CString szLog;
+	szLog.Format(_T("MaxInfo %d %d %d %d %d %d ") , lpMMI->ptMaxSize.x , lpMMI->ptMaxSize.y, lpMMI->ptMaxTrackSize.x , lpMMI->ptMaxTrackSize.y, lpMMI->ptMaxPosition.x , lpMMI->ptMaxPosition.y);
+	//SVP_LogMsg(szLog);
+	
+	lpMMI->ptMaxPosition.x = 0;
+	lpMMI->ptMaxPosition.y = 0;
+
+	__super::OnGetMinMaxInfo(lpMMI);
+
+}
 
 /*NEW UI END*/
 void CMainFrame::OnDestroy()
@@ -1620,56 +1705,6 @@ BOOL CMainFrame::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO*
 
 	// otherwise, do default handling
 	return __super::OnCmdMsg(nID, nCode, pExtra, pHandlerInfo);
-}
-
-void CMainFrame::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
-{
-	DWORD style = GetStyle();
-
-	MENUBARINFO mbi;
-	memset(&mbi, 0, sizeof(mbi));
-	mbi.cbSize = sizeof(mbi);
-	::GetMenuBarInfo(m_hWnd, OBJID_MENU, 0, &mbi);
-
-	lpMMI->ptMinTrackSize.x = 0;
-	if(!IsCaptionMenuHidden())
-	{
-		lpMMI->ptMinTrackSize.x = 10;
-		CRect r;
-		for(int i = 0; ::GetMenuItemRect(m_hWnd, mbi.hMenu, i, &r); i++)
-			lpMMI->ptMinTrackSize.x += r.Width();
-		lpMMI->ptMinTrackSize.x = max(DEFCLIENTW, lpMMI->ptMinTrackSize.x);
-	}
-	if(style&WS_THICKFRAME) lpMMI->ptMinTrackSize.x += GetSystemMetrics((style&WS_CAPTION)?SM_CXSIZEFRAME:SM_CXFIXEDFRAME)*2;
-
-	memset(&mbi, 0, sizeof(mbi));
-	mbi.cbSize = sizeof(mbi);
-	::GetMenuBarInfo(m_hWnd, OBJID_MENU, 0, &mbi);
-
-	lpMMI->ptMinTrackSize.y = 0;
-	if(style&WS_CAPTION) lpMMI->ptMinTrackSize.y += GetSystemMetrics(SM_CYCAPTION);
-	if(style&WS_THICKFRAME) lpMMI->ptMinTrackSize.y += GetSystemMetrics((style&WS_CAPTION)?SM_CYSIZEFRAME:SM_CYFIXEDFRAME)*2;
-	lpMMI->ptMinTrackSize.y += (mbi.rcBar.bottom - mbi.rcBar.top);
-	if(!AfxGetAppSettings().fHideCaptionMenu) lpMMI->ptMinTrackSize.y += 3;
-
-	POSITION pos = m_bars.GetHeadPosition();
-	while(pos) 
-	{
-		CControlBar* pCB = m_bars.GetNext(pos);
-		if(!IsWindow(pCB->m_hWnd) || !pCB->IsVisible()) continue;
-
-		lpMMI->ptMinTrackSize.y += pCB->CalcFixedLayout(TRUE, TRUE).cy;
-	}
-
-	pos = m_dockingbars.GetHeadPosition();
-	while(pos)
-	{
-		CSizingControlBar* pCB = m_dockingbars.GetNext(pos);
-		if(IsWindow(pCB->m_hWnd) && pCB->IsWindowVisible() && !pCB->IsFloating())
-			lpMMI->ptMinTrackSize.y += pCB->CalcFixedLayout(TRUE, TRUE).cy-2;
-	}
-
-	__super::OnGetMinMaxInfo(lpMMI);
 }
 
 void CMainFrame::OnMoving(UINT fwSide, LPRECT pRect)
@@ -5460,12 +5495,6 @@ void CMainFrame::OnUpdateViewMinimal(CCmdUI* pCmdUI)
 {
 }
 
-void CMainFrame::OnViewCompact()
-{
-	if(AfxGetAppSettings().fHideCaptionMenu)
-		SendMessage(WM_COMMAND, ID_VIEW_CAPTIONMENU);
-	ShowControls(CS_TOOLBAR);
-}
 
 void CMainFrame::OnUpdateViewCompact(CCmdUI* pCmdUI)
 {
@@ -7843,6 +7872,8 @@ void CMainFrame::ToggleFullscreen(bool fToNearest, bool fSwitchScreenResWhenHasT
 
 void CMainFrame::MoveVideoWindow(bool fShowStats)
 {
+	WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
+	GetWindowPlacement(&wp);
 	if(m_iMediaLoadState == MLS_LOADED && !m_fAudioOnly && IsWindowVisible())
 	{
 		AppSettings &s = AfxGetAppSettings();
@@ -7850,6 +7881,8 @@ void CMainFrame::MoveVideoWindow(bool fShowStats)
 		if(!m_fFullScreen)
 		{
 			m_wndView.GetClientRect(wr);
+
+			
 			if(!s.fHideCaptionMenu)
 				wr.DeflateRect(2, 2);
 
@@ -7950,6 +7983,14 @@ void CMainFrame::MoveVideoWindow(bool fShowStats)
 			info.Format(_T("Pos %.2f %.2f, Zoom %.2f %.2f, AR %.2f"), m_PosX, m_PosY, m_ZoomX, m_ZoomY, (float)vr.Width()/vr.Height());
 			SendStatusMessage(info, 3000);
 		}
+
+		if(wp.showCmd==SW_MAXIMIZE || 1){
+			CString szLog;
+			szLog.Format(_T("Max Client Rect %d %d %d %d  %d %d %d %d" ) , wr.left, wr.top, wr.right, wr.bottom, vr.left, vr.top, vr.right, vr.bottom);
+			//SVP_LogMsg(szLog);
+		}
+
+		
 	}
 	else
 	{

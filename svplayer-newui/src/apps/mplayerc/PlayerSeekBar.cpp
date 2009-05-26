@@ -248,7 +248,9 @@ void CPlayerSeekBar::OnPaint()
 		dc.FillSolidRect(&r,  white ); //fEnabled ?
 
 		int cur = r.left + (int)((m_start < m_stop /*&& fEnabled*/) ? (__int64)r.Width() * (m_pos - m_start) / (m_stop - m_start) : 0);
-		
+		if(cur % 2){
+			cur -= 1;
+		}
 		for(int drawPos = cur + 1; drawPos < r.right; drawPos += 2){
 			CRect step(drawPos,r.top, drawPos+1, r.bottom);
 

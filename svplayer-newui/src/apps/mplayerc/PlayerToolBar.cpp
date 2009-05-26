@@ -60,7 +60,7 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 			iButtonWidth = 20;
 		}*/
 	
-
+ 
 	if(!__super::CreateEx(pParentWnd,
 		TBSTYLE_FLAT|TBSTYLE_TRANSPARENT|TBSTYLE_AUTOSIZE,
 		WS_CHILD|WS_VISIBLE|CBRS_ALIGN_BOTTOM , CRect(0,0,0,0))  //CBRS_TOOLTIPS NEW UI
@@ -176,6 +176,25 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 	
 
 	return TRUE;
+}
+void CPlayerToolBar::OnSize(UINT nType, int cx, int cy)
+{
+	__super::OnSize(nType, cx, cy);
+
+	ArrangeControls();
+
+	CRect rc;
+	GetWindowRect(&rc);
+	long iWidth = rc.Width();
+	BOOL hideT1 = TRUE;
+	if( iWidth > 510 ){
+			hideT1 = false;
+	}
+
+	m_btnList.SetHideStat(ID_NAVIGATE_SKIPBACK , hideT1);
+	m_btnList.SetHideStat(ID_NAVIGATE_SKIPFORWARD , hideT1);
+
+	m_btnList.OnSize( rc);
 }
 
 BOOL CPlayerToolBar::PreCreateWindow(CREATESTRUCT& cs)
@@ -368,16 +387,6 @@ void CPlayerToolBar::OnNcPaint() // when using XP styles the NC area isn't drawn
 	//dc.FillSolidRect(wr, RGB(214,219,239) );   
 
 	// Do not call CToolBar::OnNcPaint() for painting messages
-}
-void CPlayerToolBar::OnSize(UINT nType, int cx, int cy)
-{
-	__super::OnSize(nType, cx, cy);
-
-	ArrangeControls();
-
-	CRect rc;
-	GetWindowRect(&rc);
-	m_btnList.OnSize( rc);
 }
 
 void CPlayerToolBar::OnInitialUpdate()

@@ -3786,6 +3786,7 @@ void CMainFrame::OnFilePostClosemedia()
 	CString szBuild;
 	szBuild.Format( _T(" (Build %s)"),SVP_REV_STR);
 	SetWindowText(CString(ResStr(IDR_MAINFRAME)) + szBuild);
+	RedrawNonClientArea();
 
 	SetAlwaysOnTop(AfxGetAppSettings().iOnTop);
 
@@ -9542,6 +9543,7 @@ void CMainFrame::OpenSetupWindowTitle(CString fn)
 	szBuild.Format(_T(" (Build %s)"),SVP_REV_STR);
 	title += szBuild;
 	SetWindowText(title);
+	RedrawNonClientArea();
 }
 
 void CMainFrame::OnColorControl(UINT nID){

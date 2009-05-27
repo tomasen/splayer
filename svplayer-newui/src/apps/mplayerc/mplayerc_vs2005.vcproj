@@ -789,6 +789,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\VMROSD.cpp"
+				>
+			</File>
+			<File
 				RelativePath="VolumeCtrl.cpp"
 				>
 			</File>
@@ -1223,6 +1227,10 @@
 			</File>
 			<File
 				RelativePath=".\UESettingPanel.h"
+				>
+			</File>
+			<File
+				RelativePath=".\VMROSD.h"
 				>
 			</File>
 			<File
@@ -1696,11 +1704,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 	</Files>

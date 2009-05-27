@@ -3730,6 +3730,7 @@ void CMainFrame::OnFilePostClosemedia()
 	CString szBuild;
 	szBuild.Format( _T(" (Build %s)"),SVP_REV_STR);
 	SetWindowText(CString(ResStr(IDR_MAINFRAME)) + szBuild);
+	RedrawNonClientArea(); //New UI
 
 	SetAlwaysOnTop(AfxGetAppSettings().iOnTop);
 
@@ -9408,6 +9409,7 @@ void CMainFrame::OpenSetupWindowTitle(CString fn)
 	szBuild.Format(_T(" (Build %s)"),SVP_REV_STR);
 	title += szBuild;
 	SetWindowText(title);
+	RedrawNonClientArea(); //New UI
 }
 
 void CMainFrame::OnColorControl(UINT nID){
@@ -9522,6 +9524,9 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 
 	try
 	{
+		CComPtr<IVMRMixerBitmap9>		pVMB;
+		CComPtr<IMFVideoMixerBitmap>	pMFVMB;
+		
 		if(m_fOpeningAborted) throw aborted;
 
 		if(OpenFileData* pOFD = dynamic_cast<OpenFileData*>(pOMD.m_p))
@@ -9578,6 +9583,14 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 
 		pGB->FindInterface(__uuidof(ISubPicAllocatorPresenter), (void**)&m_pCAP, TRUE);
 		pGB->FindInterface(__uuidof(IVMRMixerControl9),			(void**)&m_pMC,  TRUE);
+
+		pGB->FindInterface(__uuidof(IVMRMixerBitmap9),			(void**)&pVMB,	 TRUE); //New UI
+		pGB->FindInterface(__uuidof(IMFVideoMixerBitmap),		(void**)&pMFVMB, TRUE);
+		if (pVMB  )
+			m_OSD.Start (&m_wndView, pVMB);
+		else if (pMFVMB )
+			m_OSD.Start (&m_wndView, pMFVMB);
+
 		if (m_pMC)
 		{
 			SetVMR9ColorControl(s.dBrightness, s.dContrast, s.dHue, s.dSaturation);
@@ -11974,7 +11987,7 @@ void CMainFrame::SendStatusMessage(CString msg, int nTimeOut)
 
 	m_playingmsg = msg;
 	
-	if(!m_wndStatusBar.IsVisible()){
+	if(!m_wndStatusBar.IsVisible() && 0){ //New UI
 		KillTimer(TIMER_STATUSBARHIDER);
 
 		if(m_fFullScreen){

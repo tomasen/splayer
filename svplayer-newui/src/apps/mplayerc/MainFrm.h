@@ -57,6 +57,7 @@
 #include <evr.h>
 #include <evr9.h>
 #include "WebServer.h"
+#include "VMROSD.h" //New UI
 
 #include "SUIButton.h"
 
@@ -768,7 +769,8 @@ public:
 	LRESULT OnNcLButtonDown(  WPARAM wParam, LPARAM lParam);
 	LRESULT OnNcLButtonUp(  WPARAM wParam, LPARAM lParam);
 	LRESULT OnNcHitTestNewUI(  WPARAM wParam, LPARAM lParam);
-	
+
+	CVMROSD m_OSD;
 	afx_msg void OnNcCalcSize( BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp);
 	void RedrawNonClientArea();
 	DWORD GetUIStat(UINT n_CmdID);

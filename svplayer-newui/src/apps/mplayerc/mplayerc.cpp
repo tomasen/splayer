@@ -1000,6 +1000,12 @@ BOOL CMPlayerCApp::InitInstance()
 	{
 		return FALSE;
 	}
+	//New UI
+	/*
+	GdiplusStartupInput gdiplusStartupInput;
+		ULONG_PTR gdiplusToken;
+		GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);*/
+	
 
 	m_s.UpdateData(false);
 	

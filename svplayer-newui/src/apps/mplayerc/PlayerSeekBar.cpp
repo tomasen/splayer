@@ -245,16 +245,20 @@ void CPlayerSeekBar::OnPaint()
 	{
 		CRect r = GetChannelRect();
 
-		dc.FillSolidRect(&r,  white ); //fEnabled ?
-
 		int cur = r.left + (int)((m_start < m_stop /*&& fEnabled*/) ? (__int64)r.Width() * (m_pos - m_start) / (m_stop - m_start) : 0);
-		if(cur % 2){
-			cur -= 1;
-		}
-		for(int drawPos = cur + 1; drawPos < r.right; drawPos += 2){
-			CRect step(drawPos,r.top, drawPos+1, r.bottom);
+		
 
-			dc.FillSolidRect( &step, NEWUI_COLOR_TOOLBAR_UPPERBG);
+		CRect rFilled(r);
+		rFilled.right =   cur;
+		dc.FillSolidRect(&rFilled,  white ); //fEnabled ?
+		r = GetChannelRect();
+		for(int drawPos = cur + 1; drawPos < r.right; drawPos ++){
+			CRect step(drawPos,r.top, drawPos+1, r.bottom);
+			if(drawPos % 2){
+				dc.FillSolidRect( &step, NEWUI_COLOR_TOOLBAR_UPPERBG);
+			}else{
+				dc.FillSolidRect( &step, white);
+			}
 		}
 		//r.InflateRect(1, 1);
 		//dc.Draw3dRect(&r, shadow, light);

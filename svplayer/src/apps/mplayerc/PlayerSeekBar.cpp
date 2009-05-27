@@ -45,6 +45,7 @@ BOOL CPlayerSeekBar::Create(CWnd* pParentWnd)
 	if(!CDialogBar::Create(pParentWnd, IDD_PLAYERSEEKBAR, WS_CHILD|WS_VISIBLE|CBRS_ALIGN_BOTTOM, IDD_PLAYERSEEKBAR))
 		return FALSE;
 
+	cursorHand = ::LoadCursor(NULL, IDC_HAND);
 	return TRUE;
 }
 
@@ -114,7 +115,7 @@ CRect CPlayerSeekBar::GetChannelRect()
 {
 	CRect r;
 	GetClientRect(&r);
-	r.DeflateRect(8, 9, 9, 0);
+	r.DeflateRect(5, 1, 5, 8); //
 	r.bottom = r.top + 5;
 	return(r);
 }
@@ -170,8 +171,16 @@ BEGIN_MESSAGE_MAP(CPlayerSeekBar, CDialogBar)
 	ON_WM_ERASEBKGND()
 	//}}AFX_MSG_MAP
 	ON_COMMAND_EX(ID_PLAY_STOP, OnPlayStop)
+	ON_WM_SETCURSOR()
 END_MESSAGE_MAP()
 
+BOOL CPlayerSeekBar::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message){
+
+	SetCursor(cursorHand );
+	return TRUE;
+	
+	//return CWnd::OnSetCursor(pWnd, 0, 0);
+}
 
 // CPlayerSeekBar message handlers
 
@@ -182,13 +191,14 @@ void CPlayerSeekBar::OnPaint()
 	bool fEnabled = m_fEnabled && m_start < m_stop;
 
 	COLORREF 
-		white = GetSysColor(COLOR_WINDOW),
-		shadow = GetSysColor(COLOR_3DSHADOW), 
-		light = GetSysColor(COLOR_3DHILIGHT), 
-		bkg = GetSysColor(COLOR_BTNFACE);
+		white = NEWUI_COLOR_SEEKBAR_PLAYED,
+		shadow = NEWUI_COLOR_BG, 
+		light = NEWUI_COLOR_BG, 
+		bkg = NEWUI_COLOR_TOOLBAR_UPPERBG;
 
+	CBrush bBkg(bkg);
 	// thumb
-	{
+	if(0){
 		CRect r = GetThumbRect(), r2 = GetInnerThumbRect();
 		CRect rt = r, rit = r2;
 
@@ -235,9 +245,23 @@ void CPlayerSeekBar::OnPaint()
 	{
 		CRect r = GetChannelRect();
 
-		dc.FillSolidRect(&r, fEnabled ? white : bkg);
-		r.InflateRect(1, 1);
-		dc.Draw3dRect(&r, shadow, light);
+		int cur = r.left + (int)((m_start < m_stop /*&& fEnabled*/) ? (__int64)r.Width() * (m_pos - m_start) / (m_stop - m_start) : 0);
+		
+
+		CRect rFilled(r);
+		rFilled.right =   cur;
+		dc.FillSolidRect(&rFilled,  white ); //fEnabled ?
+		r = GetChannelRect();
+		for(int drawPos = cur + 1; drawPos < r.right; drawPos ++){
+			CRect step(drawPos,r.top, drawPos+1, r.bottom);
+			if(drawPos % 2){
+				dc.FillSolidRect( &step, NEWUI_COLOR_TOOLBAR_UPPERBG);
+			}else{
+				dc.FillSolidRect( &step, white);
+			}
+		}
+		//r.InflateRect(1, 1);
+		//dc.Draw3dRect(&r, shadow, light);
 		dc.ExcludeClipRect(&r);
 	}
 
@@ -245,8 +269,7 @@ void CPlayerSeekBar::OnPaint()
 	{
 		CRect r;
 		GetClientRect(&r);
-		CBrush b(bkg);
-		dc.FillRect(&r, &b);
+		dc.FillRect(&r, &bBkg);
 	}
 
 

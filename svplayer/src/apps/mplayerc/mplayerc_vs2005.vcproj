@@ -769,6 +769,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SUIButton.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\SVPSubDownUpDialog.cpp"
 				>
 			</File>
@@ -1199,6 +1203,10 @@
 			</File>
 			<File
 				RelativePath=".\SubtitleDlDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SUIButton.h"
 				>
 			</File>
 			<File
@@ -1692,11 +1700,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 	</Files>

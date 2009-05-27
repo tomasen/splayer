@@ -54,7 +54,8 @@ bool CVolumeCtrl::Create(CWnd* pParentWnd)
 void CVolumeCtrl::SetPosInternal(int pos)
 {
 	SetPos(pos);
-	GetParent()->PostMessage(WM_HSCROLL, MAKEWPARAM((short)pos, SB_THUMBPOSITION), (LPARAM)m_hWnd); // this will be reflected back on us
+	//GetParent()->PostMessage(WM_HSCROLL, MAKEWPARAM((short)pos, SB_THUMBPOSITION), (LPARAM)m_hWnd); // this will be reflected back on us
+	GetParent()->Invalidate(); // this will be reflected back on us
 }
 
 void CVolumeCtrl::IncreaseVolume()

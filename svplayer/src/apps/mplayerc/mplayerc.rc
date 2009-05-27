@@ -160,7 +160,7 @@ BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,11,17,21,20
     LTEXT           "射手影音播放器(Based on MPC)",IDC_STATIC1,40,12,126,8,SS_NOPREFIX
     LTEXT           "Copyright (C) 2008-2009 Tomasen \n  Thanks for Gabest, casimir666, ffmpeg and\n    everyone with them",IDC_STATIC,40,26,170,29
-    LTEXT           "Version: 1.0 Beta 测试版",IDC_VERSION,40,57,170,8
+    LTEXT           "Version: 2.0 Beta 测试版",IDC_VERSION,40,57,170,8
     PUSHBUTTON      "关闭",IDOK,160,8,50,14,WS_GROUP
     LTEXT           "本软件为免费软件(freeware)\n同时采用GNU授权协议",IDC_STATIC,40,69,170,25
 END
@@ -177,7 +177,13 @@ FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
 END
 
-IDD_PLAYERSEEKBAR DIALOGEX 0, 0, 254, 12
+IDD_PLAYERSEEKBAR DIALOGEX 0, 0, 254, 3
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+END
+
+IDB_PLAYERTOOLBAR DIALOGEX 0, 0, 254, 33
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
@@ -1439,6 +1445,26 @@ IDI_SUBTITLE_FILE       ICON                    "res\\Icon\\Subtitle_File.ico"
 IDI_VIDEO_CD            ICON                    "res\\Icon\\Video_CD.ico"
 IDI_PLAY                ICON                    "res\\play.ico"
 
+
+//New UI Bitmap
+CAPTION.BMP             BITMAP                  "res\\newui\\caption.bmp"
+CLOSE.BMP               BITMAP                  "res\\newui\\BTN_CLOSE.bmp"
+MAXIMIZE.BMP            BITMAP                  "res\\newui\\BTN_MAX.bmp"
+MINIMIZE.BMP            BITMAP                  "res\\newui\\BTN_MIN.bmp"
+RESTORE.BMP             BITMAP                  "res\\newui\\BTN_RESTORE.bmp"
+MENU.BMP			    BITMAP                 "res\\newui\\BTN_MENU.bmp"
+BTN_PLAY.BMP			BITMAP                 "res\\newui\\BTN_PLAY.bmp"
+BTN_PAUSE.BMP			BITMAP                 "res\\newui\\BTN_PAUSE.bmp"
+FAST_FORWORD.BMP			BITMAP                 "res\\newui\\FAST_FORWORD.bmp"
+FAST_BACKWORD.BMP			BITMAP                 "res\\newui\\FAST_BACKWORD.bmp"
+SPLAYER.BMP			BITMAP                 "res\\newui\\SPLAYER.bmp"
+MUTED.BMP			BITMAP                 "res\\newui\\MUTED.bmp"
+VOLUME.BMP			BITMAP                 "res\\newui\\VOLUME.bmp"
+VOLUME_BG.BMP			BITMAP                 "res\\newui\\VOLUME_BG.bmp"
+VOLUME_TM.BMP			BITMAP                 "res\\newui\\VOLUME_TM.bmp"
+BTN_NEXT.BMP			BITMAP                 "res\\newui\\BTN_NEXT.bmp"
+BTN_PREV.BMP			BITMAP                 "res\\newui\\BTN_PREV.bmp"
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // Toolbar
@@ -1917,6 +1943,8 @@ END
 
 IDR_MAINFRAME MENU 
 BEGIN
+    POPUP ""
+BEGIN
     POPUP "文件(&F)"
     BEGIN
         MENUITEM "快速打开文件(&Q)\tCtrl+Q",          ID_FILE_OPENQUICK
@@ -2119,7 +2147,7 @@ BEGIN
         MENUITEM "QQ或MSN聊聊想法",                  ID_VISITCONTACTINFO
     END
 END
-
+END
 
 /////////////////////////////////////////////////////////////////////////////
 //

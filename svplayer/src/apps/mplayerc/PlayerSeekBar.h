@@ -21,6 +21,7 @@
 
 #pragma once
 
+#include "SUIButton.h"
 // CPlayerSeekBar
 
 class CPlayerSeekBar : public CDialogBar
@@ -30,6 +31,7 @@ class CPlayerSeekBar : public CDialogBar
 private:
 	__int64 m_start, m_stop, m_pos, m_posreal;
 	bool m_fEnabled;
+	HCURSOR cursorHand;
 	
 	void MoveThumb(CPoint point);
 	void SetPosInternal(__int64 pos);
@@ -66,6 +68,7 @@ protected:
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 public:

@@ -80,8 +80,8 @@
 
 #include "revision.h"
 
-#define DEFCLIENTW 292
-#define DEFCLIENTH 200
+#define DEFCLIENTW 480
+#define DEFCLIENTH 360
 
 static UINT s_uTaskbarRestart = RegisterWindowMessage(TEXT("TaskbarCreated"));
 static UINT WM_NOTIFYICON = RegisterWindowMessage(TEXT("MYWM_NOTIFYICON"));
@@ -162,6 +162,15 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_WM_MOVING()
 	ON_WM_SIZE()
 	ON_WM_SIZING()
+	/*NEW UI*/
+	ON_MESSAGE(WM_NCPAINT, OnNcPaint)
+	ON_MESSAGE(WM_NCACTIVATE, OnNcActivate)
+	ON_MESSAGE(WM_NCLBUTTONDOWN, OnNcLButtonDown)
+	ON_MESSAGE(WM_NCLBUTTONUP, OnNcLButtonUp)
+	ON_MESSAGE(WM_NCHITTEST, OnNcHitTestNewUI)
+	ON_WM_NCCALCSIZE()
+	/*NEW UI END*/
+
 	ON_MESSAGE_VOID(WM_DISPLAYCHANGE, OnDisplayChange)
 
 	ON_WM_SYSCOMMAND()
@@ -188,7 +197,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_MESSAGE(WM_XBUTTONDBLCLK, OnXButtonDblClk)
 	ON_WM_MOUSEWHEEL()
 	ON_WM_MOUSEMOVE()
-	ON_WM_NCHITTEST()
+	//ON_WM_NCHITTEST()
 
 	ON_WM_HSCROLL()
 
@@ -490,7 +499,8 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_popup.LoadMenu(IDR_POPUP);
 	m_popupmain.LoadMenu(IDR_POPUPMAIN);
 
-	GetMenu()->ModifyMenu(ID_FAVORITES, MF_BYCOMMAND|MF_STRING, IDR_MAINFRAME, ResStr(IDS_FAVORITES_POPUP));
+	//GetMenu()->ModifyMenu(ID_FAVORITES, MF_BYCOMMAND|MF_STRING, IDR_MAINFRAME, ResStr(IDS_FAVORITES_POPUP));
+	m_mainMenu.LoadMenu(IDR_MAINFRAME);
 
 	// create a view to occupy the client area of the frame
 	if(!m_wndView.Create(NULL, NULL, AFX_WS_DEFAULT_VIEW,
@@ -608,9 +618,683 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	SetTimer(TIMER_STATUSCHECKER , 10000, NULL);
 
 	s.RegGlobalAccelKey(this->m_hWnd);
+	/*NEW UI*/
+	SetMenu(  NULL);
 
+	//ZeroMemory(m_nBoxStatus, sizeof(m_nBoxStatus));
+	m_bmpCaption.LoadBitmap(L"CAPTION.BMP");
+	//////////////////////////////////////////////////////////////////////////
+	// an alternative way of pre-multiplying bitmap data
+	CRect btnMargin(3,7,15,3);
+	CSize btnSize(21,17);//IDM_CLOSE_PNG
+	CSUIButton* bClose = new CSUIButton( L"CLOSE.BMP",ALIGN_TOPRIGHT, btnMargin  , 0,  HTCLOSE);
+	m_btnList.AddTail(bClose );
+	btnMargin.right = 3;
+
+	m_btnList.AddTail( new CSUIButton(L"MAXIMIZE.BMP" , ALIGN_TOPRIGHT, btnMargin  , 0, HTMAXBUTTON, FALSE, ALIGN_RIGHT, bClose ));
+	m_btnList.AddTail( new CSUIButton(L"RESTORE.BMP" , ALIGN_TOPRIGHT, btnMargin  , 0, HTMAXBUTTON, TRUE, ALIGN_RIGHT, bClose ));
+
+	// 
+	m_btnList.AddTail( new CSUIButton(L"MINIMIZE.BMP", ALIGN_TOPRIGHT, btnMargin  ,  0, HTMINBUTTON ,FALSE, ALIGN_RIGHT, m_btnList.GetTail()));
+	m_btnList.AddTail( new CSUIButton(L"MENU.BMP", ALIGN_TOPRIGHT, btnMargin  ,  0, HTMENU, FALSE, ALIGN_RIGHT, m_btnList.GetTail()));
+	/*
+	m_bmpClose.Attach((HBITMAP)::LoadImage(GetModuleHandle(NULL) L"CLOSE.BMP", IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION));
+	m_bmpMaximize.Attach( (HBITMAP)::LoadImage(GetModuleHandle(NULL), L"MAXIMIZE.BMP", IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION) );
+	m_bmpMinimize.Attach((HBITMAP)::LoadImage(GetModuleHandle(NULL), L"MINIMIZE.BMP", IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION));
+	m_bmpRestore.Attach((HBITMAP)::LoadImage(GetModuleHandle(NULL), L"RESTORE.BMP", IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION));
+	m_bmpMenu.Attach((HBITMAP)::LoadImage(GetModuleHandle(NULL), L"MENU.BMP", IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION));
+	PreMultiplyBitmap(m_bmpClose);
+	PreMultiplyBitmap(m_bmpMaximize);
+	PreMultiplyBitmap(m_bmpMinimize);
+	PreMultiplyBitmap(m_bmpRestore);
+	PreMultiplyBitmap(m_bmpMenu);*/
+
+
+	/*NEW UI END*/
 	return 0;
 }
+
+/*NEW UI*/
+static bool bNoMoreHideMouse = false;
+
+void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
+{
+	CRect CVideoRect = m_wndView.GetVideoRect();
+	if(m_iPlaybackMode == PM_DVD)
+	{
+		CPoint vp = point - CVideoRect.TopLeft();
+		pDVDC->SelectAtPosition(vp);
+	}
+
+	CSize diff = m_lastMouseMove - point;
+	BOOL bMouseMoved =  (abs(diff.cx)+abs(diff.cy)) >= 1;
+	if(bMouseMoved){
+		m_fHideCursor = false;
+		KillTimer(TIMER_FULLSCREENMOUSEHIDER);
+		if(!bNoMoreHideMouse && m_iMediaLoadState == MLS_LOADED)
+			SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
+	}
+	AppSettings& s = AfxGetAppSettings();
+	int iDistance = sqrt( pow( (double)abs(point.x - m_pLastClickPoint.x) , 2)  + pow( (double)abs( point.y - m_pLastClickPoint.y ) , 2) );
+	if( ( iDistance > 30 || s_mDragFucOn) && s_mDragFuc){
+		if(!s_mDragFucOn){
+			m_pDragFuncStartPoint = point;
+			SetAlwaysOnTop(s.iOnTop , FALSE);
+			s_mDragFucOn = true;
+		}
+		if(s_mDragFuc == 1){ //移动画面
+			m_PosX += (double)(point.x - m_pDragFuncStartPoint.x) / CVideoRect.Width() ;
+			m_PosY += (double)(point.y - m_pDragFuncStartPoint.y)/ CVideoRect.Height() ;
+			MoveVideoWindow(true);
+		}else if(s_mDragFuc == 2){//缩放画面
+			m_ZoomX += (double)(point.x - m_pDragFuncStartPoint.x) / CVideoRect.Width() ;
+			m_ZoomY += (double)(m_pDragFuncStartPoint.y - point.y ) / CVideoRect.Height() ;
+			MoveVideoWindow(true);
+		}else if(s_mDragFuc == 3){
+			PostMessage(WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM(point.x, point.y));
+		}
+		m_pDragFuncStartPoint = point;
+
+		s_fLDown = false;
+
+	}
+
+
+	if(m_fFullScreen && bMouseMoved)
+	{
+		int nTimeOut = s.nShowBarsWhenFullScreenTimeOut;
+
+		if(nTimeOut < 0)
+		{
+			m_fHideCursor = false;
+			if(s.fShowBarsWhenFullScreen){
+				ShowControls(s.nCS | (s.bShowControlBar ? CS_COLORCONTROLBAR : 0), false);
+				//m_wndColorControlBar.ShowWindow(SW_SHOW);
+			}
+
+			KillTimer(TIMER_FULLSCREENCONTROLBARHIDER);
+			//			SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
+		}
+		else if(nTimeOut == 0)
+		{
+			CRect r;
+			GetClientRect(r);
+			r.top = r.bottom;
+
+			POSITION pos = m_bars.GetHeadPosition();
+			for(int i = 1; pos; i <<= 1)
+			{
+				CControlBar* pNext = m_bars.GetNext(pos);
+				CSize sz = pNext->CalcFixedLayout(FALSE, TRUE);
+				if(s.nCS&i) r.top -= sz.cy;
+			}
+
+			// HACK: the controls would cover the menu too early hiding some buttons
+			if(m_iPlaybackMode == PM_DVD
+				&& (m_iDVDDomain == DVD_DOMAIN_VideoManagerMenu
+				|| m_iDVDDomain == DVD_DOMAIN_VideoTitleSetMenu))
+				r.top = r.bottom - 10;
+
+			m_fHideCursor = false;
+
+			if(r.PtInRect(point))
+			{
+				if(s.fShowBarsWhenFullScreen){
+					ShowControls(s.nCS | ( s.bShowControlBar ? CS_COLORCONTROLBAR : 0) , false);
+					//m_wndColorControlBar.ShowWindow(SW_SHOW);
+				}
+			}
+			else{
+				if(s.fShowBarsWhenFullScreen)
+					ShowControls(CS_NONE, false);
+
+			}
+
+
+			//SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
+		}
+		else
+		{
+			m_fHideCursor = false;
+			if(s.fShowBarsWhenFullScreen){
+				ShowControls(s.nCS |  ( s.bShowControlBar ? CS_COLORCONTROLBAR : 0), false );
+				//m_wndColorControlBar.ShowWindow(SW_SHOW);
+			}
+
+			SetTimer(TIMER_FULLSCREENCONTROLBARHIDER, nTimeOut*1000, NULL);
+			//SetTimer(TIMER_FULLSCREENMOUSEHIDER, max(nTimeOut*1000, 2000), NULL);
+		}
+	}
+	if((m_fFullScreen || IsCaptionMenuHidden() ) && bMouseMoved) //New UI
+	{
+
+		HMENU hMenu;
+		DWORD dwRemove = 0, dwAdd = 0;
+		DWORD currentStyle =  GetStyle( );
+
+		if(point.y < 20 ){
+			if( !(WS_CAPTION&currentStyle) ){
+				dwAdd = WS_CAPTION;
+				hMenu = NULL;// hMenu = m_hMenuDefault; NEW UI
+			}
+
+		}else if(WS_CAPTION&currentStyle) {
+			dwRemove = WS_CAPTION;
+			hMenu = NULL;
+		}
+
+		//::SetMenu(m_hWnd, hMenu);
+
+		if ( dwAdd || dwRemove){
+			//ModifyStyle(dwRemove, dwAdd, SWP_NOZORDER);
+			//RedrawNonClientArea();
+
+		}
+
+	}
+
+
+	/*
+
+	if(!m_fFullScreen && bMouseMoved && s.bShowControlBar){
+	CRect cvr = m_wndView.GetVideoRect(); //show and hide Color Control Bar when not full screen
+	cvr.top = cvr.bottom - 30;
+	if(cvr.PtInRect(point)){
+	ShowControlBar(&m_wndColorControlBar, SW_SHOW, FALSE);
+	}else if(!bNotHideColorControlBar){
+	ShowControlBar(&m_wndColorControlBar, SW_HIDE, TRUE);
+	}
+
+	}
+
+	*/
+
+
+	m_lastMouseMove = point;
+
+	__super::OnMouseMove(nFlags, point);
+}
+
+
+void CMainFrame::OnNcCalcSize( BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp){
+	WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
+	GetWindowPlacement(&wp);
+	if(bCalcValidRects){
+		//先把rect[1]拷贝到rect[2]，rect[0]拷贝到rect[1]
+		//memcpy( &lpncsp->rgrc[2] ,  &lpncsp->rgrc[1] , sizeof(RECT));
+		//memcpy( &lpncsp->rgrc[1] ,  &lpncsp->rgrc[0] , sizeof(RECT));
+
+		CRect rc = lpncsp->rgrc[0];
+		DWORD currentStyle = GetStyle();
+		if(currentStyle&WS_CAPTION){
+
+		}
+		if(m_fFullScreen){
+
+		}else if(wp.showCmd!=SW_MAXIMIZE ){
+			rc.InflateRect( GetSystemMetrics(SM_CXFRAME) - 3, 0,   GetSystemMetrics(SM_CXFRAME) - 3, GetSystemMetrics(SM_CXFRAME) - 2);
+		}else{
+			//rc.InflateRect( GetSystemMetrics(SM_CXFRAME) - 3, 0,   GetSystemMetrics(SM_CXFRAME) - 3, GetSystemMetrics(SM_CXFRAME) - 2);
+		}
+
+
+		lpncsp->rgrc[0] = rc;
+	}
+	__super::OnNcCalcSize(bCalcValidRects, lpncsp);
+
+	if(wp.showCmd==SW_MAXIMIZE ){
+		CString szLog;
+		szLog.Format(_T("Max Client Rect %d %d %d %d") , lpncsp->rgrc[0].left, lpncsp->rgrc[0].top, lpncsp->rgrc[0].right, lpncsp->rgrc[0].bottom);
+		//SVP_LogMsg(szLog);
+	}
+}
+
+
+void CMainFrame::OnMove(int x, int y)
+{
+	__super::OnMove(x, y);
+
+	MoveVideoWindow();
+
+	WINDOWPLACEMENT wp;
+	GetWindowPlacement(&wp);
+	if(!m_fFullScreen && wp.flags != WPF_RESTORETOMAXIMIZED && wp.showCmd != SW_SHOWMINIMIZED)
+		GetWindowRect(AfxGetAppSettings().rcLastWindowPos);
+
+	CRect rc;
+	GetWindowRect(&rc);
+	m_btnList.OnSize( rc);
+}
+
+void CMainFrame::OnSize(UINT nType, int cx, int cy)
+{
+	__super::OnSize(nType, cx, cy);
+
+	if(nType == SIZE_RESTORED && m_fTrayIcon)
+	{
+		ShowWindow(SW_SHOW);
+	}
+
+	{//New UI
+
+		if(m_fFullScreen || SIZE_MAXIMIZED == nType)
+		{
+			m_btnList.SetHideStat(L"MAXIMIZE.BMP", TRUE);
+			m_btnList.SetHideStat(L"RESTORE.BMP", false);
+		}else{
+			m_btnList.SetHideStat(L"MAXIMIZE.BMP", false);
+			m_btnList.SetHideStat(L"RESTORE.BMP", true);
+		}
+		CRect rc;
+		GetWindowRect(&rc);
+		m_btnList.OnSize( rc);
+	}
+
+	if(!m_fFullScreen)
+	{
+		AppSettings& s = AfxGetAppSettings();
+		if(nType != SIZE_MAXIMIZED && nType != SIZE_MINIMIZED)
+			GetWindowRect(s.rcLastWindowPos);
+		s.lastWindowType = nType;
+
+		{ //New UI
+			CRect rc;
+			WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
+			GetWindowPlacement(&wp);
+			GetWindowRect(&rc);
+			rc-=rc.TopLeft();
+
+
+
+			// destroy old region
+			if((HRGN)m_rgn)
+			{
+				m_rgn.DeleteObject();
+			}
+			// create rounded rect region based on new window size
+			if (wp.showCmd != SW_MAXIMIZE )
+			{
+				rc.InflateRect(GetSystemMetrics(SM_CXBORDER), GetSystemMetrics(SM_CYBORDER));
+				m_rgn.CreateRoundRectRgn(0,0,rc.Width()-1,rc.Height()-1, 3,3);                 // rounded rect w/50 pixel corners
+
+				// set window region to make rounded window
+			}
+			else{
+				m_rgn.CreateRectRgn( 0,0, rc.Width(), rc.Height() );
+
+			}
+			SetWindowRgn(m_rgn,TRUE);
+			Invalidate();
+		}
+	}else{
+		SetWindowRgn(NULL,TRUE);   
+	}
+
+
+
+
+
+}
+
+LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
+{
+	//////////////////////////////////////////////////////////////////////////
+	// Typically, we'll need the window placement information
+	// and its rect to perform painting
+	WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
+	GetWindowPlacement(&wp);
+	CRect rc;
+	GetWindowRect(&rc);
+	rc-=rc.TopLeft();
+	if(wp.showCmd!=SW_MAXIMIZE && !m_fFullScreen){
+		rc.InflateRect(GetSystemMetrics(SM_CXBORDER), GetSystemMetrics(SM_CYBORDER));
+	}
+	DWORD currentStyle = GetStyle();
+
+
+	//////////////////////////////////////////////////////////////////////////
+	// This is an undocumented (or not very clearly documented)
+	// trick. When wParam==1, documents says that the entire
+	// window needs to be repainted, so in order to paint, we get
+	// the DC by calling GetWindowDC. Otherwise, the wParam
+	// parameter should contain the region, we make sure anything
+	// outside the region is excluded from update because it's
+	// actually possible to paint outside the region
+
+	CDC* dc;
+	if(wParam == 1)
+		dc = GetWindowDC();
+	else
+	{
+		CRgn* rgn = CRgn::FromHandle((HRGN)wParam);
+		dc = GetDCEx(rgn, DCX_WINDOW|DCX_INTERSECTRGN|0x10000);
+	}
+
+	if ((HDC)dc)
+	{
+		// when updating the window frame, we exclude the client area
+		// because we don't want to interfere with the client WM_PAINT
+		// process and cause extra cost
+		RECT rcClient = {0};
+		GetClientRect(&rcClient);
+		rcClient.top+=GetSystemMetrics(SM_CYFRAME);
+		rcClient.top+=GetSystemMetrics(SM_CYCAPTION);
+		rcClient.left+=3;
+		rcClient.bottom+=GetSystemMetrics(SM_CYCAPTION)+2;
+		rcClient.right+=3;
+		dc->ExcludeClipRect(&rcClient);
+
+		// establish double buffered painting
+		CMemoryDC hdc(dc, rc);
+		CBrush brush;
+		brush.CreateSolidBrush(NEWUI_COLOR_BG);
+		if (wp.showCmd != SW_MAXIMIZE && !m_fFullScreen)
+			hdc.RoundRect(rc.left+1, rc.top+1, rc.right-1, rc.bottom-1, 3, 3);
+		else if(currentStyle&WS_CAPTION) {
+			hdc.FillRect(&rc, &brush);
+		}
+
+		int nTotalCaptionHeight = GetSystemMetrics(SM_CYCAPTION)+GetSystemMetrics(SM_CYFRAME);
+
+		if(m_fFullScreen){
+			nTotalCaptionHeight -= 4;
+		}
+		// some basic styles
+		if(!m_fFullScreen){
+			CPen pen, penBright, penDark;
+			pen.CreatePen(PS_SOLID, 1, NEWUI_COLOR_PEN );
+			penBright.CreatePen(PS_SOLID, 1, NEWUI_COLOR_PEN_BRIGHT);
+			penDark.CreatePen(PS_SOLID, 1,NEWUI_COLOR_PEN_BRIGHT);
+			HPEN holdpen = (HPEN)hdc.SelectObject(pen);
+			HBRUSH holdbrush = (HBRUSH)hdc.SelectObject(brush);
+			hdc.SelectObject(penBright);
+			hdc.MoveTo(rc.left+2, rc.bottom-3);
+			hdc.LineTo(rc.left+2, rc.top+2);
+			hdc.LineTo(rc.right-3, rc.top+2);
+			hdc.SelectObject(penDark);
+			hdc.MoveTo(rc.left+2, rc.bottom-3);
+			hdc.LineTo(rc.right-3, rc.bottom-3);
+			hdc.LineTo(rc.right-3, rc.top+2);
+			hdc.SelectObject(holdpen);
+			hdc.SelectObject(holdbrush);
+
+			// 		hdc.SelectObject((HBRUSH) GetStockObject(NULL_BRUSH));
+			// 		if (wp.showCmd != SW_MAXIMIZE)
+			// 			hdc.RoundRect(rc.left+1, rc.top+1, rc.right-1, rc.bottom-1, 3, 3);
+
+			// painting the caption bar
+			CDC dcBmp;
+			dcBmp.CreateCompatibleDC(&hdc);
+			HBITMAP hbmpold = (HBITMAP)dcBmp.SelectObject(m_bmpCaption);
+			hdc.SetStretchBltMode(HALFTONE);
+			hdc.SetBrushOrg(0, 0);
+			hdc.StretchBlt(0, 0, 4, nTotalCaptionHeight, &dcBmp, 0, 0, 4, 25, SRCCOPY);
+			hdc.StretchBlt(4, 0, rc.Width()-4*2, nTotalCaptionHeight, &dcBmp, 4, 0, 6, 25, SRCCOPY);
+			hdc.StretchBlt(rc.Width()-2-4, 0, 4, nTotalCaptionHeight, &dcBmp, 10, 0, 4, 25, SRCCOPY);
+			dcBmp.SelectObject(hbmpold);
+		}
+		if(currentStyle&WS_CAPTION){
+			// and the title
+			CFont hft;
+			GetSystemFontWithScale(&hft, 14.0);
+
+			HFONT holdft = (HFONT)hdc.SelectObject(hft);
+
+			RECT rcWindowText = {0};
+			rcWindowText.top = rc.top+GetSystemMetrics(SM_CYFRAME)/2;
+			rcWindowText.left = rc.left+7+GetSystemMetrics(SM_CXFRAME);
+			rcWindowText.bottom = rc.top+nTotalCaptionHeight;
+			rcWindowText.right = rc.right;
+			CString szWindowText;
+			GetWindowText(szWindowText);
+			::DrawShadowText(hdc, szWindowText, szWindowText.GetLength(), &rcWindowText, DT_LEFT|DT_SINGLELINE | DT_VCENTER, RGB(255,255,255), RGB(64,64,64), 2,2);
+			hdc.SelectObject(holdft);
+
+			// min/max/close buttons
+			//LONG lPaintParamArray[][5] = {{1,0},{1,1},{1,2},{1,3}};
+			GetWindowRect(&rc);
+			if(wp.showCmd==SW_MAXIMIZE || m_fFullScreen){
+				//rc.top -= 8;
+			}
+			m_btnList.PaintAll(&hdc, rc);
+		}
+		/*
+
+		int nVertPos = NEWUI_BTN_MARGIN_TOP;
+		long nImagePositions[] = {0, NEWUI_BTN_HEIGTH, NEWUI_BTN_HEIGTH*2, NEWUI_BTN_HEIGTH*3};  // 正常 ; hove ; 按下 ; disabled
+		dcBmp.SelectObject(m_bmpClose);
+		BLENDFUNCTION bf = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};//
+		hdc.AlphaBlend(rc.right-NEWUI_BTN_MARGIN_RIGHT-NEWUI_BTN_WIDTH, nVertPos, NEWUI_BTN_WIDTH, NEWUI_BTN_HEIGTH, &dcBmp, 0, nImagePositions[m_nBoxStatus[0]], NEWUI_BTN_WIDTH, NEWUI_BTN_HEIGTH, bf);
+		dcBmp.SelectObject( (wp.showCmd==SW_MAXIMIZE)?m_bmpRestore:m_bmpMaximize);
+		hdc.AlphaBlend(rc.right-NEWUI_BTN_MARGIN_RIGHT-NEWUI_BTN_WIDTH*2, nVertPos, NEWUI_BTN_WIDTH, NEWUI_BTN_HEIGTH, &dcBmp, 0, nImagePositions[m_nBoxStatus[1]], NEWUI_BTN_WIDTH, NEWUI_BTN_HEIGTH, bf);
+		dcBmp.SelectObject(m_bmpMinimize);
+		hdc.AlphaBlend(rc.right-NEWUI_BTN_MARGIN_RIGHT-NEWUI_BTN_WIDTH*3, nVertPos, NEWUI_BTN_WIDTH, NEWUI_BTN_HEIGTH, &dcBmp, 0, nImagePositions[m_nBoxStatus[2]], NEWUI_BTN_WIDTH, NEWUI_BTN_HEIGTH, bf);
+		dcBmp.SelectObject(m_bmpMenu);
+		hdc.AlphaBlend(rc.right-NEWUI_BTN_MARGIN_RIGHT-NEWUI_BTN_WIDTH*4, nVertPos, NEWUI_BTN_WIDTH, NEWUI_BTN_HEIGTH, &dcBmp, 0, nImagePositions[m_nBoxStatus[3]], NEWUI_BTN_WIDTH, NEWUI_BTN_HEIGTH, bf);
+		*/
+
+
+
+		ReleaseDC(&hdc);
+
+	}
+
+	return FALSE ;
+}
+
+LRESULT CMainFrame::OnNcActivate( WPARAM wParam, LPARAM lParam)
+{
+	//SVP_LogMsg(_T("OnNcActivate"));
+	RedrawWindow();
+	return TRUE;
+}
+
+LRESULT CMainFrame::OnNcLButtonDown( WPARAM wParam, LPARAM lParam )
+{
+	// custom processing of our min/max/close buttons
+	if (wParam == HTCLOSE || wParam == HTMAXBUTTON || wParam == HTMINBUTTON)
+	{
+		RedrawNonClientArea();
+		return FALSE;
+	}
+	if(wParam == HTMENU){
+		OnMenu(m_mainMenu.GetSubMenu(0));
+		return FALSE;
+	}
+	return DefWindowProc(WM_NCLBUTTONDOWN, wParam, lParam);
+}
+
+LRESULT CMainFrame::OnNcLButtonUp( WPARAM wParam, LPARAM lParam )
+{
+	// custom processing of our min/max/close buttons
+	if (wParam == HTCLOSE || wParam == HTMAXBUTTON || wParam == HTMINBUTTON || wParam == HTMENU)
+	{
+		RedrawNonClientArea();
+		WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
+		GetWindowPlacement(&wp);
+		if (wParam == HTCLOSE)
+			PostMessage(WM_CLOSE);
+		else if(wParam == HTMAXBUTTON)
+		{
+			//m_nBoxStatus[0] = m_nBoxStatus[1] =m_nBoxStatus[2] = 0;
+			m_btnList.ClearStat();
+			if (wp.showCmd == SW_MAXIMIZE)
+				ShowWindow(SW_NORMAL);
+			else
+				ShowWindow(SW_MAXIMIZE);
+		}
+		else if (wParam == HTMINBUTTON)
+		{
+			//m_nBoxStatus[0] = m_nBoxStatus[1] =m_nBoxStatus[2] = 0;
+			m_btnList.ClearStat();
+			ShowWindow(SW_MINIMIZE);
+		}
+		else if (wParam == HTMENU)
+		{
+			//OnMenu(m_mainMenu.GetSubMenu(0));
+		}
+		return FALSE;
+	}
+	return DefWindowProc(WM_NCLBUTTONUP, wParam, lParam);
+}
+
+LRESULT CMainFrame::OnNcHitTestNewUI(WPARAM wParam, LPARAM lParam )
+{
+	// custom processing of our min/max/close buttons
+	CRect rc;
+	GetWindowRect(&rc);
+
+	/*
+	long nBoxStatus[4];
+	memcpy(nBoxStatus, m_nBoxStatus, sizeof(nBoxStatus));
+	//SVP_LogMsg(_T("OnNcHitTestNewUI"));
+
+	CRect rcClose (rc.right-NEWUI_BTN_MARGIN_RIGHT-NEWUI_BTN_WIDTH, rc.top+NEWUI_BTN_MARGIN_TOP, rc.right-NEWUI_BTN_WIDTH, rc.top+NEWUI_BTN_MARGIN_TOP+NEWUI_BTN_HEIGTH);
+	CRect rcMax (rc.right-NEWUI_BTN_MARGIN_RIGHT-NEWUI_BTN_WIDTH*2, rc.top+NEWUI_BTN_MARGIN_TOP, rc.right-NEWUI_BTN_WIDTH*2, rc.top+NEWUI_BTN_MARGIN_TOP+NEWUI_BTN_HEIGTH);
+	CRect rcMin (rc.right-NEWUI_BTN_MARGIN_RIGHT-NEWUI_BTN_WIDTH*3, rc.top+NEWUI_BTN_MARGIN_TOP, rc.right-NEWUI_BTN_WIDTH*3, rc.top+NEWUI_BTN_MARGIN_TOP+NEWUI_BTN_HEIGTH);
+	CRect rcMenu (rc.right-NEWUI_BTN_MARGIN_RIGHT-NEWUI_BTN_WIDTH*4, rc.top+NEWUI_BTN_MARGIN_TOP, rc.right-NEWUI_BTN_WIDTH*4, rc.top+NEWUI_BTN_MARGIN_TOP+NEWUI_BTN_HEIGTH);
+
+	CPoint pt(lParam);
+	SHORT bLBtnDown = GetAsyncKeyState(VK_LBUTTON);  
+	if (rcClose.PtInRect(pt) && bLBtnDown) m_nBoxStatus[0] = 2; else if (rcClose.PtInRect(pt)) m_nBoxStatus[0] = 1; else m_nBoxStatus[0] = 0;
+	if (rcMax.PtInRect(pt) && bLBtnDown) m_nBoxStatus[1] = 2; else if (rcMax.PtInRect(pt)) m_nBoxStatus[1] = 1; else m_nBoxStatus[1] = 0;
+	if (rcMin.PtInRect(pt) && bLBtnDown) m_nBoxStatus[2] = 2; else if (rcMin.PtInRect(pt)) m_nBoxStatus[2] = 1; else m_nBoxStatus[2] = 0;
+	if (rcMenu.PtInRect(pt) && bLBtnDown) m_nBoxStatus[3] = 2; else if (rcMenu.PtInRect(pt)) m_nBoxStatus[3] = 1; else m_nBoxStatus[3] = 0;
+
+	if (m_nBoxStatus[0] != nBoxStatus[0] || m_nBoxStatus[1] != nBoxStatus[1] || m_nBoxStatus[2] != nBoxStatus[2] || m_nBoxStatus[3] != nBoxStatus[3]){
+	//SVP_LogMsg(_T("RedrawNonClientArea"));
+	RedrawNonClientArea();
+	}
+	if (m_nBoxStatus[0]!=0) return HTCLOSE;
+	else if (m_nBoxStatus[1]!=0) return HTMAXBUTTON;
+	else if (m_nBoxStatus[2]!=0) return HTMINBUTTON;
+	else if (m_nBoxStatus[3]!=0) return HTMENU;*/
+
+	CPoint pt(lParam);
+	UINT ret = m_btnList.OnHitTest(pt,rc);
+	if( m_btnList.HTRedrawRequired ){
+		RedrawNonClientArea();
+	}
+	if(ret){
+		return ret;
+	}
+	LRESULT lHTESTID = DefWindowProc(WM_NCHITTEST, wParam, lParam);
+	if(lHTESTID == HTCLOSE || lHTESTID == HTMAXBUTTON || lHTESTID == HTMINBUTTON || lHTESTID == HTMENU  ){
+		return HTCAPTION;
+	}
+	return lHTESTID;
+} 
+
+void CMainFrame::RedrawNonClientArea()
+{
+	// We can't use InvalidateRect to repaint the frame, it's for client area.
+	// To repaint the frame (or non-client area), we call SetWindowPos with
+	// flag SWP_FRAMECHANGED.
+	//
+	// This function is written for convenience.
+	//
+	// Note that Windows doesn't always send WM_NCPAINT when the frame needs to be painted.
+	// It's either a bug or problematic code or faulty design that certain API calls may attempt to draw
+	// the window frame without WM_NCPAINT. An example of this is the SetWindowText API.
+	// When SetWindowText API is called, it uses GetWindowDC, and DrawText to paint directly. Yes,
+	// it doesn't send WM_NCPAINT like it should. This is important information for this custom window
+	// painting sample because we certainly don't want Windows to paint our window ugly.
+	// However, there are no great cure for this problem. We'll have to remember call this
+	// RedrawNonClientArea function every time after SetWindowText, or other similar calls.
+	// In certain situations this might cause a flicker because two painting processes are done.
+	// So it's better to use less or avoid these types of calls.
+	SetWindowPos(NULL,0,0,0,0, SWP_FRAMECHANGED|SWP_NOMOVE|SWP_NOSIZE|SWP_NOZORDER);
+}
+
+/*
+void CMainFrame::PreMultiplyBitmap( CBitmap& bmp )
+{
+// this is only possible when the bitmap is loaded using the
+// ::LoadImage API with flag LR_CREATEDIBSECTION
+
+BITMAP bm;
+bmp.GetBitmap(&bm);
+for (int y=0; y<bm.bmHeight; y++)
+{
+BYTE * pPixel = (BYTE *) bm.bmBits + bm.bmWidth * 4 * y;
+for (int x=0; x<bm.bmWidth; x++)
+{
+pPixel[0] = pPixel[0] * pPixel[3] / 255; 
+pPixel[1] = pPixel[1] * pPixel[3] / 255; 
+pPixel[2] = pPixel[2] * pPixel[3] / 255; 
+pPixel += 4;
+}
+}
+}*/
+void CMainFrame::OnViewCompact()
+{
+	if(AfxGetAppSettings().fHideCaptionMenu)
+		SendMessage(WM_COMMAND, ID_VIEW_CAPTIONMENU);
+	ShowControls(CS_TOOLBAR|CS_SEEKBAR);
+}
+
+void CMainFrame::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
+{
+	DWORD style = GetStyle();
+
+	/*
+	MENUBARINFO mbi;
+	memset(&mbi, 0, sizeof(mbi));
+	mbi.cbSize = sizeof(mbi);
+	::GetMenuBarInfo(m_hWnd, OBJID_MENU, 0, &mbi);
+	*/
+
+	lpMMI->ptMinTrackSize.x = 100;
+	if(!IsCaptionMenuHidden())
+	{
+		lpMMI->ptMinTrackSize.x = 10;
+		CRect r;
+		//for(int i = 0; ::GetMenuItemRect(m_hWnd, mbi.hMenu, i, &r); i++)
+		//lpMMI->ptMinTrackSize.x += r.Width();
+		lpMMI->ptMinTrackSize.x = max(DEFCLIENTW, lpMMI->ptMinTrackSize.x);
+	}
+	if(style&WS_THICKFRAME) lpMMI->ptMinTrackSize.x += GetSystemMetrics((style&WS_CAPTION)?SM_CXSIZEFRAME:SM_CXFIXEDFRAME)*2;
+
+	/*
+	memset(&mbi, 0, sizeof(mbi));
+	mbi.cbSize = sizeof(mbi);
+	::GetMenuBarInfo(m_hWnd, OBJID_MENU, 0, &mbi);*/
+
+
+	lpMMI->ptMinTrackSize.y = 0;
+	if(style&WS_CAPTION) lpMMI->ptMinTrackSize.y += GetSystemMetrics(SM_CYCAPTION);
+	if(style&WS_THICKFRAME) lpMMI->ptMinTrackSize.y += GetSystemMetrics((style&WS_CAPTION)?SM_CYSIZEFRAME:SM_CYFIXEDFRAME)*2;
+	//lpMMI->ptMinTrackSize.y += (mbi.rcBar.bottom - mbi.rcBar.top);
+	if(!AfxGetAppSettings().fHideCaptionMenu) lpMMI->ptMinTrackSize.y += 3;
+
+	POSITION pos = m_bars.GetHeadPosition();
+	while(pos) 
+	{
+		CControlBar* pCB = m_bars.GetNext(pos);
+		if(!IsWindow(pCB->m_hWnd) || !pCB->IsVisible()) continue;
+
+		lpMMI->ptMinTrackSize.y += pCB->CalcFixedLayout(TRUE, TRUE).cy;
+	}
+
+	pos = m_dockingbars.GetHeadPosition();
+	while(pos)
+	{
+		CSizingControlBar* pCB = m_dockingbars.GetNext(pos);
+		if(IsWindow(pCB->m_hWnd) && pCB->IsWindowVisible() && !pCB->IsFloating())
+			lpMMI->ptMinTrackSize.y += pCB->CalcFixedLayout(TRUE, TRUE).cy-2;
+	}
+	CString szLog;
+	szLog.Format(_T("MaxInfo %d %d %d %d %d %d ") , lpMMI->ptMaxSize.x , lpMMI->ptMaxSize.y, lpMMI->ptMaxTrackSize.x , lpMMI->ptMaxTrackSize.y, lpMMI->ptMaxPosition.x , lpMMI->ptMaxPosition.y);
+	//SVP_LogMsg(szLog);
+
+	lpMMI->ptMaxPosition.x = 0;
+	lpMMI->ptMaxPosition.y = 0;
+
+	__super::OnGetMinMaxInfo(lpMMI);
+
+}
+
+/*NEW UI END*/
 void CMainFrame::OnSetHotkey(){
 	CAutoPtr<CPPageAccelTbl> page(new CPPageAccelTbl());
 	CPropertySheet dlg(_T("快捷键设置..."), this);
@@ -672,7 +1356,6 @@ void CMainFrame::OnClose()
 	__super::OnClose();
 }
 
-static bool bNoMoreHideMouse = false;
 void CMainFrame::OnEnterMenuLoop( BOOL bIsTrackPopupMenu ){
 	bNoMoreHideMouse = true;
 	//SendStatusMessage(_T("Meni Enter"), 2000);
@@ -1048,67 +1731,9 @@ BOOL CMainFrame::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO*
 	return __super::OnCmdMsg(nID, nCode, pExtra, pHandlerInfo);
 }
 
-void CMainFrame::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
-{
-	DWORD style = GetStyle();
 
-	MENUBARINFO mbi;
-	memset(&mbi, 0, sizeof(mbi));
-	mbi.cbSize = sizeof(mbi);
-	::GetMenuBarInfo(m_hWnd, OBJID_MENU, 0, &mbi);
 
-	lpMMI->ptMinTrackSize.x = 0;
-	if(!IsCaptionMenuHidden())
-	{
-		lpMMI->ptMinTrackSize.x = 10;
-		CRect r;
-		for(int i = 0; ::GetMenuItemRect(m_hWnd, mbi.hMenu, i, &r); i++)
-			lpMMI->ptMinTrackSize.x += r.Width();
-		lpMMI->ptMinTrackSize.x = max(DEFCLIENTW, lpMMI->ptMinTrackSize.x);
-	}
-	if(style&WS_THICKFRAME) lpMMI->ptMinTrackSize.x += GetSystemMetrics((style&WS_CAPTION)?SM_CXSIZEFRAME:SM_CXFIXEDFRAME)*2;
 
-	memset(&mbi, 0, sizeof(mbi));
-	mbi.cbSize = sizeof(mbi);
-	::GetMenuBarInfo(m_hWnd, OBJID_MENU, 0, &mbi);
-
-	lpMMI->ptMinTrackSize.y = 0;
-	if(style&WS_CAPTION) lpMMI->ptMinTrackSize.y += GetSystemMetrics(SM_CYCAPTION);
-	if(style&WS_THICKFRAME) lpMMI->ptMinTrackSize.y += GetSystemMetrics((style&WS_CAPTION)?SM_CYSIZEFRAME:SM_CYFIXEDFRAME)*2;
-	lpMMI->ptMinTrackSize.y += (mbi.rcBar.bottom - mbi.rcBar.top);
-	if(!AfxGetAppSettings().fHideCaptionMenu) lpMMI->ptMinTrackSize.y += 3;
-
-	POSITION pos = m_bars.GetHeadPosition();
-	while(pos) 
-	{
-		CControlBar* pCB = m_bars.GetNext(pos);
-		if(!IsWindow(pCB->m_hWnd) || !pCB->IsVisible()) continue;
-
-		lpMMI->ptMinTrackSize.y += pCB->CalcFixedLayout(TRUE, TRUE).cy;
-	}
-
-	pos = m_dockingbars.GetHeadPosition();
-	while(pos)
-	{
-		CSizingControlBar* pCB = m_dockingbars.GetNext(pos);
-		if(IsWindow(pCB->m_hWnd) && pCB->IsWindowVisible() && !pCB->IsFloating())
-			lpMMI->ptMinTrackSize.y += pCB->CalcFixedLayout(TRUE, TRUE).cy-2;
-	}
-
-	__super::OnGetMinMaxInfo(lpMMI);
-}
-
-void CMainFrame::OnMove(int x, int y)
-{
-	__super::OnMove(x, y);
-
-	MoveVideoWindow();
-
-	WINDOWPLACEMENT wp;
-	GetWindowPlacement(&wp);
-	if(!m_fFullScreen && wp.flags != WPF_RESTORETOMAXIMIZED && wp.showCmd != SW_SHOWMINIMIZED)
-		GetWindowRect(AfxGetAppSettings().rcLastWindowPos);
-}
 
 void CMainFrame::OnMoving(UINT fwSide, LPRECT pRect)
 {
@@ -1136,24 +1761,6 @@ void CMainFrame::OnMoving(UINT fwSide, LPRECT pRect)
 
 		if(wr.bottom < r1.bottom && wr.bottom > r2.bottom)
 			wr.top = (wr.bottom = r0.bottom) - ws.cy;
-	}
-}
-
-void CMainFrame::OnSize(UINT nType, int cx, int cy)
-{
-	__super::OnSize(nType, cx, cy);
-
-	if(nType == SIZE_RESTORED && m_fTrayIcon)
-	{
-		ShowWindow(SW_SHOW);
-	}
-
-	if(!m_fFullScreen)
-	{
-		AppSettings& s = AfxGetAppSettings();
-		if(nType != SIZE_MAXIMIZED && nType != SIZE_MINIMIZED)
-			GetWindowRect(s.rcLastWindowPos);
-		s.lastWindowType = nType;
 	}
 }
 
@@ -2482,151 +3089,6 @@ LRESULT CMainFrame::OnMouseMoveOut(WPARAM /*wparam*/, LPARAM /*lparam*/) {
 
 	}
 	return 0;
-}
-
-void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
-{
-	CRect CVideoRect = m_wndView.GetVideoRect();
-	if(m_iPlaybackMode == PM_DVD)
-	{
-		CPoint vp = point - CVideoRect.TopLeft();
-		pDVDC->SelectAtPosition(vp);
-	}
-
-	CSize diff = m_lastMouseMove - point;
-	BOOL bMouseMoved =  (abs(diff.cx)+abs(diff.cy)) >= 1;
-	if(bMouseMoved){
-		m_fHideCursor = false;
-		KillTimer(TIMER_FULLSCREENMOUSEHIDER);
-		if(!bNoMoreHideMouse && m_iMediaLoadState == MLS_LOADED)
-			SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
-	}
-	AppSettings& s = AfxGetAppSettings();
-	int iDistance = sqrt( pow( (double)abs(point.x - m_pLastClickPoint.x) , 2)  + pow( (double)abs( point.y - m_pLastClickPoint.y ) , 2) );
-	if( ( iDistance > 30 || s_mDragFucOn) && s_mDragFuc){
-		if(!s_mDragFucOn){
-			m_pDragFuncStartPoint = point;
-			SetAlwaysOnTop(s.iOnTop , FALSE);
-			s_mDragFucOn = true;
-		}
-		if(s_mDragFuc == 1){ //移动画面
-			m_PosX += (double)(point.x - m_pDragFuncStartPoint.x) / CVideoRect.Width() ;
-			m_PosY += (double)(point.y - m_pDragFuncStartPoint.y)/ CVideoRect.Height() ;
-			MoveVideoWindow(true);
-		}else if(s_mDragFuc == 2){//缩放画面
-			m_ZoomX += (double)(point.x - m_pDragFuncStartPoint.x) / CVideoRect.Width() ;
-			m_ZoomY += (double)(m_pDragFuncStartPoint.y - point.y ) / CVideoRect.Height() ;
-			MoveVideoWindow(true);
-		}else if(s_mDragFuc == 3){
-			PostMessage(WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM(point.x, point.y));
-		}
-		m_pDragFuncStartPoint = point;
-
-		s_fLDown = false;
-		
-	}
-
-
-	if( (m_fFullScreen || !(s.nCS & CS_TOOLBAR) ) && bMouseMoved)
-	{
-		int nTimeOut = s.nShowBarsWhenFullScreenTimeOut;
-
-		if(nTimeOut < 0)
-		{
-			m_fHideCursor = false;
-			if(s.fShowBarsWhenFullScreen){
-				ShowControls(s.nCS | (s.bShowControlBar ? CS_COLORCONTROLBAR : 0), false);
-				//m_wndColorControlBar.ShowWindow(SW_SHOW);
-			}
-
-			KillTimer(TIMER_FULLSCREENCONTROLBARHIDER);
-//			SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
-		}
-		else if(nTimeOut == 0)
-		{
-			CRect r;
-			GetClientRect(r);
-			r.top = r.bottom;
-
-			POSITION pos = m_bars.GetHeadPosition();
-			for(int i = 1; pos; i <<= 1)
-			{
-				CControlBar* pNext = m_bars.GetNext(pos);
-				CSize sz = pNext->CalcFixedLayout(FALSE, TRUE);
-				if( ( s.nCS | CS_TOOLBAR | CS_SEEKBAR ) &i) r.top -= sz.cy;
-			}
-			
-			// HACK: the controls would cover the menu too early hiding some buttons
-			if(m_iPlaybackMode == PM_DVD
-				&& (m_iDVDDomain == DVD_DOMAIN_VideoManagerMenu
-				|| m_iDVDDomain == DVD_DOMAIN_VideoTitleSetMenu))
-				r.top = r.bottom - 10;
-
-			m_fHideCursor = false;
-
-			if(r.PtInRect(point))
-			{
-				if(s.fShowBarsWhenFullScreen){
-					ShowControls(s.nCS | CS_TOOLBAR | CS_SEEKBAR | ( s.bShowControlBar ? CS_COLORCONTROLBAR : 0) , false);
-					//m_wndColorControlBar.ShowWindow(SW_SHOW);
-				}
-			}
-			else{
-				if(s.fShowBarsWhenFullScreen)
-					ShowControls(CS_NONE, false);
-				
-			}
-			
-
-			//SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
-		}
-		else
-		{
-			m_fHideCursor = false;
-			if(s.fShowBarsWhenFullScreen){
-				ShowControls(s.nCS |  ( s.bShowControlBar ? CS_COLORCONTROLBAR : 0), false );
-				//m_wndColorControlBar.ShowWindow(SW_SHOW);
-			}
-				
-			SetTimer(TIMER_FULLSCREENCONTROLBARHIDER, nTimeOut*1000, NULL);
-			//SetTimer(TIMER_FULLSCREENMOUSEHIDER, max(nTimeOut*1000, 2000), NULL);
-		}
-	}
-	if((m_fFullScreen || IsCaptionMenuHidden() ) && bMouseMoved)
-	{
-
-		HMENU hMenu;
-		CRect r;
-		m_wndView.GetClientRect(r);
-		if(point.y < 10 && point.x < (r.Width() * 4/5)){
-			hMenu = m_hMenuDefault;
-		}else{
-			hMenu = NULL;
-		}
-		::SetMenu(m_hWnd, hMenu);
-
-	}
-
-
-/*
-
-	if(!m_fFullScreen && bMouseMoved && s.bShowControlBar){
-		CRect cvr = m_wndView.GetVideoRect(); //show and hide Color Control Bar when not full screen
-		cvr.top = cvr.bottom - 30;
-		if(cvr.PtInRect(point)){
-			ShowControlBar(&m_wndColorControlBar, SW_SHOW, FALSE);
-		}else if(!bNotHideColorControlBar){
-			ShowControlBar(&m_wndColorControlBar, SW_HIDE, TRUE);
-		}
-		
-	}
-
-*/
-
-
-	m_lastMouseMove = point;
-
-	__super::OnMouseMove(nFlags, point);
 }
 
 
@@ -5140,12 +5602,6 @@ void CMainFrame::OnUpdateViewMinimal(CCmdUI* pCmdUI)
 {
 }
 
-void CMainFrame::OnViewCompact()
-{
-	if(AfxGetAppSettings().fHideCaptionMenu)
-		SendMessage(WM_COMMAND, ID_VIEW_CAPTIONMENU);
-	ShowControls(CS_SEEKBAR|CS_TOOLBAR);
-}
 
 void CMainFrame::OnUpdateViewCompact(CCmdUI* pCmdUI)
 {
@@ -7763,7 +8219,19 @@ void CMainFrame::ZoomVideoWindow(double scale)
 
 	MoveVideoWindow();
 }
+DWORD CMainFrame::GetUIStat(UINT n_CmdID)
+{ //New UI
+	DWORD fShow = false;
+	if(n_CmdID >= ID_PLAY_PLAY && n_CmdID <= ID_PLAY_STOP ){
+		OAFilterState fs = m_fFrameSteppingActive ? State_Paused : GetMediaState();
+		if(fs >= 0){
+			if(fs != State_Stopped && fs != State_Paused && n_CmdID == ID_PLAY_PAUSE) fShow = true;
+		}
 
+
+	}
+	return fShow ;
+}
 double CMainFrame::GetZoomAutoFitScale()
 {
 	if(m_iMediaLoadState != MLS_LOADED || m_fAudioOnly)

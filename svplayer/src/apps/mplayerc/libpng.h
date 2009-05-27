@@ -28,6 +28,7 @@ struct png_t {unsigned char* data; unsigned int size, pos;};
 extern "C" unsigned char* DecompressPNG(struct png_t* png, int* w, int* h);
 
 #include <atlimage.h>
+#include "mplayerc.h"
 
 class CPngImage : public CImage
 {
@@ -45,7 +46,7 @@ public:
 			int w, h;
 			if(BYTE* p = DecompressPNG(&png, &w, &h))
 			{
-				if(Create(w, -h, 32))
+				if(Create(w, -h, 32, 1))
 				{
 					for(int y = 0; y < h; y++) 
 						memcpy(GetPixelAddress(0, y), &p[w*4*y], w*4);

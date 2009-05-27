@@ -58,6 +58,9 @@
 #include <evr9.h>
 #include "WebServer.h"
 
+
+#include "SUIButton.h"
+
 enum {PM_NONE, PM_FILE, PM_DVD, PM_CAPTURE};
 
 class OpenMediaData
@@ -226,7 +229,7 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 	void SetupNavStreamSelectSubMenu(CMenu* pSub, UINT id, DWORD dwSelGroup);
 	void OnNavStreamSelectSubMenu(UINT id, DWORD dwSelGroup);
 
-	CMenu m_popupmain, m_popup;
+	CMenu m_popupmain, m_popup, m_mainMenu;
 	CMenu m_opencds;
 	CMenu m_filters, m_subtitles, m_subtitles2, m_audios, m_audiodevices;
 	CStringArray m_AudioDevice;
@@ -768,4 +771,23 @@ public:
 	afx_msg void OnShowColorControlBar();
 	afx_msg void OnUpdateShowColorControlBar(CCmdUI *pCmdUI);
 	afx_msg void OnSetsnapshotpath();
+
+	/*NEW UI*/
+	LRESULT OnNcPaint( WPARAM wParam, LPARAM lParam );
+	LRESULT OnNcActivate( WPARAM wParam, LPARAM lParam);
+	LRESULT OnNcLButtonDown(  WPARAM wParam, LPARAM lParam);
+	LRESULT OnNcLButtonUp(  WPARAM wParam, LPARAM lParam);
+	LRESULT OnNcHitTestNewUI(  WPARAM wParam, LPARAM lParam);
+
+	afx_msg void OnNcCalcSize( BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp);
+	void RedrawNonClientArea();
+	DWORD GetUIStat(UINT n_CmdID);
+	//void PreMultiplyBitmap(CBitmap& bmp);
+
+private:
+	CBitmap m_bmpCaption;//, m_bmpClose, m_bmpMaximize, m_bmpMinimize, m_bmpRestore, m_bmpMenu;
+	CSUIBtnList m_btnList;
+	CRgn m_rgn;
+	//long m_nBoxStatus[4];
+	/*NEW UI END*/
 };

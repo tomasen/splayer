@@ -54,7 +54,7 @@ public:
 // Overrides
 	virtual BOOL Create(CWnd* pParentWnd);
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-
+	virtual CSize CalcDynamicLayout(int nLength,DWORD nMode );
 	DECLARE_MESSAGE_MAP()
 
 protected:
@@ -64,6 +64,9 @@ protected:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
+	afx_msg void OnWindowPosChanged( WINDOWPOS* lpwndpos );
+	
+	CRgn m_rgn;
 public:
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 };

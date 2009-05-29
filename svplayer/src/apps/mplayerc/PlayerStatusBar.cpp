@@ -50,6 +50,9 @@ BOOL CPlayerStatusBar::Create(CWnd* pParentWnd)
 	return CDialogBar::Create(pParentWnd, IDD_PLAYERSTATUSBAR, WS_CHILD|WS_VISIBLE|CBRS_ALIGN_BOTTOM, IDD_PLAYERSTATUSBAR);
 }
 
+CSize CPlayerStatusBar::CalcDynamicLayout(int nLength,DWORD nMode ){
+	return __super::CalcDynamicLayout( nLength, nMode );
+}
 BOOL CPlayerStatusBar::PreCreateWindow(CREATESTRUCT& cs)
 {
 	//cs.dwExStyle |= WS_EX_TRANSPARENT ;
@@ -67,7 +70,8 @@ int CPlayerStatusBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if(CDialogBar::OnCreate(lpCreateStruct) == -1)
 		return -1;
-
+	
+	
 	CRect r;
 	r.SetRectEmpty();
 
@@ -127,7 +131,10 @@ void CPlayerStatusBar::Relayout()
 void CPlayerStatusBar::Clear()
 {
 	m_status.SetWindowText(_T(""));
+	//ENSURE(::IsWindow(m_hWnd) || (m_pCtrlSite != NULL));
+	//if(m_time.m_hWnd){
 	m_time.SetWindowText(_T(""));
+	//}
 	SetStatusBitmap(0);
 	SetStatusTypeIcon(0);
 
@@ -250,15 +257,21 @@ BEGIN_MESSAGE_MAP(CPlayerStatusBar, CDialogBar)
 	ON_WM_LBUTTONDOWN()
 	ON_WM_SETCURSOR()
 	ON_WM_CTLCOLOR()
+	ON_WM_WINDOWPOSCHANGED()
 END_MESSAGE_MAP()
 
 
 // CPlayerStatusBar message handlers
-
+void CPlayerStatusBar::OnWindowPosChanged( WINDOWPOS* lpwndpos ){
+	
+	__super::OnWindowPosChanged(lpwndpos);
+}
 
 BOOL CPlayerStatusBar::OnEraseBkgnd(CDC* pDC)
 {
-
+	
+	DWORD curStyle = GetStyle();
+	ModifyStyle(WS_CAPTION, 0, 0);
 	for(CWnd* pChild = GetWindow(GW_CHILD); pChild; pChild = pChild->GetNextWindow())
 	{
 		if(!pChild->IsWindowVisible()) continue;
@@ -286,7 +299,7 @@ BOOL CPlayerStatusBar::OnEraseBkgnd(CDC* pDC)
 // 	}
 	
 	//pDC->SetBkMode(TRANSPARENT );
-	pDC->FillSolidRect(&r, 0);
+	pDC->FillSolidRect(&r, NEWUI_COLOR_TOOLBAR_UPPERBG);
 
 	return TRUE;
 }

@@ -190,13 +190,14 @@ END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CChildView message handlers
-
+#include "../../svplib/svplib.h"
 void CChildView::OnPaint() 
 {
 	CPaintDC dc(this); // device context for painting
 
 	((CMainFrame*)GetParentFrame())->RepaintVideo();
 
+	
 	// Do not call CWnd::OnPaint() for painting messages
 }
 void CChildView::OnSetFocus(CWnd* pOldWnd){
@@ -209,6 +210,7 @@ BOOL CChildView::OnEraseBkgnd(CDC* pDC)
 	CAutoLock cAutoLock(&m_csLogo);
 	if(((CMainFrame*)GetParentFrame())->IsSomethingLoaded())
 	{
+		//pDC->FillSolidRect(CRect(30,30,60,60) , RGB(0xff,0,0));
 		pDC->ExcludeClipRect(m_vrect);
 	}
 	else if(!m_logo.IsNull() /*&& ((CMainFrame*)GetParentFrame())->IsPlaylistEmpty()*/)
@@ -251,6 +253,13 @@ BOOL CChildView::OnEraseBkgnd(CDC* pDC)
 	GetClientRect(r);
 	pDC->FillSolidRect(r, 0);
 
+/*
+		CRect rc;
+		GetWindowRect(rc);
+		CString szLog;
+		szLog.Format(_T("%d hieght") , rc.Height());
+		SVP_LogMsg(szLog);*/
+	
 	return TRUE;
 }
 

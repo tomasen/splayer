@@ -25,7 +25,7 @@
 #include "stdafx.h"
 #include "mplayerc.h"
 #include "StatusLabel.h"
-
+#include "SUIButton.h"
 
 // CStatusLabel
 
@@ -71,7 +71,7 @@ void CStatusLabel::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 		dc.TextOut(p.x, p.y, str);
 		dc.ExcludeClipRect(CRect(p, size));
 		dc.SelectObject(&old);
-		dc.FillSolidRect(&r, 0);
+		dc.FillSolidRect(&r, NEWUI_COLOR_TOOLBAR_UPPERBG);
 	dc.Detach();
 }
 
@@ -79,7 +79,7 @@ BOOL CStatusLabel::OnEraseBkgnd(CDC* pDC)
 {
 	CRect r;
 	GetClientRect(&r);
-	pDC->FillSolidRect(&r, 0);
+	pDC->FillSolidRect(&r, NEWUI_COLOR_TOOLBAR_UPPERBG);
 	return TRUE;
 }
 

@@ -564,6 +564,9 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		m_wndColorControlBar.ShowWindow( SW_HIDE);
 	}
 	if(m_wndStatusBar.Create(this)){
+		//m_wndStatusBar.EnableDocking(0);
+		//FloatControlBar(&m_wndStatusBar, CPoint(10,10), CBRS_ALIGN_BOTTOM );
+
 		m_bars.AddTail(&m_wndStatusBar);
 	}
 	m_bars.AddTail(&m_wndColorControlBar);
@@ -864,12 +867,14 @@ void CMainFrame::OnMove(int x, int y)
 	CRect rc;
 	GetWindowRect(&rc);
 	m_btnList.OnSize( rc);
+
+	RedrawNonClientArea();
 }
 
 void CMainFrame::OnSize(UINT nType, int cx, int cy)
 {
 	__super::OnSize(nType, cx, cy);
-
+	
 	if(nType == SIZE_RESTORED && m_fTrayIcon)
 	{
 		ShowWindow(SW_SHOW);
@@ -889,6 +894,13 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 		GetWindowRect(&rc);
 		m_btnList.OnSize( rc);
 	}
+
+	CRect r,cr;
+	m_wndView.GetClientRect(r);
+	m_wndView.GetWindowRect(cr);
+	r.top += r.Height()/2;
+	cr.top += cr.Height()/2;
+	//::SetWindowPos(m_wndStatusBar.m_hWnd, m_wndView.m_hWnd, 20, 20, 100, 30,0);
 
 	if(!m_fFullScreen)
 	{
@@ -3764,8 +3776,10 @@ void CMainFrame::OnFilePostClosemedia()
 	m_wndSeekBar.SetPos(0);
 	m_wndInfoBar.RemoveAllLines();
 	m_wndStatsBar.RemoveAllLines();		
-	m_wndStatusBar.Clear();
-	m_wndStatusBar.ShowTimer(false);
+	if(IsWindow(m_wndStatusBar.m_hWnd)){
+		m_wndStatusBar.Clear();
+		m_wndStatusBar.ShowTimer(false);
+	}
 
 	if(IsWindow(m_wndSubresyncBar.m_hWnd))
 	{

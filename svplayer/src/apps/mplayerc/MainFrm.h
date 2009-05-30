@@ -303,6 +303,7 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 	friend class CWebServer;
 	CAutoPtr<CWebServer> m_pWebServer;
 private:
+	CString m_szTitle;
 	CString getCurPlayingSubfile(int * iSubDelayMS = NULL,int subid = 0 );
 	CPoint m_pLastClickPoint;
 	CPoint m_pDragFuncStartPoint;

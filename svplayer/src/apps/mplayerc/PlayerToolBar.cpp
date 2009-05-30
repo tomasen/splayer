@@ -38,6 +38,7 @@ typedef HRESULT (__stdcall * SetWindowThemeFunct)(HWND hwnd, LPCWSTR pszSubAppNa
 IMPLEMENT_DYNAMIC(CPlayerToolBar, CToolBar)
 CPlayerToolBar::CPlayerToolBar() :
 m_hovering(0),
+holdStatStr(0),
 iButtonWidth (30)
 {
 
@@ -88,91 +89,53 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 
 	m_btnList.AddTail( new CSUIButton(L"BTN_NEXT.BMP" , ALIGN_TOPLEFT, CRect(-48 , 9, 3,3)  , 0, ID_NAVIGATE_SKIPFORWARD, FALSE, ALIGN_LEFT, btnFFwd , CRect(20 , 10 , 20, 10) ) );
 	
+	CSUIButton* btnLogo =  new CSUIButton(L"SPLAYER.BMP" , ALIGN_TOPLEFT, CRect(20 , 7, 3,3)  , TRUE, 0, FALSE ) ;
+	m_btnList.AddTail(btnLogo);
 
-	m_btnList.AddTail( new CSUIButton(L"SPLAYER.BMP" , ALIGN_TOPLEFT, CRect(20 , 7, 3,3)  , TRUE, 0, FALSE ) );
-	
-	BOOL bIsMuted = IsMuted();
-	m_btnList.AddTail( new CSUIButton(L"MUTED.BMP" , ALIGN_TOPRIGHT, CRect(3 , 9, 105,3)  , FALSE, ID_VOLUME_MUTE, !bIsMuted ) );
+	CSUIButton* btnSubSwitch = new CSUIButton(L"BTN_SUB.BMP" , ALIGN_TOPLEFT, CRect(-37 , 5, 3,3)  , 0, ID_SUBLANGSWITCH, TRUE, ALIGN_RIGHT, btnFFBack , CRect(20 , 10 , 80, 10) );
+	m_btnList.AddTail( btnSubSwitch );
 
-	m_btnList.AddTail( new CSUIButton(L"VOLUME.BMP" , ALIGN_TOPRIGHT, CRect(3 , 9, 105,3)  , FALSE, ID_VOLUME_MUTE, bIsMuted ) );
+	m_btnList.AddTail( new CSUIButton(L"BTN_SUB_DELAY_REDUCE.BMP" , ALIGN_TOPLEFT, CRect(-42 , 5, 3,3)  , 0, ID_SUBDELAYDEC, TRUE, ALIGN_RIGHT, btnSubSwitch , CRect(3 , 3 , 3, 3) ) );
+	m_btnList.AddTail( new CSUIButton(L"BTN_SUB_DELAY_INCREASE.BMP" , ALIGN_TOPLEFT, CRect(-10 , 5, 3,3)  , 0, ID_SUBDELAYINC, TRUE, ALIGN_LEFT, btnSubSwitch , CRect(4 , 3 , 3, 3) ) );
 	
 	m_btnVolBG = new CSUIButton(L"VOLUME_BG.BMP" , ALIGN_TOPRIGHT, CRect(3 , 10, 20,3)  , TRUE, 0, FALSE ) ;
 	m_btnList.AddTail( m_btnVolBG );
+
+	BOOL bIsMuted = IsMuted();
+	CSUIButton* btnMute = new CSUIButton(L"MUTED.BMP" , ALIGN_TOPRIGHT, CRect(3 , 9, 105,3)  , FALSE, ID_VOLUME_MUTE, !bIsMuted , ALIGN_RIGHT, m_btnVolBG,  CRect(3 , 3 , 3, 3)) ;
+	m_btnList.AddTail( btnMute );
+
+	CSUIButton* btnSetting = new CSUIButton(L"BTN_SETTING.BMP" , ALIGN_TOPRIGHT, CRect(-70 , 5, 105,3)  , FALSE, ID_VIEW_OPTIONS, TRUE , ALIGN_RIGHT, btnMute , CRect(20 , 10 , 20, 10)) ;
+	m_btnList.AddTail( btnSetting );
+
+	CSUIButton* btnPlayList = new CSUIButton(L"BTN_PLAYLIST.BMP" , ALIGN_TOPRIGHT, CRect(3 , 5, 105,3)  , FALSE, ID_VIEW_PLAYLIST, TRUE , ALIGN_RIGHT, btnSetting , CRect(7 , 10 , 7, 10)) ;
+	m_btnList.AddTail( btnPlayList );
+
+
+	CSUIButton* btnCapture = new CSUIButton(L"BTN_CAPTURE.BMP" , ALIGN_TOPRIGHT, CRect(3 , 5, 105,3)  , FALSE, ID_FILE_SAVE_IMAGE, TRUE , ALIGN_RIGHT, btnPlayList , CRect(7 , 10 , 7, 10)) ;
+	m_btnList.AddTail( btnCapture );
+
+	
+
+
+	m_btnList.AddTail( new CSUIButton(L"VOLUME.BMP" , ALIGN_TOPRIGHT, CRect(3 , 9, 105,3)  , FALSE, ID_VOLUME_MUTE, bIsMuted  , ALIGN_RIGHT, m_btnVolBG,  CRect(3 , 3 , 3, 3)) );
+	
 	
 	m_btnVolTm = new CSUIButton(L"VOLUME_TM.BMP" , ALIGN_TOPRIGHT, CRect(3 , 9, 65,3)  , FALSE, ID_VOLUME_THUMB, FALSE );
 	m_btnList.AddTail( m_btnVolTm );
 
 	cursorHand = ::LoadCursor(NULL, IDC_HAND);
-	/*
-		CToolBarCtrl& tb = GetToolBarCtrl();
-			tb.DeleteButton(tb.GetButtonCount()-1);
-			tb.DeleteButton(tb.GetButtonCount()-1);
-		
-			SetMute(AfxGetAppSettings().fMute);
-		
-			UINT styles[] = 
-			{
-				TBBS_CHECKGROUP, TBBS_CHECKGROUP, TBBS_CHECKGROUP, 
-				TBBS_SEPARATOR,
-				TBBS_BUTTON, TBBS_BUTTON, TBBS_BUTTON, TBBS_BUTTON, 
-				//TBBS_SEPARATOR,
-				//TBBS_BUTTON/ *|TBSTYLE_DROPDOWN* /, 
-				TBBS_SEPARATOR,
-				TBBS_BUTTON, TBBS_BUTTON, TBBS_BUTTON, 
-				TBBS_SEPARATOR,
-				TBBS_BUTTON, TBBS_BUTTON, TBBS_SEPARATOR, 
-				TBBS_BUTTON,
-				TBBS_BUTTON,
-				TBBS_DISABLED,TBBS_DISABLED,
-				TBBS_CHECKBOX, 
-				/ *TBBS_SEPARATOR,* /
-			};
-		
-			for(int i = 0; i < countof(styles); i++)
-				SetButtonStyle(i, styles[i]|TBBS_DISABLED);*/
-		
 
-	/*
-	SetButtonStyle(0, GetButtonStyle(0)|BS_ICON );
-		CWnd* hWndBtn = GetToolBarCtrl().GetDlgItem( ID_PLAY_PLAY );
-		if(hWndBtn){
-			HICON hIcon = (HICON)LoadImage(AfxGetApp()->m_hInstance,  MAKEINTRESOURCE(IDI_PLAY), IMAGE_ICON, 32, 32, LR_SHARED);
-			if(hIcon){
-				::SendMessage( hWndBtn->m_hWnd,  BM_SETIMAGE,      IMAGE_ICON , (LPARAM)(hIcon) );  
-				DestroyIcon(hIcon);
-			}else{
-				AfxMessageBox(_T("f"));
-			}
-		}else{
-			AfxMessageBox(_T("s"));
-		}*/
-	/*
-	CWinApp* aa = AfxGetApp();
-		m_ToolBarImages.Create(32, 32, ILC_COLOR32, 4, 4);
-		m_ToolBarImages.Add(aa->LoadIcon(IDI_PLAY));
-	
-		m_ToolBarDisabledImages.Create(32, 32, ILC_COLOR32, 4, 4);
-		m_ToolBarDisabledImages.Add(aa->LoadIcon(IDI_PLAY));
-	
-		tb.SetImageList(&m_ToolBarImages);
-		tb.SetDisabledImageList(&m_ToolBarDisabledImages);
-	*/
-	
+	GetSystemFontWithScale(&m_statft, 14.0);
 
+	CDC ScreenDC;
+	ScreenDC.CreateIC(_T("DISPLAY"), NULL, NULL, NULL);
+	m_nLogDPIY = ScreenDC.GetDeviceCaps(LOGPIXELSY);
 	
 
 	
 		m_volctrl.Create(this);
-		/*
-		if(AfxGetAppSettings().fDisabeXPToolbars)
-		{
-			if(HMODULE h = LoadLibrary(_T("uxtheme.dll")))
-			{
-				SetWindowThemeFunct f = (SetWindowThemeFunct)GetProcAddress(h, "SetWindowTheme");
-				if(f) f(m_hWnd, L" ", L" ");
-				FreeLibrary(h);
-			}
-		}*/
+	
 	
 
 	return TRUE;
@@ -187,12 +150,31 @@ void CPlayerToolBar::OnSize(UINT nType, int cx, int cy)
 	GetWindowRect(&rc);
 	long iWidth = rc.Width();
 	BOOL hideT1 = TRUE;
+	BOOL hideT2 = TRUE;
+	BOOL hideT3 = TRUE;
 	if( iWidth > 510 ){
 			hideT1 = false;
+	}
+	if( iWidth > 580 ){
+		hideT2 = false;
+	}
+	if( iWidth > 620 ){
+		hideT3 = false;
 	}
 
 	m_btnList.SetHideStat(ID_NAVIGATE_SKIPBACK , hideT1);
 	m_btnList.SetHideStat(ID_NAVIGATE_SKIPFORWARD , hideT1);
+
+	m_btnList.SetHideStat(ID_VIEW_PLAYLIST , hideT2);
+	m_btnList.SetHideStat(ID_SUBLANGSWITCH , hideT2);
+	m_btnList.SetHideStat(ID_SUBDELAYDEC , hideT2);
+	m_btnList.SetHideStat(ID_SUBDELAYINC , hideT2);
+
+	
+	m_btnList.SetHideStat(ID_FILE_SAVE_IMAGE , hideT2);
+	m_btnList.SetHideStat(ID_VIEW_OPTIONS , hideT2);
+	
+	
 
 	m_btnList.OnSize( rc);
 }
@@ -325,7 +307,7 @@ BOOL CPlayerToolBar::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message){
 CSize CPlayerToolBar::CalcFixedLayout(BOOL bStretch,BOOL bHorz ){
 
 	
-	CSize size( 32767, 33 );
+	CSize size( 32767, 33 * m_nLogDPIY / 96 );
 
 	if ( CWnd* pParent = AfxGetMainWnd() )
 	{
@@ -371,6 +353,23 @@ void CPlayerToolBar::OnPaint()
 	//SVP_LogMsg(szLog);
  	m_btnList.PaintAll(&hdc, rc);
 
+	if(!m_timerstr.IsEmpty()){
+		
+		HFONT holdft = (HFONT)hdc.SelectObject(m_statft);
+
+		hdc.SetTextColor(0xffffff);
+		CSize size = hdc.GetTextExtent(m_timerstr);
+		CRect frc ( rcClient );
+		size.cx = min( rcClient.Width() /3, size.cx);
+		frc.left += 20;
+		frc.bottom -= 7;
+		frc.right = frc.left + size.cx;
+		
+		::DrawText(hdc, m_timerstr, m_timerstr.GetLength(), frc,  DT_LEFT|DT_SINGLELINE| DT_VCENTER);
+		hdc.SelectObject(holdft);
+
+		
+	}
 	
 }
 void CPlayerToolBar::UpdateButtonStat(){
@@ -378,6 +377,11 @@ void CPlayerToolBar::UpdateButtonStat(){
 	BOOL fShow = pFrame->GetUIStat( ID_PLAY_PAUSE );
 	m_btnList.SetHideStat( ID_PLAY_PLAY , fShow );
 	m_btnList.SetHideStat( ID_PLAY_PAUSE , !fShow );
+	BOOL bLogo = pFrame->IsSomethingLoaded();
+	m_btnList.SetHideStat(_T("SPLAYER.BMP"), bLogo);
+	if(!bLogo){
+		m_timerstr.Empty();
+	}
 }
 void CPlayerToolBar::OnNcPaint() // when using XP styles the NC area isn't drawn for our toolbar...
 {
@@ -394,6 +398,87 @@ void CPlayerToolBar::OnInitialUpdate()
 	ArrangeControls();
 }
 
+void CPlayerToolBar::SetStatusTimer(CString str , UINT timer )
+{
+	if(m_timerstr == str) return;
+
+	str.Trim();
+	
+	if(holdStatStr && !timer){
+		m_timerqueryedstr = str;
+	}else{
+		m_timerstr = str;
+		Invalidate();
+	}
+	if(timer){
+		KillTimer(TIMER_STATERASER); 
+		holdStatStr = TRUE;
+		SetTimer(TIMER_STATERASER, timer , NULL);
+	}
+	
+}
+
+void CPlayerToolBar::SetStatusTimer(REFERENCE_TIME rtNow, REFERENCE_TIME rtDur, bool fHighPrecision, const GUID* pTimeFormat, double playRate)
+{
+	ASSERT(pTimeFormat);
+
+	CString str;
+	CString posstr, durstr;
+
+	if(*pTimeFormat == TIME_FORMAT_MEDIA_TIME)
+	{
+		DVD_HMSF_TIMECODE tcNow = RT2HMSF(rtNow);
+		DVD_HMSF_TIMECODE tcDur = RT2HMSF(rtDur);
+
+		if(tcDur.bHours > 0 || (rtNow >= rtDur && tcNow.bHours > 0)) 
+			posstr.Format(_T("%02d:%02d:%02d"), tcNow.bHours, tcNow.bMinutes, tcNow.bSeconds);
+		else 
+			posstr.Format(_T("%02d:%02d"), tcNow.bMinutes, tcNow.bSeconds);
+
+		if(tcDur.bHours > 0)
+			durstr.Format(_T("%02d:%02d:%02d"), tcDur.bHours, tcDur.bMinutes, tcDur.bSeconds);
+		else
+			durstr.Format(_T("%02d:%02d"), tcDur.bMinutes, tcDur.bSeconds);
+
+		if(fHighPrecision)
+		{
+			str.Format(_T("%s.%03d"), posstr, (rtNow/10000)%1000);
+			posstr = str;
+			str.Format(_T("%s.%03d"), durstr, (rtDur/10000)%1000);
+			durstr = str;
+			str.Empty();
+		}
+	}
+	else if(*pTimeFormat == TIME_FORMAT_FRAME)
+	{
+		posstr.Format(_T("%I64d"), rtNow);
+		durstr.Format(_T("%I64d"), rtDur);
+	}
+
+	str = (/*start <= 0 &&*/ rtDur <= 0) ? posstr : posstr + _T(" / ") + durstr;
+
+	SYSTEM_POWER_STATUS status;
+	GetSystemPowerStatus(&status);
+	CString szPower ;
+	if ( status.BatteryFlag != 128 && status.BatteryFlag != 255 ){
+		szPower.Format(_T("电量: %d%%  "), status.BatteryLifePercent);
+	}else{
+		//szPower = _T("电量: ∽ ");
+	}
+	CString szPlayrate;
+	if(fabs(playRate - 1.0) > 0.02 && playRate > 0.01)	{
+		szPlayrate.Format(_T("速率 %0.1fx "), playRate);
+	}
+
+	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
+	CString szPlayingFileName = pFrame->GetCurPlayingFileName();
+	if(!szPlayingFileName.IsEmpty()){
+		//szPlayingFileName.Append(_T("  "));
+	}
+
+//szPlayingFileName
+	SetStatusTimer( str + szPlayrate + szPower  );
+}
 BOOL CPlayerToolBar::OnVolumeMute(UINT nID)
 {
 	SetMute(!IsMuted()); 
@@ -590,6 +675,16 @@ void CPlayerToolBar::OnLButtonUp(UINT nFlags, CPoint point)
 }
 void CPlayerToolBar::OnTimer(UINT nIDEvent){
 	switch(nIDEvent){
+		case TIMER_STATERASER:
+			KillTimer(TIMER_STATERASER);
+			if(!m_timerqueryedstr.IsEmpty()){
+				m_timerstr = m_timerqueryedstr;
+				m_timerqueryedstr.Empty();
+				Invalidate();
+			}
+
+			holdStatStr = FALSE;
+			break;
 		case TIMER_STOPFASTFORWORD:
 			iFastFFWCount = 0;
 			KillTimer(TIMER_STOPFASTFORWORD);

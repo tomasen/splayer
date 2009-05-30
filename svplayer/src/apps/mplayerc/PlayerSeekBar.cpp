@@ -115,7 +115,7 @@ CRect CPlayerSeekBar::GetChannelRect()
 {
 	CRect r;
 	GetClientRect(&r);
-	r.DeflateRect(5, 1, 5, 8); //
+	r.DeflateRect(5, 0, 5, 7); //
 	r.bottom = r.top + 5;
 	return(r);
 }
@@ -252,9 +252,20 @@ void CPlayerSeekBar::OnPaint()
 		rFilled.right =   cur;
 		dc.FillSolidRect(&rFilled,  white ); //fEnabled ?
 		r = GetChannelRect();
-		for(int drawPos = cur + 1; drawPos < r.right; drawPos ++){
-			CRect step(drawPos,r.top, drawPos+1, r.bottom);
-			if(drawPos % 2){
+		switch( cur % 4 ){
+			case 3:
+				cur--;
+				break;
+			case 2:
+				cur+=2;
+				break;
+			case 1:
+				cur++;
+				break;
+		}
+		for(int drawPos = cur ; drawPos < r.right; drawPos +=2){
+			CRect step(drawPos,r.top, drawPos+2, r.bottom);
+			if(drawPos % 4){
 				dc.FillSolidRect( &step, NEWUI_COLOR_TOOLBAR_UPPERBG);
 			}else{
 				dc.FillSolidRect( &step, white);

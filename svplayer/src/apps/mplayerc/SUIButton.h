@@ -71,10 +71,13 @@ public:
 
 #include "libpng.h"
 
+static int nLogDPIX = 0,  nLogDPIY = 0;
+
 class CSUIButton {
 
 public:
 	CSize m_btnSize; //按钮的大小尺寸
+	CSize m_orgbtnSize; //按钮的大小尺寸
 	int m_iAlign; //与窗口对齐方向
 	CRect m_marginTownd; //按钮相对于窗口的位置， 0为不强制 负数为百分比
 	CRect m_rcHitest; //按钮的有效范围，用于hittest
@@ -111,9 +114,11 @@ public:
 
 	BOOL m_NotButton;
 
+	void CountDPI();
 private:
 	void PreMultiplyBitmap( CBitmap& bmp );
 	LONG CalcRealMargin(LONG Mlen, LONG bW, LONG wW);
+	
 	
 };
 

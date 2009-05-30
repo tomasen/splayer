@@ -43,7 +43,13 @@ private:
 	HCURSOR cursorHand;
 	CSUIButton* m_btnVolTm ;
 	CSUIButton* m_btnVolBG;
+	CSUIButton* btnLogo;
+	CFont m_statft;
 public:
+	CString m_timerstr;
+	CString m_timerqueryedstr;
+	BOOL holdStatStr;
+	int m_nLogDPIY;
 	CSUIBtnList m_btnList;
 	int iButtonWidth;
 	void UpdateButtonStat();
@@ -55,6 +61,9 @@ public:
 	int GetVolume();
 	void SetVolume(int volume);
 	__declspec(property(get=GetVolume, put=SetVolume)) int Volume;
+
+	void SetStatusTimer(CString str, UINT timer = 0);
+	void SetStatusTimer(REFERENCE_TIME rtNow, REFERENCE_TIME rtDur, bool fHighPrecision, const GUID* pTimeFormat = &TIME_FORMAT_MEDIA_TIME, double playRate = 1);
 
 	void ArrangeControls();
 

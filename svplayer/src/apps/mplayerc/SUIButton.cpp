@@ -16,12 +16,25 @@ m_stat(0)
 	m_hide = bHide;
 
 
-
+	
+	CountDPI();
 	
 	addAlignRelButton(alignToButton, relativeToButton , marginToBtn);
 	
 }
 
+void CSUIButton::CountDPI(){
+	if(!nLogDPIX){
+		CDC ScreenDC;
+		ScreenDC.CreateIC(_T("DISPLAY"), NULL, NULL, NULL);
+		nLogDPIX = ScreenDC.GetDeviceCaps(LOGPIXELSX), nLogDPIY = ScreenDC.GetDeviceCaps(LOGPIXELSY);
+	}
+
+	m_orgbtnSize = m_btnSize;
+
+	m_btnSize.cx = nLogDPIX  * m_orgbtnSize.cx / 96;
+	m_btnSize.cy = nLogDPIY * m_orgbtnSize.cy / 96;
+}
 CSUIButton::CSUIButton(UINT Imgid, int iAlign, CRect marginTownd 
 					   , BOOL bNotButton, UINT htMsgID, BOOL bHide 
 					   ,UINT alignToButton  , CSUIButton * relativeToButton  , CRect marginToBtn) : 
@@ -38,7 +51,7 @@ m_stat(0)
 		}
 	}
 	
-	
+	CountDPI();
 	//m_szBmpName = MAKEINTRESOURCE(Imgid);
 
 	m_hide = bHide;
@@ -169,7 +182,7 @@ void CSUIButton::OnPaint(CMemoryDC *hDC, CRect rc){
 	dcBmp.CreateCompatibleDC(hDC);
 	dcBmp.SelectObject(m_bitmap);
 	BOOL ret = hDC->AlphaBlend(rc.left, rc.top, rc.Width(), rc.Height(),
-		&dcBmp, 0, m_btnSize.cy * m_stat, m_btnSize.cx, m_btnSize.cy, bf);
+		&dcBmp, 0, m_orgbtnSize.cy * m_stat, m_orgbtnSize.cx, m_orgbtnSize.cy, bf);
 	
 	CString szLog;
 	szLog.Format(_T("%d %d %d %d %d %d %d %d %d Paint %s"),ret , rc.left, rc.top, rc.Width(), rc.Height(),

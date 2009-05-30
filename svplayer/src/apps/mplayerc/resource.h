@@ -333,6 +333,7 @@
 #define ID_SHADERS_SETDX9				4501
 #define TIMER_FASTFORWORD				7001
 #define TIMER_STOPFASTFORWORD			7002
+#define TIMER_STATERASER				7003
 #define IDD_OPEN_DLG                    10000
 #define IDD_OPENCAPDEVICE_DLG           10001
 #define IDD_MEDIATYPES_DLG              10002

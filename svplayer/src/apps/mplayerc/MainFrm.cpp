@@ -616,7 +616,8 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	CString szBuild;
 	szBuild.Format( _T(" (Build %s)"),SVP_REV_STR);
-	SetWindowText(CString(ResStr(IDR_MAINFRAME)) + szBuild);
+	//SetWindowText(CString(ResStr(IDR_MAINFRAME)) + szBuild);
+	m_szTitle = CString(ResStr(IDR_MAINFRAME)) + szBuild;
 
 	SetTimer(TIMER_STATUSCHECKER , 10000, NULL);
 
@@ -829,18 +830,20 @@ void CMainFrame::OnNcCalcSize( BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp){
 
 		CRect rc = lpncsp->rgrc[0];
 		DWORD currentStyle = GetStyle();
-		if(currentStyle&WS_CAPTION){
-
-		}
+		
 		if(m_fFullScreen){
 
 		}else if(wp.showCmd!=SW_MAXIMIZE ){
 			rc.InflateRect( GetSystemMetrics(SM_CXFRAME) - 3, 0,   GetSystemMetrics(SM_CXFRAME) - 3, GetSystemMetrics(SM_CXFRAME) - 2);
+			if(!m_wndToolBar.IsVisible())	{
+				rc.bottom -= 2;
+			}
 		}else{
 			//rc.InflateRect( GetSystemMetrics(SM_CXFRAME) - 3, 0,   GetSystemMetrics(SM_CXFRAME) - 3, GetSystemMetrics(SM_CXFRAME) - 2);
+
 		}
-
-
+		
+		
 		lpncsp->rgrc[0] = rc;
 	}
 	__super::OnNcCalcSize(bCalcValidRects, lpncsp);
@@ -960,9 +963,12 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 	rc-=rc.TopLeft();
 	if(wp.showCmd!=SW_MAXIMIZE && !m_fFullScreen){
 		rc.InflateRect(GetSystemMetrics(SM_CXBORDER), GetSystemMetrics(SM_CYBORDER));
+		if(!m_wndToolBar.IsVisible()){
+			//rc.bottom -=3;
+		}
 	}
 	DWORD currentStyle = GetStyle();
-
+	BOOL bCAPTIONon = currentStyle&WS_CAPTION ;
 
 	//////////////////////////////////////////////////////////////////////////
 	// This is an undocumented (or not very clearly documented)
@@ -990,9 +996,16 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 		RECT rcClient = {0};
 		GetClientRect(&rcClient);
 		rcClient.top+=GetSystemMetrics(SM_CYFRAME);
-		rcClient.top+=GetSystemMetrics(SM_CYCAPTION);
+		if(bCAPTIONon){
+			rcClient.top+=GetSystemMetrics(SM_CYCAPTION);
+			rcClient.bottom+=GetSystemMetrics(SM_CYCAPTION);
+		}
 		rcClient.left+=3;
-		rcClient.bottom+=GetSystemMetrics(SM_CYCAPTION)+2;
+		if(m_wndToolBar.IsVisible()){
+			rcClient.bottom+=2;
+		}else{
+			//rcClient.bottom-=4;
+		}
 		rcClient.right+=3;
 		dc->ExcludeClipRect(&rcClient);
 
@@ -1045,7 +1058,7 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 			hdc.StretchBlt(rc.Width()-2-4, 0, 4, nTotalCaptionHeight, &dcBmp, 10, 0, 4, 25, SRCCOPY);
 			dcBmp.SelectObject(hbmpold);
 		}
-		if(currentStyle&WS_CAPTION){
+		if(bCAPTIONon){
 			// and the title
 			CFont hft;
 			GetSystemFontWithScale(&hft, 14.0);
@@ -1057,8 +1070,8 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 			rcWindowText.left = rc.left+7+GetSystemMetrics(SM_CXFRAME);
 			rcWindowText.bottom = rc.top+nTotalCaptionHeight;
 			rcWindowText.right = rc.right;
-			CString szWindowText;
-			GetWindowText(szWindowText);
+			CString szWindowText = m_szTitle;
+			//GetWindowText(szWindowText);
 			::DrawShadowText(hdc, szWindowText, szWindowText.GetLength(), &rcWindowText, DT_LEFT|DT_SINGLELINE | DT_VCENTER, RGB(255,255,255), RGB(64,64,64), 2,2);
 			hdc.SelectObject(holdft);
 
@@ -1141,7 +1154,7 @@ LRESULT CMainFrame::OnNcLButtonUp( WPARAM wParam, LPARAM lParam )
 			m_btnList.ClearStat();
 			ShowWindow(SW_MINIMIZE);
 		}
-		else if (wParam == HTMENU)
+		else if (wParam == HTMENU  )
 		{
 			//OnMenu(m_mainMenu.GetSubMenu(0));
 		}
@@ -1190,10 +1203,18 @@ LRESULT CMainFrame::OnNcHitTestNewUI(WPARAM wParam, LPARAM lParam )
 	if(ret){
 		return ret;
 	}
+	CRect rcMenu (rc.left + 3, rc.top + 2,rc.left + 120 , rc.bottom - 3 );
+	if (rcMenu.PtInRect(pt) ){
+		return HTMENU;
+	}
 	LRESULT lHTESTID = DefWindowProc(WM_NCHITTEST, wParam, lParam);
 	if(lHTESTID == HTCLOSE || lHTESTID == HTMAXBUTTON || lHTESTID == HTMINBUTTON || lHTESTID == HTMENU  ){
 		return HTCAPTION;
 	}
+	if(HTSYSMENU == lHTESTID){
+		return HTMENU;
+	}
+	
 	return lHTESTID;
 } 
 
@@ -1277,8 +1298,9 @@ void CMainFrame::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
 	if(style&WS_CAPTION) lpMMI->ptMinTrackSize.y += GetSystemMetrics(SM_CYCAPTION);
 	if(style&WS_THICKFRAME) lpMMI->ptMinTrackSize.y += GetSystemMetrics((style&WS_CAPTION)?SM_CYSIZEFRAME:SM_CYFIXEDFRAME)*2;
 	//lpMMI->ptMinTrackSize.y += (mbi.rcBar.bottom - mbi.rcBar.top);
+	
 	if(!AfxGetAppSettings().fHideCaptionMenu) lpMMI->ptMinTrackSize.y += 3;
-
+	
 	POSITION pos = m_bars.GetHeadPosition();
 	while(pos) 
 	{
@@ -1298,6 +1320,9 @@ void CMainFrame::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
 	CString szLog;
 	szLog.Format(_T("MaxInfo %d %d %d %d %d %d ") , lpMMI->ptMaxSize.x , lpMMI->ptMaxSize.y, lpMMI->ptMaxTrackSize.x , lpMMI->ptMaxTrackSize.y, lpMMI->ptMaxPosition.x , lpMMI->ptMaxPosition.y);
 	//SVP_LogMsg(szLog);
+
+	
+	lpMMI->ptMinTrackSize.y = max(lpMMI->ptMinTrackSize.y, DEFCLIENTH);
 
 	lpMMI->ptMaxPosition.x = 0;
 	lpMMI->ptMaxPosition.y = 0;
@@ -1574,8 +1599,8 @@ LRESULT CMainFrame::OnNotifyIcon(WPARAM wParam, LPARAM lParam)
 		case WM_MOUSEMOVE:
 		{
 			CString str;
-			GetWindowText(str);
-			SetTrayTip(str);
+			//GetWindowText(str);
+			SetTrayTip(m_szTitle);
 			break;
 		}
 
@@ -2233,7 +2258,8 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 				str += ch;
 			}
 
-			m_wndStatusBar.SetStatusTimer(str);
+			//m_wndStatusBar.SetStatusTimer(str);
+			m_wndToolBar.SetStatusTimer(str);
 		}
 		else
 		{
@@ -2241,7 +2267,8 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 			if(E_NOTIMPL == pMS->GetRate(&pRate)){
 				pRate = 0;
 			}
-			m_wndStatusBar.SetStatusTimer(pos, stop, !!m_wndSubresyncBar.IsWindowVisible(), &tf , pRate); 
+			m_wndToolBar.SetStatusTimer(pos, stop, !!m_wndSubresyncBar.IsWindowVisible(), &tf , pRate); 
+			//m_wndToolBar.SetStatusTimer(str);
 		}
 
 		m_wndSubresyncBar.SetTime(pos);
@@ -3799,7 +3826,8 @@ void CMainFrame::OnFilePostClosemedia()
 	RecalcLayout();
 	CString szBuild;
 	szBuild.Format( _T(" (Build %s)"),SVP_REV_STR);
-	SetWindowText(CString(ResStr(IDR_MAINFRAME)) + szBuild);
+	//SetWindowText(CString(ResStr(IDR_MAINFRAME)) + szBuild);
+	m_szTitle = CString(ResStr(IDR_MAINFRAME)) + szBuild;
 	RedrawNonClientArea();
 
 	SetAlwaysOnTop(AfxGetAppSettings().iOnTop);
@@ -5941,11 +5969,15 @@ void CMainFrame::OnPlayPlay()
 		}
 
 		SetAlwaysOnTop(AfxGetAppSettings().iOnTop);
+
+		m_wndColorControlBar.CheckAbility();
+
+		MoveVideoWindow();
+	}else{
+		SendMessage(WM_COMMAND, ID_FILE_OPENMEDIA);
 	}
 
-	m_wndColorControlBar.CheckAbility();
-
-	MoveVideoWindow();
+	
 }
 
 void CMainFrame::OnPlayPauseI()
@@ -6068,7 +6100,7 @@ void CMainFrame::OnPlayStop()
 			m_wndSeekBar.GetRange(start, stop);
 			GUID tf;
 			pMS->GetTimeFormat(&tf);
-			m_wndStatusBar.SetStatusTimer(m_wndSeekBar.GetPosReal(), stop, !!m_wndSubresyncBar.IsWindowVisible(), &tf);
+			m_wndToolBar.SetStatusTimer(m_wndSeekBar.GetPosReal(), stop, !!m_wndSubresyncBar.IsWindowVisible(), &tf);
 			
 			SetAlwaysOnTop(AfxGetAppSettings().iOnTop);
 		}
@@ -6104,7 +6136,7 @@ void CMainFrame::OnUpdatePlayPauseStop(CCmdUI* pCmdUI)
 			if(fs == State_Stopped && pCmdUI->m_nID == ID_PLAY_PAUSE) fEnable = false;
 		}
 	}
-
+	if(pCmdUI->m_nID == ID_PLAY_PLAY) fEnable = true;
 	pCmdUI->Enable(fEnable);
 }
 
@@ -8207,7 +8239,7 @@ void CMainFrame::ZoomVideoWindow(double scale)
 	}
 
 	// center window
-	if(!s.fRememberWindowPos)
+	//if(!s.fRememberWindowPos)
 	{
 		CPoint cp = r.CenterPoint();
 		r.left = cp.x - w/2;
@@ -8224,7 +8256,15 @@ void CMainFrame::ZoomVideoWindow(double scale)
 	if(r.left < mi.rcWork.left) r.OffsetRect(mi.rcWork.left-r.left, 0);
 	if(r.bottom > mi.rcWork.bottom) r.OffsetRect(0, mi.rcWork.bottom-r.bottom);
 	if(r.top < mi.rcWork.top) r.OffsetRect(0, mi.rcWork.top-r.top);
-
+	CRect rcWork(mi.rcWork);
+	if(r.Width() >  rcWork.Width() ){
+		r.left = rcWork.left;
+		r.right = rcWork.right;
+	}
+	if(r.Height() >  rcWork.Height() ){
+		r.top = rcWork.top;
+		r.bottom = rcWork.bottom;
+	}
 	if(m_fFullScreen || !s.HasFixedWindowSize())
 	{
 		MoveWindow(r);
@@ -9556,7 +9596,8 @@ void CMainFrame::OpenSetupWindowTitle(CString fn)
 	CString szBuild;
 	szBuild.Format(_T(" (Build %s)"),SVP_REV_STR);
 	title += szBuild;
-	SetWindowText(title);
+	//SetWindowText(title);
+	m_szTitle = title;
 	RedrawNonClientArea();
 }
 
@@ -11137,6 +11178,7 @@ void CMainFrame::ShowControls(int nCS, bool fSave)
 		AfxGetAppSettings().nCS = nCS;
 
 	RecalcLayout();
+	RedrawNonClientArea();
 }
 
 void CMainFrame::SetAlwaysOnTop(int i, BOOL setSetting)
@@ -12133,7 +12175,8 @@ void CMainFrame::StopWebServer()
 CString CMainFrame::GetStatusMessage()
 {
 	CString str;
-	m_wndStatusBar.m_status.GetWindowText(str);
+	//m_wndStatusBar.m_status.GetWindowText(str);
+	str = m_wndToolBar.m_timerstr;
 	return str;
 }
 
@@ -12146,7 +12189,7 @@ void CMainFrame::SendStatusMessage(CString msg, int nTimeOut)
 
 	m_playingmsg = msg;
 	
-	if(!m_wndStatusBar.IsVisible()){
+	if(!m_wndStatusBar.IsVisible() && 0){
 		KillTimer(TIMER_STATUSBARHIDER);
 
 		if(m_fFullScreen){
@@ -12157,6 +12200,8 @@ void CMainFrame::SendStatusMessage(CString msg, int nTimeOut)
 			SetTimer( TIMER_STATUSBARHIDER , 10000, NULL); 
 		}
 	}
+
+	m_wndToolBar.SetStatusTimer( m_playingmsg , nTimeOut);
 
 	SetTimer(TIMER_STATUSERASER, nTimeOut, NULL);
 }

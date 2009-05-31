@@ -140,6 +140,16 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 
 	return TRUE;
 }
+
+void CPlayerToolBar::OnMove(int x, int y){
+	__super::OnMove(x, y);
+	ReCalcBtnPos();
+}
+void CPlayerToolBar::ReCalcBtnPos(){
+	CRect rc;
+	GetWindowRect(&rc);
+	m_btnList.OnSize( rc);
+}
 void CPlayerToolBar::OnSize(UINT nType, int cx, int cy)
 {
 	__super::OnSize(nType, cx, cy);
@@ -278,6 +288,7 @@ BEGIN_MESSAGE_MAP(CPlayerToolBar, CToolBar)
 	ON_COMMAND_EX(ID_VOLUME_UP, OnVolumeUp)
 	ON_COMMAND_EX(ID_VOLUME_DOWN, OnVolumeDown)
 	ON_WM_NCPAINT()
+	ON_WM_MOVE()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()
 	ON_WM_PAINT()

@@ -66,7 +66,7 @@ public:
 	void SetStatusTimer(REFERENCE_TIME rtNow, REFERENCE_TIME rtDur, bool fHighPrecision, const GUID* pTimeFormat = &TIME_FORMAT_MEDIA_TIME, double playRate = 1);
 
 	void ArrangeControls();
-
+	void ReCalcBtnPos();
 	CVolumeCtrl m_volctrl;
 
 // Overrides
@@ -81,6 +81,8 @@ protected:
 	//{{AFX_MSG(CPlayerToolBar)
 	afx_msg void OnPaint();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
+	afx_msg void OnMove(int x, int y);
+	
 	afx_msg void OnInitialUpdate();
 	afx_msg BOOL OnVolumeMute(UINT nID);
 	afx_msg void OnUpdateVolumeMute(CCmdUI* pCmdUI);

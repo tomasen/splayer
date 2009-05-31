@@ -870,7 +870,8 @@ void CMainFrame::OnMove(int x, int y)
 	CRect rc;
 	GetWindowRect(&rc);
 	m_btnList.OnSize( rc);
-
+	
+	m_wndToolBar.ReCalcBtnPos();
 	RedrawNonClientArea();
 }
 
@@ -11151,7 +11152,8 @@ void CMainFrame::ShowControls(int nCS, bool fSave)
 {
 	int nCSprev = AfxGetAppSettings().nCS;
 	int hbefore = 0, hafter = 0;
-
+	
+	nCS &= ~CS_STATUSBAR;
 	m_pLastBar = NULL;
 
 	POSITION pos = m_bars.GetHeadPosition();

@@ -47,7 +47,7 @@ CPlayerStatusBar::~CPlayerStatusBar()
 
 BOOL CPlayerStatusBar::Create(CWnd* pParentWnd)
 {
-	return CDialogBar::Create(pParentWnd, IDD_PLAYERSTATUSBAR, WS_CHILD|WS_VISIBLE|CBRS_ALIGN_BOTTOM, IDD_PLAYERSTATUSBAR);
+	return CDialogBar::Create(pParentWnd, IDD_PLAYERSTATUSBAR, WS_CHILD|CBRS_ALIGN_BOTTOM, IDD_PLAYERSTATUSBAR);
 }
 
 CSize CPlayerStatusBar::CalcDynamicLayout(int nLength,DWORD nMode ){

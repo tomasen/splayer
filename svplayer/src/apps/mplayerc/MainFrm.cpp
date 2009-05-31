@@ -587,6 +587,8 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	
 	ShowControls(s.nCS | (s.bShowControlBar ? CS_COLORCONTROLBAR : 0));
 
+	m_wndOSD.Create(_T("CMOSDWnd"), _T("OSD") , WS_VISIBLE|WS_CHILD, CRect(0,0,100,20) ,this, 9999 );
+
 	SetAlwaysOnTop(s.iOnTop);
 
 	ShowTrayIcon(s.fTrayIcon);
@@ -872,6 +874,7 @@ void CMainFrame::OnMove(int x, int y)
 	m_btnList.OnSize( rc);
 	
 	m_wndToolBar.ReCalcBtnPos();
+	m_wndView.ReCalcBtn();
 	RedrawNonClientArea();
 }
 
@@ -1071,9 +1074,13 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 			rcWindowText.left = rc.left+7+GetSystemMetrics(SM_CXFRAME);
 			rcWindowText.bottom = rc.top+nTotalCaptionHeight;
 			rcWindowText.right = rc.right;
+
+			CRect btnMenuRect = m_btnList.GetHTRect(HTMENU);
+			rcWindowText.right = btnMenuRect.left - 30;
+			
 			CString szWindowText = m_szTitle;
 			//GetWindowText(szWindowText);
-			::DrawShadowText(hdc, szWindowText, szWindowText.GetLength(), &rcWindowText, DT_LEFT|DT_SINGLELINE | DT_VCENTER, RGB(255,255,255), RGB(64,64,64), 2,2);
+			::DrawShadowText(hdc, szWindowText, szWindowText.GetLength(), &rcWindowText, DT_LEFT|DT_SINGLELINE | DT_VCENTER, RGB(255,255,255), RGB(64,64,64), 1,1);
 			hdc.SelectObject(holdft);
 
 			// min/max/close buttons

@@ -243,6 +243,17 @@ void CSUIBtnList::SetDisableStat(UINT iMsgID, BOOL bDisable){
 	}
 
 }
+CRect CSUIBtnList::GetHTRect(UINT iMsgID){
+	POSITION pos = GetHeadPosition();
+	while(pos){
+		CSUIButton* cBtn =  GetNext(pos);
+		if( iMsgID == cBtn->m_htMsgID ){
+			return cBtn->m_rcHitest;
+			break;
+		}
+	}
+	return NULL;
+}
 void CSUIBtnList::SetClickedStat(UINT iMsgID, BOOL bClicked){
 	POSITION pos = GetHeadPosition();
 	while(pos){

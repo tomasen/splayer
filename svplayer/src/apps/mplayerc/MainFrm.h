@@ -60,6 +60,7 @@
 
 
 #include "SUIButton.h"
+#include "MOSDWnd.h"
 
 enum {PM_NONE, PM_FILE, PM_DVD, PM_CAPTURE};
 
@@ -784,7 +785,7 @@ public:
 	void RedrawNonClientArea();
 	DWORD GetUIStat(UINT n_CmdID);
 	//void PreMultiplyBitmap(CBitmap& bmp);
-
+	CMOSDWnd m_wndOSD;
 private:
 	CBitmap m_bmpCaption;//, m_bmpClose, m_bmpMaximize, m_bmpMinimize, m_bmpRestore, m_bmpMenu;
 	CSUIBtnList m_btnList;

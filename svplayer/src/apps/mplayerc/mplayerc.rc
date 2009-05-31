@@ -1413,7 +1413,7 @@ IDF_CONTROLVOLUMEGRIP_PNG FILE                    "res\\web\\controlvolumegrip.p
 IDF_SHADER_RESIZER      FILE                    "res\\shaders\\resizer.psh"
 IDF_LOGO0               FILE                    "res\\logo.0.png"
 IDF_LOGO1               FILE                    "res\\logo.1.png"
-IDF_LOGO2               FILE                    "res\\logo.2.png"
+//IDF_LOGO2               FILE                    "res\\logo.2.png"
 IDF_LOGO4               FILE                    "res\\logo.4.png"
 IDF_LOGO5               FILE                    "res\\logo.5.png"
 IDF_LOGO6               FILE                    "res\\logo.6.png"
@@ -1470,6 +1470,7 @@ BTN_SUB_DELAY_REDUCE.bmp			  BITMAP                 "res\\newui\\BTN_SUB_DELAY_R
 BTN_SUB_DELAY_INCREASE.bmp			  BITMAP                 "res\\newui\\BTN_SUB_DELAY_INCREASE.bmp"
 BTN_SETTING.bmp			  BITMAP                 "res\\newui\\BTN_SETTING.bmp"
 BTN_CAPTURE.bmp			  BITMAP                 "res\\newui\\BTN_CAPTURE.bmp"
+WATERMARK2.bmp			  BITMAP                 "res\\newui\\watermark2.bmp"
 /////////////////////////////////////////////////////////////////////////////
 //
 // Toolbar

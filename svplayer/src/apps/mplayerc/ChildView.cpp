@@ -42,8 +42,10 @@ CChildView::CChildView() : m_vrect(0,0,0,0)
 	m_lastlmdowntime = 0;
 	m_lastlmdownpoint.SetPoint(0, 0);
 
-	m_watermark.LoadFromResource(IDF_LOGO2);
+	//m_watermark.LoadFromResource(IDF_LOGO2);
 	LoadLogo();
+
+	m_btnList.AddTail( new CSUIButton(L"WATERMARK2.BMP" , ALIGN_BOTTOMRIGHT, CRect(6 , 6, 0,6)  , TRUE, 0, FALSE  ) );
 }
 
 CChildView::~CChildView()
@@ -197,8 +199,18 @@ void CChildView::OnPaint()
 
 	((CMainFrame*)GetParentFrame())->RepaintVideo();
 
-	
+	CRect rcWnd;
+	GetWindowRect(rcWnd);
+	CRect rcClient;
+	GetClientRect(&rcClient);
+	CMemoryDC hdc(&dc, rcClient);
+	m_btnList.PaintAll( &hdc, rcWnd );
 	// Do not call CWnd::OnPaint() for painting messages
+}
+void CChildView::ReCalcBtn(){
+	CRect rcWnd;
+	GetWindowRect(rcWnd);
+	m_btnList.OnSize(rcWnd);
 }
 void CChildView::OnSetFocus(CWnd* pOldWnd){
 	
@@ -231,17 +243,20 @@ BOOL CChildView::OnEraseBkgnd(CDC* pDC)
 		int oldmode = pDC->SetStretchBltMode(STRETCH_HALFTONE);
 		m_logo.StretchBlt(*pDC, r, CRect(0,0,bm.bmWidth,abs(bm.bmHeight)));
 
+		
+		/*
 		if(!m_watermark.IsNull()){
-			BITMAP bmw;
-			GetObject(m_watermark, sizeof(bmw), &bmw);
-			CRect rw;
-			GetClientRect(rw);
-			int ww = min(bmw.bmWidth, rw.Width());
-			int hw = min(abs(bmw.bmHeight), rw.Height());
-			rw = CRect(CPoint(rw.Width() - ww , rw.Height() - hw), CSize(ww, hw));
-			m_watermark.StretchBlt( *pDC ,  rw,  CRect(0,0,bmw.bmWidth,abs(bmw.bmHeight)));
-			pDC->ExcludeClipRect(rw);
-		}
+					BITMAP bmw;
+					GetObject(m_watermark, sizeof(bmw), &bmw);
+					CRect rw;
+					GetClientRect(rw);
+					int ww = min(bmw.bmWidth, rw.Width());
+					int hw = min(abs(bmw.bmHeight), rw.Height());
+					rw = CRect(CPoint(rw.Width() - ww , rw.Height() - hw), CSize(ww, hw));
+					m_watermark.StretchBlt( *pDC ,  rw,  CRect(0,0,bmw.bmWidth,abs(bmw.bmHeight)));
+					pDC->ExcludeClipRect(rw);
+				}*/
+		
 //		m_logo.Draw(*pDC, r);
 		pDC->SetStretchBltMode(oldmode);
 
@@ -268,6 +283,8 @@ void CChildView::OnSize(UINT nType, int cx, int cy)
 	CWnd::OnSize(nType, cx, cy);
 
 	((CMainFrame*)GetParentFrame())->MoveVideoWindow();
+
+	ReCalcBtn();
 }
 
 void CChildView::OnWindowPosChanged(WINDOWPOS* lpwndpos)

@@ -140,6 +140,7 @@ public:
 
 	void SetDisableStat(UINT iMsgID, BOOL bDisable);
 	void SetClickedStat(UINT iMsgID, BOOL bClicked);
+	CRect GetHTRect(UINT iMsgID);
 	void SetHideStat(POSITION pos, BOOL bHide); //By Position
 	void SetHideStat(UINT iMsgID, BOOL bHide); //By HT MSG ID
 	void SetHideStat(LPCTSTR szBmpName, BOOL bHide); //By BitMapName

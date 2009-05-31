@@ -505,6 +505,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\MOSDWnd.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\mplayerc.cpp"
 				>
 			</File>
@@ -963,6 +967,10 @@
 			</File>
 			<File
 				RelativePath="MediaTypesDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MOSDWnd.h"
 				>
 			</File>
 			<File
@@ -1700,11 +1708,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 	</Files>

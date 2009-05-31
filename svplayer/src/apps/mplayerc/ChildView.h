@@ -22,6 +22,7 @@
 #pragma once
 
 #include "libpng.h"
+#include "SUIButton.h"
 
 class CChildView : public CWnd
 {
@@ -32,11 +33,14 @@ class CChildView : public CWnd
 
 	CCritSec m_csLogo;
 	CPngImage m_logo;
-	CPngImage m_watermark;
+	//CPngImage m_watermark;
+
 public:
 	CChildView();
 	virtual ~CChildView();
 
+	CSUIBtnList m_btnList;
+	void ReCalcBtn();
 	DECLARE_DYNAMIC(CChildView)
 
 public:

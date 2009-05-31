@@ -1236,6 +1236,11 @@ void CMainFrame::RedrawNonClientArea()
 	// RedrawNonClientArea function every time after SetWindowText, or other similar calls.
 	// In certain situations this might cause a flicker because two painting processes are done.
 	// So it's better to use less or avoid these types of calls.
+	if(m_wndToolBar.IsVisible())
+		m_wndToolBar.Invalidate();
+	if(m_wndSeekBar.IsVisible())
+		m_wndSeekBar.Invalidate();
+
 	SetWindowPos(NULL,0,0,0,0, SWP_FRAMECHANGED|SWP_NOMOVE|SWP_NOSIZE|SWP_NOZORDER);
 }
 

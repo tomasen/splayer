@@ -1738,6 +1738,9 @@ void CMainFrame::RecalcLayout(BOOL bNotify)
 	SendMessage(WM_GETMINMAXINFO, 0, (LPARAM)&mmi);
 	r |= CRect(r.TopLeft(), CSize(r.Width(), mmi.ptMinTrackSize.y));
 	MoveWindow(&r);
+
+	rePosOSD();
+	m_wndView.SetMyRgn();
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -8182,8 +8185,10 @@ void CMainFrame::MoveVideoWindow(bool fShowStats)
 	}
 }
 void CMainFrame::rePosOSD(){
-	if(!m_wndView.m_wndOSD.mSize.cx)
+	if(!m_wndView.m_wndOSD.mSize.cx){
+		m_wndView.m_wndOSD.MoveWindow(CRect(0,0,0,0));
 		return;
+	}
 
 	CRect rcView,rc;
 	m_wndView.GetWindowRect(&rcView);
@@ -11200,6 +11205,9 @@ void CMainFrame::ShowControls(int nCS, bool fSave)
 	for(int i = 1; pos; i <<= 1)
 	{
 		CControlBar* pNext = m_bars.GetNext(pos);
+		if( (nCS&i) == CS_TOOLBAR && !pNext->IsVisible() && !m_fnCurPlayingFile.IsEmpty()){
+			SendStatusMessage(CString(_T("ÕýÔÚ²¥·Å: ")) + m_fnCurPlayingFile, 2000);
+		}
 		ShowControlBar(pNext, !!(nCS&i), TRUE);
 		if(nCS&i) m_pLastBar = pNext;
 
@@ -11220,6 +11228,7 @@ void CMainFrame::ShowControls(int nCS, bool fSave)
 			MoveWindow(r.left, r.top, r.Width(), r.Height()+(hafter-hbefore));
 		}
 	*/
+	
 	
     if(fSave)
 		AfxGetAppSettings().nCS = nCS;

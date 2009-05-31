@@ -586,8 +586,8 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	
 	ShowControls(s.nCS | (s.bShowControlBar ? CS_COLORCONTROLBAR : 0));
-
-	m_wndOSD.Create(_T("CMOSDWnd"), _T("OSD") , WS_VISIBLE|WS_CHILD, CRect(0,0,100,20) ,this, 9999 );
+	
+	GetSystemFontWithScale(&m_hft, 14.0);
 
 	SetAlwaysOnTop(s.iOnTop);
 
@@ -655,7 +655,10 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	PreMultiplyBitmap(m_bmpRestore);
 	PreMultiplyBitmap(m_bmpMenu);*/
 
-
+	if(m_wndView.m_wndOSD.CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, NULL,NULL , WS_VISIBLE|WS_CHILD, CRect( 0,0,0,0 ) , this,  IDD_PLAYEROSDWND, 0 ) ){
+		//m_wndOSD.ShowWindow(SW_SHOW);
+		m_wndView.m_wndOSD.m_wndView = &m_wndView;
+	}
 	/*NEW UI END*/
 	return 0;
 }
@@ -875,6 +878,8 @@ void CMainFrame::OnMove(int x, int y)
 	
 	m_wndToolBar.ReCalcBtnPos();
 	m_wndView.ReCalcBtn();
+	rePosOSD();
+	m_wndView.SetMyRgn();
 	RedrawNonClientArea();
 }
 
@@ -907,6 +912,10 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 	m_wndView.GetWindowRect(cr);
 	r.top += r.Height()/2;
 	cr.top += cr.Height()/2;
+	
+	rePosOSD();
+	m_wndView.SetMyRgn();
+
 	//::SetWindowPos(m_wndStatusBar.m_hWnd, m_wndView.m_hWnd, 20, 20, 100, 30,0);
 
 	if(!m_fFullScreen)
@@ -1064,10 +1073,10 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 		}
 		if(bCAPTIONon){
 			// and the title
-			CFont hft;
-			GetSystemFontWithScale(&hft, 14.0);
+			
+			
 
-			HFONT holdft = (HFONT)hdc.SelectObject(hft);
+			HFONT holdft = (HFONT)hdc.SelectObject(m_hft);
 
 			RECT rcWindowText = {0};
 			rcWindowText.top = rc.top+GetSystemMetrics(SM_CYFRAME)/2;
@@ -2032,6 +2041,10 @@ void CMainFrame::OnPlaySubDelay(UINT nID)
 			break;
 		default:
 			//getCurPlayingSubfile(&newDelay);
+			if(m_pSubStreams.GetCount() <= 0){
+				SendMessage(WM_COMMAND , ID_FILE_LOAD_SUBTITLE, 0);
+				return;
+			}
 			if(m_iSubtitleSel < 0){
 				m_iSubtitleSel = 0;
 			}else{
@@ -2065,7 +2078,7 @@ void CMainFrame::OnUpdateSubtitleFontChange(CCmdUI* pCmdUI)
 void CMainFrame::OnUpdatePlaySubDelay(CCmdUI* pCmdUI)
 {
 	bool fEnable = false;
-	if(m_pSubStreams.GetCount() > 0 && ( m_iSubtitleSel >= 0 || pCmdUI->m_nID == ID_SUBLANGSWITCH ) ) 
+	if( (m_pSubStreams.GetCount() > 0 &&  m_iSubtitleSel >= 0  ) || pCmdUI->m_nID == ID_SUBLANGSWITCH ) 
 		fEnable = true;
 	pCmdUI->Enable(fEnable);
 }
@@ -5210,7 +5223,7 @@ void CMainFrame::OnFileLoadsubtitle()
 	CFileDialog fd(TRUE, NULL, NULL, 
 		OFN_EXPLORER | OFN_ENABLESIZING | OFN_HIDEREADONLY, 
 		szFilter, this, 0, 1);
-
+	
 	if(fd.DoModal() != IDOK) return;
 
 	if(LoadSubtitle(fd.GetPathName()))
@@ -8045,6 +8058,8 @@ void CMainFrame::ToggleFullscreen(bool fToNearest, bool fSwitchScreenResWhenHasT
 	}
 
 	m_wndView.SetWindowPos(NULL, 0, 0, 0, 0, SWP_FRAMECHANGED|SWP_NOSIZE|SWP_NOMOVE|SWP_NOZORDER);
+	rePosOSD();
+	m_wndView.SetMyRgn();
 
 	m_fAudioOnly = fAudioOnly;
 
@@ -8166,7 +8181,25 @@ void CMainFrame::MoveVideoWindow(bool fShowStats)
 		m_wndView.SetVideoRect();
 	}
 }
+void CMainFrame::rePosOSD(){
+	if(!m_wndView.m_wndOSD.mSize.cx)
+		return;
 
+	CRect rcView,rc;
+	m_wndView.GetWindowRect(&rcView);
+	if( ::GetWindowRect( m_wndView.m_hWnd, &rcView ) ){
+		GetWindowRect(&rc);
+		rcView -= rcView.TopLeft();
+
+		rcView.bottom -= 5;
+		rcView.top = rcView.bottom - 22;
+		rcView.left += 10;
+		rcView.right = rcView.left + m_wndView.m_wndOSD.mSize.cx;
+		
+		m_wndView.m_wndOSD.MoveWindow(rcView);
+	}
+	return;
+}
 void CMainFrame::ZoomVideoWindow(double scale)
 {
 	if(m_iMediaLoadState != MLS_LOADED)
@@ -12215,7 +12248,8 @@ void CMainFrame::SendStatusMessage(CString msg, int nTimeOut)
 		}
 	}
 
-	m_wndToolBar.SetStatusTimer( m_playingmsg , nTimeOut);
+	m_wndView.m_wndOSD.SendOSDMsg(m_playingmsg , nTimeOut);
+	//m_wndToolBar.SetStatusTimer( m_playingmsg , nTimeOut);
 
 	SetTimer(TIMER_STATUSERASER, nTimeOut, NULL);
 }

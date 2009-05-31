@@ -681,6 +681,7 @@
 #define IDS_RS_SHOWCONTROLBAR           13153
 #define IDS_RS_NOTCHANGEFONTTOYH        13154
 #define IDS_RS_UPLOADFAILEDPINS			13155
+#define IDD_PLAYEROSDWND	              13156
 #define IDS_SRC_RADGT                   14000
 #define IDS_SRC_CDDA                    14001
 #define IDS_SRC_AVI                     14002

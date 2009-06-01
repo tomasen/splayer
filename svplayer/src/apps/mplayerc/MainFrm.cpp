@@ -2081,7 +2081,7 @@ void CMainFrame::OnUpdateSubtitleFontChange(CCmdUI* pCmdUI)
 void CMainFrame::OnUpdatePlaySubDelay(CCmdUI* pCmdUI)
 {
 	bool fEnable = false;
-	if( (m_pSubStreams.GetCount() > 0 &&  m_iSubtitleSel >= 0  ) || pCmdUI->m_nID == ID_SUBLANGSWITCH ) 
+	if( (m_pSubStreams.GetCount() > 0 &&  m_iSubtitleSel >= 0  ) || ( pCmdUI->m_nID == ID_SUBLANGSWITCH && IsSomethingLoaded())) 
 		fEnable = true;
 	pCmdUI->Enable(fEnable);
 }
@@ -8185,8 +8185,13 @@ void CMainFrame::MoveVideoWindow(bool fShowStats)
 	}
 }
 void CMainFrame::rePosOSD(){
-	if(!m_wndView.m_wndOSD.mSize.cx){
-		m_wndView.m_wndOSD.MoveWindow(CRect(0,0,0,0));
+	try{
+		if(!m_wndView.m_wndOSD.mSize.cx){
+			m_wndView.m_wndOSD.MoveWindow(CRect(0,0,0,0));
+			return;
+		}
+	} 
+	catch(...){
 		return;
 	}
 

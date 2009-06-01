@@ -151,7 +151,7 @@ HRESULT CAviSplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 #ifdef REGISTER_FILTER
 		AFX_MANAGE_STATE(AfxGetStaticModuleState());
 #endif
-		bool fHideWarning = !!AfxGetApp()->GetProfileInt(_T("Settings"), _T("HideAviSplitterWarning"), 0);
+		bool fHideWarning = !!AfxGetApp()->GetProfileInt(_T("Settings"), _T("HideAviSplitterWarning"), TRUE);
 
 		if(!fHideWarning && !dynamic_cast<CAviSourceFilter*>(this) || fShiftDown)
 		{

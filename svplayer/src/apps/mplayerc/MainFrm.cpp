@@ -3112,8 +3112,8 @@ void CMainFrame::OnLButtonUp(UINT nFlags, CPoint point)
 	//!bRecentFocused &&
 	if(  s_fLDown && iDistance < 30){
 		if( m_iMediaLoadState == MLS_CLOSED   ){
-			//OnFileOpenQuick();
-			OnFileOpenmedia();
+			OnFileOpenQuick();
+			//OnFileOpenmedia();
 			__super::OnLButtonUp(nFlags, point);
 			return;
 		}

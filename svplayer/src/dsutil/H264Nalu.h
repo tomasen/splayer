@@ -1,5 +1,5 @@
 /* 
- * $Id: H264Nalu.h 557 2008-06-08 15:58:43Z casimir666 $
+ * $Id: H264Nalu.h 1009 2009-03-10 19:20:57Z casimir666 $
  *
  * (C) 2006-2007 see AUTHORS
  *
@@ -65,6 +65,11 @@ public :
 
 	int			GetDataLength()	{ return m_nCurPos - m_nNALDataPos; };
 	BYTE*		GetDataBuffer() { return m_pBuffer + m_nNALDataPos; };
+	int			GetRoundedDataLength()
+	{
+		int		nSize = m_nCurPos - m_nNALDataPos;
+		return nSize + 128 - (nSize %128);
+	}
 
 	int			GetLength()		{ return m_nCurPos - m_nNALStartPos; };
 	BYTE*		GetNALBuffer()	{ return m_pBuffer + m_nNALStartPos; };

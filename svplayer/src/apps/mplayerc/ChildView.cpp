@@ -313,7 +313,8 @@ void CChildView::SetMyRgn(){
 			GetWindowRect(&rc);
 			rcOsd -= rc.TopLeft();
 			CRgn OSDRgn;
-			OSDRgn.CreateRectRgn(rcOsd.left , rcOsd.top ,rcOsd.right ,rcOsd.bottom);
+			OSDRgn.CreateRoundRectRgn(rcOsd.left , rcOsd.top ,rcOsd.right ,rcOsd.bottom, 3,3);          
+			//OSDRgn.CreateRectRgn(rcOsd.left , rcOsd.top ,rcOsd.right ,rcOsd.bottom);
 			m_rgn.CombineRgn(&m_rgn , &OSDRgn,RGN_DIFF); 
 
 			// set window region to make rounded window

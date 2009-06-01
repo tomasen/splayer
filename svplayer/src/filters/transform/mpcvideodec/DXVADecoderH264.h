@@ -1,5 +1,5 @@
 /* 
- * $Id: DXVADecoderH264.h 995 2009-02-15 15:57:23Z casimir666 $
+ * $Id: DXVADecoderH264.h 1009 2009-03-10 19:20:57Z casimir666 $
  *
  * (C) 2006-2007 see AUTHORS
  *
@@ -53,6 +53,7 @@ private:
 	DXVA_Qmatrix_H264		m_DXVAScalingMatrix;
 	UINT					m_nCurRefFrame;		// First free RefFrameList position
 	int						m_nNALLength;
+	bool					m_bUseLongSlice;
 
 	// Private functions
 	void					Init();
@@ -60,5 +61,5 @@ private:
 
 	// DXVA functions
 	void					ClearRefFramesList();
-	void					UpdateRefFramesList (int nFrameNum, bool bRefFrame, bool bAdded);
+	void					UpdateRefFramesList (int nFrameNum, bool bRefFrame, bool bAdded, int nDXIndex);
 };

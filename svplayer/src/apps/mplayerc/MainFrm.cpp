@@ -481,7 +481,8 @@ CMainFrame::CMainFrame() :
 	m_bSubUploading(false),
 	m_bSubDownloading(false),
 	m_iAudioChannelMaping(0),
-	m_bCheckingUpdater(false)
+	m_bCheckingUpdater(false),
+	m_WndSizeInited(false)
 {
 }
 
@@ -869,7 +870,7 @@ void CMainFrame::OnMove(int x, int y)
 
 	WINDOWPLACEMENT wp;
 	GetWindowPlacement(&wp);
-	if(!m_fFullScreen && wp.flags != WPF_RESTORETOMAXIMIZED && wp.showCmd != SW_SHOWMINIMIZED)
+	if(!m_fFullScreen && wp.flags != WPF_RESTORETOMAXIMIZED && wp.showCmd != SW_SHOWMINIMIZED && m_WndSizeInited)
 		GetWindowRect(AfxGetAppSettings().rcLastWindowPos);
 
 	CRect rc;
@@ -921,7 +922,7 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 	if(!m_fFullScreen)
 	{
 		AppSettings& s = AfxGetAppSettings();
-		if(nType != SIZE_MAXIMIZED && nType != SIZE_MINIMIZED)
+		if(nType != SIZE_MAXIMIZED && nType != SIZE_MINIMIZED && m_WndSizeInited)
 			GetWindowRect(s.rcLastWindowPos);
 		s.lastWindowType = nType;
 
@@ -7779,20 +7780,22 @@ void CMainFrame::SetDefaultWindowRect(int iMonitor)
 		int _DEFCLIENTW = max(logosize.cx, DEFCLIENTW);
 		int _DEFCLIENTH = max(logosize.cy, DEFCLIENTH);
 
-		if(GetSystemMetrics(SM_REMOTESESSION))
-			_DEFCLIENTH = 0;
+		//if(GetSystemMetrics(SM_REMOTESESSION))
+		//	_DEFCLIENTH = 0;
 
 		DWORD style = GetStyle();
 
-		MENUBARINFO mbi;
+		/*
+MENUBARINFO mbi;
 		memset(&mbi, 0, sizeof(mbi));
 		mbi.cbSize = sizeof(mbi);
 		::GetMenuBarInfo(m_hWnd, OBJID_MENU, 0, &mbi);
+*/
 
 		int w = _DEFCLIENTW + GetSystemMetrics((style&WS_CAPTION)?SM_CXSIZEFRAME:SM_CXFIXEDFRAME)*2
 			+ r1.Width() - r2.Width();
 		int h = _DEFCLIENTH + GetSystemMetrics((style&WS_CAPTION)?SM_CYSIZEFRAME:SM_CYFIXEDFRAME)*2
-			+ (mbi.rcBar.bottom - mbi.rcBar.top)
+			//+ (mbi.rcBar.bottom - mbi.rcBar.top)
 			+ r1.Height() - r2.Height()
 			+ 1; // ???
 //			+ 2; // ???
@@ -7837,8 +7840,11 @@ void CMainFrame::SetDefaultWindowRect(int iMonitor)
 
 		UINT lastWindowType = s.lastWindowType;
 
+		CString szLog;
+		szLog.Format(_T(" %d %d %d %d size"),x, y, w, h);
+		SVP_LogMsg(szLog);
 		MoveWindow(x, y, w, h);
-
+		
 		if(s.fRememberWindowSize && s.fRememberWindowPos)
 		{
 			WINDOWPLACEMENT wp;
@@ -7857,6 +7863,7 @@ void CMainFrame::SetDefaultWindowRect(int iMonitor)
 		::SetMenu(m_hWnd, NULL);
 		SetWindowPos(NULL, 0, 0, 0, 0, SWP_FRAMECHANGED|SWP_NOSIZE|SWP_NOMOVE|SWP_NOZORDER);
 	}
+	m_WndSizeInited = true;
 }
 
 void CMainFrame::RestoreDefaultWindowRect()
@@ -11205,6 +11212,7 @@ void CMainFrame::ShowControls(int nCS, bool fSave)
 {
 	int nCSprev = AfxGetAppSettings().nCS;
 	int hbefore = 0, hafter = 0;
+	BOOL bSomthingChanged = false;
 	
 	nCS &= ~CS_STATUSBAR;
 	m_pLastBar = NULL;
@@ -11213,6 +11221,19 @@ void CMainFrame::ShowControls(int nCS, bool fSave)
 	for(int i = 1; pos; i <<= 1)
 	{
 		CControlBar* pNext = m_bars.GetNext(pos);
+
+		if(!bSomthingChanged){
+			if(nCS&i){
+				if(!pNext->IsVisible()){
+					bSomthingChanged = true;
+				}
+			}else{
+				if(pNext->IsVisible()){
+					bSomthingChanged = true;
+				}
+			}
+		}
+
 		if( (nCS&i) == CS_TOOLBAR && !pNext->IsVisible() && !m_fnCurPlayingFile.IsEmpty()){
 			SendStatusMessage(CString(_T("ÕýÔÚ²¥·Å: ")) + m_fnCurPlayingFile, 2000);
 		}
@@ -11241,8 +11262,11 @@ void CMainFrame::ShowControls(int nCS, bool fSave)
     if(fSave)
 		AfxGetAppSettings().nCS = nCS;
 
-	RecalcLayout();
-	RedrawNonClientArea();
+	if(bSomthingChanged){
+		RecalcLayout();
+		if(!m_fFullScreen)
+			RedrawNonClientArea();
+	}
 }
 
 void CMainFrame::SetAlwaysOnTop(int i, BOOL setSetting)

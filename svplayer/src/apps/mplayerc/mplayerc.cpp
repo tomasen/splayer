@@ -2862,9 +2862,11 @@ CString GetContentType(CString fn, CAtlList<CString>* redir)
 
 		CSocket s;
 		s.Create();
+		CString szHostName = url.GetHostName();
+		UINT iPort = url.GetPortNumber();
 		if(s.Connect(
-			ProxyEnable ? ProxyServer : url.GetHostName(), 
-			ProxyEnable ? ProxyPort : url.GetPortNumber()))
+			ProxyEnable ? ProxyServer  : szHostName, 
+			ProxyEnable ? ProxyPort : iPort))
 		{
 			CStringA host = CStringA(url.GetHostName());
 			CStringA path = CStringA(url.GetUrlPath()) + CStringA(url.GetExtraInfo());

@@ -346,6 +346,7 @@ public:
 	int m_iPlaybackMode;
 
 	bool m_fFullScreen;
+	bool m_WndSizeInited;
 	bool m_fHideCursor;
 
 	bool IsFrameLessWindow() {return(m_fFullScreen || AfxGetAppSettings().fHideCaptionMenu);}

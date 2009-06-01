@@ -8185,15 +8185,18 @@ void CMainFrame::MoveVideoWindow(bool fShowStats)
 	}
 }
 void CMainFrame::rePosOSD(){
-	try{
-		if(!m_wndView.m_wndOSD.mSize.cx){
-			m_wndView.m_wndOSD.MoveWindow(CRect(0,0,0,0));
-			return;
-		}
-	} 
-	catch(...){
-		return;
+
+	if(m_wndView){
+			if(::IsWindow(m_wndView.m_hWnd)){
+				if(::IsWindow(m_wndView.m_wndOSD.m_hWnd)){
+					if(m_wndView.m_wndOSD.mSize.cx <= 0){
+						m_wndView.m_wndOSD.MoveWindow(CRect(0,0,0,0));
+						return;
+					}
+				}
+			}
 	}
+	
 
 	CRect rcView,rc;
 	m_wndView.GetWindowRect(&rcView);

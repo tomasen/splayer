@@ -115,7 +115,7 @@ CRect CPlayerSeekBar::GetChannelRect()
 {
 	CRect r;
 	GetClientRect(&r);
-	r.DeflateRect(5, 0, 5, 7); //
+	r.DeflateRect(5, 1, 5, 7); //
 	r.bottom = r.top + 5;
 	return(r);
 }

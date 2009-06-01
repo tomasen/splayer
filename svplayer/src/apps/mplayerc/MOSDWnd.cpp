@@ -46,6 +46,7 @@ int CMOSDWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	return 0;
 }
 void CMOSDWnd::SendOSDMsg(CString szMsg, UINT timeOut ){
+
 	KillTimer(IDT_HIDE);
 	m_msgList.AddTail(szMsg);
 	if(m_msgList.GetCount() > 5){
@@ -58,7 +59,7 @@ void CMOSDWnd::SendOSDMsg(CString szMsg, UINT timeOut ){
 	SetTimer(IDT_HIDE , timeOut, NULL);
 	CString szLog;
 	szLog.Format(_T("%s %d")  ,szMsg, timeOut );
-	SVP_LogMsg(szLog);
+	//SVP_LogMsg(szLog);
 	CountSize();
 	//CMainFrame* pFrame = (CMainFrame*)GetParentFrame();
 	((CChildView*)m_wndView)->SetMyRgn();
@@ -85,8 +86,10 @@ void CMOSDWnd::CountSize(){
 	mSize.cx += 2;
 	CRect rc;
 	GetWindowRect(&rc);
-	CMainFrame* pFrame = (CMainFrame*)GetParent();
-	pFrame->rePosOSD();
+	CMainFrame* pFrame = (CMainFrame*)GetParentFrame();
+	if(pFrame){
+		pFrame->rePosOSD();
+	}
 	/*
 	CRect rcMain;
 		pFrame->GetClientRect(&rcMain);
@@ -107,7 +110,7 @@ void CMOSDWnd::OnTimer(UINT_PTR nIDEvent)
 			KillTimer(IDT_HIDE);
 			mSize = CSize(0,0);
 			m_osdStr.Empty();
-			CMainFrame* pFrame = (CMainFrame*)GetParent();
+			CMainFrame* pFrame = (CMainFrame*)GetParentFrame();
 			pFrame->rePosOSD();
 			((CChildView*)m_wndView)->SetMyRgn();
 			break;

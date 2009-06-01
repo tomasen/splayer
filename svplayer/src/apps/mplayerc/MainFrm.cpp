@@ -660,6 +660,8 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		//m_wndOSD.ShowWindow(SW_SHOW);
 		m_wndView.m_wndOSD.m_wndView = &m_wndView;
 	}
+
+
 	/*NEW UI END*/
 	return 0;
 }
@@ -7074,17 +7076,26 @@ void CMainFrame::OnUpdatePlayLanguage(CCmdUI* pCmdUI)
 
 void CMainFrame::OnPlayVolume(UINT nID)
 {
+	AppSettings& s = AfxGetAppSettings();
+	int iPlayerVol;
+	if(m_WndSizeInited){
+		iPlayerVol =  m_wndToolBar.m_volctrl.GetPos();
+		s.nVolume  = iPlayerVol;
+
+
+		if( s.AudioBoost < 1 || iPlayerVol < 100)
+			s.AudioBoost = 1;
+		else
+			iPlayerVol *=  (s.AudioBoost + 10) / 11;
+	}
 	if(m_iMediaLoadState == MLS_LOADED) 
 	{
 		pBA->put_Volume(m_wndToolBar.Volume);
 		
 		CString szStat;
-		int iPlayerVol =  m_wndToolBar.m_volctrl.GetPos();
-		AppSettings& s = AfxGetAppSettings();
-		if( s.AudioBoost < 1 || iPlayerVol < 100)
-			s.AudioBoost = 1;
-		else
-			iPlayerVol *=  (s.AudioBoost + 10) / 11;
+		
+		
+		
 
 		CComQIPtr<IAudioSwitcherFilter> pASF = FindFilter(__uuidof(CAudioSwitcherFilter), pGB);
 		if(pASF)

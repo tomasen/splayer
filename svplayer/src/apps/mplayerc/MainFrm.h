@@ -277,7 +277,6 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 	CString m_fnCurPlayingFile;
 	CString m_fnsAlreadyUploadedSubfile;
 	
-	void SendStatusMessage(CString msg, int nTimeOut);
 	CString m_playingmsg, m_closingmsg;
 	CString m_lastUrl;
 
@@ -786,6 +785,7 @@ public:
 	DWORD GetUIStat(UINT n_CmdID);
 	//void PreMultiplyBitmap(CBitmap& bmp);
 	void rePosOSD();
+	void SendStatusMessage(CString msg, int nTimeOut);
 
 private:
 	CBitmap m_bmpCaption;//, m_bmpClose, m_bmpMaximize, m_bmpMinimize, m_bmpRestore, m_bmpMenu;

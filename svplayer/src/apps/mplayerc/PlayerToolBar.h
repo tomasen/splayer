@@ -45,6 +45,9 @@ private:
 	CSUIButton* m_btnVolBG;
 	CSUIButton* btnLogo;
 	CFont m_statft;
+	CString m_tooltip ;
+	CPoint m_lastMouseMove;
+
 public:
 	CString m_timerstr;
 	CString m_timerqueryedstr;

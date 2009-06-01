@@ -472,7 +472,7 @@ void CPlayerToolBar::SetStatusTimer(REFERENCE_TIME rtNow, REFERENCE_TIME rtDur, 
 	GetSystemPowerStatus(&status);
 	CString szPower ;
 	if ( status.BatteryFlag != 128 && status.BatteryFlag != 255 ){
-		szPower.Format(_T("电量: %d%%  "), status.BatteryLifePercent);
+		szPower.Format(_T("电量: %d%% "), status.BatteryLifePercent);
 	}else{
 		//szPower = _T("电量: ∽ ");
 	}
@@ -515,25 +515,65 @@ BOOL CPlayerToolBar::OnVolumeDown(UINT nID)
 }
 static BOOL m_bMouseDown = FALSE;
 void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point){
+
+	CSize diff = m_lastMouseMove - point;
+	BOOL bMouseMoved =  diff.cx || diff.cy ;
+	m_lastMouseMove = point;
+
 	CRect rc;
 	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
 	GetWindowRect(&rc);
 	point += rc.TopLeft() ;
-
-	if( m_nItemToTrack == ID_VOLUME_THUMB && m_bMouseDown){
-		long nTBPos = point.x - m_btnVolBG->m_rcHitest.left;
-		long TBMax = m_btnVolBG->m_rcHitest.right-m_btnVolBG->m_rcHitest.left;
-		nTBPos = max(0 , min(TBMax , nTBPos) );
-		int Vol = 	nTBPos * 100 / TBMax;
+	
+	if( m_nItemToTrack == ID_VOLUME_THUMB  ){
+		if(m_bMouseDown && bMouseMoved){
+			long nTBPos = point.x - m_btnVolBG->m_rcHitest.left;
+			long TBMax = m_btnVolBG->m_rcHitest.right-m_btnVolBG->m_rcHitest.left;
+			nTBPos = max(0 , min(TBMax , nTBPos) );
+			int Vol = 	nTBPos * 100 / TBMax;
+			
+			m_volctrl.SetPosInternal( nTBPos * m_volctrl.GetRangeMax() / TBMax);
+			
+			
+			pFrame->OnPlayVolume(0);
+			Invalidate();
+		}
+	}else if(bMouseMoved){
 		
-		m_volctrl.SetPosInternal( nTBPos * m_volctrl.GetRangeMax() / TBMax);
-		
-		
-		pFrame->OnPlayVolume(0);
-	}else{
-
 		UINT ret = m_btnList.OnHitTest(point,rc);
 		m_nItemToTrack = ret;
+		if(ret){
+			CString toolTip;
+			switch(ret){
+				case ID_SUBDELAYDEC:
+					toolTip = _T("减少字幕延时");
+					break;
+				case ID_SUBDELAYINC:
+					toolTip = _T("增加字幕延时");
+					break;
+				case ID_SUBLANGSWITCH:
+					toolTip = _T("字幕切换或调用");
+					break;
+				case ID_VIEW_PLAYLIST:
+					toolTip = _T("播放列表");
+					break;
+				case ID_VIEW_OPTIONS:
+					toolTip = _T("设置面板");
+					break;
+				case ID_FILE_SAVE_IMAGE:
+					toolTip = _T("快速截图");
+					break;
+			}
+			if(toolTip != m_tooltip){
+				m_tooltip = toolTip;
+				//tooltip.Format(_T("按钮 %d") ,  ret);
+				if(!m_tooltip.IsEmpty()){
+					pFrame->SendStatusMessage(m_tooltip , 1000);
+				}
+			}
+		}else if(!m_tooltip.IsEmpty()){
+			m_tooltip.Empty();
+		}
 		if( m_btnList.HTRedrawRequired ){
 			Invalidate();
 		}
@@ -574,42 +614,7 @@ void CPlayerToolBar::OnLButtonDown(UINT nFlags, CPoint point)
 	return;
 	//New UI End
 	
-	KillTimer(TIMER_FASTFORWORD);
-
-	for(int i = 0, j = GetToolBarCtrl().GetButtonCount(); i < j; i++)
-	{
-		if(GetButtonStyle(i)&(TBBS_SEPARATOR|TBBS_DISABLED))
-			continue;
-
-		CRect r;
-		GetItemRect(i, r);
-		if(r.PtInRect(point))
-		{
-			UINT iButtonID , iStyle ;
-			int iImage ;
-			CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
-			GetButtonInfo(i,iButtonID,iStyle,iImage );
-			if(iButtonID == ID_PLAY_BWD || iButtonID == ID_PLAY_FWD){
-				//pFrame->PostMessage( WM_COMMAND, ID_PLAY_PAUSE);
-				iBottonClicked = iButtonID;
-				iFastFFWCount = 0;
-				SetTimer(TIMER_FASTFORWORD, 350, NULL);
-			}else if(iButtonID == ID_SUBDELAYDEC || iButtonID == ID_SUBDELAYINC){
-				iBottonClicked = iButtonID;
-				iFastFFWCount = 0;
-				SetTimer(TIMER_FASTFORWORD, 350, NULL);
-			}
-			__super::OnLButtonDown(nFlags, point);
-			
-			return;
-		}
-	} 
-
-	if(!pFrame->m_fFullScreen)
-	{
-		MapWindowPoints(pFrame, &point, 1);
-		pFrame->PostMessage(WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM(point.x, point.y));
-	}
+	
 }
 
 void CPlayerToolBar::OnLButtonUp(UINT nFlags, CPoint point)

@@ -58,7 +58,7 @@ void CMOSDWnd::SendOSDMsg(CString szMsg, UINT timeOut ){
 	}
 	SetTimer(IDT_HIDE , timeOut, NULL);
 	CString szLog;
-	szLog.Format(_T("%s %d")  ,szMsg, timeOut );
+	//szLog.Format(_T("%s %d")  ,szMsg, timeOut );
 	//SVP_LogMsg(szLog);
 	CountSize();
 	//CMainFrame* pFrame = (CMainFrame*)GetParentFrame();
@@ -83,7 +83,7 @@ void CMOSDWnd::CountSize(){
 	HFONT holdft = (HFONT)dc.SelectObject(m_statft); 
 	//m_osdStr = m_msgList.GetTail();
 	mSize = dc.GetTextExtent(m_osdStr); 
-	mSize.cx += 2;
+	mSize.cx += 4;
 	CRect rc;
 	GetWindowRect(&rc);
 	CMainFrame* pFrame = (CMainFrame*)GetParentFrame();

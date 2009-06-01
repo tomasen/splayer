@@ -679,7 +679,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 	}
 
 	CSize diff = m_lastMouseMove - point;
-	BOOL bMouseMoved =  (abs(diff.cx)+abs(diff.cy)) >= 1;
+	BOOL bMouseMoved =  diff.cx || diff.cy ;
 	if(bMouseMoved){
 		m_fHideCursor = false;
 		KillTimer(TIMER_FULLSCREENMOUSEHIDER);
@@ -7079,6 +7079,7 @@ void CMainFrame::OnPlayVolume(UINT nID)
 	AppSettings& s = AfxGetAppSettings();
 	int iPlayerVol;
 	if(m_WndSizeInited){
+		CString szStat;
 		iPlayerVol =  m_wndToolBar.m_volctrl.GetPos();
 		s.nVolume  = iPlayerVol;
 
@@ -7087,12 +7088,15 @@ void CMainFrame::OnPlayVolume(UINT nID)
 			s.AudioBoost = 1;
 		else
 			iPlayerVol *=  (s.AudioBoost + 10) / 11;
+
+		szStat.Format(_T("“Ù¡ø: %d%%  ") , iPlayerVol );
+		SendStatusMessage(szStat , 2000);
 	}
 	if(m_iMediaLoadState == MLS_LOADED) 
 	{
 		pBA->put_Volume(m_wndToolBar.Volume);
 		
-		CString szStat;
+		
 		
 		
 		
@@ -7101,8 +7105,7 @@ void CMainFrame::OnPlayVolume(UINT nID)
 		if(pASF)
 			pASF->SetNormalizeBoost(s.fAudioNormalize, s.fAudioNormalizeRecover, s.AudioBoost);
 
-		szStat.Format(_T("“Ù¡ø: %d%%  ") , iPlayerVol );
-		SendStatusMessage(szStat , 2000);
+		
 	}
 }
 
@@ -7852,8 +7855,8 @@ MENUBARINFO mbi;
 		UINT lastWindowType = s.lastWindowType;
 
 		CString szLog;
-		szLog.Format(_T(" %d %d %d %d size"),x, y, w, h);
-		SVP_LogMsg(szLog);
+		//szLog.Format(_T(" %d %d %d %d size"),x, y, w, h);
+		//SVP_LogMsg(szLog);
 		MoveWindow(x, y, w, h);
 		
 		if(s.fRememberWindowSize && s.fRememberWindowPos)

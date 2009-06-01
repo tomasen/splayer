@@ -200,12 +200,14 @@ void CChildView::OnPaint()
 
 	((CMainFrame*)GetParentFrame())->RepaintVideo();
 
+	/*
 	CRect rcWnd;
-	GetWindowRect(rcWnd);
-	CRect rcClient;
-	GetClientRect(&rcClient);
-	CMemoryDC hdc(&dc, rcClient);
-	m_btnList.PaintAll( &hdc, rcWnd );
+		GetWindowRect(rcWnd);
+		CRect rcClient;
+		GetClientRect(&rcClient);
+		CMemoryDC hdc(&dc, rcClient);
+		m_btnList.PaintAll( &hdc, rcWnd );*/
+	
 	// Do not call CWnd::OnPaint() for painting messages
 }
 void CChildView::ReCalcBtn(){
@@ -225,6 +227,8 @@ BOOL CChildView::OnEraseBkgnd(CDC* pDC)
 	{
 		//pDC->FillSolidRect(CRect(30,30,60,60) , RGB(0xff,0,0));
 		pDC->ExcludeClipRect(m_vrect);
+		GetClientRect(r);
+		pDC->FillSolidRect(r, 0);
 	}
 	else if(!m_logo.IsNull() /*&& ((CMainFrame*)GetParentFrame())->IsPlaylistEmpty()*/)
 	{
@@ -260,21 +264,22 @@ BOOL CChildView::OnEraseBkgnd(CDC* pDC)
 		
 //		m_logo.Draw(*pDC, r);
 		pDC->SetStretchBltMode(oldmode);
-
 		pDC->ExcludeClipRect(r);
+
+		CRect rcWnd;
+		GetWindowRect(rcWnd);
+		CRect rcClient;
+		GetClientRect(rcClient);
+		pDC->FillSolidRect(rcClient, 0);
+		CMemoryDC hdc(pDC, rcClient);
+		m_btnList.PaintAll( &hdc, rcWnd );
+
 		
 	}
 
 	
-	GetClientRect(r);
-	pDC->FillSolidRect(r, 0);
+	
 
-/*
-		CRect rc;
-		GetWindowRect(rc);
-		CString szLog;
-		szLog.Format(_T("%d hieght") , rc.Height());
-		SVP_LogMsg(szLog);*/
 	
 	return TRUE;
 }

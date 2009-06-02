@@ -53,7 +53,7 @@ CShockwaveGraph::~CShockwaveGraph()
 // IGraphBuilder
 STDMETHODIMP CShockwaveGraph::RenderFile(LPCWSTR lpcwstrFile, LPCWSTR lpcwstrPlayList)
 {
-	try {m_wndDestFrame.LoadMovie(0, CString(lpcwstrFile));}
+	try {m_wndDestFrame.LoadMovie(0, CString(lpcwstrFile));m_wndDestFrame.put_ScaleMode(2);}
 	catch(CException* e) {e->Delete(); return E_FAIL;}
 	return S_OK;
 }
@@ -158,8 +158,9 @@ STDMETHODIMP CShockwaveGraph::get_Visible(long* pVisible)
 }
 STDMETHODIMP CShockwaveGraph::SetWindowPosition(long Left, long Top, long Width, long Height)
 {
-	if(IsWindow(m_wndWindowFrame.m_hWnd))
+	if(IsWindow(m_wndWindowFrame.m_hWnd)){
 		m_wndWindowFrame.MoveWindow(Left, Top, Width, Height);
+	}
 
 	return S_OK;
 }
@@ -167,8 +168,9 @@ STDMETHODIMP CShockwaveGraph::SetWindowPosition(long Left, long Top, long Width,
 // IBasicVideo
 STDMETHODIMP CShockwaveGraph::SetDestinationPosition(long Left, long Top, long Width, long Height)// {return E_NOTIMPL;}
 {
-	if(IsWindow(m_wndDestFrame.m_hWnd))
+	if(IsWindow(m_wndDestFrame.m_hWnd)){
 		m_wndDestFrame.MoveWindow(Left, Top, Width, Height);
+	}
 
 	return S_OK;
 }

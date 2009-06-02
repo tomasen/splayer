@@ -954,16 +954,16 @@ void CMPlayerCApp::InitInstanceThreaded(){
 		}
 	}
 
-	/*CSVPToolBox svpToolBox;
+	CSVPToolBox svpToolBox;
 	CStringArray csaDll;
 	//csaDll.Add( _T("codecs\\CoreAVCDecoder.ax")); avoid missing reg key problem
 	
-	csaDll.Add( _T("codecs\\powerdvd\\CL264dec.ax"));
+		csaDll.Add( _T("wvc1dmod.dll"));
 		for(int i = 0; i < csaDll.GetCount(); i++){
 			CString szDllPath = svpToolBox.GetPlayerPath( csaDll.GetAt(i) );
 			if(svpToolBox.ifFileExist(szDllPath))
 				RegSvr32( szDllPath );
-		}*/
+		}
 	
 
 }

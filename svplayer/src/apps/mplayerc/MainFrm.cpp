@@ -482,7 +482,8 @@ CMainFrame::CMainFrame() :
 	m_bSubDownloading(false),
 	m_iAudioChannelMaping(0),
 	m_bCheckingUpdater(false),
-	m_WndSizeInited(false)
+	m_WndSizeInited(false),
+	m_iOSDAlign(0)
 {
 }
 
@@ -671,6 +672,9 @@ static bool bNoMoreHideMouse = false;
 
 void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 {
+	if( m_iMediaLoadState == MLS_CLOSED )
+		m_wndView.OnMouseMove(nFlags,point);
+
 	CRect CVideoRect = m_wndView.GetVideoRect();
 	if(m_iPlaybackMode == PM_DVD)
 	{
@@ -710,8 +714,6 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 		s_fLDown = false;
 
 	}
-
-
 	if(m_fFullScreen && bMouseMoved)
 	{
 		int nTimeOut = s.nShowBarsWhenFullScreenTimeOut;
@@ -777,54 +779,22 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 			//SetTimer(TIMER_FULLSCREENMOUSEHIDER, max(nTimeOut*1000, 2000), NULL);
 		}
 	}
-	if((m_fFullScreen || IsCaptionMenuHidden() ) && bMouseMoved) //New UI
-	{
 
-		HMENU hMenu;
-		DWORD dwRemove = 0, dwAdd = 0;
-		DWORD currentStyle =  GetStyle( );
-
-		if(point.y < 20 ){
-			if( !(WS_CAPTION&currentStyle) ){
-				dwAdd = WS_CAPTION;
-				hMenu = NULL;// hMenu = m_hMenuDefault; NEW UI
-			}
-
-		}else if(WS_CAPTION&currentStyle) {
-			dwRemove = WS_CAPTION;
-			hMenu = NULL;
-		}
-
-		//::SetMenu(m_hWnd, hMenu);
-
-		if ( dwAdd || dwRemove){
-			//ModifyStyle(dwRemove, dwAdd, SWP_NOZORDER);
-			//RedrawNonClientArea();
-
-		}
-
-	}
-
-
-	/*
-
-	if(!m_fFullScreen && bMouseMoved && s.bShowControlBar){
-	CRect cvr = m_wndView.GetVideoRect(); //show and hide Color Control Bar when not full screen
-	cvr.top = cvr.bottom - 30;
-	if(cvr.PtInRect(point)){
-	ShowControlBar(&m_wndColorControlBar, SW_SHOW, FALSE);
-	}else if(!bNotHideColorControlBar){
-	ShowControlBar(&m_wndColorControlBar, SW_HIDE, TRUE);
-	}
-
-	}
-
-	*/
+	
+	
 
 
 	m_lastMouseMove = point;
 
 	__super::OnMouseMove(nFlags, point);
+
+	if(bMouseMoved && !s_fLDown){
+		if(point.y < 20 && m_wndView.m_wndOSD.m_osdStr !=  _T("点击此处可以展开菜单")){ 
+			SendStatusMessage(_T("点击此处可以展开菜单"), 2000,1);
+			return;
+		}
+	}
+
 }
 
 
@@ -1092,7 +1062,7 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 			
 			CString szWindowText = m_szTitle;
 			//GetWindowText(szWindowText);
-			::DrawShadowText(hdc, szWindowText, szWindowText.GetLength(), &rcWindowText, DT_LEFT|DT_SINGLELINE | DT_VCENTER, RGB(255,255,255), RGB(64,64,64), 1,1);
+			::DrawShadowText(hdc, szWindowText, szWindowText.GetLength(), &rcWindowText, DT_LEFT|DT_SINGLELINE | DT_VCENTER, RGB(45,45,45), RGB(255,255,255), 1,1);
 			hdc.SelectObject(holdft);
 
 			// min/max/close buttons
@@ -1223,7 +1193,7 @@ LRESULT CMainFrame::OnNcHitTestNewUI(WPARAM wParam, LPARAM lParam )
 	if(ret){
 		return ret;
 	}
-	CRect rcMenu (rc.left + 3, rc.top + 2,rc.left + 120 , rc.bottom - 3 );
+	CRect rcMenu (rc.left + 3, rc.top + 2,rc.left + 23 , rc.bottom - 3 );
 	if (rcMenu.PtInRect(pt) ){
 		return HTMENU;
 	}
@@ -3045,13 +3015,20 @@ void CMainFrame::PreFocused(){
 }
 void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 {
-	
+	if( m_iMediaLoadState == MLS_CLOSED )
+		m_wndView.OnLButtonDown(nFlags ,point );
+
 	SetFocus();
 	
 
 	m_pLastClickPoint = point;
 	CRect rVideo = m_wndView.GetVideoRect();
 	CPoint p = point - rVideo.TopLeft();
+
+// 	if(p.y < 20){
+// 		OnMenu(m_mainMenu.GetSubMenu(0));
+// 		return;
+// 	}
 
 	int xPercent = 0, yPercent = 0;
 	if(rVideo.Width()){
@@ -3111,15 +3088,20 @@ void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 
 void CMainFrame::OnLButtonUp(UINT nFlags, CPoint point)
 {
+	if( m_iMediaLoadState == MLS_CLOSED )
+		m_wndView.OnLButtonUp(nFlags ,point );
+
 	int iDistance = sqrt( pow( (double)abs(point.x - m_pLastClickPoint.x) , 2)  + pow( (double)abs( point.y - m_pLastClickPoint.y ) , 2) );
 	//!bRecentFocused &&
 	if(  s_fLDown && iDistance < 30){
+		/*
 		if( m_iMediaLoadState == MLS_CLOSED   ){
-			OnFileOpenQuick();
-			//OnFileOpenmedia();
-			__super::OnLButtonUp(nFlags, point);
-			return;
-		}
+					OnFileOpenQuick();
+					//OnFileOpenmedia();
+					__super::OnLButtonUp(nFlags, point);
+					return;
+				}*/
+		
 		bool fDBLMouseClickUnassigned = true;
 		AppSettings& s = AfxGetAppSettings();
 		POSITION pos = s.wmcmds.GetHeadPosition();
@@ -4134,11 +4116,18 @@ void CMainFrame::OnFileOpenQuick()
 {
 	if(m_iMediaLoadState == MLS_LOADING || !IsWindow(m_wndPlaylistBar)) return;
 
+	CRecentFileList& MRU = AfxGetAppSettings().MRU;
+	CString szLastFile;
+	MRU.ReadList();
+	if(MRU.GetSize() > 0){
+		 szLastFile = MRU[0];
+	}
+
 	CString filter;
 	CAtlArray<CString> mask;
 	AfxGetAppSettings().Formats.GetFilter(filter, mask);
 
-	COpenFileDlg fd(mask, true, NULL, NULL, 
+	COpenFileDlg fd(mask, true, NULL, szLastFile, 
 		OFN_EXPLORER|OFN_ENABLESIZING|OFN_HIDEREADONLY|OFN_ALLOWMULTISELECT|OFN_ENABLEINCLUDENOTIFY, 
 		filter, this);
 	if(fd.DoModal() != IDOK) return;
@@ -5594,7 +5583,7 @@ void CMainFrame::OnViewCaptionmenu()
 	else
 	{
 		dwAdd = WS_CAPTION;
-		hMenu = m_hMenuDefault;
+		hMenu = NULL;// m_hMenuDefault;
 	}
 
 	ModifyStyle(dwRemove, dwAdd, SWP_NOZORDER);
@@ -8051,7 +8040,7 @@ void CMainFrame::ToggleFullscreen(bool fToNearest, bool fSwitchScreenResWhenHasT
 
 		dwAdd = (AfxGetAppSettings().fHideCaptionMenu ? 0 : WS_CAPTION) | WS_THICKFRAME;
 		r = m_lastWindowRect;
-		hMenu = AfxGetAppSettings().fHideCaptionMenu ? NULL : m_hMenuDefault;
+		hMenu = NULL;//AfxGetAppSettings().fHideCaptionMenu ? NULL : m_hMenuDefault;
 	}
 
 	m_lastMouseMove.x = m_lastMouseMove.y = -1;
@@ -8067,6 +8056,7 @@ void CMainFrame::ToggleFullscreen(bool fToNearest, bool fSwitchScreenResWhenHasT
 	ModifyStyleEx(dwRemoveEx, dwAddEx, SWP_NOZORDER);
 	::SetMenu(m_hWnd, hMenu);
 	SetWindowPos(NULL, r.left, r.top, r.Width(), r.Height(), SWP_NOZORDER|SWP_NOSENDCHANGING /*SWP_FRAMECHANGED*/);
+	RedrawNonClientArea();
 
 	if(m_fFullScreen)
 	{
@@ -8225,8 +8215,13 @@ void CMainFrame::rePosOSD(){
 		GetWindowRect(&rc);
 		rcView -= rcView.TopLeft();
 
-		rcView.bottom -= 5;
-		rcView.top = rcView.bottom - 22;
+		if(m_iOSDAlign == 1) { //TopLeft
+			rcView.top += 5;
+			rcView.bottom = rcView.top + 22;
+		}else{
+			rcView.bottom -= 5;
+			rcView.top = rcView.bottom - 22;
+		}
 		rcView.left += 10;
 		rcView.right = rcView.left + m_wndView.m_wndOSD.mSize.cx;
 		
@@ -11277,9 +11272,11 @@ void CMainFrame::ShowControls(int nCS, bool fSave)
 		AfxGetAppSettings().nCS = nCS;
 
 	if(bSomthingChanged){
-		RecalcLayout();
-		if(!m_fFullScreen)
+		if(!m_fFullScreen){
+			RecalcLayout();
+
 			RedrawNonClientArea();
+		}
 	}
 }
 
@@ -12282,7 +12279,7 @@ CString CMainFrame::GetStatusMessage()
 	return str;
 }
 
-void CMainFrame::SendStatusMessage(CString msg, int nTimeOut)
+void CMainFrame::SendStatusMessage(CString msg, int nTimeOut, int iAlign)
 {
 	KillTimer(TIMER_STATUSERASER);
 
@@ -12302,7 +12299,7 @@ void CMainFrame::SendStatusMessage(CString msg, int nTimeOut)
 			SetTimer( TIMER_STATUSBARHIDER , 10000, NULL); 
 		}
 	}
-
+	m_iOSDAlign = iAlign;
 	m_wndView.m_wndOSD.SendOSDMsg(m_playingmsg , nTimeOut);
 	//m_wndToolBar.SetStatusTimer( m_playingmsg , nTimeOut);
 

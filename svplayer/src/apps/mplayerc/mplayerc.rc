@@ -1477,6 +1477,9 @@ BTN_SUB_DELAY_INCREASE.bmp			  BITMAP                 "res\\newui\\BTN_SUB_DELAY
 BTN_SETTING.bmp			  BITMAP                 "res\\newui\\BTN_SETTING.bmp"
 BTN_CAPTURE.bmp			  BITMAP                 "res\\newui\\BTN_CAPTURE.bmp"
 WATERMARK2.bmp			  BITMAP                 "res\\newui\\watermark2.bmp"
+BTN_OPENFILE.bmp		  BITMAP                 "res\\newui\\BTN_OPENFILE.bmp"
+BTN_BIGOPEN.bmp		  BITMAP                 "res\\newui\\BTN_BIGOPEN.bmp"
+BTN_OPENADV.bmp		  BITMAP                 "res\\newui\\BTN_OPENADV.bmp"
 /////////////////////////////////////////////////////////////////////////////
 //
 // Toolbar

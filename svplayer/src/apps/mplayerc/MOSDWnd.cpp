@@ -25,6 +25,7 @@ BEGIN_MESSAGE_MAP(CMOSDWnd, CWnd)
 	ON_WM_CREATE()
 	ON_WM_TIMER()
 	ON_WM_PAINT()
+	ON_WM_LBUTTONDOWN()
 END_MESSAGE_MAP()
 
 
@@ -45,7 +46,7 @@ int CMOSDWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	CountSize();
 	return 0;
 }
-void CMOSDWnd::SendOSDMsg(CString szMsg, UINT timeOut ){
+void CMOSDWnd::SendOSDMsg(CString szMsg, UINT timeOut , int iAlign){
 
 	KillTimer(IDT_HIDE);
 	m_msgList.AddTail(szMsg);
@@ -60,10 +61,11 @@ void CMOSDWnd::SendOSDMsg(CString szMsg, UINT timeOut ){
 	CString szLog;
 	//szLog.Format(_T("%s %d")  ,szMsg, timeOut );
 	//SVP_LogMsg(szLog);
-	CountSize();
+	CountSize(iAlign);
 	//CMainFrame* pFrame = (CMainFrame*)GetParentFrame();
 	((CChildView*)m_wndView)->SetMyRgn();
 	Invalidate();
+	
 	//pFrame->m_wndView.Invalidate();
 
 	return;
@@ -74,21 +76,24 @@ BOOL CMOSDWnd::CreateEx(DWORD dwExStyle, LPCTSTR lpszClassName, LPCTSTR lpszWind
 
 	return CWnd::CreateEx(dwExStyle, lpszClassName, lpszWindowName, dwStyle, rect, pParentWnd, nID, lpParam);
 }
-void CMOSDWnd::CountSize(){
+void CMOSDWnd::CountSize(int iAlign){
 	if(m_osdStr.IsEmpty()){
 		mSize.cx = 0;
-		return;
+		
+	}else{
+		CPaintDC dc(this);
+		HFONT holdft = (HFONT)dc.SelectObject(m_statft); 
+		//m_osdStr = m_msgList.GetTail();
+		mSize = dc.GetTextExtent(m_osdStr); 
+		mSize.cx += 4;
+		//CRect rc;
+		//GetWindowRect(&rc);
 	}
-	CPaintDC dc(this);
-	HFONT holdft = (HFONT)dc.SelectObject(m_statft); 
-	//m_osdStr = m_msgList.GetTail();
-	mSize = dc.GetTextExtent(m_osdStr); 
-	mSize.cx += 4;
-	CRect rc;
-	GetWindowRect(&rc);
 	CMainFrame* pFrame = (CMainFrame*)GetParentFrame();
 	if(pFrame){
+		//pFrame->m_iOSDAlign = iAlign;
 		pFrame->rePosOSD();
+		pFrame->Invalidate();
 	}
 	/*
 	CRect rcMain;
@@ -141,4 +146,16 @@ void CMOSDWnd::OnPaint()
 	}
 	hdc.SelectObject(holdft);
 
+}
+
+void CMOSDWnd::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+
+	CMainFrame* pFrame = (CMainFrame*)GetParentFrame();
+	if(pFrame){
+		pFrame->OnMenu( pFrame->m_mainMenu.GetSubMenu(0) );
+	}
+
+	CWnd::OnLButtonDown(nFlags, point);
 }

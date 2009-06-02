@@ -43,8 +43,12 @@ CChildView::CChildView() : m_vrect(0,0,0,0)
 	m_lastlmdownpoint.SetPoint(0, 0);
 
 	//m_watermark.LoadFromResource(IDF_LOGO2);
-	LoadLogo();
+	//LoadLogo();
+	CSUIButton * btnFileOpen = new CSUIButton(L"BTN_BIGOPEN.BMP" , ALIGN_TOPLEFT, CRect(-50 , -50, 0,0)  , FALSE, ID_FILE_OPENQUICK, FALSE  ) ;
+	m_btnList.AddTail( btnFileOpen);
 
+	m_btnList.AddTail( new CSUIButton(L"BTN_OPENADV.BMP" ,ALIGN_TOPLEFT, CRect(-50 , -50, 0,0)  , FALSE, ID_FILE_OPENMEDIA, FALSE, ALIGN_TOP,btnFileOpen,  CRect(3,3,3,3) ) ) ;
+	
 	m_btnList.AddTail( new CSUIButton(L"WATERMARK2.BMP" , ALIGN_BOTTOMRIGHT, CRect(6 , 6, 0,6)  , TRUE, 0, FALSE  ) );
 }
 
@@ -120,7 +124,7 @@ BOOL CChildView::PreTranslateMessage(MSG* pMsg)
 		else
 		{
 			pParent->PostMessage(pMsg->message, pMsg->wParam, MAKELPARAM(p.x, p.y));
-            return TRUE;
+			return TRUE;
 		}
 	}
 
@@ -188,6 +192,9 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_WM_SETFOCUS()
 	//}}AFX_MSG_MAP
 	ON_WM_CREATE()
+	ON_WM_MOUSEMOVE()
+	ON_WM_LBUTTONDOWN()
+	ON_WM_LBUTTONUP()
 END_MESSAGE_MAP()
 
 
@@ -198,16 +205,18 @@ void CChildView::OnPaint()
 {
 	CPaintDC dc(this); // device context for painting
 
-	((CMainFrame*)GetParentFrame())->RepaintVideo();
+	CMainFrame* pFrame = (CMainFrame*)GetParentFrame();
+	pFrame->RepaintVideo();
 
-	/*
-	CRect rcWnd;
+	if(!pFrame->IsSomethingLoaded()){
+
+		CRect rcWnd;
 		GetWindowRect(rcWnd);
 		CRect rcClient;
 		GetClientRect(&rcClient);
 		CMemoryDC hdc(&dc, rcClient);
-		m_btnList.PaintAll( &hdc, rcWnd );*/
-	
+		m_btnList.PaintAll( &hdc, rcWnd );
+	}
 	// Do not call CWnd::OnPaint() for painting messages
 }
 void CChildView::ReCalcBtn(){
@@ -230,9 +239,10 @@ BOOL CChildView::OnEraseBkgnd(CDC* pDC)
 		GetClientRect(r);
 		pDC->FillSolidRect(r, 0);
 	}
-	else if(!m_logo.IsNull() /*&& ((CMainFrame*)GetParentFrame())->IsPlaylistEmpty()*/)
+	else 
 	{
-		BITMAP bm;
+		/*( /*&& !m_logo.IsNull() ((CMainFrame*)GetParentFrame())->IsPlaylistEmpty() /)
+BITMAP bm;
 		GetObject(m_logo, sizeof(bm), &bm);
 
 		
@@ -249,7 +259,7 @@ BOOL CChildView::OnEraseBkgnd(CDC* pDC)
 		m_logo.StretchBlt(*pDC, r, CRect(0,0,bm.bmWidth,abs(bm.bmHeight)));
 
 		
-		/*
+		/ *
 		if(!m_watermark.IsNull()){
 					BITMAP bmw;
 					GetObject(m_watermark, sizeof(bmw), &bmw);
@@ -260,19 +270,22 @@ BOOL CChildView::OnEraseBkgnd(CDC* pDC)
 					rw = CRect(CPoint(rw.Width() - ww , rw.Height() - hw), CSize(ww, hw));
 					m_watermark.StretchBlt( *pDC ,  rw,  CRect(0,0,bmw.bmWidth,abs(bmw.bmHeight)));
 					pDC->ExcludeClipRect(rw);
-				}*/
+				}* /
 		
 //		m_logo.Draw(*pDC, r);
 		pDC->SetStretchBltMode(oldmode);
 		pDC->ExcludeClipRect(r);
+*/
 
 		CRect rcWnd;
 		GetWindowRect(rcWnd);
 		CRect rcClient;
 		GetClientRect(rcClient);
-		pDC->FillSolidRect(rcClient, 0);
+		//pDC->FillSolidRect(rcClient, 0);
+
 		CMemoryDC hdc(pDC, rcClient);
-		m_btnList.PaintAll( &hdc, rcWnd );
+		hdc.FillSolidRect( rcClient, 0);
+		m_btnBBList.PaintAll( &hdc, rcWnd );
 
 		
 	}
@@ -385,4 +398,75 @@ int CChildView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	
 
 	return 0;
+}
+
+void CChildView::OnMouseMove(UINT nFlags, CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+	CSize diff = m_lastMouseMove - point;
+	BOOL bMouseMoved =  diff.cx || diff.cy ;
+	m_lastMouseMove = point;
+
+	CRect rc;
+	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
+	GetWindowRect(&rc);
+	point += rc.TopLeft() ;
+
+	if(bMouseMoved){
+
+		UINT ret = m_btnList.OnHitTest(point,rc);
+		m_nItemToTrack = ret;
+		
+			
+			if( m_btnList.HTRedrawRequired ){
+				Invalidate();
+			}
+		
+	}
+	CWnd::OnMouseMove(nFlags, point);
+}
+static BOOL m_bMouseDown = FALSE;
+void CChildView::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+
+	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
+	iBottonClicked = -1;
+	m_bMouseDown = TRUE;
+	CRect rc;
+	GetWindowRect(&rc);
+
+	point += rc.TopLeft() ;
+	UINT ret = m_btnList.OnHitTest(point,rc);
+	if( m_btnList.HTRedrawRequired ){
+		if(ret)
+			SetCapture();
+		Invalidate();
+	}
+	m_nItemToTrack = ret;
+
+	CWnd::OnLButtonDown(nFlags, point);
+}
+
+void CChildView::OnLButtonUp(UINT nFlags, CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
+	KillTimer(TIMER_FASTFORWORD);
+	ReleaseCapture();
+
+	CRect rc;
+	GetWindowRect(&rc);
+
+	CPoint xpoint = point + rc.TopLeft() ;
+	UINT ret = m_btnList.OnHitTest(xpoint,rc);
+	if( m_btnList.HTRedrawRequired ){
+		if(ret)
+			pFrame->PostMessage( WM_COMMAND, ret);
+		Invalidate();
+	}
+	m_nItemToTrack = ret;
+
+	//	__super::OnLButtonUp(nFlags, point);
+	m_bMouseDown = FALSE;
 }

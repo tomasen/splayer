@@ -229,7 +229,7 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 	void SetupNavStreamSelectSubMenu(CMenu* pSub, UINT id, DWORD dwSelGroup);
 	void OnNavStreamSelectSubMenu(UINT id, DWORD dwSelGroup);
 
-	CMenu m_popupmain, m_popup, m_mainMenu;
+	CMenu m_popupmain, m_popup;
 	CMenu m_opencds;
 	CMenu m_filters, m_subtitles, m_subtitles2, m_audios, m_audiodevices;
 	CStringArray m_AudioDevice;
@@ -785,8 +785,9 @@ public:
 	DWORD GetUIStat(UINT n_CmdID);
 	//void PreMultiplyBitmap(CBitmap& bmp);
 	void rePosOSD();
-	void SendStatusMessage(CString msg, int nTimeOut);
-
+	int m_iOSDAlign  ;
+	void SendStatusMessage(CString msg, int nTimeOut, int iAlign = 0);
+	CMenu m_mainMenu;
 private:
 	CBitmap m_bmpCaption;//, m_bmpClose, m_bmpMaximize, m_bmpMinimize, m_bmpRestore, m_bmpMenu;
 	CSUIBtnList m_btnList;

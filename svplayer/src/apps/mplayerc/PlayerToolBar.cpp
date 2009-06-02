@@ -115,7 +115,8 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 	CSUIButton* btnCapture = new CSUIButton(L"BTN_CAPTURE.BMP" , ALIGN_TOPRIGHT, CRect(3 , 5, 105,3)  , FALSE, ID_FILE_SAVE_IMAGE, TRUE , ALIGN_RIGHT, btnPlayList , CRect(7 , 10 , 7, 10)) ;
 	m_btnList.AddTail( btnCapture );
 
-	
+	CSUIButton* btnOpenFile = new CSUIButton(L"BTN_OPENFILE.BMP" , ALIGN_TOPRIGHT, CRect(3 , 5, 105,3)  , FALSE, ID_FILE_OPENQUICK, TRUE , ALIGN_RIGHT, btnCapture , CRect(7 , 10 , 7, 10)) ;
+	m_btnList.AddTail( btnOpenFile );
 
 
 	m_btnList.AddTail( new CSUIButton(L"VOLUME.BMP" , ALIGN_TOPRIGHT, CRect(3 , 9, 105,3)  , FALSE, ID_VOLUME_MUTE, bIsMuted  , ALIGN_RIGHT, m_btnVolBG,  CRect(3 , 3 , 3, 3)) );
@@ -183,7 +184,7 @@ void CPlayerToolBar::OnSize(UINT nType, int cx, int cy)
 	
 	m_btnList.SetHideStat(ID_FILE_SAVE_IMAGE , hideT2);
 	m_btnList.SetHideStat(ID_VIEW_OPTIONS , hideT2);
-	
+	m_btnList.SetHideStat(ID_FILE_OPENQUICK , hideT2);
 	
 
 	m_btnList.OnSize( rc);
@@ -472,13 +473,13 @@ void CPlayerToolBar::SetStatusTimer(REFERENCE_TIME rtNow, REFERENCE_TIME rtDur, 
 	GetSystemPowerStatus(&status);
 	CString szPower ;
 	if ( status.BatteryFlag != 128 && status.BatteryFlag != 255 ){
-		szPower.Format(_T("电量: %d%% "), status.BatteryLifePercent);
+		szPower.Format(_T("  电量: %d%% "), status.BatteryLifePercent);
 	}else{
 		//szPower = _T("电量: ∽ ");
 	}
 	CString szPlayrate;
 	if(fabs(playRate - 1.0) > 0.02 && playRate > 0.01)	{
-		szPlayrate.Format(_T("速率 %0.1fx "), playRate);
+		szPlayrate.Format(_T("  速率 %0.1fx "), playRate);
 	}
 
 	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
@@ -563,6 +564,9 @@ void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point){
 				case ID_FILE_SAVE_IMAGE:
 					toolTip = _T("快速截图");
 					break;
+				case ID_FILE_OPENQUICK:
+					toolTip = _T("打开文件");
+					break;					
 			}
 			if(toolTip != m_tooltip){
 				m_tooltip = toolTip;

@@ -35,12 +35,15 @@ class CChildView : public CWnd
 	CCritSec m_csLogo;
 	CPngImage m_logo;
 	//CPngImage m_watermark;
-
+	CPoint m_lastMouseMove;
+	UINT m_nItemToTrack;
+	int iBottonClicked;
 public:
 	CChildView();
 	virtual ~CChildView();
 
 	CSUIBtnList m_btnList;
+	CSUIBtnList m_btnBBList;
 	void ReCalcBtn();
 	DECLARE_DYNAMIC(CChildView)
 
@@ -70,4 +73,7 @@ public:
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	CMOSDWnd m_wndOSD;
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 };

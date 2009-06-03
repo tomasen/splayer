@@ -625,6 +625,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\libavcodec\msrle.c"
+				>
+			</File>
+			<File
 				RelativePath=".\libavcodec\nellymoser.c"
 				>
 			</File>
@@ -691,6 +695,10 @@
 						Name="VCCLCompilerTool"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\libavcodec\tscc.c"
+				>
 			</File>
 			<File
 				RelativePath=".\libavcodec\utils.c"
@@ -971,6 +979,10 @@
 			</File>
 			<File
 				RelativePath=".\libavcodec\msmpeg4data.h"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\msrledec.h"
 				>
 			</File>
 			<File

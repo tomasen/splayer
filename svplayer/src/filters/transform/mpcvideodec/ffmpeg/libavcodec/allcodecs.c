@@ -93,7 +93,7 @@ REGISTER_DECODER  (qtrle);
   REGISTER_DECODER  (theora);
 //REGISTER_DECODER  (truemotion1);
 //REGISTER_DECODER  (truemotion2);
-//REGISTER_DECODER  (tscc);
+REGISTER_DECODER  (tscc);
 //REGISTER_DECODER  (ulti);
   REGISTER_DECODER  (vc1);
 //REGISTER_DECODER  (vcr1);

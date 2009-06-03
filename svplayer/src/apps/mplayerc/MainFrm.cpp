@@ -485,7 +485,8 @@ CMainFrame::CMainFrame() :
 	m_iAudioChannelMaping(0),
 	m_bCheckingUpdater(false),
 	m_WndSizeInited(false),
-	m_iOSDAlign(0)
+	m_iOSDAlign(0),
+	m_bDxvaInUse(false)
 {
 }
 
@@ -1065,9 +1066,13 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 			rcWindowText.right = rc.right;
 
 			CRect btnMenuRect = m_btnList.GetHTRect(HTMENU);
-			rcWindowText.right = rc.left - 120;
+			rcWindowText.right = rc.right - 120;
 			
-			CString szWindowText = m_szTitle;
+			CString szWindowText ;
+			if(m_bDxvaInUse){
+				szWindowText = _T("[Ó²¼þ¸ßÇå]");
+			}
+			szWindowText.Append(m_szTitle);
 			//GetWindowText(szWindowText);
 			::DrawShadowText(hdc, szWindowText, szWindowText.GetLength(), &rcWindowText, DT_LEFT|DT_SINGLELINE | DT_VCENTER, RGB(45,45,45), RGB(255,255,255), 1,1);
 			hdc.SelectObject(holdft);
@@ -3808,6 +3813,21 @@ void CMainFrame::OnFilePostOpenmedia()
 		AfxGetAppSettings().nCLSwitches &= ~CLSW_FULLSCREEN;
 	}
 
+	m_bDxvaInUse = false;
+
+	CComQIPtr<IMPCVideoDecFilter> pMDF  = FindFilter(__uuidof(CMPCVideoDecFilter), pGB);
+	if(pMDF){
+		GUID*	DxvaGui = NULL;
+		DxvaGui = pMDF->GetDXVADecoderGuid();
+		if (DxvaGui != NULL)
+		{
+			CString DXVAMode = GetDXVAMode (DxvaGui);
+			m_bDxvaInUse = (DXVAMode != _T("Not using DXVA"));
+			
+		}
+		
+	}
+	RedrawNonClientArea();
 	SendNowPlayingToMSN();
 	SendNowPlayingTomIRC();
 }
@@ -3819,6 +3839,7 @@ void CMainFrame::OnUpdateFilePostOpenmedia(CCmdUI* pCmdUI)
 
 void CMainFrame::OnFilePostClosemedia()
 {
+	m_bDxvaInUse = false;
 	m_wndView.SetVideoRect();
 	m_wndSeekBar.Enable(false);
 	m_wndSeekBar.SetPos(0);

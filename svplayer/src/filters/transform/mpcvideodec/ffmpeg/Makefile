@@ -89,6 +89,11 @@ SRCS_C=\
 		$(LAVC_DIR)/mpegaudiodata.c \
 		$(LAVC_DIR)/mpegaudiodec.c \
 		$(LAVC_DIR)/mpegaudiodecheader.c \
+		$(LAVC_DIR)/msrledec.c \
+		$(LAVC_DIR)/tscc.c \
+		$(LAVC_DIR)/msrle.c \
+
+
 
 #SRCS_C+=\
 #		$(LAVC_DIR)/8bps.c \
@@ -130,7 +135,6 @@ SRCS_C=\
 #		$(LAVC_DIR)/mpeg12data.c \
 #		$(LAVC_DIR)/mpeg4audio.c \
 #		$(LAVC_DIR)/mpegvideo_parser.c \
-#		$(LAVC_DIR)/msrle.c \
 #		$(LAVC_DIR)/msvideo1.c \
 #		$(LAVC_DIR)/opt.c \
 #		$(LAVC_DIR)/pcm.c \
@@ -144,7 +148,6 @@ SRCS_C=\
 #		$(LAVC_DIR)/truemotion1.c \
 #		$(LAVC_DIR)/truemotion2.c \
 #		$(LAVC_DIR)/truespeech.c \
-#		$(LAVC_DIR)/tscc.c \
 #		$(LAVC_DIR)/tta.c \
 #		$(LAVC_DIR)/ulti.c \
 #		$(LAVC_DIR)/vcr1.c \

@@ -2105,6 +2105,8 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_div1);
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_MP41);
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_mp41);
+
+		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_tscc);
 	}
 #endif
 #if INTERNAL_DECODER_SVQ

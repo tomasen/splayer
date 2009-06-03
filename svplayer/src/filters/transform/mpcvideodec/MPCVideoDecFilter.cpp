@@ -33,6 +33,8 @@
 #include "VideoDecOutputPin.h"
 #include "CpuId.h"
 
+#include "../../../svplib/svplib.h"
+
 extern "C"
 {
 	#include "FfmpegContext.h"
@@ -48,7 +50,7 @@ extern "C"
 
 #include "../../../apps/mplayerc/internal_filter_config.h"
 
-
+#include "../../../svplib/svplib.h"
 /////
 #define MAX_SUPPORTED_MODE			5
 #define MPCVD_CAPTION				_T("MPC Video decoder")
@@ -432,12 +434,13 @@ const AMOVIESETUP_MEDIATYPE CMPCVideoDecFilter::sudPinTypesIn[] =
 	{ &MEDIATYPE_Video, &MEDIASUBTYPE_ump4   },
 	{ &MEDIATYPE_Video, &MEDIASUBTYPE_WV1F   },
 	{ &MEDIATYPE_Video, &MEDIASUBTYPE_wv1f   },
+
 	{ &MEDIATYPE_Video, &MEDIASUBTYPE_tscc   }
 	
 };
 
 // Workaround : graphedit crash when filter expose more than 115 input MediaTypes !
-const int CMPCVideoDecFilter::sudPinTypesInCount = 115; //countof(CMPCVideoDecFilter::sudPinTypesIn);
+const int CMPCVideoDecFilter::sudPinTypesInCount = countof(CMPCVideoDecFilter::sudPinTypesIn);
 
 UINT       CMPCVideoDecFilter::FFmpegFilters = 0xFFFFFFFF;
 UINT       CMPCVideoDecFilter::DXVAFilters = 0xFFFFFFFF;
@@ -799,6 +802,7 @@ void CMPCVideoDecFilter::LogLibAVCodec(void* par,int level,const char *fmt,va_li
 	vsnprintf_s (Msg, sizeof(Msg), _TRUNCATE, fmt, valist);
 //	TRACE("AVLIB : %s", Msg);
 #endif
+	//SVP_LogMsg3(fmt, valist);
 }
 
 void CMPCVideoDecFilter::OnGetBuffer(AVFrame *pic)
@@ -869,6 +873,11 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 				m_pAVCtx->width		= vih->bmiHeader.biWidth;
 				m_pAVCtx->height	= abs(vih->bmiHeader.biHeight);
 				m_pAVCtx->codec_tag	= vih->bmiHeader.biCompression;
+
+				if( m_pAVCodec->id == CODEC_ID_TSCC ){
+					m_pAVCtx->bits_per_coded_sample = vih->bmiHeader.biBitCount;
+				}
+				
 			}
 			else if(pmt->formattype == FORMAT_VideoInfo2)
 			{
@@ -927,8 +936,15 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 			ConnectTo (m_pAVCtx);
 			CalcAvgTimePerFrame();
 
-			if (avcodec_open(m_pAVCtx, m_pAVCodec)<0)
+			//SVP_LogMsg2(_T("AVCOPEN  m_pAVCtx->codec %ul") , m_pAVCtx->codec);
+			//SVP_LogMsg2(_T("AVCOPEN  m_pAVCodec %ul") , m_pAVCodec);
+			
+
+			int avcRet = avcodec_open(m_pAVCtx, m_pAVCodec);
+			if (avcRet<0){
+				SVP_LogMsg2(_T("AVCOPEN FAIL %d") , avcRet);
 				return VFW_E_INVALIDMEDIATYPE;
+			}
 
 			if (ffCodecs[m_nCodecNb].nFFCodec == CODEC_ID_H264)
 			{
@@ -1248,6 +1264,7 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 		memset(m_pFFBuffer+nSize,0,FF_INPUT_BUFFER_PADDING_SIZE);
 
 		used_bytes = avcodec_decode_video (m_pAVCtx, m_pFrame, &got_picture, m_pFFBuffer, nSize);
+		if(used_bytes < 0 ) return S_OK;
 		if (!got_picture || !m_pFrame->data[0]) return S_OK;
 		if(pIn->IsPreroll() == S_OK || rtStart < 0) return S_OK;
 
@@ -1271,7 +1288,7 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 		pOut->SetTime(&rtStart, &rtStop);
 		pOut->SetMediaTime(NULL, NULL);
 
-		CopyBuffer(pDataOut, m_pFrame->data, m_pAVCtx->width, m_pAVCtx->height, m_pFrame->linesize[0], MEDIASUBTYPE_I420, false);
+		CopyBuffer(pDataOut, m_pFrame->data, m_pAVCtx->width, m_pAVCtx->height, m_pFrame->linesize[0], MEDIASUBTYPE_I420,false);//MEDIASUBTYPE_YUY2 for TSCC
 
 #ifdef _DEBUG
 		static REFERENCE_TIME	rtLast = 0;

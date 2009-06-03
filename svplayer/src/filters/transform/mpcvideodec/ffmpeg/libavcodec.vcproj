@@ -629,6 +629,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\libavcodec\msrledec.c"
+				>
+			</File>
+			<File
 				RelativePath=".\libavcodec\nellymoser.c"
 				>
 			</File>

@@ -97,6 +97,8 @@ BOOL COpenFileDlg::OnInitDialog()
 
 	m_wndProc = (WNDPROC)SetWindowLong(GetParent()->m_hWnd, GWL_WNDPROC, (LONG)WindowProcNew);
 
+	
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }

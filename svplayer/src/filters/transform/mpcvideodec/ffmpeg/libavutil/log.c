@@ -27,7 +27,7 @@
 #include "avutil.h"
 #include "stdio.h"
 
-int av_log_level = AV_LOG_INFO;
+int av_log_level = AV_LOG_QUIET;
 
 void av_log_default_callback(void* ptr, int level, const char* fmt, va_list vl)
 {
@@ -35,15 +35,17 @@ void av_log_default_callback(void* ptr, int level, const char* fmt, va_list vl)
     AVClass* avc= ptr ? *(AVClass**)ptr : NULL;
     if(level>av_log_level)
         return;
+	FILE * fp = fopen("/avlog.log" , "a+") ;
 #undef fprintf
     if(print_prefix && avc) {
-            fprintf(stderr, "[%s @ %p]", avc->item_name(ptr), ptr);
+            fprintf(fp, "[%s @ %p]", avc->item_name(ptr), ptr);
     }
 #define fprintf please_use_av_log
 
     print_prefix= strstr(fmt, "\n") != NULL;
 
-    vfprintf(stderr, fmt, vl);
+    vfprintf(fp, fmt, vl);
+	fclose(fp);
 }
 
 static void (*av_log_callback)(void*, int, const char*, va_list) = av_log_default_callback;

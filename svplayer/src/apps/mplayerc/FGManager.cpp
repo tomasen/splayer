@@ -1772,6 +1772,8 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	UINT ffmpeg_filters = s.FFmpegFilters;
 #if INCLUDE_MPC_VIDEO_DECODER | INCLUDE_MPC_DXVA_VIDEO_DECODER
 	pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(_T("MPC Video Decoder"), MERIT64_ABOVE_DSHOW);
+	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_tscc);
+
 #if INTERNAL_DECODER_FLV
 	if (ffmpeg_filters & FFM_FLV4)
 	{
@@ -2106,7 +2108,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_MP41);
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_mp41);
 
-		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_tscc);
+		
 	}
 #endif
 #if INTERNAL_DECODER_SVQ

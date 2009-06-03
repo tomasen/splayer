@@ -79,6 +79,7 @@
 #include "SVPSubUploadDlg.h"
 
 #include "revision.h"
+#include "ChkDefPlayer.h"
 
 #define DEFCLIENTW 480
 #define DEFCLIENTH 360
@@ -408,6 +409,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI_RANGE(IDS_AUDIOCHANNALMAPNORMAL, IDS_AUDIOCHANNALMAPEND, &CMainFrame::OnUpdateChannalMapMenu)
 	ON_COMMAND(ID_VISITBBS, &CMainFrame::OnVisitbbs)
 	ON_COMMAND(ID_SENDEMAIL, &CMainFrame::OnSendemail)
+	ON_COMMAND(ID_CHECK_DEFAULT_PLAYER, OnCheckDefaultPlayer)
 	ON_COMMAND(ID_VISITCONTACTINFO, &CMainFrame::OnVisitcontactinfo)
 	ON_COMMAND(ID_DONATE, &CMainFrame::OnDonate)
 	ON_COMMAND(ID_JOINTEAM, &CMainFrame::OnJointeam)
@@ -816,6 +818,11 @@ void CMainFrame::OnNcCalcSize( BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp){
 			if(!m_wndToolBar.IsVisible())	{
 				rc.bottom -= 2;
 			}
+			if(! ( currentStyle&WS_CAPTION )){
+				rc.top -=3;
+				rc.left += 1;
+				rc.right -= 1;
+			}
 		}else{
 			//rc.InflateRect( GetSystemMetrics(SM_CXFRAME) - 3, 0,   GetSystemMetrics(SM_CXFRAME) - 3, GetSystemMetrics(SM_CXFRAME) - 2);
 
@@ -1058,7 +1065,7 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 			rcWindowText.right = rc.right;
 
 			CRect btnMenuRect = m_btnList.GetHTRect(HTMENU);
-			rcWindowText.right = btnMenuRect.left - 30;
+			rcWindowText.right = rc.left - 120;
 			
 			CString szWindowText = m_szTitle;
 			//GetWindowText(szWindowText);
@@ -12725,7 +12732,11 @@ void CMainFrame::OnFileISDBSearch()
 	}
 	ssub.DoModal();
 }
-
+void CMainFrame::OnCheckDefaultPlayer(){
+	CChkDefPlayer dlg_chkdefplayer;
+	dlg_chkdefplayer.DoModal();
+	
+}
 void CMainFrame::OnSendemail()
 {
 	ShellExecute(m_hWnd, _T("open"), _T("mailto:tomasen@gmail.com"), NULL, NULL, SW_SHOWDEFAULT);

@@ -2119,14 +2119,18 @@ BEGIN
         MENUITEM "章节选单(&C)",                    ID_NAVIGATE_CHAPTERMENU
     END
     MENUITEM "收藏夹",                         ID_FAVORITES
-    POPUP "高级(&A)"
+    POPUP "选项设置(&A)"
     BEGIN
         MENUITEM "选项(&O)...",                   ID_VIEW_OPTIONS
         MENUITEM "高级设置(&A)...",                 ID_32797
 		MENUITEM "热键设置...",                   ID_VIEW_SETHOTKEY
+		MENUITEM SEPARATOR
+        MENUITEM "自动更新...",                     ID_MANUALCHECKUPDATE
+		MENUITEM SEPARATOR
+        MENUITEM "检查文件关联",                      ID_CHECK_DEFAULT_PLAYER
         MENUITEM SEPARATOR
         MENUITEM "恢复默认设置",                      ID_RESET_SETTING
-        POPUP "工具"
+		POPUP "工具"
         BEGIN
             MENUITEM "DSM转换器(&n)...",               ID_FILE_CONVERT
         END
@@ -2144,7 +2148,12 @@ BEGIN
     END
     POPUP "帮助(&H)"
     BEGIN
-        MENUITEM "检查更新...",                     ID_MANUALCHECKUPDATE
+        POPUP "意见和反馈"
+		BEGIN
+			MENUITEM "论坛发表反馈",                      ID_VISITBBS
+			MENUITEM "Email发表意见",                   ID_SENDEMAIL
+			MENUITEM "QQ或MSN聊聊想法",                  ID_VISITCONTACTINFO
+		END
         MENUITEM SEPARATOR
         MENUITEM "主页",                          ID_HELP_HOMEPAGE
         MENUITEM "捐助开发",                        ID_DONATE
@@ -2155,12 +2164,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "关于(&A)...",                   ID_HELP_ABOUT
     END
-    POPUP "意见和反馈"
-    BEGIN
-        MENUITEM "论坛发表反馈",                      ID_VISITBBS
-        MENUITEM "Email发表意见",                   ID_SENDEMAIL
-        MENUITEM "QQ或MSN聊聊想法",                  ID_VISITCONTACTINFO
-    END
+    
 END
 END
 

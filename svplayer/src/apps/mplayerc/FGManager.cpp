@@ -664,6 +664,7 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 				fl.Insert(pFGF, 0, pFGF->CheckTypes(types, true), false);
 		}
 
+	{
 		CComPtr<IEnumMoniker> pEM;
 		if(types.GetCount() > 0 
 		&& SUCCEEDED(m_pFM->EnumMatchingFilters(
@@ -687,7 +688,7 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 					fl.Insert(pFGF, 0, pFGF->CheckTypes(types, true));
 			}
 		}
-
+	}
 		pos = fl.GetHeadPosition();
 		while(pos)
 		{

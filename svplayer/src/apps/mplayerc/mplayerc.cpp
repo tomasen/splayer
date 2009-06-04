@@ -995,16 +995,16 @@ void CMPlayerCApp::InitInstanceThreaded(){
 			}else{
 				dlg_chkdefplayer.setDefaultPlayer();
 			}
-		}else{
-			dlg_chkdefplayer.setDefaultPlayer();
 		}
+		//	dlg_chkdefplayer.setDefaultPlayer();
+		
 	}
 
 	CSVPToolBox svpToolBox;
 	CStringArray csaDll;
 	//csaDll.Add( _T("codecs\\CoreAVCDecoder.ax")); avoid missing reg key problem
 	
-		csaDll.Add( _T("tsccvid.dll"));
+		//csaDll.Add( _T("tsccvid.dll"));
 		csaDll.Add( _T("wvc1dmod.dll"));
 		for(int i = 0; i < csaDll.GetCount(); i++){
 			CString szDllPath = svpToolBox.GetPlayerPath( csaDll.GetAt(i) );
@@ -1016,6 +1016,7 @@ void CMPlayerCApp::InitInstanceThreaded(){
 }
 UINT __cdecl Thread_InitInstance( LPVOID lpParam ) 
 { 
+	Sleep(5000);
 	CMPlayerCApp * ma =(CMPlayerCApp*) lpParam;
 	CoInitialize(NULL);
 	ma->InitInstanceThreaded();
@@ -1218,6 +1219,12 @@ BOOL CMPlayerCApp::InitInstance()
 
 int CMPlayerCApp::ExitInstance()
 {
+	if ( m_s.fCheckFileAsscOnStartup ){
+		CChkDefPlayer dlg_chkdefplayer;
+		dlg_chkdefplayer.setDefaultPlayer();
+
+	}
+
 	m_s.UpdateData(true);
 
 	OleUninitialize();

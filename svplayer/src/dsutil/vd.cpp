@@ -513,6 +513,7 @@ bool BitBltFromI420ToI420(int w, int h, BYTE* dsty, BYTE* dstu, BYTE* dstv, int 
 	return true;
 }
 
+
 bool BitBltFromYUY2ToYUY2(int w, int h, BYTE* dst, int dstpitch, BYTE* src, int srcpitch)
 {
 	if(w > 0 && w == srcpitch && w == dstpitch)
@@ -1061,7 +1062,8 @@ bool BitBltFromI420ToYUY2(int w, int h, BYTE* dst, int dstpitch, BYTE* srcy, BYT
 
 	return(true);
 }
-bool BitBltFromRGBToYUY2(int w, int h, BYTE* dst, int dstpitch, int dbpp, BYTE* src, int srcpitch, int sbpp){
+bool BitBltFromRGBToYUY2(int w, int h, BYTE* dst, int dstpitch,  BYTE* src, int srcpitch, int sbpp){
+	return true;
 }
 bool BitBltFromRGBToRGB(int w, int h, BYTE* dst, int dstpitch, int dbpp, BYTE* src, int srcpitch, int sbpp)
 {
@@ -1770,6 +1772,7 @@ AvgLines565_loop:
 
 extern "C" void mmx_YUY2toRGB24(const BYTE* src, BYTE* dst, const BYTE* src_end, int src_pitch, int row_size, bool rec709);
 extern "C" void mmx_YUY2toRGB32(const BYTE* src, BYTE* dst, const BYTE* src_end, int src_pitch, int row_size, bool rec709);
+
 
 bool BitBltFromYUY2ToRGB(int w, int h, BYTE* dst, int dstpitch, int dbpp, BYTE* src, int srcpitch)
 {

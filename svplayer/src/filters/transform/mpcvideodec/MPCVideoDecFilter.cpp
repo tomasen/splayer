@@ -500,6 +500,7 @@ CMPCVideoDecFilter::CMPCVideoDecFilter(LPUNKNOWN lpunk, HRESULT* phr)
 	
 	m_bUseDXVA = true;
 	m_bUseFFmpeg = true;
+	m_bUSERGB = false;
 
 	m_nDXVAMode				= MODE_SOFTWARE;
 	m_pDXVADecoder			= NULL;
@@ -875,6 +876,7 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 				m_pAVCtx->codec_tag	= vih->bmiHeader.biCompression;
 
 				if( m_pAVCodec->id == CODEC_ID_TSCC ){
+					m_bUSERGB = true;
 					m_pAVCtx->bits_per_coded_sample = vih->bmiHeader.biBitCount;
 				}
 				
@@ -991,11 +993,16 @@ VIDEO_OUTPUT_FORMATS DXVAFormats[] =
 
 VIDEO_OUTPUT_FORMATS SoftwareFormats[] =
 {
-	{&MEDIASUBTYPE_YUY2, 1, 16, '2YUY'},	// Software
-	{&MEDIASUBTYPE_YV12, 3, 12, '21VY'},
-	{&MEDIASUBTYPE_I420, 3, 12, '024I'},
-	{&MEDIASUBTYPE_IYUV, 3, 12, 'VUYI'}
+ 	{&MEDIASUBTYPE_YUY2, 1, 16, '2YUY'},	// Software
+ 	{&MEDIASUBTYPE_YV12, 3, 12, '21VY'},
+ 	{&MEDIASUBTYPE_I420, 3, 12, '024I'},
+ 	{&MEDIASUBTYPE_IYUV, 3, 12, 'VUYI'}
 };
+VIDEO_OUTPUT_FORMATS RGBFormats[] = 
+{
+	{&MEDIASUBTYPE_RGB24, 1, 24, 'BGRA'} // How To Add RGB output ??
+};
+
 
 
 bool CMPCVideoDecFilter::IsDXVASupported()
@@ -1023,7 +1030,8 @@ void CMPCVideoDecFilter::BuildDXVAOutputFormat()
 	SAFE_DELETE_ARRAY (m_pVideoOutputFormat);
 
 	m_nVideoOutputCount = (IsDXVASupported() ? ffCodecs[m_nCodecNb].DXVAModeCount() + countof (DXVAFormats) : 0) +
-						  (m_bUseFFmpeg   ? countof(SoftwareFormats) : 0);
+						  ((m_bUseFFmpeg && !m_bUSERGB)   ? countof(SoftwareFormats) : 0) +
+						  (m_bUSERGB   ? countof(RGBFormats) : 0)   ;
 
 	m_pVideoOutputFormat	= new VIDEO_OUTPUT_FORMATS[m_nVideoOutputCount];
 
@@ -1043,8 +1051,9 @@ void CMPCVideoDecFilter::BuildDXVAOutputFormat()
 		nPos += countof (DXVAFormats);
 	}
 
-	// Software rendering
-	if (m_bUseFFmpeg)
+	if (m_bUSERGB)
+		memcpy (&m_pVideoOutputFormat[nPos], RGBFormats, sizeof(RGBFormats));
+	else if (m_bUseFFmpeg) // Software rendering
 		memcpy (&m_pVideoOutputFormat[nPos], SoftwareFormats, sizeof(SoftwareFormats));
 }
 
@@ -1288,7 +1297,12 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 		pOut->SetTime(&rtStart, &rtStop);
 		pOut->SetMediaTime(NULL, NULL);
 
-		CopyBuffer(pDataOut, m_pFrame->data, m_pAVCtx->width, m_pAVCtx->height, m_pFrame->linesize[0], MEDIASUBTYPE_I420,false);//MEDIASUBTYPE_YUY2 for TSCC
+		GUID subtype = MEDIASUBTYPE_I420;
+		if ( m_pAVCtx->pix_fmt == PIX_FMT_RGB24){
+			subtype = MEDIASUBTYPE_RGB24;
+		}
+
+		CopyBuffer(pDataOut, m_pFrame->data, m_pAVCtx->width, m_pAVCtx->height, m_pFrame->linesize[0], subtype,false);//MEDIASUBTYPE_YUY2 for TSCC
 
 #ifdef _DEBUG
 		static REFERENCE_TIME	rtLast = 0;

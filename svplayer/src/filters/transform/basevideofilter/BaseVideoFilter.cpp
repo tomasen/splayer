@@ -245,7 +245,7 @@ HRESULT CBaseVideoFilter::CopyBuffer(BYTE* pOut, BYTE** ppIn, int w, int h, int 
 
 	int pitchOut = 0;
 
-	if(bihOut.biCompression == BI_RGB || bihOut.biCompression == BI_BITFIELDS)
+	if(bihOut.biCompression == 'BGRA' || bihOut.biCompression == BI_RGB || bihOut.biCompression == BI_BITFIELDS)
 	{
 		pitchOut = bihOut.biWidth*bihOut.biBitCount>>3;
 
@@ -289,7 +289,7 @@ HRESULT CBaseVideoFilter::CopyBuffer(BYTE* pOut, BYTE** ppIn, int w, int h, int 
 		{
 			BitBltFromI420ToI420(w, h, pOut, pOutU, pOutV, bihOut.biWidth, pIn, pInU, pInV, pitchIn);
 		}
-		else if(bihOut.biCompression == BI_RGB || bihOut.biCompression == BI_BITFIELDS)
+		else if(bihOut.biCompression == 'BGRA' || bihOut.biCompression == BI_RGB || bihOut.biCompression == BI_BITFIELDS)
 		{
 			if(!BitBltFromI420ToRGB(w, h, pOut, pitchOut, bihOut.biBitCount, pIn, pInU, pInV, pitchIn))
 			{
@@ -304,7 +304,7 @@ HRESULT CBaseVideoFilter::CopyBuffer(BYTE* pOut, BYTE** ppIn, int w, int h, int 
 		{
 			BitBltFromYUY2ToYUY2(w, h, pOut, bihOut.biWidth*2, ppIn[0], pitchIn);
 		}
-		else if(bihOut.biCompression == BI_RGB || bihOut.biCompression == BI_BITFIELDS)
+		else if(bihOut.biCompression == 'BGRA' || bihOut.biCompression == BI_RGB || bihOut.biCompression == BI_BITFIELDS)
 		{
 			if(!BitBltFromYUY2ToRGB(w, h, pOut, pitchOut, bihOut.biBitCount, ppIn[0], pitchIn))
 			{
@@ -323,9 +323,9 @@ HRESULT CBaseVideoFilter::CopyBuffer(BYTE* pOut, BYTE** ppIn, int w, int h, int 
 		if(bihOut.biCompression == '2YUY')
 		{
 			// TODO
-			// BitBltFromRGBToYUY2();
+			BitBltFromRGBToYUY2(w, h, pOut, pitchOut, ppIn[0], pitchIn, sbpp);
 		}
-		else if(bihOut.biCompression == BI_RGB || bihOut.biCompression == BI_BITFIELDS)
+		else if(bihOut.biCompression == 'BGRA' || bihOut.biCompression == BI_RGB || bihOut.biCompression == BI_BITFIELDS)
 		{
 			if(!BitBltFromRGBToRGB(w, h, pOut, pitchOut, bihOut.biBitCount, ppIn[0], pitchIn, sbpp))
 			{

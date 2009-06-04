@@ -107,6 +107,7 @@ protected:
 	
 	bool									m_bUseDXVA;
 	bool									m_bUseFFmpeg;				
+	bool									m_bUSERGB;
 	CSize 									m_sar;
 
 	// === DXVA common variables

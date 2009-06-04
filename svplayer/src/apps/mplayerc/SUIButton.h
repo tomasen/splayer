@@ -104,7 +104,7 @@ public:
 	void LoadImage(LPCTSTR szBmpName);
 	void Attach(HBITMAP bmp);
 
-	void addAlignRelButton(UINT alignToButton  , CSUIButton * relativeToButton , CRect rmToBtn);
+	void addAlignRelButton(UINT alignToButton  , CSUIButton * relativeToButton , CRect rmToBtn = DEFAULT_MARGIN_TOBUTTON );
 
 	void OnSize(CRect WndRect);
 

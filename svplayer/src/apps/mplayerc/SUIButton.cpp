@@ -133,9 +133,12 @@ void CSUIButton::OnSize(CRect WndRect)
 	POSITION pos = btnAlignList.GetHeadPosition();
 	while(pos){
 		CBtnAlign* bAlignInfo = btnAlignList.GetNext(pos);
+		CSUIButton* bRBtn = (CSUIButton*) bAlignInfo->bBtn;
+		if( bRBtn->m_hide ){
+			continue;
+		}
 
 		if( bAlignInfo->iAlign&ALIGN_TOP){
-			CSUIButton* bRBtn = (CSUIButton*) bAlignInfo->bBtn;
 			int mTop = bAlignInfo->marginToBtn.top;
 			if(mTop <= 0){ mTop = DEFAULT_MARGIN; }
 			if( (bRBtn->m_rcHitest.bottom + mTop) > m_rcHitest.top){
@@ -143,7 +146,6 @@ void CSUIButton::OnSize(CRect WndRect)
 			}
 		}
 		if(bAlignInfo->iAlign&ALIGN_BOTTOM){
-			CSUIButton* bRBtn = (CSUIButton*) bAlignInfo->bBtn;
 			int mBottom = bAlignInfo->marginToBtn.bottom;
 			if(mBottom <= 0){ mBottom = DEFAULT_MARGIN; }
 			if( (bRBtn->m_rcHitest.top - mBottom)  < m_rcHitest.bottom){
@@ -151,7 +153,6 @@ void CSUIButton::OnSize(CRect WndRect)
 			}
 		}
 		if(bAlignInfo->iAlign&ALIGN_LEFT){
-			CSUIButton* bRBtn = (CSUIButton*) bAlignInfo->bBtn;
 			int mLeft = bAlignInfo->marginToBtn.left;
 			if(mLeft <= 0){ mLeft = DEFAULT_MARGIN; }
 			if( (bRBtn->m_rcHitest.right + mLeft) > m_rcHitest.left){
@@ -159,7 +160,6 @@ void CSUIButton::OnSize(CRect WndRect)
 			}
 		}
 		if(bAlignInfo->iAlign&ALIGN_RIGHT){
-			CSUIButton* bRBtn = (CSUIButton*) bAlignInfo->bBtn;
 			int mRight = bAlignInfo->marginToBtn.right;
 			if(mRight <= 0){ mRight = DEFAULT_MARGIN; }
 			if( (bRBtn->m_rcHitest.left - mRight)  < m_rcHitest.right){

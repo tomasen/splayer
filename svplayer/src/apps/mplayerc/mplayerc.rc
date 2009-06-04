@@ -177,7 +177,7 @@ FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
 END
 
-IDD_PLAYERSEEKBAR DIALOGEX 0, 0, 254, 3
+IDD_PLAYERSEEKBAR DIALOGEX 0, 0, 254, 9
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
@@ -1480,6 +1480,7 @@ WATERMARK2.bmp			  BITMAP                 "res\\newui\\watermark2.bmp"
 BTN_OPENFILE.bmp		  BITMAP                 "res\\newui\\BTN_OPENFILE.bmp"
 BTN_BIGOPEN.bmp		  BITMAP                 "res\\newui\\BTN_BIGOPEN.bmp"
 BTN_OPENADV.bmp		  BITMAP                 "res\\newui\\BTN_OPENADV.bmp"
+BTN_MINTOTRAY.bmp	  BITMAP                 "res\\newui\\BTN_MINTOTRAY.bmp"
 /////////////////////////////////////////////////////////////////////////////
 //
 // Toolbar

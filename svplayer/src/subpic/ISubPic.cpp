@@ -82,7 +82,8 @@ STDMETHODIMP ISubPicImpl::GetDirtyRect(RECT* pDirtyRect)
 {
 	return pDirtyRect ? *pDirtyRect = m_rcDirty, S_OK : E_POINTER;
 }
-
+#include "..\svplib\svplib.h"
+//#define  LOGSUBRECT
 STDMETHODIMP ISubPicImpl::GetSourceAndDest(SIZE* pSize, RECT* pRcSource, RECT* pRcDest)
 {
 	CheckPointer (pRcSource, E_POINTER);
@@ -96,13 +97,25 @@ STDMETHODIMP ISubPicImpl::GetSourceAndDest(SIZE* pSize, RECT* pRcSource, RECT* p
 		rcTemp.DeflateRect(1, 1);
 
 		*pRcSource = rcTemp;
+		
+		
 
-		rcTemp.OffsetRect (m_VirtualTextureTopLeft);
-		*pRcDest = CRect (rcTemp.left   * pSize->cx / m_VirtualTextureSize.cx,
+		CRect RcDest (rcTemp.left   * pSize->cx / m_VirtualTextureSize.cx,
 						  rcTemp.top    * pSize->cy / m_VirtualTextureSize.cy,
 						  rcTemp.right  * pSize->cx / m_VirtualTextureSize.cx,
 						  rcTemp.bottom * pSize->cy / m_VirtualTextureSize.cy);
-
+		LONG cy = min ( pSize->cx * 4/5 , pSize->cy );
+		if(cy < pSize->cy ){
+			cy = pSize->cy - cy;
+			RcDest.DeflateRect( RcDest.Width() *  cy  / pSize->cy / 2 , RcDest.Height() *   cy  / pSize->cy / 2);
+		}
+		
+		 *pRcDest = RcDest;
+#ifdef LOGSUBRECT
+		CString szLog ;
+		szLog.Format(_T(" resize w %d %d h %d %d") , pSize->cx , m_VirtualTextureSize.cx ,pSize->cy , m_VirtualTextureSize.cy);
+		SVP_LogMsg(szLog);
+#endif
 		return S_OK;
 	}
 	else
@@ -793,7 +806,7 @@ STDMETHODIMP ISubPicAllocatorPresenterImpl::NonDelegatingQueryInterface(REFIID r
 		QI(ISubPicAllocatorPresenter)
 		__super::NonDelegatingQueryInterface(riid, ppv);
 }
-#include "..\svplib\svplib.h"
+
 void ISubPicAllocatorPresenterImpl::AlphaBltSubPic(CSize size, SubPicDesc* pTarget)
 {
 	CComPtr<ISubPic> pSubPic;

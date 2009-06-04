@@ -440,6 +440,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_RESET_SETTING,  OnResetSetting)
 	ON_COMMAND(ID_VIEW_SETHOTKEY, OnSetHotkey)
 
+	ON_WM_KILLFOCUS()
 	END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1756,6 +1757,8 @@ void CMainFrame::OnSetFocus(CWnd* pOldWnd)
 	// forward focus to the view window
 	if(IsWindow(m_wndView.m_hWnd))
 		m_wndView.SetFocus();
+
+	RedrawNonClientArea();
 }
 
 BOOL CMainFrame::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo)
@@ -12812,4 +12815,12 @@ void CMainFrame::OnSetsnapshotpath()
 		return ;
 	}
 
+}
+
+void CMainFrame::OnKillFocus(CWnd* pNewWnd)
+{
+	__super::OnKillFocus(pNewWnd);
+
+	// TODO: Add your message handler code here
+	RedrawNonClientArea();
 }

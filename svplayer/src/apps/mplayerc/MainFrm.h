@@ -797,4 +797,6 @@ private:
 	CFont m_hft;
 	//long m_nBoxStatus[4];
 	/*NEW UI END*/
+public:
+	afx_msg void OnKillFocus(CWnd* pNewWnd);
 };

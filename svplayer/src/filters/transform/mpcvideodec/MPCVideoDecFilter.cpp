@@ -996,11 +996,14 @@ VIDEO_OUTPUT_FORMATS SoftwareFormats[] =
  	{&MEDIASUBTYPE_YUY2, 1, 16, '2YUY'},	// Software
  	{&MEDIASUBTYPE_YV12, 3, 12, '21VY'},
  	{&MEDIASUBTYPE_I420, 3, 12, '024I'},
- 	{&MEDIASUBTYPE_IYUV, 3, 12, 'VUYI'}
+ 	{&MEDIASUBTYPE_IYUV, 3, 12, 'VUYI'},
+	{&MEDIASUBTYPE_RGB24, 1, 24, 'BGRA'} ,
+	{&MEDIASUBTYPE_RGB32, 1, 32, 'BGRA'}
 };
 VIDEO_OUTPUT_FORMATS RGBFormats[] = 
 {
-	{&MEDIASUBTYPE_RGB24, 1, 24, 'BGRA'} // How To Add RGB output ??
+	{&MEDIASUBTYPE_RGB24, 1, 24, 'BGRA'}, // How To Add RGB output ??
+	{&MEDIASUBTYPE_RGB32, 1, 32, 'BGRA'}
 };
 
 
@@ -1298,8 +1301,15 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 		pOut->SetMediaTime(NULL, NULL);
 
 		GUID subtype = MEDIASUBTYPE_I420;
-		if ( m_pAVCtx->pix_fmt == PIX_FMT_RGB24){
-			subtype = MEDIASUBTYPE_RGB24;
+		switch ( m_pAVCtx->pix_fmt ){
+			case  PIX_FMT_PAL8:
+			case  PIX_FMT_RGB555:
+			case  PIX_FMT_RGB24:
+				subtype = MEDIASUBTYPE_RGB24;
+				break;
+			case  PIX_FMT_RGB32:
+				subtype = MEDIASUBTYPE_RGB32;
+				break;
 		}
 
 		CopyBuffer(pDataOut, m_pFrame->data, m_pAVCtx->width, m_pAVCtx->height, m_pFrame->linesize[0], subtype,false);//MEDIASUBTYPE_YUY2 for TSCC

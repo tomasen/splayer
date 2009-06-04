@@ -678,6 +678,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 	if( m_iMediaLoadState == MLS_CLOSED )
 		m_wndView.OnMouseMove(nFlags,point);
 
+
 	CRect CVideoRect = m_wndView.GetVideoRect();
 	if(m_iPlaybackMode == PM_DVD)
 	{
@@ -717,9 +718,9 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 		s_fLDown = false;
 
 	}
-	if(m_fFullScreen && bMouseMoved)
+	if( ( m_fFullScreen || s.fHideCaptionMenu) && bMouseMoved)
 	{
-		int nTimeOut = s.nShowBarsWhenFullScreenTimeOut;
+		int nTimeOut = s.nShowBarsWhenFullScreenTimeOut; //Should Be 0
 
 		if(nTimeOut < 0)
 		{
@@ -737,15 +738,18 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 			CRect r;
 			GetClientRect(r);
 			r.top = r.bottom;
-
+			DWORD dnCS = s.nCS;
+			if( s.fHideCaptionMenu){
+				dnCS |= CS_TOOLBAR|CS_SEEKBAR;
+			}
 			POSITION pos = m_bars.GetHeadPosition();
 			for(int i = 1; pos; i <<= 1)
 			{
 				CControlBar* pNext = m_bars.GetNext(pos);
 				CSize sz = pNext->CalcFixedLayout(FALSE, TRUE);
-				if(s.nCS&i) r.top -= sz.cy;
+				if(dnCS&i) r.top -= sz.cy;
 			}
-
+			
 			// HACK: the controls would cover the menu too early hiding some buttons
 			if(m_iPlaybackMode == PM_DVD
 				&& (m_iDVDDomain == DVD_DOMAIN_VideoManagerMenu
@@ -757,7 +761,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 			if(r.PtInRect(point))
 			{
 				if(s.fShowBarsWhenFullScreen){
-					ShowControls(s.nCS | ( s.bShowControlBar ? CS_COLORCONTROLBAR : 0) , false);
+					ShowControls(dnCS | ( s.bShowControlBar ? CS_COLORCONTROLBAR : 0) , false);
 					//m_wndColorControlBar.ShowWindow(SW_SHOW);
 				}
 			}
@@ -788,7 +792,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 
 
 	m_lastMouseMove = point;
-
+	
 	__super::OnMouseMove(nFlags, point);
 
 	if(bMouseMoved && !s_fLDown){
@@ -11263,10 +11267,12 @@ void CMainFrame::ShowControls(int nCS, bool fSave)
 			if(nCS&i){
 				if(!pNext->IsVisible()){
 					bSomthingChanged = true;
+					
 				}
 			}else{
 				if(pNext->IsVisible()){
 					bSomthingChanged = true;
+					
 				}
 			}
 		}
@@ -11274,7 +11280,10 @@ void CMainFrame::ShowControls(int nCS, bool fSave)
 		if( (nCS&i) == CS_TOOLBAR && !pNext->IsVisible() && !m_fnCurPlayingFile.IsEmpty()){
 			SendStatusMessage(CString(_T("ÕýÔÚ²¥·Å: ")) + m_fnCurPlayingFile, 2000);
 		}
-		ShowControlBar(pNext, !!(nCS&i), TRUE);
+
+		if( !!(nCS&i) != !!pNext->IsVisible() )
+			ShowControlBar(pNext, !!(nCS&i), TRUE);
+
 		if(nCS&i) m_pLastBar = pNext;
 
 		CSize s = pNext->CalcFixedLayout(FALSE, TRUE);

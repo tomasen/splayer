@@ -2255,6 +2255,8 @@ BEGIN
     IDS_RS_COLOR_BRIGHTNESS "Color Brightness"
     IDS_RS_COLOR_CONTRAST   "Color Contrast"
     IDS_RS_COLOR_HUE        "Color Hue"
+	IDS_RS_USERGBONLY		"UseRGBOnly"
+	IDS_RS_VMDETECTED		"VMDetected"
 END
 
 STRINGTABLE 

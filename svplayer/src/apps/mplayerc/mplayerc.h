@@ -393,6 +393,7 @@ public:
 		UINT tLastCheckUpdater;
 		UINT tCheckUpdaterInterleave;
 		bool fCheckFileAsscOnStartup;
+		int fVMDetected ;
 		CString szStartUPCheckExts;
 		bool fPopupStartUpExtCheck;
 		bool fHideCaptionMenu;
@@ -453,6 +454,7 @@ public:
 		bool fRememberZoomLevel;
 		bool fShowBarsWhenFullScreen;
 		int nShowBarsWhenFullScreenTimeOut;
+		bool bRGBOnly;
 		dispmode dmFullscreenRes;
 		bool fExitFullScreenAtTheEnd;
 		bool fRememberWindowPos;

@@ -445,6 +445,7 @@ const int CMPCVideoDecFilter::sudPinTypesInCount = countof(CMPCVideoDecFilter::s
 UINT       CMPCVideoDecFilter::FFmpegFilters = 0xFFFFFFFF;
 UINT       CMPCVideoDecFilter::DXVAFilters = 0xFFFFFFFF;
 bool	   CMPCVideoDecFilter::m_ref_frame_count_check_skip = false;	
+bool	   CMPCVideoDecFilter::m_bUSERGB = false;	
 
 const AMOVIESETUP_MEDIATYPE CMPCVideoDecFilter::sudPinTypesOut[] =
 {
@@ -500,8 +501,7 @@ CMPCVideoDecFilter::CMPCVideoDecFilter(LPUNKNOWN lpunk, HRESULT* phr)
 	
 	m_bUseDXVA = true;
 	m_bUseFFmpeg = true;
-	m_bUSERGB = false;
-
+	
 	m_nDXVAMode				= MODE_SOFTWARE;
 	m_pDXVADecoder			= NULL;
 	m_pVideoOutputFormat	= NULL;
@@ -1032,13 +1032,13 @@ void CMPCVideoDecFilter::BuildDXVAOutputFormat()
 
 	SAFE_DELETE_ARRAY (m_pVideoOutputFormat);
 
-	m_nVideoOutputCount = (IsDXVASupported() ? ffCodecs[m_nCodecNb].DXVAModeCount() + countof (DXVAFormats) : 0) +
+	m_nVideoOutputCount = ((IsDXVASupported() /*&& !m_bUSERGB should I */) ? ffCodecs[m_nCodecNb].DXVAModeCount() + countof (DXVAFormats) : 0) +
 						  ((m_bUseFFmpeg && !m_bUSERGB)   ? countof(SoftwareFormats) : 0) +
 						  (m_bUSERGB   ? countof(RGBFormats) : 0)   ;
 
 	m_pVideoOutputFormat	= new VIDEO_OUTPUT_FORMATS[m_nVideoOutputCount];
 
-	if (IsDXVASupported())
+	if (IsDXVASupported() /*&& !m_bUSERGB should I ? */)
 	{
 		// Dynamic DXVA media types for DXVA1
 		for (nPos=0; nPos<ffCodecs[m_nCodecNb].DXVAModeCount(); nPos++)

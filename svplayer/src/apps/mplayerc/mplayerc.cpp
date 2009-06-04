@@ -152,6 +152,52 @@ static LONG WINAPI  DebugMiniDumpFilter( struct _EXCEPTION_POINTERS *pExceptionI
 	return retval;
 }
 
+DWORD __forceinline IsInsideVPC_exceptionFilter(LPEXCEPTION_POINTERS ep)
+{
+	PCONTEXT ctx = ep->ContextRecord;
+
+	ctx->Ebx = -1; // Not running VPC
+
+	ctx->Eip += 4; // skip past the "call VPC" opcodes
+
+	return EXCEPTION_CONTINUE_EXECUTION;
+	// we can safely resume execution since we skipped faulty instruction
+
+}
+
+// High level language friendly version of IsInsideVPC()
+
+bool IsInsideVPC()
+{
+	bool rc = false;
+
+	__try
+	{
+		_asm push ebx
+			_asm mov  ebx, 0 // It will stay ZERO if VPC is running
+
+			_asm mov  eax, 1 // VPC function number
+
+
+			// call VPC 
+
+			_asm __emit 0Fh
+			_asm __emit 3Fh
+			_asm __emit 07h
+			_asm __emit 0Bh
+
+			_asm test ebx, ebx
+			_asm setz [rc]
+		_asm pop ebx
+	}
+	// The except block shouldn't get triggered if VPC is running!!
+
+	__except(IsInsideVPC_exceptionFilter(GetExceptionInformation()))
+	{
+	}
+
+	return rc;
+}
 //¼ì²â VMWareµÄ´úÂë
 bool IsInsideVMWare()
 {
@@ -1855,6 +1901,9 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_NOTIFYMSN), fNotifyMSN);		
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_NOTIFYGTSDLL), fNotifyGTSdll);
 
+		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VMDETECTED), fVMDetected);
+		
+
 		Formats.UpdateData(true);
 
 		pApp->WriteProfileInt(ResStr(IDS_R_INTERNAL_FILTERS), ResStr(IDS_RS_SRCFILTERS), SrcFilters|~(SRC_LAST-1));
@@ -1880,6 +1929,8 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_WEBROOT), WebRoot);
 		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_WEBDEFINDEX), WebDefIndex);
 		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_WEBSERVERCGI), WebServerCGI);
+
+		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USERGBONLY), bRGBOnly);
 
 		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SNAPSHOTPATH), SnapShotPath);
 		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SNAPSHOTEXT), SnapShotExt);
@@ -1955,6 +2006,16 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 			}
 		}
 
+		
+		fVMDetected = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VMDETECTED), -1);
+		if(fVMDetected == -1){
+			if(IsInsideVMWare() || IsInsideVPC()){
+				fVMDetected = 1;
+			}else{
+				fVMDetected = 0;
+			}
+		}
+
 		fCheckFileAsscOnStartup = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_CHECKFILEASSCONSTARTUP), 1);
 		szStartUPCheckExts = pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_CHECKFILEEXTSASSCONSTARTUP), _T(".mkv .avi .rmvb .rm .wmv .asf .mov .mp4 .mpeg .mpg .3gp"));
 		fPopupStartUpExtCheck = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_POPSTARTUPEXTCHECK), 1);
@@ -1986,10 +2047,13 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		if(useGPUAcel){
 			iDXVer = 9;
 		}
-// 		if(IsInsideVMWare() ){
-// 			fForceRGBrender = 1;
-// 			iDXVer = 7;
-// 		}
+		bRGBOnly = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USERGBONLY), 0);
+
+ 		if(fVMDetected ){
+ 			//fForceRGBrender = 1;
+			bRGBOnly = 1;
+ 			iDXVer = 7;
+ 		}
 		iDSVideoRendererType = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DSVIDEORENDERERTYPE), ( (IsVista() || iDXVer >= 9) ? VIDRNDT_DS_VMR9RENDERLESS : VIDRNDT_DS_VMR7RENDERLESS) );
 		iRMVideoRendererType = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_RMVIDEORENDERERTYPE), ( (IsVista() || iDXVer >= 9) ? VIDRNDT_RM_DX9 : VIDRNDT_RM_DX7 ) );
 		iQTVideoRendererType = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_QTVIDEORENDERERTYPE),  ( (IsVista() || iDXVer >= 9) ? VIDRNDT_QT_DX9 : VIDRNDT_QT_DX7 ) );

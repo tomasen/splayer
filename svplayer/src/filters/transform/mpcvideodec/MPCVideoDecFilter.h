@@ -107,7 +107,6 @@ protected:
 	
 	bool									m_bUseDXVA;
 	bool									m_bUseFFmpeg;				
-	bool									m_bUSERGB;
 	CSize 									m_sar;
 
 	// === DXVA common variables
@@ -159,6 +158,7 @@ public:
 	static UINT								DXVAFilters;
 
 	static bool								m_ref_frame_count_check_skip;
+	static bool								m_bUSERGB;
 
 	CMPCVideoDecFilter(LPUNKNOWN lpunk, HRESULT* phr);
 	virtual ~CMPCVideoDecFilter();

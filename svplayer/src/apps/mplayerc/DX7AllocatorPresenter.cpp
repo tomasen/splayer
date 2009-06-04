@@ -1010,28 +1010,32 @@ HRESULT CRM7AllocatorPresenter::AllocSurfaces()
 	fx.dwFillColor = 0;
 	m_pVideoSurfaceOff->Blt(NULL, NULL, NULL, DDBLT_WAIT|DDBLT_COLORFILL, &fx);
 
-	INITDDSTRUCT(ddsd);
-	ddsd.dwFlags = DDSD_CAPS|DDSD_WIDTH|DDSD_HEIGHT|DDSD_PIXELFORMAT;
-	ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN;
-	ddsd.dwWidth = m_NativeVideoSize.cx;
-	ddsd.dwHeight = m_NativeVideoSize.cy;
-	ddsd.ddpfPixelFormat.dwSize = sizeof(DDPIXELFORMAT);
-	ddsd.ddpfPixelFormat.dwFlags = DDPF_FOURCC;
-	ddsd.ddpfPixelFormat.dwYUVBitCount = 16;
-	ddsd.ddpfPixelFormat.dwFourCC = '2YUY';
-
-	hr = m_pDD->CreateSurface(&ddsd, &m_pVideoSurfaceYUY2, NULL);
-
-	if(FAILED(m_pVideoSurfaceOff->Blt(NULL, m_pVideoSurfaceYUY2, NULL, DDBLT_WAIT, NULL)))
+	if ( AfxGetAppSettings().bRGBOnly ){
 		m_pVideoSurfaceYUY2 = NULL;
+	}else{
 
-	if(m_pVideoSurfaceYUY2)
-	{
-		INITDDSTRUCT(fx);
-		fx.dwFillColor = 0x80108010;
-		m_pVideoSurfaceYUY2->Blt(NULL, NULL, NULL, DDBLT_WAIT|DDBLT_COLORFILL, &fx);
+		INITDDSTRUCT(ddsd);
+		ddsd.dwFlags = DDSD_CAPS|DDSD_WIDTH|DDSD_HEIGHT|DDSD_PIXELFORMAT;
+		ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN;
+		ddsd.dwWidth = m_NativeVideoSize.cx;
+		ddsd.dwHeight = m_NativeVideoSize.cy;
+		ddsd.ddpfPixelFormat.dwSize = sizeof(DDPIXELFORMAT);
+		ddsd.ddpfPixelFormat.dwFlags = DDPF_FOURCC;
+		ddsd.ddpfPixelFormat.dwYUVBitCount = 16;
+		ddsd.ddpfPixelFormat.dwFourCC = '2YUY';
+
+		hr = m_pDD->CreateSurface(&ddsd, &m_pVideoSurfaceYUY2, NULL);
+
+		if(FAILED(m_pVideoSurfaceOff->Blt(NULL, m_pVideoSurfaceYUY2, NULL, DDBLT_WAIT, NULL)))
+			m_pVideoSurfaceYUY2 = NULL;
+
+		if(m_pVideoSurfaceYUY2)
+		{
+			INITDDSTRUCT(fx);
+			fx.dwFillColor = 0x80108010;
+			m_pVideoSurfaceYUY2->Blt(NULL, NULL, NULL, DDBLT_WAIT|DDBLT_COLORFILL, &fx);
+		}
 	}
-
 	return __super::AllocSurfaces();
 }
 

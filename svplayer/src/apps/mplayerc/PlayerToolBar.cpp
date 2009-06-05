@@ -738,9 +738,9 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
 				}else{
 					iMsg = iBottonClicked;
 				}
-				if(iFastFFWCount > 5 && ( iBottonClicked == ID_PLAY_BWD || iBottonClicked == ID_PLAY_FWD) ){
+				if(iFastFFWCount > 10 && ( iBottonClicked == ID_PLAY_BWD || iBottonClicked == ID_PLAY_FWD) ){
 
-					int iStepPow = (int)(iFastFFWCount / 5) * 2;
+					int iStepPow = (int)(iFastFFWCount / 10) * 2;
 					iStepPow = min(8, iStepPow);
 					iMsg += iStepPow;
 				}

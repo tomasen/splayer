@@ -54,10 +54,51 @@ public:
 				}
 
 				free(p);
+			}else{
+				LPVOID pvData = NULL;
+				DWORD dwFileSize = str.GetLength();
+				HGLOBAL hGlobal = GlobalAlloc(GMEM_MOVEABLE, dwFileSize);
+				_ASSERTE(NULL != hGlobal);
+
+				pvData = GlobalLock(hGlobal);
+				_ASSERTE(NULL != pvData);
+
+				CopyMemory(pvData, str, dwFileSize);
+				//DWORD dwBytesRead = 0;
+				
+				// read file and store in global memory
+				//BOOL bRead = ReadFile(hFile, pvData, dwFileSize, &dwBytesRead, NULL);
+				//_ASSERTE(FALSE != bRead);
+				GlobalUnlock(hGlobal);
+				
+
+				LPSTREAM pstm = NULL;
+
+				// create IStream* from global memory
+				HRESULT hr = CreateStreamOnHGlobal(hGlobal, TRUE, &pstm);
+				_ASSERTE(SUCCEEDED(hr) && pstm);
+
+				LPPICTURE pPicture;
+				 hr = ::OleLoadPicture(pstm, dwFileSize, FALSE, IID_IPicture, (LPVOID*)&pPicture);
+				//_ASSERTE(SUCCEEDED(hr) && pPicture);
+				pstm->Release();
+
+				// get the bitmap handle
+				HBITMAP hBitmap;
+				if (S_OK != pPicture->get_Handle((OLE_HANDLE FAR *) &hBitmap))
+				{
+					TRACE("Couldn't get bitmap handle from picture\n");
+					ASSERT(FALSE);
+				}else{
+					this->Attach(hBitmap);
+				}
+
+
 			}
 		}
 
 		return ret;
 	}
+
 };
 #endif

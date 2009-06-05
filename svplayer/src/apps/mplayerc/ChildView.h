@@ -38,6 +38,7 @@ class CChildView : public CWnd
 	CPoint m_lastMouseMove;
 	UINT m_nItemToTrack;
 	int iBottonClicked;
+	CRect m_logo_r;
 public:
 	CChildView();
 	virtual ~CChildView();

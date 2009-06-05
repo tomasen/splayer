@@ -31,7 +31,6 @@ static void read_data_fn(png_structp png_ptr, png_bytep data, png_size_t length)
 	memcpy(data, &png->data[png->pos], length);
 	png->pos += length;
 }
-
 unsigned char* DecompressPNG(struct png_t* png, int* w, int* h)
 {
     png_structp png_ptr;

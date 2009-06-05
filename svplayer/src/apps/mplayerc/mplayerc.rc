@@ -1423,7 +1423,7 @@ IDF_LOGO1               FILE                    "res\\logo.1.png"
 IDF_LOGO4               FILE                    "res\\logo.4.png"
 IDF_LOGO5               FILE                    "res\\logo.5.png"
 IDF_LOGO6               FILE                    "res\\logo.6.png"
-IDF_LOGO7               FILE                    "res\\logo.7.png"
+IDF_LOGO7               FILE                    "res\\default_bg.jpg"
 
 /////////////////////////////////////////////////////////////////////////////
 //

@@ -43,7 +43,7 @@ CChildView::CChildView() : m_vrect(0,0,0,0)
 	m_lastlmdownpoint.SetPoint(0, 0);
 
 	//m_watermark.LoadFromResource(IDF_LOGO2);
-	//LoadLogo();
+	LoadLogo();
 	CSUIButton * btnFileOpen = new CSUIButton(L"BTN_BIGOPEN.BMP" , ALIGN_TOPLEFT, CRect(-50 , -50, 0,0)  , FALSE, ID_FILE_OPENQUICK, FALSE  ) ;
 	m_btnList.AddTail( btnFileOpen);
 
@@ -215,6 +215,25 @@ void CChildView::OnPaint()
 		CRect rcClient;
 		GetClientRect(&rcClient);
 		CMemoryDC hdc(&dc, rcClient);
+		hdc.FillSolidRect( rcClient, 0);
+		if( !m_logo.IsNull() ){ 
+			BITMAP bm;
+			GetObject(m_logo, sizeof(bm), &bm);
+
+			CRect r;
+			GetClientRect(r);
+			int w = min(bm.bmWidth, r.Width());
+			int h = min(abs(bm.bmHeight), r.Height());
+			//int w = min(m_logo.GetWidth(), r.Width());
+			//int h = min(m_logo.GetHeight(), r.Height());
+			int x = (r.Width() - w) / 2;
+			int y = (r.Height() - h) / 2;
+			m_logo_r = CRect(CPoint(x, y), CSize(w, h));
+
+			int oldmode = hdc.SetStretchBltMode(STRETCH_HALFTONE);
+			m_logo.StretchBlt(hdc, r, CRect(0,0,bm.bmWidth,abs(bm.bmHeight)));
+		}
+
 		m_btnList.PaintAll( &hdc, rcWnd );
 	}
 	// Do not call CWnd::OnPaint() for painting messages
@@ -241,25 +260,10 @@ BOOL CChildView::OnEraseBkgnd(CDC* pDC)
 	}
 	else 
 	{
-		/*( /*&& !m_logo.IsNull() ((CMainFrame*)GetParentFrame())->IsPlaylistEmpty() /)
-BITMAP bm;
-		GetObject(m_logo, sizeof(bm), &bm);
-
 		
-		GetClientRect(r);
-		int w = min(bm.bmWidth, r.Width());
-		int h = min(abs(bm.bmHeight), r.Height());
-//		int w = min(m_logo.GetWidth(), r.Width());
-//		int h = min(m_logo.GetHeight(), r.Height());
-		int x = (r.Width() - w) / 2;
-		int y = (r.Height() - h) / 2;
-		r = CRect(CPoint(x, y), CSize(w, h));
-
-		int oldmode = pDC->SetStretchBltMode(STRETCH_HALFTONE);
-		m_logo.StretchBlt(*pDC, r, CRect(0,0,bm.bmWidth,abs(bm.bmHeight)));
-
+				
 		
-		/ *
+		/*
 		if(!m_watermark.IsNull()){
 					BITMAP bmw;
 					GetObject(m_watermark, sizeof(bmw), &bmw);
@@ -277,7 +281,8 @@ BITMAP bm;
 		pDC->ExcludeClipRect(r);
 */
 
-		CRect rcWnd;
+		/*
+CRect rcWnd;
 		GetWindowRect(rcWnd);
 		CRect rcClient;
 		GetClientRect(rcClient);
@@ -286,6 +291,7 @@ BITMAP bm;
 		CMemoryDC hdc(pDC, rcClient);
 		hdc.FillSolidRect( rcClient, 0);
 		m_btnBBList.PaintAll( &hdc, rcWnd );
+*/
 
 		
 	}

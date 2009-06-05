@@ -248,7 +248,7 @@ void CPlayerSeekBar::OnPaint()
 		int cur = r.left + (int)((m_start < m_stop /*&& fEnabled*/) ? (__int64)r.Width() * (m_pos - m_start) / (m_stop - m_start) : 0);
 		
 #define CORBARS 8
-		COLORREF havntplayed = 0x00191919;
+		COLORREF havntplayed = 0x00434343;
 		COLORREF Bars[CORBARS] = {0x000f412d
 		, 0x0083ffdf, 0x0071fdd4, 0x0061f9c6 ,0x005ff5ba ,	0x0064f1b2,	0x006fefb0,	0x000f412d};
 

@@ -4254,7 +4254,7 @@ void CMainFrame::OnFileOpenFolder(){
 	bi.hwndOwner = m_hWnd;
 	bi.pidlRoot = NULL;
 	bi.pszDisplayName = buff;
-	bi.lpszTitle = _T("选择截图默认保存文件夹");
+	bi.lpszTitle = _T("打开视频文件夹");
 	bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_VALIDATE | BIF_USENEWUI | BIF_NONEWFOLDERBUTTON;
 	bi.lpfn = BrowseCtrlCallback;
 	bi.lParam = (LPARAM)(LPCTSTR)szFolderPath;

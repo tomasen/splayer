@@ -277,26 +277,26 @@ void CPlayerSeekBar::OnPaint()
 		{
 			COLORREF P2 = 0x000d3324;
 			COLORREF P1 = 0x00091611;
-			dc.SetPixel(r.left, r.top+1, P2);
-			dc.SetPixel(r.left+1, r.top, P2);
-			dc.SetPixel(r.left, r.bottom-2, P2);
-			dc.SetPixel(r.left+1, r.bottom-1, P2);
-			dc.SetPixel(cur, r.top+1, P2);
-			dc.SetPixel(cur-1, r.top, P2);
-			dc.SetPixel(cur, r.bottom-2, P2);
-			dc.SetPixel(cur-1, r.bottom-1, P2);
-			dc.SetPixel(cur, r.top, P1);
-			dc.SetPixel(cur, r.bottom-1, P1);
-			dc.SetPixel(r.left, r.top, P1);
-			dc.SetPixel(r.left, r.bottom-1, P1);
+			dc.SetPixel(r.left-1, r.top+1, P2);
+			dc.SetPixel(r.left, r.top, P2);
+			dc.SetPixel(r.left-1, r.bottom-2, P2);
+			dc.SetPixel(r.left, r.bottom-1, P2);
+			dc.SetPixel(cur+1, r.top+1, P2);
+			dc.SetPixel(cur, r.top, P2);
+			dc.SetPixel(cur+1, r.bottom-2, P2);
+			dc.SetPixel(cur, r.bottom-1, P2);
+			dc.SetPixel(cur+1, r.top, P1);
+			dc.SetPixel(cur+1, r.bottom-1, P1);
+			dc.SetPixel(r.left-1, r.top, P1);
+			dc.SetPixel(r.left-1, r.bottom-1, P1);
 
 			CPen line(PS_INSIDEFRAME, 1, Bars[0]);
 			CPen* old = dc.SelectObject(&line);
 
-			dc.MoveTo( r.left , r.top + 2);
-			dc.LineTo( r.left , r.bottom-2);
-			dc.MoveTo( cur , r.top + 2);
-			dc.LineTo( cur , r.bottom-2);
+			dc.MoveTo( r.left-1 , r.top + 2);
+			dc.LineTo( r.left-1 , r.bottom-2);
+			dc.MoveTo( cur+1 , r.top + 2);
+			dc.LineTo( cur+1 , r.bottom-2);
 		}
 		
 		/*

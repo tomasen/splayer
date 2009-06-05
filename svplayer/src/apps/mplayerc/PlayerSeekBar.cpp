@@ -115,8 +115,8 @@ CRect CPlayerSeekBar::GetChannelRect()
 {
 	CRect r;
 	GetClientRect(&r);
-	r.DeflateRect(5, 2, 5, 8); //
-	r.bottom = r.top + 5;
+	r.DeflateRect(5, 2, 5, 2); //
+	r.bottom = r.top + 8;
 	return(r);
 }
 
@@ -218,16 +218,16 @@ void CPlayerSeekBar::OnPaint()
 
 		if(fEnabled)
 		{
-		r.DeflateRect(1, 1, 1, 2);
-		CPen white(PS_INSIDEFRAME, 1, white);
-		CPen* old = dc.SelectObject(&white);
-		dc.MoveTo(r.left, r.top);
-		dc.LineTo(r.right, r.top);
-		dc.MoveTo(r.left, r.bottom);
-		dc.LineTo(r.right, r.bottom);
-		dc.SelectObject(old);
-		dc.SetPixel(r.CenterPoint().x, r.top, 0);
-		dc.SetPixel(r.CenterPoint().x, r.bottom, 0);
+			r.DeflateRect(1, 1, 1, 2);
+			CPen white(PS_INSIDEFRAME, 1, white);
+			CPen* old = dc.SelectObject(&white);
+			dc.MoveTo(r.left, r.top);
+			dc.LineTo(r.right, r.top);
+			dc.MoveTo(r.left, r.bottom);
+			dc.LineTo(r.right, r.bottom);
+			dc.SelectObject(old);
+			dc.SetPixel(r.CenterPoint().x, r.top, 0);
+			dc.SetPixel(r.CenterPoint().x, r.bottom, 0);
 		}
 
 		dc.SetPixel(r.CenterPoint().x+5, r.top-4, bkg);
@@ -247,30 +247,79 @@ void CPlayerSeekBar::OnPaint()
 
 		int cur = r.left + (int)((m_start < m_stop /*&& fEnabled*/) ? (__int64)r.Width() * (m_pos - m_start) / (m_stop - m_start) : 0);
 		
+#define CORBARS 8
+		COLORREF havntplayed = 0x00191919;
+		COLORREF Bars[CORBARS] = {0x000f412d
+		, 0x0083ffdf, 0x0071fdd4, 0x0061f9c6 ,0x005ff5ba ,	0x0064f1b2,	0x006fefb0,	0x000f412d};
 
+		{
+			CPen line(PS_INSIDEFRAME, 1, bkg);
+			CPen* old = dc.SelectObject(&line);
+			dc.MoveTo( cur , r.top );
+			dc.LineTo( r.right, r.top );
+			dc.MoveTo( cur , r.top + CORBARS - 1);
+			dc.LineTo( r.right, r.top + CORBARS - 1);
+		}
 		CRect rFilled(r);
-		rFilled.right =   cur;
-		dc.FillSolidRect(&rFilled,  white ); //fEnabled ?
-		r = GetChannelRect();
+		rFilled.left =   cur;
+		rFilled.top++;
+		rFilled.bottom--;
+		dc.FillSolidRect(&rFilled,  havntplayed ); //fEnabled ?
+		
+		//r = GetChannelRect();
+		for(int i = 0; i < CORBARS ; i++){
+			CPen line(PS_INSIDEFRAME, 1, Bars[i]);
+			CPen* old = dc.SelectObject(&line);
+			dc.MoveTo( r.left , r.top + i);
+			dc.LineTo( cur, r.top + i);
+		}
+
+		{
+			COLORREF P2 = 0x000d3324;
+			COLORREF P1 = 0x00091611;
+			dc.SetPixel(r.left, r.top+1, P2);
+			dc.SetPixel(r.left+1, r.top, P2);
+			dc.SetPixel(r.left, r.bottom-2, P2);
+			dc.SetPixel(r.left+1, r.bottom-1, P2);
+			dc.SetPixel(cur, r.top+1, P2);
+			dc.SetPixel(cur-1, r.top, P2);
+			dc.SetPixel(cur, r.bottom-2, P2);
+			dc.SetPixel(cur-1, r.bottom-1, P2);
+			dc.SetPixel(cur, r.top, P1);
+			dc.SetPixel(cur, r.bottom-1, P1);
+			dc.SetPixel(r.left, r.top, P1);
+			dc.SetPixel(r.left, r.bottom-1, P1);
+
+			CPen line(PS_INSIDEFRAME, 1, Bars[0]);
+			CPen* old = dc.SelectObject(&line);
+
+			dc.MoveTo( r.left , r.top + 2);
+			dc.LineTo( r.left , r.bottom-2);
+			dc.MoveTo( cur , r.top + 2);
+			dc.LineTo( cur , r.bottom-2);
+		}
+		
+		/*
 		switch( cur % 4 ){
-			case 3:
-				cur--;
-				break;
-			case 2:
-				cur+=2;
-				break;
-			case 1:
-				cur++;
-				break;
-		}
-		for(int drawPos = cur ; drawPos < r.right; drawPos +=2){
-			CRect step(drawPos,r.top, drawPos+2, r.bottom);
-			if(drawPos % 4){
-				dc.FillSolidRect( &step, NEWUI_COLOR_TOOLBAR_UPPERBG);
-			}else{
-				dc.FillSolidRect( &step, white);
-			}
-		}
+					case 3:
+						cur--;
+						break;
+					case 2:
+						cur+=2;
+						break;
+					case 1:
+						cur++;
+						break;
+				}
+				for(int drawPos = cur ; drawPos < r.right; drawPos +=2){
+					CRect step(drawPos,r.top, drawPos+2, r.bottom);
+					if(drawPos % 4){
+						dc.FillSolidRect( &step, NEWUI_COLOR_TOOLBAR_UPPERBG);
+					}else{
+						dc.FillSolidRect( &step, white);
+					}
+				}*/
+		
 		//r.InflateRect(1, 1);
 		//dc.Draw3dRect(&r, shadow, light);
 		dc.ExcludeClipRect(&r);

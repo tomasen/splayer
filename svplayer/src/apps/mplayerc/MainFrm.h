@@ -791,7 +791,7 @@ public:
 	CMenu m_mainMenu;
 	BOOL m_bDxvaInUse;
 private:
-	CBitmap m_bmpCaption;//, m_bmpClose, m_bmpMaximize, m_bmpMinimize, m_bmpRestore, m_bmpMenu;
+	CBitmap m_bmpCaption,m_bmpBCorner;//, m_bmpClose, m_bmpMaximize, m_bmpMinimize, m_bmpRestore, m_bmpMenu;
 	CSUIBtnList m_btnList;
 	CRgn m_rgn;
 	CFont m_hft;

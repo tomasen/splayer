@@ -635,6 +635,9 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	//ZeroMemory(m_nBoxStatus, sizeof(m_nBoxStatus));
 	m_bmpCaption.LoadBitmap(L"CAPTION.BMP");
+
+	m_bmpBCorner.LoadBitmap(L"BORDER_CORNER.BMP");
+	
 	//////////////////////////////////////////////////////////////////////////
 	// an alternative way of pre-multiplying bitmap data
 	CRect btnMargin(3,7,15,3);
@@ -822,18 +825,26 @@ void CMainFrame::OnNcCalcSize( BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp){
 
 		CRect rc = lpncsp->rgrc[0];
 		DWORD currentStyle = GetStyle();
-		
+		BOOL bCaptionOn = currentStyle&WS_CAPTION ;
 		if(m_fFullScreen){
 
 		}else if(wp.showCmd!=SW_MAXIMIZE ){
-			rc.InflateRect( GetSystemMetrics(SM_CXFRAME) - 3, 0,   GetSystemMetrics(SM_CXFRAME) - 3, GetSystemMetrics(SM_CXFRAME) - 2);
+			rc.InflateRect( GetSystemMetrics(SM_CXFRAME) - 4, 0,   GetSystemMetrics(SM_CXFRAME) - 4, GetSystemMetrics(SM_CXFRAME) - 3  );
 			if(!m_wndToolBar.IsVisible())	{
-				rc.bottom -= 2;
+				//rc.bottom -= 2;
 			}
-			if(! ( currentStyle&WS_CAPTION )){
-				rc.top -=3;
+			rc.bottom -= 4;
+			rc.top -=1 ;
+			if(!bCaptionOn){
+				//rc.top -=3 ;
 				rc.left += 1;
 				rc.right -= 1;
+			}
+			if(m_wndToolBar.IsVisible()){
+				rc.bottom += 2;
+				if(bCaptionOn){
+					rc.bottom += 1;
+				}
 			}
 		}else{
 			//rc.InflateRect( GetSystemMetrics(SM_CXFRAME) - 3, 0,   GetSystemMetrics(SM_CXFRAME) - 3, GetSystemMetrics(SM_CXFRAME) - 2);
@@ -1000,28 +1011,106 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 		// process and cause extra cost
 		RECT rcClient = {0};
 		GetClientRect(&rcClient);
-		rcClient.top+=GetSystemMetrics(SM_CYFRAME);
+		rcClient.top+=3;
 		if(bCAPTIONon){
-			rcClient.top+=GetSystemMetrics(SM_CYCAPTION);
-			rcClient.bottom+=GetSystemMetrics(SM_CYCAPTION);
+			rcClient.top+=GetSystemMetrics(SM_CYCAPTION) + 4;
+			//rcClient.bottom+=GetSystemMetrics(SM_CYCAPTION);
+		}else{
+			rcClient.top+=3;//GetSystemMetrics(SM_CYFRAME);
 		}
-		rcClient.left+=3;
+		rcClient.left+=4 ;
+		rcClient.right+=4;
+		rcClient.bottom+=6 ;
 		if(m_wndToolBar.IsVisible()){
-			rcClient.bottom+=2;
+			//rcClient.bottom+=2;
 		}else{
 			//rcClient.bottom-=4;
 		}
-		rcClient.right+=3;
+		
 		dc->ExcludeClipRect(&rcClient);
 
 		// establish double buffered painting
 		CMemoryDC hdc(dc, rc);
-		CBrush brush;
-		brush.CreateSolidBrush(NEWUI_COLOR_BG);
-		if (wp.showCmd != SW_MAXIMIZE && !m_fFullScreen)
-			hdc.RoundRect(rc.left+1, rc.top+1, rc.right-1, rc.bottom-1, 3, 3);
-		else if(currentStyle&WS_CAPTION) {
-			hdc.FillRect(&rc, &brush);
+// 		CBrush brush;
+// 		brush.CreateSolidBrush(RGB(0xff,0x00,0x00));
+// 		HBRUSH holdbrush = (HBRUSH)hdc.SelectObject(brush);
+		if (wp.showCmd != SW_MAXIMIZE && !m_fFullScreen){
+			//hdc.RoundRect(rc.left+1, rc.top+1, rc.right-1, rc.bottom-1, 3, 3);
+			int bSpace = 1;
+			CPen pen;
+			pen.CreatePen(PS_SOLID, 1, RGB(0x7f,0x7f,0x7f));
+			HPEN holdpen = (HPEN)hdc.SelectObject(pen);
+			hdc.MoveTo(rc.left+bSpace, rc.bottom-bSpace);
+			hdc.LineTo(rc.left+bSpace, rc.top+bSpace);
+			hdc.LineTo(rc.right-bSpace-1, rc.top+bSpace);
+			hdc.LineTo(rc.right-bSpace-1, rc.bottom-bSpace-1);
+			hdc.LineTo(rc.left+bSpace, rc.bottom-bSpace-1);
+
+			bSpace++;
+			CPen pen2;
+			pen2.CreatePen(PS_SOLID, 1, RGB(0xf0,0xf0,0xf0));
+			holdpen = (HPEN)hdc.SelectObject(pen2);
+			hdc.MoveTo(rc.left+bSpace, rc.bottom-bSpace);
+			hdc.LineTo(rc.left+bSpace, rc.top+bSpace);
+			hdc.LineTo(rc.right-bSpace-1, rc.top+bSpace);
+			hdc.LineTo(rc.right-bSpace-1, rc.bottom-bSpace-1);
+			hdc.LineTo(rc.left+bSpace, rc.bottom-bSpace-1);
+
+			bSpace++;
+			CPen pen3;
+			pen3.CreatePen(PS_SOLID, 1, RGB(0xe0,0xe0,0xe0));
+			holdpen = (HPEN)hdc.SelectObject(pen3);
+			hdc.MoveTo(rc.left+bSpace, rc.bottom-bSpace);
+			hdc.LineTo(rc.left+bSpace, rc.top+bSpace);
+			hdc.LineTo(rc.right-bSpace-1, rc.top+bSpace);
+			
+			hdc.MoveTo(rc.left+bSpace, rc.top+1+bSpace);
+			hdc.LineTo(rc.right-bSpace-1, rc.top+1+bSpace);
+			hdc.MoveTo(rc.left+bSpace, rc.top+2+bSpace);
+			hdc.LineTo(rc.right-bSpace-1, rc.top+2+bSpace);
+			
+			hdc.LineTo(rc.right-bSpace-1, rc.bottom-bSpace-1);
+			hdc.LineTo(rc.left+bSpace, rc.bottom-bSpace-1);
+			hdc.MoveTo(rc.right-bSpace-1, rc.bottom-bSpace-2);
+			hdc.LineTo(rc.left+bSpace, rc.bottom-bSpace-2);
+			hdc.MoveTo(rc.right-bSpace-1, rc.bottom-bSpace-3);
+			hdc.LineTo(rc.left+bSpace, rc.bottom-bSpace-3);
+
+			bSpace++;
+			CPen pen4;
+			pen4.CreatePen(PS_SOLID, 1, RGB(0x73,0x73,0x73));
+			holdpen = (HPEN)hdc.SelectObject(pen4);
+			hdc.MoveTo(rc.left+bSpace, rc.bottom-bSpace);
+			hdc.LineTo(rc.left+bSpace, rc.top+2+bSpace);
+			hdc.LineTo(rc.right-bSpace-1, rc.top+2+bSpace);
+			hdc.LineTo(rc.right-bSpace-1, rc.bottom-bSpace-1-2);
+			hdc.LineTo(rc.left+bSpace, rc.bottom-bSpace-1-2);
+
+			BOOL bToolBarOn = m_wndToolBar.IsVisible();
+			
+			CDC dcBmp;
+			dcBmp.CreateCompatibleDC(&hdc);
+			HBITMAP hbmpold = (HBITMAP)dcBmp.SelectObject(m_bmpBCorner);
+			hdc.SetStretchBltMode(HALFTONE);
+			hdc.SetBrushOrg(0, 0);
+			int tx = rc.Width() - 2;
+			int ty = rc.Height() - 2;
+			hdc.StretchBlt(0,0,5,7, &dcBmp, 0,0,5,7, SRCCOPY); // TopLeft
+			hdc.StretchBlt(tx-5,0,5,7, &dcBmp, 5,0,5,7, SRCCOPY); // Top Right
+			hdc.StretchBlt(0,ty-7,5,7, &dcBmp, 0,7,5,7, SRCCOPY);
+			hdc.StretchBlt(tx-5,ty-7,5,7, &dcBmp, 5,7,5,7, SRCCOPY);
+			
+			if(bToolBarOn){
+				hdc.StretchBlt(0,ty-13,5,9, &dcBmp, 0,9,5,1, SRCCOPY);
+				hdc.StretchBlt(tx-5,ty-13,5,9, &dcBmp, 5,9,5,1, SRCCOPY);
+				hdc.StretchBlt(0,ty-14,5,1, &dcBmp, 0,8,5,1, SRCCOPY);
+				hdc.StretchBlt(tx-5,ty-14,5,1, &dcBmp, 5,8,5,1, SRCCOPY);
+				hdc.StretchBlt(0,ty-15,5,1, &dcBmp, 0,7,5,1, SRCCOPY);
+				hdc.StretchBlt(tx-5,ty-15,5,1, &dcBmp, 5,7,5,1, SRCCOPY);
+			}
+			dcBmp.SelectObject(hbmpold);
+		}else if(currentStyle&WS_CAPTION) {
+			//hdc.FillRect(&rc, &brush);
 		}
 
 		int nTotalCaptionHeight = GetSystemMetrics(SM_CYCAPTION)+GetSystemMetrics(SM_CYFRAME);
@@ -1031,27 +1120,32 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 		}
 		// some basic styles
 		if(!m_fFullScreen){
-			CPen pen, penBright, penDark;
-			pen.CreatePen(PS_SOLID, 1, NEWUI_COLOR_PEN );
-			penBright.CreatePen(PS_SOLID, 1, NEWUI_COLOR_PEN_BRIGHT);
-			penDark.CreatePen(PS_SOLID, 1,NEWUI_COLOR_PEN_BRIGHT);
-			HPEN holdpen = (HPEN)hdc.SelectObject(pen);
-			HBRUSH holdbrush = (HBRUSH)hdc.SelectObject(brush);
-			hdc.SelectObject(penBright);
-			hdc.MoveTo(rc.left+2, rc.bottom-3);
-			hdc.LineTo(rc.left+2, rc.top+2);
-			hdc.LineTo(rc.right-3, rc.top+2);
-			hdc.SelectObject(penDark);
-			hdc.MoveTo(rc.left+2, rc.bottom-3);
-			hdc.LineTo(rc.right-3, rc.bottom-3);
-			hdc.LineTo(rc.right-3, rc.top+2);
-			hdc.SelectObject(holdpen);
-			hdc.SelectObject(holdbrush);
+// 			CPen pen, penBright, penDark;
+// 			pen.CreatePen(PS_SOLID, 1, NEWUI_COLOR_PEN );
+// 			penBright.CreatePen(PS_SOLID, 1, NEWUI_COLOR_PEN_BRIGHT);
+// 			penDark.CreatePen(PS_SOLID, 1,NEWUI_COLOR_PEN_BRIGHT);
+// 			HPEN holdpen = (HPEN)hdc.SelectObject(pen);
+//			HBRUSH holdbrush = (HBRUSH)hdc.SelectObject(brush);
+// 			hdc.SelectObject(penBright);
+// 			hdc.MoveTo(rc.left+2, rc.bottom-3);
+// 			hdc.LineTo(rc.left+2, rc.top+2);
+// 			hdc.LineTo(rc.right-3, rc.top+2);
+// 			hdc.SelectObject(penDark);
+// 			hdc.MoveTo(rc.left+2, rc.bottom-3);
+// 			hdc.LineTo(rc.right-3, rc.bottom-3);
+// 			hdc.LineTo(rc.right-3, rc.top+2);
+// 			hdc.SelectObject(holdpen);
+// 			hdc.SelectObject(holdbrush);
 
 			// 		hdc.SelectObject((HBRUSH) GetStockObject(NULL_BRUSH));
 			// 		if (wp.showCmd != SW_MAXIMIZE)
 			// 			hdc.RoundRect(rc.left+1, rc.top+1, rc.right-1, rc.bottom-1, 3, 3);
 
+			
+		}
+		if(bCAPTIONon){
+			// and the title
+			
 			// painting the caption bar
 			CDC dcBmp;
 			dcBmp.CreateCompatibleDC(&hdc);
@@ -1062,11 +1156,6 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 			hdc.StretchBlt(4, 0, rc.Width()-4*2, nTotalCaptionHeight, &dcBmp, 4, 0, 6, 25, SRCCOPY);
 			hdc.StretchBlt(rc.Width()-2-4, 0, 4, nTotalCaptionHeight, &dcBmp, 10, 0, 4, 25, SRCCOPY);
 			dcBmp.SelectObject(hbmpold);
-		}
-		if(bCAPTIONon){
-			// and the title
-			
-			
 
 			HFONT holdft = (HFONT)hdc.SelectObject(m_hft);
 
@@ -11275,6 +11364,9 @@ void CMainFrame::ShowControls(int nCS, bool fSave)
 	BOOL bSomthingChanged = false;
 	
 	nCS &= ~CS_STATUSBAR;
+	if(!IsSomethingLoaded()){
+		nCS &= ~CS_SEEKBAR;
+	}
 	m_pLastBar = NULL;
 
 	POSITION pos = m_bars.GetHeadPosition();

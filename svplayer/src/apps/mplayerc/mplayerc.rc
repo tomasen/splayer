@@ -1453,6 +1453,7 @@ IDI_PLAY                ICON                    "res\\play.ico"
 
 
 //New UI Bitmap
+BORDER_CORNER.BMP             BITMAP                  "res\\newui\\BORDER_CORNER.bmp"
 CAPTION.BMP             BITMAP                  "res\\newui\\caption.bmp"
 CLOSE.BMP               BITMAP                  "res\\newui\\BTN_CLOSE.bmp"
 MAXIMIZE.BMP            BITMAP                  "res\\newui\\BTN_MAX.bmp"

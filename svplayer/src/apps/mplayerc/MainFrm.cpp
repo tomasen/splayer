@@ -249,7 +249,9 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_FILE_SAVE_COPY, OnFileSaveAs)
 	ON_UPDATE_COMMAND_UI(ID_FILE_SAVE_COPY, OnUpdateFileSaveAs)
 	ON_COMMAND(ID_FILE_SAVE_IMAGE, OnFileSaveImage)
+	ON_COMMAND(ID_FILE_COPYTOCLIPBOARD, OnFileCopyImageToCLipBoard)
 	ON_UPDATE_COMMAND_UI(ID_FILE_SAVE_IMAGE, OnUpdateFileSaveImage)
+	ON_UPDATE_COMMAND_UI(ID_FILE_COPYTOCLIPBOARD, OnUpdateFileSaveImage)
 	ON_COMMAND(ID_FILE_SAVE_IMAGE_AUTO, OnFileSaveImageAuto)
 	ON_UPDATE_COMMAND_UI(ID_FILE_SAVE_IMAGE_AUTO, OnUpdateFileSaveImage)
 	ON_COMMAND(ID_FILE_SAVE_THUMBNAILS, OnFileSaveThumbnails)
@@ -415,6 +417,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_VISITCONTACTINFO, &CMainFrame::OnVisitcontactinfo)
 	ON_COMMAND(ID_DONATE, &CMainFrame::OnDonate)
 	ON_COMMAND(ID_JOINTEAM, &CMainFrame::OnJointeam)
+
+
 	ON_COMMAND_RANGE(ID_BRIGHTINC, ID_BRIGHTDEC, OnColorControl )
 
 	ON_COMMAND_RANGE(IDS_CHANGE_AUDIO_DEVICE, IDS_CHANGE_AUDIO_DEVICE_END, OnAudioDeviceChange )
@@ -4916,7 +4920,9 @@ void CMainFrame::SaveDIB(LPCTSTR fn, BYTE* pData, long size)
 
 	SendStatusMessage((LPCTSTR)p, 3000);
 }
-
+void CMainFrame::OnFileCopyImageToCLipBoard(){
+	SaveImage();
+}
 void CMainFrame::SaveImage(LPCTSTR fn)
 {
 	BYTE* pData = NULL;
@@ -4924,7 +4930,25 @@ void CMainFrame::SaveImage(LPCTSTR fn)
 
 	if(GetDIB(&pData, size))
 	{
-		SaveDIB(fn, pData, size);
+		
+		HANDLE hMem = GlobalAlloc (GMEM_DDESHARE | GMEM_MOVEABLE, size);
+		if(hMem){
+			void *pMem = GlobalLock (hMem);
+			CopyMemory(pMem, pData, size);
+
+			OpenClipboard();
+			EmptyClipboard();
+
+			HANDLE hHandle = SetClipboardData(CF_DIB, pMem);
+			if(!hHandle){
+				AfxMessageBox(_T("SetClipboardData Failed"));
+			}
+			CloseClipboard();
+			GlobalUnlock (hMem);
+		}
+		if(fn)
+			SaveDIB(fn, pData, size);
+
 		delete [] pData;
 	}
 }

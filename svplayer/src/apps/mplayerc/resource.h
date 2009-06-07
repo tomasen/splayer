@@ -332,8 +332,9 @@
 #define IDS_CHANGE_AUDIO_DEVICE         4411
 #define IDS_CHANGE_AUDIO_DEVICE_END     4500
 #define ID_SHADERS_SETDX9               4501
-#define ID_RECENT_FILE_START			5000
-#define ID_RECENT_FILE_END				5200
+#define ID_RECENT_FILE_START            5000
+#define ID_RECENT_FILE_END              5200
+#define ID_FILE_COPYTOCLIPBOARD         5201
 #define TIMER_FASTFORWORD               7001
 #define TIMER_STOPFASTFORWORD           7002
 #define TIMER_STATERASER                7003
@@ -916,6 +917,7 @@
 #define ID__32820                       32820
 #define ID_32821                        32821
 #define ID__RECENTPLAYED                32822
+#define ID_32823                        32823
 #define IDS_VOLUME_BOOST_INC            33129
 #define IDS_VOLUME_BOOST_DEC            33130
 #define IDS_VOLUME_BOOST_MIN            33131
@@ -990,7 +992,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        20011
-#define _APS_NEXT_COMMAND_VALUE         32823
+#define _APS_NEXT_COMMAND_VALUE         32824
 #define _APS_NEXT_CONTROL_VALUE         22004
 #define _APS_NEXT_SYMED_VALUE           24001
 #endif

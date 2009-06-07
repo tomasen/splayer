@@ -294,7 +294,7 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 	bool GetDIB(BYTE** ppData, long& size, bool fSilent = false);
 	void SaveDIB(LPCTSTR fn, BYTE* pData, long size);
 	BOOL IsRendererCompatibleWithSaveImage();
-	void SaveImage(LPCTSTR fn);
+	void SaveImage(LPCTSTR fn = NULL);
 	void SaveThumbnails(LPCTSTR fn);
 
 	//
@@ -608,6 +608,7 @@ public:
 	afx_msg void OnFileSaveAs();
 	afx_msg void OnUpdateFileSaveAs(CCmdUI* pCmdUI);
 	afx_msg void OnFileSaveImage();
+	afx_msg void OnFileCopyImageToCLipBoard();
 	afx_msg void OnFileSaveImageAuto();
 	afx_msg void OnUpdateFileSaveImage(CCmdUI* pCmdUI);
 	afx_msg void OnFileSaveThumbnails();

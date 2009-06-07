@@ -3898,7 +3898,8 @@ void CMainFrame::OnFilePostOpenmedia()
 
 	m_wndColorControlBar.CheckAbility();
 
-	ShowControls(AfxGetAppSettings().nCS | CS_SEEKBAR, false);
+	if(m_wndToolBar.IsVisible())
+		ShowControls(AfxGetAppSettings().nCS | CS_SEEKBAR, false);
 
 	__int64 rtDur = 0;
 	pMS->GetDuration(&rtDur);
@@ -3982,8 +3983,9 @@ void CMainFrame::OnFilePostClosemedia()
 	} 
 //	AfxGetAppSettings().fEnableSubtitles2 = FALSE;
 	m_iSubtitleSel2 = -1;
-
-	 ShowControls(AfxGetAppSettings().nCS & ~CS_SEEKBAR , false);
+	
+	if(m_wndToolBar.IsVisible())
+	   ShowControls(AfxGetAppSettings().nCS & ~CS_SEEKBAR , false);
 
 	if(IsWindow(m_wndCaptureBar.m_hWnd))
 	{

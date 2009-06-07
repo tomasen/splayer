@@ -47,7 +47,7 @@ CChildView::CChildView() : m_vrect(0,0,0,0)
 	CSUIButton * btnFileOpen = new CSUIButton(L"BTN_BIGOPEN.BMP" , ALIGN_TOPLEFT, CRect(-50 , -50, 0,0)  , FALSE, ID_FILE_OPENQUICK, FALSE  ) ;
 	m_btnList.AddTail( btnFileOpen);
 
-	m_btnList.AddTail( new CSUIButton(L"BTN_OPENADV.BMP" ,ALIGN_TOPLEFT, CRect(-50 , -50, 0,0)  , FALSE, ID_FILE_OPENMEDIA, FALSE, ALIGN_TOP,btnFileOpen,  CRect(3,3,3,3) ) ) ;
+	m_btnList.AddTail( new CSUIButton(L"BTN_OPENADV.BMP" ,ALIGN_TOPLEFT, CRect(-50 , -51, 0,0)  , FALSE, ID_FILE_OPENMEDIA, FALSE, ALIGN_LEFT,btnFileOpen,  CRect(3,3,3,3) ) ) ;
 	
 	m_btnList.AddTail( new CSUIButton(L"WATERMARK2.BMP" , ALIGN_BOTTOMRIGHT, CRect(6 , 6, 0,6)  , TRUE, 0, FALSE  ) );
 }

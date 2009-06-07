@@ -1006,6 +1006,7 @@ void CMPlayerCApp::InitInstanceThreaded(){
 	
 		//csaDll.Add( _T("tsccvid.dll"));
 		csaDll.Add( _T("wvc1dmod.dll"));
+		csaDll.Add( _T("RadGtSplitter.ax"));
 		for(int i = 0; i < csaDll.GetCount(); i++){
 			CString szDllPath = svpToolBox.GetPlayerPath( csaDll.GetAt(i) );
 			if(svpToolBox.ifFileExist(szDllPath))
@@ -1016,7 +1017,7 @@ void CMPlayerCApp::InitInstanceThreaded(){
 }
 UINT __cdecl Thread_InitInstance( LPVOID lpParam ) 
 { 
-	Sleep(5000);
+	Sleep(2000);
 	CMPlayerCApp * ma =(CMPlayerCApp*) lpParam;
 	CoInitialize(NULL);
 	ma->InitInstanceThreaded();

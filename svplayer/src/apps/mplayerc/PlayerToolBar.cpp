@@ -87,14 +87,27 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 	btnFFBack->addAlignRelButton(ALIGN_RIGHT, btnPlay , CRect(20 , 10 , 20, 10) );
 	m_btnList.AddTail( btnFFBack );
 
-	m_btnList.AddTail( new CSUIButton(L"BTN_PREV.BMP" , ALIGN_TOPLEFT, CRect(-48 , 9, 3,3)  , 0, ID_NAVIGATE_SKIPBACK, FALSE, ALIGN_RIGHT, btnFFBack , CRect(20 , 10 , 20, 10) ) );
+	CSUIButton* btnPrev = new CSUIButton(L"BTN_PREV.BMP" , ALIGN_TOPLEFT, CRect(-48 , 9, 3,3)  , 0, ID_NAVIGATE_SKIPBACK, FALSE, ALIGN_RIGHT, btnFFBack , CRect(20 , 10 , 20, 10) ) ;
+	m_btnList.AddTail( btnPrev );
 
 	m_btnList.AddTail( new CSUIButton(L"BTN_NEXT.BMP" , ALIGN_TOPLEFT, CRect(-48 , 9, 3,3)  , 0, ID_NAVIGATE_SKIPFORWARD, FALSE, ALIGN_LEFT, btnFFwd , CRect(20 , 10 , 20, 10) ) );
 	
-	CSUIButton* btnLogo =  new CSUIButton(L"SPLAYER.BMP" , ALIGN_TOPLEFT, CRect(20 , 7, 3,3)  , TRUE, 0, FALSE ) ;
+	CSUIButton* btnLogo =  new CSUIButton(L"SPLAYER.BMP" , ALIGN_TOPLEFT, CRect(20 , 7, 3,3)  , TRUE, 0, FALSE   ) ;
 	m_btnList.AddTail(btnLogo);
 
+	CSUIButton* btnSubFont =   new CSUIButton(L"BTN_FONT.BMP" , ALIGN_TOPLEFT, CRect(-47 , 6, 3,3)  , 0, ID_SUBSETFONTBOTH /*sub font*/, TRUE, ALIGN_RIGHT, btnPrev , CRect(20 , 10 , 30, 10) );
+	btnSubFont->addAlignRelButton(ALIGN_RIGHT, btnFFBack   , CRect(20 , 10 , 30, 10) );
+	m_btnList.AddTail( btnSubFont );
+
+ 	CSUIButton* btnSubFontPlus =   new CSUIButton(L"BTN_FONT_PLUS.BMP" , ALIGN_TOPLEFT, CRect(-10 , 5, 3,3)  , 0, ID_SUBFONTUPBOTH , TRUE, ALIGN_LEFT, btnSubFont , CRect(3 , 10 , 3, 10) );
+ 	m_btnList.AddTail( btnSubFontPlus );
+ 
+ 	CSUIButton* btnSubFontMinus =   new CSUIButton(L"BTN_FONT_MINUS.BMP" , ALIGN_TOPLEFT, CRect(-10 , 15, 3,3)  , 0, ID_SUBFONTDOWNBOTH , TRUE, ALIGN_LEFT, btnSubFont , CRect(3 , 10 , 3, 10) );
+ 	btnSubFontMinus->addAlignRelButton(ALIGN_TOP, btnSubFontPlus ,  CRect(3 , 0 , 3, 0) );
+ 	m_btnList.AddTail( btnSubFontMinus );
+
 	CSUIButton* btnSubSwitch = new CSUIButton(L"BTN_SUB.BMP" , ALIGN_TOPLEFT, CRect(-37 , 5, 3,3)  , 0, ID_SUBLANGSWITCH, TRUE, ALIGN_RIGHT, btnFFBack , CRect(20 , 10 , 80, 10) );
+	btnSubSwitch->addAlignRelButton(ALIGN_RIGHT, btnSubFont ,  CRect(20 , 10 , 35, 10) );
 	m_btnList.AddTail( btnSubSwitch );
 
 	m_btnList.AddTail( new CSUIButton(L"BTN_SUB_DELAY_REDUCE.BMP" , ALIGN_TOPLEFT, CRect(-42 , 5, 3,3)  , 0, ID_SUBDELAYDEC, TRUE, ALIGN_RIGHT, btnSubSwitch , CRect(3 , 3 , 3, 3) ) );
@@ -171,6 +184,7 @@ void CPlayerToolBar::OnSize(UINT nType, int cx, int cy)
 	BOOL hideT1 = TRUE;
 	BOOL hideT2 = TRUE;
 	BOOL hideT3 = TRUE;
+	BOOL hideT4 = TRUE;
 	if( iWidth > 510 ){
 			hideT1 = false;
 	}
@@ -180,6 +194,9 @@ void CPlayerToolBar::OnSize(UINT nType, int cx, int cy)
 	if( iWidth > 635 ){
 		hideT3 = false;
 	}
+	if( iWidth > 670 ){
+		hideT4 = false;
+	}
 
 	m_btnList.SetHideStat(ID_NAVIGATE_SKIPBACK , hideT1);
 	m_btnList.SetHideStat(ID_NAVIGATE_SKIPFORWARD , hideT1);
@@ -188,12 +205,16 @@ void CPlayerToolBar::OnSize(UINT nType, int cx, int cy)
 	m_btnList.SetHideStat(ID_SUBLANGSWITCH , hideT2);
 	m_btnList.SetHideStat(ID_SUBDELAYDEC , hideT2);
 	m_btnList.SetHideStat(ID_SUBDELAYINC , hideT2);
+	m_btnList.SetHideStat(ID_FILE_OPENQUICK , hideT2);
 
 	
 	m_btnList.SetHideStat(ID_FILE_SAVE_IMAGE , hideT3);
 	m_btnList.SetHideStat(ID_VIEW_OPTIONS , hideT3);
-	m_btnList.SetHideStat(ID_FILE_OPENQUICK , hideT2);
 	
+
+	m_btnList.SetHideStat(ID_SUBSETFONTBOTH , hideT4);
+	m_btnList.SetHideStat(ID_SUBFONTUPBOTH , hideT4);
+	m_btnList.SetHideStat(ID_SUBFONTDOWNBOTH , hideT4);
 
 	m_btnList.OnSize( rc);
 }
@@ -306,6 +327,7 @@ BEGIN_MESSAGE_MAP(CPlayerToolBar, CToolBar)
 	ON_WM_NCCALCSIZE()
 	ON_WM_MOUSEMOVE()
 	ON_WM_SETCURSOR()
+	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 // CPlayerToolBar message handlers
@@ -360,6 +382,7 @@ void CPlayerToolBar::OnPaint()
 	CRect rcUpperSqu = rcClient;
 	rcUpperSqu.bottom = rcUpperSqu.bottom - 10;
 	hdc.FillSolidRect(rcUpperSqu, NEWUI_COLOR_TOOLBAR_UPPERBG);
+
 
  	CRect rc;
 	GetWindowRect(&rc);
@@ -574,8 +597,18 @@ void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point){
 					break;
 				case ID_FILE_OPENQUICK:
 					toolTip = _T("打开文件");
-					break;					
+					break;		
+				case ID_SUBSETFONTBOTH:
+					toolTip = _T("修改字幕字体");
+					break;	
+				case ID_SUBFONTUPBOTH:
+					toolTip = _T("放大字幕");
+					break;	
+				case ID_SUBFONTDOWNBOTH:
+					toolTip = _T("缩小字幕");
+					break;	
 			}
+			
 			if(toolTip != m_tooltip){
 				m_tooltip = toolTip;
 				//tooltip.Format(_T("按钮 %d") ,  ret);
@@ -750,4 +783,11 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
 	}
 
 	__super::OnTimer(nIDEvent);
+}
+BOOL CPlayerToolBar::OnEraseBkgnd(CDC* pDC)
+{
+	// TODO: Add your message handler code here and/or call default
+
+	return true;
+	//return CToolBar::OnEraseBkgnd(pDC);
 }

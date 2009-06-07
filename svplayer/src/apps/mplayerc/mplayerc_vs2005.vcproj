@@ -1287,6 +1287,18 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\newui\BTN_FONT.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\BTN_FONT_MINUS.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\BTN_FONT_PLUS.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\newui\BTN_MAX.bmp"
 				>
 			</File>
@@ -1308,6 +1320,10 @@
 			</File>
 			<File
 				RelativePath=".\res\newui\BTN_OPENADV.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\BTN_OPENADV2.bmp"
 				>
 			</File>
 			<File
@@ -1828,11 +1844,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 	</Files>

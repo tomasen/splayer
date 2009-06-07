@@ -447,6 +447,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_VIEW_SETHOTKEY, OnSetHotkey)
 
 	ON_WM_KILLFOCUS()
+	ON_COMMAND(ID_CHANGEBACKGROUND, &CMainFrame::OnChangebackground)
+	ON_COMMAND(ID_SUBSETFONTBOTH, &CMainFrame::OnSubsetfontboth)
 	END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1028,7 +1030,8 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 		rcClient.right+=4;
 		rcClient.bottom+=6 ;
 		if(m_wndToolBar.IsVisible()){
-			//rcClient.bottom+=2;
+			
+			rcClient.bottom+= 20;;//m_wndToolBar.CalcFixedLayout(TRUE, TRUE).cy;
 		}else{
 			//rcClient.bottom-=4;
 		}
@@ -13018,4 +13021,39 @@ void CMainFrame::OnKillFocus(CWnd* pNewWnd)
 
 	// TODO: Add your message handler code here
 	RedrawNonClientArea();
+}
+
+void CMainFrame::OnChangebackground()
+{
+	// TODO: Add your command handler code here
+	CAutoPtr<CPPageLogo> page(new CPPageLogo());
+	CPropertySheet dlg(_T("ΩÁ√Ê±≥æ∞…Ë÷√..."), this);
+	dlg.AddPage(page);
+	dlg.DoModal() ;
+}
+
+void CMainFrame::OnSubsetfontboth()
+{
+	// TODO: Add your command handler code here
+	LOGFONT lf;
+	AppSettings& s = AfxGetAppSettings();
+	
+	lf <<= s.subdefstyle;
+	int iCharset1 = s.subdefstyle.charSet;
+	int iCharset2 = s.subdefstyle2.charSet;
+
+	CFontDialog dlg(&lf, CF_SCREENFONTS|CF_INITTOLOGFONTSTRUCT|CF_FORCEFONTEXIST|CF_SCALABLEONLY|CF_EFFECTS);
+	if(dlg.DoModal() == IDOK)
+	{
+		CString str(lf.lfFaceName);
+		
+		s.subdefstyle = lf;
+		s.subdefstyle2 = lf;
+
+		s.subdefstyle.charSet = iCharset1;
+		s.subdefstyle2.charSet = iCharset2;
+	
+		UpdateSubtitle(true);
+		UpdateSubtitle2(true);	
+	}
 }

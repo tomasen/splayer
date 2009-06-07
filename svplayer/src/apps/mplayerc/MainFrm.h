@@ -803,4 +803,6 @@ private:
 	/*NEW UI END*/
 public:
 	afx_msg void OnKillFocus(CWnd* pNewWnd);
+	afx_msg void OnChangebackground();
+	afx_msg void OnSubsetfontboth();
 };

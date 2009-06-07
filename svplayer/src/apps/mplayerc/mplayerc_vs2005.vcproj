@@ -1271,6 +1271,90 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\newui\BORDER_CORNER.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\BTN_BIGOPEN.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\BTN_CAPTURE.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\BTN_CLOSE.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\BTN_MAX.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\BTN_MENU.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\BTN_MIN.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\BTN_MINTOTRAY.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\BTN_NEXT.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\BTN_OPENADV.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\BTN_OPENFILE.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\BTN_PAUSE.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\BTN_PLAY.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\BTN_PLAYLIST.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\BTN_PREV.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\BTN_RESTORE.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\BTN_SETTING.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\BTN_SUB.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\BTN_SUB_DELAY_INCREASE.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\BTN_SUB_DELAY_REDUCE.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\caption.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\default1.bin"
 				>
 			</File>
@@ -1279,11 +1363,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\default_bg.jpg"
+				>
+			</File>
+			<File
 				RelativePath=".\res\icon\DV_Video.ico"
 				>
 			</File>
 			<File
 				RelativePath=".\res\icon\DVD.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\FAST_BACKWORD.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\FAST_FORWORD.bmp"
 				>
 			</File>
 			<File
@@ -1371,6 +1467,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\newui\MUTED.bmp"
+				>
+			</File>
+			<File
 				RelativePath="res\noaudio.bmp"
 				>
 			</File>
@@ -1399,6 +1499,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\newui\SPLAYER.bmp"
+				>
+			</File>
+			<File
 				RelativePath="res\stereo.bmp"
 				>
 			</File>
@@ -1420,6 +1524,22 @@
 			</File>
 			<File
 				RelativePath=".\res\icon\Video_CD.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\VOLUME.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\VOLUME_BG.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\VOLUME_TM.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\watermark2.bmp"
 				>
 			</File>
 			<Filter
@@ -1708,11 +1828,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 	</Files>

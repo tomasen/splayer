@@ -393,6 +393,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI(ID_FAVORITES_ORGANIZE, OnUpdateFavoritesOrganize)
 	ON_COMMAND_RANGE(ID_FAVORITES_FILE_START, ID_FAVORITES_FILE_END, OnFavoritesFile)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_FAVORITES_FILE_START, ID_FAVORITES_FILE_END, OnUpdateFavoritesFile)
+	ON_COMMAND_RANGE(ID_RECENT_FILE_START, ID_RECENT_FILE_END, OnRecentFile)
+	ON_UPDATE_COMMAND_UI_RANGE(ID_RECENT_FILE_START, ID_RECENT_FILE_END, OnUpdateRecentFile)
 	ON_COMMAND_RANGE(ID_FAVORITES_DVD_START, ID_FAVORITES_DVD_END, OnFavoritesDVD)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_FAVORITES_DVD_START, ID_FAVORITES_DVD_END, OnUpdateFavoritesDVD)
 	ON_COMMAND_RANGE(ID_FAVORITES_DEVICE_START, ID_FAVORITES_DEVICE_END, OnFavoritesDevice)
@@ -591,7 +593,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	}
 
 	
-	ShowControls(s.nCS | (s.bShowControlBar ? CS_COLORCONTROLBAR : 0));
+	ShowControls( ( s.nCS | (s.bShowControlBar ? CS_COLORCONTROLBAR : 0) ) & ~CS_SEEKBAR , false );
 	
 	GetSystemFontWithScale(&m_hft, 14.0);
 
@@ -3594,6 +3596,11 @@ void CMainFrame::OnInitMenuPopup(CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu)
 			SetupFavoritesSubMenu();
 			pSubMenu = &m_favorites;
 		}
+		else if(str == _T("×î½ü²¥·Å"))
+		{
+			SetupRecentFileSubMenu();
+			pSubMenu = &m_recentfiles;
+		}
 		else if(str == ResStr(IDS_SHADER_POPUP) )
 		{
 			SetupShadersSubMenu();
@@ -3887,6 +3894,8 @@ void CMainFrame::OnFilePostOpenmedia()
 
 	m_wndColorControlBar.CheckAbility();
 
+	ShowControls(AfxGetAppSettings().nCS | CS_SEEKBAR, false);
+
 	__int64 rtDur = 0;
 	pMS->GetDuration(&rtDur);
 	m_wndPlaylistBar.SetCurTime(rtDur);
@@ -3970,6 +3979,8 @@ void CMainFrame::OnFilePostClosemedia()
 //	AfxGetAppSettings().fEnableSubtitles2 = FALSE;
 	m_iSubtitleSel2 = -1;
 
+	 ShowControls(AfxGetAppSettings().nCS & ~CS_SEEKBAR , false);
+
 	if(IsWindow(m_wndCaptureBar.m_hWnd))
 	{
 		ShowControlBar(&m_wndCaptureBar, FALSE, TRUE);
@@ -3994,6 +4005,7 @@ void CMainFrame::OnFilePostClosemedia()
 	SetupNavAudioSubMenu();
 	SetupNavSubtitleSubMenu();
 	SetupNavAngleSubMenu();
+	SetupRecentFileSubMenu();
 	SetupNavChaptersSubMenu();
 	SetupFavoritesSubMenu();
 
@@ -7836,6 +7848,30 @@ void CMainFrame::OnUpdateFavoritesFile(CCmdUI* pCmdUI)
 	UINT nID = pCmdUI->m_nID - ID_FAVORITES_FILE_START;
 }
 
+void CMainFrame::OnRecentFile(UINT nID)
+{
+	nID -= ID_RECENT_FILE_START;
+	AppSettings& s = AfxGetAppSettings();
+
+	CRecentFileList& MRU = AfxGetAppSettings().MRU;
+	MRU.ReadList();
+
+	
+	if(nID >= 0 && nID < MRU.GetSize()){
+		if(!MRU[nID].IsEmpty()){
+			CAtlList<CString> sl;
+			sl.AddTail(MRU[nID]);
+			m_wndPlaylistBar.Open(sl, false);
+			OpenCurPlaylistItem();
+		}
+	}
+	
+}
+
+void CMainFrame::OnUpdateRecentFile(CCmdUI* pCmdUI)
+{
+	UINT nID = pCmdUI->m_nID - ID_RECENT_FILE_START;
+}
 void CMainFrame::OnFavoritesDVD(UINT nID)
 {
 	nID -= ID_FAVORITES_DVD_START;
@@ -11200,7 +11236,32 @@ void CMainFrame::OnNavStreamSelectSubMenu(UINT id, DWORD dwSelGroup)
 		id--;
 	}
 }
+void CMainFrame::SetupRecentFileSubMenu(){
+	CMenu* pSub = &m_recentfiles;
 
+	if(!IsMenu(pSub->m_hMenu)) pSub->CreatePopupMenu();
+	else while(pSub->RemoveMenu(0, MF_BYPOSITION));
+
+	AppSettings& s = AfxGetAppSettings();
+
+	int nLastGroupStart = pSub->GetMenuItemCount();
+
+	UINT id = ID_RECENT_FILE_START;
+
+	CRecentFileList& MRU = AfxGetAppSettings().MRU;
+	MRU.ReadList();
+
+	UINT flags = MF_BYCOMMAND|MF_STRING|MF_ENABLED;
+	for(int i = 0; i < MRU.GetSize(); i++){
+		if(!MRU[i].IsEmpty()){
+			pSub->AppendMenu(flags, ID_RECENT_FILE_START+i, MRU[i]);
+			
+		}
+	}
+
+
+	
+}
 void CMainFrame::SetupFavoritesSubMenu()
 {
 	CMenu* pSub = &m_favorites;
@@ -11364,9 +11425,9 @@ void CMainFrame::ShowControls(int nCS, bool fSave)
 	BOOL bSomthingChanged = false;
 	
 	nCS &= ~CS_STATUSBAR;
-	if(!IsSomethingLoaded()){
-		nCS &= ~CS_SEEKBAR;
-	}
+	//if(!IsSomethingLoaded()){
+		//nCS &= ~CS_SEEKBAR;
+	//}
 	m_pLastBar = NULL;
 
 	POSITION pos = m_bars.GetHeadPosition();

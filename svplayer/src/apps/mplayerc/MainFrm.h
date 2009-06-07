@@ -224,6 +224,7 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 	void SetupNavAngleSubMenu();
 	void SetupNavChaptersSubMenu();
 	void SetupFavoritesSubMenu();
+	void SetupRecentFileSubMenu();
 	void SetupShadersSubMenu();
 
 	void SetupNavStreamSelectSubMenu(CMenu* pSub, UINT id, DWORD dwSelGroup);
@@ -236,7 +237,7 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 	CAutoPtrArray<CMenu> m_filterpopups;
 	CMenu m_navaudio, m_navsubtitle, m_navangle;
 	CMenu m_navchapters, m_navtitles;
-	CMenu m_favorites;
+	CMenu m_favorites, m_recentfiles;
 	CMenu m_shaders;
 
 	CInterfaceArray<IUnknown, &IID_IUnknown> m_pparray;
@@ -739,6 +740,8 @@ public:
 	afx_msg void OnUpdateFavoritesAdd(CCmdUI* pCmdUI);
 	afx_msg void OnFavoritesOrganize();
 	afx_msg void OnUpdateFavoritesOrganize(CCmdUI* pCmdUI);
+	afx_msg void OnRecentFile(UINT nID);
+	afx_msg void OnUpdateRecentFile(CCmdUI* pCmdUI);
 	afx_msg void OnFavoritesFile(UINT nID);
 	afx_msg void OnUpdateFavoritesFile(CCmdUI* pCmdUI);
 	afx_msg void OnFavoritesDVD(UINT nID);

@@ -837,12 +837,15 @@ void CMainFrame::OnNcCalcSize( BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp){
 		if(m_fFullScreen){
 
 		}else if(wp.showCmd!=SW_MAXIMIZE ){
-			rc.InflateRect( GetSystemMetrics(SM_CXFRAME) - 4, 0,   GetSystemMetrics(SM_CXFRAME) - 4, GetSystemMetrics(SM_CXFRAME) - 3  );
+			rc.InflateRect( GetSystemMetrics(SM_CXFRAME) - 4,  GetSystemMetrics(SM_CXFRAME) - 8,   GetSystemMetrics(SM_CXFRAME) - 4, GetSystemMetrics(SM_CXFRAME) - 3  );
 			if(!m_wndToolBar.IsVisible())	{
 				//rc.bottom -= 2;
 			}
 			rc.bottom -= 4;
 			rc.top -=1 ;
+// 			CString szLog;
+// 			szLog.Format(_T("%d %d"), GetSystemMetrics(SM_CXFRAME), GetSystemMetrics(SM_CYCAPTION));
+// 			AfxMessageBox(szLog);
 			if(!bCaptionOn){
 				//rc.top -=3 ;
 				rc.left += 1;
@@ -1022,6 +1025,7 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 		rcClient.top+=3;
 		if(bCAPTIONon){
 			rcClient.top+=GetSystemMetrics(SM_CYCAPTION) + 4;
+			
 			//rcClient.bottom+=GetSystemMetrics(SM_CYCAPTION);
 		}else{
 			rcClient.top+=3;//GetSystemMetrics(SM_CYFRAME);
@@ -1035,7 +1039,12 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 		}else{
 			//rcClient.bottom-=4;
 		}
-		
+
+		int nTotalCaptionHeight = GetSystemMetrics(SM_CYCAPTION)+GetSystemMetrics(SM_CYFRAME)+( (8 - GetSystemMetrics(SM_CYFRAME) ) /2 );
+
+		if(m_fFullScreen){
+			nTotalCaptionHeight -= 4;
+		}
 		dc->ExcludeClipRect(&rcClient);
 
 		// establish double buffered painting
@@ -1122,11 +1131,11 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 			//hdc.FillRect(&rc, &brush);
 		}
 
-		int nTotalCaptionHeight = GetSystemMetrics(SM_CYCAPTION)+GetSystemMetrics(SM_CYFRAME);
 
-		if(m_fFullScreen){
-			nTotalCaptionHeight -= 4;
-		}
+// 		CString szLog;
+// 		szLog.Format(_T("%d") , nTotalCaptionHeight);
+// 		AfxMessageBox(szLog);
+		
 		// some basic styles
 		if(!m_fFullScreen){
 // 			CPen pen, penBright, penDark;

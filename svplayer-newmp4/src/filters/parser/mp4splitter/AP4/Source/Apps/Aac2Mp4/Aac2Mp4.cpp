@@ -2,7 +2,7 @@
 |
 |    AP4 - AAC to MP4 Converter
 |
-|    Copyright 2003 Gilles Boccon-Gibod & Julien Boeuf
+|    Copyright 2002-2008 Axiomatic Systems, LLC
 |
 |
 |    This file is part of Bento4/AP4 (MP4 Atom Processing Library).
@@ -27,60 +27,71 @@
  ****************************************************************/
 
 /*----------------------------------------------------------------------
-|       includes
+|   includes
 +---------------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "Ap4.h"
-#include "Ap4File.h"
-#include "Ap4FileWriter.h"
-#include "Ap4FileByteStream.h"
-#include "Ap4SyntheticSampleTable.h"
 #include "Ap4AdtsParser.h"
 
 /*----------------------------------------------------------------------
-|       constants
+|   constants
 +---------------------------------------------------------------------*/
-#define BANNER "AAC to MP4 Converter - Version 0.1a - (c) 2002-2005 Gilles Boccon-Gibod"
+#define BANNER "AAC to MP4 Converter - Version 1.0\n"\
+               "(Bento4 Version " AP4_VERSION_STRING ")\n"\
+               "(c) 2002-2008 Axiomatic Systems, LLC"
  
 /*----------------------------------------------------------------------
-|       PrintUsageAndExit
+|   PrintUsageAndExit
 +---------------------------------------------------------------------*/
 static void
 PrintUsageAndExit()
 {
     fprintf(stderr, 
             BANNER 
-            "\n\nusage: aac2mp4 [options] <input> <output>\n");
+            "\n\nusage: aac2mp4 <input> <output>\n");
     exit(1);
 }
 
 /*----------------------------------------------------------------------
-|       main
+|   MakeDsi
++---------------------------------------------------------------------*/
+static void
+MakeDsi(unsigned int sampling_frequency_index, unsigned int channel_configuration, unsigned char* dsi)
+{
+    unsigned int object_type = 2; // AAC LC by default
+    dsi[0] = (object_type<<3) | (sampling_frequency_index>>1);
+    dsi[1] = ((sampling_frequency_index&1)<<7) | (channel_configuration<<3);
+}
+
+/*----------------------------------------------------------------------
+|   main
 +---------------------------------------------------------------------*/
 int
 main(int argc, char** argv)
 {
     AP4_Result result;
 
-    if (argc < 2) {
+    if (argc < 3) {
         PrintUsageAndExit();
     }
     
     // open the input
-    AP4_ByteStream* input;
-    try {
-        input = new AP4_FileByteStream(argv[1], AP4_FileByteStream::STREAM_MODE_READ);
-    } catch (AP4_Exception&) {
-        AP4_Debug("ERROR: cannot open input (%s)\n", argv[1]);
+    AP4_ByteStream* input = NULL;
+    result = AP4_FileByteStream::Create(argv[1], AP4_FileByteStream::STREAM_MODE_READ, input);
+    if (AP4_FAILED(result)) {
+        AP4_Debug("ERROR: cannot open input (%s) %d\n", argv[1], result);
         return 1;
     }
 
     // open the output
-    AP4_ByteStream* output = new AP4_FileByteStream(
-        argv[2],
-        AP4_FileByteStream::STREAM_MODE_WRITE);
+    AP4_ByteStream* output = NULL;
+    result = AP4_FileByteStream::Create(argv[2], AP4_FileByteStream::STREAM_MODE_WRITE, output);
+    if (AP4_FAILED(result)) {
+        AP4_Debug("ERROR: cannot open output (%s) %d\n", argv[2], result);
+        return 1;
+    }
     
     // create a sample table
     AP4_SyntheticSampleTable* sample_table = new AP4_SyntheticSampleTable();
@@ -109,11 +120,12 @@ main(int argc, char** argv)
 
                 // create a sample description for our samples
                 AP4_DataBuffer dsi;
-                unsigned char aac_dsi[2] = {0x12, 0x10};
+                unsigned char aac_dsi[2];
+                MakeDsi(frame.m_Info.m_SamplingFrequencyIndex, frame.m_Info.m_ChannelConfiguration, aac_dsi);
                 dsi.SetData(aac_dsi, 2);
                 AP4_MpegAudioSampleDescription* sample_description = 
                     new AP4_MpegAudioSampleDescription(
-                    AP4_MPEG4_AUDIO_OTI,   // object type
+                    AP4_OTI_MPEG4_AUDIO,   // object type
                     frame.m_Info.m_SamplingFrequency,
                     16,                    // sample size
                     frame.m_Info.m_ChannelConfiguration,
@@ -126,13 +138,8 @@ main(int argc, char** argv)
             }
 
             AP4_MemoryByteStream* sample_data = new AP4_MemoryByteStream(frame.m_Info.m_FrameLength);
-            frame.m_Source->ReadBytes(sample_data->GetBuffer(), frame.m_Info.m_FrameLength);
-            printf("%02x %02x %02x %02x\n", 
-                sample_data->GetBuffer()[0],
-                sample_data->GetBuffer()[1],
-                sample_data->GetBuffer()[2],
-                sample_data->GetBuffer()[3]);
-            sample_table->AddSample(*sample_data, 0, frame.m_Info.m_FrameLength, sample_description_index);
+            frame.m_Source->ReadBytes(sample_data->UseData(), frame.m_Info.m_FrameLength);
+            sample_table->AddSample(*sample_data, 0, frame.m_Info.m_FrameLength, 1024, sample_description_index, 0, 0, true);
             sample_data->Release();
             sample_count++;
         } else {
@@ -145,7 +152,7 @@ main(int argc, char** argv)
         AP4_Size to_read = parser.GetBytesFree();
         if (to_read) {
             if (to_read > sizeof(input_buffer)) to_read = sizeof(input_buffer);
-            result = input->Read(input_buffer, to_read, &bytes_read);
+            result = input->ReadPartial(input_buffer, to_read, bytes_read);
             if (AP4_SUCCEEDED(result)) {
                 AP4_Size to_feed = bytes_read;
                 result = parser.Feed(input_buffer, &to_feed);
@@ -165,9 +172,10 @@ main(int argc, char** argv)
     AP4_Track* track = new AP4_Track(AP4_Track::TYPE_AUDIO, 
                                      sample_table, 
                                      0,     // track id
-                                     sample_rate, // movie time scale              
-                                     sample_rate, // track time scale
-                                     sample_count*1024, // track duration
+                                     sample_rate,       // movie time scale
+                                     sample_count*1024, // track duration              
+                                     sample_rate,       // media time scale
+                                     sample_count*1024, // media duration
                                      "eng", // language
                                      0, 0); // width, height
 
@@ -180,13 +188,16 @@ main(int argc, char** argv)
     // create a multimedia file
     AP4_File* file = new AP4_File(movie);
 
-    // create a writer to write the file
-    AP4_FileWriter* writer = new AP4_FileWriter(*file);
+    // set the file type
+    AP4_UI32 compatible_brands[2] = {
+        AP4_FILE_BRAND_ISOM,
+        AP4_FILE_BRAND_MP42
+    };
+    file->SetFileType(AP4_FILE_BRAND_M4A_, 0, compatible_brands, 2);
 
     // write the file to the output
-    writer->Write(*output);
+    AP4_FileWriter::Write(*file, *output);
 
-    delete writer;
     delete file;
     delete output;
     

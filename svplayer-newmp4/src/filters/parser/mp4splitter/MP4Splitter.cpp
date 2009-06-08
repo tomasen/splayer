@@ -33,9 +33,13 @@
 #include "Ap4StsdAtom.h"
 #include "Ap4IsmaCryp.h"
 #include "Ap4AvcCAtom.h"
-#include "Ap4ChplAtom.h"
-#include "Ap4FtabAtom.h"
-#include "Ap4DataAtom.h"
+#include "Ap4AvcParser.h"
+#include "Ap4BitStream.h"
+
+#include "../../../svplib/svplib.h"
+typedef unsigned long long AP4_TimeStamp;
+typedef unsigned long long AP4_Duration;
+typedef unsigned long long AP4_UI64;
 
 #ifdef REGISTER_FILTER
 
@@ -146,7 +150,7 @@ HRESULT CMP4SplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 			if(track->GetType() != AP4_Track::TYPE_VIDEO 
 			&& track->GetType() != AP4_Track::TYPE_AUDIO
 			&& track->GetType() != AP4_Track::TYPE_TEXT
-			&& track->GetType() != AP4_Track::TYPE_SUBP)
+			) //&& track->GetType() != AP4_Track::TYPE_SUBP why remove by AP4?
 				continue;
 
 			AP4_Sample sample;
@@ -154,8 +158,8 @@ HRESULT CMP4SplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 			if(!AP4_SUCCEEDED(track->GetSample(0, sample)) || sample.GetDescriptionIndex() == 0xFFFFFFFF)
 				continue;
 
-			CStringW TrackName = UTF8To16(track->GetTrackName().c_str());
-			CStringA TrackLanguage = track->GetTrackLanguage().c_str();
+			CStringW TrackName = UTF8To16(track->GetTrackName());//.c_str()
+			CStringA TrackLanguage = track->GetTrackLanguage();//.c_str()
 
 			CAtlArray<CMediaType> mts;
 
@@ -171,39 +175,48 @@ HRESULT CMP4SplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 			{
 				AP4_MpegSampleDescription* mpeg_desc = NULL;
 
-				if(desc->GetType() == AP4_SampleDescription::TYPE_MPEG)
+				if(desc->GetType() == AP4_SampleDescription::TYPE_MPEG )
 				{
 					mpeg_desc = dynamic_cast<AP4_MpegSampleDescription*>(desc);
 				}
-				else if(desc->GetType() == AP4_SampleDescription::TYPE_ISMACRYP)
+				else if(desc->GetType() == AP4_SampleDescription::TYPE_PROTECTED) // TYPE_ISMACRYP 看来变成了  TYPE_PROTECTED
 				{
-					AP4_IsmaCrypSampleDescription* isma_desc = dynamic_cast<AP4_IsmaCrypSampleDescription*>(desc);
-					mpeg_desc = isma_desc->GetOriginalSampleDescription();
+					AP4_ProtectedSampleDescription* prot_desc = AP4_DYNAMIC_CAST(AP4_ProtectedSampleDescription, desc);
+					if (prot_desc)
+						mpeg_desc = (AP4_MpegSampleDescription* )prot_desc->GetOriginalSampleDescription();
+					/*
+					
+										AP4_IsmaCrypSampleDescription* isma_desc = dynamic_cast<AP4_IsmaCrypSampleDescription*>(desc);
+										mpeg_desc = isma_desc->GetOriginalSampleDescription();*/
+					
+				}else{
+
+					SVP_LogMsg3("new type %d" , desc->GetType());
 				}
 
 				if(AP4_MpegVideoSampleDescription* video_desc = 
 					dynamic_cast<AP4_MpegVideoSampleDescription*>(mpeg_desc))
 				{
-					const AP4_DataBuffer* di = video_desc->GetDecoderInfo();
-					if(!di) di = &empty;
+					AP4_DataBuffer di = video_desc->GetDecoderInfo();
+					//if(!di) di = &empty;
 
 					mt.majortype = MEDIATYPE_Video;
 					mt.formattype = FORMAT_VideoInfo;
-					vih = (VIDEOINFOHEADER*)mt.AllocFormatBuffer(sizeof(VIDEOINFOHEADER) + di->GetDataSize());
+					vih = (VIDEOINFOHEADER*)mt.AllocFormatBuffer(sizeof(VIDEOINFOHEADER) + di.GetDataSize());
 					memset(vih, 0, mt.FormatLength());
 					vih->dwBitRate = video_desc->GetAvgBitrate()/8;
 					vih->bmiHeader.biSize = sizeof(vih->bmiHeader);
 					vih->bmiHeader.biWidth = (LONG)video_desc->GetWidth();
 					vih->bmiHeader.biHeight = (LONG)video_desc->GetHeight();
-					memcpy(vih + 1, di->GetData(), di->GetDataSize());
+					memcpy(vih + 1, di.GetData(), di.GetDataSize());
 
 					switch(video_desc->GetObjectTypeId())
 					{
-					case AP4_MPEG4_VISUAL_OTI:
+					case AP4_OTI_MPEG4_VISUAL:
 						mt.subtype = FOURCCMap('v4pm');
 						mt.formattype = FORMAT_MPEG2Video;
 						{
-						MPEG2VIDEOINFO* vih = (MPEG2VIDEOINFO*)mt.AllocFormatBuffer(FIELD_OFFSET(MPEG2VIDEOINFO, dwSequenceHeader) + di->GetDataSize());
+						MPEG2VIDEOINFO* vih = (MPEG2VIDEOINFO*)mt.AllocFormatBuffer(FIELD_OFFSET(MPEG2VIDEOINFO, dwSequenceHeader) + di.GetDataSize());
 						memset(vih, 0, mt.FormatLength());
 						vih->hdr.bmiHeader.biSize = sizeof(vih->hdr.bmiHeader);
 						vih->hdr.bmiHeader.biWidth = (LONG)video_desc->GetWidth();
@@ -213,19 +226,19 @@ HRESULT CMP4SplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 						vih->hdr.bmiHeader.biBitCount = 24;
 						vih->hdr.dwPictAspectRatioX = vih->hdr.bmiHeader.biWidth;
 						vih->hdr.dwPictAspectRatioY = vih->hdr.bmiHeader.biHeight;
-						vih->cbSequenceHeader = di->GetDataSize();
-						memcpy(vih->dwSequenceHeader, di->GetData(), di->GetDataSize());
+						vih->cbSequenceHeader = di.GetDataSize();
+						memcpy(vih->dwSequenceHeader, di.GetData(), di.GetDataSize());
 						mts.Add(mt);
 						mt.subtype = FOURCCMap(vih->hdr.bmiHeader.biCompression = 'V4PM');
 						mts.Add(mt);
 						}
 						break;
-					case AP4_MPEG2_VISUAL_SIMPLE_OTI:
-					case AP4_MPEG2_VISUAL_MAIN_OTI:
-					case AP4_MPEG2_VISUAL_SNR_OTI:
-					case AP4_MPEG2_VISUAL_SPATIAL_OTI:
-					case AP4_MPEG2_VISUAL_HIGH_OTI:
-					case AP4_MPEG2_VISUAL_422_OTI:
+					case AP4_OTI_MPEG2_VISUAL_SIMPLE:
+					case AP4_OTI_MPEG2_VISUAL_MAIN:
+					case AP4_OTI_MPEG2_VISUAL_SNR:
+					case AP4_OTI_MPEG2_VISUAL_SPATIAL:
+					case AP4_OTI_MPEG2_VISUAL_HIGH:
+					case AP4_OTI_MPEG2_VISUAL_422:
 						mt.subtype = MEDIASUBTYPE_MPEG2_VIDEO;
 						{
 						m_pFile->Seek(sample.GetOffset());
@@ -236,7 +249,7 @@ HRESULT CMP4SplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 						}
 						mts.Add(mt);
 						break;
-					case AP4_MPEG1_VISUAL_OTI: // ???
+					case AP4_OTI_MPEG1_VISUAL: // ???
 						mt.subtype = MEDIASUBTYPE_MPEG1Payload;
 						{
 						m_pFile->Seek(sample.GetOffset());
@@ -251,39 +264,39 @@ HRESULT CMP4SplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 
 					if(mt.subtype == GUID_NULL)
 					{
-						TRACE(_T("Unknown video OBI: %02x\n"), video_desc->GetObjectTypeId());
+						SVP_LogMsg3("Unknown video OBI: %02x\n", video_desc->GetObjectTypeId());
 					}
 				}
 				else if(AP4_MpegAudioSampleDescription* audio_desc = 
 					dynamic_cast<AP4_MpegAudioSampleDescription*>(mpeg_desc))
 				{
-					const AP4_DataBuffer* di = audio_desc->GetDecoderInfo();
-					if(!di) di = &empty;
+					AP4_DataBuffer di = audio_desc->GetDecoderInfo();
+					//if(!di) di = &empty;
 
 					mt.majortype = MEDIATYPE_Audio;
 					mt.formattype = FORMAT_WaveFormatEx;
 
-					wfe = (WAVEFORMATEX*)mt.AllocFormatBuffer(sizeof(WAVEFORMATEX) + di->GetDataSize());
+					wfe = (WAVEFORMATEX*)mt.AllocFormatBuffer(sizeof(WAVEFORMATEX) + di.GetDataSize());
 					memset(wfe, 0, mt.FormatLength());
 					wfe->nSamplesPerSec = audio_desc->GetSampleRate();
 					wfe->nAvgBytesPerSec = audio_desc->GetAvgBitrate()/8;
 					wfe->nChannels = audio_desc->GetChannelCount();
 					wfe->wBitsPerSample = audio_desc->GetSampleSize();
-					wfe->cbSize = (WORD)di->GetDataSize();
-					memcpy(wfe + 1, di->GetData(), di->GetDataSize());
+					wfe->cbSize = (WORD)di.GetDataSize();
+					memcpy(wfe + 1, di.GetData(), di.GetDataSize());
 
 					switch(audio_desc->GetObjectTypeId())
 					{
-					case AP4_MPEG4_AUDIO_OTI:
-					case AP4_MPEG2_AAC_AUDIO_MAIN_OTI: // ???
-					case AP4_MPEG2_AAC_AUDIO_LC_OTI: // ???
-					case AP4_MPEG2_AAC_AUDIO_SSRP_OTI: // ???
+					case AP4_OTI_MPEG4_AUDIO:
+					case AP4_OTI_MPEG2_AAC_AUDIO_MAIN: // ???
+					case AP4_OTI_MPEG2_AAC_AUDIO_LC: // ???
+					case AP4_OTI_MPEG2_AAC_AUDIO_SSRP: // ???
 						mt.subtype = FOURCCMap(wfe->wFormatTag = WAVE_FORMAT_AAC);
 						if(wfe->cbSize >= 2) wfe->nChannels = (((BYTE*)(wfe+1))[1]>>3) & 0xf;
 						mts.Add(mt);
 						break;
-					case AP4_MPEG2_PART3_AUDIO_OTI: // ???
-					case AP4_MPEG1_AUDIO_OTI:
+					case AP4_OTI_MPEG2_PART3_AUDIO: // ???
+					case AP4_OTI_MPEG1_AUDIO:
 						mt.subtype = FOURCCMap(wfe->wFormatTag = WAVE_FORMAT_MP3);
 						{
 						m_pFile->Seek(sample.GetOffset());
@@ -304,13 +317,13 @@ HRESULT CMP4SplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 				else if(AP4_MpegSystemSampleDescription* system_desc = 
 					dynamic_cast<AP4_MpegSystemSampleDescription*>(desc))
 				{
-					const AP4_DataBuffer* di = system_desc->GetDecoderInfo();
-					if(!di) di = &empty;
+					AP4_DataBuffer di = system_desc->GetDecoderInfo();
+					//if(!di) di = &empty;
 
 					switch(system_desc->GetObjectTypeId())
 					{
-					case AP4_NERO_VOBSUB:
-						if(di->GetDataSize() >= 16*4)
+					case 0xe0: //AP4_NERO_VOBSUB
+						if(di.GetDataSize() >= 16*4)
 						{
 							CSize size(720, 576);
 							if(AP4_TkhdAtom* tkhd = dynamic_cast<AP4_TkhdAtom*>(track->GetTrakAtom()->GetChild(AP4_ATOM_TYPE_TKHD)))
@@ -319,7 +332,7 @@ HRESULT CMP4SplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 								size.cy = tkhd->GetHeight()>>16;
 							}
 
-							const AP4_Byte* pal = di->GetData();
+							const AP4_Byte* pal = di.GetData();
 							CAtlList<CStringA> sl;
 							for(int i = 0; i < 16*4; i += 4)
 							{
@@ -364,46 +377,50 @@ HRESULT CMP4SplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 				else if(AP4_UnknownSampleDescription* unknown_desc = 
 					dynamic_cast<AP4_UnknownSampleDescription*>(desc)) // TEMP
 				{
-					AP4_SampleEntry* sample_entry = unknown_desc->GetSampleEntry();
+					AP4_Atom* atom = unknown_desc->ToAtom();
+					AP4_SampleEntry* sample_entry = AP4_DYNAMIC_CAST(AP4_SampleEntry, atom);//unknown_desc->GetSampleEntry();
 
+					/* NEW AP4 remove sub
 					if(dynamic_cast<AP4_TextSampleEntry*>(sample_entry)
-					|| dynamic_cast<AP4_Tx3gSampleEntry*>(sample_entry))
-					{
-						mt.majortype = MEDIATYPE_Subtitle;
-						mt.subtype = MEDIASUBTYPE_ASS2;
-						mt.formattype = FORMAT_SubtitleInfo;
-						CStringA hdr;
-						hdr.Format(
-							"[Script Info]\n"
-							"ScriptType: v4.00++\n"
-							"ScaledBorderAndShadow: yes\n"
-							"PlayResX: %d\n"
-							"PlayResY: %d\n"
-							"[V4++ Styles]\n"
-							"Style: Text,Arial,12,&H00ffffff,&H0000ffff,&H00000000,&H80000000,0,0,0,0,100,100,0,0.00,3,0,0,2,0,0,0,0,1,1\n",
-							// "Style: Text,Arial,12,&H00ffffff,&H0000ffff,&H00000000,&H80000000,0,0,0,0,100,100,0,0.00,1,0,0,2,0,0,0,0,1,1\n",
-							m_framesize.cx, 
-							m_framesize.cy);
-						SUBTITLEINFO* si = (SUBTITLEINFO*)mt.AllocFormatBuffer(sizeof(SUBTITLEINFO) + hdr.GetLength());
-						memset(si, 0, mt.FormatLength());
-						si->dwOffset = sizeof(SUBTITLEINFO);
-						strcpy_s(si->IsoLang, countof(si->IsoLang), CStringA(TrackLanguage));
-						wcscpy_s(si->TrackName, countof(si->TrackName), TrackName);
-						memcpy(si + 1, (LPCSTR)hdr, hdr.GetLength());
-						mts.Add(mt);
-					}
+										|| dynamic_cast<AP4_Tx3gSampleEntry*>(sample_entry))
+										{
+											mt.majortype = MEDIATYPE_Subtitle;
+											mt.subtype = MEDIASUBTYPE_ASS2;
+											mt.formattype = FORMAT_SubtitleInfo;
+											CStringA hdr;
+											hdr.Format(
+												"[Script Info]\n"
+												"ScriptType: v4.00++\n"
+												"ScaledBorderAndShadow: yes\n"
+												"PlayResX: %d\n"
+												"PlayResY: %d\n"
+												"[V4++ Styles]\n"
+												"Style: Text,Arial,12,&H00ffffff,&H0000ffff,&H00000000,&H80000000,0,0,0,0,100,100,0,0.00,3,0,0,2,0,0,0,0,1,1\n",
+												// "Style: Text,Arial,12,&H00ffffff,&H0000ffff,&H00000000,&H80000000,0,0,0,0,100,100,0,0.00,1,0,0,2,0,0,0,0,1,1\n",
+												m_framesize.cx, 
+												m_framesize.cy);
+											SUBTITLEINFO* si = (SUBTITLEINFO*)mt.AllocFormatBuffer(sizeof(SUBTITLEINFO) + hdr.GetLength());
+											memset(si, 0, mt.FormatLength());
+											si->dwOffset = sizeof(SUBTITLEINFO);
+											strcpy_s(si->IsoLang, countof(si->IsoLang), CStringA(TrackLanguage));
+											wcscpy_s(si->TrackName, countof(si->TrackName), TrackName);
+											memcpy(si + 1, (LPCSTR)hdr, hdr.GetLength());
+											mts.Add(mt);
+										}*/
+					
 				}
 			}
 			else if(AP4_Avc1SampleEntry* avc1 = dynamic_cast<AP4_Avc1SampleEntry*>(
 				track->GetTrakAtom()->FindChild("mdia/minf/stbl/stsd/avc1")))
 			{
-				if(AP4_AvcCAtom* avcC = dynamic_cast<AP4_AvcCAtom*>(avc1->GetChild(AP4_ATOM_TYPE_AVCC)))
+				if(AP4_AvccAtom* avcC = dynamic_cast<AP4_AvccAtom*>(avc1->GetChild(AP4_ATOM_TYPE_AVCC)))
 				{
-					const AP4_DataBuffer* di = avcC->GetDecoderInfo();
-					if(!di) di = &empty;
+					AP4_MpegSampleDescription* mpeg_desc = dynamic_cast<AP4_MpegSampleDescription*>(desc);
+					const AP4_DataBuffer di = mpeg_desc->GetDecoderInfo(); //;avcC->GetDecoderInfo();
+					//if(!di) di = &empty;
 
-					const AP4_Byte* data = di->GetData();
-					AP4_Size size = di->GetDataSize();
+					const AP4_Byte* data = di.GetData();
+					AP4_Size size = di.GetDataSize();
 
 					mt.majortype = MEDIATYPE_Video;
 					mt.subtype = FOURCCMap('1cva');
@@ -455,8 +472,11 @@ HRESULT CMP4SplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 			else if(AP4_StsdAtom* stsd = dynamic_cast<AP4_StsdAtom*>(
 				track->GetTrakAtom()->FindChild("mdia/minf/stbl/stsd")))
 			{
-				const AP4_DataBuffer& db = stsd->GetDataBuffer();
-
+				
+				const AP4_DataBuffer* db = &stsd->GetDataBuffer();
+				// create a memory byte stream to which we can serialize
+				
+				// create the clone for the serialized form
 				for(AP4_List<AP4_Atom>::Item* item = stsd->GetChildren().FirstItem(); 
 					item; 
 					item = item->GetNext())
@@ -469,11 +489,11 @@ HRESULT CMP4SplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 					{
 						type &= 0xffff;
 					}
-					else if(type == AP4_ATOM_TYPE__MP3)
+					else if(type == AP4_ATOM_TYPE('.','m','p','3'))
 					{
 						type = 0x0055;
 					}
-					else if(type == AP4_ATOM_TYPE__AC3)
+					else if(type ==  AP4_ATOM_TYPE('a','c','-','3'))
 					{
 						type = 0x2000;
 					}
@@ -491,13 +511,13 @@ HRESULT CMP4SplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 						mt.majortype = MEDIATYPE_Video;
 						mt.subtype = FOURCCMap(type);
 						mt.formattype = FORMAT_VideoInfo;
-						vih = (VIDEOINFOHEADER*)mt.AllocFormatBuffer(sizeof(VIDEOINFOHEADER)+db.GetDataSize());
+						vih = (VIDEOINFOHEADER*)mt.AllocFormatBuffer(sizeof(VIDEOINFOHEADER)+ db->GetDataSize());
 						memset(vih, 0, mt.FormatLength());
 						vih->bmiHeader.biSize = sizeof(vih->bmiHeader);
 						vih->bmiHeader.biWidth = (LONG)vse->GetWidth();
 						vih->bmiHeader.biHeight = (LONG)vse->GetHeight();
 						vih->bmiHeader.biCompression = type;
-						memcpy(vih+1, db.GetData(), db.GetDataSize());
+						memcpy(vih+1, db->GetData(), db->GetDataSize());
 						mts.Add(mt);
 
 						char buff[5];
@@ -529,15 +549,15 @@ HRESULT CMP4SplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 						mt.majortype = MEDIATYPE_Audio;
 						mt.subtype = FOURCCMap(type);
 						mt.formattype = FORMAT_WaveFormatEx;
-						wfe = (WAVEFORMATEX*)mt.AllocFormatBuffer(sizeof(WAVEFORMATEX) + db.GetDataSize());
+						wfe = (WAVEFORMATEX*)mt.AllocFormatBuffer(sizeof(WAVEFORMATEX) + db->GetDataSize());
 						memset(wfe, 0, mt.FormatLength());
 						if(!(type & 0xffff0000)) wfe->wFormatTag = (WORD)type;
 						wfe->nSamplesPerSec = ase->GetSampleRate();
 						wfe->nChannels = ase->GetChannelCount();
 						wfe->wBitsPerSample = ase->GetSampleSize();
-						wfe->nBlockAlign = ase->GetBytesPerFrame();
-						wfe->cbSize = db.GetDataSize();
-						memcpy(wfe+1, db.GetData(), db.GetDataSize());
+						wfe->nBlockAlign = (UINT)wfe->wBitsPerSample * (UINT)wfe->nSamplesPerSec / 8;//ase->GetBytesPerFrame();
+						wfe->cbSize = db->GetDataSize();
+						memcpy(wfe+1, db->GetData(), db->GetDataSize());
 						mts.Add(mt);
 						break;
 					}
@@ -602,6 +622,7 @@ HRESULT CMP4SplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 				EXECUTE_ASSERT(SUCCEEDED(AddOutputPin(id, pPinOut)));
 			}
 		}
+/* New AP4 removed
 
 		if(AP4_ChplAtom* chpl = dynamic_cast<AP4_ChplAtom*>(movie->GetMoovAtom()->FindChild("udta/chpl")))
 		{
@@ -615,6 +636,7 @@ HRESULT CMP4SplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 
 			ChapSort();
 		}
+*/
 
 		if(AP4_ContainerAtom* ilst = dynamic_cast<AP4_ContainerAtom*>(movie->GetMoovAtom()->FindChild("udta/meta/ilst")))
 		{
@@ -628,32 +650,39 @@ HRESULT CMP4SplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 				{
 					if(AP4_DataAtom* data = dynamic_cast<AP4_DataAtom*>(atom->GetChild(AP4_ATOM_TYPE_DATA)))
 					{
-						const AP4_DataBuffer* db = data->GetData();
-
+						//const AP4_DataBuffer* db = data->GetData();
+						AP4_LargeSize dataSize = data->GetSize();
+						AP4_DataBuffer db(dataSize);
+						data->LoadBytes(db);
 						if(atom->GetType() == AP4_ATOM_TYPE_TRKN)
 						{
-							if(db->GetDataSize() >= 4)
+							if(db.GetDataSize() >= 4)
 							{
-								unsigned short n = (db->GetData()[2] << 8) | db->GetData()[3];
+								unsigned short n = (db.GetData()[2] << 8) | db.GetData()[3];
 								if(n > 0 && n < 100) track.Format(L"%02d", n);
 								else if(n >= 100) track.Format(L"%d", n);
 							}
 						}
 						else
 						{
-							CStringW str = UTF8To16(CStringA((LPCSTR)db->GetData(), db->GetDataSize()));
+							switch(atom->GetType()){
 
-							switch(atom->GetType())
-							{
-							case AP4_ATOM_TYPE_NAM: title = str; break;
-							case AP4_ATOM_TYPE_ART: artist = str; break;
-							case AP4_ATOM_TYPE_WRT: writer = str; break;
-							case AP4_ATOM_TYPE_ALB: album = str; break;
-							case AP4_ATOM_TYPE_DAY: year = str; break;
-							case AP4_ATOM_TYPE_TOO: appl = str; break;
-							case AP4_ATOM_TYPE_CMT: desc = str; break;
-							case AP4_ATOM_TYPE_GEN: gen = str; break;
 							}
+							CStringW str = UTF8To16(CStringA((LPCSTR)db.GetData(), db.GetDataSize()));
+							title = str;
+							/* New AP4 Removed
+							switch(atom->GetType())
+														{
+														case AP4_ATOM_TYPE_NAM: title = str; break;
+														case AP4_ATOM_TYPE_ART: artist = str; break;
+														case AP4_ATOM_TYPE_WRT: writer = str; break;
+														case AP4_ATOM_TYPE_ALB: album = str; break;
+														case AP4_ATOM_TYPE_DAY: year = str; break;
+														case AP4_ATOM_TYPE_TOO: appl = str; break;
+														case AP4_ATOM_TYPE_CMT: desc = str; break;
+														case AP4_ATOM_TYPE_GEN: gen = str; break;
+														}*/
+							
 						}
 					}
 				}
@@ -706,7 +735,7 @@ bool CMP4SplitterFilter::DemuxInit()
 
 void CMP4SplitterFilter::DemuxSeek(REFERENCE_TIME rt)
 {
-	AP4_TimeStamp ts = (AP4_TimeStamp)(rt / 10000);
+	AP4_UI32 ts = (AP4_UI32)(rt / 10000);
 
 	AP4_Movie* movie = (AP4_Movie*)m_pFile->GetMovie();
 
@@ -717,8 +746,11 @@ void CMP4SplitterFilter::DemuxSeek(REFERENCE_TIME rt)
 
 		AP4_Track* track = movie->GetTrack(pPair->m_key);
 
-		if(AP4_FAILED(track->GetSampleIndexForTimeStampMs(ts, pPair->m_value.index)))
+		AP4_Ordinal apOrd;
+		if(AP4_FAILED(track->GetSampleIndexForTimeStampMs(ts, apOrd)))
 			pPair->m_value.index = 0;
+		else
+			pPair->m_value.index = apOrd;
 
 		AP4_Sample sample;
 		if(AP4_SUCCEEDED(track->GetSample(pPair->m_value.index, sample)))
@@ -728,12 +760,14 @@ void CMP4SplitterFilter::DemuxSeek(REFERENCE_TIME rt)
 
 		if(AP4_StssAtom* stss = dynamic_cast<AP4_StssAtom*>(track->GetTrakAtom()->FindChild("mdia/minf/stbl/stss")))
 		{
-			if(stss->m_Entries.ItemCount() > 0)
+			AP4_Array<AP4_UI32> apEntries = stss->GetEntries();
+			
+			if(apEntries.ItemCount() > 0)
 			{
 				AP4_Cardinal i = -1;
-				while(++i < stss->m_Entries.ItemCount() && stss->m_Entries[i]-1 <= pPair->m_value.index);
+				while(++i < apEntries.ItemCount() && apEntries[i]-1 <= pPair->m_value.index);
 				if(i > 0) i--;
-				pPair->m_value.index = stss->m_Entries[i]-1;
+				pPair->m_value.index = apEntries[i]-1;
 			}
 		}
 	}
@@ -1050,13 +1084,14 @@ bool CMP4SplitterFilter::DemuxLoop()
 
 			if(AP4_StssAtom* stss = dynamic_cast<AP4_StssAtom*>(track->GetTrakAtom()->FindChild("mdia/minf/stbl/stss")))
 			{
-				if(stss->m_Entries.ItemCount() > 0)
+				AP4_Array<AP4_UI32> apEntries = stss->GetEntries();
+				if(apEntries.ItemCount() > 0)
 				{
 					p->bSyncPoint = FALSE;
 
 					AP4_Cardinal i = -1;
-					while(++i < stss->m_Entries.ItemCount())
-						if(stss->m_Entries[i]-1 == pPairNext->m_value.index)
+					while(++i < apEntries.ItemCount())
+						if(apEntries[i]-1 == pPairNext->m_value.index)
 							p->bSyncPoint = TRUE;
 				}
 			}
@@ -1081,7 +1116,7 @@ bool CMP4SplitterFilter::DemuxLoop()
 
 				while(AP4_SUCCEEDED(track->ReadSample(pPairNext->m_value.index, sample, data)))
 				{
-					AP4_Size size = data.GetDataSize();
+					AP4_LargeSize size = data.GetDataSize();
 					const AP4_Byte* ptr = data.GetData();
 					for(int i = 0; i < size; i++) p->Add(ptr[i]);
 
@@ -1132,60 +1167,66 @@ bool CMP4SplitterFilter::DemuxLoop()
 							CPoint translation(0, 0);
 							if(AP4_TkhdAtom* tkhd = dynamic_cast<AP4_TkhdAtom*>(track->GetTrakAtom()->GetChild(AP4_ATOM_TYPE_TKHD)))
 							{
-								AP4_Float x, y;
+								float x, y;
 								tkhd->GetTranslation(x, y);
 								translation.SetPoint((int)x, (int)y);
 							}
 
 							if(AP4_UnknownSampleDescription* unknown_desc = dynamic_cast<AP4_UnknownSampleDescription*>(desc)) // TEMP
 							{
-								AP4_SampleEntry* sample_entry = unknown_desc->GetSampleEntry();
+								AP4_Atom* atom = unknown_desc->ToAtom();
+								AP4_SampleEntry* sample_entry = AP4_DYNAMIC_CAST(AP4_SampleEntry, atom);
+								//AP4_SampleEntry* sample_entry = unknown_desc->GetSampleEntry();
 
+								/*
 								if(AP4_TextSampleEntry* text = dynamic_cast<AP4_TextSampleEntry*>(sample_entry))
+																{
+																	const AP4_TextSampleEntry::AP4_TextDescription& d = text->GetDescription();
+								
+																	// TODO
+																} else */
+								
+								if(AP4_Tx3gSampleEntry* tx3g = dynamic_cast<AP4_Tx3gSampleEntry*>(sample_entry))
 								{
-									const AP4_TextSampleEntry::AP4_TextDescription& d = text->GetDescription();
-
-									// TODO
-								}
-								else if(AP4_Tx3gSampleEntry* tx3g = dynamic_cast<AP4_Tx3gSampleEntry*>(sample_entry))
-								{
+									/*
 									const AP4_Tx3gSampleEntry::AP4_Tx3gDescription& desc = tx3g->GetDescription();
-
-									CStringW font = L"Arial";
-
-									if(AP4_FtabAtom* ftab = dynamic_cast<AP4_FtabAtom*>(tx3g->GetChild(AP4_ATOM_TYPE_FTAB)))
-									{
-										AP4_String Name;
-										if(AP4_SUCCEEDED(ftab->LookupFont(desc.Style.Font.Id, Name)))
-											font = Name.c_str();
-									}					
-
-									CRect rbox;
-									CStringW ssa = ConvertTX3GToSSA(
-										UTF8To16(str), desc, font,
-										ptr + (2 + size), avail - (2 + size), 
-										m_framesize, translation, 
-										(p->rtStop - p->rtStart)/10000,
-										rbox);
-									dlgln = UTF16To8(ssa);
-
-									const AP4_Byte* bclr = (const AP4_Byte*)&desc.BackgroundColor;
-
-									if(bclr[3])
-									{
-										CPoint tl = rbox.TopLeft();
-										rbox.OffsetRect(-tl.x, -tl.y);
-
-										dlgln_bkg.Format(
-											"0,-1,Text,,0,0,0,0,,{\\an7\\pos(%d,%d)\\1c%02x%02x%02x\\1a%02x\\bord0\\shad0}{\\p1}m %d %d l %d %d l %d %d l %d %d {\\p0}", 
-											tl.x, tl.y, 
-											bclr[2], bclr[1], bclr[0], 
-											255 - bclr[3],
-											rbox.left, rbox.top, 
-											rbox.right, rbox.top,
-											rbox.right, rbox.bottom,
-											rbox.left, rbox.bottom);
-									}
+									
+																		CStringW font = L"Arial";
+									
+																		if(AP4_FtabAtom* ftab = dynamic_cast<AP4_FtabAtom*>(tx3g->GetChild(AP4_ATOM_TYPE_FTAB)))
+																		{
+																			AP4_String Name;
+																			if(AP4_SUCCEEDED(ftab->LookupFont(desc.Style.Font.Id, Name)))
+																				font = Name.c_str();
+																		}					
+									
+																		CRect rbox;
+																		CStringW ssa = ConvertTX3GToSSA(
+																			UTF8To16(str), desc, font,
+																			ptr + (2 + size), avail - (2 + size), 
+																			m_framesize, translation, 
+																			(p->rtStop - p->rtStart)/10000,
+																			rbox);
+																		dlgln = UTF16To8(ssa);
+									
+																		const AP4_Byte* bclr = (const AP4_Byte*)&desc.BackgroundColor;
+									
+																		if(bclr[3])
+																		{
+																			CPoint tl = rbox.TopLeft();
+																			rbox.OffsetRect(-tl.x, -tl.y);
+									
+																			dlgln_bkg.Format(
+																				"0,-1,Text,,0,0,0,0,,{\\an7\\pos(%d,%d)\\1c%02x%02x%02x\\1a%02x\\bord0\\shad0}{\\p1}m %d %d l %d %d l %d %d l %d %d {\\p0}", 
+																				tl.x, tl.y, 
+																				bclr[2], bclr[1], bclr[0], 
+																				255 - bclr[3],
+																				rbox.left, rbox.top, 
+																				rbox.right, rbox.top,
+																				rbox.right, rbox.bottom,
+																				rbox.left, rbox.bottom);
+																		}*/
+									
 								}
 							}
 						}
@@ -1260,7 +1301,8 @@ STDMETHODIMP CMP4SplitterFilter::GetKeyFrameCount(UINT& nKFs)
 
 		if(AP4_StssAtom* stss = dynamic_cast<AP4_StssAtom*>(track->GetTrakAtom()->FindChild("mdia/minf/stbl/stss")))
 		{
-			nKFs = stss->m_Entries.ItemCount();
+			AP4_Array<AP4_UI32> apEntries = stss->GetEntries();
+			nKFs = apEntries.ItemCount();
 			return S_OK;
 		}
 	}
@@ -1294,10 +1336,12 @@ STDMETHODIMP CMP4SplitterFilter::GetKeyFrames(const GUID* pFormat, REFERENCE_TIM
 		{
 			nKFs = 0;
 
-			for(AP4_Cardinal i = 0; i < stss->m_Entries.ItemCount(); i++)
+			AP4_Array<AP4_UI32> apEntries = stss->GetEntries();
+
+			for(AP4_Cardinal i = 0; i < apEntries.ItemCount(); i++)
 			{
 				AP4_Sample sample;
-				if(AP4_SUCCEEDED(track->GetSample(stss->m_Entries[i]-1, sample)))
+				if(AP4_SUCCEEDED(track->GetSample(apEntries[i]-1, sample)))
 					pKFs[nKFs++] = 10000000i64 * sample.GetCts() / track->GetMediaTimeScale();
 			}
 

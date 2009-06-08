@@ -2,7 +2,7 @@
 |
 |    AP4 - MP4 Decrypter
 |
-|    Copyright 2005 Gilles Boccon-Gibod
+|    Copyright 2002-2008 Axiomatic Systems, LLC
 |
 |
 |    This file is part of Bento4/AP4 (MP4 Atom Processing Library).
@@ -27,28 +27,22 @@
  ****************************************************************/
 
 /*----------------------------------------------------------------------
-|       includes
+|   includes
 +---------------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "Ap4.h"
-#include "Ap4FileByteStream.h"
-#include "Ap4Atom.h"
-#include "Ap4File.h"
-#include "Ap4Sample.h"
-#include "Ap4SampleDescription.h"
-#include "Ap4IsmaCryp.h"
-#include "Ap4Utils.h"
 
 /*----------------------------------------------------------------------
-|       constants
+|   constants
 +---------------------------------------------------------------------*/
-#define BANNER "MP4 Decrypter - Version 0.1a\n"\
-               "(c) 2002-2005 Gilles Boccon-Gibod & Julien Boeuf"
+#define BANNER "MP4 Decrypter - Version 1.2\n"\
+               "(Bento4 Version " AP4_VERSION_STRING ")\n"\
+               "(c) 2002-2008 Axiomatic Systems, LLC"
  
 /*----------------------------------------------------------------------
-|       PrintUsageAndExit
+|   PrintUsageAndExit
 +---------------------------------------------------------------------*/
 static void
 PrintUsageAndExit()
@@ -56,29 +50,47 @@ PrintUsageAndExit()
     fprintf(stderr, 
             BANNER 
             "\n\n"
-            "usage: mp4decrypt [--key <n>:<k>:<salt>] <input> <output>\n"
-            "    where <n> is a track index, <k> a 128-bit key in hex\n"
-            "    and <salt> a 128-bit salting key\n"
-            "    (several --key options can be used, one for each track)\n");
+            "usage: mp4decrypt [--key <n>:<k>] <input> <output>\n"
+            "  --show-progress: show progress details\n"
+            "  --key: <n> is a track index, <k> a 128-bit key in hex\n"
+            "         (several --key options can be used, one for each track)\n"
+            "         note: for dcf files, use 1 as the track index\n");
     exit(1);
 }
 
 /*----------------------------------------------------------------------
-|       main
+|   ProgressListener
++---------------------------------------------------------------------*/
+class ProgressListener : public AP4_Processor::ProgressListener
+{
+public:
+    AP4_Result OnProgress(unsigned int step, unsigned int total);
+};
+
+AP4_Result
+ProgressListener::OnProgress(unsigned int step, unsigned int total)
+{
+    printf("\r%d/%d", step, total);
+    return AP4_SUCCESS;
+}
+
+/*----------------------------------------------------------------------
+|   main
 +---------------------------------------------------------------------*/
 int
 main(int argc, char** argv)
 {
-    if (argc < 3) {
+    if (argc == 1) {
         PrintUsageAndExit();
     }
 
-    // create a decrypting processor
-    AP4_IsmaDecryptingProcessor processor;
-
+    // create a key map object to hold keys
+    AP4_ProtectionKeyMap key_map;
+    
     // parse options
     const char* input_filename = NULL;
     const char* output_filename = NULL;
+    bool        show_progress = false;
 
     char* arg;
     while ((arg = *++argv)) {
@@ -90,22 +102,20 @@ main(int argc, char** argv)
             }
             char* track_ascii = NULL;
             char* key_ascii = NULL;
-            char* salt_ascii = NULL;
-            if (AP4_SplitArgs(arg, track_ascii, key_ascii, salt_ascii)) {
+            if (AP4_SplitArgs(arg, track_ascii, key_ascii)) {
                 fprintf(stderr, "ERROR: invalid argument for --key option\n");
                 return 1;
             }
             unsigned char key[16];
-            unsigned char salt[16];
             unsigned int track = strtoul(track_ascii, NULL, 10);
             if (AP4_ParseHex(key_ascii, key, 16)) {
                 fprintf(stderr, "ERROR: invalid hex format for key\n");
-            }
-            if (AP4_ParseHex(salt_ascii, salt, 8)) {
-                fprintf(stderr, "ERROR: invalid hex format for salt\n");
+                return 1;
             }
             // set the key in the map
-            processor.GetKeyMap().SetKey(track, key, salt);
+            key_map.SetKey(track, key);
+        } else if (!strcmp(arg, "--show-progress")) {
+            show_progress = true;
         } else if (input_filename == NULL) {
             input_filename = arg;
         } else if (output_filename == NULL) {
@@ -127,29 +137,50 @@ main(int argc, char** argv)
     }
 
     // create the input stream
-    AP4_ByteStream* input;
-    try{
-        input = new AP4_FileByteStream(input_filename,
-            AP4_FileByteStream::STREAM_MODE_READ);
-    } catch (AP4_Exception) {
-        fprintf(stderr, "ERROR: cannot open input file (%s)\n", input_filename);
+    AP4_Result result;
+    AP4_ByteStream* input = NULL;
+    result = AP4_FileByteStream::Create(input_filename, AP4_FileByteStream::STREAM_MODE_READ, input);
+    if (AP4_FAILED(result)) {
+        fprintf(stderr, "ERROR: cannot open input file (%s) %d\n", input_filename, result);
         return 1;
     }
 
     // create the output stream
-    AP4_ByteStream* output;
-    try {
-        output = new AP4_FileByteStream(output_filename,
-            AP4_FileByteStream::STREAM_MODE_WRITE);
-    } catch (AP4_Exception) {
-        fprintf(stderr, "ERROR: cannot open output file (%s)\n", output_filename);
+    AP4_ByteStream* output = NULL;
+    result = AP4_FileByteStream::Create(output_filename, AP4_FileByteStream::STREAM_MODE_WRITE, output);
+    if (AP4_FAILED(result)) {
+        fprintf(stderr, "ERROR: cannot open output file (%s) %d\n", output_filename, result);
         return 1;
     }
 
+    // create the decrypting processor
+    AP4_Processor* processor = NULL;
+    AP4_File* input_file = new AP4_File(*input);
+    AP4_FtypAtom* ftyp = input_file->GetFileType();
+    if (ftyp) {
+        if (ftyp->GetMajorBrand() == AP4_OMA_DCF_BRAND_ODCF || ftyp->HasCompatibleBrand(AP4_OMA_DCF_BRAND_ODCF)) {
+            processor = new AP4_OmaDcfDecryptingProcessor(&key_map);
+        } else if (ftyp->GetMajorBrand() == AP4_MARLIN_BRAND_MGSV || ftyp->HasCompatibleBrand(AP4_MARLIN_BRAND_MGSV)) {
+            processor = new AP4_MarlinIpmpDecryptingProcessor(&key_map);
+        }
+    }
+    if (processor == NULL) {
+        // by default, try a standard decrypting processor
+        processor = new AP4_StandardDecryptingProcessor(&key_map);
+    }
+    delete input_file;
+    input_file = NULL;
+    input->Seek(0);
+    
     // process/decrypt the file
-    processor.Process(*input, *output);
+    ProgressListener listener;
+    result = processor->Process(*input, *output, show_progress?&listener:NULL);
+    if (AP4_FAILED(result)) {
+        fprintf(stderr, "ERROR: failed to process the file (%d)\n", result);
+    }
 
     // cleanup
+    delete processor;
     input->Release();
     output->Release();
 

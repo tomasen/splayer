@@ -56,20 +56,21 @@ AP4_Result AP4_AsyncReaderStream::Write(const void* buffer, AP4_Size bytesToWrit
     return AP4_ERROR_WRITE_FAILED;
 }
 
-AP4_Result AP4_AsyncReaderStream::Seek(AP4_Offset offset)
+AP4_Result AP4_AsyncReaderStream::Seek(AP4_Position offset)
 {
 	m_pFile->Seek(offset);
 	return m_pFile->GetPos() == offset ? AP4_SUCCESS : AP4_FAILURE;
 }
 
-AP4_Result AP4_AsyncReaderStream::Tell(AP4_Offset& offset)
+AP4_Result AP4_AsyncReaderStream::Tell(AP4_Position& offset)
 {
 	offset = (AP4_Offset)m_pFile->GetPos();
 	return AP4_SUCCESS;
 }
 
-AP4_Result AP4_AsyncReaderStream::GetSize(AP4_Size& size)
+AP4_Result AP4_AsyncReaderStream::GetSize(AP4_LargeSize& size)
 {
 	size = (AP4_Size)m_pFile->GetLength();
 	return AP4_SUCCESS;
 }
+

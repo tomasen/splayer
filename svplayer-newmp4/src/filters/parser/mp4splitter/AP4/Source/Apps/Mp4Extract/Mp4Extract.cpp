@@ -2,7 +2,7 @@
 |
 |    AP4 - MP4 File Processor
 |
-|    Copyright 2003 Gilles Boccon-Gibod & Julien Boeuf
+|    Copyright 2002-2008 Axiomatic Systems, LLC
 |
 |
 |    This file is part of Bento4/AP4 (MP4 Atom Processing Library).
@@ -27,24 +27,22 @@
  ****************************************************************/
 
 /*----------------------------------------------------------------------
-|       includes
+|   includes
 +---------------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "Ap4.h"
-#include "Ap4FileByteStream.h"
-#include "Ap4AtomFactory.h"
-#include "Ap4Utils.h"
 
 /*----------------------------------------------------------------------
-|       constants
+|   constants
 +---------------------------------------------------------------------*/
-#define BANNER "MP4 Atom Extractor - Version 0.5a\n"\
-               "(c) 2003-2005 Gilles Boccon-Gibod & Julien Boeuf"
+#define BANNER "MP4 Atom Extractor - Version 1.0\n"\
+               "(Bento4 Version " AP4_VERSION_STRING ")\n"\
+               "(c) 2002-2008 Axiomatic Systems, LLC"
  
 /*----------------------------------------------------------------------
-|       PrintUsageAndExit
+|   PrintUsageAndExit
 +---------------------------------------------------------------------*/
 static void
 PrintUsageAndExit()
@@ -53,12 +51,12 @@ PrintUsageAndExit()
             BANNER 
             "\n\nusage: mp4extract [options] <atom_path> <input> <output>\n"
             "    options:\n"
-            "    --payload-only : ommit the atom header\n");
+            "    --payload-only : omit the atom header\n");
     exit(1);
 }
 
 /*----------------------------------------------------------------------
-|       main
+|   main
 +---------------------------------------------------------------------*/
 int
 main(int argc, char** argv)
@@ -103,11 +101,10 @@ main(int argc, char** argv)
     }
 
 	// create the input stream
-    AP4_ByteStream* input;
-    try {
-        input = new AP4_FileByteStream(input_filename,
-                        AP4_FileByteStream::STREAM_MODE_READ);
-    } catch (AP4_Exception) {
+    AP4_Result result;
+    AP4_ByteStream* input = NULL;
+    result = AP4_FileByteStream::Create(input_filename, AP4_FileByteStream::STREAM_MODE_READ, input);
+    if (AP4_FAILED(result)) {
         fprintf(stderr, "ERROR: cannot open input file (%s)\n", input_filename);
         return 1;
     }
@@ -115,7 +112,7 @@ main(int argc, char** argv)
     // parse the atoms
     AP4_AtomParent top_level;
     AP4_Atom* atom;
-    AP4_AtomFactory& atom_factory = AP4_AtomFactory::DefaultFactory;
+    AP4_AtomFactory& atom_factory = AP4_DefaultAtomFactory::Instance;
     while (atom_factory.CreateAtomFromStream(*input, atom) == AP4_SUCCESS) {
         top_level.AddChild(atom);
     }
@@ -131,11 +128,9 @@ main(int argc, char** argv)
     }
 
     // create the output stream
-    AP4_ByteStream* output;
-    try {
-        output = new AP4_FileByteStream(output_filename,
-                         AP4_FileByteStream::STREAM_MODE_WRITE);
-    } catch (AP4_Exception) {
+    AP4_ByteStream* output = NULL;
+    result = AP4_FileByteStream::Create(output_filename, AP4_FileByteStream::STREAM_MODE_WRITE, output);
+    if (AP4_FAILED(result)) {
         fprintf(stderr, "ERROR: cannot open output file (%s)\n", output_filename);
         return 1;
     }

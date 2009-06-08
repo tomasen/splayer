@@ -2,7 +2,7 @@
 |
 |    AP4 - sample entries
 |
-|    Copyright 2002 Gilles Boccon-Gibod & Julien Boeuf
+|    Copyright 2002-2008 Axiomatic Systems, LLC
 |
 |
 |    This file is part of Bento4/AP4 (MP4 Atom Processing Library).
@@ -30,10 +30,9 @@
 #define _AP4_SAMPLE_ENTRY_H_
 
 /*----------------------------------------------------------------------
-|       includes
+|   includes
 +---------------------------------------------------------------------*/
-#include "Ap4.h"
-#include "Ap4ByteStream.h"
+#include "Ap4Types.h"
 #include "Ap4List.h"
 #include "Ap4Atom.h"
 #include "Ap4EsdsAtom.h"
@@ -41,22 +40,27 @@
 #include "Ap4ContainerAtom.h"
 
 /*----------------------------------------------------------------------
-|       class references
+|   class references
 +---------------------------------------------------------------------*/
 class AP4_SampleDescription;
+class AP4_AvccAtom;
 
 /*----------------------------------------------------------------------
-|       AP4_SampleEntry
+|   AP4_SampleEntry
 +---------------------------------------------------------------------*/
 class AP4_SampleEntry : public AP4_ContainerAtom
 {
  public: 
+    AP4_IMPLEMENT_DYNAMIC_CAST_D(AP4_SampleEntry, AP4_ContainerAtom)
+
     // methods
     AP4_SampleEntry(AP4_Atom::Type format, AP4_UI16 data_ref_index = 1);
     AP4_SampleEntry(AP4_Atom::Type   format, 
                     AP4_Size         size,
                     AP4_ByteStream&  stream,
                     AP4_AtomFactory& atom_factory);
+    virtual ~AP4_SampleEntry() {}
+    
     AP4_UI16           GetDataReferenceIndex() { return m_DataReferenceIndex; }
     virtual AP4_Result Write(AP4_ByteStream& stream);
     virtual AP4_Result Inspect(AP4_AtomInspector& inspector);
@@ -70,6 +74,7 @@ class AP4_SampleEntry : public AP4_ContainerAtom
     AP4_SampleEntry(AP4_Atom::Type format, AP4_Size size);
 
     // methods
+    virtual void       Read(AP4_ByteStream& stream, AP4_AtomFactory& atom_factory);
     virtual AP4_Size   GetFieldsSize();
     virtual AP4_Result ReadFields(AP4_ByteStream& stream);
     virtual AP4_Result WriteFields(AP4_ByteStream& stream);
@@ -81,68 +86,50 @@ class AP4_SampleEntry : public AP4_ContainerAtom
 };
 
 /*----------------------------------------------------------------------
-|       AP4_MpegSampleEntry
+|   AP4_UnknownSampleEntry
 +---------------------------------------------------------------------*/
-class AP4_MpegSampleEntry : public AP4_SampleEntry
+class AP4_UnknownSampleEntry : public AP4_SampleEntry
 {
-protected:
-    // constructor
-    AP4_MpegSampleEntry(AP4_Atom::Type format);
-    AP4_MpegSampleEntry(AP4_Atom::Type format, AP4_Size size);
-    AP4_MpegSampleEntry(AP4_Atom::Type    format, 
-                        AP4_EsDescriptor* descriptor);
-    AP4_MpegSampleEntry(AP4_Atom::Type   format,
-                        AP4_Size         size,
-                        AP4_ByteStream&  stream,
-                        AP4_AtomFactory& atom_factory);
-
-    // methods
-    const AP4_DecoderConfigDescriptor* GetDecoderConfigDescriptor();
-};
-
-/*----------------------------------------------------------------------
-|       AP4_Mp4sSampleEntry
-+---------------------------------------------------------------------*/
-class AP4_Mp4sSampleEntry : public AP4_MpegSampleEntry
-{
- public:
-    // constructors
-    AP4_Mp4sSampleEntry(AP4_Size         size,
-                        AP4_ByteStream&  stream,
-                        AP4_AtomFactory& atom_factory);
-    AP4_Mp4sSampleEntry(AP4_EsDescriptor* descriptor);
-
-    // methods
-    AP4_SampleDescription* ToSampleDescription();
-};
-
-/*----------------------------------------------------------------------
-|       AP4_AudioSampleEntry
-+---------------------------------------------------------------------*/
-class AP4_AudioSampleEntry : public AP4_MpegSampleEntry
-{
- public:
-    // methods
-    AP4_AudioSampleEntry(AP4_Atom::Type    format,
-                         AP4_EsDescriptor* descriptor,
-                         AP4_UI32          sample_rate,
-                         AP4_UI16          sample_size,
-                         AP4_UI16          channel_count);
-    AP4_AudioSampleEntry(AP4_Atom::Type    format,
-                         AP4_Size          size,
-                         AP4_ByteStream&   stream,
-                         AP4_AtomFactory&  atom_factory);
-    AP4_AudioSampleEntry(AP4_Atom::Type    format,
-                         AP4_Size          size);
+ public: 
+    // this constructor takes ownership of the atom passed to it
+    AP4_UnknownSampleEntry(AP4_Atom::Type type, AP4_Size size, AP4_ByteStream& stream);
     
+    // AP4_SampleEntry methods
+    virtual AP4_SampleDescription* ToSampleDescription();
+
     // accessors
-    AP4_UI32 GetSampleRate()   { return m_SampleRate>>16; }
-    AP4_UI16 GetSampleSize()   { return m_SampleSize;     }
-    AP4_UI16 GetChannelCount() { return m_ChannelCount;   }
-	AP4_UI32 GetSamplesPerPacket(){ return m_SamplesPerPacket; }
-	AP4_UI32 GetBytesPerPacket(){ return m_BytesPerPacket; }
-	AP4_UI32 GetBytesPerFrame(){ return m_BytesPerFrame; }
-	AP4_UI32 GetBytesPerSample(){ return m_BytesPerSample; }
+    const AP4_DataBuffer& GetPayload() { return m_Payload; }
+    
+ protected:
+    // methods
+    virtual AP4_Size   GetFieldsSize();
+    virtual AP4_Result ReadFields(AP4_ByteStream& stream);
+    virtual AP4_Result WriteFields(AP4_ByteStream& stream);
+
+    // members
+    AP4_DataBuffer m_Payload;
+};
+
+/*----------------------------------------------------------------------
+|   AP4_AudioSampleEntry
++---------------------------------------------------------------------*/
+class AP4_AudioSampleEntry : public AP4_SampleEntry
+{
+public:
+    // methods
+    AP4_AudioSampleEntry(AP4_Atom::Type   format,
+                         AP4_UI32         sample_rate,
+                         AP4_UI16         sample_size,
+                         AP4_UI16         channel_count);
+    AP4_AudioSampleEntry(AP4_Atom::Type   format,
+                         AP4_Size         size,
+                         AP4_ByteStream&  stream,
+                         AP4_AtomFactory& atom_factory);
+
+    // accessors
+    AP4_UI32 GetSampleRate();
+    AP4_UI16 GetSampleSize() { return m_SampleSize; }
+    AP4_UI16 GetChannelCount();
 
     // methods
     AP4_SampleDescription* ToSampleDescription();
@@ -155,46 +142,39 @@ protected:
     virtual AP4_Result InspectFields(AP4_AtomInspector& inspector);
 
     // members
-	AP4_UI16 m_DescriptionVersion;
-	AP4_UI16 m_RevisionLevel;
-	AP4_UI32 m_Vendor;
-    AP4_UI16 m_ChannelCount;
-    AP4_UI16 m_SampleSize;
-	AP4_UI16 m_CompressionID;
-    AP4_UI16 m_PacketSize;
-    AP4_UI32 m_SampleRate;
-    // m_Version == 1 ?
-    AP4_UI32 m_SamplesPerPacket; 
-    AP4_UI32 m_BytesPerPacket; 
-    AP4_UI32 m_BytesPerFrame; 
-    AP4_UI32 m_BytesPerSample; 
+    AP4_UI16 m_QtVersion;       // 0, 1 or 2
+    AP4_UI16 m_QtRevision;      // 0
+    AP4_UI32 m_QtVendor;        // 0
+    AP4_UI16 m_ChannelCount; 
+    AP4_UI16 m_SampleSize; 
+    AP4_UI16 m_QtCompressionId; // 0 or -2
+    AP4_UI16 m_QtPacketSize;    // always 0
+    AP4_UI32 m_SampleRate;      // 16.16 fixed point   
+    
+    AP4_UI32 m_QtV1SamplesPerPacket;
+    AP4_UI32 m_QtV1BytesPerPacket;
+    AP4_UI32 m_QtV1BytesPerFrame;
+    AP4_UI32 m_QtV1BytesPerSample;
+ 
+    AP4_UI32 m_QtV2StructSize;
+    double   m_QtV2SampleRate64;
+    AP4_UI32 m_QtV2ChannelCount;
+    AP4_UI32 m_QtV2Reserved;
+    AP4_UI32 m_QtV2BitsPerChannel;
+    AP4_UI32 m_QtV2FormatSpecificFlags;
+    AP4_UI32 m_QtV2BytesPerAudioPacket;
+    AP4_UI32 m_QtV2LPCMFramesPerAudioPacket;
+    AP4_DataBuffer m_QtV2Extension;
 };
 
 /*----------------------------------------------------------------------
-|       AP4_Mp4aSampleEntry
+|   AP4_VisualSampleEntry
 +---------------------------------------------------------------------*/
-class AP4_Mp4aSampleEntry : public AP4_AudioSampleEntry
+class AP4_VisualSampleEntry : public AP4_SampleEntry
 {
- public:
-    // constructors
-    AP4_Mp4aSampleEntry(AP4_Size         size,
-                        AP4_ByteStream&  stream,
-                        AP4_AtomFactory& atom_factory);
-    AP4_Mp4aSampleEntry(AP4_UI32          sample_rate, 
-                        AP4_UI16          sample_size,
-                        AP4_UI16          channel_count,
-                        AP4_EsDescriptor* descriptor);
-};
-
-/*----------------------------------------------------------------------
-|       AP4_VisualSampleEntry
-+---------------------------------------------------------------------*/
-class AP4_VisualSampleEntry : public AP4_MpegSampleEntry
-{
- public:
+public:
     // methods
     AP4_VisualSampleEntry(AP4_Atom::Type    format, 
-                          AP4_EsDescriptor* descriptor,
                           AP4_UI16          width,
                           AP4_UI16          height,
                           AP4_UI16          depth,
@@ -210,7 +190,7 @@ class AP4_VisualSampleEntry : public AP4_MpegSampleEntry
     AP4_UI16    GetHorizResolution(){ return m_HorizResolution;  }
     AP4_UI16    GetVertResolution() { return m_VertResolution; }
     AP4_UI16    GetDepth()          { return m_Depth;  }
-    const char* GetCompressorName() { return m_CompressorName.c_str(); }
+    const char* GetCompressorName() { return m_CompressorName.GetChars(); }
 
     // methods
     AP4_SampleDescription* ToSampleDescription();
@@ -224,23 +204,116 @@ protected:
 
     //members
     AP4_UI16   m_Predefined1;     // = 0
-	AP4_UI16   m_Reserved2;       // = 0
-	AP4_UI08   m_Predefined2[12]; // = 0
-	AP4_UI16   m_Width;
-	AP4_UI16   m_Height;
-	AP4_UI32   m_HorizResolution; // = 0x00480000 (72 dpi)
-	AP4_UI32   m_VertResolution;  // = 0x00480000 (72 dpi)
-	AP4_UI32   m_Reserved3;       // = 0
-	AP4_UI16   m_FrameCount;      // = 1
-	AP4_String m_CompressorName;       
-	AP4_UI16   m_Depth;           // = 0x0018
-	AP4_UI16   m_Predefined3;     // = 0xFFFF
+    AP4_UI16   m_Reserved2;       // = 0
+    AP4_UI08   m_Predefined2[12]; // = 0
+    AP4_UI16   m_Width;
+    AP4_UI16   m_Height;
+    AP4_UI32   m_HorizResolution; // = 0x00480000 (72 dpi)
+    AP4_UI32   m_VertResolution;  // = 0x00480000 (72 dpi)
+    AP4_UI32   m_Reserved3;       // = 0
+    AP4_UI16   m_FrameCount;      // = 1
+    AP4_String m_CompressorName;       
+    AP4_UI16   m_Depth;           // = 0x0018
+    AP4_UI16   m_Predefined3;     // = 0xFFFF
 };
 
 /*----------------------------------------------------------------------
-|       AP4_Mp4vSampleEntry
+|   AP4_MpegSystemSampleEntry
 +---------------------------------------------------------------------*/
-class AP4_Mp4vSampleEntry : public AP4_VisualSampleEntry
+class AP4_MpegSystemSampleEntry : public AP4_SampleEntry
+{
+public:
+    // constructors
+    AP4_MpegSystemSampleEntry(AP4_UI32          type,
+                              AP4_EsDescriptor* descriptor);
+    AP4_MpegSystemSampleEntry(AP4_UI32         type,
+                              AP4_Size         size,
+                              AP4_ByteStream&  stream,
+                              AP4_AtomFactory& atom_factory);
+
+    // methods
+    AP4_SampleDescription* ToSampleDescription();
+};
+
+/*----------------------------------------------------------------------
+|   AP4_MpegAudioSampleEntry
++---------------------------------------------------------------------*/
+class AP4_MpegAudioSampleEntry : public AP4_AudioSampleEntry
+{
+public:
+    // constructors
+    AP4_MpegAudioSampleEntry(AP4_UI32          type,
+                             AP4_UI32          sample_rate, 
+                             AP4_UI16          sample_size,
+                             AP4_UI16          channel_count,
+                             AP4_EsDescriptor* descriptor);
+    AP4_MpegAudioSampleEntry(AP4_UI32         type,
+                             AP4_Size         size,
+                             AP4_ByteStream&  stream,
+                             AP4_AtomFactory& atom_factory);
+
+    // methods
+    AP4_SampleDescription* ToSampleDescription();
+};
+
+/*----------------------------------------------------------------------
+|   AP4_MpegVideoSampleEntry
++---------------------------------------------------------------------*/
+class AP4_MpegVideoSampleEntry : public AP4_VisualSampleEntry
+{
+public:
+    // constructors
+    AP4_MpegVideoSampleEntry(AP4_UI32          type,
+                             AP4_UI16          width,
+                             AP4_UI16          height,
+                             AP4_UI16          depth,
+                             const char*       compressor_name,
+                             AP4_EsDescriptor* descriptor);
+    AP4_MpegVideoSampleEntry(AP4_UI32         type,
+                             AP4_Size         size,
+                             AP4_ByteStream&  stream,
+                             AP4_AtomFactory& atom_factory);
+
+    // methods
+    AP4_SampleDescription* ToSampleDescription();
+};
+
+/*----------------------------------------------------------------------
+|   AP4_Mp4sSampleEntry
++---------------------------------------------------------------------*/
+class AP4_Mp4sSampleEntry : public AP4_MpegSystemSampleEntry
+{
+ public:
+    // constructors
+    AP4_Mp4sSampleEntry(AP4_Size         size,
+                        AP4_ByteStream&  stream,
+                        AP4_AtomFactory& atom_factory);
+    AP4_Mp4sSampleEntry(AP4_EsDescriptor* descriptor);
+
+    // methods
+    AP4_SampleDescription* ToSampleDescription();
+};
+
+/*----------------------------------------------------------------------
+|   AP4_Mp4aSampleEntry
++---------------------------------------------------------------------*/
+class AP4_Mp4aSampleEntry : public AP4_MpegAudioSampleEntry
+{
+ public:
+    // constructors
+    AP4_Mp4aSampleEntry(AP4_Size         size,
+                        AP4_ByteStream&  stream,
+                        AP4_AtomFactory& atom_factory);
+    AP4_Mp4aSampleEntry(AP4_UI32          sample_rate, 
+                        AP4_UI16          sample_size,
+                        AP4_UI16          channel_count,
+                        AP4_EsDescriptor* descriptor);
+};
+
+/*----------------------------------------------------------------------
+|   AP4_Mp4vSampleEntry
++---------------------------------------------------------------------*/
+class AP4_Mp4vSampleEntry : public AP4_MpegVideoSampleEntry
 {
  public:
     // constructors
@@ -251,11 +324,11 @@ class AP4_Mp4vSampleEntry : public AP4_VisualSampleEntry
                         AP4_UI16          height,
                         AP4_UI16          depth,
                         const char*       compressor_name,
-                        AP4_EsDescriptor* descriptor);
+                        AP4_EsDescriptor* descriptor);                        
 };
 
 /*----------------------------------------------------------------------
-|       AP4_Avc1SampleEntry
+|   AP4_Avc1SampleEntry
 +---------------------------------------------------------------------*/
 class AP4_Avc1SampleEntry : public AP4_VisualSampleEntry
 {
@@ -264,15 +337,18 @@ public:
     AP4_Avc1SampleEntry(AP4_Size         size,
                         AP4_ByteStream&  stream,
                         AP4_AtomFactory& atom_factory);
-    AP4_Avc1SampleEntry(AP4_UI16          width,
-                        AP4_UI16          height,
-                        AP4_UI16          depth,
-                        const char*       compressor_name,
-                        AP4_EsDescriptor* descriptor);
+    AP4_Avc1SampleEntry(AP4_UI16            width,
+                        AP4_UI16            height,
+                        AP4_UI16            depth,
+                        const char*         compressor_name,
+                        const AP4_AvccAtom& avcc);
+                        
+    // inherited from AP4_SampleEntry
+    virtual AP4_SampleDescription* ToSampleDescription();
 };
 
 /*----------------------------------------------------------------------
-|       AP4_RtpHintSampleEntry
+|   AP4_RtpHintSampleEntry
 +---------------------------------------------------------------------*/
 class AP4_RtpHintSampleEntry : public AP4_SampleEntry
 {
@@ -285,7 +361,6 @@ public:
     AP4_RtpHintSampleEntry(AP4_Size         size,
                            AP4_ByteStream&  stream,
                            AP4_AtomFactory& atom_factory);
-    virtual ~AP4_RtpHintSampleEntry();
     
 protected:
     // methods
@@ -300,39 +375,6 @@ protected:
     AP4_UI32 m_MaxPacketSize;
 };
 
-/*----------------------------------------------------------------------
-|       AP4_TextSampleEntry
-+---------------------------------------------------------------------*/
-class AP4_TextSampleEntry : public AP4_SampleEntry
-{
-public:
-    // methods
-    AP4_TextSampleEntry(AP4_Size         size,
-                           AP4_ByteStream&  stream,
-                           AP4_AtomFactory& atom_factory);
-    virtual ~AP4_TextSampleEntry();
-    
-	struct AP4_TextDescription
-	{
-		AP4_UI32 DisplayFlags;
-		AP4_UI32 TextJustification;
-		AP4_UI32 BackgroundColor;
-		struct {AP4_UI16 Top, Left, Bottom, Right;} TextBox;
-		struct {AP4_UI16 StartChar, EndChar, Ascent; struct {AP4_UI16 Id; AP4_UI08 Face, Size; AP4_UI32 Color;} Font;} Style;
-		AP4_String DefaultFontName;
-	};
-
-	const AP4_TextDescription& GetDescription() const { return m_Description; };
-
-protected:
-    // methods
-    virtual AP4_Result ReadFields(AP4_ByteStream& stream);
-    virtual AP4_Result WriteFields(AP4_ByteStream& stream);
-    virtual AP4_Result InspectFields(AP4_AtomInspector& inspector);
-
-    // members
-	AP4_TextDescription m_Description;
-};
 
 /*----------------------------------------------------------------------
 |       AP4_Tx3gSampleEntry
@@ -340,15 +382,15 @@ protected:
 class AP4_Tx3gSampleEntry : public AP4_SampleEntry
 {
 public:
-    // methods
-    AP4_Tx3gSampleEntry(AP4_Size         size,
-                           AP4_ByteStream&  stream,
-                           AP4_AtomFactory& atom_factory);
-    virtual ~AP4_Tx3gSampleEntry();
-    
+	// methods
+	AP4_Tx3gSampleEntry(AP4_Size         size,
+		AP4_ByteStream&  stream,
+		AP4_AtomFactory& atom_factory);
+	virtual ~AP4_Tx3gSampleEntry();
+
 	struct AP4_Tx3gDescription
 	{
-	    AP4_UI32 DisplayFlags;
+		AP4_UI32 DisplayFlags;
 		AP4_UI08 HorizontalJustification;
 		AP4_UI08 VerticalJustification;
 		AP4_UI32 BackgroundColor;
@@ -361,29 +403,14 @@ public:
 	AP4_Result GetFontNameById(AP4_Ordinal Id, AP4_String& Name);
 
 protected:
-    // methods
-    virtual AP4_Size   GetFieldsSize();
-    virtual AP4_Result ReadFields(AP4_ByteStream& stream);
-    virtual AP4_Result WriteFields(AP4_ByteStream& stream);
-    virtual AP4_Result InspectFields(AP4_AtomInspector& inspector);
+	// methods
+	virtual AP4_Size   GetFieldsSize();
+	virtual AP4_Result ReadFields(AP4_ByteStream& stream);
+	virtual AP4_Result WriteFields(AP4_ByteStream& stream);
+	virtual AP4_Result InspectFields(AP4_AtomInspector& inspector);
 
-    // members
+	// members
 	AP4_Tx3gDescription m_Description;
-};
-
-/*----------------------------------------------------------------------
-|       AP4_AC3SampleEntry
-+---------------------------------------------------------------------*/
-class AP4_AC3SampleEntry : public AP4_AudioSampleEntry
-{
- public:
-    // constructors
-    AP4_AC3SampleEntry(AP4_Size         size,
-                        AP4_ByteStream&  stream,
-                        AP4_AtomFactory& atom_factory);
-
-	AP4_Result ReadFields(AP4_ByteStream& stream);
-	AP4_Size   GetFieldsSize();
 };
 
 #endif // _AP4_SAMPLE_ENTRY_H_

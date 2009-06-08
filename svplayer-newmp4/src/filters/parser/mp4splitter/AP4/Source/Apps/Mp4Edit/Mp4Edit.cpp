@@ -2,7 +2,7 @@
 |
 |    AP4 - MP4 File Processor
 |
-|    Copyright 2003 Gilles Boccon-Gibod & Julien Boeuf
+|    Copyright 2002-2008 Axiomatic Systems, LLC
 |
 |
 |    This file is part of Bento4/AP4 (MP4 Atom Processing Library).
@@ -27,25 +27,22 @@
  ****************************************************************/
 
 /*----------------------------------------------------------------------
-|       includes
+|   includes
 +---------------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "Ap4.h"
-#include "Ap4FileByteStream.h"
-#include "Ap4Processor.h"
-#include "Ap4Utils.h"
-#include "Ap4ContainerAtom.h"
 
 /*----------------------------------------------------------------------
-|       constants
+|   constants
 +---------------------------------------------------------------------*/
-#define BANNER "MP4 File Editor - Version 0.5a\n"\
-               "(c) 2003-2005 Gilles Boccon-Gibod & Julien Boeuf"
+#define BANNER "MP4 File Editor - Version 1.0\n"\
+               "(Bento4 Version " AP4_VERSION_STRING ")\n"\
+               "(c) 2002-2008 Axiomatic Systems, LLC"
  
 /*----------------------------------------------------------------------
-|       PrintUsageAndExit
+|   PrintUsageAndExit
 +---------------------------------------------------------------------*/
 static void
 PrintUsageAndExit()
@@ -54,14 +51,14 @@ PrintUsageAndExit()
             BANNER 
             "\n\nusage: mp4edit [commands] <input> <output>\n"
             "    where commands include one or more of:\n"
-            "    --insert <atom_name>:<source_file>[:<position>]\n"
-            "    --remove <atom_name>\n"
-            "    --replace <atom_name>:<source_file>\n");
+            "    --insert <atom_path>:<atom_source_file>[:<position>]\n"
+            "    --remove <atom_path>\n"
+            "    --replace <atom_path>:<atom_source_file>\n");
     exit(1);
 }
 
 /*----------------------------------------------------------------------
-|       AP4_EditingProcessor
+|   AP4_EditingProcessor
 +---------------------------------------------------------------------*/
 class AP4_EditingProcessor : public AP4_Processor
 {
@@ -96,7 +93,9 @@ public:
     virtual ~AP4_EditingProcessor();
 
     // methods
-    virtual AP4_Result Initialize(AP4_AtomParent& top_level);
+    virtual AP4_Result Initialize(AP4_AtomParent&   top_level,
+                                  AP4_ByteStream&   stream,
+                                  ProgressListener* listener);
     AP4_Result         AddCommand(Command::Type type, 
                                   const char*   atom_path, 
                                   const char*   file_path,
@@ -117,7 +116,7 @@ private:
 };
 
 /*----------------------------------------------------------------------
-|       AP4_EditingProcessor::~AP4_EditingProcessor
+|   AP4_EditingProcessor::~AP4_EditingProcessor
 +---------------------------------------------------------------------*/
 AP4_EditingProcessor::~AP4_EditingProcessor()
 {
@@ -125,7 +124,7 @@ AP4_EditingProcessor::~AP4_EditingProcessor()
 }
 
 /*----------------------------------------------------------------------
-|       AP4_EditingProcessor::AddCommand
+|   AP4_EditingProcessor::AddCommand
 +---------------------------------------------------------------------*/
 AP4_Result
 AP4_EditingProcessor::AddCommand(Command::Type type, 
@@ -137,10 +136,12 @@ AP4_EditingProcessor::AddCommand(Command::Type type,
 }
 
 /*----------------------------------------------------------------------
-|       AP4_EditingProcessor::Initialize
+|   AP4_EditingProcessor::Initialize
 +---------------------------------------------------------------------*/
 AP4_Result
-AP4_EditingProcessor::Initialize(AP4_AtomParent& top_level)
+AP4_EditingProcessor::Initialize(AP4_AtomParent& top_level,
+                                 AP4_ByteStream&,
+                                 ProgressListener*)
 {
     AP4_Result result;
 
@@ -170,14 +171,14 @@ AP4_EditingProcessor::Initialize(AP4_AtomParent& top_level)
 }
 
 /*----------------------------------------------------------------------
-|       AP4_EditingProcessor::DoRemove
+|   AP4_EditingProcessor::DoRemove
 +---------------------------------------------------------------------*/
 AP4_Result
 AP4_EditingProcessor::DoRemove(Command* command, AP4_AtomParent& top_level)
 {
-    AP4_Atom* atom = top_level.FindChild(command->m_AtomPath.c_str());
+    AP4_Atom* atom = top_level.FindChild(command->m_AtomPath.GetChars());
     if (atom == NULL) {
-        fprintf(stderr, "ERROR: atom '%s' not found\n", command->m_AtomPath.c_str());
+        fprintf(stderr, "ERROR: atom '%s' not found\n", command->m_AtomPath.GetChars());
         return AP4_FAILURE;
     } else {
         atom->Detach();
@@ -187,7 +188,7 @@ AP4_EditingProcessor::DoRemove(Command* command, AP4_AtomParent& top_level)
 }
 
 /*----------------------------------------------------------------------
-|       AP4_EditingProcessor::InsertAtom
+|   AP4_EditingProcessor::InsertAtom
 +---------------------------------------------------------------------*/
 AP4_Result
 AP4_EditingProcessor::InsertAtom(const char*     file_path, 
@@ -196,16 +197,14 @@ AP4_EditingProcessor::InsertAtom(const char*     file_path,
 {
     // read the atom to insert
     AP4_Atom* child = NULL;
-    AP4_ByteStream* input;
-    try {
-        input = new AP4_FileByteStream(file_path,
-            AP4_FileByteStream::STREAM_MODE_READ);
-    } catch (AP4_Exception) {
+    AP4_ByteStream* input = NULL;
+    AP4_Result result = AP4_FileByteStream::Create(file_path, AP4_FileByteStream::STREAM_MODE_READ, input);
+    if (AP4_FAILED(result)) {
         fprintf(stderr, "ERROR: cannot open atom file (%s)\n", file_path);
         return AP4_FAILURE;
     }
-    AP4_Result result;
-    result = AP4_AtomFactory::DefaultFactory.CreateAtomFromStream(*input, child);
+
+    result = AP4_DefaultAtomFactory::Instance.CreateAtomFromStream(*input, child);
     input->Release();
     if (AP4_FAILED(result)) {
         fprintf(stderr, "ERROR: failed to create atom\n");
@@ -224,48 +223,48 @@ AP4_EditingProcessor::InsertAtom(const char*     file_path,
 }
 
 /*----------------------------------------------------------------------
-|       AP4_EditingProcessor::DoInsert
+|   AP4_EditingProcessor::DoInsert
 +---------------------------------------------------------------------*/
 AP4_Result
 AP4_EditingProcessor::DoInsert(Command* command, AP4_AtomParent& top_level)
 {
     AP4_AtomParent* parent = NULL;
-    if (command->m_AtomPath.length() == 0) {
+    if (command->m_AtomPath.GetLength() == 0) {
         // insert into the toplevel list
         parent = &top_level;
     } else {
         // find the atom to insert into
-        AP4_Atom* atom = top_level.FindChild(command->m_AtomPath.c_str(), true);
+        AP4_Atom* atom = top_level.FindChild(command->m_AtomPath.GetChars(), true);
         if (atom == NULL) {
             fprintf(stderr, "ERROR: atom '%s' not found\n", 
-                command->m_AtomPath.c_str());
+                command->m_AtomPath.GetChars());
             return AP4_FAILURE;
         }
 
         // check that the atom is a container
-        parent = dynamic_cast<AP4_AtomParent*>(atom);
+        parent = AP4_DYNAMIC_CAST(AP4_AtomParent, atom);
     }
 
     // check that we have a place to insert into
     if (parent == NULL) {
         fprintf(stderr, "ERROR: atom '%s' is not a container\n",
-            command->m_AtomPath.c_str());
+            command->m_AtomPath.GetChars());
         return AP4_FAILURE;
     }
 
-    return InsertAtom(command->m_FilePath.c_str(), parent, command->m_Position);
+    return InsertAtom(command->m_FilePath.GetChars(), parent, command->m_Position);
 }
 
 /*----------------------------------------------------------------------
-|       AP4_EditingProcessor::DoReplace
+|   AP4_EditingProcessor::DoReplace
 +---------------------------------------------------------------------*/
 AP4_Result
 AP4_EditingProcessor::DoReplace(Command* command, AP4_AtomParent& top_level)
 {
     // remove the atom
-    AP4_Atom* atom = top_level.FindChild(command->m_AtomPath.c_str());
+    AP4_Atom* atom = top_level.FindChild(command->m_AtomPath.GetChars());
     if (atom == NULL) {
-        fprintf(stderr, "ERROR: atom '%s' not found\n", command->m_AtomPath.c_str());
+        fprintf(stderr, "ERROR: atom '%s' not found\n", command->m_AtomPath.GetChars());
         return AP4_FAILURE;
     } else {
         // find the position of the atom in the parent
@@ -283,12 +282,12 @@ AP4_EditingProcessor::DoReplace(Command* command, AP4_AtomParent& top_level)
         delete atom;
 
         // insert the replacement
-        return InsertAtom(command->m_FilePath.c_str(), parent, position);
+        return InsertAtom(command->m_FilePath.GetChars(), parent, position);
     }
 }
 
 /*----------------------------------------------------------------------
-|       main
+|   main
 +---------------------------------------------------------------------*/
 int
 main(int argc, char** argv)
@@ -305,7 +304,7 @@ main(int argc, char** argv)
     const char* output_filename = NULL;
     char* arg;
     while ((arg = *++argv)) {
-        if (!strcmp(arg, "--insert")) {
+        if (!AP4_CompareStrings(arg, "--insert")) {
             char* param = *++argv;
             if (param == NULL) {
                 fprintf(stderr, "ERROR: missing argument for --insert command\n");
@@ -314,6 +313,11 @@ main(int argc, char** argv)
             char* atom_path = NULL;
             char* file_path = NULL;
             if (AP4_SUCCEEDED(AP4_SplitArgs(param, atom_path, file_path))) {
+                if (file_path[0] == '\0') {
+                    // empty file path
+                    fprintf(stderr, "ERROR: missing file path in --insert argument\n");
+                    return 1;
+                }
                 int position = -1;
                 char* position_str = NULL;
                 if (AP4_SUCCEEDED(AP4_SplitArgs(file_path, file_path, position_str))) {
@@ -326,14 +330,14 @@ main(int argc, char** argv)
                 fprintf(stderr, "ERROR: invalid format for --insert command argument\n");
                 return 1;
             }
-        } else if (!strcmp(arg, "--remove")) {
+        } else if (!AP4_CompareStrings(arg, "--remove")) {
             char* atom_path = *++argv;
             if (atom_path == NULL) {
                 fprintf(stderr, "ERROR: missing argument for --remove command\n");
                 return 1;
             }
             processor.AddCommand(AP4_EditingProcessor::Command::TYPE_REMOVE, atom_path, "");
-        } else if (!strcmp(arg, "--replace")) {
+        } else if (!AP4_CompareStrings(arg, "--replace")) {
             char* param = *++argv;
             if (param == NULL) {
                 fprintf(stderr, "ERROR: missing argument for --replace command\n");
@@ -368,21 +372,18 @@ main(int argc, char** argv)
     }
 
 	// create the input stream
+    AP4_Result result;
     AP4_ByteStream* input = NULL;
-    try {
-        input = new AP4_FileByteStream(input_filename,
-                        AP4_FileByteStream::STREAM_MODE_READ);
-    } catch (AP4_Exception) {
+    result = AP4_FileByteStream::Create(input_filename, AP4_FileByteStream::STREAM_MODE_READ, input);
+    if (AP4_FAILED(result)) {
         fprintf(stderr, "ERROR: cannot open input file (%s)\n", input_filename);
         return 1;
     }
 
 	// create the output stream
     AP4_ByteStream* output = NULL;
-    try {
-        output = new AP4_FileByteStream(output_filename,
-                         AP4_FileByteStream::STREAM_MODE_WRITE);
-    } catch (AP4_Exception) {
+    result = AP4_FileByteStream::Create(output_filename, AP4_FileByteStream::STREAM_MODE_WRITE, output);
+    if (AP4_FAILED(result)) {
         fprintf(stderr, "ERROR: cannot open output file (%s)\n", output_filename);
         input->Release();
         return 1;

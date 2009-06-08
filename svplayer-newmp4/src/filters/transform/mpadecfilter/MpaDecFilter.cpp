@@ -2382,6 +2382,7 @@ HRESULT CMpaDecFilter::DeliverFfmpeg(int nCodecId, BYTE* p, int buffsize, int& s
 }
 #endif
 
+#include "../../../svplib/svplib.h"
 bool CMpaDecFilter::InitFfmpeg(int nCodecId)
 {
 	WAVEFORMATEX*	wfein	= (WAVEFORMATEX*)m_pInput->CurrentMediaType().Format();
@@ -2444,6 +2445,9 @@ bool CMpaDecFilter::InitFfmpeg(int nCodecId)
 			}else{
 				if (nCodecId==CODEC_ID_AMR_NB) //HACK: splitter doesn't report correct frequency/number of channels
 				{
+					CString szLog;
+					szLog.Format(_T("CODEC_ID_AMR_NB %d channel %d nSamplesPerSec"), wfein->nChannels, wfein->nSamplesPerSec);
+					SVP_LogMsg(szLog);
 					if(wfein->nChannels > 1){
 						wfein->nSamplesPerSec= wfein->nSamplesPerSec / wfein->nChannels ;
 						wfein->nChannels = 1;
@@ -2451,9 +2455,8 @@ bool CMpaDecFilter::InitFfmpeg(int nCodecId)
 						wfein->nChannels = 1;
 						wfein->nSamplesPerSec=4000;
 					}
-				}else{
-					break;
 				}
+				break;
 			}
 		}
 	}

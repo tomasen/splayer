@@ -2420,10 +2420,12 @@ bool CMpaDecFilter::InitFfmpeg(int nCodecId)
 			m_pAVCtx->sample_rate			= wfein->nSamplesPerSec;
 			m_pAVCtx->channels				= wfein->nChannels;
 			
-			m_pAVCtx->bit_rate				= wfein->nAvgBytesPerSec*8;
-			m_pAVCtx->bits_per_coded_sample	= wfein->wBitsPerSample;
-			m_pAVCtx->block_align			= wfein->nBlockAlign;
-			m_pAVCtx->flags				   |= CODEC_FLAG_TRUNCATED;
+			
+				m_pAVCtx->bit_rate				= wfein->nAvgBytesPerSec*8;
+				m_pAVCtx->bits_per_coded_sample	= wfein->wBitsPerSample;
+				m_pAVCtx->block_align			= wfein->nBlockAlign;
+				m_pAVCtx->flags				   |= CODEC_FLAG_TRUNCATED;
+			
 
 			m_pAVCtx->codec_id		= (CodecID)nCodecId;
 			

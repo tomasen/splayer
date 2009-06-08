@@ -32,10 +32,12 @@
 /*----------------------------------------------------------------------
 |       includes
 +---------------------------------------------------------------------*/
+#include "../../../StdAfx.h"
 #include "Ap4Config.h"
 #include "Ap4Types.h"
 #include "Ap4Constants.h"
 #include "Ap4Results.h"
 #include "Ap4Debug.h"
+
 
 #endif // _AP4_H_

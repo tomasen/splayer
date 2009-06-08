@@ -3,7 +3,7 @@
 #include "Ap4AsyncReaderStream.cpp" // FIXME
 
 CMP4SplitterFile::CMP4SplitterFile(IAsyncReader* pReader, HRESULT& hr) 
-	: CBaseSplitterFileEx(pReader, hr)
+	: CBaseSplitterFileEx(pReader, hr, DEFAULT_CACHE_LENGTH, false)
 	, m_pAp4File(NULL)
 {
 	if(FAILED(hr)) return;
@@ -28,9 +28,9 @@ HRESULT CMP4SplitterFile::Init()
 
 	delete (AP4_File*)m_pAp4File;
 
-	AP4_ByteStream* stream = new AP4_AsyncReaderStream(this);
+	AP4_ByteStream* stream = DNew AP4_AsyncReaderStream(this);
 
-	m_pAp4File = new AP4_File(*stream);
+	m_pAp4File = DNew AP4_File(*stream);
 	
 	AP4_Movie* movie = ((AP4_File*)m_pAp4File)->GetMovie();
 

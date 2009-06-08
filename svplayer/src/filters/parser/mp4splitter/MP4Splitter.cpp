@@ -126,7 +126,7 @@ HRESULT CMP4SplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 	m_trackpos.RemoveAll();
 
 	m_pFile.Free();
-	m_pFile.Attach(new CMP4SplitterFile(pAsyncReader, hr));
+	m_pFile.Attach(DNew CMP4SplitterFile(pAsyncReader, hr));
 	if(!m_pFile) return E_OUTOFMEMORY;
 	if(FAILED(hr)) {m_pFile.Free(); return hr;}
 
@@ -473,7 +473,7 @@ HRESULT CMP4SplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 					{
 						type = 0x0055;
 					}
-					else if(type == AP4_ATOM_TYPE__AC3)
+					else if((type == AP4_ATOM_TYPE__AC3) || (type == AP4_ATOM_TYPE_SAC3))
 					{
 						type = 0x2000;
 					}
@@ -536,6 +536,9 @@ HRESULT CMP4SplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 						wfe->nChannels = ase->GetChannelCount();
 						wfe->wBitsPerSample = ase->GetSampleSize();
 						wfe->nBlockAlign = ase->GetBytesPerFrame();
+						//if(wfe->nBlockAlign == 0)
+							//wfe->nBlockAlign = wfe->wBitsPerSample / 8;
+						//wfe->nAvgBytesPerSec = wfe->wBitsPerSample * wfe->nSamplesPerSec / 8;
 						wfe->cbSize = db.GetDataSize();
 						memcpy(wfe+1, db.GetData(), db.GetDataSize());
 						mts.Add(mt);
@@ -574,7 +577,7 @@ HRESULT CMP4SplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 				}
 			}
 
-			CAutoPtr<CBaseSplitterOutputPin> pPinOut(new CBaseSplitterOutputPin(mts, name, this, this, &hr));
+			CAutoPtr<CBaseSplitterOutputPin> pPinOut(DNew CBaseSplitterOutputPin(mts, name, this, this, &hr));
 
 			if(!TrackName.IsEmpty()) pPinOut->SetProperty(L"NAME", TrackName);
 			if(!TrackLanguage.IsEmpty()) pPinOut->SetProperty(L"LANG", CStringW(TrackLanguage));
@@ -594,7 +597,7 @@ HRESULT CMP4SplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 
 				id ^= 0x80402010; // FIXME: until fixing, let's hope there won't be another track like this...
 
-				CAutoPtr<CBaseSplitterOutputPin> pPinOut(new CBaseSplitterOutputPin(mts, name + postfix, this, this, &hr));
+				CAutoPtr<CBaseSplitterOutputPin> pPinOut(DNew CBaseSplitterOutputPin(mts, name + postfix, this, this, &hr));
 
 				if(!TrackName.IsEmpty()) pPinOut->SetProperty(L"NAME", TrackName + postfix);
 				if(!TrackLanguage.IsEmpty()) pPinOut->SetProperty(L"LANG", CStringW(TrackLanguage));
@@ -754,7 +757,7 @@ static CStringW ConvertTX3GToSSA(
 {
 	int str_len = str.GetLength();
 
-	SSACharacter* chars = new SSACharacter[str_len];
+	SSACharacter* chars = DNew SSACharacter[str_len];
 	for(int i = 0; i < str_len; i++) chars[i].c = str[i];
 	str.Empty();
 
@@ -1040,7 +1043,7 @@ bool CMP4SplitterFilter::DemuxLoop()
 		{
 			const CMediaType& mt = pPin->CurrentMediaType();
 
-			CAutoPtr<Packet> p(new Packet());
+			CAutoPtr<Packet> p(DNew Packet());
 			p->TrackNumber = (DWORD)track->GetId();
 			p->rtStart = (REFERENCE_TIME)(10000000.0 / track->GetMediaTimeScale() * sample.GetCts());
 			p->rtStop = p->rtStart + (REFERENCE_TIME)(10000000.0 / track->GetMediaTimeScale() * sample.GetDuration());
@@ -1199,7 +1202,7 @@ bool CMP4SplitterFilter::DemuxLoop()
 
 				if(!dlgln_bkg.IsEmpty())
 				{
-					CAutoPtr<Packet> p2(new Packet());
+					CAutoPtr<Packet> p2(DNew Packet());
 					p2->TrackNumber = p->TrackNumber;
 					p2->rtStart = p->rtStart;
 					p2->rtStop = p->rtStop;
@@ -1210,7 +1213,7 @@ bool CMP4SplitterFilter::DemuxLoop()
 
 				if(!dlgln_plaintext.IsEmpty())
 				{
-					CAutoPtr<Packet> p2(new Packet());
+					CAutoPtr<Packet> p2(DNew Packet());
 					p2->TrackNumber = p->TrackNumber ^ 0x80402010;
 					p2->rtStart = p->rtStart;
 					p2->rtStop = p->rtStop;
@@ -1343,7 +1346,7 @@ HRESULT CMPEG4VideoSplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 	HRESULT hr = E_FAIL;
 
 	m_pFile.Free();
-	m_pFile.Attach(new CBaseSplitterFileEx(pAsyncReader, hr));
+	m_pFile.Attach(DNew CBaseSplitterFileEx(pAsyncReader, hr));
 	if(!m_pFile) return E_OUTOFMEMORY;
 	if(FAILED(hr)) {m_pFile.Free(); return hr;}
 
@@ -1546,7 +1549,7 @@ HRESULT CMPEG4VideoSplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 	mt.subtype = FOURCCMap(vih->hdr.bmiHeader.biCompression = 'V4PM');
 	mts.Add(mt);
 
-	CAutoPtr<CBaseSplitterOutputPin> pPinOut(new CBaseSplitterOutputPin(mts, L"Video", this, this, &hr));
+	CAutoPtr<CBaseSplitterOutputPin> pPinOut(DNew CBaseSplitterOutputPin(mts, L"Video", this, this, &hr));
 	EXECUTE_ASSERT(SUCCEEDED(AddOutputPin(0, pPinOut)));
 
 	m_rtNewStop = m_rtStop = m_rtDuration;
@@ -1592,7 +1595,7 @@ bool CMPEG4VideoSplitterFilter::DemuxLoop()
 
 			if(!p)
 			{
-				p.Attach(new Packet());
+				p.Attach(DNew Packet());
 				p->SetCount(0, 1024);
 				p->TrackNumber = 0;
 				p->rtStart = rt; 

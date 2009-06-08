@@ -3488,7 +3488,7 @@ void CMainFrame::OnInitMenuPopup(CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu)
 		transl[_T("DVDÑ¡µ¥")] = IDS_NAVIGATE_POPUP;
 		transl[_T("´ò¿ªµúÆ¬")] = IDS_OPENCDROM_POPUP;
 		transl[_T("ÂË¾µ(Filters)")] = IDS_FILTERS_POPUP;
-		transl[_T("ÒôÆµÓëÉùµÀÇÐ»»")] = IDS_AUDIO_POPUP;
+		transl[_T("ÒôÆµ/ÉùµÀÇÐ»»")] = IDS_AUDIO_POPUP;
 		transl[_T("×ÖÄ»")] = IDS_SUBTITLES_POPUP;
 		transl[_T("Òô¹ìÑ¡Ôñ")] = IDS_AUDIOLANGUAGE_POPUP;
 		transl[_T("×ÖÄ»ÓïÑÔ")] = IDS_SUBTITLELANGUAGE_POPUP;
@@ -3558,7 +3558,7 @@ void CMainFrame::OnInitMenuPopup(CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu)
 			SetupFiltersSubMenu();
 			pSubMenu = &m_filters;
 		}
-		else if(str == ResStr(IDS_AUDIO_POPUP))
+		else if(str == ResStr(IDS_AUDIO_POPUP)  )
 		{
 			SetupAudioSwitcherSubMenu();
 			SetupNavAudioSubMenu();

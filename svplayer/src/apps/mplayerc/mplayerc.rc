@@ -2107,7 +2107,7 @@ BEGIN
         BEGIN
             MENUITEM "第一字幕",                        ID_32770
             MENUITEM "第二字幕",                        ID_32797
-            MENUITEM "音频(&A)",                      ID_32769
+            MENUITEM "音频/声道切换",                      ID_32769
             MENUITEM SEPARATOR
             MENUITEM "播放/暂停(&P)\t空格键",              ID_PLAY_PLAYPAUSE
             MENUITEM "停止&S\t后退键(←)",                ID_PLAY_STOP
@@ -2176,6 +2176,8 @@ BEGIN
         END
         POPUP "帮助(&H)"
         BEGIN
+            MENUITEM "自动更新...",                     ID_MANUALCHECKUPDATE
+            MENUITEM SEPARATOR
             POPUP "意见和反馈"
             BEGIN
                 MENUITEM "论坛发表反馈",                      ID_VISITBBS
@@ -2828,7 +2830,7 @@ END
 STRINGTABLE 
 BEGIN
     IDS_SUBTITLES_POPUP     "第一字幕"
-    IDS_AUDIO_POPUP         "音频"
+    IDS_AUDIO_POPUP         "音频/声道切换"
     IDS_FILTERS_POPUP       "滤镜(Filters)"
     IDS_OPENCDROM_POPUP     "打开碟片"
     IDS_NAVIGATE_POPUP      "DVD导航"

@@ -225,6 +225,9 @@ void CSUIButton::PreMultiplyBitmap( CBitmap& bmp )
 	if(!m_NotButton){
 		m_btnSize.cy = m_btnSize.cy /4;
 	}
+	if(bm.bmBitsPixel != 32){
+		return;
+	}
 	for (int y=0; y<bm.bmHeight; y++)
 	{
 		BYTE * pPixel = (BYTE *) bm.bmBits + bm.bmWidth * 4 * y;

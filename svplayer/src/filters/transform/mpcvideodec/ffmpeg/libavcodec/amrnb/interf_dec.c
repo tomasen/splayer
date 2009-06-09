@@ -229,7 +229,8 @@ enum Mode DecoderMMS( Word16 *param, UWord8 *stream, enum RXFrameType
       /* *frame_type = RX_SID_UPDATE; */
 
       /* speech mode indicator */
-	  *speech_mode = (*stream >> 4) && 0x07;
+	  *speech_mode = (*stream >> 4) & 0x07;
+	  *speech_mode = ((*speech_mode & 0x0001) << 2) | (*speech_mode & 0x0002) | ((*speech_mode & 0x0004) >> 2);
 
    }
    else if ( mode == 15 ) {
@@ -878,3 +879,4 @@ void Decoder_Interface_Decode( void *st,
    s->prev_ft = frame_type;
    s->prev_mode = mode;
 }
+  

@@ -234,7 +234,7 @@ static int EncoderMMS( enum Mode mode, Word16 *param, UWord8 *stream, enum
       *stream <<= 3;
 
       /* speech mode indication */
-      *stream += ( unsigned char )(speech_mode & 0x0007);
+      *stream += ( unsigned char )(((speech_mode & 0x0001) << 2) | (speech_mode & 0x0002) | ((speech_mode & 0x0004) >> 2));
 
 	  *stream <<= 1;
 
@@ -795,3 +795,4 @@ void Encoder_Interface_exit( void *state )
    free( s );
    state = NULL;
 }
+  

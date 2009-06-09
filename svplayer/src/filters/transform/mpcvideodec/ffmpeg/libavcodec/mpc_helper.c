@@ -51,6 +51,9 @@ int FFGetChannelMap(struct AVCodecContext * avctx)
 			}
 		}
 		break;
+	case CODEC_ID_AMR_WB:
+	case CODEC_ID_AMR_NB:
+		return 1;
 	case CODEC_ID_MLP  :
 		{
 			//MLPDecodeContext *s = avctx->priv_data;

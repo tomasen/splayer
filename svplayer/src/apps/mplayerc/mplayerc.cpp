@@ -195,7 +195,7 @@ bool IsInsideVPC()
 	__except(IsInsideVPC_exceptionFilter(GetExceptionInformation()))
 	{
 	}
-
+	
 	return rc;
 }
 //¼ì²â VMWareµÄ´úÂë

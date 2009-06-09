@@ -9,7 +9,7 @@ else
 endif
 
 CFLAGS+= -I. -I.. -I$(LAVC_DIR) -I$(LAVU_DIR) -I$(LAVF_DIR) -I../codecs -I../imgFilters -I$(ZLIB_DIR) -I$(PNG_DIR) \
-		-DHAVE_AV_CONFIG_H -D_ISOC99_SOURCE -D_POSIX_C_SOURCE=200112 -std=gnu99
+		-DHAVE_AV_CONFIG_H -DCONFIG_LIBAMR_WB -DCONFIG_LIBAMR_NB -D_ISOC99_SOURCE -D_POSIX_C_SOURCE=200112 -std=gnu99
 
 SRCS_C=\
 		$(LAVC_DIR)/allcodecs.c \
@@ -34,8 +34,19 @@ SRCS_C=\
 		$(LAVC_DIR)/jpeglsdec.c \
 		$(LAVC_DIR)/jrevdct.c \
 		$(LAVC_DIR)/libamr.c \
-		$(LAVC_DIR)/amr_float/interf_dec.c \
-		$(LAVC_DIR)/amr_float/sp_dec.c \
+		$(LAVC_DIR)/amrnb/interf_dec.c \
+		$(LAVC_DIR)/amrnb/sp_dec.c \
+		$(LAVC_DIR)/amrnb/interf_enc.c\
+		$(LAVC_DIR)/amrnb/sp_enc.c \
+		$(LAVC_DIR)/amrwb/dec_if.c\
+		$(LAVC_DIR)/amrwb/if_rom.c\
+		$(LAVC_DIR)/amrwb/dec_rom.c\
+		$(LAVC_DIR)/amrwb/dec_gain.c\
+		$(LAVC_DIR)/amrwb/dec_main.c\
+		$(LAVC_DIR)/amrwb/dec_dtx.c\
+		$(LAVC_DIR)/amrwb/dec_lpc.c\
+		$(LAVC_DIR)/amrwb/dec_util.c\
+		$(LAVC_DIR)/amrwb/dec_acelp.c\
 		$(LAVC_DIR)/mjpeg.c \
 		$(LAVC_DIR)/mjpegdec.c \
 		$(LAVC_DIR)/mpeg4video_parser.c \

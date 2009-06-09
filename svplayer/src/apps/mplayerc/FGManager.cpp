@@ -1610,6 +1610,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		L"AMR Audio Decoder" ,MERIT64_ABOVE_DSHOW );
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_SAMR);
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_AMR);
+	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_SAWB);
 	m_transform.AddTail(pFGF);
 
 	pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MP3 Audio Decoder"  , MERIT64_UNLIKELY); //MERIT64_UNLIKELY   MERIT64_ABOVE_DSHOW

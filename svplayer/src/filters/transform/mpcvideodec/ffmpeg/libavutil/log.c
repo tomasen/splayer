@@ -31,21 +31,23 @@ int av_log_level = AV_LOG_QUIET;
 
 void av_log_default_callback(void* ptr, int level, const char* fmt, va_list vl)
 {
-    static int print_prefix=1;
-    AVClass* avc= ptr ? *(AVClass**)ptr : NULL;
-    if(level>av_log_level)
-        return;
-	FILE * fp = fopen("/avlog.log" , "a+") ;
-#undef fprintf
-    if(print_prefix && avc) {
-            fprintf(fp, "[%s @ %p]", avc->item_name(ptr), ptr);
-    }
-#define fprintf please_use_av_log
-
-    print_prefix= strstr(fmt, "\n") != NULL;
-
-    vfprintf(fp, fmt, vl);
-	fclose(fp);
+/*
+	    static int print_prefix=1;
+	    AVClass* avc= ptr ? *(AVClass**)ptr : NULL;
+	    if(level>av_log_level)
+	        return;
+		FILE * fp = fopen("/avlog.log" , "a+") ;
+	#undef fprintf
+	    if(print_prefix && avc) {
+	            fprintf(fp, "[%s @ %p]", avc->item_name(ptr), ptr);
+	    }
+	#define fprintf please_use_av_log
+	
+	    print_prefix= strstr(fmt, "\n") != NULL;
+	
+	    vfprintf(fp, fmt, vl);
+		fclose(fp);*/
+	
 }
 
 static void (*av_log_callback)(void*, int, const char*, va_list) = av_log_default_callback;

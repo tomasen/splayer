@@ -775,6 +775,9 @@ public:
 
 	afx_msg void OnColorControl(UINT nID);
 	afx_msg void OnShowColorControlBar();
+	afx_msg void OnRecentFileClear();
+	afx_msg void OnRecentFileEnable();
+	afx_msg void OnRecentFileDisable();
 	afx_msg void OnUpdateShowColorControlBar(CCmdUI *pCmdUI);
 	afx_msg void OnSetsnapshotpath();
 

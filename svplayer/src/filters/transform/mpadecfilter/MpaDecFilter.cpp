@@ -100,6 +100,7 @@ const AMOVIESETUP_MEDIATYPE sudPinTypesIn[] =
 	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_mp4a},
 	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_AMR},
 	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_SAMR},
+	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_SAWB},
 	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_IMA4},
 	{&MEDIATYPE_DVD_ENCRYPTED_PACK, &MEDIASUBTYPE_PS2_PCM},
 	{&MEDIATYPE_MPEG2_PACK,			&MEDIASUBTYPE_PS2_PCM},
@@ -448,6 +449,8 @@ HRESULT CMpaDecFilter::Receive(IMediaSample* pIn)
 		hr = ProcessFfmpeg(CODEC_ID_NELLYMOSER);
 	else if(subtype == MEDIASUBTYPE_AMR || subtype == MEDIASUBTYPE_SAMR)
 		hr = ProcessFfmpeg(CODEC_ID_AMR_NB);
+	else if(subtype == MEDIASUBTYPE_SAWB)
+		hr = ProcessFfmpeg(CODEC_ID_AMR_WB);
 	else if(subtype == MEDIASUBTYPE_IMA4)
 		hr = ProcessFfmpeg(CODEC_ID_ADPCM_IMA_QT);
 	else if(subtype ==MEDIASUBTYPE_COOK)
@@ -2400,31 +2403,50 @@ bool CMpaDecFilter::InitFfmpeg(int nCodecId)
 	{
 		m_pAVCtx						= avcodec_alloc_context();
 		m_pParser				= av_parser_init(nCodecId);
+		
+		if (nCodecId== CODEC_ID_AMR_NB || nCodecId== CODEC_ID_AMR_WB){
+			//m_pAVCtx->frame_size = 160 * (1+ (nCodecId== CODEC_ID_AMR_WB));//	st->codec->frame_size= sc->samples_per_frame;
+					/* force sample rate for amr, stsd in 3gp does not store sample rate */
+			if (!wfein->nSamplesPerSec)
+				wfein->nSamplesPerSec = 8000 * (1+(nCodecId== CODEC_ID_AMR_WB)) / wfein->nChannels;
+			else if(wfein->nSamplesPerSec > 2000)
+				wfein->nSamplesPerSec = wfein->nSamplesPerSec /  wfein->nChannels;
+			else
+				wfein->nSamplesPerSec = 4000;//wfein->nSamplesPerSec *  wfein->nChannels;
 
-		if (nCodecId==CODEC_ID_COOK )
-		{
-			/* this code needs fixing */
+			wfein->nChannels = 1;
+			m_pAVCtx->channels = wfein->nChannels; /* really needed */
 			
-			m_pAVCtx->extradata=m_pInput->CurrentMediaType().Format()+sizeof(WAVEFORMATEX); 
-			m_pAVCtx->extradata_size=m_pInput->CurrentMediaType().FormatLength()-sizeof(WAVEFORMATEX);
-			for (;m_pAVCtx->extradata_size;m_pAVCtx->extradata=(uint8_t*)m_pAVCtx->extradata+1,m_pAVCtx->extradata_size--){
-				if (memcmp(m_pAVCtx->extradata,"cook",4)==0)
-				{
-					m_pAVCtx->extradata=(uint8_t*)m_pAVCtx->extradata+12;
-					m_pAVCtx->extradata_size-=12;
-					break;
+			m_pAVCtx->sample_rate =  wfein->nSamplesPerSec;
+			
+	
+		}else{
+			if (nCodecId==CODEC_ID_COOK )
+			{
+				/* this code needs fixing */
+				
+				m_pAVCtx->extradata=m_pInput->CurrentMediaType().Format()+sizeof(WAVEFORMATEX); 
+				m_pAVCtx->extradata_size=m_pInput->CurrentMediaType().FormatLength()-sizeof(WAVEFORMATEX);
+				for (;m_pAVCtx->extradata_size;m_pAVCtx->extradata=(uint8_t*)m_pAVCtx->extradata+1,m_pAVCtx->extradata_size--){
+					if (memcmp(m_pAVCtx->extradata,"cook",4)==0)
+					{
+						m_pAVCtx->extradata=(uint8_t*)m_pAVCtx->extradata+12;
+						m_pAVCtx->extradata_size-=12;
+						break;
+					}
 				}
 			}
-		}
-		for( int ii = 0; ii <= 1; ii++){
 			m_pAVCtx->sample_rate			= wfein->nSamplesPerSec;
 			m_pAVCtx->channels				= wfein->nChannels;
+
+
+			m_pAVCtx->bit_rate				= wfein->nAvgBytesPerSec*8;
+			m_pAVCtx->bits_per_coded_sample	= wfein->wBitsPerSample;
+			m_pAVCtx->block_align			= wfein->nBlockAlign;
+			m_pAVCtx->flags				   |= CODEC_FLAG_TRUNCATED;
+		}
+		for( int ii = 0; ii <= 1; ii++){
 			
-			
-				m_pAVCtx->bit_rate				= wfein->nAvgBytesPerSec*8;
-				m_pAVCtx->bits_per_coded_sample	= wfein->wBitsPerSample;
-				m_pAVCtx->block_align			= wfein->nBlockAlign;
-				m_pAVCtx->flags				   |= CODEC_FLAG_TRUNCATED;
 			
 
 			m_pAVCtx->codec_id		= (CodecID)nCodecId;
@@ -2434,7 +2456,7 @@ bool CMpaDecFilter::InitFfmpeg(int nCodecId)
 				m_pPCMData	= (BYTE*)FF_aligned_malloc (AVCODEC_MAX_AUDIO_FRAME_SIZE+FF_INPUT_BUFFER_PADDING_SIZE, 64);
 				bRet		= true;
 
-				if (nCodecId!=CODEC_ID_COOK ){
+				if (nCodecId!=CODEC_ID_COOK || nCodecId== CODEC_ID_AMR_NB || nCodecId== CODEC_ID_AMR_WB){
 					int iSpeakerConfig = GetSpeakerConfig(ac3);
 					if (iSpeakerConfig >= 0)
 					{
@@ -2447,11 +2469,11 @@ bool CMpaDecFilter::InitFfmpeg(int nCodecId)
 				if (nCodecId==CODEC_ID_AMR_NB) //HACK: splitter doesn't report correct frequency/number of channels
 				{
 					if(wfein->nChannels > 1){
-						wfein->nSamplesPerSec= wfein->nSamplesPerSec / wfein->nChannels ;
+						//wfein->nSamplesPerSec= wfein->nSamplesPerSec / wfein->nChannels ;
 						wfein->nChannels = 1;
 					}else{
 						wfein->nChannels = 1;
-						wfein->nSamplesPerSec=4000;
+						//wfein->nSamplesPerSec=4000;
 					}
 				}else{
 					break;

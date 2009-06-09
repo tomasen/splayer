@@ -449,6 +449,10 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_WM_KILLFOCUS()
 	ON_COMMAND(ID_CHANGEBACKGROUND, &CMainFrame::OnChangebackground)
 	ON_COMMAND(ID_SUBSETFONTBOTH, &CMainFrame::OnSubsetfontboth)
+
+	ON_COMMAND( ID_RECENTFILE_CLEAR ,  OnRecentFileClear)
+	ON_COMMAND( ID_RECENTFILE_ENABLE ,  OnRecentFileEnable)
+	ON_COMMAND( ID_RECENTFILE_DISABLE ,  OnRecentFileDisable)
 	END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -11274,6 +11278,21 @@ void CMainFrame::OnNavStreamSelectSubMenu(UINT id, DWORD dwSelGroup)
 		id--;
 	}
 }
+void CMainFrame::OnRecentFileClear(){
+	AppSettings& s = AfxGetAppSettings();
+	CRecentFileList& MRU = s.MRU;
+	MRU.ReadList();
+	for(int i=0;i < MRU.m_nSize;i++) MRU.Remove(0);
+	MRU.WriteList();
+}
+void CMainFrame::OnRecentFileEnable(){
+	AppSettings& s = AfxGetAppSettings();
+	s.fKeepHistory = true;
+}
+void CMainFrame::OnRecentFileDisable(){
+	AppSettings& s = AfxGetAppSettings();
+	s.fKeepHistory = false;
+}
 void CMainFrame::SetupRecentFileSubMenu(){
 	CMenu* pSub = &m_recentfiles;
 
@@ -11282,21 +11301,34 @@ void CMainFrame::SetupRecentFileSubMenu(){
 
 	AppSettings& s = AfxGetAppSettings();
 
-	int nLastGroupStart = pSub->GetMenuItemCount();
+	int nLastGroupStart = 0;//pSub->GetMenuItemCount();
 
 	UINT id = ID_RECENT_FILE_START;
 
-	CRecentFileList& MRU = AfxGetAppSettings().MRU;
+	CRecentFileList& MRU = s.MRU;
 	MRU.ReadList();
 
 	UINT flags = MF_BYCOMMAND|MF_STRING|MF_ENABLED;
+	CSVPToolBox svpTool;
+
 	for(int i = 0; i < MRU.GetSize(); i++){
 		if(!MRU[i].IsEmpty()){
-			pSub->AppendMenu(flags, ID_RECENT_FILE_START+i, MRU[i]);
+			if(svpTool.ifFileExist(MRU[i])){
+				pSub->AppendMenu(flags, ID_RECENT_FILE_START+i, MRU[i]);
+				nLastGroupStart ++;
+			}
 			
 		}
 	}
-
+	if(nLastGroupStart || s.fKeepHistory ){
+		if(nLastGroupStart){
+			pSub->InsertMenu(nLastGroupStart, MF_SEPARATOR|MF_ENABLED|MF_BYPOSITION);
+			pSub->AppendMenu(flags, ID_RECENTFILE_CLEAR, _T("清除历史记录"));
+		}
+		pSub->AppendMenu(flags, ID_RECENTFILE_DISABLE, _T("禁用历史记录"));
+	}else{
+		pSub->AppendMenu(flags, ID_RECENTFILE_ENABLE, _T("启用历史记录"));
+	}
 
 	
 }

@@ -336,6 +336,9 @@
 #define ID_RECENT_FILE_START            5000
 #define ID_RECENT_FILE_END              5200
 #define ID_FILE_COPYTOCLIPBOARD         5201
+#define ID_RECENTFILE_CLEAR		        5202
+#define ID_RECENTFILE_DISABLE	        5203
+#define ID_RECENTFILE_ENABLE	        5204
 #define TIMER_FASTFORWORD               7001
 #define TIMER_STOPFASTFORWORD           7002
 #define TIMER_STATERASER                7003

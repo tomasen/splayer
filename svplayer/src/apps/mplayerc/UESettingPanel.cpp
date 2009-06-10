@@ -6,6 +6,7 @@
 #include "UESettingPanel.h"
 #include "PPageAccelTbl.h"
 #include "PPageFormats.h"
+#include "PPageLogo.h"
 
 #include "..\..\svplib\svplib.h"
 
@@ -45,6 +46,8 @@ BEGIN_DHTML_EVENT_MAP(CUESettingPanel)
 	DHTML_EVENT_ONCLICK(_T("subfont2"), OnFontSetting)
 	DHTML_EVENT_ONCLICK(_T("IDFileAss"), OnFileAss)
 	DHTML_EVENT_ONCLICK(_T("IDHotKey"), OnHotKey)
+	DHTML_EVENT_ONCLICK(_T("IDBGCHG"), OnChangeBG)
+	
 END_DHTML_EVENT_MAP()
 
 
@@ -596,6 +599,14 @@ HRESULT CUESettingPanel::OnHotKey(IHTMLElement *pElement){
 
 	return S_OK;
 }
+HRESULT CUESettingPanel::OnChangeBG(IHTMLElement* /*pElement*/){
+	CAutoPtr<CPPageLogo> page(new CPPageLogo());
+	CPropertySheet dlg(_T("界面背景设置..."), this);
+	dlg.AddPage(page);
+	dlg.DoModal() ;
+	return S_OK;
+}
+
 HRESULT CUESettingPanel::OnFileAss(IHTMLElement* /*pElement*/){
 	CAutoPtr<CPPageFormats> page(new CPPageFormats());
 	CPropertySheet dlg(_T("文件关联设置..."), this);

@@ -9,11 +9,12 @@ else
 endif
 
 CFLAGS+= -I. -I.. -I$(LAVC_DIR) -I$(LAVU_DIR) -I$(LAVF_DIR) -I../codecs -I../imgFilters -I$(ZLIB_DIR) -I$(PNG_DIR) \
-		-DHAVE_AV_CONFIG_H -DCONFIG_LIBAMR_WB -DCONFIG_LIBAMR_NB -D_ISOC99_SOURCE -D_POSIX_C_SOURCE=200112 -std=gnu99
+		-DHAVE_AV_CONFIG_H -D_ISOC99_SOURCE -D_POSIX_C_SOURCE=200112 -std=gnu99
 
 SRCS_C=\
 		$(LAVC_DIR)/allcodecs.c \
 		$(LAVC_DIR)/bitstream.c \
+		$(LAVC_DIR)/atrac3.c \
 		$(LAVC_DIR)/cabac.c \
 		$(LAVC_DIR)/CompilatorVersion.c\
 		$(LAVC_DIR)/dsputil.c \
@@ -70,6 +71,7 @@ SRCS_C=\
 		$(LAVC_DIR)/vp56.c \
 		$(LAVC_DIR)/vp56data.c \
 		$(LAVC_DIR)/vp6.c \
+    $(LAVC_DIR)/vp6dsp.c \
 		$(LAVC_DIR)/w32thread.c \
 		$(LAVC_DIR)/wmv2.c \
 		$(LAVC_DIR)/wmv2dec.c \
@@ -89,8 +91,11 @@ SRCS_C=\
 		$(LAVC_DIR)/mlp.c \
 		$(LAVC_DIR)/mlp_parser.c \
 		$(LAVC_DIR)/mlpdec.c \
+		$(LAVC_DIR)/mlpdsp.c \
 		$(LAVC_DIR)/nellymoser.c \
 		$(LAVC_DIR)/nellymoserdec.c \
+		$(LAVC_DIR)/options.c \
+		$(LAVC_DIR)/ratecontrol.c \
 		$(LAVC_DIR)/adpcm.c \
 		$(LAVC_DIR)/cook.c \
 		$(LAVC_DIR)/ratecontrol.c \
@@ -103,13 +108,14 @@ SRCS_C=\
 		$(LAVC_DIR)/msrledec.c \
 		$(LAVC_DIR)/tscc.c \
 		$(LAVC_DIR)/msrle.c \
+		$(LAVC_DIR)/celp_filters.c \
+		$(LAVC_DIR)/celp_math.c \
 
 
 
 #SRCS_C+=\
 #		$(LAVC_DIR)/8bps.c \
 #		$(LAVC_DIR)/aasc.c \
-#		$(LAVC_DIR)/atrac3.c \
 #		$(LAVC_DIR)/asv1.c \
 #		$(LAVC_DIR)/avs.c \
 #		$(LAVC_DIR)/cavs.c \
@@ -146,6 +152,10 @@ SRCS_C=\
 #		$(LAVC_DIR)/mpeg12data.c \
 #		$(LAVC_DIR)/mpeg4audio.c \
 #		$(LAVC_DIR)/mpegvideo_parser.c \
+#		$(LAVC_DIR)/mpegaudio_parser.c \
+#		$(LAVC_DIR)/mpegaudiodata.c \
+#		$(LAVC_DIR)/mpegaudiodec.c \
+#		$(LAVC_DIR)/mpegaudiodecheader.c \
 #		$(LAVC_DIR)/msvideo1.c \
 #		$(LAVC_DIR)/opt.c \
 #		$(LAVC_DIR)/pcm.c \
@@ -178,6 +188,7 @@ SRCS_C+=\
 		$(LAVU_DIR)/log.c \
 		$(LAVU_DIR)/mathematics.c \
 		$(LAVU_DIR)/mem.c \
+		$(LAVU_DIR)/random_seed.c \
 		$(LAVU_DIR)/rational.c \
 		$(LAVU_DIR)/random.c \
 		$(LAVU_DIR)/lfg.c \
@@ -190,6 +201,7 @@ SRCS_C+=\
 SRCS_C+=\
     $(LAVC_DIR)/x86/cpuid.c \
 		$(LAVC_DIR)/x86/dsputil_mmx.c \
+		$(LAVC_DIR)/x86/fdct_mmx.c \
 		$(LAVC_DIR)/x86/idct_mmx.c \
 		$(LAVC_DIR)/x86/idct_mmx_xvid.c \
 		$(LAVC_DIR)/x86/idct_sse2_xvid.c \
@@ -197,7 +209,10 @@ SRCS_C+=\
 		$(LAVC_DIR)/x86/simple_idct_mmx.c \
 		$(LAVC_DIR)/x86/vc1dsp_mmx.c \
 		$(LAVC_DIR)/x86/vp3dsp_mmx.c \
-		$(LAVC_DIR)/x86/vp3dsp_sse2.c
+        $(LAVC_DIR)/x86/vp3dsp_sse2.c \
+        $(LAVC_DIR)/x86/vp6dsp_mmx.c \
+        $(LAVC_DIR)/x86/vp6dsp_sse2.c
+
 
 ifneq ($(64BIT),yes)
 SRCS_C+=\

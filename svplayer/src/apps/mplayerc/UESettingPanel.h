@@ -100,6 +100,8 @@ public:
 	CUESettingPanel(IFilterGraph* pFG, CWnd* pParentWnd, UINT idPagein);   // standard constructor
 	virtual ~CUESettingPanel();
 	
+	
+	HRESULT OnChangeBG(IHTMLElement *pElement);
 	HRESULT OnFileAss(IHTMLElement *pElement);
 	HRESULT OnHotKey(IHTMLElement *pElement);
 // Overrides

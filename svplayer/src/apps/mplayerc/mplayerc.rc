@@ -1447,12 +1447,12 @@ IDF_CONTROLVOLUMEOFF_PNG FILE                    "res\\web\\controlvolumeoff.png
 IDF_CONTROLVOLUMEBAR_PNG FILE                    "res\\web\\controlvolumebar.png"
 IDF_CONTROLVOLUMEGRIP_PNG FILE                    "res\\web\\controlvolumegrip.png"
 IDF_SHADER_RESIZER      FILE                    "res\\shaders\\resizer.psh"
-IDF_LOGO0               FILE                    "res\\logo.0.png"
 IDF_LOGO1               FILE                    "res\\logo.1.png"
 IDF_LOGO4               FILE                    "res\\logo.4.png"
 IDF_LOGO5               FILE                    "res\\logo.5.png"
 IDF_LOGO6               FILE                    "res\\logo.6.png"
-IDF_LOGO7               FILE                    "res\\default_bg.jpg"
+IDF_LOGO7               FILE                    "res\\logo.0.png"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //

@@ -1,5 +1,5 @@
 /* 
- * $Id: VideoDecDXVAAllocator.cpp 1002 2009-02-21 13:16:58Z casimir666 $
+ * $Id: VideoDecDXVAAllocator.cpp 1100 2009-05-08 12:16:01Z casimir666 $
  *
  * (C) 2006-2007 see AUTHORS
  *
@@ -123,6 +123,7 @@ HRESULT CVideoDecDXVAAllocator::Alloc()
     HRESULT										hr;
 	CComPtr<IDirectXVideoAccelerationService>	pDXVA2Service;
 
+	CheckPointer(m_pVideoDecFilter->m_pDeviceManager, E_UNEXPECTED);
 	hr = m_pVideoDecFilter->m_pDeviceManager->GetVideoService (m_pVideoDecFilter->m_hDevice, IID_IDirectXVideoAccelerationService, (void**)&pDXVA2Service);
 	CheckPointer (pDXVA2Service, E_UNEXPECTED);
 	CAutoLock lock(this);
@@ -138,7 +139,7 @@ HRESULT CVideoDecDXVAAllocator::Alloc()
 		m_nSurfaceArrayCount = m_lCount;
 
         // Allocate a new array of pointers.
-        m_ppRTSurfaceArray = new IDirect3DSurface9*[m_lCount];
+        m_ppRTSurfaceArray = DNew IDirect3DSurface9*[m_lCount];
         if (m_ppRTSurfaceArray == NULL)
         {
             hr = E_OUTOFMEMORY;
@@ -171,7 +172,7 @@ HRESULT CVideoDecDXVAAllocator::Alloc()
 		// Important : create samples in reverse order !
         for (m_lAllocated = m_lCount-1; m_lAllocated >= 0; m_lAllocated--)
         {
-            CDXVA2Sample *pSample = new CDXVA2Sample(this, &hr);
+            CDXVA2Sample *pSample = DNew CDXVA2Sample(this, &hr);
             if (pSample == NULL)
             {
                 hr = E_OUTOFMEMORY;
@@ -228,4 +229,3 @@ void CVideoDecDXVAAllocator::Free()
     m_lAllocated		 = 0;
 	m_nSurfaceArrayCount = 0;
 }
-

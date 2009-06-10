@@ -1,6 +1,6 @@
 /*
  * MJPEG decoder
- * Copyright (c) 2000, 2001 Fabrice Bellard.
+ * Copyright (c) 2000, 2001 Fabrice Bellard
  * Copyright (c) 2003 Alex Beregszaszi
  * Copyright (c) 2003-2004 Michael Niedermayer
  *
@@ -26,7 +26,7 @@
  */
 
 /**
- * @file mjpegdec.c
+ * @file libavcodec/mjpegdec.c
  * MJPEG decoder.
  */
 
@@ -85,6 +85,7 @@ av_cold int ff_mjpeg_decode_init(AVCodecContext *avctx)
     s->start_code = -1;
     s->first_picture = 1;
     s->org_height = avctx->coded_height;
+    avctx->chroma_sample_location = AVCHROMA_LOC_CENTER;
 
     build_basic_mjpeg_vlc(s);
 
@@ -885,7 +886,7 @@ static int mjpeg_decode_scan_progressive_ac(MJpegDecodeContext *s, int ss, int s
 int ff_mjpeg_decode_sos(MJpegDecodeContext *s)
 {
     int len, nb_components, i, h, v, predictor, point_transform;
-    int vmax, hmax, index, id;
+    int index, id;
     const int block_size= s->lossless ? 1 : 8;
     int ilv, prev_shift;
 
@@ -897,8 +898,6 @@ int ff_mjpeg_decode_sos(MJpegDecodeContext *s)
         av_log(s->avctx, AV_LOG_ERROR, "decode_sos: invalid len (%d)\n", len);
         return -1;
     }
-    vmax = 0;
-    hmax = 0;
     for(i=0;i<nb_components;i++) {
         id = get_bits(&s->gb, 8) - 1;
         av_log(s->avctx, AV_LOG_DEBUG, "component: %d\n", id);
@@ -1019,9 +1018,9 @@ static int mjpeg_decode_app(MJpegDecodeContext *s)
     /* buggy AVID, it puts EOI only at every 10th frame */
     /* also this fourcc is used by non-avid files too, it holds some
        informations, but it's always present in AVID creates files */
-    if (id == ff_get_fourcc("AVI1"))
+    if (id == AV_RL32("AVI1"))
     {
-        s->buggy_avid = 1;
+            s->buggy_avid = 1;
 
         i = get_bits(&s->gb, 8);
         if     (i==2) s->bottom_field= 1;
@@ -1030,7 +1029,7 @@ static int mjpeg_decode_app(MJpegDecodeContext *s)
         goto out;
     }
 
-    if (id == ff_get_fourcc("JFIF"))
+    if (id == AV_RL32("JFIF"))
     {
         int t_w, t_h, v1, v2;
         skip_bits(&s->gb, 8); /* the trailing zero-byte */
@@ -1060,7 +1059,7 @@ static int mjpeg_decode_app(MJpegDecodeContext *s)
         goto out;
     }
 
-    if (id == ff_get_fourcc("Adob") && (get_bits(&s->gb, 8) == 'e'))
+    if (id == AV_RL32("Adob") && (get_bits(&s->gb, 8) == 'e'))
     {
         if (s->avctx->debug & FF_DEBUG_PICT_INFO)
             av_log(s->avctx, AV_LOG_INFO, "mjpeg: Adobe header found\n");
@@ -1072,7 +1071,7 @@ static int mjpeg_decode_app(MJpegDecodeContext *s)
         goto out;
     }
 
-    if (id == ff_get_fourcc("LJIF")){
+    if (id == AV_RL32("LJIF")){
         if (s->avctx->debug & FF_DEBUG_PICT_INFO)
             av_log(s->avctx, AV_LOG_INFO, "Pegasus lossless jpeg header found\n");
         skip_bits(&s->gb, 16); /* version ? */
@@ -1101,7 +1100,7 @@ static int mjpeg_decode_app(MJpegDecodeContext *s)
         id = (get_bits(&s->gb, 16) << 16) | get_bits(&s->gb, 16);
         id = be2me_32(id);
         len -= 4;
-        if (id == ff_get_fourcc("mjpg")) /* Apple MJPEG-A */
+        if (id == AV_RL32("mjpg")) /* Apple MJPEG-A */
         {
             if (s->avctx->debug & FF_DEBUG_PICT_INFO)
                 av_log(s->avctx, AV_LOG_INFO, "mjpeg: Apple MJPEG-A header found\n");
@@ -1347,7 +1346,7 @@ int ff_mjpeg_decode_frame(AVCodecContext *avctx,
                         return -1;
                     break;
                 case LSE:
-                    if (!ENABLE_JPEGLS_DECODER || ff_jpegls_decode_lse(s) < 0)
+                    if (!CONFIG_JPEGLS_DECODER || ff_jpegls_decode_lse(s) < 0)
                         return -1;
                     break;
                 case EOI:

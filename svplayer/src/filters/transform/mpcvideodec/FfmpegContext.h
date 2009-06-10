@@ -1,5 +1,5 @@
 /* 
- * $Id: FfmpegContext.h 1009 2009-03-10 19:20:57Z casimir666 $
+ * $Id: FfmpegContext.h 1156 2009-06-07 14:10:39Z casimir666 $
  *
  * (C) 2006-2007 see AUTHORS
  *
@@ -27,7 +27,7 @@
 struct AVCodecContext;
 
 // === H264 functions
-void			FFH264DecodeBuffer (struct AVCodecContext* pAVCtx, BYTE* pBuffer, UINT nSize);
+void			FFH264DecodeBuffer (struct AVCodecContext* pAVCtx, BYTE* pBuffer, UINT nSize, BOOL bEndFrame, int* pFramePOC, int* pOutPOC, REFERENCE_TIME* pOutrtStart);
 HRESULT			FFH264BuildPicParams (DXVA_PicParams_H264* pDXVAPicParams, DXVA_Qmatrix_H264* pDXVAScalingMatrix, int* nFieldType, int* nSliceType, struct AVCodecContext* pAVCtx, int nPCIVendor);
 int				FFH264CheckCompatibility(int nWidth, int nHeight, struct AVCodecContext* pAVCtx, BYTE* pBuffer, UINT nSize, int nPCIVendor, LARGE_INTEGER VideoDriverVersion);
 void			FF264BuildSliceLong(DXVA_PicParams_H264* pDXVAPicParams, DXVA_Slice_H264_Long* pSlice, struct AVCodecContext* pAVCtx, int nPCIVendor);

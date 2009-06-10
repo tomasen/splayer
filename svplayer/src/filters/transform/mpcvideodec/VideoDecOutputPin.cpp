@@ -1,5 +1,5 @@
 /* 
- * $Id: VideoDecOutputPin.cpp 572 2008-06-11 22:23:09Z casimir666 $
+ * $Id: VideoDecOutputPin.cpp 1048 2009-04-18 17:39:19Z casimir666 $
  *
  * (C) 2006-2007 see AUTHORS
  *
@@ -47,7 +47,7 @@ HRESULT CVideoDecOutputPin::InitAllocator(IMemAllocator **ppAlloc)
 	if (m_pVideoDecFilter->UseDXVA2())
 	{
 		HRESULT hr = S_FALSE;
-		m_pDXVA2Allocator = new CVideoDecDXVAAllocator(m_pVideoDecFilter, &hr);
+		m_pDXVA2Allocator = DNew CVideoDecDXVAAllocator(m_pVideoDecFilter, &hr);
 		if (!m_pDXVA2Allocator)
 		{
 			return E_OUTOFMEMORY;

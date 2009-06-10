@@ -1,6 +1,6 @@
 /*
  * RV10 codec
- * Copyright (c) 2000,2001 Fabrice Bellard.
+ * Copyright (c) 2000,2001 Fabrice Bellard
  * Copyright (c) 2002-2004 Michael Niedermayer
  *
  * This file is part of FFmpeg.
@@ -21,7 +21,7 @@
  */
 
 /**
- * @file rv10.c
+ * @file libavcodec/rv10.c
  * RV10 codec.
  */
 
@@ -470,6 +470,9 @@ static av_cold int rv10_decode_init(AVCodecContext *avctx)
     if (avctx->sub_id == 0x10000000) {
         s->rv10_version= 0;
         s->low_delay=1;
+    } else if (avctx->sub_id == 0x10001000) {
+        s->rv10_version= 3;
+        s->low_delay=1;
     } else if (avctx->sub_id == 0x10002000) {
         s->rv10_version= 3;
         s->low_delay=1;
@@ -504,12 +507,12 @@ static av_cold int rv10_decode_init(AVCodecContext *avctx)
 
     /* init rv vlc */
     if (!done) {
-        init_vlc(&rv_dc_lum, DC_VLC_BITS, 256,
+        INIT_VLC_STATIC(&rv_dc_lum, DC_VLC_BITS, 256,
                  rv_lum_bits, 1, 1,
-                 rv_lum_code, 2, 2, 1);
-        init_vlc(&rv_dc_chrom, DC_VLC_BITS, 256,
+                 rv_lum_code, 2, 2, 16384);
+        INIT_VLC_STATIC(&rv_dc_chrom, DC_VLC_BITS, 256,
                  rv_chrom_bits, 1, 1,
-                 rv_chrom_code, 2, 2, 1);
+                 rv_chrom_code, 2, 2, 16388);
         done = 1;
     }
 

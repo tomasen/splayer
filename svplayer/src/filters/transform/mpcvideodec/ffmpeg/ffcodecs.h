@@ -82,6 +82,8 @@
  CODEC_OP(CODEC_ID_AMV               ,71,"amv") \
  \
  /* Well-known audio codecs */ \
+ CODEC_OP(CODEC_ID_MP3ADU            ,98,"mp3adu") \
+ CODEC_OP(CODEC_ID_MP1               ,99,"mp1") \
  CODEC_OP(CODEC_ID_MP2               ,100,"mp2") \
  CODEC_OP(CODEC_ID_MP3               ,101,"mp3") \
  CODEC_OP(CODEC_ID_VORBIS            ,102,"vorbis") \
@@ -136,6 +138,7 @@
  CODEC_OP(CODEC_ID_PCM_ZORK          ,151,"PCM Zork") \
  CODEC_OP(CODEC_ID_SHORTEN           ,152,"Shorten") \
  CODEC_OP(CODEC_ID_AMR_WB            ,153,"amrwb")\
+ CODEC_OP(CODEC_ID_TRUEHD            ,154,"truehd") \
 \
  /* Raw formats */ \
  CODEC_OP(CODEC_ID_RAW           ,300,"raw") \

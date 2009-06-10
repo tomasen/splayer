@@ -1,6 +1,6 @@
 /*
  * G.726 ADPCM audio codec
- * Copyright (c) 2004 Roman Shaposhnik.
+ * Copyright (c) 2004 Roman Shaposhnik
  *
  * This is a very straightforward rendition of the G.726
  * Section 4 "Computational Details".
@@ -23,7 +23,8 @@
  */
 #include <limits.h>
 #include "avcodec.h"
-#include "bitstream.h"
+#include "get_bits.h"
+#include "put_bits.h"
 
 /**
  * G.726 11bit float.

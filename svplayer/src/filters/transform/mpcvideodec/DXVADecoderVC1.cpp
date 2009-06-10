@@ -1,5 +1,5 @@
 /* 
- * $Id: DXVADecoderVC1.cpp 995 2009-02-15 15:57:23Z casimir666 $
+ * $Id: DXVADecoderVC1.cpp 1141 2009-06-01 15:08:56Z casimir666 $
  *
  * (C) 2006-2007 see AUTHORS
  *
@@ -26,7 +26,7 @@
 
 extern "C"
 {
-	#include "FfmpegContext.h"
+	#include "FfmpegContext.h" 
 }
 
 #if 0
@@ -153,7 +153,7 @@ HRESULT CDXVADecoderVC1::DecodeFrame (BYTE* pDataIn, UINT nSize, REFERENCE_TIME 
 #endif
 
 	// Re-order B frames
-	if (m_pFilter->ReorderBFrame())
+	if (m_pFilter->IsReorderBFrame())
 	{
 		if (m_PictureParams.bPicBackwardPrediction == 1)
 		{
@@ -176,7 +176,7 @@ HRESULT CDXVADecoderVC1::DecodeFrame (BYTE* pDataIn, UINT nSize, REFERENCE_TIME 
 	}
 
 	AddToStore (nSurfaceIndex, pSampleToDeliver, (m_PictureParams.bPicBackwardPrediction != 1), rtStart, rtStop, 
-				false,(FF_FIELD_TYPE)nFieldType, (FF_SLICE_TYPE)nSliceType);
+				false,(FF_FIELD_TYPE)nFieldType, (FF_SLICE_TYPE)nSliceType, 0);
 	m_bFlushed = false;
 
 	return DisplayNextFrame();

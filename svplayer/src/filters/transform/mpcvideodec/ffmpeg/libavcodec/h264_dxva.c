@@ -34,7 +34,26 @@ typedef unsigned short        WORD;
 #define E_FAIL              0x80004005L
 
 
+static void field_end_noexecute(H264Context *h){
+    MpegEncContext * const s = &h->s;
+    AVCodecContext * const avctx= s->avctx;
+    s->mb_y= 0;
 
+    s->current_picture_ptr->qscale_type= FF_QSCALE_TYPE_H264;
+    s->current_picture_ptr->pict_type= s->pict_type;
+
+    if(!s->dropable) {
+        execute_ref_pic_marking(h, h->mmco, h->mmco_index);
+        h->prev_poc_msb= h->poc_msb;
+        h->prev_poc_lsb= h->poc_lsb;
+    }
+    h->prev_frame_num_offset= h->frame_num_offset;
+    h->prev_frame_num= h->frame_num;
+
+    MPV_frame_end(s);
+
+    h->current_slice=0;
+}
 
 int decode_slice_header_noexecute (H264Context *h){
 	// ==> Start patch MPC DXVA
@@ -58,7 +77,9 @@ int decode_slice_header_noexecute (H264Context *h){
         s->me.qpel_avg= s->dsp.avg_h264_qpel_pixels_tab;
     }
 
+	// ==> Start patch MPC DXVA
     h->first_mb_in_slice= get_ue_golomb(&s->gb);
+	// <== End patch MPC DXVA
 
     if((s->flags2 & CODEC_FLAG2_CHUNKS) && h->first_mb_in_slice == 0){
         h0->current_slice = 0;
@@ -95,28 +116,19 @@ int decode_slice_header_noexecute (H264Context *h){
         return -1;
     }
 
-    // ffdshow custom code
-    if (s->pict_type == FF_I_TYPE){
-        h->first_I_slice_detected = 1;
-    } else if (s->pict_type == FF_P_TYPE && !h->first_I_slice_detected) {
-        av_log(h->s.avctx, AV_LOG_ERROR,
-               "P picture before first I picture, skipping\n");
-        return -1;
-    }
-
     pps_id= get_ue_golomb(&s->gb);
     if(pps_id>=MAX_PPS_COUNT){
         av_log(h->s.avctx, AV_LOG_ERROR, "pps_id out of range\n");
         return -1;
     }
     if(!h0->pps_buffers[pps_id]) {
-        av_log(h->s.avctx, AV_LOG_ERROR, "non-existing PPS referenced\n");
+        av_log(h->s.avctx, AV_LOG_ERROR, "non-existing PPS %u referenced\n", pps_id);
         return -1;
     }
     h->pps= *h0->pps_buffers[pps_id];
 
     if(!h0->sps_buffers[h->pps.sps_id]) {
-        av_log(h->s.avctx, AV_LOG_ERROR, "non-existing SPS referenced\n");
+        av_log(h->s.avctx, AV_LOG_ERROR, "non-existing SPS %u referenced\n", h->pps.sps_id);
         return -1;
     }
     h->sps = *h0->sps_buffers[h->pps.sps_id];
@@ -208,15 +220,36 @@ int decode_slice_header_noexecute (H264Context *h){
     }
     h->mb_field_decoding_flag= s->picture_structure != PICT_FRAME;
 
-	// ==> Start patch MPC DXVA
-	if (!s->current_picture_ptr)
-		MPV_frame_start(s, s->avctx);
-	// <== End patch MPC DXVA
+    /* ffdshow custom code begin */
+    //
+    // Workaround Haali's media splitter (http://forum.doom9.org/showthread.php?p=1226434#post1226434)
+    //
+    // Disallow unpaired field referencing just after seeking.
+    // This rule is applied only if h->has_to_drop_first_non_ref == 3.
+    // This is wrong because an unpaired field is allowed to be a reference field.
+    // And that's why this is optional and tried to be minimized.
+    if (h->has_to_drop_first_non_ref == 1 && s->dropable){
+        if (FIELD_PICTURE){
+            h->has_to_drop_first_non_ref = 2;
+        }else{
+            h->has_to_drop_first_non_ref = 0;
+        }
+    } else if (h->has_to_drop_first_non_ref == 2){
+        if (FIELD_PICTURE && !s->dropable)
+            h->has_to_drop_first_non_ref = 3;
+        else if (!FIELD_PICTURE)
+            h->has_to_drop_first_non_ref = 0;
+    } else if (h->has_to_drop_first_non_ref == 3){
+        h->has_to_drop_first_non_ref = 0;
+    }
+    /* ffdshow custom code end */
+
     if(h0->current_slice == 0){
         while(h->frame_num !=  h->prev_frame_num &&
               h->frame_num != (h->prev_frame_num+1)%(1<<h->sps.log2_max_frame_num)){
             av_log(NULL, AV_LOG_DEBUG, "Frame num gap %d %d\n", h->frame_num, h->prev_frame_num);
-            frame_start(h);
+            if (frame_start(h) < 0)
+                return -1;
             h->prev_frame_num++;
             h->prev_frame_num %= 1<<h->sps.log2_max_frame_num;
             s->current_picture_ptr->frame_num= h->prev_frame_num;
@@ -239,9 +272,10 @@ int decode_slice_header_noexecute (H264Context *h){
                 s0->first_field = FIELD_PICTURE;
 
             } else {
-                if (h->nal_ref_idc &&
+                if ((h->nal_ref_idc &&
                         s0->current_picture_ptr->reference &&
-                        s0->current_picture_ptr->frame_num != h->frame_num) {
+                        s0->current_picture_ptr->frame_num != h->frame_num) ||
+                        h->has_to_drop_first_non_ref == 3) { /* ffdshow custom code */
                     /*
                      * This and previous field were reference, but had
                      * different frame_nums. Consider this field first in
@@ -367,8 +401,13 @@ int decode_slice_header_noexecute (H264Context *h){
         pred_weight_table(h);
     else if(h->pps.weighted_bipred_idc==2 && h->slice_type_nos== FF_B_TYPE)
         implicit_weight_table(h);
-    else
+    else {
         h->use_weight = 0;
+        for (i = 0; i < 2; i++) {
+            h->luma_weight_flag[i]   = 0;
+            h->chroma_weight_flag[i] = 0;
+        }
+    }
 
     if(h->nal_ref_idc)
         decode_ref_pic_marking(h0, &s->gb);
@@ -515,6 +554,7 @@ static int decode_nal_units_noexecute(H264Context *h, uint8_t *buf, int buf_size
     int buf_index=0;
     H264Context *hx; ///< thread context
     int context_count = 0;
+	int next_avc= h->is_avc ? 0 : buf_size;
 
     h->max_contexts = avctx->thread_count;
 #if 0
@@ -525,10 +565,9 @@ static int decode_nal_units_noexecute(H264Context *h, uint8_t *buf, int buf_size
 #endif
     if(!(s->flags2 & CODEC_FLAG2_CHUNKS)){
         h->current_slice = 0;
-		// ==> Start patch MPC DXVA
-        //if (!s->first_field)
-        //    s->current_picture_ptr= NULL;
-		// <== End patch MPC DXVA
+        if (!s->first_field)
+            s->current_picture_ptr= NULL;
+        reset_sei(h);
     }
 
     for(;;){
@@ -539,7 +578,7 @@ static int decode_nal_units_noexecute(H264Context *h, uint8_t *buf, int buf_size
         int i, nalsize = 0;
         int err;
 
-        if(h->is_avc) {
+        if(buf_index >= next_avc) {
             if(buf_index >= buf_size) break;
             nalsize = 0;
             for(i = 0; i < h->nal_length_size; i++)
@@ -553,6 +592,7 @@ static int decode_nal_units_noexecute(H264Context *h, uint8_t *buf, int buf_size
                     break;
                 }
             }
+            next_avc= buf_index + nalsize;
         } else {
             // start code prefix search
             for(; buf_index + 3 < buf_size; buf_index++){
@@ -568,27 +608,31 @@ static int decode_nal_units_noexecute(H264Context *h, uint8_t *buf, int buf_size
 
         hx = h->thread_context[context_count];
 
-        ptr= decode_nal(hx, buf + buf_index, &dst_length, &consumed, h->is_avc ? nalsize : buf_size - buf_index);
+        ptr= ff_h264_decode_nal(hx, buf + buf_index, &dst_length, &consumed, next_avc - buf_index);
         if (ptr==NULL || dst_length < 0){
             return -1;
         }
         while(ptr[dst_length - 1] == 0 && dst_length > 0)
             dst_length--;
-        bit_length= !dst_length ? 0 : (8*dst_length - decode_rbsp_trailing(h, ptr + dst_length - 1));
+        bit_length= !dst_length ? 0 : (8*dst_length - ff_h264_decode_rbsp_trailing(h, ptr + dst_length - 1));
 
         if(s->avctx->debug&FF_DEBUG_STARTCODE){
             av_log(h->s.avctx, AV_LOG_DEBUG, "NAL %d at %d/%d length %d\n", hx->nal_unit_type, buf_index, buf_size, dst_length);
         }
 
-        if (h->is_avc && (nalsize != consumed)){
-            av_log(h->s.avctx, AV_LOG_ERROR, "AVC: Consumed only %d bytes instead of %d\n", consumed, nalsize);
-            consumed= nalsize;
+        if (h->is_avc && (nalsize != consumed) && nalsize){
+            int i, debug_level = AV_LOG_DEBUG;
+            for (i = consumed; i < nalsize; i++)
+                if (buf[buf_index+i])
+                    debug_level = AV_LOG_ERROR;
+            av_log(h->s.avctx, debug_level, "AVC: Consumed only %d bytes instead of %d\n", consumed, nalsize);
         }
 
         buf_index += consumed;
 
-        if(  (s->hurry_up == 1 && h->nal_ref_idc  == 0) //FIXME do not discard SEI id
-           ||(avctx->skip_frame >= AVDISCARD_NONREF && h->nal_ref_idc  == 0))
+        /* ffdshow custom code */
+        if(  (s->hurry_up == 1 && hx->nal_ref_idc  == 0) //FIXME do not discard SEI id
+           ||(avctx->skip_frame >= AVDISCARD_NONREF && hx->nal_ref_idc  == 0))
             continue;
 
       again:
@@ -609,15 +653,18 @@ static int decode_nal_units_noexecute(H264Context *h, uint8_t *buf, int buf_size
 			// ==> Start patch MPC DXVA
             if((err = decode_slice_header_noexecute(hx)))
                break;
-
-            //s->current_picture_ptr->key_frame|= (hx->nal_unit_type == NAL_IDR_SLICE);
-            //if(hx->redundant_pic_count==0 && hx->s.hurry_up < 5
-            //   && (avctx->skip_frame < AVDISCARD_NONREF || hx->nal_ref_idc)
-            //   && (avctx->skip_frame < AVDISCARD_BIDIR  || hx->slice_type!=FF_B_TYPE)
-            //   && (avctx->skip_frame < AVDISCARD_NONKEY || hx->slice_type==FF_I_TYPE)
-            //   && avctx->skip_frame < AVDISCARD_ALL)
-            //    context_count++;
 			// <== End patch MPC DXVA
+
+            s->current_picture_ptr->key_frame |=
+                    (hx->nal_unit_type == NAL_IDR_SLICE) ||
+                    (h->sei_recovery_frame_cnt >= 0);
+            if(hx->redundant_pic_count==0 && hx->s.hurry_up < 5
+               && (avctx->skip_frame < AVDISCARD_NONREF || hx->nal_ref_idc)
+               && (avctx->skip_frame < AVDISCARD_BIDIR  || hx->slice_type_nos!=FF_B_TYPE)
+               && (avctx->skip_frame < AVDISCARD_NONKEY || hx->slice_type_nos==FF_I_TYPE)
+               && avctx->skip_frame < AVDISCARD_ALL){
+                    context_count++;
+            }
             break;
         case NAL_DPA:
             init_get_bits(&hx->s.gb, ptr, bit_length);
@@ -630,33 +677,29 @@ static int decode_nal_units_noexecute(H264Context *h, uint8_t *buf, int buf_size
 			// <== End patch MPC DXVA
             break;
         case NAL_DPB:
-			// ==> Start patch MPC DXVA
-            //init_get_bits(&hx->intra_gb, ptr, bit_length);
-            //hx->intra_gb_ptr= &hx->intra_gb;
-            //break;
-			// <== End patch MPC DXVA
+            init_get_bits(&hx->intra_gb, ptr, bit_length);
+            hx->intra_gb_ptr= &hx->intra_gb;
+            break;
         case NAL_DPC:
-			// ==> Start patch MPC DXVA
-            //init_get_bits(&hx->inter_gb, ptr, bit_length);
-            //hx->inter_gb_ptr= &hx->inter_gb;
+            init_get_bits(&hx->inter_gb, ptr, bit_length);
+            hx->inter_gb_ptr= &hx->inter_gb;
 
-            //if(hx->redundant_pic_count==0 && hx->intra_gb_ptr && hx->s.data_partitioning
-            //   && s->context_initialized
-            //   && s->hurry_up < 5
-            //   && (avctx->skip_frame < AVDISCARD_NONREF || hx->nal_ref_idc)
-            //   && (avctx->skip_frame < AVDISCARD_BIDIR  || hx->slice_type!=FF_B_TYPE)
-            //   && (avctx->skip_frame < AVDISCARD_NONKEY || hx->slice_type==FF_I_TYPE)
-            //   && avctx->skip_frame < AVDISCARD_ALL)
-            //    context_count++;
-			// <== Start patch MPC DXVA
+            if(hx->redundant_pic_count==0 && hx->intra_gb_ptr && hx->s.data_partitioning
+               && s->context_initialized
+               && s->hurry_up < 5
+               && (avctx->skip_frame < AVDISCARD_NONREF || hx->nal_ref_idc)
+               && (avctx->skip_frame < AVDISCARD_BIDIR  || hx->slice_type_nos!=FF_B_TYPE)
+               && (avctx->skip_frame < AVDISCARD_NONKEY || hx->slice_type_nos==FF_I_TYPE)
+               && avctx->skip_frame < AVDISCARD_ALL)
+                context_count++;
             break;
         case NAL_SEI:
             init_get_bits(&s->gb, ptr, bit_length);
-            decode_sei(h);
+            ff_h264_decode_sei(h);
             break;
         case NAL_SPS:
             init_get_bits(&s->gb, ptr, bit_length);
-            decode_seq_parameter_set(h);
+            ff_h264_decode_seq_parameter_set(h);
 
             if(s->flags& CODEC_FLAG_LOW_DELAY)
                 s->low_delay=1;
@@ -667,7 +710,7 @@ static int decode_nal_units_noexecute(H264Context *h, uint8_t *buf, int buf_size
         case NAL_PPS:
             init_get_bits(&s->gb, ptr, bit_length);
 
-            decode_picture_parameter_set(h, bit_length);
+            ff_h264_decode_picture_parameter_set(h, bit_length);
 
             break;
         case NAL_AUD:
@@ -689,11 +732,11 @@ static int decode_nal_units_noexecute(H264Context *h, uint8_t *buf, int buf_size
         }
 
         if (err < 0)
-            av_log(h->s.avctx, AV_LOG_ERROR, "decode_slice_header_noexecute error\n");
+            av_log(h->s.avctx, AV_LOG_ERROR, "decode_slice_header error\n");
         else if(err == 1) {
             /* Slice could not be decoded in parallel mode, copy down
              * NAL unit stuff to context 0 and restart. Note that
-             * rbsp_buffer is not transfered, but since we no longer
+             * rbsp_buffer is not transferred, but since we no longer
              * run in parallel mode this should not be an issue. */
             h->nal_unit_type = hx->nal_unit_type;
             h->nal_ref_idc   = hx->nal_ref_idc;
@@ -709,7 +752,7 @@ static int decode_nal_units_noexecute(H264Context *h, uint8_t *buf, int buf_size
 }
 
 
-int av_h264_decode_frame(struct AVCodecContext* avctx, uint8_t *buf, int buf_size){
+int av_h264_decode_frame(struct AVCodecContext* avctx, uint8_t *buf, int buf_size, int end_frame){
     H264Context *h = avctx->priv_data;
     MpegEncContext *s = &h->s;
 //    AVFrame *pict = data;
@@ -786,6 +829,8 @@ int av_h264_decode_frame(struct AVCodecContext* avctx, uint8_t *buf, int buf_siz
 
 	// ==> Start patch MPC DXVA
 	buf_index=decode_nal_units_noexecute(h, buf, buf_size);
+	if(end_frame == 0)
+		return -1;
 	// <== End patch MPC DXVA
     if(buf_index < 0)
         return -1;
@@ -801,41 +846,12 @@ int av_h264_decode_frame(struct AVCodecContext* avctx, uint8_t *buf, int buf_siz
         Picture *cur = s->current_picture_ptr;
         int i, pics, cross_idr, out_of_order, out_idx;
 
-        s->mb_y= 0;
-
-        s->current_picture_ptr->qscale_type= FF_QSCALE_TYPE_H264;
-        s->current_picture_ptr->pict_type= s->pict_type;
-
-        if(!s->dropable) {
-            execute_ref_pic_marking(h, h->mmco, h->mmco_index);
-            h->prev_poc_msb= h->poc_msb;
-            h->prev_poc_lsb= h->poc_lsb;
-        }
-        h->prev_frame_num_offset= h->frame_num_offset;
-        h->prev_frame_num= h->frame_num;
-
-        /*
-         * FIXME: Error handling code does not seem to support interlaced
-         * when slices span multiple rows
-         * The ff_er_add_slice calls don't work right for bottom
-         * fields; they cause massive erroneous error concealing
-         * Error marking covers both fields (top and bottom).
-         * This causes a mismatched s->error_count
-         * and a bad error table. Further, the error count goes to
-         * INT_MAX when called for bottom field, because mb_y is
-         * past end by one (callers fault) and resync_mb_y != 0
-         * causes problems for the first MB line, too.
-         */
-		// ==> Start patch MPC DXVA
-        //if (!FIELD_PICTURE)
-        //    ff_er_frame_end(s);
-		//
-        //MPV_frame_end(s);
-		// <== End patch MPC DXVA
+		field_end_noexecute(h);
 
         if (cur->field_poc[0]==INT_MAX || cur->field_poc[1]==INT_MAX) {
             /* Wait for second field. */
 			// ==> Start patch MPC DXVA
+			h->outputed_poc = -1;
             //*data_size = 0;
 			// <== End patch MPC DXVA
 
@@ -844,24 +860,19 @@ int av_h264_decode_frame(struct AVCodecContext* avctx, uint8_t *buf, int buf_siz
 
             /* Signal interlacing information externally. */
             /* Prioritize picture timing SEI information over used decoding process if it exists. */
+            if (h->sei_ct_type)
+                cur->interlaced_frame = (h->sei_ct_type & (1<<1)) != 0;
+            else
+                cur->interlaced_frame = FIELD_OR_MBAFF_PICTURE;
+
             if(h->sps.pic_struct_present_flag){
                 switch (h->sei_pic_struct)
                 {
-                case SEI_PIC_STRUCT_FRAME:
-                    cur->interlaced_frame = 0;
-                    break;
-                case SEI_PIC_STRUCT_TOP_FIELD:
-                case SEI_PIC_STRUCT_BOTTOM_FIELD:
-                case SEI_PIC_STRUCT_TOP_BOTTOM:
-                case SEI_PIC_STRUCT_BOTTOM_TOP:
-                    cur->interlaced_frame = 1;
-                    break;
                 case SEI_PIC_STRUCT_TOP_BOTTOM_TOP:
                 case SEI_PIC_STRUCT_BOTTOM_TOP_BOTTOM:
                     // Signal the possibility of telecined film externally (pic_struct 5,6)
                     // From these hints, let the applications decide if they apply deinterlacing.
                     cur->repeat_pict = 1;
-                    cur->interlaced_frame = FIELD_OR_MBAFF_PICTURE;
                     break;
                 case SEI_PIC_STRUCT_FRAME_DOUBLING:
                     // Force progressive here, as doubling interlaced frame is a bad idea.
@@ -947,16 +958,18 @@ int av_h264_decode_frame(struct AVCodecContext* avctx, uint8_t *buf, int buf_siz
                 for(i=out_idx; h->delayed_pic[i]; i++)
                     h->delayed_pic[i] = h->delayed_pic[i+1];
             }
+			// ==> Start patch MPC DXVA
             if(!out_of_order && pics > s->avctx->has_b_frames){
-				// ==> Start patch MPC DXVA
                 //*data_size = sizeof(AVFrame);
 
                 h->outputed_poc = out->poc;
+				h->outputed_rtstart = out->reordered_opaque;
                 //*pict= *(AVFrame*)out;
-				// <== End patch MPC DXVA
             }else{
+				h->outputed_poc = -1;
                 av_log(avctx, AV_LOG_DEBUG, "no picture\n");
             }
+			// <== End patch MPC DXVA
         }
     }
 

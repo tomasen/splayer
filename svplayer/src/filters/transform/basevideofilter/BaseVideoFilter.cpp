@@ -31,6 +31,7 @@
 //
 // CBaseVideoFilter
 //
+bool f_need_set_aspect;
 
 CBaseVideoFilter::CBaseVideoFilter(TCHAR* pName, LPUNKNOWN lpunk, HRESULT* phr, REFCLSID clsid, long cBuffers) 
 	: CTransformFilter(pName, lpunk, clsid)
@@ -48,6 +49,8 @@ CBaseVideoFilter::CBaseVideoFilter(TCHAR* pName, LPUNKNOWN lpunk, HRESULT* phr, 
 	m_hout = m_hin = m_h = 0;
 	m_arxout = m_arxin = m_arx = 0;
 	m_aryout = m_aryin = m_ary = 0;
+
+	f_need_set_aspect = false;
 }
 
 CBaseVideoFilter::~CBaseVideoFilter()
@@ -56,6 +59,7 @@ CBaseVideoFilter::~CBaseVideoFilter()
 
 void CBaseVideoFilter::SetAspect(CSize aspect)
 {
+	f_need_set_aspect = true;
 	m_arx = aspect.cx;
 	m_ary = aspect.cy;
 }
@@ -135,10 +139,23 @@ HRESULT CBaseVideoFilter::GetDeliveryBuffer(int w, int h, IMediaSample** ppOut)
 	return S_OK;
 }
 
-HRESULT CBaseVideoFilter::ReconnectOutput(int w, int h, bool bSendSample)
+HRESULT CBaseVideoFilter::ReconnectOutput(int w, int h, bool bSendSample, int realWidth, int realHeight)
 {
 	CMediaType& mt = m_pOutput->CurrentMediaType();
 
+  bool m_update_aspect = false;
+	if(f_need_set_aspect)
+	{
+		int wout = 0, hout = 0, arxout = 0, aryout = 0;
+		ExtractDim(&mt, wout, hout, arxout, aryout);
+		if(arxout != m_arx || aryout != m_ary)
+		{
+			CString debug_s;
+			debug_s.Format(_T("\nCBaseVideoFilter::ReconnectOutput; wout = %d, hout = %d, current = %dx%d, set = %dx%d\n"), wout, hout, arxout, aryout, m_arx, m_ary);
+			TRACE(debug_s);
+			m_update_aspect = true;
+		}
+	}
 	int w_org = m_w;
 	int h_org = m_h;
 
@@ -152,7 +169,7 @@ HRESULT CBaseVideoFilter::ReconnectOutput(int w, int h, bool bSendSample)
 
 	HRESULT hr = S_OK;
 
-	if(fForceReconnection || m_w != m_wout || m_h != m_hout || m_arx != m_arxout || m_ary != m_aryout)
+	if(m_update_aspect || fForceReconnection || m_w != m_wout || m_h != m_hout || m_arx != m_arxout || m_ary != m_aryout)
 	{
 		if(GetCLSID(m_pOutput->GetConnected()) == CLSID_VideoRenderer)
 		{
@@ -165,8 +182,16 @@ HRESULT CBaseVideoFilter::ReconnectOutput(int w, int h, bool bSendSample)
 		if(mt.formattype == FORMAT_VideoInfo)
 		{
 			VIDEOINFOHEADER* vih = (VIDEOINFOHEADER*)mt.Format();
-			SetRect(&vih->rcSource, 0, 0, m_w, m_h);
-			SetRect(&vih->rcTarget, 0, 0, m_w, m_h);
+			if (realWidth != -1 && realHeight != -1)
+			{
+				SetRect(&vih->rcSource, 0, 0, realWidth, realHeight);
+				SetRect(&vih->rcTarget, 0, 0, realWidth, realHeight);
+			}
+			else
+			{
+				SetRect(&vih->rcSource, 0, 0, m_w, m_h);
+				SetRect(&vih->rcTarget, 0, 0, m_w, m_h);
+			}
 			bmi = &vih->bmiHeader;
 			bmi->biXPelsPerMeter = m_w * m_ary;
 			bmi->biYPelsPerMeter = m_h * m_arx;
@@ -174,8 +199,16 @@ HRESULT CBaseVideoFilter::ReconnectOutput(int w, int h, bool bSendSample)
 		else if(mt.formattype == FORMAT_VideoInfo2)
 		{
 			VIDEOINFOHEADER2* vih = (VIDEOINFOHEADER2*)mt.Format();
-			SetRect(&vih->rcSource, 0, 0, m_w, m_h);
-			SetRect(&vih->rcTarget, 0, 0, m_w, m_h);
+			if (realWidth != -1 && realHeight != -1)
+			{
+				SetRect(&vih->rcSource, 0, 0, realWidth, realHeight);
+				SetRect(&vih->rcTarget, 0, 0, realWidth, realHeight);
+			}
+			else
+			{
+				SetRect(&vih->rcSource, 0, 0, m_w, m_h);
+				SetRect(&vih->rcTarget, 0, 0, m_w, m_h);
+			}
 			bmi = &vih->bmiHeader;
 			vih->dwPictAspectRatioX = m_arx;
 			vih->dwPictAspectRatioY = m_ary;
@@ -498,7 +531,9 @@ HRESULT CBaseVideoFilter::GetMediaType(int iPosition, CMediaType* pmt)
 	pmt->subtype = *fmts[iPosition/2].subtype;
 
 	int w = m_win, h = m_hin, arx = m_arxin, ary = m_aryin;
-	GetOutputSize(w, h, arx, ary);
+	int RealWidth = -1;
+	int RealHeight = -1;
+	GetOutputSize(w, h, arx, ary, RealWidth, RealHeight);
 
 	BITMAPINFOHEADER bihOut;
 	memset(&bihOut, 0, sizeof(bihOut));
@@ -546,15 +581,18 @@ HRESULT CBaseVideoFilter::GetMediaType(int iPosition, CMediaType* pmt)
 
 	if (vih && vihInput && (vihInput->rcSource.right != 0) && (vihInput->rcSource.bottom != 0))
 	{
-		memcpy (&vih->rcSource, &vihInput->rcSource, sizeof(RECT));
-		memcpy (&vih->rcTarget, &vihInput->rcTarget, sizeof(RECT));
+		vih->rcSource = vihInput->rcSource;
+		vih->rcTarget = vihInput->rcTarget;
 	}
 	else
 	{
 		vih->rcSource.right  = vih->rcTarget.right  = m_win;
 		vih->rcSource.bottom = vih->rcTarget.bottom = m_hin;
 	}
-
+  if (RealWidth != -1 && vih->rcSource.right > RealWidth)
+		vih->rcSource.right = RealWidth;
+	if (RealHeight != -1 && vih->rcSource.bottom > RealHeight)
+		vih->rcSource.bottom = RealHeight;
 	return S_OK;
 }
 
@@ -568,7 +606,9 @@ HRESULT CBaseVideoFilter::SetMediaType(PIN_DIRECTION dir, const CMediaType* pmt)
 		m_hin = m_h;
 		m_arxin = m_arx;
 		m_aryin = m_ary;
-		GetOutputSize(m_w, m_h, m_arx, m_ary);
+		int RealWidth;
+		int RealHeight;
+		GetOutputSize(m_w, m_h, m_arx, m_ary, RealWidth, RealHeight);
 
 		DWORD a = m_arx, b = m_ary;
 		while(a) {int tmp = a; a = b % tmp; b = tmp;}

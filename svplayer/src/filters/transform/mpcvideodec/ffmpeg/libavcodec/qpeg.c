@@ -20,7 +20,7 @@
  */
 
 /**
- * @file qpeg.c
+ * @file libavcodec/qpeg.c
  * QPEG codec.
  */
 
@@ -108,9 +108,9 @@ static void qpeg_decode_intra(const uint8_t *src, uint8_t *dst, int size,
     }
 }
 
-static int qpeg_table_h[16] =
+static const int qpeg_table_h[16] =
  { 0x00, 0x20, 0x20, 0x20, 0x18, 0x10, 0x10, 0x20, 0x10, 0x08, 0x18, 0x08, 0x08, 0x18, 0x10, 0x04};
-static int qpeg_table_w[16] =
+static const int qpeg_table_w[16] =
  { 0x00, 0x20, 0x18, 0x08, 0x18, 0x10, 0x20, 0x10, 0x08, 0x10, 0x20, 0x20, 0x08, 0x10, 0x18, 0x04};
 
 /* Decodes delta frames */
@@ -289,7 +289,6 @@ static av_cold int decode_init(AVCodecContext *avctx){
 
     a->avctx = avctx;
     avctx->pix_fmt= PIX_FMT_PAL8;
-    a->pic.data[0] = NULL;
     a->refdata = av_malloc(avctx->width * avctx->height);
 
     return 0;
@@ -320,5 +319,5 @@ AVCodec qpeg_decoder = {
     /*.flush = */NULL,
     /*.supported_framerates = */NULL,
     /*.pix_fmts = */NULL,
-    /*.long_name = */"Q-team QPEG",
+    /*.long_name = */NULL_IF_CONFIG_SMALL("Q-team QPEG"),
 };

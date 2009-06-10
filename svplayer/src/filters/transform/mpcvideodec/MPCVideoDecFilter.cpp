@@ -1,5 +1,5 @@
 /* 
- * $Id: MPCVideoDecFilter.cpp 995 2009-02-15 15:57:23Z casimir666 $
+ * $Id: MPCVideoDecFilter.cpp 1147 2009-02-15 15:57:23Z casimir666 $
  *
  * (C) 2006-2007 see AUTHORS
  *
@@ -454,9 +454,25 @@ const AMOVIESETUP_MEDIATYPE CMPCVideoDecFilter::sudPinTypesOut[] =
 };
 const int CMPCVideoDecFilter::sudPinTypesOutCount = countof(CMPCVideoDecFilter::sudPinTypesOut);
 
+BOOL CALLBACK EnumFindProcessWnd (HWND hwnd, LPARAM lParam)
+{
+	DWORD	procid = 0;
+	TCHAR	WindowClass [40];
+	GetWindowThreadProcessId (hwnd, &procid);
+	GetClassName (hwnd, WindowClass, countof(WindowClass));
+	
+	if (procid == GetCurrentProcessId() && _tcscmp (WindowClass, _T("MediaPlayerClassicW")) == 0)
+	{
+		HWND*		pWnd = (HWND*) lParam;
+		*pWnd = hwnd;
+		return FALSE;
+	}
+	return TRUE;
+}
 CMPCVideoDecFilter::CMPCVideoDecFilter(LPUNKNOWN lpunk, HRESULT* phr) 
 	: CBaseVideoFilter(NAME("MPC - Video decoder"), lpunk, phr, __uuidof(this))
 {
+	HWND		hWnd = NULL;
 	for (int i=0; i<countof(ffCodecs); i++)
 	{
 		if(ffCodecs[i].nFFCodec == CODEC_ID_H264)
@@ -530,9 +546,10 @@ CMPCVideoDecFilter::CMPCVideoDecFilter(LPUNKNOWN lpunk, HRESULT* phr)
 
 	avcodec_init();
 	avcodec_register_all();
-	av_log_set_callback(LogLibAVCodec);
+	//av_log_set_callback(LogLibAVCodec);
 
-	DetectVideoCard();
+	EnumWindows(EnumFindProcessWnd, (LPARAM)&hWnd);
+	DetectVideoCard(hWnd);
 
 #ifdef _DEBUG
 	// Check codec definition table
@@ -545,7 +562,25 @@ CMPCVideoDecFilter::CMPCVideoDecFilter(LPUNKNOWN lpunk, HRESULT* phr)
 }
 
 
-void CMPCVideoDecFilter::DetectVideoCard()
+
+UINT CMPCVideoDecFilter::GetAdapter(IDirect3D9* pD3D, HWND hWnd)
+{
+	if(hWnd == NULL || pD3D == NULL)
+		return D3DADAPTER_DEFAULT;
+
+	HMONITOR hMonitor = MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST);
+	if(hMonitor == NULL) return D3DADAPTER_DEFAULT;
+
+	for(UINT adp = 0, num_adp = pD3D->GetAdapterCount(); adp < num_adp; ++adp)
+	{
+		HMONITOR hAdpMon = pD3D->GetAdapterMonitor(adp);
+		if(hAdpMon == hMonitor) return adp;
+	}
+
+	return D3DADAPTER_DEFAULT;
+}
+
+void CMPCVideoDecFilter::DetectVideoCard(HWND hWnd)
 {
 	IDirect3D9* pD3D9;
 	m_nPCIVendor = 0;
@@ -556,7 +591,7 @@ void CMPCVideoDecFilter::DetectVideoCard()
 	if (pD3D9 = Direct3DCreate9(D3D_SDK_VERSION)) 
 	{
 		D3DADAPTER_IDENTIFIER9 adapterIdentifier;
-		if (pD3D9->GetAdapterIdentifier(0, 0, &adapterIdentifier) == S_OK) 
+		if (pD3D9->GetAdapterIdentifier(GetAdapter(pD3D9, hWnd), 0, &adapterIdentifier) == S_OK)
 		{
 			m_nPCIVendor = adapterIdentifier.VendorId;
 			m_nPCIDevice = adapterIdentifier.DeviceId;
@@ -596,10 +631,26 @@ bool CMPCVideoDecFilter::IsVideoInterlaced()
 };
 
 
-void CMPCVideoDecFilter::GetOutputSize(int& w, int& h, int& arx, int& ary)
+void CMPCVideoDecFilter::GetOutputSize(int& w, int& h, int& arx, int& ary, int &RealWidth, int &RealHeight)
 {
+#if 1
+	RealWidth = m_nWidth;
+	RealHeight = m_nHeight;
 	w = PictWidthRounded();
 	h = PictHeightRounded();
+#else
+	if (m_nDXVAMode == MODE_SOFTWARE)
+	{
+		w = m_nWidth;
+		h = m_nHeight;
+	}
+	else
+	{
+		// DXVA surface are multiple of 16 pixels!
+		w = PictWidthRounded();
+		h = PictHeightRounded();
+	}
+#endif
 }
 
 int CMPCVideoDecFilter::PictWidth()
@@ -809,7 +860,7 @@ void CMPCVideoDecFilter::LogLibAVCodec(void* par,int level,const char *fmt,va_li
 void CMPCVideoDecFilter::OnGetBuffer(AVFrame *pic)
 {
 	// Callback from FFMpeg to store Ref Time in frame (needed to have correct rtStart after avcodec_decode_video calls)
-	pic->rtStart	= m_rtStart;
+//	pic->rtStart	= m_rtStart;
 }
 
 STDMETHODIMP CMPCVideoDecFilter::NonDelegatingQueryInterface(REFIID riid, void** ppv)
@@ -993,10 +1044,10 @@ VIDEO_OUTPUT_FORMATS DXVAFormats[] =
 
 VIDEO_OUTPUT_FORMATS SoftwareFormats[] =
 {
- 	{&MEDIASUBTYPE_YUY2, 1, 16, '2YUY'},	// Software
  	{&MEDIASUBTYPE_YV12, 3, 12, '21VY'},
- 	{&MEDIASUBTYPE_I420, 3, 12, '024I'},
- 	{&MEDIASUBTYPE_IYUV, 3, 12, 'VUYI'},
+	{&MEDIASUBTYPE_YUY2, 1, 16, '2YUY'},	// Software
+	{&MEDIASUBTYPE_I420, 3, 12, '024I'},
+	{&MEDIASUBTYPE_IYUV, 3, 12, 'VUYI'},
 	{&MEDIASUBTYPE_RGB24, 1, 24, 'BGRA'} ,
 	{&MEDIASUBTYPE_RGB32, 1, 32, 'BGRA'}
 };
@@ -1252,12 +1303,12 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 	int				got_picture;
 	int				used_bytes;
 
-	if (m_pAVCtx->has_b_frames)
+/*	if (m_pAVCtx->has_b_frames)
 	{
 		m_BFrames[m_nPosB].rtStart	= rtStart;
 		m_BFrames[m_nPosB].rtStop	= rtStop;
 		m_nPosB						= 1-m_nPosB;
-	}
+	} */
 
 	while (nSize > 0)
 	{
@@ -1276,7 +1327,7 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 		memset(m_pFFBuffer+nSize,0,FF_INPUT_BUFFER_PADDING_SIZE);
 
 		used_bytes = avcodec_decode_video (m_pAVCtx, m_pFrame, &got_picture, m_pFFBuffer, nSize);
-		if(used_bytes < 0 ) return S_OK;
+//		if(used_bytes < 0 ) return S_OK;
 		if (!got_picture || !m_pFrame->data[0]) return S_OK;
 		if(pIn->IsPreroll() == S_OK || rtStart < 0) return S_OK;
 
@@ -1287,15 +1338,9 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 		if(FAILED(hr = GetDeliveryBuffer(m_pAVCtx->width, m_pAVCtx->height, &pOut)) || FAILED(hr = pOut->GetPointer(&pDataOut)))
 			return hr;
 	
-		rtStart = m_pFrame->rtStart;
-		rtStop  = m_pFrame->rtStart + m_rtAvrTimePerFrame;
-
-		// Re-order B-frames if needed
-		if (m_pAVCtx->has_b_frames && m_bReorderBFrame)
-		{
-			rtStart	= m_BFrames [m_nPosB].rtStart;
-			rtStop	= m_BFrames [m_nPosB].rtStop;
-		}
+		rtStart = m_pFrame->reordered_opaque;
+		rtStop  = m_pFrame->reordered_opaque + m_rtAvrTimePerFrame;
+		ReorderBFrames(rtStart, rtStop);
 
 		pOut->SetTime(&rtStart, &rtStop);
 		pOut->SetMediaTime(NULL, NULL);
@@ -1314,7 +1359,7 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 
 		CopyBuffer(pDataOut, m_pFrame->data, m_pAVCtx->width, m_pAVCtx->height, m_pFrame->linesize[0], subtype,false);//MEDIASUBTYPE_YUY2 for TSCC
 
-#ifdef _DEBUG
+#ifdef _DEBUG && 0
 		static REFERENCE_TIME	rtLast = 0;
 		//TRACE ("Deliver : %10I64d - %10I64d   (%10I64d)  {%10I64d}\n", rtStart, rtStop, 
 		//			rtStop - rtStart, rtStart - rtLast);
@@ -1444,7 +1489,7 @@ HRESULT CMPCVideoDecFilter::Transform(IMediaSample* pIn)
 
 	nSize		= pIn->GetActualDataLength();
 	hr			= pIn->GetTime(&rtStart, &rtStop);
-
+/*
 	if (rtStart != _I64_MIN)
 	{
 		// Estimate rtStart/rtStop if not set by parser (EVO support)
@@ -1463,11 +1508,22 @@ HRESULT CMPCVideoDecFilter::Transform(IMediaSample* pIn)
 	{
 		m_nCountEstimated++;
 		rtStart = rtStop = m_rtLastStart + m_nCountEstimated*m_rtAvrTimePerFrame;
-	}
+	} */
 	if (rtStop <= rtStart)
 		rtStop = rtStart + m_rtAvrTimePerFrame;
-	m_rtStart	= rtStart;
+	m_pAVCtx->reordered_opaque  = rtStart;
+	m_pAVCtx->reordered_opaque2 = rtStop;
+
+	if (m_pAVCtx->has_b_frames)
+	{
+		m_BFrames[m_nPosB].rtStart	= rtStart;
+		m_BFrames[m_nPosB].rtStop	= rtStop;
+		m_nPosB						= 1-m_nPosB;
+	}
+
+	//m_rtStart	= rtStart;
 	
+
 //	DumpBuffer (pDataIn, nSize);
 //	TRACE ("Receive : %10I64d - %10I64d   (%10I64d)  Size=%d\n", rtStart, rtStop, rtStop - rtStart, nSize);
 
@@ -1485,6 +1541,14 @@ HRESULT CMPCVideoDecFilter::Transform(IMediaSample* pIn)
 	case MODE_DXVA1 :
 	case MODE_DXVA2 :
 		CheckPointer (m_pDXVADecoder, E_UNEXPECTED);
+		UpdateAspectRatio();
+
+		// Change aspect ratio for DXVA1
+		if ((m_nDXVAMode == MODE_DXVA1) &&
+			ReconnectOutput(PictWidthRounded(), PictHeightRounded(), true, PictWidth(), PictHeight()) == S_OK)
+		{
+			m_pDXVADecoder->ConfigureDXVA1();
+		}
 		hr = m_pDXVADecoder->DecodeFrame (pDataIn, nSize, rtStart, rtStop);
 		break;
 	default :
@@ -1512,7 +1576,15 @@ void CMPCVideoDecFilter::UpdateAspectRatio()
 	}
 }
 
-
+void CMPCVideoDecFilter::ReorderBFrames(REFERENCE_TIME& rtStart, REFERENCE_TIME& rtStop)
+{
+	// Re-order B-frames if needed
+	if (m_pAVCtx->has_b_frames && m_bReorderBFrame)
+	{
+		rtStart	= m_BFrames [m_nPosB].rtStart;
+		rtStop	= m_BFrames [m_nPosB].rtStop;
+	}
+}
 void CMPCVideoDecFilter::FillInVideoDescription(DXVA2_VideoDesc *pDesc)
 {
 	memset (pDesc, 0, sizeof(DXVA2_VideoDesc));
@@ -1724,6 +1796,7 @@ HRESULT CMPCVideoDecFilter::SetEVRForDXVA2(IPin *pPin)
 
     CComPtr<IMFGetService>						pGetService;
     CComPtr<IDirectXVideoMemoryConfiguration>	pVideoConfig;
+		CComPtr<IMFVideoDisplayControl>				pVdc;
 
     // Query the pin for IMFGetService.
     hr = pPin->QueryInterface(__uuidof(IMFGetService), (void**)&pGetService);
@@ -1735,6 +1808,14 @@ HRESULT CMPCVideoDecFilter::SetEVRForDXVA2(IPin *pPin)
             MR_VIDEO_ACCELERATION_SERVICE,
             __uuidof(IDirectXVideoMemoryConfiguration),
             (void**)&pVideoConfig);
+			if (SUCCEEDED (pGetService->GetService(MR_VIDEO_RENDER_SERVICE, __uuidof(IMFVideoDisplayControl), (void**)&pVdc)))
+			{
+				HWND	hWnd;
+				if (SUCCEEDED (pVdc->GetVideoWindow(&hWnd)))
+				{
+					DetectVideoCard(hWnd);
+				}
+			}
     }
 
     // Notify the EVR. 
@@ -1854,7 +1935,10 @@ WORD CMPCVideoDecFilter::GetDXVA1RestrictedMode()
 
 HRESULT CMPCVideoDecFilter::CreateDXVA1Decoder(IAMVideoAccelerator*  pAMVideoAccelerator, const GUID* pDecoderGuid, DWORD dwSurfaceCount)
 {
+	if (m_pDXVADecoder && m_DXVADecoderGUID	== *pDecoderGuid) 
+		return S_OK;
 	SAFE_DELETE (m_pDXVADecoder);
+
 
 	if (!m_bUseDXVA) return E_FAIL;
 

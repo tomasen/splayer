@@ -1,6 +1,6 @@
 /*
  * WMA compatible codec
- * Copyright (c) 2002-2007 The FFmpeg Project.
+ * Copyright (c) 2002-2007 The FFmpeg Project
  *
  * This file is part of FFmpeg.
  *
@@ -19,10 +19,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef FFMPEG_WMA_H
-#define FFMPEG_WMA_H
+#ifndef AVCODEC_WMA_H
+#define AVCODEC_WMA_H
 
-#include "bitstream.h"
+#include "get_bits.h"
+#include "put_bits.h"
 #include "dsputil.h"
 
 /* size of blocks */
@@ -146,4 +147,4 @@ int ff_wma_init(AVCodecContext * avctx, int flags2);
 int ff_wma_total_gain_to_bits(int total_gain);
 int ff_wma_end(AVCodecContext *avctx);
 
-#endif /* FFMPEG_WMA_H */
+#endif /* AVCODEC_WMA_H */

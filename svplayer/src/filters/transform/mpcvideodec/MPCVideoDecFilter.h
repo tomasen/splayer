@@ -1,5 +1,5 @@
 /* 
- * $Id: MPCVideoDecFilter.h 1009 2009-03-10 19:20:57Z casimir666 $
+ * $Id: MPCVideoDecFilter.h 1147 2009-03-10 19:20:57Z casimir666 $
  *
  * (C) 2006-2007 see AUTHORS
  *
@@ -92,7 +92,7 @@ protected:
 	int										m_nCodecNb;
 	int										m_nWorkaroundBug;
 	int										m_nErrorConcealment;
-	REFERENCE_TIME							m_rtStart;				// Ref. time for last decoded frame (use for Ffmpeg callback)
+	//REFERENCE_TIME							m_rtStart;				// Ref. time for last decoded frame (use for Ffmpeg callback)
 	REFERENCE_TIME							m_rtAvrTimePerFrame;
 	bool									m_bReorderBFrame;
 	B_FRAME									m_BFrames[2];
@@ -139,7 +139,8 @@ protected:
 	bool				IsMultiThreadSupported(int nCodec);
 	void				GetOutputFormats (int& nNumber, VIDEO_OUTPUT_FORMATS** ppFormats);
 	void				CalcAvgTimePerFrame();
-	void				DetectVideoCard();
+	void				DetectVideoCard(HWND hWnd);
+	UINT				GetAdapter(IDirect3D9* pD3D, HWND hWnd);
 
 	void				SetTypeSpecificFlags(IMediaSample* pMS);
 	HRESULT				SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int nSize, REFERENCE_TIME& rtStart, REFERENCE_TIME& rtStop);
@@ -166,7 +167,7 @@ public:
 	DECLARE_IUNKNOWN
     STDMETHODIMP			NonDelegatingQueryInterface(REFIID riid, void** ppv);
 	virtual bool			IsVideoInterlaced();
-	virtual void			GetOutputSize(int& w, int& h, int& arx, int& ary);
+virtual void			GetOutputSize(int& w, int& h, int& arx, int& ary, int &RealWidth, int &RealHeight);
 	CTransformOutputPin*	GetOutputPin() { return m_pOutput; }
 
 	// === Overriden DirectShow functions
@@ -213,13 +214,15 @@ public:
 	int				PictHeight();
 	int				PictWidthRounded();
 	int				PictHeightRounded();
-	bool			UseDXVA2()	{ return (m_nDXVAMode == MODE_DXVA2); };
+	inline bool			UseDXVA2()	{ return (m_nDXVAMode == MODE_DXVA2); };
 	void			FlushDXVADecoder()	 { if (m_pDXVADecoder) m_pDXVADecoder->Flush(); }
-	AVCodecContext*	GetAVCtx()		 { return m_pAVCtx; };
+	inline AVCodecContext*	GetAVCtx()		 { return m_pAVCtx; };
 	bool			IsDXVASupported();
-	bool			ReorderBFrame() { return m_bReorderBFrame; };
-	int				GetPCIVendor()  { return m_nPCIVendor; };
-	void			UpdateAspectRatio();
+	inline bool					IsReorderBFrame() { return m_bReorderBFrame; };
+	inline int					GetPCIVendor()  { return m_nPCIVendor; };
+	inline REFERENCE_TIME		GetAvrTimePerFrame() { return m_rtAvrTimePerFrame; };
+	void						UpdateAspectRatio();
+	void						ReorderBFrames(REFERENCE_TIME& rtStart, REFERENCE_TIME& rtStop);
 
 	// === DXVA1 functions
 	DDPIXELFORMAT*	GetPixelFormat() { return &m_PixelFormat; }

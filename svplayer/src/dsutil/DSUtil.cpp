@@ -354,6 +354,7 @@ CStringW GetPinName(IPin* pPin)
 	CPinInfo pi;
 	if(pPin && SUCCEEDED(pPin->QueryPinInfo(&pi))) 
 		name = pi.achName;
+  if(!name.Find(_T("Apple"))) name.Delete(0,1);
 	return(name);
 }
 
@@ -813,7 +814,7 @@ cdrom_t GetCDROMType(TCHAR drive, CAtlList<CString>& files)
 				{
 					for(int i = TOC.FirstTrack; i <= TOC.LastTrack; i++)
 					{
-						// MMC-3 Draft Revision 10g: Table 222 – Q Sub-channel control field
+						// MMC-3 Draft Revision 10g: Table 222 ?Q Sub-channel control field
 						TOC.TrackData[i-1].Control &= 5;
 						if(TOC.TrackData[i-1].Control == 0 || TOC.TrackData[i-1].Control == 1) 
 						{
@@ -2038,6 +2039,21 @@ CString ISO6392ToLanguage(LPCSTR code)
 	return _T("");
 }
 
+LCID ISO6391ToLcid(LPCSTR code)
+{
+	CHAR tmp[3+1];
+	strncpy_s(tmp, code, 3);
+	tmp[3] = 0;
+	_strlwr_s(tmp);
+	for(int i = 0, j = countof(s_isolangs); i < j; i++)
+	{
+		if(!strcmp(s_isolangs[i].iso6391, code))
+		{
+			return s_isolangs[i].lcid;
+		}
+	}
+	return 0;
+}
 LCID ISO6392ToLcid(LPCSTR code)
 {
 	CHAR tmp[3+1];
@@ -2359,6 +2375,21 @@ CString ReftimeToString(const REFERENCE_TIME& rtVal)
 }
 
 
+REFERENCE_TIME StringToReftime(LPCTSTR strVal)
+{
+	REFERENCE_TIME	rt			= 0;
+	int				lHour		= 0;
+	int				lMinute		= 0;
+	int				lSecond		= 0;
+	int				lMillisec	= 0;
+
+	if (_stscanf_s (strVal, _T("%02d:%02d:%02d,%03d"), &lHour, &lMinute, &lSecond, &lMillisec) == 4)
+	{
+		rt = ( (((lHour*24)+lMinute)*60 + lSecond) * MILLISECONDS + lMillisec ) * (UNITS/MILLISECONDS);
+	}
+
+	return rt;
+}
 const double Rec601_Kr = 0.299;
 const double Rec601_Kb = 0.114;
 const double Rec601_Kg = 0.587;
@@ -2374,7 +2405,15 @@ COLORREF YCrCbToRGB_Rec601(BYTE Y, BYTE Cr, BYTE Cb)
   return RGB (fabs(rp), fabs(gp), fabs(bp));
 }
 
+DWORD YCrCbToRGB_Rec601(BYTE A, BYTE Y, BYTE Cr, BYTE Cb)
+{
 
+  double rp = Y + 2*(Cr-128)*(1.0-Rec601_Kr);
+  double gp = Y - 2*(Cb-128)*(1.0-Rec601_Kb)*Rec601_Kb/Rec601_Kg - 2*(Cr-128)*(1.0-Rec601_Kr)*Rec601_Kr/Rec601_Kg;
+  double bp = Y + 2*(Cb-128)*(1.0-Rec601_Kb);
+
+  return D3DCOLOR_ARGB(A, (BYTE)fabs(rp), (BYTE)fabs(gp), (BYTE)fabs(bp));
+}
 const double Rec709_Kr = 0.2125;
 const double Rec709_Kb = 0.0721;
 const double Rec709_Kg = 0.7154;
@@ -2388,4 +2427,15 @@ COLORREF YCrCbToRGB_Rec709(BYTE Y, BYTE Cr, BYTE Cb)
 //  R = fabs(rp); G = fabs(gp); B = fabs(bp);
 
   return RGB (fabs(rp), fabs(gp), fabs(bp));
+}
+
+
+DWORD YCrCbToRGB_Rec709(BYTE A, BYTE Y, BYTE Cr, BYTE Cb)
+{
+
+  double rp = Y + 2*(Cr-128)*(1.0-Rec709_Kr);
+  double gp = Y - 2*(Cb-128)*(1.0-Rec709_Kb)*Rec709_Kb/Rec709_Kg - 2*(Cr-128)*(1.0-Rec709_Kr)*Rec709_Kr/Rec709_Kg;
+  double bp = Y + 2*(Cb-128)*(1.0-Rec709_Kb);
+
+  return D3DCOLOR_ARGB (A, (BYTE)fabs(rp), (BYTE)fabs(gp), (BYTE)fabs(bp));
 }

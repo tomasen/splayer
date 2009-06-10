@@ -1,6 +1,6 @@
 /*
  * MPEG-1/2 decoder
- * Copyright (c) 2000,2001 Fabrice Bellard.
+ * Copyright (c) 2000,2001 Fabrice Bellard
  * Copyright (c) 2002-2004 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -21,11 +21,12 @@
  */
 
 /**
- * @file mpeg12.c
+ * @file libavcodec/mpeg12.c
  * MPEG-1/2 decoder
  */
 
 //#define DEBUG
+#include "internal.h"
 #include "avcodec.h"
 #include "dsputil.h"
 #include "mpegvideo.h"
@@ -46,9 +47,6 @@
 #define MB_BTYPE_VLC_BITS 6
 
 static inline int mpeg1_decode_block_inter(MpegEncContext *s,
-                              DCTELEM *block,
-                              int n);
-static inline int mpeg1_decode_block_intra(MpegEncContext *s,
                               DCTELEM *block,
                               int n);
 static inline int mpeg1_fast_decode_block_inter(MpegEncContext *s, DCTELEM *block, int n);
@@ -297,17 +295,17 @@ static int mpeg_decode_mb(MpegEncContext *s,
         if (s->codec_id == CODEC_ID_MPEG2VIDEO) {
             if(s->flags2 & CODEC_FLAG2_FAST){
                 for(i=0;i<6;i++) {
-                    mpeg2_fast_decode_block_intra(s, s->pblocks[i], i);
+                    mpeg2_fast_decode_block_intra(s, *s->pblocks[i], i);
                 }
             }else{
                 for(i=0;i<mb_block_count;i++) {
-                    if (mpeg2_decode_block_intra(s, s->pblocks[i], i) < 0)
+                    if (mpeg2_decode_block_intra(s, *s->pblocks[i], i) < 0)
                         return -1;
                 }
             }
         } else {
             for(i=0;i<6;i++) {
-                if (mpeg1_decode_block_intra(s, s->pblocks[i], i) < 0)
+                if (ff_mpeg1_decode_block_intra(s, *s->pblocks[i], i) < 0)
                     return -1;
             }
         }
@@ -501,7 +499,7 @@ static int mpeg_decode_mb(MpegEncContext *s,
                 if(s->flags2 & CODEC_FLAG2_FAST){
                     for(i=0;i<6;i++) {
                         if(cbp & 32) {
-                            mpeg2_fast_decode_block_non_intra(s, s->pblocks[i], i);
+                            mpeg2_fast_decode_block_non_intra(s, *s->pblocks[i], i);
                         } else {
                             s->block_last_index[i] = -1;
                         }
@@ -512,7 +510,7 @@ static int mpeg_decode_mb(MpegEncContext *s,
 
                     for(i=0;i<mb_block_count;i++) {
                         if ( cbp & (1<<11) ) {
-                            if (mpeg2_decode_block_non_intra(s, s->pblocks[i], i) < 0)
+                            if (mpeg2_decode_block_non_intra(s, *s->pblocks[i], i) < 0)
                                 return -1;
                         } else {
                             s->block_last_index[i] = -1;
@@ -524,7 +522,7 @@ static int mpeg_decode_mb(MpegEncContext *s,
                 if(s->flags2 & CODEC_FLAG2_FAST){
                     for(i=0;i<6;i++) {
                         if (cbp & 32) {
-                            mpeg1_fast_decode_block_inter(s, s->pblocks[i], i);
+                            mpeg1_fast_decode_block_inter(s, *s->pblocks[i], i);
                         } else {
                             s->block_last_index[i] = -1;
                         }
@@ -533,7 +531,7 @@ static int mpeg_decode_mb(MpegEncContext *s,
                 }else{
                     for(i=0;i<6;i++) {
                         if (cbp & 32) {
-                            if (mpeg1_decode_block_inter(s, s->pblocks[i], i) < 0)
+                            if (mpeg1_decode_block_inter(s, *s->pblocks[i], i) < 0)
                                 return -1;
                         } else {
                             s->block_last_index[i] = -1;
@@ -584,7 +582,7 @@ static int mpeg_decode_motion(MpegEncContext *s, int fcode, int pred)
     return val;
 }
 
-static inline int mpeg1_decode_block_intra(MpegEncContext *s,
+inline int ff_mpeg1_decode_block_intra(MpegEncContext *s,
                                DCTELEM *block,
                                int n)
 {
@@ -603,7 +601,7 @@ static inline int mpeg1_decode_block_intra(MpegEncContext *s,
     dc = s->last_dc[component];
     dc += diff;
     s->last_dc[component] = dc;
-    block[0] = dc<<3;
+    block[0] = dc*quant_matrix[0];
     dprintf(s->avctx, "dc=%d diff=%d\n", dc, diff);
     i = 0;
     {
@@ -1109,7 +1107,7 @@ typedef struct Mpeg1Context {
     int slice_count;
     int swap_uv;//indicate VCR2
     int save_aspect_info;
-    int save_width, save_height;
+    int save_width, save_height, save_progressive_seq;
     AVRational frame_rate_ext;       ///< MPEG-2 specific framerate modificator
 
 } Mpeg1Context;
@@ -1137,6 +1135,11 @@ static av_cold int mpeg_decode_init(AVCodecContext *avctx)
     s->mpeg_enc_ctx.picture_number = 0;
     s->repeat_field = 0;
     s->mpeg_enc_ctx.codec_id= avctx->codec->id;
+    avctx->color_range= AVCOL_RANGE_MPEG;
+    if (avctx->codec->id == CODEC_ID_MPEG1VIDEO)
+        avctx->chroma_sample_location = AVCHROMA_LOC_CENTER;
+    else
+        avctx->chroma_sample_location = AVCHROMA_LOC_LEFT;
     return 0;
 }
 
@@ -1164,6 +1167,73 @@ static enum PixelFormat mpeg_get_pixelformat(AVCodecContext *avctx){
             return PIX_FMT_YUV444P;
 }
 
+/**
+ * ffdshow custom stuff
+ *
+ * retry aspect ratio calculation.
+ * Currently there are two ways of calculating aspect ratio of MPEG-2 video.
+ * ffdshow default is the one compliant to the spec, another is not.
+ * DVD must have either 4:3 or 16:9 as DAR.
+ * Call this to re-calculate until we get either 4:3 or 16:9.
+ */
+static void fix_DVD_aspect_ratio(AVCodecContext *avctx){
+    Mpeg1Context *s1 = avctx->priv_data;
+    MpegEncContext *s = &s1->mpeg_enc_ctx;
+    AVRational r1,r2;
+    double ar;
+
+    if (s->avctx->width * s->avctx->sample_aspect_ratio.num * 9 == s->avctx->height * s->avctx->sample_aspect_ratio.den * 16)
+        // 16:9, OK
+        return;
+    if (s->avctx->width * s->avctx->sample_aspect_ratio.num * 3 == s->avctx->height * s->avctx->sample_aspect_ratio.den * 4)
+        // 4:3, OK
+        return;
+
+    r1.num = s->width;
+    r1.den = s->height;
+    s->avctx->sample_aspect_ratio=
+        av_div_q(
+         ff_mpeg2_aspect[s->aspect_ratio_info],
+          r1//(AVRational){s->width, s->height}
+         );
+
+    av_log(NULL,AV_LOG_ERROR,"fix_DVD_aspect_ratio num %d den %d",s->avctx->sample_aspect_ratio.num,s->avctx->sample_aspect_ratio.den);
+
+    if (s->avctx->width * s->avctx->sample_aspect_ratio.num * 9 == s->avctx->height * s->avctx->sample_aspect_ratio.den * 16)
+        // 16:9, OK
+        return;
+    if (s->avctx->width * s->avctx->sample_aspect_ratio.num * 3 == s->avctx->height * s->avctx->sample_aspect_ratio.den * 4)
+        // 4:3, OK
+        return;
+
+    r2.num = s1->pan_scan.width;
+    r2.den = s1->pan_scan.height;
+    s->avctx->sample_aspect_ratio=
+        av_div_q(
+         ff_mpeg2_aspect[s->aspect_ratio_info],
+         r2//(AVRational){s1->pan_scan.width, s1->pan_scan.height}
+        );
+
+    if (s->avctx->width * s->avctx->sample_aspect_ratio.num * 9 == s->avctx->height * s->avctx->sample_aspect_ratio.den * 16)
+        // 16:9, OK
+        return;
+    if (s->avctx->width * s->avctx->sample_aspect_ratio.num * 3 == s->avctx->height * s->avctx->sample_aspect_ratio.den * 4)
+        // 4:3, OK
+        return;
+
+    ar=(double)(s->avctx->width * s->avctx->sample_aspect_ratio.num) / (double)(s->avctx->height * s->avctx->sample_aspect_ratio.den);
+
+    if (abs(ar-(16.0/9.0)) < abs(ar-(4.0/3.0))) {
+        // Fix to 16:9
+        s->avctx->sample_aspect_ratio.num = s->avctx->height * 16;
+        s->avctx->sample_aspect_ratio.den = s->avctx->width * 9;
+    } else {
+        // Fix to 4:3
+        s->avctx->sample_aspect_ratio.num = s->avctx->height * 4;
+        s->avctx->sample_aspect_ratio.den = s->avctx->width * 3;
+    }
+}
+
 /* Call this function when we know all parameters.
  * It may be called in different places for MPEG-1 and MPEG-2. */
 static int mpeg_decode_postinit(AVCodecContext *avctx){
@@ -1178,6 +1248,7 @@ static int mpeg_decode_postinit(AVCodecContext *avctx){
         s1->save_width != s->width ||
         s1->save_height != s->height ||
         s1->save_aspect_info != s->aspect_ratio_info||
+        s1->save_progressive_seq != s->progressive_sequence ||
         0)
     {
 
@@ -1196,12 +1267,14 @@ static int mpeg_decode_postinit(AVCodecContext *avctx){
         s1->save_aspect_info = s->aspect_ratio_info;
         s1->save_width = s->width;
         s1->save_height = s->height;
+        s1->save_progressive_seq = s->progressive_sequence;
 
         /* low_delay may be forced, in this case we will have B-frames
          * that behave like P-frames. */
         avctx->has_b_frames = !(s->low_delay);
 
-        if(avctx->sub_id==1){//s->codec_id==avctx->codec_id==CODEC_ID
+        assert((avctx->sub_id==1) == (avctx->codec_id==CODEC_ID_MPEG1VIDEO));
+        if(avctx->codec_id==CODEC_ID_MPEG1VIDEO){
             //MPEG-1 fps
             avctx->time_base.den= ff_frame_rate_tab[s->frame_rate_index].num;
             avctx->time_base.num= ff_frame_rate_tab[s->frame_rate_index].den;
@@ -1221,7 +1294,10 @@ static int mpeg_decode_postinit(AVCodecContext *avctx){
             if(s->aspect_ratio_info > 1){
                 //we ignore the spec here as reality does not match the spec, see for example
                 // res_change_ffmpeg_aspect.ts and sequence-display-aspect.mpg
-                if( (s1->pan_scan.width == 0 )||(s1->pan_scan.height == 0) || 1){
+
+                /* ffdshow custom code - we do not want to ignore spec. Comment out "// 1". 
+                   DVD plays better. It breaks the playback of res_change_ffmpeg_aspect.ts though. */
+                if( (s1->pan_scan.width == 0 )||(s1->pan_scan.height == 0) /*|| 1*/){
                     AVRational r={s->width, s->height};
                     s->avctx->sample_aspect_ratio=
                         av_div_q(
@@ -1240,6 +1316,8 @@ static int mpeg_decode_postinit(AVCodecContext *avctx){
                 s->avctx->sample_aspect_ratio=
                     ff_mpeg2_aspect[s->aspect_ratio_info];
             }
+            if (avctx->isDVD)
+                fix_DVD_aspect_ratio(avctx);
         }//MPEG-2
 
         avctx->pix_fmt = mpeg_get_pixelformat(avctx);
@@ -1351,9 +1429,9 @@ static void mpeg_decode_sequence_display_extension(Mpeg1Context *s1)
     skip_bits(&s->gb, 3); /* video format */
     color_description= get_bits1(&s->gb);
     if(color_description){
-        skip_bits(&s->gb, 8); /* color primaries */
-        skip_bits(&s->gb, 8); /* transfer_characteristics */
-        skip_bits(&s->gb, 8); /* matrix_coefficients */
+        s->avctx->color_primaries= get_bits(&s->gb, 8);
+        s->avctx->color_trc      = get_bits(&s->gb, 8);
+        s->avctx->colorspace     = get_bits(&s->gb, 8);
     }
     w= get_bits(&s->gb, 14);
     skip_bits(&s->gb, 1); //marker
@@ -1401,42 +1479,37 @@ static void mpeg_decode_picture_display_extension(Mpeg1Context *s1)
         );
 }
 
+static int load_matrix(MpegEncContext *s, uint16_t matrix0[64], uint16_t matrix1[64], uint16_t matrix2[64], int intra, int ffdshow_custom){
+    int i;
+
+    for(i=0; i<64; i++) {
+        int j = s->dsp.idct_permutation[ ff_zigzag_direct[i] ];
+        int v = get_bits(&s->gb, 8);
+        if(v==0){
+            av_log(s->avctx, AV_LOG_ERROR, "matrix damaged\n");
+            return -1;
+        }
+        if(intra && i==0 && v!=8){
+            av_log(s->avctx, AV_LOG_ERROR, "intra matrix invalid, ignoring\n");
+            v= 8; // needed by pink.mpg / issue1046
+        }
+        matrix0[j] = v;
+        if(matrix1)
+            matrix1[j] = v;
+        if(ffdshow_custom)
+            matrix2[ff_zigzag_direct[i]] = v;
+    }
+    return 0;
+}
+
 static void mpeg_decode_quant_matrix_extension(MpegEncContext *s)
 {
-    int i, v, j;
-
     dprintf(s->avctx, "matrix extension\n");
 
-    if (get_bits1(&s->gb)) {
-        for(i=0;i<64;i++) {
-            v = get_bits(&s->gb, 8);
-            j= s->dsp.idct_permutation[ ff_zigzag_direct[i] ];
-            s->intra_matrix[j] = v;
-            s->chroma_intra_matrix[j] = v;
-        }
-    }
-    if (get_bits1(&s->gb)) {
-        for(i=0;i<64;i++) {
-            v = get_bits(&s->gb, 8);
-            j= s->dsp.idct_permutation[ ff_zigzag_direct[i] ];
-            s->inter_matrix[j] = v;
-            s->chroma_inter_matrix[j] = v;
-        }
-    }
-    if (get_bits1(&s->gb)) {
-        for(i=0;i<64;i++) {
-            v = get_bits(&s->gb, 8);
-            j= s->dsp.idct_permutation[ ff_zigzag_direct[i] ];
-            s->chroma_intra_matrix[j] = v;
-        }
-    }
-    if (get_bits1(&s->gb)) {
-        for(i=0;i<64;i++) {
-            v = get_bits(&s->gb, 8);
-            j= s->dsp.idct_permutation[ ff_zigzag_direct[i] ];
-            s->chroma_inter_matrix[j] = v;
-        }
-    }
+    if(get_bits1(&s->gb)) load_matrix(s, s->chroma_intra_matrix, s->intra_matrix, NULL, 1, 0);
+    if(get_bits1(&s->gb)) load_matrix(s, s->chroma_inter_matrix, s->inter_matrix, NULL, 0, 0);
+    if(get_bits1(&s->gb)) load_matrix(s, s->chroma_intra_matrix, NULL           , NULL, 1, 0);
+    if(get_bits1(&s->gb)) load_matrix(s, s->chroma_inter_matrix, NULL           , NULL, 0, 0);
 }
 
 static void mpeg_decode_picture_coding_extension(Mpeg1Context *s1)
@@ -1532,12 +1605,14 @@ static void mpeg_decode_extension(AVCodecContext *avctx,
 }
 
 static void exchange_uv(MpegEncContext *s){
-    short * tmp = s->pblocks[4];
+    DCTELEM (*tmp)[64];
+
+    tmp           = s->pblocks[4];
     s->pblocks[4] = s->pblocks[5];
     s->pblocks[5] = tmp;
 }
 
-static int mpeg_field_start(MpegEncContext *s){
+static int mpeg_field_start(MpegEncContext *s, const uint8_t *buf, int buf_size){
     AVCodecContext *avctx= s->avctx;
     Mpeg1Context *s1 = (Mpeg1Context*)s;
 
@@ -1547,7 +1622,7 @@ static int mpeg_field_start(MpegEncContext *s){
             return -1;
 
         ff_er_frame_start(s);
-        s->current_picture_ptr->rtStart=s->parse_context.rtStart;
+        s->current_picture_ptr->reordered_opaque = s->parse_context.rtStart; /* ffdshow custom code */
 
         /* first check if we must repeat the frame */
         s->current_picture_ptr->repeat_pict = 0;
@@ -1902,23 +1977,7 @@ static int mpeg1_decode_sequence(AVCodecContext *avctx,
 
     /* get matrix */
     if (get_bits1(&s->gb)) {
-        for(i=0;i<64;i++) {
-            v = get_bits(&s->gb, 8);
-            if(v==0){
-                av_log(s->avctx, AV_LOG_ERROR, "intra matrix damaged\n");
-                return -1;
-            }
-            j = s->dsp.idct_permutation[ ff_zigzag_direct[i] ];
-            s->avctx->intra_matrix[ff_zigzag_direct[i]]=v;
-            s->intra_matrix[j] = v;
-            s->chroma_intra_matrix[j] = v;
-        }
-#ifdef DEBUG
-        dprintf(s->avctx, "intra matrix present\n");
-        for(i=0;i<64;i++)
-            dprintf(s->avctx, " %d", s->intra_matrix[s->dsp.idct_permutation[i]]);
-        dprintf(s->avctx, "\n");
-#endif
+        load_matrix(s, s->chroma_intra_matrix, s->intra_matrix, s->avctx->intra_matrix, 1, 1);
     } else {
         for(i=0;i<64;i++) {
             j = s->dsp.idct_permutation[i];
@@ -1929,23 +1988,7 @@ static int mpeg1_decode_sequence(AVCodecContext *avctx,
         }
     }
     if (get_bits1(&s->gb)) {
-        for(i=0;i<64;i++) {
-            v = get_bits(&s->gb, 8);
-            if(v==0){
-                av_log(s->avctx, AV_LOG_ERROR, "inter matrix damaged\n");
-                return -1;
-            }
-            j = s->dsp.idct_permutation[ ff_zigzag_direct[i] ];
-            s->avctx->inter_matrix[ff_zigzag_direct[i]]=v;
-            s->inter_matrix[j] = v;
-            s->chroma_inter_matrix[j] = v;
-        }
-#ifdef DEBUG
-        dprintf(s->avctx, "non-intra matrix present\n");
-        for(i=0;i<64;i++)
-            dprintf(s->avctx, " %d", s->inter_matrix[s->dsp.idct_permutation[i]]);
-        dprintf(s->avctx, "\n");
-#endif
+        load_matrix(s, s->chroma_inter_matrix, s->inter_matrix, s->avctx->inter_matrix, 0, 1);
     } else {
         for(i=0;i<64;i++) {
             int j= s->dsp.idct_permutation[i];
@@ -2096,7 +2139,7 @@ static void mpeg_decode_gop(AVCodecContext *avctx,
  * Finds the end of the current frame in the bitstream.
  * @return the position of the first byte of the next frame, or -1
  */
-int ff_mpeg1_find_frame_end(ParseContext *pc, const uint8_t *buf, int buf_size, int64_t *rtStart) /* rtStart: ffdshow custom code */
+int ff_mpeg1_find_frame_end(ParseContext *pc, const uint8_t *buf, int buf_size, AVCodecParserContext *s, int64_t *rtStart, AVCodecContext *avctx) /* rtStart,avctx: ffdshow custom code */
 {
     int i;
     uint32_t state= pc->state;
@@ -2134,7 +2177,13 @@ int ff_mpeg1_find_frame_end(ParseContext *pc, const uint8_t *buf, int buf_size, 
             }
             if(state == SEQ_END_CODE){
                 pc->state=-1;
-                return i+1;
+                /* ffdshow custom code (i-3 instead of i+1) */
+                /* DVDs won't send the next frame start on still images */
+                /* SEQ_END_CODE will have to stay at the beginning of the next frame */
+                if (avctx->isDVD)
+                    return i-3;
+                else
+                    return i+1;
             }
             if(pc->frame_start_found==2 && state == SEQ_START_CODE)
                 pc->frame_start_found= 0;
@@ -2146,6 +2195,9 @@ int ff_mpeg1_find_frame_end(ParseContext *pc, const uint8_t *buf, int buf_size, 
                     pc->state=-1;
                     return i-3;
                 }
+            }
+            if(s && state == PICTURE_START_CODE){
+                ff_fetch_timestamp(s, i-4, 1);
             }
         }
     }
@@ -2172,6 +2224,7 @@ static int mpeg_decode_frame(AVCodecContext *avctx,
         if (s2->low_delay==0 && s2->next_picture_ptr) {
             *picture= *(AVFrame*)s2->next_picture_ptr;
             s2->next_picture_ptr= NULL;
+            picture->mpeg2_sequence_end_flag = 1; /* ffdshow custom code */
 
             *data_size = sizeof(AVFrame);
         }
@@ -2179,7 +2232,7 @@ static int mpeg_decode_frame(AVCodecContext *avctx,
     }
 
     if(s2->flags&CODEC_FLAG_TRUNCATED){
-        int next = ff_mpeg1_find_frame_end(&s2->parse_context, buf, buf_size, avctx->parserRtStart); /* avctx->parserRtStart: ffdshow custom code */
+        int next = ff_mpeg1_find_frame_end(&s2->parse_context, buf, buf_size, NULL, avctx->parserRtStart, avctx); /* avctx->parserRtStart: ffdshow custom code */
 
         if( ff_combine_frame(&s2->parse_context, next, (const uint8_t **)&buf, &buf_size) < 0 )
             return buf_size;
@@ -2197,7 +2250,7 @@ static int mpeg_decode_frame(AVCodecContext *avctx,
     }
 #endif
 
-    if(s->mpeg_enc_ctx_allocated==0 && avctx->codec_tag == ff_get_fourcc("VCR2"))
+    if(s->mpeg_enc_ctx_allocated==0 && avctx->codec_tag == AV_RL32("VCR2"))
         vcr2_init_sequence(avctx);
 
     s->slice_count= 0;
@@ -2308,9 +2361,9 @@ static int decode_chunks(AVCodecContext *avctx,
 
                 if(s2->first_slice){
                     s2->first_slice=0;
-                            if(mpeg_field_start(s2) < 0)
+                    if(mpeg_field_start(s2, buf, buf_size) < 0)
                         return -1;
-                    }
+                }
                 if(!s2->current_picture_ptr){
                     av_log(avctx, AV_LOG_ERROR, "current_picture not initialized\n");
                     return -1;

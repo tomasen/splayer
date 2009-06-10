@@ -387,10 +387,16 @@ interface ISubPicAllocatorPresenter : public IUnknown
 	STDMETHOD (SetPixelShader) (LPCSTR pSrcData, LPCSTR pTarget) PURE;
 };
 
+[uuid("767AEBA8-A084-488a-89C8-F6B74E53A90F")]
+interface ISubPicAllocatorPresenter2 : public ISubPicAllocatorPresenter
+{
+	STDMETHOD (SetPixelShader2) (LPCSTR pSrcData, LPCSTR pTarget, bool bScreenSpace) PURE;
+};
+
 class ISubPicAllocatorPresenterImpl 
 	: public CUnknown
 	, public CCritSec
-	, public ISubPicAllocatorPresenter
+	, public ISubPicAllocatorPresenter2
 {
 protected:
 	HWND m_hWnd;
@@ -449,6 +455,12 @@ public:
 
 	STDMETHODIMP SetVideoAngle(Vector v, bool fRepaint = true);
 	STDMETHODIMP SetPixelShader(LPCSTR pSrcData, LPCSTR pTarget) {return E_NOTIMPL;}
+	STDMETHODIMP SetPixelShader2(LPCSTR pSrcData, LPCSTR pTarget, bool bScreenSpace) 
+	{
+		if (!bScreenSpace)
+			return SetPixelShader(pSrcData, pTarget);
+		return E_NOTIMPL;
+	}
 };
 
 //

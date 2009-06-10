@@ -1,7 +1,7 @@
 
 
 /* 
- * $Id: FfmpegContext.c 1009 2009-03-10 19:20:57Z casimir666 $
+ * $Id: FfmpegContext.c 1156 2009-06-07 14:10:39Z casimir666 $
  *
  * (C) 2006-2007 see AUTHORS
  *
@@ -24,7 +24,6 @@
 
 
 #define HAVE_AV_CONFIG_H
-#define CONFIG_H264_PARSER
 #define H264_MERGE_TESTING
 
 #include <windows.h>
@@ -41,7 +40,7 @@
 #include "vc1.h"
 
 
-int av_h264_decode_frame(struct AVCodecContext* avctx, uint8_t *buf, int buf_size);
+int av_h264_decode_frame(struct AVCodecContext* avctx, uint8_t *buf, int buf_size, int end_frame);
 int av_vc1_decode_frame(AVCodecContext *avctx, uint8_t *buf, int buf_size);
 
 
@@ -79,10 +78,21 @@ char* GetFFMpegPictureType(int nType)
 }
 
 
-void FFH264DecodeBuffer (struct AVCodecContext* pAVCtx, BYTE* pBuffer, UINT nSize)
+void FFH264DecodeBuffer (struct AVCodecContext* pAVCtx, BYTE* pBuffer, UINT nSize, BOOL bEndFrame, int* pFramePOC, int* pOutPOC, REFERENCE_TIME* pOutrtStart)
 {
 	if (pBuffer != NULL)
-		av_h264_decode_frame (pAVCtx, pBuffer, nSize);
+	{
+		H264Context*	h	= (H264Context*) pAVCtx->priv_data;
+		av_h264_decode_frame (pAVCtx, pBuffer, nSize, bEndFrame);
+
+		if (h->s.current_picture_ptr  && pFramePOC) *pFramePOC = h->s.current_picture_ptr->field_poc[0];
+
+		if (bEndFrame)
+		{
+			*pOutPOC		= h->outputed_poc;
+			*pOutrtStart	= h->outputed_rtstart;
+		}
+	}
 }
 
 
@@ -95,7 +105,7 @@ int FFH264CheckCompatibility(int nWidth, int nHeight, struct AVCodecContext* pAV
 	int supportLevel51 = 0;
 
 	if (pBuffer != NULL)
-		av_h264_decode_frame (pAVCtx, pBuffer, nSize);
+		av_h264_decode_frame (pAVCtx, pBuffer, nSize, FALSE);
 
 	cur_sps		= pContext->sps_buffers[0];
 	cur_pps		= pContext->pps_buffers[0];
@@ -134,9 +144,19 @@ int FFH264CheckCompatibility(int nWidth, int nHeight, struct AVCodecContext* pAV
 		#define MAX_DPB_41 12288 // DPB value for level 4.1
 
 		if (supportLevel51 == 1) {
-			// 11 refs as absolute max
-			if (cur_sps->ref_frame_count > 11)
-				return 2;	// Too much ref frames
+			// 11 refs as absolute max, but for Nvidia(Vista, HD) - 16
+			if(IsVista()) {
+				if(nWidth>1279) {
+					if (cur_sps->ref_frame_count > 16)
+						return 2;	// Too much ref frames					
+				} else {
+					if (cur_sps->ref_frame_count > 11)
+						return 2;	// Too much ref frames
+				}
+			} else {
+				if (cur_sps->ref_frame_count > 11)
+					return 2;	// Too much ref frames
+			}
 		} else {
 			// level 4.1 with 11 refs as absolute max
 			if (cur_sps->ref_frame_count > min(11, (1024*MAX_DPB_41/(nWidth*nHeight*1.5))))
@@ -236,7 +256,7 @@ HRESULT FFH264BuildPicParams (DXVA_PicParams_H264* pDXVAPicParams, DXVA_Qmatrix_
 		pDXVAPicParams->num_ref_frames					= cur_sps->ref_frame_count;		// num_ref_frames;
 		pDXVAPicParams->field_pic_flag					= field_pic_flag;
 		pDXVAPicParams->MbaffFrameFlag					= (h->sps.mb_aff && (field_pic_flag==0));
-		pDXVAPicParams->residual_colour_transform_flag	= cur_sps->residual_colour_transform_flag;
+		pDXVAPicParams->residual_colour_transform_flag	= cur_sps->residual_color_transform_flag;
 		pDXVAPicParams->sp_for_switch_flag				= h->sp_for_switch_flag;
 		pDXVAPicParams->chroma_format_idc				= cur_sps->chroma_format_idc;
 		pDXVAPicParams->RefPicFlag						= (h->nal_ref_idc != 0);
@@ -453,10 +473,11 @@ HRESULT FFVC1UpdatePictureParam (DXVA_PictureParameters* pPicParams, struct AVCo
 		av_vc1_decode_frame (pAVCtx, pBuffer, nSize);
 	}
 
-	if (vc1->interlace)
-		*nFieldType = (vc1->tff ? PICT_TOP_FIELD : PICT_BOTTOM_FIELD);
-	else
+	// WARNING : vc1->interlace is not reliable (always set for progressive video on HD-DVD material)
+	if (vc1->fcm == 0)
 		*nFieldType = PICT_FRAME;
+	else	// fcm : 2 or 3 frame or field interlaced
+		*nFieldType = (vc1->tff ? PICT_TOP_FIELD : PICT_BOTTOM_FIELD);
 
 	pPicParams->bPicIntra				= (vc1->s.pict_type == FF_I_TYPE);
 	pPicParams->bPicBackwardPrediction	= (vc1->s.pict_type == FF_B_TYPE);
@@ -503,7 +524,7 @@ HRESULT FFVC1UpdatePictureParam (DXVA_PictureParameters* pPicParams, struct AVCo
 												(0 << 1) |		// 1 for WMV8 quarter sample luma motion
 												(0);			// 0 for quarter sample chroma motion, 1 for half sample chroma
 
-	// Cf §7.1.1.25 in VC1 specification, §3.2.14.3 in DXVA spec
+	// Cf ?.1.1.25 in VC1 specification, ?.2.14.3 in DXVA spec
 	pPicParams->bRcontrol	= vc1->rnd;
 
 	/*
@@ -559,4 +580,3 @@ int FFIsInterlaced(struct AVCodecContext* pAVCtx, int nHeight)
 
 	return 0;
 }
-

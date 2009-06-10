@@ -489,7 +489,7 @@ STDMETHODIMP CMpegSplitterFilter::Enable(long lIndex, DWORD dwFlags)
 				int iProgram;
 				const CHdmvClipInfo::Stream *pClipInfo;
 				const CMpegSplitterFile::program* p = m_pFile->FindProgram(to.pid, iProgram, pClipInfo);
-				if(p!=NULL && !m_ClipInfo.IsHdmv())
+				if(p!=NULL && !m_ClipInfo.IsHdmv() && !m_pFile->IsHdmv())
 				{
 					for(int k = 0; k < countof(m_pFile->m_streams); k++)
 					{
@@ -565,31 +565,31 @@ CString FormatString(const wchar_t *pszFormat, ... )
 	return Temp;
 }
 
-int GetMediaTypeQuality(const CMediaType *_pMediaType, int _PresentationFormat)
+LONGLONG GetMediaTypeQuality(const CMediaType *_pMediaType, int _PresentationFormat)
 {
 	if (_pMediaType->formattype == FORMAT_WaveFormatEx)
 	{
-		int Ret = 0;
+		__int64 Ret = 0;
 
 		const WAVEFORMATEX *pInfo = GetFormatHelper(pInfo, _pMediaType);
 		int TypePriority = 0;
 		if (_pMediaType->subtype == MEDIASUBTYPE_DVD_LPCM_AUDIO)
 		{
-			TypePriority = 15;
+			TypePriority = 12;
 			
 		}
 		else if (_pMediaType->subtype == MEDIASUBTYPE_HDMV_LPCM_AUDIO)
 		{
-			TypePriority = 16;
+			TypePriority = 12;
 		}
 		else
 		{
 			if (_PresentationFormat == AUDIO_STREAM_DTS_HD_MASTER_AUDIO)
-				TypePriority = 14;
+				TypePriority = 12;
 			else if (_PresentationFormat == AUDIO_STREAM_DTS_HD)
 				TypePriority = 11;
 			else if (_PresentationFormat == AUDIO_STREAM_AC3_TRUE_HD)
-				TypePriority = 13;
+				TypePriority = 12;
 			else if (_PresentationFormat == AUDIO_STREAM_AC3_PLUS)
 				TypePriority = 10;
 			else
@@ -635,11 +635,12 @@ int GetMediaTypeQuality(const CMediaType *_pMediaType, int _PresentationFormat)
 			}
 		}
 
-		Ret += TypePriority * 100000000;
+		Ret += __int64(TypePriority) * 100000000i64 * 1000000000i64;
 
-		Ret += pInfo->nChannels * 1000000;
-		Ret += pInfo->nSamplesPerSec * 10;
-		Ret += pInfo->wBitsPerSample / 4;
+		Ret += __int64(pInfo->nChannels) * 1000000i64 * 1000000000i64;
+		Ret += __int64(pInfo->nSamplesPerSec) * 10i64  * 1000000000i64;
+		Ret += __int64(pInfo->wBitsPerSample)  * 10000000i64;
+		Ret += __int64(pInfo->nAvgBytesPerSec);
 
 		return Ret;
 	}
@@ -666,8 +667,8 @@ bool CMpegSplitterFile::stream::operator < (const stream &_Other) const
 		if (mt.formattype != FORMAT_WaveFormatEx && _Other.mt.formattype == FORMAT_WaveFormatEx)
 			return false;
 
-		int Quality0 = GetMediaTypeQuality(&mt, StreamType0);
-		int Quality1 = GetMediaTypeQuality(&_Other.mt, StreamType1);
+		LONGLONG Quality0 = GetMediaTypeQuality(&mt, StreamType0);
+		LONGLONG Quality1 = GetMediaTypeQuality(&_Other.mt, StreamType1);
 		if (Quality0 > Quality1)
 			return true;
 		if (Quality0 < Quality1)
@@ -1438,7 +1439,7 @@ HRESULT CMpegSplitterOutputPin::DeliverPacket(CAutoPtr<Packet> p)
 #if 1
 		BYTE* start = p->GetData();
 		BYTE* end = start + p->GetCount();
-		if (end - start < 4)
+		if (end - start < 4 && !p->pmt)
 			return S_OK;  // Should be invalid packet
 
 		BYTE* hdr = start;
@@ -1468,7 +1469,7 @@ HRESULT CMpegSplitterOutputPin::DeliverPacket(CAutoPtr<Packet> p)
 			Type = 14;
 
 		  // no sync
-		  else
+		  else if (!p->pmt)
 		  {
 			  return S_OK;
 		  }

@@ -38,6 +38,7 @@ int FFGetChannelMap(struct AVCodecContext * avctx)
 		{
 			AC3DecodeContext *s = avctx->priv_data;
 
+			// Mapping index for s_scmap_ac3
 			switch (s->channel_mode)
 			{
 			case AC3_CHMODE_DUALMONO: return 0;
@@ -47,7 +48,7 @@ int FFGetChannelMap(struct AVCodecContext * avctx)
 			case AC3_CHMODE_2F1R	: return 4;
 			case AC3_CHMODE_3F1R	: return 5;
 			case AC3_CHMODE_2F2R	: return 6;
-			case AC3_CHMODE_3F2R	: return 7;
+			case AC3_CHMODE_3F2R	: return (s->lfe_on ? 8 : 7);
 			}
 		}
 		break;
@@ -55,9 +56,13 @@ int FFGetChannelMap(struct AVCodecContext * avctx)
 	case CODEC_ID_AMR_NB:
 		return 1;
 	case CODEC_ID_MLP  :
-		{
-			//MLPDecodeContext *s = avctx->priv_data;
-			return 18;
+	{
+
+			// Mapping index for s_scmap_lpcm
+			if (avctx->channels<=8)
+				return avctx->channels-1;
+			else
+				return -1;
 		}
 	default :
 		return 2;
@@ -76,7 +81,7 @@ void FF_aligned_free(void* mem_ptr)
 	if (mem_ptr){
 		_aligned_free(mem_ptr);
 		mem_ptr = NULL;
-	}
+  }
 }
 
 void* FF_aligned_realloc(void *ptr,size_t size,size_t alignment)

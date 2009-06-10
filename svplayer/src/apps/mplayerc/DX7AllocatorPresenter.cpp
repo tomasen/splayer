@@ -373,6 +373,10 @@ HRESULT CDX7AllocatorPresenter::CreateDevice()
 	case 3: size.SetSize(640, 480); break;
 	case 4: size.SetSize(512, 384); break;
 	case 5: size.SetSize(384, 288); break;
+case 6: size.SetSize(2560, 1600); break;
+	case 7: size.SetSize(1920, 1080); break;
+	case 8: size.SetSize(1320, 900); break;
+	case 9: size.SetSize(1280, 720); break;
 	}
 
 	if(m_pAllocator)
@@ -718,7 +722,7 @@ STDMETHODIMP CVMR7AllocatorPresenter::CreateRenderer(IUnknown** ppRenderer)
 STDMETHODIMP_(void) CVMR7AllocatorPresenter::SetTime(REFERENCE_TIME rtNow)
 {
 	__super::SetTime(rtNow);
-	m_fUseInternalTimer = false;
+//	m_fUseInternalTimer = false;
 }
 
 // IVMRSurfaceAllocator
@@ -819,7 +823,8 @@ STDMETHODIMP CVMR7AllocatorPresenter::StopPresenting(DWORD_PTR dwUserID)
 {
 	return S_OK;
 }
-
+//extern bool g_bNoDuration;
+//extern bool g_bExternalSubtitleTime;
 STDMETHODIMP CVMR7AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMRPRESENTATIONINFO* lpPresInfo)
 {
     HRESULT hr;
@@ -841,7 +846,7 @@ STDMETHODIMP CVMR7AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMRPRESEN
 			{
 				m_pSubPicQueue->SetFPS(m_fps);
 
-				if(m_fUseInternalTimer)
+				if(m_fUseInternalTimer ) //&& !g_bExternalSubtitleTime
 				{
 					__super::SetTime(g_tSegmentStart + g_tSampleStart);
 				}
@@ -850,7 +855,7 @@ STDMETHODIMP CVMR7AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMRPRESEN
 			{
 				m_pSubPicQueue2->SetFPS(m_fps);
 
-				if(m_fUseInternalTimer)
+				if(m_fUseInternalTimer )// && !g_bExternalSubtitleTime
 				{
 					__super::SetTime(g_tSegmentStart + g_tSampleStart);
 				}

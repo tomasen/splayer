@@ -28,7 +28,7 @@
 #endif
 
 /**
- * @file avcodec.h
+ * @file libavcodec/avcodec.h
  * external API header
  */
 
@@ -40,10 +40,11 @@
 #include "libavutil/common.h"
 #endif
 
+#include <errno.h>
 #include "libavutil/avutil.h"
 
 #define LIBAVCODEC_VERSION_MAJOR 52
-#define LIBAVCODEC_VERSION_MINOR 10
+#define LIBAVCODEC_VERSION_MINOR 29
 #define LIBAVCODEC_VERSION_MICRO  0
 
 #define LIBAVCODEC_VERSION_INT  AV_VERSION_INT(LIBAVCODEC_VERSION_MAJOR, \
@@ -118,13 +119,17 @@ enum SampleFormat {
 /* Audio channel convenience macros */
 #define CH_LAYOUT_MONO              (CH_FRONT_CENTER)
 #define CH_LAYOUT_STEREO            (CH_FRONT_LEFT|CH_FRONT_RIGHT)
+#define CH_LAYOUT_2_1               (CH_LAYOUT_STEREO|CH_BACK_CENTER)
 #define CH_LAYOUT_SURROUND          (CH_LAYOUT_STEREO|CH_FRONT_CENTER)
+#define CH_LAYOUT_4POINT0           (CH_LAYOUT_SURROUND|CH_BACK_CENTER)
+#define CH_LAYOUT_2_2               (CH_LAYOUT_STEREO|CH_SIDE_LEFT|CH_SIDE_RIGHT)
 #define CH_LAYOUT_QUAD              (CH_LAYOUT_STEREO|CH_BACK_LEFT|CH_BACK_RIGHT)
 #define CH_LAYOUT_5POINT0           (CH_LAYOUT_SURROUND|CH_SIDE_LEFT|CH_SIDE_RIGHT)
 #define CH_LAYOUT_5POINT1           (CH_LAYOUT_5POINT0|CH_LOW_FREQUENCY)
+#define CH_LAYOUT_5POINT0_BACK      (CH_LAYOUT_SURROUND|CH_BACK_LEFT|CH_BACK_RIGHT)
+#define CH_LAYOUT_5POINT1_BACK      (CH_LAYOUT_5POINT0_BACK|CH_LOW_FREQUENCY)
 #define CH_LAYOUT_7POINT1           (CH_LAYOUT_5POINT1|CH_BACK_LEFT|CH_BACK_RIGHT)
-#define CH_LAYOUT_7POINT1_WIDE      (CH_LAYOUT_SURROUND|CH_LOW_FREQUENCY|\
-                                          CH_BACK_LEFT|CH_BACK_RIGHT|\
+#define CH_LAYOUT_7POINT1_WIDE      (CH_LAYOUT_5POINT1_BACK|\
                                           CH_FRONT_LEFT_OF_CENTER|CH_FRONT_RIGHT_OF_CENTER)
 #define CH_LAYOUT_STEREO_DOWNMIX    (CH_STEREO_LEFT|CH_STEREO_RIGHT)
 
@@ -173,6 +178,80 @@ enum AVDiscard{
     AVDISCARD_NONKEY = 32, ///< discard all frames except keyframes
     AVDISCARD_ALL    = 48, ///< discard all
 };
+
+enum AVColorPrimaries{
+    AVCOL_PRI_BT709      =1, ///< also ITU-R BT1361 / IEC 61966-2-4 / SMPTE RP177 Annex B
+    AVCOL_PRI_UNSPECIFIED=2,
+    AVCOL_PRI_BT470M     =4,
+    AVCOL_PRI_BT470BG    =5, ///< also ITU-R BT601-6 625 / ITU-R BT1358 625 / ITU-R BT1700 625 PAL & SECAM
+    AVCOL_PRI_SMPTE170M  =6, ///< also ITU-R BT601-6 525 / ITU-R BT1358 525 / ITU-R BT1700 NTSC
+    AVCOL_PRI_SMPTE240M  =7, ///< functionally identical to above
+    AVCOL_PRI_FILM       =8,
+    AVCOL_PRI_NB           , ///< Not part of ABI
+};
+
+enum AVColorTransferCharacteristic{
+    AVCOL_TRC_BT709      =1, ///< also ITU-R BT1361
+    AVCOL_TRC_UNSPECIFIED=2,
+    AVCOL_TRC_GAMMA22    =4, ///< also ITU-R BT470M / ITU-R BT1700 625 PAL & SECAM
+    AVCOL_TRC_GAMMA28    =5, ///< also ITU-R BT470BG
+    AVCOL_TRC_NB           , ///< Not part of ABI
+};
+
+enum AVColorSpace{
+    AVCOL_SPC_RGB        =0,
+    AVCOL_SPC_BT709      =1, ///< also ITU-R BT1361 / IEC 61966-2-4 xvYCC709 / SMPTE RP177 Annex B
+    AVCOL_SPC_UNSPECIFIED=2,
+    AVCOL_SPC_FCC        =4,
+    AVCOL_SPC_BT470BG    =5, ///< also ITU-R BT601-6 625 / ITU-R BT1358 625 / ITU-R BT1700 625 PAL & SECAM / IEC 61966-2-4 xvYCC601
+    AVCOL_SPC_SMPTE170M  =6, ///< also ITU-R BT601-6 525 / ITU-R BT1358 525 / ITU-R BT1700 NTSC / functionally identical to above
+    AVCOL_SPC_SMPTE240M  =7,
+    AVCOL_SPC_NB           , ///< Not part of ABI
+};
+
+enum AVColorRange{
+    AVCOL_RANGE_UNSPECIFIED=0,
+    AVCOL_RANGE_MPEG       =1, ///< the normal 219*2^(n-8) "MPEG" YUV ranges
+    AVCOL_RANGE_JPEG       =2, ///< the normal     2^n-1   "JPEG" YUV ranges
+    AVCOL_RANGE_NB           , ///< Not part of ABI
+};
+
+/**
+ *  X   X      3 4 X      X are luma samples,
+ *             1 2        1-6 are possible chroma positions
+ *  X   X      5 6 X      0 is undefined/unknown position
+ */
+enum AVChromaLocation{
+    AVCHROMA_LOC_UNSPECIFIED=0,
+    AVCHROMA_LOC_LEFT       =1, ///< mpeg2/4, h264 default
+    AVCHROMA_LOC_CENTER     =2, ///< mpeg1, jpeg, h263
+    AVCHROMA_LOC_TOPLEFT    =3, ///< DV
+    AVCHROMA_LOC_TOP        =4,
+    AVCHROMA_LOC_BOTTOMLEFT =5,
+    AVCHROMA_LOC_BOTTOM     =6,
+    AVCHROMA_LOC_NB           , ///< Not part of ABI
+};
+
+/**
+ * H.264 VUI colour primaries (matrix_coefficients)
+ */
+typedef enum {
+    YCbCr_RGB_coeff_GBR                                = 0,
+    YCbCr_RGB_coeff_ITUR_BT_709                        = 1,
+    YCbCr_RGB_coeff_Unspecified                        = 2,
+    YCbCr_RGB_coeff_Reserved                           = 3,
+    YCbCr_RGB_coeff_US_Federal_Regulations_2003_73_682 = 4,
+    YCbCr_RGB_coeff_ITUR_BT_601_625                    = 5,
+    YCbCr_RGB_coeff_ITUR_BT_601_525                    = 6,
+    YCbCr_RGB_coeff_SMPTE240M                          = 7,
+    YCbCr_RGB_coeff_YCgCo                              = 8
+} YCbCr_RGB_MatrixCoefficientsType;
+
+typedef enum {
+    VIDEO_FULL_RANGE_TV         = 0,
+    VIDEO_FULL_RANGE_PC         = 1,
+    VIDEO_FULL_RANGE_INVALID    = 2
+} VideoFullRangeType;
 
 typedef struct RcOverride{
     int start_frame;
@@ -273,6 +352,14 @@ typedef struct RcOverride{
  * This can be used to prevent truncation of the last audio samples.
  */
 #define CODEC_CAP_SMALL_LAST_FRAME 0x0040
+/**
+ * Codec can export data for HW decoding (VDPAU).
+ */
+#define CODEC_CAP_HWACCEL_VDPAU    0x0080
+/**
+ * Codec supports frame-based multithreading.
+ */
+#define CODEC_CAP_FRAME_THREADS    0x0100
 
 //The following defines may change, don't expect compatibility if you use them.
 #define MB_TYPE_INTRA4x4   0x0001
@@ -397,6 +484,7 @@ typedef struct AVPanScan{
      * is this picture used as reference\
      * The values for this are the same as the MpegEncContext.picture_structure\
      * variable, that is 1->top field, 2->bottom field, 3->frame/both fields.\
+     * Set to 4 for delayed, non-reference frames.\
      * - encoding: unused\
      * - decoding: Set by libavcodec. (before get_buffer() call)).\
      */\
@@ -548,8 +636,36 @@ typedef struct AVPanScan{
     int64_t reordered_opaque3; /* ffdshow custom code */\
 \
     /* ffdshow custom code */\
-    int64_t rtStart;
-
+    int mb_width,mb_height,mb_stride,b8_stride;\
+    int num_sprite_warping_points,real_sprite_warping_points;\
+    int play_flags;\
+\
+    /* ffmpeg-mt */\
+    struct AVCodecContext *owner;\
+    void *thread_opaque;\
+\
+    /* ffdshow custom stuffs (begin) */\
+\
+    int h264_poc_decoded;\
+    int h264_poc_outputed;\
+    int h264_frame_num_decoded;\
+    int h264_max_frame_num;\
+\
+    int mpeg2_sequence_end_flag;\
+\
+    /**\
+     * video_full_range_flag\
+     * - encoding: unused\
+     * - decoding: Set by libavcodec.  -1: invalid, 0: TV (16-235) 1: PC (1-254)\
+     */\
+    VideoFullRangeType video_full_range_flag;\
+    /**\
+     * YCbCr_RGB_matrix_coefficients\
+     * - encoding: unused\
+     * - decoding: Set by libavcodec.\
+     */\
+    YCbCr_RGB_MatrixCoefficientsType YCbCr_RGB_matrix_coefficients;
+    /* ffdshow custom stuffs (end) */
 
 #define FF_QSCALE_TYPE_MPEG1 0
 #define FF_QSCALE_TYPE_MPEG2 1
@@ -705,6 +821,13 @@ typedef struct AVCodecContext {
      * decoder to draw a horizontal band. It improves cache usage. Not
      * all codecs can do that. You must check the codec capabilities
      * beforehand.
+     * The function is also used by hardware acceleration APIs.
+     * It is called at least once during frame decoding to pass
+     * the data needed for hardware render.
+     * In that mode instead of pixel data, AVFrame points to
+     * a structure specific to the acceleration API. The application
+     * reads the structure and can change some fields to indicate progress
+     * or mark state.
      * - encoding: unused
      * - decoding: Set by user.
      * @param height the height of the slice
@@ -957,7 +1080,8 @@ typedef struct AVCodecContext {
     void (*release_buffer)(struct AVCodecContext *c, AVFrame *pic);
 
     /**
-     * If 1 the stream has a 1 frame delay during decoding.
+     * Size of the frame reordering buffer in the decoder.
+     * For MPEG-2 it is 1 IPB or 0 low delay IP.
      * - encoding: Set by libavcodec.
      * - decoding: Set by libavcodec.
      */
@@ -1174,11 +1298,14 @@ typedef struct AVCodecContext {
 #define FF_MM_MMX      0x0001 ///< standard MMX
 #define FF_MM_3DNOW    0x0004 ///< AMD 3DNOW
 #define FF_MM_MMXEXT   0x0002 ///< SSE integer functions or AMD MMX ext
+#define FF_MM_MMX2     0x0002 ///< SSE integer functions or AMD MMX ext
 #define FF_MM_SSE      0x0008 ///< SSE functions
 #define FF_MM_SSE2     0x0010 ///< PIV SSE2 functions
 #define FF_MM_3DNOWEXT 0x0020 ///< AMD 3DNowExt
 #define FF_MM_SSE3     0x0040 ///< Prescott SSE3 functions
 #define FF_MM_SSSE3    0x0080 ///< Conroe SSSE3 functions
+#define FF_MM_SSE4     0x0100 ///< Penryn SSE4.1 functions
+#define FF_MM_SSE42    0x0200 ///< Nehalem SSE4.2 functions
 
     /**
      * bits per sample/pixel from the demuxer (needed for huffyuv).
@@ -1436,8 +1563,11 @@ typedef struct AVCodecContext {
      */
     int global_quality;
 
-#define FF_CODER_TYPE_VLC   0
-#define FF_CODER_TYPE_AC    1
+#define FF_CODER_TYPE_VLC       0
+#define FF_CODER_TYPE_AC        1
+#define FF_CODER_TYPE_RAW       2
+#define FF_CODER_TYPE_RLE       3
+#define FF_CODER_TYPE_DEFLATE   4
     /**
      * coder type
      * - encoding: Set by user.
@@ -2034,7 +2164,51 @@ typedef struct AVCodecContext {
      * - decoding: unused.
      */
     float rc_min_vbv_overflow_use;
-    
+
+    /**
+     * For some codecs, the time base is closer to the field rate than the frame rate.
+     * Most notably, H.264 and MPEG-2 specify time_base as half of frame duration
+     * if no telecine is used ...
+     *
+     * Set to time_base ticks per frame. Default 1, e.g., H.264/MPEG-2 set it to 2.
+     */
+    int ticks_per_frame;
+
+    /**
+     * Chromaticity coordinates of the source primaries.
+     * - encoding: Set by user
+     * - decoding: Set by libavcodec
+     */
+    enum AVColorPrimaries color_primaries;
+
+    /**
+     * Color Transfer Characteristic.
+     * - encoding: Set by user
+     * - decoding: Set by libavcodec
+     */
+    enum AVColorTransferCharacteristic color_trc;
+
+    /**
+     * YUV colorspace type.
+     * - encoding: Set by user
+     * - decoding: Set by libavcodec
+     */
+    enum AVColorSpace colorspace;
+
+    /**
+     * MPEG vs JPEG YUV range.
+     * - encoding: Set by user
+     * - decoding: Set by libavcodec
+     */
+    enum AVColorRange color_range;
+
+    /**
+     * This defines the location of chroma samples.
+     * - encoding: Set by user
+     * - decoding: Set by libavcodec
+     */
+     enum AVChromaLocation chroma_sample_location;
+
     /* ffdshow custom stuff (begin) */
     
     /**
@@ -2061,7 +2235,14 @@ typedef struct AVCodecContext {
     void (*handle_user_data)(struct AVCodecContext *c,const uint8_t *buf,int buf_size);
     int h264_has_to_drop_first_non_ref;    // Workaround Haali's media splitter (http://forum.doom9.org/showthread.php?p=1226434#post1226434)
 
-    enum CorePNGFrameType corepng_frame_type;    
+    enum CorePNGFrameType corepng_frame_type;
+
+    /**
+     * Force 4:3 or 16:9 as DAR (MPEG-2 only)
+     * - encoding: unused.
+     * - decoding: Set by user.
+     */
+    int isDVD;
 
     /* ffdshow custom stuff (end) */
 } AVCodecContext;
@@ -2117,87 +2298,16 @@ typedef struct AVPicture {
     int linesize[4];       ///< number of bytes per line
 } AVPicture;
 
-/**
- * AVPaletteControl
- * This structure defines a method for communicating palette changes
- * between and demuxer and a decoder.
- *
- * @deprecated Use AVPacket to send palette changes instead.
- * This is totally broken.
- */
-#define AVPALETTE_SIZE 1024
-#define AVPALETTE_COUNT 256
-typedef struct AVPaletteControl {
-
-    /* Demuxer sets this to 1 to indicate the palette has changed;
-     * decoder resets to 0. */
-    int palette_changed;
-
-    /* 4-byte ARGB palette entries, stored in native byte order; note that
-     * the individual palette components should be on a 8-bit scale; if
-     * the palette data comes from an IBM VGA native format, the component
-     * data is probably 6 bits in size and needs to be scaled. */
-    unsigned int palette[AVPALETTE_COUNT];
-
-} AVPaletteControl attribute_deprecated;
-
-/**
- * Allocate memory for a picture.  Call avpicture_free to free it.
- *
- * @param picture the picture to be filled in
- * @param pix_fmt the format of the picture
- * @param width the width of the picture
- * @param height the height of the picture
- * @return zero if successful, a negative value if not
- */
-int avpicture_alloc(AVPicture *picture, int pix_fmt, int width, int height);
-
-/**
- * Free a picture previously allocated by avpicture_alloc().
- *
- * @param picture the AVPicture to be freed
- */
-void avpicture_free(AVPicture *picture);
-
-/**
- * Fill in the AVPicture fields.
- * The fields of the given AVPicture are filled in by using the 'ptr' address
- * which points to the image data buffer. Depending on the specified picture
- * format, one or multiple image data pointers and line sizes will be set.
- * If a planar format is specified, several pointers will be set pointing to
- * the different picture planes and the line sizes of the different planes
- * will be stored in the lines_sizes array.
- *
- * @param picture AVPicture whose fields are to be filled in
- * @param ptr Buffer which will contain or contains the actual image data
- * @param pix_fmt The format in which the picture data is stored.
- * @param width the width of the image in pixels
- * @param height the height of the image in pixels
- * @return size of the image data in bytes
- */
-int avpicture_fill(AVPicture *picture, uint8_t *ptr,
-                   int pix_fmt, int width, int height);
-int avpicture_layout(const AVPicture* src, int pix_fmt, int width, int height,
-                     unsigned char *dest, int dest_size);
-
-/**
- * Calculate the size in bytes that a picture of the given width and height
- * would occupy if stored in the given picture format.
- *
- * @param pix_fmt the given picture format
- * @param width the width of the image
- * @param height the height of the image
- * @return Image data size in bytes
- */
-int avpicture_get_size(int pix_fmt, int width, int height);
-void avcodec_get_chroma_sub_sample(int pix_fmt, int *h_shift, int *v_shift);
-const char *avcodec_get_pix_fmt_name(int pix_fmt);
+void avcodec_get_chroma_sub_sample(enum PixelFormat pix_fmt, int *h_shift, int *v_shift);
 void avcodec_set_dimensions(AVCodecContext *s, int width, int height);
-enum PixelFormat avcodec_get_pix_fmt(const char* name);
-unsigned int avcodec_pix_fmt_to_codec_tag(enum PixelFormat p);
 
 /* external high level API */
 
+/**
+ * If c is NULL, returns the first registered codec,
+ * if c is non-NULL, returns the next registered codec after c,
+ * or NULL if c is the last one.
+ */
 AVCodec *av_codec_next(AVCodec *c);
 
 /**
@@ -2218,7 +2328,7 @@ FF_EXPORT void avcodec_init(void);
  *
  * @see avcodec_init()
  */
-void register_avcodec(AVCodec *codec);
+void avcodec_register(AVCodec *codec);
 
 /**
  * Finds a registered encoder with a matching codec ID.
@@ -2428,6 +2538,43 @@ int avcodec_parse_frame(AVCodecContext *avctx, uint8_t **pdata,
                         int *data_size_ptr,
                         uint8_t *buf, int buf_size);
 
+/**
+ * Encodes an audio frame from \p samples into \p buf.
+ *
+ * @note The output buffer should be at least \c FF_MIN_BUFFER_SIZE bytes large.
+ * However, for PCM audio the user will know how much space is needed
+ * because it depends on the value passed in \p buf_size as described
+ * below. In that case a lower value can be used.
+ *
+ * @param avctx the codec context
+ * @param[out] buf the output buffer
+ * @param[in] buf_size the output buffer size
+ * @param[in] samples the input buffer containing the samples
+ * The number of samples read from this buffer is frame_size*channels,
+ * both of which are defined in \p avctx.
+ * For PCM audio the number of samples read from \p samples is equal to
+ * \p buf_size * input_sample_size / output_sample_size.
+ * @return On error a negative value is returned, on success zero or the number
+ * of bytes used to encode the data read from the input buffer.
+ */
+int avcodec_encode_audio(AVCodecContext *avctx, uint8_t *buf, int buf_size,
+                         const short *samples);
+
+/**
+ * Encodes a video frame from \p pict into \p buf.
+ * The input picture should be
+ * stored using a specific format, namely \c avctx.pix_fmt.
+ *
+ * @param avctx the codec context
+ * @param[out] buf the output buffer for the bitstream of encoded frame
+ * @param[in] buf_size the size of the output buffer in bytes
+ * @param[in] pict the input picture to encode
+ * @return On error a negative value is returned, on success zero or the number
+ * of bytes used from the output buffer.
+ */
+int avcodec_encode_video(AVCodecContext *avctx, uint8_t *buf, int buf_size,
+                         const AVFrame *pict);
+
 FF_EXPORT int avcodec_close(AVCodecContext *avctx);
 
 /**
@@ -2436,7 +2583,7 @@ FF_EXPORT int avcodec_close(AVCodecContext *avctx);
  * which formats you want to support, by using the individual registration
  * functions.
  *
- * @see register_avcodec
+ * @see avcodec_register
  * @see av_register_codec_parser
  * @see av_register_bitstream_filter
  */
@@ -2485,6 +2632,18 @@ typedef struct AVCodecParserContext {
     int64_t next_frame_offset; /* offset of the next frame */
     /* video info */
     int pict_type; /* XXX: Put it back in AVCodecContext. */
+    /**
+     * This field is used for proper frame duration computation in lavf.
+     * It signals, how much longer the frame duration of the current frame
+     * is compared to normal frame duration.
+     *
+     * frame_duration = (2 + repeat_pict) / (2*fps)
+     *
+     * It is used by codecs like H.264 to display telecined material.
+     *
+     * @note This field can also be set to -1 for half-frame duration in case
+     *       of field pictures.
+     */
     int repeat_pict; /* XXX: Put it back in AVCodecContext. */
     int64_t pts;     /* pts of the current frame */
     int64_t dts;     /* dts of the current frame */
@@ -2505,6 +2664,89 @@ typedef struct AVCodecParserContext {
 
     int64_t offset;      ///< byte offset from starting packet start
     int64_t cur_frame_end[AV_PARSER_PTS_NB];
+
+    /*!
+     * Set by parser to 1 for key frames and 0 for non-key frames.
+     * It is initialized to -1, so if the parser doesn't set this flag,
+     * old-style fallback using FF_I_TYPE picture type as key frames
+     * will be used.
+     */
+    int key_frame;
+
+    /**
+     * Time difference in stream time base units from the pts of this
+     * packet to the point at which the output from the decoder has converged
+     * independent from the availability of previous frames. That is, the
+     * frames are virtually identical no matter if decoding started from
+     * the very first frame or from this keyframe.
+     * Is AV_NOPTS_VALUE if unknown.
+     * This field is not the display duration of the current frame.
+     *
+     * The purpose of this field is to allow seeking in streams that have no
+     * keyframes in the conventional sense. It corresponds to the
+     * recovery point SEI in H.264 and match_time_delta in NUT. It is also
+     * essential for some types of subtitle streams to ensure that all
+     * subtitles are correctly displayed after seeking.
+     */
+    int64_t convergence_duration;
+
+    // Timestamp generation support:
+    /**
+     * Synchronization point for start of timestamp generation.
+     *
+     * Set to >0 for sync point, 0 for no sync point and <0 for undefined
+     * (default).
+     *
+     * For example, this corresponds to presence of H.264 buffering period
+     * SEI message.
+     */
+    int dts_sync_point;
+
+    /**
+     * Offset of the current timestamp against last timestamp sync point in
+     * units of AVCodecContext.time_base.
+     *
+     * Set to INT_MIN when dts_sync_point unused. Otherwise, it must
+     * contain a valid timestamp offset.
+     *
+     * Note that the timestamp of sync point has usually a nonzero
+     * dts_ref_dts_delta, which refers to the previous sync point. Offset of
+     * the next frame after timestamp sync point will be usually 1.
+     *
+     * For example, this corresponds to H.264 cpb_removal_delay.
+     */
+    int dts_ref_dts_delta;
+
+    /**
+     * Presentation delay of current frame in units of AVCodecContext.time_base.
+     *
+     * Set to INT_MIN when dts_sync_point unused. Otherwise, it must
+     * contain valid non-negative timestamp delta (presentation time of a frame
+     * must not lie in the past).
+     *
+     * This delay represents the difference between decoding and presentation
+     * time of the frame.
+     *
+     * For example, this corresponds to H.264 dpb_output_delay.
+     */
+    int pts_dts_delta;
+
+    /**
+     * Position of the packet in file.
+     *
+     * Analogous to cur_frame_pts/dts
+     */
+    int64_t cur_frame_pos[AV_PARSER_PTS_NB];
+
+    /**
+     * Byte position of currently parsed frame in stream.
+     */
+    int64_t pos;
+
+    /**
+     * Previous frame byte position.
+     */
+    int64_t last_pos;
 } AVCodecParserContext;
 
 typedef struct AVCodecParser {
@@ -2524,11 +2766,74 @@ AVCodecParser *av_parser_next(AVCodecParser *c);
 
 void av_register_codec_parser(AVCodecParser *parser);
 FF_EXPORT AVCodecParserContext *av_parser_init(int codec_id);
-FF_EXPORT int av_parser_parse(AVCodecParserContext *s,
+
+#if LIBAVCODEC_VERSION_MAJOR < 53
+/**
+ * AVPaletteControl
+ * This structure defines a method for communicating palette changes
+ * between and demuxer and a decoder.
+ *
+ * @deprecated Use AVPacket to send palette changes instead.
+ * This is totally broken.
+ */
+#define AVPALETTE_SIZE 1024
+#define AVPALETTE_COUNT 256
+typedef struct AVPaletteControl {
+
+    /* Demuxer sets this to 1 to indicate the palette has changed;
+     * decoder resets to 0. */
+    int palette_changed;
+
+    /* 4-byte ARGB palette entries, stored in native byte order; note that
+     * the individual palette components should be on a 8-bit scale; if
+     * the palette data comes from an IBM VGA native format, the component
+     * data is probably 6 bits in size and needs to be scaled. */
+    unsigned int palette[AVPALETTE_COUNT];
+
+} AVPaletteControl attribute_deprecated;
+
+int av_parser_parse(AVCodecParserContext *s,
                     AVCodecContext *avctx,
                     uint8_t **poutbuf, int *poutbuf_size,
                     const uint8_t *buf, int buf_size,
                     int64_t pts, int64_t dts);
+#endif
+
+/**
+ * Parse a packet.
+ *
+ * @param s             parser context.
+ * @param avctx         codec context.
+ * @param poutbuf       set to pointer to parsed buffer or NULL if not yet finished.
+ * @param poutbuf_size  set to size of parsed buffer or zero if not yet finished.
+ * @param buf           input buffer.
+ * @param buf_size      input length, to signal EOF, this should be 0 (so that the last frame can be output).
+ * @param pts           input presentation timestamp.
+ * @param dts           input decoding timestamp.
+ * @param pos           input byte position in stream.
+ * @return the number of bytes of the input bitstream used.
+ *
+ * Example:
+ * @code
+ *   while(in_len){
+ *       len = av_parser_parse2(myparser, AVCodecContext, &data, &size,
+ *                                        in_data, in_len,
+ *                                        pts, dts, pos);
+ *       in_data += len;
+ *       in_len  -= len;
+ *
+ *       if(size)
+ *          decode_frame(data, size);
+ *   }
+ * @endcode
+ */
+int av_parser_parse2(AVCodecParserContext *s,
+                     AVCodecContext *avctx,
+                     uint8_t **poutbuf, int *poutbuf_size,
+                     const uint8_t *buf, int buf_size,
+                     int64_t pts, int64_t dts,
+                     int64_t pos);
+
 int av_parser_change(AVCodecParserContext *s,
                      AVCodecContext *avctx,
                      uint8_t **poutbuf, int *poutbuf_size,
@@ -2546,6 +2851,20 @@ FF_EXPORT void av_free(void *ptr);
  */
 void *av_fast_realloc(void *ptr, unsigned int *size, unsigned int min_size);
 
+/**
+ * Allocates a buffer, reusing the given one if large enough.
+ *
+ * Contrary to av_fast_realloc the current buffer contents might not be
+ * preserved and on error the old buffer is freed, thus no special
+ * handling to avoid memleaks is necessary.
+ *
+ * @param ptr pointer to pointer to already allocated buffer, overwritten with pointer to new buffer
+ * @param size size of the buffer *ptr points to
+ * @param min_size minimum size of *ptr buffer after returning, *ptr will be NULL and
+ *                 *size 0 if an error occurred.
+ */
+void av_fast_malloc(void *ptr, unsigned int *size, unsigned int min_size);
+
 /* for static data only */
 
 /**
@@ -2562,18 +2881,18 @@ attribute_deprecated void av_free_static(void);
  * Copy image 'src' to 'dst'.
  */
 void av_picture_copy(AVPicture *dst, const AVPicture *src,
-              int pix_fmt, int width, int height);
+                     enum PixelFormat pix_fmt, int width, int height);
 
 /**
  * Crop image top and left side.
  */
 int av_picture_crop(AVPicture *dst, const AVPicture *src,
-             int pix_fmt, int top_band, int left_band);
+                    enum PixelFormat pix_fmt, int top_band, int left_band);
 
 /**
  * Pad image.
  */
-int av_picture_pad(AVPicture *dst, const AVPicture *src, int height, int width, int pix_fmt,
+int av_picture_pad(AVPicture *dst, const AVPicture *src, int height, int width, enum PixelFormat pix_fmt,
             int padtop, int padbottom, int padleft, int padright, int *color);
 
 unsigned int av_xiphlacing(unsigned char *s, unsigned int v);
@@ -2603,6 +2922,8 @@ int avcodec_h264_search_recovery_point(AVCodecContext *avctx,
 #define AVERROR_NOMEM       AVERROR(ENOMEM)  /**< not enough memory */
 #define AVERROR_NOFMT       AVERROR(EILSEQ)  /**< unknown format */
 #define AVERROR_NOTSUPP     AVERROR(ENOSYS)  /**< Operation not supported. */
+#define AVERROR_NOENT       AVERROR(ENOENT)  /**< No such file or directory. */
+#define AVERROR_EOF         AVERROR(EPIPE)   /**< End of file. */
 #define AVERROR_PATCHWELCOME    -MKTAG('P','A','W','E') /**< Not yet implemented in FFmpeg. Patches welcome. */
 
 

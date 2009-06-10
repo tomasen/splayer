@@ -58,7 +58,7 @@ bool CDVDSession::BeginSession()
 		if(!DeviceIoControl(m_hDrive, IOCTL_DVD_END_SESSION, &m_session, sizeof(m_session), NULL, 0, &BytesReturned, NULL)
 		|| !DeviceIoControl(m_hDrive, IOCTL_DVD_START_SESSION, NULL, 0, &m_session, sizeof(m_session), &BytesReturned, NULL))
 		{
-			CloseHandle(m_hDrive);
+			Close();
 			DWORD err = GetLastError();
 			return(false);
 		}
@@ -304,7 +304,7 @@ bool CLBAFile::Open(LPCTSTR path)
 {
 	Close();
 
-	return(!!CFile::Open(path, modeRead|typeBinary|shareDenyWrite|osSequentialScan));
+	return(!!CFile::Open(path, modeRead|typeBinary|shareDenyNone|osSequentialScan));
 }
 
 void CLBAFile::Close()
@@ -366,7 +366,7 @@ bool CVobFile::HasTitleKey(BYTE* key)
 bool CVobFile::Open(CString fn, CAtlList<CString>& vobs)
 {
 	CFile f;
-	if(!f.Open(fn, CFile::modeRead|CFile::typeBinary|CFile::shareDenyWrite))
+	if(!f.Open(fn, CFile::modeRead|CFile::typeBinary|CFile::shareDenyNone))
 		return(false);
 
 	char hdr[13];

@@ -1,6 +1,6 @@
 /*
  * Common code between the AC-3 encoder and decoder
- * Copyright (c) 2000, 2001, 2002 Fabrice Bellard.
+ * Copyright (c) 2000, 2001, 2002 Fabrice Bellard
  *
  * This file is part of FFmpeg.
  *
@@ -20,7 +20,7 @@
  */
 
 /**
- * @file ac3.h
+ * @file libavcodec/ac3.h
  * Common code between the AC-3 encoder and decoder.
  */
 
@@ -100,6 +100,7 @@ typedef struct {
     uint32_t bit_rate;
     uint8_t channels;
     uint16_t frame_size;
+    int64_t channel_layout;
     /** @} */
 } AC3HeaderInfo;
 

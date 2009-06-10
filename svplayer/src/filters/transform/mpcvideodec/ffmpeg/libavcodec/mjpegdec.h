@@ -1,6 +1,6 @@
 /*
  * MJPEG decoder
- * Copyright (c) 2000, 2001 Fabrice Bellard.
+ * Copyright (c) 2000, 2001 Fabrice Bellard
  * Copyright (c) 2003 Alex Beregszaszi
  * Copyright (c) 2003-2004 Michael Niedermayer
  *
@@ -22,7 +22,7 @@
  */
 
 /**
- * @file mjpegdec.h
+ * @file libavcodec/mjpegdec.h
  * MJPEG decoder.
  */
 
@@ -30,7 +30,7 @@
 #define AVCODEC_MJPEGDEC_H
 
 #include "avcodec.h"
-#include "bitstream.h"
+#include "get_bits.h"
 #include "dsputil.h"
 
 #define MAX_COMPONENTS 4

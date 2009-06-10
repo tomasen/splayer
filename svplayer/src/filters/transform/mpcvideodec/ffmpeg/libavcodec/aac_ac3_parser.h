@@ -1,7 +1,7 @@
 /*
  * Common AAC and AC-3 parser prototypes
- * Copyright (c) 2003 Fabrice Bellard.
- * Copyright (c) 2003 Michael Niedermayer.
+ * Copyright (c) 2003 Fabrice Bellard
+ * Copyright (c) 2003 Michael Niedermayer
  *
  * This file is part of FFmpeg.
  *
@@ -26,7 +26,6 @@
 #ifdef __GNUC__
 #include <stdint.h>
 #endif
-
 #include "avcodec.h"
 #include "parser.h"
 
@@ -51,11 +50,13 @@ typedef struct AACAC3ParseContext {
     int sample_rate;
     int bit_rate;
     int samples;
+    int64_t channel_layout;
 
     int remaining_size;
     uint64_t state;
 
     int need_next_header;
+    enum CodecID codec_id;
 } AACAC3ParseContext;
 
 int ff_aac_ac3_parse(AVCodecParserContext *s1,

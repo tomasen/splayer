@@ -1,7 +1,7 @@
 /*
  * AC-3 parser prototypes
- * Copyright (c) 2003 Fabrice Bellard.
- * Copyright (c) 2003 Michael Niedermayer.
+ * Copyright (c) 2003 Fabrice Bellard
+ * Copyright (c) 2003 Michael Niedermayer
  *
  * This file is part of FFmpeg.
  *
@@ -24,7 +24,7 @@
 #define AVCODEC_AC3_PARSER_H
 
 #include "ac3.h"
-#include "bitstream.h"
+#include "get_bits.h"
 
 /**
  * Parses AC-3 frame header.

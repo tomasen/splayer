@@ -18,10 +18,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef FFMPEG_UNARY_H
-#define FFMPEG_UNARY_H
+#ifndef AVCODEC_UNARY_H
+#define AVCODEC_UNARY_H
 
-#include "bitstream.h"
+#include "get_bits.h"
 
 /**
  * Get unary code of limited length
@@ -48,4 +48,9 @@ static inline int get_unary_0_33(GetBitContext *gb)
     return get_unary(gb, 0, 33);
 }
 
-#endif /* FFMPEG_UNARY_H */
+static inline int get_unary_0_9(GetBitContext *gb)
+{
+    return get_unary(gb, 0, 9);
+}
+
+#endif /* AVCODEC_UNARY_H */

@@ -290,13 +290,13 @@ STDMETHODIMP CDX9SubPic::AlphaBlt(RECT* pSrc, RECT* pDst, SubPicDesc* pTarget)
 
         hr = pD3DDev->SetPixelShader(NULL);
 
-		if(FAILED(hr = pD3DDev->BeginScene()))
-			break;
+		//if(FAILED(hr = pD3DDev->BeginScene()))
+			//break;
 
         hr = pD3DDev->SetFVF(D3DFVF_XYZRHW | D3DFVF_TEX1);
 		hr = pD3DDev->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, pVertices, sizeof(pVertices[0]));
 
-		hr = pD3DDev->EndScene();
+		//hr = pD3DDev->EndScene();
 
         //
 

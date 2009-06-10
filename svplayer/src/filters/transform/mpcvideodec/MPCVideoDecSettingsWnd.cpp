@@ -1,5 +1,5 @@
 /* 
- * $Id: MPCVideoDecSettingsWnd.cpp 908 2008-11-29 17:42:09Z casimir666 $
+ * $Id: MPCVideoDecSettingsWnd.cpp 1131 2008-11-29 17:42:09Z casimir666 $
  *
  * (C) 2006-2007 see AUTHORS
  *
@@ -101,6 +101,8 @@ bool CMPCVideoDecSettingsWnd::OnActivate()
 	m_cbThreadNumber.AddString (_T("4"));
 	m_cbThreadNumber.AddString (_T("5"));
 	m_cbThreadNumber.AddString (_T("6"));
+	m_cbThreadNumber.AddString (_T("7"));
+	m_cbThreadNumber.AddString (_T("8"));
 
 	// H264 deblocking mode
 	nPosY += VERTICAL_SPACING;

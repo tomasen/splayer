@@ -1,5 +1,5 @@
 /* 
- * $Id: H264Nalu.h 1009 2009-03-10 19:20:57Z casimir666 $
+ * $Id: H264Nalu.h 1156 2009-03-10 19:20:57Z casimir666 $
  *
  * (C) 2006-2007 see AUTHORS
  *
@@ -73,6 +73,7 @@ public :
 
 	int			GetLength()		{ return m_nCurPos - m_nNALStartPos; };
 	BYTE*		GetNALBuffer()	{ return m_pBuffer + m_nNALStartPos; };
+	bool		IsEOF()			{ return m_nCurPos >= m_nSize; };
 
 	void		SetBuffer (BYTE* pBuffer, int nSize, int nNALSize);
 	bool		ReadNext();

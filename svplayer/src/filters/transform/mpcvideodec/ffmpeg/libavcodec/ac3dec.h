@@ -20,16 +20,17 @@
  */
 
 /**
- * @file ac3.h
+ * @file libavcodec/ac3.h
  * Common code between the AC-3 and E-AC-3 decoders.
  */
 
 #ifndef AVCODEC_AC3DEC_H
 #define AVCODEC_AC3DEC_H
 
+#include "libavutil/internal.h"
 #include "libavutil/lfg.h"
 #include "ac3.h"
-#include "bitstream.h"
+#include "get_bits.h"
 #include "dsputil.h"
 
 /* override ac3.h to include coupling channel */
@@ -62,6 +63,7 @@ typedef struct {
     int sample_rate;                        ///< sample frequency, in Hz
     int num_blocks;                         ///< number of audio blocks
     int channel_mode;                       ///< channel mode                           (acmod)
+    int channel_layout;                     ///< channel layout
     int lfe_on;                             ///< lfe channel in use
     int channel_map;                        ///< custom channel map
     int center_mix_level;                   ///< Center mix level index
@@ -85,7 +87,6 @@ typedef struct {
     int channel_in_cpl[AC3_MAX_CHANNELS];   ///< channel in coupling                    (chincpl)
     int phase_flags_in_use;                 ///< phase flags in use                     (phsflginu)
     int phase_flags[18];                    ///< phase flags                            (phsflg)
-    int num_cpl_subbands;                   ///< number of coupling sub bands           (ncplsubnd)
     int num_cpl_bands;                      ///< number of coupling bands               (ncplbnd)
     uint8_t cpl_band_struct[18];            ///< coupling band structure                (cplbndstrc)
     int firstchincpl;                       ///< first channel in coupling
@@ -106,7 +107,7 @@ typedef struct {
     int num_spx_subbands;                   ///< number of spectral extension subbands
     int num_spx_bands;                      ///< number of spectral extension bands     (nspxbnds)
     uint8_t spx_band_struct[SPX_MAX_BANDS]; ///< spectral extension band structure      (spxbndstrc)
-    uint8_t spx_band_sizes[SPX_MAX_BANDS];  ///< number of bins in each band            (spxbndsztab)
+    uint8_t spx_band_sizes[SPX_MAX_BANDS];      ///< number of bins in each band            (spxbndsztab)
     int first_spx_coords[AC3_MAX_CHANNELS]; ///< first spx coordinates states           (firstspxcos)
     int spx_noise_blend[AC3_MAX_CHANNELS][SPX_MAX_BANDS];   ///< spx noise blending factor  (nblendfact)
     int spx_signal_blend[AC3_MAX_CHANNELS][SPX_MAX_BANDS];  ///< spx signal blending factor (sblendfact)

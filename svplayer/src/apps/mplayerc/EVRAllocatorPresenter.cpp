@@ -1684,7 +1684,8 @@ STDMETHODIMP CEVRAllocatorPresenter::GetIdealVideoSize(SIZE *pszMin, SIZE *pszMa
 }
 STDMETHODIMP CEVRAllocatorPresenter::SetVideoPosition(const MFVideoNormalizedRect *pnrcSource, const LPRECT prcDest)
 {
-	return S_OK;
+	//m_VideoRect = prcDest; shouldn't we do something?
+	return E_NOTIMPL;
 }
 STDMETHODIMP CEVRAllocatorPresenter::GetVideoPosition(MFVideoNormalizedRect *pnrcSource, LPRECT prcDest)
 {
@@ -1716,7 +1717,7 @@ STDMETHODIMP CEVRAllocatorPresenter::GetAspectRatioMode(DWORD *pdwAspectRatioMod
 STDMETHODIMP CEVRAllocatorPresenter::SetVideoWindow(HWND hwndVideo)
 {
 	ASSERT (m_hWnd == hwndVideo);	// What if not ??
-//	m_hWnd = hwndVideo;
+ 	m_hWnd = hwndVideo;
 	return S_OK;
 }
 STDMETHODIMP CEVRAllocatorPresenter::GetVideoWindow(HWND *phwndVideo)

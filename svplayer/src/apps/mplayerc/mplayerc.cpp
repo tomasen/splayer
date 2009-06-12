@@ -2867,7 +2867,7 @@ bool FindRedir(CString& fn, CString ct, CAtlList<CString>& fns, CAutoPtrList<CAt
 
 	return fns.GetCount() > 0;
 }
-void GetSystemFontWithScale(CFont* pFont, double dDefaultSize){
+void GetSystemFontWithScale(CFont* pFont, double dDefaultSize, int iWeight){
 	HDC hdc = ::GetDC(NULL);
 	double scale = 1.0*GetDeviceCaps(hdc, LOGPIXELSY) / 96.0;
 	::ReleaseDC(0, hdc);
@@ -2875,13 +2875,15 @@ void GetSystemFontWithScale(CFont* pFont, double dDefaultSize){
 	pFont->m_hObject = NULL;
 
 	if(!(::GetVersion()&0x80000000))
-		pFont->CreateFont(int(dDefaultSize * scale), 0, 0, 0, FW_NORMAL, 0, 0, 0, DEFAULT_CHARSET,
+		pFont->CreateFont(int(dDefaultSize * scale), 0, 0, 0, iWeight, 0, 0, 0, DEFAULT_CHARSET,
 		OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH|FF_DONTCARE, 
 		_T("Microsoft Sans Serif"));
 	if(!pFont->m_hObject)
-		pFont->CreateFont(int(dDefaultSize * scale), 0, 0, 0, FW_NORMAL, 0, 0, 0, DEFAULT_CHARSET, 
+		pFont->CreateFont(int(dDefaultSize * scale), 0, 0, 0, iWeight, 0, 0, 0, DEFAULT_CHARSET, 
 		OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH|FF_DONTCARE, 
 		_T("MS Sans Serif"));
+
+	
 }
 CString GetContentType(CString fn, CAtlList<CString>* redir)
 {

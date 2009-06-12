@@ -803,6 +803,7 @@ private:
 	CSUIBtnList m_btnList;
 	CRgn m_rgn;
 	CFont m_hft;
+	BOOL m_bHasDrawShadowText;
 	//long m_nBoxStatus[4];
 	/*NEW UI END*/
 public:

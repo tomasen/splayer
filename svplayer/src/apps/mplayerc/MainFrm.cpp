@@ -501,7 +501,8 @@ CMainFrame::CMainFrame() :
 	m_bCheckingUpdater(false),
 	m_WndSizeInited(false),
 	m_iOSDAlign(0),
-	m_bDxvaInUse(false)
+	m_bDxvaInUse(false) ,
+	m_bHasDrawShadowText(false)
 {
 }
 
@@ -607,7 +608,15 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	
 	ShowControls( ( s.nCS | (s.bShowControlBar ? CS_COLORCONTROLBAR : 0) ) & ~CS_SEEKBAR , false );
 	
-	GetSystemFontWithScale(&m_hft, 14.0);
+	GetSystemFontWithScale(&m_hft, 14.0, 600);
+
+	HMODULE hCommCtrlDLL =  ::LoadLibrary(L"comctl32.dll");
+	if (hCommCtrlDLL)
+	{
+		if( ::GetProcAddress(hCommCtrlDLL, "DrawShadowText") ){
+			m_bHasDrawShadowText = true;
+		}
+	}
 
 	SetAlwaysOnTop(s.iOnTop);
 
@@ -1199,7 +1208,13 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 			}
 			szWindowText.Append(m_szTitle);
 			//GetWindowText(szWindowText);
-			::DrawShadowText(hdc, szWindowText, szWindowText.GetLength(), &rcWindowText, DT_LEFT|DT_SINGLELINE | DT_VCENTER, RGB(45,45,45), RGB(255,255,255), 1,1);
+			if(m_bHasDrawShadowText)
+				::DrawShadowText(hdc, szWindowText, szWindowText.GetLength(), &rcWindowText, DT_LEFT|DT_SINGLELINE | DT_VCENTER, 0x00525d66, RGB(255,255,255), 1,1);
+			else{
+				hdc.SetTextColor(0x00525d66);
+				hdc.SetBkColor( 0x00d6d7ce);
+				DrawText(hdc, szWindowText, szWindowText.GetLength(), &rcWindowText, DT_LEFT|DT_SINGLELINE | DT_VCENTER );
+			}
 			hdc.SelectObject(holdft);
 
 			// min/max/close buttons

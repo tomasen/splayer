@@ -336,9 +336,9 @@
 #define ID_RECENT_FILE_START            5000
 #define ID_RECENT_FILE_END              5200
 #define ID_FILE_COPYTOCLIPBOARD         5201
-#define ID_RECENTFILE_CLEAR		        5202
-#define ID_RECENTFILE_DISABLE	        5203
-#define ID_RECENTFILE_ENABLE	        5204
+#define ID_RECENTFILE_CLEAR             5202
+#define ID_RECENTFILE_DISABLE           5203
+#define ID_RECENTFILE_ENABLE            5204
 #define TIMER_FASTFORWORD               7001
 #define TIMER_STOPFASTFORWORD           7002
 #define TIMER_STATERASER                7003
@@ -924,6 +924,20 @@
 #define ID_32823                        32823
 #define ID_32824                        32824
 #define ID_CHANGEBACKGROUND             32825
+#define ID__32826                       32826
+#define ID_32827                        32827
+#define ID_32828                        32828
+#define ID_32829                        32829
+#define ID_32830                        32830
+#define ID_32831                        32831
+#define ID_32832                        32832
+#define ID_ROTATE_H                     32833
+#define ID_ROTATE_V                     32834
+#define ID_ROTATE_90                    32835
+#define ID_ROTATE_270                   32836
+#define ID_ROTATE_180                   32837
+#define ID_ROTATE_RESET                 32838
+#define ID_ROTATE_END	                32850
 #define IDS_VOLUME_BOOST_INC            33129
 #define IDS_VOLUME_BOOST_DEC            33130
 #define IDS_VOLUME_BOOST_MIN            33131
@@ -998,7 +1012,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        20011
-#define _APS_NEXT_COMMAND_VALUE         32826
+#define _APS_NEXT_COMMAND_VALUE         32838
 #define _APS_NEXT_CONTROL_VALUE         22004
 #define _APS_NEXT_SYMED_VALUE           24001
 #endif

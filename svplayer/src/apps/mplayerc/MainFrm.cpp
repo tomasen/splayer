@@ -312,7 +312,9 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND_RANGE(ID_PANNSCAN_PRESETS_START, ID_PANNSCAN_PRESETS_END, OnViewPanNScanPresets)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_PANNSCAN_PRESETS_START, ID_PANNSCAN_PRESETS_END, OnUpdateViewPanNScanPresets)
 	ON_COMMAND_RANGE(ID_PANSCAN_ROTATEXP, ID_PANSCAN_ROTATEZM, OnViewRotate)
+	ON_COMMAND_RANGE(ID_ROTATE_H, ID_ROTATE_END, OnViewRotate)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_PANSCAN_ROTATEXP, ID_PANSCAN_ROTATEZM, OnUpdateViewRotate)
+	ON_UPDATE_COMMAND_UI_RANGE(ID_ROTATE_H, ID_ROTATE_END, OnUpdateViewRotate)
 	ON_COMMAND_RANGE(ID_ASPECTRATIO_START, ID_ASPECTRATIO_END, OnViewAspectRatio)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_ASPECTRATIO_START, ID_ASPECTRATIO_END, OnUpdateViewAspectRatio)
 	ON_COMMAND(ID_ASPECTRATIO_NEXT, OnViewAspectRatioNext)
@@ -6064,6 +6066,25 @@ void CMainFrame::OnViewRotate(UINT nID)
 	case ID_PANSCAN_ROTATEYM: m_AngleY -= 2; break;
 	case ID_PANSCAN_ROTATEZP: m_AngleZ += 2; break;
 	case ID_PANSCAN_ROTATEZM: m_AngleZ -= 2; break;
+
+	case ID_ROTATE_H: 
+		if(m_AngleY > 180 ) m_AngleY -= 180; else m_AngleY += 180;
+		break;
+	case ID_ROTATE_V: 
+		if(m_AngleX > 180 ) m_AngleX -= 180; else m_AngleX += 180;
+		break;
+	case ID_ROTATE_90:
+		if(m_AngleZ > 270 ) m_AngleZ -= 270; else m_AngleZ += 90;
+		break;
+	case ID_ROTATE_180: 
+		if(m_AngleZ > 180 ) m_AngleZ -= 180; else m_AngleZ += 180;
+		break;
+	case ID_ROTATE_270: 
+		if(m_AngleZ < 90 ) m_AngleZ += 270; else m_AngleZ -= 90;
+		break;
+	case ID_ROTATE_RESET:
+		m_AngleX = m_AngleY = m_AngleZ = 0;
+		break;
 	default: return;
 	}
 
@@ -6959,6 +6980,7 @@ void CMainFrame::OnUpdatePlayShaders(CCmdUI* pCmdUI)
 {
 	if(pCmdUI->m_nID >= ID_SHADERS_START)
 	{
+		
 		pCmdUI->Enable(!!m_pCAP);
 
 		if(pCmdUI->m_nID == ID_SHADERS_START)
@@ -8171,6 +8193,10 @@ CSize CMainFrame::GetVideoSize()
 	{
 		wh = m_pCAP->GetVideoSize(false);
 		arxy = m_pCAP->GetVideoSize(fKeepAspectRatio);
+
+		//CString szLog;
+		//szLog.Format(_T("vSize %d %d %d %d") , wh.cx, wh.cy , arxy.cx , arxy.cy);
+		//SVP_LogMsg(szLog);
 	}
 	else
 	{
@@ -8365,6 +8391,7 @@ void CMainFrame::MoveVideoWindow(bool fShowStats)
 				}
 			}
 
+
 			CSize size(
 				(int)(m_ZoomX*w), 
 				(int)(m_ZoomY*h));
@@ -8384,6 +8411,10 @@ void CMainFrame::MoveVideoWindow(bool fShowStats)
 		wr |= CRect(0,0,0,0);
 		vr |= CRect(0,0,0,0);
 		
+
+		//CString szLog;
+		//szLog.Format(_T("WVSize3 %d %d %d %d %d %d %d "), wr.Width(), wr.Height(), vr.Width(), vr.Height(), m_AngleX , m_AngleY , m_AngleZ);
+		//SVP_LogMsg(szLog);
 		if(m_pCAP)
 		{
 			m_pCAP->SetPosition(wr, vr);
@@ -8614,6 +8645,8 @@ void CMainFrame::SetShaders()
 	}
 
 	m_pCAP->SetPixelShader(NULL, NULL);
+	if (m_pCAP2)
+		m_pCAP2->SetPixelShader2(NULL, NULL, true);
 
 	CAtlList<CString> labels;
 
@@ -8631,6 +8664,8 @@ void CMainFrame::SetShaders()
 			if(FAILED(hr))
 			{
 				m_pCAP->SetPixelShader(NULL, NULL);
+				if (m_pCAP2)
+					m_pCAP2->SetPixelShader2(NULL, NULL, true);
 				SendStatusMessage(_T("无法启用DX9特效: ") + pShader->label, 3000);
 				return;
 			}
@@ -10071,12 +10106,18 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 
 		if(m_fOpeningAborted) throw aborted;
 
+		m_pCAP2 = NULL;
+		m_pCAP = NULL;
+
 		if(OpenFileData* p = dynamic_cast<OpenFileData*>(pOMD.m_p)) OpenFile(p);
 		else if(OpenDVDData* p = dynamic_cast<OpenDVDData*>(pOMD.m_p)) OpenDVD(p);
 		else if(OpenDeviceData* p = dynamic_cast<OpenDeviceData*>(pOMD.m_p)) OpenCapture(p);
 		else throw _T("Can't open, invalid input parameters");
 
+		
+
 		pGB->FindInterface(__uuidof(ISubPicAllocatorPresenter), (void**)&m_pCAP, TRUE);
+		pGB->FindInterface(__uuidof(ISubPicAllocatorPresenter2), (void**)&m_pCAP2, TRUE);
 		pGB->FindInterface(__uuidof(IVMRMixerControl9),			(void**)&m_pMC,  TRUE);
 		if (m_pMC)
 		{
@@ -10233,6 +10274,7 @@ void CMainFrame::CloseMediaPrivate()
 //	if(pVW) pVW->put_MessageDrain((OAHWND)NULL), pVW->put_Owner((OAHWND)NULL);
 
 	m_pCAP = NULL; // IMPORTANT: IVMRSurfaceAllocatorNotify/IVMRSurfaceAllocatorNotify9 has to be released before the VMR/VMR9, otherwise it will crash in Release()
+	m_pCAP2  = NULL;
 	m_pMC	 = NULL;
 	m_pMFVDC = NULL;
 
@@ -12343,8 +12385,10 @@ bool CMainFrame::BuildGraphVideoAudio(int fVPreview, bool fVCapture, int fAPrevi
 		if(fVidPrev)
 		{
 			m_pCAP = NULL;
+			m_pCAP2 = NULL;
 			pGB->Render(pVidPrevPin);
 			pGB->FindInterface(__uuidof(ISubPicAllocatorPresenter), (void**)&m_pCAP, TRUE);
+			pGB->FindInterface(__uuidof(ISubPicAllocatorPresenter2), (void**)&m_pCAP2, TRUE);
 		}
 
 		if(fVidCap)

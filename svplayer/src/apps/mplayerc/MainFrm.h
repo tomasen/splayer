@@ -190,6 +190,7 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 	CComPtr<IAMDroppedFrames> pAMDF;
 
 	CComPtr<ISubPicAllocatorPresenter> m_pCAP;
+	CComPtr<ISubPicAllocatorPresenter2> m_pCAP2;
 	
 
 	void SetBalance(int balance);

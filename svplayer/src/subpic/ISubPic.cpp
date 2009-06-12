@@ -932,6 +932,10 @@ STDMETHODIMP_(void) ISubPicAllocatorPresenterImpl::SetPosition(RECT w, RECT v)
 		}
 	}
 
+	//CString szLog;
+	//szLog.Format(_T("WVSize %d %d %d %d "), m_WindowRect.Width(), m_WindowRect.Height(), m_VideoRect.Width(), m_VideoRect.Height());
+	//SVP_LogMsg(szLog);
+
 	if(fWindowPosChanged || fVideoRectChanged)
 		Paint(fWindowSizeChanged || fVideoRectChanged);
 }
@@ -1020,8 +1024,12 @@ void ISubPicAllocatorPresenterImpl::Transform(CRect r, Vector v[4])
 		v[i].z = v[i].z / l + 0.5f;
 		v[i].x /= v[i].z*2;
 		v[i].y /= v[i].z*2;
+		//CString szLog;
+		//szLog.Format(_T("%f %f %f %f %f %f"), l + 0.5f ,  v[i].z*2 , v[i].z*2 , v[i].x , v[i].y , v[i].z);
+		//SVP_LogMsg(szLog);
 		v[i] += center;
 	}
+	
 }
 
 STDMETHODIMP ISubPicAllocatorPresenterImpl::SetVideoAngle(Vector v, bool fRepaint)

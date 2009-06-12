@@ -137,8 +137,8 @@ HRESULT CUESettingPanel::OnColorSub(IHTMLElement *pElement){
 	if(iSub == 2){sts = m_stss2;}else{sts = m_stss;}
 
 	int i = 0;
-	CColorDialog dlg(sts.colors[iCol]);
-	dlg.m_cc.Flags |= CC_FULLOPEN;
+	CColorDialog dlg(sts.colors[iCol], CC_ANYCOLOR|CC_FULLOPEN, this);
+	//dlg.m_cc.Flags |= CC_FULLOPEN;
 	if(dlg.DoModal() == IDOK)
 	{
 		if(iSub == 2){

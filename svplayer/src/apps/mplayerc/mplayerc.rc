@@ -1453,7 +1453,6 @@ IDF_LOGO5               FILE                    "res\\logo.5.png"
 IDF_LOGO6               FILE                    "res\\logo.6.png"
 IDF_LOGO7               FILE                    "res\\logo.0.png"
 
-
 /////////////////////////////////////////////////////////////////////////////
 //
 // Icon
@@ -1831,6 +1830,8 @@ BEGIN
         MENUITEM "第二字幕",                        ID__32796
         MENUITEM "调入字幕(&L)...\tCtrl+L",         ID_FILE_LOAD_SUBTITLE
         MENUITEM SEPARATOR
+        MENUITEM "画面增益",                        ID__SHADERS
+        MENUITEM SEPARATOR
         MENUITEM "铺满播放窗口(&S)",                  ID_VIEW_VF_STRETCH
         MENUITEM "标准画面\tC",                     ID_VIEW_VF_FROMINSIDE
         MENUITEM "智能去黑边(&O)",                   ID_VIEW_VF_FROMOUTSIDE
@@ -1851,7 +1852,15 @@ BEGIN
             MENUITEM "总在最前",                        ID_ONTOP_ALWAYS
             MENUITEM "仅播放时",                        ID_ONTOP_WHILEPLAYING
         END
-        MENUITEM "画面增益",                        ID__SHADERS
+        POPUP "画面翻转"
+        BEGIN
+            MENUITEM "水平翻转",                        ID_ROTATE_H
+            MENUITEM "垂直翻转",                        ID_ROTATE_V
+            MENUITEM "向右90℃",                       ID_ROTATE_90
+            MENUITEM "向左90℃",                       ID_ROTATE_270
+            MENUITEM "180℃旋转",                      ID_ROTATE_180
+			MENUITEM "恢复默认角度",                      ID_ROTATE_RESET
+        END
         POPUP "截取图片"
         BEGIN
             MENUITEM "复制到剪切板\tCtrl+C",              ID_FILE_COPYTOCLIPBOARD
@@ -2107,7 +2116,7 @@ BEGIN
         BEGIN
             MENUITEM "第一字幕",                        ID_32770
             MENUITEM "第二字幕",                        ID_32797
-            MENUITEM "音频/声道切换",                      ID_32769
+            MENUITEM "音频/声道切换",                     ID_32769
             MENUITEM SEPARATOR
             MENUITEM "播放/暂停(&P)\t空格键",              ID_PLAY_PLAYPAUSE
             MENUITEM "停止&S\t后退键(←)",                ID_PLAY_STOP

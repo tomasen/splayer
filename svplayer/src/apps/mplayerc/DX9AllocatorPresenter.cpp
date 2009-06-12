@@ -295,7 +295,8 @@ static HRESULT TextureBlt(CComPtr<IDirect3DDevice9> pD3DDev, MYD3DVERTEX<texcoor
 			hr = pD3DDev->SetSamplerState(i, D3DSAMP_ADDRESSV, D3DTADDRESS_CLAMP);
 		}
 
-		//
+		//if(FAILED(hr = pD3DDev->BeginScene()))
+		//	break;
 
 		hr = pD3DDev->SetFVF(D3DFVF_XYZRHW | FVF);
 		// hr = pD3DDev->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, v, sizeof(v[0]));
@@ -303,7 +304,7 @@ static HRESULT TextureBlt(CComPtr<IDirect3DDevice9> pD3DDev, MYD3DVERTEX<texcoor
 		MYD3DVERTEX<texcoords> tmp = v[2]; v[2] = v[3]; v[3] = tmp;
 		hr = pD3DDev->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, v, sizeof(v[0]));	
 
-		//
+		//hr = pD3DDev->EndScene();
 
 		for(int i = 0; i < texcoords; i++)
 		{
@@ -411,7 +412,7 @@ m_MainThreadId = 0;
 		//(FARPROC &)m_pDwmEnableComposition = GetProcAddress(m_hDWMAPI, "DwmEnableComposition");
 	}
 
-	m_hD3D9 = LoadLibrary(L"d3d9.dll");
+	m_hD3D9 = NULL;//LoadLibrary(L"d3d9.dll");
 	if (m_hD3D9)
 	{
 		(FARPROC &)m_pDirect3DCreate9Ex = GetProcAddress(m_hD3D9, "Direct3DCreate9Ex");
@@ -927,7 +928,7 @@ HRESULT CDX9AllocatorPresenter::CreateDevice()
 
 //		if(m_fVMRSyncFix = AfxGetMyApp()->m_s.fVMRSyncFix)
 //			pp.Flags = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
-
+	//SVP_LogMsg3("shit %d %d" , d3ddm.Width , d3ddm.Height);
 	if (m_pD3DEx)
 		{
 			hr = m_pD3DEx->CreateDeviceEx(
@@ -1036,7 +1037,7 @@ HRESULT CDX9AllocatorPresenter::CreateDevice()
   }
 	m_pSprite = NULL;
 
-	if (m_pD3DXCreateSprite)
+	if (m_pD3DXCreateSprite )
 	{
 		m_pD3DXCreateSprite( m_pD3DDev,            // D3D device
 							 &m_pSprite);
@@ -2102,7 +2103,8 @@ m_pD3DDev->BeginScene();
 						hr = m_pD3DDev->Clear(0, NULL, D3DCLEAR_TARGET, 0, 1.0f, 0);
 					}
 				}
-
+				
+				
 //				if((iDX9Resizer == 0 || iDX9Resizer == 1 || rSrcVid.Size() == rDstVid.Size() || FAILED(hr)))
 				if(iDX9Resizer == 0 || iDX9Resizer == 1)
 				{
@@ -2211,7 +2213,9 @@ m_pD3DDev->BeginScene();
 		}
 
 		// paint the text on the backbuffer
-
+		//CString szLog;
+		//szLog.Format(_T("AB Size %d %d") ,rSrcPri.Width(), rSrcPri.Height() );
+		//SVP_LogMsg(szLog);
 		AlphaBltSubPic(rSrcPri.Size());
 	}
 
@@ -2355,6 +2359,9 @@ m_pD3DDev->BeginScene();
 			else
 				hr = m_pD3DDev->Present(rSrcPri, rDstPri, NULL, NULL);
 		}
+		//CString szLog;
+		//szLog.Format(_T("Present Size %d %d %d %d") ,rSrcPri.Width(), rSrcPri.Height(),rDstPri.Width(), rDstPri.Height() );
+		//SVP_LogMsg(szLog);
 		// Issue an End event
 		if (pEventQuery)
 			pEventQuery->Issue(D3DISSUE_END);

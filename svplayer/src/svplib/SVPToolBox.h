@@ -29,7 +29,7 @@ public:
 	CString getVideoFileBasename(CString szVidPath, CStringArray* szaPathInfo);
 	int Explode(CString szIn, CString szTok, CStringArray* szaOut);
 	CString Implode(CString szTok, CStringArray* szaOut);
-	BOOL ifFileExist(CString szPathname);
+	BOOL ifFileExist(CString szPathname, BOOL evenSlowDriver = true);
 	BOOL ifDirWritable(CString szDir);
 	CString GetTempDir();
 	int DetectFileCharset(CString fn);

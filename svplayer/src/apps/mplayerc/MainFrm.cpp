@@ -11370,7 +11370,7 @@ void CMainFrame::SetupRecentFileSubMenu(){
 
 	for(int i = 0; i < MRU.GetSize(); i++){
 		if(!MRU[i].IsEmpty()){
-			if(svpTool.ifFileExist(MRU[i])){
+			if(svpTool.ifFileExist(MRU[i], false)){
 				pSub->AppendMenu(flags, ID_RECENT_FILE_START+i, MRU[i]);
 				nLastGroupStart ++;
 			}

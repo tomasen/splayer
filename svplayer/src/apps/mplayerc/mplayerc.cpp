@@ -2048,9 +2048,14 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		fRewind = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_REWIND), FALSE);
 		iZoomLevel = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_ZOOM), 1);
 
+
+		CSVPToolBox svptoolbox;
 		fForceRGBrender = 0;
-		useGPUAcel = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEGPUACEL), 0);
-		optionDecoder = pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_OPTIONDECODER), _T(""));
+		useGPUAcel = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEGPUACEL), -1);
+		if(useGPUAcel < 0 ){
+			useGPUAcel = !!svptoolbox.GetGPUString(&szaGPUStrings);
+		}
+		optionDecoder = pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_OPTIONDECODER), _T("CoreAVCdec"));
 		iDXVer = 7;
 		if(useGPUAcel){
 			iDXVer = 9;
@@ -2146,7 +2151,6 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		iDecSpeakers = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DECSPEAKERS), 200);
 		fUseInternalTSSpliter = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEINTERNALTSSPLITER), 0);
 
-		CSVPToolBox svptoolbox;
 
 		bHasCUDAforCoreAVC = svptoolbox.CanUseCUDAforCoreAVC();
 		//bSupportFFGPU = svptoolbox.SupportFFGP

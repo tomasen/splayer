@@ -422,6 +422,7 @@ public:
 		int iAPSurfaceUsage;
 		bool fVMRSyncFix;
 		int useGPUAcel;
+		CStringArray szaGPUStrings;
 		CString optionDecoder;
 		int useGPUCUDA;
 		int autoDownloadSVPSub;

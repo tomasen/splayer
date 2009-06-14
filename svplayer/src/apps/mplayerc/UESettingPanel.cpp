@@ -9,6 +9,7 @@
 #include "PPageLogo.h"
 
 #include "..\..\svplib\svplib.h"
+#include "..\..\svplib\svptoolbox.h"
 
 // CUESettingPanel dialog
 
@@ -86,6 +87,7 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_DHtml_CheckBox(pDX, _T("UseWaveOutDeviceByDefault"), m_sgi_UseWaveOutDeviceByDefault);
 
 	DDX_DHtml_ElementInnerHtml (pDX, _T("startupcheckexts"), m_sgi_startupcheckexts);
+	DDX_DHtml_ElementInnerHtml (pDX, _T("gpulist"), m_sgs_gpulist);
 	
 	DDX_DHtml_ElementValue (pDX, _T("subfont1"), m_sgs_subfont1);
 	DDX_DHtml_SelectValue( pDX, _T("subalign1"), m_sgs_subalign1);
@@ -202,6 +204,19 @@ BOOL CUESettingPanel::OnInitDialog()
 		m_sgs_FFGPU = _T("true");
 	}
 
+	//if(!s.szaGPUStrings.GetCount()){
+	CSVPToolBox svpTool;
+	int bGPUPerfer = svpTool.GetGPUString(&s.szaGPUStrings);
+	//}
+	m_sgs_gpulist = L"您拥有的显卡有：<br/>";
+	for(int i = 0; i < s.szaGPUStrings.GetCount();i++){
+		m_sgs_gpulist.Append(s.szaGPUStrings[i] + _T("<br/>"));
+	}
+	if(bGPUPerfer){
+		m_sgs_gpulist.Append(L"适宜使用GPU加速");
+	}else{
+		m_sgs_gpulist.Append(L"不适宜使用GPU加速 <a href='https://bbs.shooter.cn/forumdisplay.php?fid=6'>报告错误</a>");
+	}
 
 	//Genral Setting
 	m_sgs_chkremhistory = s.fKeepHistory;

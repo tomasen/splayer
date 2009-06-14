@@ -6072,6 +6072,11 @@ void CMainFrame::OnUpdateViewPanNScanPresets(CCmdUI* pCmdUI)
 
 void CMainFrame::OnViewRotate(UINT nID)
 {
+
+	if(nID == ID_ENABLE_ROTATE){
+		return OnEnableDX9();
+	}
+
 	if(!m_pCAP) return;
 
 	switch(nID)
@@ -6113,7 +6118,21 @@ void CMainFrame::OnViewRotate(UINT nID)
 
 void CMainFrame::OnUpdateViewRotate(CCmdUI* pCmdUI)
 {
-	pCmdUI->Enable(m_iMediaLoadState == MLS_LOADED && !m_fAudioOnly && m_pCAP);
+	AppSettings& s = AfxGetAppSettings();
+	if(s.iDSVideoRendererType != 6 || s.iRMVideoRendererType != 2 || s.iQTVideoRendererType != 2 || s.iAPSurfaceUsage != VIDRNDT_AP_TEXTURE3D){
+		if(ID_ENABLE_ROTATE == pCmdUI->m_nID){
+			pCmdUI->Enable(true);
+		}else{
+			pCmdUI->Enable(false);
+		}
+		return;
+	}
+	if(ID_ENABLE_ROTATE == pCmdUI->m_nID){
+		//pCmdUI->SetText(_T("£ø£ø£ø"));
+		pCmdUI->Enable(false);
+	}else{
+		pCmdUI->Enable(m_iMediaLoadState == MLS_LOADED && !m_fAudioOnly && m_pCAP);
+	}
 }
 
 // FIXME
@@ -9990,6 +10009,8 @@ void CMainFrame::OnEnableDX9(){
 		s.iDSVideoRendererType = 6;
 		s.iRMVideoRendererType = 2;
 		s.iQTVideoRendererType = 2;
+
+		s.iAPSurfaceUsage = VIDRNDT_AP_TEXTURE3D;
 	
 	if( m_iMediaLoadState != MLS_CLOSED){
 		ReRenderOrLoadMedia();
@@ -11511,7 +11532,7 @@ void CMainFrame::SetupShadersSubMenu()
 	CWinApp* pApp = AfxGetApp();
 	AppSettings& s = AfxGetAppSettings();
 	
-	if(s.iDSVideoRendererType != 6){
+	if(s.iDSVideoRendererType != 6 || s.iRMVideoRendererType != 2 || s.iQTVideoRendererType != 2 || s.iAPSurfaceUsage != VIDRNDT_AP_TEXTURE3D){
 		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_SHADERS_SETDX9,_T("–Ë“™∆Ù”√DX9..."));
 		return;
 	}

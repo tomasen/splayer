@@ -7302,9 +7302,14 @@ void CMainFrame::OnPlayLanguage(UINT nID)
 
 void CMainFrame::OnUpdatePlayLanguage(CCmdUI* pCmdUI)
 {
+
 	UINT nID = pCmdUI->m_nID;
 	nID -= ID_FILTERSTREAMS_SUBITEM_START;
-	CComPtr<IAMStreamSelect> pAMSS = m_ssarray[nID];
+	if(nID >= m_ssarray.GetCount()){
+		return;
+	}
+	CComPtr<IAMStreamSelect> pAMSS = m_ssarray.GetAt(nID);
+	
 	UINT i = nID;
 	while(i > 0 && pAMSS == m_ssarray[i-1]) i--;
 	DWORD flags = 0;
@@ -10496,189 +10501,6 @@ void CMainFrame::SetupOpenCDSubMenu()
 			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, id++, str);
 	}
 }
-
-void CMainFrame::SetupFiltersSubMenu()
-{
-	CMenu* pSub = &m_filters;
-
-	if(!IsMenu(pSub->m_hMenu)) pSub->CreatePopupMenu();
-	else while(pSub->RemoveMenu(0, MF_BYPOSITION));
-
-	m_filterpopups.RemoveAll();
-
-	m_pparray.RemoveAll();
-	m_ssarray.RemoveAll();
-
-	if(m_iMediaLoadState == MLS_LOADED)
-	{
-		UINT idf = 0;
-		UINT ids = ID_FILTERS_SUBITEM_START;
-		UINT idl = ID_FILTERSTREAMS_SUBITEM_START;
-
-		BeginEnumFilters(pGB, pEF, pBF)
-		{
-			CString name(GetFilterName(pBF));
-			if(name.GetLength() >= 43) name = name.Left(40) + _T("...");
-
-			CLSID clsid = GetCLSID(pBF);
-			if(clsid == CLSID_AVIDec)
-			{
-				CComPtr<IPin> pPin = GetFirstPin(pBF);
-				AM_MEDIA_TYPE mt;
-				if(pPin && SUCCEEDED(pPin->ConnectionMediaType(&mt)))
-				{
-					DWORD c = ((VIDEOINFOHEADER*)mt.pbFormat)->bmiHeader.biCompression;
-					switch(c)
-					{
-					case BI_RGB: name += _T(" (RGB)"); break;
-					case BI_RLE4: name += _T(" (RLE4)"); break;
-					case BI_RLE8: name += _T(" (RLE8)"); break;
-					case BI_BITFIELDS: name += _T(" (BITF)"); break;
-					default: name.Format(_T("%s (%c%c%c%c)"), 
-								 CString(name), (TCHAR)((c>>0)&0xff), (TCHAR)((c>>8)&0xff), (TCHAR)((c>>16)&0xff), (TCHAR)((c>>24)&0xff)); break;
-					}
-				}
-			}
-			else if(clsid == CLSID_ACMWrapper)
-			{
-				CComPtr<IPin> pPin = GetFirstPin(pBF);
-				AM_MEDIA_TYPE mt;
-				if(pPin && SUCCEEDED(pPin->ConnectionMediaType(&mt)))
-				{
-					WORD c = ((WAVEFORMATEX*)mt.pbFormat)->wFormatTag;
-					name.Format(_T("%s (0x%04x)"), CString(name), (int)c);
-				}
-			}
-			else if(clsid == __uuidof(CTextPassThruFilter) || clsid == __uuidof(CNullTextRenderer)
-				|| clsid == GUIDFromCString(_T("{48025243-2D39-11CE-875D-00608CB78066}"))) // ISCR
-			{
-				// hide these
-				continue;
-			}
-
-			CAutoPtr<CMenu> pSubSub(new CMenu);
-			pSubSub->CreatePopupMenu();
-
-			int nPPages = 0;
-
-			CComQIPtr<ISpecifyPropertyPages> pSPP = pBF;
-
-/*			if(pSPP)
-			{
-				CAUUID caGUID;
-				caGUID.pElems = NULL;
-				if(SUCCEEDED(pSPP->GetPages(&caGUID)) && caGUID.cElems > 0)
-				{
-*/					m_pparray.Add(pBF);
-					pSubSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ids, _T("&Properties..."));
-/*
-					if(caGUID.pElems) CoTaskMemFree(caGUID.pElems);
-*/
-					nPPages++;
-/*				}
-			}
-*/
-			BeginEnumPins(pBF, pEP, pPin)
-			{
-				CString name = GetPinName(pPin);
-				name.Replace(_T("&"), _T("&&"));
-
-				if(pSPP = pPin)
-				{
-					CAUUID caGUID;
-					caGUID.pElems = NULL;
-					if(SUCCEEDED(pSPP->GetPages(&caGUID)) && caGUID.cElems > 0)
-					{
-						m_pparray.Add(pPin);
-						pSubSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ids+nPPages, name + _T(" (pin) properties..."));
-
-						if(caGUID.pElems) CoTaskMemFree(caGUID.pElems);
-						
-						nPPages++;
-					}
-				}
-			}
-			EndEnumPins
-
-			CComQIPtr<IAMStreamSelect> pSS = pBF;
-			if(pSS)
-			{
-				DWORD nStreams = 0, flags, group, prevgroup = -1;
-				LCID lcid;
-				WCHAR* wname = NULL;
-				CComPtr<IUnknown> pObj, pUnk;
-
-				pSS->Count(&nStreams);
-
-				if(nStreams > 0 && nPPages > 0) pSubSub->AppendMenu(MF_SEPARATOR|MF_ENABLED);
-
-				UINT idlstart = idl;
-
-				for(DWORD i = 0; i < nStreams; i++, pObj = NULL, pUnk = NULL)
-				{
-					m_ssarray.Add(pSS);
-
-					flags = group = 0;
-					wname = NULL;
-					pSS->Info(i, NULL, &flags, &lcid, &group, &wname, &pObj, &pUnk);
-
-					if(group != prevgroup && idl > idlstart)
-						pSubSub->AppendMenu(MF_SEPARATOR|MF_ENABLED);
-					prevgroup = group;
-
-					if(flags & AMSTREAMSELECTINFO_EXCLUSIVE)
-					{
-					}
-					else if(flags & AMSTREAMSELECTINFO_ENABLED)
-					{
-					}
-
-					if(!wname) 
-					{
-						CStringW stream(L"Unknown Stream");
-						wname = (WCHAR*)CoTaskMemAlloc((stream.GetLength()+3+1)*sizeof(WCHAR));
-						swprintf(wname, L"%s %d", stream, min(i+1,999));
-					}
-
-					CString name(wname);
-					name.Replace(_T("&"), _T("&&"));
-
-					pSubSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, idl++, name);
-
-					CoTaskMemFree(wname);
-				}
-
-				if(nStreams == 0) pSS.Release();
-			}
-
-			if(nPPages == 1 && !pSS)
-			{
-				pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ids, name);
-			}
-			else 
-			{
-				pSub->AppendMenu(MF_BYPOSITION|MF_STRING|MF_DISABLED|MF_GRAYED, idf, name);
-
-				if(nPPages > 0 || pSS)
-				{
-					MENUITEMINFO mii;
-					mii.cbSize = sizeof(mii);
-					mii.fMask = MIIM_STATE|MIIM_SUBMENU;
-					mii.fType = MF_POPUP;
-					mii.hSubMenu = pSubSub->m_hMenu;
-					mii.fState = (pSPP || pSS) ? MF_ENABLED : (MF_DISABLED|MF_GRAYED);
-					pSub->SetMenuItemInfo(idf, &mii, TRUE);
-
-					m_filterpopups.Add(pSubSub);
-				}
-			}
-
-			ids += nPPages;
-			idf++;
-		}
-		EndEnumFilters
-	}
-}
 void CMainFrame::OnUpdateAudioDeviceChange(CCmdUI *pCmdUI){
 	AppSettings& s = AfxGetAppSettings();
 	if( IDS_CHANGE_AUDIO_DEVICE == pCmdUI->m_nID ){
@@ -10758,15 +10580,200 @@ void CMainFrame::SetupAudioDeviceSubMenu(){
 		}
 	}
 }
+
+
+void CMainFrame::SetupFiltersSubMenu()
+{
+	CMenu* pSub = &m_filters;
+
+	if(!IsMenu(pSub->m_hMenu)) pSub->CreatePopupMenu();
+	else while(pSub->RemoveMenu(0, MF_BYPOSITION));
+
+	m_filterpopups.RemoveAll();
+
+	m_pparray.RemoveAll();
+	m_ssarray.RemoveAll();
+
+	if(m_iMediaLoadState == MLS_LOADED)
+	{
+		UINT idf = 0;
+		UINT ids = ID_FILTERS_SUBITEM_START;
+		UINT idl = ID_FILTERSTREAMS_SUBITEM_START;
+
+		BeginEnumFilters(pGB, pEF, pBF)
+		{
+			CString name(GetFilterName(pBF));
+			if(name.GetLength() >= 43) name = name.Left(40) + _T("...");
+
+			CLSID clsid = GetCLSID(pBF);
+			if(clsid == CLSID_AVIDec)
+			{
+				CComPtr<IPin> pPin = GetFirstPin(pBF);
+				AM_MEDIA_TYPE mt;
+				if(pPin && SUCCEEDED(pPin->ConnectionMediaType(&mt)))
+				{
+					DWORD c = ((VIDEOINFOHEADER*)mt.pbFormat)->bmiHeader.biCompression;
+					switch(c)
+					{
+					case BI_RGB: name += _T(" (RGB)"); break;
+					case BI_RLE4: name += _T(" (RLE4)"); break;
+					case BI_RLE8: name += _T(" (RLE8)"); break;
+					case BI_BITFIELDS: name += _T(" (BITF)"); break;
+					default: name.Format(_T("%s (%c%c%c%c)"), 
+								 CString(name), (TCHAR)((c>>0)&0xff), (TCHAR)((c>>8)&0xff), (TCHAR)((c>>16)&0xff), (TCHAR)((c>>24)&0xff)); break;
+					}
+				}
+			}
+			else if(clsid == CLSID_ACMWrapper)
+			{
+				CComPtr<IPin> pPin = GetFirstPin(pBF);
+				AM_MEDIA_TYPE mt;
+				if(pPin && SUCCEEDED(pPin->ConnectionMediaType(&mt)))
+				{
+					WORD c = ((WAVEFORMATEX*)mt.pbFormat)->wFormatTag;
+					name.Format(_T("%s (0x%04x)"), CString(name), (int)c);
+				}
+			}
+			else if(clsid == __uuidof(CTextPassThruFilter) || clsid == __uuidof(CNullTextRenderer)
+				|| clsid == GUIDFromCString(_T("{48025243-2D39-11CE-875D-00608CB78066}"))) // ISCR
+			{
+				// hide these
+				continue;
+			}
+
+			CAutoPtr<CMenu> pSubSub(new CMenu);
+			pSubSub->CreatePopupMenu();
+
+			int nPPages = 0;
+
+			CComQIPtr<ISpecifyPropertyPages> pSPP = pBF;
+
+			/*			if(pSPP)
+			{
+			CAUUID caGUID;
+			caGUID.pElems = NULL;
+			if(SUCCEEDED(pSPP->GetPages(&caGUID)) && caGUID.cElems > 0)
+			{
+			*/					m_pparray.Add(pBF);
+			pSubSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ids, _T("&Properties..."));
+			/*
+			if(caGUID.pElems) CoTaskMemFree(caGUID.pElems);
+			*/
+			nPPages++;
+			/*				}
+			}
+			*/
+			BeginEnumPins(pBF, pEP, pPin)
+			{
+				CString name = GetPinName(pPin);
+				name.Replace(_T("&"), _T("&&"));
+
+				if(pSPP = pPin)
+				{
+					CAUUID caGUID;
+					caGUID.pElems = NULL;
+					if(SUCCEEDED(pSPP->GetPages(&caGUID)) && caGUID.cElems > 0)
+					{
+						m_pparray.Add(pPin);
+						pSubSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ids+nPPages, name + _T(" (pin) properties..."));
+
+						if(caGUID.pElems) CoTaskMemFree(caGUID.pElems);
+
+						nPPages++;
+					}
+				}
+			}
+			EndEnumPins
+
+				CComQIPtr<IAMStreamSelect> pSS = pBF;
+			if(pSS)
+			{
+				DWORD nStreams = 0, flags, group, prevgroup = -1;
+				LCID lcid;
+				WCHAR* wname = NULL;
+				CComPtr<IUnknown> pObj, pUnk;
+
+				pSS->Count(&nStreams);
+
+				if(nStreams > 0 && nPPages > 0) pSubSub->AppendMenu(MF_SEPARATOR|MF_ENABLED);
+
+				UINT idlstart = idl;
+
+				for(DWORD i = 0; i < nStreams; i++, pObj = NULL, pUnk = NULL)
+				{
+					m_ssarray.Add(pSS);
+
+					flags = group = 0;
+					wname = NULL;
+					pSS->Info(i, NULL, &flags, &lcid, &group, &wname, &pObj, &pUnk);
+
+					if(group != prevgroup && idl > idlstart)
+						pSubSub->AppendMenu(MF_SEPARATOR|MF_ENABLED);
+					prevgroup = group;
+
+					if(flags & AMSTREAMSELECTINFO_EXCLUSIVE)
+					{
+					}
+					else if(flags & AMSTREAMSELECTINFO_ENABLED)
+					{
+					}
+
+					if(!wname) 
+					{
+						CStringW stream(L"Unknown Stream");
+						wname = (WCHAR*)CoTaskMemAlloc((stream.GetLength()+3+1)*sizeof(WCHAR));
+						swprintf(wname, L"%s %d", stream, min(i+1,999));
+					}
+
+					CString name(wname);
+					name.Replace(_T("&"), _T("&&"));
+
+					pSubSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, idl++, name);
+
+					CoTaskMemFree(wname);
+				}
+
+				if(nStreams == 0) pSS.Release();
+			}
+
+			if(nPPages == 1 && !pSS)
+			{
+				pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ids, name);
+			}
+			else 
+			{
+				pSub->AppendMenu(MF_BYPOSITION|MF_STRING|MF_DISABLED|MF_GRAYED, idf, name);
+
+				if(nPPages > 0 || pSS)
+				{
+					MENUITEMINFO mii;
+					mii.cbSize = sizeof(mii);
+					mii.fMask = MIIM_STATE|MIIM_SUBMENU;
+					mii.fType = MF_POPUP;
+					mii.hSubMenu = pSubSub->m_hMenu;
+					mii.fState = (pSPP || pSS) ? MF_ENABLED : (MF_DISABLED|MF_GRAYED);
+					pSub->SetMenuItemInfo(idf, &mii, TRUE);
+
+					m_filterpopups.Add(pSubSub);
+				}
+			}
+
+			ids += nPPages;
+			idf++;
+		}
+		EndEnumFilters
+	}
+}
 void CMainFrame::SetupAudioSwitcherSubMenu()
 {
 	CMenu* pSub = &m_audios;
-
+	UINT idl = ID_FILTERSTREAMS_SUBITEM_START;
 	if(!IsMenu(pSub->m_hMenu)) pSub->CreatePopupMenu();
 	else while(pSub->RemoveMenu(0, MF_BYPOSITION));
 
 	SetupAudioDeviceSubMenu();
 
+	m_ssarray.RemoveAll();
 	CMenu* pSubMenu = &m_audiodevices;
 	if(pSubMenu ){
 		pSub->AppendMenu(MF_POPUP, (UINT_PTR) pSubMenu->m_hMenu, _T("输出设备"));
@@ -10794,7 +10801,7 @@ void CMainFrame::SetupAudioSwitcherSubMenu()
 			DWORD cStreams = 0;
 			if(SUCCEEDED(pSS->Count(&cStreams)) && cStreams > 0)
 			{
-				pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, id++, ResStr(IDS_SUBTITLES_OPTIONS));
+				pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, id++, L"设置...");
 				pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED);
 
 				for(int i = 0; i < (int)cStreams; i++)
@@ -10811,6 +10818,87 @@ void CMainFrame::SetupAudioSwitcherSubMenu()
 					CoTaskMemFree(pName);
 				}
 			}
+			pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED);
+
+			BeginEnumFilters(pGB, pEF, pBF)
+			{
+				
+				CLSID clsid = GetCLSID(pBF);
+				
+				if(clsid == CLSID_AVIDec)
+				{
+					CComPtr<IPin> pPin = GetFirstPin(pBF);
+				}
+				else if(clsid == CLSID_ACMWrapper)
+				{
+					CComPtr<IPin> pPin = GetFirstPin(pBF);
+				
+				}
+				else if(clsid == __uuidof(CTextPassThruFilter) || clsid == __uuidof(CNullTextRenderer)
+					|| clsid == GUIDFromCString(_T("{48025243-2D39-11CE-875D-00608CB78066}"))) // ISCR
+				{
+					// hide these
+					continue;
+				}
+				BeginEnumPins(pBF, pEP, pPin)
+				{
+					
+				}
+				EndEnumPins
+				
+
+				CComQIPtr<IAMStreamSelect> pSS2 = pBF;
+				if(pSS2)
+				{
+					DWORD nStreams = 0, flags, group, prevgroup = -1;
+					LCID lcid;
+					WCHAR* wname = NULL;
+					CComPtr<IUnknown> pObj, pUnk;
+
+					pSS2->Count(&nStreams);
+
+					
+
+
+					for(DWORD i = 0; i < nStreams; i++, pObj = NULL, pUnk = NULL)
+					{
+						m_ssarray.Add(pSS2);
+
+						
+						
+						flags = group = 0;
+						wname = NULL;
+						pSS2->Info(i, NULL, &flags, &lcid, &group, &wname, &pObj, &pUnk);
+
+
+						if(!wname) 
+						{
+							CStringW stream(L"Unknown Stream");
+							wname = (WCHAR*)CoTaskMemAlloc((stream.GetLength()+3+1)*sizeof(WCHAR));
+							swprintf(wname, L"%s %d", stream, min(i+1,999));
+						}
+
+						CString name(wname);
+						name.Replace(_T("&"), _T("&&"));
+						if(name.Find(_T("Audio")) == 0 || name.Find(_T("声")) == 0 || name.Find(_T("音")) == 0 ){
+							CString szLog;
+							szLog.Format(L" Audio Menu %d %s", idl, name);
+							SVP_LogMsg(szLog);
+							pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, idl, name) ;
+							
+						}
+						idl++;
+
+						CoTaskMemFree(wname);
+					}
+
+					if(nStreams == 0) pSS2.Release();
+				}
+
+				
+
+			}
+			EndEnumFilters
 		}
 	}
 }

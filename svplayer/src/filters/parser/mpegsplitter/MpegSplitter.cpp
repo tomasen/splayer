@@ -25,7 +25,7 @@
 #include <dmodshow.h>
 #include "MpegSplitter.h"
 #include <moreuuids.h>
-
+#include "../../../svplib/svplib.h"
 
 #ifdef REGISTER_FILTER
 

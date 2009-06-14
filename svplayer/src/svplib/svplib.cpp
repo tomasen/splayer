@@ -221,6 +221,23 @@ void SVP_LogMsg3(LPCSTR fmt, ...)
 	va_end(args);
 }
 
+void SVP_LogMsg4(BYTE* buff, __int64 iLen)
+{
+	
+	CSVPToolBox svpToolBox;
+	CString szLogPath = svpToolBox.GetPlayerPath(_T("SVPDebug4.log"));
+
+	
+		if(FILE* f = _tfopen(szLogPath, _T("at")))
+		{
+			fseek(f, 0, 2);
+			fwrite( buff , sizeof(BYTE), iLen , f);
+			fclose(f);
+		}
+	
+	
+}
+
 BOOL SVP_SetCoreAvcCUDA(BOOL useCUDA){
 	HRESULT hr;
 	LPITEMIDLIST pidl;

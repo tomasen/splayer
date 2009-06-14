@@ -1398,7 +1398,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		pFGF->m_chkbytes.AddTail(_T("0,4,,54467263,1660,1,,47"));
 		pFGF->m_chkbytes.AddTail(_T("0,8,fffffc00ffe00000,4156000055000000"));
 		
-		m_source.AddTail(pFGF);
+		m_source.AddTail(pFGF );
 	}
 
 	if(src & SRC_DTSAC3)
@@ -1507,7 +1507,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 
  	
  		if(src & SRC_MPEG) {
- 	 		pFGF = new CFGFilterInternal<CMpegSplitterFilter>(L"Mpeg 分离器", MERIT64_ABOVE_DSHOW);
+ 	 		pFGF = new CFGFilterInternal<CMpegSplitterFilter>(L"Mpeg 分离器", MERIT64_ABOVE_DSHOW + 1000);
  	 	} else {
  	 		pFGF = new CFGFilterInternal<CMpegSplitterFilter>(L"Mpeg 分离器 (备用方案)", MERIT64_UNLIKELY);
  	 	}
@@ -2239,7 +2239,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("PMPSplitter.ax")) );
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("rms.ax")) );
 	
-	if(!s.fUseInternalTSSpliter)
+	//if(!s.fUseInternalTSSpliter)
 		szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("NeSplitter.ax")) ); 
 
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("scmpack.dll")) );

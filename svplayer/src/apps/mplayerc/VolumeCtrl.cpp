@@ -43,7 +43,7 @@ bool CVolumeCtrl::Create(CWnd* pParentWnd)
 	if(!CSliderCtrl::Create(WS_CHILD|WS_VISIBLE|TBS_NOTICKS|TBS_HORZ, CRect(0,0,0,0), pParentWnd, IDC_SLIDER1))
 		return(false);
 
-	SetRange(1, 100);
+	SetRange(1, 120);
 	SetPosInternal(AfxGetAppSettings().nVolume);
 	SetPageSize(8);
 	SetLineSize(0);
@@ -53,7 +53,14 @@ bool CVolumeCtrl::Create(CWnd* pParentWnd)
 
 void CVolumeCtrl::SetPosInternal(int pos)
 {
+	AppSettings& s = AfxGetAppSettings();
 	SetPos(pos);
+	if(pos <= 100){
+		s.AudioBoost = 1;
+	}else{
+		s.AudioBoost = pow(10.0f, (float)(pos-100) /2);
+	}
+	
 	//GetParent()->PostMessage(WM_HSCROLL, MAKEWPARAM((short)pos, SB_THUMBPOSITION), (LPARAM)m_hWnd); // this will be reflected back on us
 	GetParent()->Invalidate(); // this will be reflected back on us
 }
@@ -62,26 +69,31 @@ void CVolumeCtrl::IncreaseVolume()
 {
 	AppSettings& s = AfxGetAppSettings();
 	if(GetPos() > 99){
+		SetPosInternal(GetPos() + 1);
+		/*
 		DWORD plVolume;
-		int WaveOutVol = 100;
-// 		if(MMSYSERR_NOERROR == waveOutGetVolume(0, (DWORD*)plVolume) ){
-// 			WaveOutVol = (HIWORD(plVolume) + LOWORD(plVolume)) * 100 / 2 / 0xFFFF;
-// 		}
-		if( WaveOutVol > 90){
-			int iBVol = (int)(50.0f*log10(s.AudioBoost));
-			iBVol = min(iBVol + 8, 100);
-			s.AudioBoost = pow(10.0f, (float)iBVol/50);
-			if( s.AudioBoost > 100)
-				s.AudioBoost = 100;
-		}else{
-			//increaseWaveOut
-			
-			//plVolume = (min( (HIWORD(plVolume) + 0x0FFF), 0xFFFF) << 16) |  min( (LOWORD(plVolume) + 0x0FFF), 0xFFFF) ;
-			//waveOutSetVolume(0, plVolume);
-			
-		}
+				int WaveOutVol = 100;
+		// 		if(MMSYSERR_NOERROR == waveOutGetVolume(0, (DWORD*)plVolume) ){
+		// 			WaveOutVol = (HIWORD(plVolume) + LOWORD(plVolume)) * 100 / 2 / 0xFFFF;
+		// 		}
+				if( WaveOutVol > 90){
+					int iBVol = (int)(50.0f*log10(s.AudioBoost));
+					iBVol = min(iBVol + 8, 100);
+					s.AudioBoost = pow(10.0f, (float)iBVol/50);
+					if( s.AudioBoost > 100)
+						s.AudioBoost = 100;
+				}else{
+					//increaseWaveOut
+					
+					//plVolume = (min( (HIWORD(plVolume) + 0x0FFF), 0xFFFF) << 16) |  min( (LOWORD(plVolume) + 0x0FFF), 0xFFFF) ;
+					//waveOutSetVolume(0, plVolume);
+					
+				}*/
+		
 	}else{
-		if (GetPos() > 25 ){
+		if (GetPos() > 95 ){
+			SetPosInternal(100);
+		}else if (GetPos() > 25 ){
 			SetPosInternal(GetPos() + GetPageSize());
 		}else if (GetPos() > 15 ){
 			SetPosInternal(GetPos() + 3);
@@ -95,7 +107,7 @@ void CVolumeCtrl::DecreaseVolume()
 {
 	AppSettings& s = AfxGetAppSettings();
 	
-	if( s.AudioBoost > 1){
+	if(0 && s.AudioBoost > 1){
 		int iBVol = (int)(50.0f*log10(s.AudioBoost));
 		iBVol = max(iBVol - 8, 0);
 		s.AudioBoost = pow(10.0f, (float)iBVol/50);
@@ -103,7 +115,10 @@ void CVolumeCtrl::DecreaseVolume()
 		if( s.AudioBoost < 1)
 			s.AudioBoost = 1;
 	}else{
-		if (GetPos() > 25 ){
+		if (GetPos() > 99 ){
+			SetPosInternal(GetPos() - 1);
+		}
+		else if (GetPos() > 25 ){
 			SetPosInternal(GetPos() - GetPageSize());
 		}else if (GetPos() > 15 ){
 			SetPosInternal(GetPos() - 3);

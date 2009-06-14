@@ -7321,14 +7321,16 @@ void CMainFrame::OnPlayVolume(UINT nID)
 	if(m_WndSizeInited){
 		CString szStat;
 		iPlayerVol =  m_wndToolBar.m_volctrl.GetPos();
-		s.nVolume  = iPlayerVol;
+		
+		s.nVolume  = iPlayerVol ;
 
 
 		if( s.AudioBoost < 1 || iPlayerVol < 100)
 			s.AudioBoost = 1;
 		else
-			iPlayerVol *=  (s.AudioBoost + 10) / 11;
+			iPlayerVol = 100 +  ( iPlayerVol - 100) * 900/ 20;
 
+		if(iPlayerVol > 1000) {iPlayerVol = 1000;}
 		szStat.Format(_T("ÒôÁ¿: %d%%  ") , iPlayerVol );
 		SendStatusMessage(szStat , 2000);
 	}
@@ -7337,10 +7339,6 @@ void CMainFrame::OnPlayVolume(UINT nID)
 		pBA->put_Volume(m_wndToolBar.Volume);
 		
 		
-		
-		
-		
-
 		CComQIPtr<IAudioSwitcherFilter> pASF = FindFilter(__uuidof(CAudioSwitcherFilter), pGB);
 		if(pASF)
 			pASF->SetNormalizeBoost(s.fAudioNormalize, s.fAudioNormalizeRecover, s.AudioBoost);

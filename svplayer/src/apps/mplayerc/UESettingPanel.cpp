@@ -62,6 +62,8 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 
 	DDX_DHtml_CheckBox(pDX, _T("chkremhistory") , m_sgs_chkremhistory);
 	DDX_DHtml_ElementInnerText(pDX, _T("initvarblock") , m_sgs_initblock);
+	DDX_DHtml_ElementInnerText(pDX, _T("haveCUDAforCoreAVC") , m_sgs_CUDAVC);
+	DDX_DHtml_ElementInnerText(pDX, _T("canUseFFMPEGGPU") , m_sgs_FFGPU);
 	DDX_DHtml_CheckBox(pDX, _T("chkremwinpos"), m_sgi_chkremwinpos);
 	DDX_DHtml_CheckBox(pDX, _T("chkcdromenu"), m_sgi_chkcdromenu);
 	DDX_DHtml_CheckBox(pDX, _T("chkuseini"), m_sgi_chkuseini);
@@ -191,10 +193,16 @@ BOOL CUESettingPanel::OnInitDialog()
 			break;
 	}
 
-	
+	AppSettings& s = AfxGetAppSettings();
+
+	if(s.bHasCUDAforCoreAVC){
+		m_sgs_CUDAVC = _T("true");
+	}
+	if(s.bSupportFFGPU){
+		m_sgs_FFGPU = _T("true");
+	}
 
 
- 	AppSettings& s = AfxGetAppSettings();
 	//Genral Setting
 	m_sgs_chkremhistory = s.fKeepHistory;
 	m_sgi_chkexitfullscreen = s.fExitFullScreenAtTheEnd;

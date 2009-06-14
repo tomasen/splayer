@@ -464,7 +464,9 @@ public:
 		UINT lastWindowType;
 		CSize AspectRatio;
 		bool fKeepHistory;
-
+		
+		bool bHasCUDAforCoreAVC;
+		bool bSupportFFGPU;
 		bool bDisableEVR;
 		bool useSmartDrag;
 		bool onlyUseInternalDec;

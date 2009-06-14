@@ -55,6 +55,8 @@ class CUESettingPanel : public CDHtmlDialog
 	CString m_sgs_speaker;
 
 	CString m_sgs_initblock;
+	CString m_sgs_CUDAVC;
+	CString m_sgs_FFGPU;
 	CString m_sgi_startupcheckexts;
 	CString m_sgs_videorender;
 	CString m_sgs_decoder;

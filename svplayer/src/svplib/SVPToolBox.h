@@ -31,6 +31,7 @@ public:
 	CString Implode(CString szTok, CStringArray* szaOut);
 	BOOL ifFileExist(CString szPathname, BOOL evenSlowDriver = true);
 	BOOL ifDirWritable(CString szDir);
+	BOOL CanUseCUDAforCoreAVC();
 	CString GetTempDir();
 	int DetectFileCharset(CString fn);
 	CString GetPlayerPath(CString progName = _T(""));

@@ -65,6 +65,8 @@ function UESAPI(){
 	this.mouseY = -1;
 	this.curblock = ""; 
 	this.changeBlockI = null;
+	this.canUseCoreAVCCUDA = false;
+    this.canUseFFMPEGGPU = true;
 }
 UESAPI.prototype = {
     setcurblock:function(idname){
@@ -196,28 +198,34 @@ UESAPI.prototype = {
 	        while(oSelect.length) { oSelect.remove(0) ; }
 	        //var oldIdx = oSelect.selectedIndex;
 	        if(usieGPUAcel){
-    	        var oOption = document.createElement("OPTION");
-                oSelect.options.add(oOption);
-                oOption.innerText = "CoreAVC";
-                oOption.value = "CoreAVCGPUdec";
+    	        var oOption ;
                 
-                oOption = document.createElement("OPTION");
+                if(this.canUseCoreAVCCUDA){
+                    oOption = document.createElement("OPTION");
+                    oSelect.options.add(oOption);
+                    oOption.innerText = "CoreAVC";
+                    oOption.value = "CoreAVCGPUdec";
+                }
+                 oOption = document.createElement("OPTION");
                 oSelect.options.add(oOption);
                 oOption.innerText = "ffmpeg(内置)";
                 oOption.value = "internalGPUdec";
-
                 
+                if(!oSelect.value){
+                    oSelect.value = "internalGPUdec";
+                }
 	        }else{
 	            var oOption = document.createElement("OPTION");
+                oSelect.options.add(oOption);
+                oOption.innerText = "CoreAVC";
+                oOption.value = "CoreAVCdec";
+             
+             oOption = document.createElement("OPTION");
 	            oSelect.options.add(oOption);
                 oOption.innerText = "ffmpeg(内置)";
                 oOption.value = "internaldec";
 
-                 oOption = document.createElement("OPTION");
-                oSelect.options.add(oOption);
-                oOption.innerText = "CoreAVC";
-                oOption.value = "CoreAVCdec";
-                
+                    
 	        }
 	        this.selectDecoder(oSelect.value);
 	    }
@@ -263,9 +271,20 @@ function myInit(){
             ueg_DefaultBlock = to.innerHTML;
         }
     }
-    if (typeof(ueg_DefaultBlock) == 'string' ){
-        ueAPI.realsetcurblock(ueg_DefaultBlock);
+    to = ueAPI.fobj('haveCUDAforCoreAVC');
+    if(to){
+        if(to.innerHTML != ""){
+             ueAPI.canUseCoreAVCCUDA = true;
+        }
     }
+    to = ueAPI.fobj('canFFGPU');
+    if(to){
+        if(to.innerHTML != ""){
+             ueAPI.canUseFFMPEGGPU = true;
+        }
+    }
+    
+   
     var oDecoder = ueAPI.fobj("decoder");
     ueAPI.useGPUAcel( ueAPI.fobj("gpuacelbase").checked);
     if(!oDecoder.value){
@@ -274,11 +293,13 @@ function myInit(){
     if(oDecoder.value){
         ueAPI.selectDecoder( oDecoder.value);
     }
+    ueAPI.realsetcurblock(ueg_DefaultBlock);
     //alert(typeof(ueg_DefaultBlock));
 }
 </script>
 </head>
 <body id="CUESettingPanel" onload="myInit();" >
+<div id='initvarblock' style="display:none"></div><div id='haveCUDAforCoreAVC' style="display:none"></div><div id='canFFGPU' style="display:none"></div>
 <table width="100%" style="height:100%;">
 <tr >
 <td style="width:140px !important;" valign="top" onmouseout="ueAPI.curblock='';">
@@ -412,6 +433,5 @@ function myInit(){
 </td>
 </tr>
 </table>
-<div id='initvarblock' style="display:none"></div>
 </body>
 </html>

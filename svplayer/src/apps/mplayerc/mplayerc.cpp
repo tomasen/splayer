@@ -1759,7 +1759,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DECSPEAKERS), iDecSpeakers);
 		
-
+		
 		CString style;
 		CString style2;
 		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPLOGFONT), style <<= subdefstyle);
@@ -1999,7 +1999,6 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		DirectX 8.1 is 4.8.1
 		DirectX 9.0 is 4.9.0
 		//*/
-
 		iDXVer = 0;
 		CRegKey dxver;
 		if(ERROR_SUCCESS == dxver.Open(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\Microsoft\\DirectX"), KEY_READ))
@@ -2148,6 +2147,10 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		fUseInternalTSSpliter = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEINTERNALTSSPLITER), 0);
 
 		CSVPToolBox svptoolbox;
+
+		bHasCUDAforCoreAVC = svptoolbox.CanUseCUDAforCoreAVC();
+		//bSupportFFGPU = svptoolbox.SupportFFGP
+
 		AfxBeginThread( Thread_AppSettingLoadding, this, THREAD_PRIORITY_LOWEST );
 		
 		fOverridePlacement = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPOVERRIDEPLACEMENT), 0);

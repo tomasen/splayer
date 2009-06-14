@@ -194,7 +194,7 @@ void CPlayerToolBar::OnSize(UINT nType, int cx, int cy)
 	if( iWidth > 635 ){
 		hideT3 = false;
 	}
-	if( iWidth > 670 ){
+	if( iWidth > 680 ){
 		hideT4 = false;
 	}
 
@@ -389,7 +389,7 @@ void CPlayerToolBar::OnPaint()
 	UpdateButtonStat();
 	int volume = min( m_volctrl.GetPos() , m_volctrl.GetRangeMax() );
 	
-	m_btnVolTm->m_rcHitest.MoveToX(m_btnVolBG->m_rcHitest.left + volume * ( m_btnVolBG->m_btnSize.cx - m_btnVolTm->m_btnSize.cx)/ m_volctrl.GetRangeMax());
+	m_btnVolTm->m_rcHitest.MoveToX(m_btnVolBG->m_rcHitest.left +  ( m_btnVolBG->m_rcHitest.Width() * volume / m_volctrl.GetRangeMax() ) - m_btnVolTm->m_rcHitest.Width()/2);
 
 	CString szLog;
 	szLog.Format(_T("TM POS %d %d"), volume , m_btnVolTm->m_rcHitest.left );
@@ -546,6 +546,21 @@ BOOL CPlayerToolBar::OnVolumeDown(UINT nID)
 	return FALSE;
 }
 static BOOL m_bMouseDown = FALSE;
+bool  CPlayerToolBar::OnSetVolByMouse(CPoint point){
+	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
+	long nTBPos = point.x - m_btnVolBG->m_rcHitest.left;
+	long TBMax = m_btnVolBG->m_rcHitest.right-m_btnVolBG->m_rcHitest.left ;
+	nTBPos = max(0 , min(TBMax , nTBPos) );
+	int Vol = 	nTBPos * m_volctrl.GetRangeMax() / TBMax;
+
+	m_volctrl.SetPosInternal( Vol );
+
+
+	pFrame->OnPlayVolume(0);
+	Invalidate();
+
+	return true;
+}
 void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point){
 
 	CSize diff = m_lastMouseMove - point;
@@ -559,16 +574,8 @@ void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point){
 	
 	if( m_nItemToTrack == ID_VOLUME_THUMB  ){
 		if(m_bMouseDown && bMouseMoved){
-			long nTBPos = point.x - m_btnVolBG->m_rcHitest.left;
-			long TBMax = m_btnVolBG->m_rcHitest.right-m_btnVolBG->m_rcHitest.left;
-			nTBPos = max(0 , min(TBMax , nTBPos) );
-			int Vol = 	nTBPos * 100 / TBMax;
+			OnSetVolByMouse(point);
 			
-			m_volctrl.SetPosInternal( nTBPos * m_volctrl.GetRangeMax() / TBMax);
-			
-			
-			pFrame->OnPlayVolume(0);
-			Invalidate();
 		}
 	}else if(bMouseMoved){
 		
@@ -655,6 +662,11 @@ void CPlayerToolBar::OnLButtonDown(UINT nFlags, CPoint point)
 		iBottonClicked = m_nItemToTrack;
 		iFastFFWCount = 0;
 		SetTimer(TIMER_FASTFORWORD, 350, NULL);
+	}else if(!ret){
+		
+		if( m_btnVolBG->m_rcHitest.PtInRect(point) ){
+			OnSetVolByMouse(point);
+		}
 	}
 	return;
 	//New UI End

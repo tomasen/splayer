@@ -1208,11 +1208,12 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 			}
 			szWindowText.Append(m_szTitle);
 			//GetWindowText(szWindowText);
-			if(m_bHasDrawShadowText)
+			if(m_bHasDrawShadowText )
 				::DrawShadowText(hdc, szWindowText, szWindowText.GetLength(), &rcWindowText, DT_LEFT|DT_SINGLELINE | DT_VCENTER, 0x00525d66, RGB(255,255,255), 1,1);
 			else{
 				hdc.SetTextColor(0x00525d66);
-				hdc.SetBkColor( 0x00d6d7ce);
+				hdc.SetBkMode(TRANSPARENT);
+				//hdc.SetBkColor( 0x00d6d7ce);
 				DrawText(hdc, szWindowText, szWindowText.GetLength(), &rcWindowText, DT_LEFT|DT_SINGLELINE | DT_VCENTER );
 			}
 			hdc.SelectObject(holdft);

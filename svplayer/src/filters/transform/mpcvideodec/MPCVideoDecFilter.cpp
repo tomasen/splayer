@@ -1044,8 +1044,8 @@ VIDEO_OUTPUT_FORMATS DXVAFormats[] =
 
 VIDEO_OUTPUT_FORMATS SoftwareFormats[] =
 {
- 	{&MEDIASUBTYPE_YUY2, 1, 16, '2YUY'},	// Software
 	{&MEDIASUBTYPE_YV12, 3, 12, '21VY'},
+    {&MEDIASUBTYPE_YUY2, 1, 16, '2YUY'},	// Software
 	{&MEDIASUBTYPE_I420, 3, 12, '024I'},
 	{&MEDIASUBTYPE_IYUV, 3, 12, 'VUYI'},
 	{&MEDIASUBTYPE_RGB24, 1, 24, 'BGRA'} ,
@@ -1327,7 +1327,7 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 		memset(m_pFFBuffer+nSize,0,FF_INPUT_BUFFER_PADDING_SIZE);
 
 		used_bytes = avcodec_decode_video (m_pAVCtx, m_pFrame, &got_picture, m_pFFBuffer, nSize);
-//		if(used_bytes < 0 ) return S_OK;
+		if(used_bytes < 0 ) return S_OK; // Why MPC-HC removed this lineis un clear to me, add it back see if it solve sunpack problem
 		if (!got_picture || !m_pFrame->data[0]) return S_OK;
 		if(pIn->IsPreroll() == S_OK || rtStart < 0) return S_OK;
 

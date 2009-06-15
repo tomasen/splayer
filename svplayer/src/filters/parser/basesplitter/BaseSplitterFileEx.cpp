@@ -26,6 +26,7 @@
 #include <initguid.h>
 #include "../../../../include/moreuuids.h"
 
+#include "../../../svplib/svplib.h"
 //
 // CBaseSplitterFileEx
 //
@@ -259,15 +260,32 @@ bool CBaseSplitterFileEx::Read(seqhdr& h, int len, CMediaType* pmt)
 	__int64 endpos = GetPos() + len; // - sequence header length
 
 	BYTE id = 0;
-
+	CString szLog;
 	while(GetPos() < endpos && id != 0xb3)
 	{
-		if(!NextMpegStartCode(id, len))
+		if(!NextMpegStartCode(id, len)){
+			//检测下一个 code 应该为b3 ，但是为什么用While?
+			szLog.Format(_T("Havn't Got Next Mpeg Start Code for len %d"),  len);
+			SVP_LogMsg(szLog);
 			return(false);
+		}else{
+			//??
+			szLog.Format(_T("Got Next Mpeg Start Code for len 0x%u , continue"),  id);
+			SVP_LogMsg(szLog);
+		}
 	}
 
-	if(id != 0xb3)
+	
+	if(id != 0xb3) {
+		szLog.Format(_T("Havn't Got Next Mpeg Proper Start Code 0x%u != 0xb3"),  id);
+		SVP_LogMsg(szLog);
+
 		return(false);
+	}else{
+		szLog.Format(_T("Got Next Mpeg Proper Start Code 0x%u == 0xb3"),  id);
+		SVP_LogMsg(szLog);
+		
+	}
 
 	__int64 shpos = GetPos() - 4;
 

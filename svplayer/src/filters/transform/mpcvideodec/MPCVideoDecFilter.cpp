@@ -1348,7 +1348,11 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 		GUID subtype = MEDIASUBTYPE_I420;
 		switch ( m_pAVCtx->pix_fmt ){
 			case  PIX_FMT_PAL8:
+				subtype = MEDIASUBTYPE_RGB8;
+				break;
 			case  PIX_FMT_RGB555:
+				subtype = MEDIASUBTYPE_RGB555;
+				break;
 			case  PIX_FMT_RGB24:
 				subtype = MEDIASUBTYPE_RGB24;
 				break;

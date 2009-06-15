@@ -346,12 +346,14 @@ HRESULT CBaseVideoFilter::CopyBuffer(BYTE* pOut, BYTE** ppIn, int w, int h, int 
 			}
 		}
 	}
-	else if(subtype == MEDIASUBTYPE_ARGB32 || subtype == MEDIASUBTYPE_RGB32 || subtype == MEDIASUBTYPE_RGB24 || subtype == MEDIASUBTYPE_RGB565)
+	else if(subtype == MEDIASUBTYPE_ARGB32 || subtype == MEDIASUBTYPE_RGB32 || subtype == MEDIASUBTYPE_RGB24
+		|| subtype == MEDIASUBTYPE_RGB565 || subtype == MEDIASUBTYPE_RGB555)
 	{
 		int sbpp = 
 			subtype == MEDIASUBTYPE_ARGB32 || subtype == MEDIASUBTYPE_RGB32 ? 32 :
 			subtype == MEDIASUBTYPE_RGB24 ? 24 :
-			subtype == MEDIASUBTYPE_RGB565 ? 16 : 0;
+			subtype == MEDIASUBTYPE_RGB565 ? 16 : 
+			subtype == MEDIASUBTYPE_RGB555 ? 15 :0;
 
 		if(bihOut.biCompression == '2YUY')
 		{

@@ -1084,7 +1084,7 @@ bool BitBltFromRGBToRGB(int w, int h, BYTE* dst, int dstpitch, int dbpp, BYTE* s
 		return(true);
 	}
 	
-	if(sbpp != 16 && sbpp != 24 && sbpp != 32
+	if(sbpp != 16 && sbpp != 24 && sbpp != 32 && sbpp != 15 && sbpp != 8
 	|| dbpp != 16 && dbpp != 24 && dbpp != 32)
 		return(false);
 
@@ -1092,12 +1092,19 @@ bool BitBltFromRGBToRGB(int w, int h, BYTE* dst, int dstpitch, int dbpp, BYTE* s
 	{
 		for(int y = 0; y < h; y++, src += srcpitch, dst += dstpitch)
 		{
-			if(sbpp == 24)
+			if(sbpp == 15)
 			{
 				BYTE* s = (BYTE*)src;
 				WORD* d = (WORD*)dst;
 				for(int x = 0; x < w; x++, s+=3, d++)
-					*d = (WORD)(((*((DWORD*)s)>>8)&0xf800)|((*((DWORD*)s)>>5)&0x07e0)|((*((DWORD*)s)>>3)&0x1f));
+					*d = (WORD)(((*((DWORD*)s)>>9)&0x7c00)|((*((DWORD*)s)>>6)&0x03e0)|((*((DWORD*)s)>>3)&0x1f));
+
+			}else if(sbpp == 24)
+			{
+				BYTE* s = (BYTE*)src;
+				WORD* d = (WORD*)dst;
+				for(int x = 0; x < w; x++, s+=3, d++)
+					*d = (WORD)(((*((DWORD*)s)>>8)&0xf00)|((*((DWORD*)s)>>5)&0x03e0)|((*((DWORD*)s)>>3)&0x1f));
 			}
 			else if(sbpp == 32)
 			{
@@ -1112,7 +1119,29 @@ bool BitBltFromRGBToRGB(int w, int h, BYTE* dst, int dstpitch, int dbpp, BYTE* s
 	{
 		for(int y = 0; y < h; y++, src += srcpitch, dst += dstpitch)
 		{
-			if(sbpp == 16)
+			if(sbpp == 8)
+			{
+				BYTE* s = (BYTE*)src;
+				DWORD* d = (DWORD*)dst;
+				for(int x = 0; x < w; x++, s++, d+=3)
+				{	// not tested, r-g-b might be in reverse
+					d[0] = (*s&0x03)<<6;
+					d[1] = (*s&0x1c)<<11;
+					d[2] = (*s&0xe0)<<16;
+				}
+				
+			}else if(sbpp == 15)
+			{
+				WORD* s = (WORD*)src;
+				DWORD* d = (DWORD*)dst;
+				for(int x = 0; x < w; x++, s++, d+=3)
+				{	// not tested, r-g-b might be in reverse
+					d[0] = (*s&0x001f)<<3;
+					d[1] = (*s&0x03e0)<<6;
+					d[2] = (*s&0x7c00)<<9;
+				}
+				
+			}else if(sbpp == 16)
 			{
 				WORD* s = (WORD*)src;
 				BYTE* d = (BYTE*)dst;
@@ -1136,7 +1165,19 @@ bool BitBltFromRGBToRGB(int w, int h, BYTE* dst, int dstpitch, int dbpp, BYTE* s
 	{
 		for(int y = 0; y < h; y++, src += srcpitch, dst += dstpitch)
 		{
-			if(sbpp == 16)
+			if(sbpp == 8)
+			{
+				BYTE* s = (BYTE*)src;
+				DWORD* d = (DWORD*)dst;
+				for(int x = 0; x < w; x++, s++, d++)
+					*d = ((*s&0xe0)<<16)|((*s&0x1c)<<11)|((*s&0x03)<<6);
+			}else if(sbpp == 15)
+			{
+				WORD* s = (WORD*)src;
+				DWORD* d = (DWORD*)dst;
+				for(int x = 0; x < w; x++, s++, d++)
+					*d = ((*s&0x7c00)<<9)|((*s&0x03e0)<<6)|((*s&0x001f)<<3);
+			}else if(sbpp == 16)
 			{
 				WORD* s = (WORD*)src;
 				DWORD* d = (DWORD*)dst;

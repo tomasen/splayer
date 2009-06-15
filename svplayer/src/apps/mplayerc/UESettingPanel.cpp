@@ -215,7 +215,7 @@ BOOL CUESettingPanel::OnInitDialog()
 	if(bGPUPerfer){
 		m_sgs_gpulist.Append(L"适宜使用GPU加速");
 	}else{
-		m_sgs_gpulist.Append(L"不适宜使用GPU加速 <a href='https://bbs.shooter.cn/forumdisplay.php?fid=6'>报告错误</a>");
+		m_sgs_gpulist.Append(L"可能不适宜使用GPU加速 <a class='small' href='https://bbs.shooter.cn/forumdisplay.php?fid=6'>报告错误</a>");
 	}
 
 	//Genral Setting

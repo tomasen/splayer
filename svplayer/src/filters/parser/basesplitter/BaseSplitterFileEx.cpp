@@ -43,6 +43,390 @@ CBaseSplitterFileEx::~CBaseSplitterFileEx()
 
 //
 
+#define MARKER if(BitRead(1) != 1) {ASSERT(0); return(false);}
+
+bool CBaseSplitterFileEx::Read(avchdr& h, int len, CMediaType* pmt)
+{
+	__int64 endpos = GetPos() + len; // - sequence header length
+	CString szLog;
+	DWORD	dwStartCode;
+
+	// TODO : manage H264 escape codes (see "remove escapes (very rare 1:2^22)" in ffmpeg h264.c file)
+	while(GetPos() < endpos+4 && BitRead(32, true) == 0x00000001 && (!h.spslen || !h.ppslen))
+	{
+		__int64 pos = GetPos();
+
+		BitRead(32);
+		BYTE id = BitRead(8);
+
+		if((id&0x9f) == 0x07 && (id&0x60) != 0)
+		{
+			szLog.Format(_T("avchd matched 0x%u"), id);
+			SVP_LogMsg(szLog);
+			__int64	num_units_in_tick;
+			__int64	time_scale;
+			long	fixed_frame_rate_flag;
+
+			h.spspos = pos;
+
+			h.profile = (BYTE)BitRead(8);
+			BitRead(8);
+			h.level = (BYTE)BitRead(8);
+
+			UExpGolombRead(); // seq_parameter_set_id
+
+			if(h.profile >= 100) // high profile
+			{
+				if(UExpGolombRead() == 3) // chroma_format_idc
+				{
+					BitRead(1); // residue_transform_flag
+				}
+
+				UExpGolombRead(); // bit_depth_luma_minus8
+				UExpGolombRead(); // bit_depth_chroma_minus8
+
+				BitRead(1); // qpprime_y_zero_transform_bypass_flag
+
+				if(BitRead(1)) // seq_scaling_matrix_present_flag
+					for(int i = 0; i < 8; i++)
+						if(BitRead(1)) // seq_scaling_list_present_flag
+							for(int j = 0, size = i < 6 ? 16 : 64, next = 8; j < size && next != 0; ++j)
+								next = (next + SExpGolombRead() + 256) & 255;
+			}
+
+			UExpGolombRead(); // log2_max_frame_num_minus4
+
+			UINT64 pic_order_cnt_type = UExpGolombRead();
+
+			if(pic_order_cnt_type == 0)
+			{
+				UExpGolombRead(); // log2_max_pic_order_cnt_lsb_minus4
+			}
+			else if(pic_order_cnt_type == 1)
+			{
+				BitRead(1); // delta_pic_order_always_zero_flag
+				SExpGolombRead(); // offset_for_non_ref_pic
+				SExpGolombRead(); // offset_for_top_to_bottom_field
+				UINT64 num_ref_frames_in_pic_order_cnt_cycle = UExpGolombRead();
+				for(int i = 0; i < num_ref_frames_in_pic_order_cnt_cycle; i++)
+					SExpGolombRead(); // offset_for_ref_frame[i]
+			}
+
+			UExpGolombRead(); // num_ref_frames
+			BitRead(1); // gaps_in_frame_num_value_allowed_flag
+
+			UINT64 pic_width_in_mbs_minus1 = UExpGolombRead();
+			UINT64 pic_height_in_map_units_minus1 = UExpGolombRead();
+			BYTE frame_mbs_only_flag = (BYTE)BitRead(1);
+
+			h.width = (pic_width_in_mbs_minus1 + 1) * 16;
+			h.height = (2 - frame_mbs_only_flag) * (pic_height_in_map_units_minus1 + 1) * 16;
+
+			if (h.height == 1088) h.height = 1080;	// Prevent blur lines 
+
+			if (!frame_mbs_only_flag) 
+				BitRead(1);							// mb_adaptive_frame_field_flag
+			BitRead(1);								// direct_8x8_inference_flag
+			if (BitRead(1))							// frame_cropping_flag
+			{
+				UExpGolombRead();					// frame_cropping_rect_left_offset
+				UExpGolombRead();					// frame_cropping_rect_right_offset
+				UExpGolombRead();					// frame_cropping_rect_top_offset
+				UExpGolombRead();					// frame_cropping_rect_bottom_offset
+			}
+
+			if (BitRead(1))							// vui_parameters_present_flag
+			{
+				if (BitRead(1))						// aspect_ratio_info_present_flag
+				{
+					if (255==(BYTE)BitRead(8))		// aspect_ratio_idc)
+					{
+						BitRead(16);				// sar_width
+						BitRead(16);				// sar_height
+					}
+				}
+
+				if (BitRead(1))						// overscan_info_present_flag
+				{
+					BitRead(1);						// overscan_appropriate_flag
+				}
+
+				if (BitRead(1))						// video_signal_type_present_flag
+				{
+					BitRead(3);						// video_format
+					BitRead(1);						// video_full_range_flag
+					if(BitRead(1))					// colour_description_present_flag
+					{
+						BitRead(8);					// colour_primaries
+						BitRead(8);					// transfer_characteristics
+						BitRead(8);					// matrix_coefficients
+					}
+				}
+				if(BitRead(1))						// chroma_location_info_present_flag
+				{
+					UExpGolombRead();				// chroma_sample_loc_type_top_field
+					UExpGolombRead();				// chroma_sample_loc_type_bottom_field
+				}
+				if (BitRead(1))						// timing_info_present_flag
+				{
+					num_units_in_tick		= BitRead(32);
+					time_scale				= BitRead(32);
+					fixed_frame_rate_flag	= BitRead(1);
+
+					// Trick for weird parameters (10x to Madshi)!
+					if ((num_units_in_tick < 1000) || (num_units_in_tick > 1001))
+					{
+						if  ((time_scale % num_units_in_tick != 0) && ((time_scale*1001) % num_units_in_tick == 0))
+						{
+							time_scale			= (time_scale * 1001) / num_units_in_tick;
+							num_units_in_tick	= 1001;
+						}
+						else
+						{
+							time_scale			= (time_scale * 1000) / num_units_in_tick;
+							num_units_in_tick	= 1000;
+						}
+					}
+					time_scale = time_scale / 2;	// VUI consider fields even for progressive stream : divide by 2!
+
+					if (time_scale)
+						h.AvgTimePerFrame = (10000000I64*num_units_in_tick)/time_scale;
+				}
+			}
+		}
+		else if((id&0x9f) == 0x08 && (id&0x60) != 0)
+		{
+			szLog.Format(_T("avchd new pos 0x%u"), id);
+			SVP_LogMsg(szLog);
+			h.ppspos = pos;
+		}else{
+			szLog.Format(_T("avchd not matched 0x%u"), id);
+			SVP_LogMsg(szLog);
+		}
+
+		BitByteAlign();
+
+		dwStartCode = BitRead(32, true);
+		while(GetPos() < endpos+4 && (dwStartCode != 0x00000001) && (dwStartCode & 0xFFFFFF00) != 0x00000100)		    
+		{
+			BitRead(8);
+			dwStartCode = BitRead(32, true);
+		}
+
+		if(h.spspos != 0 && h.spslen == 0)
+			h.spslen = GetPos() - h.spspos;
+		else if(h.ppspos != 0 && h.ppslen == 0) 
+			h.ppslen = GetPos() - h.ppspos;
+
+	}
+
+	if(!h.spspos || !h.spslen || !h.ppspos || !h.ppslen) {
+		szLog.Format(_T("not avchd 0x%u %u %u %u"),  h.spspos ,h.spslen , h.ppspos ,h.ppslen);
+		SVP_LogMsg(szLog);
+		return(false);
+	}
+
+	if(!pmt) return(true);
+
+	{
+		int extra = 2+h.spslen-4 + 2+h.ppslen-4;
+
+		pmt->majortype = MEDIATYPE_Video;
+		pmt->subtype = FOURCCMap('1CVA');
+		pmt->formattype = FORMAT_MPEG2_VIDEO;
+		int len = FIELD_OFFSET(MPEG2VIDEOINFO, dwSequenceHeader) + extra;
+		MPEG2VIDEOINFO* vi = (MPEG2VIDEOINFO*)new BYTE[len];
+		memset(vi, 0, len);
+		// vi->hdr.dwBitRate = ;
+		vi->hdr.AvgTimePerFrame = h.AvgTimePerFrame;
+		vi->hdr.dwPictAspectRatioX = h.width;
+		vi->hdr.dwPictAspectRatioY = h.height;
+		vi->hdr.bmiHeader.biSize = sizeof(vi->hdr.bmiHeader);
+		vi->hdr.bmiHeader.biWidth = h.width;
+		vi->hdr.bmiHeader.biHeight = h.height;
+		vi->hdr.bmiHeader.biCompression = '1CVA';
+		vi->dwProfile = h.profile;
+		vi->dwFlags = 4; // ?
+		vi->dwLevel = h.level;
+		vi->cbSequenceHeader = extra;
+		BYTE* p = (BYTE*)&vi->dwSequenceHeader[0];
+		*p++ = (h.spslen-4) >> 8;
+		*p++ = (h.spslen-4) & 0xff;
+		Seek(h.spspos+4);
+		ByteRead(p, h.spslen-4);
+		p += h.spslen-4;
+		*p++ = (h.ppslen-4) >> 8;
+		*p++ = (h.ppslen-4) & 0xff;
+		Seek(h.ppspos+4);
+		ByteRead(p, h.ppslen-4);
+		p += h.ppslen-4;
+		pmt->SetFormat((BYTE*)vi, len);
+		delete [] vi;
+	}
+
+	return(true);
+}
+
+
+bool CBaseSplitterFileEx::Read(seqhdr& h, int len, CMediaType* pmt)
+{
+	__int64 endpos = GetPos() + len; // - sequence header length
+
+	BYTE id = 0;
+	CString szLog;
+	while(GetPos() < endpos && id != 0xb3)
+	{
+		if(!NextMpegStartCode(id, len)){
+			//检测下一个 code 应该为b3 ，但是为什么用While?
+			szLog.Format(_T("Havn't Got Next Mpeg Start Code for len %d w%d h%d"),  len , (WORD)BitRead(12) , (WORD)BitRead(12));
+			SVP_LogMsg(szLog);
+			return(false);
+		}else{
+			//??
+			szLog.Format(_T("Got Next Mpeg Start Code for len 0x%u , continue"),  id);
+			SVP_LogMsg(szLog);
+		}
+	}
+
+
+	if(id != 0xb3) {
+		
+		szLog.Format(_T("Havn't Got Next Mpeg Proper Start Code 0x%u != 0xb3  w%d h%d"),  id, (WORD)BitRead(12) , (WORD)BitRead(12));
+		SVP_LogMsg(szLog);
+
+		return(false);
+	}else{
+		szLog.Format(_T("Got Next Mpeg Proper Start Code 0x%u == 0xb3"),  id);
+		SVP_LogMsg(szLog);
+
+	}
+
+	__int64 shpos = GetPos() - 4;
+
+	h.width = (WORD)BitRead(12);
+	h.height = (WORD)BitRead(12);
+	h.ar = BitRead(4);
+	static int ifps[16] = {0, 1126125, 1125000, 1080000, 900900, 900000, 540000, 450450, 450000, 0, 0, 0, 0, 0, 0, 0};
+	h.ifps = ifps[BitRead(4)];
+	h.bitrate = (DWORD)BitRead(18); MARKER;
+	h.vbv = (DWORD)BitRead(10);
+	h.constrained = BitRead(1);
+
+	if(h.fiqm = BitRead(1))
+		for(int i = 0; i < countof(h.iqm); i++)
+			h.iqm[i] = (BYTE)BitRead(8);
+
+	if(h.fniqm = BitRead(1))
+		for(int i = 0; i < countof(h.niqm); i++)
+			h.niqm[i] = (BYTE)BitRead(8);
+
+	__int64 shlen = GetPos() - shpos;
+
+	static float ar[] = 
+	{
+		1.0000f,1.0000f,0.6735f,0.7031f,0.7615f,0.8055f,0.8437f,0.8935f,
+		0.9157f,0.9815f,1.0255f,1.0695f,1.0950f,1.1575f,1.2015f,1.0000f
+	};
+
+	h.arx = (int)((float)h.width / ar[h.ar] + 0.5);
+	h.ary = h.height;
+
+	mpeg_t type = mpeg1;
+
+	__int64 shextpos = 0, shextlen = 0;
+
+	if(NextMpegStartCode(id, 8) && id == 0xb5) // sequence header ext
+	{
+		shextpos = GetPos() - 4;
+
+		h.startcodeid = BitRead(4);
+		h.profile_levelescape = BitRead(1); // reserved, should be 0
+		h.profile = BitRead(3);
+		h.level = BitRead(4);
+		h.progressive = BitRead(1);
+		h.chroma = BitRead(2);
+		h.width |= (BitRead(2)<<12);
+		h.height |= (BitRead(2)<<12);
+		h.bitrate |= (BitRead(12)<<18); MARKER;
+		h.vbv |= (BitRead(8)<<10);
+		h.lowdelay = BitRead(1);
+		h.ifps = (DWORD)(h.ifps * (BitRead(2)+1) / (BitRead(5)+1));
+
+		shextlen = GetPos() - shextpos;
+
+		struct {DWORD x, y;} ar[] = {{h.width,h.height},{4,3},{16,9},{221,100},{h.width,h.height}};
+		int i = min(max(h.ar, 1), 5)-1;
+		h.arx = ar[i].x;
+		h.ary = ar[i].y;
+
+		type = mpeg2;
+	}
+
+	h.ifps = 10 * h.ifps / 27;
+	h.bitrate = h.bitrate == (1<<30)-1 ? 0 : h.bitrate * 400;
+
+	DWORD a = h.arx, b = h.ary;
+	while(a) {DWORD tmp = a; a = b % tmp; b = tmp;}
+	if(b) h.arx /= b, h.ary /= b;
+
+	if(!pmt) return(true);
+
+	pmt->majortype = MEDIATYPE_Video;
+
+	if(type == mpeg1)
+	{
+		pmt->subtype = MEDIASUBTYPE_MPEG1Payload;
+		pmt->formattype = FORMAT_MPEGVideo;
+		int len = FIELD_OFFSET(MPEG1VIDEOINFO, bSequenceHeader) + shlen + shextlen;
+		MPEG1VIDEOINFO* vi = (MPEG1VIDEOINFO*)new BYTE[len];
+		memset(vi, 0, len);
+		vi->hdr.dwBitRate = h.bitrate;
+		vi->hdr.AvgTimePerFrame = h.ifps;
+		vi->hdr.bmiHeader.biSize = sizeof(vi->hdr.bmiHeader);
+		vi->hdr.bmiHeader.biWidth = h.width;
+		vi->hdr.bmiHeader.biHeight = h.height;
+		vi->hdr.bmiHeader.biXPelsPerMeter = h.width * h.ary;
+		vi->hdr.bmiHeader.biYPelsPerMeter = h.height * h.arx;
+		vi->cbSequenceHeader = shlen + shextlen;
+		Seek(shpos);
+		ByteRead((BYTE*)&vi->bSequenceHeader[0], shlen);
+		if(shextpos && shextlen) Seek(shextpos);
+		ByteRead((BYTE*)&vi->bSequenceHeader[0] + shlen, shextlen);
+		pmt->SetFormat((BYTE*)vi, len);
+		delete [] vi;
+	}
+	else if(type == mpeg2)
+	{
+		pmt->subtype = MEDIASUBTYPE_MPEG2_VIDEO;
+		pmt->formattype = FORMAT_MPEG2_VIDEO;
+		int len = FIELD_OFFSET(MPEG2VIDEOINFO, dwSequenceHeader) + shlen + shextlen;
+		MPEG2VIDEOINFO* vi = (MPEG2VIDEOINFO*)new BYTE[len];
+		memset(vi, 0, len);
+		vi->hdr.dwBitRate = h.bitrate;
+		vi->hdr.AvgTimePerFrame = h.ifps;
+		vi->hdr.dwPictAspectRatioX = h.arx;
+		vi->hdr.dwPictAspectRatioY = h.ary;
+		vi->hdr.bmiHeader.biSize = sizeof(vi->hdr.bmiHeader);
+		vi->hdr.bmiHeader.biWidth = h.width;
+		vi->hdr.bmiHeader.biHeight = h.height;
+		vi->dwProfile = h.profile;
+		vi->dwLevel = h.level;
+		vi->cbSequenceHeader = shlen + shextlen;
+		Seek(shpos);
+		ByteRead((BYTE*)&vi->dwSequenceHeader[0], shlen);
+		if(shextpos && shextlen) Seek(shextpos);
+		ByteRead((BYTE*)&vi->dwSequenceHeader[0] + shlen, shextlen);
+		pmt->SetFormat((BYTE*)vi, len);
+		delete [] vi;
+	}
+	else
+	{
+		return(false);
+	}
+
+	return(true);
+}
+
 bool CBaseSplitterFileEx::NextMpegStartCode(BYTE& code, __int64 len)
 {
 	BitByteAlign();
@@ -58,8 +442,6 @@ bool CBaseSplitterFileEx::NextMpegStartCode(BYTE& code, __int64 len)
 }
 
 //
-
-#define MARKER if(BitRead(1) != 1) {ASSERT(0); return(false);}
 
 bool CBaseSplitterFileEx::Read(pshdr& h)
 {
@@ -250,164 +632,6 @@ bool CBaseSplitterFileEx::Read(peshdr& h, BYTE code)
 		// right at the beginning of the packet, which 
 		// we should not skip...
 */
-	}
-
-	return(true);
-}
-
-bool CBaseSplitterFileEx::Read(seqhdr& h, int len, CMediaType* pmt)
-{
-	__int64 endpos = GetPos() + len; // - sequence header length
-
-	BYTE id = 0;
-	CString szLog;
-	while(GetPos() < endpos && id != 0xb3)
-	{
-		if(!NextMpegStartCode(id, len)){
-			//检测下一个 code 应该为b3 ，但是为什么用While?
-			szLog.Format(_T("Havn't Got Next Mpeg Start Code for len %d"),  len);
-			SVP_LogMsg(szLog);
-			return(false);
-		}else{
-			//??
-			szLog.Format(_T("Got Next Mpeg Start Code for len 0x%u , continue"),  id);
-			SVP_LogMsg(szLog);
-		}
-	}
-
-	
-	if(id != 0xb3) {
-		szLog.Format(_T("Havn't Got Next Mpeg Proper Start Code 0x%u != 0xb3"),  id);
-		SVP_LogMsg(szLog);
-
-		return(false);
-	}else{
-		szLog.Format(_T("Got Next Mpeg Proper Start Code 0x%u == 0xb3"),  id);
-		SVP_LogMsg(szLog);
-		
-	}
-
-	__int64 shpos = GetPos() - 4;
-
-	h.width = (WORD)BitRead(12);
-	h.height = (WORD)BitRead(12);
-	h.ar = BitRead(4);
-    static int ifps[16] = {0, 1126125, 1125000, 1080000, 900900, 900000, 540000, 450450, 450000, 0, 0, 0, 0, 0, 0, 0};
-	h.ifps = ifps[BitRead(4)];
-	h.bitrate = (DWORD)BitRead(18); MARKER;
-	h.vbv = (DWORD)BitRead(10);
-	h.constrained = BitRead(1);
-
-	if(h.fiqm = BitRead(1))
-		for(int i = 0; i < countof(h.iqm); i++)
-			h.iqm[i] = (BYTE)BitRead(8);
-
-	if(h.fniqm = BitRead(1))
-		for(int i = 0; i < countof(h.niqm); i++)
-			h.niqm[i] = (BYTE)BitRead(8);
-
-	__int64 shlen = GetPos() - shpos;
-
-	static float ar[] = 
-	{
-		1.0000f,1.0000f,0.6735f,0.7031f,0.7615f,0.8055f,0.8437f,0.8935f,
-		0.9157f,0.9815f,1.0255f,1.0695f,1.0950f,1.1575f,1.2015f,1.0000f
-	};
-
-	h.arx = (int)((float)h.width / ar[h.ar] + 0.5);
-	h.ary = h.height;
-
-	mpeg_t type = mpeg1;
-
-	__int64 shextpos = 0, shextlen = 0;
-
-	if(NextMpegStartCode(id, 8) && id == 0xb5) // sequence header ext
-	{
-		shextpos = GetPos() - 4;
-
-		h.startcodeid = BitRead(4);
-		h.profile_levelescape = BitRead(1); // reserved, should be 0
-		h.profile = BitRead(3);
-		h.level = BitRead(4);
-		h.progressive = BitRead(1);
-		h.chroma = BitRead(2);
-		h.width |= (BitRead(2)<<12);
-		h.height |= (BitRead(2)<<12);
-		h.bitrate |= (BitRead(12)<<18); MARKER;
-		h.vbv |= (BitRead(8)<<10);
-		h.lowdelay = BitRead(1);
-		h.ifps = (DWORD)(h.ifps * (BitRead(2)+1) / (BitRead(5)+1));
-
-		shextlen = GetPos() - shextpos;
-
-		struct {DWORD x, y;} ar[] = {{h.width,h.height},{4,3},{16,9},{221,100},{h.width,h.height}};
-		int i = min(max(h.ar, 1), 5)-1;
-		h.arx = ar[i].x;
-		h.ary = ar[i].y;
-
-		type = mpeg2;
-	}
-
-	h.ifps = 10 * h.ifps / 27;
-	h.bitrate = h.bitrate == (1<<30)-1 ? 0 : h.bitrate * 400;
-
-	DWORD a = h.arx, b = h.ary;
-    while(a) {DWORD tmp = a; a = b % tmp; b = tmp;}
-	if(b) h.arx /= b, h.ary /= b;
-
-	if(!pmt) return(true);
-
-	pmt->majortype = MEDIATYPE_Video;
-
-	if(type == mpeg1)
-	{
-		pmt->subtype = MEDIASUBTYPE_MPEG1Payload;
-		pmt->formattype = FORMAT_MPEGVideo;
-		int len = FIELD_OFFSET(MPEG1VIDEOINFO, bSequenceHeader) + shlen + shextlen;
-		MPEG1VIDEOINFO* vi = (MPEG1VIDEOINFO*)new BYTE[len];
-		memset(vi, 0, len);
-		vi->hdr.dwBitRate = h.bitrate;
-		vi->hdr.AvgTimePerFrame = h.ifps;
-		vi->hdr.bmiHeader.biSize = sizeof(vi->hdr.bmiHeader);
-		vi->hdr.bmiHeader.biWidth = h.width;
-		vi->hdr.bmiHeader.biHeight = h.height;
-		vi->hdr.bmiHeader.biXPelsPerMeter = h.width * h.ary;
-		vi->hdr.bmiHeader.biYPelsPerMeter = h.height * h.arx;
-		vi->cbSequenceHeader = shlen + shextlen;
-		Seek(shpos);
-		ByteRead((BYTE*)&vi->bSequenceHeader[0], shlen);
-		if(shextpos && shextlen) Seek(shextpos);
-		ByteRead((BYTE*)&vi->bSequenceHeader[0] + shlen, shextlen);
-		pmt->SetFormat((BYTE*)vi, len);
-		delete [] vi;
-	}
-	else if(type == mpeg2)
-	{
-		pmt->subtype = MEDIASUBTYPE_MPEG2_VIDEO;
-		pmt->formattype = FORMAT_MPEG2_VIDEO;
-		int len = FIELD_OFFSET(MPEG2VIDEOINFO, dwSequenceHeader) + shlen + shextlen;
-		MPEG2VIDEOINFO* vi = (MPEG2VIDEOINFO*)new BYTE[len];
-		memset(vi, 0, len);
-		vi->hdr.dwBitRate = h.bitrate;
-		vi->hdr.AvgTimePerFrame = h.ifps;
-		vi->hdr.dwPictAspectRatioX = h.arx;
-		vi->hdr.dwPictAspectRatioY = h.ary;
-		vi->hdr.bmiHeader.biSize = sizeof(vi->hdr.bmiHeader);
-		vi->hdr.bmiHeader.biWidth = h.width;
-		vi->hdr.bmiHeader.biHeight = h.height;
-		vi->dwProfile = h.profile;
-		vi->dwLevel = h.level;
-		vi->cbSequenceHeader = shlen + shextlen;
-		Seek(shpos);
-		ByteRead((BYTE*)&vi->dwSequenceHeader[0], shlen);
-		if(shextpos && shextlen) Seek(shextpos);
-		ByteRead((BYTE*)&vi->dwSequenceHeader[0] + shlen, shextlen);
-		pmt->SetFormat((BYTE*)vi, len);
-		delete [] vi;
-	}
-	else
-	{
-		return(false);
 	}
 
 	return(true);
@@ -1120,219 +1344,6 @@ bool CBaseSplitterFileEx::Read(pvahdr& h, bool fSync)
 
 	return(true);
 }
-
-bool CBaseSplitterFileEx::Read(avchdr& h, int len, CMediaType* pmt)
-{
-	__int64 endpos = GetPos() + len; // - sequence header length
-
-	DWORD	dwStartCode;
-
-	// TODO : manage H264 escape codes (see "remove escapes (very rare 1:2^22)" in ffmpeg h264.c file)
-	while(GetPos() < endpos+4 && BitRead(32, true) == 0x00000001 && (!h.spslen || !h.ppslen))
-	{
-		__int64 pos = GetPos();
-
-		BitRead(32);
-		BYTE id = BitRead(8);
-		
-		if((id&0x9f) == 0x07 && (id&0x60) != 0)
-		{
-			__int64	num_units_in_tick;
-			__int64	time_scale;
-			long	fixed_frame_rate_flag;
-
-			h.spspos = pos;
-
-			h.profile = (BYTE)BitRead(8);
-			BitRead(8);
-			h.level = (BYTE)BitRead(8);
-
-			UExpGolombRead(); // seq_parameter_set_id
-
-			if(h.profile >= 100) // high profile
-			{
-				if(UExpGolombRead() == 3) // chroma_format_idc
-				{
-					BitRead(1); // residue_transform_flag
-				}
-
-				UExpGolombRead(); // bit_depth_luma_minus8
-				UExpGolombRead(); // bit_depth_chroma_minus8
-
-				BitRead(1); // qpprime_y_zero_transform_bypass_flag
-
-				if(BitRead(1)) // seq_scaling_matrix_present_flag
-					for(int i = 0; i < 8; i++)
-						if(BitRead(1)) // seq_scaling_list_present_flag
-							for(int j = 0, size = i < 6 ? 16 : 64, next = 8; j < size && next != 0; ++j)
-								next = (next + SExpGolombRead() + 256) & 255;
-			}
-
-			UExpGolombRead(); // log2_max_frame_num_minus4
-
-			UINT64 pic_order_cnt_type = UExpGolombRead();
-
-			if(pic_order_cnt_type == 0)
-			{
-				UExpGolombRead(); // log2_max_pic_order_cnt_lsb_minus4
-			}
-			else if(pic_order_cnt_type == 1)
-			{
-				BitRead(1); // delta_pic_order_always_zero_flag
-				SExpGolombRead(); // offset_for_non_ref_pic
-				SExpGolombRead(); // offset_for_top_to_bottom_field
-				UINT64 num_ref_frames_in_pic_order_cnt_cycle = UExpGolombRead();
-				for(int i = 0; i < num_ref_frames_in_pic_order_cnt_cycle; i++)
-					SExpGolombRead(); // offset_for_ref_frame[i]
-			}
-
-			UExpGolombRead(); // num_ref_frames
-			BitRead(1); // gaps_in_frame_num_value_allowed_flag
-
-			UINT64 pic_width_in_mbs_minus1 = UExpGolombRead();
-			UINT64 pic_height_in_map_units_minus1 = UExpGolombRead();
-			BYTE frame_mbs_only_flag = (BYTE)BitRead(1);
-
-			h.width = (pic_width_in_mbs_minus1 + 1) * 16;
-			h.height = (2 - frame_mbs_only_flag) * (pic_height_in_map_units_minus1 + 1) * 16;
-
-			if (h.height == 1088) h.height = 1080;	// Prevent blur lines 
-
-			if (!frame_mbs_only_flag) 
-				BitRead(1);							// mb_adaptive_frame_field_flag
-			BitRead(1);								// direct_8x8_inference_flag
-			if (BitRead(1))							// frame_cropping_flag
-			{
-				UExpGolombRead();					// frame_cropping_rect_left_offset
-				UExpGolombRead();					// frame_cropping_rect_right_offset
-				UExpGolombRead();					// frame_cropping_rect_top_offset
-				UExpGolombRead();					// frame_cropping_rect_bottom_offset
-			}
-			
-			if (BitRead(1))							// vui_parameters_present_flag
-			{
-				if (BitRead(1))						// aspect_ratio_info_present_flag
-				{
-					if (255==(BYTE)BitRead(8))		// aspect_ratio_idc)
-					{
-						BitRead(16);				// sar_width
-						BitRead(16);				// sar_height
-					}
-				}
-
-				if (BitRead(1))						// overscan_info_present_flag
-				{
-					BitRead(1);						// overscan_appropriate_flag
-				}
-
-				if (BitRead(1))						// video_signal_type_present_flag
-				{
-					BitRead(3);						// video_format
-					BitRead(1);						// video_full_range_flag
-					if(BitRead(1))					// colour_description_present_flag
-					{
-						BitRead(8);					// colour_primaries
-						BitRead(8);					// transfer_characteristics
-						BitRead(8);					// matrix_coefficients
-					}
-				}
-				if(BitRead(1))						// chroma_location_info_present_flag
-				{
-					UExpGolombRead();				// chroma_sample_loc_type_top_field
-					UExpGolombRead();				// chroma_sample_loc_type_bottom_field
-				}
-				if (BitRead(1))						// timing_info_present_flag
-				{
-					num_units_in_tick		= BitRead(32);
-					time_scale				= BitRead(32);
-					fixed_frame_rate_flag	= BitRead(1);
-
-					// Trick for weird parameters (10x to Madshi)!
-					if ((num_units_in_tick < 1000) || (num_units_in_tick > 1001))
-					{
-						if  ((time_scale % num_units_in_tick != 0) && ((time_scale*1001) % num_units_in_tick == 0))
-						{
-							time_scale			= (time_scale * 1001) / num_units_in_tick;
-							num_units_in_tick	= 1001;
-						}
-						else
-						{
-							time_scale			= (time_scale * 1000) / num_units_in_tick;
-							num_units_in_tick	= 1000;
-						}
-					}
-					time_scale = time_scale / 2;	// VUI consider fields even for progressive stream : divide by 2!
-
-					if (time_scale)
-						h.AvgTimePerFrame = (10000000I64*num_units_in_tick)/time_scale;
-				}
-			}
-		}
-		else if((id&0x9f) == 0x08 && (id&0x60) != 0)
-		{
-			h.ppspos = pos;
-		}
-
-		BitByteAlign();
-
-		dwStartCode = BitRead(32, true);
-		while(GetPos() < endpos+4 && (dwStartCode != 0x00000001) && (dwStartCode & 0xFFFFFF00) != 0x00000100)		    
-		{
-			BitRead(8);
-			dwStartCode = BitRead(32, true);
-		}
-
-		if(h.spspos != 0 && h.spslen == 0)
-			h.spslen = GetPos() - h.spspos;
-		else if(h.ppspos != 0 && h.ppslen == 0) 
-			h.ppslen = GetPos() - h.ppspos;
-
-	}
-
-	if(!h.spspos || !h.spslen || !h.ppspos || !h.ppslen) 
-		return(false);
-
-	if(!pmt) return(true);
-
-	{
-		int extra = 2+h.spslen-4 + 2+h.ppslen-4;
-
-		pmt->majortype = MEDIATYPE_Video;
-		pmt->subtype = FOURCCMap('1CVA');
-		pmt->formattype = FORMAT_MPEG2_VIDEO;
-		int len = FIELD_OFFSET(MPEG2VIDEOINFO, dwSequenceHeader) + extra;
-		MPEG2VIDEOINFO* vi = (MPEG2VIDEOINFO*)new BYTE[len];
-		memset(vi, 0, len);
-		// vi->hdr.dwBitRate = ;
-		vi->hdr.AvgTimePerFrame = h.AvgTimePerFrame;
-		vi->hdr.dwPictAspectRatioX = h.width;
-		vi->hdr.dwPictAspectRatioY = h.height;
-		vi->hdr.bmiHeader.biSize = sizeof(vi->hdr.bmiHeader);
-		vi->hdr.bmiHeader.biWidth = h.width;
-		vi->hdr.bmiHeader.biHeight = h.height;
-		vi->hdr.bmiHeader.biCompression = '1CVA';
-		vi->dwProfile = h.profile;
-		vi->dwFlags = 4; // ?
-		vi->dwLevel = h.level;
-		vi->cbSequenceHeader = extra;
-		BYTE* p = (BYTE*)&vi->dwSequenceHeader[0];
-		*p++ = (h.spslen-4) >> 8;
-		*p++ = (h.spslen-4) & 0xff;
-		Seek(h.spspos+4);
-		ByteRead(p, h.spslen-4);
-		p += h.spslen-4;
-		*p++ = (h.ppslen-4) >> 8;
-		*p++ = (h.ppslen-4) & 0xff;
-		Seek(h.ppspos+4);
-		ByteRead(p, h.ppslen-4);
-		p += h.ppslen-4;
-		pmt->SetFormat((BYTE*)vi, len);
-		delete [] vi;
-	}
-
-	return(true);
-}
-
 
 bool CBaseSplitterFileEx::Read(vc1hdr& h, int len, CMediaType* pmt)
 {

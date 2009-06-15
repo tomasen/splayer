@@ -113,7 +113,7 @@ public:
 	STDMETHODIMP_(BSTR) GetTrackCodecDownloadURL(UINT aTrackIdx);
 };
 
-[uuid("0A68C3B5-9164-4a54-AFAF-995B2FF0E0D4")]
+[uuid("0A68C3B5-9164-4a54-AFAF-995B2FF0E0D5")]
 class CMatroskaSourceFilter : public CMatroskaSplitterFilter
 {
 public:

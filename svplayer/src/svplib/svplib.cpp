@@ -220,6 +220,17 @@ void SVP_LogMsg3(LPCSTR fmt, ...)
 	}
 	va_end(args);
 }
+void SVP_LogMsg5(LPCTSTR fmt, ...)
+{
+	wchar_t buf[2048];
+	va_list args;
+	va_start(args, fmt);
+	//CSVPToolBox svpToolBox;
+	//CString szLogPath = svpToolBox.GetPlayerPath(_T("SVPDebug2.log"));
+	vswprintf(buf,fmt,args);
+	SVP_LogMsg(buf);
+	va_end(args);
+}
 
 void SVP_LogMsg4(BYTE* buff, __int64 iLen)
 {

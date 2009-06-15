@@ -26,7 +26,7 @@
 #include <initguid.h>
 #include "../../../../include/moreuuids.h"
 
-#include "../../../svplib/svplib.h"
+//#include "../../../svplib/svplib.h"
 //
 // CBaseSplitterFileEx
 //
@@ -52,6 +52,8 @@ bool CBaseSplitterFileEx::Read(avchdr& h, int len, CMediaType* pmt)
 	DWORD	dwStartCode;
 
 	// TODO : manage H264 escape codes (see "remove escapes (very rare 1:2^22)" in ffmpeg h264.c file)
+	//dwStartCode =  BitRead(32, true);
+	//SVP_LogMsg3("avc got %x", dwStartCode);
 	while(GetPos() < endpos+4 && BitRead(32, true) == 0x00000001 && (!h.spslen || !h.ppslen))
 	{
 		__int64 pos = GetPos();
@@ -61,8 +63,8 @@ bool CBaseSplitterFileEx::Read(avchdr& h, int len, CMediaType* pmt)
 
 		if((id&0x9f) == 0x07 && (id&0x60) != 0)
 		{
-			szLog.Format(_T("avchd matched 0x%u"), id);
-			SVP_LogMsg(szLog);
+//			szLog.Format(_T("avchd matched 0x%x"), id);
+//			SVP_LogMsg(szLog);
 			__int64	num_units_in_tick;
 			__int64	time_scale;
 			long	fixed_frame_rate_flag;
@@ -196,12 +198,12 @@ bool CBaseSplitterFileEx::Read(avchdr& h, int len, CMediaType* pmt)
 		}
 		else if((id&0x9f) == 0x08 && (id&0x60) != 0)
 		{
-			szLog.Format(_T("avchd new pos 0x%u"), id);
-			SVP_LogMsg(szLog);
+//			szLog.Format(_T("avchd new pos 0x%x"), id);
+//			SVP_LogMsg(szLog);
 			h.ppspos = pos;
 		}else{
-			szLog.Format(_T("avchd not matched 0x%u"), id);
-			SVP_LogMsg(szLog);
+			//szLog.Format(_T("avchd not matched 0x%x"), id);
+			//SVP_LogMsg(szLog);
 		}
 
 		BitByteAlign();
@@ -221,8 +223,8 @@ bool CBaseSplitterFileEx::Read(avchdr& h, int len, CMediaType* pmt)
 	}
 
 	if(!h.spspos || !h.spslen || !h.ppspos || !h.ppslen) {
-		szLog.Format(_T("not avchd 0x%u %u %u %u"),  h.spspos ,h.spslen , h.ppspos ,h.ppslen);
-		SVP_LogMsg(szLog);
+//		szLog.Format(_T("not avchd 0x%x %x %x %x"),  h.spspos ,h.spslen , h.ppspos ,h.ppslen);
+//		SVP_LogMsg(szLog);
 		return(false);
 	}
 
@@ -278,26 +280,26 @@ bool CBaseSplitterFileEx::Read(seqhdr& h, int len, CMediaType* pmt)
 	{
 		if(!NextMpegStartCode(id, len)){
 			//检测下一个 code 应该为b3 ，但是为什么用While?
-			szLog.Format(_T("Havn't Got Next Mpeg Start Code for len %d w%d h%d"),  len , (WORD)BitRead(12) , (WORD)BitRead(12));
-			SVP_LogMsg(szLog);
+//			szLog.Format(_T("Havn't Got Next Mpeg Start Code for len %d w%d h%d"),  len , (WORD)BitRead(12) , (WORD)BitRead(12));
+//			SVP_LogMsg(szLog);
 			return(false);
 		}else{
 			//??
-			szLog.Format(_T("Got Next Mpeg Start Code for len 0x%u , continue"),  id);
-			SVP_LogMsg(szLog);
+//			szLog.Format(_T("Got Next Mpeg Start Code for len 0x%x , continue"),  id);
+//			SVP_LogMsg(szLog);
 		}
 	}
 
 
 	if(id != 0xb3) {
 		
-		szLog.Format(_T("Havn't Got Next Mpeg Proper Start Code 0x%u != 0xb3  w%d h%d"),  id, (WORD)BitRead(12) , (WORD)BitRead(12));
-		SVP_LogMsg(szLog);
+//		szLog.Format(_T("Havn't Got Next Mpeg Proper Start Code 0x%x != 0xb3  w%d h%d"),  id, (WORD)BitRead(12) , (WORD)BitRead(12));
+//		SVP_LogMsg(szLog);
 
 		return(false);
 	}else{
-		szLog.Format(_T("Got Next Mpeg Proper Start Code 0x%u == 0xb3"),  id);
-		SVP_LogMsg(szLog);
+//		szLog.Format(_T("Got Next Mpeg Proper Start Code 0x%x == 0xb3"),  id);
+//		SVP_LogMsg(szLog);
 
 	}
 

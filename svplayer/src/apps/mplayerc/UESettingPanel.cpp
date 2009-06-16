@@ -76,6 +76,7 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_DHtml_CheckBox(pDX, _T("chkautozoom"), m_sgi_chkautozoom);
 	DDX_DHtml_CheckBox(pDX, _T("chkautodownloadsvpsub"), m_sgi_chkautodownloadsvpsub);
 	DDX_DHtml_CheckBox(pDX, _T("chkautoresumeplay"), m_sgi_chkautoresumeplay);
+	DDX_DHtml_CheckBox(pDX, _T("chktrayicon"), m_sgi_chktrayicon);
 
 	DDX_DHtml_CheckBox(pDX, _T("chkusesmartdrag"), m_sgi_chkuseSmartDrag);
 	
@@ -230,6 +231,7 @@ BOOL CUESettingPanel::OnInitDialog()
 	m_sgi_startupcheckexts = s.szStartUPCheckExts;
 	m_sgi_chkautoresumeplay = s.autoResumePlay;
 	m_sgi_chkuseSmartDrag = s.useSmartDrag;
+	m_sgi_chktrayicon = s.fTrayIcon;
 	
 	m_sgs_stepsmall.Format(_T("%d"), s.nJumpDistS/1000) ;
 	m_sgs_stepmed.Format(_T("%d"), s.nJumpDistM/1000) ;
@@ -394,6 +396,7 @@ void CUESettingPanel::ApplyAllSetting(){
 	s.fRememberWindowSize = !!m_sgi_chkremwinpos;
 	s.fHideCDROMsSubMenu = !!m_sgi_chkcdromenu;
 	s.fLoopForever = !!m_sgi_chkplayrepeat;
+	s.nLoops = 1;
 	s.fCheckFileAsscOnStartup = !!m_sgi_chkfileass ;
 	//s.priority = !m_sgi_chkabnormal ? NORMAL_PRIORITY_CLASS : GetVersion() < 0 ? HIGH_PRIORITY_CLASS : ABOVE_NORMAL_PRIORITY_CLASS;
 	s.szStartUPCheckExts = m_sgi_startupcheckexts ;
@@ -424,7 +427,7 @@ void CUESettingPanel::ApplyAllSetting(){
 	}else{
 
 	}
-	
+	s.fTrayIcon = m_sgi_chktrayicon;
 	s.fVMRSyncFix = !!m_sgi_lockbackbuff;
 	s.useGPUAcel = !!m_sgi_gpuacel;
 	s.optionDecoder = m_sgs_decoder;

@@ -1365,7 +1365,7 @@ RESTORE.BMP             BITMAP                  "res\\newui\\BTN_RESTORE.bmp"
 MENU.BMP                BITMAP                  "res\\newui\\BTN_MENU.bmp"
 BTN_PLAY.BMP            BITMAP                  "res\\newui\\BTN_PLAY.bmp"
 BTN_PAUSE.BMP           BITMAP                  "res\\newui\\BTN_PAUSE.bmp"
-BTN_STOP.BMP           BITMAP                  "res\\newui\\BTN_STOP.bmp"
+BTN_STOP.BMP            BITMAP                  "res\\newui\\BTN_STOP.bmp"
 FAST_FORWORD.BMP        BITMAP                  "res\\newui\\FAST_FORWORD.bmp"
 FAST_BACKWORD.BMP       BITMAP                  "res\\newui\\FAST_BACKWORD.bmp"
 SPLAYER.BMP             BITMAP                  "res\\newui\\SPLAYER.bmp"
@@ -1858,7 +1858,7 @@ BEGIN
             MENUITEM "2.35:1",                      ID_ASPECTRATIO_235_1
             MENUITEM "智能显示器校正",                     ID_VIEW_VF_COMPMONDESKARDIFF
         END
-        POPUP "前端显示"
+        POPUP "在最前"
         BEGIN
             MENUITEM "从不",                          ID_ONTOP_NEVER
             MENUITEM "总在最前",                        ID_ONTOP_ALWAYS

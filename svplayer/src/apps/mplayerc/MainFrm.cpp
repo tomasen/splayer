@@ -624,6 +624,8 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	SetFocus();
 
+	
+
 	m_pGraphThread = (CGraphThread*)AfxBeginThread(RUNTIME_CLASS(CGraphThread));
 
 	if(m_pGraphThread)
@@ -678,7 +680,9 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	btnMin->addAlignRelButton(ALIGN_RIGHT , btnMax );
 	m_btnList.AddTail( btnMin);
 	m_btnList.AddTail( new CSUIButton(L"BTN_MINTOTRAY.BMP", ALIGN_TOPRIGHT, btnMargin  ,  0, HTMINTOTRAY ,FALSE, ALIGN_RIGHT, m_btnList.GetTail()));
-	m_btnList.AddTail( new CSUIButton(L"MENU.BMP", ALIGN_TOPRIGHT, btnMargin  ,  0, HTMENU, FALSE, ALIGN_RIGHT, m_btnList.GetTail(), CRect(3,3,12,3)));
+	CSUIButton* btnMenu = new CSUIButton(L"MENU.BMP", ALIGN_TOPRIGHT, btnMargin  ,  0, HTMENU, FALSE, ALIGN_RIGHT, m_btnList.GetTail(), CRect(3,3,12,3));
+	btnMenu->addAlignRelButton( ALIGN_RIGHT , btnMin , CRect(3,3,12,3) );
+	m_btnList.AddTail( btnMenu);
 
 
 	/*
@@ -692,13 +696,13 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	PreMultiplyBitmap(m_bmpMinimize);
 	PreMultiplyBitmap(m_bmpRestore);
 	PreMultiplyBitmap(m_bmpMenu);*/
-
+	m_btnList.SetHideStat( HTMINTOTRAY,   s.fTrayIcon);
+	
 	if(m_wndView.m_wndOSD.CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, NULL,NULL , WS_VISIBLE|WS_CHILD, CRect( 0,0,0,0 ) , this,  IDD_PLAYEROSDWND, 0 ) ){
 		//m_wndOSD.ShowWindow(SW_SHOW);
 		m_wndView.m_wndOSD.m_wndView = &m_wndView;
 	}
-
-
+	
 	/*NEW UI END*/
 	return 0;
 }
@@ -916,9 +920,13 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 {
 	__super::OnSize(nType, cx, cy);
 	
+	AppSettings& s = AfxGetAppSettings();
+
 	if(nType == SIZE_RESTORED && m_fTrayIcon)
 	{
-		ShowWindow(SW_SHOW);
+		//ShowWindow(SW_SHOW);
+	}else if(nType == SIZE_MINIMIZED && m_fTrayIcon ){
+		ShowWindow(SW_HIDE);
 	}
 
 	{//New UI
@@ -949,7 +957,6 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 
 	if(!m_fFullScreen)
 	{
-		AppSettings& s = AfxGetAppSettings();
 		if(nType != SIZE_MAXIMIZED && nType != SIZE_MINIMIZED && m_WndSizeInited)
 			GetWindowRect(s.rcLastWindowPos);
 		s.lastWindowType = nType;
@@ -1731,7 +1738,8 @@ LRESULT CMainFrame::OnNotifyIcon(WPARAM wParam, LPARAM lParam)
 	switch((UINT)lParam)
 	{
 		case WM_LBUTTONDOWN:
-			ShowWindow(SW_SHOW);
+			ShowWindow(SW_RESTORE);
+			//ShowWindow(SW_SHOW);
 			MoveVideoWindow();
 			SetForegroundWindow();
 			break;
@@ -1745,7 +1753,7 @@ LRESULT CMainFrame::OnNotifyIcon(WPARAM wParam, LPARAM lParam)
 			POINT p;
 			GetCursorPos(&p);
 			SetForegroundWindow();
-			m_popupmain.GetSubMenu(0)->TrackPopupMenu(TPM_RIGHTBUTTON|TPM_NOANIMATION, p.x, p.y, this);
+			m_popup.GetSubMenu(0)->TrackPopupMenu(TPM_RIGHTBUTTON|TPM_NOANIMATION, p.x, p.y, this);
 			PostMessage(WM_NULL);
 			break; 
 		}
@@ -1767,7 +1775,7 @@ LRESULT CMainFrame::OnNotifyIcon(WPARAM wParam, LPARAM lParam)
 	
 void CMainFrame::ShowTrayIcon(bool fShow)
 {
-    BOOL bWasVisible = ShowWindow(SW_HIDE);
+    //BOOL bWasVisible = ShowWindow(SW_HIDE);
 	NOTIFYICONDATA tnid; 
 
 	ZeroMemory(&tnid, sizeof(NOTIFYICONDATA));
@@ -1782,7 +1790,7 @@ void CMainFrame::ShowTrayIcon(bool fShow)
 			tnid.hIcon = (HICON)LoadImage(AfxGetResourceHandle(), MAKEINTRESOURCE(IDR_MAINFRAME), IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR);
 			tnid.uFlags = NIF_MESSAGE|NIF_ICON|NIF_TIP; 
 			tnid.uCallbackMessage = WM_NOTIFYICON; 
-			lstrcpyn(tnid.szTip, TEXT("Media Player Classic"), sizeof(tnid.szTip)); 
+			lstrcpyn(tnid.szTip, TEXT("…‰ ÷≤•∑≈∆˜"), sizeof(tnid.szTip)); 
 			Shell_NotifyIcon(NIM_ADD, &tnid);
 
 			m_fTrayIcon = true;
@@ -1798,8 +1806,8 @@ void CMainFrame::ShowTrayIcon(bool fShow)
 		}
 	}
 
-	if(bWasVisible)
-		ShowWindow(SW_SHOW);
+	//if(bWasVisible)
+	//	ShowWindow(SW_SHOW);
 }
 
 void CMainFrame::SetTrayTip(CString str)
@@ -12667,6 +12675,9 @@ void CMainFrame::OnAdvOptions()
 			s.UpdateData(true);
 		}		
 	
+		m_btnList.SetHideStat( HTMINTOTRAY,   s.fTrayIcon);
+		ShowTrayIcon(s.fTrayIcon);
+		RedrawNonClientArea();
 }
 
 void CMainFrame::ShowOptions(int idPage)
@@ -12702,7 +12713,9 @@ void CMainFrame::ShowOptions(int idPage)
 		}		
 	}
 
-
+	m_btnList.SetHideStat( HTMINTOTRAY,   s.fTrayIcon);
+	ShowTrayIcon(s.fTrayIcon);
+	RedrawNonClientArea();
 }
 
 void CMainFrame::StartWebServer(int nPort)

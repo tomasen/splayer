@@ -3160,10 +3160,11 @@ LONGLONG CMPlayerCApp::GetPerfCounter()
 	if (m_PerfFrequency != 0)
 	{
 		QueryPerformanceCounter ((LARGE_INTEGER*)&i64Ticks100ns);
-		i64Ticks100ns	= i64Ticks100ns * 10000000;
-		i64Ticks100ns	= i64Ticks100ns / m_PerfFrequency;
+		i64Ticks100ns	= LONGLONG((double(i64Ticks100ns) * 10000000) / double(m_PerfFrequency) + 0.5);
 
 		return i64Ticks100ns;
+	}else{
+		SVP_LogMsg(_T("No m_PerfFrequency!!"));
 	}
 	return 0;
 }

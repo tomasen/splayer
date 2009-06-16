@@ -47,6 +47,7 @@ class CUESettingPanel : public CDHtmlDialog
 	int m_sgi_chkautozoom;
 	int m_sgi_chkautodownloadsvpsub;
 	int m_sgi_chkautoresumeplay;
+	int m_sgi_chktrayicon;
 
 	int m_sgi_chkuseSmartDrag;
 	int m_sgi_chkinternaltspliteronly;

@@ -2019,6 +2019,7 @@ LONGLONG CEVRAllocatorPresenter::GetClockTime(LONGLONG PerformanceCounter)
 	LONGLONG			llClockTime;
 	MFTIME				nsCurrentTime;
 	m_pClock->GetCorrelatedTime(0, &llClockTime, &nsCurrentTime);
+	TRACE_EVR("GetClockTime1 %I64d  %I64d ", llClockTime ,  nsCurrentTime );
 	DWORD Characteristics = 0;
 	m_pClock->GetClockCharacteristics(&Characteristics);
 	MFCLOCK_STATE State;
@@ -2034,7 +2035,7 @@ LONGLONG CEVRAllocatorPresenter::GetClockTime(LONGLONG PerformanceCounter)
 	LONGLONG llPerf = PerformanceCounter;
 //	return llClockTime + (llPerf - nsCurrentTime);
 	double Target = llClockTime + (llPerf - nsCurrentTime) * m_ModeratedTimeSpeed;
-
+	TRACE_EVR("GetClockTime %I64d  %I64d  %I64d %f", llClockTime , llPerf, nsCurrentTime , m_ModeratedTimeSpeed);
 	bool bReset = false;
 	if (m_ModeratedTimeLast < 0 || State != m_LastClockState || m_ModeratedClockLast < 0)
 	{
@@ -2397,10 +2398,12 @@ void CEVRAllocatorPresenter::RenderThread()
 						{
 							llClockTime = GetClockTime(CurrentCounter);
 							m_StarvationClock = llClockTime;
+							TRACE_EVR ("llClockTime: %I64d CurrentCounter %I64d   \n", llClockTime, CurrentCounter);
 						}
 						else
 						{
 							llClockTime = m_StarvationClock;
+							TRACE_EVR ("m_StarvationClock: %I64d n \n", m_StarvationClock);
 						}
 
 						if (!bValidSampleTime)
@@ -2443,7 +2446,6 @@ void CEVRAllocatorPresenter::RenderThread()
 								DetectedScanlinesPerFrame = m_ScreenSize.cy;
 								DetectedScanlineTime = DetectedRefreshTime / double(m_ScreenSize.cy);
 							}
-
 							if ( s.fVMRSyncFix /*s.m_RenderSettings.iVMR9VSync*/)
 							{
 								bVSyncCorrection = true;
@@ -2471,11 +2473,17 @@ void CEVRAllocatorPresenter::RenderThread()
 	
 								SyncOffset = (nsSampleTime - ClockTimeAtNextVSync);
 
+								TRACE_EVR ("SyncOffset: %I64d nsSampleTime: %I64d ClockTimeAtNextVSync: %I64d\n", SyncOffset, nsSampleTime , ClockTimeAtNextVSync);
+
+
 //								if (SyncOffset < 0)
 //									TRACE("SyncOffset(%d): %I64d     %I64d     %I64d\n", m_nCurSurface, SyncOffset, TimePerFrame, VSyncTime);
 							}
-							else
+							else{
 								SyncOffset = (nsSampleTime - llClockTime);
+								TRACE_EVR ("SyncOffset: %I64d nsSampleTime: %I64d llClockTime: %I64d\n", SyncOffset, nsSampleTime , llClockTime);
+
+							}
 							
 							//LONGLONG SyncOffset = nsSampleTime - llClockTime;
 							TRACE_EVR ("SyncOffset: %I64d SampleFrame: %I64d ClockFrame: %I64d\n", SyncOffset, nsSampleTime/TimePerFrame, llClockTime /TimePerFrame);
@@ -2561,7 +2569,7 @@ void CEVRAllocatorPresenter::RenderThread()
 								if (NextSleepTime < 0)
 									NextSleepTime = 0;
 								NextSleepTime = 1;
-								//TRACE_EVR ("Delay\n");
+								TRACE_EVR ("Delay\n");
 							}
 
 							if (bDoVSyncCorrection)

@@ -1232,11 +1232,13 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 {
 	AppSettings& s = AfxGetAppSettings();
 
-	if(s.onlyUseInternalDec || !s.useGPUCUDA || s.iDSVideoRendererType == VIDRNDT_DS_VMR7RENDERLESS){
+	if(!s.useGPUAcel  || s.iDSVideoRendererType == VIDRNDT_DS_VMR7RENDERLESS){
 		s.DXVAFilters = 0;
 	}else{
 		s.DXVAFilters = ~0;
 	}
+	
+	
 
 	CFGFilter* pFGF;
 

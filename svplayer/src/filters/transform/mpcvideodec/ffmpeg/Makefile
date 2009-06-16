@@ -50,6 +50,7 @@ SRCS_C=\
 		$(LAVC_DIR)/amrwb/dec_acelp.c\
 		$(LAVC_DIR)/mjpeg.c \
 		$(LAVC_DIR)/mjpegdec.c \
+		$(LAVC_DIR)/mjpegbdec.c \
 		$(LAVC_DIR)/mpeg4video_parser.c \
 		$(LAVC_DIR)/mpegvideo.c \
 		$(LAVC_DIR)/msmpeg4.c \
@@ -145,7 +146,6 @@ SRCS_C=\
 #		$(LAVC_DIR)/loco.c \
 #		$(LAVC_DIR)/mace.c \
 #		$(LAVC_DIR)/mdct.c \
-#		$(LAVC_DIR)/mjpegbdec.c \
 #		$(LAVC_DIR)/mjpeg_parser.c \
 #		$(LAVC_DIR)/mlp_parser.c \
 #		$(LAVC_DIR)/mpeg12.c \

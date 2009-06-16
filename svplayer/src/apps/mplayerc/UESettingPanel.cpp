@@ -440,7 +440,7 @@ void CUESettingPanel::ApplyAllSetting(){
 			s.useGPUCUDA = 1;
 		
 	}else if(m_sgs_decoder == _T("internaldec") ){
-			s.DXVAFilters = ~3;
+			s.DXVAFilters = 0;
 			s.onlyUseInternalDec = 1;
 		
 	}else if(m_sgs_decoder == _T("CoreAVCdec") ){

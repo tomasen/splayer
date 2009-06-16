@@ -1232,6 +1232,12 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 {
 	AppSettings& s = AfxGetAppSettings();
 
+	if(s.onlyUseInternalDec){
+		s.DXVAFilters = 0;
+	}else{
+		s.DXVAFilters = ~0;
+	}
+
 	CFGFilter* pFGF;
 
 	// Source filters
@@ -2213,6 +2219,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	CStringArray szaExtFilterPaths;
 	CSVPToolBox svptoolbox;
 	szaExtFilterPaths.RemoveAll();
+	
 	if(!s.onlyUseInternalDec){
 		/*
 		if ( s.bUsePowerDVD && ( s.optionDecoder == _T("PDVDGPUdec") || s.optionDecoder.IsEmpty() ) && s.useGPUAcel && !s.useGPUCUDA && !IsVista() ) {

@@ -111,7 +111,7 @@ void CChkDefPlayer::setDefaultPlayer()
 	cpf.AddAutoPlayToRegistry(cpf.AP_VIDEO, true);
 	cpf.AddAutoPlayToRegistry(cpf.AP_DVDMOVIE, true);
 	setKeyboardNativeMediaPlayers2();
-	//SHChangeNotify(0x08000000, 0, 0, 0);
+	
 /*
 	AddAutoPlayToRegistry(AP_MUSIC, !!m_apmusic.GetCheck());
 	AddAutoPlayToRegistry(AP_AUDIOCD, !!m_apaudiocd.GetCheck());
@@ -182,7 +182,7 @@ void CChkDefPlayer::OnBnClickedOk()
 	s.UpdateData(TRUE);
 
 	this->setDefaultPlayer();
-	
+	SHChangeNotify(0x08000000, 0, 0, 0); //SHCNE_ASSOCCHANGED SHCNF_IDLIST
 	OnOK();
 }
 

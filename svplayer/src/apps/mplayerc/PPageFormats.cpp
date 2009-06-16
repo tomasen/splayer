@@ -768,7 +768,7 @@ BOOL CPPageFormats::OnApply()
 	AddAutoPlayToRegistry(AP_AUDIOCD, !!m_apaudiocd.GetCheck());
 	AddAutoPlayToRegistry(AP_DVDMOVIE, !!m_apdvd.GetCheck());
 
-//	SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, NULL, NULL);
+	SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, NULL, NULL);
 
 	AppSettings& s = AfxGetAppSettings();
 	s.Formats.SetRtspHandler(m_iRtspHandler==0?RealMedia:m_iRtspHandler==1?QuickTime:DirectShow, !!m_fRtspFileExtFirst);

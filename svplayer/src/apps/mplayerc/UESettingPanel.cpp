@@ -438,13 +438,13 @@ void CUESettingPanel::ApplyAllSetting(){
 	}else if(m_sgs_decoder == _T("PDVDGPUdec") ){
 	}else if(m_sgs_decoder == _T("CoreAVCGPUdec") ){
 			s.useGPUCUDA = 1;
-		
+			s.DXVAFilters = ~0;
 	}else if(m_sgs_decoder == _T("internaldec") ){
 			s.DXVAFilters = 0;
 			s.onlyUseInternalDec = 1;
 		
 	}else if(m_sgs_decoder == _T("CoreAVCdec") ){
-		
+		s.DXVAFilters = 0;
 	}
 
 	//Audio Setting

@@ -74,7 +74,7 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 	//btnPlay->m_stat = 3; //disabled
 	m_btnList.AddTail( btnPlay );
 
-	CSUIButton* btnPause = new CSUIButton(L"BTN_PAUSE.BMP" , ALIGN_TOPLEFT, CRect(-50 , 7, 3,3)  , 0, ID_PLAY_PAUSE, TRUE, 0, 0 );
+	CSUIButton* btnPause = new CSUIButton(L"BTN_STOP.BMP" , ALIGN_TOPLEFT, CRect(-50 , 7, 3,3)  , 0, ID_PLAY_STOP, TRUE, 0, 0 );
 	//btnPlay->m_stat = 3; //disabled
 	m_btnList.AddTail( btnPause );
 
@@ -377,10 +377,10 @@ void CPlayerToolBar::OnPaint()
 	CMemoryDC hdc(&dc, rcClient);
 	CRect rcBottomSqu = rcClient;
 	rcBottomSqu.top = rcBottomSqu.bottom - 10;
-	hdc.FillSolidRect(rcBottomSqu, NEWUI_COLOR_BG);
+	//hdc.FillSolidRect(rcBottomSqu, NEWUI_COLOR_BG);
 
 	CRect rcUpperSqu = rcClient;
-	rcUpperSqu.bottom = rcUpperSqu.bottom - 10;
+	//rcUpperSqu.bottom = rcUpperSqu.bottom - 10;
 	hdc.FillSolidRect(rcUpperSqu, NEWUI_COLOR_TOOLBAR_UPPERBG);
 
 
@@ -417,9 +417,9 @@ void CPlayerToolBar::OnPaint()
 }
 void CPlayerToolBar::UpdateButtonStat(){
 	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
-	BOOL fShow = pFrame->GetUIStat( ID_PLAY_PAUSE );
+	BOOL fShow = pFrame->GetUIStat( ID_PLAY_STOP );
 	m_btnList.SetHideStat( ID_PLAY_PLAY , fShow );
-	m_btnList.SetHideStat( ID_PLAY_PAUSE , !fShow );
+	m_btnList.SetHideStat( ID_PLAY_STOP , !fShow );
 	BOOL bLogo = pFrame->IsSomethingLoaded();
 	m_btnList.SetHideStat(_T("SPLAYER.BMP"), bLogo);
 	if(!bLogo){

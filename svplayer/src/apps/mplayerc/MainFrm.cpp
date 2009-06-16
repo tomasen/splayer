@@ -867,7 +867,7 @@ void CMainFrame::OnNcCalcSize( BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp){
 				rc.right -= 1;
 			}
 			if(m_wndToolBar.IsVisible()){
-				rc.bottom += 2;
+				//rc.bottom += 2;
 				if(bCaptionOn){
 					rc.bottom += 1;
 				}
@@ -1133,7 +1133,7 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 			hdc.StretchBlt(0,ty-7,5,7, &dcBmp, 0,7,5,7, SRCCOPY);
 			hdc.StretchBlt(tx-5,ty-7,5,7, &dcBmp, 5,7,5,7, SRCCOPY);
 			
-			if(bToolBarOn){
+			if(bToolBarOn && 0){
 				hdc.StretchBlt(0,ty-13,5,9, &dcBmp, 0,9,5,1, SRCCOPY);
 				hdc.StretchBlt(tx-5,ty-13,5,9, &dcBmp, 5,9,5,1, SRCCOPY);
 				hdc.StretchBlt(0,ty-14,5,1, &dcBmp, 0,8,5,1, SRCCOPY);
@@ -8642,7 +8642,7 @@ DWORD CMainFrame::GetUIStat(UINT n_CmdID)
 	if(n_CmdID >= ID_PLAY_PLAY && n_CmdID <= ID_PLAY_STOP ){
 		OAFilterState fs = m_fFrameSteppingActive ? State_Paused : GetMediaState();
 		if(fs >= 0){
-			if(fs != State_Stopped && fs != State_Paused && n_CmdID == ID_PLAY_PAUSE) fShow = true;
+			if(fs != State_Stopped && fs != State_Paused && ( n_CmdID == ID_PLAY_PAUSE || n_CmdID == ID_PLAY_STOP)) fShow = true;
 		}
 
 

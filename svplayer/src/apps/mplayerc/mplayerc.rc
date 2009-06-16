@@ -1365,6 +1365,7 @@ RESTORE.BMP             BITMAP                  "res\\newui\\BTN_RESTORE.bmp"
 MENU.BMP                BITMAP                  "res\\newui\\BTN_MENU.bmp"
 BTN_PLAY.BMP            BITMAP                  "res\\newui\\BTN_PLAY.bmp"
 BTN_PAUSE.BMP           BITMAP                  "res\\newui\\BTN_PAUSE.bmp"
+BTN_STOP.BMP           BITMAP                  "res\\newui\\BTN_STOP.bmp"
 FAST_FORWORD.BMP        BITMAP                  "res\\newui\\FAST_FORWORD.bmp"
 FAST_BACKWORD.BMP       BITMAP                  "res\\newui\\FAST_BACKWORD.bmp"
 SPLAYER.BMP             BITMAP                  "res\\newui\\SPLAYER.bmp"
@@ -1978,6 +1979,38 @@ BEGIN
             MENUITEM "高级设置(&A)...",                 ID_ADV_OPTIONS
         END
         MENUITEM "选项(&O)...",                   ID_VIEW_OPTIONS
+        MENUITEM "收藏夹",                         ID_FAVORITES
+        POPUP "网络字幕(&S)"
+        BEGIN
+            MENUITEM "启用智能网络字幕匹配",                  ID_SVPSUB_MENUENABLE
+            MENUITEM SEPARATOR
+            MENUITEM "智能字幕匹配下载...",                 ID_FILE_ISDB_DOWNLOAD
+            MENUITEM "上传字幕...",                     ID_FILE_ISDB_UPLOAD
+            MENUITEM SEPARATOR
+            MENUITEM "调入字幕(&L)...\tCtrl+L",         ID_FILE_LOAD_SUBTITLE
+            MENUITEM SEPARATOR
+            MENUITEM "网页搜索字幕...",                   ID_FILE_ISDB_SEARCH
+        END
+        POPUP "帮助(&H)"
+        BEGIN
+            MENUITEM "自动更新...",                     ID_MANUALCHECKUPDATE
+            MENUITEM SEPARATOR
+            POPUP "意见和反馈"
+            BEGIN
+                MENUITEM "论坛发表反馈",                      ID_VISITBBS
+                MENUITEM "Email发表意见",                   ID_SENDEMAIL
+                MENUITEM "QQ或MSN聊聊想法",                  ID_VISITCONTACTINFO
+            END
+            MENUITEM SEPARATOR
+            MENUITEM "主页",                          ID_HELP_HOMEPAGE
+            MENUITEM "捐助开发",                        ID_DONATE
+            MENUITEM "参与开发",                        ID_JOINTEAM
+            MENUITEM SEPARATOR
+            MENUITEM "使用说明",                        ID_HELP_DOCUMENTATION
+            MENUITEM "命令行用法",                       ID_HELP_SHOWCOMMANDLINESWITCHES
+            MENUITEM SEPARATOR
+            MENUITEM "关于(&A)...",                   ID_HELP_ABOUT
+        END
         MENUITEM SEPARATOR
         POPUP "播放结束后"
         BEGIN

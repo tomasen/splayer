@@ -455,6 +455,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND( ID_RECENTFILE_CLEAR ,  OnRecentFileClear)
 	ON_COMMAND( ID_RECENTFILE_ENABLE ,  OnRecentFileEnable)
 	ON_COMMAND( ID_RECENTFILE_DISABLE ,  OnRecentFileDisable)
+	ON_WM_NCRBUTTONDOWN()
 	END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1319,6 +1320,16 @@ LRESULT CMainFrame::OnNcLButtonUp( WPARAM wParam, LPARAM lParam )
 	return DefWindowProc(WM_NCLBUTTONUP, wParam, lParam);
 }
 
+void CMainFrame::OnNcRButtonDown(UINT nHitTest, CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+	OnMenu(m_mainMenu.GetSubMenu(0));
+	m_btnList.ClearStat();
+	RedrawNonClientArea();
+	
+	//__super::OnNcRButtonDown(nHitTest, point);
+}
+
 LRESULT CMainFrame::OnNcHitTestNewUI(WPARAM wParam, LPARAM lParam )
 {
 	// custom processing of our min/max/close buttons
@@ -1359,7 +1370,7 @@ LRESULT CMainFrame::OnNcHitTestNewUI(WPARAM wParam, LPARAM lParam )
 	if(ret){
 		return ret;
 	}
-	CRect rcMenu (rc.left + 3, rc.top + 2,rc.left + 23 , rc.bottom - 3 );
+	CRect rcMenu (rc.left + 3, rc.top + 3,rc.left + 23 , rc.top + 15 );
 	if (rcMenu.PtInRect(pt) ){
 		return HTMENU;
 	}

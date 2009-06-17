@@ -372,9 +372,26 @@ void CPlayerToolBar::OnPaint()
 {
 
 	CPaintDC dc(this); // device context for painting
+	CRect paintRect(dc.m_ps.rcPaint);
+
+	int volume = min( m_volctrl.GetPos() , m_volctrl.GetRangeMax() );
+	m_btnVolTm->m_rcHitest.MoveToX(m_btnVolBG->m_rcHitest.left +  ( m_btnVolBG->m_rcHitest.Width() * volume / m_volctrl.GetRangeMax() ) - m_btnVolTm->m_rcHitest.Width()/2);
+
+	
 	CRect rcClient;
 	GetClientRect(&rcClient);
 	CMemoryDC hdc(&dc, rcClient);
+
+	CRect rc;
+	GetWindowRect(&rc);
+
+	if(paintRect == m_btnVolBG->m_rcHitest){
+		m_btnVolBG->OnPaint( &hdc, rc);
+		m_btnVolTm->OnPaint( &hdc, rc);
+		//SVP_LogMsg5(_T("Just Paint Vol"));
+		return;
+	}
+	//SVP_LogMsg5(_T("Just Paint All %d %d ") , paintRect.left , paintRect.top);
 	CRect rcBottomSqu = rcClient;
 	rcBottomSqu.top = rcBottomSqu.bottom - 10;
 	//hdc.FillSolidRect(rcBottomSqu, NEWUI_COLOR_BG);
@@ -384,15 +401,10 @@ void CPlayerToolBar::OnPaint()
 	hdc.FillSolidRect(rcUpperSqu, NEWUI_COLOR_TOOLBAR_UPPERBG);
 
 
- 	CRect rc;
-	GetWindowRect(&rc);
-	UpdateButtonStat();
-	int volume = min( m_volctrl.GetPos() , m_volctrl.GetRangeMax() );
+ 	UpdateButtonStat();
 	
-	m_btnVolTm->m_rcHitest.MoveToX(m_btnVolBG->m_rcHitest.left +  ( m_btnVolBG->m_rcHitest.Width() * volume / m_volctrl.GetRangeMax() ) - m_btnVolTm->m_rcHitest.Width()/2);
-
-	CString szLog;
-	szLog.Format(_T("TM POS %d %d"), volume , m_btnVolTm->m_rcHitest.left );
+	//CString szLog;
+	//szLog.Format(_T("TM POS %d %d"), volume , m_btnVolTm->m_rcHitest.left );
 	//SVP_LogMsg(szLog);
  	m_btnList.PaintAll(&hdc, rc);
 
@@ -557,7 +569,7 @@ bool  CPlayerToolBar::OnSetVolByMouse(CPoint point){
 
 
 	pFrame->OnPlayVolume(0);
-	Invalidate();
+	InvalidateRect( m_btnVolBG->m_rcHitest,true);
 
 	return true;
 }

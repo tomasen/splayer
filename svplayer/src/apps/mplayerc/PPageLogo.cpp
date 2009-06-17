@@ -91,6 +91,9 @@ BOOL CPPageLogo::OnInitDialog()
 		}
 	}
 
+	if(!m_logoidpos){
+		m_logoidpos = m_logoids.GetHeadPosition();
+	}
 	if(!m_intext) OnBnClickedRadio1();
 	else OnBnClickedRadio2();
 

@@ -177,7 +177,7 @@ FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
 END
 
-IDD_PLAYERSEEKBAR DIALOGEX 0, 0, 254, 8
+IDD_PLAYERSEEKBAR DIALOGEX 0, 0, 254, 9
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
@@ -189,7 +189,7 @@ FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
 END
 
-IDB_PLAYERTOOLBAR DIALOGEX 0, 0, 254, 33
+IDB_PLAYERTOOLBAR DIALOGEX 0, 0, 254, 32
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
@@ -1976,10 +1976,27 @@ BEGIN
                 MENUITEM "静音(&M)\tCtrl+M",              ID_VOLUME_MUTE
             END
             MENUITEM "选项(&O)...",                   ID_VIEW_OPTIONS
-            MENUITEM "高级设置(&A)...",                 ID_ADV_OPTIONS
+            MENUITEM "高级设置(&A)...",                 ID_32797
         END
         MENUITEM "选项(&O)...",                   ID_VIEW_OPTIONS
         MENUITEM "收藏夹",                         ID_FAVORITES
+        POPUP "选项设置(&A)"
+        BEGIN
+            MENUITEM "选项(&O)...",                   ID_VIEW_OPTIONS
+            MENUITEM "高级设置(&A)...",                 ID_32797
+            MENUITEM "热键设置...",                     ID_VIEW_SETHOTKEY
+            MENUITEM "界面背景设置...",                   ID_CHANGEBACKGROUND
+            MENUITEM SEPARATOR
+            MENUITEM "自动更新...",                     ID_MANUALCHECKUPDATE
+            MENUITEM SEPARATOR
+            MENUITEM "检查文件关联",                      ID_CHECK_DEFAULT_PLAYER
+            MENUITEM SEPARATOR
+            MENUITEM "恢复默认设置",                      ID_RESET_SETTING
+            POPUP "工具"
+            BEGIN
+                MENUITEM "DSM转换器(&n)...",               ID_FILE_CONVERT
+            END
+        END
         POPUP "网络字幕(&S)"
         BEGIN
             MENUITEM "启用智能网络字幕匹配",                  ID_SVPSUB_MENUENABLE
@@ -2480,7 +2497,7 @@ STRINGTABLE
 BEGIN
     IDF_LOGO3               "Andrew S. Gildehaus, agildehaus@runbox.com"
     IDF_LOGO4               "Marcel Hoffs, marcelhoffs@hotmail.com"
-    IDF_LOGO7               "射手影音"
+    IDF_LOGO7               "黑色背景"
 END
 
 STRINGTABLE 

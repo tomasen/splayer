@@ -1469,8 +1469,21 @@ HRESULT CRealVideoDecoder::InitRV(const CMediaType* pmt)
 	FreeRV();
 
 	HRESULT hr = VFW_E_TYPE_NOT_ACCEPTED;
+	
+	if(!pmt)
+		return hr;
+	
+	if(!pmt->Format())
+		return hr;
 
-	rvinfo rvi = *(rvinfo*)(pmt->Format() + (pmt->formattype == FORMAT_VideoInfo ? sizeof(VIDEOINFOHEADER) : sizeof(VIDEOINFOHEADER2)));
+	
+	rvinfo rvi;
+	try{
+		rvi = *(rvinfo*)(pmt->Format() + (pmt->formattype == FORMAT_VideoInfo ? sizeof(VIDEOINFOHEADER) : sizeof(VIDEOINFOHEADER2)));
+	}
+	catch(...){
+		return hr;
+	}
 	rvi.bswap();
 
 #pragma pack(push, 1)

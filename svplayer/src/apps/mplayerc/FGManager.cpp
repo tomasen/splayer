@@ -2265,6 +2265,9 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("scmpack.dll")) );
 	
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("rlapedec.ax")) ); 
+
+	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("RadGtSplitter.ax")) ); 
+	
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("svplayer.bin\\real\\rmoc3260.dll")) );
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("svplayer.bin\\real\\Codecs\\rv40.dll")) );
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("svplayer.bin\\real\\Codecs\\drvc.dll")) );
@@ -2288,6 +2291,12 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 				if(pFGF){
 					if(szFPath.Find(_T("rlapedec.ax")) > 0){
 						pFGF->m_extensions.AddTail(_T(".ape"));
+						m_source.AddTail(pFGF);
+					}else if(szFPath.Find(_T("RadGtSplitter.ax")) > 0){
+						pFGF->m_chkbytes.AddTail(_T("0,3,,534D4B"));
+						pFGF->m_chkbytes.AddTail(_T("0,3,,42494B"));
+						pFGF->m_extensions.AddTail(_T(".smk"));
+						pFGF->m_extensions.AddTail(_T(".bik"));
 						m_source.AddTail(pFGF);
 					}else{
 						pFGF->SetTypes(fo->guids);

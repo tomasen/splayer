@@ -848,6 +848,7 @@
 #define IDS_RS_USEWAVEOUTDEVICEBYDEFAULT 14223
 #define IDS_RS_DISABLE_EVR              14224
 #define IDS_RS_OPTIONDECODER            14225
+#define IDS_RS_LOGOSTRETCH				14226
 #define IDD_DHTML_SETTING               20000
 #define IDR_DEFAULT1                    20006
 #define IDD_DEFAULT_PLAYER              20007

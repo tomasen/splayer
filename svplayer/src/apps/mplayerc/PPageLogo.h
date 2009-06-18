@@ -22,6 +22,7 @@
 #pragma once
 
 #include "libpng.h"
+#include "afxwin.h"
 
 // CPPageLogo dialog
 
@@ -57,4 +58,6 @@ public:
 	afx_msg void OnDeltaposSpin1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnBnClickedButton2();
 	CString m_author;
+	CButton m_chkKeepLogoAS;
+	CButton m_chkLogoStrech;
 };

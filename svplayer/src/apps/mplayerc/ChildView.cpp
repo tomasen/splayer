@@ -208,7 +208,9 @@ void CChildView::OnPaint()
 	CMainFrame* pFrame = (CMainFrame*)GetParentFrame();
 	pFrame->RepaintVideo();
 
+	
 	if(!pFrame->IsSomethingLoaded()){
+		AppSettings& s = AfxGetAppSettings();
 
 		CRect rcWnd;
 		GetWindowRect(rcWnd);
@@ -222,16 +224,34 @@ void CChildView::OnPaint()
 
 			CRect r;
 			GetClientRect(r);
-			int w = min(bm.bmWidth, r.Width());
-			int h = min(abs(bm.bmHeight), r.Height());
-			//int w = min(m_logo.GetWidth(), r.Width());
-			//int h = min(m_logo.GetHeight(), r.Height());
-			int x = (r.Width() - w) / 2;
-			int y = (r.Height() - h) / 2;
-			m_logo_r = CRect(CPoint(x, y), CSize(w, h));
-
+			if( s.logostretch == 1){ // 保持宽高  不缩放
+				int w = min(bm.bmWidth, r.Width());
+				int h = min(abs(bm.bmHeight), r.Height());
+				int x = (r.Width() - w) / 2;
+				int y = (r.Height() - h) / 2;
+				m_logo_r = CRect(CPoint(x, y), CSize(w, h));
+			}else if( s.logostretch == 2){ // 缩放 不保持宽高比
+				m_logo_r = r;
+			}else{// 缩放 保持宽高比
+				if ( bm.bmWidth * 100 / bm.bmHeight > r.Width() * 100 / r.Height() ){
+					//以r.Width()为准
+					int w = r.Width();
+					int h = r.Width() * bm.bmHeight/ bm.bmWidth ;
+					int x = 0;
+					int y = (r.Height() - h) / 2;
+					m_logo_r = CRect(CPoint(x, y), CSize(w, h));
+				}else{
+					int w = r.Height() * bm.bmWidth / bm.bmHeight;
+					int h = r.Height();
+					int x = (r.Width() - w) / 2;
+					int y = 0;
+					m_logo_r = CRect(CPoint(x, y), CSize(w, h));
+				}
+				
+			}
+			
 			int oldmode = hdc.SetStretchBltMode(STRETCH_HALFTONE);
-			m_logo.StretchBlt(hdc, r, CRect(0,0,bm.bmWidth,abs(bm.bmHeight)));
+			m_logo.StretchBlt(hdc, m_logo_r, CRect(0,0,bm.bmWidth,abs(bm.bmHeight)));
 		}
 
 		m_btnList.PaintAll( &hdc, rcWnd );

@@ -545,6 +545,7 @@ public:
 
 		CString logofn;
 		UINT logoid;
+		UINT logostretch;
 		bool logoext;
 
 		bool fHideCDROMsSubMenu;

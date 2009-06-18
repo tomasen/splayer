@@ -57,6 +57,8 @@ void CPPageLogo::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_LOGOFILENAME, m_logofn);
 	DDX_Control(pDX, IDC_LOGOPREVIEW, m_logopreview);
 	DDX_Text(pDX, IDC_AUTHOR, m_author);
+	DDX_Control(pDX, IDC_CHECK1, m_chkKeepLogoAS);
+	DDX_Control(pDX, IDC_CHECK2, m_chkLogoStrech);
 }
 
 
@@ -79,7 +81,10 @@ BOOL CPPageLogo::OnInitDialog()
 	m_intext = s.logoext?1:0;
 	m_logofn = s.logofn;
 	m_logoidpos = NULL;
-
+	
+	m_chkLogoStrech.SetCheck(s.logostretch & 2);
+	m_chkKeepLogoAS.SetCheck(s.logostretch & 1);
+			
 	UpdateData(FALSE);
 
 	for(POSITION pos = m_logoids.GetHeadPosition(); pos; m_logoids.GetNext(pos)) 
@@ -106,7 +111,11 @@ BOOL CPPageLogo::OnApply()
 	UpdateData();
 
 	AppSettings& s = AfxGetAppSettings();
-
+	
+	s.logostretch = m_chkKeepLogoAS.GetCheck()  | m_chkLogoStrech.GetCheck() << 1;
+	if(s.logostretch >= 3 ){
+		s.logostretch = 3;
+	}
 	s.logoext = !!m_intext;
 	s.logofn = m_logofn;
 	s.logoid = m_logoids.GetAt(m_logoidpos);

@@ -1496,6 +1496,10 @@ void CMainFrame::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
 	
 	lpMMI->ptMinTrackSize.y = max(lpMMI->ptMinTrackSize.y, DEFCLIENTH);
 
+	if(IsCaptionMenuHidden()){
+		lpMMI->ptMinTrackSize.x = 80;
+		lpMMI->ptMinTrackSize.y = 45;
+	}
 	lpMMI->ptMaxPosition.x = 0;
 	lpMMI->ptMaxPosition.y = 0;
 

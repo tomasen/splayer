@@ -26,6 +26,7 @@
 
 #include <initguid.h>
 #include "..\..\..\..\include\moreuuids.h"
+#include "..\..\..\svplib\svplib.h"
 
 using namespace MatroskaReader;
 
@@ -365,8 +366,19 @@ avcsuccess:
 
 				if(pTE->v.DisplayWidth != 0 && pTE->v.DisplayHeight != 0)
 				{
+					
+					DWORD rX = (DWORD)pTE->v.DisplayWidth;
+					DWORD rY = (DWORD)pTE->v.DisplayHeight;
+							/*			
+										if(rX > 100){
+											rX = 16;
+											rY = 10;
+										}
+										*/
+					
 					for(int i = 0; i < mts.GetCount(); i++)
 					{
+						
 						if(mts[i].formattype == FORMAT_VideoInfo)
 						{
 							DWORD vih1 = FIELD_OFFSET(VIDEOINFOHEADER, bmiHeader);
@@ -377,14 +389,15 @@ avcsuccess:
 							memcpy(mt.Format(), mts[i].Format(), vih1);
 							memset(mt.Format() + vih1, 0, vih2 - vih1);
 							memcpy(mt.Format() + vih2, mts[i].Format() + vih1, bmi);
-							((VIDEOINFOHEADER2*)mt.Format())->dwPictAspectRatioX = (DWORD)pTE->v.DisplayWidth;
-							((VIDEOINFOHEADER2*)mt.Format())->dwPictAspectRatioY = (DWORD)pTE->v.DisplayHeight;
+							
+							((VIDEOINFOHEADER2*)mt.Format())->dwPictAspectRatioX = rX;
+							((VIDEOINFOHEADER2*)mt.Format())->dwPictAspectRatioY = rY;
 							mts.InsertAt(i++, mt);
 						}
 						else if(mts[i].formattype == FORMAT_MPEG2Video)
 						{
-							((MPEG2VIDEOINFO*)mts[i].Format())->hdr.dwPictAspectRatioX = (DWORD)pTE->v.DisplayWidth;
-							((MPEG2VIDEOINFO*)mts[i].Format())->hdr.dwPictAspectRatioY = (DWORD)pTE->v.DisplayHeight;
+							((MPEG2VIDEOINFO*)mts[i].Format())->hdr.dwPictAspectRatioX = rX;
+							((MPEG2VIDEOINFO*)mts[i].Format())->hdr.dwPictAspectRatioY = rY;
 						}
 					}
 				}

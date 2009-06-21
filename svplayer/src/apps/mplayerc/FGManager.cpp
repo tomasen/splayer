@@ -260,6 +260,7 @@ HRESULT CFGManager::EnumSourceFilters(LPCWSTR lpcwstrFileName, CFGFilterList& fl
 			}
 		}
 	}
+	AppSettings& s = AfxGetAppSettings();
 	if(1){
 		if(hFile == INVALID_HANDLE_VALUE)
 		{
@@ -283,7 +284,7 @@ HRESULT CFGManager::EnumSourceFilters(LPCWSTR lpcwstrFileName, CFGFilterList& fl
 
 			fl.Insert(new CFGFilterRegistry(CLSID_URLReader), 6);
 		}
-		else if(1) //急速模式
+		else if(!s.fBUltraFastMode) //急速模式
 		{
 			// check bytes
 
@@ -338,7 +339,7 @@ HRESULT CFGManager::EnumSourceFilters(LPCWSTR lpcwstrFileName, CFGFilterList& fl
 			}
 		}
 
-		if(!ext.IsEmpty() && 1)  //急速模式
+		if(!ext.IsEmpty() && !s.fBUltraFastMode)  //急速模式
 		{
 			// file extension
 
@@ -1407,7 +1408,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		pFGF = new CFGFilterInternal<CMpegSourceFilter>();
 		pFGF->m_chkbytes.AddTail(_T("0,16,FFFFFFFFF100010001800001FFFFFFFF,000001BA2100010001800001000001BB"));
 		pFGF->m_chkbytes.AddTail(_T("0,5,FFFFFFFFC0,000001BA40"));
-		//pFGF->m_chkbytes.AddTail(_T("0,1,,47,188,1,,47,376,1,,47")); //some file cant play for this
+		pFGF->m_chkbytes.AddTail(_T("0,1,,47,188,1,,47,376,1,,47")); //some file cant play for this
 		pFGF->m_chkbytes.AddTail(_T("4,1,,47,196,1,,47,388,1,,47"));
 		pFGF->m_chkbytes.AddTail(_T("0,4,,54467263,1660,1,,47"));
 		pFGF->m_chkbytes.AddTail(_T("0,8,fffffc00ffe00000,4156000055000000"));
@@ -1415,6 +1416,18 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		pFGF->m_extensions.AddTail(_T(".m2ts"));
 		m_source.AddTail(pFGF );
 	}
+
+
+	 pFGF = new CFGFilterRegistry(GUIDFromCString(_T("{55DA30FC-F16B-49FC-BAA5-AE59FC65F82D}")), MERIT64_UNLIKELY);
+	pFGF->m_chkbytes.AddTail(_T("0,16,FFFFFFFFF100010001800001FFFFFFFF,000001BA2100010001800001000001BB"));
+	pFGF->m_chkbytes.AddTail(_T("0,5,FFFFFFFFC0,000001BA40"));
+	pFGF->m_chkbytes.AddTail(_T("0,1,,47,188,1,,47,376,1,,47")); //some file cant play for this
+	pFGF->m_chkbytes.AddTail(_T("4,1,,47,196,1,,47,388,1,,47"));
+	pFGF->m_chkbytes.AddTail(_T("0,4,,54467263,1660,1,,47"));
+	pFGF->m_chkbytes.AddTail(_T("0,8,fffffc00ffe00000,4156000055000000"));
+	pFGF->m_extensions.AddTail(_T(".ts"));
+	pFGF->m_extensions.AddTail(_T(".m2ts"));
+	m_source.AddTail( pFGF ); // use HAALI
 
 	if(src & SRC_DTSAC3)
 	{
@@ -2253,8 +2266,6 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		}
 	}
 
-	
-	//m_source.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{55DA30FC-F16B-49FC-BAA5-AE59FC65F82D}")), MERIT64_UNLIKELY) ); // use HAALI
 
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("PMPSplitter.ax")) );
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("rms.ax")) );

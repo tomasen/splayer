@@ -548,6 +548,7 @@ public:
 		UINT logostretch;
 		bool logoext;
 
+		BOOL fBUltraFastMode;
 		bool fHideCDROMsSubMenu;
 
 		DWORD priority;

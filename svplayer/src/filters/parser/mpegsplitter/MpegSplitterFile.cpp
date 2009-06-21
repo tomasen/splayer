@@ -153,6 +153,9 @@ HRESULT CMpegSplitterFile::Init()
 	else ; // TODO: in this case disable seeking, or try doing something less drastical...
 
 //#ifndef DEBUG
+	if(m_streams[audio].GetCount() <= 1 && m_type == ts){
+		return E_FAIL;
+	}
 	if(m_streams[video].GetCount())
 	{
 		if (!m_bIsHdmv && m_streams[subpic].GetCount())

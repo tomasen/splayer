@@ -2255,12 +2255,14 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		
 	    if( ! s.fVMR9MixerMode  ) 
 		{
-			//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("codecs\\CoreAVCDecoder.ax")) ); //will crash without why
+			szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("codecs\\CoreAVCDecoder.ax")) ); //will crash without why
 			////VMR9 seems not work with coreplayer
 	  		
-  			CFGFilter* pFGFR = new CFGFilterRegistry(GUIDFromCString(_T("{09571A4B-F1FE-4C60-9760-DE6D310C7C31}")), MERIT64_ABOVE_DSHOW+20); //use CoreAVC
-  		  	m_transform.AddTail(pFGFR); 
-  		  			m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{C16541FF-49ED-4DEA-9126-862F57722E31}")), MERIT64_UNLIKELY) ); //not use POWERDVD
+  			//CFGFilter* pFGFR = new CFGFilterRegistry(GUIDFromCString(_T("{09571A4B-F1FE-4C60-9760-DE6D310C7C31}")), MERIT64_ABOVE_DSHOW+20); //use CoreAVC
+			//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("PMPSplitter.ax")) );
+  		  	//m_transform.AddTail(pFGFR); 
+  		  	
+			m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{C16541FF-49ED-4DEA-9126-862F57722E31}")), MERIT64_UNLIKELY) ); //not use POWERDVD
 	  		
 	  		
 		}
@@ -2288,6 +2290,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		CString szFPath = szaExtFilterPaths.GetAt(l); //以文件模式调入解码器
 		CString szLog ; 
 		if(svptoolbox.ifFileExist(szFPath)){
+			SVP_LogMsg5(_T("Loading %s"), szFPath);
 			CFilterMapper2 fm2(false);
 			fm2.Register(szFPath);
 			POSITION pos = fm2.m_filters.GetHeadPosition();
@@ -2315,6 +2318,8 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 					}
 				}
 			}
+		}else{
+			SVP_LogMsg5(_T("File Not Exist %s"), szFPath);
 		}
 	}
 	// Overrides

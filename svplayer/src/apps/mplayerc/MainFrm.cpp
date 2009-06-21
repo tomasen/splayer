@@ -1489,8 +1489,8 @@ void CMainFrame::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
 		if(IsWindow(pCB->m_hWnd) && pCB->IsWindowVisible() && !pCB->IsFloating())
 			lpMMI->ptMinTrackSize.y += pCB->CalcFixedLayout(TRUE, TRUE).cy-2;
 	}
-	CString szLog;
-	szLog.Format(_T("MaxInfo %d %d %d %d %d %d ") , lpMMI->ptMaxSize.x , lpMMI->ptMaxSize.y, lpMMI->ptMaxTrackSize.x , lpMMI->ptMaxTrackSize.y, lpMMI->ptMaxPosition.x , lpMMI->ptMaxPosition.y);
+	//CString szLog;
+	//szLog.Format(_T("MaxInfo %d %d %d %d %d %d ") , lpMMI->ptMaxSize.x , lpMMI->ptMaxSize.y, lpMMI->ptMaxTrackSize.x , lpMMI->ptMaxTrackSize.y, lpMMI->ptMaxPosition.x , lpMMI->ptMaxPosition.y);
 	//SVP_LogMsg(szLog);
 
 	

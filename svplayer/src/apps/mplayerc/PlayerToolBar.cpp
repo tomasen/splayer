@@ -624,15 +624,16 @@ void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point){
 
 	CSize diff = m_lastMouseMove - point;
 	BOOL bMouseMoved =  diff.cx || diff.cy ;
-	m_lastMouseMove = point;
+	if(bMouseMoved)
+		m_lastMouseMove = point;
 
 	CRect rc;
 	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
 	GetWindowRect(&rc);
 	point += rc.TopLeft() ;
 	
-	if( m_nItemToTrack == ID_VOLUME_THUMB  ){
-		if(m_bMouseDown && bMouseMoved){
+	if( m_nItemToTrack == ID_VOLUME_THUMB && m_bMouseDown ){
+		if( bMouseMoved){
 			OnSetVolByMouse(point);
 			
 		}

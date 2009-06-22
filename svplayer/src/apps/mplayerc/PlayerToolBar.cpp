@@ -39,9 +39,10 @@ IMPLEMENT_DYNAMIC(CPlayerToolBar, CToolBar)
 CPlayerToolBar::CPlayerToolBar() :
 m_hovering(0),
 holdStatStr(0),
-iButtonWidth (30)
+iButtonWidth (30),
+m_pbtnList(&m_btnList)
 {
-
+	 
 }
 
 CPlayerToolBar::~CPlayerToolBar()
@@ -334,7 +335,7 @@ BEGIN_MESSAGE_MAP(CPlayerToolBar, CToolBar)
 	ON_WM_SETCURSOR()
 	ON_WM_ERASEBKGND()
 	ON_NOTIFY_EX(TTN_NEEDTEXT, 0, OnTtnNeedText)
-
+	ON_MESSAGE(WM_USER+301, MyHitTest)
 END_MESSAGE_MAP()
 
 // CPlayerToolBar message handlers
@@ -582,15 +583,26 @@ bool  CPlayerToolBar::OnSetVolByMouse(CPoint point){
 
 	return true;
 }
+LRESULT CPlayerToolBar::MyHitTest( WPARAM wParam, LPARAM lParam ){
+	CRect rc;
+	GetWindowRect(&rc);
+	CPoint point( (wParam & 0xffff0000) >> 16, wParam & 0xffff);
+	UINT* ret = (UINT*)lParam;
+	*ret = m_nItemToTrack;//m_btnList.OnHitTest(point,rc);
+	return S_OK;
+}
 INT_PTR CPlayerToolBar::OnToolHitTest(	CPoint point,TOOLINFO* pTI 	) const
 {
-
+	if(!pTI){
+		return -1;
+	}
 	CRect rc;
 	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
 	GetWindowRect(&rc);
 	point += rc.TopLeft() ;
-	CSUIBtnList* x = (CSUIBtnList*)&m_btnList;
-	UINT ret = x->OnHitTest(point,rc);
+	//CSUIBtnList* x = (CSUIBtnList*)&m_btnList;
+	UINT ret = 0;//m_pbtnList->OnHitTest(point,rc);
+	SendMessage(WM_USER+301, (point.x & 0xffff) << 16 | (0xffff & point.y), (UINT_PTR)&ret );
 	if(ret){
 		
 			pTI->hwnd = m_hWnd;

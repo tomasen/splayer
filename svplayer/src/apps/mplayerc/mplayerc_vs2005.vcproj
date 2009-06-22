@@ -417,6 +417,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DlgChkUpdater.cpp"
+				>
+			</File>
+			<File
 				RelativePath="DX7AllocatorPresenter.cpp"
 				>
 			</File>
@@ -863,6 +867,10 @@
 			</File>
 			<File
 				RelativePath=".\DeinterlacerFilter.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DlgChkUpdater.h"
 				>
 			</File>
 			<File

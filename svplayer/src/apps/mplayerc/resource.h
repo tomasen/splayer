@@ -848,8 +848,8 @@
 #define IDS_RS_USEWAVEOUTDEVICEBYDEFAULT 14223
 #define IDS_RS_DISABLE_EVR              14224
 #define IDS_RS_OPTIONDECODER            14225
-#define IDS_RS_LOGOSTRETCH				14226
-#define IDS_RS_ULTRAFAST				14227
+#define IDS_RS_LOGOSTRETCH              14226
+#define IDS_RS_ULTRAFAST                14227
 #define IDD_DHTML_SETTING               20000
 #define IDR_DEFAULT1                    20006
 #define IDD_DEFAULT_PLAYER              20007
@@ -860,6 +860,8 @@
 #define IDD_SVPSUBDOWNUPDLG             20009
 #define IDD_DIALOG3                     20010
 #define IDD_SEARCHSUBDLG                20010
+#define IDD_DIALOG4                     20011
+#define IDD_CHECKUPDATE                 20011
 #define IDC_CHK_NOMOREQUES              22000
 #define IDC_CHECK_DEFAULTPLAYER         22001
 #define IDC_STATIC_VFILE                22002
@@ -1014,7 +1016,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        20011
+#define _APS_NEXT_RESOURCE_VALUE        20012
 #define _APS_NEXT_COMMAND_VALUE         32840
 #define _APS_NEXT_CONTROL_VALUE         22004
 #define _APS_NEXT_SYMED_VALUE           24001

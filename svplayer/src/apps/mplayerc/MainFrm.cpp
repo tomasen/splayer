@@ -80,6 +80,8 @@
 
 #include "revision.h"
 #include "ChkDefPlayer.h"
+#include "DlgChkUpdater.h"
+
 
 #define DEFCLIENTW 480
 #define DEFCLIENTH 360
@@ -5614,7 +5616,11 @@ void CMainFrame::OnFileISDBUpload()
 void CMainFrame::OnManualcheckupdate()
 {
 	//AfxMessageBox(_T("自动升级程序正在启动，请稍后..") );
-	SVP_CheckUpdaterExe(&m_bCheckingUpdater, 1);
+	CDlgChkUpdater dlgChkUpdater(this);
+	if(IDOK == dlgChkUpdater.DoModal() ){
+		this->PostMessage(WM_COMMAND, ID_FILE_EXIT);;
+	}
+	
 }
 void CMainFrame::OnUpdateFileISDBUpload(CCmdUI *pCmdUI)
 {

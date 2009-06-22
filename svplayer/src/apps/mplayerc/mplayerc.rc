@@ -959,6 +959,16 @@ BEGIN
     LTEXT           "如果智能匹配系统没能下载到合适的字幕 \r\n              您可能需要通过射手网手动搜索字幕：",IDC_STATIC,7,15,302,19
 END
 
+IDD_CHECKUPDATE DIALOGEX 0, 0, 238, 62
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_TOOLWINDOW
+CAPTION "检查更新"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    PUSHBUTTON      "取消",IDCANCEL,94,41,50,14
+    CONTROL         "",IDC_PROGRESS1,"msctls_progress32",PBS_SMOOTH | WS_BORDER,27,19,183,10
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1342,6 +1352,14 @@ BEGIN
         RIGHTMARGIN, 309
         TOPMARGIN, 7
         BOTTOMMARGIN, 92
+    END
+
+    IDD_CHECKUPDATE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 231
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 55
     END
 END
 #endif    // APSTUDIO_INVOKED

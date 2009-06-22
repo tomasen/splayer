@@ -50,6 +50,8 @@
 
 #define FRAMERATE_MAX_DELTA			3000
 
+//#define TRACE SVP_LogMsg3
+
 CCritSec g_ffdshowReceive;
 bool queueu_ffdshow_support = false;
 
@@ -519,7 +521,7 @@ void CDX9AllocatorPresenter::VSyncThread()
 				// Do our stuff
 				if (m_pD3DDev && s.fVMRSyncFix)
 				{
-
+					//TRACE("VSyncThread WAIT_TIMEOUT");
 					int VSyncPos = GetVBlackPos();
 					int WaitRange = max(m_ScreenSize.cy / 40, 5);
 					int MinRange = max(min(int(0.003 * double(m_ScreenSize.cy) * double(m_RefreshRate) + 0.5), m_ScreenSize.cy/3), 5); // 1.8  ms or max 33 % of Time
@@ -916,7 +918,7 @@ HRESULT CDX9AllocatorPresenter::CreateDevice()
 			m_BackbufferType = D3DFMT_A2R10G10B10;
 			pp.BackBufferFormat = D3DFMT_A2R10G10B10;
 		}
-		if (0)//bCompositionEnabled || m_bAlternativeVSync)
+		if (1)//bCompositionEnabled || m_bAlternativeVSync)
 		{
 			// Desktop composition takes care of the VSYNC
 			pp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
@@ -2259,10 +2261,8 @@ m_pD3DDev->BeginScene();
 //	if (AfxGetMyApp()->m_fDisplayStats) DrawStats();
 
 	{
-		CString Temp;
-		Temp.Format(L"GPU %7.3f ms", (double(m_WaitForGPUTime)/10000.0));
-
-		TRACE("%ws\n", Temp.GetString());
+		
+		//TRACE("GPU %7.3f ms",(double(m_WaitForGPUTime)/10000.0));
 	}
 
 //	if (m_pOSDTexture) AlphaBlt(rSrcPri, rDstPri, m_pOSDTexture);
@@ -2459,7 +2459,7 @@ m_pD3DDev->BeginScene();
 			fResetDevice = true;
 	}
 
-	if(1/*s.fResetDevice*/)
+	if(0 /*s.fResetDevice*/)
 	{
 		D3DDEVICE_CREATION_PARAMETERS Parameters;
 		if(SUCCEEDED(m_pD3DDev->GetCreationParameters(&Parameters)) && m_pD3D->GetAdapterMonitor(Parameters.AdapterOrdinal) != m_pD3D->GetAdapterMonitor(GetAdapter(m_pD3D)))

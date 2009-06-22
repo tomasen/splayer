@@ -74,23 +74,27 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 	//btnPlay->m_stat = 3; //disabled
 	m_btnList.AddTail( btnPlay );
 
-	CSUIButton* btnPause = new CSUIButton(L"BTN_STOP.BMP" , ALIGN_TOPLEFT, CRect(-50 , 7, 3,3)  , 0, ID_PLAY_STOP, TRUE, 0, 0 );
-	//btnPlay->m_stat = 3; //disabled
+	CSUIButton* btnPause = new CSUIButton(L"BTN_PAUSE.BMP" , ALIGN_TOPLEFT, CRect(-50 , 7, 3,3)  , 0, ID_PLAY_PAUSE, TRUE, 0, 0 );
 	m_btnList.AddTail( btnPause );
 
-	CSUIButton* btnFFwd = new CSUIButton(L"FAST_FORWORD.BMP" , ALIGN_TOPLEFT, CRect(-52 , 9, 3,3)  , 0, ID_PLAY_FWD, FALSE, ALIGN_LEFT, btnPause , CRect(20 , 10 , 20, 10));
-	btnFFwd->addAlignRelButton(  ALIGN_LEFT, btnPlay , CRect(20 , 10 , 20, 10) );
+	CSUIButton* btnStop = new CSUIButton(L"BTN_STOP.BMP" , ALIGN_TOPLEFT, CRect(-50 , 5, 3,3)  , 0, ID_PLAY_STOP, TRUE, ALIGN_RIGHT , btnPause  , CRect(12 , 10 , 12, 10));
+	btnStop->addAlignRelButton(ALIGN_RIGHT, btnPlay , CRect(12 , 10 , 12, 10) );
+	m_btnList.AddTail( btnStop );
+
+	CSUIButton* btnFFwd = new CSUIButton(L"FAST_FORWORD.BMP" , ALIGN_TOPLEFT, CRect(-52 , 9, 3,3)  , 0, ID_PLAY_FWD, FALSE, ALIGN_LEFT, btnPause , CRect(12 , 10 , 12, 10));
+	btnFFwd->addAlignRelButton(  ALIGN_LEFT, btnPlay , CRect(12 , 10 , 12, 10) );
 	m_btnList.AddTail( btnFFwd );
 
 	
-	CSUIButton* btnFFBack = new CSUIButton(L"FAST_BACKWORD.BMP" , ALIGN_TOPLEFT, CRect(-48 , 9, 3,3)  , 0, ID_PLAY_BWD, FALSE, ALIGN_RIGHT, btnPause , CRect(20 , 10 , 20, 10) );
-	btnFFBack->addAlignRelButton(ALIGN_RIGHT, btnPlay , CRect(20 , 10 , 20, 10) );
+	CSUIButton* btnFFBack = new CSUIButton(L"FAST_BACKWORD.BMP" , ALIGN_TOPLEFT, CRect(-48 , 9, 3,3)  , 0, ID_PLAY_BWD, FALSE, ALIGN_RIGHT, btnPause , CRect(12 , 10 , 12, 10) );
+	btnFFBack->addAlignRelButton(ALIGN_RIGHT, btnPlay , CRect(12 , 10 , 12, 10) );
+	btnFFBack->addAlignRelButton(ALIGN_RIGHT, btnStop , CRect(12 , 10 , 12, 10) );
 	m_btnList.AddTail( btnFFBack );
 
-	CSUIButton* btnPrev = new CSUIButton(L"BTN_PREV.BMP" , ALIGN_TOPLEFT, CRect(-48 , 9, 3,3)  , 0, ID_NAVIGATE_SKIPBACK, FALSE, ALIGN_RIGHT, btnFFBack , CRect(20 , 10 , 20, 10) ) ;
+	CSUIButton* btnPrev = new CSUIButton(L"BTN_PREV.BMP" , ALIGN_TOPLEFT, CRect(-48 , 9, 3,3)  , 0, ID_NAVIGATE_SKIPBACK, FALSE, ALIGN_RIGHT, btnFFBack , CRect(12 , 10 , 12, 10) ) ;
 	m_btnList.AddTail( btnPrev );
 
-	m_btnList.AddTail( new CSUIButton(L"BTN_NEXT.BMP" , ALIGN_TOPLEFT, CRect(-48 , 9, 3,3)  , 0, ID_NAVIGATE_SKIPFORWARD, FALSE, ALIGN_LEFT, btnFFwd , CRect(20 , 10 , 20, 10) ) );
+	m_btnList.AddTail( new CSUIButton(L"BTN_NEXT.BMP" , ALIGN_TOPLEFT, CRect(-48 , 9, 3,3)  , 0, ID_NAVIGATE_SKIPFORWARD, FALSE, ALIGN_LEFT, btnFFwd , CRect(12 , 10 , 12, 10) ) );
 	
 	CSUIButton* btnLogo =  new CSUIButton(L"SPLAYER.BMP" , ALIGN_TOPLEFT, CRect(20 , 7, 3,3)  , TRUE, 0, FALSE   ) ;
 	m_btnList.AddTail(btnLogo);
@@ -432,11 +436,13 @@ void CPlayerToolBar::UpdateButtonStat(){
 	BOOL fShow = pFrame->GetUIStat( ID_PLAY_STOP );
 	m_btnList.SetHideStat( ID_PLAY_PLAY , fShow );
 	m_btnList.SetHideStat( ID_PLAY_STOP , !fShow );
+	m_btnList.SetHideStat( ID_PLAY_PAUSE , !fShow );
 	BOOL bLogo = pFrame->IsSomethingLoaded();
 	m_btnList.SetHideStat(_T("SPLAYER.BMP"), bLogo);
 	if(!bLogo){
 		m_timerstr.Empty();
 	}
+	ReCalcBtnPos();
 }
 void CPlayerToolBar::OnNcPaint() // when using XP styles the NC area isn't drawn for our toolbar...
 {

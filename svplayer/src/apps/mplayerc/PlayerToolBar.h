@@ -100,6 +100,11 @@ protected:
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	bool OnSetVolByMouse(CPoint point);
 	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
+	afx_msg BOOL OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult);
+
+	virtual INT_PTR OnToolHitTest(	CPoint point,TOOLINFO* pTI 	) const;
+
+
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 public:

@@ -162,7 +162,8 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 	
 		m_volctrl.Create(this);
 	
-	
+	EnableToolTips(TRUE);
+
 
 	return TRUE;
 }
@@ -332,6 +333,8 @@ BEGIN_MESSAGE_MAP(CPlayerToolBar, CToolBar)
 	ON_WM_MOUSEMOVE()
 	ON_WM_SETCURSOR()
 	ON_WM_ERASEBKGND()
+	ON_NOTIFY_EX(TTN_NEEDTEXT, 0, OnTtnNeedText)
+
 END_MESSAGE_MAP()
 
 // CPlayerToolBar message handlers
@@ -579,6 +582,32 @@ bool  CPlayerToolBar::OnSetVolByMouse(CPoint point){
 
 	return true;
 }
+INT_PTR CPlayerToolBar::OnToolHitTest(	CPoint point,TOOLINFO* pTI 	) const
+{
+
+	CRect rc;
+	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
+	GetWindowRect(&rc);
+	point += rc.TopLeft() ;
+	CSUIBtnList* x = (CSUIBtnList*)&m_btnList;
+	UINT ret = x->OnHitTest(point,rc);
+	if(ret){
+		
+			pTI->hwnd = m_hWnd;
+			pTI->uId = (UINT) (ret);
+			//pTI->uFlags = TTF_IDISHWND;
+			pTI->lpszText = LPSTR_TEXTCALLBACK;
+			RECT rcClient;
+			GetClientRect(&rcClient);
+
+			pTI->rect = rcClient;
+
+			return pTI->uId;
+		
+	}
+	return -1;
+
+};
 void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point){
 
 	CSize diff = m_lastMouseMove - point;
@@ -600,8 +629,30 @@ void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point){
 		UINT ret = m_btnList.OnHitTest(point,rc);
 		m_nItemToTrack = ret;
 		if(ret){
-			CString toolTip;
-			switch(ret){
+			
+		}else if(!m_tooltip.IsEmpty()){
+			m_tooltip.Empty();
+		}
+		if( m_btnList.HTRedrawRequired ){
+			Invalidate();
+		}
+	}
+	
+	return;
+}
+
+BOOL CPlayerToolBar::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
+{
+	UNREFERENCED_PARAMETER(id);
+
+	TOOLTIPTEXT *pTTT = (TOOLTIPTEXT *)pNMHDR;
+	UINT_PTR nID = pNMHDR->idFrom;
+	BOOL bRet = FALSE;
+
+	
+		// idFrom is actually the HWND of the tool
+	CString toolTip;
+	switch(nID){
 				case ID_SUBDELAYDEC:
 					toolTip = _T("¼õÉÙ×ÖÄ»ÑÓÊ±");
 					break;
@@ -632,25 +683,22 @@ void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point){
 				case ID_SUBFONTDOWNBOTH:
 					toolTip = _T("ËõÐ¡×ÖÄ»");
 					break;	
-			}
-			
-			if(toolTip != m_tooltip){
-				m_tooltip = toolTip;
-				//tooltip.Format(_T("°´Å¥ %d") ,  ret);
-				if(!m_tooltip.IsEmpty()){
-					pFrame->SendStatusMessage(m_tooltip , 1000);
-				}
-			}
-		}else if(!m_tooltip.IsEmpty()){
-			m_tooltip.Empty();
-		}
-		if( m_btnList.HTRedrawRequired ){
-			Invalidate();
-		}
 	}
+
 	
-	return;
+	if(!toolTip.IsEmpty()){
+		pTTT->lpszText = toolTip.GetBuffer();
+		pTTT->hinst = AfxGetResourceHandle();
+		bRet = TRUE;
+	}
+
+	
+
+	*pResult = 0;
+
+	return bRet;
 }
+
 
 void CPlayerToolBar::OnLButtonDown(UINT nFlags, CPoint point)
 {

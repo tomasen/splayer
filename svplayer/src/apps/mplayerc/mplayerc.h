@@ -532,6 +532,8 @@ public:
 		HACCEL hAccel;
 		//int disableSmartDrag;
 
+		CString szOEMTitle;
+
 		bool fWinLirc;
 		CString WinLircAddr;
 		CWinLircClient WinLircClient;

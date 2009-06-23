@@ -2133,6 +2133,18 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 			}
 		}
 
+		CRegKey oem;
+		if(ERROR_SUCCESS == dxver.Open(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\SPlayer"), KEY_READ))
+		{
+			CString str;
+			ULONG len = 640;
+			if(ERROR_SUCCESS == dxver.QueryStringValue(_T("OEM"), str.GetBuffer(len), &len))
+			{
+				str.ReleaseBuffer(len);
+				szOEMTitle = str;
+			}
+		}
+		
 		
 		fVMDetected = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VMDETECTED), -1);
 		if(fVMDetected == -1){

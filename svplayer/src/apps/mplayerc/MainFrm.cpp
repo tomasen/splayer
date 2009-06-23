@@ -651,9 +651,14 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// end
 
 	CString szBuild;
-	szBuild.Format( _T(" (Build %s)"),SVP_REV_STR);
+	if(!s.szOEMTitle.IsEmpty()){
+		szBuild.Format(_T(" (%s Build %s)"), s.szOEMTitle , SVP_REV_STR);
+	}else{
+		szBuild.Format( _T(" (Build %s)"),SVP_REV_STR);
+	}
 	//SetWindowText(CString(ResStr(IDR_MAINFRAME)) + szBuild);
 	m_szTitle = CString(ResStr(IDR_MAINFRAME)) + szBuild;
+	
 
 	SetTimer(TIMER_STATUSCHECKER , 10000, NULL);
 
@@ -1217,6 +1222,7 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 				szWindowText = _T("[Ó²¼þ¸ßÇå]");
 			}
 			szWindowText.Append(m_szTitle);
+			
 			//GetWindowText(szWindowText);
 			if(m_bHasDrawShadowText )
 				::DrawShadowText(hdc, szWindowText, szWindowText.GetLength(), &rcWindowText, DT_LEFT|DT_SINGLELINE | DT_VCENTER, 0x00525d66, RGB(255,255,255), 1,1);
@@ -4024,6 +4030,7 @@ void CMainFrame::OnUpdateFilePostOpenmedia(CCmdUI* pCmdUI)
 
 void CMainFrame::OnFilePostClosemedia()
 {
+	AppSettings& s = AfxGetAppSettings();
 	m_bDxvaInUse = false;
 	m_wndView.SetVideoRect();
 	m_wndSeekBar.Enable(false);
@@ -4044,7 +4051,7 @@ void CMainFrame::OnFilePostClosemedia()
 	m_iSubtitleSel2 = -1;
 	
 	if(m_wndToolBar.IsVisible())
-	   ShowControls(AfxGetAppSettings().nCS & ~CS_SEEKBAR , false);
+	   ShowControls(s.nCS & ~CS_SEEKBAR , false);
 
 	if(IsWindow(m_wndCaptureBar.m_hWnd))
 	{
@@ -4055,7 +4062,12 @@ void CMainFrame::OnFilePostClosemedia()
 
 	RecalcLayout();
 	CString szBuild;
-	szBuild.Format( _T(" (Build %s)"),SVP_REV_STR);
+	if(!s.szOEMTitle.IsEmpty()){
+		szBuild.Format(_T(" (%s Build %s)"), s.szOEMTitle , SVP_REV_STR);
+	}else{
+		szBuild.Format( _T(" (Build %s)"),SVP_REV_STR);
+	}
+	
 	//SetWindowText(CString(ResStr(IDR_MAINFRAME)) + szBuild);
 	m_szTitle = CString(ResStr(IDR_MAINFRAME)) + szBuild;
 	RedrawNonClientArea();

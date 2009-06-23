@@ -342,7 +342,7 @@ public:
 	bool GetAppDataPath(CString& path);
 	
 	static bool	IsVista();
-	static void GainAdminPrivileges(UINT idd);
+	static void GainAdminPrivileges(UINT idd, BOOL bWait = true);
 	static bool	IsVSFilterInstalled();
 	HINSTANCE					GetD3X9Dll();
 	LONGLONG					GetPerfCounter();

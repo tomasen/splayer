@@ -105,8 +105,10 @@ void CChkDefPlayer::setDefaultPlayer()
 {
 	CPPageFormats cpf;
 	if(cpf.m_bInsufficientPrivileges){
-		AfxGetMyApp()->GainAdminPrivileges(0);
-		__super::OnCancel();
+		//if(IDYES == AfxMessageBox(_T("必须启动管理员权限\r\n才可以建立文件关联！\r\n现在进入管理员权限么？"), MB_YESNO)){
+			AfxGetMyApp()->GainAdminPrivileges(0);
+			__super::OnCancel();
+		//}
 	}else{
 		for(int i = 0; i < szaNotExt.GetCount();i++){
 			CPPageFormats::RegisterExt(szaNotExt.GetAt(i), TRUE);

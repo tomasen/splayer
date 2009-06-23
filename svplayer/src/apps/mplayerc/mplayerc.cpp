@@ -3267,7 +3267,7 @@ CString GetContentType(CString fn, CAtlList<CString>* redir)
 
 	return ct;
 }
-void CMPlayerCApp::GainAdminPrivileges(UINT idd){
+void CMPlayerCApp::GainAdminPrivileges(UINT idd, BOOL bWait){
 	CString			strCmd;
 	CString			strApp;
 
@@ -3288,8 +3288,8 @@ void CMPlayerCApp::GainAdminPrivileges(UINT idd){
 
 	ShellExecuteEx(&execinfo);
 
-	
-	WaitForSingleObject(execinfo.hProcess, INFINITE);
+	if(bWait)
+		WaitForSingleObject(execinfo.hProcess, INFINITE);
 }
 bool CMPlayerCApp::IsVista()
 {

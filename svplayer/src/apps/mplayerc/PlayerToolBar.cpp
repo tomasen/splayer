@@ -335,7 +335,7 @@ BEGIN_MESSAGE_MAP(CPlayerToolBar, CToolBar)
 	ON_WM_SETCURSOR()
 	ON_WM_ERASEBKGND()
 	ON_NOTIFY_EX(TTN_NEEDTEXT, 0, OnTtnNeedText)
-	ON_MESSAGE(WM_USER+301, MyHitTest)
+	ON_MESSAGE(WM_USER+31, MyHitTest)
 END_MESSAGE_MAP()
 
 // CPlayerToolBar message handlers
@@ -382,9 +382,6 @@ void CPlayerToolBar::OnPaint()
 	CPaintDC dc(this); // device context for painting
 	CRect paintRect(dc.m_ps.rcPaint);
 
-	int volume = min( m_volctrl.GetPos() , m_volctrl.GetRangeMax() );
-	m_btnVolTm->m_rcHitest.MoveToX(m_btnVolBG->m_rcHitest.left +  ( m_btnVolBG->m_rcHitest.Width() * volume / m_volctrl.GetRangeMax() ) - m_btnVolTm->m_rcHitest.Width()/2);
-
 	
 	CRect rcClient;
 	GetClientRect(&rcClient);
@@ -393,7 +390,7 @@ void CPlayerToolBar::OnPaint()
 	CRect rc;
 	GetWindowRect(&rc);
 
-	if(paintRect == m_btnVolBG->m_rcHitest){
+	if(0 && paintRect == m_btnVolBG->m_rcHitest){
 		m_btnVolBG->OnPaint( &hdc, rc);
 		m_btnVolTm->OnPaint( &hdc, rc);
 		//SVP_LogMsg5(_T("Just Paint Vol"));
@@ -411,9 +408,13 @@ void CPlayerToolBar::OnPaint()
 
  	UpdateButtonStat();
 	
-	//CString szLog;
-	//szLog.Format(_T("TM POS %d %d"), volume , m_btnVolTm->m_rcHitest.left );
-	//SVP_LogMsg(szLog);
+	int volume = min( m_volctrl.GetPos() , m_volctrl.GetRangeMax() );
+	m_btnVolTm->m_rcHitest.MoveToX(m_btnVolBG->m_rcHitest.left +  ( m_btnVolBG->m_rcHitest.Width() * volume / m_volctrl.GetRangeMax() ) - m_btnVolTm->m_rcHitest.Width()/2);
+	SVP_LogMsg5(_T("Vol left %d") , m_btnVolTm->m_rcHitest.left);
+
+	CString szLog;
+	szLog.Format(_T("TM POS %d %d"), volume , m_btnVolTm->m_rcHitest.left );
+	SVP_LogMsg(szLog);
  	m_btnList.PaintAll(&hdc, rc);
 
 	if(!m_timerstr.IsEmpty()){
@@ -596,14 +597,16 @@ INT_PTR CPlayerToolBar::OnToolHitTest(	CPoint point,TOOLINFO* pTI 	) const
 	if(!pTI){
 		return -1;
 	}
+	
 	CRect rc;
 	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
 	GetWindowRect(&rc);
 	point += rc.TopLeft() ;
 	//CSUIBtnList* x = (CSUIBtnList*)&m_btnList;
 	UINT ret = 0;//m_pbtnList->OnHitTest(point,rc);
-	SendMessage(WM_USER+301, (point.x & 0xffff) << 16 | (0xffff & point.y), (UINT_PTR)&ret );
+	SendMessage(WM_USER+31, (point.x & 0xffff) << 16 | (0xffff & point.y), (UINT_PTR)&ret );
 	if(ret){
+		
 		
 			pTI->hwnd = m_hWnd;
 			pTI->uId = (UINT) (ret);

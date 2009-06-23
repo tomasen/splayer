@@ -27,7 +27,7 @@
 #include "ChildView.h"
 #include "MainFrm.h"
 #include "libpng.h"
-
+#include "..\..\svplib\SVPToolBox.h"
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -148,12 +148,26 @@ void CChildView::LoadLogo()
 	
 	if(s.logoext)
 	{
-		if(AfxGetAppSettings().fXpOrBetter)
+		if(s.fXpOrBetter)
 			m_logo.Load(s.logofn);
 		else if(HANDLE h = LoadImage(NULL, s.logofn, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE))
 			m_logo.Attach((HBITMAP)h); // win9x bug: Inside Attach GetObject() will return all zeros in DIBSECTION and silly CImage uses that to init width, height, bpp, ... so we can't use CImage::Draw later
 	}
 
+	if(m_logo.IsNull() && IDF_LOGO7 == s.logoid)
+	{
+		CString OEMBGPath;
+		CSVPToolBox svpTool;
+		OEMBGPath = svpTool.GetPlayerPath(_T("skins\\oembg.png"));
+		if(svpTool.ifFileExist(OEMBGPath)){
+			if(s.fXpOrBetter)
+				m_logo.Load(OEMBGPath);
+			else if(HANDLE h = LoadImage(NULL, OEMBGPath, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE))
+				m_logo.Attach((HBITMAP)h); 
+		}
+
+
+	}
 	if(m_logo.IsNull())
 	{
 		m_logo.LoadFromResource(s.logoid);

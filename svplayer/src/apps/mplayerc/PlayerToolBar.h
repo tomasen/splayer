@@ -104,9 +104,7 @@ protected:
 	afx_msg BOOL OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult);
 
 	virtual INT_PTR OnToolHitTest(	CPoint point,TOOLINFO* pTI 	) const;
-	LRESULT MyHitTest( WPARAM wParam, LPARAM lParam );
-	//UINT (CPoint point, CRect rc) ;
-
+	
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 public:

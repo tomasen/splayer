@@ -335,7 +335,6 @@ BEGIN_MESSAGE_MAP(CPlayerToolBar, CToolBar)
 	ON_WM_SETCURSOR()
 	ON_WM_ERASEBKGND()
 	ON_NOTIFY_EX(TTN_NEEDTEXT, 0, OnTtnNeedText)
-	//ON_MESSAGE(WM_USER+31, MyHitTest)
 END_MESSAGE_MAP()
 
 // CPlayerToolBar message handlers
@@ -390,7 +389,7 @@ void CPlayerToolBar::OnPaint()
 	CRect rc;
 	GetWindowRect(&rc);
 
-	if(0 && paintRect == m_btnVolBG->m_rcHitest){
+	if( paintRect == m_btnVolBG->m_rcHitest){
 		m_btnVolBG->OnPaint( &hdc, rc);
 		m_btnVolTm->OnPaint( &hdc, rc);
 		//SVP_LogMsg5(_T("Just Paint Vol"));
@@ -582,18 +581,18 @@ bool  CPlayerToolBar::OnSetVolByMouse(CPoint point){
 
 
 	pFrame->OnPlayVolume(0);
-	InvalidateRect( m_btnVolBG->m_rcHitest,true);
+	/*
+	CRect rc;
+		GetWindowRect(&rc);
+		CRect pRect(m_btnVolBG->m_rcHitest);
+		pRect -= rc.TopLeft();
+		InvalidateRect( pRect,true);*/
+	
+	Invalidate(FALSE);
 
 	return true;
 }
-LRESULT CPlayerToolBar::MyHitTest( WPARAM wParam, LPARAM lParam ){
-	CRect rc;
-	GetWindowRect(&rc);
-	CPoint point( (wParam & 0xffff0000) >> 16, wParam & 0xffff);
-	UINT* ret = (UINT*)lParam;
-	*ret = m_nItemToTrack;//m_btnList.OnHitTest(point,rc);
-	return S_OK;
-}
+
 INT_PTR CPlayerToolBar::OnToolHitTest(	CPoint point,TOOLINFO* pTI 	) const
 {
 	if(!pTI){

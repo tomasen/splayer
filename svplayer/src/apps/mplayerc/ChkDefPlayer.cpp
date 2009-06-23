@@ -104,14 +104,18 @@ void CChkDefPlayer::setKeyboardNativeMediaPlayers2(){
 void CChkDefPlayer::setDefaultPlayer()
 {
 	CPPageFormats cpf;
-	for(int i = 0; i < szaNotExt.GetCount();i++){
-		CPPageFormats::RegisterExt(szaNotExt.GetAt(i), TRUE);
+	if(cpf.m_bInsufficientPrivileges){
+		AfxGetMyApp()->GainAdminPrivileges(0);
+		__super::OnCancel();
+	}else{
+		for(int i = 0; i < szaNotExt.GetCount();i++){
+			CPPageFormats::RegisterExt(szaNotExt.GetAt(i), TRUE);
+		}
+		setKeyboardNativeMediaPlayers();
+		cpf.AddAutoPlayToRegistry(cpf.AP_VIDEO, true);
+		cpf.AddAutoPlayToRegistry(cpf.AP_DVDMOVIE, true);
+		setKeyboardNativeMediaPlayers2();
 	}
-	setKeyboardNativeMediaPlayers();
-	cpf.AddAutoPlayToRegistry(cpf.AP_VIDEO, true);
-	cpf.AddAutoPlayToRegistry(cpf.AP_DVDMOVIE, true);
-	setKeyboardNativeMediaPlayers2();
-	
 /*
 	AddAutoPlayToRegistry(AP_MUSIC, !!m_apmusic.GetCheck());
 	AddAutoPlayToRegistry(AP_AUDIOCD, !!m_apaudiocd.GetCheck());

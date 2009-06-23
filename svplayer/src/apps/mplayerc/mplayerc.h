@@ -99,7 +99,8 @@ enum
 	CLSW_NOFOCUS=CLSW_STARTVALID<<1,
 	CLSW_FIXEDSIZE=CLSW_NOFOCUS<<1,
 	CLSW_MONITOR=CLSW_FIXEDSIZE<<1,	
-	CLSW_UNRECOGNIZEDSWITCH=CLSW_MONITOR<<1	
+	CLSW_ADMINOPTION=CLSW_MONITOR<<1,
+	CLSW_UNRECOGNIZEDSWITCH=CLSW_ADMINOPTION<<1	
 };
 
 enum
@@ -341,6 +342,7 @@ public:
 	bool GetAppDataPath(CString& path);
 	
 	static bool	IsVista();
+	static void GainAdminPrivileges(UINT idd);
 	static bool	IsVSFilterInstalled();
 	HINSTANCE					GetD3X9Dll();
 	LONGLONG					GetPerfCounter();
@@ -388,6 +390,7 @@ public:
 
 		bool fXpOrBetter;
 		int iDXVer;
+		UINT iAdminOption;
 
 		int nCS;
 		UINT tLastCheckUpdater;

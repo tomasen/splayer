@@ -43,8 +43,14 @@ CPPageFormats::CPPageFormats()
 	, m_exts(_T(""))
 	, m_iRtspHandler(0)
 	, m_fRtspFileExtFirst(FALSE)
+	, m_bInsufficientPrivileges(FALSE)
+	, bChanged(FALSE)
 {
-
+	if (AfxGetMyApp()->IsVista() && !IsUserAnAdmin())
+	{
+		
+		m_bInsufficientPrivileges = true;
+	}
 }
 
 CPPageFormats::~CPPageFormats()
@@ -786,14 +792,24 @@ void CPPageFormats::OnNMClickList1(NMHDR* pNMHDR, LRESULT* pResult)
 		m_list.GetItemRect(lpnmlv->iItem, r, LVIR_ICON);
 		if(r.PtInRect(lpnmlv->ptAction))
 		{
+			
 			SetChecked(lpnmlv->iItem, (GetChecked(lpnmlv->iItem)&1) == 0 ? 1 : 0);
 			SetModified();
+			
 		}
 	}
 
 	*pResult = 0;
 }
-
+void CPPageFormats::SetModified(){
+	if(m_bInsufficientPrivileges){
+		if(IDYES == AfxMessageBox(_T("必须启动管理员权限\r\n才可以建立或修改文件关联！\r\n现在进入管理员权限么？"), MB_YESNO)){
+			AfxGetMyApp()->GainAdminPrivileges(1);
+			__super::OnCancel();
+		}
+	}
+	bChanged = TRUE;
+}
 void CPPageFormats::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);

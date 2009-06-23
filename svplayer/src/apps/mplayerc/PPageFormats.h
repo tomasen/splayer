@@ -65,6 +65,8 @@ public:
 	CButton m_apdvd;
 	int m_iRtspHandler;
 	BOOL m_fRtspFileExtFirst;
+	BOOL m_bInsufficientPrivileges;
+	
 
 // Dialog Data
 	enum { IDD = IDD_PPAGEFORMATS };
@@ -77,6 +79,8 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 public:
+	BOOL bChanged;
+	void SetModified();
 	afx_msg void OnNMClickList1(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnBeginlabeleditList(NMHDR* pNMHDR, LRESULT* pResult);

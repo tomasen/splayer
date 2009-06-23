@@ -34,7 +34,7 @@
 #include <locale.h> 
 #include <d3d9.h>
 #include <d3dx9.h>
-
+#include "DlgChkUpdater.h"
 
 /////////
 typedef BOOL (WINAPI* MINIDUMPWRITEDUMP)(HANDLE hProcess, DWORD dwPid, HANDLE hFile, MINIDUMP_TYPE DumpType,
@@ -1228,7 +1228,34 @@ BOOL CMPlayerCApp::InitInstance()
 	}
 
 	m_s.UpdateData(false);
-	
+	if (m_s.nCLSwitches & CLSW_ADMINOPTION)
+	{
+		switch (m_s.iAdminOption)
+		{
+		case 1:
+			{
+				CPPageSheet options(ResStr(IDS_OPTIONS_CAPTION), NULL, NULL, CPPageFormats::IDD );
+				options.DoModal();
+				return FALSE;
+			}
+			break;
+		case 2:
+			{
+
+				CDlgChkUpdater dlgChkUpdater;
+				dlgChkUpdater.DoModal();
+					
+				return FALSE;
+			}
+			break;
+		default :
+			CChkDefPlayer dlg_chkdefplayer;
+			dlg_chkdefplayer.setDefaultPlayer();
+			return FALSE;
+		}
+		
+	}
+
 	if((m_s.nCLSwitches&CLSW_REGEXTVID) || (m_s.nCLSwitches&CLSW_REGEXTAUD))
 	{
 		CMediaFormats& mf = m_s.Formats;
@@ -2698,6 +2725,7 @@ void CMPlayerCApp::Settings::ParseCommandLine(CAtlList<CString>& cmdln)
 			else if(sw == _T("hibernate")) nCLSwitches |= CLSW_HIBERNATE;
 			else if(sw == _T("shutdown")) nCLSwitches |= CLSW_SHUTDOWN;
 			else if(sw == _T("logoff")) nCLSwitches |= CLSW_LOGOFF;
+			else if(sw == _T("adminoption")) { nCLSwitches |= CLSW_ADMINOPTION; iAdminOption = _ttoi (cmdln.GetNext(pos)); }
 			else if(sw == _T("fixedsize") && pos)
 			{
 				CAtlList<CString> sl;
@@ -3238,6 +3266,30 @@ CString GetContentType(CString fn, CAtlList<CString>* redir)
 	}
 
 	return ct;
+}
+void CMPlayerCApp::GainAdminPrivileges(UINT idd){
+	CString			strCmd;
+	CString			strApp;
+
+	strCmd.Format (_T("/adminoption %d"), idd);
+
+	CSVPToolBox svpTool;
+	strApp = svpTool.GetPlayerPath();
+
+
+	SHELLEXECUTEINFO execinfo;
+	memset(&execinfo, 0, sizeof(execinfo));
+	execinfo.lpFile			= strApp;
+	execinfo.cbSize			= sizeof(execinfo);
+	execinfo.lpVerb			= _T("runas");
+	execinfo.fMask			= SEE_MASK_NOCLOSEPROCESS;
+	execinfo.nShow			= SW_SHOWDEFAULT;
+	execinfo.lpParameters	= strCmd;
+
+	ShellExecuteEx(&execinfo);
+
+	
+	WaitForSingleObject(execinfo.hProcess, INFINITE);
 }
 bool CMPlayerCApp::IsVista()
 {

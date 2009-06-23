@@ -335,7 +335,7 @@ BEGIN_MESSAGE_MAP(CPlayerToolBar, CToolBar)
 	ON_WM_SETCURSOR()
 	ON_WM_ERASEBKGND()
 	ON_NOTIFY_EX(TTN_NEEDTEXT, 0, OnTtnNeedText)
-	ON_MESSAGE(WM_USER+31, MyHitTest)
+	//ON_MESSAGE(WM_USER+31, MyHitTest)
 END_MESSAGE_MAP()
 
 // CPlayerToolBar message handlers
@@ -605,8 +605,8 @@ INT_PTR CPlayerToolBar::OnToolHitTest(	CPoint point,TOOLINFO* pTI 	) const
 	GetWindowRect(&rc);
 	point += rc.TopLeft() ;
 	//CSUIBtnList* x = (CSUIBtnList*)&m_btnList;
-	UINT ret = 0;//m_pbtnList->OnHitTest(point,rc);
-	SendMessage(WM_USER+31, (point.x & 0xffff) << 16 | (0xffff & point.y), (UINT_PTR)&ret );
+	UINT ret = m_nItemToTrack;//m_pbtnList->OnHitTest(point,rc);
+	//SendMessage(WM_USER+31, (point.x & 0xffff) << 16 | (0xffff & point.y), (UINT_PTR)&ret );
 	if(ret){
 		
 		

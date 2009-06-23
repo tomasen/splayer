@@ -410,11 +410,13 @@ void CPlayerToolBar::OnPaint()
 	
 	int volume = min( m_volctrl.GetPos() , m_volctrl.GetRangeMax() );
 	m_btnVolTm->m_rcHitest.MoveToX(m_btnVolBG->m_rcHitest.left +  ( m_btnVolBG->m_rcHitest.Width() * volume / m_volctrl.GetRangeMax() ) - m_btnVolTm->m_rcHitest.Width()/2);
+	/*
 	SVP_LogMsg5(_T("Vol left %d") , m_btnVolTm->m_rcHitest.left);
-
-	CString szLog;
-	szLog.Format(_T("TM POS %d %d"), volume , m_btnVolTm->m_rcHitest.left );
-	SVP_LogMsg(szLog);
+	
+		CString szLog;
+		szLog.Format(_T("TM POS %d %d"), volume , m_btnVolTm->m_rcHitest.left );
+		SVP_LogMsg(szLog);*/
+	
  	m_btnList.PaintAll(&hdc, rc);
 
 	if(!m_timerstr.IsEmpty()){

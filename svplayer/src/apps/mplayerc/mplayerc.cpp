@@ -1363,8 +1363,10 @@ BOOL CMPlayerCApp::InitInstance()
 int CMPlayerCApp::ExitInstance()
 {
 	if ( m_s.fCheckFileAsscOnStartup ){
-		CChkDefPlayer dlg_chkdefplayer;
-		dlg_chkdefplayer.setDefaultPlayer();
+		if( IsVista() && IsUserAnAdmin() ){
+			CChkDefPlayer dlg_chkdefplayer;
+			dlg_chkdefplayer.setDefaultPlayer();
+		}
 
 	}
 

@@ -941,6 +941,12 @@
 #define ID_ROTATE_270                   32836
 #define ID_ROTATE_180                   32837
 #define ID_ROTATE_RESET                 32838
+#define ID__32840                       32840
+#define ID_32841                        32841
+#define ID_32842                        32842
+#define ID_DELETECURFILE                32843
+#define ID_DELCURFORLE                  32844
+#define ID_DELCURFOLDER                 32845
 #define ID_ENABLE_ROTATE                32849
 #define ID_ROTATE_END                   32850
 #define IDS_VOLUME_BOOST_INC            33129
@@ -1017,7 +1023,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        20012
-#define _APS_NEXT_COMMAND_VALUE         32840
+#define _APS_NEXT_COMMAND_VALUE         32846
 #define _APS_NEXT_CONTROL_VALUE         22004
 #define _APS_NEXT_SYMED_VALUE           24001
 #endif

@@ -112,6 +112,8 @@ public:
 	HRESULT OnButtonOK(IHTMLElement *pElement);
 	HRESULT OnButtonCancel(IHTMLElement *pElement);
 	HRESULT OnButtonApply(IHTMLElement *pElement);
+	HRESULT OnButtonReset(IHTMLElement *pElement);
+	
 	HRESULT OnButtonAdvanceSetting(IHTMLElement *pElement);
 	HRESULT OnColorSub(IHTMLElement *pElement);
 	HRESULT OnFontSetting(IHTMLElement *pElement);

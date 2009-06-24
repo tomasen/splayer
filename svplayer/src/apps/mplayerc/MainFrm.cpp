@@ -13227,6 +13227,7 @@ void CMainFrame::OnFileISDBSearch()
 }
 void CMainFrame::OnCheckDefaultPlayer(){
 	CChkDefPlayer dlg_chkdefplayer;
+	dlg_chkdefplayer.b_isDefaultPlayer();
 	dlg_chkdefplayer.DoModal();
 	
 }

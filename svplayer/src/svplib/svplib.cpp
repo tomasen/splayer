@@ -53,7 +53,7 @@ void SVP_RealCheckUpdaterExe(BOOL* bCheckingUpdater, UINT verbose = 0){
 			AfxMessageBox(_T("目录无法写入，升级程序暂停"));
 		}
 	}
-	*bCheckingUpdater = true;
+	*bCheckingUpdater = false;
 }
 class CCheckUpdaterPerm{
 public:

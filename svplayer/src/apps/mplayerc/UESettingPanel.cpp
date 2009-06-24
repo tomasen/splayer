@@ -7,7 +7,7 @@
 #include "PPageAccelTbl.h"
 #include "PPageFormats.h"
 #include "PPageLogo.h"
-
+#include "MainFrm.h"
 #include "..\..\svplib\svplib.h"
 #include "..\..\svplib\svptoolbox.h"
 
@@ -48,6 +48,7 @@ BEGIN_DHTML_EVENT_MAP(CUESettingPanel)
 	DHTML_EVENT_ONCLICK(_T("IDFileAss"), OnFileAss)
 	DHTML_EVENT_ONCLICK(_T("IDHotKey"), OnHotKey)
 	DHTML_EVENT_ONCLICK(_T("IDBGCHG"), OnChangeBG)
+	DHTML_EVENT_ONCLICK(_T("ButtonReset"), OnButtonReset)
 	
 END_DHTML_EVENT_MAP()
 
@@ -611,7 +612,15 @@ HRESULT CUESettingPanel::OnButtonAdvanceSetting(IHTMLElement* /*pElement*/)
 	OnCancel();
 	return S_OK;
 }
-
+HRESULT CUESettingPanel::OnButtonReset(IHTMLElement* /*pElement*/)
+{
+	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
+	if(pFrame){
+		pFrame->PostMessage(WM_COMMAND, ID_RESET_SETTING);
+	}
+	OnCancel();
+	return S_OK;
+}
 HRESULT CUESettingPanel::OnButtonApply(IHTMLElement* /*pElement*/)
 {
 	this->ApplyAllSetting();

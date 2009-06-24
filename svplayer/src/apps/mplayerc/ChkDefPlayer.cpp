@@ -106,7 +106,7 @@ void CChkDefPlayer::setDefaultPlayer()
 	CPPageFormats cpf;
 	if(cpf.m_bInsufficientPrivileges){
 		//if(IDYES == AfxMessageBox(_T("必须启动管理员权限\r\n才可以建立文件关联！\r\n现在进入管理员权限么？"), MB_YESNO)){
-			AfxGetMyApp()->GainAdminPrivileges(0);
+			AfxGetMyApp()->GainAdminPrivileges(0, FALSE);
 			__super::OnCancel();
 		//}
 	}else{

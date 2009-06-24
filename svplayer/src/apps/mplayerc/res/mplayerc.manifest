@@ -6,7 +6,7 @@
     name="Gabest.VobSub.MediaPlayerClassic"
     type="win32"
 /-->
-<description>MediaPlayerClassic</description>
+<description>射手播放器</description>
 <dependency>
     <dependentAssembly>
         <assemblyIdentity

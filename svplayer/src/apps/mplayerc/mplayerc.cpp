@@ -1250,6 +1250,7 @@ BOOL CMPlayerCApp::InitInstance()
 			break;
 		default :
 			CChkDefPlayer dlg_chkdefplayer;
+			dlg_chkdefplayer.b_isDefaultPlayer();
 			dlg_chkdefplayer.setDefaultPlayer();
 			return FALSE;
 		}

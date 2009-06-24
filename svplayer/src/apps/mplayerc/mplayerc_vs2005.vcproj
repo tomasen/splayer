@@ -73,6 +73,7 @@
 				OutputFile="..\..\..\..\svplayer.exe"
 				AdditionalLibraryDirectories="../../../lib;../../../lib/wm7;../../../lib/qt6;../../../lib/detours"
 				GenerateManifest="true"
+				UACExecutionLevel="0"
 				IgnoreDefaultLibraryNames="MSVCRT"
 				DelayLoadDLLs="d3d9.dll;gdiplus.dll;psapi.dll"
 				GenerateMapFile="true"
@@ -1864,11 +1865,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 	</Files>

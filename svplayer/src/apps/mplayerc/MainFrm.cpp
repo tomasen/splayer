@@ -5632,12 +5632,12 @@ void CMainFrame::OnManualcheckupdate()
 	{
 		if(IDYES == AfxMessageBox(_T("必须启动管理员权限\r\n才可以启动自动升级程序！\r\n现在进入管理员权限么？"), MB_YESNO)){
 			AfxGetMyApp()->GainAdminPrivileges(2, FALSE);
-			this->PostMessage(WM_COMMAND, ID_FILE_EXIT);
+		
 		}
 	}else{
 		CDlgChkUpdater dlgChkUpdater(this);
 		if(IDOK == dlgChkUpdater.DoModal() ){
-			this->PostMessage(WM_COMMAND, ID_FILE_EXIT);;
+		
 		}
 	}
 	

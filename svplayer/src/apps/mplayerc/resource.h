@@ -941,14 +941,10 @@
 #define ID_ROTATE_270                   32836
 #define ID_ROTATE_180                   32837
 #define ID_ROTATE_RESET                 32838
-#define ID__32840                       32840
-#define ID_32841                        32841
-#define ID_32842                        32842
-#define ID_DELETECURFILE                32843
-#define ID_DELCURFORLE                  32844
-#define ID_DELCURFOLDER                 32845
 #define ID_ENABLE_ROTATE                32849
 #define ID_ROTATE_END                   32850
+#define ID_DELETECURFILE                32851
+#define ID_DELCURFOLDER                 32852
 #define IDS_VOLUME_BOOST_INC            33129
 #define IDS_VOLUME_BOOST_DEC            33130
 #define IDS_VOLUME_BOOST_MIN            33131

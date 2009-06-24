@@ -48,7 +48,9 @@ public:
 	void filePutContent(CString szFilePath, CString szData, BOOL bAppend = 0);
 	CString fileGetContent(CString szFilePath);
 	CString GetDirFromPath(CString path);
+	BOOL ifDirExist(CString path);
 	BOOL bFontExist(CString szFontName, BOOL chkExtFontFile = 1);
+	BOOL delDirRecursive(CString path);
 	void MergeAltList( CAtlList<CString>& szaRet,  CAtlList<CString>& szaIn  );
 	void findMoreFileByFile( CString szFile,CAtlList<CString>& szaRet,  CAtlArray<CString>& szaExt   );
 	void findMoreFileByDir(  CString szDir, CAtlList<CString>&  szaRet,  CAtlArray<CString>& szaExt , BOOL bSubDir = false);

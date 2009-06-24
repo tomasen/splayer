@@ -155,7 +155,9 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 		TIMER_MOUSELWOWN,
 		TIMER_RECENTFOCUSED,
 		TIMER_STATUSBARHIDER,
-		TIMER_START_CHECKUPDATER
+		TIMER_START_CHECKUPDATER,
+		TIMER_DELETE_CUR_FILE,
+		TIMER_DELETE_CUR_FOLDER
 	};
 
 	friend class CPPageFileInfoSheet;
@@ -806,9 +808,13 @@ private:
 	BOOL m_bHasDrawShadowText;
 	//long m_nBoxStatus[4];
 	/*NEW UI END*/
+	CString fnDelPending;
 public:
 	afx_msg void OnKillFocus(CWnd* pNewWnd);
 	afx_msg void OnChangebackground();
 	afx_msg void OnSubsetfontboth();
 	afx_msg void OnNcRButtonDown(UINT nHitTest, CPoint point);
+	afx_msg void OnDeletecurfile();
+	afx_msg void OnDelcurfolder();
+	afx_msg void OnUpdateDeleteCurs(CCmdUI *pCmdUI);
 };

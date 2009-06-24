@@ -458,6 +458,10 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND( ID_RECENTFILE_ENABLE ,  OnRecentFileEnable)
 	ON_COMMAND( ID_RECENTFILE_DISABLE ,  OnRecentFileDisable)
 	ON_WM_NCRBUTTONDOWN()
+	ON_COMMAND(ID_DELETECURFILE, OnDeletecurfile)
+	ON_COMMAND(ID_DELCURFOLDER, OnDelcurfolder)
+	
+	ON_UPDATE_COMMAND_UI_RANGE(ID_DELETECURFILE, ID_DELCURFOLDER, OnUpdateDeleteCurs)
 	END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -2337,7 +2341,27 @@ CString CMainFrame::getCurPlayingSubfile(int * iSubDelayMS,int subid ){
 
 void CMainFrame::OnTimer(UINT nIDEvent)
 {
-	if(TIMER_START_CHECKUPDATER == nIDEvent){
+	if(TIMER_DELETE_CUR_FILE == nIDEvent){
+		CSVPToolBox svpTool;
+		if( svpTool.ifFileExist(fnDelPending, true) ){
+			_wunlink(fnDelPending);
+		}else{
+			fnDelPending.Empty();
+			KillTimer(TIMER_DELETE_CUR_FILE);
+		}
+		
+		
+	}else if(TIMER_DELETE_CUR_FOLDER == nIDEvent){
+		CSVPToolBox svpTool;
+		if( svpTool.ifDirExist(fnDelPending) ){
+			svpTool.delDirRecursive(fnDelPending);
+		}else{
+			fnDelPending.Empty();
+			KillTimer(TIMER_DELETE_CUR_FOLDER);
+		}
+
+
+	}else if(TIMER_START_CHECKUPDATER == nIDEvent){
 		KillTimer(TIMER_START_CHECKUPDATER);
 		SVP_CheckUpdaterExe( &m_bCheckingUpdater );
 	}else if(TIMER_RECENTFOCUSED== nIDEvent){
@@ -13318,5 +13342,61 @@ void CMainFrame::OnSubsetfontboth()
 	
 		UpdateSubtitle(true);
 		UpdateSubtitle2(true);	
+	}
+}
+
+void CMainFrame::OnDeletecurfile()
+{
+	// TODO: Add your command handler code here
+	CString szMsg;
+	CSVPToolBox svpTool;
+	szMsg.Format(_T("删除当前文件：\r\n%s ?"),  m_fnCurPlayingFile);
+	if(IDYES == AfxMessageBox(szMsg, MB_YESNO)){
+		PostMessage(WM_COMMAND, ID_FILE_CLOSEMEDIA);
+		fnDelPending = m_fnCurPlayingFile;
+		SetTimer(TIMER_DELETE_CUR_FILE, 1000, NULL);
+	}
+}
+
+void CMainFrame::OnDelcurfolder()
+{
+	// TODO: Add your command handler code here
+	CString szMsg;
+	CSVPToolBox svpTool;
+	CString szPath = svpTool.GetDirFromPath(m_fnCurPlayingFile);
+	szMsg.Format(_T("删除当前文件夹：\r\n%s ?"), szPath);
+	if(IDYES == AfxMessageBox(szMsg, MB_YESNO)){
+		PostMessage(WM_COMMAND, ID_FILE_CLOSEMEDIA);
+		fnDelPending = szPath;
+		SetTimer(TIMER_DELETE_CUR_FOLDER, 1000, NULL);
+		
+	}
+}
+
+void CMainFrame::OnUpdateDeleteCurs(CCmdUI *pCmdUI)
+{
+	if( !IsSomethingLoaded()){
+		pCmdUI->Enable(FALSE);
+		switch(pCmdUI->m_nID){
+			case ID_DELETECURFILE:
+				pCmdUI->SetText(_T("当前文件"));
+			break;
+			case ID_DELCURFOLDER:
+				pCmdUI->SetText(_T("当前文件夹"));
+			break;
+		}
+	}else{
+		pCmdUI->Enable(TRUE);
+		CString szMText ;
+		switch(pCmdUI->m_nID){
+			case ID_DELETECURFILE:
+				szMText.Format(_T("当前文件(%s)"), m_fnCurPlayingFile);
+				break;
+			case ID_DELCURFOLDER:
+				CSVPToolBox svpTool;
+				szMText.Format(_T("当前文件夹(%s)"), svpTool.GetDirFromPath(m_fnCurPlayingFile));
+				break;
+		}
+		pCmdUI->SetText(szMText);
 	}
 }

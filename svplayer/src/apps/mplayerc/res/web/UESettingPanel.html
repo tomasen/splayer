@@ -266,7 +266,7 @@ UESAPI.prototype = {
 var ueAPI = new UESAPI();
 
 function myInit(){
-    var ueg_DefaultBlock = "generalseting";
+    var ueg_DefaultBlock = "videosetting";//"generalseting";
     var to = ueAPI.fobj('initvarblock');
     if(to){
         if(to.innerHTML != ""){
@@ -429,8 +429,7 @@ function myInit(){
 <td align="center"><a href="https://bbs.shooter.cn/forumdisplay.php?fid=6" target="_blank" style="font-size:10px;color:Blue;">没有找到您需要的设置？请告诉我们你想要它出现在哪</a> </td>
 </tr>
 <tr height="8%">
-<td align="center"> <input type="button" style="width:100px;" id="ButtonAdvanceSetting" value="高级设置" />  </td>
-<td align="right"  nowrap="nowrap">
+<td align="right" colspan="2" nowrap="nowrap"> <div style="float:left;margin-top:7px;margin-left:8px;"><a href="#" id="ButtonAdvanceSetting" >高级设置</a></div>
 <input type="button" style="width:100px;" id="ButtonReset" value="恢复默认设置" /> &nbsp; <input type="button" style="width:100px;" id="ButtonOK" value="确定" /> &nbsp; 
 <input type="button" style="width:100px;" id="ButtonCancel" value="取消" /> &nbsp; <input type="button" style="width:100px;" id="ButtonApply" value="应用" /> 
 </td>

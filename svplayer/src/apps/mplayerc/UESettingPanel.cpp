@@ -609,12 +609,14 @@ HRESULT STDMETHODCALLTYPE CUESettingPanel::ShowContextMenu(DWORD /*dwID*/, POINT
 }
 HRESULT CUESettingPanel::OnButtonAdvanceSetting(IHTMLElement* /*pElement*/)
 {
-	this->bOpenAdvancePanel = TRUE;
-// 	if(AfxMessageBox(_T("是否保存当前的修改"),MB_YESNO) == IDYES){
-// 		ApplyAllSetting();
-// 	}
-// 	
-	OnCancel();
+	if(AfxMessageBox(_T("射手播放器并不推荐您使用旧的“高级设置”面板\r\n不当的操作可能会带来难以预知的问题\r\n确定要继续么？"),MB_YESNO|MB_DEFBUTTON2 ) == IDYES){
+		this->bOpenAdvancePanel = TRUE;
+	// 	if(AfxMessageBox(_T("是否保存当前的修改"),MB_YESNO) == IDYES){
+	// 		ApplyAllSetting();
+	// 	}
+	// 	
+		OnCancel();
+	}
 	return S_OK;
 }
 HRESULT CUESettingPanel::OnButtonReset(IHTMLElement* /*pElement*/)

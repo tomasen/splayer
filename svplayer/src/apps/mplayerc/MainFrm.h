@@ -817,4 +817,6 @@ public:
 	afx_msg void OnDeletecurfile();
 	afx_msg void OnDelcurfolder();
 	afx_msg void OnUpdateDeleteCurs(CCmdUI *pCmdUI);
+	afx_msg void OnToggleSPDIF();
+	afx_msg void OnUpdateToggleSPDIF(CCmdUI *pCmdUI);
 };

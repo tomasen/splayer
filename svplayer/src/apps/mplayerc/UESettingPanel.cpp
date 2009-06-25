@@ -526,6 +526,11 @@ void CUESettingPanel::ApplyAllSetting(){
 				m_ac3spkcfg = A52_3F2R  ;
 				m_dtsspkcfg = DTS_3F2R  ;
 				break;
+			default:
+				m_ac3spkcfg = A52_STEREO ;
+				m_dtsspkcfg = DTS_STEREO ;
+				m_aacdownmix = TRUE;
+				break;
 			
 		}
 

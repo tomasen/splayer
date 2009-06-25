@@ -462,6 +462,10 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_DELCURFOLDER, OnDelcurfolder)
 	
 	ON_UPDATE_COMMAND_UI_RANGE(ID_DELETECURFILE, ID_DELCURFOLDER, OnUpdateDeleteCurs)
+
+	ON_COMMAND(ID_USINGSPDIF, OnToggleSPDIF)
+	ON_UPDATE_COMMAND_UI( ID_USINGSPDIF,  OnUpdateToggleSPDIF)
+	
 	END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -10851,6 +10855,7 @@ void CMainFrame::SetupAudioSwitcherSubMenu()
 	if(pSubMenu ){
 		pSub->AppendMenu(MF_POPUP, (UINT_PTR) pSubMenu->m_hMenu, _T("输出设备"));
 		
+		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_USINGSPDIF, _T("使用数字输出(SPDIF/光纤)"));
 	}
 
 	if(m_iMediaLoadState == MLS_LOADED)
@@ -13399,4 +13404,63 @@ void CMainFrame::OnUpdateDeleteCurs(CCmdUI *pCmdUI)
 		}
 		pCmdUI->SetText(szMText);
 	}
+}
+
+void CMainFrame::OnToggleSPDIF(){
+	AppSettings& s = AfxGetAppSettings();
+	BOOL usingSPDIF = !(s.iDecSpeakers >= 1000 );
+	if( !usingSPDIF && s.iDecSpeakers > 1000 ){
+		 s.iDecSpeakers  -= 1000;
+	}else if( usingSPDIF && s.iDecSpeakers < 1000 ){
+		 s.iDecSpeakers  += 1000;
+	}
+	BOOL useReg = FALSE;
+	CRegKey key;
+	int ac3spkcfg;
+	int dtsspkcfg ;
+	if(ERROR_SUCCESS == key.Create(HKEY_CURRENT_USER, _T("Software\\SVPlayer\\Filters\\MPEG Audio Decoder")))
+	{
+		useReg = TRUE;
+		DWORD tD;
+		key.QueryDWORDValue(_T("Ac3SpeakerConfig"), tD);
+		ac3spkcfg = tD;
+		key.QueryDWORDValue(_T("DtsSpeakerConfig"), tD);
+		dtsspkcfg = tD;
+
+	}
+	CComQIPtr<IMpaDecFilter>  pMDF = FindFilter(__uuidof(CMpaDecFilter), pGB);
+	if(pMDF){
+		int ac3spkcfg = pMDF->GetSpeakerConfig(IMpaDecFilter::ac3);
+		int dtsspkcfg = pMDF->GetSpeakerConfig(IMpaDecFilter::dts);
+	}
+
+		if(usingSPDIF){
+			if(ac3spkcfg > 0)
+				ac3spkcfg = -ac3spkcfg;
+			if(dtsspkcfg > 0)
+				dtsspkcfg = -dtsspkcfg;
+		}else{
+			if(ac3spkcfg < 0)
+				ac3spkcfg = -ac3spkcfg;
+			if(dtsspkcfg < 0)
+				dtsspkcfg = -dtsspkcfg;
+		}
+		if(useReg){
+			key.SetDWORDValue(_T("Ac3SpeakerConfig"), ac3spkcfg);
+			key.SetDWORDValue(_T("DtsSpeakerConfig"), dtsspkcfg);
+		}
+	if(pMDF){
+
+		
+		pMDF->SetSpeakerConfig(IMpaDecFilter::ac3, ac3spkcfg );
+		pMDF->SetSpeakerConfig(IMpaDecFilter::dts, dtsspkcfg );
+		
+	}
+	
+}
+void CMainFrame::OnUpdateToggleSPDIF(CCmdUI *pCmdUI){
+
+	AppSettings& s = AfxGetAppSettings();
+	BOOL bChecked = !!( s.iDecSpeakers >= 1000 );
+	pCmdUI->SetCheck(bChecked);
 }

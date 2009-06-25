@@ -944,7 +944,9 @@
 #define ID_ENABLE_ROTATE                32849
 #define ID_ROTATE_END                   32850
 #define ID_DELETECURFILE                32851
-#define ID_DELCURFOLDER                 32852
+#define ID_DELRECYCLECURFILE            32852
+#define ID_DELCURFOLDER                 32853
+#define ID_USINGSPDIF	                32855
 #define IDS_VOLUME_BOOST_INC            33129
 #define IDS_VOLUME_BOOST_DEC            33130
 #define IDS_VOLUME_BOOST_MIN            33131

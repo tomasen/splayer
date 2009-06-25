@@ -35,7 +35,7 @@
 #include "..\..\..\include\RealMedia\pncom.h"
 #include "..\..\..\include\RealMedia\rmavsurf.h"
 #include "IQTVideoSurface.h"
-
+#include "../../svplib/svplib.h"
 #include "IPinHook.h"
 
 bool IsVMR7InGraph(IFilterGraph* pFG)
@@ -835,7 +835,23 @@ STDMETHODIMP CVMR7AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMRPRESEN
 
 		CAutoLock cAutoLock(this);
 
-		hr = m_pVideoSurface->Blt(NULL, lpPresInfo->lpSurf, NULL, DDBLT_WAIT, NULL);
+		if(!m_pVideoSurface){
+			//SVP_LogMsg3("CVMR7AllocatorPresenter::PresentImage 12321");
+			AllocSurfaces();
+			if(!m_pVideoSurface)
+				return E_POINTER;
+		}
+		try
+		{
+			hr = m_pVideoSurface->Blt(NULL, lpPresInfo->lpSurf, NULL, DDBLT_WAIT, NULL);
+		}
+		catch (...)
+		{
+			return E_POINTER;
+
+		}
+
+		
 
 		if(lpPresInfo->rtEnd > lpPresInfo->rtStart)
 		{

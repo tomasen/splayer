@@ -25,6 +25,7 @@
 #include "../../../../include/moreuuids.h"
 #include "..\..\switcher\AudioSwitcher\AudioSwitcher.h"
 #include "BaseSplitter.h"
+#include "../../../svplib/svplib.h"
 
 #pragma warning(disable: 4355)
 
@@ -415,7 +416,7 @@ DWORD CBaseSplitterOutputPin::ThreadProc()
 	m_hrDeliver = S_OK;
 	m_fFlushing = m_fFlushed = false;
 	m_eEndFlush.Set();
-
+	__time32_t wStart =  _time32(NULL);
 	while(1)
 	{
 		Sleep(1);
@@ -430,6 +431,14 @@ DWORD CBaseSplitterOutputPin::ThreadProc()
 			return 0;
 		}
 
+		UINT waitEd = _time32(NULL) - wStart;
+		if(waitEd > 5){ //not wait more than 1 sec
+			//SVP_LogMsg3("CBaseSplitterOutputPin::ThreadProc %u", waitEd);
+			//break;
+			//m_hThread = NULL;
+			//Reply(S_FALSE);
+			//return 0;
+		}
 		int cnt = 0;
 		do
 		{

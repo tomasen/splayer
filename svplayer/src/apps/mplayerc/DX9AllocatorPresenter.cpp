@@ -1730,6 +1730,8 @@ bool CDX9AllocatorPresenter::WaitForVBlankRange(int &_RasterStart, int _RasterSi
 			}
 		}
 	}
+	LONGLONG waitStart =  AfxGetMyApp()->GetPerfCounter();
+
 	if (_bWaitIfInside)
 	{
 		int ScanLineDiff = long(ScanLine) - _RasterStart;
@@ -1743,6 +1745,7 @@ bool CDX9AllocatorPresenter::WaitForVBlankRange(int &_RasterStart, int _RasterSi
 			bWaited = true;
 			// If we are already in the wanted interval we need to wait until we aren't, this improves sync when for example you are playing 23.976 Hz material on a 24 Hz refresh rate
 			int LastLineDiff = ScanLineDiff;
+			
 			while (1)
 			{
 				if (!GetVBlank(ScanLine, InVBlank, _bMeasure))
@@ -1755,6 +1758,11 @@ bool CDX9AllocatorPresenter::WaitForVBlankRange(int &_RasterStart, int _RasterSi
 				if (!(ScanLineDiff >= 0 && ScanLineDiff <= _RasterSize) || (LastLineDiff < 0 && ScanLineDiff > 0))
 					break;
 				LastLineDiff = ScanLineDiff;
+				LONGLONG waitEd = AfxGetMyApp()->GetPerfCounter() - waitStart;
+				if(waitEd > 1000000){ //not wait more than 1 sec
+					//SVP_LogMsg3("GetVBlank2 %u", waitEd);
+					break;
+				}
 				Sleep(1); // Just sleep
 			}
 		}
@@ -1844,6 +1852,11 @@ bool CDX9AllocatorPresenter::WaitForVBlankRange(int &_RasterStart, int _RasterSi
 			Sleep(1); // Don't sleep for the last 1.5 ms scan lines, so we get maximum precision
 		}
 		LastLineDiffSleep = ScanLineDiffSleep;
+		LONGLONG waitEd = AfxGetMyApp()->GetPerfCounter() - waitStart;
+		if(waitEd > 1000000){ //not wait more than 1 sec
+			//SVP_LogMsg3("GetVBlank2 %u", waitEd);
+			break;
+		}
 	}
 	_RasterStart = ScanLine;
 	if (_bMeasure)

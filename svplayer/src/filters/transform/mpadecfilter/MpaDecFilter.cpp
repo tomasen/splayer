@@ -317,7 +317,7 @@ CMpaDecFilter::CMpaDecFilter(LPUNKNOWN lpunk, HRESULT* phr)
 	memset (&m_flac, 0, sizeof(m_flac));
 
 	CRegKey key;
-	if(ERROR_SUCCESS == key.Open(HKEY_CURRENT_USER, _T("Software\\SVPlayer\\Filters\\MPEG Audio Decoder"), KEY_READ))
+	if(ERROR_SUCCESS == key.Open(HKEY_CURRENT_USER, _T("Software\\SPlayer\\Filters\\MPEG Audio Decoder"), KEY_READ))
 	{
 		DWORD dw;
 		if(ERROR_SUCCESS == key.QueryDWORDValue(_T("SampleFormat"), dw)) m_iSampleFormat = (MPCSampleFormat)dw;
@@ -335,7 +335,7 @@ CMpaDecFilter::CMpaDecFilter(LPUNKNOWN lpunk, HRESULT* phr)
 CMpaDecFilter::~CMpaDecFilter()
 {
 	CRegKey key;
-	if(ERROR_SUCCESS == key.Create(HKEY_CURRENT_USER, _T("Software\\SVPlayer\\Filters\\MPEG Audio Decoder")))
+	if(ERROR_SUCCESS == key.Create(HKEY_CURRENT_USER, _T("Software\\SPlayer\\Filters\\MPEG Audio Decoder")))
 	{
 		key.SetDWORDValue(_T("SampleFormat"), m_iSampleFormat);
 		key.SetDWORDValue(_T("Normalize"), m_fNormalize);

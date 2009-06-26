@@ -95,7 +95,7 @@ void CDlgChkUpdater::OnTimer(UINT_PTR nIDEvent)
 		}
 		cprog_chker.SetPos(m_lostPos);
 
-		HANDLE hMutex = OpenMutex(MUTEX_ALL_ACCESS,	FALSE, _T("SVPLAYER_REAL_UPDATER"));
+		HANDLE hMutex = OpenMutex(MUTEX_ALL_ACCESS,	FALSE, _T("SPLAYER_REAL_UPDATER"));
 		if (hMutex ) {
 			HWND hWndPrevious = ::FindWindow( NULL , _T("射手影音自动更新程序"));// ::GetDesktopWindow(),GW_CHILD);
 			while( ::IsWindow(hWndPrevious)){

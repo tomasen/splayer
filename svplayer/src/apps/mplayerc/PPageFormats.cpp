@@ -118,7 +118,7 @@ bool CPPageFormats::IsRegistered(CString ext)
 {
 
 	BOOL	bIsDefault = FALSE;
-	CString strProgID = _T("SVPlayer") + ext;
+	CString strProgID = _T("SPlayer") + ext;
 	CString FileIcon = GetFileIcon(ext);
 	if ( m_pAAR == NULL)
 	{
@@ -405,7 +405,7 @@ bool CPPageFormats::RegisterExt(CString ext, bool fRegister)
 {
 	CRegKey         key;
 	bool            bSetValue;
-	CString strProgID = _T("SVPlayer") + ext;
+	CString strProgID = _T("SPlayer") + ext;
 	CString strLabel = _T("");
 	
 
@@ -565,19 +565,19 @@ void CPPageFormats::AddAutoPlayToRegistry(autoplay_t ap, bool fRegister)
 
 	if(fRegister)
 	{
-		if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, _T("SVPlayer.Autorun"))) return;//MediaPlayerClassic
+		if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, _T("SPlayer.Autorun"))) return;//MediaPlayerClassic
 		key.Close();
 
 		if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, 
-			CString(CStringA("SVPlayer.Autorun\\Shell\\Play") + handlers[i].verb + "\\Command"))) return;
+			CString(CStringA("SPlayer.Autorun\\Shell\\Play") + handlers[i].verb + "\\Command"))) return;
 		key.SetStringValue(NULL, _T("\"") + exe + _T("\"") + handlers[i].cmd);
 		key.Close();
 
 		if(ERROR_SUCCESS != key.Create(HKEY_LOCAL_MACHINE,
-			CString(CStringA("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\AutoplayHandlers\\Handlers\\SVPPlay") + handlers[i].verb + "OnArrival"))) return;
+			CString(CStringA("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\AutoplayHandlers\\Handlers\\SPlayer") + handlers[i].verb + "OnArrival"))) return;
 		key.SetStringValue(_T("Action"), ResStr(handlers[i].action));
 		key.SetStringValue(_T("Provider"), g_strRegisteredAppName/*_T("Media Player Classic")*/);
-		key.SetStringValue(_T("InvokeProgID"), _T("SVPlayer.Autorun"));
+		key.SetStringValue(_T("InvokeProgID"), _T("SPlayer.Autorun"));
 		key.SetStringValue(_T("InvokeVerb"), CString(CStringA("Play") + handlers[i].verb));
 		key.SetStringValue(_T("DefaultIcon"), exe + _T(",0"));
 		key.Close();
@@ -618,7 +618,7 @@ bool CPPageFormats::IsAutoPlayRegistered(autoplay_t ap)
 	key.Close();
 
 	if(ERROR_SUCCESS != key.Open(HKEY_CLASSES_ROOT, 
-		CString(CStringA("SVPlayer.Autorun\\Shell\\Play") + handlers[i].verb + "\\Command"),
+		CString(CStringA("SPlayer.Autorun\\Shell\\Play") + handlers[i].verb + "\\Command"),
 		KEY_READ)) return(false);
 	len = countof(buff);
 	if(ERROR_SUCCESS != key.QueryStringValue(NULL, buff, &len))

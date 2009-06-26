@@ -306,7 +306,7 @@ void CUpdaterDlg::OnNMClickSyslink1(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	// TODO: Add your control notification handler code here
 
-	ShellExecute( NULL, _T("open"), _T("http://blog.svplayer.cn"), _T("") , NULL , SW_SHOW);
+	ShellExecute( NULL, _T("open"), _T("http://blog.splayer.org"), _T("") , NULL , SW_SHOW);
 
 	*pResult = 0;
 }

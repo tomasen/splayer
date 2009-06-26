@@ -554,7 +554,7 @@ void CUESettingPanel::ApplyAllSetting(){
 		}
 
 		CRegKey key;
-		if(ERROR_SUCCESS == key.Create(HKEY_CURRENT_USER, _T("Software\\SVPlayer\\Filters\\MPEG Audio Decoder")))
+		if(ERROR_SUCCESS == key.Create(HKEY_CURRENT_USER, _T("Software\\SPlayer\\Filters\\MPEG Audio Decoder")))
 		{
 			key.SetDWORDValue(_T("Ac3SpeakerConfig"), m_ac3spkcfg);
 			key.SetDWORDValue(_T("DtsSpeakerConfig"), m_dtsspkcfg);

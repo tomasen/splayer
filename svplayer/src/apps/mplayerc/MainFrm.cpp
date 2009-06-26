@@ -8108,12 +8108,12 @@ void CMainFrame::OnUpdateFavoritesDevice(CCmdUI* pCmdUI)
 
 void CMainFrame::OnHelpHomepage()
 {
-	ShellExecute(m_hWnd, _T("open"), _T("http://shooter.cn/svplayer/"), NULL, NULL, SW_SHOWDEFAULT);
+	ShellExecute(m_hWnd, _T("open"), _T("http://shooter.cn/splayer/"), NULL, NULL, SW_SHOWDEFAULT);
 }
 
 void CMainFrame::OnHelpDocumentation()
 {
-	ShellExecute(m_hWnd, _T("open"), _T("http://shooter.cn/svplayer/"), NULL, NULL, SW_SHOWDEFAULT);
+	ShellExecute(m_hWnd, _T("open"), _T("http://shooter.cn/splayer/"), NULL, NULL, SW_SHOWDEFAULT);
 }
 
 //////////////////////////////////
@@ -13268,7 +13268,7 @@ void CMainFrame::OnSendemail()
 void CMainFrame::OnVisitcontactinfo()
 {
 	
-	ShellExecute(m_hWnd, _T("open"), _T("http://shooter.cn/svplayer/contact.html"), NULL, NULL, SW_SHOWDEFAULT);
+	ShellExecute(m_hWnd, _T("open"), _T("http://shooter.cn/splayer/contact.html"), NULL, NULL, SW_SHOWDEFAULT);
 }
 
 void CMainFrame::OnDonate()
@@ -13279,7 +13279,7 @@ void CMainFrame::OnDonate()
 
 void CMainFrame::OnJointeam()
 {
-	ShellExecute(m_hWnd, _T("open"), _T("http://shooter.cn/svplayer/join.html"), NULL, NULL, SW_SHOWDEFAULT);
+	ShellExecute(m_hWnd, _T("open"), _T("http://shooter.cn/splayer/join.html"), NULL, NULL, SW_SHOWDEFAULT);
 }
 
 void CMainFrame::OnSetsnapshotpath()
@@ -13418,7 +13418,7 @@ void CMainFrame::OnToggleSPDIF(){
 	CRegKey key;
 	int ac3spkcfg;
 	int dtsspkcfg ;
-	if(ERROR_SUCCESS == key.Create(HKEY_CURRENT_USER, _T("Software\\SVPlayer\\Filters\\MPEG Audio Decoder")))
+	if(ERROR_SUCCESS == key.Create(HKEY_CURRENT_USER, _T("Software\\SPlayer\\Filters\\MPEG Audio Decoder")))
 	{
 		useReg = TRUE;
 		DWORD tD;

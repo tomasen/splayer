@@ -533,7 +533,7 @@ void CMPlayerCApp::ShowCmdlnSwitches()
 	}
 
 	s +=
-		_T("Usage: mplayerc.exe \"pathname\" [switches]\n\n")
+		_T("Usage: splayer.exe \"pathname\" [switches]\n\n")
 		_T("\"pathname\"\tThe main file or directory to be loaded. (wildcards allowed)\n")
 		_T("/dub \"dubname\"\tLoad an additional audio file.\n")
 		_T("/sub \"subname\"\tLoad an additional subtitle file.\n")
@@ -590,7 +590,7 @@ bool CMPlayerCApp::StoreSettingsToRegistry()
 	if(m_pszRegistryKey) free((void*)m_pszRegistryKey);
 	m_pszRegistryKey = NULL;
 
-	SetRegistryKey(_T("SVPlayer"));
+	SetRegistryKey(_T("SPlayer"));
 
 	return(true);
 }
@@ -735,7 +735,7 @@ void CMPlayerCApp::RemoveAllSetting(){
 	_tremove(GetIniPath());
 	
 	HKEY hKey;
-	RegDelnode(HKEY_CURRENT_USER, L"Software\\SVPlayer");
+	RegDelnode(HKEY_CURRENT_USER, L"Software\\SPlayer");
 	AppSettings& s = AfxGetAppSettings();
 	s.fInitialized = FALSE;
 	s.UpdateData(FALSE);
@@ -757,7 +757,7 @@ bool CMPlayerCApp::GetAppDataPath(CString& path)
 		return(false);
 
 	CPath p;
-	p.Combine(path, _T("SVPlayer"));
+	p.Combine(path, _T("SPlayer"));
 	path = (LPCTSTR)p;
 
 	return(true);
@@ -1328,7 +1328,7 @@ BOOL CMPlayerCApp::InitInstance()
 	AfxBeginThread(Thread_InitInstance , this,  THREAD_PRIORITY_LOWEST);
 
 	CRegKey key;
-	if(ERROR_SUCCESS == key.Create(HKEY_LOCAL_MACHINE, _T("Software\\SVPlayer\\射手影音播放器")))
+	if(ERROR_SUCCESS == key.Create(HKEY_LOCAL_MACHINE, _T("Software\\SPlayer\\射手影音播放器")))
 	{
 		CString path;
 		GetModuleFileName(AfxGetInstanceHandle(), path.GetBuffer(MAX_PATH), MAX_PATH);

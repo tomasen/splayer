@@ -528,7 +528,7 @@ CMPCVideoDecFilter::CMPCVideoDecFilter(LPUNKNOWN lpunk, HRESULT* phr)
 	m_sar.SetSize(1,1);
 	
 	CRegKey key;
-	if(ERROR_SUCCESS == key.Open(HKEY_CURRENT_USER, _T("Software\\SVPlayer\\Filters\\MPC Video Decoder"), KEY_READ))
+	if(ERROR_SUCCESS == key.Open(HKEY_CURRENT_USER, _T("Software\\SPlayer\\Filters\\MPC Video Decoder"), KEY_READ))
 	{
 		DWORD dw;
 		if(ERROR_SUCCESS == key.QueryDWORDValue(_T("ThreadNumber"), dw)) m_nThreadNumber = dw;
@@ -2000,7 +2000,7 @@ STDMETHODIMP CMPCVideoDecFilter::CreatePage(const GUID& guid, IPropertyPage** pp
 STDMETHODIMP CMPCVideoDecFilter::Apply()
 {
 	CRegKey key;
-	if(ERROR_SUCCESS == key.Create(HKEY_CURRENT_USER, _T("Software\\SVPlayer\\Filters\\MPC Video Decoder")))
+	if(ERROR_SUCCESS == key.Create(HKEY_CURRENT_USER, _T("Software\\SPlayer\\Filters\\MPC Video Decoder")))
 	{
 		key.SetDWORDValue(_T("ThreadNumber"), m_nThreadNumber);
 		key.SetDWORDValue(_T("DiscardMode"), m_nDiscardMode);

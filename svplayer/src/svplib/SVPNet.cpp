@@ -20,7 +20,7 @@ int CSVPNet::SetCURLopt(CURL *curl )
 	//static const char buf[] = "Expect:";
 
 	char buff[MAX_PATH];
-	sprintf_s( buff, "SVPlayer Build %d", SVP_REV_NUMBER);
+	sprintf_s( buff, "SPlayer Build %d", SVP_REV_NUMBER);
 
 	curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1);
 	curl_easy_setopt(curl, CURLOPT_USERAGENT, buff);

@@ -72,7 +72,7 @@ void CUpdaterApp::PreProcessCommandLine()
 BOOL CUpdaterApp::InitInstance()
 {
 	//禁止多个副本 
-	HANDLE hObject = CreateMutex(NULL,FALSE,_T("SVPLAYER_REAL_UPDATER"));
+	HANDLE hObject = CreateMutex(NULL,FALSE,_T("SPLAYER_REAL_UPDATER"));
 	if(GetLastError() == ERROR_ALREADY_EXISTS)
 	{
 		return FALSE;

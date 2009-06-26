@@ -43,7 +43,7 @@ cupdatenetlib::~cupdatenetlib(void)
 void cupdatenetlib::SetCURLopt(CURL *curl )
 {
 	curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1);
-	curl_easy_setopt(curl, CURLOPT_USERAGENT, "SVPlayer Updater");
+	curl_easy_setopt(curl, CURLOPT_USERAGENT, "SPlayer Updater");
 	return ;
 }
 
@@ -194,9 +194,12 @@ void cupdatenetlib::tryRealUpdate(){
 		
 		CString szSetupPath = szaLists.GetAt(i+LFILESETUPPATH);
 
-		if (szSetupPath.CompareNoCase( _T("svplayer.exe")) == 0){
-			if(!svpToolBox.ifFileExist(szBasePath + szSetupPath) && svpToolBox.ifFileExist(szBasePath + _T("mplayerc.exe"))){
-				szSetupPath = _T("mplayerc.exe");
+		if (szSetupPath.CompareNoCase( _T("splayer.exe")) == 0){
+			if(!svpToolBox.ifFileExist(szBasePath + szSetupPath) ){
+				if (svpToolBox.ifFileExist(szBasePath + _T("mplayerc.exe")))
+					szSetupPath = _T("mplayerc.exe");
+				if (svpToolBox.ifFileExist(szBasePath + _T("svplayer.exe")))
+					szSetupPath = _T("svplayer.exe");
 			}
 		}
 
@@ -331,9 +334,12 @@ int cupdatenetlib::downloadFiles(){
 		CString szSetupPath = szaLists.GetAt(i+LFILESETUPPATH);
 		szCurFilePath = szSetupPath;
 
-		if (szSetupPath.CompareNoCase( _T("svplayer.exe")) == 0){
-			if(!svpToolBox.ifFileExist(szBasePath + szSetupPath) && svpToolBox.ifFileExist(szBasePath + _T("mplayerc.exe"))){
-				szSetupPath = _T("mplayerc.exe");
+		if (szSetupPath.CompareNoCase( _T("splayer.exe")) == 0){
+			if(!svpToolBox.ifFileExist(szBasePath + szSetupPath) ){
+				if (svpToolBox.ifFileExist(szBasePath + _T("mplayerc.exe")))
+					szSetupPath = _T("mplayerc.exe");
+				if (svpToolBox.ifFileExist(szBasePath + _T("svplayer.exe")))
+					szSetupPath = _T("svplayer.exe");
 			}
 		}
 

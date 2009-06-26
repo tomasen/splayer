@@ -590,7 +590,15 @@ bool CMPlayerCApp::StoreSettingsToRegistry()
 	if(m_pszRegistryKey) free((void*)m_pszRegistryKey);
 	m_pszRegistryKey = NULL;
 
-	SetRegistryKey(_T("SPlayer"));
+
+	CRegKey key, key1;
+	if(ERROR_SUCCESS == key.Open(HKEY_CURRENT_USER, _T("Software\\SVPlayer"), KEY_READ) && ERROR_SUCCESS != key.Open(HKEY_CURRENT_USER, _T("Software\\SPlayer"), KEY_READ))
+	{
+
+		SetRegistryKey(_T("SVPlayer"));
+	}else{
+		SetRegistryKey(_T("SPlayer"));
+	}
 	
 
 	return(true);

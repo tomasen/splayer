@@ -591,6 +591,7 @@ bool CMPlayerCApp::StoreSettingsToRegistry()
 	m_pszRegistryKey = NULL;
 
 	SetRegistryKey(_T("SPlayer"));
+	
 
 	return(true);
 }

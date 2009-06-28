@@ -7407,7 +7407,7 @@ void CMainFrame::OnPlayVolume(UINT nID)
 		s.nVolume  = iPlayerVol ;
 
 
-		if( s.AudioBoost < 1 || iPlayerVol < 100)
+		if( s.AudioBoost < 1 || iPlayerVol <= 100)
 			s.AudioBoost = 1;
 		else
 			iPlayerVol = 100 +  ( iPlayerVol - 100) * 900/ 20;

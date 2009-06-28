@@ -286,22 +286,30 @@ function myInit(){
         }
     }
     
-   
+    
     var oDecoder = ueAPI.fobj("decoder");
-    ueAPI.useGPUAcel( ueAPI.fobj("gpuacelbase").checked);
-    if(!oDecoder.value){
-        oDecoder.selectedIndex = 1;
+   ueAPI.useGPUAcel( ueAPI.fobj("gpuacelbase").checked);
+    if(oDecoder.value < 0){
+        oDecoder.selectedIndex = 0;
     }
-    if(oDecoder.value){
-        ueAPI.selectDecoder( oDecoder.value);
-    }
+   
     ueAPI.realsetcurblock(ueg_DefaultBlock);
+    var val = ueAPI.fobj("decodervalue").innerHTML ;
+    //val = "internaldec";
+    for(var i = 0; i < oDecoder.length; i++){
+        if( oDecoder.options[i].value == val){
+             oDecoder.selectedIndex = i;
+        }
+       }
+    if(oDecoder.value >= 0){
+       ueAPI.selectDecoder( oDecoder.value);
+    }
     //alert(typeof(ueg_DefaultBlock));
 }
 </script>
 </head>
 <body id="CUESettingPanel" onload="myInit();" >
-<div id='initvarblock' style="display:none"></div><div id='haveCUDAforCoreAVC' style="display:none"></div><div id='canFFGPU' style="display:none"></div>
+<div id='initvarblock' style="display:none"></div><div id='haveCUDAforCoreAVC' style="display:none"></div><div id='canFFGPU' style="display:none"></div><div id='decodervalue' style="display:none"></div>
 <table width="100%" style="height:100%;">
 <tr >
 <td style="width:140px !important;" valign="top" onmouseout="ueAPI.curblock='';">

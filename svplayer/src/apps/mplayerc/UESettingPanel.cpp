@@ -90,7 +90,8 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 
 	DDX_DHtml_ElementInnerHtml (pDX, _T("startupcheckexts"), m_sgi_startupcheckexts);
 	DDX_DHtml_ElementInnerHtml (pDX, _T("gpulist"), m_sgs_gpulist);
-	
+	DDX_DHtml_ElementInnerHtml (pDX, _T("decodervalue"), m_sgs_decoderinitvalue);
+
 	DDX_DHtml_ElementValue (pDX, _T("subfont1"), m_sgs_subfont1);
 	DDX_DHtml_SelectValue( pDX, _T("subalign1"), m_sgs_subalign1);
 	DDX_DHtml_CheckBox(pDX, _T("suboveride1"), m_sgi_suboveride1);
@@ -257,6 +258,7 @@ BOOL CUESettingPanel::OnInitDialog()
 			m_sgs_decoder = _T("internaldec");
 		}
 	}
+	m_sgs_decoderinitvalue = m_sgs_decoder;
 	m_sgi_chkinternaltspliteronly = s.fUseInternalTSSpliter;
 	
 

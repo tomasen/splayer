@@ -33,6 +33,9 @@
 #include <detours\detours.h>
 #include "..\..\svplib\svplib.h"
 
+#define TRACE_SVP 
+//SVP_LogMsg3
+
 HRESULT (__stdcall * Real_CoCreateInstance)(CONST IID& a0,
 											LPUNKNOWN a1,
 											DWORD a2,
@@ -364,7 +367,7 @@ LONG WINAPI Mine_RegEnumValueW(HKEY a0, DWORD a1, LPWSTR a2, LPDWORD a3, LPDWORD
 }
 LONG WINAPI Mine_RegOpenKeyA(HKEY a0, LPCSTR a1, PHKEY a2)
 {
-	//SVP_LogMsg3( "Mine_RegOpenKeyA Serial %s %u ",  a1, a2);
+	TRACE_SVP( "Mine_RegOpenKeyA Serial %s %u ",  a1, a2);
 	if(CFilterMapper2::m_pFilterMapper2) {*a2 = FAKEHKEY; return ERROR_SUCCESS;}
 	return Real_RegOpenKeyA(a0, a1, a2);
 }
@@ -375,11 +378,22 @@ LONG WINAPI Mine_RegOpenKeyW(HKEY a0, LPCWSTR a1, PHKEY a2)
 }
 LONG WINAPI Mine_RegOpenKeyExA(HKEY a0, LPCSTR a1, DWORD a2, REGSAM a3, PHKEY a4)
 {
-	if( a1 && _strcmpi(a1, "Software\\CoreCodec\\CoreAVC Pro") == 0){
-		*a4 = FAKEHKEY+1;
-		 return ERROR_SUCCESS;
+	TRACE_SVP( "Mine_RegOpenKeyExA  %s %u ",  a1, a2);
+	if( a1 ){
+		if( _strcmpi(a1, "Software\\CoreCodec\\CoreAVC Pro") == 0){
+
+			*a4 = FAKEHKEY+1;
+			 return ERROR_SUCCESS;
+		}
+		/*
+		else if( _strcmpi(a1, "CLSID\\{083863F1-70DE-11D0-BD40-00A0C911CE86}\\Instance\\{09571A4B-F1FE-4C60-9760-DE6D310C7C31}") == 0) {
+					*a4 = FAKEHKEY+2;
+					 return ERROR_SUCCESS;
+				}*/
+		
+		
 	}
-	//SVP_LogMsg3( "Mine_RegOpenKeyExA  %s %u ",  a1, a2);
+	
 
 	if(CFilterMapper2::m_pFilterMapper2 && (a3&(KEY_SET_VALUE|KEY_CREATE_SUB_KEY))) {*a4 = FAKEHKEY; return ERROR_SUCCESS;}
 	return Real_RegOpenKeyExA(a0, a1, a2, a3, a4);
@@ -416,12 +430,16 @@ LONG WINAPI Mine_RegQueryValueExA(HKEY a0, LPCSTR a1, LPDWORD a2, LPDWORD a3, LP
 	
 	if(a1 && a0 == (FAKEHKEY+1) &&  _strcmpi(a1, "Serial") == 0){
 		//*a3 = REG_SZ;
+		TRACE_SVP( "Mine_RegQueryValueExA Serial %s %u %u",  a1, *a5, a4);
+		if(*a5 < 30){
+			a4 = (LPBYTE)new char[30];
+			*a5 = 30;
+		}
 		strcpy_s((char *)a4, *a5, "03JUN-10K9Y-CORE-0CLQV-JOTFL");
-		//SVP_LogMsg3( "Mine_RegQueryValueExA Serial %s %u ",  a1, *a5);
 		return ERROR_SUCCESS;
 	
 	}else{
-		//SVP_LogMsg3( "Mine_RegQueryValueExA %s %u ",  a1, a3);
+		TRACE_SVP( "Mine_RegQueryValueExA %s %u ",  a1, a3);
 	}
 	if(CFilterMapper2::m_pFilterMapper2 && a0 == FAKEHKEY) {*a5 = 0; return ERROR_SUCCESS;}
 	return Real_RegQueryValueExA(a0, a1, a2, a3, a4, a5);

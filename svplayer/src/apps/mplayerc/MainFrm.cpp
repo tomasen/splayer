@@ -10211,7 +10211,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 					if(ret != IDOK) throw aborted;
 				}else{
 					CSVPToolBox svpTool;
-					if(!svpTool.ifFileExist(fn)){
+					if(!svpTool.ifFileExist(fn, true)){
 						throw _T("文件不存在");
 					}
 				}

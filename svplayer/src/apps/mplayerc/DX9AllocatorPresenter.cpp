@@ -2472,7 +2472,7 @@ m_pD3DDev->BeginScene();
 			fResetDevice = true;
 	}
 
-	if(0 /*s.fResetDevice*/)
+	if(1 /*s.fResetDevice*/)
 	{
 		D3DDEVICE_CREATION_PARAMETERS Parameters;
 		if(SUCCEEDED(m_pD3DDev->GetCreationParameters(&Parameters)) && m_pD3D->GetAdapterMonitor(Parameters.AdapterOrdinal) != m_pD3D->GetAdapterMonitor(GetAdapter(m_pD3D)))

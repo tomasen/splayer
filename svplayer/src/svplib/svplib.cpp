@@ -248,7 +248,42 @@ void SVP_LogMsg4(BYTE* buff, __int64 iLen)
 	
 	
 }
+BOOL SVP_ForbidenCoreAVCTrayIcon(){
+	HRESULT hr;
+	LPITEMIDLIST pidl;
+	hr = SHGetSpecialFolderLocation( NULL, CSIDL_APPDATA, &pidl);
+	if (hr)
+		return false;
 
+	TCHAR szPath[MAX_PATH];
+	BOOL f = SHGetPathFromIDList(pidl, szPath);
+	PathAddBackslash(szPath); 
+	PathAppend(szPath, _T("coreavc.ini"));
+
+	FILE*   fileHandle = _wfopen(  szPath , _T("r+") );
+	if(fileHandle){
+		char szStr[28093];
+		int iRead = fread_s(szStr, 28093, sizeof( char ), 28093, fileHandle);
+		CStringA szBuf(szStr , iRead) ;
+
+		if(szBuf.IsEmpty()){
+			szBuf =  "[CoreAVC]\r\n";
+			
+			szBuf += "use_tray=0";
+			
+		}else{
+			szBuf.Replace(CStringA("use_tray=1") , CStringA("use_tray=0"));
+			
+		}
+
+		szBuf.Trim();
+		fseek( fileHandle , SEEK_SET , SEEK_SET);
+		fwrite(szBuf,sizeof( char ),szBuf.GetLength(), fileHandle ) ;
+		SetEndOfFile(fileHandle);
+		fclose(fileHandle);
+
+	}
+}
 BOOL SVP_SetCoreAvcCUDA(BOOL useCUDA){
 	HRESULT hr;
 	LPITEMIDLIST pidl;
@@ -276,8 +311,8 @@ BOOL SVP_SetCoreAvcCUDA(BOOL useCUDA){
 
 		FILE*   fileHandle = _wfopen(  szPath , _T("r+") );
 		if(fileHandle){
-			char szStr[8093];
-			int iRead = fread_s(szStr, 8093, sizeof( char ), 8093, fileHandle);
+			char szStr[28093];
+			int iRead = fread_s(szStr, 28093, sizeof( char ), 28093, fileHandle);
 			CStringA szBuf(szStr , iRead) ;
 
 			if(szBuf.IsEmpty()){

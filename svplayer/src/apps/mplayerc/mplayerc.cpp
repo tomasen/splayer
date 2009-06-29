@@ -1126,7 +1126,7 @@ void CMPlayerCApp::InitInstanceThreaded(){
 
 	CSVPToolBox svpToolBox;
 	CStringArray csaDll;
-	csaDll.Add( _T("codecs\\CoreAVCDecoder.ax")); //avoid missing reg key problem
+	//csaDll.Add( _T("codecs\\CoreAVCDecoder.ax")); //avoid missing reg key problem
 	
 		//csaDll.Add( _T("tsccvid.dll"));
 		//csaDll.Add( _T("wvc1dmod.dll"));

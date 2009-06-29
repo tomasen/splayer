@@ -2256,6 +2256,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	    if( ! s.fVMR9MixerMode  ) 
 		{
 			szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("codecs\\CoreAVCDecoder.ax")) ); //will crash without why
+			SVP_ForbidenCoreAVCTrayIcon();
 			////VMR9 seems not work with coreplayer
 	  		
   			//CFGFilter* pFGFR = new CFGFilterRegistry(GUIDFromCString(_T("{09571A4B-F1FE-4C60-9760-DE6D310C7C31}")), MERIT64_ABOVE_DSHOW+20); //use CoreAVC

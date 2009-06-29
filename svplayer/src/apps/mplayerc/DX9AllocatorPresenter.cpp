@@ -918,7 +918,7 @@ HRESULT CDX9AllocatorPresenter::CreateDevice()
 			m_BackbufferType = D3DFMT_A2R10G10B10;
 			pp.BackBufferFormat = D3DFMT_A2R10G10B10;
 		}
-		if (1)//bCompositionEnabled || m_bAlternativeVSync)
+		if (!m_bIsEVR)//bCompositionEnabled || m_bAlternativeVSync)
 		{
 			// Desktop composition takes care of the VSYNC
 			pp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;

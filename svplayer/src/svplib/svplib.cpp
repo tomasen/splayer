@@ -283,6 +283,8 @@ BOOL SVP_ForbidenCoreAVCTrayIcon(){
 		fclose(fileHandle);
 
 	}
+
+	return true;
 }
 BOOL SVP_SetCoreAvcCUDA(BOOL useCUDA){
 	HRESULT hr;

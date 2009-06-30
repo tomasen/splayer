@@ -918,7 +918,7 @@ HRESULT CDX9AllocatorPresenter::CreateDevice()
 			m_BackbufferType = D3DFMT_A2R10G10B10;
 			pp.BackBufferFormat = D3DFMT_A2R10G10B10;
 		}
-		if (!m_bIsEVR)//bCompositionEnabled || m_bAlternativeVSync)
+		if (!m_bIsEVR)//bCompositionEnabled || m_bAlternativeVSync) // 也许导致 https://bbs.shooter.cn/viewthread.php?tid=1075 画面中有横线的问题
 		{
 			// Desktop composition takes care of the VSYNC
 			pp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;

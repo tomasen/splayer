@@ -4777,6 +4777,8 @@ void CMainFrame::OnDropFiles(HDROP hDropInfo)
 	BOOL bHasSubAdded = false;
 	CString lastSubFile;
 	UINT nFiles = ::DragQueryFile(hDropInfo, (UINT)-1, NULL, 0);
+	CSVPToolBox svpTool;
+	BOOL bHasForlder = false;
 
 	for(UINT iFile = 0; iFile < nFiles; iFile++)
 	{
@@ -4791,8 +4793,14 @@ void CMainFrame::OnDropFiles(HDROP hDropInfo)
 			}
 		}
 
-		if(!bHasSubAdded)
-			sl.AddTail(fn);
+		if(!bHasSubAdded){
+			if(PathIsDirectory(fn) && svpTool.ifDirExist(fn)){
+				m_wndPlaylistBar.AddFolder(fn, true);
+				bHasForlder = true;
+			}else{
+				sl.AddTail(fn);
+			}
+		}
 			
 		
 	}
@@ -4801,8 +4809,8 @@ void CMainFrame::OnDropFiles(HDROP hDropInfo)
 
 	
 
-
-		if(sl.IsEmpty()){
+	if(!bHasForlder){
+		if(sl.IsEmpty() ){
 
 			if(bHasSubAdded && m_pSubStreams.GetCount() > 0);
 			{
@@ -4816,8 +4824,13 @@ void CMainFrame::OnDropFiles(HDROP hDropInfo)
 
 		}
 
-
-	m_wndPlaylistBar.Open(sl, true);
+	
+		m_wndPlaylistBar.Open(sl, true);
+	}else{
+		if(!sl.IsEmpty()){
+			m_wndPlaylistBar.Append(sl, true);
+		}
+	}
 	OpenCurPlaylistItem();
 }
 

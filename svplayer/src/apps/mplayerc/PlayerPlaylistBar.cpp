@@ -845,7 +845,7 @@ void CPlayerPlaylistBar::SetNext()
 {
 	POSITION pos = m_pl.GetPos(), org = pos;
 	while(m_pl.GetNextWrap(pos).m_fInvalid && pos != org);
-UpdateList();
+//UpdateList();
 	m_pl.SetPos(pos);
 	EnsureVisible(pos);
 }
@@ -862,7 +862,7 @@ void CPlayerPlaylistBar::SetFirst()
 {
 	POSITION pos = m_pl.GetTailPosition(), org = pos;
 	while(m_pl.GetNextWrap(pos).m_fInvalid && pos != org);
-UpdateList();
+//UpdateList();
 	m_pl.SetPos(pos);
 	EnsureVisible(pos);
 }

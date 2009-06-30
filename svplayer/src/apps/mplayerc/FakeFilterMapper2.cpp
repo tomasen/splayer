@@ -227,8 +227,7 @@ LONG (WINAPI * Real_RegSetValueW)(HKEY a0, LPCWSTR a1, DWORD a2, LPCWSTR a3, DWO
 LONG (WINAPI * Real_RegSetValueA)(HKEY a0, LPCSTR a1, DWORD a2, LPCSTR a3, DWORD a4)
 = RegSetValueA;
 
-BOOL (WINAPI * Real_Shell_NotifyIconA)(DWORD dwMessage, PNOTIFYICONDATAA lpData) = Shell_NotifyIconA;
-BOOL (WINAPI * Real_Shell_NotifyIconW)(DWORD dwMessage, PNOTIFYICONDATAW lpData) = Shell_NotifyIconW;
+
 
 HRESULT WINAPI Mine_CoCreateInstance(IN REFCLSID rclsid, IN LPUNKNOWN pUnkOuter,
 									 IN DWORD dwClsContext, IN REFIID riid, OUT LPVOID FAR* ppv)
@@ -494,19 +493,6 @@ LONG WINAPI Mine_RegSetValueExW(HKEY a0, LPCWSTR a1, DWORD a2, DWORD a3, BYTE* a
 	return Real_RegSetValueExW(a0, a1, a2, a3, a4, a5);
 }
 
-BOOL WINAPI Mine_Shell_NotifyIconA(DWORD dwMessage, PNOTIFYICONDATAA lpData)
-{
-	
-	return Real_Shell_NotifyIconA( dwMessage,  lpData);
-}
-BOOL WINAPI Mine_Shell_NotifyIconW( DWORD dwMessage, PNOTIFYICONDATAW lpData)
-{
-
-	return Real_Shell_NotifyIconW( dwMessage,  lpData);
-}
-
-
-
 //
 // CFilterMapper2
 //
@@ -519,8 +505,6 @@ void CFilterMapper2::Init()
 {
 	if(!fInitialized)
 	{
-		DetourAttach(&(PVOID&)Real_Shell_NotifyIconW, (PVOID)Mine_Shell_NotifyIconW);
-		DetourAttach(&(PVOID&)Real_Shell_NotifyIconA, (PVOID)Mine_Shell_NotifyIconA);
 		DetourAttach(&(PVOID&)Real_CoCreateInstance, (PVOID)Mine_CoCreateInstance);
 		DetourAttach(&(PVOID&)Real_RegCloseKey, (PVOID)Mine_RegCloseKey);
 		DetourAttach(&(PVOID&)Real_RegFlushKey, (PVOID)Mine_RegFlushKey);

@@ -513,6 +513,7 @@ CMainFrame::CMainFrame() :
 	m_WndSizeInited(false),
 	m_iOSDAlign(0),
 	m_bDxvaInUse(false) ,
+	m_bEVRInUse(false),
 	m_bHasDrawShadowText(false)
 {
 }
@@ -1227,7 +1228,13 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 			
 			CString szWindowText ;
 			if(m_bDxvaInUse){
-				szWindowText = _T("[硬件高清]");
+				CString szEVR;
+				if(m_bEVRInUse){
+					szEVR = _T("+EVR");
+				}
+				szWindowText.Format( _T("[硬件高清%s] "), szEVR);
+			}else if(m_bEVRInUse){
+				szWindowText = _T("[EVR] ");
 			}
 			szWindowText.Append(m_szTitle);
 			
@@ -3989,6 +3996,7 @@ void CMainFrame::OnFilePostOpenmedia()
 
 	OpenSetupCaptureBar();
 
+	AppSettings& s = AfxGetAppSettings();
 	m_wndColorControlBar.CheckAbility();
 
 	if(m_wndToolBar.IsVisible())
@@ -4026,10 +4034,10 @@ void CMainFrame::OnFilePostOpenmedia()
 		}
 	}
 
-	if(!m_fAudioOnly && (AfxGetAppSettings().nCLSwitches&CLSW_FULLSCREEN))
+	if(!m_fAudioOnly && (s.nCLSwitches&CLSW_FULLSCREEN))
 	{
 		SendMessage(WM_COMMAND, ID_VIEW_FULLSCREEN);
-		AfxGetAppSettings().nCLSwitches &= ~CLSW_FULLSCREEN;
+		s.nCLSwitches &= ~CLSW_FULLSCREEN;
 	}
 
 	m_bDxvaInUse = false;
@@ -4045,6 +4053,15 @@ void CMainFrame::OnFilePostOpenmedia()
 			
 		}
 		
+	}else if(FindFilter(L"{09571A4B-F1FE-4C60-9760-DE6D310C7C31}", pGB)) {
+		if(s.useGPUCUDA){
+			m_bDxvaInUse = true;
+		}
+
+	}
+	
+	if(FindFilter(L"{FA10746C-9B63-4B6C-BC49-FC300EA5F256}", pGB)){
+		m_bEVRInUse = true;
 	}
 	RedrawNonClientArea();
 	SendNowPlayingToMSN();
@@ -4060,6 +4077,7 @@ void CMainFrame::OnFilePostClosemedia()
 {
 	AppSettings& s = AfxGetAppSettings();
 	m_bDxvaInUse = false;
+	m_bEVRInUse = false;
 	m_wndView.SetVideoRect();
 	m_wndSeekBar.Enable(false);
 	m_wndSeekBar.SetPos(0);

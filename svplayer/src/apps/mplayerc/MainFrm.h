@@ -800,6 +800,7 @@ public:
 	void SendStatusMessage(CString msg, int nTimeOut, int iAlign = 0);
 	CMenu m_mainMenu;
 	BOOL m_bDxvaInUse;
+	BOOL m_bEVRInUse;
 private:
 	CBitmap m_bmpCaption,m_bmpBCorner;//, m_bmpClose, m_bmpMaximize, m_bmpMinimize, m_bmpRestore, m_bmpMenu;
 	CSUIBtnList m_btnList;

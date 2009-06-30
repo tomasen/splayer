@@ -326,7 +326,7 @@ BOOL SVP_SetCoreAvcCUDA(BOOL useCUDA){
 				}
 			}else{
 				if(useCUDA){
-					if (!szBuf.Replace(CStringA("use_cuda=-1") , CStringA("use_cuda=1")) && szBuf.Find(CStringA("use_cuda=1")) < 0 ){
+					if (!szBuf.Replace(CStringA("use_cuda=-1") , CStringA("use_cuda=1 ")) && szBuf.Find(CStringA("use_cuda=1")) < 0 ){
 						szBuf += CStringA(" use_cuda=1");
 					}
 				}else{
@@ -334,7 +334,8 @@ BOOL SVP_SetCoreAvcCUDA(BOOL useCUDA){
 				}
 			}
 
-			szBuf.Trim();
+			//szBuf.Trim();
+			szBuf.Append(" \0");
 			fseek( fileHandle , SEEK_SET , SEEK_SET);
 			fwrite(szBuf,sizeof( char ),szBuf.GetLength(), fileHandle ) ;
 			SetEndOfFile(fileHandle);

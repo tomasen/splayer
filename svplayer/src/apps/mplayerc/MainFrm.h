@@ -820,4 +820,6 @@ public:
 	afx_msg void OnUpdateDeleteCurs(CCmdUI *pCmdUI);
 	afx_msg void OnToggleSPDIF();
 	afx_msg void OnUpdateToggleSPDIF(CCmdUI *pCmdUI);
+	afx_msg void OnDebugreport();
+	afx_msg void OnUpdateDebugreport(CCmdUI *pCmdUI);
 };

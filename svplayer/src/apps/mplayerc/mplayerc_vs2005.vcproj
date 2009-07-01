@@ -470,6 +470,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\InfoReport.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\IPinHook.cpp"
 				>
 			</File>
@@ -924,6 +928,10 @@
 			</File>
 			<File
 				RelativePath=".\IGraphBuilder2.h"
+				>
+			</File>
+			<File
+				RelativePath=".\InfoReport.h"
 				>
 			</File>
 			<File
@@ -1865,11 +1873,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 	</Files>

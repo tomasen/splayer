@@ -862,6 +862,8 @@
 #define IDD_SEARCHSUBDLG                20010
 #define IDD_DIALOG4                     20011
 #define IDD_CHECKUPDATE                 20011
+#define IDD_DIALOG5                     20012
+#define IDD_INFOREPORT                  20012
 #define IDC_CHK_NOMOREQUES              22000
 #define IDC_CHECK_DEFAULTPLAYER         22001
 #define IDC_STATIC_VFILE                22002
@@ -946,7 +948,8 @@
 #define ID_DELETECURFILE                32851
 #define ID_DELRECYCLECURFILE            32852
 #define ID_DELCURFOLDER                 32853
-#define ID_USINGSPDIF	                32855
+#define ID_USINGSPDIF                   32855
+#define ID_DEBUGREPORT                  32856
 #define IDS_VOLUME_BOOST_INC            33129
 #define IDS_VOLUME_BOOST_DEC            33130
 #define IDS_VOLUME_BOOST_MIN            33131
@@ -1020,8 +1023,8 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        20012
-#define _APS_NEXT_COMMAND_VALUE         32846
+#define _APS_NEXT_RESOURCE_VALUE        20013
+#define _APS_NEXT_COMMAND_VALUE         32848
 #define _APS_NEXT_CONTROL_VALUE         22004
 #define _APS_NEXT_SYMED_VALUE           24001
 #endif

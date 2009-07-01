@@ -81,7 +81,7 @@
 #include "revision.h"
 #include "ChkDefPlayer.h"
 #include "DlgChkUpdater.h"
-
+#include "InfoReport.h"
 
 #define DEFCLIENTW 480
 #define DEFCLIENTH 360
@@ -466,6 +466,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_USINGSPDIF, OnToggleSPDIF)
 	ON_UPDATE_COMMAND_UI( ID_USINGSPDIF,  OnUpdateToggleSPDIF)
 	
+	ON_COMMAND(ID_DEBUGREPORT, OnDebugreport)
+	ON_UPDATE_COMMAND_UI(ID_DEBUGREPORT, OnUpdateDebugreport)
 	END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -6047,7 +6049,14 @@ void CMainFrame::OnViewDefaultVideoFrame(UINT nID)
 void CMainFrame::OnUpdateViewDefaultVideoFrame(CCmdUI* pCmdUI)
 {
 	pCmdUI->Enable(m_iMediaLoadState == MLS_LOADED && !m_fAudioOnly);
-	pCmdUI->SetRadio(AfxGetAppSettings().iDefaultVideoSize == (pCmdUI->m_nID - ID_VIEW_VF_HALF));
+	
+	BOOL bCurrent = ( AfxGetAppSettings().iDefaultVideoSize == (pCmdUI->m_nID - ID_VIEW_VF_HALF) );
+		if(m_ZoomX != 1 ||  m_ZoomY != 1 || m_PosX != 0.5 || m_PosY != 0.5){
+			bCurrent = false;
+		}
+	
+
+	pCmdUI->SetRadio(bCurrent);
 }
 
 void CMainFrame::OnViewKeepaspectratio()
@@ -13505,4 +13514,132 @@ void CMainFrame::OnUpdateToggleSPDIF(CCmdUI *pCmdUI){
 	AppSettings& s = AfxGetAppSettings();
 	BOOL bChecked = !!( s.iDecSpeakers >= 1000 );
 	pCmdUI->SetCheck(bChecked);
+}
+
+void CMainFrame::OnDebugreport()
+{
+	CStringArray szaReport;
+	if(m_iMediaLoadState == MLS_LOADED)
+	{
+		
+		BeginEnumFilters(pGB, pEF, pBF)
+		{
+			CString name(GetFilterName(pBF));
+		
+			CLSID clsid = GetCLSID(pBF);
+			if(clsid == CLSID_AVIDec)
+			{
+				CComPtr<IPin> pPin = GetFirstPin(pBF);
+				AM_MEDIA_TYPE mt;
+				if(pPin && SUCCEEDED(pPin->ConnectionMediaType(&mt)))
+				{
+					DWORD c = ((VIDEOINFOHEADER*)mt.pbFormat)->bmiHeader.biCompression;
+					switch(c)
+					{
+					case BI_RGB: name += _T(" (RGB)"); break;
+					case BI_RLE4: name += _T(" (RLE4)"); break;
+					case BI_RLE8: name += _T(" (RLE8)"); break;
+					case BI_BITFIELDS: name += _T(" (BITF)"); break;
+					default: name.Format(_T("%s (%c%c%c%c)"), 
+								 CString(name), (TCHAR)((c>>0)&0xff), (TCHAR)((c>>8)&0xff), (TCHAR)((c>>16)&0xff), (TCHAR)((c>>24)&0xff)); break;
+					}
+				}
+			}
+			else if(clsid == CLSID_ACMWrapper)
+			{
+				CComPtr<IPin> pPin = GetFirstPin(pBF);
+				AM_MEDIA_TYPE mt;
+				if(pPin && SUCCEEDED(pPin->ConnectionMediaType(&mt)))
+				{
+					WORD c = ((WAVEFORMATEX*)mt.pbFormat)->wFormatTag;
+					name.Format(_T("%s (0x%04x)"), CString(name), (int)c);
+				}
+			}
+			else if(clsid == __uuidof(CTextPassThruFilter) || clsid == __uuidof(CNullTextRenderer)
+				|| clsid == GUIDFromCString(_T("{48025243-2D39-11CE-875D-00608CB78066}"))) // ISCR
+			{
+				// hide these
+				continue;
+			}
+			szaReport.Add(name + _T(" ") + CStringFromGUID(clsid));
+			CComQIPtr<ISpecifyPropertyPages> pSPP = pBF;
+			BeginEnumPins(pBF, pEP, pPin)
+			{
+				CString name = GetPinName(pPin);
+				name.Replace(_T("&"), _T("&&"));
+
+				if(pSPP = pPin)
+				{
+					CAUUID caGUID;
+					caGUID.pElems = NULL;
+					if(SUCCEEDED(pSPP->GetPages(&caGUID)) && caGUID.cElems > 0)
+					{
+						m_pparray.Add(pPin);
+						
+						if(caGUID.pElems) CoTaskMemFree(caGUID.pElems);
+
+						
+					}
+				}
+				szaReport.Add(name);
+			}
+			EndEnumPins
+
+			CComQIPtr<IAMStreamSelect> pSS = pBF;
+			if(pSS)
+			{
+				DWORD nStreams = 0, flags, group, prevgroup = -1;
+				LCID lcid;
+				WCHAR* wname = NULL;
+				CComPtr<IUnknown> pObj, pUnk;
+
+				pSS->Count(&nStreams);
+
+
+
+				for(DWORD i = 0; i < nStreams; i++, pObj = NULL, pUnk = NULL)
+				{
+					m_ssarray.Add(pSS);
+
+					flags = group = 0;
+					wname = NULL;
+					pSS->Info(i, NULL, &flags, &lcid, &group, &wname, &pObj, &pUnk);
+
+
+					if(!wname) 
+					{
+						CStringW stream(L"Unknown Stream");
+						wname = (WCHAR*)CoTaskMemAlloc((stream.GetLength()+3+1)*sizeof(WCHAR));
+						swprintf(wname, L"%s %d", stream, min(i+1,999));
+					}
+
+					CString name(wname);
+					name.Replace(_T("&"), _T("&&"));
+
+					szaReport.Add(name);
+
+					CoTaskMemFree(wname);
+				}
+
+				if(nStreams == 0) pSS.Release();
+			}
+
+			
+		}
+		EndEnumFilters
+
+		CSVPToolBox svpTool;
+		CString szReport = svpTool.Implode(_T("\r\n-------------\r\n"), &szaReport);
+		
+		CInfoReport CIR;
+		CIR.m_rptText2 = szReport;
+		CIR.DoModal();
+
+		//AfxMessageBox(szReport);
+	}
+}
+
+void CMainFrame::OnUpdateDebugreport(CCmdUI *pCmdUI)
+{
+	pCmdUI->Enable(IsSomethingLoaded());
 }

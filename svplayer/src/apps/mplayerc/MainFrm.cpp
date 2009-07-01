@@ -3395,6 +3395,9 @@ void CMainFrame::OnUpdateShowColorControlBar(CCmdUI *pCmdUI)
 
 void CMainFrame::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
+	if(!IsSomethingLoaded()){
+		SendMessage(WM_COMMAND, ID_FILE_OPENQUICK);
+	}
 	if(s_fLDown)
 	{
 		SendMessage(WM_LBUTTONDOWN, nFlags, MAKELPARAM(point.x, point.y));

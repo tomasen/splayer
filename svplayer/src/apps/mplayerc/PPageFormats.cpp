@@ -185,7 +185,7 @@ bool CPPageFormats::IsRegistered(CString ext)
 	}
 
 	if(bIsDefault){
-		SetFileAssociation(ext, strProgID, TRUE);
+	//	SetFileAssociation(ext, strProgID, TRUE);
 	}
 
 	return !!bIsDefault;

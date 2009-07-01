@@ -8199,6 +8199,9 @@ MENUBARINFO mbi;
 		{
 			w = s.rcLastWindowPos.Width();
 			h = s.rcLastWindowPos.Height();
+		}else{
+			w = DEFCLIENTW;
+			h = DEFCLIENTH;
 		}
 
 		HMONITOR hMonitor = MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST);

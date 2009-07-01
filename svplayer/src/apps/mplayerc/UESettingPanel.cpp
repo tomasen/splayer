@@ -224,7 +224,7 @@ BOOL CUESettingPanel::OnInitDialog()
 	//Genral Setting
 	m_sgs_chkremhistory = s.fKeepHistory;
 	m_sgi_chkexitfullscreen = s.fExitFullScreenAtTheEnd;
-	m_sgi_chkremwinpos = s.fRememberWindowPos || s.fRememberWindowSize;
+	m_sgi_chkremwinpos = s.fRememberWindowPos;// || s.fRememberWindowSize;
 	m_sgi_chkcdromenu = s.fHideCDROMsSubMenu;
 	m_sgi_chkplayrepeat = s.fLoopForever;
 	m_sgi_chkfileass = s.fCheckFileAsscOnStartup ;
@@ -396,7 +396,7 @@ void CUESettingPanel::ApplyAllSetting(){
 	}
 	s.fExitFullScreenAtTheEnd = !!m_sgi_chkexitfullscreen ;
 	s.fRememberWindowPos = !!m_sgi_chkremwinpos;
-	s.fRememberWindowSize = !!m_sgi_chkremwinpos;
+	//s.fRememberWindowSize = !!m_sgi_chkremwinpos;
 	s.fHideCDROMsSubMenu = !!m_sgi_chkcdromenu;
 	s.fLoopForever = !!m_sgi_chkplayrepeat;
 	s.nLoops = 1;

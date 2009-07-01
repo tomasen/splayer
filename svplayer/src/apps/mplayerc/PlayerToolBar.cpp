@@ -78,7 +78,7 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 	CSUIButton* btnPause = new CSUIButton(L"BTN_PAUSE.BMP" , ALIGN_TOPLEFT, CRect(-50 , 7, 3,3)  , 0, ID_PLAY_PAUSE, TRUE, 0, 0 );
 	m_btnList.AddTail( btnPause );
 
-	CSUIButton* btnStop = new CSUIButton(L"BTN_STOP.BMP" , ALIGN_TOPLEFT, CRect(-50 , 5, 3,3)  , 0, ID_PLAY_STOP, TRUE, ALIGN_RIGHT , btnPause  , CRect(12 , 10 , 12, 10));
+	CSUIButton* btnStop = new CSUIButton(L"BTN_STOP.BMP" , ALIGN_TOPLEFT, CRect(-50 , 3, 3,3)  , 0, ID_PLAY_STOP, TRUE, ALIGN_RIGHT , btnPause  , CRect(12 , 10 , 12, 10));
 	btnStop->addAlignRelButton(ALIGN_RIGHT, btnPlay , CRect(12 , 10 , 12, 10) );
 	m_btnList.AddTail( btnStop );
 

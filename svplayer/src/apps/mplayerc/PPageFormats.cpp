@@ -477,7 +477,7 @@ bool CPPageFormats::RegisterExt(CString ext, bool fRegister)
 
 	if(f_setAssociatedWithIcon)
 	{
- 		CString AppIcon = _T("");
+ 		CString AppIcon = GetFileIcon(ext);
  		TCHAR buff[MAX_PATH];
 // 
 // 		CString mpciconlib = GetProgramDir() + _T("\\mpciconlib.dll");

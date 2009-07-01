@@ -918,9 +918,10 @@ HRESULT CDX9AllocatorPresenter::CreateDevice()
 			m_BackbufferType = D3DFMT_A2R10G10B10;
 			pp.BackBufferFormat = D3DFMT_A2R10G10B10;
 		}
-		if (!m_bIsEVR)//bCompositionEnabled || m_bAlternativeVSync) // 也许导致 https://bbs.shooter.cn/viewthread.php?tid=1075 画面中有横线的问题
+		if (!s.fVMRSyncFix)//!m_bIsEVR && AfxGetMyApp()->IsVista() )//bCompositionEnabled || m_bAlternativeVSync) // 也许导致 https://bbs.shooter.cn/viewthread.php?tid=1075 画面中有横线的问题
 		{
 			// Desktop composition takes care of the VSYNC
+			// 会出现横纹
 			pp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
 		}
 		else
@@ -1760,7 +1761,7 @@ bool CDX9AllocatorPresenter::WaitForVBlankRange(int &_RasterStart, int _RasterSi
 				LastLineDiff = ScanLineDiff;
 				LONGLONG waitEd = AfxGetMyApp()->GetPerfCounter() - waitStart;
 				if(waitEd > 1000000){ //not wait more than 1 sec
-					//SVP_LogMsg3("GetVBlank2 %u", waitEd);
+					//SVP_LogMsg3("GetVBlank2 break %u %d %d", waitEd, m_ScreenSize.cx , m_ScreenSize.cy);
 					break;
 				}
 				Sleep(1); // Just sleep
@@ -1909,7 +1910,7 @@ int CDX9AllocatorPresenter::GetVBlackPos()
 bool CDX9AllocatorPresenter::WaitForVBlank(bool &_Waited, bool &_bTakenLock)
 {
 	AppSettings& s = AfxGetAppSettings();
-	if (!1)//s.m_RenderSettings.iVMR9VSync
+	if (!s.fVMRSyncFix)//s.m_RenderSettings.iVMR9VSync
 	{
 		_Waited = true;
 		m_VBlankWaitTime = 0;
@@ -3601,6 +3602,7 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 			{
 				m_NativeVideoSize = NativeVideoSize;
 				m_AspectRatio = AspectRatio;
+				//SVP_LogMsg3("WM_REARRANGERENDERLESS " );
 				AfxGetApp()->m_pMainWnd->PostMessage(WM_REARRANGERENDERLESS);
 			}
 
@@ -3657,10 +3659,12 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 	CSize VideoSize = m_NativeVideoSize;
 	int arx = lpPresInfo->szAspectRatio.cx, ary = lpPresInfo->szAspectRatio.cy;
 	//if(arx > 0 && ary > 0) VideoSize.cx = VideoSize.cy*arx/ary;
+	//SVP_LogMsg3("szAspectRatio %d %d",arx, ary);
 	if(VideoSize != GetVideoSize())
 	{
+		//SVP_LogMsg3("VideoSize != GetVideoSize %d %d",arx, ary);
 		m_AspectRatio.SetSize(arx, ary);
-		AfxGetApp()->m_pMainWnd->PostMessage(WM_REARRANGERENDERLESS);
+		//AfxGetApp()->m_pMainWnd->PostMessage(WM_REARRANGERENDERLESS);
 	}
 
 	// Tear test bars
@@ -4213,7 +4217,7 @@ STDMETHODIMP_(void) CDXRAllocatorPresenter::SetPosition(RECT w, RECT v)
 STDMETHODIMP_(SIZE) CDXRAllocatorPresenter::GetVideoSize(bool fCorrectAR)
 {
 	SIZE size = {0, 0};
-
+	//SVP_LogMsg3("GetVideoSize %d %d %d ",fCorrectAR,size.cx, size.cy);
 	if(!fCorrectAR)
 	{
 		if(CComQIPtr<IBasicVideo> pBV = m_pDXR)

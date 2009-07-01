@@ -1569,6 +1569,7 @@ void CMPCVideoDecFilter::UpdateAspectRatio()
 	if(((m_nARMode) && (m_pAVCtx)) && ((m_pAVCtx->sample_aspect_ratio.num>0) && (m_pAVCtx->sample_aspect_ratio.den>0)))
 	{ 
 		CSize SAR(m_pAVCtx->sample_aspect_ratio.num, m_pAVCtx->sample_aspect_ratio.den); 
+		
 		if(m_sar != SAR) 
 		{ 
 			m_sar = SAR; 

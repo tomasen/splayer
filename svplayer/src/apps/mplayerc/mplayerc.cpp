@@ -2243,6 +2243,9 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
  			iDXVer = 7;
  		}
 		iDSVideoRendererType = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DSVIDEORENDERERTYPE), ( (IsVista() || iDXVer >= 9) ? VIDRNDT_DS_VMR9RENDERLESS : VIDRNDT_DS_VMR7RENDERLESS) );
+		if(iDSVideoRendererType != VIDRNDT_DS_VMR7RENDERLESS && iDSVideoRendererType != VIDRNDT_DS_VMR9RENDERLESS ){//|| iDSVideoRendererType != VIDRNDT_DS_OVERLAYMIXER
+			iDSVideoRendererType = VIDRNDT_DS_VMR7RENDERLESS;
+		}
 		iRMVideoRendererType = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_RMVIDEORENDERERTYPE), ( (IsVista() || iDXVer >= 9) ? VIDRNDT_RM_DX9 : VIDRNDT_RM_DX7 ) );
 		iQTVideoRendererType = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_QTVIDEORENDERERTYPE),  ( (IsVista() || iDXVer >= 9) ? VIDRNDT_QT_DX9 : VIDRNDT_QT_DX7 ) );
 		iAPSurfaceUsage = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_APSURACEFUSAGE), VIDRNDT_AP_TEXTURE2D);

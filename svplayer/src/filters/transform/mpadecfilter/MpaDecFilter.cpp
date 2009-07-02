@@ -37,6 +37,8 @@
 #include "faad2\include\neaacdec.h"
 #include "FLAC\stream_decoder.h"
 
+#include "..\..\..\svplib\svplib.h"
+
 #define INT24_MAX					0x7FFFFF
 #define EAC3_FRAME_TYPE_RESERVED	3
 #define AC3_HEADER_SIZE				7
@@ -2466,16 +2468,19 @@ bool CMpaDecFilter::InitFfmpeg(int nCodecId)
 					/* force sample rate for amr, stsd in 3gp does not store sample rate */
 			if (!wfein->nSamplesPerSec)
 				wfein->nSamplesPerSec = 8000 * (1+(nCodecId== CODEC_ID_AMR_WB));// / wfein->nChannels;
-			else if(wfein->nSamplesPerSec > 2000 && wfein->nSamplesPerSec < 8000)
-				wfein->nSamplesPerSec = wfein->nSamplesPerSec;// /  wfein->nChannels;
+			else if(wfein->nSamplesPerSec > 2000 ){
+				if(wfein->nSamplesPerSec == 15750){
+					wfein->nSamplesPerSec = 2000;
+				}
+				//wfein->nSamplesPerSec = wfein->nSamplesPerSec;// /  wfein->nChannels;
+			}
 			else
 				wfein->nSamplesPerSec = 8000;//wfein->nSamplesPerSec *  wfein->nChannels;
 
 			wfein->nChannels = 1;
 			m_pAVCtx->channels = wfein->nChannels; /* really needed */
 			
-			m_pAVCtx->sample_rate =  wfein->nSamplesPerSec;
-			
+			m_pAVCtx->sample_rate			= wfein->nSamplesPerSec;
 	
 		}else{
 			if (nCodecId==CODEC_ID_COOK )
@@ -2513,7 +2518,7 @@ bool CMpaDecFilter::InitFfmpeg(int nCodecId)
 				m_pPCMData	= (BYTE*)FF_aligned_malloc (AVCODEC_MAX_AUDIO_FRAME_SIZE+FF_INPUT_BUFFER_PADDING_SIZE, 64);
 				bRet		= true;
 
-				if (nCodecId!=CODEC_ID_COOK || nCodecId== CODEC_ID_AMR_NB || nCodecId== CODEC_ID_AMR_WB){
+				if (nCodecId!=CODEC_ID_COOK && nCodecId != CODEC_ID_AMR_NB && nCodecId != CODEC_ID_AMR_WB){
 					int iSpeakerConfig = GetSpeakerConfig(ac3);
 					if (iSpeakerConfig >= 0)
 					{

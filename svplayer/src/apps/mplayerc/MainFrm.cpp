@@ -8202,19 +8202,6 @@ MENUBARINFO mbi;
 //			+ 2; // ???
 		if(style&WS_CAPTION) h += GetSystemMetrics(SM_CYCAPTION);
 
-		if(s.HasFixedWindowSize())
-		{
-			w = s.fixedWindowSize.cx;
-			h = s.fixedWindowSize.cy;
-		}
-		else if(s.fRememberWindowSize)
-		{
-			w = s.rcLastWindowPos.Width();
-			h = s.rcLastWindowPos.Height();
-		}else{
-			w = DEFCLIENTW;
-			h = DEFCLIENTH;
-		}
 
 		HMONITOR hMonitor = MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST);
 
@@ -8230,16 +8217,31 @@ MENUBARINFO mbi;
 		mi.cbSize = sizeof(MONITORINFO);
 		GetMonitorInfo(hMonitor, &mi);
 
+		if(s.HasFixedWindowSize())
+		{
+			w = s.fixedWindowSize.cx;
+			h = s.fixedWindowSize.cy;
+		}
+		else if(s.fRememberWindowSize)
+		{
+			w = s.rcLastWindowPos.Width();
+			h = s.rcLastWindowPos.Height();
+		}else{
+			
+			w = max( DEFCLIENTW , min( (mi.rcWork.right - mi.rcWork.left)  * 38 /100 , s.rcLastWindowPos.Width() ) ) ;
+			h = max( DEFCLIENTH , min( (mi.rcWork.bottom - mi.rcWork.top) * 38 /100, s.rcLastWindowPos.Height()) );
+		}
+
 		int x = (mi.rcWork.left+mi.rcWork.right-w)/2;
 		int y = (mi.rcWork.top+mi.rcWork.bottom-h)/2;
 
 		if(s.fRememberWindowPos)
 		{
 			CRect r = s.rcLastWindowPos;
-//			x = r.CenterPoint().x - w/2;
-//			y = r.CenterPoint().y - h/2;
-			x = r.TopLeft().x;
-			y = r.TopLeft().y;
+			x = r.CenterPoint().x - w/2;
+			y = r.CenterPoint().y - h/2;
+//			x = r.TopLeft().x;
+//			y = r.TopLeft().y;
 		}
 
 		UINT lastWindowType = s.lastWindowType;

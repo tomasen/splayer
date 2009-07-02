@@ -2227,11 +2227,18 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 //	if(s.fAutoloadSubtitles && s.fBlockVSFilter) {
 		if(s.iDSVideoRendererType == VIDRNDT_DS_VMR7RENDERLESS || s.iDSVideoRendererType == VIDRNDT_DS_VMR9RENDERLESS || s.iDSVideoRendererType == VIDRNDT_DS_DXR) {
 			m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{9852A670-F845-491B-9BE6-EBD841B8A613}")), MERIT64_DO_NOT_USE));
+			
 		}
 //	}
+	if(s.iDSVideoRendererType != VIDRNDT_DS_OVERLAYMIXER ){
+		m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{95F57653-71ED-42BA-9131-986CA0C6514F}")), MERIT64_DO_NOT_USE)); //disable overlay
+	}
+
 	
 	m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{04FE9017-F873-410E-871E-AB91661A4EF7}")), MERIT64_DO_NOT_USE)); //ffdshow video
 	m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{0F40E1E5-4F79-4988-B1A9-CC98794E6B55}")), MERIT64_DO_NOT_USE)); //ffdshow audio
+
+
 	CStringArray szaExtFilterPaths;
 	CSVPToolBox svptoolbox;
 	szaExtFilterPaths.RemoveAll();

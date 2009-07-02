@@ -13521,8 +13521,11 @@ void CMainFrame::OnUpdateToggleSPDIF(CCmdUI *pCmdUI){
 void CMainFrame::OnDebugreport()
 {
 	CStringArray szaReport;
+
 	if(m_iMediaLoadState == MLS_LOADED)
 	{
+		CSVPToolBox svpTool;
+		svpTool.GetGPUString(&szaReport);
 		
 		BeginEnumFilters(pGB, pEF, pBF)
 		{
@@ -13583,7 +13586,7 @@ void CMainFrame::OnDebugreport()
 						
 					}
 				}
-				szaReport.Add(name);
+				szaReport.Add(CString(_T(">>")) +name);
 			}
 			EndEnumPins
 
@@ -13618,7 +13621,7 @@ void CMainFrame::OnDebugreport()
 					CString name(wname);
 					name.Replace(_T("&"), _T("&&"));
 
-					szaReport.Add(name);
+					szaReport.Add(CString(_T(">>>")) + name);
 
 					CoTaskMemFree(wname);
 				}
@@ -13630,7 +13633,30 @@ void CMainFrame::OnDebugreport()
 		}
 		EndEnumFilters
 
-		CSVPToolBox svpTool;
+		CString szBuf;
+		szBuf.Format(_T("SPlayer Build %s ") , SVP_REV_STR);
+		szaReport.Add(szBuf);
+
+		OSVERSIONINFO osver;
+
+		osver.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
+
+		::GetVersionEx( &osver ) ;
+		szBuf.Format(_T("OS Ver %s %d.%d ")  , osver.szCSDVersion, osver.dwMajorVersion , osver.dwMinorVersion );
+		szaReport.Add(szBuf);
+
+		szBuf = _T("CPU ");
+		if(g_cpuid.m_flags & CCpuID::mmx)
+			szBuf.Append(_T(" MMX"));
+		
+		if(g_cpuid.m_flags & CCpuID::sse2)
+			szBuf.Append(_T(" SSE2"));
+
+		if(g_cpuid.m_flags & CCpuID::ssemmx)
+			szBuf.Append(_T(" SSEMMX"));
+
+		szaReport.Add(szBuf);
+
 		CString szReport = svpTool.Implode(_T("\r\n-------------\r\n"), &szaReport);
 		
 		CInfoReport CIR;

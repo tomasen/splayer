@@ -2466,7 +2466,7 @@ bool CMpaDecFilter::InitFfmpeg(int nCodecId)
 					/* force sample rate for amr, stsd in 3gp does not store sample rate */
 			if (!wfein->nSamplesPerSec)
 				wfein->nSamplesPerSec = 8000 * (1+(nCodecId== CODEC_ID_AMR_WB));// / wfein->nChannels;
-			else if(wfein->nSamplesPerSec > 2000)
+			else if(wfein->nSamplesPerSec > 2000 && wfein->nSamplesPerSec < 8000)
 				wfein->nSamplesPerSec = wfein->nSamplesPerSec;// /  wfein->nChannels;
 			else
 				wfein->nSamplesPerSec = 8000;//wfein->nSamplesPerSec *  wfein->nChannels;

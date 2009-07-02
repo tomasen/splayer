@@ -2224,13 +2224,13 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	
 	
 	// Block VSFilter when internal subtitle renderer will get used
-	if(s.fAutoloadSubtitles && s.fBlockVSFilter) {
+//	if(s.fAutoloadSubtitles && s.fBlockVSFilter) {
 		if(s.iDSVideoRendererType == VIDRNDT_DS_VMR7RENDERLESS || s.iDSVideoRendererType == VIDRNDT_DS_VMR9RENDERLESS || s.iDSVideoRendererType == VIDRNDT_DS_DXR) {
 			m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{9852A670-F845-491B-9BE6-EBD841B8A613}")), MERIT64_DO_NOT_USE));
 		}
-	}
+//	}
 	
-	//m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{04FE9017-F873-410E-871E-AB91661A4EF7}")), MERIT64_UNLIKELY)); //ffdshow
+	m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{04FE9017-F873-410E-871E-AB91661A4EF7}")), MERIT64_DO_NOT_USE)); //ffdshow
 	CStringArray szaExtFilterPaths;
 	CSVPToolBox svptoolbox;
 	szaExtFilterPaths.RemoveAll();

@@ -2231,6 +2231,8 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		}
 //	}
 	if(s.iDSVideoRendererType != VIDRNDT_DS_OVERLAYMIXER ){
+		// {CD8743A1-3736-11d0-9E69-00C04FD7C15B}
+		m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{CD8743A1-3736-11d0-9E69-00C04FD7C15B}")), MERIT64_DO_NOT_USE));
 		m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{95F57653-71ED-42BA-9131-986CA0C6514F}")), MERIT64_DO_NOT_USE)); //disable overlay
 	}
 
@@ -2472,6 +2474,10 @@ CFGManagerPlayer::CFGManagerPlayer(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	}
 
 	// Renderers
+	if(s.iDSVideoRendererType != VIDRNDT_DS_OVERLAYMIXER ){
+		m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_OverlayMixer, L"Overlay Mixer", MERIT64_DO_NOT_USE));
+	}
+	m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, GUIDFromCString(_T("{95F57653-71ED-42BA-9131-986CA0C6514F}")), L"Unknown Overlay Mixer", MERIT64_DO_NOT_USE));
 
 	if(s.iDSVideoRendererType == VIDRNDT_DS_OLDRENDERER)
 		m_transform.AddTail(new CFGFilterRegistry(CLSID_VideoRenderer, m_vrmerit));

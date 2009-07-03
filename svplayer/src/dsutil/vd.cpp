@@ -1122,7 +1122,7 @@ bool BitBltFromRGBToRGB(int w, int h, BYTE* dst, int dstpitch, int dbpp, BYTE* s
 			if(sbpp == 8)
 			{
 				BYTE* s = (BYTE*)src;
-				DWORD* d = (DWORD*)dst;
+				BYTE* d = (BYTE*)dst;
 				for(int x = 0; x < w; x++, s++, d+=3)
 				{	// not tested, r-g-b might be in reverse
 					d[0] = (*s&0x03)<<6;
@@ -1133,7 +1133,7 @@ bool BitBltFromRGBToRGB(int w, int h, BYTE* dst, int dstpitch, int dbpp, BYTE* s
 			}else if(sbpp == 15)
 			{
 				WORD* s = (WORD*)src;
-				DWORD* d = (DWORD*)dst;
+				BYTE* d = (BYTE*)dst;
 				for(int x = 0; x < w; x++, s++, d+=3)
 				{	// not tested, r-g-b might be in reverse
 					d[0] = (*s&0x001f)<<3;

@@ -2240,6 +2240,8 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{04FE9017-F873-410E-871E-AB91661A4EF7}")), MERIT64_DO_NOT_USE)); //ffdshow video
 	m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{0F40E1E5-4F79-4988-B1A9-CC98794E6B55}")), MERIT64_DO_NOT_USE)); //ffdshow audio
 
+	SVP_ForbidenCoreAVCTrayIcon();
+
 
 	CStringArray szaExtFilterPaths;
 	CSVPToolBox svptoolbox;
@@ -2266,7 +2268,6 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	    if( ! s.fVMR9MixerMode  ) 
 		{
 			szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("codecs\\CoreAVCDecoder.ax")) ); //will crash without why
-			SVP_ForbidenCoreAVCTrayIcon();
 			////VMR9 seems not work with coreplayer
 	  		
   			//CFGFilter* pFGFR = new CFGFilterRegistry(GUIDFromCString(_T("{09571A4B-F1FE-4C60-9760-DE6D310C7C31}")), MERIT64_ABOVE_DSHOW+20); //use CoreAVC

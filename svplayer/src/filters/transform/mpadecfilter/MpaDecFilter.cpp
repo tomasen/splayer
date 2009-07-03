@@ -434,12 +434,21 @@ HRESULT CMpaDecFilter::Receive(IMediaSample* pIn)
 		m_sample_max = 0.1f;
 		// ASSERT(SUCCEEDED(hr)); // what to do if not?
 		if(FAILED(hr)) {TRACE(_T("mpa: disc. w/o timestamp\n")); return S_OK;} // lets wait then...
+		//SVP_LogMsg5(_T("mpa: disc. w/o timestamp %I64d\n") ,rtStart );
 		m_rtStart = rtStart;
 	}
 
-	if(SUCCEEDED(hr) && abs((int)(m_rtStart - rtStart)) > 1000000) // +-100ms jitter is allowed for now
+	const GUID& subtype = m_pInput->CurrentMediaType().subtype;
+	BOOL bNoJitterControl = false;
+	if(subtype == MEDIASUBTYPE_AMR || subtype == MEDIASUBTYPE_SAMR || subtype == MEDIASUBTYPE_SAWB){
+		bNoJitterControl = true;
+	}
+
+	if(SUCCEEDED(hr) && abs((int)(m_rtStart - rtStart)) > 1000000  && !bNoJitterControl) // +-100ms jitter is allowed for now
 	{
 		m_buff.RemoveAll();
+		//SVP_LogMsg5(_T("mpa: disc. jitter is not allowed %I64d\n") ,rtStart );
+
 		m_rtStart = rtStart;
 	}
 
@@ -448,9 +457,13 @@ HRESULT CMpaDecFilter::Receive(IMediaSample* pIn)
 	memcpy(m_buff.GetData() + bufflen, pDataIn, len);
 	len += bufflen;
 
-	const GUID& subtype = m_pInput->CurrentMediaType().subtype;
+	
 
-	if(subtype == MEDIASUBTYPE_DVD_LPCM_AUDIO)
+	if(subtype == MEDIASUBTYPE_AMR || subtype == MEDIASUBTYPE_SAMR)
+		hr = ProcessFfmpeg(CODEC_ID_AMR_NB);
+	else if(subtype == MEDIASUBTYPE_SAWB)
+		hr = ProcessFfmpeg(CODEC_ID_AMR_WB);
+	else if(subtype == MEDIASUBTYPE_DVD_LPCM_AUDIO)
 		hr = ProcessLPCM();
 	else if(subtype == MEDIASUBTYPE_HDMV_LPCM_AUDIO)
 	{
@@ -476,10 +489,6 @@ HRESULT CMpaDecFilter::Receive(IMediaSample* pIn)
 		hr = ProcessFlac();
 	else if(subtype == MEDIASUBTYPE_NELLYMOSER)
 		hr = ProcessFfmpeg(CODEC_ID_NELLYMOSER);
-	else if(subtype == MEDIASUBTYPE_AMR || subtype == MEDIASUBTYPE_SAMR)
-		hr = ProcessFfmpeg(CODEC_ID_AMR_NB);
-	else if(subtype == MEDIASUBTYPE_SAWB)
-		hr = ProcessFfmpeg(CODEC_ID_AMR_WB);
 	else if(subtype == MEDIASUBTYPE_IMA4)
 		hr = ProcessFfmpeg(CODEC_ID_ADPCM_IMA_QT);
 	else if(subtype ==MEDIASUBTYPE_COOK)
@@ -1513,8 +1522,8 @@ HRESULT CMpaDecFilter::Deliver(CAtlArray<float>& pBuff, DWORD nSamplesPerSec, WO
 
 	REFERENCE_TIME rtDur = 10000000i64*nSamples/wfe->nSamplesPerSec;
 	REFERENCE_TIME rtStart = m_rtStart, rtStop = m_rtStart + rtDur;
+	//SVP_LogMsg5(_T("CMpaDecFilter: %I64d - %I64d =  %I64d \n"), rtStart/10000, rtStop/10000 , rtDur/10000);
 	m_rtStart += rtDur;
-//TRACE(_T("CMpaDecFilter: %I64d - %I64d\n"), rtStart/10000, rtStop/10000);
 	if(rtStart < 0 /*200000*/ /* < 0, FIXME: 0 makes strange noises */)
 		return S_OK;
 
@@ -1622,6 +1631,7 @@ HRESULT CMpaDecFilter::Deliver(BYTE* pBuff, int size, int bit_rate, BYTE type)
 
 	REFERENCE_TIME rtDur = 10000000i64 * size*8 / bit_rate;
 	REFERENCE_TIME rtStart = m_rtStart, rtStop = m_rtStart + rtDur;
+	//SVP_LogMsg5(_T("CMpaDecFilter Deliver2: %I64d - %I64d =  %I64d \n"), rtStart/10000, rtStop/10000 , rtDur/10000);
 	m_rtStart += rtDur;
 
 	if(rtStart < 0)
@@ -2465,7 +2475,7 @@ bool CMpaDecFilter::InitFfmpeg(int nCodecId)
 		
 		if (nCodecId== CODEC_ID_AMR_NB || nCodecId== CODEC_ID_AMR_WB){
 			//m_pAVCtx->frame_size = 160 * (1+ (nCodecId== CODEC_ID_AMR_WB));//	st->codec->frame_size= sc->samples_per_frame;
-					/* force sample rate for amr, stsd in 3gp does not store sample rate */
+					/* force sample rate for amr, stsd in 3gp does not store sample rate 
 			if (!wfein->nSamplesPerSec)
 				wfein->nSamplesPerSec = 8000 * (1+(nCodecId== CODEC_ID_AMR_WB));// / wfein->nChannels;
 			else if(wfein->nSamplesPerSec > 2000 ){
@@ -2477,10 +2487,11 @@ bool CMpaDecFilter::InitFfmpeg(int nCodecId)
 			else
 				wfein->nSamplesPerSec = 8000;//wfein->nSamplesPerSec *  wfein->nChannels;
 
+			m_pAVCtx->sample_rate			= wfein->nSamplesPerSec; 
 			wfein->nChannels = 1;
 			m_pAVCtx->channels = wfein->nChannels; /* really needed */
 			
-			m_pAVCtx->sample_rate			= wfein->nSamplesPerSec;
+			
 	
 		}else{
 			if (nCodecId==CODEC_ID_COOK )

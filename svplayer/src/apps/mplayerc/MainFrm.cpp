@@ -1213,6 +1213,15 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 			dcBmp.CreateCompatibleDC(&hdc);
 			HBITMAP hbmpold = (HBITMAP)dcBmp.SelectObject(m_bmpCaption);
 			hdc.SetStretchBltMode(HALFTONE);
+			if(GetForegroundWindow() != this){
+				COLORADJUSTMENT cadj;
+				hdc.GetColorAdjustment(&cadj);
+				cadj.caRedGamma = 11000;
+				cadj.caGreenGamma = 11000;
+				cadj.caBlueGamma = 11000;
+				cadj.caSize = sizeof(cadj);
+				hdc.SetColorAdjustment(&cadj);
+			}
 			hdc.SetBrushOrg(0, 0);
 			hdc.StretchBlt(0, 0, 4, nTotalCaptionHeight, &dcBmp, 0, 0, 4, 25, SRCCOPY);
 			hdc.StretchBlt(4, 0, rc.Width()-4*2, nTotalCaptionHeight, &dcBmp, 4, 0, 6, 25, SRCCOPY);
@@ -2186,6 +2195,9 @@ void CMainFrame::OnActivateApp(BOOL bActive, DWORD dwThreadID)
 		}
 
 		if(fExitFullscreen) OnViewFullscreen();
+	}
+	if(!bActive){
+		RedrawNonClientArea();
 	}
 }
 

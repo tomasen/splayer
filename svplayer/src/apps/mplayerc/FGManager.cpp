@@ -2237,6 +2237,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	}
 
 	
+	m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{3D446B6F-71DE-4437-BE15-8CE47174340F}")), MERIT64_DO_NOT_USE)); //AC3Filter
 	m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{04FE9017-F873-410E-871E-AB91661A4EF7}")), MERIT64_DO_NOT_USE)); //ffdshow video
 	m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{0F40E1E5-4F79-4988-B1A9-CC98794E6B55}")), MERIT64_DO_NOT_USE)); //ffdshow audio
 

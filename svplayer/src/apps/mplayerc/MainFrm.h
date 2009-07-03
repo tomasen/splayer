@@ -256,7 +256,8 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 	void SetupIViAudReg();
 
 	void AddTextPassThruFilter();
-
+	
+	CCritSec m_PaintLock;
 	int m_nLoops;
 
 	bool m_fCustomGraph;

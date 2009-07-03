@@ -377,7 +377,7 @@ CSize CPlayerToolBar::CalcFixedLayout(BOOL bStretch,BOOL bHorz ){
 }
 void CPlayerToolBar::OnPaint()
 {
-
+	//LONGLONG startTime = AfxGetMyApp()->GetPerfCounter();
 	CPaintDC dc(this); // device context for painting
 	CRect paintRect(dc.m_ps.rcPaint);
 
@@ -435,7 +435,8 @@ void CPlayerToolBar::OnPaint()
 
 		
 	}
-	
+	//LONGLONG costTime = AfxGetMyApp()->GetPerfCounter() - startTime;
+	//SVP_LogMsg3("Toolbar Paint @ %I64d cost %I64d" , startTime , costTime);
 }
 void CPlayerToolBar::UpdateButtonStat(){
 	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());

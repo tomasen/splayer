@@ -938,7 +938,8 @@ void CMainFrame::OnMove(int x, int y)
 void CMainFrame::OnSize(UINT nType, int cx, int cy)
 {
 	__super::OnSize(nType, cx, cy);
-	
+	//SVP_LogMsg3("Winsizing @ %I64d", AfxGetMyApp()->GetPerfCounter());
+	CAutoLock PaintLock(&m_PaintLock);
 	AppSettings& s = AfxGetAppSettings();
 
 	if(nType == SIZE_RESTORED && m_fTrayIcon)
@@ -1014,8 +1015,8 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 	}
 
 
-
-
+	
+	//SVP_LogMsg3("Winsized @ %I64d", AfxGetMyApp()->GetPerfCounter());
 
 }
 
@@ -1024,6 +1025,8 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 	//////////////////////////////////////////////////////////////////////////
 	// Typically, we'll need the window placement information
 	// and its rect to perform painting
+	CAutoLock PaintLock(&m_PaintLock);
+	LONGLONG startTime = AfxGetMyApp()->GetPerfCounter();
 	WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
 	GetWindowPlacement(&wp);
 	CRect rc, rcWnd;
@@ -1279,7 +1282,8 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 		ReleaseDC(&hdc);
 
 	}
-
+	//LONGLONG costTime = AfxGetMyApp()->GetPerfCounter() - startTime;
+	//SVP_LogMsg3("NcPaint @ %I64d cost %I64d" , startTime , costTime);
 	return FALSE ;
 }
 
@@ -7047,8 +7051,8 @@ void CMainFrame::OnPlayChangeAudDelay(UINT nID)
 	{
 		REFERENCE_TIME rtShift = pASF->GetAudioTimeShift();
 		rtShift += 
-			nID == ID_PLAY_INCAUDDELAY ? 100000 :
-			nID == ID_PLAY_DECAUDDELAY ? -100000 : 
+			nID == ID_PLAY_INCAUDDELAY ? 500000 :
+			nID == ID_PLAY_DECAUDDELAY ? -500000 : 
 			0;
 		pASF->SetAudioTimeShift(rtShift);
 

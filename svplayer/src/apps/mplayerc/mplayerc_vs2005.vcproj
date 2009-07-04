@@ -514,15 +514,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\MOSDWnd.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\mplayerc.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\mplayerc.rc"
+				>
+			</File>
+			<File
+				RelativePath=".\NEWOSDWnd.cpp"
 				>
 			</File>
 			<File
@@ -987,11 +987,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\MOSDWnd.h"
+				RelativePath=".\mplayerc.h"
 				>
 			</File>
 			<File
-				RelativePath=".\mplayerc.h"
+				RelativePath=".\NEWOSDWnd.h"
 				>
 			</File>
 			<File
@@ -1873,11 +1873,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 	</Files>

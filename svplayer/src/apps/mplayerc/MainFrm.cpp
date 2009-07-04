@@ -595,6 +595,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	LoadControlBar(&m_wndShaderEditorBar, AFX_IDW_DOCKBAR_TOP);
 
 
+	
 	if(m_wndColorControlBar.Create(this)){
 		m_wndColorControlBar.ShowWindow( SW_HIDE);
 	}
@@ -623,14 +624,16 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	ShowControls( ( s.nCS | (s.bShowControlBar ? CS_COLORCONTROLBAR : 0) ) & ~CS_SEEKBAR , false );
 	
 	GetSystemFontWithScale(&m_hft, 14.0, 600);
-
-	HMODULE hCommCtrlDLL =  ::LoadLibrary(L"comctl32.dll");
-	if (hCommCtrlDLL)
-	{
-		if( ::GetProcAddress(hCommCtrlDLL, "DrawShadowText") ){
-			m_bHasDrawShadowText = true;
-		}
-	}
+/*
+	
+		HMODULE hCommCtrlDLL =  ::LoadLibrary(L"comctl32.dll");
+		if (hCommCtrlDLL)
+		{
+			if( ::GetProcAddress(hCommCtrlDLL, "DrawShadowText") ){
+				m_bHasDrawShadowText = true;
+			}
+		}*/
+	
 
 	SetAlwaysOnTop(s.iOnTop);
 
@@ -638,7 +641,11 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	SetFocus();
 
-	
+
+	//WS_EX_NOACTIVATE
+	if(!m_wndNewOSD.CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, _T("STATIC"), _T("OSD"), WS_POPUP, CRect( 20,20,60,60 ) , this,  0)){
+		AfxMessageBox(_T("OSD 创建失败！"));
+	}
 
 	m_pGraphThread = (CGraphThread*)AfxBeginThread(RUNTIME_CLASS(CGraphThread));
 
@@ -716,12 +723,9 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	PreMultiplyBitmap(m_bmpRestore);
 	PreMultiplyBitmap(m_bmpMenu);*/
 	m_btnList.SetHideStat( HTMINTOTRAY,   s.fTrayIcon);
-	
-	if(m_wndView.m_wndOSD.CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, NULL,NULL , WS_VISIBLE|WS_CHILD, CRect( 0,0,0,0 ) , this,  IDD_PLAYEROSDWND, 0 ) ){
-		//m_wndOSD.ShowWindow(SW_SHOW);
-		m_wndView.m_wndOSD.m_wndView = &m_wndView;
-	}
-	
+
+
+
 	/*NEW UI END*/
 	return 0;
 }
@@ -851,12 +855,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 	
 	__super::OnMouseMove(nFlags, point);
 
-	if(bMouseMoved && !s_fLDown){
-		if(point.y < 20 && m_wndView.m_wndOSD.m_osdStr !=  _T("点击此处可以展开菜单")){ 
-			SendStatusMessage(_T("点击此处可以展开菜单"), 2000,1);
-			return;
-		}
-	}
+	
 
 }
 
@@ -931,7 +930,8 @@ void CMainFrame::OnMove(int x, int y)
 	m_wndToolBar.ReCalcBtnPos();
 	m_wndView.ReCalcBtn();
 	rePosOSD();
-	m_wndView.SetMyRgn();
+	//m_wndView.SetMyRgn();
+	
 	RedrawNonClientArea();
 }
 
@@ -971,8 +971,7 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 	cr.top += cr.Height()/2;
 	
 	rePosOSD();
-	m_wndView.SetMyRgn();
-
+	
 	//::SetWindowPos(m_wndStatusBar.m_hWnd, m_wndView.m_hWnd, 20, 20, 100, 30,0);
 
 	if(!m_fFullScreen)
@@ -1253,14 +1252,14 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 			szWindowText.Append(m_szTitle);
 			
 			//GetWindowText(szWindowText);
-			if(m_bHasDrawShadowText )
-				::DrawShadowText(hdc, szWindowText, szWindowText.GetLength(), &rcWindowText, DT_LEFT|DT_SINGLELINE | DT_VCENTER, 0x00525d66, RGB(255,255,255), 1,1);
-			else{
+			//if(m_bHasDrawShadowText )
+			//	::DrawShadowText(hdc, szWindowText, szWindowText.GetLength(), &rcWindowText, DT_LEFT|DT_SINGLELINE | DT_VCENTER, 0x00525d66, RGB(255,255,255), 1,1);
+			//else{
 				hdc.SetTextColor(0x00525d66);
 				hdc.SetBkMode(TRANSPARENT);
 				//hdc.SetBkColor( 0x00d6d7ce);
 				DrawText(hdc, szWindowText, szWindowText.GetLength(), &rcWindowText, DT_LEFT|DT_SINGLELINE | DT_VCENTER );
-			}
+			//}
 			hdc.SelectObject(holdft);
 
 			// min/max/close buttons
@@ -1933,7 +1932,7 @@ void CMainFrame::RecalcLayout(BOOL bNotify)
 	MoveWindow(&r);
 
 	rePosOSD();
-	m_wndView.SetMyRgn();
+
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -8496,7 +8495,7 @@ void CMainFrame::ToggleFullscreen(bool fToNearest, bool fSwitchScreenResWhenHasT
 
 	m_wndView.SetWindowPos(NULL, 0, 0, 0, 0, SWP_FRAMECHANGED|SWP_NOSIZE|SWP_NOMOVE|SWP_NOZORDER);
 	rePosOSD();
-	m_wndView.SetMyRgn();
+
 
 	m_fAudioOnly = fAudioOnly;
 
@@ -8625,15 +8624,9 @@ void CMainFrame::MoveVideoWindow(bool fShowStats)
 }
 void CMainFrame::rePosOSD(){
 
-	if(m_wndView){
-			if(::IsWindow(m_wndView.m_hWnd)){
-				if(::IsWindow(m_wndView.m_wndOSD.m_hWnd)){
-					if(m_wndView.m_wndOSD.mSize.cx <= 0){
-						m_wndView.m_wndOSD.MoveWindow(CRect(0,0,0,0));
-						return;
-					}
-				}
-			}
+	if(!m_wndView || !::IsWindow(m_wndView.m_hWnd) || !m_wndNewOSD || !::IsWindow(m_wndNewOSD.m_hWnd) || m_wndNewOSD.m_osdStr.IsEmpty()){
+		return;
+			
 	}
 	
 
@@ -8641,7 +8634,9 @@ void CMainFrame::rePosOSD(){
 	m_wndView.GetWindowRect(&rcView);
 	if( ::GetWindowRect( m_wndView.m_hWnd, &rcView ) ){
 		GetWindowRect(&rc);
-		rcView -= rcView.TopLeft();
+
+		
+		//rcView -= rcView.TopLeft();
 
 		if(m_iOSDAlign == 1) { //TopLeft
 			rcView.top += 5;
@@ -8651,9 +8646,10 @@ void CMainFrame::rePosOSD(){
 			rcView.top = rcView.bottom - 22;
 		}
 		rcView.left += 10;
-		rcView.right = rcView.left + m_wndView.m_wndOSD.mSize.cx;
+		rcView.right = rcView.left + m_wndNewOSD.mSize.cx;
 		
-		m_wndView.m_wndOSD.MoveWindow(rcView);
+		m_wndNewOSD.MoveWindow(rcView);
+		//m_wndView.m_wndOSD.MoveWindow(rcView);
 	}
 	return;
 }
@@ -12898,7 +12894,8 @@ void CMainFrame::SendStatusMessage(CString msg, int nTimeOut, int iAlign)
 		}
 	}
 	m_iOSDAlign = iAlign;
-	m_wndView.m_wndOSD.SendOSDMsg(m_playingmsg , nTimeOut);
+	m_wndNewOSD.SendOSDMsg(m_playingmsg , nTimeOut);
+	rePosOSD();
 	//m_wndToolBar.SetStatusTimer( m_playingmsg , nTimeOut);
 
 	SetTimer(TIMER_STATUSERASER, nTimeOut, NULL);

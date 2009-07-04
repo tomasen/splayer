@@ -57,7 +57,7 @@
 #include <evr.h>
 #include <evr9.h>
 #include "WebServer.h"
-
+#include "NEWOSDWnd.h"
 
 #include "SUIButton.h"
 
@@ -483,6 +483,8 @@ protected:  // control bar embedded members
 	CPlayerCaptureBar m_wndCaptureBar;
 	CPlayerShaderEditorBar m_wndShaderEditorBar;
 	CList<CSizingControlBar*> m_dockingbars;
+
+	CNEWOSDWnd m_wndNewOSD;
 
 	CFileDropTarget m_fileDropTarget;
 	// TODO

@@ -346,42 +346,7 @@ void CChildView::OnSize(UINT nType, int cx, int cy)
 	ReCalcBtn();
 }
 
-void CChildView::SetMyRgn(){
-	{ //New UI
-		CRect rc;
-		WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
-		GetWindowPlacement(&wp);
-		GetWindowRect(&rc);
-		rc-=rc.TopLeft();
 
-
-
-		// destroy old region
-		if((HRGN)m_rgn)
-		{
-			m_rgn.DeleteObject();
-		}
-		// create rounded rect region based on new window size
-		m_rgn.CreateRectRgn( 0,0, rc.Width(), rc.Height() );
-		if ( m_wndOSD.mSize.cx > 0)
-		{
-			
-			CRect rcOsd;
-			m_wndOSD.GetWindowRect(&rcOsd);
-			GetWindowRect(&rc);
-			rcOsd -= rc.TopLeft();
-			CRgn OSDRgn;
-			OSDRgn.CreateRoundRectRgn(rcOsd.left , rcOsd.top ,rcOsd.right ,rcOsd.bottom, 3,3);          
-			//OSDRgn.CreateRectRgn(rcOsd.left , rcOsd.top ,rcOsd.right ,rcOsd.bottom);
-			m_rgn.CombineRgn(&m_rgn , &OSDRgn,RGN_DIFF); 
-
-			// set window region to make rounded window
-		}
-		
-		SetWindowRgn(m_rgn,TRUE);
-		Invalidate();
-	}
-}
 void CChildView::OnWindowPosChanged(WINDOWPOS* lpwndpos)
 {
 	CWnd::OnWindowPosChanged(lpwndpos);

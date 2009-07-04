@@ -939,7 +939,7 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 {
 	__super::OnSize(nType, cx, cy);
 	//SVP_LogMsg3("Winsizing @ %I64d", AfxGetMyApp()->GetPerfCounter());
-	CAutoLock PaintLock(&m_PaintLock);
+	//CAutoLock PaintLock(&m_PaintLock);
 	AppSettings& s = AfxGetAppSettings();
 
 	if(nType == SIZE_RESTORED && m_fTrayIcon)
@@ -1025,7 +1025,7 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 	//////////////////////////////////////////////////////////////////////////
 	// Typically, we'll need the window placement information
 	// and its rect to perform painting
-	CAutoLock PaintLock(&m_PaintLock);
+	//CAutoLock PaintLock(&m_PaintLock);
 	LONGLONG startTime = AfxGetMyApp()->GetPerfCounter();
 	WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
 	GetWindowPlacement(&wp);

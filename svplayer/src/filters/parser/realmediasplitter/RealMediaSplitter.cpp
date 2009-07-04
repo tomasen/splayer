@@ -1359,7 +1359,11 @@ void CRMFile::GetDimensions()
 		{
 			pmp->width = pmp->height = 0;
 
-			rvinfo rvi = *(rvinfo*)pmp->typeSpecData.GetData();
+			rvinfo* p_rvi = (rvinfo*)pmp->typeSpecData.GetData();
+			if(!p_rvi){
+				continue;
+			}
+			rvinfo rvi = *p_rvi;
 			rvi.bswap();
 
 			if(rvi.fcc2 != '04VR' && rvi.fcc2 != '14VR')

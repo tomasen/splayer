@@ -1889,8 +1889,8 @@ BEGIN
         BEGIN
             MENUITEM "水平翻转",                        ID_ROTATE_H
             MENUITEM "垂直翻转",                        ID_ROTATE_V
-            MENUITEM "向右90℃",                       ID_ROTATE_90
-            MENUITEM "向左90℃",                       ID_ROTATE_270
+            MENUITEM "向右90℃",                       ID_ROTATE_270
+            MENUITEM "向左90℃",                       ID_ROTATE_90
             MENUITEM "180℃旋转",                      ID_ROTATE_180
             MENUITEM "恢复默认角度",                      ID_ROTATE_RESET
             MENUITEM SEPARATOR

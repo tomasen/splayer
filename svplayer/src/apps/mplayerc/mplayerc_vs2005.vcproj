@@ -1364,6 +1364,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\newui\BTN_PLAY2.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\newui\BTN_PLAYLIST.bmp"
 				>
 			</File>
@@ -1377,6 +1381,10 @@
 			</File>
 			<File
 				RelativePath=".\res\newui\BTN_SETTING.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\BTN_STEP.bmp"
 				>
 			</File>
 			<File

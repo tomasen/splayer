@@ -111,7 +111,7 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
  	btnSubFontMinus->addAlignRelButton(ALIGN_TOP, btnSubFontPlus ,  CRect(3 , 0 , 3, 0) );
  	m_btnList.AddTail( btnSubFontMinus );
 
-	CSUIButton* btnSubSwitch = new CSUIButton(L"BTN_SUB.BMP" , ALIGN_TOPLEFT, CRect(-37 , 5, 3,3)  , 0, ID_SUBLANGSWITCH, TRUE, ALIGN_RIGHT, btnFFBack , CRect(20 , 10 , 80, 10) );
+	CSUIButton* btnSubSwitch = new CSUIButton(L"BTN_SUB.BMP" , ALIGN_TOPLEFT, CRect(-37 , 5, 3,3)  , 0, ID_SUBTOOLBARBUTTON, TRUE, ALIGN_RIGHT, btnFFBack , CRect(20 , 10 , 80, 10) );
 	btnSubSwitch->addAlignRelButton(ALIGN_RIGHT, btnSubFont ,  CRect(20 , 10 , 35, 10) );
 	m_btnList.AddTail( btnSubSwitch );
 
@@ -208,7 +208,7 @@ void CPlayerToolBar::OnSize(UINT nType, int cx, int cy)
 	m_btnList.SetHideStat(ID_NAVIGATE_SKIPFORWARD , hideT1);
 
 	m_btnList.SetHideStat(ID_VIEW_PLAYLIST , hideT2);
-	m_btnList.SetHideStat(ID_SUBLANGSWITCH , hideT2);
+	m_btnList.SetHideStat(ID_SUBTOOLBARBUTTON , hideT2);
 	m_btnList.SetHideStat(ID_SUBDELAYDEC , hideT2);
 	m_btnList.SetHideStat(ID_SUBDELAYINC , hideT2);
 	m_btnList.SetHideStat(ID_FILE_OPENQUICK , hideT2);
@@ -446,7 +446,7 @@ void CPlayerToolBar::UpdateButtonStat(){
 	m_btnList.SetHideStat( ID_PLAY_PAUSE , !fShow );
 	BOOL bLogo = pFrame->IsSomethingLoaded();
 	m_btnList.SetHideStat(_T("SPLAYER.BMP"), bLogo);
-	m_btnList.SetDisableStat(ID_SUBLANGSWITCH, !bLogo);
+	m_btnList.SetDisableStat(ID_SUBTOOLBARBUTTON, !bLogo);
 	if(!bLogo){
 		m_timerstr.Empty();
 	}
@@ -681,7 +681,7 @@ BOOL CPlayerToolBar::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 				case ID_SUBDELAYINC:
 					toolTip = _T("增加字幕延时");
 					break;
-				case ID_SUBLANGSWITCH:
+				case ID_SUBTOOLBARBUTTON:
 					toolTip = _T("字幕切换或调用");
 					break;
 				case ID_VIEW_PLAYLIST:

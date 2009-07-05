@@ -465,7 +465,10 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 
 	ON_COMMAND(ID_USINGSPDIF, OnToggleSPDIF)
 	ON_UPDATE_COMMAND_UI( ID_USINGSPDIF,  OnUpdateToggleSPDIF)
+
+	ON_COMMAND(ID_SUBTOOLBARBUTTON, OnSubMenuToolbar )
 	
+
 	ON_COMMAND(ID_DEBUGREPORT, OnDebugreport)
 	ON_UPDATE_COMMAND_UI(ID_DEBUGREPORT, OnUpdateDebugreport)
 	END_MESSAGE_MAP()
@@ -11114,7 +11117,47 @@ void CMainFrame::OnUpdateChannalMapMenu(CCmdUI *pCmdUI){
 	}
 
 }
+void CMainFrame::OnSubMenuToolbar(){
+	CMenu* pSubMenu;
+	CMenu* pSub = &m_subtoolmenu;
+	if(!IsMenu(pSub->m_hMenu)) pSub->CreatePopupMenu();
+	else while(pSub->RemoveMenu(0, MF_BYPOSITION));
 
+	SetupSubtitlesSubMenu();
+	SetupNavSubtitleSubMenu();
+	MenuMerge( &m_subtitles ,  &m_navsubtitle );
+	MenuMerge( &m_subtoolmenu , &m_subtitles );
+
+	SetupSubtitlesSubMenu(2);
+	MenuMerge( &m_subtitles2 ,  &m_navsubtitle );
+	pSubMenu = &m_subtitles2;
+
+	if(m_subtoolmenu.GetMenuItemCount())
+		m_subtoolmenu.AppendMenu(MF_SEPARATOR);
+
+	m_subtoolmenu.AppendMenu(MF_POPUP, (UINT)m_subtitles2.m_hMenu,_T("µÚ¶þ×ÖÄ»"));
+
+	CMenu* netSubMenu = NULL;
+	CMenu* popmenuMain = m_popup.GetSubMenu(0);
+	for(int iPos = 0; iPos < popmenuMain->GetMenuItemCount(); iPos++){
+		CString str;
+		if (popmenuMain->GetMenuString(iPos, str, MF_BYPOSITION)){
+			if(str.Find(_T("ÍøÂç×ÖÄ»")) >= 0){
+				netSubMenu = popmenuMain->GetSubMenu(iPos);
+				break;
+			}
+		}
+		
+	}
+	
+	if(netSubMenu){
+		m_subtoolmenu.AppendMenu(MF_POPUP, (UINT)netSubMenu->m_hMenu,_T("ÍøÂç×ÖÄ»..."));
+	}
+	m_subtoolmenu.AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_FILE_LOAD_SUBTITLE, _T("µ÷Èë×ÖÄ»ÎÄ¼þ..."));
+
+
+	OnMenu(&m_subtoolmenu);
+}
 void CMainFrame::SetupSubtitlesSubMenu(int subid)
 {
 	CMenu* pSub ;
@@ -11140,13 +11183,11 @@ void CMainFrame::SetupSubtitlesSubMenu(int subid)
 	POSITION pos = m_pSubStreams.GetHeadPosition();
 	if (subid == 2){ pos = m_pSubStreams2.GetHeadPosition(); }
 
+	UINT bHasSub = 0;
 	if(pos)
 	{
-		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, id++, ResStr(IDS_SUBTITLES_OPTIONS));
-		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, id++, ResStr(IDS_SUBTITLES_STYLES));
-		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, id++, ResStr(IDS_SUBTITLES_RELOAD));
-		pSub->AppendMenu(MF_SEPARATOR);
-
+		bHasSub = id;
+		id+=3;
 		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, id++, ResStr(IDS_SUBTITLES_ENABLE));
 		pSub->AppendMenu(MF_SEPARATOR);
 	}
@@ -11188,6 +11229,15 @@ void CMainFrame::SetupSubtitlesSubMenu(int subid)
 				pSub->AppendMenu(MF_SEPARATOR);
 		}
 	}
+
+	if(bHasSub){
+		pSub->AppendMenu(MF_SEPARATOR);
+		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, bHasSub++, ResStr(IDS_SUBTITLES_OPTIONS));
+		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, bHasSub++, ResStr(IDS_SUBTITLES_STYLES));
+		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, bHasSub++, ResStr(IDS_SUBTITLES_RELOAD));
+	
+	}
+
 }
 
 void CMainFrame::SetupNavAudioSubMenu()

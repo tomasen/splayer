@@ -235,7 +235,7 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 
 	CMenu m_popupmain, m_popup;
 	CMenu m_opencds;
-	CMenu m_filters, m_subtitles, m_subtitles2, m_audios, m_audiodevices;
+	CMenu m_filters, m_subtitles, m_subtitles2, m_audios, m_audiodevices , m_subtoolmenu;
 	CStringArray m_AudioDevice;
 	CAutoPtrArray<CMenu> m_filterpopups;
 	CMenu m_navaudio, m_navsubtitle, m_navangle;
@@ -823,6 +823,7 @@ public:
 	afx_msg void OnDelcurfolder();
 	afx_msg void OnUpdateDeleteCurs(CCmdUI *pCmdUI);
 	afx_msg void OnToggleSPDIF();
+	afx_msg void OnSubMenuToolbar();
 	afx_msg void OnUpdateToggleSPDIF(CCmdUI *pCmdUI);
 	afx_msg void OnDebugreport();
 	afx_msg void OnUpdateDebugreport(CCmdUI *pCmdUI);

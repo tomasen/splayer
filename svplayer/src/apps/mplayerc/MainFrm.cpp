@@ -643,7 +643,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 
 	//WS_EX_NOACTIVATE
-	if(!m_wndNewOSD.CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, _T("STATIC"), _T("OSD"), WS_POPUP, CRect( 20,20,60,60 ) , this,  0)){
+	if(!m_wndNewOSD.CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, _T("STATIC"), _T("OSD"), WS_POPUP, CRect( 20,20,60,35 ) , this,  0)){
 		AfxMessageBox(_T("OSD ´´½¨Ê§°Ü£¡"));
 	}
 

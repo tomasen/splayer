@@ -36,6 +36,7 @@ BEGIN_MESSAGE_MAP(CNEWOSDWnd, CWnd)
 	ON_WM_PAINT()
 	ON_WM_NCPAINT()
 	ON_WM_ERASEBKGND()
+	ON_WM_ENABLE()
 END_MESSAGE_MAP()
 
 
@@ -185,14 +186,19 @@ void CNEWOSDWnd::CountSize(){
 		mSize.cx = 0;
 
 	}else{
-		try
+		if(CDC* pDC = GetDC())
 		{
-			CPaintDC dc(this);
-			HFONT holdft = (HFONT)dc.SelectObject(m_statft); 
-			mSize = dc.GetTextExtent(m_osdStr); 
+			CDC dcMemory;
+			dcMemory.CreateCompatibleDC(pDC);
+			HFONT holdft = (HFONT)dcMemory.SelectObject(m_statft); 
+			mSize = dcMemory.GetTextExtent(m_osdStr); 
+			dcMemory.SelectObject(holdft);
+			
+			ReleaseDC(pDC);
 			mSize.cx += 4;
+
 		}
-		catch (...)
+		else
 		{
 			mSize.cx = 0;
 			m_osdStr.Empty();
@@ -233,4 +239,15 @@ BOOL CNEWOSDWnd::OnEraseBkgnd(CDC* pDC)
 	GetClientRect(&r);
 	pDC->FillSolidRect(&r, 0x00000000);
 	return TRUE;//CWnd::OnEraseBkgnd(pDC);
+}
+
+void CNEWOSDWnd::OnEnable(BOOL bEnable)
+{
+	if(!bEnable){
+		//ShowWindow(SW_HIDE);
+		return;
+	}
+	CWnd::OnEnable(bEnable);
+
+	
 }

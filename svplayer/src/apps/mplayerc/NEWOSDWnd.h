@@ -9,7 +9,7 @@ class CNEWOSDWnd : public CWnd
 	DECLARE_DYNAMIC(CNEWOSDWnd)
 	enum {IDT_HIDE = 1};
 	CRgn m_rgn;
-
+	CDC m_dc;
 public:
 	CNEWOSDWnd();
 	virtual ~CNEWOSDWnd();
@@ -37,6 +37,7 @@ public:
 
 	afx_msg void OnNcPaint();
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnEnable(BOOL bEnable);
 };
 
 

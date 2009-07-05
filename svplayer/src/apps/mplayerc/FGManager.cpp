@@ -2315,7 +2315,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 				szLog.Format(_T("Loading Filter %s %s %s "), CStringFromGUID(fo->clsid) ,fo->path, CStringW(fo->name) );
 				SVP_LogMsg(szLog);
 				if(pFGF){
-					if(szFPath.Find(_T("NeSplitter.ax"))){
+					if(szFPath.Find(_T("NeSplitter.ax")) > 0){
 						pFGF->m_extensions.AddTail(_T(".ts"));
 						pFGF->m_extensions.AddTail(_T(".m2ts"));
 						m_source.AddTail(pFGF);

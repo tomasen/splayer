@@ -1218,9 +1218,9 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 			if(GetForegroundWindow() != this){
 				COLORADJUSTMENT cadj;
 				hdc.GetColorAdjustment(&cadj);
-				cadj.caRedGamma = 11000;
-				cadj.caGreenGamma = 11000;
-				cadj.caBlueGamma = 11000;
+				cadj.caRedGamma = 15000;
+				cadj.caGreenGamma = 15000;
+				cadj.caBlueGamma = 15000;
 				cadj.caSize = sizeof(cadj);
 				hdc.SetColorAdjustment(&cadj);
 			}

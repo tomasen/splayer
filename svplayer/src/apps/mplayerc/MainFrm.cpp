@@ -1496,7 +1496,7 @@ void CMainFrame::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
 		CRect r;
 		//for(int i = 0; ::GetMenuItemRect(m_hWnd, mbi.hMenu, i, &r); i++)
 		//lpMMI->ptMinTrackSize.x += r.Width();
-		lpMMI->ptMinTrackSize.x = max(DEFCLIENTW, lpMMI->ptMinTrackSize.x);
+		lpMMI->ptMinTrackSize.x = max(310, lpMMI->ptMinTrackSize.x);
 	}
 	if(style&WS_THICKFRAME) lpMMI->ptMinTrackSize.x += GetSystemMetrics((style&WS_CAPTION)?SM_CXSIZEFRAME:SM_CXFIXEDFRAME)*2;
 
@@ -1506,7 +1506,7 @@ void CMainFrame::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
 	::GetMenuBarInfo(m_hWnd, OBJID_MENU, 0, &mbi);*/
 
 
-	lpMMI->ptMinTrackSize.y = 0;
+	lpMMI->ptMinTrackSize.y = 40;
 	if(style&WS_CAPTION) lpMMI->ptMinTrackSize.y += GetSystemMetrics(SM_CYCAPTION);
 	if(style&WS_THICKFRAME) lpMMI->ptMinTrackSize.y += GetSystemMetrics((style&WS_CAPTION)?SM_CYSIZEFRAME:SM_CYFIXEDFRAME)*2;
 	//lpMMI->ptMinTrackSize.y += (mbi.rcBar.bottom - mbi.rcBar.top);
@@ -1534,7 +1534,7 @@ void CMainFrame::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
 	//SVP_LogMsg(szLog);
 
 	
-	lpMMI->ptMinTrackSize.y = max(lpMMI->ptMinTrackSize.y, DEFCLIENTH);
+	//lpMMI->ptMinTrackSize.y = max(lpMMI->ptMinTrackSize.y, DEFCLIENTH);
 
 	if(IsCaptionMenuHidden()){
 		lpMMI->ptMinTrackSize.x = 80;
@@ -11191,6 +11191,7 @@ void CMainFrame::SetupSubtitlesSubMenu(int subid)
 		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, id++, ResStr(IDS_SUBTITLES_ENABLE));
 		pSub->AppendMenu(MF_SEPARATOR);
 	}
+	BOOL HavSubs = FALSE;
 
 	while(pos)
 	{
@@ -11207,11 +11208,13 @@ void CMainFrame::SetupSubtitlesSubMenu(int subid)
 				name.Replace(_T("&"), _T("&&"));
 
 				pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, id++, name);
+				HavSubs = true;
 				CoTaskMemFree(pName);
 			}
 			else
 			{
 				pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, id++, _T("<Unknown>"));
+				HavSubs = true;
 			}
 		}
 
@@ -11225,7 +11228,7 @@ void CMainFrame::SetupSubtitlesSubMenu(int subid)
 			else
 				m_pSubStreams.GetAt(pos)->GetClassID(&next);
 
-			if(cur != next)
+			if(cur != next && HavSubs )
 				pSub->AppendMenu(MF_SEPARATOR);
 		}
 	}

@@ -2275,6 +2275,12 @@ void CMainFrame::OnUpdateSubtitleFontChange(CCmdUI* pCmdUI)
 		fEnable = true;
 	pCmdUI->Enable(fEnable);
 }
+bool CMainFrame::IsSubLoaded(){
+	if( (m_pSubStreams.GetCount() > 0 &&  ( m_iSubtitleSel >= 0 || m_iSubtitleSel2 >= 0 )  ) &&  IsSomethingLoaded()) 
+		return true;
+
+	return false;
+}
 void CMainFrame::OnUpdatePlaySubDelay(CCmdUI* pCmdUI)
 {
 	bool fEnable = false;

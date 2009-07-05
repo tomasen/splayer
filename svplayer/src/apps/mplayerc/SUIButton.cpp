@@ -256,7 +256,10 @@ void CSUIBtnList::SetDisableStat(UINT iMsgID, BOOL bDisable){
 	while(pos){
 		CSUIButton* cBtn =  GetNext(pos);
 		if( iMsgID == cBtn->m_htMsgID ){
-			cBtn->m_stat = 4;
+			if(bDisable)
+				cBtn->m_stat = 3;
+			else
+				cBtn->m_stat = 0;
 			break;
 		}
 	}
@@ -278,7 +281,10 @@ void CSUIBtnList::SetClickedStat(UINT iMsgID, BOOL bClicked){
 	while(pos){
 		CSUIButton* cBtn =  GetNext(pos);
 		if( iMsgID == cBtn->m_htMsgID ){
-			cBtn->m_stat = 3;
+			if(bClicked)
+				cBtn->m_stat = 2;
+			else
+				cBtn->m_stat = 0;
 			break;
 		}
 	}

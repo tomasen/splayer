@@ -1348,6 +1348,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\newui\BTN_OPENFILE_SMALL.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\newui\BTN_PAUSE.bmp"
 				>
 			</File>
@@ -1873,11 +1877,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 	</Files>

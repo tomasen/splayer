@@ -446,9 +446,13 @@ void CPlayerToolBar::UpdateButtonStat(){
 	m_btnList.SetHideStat( ID_PLAY_PAUSE , !fShow );
 	BOOL bLogo = pFrame->IsSomethingLoaded();
 	m_btnList.SetHideStat(_T("SPLAYER.BMP"), bLogo);
+	m_btnList.SetDisableStat(ID_SUBLANGSWITCH, !bLogo);
 	if(!bLogo){
 		m_timerstr.Empty();
 	}
+	BOOL bSub = pFrame->IsSubLoaded();
+	m_btnList.SetDisableStat( ID_SUBDELAYINC, !bSub);
+	m_btnList.SetDisableStat( ID_SUBDELAYDEC, !bSub);
 	ReCalcBtnPos();
 }
 void CPlayerToolBar::OnNcPaint() // when using XP styles the NC area isn't drawn for our toolbar...

@@ -1423,7 +1423,7 @@ BTN_SUB_DELAY_INCREASE.BMP BITMAP                  "res\\newui\\BTN_SUB_DELAY_IN
 BTN_SETTING.BMP         BITMAP                  "res\\newui\\BTN_SETTING.bmp"
 BTN_CAPTURE.BMP         BITMAP                  "res\\newui\\BTN_CAPTURE.bmp"
 WATERMARK2.BMP          BITMAP                  "res\\newui\\watermark2.bmp"
-BTN_OPENFILE_SMALL.BMP        BITMAP                  "res\\newui\\BTN_OPENFILE_SMALL.bmp"
+BTN_OPENFILE_SMALL.BMP  BITMAP                  "res\\newui\\BTN_OPENFILE_SMALL.bmp"
 BTN_BIGOPEN.BMP         BITMAP                  "res\\newui\\BTN_BIGOPEN.bmp"
 BTN_OPENADV.BMP         BITMAP                  "res\\newui\\BTN_OPENADV2.bmp"
 BTN_MINTOTRAY.BMP       BITMAP                  "res\\newui\\BTN_MINTOTRAY.bmp"
@@ -1943,7 +1943,7 @@ BEGIN
             MENUITEM "当前文件",                        ID_DELETECURFILE
             MENUITEM "当前文件夹",                       ID_DELCURFOLDER
         END
-        POPUP "在最前"
+        POPUP "在最前(前端显示)"
         BEGIN
             MENUITEM "从不",                          ID_ONTOP_NEVER
             MENUITEM "总在最前",                        ID_ONTOP_ALWAYS
@@ -2070,8 +2070,6 @@ BEGIN
             END
             MENUITEM "界面背景设置...",                   ID_CHANGEBACKGROUND
             MENUITEM "显示亮度控制栏",                     ID_SHOWCOLORCONTROLBAR
-            MENUITEM SEPARATOR
-            MENUITEM "属性(&r)",                      ID_FILE_PROPERTIES
             MENUITEM SEPARATOR
             MENUITEM "生成DEBUG反馈信息",                 ID_DEBUGREPORT
         END

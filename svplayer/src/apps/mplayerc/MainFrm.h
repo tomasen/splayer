@@ -356,6 +356,7 @@ public:
 	bool IsFrameLessWindow() {return(m_fFullScreen || AfxGetAppSettings().fHideCaptionMenu);}
 	bool IsCaptionMenuHidden() {return(!m_fFullScreen && AfxGetAppSettings().fHideCaptionMenu);}
 	bool IsSomethingLoaded() {return(m_iMediaLoadState != MLS_CLOSED);}
+	bool IsSubLoaded();
 	bool IsPlaylistEmpty() {return(m_wndPlaylistBar.GetCount() == 0);}
 	bool IsInteractiveVideo() {return(AfxGetAppSettings().fIntRealMedia && m_fRealMediaGraph || m_fShockwaveGraph);}
 

@@ -243,10 +243,10 @@ BOOL CNEWOSDWnd::OnEraseBkgnd(CDC* pDC)
 
 void CNEWOSDWnd::OnEnable(BOOL bEnable)
 {
-	if(!bEnable){
+	//if(!bEnable){
 		//ShowWindow(SW_HIDE);
 		return;
-	}
+	//}
 	CWnd::OnEnable(bEnable);
 
 	

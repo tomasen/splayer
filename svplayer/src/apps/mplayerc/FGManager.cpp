@@ -2285,8 +2285,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("PMPSplitter.ax")) );
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("rms.ax")) );
 	
-	//if(!s.fUseInternalTSSpliter)
-		szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("NeSplitter.ax")) ); 
+	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("NeSplitter.ax")) ); 
 
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("scmpack.dll")) );
 	
@@ -2316,7 +2315,11 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 				szLog.Format(_T("Loading Filter %s %s %s "), CStringFromGUID(fo->clsid) ,fo->path, CStringW(fo->name) );
 				SVP_LogMsg(szLog);
 				if(pFGF){
-					if(szFPath.Find(_T("rlapedec.ax")) > 0){
+					if(szFPath.Find(_T("NeSplitter.ax"))){
+						pFGF->m_extensions.AddTail(_T(".ts"));
+						pFGF->m_extensions.AddTail(_T(".m2ts"));
+						m_source.AddTail(pFGF);
+					}else if(szFPath.Find(_T("rlapedec.ax")) > 0){
 						pFGF->m_extensions.AddTail(_T(".ape"));
 						m_source.AddTail(pFGF);
 					}else if(szFPath.Find(_T("RadGtSplitter.ax")) > 0){

@@ -210,7 +210,7 @@ UESAPI.prototype = {
                 }
                  oOption = document.createElement("OPTION");
                 oSelect.options.add(oOption);
-                oOption.innerText = "ffmpeg(内置)";
+                oOption.innerText = "射手高清(ffmpeg)";
                 oOption.value = "internalGPUdec";
                 
                 if(!oSelect.value){
@@ -224,7 +224,7 @@ UESAPI.prototype = {
              
              oOption = document.createElement("OPTION");
 	            oSelect.options.add(oOption);
-                oOption.innerText = "ffmpeg(内置)";
+                oOption.innerText = "射手高清(ffmpeg)";
                 oOption.value = "internaldec";
 
                     
@@ -237,7 +237,7 @@ UESAPI.prototype = {
 	    var noMixer = 0;
 	    switch (vDecoder){
 	        case "internalGPUdec":
-	        remark = "ffmpeg: 射手播放器内置的显卡硬件加速(GPU加速)高清解码器";
+	        remark = "ffmpeg: 射手播放器内置的显卡硬件加速(GPU加速)高清解码器。无画面比例问题。";
 	        break;
 	        case "PDVDGPUdec":
 	        remark = "PowerDVD: 射手播放器<a href='http://splayer.org/files/netSetup.exe'>高清版安装包</a>中包含的可选组件。PowerDVD的显卡加速高清解码器支持所有主流中高档显卡。但是对于某些高清视频，不能正确识别视频宽高比。";
@@ -247,7 +247,7 @@ UESAPI.prototype = {
 	        noMixer = 1;
 	        break;
 	        case "internaldec":
-	        remark = "ffmpeg: 射手播放器内置的高清解码器";
+	        remark = "ffmpeg: 射手播放器内置的高清解码器。无画面比例问题。";
 	        break;
 	        case "CoreAVCdec":
 	        remark = "CoreAVC: 射手播放器安装包中包含的可选组件。公认画质非常好，但是不兼容播放器的内置亮度调节功能。";
@@ -352,8 +352,8 @@ function myInit(){
 <i>小窍门：启用智能拖拽功能后，鼠标在画面右上角拖拽可以缩放画面，在画面中心拖拽可以移动画面</i>
 </div>
 <div id="videosetting" class="hiddenarea">
-显示输出方式：<select id="videorender" onchange="ueAPI.useDX9Mixer(this.value == 'DX9' )"><option value="DX9" >DirectX 9</option>
-<option value="DX7">DirectX 7(适合低配置硬件)</option>
+显示输出方式：<select id="videorender" onchange="ueAPI.useDX9Mixer(this.value == 'DX9' )"><option value="DX9" >智能高配置(DX9)</option>
+<option value="DX7">智能低配置(DX7)</option>
 <option value="ADV">使用自定义高级设置</option></select><br />
 高清解码方式：<select id="decoder" onchange="ueAPI.selectDecoder(this.value);" ></select> 
 <input type="checkbox" id="gpuacelbase" onclick="ueAPI.useGPUAcel(this.checked);" /><label for="gpuacelbase">显卡硬件（GPU）加速 </label> <br />
@@ -363,7 +363,8 @@ function myInit(){
 <input type="checkbox" id="lockbackbuff" /><label for="lockbackbuff" title="解决运动画面中水平错位的问题">修正画面横向错位问题（少许降低性能）</label><br />
 <br />
 <fieldset style="display:none"><legend>专家设置</legend>
-<input type="checkbox" id="internaltspliteronly" /><label for="internaltspliteronly" title="使用内置TS分离器">仅使用内置TS分离器（方便选择TS音轨，但不兼容某些TS）</label><br />
+<input type="checkbox" id="internaltspliteronly" /><label for="internaltspliteronly" title="使用兼容性更好的TS分离器">使用兼容性更好的TS分离器（解决TS文件无画面的问题，但不方便选择TS音轨）</label><br />
+
 </fieldset>
 <div id='gpulist'></div>
 </div>

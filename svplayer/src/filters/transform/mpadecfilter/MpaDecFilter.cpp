@@ -1424,15 +1424,17 @@ HRESULT CMpaDecFilter::ProcessMPA()
 			{
 				memmove(m_buff.GetData(), m_stream.this_frame, m_stream.bufend - m_stream.this_frame);
 				m_buff.SetCount(m_stream.bufend - m_stream.this_frame);
+				//SVP_LogMsg3("MAD ERROR_BUFLEN");
 				break;
 			}
 			if( m_stream.error == MAD_ERROR_BADDATAPTR){
+				//SVP_LogMsg3("MAD MAD_ERROR_BADDATAPTR");
 				continue;
 			}
 
 			if(!MAD_RECOVERABLE(m_stream.error))
 			{
-				TRACE(_T("*m_stream.error == %d\n"), m_stream.error);
+				//SVP_LogMsg3(("MAD *m_stream.error == %d\n"), m_stream.error);
 				return E_FAIL;
 			}
 
@@ -1455,8 +1457,12 @@ continue;
 		mad_synth_frame(&m_synth, &m_frame);
 
 		WAVEFORMATEX* wfein = (WAVEFORMATEX*)m_pInput->CurrentMediaType().Format();
-		if(wfein->nChannels != m_synth.pcm.channels || wfein->nSamplesPerSec != m_synth.pcm.samplerate)
-			continue;
+		if(wfein->nChannels != m_synth.pcm.channels || wfein->nSamplesPerSec != m_synth.pcm.samplerate){
+			//SVP_LogMsg3(("MAD channels %d %d samplerate %d %d \n"),wfein->nChannels , m_synth.pcm.channels, wfein->nSamplesPerSec , m_synth.pcm.samplerate);
+			//Some time this does happened
+
+			//continue;
+		}
 
 		const mad_fixed_t* left_ch   = m_synth.pcm.samples[0];
 		const mad_fixed_t* right_ch  = m_synth.pcm.samples[1];
@@ -1473,8 +1479,10 @@ continue;
 
 
 		HRESULT hr;
-		if(S_OK != (hr = Deliver(pBuff, m_synth.pcm.samplerate, m_synth.pcm.channels)))
+		if(S_OK != (hr = Deliver(pBuff, m_synth.pcm.samplerate, m_synth.pcm.channels))){
+			//SVP_LogMsg3(("MAD Deliver Error") );
 			return hr;
+		}
 	}
 
 	return S_OK;

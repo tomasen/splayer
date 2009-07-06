@@ -102,6 +102,7 @@ SRCS_C=\
 		$(LAVC_DIR)/cook.c \
 		$(LAVC_DIR)/ratecontrol.c \
 		$(LAVC_DIR)/mpegaudio_parser.c \
+		$(LAVC_DIR)/mpegaudio.c \
 		$(LAVC_DIR)/ra144.c \
 		$(LAVC_DIR)/ra288.c \
 		$(LAVC_DIR)/mpegaudiodata.c \

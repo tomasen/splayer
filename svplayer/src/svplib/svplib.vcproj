@@ -115,7 +115,7 @@
 				AdditionalOptions="/D &quot;CURL_STATICLIB&quot;"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories=""
+				AdditionalIncludeDirectories=".\curl\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"

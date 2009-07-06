@@ -72,8 +72,8 @@ function UESAPI(){
 }
 UESAPI.prototype = {
     setcurblock:function(idname){
-        this.curblock = idname;
-        this.changeBlockI = setTimeout("ueAPI.setcurblockchk('"+idname+"')" , 800) ;
+        //this.curblock = idname;
+        //this.changeBlockI = setTimeout("ueAPI.setcurblockchk('"+idname+"')" , 800) ;
     },
     cancelsetcurblock:function(idname){
         if(this.changeBlockI)

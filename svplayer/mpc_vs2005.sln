@@ -322,6 +322,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BaseClasses", "src\filters\BaseClasses\baseclasses_vs2005.vcproj", "{E8A3F6FA-AE1C-4C8E-A0B6-9C8480324EAA}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "svplib", "src\svplib\svplib.vcproj", "{FAB25039-6D61-4729-9940-76FC6FDC806E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{87EE9DA4-DE1E-4448-8324-183C98DCA588} = {87EE9DA4-DE1E-4448-8324-183C98DCA588}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Updater", "Updater\Updater.vcproj", "{5DC7AA08-46C2-481E-99E1-253ABA337937}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -340,6 +343,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "flacsource", "src\filters\source\flacsource\Flacsource.vcproj", "{916D0FC1-1D86-487A-82DE-37FBEE43FB34}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libvorbisidec", "src\filters\transform\mpadecfilter\libvorbisidec\libvorbisidec.vcproj", "{A7134255-DFF3-42F7-9BC2-FAC6E71CFFAE}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "curllib", "src\svplib\curl\lib\curllib.vcproj", "{87EE9DA4-DE1E-4448-8324-183C98DCA588}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1707,6 +1712,24 @@ Global
 		{A7134255-DFF3-42F7-9BC2-FAC6E71CFFAE}.Release|Win32.Build.0 = Release|Win32
 		{A7134255-DFF3-42F7-9BC2-FAC6E71CFFAE}.Release|x64.ActiveCfg = Release|x64
 		{A7134255-DFF3-42F7-9BC2-FAC6E71CFFAE}.Release|x64.Build.0 = Release|x64
+		{87EE9DA4-DE1E-4448-8324-183C98DCA588}.Debug Unicode lib|Win32.ActiveCfg = Debug|Win32
+		{87EE9DA4-DE1E-4448-8324-183C98DCA588}.Debug Unicode lib|Win32.Build.0 = Debug|Win32
+		{87EE9DA4-DE1E-4448-8324-183C98DCA588}.Debug Unicode lib|x64.ActiveCfg = Debug|Win32
+		{87EE9DA4-DE1E-4448-8324-183C98DCA588}.Debug Unicode|Win32.ActiveCfg = Debug|Win32
+		{87EE9DA4-DE1E-4448-8324-183C98DCA588}.Debug Unicode|Win32.Build.0 = Debug|Win32
+		{87EE9DA4-DE1E-4448-8324-183C98DCA588}.Debug Unicode|x64.ActiveCfg = Debug|Win32
+		{87EE9DA4-DE1E-4448-8324-183C98DCA588}.Debug|Win32.ActiveCfg = Debug|Win32
+		{87EE9DA4-DE1E-4448-8324-183C98DCA588}.Debug|Win32.Build.0 = Debug|Win32
+		{87EE9DA4-DE1E-4448-8324-183C98DCA588}.Debug|x64.ActiveCfg = Debug|Win32
+		{87EE9DA4-DE1E-4448-8324-183C98DCA588}.Release Unicode lib|Win32.ActiveCfg = Release|Win32
+		{87EE9DA4-DE1E-4448-8324-183C98DCA588}.Release Unicode lib|Win32.Build.0 = Release|Win32
+		{87EE9DA4-DE1E-4448-8324-183C98DCA588}.Release Unicode lib|x64.ActiveCfg = Release|Win32
+		{87EE9DA4-DE1E-4448-8324-183C98DCA588}.Release Unicode|Win32.ActiveCfg = Release|Win32
+		{87EE9DA4-DE1E-4448-8324-183C98DCA588}.Release Unicode|Win32.Build.0 = Release|Win32
+		{87EE9DA4-DE1E-4448-8324-183C98DCA588}.Release Unicode|x64.ActiveCfg = Release|Win32
+		{87EE9DA4-DE1E-4448-8324-183C98DCA588}.Release|Win32.ActiveCfg = Release|Win32
+		{87EE9DA4-DE1E-4448-8324-183C98DCA588}.Release|Win32.Build.0 = Release|Win32
+		{87EE9DA4-DE1E-4448-8324-183C98DCA588}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1780,6 +1803,7 @@ Global
 		{FC70988B-1AE5-4381-866D-4F405E28AC42} = {D9A0529B-9EC4-4D30-9E05-A5D533739D95}
 		{D514EA4D-EAFB-47A9-A437-A582CA571251} = {D9A0529B-9EC4-4D30-9E05-A5D533739D95}
 		{FAB25039-6D61-4729-9940-76FC6FDC806E} = {D9A0529B-9EC4-4D30-9E05-A5D533739D95}
+		{87EE9DA4-DE1E-4448-8324-183C98DCA588} = {D9A0529B-9EC4-4D30-9E05-A5D533739D95}
 		{03208025-D5C2-426A-B0FA-251D4338F30C} = {2913B7E4-7A8B-43D5-A60B-345A0782816A}
 		{4CC7AE86-3E0A-430A-BFF4-BF00204CAFB0} = {2913B7E4-7A8B-43D5-A60B-345A0782816A}
 		{61E6EB4D-2F1A-443B-94B0-E8200B26E99F} = {2913B7E4-7A8B-43D5-A60B-345A0782816A}

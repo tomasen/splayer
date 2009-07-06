@@ -32,7 +32,7 @@
 #include <afxpriv.h>
 
 #include <atlconv.h>
-#include <atlrx.h>
+#include "..\..\..\lib\ATL Server\include\atlrx.h"
 #include <atlsync.h>
 
 #include "OpenFileDlg.h"

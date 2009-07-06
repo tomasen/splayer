@@ -150,24 +150,24 @@ void avcodec_register_all(void)
     //REGISTER_DECODER (PCM_MULAW,pcm_mulaw);
 
     /* ADPCM codecs */
-    //REGISTER_DECODER (ADPCM_4XM, adpcm_4xm);
-    //REGISTER_DECODER (ADPCM_CT, adpcm_ct);
-    //REGISTER_DECODER (ADPCM_EA, adpcm_ea);
-    //REGISTER_DECODER (ADPCM_G726, adpcm_g726);
-    //REGISTER_DECODER (ADPCM_IMA_AMV, adpcm_ima_amv);
-    //REGISTER_DECODER (ADPCM_IMA_DK3, adpcm_ima_dk3);
-    //REGISTER_DECODER (ADPCM_IMA_DK4, adpcm_ima_dk4);
-    //REGISTER_DECODER (ADPCM_IMA_QT, adpcm_ima_qt);
-    //REGISTER_DECODER (ADPCM_IMA_SMJPEG, adpcm_ima_smjpeg);
-    //REGISTER_DECODER (ADPCM_IMA_WAV, adpcm_ima_wav);
-    //REGISTER_DECODER (ADPCM_IMA_WS, adpcm_ima_ws);
-    //REGISTER_DECODER (ADPCM_MS, adpcm_ms);
-    //REGISTER_DECODER (ADPCM_SBPRO_2, adpcm_sbpro_2);
-    //REGISTER_DECODER (ADPCM_SBPRO_3, adpcm_sbpro_3);
-    //REGISTER_DECODER (ADPCM_SBPRO_4, adpcm_sbpro_4);
-    //REGISTER_DECODER (ADPCM_SWF, adpcm_swf);
-    //REGISTER_DECODER (ADPCM_XA, adpcm_xa);
-    //REGISTER_DECODER (ADPCM_YAMAHA, adpcm_yamaha);
+    REGISTER_DECODER (ADPCM_4XM, adpcm_4xm);
+    REGISTER_DECODER (ADPCM_CT, adpcm_ct);
+    REGISTER_DECODER (ADPCM_EA, adpcm_ea);
+    REGISTER_DECODER (ADPCM_G726, adpcm_g726);
+    REGISTER_DECODER (ADPCM_IMA_AMV, adpcm_ima_amv);
+    REGISTER_DECODER (ADPCM_IMA_DK3, adpcm_ima_dk3);
+    REGISTER_DECODER (ADPCM_IMA_DK4, adpcm_ima_dk4);
+    REGISTER_DECODER (ADPCM_IMA_QT, adpcm_ima_qt);
+    REGISTER_DECODER (ADPCM_IMA_SMJPEG, adpcm_ima_smjpeg);
+    REGISTER_DECODER (ADPCM_IMA_WAV, adpcm_ima_wav);
+    REGISTER_DECODER (ADPCM_IMA_WS, adpcm_ima_ws);
+    REGISTER_DECODER (ADPCM_MS, adpcm_ms);
+    REGISTER_DECODER (ADPCM_SBPRO_2, adpcm_sbpro_2);
+    REGISTER_DECODER (ADPCM_SBPRO_3, adpcm_sbpro_3);
+    REGISTER_DECODER (ADPCM_SBPRO_4, adpcm_sbpro_4);
+    REGISTER_DECODER (ADPCM_SWF, adpcm_swf);
+    REGISTER_DECODER (ADPCM_XA, adpcm_xa);
+    REGISTER_DECODER (ADPCM_YAMAHA, adpcm_yamaha);
     
     /* external libraries */
     REGISTER_DECODER (LIBAMR_NB, libamr_nb);

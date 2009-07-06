@@ -51,7 +51,7 @@
 				AdditionalOptions="/D &quot;CURL_STATICLIB&quot;"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories=".,..\include"
+				AdditionalIncludeDirectories="..\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;BUILDING_LIBCURL"
 				StringPooling="true"
 				RuntimeLibrary="0"

@@ -99,20 +99,20 @@
  CODEC_OP(CODEC_ID_PCM_U8            ,112,"") \
  CODEC_OP(CODEC_ID_PCM_MULAW         ,113,"mulaw") \
  CODEC_OP(CODEC_ID_PCM_ALAW          ,114,"alaw") \
- CODEC_OP(CODEC_ID_ADPCM_IMA_QT      ,115,"adpcm ima qt") \
- CODEC_OP(CODEC_ID_ADPCM_IMA_WAV     ,116,"adpcm ima wav") \
- CODEC_OP(CODEC_ID_ADPCM_MS          ,117,"adpcm ms") \
- CODEC_OP(CODEC_ID_ADPCM_IMA_DK3     ,118,"adpcm ima dk3") \
- CODEC_OP(CODEC_ID_ADPCM_IMA_DK4     ,119,"adpcm ima dk4") \
- CODEC_OP(CODEC_ID_ADPCM_IMA_WS      ,120,"adpcm ima ws") \
- CODEC_OP(CODEC_ID_ADPCM_IMA_SMJPEG  ,121,"adpcm ima smjpeg") \
- CODEC_OP(CODEC_ID_ADPCM_4XM         ,122,"adpcm 4xm") \
- CODEC_OP(CODEC_ID_ADPCM_XA          ,123,"adpcm xa") \
- CODEC_OP(CODEC_ID_ADPCM_EA          ,124,"adpcm ea") \
- CODEC_OP(CODEC_ID_ADPCM_G726        ,125,"adpcm g726") \
- CODEC_OP(CODEC_ID_ADPCM_CT          ,126,"adpcm ct") \
- CODEC_OP(CODEC_ID_ADPCM_SWF         ,127,"adpcm swf") \
- CODEC_OP(CODEC_ID_ADPCM_YAMAHA      ,128,"adpcm yamaha") \
+ CODEC_OP(CODEC_ID_ADPCM_IMA_QT      ,115,"adpcm") \
+ CODEC_OP(CODEC_ID_ADPCM_IMA_WAV     ,116,"adpcm") \
+ CODEC_OP(CODEC_ID_ADPCM_MS          ,117,"adpcm") \
+ CODEC_OP(CODEC_ID_ADPCM_IMA_DK3     ,118,"adpcm") \
+ CODEC_OP(CODEC_ID_ADPCM_IMA_DK4     ,119,"adpcm") \
+ CODEC_OP(CODEC_ID_ADPCM_IMA_WS      ,120,"adpcm") \
+ CODEC_OP(CODEC_ID_ADPCM_IMA_SMJPEG  ,121,"adpcm") \
+ CODEC_OP(CODEC_ID_ADPCM_4XM         ,122,"adpcm") \
+ CODEC_OP(CODEC_ID_ADPCM_XA          ,123,"adpcm") \
+ CODEC_OP(CODEC_ID_ADPCM_EA          ,124,"adpcm") \
+ CODEC_OP(CODEC_ID_ADPCM_G726        ,125,"adpcm") \
+ CODEC_OP(CODEC_ID_ADPCM_CT          ,126,"adpcm") \
+ CODEC_OP(CODEC_ID_ADPCM_SWF         ,127,"adpcm") \
+ CODEC_OP(CODEC_ID_ADPCM_YAMAHA      ,128,"adpcm") \
  CODEC_OP(CODEC_ID_ADPCM_SBPRO_2     ,129,"") \
  CODEC_OP(CODEC_ID_ADPCM_SBPRO_3     ,130,"") \
  CODEC_OP(CODEC_ID_ADPCM_SBPRO_4     ,131,"") \

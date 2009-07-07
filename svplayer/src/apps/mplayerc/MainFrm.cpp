@@ -13535,7 +13535,9 @@ void CMainFrame::OnToggleSPDIF(){
 	AppSettings& s = AfxGetAppSettings();
 	
 	s.fbUseSPDIF = !s.fbUseSPDIF;
-
+	if(IsSomethingLoaded()){
+		ReRenderOrLoadMedia();
+	}
 	
 }
 void CMainFrame::OnUpdateToggleSPDIF(CCmdUI *pCmdUI){

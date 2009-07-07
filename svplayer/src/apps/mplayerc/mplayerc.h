@@ -479,6 +479,7 @@ public:
 		bool fUseDVDPath;
 		LCID idMenuLang, idAudioLang, idSubtitlesLang;
 		bool fAutoSpeakerConf;
+		bool fbUseSPDIF;
 
 		STSStyle subdefstyle;
 		STSStyle subdefstyle2;

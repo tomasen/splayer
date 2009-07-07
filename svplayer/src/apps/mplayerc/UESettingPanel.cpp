@@ -269,7 +269,7 @@ BOOL CUESettingPanel::OnInitDialog()
 	}
 	m_sgi_UseWaveOutDeviceByDefault = s.bUseWaveOutDeviceByDefault;
 	m_sgs_speaker.Format(_T("%d") ,  s.iDecSpeakers % 1000 );
-	m_sgi_usespdif = !!( s.iDecSpeakers >= 1000 );
+	m_sgi_usespdif = s.fbUseSPDIF;
 	//m_sgi_downsample44k = s.fDownSampleTo441;
 
 	m_sgi_chkautozoom = s.fRememberZoomLevel;
@@ -540,10 +540,11 @@ void CUESettingPanel::ApplyAllSetting(){
 			m_ac3spkcfg |= A52_LFE;
 			m_dtsspkcfg |= DTS_LFE;
 		}
+		s.fbUseSPDIF = !!m_sgi_usespdif;
 		if(m_sgi_usespdif){
-			iSS += 1000;
-			m_ac3spkcfg = -m_ac3spkcfg;
-			m_dtsspkcfg = -m_dtsspkcfg;
+			//iSS += 1000;
+			//m_ac3spkcfg = -m_ac3spkcfg;
+			//m_dtsspkcfg = -m_dtsspkcfg;
 		}
 		s.iDecSpeakers = iSS;
 		if(m_pMDF){

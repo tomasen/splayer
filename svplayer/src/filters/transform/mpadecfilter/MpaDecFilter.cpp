@@ -296,6 +296,7 @@ CMpaDecFilter::CMpaDecFilter(LPUNKNOWN lpunk, HRESULT* phr)
 	, m_iSampleFormat(SF_PCM16)
 	, m_fNormalize(false)
 	, m_boost(1)
+	, m_fbUseSPDIF(false)
 {
 	if(phr) *phr = S_OK;
 
@@ -752,24 +753,27 @@ HRESULT CMpaDecFilter::ProcessA52(BYTE* p, int buffsize, int& size, bool& fEnoug
 			if((abs(iSpeakerConfig)&A52_CHANNEL_MASK) > 10 ){
 				iSpeakerConfig = abs(iSpeakerConfig) & ~A52_CHANNEL_MASK | A52_STEREO;
 				SetSpeakerConfig(ac3, iSpeakerConfig);
+				//SVP_LogMsg3(" Fix AC3 Setting");
 				//this shouldn't happen
 			}
 			BOOL decIt = true;
 
 			
-			if(iSpeakerConfig < 0 && ((WAVEFORMATEX*)(m_pOutput->CurrentMediaType().Format()))->wFormatTag == WAVE_FORMAT_DOLBY_AC3_SPDIF ) // 
+			if( m_fbUseSPDIF ) // 
 			{
 				//SVP_LogMsg3(" ProcessA52 SPDIF");
 				HRESULT hr;
 				if(S_OK == (hr = Deliver(p, size, bit_rate, 0x0001))){
-					//return hr;
 					decIt = false;
 				}else{
-					iSpeakerConfig = -iSpeakerConfig;
+					//iSpeakerConfig = -iSpeakerConfig;
+					//SVP_LogMsg3(" ProcessA52 SPDIF FAIL");
+					return hr;
 				}
 			}
 			if(decIt)
 			{
+				//SVP_LogMsg3(" ProcessA52 Normal");
 				if(iSpeakerConfig < 0){
 					iSpeakerConfig = abs(iSpeakerConfig);
 					SetSpeakerConfig(ac3,iSpeakerConfig);
@@ -1051,12 +1055,12 @@ HRESULT CMpaDecFilter::ProcessDTS()
 					//this shouldn't happened
 				}
 				BOOL decIt = true;
-				if(iSpeakerConfig < 0 && ((WAVEFORMATEX*)(m_pOutput->CurrentMediaType().Format()))->wFormatTag == WAVE_FORMAT_DOLBY_AC3_SPDIF ) //  //if(iSpeakerConfig < 0)
+				if(m_fbUseSPDIF ) //  //if(iSpeakerConfig < 0)
 				{
 					HRESULT hr;
 					if(S_OK != (hr = Deliver(p, size, bit_rate, 0x000b))){
-						//return hr;
-						iSpeakerConfig = -iSpeakerConfig;
+						return hr;
+						//iSpeakerConfig = -iSpeakerConfig;
 						
 					}else{
 						decIt = false;
@@ -1882,27 +1886,23 @@ HRESULT CMpaDecFilter::GetMediaType(int iPosition, CMediaType* pmt)
 
 	if(iPosition < 0) return E_INVALIDARG;
 
-
-	CMediaType mt = m_pInput->CurrentMediaType();
-	const GUID& subtype = mt.subtype;
-	WAVEFORMATEX* wfe = (WAVEFORMATEX*)mt.Format();
-	BOOL bSettingIndicateSPDIF =  (GetSpeakerConfig(ac3) < 0 && (subtype == MEDIASUBTYPE_DOLBY_AC3 || 
-		subtype == MEDIASUBTYPE_WAVE_DOLBY_AC3 ||
-		subtype == MEDIASUBTYPE_DOLBY_DDPLUS ||
-		subtype == MEDIASUBTYPE_DOLBY_TRUEHD)
-		|| GetSpeakerConfig(dts) < 0 && (subtype == MEDIASUBTYPE_DTS || subtype == MEDIASUBTYPE_WAVE_DTS)) ;
-
-	if(!bSettingIndicateSPDIF && iPosition > 0 )
-	{
-		return VFW_S_NO_MORE_ITEMS;
-	}
-
-	if(iPosition > 1) {
+	if(iPosition > 0) {
 		return VFW_S_NO_MORE_ITEMS;
 	}
 	
+	CMediaType mt = m_pInput->CurrentMediaType();
+	const GUID& subtype = mt.subtype;
+	WAVEFORMATEX* wfe = (WAVEFORMATEX*)mt.Format(); // (GetSpeakerConfig(ac3) < 0  GetSpeakerConfig(dts) < 0 && 
+	BOOL bSettingIndicateSPDIF =  (subtype == MEDIASUBTYPE_DOLBY_AC3 || 
+		subtype == MEDIASUBTYPE_WAVE_DOLBY_AC3 ||
+		subtype == MEDIASUBTYPE_DOLBY_DDPLUS ||
+		subtype == MEDIASUBTYPE_DOLBY_TRUEHD
+		|| subtype == MEDIASUBTYPE_DTS || subtype == MEDIASUBTYPE_WAVE_DTS) ;
 
-	if ( iPosition == 0 && bSettingIndicateSPDIF)
+	CString szName(this->m_pName);
+	m_fbUseSPDIF = (szName.Find(_T("SPDIF")) > 0);
+
+	if ( m_fbUseSPDIF && bSettingIndicateSPDIF)
 	{
 		//SVP_LogMsg3("CreateMediaTypeSPDIF %d", iPosition);;
 		*pmt = CreateMediaTypeSPDIF();

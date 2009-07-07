@@ -851,6 +851,7 @@
 #define IDS_RS_OPTIONDECODER            14225
 #define IDS_RS_LOGOSTRETCH              14226
 #define IDS_RS_ULTRAFAST                14227
+#define IDS_RS_USESPDIF					14228
 #define IDD_DHTML_SETTING               20000
 #define IDR_DEFAULT1                    20006
 #define IDD_DEFAULT_PLAYER              20007

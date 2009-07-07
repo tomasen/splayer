@@ -1664,6 +1664,28 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_HDMV_LPCM_AUDIO);
 	m_transform.AddTail(pFGF);
 
+	if(s.fbUseSPDIF){
+		pFGF = new CFGFilterInternal<CMpaDecFilter>(
+			(tra & TRA_AC3) ? L"AC3 Audio Decoder SPDIF" : L"AC3 Audio Decoder SPDIF (low merit)",
+			(tra & TRA_AC3) ? (MERIT64_ABOVE_DSHOW+1) : MERIT64_UNLIKELY);
+		pFGF->AddType(MEDIATYPE_DVD_ENCRYPTED_PACK, MEDIASUBTYPE_DOLBY_AC3);
+		pFGF->AddType(MEDIATYPE_MPEG2_PACK, MEDIASUBTYPE_DOLBY_AC3);
+		pFGF->AddType(MEDIATYPE_MPEG2_PES, MEDIASUBTYPE_DOLBY_AC3);
+		pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_DOLBY_AC3);
+		pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_WAVE_DOLBY_AC3);
+		pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_DOLBY_EAC3);
+		m_transform.AddTail(pFGF);
+
+		pFGF = new CFGFilterInternal<CMpaDecFilter>(
+			(tra & TRA_DTS) ? L"DTS Decoder SPDIF" : L"DTS Decoder  SPDIF(low merit)",
+			(tra & TRA_DTS) ? ( MERIT64_ABOVE_DSHOW + 1) : MERIT64_UNLIKELY);
+		pFGF->AddType(MEDIATYPE_DVD_ENCRYPTED_PACK, MEDIASUBTYPE_DTS);
+		pFGF->AddType(MEDIATYPE_MPEG2_PACK, MEDIASUBTYPE_DTS);
+		pFGF->AddType(MEDIATYPE_MPEG2_PES, MEDIASUBTYPE_DTS);
+		pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_DTS);
+		pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_WAVE_DTS);
+		m_transform.AddTail(pFGF);
+	}
 	pFGF = new CFGFilterInternal<CMpaDecFilter>(
 		(tra & TRA_AC3) ? L"AC3 Audio Decoder" : L"AC3 Audio Decoder (low merit)",
 		(tra & TRA_AC3) ? MERIT64_ABOVE_DSHOW : MERIT64_UNLIKELY);

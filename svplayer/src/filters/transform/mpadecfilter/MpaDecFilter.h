@@ -154,6 +154,7 @@ public:
 	CMpaDecFilter(LPUNKNOWN lpunk, HRESULT* phr);
 	virtual ~CMpaDecFilter();
 
+	bool m_fbUseSPDIF;
 	DECLARE_IUNKNOWN
     STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void** ppv);
 

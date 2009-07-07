@@ -13533,60 +13533,15 @@ void CMainFrame::OnUpdateDeleteCurs(CCmdUI *pCmdUI)
 
 void CMainFrame::OnToggleSPDIF(){
 	AppSettings& s = AfxGetAppSettings();
-	BOOL usingSPDIF = !(s.iDecSpeakers >= 1000 );
-	if( !usingSPDIF && s.iDecSpeakers > 1000 ){
-		 s.iDecSpeakers  -= 1000;
-	}else if( usingSPDIF && s.iDecSpeakers < 1000 ){
-		 s.iDecSpeakers  += 1000;
-	}
-	BOOL useReg = FALSE;
-	CRegKey key;
-	int ac3spkcfg;
-	int dtsspkcfg ;
-	if(ERROR_SUCCESS == key.Create(HKEY_CURRENT_USER, _T("Software\\SPlayer\\Filters\\MPEG Audio Decoder")))
-	{
-		useReg = TRUE;
-		DWORD tD;
-		key.QueryDWORDValue(_T("Ac3SpeakerConfig"), tD);
-		ac3spkcfg = tD;
-		key.QueryDWORDValue(_T("DtsSpeakerConfig"), tD);
-		dtsspkcfg = tD;
+	
+	s.fbUseSPDIF = !s.fbUseSPDIF;
 
-	}
-	CComQIPtr<IMpaDecFilter>  pMDF = FindFilter(__uuidof(CMpaDecFilter), pGB);
-	if(pMDF){
-		int ac3spkcfg = pMDF->GetSpeakerConfig(IMpaDecFilter::ac3);
-		int dtsspkcfg = pMDF->GetSpeakerConfig(IMpaDecFilter::dts);
-	}
-
-		if(usingSPDIF){
-			if(ac3spkcfg > 0)
-				ac3spkcfg = -ac3spkcfg;
-			if(dtsspkcfg > 0)
-				dtsspkcfg = -dtsspkcfg;
-		}else{
-			if(ac3spkcfg < 0)
-				ac3spkcfg = -ac3spkcfg;
-			if(dtsspkcfg < 0)
-				dtsspkcfg = -dtsspkcfg;
-		}
-		if(useReg){
-			key.SetDWORDValue(_T("Ac3SpeakerConfig"), ac3spkcfg);
-			key.SetDWORDValue(_T("DtsSpeakerConfig"), dtsspkcfg);
-		}
-	if(pMDF){
-
-		
-		pMDF->SetSpeakerConfig(IMpaDecFilter::ac3, ac3spkcfg );
-		pMDF->SetSpeakerConfig(IMpaDecFilter::dts, dtsspkcfg );
-		
-	}
 	
 }
 void CMainFrame::OnUpdateToggleSPDIF(CCmdUI *pCmdUI){
 
 	AppSettings& s = AfxGetAppSettings();
-	BOOL bChecked = !!( s.iDecSpeakers >= 1000 );
+	BOOL bChecked = s.fbUseSPDIF ;
 	pCmdUI->SetCheck(bChecked);
 }
 

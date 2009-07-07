@@ -2445,6 +2445,7 @@ BEGIN
     IDS_RS_AUDIOLANG        "AudioLang"
     IDS_RS_SUBTITLESLANG    "SubtitlesLang"
     IDS_RS_SPLOGFONT        "SPDefaultStyle"
+	IDS_RS_USESPDIF			"UseSPDIF"
 END
 
 STRINGTABLE 

@@ -140,7 +140,11 @@ bool CMpaDecSettingsWnd::OnActivate()
 	for(int i = 0, h = max(20, m_fontheight)+1; i < countof(m_ac3spkcfg_radio); i++, p.y += h)
 	{
 		static const TCHAR* labels[] = {m_strDecodeToSpeaker, _T("SPDIF")};
-		m_ac3spkcfg_radio[i].Create(labels[i], dwStyle|BS_AUTORADIOBUTTON|(i == 0 ? WS_GROUP : 0), CRect(p + CPoint(10, 0), CSize(140, h)), this, IDC_PP_RADIO1+i);
+		DWORD ddwStyle = dwStyle;
+		if(wcscmp(labels[i],_T("SPDIF")) == 0){
+			ddwStyle =  (dwStyle& ~WS_VISIBLE);
+		}
+		m_ac3spkcfg_radio[i].Create(labels[i],ddwStyle|BS_AUTORADIOBUTTON|(i == 0 ? WS_GROUP : 0), CRect(p + CPoint(10, 0), CSize(140, h)), this, IDC_PP_RADIO1+i);
 	}
 
 	CheckRadioButton(IDC_PP_RADIO1, IDC_PP_RADIO2, m_ac3spkcfg >= 0 ? IDC_PP_RADIO1 : IDC_PP_RADIO2);
@@ -181,7 +185,11 @@ bool CMpaDecSettingsWnd::OnActivate()
 	for(int i = 0, h = max(20, m_fontheight)+1; i < countof(m_dtsspkcfg_radio); i++, p.y += h)
 	{
 		static const TCHAR* labels[] = {m_strDecodeToSpeaker, _T("SPDIF")};
-		m_dtsspkcfg_radio[i].Create(labels[i], dwStyle|BS_AUTORADIOBUTTON|(i == 0 ? WS_GROUP : 0), CRect(p + CPoint(10, 0), CSize(140, h)), this, IDC_PP_RADIO3+i);
+		DWORD ddwStyle = dwStyle;
+		if(wcscmp(labels[i],_T("SPDIF")) == 0){
+			ddwStyle =  (dwStyle& ~WS_VISIBLE);
+		}
+		m_dtsspkcfg_radio[i].Create(labels[i], ddwStyle|BS_AUTORADIOBUTTON|(i == 0 ? WS_GROUP : 0), CRect(p + CPoint(10, 0), CSize(140, h)), this, IDC_PP_RADIO3+i);
 	}
 
 	CheckRadioButton(IDC_PP_RADIO3, IDC_PP_RADIO4, m_dtsspkcfg >= 0 ? IDC_PP_RADIO3 : IDC_PP_RADIO4);

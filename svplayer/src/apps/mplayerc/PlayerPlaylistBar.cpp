@@ -22,7 +22,7 @@
 #include "stdafx.h"
 #include <math.h>
 #include <afxinet.h>
-#include <atlrx.h>
+#include "..\..\..\lib\ATL Server\include\atlrx.h"
 #include <atlutil.h>
 #include "mplayerc.h"
 #include "mainfrm.h"

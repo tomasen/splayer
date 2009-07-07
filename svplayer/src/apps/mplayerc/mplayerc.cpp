@@ -2963,7 +2963,7 @@ void SetDispMode(dispmode& dm)
 #include <afxsock.h>
 #include <atlsync.h>
 #include <atlutil.h> // put this before the first detours macro above to see an ICE with vc71 :)
-#include <D:\-=SVN=-\ATL Server\include\atlrx.h> // http://www.codeplex.com/AtlServer/
+#include "..\..\..\lib\ATL Server\include\atlrx.h" // http://www.codeplex.com/AtlServer/
 #include "afxwin.h"
 
 typedef CAtlRegExp<CAtlRECharTraits> CAtlRegExpT;

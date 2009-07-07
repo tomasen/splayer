@@ -63,7 +63,7 @@ typedef struct dts_state_s dts_state_t;
 
 #define DTS_DOLBY 101 /* FIXME */
 
-#define DTS_CHANNEL_MAX  DTS_3F2R /* We don't handle anything above that */
+#define DTS_CHANNEL_MAX  DTS_4F2R /* We don't handle anything above that */
 #define DTS_CHANNEL_BITS 6
 #define DTS_CHANNEL_MASK 0x3F
 

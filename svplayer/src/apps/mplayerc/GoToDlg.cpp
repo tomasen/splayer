@@ -26,7 +26,7 @@
 #include "mplayerc.h"
 #include "GoToDlg.h"
 
-#include <atlrx.h>
+#include "..\..\..\lib\ATL Server\include\atlrx.h"
 
 
 // CGoToDlg dialog

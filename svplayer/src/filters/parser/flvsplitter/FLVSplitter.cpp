@@ -24,7 +24,7 @@
 #include "..\..\..\DSUtil\DSUtil.h"
 
 #include <initguid.h>
-#include <moreuuids.h>
+#include "..\..\..\..\include\moreuuids.h"
 
 #ifdef REGISTER_FILTER
 

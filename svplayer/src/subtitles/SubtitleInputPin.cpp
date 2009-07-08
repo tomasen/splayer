@@ -27,7 +27,7 @@
 #include "RenderedHdmvSubtitle.h"
 
 #include <initguid.h>
-#include <moreuuids.h>
+#include "..\..\include\moreuuids.h"
 
 // our first format id
 #define __GAB1__ "GAB1"

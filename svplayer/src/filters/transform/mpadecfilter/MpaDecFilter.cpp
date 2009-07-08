@@ -118,6 +118,8 @@ const AMOVIESETUP_MEDIATYPE sudPinTypesIn[] =
 	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_COOK},
 	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_14_4},
 	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_28_8},
+	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_PCM_RAW},
+	
 };
 
 #ifdef REGISTER_FILTER
@@ -499,7 +501,9 @@ HRESULT CMpaDecFilter::Receive(IMediaSample* pIn)
 		hr = ProcessFfmpeg(CODEC_ID_RA_144);
 	else if(subtype ==MEDIASUBTYPE_28_8)
 		hr = ProcessFfmpeg(CODEC_ID_RA_288);
-	else {// if(.. the rest ..)
+	else if(MEDIASUBTYPE_PCM_RAW == subtype ){
+		hr = ProcessPCMU8();
+	}else{// if(.. the rest ..)
 		hr = ProcessMPA();
 		//hr = ProcessFfmpeg(CODEC_ID_MP3);
 	}
@@ -1217,7 +1221,36 @@ HRESULT CMpaDecFilter::ProcessAAC()
 
 	return S_OK;
 }
+HRESULT CMpaDecFilter::ProcessPCMU8(){
+	BYTE* p = m_buff.GetData();
+	size_t inSamples = m_buff.GetCount();
+	
+	WAVEFORMATEXPS2* wfe = (WAVEFORMATEXPS2*)m_pInput->CurrentMediaType().Format();
+	CAtlArray<float> pBuff;
+	pBuff.SetCount(inSamples);
+	
+	float* f = pBuff.GetData();
+	switch(wfe->wBitsPerSample){
+		case 16:
+			for(int i = 0; i < inSamples; i++)
+				f[i] = ((float)(p[i])-SHORT_MAX) / SHORT_MAX;
 
+		default:
+			for(int i = 0; i < inSamples; i++)
+				f[i] = ((float)(p[i])-128) / 128;
+				//SVP_LogMsg3("%f %d", f[i] , p[i]);
+		
+		break;
+	}
+	HRESULT hr;
+	if(S_OK != (hr = Deliver(pBuff, wfe->nSamplesPerSec, wfe->nChannels)))
+		return hr;
+
+	//SVP_LogMsg3("PCM Done");
+	m_buff.RemoveAll();
+
+	return S_OK;
+}
 HRESULT CMpaDecFilter::ProcessPS2PCM()
 {
 	BYTE* p = m_buff.GetData();

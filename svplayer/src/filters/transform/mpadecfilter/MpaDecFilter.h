@@ -125,6 +125,7 @@ protected:
 	HRESULT ProcessVorbis();
 	HRESULT ProcessFlac();
 	HRESULT ProcessMPA();
+	HRESULT ProcessPCMU8();
 	HRESULT ProcessFfmpeg(int nCodecId);
 
 	HRESULT GetDeliveryBuffer(IMediaSample** pSample, BYTE** pData);

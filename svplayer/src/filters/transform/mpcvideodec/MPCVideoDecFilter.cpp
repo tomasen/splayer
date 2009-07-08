@@ -276,6 +276,8 @@ FFMPEG_CODECS		ffCodecs[] =
 	{ &MEDIASUBTYPE_wv1f, CODEC_ID_MPEG4,  MAKEFOURCC('w','v','1','f'),	NULL },
 
 	{ &MEDIASUBTYPE_tscc, CODEC_ID_TSCC,  MAKEFOURCC('t','s','c','c'),	NULL },
+	{ &MEDIASUBTYPE_QTJpeg, CODEC_ID_MJPEG,  MAKEFOURCC('j','p','e','g'),	NULL },
+	
 };
 
 /* Important: the order should be exactly the same as in ffCodecs[] */
@@ -435,7 +437,9 @@ const AMOVIESETUP_MEDIATYPE CMPCVideoDecFilter::sudPinTypesIn[] =
 	{ &MEDIATYPE_Video, &MEDIASUBTYPE_WV1F   },
 	{ &MEDIATYPE_Video, &MEDIASUBTYPE_wv1f   },
 
-	{ &MEDIATYPE_Video, &MEDIASUBTYPE_tscc   }
+	{ &MEDIATYPE_Video, &MEDIASUBTYPE_tscc   },
+	{ &MEDIATYPE_Video, &MEDIASUBTYPE_QTJpeg   }
+	
 	
 };
 
@@ -1358,6 +1362,16 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 				break;
 			case  PIX_FMT_RGB32:
 				subtype = MEDIASUBTYPE_RGB32;
+				break;
+			case  PIX_FMT_YUVJ422P:
+			case  PIX_FMT_YUVJ444P:
+			case  PIX_FMT_YUVJ420P:
+				//TODO itu601 convert
+
+				break;
+			
+			default:
+				SVP_LogMsg3("PIX_FMT %u ", m_pAVCtx->pix_fmt);
 				break;
 		}
 

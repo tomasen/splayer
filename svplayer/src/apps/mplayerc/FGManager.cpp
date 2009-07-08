@@ -552,6 +552,7 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 
 	CheckPointer(pPinOut, E_POINTER);
 
+
 	HRESULT hr;
 
 	if(S_OK != IsPinDirection(pPinOut, PINDIR_OUTPUT) 

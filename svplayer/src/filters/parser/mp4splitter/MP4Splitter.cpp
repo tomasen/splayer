@@ -25,7 +25,8 @@
 #include "..\..\..\DSUtil\DSUtil.h"
 
 #include <initguid.h>
-#include <moreuuids.h>
+#include "..\..\..\..\include\moreuuids.h"
+#include "..\..\..\svplib\svplib.h"
 
 #include "Ap4.h"
 #include "Ap4File.h"
@@ -543,6 +544,8 @@ HRESULT CMP4SplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 						memcpy(wfe+1, db.GetData(), db.GetDataSize());
 						mts.Add(mt);
 						break;
+					}else{
+						//SVP_LogMsg3("Unknow MP4 Steam %x" , type);
 					}
 				}
 			}
@@ -681,6 +684,8 @@ HRESULT CMP4SplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 	}
 
 	m_rtNewStop = m_rtStop = m_rtDuration;
+
+	//SVP_LogMsg3("CMP4SplitterFilter m_pOutputs.GetCount()  = %d" , m_pOutputs.GetCount());
 
 	return m_pOutputs.GetCount() > 0 ? S_OK : E_FAIL;
 }

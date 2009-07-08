@@ -274,6 +274,8 @@ const AP4_Atom::Type AP4_ATOM_TYPE_EAC3 = AP4_ATOM_TYPE('e','c','-','3');
 const AP4_Atom::Type AP4_ATOM_TYPE_DTSC = AP4_ATOM_TYPE('d','t','s','c');
 const AP4_Atom::Type AP4_ATOM_TYPE_DTSH = AP4_ATOM_TYPE('d','t','s','h');
 const AP4_Atom::Type AP4_ATOM_TYPE_DTSL = AP4_ATOM_TYPE('d','t','s','l');
+const AP4_Atom::Type AP4_ATOM_TYPE_RAW = AP4_ATOM_TYPE('r','a','w',' ');
+const AP4_Atom::Type AP4_ATOM_TYPE_JPEG = AP4_ATOM_TYPE('j','p','e','g');
 
 /*----------------------------------------------------------------------
 |       AP4_AtomListInspector

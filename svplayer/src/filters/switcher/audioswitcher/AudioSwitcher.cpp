@@ -33,6 +33,7 @@
 
 #include <initguid.h>
 #include "..\..\..\..\include\moreuuids.h"
+#include "..\..\..\svplib\svplib.h"
 
 
 #ifdef REGISTER_FILTER
@@ -120,7 +121,7 @@ HRESULT CAudioSwitcherFilter::CheckMediaType(const CMediaType* pmt)
 	&& ((WAVEFORMATEX*)pmt->pbFormat)->wFormatTag != WAVE_FORMAT_EXTENSIBLE)
 		return VFW_E_INVALIDMEDIATYPE; // stupid iviaudio tries to fool us
 
-	return (pmt->majortype == MEDIATYPE_Audio
+	HRESULT hr = (pmt->majortype == MEDIATYPE_Audio
 			&& pmt->formattype == FORMAT_WaveFormatEx
 			&& (((WAVEFORMATEX*)pmt->pbFormat)->wBitsPerSample == 8
 				|| ((WAVEFORMATEX*)pmt->pbFormat)->wBitsPerSample == 16
@@ -132,6 +133,8 @@ HRESULT CAudioSwitcherFilter::CheckMediaType(const CMediaType* pmt)
 				|| ((WAVEFORMATEX*)pmt->pbFormat)->wFormatTag == WAVE_FORMAT_EXTENSIBLE))
 		? S_OK
 		: VFW_E_TYPE_NOT_ACCEPTED;
+
+	return hr ;
 }
 
 template<class T, class U, int Umin, int Umax> 

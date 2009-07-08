@@ -388,6 +388,7 @@ AP4_AtomFactory::CreateAtomFromStream(AP4_ByteStream& stream,
       case AP4_ATOM_TYPE_SVQ3:
 	  case AP4_ATOM_TYPE_H263:
       case AP4_ATOM_TYPE_S263:
+	  case AP4_ATOM_TYPE_JPEG:
         atom = DNew AP4_VisualSampleEntry(type, size, stream, *this);
         break;
 
@@ -398,6 +399,7 @@ AP4_AtomFactory::CreateAtomFromStream(AP4_ByteStream& stream,
 	  case AP4_ATOM_TYPE_QDM2:
 	  case AP4_ATOM_TYPE_TWOS:
 	  case AP4_ATOM_TYPE_SOWT:
+	  case AP4_ATOM_TYPE_RAW:
         atom = DNew AP4_AudioSampleEntry(type, size, stream, *this);
         break;
 

@@ -288,6 +288,10 @@ static bool BitBltFromYUVToRGB(int w, int h, BYTE* dst, int dstpitch, int dbpp, 
 
 	SHORT y , u , v , C , D, E;
 
+	if( dbpp != 24 && dbpp != 32  ){
+		return false;
+	}
+
 	//SVP_LogMsg3("x %d y %d dstpitch %d srcpitch %d ", w, h,dstpitch ,srcpitch);
 	do
 	{
@@ -308,10 +312,17 @@ static bool BitBltFromYUVToRGB(int w, int h, BYTE* dst, int dstpitch, int dbpp, 
 			D = u - 128;
 			E = v - 128;
 
-			dst[i*4] = _clip(( 298 * C + 516 * D           + 128) >> 8);
-			dst[i*4+1] = _clip(( 298 * C - 100 * D - 208 * E + 128) >> 8);
-			dst[i*4+2] = _clip(( 298 * C           + 409 * E + 128) >> 8);
-			dst[i*4+3] = 0;
+			if(dbpp == 24){
+				dst[i*3] = _clip(( 298 * C + 516 * D           + 128) >> 8);
+				dst[i*3+1] = _clip(( 298 * C - 100 * D - 208 * E + 128) >> 8);
+				dst[i*3+2] = _clip(( 298 * C           + 409 * E + 128) >> 8);
+				
+			}else{
+				dst[i*4] = _clip(( 298 * C + 516 * D           + 128) >> 8);
+				dst[i*4+1] = _clip(( 298 * C - 100 * D - 208 * E + 128) >> 8);
+				dst[i*4+2] = _clip(( 298 * C           + 409 * E + 128) >> 8);
+				dst[i*4+3] = 0;
+			}
 
 				
 		}while(i < w);

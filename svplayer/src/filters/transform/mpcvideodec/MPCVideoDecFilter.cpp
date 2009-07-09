@@ -930,7 +930,9 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 				m_pAVCtx->height	= abs(vih->bmiHeader.biHeight);
 				m_pAVCtx->codec_tag	= vih->bmiHeader.biCompression;
 
-				if( m_pAVCodec->id == CODEC_ID_TSCC ){
+				if( m_pAVCodec->id == CODEC_ID_MJPEG ){
+					m_bUSERGB = true;
+				}else if( m_pAVCodec->id == CODEC_ID_TSCC ){
 					m_bUSERGB = true;
 					m_pAVCtx->bits_per_coded_sample = vih->bmiHeader.biBitCount;
 				}
@@ -1363,15 +1365,33 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 			case  PIX_FMT_RGB32:
 				subtype = MEDIASUBTYPE_RGB32;
 				break;
-			case  PIX_FMT_YUVJ422P:
-			case  PIX_FMT_YUVJ444P:
-			case  PIX_FMT_YUVJ420P:
-				//TODO itu601 convert
-
+			case  PIX_FMT_GRAY8:
+				//subtype = MEDIASUBTYPE_GRAY8;
 				break;
-			
+			case  PIX_FMT_GRAY16:
+				//subtype = MEDIASUBTYPE_GRAY16;
+				break;	
+			case  PIX_FMT_YUVJ422P:
+				subtype = MEDIASUBTYPE_YUVJ422P;
+				break;
+			case  PIX_FMT_YUVJ444P:
+				subtype = MEDIASUBTYPE_YUVJ444P;
+				break;
+			case  PIX_FMT_YUVJ420P:
+				//subtype = MEDIASUBTYPE_YUVJ420P;
+				break;
+			case  PIX_FMT_YUV422P:
+				subtype = MEDIASUBTYPE_YUV422P;
+				break;
+			case  PIX_FMT_YUV444P:
+				subtype = MEDIASUBTYPE_YUV444P;
+				break;
+			case  PIX_FMT_YUV420P:
+				//subtype = MEDIASUBTYPE_YUV420P;
+				break;
+
 			default:
-				SVP_LogMsg3("PIX_FMT %u ", m_pAVCtx->pix_fmt);
+				//SVP_LogMsg3("PIX_FMT %u ", m_pAVCtx->pix_fmt);
 				break;
 		}
 

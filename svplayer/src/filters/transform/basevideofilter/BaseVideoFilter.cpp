@@ -270,7 +270,67 @@ HRESULT CBaseVideoFilter::CopyBuffer(BYTE* pOut, BYTE* pIn, int w, int h, int pi
 	BYTE* pInYUV[3] = {pIn, pIn + pitchIn*abs_h, pIn + pitchIn*abs_h + (pitchIn>>1)*(abs_h>>1)};
 	return CopyBuffer(pOut, pInYUV, w, h, pitchIn, subtype, fInterlaced);
 }
+#include "../../../svplib/svplib.h"
+/*
+R = Y + 1.4075 *ㄗV-128ㄘ
+G = Y 每 0.3455 *ㄗU 每128ㄘ 每 0.7169 *ㄗV 每128ㄘ
+B = Y + 1.779 *ㄗU 每 128ㄘ
+*/
+#define YUV444 1
+#define YUV422 0
+#define YUV420 2
+#define _clip(x)  min(255,max(0,x))
+static bool BitBltFromYUVToRGB(int w, int h, BYTE* dst, int dstpitch, int dbpp, BYTE** src, int srcpitch, bool rec601, int yuvflag){
+	//current only convert to 32bits rgb and accept 422
+	BYTE* srcy = src[0];
+	BYTE* srcu = src[1];
+	BYTE* srcv = src[2];
 
+	SHORT y , u , v , C , D, E;
+
+	//SVP_LogMsg3("x %d y %d dstpitch %d srcpitch %d ", w, h,dstpitch ,srcpitch);
+	do
+	{
+		int i = 0;
+		do{
+			y = srcy[i];		
+			if( yuvflag == YUV444){
+				u = srcu[i];
+				v = srcv[i];
+			}else{
+				u = srcu[i/2];
+				v = srcv[i/2];
+			}
+				
+			i++;
+
+			C = y - 16;
+			D = u - 128;
+			E = v - 128;
+
+			dst[i*4] = _clip(( 298 * C + 516 * D           + 128) >> 8);
+			dst[i*4+1] = _clip(( 298 * C - 100 * D - 208 * E + 128) >> 8);
+			dst[i*4+2] = _clip(( 298 * C           + 409 * E + 128) >> 8);
+			dst[i*4+3] = 0;
+
+				
+		}while(i < w);
+
+		dst += dstpitch;
+		srcy += srcpitch;
+		if( yuvflag == YUV444){
+			srcu += srcpitch;
+			srcv += srcpitch;
+		}else{
+			srcu += srcpitch/2;
+			srcv += srcpitch/2;
+		}
+		
+	}while(h--);
+	
+
+	return true;
+}
 HRESULT CBaseVideoFilter::CopyBuffer(BYTE* pOut, BYTE** ppIn, int w, int h, int pitchIn, const GUID& subtype, bool fInterlaced)
 {
 	BITMAPINFOHEADER bihOut;
@@ -290,7 +350,7 @@ HRESULT CBaseVideoFilter::CopyBuffer(BYTE* pOut, BYTE** ppIn, int w, int h, int 
 		}
 	}
 
-	if(h < 0)
+	if(h < 0) //flip?
 	{
 		h = -h;
 		ppIn[0] += pitchIn*(h-1);
@@ -330,6 +390,25 @@ HRESULT CBaseVideoFilter::CopyBuffer(BYTE* pOut, BYTE** ppIn, int w, int h, int 
 					memset(pOut, 0, pitchOut);
 			}
 		}
+	}
+	else if(subtype == MEDIASUBTYPE_YUVJ422P || subtype == MEDIASUBTYPE_YUV422P) //only can convert to rgb
+	{
+		
+		bool rec601 = false;
+		if(MEDIASUBTYPE_YUVJ422P == subtype){
+			rec601 = true;
+		}
+		BitBltFromYUVToRGB(w, h, pOut, pitchOut, bihOut.biBitCount, ppIn, pitchIn, rec601, YUV422);
+		
+	}else if(subtype == MEDIASUBTYPE_YUVJ444P || subtype == MEDIASUBTYPE_YUV444P) //only can convert to rgb
+	{
+
+		bool rec601 = false;
+		if(MEDIASUBTYPE_YUVJ444P == subtype){
+			rec601 = true;
+		}
+		BitBltFromYUVToRGB(w, h, pOut, pitchOut, bihOut.biBitCount, ppIn, pitchIn, rec601, YUV444);
+
 	}
 	else if(subtype == MEDIASUBTYPE_YUY2)
 	{

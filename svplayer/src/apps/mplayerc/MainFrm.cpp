@@ -4166,6 +4166,8 @@ void CMainFrame::OnFilePostClosemedia()
 	SetupFavoritesSubMenu();
 
 	SendNowPlayingToMSN();
+
+	
 }
 
 void CMainFrame::OnUpdateFilePostClosemedia(CCmdUI* pCmdUI)
@@ -13535,6 +13537,10 @@ void CMainFrame::OnDeletecurfile()
 		PostMessage(WM_COMMAND, ID_FILE_CLOSEMEDIA);
 		fnDelPending = m_fnCurPlayingFile;
 		SetTimer(TIMER_DELETE_CUR_FILE, 1000, NULL);
+
+		if(m_fFullScreen){
+			ToggleFullscreen(true, false);
+		}
 	}
 }
 
@@ -13550,6 +13556,9 @@ void CMainFrame::OnDelcurfolder()
 		fnDelPending = szPath;
 		SetTimer(TIMER_DELETE_CUR_FOLDER, 1000, NULL);
 		
+		if(m_fFullScreen){
+			ToggleFullscreen(true, false);
+		}
 	}
 }
 

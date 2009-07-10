@@ -1863,6 +1863,8 @@ BEGIN
             MENUITEM "打开DVD(&D)...\tCtrl+D",        ID_FILE_OPENDVD
             MENUITEM "视频捕捉(&V)...\tCtrl+V",         ID_FILE_OPENDEVICE
             MENUITEM "打开碟片(&P)",                    ID_32768
+            MENUITEM SEPARATOR
+            MENUITEM "视频信息(&r)",                    ID_FILE_PROPERTIES
         END
         MENUITEM "最近播放",                        ID__RECENTPLAYED
         MENUITEM "收藏夹",                         ID_FAVORITES
@@ -2445,7 +2447,15 @@ BEGIN
     IDS_RS_AUDIOLANG        "AudioLang"
     IDS_RS_SUBTITLESLANG    "SubtitlesLang"
     IDS_RS_SPLOGFONT        "SPDefaultStyle"
-	IDS_RS_USESPDIF			"UseSPDIF"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_RS_DISABLE_EVR      "DisableEVR"
+    IDS_RS_OPTIONDECODER    "OptionDecoder"
+    IDS_RS_LOGOSTRETCH      "LogoStretch"
+    IDS_RS_ULTRAFAST        "UltraFastOpen"
+    IDS_RS_USESPDIF         "UseSPDIF"
 END
 
 STRINGTABLE 
@@ -2463,14 +2473,6 @@ BEGIN
     IDS_RS_POPSTARTUPEXTCHECK "PouStartupExtCheck"
     IDD_PPAGESUBSTYLE2      "字幕::第二字幕"
     IDS_RS_CHECKUPDATERINTERLEAVE "CheckUpdaterInterleave"
-END
-
-STRINGTABLE 
-BEGIN
-    IDS_RS_DISABLE_EVR      "DisableEVR"
-    IDS_RS_OPTIONDECODER    "OptionDecoder"
-    IDS_RS_LOGOSTRETCH      "LogoStretch"
-    IDS_RS_ULTRAFAST        "UltraFastOpen"
 END
 
 STRINGTABLE 

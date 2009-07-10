@@ -311,7 +311,7 @@ CString CPPageAccelTbl::MakeAccelShortcutLabel(ACCEL& a)
 	case VK_BACK: str = _T("Back"); break;
 	case VK_TAB: str = _T("Tab"); break;
 	case VK_CLEAR: str = _T("Clear"); break;
-	case VK_RETURN: str = _T("Return"); break;
+	case VK_RETURN: str = _T("»Ø³µ"); break;
 	case VK_SHIFT: str = _T("Shift"); break;
 	case VK_CONTROL: str = _T("Ctrl"); break;
 	case VK_MENU: str = _T("Alt"); break;
@@ -324,7 +324,7 @@ CString CPPageAccelTbl::MakeAccelShortcutLabel(ACCEL& a)
 	case VK_FINAL: str = _T("Final"); break;
 //	case VK_HANJA: str = _T("Hanja"); break;
 	case VK_KANJI: str = _T("Kanji"); break;
-	case VK_ESCAPE: str = _T("Escape"); break;
+	case VK_ESCAPE: str = _T("Esc"); break;
 	case VK_CONVERT: str = _T("Convert"); break;
 	case VK_NONCONVERT: str = _T("Non Convert"); break;
 	case VK_ACCEPT: str = _T("Accept"); break;

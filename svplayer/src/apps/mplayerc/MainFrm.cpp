@@ -8655,7 +8655,8 @@ void CMainFrame::rePosOSD(){
 			rcView.top = rcView.bottom - 22;
 		}
 		rcView.left += 10;
-		rcView.right = rcView.left + m_wndNewOSD.mSize.cx;
+		
+		rcView.right = rcView.left + min(m_wndNewOSD.mSize.cx, rcView.Width() *9/10);
 		
 		m_wndNewOSD.MoveWindow(rcView);
 		//m_wndView.m_wndOSD.MoveWindow(rcView);
@@ -11887,7 +11888,11 @@ void CMainFrame::ShowControls(int nCS, bool fSave)
 		}
 
 		if( (nCS&i) == CS_TOOLBAR && !pNext->IsVisible() && !m_fnCurPlayingFile.IsEmpty()){
-			SendStatusMessage(CString(_T("正在播放: ")) + m_fnCurPlayingFile, 2000);
+			CPath fuPath(m_fnCurPlayingFile);
+			CSVPToolBox svpTool;
+			fuPath.StripPath();
+
+			SendStatusMessage(CString(_T("正在播放: ")) + CString(fuPath) + _T(" 位于: ") + svpTool.GetDirFromPath(m_fnCurPlayingFile), 2000);
 		}
 
 		if( !!(nCS&i) != !!pNext->IsVisible() )

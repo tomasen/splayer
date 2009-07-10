@@ -152,86 +152,53 @@ static LONG WINAPI  DebugMiniDumpFilter( struct _EXCEPTION_POINTERS *pExceptionI
 	return retval;
 }
 
-DWORD __forceinline IsInsideVPC_exceptionFilter(LPEXCEPTION_POINTERS ep)
-{
-	PCONTEXT ctx = ep->ContextRecord;
+int IsInsideVM(){
+	//这个方法似乎是检测虚拟机的一个简单有效的方法，虽然还不能确定它是否是100%有效。名字很有意思，红色药丸（为什么不是bluepill,哈哈）。我在网上找到了个ppt专门介绍这个方法，可惜现在翻不到了。记忆中原理是这样的，主要检测IDT的数  值，如果这个数值超过了某个数值，我们就可以认为应用程序处于虚拟环境中，似乎这个方法在多CPU的机器中并不可靠。据称ScoobyDoo方法是RedPill的升级版。代码也是在网上找的，做了点小改动。有四种返回结果，可以确认是VMWare，还是  VirtualPC，还是其它VME，或是没有处于VME中。
+	//return value: 0:none,1:vmvare;2:vpc;3:others
+	unsigned char matrix[6];
 
-	ctx->Ebx = -1; // Not running VPC
+	unsigned char redpill[] = 
+		"\x0f\x01\x0d\x00\x00\x00\x00\xc3";
 
-	ctx->Eip += 4; // skip past the "call VPC" opcodes
+	HANDLE hProcess = GetCurrentProcess();
 
-	return EXCEPTION_CONTINUE_EXECUTION;
-	// we can safely resume execution since we skipped faulty instruction
-
-}
-
-// High level language friendly version of IsInsideVPC()
-
-bool IsInsideVPC()
-{
-	bool rc = false;
+	LPVOID lpAddress = NULL;
+	PDWORD lpflOldProtect = NULL;
 
 	__try
 	{
-		_asm push ebx
-			_asm mov  ebx, 0 // It will stay ZERO if VPC is running
+		*((unsigned*)&redpill[3]) = (unsigned)matrix;
 
-			_asm mov  eax, 1 // VPC function number
+		lpAddress = VirtualAllocEx(hProcess, NULL, 6, MEM_RESERVE|MEM_COMMIT , PAGE_EXECUTE_READWRITE);
 
+		if(lpAddress == NULL)
+			return 0;
 
-			// call VPC 
+		BOOL success = VirtualProtectEx(hProcess, lpAddress, 6, PAGE_EXECUTE_READWRITE , lpflOldProtect);
 
-			_asm __emit 0Fh
-			_asm __emit 3Fh
-			_asm __emit 07h
-			_asm __emit 0Bh
+		if(success != 0)
+			return 0;
 
-			_asm test ebx, ebx
-			_asm setz [rc]
-		_asm pop ebx
-	}
-	// The except block shouldn't get triggered if VPC is running!!
+		memcpy(lpAddress, redpill, 8);
 
-	__except(IsInsideVPC_exceptionFilter(GetExceptionInformation()))
-	{
-	}
-	
-	return rc;
-}
-//检测 VMWare的代码
-bool IsInsideVMWare()
-{
-	bool rc = true;
+		((void(*)())lpAddress)();
 
-	__try
-	{
-		__asm
+		if (matrix[5]>0xd0) 
 		{
-			push  edx
-				push  ecx
-				push  ebx
-
-				mov  eax, 'VMXh';
-			mov  ebx, 0 // any value but not the MAGIC VALUE
-				mov  ecx, 10 // get VMWare version
-				mov  edx, 'VX'; // port number
-
-			in   eax, dx // read port
-				// on return EAX returns the VERSION
-				cmp  ebx, 'VMXh' // is it a reply from VMWare?
-				setz  [rc] // set return value
-
-			pop  ebx
-				pop  ecx
-				pop  edx
+			if(matrix[5]==0xff)//vmvare
+				return 1;
+			else if(matrix[5]==0xe8)//vitualpc
+				return 2;
+			else
+				return 3;
 		}
+		else 
+			return 0;
 	}
-	__except(EXCEPTION_EXECUTE_HANDLER)
+	__finally
 	{
-		rc = false;
-	}
-
-	return rc;
+		VirtualFreeEx(hProcess, lpAddress, 0, MEM_RELEASE);
+	} 
 }
 
 void CorrectComboListWidth(CComboBox& box, CFont* pWndFont)
@@ -2193,7 +2160,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		
 		fVMDetected = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VMDETECTED), -1);
 		if(fVMDetected == -1){
-			if(IsInsideVMWare() || IsInsideVPC()){
+			if(IsInsideVM() ){
 				fVMDetected = 1;
 			}else{
 				fVMDetected = 0;

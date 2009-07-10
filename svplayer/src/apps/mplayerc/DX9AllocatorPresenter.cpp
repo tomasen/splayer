@@ -51,6 +51,8 @@
 #define FRAMERATE_MAX_DELTA			3000
 
 //#define TRACE SVP_LogMsg3
+#define TRACE_VM 
+//SVP_LogMsg5
 
 CCritSec g_ffdshowReceive;
 bool queueu_ffdshow_support = false;
@@ -1061,14 +1063,14 @@ HRESULT CDX9AllocatorPresenter::CreateDevice()
 	if(m_pSubPicQueue2 && pSubPicProvider2) m_pSubPicQueue2->SetSubPicProvider(pSubPicProvider2);
 	
 	StartWorkerThreads();
-
+TRACE_VM(_T("CDX9AllocatorPresenter::CreateDevice 1"));
 	return S_OK;
 } 
 
 HRESULT CDX9AllocatorPresenter::AllocSurfaces(D3DFORMAT Format)
 {
 	CAutoLock cAutoLock(this);
-CAutoLock cRenderLock(&m_RenderLock);
+	CAutoLock cRenderLock(&m_RenderLock);
 	AppSettings& s = AfxGetAppSettings();
 
 	for(int i = 0; i < m_nNbDXSurface+2; i++)
@@ -1083,7 +1085,7 @@ CAutoLock cRenderLock(&m_RenderLock);
 	m_SurfaceType = Format;
 
 	HRESULT hr;
-
+	TRACE_VM(_T("AllocSurfaces 1"));
 	if(s.iAPSurfaceUsage == VIDRNDT_AP_TEXTURE2D || s.iAPSurfaceUsage == VIDRNDT_AP_TEXTURE3D)
 	{
 		int nTexturesNeeded = s.iAPSurfaceUsage == VIDRNDT_AP_TEXTURE3D ? m_nNbDXSurface+2 : 1;
@@ -1099,7 +1101,7 @@ CAutoLock cRenderLock(&m_RenderLock);
 			if(FAILED(hr = m_pVideoTexture[i]->GetSurfaceLevel(0, &m_pVideoSurface[i])))
 				return hr;
 		}
-
+TRACE_VM(_T("AllocSurfaces 2"));
 		if(s.iAPSurfaceUsage == VIDRNDT_AP_TEXTURE2D)
 		{
 			for(int i = 0; i < m_nNbDXSurface+2; i++)
@@ -1110,12 +1112,14 @@ CAutoLock cRenderLock(&m_RenderLock);
 	}
 	else
 	{
+		TRACE_VM(_T("AllocSurfaces 3"));
 		if(FAILED(hr = m_pD3DDev->CreateOffscreenPlainSurface(
 			m_NativeVideoSize.cx, m_NativeVideoSize.cy, 
 			D3DFMT_X8R8G8B8/*D3DFMT_A8R8G8B8*/, 
 			D3DPOOL_DEFAULT, &m_pVideoSurface[m_nCurSurface], NULL)))
 			return hr;
 	}
+	TRACE_VM(_T("AllocSurfaces x"));
 
 	hr = m_pD3DDev->ColorFill(m_pVideoSurface[m_nCurSurface], NULL, 0);
 
@@ -3018,13 +3022,14 @@ HRESULT CVMR9AllocatorPresenter::CreateDevice()
 {
 	HRESULT hr = __super::CreateDevice();
 	if(FAILED(hr)) return hr;
-
+	TRACE_VM(_T(" CVMR9AllocatorPresenter::CreateDevice"));
 	if(m_pIVMRSurfAllocNotify)
 	{
 		HMONITOR hMonitor = m_pD3D->GetAdapterMonitor(GetAdapter(m_pD3D));
 		if(FAILED(hr = m_pIVMRSurfAllocNotify->ChangeD3DDevice(m_pD3DDev, hMonitor)))
 			return(false);
 	}
+	TRACE_VM(_T(" CVMR9AllocatorPresenter::CreateDevice 2"));
 
 	return hr;
 }
@@ -3416,16 +3421,18 @@ STDMETHODIMP_(void) CVMR9AllocatorPresenter::SetTime(REFERENCE_TIME rtNow)
 
 STDMETHODIMP CVMR9AllocatorPresenter::InitializeDevice(DWORD_PTR dwUserID, VMR9AllocationInfo* lpAllocInfo, DWORD* lpNumBuffers)
 {
+	TRACE_VM(_T("InitializeDevice 1"));
 	if(!lpAllocInfo || !lpNumBuffers)
 		return E_POINTER;
 
+	TRACE_VM(_T("InitializeDevice 1"));
 	if(!m_pIVMRSurfAllocNotify)
 		return E_FAIL;
-
+TRACE_VM(_T("InitializeDevice 1"));
 	if((GetAsyncKeyState(VK_CONTROL)&0x80000000))
 		if(lpAllocInfo->Format == '21VY' || lpAllocInfo->Format == '024I')
 			return E_FAIL;
-
+TRACE_VM(_T("InitializeDevice 1"));
 	DeleteSurfaces();
 
 	int nOriginal = *lpNumBuffers;
@@ -4178,15 +4185,18 @@ HRESULT CDXRAllocatorPresenter::Render(
 
 STDMETHODIMP CDXRAllocatorPresenter::CreateRenderer(IUnknown** ppRenderer)
 {
+	TRACE_VM(_T("CreateRenderer 1"));
 	CheckPointer(ppRenderer, E_POINTER);
 
+	TRACE_VM(_T("CreateRenderer 2"));
 	if(m_pDXR) return E_UNEXPECTED;
+	TRACE_VM(_T("CreateRenderer 2"));
 	m_pDXR.CoCreateInstance(CLSID_DXR, GetOwner());
 	if(!m_pDXR) return E_FAIL;
-
+	TRACE_VM(_T("CreateRenderer 2"));
 	CComQIPtr<ISubRender> pSR = m_pDXR;
 	if(!pSR) {m_pDXR = NULL; return E_FAIL;}
-
+	TRACE_VM(_T("CreateRenderer 2"));
 	m_pSRCB = new CSubRenderCallback(this);
 	if(FAILED(pSR->SetCallback(m_pSRCB))) {m_pDXR = NULL; return E_FAIL;}
 

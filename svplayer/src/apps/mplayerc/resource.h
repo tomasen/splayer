@@ -340,6 +340,7 @@
 #define ID_RECENTFILE_CLEAR             5202
 #define ID_RECENTFILE_DISABLE           5203
 #define ID_RECENTFILE_ENABLE            5204
+#define ID_CONFIG_AUTOLOADSUBTITLE2		5205
 #define TIMER_FASTFORWORD               7001
 #define TIMER_STOPFASTFORWORD           7002
 #define TIMER_STATERASER                7003

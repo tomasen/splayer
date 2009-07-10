@@ -827,4 +827,6 @@ public:
 	afx_msg void OnUpdateToggleSPDIF(CCmdUI *pCmdUI);
 	afx_msg void OnDebugreport();
 	afx_msg void OnUpdateDebugreport(CCmdUI *pCmdUI);
+	afx_msg void OnSetAutoLoadSubtitle();
+	afx_msg void OnUpdateSetAutoLoadSubtitle(CCmdUI *pCmdUI);
 };

@@ -471,6 +471,10 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 
 	ON_COMMAND(ID_DEBUGREPORT, OnDebugreport)
 	ON_UPDATE_COMMAND_UI(ID_DEBUGREPORT, OnUpdateDebugreport)
+
+	ON_COMMAND(ID_CONFIG_AUTOLOADSUBTITLE2, OnSetAutoLoadSubtitle)
+	ON_UPDATE_COMMAND_UI(ID_CONFIG_AUTOLOADSUBTITLE2, OnUpdateSetAutoLoadSubtitle)
+
 	END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -8731,8 +8735,8 @@ void CMainFrame::ZoomVideoWindow(double scale)
 
 		GetWindowRect(r);
 
-		w = max(w, mmi.ptMinTrackSize.x);
-		h = max(h, mmi.ptMinTrackSize.y);
+		w = max(w, 480);
+		h = max(h, 280);
 
 		if(bThisIsAutoZoom){
 			double mratio = (double)lHeight/lWidth;
@@ -10350,8 +10354,43 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 				}
 			}
 
-			if(AfxGetAppSettings().fEnableSubtitles && m_pSubStreams.GetCount() > 0)
+			if(s.fEnableSubtitles && m_pSubStreams.GetCount() > 0){
+				
 				SetSubtitle(m_pSubStreams.GetHead());
+				if(s.fAutoloadSubtitles2 && m_pSubStreams2.GetCount() > 1 ){
+					BOOL HavSubs = false;
+					POSITION pos = m_pSubStreams2.GetHeadPosition();
+					while(pos){
+						CComPtr<ISubStream> pSubStream = m_pSubStreams2.GetNext(pos);
+
+						if(!pSubStream) continue;
+
+						for(int i = 0, j = pSubStream->GetStreamCount(); i < j; i++)
+						{
+							WCHAR* pName = NULL;
+							if(SUCCEEDED(pSubStream->GetStreamInfo(i, &pName, NULL)))
+							{
+								CString name(pName);
+								if( name.Find(_T("en")) >= 0){
+									SetSubtitle2( pSubStream);
+									HavSubs = true;
+								}
+								CoTaskMemFree(pName);
+							}
+							
+						}
+					}
+					if(!HavSubs){
+						pos = m_pSubStreams2.GetHeadPosition();
+						m_pSubStreams2.GetNext(pos);
+						if(pos)
+							SetSubtitle2( m_pSubStreams2.GetNext(pos));
+					}
+					
+				}
+			}
+
+			
 		}
 
 		if(m_fOpeningAborted) throw aborted;
@@ -11240,6 +11279,12 @@ void CMainFrame::SetupSubtitlesSubMenu(int subid)
 		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, bHasSub++, ResStr(IDS_SUBTITLES_STYLES));
 		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, bHasSub++, ResStr(IDS_SUBTITLES_RELOAD));
 	
+	}
+	if (subid == 2){
+		if(pSub->GetMenuItemCount() > 0)
+			pSub->AppendMenu(MF_SEPARATOR);
+
+		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_CONFIG_AUTOLOADSUBTITLE2 , _T("自动启用第二字幕"));
 	}
 
 }
@@ -13548,10 +13593,16 @@ void CMainFrame::OnToggleSPDIF(){
 void CMainFrame::OnUpdateToggleSPDIF(CCmdUI *pCmdUI){
 
 	AppSettings& s = AfxGetAppSettings();
-	BOOL bChecked = s.fbUseSPDIF ;
-	pCmdUI->SetCheck(bChecked);
+	pCmdUI->SetCheck(s.fbUseSPDIF);
 }
-
+void CMainFrame::OnSetAutoLoadSubtitle(){
+	AppSettings& s = AfxGetAppSettings();
+	s.fAutoloadSubtitles2 = !s.fAutoloadSubtitles2;
+}
+void CMainFrame::OnUpdateSetAutoLoadSubtitle(CCmdUI *pCmdUI){
+	AppSettings& s = AfxGetAppSettings();
+	pCmdUI->SetCheck(s.fAutoloadSubtitles2 );
+}
 void CMainFrame::OnDebugreport()
 {
 	CStringArray szaReport;

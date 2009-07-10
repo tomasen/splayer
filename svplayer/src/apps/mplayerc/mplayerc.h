@@ -444,6 +444,7 @@ public:
 		CStringW AudioRendererDisplayName;
 		bool fAutoloadAudio;
 		bool fAutoloadSubtitles;
+		bool fAutoloadSubtitles2;
 		bool fBlockVSFilter;
 		bool fEnableWorkerThreadForOpening;
 		bool fReportFailedPins;

@@ -58,7 +58,7 @@ void CVolumeCtrl::SetPosInternal(int pos)
 	if(pos <= 100){
 		s.AudioBoost = 1;
 	}else{
-		s.AudioBoost = pow(10.0f, (float)(pos-100) /2);
+		s.AudioBoost = pow(10.0f, (float)(pos-100) /4);
 	}
 	
 	//GetParent()->PostMessage(WM_HSCROLL, MAKEWPARAM((short)pos, SB_THUMBPOSITION), (LPARAM)m_hWnd); // this will be reflected back on us

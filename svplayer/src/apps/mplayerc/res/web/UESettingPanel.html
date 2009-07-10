@@ -48,6 +48,7 @@ a.panelbutton
 	font-size: 11pt;
 	line-height:28px;
 	color: #000000;
+	cursor:hand;
 }
 a.small{font-size: 7pt;}
 a.panelbutton:hover{color: #5c5cec; text-decoration :none;}
@@ -310,24 +311,24 @@ function myInit(){
 </head>
 <body id="CUESettingPanel" onload="myInit();" >
 <div id='initvarblock' style="display:none"></div><div id='haveCUDAforCoreAVC' style="display:none"></div><div id='canFFGPU' style="display:none"></div><div id='decodervalue' style="display:none"></div>
-<table width="100%" style="height:100%;">
+<table width="100%" style="height:100%;" >
 <tr >
 <td style="width:140px !important;" valign="top" onmouseout="ueAPI.curblock='';">
-<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('generalseting');" onmouseout="ueAPI.cancelsetcurblock();" class="panelbutton"  href="#" onclick="ueAPI.realsetcurblock('generalseting');">使用习惯</a></div>
-<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('playseting');" onmouseout="ueAPI.cancelsetcurblock();" class="panelbutton"  href="#" onclick="ueAPI.realsetcurblock('playseting');">播放設置</a></div>
-<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('videosetting');" onmouseout="ueAPI.cancelsetcurblock();" href="#" onclick="ueAPI.realsetcurblock('videosetting');" class="panelbutton">视频设置</a></div>
-<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('audiosetting');" onmouseout="ueAPI.cancelsetcurblock();" href="#" onclick="ueAPI.realsetcurblock('audiosetting');" class="panelbutton">音频设置</a></div>
-<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('subsetting');" onmouseout="ueAPI.cancelsetcurblock();" href="#" onclick="ueAPI.realsetcurblock('subsetting');" class="panelbutton">字幕设置</a></div>
-<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('updatesetting');" onmouseout="ueAPI.cancelsetcurblock();" href="#" onclick="ueAPI.realsetcurblock('updatesetting');" class="panelbutton">自动升级</a></div>
-<div class="panelbutton"><a  id="IDFileAss" href="#"  class="panelbutton">文件关联</a></div>
-<div class="panelbutton"><a id="IDHotKey" href="#"  class="panelbutton">热键绑定</a></div>
-<div class="panelbutton"><a id="IDBGCHG" href="#"  class="panelbutton">界面背景</a></div>
-</td><td  valign="top" align="left" id="pannelset">
-<div id="playseting" class="hiddenarea">
+<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('generalseting');" onmouseout="ueAPI.cancelsetcurblock();" class="panelbutton"   onclick="ueAPI.realsetcurblock('generalseting');">使用习惯</a></div>
+<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('playseting');" onmouseout="ueAPI.cancelsetcurblock();" class="panelbutton"  onclick="ueAPI.realsetcurblock('playseting');">播放設置</a></div>
+<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('videosetting');" onmouseout="ueAPI.cancelsetcurblock();" onclick="ueAPI.realsetcurblock('videosetting');" class="panelbutton">视频设置</a></div>
+<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('audiosetting');" onmouseout="ueAPI.cancelsetcurblock();" onclick="ueAPI.realsetcurblock('audiosetting');" class="panelbutton">音频设置</a></div>
+<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('subsetting');" onmouseout="ueAPI.cancelsetcurblock();" onclick="ueAPI.realsetcurblock('subsetting');" class="panelbutton">字幕设置</a></div>
+<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('updatesetting');" onmouseout="ueAPI.cancelsetcurblock();"  onclick="ueAPI.realsetcurblock('updatesetting');" class="panelbutton">自动升级</a></div>
+<div class="panelbutton"><a  id="IDFileAss"  class="panelbutton">文件关联</a></div>
+<div class="panelbutton"><a id="IDHotKey"   class="panelbutton">热键绑定</a></div>
+<div class="panelbutton"><a id="IDBGCHG"   class="panelbutton">界面背景</a></div>
+</td><td  valign="top" align="left" id="pannelset" style="width:98%"><div id="playseting" class="hiddenarea" >
 <input type="checkbox" id="chkplayrepeat" /><label for="chkplayrepeat">循环播放</label><br />
 <input type="checkbox" id="chkexitfullscreen" /><label for="chkexitfullscreen">播放结束后自动退出全屏</label><br />
 <input type="checkbox" id="chkautozoom" /><label for="chkautozoom">根据视频画面尺寸改变窗口大小</label><br />
 
+<br /><br /><br /><br /><br />
 </div>
 <div id="generalseting" class="hiddenarea">
 <input type="checkbox" id="chkremhistory" style="display:none;"/><label for="chkremhistory"  style="display:none;">保存播放记录</label><br />
@@ -438,7 +439,7 @@ function myInit(){
 <td align="center"><a href="https://bbs.shooter.cn/forumdisplay.php?fid=6" target="_blank" style="font-size:10px;color:Blue;">没有找到您需要的设置？请告诉我们你想要它出现在哪</a> </td>
 </tr>
 <tr height="8%">
-<td align="right" colspan="2" nowrap="nowrap"> <div style="float:left;margin-top:7px;margin-left:8px;"><a href="#" id="ButtonAdvanceSetting" >高级设置</a></div>
+<td align="right" colspan="2" nowrap="nowrap"> <div style="float:left;margin-top:7px;margin-left:8px;"><a id="ButtonAdvanceSetting" >高级设置</a></div>
 <input type="button" style="width:100px;" id="ButtonReset" value="恢复默认设置" /> &nbsp; <input type="button" style="width:100px;" id="ButtonOK" value="确定" /> &nbsp; 
 <input type="button" style="width:100px;" id="ButtonCancel" value="取消" /> &nbsp; <input type="button" style="width:100px;" id="ButtonApply" value="应用" /> 
 </td>

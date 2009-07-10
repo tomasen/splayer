@@ -653,10 +653,16 @@ HRESULT CUESettingPanel::OnChangeBG(IHTMLElement* /*pElement*/){
 }
 
 HRESULT CUESettingPanel::OnFileAss(IHTMLElement* /*pElement*/){
-	CAutoPtr<CPPageFormats> page(new CPPageFormats());
-	CPropertySheet dlg(_T("文件关联设置..."), this);
-	dlg.AddPage(page);
-	dlg.DoModal() ;
+
+	if (AfxGetMyApp()->IsVista() && !IsUserAnAdmin())
+	{
+		AfxGetMyApp()->GainAdminPrivileges(1, FALSE);
+	}else{
+		CAutoPtr<CPPageFormats> page(new CPPageFormats());
+		CPropertySheet dlg(_T("文件关联设置..."), this);
+		dlg.AddPage(page);
+		dlg.DoModal() ;
+	}
 	return S_OK;
 }
 HRESULT CUESettingPanel::OnButtonOK(IHTMLElement* /*pElement*/)

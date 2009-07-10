@@ -27,7 +27,8 @@
 
 #include <initguid.h>
 #include "..\..\..\..\include\moreuuids.h"
-
+#include <afxtempl.h>
+#include "..\..\..\..\src\apps\mplayerc\mplayerc.h"
 //
 // CBaseVideoFilter
 //
@@ -587,10 +588,32 @@ VIDEO_OUTPUT_FORMATS DefaultFormats[] =
 	{&MEDIASUBTYPE_RGB555, 1, 16, BI_BITFIELDS},
 };
 
+VIDEO_OUTPUT_FORMATS DefaultFormatsRGB[] =
+{
+	{&MEDIASUBTYPE_RGB32, 1, 32, BI_RGB},
+	{&MEDIASUBTYPE_RGB24, 1, 24, BI_RGB},
+	{&MEDIASUBTYPE_ARGB32, 1, 32, BI_RGB},
+	{&MEDIASUBTYPE_RGB565, 1, 16, BI_RGB},
+	{&MEDIASUBTYPE_RGB555, 1, 16, BI_RGB},
+	{&MEDIASUBTYPE_ARGB32, 1, 32, BI_BITFIELDS},
+	{&MEDIASUBTYPE_RGB32, 1, 32, BI_BITFIELDS},
+	{&MEDIASUBTYPE_RGB24, 1, 24, BI_BITFIELDS},
+	{&MEDIASUBTYPE_RGB565, 1, 16, BI_BITFIELDS},
+	{&MEDIASUBTYPE_RGB555, 1, 16, BI_BITFIELDS},
+	
+};
+
 void CBaseVideoFilter::GetOutputFormats (int& nNumber, VIDEO_OUTPUT_FORMATS** ppFormats)
 {
-	nNumber		= countof(DefaultFormats);
-	*ppFormats	= DefaultFormats;
+	AppSettings& s = AfxGetAppSettings();
+	if(s.bRGBOnly){
+		nNumber		= countof(DefaultFormatsRGB);
+		*ppFormats	= DefaultFormatsRGB;
+	}else{
+		nNumber		= countof(DefaultFormats);
+		*ppFormats	= DefaultFormats;
+	}
+	
 }
 
 

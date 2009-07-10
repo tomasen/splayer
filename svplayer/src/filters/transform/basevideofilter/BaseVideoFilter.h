@@ -62,7 +62,7 @@ public:
 	HRESULT ReconnectOutput(int w, int h, bool bSendSample = true, int realWidth = -1, int realHeight = -1);
 	int GetPinCount();
 	CBasePin* GetPin(int n);
-
+	
     HRESULT CheckInputType(const CMediaType* mtIn);
 	HRESULT CheckOutputType(const CMediaType& mtOut);
     HRESULT CheckTransform(const CMediaType* mtIn, const CMediaType* mtOut);

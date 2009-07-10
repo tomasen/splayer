@@ -2113,7 +2113,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 			// WINBUG: on win2k this would crash WritePrivateProfileString
 			pApp->WriteProfileInt(_T(""), _T(""), pApp->GetProfileInt(_T(""), _T(""), 0)?0:1);
 		}
-		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("LastVersion"), 341);		
+		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("LastVersion"), 390);		
 		
 	}
 	else
@@ -2159,7 +2159,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		
 		
 		fVMDetected = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VMDETECTED), -1);
-		if(fVMDetected == -1){
+		if(fVMDetected == -1 || (fVMDetected == 0 && iUpgradeReset < 390)){
 			if(IsInsideVM() ){
 				fVMDetected = 1;
 			}else{

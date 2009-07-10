@@ -2222,6 +2222,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	CMPCVideoDecFilter::m_ref_frame_count_check_skip = false;
 	
 	CMPCVideoDecFilter::m_bUSERGB =  s.bRGBOnly;
+//	CBaseVideoFilter::m_bUSERGB =  s.bRGBOnly;
 	
 	// Blocked filters
 

@@ -43,7 +43,7 @@ CString CMediaTypeEx::ToString(IPin* pPin)
 	
 	if(majortype == MEDIATYPE_Video)
 	{
-		type = _T("Video");
+		type = _T("视频");
 
 		BITMAPINFOHEADER bih;
 		bool fBIH = ExtractBIH(this, &bih);
@@ -58,9 +58,9 @@ CString CMediaTypeEx::ToString(IPin* pPin)
 
 		if(codec.IsEmpty())
 		{
-			if(formattype == FORMAT_MPEGVideo) codec = _T("MPEG1 Video");
-			else if(formattype == FORMAT_MPEG2_VIDEO) codec = _T("MPEG2 Video");
-			else if(formattype == FORMAT_DiracVideoInfo) codec = _T("Dirac Video");
+			if(formattype == FORMAT_MPEGVideo) codec = _T("MPEG1 视频");
+			else if(formattype == FORMAT_MPEG2_VIDEO) codec = _T("MPEG2 视频");
+			else if(formattype == FORMAT_DiracVideoInfo) codec = _T("Dirac 视频");
 		}
 
 		if(fDim)
@@ -86,13 +86,13 @@ CString CMediaTypeEx::ToString(IPin* pPin)
 
 		if(subtype == MEDIASUBTYPE_DVD_SUBPICTURE)
 		{
-			type = _T("Subtitle");
-			codec = _T("DVD Subpicture");
+			type = _T("字幕");
+			codec = _T("DVD 字幕");
 		}
 	}
 	else if(majortype == MEDIATYPE_Audio)
 	{
-		type = _T("Audio");
+		type = _T("音频");
 
 		if(formattype == FORMAT_WaveFormatEx)
 		{
@@ -104,9 +104,9 @@ CString CMediaTypeEx::ToString(IPin* pPin)
 			{
 				codec = GetAudioCodecName(subtype, wfe->wFormatTag);
 				dim.Format(_T("%dHz"), wfe->nSamplesPerSec);
-				if(wfe->nChannels == 1) dim.Format(_T("%s mono"), CString(dim));
-				else if(wfe->nChannels == 2) dim.Format(_T("%s stereo"), CString(dim));
-				else dim.Format(_T("%s %dch"), CString(dim), wfe->nChannels);
+				if(wfe->nChannels == 1) dim.Format(_T("%s 单声道"), CString(dim));
+				else if(wfe->nChannels == 2) dim.Format(_T("%s 立体声"), CString(dim));
+				else dim.Format(_T("%s %d声道"), CString(dim), wfe->nChannels);
 				if(wfe->nAvgBytesPerSec) rate.Format(_T("%dKbps"), wfe->nAvgBytesPerSec*8/1000);
 			}
 		}
@@ -116,9 +116,9 @@ CString CMediaTypeEx::ToString(IPin* pPin)
 
 			codec = GetAudioCodecName(subtype, 0);
 			dim.Format(_T("%dHz"), vf->nSamplesPerSec);
-			if(vf->nChannels == 1) dim.Format(_T("%s mono"), CString(dim));
-			else if(vf->nChannels == 2) dim.Format(_T("%s stereo"), CString(dim));
-			else dim.Format(_T("%s %dch"), CString(dim), vf->nChannels);
+			if(vf->nChannels == 1) dim.Format(_T("%s 单声道"), CString(dim));
+			else if(vf->nChannels == 2) dim.Format(_T("%s 立体声"), CString(dim));
+			else dim.Format(_T("%s %d声道"), CString(dim), vf->nChannels);
 			if(vf->nAvgBitsPerSec) rate.Format(_T("%dKbps"), vf->nAvgBitsPerSec/1000);
 		}
 		else if(formattype == FORMAT_VorbisFormat2)
@@ -127,23 +127,23 @@ CString CMediaTypeEx::ToString(IPin* pPin)
 
 			codec = GetAudioCodecName(subtype, 0);
 			dim.Format(_T("%dHz"), vf->SamplesPerSec);
-			if(vf->Channels == 1) dim.Format(_T("%s mono"), CString(dim));
-			else if(vf->Channels == 2) dim.Format(_T("%s stereo"), CString(dim));
-			else dim.Format(_T("%s %dch"), CString(dim), vf->Channels);
+			if(vf->Channels == 1) dim.Format(_T("%s 单声道"), CString(dim));
+			else if(vf->Channels == 2) dim.Format(_T("%s 立体声"), CString(dim));
+			else dim.Format(_T("%s %d声道"), CString(dim), vf->Channels);
 		}				
 	}
 	else if(majortype == MEDIATYPE_Text)
 	{
-		type = _T("Text");
+		type = _T("文字");
 	}
 	else if(majortype == MEDIATYPE_Subtitle)
 	{
-		type = _T("Subtitle");
+		type = _T("字幕");
 		codec = GetSubtitleCodecName(subtype);
 	}
 	else
 	{
-		type = _T("Unknown");
+		type = _T("未知");
 	}
 
 	if(CComQIPtr<IMediaSeeking> pMS = pPin)
@@ -208,6 +208,7 @@ CString CMediaTypeEx::GetVideoCodecName(const GUID& subtype, DWORD biCompression
 		names['SVQ3'] = _T("SVQ3");
 		names['SVQ1'] = _T("SVQ1");
 		names['H263'] = _T("H263");
+		names['H264'] = _T("H264");
 		// names[''] = _T("");
 	}
 
@@ -221,7 +222,7 @@ CString CMediaTypeEx::GetVideoCodecName(const GUID& subtype, DWORD biCompression
 
 		if(!names.Lookup(MAKEFOURCC(b[3], b[2], b[1], b[0]), str))
 		{
-			if(subtype == MEDIASUBTYPE_DiracVideo) str = _T("Dirac Video");
+			if(subtype == MEDIASUBTYPE_DiracVideo) str = _T("Dirac 视频");
 			// else if(subtype == ) str = _T("");
 			else if(biCompression < 256) str.Format(_T("%d"), biCompression);
 			else str.Format(_T("%4.4hs"), &biCompression);

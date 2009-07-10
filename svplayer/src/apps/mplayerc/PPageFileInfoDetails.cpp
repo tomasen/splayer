@@ -232,10 +232,10 @@ BOOL CPPageFileInfoDetails::OnInitDialog()
 		}
 		while(lnko > 1);
 
-		if(arxy.cx > 0 && arxy.cy > 0 && arxy.cx*wh.cy != arxy.cy*wh.cx)
+		if(arxy.cx > 0 && arxy.cy > 0 )
 		{
 			CString ar;
-			ar.Format(_T(" (AR %d:%d)"), arxy.cx, arxy.cy);
+			ar.Format(_T(" (画面比例 %d:%d)"), arxy.cx, arxy.cy);
 			m_res += ar;
 		}
 	}
@@ -296,13 +296,18 @@ void CPPageFileInfoDetails::InitEncoding()
 			
 			if(!str.IsEmpty())
 			{
-				sl.AddTail(mt.ToString() + CString(L" [" + GetPinName(pPin) + L"]"));
+				sl.AddTail(str + CString(L" [" + GetPinName(pPin) + L"]"));
 			}
 		}
 		EndEnumPins
 	}
 	EndEnumFilters
 
+		
+	sl.AddTail( CString(_T("视频画面： ")) + m_res );
+	sl.AddTail( CString(_T("时间长度： ")) + m_time );
+	sl.AddTail( CString(_T("文件尺寸： ")) + m_size );
+	sl.AddTail( CString(_T("文件类型： ")) + m_type );
 	CString text = Implode(sl, '\n');
 	text.Replace(_T("\n"), _T("\r\n"));
 	m_encoding.SetWindowText(text);

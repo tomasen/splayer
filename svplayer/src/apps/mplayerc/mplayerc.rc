@@ -396,15 +396,15 @@ BEGIN
     ICON            "",IDC_DEFAULTICON,8,8,20,20,SS_REALSIZEIMAGE
     EDITTEXT        IDC_EDIT1,35,16,186,12,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,8,35,213,1
-    LTEXT           "媒体类型:",IDC_STATIC,40,42,20,8
+    LTEXT           "媒体类型:",IDC_STATIC,18,42,42,8
     EDITTEXT        IDC_EDIT4,73,42,148,13,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
-    LTEXT           "文件尺寸:",IDC_STATIC,44,55,16,8
+    LTEXT           "文件尺寸:",IDC_STATIC,18,55,42,8
     EDITTEXT        IDC_EDIT3,73,55,148,13,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
-    LTEXT           "时间长度:",IDC_STATIC,16,68,44,8
+    LTEXT           "时间长度:",IDC_STATIC,18,68,42,8
     EDITTEXT        IDC_EDIT2,73,68,148,13,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
-    LTEXT           "视频大小:",IDC_STATIC,25,81,35,8
+    LTEXT           "视频大小:",IDC_STATIC,18,81,42,8
     EDITTEXT        IDC_EDIT5,73,81,148,13,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
-    LTEXT           "创建时间:",IDC_STATIC,30,94,30,8
+    LTEXT           "创建时间:",IDC_STATIC,18,94,42,8
     EDITTEXT        IDC_EDIT6,73,94,148,13,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,8,114,213,1
     EDITTEXT        IDC_EDIT7,8,121,213,69,ES_MULTILINE | ES_AUTOHSCROLL | ES_READONLY | WS_VSCROLL | WS_HSCROLL
@@ -1857,14 +1857,12 @@ BEGIN
         MENUITEM "打开文件",                        ID_FILE_OPENQUICK
         POPUP "打开"
         BEGIN
-            MENUITEM "打开文件(&O)...\tCtrl+O",         ID_FILE_OPENMEDIA
-            MENUITEM "打开文件夹(&F)...\tCtrl+F",        ID_FILE_OPENFOLDER
-            MENUITEM "打开网址(&U)...\tCtrl+U",         ID_FILE_OPENURLSTREAM
-            MENUITEM "打开DVD(&D)...\tCtrl+D",        ID_FILE_OPENDVD
+            MENUITEM "文件(&O)...\tCtrl+O",           ID_FILE_OPENMEDIA
+            MENUITEM "文件夹(&F)...\tCtrl+F",          ID_FILE_OPENFOLDER
+            MENUITEM "网址(&U)...\tCtrl+U",           ID_FILE_OPENURLSTREAM
+            MENUITEM "DVD(&D)...\tCtrl+D",          ID_FILE_OPENDVD
             MENUITEM "视频捕捉(&V)...\tCtrl+V",         ID_FILE_OPENDEVICE
-            MENUITEM "打开碟片(&P)",                    ID_32768
-            MENUITEM SEPARATOR
-            MENUITEM "视频信息(&r)",                    ID_FILE_PROPERTIES
+            MENUITEM "碟片(&P)",                      ID_32768
         END
         MENUITEM "最近播放",                        ID__RECENTPLAYED
         MENUITEM "收藏夹",                         ID_FAVORITES
@@ -1932,6 +1930,7 @@ BEGIN
         END
         MENUITEM SEPARATOR
         MENUITEM "选项设置(&O)...",                 ID_VIEW_OPTIONS
+        MENUITEM "视频信息(&r)",                    ID_FILE_PROPERTIES
         MENUITEM SEPARATOR
         POPUP "截图"
         BEGIN

@@ -1318,7 +1318,7 @@ LRESULT CMainFrame::OnNcLButtonDown( WPARAM wParam, LPARAM lParam )
 		return FALSE;
 	}
 	if(wParam == HTMENU){
-		OnMenu(m_mainMenu.GetSubMenu(0));
+		OnMenu(m_popup.GetSubMenu(0));
 		m_btnList.ClearStat();
 		RedrawNonClientArea();
 		return FALSE;
@@ -1367,7 +1367,7 @@ LRESULT CMainFrame::OnNcLButtonUp( WPARAM wParam, LPARAM lParam )
 void CMainFrame::OnNcRButtonDown(UINT nHitTest, CPoint point)
 {
 	// TODO: Add your message handler code here and/or call default
-	OnMenu(m_mainMenu.GetSubMenu(0));
+	OnMenu(m_popup.GetSubMenu(0));
 	m_btnList.ClearStat();
 	RedrawNonClientArea();
 	

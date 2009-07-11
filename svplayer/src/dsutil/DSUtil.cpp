@@ -786,6 +786,7 @@ cdrom_t GetCDROMType(TCHAR drive, CAtlList<CString>& files)
 
 	if(GetDriveType(path + _T("\\")) == DRIVE_CDROM)
 	{
+		/*
 		// CDROM_VideoCD
 		FindFiles(path + _T("\\mpegav\\avseq??.dat"), files);
 		FindFiles(path + _T("\\mpegav\\avseq??.mpg"), files);
@@ -829,7 +830,7 @@ cdrom_t GetCDROMType(TCHAR drive, CAtlList<CString>& files)
 			}
 		}
 		if(files.GetCount() > 0) return CDROM_Audio;
-
+		*/
 		// it is a cdrom but nothing special
 		return CDROM_Unknown;
 	}

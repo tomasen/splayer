@@ -10671,9 +10671,14 @@ void CMainFrame::SetupOpenCDSubMenu()
 	{
 		CString label = GetDriveLabel(drive), str;
 
+		
 		CAtlList<CString> files;
 		switch(GetCDROMType(drive, files))
 		{
+		case CDROM_Unknown:
+			if(label.IsEmpty()) label = _T("Disk ");
+			str.Format(_T("%s (%c:)"), label, drive);
+			break;
 		case CDROM_Audio:
 			if(label.IsEmpty()) label = _T("Audio CD");
 			str.Format(_T("%s (%c:)"), label, drive);

@@ -2454,7 +2454,12 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		fForceRGBrender = 0;
 		useGPUAcel = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEGPUACEL), -1);
 		if(useGPUAcel < 0 ){
-			useGPUAcel = !!svptoolbox.GetGPUString(&szaGPUStrings);
+			try{
+				useGPUAcel = !!svptoolbox.GetGPUString(&szaGPUStrings);
+			}
+			catch(...){
+				useGPUAcel = 0;
+			}
 		}
 		optionDecoder = pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_OPTIONDECODER), _T("CoreAVCdec"));
 		iDXVer = 7;

@@ -499,75 +499,7 @@ void CUESettingPanel::ApplyAllSetting(){
 	
 	{
 		int iSS = _wtoi(m_sgs_speaker);
-		int iFRS = iSS/10;
-		BOOL iLFE = iSS % 10;
-		m_aacdownmix = FALSE;
-
-		switch(iFRS){
-			case 20:
-				m_ac3spkcfg = A52_STEREO ;
-				m_dtsspkcfg = DTS_STEREO ;
-				m_aacdownmix = TRUE;
-				break;
-			case 21:
-				m_ac3spkcfg = A52_2F1R  ;
-				m_dtsspkcfg = DTS_2F1R  ;
-				m_aacdownmix = TRUE;
-				break;
-			case 22:
-				m_ac3spkcfg = A52_2F2R  ;
-				m_dtsspkcfg = DTS_2F2R  ;
-				break;
-			case 30:
-				m_ac3spkcfg = A52_3F  ;
-				m_dtsspkcfg = DTS_3F  ;
-				m_aacdownmix = TRUE;
-				break;
-			case 31:
-				m_ac3spkcfg = A52_3F1R  ;
-				m_dtsspkcfg = DTS_3F1R  ;
-				m_aacdownmix = TRUE;
-				break;
-			case 32:
-				m_ac3spkcfg = A52_3F2R  ;
-				m_dtsspkcfg = DTS_3F2R  ;
-				break;
-			default:
-				m_ac3spkcfg = A52_STEREO ;
-				m_dtsspkcfg = DTS_STEREO ;
-				m_aacdownmix = TRUE;
-				break;
-			
-		}
-
-		if(iLFE){
-			m_ac3spkcfg |= A52_LFE;
-			m_dtsspkcfg |= DTS_LFE;
-		}
-		s.fbUseSPDIF = !!m_sgi_usespdif;
-		if(m_sgi_usespdif){
-			//iSS += 1000;
-			//m_ac3spkcfg = -m_ac3spkcfg;
-			//m_dtsspkcfg = -m_dtsspkcfg;
-		}
-		s.iDecSpeakers = iSS;
-		if(m_pMDF){
-			//m_pMDF->SetSampleFormat((MPCSampleFormat)m_outputformat);
-			m_pMDF->SetSpeakerConfig(IMpaDecFilter::ac3, m_ac3spkcfg);
-			//m_pMDF->SetDynamicRangeControl(IMpaDecFilter::ac3, m_ac3drc);
-			m_pMDF->SetSpeakerConfig(IMpaDecFilter::dts, m_dtsspkcfg);
-			//m_pMDF->SetDynamicRangeControl(IMpaDecFilter::dts, m_dtsdrc);
-			m_pMDF->SetSpeakerConfig(IMpaDecFilter::aac, m_aacdownmix);
-		}
-
-		CRegKey key;
-		if(ERROR_SUCCESS == key.Create(HKEY_CURRENT_USER, _T("Software\\SPlayer\\Filters\\MPEG Audio Decoder")))
-		{
-			key.SetDWORDValue(_T("Ac3SpeakerConfig"), m_ac3spkcfg);
-			key.SetDWORDValue(_T("DtsSpeakerConfig"), m_dtsspkcfg);
-			key.SetDWORDValue(_T("AacSpeakerConfig"), m_aacdownmix);
-			
-		}
+		s.SetChannelMapByNumberOfSpeakers(iSS, -1);
 		
 	}
 

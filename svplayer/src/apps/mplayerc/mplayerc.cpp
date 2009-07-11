@@ -36,6 +36,8 @@
 #include <d3dx9.h>
 #include "DlgChkUpdater.h"
 #include <dsound.h>
+#include "..\..\filters\switcher\AudioSwitcher\AudioSwitcher.h"
+#include "..\..\filters\transform\mpadecfilter\MpaDecFilter.h"
 
 /////////
 typedef BOOL (WINAPI* MINIDUMPWRITEDUMP)(HANDLE hProcess, DWORD dwPid, HANDLE hFile, MINIDUMP_TYPE DumpType,
@@ -1823,7 +1825,23 @@ void CMPlayerCApp::Settings::SetChannelMapByNumberOfSpeakers( int iSS , int iNum
 	for(int j = 0; j < 18; j++)
 		for(int i = 0; i <= j; i++)
 			pSpeakerToChannelMap[j][i] = 1<<i;
-
+	if(!iSS){
+		switch( iNumberOfSpeakers ){
+				case 1: iDecSpeakers = 100;	break;
+				case 2: iDecSpeakers = 200;	break;
+				case 3: iDecSpeakers = 210;	break;
+				case 4: iDecSpeakers = 220;	break;
+				case 5: iDecSpeakers = 221;	break;
+				case 6: iDecSpeakers = 321;	break;
+				case 7: iDecSpeakers = 321;	break;
+				case 8: iDecSpeakers = 321;	break;
+		}
+		iSS = iDecSpeakers;
+	}else{
+		iSS = abs(iSS);
+		iDecSpeakers = iSS;
+		iNumberOfSpeakers = max(iNumberOfSpeakers, (iSS % 10) + ( (int)(iSS/10) % 10 ) + ( (int)(iSS/100) % 10 ) );
+	}
 	switch(iNumberOfSpeakers){
 		case 1:
 			//2 Channel
@@ -2046,7 +2064,75 @@ void CMPlayerCApp::Settings::SetChannelMapByNumberOfSpeakers( int iSS , int iNum
 		
 	}
 	
+	{
+		int iFRS = iSS/10;
+		BOOL iLFE = iSS % 10;
+		int m_ac3spkcfg;
+		int m_dtsspkcfg;
+		bool m_aacdownmix;
+		m_aacdownmix = FALSE;
 
+		switch(iFRS){
+			case 20:
+				m_ac3spkcfg = A52_STEREO ;
+				m_dtsspkcfg = DTS_STEREO ;
+				m_aacdownmix = TRUE;
+				break;
+			case 21:
+				m_ac3spkcfg = A52_2F1R  ;
+				m_dtsspkcfg = DTS_2F1R  ;
+				m_aacdownmix = TRUE;
+				break;
+			case 22:
+				m_ac3spkcfg = A52_2F2R  ;
+				m_dtsspkcfg = DTS_2F2R  ;
+				break;
+			case 30:
+				m_ac3spkcfg = A52_3F  ;
+				m_dtsspkcfg = DTS_3F  ;
+				m_aacdownmix = TRUE;
+				break;
+			case 31:
+				m_ac3spkcfg = A52_3F1R  ;
+				m_dtsspkcfg = DTS_3F1R  ;
+				m_aacdownmix = TRUE;
+				break;
+			case 32:
+				m_ac3spkcfg = A52_3F2R  ;
+				m_dtsspkcfg = DTS_3F2R  ;
+				break;
+			default:
+				m_ac3spkcfg = A52_STEREO ;
+				m_dtsspkcfg = DTS_STEREO ;
+				m_aacdownmix = TRUE;
+				break;
+
+		}
+
+		if(iLFE){
+			m_ac3spkcfg |= A52_LFE;
+			m_dtsspkcfg |= DTS_LFE;
+		}
+		
+		CComQIPtr<IMpaDecFilter> m_pMDF;
+		if(m_pMDF){
+			//m_pMDF->SetSampleFormat((MPCSampleFormat)m_outputformat);
+			m_pMDF->SetSpeakerConfig(IMpaDecFilter::ac3, m_ac3spkcfg);
+			//m_pMDF->SetDynamicRangeControl(IMpaDecFilter::ac3, m_ac3drc);
+			m_pMDF->SetSpeakerConfig(IMpaDecFilter::dts, m_dtsspkcfg);
+			//m_pMDF->SetDynamicRangeControl(IMpaDecFilter::dts, m_dtsdrc);
+			m_pMDF->SetSpeakerConfig(IMpaDecFilter::aac, m_aacdownmix);
+		}
+
+		CRegKey key;
+		if(ERROR_SUCCESS == key.Create(HKEY_CURRENT_USER, _T("Software\\SPlayer\\Filters\\MPEG Audio Decoder")))
+		{
+			key.SetDWORDValue(_T("Ac3SpeakerConfig"), m_ac3spkcfg);
+			key.SetDWORDValue(_T("DtsSpeakerConfig"), m_dtsspkcfg);
+			key.SetDWORDValue(_T("AacSpeakerConfig"), m_aacdownmix);
+
+		}
+	}
 	
 	fCustomChannelMapping = !IsVista();
 
@@ -2565,7 +2651,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		bUseWaveOutDeviceByDefault = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEWAVEOUTDEVICEBYDEFAULT), 0);
 		fCustomChannelMapping = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_CUSTOMCHANNELMAPPING), 1);
 		iDecSpeakers = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DECSPEAKERS), -1);
-		int iSS = abs(iDecSpeakers) %1000;
+		int iSS = abs(iDecSpeakers) % 1000;
 		int iNumberOfSpeakers = -1;
 		if(iDecSpeakers == -1 || (iSS == 200 && iUpgradeReset < 400) ){
 			iDecSpeakers = 200;
@@ -2590,7 +2676,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		else
 		{
 			
-			SetChannelMapByNumberOfSpeakers(iSS, iNumberOfSpeakers);
+			SetChannelMapByNumberOfSpeakers(iDecSpeakers, iNumberOfSpeakers);
 			
 		}
 		fbUseSPDIF = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USESPDIF), 0);

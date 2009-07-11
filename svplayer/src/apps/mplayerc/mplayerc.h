@@ -343,6 +343,7 @@ public:
 	
 	static bool	IsVista();
 	static void GainAdminPrivileges(UINT idd, BOOL bWait = true);
+	static int GetNumberOfSpeakers(LPCGUID lpcGUID = NULL, HWND hWnd = NULL);
 	static bool	IsVSFilterInstalled();
 	HINSTANCE					GetD3X9Dll();
 	LONGLONG					GetPerfCounter();
@@ -520,6 +521,7 @@ public:
 		bool fAudioTimeShift;
 		int tAudioTimeShift;
 		bool fCustomChannelMapping;
+		
 		DWORD pSpeakerToChannelMap[18][18]; //Meaning [Total Channel Number] [Speaker] = 1 << Channel
 
 		bool fAudioNormalize;
@@ -584,6 +586,7 @@ public:
 		Settings();
 		virtual ~Settings();
 		void ThreadedLoading();
+		void SetChannelMapByNumberOfSpeakers(int iSS, int iNumberOfSpeakers);
 		void RegGlobalAccelKey(HWND hWnd = NULL);
 		void UpdateData(bool fSave);
 

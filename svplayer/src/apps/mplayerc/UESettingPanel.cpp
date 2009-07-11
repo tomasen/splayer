@@ -268,7 +268,11 @@ BOOL CUESettingPanel::OnInitDialog()
 		m_sgi_noaudioboost = 0;
 	}
 	m_sgi_UseWaveOutDeviceByDefault = s.bUseWaveOutDeviceByDefault;
-	m_sgs_speaker.Format(_T("%d") ,  s.iDecSpeakers % 1000 );
+	s.iDecSpeakers = s.iDecSpeakers % 1000;
+	if(s.iDecSpeakers == 201){ //其实2.1就是2.0
+		s.iDecSpeakers = 200;
+	}
+	m_sgs_speaker.Format(_T("%d") , s.iDecSpeakers   );
 	m_sgi_usespdif = s.fbUseSPDIF;
 	//m_sgi_downsample44k = s.fDownSampleTo441;
 

@@ -732,7 +732,6 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_btnList.SetHideStat( HTMINTOTRAY,   s.fTrayIcon);
 
 
-
 	/*NEW UI END*/
 	return 0;
 }
@@ -8914,7 +8913,8 @@ void CMainFrame::SetBalance(int balance)
 
 void CMainFrame::SetupIViAudReg()
 {
-	if(!AfxGetAppSettings().fAutoSpeakerConf) return;
+	return;
+	//if(!AfxGetAppSettings().fAutoSpeakerConf) 
 
 	DWORD spc = 0, defchnum = 0;
 

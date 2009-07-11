@@ -1025,6 +1025,7 @@ bool ExtractDim(const AM_MEDIA_TYPE* pmt, int& w, int& h, int& arx, int& ary)
 		VIDEOINFOHEADER* vih = (VIDEOINFOHEADER*)pmt->pbFormat;
 		w = vih->bmiHeader.biWidth;
 		h = abs(vih->bmiHeader.biHeight);
+		vih->bmiHeader.biHeight = h;
 		arx = w * vih->bmiHeader.biYPelsPerMeter;
 		ary = h * vih->bmiHeader.biXPelsPerMeter;
 	}
@@ -1033,6 +1034,7 @@ bool ExtractDim(const AM_MEDIA_TYPE* pmt, int& w, int& h, int& arx, int& ary)
 		VIDEOINFOHEADER2* vih = (VIDEOINFOHEADER2*)pmt->pbFormat;
 		w = vih->bmiHeader.biWidth;
 		h = abs(vih->bmiHeader.biHeight);
+		vih->bmiHeader.biHeight = h;
 		arx = vih->dwPictAspectRatioX;
 		ary = vih->dwPictAspectRatioY;
 	}

@@ -1862,7 +1862,7 @@ BEGIN
             MENUITEM "网址(&U)...\tCtrl+U",           ID_FILE_OPENURLSTREAM
             MENUITEM "DVD(&D)...\tCtrl+D",          ID_FILE_OPENDVD
             MENUITEM "视频捕捉(&V)...\tCtrl+V",         ID_FILE_OPENDEVICE
-            MENUITEM "碟片(&P)",                      ID_32768
+            MENUITEM "打开碟片(&P)",                      ID_32768
         END
         MENUITEM "最近播放",                        ID__RECENTPLAYED
         MENUITEM "收藏夹",                         ID_FAVORITES

@@ -35,6 +35,7 @@
 #include <d3d9.h>
 #include <d3dx9.h>
 #include "DlgChkUpdater.h"
+#include <dsound.h>
 
 /////////
 typedef BOOL (WINAPI* MINIDUMPWRITEDUMP)(HANDLE hProcess, DWORD dwPid, HANDLE hFile, MINIDUMP_TYPE DumpType,
@@ -1795,6 +1796,261 @@ POSITION CMPlayerCApp::Settings::FindWmcmdsPosofCmdidByIdx(INT cmdid, int idx){
 	}
 	return 0;
 }
+#define SPEAKER_FRONT_LEFT              0x1
+#define SPEAKER_FRONT_RIGHT             0x2
+#define SPEAKER_FRONT_CENTER            0x4
+#define SPEAKER_LOW_FREQUENCY           0x8
+#define SPEAKER_BACK_LEFT               0x10
+#define SPEAKER_BACK_RIGHT              0x20
+#define SPEAKER_FRONT_LEFT_OF_CENTER    0x40
+#define SPEAKER_FRONT_RIGHT_OF_CENTER   0x80
+#define SPEAKER_BACK_CENTER             0x100
+#define SPEAKER_SIDE_LEFT               0x200
+#define SPEAKER_SIDE_RIGHT              0x400
+#define SPEAKER_TOP_CENTER              0x800
+#define SPEAKER_TOP_FRONT_LEFT          0x1000
+#define SPEAKER_TOP_FRONT_CENTER        0x2000
+#define SPEAKER_TOP_FRONT_RIGHT         0x4000
+#define SPEAKER_TOP_BACK_LEFT           0x8000
+#define SPEAKER_TOP_BACK_CENTER         0x10000
+#define SPEAKER_TOP_BACK_RIGHT          0x20000
+void CMPlayerCApp::Settings::SetChannelMapByNumberOfSpeakers( int iSS , int iNumberOfSpeakers){
+
+	if(iNumberOfSpeakers == -1){
+		iNumberOfSpeakers = GetNumberOfSpeakers();
+	}
+	memset(pSpeakerToChannelMap, 0, sizeof(pSpeakerToChannelMap));
+	for(int j = 0; j < 18; j++)
+		for(int i = 0; i <= j; i++)
+			pSpeakerToChannelMap[j][i] = 1<<i;
+
+	switch(iNumberOfSpeakers){
+		case 1:
+			//2 Channel
+			pSpeakerToChannelMap[1][0] = SPEAKER_FRONT_LEFT|SPEAKER_FRONT_RIGHT;
+			//pSpeakerToChannelMap[1][1] = 0;
+
+			//3 Channel
+			pSpeakerToChannelMap[2][0] = SPEAKER_FRONT_LEFT|SPEAKER_FRONT_RIGHT|SPEAKER_FRONT_CENTER;
+			//pSpeakerToChannelMap[2][1] = pSpeakerToChannelMap[2][2] = 0;
+
+			//4 Channel
+			pSpeakerToChannelMap[3][0] = SPEAKER_FRONT_LEFT|SPEAKER_FRONT_RIGHT|SPEAKER_BACK_LEFT|SPEAKER_BACK_RIGHT;
+			//pSpeakerToChannelMap[3][1] = pSpeakerToChannelMap[3][2] = pSpeakerToChannelMap[3][3] = 0;
+
+			//5 Channel
+			pSpeakerToChannelMap[4][0] = SPEAKER_FRONT_LEFT|SPEAKER_BACK_LEFT|SPEAKER_LOW_FREQUENCY|SPEAKER_FRONT_RIGHT|SPEAKER_BACK_RIGHT;
+			//pSpeakerToChannelMap[4][1] = pSpeakerToChannelMap[4][2] = pSpeakerToChannelMap[4][3] = pSpeakerToChannelMap[4][4]= 0;
+
+			//6 Channel
+			pSpeakerToChannelMap[5][0] = SPEAKER_FRONT_LEFT|SPEAKER_FRONT_CENTER|SPEAKER_BACK_LEFT|SPEAKER_LOW_FREQUENCY|SPEAKER_FRONT_RIGHT|SPEAKER_BACK_RIGHT ;
+			//pSpeakerToChannelMap[5][1] = pSpeakerToChannelMap[5][2] = pSpeakerToChannelMap[5][3] = pSpeakerToChannelMap[5][4] = pSpeakerToChannelMap[5][5] = 0;
+
+			//7 Channel
+			pSpeakerToChannelMap[6][0] = 0xff ;
+			//pSpeakerToChannelMap[6][1] = pSpeakerToChannelMap[6][2] = pSpeakerToChannelMap[6][3] = pSpeakerToChannelMap[6][4] = pSpeakerToChannelMap[6][5] =  pSpeakerToChannelMap[6][6] = pSpeakerToChannelMap[6][7] =0;
+
+			//8 Channel
+			pSpeakerToChannelMap[7][0] = 0xff;
+			//pSpeakerToChannelMap[7][1] = pSpeakerToChannelMap[7][2] = pSpeakerToChannelMap[7][3] = pSpeakerToChannelMap[7][4] = pSpeakerToChannelMap[7][5] = pSpeakerToChannelMap[7][6] = pSpeakerToChannelMap[7][7] = 0;
+			break;
+		default: //2 
+			pSpeakerToChannelMap[0][0] = pSpeakerToChannelMap[0][1] = 1;
+
+			//pSpeakerToChannelMap[1][0] = SPEAKER_FRONT_LEFT|SPEAKER_FRONT_CENTER|SPEAKER_BACK_LEFT|SPEAKER_LOW_FREQUENCY|SPEAKER_BACK_CENTER|SPEAKER_FRONT_LEFT_OF_CENTER|SPEAKER_SIDE_LEFT;
+			//pSpeakerToChannelMap[1][1] = SPEAKER_FRONT_RIGHT|SPEAKER_FRONT_CENTER|SPEAKER_BACK_RIGHT|SPEAKER_LOW_FREQUENCY|SPEAKER_BACK_CENTER|SPEAKER_FRONT_RIGHT_OF_CENTER|SPEAKER_SIDE_RIGHT ;
+
+			//3 Channel
+			pSpeakerToChannelMap[2][0] = SPEAKER_FRONT_LEFT|SPEAKER_FRONT_CENTER;
+			pSpeakerToChannelMap[2][1] = SPEAKER_FRONT_RIGHT|SPEAKER_FRONT_CENTER;
+			//pSpeakerToChannelMap[2][2] = 0;
+
+			//4 Channel
+			pSpeakerToChannelMap[3][0] = SPEAKER_FRONT_LEFT|SPEAKER_BACK_LEFT;
+			pSpeakerToChannelMap[3][1] =  SPEAKER_FRONT_RIGHT|SPEAKER_BACK_RIGHT;
+			//pSpeakerToChannelMap[3][2] = pSpeakerToChannelMap[3][3] = 0;
+
+			//5 Channel
+			pSpeakerToChannelMap[4][0] = SPEAKER_FRONT_LEFT|SPEAKER_BACK_LEFT|SPEAKER_LOW_FREQUENCY;
+			pSpeakerToChannelMap[4][1] =  SPEAKER_FRONT_RIGHT|SPEAKER_BACK_RIGHT|SPEAKER_LOW_FREQUENCY;
+			//pSpeakerToChannelMap[4][2] = pSpeakerToChannelMap[4][3] = pSpeakerToChannelMap[4][4]= 0;
+
+			//6 Channel
+			pSpeakerToChannelMap[5][0] = SPEAKER_FRONT_LEFT|SPEAKER_FRONT_CENTER|SPEAKER_BACK_LEFT|SPEAKER_LOW_FREQUENCY;
+			pSpeakerToChannelMap[5][1] = SPEAKER_FRONT_RIGHT|SPEAKER_FRONT_CENTER|SPEAKER_BACK_RIGHT|SPEAKER_LOW_FREQUENCY ;
+			//pSpeakerToChannelMap[5][2] = pSpeakerToChannelMap[5][3] = pSpeakerToChannelMap[5][4] = pSpeakerToChannelMap[5][5] = 0;
+
+			//7 Channel
+			pSpeakerToChannelMap[6][0] = SPEAKER_FRONT_LEFT|SPEAKER_FRONT_CENTER|SPEAKER_BACK_LEFT|SPEAKER_LOW_FREQUENCY|SPEAKER_BACK_CENTER|SPEAKER_FRONT_LEFT_OF_CENTER|SPEAKER_SIDE_LEFT;
+			pSpeakerToChannelMap[6][1] = SPEAKER_FRONT_RIGHT|SPEAKER_FRONT_CENTER|SPEAKER_BACK_RIGHT|SPEAKER_LOW_FREQUENCY|SPEAKER_BACK_CENTER|SPEAKER_FRONT_RIGHT_OF_CENTER|SPEAKER_SIDE_RIGHT ;
+			//pSpeakerToChannelMap[6][2] = pSpeakerToChannelMap[6][3] = pSpeakerToChannelMap[6][4] = pSpeakerToChannelMap[6][5] =  pSpeakerToChannelMap[6][6] = pSpeakerToChannelMap[6][7] =0;
+
+			//8 Channel
+			pSpeakerToChannelMap[7][0] = SPEAKER_FRONT_LEFT|SPEAKER_FRONT_CENTER|SPEAKER_BACK_LEFT|SPEAKER_LOW_FREQUENCY|SPEAKER_BACK_CENTER|SPEAKER_FRONT_LEFT_OF_CENTER|SPEAKER_SIDE_LEFT;
+			pSpeakerToChannelMap[7][1] = SPEAKER_FRONT_RIGHT|SPEAKER_FRONT_CENTER|SPEAKER_BACK_RIGHT|SPEAKER_LOW_FREQUENCY|SPEAKER_BACK_CENTER|SPEAKER_FRONT_RIGHT_OF_CENTER|SPEAKER_SIDE_RIGHT ;
+			//pSpeakerToChannelMap[7][2] = pSpeakerToChannelMap[7][3] = pSpeakerToChannelMap[7][4] = pSpeakerToChannelMap[7][5] = pSpeakerToChannelMap[7][6] = pSpeakerToChannelMap[7][7] = 0;
+			break;
+		case 3:
+			pSpeakerToChannelMap[0][0] = pSpeakerToChannelMap[0][1]  = pSpeakerToChannelMap[0][2] = 1;
+
+			pSpeakerToChannelMap[1][0] = SPEAKER_FRONT_LEFT;
+			pSpeakerToChannelMap[1][1] = SPEAKER_FRONT_RIGHT;
+			pSpeakerToChannelMap[1][2] = SPEAKER_FRONT_LEFT|SPEAKER_FRONT_RIGHT;
+
+			//3 Channel
+			//pSpeakerToChannelMap[2][0] = SPEAKER_FRONT_LEFT|SPEAKER_FRONT_CENTER;
+			//pSpeakerToChannelMap[2][1] = SPEAKER_FRONT_RIGHT|SPEAKER_FRONT_CENTER;
+			//pSpeakerToChannelMap[2][2] = 0;
+
+			//4 Channel
+			pSpeakerToChannelMap[3][0] = SPEAKER_FRONT_LEFT|SPEAKER_BACK_LEFT|SPEAKER_LOW_FREQUENCY;
+			pSpeakerToChannelMap[3][1] =  SPEAKER_FRONT_RIGHT|SPEAKER_BACK_RIGHT|SPEAKER_LOW_FREQUENCY;
+			pSpeakerToChannelMap[3][2] = SPEAKER_FRONT_CENTER|SPEAKER_LOW_FREQUENCY;
+			//pSpeakerToChannelMap[3][3] = 0;
+
+			//5 Channel
+			pSpeakerToChannelMap[4][0] = SPEAKER_FRONT_LEFT|SPEAKER_BACK_LEFT|SPEAKER_LOW_FREQUENCY;
+			pSpeakerToChannelMap[4][1] =  SPEAKER_FRONT_RIGHT|SPEAKER_BACK_RIGHT|SPEAKER_LOW_FREQUENCY;
+			pSpeakerToChannelMap[4][2] = SPEAKER_FRONT_CENTER;
+			//pSpeakerToChannelMap[4][3] = pSpeakerToChannelMap[4][4]= 0;
+
+			//6 Channel
+			pSpeakerToChannelMap[5][0] = SPEAKER_FRONT_LEFT|SPEAKER_BACK_LEFT|SPEAKER_LOW_FREQUENCY;
+			pSpeakerToChannelMap[5][1] = SPEAKER_FRONT_RIGHT|SPEAKER_BACK_RIGHT|SPEAKER_LOW_FREQUENCY ;
+			pSpeakerToChannelMap[5][2] = SPEAKER_FRONT_CENTER;
+			//pSpeakerToChannelMap[5][3] = pSpeakerToChannelMap[5][4] = pSpeakerToChannelMap[5][5] = 0;
+
+			//7 Channel
+			pSpeakerToChannelMap[6][0] = SPEAKER_FRONT_LEFT|SPEAKER_BACK_LEFT|SPEAKER_LOW_FREQUENCY|SPEAKER_BACK_CENTER|SPEAKER_FRONT_LEFT_OF_CENTER|SPEAKER_SIDE_LEFT;
+			pSpeakerToChannelMap[6][1] = SPEAKER_FRONT_RIGHT|SPEAKER_BACK_RIGHT|SPEAKER_LOW_FREQUENCY|SPEAKER_BACK_CENTER|SPEAKER_FRONT_RIGHT_OF_CENTER|SPEAKER_SIDE_RIGHT ;
+			pSpeakerToChannelMap[6][2] = SPEAKER_FRONT_CENTER|SPEAKER_FRONT_RIGHT_OF_CENTER|SPEAKER_FRONT_LEFT_OF_CENTER|SPEAKER_SIDE_RIGHT|SPEAKER_SIDE_LEFT ;
+			//pSpeakerToChannelMap[6][2] = pSpeakerToChannelMap[6][3] = pSpeakerToChannelMap[6][4] = pSpeakerToChannelMap[6][5] =  pSpeakerToChannelMap[6][6] = pSpeakerToChannelMap[6][7] =0;
+
+			//8 Channel
+			pSpeakerToChannelMap[7][0] = SPEAKER_FRONT_LEFT|SPEAKER_BACK_LEFT|SPEAKER_LOW_FREQUENCY|SPEAKER_BACK_CENTER|SPEAKER_FRONT_LEFT_OF_CENTER|SPEAKER_SIDE_LEFT;
+			pSpeakerToChannelMap[7][1] = SPEAKER_FRONT_RIGHT|SPEAKER_BACK_RIGHT|SPEAKER_LOW_FREQUENCY|SPEAKER_BACK_CENTER|SPEAKER_FRONT_RIGHT_OF_CENTER|SPEAKER_SIDE_RIGHT ;
+			pSpeakerToChannelMap[7][2] = SPEAKER_FRONT_CENTER|SPEAKER_FRONT_RIGHT_OF_CENTER|SPEAKER_FRONT_LEFT_OF_CENTER|SPEAKER_SIDE_RIGHT|SPEAKER_SIDE_LEFT ;
+			//pSpeakerToChannelMap[7][2] = pSpeakerToChannelMap[7][3] = pSpeakerToChannelMap[7][4] = pSpeakerToChannelMap[7][5] = pSpeakerToChannelMap[7][6] = pSpeakerToChannelMap[7][7] = 0;
+			break;
+		case 4:
+			pSpeakerToChannelMap[0][0] = pSpeakerToChannelMap[0][1]  = pSpeakerToChannelMap[0][2] = pSpeakerToChannelMap[0][3] = 1;
+
+			pSpeakerToChannelMap[1][0] = SPEAKER_FRONT_LEFT;
+			pSpeakerToChannelMap[1][1] = SPEAKER_FRONT_RIGHT;
+			pSpeakerToChannelMap[1][2] = SPEAKER_FRONT_LEFT;
+			pSpeakerToChannelMap[1][3] = SPEAKER_FRONT_RIGHT;
+
+			//3 Channel
+			pSpeakerToChannelMap[2][0] = SPEAKER_FRONT_LEFT|SPEAKER_FRONT_CENTER;
+			pSpeakerToChannelMap[2][1] = SPEAKER_FRONT_RIGHT|SPEAKER_FRONT_CENTER;
+			pSpeakerToChannelMap[2][2] = SPEAKER_FRONT_LEFT;
+			pSpeakerToChannelMap[2][3] = SPEAKER_FRONT_RIGHT;
+			//pSpeakerToChannelMap[2][2] = 0;
+
+			//4 Channel
+			//pSpeakerToChannelMap[3][0] = SPEAKER_FRONT_LEFT|SPEAKER_BACK_LEFT|SPEAKER_LOW_FREQUENCY;
+			//pSpeakerToChannelMap[3][1] =  SPEAKER_FRONT_RIGHT|SPEAKER_BACK_RIGHT|SPEAKER_LOW_FREQUENCY;
+			//pSpeakerToChannelMap[3][2] = SPEAKER_FRONT_CENTER|SPEAKER_LOW_FREQUENCY;
+			//pSpeakerToChannelMap[3][3] = 0;
+
+			//5 Channel
+			pSpeakerToChannelMap[4][0] = SPEAKER_FRONT_LEFT|SPEAKER_FRONT_CENTER|SPEAKER_LOW_FREQUENCY;
+			pSpeakerToChannelMap[4][1] =  SPEAKER_FRONT_RIGHT|SPEAKER_FRONT_CENTER|SPEAKER_LOW_FREQUENCY;
+			pSpeakerToChannelMap[4][2] = SPEAKER_BACK_LEFT;
+			pSpeakerToChannelMap[4][3] = SPEAKER_BACK_RIGHT;
+			
+			//pSpeakerToChannelMap[4][3] = pSpeakerToChannelMap[4][4]= 0;
+
+			//6 Channel
+			pSpeakerToChannelMap[5][0] = SPEAKER_FRONT_LEFT|SPEAKER_FRONT_CENTER|SPEAKER_LOW_FREQUENCY;
+			pSpeakerToChannelMap[5][1] = SPEAKER_FRONT_RIGHT|SPEAKER_FRONT_CENTER|SPEAKER_LOW_FREQUENCY ;
+			pSpeakerToChannelMap[5][2] = SPEAKER_BACK_LEFT;
+			pSpeakerToChannelMap[5][3] = SPEAKER_BACK_RIGHT;
+
+			//pSpeakerToChannelMap[5][3] = pSpeakerToChannelMap[5][4] = pSpeakerToChannelMap[5][5] = 0;
+
+			//7 Channel
+			pSpeakerToChannelMap[6][0] = SPEAKER_FRONT_LEFT|SPEAKER_FRONT_CENTER|SPEAKER_LOW_FREQUENCY|SPEAKER_BACK_CENTER|SPEAKER_FRONT_LEFT_OF_CENTER;
+			pSpeakerToChannelMap[6][1] = SPEAKER_FRONT_RIGHT|SPEAKER_FRONT_CENTER|SPEAKER_LOW_FREQUENCY|SPEAKER_BACK_CENTER|SPEAKER_FRONT_RIGHT_OF_CENTER ;
+			pSpeakerToChannelMap[6][2] = SPEAKER_BACK_LEFT|SPEAKER_SIDE_LEFT ;
+			pSpeakerToChannelMap[6][3] = SPEAKER_BACK_RIGHT|SPEAKER_SIDE_RIGHT ;
+			//pSpeakerToChannelMap[6][2] = pSpeakerToChannelMap[6][3] = pSpeakerToChannelMap[6][4] = pSpeakerToChannelMap[6][5] =  pSpeakerToChannelMap[6][6] = pSpeakerToChannelMap[6][7] =0;
+
+			//8 Channel
+			pSpeakerToChannelMap[7][0] = SPEAKER_FRONT_LEFT|SPEAKER_FRONT_CENTER|SPEAKER_LOW_FREQUENCY|SPEAKER_BACK_CENTER|SPEAKER_FRONT_LEFT_OF_CENTER;
+			pSpeakerToChannelMap[7][1] = SPEAKER_FRONT_RIGHT|SPEAKER_FRONT_CENTER|SPEAKER_LOW_FREQUENCY|SPEAKER_BACK_CENTER|SPEAKER_FRONT_RIGHT_OF_CENTER ;
+			pSpeakerToChannelMap[7][2] = SPEAKER_BACK_LEFT|SPEAKER_SIDE_LEFT ;
+			pSpeakerToChannelMap[7][3] = SPEAKER_BACK_RIGHT|SPEAKER_SIDE_RIGHT ;
+			//pSpeakerToChannelMap[7][2] = pSpeakerToChannelMap[7][3] = pSpeakerToChannelMap[7][4] = pSpeakerToChannelMap[7][5] = pSpeakerToChannelMap[7][6] = pSpeakerToChannelMap[7][7] = 0;
+			break;
+		case 5:
+		case 6:
+		case 7:
+			pSpeakerToChannelMap[0][0] = pSpeakerToChannelMap[0][1]  = pSpeakerToChannelMap[0][2] = pSpeakerToChannelMap[0][3] =  pSpeakerToChannelMap[0][4] =  pSpeakerToChannelMap[0][5] =  pSpeakerToChannelMap[0][6] = 1;
+
+			pSpeakerToChannelMap[1][0] = SPEAKER_FRONT_LEFT;
+			pSpeakerToChannelMap[1][1] = SPEAKER_FRONT_RIGHT;
+			pSpeakerToChannelMap[1][2] = SPEAKER_FRONT_CENTER;
+			pSpeakerToChannelMap[1][3] = SPEAKER_FRONT_LEFT;
+			pSpeakerToChannelMap[1][4] = SPEAKER_FRONT_RIGHT;
+
+			//3 Channel
+			pSpeakerToChannelMap[2][0] = SPEAKER_FRONT_LEFT;
+			pSpeakerToChannelMap[2][1] = SPEAKER_FRONT_RIGHT;
+			pSpeakerToChannelMap[2][2] = SPEAKER_FRONT_CENTER;
+			pSpeakerToChannelMap[2][3] = SPEAKER_FRONT_LEFT;
+			pSpeakerToChannelMap[2][4] = SPEAKER_FRONT_RIGHT;
+			//pSpeakerToChannelMap[2][2] = 0;
+
+			//4 Channel
+			pSpeakerToChannelMap[3][0] = SPEAKER_FRONT_LEFT|SPEAKER_LOW_FREQUENCY;
+			pSpeakerToChannelMap[3][1] =  SPEAKER_FRONT_RIGHT|SPEAKER_LOW_FREQUENCY;
+			pSpeakerToChannelMap[3][2] = SPEAKER_FRONT_CENTER;
+			pSpeakerToChannelMap[3][3] = SPEAKER_BACK_LEFT;
+			pSpeakerToChannelMap[3][4] = SPEAKER_BACK_RIGHT;
+
+			//5 Channel
+			//pSpeakerToChannelMap[4][0] = SPEAKER_FRONT_LEFT|SPEAKER_FRONT_CENTER|SPEAKER_LOW_FREQUENCY;
+			//pSpeakerToChannelMap[4][1] =  SPEAKER_FRONT_RIGHT|SPEAKER_FRONT_CENTER|SPEAKER_LOW_FREQUENCY;
+			//pSpeakerToChannelMap[4][2] = SPEAKER_BACK_LEFT;
+			//pSpeakerToChannelMap[4][3] = SPEAKER_BACK_RIGHT;
+
+			//pSpeakerToChannelMap[4][3] = pSpeakerToChannelMap[4][4]= 0;
+
+			//6 Channel
+			pSpeakerToChannelMap[5][0] = SPEAKER_FRONT_LEFT|SPEAKER_LOW_FREQUENCY;
+			pSpeakerToChannelMap[5][1] = SPEAKER_FRONT_RIGHT|SPEAKER_LOW_FREQUENCY ;
+			pSpeakerToChannelMap[5][2] = SPEAKER_FRONT_CENTER;
+			pSpeakerToChannelMap[5][3] = SPEAKER_BACK_LEFT;
+			pSpeakerToChannelMap[5][4] = SPEAKER_BACK_RIGHT;
+
+			//pSpeakerToChannelMap[5][3] = pSpeakerToChannelMap[5][4] = pSpeakerToChannelMap[5][5] = 0;
+
+			//7 Channel
+			pSpeakerToChannelMap[6][0] = SPEAKER_FRONT_LEFT|SPEAKER_LOW_FREQUENCY|SPEAKER_BACK_CENTER|SPEAKER_FRONT_LEFT_OF_CENTER;
+			pSpeakerToChannelMap[6][1] = SPEAKER_FRONT_RIGHT|SPEAKER_LOW_FREQUENCY |SPEAKER_BACK_CENTER|SPEAKER_FRONT_RIGHT_OF_CENTER;
+			pSpeakerToChannelMap[6][2] = SPEAKER_FRONT_CENTER;
+			pSpeakerToChannelMap[6][3] = SPEAKER_BACK_LEFT|SPEAKER_SIDE_LEFT;
+			pSpeakerToChannelMap[6][4] = SPEAKER_BACK_RIGHT|SPEAKER_SIDE_RIGHT;
+
+			//pSpeakerToChannelMap[6][2] = pSpeakerToChannelMap[6][3] = pSpeakerToChannelMap[6][4] = pSpeakerToChannelMap[6][5] =  pSpeakerToChannelMap[6][6] = pSpeakerToChannelMap[6][7] =0;
+
+			//8 Channel
+			pSpeakerToChannelMap[7][0] = SPEAKER_FRONT_LEFT|SPEAKER_LOW_FREQUENCY|SPEAKER_BACK_CENTER|SPEAKER_FRONT_LEFT_OF_CENTER;
+			pSpeakerToChannelMap[7][1] = SPEAKER_FRONT_RIGHT|SPEAKER_LOW_FREQUENCY |SPEAKER_BACK_CENTER|SPEAKER_FRONT_RIGHT_OF_CENTER;
+			pSpeakerToChannelMap[7][2] = SPEAKER_FRONT_CENTER;
+			pSpeakerToChannelMap[7][3] = SPEAKER_BACK_LEFT|SPEAKER_SIDE_LEFT;
+			pSpeakerToChannelMap[7][4] = SPEAKER_BACK_RIGHT|SPEAKER_SIDE_RIGHT;
+			//pSpeakerToChannelMap[7][2] = pSpeakerToChannelMap[7][3] = pSpeakerToChannelMap[7][4] = pSpeakerToChannelMap[7][5] = pSpeakerToChannelMap[7][6] = pSpeakerToChannelMap[7][7] = 0;
+			break;
+		
+	}
+	
+
+	
+	fCustomChannelMapping = !IsVista();
+
+}
 void CMPlayerCApp::Settings::UpdateData(bool fSave)
 {
 	CWinApp* pApp = AfxGetApp();
@@ -2113,7 +2369,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 			// WINBUG: on win2k this would crash WritePrivateProfileString
 			pApp->WriteProfileInt(_T(""), _T(""), pApp->GetProfileInt(_T(""), _T(""), 0)?0:1);
 		}
-		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("LastVersion"), 390);		
+		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("LastVersion"), 400);		
 		
 	}
 	else
@@ -2302,8 +2558,37 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 //		disableSmartDrag = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DISABLESMARTDRAG),  -1 );
 		bDisableEVR = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DISABLE_EVR), 1);
 		bUseWaveOutDeviceByDefault = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEWAVEOUTDEVICEBYDEFAULT), 0);
-		iDecSpeakers = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DECSPEAKERS), 200);
-		fbUseSPDIF = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USESPDIF), (iDecSpeakers>1000));
+		fCustomChannelMapping = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_CUSTOMCHANNELMAPPING), 1);
+		iDecSpeakers = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DECSPEAKERS), -1);
+		int iSS = abs(iDecSpeakers) %1000;
+		int iNumberOfSpeakers = -1;
+		if(iDecSpeakers == -1 || (iSS == 200 && iUpgradeReset < 400) ){
+			iDecSpeakers = 200;
+			iNumberOfSpeakers = GetNumberOfSpeakers();
+			switch( iNumberOfSpeakers ){
+				case 1: iDecSpeakers = 100;	break;
+				case 2: iDecSpeakers = 200;	break;
+				case 3: iDecSpeakers = 210;	break;
+				case 4: iDecSpeakers = 220;	break;
+				case 5: iDecSpeakers = 221;	break;
+				case 6: iDecSpeakers = 321;	break;
+				case 7: iDecSpeakers = 321;	break;
+				case 8: iDecSpeakers = 321;	break;
+			}
+		}
+
+		if((iUpgradeReset >= 400) && pApp->GetProfileBinary(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPEAKERTOCHANNELMAPPING), &ptr, &len) && fCustomChannelMapping )
+		{
+			memcpy(pSpeakerToChannelMap, ptr, sizeof(pSpeakerToChannelMap));
+			delete [] ptr;
+		}
+		else
+		{
+			
+			SetChannelMapByNumberOfSpeakers(iSS, iNumberOfSpeakers);
+			
+		}
+		fbUseSPDIF = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USESPDIF), 0);
 
 		fUseInternalTSSpliter = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEINTERNALTSSPLITER), 0);
 
@@ -2332,11 +2617,12 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		fAudioTimeShift = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_ENABLEAUDIOTIMESHIFT), 0);
 		tAudioTimeShift = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUDIOTIMESHIFT), 0);
 		fDownSampleTo441 = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DOWNSAMPLETO441), 0);
-		fCustomChannelMapping = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_CUSTOMCHANNELMAPPING), 0);
-
+		
 		onlyUseInternalDec = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_ONLYUSEINTERNALDEC), FALSE);
 		useSmartDrag = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USESMARTDRAG), FALSE);
 
+
+		
 		if(iUpgradeReset < 49){
 			subdefstyle.relativeTo = 0;	
 		}
@@ -2350,35 +2636,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		if(iUpgradeReset < 172){
 			bDisableEVR = 1;
 		}
-		if(pApp->GetProfileBinary(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPEAKERTOCHANNELMAPPING), &ptr, &len) && fCustomChannelMapping )
-		{
-			memcpy(pSpeakerToChannelMap, ptr, sizeof(pSpeakerToChannelMap));
-			delete [] ptr;
-		}
-		else
-		{
-			memset(pSpeakerToChannelMap, 0, sizeof(pSpeakerToChannelMap));
-			for(int j = 0; j < 18; j++)
-				for(int i = 0; i <= j; i++)
-					pSpeakerToChannelMap[j][i] = 1<<i;
-
-			pSpeakerToChannelMap[0][0] = 1<<0;
-			pSpeakerToChannelMap[0][1] = 1<<0;
-
-			pSpeakerToChannelMap[3][0] = 1<<0;
-			pSpeakerToChannelMap[3][1] = 1<<1;
-			pSpeakerToChannelMap[3][2] = 0;
-			pSpeakerToChannelMap[3][3] = 0;
-			pSpeakerToChannelMap[3][4] = 1<<2;
-			pSpeakerToChannelMap[3][5] = 1<<3;
-
-			pSpeakerToChannelMap[4][0] = 1<<0;
-			pSpeakerToChannelMap[4][1] = 1<<1;
-			pSpeakerToChannelMap[4][2] = 1<<2;
-			pSpeakerToChannelMap[4][3] = 0;
-			pSpeakerToChannelMap[4][4] = 1<<3;
-			pSpeakerToChannelMap[4][5] = 1<<4;
-		}
+		
 		fAudioNormalize = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUDIONORMALIZE), FALSE);
 		fAudioNormalizeRecover = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUDIONORMALIZERECOVER), TRUE);
 		AudioBoost = (float)pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUDIOBOOST), 1);
@@ -2600,6 +2858,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		shader_ids.AddTail(IDF_SHADER_SHARPEN_COMPLEX);
 		shader_ids.AddTail(IDF_SHADER_GRAYSCALE);
 		shader_ids.AddTail(IDF_SHADER_INVERT);
+		/*
 		shader_ids.AddTail(IDF_SHADER_CONTOUR);
 		shader_ids.AddTail(IDF_SHADER_EMBOSS);
 		shader_ids.AddTail(IDF_SHADER_LETTERBOX);
@@ -2608,7 +2867,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		shader_ids.AddTail(IDF_SHADER_SPHERE);
 		shader_ids.AddTail(IDF_SHADER_SPOTLIGHT);
 		shader_ids.AddTail(IDF_SHADER_WAVE);
-
+		*/
 		
 
 		CAtlStringMap<UINT> shaders;
@@ -3285,6 +3544,33 @@ void CMPlayerCApp::GainAdminPrivileges(UINT idd, BOOL bWait){
 
 	if(bWait)
 		WaitForSingleObject(execinfo.hProcess, INFINITE);
+}
+
+int  CMPlayerCApp::GetNumberOfSpeakers(LPCGUID lpcGUID, HWND hWnd){
+	CComPtr<IDirectSound> pDS;
+	DWORD spc = 0, defchnum = 2;
+	if(SUCCEEDED(DirectSoundCreate(lpcGUID, &pDS, NULL)))
+	{
+		if(SUCCEEDED(pDS->GetSpeakerConfig(&spc)))
+		{
+			spc = DSSPEAKER_CONFIG(spc);
+			switch(spc)
+			{
+			case DSSPEAKER_DIRECTOUT: defchnum = 6; break;
+			case DSSPEAKER_HEADPHONE: defchnum = 2; break;
+			case DSSPEAKER_MONO: defchnum = 1; break;
+			case DSSPEAKER_QUAD: defchnum = 4; break;
+			
+			case DSSPEAKER_STEREO: defchnum = 2; break;
+			case DSSPEAKER_SURROUND: defchnum = 3; break;
+			case DSSPEAKER_5POINT1: defchnum = 6; break;
+			case DSSPEAKER_7POINT1: defchnum = 7; break;
+			default: defchnum = spc; break;
+			}
+		}
+	}
+
+	return defchnum;
 }
 bool CMPlayerCApp::IsVista()
 {

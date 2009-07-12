@@ -581,7 +581,7 @@ public:
 		CString m_shadercombine;
 		
 		CString	strShaderList;
-
+		CString szFGMLog;
 	public:
 		Settings();
 		virtual ~Settings();

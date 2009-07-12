@@ -384,13 +384,14 @@ HRESULT CFGManager::EnumSourceFilters(LPCWSTR lpcwstrFileName, CFGFilterList& fl
 
 HRESULT CFGManager::AddSourceFilter(CFGFilter* pFGF, LPCWSTR lpcwstrFileName, LPCWSTR lpcwstrFilterName, IBaseFilter** ppBF)
 {
-	SVP_LogMsg5(_T("FGM: AddSourceFilter trying '%s' %s\n"), CStringFromGUID(pFGF->GetCLSID()) , pFGF->GetName());
-
+	
 	CString szFName = pFGF->GetName();
-	if(szFName.Find(_T("GPAC")) >= 0 ) return E_NOINTERFACE;
+	//if(szFName.Find(_T("GPAC")) >= 0 ) return E_NOINTERFACE;
 
 	//CLSID pFID = pFGF->GetCLSID();
 	//if(pFID == GUIDFromCString(_T("{E436EBB5-524F-11CE-9F53-0020AF0BA770}") ) ) return E_NOINTERFACE;
+
+	AfxGetAppSettings().szFGMLog.AppendFormat(_T("\r\nFGM: AddSourceFilter trying '%s' %s\n"), CStringFromGUID(pFGF->GetCLSID()) , pFGF->GetName());
 
 	CheckPointer(lpcwstrFileName, E_POINTER);
 	CheckPointer(ppBF, E_POINTER);
@@ -722,7 +723,7 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 			CLSID FGID = pFGF->GetCLSID() ;
 			if ( FGID == GUIDFromCString(_T("{AA59CBFA-F731-49E9-BE78-08665F339EFC}")) ) continue;  //disable  Bicubic Video Resizer  that may cause flip
 
-			SVP_LogMsg5(_T("FGM: Connecting '%s' %s "), szFName, CStringFromGUID(pFGF->GetCLSID()) );
+			AfxGetAppSettings().szFGMLog.AppendFormat(_T("\r\nFGM: Connecting '%s' %s "), szFName, CStringFromGUID(pFGF->GetCLSID()) );
 
 			CComPtr<IBaseFilter> pBF;
 			CInterfaceList<IUnknown, &IID_IUnknown> pUnks;
@@ -1273,7 +1274,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		s.DXVAFilters = ~0;
 	}
 	
-	
+	s.szFGMLog.Empty();
 
 	CFGFilter* pFGF;
 

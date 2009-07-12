@@ -41,7 +41,9 @@ BOOL CInfoReport::OnInitDialog()
 	CDialog::OnInitDialog();
 
 	// TODO:  Add extra initialization here
-	ce_rpt.SetWindowText(m_rptText2);
+
+	ce_rpt.SetWindowText(m_rptText2 +  AfxGetAppSettings().szFGMLog);
+
 	// Set WS_EX_LAYERED on this window 
 	::SetWindowLong(this->m_hWnd , GWL_EXSTYLE, ::GetWindowLong(this->m_hWnd, GWL_EXSTYLE) | WS_EX_LAYERED);
 	// Make this window 70% alpha

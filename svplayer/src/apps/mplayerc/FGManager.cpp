@@ -707,6 +707,8 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 			CString szFName = pFGF->GetName();
 			if (szFName.Find(_T("SMV")) >= 0 && szFName.Find(_T("DSP")) >= 0) continue; //disable SMV filter that cause flip
 			if (szFName.Find(_T("DivXG400")) >= 0 ) continue; //disable DivxG400 filter that may cause flip
+			CLSID FGID = pFGF->GetCLSID() ;
+			if ( FGID == GUIDFromCString(_T("{AA59CBFA-F731-49E9-BE78-08665F339EFC}")) ) continue;  //disable  Bicubic Video Resizer  that may cause flip
 
 			SVP_LogMsg5(_T("FGM: Connecting '%s' %s "), szFName, CStringFromGUID(pFGF->GetCLSID()) );
 

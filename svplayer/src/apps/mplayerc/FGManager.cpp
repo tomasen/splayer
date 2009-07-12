@@ -715,6 +715,8 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 			if (szFName.Find(_T("DivXG400")) >= 0 ) continue; //disable DivxG400 filter that may cause flip
 			if (szFName.Find(_T("ArcSoft")) >= 0 ) continue; //disable ArcSoft filter that may cause flip
 			if (szFName.Find(_T("Nero")) >= 0 ) continue; //disable Nero filter that may cause flip
+			if (szFName.Find(_T("Adobe")) >= 0 ) continue; //disable Adobe filter that may cause flip
+			
 			
 				
 			CLSID FGID = pFGF->GetCLSID() ;

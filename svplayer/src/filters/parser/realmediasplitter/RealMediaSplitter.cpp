@@ -1565,7 +1565,7 @@ HRESULT CRealVideoDecoder::Transform(IMediaSample* pIn)
 	unsigned int tmp1, tmp2;
 	bool interlaced = false, tmp3, tmp4;
 	::GetDimensions_X10(pDataIn, &tmp1, &tmp2, &interlaced, &tmp3, &tmp4);
-
+	
 	m_timestamp = transform_in.timestamp;
 
 	if(FAILED(hr))

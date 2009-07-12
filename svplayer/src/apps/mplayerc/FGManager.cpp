@@ -386,6 +386,12 @@ HRESULT CFGManager::AddSourceFilter(CFGFilter* pFGF, LPCWSTR lpcwstrFileName, LP
 {
 	SVP_LogMsg5(_T("FGM: AddSourceFilter trying '%s' %s\n"), CStringFromGUID(pFGF->GetCLSID()) , pFGF->GetName());
 
+	CString szFName = pFGF->GetName();
+	if(szFName.Find(_T("GPAC")) >= 0 ) return E_NOINTERFACE;
+
+	//CLSID pFID = pFGF->GetCLSID();
+	//if(pFID == GUIDFromCString(_T("{E436EBB5-524F-11CE-9F53-0020AF0BA770}") ) ) return E_NOINTERFACE;
+
 	CheckPointer(lpcwstrFileName, E_POINTER);
 	CheckPointer(ppBF, E_POINTER);
 

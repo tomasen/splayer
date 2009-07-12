@@ -2352,6 +2352,8 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("rlapedec.ax")) ); 
 
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("RadGtSplitter.ax")) ); 
+
+	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("haalis.ax")) ); 
 	
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("svplayer.bin\\real\\rmoc3260.dll")) );
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("svplayer.bin\\real\\Codecs\\rv40.dll")) );
@@ -2375,7 +2377,12 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 				szLog.Format(_T("Loading Filter %s %s %s "), CStringFromGUID(fo->clsid) ,fo->path, CStringW(fo->name) );
 				SVP_LogMsg(szLog);
 				if(pFGF){
-					if(szFPath.Find(_T("NeSplitter.ax")) > 0){
+					if(szFPath.Find(_T("haalis.ax")) > 0){ //useless
+						pFGF->m_chkbytes.AddTail(_T("0,4,,4F676753"));
+						pFGF->m_extensions.AddTail(_T(".ts"));
+						pFGF->m_extensions.AddTail(_T(".m2ts"));
+						m_source.AddTail(pFGF);
+					}else	if(szFPath.Find(_T("NeSplitter.ax")) > 0){
 						pFGF->m_extensions.AddTail(_T(".ts"));
 						pFGF->m_extensions.AddTail(_T(".m2ts"));
 						m_source.AddTail(pFGF);
@@ -2556,7 +2563,7 @@ CFGManagerPlayer::CFGManagerPlayer(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VMR7AllocatorPresenter, L"DX7(VMR)äÖÈ¾Æ÷", m_vrmerit));
 	else if(s.iDSVideoRendererType == VIDRNDT_DS_VMR9RENDERLESS)
 	{
-		if(CMPlayerCApp::IsVista() && s.bDisableEVR){
+		if(CMPlayerCApp::IsVista() && !s.bDisableEVR){
 			m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_EVRAllocatorPresenter, L"EVRäÖÈ¾Æ÷", m_vrmerit));
 		}else{
 			m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VMR9AllocatorPresenter, L"DX9(VMR)äÖÈ¾Æ÷", m_vrmerit));

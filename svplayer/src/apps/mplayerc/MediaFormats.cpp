@@ -311,6 +311,8 @@ void CMediaFormats::GetExtsArray(CAtlArray<CString>& mask, bool noAudio){
 		CMediaFormatCategory& mfc = GetAt(i);
 		if( noAudio && mfc.IsAudioOnly() ) continue;
 		if( mfc.GetEngineType() != DirectShow) continue;
+		CString szLabel = mfc.GetLabel();
+		if( szLabel.Find(_T("Subtitle")) >= 0 || szLabel.Find(_T("×ÖÄ»")) >= 0  )  continue;
 		mfc.GetExtArray(mask);
 	}
 

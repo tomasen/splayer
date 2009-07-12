@@ -943,7 +943,9 @@ void CMainFrame::OnMove(int x, int y)
 
 void CMainFrame::OnSize(UINT nType, int cx, int cy)
 {
+	
 	__super::OnSize(nType, cx, cy);
+	
 	//SVP_LogMsg3("Winsizing @ %I64d", AfxGetMyApp()->GetPerfCounter());
 	//CAutoLock PaintLock(&m_PaintLock);
 	AppSettings& s = AfxGetAppSettings();
@@ -2199,7 +2201,7 @@ void CMainFrame::OnActivateApp(BOOL bActive, DWORD dwThreadID)
 			SendStatusMessage(str, 5000);
 		}
 
-		if(fExitFullscreen) OnViewFullscreen();
+		//if(fExitFullscreen) OnViewFullscreen();
 	}
 	if(!bActive){
 		RedrawNonClientArea();

@@ -3675,7 +3675,6 @@ int  CMPlayerCApp::GetNumberOfSpeakers(LPCGUID lpcGUID, HWND hWnd){
 		if(SUCCEEDED(pDS->GetSpeakerConfig(&spc)))
 		{
 			spc = DSSPEAKER_CONFIG(spc);
-			AfxGetAppSettings().szFGMLog.AppendFormat(_T("\r\nGotNumberOfSpeakers %d for %s"), spc, m_DisplayName);
 			switch(spc)
 			{
 			case DSSPEAKER_DIRECTOUT: defchnum = 6; break;
@@ -3689,6 +3688,8 @@ int  CMPlayerCApp::GetNumberOfSpeakers(LPCGUID lpcGUID, HWND hWnd){
 			case DSSPEAKER_7POINT1: defchnum = 7; break;
 			default: defchnum = spc; break;
 			}
+			AfxGetAppSettings().szFGMLog.AppendFormat(_T("\r\nGotNumberOfSpeakers %d for %s"), defchnum, m_DisplayName);
+
 		}
 	}
 

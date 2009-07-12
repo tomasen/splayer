@@ -9266,19 +9266,19 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 
 				switch(hr)
 				{
-				case E_ABORT: err = _T("Opening aborted"); break;
+				case E_ABORT: err = _T("操作已取消"); break;
 				case E_FAIL: case E_POINTER: default: 
-					err.Format(_T("Failed to render the file , %X") , hr);
+					err.Format(_T("未能打开文件, %X") , hr);
 					break;
-				case E_INVALIDARG: err = _T("Invalid file name"); break;
-				case E_OUTOFMEMORY: err = _T("Out of memory"); break;
-				case VFW_E_CANNOT_CONNECT: err = _T("Cannot connect the filters"); break;
-				case VFW_E_CANNOT_LOAD_SOURCE_FILTER: err = _T("Cannot load any source filter"); break;
-				case VFW_E_CANNOT_RENDER: err = _T("Cannot render the file"); break;
+				case E_INVALIDARG: err = _T("非法文件名"); break;
+				case E_OUTOFMEMORY: err = _T("内存不足"); break;
+				case VFW_E_CANNOT_CONNECT: err = _T("未能解码"); break;
+				case VFW_E_CANNOT_LOAD_SOURCE_FILTER: err = _T("未能打开文件(Source)"); break;
+				case VFW_E_CANNOT_RENDER: err = _T("未能打开文件(Render)"); break;
 				case VFW_E_INVALID_FILE_FORMAT: err = _T("Invalid file format"); break;
-				case VFW_E_NOT_FOUND: err = _T("File not found"); break;
-				case VFW_E_UNKNOWN_FILE_TYPE: err = _T("Unknown file type"); break;
-				case VFW_E_UNSUPPORTED_STREAM: err = _T("Unsupported stream"); break;
+				case VFW_E_NOT_FOUND: err = _T("文件不存在"); break;
+				case VFW_E_UNKNOWN_FILE_TYPE: err = _T("未知文件类型"); break;
+				case VFW_E_UNSUPPORTED_STREAM: err = _T("不支持的流类型"); break;
 				}
 
 				throw err;
@@ -10246,12 +10246,14 @@ void CMainFrame::SetVMR9ColorControl(float dBrightness, float dContrast, float d
 bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 {
 	AppSettings& s = AfxGetAppSettings();
-
 	if(m_iMediaLoadState != MLS_CLOSED && m_iMediaLoadState != MLS_LOADING)
 	{
 		ASSERT(0);
 		return(false);
 	}
+
+	s.szFGMLog.Empty();
+	s.SetChannelMapByNumberOfSpeakers(s.iDecSpeakers , -1);
 
 	m_iMediaLoadState = MLS_LOADING;
 
@@ -10467,6 +10469,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 
 	if(!err.IsEmpty())
 	{
+		SendStatusMessage(err, 3000);
 		CloseMediaPrivate();
 		m_closingmsg = err;
 

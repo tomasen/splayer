@@ -1838,9 +1838,9 @@ void CMPlayerCApp::Settings::SetChannelMapByNumberOfSpeakers( int iSS , int iNum
 		}
 		iSS = iDecSpeakers;
 	}else{
-		iSS = abs(iSS);
-		iDecSpeakers = iSS;
-		iNumberOfSpeakers = max(iNumberOfSpeakers, (iSS % 10) + ( (int)(iSS/10) % 10 ) + ( (int)(iSS/100) % 10 ) );
+		//iSS = abs(iSS);
+		//iDecSpeakers = iSS;
+		//iNumberOfSpeakers = max(iNumberOfSpeakers, (iSS % 10) + ( (int)(iSS/10) % 10 ) + ( (int)(iSS/100) % 10 ) );
 	}
 	switch(iNumberOfSpeakers){
 		case 1:
@@ -2028,10 +2028,12 @@ void CMPlayerCApp::Settings::SetChannelMapByNumberOfSpeakers( int iSS , int iNum
 			pSpeakerToChannelMap[3][4] = SPEAKER_BACK_RIGHT;
 
 			//5 Channel
-			//pSpeakerToChannelMap[4][0] = SPEAKER_FRONT_LEFT|SPEAKER_FRONT_CENTER|SPEAKER_LOW_FREQUENCY;
-			//pSpeakerToChannelMap[4][1] =  SPEAKER_FRONT_RIGHT|SPEAKER_FRONT_CENTER|SPEAKER_LOW_FREQUENCY;
-			//pSpeakerToChannelMap[4][2] = SPEAKER_BACK_LEFT;
-			//pSpeakerToChannelMap[4][3] = SPEAKER_BACK_RIGHT;
+			/*
+			pSpeakerToChannelMap[4][0] = SPEAKER_FRONT_LEFT|SPEAKER_FRONT_CENTER|SPEAKER_LOW_FREQUENCY;
+			pSpeakerToChannelMap[4][1] =  SPEAKER_FRONT_RIGHT|SPEAKER_FRONT_CENTER|SPEAKER_LOW_FREQUENCY;
+			pSpeakerToChannelMap[4][2] = SPEAKER_BACK_LEFT;
+			pSpeakerToChannelMap[4][3] = SPEAKER_BACK_RIGHT;
+			*/
 
 			//pSpeakerToChannelMap[4][3] = pSpeakerToChannelMap[4][4]= 0;
 
@@ -3636,15 +3638,44 @@ void CMPlayerCApp::GainAdminPrivileges(UINT idd, BOOL bWait){
 	if(bWait)
 		WaitForSingleObject(execinfo.hProcess, INFINITE);
 }
+BOOL CALLBACK DS_GetAudioDeviceGUID(LPGUID lpGuid,
+								  LPCTSTR lpstrDescription,
+								  LPCTSTR lpstrModule,
+								  LPGUID* pGuid) {
+								CString m_DisplayName = AfxGetAppSettings().AudioRendererDisplayName ;
+
+								if(m_DisplayName.Find( lpstrDescription) >=0){
+									if (lpGuid == NULL) {
+										memset(&(pGuid), 0, sizeof(GUID));
+									} else {
+										memcpy(&(pGuid), lpGuid, sizeof(GUID));
+									}
+
+								}
+								
+									  /* continue enumeration */
+									  return TRUE;
+}
 
 int  CMPlayerCApp::GetNumberOfSpeakers(LPCGUID lpcGUID, HWND hWnd){
 	CComPtr<IDirectSound> pDS;
 	DWORD spc = 0, defchnum = 2;
+	CString m_DisplayName = AfxGetAppSettings().AudioRendererDisplayName ;
+	
+	if(!lpcGUID && !m_DisplayName.IsEmpty()){
+
+		DirectSoundEnumerate((LPDSENUMCALLBACK) DS_GetAudioDeviceGUID, &lpcGUID);
+
+	}
+	
+
 	if(SUCCEEDED(DirectSoundCreate(lpcGUID, &pDS, NULL)))
 	{
+		//AfxMessageBox( CStringFromGUID(m_clsid ));
 		if(SUCCEEDED(pDS->GetSpeakerConfig(&spc)))
 		{
 			spc = DSSPEAKER_CONFIG(spc);
+			AfxGetAppSettings().szFGMLog.AppendFormat(_T("\r\nGotNumberOfSpeakers %d for %s"), spc, m_DisplayName);
 			switch(spc)
 			{
 			case DSSPEAKER_DIRECTOUT: defchnum = 6; break;

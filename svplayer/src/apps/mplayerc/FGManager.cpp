@@ -1274,8 +1274,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		s.DXVAFilters = ~0;
 	}
 	
-	s.szFGMLog.Empty();
-
+	
 	CFGFilter* pFGF;
 
 	// Source filters

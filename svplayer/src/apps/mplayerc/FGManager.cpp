@@ -626,7 +626,9 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 			if(GetCLSID(pPinOut) == GUIDFromCString(_T("{04FE9017-F873-410E-871E-AB91661A4EF7}"))
 			&& GetCLSID(pBF) == GUIDFromCString(_T("{E30629D2-27E5-11CE-875D-00608CB78066}")))
 				continue;
+			//if(GetCLSID(pPinOut) == GUIDFromCString(_T("{95F57653-71ED-42BA-9131-986CA0C6514F}")) || GetCLSID(pBF) == GUIDFromCString(_T("{95F57653-71ED-42BA-9131-986CA0C6514F}")) ) continue;
 
+			//SVP_LogMsg5(_T(" Try filters in the graph %s %s") , CStringFromGUID(GetCLSID(pPinOut)) , CStringFromGUID(GetCLSID(pBF)));
 			pBFs.AddTail(pBF);
 		}
 		EndEnumFilters
@@ -702,7 +704,11 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 		{
 			CFGFilter* pFGF = fl.GetNext(pos);
 
-			//SVP_LogMsg5(_T("FGM: Connecting '%s'\n"), pFGF->GetName());
+			CString szFName = pFGF->GetName();
+			if (szFName.Find(_T("SMV")) >= 0 && szFName.Find(_T("DSP")) >= 0) continue; //disable SMV filter that cause flip
+			if (szFName.Find(_T("DivXG400")) >= 0 ) continue; //disable DivxG400 filter that may cause flip
+
+			SVP_LogMsg5(_T("FGM: Connecting '%s' %s "), szFName, CStringFromGUID(pFGF->GetCLSID()) );
 
 			CComPtr<IBaseFilter> pBF;
 			CInterfaceList<IUnknown, &IID_IUnknown> pUnks;

@@ -1,6 +1,6 @@
 #pragma once	
 
-#include <curl\curl.h>
+#include "../src/svplib/curl/include/curl/curl.h"
 #include "../src/svplib/SVPToolBox.h"
 #include "../src/svplib/MD5Checksum.h"
 

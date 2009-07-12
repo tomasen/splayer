@@ -5560,7 +5560,13 @@ void CMainFrame::OnFileLoadsubtitle()
 	CFileDialog fd(TRUE, NULL, NULL, 
 		OFN_EXPLORER | OFN_ENABLESIZING | OFN_HIDEREADONLY, 
 		szFilter, this, 0, 1);
-	
+	if(!m_fnCurPlayingFile.IsEmpty()){
+		CSVPToolBox svptool;
+		CPath* spInitialDir = new CPath(m_fnCurPlayingFile);
+		svptool.GetDirectoryLeft(spInitialDir, 5);
+		fd.m_pOFN->lpstrInitialDir = spInitialDir->m_strPath;
+	}
+
 	if(fd.DoModal() != IDOK) return;
 
 	if(LoadSubtitle(fd.GetPathName()))
@@ -5584,6 +5590,14 @@ void CMainFrame::OnFileLoadsubtitle2()
 	CFileDialog fd(TRUE, NULL, NULL, 
 		OFN_EXPLORER | OFN_ENABLESIZING | OFN_HIDEREADONLY, 
 		szFilter, this, 0);
+
+	if(!m_fnCurPlayingFile.IsEmpty()){
+		CSVPToolBox svptool;
+		CPath* spInitialDir = new CPath(m_fnCurPlayingFile);
+		svptool.GetDirectoryLeft(spInitialDir, 5);
+		fd.m_pOFN->lpstrInitialDir = spInitialDir->m_strPath;
+	}
+	
 
 	if(fd.DoModal() != IDOK) return;
 

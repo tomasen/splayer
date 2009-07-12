@@ -26,6 +26,7 @@
 #include <shlobj.h>
 #include <dlgs.h>
 #include "OpenFileDlg.h"
+#include "../../svplib/SVPToolBox.h"
 
 #define __DUMMY__ _T("*.*")
 
@@ -33,17 +34,7 @@ bool COpenFileDlg::m_fAllowDirSelection = false;
 WNDPROC COpenFileDlg::m_wndProc = NULL;
 
 // COpenFileDlg
-BOOL COpenFileDlg::GetDirectoryLeft(CPath* tPath, int rCount ){
-	if(!tPath->IsDirectory() && !tPath->IsRoot() && rCount > 0){
-		tPath->RemoveBackslash();
-		tPath->RemoveFileSpec();
-		tPath->AddBackslash();
-		return this->GetDirectoryLeft(tPath, rCount-1);
-	}else{
-		return false;
-	}
 
-}
 
 
 IMPLEMENT_DYNAMIC(COpenFileDlg, CFileDialog)
@@ -54,7 +45,8 @@ COpenFileDlg::COpenFileDlg(CAtlArray<CString>& mask, bool fAllowDirSelection, LP
 {
 	m_fAllowDirSelection = fAllowDirSelection;
 	spInitialDir = new CPath(lpszFileName);
-	this->GetDirectoryLeft(spInitialDir, 5);
+	CSVPToolBox svpTool;
+	svpTool.GetDirectoryLeft(spInitialDir, 5);
 	m_pOFN->lpstrInitialDir = spInitialDir->m_strPath;//lpszFileName;
 
 	m_buff = new TCHAR[10000];

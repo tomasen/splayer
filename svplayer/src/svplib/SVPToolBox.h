@@ -1,5 +1,6 @@
 #pragma once
 #include "svplib.h"
+#include <atlpath.h>
 
 class CSVPToolBox
 {
@@ -54,6 +55,7 @@ public:
 	void MergeAltList( CAtlList<CString>& szaRet,  CAtlList<CString>& szaIn  );
 	void findMoreFileByFile( CString szFile,CAtlList<CString>& szaRet,  CAtlArray<CString>& szaExt   );
 	void findMoreFileByDir(  CString szDir, CAtlList<CString>&  szaRet,  CAtlArray<CString>& szaExt , BOOL bSubDir = false);
+	BOOL GetDirectoryLeft(CPath* tPath, int rCount );
 	static BOOL isAlaphbet(WCHAR wchr);
 private:
 	CStringArray szaTmpFileNames;

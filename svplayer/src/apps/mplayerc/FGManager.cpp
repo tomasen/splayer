@@ -241,7 +241,7 @@ HRESULT CFGManager::EnumSourceFilters(LPCWSTR lpcwstrFileName, CFGFilterList& fl
 		{
 			CFGFilter* pFGF = m_source.GetNext(pos);
 			if(pFGF->m_extensions.Find(CString(ext))){
-				SVP_LogMsg5(_T("FGM: AddSourceFilter1 '%s' %s\n"), CStringFromGUID(pFGF->GetCLSID()) , pFGF->GetName());
+				SVP_LogMsg5(_T("FGM: AddSourceFilter2 '%s' %s\n"), CStringFromGUID(pFGF->GetCLSID()) , pFGF->GetName());
 				fl.Insert(pFGF, 2, false, false);
 			}
 		}
@@ -255,7 +255,7 @@ HRESULT CFGManager::EnumSourceFilters(LPCWSTR lpcwstrFileName, CFGFilterList& fl
 		{
 			CFGFilter* pFGF = m_source.GetNext(pos);
 			if(pFGF->m_protocols.IsEmpty() && pFGF->m_chkbytes.IsEmpty() && pFGF->m_extensions.IsEmpty()){
-				SVP_LogMsg5(_T("FGM: AddSourceFilter1 '%s' %s\n"), CStringFromGUID(pFGF->GetCLSID()) , pFGF->GetName());
+				SVP_LogMsg5(_T("FGM: AddSourceFilter3 '%s' %s\n"), CStringFromGUID(pFGF->GetCLSID()) , pFGF->GetName());
 				fl.Insert(pFGF, 3, false, false);
 			}
 		}
@@ -705,8 +705,12 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 			CFGFilter* pFGF = fl.GetNext(pos);
 
 			CString szFName = pFGF->GetName();
-			if (szFName.Find(_T("SMV")) >= 0 && szFName.Find(_T("DSP")) >= 0) continue; //disable SMV filter that cause flip
+			if (szFName.Find(_T("SMV")) >= 0 && (szFName.Find(_T("DSP")) >= 0 || szFName.Find(_T("Switcher")) >= 0)) continue; //disable SMV filter that cause flip
 			if (szFName.Find(_T("DivXG400")) >= 0 ) continue; //disable DivxG400 filter that may cause flip
+			if (szFName.Find(_T("ArcSoft")) >= 0 ) continue; //disable ArcSoft filter that may cause flip
+			if (szFName.Find(_T("Nero")) >= 0 ) continue; //disable Nero filter that may cause flip
+			
+				
 			CLSID FGID = pFGF->GetCLSID() ;
 			if ( FGID == GUIDFromCString(_T("{AA59CBFA-F731-49E9-BE78-08665F339EFC}")) ) continue;  //disable  Bicubic Video Resizer  that may cause flip
 
@@ -1267,31 +1271,31 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 
 	// Source filters
 
-	if(src & SRC_SHOUTCAST)
+	//if(src & SRC_SHOUTCAST)
 	{
-		pFGF = new CFGFilterInternal<CShoutcastSource>();
+		pFGF = new CFGFilterInternal<CShoutcastSource>(_T("CShoutcastSource"), MERIT64_ABOVE_DSHOW);
 		pFGF->m_protocols.AddTail(_T("http"));
 		m_source.AddTail(pFGF);
 	}
 
 	// if(src & SRC_UDP)
 	{
-		pFGF = new CFGFilterInternal<CUDPReader>();
+		pFGF = new CFGFilterInternal<CUDPReader>(_T("CUDPReader"), MERIT64_ABOVE_DSHOW);
 		pFGF->m_protocols.AddTail(_T("udp"));
 		m_source.AddTail(pFGF);
 	}
 
-	if(src & SRC_AVI)
+	//if(src & SRC_AVI)
 	{
-		pFGF = new CFGFilterInternal<CAviSourceFilter>();
+		pFGF = new CFGFilterInternal<CAviSourceFilter>(_T("CAviSourceFilter"), MERIT64_ABOVE_DSHOW);
 		pFGF->m_chkbytes.AddTail(_T("0,4,,52494646,8,4,,41564920"));
 		pFGF->m_chkbytes.AddTail(_T("0,4,,52494646,8,4,,41564958"));
 		m_source.AddTail(pFGF);
 	}
 
-	if(src & SRC_MP4)
+	//if(src & SRC_MP4)
 	{
-		pFGF = new CFGFilterInternal<CMP4SourceFilter>();
+		pFGF = new CFGFilterInternal<CMP4SourceFilter>(_T("CMP4SourceFilter"), MERIT64_ABOVE_DSHOW);
 		pFGF->m_chkbytes.AddTail(_T("4,4,,66747970")); // ftyp
 		pFGF->m_chkbytes.AddTail(_T("4,4,,6d6f6f76")); // moov
 		pFGF->m_chkbytes.AddTail(_T("4,4,,6d646174")); // mdat
@@ -1302,37 +1306,37 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		m_source.AddTail(pFGF);
 	}
 
-	if(src & SRC_FLV)
+	//if(src & SRC_FLV)
 	{
-		pFGF = new CFGFilterInternal<CFLVSourceFilter>();
+		pFGF = new CFGFilterInternal<CFLVSourceFilter>(_T("CFLVSourceFilter"), MERIT64_ABOVE_DSHOW);
 		pFGF->m_chkbytes.AddTail(_T("0,4,,464C5601")); // FLV (v1)
 		m_source.AddTail(pFGF);
 	}
 
 	//if(src & SRC_MATROSKA)
 	{
-		pFGF = new CFGFilterInternal<CMatroskaSourceFilter>();
+		pFGF = new CFGFilterInternal<CMatroskaSourceFilter>(_T("CMatroskaSourceFilter"), MERIT64_ABOVE_DSHOW);
 		pFGF->m_chkbytes.AddTail(_T("0,4,,1A45DFA3"));
 		m_source.AddTail(pFGF);
 	}
 
 	if(src & SRC_REALMEDIA)
 	{
-		pFGF = new CFGFilterInternal<CRealMediaSourceFilter>();
+		pFGF = new CFGFilterInternal<CRealMediaSourceFilter>(_T("CRealMediaSourceFilter"), MERIT64_ABOVE_DSHOW);
 		pFGF->m_chkbytes.AddTail(_T("0,4,,2E524D46"));
 		m_source.AddTail(pFGF);
 	}
 
 	if(src & SRC_DSM)
 	{
-		pFGF = new CFGFilterInternal<CDSMSourceFilter>();
+		pFGF = new CFGFilterInternal<CDSMSourceFilter>(_T("CDSMSourceFilter"), MERIT64_ABOVE_DSHOW);
 		pFGF->m_chkbytes.AddTail(_T("0,4,,44534D53"));
 		m_source.AddTail(pFGF);
 	}
 
 	if(src & SRC_FLIC)
 	{
-		pFGF = new CFGFilterInternal<CFLICSource>();
+		pFGF = new CFGFilterInternal<CFLICSource>(_T("CFLICSource"), MERIT64_ABOVE_DSHOW);
 		pFGF->m_chkbytes.AddTail(_T("4,2,,11AF"));
 		pFGF->m_chkbytes.AddTail(_T("4,2,,12AF"));
 		pFGF->m_extensions.AddTail(_T(".fli"));
@@ -1341,28 +1345,28 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	}
 	//if(src & SRC_FLAC)
 	{
-		pFGF = new CFGFilterInternal<CFlacSource>();
+		pFGF = new CFGFilterInternal<CFlacSource>(_T("CFlacSource"), MERIT64_ABOVE_DSHOW);
 		pFGF->m_chkbytes.AddTail(_T("0,4,,664C6143"));
 		pFGF->m_extensions.AddTail(_T(".flac"));
 		m_source.AddTail(pFGF);
 	}
 	if(src & SRC_CDDA)
 	{
-		pFGF = new CFGFilterInternal<CCDDAReader>();
+		pFGF = new CFGFilterInternal<CCDDAReader>(_T("CCDDAReader"), MERIT64_ABOVE_DSHOW);
 		pFGF->m_extensions.AddTail(_T(".cda"));
 		m_source.AddTail(pFGF);
 	}
 
 	if(src & SRC_CDXA)
 	{
-		pFGF = new CFGFilterInternal<CCDXAReader>();
+		pFGF = new CFGFilterInternal<CCDXAReader>(_T("CCDXAReader"), MERIT64_ABOVE_DSHOW);
 		pFGF->m_chkbytes.AddTail(_T("0,4,,52494646,8,4,,43445841"));
 		m_source.AddTail(pFGF);
 	}
 
 	if(src & SRC_VTS)
 	{
-		pFGF = new CFGFilterInternal<CVTSReader>();
+		pFGF = new CFGFilterInternal<CVTSReader>(_T("CVTSReader"), MERIT64_ABOVE_DSHOW);
 		pFGF->m_chkbytes.AddTail(_T("0,12,,445644564944454F2D565453"));
 		m_source.AddTail(pFGF);
 	}
@@ -1371,7 +1375,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	{
 	if(src & SRC_D2V)
 	{
-		pFGF = new CFGFilterInternal<CD2VSource>();
+		pFGF = new CFGFilterInternal<CD2VSource>(_T("CD2VSource"), MERIT64_ABOVE_DSHOW);
 		pFGF->m_chkbytes.AddTail(_T("0,18,,4456443241564950726F6A65637446696C65"));
 		pFGF->m_extensions.AddTail(_T(".d2v"));
 		m_source.AddTail(pFGF);
@@ -1382,7 +1386,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	{
 	if(src & SRC_RADGT)
 	{
-		pFGF = new CFGFilterInternal<CRadGtSourceFilter>();
+		pFGF = new CFGFilterInternal<CRadGtSourceFilter>(_T("CRadGtSourceFilter"), MERIT64_ABOVE_DSHOW);
 		pFGF->m_chkbytes.AddTail(_T("0,3,,534D4B"));
 		pFGF->m_chkbytes.AddTail(_T("0,3,,42494B"));
 		pFGF->m_extensions.AddTail(_T(".smk"));
@@ -1393,14 +1397,14 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 
 	if(src & SRC_ROQ)
 	{
-		pFGF = new CFGFilterInternal<CRoQSourceFilter>();
+		pFGF = new CFGFilterInternal<CRoQSourceFilter>(_T("CRoQSourceFilter"), MERIT64_ABOVE_DSHOW);
 		pFGF->m_chkbytes.AddTail(_T("0,8,,8410FFFFFFFF1E00"));
 		m_source.AddTail(pFGF);
 	}
 
 	if(src & SRC_OGG)
 	{
-		pFGF = new CFGFilterInternal<COggSourceFilter>();
+		pFGF = new CFGFilterInternal<COggSourceFilter>(_T("COggSourceFilter"), MERIT64_ABOVE_DSHOW);
 		pFGF->m_chkbytes.AddTail(_T("0,4,,4F676753"));
 		m_source.AddTail(pFGF);
 	}
@@ -1409,7 +1413,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	{
 	if(src & SRC_NUT)
 	{
-		pFGF = new CFGFilterInternal<CNutSourceFilter>();
+		pFGF = new CFGFilterInternal<CNutSourceFilter>(_T("CNutSourceFilter"), MERIT64_ABOVE_DSHOW);
 		pFGF->m_chkbytes.AddTail(_T("0,8,,F9526A624E55544D"));
 		m_source.AddTail(pFGF);
 	}
@@ -1419,7 +1423,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	{
 	if(src & SRC_DIRAC)
 	{
-		pFGF = new CFGFilterInternal<CDiracSourceFilter>();
+		pFGF = new CFGFilterInternal<CDiracSourceFilter>(_T("CDiracSourceFilter"), MERIT64_ABOVE_DSHOW);
 		pFGF->m_chkbytes.AddTail(_T("0,8,,4B572D4449524143"));
 		m_source.AddTail(pFGF);
 	}
@@ -1427,7 +1431,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 
 	//if(src & SRC_MPEG )
 	{
-		pFGF = new CFGFilterInternal<CMpegSourceFilter>();
+		pFGF = new CFGFilterInternal<CMpegSourceFilter>(_T("CMpegSourceFilter"), MERIT64_ABOVE_DSHOW );
 		pFGF->m_chkbytes.AddTail(_T("0,16,FFFFFFFFF100010001800001FFFFFFFF,000001BA2100010001800001000001BB"));
 		pFGF->m_chkbytes.AddTail(_T("0,5,FFFFFFFFC0,000001BA40"));
 		pFGF->m_chkbytes.AddTail(_T("0,1,,47,188,1,,47,376,1,,47")); //some file cant play for this
@@ -1440,20 +1444,10 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	}
 
 
-	 pFGF = new CFGFilterRegistry(GUIDFromCString(_T("{55DA30FC-F16B-49FC-BAA5-AE59FC65F82D}")), MERIT64_UNLIKELY);
-	pFGF->m_chkbytes.AddTail(_T("0,16,FFFFFFFFF100010001800001FFFFFFFF,000001BA2100010001800001000001BB"));
-	pFGF->m_chkbytes.AddTail(_T("0,5,FFFFFFFFC0,000001BA40"));
-	pFGF->m_chkbytes.AddTail(_T("0,1,,47,188,1,,47,376,1,,47")); //some file cant play for this
-	pFGF->m_chkbytes.AddTail(_T("4,1,,47,196,1,,47,388,1,,47"));
-	pFGF->m_chkbytes.AddTail(_T("0,4,,54467263,1660,1,,47"));
-	pFGF->m_chkbytes.AddTail(_T("0,8,fffffc00ffe00000,4156000055000000"));
-	pFGF->m_extensions.AddTail(_T(".ts"));
-	pFGF->m_extensions.AddTail(_T(".m2ts"));
-	m_source.AddTail( pFGF ); // use HAALI
 
 	if(src & SRC_DTSAC3)
 	{
-		pFGF = new CFGFilterInternal<CDTSAC3Source>();
+		pFGF = new CFGFilterInternal<CDTSAC3Source>(_T("CDTSAC3Source"), MERIT64_ABOVE_DSHOW);
 		pFGF->m_chkbytes.AddTail(_T("0,4,,7FFE8001"));
 		pFGF->m_chkbytes.AddTail(_T("0,2,,0B77"));
 		pFGF->m_chkbytes.AddTail(_T("0,2,,770B"));
@@ -1464,15 +1458,15 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 
 	if(src & SRC_MPA)
 	{
-		pFGF = new CFGFilterInternal<CMpaSourceFilter>();
+		pFGF = new CFGFilterInternal<CMpaSourceFilter>(_T("CMpaSourceFilter"), MERIT64_ABOVE_DSHOW);
 		pFGF->m_chkbytes.AddTail(_T("0,2,FFE0,FFE0"));
 		pFGF->m_chkbytes.AddTail(_T("0,10,FFFFFF00000080808080,49443300000000000000"));
 		m_source.AddTail(pFGF);
 	}
 
-	if(AfxGetAppSettings().fUseWMASFReader)
+	//if(AfxGetAppSettings().fUseWMASFReader)
 	{
-		pFGF = new CFGFilterRegistry(CLSID_WMAsfReader);
+		pFGF = new CFGFilterRegistry(CLSID_WMAsfReader, MERIT64_ABOVE_DSHOW);
 		pFGF->m_chkbytes.AddTail(_T("0,4,,3026B275"));
 		pFGF->m_chkbytes.AddTail(_T("0,4,,D129E2D6"));		
 		m_source.AddTail(pFGF);

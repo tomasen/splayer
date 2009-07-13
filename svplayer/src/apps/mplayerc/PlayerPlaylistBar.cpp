@@ -605,9 +605,9 @@ void CPlayerPlaylistBar::FindMoreFileFromOneFileAndPutIntoPlaylist(CString szMed
 void CPlayerPlaylistBar::Open(CAtlList<CString>& fns, bool fMulti, CAtlList<CString>* subs, int smartAddMorefile)
 {
 	BOOL bAppened = false;
+	CString szFirstMedia = fns.GetHead();
 	if(GetCount() > 0){
 
-		CString szFirstMedia = fns.GetHead();
 		POSITION pos = fns.GetHeadPosition();
 		while(pos){
 			POSITION cur =  pos;
@@ -617,12 +617,12 @@ void CPlayerPlaylistBar::Open(CAtlList<CString>& fns, bool fMulti, CAtlList<CStr
 				CPlaylistItem pli =  m_pl.GetNext(pos2);
 				if ( pli.FindFile(szFN ) ){
 					//AfxMessageBox(_T("Empty2"));
-					//fns.RemoveAt(cur);
+					fns.RemoveAt(cur);
 					bAppened = true;
 					break;
 				}
 			}
-			if(bAppened) break;
+			
 		}
 
 		if(bAppened){
@@ -632,7 +632,7 @@ void CPlayerPlaylistBar::Open(CAtlList<CString>& fns, bool fMulti, CAtlList<CStr
 			FindPosByFilename( szFirstMedia);
 		}
 	}
-	if(!bAppened){
+	if(!bAppened && fns.GetCount() > 0){
 		//AfxMessageBox(_T("Empty"));
 		Empty();
 		Append(fns, fMulti, subs);
@@ -641,7 +641,7 @@ void CPlayerPlaylistBar::Open(CAtlList<CString>& fns, bool fMulti, CAtlList<CStr
 	
 	if(smartAddMorefile){
 
-		FindMoreFileFromOneFileAndPutIntoPlaylist( fns.GetHead(), fns);
+		FindMoreFileFromOneFileAndPutIntoPlaylist( szFirstMedia, fns);
 	}
 
 }

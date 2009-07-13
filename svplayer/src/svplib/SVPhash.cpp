@@ -1,6 +1,6 @@
 #include "SVPhash.h"
 #include "MD5Checksum.h"
-
+#include "SVPToolBox.h"
 
 CSVPhash::CSVPhash(void)
 {
@@ -15,7 +15,14 @@ CString CSVPhash::ComputerSubFilesFileHash(CStringArray* szaSubFiles){
 	for (int i = 0; i < szaSubFiles->GetCount(); i++)
 	{
 		CMD5Checksum cmd5 ;
-		CString szBuf = cmd5.GetMD5(szaSubFiles->GetAt(i));
+		CString szpath = szaSubFiles->GetAt(i);
+		CSVPToolBox svpTool;
+		if(!svpTool.ifFileExist(szpath)){
+			SVP_LogMsg(_T("sub file not exist for hash");
+			return _T("");
+			break;
+		}
+		CString szBuf = cmd5.GetMD5(szpath);
 		if ( !szBuf.IsEmpty() ){
 			//SVP_LogMsg(szBuf);
 			if ( i == 0){

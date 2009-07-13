@@ -1233,13 +1233,10 @@ HRESULT CMpaDecFilter::ProcessAAC()
 
 HRESULT CMpaDecFilter::ProcessPCM16(bool bigendian){
 	size_t inSamples = m_buff.GetCount()/2;
-	WAVEFORMATEXPS2* wfe = (WAVEFORMATEXPS2*)m_pInput->CurrentMediaType().Format();
-	if(inSamples < wfe->nBlockAlign){return S_OK;}
+	if(inSamples < 480){return S_OK;}
 	SHORT* p = (SHORT*)m_buff.GetData();
 
-//	bNoJitterControl = true;     
-
-	
+	WAVEFORMATEXPS2* wfe = (WAVEFORMATEXPS2*)m_pInput->CurrentMediaType().Format();
 	//wfe->nAvgBytesPerSec = wfe->wBitsPerSample * wfe->nSamplesPerSec / 8;
 	
 	CAtlArray<float> pBuff;
@@ -1276,9 +1273,9 @@ HRESULT CMpaDecFilter::ProcessPCM16(bool bigendian){
 	return S_OK;
 }
 HRESULT CMpaDecFilter::ProcessPCMU8(){
-	BYTE* p = m_buff.GetData();
 	size_t inSamples = m_buff.GetCount();
-	
+	if(inSamples < 480){return S_OK;}
+	BYTE* p = m_buff.GetData();
 	WAVEFORMATEXPS2* wfe = (WAVEFORMATEXPS2*)m_pInput->CurrentMediaType().Format();
 	CAtlArray<float> pBuff;
 	pBuff.SetCount(inSamples);

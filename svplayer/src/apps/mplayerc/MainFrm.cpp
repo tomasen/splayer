@@ -12008,7 +12008,7 @@ void CMainFrame::SetAlwaysOnTop(int i, BOOL setSetting)
 		AfxGetAppSettings().iOnTop = i;
 	}
 
-	if(1)//
+	if(1)//!m_fFullScreen
 	{
 		const CWnd* pInsertAfter = NULL;
 

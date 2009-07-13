@@ -176,8 +176,9 @@ HRESULT CBaseSplitterFile::Read(BYTE* pData, __int64 len)
 
 		if(!pData) 
 		     return S_OK; 
+
 		__try{		
-			memcpy(pData, pCache, (size_t)minlen)
+			memcpy(pData, pCache, (size_t)minlen);
 		}__except(EXCEPTION_EXECUTE_HANDLER){ return S_OK; }
 		/*if(pData && minlen > 0){
 			__try{

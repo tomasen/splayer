@@ -1632,7 +1632,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 
 	pFGF = new CFGFilterInternal<CMpeg2DecFilter>(
 		(tra & TRA_MPEG1) ? L"MPEG-1 Video Decoder" : L"MPEG-1 Video Decoder (low merit)", 
-		(tra & TRA_MPEG1) ? MERIT64_ABOVE_DSHOW : MERIT64_UNLIKELY);
+		(tra & TRA_MPEG1) ? MERIT64_UNLIKELY : MERIT64_UNLIKELY);
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_MPEG1Packet);
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_MPEG1Payload);
 	m_transform.AddTail(pFGF);

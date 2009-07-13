@@ -154,6 +154,7 @@ HRESULT CMpegSplitterFile::Init()
 
 //#ifndef DEBUG
 	if(m_streams[audio].GetCount() <= 1 && m_type == ts){
+		SVP_LogMsg5(_T("ts and no audio"));
 		return E_FAIL;
 	}
 	if(m_streams[video].GetCount())
@@ -172,6 +173,7 @@ HRESULT CMpegSplitterFile::Init()
 			AddHdmvPGStream (NO_SUBTITLE_PID, "---");
 		}
 	}else if(m_type == ts){
+		SVP_LogMsg5(_T("ts and no video"));
 		return E_FAIL;
 	}
 //#endif

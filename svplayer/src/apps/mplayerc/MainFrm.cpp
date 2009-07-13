@@ -4796,6 +4796,7 @@ void CMainFrame::OnFileOpenCD(UINT nID)
 		case CDROM_Audio:
 		case CDROM_VideoCD:
 		case CDROM_DVDVideo:
+		case CDROM_Unknown:
 			nID--;
 			break;
 		default:
@@ -10692,7 +10693,7 @@ void CMainFrame::SetupOpenCDSubMenu()
 
 		
 		CAtlList<CString> files;
-		switch(GetCDROMType(drive, files))
+		switch(GetCDROMType(drive, files, true))
 		{
 		case CDROM_Unknown:
 			if(label.IsEmpty()) label = _T("Disk ");

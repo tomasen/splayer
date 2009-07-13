@@ -119,6 +119,8 @@ const AMOVIESETUP_MEDIATYPE sudPinTypesIn[] =
 	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_14_4},
 	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_28_8},
 	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_PCM_RAW},
+	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_PCM_SOWT},
+	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_PCM_TWOS},
 	
 };
 
@@ -444,7 +446,7 @@ HRESULT CMpaDecFilter::Receive(IMediaSample* pIn)
 
 	const GUID& subtype = m_pInput->CurrentMediaType().subtype;
 	BOOL bNoJitterControl = false;
-	if(subtype == MEDIASUBTYPE_AMR || subtype == MEDIASUBTYPE_SAMR || subtype == MEDIASUBTYPE_SAWB){
+	if(subtype == MEDIASUBTYPE_AMR || subtype == MEDIASUBTYPE_SAMR || subtype == MEDIASUBTYPE_SAWB  ){//|| subtype == MEDIASUBTYPE_PCM_SOWT || subtype == MEDIASUBTYPE_PCM_TWOS
 		bNoJitterControl = true;
 	}
 
@@ -503,6 +505,13 @@ HRESULT CMpaDecFilter::Receive(IMediaSample* pIn)
 		hr = ProcessFfmpeg(CODEC_ID_RA_288);
 	else if(MEDIASUBTYPE_PCM_RAW == subtype ){
 		hr = ProcessPCMU8();
+	}else if(MEDIASUBTYPE_PCM_SOWT == subtype){
+		hr = ProcessPCM16(false);
+		//hr = ProcessFfmpeg(CODEC_ID_PCM_S16LE);
+	}else if( MEDIASUBTYPE_PCM_TWOS == subtype){
+		hr = ProcessPCM16(true);
+
+		//hr = ProcessFfmpeg(CODEC_ID_PCM_S16BE);
 	}else{// if(.. the rest ..)
 		hr = ProcessMPA();
 		//hr = ProcessFfmpeg(CODEC_ID_MP3);
@@ -1218,6 +1227,51 @@ HRESULT CMpaDecFilter::ProcessAAC()
 	HRESULT hr;
 	if(S_OK != (hr = Deliver(pBuff, info.samplerate, info.channels, dwChannelMask)))
 		return hr;
+
+	return S_OK;
+}
+
+HRESULT CMpaDecFilter::ProcessPCM16(bool bigendian){
+	size_t inSamples = m_buff.GetCount()/2;
+	WAVEFORMATEXPS2* wfe = (WAVEFORMATEXPS2*)m_pInput->CurrentMediaType().Format();
+	if(inSamples < wfe->nBlockAlign){return S_OK;}
+	SHORT* p = (SHORT*)m_buff.GetData();
+
+//	bNoJitterControl = true;     
+
+	
+	//wfe->nAvgBytesPerSec = wfe->wBitsPerSample * wfe->nSamplesPerSec / 8;
+	
+	CAtlArray<float> pBuff;
+	pBuff.SetCount(inSamples);
+	
+		
+	float* f = pBuff.GetData();
+	
+	if(bigendian){
+
+		for(int i = 0; i < inSamples; i++){
+			
+			f[i] = ((float)((SHORT) (((p[i] & 0xff) << 8 )| ( (p[i] & 0xff00) >> 8)))) / SHORT_MAX;
+			//SVP_LogMsg3("%f %d", f[i] , p[i]);
+		}
+	}else{
+		for(int i = 0; i < inSamples; i++){
+			f[i] = ((float)(p[i])) / SHORT_MAX;
+			//SVP_LogMsg3("%f %d", f[i] , p[i]);
+		}
+
+	}
+
+	
+	HRESULT hr;
+	if(S_OK != (hr = Deliver(pBuff, wfe->nSamplesPerSec, wfe->nChannels))){
+		//SVP_LogMsg3("PCM Error %d", wfe->nSamplesPerSec);
+		return hr;
+	}
+
+	//SVP_LogMsg3("PCM Done %d",  inSamples);
+	m_buff.RemoveAll();
 
 	return S_OK;
 }

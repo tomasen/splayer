@@ -126,6 +126,7 @@ protected:
 	HRESULT ProcessFlac();
 	HRESULT ProcessMPA();
 	HRESULT ProcessPCMU8();
+	HRESULT ProcessPCM16(bool bigendian);
 	HRESULT ProcessFfmpeg(int nCodecId);
 
 	HRESULT GetDeliveryBuffer(IMediaSample** pSample, BYTE** pData);

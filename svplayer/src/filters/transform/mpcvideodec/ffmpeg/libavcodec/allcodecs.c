@@ -139,7 +139,7 @@ void avcodec_register_all(void)
     REGISTER_DECODER (RA_144, ra_144);
     REGISTER_DECODER (RA_288, ra_288);
     REGISTER_DECODER (TRUEHD, truehd);
-    //REGISTER_DECODER (TRUESPEECH, truespeech);
+	//REGISTER_DECODER (TRUESPEECH, truespeech);
     //REGISTER_DECODER (TTA, tta);
     //REGISTER_DECODER (VORBIS, vorbis);
     //REGISTER_DECODER (WMAV1, wmav1);

@@ -538,7 +538,7 @@ HRESULT CMP4SplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 						wfe->wBitsPerSample = ase->GetSampleSize();
 						wfe->nBlockAlign = ase->GetBytesPerFrame();
 						//if(wfe->nBlockAlign == 0)
-							//wfe->nBlockAlign = wfe->wBitsPerSample / 8;
+						//	wfe->nBlockAlign = wfe->wBitsPerSample / 8;
 						//wfe->nAvgBytesPerSec = wfe->wBitsPerSample * wfe->nSamplesPerSec / 8;
 						wfe->cbSize = db.GetDataSize();
 						memcpy(wfe+1, db.GetData(), db.GetDataSize());

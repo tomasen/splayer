@@ -53,7 +53,7 @@ CShockwaveGraph::~CShockwaveGraph()
 // IGraphBuilder
 STDMETHODIMP CShockwaveGraph::RenderFile(LPCWSTR lpcwstrFile, LPCWSTR lpcwstrPlayList)
 {
-	try {m_wndDestFrame.LoadMovie(0, CString(lpcwstrFile));m_wndDestFrame.put_ScaleMode(2);}
+	try {m_wndDestFrame.LoadMovie(0, CString(lpcwstrFile));m_wndDestFrame.put_ScaleMode(1);}
 	catch(CException* e) {e->Delete(); return E_FAIL;}
 	return S_OK;
 }
@@ -171,7 +171,6 @@ STDMETHODIMP CShockwaveGraph::SetDestinationPosition(long Left, long Top, long W
 	if(IsWindow(m_wndDestFrame.m_hWnd)){
 		m_wndDestFrame.MoveWindow(Left, Top, Width, Height);
 	}
-
 	return S_OK;
 }
 STDMETHODIMP CShockwaveGraph::GetVideoSize(long* pWidth, long* pHeight)
@@ -180,7 +179,7 @@ STDMETHODIMP CShockwaveGraph::GetVideoSize(long* pWidth, long* pHeight)
 
 	CRect r;
 	m_wndWindowFrame.GetWindowRect(r);
-	if(!r.IsRectEmpty())
+	if(!r.IsRectEmpty() && 0)
 	{
 		*pWidth = r.Width();
 		*pHeight = r.Height();
@@ -188,12 +187,12 @@ STDMETHODIMP CShockwaveGraph::GetVideoSize(long* pWidth, long* pHeight)
 	else
 	{
 		// no call exists to determine these...
-		*pWidth = 384;//m_wndDestFrame.get_; 
-		*pHeight = 288;
+		*pWidth = _wtoi(m_wndDestFrame.TGetProperty(_T("_level0"),  8));//m_wndDestFrame.get_; 
+		*pHeight = _wtoi(m_wndDestFrame.TGetProperty(_T("_level0"),  9));
 
 		NotifyEvent(EC_BG_AUDIO_CHANGED, 2, 0);
 	}
-
+	
 	return S_OK;
 }
 

@@ -53,7 +53,7 @@ CShockwaveGraph::~CShockwaveGraph()
 // IGraphBuilder
 STDMETHODIMP CShockwaveGraph::RenderFile(LPCWSTR lpcwstrFile, LPCWSTR lpcwstrPlayList)
 {
-	try {m_wndDestFrame.LoadMovie(0, CString(lpcwstrFile));m_wndDestFrame.put_ScaleMode(1);}
+	try {m_wndDestFrame.LoadMovie(0, CString(lpcwstrFile));m_wndDestFrame.put_ScaleMode(0);}
 	catch(CException* e) {e->Delete(); return E_FAIL;}
 	return S_OK;
 }

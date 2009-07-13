@@ -113,6 +113,8 @@ SRCS_C=\
 		$(LAVC_DIR)/msrle.c \
 		$(LAVC_DIR)/celp_filters.c \
 		$(LAVC_DIR)/celp_math.c \
+		$(LAVC_DIR)/mpeg12.c \
+		$(LAVC_DIR)/mpeg12data.c \
 
 
 
@@ -150,8 +152,6 @@ SRCS_C=\
 #		$(LAVC_DIR)/mdct.c \
 #		$(LAVC_DIR)/mjpeg_parser.c \
 #		$(LAVC_DIR)/mlp_parser.c \
-#		$(LAVC_DIR)/mpeg12.c \
-#		$(LAVC_DIR)/mpeg12data.c \
 #		$(LAVC_DIR)/mpeg4audio.c \
 #		$(LAVC_DIR)/mpegvideo_parser.c \
 #		$(LAVC_DIR)/mpegaudio_parser.c \

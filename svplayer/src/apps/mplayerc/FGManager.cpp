@@ -1858,6 +1858,12 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	// High merit MPC Video Decoder
 	UINT dxva_filters = s.DXVAFilters;
 	UINT ffmpeg_filters = s.FFmpegFilters;
+
+	//pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(L"MPEG-1 FF Video Decoder" , MERIT64_ABOVE_DSHOW);
+	//pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_MPEG1Packet);
+	//pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_MPEG1Payload);
+	//m_transform.AddTail(pFGF);
+
 #if INCLUDE_MPC_VIDEO_DECODER | INCLUDE_MPC_DXVA_VIDEO_DECODER
 	pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(_T("MPC Video Decoder"), MERIT64_ABOVE_DSHOW);
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_tscc);

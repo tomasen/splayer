@@ -221,7 +221,7 @@ CMpeg2DecFilter::CMpeg2DecFilter(LPUNKNOWN lpunk, HRESULT* phr)
 	EnableInterlaced(false);
 
 	CRegKey key;
-	if(ERROR_SUCCESS == key.Open(HKEY_CURRENT_USER, _T("Software\\Gabest\\Filters\\MPEG Video Decoder"), KEY_READ))
+	if(ERROR_SUCCESS == key.Open(HKEY_CURRENT_USER, _T("Software\\SPlayer\\Filters\\MPEG Video Decoder"), KEY_READ))
 	{
 		DWORD dw;
 		if(ERROR_SUCCESS == key.QueryDWORDValue(_T("DeinterlaceMethod"), dw)) SetDeinterlaceMethod((ditype)dw);
@@ -241,7 +241,7 @@ CMpeg2DecFilter::CMpeg2DecFilter(LPUNKNOWN lpunk, HRESULT* phr)
 CMpeg2DecFilter::~CMpeg2DecFilter()
 {
 	CRegKey key;
-	if(ERROR_SUCCESS == key.Create(HKEY_CURRENT_USER, _T("Software\\Gabest\\Filters\\MPEG Video Decoder")))
+	if(ERROR_SUCCESS == key.Create(HKEY_CURRENT_USER, _T("Software\\SPlayer\\Filters\\MPEG Video Decoder")))
 	{
 		key.SetDWORDValue(_T("DeinterlaceMethod"), m_ditype);
 		key.SetDWORDValue(_T("Brightness"), *(DWORD*)&m_bright);

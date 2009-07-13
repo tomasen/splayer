@@ -18,7 +18,7 @@ CString CSVPhash::ComputerSubFilesFileHash(CStringArray* szaSubFiles){
 		CString szpath = szaSubFiles->GetAt(i);
 		CSVPToolBox svpTool;
 		if(!svpTool.ifFileExist(szpath)){
-			SVP_LogMsg(_T("sub file not exist for hash");
+			SVP_LogMsg(_T("sub file not exist for hash"));
 			return _T("");
 			break;
 		}

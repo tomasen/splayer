@@ -4718,9 +4718,10 @@ BOOL CMainFrame::OnCopyData(CWnd* pWnd, COPYDATASTRUCT* pCDS)
 		{
 			SendMessage(WM_COMMAND, ID_FILE_CLOSEMEDIA);
 			fSetForegroundWindow = true;
-
+			
 			m_wndPlaylistBar.Open(sl, fMulti, &s.slSubs);
 			OpenCurPlaylistItem((s.nCLSwitches&CLSW_STARTVALID) ? s.rtStart : 0);
+			
 
 			s.nCLSwitches &= ~CLSW_STARTVALID;
 			s.rtStart = 0;

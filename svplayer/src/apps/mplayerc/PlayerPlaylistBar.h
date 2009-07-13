@@ -101,7 +101,7 @@ public:
 	void LoadPlaylist();
 	void SavePlaylist();
 
-	POSITION FindPosByFilename(CString fn);
+	POSITION FindPosByFilename(CString fn, BOOL movePos = true);
 
 protected:
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);

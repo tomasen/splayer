@@ -22,7 +22,7 @@
 #include "stdafx.h"
 #include "mplayerc.h"
 #include "playlist.h"
-
+#include "../../svplib/svplib.h"
 //
 // CPlaylistItem
 //
@@ -69,7 +69,17 @@ CPlaylistItem& CPlaylistItem::operator = (const CPlaylistItem& pli)
 POSITION CPlaylistItem::FindFile(CString path)
 {
 	POSITION pos = m_fns.GetHeadPosition();
-	while(pos && !m_fns.GetAt(pos).CompareNoCase(path)) m_fns.GetNext(pos);
+	while(pos ) {
+		POSITION cur = pos;
+		CString szFN = m_fns.GetNext(pos);
+		path.MakeLower();
+		szFN.MakeLower();
+		///SVP_LogMsg5(_T("Compart %s %s"), szFN , path);
+		if( szFN.Find(path) >= 0){
+			SVP_LogMsg5(_T("Got"));
+			return cur;
+		}
+	}
 	return(NULL);
 }
 

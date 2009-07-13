@@ -547,17 +547,27 @@ void CPlayerPlaylistBar::RealFindMoreFileFromOneFileAndPutIntoPlaylist(CString s
 		{
 			//delete m_csDataLock;
 			//m_csDataLock = new CCritSec();
-			CAutoLock dataLock(m_csDataLock);
+			//CAutoLock dataLock(m_csDataLock);
 			svptool.MergeAltList(szaRet, szaIn);
 
-			Empty();  //add them all
-			POSITION posx = szaRet.GetHeadPosition();
-			while(posx) ParsePlayList(szaRet.GetNext(posx), NULL); 
+			POSITION pos = szaRet.GetHeadPosition();
+			while(pos){
+				POSITION cur = pos;
+				if( FindPosByFilename(szaRet.GetNext(pos) , false) ){
+					szaRet.RemoveAt(cur);
+				}
+			}
+			if(szaRet.GetCount() > 0)
+				Append(szaRet, (szaRet.GetCount() > 1));
+
+			  //add them all
+			//POSITION posx = szaRet.GetHeadPosition();
+			//while(posx) ParsePlayList(szaRet.GetNext(posx), NULL); 
 
 		}
 		POSITION pos = FindPosByFilename(szMediaFile);
 		m_pl.SetPos(pos);
-
+		m_pl.SortByName();
 		Refresh();
 		SavePlaylist();
 	}
@@ -594,11 +604,46 @@ void CPlayerPlaylistBar::FindMoreFileFromOneFileAndPutIntoPlaylist(CString szMed
 }
 void CPlayerPlaylistBar::Open(CAtlList<CString>& fns, bool fMulti, CAtlList<CString>* subs, int smartAddMorefile)
 {
+	BOOL bAppened = false;
+	if(GetCount() > 0){
+
+		CString szFirstMedia = fns.GetHead();
+		POSITION pos = fns.GetHeadPosition();
+		while(pos){
+			POSITION cur =  pos;
+			CString szFN = fns.GetNext(pos);
+			POSITION pos2 = m_pl.GetHeadPosition();
+			while(pos2){
+				CPlaylistItem pli =  m_pl.GetNext(pos2);
+				if ( pli.FindFile(szFN ) ){
+					//AfxMessageBox(_T("Empty2"));
+					//fns.RemoveAt(cur);
+					bAppened = true;
+					break;
+				}
+			}
+			if(bAppened) break;
+		}
+
+		if(bAppened){
+			if(fns.GetCount() > 0)
+				Append(fns, fMulti);
+
+			FindPosByFilename( szFirstMedia);
+		}
+	}
+	if(!bAppened){
+		//AfxMessageBox(_T("Empty"));
 		Empty();
 		Append(fns, fMulti, subs);
-		if(smartAddMorefile){
-			FindMoreFileFromOneFileAndPutIntoPlaylist( fns.GetHead(), fns);
-		}
+		
+	}
+	
+	if(smartAddMorefile){
+
+		FindMoreFileFromOneFileAndPutIntoPlaylist( fns.GetHead(), fns);
+	}
+
 }
 
 class CFFindByDir{
@@ -767,7 +812,7 @@ int CPlayerPlaylistBar::FindItem(POSITION pos)
 			return(i);
 	return(-1);
 }
-POSITION CPlayerPlaylistBar::FindPosByFilename(CString fn){
+POSITION CPlayerPlaylistBar::FindPosByFilename(CString fn, BOOL movePos){
 	POSITION pos = m_pl.GetHeadPosition();
 	while(pos){	
 		POSITION ret = pos;
@@ -777,8 +822,10 @@ POSITION CPlayerPlaylistBar::FindPosByFilename(CString fn){
 		while(pos1){
 			CString szBuf = pi.m_fns.GetNext(pos1);
 			if(szBuf.CompareNoCase( fn ) == 0){
-				m_pl.SetPos(pos);
-				EnsureVisible(pos);
+				if(movePos){
+					m_pl.SetPos(pos);
+					EnsureVisible(pos);
+				}
 				return ret;
 			}
 		}
@@ -1237,7 +1284,7 @@ void CPlayerPlaylistBar::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruc
 
 BOOL CPlayerPlaylistBar::OnFileClosePlaylist(UINT nID)
 {
-	Empty();
+	//Empty();
 	return FALSE;
 }
 

@@ -133,13 +133,18 @@ HRESULT CBaseSplitterFile::Read(BYTE* pData, __int64 len)
 	{
 		__int64 minlen = min(len, m_cachelen - (m_pos - m_cachepos));
  		
-		if(pData && len > 0){
+		if(!pData || len < 0) 
+		      return S_OK; 
+		__try{ 
+		      memcpy_s(pData, len, &pCache[m_pos - m_cachepos], (size_t)minlen); 
+		}__except(EXCEPTION_EXECUTE_HANDLER){return S_OK;} 
+	/*	if(pData && len > 0){
 			__try{
 				memcpy_s(pData, len, &pCache[m_pos - m_cachepos], (size_t)minlen);
 				//memcpy(pData, &pCache[m_pos - m_cachepos], (size_t)minlen);
 			}__except(EXCEPTION_EXECUTE_HANDLER){}
 		}
-		if(minlen < 0) minlen = 0;
+		if(minlen < 0) minlen = 0; */
 		len -= minlen;
 		m_pos += minlen;
 		pData += minlen;
@@ -169,12 +174,17 @@ HRESULT CBaseSplitterFile::Read(BYTE* pData, __int64 len)
 		m_cachepos = m_pos;
 		m_cachelen = maxlen;
 
-		if(pData && minlen > 0){
+		if(!pData) 
+		     return S_OK; 
+		__try{		
+			memcpy(pData, pCache, (size_t)minlen)
+		}__except(EXCEPTION_EXECUTE_HANDLER){ return S_OK; }
+		/*if(pData && minlen > 0){
 			__try{
 				memcpy(pData, pCache, (size_t)minlen);
 			}__except(EXCEPTION_EXECUTE_HANDLER){}
 		}
-		if(minlen < 0) minlen = 0;
+		if(minlen < 0) minlen = 0; */
 		len -= minlen;
 		m_pos += minlen;
 		pData += minlen;

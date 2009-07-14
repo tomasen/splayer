@@ -1103,9 +1103,9 @@ void CMPlayerCApp::InitInstanceThreaded(){
 	//CFilterMapper2 fm2(false);
 	HKEY fKey;
 	if(RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{55DA30FC-F16B-49FC-BAA5-AE59FC65F82D}") , &fKey ) != ERROR_SUCCESS ){
-		//csaDll.Add( _T("ts.dll"));
-		//csaDll.Add( _T("ogm.dll"));
-		//csaDll.Add( _T("haalis.ax"));
+		csaDll.Add( _T("ts.dll"));
+		csaDll.Add( _T("ogm.dll"));
+		csaDll.Add( _T("haalis.ax"));
 	}else{
 		RegCloseKey(fKey);
 	}

@@ -823,8 +823,8 @@ POSITION CPlayerPlaylistBar::FindPosByFilename(CString fn, BOOL movePos){
 			CString szBuf = pi.m_fns.GetNext(pos1);
 			if(szBuf.CompareNoCase( fn ) == 0){
 				if(movePos){
-					m_pl.SetPos(pos);
-					EnsureVisible(pos);
+					m_pl.SetPos(ret);
+					EnsureVisible(ret);
 				}
 				return ret;
 			}

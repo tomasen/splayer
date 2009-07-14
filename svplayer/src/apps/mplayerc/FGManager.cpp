@@ -391,6 +391,7 @@ HRESULT CFGManager::AddSourceFilter(CFGFilter* pFGF, LPCWSTR lpcwstrFileName, LP
 	//CLSID pFID = pFGF->GetCLSID();
 	//if(pFID == GUIDFromCString(_T("{E436EBB5-524F-11CE-9F53-0020AF0BA770}") ) ) return E_NOINTERFACE;
 
+	SVP_LogMsg5(_T("FGM: AddSourceFilter trying '%s' %s\n"), CStringFromGUID(pFGF->GetCLSID()) , pFGF->GetName());
 	AfxGetAppSettings().szFGMLog.AppendFormat(_T("\r\nFGM: AddSourceFilter trying '%s' %s\n"), CStringFromGUID(pFGF->GetCLSID()) , pFGF->GetName());
 
 	CheckPointer(lpcwstrFileName, E_POINTER);
@@ -723,6 +724,7 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 			CLSID FGID = pFGF->GetCLSID() ;
 			if ( FGID == GUIDFromCString(_T("{AA59CBFA-F731-49E9-BE78-08665F339EFC}")) ) continue;  //disable  Bicubic Video Resizer  that may cause flip
 
+			SVP_LogMsg5(_T("FGM: Connecting '%s' %s "), szFName, CStringFromGUID(pFGF->GetCLSID()) );
 			AfxGetAppSettings().szFGMLog.AppendFormat(_T("\r\nFGM: Connecting '%s' %s "), szFName, CStringFromGUID(pFGF->GetCLSID()) );
 
 			CComPtr<IBaseFilter> pBF;
@@ -1446,8 +1448,8 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		pFGF->m_chkbytes.AddTail(_T("4,1,,47,196,1,,47,388,1,,47"));
 		pFGF->m_chkbytes.AddTail(_T("0,4,,54467263,1660,1,,47"));
 		pFGF->m_chkbytes.AddTail(_T("0,8,fffffc00ffe00000,4156000055000000"));
-		pFGF->m_extensions.AddTail(_T(".ts"));
-		pFGF->m_extensions.AddTail(_T(".m2ts"));
+		//pFGF->m_extensions.AddTail(_T(".ts"));
+		//pFGF->m_extensions.AddTail(_T(".m2ts"));
 		m_source.AddTail(pFGF );
 	}
 
@@ -2353,7 +2355,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("PMPSplitter.ax")) );
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("rms.ax")) );
 	
-	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("NeSplitter.ax")) ); 
+	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("NeSplitter.ax")) ); 
 
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("scmpack.dll")) );
 	
@@ -2361,8 +2363,12 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("RadGtSplitter.ax")) ); 
 
-	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("haalis.ax")) ); 
-	
+	m_source.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{564FD788-86C9-4444-971E-CC4A243DA150}")), MERIT64_ABOVE_DSHOW + 1200) );
+
+	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("haalis.ax")) ); 
+	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("ts.dll")) ); 
+	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("ogm.dll")) ); 
+
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("svplayer.bin\\real\\rmoc3260.dll")) );
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("svplayer.bin\\real\\Codecs\\rv40.dll")) );
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("svplayer.bin\\real\\Codecs\\drvc.dll")) );
@@ -2385,10 +2391,12 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 				szLog.Format(_T("Loading Filter %s %s %s "), CStringFromGUID(fo->clsid) ,fo->path, CStringW(fo->name) );
 				SVP_LogMsg(szLog);
 				if(pFGF){
-					if(szFPath.Find(_T("haalis.ax")) > 0){ //useless
-						pFGF->m_chkbytes.AddTail(_T("0,4,,4F676753"));
+					if(szFPath.Find(_T("haalis.ax")) > 0 || szFPath.Find(_T("ts.dll")) > 0 || szFPath.Find(_T("ogm.dll")) > 0){ //useless
 						pFGF->m_extensions.AddTail(_T(".ts"));
 						pFGF->m_extensions.AddTail(_T(".m2ts"));
+						pFGF->m_extensions.AddTail(_T(".tp"));
+						pFGF->m_extensions.AddTail(_T(".ogg"));
+						pFGF->m_extensions.AddTail(_T(".ogm"));
 						m_source.AddTail(pFGF);
 					}else	if(szFPath.Find(_T("NeSplitter.ax")) > 0){
 						pFGF->m_extensions.AddTail(_T(".ts"));

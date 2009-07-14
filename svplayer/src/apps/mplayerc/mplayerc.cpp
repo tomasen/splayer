@@ -946,7 +946,7 @@ HANDLE WINAPI Mine_CreateFileA(LPCSTR p1, DWORD p2, DWORD p3, LPSECURITY_ATTRIBU
 	//int i = fn.Find(".part");
 	//if(i > 0 && i == fn.GetLength() - 5)
 	p3 |= FILE_SHARE_WRITE;
-
+	//if(strstr(p1, ("SVPDebug")) == 0)  SVP_LogMsg3(("Mine_CreateFileW %s") , p1);
 	return Real_CreateFileA(p1, p2, p3, p4, p5, p6, p7);
 }
 #include "Ifo.h"
@@ -979,6 +979,7 @@ HANDLE WINAPI Mine_CreateFileW(LPCWSTR p1, DWORD p2, DWORD p3, LPSECURITY_ATTRIB
 	WCHAR	strFakeFile[MAX_PATH];
 	int		nLen  = wcslen(p1);
 
+	
 	p3 |= FILE_SHARE_WRITE;
 
 	if (nLen>=4 && _wcsicmp (p1 + nLen-4, L".ifo") == 0)
@@ -991,6 +992,8 @@ HANDLE WINAPI Mine_CreateFileW(LPCWSTR p1, DWORD p2, DWORD p3, LPSECURITY_ATTRIB
 
 	if (hFile == INVALID_HANDLE_VALUE)
 		hFile = Real_CreateFileW(p1, p2, p3, p4, p5, p6, p7);
+
+	//if(wcsstr(p1, _T("SVPDebug")) == 0)  SVP_LogMsg5(_T("Mine_CreateFileW %s") , p1);
 
 	return hFile;
 }
@@ -1097,14 +1100,25 @@ void CMPlayerCApp::InitInstanceThreaded(){
 	CSVPToolBox svpToolBox;
 	CStringArray csaDll;
 	//csaDll.Add( _T("codecs\\CoreAVCDecoder.ax")); //avoid missing reg key problem
-	
+	//CFilterMapper2 fm2(false);
+	HKEY fKey;
+	if(RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{55DA30FC-F16B-49FC-BAA5-AE59FC65F82D}") , &fKey ) != ERROR_SUCCESS ){
+		//csaDll.Add( _T("ts.dll"));
+		//csaDll.Add( _T("ogm.dll"));
+		//csaDll.Add( _T("haalis.ax"));
+	}else{
+		RegCloseKey(fKey);
+	}
+
 		//csaDll.Add( _T("tsccvid.dll"));
 		//csaDll.Add( _T("wvc1dmod.dll"));
 		//csaDll.Add( _T("RadGtSplitter.ax"));
 		for(int i = 0; i < csaDll.GetCount(); i++){
 			CString szDllPath = svpToolBox.GetPlayerPath( csaDll.GetAt(i) );
-			if(svpToolBox.ifFileExist(szDllPath))
+			if(svpToolBox.ifFileExist(szDllPath)){
+				//fm2.Register(szDllPath);
 				RegSvr32( szDllPath );
+			}
 		}
 	
 

@@ -6,8 +6,26 @@
 //#include "../apps/mplayerc/mplayerc.h"
 
 static CAtlList<CString> * szGStatMsg = NULL;
-void SVP_RealUploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString szSubPath, int iDelayMS, CStringArray* szaPostTerms){
 
+static LONGLONG	m_PerfFrequency = 0;
+LONGLONG SVPGetPerfCounter()
+{
+	LONGLONG		i64Ticks100ns;
+	if (m_PerfFrequency == 0)
+	{
+		QueryPerformanceFrequency ((LARGE_INTEGER*)&m_PerfFrequency);
+	}
+	if (m_PerfFrequency != 0){
+		QueryPerformanceCounter ((LARGE_INTEGER*)&i64Ticks100ns);
+		i64Ticks100ns	= LONGLONG((double(i64Ticks100ns) * 10000000) / double(m_PerfFrequency) + 0.5);
+
+		return i64Ticks100ns;
+	}
+	return 0;
+}
+
+void SVP_RealUploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString szSubPath, int iDelayMS, CStringArray* szaPostTerms){
+		
 	CSVPNet svpNet;
 	CSVPhash svpHash;
 	CSVPToolBox svpToolBox;
@@ -172,13 +190,16 @@ void SVP_LogMsg(CString logmsg, int level){
 	if(szGStatMsg && (level & 16) ){
 		szGStatMsg->AddTail(logmsg);
 	}
+	ULONGLONG logTick2 = SVPGetPerfCounter();
 	CStdioFile f;
 	CSVPToolBox svpToolBox;
 	CString szLogPath = svpToolBox.GetPlayerPath(_T("SVPDebug.log"));
 	if(f.Open(szLogPath, CFile::modeCreate | CFile::modeWrite | CFile::modeNoTruncate | CFile::typeBinary))
 	{
 		f.SeekToEnd();
-		f.WriteString(logmsg+_T("\r\n"));
+		CString szLog;
+		szLog.Format(_T("[%ul] %s") , (UINT)logTick2, logmsg);
+		f.WriteString(szLog + _T("\r\n"));
 		
 		f.Flush();
 		f.Close();
@@ -206,6 +227,7 @@ void SVP_LogMsg2(LPCTSTR fmt, ...)
 }
 void SVP_LogMsg3(LPCSTR fmt, ...)
 {
+	ULONGLONG logTick2 = SVPGetPerfCounter();
 	va_list args;
 	va_start(args, fmt);
 	CSVPToolBox svpToolBox;
@@ -216,7 +238,7 @@ void SVP_LogMsg3(LPCSTR fmt, ...)
 		if(FILE* f = _tfopen(szLogPath, _T("at")))
 		{
 			fseek(f, 0, 2);
-			_ftprintf(f, _T("%s\n"), CA2T(buff));
+			_ftprintf(f, _T("[%ull] %s\n"), (UINT)logTick2, CA2T(buff));
 			fclose(f);
 		}
 		delete [] buff;

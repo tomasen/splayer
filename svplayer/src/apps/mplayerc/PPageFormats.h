@@ -44,7 +44,7 @@ private:
 	static BOOL SetFileAssociation(CString strExt, CString strProgID, bool fRegister);
 	static CString GetFileIcon(CString strExt);
 public:
-	typedef enum {AP_VIDEO=0,AP_MUSIC,AP_AUDIOCD,AP_DVDMOVIE} autoplay_t;
+	typedef enum {AP_VIDEO=0,AP_MUSIC,AP_AUDIOCD,AP_DVDMOVIE, AP_SVCDMOVIE, AP_VCDMOVIE, AP_BDMOVIE, AP_DVDAUDIO, AP_CAPTURECAMERA , } autoplay_t;
 	void AddAutoPlayToRegistry(autoplay_t ap, bool fRegister);
 	bool IsAutoPlayRegistered(autoplay_t ap);
 

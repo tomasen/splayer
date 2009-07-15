@@ -116,6 +116,13 @@ void CChkDefPlayer::setDefaultPlayer()
 		setKeyboardNativeMediaPlayers();
 		cpf.AddAutoPlayToRegistry(cpf.AP_VIDEO, true);
 		cpf.AddAutoPlayToRegistry(cpf.AP_DVDMOVIE, true);
+		cpf.AddAutoPlayToRegistry(cpf.AP_AUDIOCD, true);
+		cpf.AddAutoPlayToRegistry(cpf.AP_MUSIC, true);
+		cpf.AddAutoPlayToRegistry(cpf.AP_SVCDMOVIE, true);
+		cpf.AddAutoPlayToRegistry(cpf.AP_VCDMOVIE, true);
+		cpf.AddAutoPlayToRegistry(cpf.AP_BDMOVIE, true);
+		cpf.AddAutoPlayToRegistry(cpf.AP_DVDAUDIO, true);
+		cpf.AddAutoPlayToRegistry(cpf.AP_CAPTURECAMERA, true);
 		setKeyboardNativeMediaPlayers2();
 	}
 /*

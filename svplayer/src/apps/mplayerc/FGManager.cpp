@@ -2391,13 +2391,18 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 				szLog.Format(_T("Loading Filter %s %s %s "), CStringFromGUID(fo->clsid) ,fo->path, CStringW(fo->name) );
 				SVP_LogMsg(szLog);
 				if(pFGF){
-					if(szFPath.Find(_T("haalis.ax")) > 0 || szFPath.Find(_T("ts.dll")) > 0 || szFPath.Find(_T("ogm.dll")) > 0){ //useless
-						pFGF->m_extensions.AddTail(_T(".ts"));
+					if( szFPath.Find(_T("haalis.ax")) > 0 || szFPath.Find(_T("ts.dll")) > 0 || szFPath.Find(_T("ogm.dll")) > 0){ //useless
+					/*	pFGF->m_extensions.AddTail(_T(".ts"));
 						pFGF->m_extensions.AddTail(_T(".m2ts"));
 						pFGF->m_extensions.AddTail(_T(".tp"));
 						pFGF->m_extensions.AddTail(_T(".ogg"));
-						pFGF->m_extensions.AddTail(_T(".ogm"));
-						m_source.AddTail(pFGF);
+						pFGF->m_extensions.AddTail(_T(".ogm"));*/
+						pFGF->SetTypes(fo->guids);
+						CString szName(fo->name);
+						if(szName.Find(_T("Media Splitter")) >= 0)
+							m_source.AddTail(pFGF);
+						//else
+						//	m_transform.AddTail(pFGF);
 					}else	if(szFPath.Find(_T("NeSplitter.ax")) > 0){
 						pFGF->m_extensions.AddTail(_T(".ts"));
 						pFGF->m_extensions.AddTail(_T(".m2ts"));

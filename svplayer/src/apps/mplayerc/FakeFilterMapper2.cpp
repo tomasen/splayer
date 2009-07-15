@@ -631,6 +631,7 @@ void CFilterMapper2::Register(CString path)
 
 STDMETHODIMP CFilterMapper2::CreateCategory(REFCLSID clsidCategory, DWORD dwCategoryMerit, LPCWSTR Description)
 {
+	TRACE_SVP5(_T("CFilterMapper2::CreateCategory %s") , m_path);
 	if(!m_path.IsEmpty())
 	{
 		return S_OK;
@@ -645,6 +646,7 @@ STDMETHODIMP CFilterMapper2::CreateCategory(REFCLSID clsidCategory, DWORD dwCate
 
 STDMETHODIMP CFilterMapper2::UnregisterFilter(const CLSID* pclsidCategory, const OLECHAR* szInstance, REFCLSID Filter)
 {
+	TRACE_SVP5(_T("CFilterMapper2::UnregisterFilter %s") , m_path);
 	if(!m_path.IsEmpty())
 	{
 		return S_OK;
@@ -661,7 +663,7 @@ STDMETHODIMP CFilterMapper2::UnregisterFilter(const CLSID* pclsidCategory, const
 
 STDMETHODIMP CFilterMapper2::RegisterFilter(REFCLSID clsidFilter, LPCWSTR Name, IMoniker** ppMoniker, const CLSID* pclsidCategory, const OLECHAR* szInstance, const REGFILTER2* prf2)
 {
-	
+	TRACE_SVP5(_T("CFilterMapper2::RegisterFilter %s") , m_path);
 	if(!m_path.IsEmpty())
 	{
 		if(FilterOverride* f = new FilterOverride)
@@ -724,8 +726,10 @@ STDMETHODIMP CFilterMapper2::EnumMatchingFilters(IEnumMoniker** ppEnum, DWORD dw
 												 BOOL bInputNeeded, DWORD cInputTypes, const GUID* pInputTypes, const REGPINMEDIUM* pMedIn, const CLSID* pPinCategoryIn, BOOL bRender, 
 												 BOOL bOutputNeeded, DWORD cOutputTypes, const GUID* pOutputTypes, const REGPINMEDIUM* pMedOut, const CLSID* pPinCategoryOut)
 {
+	TRACE_SVP5(_T("CFilterMapper2::EnumMatchingFilters %s") , m_path);
 	if(CComQIPtr<IFilterMapper2> pFM2 = m_pFM2)
 	{
+		TRACE_SVP5(_T("Real CFilterMapper2::EnumMatchingFilters %s") , m_path);
 		pFM2->EnumMatchingFilters(ppEnum, dwFlags, bExactMatch, dwMerit, 
 			bInputNeeded, cInputTypes, pInputTypes, pMedIn, pPinCategoryIn, bRender, 
 			bOutputNeeded, cOutputTypes, pOutputTypes, pMedOut, pPinCategoryOut);

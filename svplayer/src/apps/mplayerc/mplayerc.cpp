@@ -838,6 +838,8 @@ HANDLE (__stdcall * Real_CreateFileW)(LPCWSTR a0,
 									  HANDLE a6)
 									  = CreateFileW;
 
+DWORD (__stdcall * Real_GetModuleFileNameA)(HMODULE hModule, LPCH lpFilename,  DWORD nSize )
+												 =  GetModuleFileNameA;
 BOOL (__stdcall * Real_DeviceIoControl)(HANDLE a0,
 										DWORD a1,
 										LPVOID a2,
@@ -931,6 +933,13 @@ LONG WINAPI Mine_ChangeDisplaySettingsExA(LPCSTR lpszDeviceName, LPDEVMODEA lpDe
 		dwFlags, 
 		lParam);
 }
+DWORD WINAPI Mine_GetModuleFileNameA( HMODULE hModule, LPCH lpFilename,  DWORD nSize )
+{
+	DWORD ret = Real_GetModuleFileNameA(hModule, lpFilename, nSize);
+	//SVP_LogMsg3(" Mine_GetModuleFileNameA %s" , lpFilename);
+	return ret;
+}
+				   
 LONG WINAPI Mine_ChangeDisplaySettingsExW(LPCWSTR lpszDeviceName, LPDEVMODEW lpDevMode, HWND hwnd, DWORD dwFlags, LPVOID lParam)
 {
 	return Mine_ChangeDisplaySettingsEx(
@@ -1101,13 +1110,15 @@ void CMPlayerCApp::InitInstanceThreaded(){
 	CStringArray csaDll;
 	//csaDll.Add( _T("codecs\\CoreAVCDecoder.ax")); //avoid missing reg key problem
 	//CFilterMapper2 fm2(false);
-	HKEY fKey;
-	if(RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{55DA30FC-F16B-49FC-BAA5-AE59FC65F82D}") , &fKey ) != ERROR_SUCCESS ){
-		csaDll.Add( _T("ts.dll"));
-		csaDll.Add( _T("ogm.dll"));
-		csaDll.Add( _T("haalis.ax"));
-	}else{
-		RegCloseKey(fKey);
+	if(1){
+		HKEY fKey;
+		if(RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{55DA30FC-F16B-49FC-BAA5-AE59FC65F82D}") , &fKey ) != ERROR_SUCCESS ){
+			csaDll.Add( _T("ts.dll"));
+			csaDll.Add( _T("ogm.dll"));
+			csaDll.Add( _T("haalis.ax"));
+		}else{
+			//RegCloseKey(fKey);
+		}
 	}
 
 		//csaDll.Add( _T("tsccvid.dll"));
@@ -1148,6 +1159,7 @@ BOOL CMPlayerCApp::InitInstance()
 	DetourAttach(&(PVOID&)Real_CreateFileW, (PVOID)Mine_CreateFileW);
 	DetourAttach(&(PVOID&)Real_mixerSetControlDetails, (PVOID)Mine_mixerSetControlDetails);
 	DetourAttach(&(PVOID&)Real_DeviceIoControl, (PVOID)Mine_DeviceIoControl);
+	DetourAttach(&(PVOID&)Real_GetModuleFileNameA, (PVOID)Mine_GetModuleFileNameA);
 #ifndef _DEBUG
 	HMODULE hNTDLL	=	LoadLibrary (_T("ntdll.dll"));
 	if (hNTDLL)
@@ -3073,6 +3085,7 @@ void CMPlayerCApp::Settings::ParseCommandLine(CAtlList<CString>& cmdln)
 			else if(sw == _T("dvd")) nCLSwitches |= CLSW_DVD;
 			else if(sw == _T("cd")) nCLSwitches |= CLSW_CD;
 			else if(sw == _T("add")) nCLSwitches |= CLSW_ADD;
+			else if(sw == _T("cap")) nCLSwitches |= CLSW_CAP;
 			else if(sw == _T("regvid")) nCLSwitches |= CLSW_REGEXTVID;
 			else if(sw == _T("regaud")) nCLSwitches |= CLSW_REGEXTAUD;
 			else if(sw == _T("unregall")) nCLSwitches |= CLSW_UNREGEXT;

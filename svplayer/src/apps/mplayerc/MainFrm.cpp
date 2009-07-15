@@ -4660,7 +4660,17 @@ BOOL CMainFrame::OnCopyData(CWnd* pWnd, COPYDATASTRUCT* pCDS)
 
 	bool fSetForegroundWindow = false;
 
-	if((s.nCLSwitches&CLSW_DVD) && !s.slFiles.IsEmpty())
+	if(s.nCLSwitches&CLSW_CAP) {
+		SendMessage(WM_COMMAND, ID_FILE_CLOSEMEDIA);
+		fSetForegroundWindow = true;
+		COpenCapDeviceDlg capdlg;
+		if(capdlg.DoModal() == IDOK){
+			
+			CAutoPtr<OpenDeviceData> p(new OpenDeviceData());
+			if(p) {p->DisplayName[0] = capdlg.m_vidstr; p->DisplayName[1] = capdlg.m_audstr;}
+			OpenMedia(p);
+		}
+	}else if((s.nCLSwitches&CLSW_DVD) && !s.slFiles.IsEmpty())
 	{
 		SendMessage(WM_COMMAND, ID_FILE_CLOSEMEDIA);
 		fSetForegroundWindow = true;

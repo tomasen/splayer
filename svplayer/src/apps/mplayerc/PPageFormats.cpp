@@ -546,8 +546,14 @@ static struct {LPCSTR verb, cmd; UINT action;} handlers[] =
 {
 	{"VideoFiles", " %1", IDS_AUTOPLAY_PLAYVIDEO},
 	{"MusicFiles", " %1", IDS_AUTOPLAY_PLAYMUSIC},
-	{"CDAudio", " %1 /cd", IDS_AUTOPLAY_PLAYAUDIOCD},
-	{"DVDMovie", " %1 /dvd", IDS_AUTOPLAY_PLAYDVDMOVIE},
+	{"CDAudio", " %1 /cd ", IDS_AUTOPLAY_PLAYAUDIOCD},
+	{"DVDMovie", " %1 /dvd ", IDS_AUTOPLAY_PLAYDVDMOVIE},
+	{"SuperVideoCDMovie", " %1 /cd ", IDS_AUTOPLAY_PLAYSVCDMOVIE},
+	{"VideoCDMovie", " %1 /cd ", IDS_AUTOPLAY_PLAYVCDMOVIE},
+	{"BluRay", " %1 /dvd ", IDS_AUTOPLAY_PLAYBDMOVIE},
+	{"DVDAudio", " %1 /dvd ", IDS_AUTOPLAY_PLAYDVDAUDIO},
+	{"Camera", " %1 /cap ", IDS_AUTOPLAY_CAPTURECAMERA},
+
 };
 
 void CPPageFormats::AddAutoPlayToRegistry(autoplay_t ap, bool fRegister)
@@ -574,24 +580,35 @@ void CPPageFormats::AddAutoPlayToRegistry(autoplay_t ap, bool fRegister)
 		key.Close();
 
 		if(ERROR_SUCCESS != key.Create(HKEY_LOCAL_MACHINE,
-			CString(CStringA("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\AutoplayHandlers\\Handlers\\SPlayer") + handlers[i].verb + "OnArrival"))) return;
+			CString(CStringA("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\AutoplayHandlers\\Handlers\\Play") + handlers[i].verb + "OnArrival"))) return;
 		key.SetStringValue(_T("Action"), ResStr(handlers[i].action));
 		key.SetStringValue(_T("Provider"), g_strRegisteredAppName/*_T("Media Player Classic")*/);
 		key.SetStringValue(_T("InvokeProgID"), _T("SPlayer.Autorun"));
-		key.SetStringValue(_T("InvokeVerb"), CString(CStringA("Play") + handlers[i].verb));
+		key.SetStringValue(_T("InvokeVerb"), CString(CStringA("Play") + handlers[i].verb ));//
 		key.SetStringValue(_T("DefaultIcon"), exe + _T(",0"));
 		key.Close();
 
 		if(ERROR_SUCCESS != key.Create(HKEY_LOCAL_MACHINE, 
 			CString(CStringA("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\AutoplayHandlers\\EventHandlers\\Play") + handlers[i].verb + "OnArrival"))) return;
-		key.SetStringValue(CString(CStringA("SVPPlay") + handlers[i].verb + "OnArrival"), _T(""));
+		key.SetStringValue(CString(CStringA("Play") + handlers[i].verb + "OnArrival"), _T(""));
 		key.Close();
+
+		if(ERROR_SUCCESS != key.Create(HKEY_CURRENT_USER, 
+			CString(CStringA("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\AutoplayHandlers\\EventHandlersDefaultSelection\\Play") + handlers[i].verb + "OnArrival"))) return;
+		key.SetStringValue(NULL, CString(CStringA("Play") + handlers[i].verb + "OnArrival") );
+		key.Close();
+/*
+		if(ERROR_SUCCESS != key.Create(HKEY_LOCAL_MACHINE, 
+			CString(CStringA("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\AutoplayHandlers\\EventHandlersDefaultSelection\\Play") + handlers[i].verb + "OnArrival"))) return;
+		key.SetStringValue(NULL, CString(CStringA("Play") + handlers[i].verb + "OnArrival") );
+		key.Close();*/
+		
 	}
 	else
 	{
 		if(ERROR_SUCCESS != key.Create(HKEY_LOCAL_MACHINE, 
 			CString(CStringA("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\AutoplayHandlers\\EventHandlers\\Play") + handlers[i].verb + "OnArrival"))) return;
-		key.DeleteValue(CString(CStringA("SVPPlay") + handlers[i].verb + "OnArrival"));
+		key.DeleteValue(CString(CStringA("Play") + handlers[i].verb + "OnArrival"));
 		key.Close();
 	}
 }
@@ -613,7 +630,7 @@ bool CPPageFormats::IsAutoPlayRegistered(autoplay_t ap)
 		KEY_READ)) return(false);
 	len = countof(buff);
 	if(ERROR_SUCCESS != key.QueryStringValue(
-		CString(_T("SVPPlay")) + handlers[i].verb + _T("OnArrival"), 
+		CString(_T("Play")) + handlers[i].verb + _T("OnArrival"), 
 		buff, &len)) return(false);
 	key.Close();
 

@@ -1,4 +1,4 @@
-/* 
+﻿/* 
  *	Copyright (C) 2003-2006 Gabest
  *	http://www.gabest.org
  *
@@ -312,7 +312,7 @@ void CMediaFormats::GetExtsArray(CAtlArray<CString>& mask, bool noAudio){
 		if( noAudio && mfc.IsAudioOnly() ) continue;
 		if( mfc.GetEngineType() != DirectShow) continue;
 		CString szLabel = mfc.GetLabel();
-		if( szLabel.Find(_T("Subtitle")) >= 0 || szLabel.Find(_T("��Ļ")) >= 0  )  continue;
+		if( szLabel.Find(_T("Subtitle")) >= 0 || szLabel.Find(_T("字幕")) >= 0  )  continue;
 		mfc.GetExtArray(mask);
 	}
 

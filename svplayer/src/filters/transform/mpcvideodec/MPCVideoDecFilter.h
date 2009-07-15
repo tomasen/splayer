@@ -57,8 +57,8 @@ typedef struct
 	REFERENCE_TIME	rtStop;
 } B_FRAME;
 
-[uuid("008BAC12-FBAF-497b-9670-BC6F6FBAE2C4")]
-class CMPCVideoDecFilter 
+
+class __declspec(uuid("008BAC12-FBAF-497b-9670-BC6F6FBAE2C4")) CMPCVideoDecFilter 
 	: public CBaseVideoFilter
 	, public TlibavcodecExt
 	, public ISpecifyPropertyPages2

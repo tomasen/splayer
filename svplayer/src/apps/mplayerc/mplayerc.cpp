@@ -1,4 +1,4 @@
-/* 
+Ôªø/* 
  *	Copyright (C) 2003-2006 Gabest
  *	http://www.gabest.org
  *
@@ -90,7 +90,7 @@ static LONG WINAPI  DebugMiniDumpFilter( struct _EXCEPTION_POINTERS *pExceptionI
 			_tcscat( szDumpPath, _T(".dmp"));
 
 			// ask the user if they want to save a dump file
-			//if (::MessageBox(NULL,_T("≥Ã–Ú∑¢…˙“‚Õ‚, «∑Ò±£¥Ê“ª∏ˆŒƒº˛”√”⁄’Ô∂œ?"), ResStr(IDR_MAINFRAME) ,MB_YESNO)==IDYES)
+			//if (::MessageBox(NULL,_T("Á®ãÂ∫èÂèëÁîüÊÑèÂ§ñ,ÊòØÂê¶‰øùÂ≠ò‰∏Ä‰∏™Êñá‰ª∂Áî®‰∫éËØäÊñ≠?"), ResStr(IDR_MAINFRAME) ,MB_YESNO)==IDYES)
 			{
 				// create the file
 				HANDLE hFile = ::CreateFile( szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS,
@@ -107,7 +107,7 @@ static LONG WINAPI  DebugMiniDumpFilter( struct _EXCEPTION_POINTERS *pExceptionI
 					BOOL bOK = pDump( GetCurrentProcess(),GetCurrentProcessId(),hFile,MiniDumpNormal,&ExInfo,NULL,NULL);
 					if (bOK)
 					{
-						_stprintf( szScratch, _T("≥Ã–Ú∑¢…˙“‚Õ‚,’Ô∂œŒƒº˛“—æ≠±£¥ÊµΩ:'%s'\n«ÎΩ´∏√Œƒº˛∑¢ÀÕ÷¡tomasen@gmail.comªÚhttps://bbs.shooter.cn\n“‘±„Œ“√«≤ª∂œÕÍ…∆"), szDumpPath );
+						_stprintf( szScratch, _T("Á®ãÂ∫èÂèëÁîüÊÑèÂ§ñ,ËØäÊñ≠Êñá‰ª∂Â∑≤Áªè‰øùÂ≠òÂà∞:'%s'\nËØ∑Â∞ÜËØ•Êñá‰ª∂ÂèëÈÄÅËá≥tomasen@gmail.comÊàñhttps://bbs.shooter.cn\n‰ª•‰æøÊàë‰ª¨‰∏çÊñ≠ÂÆåÂñÑ"), szDumpPath );
 						szResult = szScratch;
 						retval = EXCEPTION_EXECUTE_HANDLER;
 						{
@@ -124,26 +124,26 @@ static LONG WINAPI  DebugMiniDumpFilter( struct _EXCEPTION_POINTERS *pExceptionI
 					}
 					else
 					{
-						_stprintf( szScratch, _T("±£¥ÊŒƒº˛µΩ '%s' ß∞‹,(¥ÌŒÛ∫≈: %d)"), szDumpPath, GetLastError() );
+						_stprintf( szScratch, _T("‰øùÂ≠òÊñá‰ª∂Âà∞ '%s'Â§±Ë¥•,(ÈîôËØØÂè∑: %d)"), szDumpPath, GetLastError() );
 						szResult = szScratch;
 					}
 					::CloseHandle(hFile);
 				}
 				else
 				{
-					_stprintf( szScratch, _T("‘⁄'%s'¥¥Ω® dump Œƒº˛ ß∞‹,(¥ÌŒÛ∫≈ %d)"), szDumpPath, GetLastError() );
+					_stprintf( szScratch, _T("Âú®'%s'ÂàõÂª∫ dump Êñá‰ª∂Â§±Ë¥•,(ÈîôËØØÂè∑ %d)"), szDumpPath, GetLastError() );
 					szResult = szScratch;
 				}
 			}
 		}
 		else
 		{
-			szResult = _T("dbghelp.dll Œƒº˛Ã´æ…,≤ªƒ‹÷ß≥÷MiniDumpWriteDump∫Ø ˝");
+			szResult = _T("dbghelp.dll Êñá‰ª∂Â§™Êóß,‰∏çËÉΩÊîØÊåÅMiniDumpWriteDumpÂáΩÊï∞");
 		}
 	}
 	else
 	{
-		szResult = _T("dbghelp.dll Œƒº˛≤ª¥Ê‘⁄");
+		szResult = _T("dbghelp.dll Êñá‰ª∂‰∏çÂ≠òÂú®");
 	}
 
 	if (szResult)
@@ -156,7 +156,7 @@ static LONG WINAPI  DebugMiniDumpFilter( struct _EXCEPTION_POINTERS *pExceptionI
 }
 
 int IsInsideVM(){
-	//’‚∏ˆ∑Ω∑®À∆∫ı «ºÏ≤‚–Èƒ‚ª˙µƒ“ª∏ˆºÚµ•”––ßµƒ∑Ω∑®£¨À‰»ªªπ≤ªƒ‹»∑∂®À¸ «∑Ò «100%”––ß°£√˚◊÷∫‹”–“‚Àº£¨∫Ï…´“©ÕË£®Œ™ ≤√¥≤ª «bluepill,π˛π˛£©°£Œ“‘⁄Õ¯…œ’“µΩ¡À∏ˆppt◊®√≈ΩÈ…‹’‚∏ˆ∑Ω∑®£¨ø…œßœ÷‘⁄∑≠≤ªµΩ¡À°£º«“‰÷–‘≠¿Ì «’‚—˘µƒ£¨÷˜“™ºÏ≤‚IDTµƒ ˝  ÷µ£¨»Áπ˚’‚∏ˆ ˝÷µ≥¨π˝¡Àƒ≥∏ˆ ˝÷µ£¨Œ“√«æÕø…“‘»œŒ™”¶”√≥Ã–Ú¥¶”⁄–Èƒ‚ª∑æ≥÷–£¨À∆∫ı’‚∏ˆ∑Ω∑®‘⁄∂‡CPUµƒª˙∆˜÷–≤¢≤ªø…øø°£æ›≥∆ScoobyDoo∑Ω∑® «RedPillµƒ…˝º∂∞Ê°£¥˙¬Î“≤ «‘⁄Õ¯…œ’“µƒ£¨◊ˆ¡Àµ„–°∏ƒ∂Ø°£”–Àƒ÷÷∑µªÿΩ·π˚£¨ø…“‘»∑»œ «VMWare£¨ªπ «  VirtualPC£¨ªπ «∆‰À¸VME£¨ªÚ «√ª”–¥¶”⁄VME÷–°£
+	//Ëøô‰∏™ÊñπÊ≥ï‰ºº‰πéÊòØÊ£ÄÊµãËôöÊãüÊú∫ÁöÑ‰∏Ä‰∏™ÁÆÄÂçïÊúâÊïàÁöÑÊñπÊ≥ïÔºåËôΩÁÑ∂Ëøò‰∏çËÉΩÁ°ÆÂÆöÂÆÉÊòØÂê¶ÊòØ100%ÊúâÊïà„ÄÇÂêçÂ≠óÂæàÊúâÊÑèÊÄùÔºåÁ∫¢Ëâ≤ËçØ‰∏∏Ôºà‰∏∫‰ªÄ‰πà‰∏çÊòØbluepill,ÂìàÂìàÔºâ„ÄÇÊàëÂú®ÁΩë‰∏äÊâæÂà∞‰∫Ü‰∏™ppt‰∏ìÈó®‰ªãÁªçËøô‰∏™ÊñπÊ≥ïÔºåÂèØÊÉúÁé∞Âú®Áøª‰∏çÂà∞‰∫Ü„ÄÇËÆ∞ÂøÜ‰∏≠ÂéüÁêÜÊòØËøôÊ†∑ÁöÑÔºå‰∏ªË¶ÅÊ£ÄÊµãIDTÁöÑÊï∞  ÂÄºÔºåÂ¶ÇÊûúËøô‰∏™Êï∞ÂÄºË∂ÖËøá‰∫ÜÊüê‰∏™Êï∞ÂÄºÔºåÊàë‰ª¨Â∞±ÂèØ‰ª•ËÆ§‰∏∫Â∫îÁî®Á®ãÂ∫èÂ§Ñ‰∫éËôöÊãüÁéØÂ¢É‰∏≠Ôºå‰ºº‰πéËøô‰∏™ÊñπÊ≥ïÂú®Â§öCPUÁöÑÊú∫Âô®‰∏≠Âπ∂‰∏çÂèØÈù†„ÄÇÊçÆÁß∞ScoobyDooÊñπÊ≥ïÊòØRedPillÁöÑÂçáÁ∫ßÁâà„ÄÇ‰ª£Á†Å‰πüÊòØÂú®ÁΩë‰∏äÊâæÁöÑÔºåÂÅö‰∫ÜÁÇπÂ∞èÊîπÂä®„ÄÇÊúâÂõõÁßçËøîÂõûÁªìÊûúÔºåÂèØ‰ª•Á°ÆËÆ§ÊòØVMWareÔºåËøòÊòØ  VirtualPCÔºåËøòÊòØÂÖ∂ÂÆÉVMEÔºåÊàñÊòØÊ≤°ÊúâÂ§Ñ‰∫éVME‰∏≠„ÄÇ
 	//return value: 0:none,1:vmvare;2:vpc;3:others
 	unsigned char matrix[6];
 
@@ -1092,7 +1092,7 @@ public:
 };
 void CMPlayerCApp::InitInstanceThreaded(){
 	CSVPToolBox svpTool;
-	//ºÏ≤ÈŒƒº˛πÿ¡™
+	//Ê£ÄÊü•Êñá‰ª∂ÂÖ≥ËÅî
 	if ( m_s.fCheckFileAsscOnStartup ){
 		CChkDefPlayer dlg_chkdefplayer;
 		if( ! dlg_chkdefplayer.b_isDefaultPlayer() ){
@@ -1333,7 +1333,7 @@ BOOL CMPlayerCApp::InitInstance()
 	AfxBeginThread(Thread_InitInstance , this,  THREAD_PRIORITY_LOWEST);
 
 	CRegKey key;
-	if(ERROR_SUCCESS == key.Create(HKEY_LOCAL_MACHINE, _T("Software\\SPlayer\\…‰ ÷”∞“Ù≤•∑≈∆˜")))
+	if(ERROR_SUCCESS == key.Create(HKEY_LOCAL_MACHINE, _T("Software\\SPlayer\\Â∞ÑÊâãÂΩ±Èü≥Êí≠ÊîæÂô®")))
 	{
 		CString path;
 		GetModuleFileName(AfxGetInstanceHandle(), path.GetBuffer(MAX_PATH), MAX_PATH);
@@ -1564,59 +1564,59 @@ CMPlayerCApp::Settings::Settings()
 	, hAccel(NULL)
 {
 #define ADDCMD(cmd) wmcmds.AddTail(wmcmd##cmd)
-	ADDCMD((ID_BOSS, VK_OEM_3, FVIRTKEY|FCONTROL|FNOINVERT, _T("¿œ∞Âº¸")));
-	ADDCMD((ID_PLAY_PLAYPAUSE, VK_SPACE, FVIRTKEY|FNOINVERT, _T("≤•∑≈/‘›Õ£"), APPCOMMAND_MEDIA_PLAY_PAUSE, wmcmd::LDOWN));
-	ADDCMD((ID_PLAY_SEEKFORWARDMED, VK_RIGHT, FVIRTKEY|FNOINVERT, _T("øÏΩ¯")));//
-	ADDCMD((ID_PLAY_SEEKBACKWARDMED, VK_LEFT, FVIRTKEY|FNOINVERT, _T("øÏÕÀ")));//
+	ADDCMD((ID_BOSS, VK_OEM_3, FVIRTKEY|FCONTROL|FNOINVERT, _T("ËÄÅÊùøÈîÆ")));
+	ADDCMD((ID_PLAY_PLAYPAUSE, VK_SPACE, FVIRTKEY|FNOINVERT, _T("Êí≠Êîæ/ÊöÇÂÅú"), APPCOMMAND_MEDIA_PLAY_PAUSE, wmcmd::LDOWN));
+	ADDCMD((ID_PLAY_SEEKFORWARDMED, VK_RIGHT, FVIRTKEY|FNOINVERT, _T("Âø´Ëøõ")));//
+	ADDCMD((ID_PLAY_SEEKBACKWARDMED, VK_LEFT, FVIRTKEY|FNOINVERT, _T("Âø´ÈÄÄ")));//
 
-	ADDCMD((ID_FILE_OPENQUICK, 'Q', FVIRTKEY|FCONTROL|FNOINVERT, _T("øÏÀŸ¥Úø™Œƒº˛")));
-	ADDCMD((ID_FILE_OPENURLSTREAM, 'U', FVIRTKEY|FCONTROL|FNOINVERT, _T("¥Úø™Õ¯÷∑")));
-	ADDCMD((ID_FILE_OPENMEDIA, 'O', FVIRTKEY|FCONTROL|FNOINVERT, _T("¥Úø™Œƒº˛")));
-	ADDCMD((ID_FILE_OPENFOLDER, 'F', FVIRTKEY|FCONTROL|FNOINVERT, _T("¥Úø™Œƒº˛")));
+	ADDCMD((ID_FILE_OPENQUICK, 'Q', FVIRTKEY|FCONTROL|FNOINVERT, _T("Âø´ÈÄüÊâìÂºÄÊñá‰ª∂")));
+	ADDCMD((ID_FILE_OPENURLSTREAM, 'U', FVIRTKEY|FCONTROL|FNOINVERT, _T("ÊâìÂºÄÁΩëÂùÄ")));
+	ADDCMD((ID_FILE_OPENMEDIA, 'O', FVIRTKEY|FCONTROL|FNOINVERT, _T("ÊâìÂºÄÊñá‰ª∂")));
+	ADDCMD((ID_FILE_OPENFOLDER, 'F', FVIRTKEY|FCONTROL|FNOINVERT, _T("ÊâìÂºÄÊñá‰ª∂")));
 	
-	ADDCMD((ID_SUBMOVEUP,  VK_OEM_4 /* [ */, FVIRTKEY|FALT|FNOINVERT, _T("÷˜◊÷ƒª…œ“∆")));
-	ADDCMD((ID_SUBMOVEDOWN,  VK_OEM_6  /* ] */, FVIRTKEY|FALT|FNOINVERT, _T("÷˜◊÷ƒªœ¬“∆")));
-	ADDCMD((ID_SUB2MOVEUP,  VK_OEM_4, FVIRTKEY|FALT|FCONTROL|FNOINVERT, _T("µ⁄∂˛◊÷ƒª…œ“∆")));
-	ADDCMD((ID_SUB2MOVEDOWN,  VK_OEM_6, FVIRTKEY|FALT|FCONTROL|FNOINVERT, _T("µ⁄∂˛◊÷ƒªœ¬“∆")));
-	ADDCMD((ID_SUBFONTDOWNBOTH,  VK_F1, FVIRTKEY|FALT|FNOINVERT, _T("Àı–°◊÷ƒª◊÷ÃÂ")));
-	ADDCMD((ID_SUBFONTUPBOTH,  VK_F2, FVIRTKEY|FALT|FNOINVERT, _T("∑≈¥Û◊÷ƒª◊÷ÃÂ")));
-	ADDCMD((ID_SUB1FONTDOWN,  VK_F3, FVIRTKEY|FSHIFT|FNOINVERT, _T("Àı–°÷˜◊÷ƒª◊÷ÃÂ")));
-	ADDCMD((ID_SUB1FONTUP,  VK_F4, FVIRTKEY|FSHIFT|FNOINVERT, _T("∑≈¥Û÷˜◊÷ƒª◊÷ÃÂ")));
-	ADDCMD((ID_SUB2FONTDOWN,  VK_F5, FVIRTKEY|FSHIFT|FNOINVERT, _T("Àı–°µ⁄∂˛◊÷ƒª◊÷ÃÂ")));
-	ADDCMD((ID_SUB2FONTUP,  VK_F6, FVIRTKEY|FSHIFT|FNOINVERT, _T("∑≈¥Ûµ⁄∂˛◊÷ƒª◊÷ÃÂ")));
+	ADDCMD((ID_SUBMOVEUP,  VK_OEM_4 /* [ */, FVIRTKEY|FALT|FNOINVERT, _T("‰∏ªÂ≠óÂπï‰∏äÁßª")));
+	ADDCMD((ID_SUBMOVEDOWN,  VK_OEM_6  /* ] */, FVIRTKEY|FALT|FNOINVERT, _T("‰∏ªÂ≠óÂπï‰∏ãÁßª")));
+	ADDCMD((ID_SUB2MOVEUP,  VK_OEM_4, FVIRTKEY|FALT|FCONTROL|FNOINVERT, _T("Á¨¨‰∫åÂ≠óÂπï‰∏äÁßª")));
+	ADDCMD((ID_SUB2MOVEDOWN,  VK_OEM_6, FVIRTKEY|FALT|FCONTROL|FNOINVERT, _T("Á¨¨‰∫åÂ≠óÂπï‰∏ãÁßª")));
+	ADDCMD((ID_SUBFONTDOWNBOTH,  VK_F1, FVIRTKEY|FALT|FNOINVERT, _T("Áº©Â∞èÂ≠óÂπïÂ≠ó‰Ωì")));
+	ADDCMD((ID_SUBFONTUPBOTH,  VK_F2, FVIRTKEY|FALT|FNOINVERT, _T("ÊîæÂ§ßÂ≠óÂπïÂ≠ó‰Ωì")));
+	ADDCMD((ID_SUB1FONTDOWN,  VK_F3, FVIRTKEY|FSHIFT|FNOINVERT, _T("Áº©Â∞è‰∏ªÂ≠óÂπïÂ≠ó‰Ωì")));
+	ADDCMD((ID_SUB1FONTUP,  VK_F4, FVIRTKEY|FSHIFT|FNOINVERT, _T("ÊîæÂ§ß‰∏ªÂ≠óÂπïÂ≠ó‰Ωì")));
+	ADDCMD((ID_SUB2FONTDOWN,  VK_F5, FVIRTKEY|FSHIFT|FNOINVERT, _T("Áº©Â∞èÁ¨¨‰∫åÂ≠óÂπïÂ≠ó‰Ωì")));
+	ADDCMD((ID_SUB2FONTUP,  VK_F6, FVIRTKEY|FSHIFT|FNOINVERT, _T("ÊîæÂ§ßÁ¨¨‰∫åÂ≠óÂπïÂ≠ó‰Ωì")));
 	
-	ADDCMD((ID_SUB_DELAY_DOWN, VK_F1, FVIRTKEY|FNOINVERT, _T("ºı…Ÿ÷˜◊÷ƒª—” ±")));
-	ADDCMD((ID_SUB_DELAY_UP, VK_F2,   FVIRTKEY|FNOINVERT, _T("‘ˆº”÷˜◊÷ƒª—” ±")));
+	ADDCMD((ID_SUB_DELAY_DOWN, VK_F1, FVIRTKEY|FNOINVERT, _T("ÂáèÂ∞ë‰∏ªÂ≠óÂπïÂª∂Êó∂")));
+	ADDCMD((ID_SUB_DELAY_UP, VK_F2,   FVIRTKEY|FNOINVERT, _T("Â¢ûÂä†‰∏ªÂ≠óÂπïÂª∂Êó∂")));
 
-	ADDCMD((ID_BRIGHTINC, VK_HOME, FVIRTKEY|FCONTROL|FNOINVERT, _T("Ã·∏ﬂ¡¡∂»")));
-	ADDCMD((ID_BRIGHTDEC, VK_END, FVIRTKEY|FCONTROL|FNOINVERT, _T("ΩµµÕ¡¡∂»")));
+	ADDCMD((ID_BRIGHTINC, VK_HOME, FVIRTKEY|FCONTROL|FNOINVERT, _T("ÊèêÈ´ò‰∫ÆÂ∫¶")));
+	ADDCMD((ID_BRIGHTDEC, VK_END, FVIRTKEY|FCONTROL|FNOINVERT, _T("Èôç‰Ωé‰∫ÆÂ∫¶")));
 	
-	ADDCMD((ID_FILE_OPENDVD, 'D', FVIRTKEY|FCONTROL|FNOINVERT, _T("¥Úø™DVD")));
+	ADDCMD((ID_FILE_OPENDVD, 'D', FVIRTKEY|FCONTROL|FNOINVERT, _T("ÊâìÂºÄDVD")));
 	ADDCMD((ID_FILE_OPENDEVICE, 'V', FVIRTKEY|FCONTROL|FNOINVERT, _T("Open Device")));
-	ADDCMD((ID_FILE_SAVE_COPY, 0, FVIRTKEY|FNOINVERT, _T("¡Ì¥ÊŒ™")));
-	ADDCMD((ID_FILE_SAVE_IMAGE, 'I', FVIRTKEY|FALT|FNOINVERT, _T("±£¥ÊÕº∆¨")));
-	ADDCMD((ID_FILE_SAVE_IMAGE_AUTO, VK_F5, FVIRTKEY|FNOINVERT, _T("◊‘∂Ø±£¥ÊÕº∆¨")));
-	ADDCMD((ID_FILE_LOAD_SUBTITLE, 'L', FVIRTKEY|FCONTROL|FNOINVERT, _T("∂¡»°◊÷ƒª")));
-	ADDCMD((ID_FILE_SAVE_SUBTITLE, 'S', FVIRTKEY|FCONTROL|FNOINVERT, _T("±£¥Ê◊÷ƒª")));
-	//ADDCMD((ID_FILE_CLOSEPLAYLIST, 'C', FVIRTKEY|FCONTROL|FNOINVERT, _T("ΩÿÕº÷¡ºÙÃ˘∞Â")));
-	ADDCMD((ID_FILE_COPYTOCLIPBOARD, 'C', FVIRTKEY|FCONTROL|FNOINVERT, _T("ΩÿÕº÷¡ºÙÃ˘∞Â")));
-	ADDCMD((ID_FILE_PROPERTIES, VK_F10, FVIRTKEY|FSHIFT|FNOINVERT, _T(" Ù–‘")));
-	ADDCMD((ID_FILE_EXIT, 'X', FVIRTKEY|FALT|FNOINVERT, _T("ÕÀ≥ˆ")));
-	ADDCMD((ID_TOGGLE_SUBTITLE, 'H', FVIRTKEY|FNOINVERT, _T("“˛≤ÿªÚœ‘ æ◊÷ƒª")));
-	ADDCMD((ID_VIEW_VF_FROMINSIDE, 'C', FVIRTKEY|FNOINVERT, _T("÷ÿ÷√ª≠√ÊŒª÷√")));
-	ADDCMD((ID_PLAY_PLAY, 0, FVIRTKEY|FNOINVERT, _T("ø™ º≤•∑≈")));
-	ADDCMD((ID_PLAY_PAUSE, 0, FVIRTKEY|FNOINVERT, _T("‘›Õ£≤•∑≈")));
-	ADDCMD((ID_PLAY_STOP, VK_OEM_PERIOD, FVIRTKEY|FNOINVERT, _T("Õ£÷π≤•∑≈"), APPCOMMAND_MEDIA_STOP));
-	 ADDCMD((ID_PLAY_FRAMESTEP, VK_RIGHT, FVIRTKEY|FCONTROL|FALT|FNOINVERT, _T("÷÷°«∞Ω¯")));
-	 ADDCMD((ID_PLAY_FRAMESTEPCANCEL, VK_LEFT, FVIRTKEY|FCONTROL|FALT|FNOINVERT, _T("÷÷°ªÿÕÀ")));
-	ADDCMD((ID_PLAY_INCRATE, VK_UP, FVIRTKEY|FCONTROL|FNOINVERT, _T("º”ÀŸ≤•∑≈")));
-	ADDCMD((ID_PLAY_DECRATE, VK_DOWN, FVIRTKEY|FCONTROL|FNOINVERT, _T("ºıÀŸ≤•∑≈")));
-	ADDCMD((ID_VIEW_FULLSCREEN, VK_RETURN, FVIRTKEY|FALT|FNOINVERT, _T("«–ªª»´∆¡"), 0, wmcmd::LDBLCLK));
-	ADDCMD((ID_VIEW_FULLSCREEN, VK_RETURN, FVIRTKEY|FNOINVERT, _T("«–ªª»´∆¡"), 0, wmcmd::MUP));
-	ADDCMD((ID_PLAY_INCAUDDELAY, VK_ADD, FVIRTKEY|FNOINVERT, _T("“Ù∆µ—” ± +50ms")));
-	ADDCMD((ID_PLAY_DECAUDDELAY, VK_SUBTRACT, FVIRTKEY|FNOINVERT, _T("“Ù∆µ—” ± -50ms")));
-	//ADDCMD((ID_VIEW_FULLSCREEN_SECONDARY, VK_ESCAPE, FVIRTKEY|FNOINVERT, _T("ÕÀ≥ˆ»´∆¡")));
-	ADDCMD((ID_VIEW_PLAYLIST, 'P', FVIRTKEY|FCONTROL|FNOINVERT, _T("¥Úø™≤•∑≈¡–±Ì")));
+	ADDCMD((ID_FILE_SAVE_COPY, 0, FVIRTKEY|FNOINVERT, _T("Âè¶Â≠ò‰∏∫")));
+	ADDCMD((ID_FILE_SAVE_IMAGE, 'I', FVIRTKEY|FALT|FNOINVERT, _T("‰øùÂ≠òÂõæÁâá")));
+	ADDCMD((ID_FILE_SAVE_IMAGE_AUTO, VK_F5, FVIRTKEY|FNOINVERT, _T("Ëá™Âä®‰øùÂ≠òÂõæÁâá")));
+	ADDCMD((ID_FILE_LOAD_SUBTITLE, 'L', FVIRTKEY|FCONTROL|FNOINVERT, _T("ËØªÂèñÂ≠óÂπï")));
+	ADDCMD((ID_FILE_SAVE_SUBTITLE, 'S', FVIRTKEY|FCONTROL|FNOINVERT, _T("‰øùÂ≠òÂ≠óÂπï")));
+	//ADDCMD((ID_FILE_CLOSEPLAYLIST, 'C', FVIRTKEY|FCONTROL|FNOINVERT, _T("Êà™ÂõæËá≥Ââ™Ë¥¥Êùø")));
+	ADDCMD((ID_FILE_COPYTOCLIPBOARD, 'C', FVIRTKEY|FCONTROL|FNOINVERT, _T("Êà™ÂõæËá≥Ââ™Ë¥¥Êùø")));
+	ADDCMD((ID_FILE_PROPERTIES, VK_F10, FVIRTKEY|FSHIFT|FNOINVERT, _T("Â±ûÊÄß")));
+	ADDCMD((ID_FILE_EXIT, 'X', FVIRTKEY|FALT|FNOINVERT, _T("ÈÄÄÂá∫")));
+	ADDCMD((ID_TOGGLE_SUBTITLE, 'H', FVIRTKEY|FNOINVERT, _T("ÈöêËóèÊàñÊòæÁ§∫Â≠óÂπï")));
+	ADDCMD((ID_VIEW_VF_FROMINSIDE, 'C', FVIRTKEY|FNOINVERT, _T("ÈáçÁΩÆÁîªÈù¢‰ΩçÁΩÆ")));
+	ADDCMD((ID_PLAY_PLAY, 0, FVIRTKEY|FNOINVERT, _T("ÂºÄÂßãÊí≠Êîæ")));
+	ADDCMD((ID_PLAY_PAUSE, 0, FVIRTKEY|FNOINVERT, _T("ÊöÇÂÅúÊí≠Êîæ")));
+	ADDCMD((ID_PLAY_STOP, VK_OEM_PERIOD, FVIRTKEY|FNOINVERT, _T("ÂÅúÊ≠¢Êí≠Êîæ"), APPCOMMAND_MEDIA_STOP));
+	 ADDCMD((ID_PLAY_FRAMESTEP, VK_RIGHT, FVIRTKEY|FCONTROL|FALT|FNOINVERT, _T("ÈÄêÂ∏ßÂâçËøõ")));
+	 ADDCMD((ID_PLAY_FRAMESTEPCANCEL, VK_LEFT, FVIRTKEY|FCONTROL|FALT|FNOINVERT, _T("ÈÄêÂ∏ßÂõûÈÄÄ")));
+	ADDCMD((ID_PLAY_INCRATE, VK_UP, FVIRTKEY|FCONTROL|FNOINVERT, _T("Âä†ÈÄüÊí≠Êîæ")));
+	ADDCMD((ID_PLAY_DECRATE, VK_DOWN, FVIRTKEY|FCONTROL|FNOINVERT, _T("ÂáèÈÄüÊí≠Êîæ")));
+	ADDCMD((ID_VIEW_FULLSCREEN, VK_RETURN, FVIRTKEY|FALT|FNOINVERT, _T("ÂàáÊç¢ÂÖ®Â±è"), 0, wmcmd::LDBLCLK));
+	ADDCMD((ID_VIEW_FULLSCREEN, VK_RETURN, FVIRTKEY|FNOINVERT, _T("ÂàáÊç¢ÂÖ®Â±è"), 0, wmcmd::MUP));
+	ADDCMD((ID_PLAY_INCAUDDELAY, VK_ADD, FVIRTKEY|FNOINVERT, _T("Èü≥È¢ëÂª∂Êó∂ +50ms")));
+	ADDCMD((ID_PLAY_DECAUDDELAY, VK_SUBTRACT, FVIRTKEY|FNOINVERT, _T("Èü≥È¢ëÂª∂Êó∂ -50ms")));
+	//ADDCMD((ID_VIEW_FULLSCREEN_SECONDARY, VK_ESCAPE, FVIRTKEY|FNOINVERT, _T("ÈÄÄÂá∫ÂÖ®Â±è")));
+	ADDCMD((ID_VIEW_PLAYLIST, 'P', FVIRTKEY|FCONTROL|FNOINVERT, _T("ÊâìÂºÄÊí≠ÊîæÂàóË°®")));
 	ADDCMD((ID_VIEW_PLAYLIST, '7', FVIRTKEY|FCONTROL|FNOINVERT, _T("Toggle Playlist Bar")));
 	ADDCMD((ID_PLAY_GOTO, 'G', FVIRTKEY|FCONTROL|FNOINVERT, _T("Go To")));
 	ADDCMD((ID_PLAY_RESETRATE, 'R', FVIRTKEY|FCONTROL|FNOINVERT, _T("Reset Rate")));
@@ -1741,7 +1741,7 @@ void CMPlayerCApp::Settings::RegGlobalAccelKey(HWND hWnd){
 	POSITION pos = wmcmds.GetHeadPosition();
 	while(pos){
 		wmcmd& wc = wmcmds.GetNext(pos);
-		if(wc.name == _T("¿œ∞Âº¸")){
+		if(wc.name == _T("ËÄÅÊùøÈîÆ")){
 			UINT modKey = 0;
 			if( wc.fVirt & FCONTROL) {modKey |= MOD_CONTROL;}
 			if( wc.fVirt & FALT) {modKey |= MOD_ALT;}
@@ -1756,31 +1756,31 @@ void CMPlayerCApp::Settings::ThreadedLoading(){
 	CSVPToolBox svptoolbox;
 	CWinApp* pApp = AfxGetApp();
 	if(!bNotChangeFontToYH){
-		BOOL bHadYaheiDownloaded = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS),  _T("HasYaheiDownloaded"), 0); //ƒ¨»œºÏ≤È «∑Ò π”√æ…◊÷ÃÂ
-		if(!svptoolbox.bFontExist(_T("Œ¢»Ì—≈∫⁄")) && !svptoolbox.bFontExist(_T("Microsoft YaHei")) ){ 
+		BOOL bHadYaheiDownloaded = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS),  _T("HasYaheiDownloaded"), 0); //ÈªòËÆ§Ê£ÄÊü•ÊòØÂê¶‰ΩøÁî®ÊóßÂ≠ó‰Ωì
+		if(!svptoolbox.bFontExist(_T("ÂæÆËΩØÈõÖÈªë")) && !svptoolbox.bFontExist(_T("Microsoft YaHei")) ){ 
 			CString szTTFPath = svptoolbox.GetPlayerPath( _T("msyh.ttf") );
 			if( svptoolbox.ifFileExist(szTTFPath)) {
 				if( AddFontResourceEx( szTTFPath , FR_PRIVATE, 0) ){
 
-					if(bHadYaheiDownloaded != 1)  // ◊¥Œ≥…π¶µ˜»Î¡ÀÕ‚≤ø◊÷ÃÂ£¨œ¬¥Œ≤ª‘ŸºÏ≤È «∑Ò π”√æ…◊÷ÃÂ
+					if(bHadYaheiDownloaded != 1)  //È¶ñÊ¨°ÊàêÂäüË∞ÉÂÖ•‰∫ÜÂ§ñÈÉ®Â≠ó‰ΩìÔºå‰∏ãÊ¨°‰∏çÂÜçÊ£ÄÊü•ÊòØÂê¶‰ΩøÁî®ÊóßÂ≠ó‰Ωì
 						pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("HasYaheiDownloaded"), 1 );	
 				}else{
-					if(bHadYaheiDownloaded != 0)  //√ª”–≥…π¶µ˜»ÎÕ‚≤ø◊÷ÃÂ£¨œ¬¥ŒºÏ≤È «∑Ò π”√æ…◊÷ÃÂ
+					if(bHadYaheiDownloaded != 0)  //Ê≤°ÊúâÊàêÂäüË∞ÉÂÖ•Â§ñÈÉ®Â≠ó‰ΩìÔºå‰∏ãÊ¨°Ê£ÄÊü•ÊòØÂê¶‰ΩøÁî®ÊóßÂ≠ó‰Ωì
 						pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("HasYaheiDownloaded"), 0 );	
 				}
 			}
 		}
 		if(!bHadYaheiDownloaded ){
-			if(svptoolbox.bFontExist(_T("Œ¢»Ì—≈∫⁄"))){ //
-				if(subdefstyle.fontName.CompareNoCase(_T("∫⁄ÃÂ") ) == 0 )
-					subdefstyle.fontName = _T("Œ¢»Ì—≈∫⁄");
-				if(subdefstyle2.fontName.CompareNoCase(_T("∫⁄ÃÂ") ) == 0 )
-					subdefstyle2.fontName = _T("Œ¢»Ì—≈∫⁄");
+			if(svptoolbox.bFontExist(_T("ÂæÆËΩØÈõÖÈªë"))){ //
+				if(subdefstyle.fontName.CompareNoCase(_T("Èªë‰Ωì") ) == 0 )
+					subdefstyle.fontName = _T("ÂæÆËΩØÈõÖÈªë");
+				if(subdefstyle2.fontName.CompareNoCase(_T("Èªë‰Ωì") ) == 0 )
+					subdefstyle2.fontName = _T("ÂæÆËΩØÈõÖÈªë");
 
-			}else if( !svptoolbox.bFontExist(_T("∫⁄ÃÂ")) ){
-				if(subdefstyle.fontName.CompareNoCase(_T("∫⁄ÃÂ") ) == 0 )
+			}else if( !svptoolbox.bFontExist(_T("Èªë‰Ωì")) ){
+				if(subdefstyle.fontName.CompareNoCase(_T("Èªë‰Ωì") ) == 0 )
 					subdefstyle.fontName = _T("SimHei");
-				if(subdefstyle2.fontName.CompareNoCase(_T("∫⁄ÃÂ") ) == 0 )
+				if(subdefstyle2.fontName.CompareNoCase(_T("Èªë‰Ωì") ) == 0 )
 					subdefstyle2.fontName = _T("SimHei");
 			}
 			if(svptoolbox.bFontExist(_T("Microsoft YaHei"))){ //Microsoft YaHei
@@ -2663,8 +2663,8 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		fAutoSpeakerConf = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUTOSPEAKERCONF), 1);
 		
 		// TODO: rename subdefstyle -> defStyle, IDS_RS_SPLOGFONT -> IDS_RS_SPSTYLE
-		subdefstyle <<= pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPLOGFONT), _T("20,20,20,20,2,0,2.000000,2.000000,3.000000,3.000000,0x00ecec,0x00ffff,0x000000,0x000000,0x00,0x00,0x00,0x80,0,∫⁄ÃÂ,20.000000,100.000000,100.000000,0.000000,700,0,0,0,0,0.000000,0.000000,0.000000,0.000000,0,0.700000"));
-		subdefstyle2 <<= pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPLOGFONT2), _T("20,20,20,20,2,0,2.000000,2.000000,3.000000,3.000000,0x00ecec,0x00ffff,0x000000,0x000000,0x00,0x00,0x00,0x80,1,∫⁄ÃÂ,20.000000,100.000000,100.000000,0.000000,700,0,0,0,0,0.000000,0.000000,0.000000,0.000000,0,0.700000"));
+		subdefstyle <<= pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPLOGFONT), _T("20,20,20,20,2,0,2.000000,2.000000,3.000000,3.000000,0x00ecec,0x00ffff,0x000000,0x000000,0x00,0x00,0x00,0x80,0,Èªë‰Ωì,20.000000,100.000000,100.000000,0.000000,700,0,0,0,0,0.000000,0.000000,0.000000,0.000000,0,0.700000"));
+		subdefstyle2 <<= pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPLOGFONT2), _T("20,20,20,20,2,0,2.000000,2.000000,3.000000,3.000000,0x00ecec,0x00ffff,0x000000,0x000000,0x00,0x00,0x00,0x80,1,Èªë‰Ωì,20.000000,100.000000,100.000000,0.000000,700,0,0,0,0,0.000000,0.000000,0.000000,0.000000,0,0.700000"));
 
 		CheckSVPSubExts = _T(" .ts; .avi; .mkv;");
 		bShowControlBar = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SHOWCONTROLBAR), 0);
@@ -2845,7 +2845,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 			CString str;
 			str.Format(_T("16:9,%.3f,%.3f,%.3f,%.3f"), 0.5, 0.5, _4p3/_4p3, _16p9/_4p3);
 			m_pnspresets.Add(str);
-			str.Format(_T("±‰–ŒøÌ“¯ƒª,%.3f,%.3f,%.3f,%.3f"), 0.5, 0.5, _16p9/_4p3, _16p9/_4p3);
+			str.Format(_T("ÂèòÂΩ¢ÂÆΩÈì∂Âπï,%.3f,%.3f,%.3f,%.3f"), 0.5, 0.5, _16p9/_4p3, _16p9/_4p3);
 			m_pnspresets.Add(str);
 			str.Format(_T("2.35:1,%.3f,%.3f,%.3f,%.3f"), 0.5, 0.5, _235p1/_4p3, _235p1/_4p3);
 			m_pnspresets.Add(str);

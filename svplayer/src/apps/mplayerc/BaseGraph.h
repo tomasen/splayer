@@ -36,8 +36,8 @@ protected:
 
 typedef enum {DirectShow = 0, RealMedia, QuickTime, ShockWave} engine_t;
 
-[uuid("B110CDE5-6331-4118-8AAF-A870D6F7E2E4")]
-interface IGraphEngine : public IUnknown
+
+interface __declspec(uuid("B110CDE5-6331-4118-8AAF-A870D6F7E2E4")) IGraphEngine : public IUnknown
 {
 	STDMETHOD_(engine_t, GetEngine) () = 0;
 };

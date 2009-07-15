@@ -1,6 +1,6 @@
 #pragma once
 #include "svplib.h"
-#include <curl\curl.h>
+#include "curl/include/curl/curl.h"
 #include "SVPToolBox.h"
 
 

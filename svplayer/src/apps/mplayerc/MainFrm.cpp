@@ -1,4 +1,4 @@
-/* 
+ï»¿/* 
  *	Copyright (C) 2003-2006 Gabest
  *	http://www.gabest.org
  *
@@ -651,7 +651,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	//WS_EX_NOACTIVATE
 	if(!m_wndNewOSD.CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, _T("STATIC"), _T("OSD"), WS_POPUP, CRect( 20,20,60,35 ) , this,  0)){
-		AfxMessageBox(_T("OSD ´´½¨Ê§°Ü£¡"));
+		AfxMessageBox(_T("OSD åˆ›å»ºå¤±è´¥ï¼"));
 	}
 
 	m_pGraphThread = (CGraphThread*)AfxBeginThread(RUNTIME_CLASS(CGraphThread));
@@ -768,11 +768,11 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 			SetAlwaysOnTop(s.iOnTop , FALSE);
 			s_mDragFucOn = true;
 		}
-		if(s_mDragFuc == 1){ //ÒÆ¶¯»­Ãæ
+		if(s_mDragFuc == 1){ //ç§»åŠ¨ç”»é¢
 			m_PosX += (double)(point.x - m_pDragFuncStartPoint.x) / CVideoRect.Width() ;
 			m_PosY += (double)(point.y - m_pDragFuncStartPoint.y)/ CVideoRect.Height() ;
 			MoveVideoWindow(true);
-		}else if(s_mDragFuc == 2){//Ëõ·Å»­Ãæ
+		}else if(s_mDragFuc == 2){//ç¼©æ”¾ç”»é¢
 			m_ZoomX += (double)(point.x - m_pDragFuncStartPoint.x) / CVideoRect.Width() ;
 			m_ZoomY += (double)(m_pDragFuncStartPoint.y - point.y ) / CVideoRect.Height() ;
 			MoveVideoWindow(true);
@@ -870,7 +870,7 @@ void CMainFrame::OnNcCalcSize( BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp){
 	WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
 	GetWindowPlacement(&wp);
 	if(bCalcValidRects){
-		//ÏÈ°Ñrect[1]¿½±´µ½rect[2]£¬rect[0]¿½±´µ½rect[1]
+		//å…ˆæŠŠrect[1]æ‹·è´åˆ°rect[2]ï¼Œrect[0]æ‹·è´åˆ°rect[1]
 		//memcpy( &lpncsp->rgrc[2] ,  &lpncsp->rgrc[1] , sizeof(RECT));
 		//memcpy( &lpncsp->rgrc[1] ,  &lpncsp->rgrc[0] , sizeof(RECT));
 
@@ -1253,7 +1253,7 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 				if(m_bEVRInUse){
 					szEVR = _T("+EVR");
 				}
-				szWindowText.Format( _T("[Ó²¼ş¸ßÇå%s] "), szEVR);
+				szWindowText.Format( _T("[ç¡¬ä»¶é«˜æ¸…%s] "), szEVR);
 			}else if(m_bEVRInUse){
 				szWindowText = _T("[EVR] ");
 			}
@@ -1281,7 +1281,7 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 		/*
 
 		int nVertPos = NEWUI_BTN_MARGIN_TOP;
-		long nImagePositions[] = {0, NEWUI_BTN_HEIGTH, NEWUI_BTN_HEIGTH*2, NEWUI_BTN_HEIGTH*3};  // Õı³£ ; hove ; °´ÏÂ ; disabled
+		long nImagePositions[] = {0, NEWUI_BTN_HEIGTH, NEWUI_BTN_HEIGTH*2, NEWUI_BTN_HEIGTH*3};  // æ­£å¸¸ ; hove ; æŒ‰ä¸‹ ; disabled
 		dcBmp.SelectObject(m_bmpClose);
 		BLENDFUNCTION bf = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};//
 		hdc.AlphaBlend(rc.right-NEWUI_BTN_MARGIN_RIGHT-NEWUI_BTN_WIDTH, nVertPos, NEWUI_BTN_WIDTH, NEWUI_BTN_HEIGTH, &dcBmp, 0, nImagePositions[m_nBoxStatus[0]], NEWUI_BTN_WIDTH, NEWUI_BTN_HEIGTH, bf);
@@ -1555,12 +1555,12 @@ void CMainFrame::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
 /*NEW UI END*/
 void CMainFrame::OnSetHotkey(){
 	CAutoPtr<CPPageAccelTbl> page(new CPPageAccelTbl());
-	CPropertySheet dlg(_T("¿ì½İ¼üÉèÖÃ..."), this);
+	CPropertySheet dlg(_T("å¿«æ·é”®è®¾ç½®..."), this);
 	dlg.AddPage(page);
 	dlg.DoModal() ;
 }
 void CMainFrame::OnResetSetting(){
-	if(AfxMessageBox(_T("´Ë²Ù×÷½«Çå³ıÉäÊÖ²¥·ÅÆ÷µÄ\nËùÓĞÉèÖÃºÍ²¥·Å¼ÇÂ¼£¬ÄúÈ·¶¨Ã´£¿"), MB_YESNO) == IDYES){
+	if(AfxMessageBox(_T("æ­¤æ“ä½œå°†æ¸…é™¤å°„æ‰‹æ’­æ”¾å™¨çš„\næ‰€æœ‰è®¾ç½®å’Œæ’­æ”¾è®°å½•ï¼Œæ‚¨ç¡®å®šä¹ˆï¼Ÿ"), MB_YESNO) == IDYES){
 
 		CMPlayerCApp* mApp = (CMPlayerCApp*)AfxGetApp();
 		mApp->RemoveAllSetting();
@@ -1850,7 +1850,7 @@ void CMainFrame::ShowTrayIcon(bool fShow)
 			tnid.hIcon = (HICON)LoadImage(AfxGetResourceHandle(), MAKEINTRESOURCE(IDR_MAINFRAME), IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR);
 			tnid.uFlags = NIF_MESSAGE|NIF_ICON|NIF_TIP; 
 			tnid.uCallbackMessage = WM_NOTIFYICON; 
-			lstrcpyn(tnid.szTip, TEXT("ÉäÊÖ²¥·ÅÆ÷"), sizeof(tnid.szTip)); 
+			lstrcpyn(tnid.szTip, TEXT("å°„æ‰‹æ’­æ”¾å™¨"), sizeof(tnid.szTip)); 
 			Shell_NotifyIcon(NIM_ADD, &tnid);
 
 			m_fTrayIcon = true;
@@ -2272,7 +2272,7 @@ void CMainFrame::OnPlaySubDelay(UINT nID)
 			break;
 	}
 	CString str;
-	str.Format(_T("Ö÷×ÖÄ»ÑÓÊ±ÒÑ¾­ÉèÎª£º %d ms"), newDelay);
+	str.Format(_T("ä¸»å­—å¹•å»¶æ—¶å·²ç»è®¾ä¸ºï¼š %d ms"), newDelay);
 	SendStatusMessage(str, 5000);
 	this->SetSubtitleDelay(newDelay);
 }
@@ -2314,7 +2314,7 @@ void CMainFrame::OnPlaySub2Delay(UINT nID)
 			break;
 	}
 	CString str;
-	str.Format(_T("µÚ¶ş×ÖÄ»ÑÓÊ±ÒÑ¾­ÉèÎª£º %d ms"), newDelay);
+	str.Format(_T("ç¬¬äºŒå­—å¹•å»¶æ—¶å·²ç»è®¾ä¸ºï¼š %d ms"), newDelay);
 	SendStatusMessage(str, 5000);
 	this->SetSubtitleDelay2(newDelay);
 }
@@ -2424,28 +2424,28 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 			pMS->GetDuration(&rtDur);
 
 			UINT iTotalLenSec = (UINT)( (INT64) rtDur / 20000000 );
-			//Èç¹ûÊÓÆµ³¤¶È´óÓÚ1·ÖÖÓ£¬ ¶øÇÒÊÇÎÄ¼şÄ£Ê½£¬¶øÇÒÕıÔÚ²¥·ÅÖĞ
+			//å¦‚æœè§†é¢‘é•¿åº¦å¤§äº1åˆ†é’Ÿï¼Œ è€Œä¸”æ˜¯æ–‡ä»¶æ¨¡å¼ï¼Œè€Œä¸”æ­£åœ¨æ’­æ”¾ä¸­
 			if ( iTotalLenSec >  180 && m_iPlaybackMode == PM_FILE && GetMediaState() == State_Running) {
 				
 				time_t time_now = time(NULL);
 				
 				UINT totalplayedtime =  time_now - m_tPlayStartTime;
 
-				if( time_now > ( m_tLastLogTick + 180 )){ //Èç¹ûºÍÉÏ´Î¼ì²éÒÑ¾­³¬nÃë
+				if( time_now > ( m_tLastLogTick + 180 )){ //å¦‚æœå’Œä¸Šæ¬¡æ£€æŸ¥å·²ç»è¶…nç§’
 					CString fnVideoFile , fnSubtitleFile; 
 					int subDelayMS = 0;
 					fnVideoFile = m_fnCurPlayingFile;
 					fnSubtitleFile = getCurPlayingSubfile(&subDelayMS);
 					
 					
-					if (!fnSubtitleFile.IsEmpty()){ //Èç¹ûÓĞ×ÖÄ»
+					if (!fnSubtitleFile.IsEmpty()){ //å¦‚æœæœ‰å­—å¹•
 						CString szLog;
 
 						szLog.Format(_T(" %s ( with sub %s delay %d ) %d sec of %d sec ( 1/2 length video = %d ) ") , fnVideoFile, fnSubtitleFile,subDelayMS, totalplayedtime , iTotalLenSec, (UINT)(iTotalLenSec/2)  );
 						SVP_LogMsg(szLog);
 						//if time > 50%
 						if (totalplayedtime > (UINT)(iTotalLenSec/2)){
-							//ÊÇ·ñÒÑ¾­ÉÏ´«¹ıÄØ
+							//æ˜¯å¦å·²ç»ä¸Šä¼ è¿‡å‘¢
 							if(m_fnsAlreadyUploadedSubfile.Find( fnVideoFile+fnSubtitleFile ) < 0 ){
 								//upload subtitle
 								szLog.Format(_T("Uploading sub %s of %s width delay %d ms since user played %d sec of %d sec ( more than 1/2 length video ) ") , fnSubtitleFile, fnVideoFile ,subDelayMS, totalplayedtime , iTotalLenSec  );
@@ -3326,11 +3326,11 @@ void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 		}
 		else if( s.useSmartDrag )
 		{
-				if(xPercent > 40  && xPercent < 60 && yPercent > 40  && yPercent < 60 ){ //»­ÃæÖĞĞÄ
-					//ÒÆ¶¯»­Ãæ
+				if(xPercent > 40  && xPercent < 60 && yPercent > 40  && yPercent < 60 ){ //ç”»é¢ä¸­å¿ƒ
+					//ç§»åŠ¨ç”»é¢
 					s_mDragFuc = 1;
-				}else if(xPercent > 65 && yPercent < 65){ // »­ÃæÓÒÉÏ½Ç
-					//Ëõ·Å»­Ãæ
+				}else if(xPercent > 65 && yPercent < 65){ // ç”»é¢å³ä¸Šè§’
+					//ç¼©æ”¾ç”»é¢
 					s_mDragFuc = 2;
 				}
 			
@@ -3616,21 +3616,21 @@ void CMainFrame::OnInitMenuPopup(CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu)
 		transl[_T("PanScan")] = IDS_PANSCAN_POPUP;
 		transl[_T("Aspect Ratio")] = IDS_ASPECTRATIO_POPUP;
 		transl[_T("Zoom")] = IDS_ZOOM_POPUP;
-		transl[_T("DVDÑ¡µ¥")] = IDS_NAVIGATE_POPUP;
-		transl[_T("´ò¿ªµúÆ¬")] = IDS_OPENCDROM_POPUP;
-		transl[_T("ÂË¾µ(Filters)")] = IDS_FILTERS_POPUP;
-		transl[_T("ÒôÆµ/ÉùµÀÇĞ»»")] = IDS_AUDIO_POPUP;
-		transl[_T("×ÖÄ»")] = IDS_SUBTITLES_POPUP;
-		transl[_T("Òô¹ìÑ¡Ôñ")] = IDS_AUDIOLANGUAGE_POPUP;
-		transl[_T("×ÖÄ»ÓïÑÔ")] = IDS_SUBTITLELANGUAGE_POPUP;
-		transl[_T("ÊÓ½ÇÇĞ»»")] = IDS_VIDEOANGLE_POPUP;
-		transl[_T("ÌøÖÁ...")] = IDS_JUMPTO_POPUP;
-		transl[_T("ÊÕ²Ø¼Ğ")] = IDS_FAVORITES_POPUP;
-		transl[_T("»­ÃæÔöÒæ")] = IDS_SHADER_POPUP;
-		transl[_T("ÊÓÆµ³ß´ç")] = IDS_VIDEOFRAME_POPUP;
-		transl[_T("»­ÃæÎ¢µ÷")] = IDS_PANSCAN_POPUP;
-		transl[_T("Ç¿ÖÆ»­Ãæ±ÈÀı")] = IDS_ASPECTRATIO_POPUP;
-		transl[_T("½çÃæËõ·Å")] = IDS_ZOOM_POPUP;
+		transl[_T("DVDé€‰å•")] = IDS_NAVIGATE_POPUP;
+		transl[_T("æ‰“å¼€ç¢Ÿç‰‡")] = IDS_OPENCDROM_POPUP;
+		transl[_T("æ»¤é•œ(Filters)")] = IDS_FILTERS_POPUP;
+		transl[_T("éŸ³é¢‘/å£°é“åˆ‡æ¢")] = IDS_AUDIO_POPUP;
+		transl[_T("å­—å¹•")] = IDS_SUBTITLES_POPUP;
+		transl[_T("éŸ³è½¨é€‰æ‹©")] = IDS_AUDIOLANGUAGE_POPUP;
+		transl[_T("å­—å¹•è¯­è¨€")] = IDS_SUBTITLELANGUAGE_POPUP;
+		transl[_T("è§†è§’åˆ‡æ¢")] = IDS_VIDEOANGLE_POPUP;
+		transl[_T("è·³è‡³...")] = IDS_JUMPTO_POPUP;
+		transl[_T("æ”¶è—å¤¹")] = IDS_FAVORITES_POPUP;
+		transl[_T("ç”»é¢å¢ç›Š")] = IDS_SHADER_POPUP;
+		transl[_T("è§†é¢‘å°ºå¯¸")] = IDS_VIDEOFRAME_POPUP;
+		transl[_T("ç”»é¢å¾®è°ƒ")] = IDS_PANSCAN_POPUP;
+		transl[_T("å¼ºåˆ¶ç”»é¢æ¯”ä¾‹")] = IDS_ASPECTRATIO_POPUP;
+		transl[_T("ç•Œé¢ç¼©æ”¾")] = IDS_ZOOM_POPUP;
 	}
 
 	MENUITEMINFO mii;
@@ -3734,7 +3734,7 @@ void CMainFrame::OnInitMenuPopup(CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu)
 			SetupFavoritesSubMenu();
 			pSubMenu = &m_favorites;
 		}
-		else if(str == _T("×î½ü²¥·Å"))
+		else if(str == _T("æœ€è¿‘æ’­æ”¾"))
 		{
 			SetupRecentFileSubMenu();
 			pSubMenu = &m_recentfiles;
@@ -4514,7 +4514,7 @@ void CMainFrame::OnFileOpenFolder(){
 	bi.hwndOwner = m_hWnd;
 	bi.pidlRoot = NULL;
 	bi.pszDisplayName = buff;
-	bi.lpszTitle = _T("´ò¿ªÊÓÆµÎÄ¼ş¼Ğ");
+	bi.lpszTitle = _T("æ‰“å¼€è§†é¢‘æ–‡ä»¶å¤¹");
 	bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_VALIDATE | BIF_USENEWUI | BIF_NONEWFOLDERBUTTON;
 	bi.lpfn = BrowseCtrlCallback;
 	bi.lParam = (LPARAM)(LPCTSTR)szFolderPath;
@@ -5304,7 +5304,7 @@ void CMainFrame::SaveThumbnails(LPCTSTR fn)
 		{
 			delete [] pData;
 			CString str;
-			str.Format(_T("ÄãÑ¡ÔñµÄÍ¼Æ¬Êä³ö¸ñÊ½ºÍÊÓÆµ²»¼æÈİ, Î´ÄÜ´´½¨ËõÂÔÍ¼ (%d bpp dibs)."), bi->bmiHeader.biBitCount);
+			str.Format(_T("ä½ é€‰æ‹©çš„å›¾ç‰‡è¾“å‡ºæ ¼å¼å’Œè§†é¢‘ä¸å…¼å®¹, æœªèƒ½åˆ›å»ºç¼©ç•¥å›¾ (%d bpp dibs)."), bi->bmiHeader.biBitCount);
 			AfxMessageBox(str);
 			return;
 		}
@@ -5368,7 +5368,7 @@ void CMainFrame::SaveThumbnails(LPCTSTR fn)
 		rts.AddStyle(_T("thumbs"), style);
 
 		CStringW str;
-		str.Format(L"{\\an9\\fs%d\\b1\\bord0\\shad0\\1c&Hffffff&}%s", infoheight-10, width >= 550 ? L"ÉäÊÖÓ°Òô²¥·ÅÆ÷" : L"ÉäÊÖ²¥·ÅÆ÷");
+		str.Format(L"{\\an9\\fs%d\\b1\\bord0\\shad0\\1c&Hffffff&}%s", infoheight-10, width >= 550 ? L"å°„æ‰‹å½±éŸ³æ’­æ”¾å™¨" : L"å°„æ‰‹æ’­æ”¾å™¨");
 
 		rts.Add(str, true, 0, 1, _T("thumbs"), _T(""), _T(""), CRect(0,0,0,0), -1);
 
@@ -5391,14 +5391,14 @@ void CMainFrame::SaveThumbnails(LPCTSTR fn)
 			if(shortsize > 10240) shortsize /= 1024, measure = L"KB";
 			if(shortsize > 10240) shortsize /= 1024, measure = L"MB";
 			if(shortsize > 10240) shortsize /= 1024, measure = L"GB";
-			fs.Format(L"ÎÄ¼ş³ß´ç: %I64d%s (%I64d bytes)\\N", shortsize, measure, size);
+			fs.Format(L"æ–‡ä»¶å°ºå¯¸: %I64d%s (%I64d bytes)\\N", shortsize, measure, size);
 		}
 
 		CStringW ar;
 		if(arxy.cx > 0 && arxy.cy > 0 && arxy.cx != wh.cx && arxy.cy != wh.cy)
 			ar.Format(L"(%d:%d)", arxy.cx, arxy.cy);
 
-		str.Format(L"{\\an7\\1c&H000000&\\fs16\\b0\\bord0\\shad0}ÎÄ¼şÃû: %s\\N%s·Ö±æÂÊ: %dx%d %s\\N×Ü³¤¶È: %02d:%02d:%02d", 
+		str.Format(L"{\\an7\\1c&H000000&\\fs16\\b0\\bord0\\shad0}æ–‡ä»¶å: %s\\N%såˆ†è¾¨ç‡: %dx%d %s\\Næ€»é•¿åº¦: %02d:%02d:%02d", 
 			fn, fs, wh.cx, wh.cy, ar, hmsf.bHours, hmsf.bMinutes, hmsf.bSeconds);
 		rts.Add(str, true, 0, 1, _T("thumbs"));
 
@@ -5555,7 +5555,7 @@ void CMainFrame::OnUpdateFileConvert(CCmdUI* pCmdUI)
 {
 	// TODO: Add your command update UI handler code here
 }
-#define NOTSUPPORTSUB  _T("ÆôÓÃ²¥·ÅÆ÷ÄÚÖÃ×ÖÄ»¹¦ÄÜĞèÒªDX7»òDX9ÖĞµÄÒ»Ğ©¸ß¼¶¹¦ÄÜ\nÈç¹ûÄú¿´µ½±¾ÌáÊ¾£¬¿ÉÄÜËµÃ÷ÄúĞèÒªÉı¼¶ÏÔ¿¨Çı¶¯\n»òÕßÄúµÄÏÔ¿¨Ã»ÓĞÄÜÁ¦Ö§³ÖËùĞè¹¦ÄÜ(VMR7»ò9)")
+#define NOTSUPPORTSUB  _T("å¯ç”¨æ’­æ”¾å™¨å†…ç½®å­—å¹•åŠŸèƒ½éœ€è¦DX7æˆ–DX9ä¸­çš„ä¸€äº›é«˜çº§åŠŸèƒ½\nå¦‚æœæ‚¨çœ‹åˆ°æœ¬æç¤ºï¼Œå¯èƒ½è¯´æ˜æ‚¨éœ€è¦å‡çº§æ˜¾å¡é©±åŠ¨\næˆ–è€…æ‚¨çš„æ˜¾å¡æ²¡æœ‰èƒ½åŠ›æ”¯æŒæ‰€éœ€åŠŸèƒ½(VMR7æˆ–9)")
 void CMainFrame::OnFileLoadsubtitle()
 {
 #ifndef DEBUG
@@ -5711,14 +5711,14 @@ void CMainFrame::OnFileISDBUpload()
 	int subDelayMS = 0;
 	fnSubtitleFile = getCurPlayingSubfile(&subDelayMS);
 
-	if (!fnSubtitleFile.IsEmpty() ){ //Èç¹ûÓĞ×ÖÄ»
+	if (!fnSubtitleFile.IsEmpty() ){ //å¦‚æœæœ‰å­—å¹•
 		CString szBuf;
 		if(subDelayMS){
-			szBuf.Format(_T("×ÖÄ»ÑÓÊ±£º%d ms\r\n"),subDelayMS );
+			szBuf.Format(_T("å­—å¹•å»¶æ—¶ï¼š%d ms\r\n"),subDelayMS );
 		}
 		/*
 		CString szUploadMsg;
-				szUploadMsg.Format(_T("±¾²Ù×÷½«ÉÏ´«ÄúÕıÔÚ²¥·ÅÖĞµÄ×ÖÄ»£º \r\n %s \r\n%s\r\nÊÇ·ñ¼ÌĞø£¿"), fnSubtitleFile,szBuf);
+				szUploadMsg.Format(_T("æœ¬æ“ä½œå°†ä¸Šä¼ æ‚¨æ­£åœ¨æ’­æ”¾ä¸­çš„å­—å¹•ï¼š \r\n %s \r\n%s\r\næ˜¯å¦ç»§ç»­ï¼Ÿ"), fnSubtitleFile,szBuf);
 		
 				if ( AfxMessageBox(szUploadMsg, MB_YESNO) == IDYES){
 		
@@ -5727,7 +5727,7 @@ void CMainFrame::OnFileISDBUpload()
 					szLog.Format(_T("Uploading sub %s of %s with delay %d ms because user demand to ") , fnSubtitleFile, fnVideoFile ,subDelayMS );
 					SVP_LogMsg(szLog);
 					SVP_UploadSubFileByVideoAndSubFilePath(fnVideoFile , fnSubtitleFile, subDelayMS) ;
-					if( AfxMessageBox(_T("×ÖÄ»ÒÑ¾­ÉÏ´«µ½²¥·ÅÆ÷ÏµÍ³¡£½¨ÒéÄúÍ¨¹ıÉÏ´«ÍøÒ³·á¸»Ïà¹ØĞÅÏ¢¡£"), MB_YESNO) != IDYES){
+					if( AfxMessageBox(_T("å­—å¹•å·²ç»ä¸Šä¼ åˆ°æ’­æ”¾å™¨ç³»ç»Ÿã€‚å»ºè®®æ‚¨é€šè¿‡ä¸Šä¼ ç½‘é¡µä¸°å¯Œç›¸å…³ä¿¡æ¯ã€‚"), MB_YESNO) != IDYES){
 					return;
 					}
 				}else*/
@@ -5748,10 +5748,10 @@ void CMainFrame::OnFileISDBUpload()
 }
 void CMainFrame::OnManualcheckupdate()
 {
-	//AfxMessageBox(_T("×Ô¶¯Éı¼¶³ÌĞòÕıÔÚÆô¶¯£¬ÇëÉÔºó..") );
+	//AfxMessageBox(_T("è‡ªåŠ¨å‡çº§ç¨‹åºæ­£åœ¨å¯åŠ¨ï¼Œè¯·ç¨å..") );
 	if (AfxGetMyApp()->IsVista() && !IsUserAnAdmin())
 	{
-		if(IDYES == AfxMessageBox(_T("±ØĞëÆô¶¯¹ÜÀíÔ±È¨ÏŞ\r\n²Å¿ÉÒÔÆô¶¯×Ô¶¯Éı¼¶³ÌĞò£¡\r\nÏÖÔÚ½øÈë¹ÜÀíÔ±È¨ÏŞÃ´£¿"), MB_YESNO)){
+		if(IDYES == AfxMessageBox(_T("å¿…é¡»å¯åŠ¨ç®¡ç†å‘˜æƒé™\r\næ‰å¯ä»¥å¯åŠ¨è‡ªåŠ¨å‡çº§ç¨‹åºï¼\r\nç°åœ¨è¿›å…¥ç®¡ç†å‘˜æƒé™ä¹ˆï¼Ÿ"), MB_YESNO)){
 			AfxGetMyApp()->GainAdminPrivileges(2, FALSE);
 		
 		}
@@ -5777,7 +5777,7 @@ void CMainFrame::OnFileISDBDownload()
 	
 	
 		//CString szUploadMsg;
-		//szUploadMsg.Format(_T("±¾²Ù×÷½«³¢ÊÔÎªÄúÕıÔÚ²¥·ÅÖĞµÄÊÓÆµÏÂÔØ×ÖÄ»£º \r\n %s \r\n\r\nÊÇ·ñ¼ÌĞø£¿"), fnVideoFile);
+		//szUploadMsg.Format(_T("æœ¬æ“ä½œå°†å°è¯•ä¸ºæ‚¨æ­£åœ¨æ’­æ”¾ä¸­çš„è§†é¢‘ä¸‹è½½å­—å¹•ï¼š \r\n %s \r\n\r\næ˜¯å¦ç»§ç»­ï¼Ÿ"), fnVideoFile);
 
 		CSVPSubDownUpDialog csdu;
 		csdu.szVidFilePath = fnVideoFile;
@@ -5799,10 +5799,10 @@ void CMainFrame::OnFileISDBDownload()
 						if( szaSubarr.GetCount() > 0){
 							if( LoadSubtitle(szaSubarr.GetAt(0)) )
 								SetSubtitle(m_pSubStreams.GetTail());
-							szUploadMsg.Format(_T("%d ¸ö×ÖÄ»ÒÑ¾­ÏÂÔØ³É¹¦"),szaSubarr.GetCount());
+							szUploadMsg.Format(_T("%d ä¸ªå­—å¹•å·²ç»ä¸‹è½½æˆåŠŸ"),szaSubarr.GetCount());
 							AfxMessageBox(szUploadMsg, MB_OK);
 						}else{
-							if ( AfxMessageBox(_T("Ã»ÓĞÏÂÔØµ½Æ¥ÅäµÄ×ÖÄ»¡£\nÒª²»ÒªÊÔÊÔ¿´Í¨¹ıÍøÒ³ËÑË÷£¿"), MB_YESNO) == IDYES){
+							if ( AfxMessageBox(_T("æ²¡æœ‰ä¸‹è½½åˆ°åŒ¹é…çš„å­—å¹•ã€‚\nè¦ä¸è¦è¯•è¯•çœ‹é€šè¿‡ç½‘é¡µæœç´¢ï¼Ÿ"), MB_YESNO) == IDYES){
 								CStringA url = "http://shooter.cn/sub/?";
 								ShellExecute(m_hWnd, _T("open"), CString(url), NULL, NULL, SW_SHOWDEFAULT);
 							}
@@ -6305,7 +6305,7 @@ void CMainFrame::OnUpdateViewRotate(CCmdUI* pCmdUI)
 		return;
 	}
 	if(ID_ENABLE_ROTATE == pCmdUI->m_nID){
-		//pCmdUI->SetText(_T("£¿£¿£¿"));
+		//pCmdUI->SetText(_T("ï¼Ÿï¼Ÿï¼Ÿ"));
 		pCmdUI->Enable(false);
 	}else{
 		pCmdUI->Enable(m_iMediaLoadState == MLS_LOADED && !m_fAudioOnly && m_pCAP);
@@ -7003,7 +7003,7 @@ void CMainFrame::OnPlayChangeRate(UINT nID)
 				else
 					hr = pDVDC->PlayBackwards(dRate, DVD_CMD_FLAG_Block, NULL);
 			}
-			szMsg.Format(_T("²¥·ÅËÙ¶È±äÎª %0.1f"), dRate);
+			szMsg.Format(_T("æ’­æ”¾é€Ÿåº¦å˜ä¸º %0.1f"), dRate);
 			
 			if(FAILED(hr)){
 				AppSettings& s = AfxGetAppSettings();
@@ -7011,11 +7011,11 @@ void CMainFrame::OnPlayChangeRate(UINT nID)
 					s.AudioRendererDisplayName = _T("");
 					s.bUseWaveOutDeviceByDefault = true;
 					//TODO: switch to waveOut Device
-					szMsg.Format( _T("ÕıÔÚÇĞ»»ÉèÖÃÒÔÔÊĞí¸ßËÙ²¥·Å...") );
+					szMsg.Format( _T("æ­£åœ¨åˆ‡æ¢è®¾ç½®ä»¥å…è®¸é«˜é€Ÿæ’­æ”¾...") );
 					SendStatusMessage(szMsg, 3000);
 					ReRenderOrLoadMedia();
 				}else{
-					szMsg.Format( _T("½¨ÒéÊ¹ÓÃWaveOut¶ø·ÇDirectSoundÀàÒôÆµÊä³öÑ¡ÏîÒÔÖ§³Ö´ËËÙÂÊ (%0.1f)"), dRate);
+					szMsg.Format( _T("å»ºè®®ä½¿ç”¨WaveOutè€ŒéDirectSoundç±»éŸ³é¢‘è¾“å‡ºé€‰é¡¹ä»¥æ”¯æŒæ­¤é€Ÿç‡ (%0.1f)"), dRate);
 				}
 			}
 		}
@@ -7081,7 +7081,7 @@ void CMainFrame::SetSubtitleDelay(int delay_ms)
 		m_pCAP->SetSubtitleDelay(delay_ms);
 		getCurPlayingSubfile();
 		//CString str;
-		//str.Format(_T("Ö÷×ÖÄ»ÑÓÊ±ÒÑ¾­ÉèÎª£º %d ms"), delay_ms);
+		//str.Format(_T("ä¸»å­—å¹•å»¶æ—¶å·²ç»è®¾ä¸ºï¼š %d ms"), delay_ms);
 		//SendStatusMessage(str, 5000);
 	}
 	time(&m_tPlayStartTime);
@@ -7092,7 +7092,7 @@ void CMainFrame::SetSubtitleDelay2(int delay_ms)
 		m_pCAP->SetSubtitleDelay2(delay_ms);
 		getCurPlayingSubfile(NULL, 2);
 // 		CString str;
-// 		str.Format(_T("µÚ¶ş×ÖÄ»ÑÓÊ±ÒÑ¾­ÉèÎª£º %d ms"), delay_ms);
+// 		str.Format(_T("ç¬¬äºŒå­—å¹•å»¶æ—¶å·²ç»è®¾ä¸ºï¼š %d ms"), delay_ms);
 // 		SendStatusMessage(str, 5000);
 	}
 	time(&m_tPlayStartTime);
@@ -7285,12 +7285,12 @@ void CMainFrame::OnPlaySubtitles(UINT nID)
 		i -= 2000;
 	}
 
-	if(i == -4)  //ÉèÖÃ
+	if(i == -4)  //è®¾ç½®
 	{
 		ShowOptions(CPPageSubtitles::IDD); 
 	}
 	else if(i == -3)
-	{   //×ÖÄ»·ç¸ñÉèÖÃ
+	{   //å­—å¹•é£æ ¼è®¾ç½®
 		int i = m_iSubtitleSel;
 		if(secondSub)
 			i = m_iSubtitleSel2;
@@ -7352,7 +7352,7 @@ void CMainFrame::OnPlaySubtitles(UINT nID)
 	{	
 		ReloadSubtitle();
 	}
-	else if(i == -1) //½ûÓÃ»òÆôÓÃ
+	else if(i == -1) //ç¦ç”¨æˆ–å¯ç”¨
 	{
 		if(secondSub){
 			if(m_iSubtitleSel2 == -1){
@@ -7383,7 +7383,7 @@ void CMainFrame::OnPlaySubtitles(UINT nID)
 			UpdateSubtitle();		
 		}
 	}
-	else if(i >= 0) //Ñ¡Ôñ×ÖÄ»
+	else if(i >= 0) //é€‰æ‹©å­—å¹•
 	{
 		if(secondSub){
 			m_iSubtitleSel2 = i;
@@ -7513,7 +7513,7 @@ void CMainFrame::OnPlayVolume(UINT nID)
 			iPlayerVol = 100 +  ( iPlayerVol - 100) * 900/ 20;
 
 		if(iPlayerVol > 1000) {iPlayerVol = 1000;}
-		szStat.Format(_T("ÒôÁ¿: %d%%  ") , iPlayerVol );
+		szStat.Format(_T("éŸ³é‡: %d%%  ") , iPlayerVol );
 		SendStatusMessage(szStat , 2000);
 	}
 	if(m_iMediaLoadState == MLS_LOADED) 
@@ -8884,7 +8884,7 @@ void CMainFrame::SetShaders()
 				m_pCAP->SetPixelShader(NULL, NULL);
 				if (m_pCAP2)
 					m_pCAP2->SetPixelShader2(NULL, NULL, true);
-				SendStatusMessage(_T("ÎŞ·¨ÆôÓÃDX9ÌØĞ§: ") + pShader->label, 3000);
+				SendStatusMessage(_T("æ— æ³•å¯ç”¨DX9ç‰¹æ•ˆ: ") + pShader->label, 3000);
 				return;
 			}
 
@@ -9091,7 +9091,7 @@ void CMainFrame::OpenCreateGraphObject(OpenMediaData* pOMD)
 	|| !(pVW && pBV)
 	|| !(pBA))
 	{
-		throw _T("DirectXÏµÍ³×é¼şÊÜËğ£¬Äú¿ÉÄÜĞèÒªÖØĞÂÖØĞÂ°²×°DirextX 9+");
+		throw _T("DirectXç³»ç»Ÿç»„ä»¶å—æŸï¼Œæ‚¨å¯èƒ½éœ€è¦é‡æ–°é‡æ–°å®‰è£…DirextX 9+");
 	}
 
 	if(FAILED(pME->SetNotifyWindow((OAHWND)m_hWnd, WM_GRAPHNOTIFY, 0)))
@@ -9280,19 +9280,19 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 
 				switch(hr)
 				{
-				case E_ABORT: err = _T("²Ù×÷ÒÑÈ¡Ïû"); break;
+				case E_ABORT: err = _T("æ“ä½œå·²å–æ¶ˆ"); break;
 				case E_FAIL: case E_POINTER: default: 
-					err.Format(_T("Î´ÄÜ´ò¿ªÎÄ¼ş, %X") , hr);
+					err.Format(_T("æœªèƒ½æ‰“å¼€æ–‡ä»¶, %X") , hr);
 					break;
-				case E_INVALIDARG: err = _T("·Ç·¨ÎÄ¼şÃû"); break;
-				case E_OUTOFMEMORY: err = _T("ÄÚ´æ²»×ã"); break;
-				case VFW_E_CANNOT_CONNECT: err = _T("Î´ÄÜ½âÂë"); break;
-				case VFW_E_CANNOT_LOAD_SOURCE_FILTER: err = _T("Î´ÄÜ´ò¿ªÎÄ¼ş(Source)"); break;
-				case VFW_E_CANNOT_RENDER: err = _T("Î´ÄÜ´ò¿ªÎÄ¼ş(Render)"); break;
+				case E_INVALIDARG: err = _T("éæ³•æ–‡ä»¶å"); break;
+				case E_OUTOFMEMORY: err = _T("å†…å­˜ä¸è¶³"); break;
+				case VFW_E_CANNOT_CONNECT: err = _T("æœªèƒ½è§£ç "); break;
+				case VFW_E_CANNOT_LOAD_SOURCE_FILTER: err = _T("æœªèƒ½æ‰“å¼€æ–‡ä»¶(Source)"); break;
+				case VFW_E_CANNOT_RENDER: err = _T("æœªèƒ½æ‰“å¼€æ–‡ä»¶(Render)"); break;
 				case VFW_E_INVALID_FILE_FORMAT: err = _T("Invalid file format"); break;
-				case VFW_E_NOT_FOUND: err = _T("ÎÄ¼ş²»´æÔÚ"); break;
-				case VFW_E_UNKNOWN_FILE_TYPE: err = _T("Î´ÖªÎÄ¼şÀàĞÍ"); break;
-				case VFW_E_UNSUPPORTED_STREAM: err = _T("²»Ö§³ÖµÄÁ÷ÀàĞÍ"); break;
+				case VFW_E_NOT_FOUND: err = _T("æ–‡ä»¶ä¸å­˜åœ¨"); break;
+				case VFW_E_UNKNOWN_FILE_TYPE: err = _T("æœªçŸ¥æ–‡ä»¶ç±»å‹"); break;
+				case VFW_E_UNSUPPORTED_STREAM: err = _T("ä¸æ”¯æŒçš„æµç±»å‹"); break;
 				}
 
 				throw err;
@@ -9319,7 +9319,7 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 		{
 			pOFD->title = fn;
 			m_fnCurPlayingFile = fn;
-			//ÊÇ·ñÓĞ×ÖÄ»£¿ ›]ÓĞÔòÏÂÔØ×ÖÄ»
+			//æ˜¯å¦æœ‰å­—å¹•ï¼Ÿ æ²’æœ‰åˆ™ä¸‹è½½å­—å¹•
 			if ( pOFD->subs.GetCount() <= 0){
 				AppSettings & s = AfxGetAppSettings();
 				if(s.autoDownloadSVPSub){
@@ -9329,7 +9329,7 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 					if(s.CheckSVPSubExts.Find(szExt) >= 0 ){
 						SVPSubDownloadByVPath(fn);
 					}else{
-						SendStatusMessage(  _T("ÕıÔÚ²¥·ÅµÄÎÄ¼şÀàĞÍ¿´À´²»ĞèÒª×ÖÄ»£¬ÖÕÖ¹×Ô¶¯ÖÇÄÜÆ¥Åä"), 1000);
+						SendStatusMessage(  _T("æ­£åœ¨æ’­æ”¾çš„æ–‡ä»¶ç±»å‹çœ‹æ¥ä¸éœ€è¦å­—å¹•ï¼Œç»ˆæ­¢è‡ªåŠ¨æ™ºèƒ½åŒ¹é…"), 1000);
 					}
 
 					
@@ -9384,7 +9384,7 @@ CString CMainFrame::GetCurPlayingFileName(){
 		}else if(m_iPlaybackMode == PM_DVD){
 			szPlayingFileName = _T("DVD");
 		}else{
-			szPlayingFileName = _T("Î´Öª");
+			szPlayingFileName = _T("æœªçŸ¥");
 		}
 	}
 	return szPlayingFileName;
@@ -10167,7 +10167,7 @@ void CMainFrame::OnColorControl(UINT nID){
 		s.dBrightness = min( max(s.dBrightness, ClrRange.MinValue) , ClrRange.MaxValue);
 		SetVMR9ColorControl(s.dBrightness,s.dContrast,s.dHue,s.dSaturation);
 	}else{
-		SendStatusMessage(_T("ÄúĞèÒªÔÚÑ¡ÏîÃæ°åÖĞÆôÓÃÄÚÖÃÁÁ¶È\\É«²Ê¿ØÖÆÆ÷²ÅÄÜ¿ØÖÆÁÁ¶È") , 5000);
+		SendStatusMessage(_T("æ‚¨éœ€è¦åœ¨é€‰é¡¹é¢æ¿ä¸­å¯ç”¨å†…ç½®äº®åº¦\\è‰²å½©æ§åˆ¶å™¨æ‰èƒ½æ§åˆ¶äº®åº¦") , 5000);
 	}
 }
 void CMainFrame::OnColorControlButtonReset(){
@@ -10230,9 +10230,9 @@ void CMainFrame::OnColorControlUpdateButtonEnable(CCmdUI* pCmdUI)
 	}
 	//pCmdUI->Enable(bEnable);
 	if(bEnable)
-		pCmdUI->SetText(_T("ÆôÓÃ"));
+		pCmdUI->SetText(_T("å¯ç”¨"));
 	else
-		pCmdUI->SetText(_T("½ûÓÃ"));
+		pCmdUI->SetText(_T("ç¦ç”¨"));
 	
 }
 
@@ -10253,7 +10253,7 @@ void CMainFrame::SetVMR9ColorControl(float dBrightness, float dContrast, float d
 		m_pMC->SetProcAmpControl (0, &ClrControl);
 
 		CString szMsg;
-		szMsg.Format(_T("ÁÁ¶È: %0.2f  ¶Ô±È¶È: %0.2f "),dBrightness,dContrast);
+		szMsg.Format(_T("äº®åº¦: %0.2f  å¯¹æ¯”åº¦: %0.2f "),dBrightness,dContrast);
 		SendStatusMessage( szMsg , 3000);
 	}
 }
@@ -10284,7 +10284,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 
 		if(OpenFileData* pOFD = dynamic_cast<OpenFileData*>(pOMD.m_p))
 		{
-			if(pOFD->fns.IsEmpty()) throw _T("Ã»ÓĞÕÒµ½ÎÄ¼ş");
+			if(pOFD->fns.IsEmpty()) throw _T("æ²¡æœ‰æ‰¾åˆ°æ–‡ä»¶");
 
 			CString fn = pOFD->fns.GetHead();
 
@@ -10318,7 +10318,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 				}else{
 					CSVPToolBox svpTool;
 					if(!svpTool.ifFileExist(fn, true)){
-						throw _T("ÎÄ¼ş²»´æÔÚ");
+						throw _T("æ–‡ä»¶ä¸å­˜åœ¨");
 					}
 				}
 			}
@@ -10797,7 +10797,7 @@ void CMainFrame::SetupAudioDeviceSubMenu(){
 		EndEnumSysDev
 	}
 	
-	pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, idstart++, _T("ÏµÍ³Ä¬ÈÏ"));
+	pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, idstart++, _T("ç³»ç»Ÿé»˜è®¤"));
 	if(m_AudioDevice.GetCount())
 		pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED);
 
@@ -11005,9 +11005,9 @@ void CMainFrame::SetupAudioSwitcherSubMenu()
 	m_ssarray.RemoveAll();
 	CMenu* pSubMenu = &m_audiodevices;
 	if(pSubMenu ){
-		pSub->AppendMenu(MF_POPUP, (UINT_PTR) pSubMenu->m_hMenu, _T("Êä³öÉè±¸"));
+		pSub->AppendMenu(MF_POPUP, (UINT_PTR) pSubMenu->m_hMenu, _T("è¾“å‡ºè®¾å¤‡"));
 		
-		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_USINGSPDIF, _T("Ê¹ÓÃÊı×ÖÊä³ö(SPDIF/¹âÏË)"));
+		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_USINGSPDIF, _T("ä½¿ç”¨æ•°å­—è¾“å‡º(SPDIF/å…‰çº¤)"));
 	}
 
 	if(m_iMediaLoadState == MLS_LOADED)
@@ -11022,16 +11022,16 @@ void CMainFrame::SetupAudioSwitcherSubMenu()
 			if(pSubMenu )
 				pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED);
 
-			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPNORMAL, _T("ÏµÍ³Ä¬ÈÏ"));
-			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPLEFT,  _T("Ö»²¥·Å×óÉùµÀ"));
-			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPRIGHT,  _T("Ö»²¥·ÅÓÒÉùµÀ"));
-			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPCENTER,  _T("Ö»²¥·ÅÖĞÖÃÉùµÀ"));
+			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPNORMAL, _T("ç³»ç»Ÿé»˜è®¤"));
+			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPLEFT,  _T("åªæ’­æ”¾å·¦å£°é“"));
+			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPRIGHT,  _T("åªæ’­æ”¾å³å£°é“"));
+			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPCENTER,  _T("åªæ’­æ”¾ä¸­ç½®å£°é“"));
 			pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED);
 
 			DWORD cStreams = 0;
 			if(SUCCEEDED(pSS->Count(&cStreams)) && cStreams > 0)
 			{
-				pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, id++, L"ÉèÖÃ...");
+				pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, id++, L"è®¾ç½®...");
 				pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED);
 
 				for(int i = 0; i < (int)cStreams; i++)
@@ -11110,7 +11110,7 @@ void CMainFrame::SetupAudioSwitcherSubMenu()
 
 						CString name(wname);
 						name.Replace(_T("&"), _T("&&"));
-						if(name.Find(_T("Audio")) == 0 || name.Find(_T("Éù")) == 0 || name.Find(_T("Òô")) == 0 ){
+						if(name.Find(_T("Audio")) == 0 || name.Find(_T("å£°")) == 0 || name.Find(_T("éŸ³")) == 0 ){
 							CString szLog;
 							szLog.Format(L" Audio Menu %d %s", idl, name);
 							SVP_LogMsg(szLog);
@@ -11213,14 +11213,14 @@ void CMainFrame::OnSubMenuToolbar(){
 	if(m_subtoolmenu.GetMenuItemCount())
 		m_subtoolmenu.AppendMenu(MF_SEPARATOR);
 
-	m_subtoolmenu.AppendMenu(MF_POPUP, (UINT)m_subtitles2.m_hMenu,_T("µÚ¶ş×ÖÄ»"));
+	m_subtoolmenu.AppendMenu(MF_POPUP, (UINT)m_subtitles2.m_hMenu,_T("ç¬¬äºŒå­—å¹•"));
 
 	CMenu* netSubMenu = NULL;
 	CMenu* popmenuMain = m_popup.GetSubMenu(0);
 	for(int iPos = 0; iPos < popmenuMain->GetMenuItemCount(); iPos++){
 		CString str;
 		if (popmenuMain->GetMenuString(iPos, str, MF_BYPOSITION)){
-			if(str.Find(_T("ÍøÂç×ÖÄ»")) >= 0){
+			if(str.Find(_T("ç½‘ç»œå­—å¹•")) >= 0){
 				netSubMenu = popmenuMain->GetSubMenu(iPos);
 				break;
 			}
@@ -11229,9 +11229,9 @@ void CMainFrame::OnSubMenuToolbar(){
 	}
 	
 	if(netSubMenu){
-		m_subtoolmenu.AppendMenu(MF_POPUP, (UINT)netSubMenu->m_hMenu,_T("ÍøÂç×ÖÄ»..."));
+		m_subtoolmenu.AppendMenu(MF_POPUP, (UINT)netSubMenu->m_hMenu,_T("ç½‘ç»œå­—å¹•..."));
 	}
-	m_subtoolmenu.AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_FILE_LOAD_SUBTITLE, _T("µ÷Èë×ÖÄ»ÎÄ¼ş..."));
+	m_subtoolmenu.AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_FILE_LOAD_SUBTITLE, _T("è°ƒå…¥å­—å¹•æ–‡ä»¶..."));
 
 
 	OnMenu(&m_subtoolmenu);
@@ -11322,7 +11322,7 @@ void CMainFrame::SetupSubtitlesSubMenu(int subid)
 		if(pSub->GetMenuItemCount() > 0)
 			pSub->AppendMenu(MF_SEPARATOR);
 
-		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_CONFIG_AUTOLOADSUBTITLE2 , _T("×Ô¶¯ÆôÓÃµÚ¶ş×ÖÄ»"));
+		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_CONFIG_AUTOLOADSUBTITLE2 , _T("è‡ªåŠ¨å¯ç”¨ç¬¬äºŒå­—å¹•"));
 	}
 
 }
@@ -11774,11 +11774,11 @@ void CMainFrame::SetupRecentFileSubMenu(){
 	if(nLastGroupStart || s.fKeepHistory ){
 		if(nLastGroupStart){
 			pSub->InsertMenu(nLastGroupStart, MF_SEPARATOR|MF_ENABLED|MF_BYPOSITION);
-			pSub->AppendMenu(flags, ID_RECENTFILE_CLEAR, _T("Çå³ıÀúÊ·¼ÇÂ¼"));
+			pSub->AppendMenu(flags, ID_RECENTFILE_CLEAR, _T("æ¸…é™¤å†å²è®°å½•"));
 		}
-		pSub->AppendMenu(flags, ID_RECENTFILE_DISABLE, _T("½ûÓÃÀúÊ·¼ÇÂ¼"));
+		pSub->AppendMenu(flags, ID_RECENTFILE_DISABLE, _T("ç¦ç”¨å†å²è®°å½•"));
 	}else{
-		pSub->AppendMenu(flags, ID_RECENTFILE_ENABLE, _T("ÆôÓÃÀúÊ·¼ÇÂ¼"));
+		pSub->AppendMenu(flags, ID_RECENTFILE_ENABLE, _T("å¯ç”¨å†å²è®°å½•"));
 	}
 
 	
@@ -11905,7 +11905,7 @@ void CMainFrame::SetupShadersSubMenu()
 	AppSettings& s = AfxGetAppSettings();
 	
 	if(s.iDSVideoRendererType != 6 || s.iRMVideoRendererType != 2 || s.iQTVideoRendererType != 2 || s.iAPSurfaceUsage != VIDRNDT_AP_TEXTURE3D){
-		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_SHADERS_SETDX9,_T("ĞèÒªÆôÓÃDX9..."));
+		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_SHADERS_SETDX9,_T("éœ€è¦å¯ç”¨DX9..."));
 		return;
 	}
 
@@ -11975,7 +11975,7 @@ void CMainFrame::ShowControls(int nCS, bool fSave)
 			CSVPToolBox svpTool;
 			fuPath.StripPath();
 
-			SendStatusMessage(CString(_T("ÕıÔÚ²¥·Å: ")) + CString(fuPath) + _T(" Î»ÓÚ: ") + svpTool.GetDirFromPath(m_fnCurPlayingFile), 2000);
+			SendStatusMessage(CString(_T("æ­£åœ¨æ’­æ”¾: ")) + CString(fuPath) + _T(" ä½äº: ") + svpTool.GetDirFromPath(m_fnCurPlayingFile), 2000);
 		}
 
 		if( !!(nCS&i) != !!pNext->IsVisible() )
@@ -12135,10 +12135,10 @@ bool CMainFrame::LoadSubtitle(CString fn, int sub_delay_ms, BOOL bIsForPlayList)
 	
 	CSVPToolBox svTool;
 	if(!sub_delay_ms){
-		//Èç¹ûÃ»ÓĞÔ¤Éè×ÖÄ»ÑÓ³Ù£¬ÊÓÍ¼¶ÁÈ¡ ×ÖÄ».delay »ñµÃdelay²ÎÊı
+		//å¦‚æœæ²¡æœ‰é¢„è®¾å­—å¹•å»¶è¿Ÿï¼Œè§†å›¾è¯»å– å­—å¹•.delay è·å¾—delayå‚æ•°
 		sub_delay_ms = _wtoi ( svTool.fileGetContent( fn+_T(".delay")) );
 	}else{
-		//Èç¹ûÓĞ×ÖÄ»ÑÓ³Ù£¬ ¶øÇÒ²»ÊÇplaylist subtitles£¬ ±£´æµ½.delayÎÄ¼ş
+		//å¦‚æœæœ‰å­—å¹•å»¶è¿Ÿï¼Œ è€Œä¸”ä¸æ˜¯playlist subtitlesï¼Œ ä¿å­˜åˆ°.delayæ–‡ä»¶
 		if(!bIsForPlayList){
 			szBuf.Format(_T("%d"), sub_delay_ms);
 			svTool.filePutContent(  fn+_T(".delay"), szBuf );
@@ -12182,7 +12182,7 @@ void CMainFrame::UpdateSubtitle2(bool fApplyDefStyle)
 
 		i -= pSubStream->GetStreamCount();
 	}
-	SendStatusMessage(_T("µÚ¶ş×ÖÄ»ÒÑ¹Ø±Õ") , 4000 );
+	SendStatusMessage(_T("ç¬¬äºŒå­—å¹•å·²å…³é—­") , 4000 );
 	m_pCAP->SetSubPicProvider2(NULL);
 }
 void CMainFrame::UpdateSubtitle(bool fApplyDefStyle)
@@ -12206,7 +12206,7 @@ void CMainFrame::UpdateSubtitle(bool fApplyDefStyle)
 
 		i -= pSubStream->GetStreamCount();
 	}
-	SendStatusMessage(_T("Ö÷×ÖÄ»ÒÑ¹Ø±Õ") , 4000 );
+	SendStatusMessage(_T("ä¸»å­—å¹•å·²å…³é—­") , 4000 );
 	m_pCAP->SetSubPicProvider(NULL);
 }
 void CMainFrame::SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle)
@@ -12321,14 +12321,14 @@ void CMainFrame::SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle)
 			CoTaskMemFree(pName);
 		}
 
-		szBuf.Format(_T("ÕıÔÚÏÔÊ¾µÚ¶ş×ÖÄ» %s ÑÓÊ±ÉèÎª %d ºÁÃë ¸ß¶È£º%d%%"), subName, pSubStream->sub_delay_ms, s.nVerPos2);
+		szBuf.Format(_T("æ­£åœ¨æ˜¾ç¤ºç¬¬äºŒå­—å¹• %s å»¶æ—¶è®¾ä¸º %d æ¯«ç§’ é«˜åº¦ï¼š%d%%"), subName, pSubStream->sub_delay_ms, s.nVerPos2);
 		SVP_LogMsg(szBuf);
 		SendStatusMessage(szBuf , 4000 );
 		m_pCAP->SetSubPicProvider2(CComQIPtr<ISubPicProvider>(pSubStream));
 		SetSubtitleDelay2(pSubStream->sub_delay_ms); 
 
 	}else{
-		SendStatusMessage(_T("µÚ¶ş×ÖÄ»ÒÑ¹Ø±Õ") , 4000 );
+		SendStatusMessage(_T("ç¬¬äºŒå­—å¹•å·²å…³é—­") , 4000 );
 	}
 }
 void CMainFrame::SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle)
@@ -12446,7 +12446,7 @@ void CMainFrame::SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle)
 		}
 		
 		
-		szBuf.Format(_T("ÕıÔÚÏÔÊ¾Ö÷×ÖÄ» %s ÑÓÊ±ÉèÎª %d ºÁÃë ¸ß¶È£º%d%%"), subName,  pSubStream->sub_delay_ms,s.nVerPos);
+		szBuf.Format(_T("æ­£åœ¨æ˜¾ç¤ºä¸»å­—å¹• %s å»¶æ—¶è®¾ä¸º %d æ¯«ç§’ é«˜åº¦ï¼š%d%%"), subName,  pSubStream->sub_delay_ms,s.nVerPos);
 		SVP_LogMsg(szBuf);
 		SendStatusMessage(szBuf , 4000 );
 		
@@ -12455,7 +12455,7 @@ void CMainFrame::SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle)
 		
 		
 	}else{
-		SendStatusMessage(_T("Ö÷×ÖÄ»ÒÑ¹Ø±Õ") , 4000 );
+		SendStatusMessage(_T("ä¸»å­—å¹•å·²å…³é—­") , 4000 );
 	}
 }
 
@@ -13295,7 +13295,7 @@ afx_msg void CMainFrame::OnSubtitleDelay(UINT nID)
 			newDelay = oldDelay+AfxGetAppSettings().nSubDelayInterval;
 
 		CString str;
-		str.Format(_T("Ö÷×ÖÄ»ÑÓÊ±ÒÑ¾­ÉèÎª£º %d ms"), newDelay);
+		str.Format(_T("ä¸»å­—å¹•å»¶æ—¶å·²ç»è®¾ä¸ºï¼š %d ms"), newDelay);
 		SendStatusMessage(str, 5000);
 		SetSubtitleDelay(newDelay);
 	}
@@ -13313,7 +13313,7 @@ afx_msg void CMainFrame::OnSubtitleDelay2(UINT nID)
 			newDelay = oldDelay+AfxGetAppSettings().nSubDelayInterval;
 
 		CString str;
-		str.Format(_T("µÚ¶ş×ÖÄ»ÑÓÊ±ÒÑ¾­ÉèÎª£º %d ms"), newDelay);
+		str.Format(_T("ç¬¬äºŒå­—å¹•å»¶æ—¶å·²ç»è®¾ä¸ºï¼š %d ms"), newDelay);
 		SendStatusMessage(str, 5000);
 		SetSubtitleDelay2(newDelay);
 	}
@@ -13338,13 +13338,13 @@ afx_msg void CMainFrame::OnSubtitleMove(UINT nID)
 				s.nVerPos -= 2;
 				if(s.nVerPos < 2){s.nVerPos = 2;}
 				s.fOverridePlacement = true;
-				str.Format(_T("Ö÷×ÖÄ»¸ß¶ÈÒÑ¾­ÉèÎª£º%d %%"), s.nVerPos);
+				str.Format(_T("ä¸»å­—å¹•é«˜åº¦å·²ç»è®¾ä¸ºï¼š%d %%"), s.nVerPos);
 				break;
 			case  ID_SUBMOVEDOWN:
 				s.nVerPos += 2;
 				if(s.nVerPos > 98){s.nVerPos = 98;}
 				s.fOverridePlacement = true;
-				str.Format(_T("Ö÷×ÖÄ»¸ß¶ÈÒÑ¾­ÉèÎª£º%d %%"), s.nVerPos);
+				str.Format(_T("ä¸»å­—å¹•é«˜åº¦å·²ç»è®¾ä¸ºï¼š%d %%"), s.nVerPos);
 				break;
 			case  ID_SUBMOVELEFT:
 				break;
@@ -13354,13 +13354,13 @@ afx_msg void CMainFrame::OnSubtitleMove(UINT nID)
 				s.nVerPos2 -= 2;
 				if(s.nVerPos2 < 2){s.nVerPos2 = 2;}
 				s.fOverridePlacement2 = true;
-				str.Format(_T("µÚ¶ş×ÖÄ»¸ß¶ÈÒÑ¾­ÉèÎª£º%d %%"), s.nVerPos2);
+				str.Format(_T("ç¬¬äºŒå­—å¹•é«˜åº¦å·²ç»è®¾ä¸ºï¼š%d %%"), s.nVerPos2);
 				break;
 			case  ID_SUB2MOVEDOWN:
 				s.nVerPos2 += 2;
 				if(s.nVerPos2 > 98){s.nVerPos2 = 98;}
 				s.fOverridePlacement2 = true;
-				str.Format(_T("µÚ¶ş×ÖÄ»¸ß¶ÈÒÑ¾­ÉèÎª£º%d %%"), s.nVerPos2);
+				str.Format(_T("ç¬¬äºŒå­—å¹•é«˜åº¦å·²ç»è®¾ä¸ºï¼š%d %%"), s.nVerPos2);
 				break;
 			case  ID_SUB2MOVELEFT:
 				break;
@@ -13424,11 +13424,11 @@ afx_msg void CMainFrame::OnSubtitleFontChange(UINT nID)
 		}
 
 		if(bSubChg1){
-			str.Format(_T("Ö÷×ÖÄ»×ÖÌåÒÑ¾­ÉèÎª£º%0.0f  "), s.subdefstyle.fontSize);
+			str.Format(_T("ä¸»å­—å¹•å­—ä½“å·²ç»è®¾ä¸ºï¼š%0.0f  "), s.subdefstyle.fontSize);
 			UpdateSubtitle(true); 
 		}
 		if(bSubChg2){
-			str2.Format(_T("µÚ¶ş×ÖÄ»×ÖÌåÒÑ¾­ÉèÎª£º%0.0f  "), s.subdefstyle.fontSize);
+			str2.Format(_T("ç¬¬äºŒå­—å¹•å­—ä½“å·²ç»è®¾ä¸ºï¼š%0.0f  "), s.subdefstyle.fontSize);
 			UpdateSubtitle2(true);
 		}
 		SendStatusMessage(str + str2, 5000);
@@ -13504,7 +13504,7 @@ void CMainFrame::OnSetsnapshotpath()
 	bi.hwndOwner = m_hWnd;
 	bi.pidlRoot = NULL;
 	bi.pszDisplayName = buff;
-	bi.lpszTitle = _T("Ñ¡Ôñ½ØÍ¼Ä¬ÈÏ±£´æÎÄ¼ş¼Ğ");
+	bi.lpszTitle = _T("é€‰æ‹©æˆªå›¾é»˜è®¤ä¿å­˜æ–‡ä»¶å¤¹");
 	bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_VALIDATE | BIF_USENEWUI;
 	bi.lpfn = BrowseCtrlCallback;
 	bi.lParam = (LPARAM)(LPCTSTR)s.SnapShotPath;
@@ -13532,7 +13532,7 @@ void CMainFrame::OnChangebackground()
 {
 	// TODO: Add your command handler code here
 	CAutoPtr<CPPageLogo> page(new CPPageLogo());
-	CPropertySheet dlg(_T("½çÃæ±³¾°ÉèÖÃ..."), this);
+	CPropertySheet dlg(_T("ç•Œé¢èƒŒæ™¯è®¾ç½®..."), this);
 	dlg.AddPage(page);
 	dlg.DoModal() ;
 }
@@ -13568,7 +13568,7 @@ void CMainFrame::OnDeletecurfile()
 	// TODO: Add your command handler code here
 	CString szMsg;
 	CSVPToolBox svpTool;
-	szMsg.Format(_T("É¾³ıµ±Ç°ÎÄ¼ş£º\r\n%s ?"),  m_fnCurPlayingFile);
+	szMsg.Format(_T("åˆ é™¤å½“å‰æ–‡ä»¶ï¼š\r\n%s ?"),  m_fnCurPlayingFile);
 	if(IDYES == AfxMessageBox(szMsg, MB_YESNO)){
 		PostMessage(WM_COMMAND, ID_FILE_CLOSEMEDIA);
 		fnDelPending = m_fnCurPlayingFile;
@@ -13586,7 +13586,7 @@ void CMainFrame::OnDelcurfolder()
 	CString szMsg;
 	CSVPToolBox svpTool;
 	CString szPath = svpTool.GetDirFromPath(m_fnCurPlayingFile);
-	szMsg.Format(_T("É¾³ıµ±Ç°ÎÄ¼ş¼Ğ£º\r\n%s ?"), szPath);
+	szMsg.Format(_T("åˆ é™¤å½“å‰æ–‡ä»¶å¤¹ï¼š\r\n%s ?"), szPath);
 	if(IDYES == AfxMessageBox(szMsg, MB_YESNO)){
 		PostMessage(WM_COMMAND, ID_FILE_CLOSEMEDIA);
 		fnDelPending = szPath;
@@ -13604,10 +13604,10 @@ void CMainFrame::OnUpdateDeleteCurs(CCmdUI *pCmdUI)
 		pCmdUI->Enable(FALSE);
 		switch(pCmdUI->m_nID){
 			case ID_DELETECURFILE:
-				pCmdUI->SetText(_T("µ±Ç°ÎÄ¼ş"));
+				pCmdUI->SetText(_T("å½“å‰æ–‡ä»¶"));
 			break;
 			case ID_DELCURFOLDER:
-				pCmdUI->SetText(_T("µ±Ç°ÎÄ¼ş¼Ğ"));
+				pCmdUI->SetText(_T("å½“å‰æ–‡ä»¶å¤¹"));
 			break;
 		}
 	}else{
@@ -13615,11 +13615,11 @@ void CMainFrame::OnUpdateDeleteCurs(CCmdUI *pCmdUI)
 		CString szMText ;
 		switch(pCmdUI->m_nID){
 			case ID_DELETECURFILE:
-				szMText.Format(_T("µ±Ç°ÎÄ¼ş(%s)"), m_fnCurPlayingFile);
+				szMText.Format(_T("å½“å‰æ–‡ä»¶(%s)"), m_fnCurPlayingFile);
 				break;
 			case ID_DELCURFOLDER:
 				CSVPToolBox svpTool;
-				szMText.Format(_T("µ±Ç°ÎÄ¼ş¼Ğ(%s)"), svpTool.GetDirFromPath(m_fnCurPlayingFile));
+				szMText.Format(_T("å½“å‰æ–‡ä»¶å¤¹(%s)"), svpTool.GetDirFromPath(m_fnCurPlayingFile));
 				break;
 		}
 		pCmdUI->SetText(szMText);

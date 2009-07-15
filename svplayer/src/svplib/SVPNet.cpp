@@ -378,7 +378,7 @@ int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, C
 
 			if(respcode == 200){
 				//good to go
-				SVP_LogMsg(_T("HTTP return code 200"));
+				//SVP_LogMsg(_T("字幕已经找到，正在处理..."), 31);
 				ret = 1;
 			}else{
 				//error
@@ -400,9 +400,9 @@ int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, C
 			if ( this->ExtractDataFromAiSubRecvBuffer(szFilePath, stream_http_recv_buffer) ){
 				SVP_LogMsg(_T("Error On Extract DataFromAiSubRecvBuffer ")); //TODO handle this
 			}
+		}else{
+			SVP_LogMsg(_T("网络通讯故障，字幕下载失败"), 31);
 		}
-		
-
 		/*
 		if (this->mainBufferSize > 0){
 			char statCode = this->mainBuffer[0];
@@ -428,7 +428,7 @@ int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, C
 
 int  CSVPNet::ExtractDataFromAiSubRecvBuffer(CString szFilePath, FILE* sAiSubRecvBuff){
 
-	char szSBuff[2];
+	char szSBuff[2] = {0,0};
 	int ret = 0;
 	fseek(sAiSubRecvBuff,0,SEEK_SET); // move point yo begining of file
 	
@@ -442,10 +442,13 @@ int  CSVPNet::ExtractDataFromAiSubRecvBuffer(CString szFilePath, FILE* sAiSubRec
 			SVP_LogMsg(_T("没有找到字幕"), 31);
 		}else{
 			//TODO error handle
-			SVP_LogMsg(_T("First Stat Code TODO: 显示有错误发生"));
+			SVP_LogMsg(_T("数据错误，字幕下载失败"), 31);
+			//SVP_LogMsg(_T("First Stat Code TODO: 显示有错误发生"));
 		}
 		ret = -1;
 		goto releaseALL;
+	}else{
+		SVP_LogMsg(_T("字幕已经找到，正在下载"), 31);
 	}
 	
 	//handle SubFiles

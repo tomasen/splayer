@@ -790,6 +790,11 @@ BOOL CPPageFormats::OnApply()
 	AddAutoPlayToRegistry(AP_MUSIC, !!m_apmusic.GetCheck());
 	AddAutoPlayToRegistry(AP_AUDIOCD, !!m_apaudiocd.GetCheck());
 	AddAutoPlayToRegistry(AP_DVDMOVIE, !!m_apdvd.GetCheck());
+	AddAutoPlayToRegistry(AP_SVCDMOVIE, !!m_apdvd.GetCheck());
+	AddAutoPlayToRegistry(AP_VCDMOVIE, !!m_apdvd.GetCheck());
+	AddAutoPlayToRegistry(AP_BDMOVIE, !!m_apdvd.GetCheck());
+	AddAutoPlayToRegistry(AP_DVDAUDIO, !!m_apaudiocd.GetCheck());
+	AddAutoPlayToRegistry(AP_CAPTURECAMERA, !!m_apvideo.GetCheck());
 
 	SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, NULL, NULL);
 

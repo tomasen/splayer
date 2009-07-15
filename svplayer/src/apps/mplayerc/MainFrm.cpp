@@ -4075,21 +4075,22 @@ void CMainFrame::OnFilePostOpenmedia()
 	}
 
 	m_bDxvaInUse = false;
-
+	m_DXVAMode = _T("");
 	CComQIPtr<IMPCVideoDecFilter> pMDF  = FindFilter(__uuidof(CMPCVideoDecFilter), pGB);
 	if(pMDF){
 		GUID*	DxvaGui = NULL;
 		DxvaGui = pMDF->GetDXVADecoderGuid();
 		if (DxvaGui != NULL)
 		{
-			CString DXVAMode = GetDXVAMode (DxvaGui);
-			m_bDxvaInUse = (DXVAMode != _T("Not using DXVA"));
+			m_DXVAMode = GetDXVAMode (DxvaGui);
+			m_bDxvaInUse = (m_DXVAMode != _T("Not using DXVA"));
 			
 		}
 		
 	}else if(FindFilter(L"{09571A4B-F1FE-4C60-9760-DE6D310C7C31}", pGB)) {
 		if(s.useGPUCUDA){
 			m_bDxvaInUse = true;
+			m_DXVAMode = _T("CoreAVC");
 		}
 
 	}
@@ -13773,6 +13774,9 @@ void CMainFrame::OnDebugreport()
 
 		::GetVersionEx( &osver ) ;
 		szBuf.Format(_T("OS Ver %s %d.%d ")  , osver.szCSDVersion, osver.dwMajorVersion , osver.dwMinorVersion );
+		szaReport.Add(szBuf);
+		
+		szBuf.Format(_T("硬件加速 ： %d %s ")  ,m_bDxvaInUse , m_DXVAMode  );
 		szaReport.Add(szBuf);
 
 		szBuf = _T("CPU ");

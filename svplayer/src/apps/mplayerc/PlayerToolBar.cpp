@@ -71,37 +71,37 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 
 	GetToolBarCtrl().SetExtendedStyle(TBSTYLE_EX_DRAWDDARROWS);
 
-	CSUIButton* btnPlay = new CSUIButton(L"BTN_PLAY.BMP" , ALIGN_TOPLEFT, CRect(-50 , 7, 3,3)  , 0, ID_PLAY_PLAY, FALSE, 0, 0 );
+	CSUIButton* btnPlay = new CSUIButton(L"BTN_PLAY.BMP" , ALIGN_TOPLEFT, CRect(-50 , 6, 3,3)  , 0, ID_PLAY_PLAY, FALSE, 0, 0 );
 	//btnPlay->m_stat = 3; //disabled
 	m_btnList.AddTail( btnPlay );
 
-	CSUIButton* btnPause = new CSUIButton(L"BTN_PAUSE.BMP" , ALIGN_TOPLEFT, CRect(-50 , 7, 3,3)  , 0, ID_PLAY_PAUSE, TRUE, 0, 0 );
+	CSUIButton* btnPause = new CSUIButton(L"BTN_PAUSE.BMP" , ALIGN_TOPLEFT, CRect(-50 , 6, 3,3)  , 0, ID_PLAY_PAUSE, TRUE, 0, 0 );
 	m_btnList.AddTail( btnPause );
 
-	CSUIButton* btnStop = new CSUIButton(L"BTN_STOP.BMP" , ALIGN_TOPLEFT, CRect(-50 , 7, 3,3)  , 0, ID_PLAY_STOP, FALSE, ALIGN_RIGHT , btnPause  , CRect(10 , 10 , 10, 10));
+	CSUIButton* btnStop = new CSUIButton(L"BTN_STOP.BMP" , ALIGN_TOPLEFT, CRect(-50 , 8, 3,3)  , 0, ID_PLAY_STOP, FALSE, ALIGN_RIGHT , btnPause  , CRect(10 , 10 , 10, 10));
 	btnStop->addAlignRelButton(ALIGN_RIGHT, btnPlay , CRect(10 , 10 , 10, 10) );
 	m_btnList.AddTail( btnStop );
 
 	
-	CSUIButton* btnStep = new CSUIButton(L"BTN_STEP.BMP" , ALIGN_TOPLEFT, CRect(-50 , 7, 3,3)  , 0, ID_PLAY_FRAMESTEP, FALSE, ALIGN_LEFT , btnPause  , CRect(10 , 10 , 10, 10));
+	CSUIButton* btnStep = new CSUIButton(L"BTN_STEP.BMP" , ALIGN_TOPLEFT, CRect(-50 , 8, 3,3)  , 0, ID_PLAY_FRAMESTEP, FALSE, ALIGN_LEFT , btnPause  , CRect(10 , 10 , 10, 10));
 	btnStep->addAlignRelButton(ALIGN_LEFT, btnPlay , CRect(10 , 10 , 10, 10) );
 	m_btnList.AddTail( btnStep );
 
-	CSUIButton* btnFFwd = new CSUIButton(L"FAST_FORWORD.BMP" , ALIGN_TOPLEFT, CRect(-52 , 9, 3,3)  , 0, ID_PLAY_FWD, FALSE, ALIGN_LEFT, btnPause , CRect(10 , 10 , 10, 10));
+	CSUIButton* btnFFwd = new CSUIButton(L"FAST_FORWORD.BMP" , ALIGN_TOPLEFT, CRect(-52 , 10, 3,3)  , 0, ID_PLAY_FWD, FALSE, ALIGN_LEFT, btnPause , CRect(10 , 10 , 10, 10));
 	btnFFwd->addAlignRelButton(  ALIGN_LEFT, btnPlay , CRect(10 , 10 , 10, 10) );
 	btnFFwd->addAlignRelButton(ALIGN_LEFT, btnStep , CRect(10 , 10 , 10, 10) );
 	m_btnList.AddTail( btnFFwd );
 
 	
-	CSUIButton* btnFFBack = new CSUIButton(L"FAST_BACKWORD.BMP" , ALIGN_TOPLEFT, CRect(-48 , 9, 3,3)  , 0, ID_PLAY_BWD, FALSE, ALIGN_RIGHT, btnPause , CRect(10 , 10 , 10, 10) );
+	CSUIButton* btnFFBack = new CSUIButton(L"FAST_BACKWORD.BMP" , ALIGN_TOPLEFT, CRect(-48 , 10, 3,3)  , 0, ID_PLAY_BWD, FALSE, ALIGN_RIGHT, btnPause , CRect(10 , 10 , 10, 10) );
 	btnFFBack->addAlignRelButton(ALIGN_RIGHT, btnPlay , CRect(10 , 10 , 10, 10) );
 	btnFFBack->addAlignRelButton(ALIGN_RIGHT, btnStop , CRect(10 , 10 , 10, 10) );
 	m_btnList.AddTail( btnFFBack );
 
-	CSUIButton* btnPrev = new CSUIButton(L"BTN_PREV.BMP" , ALIGN_TOPLEFT, CRect(-48 , 9, 3,3)  , 0, ID_NAVIGATE_SKIPBACK, FALSE, ALIGN_RIGHT, btnFFBack , CRect(10 , 10 , 10, 10) ) ;
+	CSUIButton* btnPrev = new CSUIButton(L"BTN_PREV.BMP" , ALIGN_TOPLEFT, CRect(-48 , 10, 3,3)  , 0, ID_NAVIGATE_SKIPBACK, FALSE, ALIGN_RIGHT, btnFFBack , CRect(10 , 10 , 10, 10) ) ;
 	m_btnList.AddTail( btnPrev );
 
-	m_btnList.AddTail( new CSUIButton(L"BTN_NEXT.BMP" , ALIGN_TOPLEFT, CRect(-48 , 9, 3,3)  , 0, ID_NAVIGATE_SKIPFORWARD, FALSE, ALIGN_LEFT, btnFFwd , CRect(10 , 10 , 10, 10) ) );
+	m_btnList.AddTail( new CSUIButton(L"BTN_NEXT.BMP" , ALIGN_TOPLEFT, CRect(-48 ,10, 3,3)  , 0, ID_NAVIGATE_SKIPFORWARD, FALSE, ALIGN_LEFT, btnFFwd , CRect(10 , 10 , 10, 10) ) );
 	
 	CSUIButton* btnLogo =  new CSUIButton(L"SPLAYER.BMP" , ALIGN_TOPLEFT, CRect(20 , 7, 3,3)  , TRUE, 0, FALSE   ) ;
 	m_btnList.AddTail(btnLogo);
@@ -124,14 +124,14 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 	m_btnList.AddTail( new CSUIButton(L"BTN_SUB_DELAY_REDUCE.BMP" , ALIGN_TOPLEFT, CRect(-42 , 7, 3,3)  , 0, ID_SUBDELAYDEC, TRUE, ALIGN_RIGHT, btnSubSwitch , CRect(2 , 3 , 2, 3) ) );
 	m_btnList.AddTail( new CSUIButton(L"BTN_SUB_DELAY_INCREASE.BMP" , ALIGN_TOPLEFT, CRect(-10 , 7, 3,3)  , 0, ID_SUBDELAYINC, TRUE, ALIGN_LEFT, btnSubSwitch , CRect(2 , 3 , 2, 3) ) );
 	
-	m_btnVolBG = new CSUIButton(L"VOLUME_BG.BMP" , ALIGN_TOPRIGHT, CRect(3 , 10, 20,3)  , TRUE, 0, FALSE ) ;
+	m_btnVolBG = new CSUIButton(L"VOLUME_BG.BMP" , ALIGN_TOPRIGHT, CRect(3 , 11, 20,3)  , TRUE, 0, FALSE ) ;
 	m_btnList.AddTail( m_btnVolBG );
 
 	BOOL bIsMuted = IsMuted();
-	CSUIButton* btnMute = new CSUIButton(L"MUTED.BMP" , ALIGN_TOPRIGHT, CRect(3 , 9, 105,3)  , FALSE, ID_VOLUME_MUTE, !bIsMuted , ALIGN_RIGHT, m_btnVolBG,  CRect(3 , 3 , 3, 3)) ;
+	CSUIButton* btnMute = new CSUIButton(L"MUTED.BMP" , ALIGN_TOPRIGHT, CRect(3 , 10, 105,3)  , FALSE, ID_VOLUME_MUTE, !bIsMuted , ALIGN_RIGHT, m_btnVolBG,  CRect(3 , 3 , 3, 3)) ;
 	m_btnList.AddTail( btnMute );
 
-	CSUIButton* btnVol =  new CSUIButton(L"VOLUME.BMP" , ALIGN_TOPRIGHT, CRect(3 , 9, 105,3)  , FALSE, ID_VOLUME_MUTE, bIsMuted  , ALIGN_RIGHT, m_btnVolBG,  CRect(3 , 3 , 3, 3)) ;
+	CSUIButton* btnVol =  new CSUIButton(L"VOLUME.BMP" , ALIGN_TOPRIGHT, CRect(3 , 10, 105,3)  , FALSE, ID_VOLUME_MUTE, bIsMuted  , ALIGN_RIGHT, m_btnVolBG,  CRect(3 , 3 , 3, 3)) ;
 	m_btnList.AddTail(btnVol);
 
 	CSUIButton* btnSetting = new CSUIButton(L"BTN_SETTING.BMP" , ALIGN_TOPRIGHT, CRect(-70 , 5, 105,3)  , FALSE, ID_VIEW_OPTIONS, TRUE , ALIGN_RIGHT, btnMute , CRect(10 , 10 , 10, 10)) ;
@@ -154,7 +154,7 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 
 	
 	
-	m_btnVolTm = new CSUIButton(L"VOLUME_TM.BMP" , ALIGN_TOPRIGHT, CRect(3 , 9, 65,3)  , FALSE, ID_VOLUME_THUMB, FALSE );
+	m_btnVolTm = new CSUIButton(L"VOLUME_TM.BMP" , ALIGN_TOPRIGHT, CRect(3 , 10, 65,3)  , FALSE, ID_VOLUME_THUMB, FALSE );
 	m_btnList.AddTail( m_btnVolTm );
 
 	cursorHand = ::LoadCursor(NULL, IDC_HAND);

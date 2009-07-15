@@ -1862,7 +1862,7 @@ BEGIN
             MENUITEM "网址(&U)...\tCtrl+U",           ID_FILE_OPENURLSTREAM
             MENUITEM "DVD(&D)...\tCtrl+D",          ID_FILE_OPENDVD
             MENUITEM "视频捕捉(&V)...\tCtrl+V",         ID_FILE_OPENDEVICE
-            MENUITEM "碟片",                      ID_32768
+            MENUITEM "碟片",                          ID_32768
         END
         MENUITEM "最近播放",                        ID__RECENTPLAYED
         MENUITEM "收藏夹",                         ID_FAVORITES
@@ -1964,46 +1964,22 @@ BEGIN
         MENUITEM SEPARATOR
         POPUP "更多..."
         BEGIN
-            MENUITEM "滤镜(Filters)",                 ID__FILTERS
+            POPUP "意见和反馈"
+            BEGIN
+                MENUITEM "论坛发表反馈",                      ID_VISITBBS
+                MENUITEM "Email发表意见",                   ID_SENDEMAIL
+                MENUITEM "QQ或MSN聊聊想法",                  ID_VISITCONTACTINFO
+            END
+            MENUITEM "关于(&A)...",                   ID_HELP_ABOUT
+            MENUITEM "捐助！",                         ID_DONATE
             MENUITEM SEPARATOR
             MENUITEM "自动更新...",                     ID_MANUALCHECKUPDATE
-            POPUP "更多设置"
-            BEGIN
-                MENUITEM "选项(&O)...",                   ID_VIEW_OPTIONS
-                MENUITEM "高级设置(&A)...",                 ID_32797
-                MENUITEM "热键设置...",                     ID_VIEW_SETHOTKEY
-                MENUITEM "界面背景设置...",                   ID_CHANGEBACKGROUND
-                MENUITEM SEPARATOR
-                MENUITEM "自动更新...",                     ID_MANUALCHECKUPDATE
-                MENUITEM SEPARATOR
-                MENUITEM "检查文件关联",                      ID_CHECK_DEFAULT_PLAYER
-                MENUITEM SEPARATOR
-                MENUITEM "恢复默认设置",                      ID_RESET_SETTING
-                POPUP "工具"
-                BEGIN
-                    MENUITEM "DSM转换器(&n)...",               ID_FILE_CONVERT
-                END
-            END
-            POPUP "帮助(&H)"
-            BEGIN
-                MENUITEM "自动更新...",                     ID_MANUALCHECKUPDATE
-                MENUITEM SEPARATOR
-                POPUP "意见和反馈"
-                BEGIN
-                    MENUITEM "论坛发表反馈",                      ID_VISITBBS
-                    MENUITEM "Email发表意见",                   ID_SENDEMAIL
-                    MENUITEM "QQ或MSN聊聊想法",                  ID_VISITCONTACTINFO
-                END
-                MENUITEM SEPARATOR
-                MENUITEM "主页",                          ID_HELP_HOMEPAGE
-                MENUITEM "捐助开发",                        ID_DONATE
-                MENUITEM "参与开发",                        ID_JOINTEAM
-                MENUITEM SEPARATOR
-                MENUITEM "使用说明",                        ID_HELP_DOCUMENTATION
-                MENUITEM "命令行用法",                       ID_HELP_SHOWCOMMANDLINESWITCHES
-                MENUITEM SEPARATOR
-                MENUITEM "关于(&A)...",                   ID_HELP_ABOUT
-            END
+            MENUITEM "热键设置...",                     ID_VIEW_SETHOTKEY
+            MENUITEM "界面背景设置...",                   ID_CHANGEBACKGROUND
+            MENUITEM "重建文件关联",                      ID_CHECK_DEFAULT_PLAYER
+            MENUITEM "恢复默认设置",                      ID_RESET_SETTING
+            MENUITEM SEPARATOR
+            MENUITEM "滤镜(Filters)",                 ID__FILTERS
             MENUITEM SEPARATOR
             POPUP "视频尺寸(&V)"
             BEGIN
@@ -2055,9 +2031,7 @@ BEGIN
                 MENUITEM "小巧",                          ID_VIEW_PRESETS_MINIMAL
                 MENUITEM "标准",                          ID_VIEW_PRESETS_NORMAL
             END
-            MENUITEM "界面背景设置...",                   ID_CHANGEBACKGROUND
-            MENUITEM "显示亮度控制栏",                     ID_SHOWCOLORCONTROLBAR
-            POPUP "自定义界面(&e)"
+            POPUP "更多功能面板(&e)"
             BEGIN
                 MENUITEM "显示标题和菜单(&M)\tCtrl+0",         ID_VIEW_CAPTIONMENU
                 MENUITEM "时间栏(&S)\tCtrl+1",             ID_VIEW_SEEKER
@@ -2069,7 +2043,9 @@ BEGIN
                 MENUITEM "显示播放列表\tCtrl+7",              ID_VIEW_PLAYLIST
                 MENUITEM "视频捕捉控制面板\tCtrl+8",            ID_VIEW_CAPTURE
                 MENUITEM "特效(Shader)编辑器\tCtrl+9",       ID_VIEW_SHADEREDITOR
+                MENUITEM "DSM转换器(&n)...",               ID_FILE_CONVERT
             END
+            MENUITEM "显示亮度控制栏",                     ID_SHOWCOLORCONTROLBAR
             MENUITEM SEPARATOR
             MENUITEM "生成DEBUG反馈信息",                 ID_DEBUGREPORT
         END
@@ -2455,6 +2431,11 @@ BEGIN
     IDS_RS_LOGOSTRETCH      "LogoStretch"
     IDS_RS_ULTRAFAST        "UltraFastOpen"
     IDS_RS_USESPDIF         "UseSPDIF"
+    IDS_AUTOPLAY_PLAYSVCDMOVIE "播放SVCD"
+    IDS_AUTOPLAY_PLAYVCDMOVIE "播放VCD"
+    IDS_AUTOPLAY_PLAYBDMOVIE "播放蓝光DVD"
+    IDS_AUTOPLAY_PLAYDVDAUDIO "播放DVD-AUDIO"
+    IDS_AUTOPLAY_CAPTURECAMERA "采集视频"
 END
 
 STRINGTABLE 
@@ -2568,12 +2549,6 @@ BEGIN
     IDS_AUTOPLAY_PLAYMUSIC  "播放音乐"
     IDS_AUTOPLAY_PLAYAUDIOCD "播放音频CD"
     IDS_AUTOPLAY_PLAYDVDMOVIE "播放DVD"
-	IDS_AUTOPLAY_PLAYSVCDMOVIE       "播放SVCD"
-	IDS_AUTOPLAY_PLAYVCDMOVIE       "播放VCD"
-	IDS_AUTOPLAY_PLAYBDMOVIE       "播放蓝光DVD"
-	IDS_AUTOPLAY_PLAYDVDAUDIO       "播放DVD-AUDIO"
-	IDS_AUTOPLAY_CAPTURECAMERA		"采集视频"
-
     IDS_PROPSHEET_PROPERTIES "属性"
     IDS_GRAPHBUILDER_AUDIOSWITCHER "Audio Switcher"
     IDS_SHADER_EDIT         "编辑(&E)..."

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+ï»¿#include "StdAfx.h"
 #include "DSUtil.h"
 #include "MediaTypeEx.h"
 
@@ -43,7 +43,7 @@ CString CMediaTypeEx::ToString(IPin* pPin)
 	
 	if(majortype == MEDIATYPE_Video)
 	{
-		type = _T("ÊÓÆµ");
+		type = _T("è§†é¢‘");
 
 		BITMAPINFOHEADER bih;
 		bool fBIH = ExtractBIH(this, &bih);
@@ -58,9 +58,9 @@ CString CMediaTypeEx::ToString(IPin* pPin)
 
 		if(codec.IsEmpty())
 		{
-			if(formattype == FORMAT_MPEGVideo) codec = _T("MPEG1 ÊÓÆµ");
-			else if(formattype == FORMAT_MPEG2_VIDEO) codec = _T("MPEG2 ÊÓÆµ");
-			else if(formattype == FORMAT_DiracVideoInfo) codec = _T("Dirac ÊÓÆµ");
+			if(formattype == FORMAT_MPEGVideo) codec = _T("MPEG1 è§†é¢‘");
+			else if(formattype == FORMAT_MPEG2_VIDEO) codec = _T("MPEG2 è§†é¢‘");
+			else if(formattype == FORMAT_DiracVideoInfo) codec = _T("Dirac è§†é¢‘");
 		}
 
 		if(fDim)
@@ -86,13 +86,13 @@ CString CMediaTypeEx::ToString(IPin* pPin)
 
 		if(subtype == MEDIASUBTYPE_DVD_SUBPICTURE)
 		{
-			type = _T("×ÖÄ»");
-			codec = _T("DVD ×ÖÄ»");
+			type = _T("å­—å¹•");
+			codec = _T("DVD å­—å¹•");
 		}
 	}
 	else if(majortype == MEDIATYPE_Audio)
 	{
-		type = _T("ÒôÆµ");
+		type = _T("éŸ³é¢‘");
 
 		if(formattype == FORMAT_WaveFormatEx)
 		{
@@ -104,9 +104,9 @@ CString CMediaTypeEx::ToString(IPin* pPin)
 			{
 				codec = GetAudioCodecName(subtype, wfe->wFormatTag);
 				dim.Format(_T("%dHz"), wfe->nSamplesPerSec);
-				if(wfe->nChannels == 1) dim.Format(_T("%s µ¥ÉùµÀ"), CString(dim));
-				else if(wfe->nChannels == 2) dim.Format(_T("%s Á¢ÌåÉù"), CString(dim));
-				else dim.Format(_T("%s %dÉùµÀ"), CString(dim), wfe->nChannels);
+				if(wfe->nChannels == 1) dim.Format(_T("%s å•å£°é“"), CString(dim));
+				else if(wfe->nChannels == 2) dim.Format(_T("%s ç«‹ä½“å£°"), CString(dim));
+				else dim.Format(_T("%s %då£°é“"), CString(dim), wfe->nChannels);
 				if(wfe->nAvgBytesPerSec) rate.Format(_T("%dKbps"), wfe->nAvgBytesPerSec*8/1000);
 			}
 		}
@@ -116,9 +116,9 @@ CString CMediaTypeEx::ToString(IPin* pPin)
 
 			codec = GetAudioCodecName(subtype, 0);
 			dim.Format(_T("%dHz"), vf->nSamplesPerSec);
-			if(vf->nChannels == 1) dim.Format(_T("%s µ¥ÉùµÀ"), CString(dim));
-			else if(vf->nChannels == 2) dim.Format(_T("%s Á¢ÌåÉù"), CString(dim));
-			else dim.Format(_T("%s %dÉùµÀ"), CString(dim), vf->nChannels);
+			if(vf->nChannels == 1) dim.Format(_T("%s å•å£°é“"), CString(dim));
+			else if(vf->nChannels == 2) dim.Format(_T("%s ç«‹ä½“å£°"), CString(dim));
+			else dim.Format(_T("%s %då£°é“"), CString(dim), vf->nChannels);
 			if(vf->nAvgBitsPerSec) rate.Format(_T("%dKbps"), vf->nAvgBitsPerSec/1000);
 		}
 		else if(formattype == FORMAT_VorbisFormat2)
@@ -127,23 +127,23 @@ CString CMediaTypeEx::ToString(IPin* pPin)
 
 			codec = GetAudioCodecName(subtype, 0);
 			dim.Format(_T("%dHz"), vf->SamplesPerSec);
-			if(vf->Channels == 1) dim.Format(_T("%s µ¥ÉùµÀ"), CString(dim));
-			else if(vf->Channels == 2) dim.Format(_T("%s Á¢ÌåÉù"), CString(dim));
-			else dim.Format(_T("%s %dÉùµÀ"), CString(dim), vf->Channels);
+			if(vf->Channels == 1) dim.Format(_T("%s å•å£°é“"), CString(dim));
+			else if(vf->Channels == 2) dim.Format(_T("%s ç«‹ä½“å£°"), CString(dim));
+			else dim.Format(_T("%s %då£°é“"), CString(dim), vf->Channels);
 		}				
 	}
 	else if(majortype == MEDIATYPE_Text)
 	{
-		type = _T("ÎÄ×Ö");
+		type = _T("æ–‡å­—");
 	}
 	else if(majortype == MEDIATYPE_Subtitle)
 	{
-		type = _T("×ÖÄ»");
+		type = _T("å­—å¹•");
 		codec = GetSubtitleCodecName(subtype);
 	}
 	else
 	{
-		type = _T("Î´Öª");
+		type = _T("æœªçŸ¥");
 	}
 
 	if(CComQIPtr<IMediaSeeking> pMS = pPin)
@@ -222,7 +222,7 @@ CString CMediaTypeEx::GetVideoCodecName(const GUID& subtype, DWORD biCompression
 
 		if(!names.Lookup(MAKEFOURCC(b[3], b[2], b[1], b[0]), str))
 		{
-			if(subtype == MEDIASUBTYPE_DiracVideo) str = _T("Dirac ÊÓÆµ");
+			if(subtype == MEDIASUBTYPE_DiracVideo) str = _T("Dirac è§†é¢‘");
 			// else if(subtype == ) str = _T("");
 			else if(biCompression < 256) str.Format(_T("%d"), biCompression);
 			else str.Format(_T("%4.4hs"), &biCompression);

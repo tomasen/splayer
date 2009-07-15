@@ -13697,12 +13697,29 @@ void CMainFrame::OnDebugreport()
 				// hide these
 				continue;
 			}
+			CMediaTypeEx cmt;
 			szaReport.Add(name + _T(" ") + CStringFromGUID(clsid));
 			CComQIPtr<ISpecifyPropertyPages> pSPP = pBF;
 			BeginEnumPins(pBF, pEP, pPin)
 			{
 				CString name = GetPinName(pPin);
 				name.Replace(_T("&"), _T("&&"));
+
+				if(SUCCEEDED(pPin->ConnectionMediaType(&cmt)))
+				{
+					CAtlList<CString> sl;
+					cmt.Dump(sl);
+					CString szTmp1;
+					POSITION pos = sl.GetHeadPosition();
+					while(pos) {
+						CString szTmp2 = sl.GetNext(pos) ;
+						if(szTmp2.Find(_T("pbFormat")) >= 0){
+							break;
+						}
+						szTmp1.Append(szTmp2+_T("\r\n"));
+					}
+					szaReport.Add(szTmp1);
+				}
 
 				if(pSPP = pPin)
 				{

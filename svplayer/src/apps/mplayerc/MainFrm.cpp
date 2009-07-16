@@ -174,6 +174,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_WM_NCCALCSIZE()
 	/*NEW UI END*/
 
+	ON_MESSAGE(WM_IME_SETCONTEXT, OnImeSetContext)
+
 	ON_MESSAGE_VOID(WM_DISPLAYCHANGE, OnDisplayChange)
 
 	ON_WM_SYSCOMMAND()
@@ -732,7 +734,8 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	PreMultiplyBitmap(m_bmpMenu);*/
 	m_btnList.SetHideStat( HTMINTOTRAY,   s.fTrayIcon);
 
-
+	ImmAssociateContextEx(m_hWnd, 0, IACE_CHILDREN);
+	//ImmAssociateContext((HWND)m_wndView, 0);
 	/*NEW UI END*/
 	return 0;
 }
@@ -1376,6 +1379,11 @@ void CMainFrame::OnNcRButtonDown(UINT nHitTest, CPoint point)
 	//__super::OnNcRButtonDown(nHitTest, point);
 }
 
+LRESULT CMainFrame::OnImeSetContext(WPARAM wParam, LPARAM lParam )
+{
+	//lParam = 0;
+	return DefWindowProc(WM_IME_SETCONTEXT, wParam, lParam);
+}
 LRESULT CMainFrame::OnNcHitTestNewUI(WPARAM wParam, LPARAM lParam )
 {
 	// custom processing of our min/max/close buttons
@@ -12061,9 +12069,9 @@ void CMainFrame::SetAlwaysOnTop(int i, BOOL setSetting)
 	{
 		const CWnd* pInsertAfter = NULL;
 
-		if(i == 0)
+		if(i == 0){
 			pInsertAfter = &wndNoTopMost;
-		else if(i == 1)
+		}else if(i == 1)
 			pInsertAfter = &wndTopMost;
 		else // if(i == 2)
 			pInsertAfter = GetMediaState() == State_Running ? &wndTopMost : &wndNoTopMost;

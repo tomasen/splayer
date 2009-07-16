@@ -448,6 +448,7 @@ CMPlayerCApp::CMPlayerCApp()
 , m_bMouseInOutUnknown(TRUE)      // don't know whether in or out yet
 , m_bGenerateMouseInOutMessages(TRUE) 
 {
+
 	::SetUnhandledExceptionFilter(DebugMiniDumpFilter);
 
 	QueryPerformanceFrequency ((LARGE_INTEGER*)&m_PerfFrequency);
@@ -1146,7 +1147,7 @@ UINT __cdecl Thread_InitInstance( LPVOID lpParam )
 BOOL CMPlayerCApp::InitInstance()
 {
 	//ssftest s;
-
+	
 	long		lError;
 	DetourRestoreAfterWith();
 	DetourTransactionBegin();

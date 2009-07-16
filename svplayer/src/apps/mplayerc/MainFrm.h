@@ -794,6 +794,8 @@ public:
 	LRESULT OnNcLButtonDown(  WPARAM wParam, LPARAM lParam);
 	LRESULT OnNcLButtonUp(  WPARAM wParam, LPARAM lParam);
 	LRESULT OnNcHitTestNewUI(  WPARAM wParam, LPARAM lParam);
+	LRESULT OnImeSetContext(  WPARAM wParam, LPARAM lParam);
+	
 
 	afx_msg void OnNcCalcSize( BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp);
 	void RedrawNonClientArea();

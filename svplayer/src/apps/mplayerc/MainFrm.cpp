@@ -9360,7 +9360,36 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 			pOFD->title = fn;
 			m_fnCurPlayingFile = fn;
 			//是否有字幕？ 沒有则下载字幕
+			CSVPToolBox svpTool;
+			//搜索目录下同名字幕
+			CAtlArray<CString> subSearchPaths;
+			subSearchPaths.Add(_T("."));
+			subSearchPaths.Add(svpTool.GetPlayerPath(_T("subtitles")) );
+			subSearchPaths.Add(_T(".\\subtitles"));
+			subSearchPaths.Add(_T(".\\Subs"));
+			subSearchPaths.Add(_T("c:\\subtitles"));
+
+			CAtlArray<SubFile> ret;
+
+			POSITION pos = pOFD->subs.GetHeadPosition();
+			while(pos){
+				POSITION cur = pos;
+				CString szSubFn = pOFD->subs.GetNext(pos);
+				if(!svpTool.ifFileExist(szSubFn))
+					pOFD->subs.RemoveAt(cur);
+			}
+			GetSubFileNames(fn, subSearchPaths, ret);
+			for(int i = 0; i < ret.GetCount(); i++){
+				SubFile szBuf = ret.GetAt(i);
+				if ( pOFD->subs.Find( szBuf.fn ) == NULL){
+					pOFD->subs.AddTail(szBuf.fn);
+			//		AfxMessageBox(szBuf.fn);
+				}
+			}
+			//AfxMessageBox(_T("1"));
 			if ( pOFD->subs.GetCount() <= 0){
+			//	AfxMessageBox(_T("2"));
+
 				AppSettings & s = AfxGetAppSettings();
 				if(s.autoDownloadSVPSub){
 					CPath fPath(fn);

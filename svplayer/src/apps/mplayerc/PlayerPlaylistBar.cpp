@@ -467,7 +467,7 @@ void CPlayerPlaylistBar::CheckForPlaylistSubtitle(){
 				break;
 			}
 		}    
-
+/* 不好用
 		if(!bHasSubtitles && bAllInSameDir && iFileTotal > 1){ 
 			//Playlist的所在文件目录中是否有字幕文件
 
@@ -483,7 +483,7 @@ void CPlayerPlaylistBar::CheckForPlaylistSubtitle(){
 				m_pl.szPlayListSub = xSub.fn;
 			}
 		}
-
+*/
 	}
 }
 void CPlayerPlaylistBar::OnUpdateButtonAddSubForPlayList(CCmdUI* pCmdUI){
@@ -715,6 +715,8 @@ void CPlayerPlaylistBar::AddFolder(CString szFPath, BOOL bWithSubDirByDefault ){
 
 void CPlayerPlaylistBar::Append(CAtlList<CString>& fns, bool fMulti, CAtlList<CString>* subs)
 {
+	m_pl.szPlayListSub.Empty();
+
 	if(fMulti)
 	{
 		ASSERT(subs == NULL || subs->GetCount() == 0);
@@ -746,6 +748,8 @@ void CPlayerPlaylistBar::Open(CStringW vdn, CStringW adn, int vinput, int vchann
 
 void CPlayerPlaylistBar::Append(CStringW vdn, CStringW adn, int vinput, int vchannel, int ainput)
 {
+	m_pl.szPlayListSub.Empty();
+
 	CPlaylistItem pli;
 	pli.m_type = CPlaylistItem::device;
 	pli.m_fns.AddTail(CString(vdn));

@@ -23,6 +23,7 @@
 #include "shockwavegraph.h"
 #include "resource.h"
 #include "..\..\DSUtil\DSUtil.h"
+#include "..\..\svplib\svplib.h"
 
 CShockwaveGraph::CShockwaveGraph(HWND hParent, HRESULT& hr)
 	: m_fs(State_Stopped)
@@ -179,7 +180,7 @@ STDMETHODIMP CShockwaveGraph::GetVideoSize(long* pWidth, long* pHeight)
 
 	CRect r;
 	m_wndWindowFrame.GetWindowRect(r);
-	if(!r.IsRectEmpty() && 0)
+	if(!r.IsRectEmpty() && 0 )
 	{
 		*pWidth = r.Width();
 		*pHeight = r.Height();
@@ -187,9 +188,10 @@ STDMETHODIMP CShockwaveGraph::GetVideoSize(long* pWidth, long* pHeight)
 	else
 	{
 		// no call exists to determine these...
-		*pWidth = _wtoi(m_wndDestFrame.TGetProperty(_T("_level0"),  8));//m_wndDestFrame.get_; 
-		*pHeight = _wtoi(m_wndDestFrame.TGetProperty(_T("_level0"),  9));
+		*pWidth = max(50,  _wtof(m_wndDestFrame.TGetProperty(_T("_level0"),  8)) );//m_wndDestFrame.get_; 
+		*pHeight = max(50, _wtof(m_wndDestFrame.TGetProperty(_T("_level0"),  9)) );
 
+		//SVP_LogMsg5(_T("SWF width %d %s height %d %s ") ,*pWidth,m_wndDestFrame.TGetProperty(_T("_level0"),  8) , *pHeight , m_wndDestFrame.TGetProperty(_T("_level0"),  9));
 		NotifyEvent(EC_BG_AUDIO_CHANGED, 2, 0);
 	}
 	

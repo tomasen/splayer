@@ -6,6 +6,13 @@
 	ProjectGUID="{34E7D21F-9B5C-473A-B7FF-50C58627E961}"
 	VCNestedProjectGUID="{FC70988B-1AE5-4381-866D-4F405E28AC42}"
 	VCNestedProjectFileName="dsutil_vs2005.vcproj">
-	<Configurations/>
+	<Configurations>
+		<Configuration
+			Name="Release Unicode|Win32">
+			<Tool
+				Name="CppCmplrTool"
+				EnableEnhancedInstructionSet="1001"/>
+		</Configuration>
+	</Configurations>
 	<Files/>
 </VisualStudioProject>

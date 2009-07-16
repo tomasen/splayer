@@ -209,6 +209,7 @@
 				Name="VCCLCompilerTool"
 				WholeProgramOptimization="true"
 				PreprocessorDefinitions="WIN32;NDEBUG"
+				EnableEnhancedInstructionSet="0"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"

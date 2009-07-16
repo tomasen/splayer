@@ -6,6 +6,13 @@
 	ProjectGUID="{39DCC1DB-5CAD-4B63-9599-040128AF60B4}"
 	VCNestedProjectGUID="{58E36BF5-4A06-47E4-BD40-4CCEF8C634DF}"
 	VCNestedProjectFileName="MPCVideoDec.vcproj">
-	<Configurations/>
+	<Configurations>
+		<Configuration
+			Name="Release Unicode|Win32">
+			<Tool
+				Name="CppCmplrTool"
+				EnableEnhancedInstructionSet="1001"/>
+		</Configuration>
+	</Configurations>
 	<Files/>
 </VisualStudioProject>

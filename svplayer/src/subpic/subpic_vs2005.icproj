@@ -6,6 +6,13 @@
 	ProjectGUID="{530A307B-FDE3-4A35-883E-9F7C6F2B7587}"
 	VCNestedProjectGUID="{D514EA4D-EAFB-47A9-A437-A582CA571251}"
 	VCNestedProjectFileName="subpic_vs2005.vcproj">
-	<Configurations/>
+	<Configurations>
+		<Configuration
+			Name="Release Unicode|Win32">
+			<Tool
+				Name="CppCmplrTool"
+				EnableEnhancedInstructionSet="1001"/>
+		</Configuration>
+	</Configurations>
 	<Files/>
 </VisualStudioProject>

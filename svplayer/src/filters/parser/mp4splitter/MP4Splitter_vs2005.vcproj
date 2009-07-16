@@ -213,6 +213,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories=".\AP4\Source\Core;.\AP4\Source\Config;.\AP4\Source\Crypto"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
+				EnableEnhancedInstructionSet="2"
 				DisableSpecificWarnings="4812"
 			/>
 			<Tool

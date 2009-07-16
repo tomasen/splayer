@@ -8298,6 +8298,12 @@ MENUBARINFO mbi;
 			CRect r = s.rcLastWindowPos;
 			x = r.CenterPoint().x - w/2;
 			y = r.CenterPoint().y - h/2;
+
+			x = max( mi.rcWork.left , x);
+			x = min( (mi.rcWork.right - w) , x);
+			y = max( mi.rcWork.top , y);
+			y = min( (mi.rcWork.bottom - h) , y);
+
 //			x = r.TopLeft().x;
 //			y = r.TopLeft().y;
 		}

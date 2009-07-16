@@ -830,4 +830,5 @@ public:
 	afx_msg void OnUpdateDebugreport(CCmdUI *pCmdUI);
 	afx_msg void OnSetAutoLoadSubtitle();
 	afx_msg void OnUpdateSetAutoLoadSubtitle(CCmdUI *pCmdUI);
+	afx_msg BOOL OnNcCreate(LPCREATESTRUCT lpCreateStruct);
 };

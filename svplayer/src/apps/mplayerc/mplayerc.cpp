@@ -1342,7 +1342,6 @@ BOOL CMPlayerCApp::InitInstance()
 	}
 
 	AfxEnableControlContainer();
-
 	CMainFrame* pFrame = new CMainFrame;
 	m_pMainWnd = pFrame;
 	pFrame->LoadFrame(IDR_MAINFRAME, WS_OVERLAPPEDWINDOW|FWS_ADDTOTITLE, NULL, NULL);

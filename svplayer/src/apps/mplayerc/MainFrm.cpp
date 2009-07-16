@@ -475,6 +475,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_CONFIG_AUTOLOADSUBTITLE2, OnSetAutoLoadSubtitle)
 	ON_UPDATE_COMMAND_UI(ID_CONFIG_AUTOLOADSUBTITLE2, OnUpdateSetAutoLoadSubtitle)
 
+	ON_WM_NCCREATE()
 	END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -4106,6 +4107,8 @@ void CMainFrame::OnFilePostOpenmedia()
 	RedrawNonClientArea();
 	SendNowPlayingToMSN();
 	SendNowPlayingTomIRC();
+
+
 }
 
 void CMainFrame::OnUpdateFilePostOpenmedia(CCmdUI* pCmdUI)
@@ -10727,10 +10730,13 @@ void CMainFrame::SetupOpenCDSubMenu()
 
 	UINT id = ID_FILE_OPEN_CD_START;
 
+	ULONGLONG startL = AfxGetMyApp()->GetPerfCounter();
 	for(TCHAR drive = 'C'; drive <= 'Z'; drive++)
 	{
-		CString label = GetDriveLabel(drive), str;
-
+		CString label, str; // = GetDriveLabel(drive)
+		//ULONGLONG x1 =  AfxGetMyApp()->GetPerfCounter();
+		//SVP_LogMsg5(_T("GetDriveLabel %I64d") , x1 - startL);
+		//startL = x1;
 		
 		CAtlList<CString> files;
 		switch(GetCDROMType(drive, files, true))
@@ -10754,7 +10760,9 @@ void CMainFrame::SetupOpenCDSubMenu()
 		default:
 			break;
 		}
-
+		//x1 =  AfxGetMyApp()->GetPerfCounter();
+		//SVP_LogMsg5(_T("GetCDROMType %I64d") , x1 - startL);
+		//startL = x1;
 		if(!str.IsEmpty())
 			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, id++, str);
 	}
@@ -13276,6 +13284,7 @@ IMPLEMENT_DYNCREATE(CGraphThread, CWinThread)
 BOOL CGraphThread::InitInstance()
 {
 	AfxSocketInit();
+
 	return SUCCEEDED(CoInitialize(0)) ? TRUE : FALSE;
 }
 
@@ -13849,4 +13858,15 @@ void CMainFrame::OnDebugreport()
 void CMainFrame::OnUpdateDebugreport(CCmdUI *pCmdUI)
 {
 	pCmdUI->Enable(IsSomethingLoaded());
+}
+
+BOOL CMainFrame::OnNcCreate(LPCREATESTRUCT lpCreateStruct)
+{
+	
+	if (!__super::OnNcCreate(lpCreateStruct))
+		return FALSE;
+
+	// TODO:  Add your specialized creation code here
+
+	return TRUE;
 }

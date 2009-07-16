@@ -8293,8 +8293,8 @@ MENUBARINFO mbi;
 			h = s.rcLastWindowPos.Height();
 		}else{
 			
-			w = max( DEFCLIENTW , min( (mi.rcWork.right - mi.rcWork.left)  * 61 /100 , s.rcLastWindowPos.Width() ) ) ;
-			h = max( DEFCLIENTH , min( (mi.rcWork.bottom - mi.rcWork.top) * 61 /100, s.rcLastWindowPos.Height()) );
+			w = max( DEFCLIENTW , min( (mi.rcWork.right - mi.rcWork.left)  * 51 /100 , s.rcLastWindowPos.Width() ) ) ;
+			h = max( DEFCLIENTH , min( (mi.rcWork.bottom - mi.rcWork.top) * 51 /100, s.rcLastWindowPos.Height()) );
 			
 		}
 
@@ -8390,8 +8390,8 @@ void CMainFrame::RestoreDefaultWindowRect()
 
 		CRect rcW;
 		GetWindowRect(rcW);
-		w = max(w,min( rcW.Width(), (mi.rcWork.right - mi.rcWork.left) * 61 / 100 ));
-		h = max(h, min(rcW.Height(),  (mi.rcWork.bottom - mi.rcWork.top) * 61 / 100 ));
+		w = max(w,min( rcW.Width(), (mi.rcWork.right - mi.rcWork.left) * 51 / 100 ));
+		h = max(h, min(rcW.Height(),  (mi.rcWork.bottom - mi.rcWork.top) * 51 / 100 ));
 		if(s.HasFixedWindowSize())
 		{
 			w = s.fixedWindowSize.cx;

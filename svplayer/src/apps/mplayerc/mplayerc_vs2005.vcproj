@@ -590,6 +590,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\PlayerToolTopBar.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PlayerToolTopBar.h"
+				>
+			</File>
+			<File
 				RelativePath="Playlist.cpp"
 				>
 			</File>

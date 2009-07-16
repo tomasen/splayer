@@ -1936,7 +1936,12 @@ void CMainFrame::RecalcLayout(BOOL bNotify)
 	MINMAXINFO mmi;
 	memset(&mmi, 0, sizeof(mmi));
 	SendMessage(WM_GETMINMAXINFO, 0, (LPARAM)&mmi);
+	//int xMod = r.Width();
+	//int yMod = r.Height();
+
 	r |= CRect(r.TopLeft(), CSize(r.Width(), mmi.ptMinTrackSize.y));
+
+	//r.MoveToXY( r.left + ( r.Width() - xMod) / 2 , r.top + ( r.Height() - yMod) / 2  );
 	MoveWindow(&r);
 
 	rePosOSD();
@@ -8275,6 +8280,8 @@ MENUBARINFO mbi;
 		mi.cbSize = sizeof(MONITORINFO);
 		GetMonitorInfo(hMonitor, &mi);
 
+		int xMod = 0;
+		int yMod = 0; //修正值
 		if(s.HasFixedWindowSize())
 		{
 			w = s.fixedWindowSize.cx;
@@ -8288,6 +8295,7 @@ MENUBARINFO mbi;
 			
 			w = max( DEFCLIENTW , min( (mi.rcWork.right - mi.rcWork.left)  * 38 /100 , s.rcLastWindowPos.Width() ) ) ;
 			h = max( DEFCLIENTH , min( (mi.rcWork.bottom - mi.rcWork.top) * 38 /100, s.rcLastWindowPos.Height()) );
+			
 		}
 
 		int x = (mi.rcWork.left+mi.rcWork.right-w)/2;
@@ -8298,15 +8306,21 @@ MENUBARINFO mbi;
 			CRect r = s.rcLastWindowPos;
 			x = r.CenterPoint().x - w/2;
 			y = r.CenterPoint().y - h/2;
-
-			x = max( mi.rcWork.left , x);
-			x = min( (mi.rcWork.right - w) , x);
-			y = max( mi.rcWork.top , y);
-			y = min( (mi.rcWork.bottom - h) , y);
-
+			
 //			x = r.TopLeft().x;
 //			y = r.TopLeft().y;
 		}
+
+		//xMod = (s.rcLastWindowPos.Width() - w) /2;
+		//yMod = (s.rcLastWindowPos.Height() - h) /2;
+		//x += xMod;
+		//y += yMod;
+
+		x = max( mi.rcWork.left , x);
+		x = min( (mi.rcWork.right - w) , x);
+		y = max( mi.rcWork.top , y);
+		y = min( (mi.rcWork.bottom - h) , y);
+
 
 		UINT lastWindowType = s.lastWindowType;
 
@@ -8386,8 +8400,8 @@ void CMainFrame::RestoreDefaultWindowRect()
 		{
 			CRect r = s.rcLastWindowPos;
 
-			x = r.TopLeft().x;
-			y = r.TopLeft().y;
+			x = r.CenterPoint().x - w/2;
+			y = r.CenterPoint().y - h/2;
 		}
 
 		MoveWindow(x, y, w, h);

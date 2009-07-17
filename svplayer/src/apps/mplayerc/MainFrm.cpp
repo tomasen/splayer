@@ -860,29 +860,33 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 			//SetTimer(TIMER_FULLSCREENMOUSEHIDER, max(nTimeOut*1000, 2000), NULL);
 		}
 	}
+/*
 
-	if(0 && bMouseMoved && IsSomethingLoaded()){
+	if( bMouseMoved && IsSomethingLoaded()){
 		BOOL bSomethingChanged = false;
 		DWORD dnCS = s.nCS;
 		if(point.y < 20){
 			if(!m_wndToolTopBar.IsVisible()){
 				SVP_LogMsg5(_T("show  tooltopbar") );
-				ShowControls(dnCS | CS_TOOLTOPBAR , false);//ShowControlBar(&m_wndToolTopBar, SW_SHOW, false) ;
+				//ShowControlBar(&m_wndToolTopBar, TRUE, TRUE); //ShowControls(dnCS | CS_TOOLTOPBAR , false);//
+				ShowControlBar(&m_wndToolTopBar, TRUE, TRUE); 
 				bSomethingChanged = true;
 			}
 		}else{
 			if(m_wndToolTopBar.IsVisible()){
 				SVP_LogMsg5(_T(" hide tooltopbar") );
-				ShowControls(dnCS  , false);//ShowControlBar(&m_wndToolTopBar, SW_HIDE, false) ;
+				ShowControlBar(&m_wndToolTopBar, FALSE, TRUE) ; //ShowControls(dnCS  , false);//
 				bSomethingChanged = true;
 			}
 		}
 
 		if(bSomethingChanged){
 			//MoveVideoWindow();
-			
+			RecalcLayout();
+			RedrawNonClientArea();
 		}
 	}
+*/
 
 
 

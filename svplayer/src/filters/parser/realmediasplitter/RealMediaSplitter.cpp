@@ -1560,8 +1560,9 @@ HRESULT CRealVideoDecoder::Transform(IMediaSample* pIn)
 		return S_OK;
 	}
 
+	
 	hr = RVTransform(pDataIn, (BYTE*)m_pI420, &transform_in, &transform_out, m_dwCookie);
-
+	
 	unsigned int tmp1, tmp2;
 	bool interlaced = false, tmp3, tmp4;
 	::GetDimensions_X10(pDataIn, &tmp1, &tmp2, &interlaced, &tmp3, &tmp4);

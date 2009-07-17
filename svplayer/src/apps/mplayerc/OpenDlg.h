@@ -33,6 +33,7 @@ public:
 	virtual ~COpenDlg();
 
 	bool m_fMultipleFiles;
+	bool m_hasAudio;
 	CAtlList<CString> m_fns;
 
 // Dialog Data

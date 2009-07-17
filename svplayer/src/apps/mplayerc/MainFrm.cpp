@@ -615,6 +615,10 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 		m_bars.AddTail(&m_wndStatusBar);
 	}
+
+	if(m_wndToolTopBar.Create(this))
+		m_bars.AddTail(&m_wndToolTopBar);
+
 	m_bars.AddTail(&m_wndColorControlBar);
 
 	
@@ -4579,8 +4583,15 @@ void CMainFrame::OnFileOpenmedia()
 
 	ShowWindow(SW_SHOW);
 	SetForegroundWindow();
+	
+	if(dlg.m_hasAudio){
+		m_wndPlaylistBar.Empty();
+		m_wndPlaylistBar.Append(dlg.m_fns, dlg.m_fMultipleFiles);
+	
+	}else{
 
-	m_wndPlaylistBar.Open(dlg.m_fns, dlg.m_fMultipleFiles, NULL, dlg.m_fOpenDirAutomatic);
+		m_wndPlaylistBar.Open(dlg.m_fns, dlg.m_fMultipleFiles, NULL, dlg.m_fOpenDirAutomatic);
+	}
 	//set current f
 
 	if(m_wndPlaylistBar.GetCount() == 1 && m_wndPlaylistBar.IsWindowVisible() && !m_wndPlaylistBar.IsFloating())
@@ -12077,7 +12088,7 @@ void CMainFrame::ShowControls(int nCS, bool fSave)
 	
 	
     if(fSave)
-		AfxGetAppSettings().nCS = nCS;
+		AfxGetAppSettings().nCS = nCS&~CS_TOOLTOPBAR;
 
 	if(bSomthingChanged){
 		if(!m_fFullScreen){

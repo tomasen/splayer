@@ -124,8 +124,23 @@ void CPlayerToolTopBar::OnMove(int x, int y)
 void CPlayerToolTopBar::OnPaint()
 {
 	CPaintDC dc(this); // device context for painting
-	// TODO: Add your message handler code here
-	// Do not call CToolBar::OnPaint() for painting messages
+	CRect rcClient;
+	GetClientRect(&rcClient);
+	CMemoryDC hdc(&dc, rcClient);
+
+	CRect rc;
+	GetWindowRect(&rc);
+
+	CRect rcBottomSqu = rcClient;
+	rcBottomSqu.top = rcBottomSqu.bottom - 1;
+	//hdc.FillSolidRect(rcBottomSqu, NEWUI_COLOR_BG);
+
+	CRect rcUpperSqu = rcClient;
+	rcUpperSqu.bottom--;
+	hdc.FillSolidRect(rcUpperSqu, RGB(61,65,69));
+
+	hdc.FillSolidRect(rcBottomSqu, RGB(89,89,89));
+
 }
 
 void CPlayerToolTopBar::OnSize(UINT nType, int cx, int cy)
@@ -139,13 +154,31 @@ BOOL CPlayerToolTopBar::Create(CWnd* pParentWnd, DWORD dwStyle , UINT nID)
 {
 	// TODO: Add your specialized code here and/or call the base class
 
-	return CToolBar::Create(pParentWnd, dwStyle, nID);
+	if(!__super::CreateEx(pParentWnd,
+		TBSTYLE_FLAT|TBSTYLE_TRANSPARENT|TBSTYLE_AUTOSIZE,
+		WS_CHILD|CBRS_ALIGN_TOP , CRect(0,0,0,0))  //CBRS_TOOLTIPS NEW UI
+		) //|| !LoadToolBar(iToolBarID)
+		return FALSE;
+
+	GetToolBarCtrl().SetExtendedStyle(TBSTYLE_EX_DRAWDDARROWS);
+
+	cursorHand = ::LoadCursor(NULL, IDC_HAND);
+
+	GetSystemFontWithScale(&m_statft, 14.0);
+
+	CDC ScreenDC;
+	ScreenDC.CreateIC(_T("DISPLAY"), NULL, NULL, NULL);
+	m_nLogDPIY = ScreenDC.GetDeviceCaps(LOGPIXELSY);
+
+
+	EnableToolTips(TRUE);
+	return TRUE;
 }
 
 CSize CPlayerToolTopBar::CalcFixedLayout(BOOL bStretch,BOOL bHorz ){
 
 
-	CSize size( 32767, 16 * m_nLogDPIY / 96 );
+	CSize size( 32767, 20 * m_nLogDPIY / 96 );
 
 	if ( CWnd* pParent = AfxGetMainWnd() )
 	{

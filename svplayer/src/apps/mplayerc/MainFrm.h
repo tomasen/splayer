@@ -36,6 +36,7 @@
 #include "PPageSheet.h"
 #include "PPageFileInfoSheet.h"
 #include "OpenCapDeviceDlg.h"
+#include "PlayerToolTopBar.h"
 
 #include "FileDropTarget.h"
 
@@ -476,6 +477,7 @@ protected:  // control bar embedded members
 	CPlayerInfoBar m_wndInfoBar;
 	CPlayerInfoBar m_wndStatsBar;
 	CPlayerStatusBar m_wndStatusBar;
+	CPlayerToolTopBar m_wndToolTopBar;
 	CPlayerColorControlBar m_wndColorControlBar;
 	CList<CControlBar*> m_bars;
 

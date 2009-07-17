@@ -37,6 +37,7 @@ COpenDlg::COpenDlg(CWnd* pParent /*=NULL*/)
 	, m_fMultipleFiles(false)
 	, m_fAppendPlaylist(FALSE)
 	, m_fOpenDirAutomatic(TRUE)
+	, m_hasAudio(false)
 {
 }
 
@@ -187,8 +188,12 @@ void COpenDlg::OnBnClickedOk()
 
 	m_fns.RemoveAll();
 	m_fns.AddTail(m_path);
-	if(m_mrucombo2.IsWindowEnabled())
+	if(m_mrucombo2.IsWindowEnabled()){
 		m_fns.AddTail(m_path2);
+		
+		if(!m_path2.IsEmpty())
+			m_hasAudio = true;
+	}
 
 	m_fMultipleFiles = false;
 

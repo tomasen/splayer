@@ -559,7 +559,7 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 	CAutoLock cAutoLock(this);
 
 	CheckPointer(pPinOut, E_POINTER);
-
+	AppSettings& s = AfxGetAppSettings();
 
 	HRESULT hr;
 
@@ -718,6 +718,8 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 			if (szFName.Find(_T("ArcSoft")) >= 0 ) continue; //disable ArcSoft filter that may cause flip
 			if (szFName.Find(_T("Nero")) >= 0 ) continue; //disable Nero filter that may cause flip
 			if (szFName.Find(_T("Adobe")) >= 0 ) continue; //disable Adobe filter that may cause flip
+			
+			if (s.TraFilters & TRA_AC3 && szFName.Find(_T("AC3Filter")) >= 0 ) continue; //disable AC3 filter if internal AC3 is enabled
 			
 			
 				

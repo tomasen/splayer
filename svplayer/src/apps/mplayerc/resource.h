@@ -37,7 +37,11 @@
 #define IDI_REAL_FILE                   313
 #define IDI_SUBTITLE_FILE               314
 #define IDI_VIDEO_CD                    315
-#define IDI_PLAY                        316
+#define IDI_AVI                        316
+#define IDI_MKV                        317
+#define IDI_TS                        318
+#define IDI_VIDEO                        319
+#define IDI_PLAY                        320
 #define IDR_AVI_FILECOPY                400
 #define IDR_HTML_INDEX                  500
 #define IDR_HTML_404                    501

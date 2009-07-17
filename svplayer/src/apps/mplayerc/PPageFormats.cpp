@@ -207,7 +207,7 @@ CString CPPageFormats::GetFileIcon(CString strExt){
 				if(mf[i].IsAudioOnly()){
 					iconId = IDI_AUDIO_FILE;
 				}else{
-					iconId = IDI_DV_VIDEO;
+					iconId = IDI_VIDEO;
 				}
 					CString szType = mf[i].GetLabel();
 					if(szType.Find(_T("Real")) >= 0){
@@ -226,6 +226,12 @@ CString CPPageFormats::GetFileIcon(CString strExt){
 						iconId = IDI_FLASH;
 					}else if(szType.Find(_T("DVD")) >= 0){
 						iconId = IDI_DVD;
+					}else if(szType.Find(_T("Matroska")) >= 0){
+						iconId = IDI_MKV;
+					}else if(szType.Find(_T("Video File")) >= 0){
+						iconId = IDI_AVI;
+					}else if(szType.Find(_T("Transport-Stream")) >= 0){
+						iconId = IDI_TS;
 					}
 				
 				break;

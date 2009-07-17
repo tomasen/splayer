@@ -1520,6 +1520,10 @@ IDI_QUICKTIME_FILE      ICON                    "res\\Icon\\Quicktime_File.ico"
 IDI_REAL_FILE           ICON                    "res\\Icon\\Real_File.ico"
 IDI_SUBTITLE_FILE       ICON                    "res\\Icon\\Subtitle_File.ico"
 IDI_VIDEO_CD            ICON                    "res\\Icon\\Video_CD.ico"
+IDI_AVI            ICON                    "res\\Icon\\avi.ico"
+IDI_MKV            ICON                    "res\\Icon\\mkv.ico"
+IDI_TS            ICON                    "res\\Icon\\ts.ico"
+IDI_VIDEO            ICON                    "res\\Icon\\video.ico"
 IDI_PLAY                ICON                    "res\\play.ico"
 
 /////////////////////////////////////////////////////////////////////////////

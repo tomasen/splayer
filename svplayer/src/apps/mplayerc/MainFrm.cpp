@@ -616,9 +616,9 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		m_bars.AddTail(&m_wndStatusBar);
 	}
 
-	if(m_wndToolTopBar.Create(this))
+	if(m_wndToolTopBar.Create(this)){
 		m_bars.AddTail(&m_wndToolTopBar);
-
+	}
 	m_bars.AddTail(&m_wndColorControlBar);
 
 	
@@ -861,8 +861,29 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 		}
 	}
 
-	
-	
+	if(0 && bMouseMoved && IsSomethingLoaded()){
+		BOOL bSomethingChanged = false;
+		DWORD dnCS = s.nCS;
+		if(point.y < 20){
+			if(!m_wndToolTopBar.IsVisible()){
+				SVP_LogMsg5(_T("show  tooltopbar") );
+				ShowControls(dnCS | CS_TOOLTOPBAR , false);//ShowControlBar(&m_wndToolTopBar, SW_SHOW, false) ;
+				bSomethingChanged = true;
+			}
+		}else{
+			if(m_wndToolTopBar.IsVisible()){
+				SVP_LogMsg5(_T(" hide tooltopbar") );
+				ShowControls(dnCS  , false);//ShowControlBar(&m_wndToolTopBar, SW_HIDE, false) ;
+				bSomethingChanged = true;
+			}
+		}
+
+		if(bSomethingChanged){
+			//MoveVideoWindow();
+			
+		}
+	}
+
 
 
 	m_lastMouseMove = point;
@@ -1461,6 +1482,9 @@ void CMainFrame::RedrawNonClientArea()
 	// RedrawNonClientArea function every time after SetWindowText, or other similar calls.
 	// In certain situations this might cause a flicker because two painting processes are done.
 	// So it's better to use less or avoid these types of calls.
+	if(m_wndToolTopBar.IsVisible())
+		m_wndToolTopBar.Invalidate();
+
 	if(m_wndToolBar.IsVisible())
 		m_wndToolBar.Invalidate();
 	if(m_wndSeekBar.IsVisible())
@@ -1943,7 +1967,7 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
 void CMainFrame::RecalcLayout(BOOL bNotify)
 {
 	__super::RecalcLayout(bNotify);
-
+	
 	CRect r;
 	GetWindowRect(&r);
 	MINMAXINFO mmi;
@@ -8599,14 +8623,17 @@ void CMainFrame::MoveVideoWindow(bool fShowStats)
 {
 	if(m_iMediaLoadState == MLS_LOADED && !m_fAudioOnly && IsWindowVisible())
 	{
+		
 		AppSettings &s = AfxGetAppSettings();
 		CRect wr;
+		
 		if(!m_fFullScreen && ( s.nCS & CS_TOOLBAR ) )
 		{
 			m_wndView.GetClientRect(wr);
 			if(!s.fHideCaptionMenu)
 				wr.DeflateRect(2, 2);
 
+			
 			if( m_wndColorControlBar.IsVisible() ){
 				CRect rt ;
 				m_wndColorControlBar.GetClientRect(rt);
@@ -8627,6 +8654,15 @@ void CMainFrame::MoveVideoWindow(bool fShowStats)
 			m_wndView.GetWindowRect(&r);
 			wr -= r.TopLeft();
 		}
+
+/*
+		if( 0 && m_wndToolTopBar.IsVisible() ){
+			CRect rt ;
+			m_wndToolTopBar.GetClientRect(rt);
+			wr.top -= rt.Height();
+			SVP_LogMsg5(_T("m_wndToolTopBar.IsVisible()  %d "),  rt.Height());
+		}
+*/
 
 		CRect vr = CRect(0,0,0,0);
 
@@ -8700,7 +8736,7 @@ void CMainFrame::MoveVideoWindow(bool fShowStats)
 
 			if (m_pMFVDC) m_pMFVDC->SetVideoPosition (NULL, wr);
 		}
-
+		//SVP_LogMsg5(_T("MoveVideoWindow %d ") , wr.Height());
 		m_wndView.SetVideoRect(wr);
 
 		if(fShowStats && vr.Height() > 0)
@@ -12067,7 +12103,6 @@ void CMainFrame::ShowControls(int nCS, bool fSave)
 			ShowControlBar(pNext, !!(nCS&i), TRUE);
 
 		if(nCS&i) m_pLastBar = pNext;
-
 		CSize s = pNext->CalcFixedLayout(FALSE, TRUE);
 		if(nCSprev&i) hbefore += s.cy;
 		if(nCS&i) hafter += s.cy;

@@ -110,8 +110,14 @@ void CPlayerToolTopBar::ReCalcBtnPos(){
 BOOL CPlayerToolTopBar::PreCreateWindow(CREATESTRUCT& cs)
 {
 	// TODO: Add your specialized code here and/or call the base class
+	if(!__super::PreCreateWindow(cs))
+		return FALSE;
 
-	return CToolBar::PreCreateWindow(cs);
+	m_dwStyle &= ~CBRS_BORDER_TOP;
+	m_dwStyle &= ~CBRS_BORDER_LEFT;
+	m_dwStyle &= ~CBRS_BORDER_RIGHT;
+	m_dwStyle &= ~CBRS_BORDER_BOTTOM;
+	return TRUE;
 }
 
 void CPlayerToolTopBar::OnMove(int x, int y)

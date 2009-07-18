@@ -1097,7 +1097,7 @@ void CMPlayerCApp::InitInstanceThreaded(){
 	if ( m_s.fCheckFileAsscOnStartup ){
 		CChkDefPlayer dlg_chkdefplayer;
 		if( ! dlg_chkdefplayer.b_isDefaultPlayer() ){
-			if(m_s.fPopupStartUpExtCheck){
+			if(m_s.fPopupStartUpExtCheck || (IsVista() && !IsUserAnAdmin())){
 				dlg_chkdefplayer.DoModal();
 			}else{
 				dlg_chkdefplayer.setDefaultPlayer();
@@ -2588,7 +2588,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
  			iDXVer = 7;
  		}
 		iDSVideoRendererType = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DSVIDEORENDERERTYPE), ( (IsVista() || iDXVer >= 9) ? VIDRNDT_DS_VMR9RENDERLESS : VIDRNDT_DS_VMR7RENDERLESS) );
-		if(iDSVideoRendererType != VIDRNDT_DS_VMR7RENDERLESS && iDSVideoRendererType != VIDRNDT_DS_VMR9RENDERLESS ){//|| iDSVideoRendererType != VIDRNDT_DS_OVERLAYMIXER
+		if((iDSVideoRendererType != VIDRNDT_DS_VMR7RENDERLESS && iDSVideoRendererType != VIDRNDT_DS_VMR9RENDERLESS) || fVMDetected){//|| iDSVideoRendererType != VIDRNDT_DS_OVERLAYMIXER
 			iDSVideoRendererType = VIDRNDT_DS_VMR7RENDERLESS;
 		}
 		iRMVideoRendererType = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_RMVIDEORENDERERTYPE), ( (IsVista() || iDXVer >= 9) ? VIDRNDT_RM_DX9 : VIDRNDT_RM_DX7 ) );

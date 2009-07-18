@@ -359,7 +359,7 @@ bool RegSvr32(CString szDllPath){
 			p();
 		}
 
-		//FreeLibrary(h);
+		FreeLibrary(h);
 	}
 	return true;
 }

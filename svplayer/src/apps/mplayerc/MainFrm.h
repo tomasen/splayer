@@ -796,6 +796,7 @@ public:
 	LRESULT OnNcLButtonDown(  WPARAM wParam, LPARAM lParam);
 	LRESULT OnNcLButtonUp(  WPARAM wParam, LPARAM lParam);
 	LRESULT OnNcHitTestNewUI(  WPARAM wParam, LPARAM lParam);
+	LRESULT OnStatusMessage(  WPARAM wParam, LPARAM lParam);
 	LRESULT OnImeSetContext(  WPARAM wParam, LPARAM lParam);
 	
 

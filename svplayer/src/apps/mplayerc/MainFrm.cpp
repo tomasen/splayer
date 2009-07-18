@@ -174,6 +174,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_WM_NCCALCSIZE()
 	/*NEW UI END*/
 
+	ON_MESSAGE(ID_STATUS_MESSAGE, OnStatusMessage)
+
 	ON_MESSAGE(WM_IME_SETCONTEXT, OnImeSetContext)
 
 	ON_MESSAGE_VOID(WM_DISPLAYCHANGE, OnDisplayChange)
@@ -1359,7 +1361,12 @@ LRESULT CMainFrame::OnNcLButtonDown( WPARAM wParam, LPARAM lParam )
 	}
 	return DefWindowProc(WM_NCLBUTTONDOWN, wParam, lParam);
 }
+LRESULT CMainFrame::OnStatusMessage(  WPARAM wParam, LPARAM lParam){
 
+	SendStatusMessage( CString((WCHAR*)(wParam))  , (UINT)lParam);
+	return S_OK;
+
+}
 LRESULT CMainFrame::OnNcLButtonUp( WPARAM wParam, LPARAM lParam )
 {
 	// custom processing of our min/max/close buttons

@@ -1,4 +1,4 @@
-/* 
+﻿/* 
  * $Id: MPCVideoDecFilter.cpp 1147 2009-02-15 15:57:23Z casimir666 $
  *
  * (C) 2006-2007 see AUTHORS
@@ -33,6 +33,7 @@
 #include "VideoDecOutputPin.h"
 #include "CpuId.h"
 
+#include "../../../apps/mplayerc/Resource.h"
 #include "../../../svplib/svplib.h"
 
 extern "C"
@@ -1026,12 +1027,12 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 				case 1 :	// SAR not supported
 					 m_bDXVACompatible = false;
 					 if (m_nCompatibilityMode & 1) MessageBox (NULL, _T("DXVA : SAR is not supported"), MPCVD_CAPTION, MB_OK);
-					 if (m_nCompatibilityMode & 2) m_bDXVACompatible = true;
+					 if (m_nCompatibilityMode & 2) { m_bDXVACompatible = true; WCHAR *msg = _T("硬件设备可能不支持加速本文件(SAR)...") ; AfxGetMainWnd()->SendMessage(ID_STATUS_MESSAGE, (UINT_PTR)msg, 3000); }
 					 break;
 				case 2 :	// Too much ref frames
 					 m_bDXVACompatible = false;
 					 if (m_nCompatibilityMode & 1) MessageBox (NULL, _T("DXVA : too much ref frame"), MPCVD_CAPTION, MB_OK);
-					 if (m_nCompatibilityMode & 4) m_bDXVACompatible = true;
+					 if (m_nCompatibilityMode & 4) { m_bDXVACompatible = true; WCHAR *msg = _T("硬件设备可能没有足够能力加速本文件...") ; AfxGetMainWnd()->SendMessage(ID_STATUS_MESSAGE, (UINT_PTR)msg, 3000); }
 					 break;
 				}
 			}
@@ -1082,10 +1083,10 @@ bool CMPCVideoDecFilter::IsDXVASupported()
 			//SVP_LogMsg5(_T("DXVAModes true"));
 			// Enabled by user ?
 			if (m_bUseDXVA) {
-				SVP_LogMsg5(_T("m_bUseDXVA true"));
+				//SVP_LogMsg5(_T("m_bUseDXVA true"));
 				// is the file compatible ?
 		 		if (m_bDXVACompatible) {
-					SVP_LogMsg5(_T("m_bDXVACompatible true"));
+					//SVP_LogMsg5(_T("m_bDXVACompatible true"));
 					return true;
 				}
 			}

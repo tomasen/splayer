@@ -1092,21 +1092,8 @@ public:
 	}
 };
 void CMPlayerCApp::InitInstanceThreaded(){
-	CSVPToolBox svpTool;
-	//检查文件关联
-	if ( m_s.fCheckFileAsscOnStartup ){
-		CChkDefPlayer dlg_chkdefplayer;
-		if( ! dlg_chkdefplayer.b_isDefaultPlayer() ){
-			if(m_s.fPopupStartUpExtCheck || (IsVista() && !IsUserAnAdmin())){
-				dlg_chkdefplayer.DoModal();
-			}else{
-				dlg_chkdefplayer.setDefaultPlayer();
-			}
-		}
-		//	dlg_chkdefplayer.setDefaultPlayer();
-		
-	}
-
+	
+	
 	CSVPToolBox svpToolBox;
 	CStringArray csaDll;
 	//csaDll.Add( _T("codecs\\CoreAVCDecoder.ax")); //avoid missing reg key problem
@@ -1133,6 +1120,19 @@ void CMPlayerCApp::InitInstanceThreaded(){
 			}
 		}
 	
+		//检查文件关联
+		if ( m_s.fCheckFileAsscOnStartup ){
+			CChkDefPlayer dlg_chkdefplayer;
+			if( ! dlg_chkdefplayer.b_isDefaultPlayer() ){
+				if(m_s.fPopupStartUpExtCheck || (IsVista() && !IsUserAnAdmin())){
+					dlg_chkdefplayer.DoModal();
+				}else{
+					dlg_chkdefplayer.setDefaultPlayer();
+				}
+			}
+			//	dlg_chkdefplayer.setDefaultPlayer();
+
+		}
 
 }
 UINT __cdecl Thread_InitInstance( LPVOID lpParam ) 

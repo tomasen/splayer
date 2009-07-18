@@ -521,7 +521,7 @@ CMPCVideoDecFilter::CMPCVideoDecFilter(LPUNKNOWN lpunk, HRESULT* phr)
 	m_nErrorRecognition		= FF_ER_CAREFUL;
 	m_nIDCTAlgo				= FF_IDCT_AUTO;
 	m_bDXVACompatible		= true;
-	m_nCompatibilityMode	= 0;
+	m_nCompatibilityMode	= 6;
 	m_pFFBuffer				= NULL;
 	m_nFFBufferSize			= 0;
 	m_nWidth				= 0;
@@ -547,7 +547,7 @@ CMPCVideoDecFilter::CMPCVideoDecFilter(LPUNKNOWN lpunk, HRESULT* phr)
 		if(ERROR_SUCCESS == key.QueryDWORDValue(_T("DiscardMode"), dw)) m_nDiscardMode = dw;
 		if(ERROR_SUCCESS == key.QueryDWORDValue(_T("ErrorRecognition"), dw)) m_nErrorRecognition = dw;
 		if(ERROR_SUCCESS == key.QueryDWORDValue(_T("IDCTAlgo"), dw)) m_nIDCTAlgo = dw;
-		if(ERROR_SUCCESS == key.QueryDWORDValue(_T("CompatibilityMode"), dw)) m_nCompatibilityMode = dw;
+		//if(ERROR_SUCCESS == key.QueryDWORDValue(_T("CompatibilityMode"), dw)) m_nCompatibilityMode = dw;
 		if(ERROR_SUCCESS == key.QueryDWORDValue(_T("ActiveCodecs"), dw)) m_nActiveCodecs = dw;
 		if(ERROR_SUCCESS == key.QueryDWORDValue(_T("ARMode"), dw)) m_nARMode = dw;
 	}
@@ -1079,15 +1079,19 @@ bool CMPCVideoDecFilter::IsDXVASupported()
 	if (m_nCodecNb != -1) {
 		// Does the codec suppport DXVA ?
 		if (ffCodecs[m_nCodecNb].DXVAModes != NULL) {
+			//SVP_LogMsg5(_T("DXVAModes true"));
 			// Enabled by user ?
 			if (m_bUseDXVA) {
+				SVP_LogMsg5(_T("m_bUseDXVA true"));
 				// is the file compatible ?
 		 		if (m_bDXVACompatible) {
+					SVP_LogMsg5(_T("m_bDXVACompatible true"));
 					return true;
 				}
 			}
 		}
 	}
+	//SVP_LogMsg5(_T("Not DXVASupported"));
 	return false;
 }
 

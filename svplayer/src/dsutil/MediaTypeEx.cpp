@@ -371,7 +371,12 @@ void CMediaTypeEx::Dump(CAtlList<CString>& sl)
 	sl.AddTail(_T("AM_MEDIA_TYPE: "));
 	str.Format(_T("majortype: %s %s"), CString(GuidNames[majortype]), major);
 	sl.AddTail(str);
-	str.Format(_T("subtype: %s %s"), CString(GuidNames[subtype]), sub);
+	CString szSubGUID = CString(GuidNames[subtype]);
+	if(szSubGUID.Find(_T("Unknown")) >= 0){
+		TCHAR cType[5] = {subtype.Data1 & 0xff , (subtype.Data1 >> 8) & 0xff , (subtype.Data1 >> 16) & 0xff , (subtype.Data1 >> 24) & 0xff , 0};
+		szSubGUID.Format(_T("MEDIASUBTYPE_%s") ,cType );
+	}
+	str.Format(_T("subtype: %s %s"),szSubGUID , sub);
 	sl.AddTail(str);
 	str.Format(_T("formattype: %s %s"), CString(GuidNames[formattype]), format);
 	sl.AddTail(str);

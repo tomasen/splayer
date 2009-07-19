@@ -78,6 +78,7 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_DHtml_CheckBox(pDX, _T("chkautodownloadsvpsub"), m_sgi_chkautodownloadsvpsub);
 	DDX_DHtml_CheckBox(pDX, _T("chkautoresumeplay"), m_sgi_chkautoresumeplay);
 	DDX_DHtml_CheckBox(pDX, _T("chktrayicon"), m_sgi_chktrayicon);
+	DDX_DHtml_CheckBox(pDX, _T("dxvacompat"), m_sgi_dxvacompat);
 
 	DDX_DHtml_CheckBox(pDX, _T("chkusesmartdrag"), m_sgi_chkuseSmartDrag);
 	
@@ -234,7 +235,8 @@ BOOL CUESettingPanel::OnInitDialog()
 	m_sgi_chkautoresumeplay = s.autoResumePlay;
 	m_sgi_chkuseSmartDrag = s.useSmartDrag;
 	m_sgi_chktrayicon = s.fTrayIcon;
-	
+	m_sgi_dxvacompat = s.bDVXACompat;
+
 	m_sgs_stepsmall.Format(_T("%d"), s.nJumpDistS/1000) ;
 	m_sgs_stepmed.Format(_T("%d"), s.nJumpDistM/1000) ;
 	m_sgs_stepbig.Format(_T("%d"), s.nJumpDistL/1000) ;
@@ -411,6 +413,7 @@ void CUESettingPanel::ApplyAllSetting(){
 	s.fRememberZoomLevel = !!m_sgi_chkautozoom ;
 	s.useSmartDrag = !!m_sgi_chkuseSmartDrag ;
 	s.fUseInternalTSSpliter = m_sgi_chkinternaltspliteronly;
+	s.bDVXACompat = !!m_sgi_dxvacompat ;
 	
 	s.nJumpDistS = _wtof(m_sgs_stepsmall) * 1000;
 	s.nJumpDistM = _wtof(m_sgs_stepmed) * 1000;

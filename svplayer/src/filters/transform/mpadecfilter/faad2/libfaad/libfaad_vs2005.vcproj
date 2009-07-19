@@ -43,6 +43,7 @@
 				AdditionalOptions=""
 				AdditionalIncludeDirectories="../include/"
 				PreprocessorDefinitions="NDEBUG;WIN32;_LIB"
+				EnableEnhancedInstructionSet="0"
 				PrecompiledHeaderFile=".\Release/libfaad.pch"
 			/>
 			<Tool

@@ -119,6 +119,7 @@
 				PreprocessorDefinitions="WIN32;NDEBUG;"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
+				EnableEnhancedInstructionSet="0"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 			/>

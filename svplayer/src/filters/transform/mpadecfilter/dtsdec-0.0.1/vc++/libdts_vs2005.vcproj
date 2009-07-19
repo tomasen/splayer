@@ -103,6 +103,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories=".,../include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
+				EnableEnhancedInstructionSet="0"
 				PrecompiledHeaderFile=".\Release/libdts.pch"
 				CompileAs="0"
 			/>

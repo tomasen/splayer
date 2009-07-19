@@ -532,7 +532,7 @@ CMPCVideoDecFilter::CMPCVideoDecFilter(LPUNKNOWN lpunk, HRESULT* phr)
 	m_nErrorRecognition		= FF_ER_CAREFUL;
 	m_nIDCTAlgo				= FF_IDCT_AUTO;
 	m_bDXVACompatible		= true;
-	m_nCompatibilityMode	= 6;
+	m_nCompatibilityMode	= 0; //6 too allow too much ref count
 	m_pFFBuffer				= NULL;
 	m_nFFBufferSize			= 0;
 	m_nWidth				= 0;
@@ -920,6 +920,11 @@ bool CMPCVideoDecFilter::IsMultiThreadSupported(int nCodec)
 HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaType *pmt)
 {
 	int		nNewCodec;
+
+	CString szName(this->m_pName);
+	m_bUseDXVA = (szName.Find(_T("DXVA")) >= 0);
+	if(m_bUseDXVA) {DXVAFilters = ~0;}else{DXVAFilters = 0; }
+
  
 	if (direction == PINDIR_INPUT)
 	{
@@ -1020,7 +1025,7 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 
 			int avcRet = avcodec_open(m_pAVCtx, m_pAVCodec);
 			if (avcRet<0){
-				SVP_LogMsg2(_T("AVCOPEN FAIL %d") , avcRet);
+				//SVP_LogMsg2(_T("AVCOPEN FAIL %d") , avcRet);
 				return VFW_E_INVALIDMEDIATYPE;
 			}
 
@@ -1028,28 +1033,32 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 			{
 				int		nCompat;
 				nCompat = FFH264CheckCompatibility (PictWidthRounded(), PictHeightRounded(), m_pAVCtx, (BYTE*)m_pAVCtx->extradata, m_pAVCtx->extradata_size, m_nPCIVendor, m_VideoDriverVersion);
-				#ifndef REGISTER_FILTER
-					if((nCompat == 2) && (m_ref_frame_count_check_skip)) nCompat = 0;
-				#endif
-
+				
 				switch (nCompat)
 				{
 				case 1 :	// SAR not supported
 					 m_bDXVACompatible = false;
-					 if (m_nCompatibilityMode & 1) MessageBox (NULL, _T("DXVA : SAR is not supported"), MPCVD_CAPTION, MB_OK);
-					 if (m_nCompatibilityMode & 2) { m_bDXVACompatible = true; WCHAR *msg = _T("硬件设备可能不支持加速本文件(SAR)...") ; AfxGetMainWnd()->SendMessage(ID_STATUS_MESSAGE, (UINT_PTR)msg, 3000); }
+					 { WCHAR *msg = _T("硬件设备可能不支持加速本文件(SAR)...") ; AfxGetMainWnd()->SendMessage(ID_STATUS_MESSAGE, (UINT_PTR)msg, 3000); }
+					 if (m_nCompatibilityMode & 2) { m_bDXVACompatible = true; }
 					 break;
 				case 2 :	// Too much ref frames
 					 m_bDXVACompatible = false;
-					 if (m_nCompatibilityMode & 1) MessageBox (NULL, _T("DXVA : too much ref frame"), MPCVD_CAPTION, MB_OK);
-					 if (m_nCompatibilityMode & 4) { m_bDXVACompatible = true; WCHAR *msg = _T("硬件设备可能没有足够能力加速本文件...") ; AfxGetMainWnd()->SendMessage(ID_STATUS_MESSAGE, (UINT_PTR)msg, 3000); }
+					 { WCHAR *msg = _T("硬件设备可能没有足够能力加速本文件...") ; AfxGetMainWnd()->SendMessage(ID_STATUS_MESSAGE, (UINT_PTR)msg, 3000); }
+					 if (m_nCompatibilityMode & 4) { m_bDXVACompatible = true;  }
 					 break;
 				}
+
+				#ifndef REGISTER_FILTER
+					if((nCompat == 2) && (m_ref_frame_count_check_skip)) m_bDXVACompatible = true;
+				#endif
+
 			}
 			
 			// Force single thread for DXVA !
 			if (IsDXVASupported())
 				avcodec_thread_init(m_pAVCtx, 1);
+			else if (m_bUseDXVA)
+				return VFW_E_INVALIDMEDIATYPE;
 
 			BuildDXVAOutputFormat();
 		}

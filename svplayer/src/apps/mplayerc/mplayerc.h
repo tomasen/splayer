@@ -553,6 +553,7 @@ public:
 		CMediaFormats Formats;
 		
 		UINT SrcFilters, TraFilters, DXVAFilters, FFmpegFilters;
+		BOOL bDVXACompat;
 
 		CString logofn;
 		UINT logoid;

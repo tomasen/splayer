@@ -33,7 +33,7 @@ BOOL CFilterApp::InitInstance()
 	if(!__super::InitInstance()) 
 		return FALSE;
 	
-	SetRegistryKey(_T("Gabest"));
+	SetRegistryKey(_T("SPlayer"));
 	
 	DllEntryPoint(AfxGetInstanceHandle(), DLL_PROCESS_ATTACH, 0);
 	

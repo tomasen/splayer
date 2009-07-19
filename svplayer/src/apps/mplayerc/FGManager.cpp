@@ -1878,6 +1878,32 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	//pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_MPEG1Payload);
 	//m_transform.AddTail(pFGF);
 
+	if ( s.useGPUAcel )
+	{
+		UINT64 gMerit =  MERIT64_ABOVE_DSHOW+100;
+		if(s.useGPUCUDA){gMerit =  MERIT64_ABOVE_DSHOW+5;}
+		pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(_T("MPC Video Decoder DXVA"), gMerit);
+		if(dxva_filters & DXVA_H264){
+			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_H264);
+			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_h264);
+			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_X264);
+			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_x264);
+			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_VSSH);
+			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_vssh);
+			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_DAVC);
+			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_davc);
+			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_PAVC);
+			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_pavc);
+			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_AVC1);
+			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_avc1);
+			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_H264_bis);
+		}
+		if(dxva_filters & DXVA_VC1){
+			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_WVC1);
+			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_wvc1);
+		}
+		m_transform.AddTail(pFGF);
+	}
 #if INCLUDE_MPC_VIDEO_DECODER | INCLUDE_MPC_DXVA_VIDEO_DECODER
 	pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(_T("MPC Video Decoder"), MERIT64_ABOVE_DSHOW);
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_tscc);
@@ -2252,7 +2278,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	CMPCVideoDecFilter::FFmpegFilters = s.FFmpegFilters;
 	CMPCVideoDecFilter::DXVAFilters = s.DXVAFilters;
 	
-	CMPCVideoDecFilter::m_ref_frame_count_check_skip = false;
+	CMPCVideoDecFilter::m_ref_frame_count_check_skip = s.bDVXACompat ;
 	
 	CMPCVideoDecFilter::m_bUSERGB =  s.bRGBOnly;
 //	CBaseVideoFilter::m_bUSERGB =  s.bRGBOnly;
@@ -2330,7 +2356,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	CSVPToolBox svptoolbox;
 	szaExtFilterPaths.RemoveAll();
 	
-	if(!s.onlyUseInternalDec){
+	//if(!s.onlyUseInternalDec){
 		/*
 		if ( s.bUsePowerDVD && ( s.optionDecoder == _T("PDVDGPUdec") || s.optionDecoder.IsEmpty() ) && s.useGPUAcel && !s.useGPUCUDA && !IsVista() ) {
 					//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("codecs\\powerdvd\\CL264dec.ax")) );
@@ -2361,7 +2387,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	  		
 	  		
 		}
-	}
+	//}
 
 
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("PMPSplitter.ax")) );
@@ -2401,7 +2427,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 				if(fo->name == _T("RealAudio Decoder")){
 					continue;
 				}
-				CFGFilter* pFGF = new CFGFilterFile(fo->clsid, fo->path, CStringW(fo->name), MERIT64_ABOVE_DSHOW + 1);
+				CFGFilter* pFGF = new CFGFilterFile(fo->clsid, fo->path, CStringW(fo->name), MERIT64_ABOVE_DSHOW + 10);
 				szLog.Format(_T("Loading Filter %s %s %s "), CStringFromGUID(fo->clsid) ,fo->path, CStringW(fo->name) );
 				SVP_LogMsg(szLog);
 				if(pFGF){

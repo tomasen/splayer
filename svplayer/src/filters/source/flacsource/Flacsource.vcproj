@@ -165,6 +165,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="..\..\..\..\include; ..\..\transform\mpadecfilter\libflac\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;FLAC__NO_DLL"
+				EnableEnhancedInstructionSet="0"
 				DisableSpecificWarnings="4244"
 			/>
 			<Tool

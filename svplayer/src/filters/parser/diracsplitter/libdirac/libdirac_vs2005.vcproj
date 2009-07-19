@@ -97,6 +97,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="."
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
+				EnableEnhancedInstructionSet="0"
 				UsePrecompiledHeader="0"
 			/>
 			<Tool

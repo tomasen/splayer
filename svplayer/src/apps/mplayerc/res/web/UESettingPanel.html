@@ -236,9 +236,11 @@ UESAPI.prototype = {
 	selectDecoder:function(vDecoder){
 	    var remark = "";
 	    var noMixer = 0;
+	    this.hideobj("divdxvacompat");
 	    switch (vDecoder){
 	        case "internalGPUdec":
 	        remark = "ffmpeg: 射手播放器内置的显卡硬件加速(GPU加速)高清解码器。无画面比例问题。";
+	        this.showblock("divdxvacompat");
 	        break;
 	        case "PDVDGPUdec":
 	        remark = "PowerDVD: 射手播放器<a href='http://splayer.org/files/netSetup.exe'>高清版安装包</a>中包含的可选组件。PowerDVD的显卡加速高清解码器支持所有主流中高档显卡。但是对于某些高清视频，不能正确识别视频宽高比。";
@@ -256,6 +258,7 @@ UESAPI.prototype = {
 	        break;
 	      
 	    }
+	    
 	    if(noMixer){
 	        var obmixer = this.fobj("vmr9mixer");
 	        obmixer.checked = false;
@@ -302,8 +305,9 @@ function myInit(){
              oDecoder.selectedIndex = i;
         }
        }
-    if(oDecoder.value >= 0){
+    if(oDecoder.value ){
        ueAPI.selectDecoder( oDecoder.value);
+       
     }
     //alert(typeof(ueg_DefaultBlock));
 }
@@ -356,8 +360,9 @@ function myInit(){
 显示输出方式：<select id="videorender" onchange="ueAPI.useDX9Mixer(this.value == 'DX9' )"><option value="DX9" >智能高配置(DX9)</option>
 <option value="DX7">智能低配置(DX7)</option>
 <option value="ADV">使用自定义高级设置</option></select><br />
-高清解码方式：<select id="decoder" onchange="ueAPI.selectDecoder(this.value);" ></select> 
+高清解码方式：<select id="decoder" onchange="ueAPI.selectDecoder(this.value);" ></select>
 <input type="checkbox" id="gpuacelbase" onclick="ueAPI.useGPUAcel(this.checked);" /><label for="gpuacelbase">显卡硬件（GPU）加速 </label> <br />
+<div id='divdxvacompat' ><input type="checkbox" id="dxvacompat" /><label for="dxvacompat">使显卡加速兼容更多文件（但可能造成解码失败）</label> <br /></div>
  <span id="remarkfordecoder" ></span><br /> <br />
 
 <input type="checkbox" id="vmr9mixer" onclick="ueAPI.useDX9(this.checked);"  /><label for="vmr9mixer" title="启用播放器的亮度调节功能">启用内置亮度调节(需DX9，不能使用CoreAVC解码器)</label><br />

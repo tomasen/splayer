@@ -206,6 +206,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
+				EnableEnhancedInstructionSet="0"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"

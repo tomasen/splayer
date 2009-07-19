@@ -105,6 +105,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="."
 				PreprocessorDefinitions="NDEBUG;FPM_INTEL;WIN32;_LIB;HAVE_CONFIG_H;ASO_ZEROCHECK"
+				EnableEnhancedInstructionSet="0"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderFile=".\Release/libmad.pch"
 				CompileAs="0"

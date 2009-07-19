@@ -56,6 +56,7 @@
 				StringPooling="true"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
+				EnableEnhancedInstructionSet="0"
 				PrecompiledHeaderFile=".\Release/curllib.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"

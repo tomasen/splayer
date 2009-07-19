@@ -115,7 +115,17 @@ SRCS_C=\
 		$(LAVC_DIR)/celp_math.c \
 		$(LAVC_DIR)/mpeg12.c \
 		$(LAVC_DIR)/mpeg12data.c \
-
+		$(LAVC_DIR)/rv10.c \
+		$(LAVC_DIR)/rv30.c \
+		$(LAVC_DIR)/rv30data.c \
+		$(LAVC_DIR)/rv30dsp.c \
+		$(LAVC_DIR)/rv34.c \
+		$(LAVC_DIR)/rv34data.c \
+		$(LAVC_DIR)/rv34vlc.c \
+		$(LAVC_DIR)/rv40.c \
+		$(LAVC_DIR)/rv40data.c \
+		$(LAVC_DIR)/rv40dsp.c \
+		$(LAVC_DIR)/rv40vlc2.c \
 
 
 #SRCS_C+=\
@@ -163,7 +173,6 @@ SRCS_C=\
 #		$(LAVC_DIR)/pcm.c \
 #		$(LAVC_DIR)/png.c \
 #		$(LAVC_DIR)/pngdec.c \
-#		$(LAVC_DIR)/rv10.c \
 #		$(LAVC_DIR)/qdm2.c \
 #		$(LAVC_DIR)/qpeg.c \
 #		$(LAVC_DIR)/rpza.c \

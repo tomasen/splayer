@@ -93,7 +93,9 @@ void avcodec_register_all(void)
     REGISTER_DECODER (RV10, rv10);
     REGISTER_DECODER (RV20, rv20);
     REGISTER_DECODER (RV30, rv30);
-    REGISTER_DECODER (RV40, rv40);
+    
+	extern AVCodec rv40_decoder; 
+	avcodec_register( &rv40_decoder );
     //REGISTER_DECODER (SP5X, sp5x);
     REGISTER_DECODER (SVQ1, svq1);
     REGISTER_DECODER (SVQ3, svq3);

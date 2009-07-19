@@ -569,6 +569,7 @@ CMPCVideoDecFilter::CMPCVideoDecFilter(LPUNKNOWN lpunk, HRESULT* phr)
 
 	avcodec_init();
 	avcodec_register_all();
+
 	//av_log_set_callback(LogLibAVCodec);
 
 	EnumWindows(EnumFindProcessWnd, (LPARAM)&hWnd);
@@ -877,7 +878,7 @@ void CMPCVideoDecFilter::LogLibAVCodec(void* par,int level,const char *fmt,va_li
 	vsnprintf_s (Msg, sizeof(Msg), _TRUNCATE, fmt, valist);
 //	TRACE("AVLIB : %s", Msg);
 #endif
-	//SVP_LogMsg3(fmt, valist);
+	SVP_LogMsg3(fmt, valist);
 }
 
 void CMPCVideoDecFilter::OnGetBuffer(AVFrame *pic)
@@ -1370,7 +1371,7 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 		if (!got_picture || !m_pFrame->data[0]) {/* SVP_LogMsg3("!got_picture || !m_pFrame->data[0] %d " , got_picture);*/  return S_OK; }
 		if(pIn->IsPreroll() == S_OK || rtStart < 0) {/* SVP_LogMsg3("pIn->IsPreroll()  %d  %d " , pIn->IsPreroll() , rtStart);*/ return S_OK;}
 
-		SVP_LogMsg3("GetDeliveryBuffer");
+//		SVP_LogMsg3("GetDeliveryBuffer");
 		CComPtr<IMediaSample>	pOut;
 		BYTE*					pDataOut = NULL;
 

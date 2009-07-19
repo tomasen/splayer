@@ -1,8 +1,5 @@
 /*
- * Misc image conversion routines
- * most functionality is exported to the public API, see avcodec.h
- *
- * Copyright (c) 2008 Vitor Sessak
+ * XVideo Motion Compensation internal functions
  *
  * This file is part of FFmpeg.
  *
@@ -21,18 +18,16 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef AVCODEC_IMGCONVERT_H
-#define AVCODEC_IMGCONVERT_H
+#ifndef AVCODEC_INTERNAL_XVMC_H
+#define AVCODEC_INTERNAL_XVMC_H
 
-#include <stdint.h>
 #include "avcodec.h"
+#include "mpegvideo.h"
 
-int ff_fill_linesize(AVPicture *picture, enum PixelFormat pix_fmt, int width);
+void ff_xvmc_init_block(MpegEncContext *s);
+void ff_xvmc_pack_pblocks(MpegEncContext *s, int cbp);
+int  ff_xvmc_field_start(MpegEncContext*s, AVCodecContext *avctx);
+void ff_xvmc_field_end(MpegEncContext *s);
+void ff_xvmc_decode_mb(MpegEncContext *s);
 
-int ff_fill_pointer(AVPicture *picture, uint8_t *ptr, enum PixelFormat pix_fmt, int height);
-
-int ff_get_plane_bytewidth(enum PixelFormat pix_fmt, int width, int plane);
-
-int ff_set_systematic_pal(uint32_t pal[256], enum PixelFormat pix_fmt);
-
-#endif /* AVCODEC_IMGCONVERT_H */
+#endif /* AVCODEC_INTERNAL_XVMC_H */

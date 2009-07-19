@@ -116,6 +116,7 @@ typedef struct Picture{
     int field_poc[2];           ///< h264 top/bottom POC
     int poc;                    ///< h264 frame POC
     int frame_num;              ///< h264 frame_num (raw frame_num from slice header)
+    int mmco_reset;             ///< h264 MMCO_RESET set this 1. Reordering code must not mix pictures before and after MMCO_RESET.
     int pic_id;                 /**< h264 pic_num (short -> no wrap version of pic_num,
                                      pic_num & max_pic_num; long -> long_pic_num) */
     int long_ref;               ///< 1->long term reference 0->short term reference
@@ -312,6 +313,7 @@ typedef struct MpegEncContext {
     int *lambda_table;
     int adaptive_quant;         ///< use adaptive quantization
     int dquant;                 ///< qscale difference to prev qscale
+    int closed_gop;             ///< MPEG1/2 GOP is closed
     int pict_type;              ///< FF_I_TYPE, FF_P_TYPE, FF_B_TYPE, ...
     int last_pict_type; //FIXME removes
     int last_non_b_pict_type;   ///< used for mpeg4 gmc b-frames & ratecontrol
@@ -684,6 +686,11 @@ int MPV_encode_init(AVCodecContext *avctx);
 int MPV_encode_end(AVCodecContext *avctx);
 int MPV_encode_picture(AVCodecContext *avctx, unsigned char *buf, int buf_size, void *data);
 void MPV_common_init_mmx(MpegEncContext *s);
+void MPV_common_init_axp(MpegEncContext *s);
+void MPV_common_init_mlib(MpegEncContext *s);
+void MPV_common_init_mmi(MpegEncContext *s);
+void MPV_common_init_arm(MpegEncContext *s);
+void MPV_common_init_altivec(MpegEncContext *s);
 void ff_clean_intra_table_entries(MpegEncContext *s);
 void ff_draw_horiz_band(MpegEncContext *s, int y, int h);
 void ff_mpeg_flush(AVCodecContext *avctx);
@@ -704,6 +711,15 @@ void ff_convert_matrix(DSPContext *dsp, int (*qmat)[64], uint16_t (*qmat16)[2][6
 
 void ff_init_block_index(MpegEncContext *s);
 void ff_copy_picture(Picture *dst, Picture *src);
+
+/**
+ * allocates a Picture
+ * The pixels are allocated/set by calling get_buffer() if shared=0
+ */
+int ff_alloc_picture(MpegEncContext *s, Picture *pic, int shared);
+
+extern const enum PixelFormat ff_pixfmt_list_420[];
+extern const enum PixelFormat ff_hwaccel_pixfmt_list_420[];
 
 static inline void ff_update_block_index(MpegEncContext *s){
     const int block_size= 8>>s->avctx->lowres;

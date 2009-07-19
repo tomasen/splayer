@@ -13,6 +13,14 @@ CFLAGS+= -I. -I.. -I$(LAVC_DIR) -I$(LAVU_DIR) -I$(LAVF_DIR) -I../codecs -I../img
 CC=gcc
 
 SRCS_C=\
+		$(LAVC_DIR)/rv30dsp.c \
+		$(LAVC_DIR)/rv30.c \
+		$(LAVC_DIR)/rv10.c \
+		$(LAVC_DIR)/rv34.c \
+		$(LAVC_DIR)/rv40dsp.c \
+		$(LAVC_DIR)/rv40.c \
+		$(LAVC_DIR)/qtrle.c \
+		$(LAVC_DIR)/mpegvideo.c \
 		$(LAVC_DIR)/allcodecs.c \
 		$(LAVC_DIR)/bitstream.c \
 		$(LAVC_DIR)/atrac3.c \
@@ -53,11 +61,9 @@ SRCS_C=\
 		$(LAVC_DIR)/mjpegdec.c \
 		$(LAVC_DIR)/mjpegbdec.c \
 		$(LAVC_DIR)/mpeg4video_parser.c \
-		$(LAVC_DIR)/mpegvideo.c \
 		$(LAVC_DIR)/msmpeg4.c \
 		$(LAVC_DIR)/msmpeg4data.c \
 		$(LAVC_DIR)/parser.c \
-		$(LAVC_DIR)/qtrle.c \
 		$(LAVC_DIR)/simple_idct.c \
 		$(LAVC_DIR)/sp5xdec.c \
 		$(LAVC_DIR)/svq1.c \
@@ -115,18 +121,7 @@ SRCS_C=\
 		$(LAVC_DIR)/celp_math.c \
 		$(LAVC_DIR)/mpeg12.c \
 		$(LAVC_DIR)/mpeg12data.c \
-		$(LAVC_DIR)/rv10.c \
-		$(LAVC_DIR)/rv30.c \
-		$(LAVC_DIR)/rv30data.c \
-		$(LAVC_DIR)/rv30dsp.c \
-		$(LAVC_DIR)/rv34.c \
-		$(LAVC_DIR)/rv34data.c \
-		$(LAVC_DIR)/rv34vlc.c \
-		$(LAVC_DIR)/rv40.c \
-		$(LAVC_DIR)/rv40data.c \
-		$(LAVC_DIR)/rv40dsp.c \
-		$(LAVC_DIR)/rv40vlc2.c \
-
+		
 
 #SRCS_C+=\
 #		$(LAVC_DIR)/8bps.c \

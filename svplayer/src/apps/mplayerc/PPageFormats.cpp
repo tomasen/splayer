@@ -27,6 +27,7 @@
 #include "PPageFormats.h"
 #define CINTERFACE
 #include <shobjidl.h>
+#include "../../svplib/SVPToolBox.h"
 
 CString			g_strRegisteredAppName =  _T("ÉäÊÖÓ°Òô²¥·ÅÆ÷");//_T("Media Player Classic");
 CString			g_strOldAssoc		  = _T("PreviousRegistration");
@@ -197,6 +198,13 @@ CString CPPageFormats::GetFileIcon(CString strExt){
 	CString FileIcon;
 	int iconId = IDI_UNKNOWN;
 
+	CString szExtIconfile(strExt);
+	szExtIconfile.Trim('.');
+	CSVPToolBox svpTool;
+	szExtIconfile = svpTool.GetPlayerPath(CString(_T("skins\\icons\\"))+szExtIconfile + _T(".ico") );
+	if(svpTool.ifFileExist(szExtIconfile)){
+		return szExtIconfile;
+	}
 	if(isSubtitleFile(strExt)){
 		iconId = IDI_SUBTITLE_FILE;
 	}else{
@@ -210,6 +218,12 @@ CString CPPageFormats::GetFileIcon(CString strExt){
 					iconId = IDI_VIDEO;
 				}
 					CString szType = mf[i].GetLabel();
+					szExtIconfile = szType;
+					szExtIconfile = svpTool.GetPlayerPath(CString(_T("skins\\icons\\"))+szExtIconfile.Trim() + _T(".ico") );
+					if(svpTool.ifFileExist(szExtIconfile)){
+						return szExtIconfile;
+					}
+
 					if(szType.Find(_T("Real")) >= 0){
 						iconId = IDI_REAL_FILE;
 					}else if(szType.Find(_T("Quicktime")) >= 0){

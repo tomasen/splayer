@@ -88,4 +88,6 @@ public:
 	void GetFilter(CString& filter, CAtlArray<CString>& mask);
 	void GetAudioFilter(CString& filter, CAtlArray<CString>& mask);
 	BOOL IsAudioFile(CString szFilename);
+	BOOL IsUnPlayableFile(CString szFilename);
+	
 };

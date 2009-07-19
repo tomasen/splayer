@@ -199,14 +199,15 @@ void CMediaFormats::UpdateData(bool fSave)
 		ADDFMT((_T("MIDI file"), _T("mid midi rmi"), true));
 		ADDFMT((_T("Indeo Video file"), _T("ivf")));
 		ADDFMT((_T("AIFF Format Sound"), _T("aif aifc aiff"), true));
-		ADDFMT((_T("Monkey's Audio APE File"), _T("ape"), false));
+		ADDFMT((_T("Monkey's Audio APE File"), _T("ape"), true));
 		ADDFMT((_T("AU Format Sound"), _T("au snd"), true));
 		ADDFMT((_T("Ogg Media file"), _T("ogm")));
 		ADDFMT((_T("Ogg Vorbis Audio file"), _T("ogg"), true));
 		ADDFMT((_T("CD Audio Track"), _T("cda"), true, _T("Windows 2000/XP or better")));
 		ADDFMT((_T("FLIC file"), _T("fli flc flic")));
 		ADDFMT((_T("DVD2AVI Project file"), _T("d2v")));
-		ADDFMT((_T("MPEG4 file"), _T("mp4 m4v hdmov 3gp 3gpp")));
+		ADDFMT((_T("MPEG4 file"), _T("mp4 m4v hdmov")));
+		ADDFMT((_T("Mobile Phone file"), _T("3gp 3gpp")));
 		ADDFMT((_T("MPEG4 Audio file"), _T("m4a m4b aac"), true));
 		ADDFMT((_T("Matroska Media file"), _T("mkv")));
 		ADDFMT((_T("Matroska Audio file"), _T("mka"), true));
@@ -346,6 +347,20 @@ void CMediaFormats::GetFilter(CString& filter, CAtlArray<CString>& mask)
 	mask.Add(_T("*.*"));
 
 	filter += _T("|");
+}
+BOOL CMediaFormats::IsUnPlayableFile(CString szFilename){
+	CPath fPath(szFilename);
+	CString szThisExtention = fPath.GetExtension();
+
+	for(int i = 0; i < GetCount(); i++)
+	{
+		CMediaFormatCategory& mfc = GetAt(i);
+		CString szLabel = mfc.GetLabel();
+		if ( szLabel.Find(_T("Subtitle")) >= 0 || szLabel.Find(_T("字幕")) >= 0){
+			return TRUE;
+		}
+	}
+	return FALSE;
 }
 BOOL CMediaFormats::IsAudioFile(CString szFilename){
 	CPath fPath(szFilename);

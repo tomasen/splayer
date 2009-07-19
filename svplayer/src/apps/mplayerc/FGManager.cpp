@@ -1883,7 +1883,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	}
 #endif
 #if INTERNAL_DECODER_VP6
-	if (ffmpeg_filters & FFM_VP62)
+	if (ffmpeg_filters & FFM_VP62 && 0)
 	{
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_VP50);
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_vp50);
@@ -2055,7 +2055,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	m_transform.AddTail(pFGF);
 
 	// Low merit MPC Video Decoder
-	pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(_T("MPC Video Decoder (low merit)"),  MERIT64_DO_NOT_USE);
+	pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(_T("MPC Video Decoder (low merit)"),  MERIT64_UNLIKELY);
 #if INTERNAL_DECODER_FLV
 	if (!(ffmpeg_filters & FFM_FLV4))
 	{
@@ -2067,7 +2067,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 #endif
 
 #if INTERNAL_DECODER_VP6
-	if (!(ffmpeg_filters & FFM_VP62))
+	if (!(ffmpeg_filters & FFM_VP62) || 1)
 	{
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_VP50);
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_vp50);
@@ -2371,6 +2371,8 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("haalis.ax")) ); 
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("ts.dll")) ); 
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("ogm.dll")) ); 
+
+	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("vp6dec.ax")) ); 
 
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("svplayer.bin\\real\\rmoc3260.dll")) );
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("svplayer.bin\\real\\Codecs\\rv40.dll")) );

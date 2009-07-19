@@ -1347,10 +1347,11 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 		memset(m_pFFBuffer+nSize,0,FF_INPUT_BUFFER_PADDING_SIZE);
 
 		used_bytes = avcodec_decode_video (m_pAVCtx, m_pFrame, &got_picture, m_pFFBuffer, nSize);
-		if(used_bytes < 0 ) return S_OK; // Why MPC-HC removed this lineis un clear to me, add it back see if it solve sunpack problem
-		if (!got_picture || !m_pFrame->data[0]) return S_OK;
-		if(pIn->IsPreroll() == S_OK || rtStart < 0) return S_OK;
+		if(used_bytes < 0 ) { /*SVP_LogMsg3("used_bytes < 0 ");*/ return S_OK; } // Why MPC-HC removed this lineis un clear to me, add it back see if it solve sunpack problem
+		if (!got_picture || !m_pFrame->data[0]) {/* SVP_LogMsg3("!got_picture || !m_pFrame->data[0] %d " , got_picture);*/  return S_OK; }
+		if(pIn->IsPreroll() == S_OK || rtStart < 0) {/* SVP_LogMsg3("pIn->IsPreroll()  %d  %d " , pIn->IsPreroll() , rtStart);*/ return S_OK;}
 
+		SVP_LogMsg3("GetDeliveryBuffer");
 		CComPtr<IMediaSample>	pOut;
 		BYTE*					pDataOut = NULL;
 

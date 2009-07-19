@@ -531,7 +531,11 @@ static bool OpenSubRipper(CTextFile* file, CSimpleTextSubtitle& ret, int CharSet
 		}
 		else if(c != EOF) // might be another format
 		{
-			return(false);
+			if(ret.GetCount() > 5){
+				continue;
+			}else{
+				return(false);
+			}
 		}
 	}
 
@@ -2623,8 +2627,8 @@ bool CSimpleTextSubtitle::Open(CTextFile* f, int CharSet, CString name)
 			{
 				int n = CountLines(f, pos, f->GetPosition());
 				CString s;
-				s.Format(_T("Syntax error at line %d!\t"), n+1);
-				AfxMessageBox(s, MB_OK|MB_ICONERROR);
+				//s.Format(_T("Syntax error at line %d!\t"), n+1);
+				//AfxMessageBox(s, MB_OK|MB_ICONERROR);
 				Empty();
 				break;
 			}

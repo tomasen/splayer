@@ -126,24 +126,18 @@ void CPlayerPlaylistBar::AddItem(CString fn, CAtlList<CString>* subs)
 void CPlayerPlaylistBar::AddItem(CAtlList<CString>& fns, CAtlList<CString>* subs)
 {
 	CPlaylistItem pli;
+	CMediaFormats& mf = AfxGetAppSettings().Formats;
 
 	POSITION pos = fns.GetHeadPosition();
 	while(pos)
 	{
 		POSITION cur = pos;
 		CString fn = fns.GetNext(pos);
-		int i = fn.ReverseFind('.');
-		if(i > 0)
-		{
-			CMediaFormats& mf = AfxGetAppSettings().Formats;
-			CString ext = fn.Mid(i+1).MakeLower();
-			if(!mf.FindExt(ext, true))
-			{
-				if( mf.IsUnPlayableFile() ){
-					fns.RemoveAt(cur);
-					continue;
-				}
-			}
+		
+			
+		if( mf.IsUnPlayableFile(fn) ){
+			fns.RemoveAt(cur);
+			continue;
 		}
 		
 		if(!fn.Trim().IsEmpty()) pli.m_fns.AddTail(fn);
@@ -168,7 +162,7 @@ void CPlayerPlaylistBar::AddItem(CAtlList<CString>& fns, CAtlList<CString>* subs
 		int i = fn.ReverseFind('.');
 		if(i > 0)
 		{
-			CMediaFormats& mf = AfxGetAppSettings().Formats;
+			//CMediaFormats& mf = AfxGetAppSettings().Formats;
 
 			CString ext = fn.Mid(i+1).MakeLower();
 

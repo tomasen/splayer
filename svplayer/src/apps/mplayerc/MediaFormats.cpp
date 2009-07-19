@@ -355,9 +355,11 @@ BOOL CMediaFormats::IsUnPlayableFile(CString szFilename){
 	for(int i = 0; i < GetCount(); i++)
 	{
 		CMediaFormatCategory& mfc = GetAt(i);
-		CString szLabel = mfc.GetLabel();
-		if ( szLabel.Find(_T("Subtitle")) >= 0 || szLabel.Find(_T("字幕")) >= 0){
-			return TRUE;
+		if( mfc.FindExt(szThisExtention) ){
+			CString szLabel = mfc.GetLabel();
+			if ( szLabel.Find(_T("Subtitle")) >= 0 || szLabel.Find(_T("字幕")) >= 0){
+				return TRUE;
+			}
 		}
 	}
 	return FALSE;

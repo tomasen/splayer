@@ -2299,6 +2299,7 @@ IDR_HTML_UESETTINGPANEL HTML                    "res\\web\\UESettingPanel.html"
 //
 
 UESETBG.PNG             2110                    "res\\web\\uesetbg.png"
+UESETBG_HOVER.PNG             2110                    "res\\web\\uesetbg_hover.png"
 BLANK.GIF               2110                    "res\\web\\blank.gif"
 
 /////////////////////////////////////////////////////////////////////////////

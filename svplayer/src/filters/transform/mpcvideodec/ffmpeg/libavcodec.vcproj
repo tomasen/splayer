@@ -649,6 +649,26 @@
 				>
 			</File>
 			<File
+				RelativePath=".\libavcodec\rv10.c"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\rv30.c"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\rv30dsp.c"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\rv34.c"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\rv40.c"
+				>
+			</File>
+			<File
 				RelativePath=".\libavcodec\simple_idct.c"
 				>
 			</File>
@@ -1014,6 +1034,22 @@
 				>
 			</File>
 			<File
+				RelativePath=".\libavcodec\rv30data.h"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\rv34.h"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\rv34data.h"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\rv34vlc.h"
+				>
+			</File>
+			<File
 				RelativePath=".\libavcodec\simple_idct.h"
 				>
 			</File>
@@ -1159,6 +1195,10 @@
 			</File>
 			<File
 				RelativePath=".\libavutil\bswap.h"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\colorspace.h"
 				>
 			</File>
 			<File

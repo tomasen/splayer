@@ -31,7 +31,7 @@
 #include "..\..\..\subtitles\SubtitleInputPin.h"
 #include "..\..\..\svplib\SVPToolBox.h"
 
-//
+#define SVP_LogMsg3  __noop
 
 #include <initguid.h>
 #include "..\..\..\..\include\moreuuids.h"
@@ -1480,7 +1480,6 @@ HRESULT CRealVideoDecoder::InitRV(const CMediaType* pmt)
 	if(!pmt->Format())
 		return hr;
 
-	
 	rvinfo rvi;
 	try{
 		rvi = *(rvinfo*)(pmt->Format() + (pmt->formattype == FORMAT_VideoInfo ? sizeof(VIDEOINFOHEADER) : sizeof(VIDEOINFOHEADER2)));
@@ -1560,25 +1559,76 @@ HRESULT CRealVideoDecoder::Transform(IMediaSample* pIn)
 		return S_OK;
 	}
 
-	
-	hr = RVTransform(pDataIn, (BYTE*)m_pI420, &transform_in, &transform_out, m_dwCookie);
-	
+
+	SVP_LogMsg3("before GetDimensions_X10 ");
 	unsigned int tmp1, tmp2;
 	bool interlaced = false, tmp3, tmp4;
 	::GetDimensions_X10(pDataIn, &tmp1, &tmp2, &interlaced, &tmp3, &tmp4);
+
+
+	SVP_LogMsg3("after GetDimensions_X10 %u  %u %d %d  %d %d  %d %d  " ,  tmp1, tmp2, interlaced, tmp3, tmp4 , m_w, m_h , m_lastBuffSizeDim);
+	{
+		int size =  tmp1*tmp2;
+		if( m_lastBuffSizeDim < size  ){
+			//resize out buff
+
+			m_pI420.Free();
+			m_pI420Tmp.Free();
+
+
+			m_lastBuffSizeDim = size;
+			SVP_LogMsg3("resize out put buff %d" ,size);
+			if ( m_pI420.Allocate(size*3/2) ){
+
+				SVP_LogMsg3(" m_pI420.Allocated 1" );
+				memset(m_pI420, 0, size);
+				SVP_LogMsg3(" m_pI420.Allocated 2" );
+				memset(m_pI420 + size, 0x80, size/2);
+				SVP_LogMsg3(" m_pI420.Allocated 3" );
+			}else{
+				SVP_LogMsg3(" m_pI420.Allocate fail %d" ,size*3/2);
+				return S_OK;
+			}
+			if( m_pI420Tmp.Allocate(size*3/2) ){
+				SVP_LogMsg3(" m_pI420Tmp.Allocated 1" );
+				memset(m_pI420Tmp, 0, size);
+				SVP_LogMsg3(" m_pI420Tmp.Allocated 2" );
+				memset(m_pI420Tmp + size, 0x80, size/2);
+				SVP_LogMsg3(" m_pI420Tmp.Allocated 3" );
+			}else{
+				SVP_LogMsg3(" m_pI420Tmp.Allocate fail %d" ,size*3/2);
+				return S_OK;
+			}
+
+		}
+
+	}
+	
+	SVP_LogMsg3("before RVTransform %d %d %d %d %d %d", transform_in.len , transform_in.unk1, transform_in.unk2, transform_in.chunks, transform_in.timestamp , m_dwCookie);
+
+	try{
+		hr = RVTransform(pDataIn, (BYTE*)m_pI420, &transform_in, &transform_out, m_dwCookie);
+	}catch(...){
+
+	}
+	
+	SVP_LogMsg3("after RVTransform %u %d %d" , hr , transform_out.w , transform_out.h);
+
+	
 	
 	m_timestamp = transform_in.timestamp;
 
 	if(FAILED(hr))
 	{
-		TRACE(_T("RV returned an error code!!!\n"));
+		//SVP_LogMsg3(("RV returned an error code!!!\n"));
 		ASSERT(!(transform_out.unk1&1)); // error allowed when the "render" flag is not set
 		//		return hr;
 	}
 
 	if(pIn->IsPreroll() == S_OK || rtStart < 0 || !(transform_out.unk1&1))
 		return S_OK;
-
+	m_w = transform_out.w ;
+	m_h = transform_out.h ;
 	CComPtr<IMediaSample> pOut;
 	BYTE* pDataOut = NULL;
 	if(/*FAILED(hr = GetDeliveryBuffer(transform_out.w, transform_out.h, &pOut)) // TODO
@@ -1750,6 +1800,9 @@ HRESULT CRealVideoDecoder::CheckInputType(const CMediaType* mtIn)
 			key.Close();
 		}
 
+		CSVPToolBox svpTool;
+		CString playerpath = svpTool.GetPlayerPath(newdll) ;
+		if(svpTool.ifFileExist(playerpath)) paths.AddTail(playerpath);
 		if(!newpath.IsEmpty()) paths.AddTail(newpath + newdll);
 		if(!oldpath.IsEmpty()) paths.AddTail(oldpath + newdll);
 		paths.AddTail(newdll); // default dll paths
@@ -1758,7 +1811,11 @@ HRESULT CRealVideoDecoder::CheckInputType(const CMediaType* mtIn)
 		paths.AddTail(olddll); // default dll paths
 
 		POSITION pos = paths.GetHeadPosition();
-		while(pos && !(m_hDrvDll = LoadLibrary(paths.GetNext(pos))));
+		while(pos ){
+			CString szDllPath = paths.GetNext(pos);
+			m_hDrvDll = LoadLibrary(szDllPath);
+			if(m_hDrvDll) { SVP_LogMsg5( _T("real video dll loaded %s") , szDllPath ); break;}
+		}
 
 		if(m_hDrvDll)
 		{
@@ -1806,7 +1863,8 @@ HRESULT CRealVideoDecoder::StartStreaming()
 	if(FAILED(InitRV(&mt)))
 		return E_FAIL;
 
-	int size = m_w*m_h;
+	int size = m_w*m_h ;//max(m_w*m_h , 640*480);
+	m_lastBuffSizeDim = size ;
 	m_pI420.Allocate(size*3/2);
 	memset(m_pI420, 0, size);
 	memset(m_pI420 + size, 0x80, size/2);

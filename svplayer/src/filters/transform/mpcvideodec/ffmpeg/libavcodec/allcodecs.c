@@ -90,10 +90,13 @@ void avcodec_register_all(void)
     //REGISTER_DECODER (QPEG, qpeg);
     REGISTER_DECODER (QTRLE, qtrle);
     //REGISTER_DECODER (RPZA, rpza);
-    REGISTER_DECODER (RV10, rv10);
-    REGISTER_DECODER (RV20, rv20);
-    REGISTER_DECODER (RV30, rv30);
     
+	extern AVCodec rv10_decoder; 
+	avcodec_register( &rv10_decoder );
+	extern AVCodec rv20_decoder; 
+	avcodec_register( &rv20_decoder );
+	extern AVCodec rv30_decoder; 
+	avcodec_register( &rv30_decoder );
 	extern AVCodec rv40_decoder; 
 	avcodec_register( &rv40_decoder );
     //REGISTER_DECODER (SP5X, sp5x);

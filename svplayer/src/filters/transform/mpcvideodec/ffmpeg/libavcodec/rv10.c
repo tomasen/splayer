@@ -229,6 +229,83 @@ int rv_decode_dc(MpegEncContext *s, int n)
     return -code;
 }
 
+
+#if CONFIG_RV10_ENCODER || CONFIG_RV20_ENCODER
+/* write RV 1.0 compatible frame header */
+void rv10_encode_picture_header(MpegEncContext *s, int picture_number)
+{
+    int full_frame= 0;
+
+    align_put_bits(&s->pb);
+
+    put_bits(&s->pb, 1, 1);     /* marker */
+
+    put_bits(&s->pb, 1, (s->pict_type == FF_P_TYPE));
+
+    put_bits(&s->pb, 1, 0);     /* not PB frame */
+
+    put_bits(&s->pb, 5, s->qscale);
+
+    if (s->pict_type == FF_I_TYPE) {
+        /* specific MPEG like DC coding not used */
+    }
+    /* if multiple packets per frame are sent, the position at which
+       to display the macroblocks is coded here */
+    if(!full_frame){
+        put_bits(&s->pb, 6, 0); /* mb_x */
+        put_bits(&s->pb, 6, 0); /* mb_y */
+        put_bits(&s->pb, 12, s->mb_width * s->mb_height);
+    }
+
+    put_bits(&s->pb, 3, 0);     /* ignored */
+}
+
+void rv20_encode_picture_header(MpegEncContext *s, int picture_number){
+    put_bits(&s->pb, 2, s->pict_type); //I 0 vs. 1 ?
+    put_bits(&s->pb, 1, 0);     /* unknown bit */
+    put_bits(&s->pb, 5, s->qscale);
+
+    put_sbits(&s->pb, 8, picture_number); //FIXME wrong, but correct is not known
+    s->mb_x= s->mb_y= 0;
+    ff_h263_encode_mba(s);
+
+    put_bits(&s->pb, 1, s->no_rounding);
+
+    assert(s->f_code == 1);
+    assert(s->unrestricted_mv == 1);
+//    assert(s->h263_aic== (s->pict_type == FF_I_TYPE));
+    assert(s->alt_inter_vlc == 0);
+    assert(s->umvplus == 0);
+    assert(s->modified_quant==1);
+    assert(s->loop_filter==1);
+
+    s->h263_aic= s->pict_type == FF_I_TYPE;
+    if(s->h263_aic){
+        s->y_dc_scale_table=
+        s->c_dc_scale_table= ff_aic_dc_scale_table;
+    }else{
+        s->y_dc_scale_table=
+        s->c_dc_scale_table= ff_mpeg1_dc_scale_table;
+    }
+}
+
+#if 0 /* unused, remove? */
+static int get_num(GetBitContext *gb)
+{
+    int n, n1;
+
+    n = get_bits(gb, 16);
+    if (n >= 0x4000) {
+        return n - 0x4000;
+    } else {
+        n1 = get_bits(gb, 16);
+        return (n << 16) | n1;
+    }
+}
+#endif
+
+#endif /* CONFIG_RV10_ENCODER || CONFIG_RV20_ENCODER */
+
 /* read RV 1.0 compatible frame header */
 static int rv10_decode_picture_header(MpegEncContext *s)
 {
@@ -433,7 +510,8 @@ av_log(s->avctx, AV_LOG_DEBUG, "\n");*/
 //    s->obmc=1;
 //    s->umvplus=1;
     s->modified_quant=1;
-    s->loop_filter=1;
+    if(!s->avctx->lowres)
+        s->loop_filter=1;
 
     if(s->avctx->debug & FF_DEBUG_PICT_INFO){
             av_log(s->avctx, AV_LOG_INFO, "num:%5d x:%2d y:%2d type:%d qscale:%2d rnd:%d\n",
@@ -461,8 +539,8 @@ static av_cold int rv10_decode_init(AVCodecContext *avctx)
     s->out_format = FMT_H263;
     s->codec_id= avctx->codec_id;
 
-    s->width = avctx->width;
-    s->height = avctx->height;
+    s->width = avctx->coded_width;
+    s->height = avctx->coded_height;
 
     s->h263_long_vectors= ((uint8_t*)avctx->extradata)[3] & 1;
     avctx->sub_id= AV_RB32((uint8_t*)avctx->extradata + 4);
@@ -650,8 +728,9 @@ static int get_slice_offset(AVCodecContext *avctx, const uint8_t *buf, int n)
 
 static int rv10_decode_frame(AVCodecContext *avctx,
                              void *data, int *data_size,
-                             const uint8_t *buf, int buf_size)
+                             const uint8_t *buf  , int buf_size)
 {
+    
     MpegEncContext *s = avctx->priv_data;
     int i;
     AVFrame *pict = data;
@@ -715,12 +794,9 @@ AVCodec rv10_decoder = {
     NULL,
     rv10_decode_end,
     rv10_decode_frame,
-    /*.capabilities = */CODEC_CAP_DR1,
-    /*.next = */NULL,
-    /*.flush = */NULL,
-    /*.supported_framerates = */NULL,
-    /*.pix_fmts = */NULL,
-    /*.long_name = */NULL_IF_CONFIG_SMALL("RealVideo 1.0"),
+    CODEC_CAP_DR1,
+    .long_name = NULL_IF_CONFIG_SMALL("RealVideo 1.0"),
+    .pix_fmts= ff_pixfmt_list_420,
 };
 
 AVCodec rv20_decoder = {
@@ -732,11 +808,9 @@ AVCodec rv20_decoder = {
     NULL,
     rv10_decode_end,
     rv10_decode_frame,
-    /*.capabilities = */CODEC_CAP_DR1 | CODEC_CAP_DELAY,
-    /*.next = */NULL,
-    /*.flush = */ff_mpeg_flush,
-    /*.supported_framerates = */NULL,
-    /*.pix_fmts = */NULL,
-    /*.long_name = */NULL_IF_CONFIG_SMALL("RealVideo 2.0"),
+    CODEC_CAP_DR1 | CODEC_CAP_DELAY,
+    .flush= ff_mpeg_flush,
+    .long_name = NULL_IF_CONFIG_SMALL("RealVideo 2.0"),
+    .pix_fmts= ff_pixfmt_list_420,
 };
 

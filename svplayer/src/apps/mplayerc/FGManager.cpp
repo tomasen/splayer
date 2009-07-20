@@ -1856,7 +1856,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RV30);
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RV40);
 	m_transform.AddTail(pFGF);
-/*
+#if 0
 	pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(
 		L"MPC RealVideo Decoder 2.0",
 		MERIT64_ABOVE_DSHOW + 5);
@@ -1865,7 +1865,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RV30);
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RV40);
 	m_transform.AddTail(pFGF);
-*/
+#endif
 	pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(_T("MJPEG Video Decoder"), MERIT64_UNLIKELY);
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_QTJpeg);
 	m_transform.AddTail(pFGF);

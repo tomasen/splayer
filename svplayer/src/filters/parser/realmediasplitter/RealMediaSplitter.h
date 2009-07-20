@@ -231,6 +231,7 @@ class __declspec(uuid("238D0F23-5DC9-45A6-9BE2-666160C324DD")) CRealVideoDecoder
 	HMODULE m_hDrvDll;
 	DWORD m_dwCookie;
 
+	int m_lastBuffSizeDim;
 	HRESULT InitRV(const CMediaType* pmt);
 	void FreeRV();
 

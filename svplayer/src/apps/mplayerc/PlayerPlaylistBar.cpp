@@ -31,6 +31,7 @@
 #include ".\playerplaylistbar.h"
 #include "../../svplib/svplib.h"
 #include "../../svplib/SVPToolBox.h"
+#include "OpenFileDlg.h"
 
 IMPLEMENT_DYNAMIC(CPlayerPlaylistBar, CSizingControlBarG)
 CPlayerPlaylistBar::CPlayerPlaylistBar()
@@ -1613,12 +1614,13 @@ void CPlayerPlaylistBar::OnContextMenu(CWnd* /*pWnd*/, CPoint p)
 	{
 		M_OPEN=1, M_ADD, M_REMOVE, M_CLIPBOARD, M_SAVEAS, 
 		M_SORTBYNAME, M_SORTBYPATH, M_RANDOMIZE, M_SORTBYID,
-		M_REMEMBERPLAYLIST, M_SHUFFLE
+		M_REMEMBERPLAYLIST, M_SHUFFLE , M_ADDFILE 
 	};
 
 	m.AppendMenu(MF_STRING|(!fOnItem?(MF_DISABLED|MF_GRAYED):MF_ENABLED), M_OPEN, ResStr(IDS_PLAYLIST_OPEN));
 	if(((CMainFrame*)AfxGetMainWnd())->m_iPlaybackMode == PM_CAPTURE) m.AppendMenu(MF_STRING|MF_ENABLED, M_ADD, ResStr(IDS_PLAYLIST_ADD));
 	m.AppendMenu(MF_STRING|(/*fSelected||*/!fOnItem?(MF_DISABLED|MF_GRAYED):MF_ENABLED), M_REMOVE, ResStr(IDS_PLAYLIST_REMOVE));
+	m.AppendMenu(MF_STRING|MF_ENABLED, M_ADDFILE, ResStr(IDS_CONVERT_ADDFILE));
 	m.AppendMenu(MF_SEPARATOR);
 	m.AppendMenu(MF_STRING|(!fOnItem?(MF_DISABLED|MF_GRAYED):MF_ENABLED), M_CLIPBOARD, ResStr(IDS_PLAYLIST_COPYTOCLIPBOARD));
 	m.AppendMenu(MF_STRING|(!m_pl.GetCount()?(MF_DISABLED|MF_GRAYED):MF_ENABLED), M_SAVEAS, ResStr(IDS_PLAYLIST_SAVEAS));
@@ -1671,6 +1673,42 @@ void CPlayerPlaylistBar::OnContextMenu(CWnd* /*pWnd*/, CPoint p)
 			m_pl.Randomize();
 			SetupList();
 			SavePlaylist();
+			break;
+		case M_ADDFILE:
+			{
+				CRecentFileList& MRU = AfxGetAppSettings().MRU;
+				CString szLastFile;
+				MRU.ReadList();
+				if(MRU.GetSize() > 0){
+					szLastFile = MRU[0];
+				}
+
+				CString filter;
+				CAtlArray<CString> mask;
+				AfxGetAppSettings().Formats.GetFilter(filter, mask);
+
+				COpenFileDlg fd(mask, true, NULL, szLastFile, 
+					OFN_EXPLORER|OFN_ENABLESIZING|OFN_HIDEREADONLY|OFN_ALLOWMULTISELECT|OFN_ENABLEINCLUDENOTIFY, 
+					filter, this);
+				if(fd.DoModal() != IDOK) break;
+
+				CAtlList<CString> fns;
+
+				POSITION pos = fd.GetStartPosition();
+				while(pos) fns.AddTail(fd.GetNextPathName(pos));
+
+				bool fMultipleFiles = false;
+
+				if(fns.GetCount() > 1 
+					|| fns.GetCount() == 1 
+					&& (fns.GetHead()[fns.GetHead().GetLength()-1] == '\\'
+					|| fns.GetHead()[fns.GetHead().GetLength()-1] == '*'))
+				{
+					fMultipleFiles = true;
+				}
+
+				this->Append(fns, fMultipleFiles);
+			}
 			break;
 		case M_CLIPBOARD:
 			if(OpenClipboard() && EmptyClipboard())

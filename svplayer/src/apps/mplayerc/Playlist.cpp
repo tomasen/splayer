@@ -171,9 +171,137 @@ static int compare(const void* arg1, const void* arg2)
 
 typedef struct {LPCTSTR str; POSITION pos;} plsort2_t;
 
+static int compare_right(const TCHAR *a, const TCHAR *b)
+{
+	int bias = 0;
+
+	/* The longest run of digits wins.  That aside, the greatest
+	value wins, but we can't know that it will until we've scanned
+	both numbers to know that they have the same magnitude, so we
+	remember it in BIAS. */
+	for (;; a++, b++) {
+		if (!isdigit(*a))
+			return isdigit(*b) ? -1 : bias;
+		else if (!isdigit(*b))
+			return +1;
+		else if (*a < *b) {
+			if (!bias)
+				bias = -1;
+		} else if (*a > *b) {
+			if (!bias)
+				bias = +1;
+		} else if (!*a && !*b)
+			return bias;
+	}
+
+	return 0;
+}
+
+
+static int compare_left(const TCHAR *a, const TCHAR *b)
+{
+	/* Compare two left-aligned numbers: the first to have a
+	different value wins. */
+	for (;; a++, b++) {
+		if (!isdigit(*a))
+			return !isdigit(*b) - 1;
+		else if (!isdigit(*b))
+			return +1;
+		else if (*a < *b)
+			return -1;
+		else if (*a > *b)
+			return +1;
+	}
+
+	return 0;
+}
+
+
+int strnatcmp(const TCHAR *a, const TCHAR *b)
+{
+	int ai, bi;
+	TCHAR ca, cb;
+	int fractional, result;
+
+	ai = bi = 0;
+	while (1) {
+		ca = a[ai];
+		cb = b[bi];
+
+		/* skip over leading spaces or zeros */
+		while (isspace(ca))
+			ca = a[++ai];
+
+		while (isspace(cb))
+			cb = b[++bi];
+
+		/* process run of digits */
+		if (isdigit(ca) && isdigit(cb)) {
+			fractional = (ca == '0' || cb == '0');
+
+			if (fractional) {
+				if ((result = compare_left(a + ai, b + bi)) != 0)
+					return result;
+			} else {
+				if ((result = compare_right(a + ai, b + bi)) != 0)
+					return result;
+			}
+		}
+
+		if (!ca && !cb) {
+			/* The strings compare the same.  Perhaps the caller
+			will want to call strcmp to break the tie. */
+			return 0;
+		}
+
+		if (ca < cb)
+			return -1;
+		else if (ca > cb)
+			return +1;
+
+		++ai;
+		++bi;
+	}
+}
+
+
 int compare2(const void* arg1, const void* arg2)
 {
-	return _tcsicmp(((plsort2_t*)arg1)->str, ((plsort2_t*)arg2)->str);
+//	int iosort =  _tcsicmp(((plsort2_t*)arg1)->str, ((plsort2_t*)arg2)->str);;
+//	if(iosort == 0) {return 0;}
+
+/*
+	
+		CString szA(((plsort2_t*)arg1)->str);
+		CString szB(((plsort2_t*)arg2)->str);
+	
+		int iLen = min(szA.GetLength() , szB.GetLength());
+		int iLast = 0;
+		for(int i = 0; i < iLen; i++){
+			TCHAR curCharA = szA.GetAt(i) ;
+			BOOL isNumberA = false;
+			if(curCharA >= '0' && curCharA <= '9') isNumberA = true;
+	
+			TCHAR curCharB = szB.GetAt(i) ;
+			BOOL isNumberB = false;
+			if(curCharB >= '0' && curCharB <= '9') isNumberB = true;
+	
+			if(isNumberA || isNumberB){
+				if(isNumberA && isNumberB){
+					break;
+				}else{
+					return iosort;
+				}
+	
+			}else {
+				if( szA.Left(i+1) == szB.Left(i+1)){
+					iLast = i;
+				}
+			}
+			
+		}*/
+	
+	return strnatcmp(((plsort2_t*)arg1)->str, ((plsort2_t*)arg2)->str) ;
 }
 
 void CPlaylist::SortById()

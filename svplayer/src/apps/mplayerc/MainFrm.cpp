@@ -2181,7 +2181,11 @@ void CMainFrame::OnDisplayChange() // untested, not sure if it's working...
 		if ( CComQIPtr<IVMRWindowlessControl> pCAP = m_pCAP ){
 
 			pCAP->DisplayModeChanged();
-		}
+		}/*
+		else if(CComQIPtr<IVMRWindowlessControl9> pCAP = m_pCAP ){
+					pCAP->DisplayModeChanged();
+				}*/
+		
 		
 	}
 

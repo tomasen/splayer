@@ -309,12 +309,23 @@ HRESULT CDX7AllocatorPresenter::CreateDevice()
 
     DDSURFACEDESC2 ddsd;
 	INITDDSTRUCT(ddsd);
+	
     if(FAILED(m_pDD->GetDisplayMode(&ddsd))
 	|| ddsd.ddpfPixelFormat.dwRGBBitCount <= 8)
 		return DDERR_INVALIDMODE;
 
 	m_ScreenSize.SetSize(ddsd.dwWidth, ddsd.dwHeight);
+	if(AfxGetMainWnd()){
+		MONITORINFO mi;
+		mi.cbSize = sizeof(MONITORINFO);
+		GetMonitorInfo(MonitorFromWindow(AfxGetMainWnd()->m_hWnd, MONITOR_DEFAULTTONEAREST), &mi);
+		
+		m_ScreenSize.SetSize(mi.rcMonitor.right - mi.rcMonitor.left, mi.rcMonitor.bottom - mi.rcMonitor.top);
+		//SVP_LogMsg5(_T("m_ScreenSize mi DX7 %d %d ") , m_ScreenSize.cx, m_ScreenSize.cy);
+	}
+	
 
+	//SVP_LogMsg5(_T("m_ScreenSize DX7 %d %d ") , m_ScreenSize.cx, m_ScreenSize.cy);
 	HRESULT hr, hr2;
 
 	// m_pPrimary

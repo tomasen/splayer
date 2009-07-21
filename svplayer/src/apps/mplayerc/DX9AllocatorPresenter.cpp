@@ -874,6 +874,8 @@ HRESULT CDX9AllocatorPresenter::CreateDevice()
 	m_RefreshRate = d3ddm.RefreshRate;
 	m_ScreenSize.SetSize(d3ddm.Width, d3ddm.Height);
 
+	//SVP_LogMsg5(_T("m_ScreenSize DX9 %d %d ") , m_ScreenSize.cx, m_ScreenSize.cy);
+
 	D3DPRESENT_PARAMETERS pp;
 	ZeroMemory(&pp, sizeof(pp));
 
@@ -3728,7 +3730,7 @@ STDMETHODIMP CVMR9AllocatorPresenter::GetAspectRatioMode(DWORD* lpAspectRatioMod
 STDMETHODIMP CVMR9AllocatorPresenter::SetAspectRatioMode(DWORD AspectRatioMode) {return E_NOTIMPL;}
 STDMETHODIMP CVMR9AllocatorPresenter::SetVideoClippingWindow(HWND hwnd) {return E_NOTIMPL;}
 STDMETHODIMP CVMR9AllocatorPresenter::RepaintVideo(HWND hwnd, HDC hdc) {return E_NOTIMPL;}
-STDMETHODIMP CVMR9AllocatorPresenter::DisplayModeChanged() {return E_NOTIMPL;}
+STDMETHODIMP CVMR9AllocatorPresenter::DisplayModeChanged() {return E_NOTIMPL;} /*DeleteSurfaces(); CreateDevice() ; AllocSurfaces(); return S_OK;*/
 STDMETHODIMP CVMR9AllocatorPresenter::GetCurrentImage(BYTE** lpDib) {return E_NOTIMPL;}
 STDMETHODIMP CVMR9AllocatorPresenter::SetBorderColor(COLORREF Clr) {return E_NOTIMPL;}
 STDMETHODIMP CVMR9AllocatorPresenter::GetBorderColor(COLORREF* lpClr)

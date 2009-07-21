@@ -315,6 +315,7 @@ void CMediaFormats::GetExtsArray(CAtlArray<CString>& mask, bool noAudio){
 		if( mfc.GetEngineType() != DirectShow) continue;
 		CString szLabel = mfc.GetLabel();
 		if( szLabel.Find(_T("Subtitle")) >= 0 || szLabel.Find(_T("字幕")) >= 0  )  continue;
+		if( szLabel.Find(_T("Image File")) >= 0 || szLabel.Find(_T("图片")) >= 0  )  continue;
 		mfc.GetExtArray(mask);
 	}
 

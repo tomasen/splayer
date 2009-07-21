@@ -1270,6 +1270,7 @@ BOOL CMPlayerCApp::InitInstance()
 		for(size_t i = 0; i < mf.GetCount(); i++)
 		{
 			if(!mf[i].GetLabel().CompareNoCase(_T("Image file"))) continue;
+			if(!mf[i].GetLabel().CompareNoCase(_T("Subtitle file"))) continue;
 			if(!mf[i].GetLabel().CompareNoCase(_T("Playlist file"))) continue;
 				
 			bool fAudioOnly = mf[i].IsAudioOnly();

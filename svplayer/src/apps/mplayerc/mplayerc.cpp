@@ -1760,10 +1760,12 @@ void CMPlayerCApp::Settings::RegGlobalAccelKey(HWND hWnd){
 }
 void CMPlayerCApp::Settings::ThreadedLoading(){
 	
-	CMPlayerCApp * pApp  =(CMPlayerCApp*) AfxGetMyApp();
+	CMPlayerCApp * pApp  = AfxGetMyApp();
+	
 	CMainFrame* pFrame = (CMainFrame*)pApp->m_pMainWnd;
 	while(!pFrame || !pFrame->m_WndSizeInited){
 		Sleep(1000);
+		pFrame = (CMainFrame*)pApp->m_pMainWnd;
 	}
 	CSVPToolBox svptoolbox;
 	

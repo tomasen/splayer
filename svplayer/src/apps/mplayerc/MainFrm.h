@@ -244,6 +244,7 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 	CMenu m_favorites, m_recentfiles;
 	CMenu m_shaders;
 
+	HMONITOR m_HLastMonitor;
 	CInterfaceArray<IUnknown, &IID_IUnknown> m_pparray;
 	CInterfaceArray<IAMStreamSelect> m_ssarray;
 

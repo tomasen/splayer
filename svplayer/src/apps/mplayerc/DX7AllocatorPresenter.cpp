@@ -935,7 +935,7 @@ STDMETHODIMP CVMR7AllocatorPresenter::GetAspectRatioMode(DWORD* lpAspectRatioMod
 STDMETHODIMP CVMR7AllocatorPresenter::SetAspectRatioMode(DWORD AspectRatioMode) {return E_NOTIMPL;}
 STDMETHODIMP CVMR7AllocatorPresenter::SetVideoClippingWindow(HWND hwnd) {return E_NOTIMPL;}
 STDMETHODIMP CVMR7AllocatorPresenter::RepaintVideo(HWND hwnd, HDC hdc) {return E_NOTIMPL;}
-STDMETHODIMP CVMR7AllocatorPresenter::DisplayModeChanged() {return E_NOTIMPL;}
+STDMETHODIMP CVMR7AllocatorPresenter::DisplayModeChanged() {DeleteSurfaces(); CreateDevice() ; AllocSurfaces(); return S_OK;}
 STDMETHODIMP CVMR7AllocatorPresenter::GetCurrentImage(BYTE** lpDib) {return E_NOTIMPL;}
 STDMETHODIMP CVMR7AllocatorPresenter::SetBorderColor(COLORREF Clr) {return E_NOTIMPL;}
 

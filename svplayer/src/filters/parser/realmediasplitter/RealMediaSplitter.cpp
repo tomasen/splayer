@@ -1612,7 +1612,7 @@ HRESULT CRealVideoDecoder::Transform(IMediaSample* pIn)
 
 	}
 	
-	SVP_LogMsg3("after RVTransform %u %d %d" , hr , transform_out.w , transform_out.h);
+	SVP_LogMsg3("after RVTransform %u %d %d %d %d" , hr , transform_out.w , transform_out.h, m_w, m_h);
 
 	
 	
@@ -1627,12 +1627,12 @@ HRESULT CRealVideoDecoder::Transform(IMediaSample* pIn)
 
 	if(pIn->IsPreroll() == S_OK || rtStart < 0 || !(transform_out.unk1&1))
 		return S_OK;
-	m_w = transform_out.w ;
-	m_h = transform_out.h ;
+	//m_w = transform_out.w ;
+	//m_h = transform_out.h ;
 	CComPtr<IMediaSample> pOut;
 	BYTE* pDataOut = NULL;
-	if(/*FAILED(hr = GetDeliveryBuffer(transform_out.w, transform_out.h, &pOut)) // TODO
-	   && */ FAILED(hr = GetDeliveryBuffer(m_w, m_h, &pOut))
+	if(FAILED(hr = GetDeliveryBuffer(transform_out.w, transform_out.h, &pOut)) // TODO
+	   /*&&  FAILED(hr = GetDeliveryBuffer(m_w, m_h, &pOut))*/
 	   || FAILED(hr = pOut->GetPointer(&pDataOut)))
 	   return hr;
 
@@ -1661,6 +1661,7 @@ HRESULT CRealVideoDecoder::Transform(IMediaSample* pIn)
 
 	pOut->SetDiscontinuity(pIn->IsDiscontinuity() == S_OK);
 
+	
 	CopyBuffer(pDataOut, pI420[0], m_w, m_h, m_w, MEDIASUBTYPE_I420);
 
 	DbgLog((LOG_TRACE, 0, _T("V: rtStart=%I64d, rtStop=%I64d, disc=%d, sync=%d"), 

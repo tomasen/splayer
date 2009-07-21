@@ -955,6 +955,12 @@ void CMainFrame::OnNcCalcSize( BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp){
 
 void CMainFrame::OnMove(int x, int y)
 {
+	HMONITOR hMonitor = MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST);
+	if(m_HLastMonitor != hMonitor){
+		m_HLastMonitor = hMonitor;
+		OnDisplayChange();
+	}
+
 	__super::OnMove(x, y);
 
 	MoveVideoWindow();
@@ -2169,10 +2175,15 @@ void CMainFrame::OnSizing(UINT fwSide, LPRECT pRect)
 void CMainFrame::OnDisplayChange() // untested, not sure if it's working...
 {
 	TRACE(_T("*** CMainFrame::OnDisplayChange()\n"));
-/*
-	if(m_iMediaLoadState == MLS_LOADED && m_pCAP) 
-		m_pCAP->OnDisplayChange();
-*/
+	//AfxMessageBox(_T("SD"));
+	if(m_iMediaLoadState == MLS_LOADED && m_pCAP) {
+
+		if ( CComQIPtr<IVMRWindowlessControl> pCAP = m_pCAP ){
+
+			pCAP->DisplayModeChanged();
+		}
+		
+	}
 
 	GetDesktopWindow()->GetWindowRect(&m_rcDesktop);
 }
@@ -8891,6 +8902,7 @@ void CMainFrame::ZoomVideoWindow(double scale)
 
 	MONITORINFO mi;
 	mi.cbSize = sizeof(MONITORINFO);
+	
 	GetMonitorInfo(MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST), &mi);
 	if(r.right > mi.rcWork.right) r.OffsetRect(mi.rcWork.right-r.right, 0);
 	if(r.left < mi.rcWork.left) r.OffsetRect(mi.rcWork.left-r.left, 0);

@@ -448,7 +448,7 @@ CMPlayerCApp::CMPlayerCApp()
 , m_bMouseInOutUnknown(TRUE)      // don't know whether in or out yet
 , m_bGenerateMouseInOutMessages(TRUE) 
 {
-
+	m_pMainWnd = NULL;
 	::SetUnhandledExceptionFilter(DebugMiniDumpFilter);
 
 	QueryPerformanceFrequency ((LARGE_INTEGER*)&m_PerfFrequency);
@@ -1093,9 +1093,9 @@ public:
 };
 void CMPlayerCApp::InitInstanceThreaded(){
 	
-	
 	CSVPToolBox svpToolBox;
 	CStringArray csaDll;
+
 	//csaDll.Add( _T("codecs\\CoreAVCDecoder.ax")); //avoid missing reg key problem
 	//CFilterMapper2 fm2(false);
 	if(1){
@@ -1137,8 +1137,12 @@ void CMPlayerCApp::InitInstanceThreaded(){
 }
 UINT __cdecl Thread_InitInstance( LPVOID lpParam ) 
 { 
-	Sleep(2000);
+	
 	CMPlayerCApp * ma =(CMPlayerCApp*) lpParam;
+	CMainFrame* pFrame = (CMainFrame*)ma->m_pMainWnd;
+	while(!pFrame->m_WndSizeInited){
+		Sleep(1000);
+	}
 	CoInitialize(NULL);
 	ma->InitInstanceThreaded();
 	CoUninitialize();
@@ -1332,8 +1336,7 @@ BOOL CMPlayerCApp::InitInstance()
 		return FALSE;
 	}
 
-	AfxBeginThread(Thread_InitInstance , this,  THREAD_PRIORITY_LOWEST);
-
+	
 	CRegKey key;
 	if(ERROR_SUCCESS == key.Create(HKEY_LOCAL_MACHINE, _T("Software\\SPlayer\\射手影音播放器")))
 	{
@@ -1354,6 +1357,9 @@ BOOL CMPlayerCApp::InitInstance()
 	pFrame->ShowWindow((m_s.nCLSwitches&CLSW_MINIMIZED)?SW_SHOWMINIMIZED:SW_SHOW);
 	pFrame->UpdateWindow();
 	pFrame->m_hAccelTable = m_s.hAccel;
+
+	AfxBeginThread(Thread_InitInstance , this,  THREAD_PRIORITY_LOWEST);
+
 
 	m_s.WinLircClient.SetHWND(m_pMainWnd->m_hWnd);
 	if(m_s.fWinLirc) m_s.WinLircClient.Connect(m_s.WinLircAddr);
@@ -1753,9 +1759,14 @@ void CMPlayerCApp::Settings::RegGlobalAccelKey(HWND hWnd){
 	}
 }
 void CMPlayerCApp::Settings::ThreadedLoading(){
-	Sleep(4000);
+	
+	CMPlayerCApp * pApp  =(CMPlayerCApp*) AfxGetMyApp();
+	CMainFrame* pFrame = (CMainFrame*)pApp->m_pMainWnd;
+	while(!pFrame || !pFrame->m_WndSizeInited){
+		Sleep(1000);
+	}
 	CSVPToolBox svptoolbox;
-	CWinApp* pApp = AfxGetApp();
+	
 	if(!bNotChangeFontToYH){
 		BOOL bHadYaheiDownloaded = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS),  _T("HasYaheiDownloaded"), 0); //默认检查是否使用旧字体
 		if(!svptoolbox.bFontExist(_T("微软雅黑")) && !svptoolbox.bFontExist(_T("Microsoft YaHei")) ){ 

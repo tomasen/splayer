@@ -11,6 +11,7 @@
 #include "..\..\svplib\svplib.h"
 #include "..\..\svplib\svptoolbox.h"
 
+#include <exdispid.h>
 // CUESettingPanel dialog
 
 IMPLEMENT_DYNAMIC(CUESettingPanel, CDHtmlDialog)
@@ -52,6 +53,10 @@ BEGIN_DHTML_EVENT_MAP(CUESettingPanel)
 	
 END_DHTML_EVENT_MAP()
 
+BEGIN_EVENTSINK_MAP(CUESettingPanel, CDHtmlDialog)
+	ON_EVENT(CUESettingPanel, AFX_IDC_BROWSER, DISPID_BEFORENAVIGATE2, OnBeforeNavigate2, VTS_DISPATCH VTS_PVARIANT VTS_PVARIANT VTS_PVARIANT VTS_PVARIANT VTS_PVARIANT VTS_PBOOL)
+
+END_EVENTSINK_MAP()
 
 
 CUESettingPanel::~CUESettingPanel()
@@ -80,6 +85,8 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_DHtml_CheckBox(pDX, _T("chktrayicon"), m_sgi_chktrayicon);
 	DDX_DHtml_CheckBox(pDX, _T("dxvacompat"), m_sgi_dxvacompat);
 
+	DDX_DHtml_CheckBox(pDX, _T("useCustomSpeakerSetting"), m_sgi_useCustomSpeakerSetting);
+	
 	DDX_DHtml_CheckBox(pDX, _T("chkusesmartdrag"), m_sgi_chkuseSmartDrag);
 	
 	DDX_DHtml_ElementValue (pDX, _T("stepsmall"), m_sgs_stepsmall);
@@ -236,6 +243,8 @@ BOOL CUESettingPanel::OnInitDialog()
 	m_sgi_chkuseSmartDrag = s.useSmartDrag;
 	m_sgi_chktrayicon = s.fTrayIcon;
 	m_sgi_dxvacompat = s.bDVXACompat;
+
+	m_sgi_useCustomSpeakerSetting = !!s.bNotAutoCheckSpeaker;
 
 	m_sgs_stepsmall.Format(_T("%d"), s.nJumpDistS/1000) ;
 	m_sgs_stepmed.Format(_T("%d"), s.nJumpDistM/1000) ;
@@ -500,11 +509,19 @@ void CUESettingPanel::ApplyAllSetting(){
 
 	s.bUseWaveOutDeviceByDefault = m_sgi_UseWaveOutDeviceByDefault ;
 	
-	{
-		int iSS = _wtoi(m_sgs_speaker);
-		s.SetChannelMapByNumberOfSpeakers(iSS, -1);
+	if(m_sgi_useCustomSpeakerSetting){
 		
+		{
+			int iSS = _wtoi(m_sgs_speaker);
+
+			s.bNotAutoCheckSpeaker = (int)(iSS /100)%10 + (int)(iSS/10) %10  + iSS%10; 
+
+			//SVP_LogMsg5(_T("s.bNotAutoCheckSpeaker %d") , s.bNotAutoCheckSpeaker);
+			s.SetChannelMapByNumberOfSpeakers(iSS, s.bNotAutoCheckSpeaker );
+
+		}
 	}
+	
 
 	//Sub Setting
 	s.autoDownloadSVPSub = m_sgi_chkautodownloadsvpsub ;
@@ -539,8 +556,26 @@ void CUESettingPanel::ApplyAllSetting(){
 	s.UpdateData(true);
 }
 
+void CUESettingPanel::OnBeforeNavigate2(LPDISPATCH pDisp, VARIANT FAR* URL, VARIANT FAR* Flags, VARIANT FAR* TargetFrameName, VARIANT FAR* PostData, VARIANT FAR* Headers, BOOL FAR* Cancel)
+{
+	CString str(V_BSTR(URL));
+	if(0){
+		CString sMsg;
+		sMsg.Format(L"OnBeforeNavigate2 %s\r\n",str);
+		AfxMessageBox(sMsg);
+	}
+
+	if(str.Find(_T("#"))>=0 )
+		*Cancel = TRUE; // cancel when needed
+	else
+		__super::_OnBeforeNavigate2( pDisp, URL, Flags, TargetFrameName, PostData, Headers, Cancel );
+	
+	
+}
 HRESULT STDMETHODCALLTYPE CUESettingPanel::GetHostInfo(DOCHOSTUIINFO *pInfo){
-	pInfo->dwFlags |= DOCHOSTUIFLAG_THEME | DOCHOSTUIFLAG_SCROLL_NO ;
+	pInfo->dwFlags |= DOCHOSTUIFLAG_THEME | DOCHOSTUIFLAG_SCROLL_NO | DOCHOSTUIFLAG_NO3DBORDER
+				| DOCHOSTUIFLAG_DISABLE_HELP_MENU | DOCHOSTUIFLAG_DIALOG | DOCHOSTUIFLAG_DISABLE_SCRIPT_INACTIVE
+				| DOCHOSTUIFLAG_OVERRIDEBEHAVIORFACTORY;
 	return S_OK;
 }
 // CUESettingPanel message handlers

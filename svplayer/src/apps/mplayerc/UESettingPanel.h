@@ -88,6 +88,7 @@ class CUESettingPanel : public CDHtmlDialog
 	int m_sgi_gpuacel;
 	int m_sgi_uservmrmixer;
 	int m_sgi_usespdif;
+	int m_sgi_useCustomSpeakerSetting;
 
 	int m_sgi_normalize;
 	int m_sgi_downsample44k;
@@ -127,6 +128,8 @@ public:
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	virtual BOOL OnInitDialog();
+	void OnBeforeNavigate2(LPDISPATCH pDisp, VARIANT FAR* URL, VARIANT FAR* Flags, VARIANT FAR* TargetFrameName, VARIANT FAR* PostData, VARIANT FAR* Headers, BOOL FAR* Cancel);
 	DECLARE_MESSAGE_MAP()
 	DECLARE_DHTML_EVENT_MAP()
+	DECLARE_EVENTSINK_MAP()
 };

@@ -2201,6 +2201,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_CHECKUPDATERINTERLEAVE), tCheckUpdaterInterleave);
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LASTCHECKUPDATER), tLastCheckUpdater);
 
+
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUTORESUMEPLAY), autoResumePlay);
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_HIDECAPTIONMENU), fHideCaptionMenu);
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_CONTROLSTATE), nCS);
@@ -2237,7 +2238,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEGPUCUDA), useGPUCUDA);
 		
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUTODOWNLAODSVPSUB), autoDownloadSVPSub);
-		
+		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_NOTAUTOCHECKSPEAKER), bNotAutoCheckSpeaker);
 
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DSVIDEORENDERERTYPE), iDSVideoRendererType);
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_RMVIDEORENDERERTYPE), iRMVideoRendererType);
@@ -2613,6 +2614,9 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		iAPSurfaceUsage = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_APSURACEFUSAGE), VIDRNDT_AP_TEXTURE2D);
 		useGPUCUDA = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEGPUCUDA), 0);
 		useGPUCUDA = SVP_SetCoreAvcCUDA(useGPUCUDA);
+
+		bNotAutoCheckSpeaker = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_NOTAUTOCHECKSPEAKER), 0);
+		
 
 		fBUltraFastMode = 0;// !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_ULTRAFAST), 1);
 		autoDownloadSVPSub = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUTODOWNLAODSVPSUB), 1);
@@ -3703,9 +3707,13 @@ BOOL CALLBACK DS_GetAudioDeviceGUID(LPGUID lpGuid,
 }
 
 int  CMPlayerCApp::GetNumberOfSpeakers(LPCGUID lpcGUID, HWND hWnd){
+	AppSettings& s = AfxGetAppSettings();
+	if(s.bNotAutoCheckSpeaker > 1){
+		return s.bNotAutoCheckSpeaker;
+	}
 	CComPtr<IDirectSound> pDS;
 	DWORD spc = 0, defchnum = 2;
-	CString m_DisplayName = AfxGetAppSettings().AudioRendererDisplayName ;
+	CString m_DisplayName = s.AudioRendererDisplayName ;
 	
 	if(!lpcGUID && !m_DisplayName.IsEmpty()){
 

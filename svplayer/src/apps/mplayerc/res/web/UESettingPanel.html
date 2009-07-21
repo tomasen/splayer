@@ -128,6 +128,13 @@ UESAPI.prototype = {
             tobj.style.display = "block";
         }
     },
+    useCustomSpeakerSetting:function(chked){
+        if(chked){
+            this.showblock("speakerdiv");
+        }else{
+            this.hideobj("speakerdiv");
+        }
+    },
     showinline:function(idname){
         var tobj = this.fobj(idname);
         tobj.style.display = "inline";
@@ -332,7 +339,14 @@ function myInit(){
 <input type="checkbox" id="chkexitfullscreen" /><label for="chkexitfullscreen">播放结束后自动退出全屏</label><br />
 <input type="checkbox" id="chkautozoom" /><label for="chkautozoom">根据视频画面尺寸改变窗口大小</label><br />
 
-<br /><br /><br /><br /><br />
+<br />
+<input type="checkbox" id="UseWaveOutDeviceByDefault" /><label for="UseWaveOutDeviceByDefault" title="优先使用WaveOut而非DirectSound音频设备">使变速播放支持2倍以上速度快进</label><br />
+ 小幅快进： <input type="text" id="stepsmall" size="2"/>秒  
+ 中幅快进： <input type="text" id="stepmed" size="2"/>秒   
+ 大幅快进： <input type="text" id="stepbig" size="2"/>秒<br />
+ <i>小窍门：按住快进(退)按钮时，按下的时间越长，快进(退)的步幅越大</i><br />
+<i>小窍门：启用智能拖拽功能后，鼠标在画面右上角拖拽可以缩放画面，在画面中心拖拽可以移动画面</i>
+
 </div>
 <div id="generalseting" class="hiddenarea">
 <input type="checkbox" id="chkremhistory" style="display:none;"/><label for="chkremhistory"  style="display:none;">保存播放记录</label><br />
@@ -349,12 +363,6 @@ function myInit(){
 <input type="checkbox" id="chkusesmartdrag" /><label for="chkusesmartdrag">启用智能拖拽功能 [<a href="http://blog.splayer.org/?page_id=796" target="_blank"><b>?</b></a>]</label><br />
 <!--<input type="checkbox" id="chkabnormal" /><label for="chkabnormal" title="允许播放器使用更多的CPU运算资源
 但播放时也有可能影响其他软件运行效率，特别是在低配置的电脑上。">提高进程优先级</label><br />--><br />
-<input type="checkbox" id="UseWaveOutDeviceByDefault" /><label for="UseWaveOutDeviceByDefault" title="优先使用WaveOut而非DirectSound音频设备">使变速播放支持2倍以上速度快进</label><br />
- 小幅快进： <input type="text" id="stepsmall" size="2"/>秒  
- 中幅快进： <input type="text" id="stepmed" size="2"/>秒   
- 大幅快进： <input type="text" id="stepbig" size="2"/>秒<br />
- <i>小窍门：按住快进(退)按钮时，按下的时间越长，快进(退)的步幅越大</i><br />
-<i>小窍门：启用智能拖拽功能后，鼠标在画面右上角拖拽可以缩放画面，在画面中心拖拽可以移动画面</i>
 </div>
 <div id="videosetting" class="hiddenarea">
 显示输出方式：<select id="videorender" onchange="ueAPI.useDX9Mixer(this.value == 'DX9' )"><option value="DX9" >智能高配置(DX9)</option>
@@ -362,9 +370,10 @@ function myInit(){
 <option value="ADV">使用自定义高级设置</option></select><br />
 高清解码方式：<select id="decoder" onchange="ueAPI.selectDecoder(this.value);" ></select>
 <input type="checkbox" id="gpuacelbase" onclick="ueAPI.useGPUAcel(this.checked);" /><label for="gpuacelbase">显卡硬件（GPU）加速 </label> <br />
-<div id='divdxvacompat' ><input type="checkbox" id="dxvacompat" /><label for="dxvacompat">使显卡加速兼容更多文件（但可能造成解码失败）</label> <br /></div>
+
  <span id="remarkfordecoder" ></span><br /> <br />
 
+<div id='divdxvacompat' ><input type="checkbox" id="dxvacompat" /><label for="dxvacompat">使硬件高清兼容更多文件（但显卡能力不足时可能造成画面破碎）</label> <br /></div>
 <input type="checkbox" id="vmr9mixer" onclick="ueAPI.useDX9(this.checked);"  /><label for="vmr9mixer" title="启用播放器的亮度调节功能">启用内置亮度调节(需DX9，不能使用CoreAVC解码器)</label><br />
 <input type="checkbox" id="lockbackbuff" /><label for="lockbackbuff" title="解决运动画面中水平错位的问题">修正画面横向错位问题（少许降低性能）</label><br />
 <br />
@@ -379,15 +388,16 @@ function myInit(){
 <!--- <input type="checkbox" id="noaudioboost" /><label for="noaudioboost" title="不对音频进行额外的增益处理">高音质模式 (不使用任何音量增益效果，对一般用户可能会觉得音量较轻)</label><br />
 <!--- <input type="checkbox" id="downsample44k" /><label for="downsample44k" title="部分声卡不支持48kHz音频时
 可选择此选项">以44kHz输出</label><br /><br /> -->
-扬声器配置：<select id="speaker"  ><option value='200'>2.0(2.1)立体声音箱(2 前置)</option>
+<input type="checkbox" id="useCustomSpeakerSetting" onclick="ueAPI.useCustomSpeakerSetting(this.checked)" /><label for="useCustomSpeakerSetting" >使用自定义音箱配置（忽略系统自动检测）</label><br />
+<div id='speakerdiv' style="display:none;margin-left:22px;"> <select id="speaker"  ><option value='200'>2.0(2.1)立体声音箱(2 前置)</option>
 <option value='220'>4(4.1)音箱(2 前置 + 2 后置)</option>
 <option value='321'>5.1 音箱</option>
 <option value='210'>2 前置 + 1 后置音箱</option>
 <option value='310'>3 前置 + 1 后置音箱</option>
 <option value='320'>3 前置 + 2 后置音箱</option>
-</select><br />
+</select><br /> </div>
+<br />
 <input type="checkbox" id="usespdif" /><label for="usespdif" title="通过光纤或同轴发送数字信号至外部功放进行音频解码">优先使用SPDIF输出</label><br />
-
 <br /><input type="checkbox" id="normalize" /><label for="normalize" title="当视频声音较轻时自动提高音量">智能音量放大 (试验阶段)</label><br />
 <br />
 <i>小窍门：<br />

@@ -618,9 +618,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		m_bars.AddTail(&m_wndStatusBar);
 	}
 
-	if(m_wndToolTopBar.Create(this)){
-		m_bars.AddTail(&m_wndToolTopBar);
-	}
+
 	m_bars.AddTail(&m_wndColorControlBar);
 
 	
@@ -659,8 +657,12 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 
 	//WS_EX_NOACTIVATE
-	if(!m_wndNewOSD.CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, _T("STATIC"), _T("OSD"), WS_POPUP, CRect( 20,20,60,35 ) , this,  0)){
+	if(!m_wndNewOSD.CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, _T("STATIC"), _T("OSD"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0)){
 		AfxMessageBox(_T("OSD 创建失败！"));
+	}
+
+	if(!m_wndToolTopBar.CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, _T("STATIC"), _T("TOPTOOL"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0)){
+		AfxMessageBox(_T("Top Toolbar 创建失败！"));
 	}
 
 	m_pGraphThread = (CGraphThread*)AfxBeginThread(RUNTIME_CLASS(CGraphThread));
@@ -862,33 +864,29 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 			//SetTimer(TIMER_FULLSCREENMOUSEHIDER, max(nTimeOut*1000, 2000), NULL);
 		}
 	}
-/*
 
-	if( bMouseMoved && IsSomethingLoaded()){
+
+	if( bMouseMoved ){ //&& IsSomethingLoaded()
 		BOOL bSomethingChanged = false;
 		DWORD dnCS = s.nCS;
 		if(point.y < 20){
-			if(!m_wndToolTopBar.IsVisible()){
-				SVP_LogMsg5(_T("show  tooltopbar") );
-				//ShowControlBar(&m_wndToolTopBar, TRUE, TRUE); //ShowControls(dnCS | CS_TOOLTOPBAR , false);//
-				ShowControlBar(&m_wndToolTopBar, TRUE, TRUE); 
+			if(!m_wndToolTopBar.IsWindowVisible()){
+				m_wndToolTopBar.ShowWindow(SW_SHOW);
 				bSomethingChanged = true;
 			}
 		}else{
-			if(m_wndToolTopBar.IsVisible()){
-				SVP_LogMsg5(_T(" hide tooltopbar") );
-				ShowControlBar(&m_wndToolTopBar, FALSE, TRUE) ; //ShowControls(dnCS  , false);//
+			if(m_wndToolTopBar.IsWindowVisible()){
+			//	SVP_LogMsg5(_T(" hide tooltopbar") );
+				m_wndToolTopBar.ShowWindow(SW_HIDE);
 				bSomethingChanged = true;
 			}
 		}
 
 		if(bSomethingChanged){
-			//MoveVideoWindow();
-			RecalcLayout();
-			RedrawNonClientArea();
+			rePosOSD();
 		}
 	}
-*/
+
 
 
 
@@ -1499,9 +1497,7 @@ void CMainFrame::RedrawNonClientArea()
 	// RedrawNonClientArea function every time after SetWindowText, or other similar calls.
 	// In certain situations this might cause a flicker because two painting processes are done.
 	// So it's better to use less or avoid these types of calls.
-	if(m_wndToolTopBar.IsVisible())
-		m_wndToolTopBar.Invalidate();
-
+	
 	if(m_wndToolBar.IsVisible())
 		m_wndToolBar.Invalidate();
 	if(m_wndSeekBar.IsVisible())
@@ -8779,9 +8775,8 @@ void CMainFrame::MoveVideoWindow(bool fShowStats)
 }
 void CMainFrame::rePosOSD(){
 
-	if(!m_wndView || !::IsWindow(m_wndView.m_hWnd) || !m_wndNewOSD || !::IsWindow(m_wndNewOSD.m_hWnd) || m_wndNewOSD.m_osdStr.IsEmpty()){
-		return;
-			
+	if(!m_wndView || !::IsWindow(m_wndView.m_hWnd) || !m_wndNewOSD || !::IsWindow(m_wndNewOSD.m_hWnd) ){
+		return;	
 	}
 	
 
@@ -8789,23 +8784,29 @@ void CMainFrame::rePosOSD(){
 	m_wndView.GetWindowRect(&rcView);
 	if( ::GetWindowRect( m_wndView.m_hWnd, &rcView ) ){
 		GetWindowRect(&rc);
-
-		
+		CRect rcTopToolBar(rcView);
+			
 		//rcView -= rcView.TopLeft();
-
-		if(m_iOSDAlign == 1) { //TopLeft
-			rcView.top += 5;
-			rcView.bottom = rcView.top + 22;
-		}else{
-			rcView.bottom -= 5;
-			rcView.top = rcView.bottom - 22;
+		if(!m_wndNewOSD.m_osdStr.IsEmpty()){
+			if(m_iOSDAlign == 1) { //TopLeft
+				rcView.top += 5;
+				rcView.bottom = rcView.top + 22;
+			}else{
+				rcView.bottom -= 5;
+				rcView.top = rcView.bottom - 22;
+			}
+			rcView.left += 10;
+			
+			rcView.right = rcView.left + min(m_wndNewOSD.mSize.cx, rcView.Width() *9/10);
+			
+			m_wndNewOSD.MoveWindow(rcView);
 		}
-		rcView.left += 10;
 		
-		rcView.right = rcView.left + min(m_wndNewOSD.mSize.cx, rcView.Width() *9/10);
-		
-		m_wndNewOSD.MoveWindow(rcView);
-		//m_wndView.m_wndOSD.MoveWindow(rcView);
+		if(m_wndToolTopBar.IsWindowVisible()){
+			rcTopToolBar.bottom = rcTopToolBar.top + 20;
+	//		rcTopToolBar.right = min( rcTopToolBar.left + 100 , rcTopToolBar.right);
+			m_wndToolTopBar.MoveWindow(rcTopToolBar);
+		}
 	}
 	return;
 }
@@ -9376,7 +9377,7 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 
 		
 		HRESULT hr = pGB->RenderFile(CStringW(fn), NULL);
-		if(FAILED(hr) && ( fn.MakeLower().Find(_T("mms://")) == 0 || fn.MakeLower().Find(_T("mmsh://")) == 0 )){
+		if(FAILED(hr) && ( fn.MakeLower().Find(_T("mms://")) == 0 || fn.MakeLower().Find(_T("mmsh://")) == 0 )){ // || fn.MakeLower().Find(_T("http://")) == 0 
 			//render mms our own way
 			hr = OpenMMSUrlStream(fn);
 		}

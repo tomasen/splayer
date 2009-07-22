@@ -16,7 +16,7 @@
 
 // CPlayerToolTopBar
 
-IMPLEMENT_DYNAMIC(CPlayerToolTopBar, CToolBar)
+IMPLEMENT_DYNAMIC(CPlayerToolTopBar, CWnd)
 
 CPlayerToolTopBar::CPlayerToolTopBar():
 m_hovering(0),
@@ -30,7 +30,7 @@ CPlayerToolTopBar::~CPlayerToolTopBar()
 }
 
 
-BEGIN_MESSAGE_MAP(CPlayerToolTopBar, CToolBar)
+BEGIN_MESSAGE_MAP(CPlayerToolTopBar, CWnd)
 	ON_WM_CREATE()
 	ON_WM_MOVE()
 	ON_WM_PAINT()
@@ -43,6 +43,7 @@ BEGIN_MESSAGE_MAP(CPlayerToolTopBar, CToolBar)
 	ON_WM_MOUSEMOVE()
 	ON_WM_SETCURSOR()
 	ON_NOTIFY_EX(TTN_NEEDTEXT, 0, OnTtnNeedText)
+	ON_WM_ENABLE()
 END_MESSAGE_MAP()
 
 
@@ -95,10 +96,19 @@ BOOL CPlayerToolTopBar::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 }
 int CPlayerToolTopBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
-	if (CToolBar::OnCreate(lpCreateStruct) == -1)
+	if (__super::OnCreate(lpCreateStruct) == -1)
 		return -1;
 
-	// TODO:  Add your specialized creation code here
+	cursorHand = ::LoadCursor(NULL, IDC_HAND);
+
+	GetSystemFontWithScale(&m_statft, 14.0);
+
+	CDC ScreenDC;
+	ScreenDC.CreateIC(_T("DISPLAY"), NULL, NULL, NULL);
+	m_nLogDPIY = ScreenDC.GetDeviceCaps(LOGPIXELSY);
+
+
+	EnableToolTips(TRUE);
 
 	return 0;
 }
@@ -107,22 +117,10 @@ void CPlayerToolTopBar::ReCalcBtnPos(){
 	GetWindowRect(&rc);
 	m_btnList.OnSize( rc);
 }
-BOOL CPlayerToolTopBar::PreCreateWindow(CREATESTRUCT& cs)
-{
-	// TODO: Add your specialized code here and/or call the base class
-	if(!__super::PreCreateWindow(cs))
-		return FALSE;
-
-	m_dwStyle &= ~CBRS_BORDER_TOP;
-	m_dwStyle &= ~CBRS_BORDER_LEFT;
-	m_dwStyle &= ~CBRS_BORDER_RIGHT;
-	m_dwStyle &= ~CBRS_BORDER_BOTTOM;
-	return TRUE;
-}
 
 void CPlayerToolTopBar::OnMove(int x, int y)
 {
-	CToolBar::OnMove(x, y);
+	__super::OnMove(x, y);
 
 	// TODO: Add your message handler code here
 }
@@ -143,85 +141,43 @@ void CPlayerToolTopBar::OnPaint()
 
 	CRect rcUpperSqu = rcClient;
 	rcUpperSqu.bottom--;
+	//rcUpperSqu.right--;
 	hdc.FillSolidRect(rcUpperSqu, RGB(61,65,69));
 
 	hdc.FillSolidRect(rcBottomSqu, RGB(89,89,89));
 
+	//rcBottomSqu = rcClient;
+	//rcBottomSqu.left = rcBottomSqu.right - 1;
+	//hdc.FillSolidRect(rcBottomSqu, RGB(89,89,89));
 }
 
 void CPlayerToolTopBar::OnSize(UINT nType, int cx, int cy)
 {
-	CToolBar::OnSize(nType, cx, cy);
+	__super::OnSize(nType, cx, cy);
 
 	// TODO: Add your message handler code here
 }
 
-BOOL CPlayerToolTopBar::Create(CWnd* pParentWnd, DWORD dwStyle , UINT nID)
-{
-	// TODO: Add your specialized code here and/or call the base class
 
-	if(!__super::CreateEx(pParentWnd,
-		TBSTYLE_FLAT|TBSTYLE_TRANSPARENT|TBSTYLE_AUTOSIZE,
-		WS_CHILD|CBRS_ALIGN_TOP , CRect(0,0,0,0))  //CBRS_TOOLTIPS NEW UI
-		) //|| !LoadToolBar(iToolBarID)
-		return FALSE;
-
-	GetToolBarCtrl().SetExtendedStyle(TBSTYLE_EX_DRAWDDARROWS);
-
-	cursorHand = ::LoadCursor(NULL, IDC_HAND);
-
-	GetSystemFontWithScale(&m_statft, 14.0);
-
-	CDC ScreenDC;
-	ScreenDC.CreateIC(_T("DISPLAY"), NULL, NULL, NULL);
-	m_nLogDPIY = ScreenDC.GetDeviceCaps(LOGPIXELSY);
-
-
-	EnableToolTips(TRUE);
-	return TRUE;
-}
-
-CSize CPlayerToolTopBar::CalcFixedLayout(BOOL bStretch,BOOL bHorz ){
-
-
-	CSize size( 32767, 20 * m_nLogDPIY / 96 );
-
-	if ( CWnd* pParent = AfxGetMainWnd() )
-	{
-		CRect rc;
-		pParent->GetWindowRect( &rc );
-		size.cx = rc.Width() - 2;
-	}
-
-	CRect rc;
-	GetWindowRect(&rc);
-	m_btnList.OnSize( rc);
-
-	return size;
-
-
-
-	//return __super::CalcFixedLayout(bStretch,bHorz);
-}
 BOOL CPlayerToolTopBar::OnEraseBkgnd(CDC* pDC)
 {
 	// TODO: Add your message handler code here and/or call default
 
-	return CToolBar::OnEraseBkgnd(pDC);
+	return __super::OnEraseBkgnd(pDC);
 }
 
 void CPlayerToolTopBar::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	// TODO: Add your message handler code here and/or call default
 
-	CToolBar::OnLButtonUp(nFlags, point);
+	__super::OnLButtonUp(nFlags, point);
 }
 
 void CPlayerToolTopBar::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	// TODO: Add your message handler code here and/or call default
 
-	CToolBar::OnLButtonDown(nFlags, point);
+	__super::OnLButtonDown(nFlags, point);
 }
 
 void CPlayerToolTopBar::OnNcPaint()
@@ -234,19 +190,27 @@ void CPlayerToolTopBar::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO: Add your message handler code here and/or call default
 
-	CToolBar::OnTimer(nIDEvent);
+	__super::OnTimer(nIDEvent);
 }
 
 void CPlayerToolTopBar::OnMouseMove(UINT nFlags, CPoint point)
 {
 	// TODO: Add your message handler code here and/or call default
 
-	CToolBar::OnMouseMove(nFlags, point);
+	__super::OnMouseMove(nFlags, point);
 }
 
 INT_PTR CPlayerToolTopBar::OnToolHitTest(CPoint point, TOOLINFO* pTI) const
 {
 	// TODO: Add your specialized code here and/or call the base class
 
-	return CToolBar::OnToolHitTest(point, pTI);
+	return __super::OnToolHitTest(point, pTI);
+}
+
+void CPlayerToolTopBar::OnEnable(BOOL bEnable)
+{
+	//CWnd::OnEnable(bEnable);
+
+	return;
+	// TODO: Add your message handler code here
 }

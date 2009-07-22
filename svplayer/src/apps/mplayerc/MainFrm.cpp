@@ -13804,7 +13804,7 @@ void CMainFrame::OnDebugreport()
 	{
 		CSVPToolBox svpTool;
 		svpTool.GetGPUString(&szaReport);
-		
+		AppSettings& s = AfxGetAppSettings();
 		BeginEnumFilters(pGB, pEF, pBF)
 		{
 			CString name(GetFilterName(pBF));
@@ -13940,7 +13940,7 @@ void CMainFrame::OnDebugreport()
 		szBuf.Format(_T("OS Ver %s %d.%d ")  , osver.szCSDVersion, osver.dwMajorVersion , osver.dwMinorVersion );
 		szaReport.Add(szBuf);
 		
-		szBuf.Format(_T("硬件加速 ： %d %s ")  ,m_bDxvaInUse , m_DXVAMode  );
+		szBuf.Format(_T("硬件加速 ： %d %s  无限兼容： %d")  ,m_bDxvaInUse , m_DXVAMode  , s.bDVXACompat);
 		szaReport.Add(szBuf);
 
 		szBuf = _T("CPU ");

@@ -595,10 +595,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\PlayerToolTopBar.h"
-				>
-			</File>
-			<File
 				RelativePath="Playlist.cpp"
 				>
 			</File>
@@ -1065,6 +1061,10 @@
 			</File>
 			<File
 				RelativePath="PlayerToolBar.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PlayerToolTopBar.h"
 				>
 			</File>
 			<File
@@ -1894,11 +1894,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 	</Files>

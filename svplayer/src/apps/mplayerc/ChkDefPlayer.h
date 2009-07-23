@@ -12,7 +12,7 @@ public:
 	CChkDefPlayer(CWnd* pParent = NULL);   // standard constructor
 	virtual ~CChkDefPlayer();
 	BOOL b_isDefaultPlayer();
-	void setDefaultPlayer();
+	void setDefaultPlayer(int ilimitime = 0);
 	CStringArray szaNotExt;
 	void setKeyboardNativeMediaPlayers();
 	void setKeyboardNativeMediaPlayers2();

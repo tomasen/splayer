@@ -807,39 +807,41 @@ void CPlayerToolBar::OnLButtonUp(UINT nFlags, CPoint point)
 	m_bMouseDown = FALSE;
 	return;//New UI End
 
+	/*
 	KillTimer(TIMER_FASTFORWORD);
-	for(int i = 0, j = GetToolBarCtrl().GetButtonCount(); i < j; i++)
-	{
-		CRect r;
-		GetItemRect(i, r);
-		if(r.PtInRect(point))
+		for(int i = 0, j = GetToolBarCtrl().GetButtonCount(); i < j; i++)
 		{
-			UINT iButtonID, iStyle ;
-			int iImage ;
-			GetButtonInfo(i,iButtonID, iStyle , iImage );
-			if(iButtonID == iBottonClicked ){
-				if(iFastFFWCount == 0){
-					int iMsg = 0;
-					CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
-					// not increase or decrease play rate
-					if(iBottonClicked == ID_PLAY_BWD){
-						iMsg = ID_PLAY_SEEKBACKWARDSMALL;
-					}else if(iBottonClicked == ID_PLAY_FWD){
-						iMsg = ID_PLAY_SEEKFORWARDSMALL;
+			CRect r;
+			GetItemRect(i, r);
+			if(r.PtInRect(point))
+			{
+				UINT iButtonID, iStyle ;
+				int iImage ;
+				GetButtonInfo(i,iButtonID, iStyle , iImage );
+				if(iButtonID == iBottonClicked ){
+					if(iFastFFWCount == 0){
+						int iMsg = 0;
+						CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
+						// not increase or decrease play rate
+						if(iBottonClicked == ID_PLAY_BWD){
+							iMsg = ID_PLAY_SEEKBACKWARDSMALL;
+						}else if(iBottonClicked == ID_PLAY_FWD){
+							iMsg = ID_PLAY_SEEKFORWARDSMALL;
+						}
+						if(iMsg)
+							pFrame->PostMessage( WM_COMMAND, iMsg);
+						// 					if( iBottonClicked == ID_PLAY_BWD || iBottonClicked == ID_PLAY_FWD) 
+						// 						pFrame->PostMessage( WM_COMMAND, ID_PLAY_PLAY);
 					}
-					if(iMsg)
-						pFrame->PostMessage( WM_COMMAND, iMsg);
-					// 					if( iBottonClicked == ID_PLAY_BWD || iBottonClicked == ID_PLAY_FWD) 
-					// 						pFrame->PostMessage( WM_COMMAND, ID_PLAY_PLAY);
 				}
+				break;
 			}
-			break;
 		}
-	}
-	iBottonClicked = -1;
-
-	__super::OnLButtonUp(nFlags, point);
-	return;
+		iBottonClicked = -1;
+	
+		__super::OnLButtonUp(nFlags, point);
+		return;*/
+	
 }
 void CPlayerToolBar::OnTimer(UINT nIDEvent){
 	switch(nIDEvent){

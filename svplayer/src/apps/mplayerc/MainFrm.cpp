@@ -476,9 +476,13 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_DEBUGREPORT, OnDebugreport)
 	ON_UPDATE_COMMAND_UI(ID_DEBUGREPORT, OnUpdateDebugreport)
 
+	ON_COMMAND(ID_MENU_AUDIO, OnMenuAudio)
+	ON_COMMAND(ID_MENU_VIDEO, OnMenuVideo)
+
 	ON_COMMAND(ID_CONFIG_AUTOLOADSUBTITLE2, OnSetAutoLoadSubtitle)
 	ON_UPDATE_COMMAND_UI(ID_CONFIG_AUTOLOADSUBTITLE2, OnUpdateSetAutoLoadSubtitle)
-
+	
+	ON_NOTIFY_EX(TTN_NEEDTEXT, 0, OnTtnNeedText)
 	ON_WM_NCCREATE()
 	END_MESSAGE_MAP()
 
@@ -537,6 +541,31 @@ CMainFrame::~CMainFrame()
 //	m_owner.DestroyWindow();
 }
 
+BOOL CMainFrame::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
+{
+	//AfxMessageBox(_T("x"));
+	UNREFERENCED_PARAMETER(id);
+
+	TOOLTIPTEXT *pTTT = (TOOLTIPTEXT *)pNMHDR;
+	UINT_PTR nID = pNMHDR->idFrom;
+	BOOL bRet = FALSE;
+
+
+	// idFrom is actually the HWND of the tool
+	CString toolTip = ResStr(nID);
+	
+	if(!toolTip.IsEmpty()){
+		pTTT->lpszText = toolTip.GetBuffer();
+		pTTT->hinst = AfxGetResourceHandle();
+		bRet = TRUE;
+	}
+
+
+
+	*pResult = 0;
+
+	return bRet;
+}
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
@@ -745,6 +774,8 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	ImmAssociateContextEx(m_hWnd, 0, IACE_CHILDREN);
 	//ImmAssociateContext((HWND)m_wndView, 0);
 	/*NEW UI END*/
+
+	EnableToolTips(TRUE);
 	return 0;
 }
 
@@ -866,7 +897,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 	}
 
 
-	if( bMouseMoved ){ //&& IsSomethingLoaded()
+	if( bMouseMoved && IsSomethingLoaded()){ //
 		BOOL bSomethingChanged = false;
 		DWORD dnCS = s.nCS;
 		if(point.y < 20){
@@ -1973,7 +2004,32 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
 			return TRUE;
 		}
 	}
-
+	/* no realy needed
+	if(pMsg->message == WM_NOTIFY){
+			SVP_LogMsg3("M WM_NOTIFY");
+			if(m_wndToolTopBar.IsWindowVisible() && pMsg->hwnd != m_wndToolTopBar.m_hWnd){
+				m_wndToolTopBar.PostMessage(pMsg->message, pMsg->wParam, pMsg->lParam);
+				return TRUE;
+			}
+		}*/
+	
+	if(pMsg->message >= WM_MOUSEFIRST && pMsg->message <= WM_MYMOUSELAST)
+	{
+		
+		if(m_wndToolTopBar.IsWindowVisible() && pMsg->hwnd != m_wndToolTopBar.m_hWnd){
+			CPoint p(pMsg->lParam);
+			::MapWindowPoints(pMsg->hwnd, m_wndToolTopBar.m_hWnd, &p, 1);
+		
+			CRect rc;
+			m_wndToolTopBar.GetWindowRect(rc);
+			//SVP_LogMsg3("M %u %u %d %d %d %d %d %d ", pMsg->hwnd, m_wndToolTopBar.m_hWnd , rc.left, rc.top, rc.right, rc.bottom, p.x ,p.y);
+			if( p.x < rc.Width() && p.y <rc.Height()){
+				m_wndToolTopBar.PostMessage(pMsg->message, pMsg->wParam, MAKELPARAM(p.x, p.y));
+				return TRUE;
+			}
+		}
+		
+	}
 	return __super::PreTranslateMessage(pMsg);
 }
 
@@ -3451,6 +3507,8 @@ LRESULT CMainFrame::OnMouseMoveIn(WPARAM /*wparam*/, LPARAM /*lparam*/) {
 LRESULT CMainFrame::OnMouseMoveOut(WPARAM /*wparam*/, LPARAM /*lparam*/) {
 	TRACE("OnMouseMoveOut\n");
 	m_btnList.ClearStat();
+
+	m_wndToolTopBar.ShowWindow(SW_HIDE);
 
 	AppSettings&s = AfxGetAppSettings();
 	if (m_fFullScreen || !(s.nCS & CS_TOOLBAR) ) {
@@ -13325,7 +13383,7 @@ void CMainFrame::CloseMedia()
 
 	CString fnx = m_wndPlaylistBar.GetCur();
 
-	if(m_iMediaLoadState == MLS_CLOSING)
+	if(m_iMediaLoadState == MLS_CLOSING || MLS_CLOSED == m_iMediaLoadState)
 	{
 		TRACE(_T("WARNING: CMainFrame::CloseMedia() called twice or more\n"));
 		return;
@@ -13345,7 +13403,7 @@ void CMainFrame::CloseMedia()
 
 		if(pGB) pGB->Abort(); // TODO: lock on graph objects somehow, this is not thread safe
 
-		if(nTimeWaited > 5*1000 && m_pGraphThread)
+		if(nTimeWaited > 3*1000 && m_pGraphThread)
 		{
 			MessageBeep(MB_ICONEXCLAMATION);
 			TRACE(_T("CRITICAL ERROR: !!! Must kill opener thread !!!"));
@@ -13369,6 +13427,7 @@ void CMainFrame::CloseMedia()
 
 	OnFilePostClosemedia();
 
+	
 	if(m_pGraphThread && s_fOpenedThruThread)
 	{
 		CAMEvent e;
@@ -13796,6 +13855,16 @@ void CMainFrame::OnSetAutoLoadSubtitle(){
 void CMainFrame::OnUpdateSetAutoLoadSubtitle(CCmdUI *pCmdUI){
 	AppSettings& s = AfxGetAppSettings();
 	pCmdUI->SetCheck(s.fAutoloadSubtitles2 );
+}
+void CMainFrame::OnMenuAudio(){
+	SetupAudioSwitcherSubMenu();
+	SetupNavAudioSubMenu();
+	MenuMerge( &m_audios ,  &m_navaudio );
+	OnMenu( &m_audios );
+}
+void CMainFrame::OnMenuVideo(){
+	SetupShadersSubMenu();
+	OnMenu(  &m_shaders );;
 }
 void CMainFrame::OnDebugreport()
 {

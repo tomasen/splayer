@@ -1375,19 +1375,22 @@ BOOL CMPlayerCApp::InitInstance()
 
 int CMPlayerCApp::ExitInstance()
 {
-	if ( m_s.fCheckFileAsscOnStartup ){
-		if( IsVista() && IsUserAnAdmin() ){
-			CChkDefPlayer dlg_chkdefplayer;
-			dlg_chkdefplayer.setDefaultPlayer();
-		}
-
-	}
 
 	m_s.UpdateData(true);
 
 	OleUninitialize();
 
-	return CWinApp::ExitInstance();
+	int ret = CWinApp::ExitInstance();
+
+	/*if ( m_s.fCheckFileAsscOnStartup ){
+		if( IsVista() && IsUserAnAdmin() ){
+			CChkDefPlayer dlg_chkdefplayer;
+			dlg_chkdefplayer.setDefaultPlayer(2);
+		}
+
+	}*/
+
+	return ret;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -2988,18 +2991,18 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		m_shaders.RemoveAll();
 
 		CAtlList<UINT> shader_ids;
+		shader_ids.AddTail(IDF_SHADER_SHARPEN);
 		shader_ids.AddTail(IDF_SHADER_LEVELS);
 		shader_ids.AddTail(IDF_SHADER_LEVELS2);
 		shader_ids.AddTail(IDF_SHADER_BT601_BT701);
 		shader_ids.AddTail(IDF_SHADER_YV12CHROMAUP);
 		shader_ids.AddTail(IDF_SHADER_DEINTERLACE);
 		shader_ids.AddTail(IDF_SHADER_DENOISE);
-		shader_ids.AddTail(IDF_SHADER_SHARPEN);
 		shader_ids.AddTail(IDF_SHADER_EDGE_SHARPEN);
 		shader_ids.AddTail(IDF_SHADER_SHARPEN_COMPLEX);
+		/*
 		shader_ids.AddTail(IDF_SHADER_GRAYSCALE);
 		shader_ids.AddTail(IDF_SHADER_INVERT);
-		/*
 		shader_ids.AddTail(IDF_SHADER_CONTOUR);
 		shader_ids.AddTail(IDF_SHADER_EMBOSS);
 		shader_ids.AddTail(IDF_SHADER_LETTERBOX);

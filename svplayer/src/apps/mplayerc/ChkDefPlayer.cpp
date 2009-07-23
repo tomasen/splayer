@@ -101,7 +101,7 @@ void CChkDefPlayer::setKeyboardNativeMediaPlayers2(){
 
 
 }
-void CChkDefPlayer::setDefaultPlayer()
+void CChkDefPlayer::setDefaultPlayer(int ilimitime )
 {
 	CPPageFormats cpf;
 	if(cpf.m_bInsufficientPrivileges){

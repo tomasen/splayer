@@ -16,6 +16,7 @@ public:
 	UINT m_nItemToTrack;
 	bool m_hovering;
 	HCURSOR cursorHand;
+	HCURSOR cursorArrow;
 
 	CFont m_statft;
 	CString m_tooltip ;
@@ -28,6 +29,7 @@ public:
 	CSUIBtnList m_btnList;
 	CSUIBtnList* const m_pbtnList;
 public:
+	void UpdateButtonStat();
 	afx_msg void OnMove(int x, int y);
 	afx_msg void OnPaint();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
@@ -41,6 +43,8 @@ public:
 	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
 	afx_msg BOOL OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnEnable(BOOL bEnable);
+	afx_msg void OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized);
+	virtual BOOL Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID, CCreateContext* pContext = NULL);
 };
 
 

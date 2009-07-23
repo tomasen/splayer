@@ -1431,6 +1431,15 @@ BTN_FONT.BMP            BITMAP                  "res\\newui\\BTN_FONT.bmp"
 BTN_FONT_MINUS.BMP      BITMAP                  "res\\newui\\BTN_FONT_MINUS.bmp"
 BTN_FONT_PLUS.BMP       BITMAP                  "res\\newui\\BTN_FONT_PLUS.bmp"
 BTN_STEP.BMP            BITMAP                  "res\\newui\\BTN_STEP.bmp"
+PINAIL.BMP				BITMAP                  "res\\newui\\pinail.bmp"
+PINAIL2.BMP				BITMAP                  "res\\newui\\pinail2.bmp"
+TOP_1X.BMP				BITMAP                  "res\\newui\\TOP_1X.bmp"
+TOP_2X.BMP				BITMAP                  "res\\newui\\TOP_2X.bmp"
+TOP_AUDIO.BMP			BITMAP                  "res\\newui\\TOP_AUDIO.bmp"
+TOP_VIDEO.BMP			BITMAP                  "res\\newui\\TOP_VIDEO.bmp"
+TOP_FULLSCREEN.BMP		BITMAP                  "res\\newui\\TOP_FULLSCREEN.bmp"
+TOP_NORMAL.BMP			BITMAP                  "res\\newui\\TOP_NORMAL.bmp"
+TOP_LETTERBOX.BMP		BITMAP                  "res\\newui\\TOP_LETTERBOX.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -2630,7 +2639,7 @@ BEGIN
     IDF_SHADER_GRAYSCALE    "黑白片"
     IDF_SHADER_INVERT       "反转片"
     IDF_SHADER_LETTERBOX    "letterbox"
-    IDF_SHADER_SHARPEN      "锐化"
+    IDF_SHADER_SHARPEN      "画面锐化"
     IDF_SHADER_SPHERE       "sphere"
     IDF_SHADER_SPOTLIGHT    "spotlight"
     IDF_SHADER_WAVE         "wave"
@@ -2638,7 +2647,7 @@ BEGIN
     IDF_SHADER_LEVELS       "高清色彩修正（16-235 -> 0-255）"
     IDF_SHADER_NIGHTVISION  "nightvision"
     IDF_SHADER_EDGE_SHARPEN "边缘锐化"
-    IDF_SHADER_SHARPEN_COMPLEX "智能锐化"
+    IDF_SHADER_SHARPEN_COMPLEX "画面柔滑"
     IDF_SHADER_LEVELS2      "标清色彩修正（16-235 -> 0-255）"
     IDF_SHADER_BT601_BT701  "亮度校正（BT.601 -> BT.701）"
     IDF_SHADER_DENOISE      "降噪"
@@ -2726,6 +2735,7 @@ BEGIN
     IDS_SRC_NUT             "6.4.0.0\n基于 ""NUT 开放容器格式 DRAFT 20030906""\n仍然非常不完善, 如果您有或能够制作测试文件,请联系我。"
     IDS_SRC_DIRAC           "6.4.0.1\n基于 libdirac 0.5.0"
     IDS_SRC_DSM             "6.4.0.5"
+	ID_VIEW_VF_FROMINSIDE	"标准画面"
 END
 
 STRINGTABLE 

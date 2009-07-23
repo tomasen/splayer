@@ -554,6 +554,9 @@ BOOL CMainFrame::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 	// idFrom is actually the HWND of the tool
 	CString toolTip = ResStr(nID);
 	
+	//if(toolTip.IsEmpty())
+	//	toolTip = _T("Unkown 2");
+
 	if(!toolTip.IsEmpty()){
 		pTTT->lpszText = toolTip.GetBuffer();
 		pTTT->hinst = AfxGetResourceHandle();
@@ -690,7 +693,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		AfxMessageBox(_T("OSD 创建失败！"));
 	}
 
-	if(!m_wndToolTopBar.CreateEx(WS_EX_TOPMOST, _T("STATIC"), _T("TOPTOOL"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0)){//WS_EX_NOACTIVATE
+	if(!m_wndToolTopBar.CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, _T("STATIC"), _T("TOPTOOL"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0)){//
 		AfxMessageBox(_T("Top Toolbar 创建失败！"));
 	}
 
@@ -6389,9 +6392,18 @@ void CMainFrame::OnViewRotate(UINT nID)
 	if(nID == ID_ENABLE_ROTATE){
 		return OnEnableDX9();
 	}
+	AppSettings& s = AfxGetAppSettings();
+	if(!m_pCAP || s.iDSVideoRendererType != 6 || s.iRMVideoRendererType != 2 || s.iQTVideoRendererType != 2 || s.iAPSurfaceUsage != VIDRNDT_AP_TEXTURE3D){
 
-	if(!m_pCAP) return;
+		SetupShadersSubMenu();
+		OnMenu(  &m_shaders );;
+		return;
 
+	}
+
+	//if() return;
+
+	
 	switch(nID)
 	{
 	case ID_PANSCAN_ROTATEXP: m_AngleX += 2; break;
@@ -6431,21 +6443,17 @@ void CMainFrame::OnViewRotate(UINT nID)
 
 void CMainFrame::OnUpdateViewRotate(CCmdUI* pCmdUI)
 {
-	AppSettings& s = AfxGetAppSettings();
-	if(s.iDSVideoRendererType != 6 || s.iRMVideoRendererType != 2 || s.iQTVideoRendererType != 2 || s.iAPSurfaceUsage != VIDRNDT_AP_TEXTURE3D){
+
+	pCmdUI->Enable(true);
+/*
+	
 		if(ID_ENABLE_ROTATE == pCmdUI->m_nID){
-			pCmdUI->Enable(true);
-		}else{
+			//pCmdUI->SetText(_T("？？？"));
 			pCmdUI->Enable(false);
-		}
-		return;
-	}
-	if(ID_ENABLE_ROTATE == pCmdUI->m_nID){
-		//pCmdUI->SetText(_T("？？？"));
-		pCmdUI->Enable(false);
-	}else{
-		pCmdUI->Enable(m_iMediaLoadState == MLS_LOADED && !m_fAudioOnly && m_pCAP);
-	}
+		}else{
+			pCmdUI->Enable(m_iMediaLoadState == MLS_LOADED && !m_fAudioOnly && m_pCAP);
+		}*/
+	
 }
 
 // FIXME

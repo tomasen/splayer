@@ -7,14 +7,17 @@ class CPlayerToolTopBar : public CWnd
 {
 	DECLARE_DYNAMIC(CPlayerToolTopBar)
 	CRgn m_rgn;
-
+	enum {IDT_TIPS};
 public:
 	CPlayerToolTopBar();
 	virtual ~CPlayerToolTopBar();
 	int m_nLogDPIY;
 	
-	CToolTipCtrl* m_toolTip;
+	CToolTipCtrl m_toolTip;
+	TOOLINFO	m_ti;
+
 	UINT m_nItemToTrack;
+	UINT m_lastTipItem;
 	bool m_hovering;
 	HCURSOR cursorHand;
 	HCURSOR cursorArrow;
@@ -50,6 +53,10 @@ public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg LRESULT OnNcHitTest(CPoint point);
 	afx_msg void OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp);
+	afx_msg void OnClose();
+	afx_msg void OnDestroy();
+	afx_msg void OnMouseLeave();
+	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 };
 
 

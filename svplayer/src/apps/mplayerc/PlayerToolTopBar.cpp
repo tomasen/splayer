@@ -42,6 +42,10 @@ BEGIN_MESSAGE_MAP(CPlayerToolTopBar, CWnd)
 	ON_WM_ACTIVATE()
 	ON_WM_NCHITTEST()
 	ON_WM_NCCALCSIZE()
+	ON_WM_CLOSE()
+	ON_WM_DESTROY()
+	ON_WM_MOUSELEAVE()
+	ON_WM_SHOWWINDOW()
 END_MESSAGE_MAP()
 
 
@@ -70,26 +74,57 @@ BOOL CPlayerToolTopBar::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 	UINT_PTR nID = pNMHDR->idFrom;
 	BOOL bRet = FALSE;
 
+	if(m_nItemToTrack){
+		// idFrom is actually the HWND of the tool
+		CString toolTip;
+		m_lastTipItem = m_nItemToTrack;
+		switch(m_nItemToTrack){
+					case ID_VIEW_VF_FROMINSIDE:
+						toolTip = _T("标准画面");
+						break;
+					case ID_VIEW_VF_FROMOUTSIDE:
+						toolTip = _T("智能去黑边");
+						break;
+					case ID_VIEW_FULLSCREEN:
+						toolTip = _T("全屏幕切换");
+						break;
+					case ID_VIEW_ZOOM_100:
+						toolTip = _T("100% 尺寸");
+						break;
+					case ID_VIEW_ZOOM_200:
+						toolTip = _T("200% 尺寸");
+						break;
+					case ID_MENU_AUDIO:
+						toolTip = _T("音轨选择");
+						break;
+					case ID_MENU_VIDEO:
+						toolTip = _T("画面增益");
+						break;
+					case ID_ONTOP_ALWAYS:
+						toolTip = _T("使窗口钉在最前端");
+						break;
+					case ID_ONTOP_NEVER:
+						toolTip = _T("恢复正常窗口");
+						break;
+					case ID_ROTATE_90:
+						toolTip = _T("顺时针旋转 90℃");
+						break;
+					case ID_ROTATE_V:
+						toolTip = _T("垂直翻转");
+						break;
+						
 
-	// idFrom is actually the HWND of the tool
-	CString toolTip;
-	switch(nID){
-				case ID_VIEW_VF_FROMINSIDE:
-					toolTip = _T("标准画面");
-					break;
-				case ID_VIEW_VF_FROMOUTSIDE:
-					toolTip = _T("智能去黑边");
-					break;
-				
+		}
+		//AfxMessageBox(toolTip);
+		//if(toolTip.IsEmpty())
+		//	toolTip = _T("Unkown");
+		
+		if(!toolTip.IsEmpty()){
+			pTTT->lpszText = toolTip.GetBuffer();
+			pTTT->hinst = AfxGetResourceHandle();
+			bRet = TRUE;
+		}
 	}
-	//AfxMessageBox(toolTip);
-
-	if(!toolTip.IsEmpty()){
-		pTTT->lpszText = toolTip.GetBuffer();
-		pTTT->hinst = AfxGetResourceHandle();
-		bRet = TRUE;
-	}
-
 
 
 	*pResult = 0;
@@ -111,9 +146,16 @@ int CPlayerToolTopBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_nLogDPIY = ScreenDC.GetDeviceCaps(LOGPIXELSY);
 
 
-	
-	m_btnList.AddTail( new CSUIButton(L"PINAIL.BMP" , ALIGN_TOPRIGHT, CRect(1 , 1, 1,1)  , 0, ID_ONTOP_ALWAYS, FALSE, 0, 0 ) );
-	m_btnList.AddTail( new CSUIButton(L"PINAIL2.BMP" , ALIGN_TOPRIGHT, CRect(1 , 1, 1,1)  , 0, ID_ONTOP_NEVER, TRUE, 0, 0 ) );
+	CSUIButton* btnPin1 = new CSUIButton(L"PINAIL.BMP" , ALIGN_TOPRIGHT, CRect(1 , 1, 1,1)  , 0, ID_ONTOP_ALWAYS, FALSE, 0, 0 ) ;
+	m_btnList.AddTail( btnPin1 );
+	CSUIButton* btnPin2 = new CSUIButton(L"PINAIL2.BMP" , ALIGN_TOPRIGHT, CRect(1 , 1, 1,1)  , 0, ID_ONTOP_NEVER, TRUE, 0, 0 ) ;
+	m_btnList.AddTail( btnPin2 );
+
+	CSUIButton* btnRotate  = new CSUIButton(L"TOP_ROTATE.BMP" , ALIGN_TOPRIGHT, CRect(1 , 1, 1,1)  , 0, ID_ROTATE_90, FALSE, ALIGN_RIGHT, btnPin2  , CRect(1,1,1,1)   ) ;
+	btnRotate->addAlignRelButton( ALIGN_RIGHT, btnPin1  , CRect(1,1,1,1)  );
+	m_btnList.AddTail(btnRotate);
+
+	m_btnList.AddTail( new CSUIButton(L"TOP_FLIP.BMP" , ALIGN_TOPRIGHT, CRect(1 , 1, 1,1)  , 0, ID_ROTATE_V, FALSE, ALIGN_RIGHT, m_btnList.GetTail() , CRect(1,1,1,1)  ) );
 	
 /*
 #define ID_VIEW_VF_STRETCH              838
@@ -133,10 +175,20 @@ int CPlayerToolTopBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_btnList.AddTail( new CSUIButton(L"TOP_AUDIO.BMP" , ALIGN_TOPLEFT, CRect(1 , 1, 1,1)  , 0, ID_MENU_AUDIO, FALSE, ALIGN_LEFT, m_btnList.GetTail() , CRect(5,1,1,1)  ) );
 	m_btnList.AddTail( new CSUIButton(L"TOP_VIDEO.BMP" , ALIGN_TOPLEFT, CRect(1 , 1, 1,1)  , 0, ID_MENU_VIDEO, FALSE, ALIGN_LEFT, m_btnList.GetTail() , CRect(1,1,1,1)  ) );
 
-	if(!EnableToolTips(TRUE))
-		AfxMessageBox(_T("Fail"));
-	//m_toolTip = new CToolTipCtrl();
-	//m_toolTip->CreateEx(this);
+	m_toolTip.Create(this);
+	m_ti.cbSize = sizeof(m_ti);
+	m_ti.uFlags = 0  ;//TTF_TRACK|TTF_ABSOLUTE
+	m_ti.hwnd = m_hWnd;
+	m_ti.hinst = NULL;
+	m_ti.uId = (UINT)0;
+	m_ti.lpszText = LPSTR_TEXTCALLBACK;
+	m_ti.rect.left = 0;    
+	m_ti.rect.top = 0;
+	m_ti.rect.right = 0;
+	m_ti.rect.bottom = 0;
+
+	m_toolTip.SendMessage(TTM_ADDTOOL, 0, (LPARAM)&m_ti);
+
 	return 0;
 }
 void CPlayerToolTopBar::ReCalcBtnPos(){
@@ -222,6 +274,8 @@ void CPlayerToolTopBar::OnLButtonUp(UINT nFlags, CPoint point)
 	if( m_btnList.HTRedrawRequired ){
 		if(ret)
 			pFrame->PostMessage( WM_COMMAND, ret);
+		m_toolTip.SendMessage(TTM_TRACKACTIVATE, FALSE, (LPARAM)&m_ti);
+		
 		Invalidate();
 	}
 	m_nItemToTrack = ret;
@@ -263,7 +317,22 @@ void CPlayerToolTopBar::OnNcPaint()
 void CPlayerToolTopBar::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO: Add your message handler code here and/or call default
+	if(IDT_TIPS == nIDEvent){
+		KillTimer(IDT_TIPS);
+		if(m_nItemToTrack){
+			CPoint pt;
+			if(m_lastTipItem != m_nItemToTrack) {
+				
+				GetCursorPos(&pt);
+				//ClientToScreen(&pt);
+				pt.y+=10;
+				//m_ti.uId = ret;
 
+				m_toolTip.SendMessage(TTM_TRACKPOSITION, 0, (LPARAM)MAKELPARAM(pt.x, pt.y));
+				m_toolTip.SendMessage(TTM_TRACKACTIVATE, TRUE, (LPARAM)&m_ti);
+			}
+		}
+	}
 	__super::OnTimer(nIDEvent);
 }
 static CPoint m_lastMouseMove;
@@ -286,13 +355,15 @@ void CPlayerToolTopBar::OnMouseMove(UINT nFlags, CPoint point)
 		UINT ret = m_btnList.OnHitTest(point,rc);
 		m_nItemToTrack = ret;
 		if(ret){
-			//if( GetCursor() == NULL )
-			//	SetCursor(cursorHand);
-			//if(m_toolTip)
-			//	m_toolTip->Popup();
+			if( GetCursor() == NULL )
+				SetCursor(cursorHand);
+
+			SetTimer(IDT_TIPS, 100 , NULL);
+			
 		}else{
-			//if( GetCursor() == NULL ) 
-			//	SetCursor(cursorArrow);
+			m_toolTip.SendMessage(TTM_TRACKACTIVATE, FALSE, (LPARAM)&m_ti);
+			if( GetCursor() == NULL ) 
+				SetCursor(cursorArrow);
 		}
 		if( m_btnList.HTRedrawRequired ){
 			Invalidate();
@@ -318,13 +389,14 @@ INT_PTR CPlayerToolTopBar::OnToolHitTest(CPoint point, TOOLINFO* pTI) const
 		
 		pTI->hwnd = AfxGetMainWnd()->m_hWnd;
 		pTI->uId = (UINT) (ret);
-		//pTI->uFlags = TTF_IDISHWND;
+		//pTI->uFlags = TTF_SUBCLASS TTF_IDISHWND;
 		pTI->lpszText = LPSTR_TEXTCALLBACK;
 		RECT rcClient;
 		GetClientRect(&rcClient);
 		//SVP_LogMsg3("Tooltip %d" , ret);
 		pTI->rect = rcClient;
 
+		
 		return pTI->uId;
 
 	}
@@ -344,7 +416,7 @@ void CPlayerToolTopBar::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized
 {
 
 //
-	CWnd::OnActivate(nState, pWndOther, bMinimized); //WA_INACTIVE
+	CWnd::OnActivate(WA_INACTIVE, pWndOther, bMinimized); //
 
 
 }
@@ -376,5 +448,39 @@ void CPlayerToolTopBar::OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lp
 {
 
 	__super::OnNcCalcSize(bCalcValidRects, lpncsp);
+	
+}
+
+void CPlayerToolTopBar::OnClose()
+{
+	// TODO: Add your message handler code here and/or call default
+
+	//CWnd::OnClose();
+}
+
+void CPlayerToolTopBar::OnDestroy()
+{
+	CWnd::OnDestroy();
+
+	// TODO: Add your message handler code here
+}
+
+void CPlayerToolTopBar::OnMouseLeave()
+{
+	// TODO: Add your message handler code here and/or call default
+	m_toolTip.SendMessage(TTM_TRACKACTIVATE, FALSE, (LPARAM)&m_ti);
+	m_nItemToTrack = 0 ;
+	CWnd::OnMouseLeave();
+}
+
+void CPlayerToolTopBar::OnShowWindow(BOOL bShow, UINT nStatus)
+{
+	if(bShow != SW_SHOW){
+		m_toolTip.SendMessage(TTM_TRACKACTIVATE, FALSE, (LPARAM)&m_ti);
+		m_nItemToTrack = 0 ;
+	}
+	
+	CWnd::OnShowWindow(bShow, nStatus);
+
 	
 }

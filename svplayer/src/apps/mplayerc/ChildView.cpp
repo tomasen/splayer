@@ -71,7 +71,9 @@ BOOL CChildView::PreCreateWindow(CREATESTRUCT& cs)
 }
 
 BOOL CChildView::PreTranslateMessage(MSG* pMsg)
-{
+{	
+	
+
 	if(pMsg->message >= WM_MOUSEFIRST && pMsg->message <= WM_MYMOUSELAST)
 	{
 		CWnd* pParent = GetParent();
@@ -127,7 +129,11 @@ BOOL CChildView::PreTranslateMessage(MSG* pMsg)
 			return TRUE;
 		}
 	}
-
+	else{
+		//CMainFrame* pFrame = (CMainFrame*)GetParentFrame();
+		//if(pFrame->m_wndToolTopBar.IsWindowVisible())
+		//	return TRUE;
+	}
 	return CWnd::PreTranslateMessage(pMsg);
 }
 
@@ -209,6 +215,7 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_WM_MOUSEMOVE()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()
+	ON_WM_NCHITTEST()
 END_MESSAGE_MAP()
 
 
@@ -474,4 +481,11 @@ void CChildView::OnLButtonUp(UINT nFlags, CPoint point)
 
 	//	__super::OnLButtonUp(nFlags, point);
 	m_bMouseDown = FALSE;
+}
+
+LRESULT CChildView::OnNcHitTest(CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+
+	return CWnd::OnNcHitTest(point);
 }

@@ -478,7 +478,6 @@ protected:  // control bar embedded members
 	CPlayerInfoBar m_wndInfoBar;
 	CPlayerInfoBar m_wndStatsBar;
 	CPlayerStatusBar m_wndStatusBar;
-	CPlayerToolTopBar m_wndToolTopBar;
 	CPlayerColorControlBar m_wndColorControlBar;
 	CList<CControlBar*> m_bars;
 
@@ -515,6 +514,7 @@ public:
 	//Mouse Relate
 	void PreFocused();
 
+	CPlayerToolTopBar m_wndToolTopBar;
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnDestroy();
 

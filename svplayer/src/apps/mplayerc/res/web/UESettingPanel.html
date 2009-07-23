@@ -31,7 +31,7 @@ body
 label{font: 10pt;}
 div.panelbutton
 {
-	background-image: url(uesetbg_hover.png);
+	
 	text-align:center;
 	color: #000000;
 	width: 130px;
@@ -42,6 +42,7 @@ div.panelbutton
 }
 a.panelbutton
 {
+	background-image: url(uesetbg_hover.png);
 	display:block;
 	width:130px;
 	height:28px;
@@ -51,7 +52,7 @@ a.panelbutton
 	cursor:hand;
 }
 a.small{font-size: 7pt;}
-a.panelbutton:hover{background-image: url(uesetbg.png); text-decoration :none;}
+a.panelbutton:hover{background-image: url(uesetbg.png); text-decoration :none;height:28px;}
 a:hover{color: #000000; text-decoration :none;}
 a:link{color: #000000; text-decoration :none;}
 a:visited{color: #000000; text-decoration :none;}
@@ -325,15 +326,15 @@ function myInit(){
 <table width="100%" style="height:100%;" >
 <tr >
 <td style="width:130px !important;" valign="top" onmouseout="ueAPI.curblock='';">
-<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('generalseting');" href="#" onmouseout="ueAPI.cancelsetcurblock();" class="panelbutton"   onclick="ueAPI.realsetcurblock('generalseting');return false;">使用习惯</a></div>
-<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('playseting');" href="#" onmouseout="ueAPI.cancelsetcurblock();" class="panelbutton"  onclick="ueAPI.realsetcurblock('playseting');return false;">播放設置</a></div>
-<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('videosetting');" href="#" onmouseout="ueAPI.cancelsetcurblock();" onclick="ueAPI.realsetcurblock('videosetting');return false;" class="panelbutton">视频设置</a></div>
-<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('audiosetting');" href="#" onmouseout="ueAPI.cancelsetcurblock();" onclick="ueAPI.realsetcurblock('audiosetting');return false;" class="panelbutton">音频设置</a></div>
-<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('subsetting');" href="#" onmouseout="ueAPI.cancelsetcurblock();" onclick="ueAPI.realsetcurblock('subsetting');return false;" class="panelbutton">字幕设置</a></div>
-<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('updatesetting');" href="#" onmouseout="ueAPI.cancelsetcurblock();"  onclick="ueAPI.realsetcurblock('updatesetting');return false;" class="panelbutton">自动升级</a></div>
-<div class="panelbutton"><a  id="IDFileAss" href="#" onclick="return false;"  class="panelbutton">文件关联</a></div>
-<div class="panelbutton"><a id="IDHotKey"  href="#" onclick="return false;"  class="panelbutton">热键绑定</a></div>
-<div class="panelbutton"><a id="IDBGCHG"  href="#" onclick="return false;"  class="panelbutton">界面背景</a></div>
+<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('generalseting');" href="#" onmouseout="ueAPI.cancelsetcurblock();" class="panelbutton"   onclick="ueAPI.realsetcurblock('generalseting');">使用习惯</a></div>
+<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('playseting');" href="#" onmouseout="ueAPI.cancelsetcurblock();" class="panelbutton"  onclick="ueAPI.realsetcurblock('playseting');">播放設置</a></div>
+<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('videosetting');" href="#" onmouseout="ueAPI.cancelsetcurblock();" onclick="ueAPI.realsetcurblock('videosetting');" class="panelbutton">视频设置</a></div>
+<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('audiosetting');" href="#" onmouseout="ueAPI.cancelsetcurblock();" onclick="ueAPI.realsetcurblock('audiosetting');" class="panelbutton">音频设置</a></div>
+<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('subsetting');" href="#" onmouseout="ueAPI.cancelsetcurblock();" onclick="ueAPI.realsetcurblock('subsetting');" class="panelbutton">字幕设置</a></div>
+<div class="panelbutton"><a onmouseover="ueAPI.setcurblock('updatesetting');" href="#" onmouseout="ueAPI.cancelsetcurblock();"  onclick="ueAPI.realsetcurblock('updatesetting');" class="panelbutton">自动升级</a></div>
+<div class="panelbutton"><a  id="IDFileAss" href="#"   class="panelbutton">文件关联</a></div>
+<div class="panelbutton"><a id="IDHotKey"  href="#"   class="panelbutton">热键绑定</a></div>
+<div class="panelbutton"><a id="IDBGCHG"  href="#"   class="panelbutton">界面背景</a></div>
 </td><td  valign="top" align="left" id="pannelset" style="width:98%"><div id="playseting" class="hiddenarea" >
 <input type="checkbox" id="chkplayrepeat" /><label for="chkplayrepeat">循环播放</label><br />
 <input type="checkbox" id="chkexitfullscreen" /><label for="chkexitfullscreen">播放结束后自动退出全屏</label><br />

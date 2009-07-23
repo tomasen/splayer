@@ -543,7 +543,7 @@ CMainFrame::~CMainFrame()
 
 BOOL CMainFrame::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 {
-	//AfxMessageBox(_T("x"));
+	//AfxMessageBox(_T("x2"));
 	UNREFERENCED_PARAMETER(id);
 
 	TOOLTIPTEXT *pTTT = (TOOLTIPTEXT *)pNMHDR;
@@ -690,7 +690,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		AfxMessageBox(_T("OSD 创建失败！"));
 	}
 
-	if(!m_wndToolTopBar.CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, _T("STATIC"), _T("TOPTOOL"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0)){
+	if(!m_wndToolTopBar.CreateEx(WS_EX_TOPMOST, _T("STATIC"), _T("TOPTOOL"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0)){//WS_EX_NOACTIVATE
 		AfxMessageBox(_T("Top Toolbar 创建失败！"));
 	}
 
@@ -897,7 +897,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 	}
 
 
-	if( bMouseMoved && IsSomethingLoaded()){ //
+	if( bMouseMoved ){ //&& IsSomethingLoaded()
 		BOOL bSomethingChanged = false;
 		DWORD dnCS = s.nCS;
 		if(point.y < 20){
@@ -906,7 +906,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 				bSomethingChanged = true;
 			}
 		}else{
-			if(m_wndToolTopBar.IsWindowVisible()){
+			if(m_wndToolTopBar.IsWindowVisible() ){
 			//	SVP_LogMsg5(_T(" hide tooltopbar") );
 				m_wndToolTopBar.ShowWindow(SW_HIDE);
 				bSomethingChanged = true;
@@ -2013,13 +2013,17 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
 			}
 		}*/
 	
-	if(pMsg->message >= WM_MOUSEFIRST && pMsg->message <= WM_MYMOUSELAST)
+	if( (pMsg->message >= WM_MOUSEFIRST && pMsg->message <= WM_MYMOUSELAST) )
 	{
 		
 		if(m_wndToolTopBar.IsWindowVisible() && pMsg->hwnd != m_wndToolTopBar.m_hWnd){
+		
+
 			CPoint p(pMsg->lParam);
 			::MapWindowPoints(pMsg->hwnd, m_wndToolTopBar.m_hWnd, &p, 1);
 		
+			
+
 			CRect rc;
 			m_wndToolTopBar.GetWindowRect(rc);
 			//SVP_LogMsg3("M %u %u %d %d %d %d %d %d ", pMsg->hwnd, m_wndToolTopBar.m_hWnd , rc.left, rc.top, rc.right, rc.bottom, p.x ,p.y);
@@ -8861,8 +8865,9 @@ void CMainFrame::rePosOSD(){
 		}
 		
 		if(m_wndToolTopBar.IsWindowVisible()){
-			rcTopToolBar.bottom = rcTopToolBar.top + 20;
+			rcTopToolBar.bottom = rcTopToolBar.top + 20 * m_wndToolTopBar.m_nLogDPIY / 96 ;
 	//		rcTopToolBar.right = min( rcTopToolBar.left + 100 , rcTopToolBar.right);
+			
 			m_wndToolTopBar.MoveWindow(rcTopToolBar);
 		}
 	}
@@ -13432,7 +13437,14 @@ void CMainFrame::CloseMedia()
 	{
 		CAMEvent e;
 		m_pGraphThread->PostThreadMessage(CGraphThread::TM_CLOSE, 0, (LPARAM)&e);
-		e.Wait(); // either opening or closing has to be blocked to prevent reentering them, closing is the better choice
+		// either opening or closing has to be blocked to prevent reentering them, closing is the better choice
+		if(!e.Wait(5000))
+		{
+			TRACE(_T("ERROR: Must call TerminateThread() on CMainFrame::m_pGraphThread->m_hThread\n")); 
+			TerminateThread(m_pGraphThread->m_hThread, -1);
+			m_pGraphThread = (CGraphThread*)AfxBeginThread(RUNTIME_CLASS(CGraphThread));
+			s_fOpenedThruThread = false;
+		}
 	}
 	else
 	{

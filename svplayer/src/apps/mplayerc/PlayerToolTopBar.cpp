@@ -7,13 +7,8 @@
 
 
 // PlayerToolTopBar.cpp : implementation file
-//
-
-#include "stdafx.h"
-#include "mplayerc.h"
-#include "PlayerToolTopBar.h"
 #include "MainFrm.h"
-
+#include "../../svplib/svplib.h"
 // CPlayerToolTopBar
 
 IMPLEMENT_DYNAMIC(CPlayerToolTopBar, CWnd)
@@ -45,6 +40,8 @@ BEGIN_MESSAGE_MAP(CPlayerToolTopBar, CWnd)
 	ON_NOTIFY_EX(TTN_NEEDTEXT, 0, OnTtnNeedText)
 	ON_WM_ENABLE()
 	ON_WM_ACTIVATE()
+	ON_WM_NCHITTEST()
+	ON_WM_NCCALCSIZE()
 END_MESSAGE_MAP()
 
 
@@ -53,9 +50,9 @@ END_MESSAGE_MAP()
 
 BOOL CPlayerToolTopBar::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message){
 
-	CPoint pt;
-	::GetCursorPos (&pt);
-	ScreenToClient (&pt);
+	//CPoint pt;
+	//::GetCursorPos (&pt);
+	//ScreenToClient (&pt);
 
 	if(m_nItemToTrack){	
 		SetCursor(cursorHand );
@@ -66,7 +63,7 @@ BOOL CPlayerToolTopBar::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message){
 
 BOOL CPlayerToolTopBar::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 {
-	//AfxMessageBox(_T("x")); where is my tooltip!?!
+	//AfxMessageBox(_T("x")); //where is my tooltip!?!
 	UNREFERENCED_PARAMETER(id);
 
 	TOOLTIPTEXT *pTTT = (TOOLTIPTEXT *)pNMHDR;
@@ -136,13 +133,21 @@ int CPlayerToolTopBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_btnList.AddTail( new CSUIButton(L"TOP_AUDIO.BMP" , ALIGN_TOPLEFT, CRect(1 , 1, 1,1)  , 0, ID_MENU_AUDIO, FALSE, ALIGN_LEFT, m_btnList.GetTail() , CRect(5,1,1,1)  ) );
 	m_btnList.AddTail( new CSUIButton(L"TOP_VIDEO.BMP" , ALIGN_TOPLEFT, CRect(1 , 1, 1,1)  , 0, ID_MENU_VIDEO, FALSE, ALIGN_LEFT, m_btnList.GetTail() , CRect(1,1,1,1)  ) );
 
-
+	if(!EnableToolTips(TRUE))
+		AfxMessageBox(_T("Fail"));
+	//m_toolTip = new CToolTipCtrl();
+	//m_toolTip->CreateEx(this);
 	return 0;
 }
 void CPlayerToolTopBar::ReCalcBtnPos(){
 	CRect rc;
 	GetWindowRect(&rc);
 	m_btnList.OnSize( rc);
+	POSITION pos = m_btnList.GetHeadPosition();
+	while(pos){
+		break;
+	}
+	
 }
 void CPlayerToolTopBar::UpdateButtonStat(){
 	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
@@ -239,8 +244,8 @@ void CPlayerToolTopBar::OnLButtonDown(UINT nFlags, CPoint point)
 	point += rc.TopLeft() ;
 	UINT ret = m_btnList.OnHitTest(point,rc);
 	if( m_btnList.HTRedrawRequired ){
-		if(ret)
-			SetCapture();
+		//if(ret)
+		//	SetCapture();
 		Invalidate();
 	}
 	m_nItemToTrack = ret;
@@ -281,9 +286,13 @@ void CPlayerToolTopBar::OnMouseMove(UINT nFlags, CPoint point)
 		UINT ret = m_btnList.OnHitTest(point,rc);
 		m_nItemToTrack = ret;
 		if(ret){
-			SetCursor(cursorHand);
+			//if( GetCursor() == NULL )
+			//	SetCursor(cursorHand);
+			//if(m_toolTip)
+			//	m_toolTip->Popup();
 		}else{
-			SetCursor(cursorArrow);
+			//if( GetCursor() == NULL ) 
+			//	SetCursor(cursorArrow);
 		}
 		if( m_btnList.HTRedrawRequired ){
 			Invalidate();
@@ -296,24 +305,24 @@ void CPlayerToolTopBar::OnMouseMove(UINT nFlags, CPoint point)
 INT_PTR CPlayerToolTopBar::OnToolHitTest(CPoint point, TOOLINFO* pTI) const
 {
 	// TODO: Add your specialized code here and/or call the base class
-	//	AfxMessageBox(_T("1"));
+		
 	if(!pTI){
 		return -1;
 	}
 
 	
 	UINT ret = m_nItemToTrack;
-	//AfxMessageBox(_T("2"));
+	
 	if(ret){
 
 		
-		pTI->hwnd = m_hWnd;
+		pTI->hwnd = AfxGetMainWnd()->m_hWnd;
 		pTI->uId = (UINT) (ret);
 		//pTI->uFlags = TTF_IDISHWND;
 		pTI->lpszText = LPSTR_TEXTCALLBACK;
 		RECT rcClient;
 		GetClientRect(&rcClient);
-		//AfxMessageBox(_T("f"));
+		//SVP_LogMsg3("Tooltip %d" , ret);
 		pTI->rect = rcClient;
 
 		return pTI->uId;
@@ -335,7 +344,7 @@ void CPlayerToolTopBar::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized
 {
 
 //
-	CWnd::OnActivate(WA_INACTIVE, pWndOther, bMinimized);
+	CWnd::OnActivate(nState, pWndOther, bMinimized); //WA_INACTIVE
 
 
 }
@@ -343,7 +352,29 @@ void CPlayerToolTopBar::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized
 BOOL CPlayerToolTopBar::Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID, CCreateContext* pContext)
 {
 	// TODO: Add your specialized code here and/or call the base class
-	__super::Create(lpszClassName, lpszWindowName, dwStyle, rect, pParentWnd, nID, pContext);
-	EnableToolTips(TRUE);
-	return TRUE;
+	
+	return __super::Create(lpszClassName, lpszWindowName, dwStyle, rect, pParentWnd, nID, pContext);
+
+}
+
+BOOL CPlayerToolTopBar::PreTranslateMessage(MSG* pMsg)
+{
+	// TODO: Add your specialized code here and/or call the base class
+
+	
+	return CWnd::PreTranslateMessage(pMsg);
+}
+
+LRESULT CPlayerToolTopBar::OnNcHitTest(CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+
+	return CWnd::OnNcHitTest(point);
+}
+
+void CPlayerToolTopBar::OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp)
+{
+
+	__super::OnNcCalcSize(bCalcValidRects, lpncsp);
+	
 }

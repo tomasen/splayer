@@ -1096,6 +1096,8 @@ void CMPlayerCApp::InitInstanceThreaded(){
 	CSVPToolBox svpToolBox;
 	CStringArray csaDll;
 
+	_wremove(svpToolBox.GetPlayerPath(_T("SVPDebug.log")));
+	_wremove(svpToolBox.GetPlayerPath(_T("SVPDebug2.log")));
 	//csaDll.Add( _T("codecs\\CoreAVCDecoder.ax")); //avoid missing reg key problem
 	//CFilterMapper2 fm2(false);
 	if(1){

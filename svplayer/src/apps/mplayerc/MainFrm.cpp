@@ -550,21 +550,20 @@ BOOL CMainFrame::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 	UINT_PTR nID = pNMHDR->idFrom;
 	BOOL bRet = FALSE;
 
+	if(IDD_PPAGEACCELTBL != nID){	
 
-	// idFrom is actually the HWND of the tool
-	CString toolTip = ResStr(nID);
-	
-	//if(toolTip.IsEmpty())
-	//	toolTip = _T("Unkown 2");
+		// idFrom is actually the HWND of the tool
+		CString toolTip = ResStr(nID);
+		
+		//if(toolTip.IsEmpty())
+		//	toolTip = _T("Unkown 2");
 
-	if(!toolTip.IsEmpty()){
-		pTTT->lpszText = toolTip.GetBuffer();
-		pTTT->hinst = AfxGetResourceHandle();
-		bRet = TRUE;
+		if(!toolTip.IsEmpty()){
+			pTTT->lpszText = toolTip.GetBuffer();
+			pTTT->hinst = AfxGetResourceHandle();
+			bRet = TRUE;
+		}
 	}
-
-
-
 	*pResult = 0;
 
 	return bRet;
@@ -5594,8 +5593,25 @@ void CMainFrame::OnFileSaveImage()
 
 	/* Check if a compatible renderer is being used */
 	if(!IsRendererCompatibleWithSaveImage()) {
+		SendStatusMessage(_T("当前配置模式无法抓取截图，请进入选项面板选择DX9或DX7模式") , 3000);
 		return;
 	}
+
+	OAFilterState fs = GetMediaState();
+
+	if(!(m_iMediaLoadState == MLS_LOADED && !m_fAudioOnly && (fs == State_Paused || fs == State_Running))){
+		SendStatusMessage(_T("当前没有播放视频，无从抓取"),3000);
+		return;
+	}
+
+	bool bResumPlayAfter = FALSE;
+	if(fs == State_Running )
+	{
+		pMC->Pause();
+		GetMediaState(); // wait for completion of the pause command
+		bResumPlayAfter = true;
+	}
+
 
 	CPath psrc(s.SnapShotPath);
 	psrc.Combine(s.SnapShotPath, MakeSnapshotFileName(_T("snapshot")));
@@ -5619,6 +5635,10 @@ void CMainFrame::OnFileSaveImage()
 	s.SnapShotPath = (LPCTSTR)pdst;
 
 	SaveImage(path);
+
+	if(bResumPlayAfter){
+		pMC->Run();
+	}
 }
 
 void CMainFrame::OnFileSaveImageAuto()

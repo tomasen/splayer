@@ -959,8 +959,10 @@ HRESULT CDX9AllocatorPresenter::CreateDevice()
 	{
 		m_pD3DDevEx->SetGPUThreadPriority(7);
 	}
-	if(FAILED(hr))
+	if(FAILED(hr)){
+		SVP_LogMsg5(_T("DX9 CreateDevice Failed") );
 		return hr;
+	}
 
 	m_pPSC.Attach(new CPixelShaderCompiler(m_pD3DDev, true));
 

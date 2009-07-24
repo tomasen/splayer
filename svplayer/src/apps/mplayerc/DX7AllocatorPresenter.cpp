@@ -327,18 +327,25 @@ HRESULT CDX7AllocatorPresenter::CreateDevice()
 
 	//SVP_LogMsg5(_T("m_ScreenSize DX7 %d %d ") , m_ScreenSize.cx, m_ScreenSize.cy);
 	HRESULT hr, hr2;
-
+	//m_ScreenSize.cx = 2000;
 	// m_pPrimary
 
 	INITDDSTRUCT(ddsd);
     ddsd.dwFlags = DDSD_CAPS;
-    ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
-    if(FAILED(hr = m_pDD->CreateSurface(&ddsd, &m_pPrimary, NULL)))
+	ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE ;//;//;
+	
+	if(FAILED(hr = m_pDD->CreateSurface(&ddsd, &m_pPrimary, NULL))){
+		SVP_LogMsg5(_T("DX7 CreateSurface Failed %d") ,hr );
+
+		
         return hr;
+	}
 
 	CComPtr<IDirectDrawClipper> pcClipper;
-    if(FAILED(hr = m_pDD->CreateClipper(0, &pcClipper, NULL)))
+	if(FAILED(hr = m_pDD->CreateClipper(0, &pcClipper, NULL))){
+		SVP_LogMsg5(_T("DX7 CreateClipper Failed") );
         return hr;
+	}
 	pcClipper->SetHWnd(0, m_hWnd);
 	m_pPrimary->SetClipper(pcClipper);
 
@@ -349,12 +356,16 @@ HRESULT CDX7AllocatorPresenter::CreateDevice()
     ddsd.ddsCaps.dwCaps = /*DDSCAPS_OFFSCREENPLAIN |*/ DDSCAPS_VIDEOMEMORY | DDSCAPS_3DDEVICE;
 	ddsd.dwWidth = m_ScreenSize.cx;
 	ddsd.dwHeight = m_ScreenSize.cy;
-	if(FAILED(hr = m_pDD->CreateSurface(&ddsd, &m_pBackBuffer, NULL)))
+	if(FAILED(hr = m_pDD->CreateSurface(&ddsd, &m_pBackBuffer, NULL))){
+		SVP_LogMsg5(_T("DX7 CreateSurface 2 Failed") );
         return hr;
+	}
 
 	pcClipper = NULL;
-    if(FAILED(hr = m_pDD->CreateClipper(0, &pcClipper, NULL)))
+	if(FAILED(hr = m_pDD->CreateClipper(0, &pcClipper, NULL))){
+		SVP_LogMsg5(_T("DX7 CreateClipper 2 Failed") );
 		return hr;
+	}
     BYTE rgnDataBuffer[1024];
 	HRGN hrgn = CreateRectRgn(0, 0, ddsd.dwWidth, ddsd.dwHeight);
 	GetRegionData(hrgn, sizeof(rgnDataBuffer), (RGNDATA*)rgnDataBuffer);
@@ -364,8 +375,10 @@ HRESULT CDX7AllocatorPresenter::CreateDevice()
 
 	// m_pD3DDev
 
-	if(FAILED(hr = m_pD3D->CreateDevice(IID_IDirect3DHALDevice, m_pBackBuffer, &m_pD3DDev))) // this seems to fail if the desktop size is too large (width or height >2048)
+	if(FAILED(hr = m_pD3D->CreateDevice(IID_IDirect3DHALDevice, m_pBackBuffer, &m_pD3DDev))) {// this seems to fail if the desktop size is too large (width or height >2048)
+		SVP_LogMsg5(_T("DX7 CreateDevice Failed") );
 		return hr;
+	}
 
 	//
 

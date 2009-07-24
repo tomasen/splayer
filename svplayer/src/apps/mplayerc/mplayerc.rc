@@ -1431,17 +1431,19 @@ BTN_FONT.BMP            BITMAP                  "res\\newui\\BTN_FONT.bmp"
 BTN_FONT_MINUS.BMP      BITMAP                  "res\\newui\\BTN_FONT_MINUS.bmp"
 BTN_FONT_PLUS.BMP       BITMAP                  "res\\newui\\BTN_FONT_PLUS.bmp"
 BTN_STEP.BMP            BITMAP                  "res\\newui\\BTN_STEP.bmp"
-PINAIL.BMP				BITMAP                  "res\\newui\\pinail.bmp"
-PINAIL2.BMP				BITMAP                  "res\\newui\\pinail2.bmp"
-TOP_1X.BMP				BITMAP                  "res\\newui\\TOP_1X.bmp"
-TOP_2X.BMP				BITMAP                  "res\\newui\\TOP_2X.bmp"
-TOP_AUDIO.BMP			BITMAP                  "res\\newui\\TOP_AUDIO.bmp"
-TOP_VIDEO.BMP			BITMAP                  "res\\newui\\TOP_VIDEO.bmp"
-TOP_FULLSCREEN.BMP		BITMAP                  "res\\newui\\TOP_FULLSCREEN.bmp"
-TOP_NORMAL.BMP			BITMAP                  "res\\newui\\TOP_NORMAL.bmp"
-TOP_LETTERBOX.BMP		BITMAP                  "res\\newui\\TOP_LETTERBOX.bmp"
-TOP_ROTATE.BMP			BITMAP                  "res\\newui\\TOP_ROTATE.bmp"
-TOP_FLIP.BMP			BITMAP                  "res\\newui\\TOP_FLIP.bmp"
+PINAIL.BMP              BITMAP                  "res\\newui\\pinail.bmp"
+PINAIL2.BMP             BITMAP                  "res\\newui\\pinail2.bmp"
+TOP_1X.BMP              BITMAP                  "res\\newui\\TOP_1X.bmp"
+TOP_2X.BMP              BITMAP                  "res\\newui\\TOP_2X.bmp"
+TOP_AUDIO.BMP           BITMAP                  "res\\newui\\TOP_AUDIO.bmp"
+TOP_VIDEO.BMP           BITMAP                  "res\\newui\\TOP_VIDEO.bmp"
+TOP_FULLSCREEN.BMP      BITMAP                  "res\\newui\\TOP_FULLSCREEN.bmp"
+TOP_NORMAL.BMP          BITMAP                  "res\\newui\\TOP_NORMAL.bmp"
+TOP_LETTERBOX.BMP       BITMAP                  "res\\newui\\TOP_LETTERBOX.bmp"
+TOP_ROTATE.BMP          BITMAP                  "res\\newui\\TOP_ROTATE.bmp"
+TOP_FLIP.BMP            BITMAP                  "res\\newui\\TOP_FLIP.bmp"
+TOP_CAPTURE.BMP            BITMAP                  "res\\newui\\TOP_CAPTURE.bmp"
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // FILE
@@ -1530,10 +1532,10 @@ IDI_QUICKTIME_FILE      ICON                    "res\\Icon\\Quicktime_File.ico"
 IDI_REAL_FILE           ICON                    "res\\Icon\\Real_File.ico"
 IDI_SUBTITLE_FILE       ICON                    "res\\Icon\\Subtitle_File.ico"
 IDI_VIDEO_CD            ICON                    "res\\Icon\\Video_CD.ico"
-IDI_AVI            ICON                    "res\\Icon\\avi.ico"
-IDI_MKV            ICON                    "res\\Icon\\mkv.ico"
-IDI_TS            ICON                    "res\\Icon\\ts.ico"
-IDI_VIDEO            ICON                    "res\\Icon\\video.ico"
+IDI_AVI                 ICON                    "res\\Icon\\avi.ico"
+IDI_MKV                 ICON                    "res\\Icon\\mkv.ico"
+IDI_TS                  ICON                    "res\\Icon\\ts.ico"
+IDI_VIDEO               ICON                    "res\\Icon\\video.ico"
 IDI_PLAY                ICON                    "res\\play.ico"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1882,7 +1884,6 @@ BEGIN
         MENUITEM "收藏夹",                         ID_FAVORITES
         MENUITEM "关闭(&C)",                      ID_FILE_CLOSEPLAYLIST
         MENUITEM SEPARATOR
-        MENUITEM "音频/声道切换",                     ID__32777
         MENUITEM "第一字幕",                        ID__32776
         MENUITEM "第二字幕",                        ID__32796
         MENUITEM "调入字幕(&L)...\tCtrl+L",         ID_FILE_LOAD_SUBTITLE
@@ -1891,39 +1892,49 @@ BEGIN
             MENUITEM "启用智能网络字幕匹配",                  ID_SVPSUB_MENUENABLE
             MENUITEM SEPARATOR
             MENUITEM "智能字幕匹配下载...",                 ID_FILE_ISDB_DOWNLOAD
-            MENUITEM "上传字幕...",                     ID_FILE_ISDB_UPLOAD
             MENUITEM SEPARATOR
-            MENUITEM "调入字幕(&L)...\tCtrl+L",         ID_FILE_LOAD_SUBTITLE
+            MENUITEM "上传字幕...",                     ID_FILE_ISDB_UPLOAD
             MENUITEM SEPARATOR
             MENUITEM "网页搜索字幕...",                   ID_FILE_ISDB_SEARCH
         END
         MENUITEM SEPARATOR
-        MENUITEM "画面增益",                        ID__SHADERS
-        POPUP "画面翻转"
+        MENUITEM "音频/声道切换",                     ID__32777
+        POPUP "画面"
         BEGIN
-            MENUITEM "水平翻转",                        ID_ROTATE_H
-            MENUITEM "垂直翻转",                        ID_ROTATE_V
-            MENUITEM "向右90℃",                       ID_ROTATE_270
-            MENUITEM "向左90℃",                       ID_ROTATE_90
-            MENUITEM "180℃旋转",                      ID_ROTATE_180
-            MENUITEM "恢复默认角度",                      ID_ROTATE_RESET
+            MENUITEM "标准画面\tC",                     ID_VIEW_VF_FROMINSIDE
+            MENUITEM "全屏幕(&l)",                     ID_VIEW_FULLSCREEN
+            MENUITEM "智能去黑边(&O)",                   ID_VIEW_VF_FROMOUTSIDE
+            MENUITEM "铺满播放窗口(&S)",                  ID_VIEW_VF_STRETCH
             MENUITEM SEPARATOR
-            MENUITEM "启用画面翻转",                      ID_ENABLE_ROTATE
+            MENUITEM "画面增益",                        ID__SHADERS
+            POPUP "画面翻转"
+            BEGIN
+                MENUITEM "水平翻转",                        ID_ROTATE_H
+                MENUITEM "垂直翻转",                        ID_ROTATE_V
+                MENUITEM "向右90℃",                       ID_ROTATE_270
+                MENUITEM "向左90℃",                       ID_ROTATE_90
+                MENUITEM "180℃旋转",                      ID_ROTATE_180
+                MENUITEM "恢复默认角度",                      ID_ROTATE_RESET
+                MENUITEM SEPARATOR
+                MENUITEM "启用画面翻转",                      ID_ENABLE_ROTATE
+            END
+            POPUP "宽高比"
+            BEGIN
+                MENUITEM "默认",                          ID_ASPECTRATIO_SOURCE
+                MENUITEM "4:3",                         ID_ASPECTRATIO_4_3
+                MENUITEM "5:4",                         ID_ASPECTRATIO_5_4
+                MENUITEM "16:9",                        ID_ASPECTRATIO_16_9
+                MENUITEM "2.35:1",                      ID_ASPECTRATIO_235_1
+                MENUITEM "智能显示器校正",                     ID_VIEW_VF_COMPMONDESKARDIFF
+            END
+            MENUITEM SEPARATOR
+            POPUP "在最前(前端显示)"
+            BEGIN
+                MENUITEM "从不",                          ID_ONTOP_NEVER
+                MENUITEM "总在最前",                        ID_ONTOP_ALWAYS
+                MENUITEM "仅播放时",                        ID_ONTOP_WHILEPLAYING
+            END
         END
-        POPUP "宽高比"
-        BEGIN
-            MENUITEM "默认",                          ID_ASPECTRATIO_SOURCE
-            MENUITEM "4:3",                         ID_ASPECTRATIO_4_3
-            MENUITEM "5:4",                         ID_ASPECTRATIO_5_4
-            MENUITEM "16:9",                        ID_ASPECTRATIO_16_9
-            MENUITEM "2.35:1",                      ID_ASPECTRATIO_235_1
-            MENUITEM "智能显示器校正",                     ID_VIEW_VF_COMPMONDESKARDIFF
-        END
-        MENUITEM SEPARATOR
-        MENUITEM "标准画面\tC",                     ID_VIEW_VF_FROMINSIDE
-        MENUITEM "全屏幕(&l)",                     ID_VIEW_FULLSCREEN
-        MENUITEM "智能去黑边(&O)",                   ID_VIEW_VF_FROMOUTSIDE
-        MENUITEM "铺满播放窗口(&S)",                  ID_VIEW_VF_STRETCH
         MENUITEM SEPARATOR
         POPUP "DVD选单"
         BEGIN
@@ -1958,12 +1969,6 @@ BEGIN
         BEGIN
             MENUITEM "当前文件",                        ID_DELETECURFILE
             MENUITEM "当前文件夹",                       ID_DELCURFOLDER
-        END
-        POPUP "在最前(前端显示)"
-        BEGIN
-            MENUITEM "从不",                          ID_ONTOP_NEVER
-            MENUITEM "总在最前",                        ID_ONTOP_ALWAYS
-            MENUITEM "仅播放时",                        ID_ONTOP_WHILEPLAYING
         END
         POPUP "播放结束后"
         BEGIN
@@ -2309,7 +2314,7 @@ IDR_HTML_UESETTINGPANEL HTML                    "res\\web\\UESettingPanel.html"
 //
 
 UESETBG.PNG             2110                    "res\\web\\uesetbg.png"
-UESETBG_HOVER.PNG             2110                    "res\\web\\uesetbg_hover.png"
+UESETBG_HOVER.PNG       2110                    "res\\web\\uesetbg_hover.png"
 BLANK.GIF               2110                    "res\\web\\blank.gif"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -2451,6 +2456,8 @@ BEGIN
     IDS_AUTOPLAY_PLAYBDMOVIE "播放蓝光DVD"
     IDS_AUTOPLAY_PLAYDVDAUDIO "播放DVD-AUDIO"
     IDS_AUTOPLAY_CAPTURECAMERA "采集视频"
+    IDS_RS_DXVACOMPAT       "DXVACompat"
+    IDS_RS_NOTAUTOCHECKSPEAKER "NotAutoCheckSpeaker"
 END
 
 STRINGTABLE 
@@ -2507,7 +2514,6 @@ BEGIN
     IDS_RS_QUICKTIMERENDERER "QuickTimeRenderer"
     IDS_RS_REALMEDIAFPS     "RealMediaFPS"
     IDS_RS_AUDIOTIMESHIFT   "AudioTimeShift"
-	IDS_RS_NOTAUTOCHECKSPEAKER		"NotAutoCheckSpeaker"
 END
 
 STRINGTABLE 
@@ -2611,7 +2617,6 @@ BEGIN
     IDS_RS_MPEGDI           "MPEGDI"
     IDS_RS_MPEGBRIGHT       "MPEGBright"
     IDS_RS_MPEGCONT         "MPEGCont"
-	IDS_RS_DXVACOMPAT		"DXVACompat"
 END
 
 STRINGTABLE 
@@ -2736,7 +2741,11 @@ BEGIN
     IDS_SRC_NUT             "6.4.0.0\n基于 ""NUT 开放容器格式 DRAFT 20030906""\n仍然非常不完善, 如果您有或能够制作测试文件,请联系我。"
     IDS_SRC_DIRAC           "6.4.0.1\n基于 libdirac 0.5.0"
     IDS_SRC_DSM             "6.4.0.5"
-	ID_VIEW_VF_FROMINSIDE	"标准画面"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_VIEW_VF_FROMINSIDE   "标准画面"
 END
 
 STRINGTABLE 

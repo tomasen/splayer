@@ -70,6 +70,7 @@ SRCS_C=\
 		$(LAVC_DIR)/svq1dec.c \
 		$(LAVC_DIR)/utils.c \
 		$(LAVC_DIR)/vc1.c \
+		$(LAVC_DIR)/vc1dec.c \
 		$(LAVC_DIR)/vc1_parser.c \
 		$(LAVC_DIR)/vc1data.c \
 		$(LAVC_DIR)/vc1dsp.c \

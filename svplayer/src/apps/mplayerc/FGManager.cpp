@@ -1956,7 +1956,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 #if INTERNAL_DECODER_VC1 | INTERNAL_DECODER_VC1_DXVA
 	if ((ffmpeg_filters & FFM_VC1) || (dxva_filters & DXVA_VC1))
 	{
-		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_WVC1);
+		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_WVC1); //不支持隔行VC1 :(
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_wvc1);
 	}
 #endif

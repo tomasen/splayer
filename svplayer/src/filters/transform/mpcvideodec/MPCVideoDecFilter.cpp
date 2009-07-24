@@ -1055,12 +1055,27 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 
 			}
 			
+				
+
 			// Force single thread for DXVA !
 			if (IsDXVASupported())
 				avcodec_thread_init(m_pAVCtx, 1);
 			else if (m_bUseDXVA)
 				return VFW_E_INVALIDMEDIATYPE;
 
+
+				if( m_pAVCodec->id == CODEC_ID_VC1 && FFIsInterlaced(m_pAVCtx , m_nHeight)){
+					if(!m_bUseDXVA)
+						return VFW_E_INVALIDMEDIATYPE;
+
+					if(m_ref_frame_count_check_skip)
+					  { WCHAR *msg = _T("隔行VC1编码的文件恐怕无法进行硬件加速...") ; AfxGetMainWnd()->SendMessage(ID_STATUS_MESSAGE, (UINT_PTR)msg, 3000); }
+					else 
+						return VFW_E_INVALIDMEDIATYPE;
+					
+				}
+			
+			
 			BuildDXVAOutputFormat();
 		}
 	}
@@ -1129,7 +1144,7 @@ void CMPCVideoDecFilter::BuildDXVAOutputFormat()
 
 	m_pVideoOutputFormat	= new VIDEO_OUTPUT_FORMATS[m_nVideoOutputCount];
 
-	if (IsDXVASupported() /*&& !m_bUSERGB should I ? */)
+	if (IsDXVASupported() /* m_bUseDXVA && !m_bUSERGB should I ? */)
 	{
 		// Dynamic DXVA media types for DXVA1
 		for (nPos=0; nPos<ffCodecs[m_nCodecNb].DXVAModeCount(); nPos++)

@@ -1293,6 +1293,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\icon\avi.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\res\web\blank.gif"
 				>
 			</File>
@@ -1513,6 +1517,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\icon\mkv.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\res\icon\Mobile_Video.ico"
 				>
 			</File>
@@ -1546,6 +1554,14 @@
 			</File>
 			<File
 				RelativePath="res\onoff.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\pinail.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\pinail2.bmp"
 				>
 			</File>
 			<File
@@ -1586,6 +1602,50 @@
 			</File>
 			<File
 				RelativePath=".\res\toolbar2.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\TOP_1X.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\TOP_2X.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\TOP_AUDIO.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\TOP_FLIP.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\TOP_FULLSCREEN.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\TOP_LETTERBOX.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\TOP_NORMAL.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\TOP_ROTATE.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\TOP_VIDEO.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\icon\ts.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\icon\video.ico"
 				>
 			</File>
 			<File
@@ -1894,11 +1954,15 @@
 			>
 		</File>
 		<File
+			RelativePath=".\res\web\uesetbg.png"
+			>
+		</File>
+		<File
 			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\web\uesetbg_hover.png"
 			>
 		</File>
 	</Files>

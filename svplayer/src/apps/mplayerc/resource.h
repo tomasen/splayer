@@ -37,10 +37,10 @@
 #define IDI_REAL_FILE                   313
 #define IDI_SUBTITLE_FILE               314
 #define IDI_VIDEO_CD                    315
-#define IDI_AVI                        316
-#define IDI_MKV                        317
-#define IDI_TS                        318
-#define IDI_VIDEO                        319
+#define IDI_AVI                         316
+#define IDI_MKV                         317
+#define IDI_TS                          318
+#define IDI_VIDEO                       319
 #define IDI_PLAY                        320
 #define IDR_AVI_FILECOPY                400
 #define IDR_HTML_INDEX                  500
@@ -299,8 +299,8 @@
 #define ID_CHECK_DEFAULT_PLAYER         1034
 #define ID_SUBSETFONTBOTH               1035
 #define ID_SUBTOOLBARBUTTON             1036
-#define ID_MENU_AUDIO					1037
-#define ID_MENU_VIDEO					1038
+#define ID_MENU_AUDIO                   1037
+#define ID_MENU_VIDEO                   1038
 #define ID_FILTERS_SUBITEM_START        2000
 #define ID_FILTERS_SUBITEM_END          2099
 #define ID_FILTERSTREAMS_SUBITEM_START  2100
@@ -346,7 +346,7 @@
 #define ID_RECENTFILE_CLEAR             5202
 #define ID_RECENTFILE_DISABLE           5203
 #define ID_RECENTFILE_ENABLE            5204
-#define ID_CONFIG_AUTOLOADSUBTITLE2		5205
+#define ID_CONFIG_AUTOLOADSUBTITLE2     5205
 #define TIMER_FASTFORWORD               7001
 #define TIMER_STOPFASTFORWORD           7002
 #define TIMER_STATERASER                7003
@@ -858,14 +858,14 @@
 #define IDS_RS_OPTIONDECODER            14225
 #define IDS_RS_LOGOSTRETCH              14226
 #define IDS_RS_ULTRAFAST                14227
-#define IDS_RS_USESPDIF					14228
-#define IDS_AUTOPLAY_PLAYSVCDMOVIE       14229
+#define IDS_RS_USESPDIF                 14228
+#define IDS_AUTOPLAY_PLAYSVCDMOVIE      14229
 #define IDS_AUTOPLAY_PLAYVCDMOVIE       14230
-#define IDS_AUTOPLAY_PLAYBDMOVIE       14231
+#define IDS_AUTOPLAY_PLAYBDMOVIE        14231
 #define IDS_AUTOPLAY_PLAYDVDAUDIO       14232
-#define IDS_AUTOPLAY_CAPTURECAMERA		14233
-#define	IDS_RS_DXVACOMPAT				14234
-#define IDS_RS_NOTAUTOCHECKSPEAKER		14235
+#define IDS_AUTOPLAY_CAPTURECAMERA      14233
+#define IDS_RS_DXVACOMPAT               14234
+#define IDS_RS_NOTAUTOCHECKSPEAKER      14235
 #define IDD_DHTML_SETTING               20000
 #define IDR_DEFAULT1                    20006
 #define IDD_DEFAULT_PLAYER              20007
@@ -962,12 +962,12 @@
 #define ID_32848                        32848
 #define ID_ENABLE_ROTATE                32849
 #define ID_ROTATE_END                   32850
+#define ID_32850                        32850
 #define ID_DELETECURFILE                32851
 #define ID_DELRECYCLECURFILE            32852
 #define ID_DELCURFOLDER                 32853
 #define ID_USINGSPDIF                   32855
 #define ID_DEBUGREPORT                  32856
-#define ID_STATUS_MESSAGE				WM_USER+300
 #define IDS_VOLUME_BOOST_INC            33129
 #define IDS_VOLUME_BOOST_DEC            33130
 #define IDS_VOLUME_BOOST_MIN            33131
@@ -1036,13 +1036,13 @@
 #define IDS_PPSDB_PROTOCOLERR           33199
 #define IDS_PPSDB_BADURL                33200
 #define IDS_VDF_AR_MODE                 33211
-
+#define ID_STATUS_MESSAGE				1324
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        20013
-#define _APS_NEXT_COMMAND_VALUE         32849
+#define _APS_NEXT_COMMAND_VALUE         32851
 #define _APS_NEXT_CONTROL_VALUE         22004
 #define _APS_NEXT_SYMED_VALUE           24001
 #endif

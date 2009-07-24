@@ -157,6 +157,8 @@ int CPlayerToolTopBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	m_btnList.AddTail( new CSUIButton(L"TOP_FLIP.BMP" , ALIGN_TOPRIGHT, CRect(1 , 1, 1,1)  , 0, ID_ROTATE_V, FALSE, ALIGN_RIGHT, m_btnList.GetTail() , CRect(1,1,1,1)  ) );
 	
+	m_btnList.AddTail( new CSUIButton(L"TOP_CAPTURE.BMP" , ALIGN_TOPRIGHT, CRect(1 , 1, 1,1)  , 0, ID_FILE_SAVE_IMAGE, FALSE, ALIGN_RIGHT, m_btnList.GetTail() , CRect(1,1,1,1)  ) );
+	
 /*
 #define ID_VIEW_VF_STRETCH              838
 #define ID_VIEW_VF_FROMINSIDE           839

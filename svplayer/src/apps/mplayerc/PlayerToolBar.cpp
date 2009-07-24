@@ -87,15 +87,15 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 	btnStep->addAlignRelButton(ALIGN_LEFT, btnPlay , CRect(10 , 10 , 10, 10) );
 	m_btnList.AddTail( btnStep );
 
-	CSUIButton* btnFFwd = new CSUIButton(L"FAST_FORWORD.BMP" , ALIGN_TOPLEFT, CRect(-52 , 10, 3,3)  , 0, ID_PLAY_FWD, FALSE, ALIGN_LEFT, btnPause , CRect(10 , 10 , 10, 10));
-	btnFFwd->addAlignRelButton(  ALIGN_LEFT, btnPlay , CRect(10 , 10 , 10, 10) );
-	btnFFwd->addAlignRelButton(ALIGN_LEFT, btnStep , CRect(10 , 10 , 10, 10) );
+	CSUIButton* btnFFwd = new CSUIButton(L"FAST_FORWORD.BMP" , ALIGN_TOPLEFT, CRect(-52 , 10, 3,3)  , 0, ID_PLAY_FWD, FALSE, ALIGN_LEFT, btnPause , CRect(5 , 10 , 5, 10));
+	btnFFwd->addAlignRelButton(  ALIGN_LEFT, btnPlay , CRect(5 , 10 , 5, 10) );
+	btnFFwd->addAlignRelButton(ALIGN_LEFT, btnStep , CRect(5 , 10 , 5, 10) );
 	m_btnList.AddTail( btnFFwd );
 
 	
-	CSUIButton* btnFFBack = new CSUIButton(L"FAST_BACKWORD.BMP" , ALIGN_TOPLEFT, CRect(-48 , 10, 3,3)  , 0, ID_PLAY_BWD, FALSE, ALIGN_RIGHT, btnPause , CRect(10 , 10 , 10, 10) );
-	btnFFBack->addAlignRelButton(ALIGN_RIGHT, btnPlay , CRect(10 , 10 , 10, 10) );
-	btnFFBack->addAlignRelButton(ALIGN_RIGHT, btnStop , CRect(10 , 10 , 10, 10) );
+	CSUIButton* btnFFBack = new CSUIButton(L"FAST_BACKWORD.BMP" , ALIGN_TOPLEFT, CRect(-48 , 10, 3,3)  , 0, ID_PLAY_BWD, FALSE, ALIGN_RIGHT, btnPause , CRect(5 , 10 , 5, 10) );
+	btnFFBack->addAlignRelButton(ALIGN_RIGHT, btnPlay , CRect(5 , 10 , 5, 10) );
+	btnFFBack->addAlignRelButton(ALIGN_RIGHT, btnStop , CRect(5 , 10 , 5, 10) );
 	m_btnList.AddTail( btnFFBack );
 
 	CSUIButton* btnPrev = new CSUIButton(L"BTN_PREV.BMP" , ALIGN_TOPLEFT, CRect(-48 , 10, 3,3)  , 0, ID_NAVIGATE_SKIPBACK, FALSE, ALIGN_RIGHT, btnFFBack , CRect(10 , 10 , 10, 10) ) ;
@@ -144,7 +144,7 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 	m_btnList.AddTail( btnPlayList );
 
 
-	CSUIButton* btnCapture = new CSUIButton(L"BTN_CAPTURE.BMP" , ALIGN_TOPRIGHT, CRect(3 , 5, 105,3)  , FALSE, ID_FILE_SAVE_IMAGE, TRUE , ALIGN_RIGHT, btnPlayList , CRect(3 , 10 , 3, 10)) ;
+	CSUIButton* btnCapture = new CSUIButton(L"BTN_CAPTURE.BMP" , ALIGN_TOPRIGHT, CRect(3 , 5, 105,3)  , FALSE, ID_FILE_SAVE_IMAGE_AUTO, TRUE , ALIGN_RIGHT, btnPlayList , CRect(3 , 10 , 3, 10)) ;
 	m_btnList.AddTail( btnCapture );
 
 	CSUIButton* btnOpenFile = new CSUIButton(L"BTN_OPENFILE_SMALL.BMP" , ALIGN_TOPRIGHT, CRect(3 , 5, 105,3)  , FALSE, ID_FILE_OPENQUICK, TRUE , ALIGN_RIGHT, btnCapture , CRect(3 , 10 , 3, 10)) ;

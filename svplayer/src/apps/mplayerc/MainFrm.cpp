@@ -5647,6 +5647,7 @@ void CMainFrame::OnFileSaveImageAuto()
 
 	/* Check if a compatible renderer is being used */
 	if(!IsRendererCompatibleWithSaveImage()) {
+		SendStatusMessage(_T("当前配置模式无法抓取截图，请进入选项面板选择DX9或DX7模式") , 3000);
 		return;
 	}
 

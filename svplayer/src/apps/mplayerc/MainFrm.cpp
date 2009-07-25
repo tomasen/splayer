@@ -559,6 +559,12 @@ BOOL CMainFrame::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 		//	toolTip = _T("Unkown 2");
 
 		if(!toolTip.IsEmpty()){
+
+			int iN = toolTip.Find(_T("\n"));
+			if(iN > 0){
+				toolTip = toolTip.Left(iN).Trim();
+			}
+
 			pTTT->lpszText = toolTip.GetBuffer();
 			pTTT->hinst = AfxGetResourceHandle();
 			bRet = TRUE;
@@ -11448,7 +11454,7 @@ void CMainFrame::OnSubMenuToolbar(){
 	MenuMerge( &m_subtoolmenu , &m_subtitles );
 
 	SetupSubtitlesSubMenu(2);
-	MenuMerge( &m_subtitles2 ,  &m_navsubtitle );
+	//MenuMerge( &m_subtitles2 ,  &m_navsubtitle );
 	pSubMenu = &m_subtitles2;
 
 	if(m_subtoolmenu.GetMenuItemCount())
@@ -11683,7 +11689,7 @@ void CMainFrame::SetupNavSubtitleSubMenu()
 		if(FAILED(pDVDI->GetDefaultSubpictureLanguage(&DefLanguage, &ext)))
 			return;
 
-		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|(bIsDisabled?0:MF_CHECKED), id++, _T("Enabled"));
+		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|(bIsDisabled?0:MF_CHECKED), id++, _T("启用"));
 		pSub->AppendMenu(MF_BYCOMMAND|MF_SEPARATOR|MF_ENABLED);
 
         for(ULONG i = 0; i < ulStreamsAvailable; i++)
@@ -13213,10 +13219,7 @@ void CMainFrame::ShowOptions(int idPage)
 		if(!m_fFullScreen)
 			SetAlwaysOnTop(s.iOnTop);
 
-		m_wndView.LoadLogo();
-		UpdateSubtitle(true);
-		UpdateSubtitle2(true);	
-		
+	
 		
 	}else if(ueOption.bOpenAdvancePanel){
 		CPPageSheet options(ResStr(IDS_OPTIONS_CAPTION), pGB, this, idPage);

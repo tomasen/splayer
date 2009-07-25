@@ -464,6 +464,8 @@ public:
 // Implementation
 public:
 	virtual ~CMainFrame();
+	CChildView m_wndView;
+
 #ifdef _DEBUG
 	virtual void AssertValid() const;
 	virtual void Dump(CDumpContext& dc) const;
@@ -471,8 +473,7 @@ public:
 
 protected:  // control bar embedded members
 
-	CChildView m_wndView;
-
+	
 	CPlayerSeekBar m_wndSeekBar;
 	CPlayerToolBar m_wndToolBar;
 	CPlayerInfoBar m_wndInfoBar;

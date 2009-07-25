@@ -172,7 +172,14 @@ CAMThread::CallWorker(DWORD dwParam)
     m_EventSend.Set();
 
     // wait for the completion to be signalled
-    m_EventComplete.Wait();
+	if( m_EventComplete.Wait(5000) == FALSE) {
+		m_dwParam = 0; 
+		m_EventComplete.Reset();
+		m_EventSend.Reset();
+		return (DWORD) E_FAIL;
+	}
+
+	
 
     // done - this is the thread's return value
     return m_dwReturnVal;

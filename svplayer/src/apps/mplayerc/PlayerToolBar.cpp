@@ -539,7 +539,7 @@ void CPlayerToolBar::SetStatusTimer(REFERENCE_TIME rtNow, REFERENCE_TIME rtDur, 
 	SYSTEM_POWER_STATUS status;
 	GetSystemPowerStatus(&status);
 	CString szPower ;
-	if ( status.BatteryFlag != 128 && status.BatteryFlag != 255 ){
+	if ( status.BatteryFlag != 128 && status.BatteryFlag != 255 && status.BatteryLifePercent < 91 ){
 		szPower.Format(_T("  电量: %d%% "), status.BatteryLifePercent);
 	}else{
 		//szPower = _T("电量: ∽ ");

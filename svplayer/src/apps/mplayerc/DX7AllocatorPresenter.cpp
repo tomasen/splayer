@@ -336,7 +336,15 @@ HRESULT CDX7AllocatorPresenter::CreateDevice()
 	
 	if(FAILED(hr = m_pDD->CreateSurface(&ddsd, &m_pPrimary, NULL))){
 		SVP_LogMsg5(_T("DX7 CreateSurface Failed %d") ,hr );
-
+		/*
+		ddsd.ddsCaps.dwCaps = 0;
+				ddsd.ddsCaps.dwCaps2 = DDSCAPS2_ADDITIONALPRIMARY;
+				for(int i = 0; i <= 4; i++){
+					ddsd.ddsCaps.dwCaps4 = i;
+					if(FAILED(hr = m_pDD->CreateSurface(&ddsd, &m_pPrimary, NULL))){
+						SVP_LogMsg5(_T("DX7 CreateSurface ADDITIONAL Failed %d %d") , i , hr );
+					}
+				}*/
 		
         return hr;
 	}

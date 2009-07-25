@@ -1002,7 +1002,7 @@ void MPV_frame_end(MpegEncContext *s)
     /* draw edge for correct motion prediction if outside */
     //just to make sure that all data is rendered.
     if(!s->avctx->hwaccel
-       && !(s->avctx->codec->capabilities&CODEC_CAP_HWACCEL_VDPAU)
+      && !(s->avctx->codec->capabilities&CODEC_CAP_HWACCEL_VDPAU)
        && s->unrestricted_mv
        && s->current_picture.reference
        && !s->intra_only

@@ -2999,7 +2999,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		shader_ids.AddTail(IDF_SHADER_BT601_BT701);
 		shader_ids.AddTail(IDF_SHADER_YV12CHROMAUP);
 		shader_ids.AddTail(IDF_SHADER_DEINTERLACE);
-		shader_ids.AddTail(IDF_SHADER_DENOISE);
+		//shader_ids.AddTail(IDF_SHADER_DENOISE);
 		shader_ids.AddTail(IDF_SHADER_EDGE_SHARPEN);
 		shader_ids.AddTail(IDF_SHADER_SHARPEN_COMPLEX);
 		/*

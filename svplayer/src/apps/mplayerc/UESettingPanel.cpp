@@ -554,6 +554,12 @@ void CUESettingPanel::ApplyAllSetting(){
 	}
 	s.useGPUCUDA = SVP_SetCoreAvcCUDA(s.useGPUCUDA);
 	s.UpdateData(true);
+
+	CMainFrame * pFrame = (CMainFrame *) AfxGetMainWnd();
+	pFrame->m_wndView.LoadLogo();
+	pFrame->UpdateSubtitle(true);
+	pFrame->UpdateSubtitle2(true);	
+
 }
 
 void CUESettingPanel::OnBeforeNavigate2(LPDISPATCH pDisp, VARIANT FAR* URL, VARIANT FAR* Flags, VARIANT FAR* TargetFrameName, VARIANT FAR* PostData, VARIANT FAR* Headers, BOOL FAR* Cancel)

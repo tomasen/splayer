@@ -133,8 +133,8 @@ HRESULT CBaseSplitterFile::Read(BYTE* pData, __int64 len)
 	{
 		__int64 minlen = min(len, m_cachelen - (m_pos - m_cachepos));
  		
-		if(!pData || len < 0) 
-		      return S_OK; 
+		if(!pData || len <= 0 || minlen <= 0) 
+		      return S_FALSE; 
 		__try{ 
 		      memcpy_s(pData, len, &pCache[m_pos - m_cachepos], (size_t)minlen); 
 		}__except(EXCEPTION_EXECUTE_HANDLER){return S_OK;} 

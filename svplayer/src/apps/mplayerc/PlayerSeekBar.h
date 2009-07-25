@@ -29,6 +29,7 @@ class CPlayerSeekBar : public CDialogBar
 	DECLARE_DYNAMIC(CPlayerSeekBar)
 
 private:
+	enum{IDT_CLOSETIPS};
 	__int64 m_start, m_stop, m_pos, m_posreal;
 	bool m_fEnabled;
 	HCURSOR cursorHand;
@@ -51,7 +52,8 @@ public:
 	__int64 GetPos(), GetPosReal();
 	void SetPos(__int64 pos);
 
-
+	CToolTipCtrl m_toolTip;
+	TOOLINFO	m_ti;
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CPlayerSeekBar)
@@ -62,6 +64,8 @@ public:
 // Generated message map functions
 protected:
 	//{{AFX_MSG(CPlayerSeekBar)
+	afx_msg BOOL OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult);
+
 	afx_msg void OnPaint();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
@@ -73,4 +77,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg BOOL OnPlayStop(UINT nID);
+	afx_msg void OnMouseLeave();
+	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };

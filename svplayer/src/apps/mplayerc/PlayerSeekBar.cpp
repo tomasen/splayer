@@ -46,10 +46,11 @@ BOOL CPlayerSeekBar::Create(CWnd* pParentWnd)
 		return FALSE;
 
 	cursorHand = ::LoadCursor(NULL, IDC_HAND);
-
-	m_toolTip.Create(this);
+	
+	m_toolTip.CreateEx(this,0,WS_EX_NOACTIVATE);
+	m_toolTip.ModifyStyleEx( WS_EX_LAYERED , NULL);
 	m_ti.cbSize = sizeof(m_ti);
-	m_ti.uFlags = 0  ;//TTF_TRACK|TTF_ABSOLUTE
+	m_ti.uFlags = TTF_TRACK|TTF_ABSOLUTE|TTF_TRANSPARENT;
 	m_ti.hwnd = m_hWnd;
 	m_ti.hinst = NULL;
 	m_ti.uId = (UINT)0;
@@ -451,17 +452,17 @@ void CPlayerSeekBar::OnMouseMove(UINT nFlags, CPoint point)
 		if(pFrame->IsSomethingLoaded()){
 			CPoint pt;
 			GetCursorPos(&pt);
-			pt.y+=7;
-			
+			pt.y -= 20 * pFrame->m_nLogDPIY / 96;
+			pt.x += 8 ;
 			m_toolTip.SendMessage(TTM_TRACKPOSITION, 0, (LPARAM)MAKELPARAM(pt.x, pt.y));
 			m_toolTip.SendMessage(TTM_TRACKACTIVATE, TRUE, (LPARAM)&m_ti);
 			;
 		}else{
-			m_toolTip.SendMessage(TTM_TRACKACTIVATE, FALSE, (LPARAM)&m_ti);
+			CloseToolTips();
 		}
 	}
 	KillTimer(IDT_CLOSETIPS);
-	SetTimer(IDT_CLOSETIPS, 1000, NULL);
+	SetTimer(IDT_CLOSETIPS, 600, NULL);
 	CDialogBar::OnMouseMove(nFlags, point);
 }
 
@@ -473,35 +474,36 @@ BOOL CPlayerSeekBar::OnEraseBkgnd(CDC* pDC)
 BOOL CPlayerSeekBar::OnPlayStop(UINT nID)
 {
 	SetPos(0);
-	m_toolTip.SendMessage(TTM_TRACKACTIVATE, FALSE, (LPARAM)&m_ti);
+	CloseToolTips();
 	return FALSE;
 }
 
 void CPlayerSeekBar::OnMouseLeave()
 {
 	// TODO: Add your message handler code here and/or call default
-	m_toolTip.SendMessage(TTM_TRACKACTIVATE, FALSE, (LPARAM)&m_ti);
+	CloseToolTips();
 	CDialogBar::OnMouseLeave();
 }
 
 void CPlayerSeekBar::OnShowWindow(BOOL bShow, UINT nStatus)
 {
 	if(bShow != SW_SHOW){
-		m_toolTip.SendMessage(TTM_TRACKACTIVATE, FALSE, (LPARAM)&m_ti);
-		
+		CloseToolTips();
 	}
 
 	__super::OnShowWindow(bShow, nStatus);
 
 
 }
-
+void CPlayerSeekBar::CloseToolTips(){
+	m_toolTip.SendMessage(TTM_TRACKACTIVATE, FALSE, (LPARAM)&m_ti);
+}
 void CPlayerSeekBar::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO: Add your message handler code here and/or call default
 	if(IDT_CLOSETIPS == nIDEvent){
 		KillTimer(IDT_CLOSETIPS);
-		m_toolTip.SendMessage(TTM_TRACKACTIVATE, FALSE, (LPARAM)&m_ti);
+		CloseToolTips();
 	}
 	CDialogBar::OnTimer(nIDEvent);
 }

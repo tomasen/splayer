@@ -580,6 +580,10 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if(__super::OnCreate(lpCreateStruct) == -1)
 		return -1;
 
+	CDC ScreenDC;
+	ScreenDC.CreateIC(_T("DISPLAY"), NULL, NULL, NULL);
+	m_nLogDPIY = ScreenDC.GetDeviceCaps(LOGPIXELSY);
+
 	m_popup.LoadMenu(IDR_POPUP);
 	m_popupmain.LoadMenu(IDR_POPUPMAIN);
 
@@ -792,6 +796,7 @@ static bool bNoMoreHideMouse = false;
 
 void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 {
+	m_wndSeekBar.CloseToolTips();
 	if( m_iMediaLoadState == MLS_CLOSED )
 		m_wndView.OnMouseMove(nFlags,point);
 

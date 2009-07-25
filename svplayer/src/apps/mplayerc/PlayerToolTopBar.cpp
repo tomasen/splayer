@@ -141,9 +141,8 @@ int CPlayerToolTopBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	GetSystemFontWithScale(&m_statft, 14.0);
 
-	CDC ScreenDC;
-	ScreenDC.CreateIC(_T("DISPLAY"), NULL, NULL, NULL);
-	m_nLogDPIY = ScreenDC.GetDeviceCaps(LOGPIXELSY);
+	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
+	m_nLogDPIY = pFrame->m_nLogDPIY;
 
 
 	CSUIButton* btnPin1 = new CSUIButton(L"PINAIL.BMP" , ALIGN_TOPRIGHT, CRect(1 , 1, 1,1)  , 0, ID_ONTOP_ALWAYS, FALSE, 0, 0 ) ;

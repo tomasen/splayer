@@ -161,9 +161,8 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 
 	GetSystemFontWithScale(&m_statft, 14.0);
 
-	CDC ScreenDC;
-	ScreenDC.CreateIC(_T("DISPLAY"), NULL, NULL, NULL);
-	m_nLogDPIY = ScreenDC.GetDeviceCaps(LOGPIXELSY);
+	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
+	m_nLogDPIY = pFrame->m_nLogDPIY;
 	
 
 	

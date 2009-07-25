@@ -516,6 +516,7 @@ public:
 	void PreFocused();
 
 	CPlayerToolTopBar m_wndToolTopBar;
+	int m_nLogDPIY;
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnDestroy();
 

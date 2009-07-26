@@ -465,7 +465,9 @@ void CPlayerToolTopBar::OnDestroy()
 
 	// TODO: Add your message handler code here
 }
-
+void CPlayerToolTopBar::OnRealClose(){
+	__super::OnClose();
+}
 void CPlayerToolTopBar::OnMouseLeave()
 {
 	// TODO: Add your message handler code here and/or call default

@@ -54,6 +54,7 @@ public:
 	afx_msg LRESULT OnNcHitTest(CPoint point);
 	afx_msg void OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp);
 	afx_msg void OnClose();
+	void OnRealClose();
 	afx_msg void OnDestroy();
 	afx_msg void OnMouseLeave();
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);

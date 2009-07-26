@@ -37,6 +37,7 @@ BEGIN_MESSAGE_MAP(CNEWOSDWnd, CWnd)
 	ON_WM_NCPAINT()
 	ON_WM_ERASEBKGND()
 	ON_WM_ENABLE()
+	ON_WM_CLOSE()
 END_MESSAGE_MAP()
 
 
@@ -250,4 +251,15 @@ void CNEWOSDWnd::OnEnable(BOOL bEnable)
 	CWnd::OnEnable(bEnable);
 
 	
+}
+
+void CNEWOSDWnd::OnClose()
+{
+	// TODO: Add your message handler code here and/or call default
+
+	//CWnd::OnClose();
+}
+
+void CNEWOSDWnd::OnRealClose(){
+	__super::OnClose();
 }

@@ -1711,8 +1711,8 @@ void CMainFrame::OnClose()
 
 	CloseMedia();
 
-	m_wndNewOSD.SendMessage(WM_CLOSE, 0 , 0);
-	m_wndToolTopBar.SendMessage(WM_CLOSE, 0 , 0);
+	m_wndNewOSD.OnRealClose();
+	m_wndToolTopBar.OnRealClose();
 	
 
 	__super::OnClose();

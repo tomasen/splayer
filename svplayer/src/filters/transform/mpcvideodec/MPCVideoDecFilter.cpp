@@ -530,7 +530,7 @@ CMPCVideoDecFilter::CMPCVideoDecFilter(LPUNKNOWN lpunk, HRESULT* phr)
 	m_nThreadNumber			= m_pCpuId->GetProcessorNumber();
 	m_nDiscardMode			= AVDISCARD_DEFAULT;
 	m_nErrorRecognition		= FF_ER_CAREFUL;
-	m_nIDCTAlgo				= FF_IDCT_AUTO;
+	m_nIDCTAlgo				= FF_IDCT_XVIDMMX;  //FF_IDCT_AUTO //FF_IDCT_LIBMPEG2MMX //FF_IDCT_VP3
 	m_bDXVACompatible		= true;
 	m_nCompatibilityMode	= 0; //6 too allow too much ref count
 	m_pFFBuffer				= NULL;
@@ -557,7 +557,7 @@ CMPCVideoDecFilter::CMPCVideoDecFilter(LPUNKNOWN lpunk, HRESULT* phr)
 		if(ERROR_SUCCESS == key.QueryDWORDValue(_T("ThreadNumber"), dw)) m_nThreadNumber = dw;
 		if(ERROR_SUCCESS == key.QueryDWORDValue(_T("DiscardMode"), dw)) m_nDiscardMode = dw;
 		if(ERROR_SUCCESS == key.QueryDWORDValue(_T("ErrorRecognition"), dw)) m_nErrorRecognition = dw;
-		if(ERROR_SUCCESS == key.QueryDWORDValue(_T("IDCTAlgo"), dw)) m_nIDCTAlgo = dw;
+		//if(ERROR_SUCCESS == key.QueryDWORDValue(_T("IDCTAlgo"), dw)) m_nIDCTAlgo = dw;
 		//if(ERROR_SUCCESS == key.QueryDWORDValue(_T("CompatibilityMode"), dw)) m_nCompatibilityMode = dw;
 		if(ERROR_SUCCESS == key.QueryDWORDValue(_T("ActiveCodecs"), dw)) m_nActiveCodecs = dw;
 		if(ERROR_SUCCESS == key.QueryDWORDValue(_T("ARMode"), dw)) m_nARMode = dw;
@@ -1003,6 +1003,15 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 			m_pAVCtx->workaround_bugs		= m_nWorkaroundBug;
 			m_pAVCtx->error_concealment		= m_nErrorConcealment;
 			m_pAVCtx->error_recognition		= m_nErrorRecognition;
+			switch( m_pAVCodec->id ){
+				case CODEC_ID_VP3:
+				case CODEC_ID_VP5:
+				case CODEC_ID_VP6:
+					m_nIDCTAlgo = FF_IDCT_VP3;
+					break;
+				//FF_IDCT_AUTO // //
+			}
+
 			m_pAVCtx->idct_algo				= m_nIDCTAlgo;
 			m_pAVCtx->skip_loop_filter		= (AVDiscard)m_nDiscardMode;
 			m_pAVCtx->dsp_mask				= FF_MM_FORCE | m_pCpuId->GetFeatures();

@@ -794,9 +794,9 @@ void CPlayerToolBar::OnLButtonUp(UINT nFlags, CPoint point)
 			CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
 			// not increase or decrease play rate
 			if(iBottonClicked == ID_PLAY_BWD){
-				iMsg = ID_PLAY_SEEKBACKWARDSMALL;
+				iMsg = ID_PLAY_SEEKBACKWARDSMALLC;
 			}else if(iBottonClicked == ID_PLAY_FWD){
-				iMsg = ID_PLAY_SEEKFORWARDSMALL;
+				iMsg = ID_PLAY_SEEKFORWARDSMALLC;
 			}
 			if(iMsg)
 				pFrame->PostMessage( WM_COMMAND, iMsg);

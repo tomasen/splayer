@@ -301,6 +301,8 @@
 #define ID_SUBTOOLBARBUTTON             1036
 #define ID_MENU_AUDIO                   1037
 #define ID_MENU_VIDEO                   1038
+#define ID_PLAY_SEEKBACKWARDSMALLC       1039
+#define ID_PLAY_SEEKFORWARDSMALLC        1040
 #define ID_FILTERS_SUBITEM_START        2000
 #define ID_FILTERS_SUBITEM_END          2099
 #define ID_FILTERSTREAMS_SUBITEM_START  2100

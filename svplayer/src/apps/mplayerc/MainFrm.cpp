@@ -1662,11 +1662,15 @@ void CMainFrame::OnResetSetting(){
 }
 void CMainFrame::OnDestroy()
 {
+	//AfxMessageBox(_T("2"));
 	ShowTrayIcon(false);
 
 	m_fileDropTarget.Revoke();
 	
 	CloseMedia();
+
+	m_wndNewOSD.SendMessage(WM_DESTROY,0  , 0);
+	m_wndToolTopBar.SendMessage(WM_DESTROY, 0 , 0);
 
 	if(m_pGraphThread)
 	{
@@ -1684,6 +1688,8 @@ void CMainFrame::OnDestroy()
 
 void CMainFrame::OnClose()
 {
+
+	//AfxMessageBox(_T("1"));
 	// save shader list
 	POSITION pos;
 	CString	strList = "";
@@ -1704,6 +1710,10 @@ void CMainFrame::OnClose()
 	ShowWindow(SW_HIDE);
 
 	CloseMedia();
+
+	m_wndNewOSD.SendMessage(WM_CLOSE, 0 , 0);
+	m_wndToolTopBar.SendMessage(WM_CLOSE, 0 , 0);
+	
 
 	__super::OnClose();
 }

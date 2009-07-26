@@ -7704,9 +7704,13 @@ void CMainFrame::OnPlayVolume(UINT nID)
 	}
 	if(m_iMediaLoadState == MLS_LOADED) 
 	{
-		pBA->put_Volume(m_wndToolBar.Volume);
+		HRESULT hr = pBA->put_Volume(m_wndToolBar.Volume);
+		if(S_OK != hr){
+			SVP_LogMsg5(_T("设置音量失败 %d : %d") , hr,  m_wndToolBar.Volume);
+			SendStatusMessage(_T("您当前的音频设备不支持音量控制，请在音频菜单中选择正确的音频设备。"),4000);
+		}
 		
-		
+	
 		CComQIPtr<IAudioSwitcherFilter> pASF = FindFilter(__uuidof(CAudioSwitcherFilter), pGB);
 		if(pASF)
 			pASF->SetNormalizeBoost(s.fAudioNormalize, s.fAudioNormalizeRecover, s.AudioBoost);

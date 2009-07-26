@@ -308,6 +308,8 @@ int CPlayerToolBar::GetVolume()
 {
 	int volume = min( m_volctrl.GetPos() , 100);
 	volume = (int)((log10(1.0*volume)-2)*5000);
+	volume = ((int)(volume/100)*100);
+	//SVP_LogMsg3(("Vol %d") , volume);
 	volume = max(min(volume, 0), -10000);
 	return(IsMuted() ? -10000 : volume);
 }

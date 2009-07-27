@@ -102,6 +102,9 @@
 #define IDF_SHADER_BT601_BT701          718
 #define IDF_SHADER_DENOISE              719
 #define IDF_SHADER_YV12CHROMAUP         720
+#define IDF_SHADER_LEVELS3              721
+#define IDF_SHADER_BT601_BT709           722
+#define IDF_SHADER_SHARPEN_COMPLEX3		723
 #define ID_FILE_OPENMEDIA               800
 #define ID_FILE_OPENDVD                 801
 #define ID_FILE_OPENDEVICE              802

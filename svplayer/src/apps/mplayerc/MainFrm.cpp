@@ -9123,8 +9123,12 @@ void CMainFrame::SetShaders()
 			{
 				m_pCAP->SetPixelShader(NULL, NULL);
 				if (m_pCAP2)
-					m_pCAP2->SetPixelShader2(NULL, NULL, true);
-				SendStatusMessage(_T("无法启用DX9特效: ") + pShader->label, 3000);
+					hr = m_pCAP2->SetPixelShader2(srcdata, target, true);
+				if(FAILED(hr)){
+					if (m_pCAP2)
+						m_pCAP2->SetPixelShader2(NULL, NULL, true);
+					SendStatusMessage(_T("无法启用DX9特效: ") + pShader->label, 3000);
+				}
 				return;
 			}
 

@@ -2994,14 +2994,17 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 
 		CAtlList<UINT> shader_ids;
 		shader_ids.AddTail(IDF_SHADER_SHARPEN);
+		shader_ids.AddTail(IDF_SHADER_DENOISE);
 		shader_ids.AddTail(IDF_SHADER_LEVELS);
 		shader_ids.AddTail(IDF_SHADER_LEVELS2);
+		shader_ids.AddTail(IDF_SHADER_LEVELS3);
 		shader_ids.AddTail(IDF_SHADER_BT601_BT701);
 		shader_ids.AddTail(IDF_SHADER_YV12CHROMAUP);
 		shader_ids.AddTail(IDF_SHADER_DEINTERLACE);
-		//shader_ids.AddTail(IDF_SHADER_DENOISE);
 		shader_ids.AddTail(IDF_SHADER_EDGE_SHARPEN);
 		shader_ids.AddTail(IDF_SHADER_SHARPEN_COMPLEX);
+		shader_ids.AddTail(IDF_SHADER_SHARPEN_COMPLEX3);
+		shader_ids.AddTail(IDF_SHADER_BT601_BT709);
 		/*
 		shader_ids.AddTail(IDF_SHADER_GRAYSCALE);
 		shader_ids.AddTail(IDF_SHADER_INVERT);
@@ -3035,12 +3038,21 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 			{
 				Shader s;
 				s.label = ResStr(idf);
-				s.target = _T("ps_2_0");
+				switch(idf){
+					case IDF_SHADER_SHARPEN_COMPLEX3:
+						s.target = _T("ps_3_0");
+						break;
+					default:
+						s.target = _T("ps_2_0");
+						break;
+
+				}
+				
 				s.srcdata = CString(srcdata);
 				m_shaders.AddTail(s);
 			}
 		}
-
+/*
 		for(; ; iShader++)
 		{
 			
@@ -3067,7 +3079,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 			
 		}
 
-
+*/
 		strShaderList	= pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SHADERLIST), _T(""));
 
 		// TODO: sort shaders by label

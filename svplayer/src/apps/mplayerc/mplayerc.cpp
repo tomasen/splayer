@@ -1338,6 +1338,12 @@ BOOL CMPlayerCApp::InitInstance()
 		return FALSE;
 	}
 
+	//int aElements[3] = {COLOR_BTNHIGHLIGHT, COLOR_BTNSHADOW, COLOR_WINDOW};
+
+	//DWORD aNewColors[3] = {0xeeeeee, 0xb2b2b2, 0xdddddd};
+	//SetSysColors(3, aElements, aNewColors); 
+
+
 	
 	CRegKey key;
 	if(ERROR_SUCCESS == key.Create(HKEY_LOCAL_MACHINE, _T("Software\\SPlayer\\射手影音播放器")))

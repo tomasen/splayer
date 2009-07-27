@@ -10705,6 +10705,14 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 			
 		}
 
+		if(m_fAudioOnly){
+			ShowControlBar(&m_wndPlaylistBar, TRUE, TRUE);
+			CRect rcView;
+			m_wndView.GetWindowRect(&rcView);
+			m_wndPlaylistBar.MoveWindow(rcView);
+		}
+
+
 		if(m_fOpeningAborted) throw aborted;
 
 		OpenSetupWindowTitle(pOMD->title);
@@ -13456,6 +13464,8 @@ void CMainFrame::OpenMedia(CAutoPtr<OpenMediaData> pOMD)
 
 void CMainFrame::CloseMedia()
 {
+
+	PostMessage(WM_COMMAND, ID_PLAY_PAUSE);
 
 	CString fnx = m_wndPlaylistBar.GetCur();
 

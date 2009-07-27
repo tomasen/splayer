@@ -111,6 +111,7 @@ BEGIN_MESSAGE_MAP(CSizingControlBar, baseCSizingControlBar)
     ON_WM_SIZE()
     //}}AFX_MSG_MAP
     ON_MESSAGE(WM_SETTEXT, OnSetText)
+	ON_WM_CTLCOLOR()
 END_MESSAGE_MAP()
 
 // old creation method, still here for compatibility reasons
@@ -188,6 +189,7 @@ int CSizingControlBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
     ::SystemParametersInfo(SPI_GETDRAGFULLWINDOWS, 0,
         &m_bDragShowContent, 0);
 
+	//m_brBkgnd.CreateSolidBrush( 0xdddddd );
     // uncomment this line if you want raised borders
 //    m_dwSCBStyle |= SCBS_SHOWEDGES;
 
@@ -357,9 +359,12 @@ void CSizingControlBar::OnWindowPosChanging(WINDOWPOS FAR* lpwndpos)
 /////////////////////////////////////////////////////////////////////////
 // Mouse Handling
 //
+static bool m_bJustAClick = false;
 void CSizingControlBar::OnLButtonDown(UINT nFlags, CPoint point)
 {
-    if (m_pDockBar != NULL)
+	m_bJustAClick = true;
+
+	if (m_pDockBar != NULL)
     {
         // start the drag
         ASSERT(m_pDockContext != NULL);
@@ -384,6 +389,7 @@ void CSizingControlBar::OnLButtonDblClk(UINT nFlags, CPoint point)
 
 void CSizingControlBar::OnNcLButtonDown(UINT nHitTest, CPoint point) 
 {
+	m_bJustAClick = true;
     UNUSED_ALWAYS(point);
 
     if (m_bTracking || IsFloating())
@@ -395,6 +401,11 @@ void CSizingControlBar::OnNcLButtonDown(UINT nHitTest, CPoint point)
 
 void CSizingControlBar::OnLButtonUp(UINT nFlags, CPoint point)
 {
+	if(m_bJustAClick){
+		//AfxMessageBox(_T("Close"));
+		ShowWindow(SW_HIDE);
+	}
+
     if (m_bTracking)
         StopTracking();
 
@@ -408,17 +419,24 @@ void CSizingControlBar::OnRButtonDown(UINT nFlags, CPoint point)
 
     baseCSizingControlBar::OnRButtonDown(nFlags, point);
 }
-
+static CPoint m_lastMousePos = 0;
 void CSizingControlBar::OnMouseMove(UINT nFlags, CPoint point)
 {
+	
     if (m_bTracking)
     {
         CPoint ptScreen = point;
         ClientToScreen(&ptScreen);
 
         OnTrackUpdateSize(ptScreen);
+
+		
     }
 
+	if(point != m_lastMousePos){
+		m_bJustAClick = false;
+		m_lastMousePos = point;
+	}
     baseCSizingControlBar::OnMouseMove(nFlags, point);
 }
 
@@ -533,16 +551,15 @@ void CSizingControlBar::OnNcPaint()
     DrawBorders(&mdc, rcDraw);
 
     // erase the NC background
-    mdc.FillRect(rcDraw, CBrush::FromHandle(
-        (HBRUSH) GetClassLong(m_hWnd, GCL_HBRBACKGROUND)));
+    mdc.FillSolidRect(rcDraw, 0xd6d6d6 );
 
     if (m_dwSCBStyle & SCBS_SHOWEDGES)
     {
         CRect rcEdge; // paint the sizing edges
         for (int i = 0; i < 4; i++)
             if (GetEdgeRect(rcBar, GetEdgeHTCode(i), rcEdge))
-                mdc.Draw3dRect(rcEdge, ::GetSysColor(COLOR_BTNHIGHLIGHT),
-                    ::GetSysColor(COLOR_BTNSHADOW));
+                mdc.Draw3dRect(rcEdge,0xeeeeee ,
+                    0xb2b2b2);
     }
 
     NcPaintGripper(&mdc, rcClient);
@@ -1413,3 +1430,15 @@ void CSCBMiniDockFrameWnd::OnWindowPosChanging(WINDOWPOS FAR* lpwndpos)
 }
 
 #endif //_SCB_REPLACE_MINIFRAME
+
+HBRUSH CSizingControlBar::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	HBRUSH hbr = CControlBar::OnCtlColor(pDC, pWnd, nCtlColor);
+
+	// TODO:  Change any attributes of the DC here
+	//if(pWnd->IsKindOf(RUNTIME_CLASS(CEdit))){
+	//	hbr = m_brBkgnd;
+	//}
+
+	return hbr;
+}

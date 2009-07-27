@@ -74,6 +74,7 @@ class CSizingControlBar : public baseCSizingControlBar
 {
     DECLARE_DYNAMIC(CSizingControlBar);
 
+	CBrush m_brBkgnd;
 // Construction
 public:
     CSizingControlBar();
@@ -185,6 +186,8 @@ protected:
 #ifdef _SCB_REPLACE_MINIFRAME
     friend class CSCBMiniDockFrameWnd;
 #endif //_SCB_REPLACE_MINIFRAME
+public:
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 };
 
 #ifdef _SCB_REPLACE_MINIFRAME

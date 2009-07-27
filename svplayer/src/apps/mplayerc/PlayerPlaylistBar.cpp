@@ -1237,10 +1237,10 @@ void CPlayerPlaylistBar::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruc
 	}
 	else
 	{
-		FillRect(pDC->m_hDC, rcItem, CBrush(GetSysColor(COLOR_WINDOW)));
+		FillRect(pDC->m_hDC, rcItem, CBrush(0xdddddd));
 	}
 	CString time = _T("Invalid");
-	COLORREF textcolor = fSelected?0xff:0;
+	COLORREF textcolor = fSelected?0xd6811c:0;
 	{
 		CAutoLock dataLock(m_csDataLock);
 		try 

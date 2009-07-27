@@ -7374,9 +7374,17 @@ void CMainFrame::OnPlayShaders(UINT nID)
 		mii.cbSize = sizeof(mii);
 		mii.fMask = MIIM_DATA;
 		m_shaders.GetMenuItemInfo(nID, &mii);
+		
+		CString szShardLabel = ((const AppSettings::Shader*)mii.dwItemData)->label;
+		//m_shaderlabels.RemoveAll();
+		POSITION pos = m_shaderlabels.Find(szShardLabel);
+		
+		if(pos)
+			m_shaderlabels.RemoveAt(pos);
+		else
+			m_shaderlabels.AddTail(szShardLabel);
 
-		m_shaderlabels.RemoveAll();
-		m_shaderlabels.AddTail(((const AppSettings::Shader*)mii.dwItemData)->label);
+		AfxGetAppSettings().m_shadercombine = Implode(m_shaderlabels, '|');
 	}
 
 	SetShaders();
@@ -7395,7 +7403,7 @@ void CMainFrame::OnUpdatePlayShaders(CCmdUI* pCmdUI)
 		}
 		else if(pCmdUI->m_nID == ID_SHADERS_START+1)
 		{
-			pCmdUI->SetRadio(m_shaderlabels.GetCount() > 1);
+			//pCmdUI->SetRadio(m_shaderlabels.GetCount() > 1);
 		}
 		else if(pCmdUI->m_nID == ID_SHADERS_START+2)
 		{
@@ -7409,8 +7417,7 @@ void CMainFrame::OnUpdatePlayShaders(CCmdUI* pCmdUI)
 			mii.fMask = MIIM_DATA;
 			m_shaders.GetMenuItemInfo(pCmdUI->m_nID, &mii);
 
-			pCmdUI->SetRadio(m_shaderlabels.GetCount() == 1 
-				&& m_shaderlabels.GetHead() == ((AppSettings::Shader*)mii.dwItemData)->label);
+			pCmdUI->SetCheck( !!m_shaderlabels.Find(((AppSettings::Shader*)mii.dwItemData)->label) );
 		}
 	}
 }
@@ -12193,7 +12200,8 @@ void CMainFrame::SetupShadersSubMenu()
 
 	if(POSITION pos = AfxGetAppSettings().m_shaders.GetHeadPosition())
 	{
-		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, id++, ResStr(IDS_SHADER_COMBINE));
+		//pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, id++, ResStr(IDS_SHADER_COMBINE));
+		id++;
 		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, id++, ResStr(IDS_SHADER_EDIT));
 		pSub->AppendMenu(MF_SEPARATOR);
 

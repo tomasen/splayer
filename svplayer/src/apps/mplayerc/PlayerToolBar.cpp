@@ -583,13 +583,18 @@ BOOL CPlayerToolBar::OnVolumeDown(UINT nID)
 	return FALSE;
 }
 static BOOL m_bMouseDown = FALSE;
-bool  CPlayerToolBar::OnSetVolByMouse(CPoint point){
+bool  CPlayerToolBar::OnSetVolByMouse(CPoint point, BOOL byClick){
 	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
 	long nTBPos = point.x - m_btnVolBG->m_rcHitest.left;
 	long TBMax = m_btnVolBG->m_rcHitest.right-m_btnVolBG->m_rcHitest.left ;
 	nTBPos = max(0 , min(TBMax , nTBPos) );
 	int Vol = 	nTBPos * m_volctrl.GetRangeMax() / TBMax;
-
+	if(byClick){
+		int oldVol = m_volctrl.GetPos();
+		if(Vol > 100 ){
+			Vol = max(oldVol,100) + 2;
+		}
+	}
 	m_volctrl.SetPosInternal( Vol );
 
 
@@ -761,7 +766,7 @@ void CPlayerToolBar::OnLButtonDown(UINT nFlags, CPoint point)
 	}else if(!ret){
 		
 		if( m_btnVolBG->m_rcHitest.PtInRect(point) ){
-			OnSetVolByMouse(point);
+			OnSetVolByMouse(point, true);
 		}
 	}
 	return;

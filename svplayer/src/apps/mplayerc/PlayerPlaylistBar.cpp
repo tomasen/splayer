@@ -1614,12 +1614,13 @@ void CPlayerPlaylistBar::OnContextMenu(CWnd* /*pWnd*/, CPoint p)
 	{
 		M_OPEN=1, M_ADD, M_REMOVE, M_CLIPBOARD, M_SAVEAS, 
 		M_SORTBYNAME, M_SORTBYPATH, M_RANDOMIZE, M_SORTBYID,
-		M_REMEMBERPLAYLIST, M_SHUFFLE , M_ADDFILE 
+		M_REMEMBERPLAYLIST, M_SHUFFLE , M_ADDFILE , M_CLEARALL
 	};
 
 	m.AppendMenu(MF_STRING|(!fOnItem?(MF_DISABLED|MF_GRAYED):MF_ENABLED), M_OPEN, ResStr(IDS_PLAYLIST_OPEN));
 	if(((CMainFrame*)AfxGetMainWnd())->m_iPlaybackMode == PM_CAPTURE) m.AppendMenu(MF_STRING|MF_ENABLED, M_ADD, ResStr(IDS_PLAYLIST_ADD));
 	m.AppendMenu(MF_STRING|(/*fSelected||*/!fOnItem?(MF_DISABLED|MF_GRAYED):MF_ENABLED), M_REMOVE, ResStr(IDS_PLAYLIST_REMOVE));
+	m.AppendMenu(MF_STRING|MF_ENABLED, M_CLEARALL, _T("Çå¿Õ"));
 	m.AppendMenu(MF_STRING|MF_ENABLED, M_ADDFILE, ResStr(IDS_CONVERT_ADDFILE));
 	m.AppendMenu(MF_SEPARATOR);
 	m.AppendMenu(MF_STRING|(!fOnItem?(MF_DISABLED|MF_GRAYED):MF_ENABLED), M_CLIPBOARD, ResStr(IDS_PLAYLIST_COPYTOCLIPBOARD));
@@ -1673,6 +1674,9 @@ void CPlayerPlaylistBar::OnContextMenu(CWnd* /*pWnd*/, CPoint p)
 			m_pl.Randomize();
 			SetupList();
 			SavePlaylist();
+			break;
+		case M_CLEARALL:
+			Empty();
 			break;
 		case M_ADDFILE:
 			{

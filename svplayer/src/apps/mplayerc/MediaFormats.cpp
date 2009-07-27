@@ -361,6 +361,9 @@ BOOL CMediaFormats::IsUnPlayableFile(CString szFilename){
 			if ( szLabel.Find(_T("Subtitle")) >= 0 || szLabel.Find(_T("字幕")) >= 0){
 				return TRUE;
 			}
+			if ( szLabel.Find(_T("Image file")) >= 0 || szLabel.Find(_T("图片")) >= 0){
+				return TRUE;
+			}
 		}
 	}
 	return FALSE;

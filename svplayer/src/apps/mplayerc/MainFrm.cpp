@@ -8418,7 +8418,7 @@ void CMainFrame::OnHelpHomepage()
 
 void CMainFrame::OnHelpDocumentation()
 {
-	ShellExecute(m_hWnd, _T("open"), _T("http://shooter.cn/splayer/"), NULL, NULL, SW_SHOWDEFAULT);
+	ShellExecute(m_hWnd, _T("open"), _T("http://www.shooter.cn/wiki/Category:%E5%B0%84%E6%89%8B%E6%92%AD%E6%94%BE%E5%99%A8"), NULL, NULL, SW_SHOWDEFAULT);
 }
 
 //////////////////////////////////

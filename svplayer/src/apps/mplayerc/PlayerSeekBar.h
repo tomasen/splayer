@@ -23,13 +23,14 @@
 
 #include "SUIButton.h"
 // CPlayerSeekBar
+#include "SeekBarTip.h"
 
 class CPlayerSeekBar : public CDialogBar
 {
 	DECLARE_DYNAMIC(CPlayerSeekBar)
 
 private:
-	enum{IDT_CLOSETIPS};
+	enum{IDT_CLOSETIPS , IDT_OPENTIPS};
 	__int64 m_start, m_stop, m_pos, m_posreal;
 	bool m_fEnabled;
 	HCURSOR cursorHand;
@@ -40,11 +41,13 @@ private:
 	CRect GetChannelRect();
 	CRect GetThumbRect();
 	CRect GetInnerThumbRect();
-
+	void SetTimecodeTip();
 public:
 	CPlayerSeekBar();
 	virtual ~CPlayerSeekBar();
 
+	CSeekBarTip m_tip;
+	void SetTip(CString szTip);
 	void Enable(bool fEnable);
 
 	void GetRange(__int64& start, __int64& stop);
@@ -52,8 +55,8 @@ public:
 	__int64 GetPos(), GetPosReal();
 	void SetPos(__int64 pos);
 
-	CToolTipCtrl m_toolTip;
-	TOOLINFO	m_ti;
+	//CToolTipCtrl m_toolTip;
+	//TOOLINFO	m_ti;
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CPlayerSeekBar)
@@ -64,7 +67,7 @@ public:
 // Generated message map functions
 protected:
 	//{{AFX_MSG(CPlayerSeekBar) 
-	afx_msg BOOL OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult);
+	//afx_msg BOOL OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult);
 
 	afx_msg void OnPaint();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
@@ -81,4 +84,5 @@ public:
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	void CloseToolTips();
+	afx_msg void OnClose();
 };

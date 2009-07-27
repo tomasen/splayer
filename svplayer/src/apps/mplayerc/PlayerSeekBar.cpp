@@ -26,6 +26,7 @@
 #include "mplayerc.h"
 #include "PlayerSeekBar.h"
 #include "MainFrm.h"
+#include "..\..\svplib\svplib.h"
 // CPlayerSeekBar
 
 IMPLEMENT_DYNAMIC(CPlayerSeekBar, CDialogBar)
@@ -39,14 +40,20 @@ CPlayerSeekBar::CPlayerSeekBar() :
 CPlayerSeekBar::~CPlayerSeekBar()
 {
 }
+void CPlayerSeekBar::SetTip(CString szTip){
 
+}
 BOOL CPlayerSeekBar::Create(CWnd* pParentWnd)
 {
 	if(!CDialogBar::Create(pParentWnd, IDD_PLAYERSEEKBAR, WS_CHILD|WS_VISIBLE|CBRS_ALIGN_BOTTOM, IDD_PLAYERSEEKBAR))
 		return FALSE;
 
 	cursorHand = ::LoadCursor(NULL, IDC_HAND);
-	
+
+	if(!m_tip.CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, _T("STATIC"), _T("TIPS"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0)){
+		AfxMessageBox(_T("SEEKTIP ´´½¨Ê§°Ü£¡"));
+	}
+	/*
 	m_toolTip.CreateEx(this,0,WS_EX_NOACTIVATE);
 	m_toolTip.ModifyStyleEx( WS_EX_LAYERED , NULL);
 	m_ti.cbSize = sizeof(m_ti);
@@ -60,7 +67,7 @@ BOOL CPlayerSeekBar::Create(CWnd* pParentWnd)
 	m_ti.rect.right = 0;
 	m_ti.rect.bottom = 0;
 	EnableToolTips(FALSE);
-	m_toolTip.SendMessage(TTM_ADDTOOL, 0, (LPARAM)&m_ti);
+	m_toolTip.SendMessage(TTM_ADDTOOL, 0, (LPARAM)&m_ti);*/
 	return TRUE;
 }
 
@@ -185,12 +192,13 @@ BEGIN_MESSAGE_MAP(CPlayerSeekBar, CDialogBar)
 	ON_WM_MOUSEMOVE()
 	ON_WM_ERASEBKGND()
 	//}}AFX_MSG_MAP
-	ON_NOTIFY_EX(TTN_NEEDTEXT, 0, OnTtnNeedText)
+//	ON_NOTIFY_EX(TTN_NEEDTEXT, 0, OnTtnNeedText)
 	ON_COMMAND_EX(ID_PLAY_STOP, OnPlayStop)
 	ON_WM_SETCURSOR()
 	ON_WM_MOUSELEAVE()
 	ON_WM_SHOWWINDOW()
 	ON_WM_TIMER()
+	ON_WM_CLOSE()
 END_MESSAGE_MAP()
 
 BOOL CPlayerSeekBar::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message){
@@ -202,7 +210,7 @@ BOOL CPlayerSeekBar::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message){
 }
 
 // CPlayerSeekBar message handlers
-
+/*
 BOOL CPlayerSeekBar::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 {
 	//AfxMessageBox(_T("x")); //where is my tooltip!?!
@@ -254,7 +262,7 @@ BOOL CPlayerSeekBar::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 	*pResult = 0;
 
 	return bRet;
-}
+}*/
 void CPlayerSeekBar::OnPaint()
 {
 	CPaintDC dc(this); // device context for painting
@@ -450,13 +458,18 @@ void CPlayerSeekBar::OnMouseMove(UINT nFlags, CPoint point)
 	if(bMouseMoved){
 		CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 		if(pFrame->IsSomethingLoaded()){
-			CPoint pt;
+			/*CPoint pt;
 			GetCursorPos(&pt);
 			pt.y -= 20 * pFrame->m_nLogDPIY / 96;
 			pt.x += 8 ;
 			m_toolTip.SendMessage(TTM_TRACKPOSITION, 0, (LPARAM)MAKELPARAM(pt.x, pt.y));
 			m_toolTip.SendMessage(TTM_TRACKACTIVATE, TRUE, (LPARAM)&m_ti);
-			;
+			;*/
+			if(m_tip.IsWindowVisible()){
+				SetTimecodeTip();
+			}else{
+				SetTimer(IDT_OPENTIPS, 140, NULL);
+			}
 		}else{
 			CloseToolTips();
 		}
@@ -496,7 +509,70 @@ void CPlayerSeekBar::OnShowWindow(BOOL bShow, UINT nStatus)
 
 }
 void CPlayerSeekBar::CloseToolTips(){
-	m_toolTip.SendMessage(TTM_TRACKACTIVATE, FALSE, (LPARAM)&m_ti);
+	//m_toolTip.SendMessage(TTM_TRACKACTIVATE, FALSE, (LPARAM)&m_ti);
+	KillTimer(IDT_OPENTIPS);
+	m_tip.ShowWindow(SW_HIDE);
+}
+void CPlayerSeekBar::SetTimecodeTip(){
+	CString toolTip;
+	CPoint point , screenPos;
+	GetCursorPos(&point);
+	screenPos = point;
+	ScreenToClient(&point);
+	CRect rcClient;
+	if( !rcClient.PtInRect(point)){
+
+		//return;
+	}
+	CRect r = GetChannelRect();
+
+	if(r.left <= r.right){
+
+		__int64 mPos = 0;
+		if(point.x < r.left) mPos = m_start;
+		else if(point.x >= r.right) mPos = m_stop;
+		else
+		{
+			__int64 w = r.right - r.left;
+			if(m_start < m_stop)
+				mPos = (m_start + ((m_stop - m_start) * (point.x - r.left) + (w/2)) / w);
+		}
+		DVD_HMSF_TIMECODE tcNow = RT2HMSF(mPos);
+
+		if( tcNow.bHours > 0)
+			toolTip.Format(_T("%02d:%02d:%02d"), tcNow.bHours, tcNow.bMinutes, tcNow.bSeconds);
+		else 
+			toolTip.Format(_T("%02d:%02d"), tcNow.bMinutes, tcNow.bSeconds);
+
+
+		//AfxMessageBox(toolTip);
+		//if(toolTip.IsEmpty())
+		//	toolTip = _T("Unkown");
+
+		if(!toolTip.IsEmpty()){
+			m_tip.m_text = toolTip;
+			CSize tipsize = m_tip.CountSize();
+			point = screenPos;
+			CRect rcTip ( point.x - tipsize.cx/2 , point.y - tipsize.cy - 6,point.x + tipsize.cx/2 , point.y -  6);
+			//SVP_LogMsg5(_T("Tip %d %d %d %d") , rcTip.left,rcTip.top , rcTip.right,rcTip.left);
+
+			HMONITOR hMonitor = MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST);
+
+			MONITORINFO mi;
+			mi.cbSize = sizeof(MONITORINFO);
+			GetMonitorInfo(hMonitor, &mi);
+
+			if(rcTip.left < mi.rcWork.left){
+				rcTip.MoveToX(mi.rcWork.left + 3);
+			}else if(rcTip.right > mi.rcWork.right){
+				rcTip.MoveToX(mi.rcWork.right - rcTip.Width() - 3);
+			}
+
+			m_tip.MoveWindow( rcTip );
+			m_tip.ShowWindow(SW_SHOW);
+			m_tip.Invalidate();
+		}
+	}
 }
 void CPlayerSeekBar::OnTimer(UINT_PTR nIDEvent)
 {
@@ -504,6 +580,18 @@ void CPlayerSeekBar::OnTimer(UINT_PTR nIDEvent)
 	if(IDT_CLOSETIPS == nIDEvent){
 		KillTimer(IDT_CLOSETIPS);
 		CloseToolTips();
+	}else if(nIDEvent == IDT_OPENTIPS){
+		KillTimer(IDT_OPENTIPS);
+		SetTimecodeTip();
+
 	}
 	CDialogBar::OnTimer(nIDEvent);
+}
+
+void CPlayerSeekBar::OnClose()
+{
+	// TODO: Add your message handler code here and/or call default
+
+	m_tip.OnRealClose();
+	CDialogBar::OnClose();
 }

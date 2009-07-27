@@ -719,6 +719,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SeekBarTip.cpp"
+				>
+			</File>
+			<File
 				RelativePath="SelectMediaType.cpp"
 				>
 			</File>
@@ -1197,6 +1201,10 @@
 			</File>
 			<File
 				RelativePath=".\SearchSubDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SeekBarTip.h"
 				>
 			</File>
 			<File
@@ -1954,11 +1962,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 		<File

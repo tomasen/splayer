@@ -42,6 +42,7 @@ public:
 	CChildView();
 	virtual ~CChildView();
 
+	CPngImage* m_cover;
 	CSUIBtnList m_btnList;
 	CSUIBtnList m_btnBBList;
 	void ReCalcBtn();

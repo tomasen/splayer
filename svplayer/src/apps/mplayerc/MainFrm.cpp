@@ -6610,7 +6610,10 @@ void CMainFrame::OnPlayPlay()
 
 		MoveVideoWindow();
 	}else{
-		SendMessage(WM_COMMAND, ID_FILE_OPENMEDIA);
+		if(m_wndPlaylistBar.GetCount()){
+			OpenCurPlaylistItem();
+		}else
+			SendMessage(WM_COMMAND, ID_FILE_OPENMEDIA);
 	}
 
 	
@@ -10705,13 +10708,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 			
 		}
 
-		if(m_fAudioOnly){
-			ShowControlBar(&m_wndPlaylistBar, TRUE, TRUE);
-			CRect rcView;
-			m_wndView.GetWindowRect(&rcView);
-			m_wndPlaylistBar.MoveWindow(rcView);
-		}
-
+	
 
 		if(m_fOpeningAborted) throw aborted;
 
@@ -10759,6 +10756,31 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 			m_wndCaptureBar.m_capdlg.SetVideoChannel(p->vchannel);
 			m_wndCaptureBar.m_capdlg.SetAudioInput(p->ainput);
 		}
+
+		if(m_fAudioOnly){
+			
+			//if there is jpg/png in music dir display it
+			CSVPToolBox svpTool;
+			CAtlList<CString> szaRet;
+			CAtlArray<CString> szaExt;
+			szaExt.Add(_T(".jpg"));
+			szaExt.Add(_T(".png"));
+			svpTool.findMoreFileByDir(svpTool.GetDirFromPath( m_wndPlaylistBar.GetCur() ) + _T("*.*") , szaRet, szaExt, FALSE );
+			if(szaRet.GetCount()){
+				m_wndView.m_cover = new CPngImage();
+				if( S_OK == m_wndView.m_cover->Load( szaRet.GetHead() )  )
+					m_wndView.Invalidate();
+				else
+					AfxMessageBox(szaRet.GetHead() );
+
+			}
+
+			ShowControlBar(&m_wndPlaylistBar, TRUE, TRUE);
+			CRect rcView;
+			m_wndView.GetWindowRect(&rcView);
+			m_wndPlaylistBar.MoveWindow(rcView);
+		}
+
 	}
 	catch(LPCTSTR msg)
 	{
@@ -13480,6 +13502,7 @@ void CMainFrame::CloseMedia()
 	}
 
 	int nTimeWaited = 0;
+	
 
 	while(m_iMediaLoadState == MLS_LOADING)
 	{
@@ -13513,7 +13536,13 @@ void CMainFrame::CloseMedia()
 
 	OnFilePostClosemedia();
 
-	
+
+	if(m_wndView.m_cover && !m_wndView.m_cover->IsNull()){
+		m_wndView.m_cover->Destroy();
+		m_wndView.m_cover = NULL;
+		m_wndView.Invalidate();
+	}
+
 	if(m_pGraphThread && s_fOpenedThruThread)
 	{
 		CAMEvent e;

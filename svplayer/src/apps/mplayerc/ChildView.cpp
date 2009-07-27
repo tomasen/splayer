@@ -37,7 +37,9 @@ static char THIS_FILE[] = __FILE__;
 /////////////////////////////////////////////////////////////////////////////
 // CChildView
 
-CChildView::CChildView() : m_vrect(0,0,0,0)
+CChildView::CChildView() :
+m_vrect(0,0,0,0)
+,m_cover(NULL)
 {
 	m_lastlmdowntime = 0;
 	m_lastlmdownpoint.SetPoint(0, 0);
@@ -230,7 +232,7 @@ void CChildView::OnPaint()
 	pFrame->RepaintVideo();
 
 	
-	if(!pFrame->IsSomethingLoaded()){
+	if(!pFrame->IsSomethingLoaded() || (pFrame->IsSomethingLoaded() && pFrame->m_fAudioOnly)){
 		AppSettings& s = AfxGetAppSettings();
 
 		CRect rcWnd;
@@ -239,7 +241,31 @@ void CChildView::OnPaint()
 		GetClientRect(&rcClient);
 		CMemoryDC hdc(&dc, rcClient);
 		hdc.FillSolidRect( rcClient, 0);
-		if( !m_logo.IsNull() ){ 
+		if(m_cover && !m_cover->IsNull()){
+			BITMAP bm;
+			GetObject(*m_cover, sizeof(bm), &bm);
+
+			CRect r;
+			GetClientRect(r);
+			// 缩放 保持宽高比
+			CRect cover_r;
+			if ( bm.bmWidth * 100 / bm.bmHeight > r.Width() * 100 / r.Height() ){
+				//以r.Width()为准
+				int w = r.Width();
+				int h = r.Width() * bm.bmHeight/ bm.bmWidth ;
+				int x = 0;
+				int y = (r.Height() - h) / 2;
+				cover_r = CRect(CPoint(x, y), CSize(w, h));
+			}else{
+				int w = r.Height() * bm.bmWidth / bm.bmHeight;
+				int h = r.Height();
+				int x = (r.Width() - w) / 2;
+				int y = 0;
+				cover_r = CRect(CPoint(x, y), CSize(w, h));
+			}
+			int oldmode = hdc.SetStretchBltMode(STRETCH_HALFTONE);
+			m_cover->StretchBlt(hdc, cover_r, CRect(0,0,bm.bmWidth,abs(bm.bmHeight)));
+		}else	if( !m_logo.IsNull() ){ 
 			BITMAP bm;
 			GetObject(m_logo, sizeof(bm), &bm);
 
@@ -292,7 +318,8 @@ BOOL CChildView::OnEraseBkgnd(CDC* pDC)
 	CRect r;
 
 	CAutoLock cAutoLock(&m_csLogo);
-	if(((CMainFrame*)GetParentFrame())->IsSomethingLoaded())
+	CMainFrame* pFrame = (CMainFrame*)GetParentFrame();
+	if(pFrame->IsSomethingLoaded() && ! pFrame->m_fAudioOnly)
 	{
 		//pDC->FillSolidRect(CRect(30,30,60,60) , RGB(0xff,0,0));
 		pDC->ExcludeClipRect(m_vrect);
@@ -302,7 +329,7 @@ BOOL CChildView::OnEraseBkgnd(CDC* pDC)
 	else 
 	{
 		
-				
+	
 		
 		/*
 		if(!m_watermark.IsNull()){

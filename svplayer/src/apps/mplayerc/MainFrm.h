@@ -362,6 +362,8 @@ public:
 	bool IsPlaylistEmpty() {return(m_wndPlaylistBar.GetCount() == 0);}
 	bool IsInteractiveVideo() {return(AfxGetAppSettings().fIntRealMedia && m_fRealMediaGraph || m_fShockwaveGraph);}
 
+	bool m_fAudioOnly;
+
 	CControlBar* m_pLastBar;
 
 	CString GetCurPlayingFileName();
@@ -370,7 +372,6 @@ protected:
 	enum {MLS_CLOSED, MLS_LOADING, MLS_LOADED, MLS_CLOSING};
 	int m_iMediaLoadState;
 
-	bool m_fAudioOnly;
 	dispmode m_dmBeforeFullscreen;
 
 	DVD_DOMAIN m_iDVDDomain;

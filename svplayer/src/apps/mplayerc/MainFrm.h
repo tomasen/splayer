@@ -323,6 +323,8 @@ public:
 	void SVP_UploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString szSubPath, int iDelayMS = 0, CAtlList<CString>* szaStatMsgs = NULL, CStringArray* szaPostTerms = NULL);
 	CAtlList<CString> m_statusmsgs;
 
+	CSeekBarTip m_tip;
+
 	BOOL m_bSubDownloading;
 	BOOL m_bSubUploading;
 

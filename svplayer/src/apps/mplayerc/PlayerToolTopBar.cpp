@@ -119,11 +119,17 @@ BOOL CPlayerToolTopBar::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 		//if(toolTip.IsEmpty())
 		//	toolTip = _T("Unkown");
 		
-		if(!toolTip.IsEmpty()){
-			pTTT->lpszText = toolTip.GetBuffer();
-			pTTT->hinst = AfxGetResourceHandle();
-			bRet = TRUE;
-		}
+			if(AfxGetMyApp()->IsVista() ){
+				if(!toolTip.IsEmpty()){
+					pTTT->lpszText = toolTip.GetBuffer();
+					pTTT->hinst = AfxGetResourceHandle();
+					bRet = TRUE;
+				}
+			}else{
+				CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
+				pFrame->m_tip.SetTips(toolTip, TRUE);
+			}
+		
 	}
 
 
@@ -363,6 +369,8 @@ void CPlayerToolTopBar::OnMouseMove(UINT nFlags, CPoint point)
 			
 		}else{
 			m_toolTip.SendMessage(TTM_TRACKACTIVATE, FALSE, (LPARAM)&m_ti);
+			CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
+			pFrame->m_tip.SetTips(_T(""));
 			if( GetCursor() == NULL ) 
 				SetCursor(cursorArrow);
 		}

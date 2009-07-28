@@ -46,8 +46,6 @@ public:
 	CPlayerSeekBar();
 	virtual ~CPlayerSeekBar();
 
-	CSeekBarTip m_tip;
-	void SetTip(CString szTip);
 	void Enable(bool fEnable);
 
 	void GetRange(__int64& start, __int64& stop);

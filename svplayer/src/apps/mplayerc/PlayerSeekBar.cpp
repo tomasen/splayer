@@ -40,9 +40,6 @@ CPlayerSeekBar::CPlayerSeekBar() :
 CPlayerSeekBar::~CPlayerSeekBar()
 {
 }
-void CPlayerSeekBar::SetTip(CString szTip){
-
-}
 BOOL CPlayerSeekBar::Create(CWnd* pParentWnd)
 {
 	if(!CDialogBar::Create(pParentWnd, IDD_PLAYERSEEKBAR, WS_CHILD|WS_VISIBLE|CBRS_ALIGN_BOTTOM, IDD_PLAYERSEEKBAR))
@@ -50,9 +47,6 @@ BOOL CPlayerSeekBar::Create(CWnd* pParentWnd)
 
 	cursorHand = ::LoadCursor(NULL, IDC_HAND);
 
-	if(!m_tip.CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, _T("STATIC"), _T("TIPS"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0)){
-		AfxMessageBox(_T("SEEKTIP ´´½¨Ê§°Ü£¡"));
-	}
 	/*
 	m_toolTip.CreateEx(this,0,WS_EX_NOACTIVATE);
 	m_toolTip.ModifyStyleEx( WS_EX_LAYERED , NULL);
@@ -465,7 +459,7 @@ void CPlayerSeekBar::OnMouseMove(UINT nFlags, CPoint point)
 			m_toolTip.SendMessage(TTM_TRACKPOSITION, 0, (LPARAM)MAKELPARAM(pt.x, pt.y));
 			m_toolTip.SendMessage(TTM_TRACKACTIVATE, TRUE, (LPARAM)&m_ti);
 			;*/
-			if(m_tip.IsWindowVisible()){
+			if(pFrame->m_tip.IsWindowVisible()){
 				SetTimecodeTip();
 			}else{
 				SetTimer(IDT_OPENTIPS, 140, NULL);
@@ -511,7 +505,9 @@ void CPlayerSeekBar::OnShowWindow(BOOL bShow, UINT nStatus)
 void CPlayerSeekBar::CloseToolTips(){
 	//m_toolTip.SendMessage(TTM_TRACKACTIVATE, FALSE, (LPARAM)&m_ti);
 	KillTimer(IDT_OPENTIPS);
-	m_tip.ShowWindow(SW_HIDE);
+	KillTimer(IDT_CLOSETIPS);
+	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
+	pFrame->m_tip.ShowWindow(SW_HIDE);
 }
 void CPlayerSeekBar::SetTimecodeTip(){
 	CString toolTip;
@@ -550,8 +546,9 @@ void CPlayerSeekBar::SetTimecodeTip(){
 		//	toolTip = _T("Unkown");
 
 		if(!toolTip.IsEmpty()){
-			m_tip.m_text = toolTip;
-			CSize tipsize = m_tip.CountSize();
+			CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
+			pFrame->m_tip.m_text = toolTip;
+			CSize tipsize = pFrame->m_tip.CountSize();
 			point = screenPos;
 			CRect rcTip ( point.x - tipsize.cx/2 , point.y - tipsize.cy - 6,point.x + tipsize.cx/2 , point.y -  6);
 			//SVP_LogMsg5(_T("Tip %d %d %d %d") , rcTip.left,rcTip.top , rcTip.right,rcTip.left);
@@ -568,9 +565,9 @@ void CPlayerSeekBar::SetTimecodeTip(){
 				rcTip.MoveToX(mi.rcWork.right - rcTip.Width() - 3);
 			}
 
-			m_tip.MoveWindow( rcTip );
-			m_tip.ShowWindow(SW_SHOW);
-			m_tip.Invalidate();
+			pFrame->m_tip.MoveWindow( rcTip );
+			pFrame->m_tip.ShowWindow(SW_SHOW);
+			pFrame->m_tip.Invalidate();
 		}
 	}
 }
@@ -591,7 +588,7 @@ void CPlayerSeekBar::OnTimer(UINT_PTR nIDEvent)
 void CPlayerSeekBar::OnClose()
 {
 	// TODO: Add your message handler code here and/or call default
-
-	m_tip.OnRealClose();
+	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
+	pFrame->m_tip.OnRealClose();
 	CDialogBar::OnClose();
 }

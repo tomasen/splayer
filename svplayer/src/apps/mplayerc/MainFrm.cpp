@@ -565,11 +565,19 @@ BOOL CMainFrame::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 			if(iN > 0){
 				toolTip = toolTip.Left(iN).Trim();
 			}
-
-			pTTT->lpszText = toolTip.GetBuffer();
-			pTTT->hinst = AfxGetResourceHandle();
-			bRet = TRUE;
 		}
+
+			if(AfxGetMyApp()->IsVista()){
+				if(!toolTip.IsEmpty()){
+					pTTT->lpszText = toolTip.GetBuffer();
+					pTTT->hinst = AfxGetResourceHandle();
+					bRet = TRUE;
+				}
+			}else{
+				m_tip.SetTips(toolTip, TRUE);
+			}
+			
+		
 	}
 	*pResult = 0;
 
@@ -787,6 +795,10 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	ImmAssociateContextEx(m_hWnd, 0, IACE_CHILDREN);
 	//ImmAssociateContext((HWND)m_wndView, 0);
 	/*NEW UI END*/
+
+	if(!m_tip.CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, _T("STATIC"), _T("TIPS"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0)){
+		AfxMessageBox(_T("SEEKTIP 创建失败！"));
+	}
 
 	EnableToolTips(TRUE);
 	return 0;

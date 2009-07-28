@@ -594,6 +594,14 @@ bool  CPlayerToolBar::OnSetVolByMouse(CPoint point, BOOL byClick){
 		if(Vol > 100 ){
 			Vol = max(oldVol,100) + 2;
 		}
+	}else{
+		CString szVol;
+		int VolPercent = Vol;
+		if(VolPercent>100){
+			VolPercent = 100 + (VolPercent-100) * 900/ (m_volctrl.GetRangeMax() - 100);
+		}
+		szVol.Format(_T("%d%%") , VolPercent);
+		pFrame->m_tip.SetTips(  szVol );
 	}
 	m_volctrl.SetPosInternal( Vol );
 
@@ -668,6 +676,9 @@ void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point){
 		}else if(!m_tooltip.IsEmpty()){
 			m_tooltip.Empty();
 		}
+		if(!m_nItemToTrack){
+			pFrame->m_tip.SetTips(_T(""));
+		}
 		if( m_btnList.HTRedrawRequired ){
 			Invalidate();
 		}
@@ -721,11 +732,18 @@ BOOL CPlayerToolBar::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 	}
 
 	
-	if(!toolTip.IsEmpty()){
-		pTTT->lpszText = toolTip.GetBuffer();
-		pTTT->hinst = AfxGetResourceHandle();
-		bRet = TRUE;
-	}
+	
+		if(AfxGetMyApp()->IsVista()  ){
+			if(!toolTip.IsEmpty()){
+				pTTT->lpszText = toolTip.GetBuffer();
+				pTTT->hinst = AfxGetResourceHandle();
+				bRet = TRUE;
+			}
+		}else{
+			CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
+			pFrame->m_tip.SetTips(toolTip, TRUE);
+		}
+	
 
 	
 

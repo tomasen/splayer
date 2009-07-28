@@ -26,6 +26,8 @@ BEGIN_MESSAGE_MAP(CSeekBarTip, CWnd)
 	ON_WM_PAINT()
 	ON_WM_CREATE()
 	ON_WM_CLOSE()
+	ON_WM_MOUSEMOVE()
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -40,6 +42,60 @@ void CSeekBarTip::OnEnable(BOOL bEnable)
 	//CWnd::OnEnable(bEnable);
 
 	// TODO: Add your message handler code here
+}
+void CSeekBarTip::SetTips(CString szText, BOOL bMove , CPoint* mPoint){
+	m_text = szText;
+	if(szText.IsEmpty()){
+		ShowWindow(SW_HIDE);
+	}else{
+		CSize tipsize =CountSize();
+		if(bMove){
+			CPoint point;
+			if(mPoint)
+				point = *mPoint;
+			else
+				GetCursorPos(&point);
+			
+			CRect rcTip ( point.x + 5 , point.y - tipsize.cy - 6,point.x + 5 + tipsize.cx , point.y -  6);
+			//SVP_LogMsg5(_T("Tip %d %d %d %d") , rcTip.left,rcTip.top , rcTip.right,rcTip.left);
+
+			HMONITOR hMonitor = MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST);
+
+			MONITORINFO mi;
+			mi.cbSize = sizeof(MONITORINFO);
+			GetMonitorInfo(hMonitor, &mi);
+
+
+			if(point.y > ( ( mi.rcWork.bottom + mi.rcWork.top) / 2 + 20 ) ){
+				//tip on top
+
+			}else{
+				//tip is below
+				rcTip.MoveToY( point.y + 6 );
+			}
+
+			if(point.y > ( ( mi.rcWork.right + mi.rcWork.left) / 2 + 20 ) ){
+				//tip on left
+				rcTip.MoveToX( point.x - 5 - tipsize.cx );
+			}else{
+				//tip is right
+				
+			}
+
+			if(rcTip.left < mi.rcWork.left){
+				rcTip.MoveToX(mi.rcWork.left + 3);
+			}else if(rcTip.right > mi.rcWork.right){
+				rcTip.MoveToX(mi.rcWork.right - rcTip.Width() - 3);
+			}
+
+			MoveWindow( rcTip );
+			ShowWindow(SW_SHOW);
+			Invalidate();
+			KillTimer(IDT_CLOSTTIPS);
+			SetTimer(IDT_CLOSTTIPS, 3000, NULL);
+		}
+	}
+	
 }
 CSize CSeekBarTip::CountSize(){
 	CSize mSize ;
@@ -57,8 +113,8 @@ CSize CSeekBarTip::CountSize(){
 			dcMemory.SelectObject(holdft);
 
 			ReleaseDC(pDC);
-			mSize.cx += 8;
-			mSize.cy += 6;
+			mSize.cx += 9;
+			mSize.cy += 7;
 
 		}
 		else
@@ -109,9 +165,12 @@ void CSeekBarTip::OnPaint()
 
 	HFONT holdft = (HFONT)hdc.SelectObject(m_statft);
 	hdc.SetTextColor(0x121212);
-	if(!m_text.IsEmpty()){
-		//rcClient.left += 2;
-		::DrawText(hdc, m_text, m_text.GetLength(), rcClient,  DT_CENTER|DT_SINGLELINE| DT_VCENTER);
+	if(!m_text.IsEmpty()){ 
+		//rcClient.left += 2; 
+		//hdc.SetTextAlign( TA_TOP |TA_CENTER | TA_NOUPDATECP );
+		rcClient.top += 2;
+		rcClient.left += 4;
+		::DrawText(hdc, m_text, m_text.GetLength(), rcClient,  DT_LEFT|DT_SINGLELINE| DT_TOP);
 
 	}
 	hdc.SelectObject(holdft);
@@ -137,4 +196,27 @@ void CSeekBarTip::OnClose()
 
 void CSeekBarTip::OnRealClose(){
 	CWnd::OnClose();
+}
+BOOL CSeekBarTip::PreTranslateMessage(MSG* pMsg)
+{
+	// TODO: Add your specialized code here and/or call the base class
+
+	return CWnd::PreTranslateMessage(pMsg);
+}
+
+void CSeekBarTip::OnMouseMove(UINT nFlags, CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+	ShowWindow(SW_HIDE);
+	CWnd::OnMouseMove(nFlags, point);
+}
+
+void CSeekBarTip::OnTimer(UINT_PTR nIDEvent)
+{
+	// TODO: Add your message handler code here and/or call default
+	if(nIDEvent == IDT_CLOSTTIPS ){
+		KillTimer(IDT_CLOSTTIPS);
+		ShowWindow(SW_HIDE);
+	}
+	CWnd::OnTimer(nIDEvent);
 }

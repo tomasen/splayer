@@ -14,7 +14,7 @@ float4 p1 : register(c1);
 
 #define effect_width (2.0) 
 
-#define val0 (2.2) 
+#define val0 (2.15) 
 
 #define val1 (-0.125) 
 

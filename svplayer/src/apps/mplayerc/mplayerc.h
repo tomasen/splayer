@@ -355,6 +355,9 @@ public:
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CMPlayerCApp)
+	private:
+	BOOL  m_bSystemParametersInfo[4] ;
+
 	public:
 	void InitInstanceThreaded();
 	virtual BOOL InitInstance();

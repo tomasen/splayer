@@ -1098,6 +1098,40 @@ void CMPlayerCApp::InitInstanceThreaded(){
 
 	_wremove(svpToolBox.GetPlayerPath(_T("SVPDebug.log")));
 	_wremove(svpToolBox.GetPlayerPath(_T("SVPDebug2.log")));
+
+	m_bSystemParametersInfo[0] = FALSE;
+	if(!IsVista()){
+		BOOL bDropShadow = FALSE;
+
+		if (SystemParametersInfo(SPI_GETDROPSHADOW , 0,    &bDropShadow,	0)){
+			if(bDropShadow){
+				if( SystemParametersInfo(SPI_SETDROPSHADOW , 0,    FALSE,	0) )
+					m_bSystemParametersInfo[0] = TRUE;
+			}
+		}
+
+/* useless, not effect to tooltip shadow
+
+		if (SystemParametersInfo(SPI_GETTOOLTIPFADE , 0,    &bDropShadow,	0)){
+			if(bDropShadow){
+				if( SystemParametersInfo(SPI_SETTOOLTIPFADE , 0,    FALSE,	0) )
+					m_bSystemParametersInfo[1] = TRUE;
+			}
+		}
+
+
+		if (SystemParametersInfo(SPI_GETTOOLTIPANIMATION , 0,    &bDropShadow,	0)){
+			if(bDropShadow){
+				if( SystemParametersInfo(SPI_SETTOOLTIPANIMATION , 0,    FALSE,	0) )
+					m_bSystemParametersInfo[2] = TRUE;
+			}
+		}
+
+*/
+
+
+	}
+
 	//csaDll.Add( _T("codecs\\CoreAVCDecoder.ax")); //avoid missing reg key problem
 	//CFilterMapper2 fm2(false);
 	if(1){
@@ -1385,6 +1419,15 @@ int CMPlayerCApp::ExitInstance()
 {
 
 	m_s.UpdateData(true);
+
+
+	if(!IsVista()){
+		BOOL bDropShadow = TRUE;
+		if(m_bSystemParametersInfo[0])
+			SystemParametersInfo(SPI_SETDROPSHADOW , 0,    &bDropShadow,	0) ;
+			
+		
+	}
 
 	OleUninitialize();
 

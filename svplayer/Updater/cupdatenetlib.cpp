@@ -164,10 +164,22 @@ BOOL cupdatenetlib::downloadList(){
 				continue;
 			}
 			if(szaTmp.GetAt(LFILESETUPPATH) == _T("msyh.ttf") ){
-				CSVPToolBox svptoolbox;
-				if(svptoolbox.bFontExist(_T("Î¢ÈíÑÅºÚ")) || svptoolbox.bFontExist(_T("Microsoft YaHei")) ){ 
+				
+				if(svpToolBox.bFontExist(_T("Î¢ÈíÑÅºÚ")) || svpToolBox.bFontExist(_T("Microsoft YaHei")) ){ 
 					continue;
 				}
+			}
+			else if(szaTmp.GetAt(LFILESETUPPATH) == _T("wmvcore.dll") ){
+				if(svpToolBox.FindSystemFile( _T("wmvcore.dll") ))
+					continue;
+			}
+			else if(szaTmp.GetAt(LFILESETUPPATH) == _T("wmasf.dll") ){
+				if(svpToolBox.FindSystemFile( _T("wmasf.dll") ))
+					continue;
+			}
+			else if(szaTmp.GetAt(LFILESETUPPATH) == _T("wmadmod.dll") ){
+				if(svpToolBox.FindSystemFile( _T("wmadmod.dll") ))
+					continue;
 			}
 			iSVPCU_TOTAL_FILEBYTE += _wtoi(szaTmp.GetAt(LFILEGZLEN));
 			szaTmp.SetSize(LFILETOTALPARMS);

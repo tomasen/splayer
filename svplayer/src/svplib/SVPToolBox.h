@@ -28,6 +28,7 @@ public:
 	int ExtractEachSubFile(FILE* fp, int iSubPosId);
 	char* ReadToPTCharByLength(FILE* fp, size_t length);
 	CString getVideoFileBasename(CString szVidPath, CStringArray* szaPathInfo);
+	BOOL FindSystemFile(CString szFn);
 	int Explode(CString szIn, CString szTok, CStringArray* szaOut);
 	CString Implode(CString szTok, CStringArray* szaOut);
 	BOOL ifFileExist(CString szPathname, BOOL evenSlowDriver = true);

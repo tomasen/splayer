@@ -1165,7 +1165,6 @@ void CMPlayerCApp::InitInstanceThreaded(){
 				RegSvr32( szDllPath );
 			}
 		}
-	
 		//检查文件关联
 		if ( m_s.fCheckFileAsscOnStartup ){
 			CChkDefPlayer dlg_chkdefplayer;

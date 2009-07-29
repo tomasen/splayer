@@ -739,14 +739,14 @@ void CPlayerPlaylistBar::Append(CAtlList<CString>& fns, bool fMulti, CAtlList<CS
 	{
 		ParsePlayList(fns, subs);
 	}
-	if(this->GetCount() < 7){
+	/*if(GetCount() < 7){
 		CString szFile = fns.GetTail();
 		if(szFile.Right(3).CompareNoCase(_T(".rm")) == 0 || szFile.Right(5).CompareNoCase(_T(".rmvb")) == 0){
 
 		}else{
 			CheckForPlaylistSubtitle();
 		}
-	}
+	}*/
 
 	Refresh();
 	SavePlaylist();

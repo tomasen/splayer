@@ -1212,6 +1212,7 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 			hdc.LineTo(rc.right-bSpace-1, rc.bottom-bSpace-1);
 			hdc.LineTo(rc.left+bSpace, rc.bottom-bSpace-1);
 
+			hdc.SelectObject(holdpen);
 			bSpace++;
 			CPen pen2;
 			pen2.CreatePen(PS_SOLID, 1, RGB(0xf0,0xf0,0xf0));
@@ -1222,6 +1223,7 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 			hdc.LineTo(rc.right-bSpace-1, rc.bottom-bSpace-1);
 			hdc.LineTo(rc.left+bSpace, rc.bottom-bSpace-1);
 
+			hdc.SelectObject(holdpen);
 			bSpace++;
 			CPen pen3;
 			pen3.CreatePen(PS_SOLID, 1, RGB(0xe0,0xe0,0xe0));
@@ -1242,6 +1244,7 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 			hdc.MoveTo(rc.right-bSpace-1, rc.bottom-bSpace-3);
 			hdc.LineTo(rc.left+bSpace, rc.bottom-bSpace-3);
 
+			hdc.SelectObject(holdpen);
 			bSpace++;
 			CPen pen4;
 			pen4.CreatePen(PS_SOLID, 1, RGB(0x73,0x73,0x73));
@@ -1252,6 +1255,7 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 			hdc.LineTo(rc.right-bSpace-1, rc.bottom-bSpace-1-2);
 			hdc.LineTo(rc.left+bSpace, rc.bottom-bSpace-1-2);
 
+			hdc.SelectObject(holdpen);
 			BOOL bToolBarOn = m_wndToolBar.IsVisible();
 			
 			CDC dcBmp;
@@ -1393,7 +1397,12 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 
 
 		ReleaseDC(&hdc);
+		
+	}
 
+	if ((HDC)dc)
+	{
+		ReleaseDC(dc);
 	}
 	//LONGLONG costTime = AfxGetMyApp()->GetPerfCounter() - startTime;
 	//SVP_LogMsg3("NcPaint @ %I64d cost %I64d" , startTime , costTime);
@@ -2885,7 +2894,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 			if(SUCCEEDED(pDVDI->GetCurrentAngle(&ulAvailable, &ulCurrent))
 			&& SUCCEEDED(pDVDI->GetCurrentVideoAttributes(&VATR)))
 			{
-				Video.Format(_T("Angle: %02d/%02d, %dx%d %dHz %d:%d"), 
+				Video.Format(_T("视角: %02d/%02d, %dx%d %dHz %d:%d"), 
 					ulAvailable, ulCurrent,
 					VATR.ulSourceResolutionX, VATR.ulSourceResolutionY, VATR.ulFrameRate,
 					VATR.ulAspectX, VATR.ulAspectY);
@@ -2910,10 +2919,10 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 				{
 				case DVD_AUD_EXT_NotSpecified:
 				default: break;
-				case DVD_AUD_EXT_Captions: lang += _T(" (Captions)"); break;
+				case DVD_AUD_EXT_Captions: lang += _T(" (字幕)"); break;
 				case DVD_AUD_EXT_VisuallyImpaired: lang += _T(" (Visually Impaired)"); break;
-				case DVD_AUD_EXT_DirectorComments1: lang += _T(" (Director Comments 1)"); break;
-				case DVD_AUD_EXT_DirectorComments2: lang += _T(" (Director Comments 2)"); break;
+				case DVD_AUD_EXT_DirectorComments1: lang += _T(" (导演评论1)"); break;
+				case DVD_AUD_EXT_DirectorComments2: lang += _T(" (导演评论2)"); break;
 				}
 
 				CString format;
@@ -2928,10 +2937,10 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 				case DVD_AudioFormat_DTS: format = _T("DTS"); break;
 				case DVD_AudioFormat_SDDS: format = _T("SDDS"); break;
 				case DVD_AudioFormat_Other: 
-				default: format = _T("Unknown format"); break;
+				default: format = _T("未知格式"); break;
 				}
 
-				Audio.Format(_T("%s, %s %dHz %dbits %d channel(s)"), 
+				Audio.Format(_T("%s, %s %dHz %dbits %d 声道(s)"), 
 					lang, 
 					format,
 					AATR.dwFrequency,
@@ -2971,9 +2980,9 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 				case DVD_SP_EXT_CC_Big: lang += _T(" (CC Big)"); break;
 				case DVD_SP_EXT_CC_Children: lang += _T(" (CC Children)"); break;
 				case DVD_SP_EXT_Forced: lang += _T(" (Forced)"); break;
-				case DVD_SP_EXT_DirectorComments_Normal: lang += _T(" (Director Comments)"); break;
-				case DVD_SP_EXT_DirectorComments_Big: lang += _T(" (Director Comments, Big)"); break;
-				case DVD_SP_EXT_DirectorComments_Children: lang += _T(" (Director Comments, Children)"); break;
+				case DVD_SP_EXT_DirectorComments_Normal: lang += _T(" (导演评论)"); break;
+				case DVD_SP_EXT_DirectorComments_Big: lang += _T(" (导演评论, Big)"); break;
+				case DVD_SP_EXT_DirectorComments_Children: lang += _T(" (导演评论, Children)"); break;
 				}
 
 				if(bIsDisabled) lang = _T("-");
@@ -11438,6 +11447,10 @@ void CMainFrame::SetupAudioSwitcherSubMenu()
 						CString name(wname);
 						name.Replace(_T("&"), _T("&&"));
 						if(name.Find(_T("Audio")) == 0 || name.Find(_T("声")) == 0 || name.Find(_T("音")) == 0 ){
+							name.Replace(_T("Audio"), _T("音轨"));
+							name.Replace(_T("Chinese"), _T("汉语"));
+							name.Replace(_T("Japanese"), _T("日语"));
+							name.Replace(_T("English"), _T("英语"));
 							CString szLog;
 							szLog.Format(L" Audio Menu %d %s", idl, name);
 							SVP_LogMsg(szLog);

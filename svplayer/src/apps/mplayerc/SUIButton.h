@@ -40,6 +40,7 @@ public:
 	{
 		m_hDCOriginal->BitBlt( m_rcPaint.left, m_rcPaint.top, m_rcPaint.right - m_rcPaint.left, m_rcPaint.bottom - m_rcPaint.top, CDC::FromHandle(m_hDC), m_rcPaint.left, m_rcPaint.top, SRCCOPY);
 		SelectObject(m_hBmpOld);
+		DeleteDC();
 	}
 };
 

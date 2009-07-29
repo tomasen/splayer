@@ -13,6 +13,8 @@ CFLAGS+= -I. -I.. -I$(LAVC_DIR) -I$(LAVU_DIR) -I$(LAVF_DIR) -I../codecs -I../img
 CC=gcc
 
 SRCS_C=\
+		$(LAVC_DIR)/wma.c \
+		$(LAVC_DIR)/wmadec.c \
 		$(LAVC_DIR)/rv30dsp.c \
 		$(LAVC_DIR)/rv30.c \
 		$(LAVC_DIR)/rv10.c \
@@ -182,8 +184,6 @@ SRCS_C=\
 #		$(LAVC_DIR)/vorbis.c \
 #		$(LAVC_DIR)/vorbis_dec.c \
 #		$(LAVC_DIR)/vorbis_data.c \
-#		$(LAVC_DIR)/wma.c \
-#		$(LAVC_DIR)/wmadec.c \
 #		$(LAVC_DIR)/wnv1.c \
 #		$(LAVC_DIR)/xl.c \
 #		$(LAVC_DIR)/zmbv.c

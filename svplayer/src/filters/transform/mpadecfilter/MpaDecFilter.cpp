@@ -121,7 +121,8 @@ const AMOVIESETUP_MEDIATYPE sudPinTypesIn[] =
 	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_PCM_RAW},
 	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_PCM_SOWT},
 	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_PCM_TWOS},
-	
+	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_WMA2},
+	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_WMA1},
 };
 
 #ifdef REGISTER_FILTER
@@ -446,7 +447,7 @@ HRESULT CMpaDecFilter::Receive(IMediaSample* pIn)
 
 	const GUID& subtype = m_pInput->CurrentMediaType().subtype;
 	BOOL bNoJitterControl = false;
-	if(subtype == MEDIASUBTYPE_AMR || subtype == MEDIASUBTYPE_SAMR || subtype == MEDIASUBTYPE_SAWB  ){//|| subtype == MEDIASUBTYPE_PCM_SOWT || subtype == MEDIASUBTYPE_PCM_TWOS
+	if(subtype == MEDIASUBTYPE_AMR || subtype == MEDIASUBTYPE_SAMR || subtype == MEDIASUBTYPE_SAWB   ){//  || subtype == MEDIASUBTYPE_WMA1   || subtype == MEDIASUBTYPE_WMA2 || subtype == MEDIASUBTYPE_PCM_SOWT || subtype == MEDIASUBTYPE_PCM_TWOS
 		bNoJitterControl = true;
 	}
 
@@ -503,6 +504,10 @@ HRESULT CMpaDecFilter::Receive(IMediaSample* pIn)
 		hr = ProcessFfmpeg(CODEC_ID_RA_144);
 	else if(subtype ==MEDIASUBTYPE_28_8)
 		hr = ProcessFfmpeg(CODEC_ID_RA_288);
+	else if(subtype == MEDIASUBTYPE_WMA1)
+		hr = ProcessFfmpeg(CODEC_ID_WMAV1);
+	else if(subtype == MEDIASUBTYPE_WMA2)
+		hr = ProcessFfmpeg(CODEC_ID_WMAV2);
 	else if(MEDIASUBTYPE_PCM_RAW == subtype ){
 		hr = ProcessPCMU8();
 	}else if(MEDIASUBTYPE_PCM_SOWT == subtype){
@@ -2603,9 +2608,9 @@ bool CMpaDecFilter::InitFfmpeg(int nCodecId)
 
 	avcodec_init();
 	avcodec_register_all();
-#ifdef _DEBUG
+//#ifdef _DEBUG
 	av_log_set_callback(LogLibAVCodec);
-#endif
+//#endif
 
 	if (m_pAVCodec) ffmpeg_stream_finish();
 
@@ -2671,7 +2676,7 @@ bool CMpaDecFilter::InitFfmpeg(int nCodecId)
 				m_pPCMData	= (BYTE*)FF_aligned_malloc (AVCODEC_MAX_AUDIO_FRAME_SIZE+FF_INPUT_BUFFER_PADDING_SIZE, 64);
 				bRet		= true;
 
-				if (nCodecId!=CODEC_ID_COOK && nCodecId != CODEC_ID_AMR_NB && nCodecId != CODEC_ID_AMR_WB){
+				if (nCodecId!=CODEC_ID_COOK && nCodecId != CODEC_ID_AMR_NB && nCodecId != CODEC_ID_AMR_WB && nCodecId != CODEC_ID_WMAV2 && nCodecId != CODEC_ID_WMAV1){
 					int iSpeakerConfig = GetSpeakerConfig(ac3);
 					if (iSpeakerConfig >= 0)
 					{
@@ -2706,7 +2711,8 @@ void CMpaDecFilter::LogLibAVCodec(void* par,int level,const char *fmt,va_list va
 {
 	char		Msg [500];
 	vsnprintf_s (Msg, sizeof(Msg), _TRUNCATE, fmt, valist);
-	TRACE("AVLIB : %s", Msg);
+	//TRACE("AVLIB : %s", Msg);
+	SVP_LogMsg3(Msg);
 }
 
 void CMpaDecFilter::ffmpeg_stream_finish()

@@ -1652,6 +1652,15 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_MPEG2_VIDEO);
 	m_transform.AddTail(pFGF);
 
+	
+	/*
+pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_ABOVE_DSHOW);
+	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_WMA1);
+	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_WMA2);
+	m_transform.AddTail(pFGF);
+*/
+
+		
 	pFGF = new CFGFilterInternal<CMpaDecFilter>( L"PCM RAW Audio Decoder", MERIT64_ABOVE_DSHOW);
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_PCM_RAW);
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_PCM_SOWT);
@@ -2392,6 +2401,9 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 
 
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("PMPSplitter.ax")) );
+
+	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("wmadmod.dll")) );
+	
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("rms.ax")) );
 	
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("NeSplitter.ax")) ); 
@@ -2451,6 +2463,15 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 					}else if(szFPath.Find(_T("rlapedec.ax")) > 0){
 						pFGF->m_extensions.AddTail(_T(".ape"));
 						m_source.AddTail(pFGF);
+/*
+					}else if(szFPath.Find(_T("wmadmod.dll")) > 0){
+						pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_WMA1);
+						pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_WMA2);
+						pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_WMAPRO);
+						pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_WMALOSSLESS);
+						m_transform.AddTail(pFGF);
+*/
+
 					}else if(szFPath.Find(_T("RadGtSplitter.ax")) > 0){
 						pFGF->m_chkbytes.AddTail(_T("0,3,,534D4B"));
 						pFGF->m_chkbytes.AddTail(_T("0,3,,42494B"));

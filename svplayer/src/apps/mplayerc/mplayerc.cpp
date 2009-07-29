@@ -1148,6 +1148,16 @@ void CMPlayerCApp::InitInstanceThreaded(){
 		//csaDll.Add( _T("tsccvid.dll"));
 		//csaDll.Add( _T("wvc1dmod.dll"));
 		//csaDll.Add( _T("RadGtSplitter.ax"));
+
+	{
+		HKEY fKey;
+		if(RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{2eeb4adf-4578-4d10-bca7-bb955f56320a}") , &fKey ) != ERROR_SUCCESS ){
+			csaDll.Add( _T("wmadmod.dll"));
+		}else{
+			//RegCloseKey(fKey);
+		}
+	}
+		
 		for(int i = 0; i < csaDll.GetCount(); i++){
 			CString szDllPath = svpToolBox.GetPlayerPath( csaDll.GetAt(i) );
 			if(svpToolBox.ifFileExist(szDllPath)){

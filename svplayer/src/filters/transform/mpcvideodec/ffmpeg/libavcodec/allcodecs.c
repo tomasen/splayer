@@ -146,8 +146,8 @@ void avcodec_register_all(void)
 	//REGISTER_DECODER (TRUESPEECH, truespeech);
     //REGISTER_DECODER (TTA, tta);
     //REGISTER_DECODER (VORBIS, vorbis);
-    //REGISTER_DECODER (WMAV1, wmav1);
-    //REGISTER_DECODER (WMAV2, wmav2);
+    REGISTER_DECODER (WMAV1, wmav1);
+    REGISTER_DECODER (WMAV2, wmav2);
 
     /* pcm codecs */
     //REGISTER_DECODER (PCM_ALAW, pcm_alaw);

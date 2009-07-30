@@ -68,6 +68,7 @@ BOOL CPlayerPlaylistBar::Create(CWnd* pParentWnd)
 
 	m_list.InsertColumn(COL_NAME, _T("ÎÄ¼þÃû"), LVCFMT_LEFT, 380);
 
+	m_list.SetBkColor(0xdddddd);
 	CDC* pDC = m_list.GetDC();
 	CFont* old = pDC->SelectObject(GetFont());
 	m_nTimeColWidth = pDC->GetTextExtent(_T("000:00:00")).cx + 5;

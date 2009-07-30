@@ -10772,7 +10772,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 			m_wndCaptureBar.m_capdlg.SetAudioInput(p->ainput);
 		}
 
-		if(m_fAudioOnly){
+		if(!m_pCAP && m_fAudioOnly){
 			
 			//if there is jpg/png in music dir display it
 			CSVPToolBox svpTool;
@@ -10786,7 +10786,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 				if( S_OK == m_wndView.m_cover->Load( szaRet.GetHead() )  )
 					m_wndView.Invalidate();
 				else
-					AfxMessageBox(szaRet.GetHead() );
+					SendStatusMessage( CString(_T("图片读取失败 "))+szaRet.GetHead() , 3000);
 
 			}
 

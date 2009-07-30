@@ -1490,10 +1490,12 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 
 	// Transform filters
 
+	/* this is useless
 	pFGF = new CFGFilterInternal<CAVI2AC3Filter>(L"AVI<->AC3/DTS", MERIT64(0x00680000)+1);
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_WAVE_DOLBY_AC3);
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_WAVE_DTS);
 	m_transform.AddTail(pFGF);
+*/
 
 	if(src & SRC_MATROSKA) {
 		pFGF = new CFGFilterInternal<CMatroskaSplitterFilter>(L"Matroska Splitter", MERIT64_ABOVE_DSHOW);

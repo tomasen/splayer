@@ -163,7 +163,7 @@ void CNEWOSDWnd::OnTimer(UINT_PTR nIDEvent)
 					CString szOsd = m_szaOsd.GetAt(minIdx);
 					if( m_osdStr != szOsd){
 						ShowWindow(SW_SHOW);
-						SetTimer(IDT_HIDE , m_sziOsd.GetAt(minIdx) - curTime, NULL);
+						SetTimer(IDT_HIDE , (m_sziOsd.GetAt(minIdx) - curTime) * 1000, NULL);
 						CountSize();
 						Invalidate();
 					}else{

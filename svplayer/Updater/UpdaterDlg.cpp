@@ -226,9 +226,11 @@ void CUpdaterDlg::OnTimer(UINT_PTR nIDEvent)
 				//SVP_LogMsg(szTmp);
 
 				if(cup.bWaiting){
-					szTmp = _T("文件正在被占用，关闭播放器或重新启动后将自动更新到最新版本");
+					szTmp = _T("文件仍在被占用，关闭播放器或重新启动后将自动更新到最新版本");
 					csCurFile.ShowWindow(SW_HIDE);
 					prg_curfile.ShowWindow(SW_HIDE);
+					csTotalProgress.ShowWindow(SW_HIDE);
+					prg_total.ShowWindow(SW_HIDE);
 					cs_stat.ShowWindow(SW_SHOW);
 					cs_stat.SetWindowText(szTmp);
 				}
@@ -292,14 +294,19 @@ void CUpdaterDlg::OnBnClickedOk()
 void CUpdaterDlg::OnClose()
 {
 	// TODO: Add your message handler code here and/or call default
-	ShowWindow(SW_MINIMIZE);
+	Shell_NotifyIcon(NIM_DELETE, &tnid); 
+	OnOK();
 	//CDialog::OnClose();
 }
 
 void CUpdaterDlg::OnBnClickedButton1()
 {
-	Shell_NotifyIcon(NIM_DELETE, &tnid); 
-	OnOK();
+	if(!cup.bWaiting && cup.bSVPCU_DONE){
+		Shell_NotifyIcon(NIM_DELETE, &tnid); 
+		OnOK();
+	}else
+		ShowWindow(SW_MINIMIZE);
+	
 }
 
 void CUpdaterDlg::OnNMClickSyslink1(NMHDR *pNMHDR, LRESULT *pResult)

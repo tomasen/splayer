@@ -78,7 +78,7 @@ IDR_MAINFRAME           ICON                    "res\\Updater.ico"
 //
 
 IDD_UPDATER_DIALOG DIALOGEX 0, 0, 281, 106
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION
+STYLE DS_SYSMODAL | DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_APPWINDOW
 CAPTION "射手影音自动更新程序"
 FONT 8, "MS Shell Dlg", 0, 0, 0x1
@@ -88,9 +88,9 @@ BEGIN
     CONTROL         "",IDC_PROGRESS2,"msctls_progress32",PBS_SMOOTH | WS_BORDER,27,30,227,11
     LTEXT           "当前文件",STATIC_CURRENT,18,15,245,12
     LTEXT           "总进度",STATIC_TOTAL,18,49,245,12,SS_CENTERIMAGE
-    PUSHBUTTON      "终止更新",IDC_BUTTON1,154,85,50,14
-    CONTROL         "<a href=""http://blog.splayer.org"">点此查看射手影音播放器最近更新...</a>",IDC_SYSLINK1,
-                    "SysLink",LWS_USEVISUALSTYLE | NOT WS_VISIBLE | WS_TABSTOP,69,62,142,15
+    PUSHBUTTON      "后台运行",IDC_BUTTON1,154,85,50,14
+    CONTROL         "<a href=""http://blog.splayer.org"">查看更新内容...</a>",IDC_SYSLINK1,
+                    "SysLink",LWS_USEVISUALSTYLE | NOT WS_VISIBLE | WS_TABSTOP,114,62,64,15
     EDITTEXT        IDC_STATIC_DONE,7,16,267,42,ES_CENTER | ES_MULTILINE | ES_READONLY | NOT WS_VISIBLE | NOT WS_BORDER
 END
 
@@ -101,8 +101,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,12
- PRODUCTVERSION 1,0,0,12
+ FILEVERSION 1,0,0,15
+ PRODUCTVERSION 1,0,0,15
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -119,12 +119,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Shooter.cn"
             VALUE "FileDescription", "射手影音播放器自动升级程序"
-            VALUE "FileVersion", "1.0.0.12"
+            VALUE "FileVersion", "1.0.0.15"
             VALUE "InternalName", "Updater.exe"
             VALUE "LegalCopyright", "(c) Shooter.cn.  All rights reserved."
             VALUE "OriginalFilename", "Updater.exe"
             VALUE "ProductName", "射手影音播放器自动升级程序"
-            VALUE "ProductVersion", "1.0.0.12"
+            VALUE "ProductVersion", "1.0.0.15"
         END
     END
     BLOCK "VarFileInfo"

@@ -248,7 +248,7 @@ void cupdatenetlib::tryRealUpdate(BOOL bNoWaiting){
 
 	while(1){
 		POSITION pos = szaMoveFiles.GetHeadPosition();
-		if(!pos){break;}
+		if(!pos){ break;}
 		bWaiting = TRUE;
 		while(pos){
 			szaMoveFile mFiles;

@@ -161,7 +161,7 @@
 				OutputFile="..\..\$(ProjectName).exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="../lib"
-				UACExecutionLevel="1"
+				UACExecutionLevel="0"
 				IgnoreDefaultLibraryNames="MSVCRT"
 				GenerateDebugInformation="true"
 				GenerateMapFile="true"

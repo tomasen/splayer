@@ -720,6 +720,8 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 			if (szFName.Find(_T("Adobe")) >= 0 ) continue; //disable Adobe filter that may cause flip
 			if (szFName.Find(_T("TTL2 Decompressor")) >= 0 ) continue;
 			if (szFName.Find(_T("RDP DShow Redirection Filter")) >= 0 ) continue;
+			if (szFName.Find(_T("Sonic MP4 Demultiplexer")) >= 0 ) continue;
+			
 			
 			if (s.TraFilters & TRA_AC3 && szFName.Find(_T("AC3Filter")) >= 0 ) continue; //disable AC3 filter if internal AC3 is enabled
 			

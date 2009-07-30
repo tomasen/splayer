@@ -447,6 +447,7 @@ CMPlayerCApp::CMPlayerCApp()
 :  m_bMouseIn(FALSE)      // doesn't matter because don't know yet
 , m_bMouseInOutUnknown(TRUE)      // don't know whether in or out yet
 , m_bGenerateMouseInOutMessages(TRUE) 
+, m_cnetupdater(NULL)
 {
 	m_pMainWnd = NULL;
 	::SetUnhandledExceptionFilter(DebugMiniDumpFilter);
@@ -540,12 +541,12 @@ HWND g_hWnd = NULL;
 bool CMPlayerCApp::StoreSettingsToIni()
 {
 	CString ini = GetIniPath();
-/*
+
 	FILE* f;
 	if(!(f = _tfopen(ini, _T("r+"))) && !(f = _tfopen(ini, _T("w"))))
 		return StoreSettingsToRegistry();
 	fclose(f);
-*/
+
 	if(m_pszRegistryKey) free((void*)m_pszRegistryKey);
 	m_pszRegistryKey = NULL;
 	if(m_pszProfileName) free((void*)m_pszProfileName);
@@ -1178,6 +1179,36 @@ void CMPlayerCApp::InitInstanceThreaded(){
 			//	dlg_chkdefplayer.setDefaultPlayer();
 
 		}
+
+		if ( time(NULL) > (m_s.tLastCheckUpdater + m_s.tCheckUpdaterInterleave) || m_s.tLastCheckUpdater == 0){
+		
+			CMainFrame* pFrame = (CMainFrame*)m_pMainWnd;
+
+			if(m_s.tLastCheckUpdater == 0 && !svpToolBox.FindSystemFile( _T("wmvcore.dll") )){
+				pFrame->SendStatusMessage(_T("您的系统中缺少必要的wmv/asf媒体组件，正在下载（约2MB）..."), 4000);
+			}
+			//if(m_s.tLastCheckUpdater == 0 &&  !svpToolBox.bFontExist(_T("微软雅黑")) && !svpToolBox.bFontExist(_T("Microsoft YaHei")) ){ 
+			//	pFrame->SendStatusMessage(_T("您的系统中缺少字体组件，正在下载（约8MB）..."), 4000);
+			//}
+			m_s.tLastCheckUpdater = (UINT)time(NULL); 
+			m_s.UpdateData(true);
+
+			if(!m_cnetupdater)
+				m_cnetupdater = new cupdatenetlib();
+
+			if(m_cnetupdater->downloadList()){
+				m_cnetupdater->downloadFiles();
+				m_cnetupdater->tryRealUpdate(TRUE);
+			}
+			if(!pFrame->m_bCheckingUpdater){
+				pFrame->m_bCheckingUpdater = true;
+				SVP_RealCheckUpdaterExe( &(pFrame->m_bCheckingUpdater) );
+
+			}
+			
+			m_cnetupdater->bSVPCU_DONE = TRUE;
+		}
+
 
 }
 UINT __cdecl Thread_InitInstance( LPVOID lpParam ) 

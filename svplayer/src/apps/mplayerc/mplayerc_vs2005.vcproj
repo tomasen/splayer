@@ -415,6 +415,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\Updater\cupdatenetlib.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\DeinterlacerFilter.cpp"
 				>
 			</File>
@@ -877,6 +881,10 @@
 			</File>
 			<File
 				RelativePath="CShockwaveFlash.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\Updater\cupdatenetlib.h"
 				>
 			</File>
 			<File
@@ -1625,6 +1633,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\newui\TOP_CAPTURE.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\newui\TOP_FLIP.bmp"
 				>
 			</File>
@@ -1918,7 +1930,15 @@
 			</Filter>
 		</Filter>
 		<File
+			RelativePath=".\res\shaders\BT601BT709.psh"
+			>
+		</File>
+		<File
 			RelativePath=".\res\shaders\EdgeSharpen.psh"
+			>
+		</File>
+		<File
+			RelativePath=".\res\shaders\levels3.psh"
 			>
 		</File>
 		<File
@@ -1962,11 +1982,15 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\shaders\SharpenComplex2.psh"
 			>
 		</File>
 		<File
 			RelativePath=".\res\web\uesetbg.png"
+			>
+		</File>
+		<File
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 		<File

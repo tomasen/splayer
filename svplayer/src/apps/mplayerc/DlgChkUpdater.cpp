@@ -47,12 +47,17 @@ BOOL CDlgChkUpdater::OnInitDialog()
 	cprog_chker.SetPos(0);
 	m_lostPos = 0;
 	moreTick = 0;
-	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
-	if(pFrame){
-		SVP_CheckUpdaterExe(&pFrame->m_bCheckingUpdater, 1);	
-	}else{
-		SVP_CheckUpdaterExe(&mChk, 1);
+	CMPlayerCApp* pApp = (CMPlayerCApp*) AfxGetMyApp();
+	if(!pApp->m_cnetupdater){
+		CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
+		if(pFrame){
+			SVP_CheckUpdaterExe(&pFrame->m_bCheckingUpdater, 1);	
+		}else{
+			SVP_CheckUpdaterExe(&mChk, 1);
+		}
+			
 	}
+	
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -61,60 +66,70 @@ BOOL CDlgChkUpdater::OnInitDialog()
 void CDlgChkUpdater::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO: Add your message handler code here and/or call default
-	if(IDT_CHECK_TICK == nIDEvent){
-		if(m_lostPos < 500){
-			m_lostPos += 80;
-		}else if(m_lostPos < 800){
-			m_lostPos += 20;
-		}else if(m_lostPos < 900){
-			m_lostPos += 10;
-		}else if(m_lostPos < 960){
-			m_lostPos += 4;
-		}else{
-			m_lostPos += 1;
-		}
-		if(moreTick == 0){
-			CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
-			if(pFrame){
-				mChk = pFrame->m_bCheckingUpdater;
+	switch( nIDEvent){
+		case IDT_CHECK_TICK:
+			CMPlayerCApp* pApp = (CMPlayerCApp*) AfxGetMyApp();
+			if(pApp->m_cnetupdater){
+				if(!pApp->m_cnetupdater->bSVPCU_DONE){
+					m_lostPos = (int)(pApp->m_cnetupdater->getProgressBytes() * 9);
+					cprog_chker.SetPos(m_lostPos);
+					break;
+				}
 			}
-			if(!mChk){
-				moreTick = 10;
+			if(m_lostPos < 500){
+				m_lostPos += 80;
+			}else if(m_lostPos < 800){
+				m_lostPos += 20;
+			}else if(m_lostPos < 900){
+				m_lostPos += 10;
+			}else if(m_lostPos < 960){
+				m_lostPos += 4;
+			}else{
+				m_lostPos += 1;
+			}
+			if(moreTick == 0){
+				CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
+				if(pFrame){
+					mChk = pFrame->m_bCheckingUpdater;
+				}
+				if(!mChk){
+					moreTick = 10;
+					
+				}
+			}
+
+			if(moreTick == 1){
+				cprog_chker.ShowWindow(SW_HIDE);
+				cs_stat.ShowWindow(SW_SHOW);
+				cb_close.SetWindowText(_T("关闭"));
+				KillTimer(IDT_CHECK_TICK);
+			}
+			if(moreTick > 1 ){
+				moreTick --;
+			}
+			cprog_chker.SetPos(m_lostPos);
+
+			HANDLE hMutex = OpenMutex(MUTEX_ALL_ACCESS,	FALSE, _T("SPLAYER_REAL_UPDATER"));
+			if (hMutex ) {
+				HWND hWndPrevious = ::FindWindow( NULL , _T("射手影音自动更新程序"));// ::GetDesktopWindow(),GW_CHILD);
+				while( ::IsWindow(hWndPrevious)){
+					//if (::GetProp(hWndPrevious, "WOWSocks")){
+					//if (!::IsWindowVisible(hWndPrevious) ){
+					::ShowWindow(hWndPrevious,SW_SHOW);
+					::ShowWindow(hWndPrevious,SW_RESTORE);
+					::SetForegroundWindow(hWndPrevious);
+					::GetLastActivePopup(hWndPrevious);
 				
+					//}
+					//}
+					break;
+					hWndPrevious = ::GetWindow(hWndPrevious,GW_HWNDNEXT);
+				}
+				KillTimer(IDT_CHECK_TICK);
+				OnOK();
+
 			}
-		}
-
-		if(moreTick == 1){
-			cprog_chker.ShowWindow(SW_HIDE);
-			cs_stat.ShowWindow(SW_SHOW);
-			cb_close.SetWindowText(_T("关闭"));
-			KillTimer(IDT_CHECK_TICK);
-		}
-		if(moreTick > 1 ){
-			moreTick --;
-		}
-		cprog_chker.SetPos(m_lostPos);
-
-		HANDLE hMutex = OpenMutex(MUTEX_ALL_ACCESS,	FALSE, _T("SPLAYER_REAL_UPDATER"));
-		if (hMutex ) {
-			HWND hWndPrevious = ::FindWindow( NULL , _T("射手影音自动更新程序"));// ::GetDesktopWindow(),GW_CHILD);
-			while( ::IsWindow(hWndPrevious)){
-				//if (::GetProp(hWndPrevious, "WOWSocks")){
-				//if (!::IsWindowVisible(hWndPrevious) ){
-				::ShowWindow(hWndPrevious,SW_SHOW);
-				::ShowWindow(hWndPrevious,SW_RESTORE);
-				::SetForegroundWindow(hWndPrevious);
-				::GetLastActivePopup(hWndPrevious);
-			
-				//}
-				//}
-				break;
-				hWndPrevious = ::GetWindow(hWndPrevious,GW_HWNDNEXT);
-			}
-			KillTimer(IDT_CHECK_TICK);
-			OnOK();
-
-		}
+		break;
 
 	}
 

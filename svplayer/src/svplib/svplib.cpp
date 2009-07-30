@@ -46,7 +46,7 @@ void SVP_RealUploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString
 	}
 }
 
-void SVP_RealCheckUpdaterExe(BOOL* bCheckingUpdater, UINT verbose = 0){
+void SVP_RealCheckUpdaterExe(BOOL* bCheckingUpdater, UINT verbose ){
 
 	
 	//检查 updater.exe 是否可写
@@ -67,6 +67,7 @@ void SVP_RealCheckUpdaterExe(BOOL* bCheckingUpdater, UINT verbose = 0){
 		if(verbose){
 			szPerm = _T(" /verbose ");
 		}
+
 		//运行升级程序
 		ShellExecute( NULL, _T("open"), szUpdaterPath, szPerm , _T(""), SW_HIDE);	
 	}else{

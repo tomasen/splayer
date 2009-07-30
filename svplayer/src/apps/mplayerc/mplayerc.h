@@ -32,6 +32,8 @@
 #include "MediaFormats.h"
 #include "fakefiltermapper2.h"
 
+#include "..\..\..\Updater\cupdatenetlib.h"
+
 #ifdef UNICODE
 #define MPC_WND_CLASS_NAME L"MediaPlayerClassicW"
 #else
@@ -607,6 +609,7 @@ public:
 	} m_s;
 
 public:
+	cupdatenetlib* m_cnetupdater;
 	DECLARE_MESSAGE_MAP()
 	afx_msg void OnAppAbout();
 	afx_msg void OnFileExit();

@@ -130,9 +130,58 @@ void CNEWOSDWnd::OnTimer(UINT_PTR nIDEvent)
 	switch(nIDEvent){
 		case IDT_HIDE:
 			KillTimer(IDT_HIDE);
-			mSize = CSize(0,0);
-			m_osdStr.Empty();
-			ShowWindow(SW_HIDE);
+			
+			if(m_sziOsd.GetCount()){
+				int minTime = 0;
+				int minIdx = -1;
+				int curTime = time(NULL);
+				
+				for(int i = (m_sziOsd.GetCount() - 1); i >=0; i--){
+					int thisTime = m_sziOsd.GetAt(i);
+					if( thisTime < curTime){
+						m_sziOsd.RemoveAt(i);
+						m_szaOsd.RemoveAt(i);
+					}
+				}
+
+				for(int i = 0; i < m_sziOsd.GetCount(); i++){
+					int thisTime = m_sziOsd.GetAt(i);
+					if( thisTime < curTime)
+						continue;
+					
+
+					if(minTime == 0){
+						minTime = thisTime;
+						minIdx = i;
+					}else if(thisTime < minTime){
+						minTime = thisTime;
+						minIdx = i;
+					}
+				}
+
+				if(minIdx >= 0){
+					CString szOsd = m_szaOsd.GetAt(minIdx);
+					if( m_osdStr != szOsd){
+						ShowWindow(SW_SHOW);
+						SetTimer(IDT_HIDE , m_sziOsd.GetAt(minIdx) - curTime, NULL);
+						CountSize();
+						Invalidate();
+					}else{
+						SetTimer(IDT_HIDE, 1000, NULL);
+					}
+				}else{
+					mSize = CSize(0,0);
+					m_osdStr.Empty();
+					ShowWindow(SW_HIDE);
+				}
+
+				
+			}else{
+				mSize = CSize(0,0);
+				m_osdStr.Empty();
+				ShowWindow(SW_HIDE);
+			}
+			
 			break;
 	}
 	CWnd::OnTimer(nIDEvent);
@@ -209,7 +258,7 @@ void CNEWOSDWnd::CountSize(){
 	}
 	
 	
-}
+}     
 int CNEWOSDWnd::SendOSDMsg(CString szMsg, int lTime ){
 
 	KillTimer(IDT_HIDE);
@@ -220,9 +269,11 @@ int CNEWOSDWnd::SendOSDMsg(CString szMsg, int lTime ){
 		ShowWindow(SW_HIDE);
 	}else{
 		ShowWindow(SW_SHOW);
-		SetTimer(IDT_HIDE , lTime, NULL);
+		SetTimer(IDT_HIDE , 2000, NULL);
 		CountSize();
 		Invalidate();
+		m_szaOsd.Add(szMsg);
+		m_sziOsd.Add(time(NULL)+lTime/1000);
 	}
 	
 	return 0;

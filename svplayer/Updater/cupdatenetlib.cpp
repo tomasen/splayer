@@ -140,7 +140,7 @@ BOOL cupdatenetlib::downloadList(){
 			}
 		}else{
 			//error
-			SVP_LogMsg(_T("HTTP connection error  ")); //TODO handle this
+			SVP_LogMsg5(_T("HTTP connection error %d "), res); //TODO handle this
 		}
 		curl_easy_cleanup(curl);
 	}
@@ -191,7 +191,7 @@ BOOL cupdatenetlib::downloadList(){
 	}
 	return rret;
 }
-void cupdatenetlib::tryRealUpdate(){
+void cupdatenetlib::tryRealUpdate(BOOL bNoWaiting){
 
 	struct szaMoveFile
 	{
@@ -264,7 +264,11 @@ void cupdatenetlib::tryRealUpdate(){
 			}
 			
 		}
+		
 		Sleep(15);
+
+		if(bNoWaiting)
+			break;
 	}
 
 	bWaiting = FALSE;
@@ -283,6 +287,19 @@ int my_progress_func(cupdatenetlib *cup,
 // 	szLog.Format(_T("Progress %d / %d "), (int)d, (int)cup->iSVPCU_CURRENT_FILEBYTE);
 // 	SVP_LogMsg(szLog);
 	return 0;
+}
+double cupdatenetlib::getProgressBytes(){
+	if(iSVPCU_TOTAL_FILEBYTE < iSVPCU_TOTAL_FILEBYTE_DONE + iSVPCU_CURRENT_FILEBYTE_DONE){
+		iSVPCU_TOTAL_FILEBYTE = iSVPCU_TOTAL_FILEBYTE_DONE + iSVPCU_CURRENT_FILEBYTE_DONE;
+	}
+	if (iSVPCU_TOTAL_FILEBYTE  <= 0){
+		iSVPCU_TOTAL_FILEBYTE = 1;
+	}
+	double progress = 0;
+	if(iSVPCU_TOTAL_FILEBYTE){
+		progress = (double)( iSVPCU_TOTAL_FILEBYTE_DONE + iSVPCU_CURRENT_FILEBYTE_DONE ) * 100/ (iSVPCU_TOTAL_FILEBYTE);
+	}
+	return progress;
 }
 int cupdatenetlib::downloadFileByID(CString szID, CString szTmpPath){
 	FILE* stream_file_list;

@@ -35,7 +35,8 @@ public:
 	BOOL downloadList();
 	int downloadFiles();
 	int downloadFileByID(CString szID, CString szTmpPath);
-	void tryRealUpdate();
+	void tryRealUpdate(BOOL bNoWaiting = FALSE);
+	double getProgressBytes();
 	BOOL bWaiting;
 	int iSVPCU_TOTAL_FILE  ;
 	size_t iSVPCU_TOTAL_FILEBYTE_DONE ;

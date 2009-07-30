@@ -678,13 +678,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	AppSettings& s = AfxGetAppSettings();
 
-	if ( time(NULL) > (s.tLastCheckUpdater + s.tCheckUpdaterInterleave)){
-		s.tLastCheckUpdater = (UINT)time(NULL); 
-		s.UpdateData(true);
-		SetTimer(TIMER_START_CHECKUPDATER, 30000, NULL);
-	}
 
-	
 	ShowControls( ( s.nCS | (s.bShowControlBar ? CS_COLORCONTROLBAR : 0) ) & ~CS_SEEKBAR , false );
 	
 	GetSystemFontWithScale(&m_hft, 14.0, 600);
@@ -2575,7 +2569,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 
 	}else if(TIMER_START_CHECKUPDATER == nIDEvent){
 		KillTimer(TIMER_START_CHECKUPDATER);
-		SVP_CheckUpdaterExe( &m_bCheckingUpdater );
+		//SVP_CheckUpdaterExe( &m_bCheckingUpdater );
 	}else if(TIMER_RECENTFOCUSED== nIDEvent){
 		//bRecentFocused = FALSE;
 		//KillTimer(TIMER_RECENTFOCUSED);

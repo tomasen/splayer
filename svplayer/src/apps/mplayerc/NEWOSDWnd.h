@@ -32,6 +32,8 @@ public:
 	CSize mSize ;
 	CFont m_statft;
 	CString m_osdStr;
+	CStringArray m_szaOsd;
+	CUIntArray m_sziOsd;
 	void CountSize();
 	CWnd* m_wndView;
 	void OnRealClose();

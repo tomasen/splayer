@@ -965,7 +965,7 @@ EXSTYLE WS_EX_TOOLWINDOW
 CAPTION "检查更新"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    PUSHBUTTON      "取消",IDCANCEL,94,41,50,14
+    PUSHBUTTON      "隐藏",IDCANCEL,94,41,50,14
     CONTROL         "",IDC_PROGRESS1,"msctls_progress32",PBS_SMOOTH | WS_BORDER,27,19,183,10
     CTEXT           "升级进程已启动",IDC_STATIC1,36,17,164,17,SS_CENTERIMAGE | NOT WS_VISIBLE
 END
@@ -1442,14 +1442,15 @@ TOP_NORMAL.BMP          BITMAP                  "res\\newui\\TOP_NORMAL.bmp"
 TOP_LETTERBOX.BMP       BITMAP                  "res\\newui\\TOP_LETTERBOX.bmp"
 TOP_ROTATE.BMP          BITMAP                  "res\\newui\\TOP_ROTATE.bmp"
 TOP_FLIP.BMP            BITMAP                  "res\\newui\\TOP_FLIP.bmp"
-TOP_CAPTURE.BMP            BITMAP                  "res\\newui\\TOP_CAPTURE.bmp"
+TOP_CAPTURE.BMP         BITMAP                  "res\\newui\\TOP_CAPTURE.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // FILE
 //
+
 IDF_SHADER_LEVELS3      FILE                    "res\\shaders\\levels3.psh"
-IDF_SHADER_BT601_BT709	FILE					"res\\shaders\\BT601BT709.psh"
+IDF_SHADER_BT601_BT709  FILE                    "res\\shaders\\BT601BT709.psh"
 IDF_SHADER_EMPTY        FILE                    "res\\shaders\\empty.psh"
 IDF_SHADER_CONTOUR      FILE                    "res\\shaders\\contour.psh"
 IDF_SHADER_DEINTERLACE  FILE                    "res\\shaders\\deinterlace (blend).psh"
@@ -2656,17 +2657,17 @@ BEGIN
     IDF_SHADER_NIGHTVISION  "nightvision"
     IDF_SHADER_EDGE_SHARPEN "边缘锐化"
     IDF_SHADER_SHARPEN_COMPLEX "画面柔滑"
-	IDF_SHADER_SHARPEN_COMPLEX3 "画面柔滑（PS 3.0）"
     IDF_SHADER_LEVELS2      "标清色彩校正（16-235 -> 0-255）"
-	IDF_SHADER_LEVELS3      "护眼模式"
     IDF_SHADER_BT601_BT701  "亮度校正（BT.601 -> BT.701）"
-	IDF_SHADER_BT601_BT709  "亮度校正（BT.601 -> BT.709）"
     IDF_SHADER_DENOISE      "降噪"
 END
 
 STRINGTABLE 
 BEGIN
     IDF_SHADER_YV12CHROMAUP "色彩浓度修正"
+    IDF_SHADER_LEVELS3      "护眼模式"
+    IDF_SHADER_BT601_BT709  "亮度校正（BT.601 -> BT.709）"
+    IDF_SHADER_SHARPEN_COMPLEX3 "画面柔滑（PS 3.0）"
 END
 
 STRINGTABLE 

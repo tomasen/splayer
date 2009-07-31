@@ -43,7 +43,15 @@ void CSeekBarTip::OnEnable(BOOL bEnable)
 
 	// TODO: Add your message handler code here
 }
-void CSeekBarTip::SetTips(CString szText, BOOL bMove , CPoint* mPoint){
+void CSeekBarTip::SetTips(CString szText, BOOL bMove , CPoint* mPoint, UINT delayOpen){
+	KillTimer(IDT_DELAYOPEN);
+	if(delayOpen){
+		m_delayText = szText;
+		m_delayMove = bMove;
+		GetCursorPos(&m_delayPoint);
+		SetTimer(IDT_DELAYOPEN, delayOpen,NULL);
+		return;
+	}
 	m_text = szText;
 	if(szText.IsEmpty()){
 		ShowWindow(SW_HIDE);
@@ -197,6 +205,11 @@ void CSeekBarTip::OnClose()
 void CSeekBarTip::OnRealClose(){
 	CWnd::OnClose();
 }
+void CSeekBarTip::ClearStat(){
+	KillTimer(IDT_DELAYOPEN);
+	KillTimer(IDT_CLOSTTIPS);
+	ShowWindow(SW_HIDE);
+}
 BOOL CSeekBarTip::PreTranslateMessage(MSG* pMsg)
 {
 	// TODO: Add your specialized code here and/or call the base class
@@ -214,9 +227,14 @@ void CSeekBarTip::OnMouseMove(UINT nFlags, CPoint point)
 void CSeekBarTip::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO: Add your message handler code here and/or call default
+	
 	if(nIDEvent == IDT_CLOSTTIPS ){
 		KillTimer(IDT_CLOSTTIPS);
+		
 		ShowWindow(SW_HIDE);
+	}else if(nIDEvent == IDT_DELAYOPEN){
+		KillTimer(IDT_DELAYOPEN);
+		SetTips(m_delayText, m_delayMove, &m_delayPoint);
 	}
 	CWnd::OnTimer(nIDEvent);
 }

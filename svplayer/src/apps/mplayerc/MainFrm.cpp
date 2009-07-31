@@ -498,7 +498,6 @@ static bool s_mDragFucOn = false;
 //static bool bRecentFocused = FALSE;
 static bool bNotHideColorControlBar = FALSE;
 #define  SINGLECLICK_INTERLEAVE_MS 200
-#define HTMINTOTRAY 10002
 
 CMainFrame::CMainFrame() : 
 	m_dwRegister(0),
@@ -755,20 +754,27 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// an alternative way of pre-multiplying bitmap data
 	CRect btnMargin(3,7,15,3);
 	CSize btnSize(21,17);//IDM_CLOSE_PNG
-	CSUIButton* bClose = new CSUIButton( L"CLOSE.BMP",ALIGN_TOPRIGHT, btnMargin  , 0,  HTCLOSE);
+	CSUIButton* bClose = new CSUIButton( L"CLOSE.BMP",ALIGN_TOPRIGHT, btnMargin  , 0,  MYHTCLOSE);
 	m_btnList.AddTail(bClose );
 	btnMargin.right = 3;
 
-	CSUIButton* btnMax = new CSUIButton(L"MAXIMIZE.BMP" , ALIGN_TOPRIGHT, btnMargin  , 0, HTMAXBUTTON, FALSE, ALIGN_RIGHT, bClose );
-	CSUIButton* btnRestore = new CSUIButton(L"RESTORE.BMP" , ALIGN_TOPRIGHT, btnMargin  , 0, HTMAXBUTTON, TRUE, ALIGN_RIGHT, bClose );
+	CSUIButton* btnFullScreen = new CSUIButton(L"BTN_FULLSCREEN.BMP" , ALIGN_TOPRIGHT, btnMargin  , 0, MYHTFULLSCREEN, FALSE, ALIGN_RIGHT, bClose );
+
+	CSUIButton* btnMax = new CSUIButton(L"MAXIMIZE.BMP" , ALIGN_TOPRIGHT, btnMargin  , 0, MYHTMAXBUTTON, FALSE, ALIGN_RIGHT, bClose );
+	btnMax->addAlignRelButton(ALIGN_RIGHT, btnFullScreen );
+	CSUIButton* btnRestore = new CSUIButton(L"RESTORE.BMP" , ALIGN_TOPRIGHT, btnMargin  , 0, MYHTMAXBUTTON, TRUE, ALIGN_RIGHT, bClose );
+	btnRestore->addAlignRelButton(ALIGN_RIGHT, btnFullScreen );
+
+	m_btnList.AddTail(btnFullScreen );
 	m_btnList.AddTail(btnMax );
 	m_btnList.AddTail( btnRestore );
 
-	CSUIButton* btnMin = new CSUIButton(L"MINIMIZE.BMP", ALIGN_TOPRIGHT, btnMargin  ,  0, HTMINBUTTON ,FALSE, ALIGN_RIGHT, btnRestore);
+	CSUIButton* btnMin = new CSUIButton(L"MINIMIZE.BMP", ALIGN_TOPRIGHT, btnMargin  ,  0, MYHTMINBUTTON ,FALSE, ALIGN_RIGHT, btnRestore);
 	btnMin->addAlignRelButton(ALIGN_RIGHT , btnMax );
+	btnMin->addAlignRelButton(ALIGN_RIGHT , btnFullScreen );
 	m_btnList.AddTail( btnMin);
-	m_btnList.AddTail( new CSUIButton(L"BTN_MINTOTRAY.BMP", ALIGN_TOPRIGHT, btnMargin  ,  0, HTMINTOTRAY ,FALSE, ALIGN_RIGHT, m_btnList.GetTail()));
-	CSUIButton* btnMenu = new CSUIButton(L"MENU.BMP", ALIGN_TOPRIGHT, btnMargin  ,  0, HTMENU, FALSE, ALIGN_RIGHT, m_btnList.GetTail(), CRect(3,3,12,3));
+	m_btnList.AddTail( new CSUIButton(L"BTN_MINTOTRAY.BMP", ALIGN_TOPRIGHT, btnMargin  ,  0, MYHTMINTOTRAY ,FALSE, ALIGN_RIGHT, m_btnList.GetTail()));
+	CSUIButton* btnMenu = new CSUIButton(L"MENU.BMP", ALIGN_TOPRIGHT, btnMargin  ,  0, MYHTMENU, FALSE, ALIGN_RIGHT, m_btnList.GetTail(), CRect(3,3,12,3));
 	btnMenu->addAlignRelButton( ALIGN_RIGHT , btnMin , CRect(3,3,12,3) );
 	m_btnList.AddTail( btnMenu);
 
@@ -784,7 +790,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	PreMultiplyBitmap(m_bmpMinimize);
 	PreMultiplyBitmap(m_bmpRestore);
 	PreMultiplyBitmap(m_bmpMenu);*/
-	m_btnList.SetHideStat( HTMINTOTRAY,   s.fTrayIcon);
+	m_btnList.SetHideStat( MYHTMINTOTRAY,   s.fTrayIcon);
 
 	ImmAssociateContextEx(m_hWnd, 0, IACE_CHILDREN);
 	//ImmAssociateContext((HWND)m_wndView, 0);
@@ -1053,9 +1059,11 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 		if(m_fFullScreen || SIZE_MAXIMIZED == nType)
 		{
 			m_btnList.SetHideStat(L"MAXIMIZE.BMP", TRUE);
+			m_btnList.SetHideStat(L"BTN_FULLSCREEN.BMP", TRUE);
 			m_btnList.SetHideStat(L"RESTORE.BMP", false);
 		}else{
 			m_btnList.SetHideStat(L"MAXIMIZE.BMP", false);
+			m_btnList.SetHideStat(L"BTN_FULLSCREEN.BMP", false);
 			m_btnList.SetHideStat(L"RESTORE.BMP", true);
 		}
 		CRect rc;
@@ -1413,15 +1421,19 @@ LRESULT CMainFrame::OnNcActivate( WPARAM wParam, LPARAM lParam)
 LRESULT CMainFrame::OnNcLButtonDown( WPARAM wParam, LPARAM lParam )
 {
 	// custom processing of our min/max/close buttons
-	if (wParam == HTCLOSE || wParam == HTMAXBUTTON || wParam == HTMINBUTTON || HTMINTOTRAY == wParam)
+	if (wParam == MYHTCLOSE || wParam == MYHTMAXBUTTON || wParam == MYHTMINBUTTON || MYHTMINTOTRAY == wParam || MYHTFULLSCREEN == wParam)
 	{
 		RedrawNonClientArea();
+		
 		return FALSE;
-	}
-	if(wParam == HTMENU){
+	}else if(wParam == HTCLOSE || wParam == HTMAXBUTTON || wParam == HTMINBUTTON  )
+		return FALSE;
+
+	if(wParam == HTMENU || wParam == MYHTMENU){
 		OnMenu(m_popup.GetSubMenu(0));
 		m_btnList.ClearStat();
 		RedrawNonClientArea();
+		
 		return FALSE;
 	}
 	return DefWindowProc(WM_NCLBUTTONDOWN, wParam, lParam);
@@ -1432,41 +1444,48 @@ LRESULT CMainFrame::OnStatusMessage(  WPARAM wParam, LPARAM lParam){
 	return S_OK;
 
 }
+static LONGLONG m_lastTimeToggleFullsreen = 0;
 LRESULT CMainFrame::OnNcLButtonUp( WPARAM wParam, LPARAM lParam )
 {
 	// custom processing of our min/max/close buttons
-	if (wParam == HTCLOSE || wParam == HTMAXBUTTON || wParam == HTMINBUTTON || wParam == HTMENU || HTMINTOTRAY == wParam)
+	if ( (wParam == MYHTCLOSE || wParam == MYHTMAXBUTTON || wParam == MYHTMINBUTTON || wParam == MYHTMENU || MYHTMINTOTRAY == wParam || MYHTFULLSCREEN == wParam))
 	{
 		RedrawNonClientArea();
 		WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
 		GetWindowPlacement(&wp);
-		if (wParam == HTCLOSE)
-			PostMessage(WM_CLOSE);
-		else if(wParam == HTMAXBUTTON)
-		{
-			//m_nBoxStatus[0] = m_nBoxStatus[1] =m_nBoxStatus[2] = 0;
-			m_btnList.ClearStat();
-			if (wp.showCmd == SW_MAXIMIZE)
-				ShowWindow(SW_NORMAL);
-			else
-				ShowWindow(SW_MAXIMIZE);
-		}
-		else if (wParam == HTMINBUTTON)
-		{
-			//m_nBoxStatus[0] = m_nBoxStatus[1] =m_nBoxStatus[2] = 0;
-			m_btnList.ClearStat();
-			ShowWindow(SW_MINIMIZE);
-		}
-		else if (wParam == HTMENU  )
-		{
-			//OnMenu(m_mainMenu.GetSubMenu(0));
-		}else if(HTMINTOTRAY == wParam ){
-			m_btnList.ClearStat();
-			ShowWindow(SW_HIDE);
-			ShowTrayIcon(true);
+		LONGLONG tickNow = AfxGetMyApp()->GetPerfCounter();
+		if(  tickNow > ( m_lastTimeToggleFullsreen + 3000000) ){
+			if (wParam == MYHTFULLSCREEN){
+				PostMessage(WM_COMMAND , ID_VIEW_FULLSCREEN , 0);
+				m_btnList.ClearStat();
+			}
+			else if (wParam == MYHTCLOSE)
+				PostMessage(WM_CLOSE);
+			else if(wParam == MYHTMAXBUTTON)
+			{
+				//m_nBoxStatus[0] = m_nBoxStatus[1] =m_nBoxStatus[2] = 0;
+				m_btnList.ClearStat();
+				if (wp.showCmd == SW_MAXIMIZE)
+					ShowWindow(SW_NORMAL);
+				else
+					ShowWindow(SW_MAXIMIZE);
+			}
+			else if (wParam == MYHTMINBUTTON)
+			{
+				//m_nBoxStatus[0] = m_nBoxStatus[1] =m_nBoxStatus[2] = 0;
+				m_btnList.ClearStat();
+				ShowWindow(SW_MINIMIZE);
+			}
+			else if(MYHTMINTOTRAY == wParam ){
+				m_btnList.ClearStat();
+				ShowWindow(SW_HIDE);
+				ShowTrayIcon(true);
+			}
 		}
 		return FALSE;
-	}
+	}else if(wParam == HTCLOSE || wParam == HTMAXBUTTON || wParam == HTMINBUTTON || wParam == HTMENU || wParam == MYHTMENU )
+		return FALSE;
+
 	return DefWindowProc(WM_NCLBUTTONUP, wParam, lParam);
 }
 
@@ -1524,6 +1543,42 @@ LRESULT CMainFrame::OnNcHitTestNewUI(WPARAM wParam, LPARAM lParam )
 		RedrawNonClientArea();
 	}
 	if(ret){
+		CString szTips;
+		switch(ret){
+			case MYHTFULLSCREEN:
+				if(m_fFullScreen)
+					szTips = ( _T("恢复窗口"));
+				else
+					szTips = ( _T("全屏切换"));
+				break;
+			case MYHTMINTOTRAY:
+				szTips = ( _T("最小化到任务栏"));
+				break;
+			case MYHTMENU:
+				szTips = ( _T("菜单"));
+				break;
+			case MYHTMINBUTTON:
+				szTips = ( _T("最小化"));
+				break;
+			case MYHTMAXBUTTON:
+				{
+					WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
+					GetWindowPlacement(&wp);
+					if(wp.showCmd != SW_SHOWMAXIMIZED)
+						szTips = ( _T("最大化"));
+					else
+						szTips = ( _T("恢复窗口"));
+
+				}
+				
+				break;
+			case MYHTCLOSE:
+				szTips = ( _T("退出"));
+				break;
+		}
+		if(!szTips.IsEmpty()){
+			m_tip.SetTips(szTips, 1,0,300);
+		}
 		return ret;
 	}
 	CRect rcMenu (rc.left + 3, rc.top + 3,rc.left + 23 , rc.top + 15 );
@@ -1531,7 +1586,7 @@ LRESULT CMainFrame::OnNcHitTestNewUI(WPARAM wParam, LPARAM lParam )
 		return HTMENU;
 	}
 	LRESULT lHTESTID = DefWindowProc(WM_NCHITTEST, wParam, lParam);
-	if(lHTESTID == HTCLOSE || lHTESTID == HTMAXBUTTON || lHTESTID == HTMINBUTTON || lHTESTID == HTMENU || lHTESTID == HTMINTOTRAY ){
+	if(lHTESTID == MYHTCLOSE || lHTESTID == MYHTMAXBUTTON || lHTESTID == MYHTMINBUTTON || lHTESTID == MYHTMENU || lHTESTID == MYHTMINTOTRAY ){
 		return HTCAPTION;
 	}
 	if(HTSYSMENU == lHTESTID){
@@ -1539,7 +1594,7 @@ LRESULT CMainFrame::OnNcHitTestNewUI(WPARAM wParam, LPARAM lParam )
 	}
 	
 	if(lHTESTID && m_WndSizeInited && m_tip.IsWindowVisible())
-		m_tip.ShowWindow(SW_HIDE);
+		m_tip.ClearStat();
 
 	return lHTESTID;
 } 
@@ -4006,6 +4061,8 @@ BOOL CMainFrame::OnMenu(CMenu* pMenu)
 {
 	if(!pMenu) return FALSE;
 
+	m_tip.ClearStat();
+
 	KillTimer(TIMER_FULLSCREENMOUSEHIDER);
 	m_fHideCursor = false;
 
@@ -6278,7 +6335,7 @@ void CMainFrame::OnViewFullscreenSecondary()
 
 void CMainFrame::OnUpdateViewFullscreen(CCmdUI* pCmdUI)
 {
-	pCmdUI->Enable(m_iMediaLoadState == MLS_LOADED && !m_fAudioOnly || m_fFullScreen);
+	pCmdUI->Enable(1);//m_iMediaLoadState == MLS_LOADED && !m_fAudioOnly || m_fFullScreen
 	pCmdUI->SetCheck(m_fFullScreen);
 }
 
@@ -8721,6 +8778,7 @@ CSize CMainFrame::GetVideoSize()
 void CMainFrame::ToggleFullscreen(bool fToNearest, bool fSwitchScreenResWhenHasTo)
 {
 	CRect r;
+	m_lastTimeToggleFullsreen = AfxGetMyApp()->GetPerfCounter();
 //	const CWnd* pWndInsertAfter;
 	DWORD dwRemove = 0, dwAdd = 0;
 	DWORD dwRemoveEx = 0, dwAddEx = 0;
@@ -13306,7 +13364,7 @@ void CMainFrame::OnAdvOptions()
 			s.UpdateData(true);
 		}		
 	
-		m_btnList.SetHideStat( HTMINTOTRAY,   s.fTrayIcon);
+		m_btnList.SetHideStat( MYHTMINTOTRAY,   s.fTrayIcon);
 		ShowTrayIcon(s.fTrayIcon);
 		RedrawNonClientArea();
 }
@@ -13341,7 +13399,7 @@ void CMainFrame::ShowOptions(int idPage)
 		}		
 	}
 
-	m_btnList.SetHideStat( HTMINTOTRAY,   s.fTrayIcon);
+	m_btnList.SetHideStat( MYHTMINTOTRAY,   s.fTrayIcon);
 	ShowTrayIcon(s.fTrayIcon);
 	RedrawNonClientArea();
 }

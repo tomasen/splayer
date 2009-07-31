@@ -729,6 +729,9 @@ BOOL CPlayerToolBar::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 				case ID_SUBFONTDOWNBOTH:
 					toolTip = _T("ËõÐ¡×ÖÄ»");
 					break;	
+				default:
+					toolTip = ResStr(nID);
+					break;
 	}
 
 	
@@ -740,8 +743,16 @@ BOOL CPlayerToolBar::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 				bRet = TRUE;
 			}
 		}else{
-			CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
-			pFrame->m_tip.SetTips(toolTip, TRUE);
+			if(!toolTip.IsEmpty()){
+
+				int iN = toolTip.Find(_T("\n"));
+				if(iN > 0){
+					toolTip = toolTip.Left(iN).Trim();
+				}
+				CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
+				pFrame->m_tip.SetTips(toolTip, TRUE);
+			}
+			
 		}
 	
 

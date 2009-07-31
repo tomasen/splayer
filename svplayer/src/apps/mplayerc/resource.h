@@ -355,6 +355,12 @@
 #define TIMER_FASTFORWORD               7001
 #define TIMER_STOPFASTFORWORD           7002
 #define TIMER_STATERASER                7003
+#define MYHTFULLSCREEN					7004
+#define MYHTMENU						7005
+#define MYHTCLOSE						7006
+#define MYHTMAXBUTTON					7007
+#define MYHTMINBUTTON					7008
+#define MYHTMINTOTRAY					7009
 #define IDD_OPEN_DLG                    10000
 #define IDD_OPENCAPDEVICE_DLG           10001
 #define IDD_MEDIATYPES_DLG              10002

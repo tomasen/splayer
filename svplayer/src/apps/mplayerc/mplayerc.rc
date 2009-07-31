@@ -1443,6 +1443,9 @@ TOP_LETTERBOX.BMP       BITMAP                  "res\\newui\\TOP_LETTERBOX.bmp"
 TOP_ROTATE.BMP          BITMAP                  "res\\newui\\TOP_ROTATE.bmp"
 TOP_FLIP.BMP            BITMAP                  "res\\newui\\TOP_FLIP.bmp"
 TOP_CAPTURE.BMP         BITMAP                  "res\\newui\\TOP_CAPTURE.bmp"
+TOP_CLOSE.BMP		    BITMAP                  "res\\newui\\TOP_CLOSE.bmp"
+TOP_RESTORE.BMP         BITMAP                  "res\\newui\\TOP_RESTORE.bmp"
+BTN_FULLSCREEN.BMP      BITMAP                "res\\newui\\BTN_FULLSCREEN.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //

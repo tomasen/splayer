@@ -8724,6 +8724,12 @@ void CMainFrame::ToggleFullscreen(bool fToNearest, bool fSwitchScreenResWhenHasT
 
 	if(!m_fFullScreen)
 	{
+
+		if(m_wndPlaylistBar.IsVisible()){
+			m_fPlaylistBeforeToggleFullScreen = true;
+			ShowControlBar(&m_wndPlaylistBar, FALSE, TRUE);
+		}
+
 		GetWindowRect(&m_lastWindowRect);
 
 		dispmode& dm = AfxGetAppSettings().dmFullscreenRes;
@@ -8742,9 +8748,14 @@ void CMainFrame::ToggleFullscreen(bool fToNearest, bool fSwitchScreenResWhenHasT
 		if(fToNearest) r = mi.rcMonitor;
 		else GetDesktopWindow()->GetWindowRect(&r);
 		hMenu = NULL;
+
+
 	}
 	else
 	{
+		if( m_fPlaylistBeforeToggleFullScreen )		
+			ShowControlBar(&m_wndPlaylistBar, TRUE, TRUE);
+
 		if(m_dmBeforeFullscreen.fValid)
 			SetDispMode(m_dmBeforeFullscreen);
 

@@ -202,7 +202,8 @@ void CUpdaterDlg::OnTimer(UINT_PTR nIDEvent)
 				prg_total.ShowWindow(SW_SHOW);
 				cs_stat.ShowWindow(SW_HIDE);
 				cslink.ShowWindow(SW_HIDE);
-				cb_backgd.SetWindowText(_T("后台运行"));
+				//cb_backgd.SetWindowText(_T("后台运行"));
+				cb_backgd.EnableWindow(false);
 				AfxBeginThread(ThreadCheckUpdate , (LPVOID)&cup);
 				SetTimer(IDT_REFRESH_STAT, 700, NULL);
 			}
@@ -226,7 +227,7 @@ void CUpdaterDlg::OnTimer(UINT_PTR nIDEvent)
 				//SVP_LogMsg(szTmp);
 
 				if(cup.bWaiting){
-					szTmp = _T("文件仍在被占用，关闭播放器或重新启动后将自动更新到最新版本");
+					szTmp = _T("关闭播放器或重新启动后将自动更新到最新版本");
 					csCurFile.ShowWindow(SW_HIDE);
 					prg_curfile.ShowWindow(SW_HIDE);
 					csTotalProgress.ShowWindow(SW_HIDE);

@@ -354,6 +354,7 @@ public:
 	int m_iPlaybackMode;
 
 	bool m_fFullScreen;
+	bool m_fPlaylistBeforeToggleFullScreen;
 	bool m_WndSizeInited;
 	bool m_fHideCursor;
 

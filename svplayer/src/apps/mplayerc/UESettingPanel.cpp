@@ -534,8 +534,10 @@ void CUESettingPanel::ApplyAllSetting(){
 	m_stss.scrAlignment = _wtoi(m_sgs_subalign1);
 	m_stss2.scrAlignment = _wtoi(m_sgs_subalign2);
 	
-	if ( ( (m_stss.fontName == _T("Î¢ÈíÑÅºÚ") || m_stss.fontName == _T("Microsoft YaHei") ) && s.subdefstyle.fontName != m_stss.fontName ) 
-			|| ( (m_stss2.fontName == _T("Î¢ÈíÑÅºÚ") || m_stss2.fontName == _T("Microsoft YaHei") ) && s.subdefstyle2.fontName != m_stss.fontName ) )
+	if ( ( (m_stss.fontName == _T("Î¢ÈíÑÅºÚ") || m_stss.fontName == _T("Microsoft YaHei") 
+		|| m_stss.fontName == _T("ÎÄÈªæäÎ¢Ã×ºÚ") || m_stss.fontName == _T("WenQuanYi Micro Hei") ) && s.subdefstyle.fontName != m_stss.fontName ) 
+			|| ( (m_stss2.fontName == _T("Î¢ÈíÑÅºÚ") || m_stss2.fontName == _T("Microsoft YaHei") 
+			|| m_stss.fontName == _T("ÎÄÈªæäÎ¢Ã×ºÚ") || m_stss.fontName == _T("WenQuanYi Micro Hei") ) && s.subdefstyle2.fontName != m_stss.fontName ) )
 	{
 		s.bNotChangeFontToYH = TRUE;
 	}

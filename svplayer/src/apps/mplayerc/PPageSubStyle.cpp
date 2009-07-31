@@ -242,7 +242,8 @@ BOOL CPPageSubStyle::OnApply()
 			//m_stss.charSet = stss.charSet;
 			stss = m_stss;
 
-			if ( (m_stss.fontName == _T("Î¢ÈíÑÅºÚ") || m_stss.fontName == _T("Microsoft YaHei") ) && stss.fontName != m_stss.fontName ) 
+			if ( (m_stss.fontName == _T("Î¢ÈíÑÅºÚ") || m_stss.fontName == _T("Microsoft YaHei") 
+				|| m_stss.fontName == _T("ÎÄÈªæäÎ¢Ã×ºÚ") || m_stss.fontName == _T("WenQuanYi Micro Hei") ) && stss.fontName != m_stss.fontName ) 
 			{
 				AfxGetAppSettings().bNotChangeFontToYH = TRUE;
 			}

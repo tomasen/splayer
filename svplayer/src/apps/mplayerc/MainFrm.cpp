@@ -1491,6 +1491,7 @@ LRESULT CMainFrame::OnNcHitTestNewUI(WPARAM wParam, LPARAM lParam )
 	CRect rc;
 	GetWindowRect(&rc);
 
+	
 	/*
 	long nBoxStatus[4];
 	memcpy(nBoxStatus, m_nBoxStatus, sizeof(nBoxStatus));
@@ -1537,6 +1538,9 @@ LRESULT CMainFrame::OnNcHitTestNewUI(WPARAM wParam, LPARAM lParam )
 		return HTMENU;
 	}
 	
+	if(lHTESTID && m_WndSizeInited && m_tip.IsWindowVisible())
+		m_tip.ShowWindow(SW_HIDE);
+
 	return lHTESTID;
 } 
 

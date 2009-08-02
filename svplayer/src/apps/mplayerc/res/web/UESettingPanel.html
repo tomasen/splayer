@@ -210,18 +210,19 @@ UESAPI.prototype = {
 	        //var oldIdx = oSelect.selectedIndex;
 	        if(usieGPUAcel){
     	        var oOption ;
+               
+                oOption = document.createElement("OPTION");
+                oSelect.options.add(oOption);
+                oOption.innerText = "射手高清";
+                oOption.value = "internalGPUdec";
                 
+                 
                 if(this.canUseCoreAVCCUDA){
                     oOption = document.createElement("OPTION");
                     oSelect.options.add(oOption);
                     oOption.innerText = "CoreAVC";
                     oOption.value = "CoreAVCGPUdec";
                 }
-                 oOption = document.createElement("OPTION");
-                oSelect.options.add(oOption);
-                oOption.innerText = "射手高清(ffmpeg)";
-                oOption.value = "internalGPUdec";
-                
                 if(!oSelect.value){
                     oSelect.value = "internalGPUdec";
                 }
@@ -233,7 +234,7 @@ UESAPI.prototype = {
              
              oOption = document.createElement("OPTION");
 	            oSelect.options.add(oOption);
-                oOption.innerText = "射手高清(ffmpeg)";
+                oOption.innerText = "射手高清";
                 oOption.value = "internaldec";
 
                     
@@ -254,14 +255,14 @@ UESAPI.prototype = {
 	        remark = "PowerDVD: 射手播放器<a href='http://splayer.org/files/netSetup.exe'>高清版安装包</a>中包含的可选组件。PowerDVD的显卡加速高清解码器支持所有主流中高档显卡。但是对于某些高清视频，不能正确识别视频宽高比。";
 	        break;
 	        case "CoreAVCGPUdec":
-	        remark = "CoreAVC: CoreAVC的显卡加速高清解码器支持目前仅支持NVIDIA的中高档显卡，必须安装182.05以上版本的NVIDIA显卡驱动。不兼容播放器的内置亮度调节功能。";
+	        remark = "CoreAVC: CoreAVC的显卡加速高清解码器支持目前仅支持NVIDIA的中高档显卡，必须安装182.05以上版本的NVIDIA显卡驱动。不兼容播放器的内置亮度调节功能。播放一些影片时有画面比例问题。";
 	        noMixer = 1;
 	        break;
 	        case "internaldec":
 	        remark = "ffmpeg: 射手播放器内置的高清解码器。无画面比例问题。";
 	        break;
 	        case "CoreAVCdec":
-	        remark = "CoreAVC:公认性能最好的软解码，但是不兼容播放器的内置亮度调节功能。";
+	        remark = "CoreAVC:公认性能最好的软解码，但是不兼容播放器的内置亮度调节功能。播放一些影片时有画面比例问题。";
 	        noMixer = 1;
 	        break;
 	      
@@ -366,14 +367,12 @@ function myInit(){
 但播放时也有可能影响其他软件运行效率，特别是在低配置的电脑上。">提高进程优先级</label><br />--><br />
 </div>
 <div id="videosetting" class="hiddenarea">
-显示输出方式：<select id="videorender" onchange="ueAPI.useDX9Mixer(this.value == 'DX9' )"><option value="DX9" >智能高配置(DX9)</option>
+&nbsp;<select id="videorender" onchange="ueAPI.useDX9Mixer(this.value == 'DX9' )"><option value="DX9" >智能高配置(DX9)</option>
 <option value="DX7">智能低配置(DX7)</option>
 <option value="ADV">使用自定义高级设置</option></select><br />
-高清解码方式：<select id="decoder" onchange="ueAPI.selectDecoder(this.value);" ></select>
-<input type="checkbox" id="gpuacelbase" onclick="ueAPI.useGPUAcel(this.checked);" /><label for="gpuacelbase">显卡硬件（GPU）加速 </label> <br />
-
- <span id="remarkfordecoder" ></span><br /> <br />
-
+<span id="decoderline" style="display:none;">解码器：<select id="decoder" onchange="ueAPI.selectDecoder(this.value);" ></select></span>
+ <span id="remarkfordecoder" style="display:none;" ></span><br />
+<input type="checkbox" id="gpuacelbase" onclick="ueAPI.useGPUAcel(this.checked);" /><label for="gpuacelbase">显卡硬件（GPU）加速 </label> <br /><br />
 <input type="checkbox" id="vmr9mixer" onclick="ueAPI.useDX9(this.checked);"  /><label for="vmr9mixer" title="启用播放器的亮度调节功能">启用内置亮度调节(需DX9，不能使用CoreAVC解码器)</label><br />
 <input type="checkbox" id="lockbackbuff" /><label for="lockbackbuff" title="解决运动画面中水平错位的问题">修正画面横向错位问题（少许降低性能）</label><br />
 <div id='divdxvacompat' ><input type="checkbox" id="dxvacompat" /><label for="dxvacompat">使硬件高清兼容更多文件（不推荐！显卡能力不足时会造成花屏）</label> <br /></div>
@@ -383,6 +382,8 @@ function myInit(){
 
 </fieldset>
 <div id='gpulist'></div>
+<a style="display:block;float:right;" href="#" onclick="ueAPI.showblock('decoderline');ueAPI.showblock('remarkfordecoder');this.style.display='none';">显示隐藏选项</a>
+<div style="clear:both"></div>
 </div>
 <div id="audiosetting" class="hiddenarea">
 <select id="audiodevice" style="display:none;"><option value='default'>系统默认</option></select><br />

@@ -148,6 +148,8 @@ protected:
 	//void				FindStartCodeH264 (BYTE** pDataIn, int& nSize);
 	//void				AppendBuffer (BYTE* pDataIn, int nSize);
 
+	LONGLONG GetPerfCounter();
+	LONGLONG m_PerfFrequency;
 public:
 
 	const static AMOVIESETUP_MEDIATYPE		sudPinTypesIn[];
@@ -161,6 +163,7 @@ public:
 	static bool								m_ref_frame_count_check_skip;
 	static bool								m_bUSERGB;
 
+	LONGLONG								m_perf_timer[8];
 	CMPCVideoDecFilter(LPUNKNOWN lpunk, HRESULT* phr);
 	virtual ~CMPCVideoDecFilter();
 

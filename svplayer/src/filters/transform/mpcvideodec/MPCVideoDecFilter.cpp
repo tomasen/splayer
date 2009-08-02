@@ -51,7 +51,10 @@ extern "C"
 
 #include "../../../apps/mplayerc/internal_filter_config.h"
 
+
 #include "../../../svplib/svplib.h"
+
+#define LOGDEBUG 0
 /////
 #define MAX_SUPPORTED_MODE			5
 #define MPCVD_CAPTION				_T("MPC Video decoder")
@@ -528,6 +531,9 @@ CMPCVideoDecFilter::CMPCVideoDecFilter(LPUNKNOWN lpunk, HRESULT* phr)
 	m_nErrorConcealment		= FF_EC_DEBLOCK | FF_EC_GUESS_MVS;
 
 	m_nThreadNumber			= m_pCpuId->GetProcessorNumber();
+	if(m_pCpuId->GetHTEnabled()){
+		m_nThreadNumber = max(1, m_nThreadNumber/2);
+	}
 	m_nDiscardMode			= AVDISCARD_DEFAULT;
 	m_nErrorRecognition		= FF_ER_CAREFUL;
 	m_nIDCTAlgo				= FF_IDCT_XVIDMMX;  //FF_IDCT_AUTO //FF_IDCT_LIBMPEG2MMX //FF_IDCT_VP3
@@ -570,7 +576,10 @@ CMPCVideoDecFilter::CMPCVideoDecFilter(LPUNKNOWN lpunk, HRESULT* phr)
 	avcodec_init();
 	avcodec_register_all();
 
-	//av_log_set_callback(LogLibAVCodec);
+#ifdef LOGDEBUG
+	av_log_set_callback(LogLibAVCodec);
+	QueryPerformanceFrequency ((LARGE_INTEGER*)&m_PerfFrequency);
+#endif
 
 	EnumWindows(EnumFindProcessWnd, (LPARAM)&hWnd);
 	DetectVideoCard(hWnd);
@@ -1103,9 +1112,9 @@ VIDEO_OUTPUT_FORMATS DXVAFormats[] =
 
 VIDEO_OUTPUT_FORMATS SoftwareFormats[] =
 {
+	{&MEDIASUBTYPE_I420, 3, 12, '024I'},
 	{&MEDIASUBTYPE_YV12, 3, 12, '21VY'},
 	{&MEDIASUBTYPE_YUY2, 1, 16, '2YUY'},	// Software
-	{&MEDIASUBTYPE_I420, 3, 12, '024I'},
 	{&MEDIASUBTYPE_IYUV, 3, 12, 'VUYI'},
 	{&MEDIASUBTYPE_RGB32, 1, 32, BI_RGB},
 	{&MEDIASUBTYPE_RGB24, 1, 24, BI_RGB} 
@@ -1360,6 +1369,22 @@ void CMPCVideoDecFilter::SetTypeSpecificFlags(IMediaSample* pMS)
 		}
 	}
 }
+LONGLONG CMPCVideoDecFilter::GetPerfCounter()
+{
+#ifdef LOGDEBUG
+	LONGLONG		i64Ticks100ns;
+	if (m_PerfFrequency != 0)
+	{
+		QueryPerformanceCounter ((LARGE_INTEGER*)&i64Ticks100ns);
+		i64Ticks100ns	= LONGLONG((double(i64Ticks100ns) * 10000000) / double(m_PerfFrequency) + 0.5);
+
+		return i64Ticks100ns;
+	}else{
+		SVP_LogMsg(_T("No m_PerfFrequency!!"));
+	}
+#endif
+	return 0;
+}
 
 HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int nSize, REFERENCE_TIME& rtStart, REFERENCE_TIME& rtStop)
 {
@@ -1389,8 +1414,10 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 		// MPEG bitstreams could cause overread and segfault.
 		memcpy(m_pFFBuffer, pDataIn, nSize);
 		memset(m_pFFBuffer+nSize,0,FF_INPUT_BUFFER_PADDING_SIZE);
+		m_perf_timer[1] = GetPerfCounter();
 
 		used_bytes = avcodec_decode_video (m_pAVCtx, m_pFrame, &got_picture, m_pFFBuffer, nSize);
+		m_perf_timer[2] = GetPerfCounter();
 		if(used_bytes < 0 ) { /*SVP_LogMsg3("used_bytes < 0 ");*/ return S_OK; } // Why MPC-HC removed this lineis un clear to me, add it back see if it solve sunpack problem
 		if (!got_picture || !m_pFrame->data[0]) {/* SVP_LogMsg3("!got_picture || !m_pFrame->data[0] %d " , got_picture);*/  return S_OK; }
 		if(pIn->IsPreroll() == S_OK || rtStart < 0) {/* SVP_LogMsg3("pIn->IsPreroll()  %d  %d " , pIn->IsPreroll() , rtStart);*/ return S_OK;}
@@ -1454,9 +1481,11 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 				break;
 		}
 
+		m_perf_timer[3] = GetPerfCounter();
 		CopyBuffer(pDataOut, m_pFrame->data, m_pAVCtx->width, m_pAVCtx->height, m_pFrame->linesize[0], subtype,false);//MEDIASUBTYPE_YUY2 for TSCC
 
-#ifdef _DEBUG && 0
+		m_perf_timer[4] = GetPerfCounter();
+#if 0
 		static REFERENCE_TIME	rtLast = 0;
 		//TRACE ("Deliver : %10I64d - %10I64d   (%10I64d)  {%10I64d}\n", rtStart, rtStop, 
 		//			rtStop - rtStart, rtStart - rtLast);
@@ -1468,6 +1497,14 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 
 		nSize	-= used_bytes;
 		pDataIn += used_bytes;
+#ifdef LOGDEBUG
+		m_perf_timer[5] = GetPerfCounter();
+		LONGLONG totalPerfTime = m_perf_timer[5] - m_perf_timer[0];
+		SVP_LogMsg3(("Timer Decoder %.3f%% CopyBuff Delivery %.3f%% Other Decoder %.3f%%") , ((double)((m_perf_timer[2] - m_perf_timer[1]) * 10000 / totalPerfTime)) / 100,
+			((double)((m_perf_timer[4] - m_perf_timer[3]) * 10000 / totalPerfTime)) / 100,((double)((m_perf_timer[5] - m_perf_timer[4]) * 10000 / totalPerfTime)) / 100,
+			((double)((m_perf_timer[1] - m_perf_timer[0]) * 10000 / totalPerfTime)) / 100);
+		m_perf_timer[0] = m_perf_timer[5];
+#endif
 	}
 
 	return hr;

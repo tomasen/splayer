@@ -51,6 +51,8 @@ public:
 	int					GetFeatures()	{ return m_nCPUFeatures; };
 	PROCESSOR_TYPE		GetType()		{ return m_nType; };
 	int					GetProcessorNumber();
+	int					m_HTEnabled;
+	BOOL				GetHTEnabled();
 
 private :
 	int					m_nCPUFeatures;

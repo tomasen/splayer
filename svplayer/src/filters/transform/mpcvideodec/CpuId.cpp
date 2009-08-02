@@ -39,7 +39,8 @@
 #define CPUID_MMXEXT		(1<<22)
 
 
-CCpuId::CCpuId(void)
+CCpuId::CCpuId(void): 
+m_HTEnabled(-1)
 {
 unsigned	nHighestFeature;
 unsigned	nHighestFeatureEx;
@@ -199,4 +200,24 @@ int CCpuId::GetProcessorNumber()
 	GetSystemInfo(&SystemInfo);
 
 	return SystemInfo.dwNumberOfProcessors;
+}
+
+
+BOOL CCpuId::GetHTEnabled(){
+	if(m_HTEnabled < 0){
+		int IsHTSupported = 0;
+		__asm
+		{
+				mov eax, 1
+				cpuid
+				test edx, 0x10000000
+				// Check if bit 28 in EDX is set
+				jz HT_Not_Support
+				mov IsHTSupported, 1
+				HT_Not_Support:
+		}
+		m_HTEnabled = IsHTSupported;
+	}else{
+		return !! m_HTEnabled;
+	}
 }

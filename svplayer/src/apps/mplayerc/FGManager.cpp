@@ -1919,7 +1919,11 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 		m_transform.AddTail(pFGF);
 	}
 #if INCLUDE_MPC_VIDEO_DECODER | INCLUDE_MPC_DXVA_VIDEO_DECODER
-	pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(_T("MPC Video Decoder"), MERIT64_ABOVE_DSHOW);
+	UINT64 merit = MERIT64_ABOVE_DSHOW;
+	if(s.optionDecoder == _T("internaldec") && !s.useGPUAcel){
+		merit += 100;
+	}
+	pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(_T("MPC Video Decoder"),  merit);
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_tscc);
 	
 #if INTERNAL_DECODER_FLV

@@ -10,7 +10,7 @@
 
 // CPlayerColorControlBar
 
-IMPLEMENT_DYNAMIC(CPlayerColorControlBar, CDialogBar)
+IMPLEMENT_DYNAMIC(CPlayerColorControlBar, CSVPDialog)
 
 CPlayerColorControlBar::CPlayerColorControlBar()
 {
@@ -22,14 +22,43 @@ CPlayerColorControlBar::~CPlayerColorControlBar()
 }
 
 
-BEGIN_MESSAGE_MAP(CPlayerColorControlBar, CDialogBar)
-	ON_WM_ERASEBKGND()
-	ON_WM_PAINT()
+BEGIN_MESSAGE_MAP(CPlayerColorControlBar, CSVPDialog)
+	//ON_WM_ERASEBKGND()
+	//ON_WM_PAINT()
 	ON_WM_SIZE()
 	ON_WM_CREATE()
 	ON_WM_HSCROLL()
 
+	ON_WM_GETMINMAXINFO()
+
+	ON_BN_CLICKED(IDC_BUTTONRESETCOLORCONTROL,   OnButtonReset)
+	ON_BN_CLICKED(IDC_BUTTONENABLECOLORCONTROL,  OnColorControlButtonEnable)
+	
 END_MESSAGE_MAP()
+
+
+void CPlayerColorControlBar::OnColorControlButtonEnable(){
+	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
+	if(pFrame){
+		AppSettings& s = AfxGetAppSettings();
+		s.fVMR9MixerMode = !s.fVMR9MixerMode;
+		if(s.fVMR9MixerMode){
+			s.iDSVideoRendererType = 6;
+			s.iRMVideoRendererType = 2;
+			s.iQTVideoRendererType = 2;
+		}
+
+		if( pFrame->IsSomethingLoaded()){
+			pFrame->ReRenderOrLoadMedia();
+
+		}
+		CheckAbility();
+		
+	}
+
+	Relayout();
+}
+
 
 // CPlayerColorControlBar message handlers
 void CPlayerColorControlBar::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
@@ -52,14 +81,16 @@ void CPlayerColorControlBar::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScr
 			}
 		}
 		
-	
+	 
 
 }
 
 int CPlayerColorControlBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
-	if(CDialogBar::OnCreate(lpCreateStruct) == -1)
+	if(__super::OnCreate(lpCreateStruct) == -1)
 		return -1;
+
+	m_bgColor = 0x333333;
 
 	CRect r;
 	GetClientRect(r);
@@ -101,12 +132,11 @@ void CPlayerColorControlBar::OnButtonReset(){
 		csl_const.SetPos(fDefaultConst * 100);
 		pMFrame->SetVMR9ColorControl(fDefaultBright,fDefaultConst,fDefaultHue,fDefaultSaturation);
 	}
+	Relayout();
 }
-void CPlayerColorControlBar::OnButtonEnable(){
-	
-}
+
 void CPlayerColorControlBar::CheckAbility(){
-	CMainFrame* pMFrame = (CMainFrame*)GetParentFrame();
+	CMainFrame* pMFrame = (CMainFrame*)AfxGetMainWnd();
 	AppSettings& s = AfxGetAppSettings();
 	m_bAbleControl = (!!pMFrame->m_pMC);
 	
@@ -156,46 +186,78 @@ void CPlayerColorControlBar::Relayout()
 
 	
 	r2 = r;
+	r2.top += 9;
 	r2.left += 5;
 	r2.right = r2.left + 40;
+	r2.bottom = r2.top + 20;
 	csBrightLabel.MoveWindow(&r2);
 
 	r2 = r;
-	r2.left += r.Width() / 2 - 40;
+	r2.left += 5;
 	r2.right = r2.left + 40;
+	r2.top += 29;
+	r2.bottom = r2.top + 20;
 	csConstLabel.MoveWindow(&r2);
 
 
 	r2 = r;
-	r2.top += 1;
+	r2.top += 9;
 	r2.left += 50;
-	r2.right = r2.left + r.Width() / 2 - 110;
+	r2.right =  r2.right - 18;
+	r2.bottom = r2.top + 20;
 	csl_bright.MoveWindow(&r2);
 	
 	r2 = r;
-	r2.top += 1;
-	r2.left += (r.Width() - 50) / 2 + 30;
-	r2.right = r2.left + r.Width() / 2 - 110;
+	r2.top += 9;
+	r2.left += 50;
+	r2.right = r2.right - 18;
+	r2.top += 20;
+	r2.bottom = r2.top + 20;
 	csl_const.MoveWindow(&r2);
 
 	r2 = r;
-	r2.top += 1;
-	r2.right -= 10;
-	r2.left = r2.right - 35;
+	r2.left += 50;
+	r2.right = r2.left + 35;
+	r2.top += 54;
+	r2.bottom = r2.top + 20;
 	cb_reset.MoveWindow(&r2);
 	cb_reset.EnableWindow(TRUE);
 
 	r2 = r;
-	r2.top += 1;
-	r2.right -= 48;
-	r2.left = r2.right - 35;
+	r2.left += 90;
+	r2.right = r2.left + 35;
+	r2.top += 54;
+	r2.bottom = r2.top + 20;
 	cb_enablectrl.MoveWindow(&r2);
 	cb_enablectrl.EnableWindow(TRUE);
+
+	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
+	AppSettings& s  = AfxGetAppSettings();
+	bool bEnable = (s.iDSVideoRendererType != VIDRNDT_DS_VMR9RENDERLESS) || !s.fVMR9MixerMode;
+	BOOL enable = !bEnable;
+	/*
+	if(pFrame){
+			if(pFrame->IsSomethingLoaded() ){
+				enable == !!pFrame->m_pMC;
+				bEnable = !pFrame->m_pMC;
+			}
+		}*/
+	
+	cb_reset.EnableWindow(enable);
+	cb_reset.Invalidate();
+	
+	if(bEnable)
+		cb_enablectrl.SetWindowText(_T("ÆôÓÃ"));
+	else
+		cb_enablectrl.SetWindowText(_T("½ûÓÃ"));
+	
+	cb_enablectrl.Invalidate();
 
 	Invalidate();
 }
 
 
+/*
 BOOL CPlayerColorControlBar::OnEraseBkgnd(CDC* pDC)
 {
 	
@@ -203,16 +265,12 @@ BOOL CPlayerColorControlBar::OnEraseBkgnd(CDC* pDC)
 	CRect r;
 	GetClientRect(&r);
 
-	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
-
-
-	if(pFrame->m_pLastBar != this || pFrame->m_fFullScreen)
-		r.InflateRect(0, 0, 0, 1);
-
-	r.InflateRect(1, 1, 1, 0);
+	
 	pDC->FillSolidRect(&r, 0x00);
 	return TRUE;
 }
+*/
+/*
 
 void CPlayerColorControlBar::OnPaint()
 {
@@ -223,29 +281,27 @@ void CPlayerColorControlBar::OnPaint()
 
 	// Do not call CDialogBar::OnPaint() for painting messages
 }
+*/
 
 void CPlayerColorControlBar::OnSize(UINT nType, int cx, int cy)
 {
-	CDialogBar::OnSize(nType, cx, cy);
+	__super::OnSize(nType, cx, cy);
 
 	Relayout();
 }
 
-BOOL CPlayerColorControlBar::Create(CWnd* pParentWnd)
-{
-	return CDialogBar::Create(pParentWnd, IDD_PLAYERCOLORCONTROLSBAR, WS_CHILD|WS_VISIBLE|CBRS_ALIGN_BOTTOM|SW_HIDE, IDD_PLAYERCOLORCONTROLSBAR); //not visible default
-}
-
 BOOL CPlayerColorControlBar::PreCreateWindow(CREATESTRUCT& cs)
 {
-	//cs.dwExStyle |= WS_EX_TRANSPARENT ;
-	if(!CDialogBar::PreCreateWindow(cs))
+	if(!__super::PreCreateWindow(cs))
 		return FALSE;
-
-	m_dwStyle &= ~CBRS_BORDER_TOP;
-	m_dwStyle &= ~CBRS_BORDER_BOTTOM;
-	m_dwStyle &= ~WS_VISIBLE;
 	
 
 	return TRUE;
+}
+
+void CPlayerColorControlBar::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
+{
+	// TODO: Add your message handler code here and/or call default
+
+	CSVPDialog::OnGetMinMaxInfo(lpMMI);
 }

@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "mplayerc.h"
 #include "SVPStatic.h"
-
+#include "SVPDialog.h"
 
 // CSVPStatic
 
@@ -39,6 +39,9 @@ int CSVPStatic::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 
 	// TODO:  Add your specialized creation code here
+	CSVPDialog * pDialog = dynamic_cast<CSVPDialog*>( GetParent() );
+	if(pDialog)
+		m_bgColor = pDialog->m_bgColor;
 
 	return 0;
 }

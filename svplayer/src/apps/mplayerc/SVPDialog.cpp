@@ -1,0 +1,131 @@
+// SVPDialog.cpp : implementation file
+//
+
+#include "stdafx.h"
+#include "mplayerc.h"
+#include "SVPDialog.h"
+
+
+// CSVPDialog
+
+IMPLEMENT_DYNAMIC(CSVPDialog, CWnd)
+
+CSVPDialog::CSVPDialog()
+: m_bgColor(0)
+, m_borderColor(0xefefef)
+{
+	m_btnClose.m_btnMode = 1; //x
+	m_btnClose.m_borderColor = 0x787878;
+
+}
+
+CSVPDialog::~CSVPDialog()
+{
+}
+
+
+BEGIN_MESSAGE_MAP(CSVPDialog, CWnd)
+	ON_WM_ENABLE()
+	ON_WM_SIZE()
+	ON_WM_PAINT()
+	ON_WM_CREATE()
+	ON_WM_CLOSE()
+	ON_BN_CLICKED(IDC_BUTTON1,  OnButtonClose)
+	ON_WM_MOVE()
+END_MESSAGE_MAP()
+
+// CSVPDialog message handlers
+void CSVPDialog::OnButtonClose(){
+	ShowWindow(SW_HIDE);
+}
+
+void CSVPDialog::OnEnable(BOOL bEnable)
+{
+	return ;
+	//CWnd::OnEnable(bEnable);
+
+}
+
+void CSVPDialog::OnSize(UINT nType, int cx, int cy)
+{
+	CWnd::OnSize(nType, cx, cy);
+
+	CRect r,cr;
+
+	{ //New UI
+		CRect rc;
+		GetWindowRect(&rc);
+		rc-=rc.TopLeft();
+
+
+
+		// destroy old region
+		if((HRGN)m_rgn)
+		{
+			m_rgn.DeleteObject();
+		}
+
+		m_rgn.CreateRoundRectRgn(0,0,rc.Width()-1,rc.Height()-1, 3,3);                 // rounded rect w/50 pixel corners
+
+		m_rgnBorder.CreateRoundRectRgn(1,1,rc.Width()-2,rc.Height()-2, 3,3);            
+
+		SetWindowRgn(m_rgn,TRUE);
+
+		m_btnClose.MoveWindow( rc.right-16,rc.top+3, 12, 12);
+	}
+
+	
+}
+
+void CSVPDialog::OnPaint()
+{
+	CPaintDC dc(this); // device context for painting
+	CRect rcClient;
+	GetClientRect(&rcClient);
+	CMemoryDC hdc(&dc, rcClient);
+	hdc.FillSolidRect(rcClient, m_bgColor);
+
+	CRect rc;
+	GetWindowRect(&rc);
+	rc-=rc.TopLeft();
+	hdc.FrameRgn(&m_rgnBorder, &m_brushBorder,1,1);
+
+}
+
+int CSVPDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
+{
+	if (CWnd::OnCreate(lpCreateStruct) == -1)
+		return -1;
+
+	GetSystemFontWithScale(&m_statft, 14.0);
+
+	m_brushBorder.CreateSolidBrush(m_borderColor);
+
+	m_btnClose.Create( _T("x"), WS_VISIBLE|WS_CHILD|BS_FLAT|BS_VCENTER|BS_CENTER, CRect(0,0,0,0) , this, IDC_BUTTON1);
+	
+	return 0;
+}
+
+void CSVPDialog::OnClose()
+{
+	ShowWindow(SW_HIDE);
+	//CWnd::OnClose();
+}
+
+void CSVPDialog::OnRealClose(){
+	CWnd::OnClose();
+}
+
+BOOL CSVPDialog::PreTranslateMessage(MSG* pMsg)
+{
+	// TODO: Add your specialized code here and/or call the base class
+
+	return CWnd::PreTranslateMessage(pMsg);
+}
+
+void CSVPDialog::OnMove(int x, int y)
+{
+	CWnd::OnMove(x, y);
+
+	// TODO: Add your message handler code here
+}

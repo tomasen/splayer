@@ -433,10 +433,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND_RANGE(IDS_CHANGE_AUDIO_DEVICE, IDS_CHANGE_AUDIO_DEVICE_END, OnAudioDeviceChange )
 	ON_UPDATE_COMMAND_UI_RANGE(IDS_CHANGE_AUDIO_DEVICE, IDS_CHANGE_AUDIO_DEVICE_END, OnUpdateAudioDeviceChange )
 
-	ON_BN_CLICKED(IDC_BUTTONRESETCOLORCONTROL,  OnColorControlButtonReset)
-	ON_BN_CLICKED(IDC_BUTTONENABLECOLORCONTROL, OnColorControlButtonEnable)
-	ON_UPDATE_COMMAND_UI( IDC_BUTTONRESETCOLORCONTROL,  OnColorControlUpdateButtonReset)
-	ON_UPDATE_COMMAND_UI( IDC_BUTTONENABLECOLORCONTROL,  OnColorControlUpdateButtonEnable)
 
 
 	ON_COMMAND(ID_SHADERS_SETDX9, OnEnableDX9)
@@ -657,7 +653,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 
 	
-	if(m_wndColorControlBar.Create(this)){
+	if(m_wndColorControlBar.CreateEx(WS_EX_TOPMOST, _T("STATIC"), _T("COLORCONTROL"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0)){//WS_EX_NOACTIVATE
 		m_wndColorControlBar.ShowWindow( SW_HIDE);
 	}
 	if(m_wndStatusBar.Create(this)){
@@ -668,7 +664,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	}
 
 
-	m_bars.AddTail(&m_wndColorControlBar);
+	//m_bars.AddTail(&m_wndColorControlBar);
 
 	
 	m_fileDropTarget.Register(this);
@@ -2798,6 +2794,14 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 				SetCursor(NULL);
 			}
 		}
+		if(m_wndColorControlBar.IsWindowVisible()){
+			CRect rcWnd;
+			m_wndColorControlBar.GetWindowRect(rcWnd);
+			CPoint pos;
+			GetCursorPos(&pos);
+			if(!rcWnd.PtInRect(pos))
+				m_wndColorControlBar.ShowWindow(SW_HIDE);
+		}
 	}
 	else if(nIDEvent == TIMER_STATS)
 	{
@@ -3634,20 +3638,23 @@ LRESULT CMainFrame::OnMouseMoveOut(WPARAM /*wparam*/, LPARAM /*lparam*/) {
 void CMainFrame::OnShowColorControlBar()
 {
 	AppSettings &s = AfxGetAppSettings();
-	s.bShowControlBar = !m_wndColorControlBar.IsVisible();
-	ShowControlBar(&m_wndColorControlBar, (s.bShowControlBar ? SW_SHOW : SW_HIDE) , false);
+	s.bShowControlBar = !m_wndColorControlBar.IsWindowVisible();
+	//ShowControlBar(&m_wndColorControlBar, (s.bShowControlBar ? SW_SHOW : SW_HIDE) , false);
 	if(s.bShowControlBar){
+		m_wndColorControlBar.ShowWindow(SW_SHOW);
+		rePosOSD();
 		bNotHideColorControlBar = TRUE;
 		SetTimer(TIMER_STATUSBARHIDER, 3000 , NULL);
 	}else{
 		bNotHideColorControlBar = false;
+		m_wndColorControlBar.ShowWindow(SW_HIDE);
 	}
 }
 
 void CMainFrame::OnUpdateShowColorControlBar(CCmdUI *pCmdUI)
 {
 	AppSettings &s = AfxGetAppSettings();
-	s.bShowControlBar = m_wndColorControlBar.IsVisible();
+	s.bShowControlBar = m_wndColorControlBar.IsWindowVisible();
 
 	pCmdUI->SetCheck(s.bShowControlBar);
 }
@@ -8882,11 +8889,13 @@ void CMainFrame::MoveVideoWindow(bool fShowStats)
 				wr.DeflateRect(2, 2);
 
 			
-			if( m_wndColorControlBar.IsVisible() ){
-				CRect rt ;
-				m_wndColorControlBar.GetClientRect(rt);
-				wr.bottom += rt.Height();
-			}
+			/*
+			if( m_wndColorControlBar.IsWindowVisible() ){
+							CRect rt ;
+							m_wndColorControlBar.GetClientRect(rt);
+							wr.bottom += rt.Height();
+						}*/
+			
 			if( m_wndStatusBar.IsVisible() &&  !( s.nCS & CS_STATUSBAR )  ){
 				CRect rt ;
 				m_wndStatusBar.GetClientRect(rt);
@@ -9001,7 +9010,7 @@ void CMainFrame::MoveVideoWindow(bool fShowStats)
 }
 void CMainFrame::rePosOSD(){
 
-	if(!m_wndView || !::IsWindow(m_wndView.m_hWnd) || !m_wndNewOSD || !::IsWindow(m_wndNewOSD.m_hWnd) ){
+	if(!m_wndView || !::IsWindow(m_wndView.m_hWnd) || !m_wndNewOSD || !::IsWindow(m_wndNewOSD.m_hWnd) || !m_wndColorControlBar || !::IsWindow(m_wndColorControlBar.m_hWnd)){
 		return;	
 	}
 	
@@ -9011,6 +9020,7 @@ void CMainFrame::rePosOSD(){
 	if( ::GetWindowRect( m_wndView.m_hWnd, &rcView ) ){
 		GetWindowRect(&rc);
 		CRect rcTopToolBar(rcView);
+		CRect rcRightTopWnd(rcView);
 			
 		//rcView -= rcView.TopLeft();
 		if(!m_wndNewOSD.m_osdStr.IsEmpty()){
@@ -9029,10 +9039,18 @@ void CMainFrame::rePosOSD(){
 		}
 		
 		if(m_wndToolTopBar.IsWindowVisible()){
-			rcTopToolBar.bottom = rcTopToolBar.top + 20 * m_wndToolTopBar.m_nLogDPIY / 96 ;
+			rcTopToolBar.bottom = rcTopToolBar.top + 20 * m_nLogDPIY / 96 ;
+			
 	//		rcTopToolBar.right = min( rcTopToolBar.left + 100 , rcTopToolBar.right);
 			
 			m_wndToolTopBar.MoveWindow(rcTopToolBar);
+		}
+
+		if(m_wndColorControlBar.IsWindowVisible()){
+			rcRightTopWnd.top += 20 * m_wndToolTopBar.m_nLogDPIY / 96 + 4;
+			rcRightTopWnd.left = rcRightTopWnd.right - 220  * m_nLogDPIY / 96;
+			rcRightTopWnd.bottom = rcRightTopWnd.top + 80  * m_nLogDPIY / 96;
+			m_wndColorControlBar.MoveWindow(rcRightTopWnd);
 		}
 	}
 	return;
@@ -10545,9 +10563,6 @@ void CMainFrame::OnColorControl(UINT nID){
 		SendStatusMessage(_T("您需要在选项面板中启用内置亮度\\色彩控制器才能控制亮度") , 5000);
 	}
 }
-void CMainFrame::OnColorControlButtonReset(){
-	m_wndColorControlBar.OnButtonReset();
-}
 void CMainFrame::ReRenderOrLoadMedia(){
 	int iPlaybackMode = m_iPlaybackMode;
 	int iSpeed = m_iSpeedLevel;
@@ -10575,46 +10590,12 @@ void CMainFrame::OnEnableDX9(){
 		ReRenderOrLoadMedia();
 	}
 }
-void CMainFrame::OnColorControlButtonEnable(){
-	AppSettings& s = AfxGetAppSettings();
-	s.fVMR9MixerMode = !s.fVMR9MixerMode;
-	if(s.fVMR9MixerMode){
-		s.iDSVideoRendererType = 6;
-		s.iRMVideoRendererType = 2;
-		s.iQTVideoRendererType = 2;
-	}
-
-	if( m_iMediaLoadState != MLS_CLOSED){
-		ReRenderOrLoadMedia();
-		
-	}else{
-		m_wndColorControlBar.CheckAbility();
-	}
-}
-void CMainFrame::OnColorControlUpdateButtonReset(CCmdUI* pCmdUI)
-{
-	pCmdUI->Enable(!!m_pMC);
-}
-
-void CMainFrame::OnColorControlUpdateButtonEnable(CCmdUI* pCmdUI)
-{
-	AppSettings& s  = AfxGetAppSettings();
-	bool bEnable = (s.iDSVideoRendererType != VIDRNDT_DS_VMR9RENDERLESS) || !s.fVMR9MixerMode;
-	if( GetMediaState() == State_Running ){
-		bEnable = !m_pMC;
-	}
-	//pCmdUI->Enable(bEnable);
-	if(bEnable)
-		pCmdUI->SetText(_T("启用"));
-	else
-		pCmdUI->SetText(_T("禁用"));
-	
-}
 
 void CMainFrame::SetVMR9ColorControl(float dBrightness, float dContrast, float dHue, float dSaturation)
 {
 	VMR9ProcAmpControl		ClrControl;
 
+	CString  szMsg = _T("您没有启用或显卡(或驱动)不支持亮度控制");
 	if(m_pMC ) // Fuck fVMR9MixerYUV && !AfxGetAppSettings().fVMR9MixerYUV
 	{
 		
@@ -10625,12 +10606,16 @@ void CMainFrame::SetVMR9ColorControl(float dBrightness, float dContrast, float d
 		ClrControl.Hue			= 0;
 		ClrControl.Saturation	= 1;
 
-		m_pMC->SetProcAmpControl (0, &ClrControl);
 
-		CString szMsg;
-		szMsg.Format(_T("亮度: %0.2f  对比度: %0.2f "),dBrightness,dContrast);
-		SendStatusMessage( szMsg , 3000);
+		if(S_OK == m_pMC->SetProcAmpControl (0, &ClrControl) )
+			szMsg.Format(_T("亮度: %0.2f  对比度: %0.2f "),dBrightness,dContrast);
+		else
+			szMsg = _T("您的显卡(或驱动)不支持亮度控制");
+
+		
 	}
+
+	SendStatusMessage( szMsg , 3000);
 }
 bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 {

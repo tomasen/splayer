@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "mplayerc.h"
 #include "SVPButton.h"
+#include "SVPDialog.h"
 
 
 // CSVPButton
@@ -16,7 +17,8 @@ m_textColor(0xffffff)
 ,m_bgColor(0)
 , m_pushedColor(0x232323)
 , m_borderColor(0xffffff)
-, m_textGrayColor(0x787878)
+, m_textGrayColor(0x454545)
+, m_btnMode(0)
 {
 
 }
@@ -44,6 +46,11 @@ int CSVPButton::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	// TODO:  Add your specialized creation code here
 
+	
+		CSVPDialog * pDialog = dynamic_cast<CSVPDialog*>( GetParent() );
+		if(pDialog)
+			this->m_bgColor = pDialog->m_bgColor;
+
 	return 0;
 }
 
@@ -54,14 +61,14 @@ void CSVPButton::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 
 	// This code only works with buttons.
 	ASSERT(lpDrawItemStruct->CtlType == ODT_BUTTON);
-
+	
 	// If drawing selected, add the pushed style to DrawFrameControl.
 	DWORD buttonBG = m_btnBgColor;
 	DWORD textColor = m_textColor;
 	if (lpDrawItemStruct->itemState & ODS_SELECTED){
 		uStyle |= DFCS_PUSHED;
 		buttonBG = m_pushedColor;
-	}if (lpDrawItemStruct->itemState & (ODS_DISABLED|ODS_GRAYED)){
+	} else if (lpDrawItemStruct->itemState & (ODS_DISABLED|ODS_GRAYED)){
 		textColor = m_textGrayColor;
 	}
 
@@ -86,15 +93,39 @@ void CSVPButton::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	CString strText;
 	GetWindowText(strText);
 
-	// Draw the button text using the text color red.
-	COLORREF crOldColor = ::SetTextColor(lpDrawItemStruct->hDC, textColor);
-	::SetBkMode( lpDrawItemStruct->hDC, TRANSPARENT);
-	CRect textRc(lpDrawItemStruct->rcItem);
-	textRc.bottom -=2;
-	::DrawText(lpDrawItemStruct->hDC, strText, strText.GetLength(), 
-		&textRc, DT_SINGLELINE|DT_VCENTER|DT_CENTER);
-	::SetTextColor(lpDrawItemStruct->hDC, crOldColor);
+	switch(m_btnMode){
+		case 1:
+			//x
+			{
+				CRect xRect(lpDrawItemStruct->rcItem);
+				CPoint center = xRect.CenterPoint();
+				center.Offset(-1,-1);
+				HPEN line = CreatePen(PS_INSIDEFRAME, 1, textColor);
+				HPEN old = (HPEN)::SelectObject(lpDrawItemStruct->hDC, (HPEN)line);
+				::MoveToEx(lpDrawItemStruct->hDC, center.x -2 , center.y - 2, NULL);
+				::LineTo( lpDrawItemStruct->hDC,center.x +3 , center.y + 3);
+				::MoveToEx(lpDrawItemStruct->hDC,  center.x +2 , center.y - 2, NULL);
+				::LineTo( lpDrawItemStruct->hDC, center.x -3 , center.y + 3);
+				::SelectObject( lpDrawItemStruct->hDC,  old);
+				DeleteObject(line);
 
+			}
+			break;
+		default:
+			{
+				COLORREF crOldColor = ::SetTextColor(lpDrawItemStruct->hDC, textColor);
+				::SetBkMode( lpDrawItemStruct->hDC, TRANSPARENT);
+				CRect textRc(lpDrawItemStruct->rcItem);
+				textRc.bottom -=2;
+				::DrawText(lpDrawItemStruct->hDC, strText, strText.GetLength(), 
+					&textRc, DT_SINGLELINE|DT_VCENTER|DT_CENTER);
+				::SetTextColor(lpDrawItemStruct->hDC, crOldColor);
+
+			}
+			break;
+	}
+	// Draw the button text using the text color red.
+	
 }
 
 void CSVPButton::PreSubclassWindow()

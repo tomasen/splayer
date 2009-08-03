@@ -3,10 +3,11 @@
 #include "SVPSliderCtrl.h"
 #include "SVPButton.h"
 #include "SVPStatic.h"
+#include "SVPDialog.h"
 
 // CPlayerColorControlBar
 
-class CPlayerColorControlBar : public CDialogBar
+class CPlayerColorControlBar : public CSVPDialog
 {
 	DECLARE_DYNAMIC(CPlayerColorControlBar)
 
@@ -20,7 +21,6 @@ public:
 	void Relayout();
 	
 	// Overrides
-	virtual BOOL Create(CWnd* pParentWnd);
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 
 	CSVPStatic csBrightLabel;
@@ -50,13 +50,15 @@ protected:
 
 public:
 	afx_msg void OnButtonReset();
-	afx_msg void OnButtonEnable();
-	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
-	afx_msg void OnPaint();
+	
+	//afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	//afx_msg void OnPaint();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
-	
+	afx_msg void OnColorControlButtonEnable();
+	afx_msg void OnGetMinMaxInfo(MINMAXINFO* lpMMI);
+
 };
 
 

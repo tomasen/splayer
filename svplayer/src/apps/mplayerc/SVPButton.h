@@ -6,11 +6,12 @@
 class CSVPButton : public CButton
 {
 	DECLARE_DYNAMIC(CSVPButton)
-
 public:
+	
 	CSVPButton();
 	virtual ~CSVPButton();
 	DWORD m_textColor,m_btnBgColor, m_pushedColor, m_borderColor, m_bgColor, m_textGrayColor;
+	int m_btnMode;
 
 protected:
 	DECLARE_MESSAGE_MAP()

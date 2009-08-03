@@ -1445,7 +1445,9 @@ TOP_FLIP.BMP            BITMAP                  "res\\newui\\TOP_FLIP.bmp"
 TOP_CAPTURE.BMP         BITMAP                  "res\\newui\\TOP_CAPTURE.bmp"
 TOP_CLOSE.BMP		    BITMAP                  "res\\newui\\TOP_CLOSE.bmp"
 TOP_RESTORE.BMP         BITMAP                  "res\\newui\\TOP_RESTORE.bmp"
-BTN_FULLSCREEN.BMP      BITMAP                "res\\newui\\BTN_FULLSCREEN.bmp"
+BTN_FULLSCREEN.BMP      BITMAP		            "res\\newui\\BTN_FULLSCREEN.bmp"
+SLIDER_TM.BMP			BITMAP	                "res\\newui\\SLIDER_TM.bmp"
+TOP_GAMMA.BMP			BITMAP	                "res\\newui\\TOP_GAMMA.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //

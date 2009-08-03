@@ -16,7 +16,7 @@ public:
 	DWORD colorBackGround;
 	DWORD m_style;
 
-	BOOL m_bHOZ;
+	BOOL m_bVertical ;
 	CSUIButton* m_btnVolTm;
 	CSUIButton* m_btnVolBG;
 	CSUIBtnList m_btnList;

@@ -5,6 +5,7 @@
 #include "mplayerc.h"
 #include "SVPSliderCtrl.h"
 #include "MainFrm.h"
+#include "SVPDialog.h"
 #include "../../svplib/svplib.h"
 
 
@@ -13,8 +14,9 @@
 IMPLEMENT_DYNAMIC(CSVPSliderCtrl, CSliderCtrl)
 
 CSVPSliderCtrl::CSVPSliderCtrl() :
-m_bHOZ(0),
-m_style(0)
+m_bVertical(0),
+m_style(0),
+colorBackGround(0)
 {
 
 }
@@ -44,7 +46,7 @@ void CSVPSliderCtrl::OnPaint()
 	GetClientRect(&rcClient);
 	CMemoryDC hdc(&dc, rcClient);
 
-	//hdc.FillSolidRect(rcClient, colorBackGround);
+	hdc.FillSolidRect(rcClient, colorBackGround);
 	CRect rc;
 	GetWindowRect(&rc);
 
@@ -75,7 +77,7 @@ void CSVPSliderCtrl::OnPaint()
 			break;
 	}*/
 
-	if(m_bHOZ){
+	if(m_bVertical){
 		rcLine.top+=4;
 		rcLine.bottom-=4;
 		rcLine.right--;
@@ -117,7 +119,7 @@ int CSVPSliderCtrl::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 
 	if(imgTM.IsEmpty())
-		imgTM = L"VOLUME_TM.BMP";
+		imgTM = L"SLIDER_TM.BMP";
 
 	
 	//	imgTBG = L"VOLUME_BG.BMP";
@@ -129,6 +131,10 @@ int CSVPSliderCtrl::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_btnVolTm = new CSUIButton(imgTM , ALIGN_TOPRIGHT, CRect(0 , 0, 0,0)  , FALSE, 0, FALSE );
 	//m_btnList.AddTail( m_btnVolTm );
 
+	
+		CSVPDialog * pDialog = dynamic_cast<CSVPDialog*>( GetParent() );
+		if(pDialog)
+			colorBackGround = pDialog->m_bgColor;
 
 	return 0;
 }

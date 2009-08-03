@@ -807,6 +807,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SVPDialog.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SVPDialog.h"
+				>
+			</File>
+			<File
 				RelativePath=".\SVPSliderCtrl.cpp"
 				>
 			</File>

@@ -1347,7 +1347,7 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 			rcWindowText.right = rc.right;
 
 
-			CRect btnMenuRect = m_btnList.GetHTRect(HTMENU);
+			CRect btnMenuRect = m_btnList.GetHTRect(MYHTMENU);
 			rcWindowText.right = rcWindowText.right - ( rcWnd.right - btnMenuRect.left + 10 );
 			
 			CString szWindowText ;
@@ -3653,6 +3653,7 @@ void CMainFrame::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
 	if(!IsSomethingLoaded()){
 		SendMessage(WM_COMMAND, ID_FILE_OPENQUICK);
+		return;
 	}
 	if(s_fLDown)
 	{

@@ -601,7 +601,9 @@ bool  CPlayerToolBar::OnSetVolByMouse(CPoint point, BOOL byClick){
 			VolPercent = 100 + (VolPercent-100) * 900/ (m_volctrl.GetRangeMax() - 100);
 		}
 		szVol.Format(_T("%d%%") , VolPercent);
-		pFrame->m_tip.SetTips(  szVol );
+		CPoint posTip( m_btnVolBG->m_rcHitest.left + nTBPos, m_btnVolBG->m_rcHitest.top);
+		//ClientToScreen( &posTip );
+		pFrame->m_tip.SetTips(  szVol , 1, &posTip);
 	}
 	m_volctrl.SetPosInternal( Vol );
 

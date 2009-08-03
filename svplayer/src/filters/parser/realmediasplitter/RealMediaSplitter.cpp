@@ -1482,7 +1482,11 @@ HRESULT CRealVideoDecoder::InitRV(const CMediaType* pmt)
 
 	rvinfo rvi;
 	try{
-		rvi = *(rvinfo*)(pmt->Format() + (pmt->formattype == FORMAT_VideoInfo ? sizeof(VIDEOINFOHEADER) : sizeof(VIDEOINFOHEADER2)));
+		BYTE* ptr = pmt->Format() + (pmt->formattype == FORMAT_VideoInfo ? sizeof(VIDEOINFOHEADER) : sizeof(VIDEOINFOHEADER2));
+		if(ptr)
+			rvi = *(rvinfo*)(ptr);
+		else
+			return hr;
 	}
 	catch(...){
 		return hr;

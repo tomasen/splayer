@@ -799,6 +799,30 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SVPButton.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SVPButton.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SVPSliderCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SVPSliderCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SVPStatic.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SVPStatic.h"
+				>
+			</File>
+			<File
 				RelativePath=".\SVPSubDownUpDialog.cpp"
 				>
 			</File>
@@ -1986,11 +2010,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 		<File

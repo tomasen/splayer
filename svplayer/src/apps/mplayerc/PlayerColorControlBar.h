@@ -1,5 +1,8 @@
 #pragma once
 
+#include "SVPSliderCtrl.h"
+#include "SVPButton.h"
+#include "SVPStatic.h"
 
 // CPlayerColorControlBar
 
@@ -20,14 +23,14 @@ public:
 	virtual BOOL Create(CWnd* pParentWnd);
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 
-	CStatic csBrightLabel;
-	CStatic csConstLabel;
+	CSVPStatic csBrightLabel;
+	CSVPStatic csConstLabel;
 
-	CSliderCtrl csl_bright;
-	CSliderCtrl csl_const;
+	CSVPSliderCtrl csl_bright;
+	CSVPSliderCtrl csl_const;
 
-	CButton  cb_reset;
-	CButton  cb_enablectrl;
+	CSVPButton  cb_reset;
+	CSVPButton  cb_enablectrl;
 
 	CFont m_font;
 

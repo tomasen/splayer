@@ -3634,7 +3634,7 @@ LRESULT CMainFrame::OnMouseMoveOut(WPARAM /*wparam*/, LPARAM /*lparam*/) {
 void CMainFrame::OnShowColorControlBar()
 {
 	AppSettings &s = AfxGetAppSettings();
-	s.bShowControlBar = !s.bShowControlBar;
+	s.bShowControlBar = !m_wndColorControlBar.IsVisible();
 	ShowControlBar(&m_wndColorControlBar, (s.bShowControlBar ? SW_SHOW : SW_HIDE) , false);
 	if(s.bShowControlBar){
 		bNotHideColorControlBar = TRUE;
@@ -3646,7 +3646,10 @@ void CMainFrame::OnShowColorControlBar()
 
 void CMainFrame::OnUpdateShowColorControlBar(CCmdUI *pCmdUI)
 {
-	pCmdUI->SetCheck(!!AfxGetAppSettings().bShowControlBar);
+	AppSettings &s = AfxGetAppSettings();
+	s.bShowControlBar = m_wndColorControlBar.IsVisible();
+
+	pCmdUI->SetCheck(s.bShowControlBar);
 }
 
 void CMainFrame::OnLButtonDblClk(UINT nFlags, CPoint point)

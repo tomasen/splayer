@@ -201,10 +201,9 @@ void CSUIButton::OnPaint(CMemoryDC *hDC, CRect rc){
 		&dcBmp, 0, m_orgbtnSize.cy * m_stat, m_orgbtnSize.cx, m_orgbtnSize.cy, bf);
 	dcBmp.SelectObject(holdBmp);
 	dcBmp.DeleteDC();
-	//CString szLog;
-	//szLog.Format(_T("%d %d %d %d %d %d %d %d %d Paint %s"),ret , rc.left, rc.top, rc.Width(), rc.Height(),
+	
+	//SVP_LogMsg5(_T("%d %d %d %d %d %d %d %d %d Paint %s"),ret , rc.left, rc.top, rc.Width(), rc.Height(),
 		//0, m_btnSize.cy * m_stat, m_btnSize.cx, m_btnSize.cy, m_szBmpName);
-	//SVP_LogMsg(szLog);
 }
 void CSUIButton::LoadImage(LPCTSTR szBmpName){
 

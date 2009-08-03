@@ -74,8 +74,8 @@ int CPlayerColorControlBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		r, this, IDC_STATIC);
 	csConstLabel.SetFont(&m_font);
 
-	csl_bright.Create( WS_CHILD|WS_VISIBLE|TBS_AUTOTICKS|TBS_HORZ|TBS_NOTICKS|TBS_TOOLTIPS  , r, this, IDC_SLIDER1);
-	csl_const.Create( WS_CHILD|WS_VISIBLE|TBS_AUTOTICKS|TBS_HORZ|TBS_NOTICKS|TBS_TOOLTIPS  , r, this, IDC_SLIDER2);
+	csl_bright.Create( WS_CHILD|WS_VISIBLE|TBS_AUTOTICKS|TBS_HORZ|TBS_NOTICKS  , r, this, IDC_SLIDER1);
+	csl_const.Create( WS_CHILD|WS_VISIBLE|TBS_AUTOTICKS|TBS_HORZ|TBS_NOTICKS  , r, this, IDC_SLIDER2);
 
 	cb_reset.Create( _T("ÖØÖÃ"), WS_VISIBLE|WS_CHILD|BS_FLAT|BS_VCENTER|BS_CENTER, r , this, IDC_BUTTONRESETCOLORCONTROL);
 	cb_reset.SetFont(&m_font);
@@ -173,7 +173,7 @@ void CPlayerColorControlBar::Relayout()
 	csl_bright.MoveWindow(&r2);
 	
 	r2 = r;
-	r2.top += 4;
+	r2.top += 1;
 	r2.left += (r.Width() - 50) / 2 + 30;
 	r2.right = r2.left + r.Width() / 2 - 110;
 	csl_const.MoveWindow(&r2);
@@ -210,7 +210,7 @@ BOOL CPlayerColorControlBar::OnEraseBkgnd(CDC* pDC)
 		r.InflateRect(0, 0, 0, 1);
 
 	r.InflateRect(1, 1, 1, 0);
-	pDC->FillSolidRect(&r, GetSysColor(COLOR_BTNFACE));
+	pDC->FillSolidRect(&r, 0x00);
 	return TRUE;
 }
 

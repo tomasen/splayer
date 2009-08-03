@@ -437,6 +437,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 
 	ON_COMMAND(ID_SHADERS_SETDX9, OnEnableDX9)
 
+	ON_COMMAND(ID_SHOWTRANSPRANTBAR, OnShowTranparentControlBar)
 	ON_COMMAND(ID_SHOWCOLORCONTROLBAR, &CMainFrame::OnShowColorControlBar)
 	ON_UPDATE_COMMAND_UI(ID_SHOWCOLORCONTROLBAR, &CMainFrame::OnUpdateShowColorControlBar)
 	ON_COMMAND(ID_SETSNAPSHOTPATH, &CMainFrame::OnSetsnapshotpath)
@@ -653,9 +654,13 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 
 	
-	if(m_wndColorControlBar.CreateEx(WS_EX_TOPMOST, _T("STATIC"), _T("COLORCONTROL"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0)){//WS_EX_NOACTIVATE
+	if(m_wndColorControlBar.CreateEx(WS_EX_TOPMOST, _T("STATIC"), _T("COLORCONTROL"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0))//WS_EX_NOACTIVATE
 		m_wndColorControlBar.ShowWindow( SW_HIDE);
-	}
+	
+	if(m_wndTransparentControlBar.CreateEx(WS_EX_TOPMOST, _T("STATIC"), _T("TRANSPARENTCONTROL"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0))//WS_EX_NOACTIVATE
+		m_wndTransparentControlBar.ShowWindow( SW_HIDE);
+
+
 	if(m_wndStatusBar.Create(this)){
 		//m_wndStatusBar.EnableDocking(0);
 		//FloatControlBar(&m_wndStatusBar, CPoint(10,10), CBRS_ALIGN_BOTTOM );
@@ -2794,6 +2799,14 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 				SetCursor(NULL);
 			}
 		}
+		if(m_wndTransparentControlBar.IsWindowVisible()){
+			CRect rcWnd;
+			m_wndTransparentControlBar.GetWindowRect(rcWnd);
+			CPoint pos;
+			GetCursorPos(&pos);
+			if(!rcWnd.PtInRect(pos))
+				m_wndTransparentControlBar.ShowWindow(SW_HIDE);
+		}
 		if(m_wndColorControlBar.IsWindowVisible()){
 			CRect rcWnd;
 			m_wndColorControlBar.GetWindowRect(rcWnd);
@@ -3634,7 +3647,14 @@ LRESULT CMainFrame::OnMouseMoveOut(WPARAM /*wparam*/, LPARAM /*lparam*/) {
 	return 0;
 }
 
-
+void CMainFrame::OnShowTranparentControlBar(){
+	if(m_wndTransparentControlBar.IsWindowVisible()){
+		m_wndTransparentControlBar.ShowWindow(SW_HIDE);
+	}else{
+		m_wndTransparentControlBar.ShowWindow(SW_SHOW);
+		rePosOSD();
+	}
+}
 void CMainFrame::OnShowColorControlBar()
 {
 	AppSettings &s = AfxGetAppSettings();
@@ -9021,6 +9041,7 @@ void CMainFrame::rePosOSD(){
 		GetWindowRect(&rc);
 		CRect rcTopToolBar(rcView);
 		CRect rcRightTopWnd(rcView);
+		CRect rcRightVertWnd(rcView);
 			
 		//rcView -= rcView.TopLeft();
 		if(!m_wndNewOSD.m_osdStr.IsEmpty()){
@@ -9046,8 +9067,15 @@ void CMainFrame::rePosOSD(){
 			m_wndToolTopBar.MoveWindow(rcTopToolBar);
 		}
 
+		if(m_wndTransparentControlBar.IsWindowVisible()){
+			rcRightVertWnd.top += 20 * m_nLogDPIY / 96 + 4;
+			rcRightVertWnd.left = rcRightVertWnd.right - 30  * m_nLogDPIY / 96;
+			rcRightVertWnd.bottom = rcRightVertWnd.top + 120  * m_nLogDPIY / 96;
+			m_wndTransparentControlBar.MoveWindow(rcRightVertWnd);
+			rcRightTopWnd.right = rcRightVertWnd.left - 5;
+		}
 		if(m_wndColorControlBar.IsWindowVisible()){
-			rcRightTopWnd.top += 20 * m_wndToolTopBar.m_nLogDPIY / 96 + 4;
+			rcRightTopWnd.top += 20 * m_nLogDPIY / 96 + 4;
 			rcRightTopWnd.left = rcRightTopWnd.right - 220  * m_nLogDPIY / 96;
 			rcRightTopWnd.bottom = rcRightTopWnd.top + 80  * m_nLogDPIY / 96;
 			m_wndColorControlBar.MoveWindow(rcRightTopWnd);

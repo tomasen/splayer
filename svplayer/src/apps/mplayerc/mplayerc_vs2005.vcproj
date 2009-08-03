@@ -843,6 +843,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\TransparentControlBar.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\UESettingPanel.cpp"
 				>
 			</File>
@@ -1301,6 +1305,10 @@
 			</File>
 			<File
 				RelativePath="TextPassThruFilter.h"
+				>
+			</File>
+			<File
+				RelativePath=".\TransparentControlBar.h"
 				>
 			</File>
 			<File

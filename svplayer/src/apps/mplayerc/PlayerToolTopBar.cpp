@@ -115,6 +115,10 @@ BOOL CPlayerToolTopBar::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 					case ID_FILE_SAVE_IMAGE:
 						toolTip = _T("截图至文件和剪贴板");
 						break;
+					case ID_SHOWTRANSPRANTBAR:
+						toolTip = _T("半透明界面");
+						break;
+					
 					case ID_SHOWCOLORCONTROLBAR:
 						toolTip = _T("亮度与对比度");
 						break;
@@ -183,6 +187,8 @@ int CPlayerToolTopBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_btnList.AddTail( new CSUIButton(L"TOP_FLIP.BMP" , ALIGN_TOPRIGHT, CRect(1 , 1, 1,1)  , 0, ID_ROTATE_V, FALSE, ALIGN_RIGHT, m_btnList.GetTail() , CRect(1,1,1,1)  ) );
 	
 	m_btnList.AddTail( new CSUIButton(L"TOP_CAPTURE.BMP" , ALIGN_TOPRIGHT, CRect(1 , 1, 1,1)  , 0, ID_FILE_SAVE_IMAGE, FALSE, ALIGN_RIGHT, m_btnList.GetTail() , CRect(1,1,1,1)  ) );
+
+	m_btnList.AddTail( new CSUIButton(L"TOP_TRANS.BMP" , ALIGN_TOPRIGHT, CRect(1 , 1, 1,1)  , 0, ID_SHOWTRANSPRANTBAR, FALSE, ALIGN_RIGHT, m_btnList.GetTail() , CRect(1,1,1,1)  ) );
 
 	m_btnList.AddTail( new CSUIButton(L"TOP_GAMMA.BMP" , ALIGN_TOPRIGHT, CRect(1 , 1, 1,1)  , 0, ID_SHOWCOLORCONTROLBAR, FALSE, ALIGN_RIGHT, m_btnList.GetTail() , CRect(1,1,1,1)  ) );
 	

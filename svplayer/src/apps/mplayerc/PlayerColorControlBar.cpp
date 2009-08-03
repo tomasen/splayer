@@ -65,7 +65,7 @@ void CPlayerColorControlBar::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScr
 {
 	
 	AppSettings& s = AfxGetAppSettings();
-	CMainFrame* pMFrame = (CMainFrame*)GetParentFrame();
+	CMainFrame* pMFrame = (CMainFrame*)AfxGetMainWnd();
 
 		if(pMFrame->m_pMC){
 			BOOL bChanged = FALSE;

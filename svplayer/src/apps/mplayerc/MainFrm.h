@@ -33,6 +33,7 @@
 #include "PlayerCaptureBar.h"
 #include "PlayerShaderEditorBar.h"
 #include "PlayerColorControlBar.h"
+#include "TransparentControlBar.h"
 #include "PPageSheet.h"
 #include "PPageFileInfoSheet.h"
 #include "OpenCapDeviceDlg.h"
@@ -484,6 +485,7 @@ protected:  // control bar embedded members
 	CPlayerInfoBar m_wndStatsBar;
 	CPlayerStatusBar m_wndStatusBar;
 	CPlayerColorControlBar m_wndColorControlBar;
+	CTransparentControlBar m_wndTransparentControlBar;
 	CList<CControlBar*> m_bars;
 
 	CPlayerSubresyncBar m_wndSubresyncBar;
@@ -791,6 +793,7 @@ public:
 
 	afx_msg void OnColorControl(UINT nID);
 	afx_msg void OnShowColorControlBar();
+	afx_msg void OnShowTranparentControlBar();
 	afx_msg void OnRecentFileClear();
 	afx_msg void OnRecentFileEnable();
 	afx_msg void OnRecentFileDisable();

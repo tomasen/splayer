@@ -979,6 +979,7 @@
 #define ID_DELCURFOLDER                 32853
 #define ID_USINGSPDIF                   32855
 #define ID_DEBUGREPORT                  32856
+#define ID_SHOWTRANSPRANTBAR			32857
 #define IDS_VOLUME_BOOST_INC            33129
 #define IDS_VOLUME_BOOST_DEC            33130
 #define IDS_VOLUME_BOOST_MIN            33131

@@ -78,6 +78,8 @@ void CSVPSliderCtrl::OnPaint()
 	}*/
 
 	if(m_bVertical){
+		rcLine.left ^= rcLine.top ^= rcLine.left ^= rcLine.top; // swap left and top values
+		rcLine.right ^= rcLine.bottom ^= rcLine.right ^= rcLine.bottom; // swap right and bottom values
 		rcLine.top+=4;
 		rcLine.bottom-=4;
 		rcLine.right--;
@@ -121,7 +123,7 @@ int CSVPSliderCtrl::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if(imgTM.IsEmpty())
 		imgTM = L"SLIDER_TM.BMP";
 
-	
+	m_bVertical = !!(lpCreateStruct->style&TBS_VERT);
 	//	imgTBG = L"VOLUME_BG.BMP";
 	//if(!imgTBG.IsEmpty())
 	//	m_btnVolBG =  new CSUIButton(L"VOLUME.BMP" , ALIGN_TOPRIGHT, CRect(0 , 0, 0, 0)  , TRUE) ;

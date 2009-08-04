@@ -7,7 +7,7 @@
 class CSVPDialog : public CWnd
 {
 	DECLARE_DYNAMIC(CSVPDialog)
-
+	enum {IDT_CLOSE};
 	CFont m_statft;
 	CRgn m_rgn;
 	CBrush m_brushBorder;
@@ -30,6 +30,8 @@ public:
 	void OnRealClose();
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg void OnMove(int x, int y);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 };
 
 

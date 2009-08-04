@@ -30,6 +30,7 @@ BEGIN_MESSAGE_MAP(CSVPSliderCtrl, CSliderCtrl)
 	ON_WM_PAINT()
 	ON_WM_CREATE()
 	ON_WM_ERASEBKGND()
+	ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 
@@ -117,9 +118,11 @@ void CSVPSliderCtrl::OnPaint()
 
 int CSVPSliderCtrl::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
+	lpCreateStruct->style |= TBS_FIXEDLENGTH ;
 	if (CSliderCtrl::OnCreate(lpCreateStruct) == -1)
 		return -1;
 
+	
 	if(imgTM.IsEmpty())
 		imgTM = L"SLIDER_TM.BMP";
 
@@ -130,7 +133,7 @@ int CSVPSliderCtrl::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	//m_btnList.AddTail(m_btnVolBG);
 
 	
-	m_btnVolTm = new CSUIButton(imgTM , ALIGN_TOPRIGHT, CRect(0 , 0, 0,0)  , FALSE, 0, FALSE );
+	m_btnVolTm = new CSUIButton(imgTM , ALIGN_TOPRIGHT, CRect(0 , 0, 0,0)  , TRUE, 0, FALSE );
 	//m_btnList.AddTail( m_btnVolTm );
 
 	
@@ -148,4 +151,20 @@ BOOL CSVPSliderCtrl::OnEraseBkgnd(CDC* pDC)
 	GetClientRect(&r);
 	pDC->FillSolidRect(&r, colorBackGround);
 	return TRUE;
+}
+
+void CSVPSliderCtrl::OnSize(UINT nType, int cx, int cy)
+{
+	CSliderCtrl::OnSize(nType, cx, cy);
+
+	//int iMin, iMax;
+	//GetRange(iMin, iMax);
+	if(m_bVertical){
+
+		SetThumbLength( m_btnVolTm->m_btnSize.cy ); //* (iMax-iMin) / cy 
+	}else{
+
+		SetThumbLength( m_btnVolTm->m_btnSize.cx );// * (iMax-iMin) / cx
+	}
+	// TODO: Add your message handler code here
 }

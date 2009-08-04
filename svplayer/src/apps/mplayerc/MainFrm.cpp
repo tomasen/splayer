@@ -2799,22 +2799,24 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 				SetCursor(NULL);
 			}
 		}
+		/*
 		if(m_wndTransparentControlBar.IsWindowVisible()){
-			CRect rcWnd;
-			m_wndTransparentControlBar.GetWindowRect(rcWnd);
-			CPoint pos;
-			GetCursorPos(&pos);
-			if(!rcWnd.PtInRect(pos))
-				m_wndTransparentControlBar.ShowWindow(SW_HIDE);
-		}
-		if(m_wndColorControlBar.IsWindowVisible()){
-			CRect rcWnd;
-			m_wndColorControlBar.GetWindowRect(rcWnd);
-			CPoint pos;
-			GetCursorPos(&pos);
-			if(!rcWnd.PtInRect(pos))
-				m_wndColorControlBar.ShowWindow(SW_HIDE);
-		}
+					CRect rcWnd;
+					m_wndTransparentControlBar.GetWindowRect(rcWnd);
+					CPoint pos;
+					GetCursorPos(&pos);
+					if(!rcWnd.PtInRect(pos))
+						m_wndTransparentControlBar.ShowWindow(SW_HIDE);
+				}
+				if(m_wndColorControlBar.IsWindowVisible()){
+					CRect rcWnd;
+					m_wndColorControlBar.GetWindowRect(rcWnd);
+					CPoint pos;
+					GetCursorPos(&pos);
+					if(!rcWnd.PtInRect(pos))
+						m_wndColorControlBar.ShowWindow(SW_HIDE);
+				}*/
+		
 	}
 	else if(nIDEvent == TIMER_STATS)
 	{

@@ -38,6 +38,8 @@ int CTransparentControlBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (CSVPDialog::OnCreate(lpCreateStruct) == -1)
 		return -1;
 
+	m_bgColor = 0x333333;
+
 	CRect r;
 	GetClientRect(r);
 
@@ -79,7 +81,7 @@ void CTransparentControlBar::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScr
 
 void CTransparentControlBar::OnSize(UINT nType, int cx, int cy)
 {
-	CSVPDialog::OnSize(nType, cx, cy);
+	__super::OnSize(nType, cx, cy);
 
 	Relayout();
 }
@@ -90,7 +92,7 @@ void CTransparentControlBar::Relayout()
 	GetClientRect(r);
 	r2 = r;
 	r2.top += 15;
-	r2.left += r2.Width() / 2 - 4;
+	r2.left += r2.Width() / 2 - 5;
 	r2.right -= r2.Width() / 2 - 4;
 	r2.bottom -= 5;
 	csl_trans.MoveWindow(&r2);

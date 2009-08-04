@@ -32,6 +32,8 @@ BEGIN_MESSAGE_MAP(CSVPDialog, CWnd)
 	ON_WM_CLOSE()
 	ON_BN_CLICKED(IDC_BUTTON1,  OnButtonClose)
 	ON_WM_MOVE()
+	ON_WM_TIMER()
+	ON_WM_SHOWWINDOW()
 END_MESSAGE_MAP()
 
 // CSVPDialog message handlers
@@ -120,6 +122,12 @@ BOOL CSVPDialog::PreTranslateMessage(MSG* pMsg)
 {
 	// TODO: Add your specialized code here and/or call the base class
 
+	if(( pMsg->message == WM_KEYDOWN || (pMsg->message >= WM_MOUSEFIRST && pMsg->message <= WM_MYMOUSELAST))){
+
+		KillTimer(IDT_CLOSE);
+		SetTimer(IDT_CLOSE, 3000, NULL);
+	}
+	
 	return CWnd::PreTranslateMessage(pMsg);
 }
 
@@ -127,5 +135,30 @@ void CSVPDialog::OnMove(int x, int y)
 {
 	CWnd::OnMove(x, y);
 
+	// TODO: Add your message handler code here
+}
+
+void CSVPDialog::OnTimer(UINT_PTR nIDEvent)
+{
+	// TODO: Add your message handler code here and/or call default
+	switch(nIDEvent){
+		case IDT_CLOSE:
+			{
+				KillTimer(IDT_CLOSE);
+				OnClose();
+			}
+			break;
+	}
+	CWnd::OnTimer(nIDEvent);
+}
+
+void CSVPDialog::OnShowWindow(BOOL bShow, UINT nStatus)
+{
+	CWnd::OnShowWindow(bShow, nStatus);
+
+	KillTimer(IDT_CLOSE);
+	
+	if(bShow)
+		SetTimer(IDT_CLOSE, 3000, NULL);
 	// TODO: Add your message handler code here
 }

@@ -1443,12 +1443,12 @@ TOP_LETTERBOX.BMP       BITMAP                  "res\\newui\\TOP_LETTERBOX.bmp"
 TOP_ROTATE.BMP          BITMAP                  "res\\newui\\TOP_ROTATE.bmp"
 TOP_FLIP.BMP            BITMAP                  "res\\newui\\TOP_FLIP.bmp"
 TOP_CAPTURE.BMP         BITMAP                  "res\\newui\\TOP_CAPTURE.bmp"
-TOP_CLOSE.BMP		    BITMAP                  "res\\newui\\TOP_CLOSE.bmp"
+TOP_CLOSE.BMP           BITMAP                  "res\\newui\\TOP_CLOSE.bmp"
 TOP_RESTORE.BMP         BITMAP                  "res\\newui\\TOP_RESTORE.bmp"
-BTN_FULLSCREEN.BMP      BITMAP		            "res\\newui\\BTN_FULLSCREEN.bmp"
-SLIDER_TM.BMP			BITMAP	                "res\\newui\\SLIDER_TM.bmp"
-TOP_GAMMA.BMP			BITMAP	                "res\\newui\\TOP_GAMMA.bmp"
-TOP_TRANS.BMP			BITMAP	                "res\\newui\\TOP_TRANS.bmp"
+BTN_FULLSCREEN.BMP      BITMAP                  "res\\newui\\BTN_FULLSCREEN.bmp"
+SLIDER_TM.BMP           BITMAP                  "res\\newui\\SLIDER_TM.bmp"
+TOP_GAMMA.BMP           BITMAP                  "res\\newui\\TOP_GAMMA.bmp"
+TOP_TRANS.BMP           BITMAP                  "res\\newui\\TOP_TRANS.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1511,10 +1511,10 @@ IDF_CONTROLVOLUMEOFF_PNG FILE                    "res\\web\\controlvolumeoff.png
 IDF_CONTROLVOLUMEBAR_PNG FILE                    "res\\web\\controlvolumebar.png"
 IDF_CONTROLVOLUMEGRIP_PNG FILE                    "res\\web\\controlvolumegrip.png"
 IDF_SHADER_RESIZER      FILE                    "res\\shaders\\resizer.psh"
-IDF_LOGO1               FILE                    "res\\logo.1.png"
-IDF_LOGO4               FILE                    "res\\logo.4.png"
-IDF_LOGO5               FILE                    "res\\logo.5.png"
-IDF_LOGO6               FILE                    "res\\logo.6.png"
+//IDF_LOGO1               FILE                    "res\\logo.1.png"
+//IDF_LOGO4               FILE                    "res\\logo.4.png"
+//IDF_LOGO5               FILE                    "res\\logo.5.png"
+//IDF_LOGO6               FILE                    "res\\logo.6.png"
 IDF_LOGO7               FILE                    "res\\logo.0.png"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1964,7 +1964,7 @@ BEGIN
         END
         MENUITEM SEPARATOR
         MENUITEM "选项设置(&O)...",                 ID_VIEW_OPTIONS
-        MENUITEM "视频信息(&r)",                    ID_FILE_PROPERTIES
+        MENUITEM "文件信息(&r)",                    ID_FILE_PROPERTIES
         MENUITEM SEPARATOR
         POPUP "截图"
         BEGIN

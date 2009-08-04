@@ -1385,6 +1385,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\newui\BTN_FULLSCREEN.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\newui\BTN_MAX.bmp"
 				>
 			</File>
@@ -1637,6 +1641,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\newui\SLIDER_TM.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\newui\SPLAYER.bmp"
 				>
 			</File>
@@ -1677,11 +1685,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\newui\TOP_CLOSE.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\newui\TOP_FLIP.bmp"
 				>
 			</File>
 			<File
 				RelativePath=".\res\newui\TOP_FULLSCREEN.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\TOP_GAMMA.bmp"
 				>
 			</File>
 			<File
@@ -1693,7 +1709,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\newui\TOP_RESTORE.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\newui\TOP_ROTATE.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\TOP_TRANS.bmp"
 				>
 			</File>
 			<File
@@ -2026,11 +2050,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 		<File

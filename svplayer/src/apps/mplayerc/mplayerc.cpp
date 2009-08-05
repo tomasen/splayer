@@ -724,24 +724,8 @@ void CMPlayerCApp::RemoveAllSetting(){
 }
 bool CMPlayerCApp::GetAppDataPath(CString& path)
 {
-	path.Empty();
-
-	CRegKey key;
-	if(ERROR_SUCCESS == key.Open(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders"), KEY_READ))
-	{
-		ULONG len = MAX_PATH;
-		if(ERROR_SUCCESS == key.QueryStringValue(_T("AppData"), path.GetBuffer(MAX_PATH), &len))
-			path.ReleaseBufferSetLength(len);
-	}
-
-	if(path.IsEmpty())
-		return(false);
-
-	CPath p;
-	p.Combine(path, _T("SPlayer"));
-	path = (LPCTSTR)p;
-
-	return(true);
+	CSVPToolBox svpTool;
+	return svpTool.GetAppDataPath(path);
 }
 
 void CMPlayerCApp::PreProcessCommandLine()
@@ -2610,6 +2594,9 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEWAVEOUTDEVICEBYDEFAULT), bUseWaveOutDeviceByDefault);
 
+		
+		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SVPSUBSTOREDIR), SVPSubStoreDir);
+
 		pApp->WriteProfileString(_T("Shaders"), NULL, NULL);
 		pApp->WriteProfileInt(_T("Shaders"), _T("Initialized"), 1);
 		pApp->WriteProfileString(_T("Shaders"), _T("Combine"), m_shadercombine);
@@ -2757,6 +2744,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 
 		bNotAutoCheckSpeaker = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_NOTAUTOCHECKSPEAKER), 0);
 		
+		SVPSubStoreDir = pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SVPSUBSTOREDIR), _T(""));
 
 		fBUltraFastMode = 0;// !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_ULTRAFAST), 1);
 		autoDownloadSVPSub = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUTODOWNLAODSVPSUB), 1);

@@ -24,6 +24,7 @@ public:
 	CStringArray szaSubDescs; //save raw desc data order by id
 	CStringArray szaSubTmpFileList; //save tmp file names order by id, format: ".srt;C:\tmp\blahblah;.idx;C:\tmp\blah2;.sub;C:\tmp\blah3"...
 	CString getSubFileByTempid(int iTmpID, CString szVidPath);
+	bool GetAppDataPath(CString& path);
 	int ExtractSubFiles(FILE* fp);
 	int ExtractEachSubFile(FILE* fp, int iSubPosId);
 	char* ReadToPTCharByLength(FILE* fp, size_t length);

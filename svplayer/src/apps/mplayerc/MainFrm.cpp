@@ -9713,6 +9713,7 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 
 		if(fFirst)
 		{
+			AppSettings& s = AfxGetAppSettings();
 			pOFD->title = fn;
 			m_fnCurPlayingFile = fn;
 			//是否有字幕？ 沒有则下载字幕
@@ -9720,7 +9721,7 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 			//搜索目录下同名字幕
 			CAtlArray<CString> subSearchPaths;
 			subSearchPaths.Add(_T("."));
-			subSearchPaths.Add(svpTool.GetPlayerPath(_T("subtitles")) );
+			subSearchPaths.Add(s.SVPSubStoreDir);
 			subSearchPaths.Add(_T(".\\subtitles"));
 			subSearchPaths.Add(_T(".\\Subs"));
 			subSearchPaths.Add(_T("c:\\subtitles"));
@@ -9746,7 +9747,7 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 			if ( pOFD->subs.GetCount() <= 0){
 			//	AfxMessageBox(_T("2"));
 
-				AppSettings & s = AfxGetAppSettings();
+				
 				if(s.autoDownloadSVPSub){
 					CPath fPath(fn);
 					CString szExt;

@@ -168,7 +168,9 @@ void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath, CStringArray* szSu
 				SVP_LogMsg(_T("射手影音字幕智能匹配系统中的字幕与当前字幕相同 "), 31);
 			}else if(szSubFilePath){
 				szSubArray->Add(szSubFilePath);
-				SVP_LogMsg(CString(_T("成功下载到字幕文件 ")) + szSubFilePath , 31 ); //TODO: if its vobsub, load perfered language
+				CPath fnPath(szSubFilePath);
+				fnPath.StripPath();
+				SVP_LogMsg(CString(_T("成功下载到字幕文件 ")) + (CString)fnPath , 31 ); //TODO: if its vobsub, load perfered language
 				iSubTotal++;
 			}else{
 				SVP_LogMsg(_T("Fail to get sub file name"));

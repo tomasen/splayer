@@ -128,7 +128,8 @@ void CPlayerPlaylistBar::AddItem(CString fn, CAtlList<CString>* subs)
 void CPlayerPlaylistBar::AddItem(CAtlList<CString>& fns, CAtlList<CString>* subs)
 {
 	CPlaylistItem pli;
-	CMediaFormats& mf = AfxGetAppSettings().Formats;
+	AppSettings& s = AfxGetAppSettings();
+	CMediaFormats& mf = s.Formats;
 
 	POSITION pos = fns.GetHeadPosition();
 	while(pos)
@@ -159,7 +160,7 @@ void CPlayerPlaylistBar::AddItem(CAtlList<CString>& fns, CAtlList<CString>* subs
 
 	CString fn = pli.m_fns.GetHead();
 
-	if(AfxGetAppSettings().fAutoloadAudio && fn.Find(_T("://")) < 0)
+	if(s.fAutoloadAudio && fn.Find(_T("://")) < 0)
 	{
 		int i = fn.ReverseFind('.');
 		if(i > 0)
@@ -207,6 +208,8 @@ void CPlayerPlaylistBar::AddItem(CAtlList<CString>& fns, CAtlList<CString>* subs
 		paths.Add(_T(".\\subtitles"));
 		paths.Add(_T(".\\Subs"));
 		paths.Add(_T("c:\\subtitles"));
+		paths.Add(s.SVPSubStoreDir);
+		paths.Add();
 
 		CAtlArray<SubFile> ret;
 		

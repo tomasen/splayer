@@ -579,6 +579,7 @@ public:
 		bool fWebServerLocalhostOnly;
 		CString WebRoot, WebDefIndex;
 		CString WebServerCGI;
+		CString SVPSubStoreDir;
 
 		CString SnapShotPath, SnapShotExt;
 		int ThumbRows, ThumbCols, ThumbWidth;

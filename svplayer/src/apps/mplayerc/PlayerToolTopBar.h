@@ -7,7 +7,7 @@ class CPlayerToolTopBar : public CWnd
 {
 	DECLARE_DYNAMIC(CPlayerToolTopBar)
 	CRgn m_rgn;
-	enum {IDT_TIPS, IDT_CLOSE};
+	enum {IDT_CLOSE, IDT_TIPS};
 public:
 	CPlayerToolTopBar();
 	virtual ~CPlayerToolTopBar();

@@ -391,9 +391,17 @@ void CPlayerToolTopBar::OnMouseMove(UINT nFlags, CPoint point)
 {
 	// TODO: Add your message handler code here and/or call default
 	CSize diff = m_lastMouseMove - point;
+	CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
+
 	BOOL bMouseMoved =  diff.cx || diff.cy ;
 	if(bMouseMoved){
 		KillTimer(IDT_CLOSE);
+		pFrame->KillTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER);
+
+		if(pFrame->IsSomethingLoaded()){
+			pFrame->SetTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER, 5000, NULL); 
+		}
+		
 		//SetTimer(IDT_CLOSE, 8000 , NULL);
 		m_lastMouseMove = point;
 	}
@@ -416,7 +424,6 @@ void CPlayerToolTopBar::OnMouseMove(UINT nFlags, CPoint point)
 			
 		}else{
 			m_toolTip.SendMessage(TTM_TRACKACTIVATE, FALSE, (LPARAM)&m_ti);
-			CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
 			pFrame->m_tip.SetTips(_T(""));
 			if( GetCursor() == NULL ) 
 				SetCursor(cursorArrow);

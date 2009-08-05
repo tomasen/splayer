@@ -935,7 +935,6 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 			DWORD dnCS = s.nCS;
 			if(point.y < 20){
 				if(!m_wndToolTopBar.IsWindowVisible()){
-					
 					m_wndToolTopBar.ShowWindow(SW_SHOW);
 					bSomethingChanged = true;
 				}

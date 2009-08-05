@@ -12189,7 +12189,10 @@ void CMainFrame::SetupRecentFileSubMenu(){
 	CSVPToolBox svpTool;
 
 	for(int i = 0; i < MRU.GetSize(); i++){
+		if(i > 10)
+			break;
 		if(!MRU[i].IsEmpty()){
+			//SVP_LogMsg5(MRU[i]);
 			if(svpTool.ifFileExist(MRU[i], false)){
 				pSub->AppendMenu(flags, ID_RECENT_FILE_START+i, MRU[i]);
 				nLastGroupStart ++;

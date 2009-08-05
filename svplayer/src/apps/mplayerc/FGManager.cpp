@@ -1919,6 +1919,21 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 		m_transform.AddTail(pFGF);
 	}
 #if INCLUDE_MPC_VIDEO_DECODER | INCLUDE_MPC_DXVA_VIDEO_DECODER
+
+#if INTERNAL_DECODER_WMV
+	if (ffmpeg_filters & FFM_WMV)
+	{
+		pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(_T("WMV SVP Video Decoder"), MERIT64_ABOVE_DSHOW);
+		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_WMV1);
+		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_wmv1);
+		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_WMV2);
+		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_wmv2);
+		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_WMV3);
+		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_wmv3);
+		m_transform.AddTail(pFGF);
+	}
+#endif
+
 	UINT64 merit = MERIT64_ABOVE_DSHOW;
 	if(s.optionDecoder == _T("internaldec") && !s.useGPUAcel){
 		merit += 100;
@@ -2031,17 +2046,7 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_dx50);
 	}
 #endif
-#if INTERNAL_DECODER_WMV
-	if (ffmpeg_filters & FFM_WMV)
-	{
-		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_WMV1);
-		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_wmv1);
-		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_WMV2);
-		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_wmv2);
-		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_WMV3);
-		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_wmv3);
-	}
-#endif
+
 #if INTERNAL_DECODER_MSMPEG4
 	if (ffmpeg_filters & FFM_MSMPEG4)
 	{

@@ -775,9 +775,9 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	btnMin->addAlignRelButton(ALIGN_RIGHT , btnFullScreen );
 	m_btnList.AddTail( btnMin);
 	m_btnList.AddTail( new CSUIButton(L"BTN_MINTOTRAY.BMP", ALIGN_TOPRIGHT, btnMargin  ,  0, MYHTMINTOTRAY ,FALSE, ALIGN_RIGHT, m_btnList.GetTail()));
-	CSUIButton* btnMenu = new CSUIButton(L"MENU.BMP", ALIGN_TOPRIGHT, btnMargin  ,  0, MYHTMENU, FALSE, ALIGN_RIGHT, m_btnList.GetTail(), CRect(3,3,12,3));
-	btnMenu->addAlignRelButton( ALIGN_RIGHT , btnMin , CRect(3,3,12,3) );
-	m_btnList.AddTail( btnMenu);
+	//CSUIButton* btnMenu = new CSUIButton(L"MENU.BMP", ALIGN_TOPRIGHT, btnMargin  ,  0, MYHTMENU, FALSE, ALIGN_RIGHT, m_btnList.GetTail(), CRect(3,3,12,3));
+	//btnMenu->addAlignRelButton( ALIGN_RIGHT , btnMin , CRect(3,3,12,3) );
+	//m_btnList.AddTail( btnMenu);
 
 
 	/*
@@ -1348,7 +1348,7 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 			rcWindowText.right = rc.right;
 
 
-			CRect btnMenuRect = m_btnList.GetHTRect(MYHTMENU);
+			CRect btnMenuRect = m_btnList.GetHTRect(MYHTMINTOTRAY);
 			rcWindowText.right = rcWindowText.right - ( rcWnd.right - btnMenuRect.left + 10 );
 			
 			CString szWindowText ;
@@ -9654,12 +9654,14 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 		if(fn.IsEmpty() && !fFirst)
 			break;
 
-		
-		HRESULT hr = pGB->RenderFile(CStringW(fn), NULL);
-		if(FAILED(hr) && ( fn.MakeLower().Find(_T("mms://")) == 0 || fn.MakeLower().Find(_T("mmsh://")) == 0 )){ // || fn.MakeLower().Find(_T("http://")) == 0 
-			//render mms our own way
+		HRESULT hr = -1;
+		if( ( fn.MakeLower().Find(_T("mms://")) == 0 || fn.MakeLower().Find(_T("mmsh://")) == 0 || (fn.MakeLower().Find(_T("http:")) == 0 && fn.MakeLower().Find(_T(":8902")) > 0 ))){ 
+			//render mms our own way	
 			hr = OpenMMSUrlStream(fn);
 		}
+		if(FAILED(hr))
+			hr = pGB->RenderFile(CStringW(fn), NULL);
+
 		if(FAILED(hr))
 		{
 			if(fFirst)

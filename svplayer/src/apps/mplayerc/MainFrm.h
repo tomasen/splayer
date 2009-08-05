@@ -193,8 +193,7 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 
 	CRect m_rcDesktop;
 
-	void ShowControls(int nCS, bool fSave = true);
-
+	
 	void SetDefaultWindowRect(int iMonitor = 0);
 	void RestoreDefaultWindowRect();
 	void ZoomVideoWindow(double scale = -1);
@@ -316,6 +315,8 @@ public:
 		TIMER_DELETE_CUR_FILE,
 		TIMER_DELETE_CUR_FOLDER
 	};
+	void ShowControls(int nCS, bool fSave = true);
+	int m_notshowtoolbarforawhile;
 	// subtitles
 	CComPtr<IVMRMixerControl9>	m_pMC;
 	CComPtr<IMFVideoDisplayControl>	m_pMFVDC;

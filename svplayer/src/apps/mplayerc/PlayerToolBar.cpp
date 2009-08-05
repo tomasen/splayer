@@ -655,12 +655,18 @@ INT_PTR CPlayerToolBar::OnToolHitTest(	CPoint point,TOOLINFO* pTI 	) const
 void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point){
 
 	CSize diff = m_lastMouseMove - point;
+	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
 	BOOL bMouseMoved =  diff.cx || diff.cy ;
-	if(bMouseMoved)
+	if(bMouseMoved){
 		m_lastMouseMove = point;
+		KillTimer(TIMER_CLOSETOOLBAR);
+		if(pFrame->IsSomethingLoaded() && pFrame->m_fFullScreen){
+			SetTimer(TIMER_CLOSETOOLBAR, 5000, NULL);
+			
+		}
+	}
 
 	CRect rc;
-	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
 	GetWindowRect(&rc);
 	point += rc.TopLeft() ;
 	
@@ -769,6 +775,8 @@ BOOL CPlayerToolBar::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 void CPlayerToolBar::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	KillTimer(TIMER_FASTFORWORD);
+	KillTimer(TIMER_CLOSETOOLBAR);
+	
 	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
 	iBottonClicked = -1;
 	m_bMouseDown = TRUE;
@@ -810,6 +818,7 @@ void CPlayerToolBar::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
 	KillTimer(TIMER_FASTFORWORD);
+	KillTimer(TIMER_CLOSETOOLBAR);
 	ReleaseCapture();
 
 	CRect rc;
@@ -842,6 +851,9 @@ void CPlayerToolBar::OnLButtonUp(UINT nFlags, CPoint point)
 
 //	__super::OnLButtonUp(nFlags, point);
 	m_bMouseDown = FALSE;
+	if(pFrame->IsSomethingLoaded() && pFrame->m_fFullScreen){
+		SetTimer(TIMER_CLOSETOOLBAR, 5000, NULL);
+	}
 	return;//New UI End
 
 	/*
@@ -924,6 +936,17 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
 					iMsg += iStepPow;
 				}
 				pFrame->PostMessage( WM_COMMAND, iMsg);
+			}
+			break;
+		case TIMER_CLOSETOOLBAR:
+			{
+				KillTimer(TIMER_CLOSETOOLBAR);
+				CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
+				if(pFrame->m_fFullScreen && pFrame->IsSomethingLoaded()){
+					pFrame->m_notshowtoolbarforawhile = 3;
+					pFrame->ShowControls(0, FALSE);
+				}
+				
 			}
 			break;
 	}

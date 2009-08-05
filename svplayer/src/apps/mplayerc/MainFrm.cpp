@@ -529,7 +529,8 @@ CMainFrame::CMainFrame() :
 	m_iOSDAlign(0),
 	m_bDxvaInUse(false) ,
 	m_bEVRInUse(false),
-	m_bHasDrawShadowText(false)
+	m_bHasDrawShadowText(false),
+	m_notshowtoolbarforawhile(0)
 {
 }
 
@@ -826,6 +827,9 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 	BOOL bMouseMoved =  diff.cx || diff.cy ;
 	if(bMouseMoved){
 		//SVP_LogMsg3("M %d %d %d %d",m_lastMouseMove.x, m_lastMouseMove.y, point.x, point.y);
+		if(m_notshowtoolbarforawhile>0)
+			m_notshowtoolbarforawhile--;
+
 		m_lastMouseMove = point;
 		m_fHideCursor = false;
 		KillTimer(TIMER_FULLSCREENMOUSEHIDER);
@@ -856,7 +860,8 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 		s_fLDown = false;
 
 	}
-	if( ( m_fFullScreen || s.fHideCaptionMenu) && bMouseMoved)
+	
+	if( ( m_fFullScreen || s.fHideCaptionMenu) && bMouseMoved && m_notshowtoolbarforawhile <= 0)
 	{
 		int nTimeOut = s.nShowBarsWhenFullScreenTimeOut; //Should Be 0
 

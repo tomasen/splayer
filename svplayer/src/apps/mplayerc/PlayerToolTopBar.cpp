@@ -324,7 +324,9 @@ void CPlayerToolTopBar::OnLButtonUp(UINT nFlags, CPoint point)
 	}
 	m_nItemToTrack = ret;
 
-	
+	KillTimer(IDT_CLOSE);
+	//SetTimer(IDT_CLOSE, 8000 , NULL);
+
 
 	//	__super::OnLButtonUp(nFlags, point);
 	
@@ -348,6 +350,8 @@ void CPlayerToolTopBar::OnLButtonDown(UINT nFlags, CPoint point)
 	}
 	m_nItemToTrack = ret;
 
+	KillTimer(IDT_CLOSE);
+	//SetTimer(IDT_CLOSE, 8000 , NULL);
 
 	//__super::OnLButtonDown(nFlags, point);
 }
@@ -376,6 +380,9 @@ void CPlayerToolTopBar::OnTimer(UINT_PTR nIDEvent)
 				m_toolTip.SendMessage(TTM_TRACKACTIVATE, TRUE, (LPARAM)&m_ti);
 			}
 		}
+	}else if(IDT_CLOSE == nIDEvent){
+		KillTimer(IDT_CLOSE);
+		ShowWindow(SW_HIDE);
 	}
 	__super::OnTimer(nIDEvent);
 }
@@ -385,8 +392,11 @@ void CPlayerToolTopBar::OnMouseMove(UINT nFlags, CPoint point)
 	// TODO: Add your message handler code here and/or call default
 	CSize diff = m_lastMouseMove - point;
 	BOOL bMouseMoved =  diff.cx || diff.cy ;
-	if(bMouseMoved)
+	if(bMouseMoved){
+		KillTimer(IDT_CLOSE);
+		//SetTimer(IDT_CLOSE, 8000 , NULL);
 		m_lastMouseMove = point;
+	}
 
 	CRect rc;
 	//CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());

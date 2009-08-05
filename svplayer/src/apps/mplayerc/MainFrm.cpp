@@ -807,7 +807,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 /*NEW UI*/
 static bool bNoMoreHideMouse = false;
-
+static int m_nomoretopbarforawhile = 0;
 void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 {
 	m_wndSeekBar.CloseToolTips();
@@ -825,6 +825,8 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 	CSize diff = m_lastMouseMove - point;
 	BOOL bMouseMoved =  diff.cx || diff.cy ;
 	if(bMouseMoved){
+		//SVP_LogMsg3("M %d %d %d %d",m_lastMouseMove.x, m_lastMouseMove.y, point.x, point.y);
+		m_lastMouseMove = point;
 		m_fHideCursor = false;
 		KillTimer(TIMER_FULLSCREENMOUSEHIDER);
 		if(!bNoMoreHideMouse && m_iMediaLoadState == MLS_LOADED)
@@ -926,30 +928,34 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 
 
 	if( bMouseMoved ){ //&& IsSomethingLoaded()
-		BOOL bSomethingChanged = false;
-		DWORD dnCS = s.nCS;
-		if(point.y < 20){
-			if(!m_wndToolTopBar.IsWindowVisible()){
-				m_wndToolTopBar.ShowWindow(SW_SHOW);
-				bSomethingChanged = true;
-			}
+		if(m_nomoretopbarforawhile > 0){
+			m_nomoretopbarforawhile --;
 		}else{
-			if(m_wndToolTopBar.IsWindowVisible() ){
-			//	SVP_LogMsg5(_T(" hide tooltopbar") );
-				m_wndToolTopBar.ShowWindow(SW_HIDE);
-				bSomethingChanged = true;
+			BOOL bSomethingChanged = false;
+			DWORD dnCS = s.nCS;
+			if(point.y < 20){
+				if(!m_wndToolTopBar.IsWindowVisible()){
+					
+					m_wndToolTopBar.ShowWindow(SW_SHOW);
+					bSomethingChanged = true;
+				}
+			}else{
+				if(m_wndToolTopBar.IsWindowVisible() ){
+				//	SVP_LogMsg5(_T(" hide tooltopbar") );
+					m_wndToolTopBar.ShowWindow(SW_HIDE);
+					bSomethingChanged = true;
+				}
 			}
-		}
 
-		if(bSomethingChanged){
-			rePosOSD();
+			if(bSomethingChanged){
+				rePosOSD();
+			}
 		}
 	}
 
 
 
 
-	m_lastMouseMove = point;
 	
 	__super::OnMouseMove(nFlags, point);
 
@@ -2798,6 +2804,8 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 				m_fHideCursor = true;
 				SetCursor(NULL);
 			}
+			m_nomoretopbarforawhile = 2;
+			m_wndToolTopBar.SetTimer(m_wndToolTopBar.IDT_CLOSE,800,NULL);;
 		}
 		/*
 		if(m_wndTransparentControlBar.IsWindowVisible()){

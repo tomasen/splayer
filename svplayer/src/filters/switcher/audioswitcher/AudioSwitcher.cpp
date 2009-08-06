@@ -244,26 +244,7 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 	if(!pDataIn || !pDataOut || len <= 0 || lenout <= 0) return S_FALSE;
 
 	memset(pDataOut, 0, pOut->GetSize());
-
-	/*
-	PIN_INFO	PinInfo;
-		
-		if (SUCCEEDED (GetInputPin()->QueryPinInfo(&PinInfo)))
-		{
-			CLSID		FilterClsid;
-			FILTER_INFO	FilterInfo;
 	
-			if (SUCCEEDED (PinInfo.pFilter->QueryFilterInfo (&FilterInfo)))
-			{
-				PinInfo.pFilter->GetClassID(&FilterClsid);
-				
-				
-				SVP_LogMsg5(L"CLS %s" , CStringFromGUID( FilterClsid), FilterInfo.achName);
-			}
-		}*/
-	
-	
-
 	if(m_fCustomChannelMapping)
 	{
 		if(m_chs[wfe->nChannels-1].GetCount() > 0)

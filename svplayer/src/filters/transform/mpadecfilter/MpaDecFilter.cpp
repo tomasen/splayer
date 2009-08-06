@@ -1679,6 +1679,7 @@ ASSERT(wfeout->nSamplesPerSec == wfe->nSamplesPerSec);
 
 	// TODO: move this into the audio switcher
 	float sample_mul = 1;
+	m_fNormalize = false;//not use normalize here
 	if(m_fNormalize)
 	{
 		for(int i = 0, len = pBuff.GetCount(); i < len; i++)
@@ -1691,7 +1692,7 @@ ASSERT(wfeout->nSamplesPerSec == wfe->nSamplesPerSec);
 		pDataIn = pBuff.GetData();
 	}
 
-	bool fBoost = m_boost > 1;
+	bool fBoost = false;
 	double boost = 1+log10(m_boost);
 
 	for(int i = 0, len = pBuff.GetCount(); i < len; i++)

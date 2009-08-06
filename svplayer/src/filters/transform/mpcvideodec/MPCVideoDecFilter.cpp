@@ -576,7 +576,7 @@ CMPCVideoDecFilter::CMPCVideoDecFilter(LPUNKNOWN lpunk, HRESULT* phr)
 	avcodec_init();
 	avcodec_register_all();
 
-#ifdef LOGDEBUG
+#if LOGDEBUG
 	av_log_set_callback(LogLibAVCodec);
 	QueryPerformanceFrequency ((LARGE_INTEGER*)&m_PerfFrequency);
 #endif
@@ -1062,7 +1062,7 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 					 break;
 				case 2 :	// Too much ref frames
 					 m_bDXVACompatible = false;
-					 { WCHAR *msg = _T("硬件设备可能没有足够能力加速本文件...") ; AfxGetMainWnd()->SendMessage(ID_STATUS_MESSAGE, (UINT_PTR)msg, 3000); }
+					 { WCHAR *msg = _T("设备可能没有足够能力硬件加速本文件，请勿勾选“使硬件加速兼容更多文件”选项...") ; AfxGetMainWnd()->SendMessage(ID_STATUS_MESSAGE, (UINT_PTR)msg, 3000); }
 					 if (m_nCompatibilityMode & 4) { m_bDXVACompatible = true;  }
 					 break;
 				}
@@ -1371,7 +1371,7 @@ void CMPCVideoDecFilter::SetTypeSpecificFlags(IMediaSample* pMS)
 }
 LONGLONG CMPCVideoDecFilter::GetPerfCounter()
 {
-#ifdef LOGDEBUG
+#if LOGDEBUG
 	LONGLONG		i64Ticks100ns;
 	if (m_PerfFrequency != 0)
 	{
@@ -1497,7 +1497,7 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 
 		nSize	-= used_bytes;
 		pDataIn += used_bytes;
-#ifdef LOGDEBUG
+#if LOGDEBUG
 		m_perf_timer[5] = GetPerfCounter();
 		LONGLONG totalPerfTime = m_perf_timer[5] - m_perf_timer[0];
 		SVP_LogMsg3(("Timer Decoder %.3f%% CopyBuff Delivery %.3f%% Other Decoder %.3f%%") , ((double)((m_perf_timer[2] - m_perf_timer[1]) * 10000 / totalPerfTime)) / 100,

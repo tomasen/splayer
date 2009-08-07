@@ -182,10 +182,11 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/D &quot;WINVER=0x0600&quot; "
+				AdditionalOptions="/D &quot;WINVER=0x0600&quot;"
 				AdditionalIncludeDirectories="..\..\..\..\include,ffmpeg,ffmpeg\libavcodec,ffmpeg\libavutil"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				EnableEnhancedInstructionSet="0"
+				OpenMP="false"
 				CompileAs="2"
 			/>
 			<Tool

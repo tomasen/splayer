@@ -245,8 +245,9 @@ void cupdatenetlib::tryRealUpdate(BOOL bNoWaiting){
 // 			}
 		}
 	}
-
+	BOOL bFirstRound = true;
 	while(1){
+		
 		POSITION pos = szaMoveFiles.GetHeadPosition();
 		if(!pos){ break;}
 		bWaiting = TRUE;
@@ -259,11 +260,14 @@ void cupdatenetlib::tryRealUpdate(BOOL bNoWaiting){
 				continue;
 			}
 			svpToolBox.CreatDirForFile(mFiles.szMoveDestFile);
-			if( MoveFileEx( mFiles.szMoveSrcFile , mFiles.szMoveDestFile , MOVEFILE_COPY_ALLOWED|MOVEFILE_REPLACE_EXISTING|MOVEFILE_WRITE_THROUGH) == 0 ){
+			if( MoveFileEx( mFiles.szMoveSrcFile , mFiles.szMoveDestFile , MOVEFILE_COPY_ALLOWED|MOVEFILE_REPLACE_EXISTING|MOVEFILE_WRITE_THROUGH) == 0 && bFirstRound){
+				// only use MOVEFILE_DELAY_UNTIL_REBOOT on FirstRound
 				MoveFileEx( mFiles.szMoveSrcFile , mFiles.szMoveDestFile , MOVEFILE_COPY_ALLOWED|MOVEFILE_REPLACE_EXISTING|MOVEFILE_DELAY_UNTIL_REBOOT) ;
 			}
 			
 		}
+
+		bFirstRound = FALSE;
 		
 		Sleep(15);
 

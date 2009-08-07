@@ -385,6 +385,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\libavutil\aclib_template.c"
+				>
+			</File>
+			<File
 				RelativePath=".\libavcodec\allcodecs.c"
 				>
 			</File>

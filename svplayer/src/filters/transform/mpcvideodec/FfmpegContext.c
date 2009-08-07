@@ -39,7 +39,6 @@
 #include "h264data.h"
 #include "vc1.h"
 
-
 int av_h264_decode_frame(struct AVCodecContext* avctx, uint8_t *buf, int buf_size, int end_frame);
 int av_vc1_decode_frame(AVCodecContext *avctx, uint8_t *buf, int buf_size);
 
@@ -54,6 +53,7 @@ const byte ZZ_SCAN8[64] =
    35, 42, 49, 56, 57, 50, 43, 36, 29, 22, 15, 23, 30, 37, 44, 51,
    58, 59, 52, 45, 38, 31, 39, 46, 53, 60, 61, 54, 47, 55, 62, 63
 };
+
 
 int IsVista()
 {

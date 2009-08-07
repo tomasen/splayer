@@ -6896,7 +6896,7 @@ static void copy_context_to_mb(H264mb *dst, H264Context *src)
         memcpy(dst->direct_cache,             src->direct_cache,             sizeof(src->direct_cache));
         memcpy(dst->ref_cache,                src->ref_cache,                sizeof(src->ref_cache));
     }
-
+ 
     dst->top_mb_xy                      = src->top_mb_xy;
     dst->left_mb_xy[0]                  = src->left_mb_xy[0];
     dst->left_mb_xy[1]                  = src->left_mb_xy[1];
@@ -6924,6 +6924,8 @@ static void copy_mb_to_context(H264Context *dst, H264mb *src)
     memcpy(dst->mb,                       src->mb,                       sizeof(src->mb));
     memcpy(dst->intra4x4_pred_mode_cache, src->intra4x4_pred_mode_cache, sizeof(src->intra4x4_pred_mode_cache));
     memcpy(dst->non_zero_count_cache,     src->non_zero_count_cache,     sizeof(src->non_zero_count_cache));
+	//av_log(NULL, AV_LOG_DEBUG, "how many being copied? copy_mb_to_context :\n   %d %d %d %d \n", 
+	//	sizeof(src->mb) , sizeof(src->intra4x4_pred_mode_cache) , sizeof(src->non_zero_count_cache) ,5*8*2 );
 
     if(dst->slice_type != FF_I_TYPE && dst->slice_type != FF_SI_TYPE) {
         memcpy(dst->sub_mb_type,              src->sub_mb_type,              sizeof(src->sub_mb_type));
@@ -6931,9 +6933,14 @@ static void copy_mb_to_context(H264Context *dst, H264mb *src)
         memcpy(dst->mvd_cache,                src->mvd_cache,                sizeof(src->mvd_cache));
         memcpy(dst->direct_cache,             src->direct_cache,             sizeof(src->direct_cache));
         memcpy(dst->ref_cache,                src->ref_cache,                sizeof(src->ref_cache));
+
+		//av_log(NULL, AV_LOG_DEBUG, "how many being copied? copy_mb_to_context2 :\n   %ul %ul %ul %ul %ul\n", 
+		//	sizeof(src->sub_mb_type) , 	sizeof(src->mv_cache) , sizeof(src->mvd_cache) , sizeof(src->direct_cache) , sizeof(src->ref_cache) );
+
+
     }
 
-    /* Needed for deblocking */
+	/* Needed for deblocking */
 
     dst->top_mb_xy                      = src->top_mb_xy;
     dst->left_mb_xy[0]                  = src->left_mb_xy[0];

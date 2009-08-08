@@ -208,14 +208,16 @@ static LPCTSTR DebugMiniDumpProcess( HANDLE pProcess, DWORD pId ,DWORD dwTid)
 
 				if (hFile!=INVALID_HANDLE_VALUE)
 				{
-					_EXCEPTION_POINTERS ExceptionInfo;
+					/*
+_EXCEPTION_POINTERS ExceptionInfo;
 					_MINIDUMP_EXCEPTION_INFORMATION ExInfo;
 					ExInfo.ThreadId = dwTid;
 					ExInfo.ExceptionPointers = &ExceptionInfo;
 					ExInfo.ClientPointers = NULL;
+*/
 
 					// write the dump
-					BOOL bOK = pDump( pProcess, pId,hFile,MiniDumpNormal,&ExInfo,NULL,NULL);
+					BOOL bOK = pDump( pProcess, pId,hFile,MiniDumpNormal,NULL,NULL,NULL);
 					if (bOK)
 					{
 						_stprintf( szScratch, _T("前一进程锁死,诊断文件已经保存到:'%s'\n请将该文件发送至tomasen@gmail.com，以便我们不断完善"), szDumpPath );
@@ -1316,10 +1318,10 @@ void CMPlayerCApp::InitInstanceThreaded(){
 			//	dlg_chkdefplayer.setDefaultPlayer();
 
 		}
+		CMainFrame* pFrame = (CMainFrame*)m_pMainWnd;
 
 		if ( time(NULL) > (m_s.tLastCheckUpdater + m_s.tCheckUpdaterInterleave) || m_s.tLastCheckUpdater == 0){
 		
-			CMainFrame* pFrame = (CMainFrame*)m_pMainWnd;
 
 			if(m_s.tLastCheckUpdater == 0 && !svpToolBox.FindSystemFile( _T("wmvcore.dll") )){
 				pFrame->SendStatusMessage(_T("您的系统中缺少必要的wmv/asf媒体组件，正在下载（约2MB）..."), 4000);
@@ -1346,7 +1348,59 @@ void CMPlayerCApp::InitInstanceThreaded(){
 			m_cnetupdater->bSVPCU_DONE = TRUE;
 		}
 
+		//AfxMessageBox(_T("GO"));
+		HWND hWnd = NULL;
+		while(1)
+		{
+			Sleep(1000);
+			hWnd = ::FindWindowEx(NULL, hWnd, MPC_WND_CLASS_NAME, NULL);
+			if(!hWnd)
+				break;
 
+			//AfxMessageBox(_T("GO1"));
+			//Sleep(3000);
+			if(hWnd != pFrame->m_hWnd) {
+				CString dumpMsg;
+
+				Sleep(1000);
+			//					AfxMessageBox(_T("GO1.5"));
+				DWORD pId = NULL;
+				DWORD dwTid = GetWindowThreadProcessId(hWnd, &pId);
+				if(pId == GetCurrentProcessId())
+					continue;
+
+				m_bGotResponse = FALSE;
+				if(SendMessageCallback(hWnd,WM_NULL,(WPARAM) NULL, NULL, 
+					HungWindowResponseCallback,	(ULONG_PTR)(this))){
+
+						MSG tMsg;
+						for(int i =0;i< 10; i++){
+							PeekMessage(&tMsg, hWnd, 0,0,0);
+							if(m_bGotResponse){
+								//AfxMessageBox(_T("m_bGotResponse true 2"));
+								break;
+							}
+							Sleep(320);
+						}
+
+
+						if(m_bGotResponse != true){
+							//		AfxMessageBox(_T("GO3"));
+							HANDLE deadProcess = OpenProcess( PROCESS_TERMINATE  , false , pId);
+							if(deadProcess){
+								dumpMsg = DebugMiniDumpProcess(deadProcess, pId, dwTid);
+								TerminateProcess(deadProcess, 0);
+								CloseHandle(deadProcess);
+							}
+							hWnd = NULL;
+
+							if(!dumpMsg.IsEmpty())
+								pFrame->SendStatusMessage(dumpMsg, 4000);
+						}
+				}
+				
+			}
+		}
 }
 UINT __cdecl Thread_InitInstance( LPVOID lpParam ) 
 { 

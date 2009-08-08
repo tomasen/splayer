@@ -1800,6 +1800,7 @@ void CMainFrame::OnClose()
 	m_wndNewOSD.OnRealClose();
 	m_wndToolTopBar.OnRealClose();
 	
+	//while(1){Sleep(333);}
 	CloseMedia();
 
 	__super::OnClose();

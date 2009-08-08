@@ -508,12 +508,22 @@ STDMETHODIMP CFGManager::ConnectDirect(IPin* pPinOut, IPin* pPinIn, const AM_MED
 	try {
 		CComPtr<IBaseFilter> pBF = GetFilterFromPin(pPinIn);
 		CLSID clsid = GetCLSID(pBF);
+		FILTER_INFO fInfo;
+		pBF->QueryFilterInfo(&fInfo);
+		SVP_LogMsg5(_T("ConnectDirect %s %s"), fInfo.achName , CStringFromGUID(clsid));
+		AfxGetAppSettings().szFGMLog.AppendFormat(_T("\r\nFConnectDirect %s %s"), fInfo.achName , CStringFromGUID(clsid) );
 
 		// TODO: GetUpStreamFilter goes up on the first input pin only
 		for(CComPtr<IBaseFilter> pBFUS = GetFilterFromPin(pPinOut); pBFUS; pBFUS = GetUpStreamFilter(pBFUS))
 		{
 			if(pBFUS == pBF) return VFW_E_CIRCULAR_GRAPH;
 			if(GetCLSID(pBFUS) == clsid) return VFW_E_CANNOT_CONNECT;
+
+			FILTER_INFO fInfo2;
+			pBFUS->QueryFilterInfo(&fInfo2);
+			SVP_LogMsg5(_T("ConnectDirect2 %s %s"), fInfo2.achName , CStringFromGUID(GetCLSID(pBFUS)));
+			AfxGetAppSettings().szFGMLog.AppendFormat(_T("\r\nFConnectDirect %s %s"), fInfo2.achName , CStringFromGUID(GetCLSID(pBFUS)) );
+
 		}
 		
 		ret = CComQIPtr<IFilterGraph2>(m_pUnkInner)->ConnectDirect(pPinOut, pPinIn, pmt);
@@ -721,7 +731,23 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 			if (szFName.Find(_T("TTL2 Decompressor")) >= 0 ) continue;
 			if (szFName.Find(_T("RDP DShow Redirection Filter")) >= 0 ) continue;
 			if (szFName.Find(_T("Sonic MP4 Demultiplexer")) >= 0 ) continue;
+			if (szFName.Find(_T("AVI Decompressor (YV12)")) >= 0 ) continue;
+			if (szFName.Find(_T("AVI Decompressor (I420)")) >= 0 ) continue;
+			if (szFName.Find(_T("AVI Decompressor (YUY2)")) >= 0 ) continue;
+			/*
+			if (szFName.Find(_T("AVI Decompressor")) >= 0 ){
+							SVP_LogMsg5(_T("FGM: Connecting '%s' WTF "), szFName );
+							AfxGetAppSettings().szFGMLog.AppendFormat(_T("FGM: Connecting '%s' WTF "), szFName );
+							continue;
+						}*/
 			
+			if (szFName.Find(_T("Color Space Converter")) >= 0 ) continue;
+			
+			
+			if(s.iDSVideoRendererType == VIDRNDT_DS_VMR7RENDERLESS || s.iDSVideoRendererType == VIDRNDT_DS_VMR9RENDERLESS || s.iDSVideoRendererType == VIDRNDT_DS_DXR) {
+				if (szFName.Find(_T("DirectVobSub")) >= 0 ) continue;
+			}
+
 			
 			if (s.TraFilters & TRA_AC3 && szFName.Find(_T("AC3Filter")) >= 0 ) continue; //disable AC3 filter if internal AC3 is enabled
 			
@@ -729,7 +755,9 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 				
 			CLSID FGID = pFGF->GetCLSID() ;
 			if ( FGID == GUIDFromCString(_T("{AA59CBFA-F731-49E9-BE78-08665F339EFC}")) ) continue;  //disable  Bicubic Video Resizer  that may cause flip
-
+			if ( FGID == GUIDFromCString(_T("{1643E180-90F5-11CE-97D5-00AA0055595A}")) ) continue;  //Color Space Converter
+			//if ( FGID == GUIDFromCString(_T("{CF49D4E0-1115-11CE-B03A-0020AF0BA770}")) ) continue;  //AVI Decompressor
+			
 			SVP_LogMsg5(_T("FGM: Connecting '%s' %s "), szFName, CStringFromGUID(pFGF->GetCLSID()) );
 			AfxGetAppSettings().szFGMLog.AppendFormat(_T("\r\nFGM: Connecting '%s' %s "), szFName, CStringFromGUID(pFGF->GetCLSID()) );
 
@@ -2354,8 +2382,7 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 	// Block VSFilter when internal subtitle renderer will get used
 //	if(s.fAutoloadSubtitles && s.fBlockVSFilter) {
 		if(s.iDSVideoRendererType == VIDRNDT_DS_VMR7RENDERLESS || s.iDSVideoRendererType == VIDRNDT_DS_VMR9RENDERLESS || s.iDSVideoRendererType == VIDRNDT_DS_DXR) {
-			m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{9852A670-F845-491B-9BE6-EBD841B8A613}")), MERIT64_DO_NOT_USE));
-			
+			m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{9852A670-F845-491B-9BE6-EBD841B8A613}")), MERIT64_DO_NOT_USE));			
 		}
 //	}
 	if(s.iDSVideoRendererType != VIDRNDT_DS_OVERLAYMIXER ){

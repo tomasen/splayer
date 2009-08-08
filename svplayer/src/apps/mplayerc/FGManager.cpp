@@ -508,10 +508,10 @@ STDMETHODIMP CFGManager::ConnectDirect(IPin* pPinOut, IPin* pPinIn, const AM_MED
 	try {
 		CComPtr<IBaseFilter> pBF = GetFilterFromPin(pPinIn);
 		CLSID clsid = GetCLSID(pBF);
-		FILTER_INFO fInfo;
-		pBF->QueryFilterInfo(&fInfo);
-		SVP_LogMsg5(_T("ConnectDirect %s %s"), fInfo.achName , CStringFromGUID(clsid));
-		AfxGetAppSettings().szFGMLog.AppendFormat(_T("\r\nFConnectDirect %s %s"), fInfo.achName , CStringFromGUID(clsid) );
+		//FILTER_INFO fInfo;
+		//pBF->QueryFilterInfo(&fInfo);
+		SVP_LogMsg5(_T("ConnectDirect %s "), CStringFromGUID(clsid));
+		AfxGetAppSettings().szFGMLog.AppendFormat(_T("\r\nFConnectDirect %s "),  CStringFromGUID(clsid) );
 
 		// TODO: GetUpStreamFilter goes up on the first input pin only
 		for(CComPtr<IBaseFilter> pBFUS = GetFilterFromPin(pPinOut); pBFUS; pBFUS = GetUpStreamFilter(pBFUS))
@@ -519,10 +519,10 @@ STDMETHODIMP CFGManager::ConnectDirect(IPin* pPinOut, IPin* pPinIn, const AM_MED
 			if(pBFUS == pBF) return VFW_E_CIRCULAR_GRAPH;
 			if(GetCLSID(pBFUS) == clsid) return VFW_E_CANNOT_CONNECT;
 
-			FILTER_INFO fInfo2;
-			pBFUS->QueryFilterInfo(&fInfo2);
-			SVP_LogMsg5(_T("ConnectDirect2 %s %s"), fInfo2.achName , CStringFromGUID(GetCLSID(pBFUS)));
-			AfxGetAppSettings().szFGMLog.AppendFormat(_T("\r\nFConnectDirect %s %s"), fInfo2.achName , CStringFromGUID(GetCLSID(pBFUS)) );
+		//	FILTER_INFO fInfo2;
+		//	pBFUS->QueryFilterInfo(&fInfo2);
+			SVP_LogMsg5(_T("ConnectDirect2 %s  "),  CStringFromGUID(GetCLSID(pBFUS)));
+			AfxGetAppSettings().szFGMLog.AppendFormat(_T("\r\nFConnectDirect2 %s"),  CStringFromGUID(GetCLSID(pBFUS)) );
 
 		}
 		
@@ -758,8 +758,8 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 			if ( FGID == GUIDFromCString(_T("{1643E180-90F5-11CE-97D5-00AA0055595A}")) ) continue;  //Color Space Converter
 			//if ( FGID == GUIDFromCString(_T("{CF49D4E0-1115-11CE-B03A-0020AF0BA770}")) ) continue;  //AVI Decompressor
 			
-			SVP_LogMsg5(_T("FGM: Connecting '%s' %s "), szFName, CStringFromGUID(pFGF->GetCLSID()) );
-			AfxGetAppSettings().szFGMLog.AppendFormat(_T("\r\nFGM: Connecting '%s' %s "), szFName, CStringFromGUID(pFGF->GetCLSID()) );
+			//SVP_LogMsg5(_T("FGM: Connecting '%s' %s "), szFName, CStringFromGUID(pFGF->GetCLSID()) );
+			//AfxGetAppSettings().szFGMLog.AppendFormat(_T("\r\nFGM: Connecting '%s' %s "), szFName, CStringFromGUID(pFGF->GetCLSID()) );
 
 			CComPtr<IBaseFilter> pBF;
 			CInterfaceList<IUnknown, &IID_IUnknown> pUnks;

@@ -326,7 +326,7 @@ class CMPlayerCApp : public CWinApp
 
 	CAtlList<CString> m_cmdln;
 	void PreProcessCommandLine();
-	void SendCommandLine(HWND hWnd);
+	BOOL SendCommandLine(HWND hWnd, BOOL bPostMessage = false);
 	HINSTANCE				m_hD3DX9Dll;
 	int						m_nDXSdkRelease;
 
@@ -345,6 +345,7 @@ public:
 
 	bool GetAppDataPath(CString& path);
 	
+	bool m_bGotResponse;
 	static bool	IsVista();
 	static void GainAdminPrivileges(UINT idd, BOOL bWait = true);
 	static int GetNumberOfSpeakers(LPCGUID lpcGUID = NULL, HWND hWnd = NULL);

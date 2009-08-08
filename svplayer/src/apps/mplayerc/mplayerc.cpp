@@ -154,6 +154,117 @@ static LONG WINAPI  DebugMiniDumpFilter( struct _EXCEPTION_POINTERS *pExceptionI
 	
 	return retval;
 }
+static LPCTSTR DebugMiniDumpProcess( HANDLE pProcess, DWORD pId ,DWORD dwTid)
+{
+	LONG retval = EXCEPTION_CONTINUE_SEARCH;
+	HWND hParent = NULL;                        // find a better value for your app
+
+	// firstly see if dbghelp.dll is around and has the function we need
+	// look next to the EXE first, as the one in System32 might be old
+	// (e.g. Windows 2000)
+	HMODULE hDll = NULL;
+	TCHAR szDbgHelpPath[_MAX_PATH];
+
+	if (GetModuleFileName( NULL, szDbgHelpPath, _MAX_PATH ))
+	{
+		TCHAR *pSlash = _tcsrchr( szDbgHelpPath, _T('\\') );
+		if (pSlash)
+		{
+			_tcscpy(pSlash+1, _T("DBGHELP.DLL"));
+			hDll = ::LoadLibrary( szDbgHelpPath );
+		}
+	}
+
+	if (hDll==NULL)
+	{
+		// load any version we can
+		hDll = ::LoadLibrary(_T("DBGHELP.DLL"));
+	}
+
+	LPCTSTR szResult = NULL;
+
+	if (hDll)
+	{
+		MINIDUMPWRITEDUMP pDump = (MINIDUMPWRITEDUMP)::GetProcAddress(hDll,"MiniDumpWriteDump");
+		if (pDump)
+		{
+			TCHAR szDumpPath[_MAX_PATH];
+			TCHAR szScratch [_MAX_PATH];
+
+			// work out a good place for the dump file
+			_tgetcwd(szDumpPath,_MAX_PATH);
+			_tcscat( szDumpPath, _T("\\"));
+
+			_tcscat( szDumpPath, _T("splayer_hanged_") );
+			_tcscat( szDumpPath, SVP_REV_STR );
+			_tcscat( szDumpPath, _T(".dmp"));
+
+			// ask the user if they want to save a dump file
+			//if (::MessageBox(NULL,_T("程序发生意外,是否保存一个文件用于诊断?"), ResStr(IDR_MAINFRAME) ,MB_YESNO)==IDYES)
+			{
+				// create the file
+				HANDLE hFile = ::CreateFile( szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS,
+					FILE_ATTRIBUTE_NORMAL, NULL );
+
+				if (hFile!=INVALID_HANDLE_VALUE)
+				{
+					_EXCEPTION_POINTERS ExceptionInfo;
+					_MINIDUMP_EXCEPTION_INFORMATION ExInfo;
+					ExInfo.ThreadId = dwTid;
+					ExInfo.ExceptionPointers = &ExceptionInfo;
+					ExInfo.ClientPointers = NULL;
+
+					// write the dump
+					BOOL bOK = pDump( pProcess, pId,hFile,MiniDumpNormal,&ExInfo,NULL,NULL);
+					if (bOK)
+					{
+						_stprintf( szScratch, _T("前一进程锁死,诊断文件已经保存到:'%s'\n请将该文件发送至tomasen@gmail.com，以便我们不断完善"), szDumpPath );
+						szResult = szScratch;
+						retval = EXCEPTION_EXECUTE_HANDLER;
+						{
+							TCHAR sUpdaterPath[_MAX_PATH];
+							TCHAR sUpPerm[_MAX_PATH];
+							if (GetModuleFileName( NULL, sUpdaterPath, _MAX_PATH ))
+							{
+								_tcscat( sUpdaterPath, _T("\\Updater.exe"));
+								_stprintf( sUpPerm, _T(" /dmp splayer_hanged_%s.dmp "), SVP_REV_STR );
+								(int)::ShellExecute(NULL, _T("open"), sUpdaterPath, sUpPerm, NULL, SW_HIDE);
+
+							}
+						}
+					}
+					else
+					{
+						_stprintf( szScratch, _T("保存文件到 '%s'失败,(错误号: %d)"), szDumpPath, GetLastError() );
+						szResult = szScratch;
+					}
+					::CloseHandle(hFile);
+				}
+				else
+				{
+					_stprintf( szScratch, _T("在'%s'创建 dump 文件失败,(错误号 %d)"), szDumpPath, GetLastError() );
+					szResult = szScratch;
+				}
+			}
+		}
+		else
+		{
+			szResult = _T("dbghelp.dll 文件太旧,不能支持MiniDumpWriteDump函数");
+		}
+	}
+	else
+	{
+		szResult = _T("dbghelp.dll 文件不存在");
+	}
+
+	if (szResult)
+	{
+		//::MessageBox( NULL, szResult, ResStr(IDR_MAINFRAME), MB_OK );
+	}
+
+
+	return szResult;
+}
 
 int IsInsideVM(){
 	//这个方法似乎是检测虚拟机的一个简单有效的方法，虽然还不能确定它是否是100%有效。名字很有意思，红色药丸（为什么不是bluepill,哈哈）。我在网上找到了个ppt专门介绍这个方法，可惜现在翻不到了。记忆中原理是这样的，主要检测IDT的数  值，如果这个数值超过了某个数值，我们就可以认为应用程序处于虚拟环境中，似乎这个方法在多CPU的机器中并不可靠。据称ScoobyDoo方法是RedPill的升级版。代码也是在网上找的，做了点小改动。有四种返回结果，可以确认是VMWare，还是  VirtualPC，还是其它VME，或是没有处于VME中。
@@ -747,11 +858,23 @@ void CMPlayerCApp::PreProcessCommandLine()
 		m_cmdln.AddTail(str);
 	}
 }
+ void CALLBACK HungWindowResponseCallback(HWND target_window,
+												UINT message,
+												ULONG_PTR data,
+												LRESULT result){
 
-void CMPlayerCApp::SendCommandLine(HWND hWnd)
+	CMPlayerCApp* instance = (CMPlayerCApp*)(data);
+	if (NULL != instance) {
+		instance->m_bGotResponse = true;
+		
+		//AfxMessageBox(_T("m_bGotResponse true"));
+	}
+}
+
+BOOL CMPlayerCApp::SendCommandLine(HWND hWnd, BOOL bPostMessage )
 {
 	if(m_cmdln.IsEmpty())
-		return;
+		return false;
 
 	int bufflen = sizeof(DWORD);
 
@@ -760,7 +883,7 @@ void CMPlayerCApp::SendCommandLine(HWND hWnd)
 
 	CAutoVectorPtr<BYTE> buff;
 	if(!buff.Allocate(bufflen))
-		return;
+		return false;
 
 	BYTE* p = buff;
 
@@ -780,7 +903,37 @@ void CMPlayerCApp::SendCommandLine(HWND hWnd)
 	cds.dwData = 0x6ABE51;
 	cds.cbData = bufflen;
 	cds.lpData = (void*)(BYTE*)buff;
+	if(bPostMessage){
+
+		m_bGotResponse = FALSE;
+		if(SendMessageCallback(hWnd,WM_NULL,(WPARAM) NULL, NULL, 
+			HungWindowResponseCallback,	(ULONG_PTR)(this))){
+		
+			MSG tMsg;
+			for(int i =0;i< 7; i++){
+				PeekMessage(&tMsg, hWnd, 0,0,0);
+				if(m_bGotResponse){
+					//AfxMessageBox(_T("m_bGotResponse true 2"));
+					break;
+				}
+				Sleep(320);
+			}
+
+
+			if(m_bGotResponse != true){
+				//AfxMessageBox(_T("m_bGotResponse false"));
+				return false;
+			}
+		}else{
+			//AfxMessageBox(_T("SendMessageCallback false"));
+			return FALSE;
+		}
+
+		
+	}
+	//AfxMessageBox(_T("SendMsg"));
 	SendMessage(hWnd, WM_COPYDATA, (WPARAM)NULL, (LPARAM)&cds);
+	return true;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1371,20 +1524,39 @@ BOOL CMPlayerCApp::InitInstance()
 
 	m_mutexOneInstance.Create(NULL, TRUE, MPC_WND_CLASS_NAME);
 
+	CString dumpMsg;
 	if(GetLastError() == ERROR_ALREADY_EXISTS
 	&& (!(m_s.fAllowMultipleInst || (m_s.nCLSwitches&CLSW_NEW) || m_cmdln.IsEmpty())
 		|| (m_s.nCLSwitches&CLSW_ADD)))
 	{
 		if(HWND hWnd = ::FindWindow(MPC_WND_CLASS_NAME, NULL))
 		{
-			SetForegroundWindow(hWnd);
+			{
 
-			if(!(m_s.nCLSwitches&CLSW_MINIMIZED) && IsIconic(hWnd))
-				ShowWindow(hWnd, SW_RESTORE);
+				SetForegroundWindow(hWnd);
+				//AfxMessageBox(_T("5")); 
 
-			SendCommandLine(hWnd);
+				if(!(m_s.nCLSwitches&CLSW_MINIMIZED) && IsIconic(hWnd))
+					ShowWindow(hWnd, SW_RESTORE);
 
-			return FALSE;
+				if(SendCommandLine(hWnd, true)){
+
+					//AfxMessageBox(_T("6"));
+
+					return FALSE;
+				}else{
+					//AfxMessageBox(_T("should create dump for that hwnd"));
+					DWORD pId = NULL;
+					DWORD dwTid = GetWindowThreadProcessId(hWnd, &pId);
+					HANDLE deadProcess = OpenProcess( PROCESS_TERMINATE  , false , pId);
+					if(deadProcess){
+						dumpMsg = DebugMiniDumpProcess(deadProcess, pId, dwTid);
+						TerminateProcess(deadProcess, 0);
+						CloseHandle(deadProcess);
+					}
+				}
+				
+			}
 		}
 	}
 
@@ -1435,6 +1607,9 @@ BOOL CMPlayerCApp::InitInstance()
 	SendCommandLine(m_pMainWnd->m_hWnd);
 
 	pFrame->SetFocus();
+
+	if(!dumpMsg.IsEmpty())
+		pFrame->SendStatusMessage(dumpMsg, 5000);
 
 	return TRUE;
 }

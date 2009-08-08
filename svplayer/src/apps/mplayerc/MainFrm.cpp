@@ -1754,10 +1754,11 @@ void CMainFrame::OnDestroy()
 
 	m_fileDropTarget.Revoke();
 	
-	CloseMedia();
-
+	
 	m_wndNewOSD.SendMessage(WM_DESTROY,0  , 0);
 	m_wndToolTopBar.SendMessage(WM_DESTROY, 0 , 0);
+
+	CloseMedia();
 
 	if(m_pGraphThread)
 	{
@@ -1796,22 +1797,21 @@ void CMainFrame::OnClose()
  
 	ShowWindow(SW_HIDE);
 
-	CloseMedia();
-
 	m_wndNewOSD.OnRealClose();
 	m_wndToolTopBar.OnRealClose();
 	
+	CloseMedia();
 
 	__super::OnClose();
 }
 
 void CMainFrame::OnEnterMenuLoop( BOOL bIsTrackPopupMenu ){
 	bNoMoreHideMouse = true;
-	//SendStatusMessage(_T("Meni Enter"), 2000);
+	//SendStatusMessage(_T("Menu Enter"), 2000);
 }
 void CMainFrame::OnExitMenuLoop( BOOL bIsTrackPopupMenu ){
 	bNoMoreHideMouse = false;
-	//SendStatusMessage(_T("Meni Exit"), 2000);
+	//SendStatusMessage(_T("Menu Exit"), 2000);
 }
 
 DROPEFFECT CMainFrame::OnDragEnter(COleDataObject* pDataObject, DWORD dwKeyState, CPoint point)

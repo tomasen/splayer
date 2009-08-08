@@ -355,6 +355,7 @@ int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, C
 		SVP_LogMsg(_T("TmpFile Creation for http recv buff fail")); //// TODO: 1. warning!! OR switch to memfile system
 		return -1;
 	}
+	int err = 0;
 
 
 	curl = curl_easy_init();
@@ -383,10 +384,11 @@ int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, C
 			}else{
 				//error
 				SVP_LogMsg(_T("HTTP return code is not 200"));
+				err = 1;
 			}
 		}else{
 			//error
-			
+			err = 2;
 			SVP_LogMsg(_T("HTTP connection error  ")); //TODO handle this
 		}
 
@@ -397,11 +399,14 @@ int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, C
 
 		//if not error, process data
 		if (ret){
-			if ( this->ExtractDataFromAiSubRecvBuffer(szFilePath, stream_http_recv_buffer) ){
+			int extErr  = this->ExtractDataFromAiSubRecvBuffer(szFilePath, stream_http_recv_buffer);
+			if ( extErr && extErr != -2 ){ // -2 if there is none match subtile
 				SVP_LogMsg(_T("Error On Extract DataFromAiSubRecvBuffer ")); //TODO handle this
+				err = 3;
 			}
 		}else{
 			SVP_LogMsg(_T("网络通讯故障，字幕下载失败"), 31);
+			err = 4;
 		}
 		/*
 		if (this->mainBufferSize > 0){
@@ -423,7 +428,7 @@ int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, C
 	//this->mainBufferSize = 0;
 	fclose(stream_http_recv_buffer);
 
-	return 0;
+	return err;
 }
 
 int  CSVPNet::ExtractDataFromAiSubRecvBuffer(CString szFilePath, FILE* sAiSubRecvBuff){
@@ -440,12 +445,14 @@ int  CSVPNet::ExtractDataFromAiSubRecvBuffer(CString szFilePath, FILE* sAiSubRec
 	if(iStatCode <= 0){
 		if (iStatCode == -1){
 			SVP_LogMsg(_T("没有找到字幕"), 31);
+			ret = -2;
 		}else{
 			//TODO error handle
 			SVP_LogMsg(_T("数据错误，字幕下载失败"), 31);
+			ret = -1;
 			//SVP_LogMsg(_T("First Stat Code TODO: 显示有错误发生"));
 		}
-		ret = -1;
+		
 		goto releaseALL;
 	}else{
 		SVP_LogMsg(_T("字幕已经找到，正在下载"), 31);

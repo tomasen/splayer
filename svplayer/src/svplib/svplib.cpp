@@ -155,10 +155,19 @@ void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath, CStringArray* szSu
 	CSVPNet svpNet;
 	CSVPhash svpHash;
 	CString szFileHash  = svpHash.ComputerFileHash(fnVideoFilePath);
-	if ( svpNet.QuerySubByVideoPathOrHash(fnVideoFilePath,szFileHash) ){
-		return ;
-	}
+	for(int i = 1; i < 8; i++){
+		int err =  svpNet.QuerySubByVideoPathOrHash(fnVideoFilePath,szFileHash) ;
+		if(err){
+			Sleep(2300 * i);
+			if(i >= 3)
+				return;
 
+			SVP_LogMsg(_T("ÕýÔÚÖØÊÔ..."), 31);
+		}else{
+			break;
+		}
+	}
+	
 		//load sub file to sublist
 		CString szSubFilePath;
 		int iSubTotal = 0;

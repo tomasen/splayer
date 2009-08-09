@@ -1511,10 +1511,6 @@ IDF_CONTROLVOLUMEOFF_PNG FILE                    "res\\web\\controlvolumeoff.png
 IDF_CONTROLVOLUMEBAR_PNG FILE                    "res\\web\\controlvolumebar.png"
 IDF_CONTROLVOLUMEGRIP_PNG FILE                    "res\\web\\controlvolumegrip.png"
 IDF_SHADER_RESIZER      FILE                    "res\\shaders\\resizer.psh"
-//IDF_LOGO1               FILE                    "res\\logo.1.png"
-//IDF_LOGO4               FILE                    "res\\logo.4.png"
-//IDF_LOGO5               FILE                    "res\\logo.5.png"
-//IDF_LOGO6               FILE                    "res\\logo.6.png"
 IDF_LOGO7               FILE                    "res\\logo.0.png"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1879,35 +1875,14 @@ IDR_POPUP MENU
 BEGIN
     POPUP ""
     BEGIN
-        MENUITEM "打开文件",                        ID_FILE_OPENQUICK
-        POPUP "打开"
-        BEGIN
-            MENUITEM "文件(&O)...\tCtrl+O",           ID_FILE_OPENMEDIA
-            MENUITEM "文件夹(&F)...\tCtrl+F",          ID_FILE_OPENFOLDER
-            MENUITEM "网址(&U)...\tCtrl+U",           ID_FILE_OPENURLSTREAM
-            MENUITEM "DVD(&D)...\tCtrl+D",          ID_FILE_OPENDVD
-            MENUITEM "视频捕捉(&V)...\tCtrl+V",         ID_FILE_OPENDEVICE
-            MENUITEM "碟片",                          ID_32768
-        END
+        MENUITEM "打开文件...",                     ID_FILE_OPENQUICK
+        MENUITEM "打开",                          65535
         MENUITEM "最近播放",                        ID__RECENTPLAYED
         MENUITEM "收藏夹",                         ID_FAVORITES
         MENUITEM "关闭(&C)",                      ID_FILE_CLOSEPLAYLIST
         MENUITEM SEPARATOR
-        MENUITEM "第一字幕",                        ID__32776
-        MENUITEM "第二字幕",                        ID__32796
-        MENUITEM "调入字幕(&L)...\tCtrl+L",         ID_FILE_LOAD_SUBTITLE
-        POPUP "网络字幕(&S)"
-        BEGIN
-            MENUITEM "启用智能网络字幕匹配",                  ID_SVPSUB_MENUENABLE
-            MENUITEM SEPARATOR
-            MENUITEM "智能字幕匹配下载...",                 ID_FILE_ISDB_DOWNLOAD
-            MENUITEM SEPARATOR
-            MENUITEM "上传字幕...",                     ID_FILE_ISDB_UPLOAD
-            MENUITEM SEPARATOR
-            MENUITEM "网页搜索字幕...",                   ID_FILE_ISDB_SEARCH
-        END
-        MENUITEM SEPARATOR
-        MENUITEM "音频/声道切换",                     ID__32777
+        MENUITEM "声音",                          ID__32777
+        MENUITEM "字幕",                          65535
         POPUP "画面"
         BEGIN
             MENUITEM "标准画面\tC",                     ID_VIEW_VF_FROMINSIDE
@@ -1915,7 +1890,7 @@ BEGIN
             MENUITEM "智能去黑边(&O)",                   ID_VIEW_VF_FROMOUTSIDE
             MENUITEM "铺满播放窗口(&S)",                  ID_VIEW_VF_STRETCH
             MENUITEM SEPARATOR
-            MENUITEM "画面增益",                        ID__SHADERS
+            MENUITEM "播放效果调节",                      ID__SHADERS
             POPUP "画面翻转"
             BEGIN
                 MENUITEM "水平翻转",                        ID_ROTATE_H
@@ -1944,8 +1919,7 @@ BEGIN
                 MENUITEM "仅播放时",                        ID_ONTOP_WHILEPLAYING
             END
         END
-        MENUITEM SEPARATOR
-        POPUP "DVD选单"
+        POPUP "DVD控制"
         BEGIN
             MENUITEM "上一段(&P)\t上一页",                ID_NAVIGATE_SKIPBACK
             MENUITEM "下一段(&N)\t下一页",                ID_NAVIGATE_SKIPFORWARD
@@ -1963,9 +1937,6 @@ BEGIN
             MENUITEM "章节选单(&C)",                    ID_NAVIGATE_CHAPTERMENU
         END
         MENUITEM SEPARATOR
-        MENUITEM "选项设置(&O)...",                 ID_VIEW_OPTIONS
-        MENUITEM "文件信息(&r)",                    ID_FILE_PROPERTIES
-        MENUITEM SEPARATOR
         POPUP "截图"
         BEGIN
             MENUITEM "复制到剪切板\tCtrl+C",              ID_FILE_COPYTOCLIPBOARD
@@ -1979,17 +1950,9 @@ BEGIN
             MENUITEM "当前文件",                        ID_DELETECURFILE
             MENUITEM "当前文件夹",                       ID_DELCURFOLDER
         END
-        POPUP "播放结束后"
-        BEGIN
-            MENUITEM "退出视频",                        ID_AFTERPLAYBACK_CLOSE
-            MENUITEM "进入待机",                        ID_AFTERPLAYBACK_STANDBY
-            MENUITEM "进入休眠",                        ID_AFTERPLAYBACK_HIBERNATE
-            MENUITEM "关机",                          ID_AFTERPLAYBACK_SHUTDOWN
-            MENUITEM "注销当前用户",                      ID_AFTERPLAYBACK_LOGOFF
-            MENUITEM SEPARATOR
-            MENUITEM "什么都不做",                       ID_AFTERPLAYBACK_DONOTHING
-        END
+        MENUITEM "播放器设置(&O)...",                ID_VIEW_OPTIONS
         MENUITEM SEPARATOR
+        MENUITEM "文件信息(&r)",                    ID_FILE_PROPERTIES
         POPUP "更多..."
         BEGIN
             POPUP "意见和反馈"
@@ -2073,11 +2036,20 @@ BEGIN
                 MENUITEM "特效(Shader)编辑器\tCtrl+9",       ID_VIEW_SHADEREDITOR
                 MENUITEM "DSM转换器(&n)...",               ID_FILE_CONVERT
             END
-            MENUITEM "显示亮度控制栏",                     ID_SHOWCOLORCONTROLBAR
+            MENUITEM "亮度控制栏",                       ID_SHOWCOLORCONTROLBAR
             MENUITEM SEPARATOR
             MENUITEM "生成DEBUG反馈信息",                 ID_DEBUGREPORT
         END
-        MENUITEM "退出(&x)\tAlt+X",               ID_FILE_EXIT
+        POPUP "播放结束后"
+        BEGIN
+            MENUITEM "退出视频",                        ID_AFTERPLAYBACK_CLOSE
+            MENUITEM "进入待机",                        ID_AFTERPLAYBACK_STANDBY
+            MENUITEM "进入休眠",                        ID_AFTERPLAYBACK_HIBERNATE
+            MENUITEM "关机",                          ID_AFTERPLAYBACK_SHUTDOWN
+            MENUITEM "注销当前用户",                      ID_AFTERPLAYBACK_LOGOFF
+            MENUITEM SEPARATOR
+            MENUITEM "什么都不做",                       ID_AFTERPLAYBACK_DONOTHING
+        END
     END
 END
 
@@ -2297,6 +2269,23 @@ BEGIN
     END
 END
 
+IDR_OPENMORE MENU 
+BEGIN
+    MENUITEM "DVD(&D)...\tCtrl+D",          ID_FILE_OPENDVD
+    MENUITEM "网址(&U)...\tCtrl+U",           ID_FILE_OPENURLSTREAM
+    MENUITEM "文件夹(&F)...\tCtrl+F",          ID_FILE_OPENFOLDER
+    MENUITEM "视频捕捉(&V)...\tCtrl+V",         ID_FILE_OPENDEVICE
+    MENUITEM "指定音轨文件(&O)...\tCtrl+O",       ID_FILE_OPENMEDIA
+END
+
+IDR_SUBMENU MENU 
+BEGIN
+    MENUITEM "启用智能网络字幕匹配",                  ID_SVPSUB_MENUENABLE
+    MENUITEM "智能字幕匹配下载...",                 ID_FILE_ISDB_DOWNLOAD
+    MENUITEM "网页搜索字幕...",                   ID_FILE_ISDB_SEARCH
+    MENUITEM "上传字幕...",                     ID_FILE_ISDB_UPLOAD
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -2467,6 +2456,7 @@ BEGIN
     IDS_AUTOPLAY_CAPTURECAMERA "采集视频"
     IDS_RS_DXVACOMPAT       "DXVACompat"
     IDS_RS_NOTAUTOCHECKSPEAKER "NotAutoCheckSpeaker"
+    IDS_RS_SVPSUBSTOREDIR   "SVPSubStoreDir"
 END
 
 STRINGTABLE 
@@ -2700,7 +2690,6 @@ BEGIN
     IDS_RS_MPABOOST         "MpaBoost"
     IDS_RS_AACSC            "AACSpeakerConfig"
     IDS_RS_VMRSYNCFIX       "VMRSyncFix"
-	IDS_RS_SVPSUBSTOREDIR	"SVPSubStoreDir"
 END
 
 STRINGTABLE 
@@ -2936,7 +2925,7 @@ BEGIN
     IDS_OPTIONS_CAPTION     "选项"
     IDS_SHADER_COMBINE      "合并(&C)..."
     IDS_SHADER_OFF          "关闭"
-    IDS_SHADER_POPUP        "画面增益"
+    IDS_SHADER_POPUP        "播放效果调节"
     IDS_FAVORITES_POPUP     "收藏夹"
     IDS_JUMPTO_POPUP        "跳至(&J)..."
     IDS_VIDEOANGLE_POPUP    "视角切换"
@@ -2951,11 +2940,11 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_SUBTITLES_POPUP     "第一字幕"
-    IDS_AUDIO_POPUP         "音频/声道切换"
+    IDS_SUBTITLES_POPUP     "字幕"
+    IDS_AUDIO_POPUP         "声音"
     IDS_FILTERS_POPUP       "滤镜(Filters)"
-    IDS_OPENCDROM_POPUP     "碟片"
-    IDS_NAVIGATE_POPUP      "DVD导航"
+    IDS_OPENCDROM_POPUP     "播放光盘"
+    IDS_NAVIGATE_POPUP      "DVD控制"
     IDS_VIDEOFRAME_POPUP    "视频尺寸"
     IDS_PANSCAN_POPUP       "画面微调"
     IDS_ASPECTRATIO_POPUP   "强制画面比例"

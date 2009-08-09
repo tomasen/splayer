@@ -172,6 +172,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_MESSAGE(WM_NCLBUTTONUP, OnNcLButtonUp)
 	ON_MESSAGE(WM_NCHITTEST, OnNcHitTestNewUI)
 	ON_WM_NCCALCSIZE()
+	ON_WM_DRAWITEM()
+	ON_WM_MEASUREITEM()  
 	/*NEW UI END*/
 
 	ON_MESSAGE(ID_STATUS_MESSAGE, OnStatusMessage)
@@ -538,7 +540,22 @@ CMainFrame::~CMainFrame()
 {
 //	m_owner.DestroyWindow();
 }
-
+  
+void CMainFrame::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct)    
+{   
+    // TODO: Add your message handler code here and/or call default   
+    //if(!nIDCtl) m_mainMenu.DrawItem(lpDrawItemStruct);
+	
+    __super::OnDrawItem(nIDCtl, lpDrawItemStruct);   
+}   
+   
+void CMainFrame::OnMeasureItem(int nIDCtl, LPMEASUREITEMSTRUCT lpMeasureItemStruct)    
+{   
+    // TODO: Add your message handler code here and/or call default   
+    //if(!nIDCtl) m_menu.MeasureItem(lpMeasureItemStruct);   
+	 //if(!nIDCtl) m_mainMenu.MeasureItem( lpMeasureItemStruct);   
+    __super::OnMeasureItem(nIDCtl, lpMeasureItemStruct);   
+}   
 BOOL CMainFrame::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 {
 	//AfxMessageBox(_T("x2"));
@@ -591,6 +608,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_nLogDPIY = ScreenDC.GetDeviceCaps(LOGPIXELSY);
 
 	m_popup.LoadMenu(IDR_POPUP);
+	m_openmore.LoadMenu(IDR_OPENMORE);
 	m_popupmain.LoadMenu(IDR_POPUPMAIN);
 
 	//GetMenu()->ModifyMenu(ID_FAVORITES, MF_BYCOMMAND|MF_STRING, IDR_MAINFRAME, ResStr(IDS_FAVORITES_POPUP));
@@ -3807,6 +3825,7 @@ void CMainFrame::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	__super::OnHScroll(nSBCode, nPos, pScrollBar);
 }
 
+
 void CMainFrame::OnInitMenu(CMenu* pMenu)
 {
 	__super::OnInitMenu(pMenu);
@@ -3818,6 +3837,7 @@ void CMainFrame::OnInitMenu(CMenu* pMenu)
 	{
 		CString str;
 		pMenu->GetMenuString(i, str, MF_BYPOSITION);
+		
 
 		CMenu* pSubMenu = NULL;
 
@@ -3835,7 +3855,9 @@ void CMainFrame::OnInitMenu(CMenu* pMenu)
 			mii.fState = (pSubMenu->GetMenuItemCount() > 0 ? MF_ENABLED : (MF_DISABLED|MF_GRAYED));
 			pMenu->SetMenuItemInfo(i, &mii, TRUE);
 		}
+		//pMenu->ModifyMenu(i,MF_BYPOSITION|MF_OWNERDRAW ,pMenu->GetMenuItemID(i), str);   
 	}
+	
 }
 void MenuMerge(CMenu* Org, CMenu* New){
 	if(!Org || !New){ return;};
@@ -3859,12 +3881,12 @@ void MenuMerge(CMenu* Org, CMenu* New){
 				mflag = MF_CHECKED;
 			}
 
-			Org->AppendMenu(MF_ENABLED | MF_STRING | mflag, New->GetMenuItemID(j), szMStr);
+			Org->AppendMenu(MF_ENABLED |MF_STRING | mflag, New->GetMenuItemID(j), szMStr);
 		}
 	}
 }
 
-void CMainFrame::OnInitMenuPopup(CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu)
+void CMainFrame::OnInitMenuPopup(CMenu * pPopupMenu, UINT nIndex, BOOL bSysMenu)
 {
 	__super::OnInitMenuPopup(pPopupMenu, nIndex, bSysMenu);
 
@@ -3887,17 +3909,17 @@ void CMainFrame::OnInitMenuPopup(CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu)
 		transl[_T("PanScan")] = IDS_PANSCAN_POPUP;
 		transl[_T("Aspect Ratio")] = IDS_ASPECTRATIO_POPUP;
 		transl[_T("Zoom")] = IDS_ZOOM_POPUP;
-		transl[_T("DVD选单")] = IDS_NAVIGATE_POPUP;
-		transl[_T("打开碟片")] = IDS_OPENCDROM_POPUP;
+		transl[_T("DVD控制")] = IDS_NAVIGATE_POPUP;
+		transl[_T("播放光盘")] = IDS_OPENCDROM_POPUP;
 		transl[_T("滤镜(Filters)")] = IDS_FILTERS_POPUP;
-		transl[_T("音频/声道切换")] = IDS_AUDIO_POPUP;
+		transl[_T("声音")] = IDS_AUDIO_POPUP;
 		transl[_T("字幕")] = IDS_SUBTITLES_POPUP;
 		transl[_T("音轨选择")] = IDS_AUDIOLANGUAGE_POPUP;
 		transl[_T("字幕语言")] = IDS_SUBTITLELANGUAGE_POPUP;
 		transl[_T("视角切换")] = IDS_VIDEOANGLE_POPUP;
 		transl[_T("跳至...")] = IDS_JUMPTO_POPUP;
 		transl[_T("收藏夹")] = IDS_FAVORITES_POPUP;
-		transl[_T("画面增益")] = IDS_SHADER_POPUP;
+		transl[_T("播放效果调节")] = IDS_SHADER_POPUP;
 		transl[_T("视频尺寸")] = IDS_VIDEOFRAME_POPUP;
 		transl[_T("画面微调")] = IDS_PANSCAN_POPUP;
 		transl[_T("强制画面比例")] = IDS_ASPECTRATIO_POPUP;
@@ -3950,10 +3972,13 @@ void CMainFrame::OnInitMenuPopup(CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu)
 
 			pPopupMenu->EnableMenuItem(i, MF_BYPOSITION|fState);
 		}
-		else if(str == ResStr(IDS_OPENCDROM_POPUP))
+		else if(str == _T("打开"))//ResStr(IDS_OPENCDROM_POPUP)
 		{
 			SetupOpenCDSubMenu();
-			pSubMenu = &m_opencds;
+			m_openmore.DestroyMenu();
+			m_openmore.LoadMenu(IDR_OPENMORE);
+			MenuMerge( &m_openmore ,  &m_opencds );
+			pSubMenu = &m_openmore;
 		}
 		else if(str == ResStr(IDS_FILTERS_POPUP))
 		{
@@ -3965,20 +3990,30 @@ void CMainFrame::OnInitMenuPopup(CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu)
 			SetupAudioSwitcherSubMenu();
 			SetupNavAudioSubMenu();
 			MenuMerge( &m_audios ,  &m_navaudio );
+			SetupAudioDeviceSubMenu();
+			CMenu* pSubMenuAD = &m_audiodevices;
+			if(pSubMenuAD ){
+				//if(m_audios.GetMenuItemCount())
+				//	m_audios.AppendMenu(MF_SEPARATOR);
+
+				m_audios.AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_USINGSPDIF, _T("数字输出(光纤/SPDIF/HDMI)"));
+				m_audios.AppendMenu(MF_POPUP, (UINT_PTR) pSubMenuAD->m_hMenu, _T("将声音输出至..."));
+			}
+
 			pSubMenu = &m_audios;
 		}
-		else if(str == ResStr(IDS_SUBTITLES_POPUP))
+		else if(str == _T("字幕")) //ResStr(IDS_SUBTITLES_POPUP)
 		{
-			SetupSubtitlesSubMenu();
-			SetupNavSubtitleSubMenu();
-			MenuMerge( &m_subtitles ,  &m_navsubtitle );
-			pSubMenu = &m_subtitles;
+			SetupSubMenuToolbar();
+			pSubMenu = &m_subtoolmenu;
 		}
+		/*
 		else if(str == ResStr(IDS_SUBTITLES_POPUP2))
-		{
-			SetupSubtitlesSubMenu(2);
-			pSubMenu = &m_subtitles2;
-		}
+				{
+					SetupSubtitlesSubMenu(2);
+					pSubMenu = &m_subtitles2;
+				}*/
+		
 		else if(str == ResStr(IDS_AUDIOLANGUAGE_POPUP) )
 		{
 			SetupNavAudioSubMenu();
@@ -4115,7 +4150,8 @@ BOOL CMainFrame::OnMenu(CMenu* pMenu)
 	CPoint point;
 	GetCursorPos(&point);
 
-	pMenu->TrackPopupMenu(TPM_RIGHTBUTTON|TPM_NOANIMATION, point.x+1, point.y+1, this);
+	CMenu* pMenuEx = (CMenu*)pMenu;
+	pMenuEx->TrackPopupMenu(TPM_RIGHTBUTTON|TPM_NOANIMATION, point.x+1, point.y+1, this);
 
 	return TRUE;
 }
@@ -10000,6 +10036,15 @@ void CMainFrame::OpenDVD(OpenDVDData* pODD)
 	if(SUCCEEDED(hr = pDVDI->GetDVDDirectory(buff, countof(buff), &len)))
 		pODD->title = CString(CStringW(buff));
 
+	if(s.fKeepHistory)
+	{
+		
+			//CRecentFileList* pMRU = &s.MRU ; not ready
+			//pMRU->ReadList();
+			//pMRU->Add(pODD->path);
+			//pMRU->WriteList();
+		
+	}
 	// TODO: resetdvd
 
 	pDVDC->SetOption(DVD_ResetOnStop, FALSE);
@@ -11143,19 +11188,19 @@ void CMainFrame::SetupOpenCDSubMenu()
 		switch(GetCDROMType(drive, files, true))
 		{
 		case CDROM_Unknown:
-			if(label.IsEmpty()) label = _T("Disk ");
+			if(label.IsEmpty()) label = _T("光盘 ");
 			str.Format(_T("%s (%c:)"), label, drive);
 			break;
 		case CDROM_Audio:
-			if(label.IsEmpty()) label = _T("Audio CD");
+			if(label.IsEmpty()) label = _T("音频CD ");
 			str.Format(_T("%s (%c:)"), label, drive);
 			break;
 		case CDROM_VideoCD:
-			if(label.IsEmpty()) label = _T("(S)VCD");
+			if(label.IsEmpty()) label = _T("(S)VCD ");
 			str.Format(_T("%s (%c:)"), label, drive);
 			break;
 		case CDROM_DVDVideo:
-			if(label.IsEmpty()) label = _T("DVD Video");
+			if(label.IsEmpty()) label = _T("DVD ");
 			str.Format(_T("%s (%c:)"), label, drive);
 			break;
 		default:
@@ -11240,7 +11285,10 @@ void CMainFrame::SetupAudioDeviceSubMenu(){
 		pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED);
 
 	for(int i = 0 ; i < m_AudioDevice.GetCount(); i+=2){
-		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, idstart++, m_AudioDevice.GetAt(i));
+		CString szAudioDevice = m_AudioDevice.GetAt(i);
+		szAudioDevice.Replace(_T("Default") , _T("默认") );
+		szAudioDevice.Replace(_T("Device") , _T("设备") );
+		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, idstart++, szAudioDevice );
 		if(idstart > IDS_CHANGE_AUDIO_DEVICE_END){
 			//too many device...
 			break;
@@ -11438,16 +11486,9 @@ void CMainFrame::SetupAudioSwitcherSubMenu()
 	if(!IsMenu(pSub->m_hMenu)) pSub->CreatePopupMenu();
 	else while(pSub->RemoveMenu(0, MF_BYPOSITION));
 
-	SetupAudioDeviceSubMenu();
-
+	
 	m_ssarray.RemoveAll();
-	CMenu* pSubMenu = &m_audiodevices;
-	if(pSubMenu ){
-		pSub->AppendMenu(MF_POPUP, (UINT_PTR) pSubMenu->m_hMenu, _T("输出设备"));
-		
-		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_USINGSPDIF, _T("使用数字输出(SPDIF/光纤)"));
-	}
-
+	
 	if(m_iMediaLoadState == MLS_LOADED)
 	{
 		UINT id = ID_AUDIO_SUBITEM_START;
@@ -11457,8 +11498,8 @@ void CMainFrame::SetupAudioSwitcherSubMenu()
 
 		if(pSS)
 		{
-			if(pSubMenu )
-				pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED);
+			//if(pSubMenu )
+			//	pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED);
 
 			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPNORMAL, _T("系统默认"));
 			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPLEFT,  _T("只播放左声道"));
@@ -11637,7 +11678,7 @@ void CMainFrame::OnUpdateChannalMapMenu(CCmdUI *pCmdUI){
 	}
 
 }
-void CMainFrame::OnSubMenuToolbar(){
+void CMainFrame::SetupSubMenuToolbar(){
 	CMenu* pSubMenu;
 	CMenu* pSub = &m_subtoolmenu;
 	if(!IsMenu(pSub->m_hMenu)) pSub->CreatePopupMenu();
@@ -11650,32 +11691,43 @@ void CMainFrame::OnSubMenuToolbar(){
 
 	SetupSubtitlesSubMenu(2);
 	//MenuMerge( &m_subtitles2 ,  &m_navsubtitle );
-	pSubMenu = &m_subtitles2;
+	//pSubMenu = &m_subtitles2;
 
-	if(m_subtoolmenu.GetMenuItemCount())
-		m_subtoolmenu.AppendMenu(MF_SEPARATOR);
-
-	m_subtoolmenu.AppendMenu(MF_POPUP, (UINT)m_subtitles2.m_hMenu,_T("第二字幕"));
-
+	
+	if(m_subtitles2.GetMenuItemCount() ){
+		if(m_subtoolmenu.GetMenuItemCount())
+			m_subtoolmenu.AppendMenu(MF_SEPARATOR);
+		m_subtoolmenu.AppendMenu(MF_POPUP, (UINT)m_subtitles2.m_hMenu,_T("第二字幕"));
+	}
+	
+/*
 	CMenu* netSubMenu = NULL;
-	CMenu* popmenuMain = m_popup.GetSubMenu(0);
+	CMenu* popmenuMain = (CMenu*)m_popup.GetSubMenu(0);
 	for(int iPos = 0; iPos < popmenuMain->GetMenuItemCount(); iPos++){
 		CString str;
 		if (popmenuMain->GetMenuString(iPos, str, MF_BYPOSITION)){
 			if(str.Find(_T("网络字幕")) >= 0){
-				netSubMenu = popmenuMain->GetSubMenu(iPos);
+				netSubMenu = (CMenu*) popmenuMain->GetSubMenu(iPos);
 				break;
 			}
 		}
-		
+
 	}
+*/
+	//if(netSubMenu){
+	//	m_subtoolmenu.AppendMenu(MF_POPUP, (UINT)netSubMenu->m_hMenu,_T("网络字幕..."));
+	//}
+	m_subtitles.DestroyMenu();
+	m_subtitles.LoadMenu(IDR_SUBMENU);
+	MenuMerge( &m_subtoolmenu,  &m_subtitles );
 	
-	if(netSubMenu){
-		m_subtoolmenu.AppendMenu(MF_POPUP, (UINT)netSubMenu->m_hMenu,_T("网络字幕..."));
-	}
-	m_subtoolmenu.AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_FILE_LOAD_SUBTITLE, _T("调入字幕文件..."));
+	//m_subtoolmenu.AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_FILE_LOAD_SUBTITLE, _T("调入字幕文件..."));
 
 
+}
+void CMainFrame::OnSubMenuToolbar(){
+	SetupSubMenuToolbar();
+	
 	OnMenu(&m_subtoolmenu);
 }
 void CMainFrame::SetupSubtitlesSubMenu(int subid)
@@ -11693,9 +11745,12 @@ void CMainFrame::SetupSubtitlesSubMenu(int subid)
 	if(m_iMediaLoadState != MLS_LOADED || m_fAudioOnly || !m_pCAP)
 		return;
 
+	UINT loadID = ID_FILE_LOAD_SUBTITLE;
+
 	UINT id ;
 	if (subid == 2){
 		id = ID_SUBTITLES_SUBITEM_START2;
+		loadID = ID_FILE_LOAD_SUBTITLE2;
 	}else{
 		id = ID_SUBTITLES_SUBITEM_START;
 	}
@@ -11760,13 +11815,17 @@ void CMainFrame::SetupSubtitlesSubMenu(int subid)
 		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, bHasSub++, ResStr(IDS_SUBTITLES_RELOAD));
 	
 	}
-	if (subid == 2){
+	
+	pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, loadID, _T("调入字幕文件..."));
+
+	if (subid == 2 && bHasSub){
 		if(pSub->GetMenuItemCount() > 0)
 			pSub->AppendMenu(MF_SEPARATOR);
 
 		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_CONFIG_AUTOLOADSUBTITLE2 , _T("自动启用第二字幕"));
 	}
-
+	
+	
 }
 
 void CMainFrame::SetupNavAudioSubMenu()
@@ -14112,6 +14171,15 @@ void CMainFrame::OnMenuAudio(){
 	SetupAudioSwitcherSubMenu();
 	SetupNavAudioSubMenu();
 	MenuMerge( &m_audios ,  &m_navaudio );
+	SetupAudioDeviceSubMenu();
+	CMenu* pSubMenuAD = &m_audiodevices;
+	if(pSubMenuAD ){
+		//if(m_audios.GetMenuItemCount())
+		//	m_audios.AppendMenu(MF_SEPARATOR);
+
+		m_audios.AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_USINGSPDIF, _T("数字输出(光纤/SPDIF/HDMI)"));
+		m_audios.AppendMenu(MF_POPUP, (UINT_PTR) pSubMenuAD->m_hMenu, _T("将声音输出至..."));
+	}
 	OnMenu( &m_audios );
 }
 void CMainFrame::OnMenuVideo(){

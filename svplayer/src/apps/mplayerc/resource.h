@@ -5,6 +5,8 @@
 #define IDR_MAINFRAME                   128
 #define IDR_POPUP                       129
 #define IDR_POPUPMAIN                   130
+#define IDR_OPENMORE                    131
+#define IDR_SUBMENU                     132
 #define IDB_PLAYERTOOLBAR               201
 #define IDB_NOAUDIO                     202
 #define IDB_MONO                        203
@@ -103,8 +105,8 @@
 #define IDF_SHADER_DENOISE              719
 #define IDF_SHADER_YV12CHROMAUP         720
 #define IDF_SHADER_LEVELS3              721
-#define IDF_SHADER_BT601_BT709           722
-#define IDF_SHADER_SHARPEN_COMPLEX3		723
+#define IDF_SHADER_BT601_BT709          722
+#define IDF_SHADER_SHARPEN_COMPLEX3     723
 #define ID_FILE_OPENMEDIA               800
 #define ID_FILE_OPENDVD                 801
 #define ID_FILE_OPENDEVICE              802
@@ -304,8 +306,9 @@
 #define ID_SUBTOOLBARBUTTON             1036
 #define ID_MENU_AUDIO                   1037
 #define ID_MENU_VIDEO                   1038
-#define ID_PLAY_SEEKBACKWARDSMALLC       1039
-#define ID_PLAY_SEEKFORWARDSMALLC        1040
+#define ID_PLAY_SEEKBACKWARDSMALLC      1039
+#define ID_PLAY_SEEKFORWARDSMALLC       1040
+#define ID_STATUS_MESSAGE               1324
 #define ID_FILTERS_SUBITEM_START        2000
 #define ID_FILTERS_SUBITEM_END          2099
 #define ID_FILTERSTREAMS_SUBITEM_START  2100
@@ -345,6 +348,7 @@
 #define IDS_CHANGE_AUDIO_DEVICE         4411
 #define IDS_CHANGE_AUDIO_DEVICE_END     4500
 #define ID_SHADERS_SETDX9               4501
+#define ID_FILE_LOAD_SUBTITLE2          4502
 #define ID_RECENT_FILE_START            5000
 #define ID_RECENT_FILE_END              5200
 #define ID_FILE_COPYTOCLIPBOARD         5201
@@ -355,13 +359,13 @@
 #define TIMER_FASTFORWORD               7001
 #define TIMER_STOPFASTFORWORD           7002
 #define TIMER_STATERASER                7003
-#define MYHTFULLSCREEN					7004
-#define MYHTMENU						7005
-#define MYHTCLOSE						7006
-#define MYHTMAXBUTTON					7007
-#define MYHTMINBUTTON					7008
-#define MYHTMINTOTRAY					7009
-#define TIMER_CLOSETOOLBAR             7010
+#define MYHTFULLSCREEN                  7004
+#define MYHTMENU                        7005
+#define MYHTCLOSE                       7006
+#define MYHTMAXBUTTON                   7007
+#define MYHTMINBUTTON                   7008
+#define MYHTMINTOTRAY                   7009
+#define TIMER_CLOSETOOLBAR              7010
 #define IDD_OPEN_DLG                    10000
 #define IDD_OPENCAPDEVICE_DLG           10001
 #define IDD_MEDIATYPES_DLG              10002
@@ -878,7 +882,7 @@
 #define IDS_AUTOPLAY_CAPTURECAMERA      14233
 #define IDS_RS_DXVACOMPAT               14234
 #define IDS_RS_NOTAUTOCHECKSPEAKER      14235
-#define IDS_RS_SVPSUBSTOREDIR			14236
+#define IDS_RS_SVPSUBSTOREDIR           14236
 #define IDD_DHTML_SETTING               20000
 #define IDR_DEFAULT1                    20006
 #define IDD_DEFAULT_PLAYER              20007
@@ -925,7 +929,6 @@
 #define ID_DVD32792                     32792
 #define ID_32793                        32793
 #define ID_32794                        32794
-#define ID_FILE_LOAD_SUBTITLE2          32795
 #define ID__32796                       32796
 #define ID_32796                        32796
 #define ID_32797                        32797
@@ -978,10 +981,11 @@
 #define ID_32850                        32850
 #define ID_DELETECURFILE                32851
 #define ID_DELRECYCLECURFILE            32852
+#define ID__32852                       32852
 #define ID_DELCURFOLDER                 32853
 #define ID_USINGSPDIF                   32855
 #define ID_DEBUGREPORT                  32856
-#define ID_SHOWTRANSPRANTBAR			32857
+#define ID_SHOWTRANSPRANTBAR            32857
 #define IDS_VOLUME_BOOST_INC            33129
 #define IDS_VOLUME_BOOST_DEC            33130
 #define IDS_VOLUME_BOOST_MIN            33131
@@ -1050,13 +1054,13 @@
 #define IDS_PPSDB_PROTOCOLERR           33199
 #define IDS_PPSDB_BADURL                33200
 #define IDS_VDF_AR_MODE                 33211
-#define ID_STATUS_MESSAGE				1324
+
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        20013
-#define _APS_NEXT_COMMAND_VALUE         32851
+#define _APS_NEXT_RESOURCE_VALUE        20015
+#define _APS_NEXT_COMMAND_VALUE         32854
 #define _APS_NEXT_CONTROL_VALUE         22004
 #define _APS_NEXT_SYMED_VALUE           24001
 #endif

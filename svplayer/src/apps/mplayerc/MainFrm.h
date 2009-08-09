@@ -60,6 +60,7 @@
 #include <evr9.h>
 #include "WebServer.h"
 #include "NEWOSDWnd.h"
+#include "MenuEx.h"
 
 #include "SUIButton.h"
 
@@ -219,7 +220,7 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 	void OnNavStreamSelectSubMenu(UINT id, DWORD dwSelGroup);
 
 	CMenu m_popupmain, m_popup;
-	CMenu m_opencds;
+	CMenu m_opencds, m_openmore;
 	CMenu m_filters, m_subtitles, m_subtitles2, m_audios, m_audiodevices , m_subtoolmenu;
 	CStringArray m_AudioDevice;
 	CAutoPtrArray<CMenu> m_filterpopups;
@@ -579,6 +580,9 @@ public:
 	afx_msg void OnInitMenu(CMenu* pMenu);
 	afx_msg void OnInitMenuPopup(CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu);
 
+	afx_msg void OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct); 
+	afx_msg void OnMeasureItem(int nIDCtl, LPMEASUREITEMSTRUCT lpMeasureItemStruct); 
+
 	BOOL OnMenu(CMenu* pMenu);
 	afx_msg void OnMenuPlayerShort();
 	afx_msg void OnMenuPlayerLong();
@@ -784,6 +788,7 @@ public:
 	UINT m_iAudioChannelMaping;
 	afx_msg void OnAudioChannalMapMenu(UINT nID);
 	afx_msg void OnUpdateChannalMapMenu(CCmdUI *pCmdUI);
+	void SetupSubMenuToolbar();
 	afx_msg void OnAudioDeviceChange(UINT nID);
 	afx_msg void OnUpdateAudioDeviceChange(CCmdUI *pCmdUI);
 	afx_msg void OnVisitbbs();

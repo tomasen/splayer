@@ -231,13 +231,13 @@ LRESULT CSkinMenu::WindowProc(HWND hRealWnd, UINT msg, WPARAM wp, LPARAM lp)
 				
 				// prevent redrawing during default message processing
 				// because otherwise the item is redrawn oven ours.
-				SetRedraw(FALSE);
+				SetRedraw(TRUE);
 				lr = Default();
 				SetRedraw(TRUE);
 				
 				m_nSelIndex = (int)wp;
 				
-				InvalidateRect(hRealWnd, rInvalid, FALSE);
+				InvalidateRect(hRealWnd, rInvalid, TRUE);
 
 				if (!m_bFirstRedraw)
 					UpdateWindow(hRealWnd);

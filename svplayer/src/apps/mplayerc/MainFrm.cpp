@@ -1069,22 +1069,27 @@ void CMainFrame::OnMove(int x, int y)
 
 void CMainFrame::OnSize(UINT nType, int cx, int cy)
 {
-	
+	m_tip.ClearStat();
 	__super::OnSize(nType, cx, cy);
 	
 	//SVP_LogMsg3("Winsizing @ %I64d", AfxGetMyApp()->GetPerfCounter());
 	//CAutoLock PaintLock(&m_PaintLock);
 	AppSettings& s = AfxGetAppSettings();
 
-	if(nType == SIZE_RESTORED && m_fTrayIcon)
+	if(nType == SIZE_RESTORED && m_fTrayIcon && !s.fTrayIcon)
 	{
-		//ShowWindow(SW_SHOW);
-	}else if(nType == SIZE_MINIMIZED && m_fTrayIcon ){
+		ShowTrayIcon(false);
+	}else if(nType == SIZE_MINIMIZED && s.fTrayIcon ){
 		ShowWindow(SW_HIDE);
+
 	}
 
-	{//New UI
+	//if(nType == SIZE_MINIMIZED)
+		
 
+	{//New UI
+		m_btnList.SetHideStat(MYHTMINTOTRAY, s.fTrayIcon);
+		
 		if(m_fFullScreen || SIZE_MAXIMIZED == nType)
 		{
 			m_btnList.SetHideStat(L"MAXIMIZE.BMP", TRUE);
@@ -1503,10 +1508,12 @@ LRESULT CMainFrame::OnNcLButtonUp( WPARAM wParam, LPARAM lParam )
 			{
 				//m_nBoxStatus[0] = m_nBoxStatus[1] =m_nBoxStatus[2] = 0;
 				m_btnList.ClearStat();
+				m_tip.ClearStat();
 				ShowWindow(SW_MINIMIZE);
 			}
 			else if(MYHTMINTOTRAY == wParam ){
 				m_btnList.ClearStat();
+				m_tip.ClearStat();
 				ShowWindow(SW_HIDE);
 				ShowTrayIcon(true);
 			}
@@ -1581,7 +1588,7 @@ LRESULT CMainFrame::OnNcHitTestNewUI(WPARAM wParam, LPARAM lParam )
 					szTips = ( _T("全屏切换"));
 				break;
 			case MYHTMINTOTRAY:
-				szTips = ( _T("最小化到任务栏"));
+				szTips = ( _T("最小化到系统托盘"));
 				break;
 			case MYHTMENU:
 				szTips = ( _T("菜单"));
@@ -9085,7 +9092,7 @@ void CMainFrame::rePosOSD(){
 		return;	
 	}
 	
-
+	
 	CRect rcView,rc;
 	m_wndView.GetWindowRect(&rcView);
 	if( ::GetWindowRect( m_wndView.m_hWnd, &rcView ) ){

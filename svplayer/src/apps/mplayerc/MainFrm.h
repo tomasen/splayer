@@ -64,6 +64,8 @@
 
 #include "SUIButton.h"
 
+#include "..\..\ui\SkinWindows\SkinMenuMgr.h"
+
 enum {PM_NONE, PM_FILE, PM_DVD, PM_CAPTURE};
 
 class OpenMediaData
@@ -143,7 +145,7 @@ public:
 */
 interface ISubClock;
 
-class CMainFrame : public CFrameWnd, public CDropTarget
+class CMainFrame : public CFrameWnd, public CDropTarget  , protected ISkinMenuRender
 {
 	
 
@@ -856,4 +858,14 @@ public:
 	afx_msg void OnSetAutoLoadSubtitle();
 	afx_msg void OnUpdateSetAutoLoadSubtitle(CCmdUI *pCmdUI);
 	afx_msg BOOL OnNcCreate(LPCREATESTRUCT lpCreateStruct);
+
+	// ISkinMenuRender overrides
+	BOOL DrawMenuNonClientBkgnd(CDC* pDC, LPRECT pRect);
+	BOOL DrawMenuClientBkgnd(CDC* pDC, LPRECT pRect, LPRECT pClip);
+	BOOL DrawMenuSidebar(CDC* pDC, LPRECT pRect, LPCTSTR szTitle);
+	BOOL DrawMenuBorder(CDC* pDC, LPRECT pRect);
+
+	void DrawGradientBkgnd(CDC* pDC, LPRECT pRect, LPRECT pClip);
+
+	BOOL m_bGradient;
 };

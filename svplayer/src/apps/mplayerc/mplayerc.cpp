@@ -1272,6 +1272,7 @@ void CMPlayerCApp::InitInstanceThreaded(){
 
 	}
 
+	
 	//csaDll.Add( _T("codecs\\CoreAVCDecoder.ax")); //avoid missing reg key problem
 	//CFilterMapper2 fm2(false);
 	if(1){

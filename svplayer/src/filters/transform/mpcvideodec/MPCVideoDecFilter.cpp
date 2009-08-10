@@ -1267,6 +1267,15 @@ HRESULT CMPCVideoDecFilter::CompleteConnect(PIN_DIRECTION direction, IPin* pRece
 				m_pDXVADecoder->ConfigureDXVA1();	// TODO : check errors!
 			else if (SUCCEEDED (ConfigureDXVA2 (pReceivePin)) &&	SUCCEEDED (SetEVRForDXVA2 (pReceivePin)) )
 				m_nDXVAMode  = MODE_DXVA2;
+
+			GUID*	DxvaGui = NULL;
+			DxvaGui = GetDXVADecoderGuid();
+			if (DxvaGui != NULL){
+				 if(GetDXVAMode (DxvaGui) == _T("Not using DXVA"))
+					 return VFW_E_INVALIDMEDIATYPE;
+			}else
+				return VFW_E_INVALIDMEDIATYPE;
+
 		}
 
 		CLSID	ClsidSourceFilter = GetCLSID(m_pInput->GetConnected());

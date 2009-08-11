@@ -865,9 +865,11 @@ void CMainFrame::DrawGradientBkgnd(CDC* pDC, LPRECT pRect, LPRECT pClip)
 	COLORREF crFrom = CSkinMenuMgr::GetColor(COLOR_MENU);
 	COLORREF crTo = 0xfff6ec;
 
+	
 //	AfxMessageBox(_T("x"));
 	if (pClip)
 	{
+		
 		// ensure that pClip is at least 100 pixels high else the 
 		// gradient has artifacts
 		CRect rClip(pClip), rRect(pRect);
@@ -891,10 +893,15 @@ void CMainFrame::DrawGradientBkgnd(CDC* pDC, LPRECT pRect, LPRECT pClip)
 		crFrom = CSkinBase::BlendColors(crFrom, crTo, fFromFactor);
 		crTo = CSkinBase::BlendColors(crFrom, crTo, fToFactor);
 
+		//SVP_LogMsg3("DrawGradientBkgnd1 %d %d %d %d / %d %d %d %d" , pRect->left , pRect->top,  pRect->right, pRect->bottom , pClip->left , pClip->top,  pClip->right,  pClip->bottom );
+		//rClip.left += 20;
 		CSkinBase::GradientFill(pDC, rClip, crFrom, crTo, FALSE);
+		
 	}
-	else
+	else{
+		//SVP_LogMsg3("DrawGradientBkgnd2 %d %d %d %d / %d %d %d %d" , pRect->left , pRect->top,  pRect->right, pRect->bottom , pClip->left , pClip->top,  pClip->right,  pClip->bottom );
 		CSkinBase::GradientFill(pDC, pRect, crFrom, crTo, FALSE);
+	}
 }
 
 BOOL CMainFrame::DrawMenuSidebar(CDC* pDC, LPRECT pRect, LPCTSTR szTitle)
@@ -905,7 +912,7 @@ BOOL CMainFrame::DrawMenuSidebar(CDC* pDC, LPRECT pRect, LPCTSTR szTitle)
 
 		COLORREF crFrom = crColor;
 		COLORREF crTo = 0xded3c6;//CSkinBase::VaryColor(crFrom, 2.0f);
-
+		
 		CSkinBase::GradientFill(pDC, pRect, crFrom, crTo, FALSE);
 		return TRUE;
 	}
@@ -922,6 +929,7 @@ BOOL CMainFrame::DrawMenuSidebar(CDC* pDC, LPRECT pRect, LPCTSTR szTitle)
 
 BOOL CMainFrame::DrawMenuBorder(CDC* pDC, LPRECT pRect)
 {
+	//pDC->FillSolidRect(pRect, 0);
 	return FALSE;
 }
 /*NEW UI*/

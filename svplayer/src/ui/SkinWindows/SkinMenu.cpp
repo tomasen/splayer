@@ -11,6 +11,7 @@
 #include "skinglobals.h"
 #include "skinbase.h"
 
+#include "../../svplib/svplib.h"
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
@@ -44,11 +45,13 @@ static colorMapping colors[] =
 	{ COLOR_GRAYTEXT, COLOR_GRAYTEXT },
 	{ COLOR_HIGHLIGHTTEXT, COLOR_HIGHLIGHTTEXT },
 	{ COLOR_3DHILIGHT, COLOR_MENU },
+	{ COLOR_MENUBAR, COLOR_MENU},
+	//{ COLOR_BTNSHADOW, COLOR_MENU },
 //	{ COLOR_3DDKSHADOW, COLOR_MENU },
 	{ COLOR_3DSHADOW, COLOR_3DSHADOW },
 	{ COLOR_3DFACE, COLOR_MENU },
 	{ COLOR_MENU, COLOR_MENU },
-
+	
 };
 
 CSkinMenu::CSkinMenu(CSkinGlobals* pGlobals, DWORD dwStyle, int nSBWidth) 
@@ -327,14 +330,17 @@ CDC* CSkinMenu::ReplaceSystemColors(CDC* pDCSrc, CDC* pDCDest, LPRECT pRect, LPR
 
 	if (nOS == SBOS_95 || nOS == SBOS_NT4)
 		return pDCSrc;
-
+	
+//pRect->left -= 10;
 	// replace the system colors with skin colors
 	CMap<COLORREF, COLORREF, int, int&> mapColors;
 
 	// 1. replace the actual background color with COLOR_MENU
 	const COLORREF COLORMENU = GetColor(COLOR_MENU);
-
+	
 	COLORREF crSrc, crDest = COLORMENU;
+
+	//SVP_LogMsg3("ReplaceSystemColors1 %d %d %d %d / %d %d %d %d"  , pRect->left , pRect->top,  pRect->right, pRect->bottom , pClip->left , pClip->top,  pClip->right,  pClip->bottom );
 
 	if (m_nSelIndex != 0)
 		crSrc = pDCSrc->GetPixel(pRect->right, pRect->top);
@@ -342,7 +348,7 @@ CDC* CSkinMenu::ReplaceSystemColors(CDC* pDCSrc, CDC* pDCDest, LPRECT pRect, LPR
 		crSrc = pDCSrc->GetPixel(pRect->right, pRect->bottom);
 
 	// see if user wants to render bkgnd
-	if (crSrc != -1)
+	if (crSrc != -1 )
 	{
 		if (s_pRenderer && s_pRenderer->DrawMenuClientBkgnd(pDCDest, pRect, pClip))
 		{
@@ -363,27 +369,43 @@ CDC* CSkinMenu::ReplaceSystemColors(CDC* pDCSrc, CDC* pDCDest, LPRECT pRect, LPR
 
 		mapColors[crSrc] = 1;
 	}
-
+//SVP_LogMsg3("ReplaceSystemColors2 %d %d %d %d / %d %d %d %d" , pRect->left , pRect->top,  pRect->right, pRect->bottom , pClip->left , pClip->top,  pClip->right,  pClip->bottom );
 	// 2. replace other mapped colors 
 	int nColor = sizeof(colors) / sizeof(colorMapping);
-	
-	while (nColor--)
+/*
+	for(int i = 0; i < 50; i++){
+		SVP_LogMsg3("Co %x %d" , GetSysColor(i), i);
+	}*/
+
+	while (nColor-- >= -1)
 	{
 		int nTemp;
-		int nSrcColor = colors[nColor].nSrcColor;
-		crSrc = GetSysColor(nSrcColor);
+		int nSrcColor , nDestColor;
 		
-		if (mapColors.Lookup(crSrc, nTemp))
-		{
-//			TRACE("CSkinMenu::ReplaceSystemColors - %d already replaced\n", crSrc);
-			continue;
-		}
+		if(nColor == -1){
+			crSrc = GetSysColor(COLOR_MENU) + 0x010101;
+			crDest = GetColor(COLOR_MENU) ;
+		}else if(nColor == -2){
+			crSrc = GetSysColor(COLOR_MENU) + 0x070707;
+			crDest = GetColor(COLOR_MENU) ;
+		}else{
+			nSrcColor = colors[nColor].nSrcColor;
+			crSrc = GetSysColor(nSrcColor);
 
-		int nDestColor = colors[nColor].nDestColor;
-		crDest = GetColor(nDestColor);
+			if (mapColors.Lookup(crSrc, nTemp))
+			{
+				//SVP_LogMsg3("CSkinMenu::ReplaceSystemColors - %x already replaced", crSrc);
+				continue;
+			}
+
+			nDestColor = colors[nColor].nDestColor;
+			crDest = GetColor(nDestColor);
+
+		}
+		//SVP_LogMsg3("CSkinMenu::ReplaceSystemColors - %x %x", crSrc , crDest);
 
 		// if the dest color is COLORMENU let the user have first go
-		if (crDest == COLORMENU && s_pRenderer && s_pRenderer->DrawMenuClientBkgnd(pDCDest, pRect, pClip))
+		if ( crDest == COLORMENU   && s_pRenderer && s_pRenderer->DrawMenuClientBkgnd(pDCDest, pRect, pClip))
 		{
 			// transparent blt
 			CSkinBase::BitBlt(pDCDest, pRect->left, pRect->top, 
@@ -396,15 +418,17 @@ CDC* CSkinMenu::ReplaceSystemColors(CDC* pDCSrc, CDC* pDCDest, LPRECT pRect, LPR
 		// else simple color replacement
 		else if (ReplaceColor(pDCSrc, crSrc, pDCDest, crDest, pRect, pClip))
 		{		
+			//SVP_LogMsg3("ReplaceColor %x %d %u", crSrc , nColor ,nSrcColor );;
 			// swap dest and src
 			SwapDCs(pDCSrc, pDCDest);
 		}
-//		else
-//			TRACE("CSkinMenu::ReplaceSystemColors - GetSysColor(%d) == CSkinBase::GetColor(%d)\n", nSrcColor, nDestColor);
+		//else
+		//	SVP_LogMsg3("CSkinMenu::ReplaceSystemColors - GetSysColor(%d) == CSkinBase::GetColor(%d)", nSrcColor, nDestColor);
 		
 		mapColors[crSrc] = 1;
 	}
-
+//SVP_LogMsg3("ReplaceSystemColors3 %d %d %d %d / %d %d %d %d" , pRect->left , pRect->top,  pRect->right, pRect->bottom , pClip->left , pClip->top,  pClip->right,  pClip->bottom );
+	
 	return pDCSrc;
 }
 
@@ -435,8 +459,17 @@ void CSkinMenu::OnPrintClient(CDC* pDC, DWORD dwFlags)
 	CRect rClient;
 	GetClientRect(rClient);
 
+/*
+	CRect rcWnd;
+	GetWindowRect(rcWnd);
+	
+	rClient = rcWnd;
+	rClient -= rClient.TopLeft();
+*/
+//rClient.right+=10;
 	CRect rClip(rClient);
-//	pDC->GetClipBox(rClip);
+	//pDC->GetClipBox(rClip);
+	
 
 	// create standard back buffer and another dc on which 
 	// to layer the background and foreground
@@ -481,10 +514,11 @@ void CSkinMenu::OnPrintClient(CDC* pDC, DWORD dwFlags)
 	CDC* pDCSrc = ReplaceSystemColors(&dcMem, &dcMem2, rClient, rClip);
 	
 	// blt the lot to pDC
-//	pDC->BitBlt(0, 0, rClient.right, rClient.bottom, pDCSrc, 0, 0, SRCCOPY);
+	//pDC->BitBlt(0, 0, rClip.Width(), rClip.Height(), pDCSrc, 0, 0, SRCCOPY);
 	pDC->BitBlt(rClip.left, rClip.top, rClip.Width(), rClip.Height(), 
 				pDCSrc, rClip.left, rClip.top, SRCCOPY);
-	
+	//pDC->FillSolidRect(&rClient, 0);
+	//SVP_LogMsg3("%d %d %d %d / %d %d %d %d" , rClient.left , rClient.top,  rClient.right, rClient.bottom , rClip.left , rClip.top,  rClip.right,  rClip.bottom );
 	// cleanup
 	dcMem.SelectObject(pOldBM);
 	dcMem.SelectObject(pOldFont);
@@ -613,7 +647,7 @@ void CSkinMenu::OnNcPaint(CDC* pDC)
 
 	pDC->ExcludeClipRect(rClient);
 	pDC->BitBlt(0, 0, rWindow.right, rWindow.bottom, &dcMem, 0, 0, SRCCOPY);
-
+//SVP_LogMsg3("Nc %d %d %d %d / %d %d %d %d" , rClient.left , rClient.top,  rClient.right, rClient.bottom , rWindow.left , rWindow.top,  rWindow.right,  rWindow.bottom );
 	pDC->RestoreDC(nSaveDC);
 
 	// cleanup

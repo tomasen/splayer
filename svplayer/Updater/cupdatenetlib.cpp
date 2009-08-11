@@ -156,8 +156,8 @@ BOOL cupdatenetlib::downloadList(){
 			if (szaLines.GetAt(i).IsEmpty()){break;}
 			this->iSVPCU_TOTAL_FILE++;
 			
-			szLog.Format(_T("Total Files need to download: %d"), iSVPCU_TOTAL_FILE);
-			SVP_LogMsg(szLog);
+			//szLog.Format(_T("Total Files need to download: %d"), iSVPCU_TOTAL_FILE);
+			//SVP_LogMsg(szLog);
 			CStringArray szaTmp;
 			svpToolBox.Explode( szaLines.GetAt(i), _T(";") , &szaTmp );
 			if(szaTmp.GetCount() < LFILETOTALPARMS){
@@ -181,9 +181,45 @@ BOOL cupdatenetlib::downloadList(){
 				if(svpToolBox.FindSystemFile( _T("wmadmod.dll") ))
 					continue;
 			}
-			iSVPCU_TOTAL_FILEBYTE += _wtoi(szaTmp.GetAt(LFILEGZLEN));
-			szaTmp.SetSize(LFILETOTALPARMS);
-			szaLists.Append( szaTmp );
+
+			//检查是否需要下载
+			CString szSetupPath = szaTmp.GetAt(LFILESETUPPATH);
+
+			if (szSetupPath.CompareNoCase( _T("splayer.exe")) == 0){
+				if(!svpToolBox.ifFileExist(szBasePath + szSetupPath) ){
+					if (svpToolBox.ifFileExist(szBasePath + _T("mplayerc.exe")))
+						szSetupPath = _T("mplayerc.exe");
+					if (svpToolBox.ifFileExist(szBasePath + _T("svplayer.exe")))
+						szSetupPath = _T("svplayer.exe");
+				}
+			}
+
+			bool bDownloadThis = FALSE;
+
+			//check file hash
+			CMD5Checksum cmd5;
+			CString updTmpHash ;
+			CString currentHash ;
+			if( svpToolBox.ifFileExist(szUpdfilesPath + szaTmp.GetAt(LFILETMPATH) ) ){
+				updTmpHash = cmd5.GetMD5(szUpdfilesPath + szaTmp.GetAt(LFILETMPATH) ); //Get Hash for current Temp File
+			}
+
+			if( svpToolBox.ifFileExist(szBasePath + szSetupPath ) ){
+				currentHash = cmd5.GetMD5(szBasePath + szSetupPath); //Get Hash for bin file
+			}
+
+			if (currentHash.CompareNoCase( szaTmp.GetAt(LFILEHASH) ) != 0 && updTmpHash.CompareNoCase( szaTmp.GetAt(LFILEHASH) ) != 0 ){
+
+				//SVP_LogMsg5(_T("X %s  X %s X %s X %s X %s hash not match") , currentHash , szUpdfilesPath + szaTmp.GetAt(LFILETMPATH) , currentHash , szBasePath + szSetupPath ,  szaTmp.GetAt(LFILEHASH));
+				bDownloadThis = TRUE;
+			}
+
+			if(bDownloadThis){
+				iSVPCU_TOTAL_FILEBYTE += _wtoi(szaTmp.GetAt(LFILEGZLEN));
+				szaTmp.SetSize(LFILETOTALPARMS);
+				szaLists.Append( szaTmp );
+			}
+			
 			
 		}
 		szLog.Format(_T("Total Files: %d ; Total Len %d"), iSVPCU_TOTAL_FILE, iSVPCU_TOTAL_FILEBYTE);
@@ -225,7 +261,7 @@ void cupdatenetlib::tryRealUpdate(BOOL bNoWaiting){
 			updTmpHash = cmd5.GetMD5(szUpdfilesPath + szaLists.GetAt(i+LFILETMPATH) ); //Get Hash for current Temp File
 		}
 		
-		if( svpToolBox.ifFileExist(szUpdfilesPath + szSetupPath ) ){
+		if( svpToolBox.ifFileExist(szBasePath + szSetupPath ) ){
 			currentHash = cmd5.GetMD5(szBasePath + szSetupPath); //Get Hash for bin file
 		}
 

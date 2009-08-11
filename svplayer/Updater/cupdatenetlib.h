@@ -25,6 +25,7 @@ public:
 	int iSVPCU_CURRETN_FILE ;
 	size_t iSVPCU_TOTAL_FILEBYTE ;
 	size_t iSVPCU_CURRENT_FILEBYTE ;
+	size_t iSVPCU_CURRENT_GZFILEBYTE ;
 	CString szBasePath;
 	CString szUpdfilesPath;
 	CSVPToolBox svpToolBox;	

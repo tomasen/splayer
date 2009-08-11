@@ -14,6 +14,10 @@ public:
 	CUpdaterDlg(CWnd* pParent = NULL);	// standard constructor
 	UINT verbose;
 	BOOL bHide;
+	UINT iTimeStart;
+	CFont m_hBigFont;
+	CFont m_hIntroFont;
+	CStringArray szaIntro;
 
 // Dialog Data
 	enum { IDD = IDD_UPDATER_DIALOG };
@@ -41,9 +45,8 @@ public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnClose();
 	afx_msg void OnBnClickedButton1();
-	CStatic csCurFile;
+	CStatic csCurTask;
 	CStatic csTotalProgress;
-	CProgressCtrl prg_curfile;
 	CProgressCtrl prg_total;
 	CEdit cs_stat;
 	CLinkCtrl cslink;
@@ -51,4 +54,6 @@ public:
 	CButton cb_stop;
 	CButton cb_backgd;
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+	CStatic szSpeed;
+	CStatic cszSizeTotal;
 };

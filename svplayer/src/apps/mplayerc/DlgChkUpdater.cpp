@@ -122,12 +122,12 @@ void CDlgChkUpdater::OnTimer(UINT_PTR nIDEvent)
 				
 					//}
 					//}
+					KillTimer(IDT_CHECK_TICK);
+					OnOK();
 					break;
-					hWndPrevious = ::GetWindow(hWndPrevious,GW_HWNDNEXT);
+					//hWndPrevious = ::GetWindow(hWndPrevious,GW_HWNDNEXT);
 				}
-				KillTimer(IDT_CHECK_TICK);
-				OnOK();
-
+				
 			}
 		break;
 

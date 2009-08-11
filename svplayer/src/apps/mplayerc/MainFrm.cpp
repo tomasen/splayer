@@ -831,7 +831,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		CSkinMenuMgr::SetColor(COLOR_WINDOWTEXT,  0x211400);//RGB(0, 70, 100)
 		CSkinMenuMgr::SetColor(COLOR_HIGHLIGHTTEXT,RGB(255, 255, 255));//
 		CSkinMenuMgr::SetColor(COLOR_3DSHADOW, 0xbda684);//RGB(70, 100, 130)
-
+		//CSkinMenuMgr::SetColor(COLOR_3DHILIGHT, 0x00);
 		m_bGradient = TRUE;
 	}
 

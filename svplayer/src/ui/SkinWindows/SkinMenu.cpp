@@ -41,7 +41,7 @@ static colorMapping colors[] =
 {
 //	{ COLOR_HIGHLIGHT, COLOR_HIGHLIGHT },
 	{ COLOR_WINDOWTEXT, COLOR_WINDOWTEXT },
-	{ COLOR_GRAYTEXT, COLOR_MENU },
+	{ COLOR_GRAYTEXT, COLOR_GRAYTEXT },
 	{ COLOR_HIGHLIGHTTEXT, COLOR_HIGHLIGHTTEXT },
 	{ COLOR_3DHILIGHT, COLOR_MENU },
 //	{ COLOR_3DDKSHADOW, COLOR_MENU },
@@ -142,6 +142,7 @@ LRESULT CSkinMenu::WindowProc(HWND hRealWnd, UINT msg, WPARAM wp, LPARAM lp)
 		if (nOS != SBOS_95 && nOS != SBOS_NT4)
 		{
 			CPaintDC dc(GetCWnd());
+			
 			SendMessage(WM_PRINTCLIENT, (WPARAM)(HDC)dc, PRF_CLIENT | PRF_CHECKVISIBLE);
 			return 0;
 		}
@@ -298,8 +299,18 @@ LRESULT CSkinMenu::WindowProc(HWND hRealWnd, UINT msg, WPARAM wp, LPARAM lp)
 		break;
 		
 	case WM_ERASEBKGND: 
-		if (nOS != SBOS_95 && nOS != SBOS_NT4)
+		if (nOS != SBOS_95 && nOS != SBOS_NT4){
+/*
+
+			CDC* pDC = CDC::FromHandle((HDC)wp);
+			CRect r;
+			GetWindowRect(&r);
+			r -= r.TopLeft();
+			pDC->FillSolidRect(&r, 0x00);
+*/
+
 			return TRUE; 
+		}
 		break;
 		
 	default:
@@ -460,7 +471,7 @@ void CSkinMenu::OnPrintClient(CDC* pDC, DWORD dwFlags)
 		dcMem.ExcludeClipRect(0, rClip.bottom, rClient.right, rClient.bottom);
 
 	// draw background
-//	dcMem.FillSolidRect(rClient, GetSysColor(COLOR_MENU));
+	//dcMem.FillSolidRect(rClient, GetSysColor(COLOR_MENU));
 	dcMem.FillSolidRect(rClip, GetSysColor(COLOR_MENU));
 
 	// default draw

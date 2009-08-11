@@ -254,7 +254,7 @@ void CUpdaterDlg::OnTimer(UINT_PTR nIDEvent)
 					
 					cszSizeTotal.SetWindowText(  CString(L"文件大小： ") + getShortSize(cup.iSVPCU_TOTAL_FILEBYTE) );
 
-					csTotalProgress.SetWindowText( CString(L"已下载： ") + getShortSize(cup.iSVPCU_CURRENT_FILEBYTE_DONE) );
+					csTotalProgress.SetWindowText( CString(L"已解压： ") + getShortSize(cup.iSVPCU_CURRENT_FILEBYTE_DONE) );
 
 					SetTimer(IDT_REAL_START_CHECK, 800, NULL);
 
@@ -322,7 +322,7 @@ void CUpdaterDlg::OnTimer(UINT_PTR nIDEvent)
 					}
 
 
-					csTotalProgress.SetWindowText( CString(L"已下载： ") + getShortSize(downloadedTotal) );
+					csTotalProgress.SetWindowText( CString(L"已解压： ") + getShortSize(downloadedTotal) );
 
 					prg_total.SetPos(int(progress * 10));
 					

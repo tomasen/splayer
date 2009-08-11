@@ -50,6 +50,15 @@ class CUESettingPanel : public CDHtmlDialog
 	int m_sgi_chktrayicon;
 	int m_sgi_dxvacompat;
 
+	int m_sgi_nobgpic;
+	int m_sgi_custompic;
+	int m_sgi_keepbgar;
+	int m_sgi_bgstrech;
+	int  m_sgi_usenewmenu;
+	int m_sgi_useaeroglass;
+	CString m_sgs_custompicfile;
+
+
 	int m_sgi_chkuseSmartDrag;
 	int m_sgi_chkinternaltspliteronly;
 	int m_sgi_UseWaveOutDeviceByDefault;
@@ -110,6 +119,8 @@ public:
 	
 	HRESULT OnChangeBG(IHTMLElement *pElement);
 	HRESULT OnFileAss(IHTMLElement *pElement);
+	
+	HRESULT OnBrowerPic(IHTMLElement *pElement);
 	HRESULT OnHotKey(IHTMLElement *pElement);
 // Overrides
 	HRESULT OnButtonOK(IHTMLElement *pElement);

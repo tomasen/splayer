@@ -48,7 +48,8 @@ BEGIN_DHTML_EVENT_MAP(CUESettingPanel)
 	DHTML_EVENT_ONCLICK(_T("subfont2"), OnFontSetting)
 	DHTML_EVENT_ONCLICK(_T("IDFileAss"), OnFileAss)
 	DHTML_EVENT_ONCLICK(_T("IDHotKey"), OnHotKey)
-	DHTML_EVENT_ONCLICK(_T("IDBGCHG"), OnChangeBG)
+	DHTML_EVENT_ONCLICK(_T("IDBROWERPIC"), OnBrowerPic)
+	//DHTML_EVENT_ONCLICK(_T("IDBGCHG"), OnChangeBG)
 	DHTML_EVENT_ONCLICK(_T("ButtonReset"), OnButtonReset)
 	
 END_DHTML_EVENT_MAP()
@@ -84,6 +85,14 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_DHtml_CheckBox(pDX, _T("chkautoresumeplay"), m_sgi_chkautoresumeplay);
 	DDX_DHtml_CheckBox(pDX, _T("chktrayicon"), m_sgi_chktrayicon);
 	DDX_DHtml_CheckBox(pDX, _T("dxvacompat"), m_sgi_dxvacompat);
+
+	DDX_DHtml_CheckBox(pDX, _T("nobgpic"), m_sgi_nobgpic);
+	DDX_DHtml_CheckBox(pDX, _T("custompic"), m_sgi_custompic);
+	DDX_DHtml_CheckBox(pDX, _T("keepbgar"), m_sgi_keepbgar);
+	DDX_DHtml_CheckBox(pDX, _T("bgstrech"), m_sgi_bgstrech);
+	DDX_DHtml_CheckBox(pDX, _T("usenewmenu"), m_sgi_usenewmenu);
+	DDX_DHtml_CheckBox(pDX, _T("useaeroglass"), m_sgi_useaeroglass);
+	DDX_DHtml_ElementValue (pDX, _T("custompicfile"), m_sgs_custompicfile);
 
 	DDX_DHtml_CheckBox(pDX, _T("useCustomSpeakerSetting"), m_sgi_useCustomSpeakerSetting);
 	
@@ -310,6 +319,18 @@ BOOL CUESettingPanel::OnInitDialog()
 
 	m_sgi_autoupdate = (s.tLastCheckUpdater < 2000000000);//
 
+	//Theme
+	
+	m_sgi_nobgpic = !s.logoext;
+	m_sgs_custompicfile = s.logofn;
+	m_sgi_custompic = !m_sgi_nobgpic;
+	m_sgi_keepbgar = !!(s.logostretch & 1);
+	m_sgi_bgstrech = !!(s.logostretch & 2);
+	m_sgi_usenewmenu = s.bNewMenu;
+	m_sgi_useaeroglass = s.bAeroGlass;
+	
+
+
 	if(CMPlayerCApp::IsVista()){
 		DisplayNodeByID(_T("disableevrline"), FALSE);
 	}
@@ -388,6 +409,24 @@ void CUESettingPanel::ApplyAllSetting(){
 	UpdateData();
 
 	AppSettings& s = AfxGetAppSettings();
+
+	//Theme
+	if(m_sgi_nobgpic){
+		s.logoext = 0;
+	}else{
+		s.logoext = 1;
+		s.logofn = m_sgs_custompicfile;
+	}
+	s.logostretch = 0;
+	if(m_sgi_keepbgar)
+		s.logostretch |= 1;
+	if(m_sgi_bgstrech)
+		s.logostretch |= 2;
+
+	s.bNewMenu = m_sgi_usenewmenu ;
+	s.bAeroGlass = m_sgi_useaeroglass;
+
+	((CMainFrame*)AfxGetMainWnd())->m_wndView.LoadLogo();
 
 	//Genral Setting
 	if(m_sgi_chkuseini) ((CMPlayerCApp*)AfxGetApp())->StoreSettingsToIni();
@@ -633,7 +672,23 @@ HRESULT CUESettingPanel::OnChangeBG(IHTMLElement* /*pElement*/){
 	dlg.DoModal() ;
 	return S_OK;
 }
+HRESULT CUESettingPanel::OnBrowerPic(IHTMLElement *pElement){
+	CFileDialog dlg(TRUE, NULL, m_sgs_custompicfile, 
+		OFN_EXPLORER|OFN_ENABLESIZING|OFN_HIDEREADONLY, 
+		AfxGetAppSettings().fXpOrBetter 
+		? _T("Images (*.bmp;*.jpg;*.gif;*.png)|*.bmp;*.jpg;*.gif;*.png|All files (*.*)|*.*||")
+		: _T("Images (*.bmp)|*.bmp|All files (*.*)|*.*||")
+		, this, 0);
 
+	if(dlg.DoModal() == IDOK)
+	{
+		UpdateData(TRUE);
+		m_sgi_custompic = 1;
+		m_sgs_custompicfile = dlg.GetPathName();
+		UpdateData(FALSE);
+	}
+	return S_OK;
+}
 HRESULT CUESettingPanel::OnFileAss(IHTMLElement* /*pElement*/){
 
 	if (AfxGetMyApp()->IsVista() && !IsUserAnAdmin())

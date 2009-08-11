@@ -823,7 +823,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	EnableToolTips(TRUE);
 
-	if(1){
+	if(s.bNewMenu){
 		CSkinMenuMgr::Initialize(SKMS_SIDEBAR |SKMS_FLAT , 8);
 		CSkinMenu::SetRenderer(this);
 

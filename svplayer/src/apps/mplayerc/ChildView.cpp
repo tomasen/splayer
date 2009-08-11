@@ -271,15 +271,17 @@ void CChildView::OnPaint()
 
 			CRect r;
 			GetClientRect(r);
+			/*
 			if( s.logostretch == 1){ // 保持宽高  不缩放
-				int w = min(bm.bmWidth, r.Width());
-				int h = min(abs(bm.bmHeight), r.Height());
-				int x = (r.Width() - w) / 2;
-				int y = (r.Height() - h) / 2;
-				m_logo_r = CRect(CPoint(x, y), CSize(w, h));
-			}else if( s.logostretch == 2){ // 缩放 不保持宽高比
+							int w = min(bm.bmWidth, r.Width());
+							int h = min(abs(bm.bmHeight), r.Height());
+							int x = (r.Width() - w) / 2;
+							int y = (r.Height() - h) / 2;
+							m_logo_r = CRect(CPoint(x, y), CSize(w, h));
+						}else */
+			if( s.logostretch == 2){ // 缩放 不保持宽高比
 				m_logo_r = r;
-			}else{// 缩放 保持宽高比
+			}else if(s.logostretch == 3){// 缩放 保持宽高比
 				if ( bm.bmWidth * 100 / bm.bmHeight > r.Width() * 100 / r.Height() ){
 					//以r.Width()为准
 					int w = r.Width();
@@ -295,6 +297,13 @@ void CChildView::OnPaint()
 					m_logo_r = CRect(CPoint(x, y), CSize(w, h));
 				}
 				
+			}else{ //不缩放 不保持宽高比
+				int w = bm.bmWidth;
+				int h = bm.bmHeight ;
+				CPoint pos = r.CenterPoint();
+				pos.x -= w/2;
+				pos.y -= h/2;
+				m_logo_r = CRect( pos, CSize(w, h));
 			}
 			
 			int oldmode = hdc.SetStretchBltMode(STRETCH_HALFTONE);

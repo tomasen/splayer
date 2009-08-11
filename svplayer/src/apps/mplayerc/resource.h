@@ -883,6 +883,8 @@
 #define IDS_RS_DXVACOMPAT               14234
 #define IDS_RS_NOTAUTOCHECKSPEAKER      14235
 #define IDS_RS_SVPSUBSTOREDIR           14236
+#define IDS_RS_USENEWMENU				 14237
+#define IDS_RS_USEAEROGLASS			     14238
 #define IDD_DHTML_SETTING               20000
 #define IDR_DEFAULT1                    20006
 #define IDD_DEFAULT_PLAYER              20007

@@ -146,10 +146,7 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 HRESULT CUESettingPanel::OnColorSub(IHTMLElement *pElement){
 
 	CString szId = this->GetIDfromElement(pElement);
-	if(m_sgs_updateversion.IsEmpty()){
-		m_sgs_updateversion = _T("stable");
-	}
-
+	
 	int iSub, iCol;
 	swscanf(szId, _T("sub%dc%d") , &iSub, &iCol);
 	if ( iCol > 0 && iCol < 5)
@@ -216,6 +213,10 @@ BOOL CUESettingPanel::OnInitDialog()
 	}
 
 	AppSettings& s = AfxGetAppSettings();
+
+//	if(m_sgs_updateversion.IsEmpty()){
+//		m_sgs_updateversion = _T("stable");
+//	}
 
 	if(s.bHasCUDAforCoreAVC){
 		m_sgs_CUDAVC = _T("true");
@@ -326,6 +327,8 @@ BOOL CUESettingPanel::OnInitDialog()
 	m_sgi_custompic = !m_sgi_nobgpic;
 	m_sgi_keepbgar = !!(s.logostretch & 1);
 	m_sgi_bgstrech = !!(s.logostretch & 2);
+	
+
 	m_sgi_usenewmenu = s.bNewMenu;
 	m_sgi_useaeroglass = s.bAeroGlass;
 	
@@ -333,6 +336,8 @@ BOOL CUESettingPanel::OnInitDialog()
 
 	if(CMPlayerCApp::IsVista()){
 		DisplayNodeByID(_T("disableevrline"), FALSE);
+		//DisplayNodeByID(_T("vistaaeroglass"), TRUE);
+		
 	}
 
 	UpdateData(FALSE);

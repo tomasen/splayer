@@ -1239,11 +1239,13 @@ void CMPlayerCApp::InitInstanceThreaded(){
 	_wremove(svpToolBox.GetPlayerPath(_T("SVPDebug.log")));
 	_wremove(svpToolBox.GetPlayerPath(_T("SVPDebug2.log")));
 
-	for(int i = 0; i <= 30; i++){
+	/*
+for(int i = 0; i <= 30; i++){
 		SVP_LogMsg5(_T("COLOR_GRAYTEXT %x %d"), GetSysColor(i), i);
 
 	}
 	SVP_LogMsg5(_T("COLOR_GRAYTEXT %x"), GetSysColor(COLOR_GRAYTEXT));
+*/
 
 
 	m_bSystemParametersInfo[0] = FALSE;

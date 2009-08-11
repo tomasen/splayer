@@ -43,7 +43,7 @@ cupdatenetlib::~cupdatenetlib(void)
 void cupdatenetlib::SetCURLopt(CURL *curl )
 {
 	curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1);
-	curl_easy_setopt(curl, CURLOPT_USERAGENT, "SPlayer Updater");
+	curl_easy_setopt(curl, CURLOPT_USERAGENT, "SPlayer Updater 17");
 	return ;
 }
 
@@ -300,12 +300,19 @@ void cupdatenetlib::tryRealUpdate(BOOL bNoWaiting){
 				// only use MOVEFILE_DELAY_UNTIL_REBOOT on FirstRound
 				MoveFileEx( mFiles.szMoveSrcFile , mFiles.szMoveDestFile , MOVEFILE_COPY_ALLOWED|MOVEFILE_REPLACE_EXISTING|MOVEFILE_DELAY_UNTIL_REBOOT) ;
 			}
+			/*
+			if(mFiles.szMoveDestFile.Right(11).CompareNoCase(_T("Updater.exe")) == 0){
+							szaMoveFiles.RemoveAt(orgPos);
+							continue;
+						}
+						SVP_LogMsg5(mFiles.szMoveDestFile.Right(11));*/
+			
 			
 		}
 
 		bFirstRound = FALSE;
 		
-		Sleep(15);
+		Sleep(1500);
 
 		if(bNoWaiting)
 			break;

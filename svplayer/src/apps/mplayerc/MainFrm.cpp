@@ -528,7 +528,7 @@ CMainFrame::CMainFrame() :
 	m_bSubDownloading(false),
 	m_iAudioChannelMaping(0),
 	m_bCheckingUpdater(false),
-	m_WndSizeInited(false),
+	m_WndSizeInited(0),
 	m_iOSDAlign(0),
 	m_bDxvaInUse(false) ,
 	m_bEVRInUse(false),
@@ -831,10 +831,13 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		CSkinMenuMgr::SetColor(COLOR_WINDOWTEXT,  0x211400);//RGB(0, 70, 100)
 		CSkinMenuMgr::SetColor(COLOR_HIGHLIGHTTEXT,RGB(255, 255, 255));//
 		CSkinMenuMgr::SetColor(COLOR_3DSHADOW, 0xbda684);//RGB(70, 100, 130)
+		CSkinMenuMgr::SetColor(COLOR_GRAYTEXT, 0x808080);
+		
 		//CSkinMenuMgr::SetColor(COLOR_3DHILIGHT, 0x00);
 		m_bGradient = TRUE;
 	}
 
+	m_WndSizeInited++;
 	return 0;
 }
 
@@ -1160,7 +1163,7 @@ void CMainFrame::OnMove(int x, int y)
 
 	WINDOWPLACEMENT wp;
 	GetWindowPlacement(&wp);
-	if(!m_fFullScreen && wp.flags != WPF_RESTORETOMAXIMIZED && wp.showCmd != SW_SHOWMINIMIZED && m_WndSizeInited)
+	if(!m_fFullScreen && wp.flags != WPF_RESTORETOMAXIMIZED && wp.showCmd != SW_SHOWMINIMIZED && m_WndSizeInited >= 2)
 		GetWindowRect(AfxGetAppSettings().rcLastWindowPos);
 
 	CRect rc;
@@ -1225,7 +1228,7 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 
 	if(!m_fFullScreen)
 	{
-		if(nType != SIZE_MAXIMIZED && nType != SIZE_MINIMIZED && m_WndSizeInited)
+		if(nType != SIZE_MAXIMIZED && nType != SIZE_MINIMIZED && m_WndSizeInited >= 2)
 			GetWindowRect(s.rcLastWindowPos);
 		s.lastWindowType = nType;
 
@@ -1737,7 +1740,7 @@ LRESULT CMainFrame::OnNcHitTestNewUI(WPARAM wParam, LPARAM lParam )
 		return HTMENU;
 	}
 	
-	if(lHTESTID && m_WndSizeInited && m_tip.IsWindowVisible())
+	if(lHTESTID && m_WndSizeInited >= 2 && m_tip.IsWindowVisible())
 		m_tip.ClearStat();
 
 	return lHTESTID;
@@ -2219,6 +2222,7 @@ BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 
 BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
 {
+	
 	if(pMsg->message == WM_KEYDOWN)
 	{
 /*		if(m_fShockwaveGraph
@@ -2477,11 +2481,11 @@ void CMainFrame::OnDisplayChange() // untested, not sure if it's working...
 	TRACE(_T("*** CMainFrame::OnDisplayChange()\n"));
 	//AfxMessageBox(_T("SD"));
 	if(m_iMediaLoadState == MLS_LOADED && m_pCAP) {
-
+/*
 		if ( CComQIPtr<IVMRWindowlessControl> pCAP = m_pCAP ){
 
-			pCAP->DisplayModeChanged();
-		}/*
+			//pCAP->DisplayModeChanged(); // 重建Surface才能在另一个更大的显示器上满屏
+		}
 		else if(CComQIPtr<IVMRWindowlessControl9> pCAP = m_pCAP ){
 					pCAP->DisplayModeChanged();
 				}*/
@@ -7977,7 +7981,7 @@ void CMainFrame::OnPlayVolume(UINT nID)
 {
 	AppSettings& s = AfxGetAppSettings();
 	int iPlayerVol;
-	if(m_WndSizeInited){
+	if(m_WndSizeInited >= 2){
 		CString szStat;
 		iPlayerVol =  m_wndToolBar.m_volctrl.GetPos();
 		
@@ -8822,7 +8826,7 @@ MENUBARINFO mbi;
 		::SetMenu(m_hWnd, NULL);
 		SetWindowPos(NULL, 0, 0, 0, 0, SWP_FRAMECHANGED|SWP_NOSIZE|SWP_NOMOVE|SWP_NOZORDER);
 	}
-	m_WndSizeInited = true;
+	m_WndSizeInited++;
 }
 
 void CMainFrame::RestoreDefaultWindowRect()

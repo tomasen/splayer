@@ -429,6 +429,8 @@ public:
 
 		CString CheckSVPSubExts;
 
+		BOOL bNewMenu;
+		BOOL bAeroGlass;
 		int iDSVideoRendererType;
 		int iRMVideoRendererType;
 		int iQTVideoRendererType;

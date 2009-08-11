@@ -37,6 +37,9 @@ bool f_need_set_aspect;
 CBaseVideoFilter::CBaseVideoFilter(TCHAR* pName, LPUNKNOWN lpunk, HRESULT* phr, REFCLSID clsid, long cBuffers) 
 	: CTransformFilter(pName, lpunk, clsid)
 	, m_cBuffers(cBuffers)
+	, m_connRetry(0)
+	, m_w (0)
+	, m_h (0)
 {
 	if(phr) *phr = S_OK;
 
@@ -139,8 +142,23 @@ HRESULT CBaseVideoFilter::GetDeliveryBuffer(int w, int h, IMediaSample** ppOut)
 
 	return S_OK;
 }
+HRESULT CBaseVideoFilter::CompleteConnect(PIN_DIRECTION direction,IPin *pReceivePin){
+	if (direction==PINDIR_OUTPUT)		 
+	{
 
-HRESULT CBaseVideoFilter::ReconnectOutput(int w, int h, bool bSendSample, int realWidth, int realHeight)
+		
+	}
+	return __super::CompleteConnect (direction, pReceivePin);
+}
+HRESULT CBaseVideoFilter::BreakConnect(PIN_DIRECTION dir){
+	if (dir==PINDIR_OUTPUT)	{
+		//m_connRetry = 10;
+		//SVP_LogMsg5(_T("MPCV BreakConnect")  );
+		//m_pInput->SetDiscontinuity(true);
+	}
+	return __super::BreakConnect(dir);
+}
+HRESULT CBaseVideoFilter::ReconnectOutput(int w, int h, bool bSendSample, int realWidth, int realHeight, bool bForReconn)
 {
 	CMediaType& mt = m_pOutput->CurrentMediaType();
 
@@ -160,7 +178,7 @@ HRESULT CBaseVideoFilter::ReconnectOutput(int w, int h, bool bSendSample, int re
 	int w_org = m_w;
 	int h_org = m_h;
 
-	bool fForceReconnection = false;
+	bool fForceReconnection = bForReconn;
 	if(w != m_w || h != m_h)
 	{
 		fForceReconnection = true;

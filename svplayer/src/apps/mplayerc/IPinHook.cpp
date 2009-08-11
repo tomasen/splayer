@@ -26,6 +26,7 @@
 #include <d3dx9.h>
 #include <dxva.h>
 #include <dxva2api.h>
+#include "../../svplib/svplib.h"
 //#define LOG_FILE				_T("D:\\-=SVN=-\\dxva.log")
 
 //#define _DEBUG
@@ -225,6 +226,8 @@ bool HookNewSegmentAndReceive(IPinC* pPinC, IMemInputPinC* pMemInputPinC)
 {
 	if(!pPinC || !pMemInputPinC || (GetVersion()&0x80000000))
 		return false;
+
+	//SVP_LogMsg5(_T("HookNewSegmentAndReceive %s %s"), CStringFromGUID(GetCLSID((IPin*)pPinC)) ,  CStringFromGUID(GetCLSID((IPin*)pMemInputPinC)) );
 
 	g_tSegmentStart		= 0;
 	g_tSampleStart		= 0;

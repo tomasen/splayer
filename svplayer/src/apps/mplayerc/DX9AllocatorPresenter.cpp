@@ -739,6 +739,17 @@ bool CDX9AllocatorPresenter::SettingsNeedResetDevice()
 
 	return bRet;
 }
+static BOOL CALLBACK MonitorEnumProcDx9(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData)
+{
+	CSize* ms = (CSize*)dwData;
+	MONITORINFO mi;
+	mi.cbSize = sizeof(MONITORINFO);
+	GetMonitorInfo(hMonitor, &mi);
+
+	ms->cx = max(ms->cx , mi.rcMonitor.right - mi.rcMonitor.left );
+	ms->cy = max(ms->cy ,  mi.rcMonitor.bottom - mi.rcMonitor.top );
+	return TRUE;
+}
 HRESULT CDX9AllocatorPresenter::CreateDevice()
 {
 	StopWorkerThreads();
@@ -874,7 +885,9 @@ HRESULT CDX9AllocatorPresenter::CreateDevice()
 	m_RefreshRate = d3ddm.RefreshRate;
 	m_ScreenSize.SetSize(d3ddm.Width, d3ddm.Height);
 
-	//SVP_LogMsg5(_T("m_ScreenSize DX9 %d %d ") , m_ScreenSize.cx, m_ScreenSize.cy);
+	
+	EnumDisplayMonitors(NULL, NULL, MonitorEnumProcDx9, (LPARAM)&m_ScreenSize);
+	SVP_LogMsg5(_T("m_ScreenSize DX9 %d %d ") , m_ScreenSize.cx, m_ScreenSize.cy);
 
 	D3DPRESENT_PARAMETERS pp;
 	ZeroMemory(&pp, sizeof(pp));
@@ -891,8 +904,8 @@ HRESULT CDX9AllocatorPresenter::CreateDevice()
 	if (0) //AfxGetAppSettings().IsD3DFullscreen()
 	{
 		pp.Windowed = false; 
-		pp.BackBufferWidth = d3ddm.Width; 
-		pp.BackBufferHeight = d3ddm.Height; 
+		pp.BackBufferWidth = m_ScreenSize.cx; 
+		pp.BackBufferHeight = m_ScreenSize.cy; 
 		pp.hDeviceWindow = m_hWnd;
 		pp.BackBufferCount = 1; 
 		pp.SwapEffect = D3DSWAPEFFECT_FLIP;		// Ne pas mettre D3DSWAPEFFECT_COPY car cela entraine une desynchro audio sur les MKV !
@@ -913,8 +926,8 @@ HRESULT CDX9AllocatorPresenter::CreateDevice()
 		pp.SwapEffect = D3DSWAPEFFECT_COPY;
 		pp.Flags = D3DPRESENTFLAG_VIDEO;
 		pp.BackBufferCount = 1; 
-		pp.BackBufferWidth = d3ddm.Width;
-		pp.BackBufferHeight = d3ddm.Height;
+		pp.BackBufferWidth =m_ScreenSize.cx;
+		pp.BackBufferHeight = m_ScreenSize.cy;
 		m_BackbufferType = d3ddm.Format;
 		m_DisplayType = d3ddm.Format;
 		if (m_bHighColorResolution)
@@ -2381,6 +2394,9 @@ m_pD3DDev->BeginScene();
 			else
 				hr = m_pD3DDev->Present(rSrcPri, rDstPri, NULL, NULL);
 		}
+		if(hr == D3DERR_DEVICELOST){
+			SVP_LogMsg5(_T("D3DERR_DEVICELOST"));
+		}
 		//CString szLog;
 		//szLog.Format(_T("Present Size %d %d %d %d") ,rSrcPri.Width(), rSrcPri.Height(),rDstPri.Width(), rDstPri.Height() );
 		//SVP_LogMsg(szLog);
@@ -2462,11 +2478,14 @@ m_pD3DDev->BeginScene();
 	if(hr == D3DERR_DEVICELOST && m_pD3DDev->TestCooperativeLevel() == D3DERR_DEVICENOTRESET
 		|| hr == S_PRESENT_MODE_CHANGED)
 	{
+		SVP_LogMsg5(_T("D3DERR_DEVICELOST? %x") ,hr);
 		fResetDevice = true;
 	}
 
-	if (SettingsNeedResetDevice())
+	if (SettingsNeedResetDevice()){
+		SVP_LogMsg5(_T("SettingsNeedResetDevice? ") );
 		fResetDevice = true;
+	}
 
 	bCompositionEnabled = false;
 	if (m_pDwmIsCompositionEnabled)
@@ -2477,15 +2496,18 @@ m_pD3DDev->BeginScene();
 		{
 			m_bCompositionEnabled = (bCompositionEnabled != 0);
 		}
-		else
+		else{
+			SVP_LogMsg5(_T("if ((bCompositionEnabled != 0) != m_bCompositionEnabled)") );
 			fResetDevice = true;
+		}
 	}
 
-	if(1 /*s.fResetDevice*/)
+	if(0/*s.fResetDevice*/)
 	{
 		D3DDEVICE_CREATION_PARAMETERS Parameters;
 		if(SUCCEEDED(m_pD3DDev->GetCreationParameters(&Parameters)) && m_pD3D->GetAdapterMonitor(Parameters.AdapterOrdinal) != m_pD3D->GetAdapterMonitor(GetAdapter(m_pD3D)))
 		{
+			SVP_LogMsg5(_T("SUCCEEDED(m_pD3DDev->GetCreationParameters(&Parameters)) && m_pD3D->GetAdapterMonitor(Parameters.AdapterOrdinal) != m_pD3D->GetAdapterMonitor(GetAdapter(m_pD3D)))") );
 			fResetDevice = true;
 		}
 	}
@@ -2501,6 +2523,7 @@ m_pD3DDev->BeginScene();
 			if (m_MainThreadId && m_MainThreadId == GetCurrentThreadId())
 			{
 				m_bPendingResetDevice = false;
+				SVP_LogMsg5(_T("ResetDevice"));
 				ResetDevice();
 			}
 			else
@@ -3138,7 +3161,7 @@ public:
 	STDMETHODIMP SetAspectRatioMode(DWORD AspectRatioMode) {return E_NOTIMPL;}
 	STDMETHODIMP SetVideoClippingWindow(HWND hwnd) {return E_NOTIMPL;}
 	STDMETHODIMP RepaintVideo(HWND hwnd, HDC hdc) {return E_NOTIMPL;}
-	STDMETHODIMP DisplayModeChanged() {return E_NOTIMPL;}
+	STDMETHODIMP DisplayModeChanged() {return S_OK;}//E_NOTIMPL;
 	STDMETHODIMP GetCurrentImage(BYTE** lpDib) {return E_NOTIMPL;}
 	STDMETHODIMP SetBorderColor(COLORREF Clr) {return E_NOTIMPL;}
 	STDMETHODIMP GetBorderColor(COLORREF* lpClr) {return E_NOTIMPL;}
@@ -3732,7 +3755,7 @@ STDMETHODIMP CVMR9AllocatorPresenter::GetAspectRatioMode(DWORD* lpAspectRatioMod
 STDMETHODIMP CVMR9AllocatorPresenter::SetAspectRatioMode(DWORD AspectRatioMode) {return E_NOTIMPL;}
 STDMETHODIMP CVMR9AllocatorPresenter::SetVideoClippingWindow(HWND hwnd) {return E_NOTIMPL;}
 STDMETHODIMP CVMR9AllocatorPresenter::RepaintVideo(HWND hwnd, HDC hdc) {return E_NOTIMPL;}
-STDMETHODIMP CVMR9AllocatorPresenter::DisplayModeChanged() {return E_NOTIMPL;} /*DeleteSurfaces(); CreateDevice() ; AllocSurfaces(); return S_OK;*/
+STDMETHODIMP CVMR9AllocatorPresenter::DisplayModeChanged() { SVP_LogMsg5(_T("Shit DX9 DisplayModeChanged "));return S_OK;} /*DeleteSurfaces(); CreateDevice() ; AllocSurfaces(); return S_OK;*/
 STDMETHODIMP CVMR9AllocatorPresenter::GetCurrentImage(BYTE** lpDib) {return E_NOTIMPL;}
 STDMETHODIMP CVMR9AllocatorPresenter::SetBorderColor(COLORREF Clr) {return E_NOTIMPL;}
 STDMETHODIMP CVMR9AllocatorPresenter::GetBorderColor(COLORREF* lpClr)
@@ -4206,11 +4229,13 @@ STDMETHODIMP CDXRAllocatorPresenter::CreateRenderer(IUnknown** ppRenderer)
 
 	(*ppRenderer = this)->AddRef();
 
+	
 	MONITORINFO mi;
 	mi.cbSize = sizeof(MONITORINFO);
 	if (GetMonitorInfo(MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST), &mi))
 		m_ScreenSize.SetSize(mi.rcMonitor.right-mi.rcMonitor.left, mi.rcMonitor.bottom-mi.rcMonitor.top);
 
+	
 	return S_OK;
 }
 

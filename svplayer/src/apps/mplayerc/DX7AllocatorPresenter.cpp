@@ -299,7 +299,17 @@ CDX7AllocatorPresenter::CDX7AllocatorPresenter(HWND hWnd, HRESULT& hr)
 
 	hr = CreateDevice();
 }
+static BOOL CALLBACK MonitorEnumProcDx7(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData)
+{
+	CSize* ms = (CSize*)dwData;
+	MONITORINFO mi;
+	mi.cbSize = sizeof(MONITORINFO);
+	GetMonitorInfo(hMonitor, &mi);
 
+	ms->cx = max(ms->cx , mi.rcMonitor.right - mi.rcMonitor.left );
+	ms->cy = max(ms->cy ,  mi.rcMonitor.bottom - mi.rcMonitor.top );
+	return TRUE;
+}
 HRESULT CDX7AllocatorPresenter::CreateDevice()
 {
     m_pD3DDev = NULL;
@@ -315,17 +325,20 @@ HRESULT CDX7AllocatorPresenter::CreateDevice()
 		return DDERR_INVALIDMODE;
 
 	m_ScreenSize.SetSize(ddsd.dwWidth, ddsd.dwHeight);
+	/*
 	if(AfxGetMainWnd()){
-		MONITORINFO mi;
-		mi.cbSize = sizeof(MONITORINFO);
-		GetMonitorInfo(MonitorFromWindow(AfxGetMainWnd()->m_hWnd, MONITOR_DEFAULTTONEAREST), &mi);
-		
-		m_ScreenSize.SetSize(mi.rcMonitor.right - mi.rcMonitor.left, mi.rcMonitor.bottom - mi.rcMonitor.top);
-		//SVP_LogMsg5(_T("m_ScreenSize mi DX7 %d %d ") , m_ScreenSize.cx, m_ScreenSize.cy);
-	}
+			MONITORINFO mi;
+			mi.cbSize = sizeof(MONITORINFO);
+			GetMonitorInfo(MonitorFromWindow(AfxGetMainWnd()->m_hWnd, MONITOR_DEFAULTTONEAREST), &mi);
+			
+			m_ScreenSize.SetSize(mi.rcMonitor.right - mi.rcMonitor.left, mi.rcMonitor.bottom - mi.rcMonitor.top);
+			//SVP_LogMsg5(_T("m_ScreenSize mi DX7 %d %d ") , m_ScreenSize.cx, m_ScreenSize.cy);
+		}
+		*/
 	
+	EnumDisplayMonitors(NULL, NULL, MonitorEnumProcDx7, (LPARAM)&m_ScreenSize);
 
-	//SVP_LogMsg5(_T("m_ScreenSize DX7 %d %d ") , m_ScreenSize.cx, m_ScreenSize.cy);
+	SVP_LogMsg5(_T("m_ScreenSize DX7 %d %d ") , m_ScreenSize.cx, m_ScreenSize.cy);
 	HRESULT hr, hr2;
 	//m_ScreenSize.cx = 2000;
 	// m_pPrimary
@@ -383,7 +396,8 @@ HRESULT CDX7AllocatorPresenter::CreateDevice()
 
 	// m_pD3DDev
 
-	if(FAILED(hr = m_pD3D->CreateDevice(IID_IDirect3DHALDevice, m_pBackBuffer, &m_pD3DDev))) {// this seems to fail if the desktop size is too large (width or height >2048)
+	if(FAILED(hr = m_pD3D->CreateDevice(IID_IDirect3DHALDevice, m_pBackBuffer, &m_pD3DDev))) {
+		// this seems to fail if the desktop size is too large (width or height >2048)
 		SVP_LogMsg5(_T("DX7 CreateDevice Failed") );
 		return hr;
 	}
@@ -814,12 +828,15 @@ STDMETHODIMP CVMR7AllocatorPresenter::FreeSurface(DWORD_PTR dwUserID)
 
 STDMETHODIMP CVMR7AllocatorPresenter::PrepareSurface(DWORD_PTR dwUserID, IDirectDrawSurface7* lpSurface, DWORD dwSurfaceFlags)
 {
-    if(!lpSurface)
+    //SVP_LogMsg5(_T("PrepareSurface %x %x %x %x %x"), lpSurface, m_pVideoSurface , m_pVideoTexture , m_pPrimary, m_pBackBuffer);
+	
+	if(!lpSurface)
 		return E_POINTER;
 
 	// FIXME: sometimes the msmpeg4/divx3/wmv decoder wants to reuse our 
 	// surface (expects it to point to the same mem every time), and to avoid 
 	// problems we can't call m_pSA->PrepareSurface (flips? clears?).
+	
 	return S_OK; 
 /*
 	return m_pSA->PrepareSurface(dwUserID, lpSurface, dwSurfaceFlags);
@@ -967,7 +984,11 @@ STDMETHODIMP CVMR7AllocatorPresenter::GetAspectRatioMode(DWORD* lpAspectRatioMod
 STDMETHODIMP CVMR7AllocatorPresenter::SetAspectRatioMode(DWORD AspectRatioMode) {return E_NOTIMPL;}
 STDMETHODIMP CVMR7AllocatorPresenter::SetVideoClippingWindow(HWND hwnd) {return E_NOTIMPL;}
 STDMETHODIMP CVMR7AllocatorPresenter::RepaintVideo(HWND hwnd, HDC hdc) {return E_NOTIMPL;}
-STDMETHODIMP CVMR7AllocatorPresenter::DisplayModeChanged() {DeleteSurfaces(); CreateDevice() ; AllocSurfaces(); return S_OK;}
+STDMETHODIMP CVMR7AllocatorPresenter::DisplayModeChanged() {
+	//DeleteSurfaces(); CreateDevice() ; AllocSurfaces();
+	// Pass our input pin as parameter on the event
+	//NotifyEvent(EC_DISPLAY_CHANGED,(LONG_PTR) pPin,0);
+	return S_OK;}
 STDMETHODIMP CVMR7AllocatorPresenter::GetCurrentImage(BYTE** lpDib) {return E_NOTIMPL;}
 STDMETHODIMP CVMR7AllocatorPresenter::SetBorderColor(COLORREF Clr) {return E_NOTIMPL;}
 

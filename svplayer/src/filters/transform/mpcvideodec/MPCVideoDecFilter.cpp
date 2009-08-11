@@ -1255,32 +1255,50 @@ HRESULT CMPCVideoDecFilter::CompleteConnect(PIN_DIRECTION direction, IPin* pRece
 {
 	LOG(_T("CMPCVideoDecFilter::CompleteConnect"));
 
-	if (direction==PINDIR_INPUT && m_pOutput->IsConnected())
+	if (direction==PINDIR_INPUT )
 	{
-		ReconnectOutput (m_nWidth, m_nHeight);
+		if(m_pOutput->IsConnected())
+			ReconnectOutput (m_nWidth, m_nHeight);
+		else if(m_pOutput){
+			//SVP_LogMsg5(_T("ReconnectOutput "));
+			//ReconnectOutput (m_nWidth, m_nHeight, true, -1,-1, true);
+		}
 	}
 	else if (direction==PINDIR_OUTPUT)		 
 	{
+		
+			//SVP_LogMsg5(_T("MPCV ReconnectOutput %s") ,CStringFromGUID( GetCLSID(m_pInput->GetConnected())) );
+			//ReconnectOutput (m_nWidth, m_nHeight, true, -1, -1, true);
+
+	//	Sleep(100);
+		
 		if (IsDXVASupported())
 		{
+			SVP_LogMsg5(_T("Creating DXVA "));
 			if (m_nDXVAMode == MODE_DXVA1)
 				m_pDXVADecoder->ConfigureDXVA1();	// TODO : check errors!
 			else if (SUCCEEDED (ConfigureDXVA2 (pReceivePin)) &&	SUCCEEDED (SetEVRForDXVA2 (pReceivePin)) )
 				m_nDXVAMode  = MODE_DXVA2;
 
+			HRESULT hrDXVA = S_OK;
 			GUID*	DxvaGui = NULL;
 			DxvaGui = GetDXVADecoderGuid();
 			if (DxvaGui != NULL){
 				 if(GetDXVAMode (DxvaGui) == _T("Not using DXVA"))
-					 return VFW_E_INVALIDMEDIATYPE;
+					 hrDXVA = VFW_E_INVALIDMEDIATYPE;
 			}else
-				return VFW_E_INVALIDMEDIATYPE;
+				hrDXVA = VFW_E_INVALIDMEDIATYPE;
 
+			if(hrDXVA == VFW_E_INVALIDMEDIATYPE){
+				SVP_LogMsg5(_T("Create DXVA Failed"));
+			}
 		}
 
 		CLSID	ClsidSourceFilter = GetCLSID(m_pInput->GetConnected());
 		if((ClsidSourceFilter == __uuidof(CMpegSourceFilter)) || (ClsidSourceFilter == __uuidof(CMpegSplitterFilter)))
 			m_bReorderBFrame = false;
+
+		
 	}
 
 	// Cannot use YUY2 if horizontal or vertical resolution is not even

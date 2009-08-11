@@ -40,11 +40,12 @@ private:
 	DWORD m_wout, m_hout, m_arxout, m_aryout;
 
 	long m_cBuffers;
-
+	
 protected:
 	CCritSec m_csReceive;
 
 	int m_w, m_h, m_arx, m_ary;
+	long m_connRetry;
 
 	HRESULT GetDeliveryBuffer(int w, int h, IMediaSample** ppOut);
 	HRESULT CopyBuffer(BYTE* pOut, BYTE* pIn, int w, int h, int pitchIn, const GUID& subtype, bool fInterlaced = false);
@@ -56,10 +57,13 @@ protected:
 	virtual void GetOutputFormats (int& nNumber, VIDEO_OUTPUT_FORMATS** ppFormats);
 
 public:
+
 	CBaseVideoFilter(TCHAR* pName, LPUNKNOWN lpunk, HRESULT* phr, REFCLSID clsid, long cBuffers = 1);
 	virtual ~CBaseVideoFilter();
 
-	HRESULT ReconnectOutput(int w, int h, bool bSendSample = true, int realWidth = -1, int realHeight = -1);
+	HRESULT ReconnectOutput(int w, int h, bool bSendSample = true, int realWidth = -1, int realHeight = -1, bool bForReconn = false);
+	HRESULT CompleteConnect(PIN_DIRECTION direction,IPin *pReceivePin);
+	HRESULT BreakConnect(PIN_DIRECTION dir);
 	int GetPinCount();
 	CBasePin* GetPin(int n);
 	

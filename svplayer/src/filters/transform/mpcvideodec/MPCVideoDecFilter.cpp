@@ -1291,6 +1291,7 @@ HRESULT CMPCVideoDecFilter::CompleteConnect(PIN_DIRECTION direction, IPin* pRece
 
 			if(hrDXVA == VFW_E_INVALIDMEDIATYPE){
 				SVP_LogMsg5(_T("Create DXVA Failed"));
+				return VFW_E_INVALIDMEDIATYPE;
 			}
 		}
 

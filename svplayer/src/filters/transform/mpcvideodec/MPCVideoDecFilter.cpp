@@ -1279,7 +1279,7 @@ HRESULT CMPCVideoDecFilter::CompleteConnect(PIN_DIRECTION direction, IPin* pRece
 				m_pDXVADecoder->ConfigureDXVA1();	// TODO : check errors!
 			else if (SUCCEEDED (ConfigureDXVA2 (pReceivePin)) &&	SUCCEEDED (SetEVRForDXVA2 (pReceivePin)) )
 				m_nDXVAMode  = MODE_DXVA2;
-/*
+
 			
 						HRESULT hrDXVA = S_OK;
 						GUID*	DxvaGui = NULL;
@@ -1293,7 +1293,7 @@ HRESULT CMPCVideoDecFilter::CompleteConnect(PIN_DIRECTION direction, IPin* pRece
 						if(hrDXVA == VFW_E_INVALIDMEDIATYPE){
 							SVP_LogMsg5(_T("Create DXVA Failed"));
 							return VFW_E_INVALIDMEDIATYPE;
-						}*/
+						}
 			
 		}
 

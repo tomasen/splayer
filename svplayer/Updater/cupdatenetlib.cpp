@@ -43,7 +43,7 @@ cupdatenetlib::~cupdatenetlib(void)
 void cupdatenetlib::SetCURLopt(CURL *curl )
 {
 	curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1);
-	curl_easy_setopt(curl, CURLOPT_USERAGENT, "SPlayer Updater 17");
+	curl_easy_setopt(curl, CURLOPT_USERAGENT, "SPlayer Updater 18");
 	return ;
 }
 

@@ -118,7 +118,7 @@ void CDlgChkUpdater::OnTimer(UINT_PTR nIDEvent)
 					::ShowWindow(hWndPrevious,SW_SHOW);
 					::ShowWindow(hWndPrevious,SW_RESTORE);
 					::SetForegroundWindow(hWndPrevious);
-					::GetLastActivePopup(hWndPrevious);
+					//::GetLastActivePopup(hWndPrevious);
 				
 					//}
 					//}

@@ -742,12 +742,14 @@ bool CDX9AllocatorPresenter::SettingsNeedResetDevice()
 static BOOL CALLBACK MonitorEnumProcDx9(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData)
 {
 	CSize* ms = (CSize*)dwData;
-	MONITORINFO mi;
-	mi.cbSize = sizeof(MONITORINFO);
-	GetMonitorInfo(hMonitor, &mi);
+	MONITORINFOEX  mi;
+	mi.cbSize = sizeof(MONITORINFOEX );
+	if( GetMonitorInfo(hMonitor, &mi) ){
+		SVP_LogMsg5(_T("Monitors %s %d %d %d"), mi.szDevice , mi.dwFlags, mi.rcMonitor.right - mi.rcMonitor.left ,   mi.rcMonitor.bottom - mi.rcMonitor.top);
 
-	ms->cx = max(ms->cx , mi.rcMonitor.right - mi.rcMonitor.left );
-	ms->cy = max(ms->cy ,  mi.rcMonitor.bottom - mi.rcMonitor.top );
+		ms->cx = max(ms->cx , mi.rcMonitor.right - mi.rcMonitor.left );
+		ms->cy = max(ms->cy ,  mi.rcMonitor.bottom - mi.rcMonitor.top );
+	}
 	return TRUE;
 }
 HRESULT CDX9AllocatorPresenter::CreateDevice()
@@ -3161,7 +3163,7 @@ public:
 	STDMETHODIMP SetAspectRatioMode(DWORD AspectRatioMode) {return E_NOTIMPL;}
 	STDMETHODIMP SetVideoClippingWindow(HWND hwnd) {return E_NOTIMPL;}
 	STDMETHODIMP RepaintVideo(HWND hwnd, HDC hdc) {return E_NOTIMPL;}
-	STDMETHODIMP DisplayModeChanged() {return S_OK;}//E_NOTIMPL;
+	STDMETHODIMP DisplayModeChanged() {return E_NOTIMPL;}//E_NOTIMPL;
 	STDMETHODIMP GetCurrentImage(BYTE** lpDib) {return E_NOTIMPL;}
 	STDMETHODIMP SetBorderColor(COLORREF Clr) {return E_NOTIMPL;}
 	STDMETHODIMP GetBorderColor(COLORREF* lpClr) {return E_NOTIMPL;}
@@ -3755,7 +3757,7 @@ STDMETHODIMP CVMR9AllocatorPresenter::GetAspectRatioMode(DWORD* lpAspectRatioMod
 STDMETHODIMP CVMR9AllocatorPresenter::SetAspectRatioMode(DWORD AspectRatioMode) {return E_NOTIMPL;}
 STDMETHODIMP CVMR9AllocatorPresenter::SetVideoClippingWindow(HWND hwnd) {return E_NOTIMPL;}
 STDMETHODIMP CVMR9AllocatorPresenter::RepaintVideo(HWND hwnd, HDC hdc) {return E_NOTIMPL;}
-STDMETHODIMP CVMR9AllocatorPresenter::DisplayModeChanged() { SVP_LogMsg5(_T("Shit DX9 DisplayModeChanged "));return S_OK;} /*DeleteSurfaces(); CreateDevice() ; AllocSurfaces(); return S_OK;*/
+STDMETHODIMP CVMR9AllocatorPresenter::DisplayModeChanged() { return E_NOTIMPL;} /*SVP_LogMsg5(_T("Shit DX9 DisplayModeChanged "));DeleteSurfaces(); CreateDevice() ; AllocSurfaces(); return S_OK;*/
 STDMETHODIMP CVMR9AllocatorPresenter::GetCurrentImage(BYTE** lpDib) {return E_NOTIMPL;}
 STDMETHODIMP CVMR9AllocatorPresenter::SetBorderColor(COLORREF Clr) {return E_NOTIMPL;}
 STDMETHODIMP CVMR9AllocatorPresenter::GetBorderColor(COLORREF* lpClr)

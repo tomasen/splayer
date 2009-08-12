@@ -93,7 +93,8 @@ BOOL CUpdaterDlg::OnInitDialog()
 	HDC hdc = ::GetDC(NULL);
 	double dDefaultSize = 22;
 	double dIntroSize = 14;
-	double scale = 1.0;//*GetDeviceCaps(hdc, LOGPIXELSY) / 96.0;
+	m_scale = (double)GetDeviceCaps(hdc, LOGPIXELSY) / 96.0;
+	double scale = 1.0;
 	::ReleaseDC(0, hdc);
 
 	m_hBigFont.m_hObject = NULL;
@@ -188,13 +189,13 @@ void CUpdaterDlg::OnPaint()
 		//CDialog::OnPaint();
 		
 		CPaintDC dc(this);
-		dc.DrawIcon(34, 25, m_hIcon);
+		dc.DrawIcon(m_scale*34, m_scale*25, m_hIcon);
 		dc.SetBkMode(TRANSPARENT);
 		HFONT oldFont = (HFONT)dc.SelectObject((HFONT) m_hBigFont);
 		dc.SetTextColor( 0x353535);
-		dc.DrawText(_T("射手播放器\r\n自动升级程序"), CRect(80, 25, 230,85),DT_LEFT );
+		dc.DrawText(_T("射手播放器\r\n自动升级程序"), CRect(m_scale*80, m_scale*25, m_scale * 230, m_scale * 85),DT_LEFT );
 		dc.SelectObject((HFONT) m_hIntroFont);
-		dc.DrawText(_T("软件介绍："), CRect(39, 110, 200,130),DT_LEFT );
+		dc.DrawText(_T("软件介绍："), CRect(m_scale*39, m_scale*110, m_scale*200,m_scale*130),DT_LEFT );
 
 		dc.SelectObject((HFONT) oldFont);
 	}
@@ -271,7 +272,11 @@ void CUpdaterDlg::OnTimer(UINT_PTR nIDEvent)
 			}
 			break;
 		case IDT_SHOW_INTRO:
-			cs_stat.SetWindowText(szaIntro.GetAt( rand() % szaIntro.GetCount() ));
+			if(cup.bWaiting && rand() % 2 == 1){
+				cs_stat.SetWindowText( _T("关闭播放器或重新启动完成本次更新"));
+			}else
+				cs_stat.SetWindowText(szaIntro.GetAt( rand() % szaIntro.GetCount() ));
+
 			break;
 		case IDT_REAL_START_CHECK:
 			{
@@ -305,7 +310,7 @@ void CUpdaterDlg::OnTimer(UINT_PTR nIDEvent)
 				if(cup.bWaiting){
 					szTmp = _T("关闭播放器或重新启动后将自动更新到最新版本");
 					csCurTask.SetWindowText(_T("当前任务：正在覆盖..."));
-					
+					cs_stat.SetWindowText(szTmp);
 				}
 				wcscpy_s(tnid.szTip, szTmp);
 

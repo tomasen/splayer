@@ -55,7 +55,7 @@
 #include "../../svplib/svplib.h"
 	#define TRACE_EVR		SVP_LogMsg3
 #else
-	#define TRACE_EVR
+	#define TRACE_EVR		
 #endif
 
 typedef enum 

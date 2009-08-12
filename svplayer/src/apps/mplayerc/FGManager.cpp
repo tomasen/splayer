@@ -510,8 +510,8 @@ STDMETHODIMP CFGManager::ConnectDirect(IPin* pPinOut, IPin* pPinIn, const AM_MED
 		CLSID clsid = GetCLSID(pBF);
 		//FILTER_INFO fInfo;
 		//pBF->QueryFilterInfo(&fInfo);
-		SVP_LogMsg5(_T("ConnectDirect %s "), CStringFromGUID(clsid));
-		AfxGetAppSettings().szFGMLog.AppendFormat(_T("\r\nFConnectDirect %s "),  CStringFromGUID(clsid) );
+		//SVP_LogMsg5(_T("ConnectDirect %s "), CStringFromGUID(clsid));
+		//AfxGetAppSettings().szFGMLog.AppendFormat(_T("\r\nFConnectDirect %s "),  CStringFromGUID(clsid) );
 
 		// TODO: GetUpStreamFilter goes up on the first input pin only
 		for(CComPtr<IBaseFilter> pBFUS = GetFilterFromPin(pPinOut); pBFUS; pBFUS = GetUpStreamFilter(pBFUS))
@@ -521,8 +521,8 @@ STDMETHODIMP CFGManager::ConnectDirect(IPin* pPinOut, IPin* pPinIn, const AM_MED
 
 		//	FILTER_INFO fInfo2;
 		//	pBFUS->QueryFilterInfo(&fInfo2);
-			SVP_LogMsg5(_T("ConnectDirect2 %s  "),  CStringFromGUID(GetCLSID(pBFUS)));
-			AfxGetAppSettings().szFGMLog.AppendFormat(_T("\r\nFConnectDirect2 %s"),  CStringFromGUID(GetCLSID(pBFUS)) );
+			//SVP_LogMsg5(_T("ConnectDirect2 %s  "),  CStringFromGUID(GetCLSID(pBFUS)));
+			//AfxGetAppSettings().szFGMLog.AppendFormat(_T("\r\nFConnectDirect2 %s"),  CStringFromGUID(GetCLSID(pBFUS)) );
 
 		}
 		
@@ -731,9 +731,9 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 			if (szFName.Find(_T("TTL2 Decompressor")) >= 0 ) continue;
 			if (szFName.Find(_T("RDP DShow Redirection Filter")) >= 0 ) continue;
 			if (szFName.Find(_T("Sonic MP4 Demultiplexer")) >= 0 ) continue;
-			if (szFName.Find(_T("AVI Decompressor (YV12)")) >= 0 ) continue;
-			if (szFName.Find(_T("AVI Decompressor (I420)")) >= 0 ) continue;
-			if (szFName.Find(_T("AVI Decompressor (YUY2)")) >= 0 ) continue;
+			//if (szFName.Find(_T("AVI Decompressor (YV12)")) >= 0 ) continue;
+			//if (szFName.Find(_T("AVI Decompressor (I420)")) >= 0 ) continue;
+			//if (szFName.Find(_T("AVI Decompressor (YUY2)")) >= 0 ) continue;
 			/*
 			if (szFName.Find(_T("AVI Decompressor")) >= 0 ){
 							SVP_LogMsg5(_T("FGM: Connecting '%s' WTF "), szFName );
@@ -741,7 +741,7 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 							continue;
 						}*/
 			
-			if (szFName.Find(_T("Color Space Converter")) >= 0 ) continue;
+			//if (szFName.Find(_T("Color Space Converter")) >= 0 ) continue;
 			
 			
 			if(s.iDSVideoRendererType == VIDRNDT_DS_VMR7RENDERLESS || s.iDSVideoRendererType == VIDRNDT_DS_VMR9RENDERLESS || s.iDSVideoRendererType == VIDRNDT_DS_DXR) {
@@ -1949,9 +1949,9 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 #if INCLUDE_MPC_VIDEO_DECODER | INCLUDE_MPC_DXVA_VIDEO_DECODER
 
 #if INTERNAL_DECODER_WMV
-	if (ffmpeg_filters & FFM_WMV)
+	if (ffmpeg_filters & FFM_WMV )
 	{
-		pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(_T("WMV SVP Video Decoder"), MERIT64_ABOVE_DSHOW);
+		pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(_T("WMV SVP Video Decoder"), MERIT64_NORMAL);
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_WMV1);
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_wmv1);
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_WMV2);

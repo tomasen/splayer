@@ -302,12 +302,14 @@ CDX7AllocatorPresenter::CDX7AllocatorPresenter(HWND hWnd, HRESULT& hr)
 static BOOL CALLBACK MonitorEnumProcDx7(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData)
 {
 	CSize* ms = (CSize*)dwData;
-	MONITORINFO mi;
-	mi.cbSize = sizeof(MONITORINFO);
-	GetMonitorInfo(hMonitor, &mi);
+	MONITORINFOEX  mi;
+	mi.cbSize = sizeof(MONITORINFOEX );
+	if( GetMonitorInfo(hMonitor, &mi) ){
+		SVP_LogMsg5(_T("Monitors %s %d %d %d"), mi.szDevice , mi.dwFlags, mi.rcMonitor.right - mi.rcMonitor.left ,   mi.rcMonitor.bottom - mi.rcMonitor.top);
 
-	ms->cx = max(ms->cx , mi.rcMonitor.right - mi.rcMonitor.left );
-	ms->cy = max(ms->cy ,  mi.rcMonitor.bottom - mi.rcMonitor.top );
+		ms->cx = max(ms->cx , mi.rcMonitor.right - mi.rcMonitor.left );
+		ms->cy = max(ms->cy ,  mi.rcMonitor.bottom - mi.rcMonitor.top );
+	}
 	return TRUE;
 }
 HRESULT CDX7AllocatorPresenter::CreateDevice()

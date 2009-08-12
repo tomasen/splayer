@@ -18,6 +18,7 @@ public:
 	CFont m_hBigFont;
 	CFont m_hIntroFont;
 	CStringArray szaIntro;
+	double m_scale;
 
 // Dialog Data
 	enum { IDD = IDD_UPDATER_DIALOG };

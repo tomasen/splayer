@@ -74,7 +74,7 @@ void cupdatenetlib::procUpdate(){
 			while(  downloadFiles() != 0 ){
 				i++;
 				SVP_LogMsg( _T("DOWNLOAD UPDATE "));
-				if(i > 10) break;
+				if(i > 3) break;
 			}
 
 

@@ -616,8 +616,15 @@ void CUESettingPanel::OnBeforeNavigate2(LPDISPATCH pDisp, VARIANT FAR* URL, VARI
 		sMsg.Format(L"OnBeforeNavigate2 %s\r\n",str);
 		AfxMessageBox(sMsg);
 	}
+	int wheres = str.Find(_T("\?http"));
+	if( wheres >= 0 ){
+		str=str.Right( str.GetLength() - wheres - 1);
+		
+		ShellExecute(NULL, L"open", str, L"", L"", SW_SHOW);
 
-	if(str.Find(_T("#"))>=0 )
+		*Cancel = TRUE;
+	}
+	else if(str.Find(_T("#"))>=0 )
 		*Cancel = TRUE; // cancel when needed
 	else
 		__super::_OnBeforeNavigate2( pDisp, URL, Flags, TargetFrameName, PostData, Headers, Cancel );

@@ -44,11 +44,28 @@ COpenFileDlg::COpenFileDlg(CAtlArray<CString>& mask, bool fAllowDirSelection, LP
 	, m_mask(mask)
 {
 	m_fAllowDirSelection = fAllowDirSelection;
-	spInitialDir = new CPath(lpszFileName);
-	CSVPToolBox svpTool;
-	svpTool.GetDirectoryLeft(spInitialDir, 5);
-	m_pOFN->lpstrInitialDir = spInitialDir->m_strPath;//lpszFileName;
-
+	CString szBuf(lpszFileName);
+	if(!szBuf.IsEmpty()){
+		spInitialDir = new CPath(lpszFileName);	
+		CSVPToolBox svpTool;
+		svpTool.GetDirectoryLeft(spInitialDir, 5);
+		m_pOFN->lpstrInitialDir = spInitialDir->m_strPath;//lpszFileName;
+	}else{
+		LPITEMIDLIST pidl;
+		HRESULT hr = SHGetSpecialFolderLocation( AfxGetMainWnd()->m_hWnd, CSIDL_MYVIDEO, &pidl); //CSIDL_DRIVES
+		szBuf.Empty();
+		if (!hr){
+			TCHAR szPath[MAX_PATH];
+			BOOL f = SHGetPathFromIDList(pidl, szPath);
+			szBuf = szPath;
+			
+		}
+		if(szBuf.IsEmpty()){
+			szBuf = _T("C:\\") ;
+		}
+		spInitialDir = new CPath(szBuf);	;
+		m_pOFN->lpstrInitialDir = spInitialDir->m_strPath;
+	}
 	m_buff = new TCHAR[10000];
 	m_buff[0] = 0;
 	m_pOFN->lpstrFile = m_buff;

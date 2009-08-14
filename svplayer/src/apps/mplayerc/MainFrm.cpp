@@ -9453,12 +9453,12 @@ void CMainFrame::SetVMR9ColorControl(float dBrightness, float dContrast, float d
 			if( dContrast != 1.0 || dBrightness != 100.0){
 
 				CStringA szSrcData;
-				szSrcData.Format( ("sampler s0:register(s0);float4 p0 : register(c0);float4 main(float2 tex : TEXCOORD0) : COLOR { float4 c0 = tex2D(s0,tex) * %0.3f + %0.3f; ;  return c0;  }")
+				szSrcData.Format( ("sampler s0:register(s0);float4 p0 : register(c0);float4 main(float2 tex : TEXCOORD0) : COLOR { return tex2D(s0,tex) * %0.3f + %0.3f; }")
 					, dContrast , dBrightness / 100 - 1.0  );
 
 				HRESULT hr = m_pCAP->SetPixelShader(szSrcData, ("ps_2_0"));
 				if(FAILED(hr)){
-					szMsg = _T("硬件不支持此操作(Pixel Shader 2.0): ") ;
+					szMsg = _T("需要硬件 Pixel Shader 2.0") ;
 				}
 			}
 			

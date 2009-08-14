@@ -3608,9 +3608,13 @@ void CMPlayerCApp::Settings::AddFav(favtype ft, CString s, BOOL bRecent, CString
 	CAtlList<CString> sl;
 	GetFav(ft, sl, bRecent);
 	if(bRecent){
+		CMD5Checksum cmd5;
+		CStringA szMD5data(szMatch);
+		CString szMatchmd5 = cmd5.GetMD5((BYTE*)szMD5data.GetBuffer() , szMD5data.GetLength() );
+		szMD5data.ReleaseBuffer();
 		POSITION pos = sl.GetHeadPosition();
 		while(pos){
-			if( sl.GetAt(pos).Find(szMatch) >= 0 ){
+			if( sl.GetAt(pos).Find(szMatchmd5) >= 0 ){
 				sl.RemoveAt(pos);
 				break;
 			}
@@ -3619,6 +3623,7 @@ void CMPlayerCApp::Settings::AddFav(favtype ft, CString s, BOOL bRecent, CString
 		if(sl.GetCount() > 10){
 			sl.RemoveHead();
 		}
+		s.Replace( szMatch , szMatchmd5);
 	}else{
 		if(sl.Find(s)) return;
 	}

@@ -10224,6 +10224,7 @@ void CMainFrame::OpenDVD(OpenDVDData* pODD)
 	if(s.fKeepHistory)
 	{
 		
+		//AfxMessageBox(pODD->path + pODD->title);
 			//CRecentFileList* pMRU = &s.MRU ; not ready
 			//pMRU->ReadList();
 			//pMRU->Add(pODD->path);
@@ -13730,13 +13731,18 @@ void CMainFrame::OpenCurPlaylistItem(REFERENCE_TIME rtStart)
 		favtype ft ;
 		ft = FAV_FILE;
 		if (!fn.IsEmpty() && s.autoResumePlay){
+			CMD5Checksum cmd5;
+			CStringA szMD5data(fn);
+			CString szMatchmd5 = cmd5.GetMD5((BYTE*)szMD5data.GetBuffer() , szMD5data.GetLength() );
+			szMD5data.ReleaseBuffer();
+
 			CAtlList<CString> sl;
 			s.GetFav(ft, sl, TRUE);
 			CString PosStr ;
 			POSITION pos = sl.GetHeadPosition();
 			while(pos){
 				PosStr = sl.GetNext(pos) ;
-				if( PosStr.Find(fn + _T(";")) == 0 ){
+				if( PosStr.Find(szMatchmd5 + _T(";")) == 0 ){
 					break;
 				}else{
 					PosStr.Empty();

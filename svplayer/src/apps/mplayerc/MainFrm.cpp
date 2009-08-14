@@ -9917,7 +9917,7 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 				SubFile szBuf = ret.GetAt(i);
 				if ( pOFD->subs.Find( szBuf.fn ) == NULL){
 					pOFD->subs.AddTail(szBuf.fn);
-			//		AfxMessageBox(szBuf.fn);
+					//AfxMessageBox(szBuf.fn);
 				}
 			}
 			//AfxMessageBox(_T("1"));
@@ -10888,7 +10888,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 						else
 						{
 							CString msg;
-							msg.Format(_T("%s was not found, please insert media containing this file."), fn);
+							msg.Format(_T("没有找到 %s 请插入光盘"), fn);
 							ret = AfxMessageBox(msg, MB_RETRYCANCEL);
 						}
 					}
@@ -10961,6 +10961,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 			if(m_pSubStreams.GetCount() == 0){
 				if ( !m_wndPlaylistBar.m_pl.szPlayListSub.IsEmpty() ){
 					int delayms = 0 - m_wndPlaylistBar.GetTotalTimeBeforeCur();
+					 
 					LoadSubtitle(m_wndPlaylistBar.m_pl.szPlayListSub, delayms , true); 
 				}
 			}

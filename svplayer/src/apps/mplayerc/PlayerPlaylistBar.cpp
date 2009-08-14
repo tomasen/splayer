@@ -202,7 +202,8 @@ void CPlayerPlaylistBar::AddItem(CAtlList<CString>& fns, CAtlList<CString>* subs
 	}
 
 	//if(AfxGetAppSettings().fAutoloadSubtitles) //always autoload subtitles
-	//{
+	/*
+{
 		CAtlArray<CString> paths;
 		paths.Add(_T("."));
 		paths.Add(_T(".\\subtitles"));
@@ -220,7 +221,8 @@ void CPlayerPlaylistBar::AddItem(CAtlList<CString>& fns, CAtlList<CString>* subs
 			if(!FindFileInList(pli.m_subs, ret[i].fn))
 				pli.m_subs.AddTail(ret[i].fn);
 		}
-	//}
+	}
+*/
 
 	m_pl.AddTail(pli);
 }
@@ -1000,7 +1002,7 @@ OpenMediaData* CPlayerPlaylistBar::GetCurOMD(REFERENCE_TIME rtStart)
 		if(OpenFileData* p = new OpenFileData())
 		{
 			p->fns.AddTailList(&pli.m_fns);
-			p->subs.AddTailList(&pli.m_subs);
+			//p->subs.AddTailList(&pli.m_subs);
 			p->rtStart = rtStart;
 			return p;
 		}

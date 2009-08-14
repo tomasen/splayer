@@ -2923,6 +2923,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 				fVMDetected = 0;
 			}
 		}
+		bOldLumaControl = 0;
 
 		fCheckFileAsscOnStartup = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_CHECKFILEASSCONSTARTUP), 1);
 		szStartUPCheckExts = pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_CHECKFILEEXTSASSCONSTARTUP), _T(".mkv .avi .rmvb .rm .wmv .asf .mov .mp4 .mpeg .mpg .3gp"));
@@ -2992,7 +2993,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		autoDownloadSVPSub = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUTODOWNLAODSVPSUB), 1);
 		fVMRSyncFix = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VMRSYNCFIX), TRUE);
 		iDX9Resizer = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DX9_RESIZER), 1);
-		fVMR9MixerMode = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VMR9MIXERMODE), FALSE);
+		fVMR9MixerMode = FALSE;//!!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VMR9MIXERMODE), FALSE);
 		fVMR9MixerYUV = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VMR9MIXERYUV), FALSE);
 		AudioRendererDisplayName = pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUDIORENDERERTYPE), _T(""));
 		fAutoloadAudio = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUTOLOADAUDIO), TRUE);
@@ -3307,6 +3308,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		FFmpegFilters = pApp->GetProfileInt(ResStr(IDS_R_INTERNAL_FILTERS), ResStr(IDS_RS_FFMPEGFILTERS), ~0);
 		bDVXACompat = pApp->GetProfileInt(ResStr(IDS_R_INTERNAL_FILTERS), ResStr(IDS_RS_DXVACOMPAT), 0);
 		
+		
 
 		logofn = pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LOGOFILE), _T(""));
 		logoid = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LOGOID), IDF_LOGO7);
@@ -3365,10 +3367,10 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		CAtlList<UINT> shader_ids;
 		shader_ids.AddTail(IDF_SHADER_SHARPEN);
 		shader_ids.AddTail(IDF_SHADER_DENOISE);
-		shader_ids.AddTail(IDF_SHADER_LEVELS);
+		//shader_ids.AddTail(IDF_SHADER_LEVELS);
 		shader_ids.AddTail(IDF_SHADER_LEVELS2);
 		shader_ids.AddTail(IDF_SHADER_LEVELS3);
-		shader_ids.AddTail(IDF_SHADER_BT601_BT701);
+		//shader_ids.AddTail(IDF_SHADER_BT601_BT701);
 		shader_ids.AddTail(IDF_SHADER_YV12CHROMAUP);
 		shader_ids.AddTail(IDF_SHADER_DEINTERLACE);
 		shader_ids.AddTail(IDF_SHADER_EDGE_SHARPEN);

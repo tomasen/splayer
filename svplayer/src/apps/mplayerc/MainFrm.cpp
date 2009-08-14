@@ -9414,7 +9414,61 @@ void CMainFrame::RepaintVideo()
 	if(m_pCAP) m_pCAP->Paint(false);
 }
 
-void CMainFrame::SetShaders()
+void CMainFrame::SetVMR9ColorControl(float dBrightness, float dContrast, float dHue, float dSaturation, BOOL silent)
+{
+
+	AppSettings& s = AfxGetAppSettings();
+	CString  szMsg;
+	if(s.bOldLumaControl){
+		VMR9ProcAmpControl		ClrControl;
+
+		szMsg = _T("您没有启用或显卡(或驱动)不支持亮度控制");
+		if(m_pMC ) // Fuck fVMR9MixerYUV && !AfxGetAppSettings().fVMR9MixerYUV
+		{
+
+			ClrControl.dwSize		= sizeof(ClrControl);
+			ClrControl.dwFlags		= ProcAmpControl9_Mask;
+			ClrControl.Brightness	= dBrightness;
+			ClrControl.Contrast		= dContrast;
+			ClrControl.Hue			= 0;
+			ClrControl.Saturation	= 1;
+
+
+			if(S_OK == m_pMC->SetProcAmpControl (0, &ClrControl) )
+				szMsg.Format(_T("亮度: %0.2f  对比度: %0.2f "),dBrightness,dContrast);
+			else
+				szMsg = _T("您的显卡(或驱动)不支持亮度控制");
+
+
+		}
+
+	}else{
+		
+		szMsg.Format(_T("亮度: %0.2f  对比度: %0.2f "),dBrightness,dContrast);
+
+		if(m_pCAP) {
+			if(!silent)
+				SetShaders(true);
+			
+			if( dContrast != 1.0 || dBrightness != 100.0){
+
+				CStringA szSrcData;
+				szSrcData.Format( ("sampler s0:register(s0);float4 p0 : register(c0);float4 main(float2 tex : TEXCOORD0) : COLOR { float4 c0 = tex2D(s0,tex) * %0.3f + %0.3f; ;  return c0;  }")
+					, dContrast , dBrightness / 100 - 1.0  );
+
+				HRESULT hr = m_pCAP->SetPixelShader(szSrcData, ("ps_2_0"));
+				if(FAILED(hr)){
+					szMsg = _T("硬件不支持此操作(Pixel Shader 2.0): ") ;
+				}
+			}
+			
+		}
+		
+	}
+
+	if(!silent) SendStatusMessage( szMsg , 3000);
+}
+void CMainFrame::SetShaders( BOOL silent )
 {
 	if(!m_pCAP) return;
 
@@ -9454,7 +9508,7 @@ void CMainFrame::SetShaders()
 				if(FAILED(hr)){
 					if (m_pCAP2)
 						m_pCAP2->SetPixelShader2(NULL, NULL, true);
-					SendStatusMessage(_T("硬件不支持此操作(Pixel Shader 2.0): ") + pShader->label, 3000);
+					if(!silent) SendStatusMessage(_T("硬件不支持此操作(Pixel Shader 2.0): ") + pShader->label, 3000);
 				}
 				return;
 			}
@@ -9467,7 +9521,10 @@ void CMainFrame::SetShaders()
 	{
 		CString str = Implode(labels, '|');
 		str.Replace(_T("|"), _T(", "));
-		SendStatusMessage(_T("Shader: ") + str, 3000);
+		if(!silent) SendStatusMessage(_T("Shader: ") + str, 3000);
+	}
+	if(!silent){
+		SetVMR9ColorControl(s.dBrightness , s.dContrast, 0, 0, true);
 	}
 }
 
@@ -10810,32 +10867,6 @@ void CMainFrame::OnEnableDX9(){
 	}
 }
 
-void CMainFrame::SetVMR9ColorControl(float dBrightness, float dContrast, float dHue, float dSaturation)
-{
-	VMR9ProcAmpControl		ClrControl;
-
-	CString  szMsg = _T("您没有启用或显卡(或驱动)不支持亮度控制");
-	if(m_pMC ) // Fuck fVMR9MixerYUV && !AfxGetAppSettings().fVMR9MixerYUV
-	{
-		
-		ClrControl.dwSize		= sizeof(ClrControl);
-		ClrControl.dwFlags		= ProcAmpControl9_Mask;
-		ClrControl.Brightness	= dBrightness;
-		ClrControl.Contrast		= dContrast;
-		ClrControl.Hue			= 0;
-		ClrControl.Saturation	= 1;
-
-
-		if(S_OK == m_pMC->SetProcAmpControl (0, &ClrControl) )
-			szMsg.Format(_T("亮度: %0.2f  对比度: %0.2f "),dBrightness,dContrast);
-		else
-			szMsg = _T("您的显卡(或驱动)不支持亮度控制");
-
-		
-	}
-
-	SendStatusMessage( szMsg , 3000);
-}
 bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 {
 	AppSettings& s = AfxGetAppSettings();

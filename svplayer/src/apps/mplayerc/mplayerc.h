@@ -582,6 +582,7 @@ public:
 		bool fWebServerUseCompression;
 		bool fWebServerLocalhostOnly;
 		CString WebRoot, WebDefIndex;
+		BOOL bOldLumaControl;
 		CString WebServerCGI;
 		CString SVPSubStoreDir;
 

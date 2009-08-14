@@ -484,7 +484,7 @@ void CUESettingPanel::ApplyAllSetting(){
 	//Video Setting
 	s.bDisableEVR = !m_sgi_gpuacel;
 
-	s.fVMR9MixerMode = m_sgi_uservmrmixer ;
+	//s.fVMR9MixerMode = m_sgi_uservmrmixer ;
 	if(s.fVMR9MixerMode){
 		m_sgs_videorender = _T("DX9");
 	}

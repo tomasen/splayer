@@ -41,12 +41,12 @@ void CPlayerColorControlBar::OnColorControlButtonEnable(){
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	if(pFrame){
 		AppSettings& s = AfxGetAppSettings();
-		s.fVMR9MixerMode = !s.fVMR9MixerMode;
-		if(s.fVMR9MixerMode){
+		//s.fVMR9MixerMode = !s.fVMR9MixerMode;
+		//if(s.fVMR9MixerMode){
 			s.iDSVideoRendererType = 6;
 			s.iRMVideoRendererType = 2;
 			s.iQTVideoRendererType = 2;
-		}
+		//}
 
 		if( pFrame->IsSomethingLoaded()){
 			pFrame->ReRenderOrLoadMedia();
@@ -67,7 +67,7 @@ void CPlayerColorControlBar::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScr
 	AppSettings& s = AfxGetAppSettings();
 	CMainFrame* pMFrame = (CMainFrame*)AfxGetMainWnd();
 
-		if(pMFrame->m_pMC){
+		//if(pMFrame->m_pMC){
 			BOOL bChanged = FALSE;
 			if (pScrollBar == GetDlgItem(IDC_SLIDER1) && s.dBrightness != csl_bright.GetPos()){
 				s.dBrightness = csl_bright.GetPos();
@@ -79,7 +79,7 @@ void CPlayerColorControlBar::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScr
 			if(bChanged){
 				pMFrame->SetVMR9ColorControl(s.dBrightness,s.dContrast,fDefaultHue,fDefaultSaturation);
 			}
-		}
+		//}
 		
 	 
 
@@ -122,7 +122,7 @@ int CPlayerColorControlBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 void CPlayerColorControlBar::OnButtonReset(){
 	CMainFrame* pMFrame = (CMainFrame*)GetParentFrame();
 	AppSettings& s = AfxGetAppSettings();
-	if(!!pMFrame->m_pMC ){
+	//if(!!pMFrame->m_pMC ){
 		CheckAbility();
 		
 		
@@ -131,52 +131,73 @@ void CPlayerColorControlBar::OnButtonReset(){
 		s.dContrast = fDefaultConst;
 		csl_const.SetPos(fDefaultConst * 100);
 		pMFrame->SetVMR9ColorControl(fDefaultBright,fDefaultConst,fDefaultHue,fDefaultSaturation);
-	}
+	//}
 	Relayout();
 }
 
 void CPlayerColorControlBar::CheckAbility(){
 	CMainFrame* pMFrame = (CMainFrame*)AfxGetMainWnd();
 	AppSettings& s = AfxGetAppSettings();
-	m_bAbleControl = (!!pMFrame->m_pMC);
 	
-	csl_bright.EnableWindow(m_bAbleControl);
-	csl_const.EnableWindow(m_bAbleControl);
-	csConstLabel.EnableWindow(m_bAbleControl);
-	csBrightLabel.EnableWindow(m_bAbleControl);
 
-	if(m_bAbleControl){
-		VMR9ProcAmpControlRange ClrRangeBright;
-		ClrRangeBright.dwProperty = ProcAmpControl9_Brightness;
-		ClrRangeBright.dwSize = sizeof(VMR9ProcAmpControlRange);
-		pMFrame->m_pMC->GetProcAmpControlRange(0, &ClrRangeBright);
-		fDefaultBright = ClrRangeBright.DefaultValue; 
-		csl_bright.SetRange(ClrRangeBright.MinValue,  ClrRangeBright.MaxValue, 1);
-		csl_bright.SetTic( ClrRangeBright.StepSize );
-		csl_bright.SetPos( s.dBrightness );
+	
+	
 
-		VMR9ProcAmpControlRange ClrRangeConst;
-		ClrRangeConst.dwProperty = ProcAmpControl9_Contrast;
-		ClrRangeConst.dwSize = sizeof(VMR9ProcAmpControlRange);
-		pMFrame->m_pMC->GetProcAmpControlRange(0, &ClrRangeConst);
-		fDefaultConst = ClrRangeConst.DefaultValue; 
-		
-		csl_const.SetRange(ClrRangeConst.MinValue * 100,  ClrRangeConst.MaxValue* 100, 1);
-		csl_const.SetTic( ClrRangeConst.StepSize * 100);
-		csl_const.SetPos( s.dContrast* 100 );
-		
-		VMR9ProcAmpControlRange ClrRangeHue;
-		ClrRangeHue.dwProperty = ProcAmpControl9_Hue;
-		ClrRangeHue.dwSize = sizeof(VMR9ProcAmpControlRange);
-		pMFrame->m_pMC->GetProcAmpControlRange(0, &ClrRangeHue);
-		fDefaultHue = ClrRangeHue.DefaultValue; 
+	if(s.bOldLumaControl){
+		m_bAbleControl = (!!pMFrame->m_pMC);
+		csl_bright.EnableWindow(m_bAbleControl);
+		csl_const.EnableWindow(m_bAbleControl);
+		csConstLabel.EnableWindow(m_bAbleControl);
+		csBrightLabel.EnableWindow(m_bAbleControl);
+		if(m_bAbleControl){
+			VMR9ProcAmpControlRange ClrRangeBright;
+			ClrRangeBright.dwProperty = ProcAmpControl9_Brightness;
+			ClrRangeBright.dwSize = sizeof(VMR9ProcAmpControlRange);
+			pMFrame->m_pMC->GetProcAmpControlRange(0, &ClrRangeBright);
+			fDefaultBright = ClrRangeBright.DefaultValue; 
+			csl_bright.SetRange(ClrRangeBright.MinValue,  ClrRangeBright.MaxValue, 1);
+			csl_bright.SetTic( ClrRangeBright.StepSize );
+			csl_bright.SetPos( s.dBrightness );
 
-		VMR9ProcAmpControlRange ClrRangeSat;
-		ClrRangeSat.dwProperty = ProcAmpControl9_Saturation;
-		ClrRangeSat.dwSize = sizeof(VMR9ProcAmpControlRange);
-		pMFrame->m_pMC->GetProcAmpControlRange(0, &ClrRangeSat);
-		fDefaultSaturation = ClrRangeSat.DefaultValue; 
+			VMR9ProcAmpControlRange ClrRangeConst;
+			ClrRangeConst.dwProperty = ProcAmpControl9_Contrast;
+			ClrRangeConst.dwSize = sizeof(VMR9ProcAmpControlRange);
+			pMFrame->m_pMC->GetProcAmpControlRange(0, &ClrRangeConst);
+			fDefaultConst = ClrRangeConst.DefaultValue; 
+
+			csl_const.SetRange(ClrRangeConst.MinValue * 100,  ClrRangeConst.MaxValue* 100, 1);
+			csl_const.SetTic( ClrRangeConst.StepSize * 100);
+			csl_const.SetPos( s.dContrast* 100 );
+
+			VMR9ProcAmpControlRange ClrRangeHue;
+			ClrRangeHue.dwProperty = ProcAmpControl9_Hue;
+			ClrRangeHue.dwSize = sizeof(VMR9ProcAmpControlRange);
+			pMFrame->m_pMC->GetProcAmpControlRange(0, &ClrRangeHue);
+			fDefaultHue = ClrRangeHue.DefaultValue; 
+
+			VMR9ProcAmpControlRange ClrRangeSat;
+			ClrRangeSat.dwProperty = ProcAmpControl9_Saturation;
+			ClrRangeSat.dwSize = sizeof(VMR9ProcAmpControlRange);
+			pMFrame->m_pMC->GetProcAmpControlRange(0, &ClrRangeSat);
+			fDefaultSaturation = ClrRangeSat.DefaultValue; 
+		}
+	}else{
+		csl_bright.SetRange(1,  200, 1);
+		csl_bright.SetTic( 1 );
+		fDefaultBright = 100;
+		csl_bright.SetPos( s.dBrightness  );
+
+		csl_const.SetRange(1,400,1);
+		csl_const.SetTic( 1);
+		fDefaultConst = 1.0;
+		csl_const.SetPos(s.dContrast*  100 );
+		m_bAbleControl = true;
+		csl_bright.EnableWindow(m_bAbleControl);
+		csl_const.EnableWindow(m_bAbleControl);
+		csConstLabel.EnableWindow(m_bAbleControl);
+		csBrightLabel.EnableWindow(m_bAbleControl);
 	}
+	
 
 }
 void CPlayerColorControlBar::Relayout()
@@ -243,7 +264,7 @@ void CPlayerColorControlBar::Relayout()
 			}
 		}*/
 	
-	cb_reset.EnableWindow(enable);
+	cb_reset.EnableWindow(TRUE);
 	cb_reset.Invalidate();
 	
 	if(bEnable)

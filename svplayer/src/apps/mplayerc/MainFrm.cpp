@@ -9465,7 +9465,10 @@ void CMainFrame::SetVMR9ColorControl(float dBrightness, float dContrast, float d
 
 				HRESULT hr = m_pCAP->SetPixelShader(szSrcData, ("ps_2_0"));
 				if(FAILED(hr)){
-					szMsg = _T("需要硬件 Pixel Shader 2.0") ;
+					if(!AfxGetMyApp()->GetD3X9Dll())
+						szMsg = _T("请通过自动更新下载必要的组件(d3d9x.dll)");
+					else
+						szMsg = _T("需要硬件 Pixel Shader 2.0") ;
 				}
 			}
 			
@@ -9515,7 +9518,14 @@ void CMainFrame::SetShaders( BOOL silent )
 				if(FAILED(hr)){
 					if (m_pCAP2)
 						m_pCAP2->SetPixelShader2(NULL, NULL, true);
-					if(!silent) SendStatusMessage(_T("硬件不支持此操作(Pixel Shader 2.0): ") + pShader->label, 3000);
+					if(!silent){
+						if(!AfxGetMyApp()->GetD3X9Dll())
+							SendStatusMessage(_T("请通过自动更新下载必要的组件(d3d9x.dll): ") + pShader->label, 3000);
+						else
+							SendStatusMessage(_T("需要硬件 Pixel Shader 2.0: ") + pShader->label, 3000);
+						
+						
+					}
 				}
 				return;
 			}

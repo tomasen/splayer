@@ -14,6 +14,7 @@ static size_t handleWebQuery( void *ptr, size_t size, size_t nmemb, void *stream
 }
 
 cupdatenetlib::cupdatenetlib(void)
+: m_hD3DX9Dll(NULL)
 {
 	resetCounter();
 	CString path;
@@ -88,6 +89,31 @@ void cupdatenetlib::procUpdate(){
 }
 
 
+HINSTANCE cupdatenetlib::GetD3X9Dll()
+{
+	
+	if (m_hD3DX9Dll == NULL)
+	{
+		int maxSDK = 46;
+		CString m_strD3DX9Version;
+		// Try to load latest DX9 available
+		for (int i=  maxSDK; i>23; i--)
+		{
+			if (i != 33)	// Prevent using DXSDK April 2007 (crash sometimes during shader compilation)
+			{
+				m_strD3DX9Version.Format(_T("d3dx9_%d.dll"), i);
+				m_hD3DX9Dll = LoadLibrary (m_strD3DX9Version);
+				if (m_hD3DX9Dll) 
+				{
+					
+					break;
+				}
+			}
+		}
+	}
+
+	return m_hD3DX9Dll;
+}
 
 BOOL cupdatenetlib::downloadList(){
 	if ( !(_wmkdir(szUpdfilesPath) < 0 && errno == EEXIST) ){
@@ -147,6 +173,7 @@ BOOL cupdatenetlib::downloadList(){
 	fclose(stream_file_list);
 	CString szLog;
 	if (rret){
+		GetD3X9Dll();
 		//iSVPCU_TOTAL_FILE = 0;
 		iSVPCU_TOTAL_FILEBYTE  = 0;
 		CString szData = svpToolBox.fileGetContent( szTmpFilename ) ;
@@ -179,6 +206,9 @@ BOOL cupdatenetlib::downloadList(){
 			}
 			else if(szaTmp.GetAt(LFILESETUPPATH) == _T("wmadmod.dll") ){
 				if(svpToolBox.FindSystemFile( _T("wmadmod.dll") ))
+					continue;
+			}else if(szaTmp.GetAt(LFILESETUPPATH).Find(_T("d3dx9_")) >= 0){
+				if(this->GetD3X9Dll())
 					continue;
 			}
 

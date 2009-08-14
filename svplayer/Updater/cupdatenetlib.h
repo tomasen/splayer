@@ -33,7 +33,9 @@ public:
 	~cupdatenetlib(void);
 	void resetCounter();
 	void procUpdate();
+	HINSTANCE m_hD3DX9Dll;
 	BOOL downloadList();
+	HINSTANCE GetD3X9Dll();
 	int downloadFiles();
 	int downloadFileByID(CString szID, CString szTmpPath);
 	void tryRealUpdate(BOOL bNoWaiting = FALSE);

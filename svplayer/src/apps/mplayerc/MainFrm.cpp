@@ -6559,7 +6559,14 @@ void CMainFrame::OnViewZoomAutoFit()
 
 void CMainFrame::OnViewDefaultVideoFrame(UINT nID)
 {
-	AfxGetAppSettings().iDefaultVideoSize = nID - ID_VIEW_VF_HALF;
+	INT actionID =  nID ;//- ID_VIEW_VF_HALF;
+	if(actionID == (AfxGetAppSettings().iDefaultVideoSize + ID_VIEW_VF_HALF)){
+		if(ID_VIEW_VF_FROMINSIDE  == actionID)
+			actionID  = ID_VIEW_VF_FROMOUTSIDE;
+		else// if(ID_VIEW_VF_FROMOUTSIDE == actionID)
+			actionID  = ID_VIEW_VF_FROMINSIDE; //标准画面
+	}
+	AfxGetAppSettings().iDefaultVideoSize = actionID- ID_VIEW_VF_HALF;
 	m_ZoomX = m_ZoomY = 1; 
 	m_PosX = m_PosY = 0.5;
 	MoveVideoWindow();

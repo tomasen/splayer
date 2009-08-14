@@ -427,7 +427,6 @@ function myInit(){
 <!--双声道音频设置：<select id="channelsetting"><option value='0'>系统默认</option><option value='1'>仅仅左声道</option><option value='2'>仅仅右声道</option></select><br />-->
 </div>
 <div id="subsetting" class="hiddenarea">
-<input type="checkbox" id="chkautodownloadsvpsub" /><label for="chkautodownloadsvpsub">自动通过射手影音字幕智能匹配系统下载字幕</label><br />
 <table width="96%"><tr><td width="50%"><fieldset><legend>第一字幕</legend>
 字体： <input type="button" id="subfont1" value="黑体"/><br />
 颜色： 
@@ -442,7 +441,7 @@ function myInit(){
 <fieldset><legend><input type="checkbox" id="suboveride1" /><label for="suboveride1">强制字幕显示位置</label></legend>
 水平位置： <input class="percent" type="text" id="subhpos1" value="" size="3" maxlength="3" />%<br />
 垂直位置： <input class="percent" type="text" id="subvpos1" value="" size="3" maxlength="3" />%<br /></fieldset>
-英文字幕字体：<input class="percent" type="text" id="engsizeratio1" value="" size="5" maxlength="5" />
+英文字号比：<input class="percent" type="text" id="engsizeratio1" value="" size="5" maxlength="5" />
 </fieldset></td><td width="50%"><fieldset><legend>第二字幕</legend>
 字体： <input type="button" id="subfont2" value="黑体"/><br />
 颜色： 
@@ -457,9 +456,14 @@ function myInit(){
 <fieldset><legend><input type="checkbox" id="suboveride2" /><label for="suboveride2">强制字幕显示位置</label></legend>
 水平位置： <input class="percent" type="text" id="subhpos2" value="" size="3" maxlength="3" />%<br />
 垂直位置： <input class="percent" type="text" id="subvpos2" value="" size="3" maxlength="3" />%<br /></fieldset>
-英文字幕字体：<input class="percent" type="text" id="engsizeratio2" value="" size="5" maxlength="5" />
+英文字号比：<input class="percent" type="text" id="engsizeratio2" value="" size="5" maxlength="5" />
 </fieldset>
-</td></tr></table>
+</td></tr></table><br />
+<fieldset><legend><input type="checkbox" id="chkautodownloadsvpsub" /><label for="chkautodownloadsvpsub">自动通过射手影音字幕智能匹配系统下载字幕至：</label>
+</legend>
+<input type="radio" name="svpstorepath" id="savesvpstore" /> <input type="text" READONLY id="savesvpstorepath" style="width:200px" /> <input type='button' id="SELSVPSTOREPATH" value="选择目录" /><br />
+<input type="radio" name="svpstorepath" id="savesvpsubwithvideo" /> <label for="savesvpsubwithvideo">将字幕保存到视频所在目录</label><br />
+</fieldset>
 </div>
 <div id="fileass" class="hiddenarea"><input type="button" value="重建文件关联"/></div>
 <div id="hotkeysetting" class="hiddenarea">热键设置</div>

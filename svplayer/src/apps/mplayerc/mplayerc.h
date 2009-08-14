@@ -430,6 +430,7 @@ public:
 		CString CheckSVPSubExts;
 
 		BOOL bNewMenu;
+		BOOL bSaveSVPSubWithVideo;
 		BOOL bAeroGlass;
 		int iDSVideoRendererType;
 		int iRMVideoRendererType;

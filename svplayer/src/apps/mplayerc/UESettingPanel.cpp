@@ -49,6 +49,7 @@ BEGIN_DHTML_EVENT_MAP(CUESettingPanel)
 	DHTML_EVENT_ONCLICK(_T("IDFileAss"), OnFileAss)
 	DHTML_EVENT_ONCLICK(_T("IDHotKey"), OnHotKey)
 	DHTML_EVENT_ONCLICK(_T("IDBROWERPIC"), OnBrowerPic)
+	DHTML_EVENT_ONCLICK(_T("SELSVPSTOREPATH"), OnBrowerSVPStoreFolder)
 	//DHTML_EVENT_ONCLICK(_T("IDBGCHG"), OnChangeBG)
 	DHTML_EVENT_ONCLICK(_T("ButtonReset"), OnButtonReset)
 	
@@ -86,6 +87,9 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_DHtml_CheckBox(pDX, _T("chktrayicon"), m_sgi_chktrayicon);
 	DDX_DHtml_CheckBox(pDX, _T("dxvacompat"), m_sgi_dxvacompat);
 
+	DDX_DHtml_CheckBox(pDX, _T("savesvpsubwithvideo"), m_sgi_savesvpsubwithvideo);	
+	DDX_DHtml_CheckBox(pDX, _T("savesvpstore"), m_sgi_savesvpstore);	
+
 	DDX_DHtml_CheckBox(pDX, _T("nobgpic"), m_sgi_nobgpic);
 	DDX_DHtml_CheckBox(pDX, _T("custompic"), m_sgi_custompic);
 	DDX_DHtml_CheckBox(pDX, _T("keepbgar"), m_sgi_keepbgar);
@@ -101,6 +105,8 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_DHtml_ElementValue (pDX, _T("stepsmall"), m_sgs_stepsmall);
 	DDX_DHtml_ElementValue (pDX, _T("stepmed"), m_sgs_stepmed);
 	DDX_DHtml_ElementValue (pDX, _T("stepbig"), m_sgs_stepbig);
+	DDX_DHtml_ElementValue (pDX, _T("savesvpstorepath"), m_sgs_savesvpstorepath);
+	
 
 	DDX_DHtml_SelectValue( pDX, _T("speaker"), m_sgs_speaker);
 	DDX_DHtml_CheckBox(pDX, _T("UseWaveOutDeviceByDefault"), m_sgi_UseWaveOutDeviceByDefault);
@@ -304,12 +310,15 @@ BOOL CUESettingPanel::OnInitDialog()
 
 	 //Sub Setting
 	m_sgi_chkautodownloadsvpsub = s.autoDownloadSVPSub;
+	m_sgs_savesvpstorepath = s.SVPSubStoreDir;
 	m_sgs_subfont1.Format( _T("%s(%d)"), s.subdefstyle.fontName , (INT)s.subdefstyle.fontSize);
 	m_sgs_subalign1.Format( _T("%d") , s.subdefstyle.scrAlignment ); 
 	m_sgi_suboveride1 = s.fOverridePlacement;
 	m_sgs_subhpos1.Format( _T("%d") , s.nHorPos );
 	m_sgs_subvpos1.Format( _T("%d") , s.nVerPos );
 	m_sgs_engsubradio1.Format(_T("%.3f"), s.subdefstyle.engRatio);
+	m_sgi_savesvpsubwithvideo = s.bSaveSVPSubWithVideo;
+	m_sgi_savesvpstore = !s.bSaveSVPSubWithVideo;
 
 	m_sgs_subfont2.Format( _T("%s(%d)"), s.subdefstyle2.fontName , (INT)s.subdefstyle2.fontSize);
 	m_sgs_subalign2.Format( _T("%d") , s.subdefstyle2.scrAlignment );
@@ -569,6 +578,10 @@ void CUESettingPanel::ApplyAllSetting(){
 
 	//Sub Setting
 	s.autoDownloadSVPSub = m_sgi_chkautodownloadsvpsub ;
+	s.bSaveSVPSubWithVideo = !!m_sgi_savesvpsubwithvideo ;
+	if(!s.bSaveSVPSubWithVideo)
+		s.SVPSubStoreDir = m_sgs_savesvpstorepath;
+
 	s.fOverridePlacement = !!m_sgi_suboveride1  ;
 	s.fOverridePlacement2 = !!m_sgi_suboveride2  ;
 	
@@ -682,6 +695,45 @@ HRESULT CUESettingPanel::OnChangeBG(IHTMLElement* /*pElement*/){
 	CPropertySheet dlg(_T("界面背景设置..."), this);
 	dlg.AddPage(page);
 	dlg.DoModal() ;
+	return S_OK;
+}
+static int __stdcall BrowseCtrlCallbackSVPStore(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData)
+{
+	if(uMsg == BFFM_INITIALIZED && lpData)
+		::SendMessage(hwnd, BFFM_SETSELECTION, TRUE, lpData);
+	return 0;
+}
+
+HRESULT CUESettingPanel::OnBrowerSVPStoreFolder(IHTMLElement *pElement){
+	CString szFolderPath = m_sgs_savesvpstorepath;
+
+	TCHAR buff[MAX_PATH];
+
+	BROWSEINFO bi;
+	bi.hwndOwner = m_hWnd;
+	bi.pidlRoot = NULL;
+	bi.pszDisplayName = buff;
+	bi.lpszTitle = _T("默认网络字幕保存到文件夹");
+	bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_VALIDATE | BIF_USENEWUI | BIF_NONEWFOLDERBUTTON;
+	bi.lpfn = BrowseCtrlCallbackSVPStore;
+	bi.lParam = (LPARAM)(LPCTSTR)szFolderPath;
+	bi.iImage = 0; 
+
+
+	LPITEMIDLIST iil;
+	if(iil = SHBrowseForFolder(&bi))
+	{
+		if( SHGetPathFromIDList(iil, buff) )
+			szFolderPath = buff;
+	}
+	if(!szFolderPath.IsEmpty()){
+		
+		UpdateData(TRUE);
+		m_sgi_savesvpsubwithvideo = 0;
+		m_sgi_savesvpstore = 1;
+		m_sgs_savesvpstorepath = szFolderPath;
+		UpdateData(FALSE);
+	}
 	return S_OK;
 }
 HRESULT CUESettingPanel::OnBrowerPic(IHTMLElement *pElement){

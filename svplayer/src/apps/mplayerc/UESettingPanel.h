@@ -49,6 +49,8 @@ class CUESettingPanel : public CDHtmlDialog
 	int m_sgi_chkautoresumeplay;
 	int m_sgi_chktrayicon;
 	int m_sgi_dxvacompat;
+	int m_sgi_savesvpsubwithvideo;
+	int m_sgi_savesvpstore;
 
 	int m_sgi_nobgpic;
 	int m_sgi_custompic;
@@ -85,6 +87,7 @@ class CUESettingPanel : public CDHtmlDialog
 	CString m_sgs_stepsmall;
 	CString m_sgs_stepmed;
 	CString m_sgs_stepbig;
+	CString m_sgs_savesvpstorepath;
 
 	CString m_sgs_subalign2;
 	int m_sgi_suboveride2;
@@ -121,6 +124,7 @@ public:
 	HRESULT OnFileAss(IHTMLElement *pElement);
 	
 	HRESULT OnBrowerPic(IHTMLElement *pElement);
+	HRESULT OnBrowerSVPStoreFolder(IHTMLElement *pElement);
 	HRESULT OnHotKey(IHTMLElement *pElement);
 // Overrides
 	HRESULT OnButtonOK(IHTMLElement *pElement);

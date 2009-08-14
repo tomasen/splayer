@@ -11813,6 +11813,11 @@ void CMainFrame::SetupSubMenuToolbar(){
 	if(!IsMenu(pSub->m_hMenu)) pSub->CreatePopupMenu();
 	else while(pSub->RemoveMenu(0, MF_BYPOSITION));
 
+	if(m_iMediaLoadState != MLS_LOADED || m_fAudioOnly || !m_pCAP){
+		pSub->AppendMenu(MF_STRING|MF_GRAYED, 0, _T("没有可供加载字幕的视频"));
+		return;
+	}
+
 	SetupSubtitlesSubMenu();
 	SetupNavSubtitleSubMenu();
 	MenuMerge( &m_subtitles ,  &m_navsubtitle );

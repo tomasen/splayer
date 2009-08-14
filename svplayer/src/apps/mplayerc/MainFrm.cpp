@@ -3810,16 +3810,23 @@ void CMainFrame::OnShowTranparentControlBar(){
 void CMainFrame::OnShowColorControlBar()
 {
 	AppSettings &s = AfxGetAppSettings();
-	s.bShowControlBar = !m_wndColorControlBar.IsWindowVisible();
-	//ShowControlBar(&m_wndColorControlBar, (s.bShowControlBar ? SW_SHOW : SW_HIDE) , false);
-	if(s.bShowControlBar){
-		m_wndColorControlBar.ShowWindow(SW_SHOW);
-		rePosOSD();
-		bNotHideColorControlBar = TRUE;
-		SetTimer(TIMER_STATUSBARHIDER, 3000 , NULL);
+
+	if(s.iDSVideoRendererType != 6 || s.iRMVideoRendererType != 2 || s.iQTVideoRendererType != 2 || s.iAPSurfaceUsage != VIDRNDT_AP_TEXTURE3D){
+		SetupShadersSubMenu();
+		OnMenu(  &m_shaders );;
 	}else{
-		bNotHideColorControlBar = false;
-		m_wndColorControlBar.ShowWindow(SW_HIDE);
+		s.bShowControlBar = !m_wndColorControlBar.IsWindowVisible();
+		//ShowControlBar(&m_wndColorControlBar, (s.bShowControlBar ? SW_SHOW : SW_HIDE) , false);
+		if(s.bShowControlBar){
+			m_wndColorControlBar.ShowWindow(SW_SHOW);
+			rePosOSD();
+			bNotHideColorControlBar = TRUE;
+			SetTimer(TIMER_STATUSBARHIDER, 3000 , NULL);
+		}else{
+			bNotHideColorControlBar = false;
+			m_wndColorControlBar.ShowWindow(SW_HIDE);
+		}
+
 	}
 }
 

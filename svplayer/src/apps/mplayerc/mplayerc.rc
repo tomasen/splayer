@@ -160,7 +160,7 @@ BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,11,17,21,20
     LTEXT           "射手影音播放器(Based on MPC)",IDC_STATIC1,40,12,126,8,SS_NOPREFIX
     LTEXT           "Copyright (C) 2008-2009 Tomasen \n  Thanks for Gabest, casimir666, ffmpeg and\n    everyone with them",IDC_STATIC,40,26,170,29
-    LTEXT           "Version: 2.0 Beta 测试版",IDC_VERSION,40,57,170,8
+    LTEXT           "Version: 2.1",IDC_VERSION,40,57,170,8
     PUSHBUTTON      "关闭",IDOK,160,8,50,14,WS_GROUP
     LTEXT           "本软件为免费软件(freeware)\n同时采用GNU授权协议",IDC_STATIC,40,69,170,25
 END
@@ -1649,8 +1649,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,0,0,0
- PRODUCTVERSION 2,0,0,0
+ FILEVERSION 2,1,0,0
+ PRODUCTVERSION 2,1,0,0
  FILEFLAGSMASK 0x1fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -1667,7 +1667,7 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Tomasen, Gabest, casimir666, ffmpeg"
             VALUE "FileDescription", "射手影音播放器"
-            VALUE "FileVersion", "2.0 Beta"
+            VALUE "FileVersion", "2.1"
             VALUE "InternalName", "射手影音播放器"
             VALUE "LegalCopyright", "Copyright (C) 2008-2009 Tomasen, Gabest, casimir666, ffmpeg"
             VALUE "OriginalFilename", "splayer.exe"

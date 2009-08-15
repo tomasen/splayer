@@ -102,7 +102,7 @@ BOOL CUpdaterApp::InitInstance()
 	PreProcessCommandLine();
 
 	CString szDmpFile;
-	UINT m_verbose = 0;
+	UINT m_verbose = 1;
 
 	POSITION pos = m_cmdln.GetHeadPosition();
 	while(pos)
@@ -118,6 +118,8 @@ BOOL CUpdaterApp::InitInstance()
 				
 			}else if(sw == _T("verbose") ) {
 				m_verbose = 1;
+			}else if(sw == _T("hide") ) {
+				m_verbose = 0;
 			}
 		}
 		
@@ -137,6 +139,9 @@ BOOL CUpdaterApp::InitInstance()
 	if(m_verbose){
 		dlg.bHide  = FALSE;
 		dlg.verbose = m_verbose;
+	}else{
+		dlg.bHide  = TRUE;
+		dlg.verbose = !m_verbose;
 	}
 	m_pMainWnd = &dlg;
 	INT_PTR nResponse = dlg.DoModal();

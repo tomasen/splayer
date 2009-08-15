@@ -66,6 +66,8 @@ void SVP_RealCheckUpdaterExe(BOOL* bCheckingUpdater, UINT verbose ){
 		CString szPerm = _T("");
 		if(verbose){
 			szPerm = _T(" /verbose ");
+		}else{
+			szPerm = _T(" /hide ");
 		}
 
 		//运行升级程序

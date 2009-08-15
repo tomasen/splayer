@@ -220,10 +220,17 @@ BOOL CUESettingPanel::OnInitDialog()
 
 	AppSettings& s = AfxGetAppSettings();
 
-//	if(m_sgs_updateversion.IsEmpty()){
-//		m_sgs_updateversion = _T("stable");
-//	}
+	CSVPToolBox svpTool;
+	CPath updPath( svpTool.GetPlayerPath(_T("UPD")));
+	updPath.AddBackslash();
+	CString szUpdfilesPath(updPath);
 
+	m_sgs_updateversion = svpTool.fileGetContent(szUpdfilesPath + _T("branch") );
+//	m_sgs_updateversion.Trim();
+	if(m_sgs_updateversion.IsEmpty()){
+		m_sgs_updateversion = _T("stable");
+	}
+//AfxMessageBox(m_sgs_updateversion); 
 	if(s.bHasCUDAforCoreAVC){
 		m_sgs_CUDAVC = _T("true");
 	}
@@ -232,7 +239,6 @@ BOOL CUESettingPanel::OnInitDialog()
 	}
 
 	//if(!s.szaGPUStrings.GetCount()){
-	CSVPToolBox svpTool;
 	int bGPUPerfer = svpTool.GetGPUString(&s.szaGPUStrings);
 	//}
 	m_sgs_gpulist = L"ÄúÓµÓÐµÄÏÔ¿¨ÓÐ£º<br/>";
@@ -612,6 +618,14 @@ void CUESettingPanel::ApplyAllSetting(){
 	 s.tLastCheckUpdater = 2000000000;
 	}
 	s.useGPUCUDA = SVP_SetCoreAvcCUDA(s.useGPUCUDA);
+
+	CSVPToolBox svpTool;
+	CPath updPath( svpTool.GetPlayerPath(_T("UPD")));
+	updPath.AddBackslash();
+	CString szUpdfilesPath(updPath);
+	//m_sgs_updateversion.Trim();
+	svpTool.filePutContent( szUpdfilesPath + _T("branch") , m_sgs_updateversion);
+
 	s.UpdateData(true);
 
 	CMainFrame * pFrame = (CMainFrame *) AfxGetMainWnd();

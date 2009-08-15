@@ -156,6 +156,9 @@ BOOL CUpdaterDlg::OnInitDialog()
 	if(bHide){
 		ShowWindow(SW_HIDE);
 		ShowWindow(SW_MINIMIZE);
+	}else{
+		ShowWindow(SW_SHOW);
+		ShowWindow(SW_RESTORE);
 	}
 	return FALSE;  // return TRUE  unless you set the focus to a control
 }

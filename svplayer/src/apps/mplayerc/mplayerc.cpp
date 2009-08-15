@@ -2870,7 +2870,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 			// WINBUG: on win2k this would crash WritePrivateProfileString
 			pApp->WriteProfileInt(_T(""), _T(""), pApp->GetProfileInt(_T(""), _T(""), 0)?0:1);
 		}
-		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("LastVersion"), 410);		
+		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("LastVersion"), 580);		
 		
 	}
 	else
@@ -3060,7 +3060,10 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 
 		CheckSVPSubExts = _T(" .ts; .avi; .mkv;");
 		bShowControlBar = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SHOWCONTROLBAR), 0);
-		dBrightness		= (float)_tstof(pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_COLOR_BRIGHTNESS),	_T("1")));
+		dBrightness		= (float)_tstof(pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_COLOR_BRIGHTNESS),	_T("100")));
+		if(iUpgradeReset < 580){
+			dBrightness = 100;
+		}
 		dContrast		= (float)_tstof(pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_COLOR_CONTRAST),		_T("1")));
 		dHue			= (float)_tstof(pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_COLOR_HUE),			_T("0")));
 		dSaturation		= (float)_tstof(pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_COLOR_SATURATION),	_T("1")));

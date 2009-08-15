@@ -101,8 +101,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,19
- PRODUCTVERSION 1,0,0,19
+ FILEVERSION 1,0,0,20
+ PRODUCTVERSION 1,0,0,20
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -119,12 +119,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Shooter.cn"
             VALUE "FileDescription", "射手影音播放器自动升级程序"
-            VALUE "FileVersion", "1.0.0.19"
+            VALUE "FileVersion", "1.0.0.20"
             VALUE "InternalName", "Updater.exe"
             VALUE "LegalCopyright", "(c) Shooter.cn.  All rights reserved."
             VALUE "OriginalFilename", "Updater.exe"
             VALUE "ProductName", "射手影音播放器自动升级程序"
-            VALUE "ProductVersion", "1.0.0.19"
+            VALUE "ProductVersion", "1.0.0.20"
         END
     END
     BLOCK "VarFileInfo"

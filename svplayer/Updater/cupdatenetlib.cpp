@@ -128,7 +128,14 @@ BOOL cupdatenetlib::downloadList(){
 	if(szBranch.IsEmpty() ){
 		/* 如果 mtime 小于 stable 版本的 mtime 就更新 stable ， 大于就更新 beta */
 		struct __stat64  sbuf;
-		if(!_wstat64(svpToolBox.GetPlayerPath(), &sbuf)){
+		CString szPlayerPath = svpToolBox.GetPlayerPath(_T("splayer.exe"));
+		if(!svpToolBox.ifFileExist(szPlayerPath) ){
+			szPlayerPath = svpToolBox.GetPlayerPath(_T("mplayerc.exe"));
+			if (!svpToolBox.ifFileExist(szPlayerPath)){
+				szPlayerPath = svpToolBox.GetPlayerPath(_T("svplayer.exe"));
+			}
+		}
+		if(!_wstat64(szPlayerPath, &sbuf)){
 			szBranch.Format( _T("%I64d") , sbuf.st_mtime );
 			//AfxMessageBox(szBranch);
 		}

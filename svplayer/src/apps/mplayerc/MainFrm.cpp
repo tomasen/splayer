@@ -9457,10 +9457,10 @@ void CMainFrame::SetVMR9ColorControl(float dBrightness, float dContrast, float d
 			if(!silent)
 				SetShaders(true);
 			
-			if( dContrast != 1.0 || dBrightness != 100.0){
+			if( dContrast != 1.0 || dBrightness != 100.0 || s.fVMRSyncFix){
 
 				CStringA szSrcData;
-				szSrcData.Format( ("sampler s0:register(s0);float4 p0 : register(c0);float4 main(float2 tex : TEXCOORD0) : COLOR { return tex2D(s0,tex) * %0.3f + %0.3f; }")
+				szSrcData.Format( ("sampler s0:register(s0);float4 p0 : register(c0);float4 main(float2 tex : TEXCOORD0) : COLOR { return (tex2D(s0,tex) - 0.3) * %0.3f + 0.3 + %0.3f; }")
 					, dContrast , dBrightness / 100 - 1.0  );
 
 				HRESULT hr = m_pCAP->SetPixelShader(szSrcData, ("ps_2_0"));

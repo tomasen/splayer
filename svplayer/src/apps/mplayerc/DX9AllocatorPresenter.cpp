@@ -946,10 +946,11 @@ HRESULT CDX9AllocatorPresenter::CreateDevice()
 		else
 		{
 			pp.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
+			//pp.Flags |= D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
 		}
 
 //		if(m_fVMRSyncFix = AfxGetMyApp()->m_s.fVMRSyncFix)
-//			pp.Flags = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
+			
 	//SVP_LogMsg3("shit %d %d" , d3ddm.Width , d3ddm.Height);
 	if (m_pD3DEx)
 		{

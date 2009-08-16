@@ -308,6 +308,11 @@
 #define ID_MENU_VIDEO                   1038
 #define ID_PLAY_SEEKBACKWARDSMALLC      1039
 #define ID_PLAY_SEEKFORWARDSMALLC       1040
+#define ID_ABCONTROL_SETA               1201
+#define ID_ABCONTROL_SETB               1202
+#define ID_ABCONTROL_ON                 1203
+#define ID_ABCONTROL_OFF                1204
+#define ID_ABCONTROL_TOGGLE             1205
 #define ID_STATUS_MESSAGE               1324
 #define ID_FILTERS_SUBITEM_START        2000
 #define ID_FILTERS_SUBITEM_END          2099
@@ -716,7 +721,7 @@
 #define IDD_PLAYEROSDWND                13156
 #define IDS_RS_USERGBONLY               13157
 #define IDS_RS_VMDETECTED               13158
-#define	IDS_RS_SAVESVPSUBWITHVIDEO		13159
+#define IDS_RS_SAVESVPSUBWITHVIDEO      13159
 #define IDS_SRC_RADGT                   14000
 #define IDS_SRC_CDDA                    14001
 #define IDS_SRC_AVI                     14002
@@ -884,8 +889,8 @@
 #define IDS_RS_DXVACOMPAT               14234
 #define IDS_RS_NOTAUTOCHECKSPEAKER      14235
 #define IDS_RS_SVPSUBSTOREDIR           14236
-#define IDS_RS_USENEWMENU				 14237
-#define IDS_RS_USEAEROGLASS			     14238
+#define IDS_RS_USENEWMENU               14237
+#define IDS_RS_USEAEROGLASS             14238
 #define IDD_DHTML_SETTING               20000
 #define IDR_DEFAULT1                    20006
 #define IDD_DEFAULT_PLAYER              20007
@@ -900,6 +905,8 @@
 #define IDD_CHECKUPDATE                 20011
 #define IDD_DIALOG5                     20012
 #define IDD_INFOREPORT                  20012
+#define IDR_MENU1                       20015
+#define IDR_POPUPAB                     20015
 #define IDC_CHK_NOMOREQUES              22000
 #define IDC_CHECK_DEFAULTPLAYER         22001
 #define IDC_STATIC_VFILE                22002
@@ -986,9 +993,16 @@
 #define ID_DELRECYCLECURFILE            32852
 #define ID__32852                       32852
 #define ID_DELCURFOLDER                 32853
+#define ID__32854                       32854
 #define ID_USINGSPDIF                   32855
+#define ID_32855                        32855
 #define ID_DEBUGREPORT                  32856
 #define ID_SHOWTRANSPRANTBAR            32857
+#define ID_A_32857                      32857
+#define ID_A_32858                      32858
+#define ID_A_32859                      32859
+#define ID__32860                       32860
+#define ID__32861                       32861
 #define IDS_VOLUME_BOOST_INC            33129
 #define IDS_VOLUME_BOOST_DEC            33130
 #define IDS_VOLUME_BOOST_MIN            33131
@@ -1062,8 +1076,8 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        20015
-#define _APS_NEXT_COMMAND_VALUE         32854
+#define _APS_NEXT_RESOURCE_VALUE        20016
+#define _APS_NEXT_COMMAND_VALUE         32862
 #define _APS_NEXT_CONTROL_VALUE         22004
 #define _APS_NEXT_SYMED_VALUE           24001
 #endif

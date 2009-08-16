@@ -225,6 +225,9 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 
 	ON_COMMAND(ID_BOSS, OnBossKey)
 
+	ON_COMMAND_RANGE(ID_ABCONTROL_SETA, ID_ABCONTROL_TOGGLE, OnABControl)
+	ON_UPDATE_COMMAND_UI_RANGE(ID_ABCONTROL_SETA, ID_ABCONTROL_TOGGLE, OnUpdateABControl)
+
 	ON_COMMAND_RANGE(ID_STREAM_AUDIO_NEXT, ID_STREAM_AUDIO_PREV, OnStreamAudio)
 	ON_COMMAND_RANGE(ID_STREAM_SUB_NEXT, ID_STREAM_SUB_PREV, OnStreamSub)
 	ON_COMMAND(ID_STREAM_SUB_ONOFF, OnStreamSubOnOff)
@@ -836,6 +839,15 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		//CSkinMenuMgr::SetColor(COLOR_3DHILIGHT, 0x00);
 		m_bGradient = TRUE;
 	}
+
+	m_ABMenu.LoadMenu(IDR_POPUPAB);
+	/*
+m_ABMenu.AppendMenu(MF_ENABLED |MF_STRING , ID_ABCONTROL_SETA, _T("设置A点"));
+	m_ABMenu.AppendMenu(MF_ENABLED |MF_STRING , ID_ABCONTROL_SETB, _T("设置B点"));
+	m_ABMenu.AppendMenu(MF_ENABLED |MF_STRING , ID_ABCONTROL_ON, _T("开始A-B循环"));
+	m_ABMenu.AppendMenu(MF_ENABLED |MF_STRING , ID_ABCONTROL_OFF, _T("关闭A-B循环"));
+*/
+
 
 	m_WndSizeInited++;
 	return 0;
@@ -2873,6 +2885,12 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 		m_wndSeekBar.GetRange(start, stop);
 		pos = m_wndSeekBar.GetPosReal();
 
+		if(ABControlOn && m_bRefTime > m_aRefTime && GetMediaState() == State_Running){
+			if(pos > m_bRefTime){
+				//goto aRefTimer
+				SeekTo(m_aRefTime, 0);
+			}
+		}
 		GUID tf;
 		pMS->GetTimeFormat(&tf);
 
@@ -4463,6 +4481,11 @@ void CMainFrame::OnFilePostOpenmedia()
 
 	// OpenSetupToolBar();
 
+	//A-B Control
+	m_aRefTime = 0;
+	m_bRefTime = 0;
+	ABControlOn = FALSE;
+
 	OpenSetupCaptureBar();
 
 	AppSettings& s = AfxGetAppSettings();
@@ -4560,6 +4583,12 @@ void CMainFrame::OnFilePostClosemedia()
 		m_wndStatusBar.ShowTimer(false);
 	}
 
+	//A-B Control
+	m_aRefTime = 0;
+	m_bRefTime = 0;
+	ABControlOn = FALSE;
+
+
 	if(IsWindow(m_wndSubresyncBar.m_hWnd))
 	{
 		ShowControlBar(&m_wndSubresyncBar, FALSE, TRUE); 
@@ -4626,6 +4655,47 @@ void CMainFrame::OnBossKey()
 	SendMessage(WM_SYSCOMMAND, SC_MINIMIZE, -1);
 }
 
+void CMainFrame::OnUpdateABControl(CCmdUI* pCmdUI)
+{
+	pCmdUI->Enable(IsSomethingLoaded());
+	
+}
+void CMainFrame::OnABControl(UINT nID)
+{
+	if(!IsSomethingLoaded())
+		return;
+	
+	switch (nID){
+		case ID_ABCONTROL_SETA:
+			m_aRefTime = m_wndSeekBar.GetPosReal();
+			break;
+		case ID_ABCONTROL_SETB:
+			m_bRefTime = m_wndSeekBar.GetPosReal();
+			break;
+		case ID_ABCONTROL_ON:
+			SeekTo(m_aRefTime, 0);
+			ABControlOn = nID;
+			break;
+		case ID_ABCONTROL_OFF:
+			ABControlOn = 0;
+			//m_aRefTime = 0;
+			//m_bRefTime = 0;
+			break;
+		case ID_ABCONTROL_TOGGLE:
+			if( ABControlOn > 0)
+				SendMessage(WM_COMMAND, ID_ABCONTROL_OFF);
+			else{
+				if(m_aRefTime <= 0 ){
+					SendMessage(WM_COMMAND, ID_ABCONTROL_SETA);
+				}else if(m_bRefTime <= m_aRefTime){
+					SendMessage(WM_COMMAND, ID_ABCONTROL_SETB);
+				}else
+					SendMessage(WM_COMMAND, ID_ABCONTROL_ON);
+			}
+			break;
+	}
+	
+}
 void CMainFrame::OnStreamAudio(UINT nID)
 {
 	nID -= ID_STREAM_AUDIO_NEXT;

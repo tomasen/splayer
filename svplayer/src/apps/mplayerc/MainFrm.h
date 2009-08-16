@@ -455,6 +455,11 @@ public:
 	void SetShaders( BOOL silent = false);
 	void UpdateShaders(CString label);
 
+	//A-B Control
+	REFERENCE_TIME m_aRefTime;
+	REFERENCE_TIME m_bRefTime;
+	int ABControlOn;
+
 	// capturing
 	bool m_fCapturing;
 	HRESULT BuildCapture(IPin* pPin, IBaseFilter* pBF[3], const GUID& majortype, AM_MEDIA_TYPE* pmt); // pBF: 0 buff, 1 enc, 2 mux, pmt is for 1 enc
@@ -475,6 +480,9 @@ public:
 public:
 	virtual ~CMainFrame();
 	CChildView m_wndView;
+
+	CMenu m_ABMenu;
+
 
 #ifdef _DEBUG
 	virtual void AssertValid() const;
@@ -608,6 +616,8 @@ public:
 
 	afx_msg void OnBossKey();
 
+	afx_msg void OnABControl(UINT nID);
+
 	afx_msg void OnStreamAudio(UINT nID);
 	afx_msg void OnStreamSub(UINT nID);
 	afx_msg void OnStreamSubOnOff();
@@ -626,6 +636,7 @@ public:
 	afx_msg void OnFileOpenmedia();
 	afx_msg void OnFileOpenFolder();
 	afx_msg void OnUpdateFileOpen(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateABControl(CCmdUI* pCmdUI);
 	afx_msg BOOL OnCopyData(CWnd* pWnd, COPYDATASTRUCT* pCopyDataStruct);
 	afx_msg void OnFileOpendvd();
 	afx_msg void OnFileOpendevice();

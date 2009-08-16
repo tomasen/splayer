@@ -1469,9 +1469,7 @@ IDF_SHADER_SHARPEN      FILE                    "res\\shaders\\sharpen.psh"
 IDF_SHADER_SPHERE       FILE                    "res\\shaders\\sphere.psh"
 IDF_SHADER_SPOTLIGHT    FILE                    "res\\shaders\\spotlight.psh"
 IDF_SHADER_WAVE         FILE                    "res\\shaders\\wave.psh"
-//IDF_SHADER_LEVELS       FILE                    "res\\shaders\\levels.psh"
 IDF_SHADER_LEVELS2      FILE                    "res\\shaders\\levels2.psh"
-//IDF_SHADER_BT601_BT701  FILE                    "res\\shaders\\BT601BT701.psh"
 IDF_SHADER_NIGHTVISION  FILE                    "res\\shaders\\nightvision.psh"
 IDF_SHADER_EDGE_SHARPEN FILE                    "res\\shaders\\EdgeSharpen.psh"
 IDF_SHADER_SHARPEN_COMPLEX FILE                    "res\\shaders\\SharpenComplex.psh"
@@ -1876,13 +1874,13 @@ BEGIN
     POPUP ""
     BEGIN
         MENUITEM "打开文件...",                     ID_FILE_OPENQUICK
-        MENUITEM "打开",                          65535
+        MENUITEM "打开",                          ID__32861
         MENUITEM "最近播放",                        ID__RECENTPLAYED
         MENUITEM "收藏夹",                         ID_FAVORITES
         MENUITEM "关闭(&C)",                      ID_FILE_CLOSEPLAYLIST
         MENUITEM SEPARATOR
         MENUITEM "声音",                          ID__32777
-        MENUITEM "字幕",                          65535
+        MENUITEM "字幕",                          ID__32860
         POPUP "画面"
         BEGIN
             MENUITEM "标准画面\tC",                     ID_VIEW_VF_FROMINSIDE
@@ -2029,14 +2027,19 @@ BEGIN
                 MENUITEM "显示控制按钮(&r)\tCtrl+2",          ID_VIEW_CONTROLS
                 MENUITEM "显示视频信息(&I)\tCtrl+3",          ID_VIEW_INFORMATION
                 MENUITEM "显示播放信息(&t)\tCtrl+4",          ID_VIEW_STATISTICS
-                MENUITEM "显示状态栏(&a)\tCtrl+5",           ID_VIEW_STATUS
                 MENUITEM "字幕调整\tCtrl+6",                ID_VIEW_SUBRESYNC
                 MENUITEM "显示播放列表\tCtrl+7",              ID_VIEW_PLAYLIST
                 MENUITEM "视频捕捉控制面板\tCtrl+8",            ID_VIEW_CAPTURE
                 MENUITEM "特效(Shader)编辑器\tCtrl+9",       ID_VIEW_SHADEREDITOR
                 MENUITEM "DSM转换器(&n)...",               ID_FILE_CONVERT
             END
-            MENUITEM "亮度控制",                        ID_SHOWCOLORCONTROLBAR
+            POPUP "A-B控制"
+            BEGIN
+                MENUITEM "设置A点",                        ID_ABCONTROL_SETA
+                MENUITEM "设置B点",                        ID_ABCONTROL_SETB
+                MENUITEM "启用",                          ID_ABCONTROL_ON
+                MENUITEM "关闭",                          ID_ABCONTROL_OFF
+            END
             MENUITEM SEPARATOR
             MENUITEM "生成DEBUG反馈信息",                 ID_DEBUGREPORT
         END
@@ -2050,6 +2053,7 @@ BEGIN
             MENUITEM SEPARATOR
             MENUITEM "什么都不做",                       ID_AFTERPLAYBACK_DONOTHING
         END
+        MENUITEM "退出(&X)",                      ID_FILE_EXIT
     END
 END
 
@@ -2286,6 +2290,17 @@ BEGIN
     MENUITEM "上传字幕...",                     ID_FILE_ISDB_UPLOAD
 END
 
+IDR_POPUPAB MENU 
+BEGIN
+    POPUP "设置A点"
+    BEGIN
+        MENUITEM "设置A点",                        ID_ABCONTROL_SETA
+        MENUITEM "设置B点",                        ID_ABCONTROL_SETB
+        MENUITEM "开始A-B循环",                     ID_ABCONTROL_ON
+        MENUITEM "关闭A-B循环",                     ID_ABCONTROL_OFF
+    END
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -2385,6 +2400,7 @@ BEGIN
     IDS_RS_UPLOADFAILEDPINS "UploadFailedPins"
     IDS_RS_USERGBONLY       "UseRGBOnly"
     IDS_RS_VMDETECTED       "VMDetected"
+    IDS_RS_SAVESVPSUBWITHVIDEO "SaveSVPSubWithVideo"
 END
 
 STRINGTABLE 
@@ -2457,6 +2473,8 @@ BEGIN
     IDS_RS_DXVACOMPAT       "DXVACompat"
     IDS_RS_NOTAUTOCHECKSPEAKER "NotAutoCheckSpeaker"
     IDS_RS_SVPSUBSTOREDIR   "SVPSubStoreDir"
+    IDS_RS_USENEWMENU       "UseNewMenu"
+    IDS_RS_USEAEROGLASS     "UseAeroGlass"
 END
 
 STRINGTABLE 
@@ -2636,8 +2654,6 @@ BEGIN
     IDS_RS_ENABLEWEBSERVER  "EnableWebServer"
     IDS_RS_WEBSERVERPORT    "WebServerPort"
     IDS_RS_LASTWINDOWTYPE   "LastWindowType"
-	IDS_RS_USENEWMENU		"UseNewMenu"
-	IDS_RS_USEAEROGLASS		"UseAeroGlass"
 END
 
 STRINGTABLE 
@@ -2652,7 +2668,6 @@ BEGIN
     IDF_SHADER_WAVE         "wave"
     IDF_SHADER_PROCAMP      "procamp"
     IDF_SHADER_LEVELS       "色彩校正（16-235 -> 0-255）"
-    IDF_SHADER_BT601_BT709  "高清色彩校正（BT.601 -> BT.709）"
     IDF_SHADER_NIGHTVISION  "nightvision"
     IDF_SHADER_EDGE_SHARPEN "边缘锐化"
     IDF_SHADER_SHARPEN_COMPLEX "画面柔滑"
@@ -2665,6 +2680,7 @@ STRINGTABLE
 BEGIN
     IDF_SHADER_YV12CHROMAUP "色彩浓度修正"
     IDF_SHADER_LEVELS3      "护眼模式"
+    IDF_SHADER_BT601_BT709  "高清色彩校正（BT.601 -> BT.709）"
     IDF_SHADER_SHARPEN_COMPLEX3 "画面柔滑（PS 3.0）"
 END
 
@@ -2685,7 +2701,6 @@ BEGIN
     IDS_RS_MPANORMALIZE     "MPANormalize"
     IDS_RS_DTSSC            "DTSSpeakerConfig"
     IDS_RS_DTSDRC           "DTSDynamicRangeControl"
-	IDS_RS_SAVESVPSUBWITHVIDEO	"SaveSVPSubWithVideo"
     IDS_RS_SNAPSHOTPATH     "SnapShotPath"
     IDS_RS_PRIORITY         "Priority"
     IDS_RS_SNAPSHOTEXT      "SnapShotExt"

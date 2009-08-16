@@ -193,6 +193,8 @@ BEGIN_MESSAGE_MAP(CPlayerSeekBar, CDialogBar)
 	ON_WM_SHOWWINDOW()
 	ON_WM_TIMER()
 	ON_WM_CLOSE()
+	ON_WM_RBUTTONDOWN()
+	ON_WM_RBUTTONUP()
 END_MESSAGE_MAP()
 
 BOOL CPlayerSeekBar::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message){
@@ -371,6 +373,23 @@ void CPlayerSeekBar::OnPaint()
 			dc.MoveTo( cur+1 , r.top + 2);
 			dc.LineTo( cur+1 , r.bottom-2);
 		}
+
+		CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
+		if( pFrame->m_aRefTime > 0){
+			CRect rFilled(r);
+			
+			rFilled.left += (__int64)r.Width() * (pFrame->m_aRefTime - m_start) / (m_stop - m_start) ;
+			if( pFrame->m_aRefTime < pFrame->m_bRefTime )
+				rFilled.right = r.left + (__int64)r.Width() * (pFrame->m_bRefTime - m_start) / (m_stop - m_start) ;
+			else
+				rFilled.right = rFilled.left + 1;
+
+			rFilled.top++;
+			rFilled.bottom--;
+
+			CBrush nBrush(HS_FDIAGONAL,   0x003fff9a);
+			dc.FillRect(&rFilled,&nBrush ); //fEnabled ?
+		}
 		
 		/*
 		switch( cur % 4 ){
@@ -415,6 +434,33 @@ void CPlayerSeekBar::OnSize(UINT nType, int cx, int cy)
 	CDialogBar::OnSize(nType, cx, cy);
 
 	Invalidate();
+}
+void CPlayerSeekBar::OnRButtonDown(UINT nFlags, CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+	//OnLButtonDown( nFlags, point);
+	CMainFrame* pFrame = (CMainFrame*) AfxGetMainWnd();
+	//pFrame->PostMessage(WM_COMMAND, ID_PLAY_PAUSE);
+	
+	pFrame->OnMenu(pFrame->m_ABMenu.GetSubMenu(0));
+
+	//AfxMessageBox(_T("2"));
+	//CPoint point;
+	//GetCursorPos(&point);
+
+	//m_ABMenu.TrackPopupMenu(TPM_RIGHTBUTTON|TPM_NOANIMATION, point.x+1, point.y+1, this);
+
+	
+	CDialogBar::OnRButtonDown(nFlags, point);
+}
+
+void CPlayerSeekBar::OnRButtonUp(UINT nFlags, CPoint point)
+{ 
+	// TODO: Add your message handler code here and/or call default
+
+	ReleaseCapture();
+
+	CDialogBar::OnRButtonUp(nFlags, point);
 }
 
 void CPlayerSeekBar::OnLButtonDown(UINT nFlags, CPoint point)
@@ -592,3 +638,4 @@ void CPlayerSeekBar::OnClose()
 	pFrame->m_tip.OnRealClose();
 	CDialogBar::OnClose();
 }
+

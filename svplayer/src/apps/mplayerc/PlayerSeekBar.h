@@ -83,4 +83,6 @@ public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	void CloseToolTips();
 	afx_msg void OnClose();
+	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 };

@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "mplayerc.h"
 #include "InfoReport.h"
-
+#include "revision.h"
 
 // CInfoReport dialog
 
@@ -42,7 +42,9 @@ BOOL CInfoReport::OnInitDialog()
 
 	// TODO:  Add extra initialization here
 
-	ce_rpt.SetWindowText(m_rptText2 +  AfxGetAppSettings().szFGMLog);
+	CString szVersion;
+	szVersion.Format( _T("Version %d \n") , SVP_REV_NUMBER);
+	ce_rpt.SetWindowText(szVersion + m_rptText2 +  AfxGetAppSettings().szFGMLog);
 
 	// Set WS_EX_LAYERED on this window 
 	::SetWindowLong(this->m_hWnd , GWL_EXSTYLE, ::GetWindowLong(this->m_hWnd, GWL_EXSTYLE) | WS_EX_LAYERED);

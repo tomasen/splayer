@@ -2319,9 +2319,9 @@ void CMPlayerCApp::Settings::SetChannelMapByNumberOfSpeakers( int iSS , int iNum
 			pSpeakerToChannelMap[1][2] = SPEAKER_FRONT_LEFT|SPEAKER_FRONT_RIGHT;
 
 			//3 Channel
-			//pSpeakerToChannelMap[2][0] = SPEAKER_FRONT_LEFT|SPEAKER_FRONT_CENTER;
-			//pSpeakerToChannelMap[2][1] = SPEAKER_FRONT_RIGHT|SPEAKER_FRONT_CENTER;
-			//pSpeakerToChannelMap[2][2] = 0;
+			pSpeakerToChannelMap[2][0] = SPEAKER_FRONT_LEFT|SPEAKER_FRONT_CENTER;
+			pSpeakerToChannelMap[2][1] = SPEAKER_FRONT_RIGHT|SPEAKER_FRONT_CENTER;
+			pSpeakerToChannelMap[2][2] = SPEAKER_FRONT_LEFT|SPEAKER_FRONT_RIGHT;
 
 			//4 Channel
 			pSpeakerToChannelMap[3][0] = SPEAKER_FRONT_LEFT|SPEAKER_BACK_LEFT|SPEAKER_LOW_FREQUENCY;
@@ -2369,10 +2369,10 @@ void CMPlayerCApp::Settings::SetChannelMapByNumberOfSpeakers( int iSS , int iNum
 			//pSpeakerToChannelMap[2][2] = 0;
 
 			//4 Channel
-			//pSpeakerToChannelMap[3][0] = SPEAKER_FRONT_LEFT|SPEAKER_BACK_LEFT|SPEAKER_LOW_FREQUENCY;
-			//pSpeakerToChannelMap[3][1] =  SPEAKER_FRONT_RIGHT|SPEAKER_BACK_RIGHT|SPEAKER_LOW_FREQUENCY;
-			//pSpeakerToChannelMap[3][2] = SPEAKER_FRONT_CENTER|SPEAKER_LOW_FREQUENCY;
-			//pSpeakerToChannelMap[3][3] = 0;
+			pSpeakerToChannelMap[3][0] = SPEAKER_FRONT_LEFT;
+			pSpeakerToChannelMap[3][1] =  SPEAKER_FRONT_RIGHT;
+			pSpeakerToChannelMap[3][2] = SPEAKER_BACK_LEFT;
+			pSpeakerToChannelMap[3][3] = SPEAKER_BACK_RIGHT;
 
 			//5 Channel
 			pSpeakerToChannelMap[4][0] = SPEAKER_FRONT_LEFT|SPEAKER_FRONT_CENTER|SPEAKER_LOW_FREQUENCY;
@@ -2407,6 +2407,8 @@ void CMPlayerCApp::Settings::SetChannelMapByNumberOfSpeakers( int iSS , int iNum
 		case 5:
 		case 6:
 		case 7:
+		case 8:
+		case 9:
 			pSpeakerToChannelMap[0][0] = pSpeakerToChannelMap[0][1]  = pSpeakerToChannelMap[0][2] = pSpeakerToChannelMap[0][3] =  pSpeakerToChannelMap[0][4] =  pSpeakerToChannelMap[0][5] =  pSpeakerToChannelMap[0][6] = 1;
 
 			pSpeakerToChannelMap[1][0] = SPEAKER_FRONT_LEFT;
@@ -2424,11 +2426,11 @@ void CMPlayerCApp::Settings::SetChannelMapByNumberOfSpeakers( int iSS , int iNum
 			//pSpeakerToChannelMap[2][2] = 0;
 
 			//4 Channel
-			pSpeakerToChannelMap[3][0] = SPEAKER_FRONT_LEFT|SPEAKER_LOW_FREQUENCY;
-			pSpeakerToChannelMap[3][1] =  SPEAKER_FRONT_RIGHT|SPEAKER_LOW_FREQUENCY;
-			pSpeakerToChannelMap[3][2] = SPEAKER_FRONT_CENTER;
-			pSpeakerToChannelMap[3][3] = SPEAKER_BACK_LEFT;
-			pSpeakerToChannelMap[3][4] = SPEAKER_BACK_RIGHT;
+			pSpeakerToChannelMap[3][0] = SPEAKER_FRONT_LEFT|SPEAKER_FRONT_CENTER|SPEAKER_LOW_FREQUENCY;
+			pSpeakerToChannelMap[3][1] =  SPEAKER_FRONT_RIGHT|SPEAKER_FRONT_CENTER|SPEAKER_LOW_FREQUENCY;
+			pSpeakerToChannelMap[3][2] = SPEAKER_BACK_LEFT;//;
+			pSpeakerToChannelMap[3][3] = SPEAKER_BACK_RIGHT;
+			//pSpeakerToChannelMap[3][4] = ;
 
 			//5 Channel
 			/*

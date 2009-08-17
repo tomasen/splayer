@@ -2043,6 +2043,12 @@ BEGIN
             MENUITEM SEPARATOR
             MENUITEM "生成DEBUG反馈信息",                 ID_DEBUGREPORT
         END
+        POPUP "钉在最前"
+        BEGIN
+            MENUITEM "从不",                          ID_ONTOP_NEVER
+            MENUITEM "总在最前",                        ID_ONTOP_ALWAYS
+            MENUITEM "仅播放时",                        ID_ONTOP_WHILEPLAYING
+        END
         POPUP "播放结束后"
         BEGIN
             MENUITEM "退出视频",                        ID_AFTERPLAYBACK_CLOSE

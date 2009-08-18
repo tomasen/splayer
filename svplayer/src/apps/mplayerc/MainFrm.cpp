@@ -9525,18 +9525,18 @@ void CMainFrame::SetVMR9ColorControl(float dBrightness, float dContrast, float d
 
 		if(m_pCAP) {
 			if(!silent){
-				m_pCAP->SetPixelShader(NULL, NULL, false);
+				m_pCAP->SetPixelShader(NULL, NULL);
 				if (m_pCAP2)
-					m_pCAP2->SetPixelShader2(NULL, NULL, true, false);
+					m_pCAP2->SetPixelShader2(NULL, NULL, true);
 			}
 				
-			if( dContrast != 1.0 || dBrightness != 100.0 || s.fVMRSyncFix){
+			if( dContrast != 1.0 || dBrightness != 100.0 ){
 
 				CStringA szSrcData;
 				szSrcData.Format( ("sampler s0:register(s0);float4 p0 : register(c0);float4 main(float2 tex : TEXCOORD0) : COLOR { return (tex2D(s0,tex) - 0.3) * %0.3f + 0.3 + %0.3f; }")
 					, dContrast , dBrightness / 100 - 1.0  );
 
-				HRESULT hr = m_pCAP->SetPixelShader(szSrcData, ("ps_2_0"), !silent);
+				HRESULT hr = m_pCAP->SetPixelShader(szSrcData, ("ps_2_0"));
 				if(FAILED(hr)){
 					if(!AfxGetMyApp()->GetD3X9Dll())
 						szMsg = _T("请通过自动更新下载必要的组件(d3d9x.dll)");
@@ -9569,9 +9569,9 @@ void CMainFrame::SetShaders( BOOL silent )
 		s2s[pShader->label] = pShader;
 	}
 	if(!silent){
-		m_pCAP->SetPixelShader(NULL, NULL, false);
+		m_pCAP->SetPixelShader(NULL, NULL);
 		if (m_pCAP2)
-			m_pCAP2->SetPixelShader2(NULL, NULL, true, false);
+			m_pCAP2->SetPixelShader2(NULL, NULL, true);
 
 	}
 	
@@ -9586,16 +9586,16 @@ void CMainFrame::SetShaders( BOOL silent )
 			CStringA target = pShader->target;
 			CStringA srcdata = pShader->srcdata;
 
-			HRESULT hr = m_pCAP->SetPixelShader(srcdata, target , !silent);
+			HRESULT hr = m_pCAP->SetPixelShader(srcdata, target );
 
 			if(FAILED(hr))
 			{
-				m_pCAP->SetPixelShader(NULL, NULL);
+				//m_pCAP->SetPixelShader(NULL, NULL);
 				if (m_pCAP2)
-					hr = m_pCAP2->SetPixelShader2(srcdata, target, true ,  !silent);
+					hr = m_pCAP2->SetPixelShader2(srcdata, target, true);
 				if(FAILED(hr)){
-					if (m_pCAP2)
-						m_pCAP2->SetPixelShader2(NULL, NULL, true,  !silent);
+				//	if (m_pCAP2)
+				//		m_pCAP2->SetPixelShader2(NULL, NULL, true,  !silent);
 					if(!silent){
 						if(!AfxGetMyApp()->GetD3X9Dll())
 							SendStatusMessage(_T("请通过自动更新下载必要的组件(d3d9x.dll): ") + pShader->label, 3000);

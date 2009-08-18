@@ -340,8 +340,8 @@ namespace DSObjects
 		STDMETHODIMP CreateRenderer(IUnknown** ppRenderer);
 		STDMETHODIMP_(bool) Paint(bool fAll);
 		STDMETHODIMP GetDIB(BYTE* lpDib, DWORD* size);
-		STDMETHODIMP SetPixelShader(LPCSTR pSrcData, LPCSTR pTarget, bool repaint);
-		STDMETHODIMP SetPixelShader2(LPCSTR pSrcData, LPCSTR pTarget, bool bScreenSpace, bool repaint);
+		STDMETHODIMP SetPixelShader(LPCSTR pSrcData, LPCSTR pTarget);
+		STDMETHODIMP SetPixelShader2(LPCSTR pSrcData, LPCSTR pTarget, bool bScreenSpace);
 	};
 
 	class CVMR9AllocatorPresenter

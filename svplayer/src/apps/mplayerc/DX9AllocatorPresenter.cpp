@@ -2982,13 +2982,13 @@ STDMETHODIMP CDX9AllocatorPresenter::GetDIB(BYTE* lpDib, DWORD* size)
 	return S_OK;
 }
 
-STDMETHODIMP CDX9AllocatorPresenter::SetPixelShader(LPCSTR pSrcData, LPCSTR pTarget, bool repaint)
+STDMETHODIMP CDX9AllocatorPresenter::SetPixelShader(LPCSTR pSrcData, LPCSTR pTarget)
 {
-	return SetPixelShader2(pSrcData, pTarget, false, repaint);
+	return SetPixelShader2(pSrcData, pTarget, false);
 
 }
 
-STDMETHODIMP CDX9AllocatorPresenter::SetPixelShader2(LPCSTR pSrcData, LPCSTR pTarget, bool bScreenSpace, bool repaint)
+STDMETHODIMP CDX9AllocatorPresenter::SetPixelShader2(LPCSTR pSrcData, LPCSTR pTarget, bool bScreenSpace)
 {
 	CAutoLock cRenderLock(&m_RenderLock);
 
@@ -3020,8 +3020,8 @@ STDMETHODIMP CDX9AllocatorPresenter::SetPixelShader2(LPCSTR pSrcData, LPCSTR pTa
 
 	pPixelShaders->AddTail(Shader);
 
-	if(repaint)
-		Paint(false);
+	//if(repaint)
+	//Paint(false);
 
 	return S_OK;
 }

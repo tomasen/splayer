@@ -384,13 +384,13 @@ interface __declspec(uuid("CF75B1F0-535C-4074-8869-B15F177F944E")) ISubPicAlloca
 	STDMETHOD (GetDIB) (BYTE* lpDib, DWORD* size) PURE;
 
 	STDMETHOD (SetVideoAngle) (Vector v, bool fRepaint = true) PURE;
-	STDMETHOD (SetPixelShader) (LPCSTR pSrcData, LPCSTR pTarget, bool repaint = true) PURE;
+	STDMETHOD (SetPixelShader) (LPCSTR pSrcData, LPCSTR pTarget ) PURE;
 };
 
 
 interface __declspec(uuid("767AEBA8-A084-488a-89C8-F6B74E53A90F")) ISubPicAllocatorPresenter2 : public ISubPicAllocatorPresenter
 {
-	STDMETHOD (SetPixelShader2) (LPCSTR pSrcData, LPCSTR pTarget, bool bScreenSpace, bool repaint) PURE;
+	STDMETHOD (SetPixelShader2) (LPCSTR pSrcData, LPCSTR pTarget, bool bScreenSpace) PURE;
 };
 
 class ISubPicAllocatorPresenterImpl 
@@ -454,8 +454,8 @@ public:
 	STDMETHODIMP GetDIB(BYTE* lpDib, DWORD* size) {return E_NOTIMPL;}
 
 	STDMETHODIMP SetVideoAngle(Vector v, bool fRepaint = true);
-	STDMETHODIMP SetPixelShader(LPCSTR pSrcData, LPCSTR pTarget, bool repaint = true) {return E_NOTIMPL;}
-	STDMETHODIMP SetPixelShader2(LPCSTR pSrcData, LPCSTR pTarget, bool bScreenSpace, bool repaint = true) 
+	STDMETHODIMP SetPixelShader(LPCSTR pSrcData, LPCSTR pTarget) {return E_NOTIMPL;}
+	STDMETHODIMP SetPixelShader2(LPCSTR pSrcData, LPCSTR pTarget, bool bScreenSpace) 
 	{
 		if (!bScreenSpace)
 			return SetPixelShader(pSrcData, pTarget);

@@ -494,6 +494,7 @@ public:
 		LCID idMenuLang, idAudioLang, idSubtitlesLang;
 		bool fAutoSpeakerConf;
 		bool fbUseSPDIF;
+		bool fbSmoothMutilMonitor;
 
 		STSStyle subdefstyle;
 		STSStyle subdefstyle2;

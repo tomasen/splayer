@@ -209,3 +209,20 @@ static CUnknown* WINAPI CreateInstance(LPUNKNOWN lpunk, HRESULT* phr)
     if(punk == NULL) *phr = E_OUTOFMEMORY;
 	return punk;
 }
+
+
+static BOOL CALLBACK MonitorEnumProcDxDetect(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData)
+{
+	CSize* ms = (CSize*)dwData;
+	MONITORINFOEX  mi;
+	mi.cbSize = sizeof(MONITORINFOEX );
+	if( GetMonitorInfo(hMonitor, &mi) ){
+		//SVP_LogMsg5(_T("Monitors %s %d %d %d"), mi.szDevice , mi.dwFlags, mi.rcMonitor.right - mi.rcMonitor.left ,   mi.rcMonitor.bottom - mi.rcMonitor.top);
+
+		ms->cx = max(ms->cx , mi.rcMonitor.right - mi.rcMonitor.left );
+		ms->cy = max(ms->cy ,  mi.rcMonitor.bottom - mi.rcMonitor.top );
+	}
+	return TRUE;
+}
+
+

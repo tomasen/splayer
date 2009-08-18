@@ -2715,6 +2715,7 @@ BEGIN
     IDS_RS_MPABOOST         "MpaBoost"
     IDS_RS_AACSC            "AACSpeakerConfig"
     IDS_RS_VMRSYNCFIX       "VMRSyncFix"
+	IDS_RS_SMOOTHMUTILMONITOR	"SmoothMutilMonitor"
 END
 
 STRINGTABLE 

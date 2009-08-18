@@ -739,19 +739,6 @@ bool CDX9AllocatorPresenter::SettingsNeedResetDevice()
 
 	return bRet;
 }
-static BOOL CALLBACK MonitorEnumProcDx9(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData)
-{
-	CSize* ms = (CSize*)dwData;
-	MONITORINFOEX  mi;
-	mi.cbSize = sizeof(MONITORINFOEX );
-	if( GetMonitorInfo(hMonitor, &mi) ){
-		SVP_LogMsg5(_T("Monitors %s %d %d %d"), mi.szDevice , mi.dwFlags, mi.rcMonitor.right - mi.rcMonitor.left ,   mi.rcMonitor.bottom - mi.rcMonitor.top);
-
-		ms->cx = max(ms->cx , mi.rcMonitor.right - mi.rcMonitor.left );
-		ms->cy = max(ms->cy ,  mi.rcMonitor.bottom - mi.rcMonitor.top );
-	}
-	return TRUE;
-}
 HRESULT CDX9AllocatorPresenter::CreateDevice()
 {
 	StopWorkerThreads();
@@ -887,8 +874,9 @@ HRESULT CDX9AllocatorPresenter::CreateDevice()
 	m_RefreshRate = d3ddm.RefreshRate;
 	m_ScreenSize.SetSize(d3ddm.Width, d3ddm.Height);
 
-	
-	EnumDisplayMonitors(NULL, NULL, MonitorEnumProcDx9, (LPARAM)&m_ScreenSize);
+	if(s.fbSmoothMutilMonitor)
+		EnumDisplayMonitors(NULL, NULL, MonitorEnumProcDxDetect, (LPARAM)&m_ScreenSize);
+
 	SVP_LogMsg5(_T("m_ScreenSize DX9 %d %d ") , m_ScreenSize.cx, m_ScreenSize.cy);
 
 	D3DPRESENT_PARAMETERS pp;
@@ -2505,7 +2493,7 @@ m_pD3DDev->BeginScene();
 		}
 	}
 
-	if(0/*s.fResetDevice*/)
+	if(!AfxGetAppSettings().fbSmoothMutilMonitor/*s.fResetDevice*/)
 	{
 		D3DDEVICE_CREATION_PARAMETERS Parameters;
 		if(SUCCEEDED(m_pD3DDev->GetCreationParameters(&Parameters)) && m_pD3D->GetAdapterMonitor(Parameters.AdapterOrdinal) != m_pD3D->GetAdapterMonitor(GetAdapter(m_pD3D)))

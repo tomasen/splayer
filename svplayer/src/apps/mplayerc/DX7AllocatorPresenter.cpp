@@ -299,19 +299,7 @@ CDX7AllocatorPresenter::CDX7AllocatorPresenter(HWND hWnd, HRESULT& hr)
 
 	hr = CreateDevice();
 }
-static BOOL CALLBACK MonitorEnumProcDx7(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData)
-{
-	CSize* ms = (CSize*)dwData;
-	MONITORINFOEX  mi;
-	mi.cbSize = sizeof(MONITORINFOEX );
-	if( GetMonitorInfo(hMonitor, &mi) ){
-		SVP_LogMsg5(_T("Monitors %s %d %d %d"), mi.szDevice , mi.dwFlags, mi.rcMonitor.right - mi.rcMonitor.left ,   mi.rcMonitor.bottom - mi.rcMonitor.top);
 
-		ms->cx = max(ms->cx , mi.rcMonitor.right - mi.rcMonitor.left );
-		ms->cy = max(ms->cy ,  mi.rcMonitor.bottom - mi.rcMonitor.top );
-	}
-	return TRUE;
-}
 HRESULT CDX7AllocatorPresenter::CreateDevice()
 {
     m_pD3DDev = NULL;
@@ -327,18 +315,19 @@ HRESULT CDX7AllocatorPresenter::CreateDevice()
 		return DDERR_INVALIDMODE;
 
 	m_ScreenSize.SetSize(ddsd.dwWidth, ddsd.dwHeight);
-	/*
-	if(AfxGetMainWnd()){
+	
+	if(AfxGetAppSettings().fbSmoothMutilMonitor)
+		EnumDisplayMonitors(NULL, NULL, MonitorEnumProcDxDetect, (LPARAM)&m_ScreenSize);
+	else{
+		if(AfxGetMainWnd()){
 			MONITORINFO mi;
 			mi.cbSize = sizeof(MONITORINFO);
 			GetMonitorInfo(MonitorFromWindow(AfxGetMainWnd()->m_hWnd, MONITOR_DEFAULTTONEAREST), &mi);
-			
+
 			m_ScreenSize.SetSize(mi.rcMonitor.right - mi.rcMonitor.left, mi.rcMonitor.bottom - mi.rcMonitor.top);
 			//SVP_LogMsg5(_T("m_ScreenSize mi DX7 %d %d ") , m_ScreenSize.cx, m_ScreenSize.cy);
 		}
-		*/
-	
-	EnumDisplayMonitors(NULL, NULL, MonitorEnumProcDx7, (LPARAM)&m_ScreenSize);
+	}
 
 	SVP_LogMsg5(_T("m_ScreenSize DX7 %d %d ") , m_ScreenSize.cx, m_ScreenSize.cy);
 	HRESULT hr, hr2;
@@ -987,7 +976,11 @@ STDMETHODIMP CVMR7AllocatorPresenter::SetAspectRatioMode(DWORD AspectRatioMode) 
 STDMETHODIMP CVMR7AllocatorPresenter::SetVideoClippingWindow(HWND hwnd) {return E_NOTIMPL;}
 STDMETHODIMP CVMR7AllocatorPresenter::RepaintVideo(HWND hwnd, HDC hdc) {return E_NOTIMPL;}
 STDMETHODIMP CVMR7AllocatorPresenter::DisplayModeChanged() {
-	//DeleteSurfaces(); CreateDevice() ; AllocSurfaces();
+	if(!AfxGetAppSettings().fbSmoothMutilMonitor){
+		DeleteSurfaces(); CreateDevice() ; AllocSurfaces();
+		//AfxMessageBox(_T("1"));
+	}
+	
 	// Pass our input pin as parameter on the event
 	//NotifyEvent(EC_DISPLAY_CHANGED,(LONG_PTR) pPin,0);
 	return S_OK;}

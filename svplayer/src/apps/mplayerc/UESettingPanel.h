@@ -58,6 +58,7 @@ class CUESettingPanel : public CDHtmlDialog
 	int m_sgi_bgstrech;
 	int  m_sgi_usenewmenu;
 	int m_sgi_useaeroglass;
+	int m_sgi_smothmutilmonitor;
 	CString m_sgs_custompicfile;
 
 

@@ -599,3 +599,4 @@ namespace DSObjects
 		STDMETHODIMP SetPixelShader(LPCSTR pSrcData, LPCSTR pTarget);
 	};
 }
+

@@ -2491,16 +2491,16 @@ void CMainFrame::OnSizing(UINT fwSide, LPRECT pRect)
 void CMainFrame::OnDisplayChange() // untested, not sure if it's working...
 {
 	TRACE(_T("*** CMainFrame::OnDisplayChange()\n"));
-	//AfxMessageBox(_T("SD"));
-	if(m_iMediaLoadState == MLS_LOADED && m_pCAP) {
-/*
+//	AfxMessageBox(_T("SD"));
+	if(m_iMediaLoadState == MLS_LOADED && m_pCAP && !AfxGetAppSettings().fbSmoothMutilMonitor ) {
+//AfxMessageBox(_T("SD2"));
 		if ( CComQIPtr<IVMRWindowlessControl> pCAP = m_pCAP ){
 
-			//pCAP->DisplayModeChanged(); // 重建Surface才能在另一个更大的显示器上满屏
+			pCAP->DisplayModeChanged(); // 重建Surface才能在另一个更大的显示器上满屏
 		}
-		else if(CComQIPtr<IVMRWindowlessControl9> pCAP = m_pCAP ){
-					pCAP->DisplayModeChanged();
-				}*/
+		//else if(CComQIPtr<IVMRWindowlessControl9> pCAP = m_pCAP )
+			//pCAP->DisplayModeChanged();
+				
 		
 		
 	}

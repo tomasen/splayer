@@ -96,6 +96,8 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_DHtml_CheckBox(pDX, _T("bgstrech"), m_sgi_bgstrech);
 	DDX_DHtml_CheckBox(pDX, _T("usenewmenu"), m_sgi_usenewmenu);
 	DDX_DHtml_CheckBox(pDX, _T("useaeroglass"), m_sgi_useaeroglass);
+	DDX_DHtml_CheckBox(pDX, _T("smothmutilmonitor"), m_sgi_smothmutilmonitor);
+	
 	DDX_DHtml_ElementValue (pDX, _T("custompicfile"), m_sgs_custompicfile);
 
 	DDX_DHtml_CheckBox(pDX, _T("useCustomSpeakerSetting"), m_sgi_useCustomSpeakerSetting);
@@ -282,6 +284,7 @@ BOOL CUESettingPanel::OnInitDialog()
 		m_sgi_videorender = 2; //×Ô¶¨Òå
 	}
 	m_sgi_lockbackbuff = s.fVMRSyncFix;
+	m_sgi_smothmutilmonitor = s.fbSmoothMutilMonitor;
 	m_sgi_gpuacel = s.useGPUAcel;
 	m_sgs_decoder = s.optionDecoder;
 	if(m_sgs_decoder.IsEmpty()){
@@ -471,6 +474,7 @@ void CUESettingPanel::ApplyAllSetting(){
 	s.fExitFullScreenAtTheEnd = !!m_sgi_chkexitfullscreen ;
 	s.fRememberWindowPos = !!m_sgi_chkremwinpos;
 	//s.fRememberWindowSize = !!m_sgi_chkremwinpos;
+	s.fbSmoothMutilMonitor = !!m_sgi_smothmutilmonitor ;
 	s.fHideCDROMsSubMenu = !!m_sgi_chkcdromenu;
 	s.fLoopForever = !!m_sgi_chkplayrepeat;
 	s.nLoops = 1;

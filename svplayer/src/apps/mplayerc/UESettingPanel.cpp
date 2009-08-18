@@ -266,7 +266,7 @@ BOOL CUESettingPanel::OnInitDialog()
 	m_sgi_chktrayicon = s.fTrayIcon;
 	m_sgi_dxvacompat = s.bDVXACompat;
 
-	m_sgi_useCustomSpeakerSetting = !!s.bNotAutoCheckSpeaker;
+	m_sgi_useCustomSpeakerSetting = !!s.fCustomSpeakers;
 
 	m_sgs_stepsmall.Format(_T("%d"), s.nJumpDistS/1000) ;
 	m_sgs_stepmed.Format(_T("%d"), s.nJumpDistM/1000) ;
@@ -567,7 +567,7 @@ void CUESettingPanel::ApplyAllSetting(){
 	}
 
 	s.bUseWaveOutDeviceByDefault = m_sgi_UseWaveOutDeviceByDefault ;
-	
+	s.fCustomSpeakers = m_sgi_useCustomSpeakerSetting;
 	if(m_sgi_useCustomSpeakerSetting){
 		
 		{

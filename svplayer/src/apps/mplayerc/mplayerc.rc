@@ -2498,6 +2498,7 @@ BEGIN
     IDS_RS_POPSTARTUPEXTCHECK "PouStartupExtCheck"
     IDD_PPAGESUBSTYLE2      "×ÖÄ»::µÚ¶þ×ÖÄ»"
     IDS_RS_CHECKUPDATERINTERLEAVE "CheckUpdaterInterleave"
+	IDS_RS_FCUSTOMSPEAKERS		"CustomSpeakers"
 END
 
 STRINGTABLE 

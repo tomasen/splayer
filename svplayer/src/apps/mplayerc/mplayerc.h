@@ -533,6 +533,7 @@ public:
 		bool fAudioTimeShift;
 		int tAudioTimeShift;
 		bool fCustomChannelMapping;
+		bool fCustomSpeakers;
 		
 		DWORD pSpeakerToChannelMap[18][18]; //Meaning [Total Channel Number] [Speaker] = 1 << Channel
 

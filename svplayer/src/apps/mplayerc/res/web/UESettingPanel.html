@@ -322,6 +322,9 @@ function myInit(){
     var pbst = ueAPI.fobj('bgstrech');
    
     var obtgar = ueAPI.fobj('keepbgarline');if(pbst && obtgar){ if(pbst.checked){obtgar.style.display='inline';}else{obtgar.style.display='none';}  }
+   
+    var obtspk = ueAPI.fobj('useCustomSpeakerSetting');
+    ueAPI.useCustomSpeakerSetting(obtspk.checked);
     //alert(typeof(ueg_DefaultBlock));
 }
 </script>

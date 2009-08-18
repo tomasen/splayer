@@ -2370,9 +2370,12 @@ void CMPlayerCApp::Settings::SetChannelMapByNumberOfSpeakers( int iSS , int iNum
 
 			//4 Channel
 			pSpeakerToChannelMap[3][0] = SPEAKER_FRONT_LEFT;
-			pSpeakerToChannelMap[3][1] =  SPEAKER_FRONT_RIGHT;
-			pSpeakerToChannelMap[3][2] = SPEAKER_BACK_LEFT;
-			pSpeakerToChannelMap[3][3] = SPEAKER_BACK_RIGHT;
+			pSpeakerToChannelMap[3][1] =  SPEAKER_FRONT_RIGHT;//SPEAKER_FRONT_CENTER;
+			pSpeakerToChannelMap[3][2] = SPEAKER_FRONT_CENTER|SPEAKER_BACK_LEFT;
+			pSpeakerToChannelMap[3][3] = SPEAKER_LOW_FREQUENCY|SPEAKER_BACK_RIGHT;
+
+			pSpeakerToChannelMap[3][4] = SPEAKER_BACK_LEFT;
+			pSpeakerToChannelMap[3][5] = SPEAKER_BACK_RIGHT;
 
 			//5 Channel
 			pSpeakerToChannelMap[4][0] = SPEAKER_FRONT_LEFT|SPEAKER_FRONT_CENTER|SPEAKER_LOW_FREQUENCY;
@@ -2430,24 +2433,29 @@ void CMPlayerCApp::Settings::SetChannelMapByNumberOfSpeakers( int iSS , int iNum
 			pSpeakerToChannelMap[3][1] =  SPEAKER_FRONT_RIGHT|SPEAKER_FRONT_CENTER|SPEAKER_LOW_FREQUENCY;
 			pSpeakerToChannelMap[3][2] = SPEAKER_BACK_LEFT;//;
 			pSpeakerToChannelMap[3][3] = SPEAKER_BACK_RIGHT;
+			pSpeakerToChannelMap[3][4] = SPEAKER_BACK_LEFT;//;
+			pSpeakerToChannelMap[3][5] = SPEAKER_BACK_RIGHT;
+			
 			//pSpeakerToChannelMap[3][4] = ;
 
 			//5 Channel
-			/*
+			
 			pSpeakerToChannelMap[4][0] = SPEAKER_FRONT_LEFT|SPEAKER_FRONT_CENTER|SPEAKER_LOW_FREQUENCY;
 			pSpeakerToChannelMap[4][1] =  SPEAKER_FRONT_RIGHT|SPEAKER_FRONT_CENTER|SPEAKER_LOW_FREQUENCY;
-			pSpeakerToChannelMap[4][2] = SPEAKER_BACK_LEFT;
-			pSpeakerToChannelMap[4][3] = SPEAKER_BACK_RIGHT;
-			*/
+			pSpeakerToChannelMap[4][2] = SPEAKER_FRONT_CENTER;
+			pSpeakerToChannelMap[4][3] = SPEAKER_BACK_LEFT;
+			pSpeakerToChannelMap[4][4] = SPEAKER_BACK_RIGHT;
+			
 
 			//pSpeakerToChannelMap[4][3] = pSpeakerToChannelMap[4][4]= 0;
 
 			//6 Channel
-			pSpeakerToChannelMap[5][0] = SPEAKER_FRONT_LEFT|SPEAKER_LOW_FREQUENCY;
-			pSpeakerToChannelMap[5][1] = SPEAKER_FRONT_RIGHT|SPEAKER_LOW_FREQUENCY ;
+			pSpeakerToChannelMap[5][0] = SPEAKER_FRONT_LEFT|SPEAKER_FRONT_CENTER|SPEAKER_LOW_FREQUENCY;
+			pSpeakerToChannelMap[5][1] = SPEAKER_FRONT_RIGHT|SPEAKER_FRONT_CENTER|SPEAKER_LOW_FREQUENCY ;
 			pSpeakerToChannelMap[5][2] = SPEAKER_FRONT_CENTER;
-			pSpeakerToChannelMap[5][3] = SPEAKER_BACK_LEFT;
-			pSpeakerToChannelMap[5][4] = SPEAKER_BACK_RIGHT;
+			pSpeakerToChannelMap[5][3] = SPEAKER_LOW_FREQUENCY;
+			pSpeakerToChannelMap[5][4] = SPEAKER_BACK_LEFT;
+			pSpeakerToChannelMap[5][5] = SPEAKER_BACK_RIGHT;
 
 			//pSpeakerToChannelMap[5][3] = pSpeakerToChannelMap[5][4] = pSpeakerToChannelMap[5][5] = 0;
 
@@ -2541,7 +2549,7 @@ void CMPlayerCApp::Settings::SetChannelMapByNumberOfSpeakers( int iSS , int iNum
 		}
 	}
 	
-	fCustomChannelMapping = !IsVista();
+	//fCustomChannelMapping = !IsVista();
 
 }
 void CMPlayerCApp::Settings::UpdateData(bool fSave)
@@ -2604,6 +2612,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUTODOWNLAODSVPSUB), autoDownloadSVPSub);
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_NOTAUTOCHECKSPEAKER), bNotAutoCheckSpeaker);
+		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_FCUSTOMSPEAKERS), fCustomSpeakers);
 
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DSVIDEORENDERERTYPE), iDSVideoRendererType);
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_RMVIDEORENDERERTYPE), iRMVideoRendererType);
@@ -2988,6 +2997,8 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		useGPUCUDA = SVP_SetCoreAvcCUDA(useGPUCUDA);
 
 		bNotAutoCheckSpeaker = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_NOTAUTOCHECKSPEAKER), 0);
+		fCustomSpeakers = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_FCUSTOMSPEAKERS), 0);
+		
 		
 		SVPSubStoreDir = pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SVPSUBSTOREDIR), _T(""));
 
@@ -3098,10 +3109,12 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		{
 			memcpy(pSpeakerToChannelMap, ptr, sizeof(pSpeakerToChannelMap));
 			delete [] ptr;
+
+			//AfxMessageBox(_T("1"));
 		}
 		else
 		{
-			
+			//AfxMessageBox(_T("2"));
 			SetChannelMapByNumberOfSpeakers(iDecSpeakers, iNumberOfSpeakers);
 			
 		}
@@ -4108,7 +4121,7 @@ BOOL CALLBACK DS_GetAudioDeviceGUID(LPGUID lpGuid,
 
 int  CMPlayerCApp::GetNumberOfSpeakers(LPCGUID lpcGUID, HWND hWnd){
 	AppSettings& s = AfxGetAppSettings();
-	if(s.bNotAutoCheckSpeaker > 1){
+	if(s.bNotAutoCheckSpeaker > 1 && s.fCustomSpeakers){
 		return s.bNotAutoCheckSpeaker;
 	}
 	CComPtr<IDirectSound> pDS;

@@ -71,6 +71,7 @@ function UESAPI(){
 	this.changeBlockI = null;
 	this.canUseCoreAVCCUDA = false;
     this.canUseFFMPEGGPU = true;
+    this.isvista = false;
 }
 UESAPI.prototype = {
     setcurblock:function(idname){
@@ -325,11 +326,19 @@ function myInit(){
    
     var obtspk = ueAPI.fobj('useCustomSpeakerSetting');
     ueAPI.useCustomSpeakerSetting(obtspk.checked);
+    
+    var obtisvista = ueAPI.fobj('isvista');
+    if(obtisvista){
+        if(obtisvista.innerHTML == 'vista'){
+            ueAPI.isvista = true;
+        }
+    }
     //alert(typeof(ueg_DefaultBlock));
 }
 </script>
 </head>
 <body id="CUESettingPanel" onload="myInit();" >
+<div id='isvista' style="display:none"></div>
 <div id='initvarblock' style="display:none"></div><div id='haveCUDAforCoreAVC' style="display:none"></div><div id='canFFGPU' style="display:none"></div><div id='decodervalue' style="display:none"></div>
 <table width="100%" style="height:100%;" >
 <tr >
@@ -388,15 +397,15 @@ function myInit(){
 但播放时也有可能影响其他软件运行效率，特别是在低配置的电脑上。">提高进程优先级</label><br />--><br />
 </div>
 <div id="videosetting" class="hiddenarea">
-&nbsp;<select id="videorender" onchange="ueAPI.useDX9Mixer(this.value == 'DX9' )"><option value="DX9" >画质优先模式(DX9)</option>
+&nbsp;<select id="videorender" onchange="if(this.value!='DX9' && ueAPI.isvista){ueAPI.fobj('gpuacelbase').checked = false;}"><option value="DX9" >画质优先模式(DX9)</option>
 <option value="DX7">性能优先模式(DX7)</option>
 <option value="ADV">使用自定义高级设置</option></select><br />
 <span id="decoderline" style="display:none;">解码器：<select id="decoder" onchange="ueAPI.selectDecoder(this.value);" ></select></span>
  <span id="remarkfordecoder" style="display:none;" ></span><br />
-<input type="checkbox" id="gpuacelbase" onclick="ueAPI.useGPUAcel(this.checked);" /><label for="gpuacelbase">显卡硬件（GPU）加速 </label> <br /><br />
+<input type="checkbox" id="gpuacelbase" onclick="ueAPI.useGPUAcel(this.checked);" /><label for="gpuacelbase" title="只能在画质优先模式中使用">显卡硬件（GPU）加速 [<a href='?http://www.shooter.cn/wiki/%E5%B0%84%E6%89%8B%E6%92%AD%E6%94%BE%E5%99%A8_%E9%AB%98%E6%B8%85%E7%A1%AC%E4%BB%B6%E8%A7%A3%E7%A0%81%E7%9A%84%E6%94%AF%E6%8C%81%E5%88%97%E8%A1%A8'><b>?</b></a>]</label> <br /><br />
 <div style="display:none;"><input type="checkbox" id="vmr9mixer" onclick="ueAPI.useDX9(this.checked);"  /><label for="vmr9mixer" title="启用播放器的亮度调节功能">启用内置亮度调节(需DX9，不能使用CoreAVC解码器)</label><br /></div>
 <input type="checkbox" id="smothmutilmonitor" /><label for="smothmutilmonitor" title="播放器在多个显示器间移动时保持画面流畅。但可能在部分老式电视连接时因刷新率不同而出现问题">多显示器平滑移动</label><br />
-<input type="checkbox" id="lockbackbuff" /><label for="lockbackbuff" title="解决运动画面中水平错位的问题">修正画面横向错位问题（降低性能）</label><br />
+<input type="checkbox" id="lockbackbuff" /><label for="lockbackbuff" title="解决运动画面中水平错位(或者说撕裂)的问题。在部分显卡驱动上会造成CPU占用过高的问题">修正画面横向撕裂问题（会降低性能）</label><br />
 <div id='divdxvacompat' ><input type="checkbox" id="dxvacompat" /><label for="dxvacompat">使硬件高清兼容更多文件（不推荐！显卡能力不足时会造成花屏）</label> <br /></div>
 <br />
 <fieldset style="display:none"><legend>专家设置</legend>

@@ -71,6 +71,7 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 
 	DDX_DHtml_CheckBox(pDX, _T("chkremhistory") , m_sgs_chkremhistory);
 	DDX_DHtml_ElementInnerText(pDX, _T("initvarblock") , m_sgs_initblock);
+	DDX_DHtml_ElementInnerText(pDX, _T("isvista") , m_sgs_isvista);
 	DDX_DHtml_ElementInnerText(pDX, _T("haveCUDAforCoreAVC") , m_sgs_CUDAVC);
 	DDX_DHtml_ElementInnerText(pDX, _T("canUseFFMPEGGPU") , m_sgs_FFGPU);
 	DDX_DHtml_CheckBox(pDX, _T("chkremwinpos"), m_sgi_chkremwinpos);
@@ -354,6 +355,7 @@ BOOL CUESettingPanel::OnInitDialog()
 
 	if(CMPlayerCApp::IsVista()){
 		DisplayNodeByID(_T("disableevrline"), FALSE);
+		m_sgs_isvista = _T("vista");
 		//DisplayNodeByID(_T("vistaaeroglass"), TRUE);
 		
 	}

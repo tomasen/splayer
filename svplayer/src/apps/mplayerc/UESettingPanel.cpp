@@ -356,6 +356,10 @@ BOOL CUESettingPanel::OnInitDialog()
 	if(CMPlayerCApp::IsVista()){
 		DisplayNodeByID(_T("disableevrline"), FALSE);
 		m_sgs_isvista = _T("vista");
+		
+		if(s.bAeroGlassAvalibility){
+			m_sgs_isvista = _T("vistaaero");
+		}
 		//DisplayNodeByID(_T("vistaaeroglass"), TRUE);
 		
 	}

@@ -145,9 +145,9 @@ public:
 */
 interface ISubClock;
 
+
 class CMainFrame : public CFrameWnd, public CDropTarget  , protected ISkinMenuRender
 {
-	
 
 	friend class CPPageFileInfoSheet;
 	friend class CPPageLogo;
@@ -318,6 +318,8 @@ public:
 		TIMER_DELETE_CUR_FILE,
 		TIMER_DELETE_CUR_FOLDER
 	};
+
+
 	void ShowControls(int nCS, bool fSave = true);
 	int m_notshowtoolbarforawhile;
 	// subtitles
@@ -826,11 +828,12 @@ public:
 	LRESULT OnNcLButtonDown(  WPARAM wParam, LPARAM lParam);
 	LRESULT OnNcLButtonUp(  WPARAM wParam, LPARAM lParam);
 	LRESULT OnNcHitTestNewUI(  WPARAM wParam, LPARAM lParam);
+	LRESULT OnNcCalcSizeNewUI(  WPARAM wParam, LPARAM lParam);
 	LRESULT OnStatusMessage(  WPARAM wParam, LPARAM lParam);
 	LRESULT OnImeSetContext(  WPARAM wParam, LPARAM lParam);
 	
 
-	afx_msg void OnNcCalcSize( BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp);
+	//afx_msg void OnNcCalcSize( BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp);
 	void RedrawNonClientArea();
 	DWORD GetUIStat(UINT n_CmdID);
 	//void PreMultiplyBitmap(CBitmap& bmp);
@@ -879,4 +882,6 @@ public:
 	void DrawGradientBkgnd(CDC* pDC, LPRECT pRect, LPRECT pClip);
 
 	BOOL m_bGradient;
+	afx_msg void OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized);
+	afx_msg void OnPaint();
 };

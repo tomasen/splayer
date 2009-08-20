@@ -1514,6 +1514,34 @@ BOOL CMPlayerCApp::InitInstance()
 		return FALSE;
 	}
 
+	HMODULE hDWMAPI = LoadLibrary(L"dwmapi.dll");
+	if (hDWMAPI)
+	{
+		(FARPROC &)m_pDwmIsCompositionEnabled = GetProcAddress(hDWMAPI, "DwmIsCompositionEnabled");
+		(FARPROC &)m_pDwmEnableComposition = GetProcAddress(hDWMAPI, "DwmEnableComposition");
+		(FARPROC &)m_pDwmExtendFrameIntoClientArea = GetProcAddress(hDWMAPI, "DwmExtendFrameIntoClientArea");
+		(FARPROC &)m_pDwmDefWindowProc = GetProcAddress(hDWMAPI, "DwmDefWindowProc");
+
+		BOOL bCompositionEnabled =  true;
+		if(m_pDwmIsCompositionEnabled)
+			m_pDwmIsCompositionEnabled(&bCompositionEnabled);
+
+		m_s.bAeroGlassAvalibility = bCompositionEnabled;
+
+	}else
+		m_s.bAeroGlassAvalibility = false;
+
+	HMODULE hUXAPI = LoadLibrary(L"uxtheme.dll");
+	if (hUXAPI)
+	{
+		(FARPROC &)m_pOpenThemeData = GetProcAddress(hUXAPI, "OpenThemeData");
+		(FARPROC &)m_pGetThemeSysFont = GetProcAddress(hUXAPI, "GetThemeSysFont");
+		(FARPROC &)m_pDrawThemeTextEx = GetProcAddress(hUXAPI, "DrawThemeTextEx");
+		(FARPROC &)m_pCloseThemeData = GetProcAddress(hUXAPI, "CloseThemeData");
+
+	}else
+		m_s.bAeroGlassAvalibility = false;
+
 	m_s.UpdateData(false);
 	if (m_s.nCLSwitches & CLSW_ADMINOPTION)
 	{
@@ -3353,7 +3381,9 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		iEvrBuffers		= pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_EVR_BUFFERS), 5);
 
 		bNewMenu		= pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USENEWMENU), 0);
-		bAeroGlass		= pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEAEROGLASS), 0);
+		bAeroGlass		= pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEAEROGLASS), 0);//bAeroGlassAvalibility
+		if(!bAeroGlassAvalibility)
+			bAeroGlass = false;
 
 		bSaveSVPSubWithVideo  = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SAVESVPSUBWITHVIDEO), 0);
 

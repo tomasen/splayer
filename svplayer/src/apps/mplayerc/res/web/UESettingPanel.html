@@ -72,6 +72,7 @@ function UESAPI(){
 	this.canUseCoreAVCCUDA = false;
     this.canUseFFMPEGGPU = true;
     this.isvista = false;
+    this.isvistaaero = false;
 }
 UESAPI.prototype = {
     setcurblock:function(idname){
@@ -329,8 +330,12 @@ function myInit(){
     
     var obtisvista = ueAPI.fobj('isvista');
     if(obtisvista){
-        if(obtisvista.innerHTML == 'vista'){
+        if(obtisvista.innerHTML.indexOf( 'vista' ) >= 0 ){
             ueAPI.isvista = true;
+        }
+        if(obtisvista.innerHTML.indexOf( 'aero' ) >= 0 ){
+            ueAPI.isvistaaero = true;
+            ueAPI.fobj('vistaaeroglass').style.display = "block";
         }
     }
     //alert(typeof(ueg_DefaultBlock));

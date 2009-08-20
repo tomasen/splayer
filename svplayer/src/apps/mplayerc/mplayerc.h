@@ -333,6 +333,17 @@ class CMPlayerCApp : public CWinApp
 public:
 	CMPlayerCApp();
 
+
+	HRESULT (__stdcall * m_pDwmIsCompositionEnabled)(__out BOOL* pfEnabled);
+	HRESULT (__stdcall * m_pDwmEnableComposition)(UINT uCompositionAction);
+	HRESULT (__stdcall * m_pDwmExtendFrameIntoClientArea)( HWND hWnd,const MARGINS *pMarInset);
+	HTHEME (__stdcall * m_pOpenThemeData)(  HWND hwnd,LPCWSTR pszClassList);
+	HRESULT (__stdcall * m_pGetThemeSysFont)( HTHEME hTheme,int iFontID,LOGFONTW *plf);
+	HRESULT (__stdcall * m_pCloseThemeData)(HTHEME hTheme);
+	HRESULT (__stdcall * m_pDrawThemeTextEx)( HTHEME hTheme, HDC hdc,int iPartId,int iStateId,LPCWSTR pszText,int iCharCount,DWORD dwFlags,LPRECT pRect,const DTTOPTS *pOptions);
+	HRESULT (__stdcall * m_pDwmDefWindowProc)( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, LRESULT *plResult);
+
+
 	CString		m_strD3DX9Version;
 	LONGLONG	m_PerfFrequency;
 	void ShowCmdlnSwitches();
@@ -432,6 +443,7 @@ public:
 		BOOL bNewMenu;
 		BOOL bSaveSVPSubWithVideo;
 		BOOL bAeroGlass;
+		BOOL bAeroGlassAvalibility;
 		int iDSVideoRendererType;
 		int iRMVideoRendererType;
 		int iQTVideoRendererType;

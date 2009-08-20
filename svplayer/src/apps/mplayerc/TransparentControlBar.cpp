@@ -66,8 +66,14 @@ void CTransparentControlBar::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScr
 			pMFrame->ModifyStyleEx(  0, WS_EX_LAYERED);
 			pMFrame->SetLayeredWindowAttributes( 0, pos, LWA_ALPHA);
 		}else{
-			pMFrame->ModifyStyleEx( WS_EX_LAYERED, 0);
-			pMFrame->ModifyStyle(WS_POPUP,0 );
+			AppSettings& s = AfxGetAppSettings();
+			if(s.bAeroGlass){
+				pMFrame->SetLayeredWindowAttributes( 0, 0xff, LWA_ALPHA);
+			}else{
+				pMFrame->ModifyStyleEx( WS_EX_LAYERED, 0);
+				pMFrame->ModifyStyle(WS_POPUP,0 );
+			}
+			
 		}
 
 	}

@@ -171,7 +171,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_MESSAGE(WM_NCLBUTTONDOWN, OnNcLButtonDown)
 	ON_MESSAGE(WM_NCLBUTTONUP, OnNcLButtonUp)
 	ON_MESSAGE(WM_NCHITTEST, OnNcHitTestNewUI)
-	ON_WM_NCCALCSIZE()
+	ON_MESSAGE(WM_NCCALCSIZE, OnNcCalcSizeNewUI)
+	//ON_WM_NCCALCSIZE()
 	ON_WM_DRAWITEM()
 	ON_WM_MEASUREITEM()  
 	/*NEW UI END*/
@@ -488,6 +489,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	
 	ON_NOTIFY_EX(TTN_NEEDTEXT, 0, OnTtnNeedText)
 	ON_WM_NCCREATE()
+	ON_WM_ACTIVATE()
+	ON_WM_PAINT()
 	END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -841,13 +844,37 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	}
 
 	m_ABMenu.LoadMenu(IDR_POPUPAB);
+	
 	/*
-m_ABMenu.AppendMenu(MF_ENABLED |MF_STRING , ID_ABCONTROL_SETA, _T("设置A点"));
+	m_ABMenu.AppendMenu(MF_ENABLED |MF_STRING , ID_ABCONTROL_SETA, _T("设置A点"));
 	m_ABMenu.AppendMenu(MF_ENABLED |MF_STRING , ID_ABCONTROL_SETB, _T("设置B点"));
 	m_ABMenu.AppendMenu(MF_ENABLED |MF_STRING , ID_ABCONTROL_ON, _T("开始A-B循环"));
 	m_ABMenu.AppendMenu(MF_ENABLED |MF_STRING , ID_ABCONTROL_OFF, _T("关闭A-B循环"));
-*/
+	*/
 
+	if(s.bAeroGlass){
+
+		
+
+		if(s.bAeroGlass){
+			ModifyStyle(0, WS_POPUP);
+			ModifyStyleEx(  0, WS_EX_LAYERED);
+
+			//m_wndView.ModifyStyle(0, WS_POPUP);
+			//m_wndView.ModifyStyleEx(  0, WS_EX_LAYERED);
+			//m_wndView.SetLayeredWindowAttributes( 0, 0x43, LWA_ALPHA);
+			
+			SetLayeredWindowAttributes( 0, 0xff, LWA_ALPHA);
+
+			CRect rcClient;
+			GetWindowRect( &rcClient);
+
+			// Inform application of the frame change.
+			::SetWindowPos(m_hWnd, NULL, rcClient.left, rcClient.top,rcClient.Width(), rcClient.Height(),SWP_FRAMECHANGED);
+
+		}
+		
+	}
 
 	m_WndSizeInited++;
 	return 0;
@@ -1109,7 +1136,11 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 }
 
 
-void CMainFrame::OnNcCalcSize( BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp){
+LRESULT CMainFrame::OnNcCalcSizeNewUI(   WPARAM wParam, LPARAM lParam){
+	
+	BOOL bCalcValidRects = (BOOL)wParam;
+	NCCALCSIZE_PARAMS* lpncsp = reinterpret_cast<NCCALCSIZE_PARAMS*>(lParam);
+
 	WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
 	GetWindowPlacement(&wp);
 	if(bCalcValidRects){
@@ -1122,42 +1153,55 @@ void CMainFrame::OnNcCalcSize( BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp){
 		BOOL bCaptionOn = currentStyle&WS_CAPTION ;
 		if(m_fFullScreen){
 
-		}else if(wp.showCmd!=SW_MAXIMIZE ){
-			rc.InflateRect( GetSystemMetrics(SM_CXFRAME) - 4,  GetSystemMetrics(SM_CXFRAME) - 8,   GetSystemMetrics(SM_CXFRAME) - 4, GetSystemMetrics(SM_CXFRAME) - 3  );
-			if(!m_wndToolBar.IsVisible())	{
-				//rc.bottom -= 2;
-			}
-			rc.bottom -= 4;
-			rc.top -=1 ;
-// 			CString szLog;
-// 			szLog.Format(_T("%d %d"), GetSystemMetrics(SM_CXFRAME), GetSystemMetrics(SM_CYCAPTION));
-// 			AfxMessageBox(szLog);
-			if(!bCaptionOn){
-				//rc.top -=3 ;
-				rc.left += 1;
-				rc.right -= 1;
-			}
-			if(m_wndToolBar.IsVisible()){
-				//rc.bottom += 2;
-				if(bCaptionOn){
-					rc.bottom += 1;
-				}
-			}
 		}else{
-			//rc.InflateRect( GetSystemMetrics(SM_CXFRAME) - 3, 0,   GetSystemMetrics(SM_CXFRAME) - 3, GetSystemMetrics(SM_CXFRAME) - 2);
+			AppSettings& s = AfxGetAppSettings();
+			if( s.bAeroGlass && 0){
+				//LRESULT lRet = 0;
 
-		}
-		
+				//m_pDwmDefWindowProc(m_hWnd, WM_NCCALCSIZE, (WPARAM)bCalcValidRects, (LPARAM)lpncsp, &lRet);
+				//rc.DeflateRect(2,2,2,2);
+				lpncsp->rgrc[0] = rc;
+				return 0;
+			}else if(wp.showCmd!=SW_MAXIMIZE ){
+				
+					rc.InflateRect( GetSystemMetrics(SM_CXFRAME) - 4,  GetSystemMetrics(SM_CXFRAME) - 8,   GetSystemMetrics(SM_CXFRAME) - 4, GetSystemMetrics(SM_CXFRAME) - 3  );
+					if(!m_wndToolBar.IsVisible())	{
+						//rc.bottom -= 2;
+					}
+					rc.bottom -= 4;
+					rc.top -=1 ;
+					// 			CString szLog;
+					// 			szLog.Format(_T("%d %d"), GetSystemMetrics(SM_CXFRAME), GetSystemMetrics(SM_CYCAPTION));
+					// 			AfxMessageBox(szLog);
+					if(!bCaptionOn){
+						//rc.top -=3 ;
+						rc.left += 1;
+						rc.right -= 1;
+					}
+					if(m_wndToolBar.IsVisible()){
+						//rc.bottom += 2;
+						if(bCaptionOn){
+							rc.bottom += 1;
+						}
+					}
+				
+			}else{
+				//rc.InflateRect( GetSystemMetrics(SM_CXFRAME) - 3, 0,   GetSystemMetrics(SM_CXFRAME) - 3, GetSystemMetrics(SM_CXFRAME) - 2);
+
+			}
+		}			
 		
 		lpncsp->rgrc[0] = rc;
 	}
-	__super::OnNcCalcSize(bCalcValidRects, lpncsp);
-
+//	__super::OnNcCalcSize(bCalcValidRects, lpncsp);
+	return DefWindowProc(WM_NCCALCSIZE, wParam, lParam);
+	/*
 	if(wp.showCmd==SW_MAXIMIZE ){
-		CString szLog;
-		szLog.Format(_T("Max Client Rect %d %d %d %d") , lpncsp->rgrc[0].left, lpncsp->rgrc[0].top, lpncsp->rgrc[0].right, lpncsp->rgrc[0].bottom);
-		//SVP_LogMsg(szLog);
-	}
+			CString szLog;
+			szLog.Format(_T("Max Client Rect %d %d %d %d") , lpncsp->rgrc[0].left, lpncsp->rgrc[0].top, lpncsp->rgrc[0].right, lpncsp->rgrc[0].bottom);
+			//SVP_LogMsg(szLog);
+		}*/
+	
 }
 
 
@@ -1231,6 +1275,8 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 	CRect r,cr;
 	m_wndView.GetClientRect(r);
 	m_wndView.GetWindowRect(cr);
+	//r.top += 20;
+	//m_wndView.MoveWindow(cr);
 	r.top += r.Height()/2;
 	cr.top += cr.Height()/2;
 	
@@ -1244,6 +1290,8 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 			GetWindowRect(s.rcLastWindowPos);
 		s.lastWindowType = nType;
 
+		//if we dont use aero, set the round corner region
+		if(!s.bAeroGlass)
 		{ //New UI
 			CRect rc;
 			WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
@@ -1285,6 +1333,26 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 
 LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 {
+
+
+	CString szWindowText ;
+	if(m_bDxvaInUse){
+		CString szEVR;
+		if(m_bEVRInUse){
+			szEVR = _T("+EVR");
+		}
+		szWindowText.Format( _T("[硬件高清%s] "), szEVR);
+	}else if(m_bEVRInUse){
+		szWindowText = _T("[EVR] ");
+	}
+	szWindowText.Append(m_szTitle);
+
+
+	AppSettings& s = AfxGetAppSettings();
+	if(s.bAeroGlass){
+		SetWindowText(szWindowText);
+		return DefWindowProc(WM_NCPAINT, wParam, lParam);
+	}
 	//////////////////////////////////////////////////////////////////////////
 	// Typically, we'll need the window placement information
 	// and its rect to perform painting
@@ -1327,8 +1395,9 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 		// when updating the window frame, we exclude the client area
 		// because we don't want to interfere with the client WM_PAINT
 		// process and cause extra cost
-		RECT rcClient = {0};
+		CRect rcClient  ;
 		GetClientRect(&rcClient);
+
 		rcClient.top+=3;
 		if(bCAPTIONon){
 			rcClient.top+=GetSystemMetrics(SM_CYCAPTION) + 4;
@@ -1507,18 +1576,6 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 			CRect btnMenuRect = m_btnList.GetHTRect(MYHTMINTOTRAY);
 			rcWindowText.right = rcWindowText.right - ( rcWnd.right - btnMenuRect.left + 10 );
 			
-			CString szWindowText ;
-			if(m_bDxvaInUse){
-				CString szEVR;
-				if(m_bEVRInUse){
-					szEVR = _T("+EVR");
-				}
-				szWindowText.Format( _T("[硬件高清%s] "), szEVR);
-			}else if(m_bEVRInUse){
-				szWindowText = _T("[EVR] ");
-			}
-			szWindowText.Append(m_szTitle);
-			
 			//GetWindowText(szWindowText);
 			//if(m_bHasDrawShadowText )
 			//	::DrawShadowText(hdc, szWindowText, szWindowText.GetLength(), &rcWindowText, DT_LEFT|DT_SINGLELINE | DT_VCENTER, 0x00525d66, RGB(255,255,255), 1,1);
@@ -1605,6 +1662,31 @@ static LONGLONG m_lastTimeToggleFullsreen = 0;
 LRESULT CMainFrame::OnNcLButtonUp( WPARAM wParam, LPARAM lParam )
 {
 	// custom processing of our min/max/close buttons
+	BOOL bGlassAllow = FALSE;
+	AppSettings& s = AfxGetAppSettings();
+	if(s.bAeroGlass){
+
+		switch(wParam){
+			//my hittest
+			case HTMAXBUTTON:
+				wParam = MYHTMAXBUTTON;
+				break;
+			case HTMINBUTTON:
+				wParam = MYHTMINBUTTON;
+				break;
+			case HTCLOSE:
+				wParam = MYHTCLOSE;
+				break;
+			case HTSYSMENU:
+				wParam = MYHTMENU;
+				break;
+			case 0:
+				break;
+			default:
+				//	SVP_LogMsg5(_T("NCHIT %d"), lRet);
+				break;
+		}
+	}
 	if ( (wParam == MYHTCLOSE || wParam == MYHTMAXBUTTON || wParam == MYHTMINBUTTON || wParam == MYHTMENU || MYHTMINTOTRAY == wParam || MYHTFULLSCREEN == wParam))
 	{
 		RedrawNonClientArea();
@@ -1663,12 +1745,51 @@ LRESULT CMainFrame::OnImeSetContext(WPARAM wParam, LPARAM lParam )
 	//lParam = 0;
 	return DefWindowProc(WM_IME_SETCONTEXT, wParam, lParam);
 }
+
 LRESULT CMainFrame::OnNcHitTestNewUI(WPARAM wParam, LPARAM lParam )
 {
+	
+	AppSettings& s = AfxGetAppSettings();
+	if(s.bAeroGlass){
+		LRESULT lRet = 0;
+		if(!AfxGetMyApp()->m_pDwmDefWindowProc){
+			//SVP_LogMsg5(_T("NFUCK"));
+		}
+		HRESULT bNotPassOnDefWindowProc = true;
+		bNotPassOnDefWindowProc = AfxGetMyApp()->m_pDwmDefWindowProc(m_hWnd, WM_NCHITTEST, wParam, lParam, &lRet);
+		//SVP_LogMsg5(_T("NCHIT1 %d %x"), lRet , bNotPassOnDefWindowProc);
+		if(!bNotPassOnDefWindowProc){
+			lRet = DefWindowProc( WM_NCHITTEST, wParam, lParam);
+		}
+		//SVP_LogMsg5(_T("NCHIT2 %d"), lRet);
+		switch(lRet){
+			//my hittest
+			case HTMAXBUTTON:
+				lRet = MYHTMAXBUTTON;
+				break;
+			case HTMINBUTTON:
+				lRet = MYHTMINBUTTON;
+				break;
+			case HTCLOSE:
+				lRet = MYHTCLOSE;
+				break;
+			case HTSYSMENU:
+				lRet = MYHTMENU;
+				break;
+			case 0:
+				break;
+			default:
+			//	SVP_LogMsg5(_T("NCHIT %d"), lRet);
+				break;
+		}
+		return lRet;
+	}
+	CPoint pt(lParam);
+
 	// custom processing of our min/max/close buttons
 	CRect rc;
 	GetWindowRect(&rc);
-
+	
 	
 	/*
 	long nBoxStatus[4];
@@ -1696,7 +1817,6 @@ LRESULT CMainFrame::OnNcHitTestNewUI(WPARAM wParam, LPARAM lParam )
 	else if (m_nBoxStatus[2]!=0) return HTMINBUTTON;
 	else if (m_nBoxStatus[3]!=0) return HTMENU;*/
 
-	CPoint pt(lParam);
 	UINT ret = m_btnList.OnHitTest(pt,rc);
 	if( m_btnList.HTRedrawRequired ){
 		RedrawNonClientArea();
@@ -14635,4 +14755,121 @@ BOOL CMainFrame::OnNcCreate(LPCREATESTRUCT lpCreateStruct)
 	// TODO:  Add your specialized creation code here
 
 	return TRUE;
+}
+
+void CMainFrame::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
+{
+	AppSettings& s = AfxGetAppSettings();
+	if(s.bAeroGlass && 0 ){
+		
+		// Extend the frame into the client area.
+		MARGINS margins;
+
+		margins.cxLeftWidth = 0;      //8
+		margins.cxRightWidth = 0;    //8
+		margins.cyBottomHeight = 0; //20
+		margins.cyTopHeight = 0;       //27
+
+		HRESULT hr = AfxGetMyApp()->m_pDwmExtendFrameIntoClientArea(m_hWnd, &margins);
+
+		if (!SUCCEEDED(hr))
+		{
+			// Handle error.
+		}
+
+	}
+	
+	__super::OnActivate(nState, pWndOther, bMinimized);
+
+	// TODO: Add your message handler code here
+}
+
+void CMainFrame::OnPaint()
+{
+	
+	
+
+	{
+		CPaintDC dc(this); // device context for painting
+		// TODO: Add your message handler code here
+		// Do not call __super::OnPaint() for painting messages
+
+		AppSettings& s = AfxGetAppSettings();
+		if(!s.bAeroGlass || 1)
+			return;
+
+		
+		CRect rcClient;
+		GetClientRect( &rcClient);
+
+		HTHEME hTheme = AfxGetMyApp()->m_pOpenThemeData(NULL, L"CompositedWindow::Window");
+		if (hTheme)
+		{
+			CDC hdcPaint;
+
+			if (hdcPaint.CreateCompatibleDC(&dc))
+			{
+				int cx = rcClient.Width();
+				int cy = rcClient.Height();
+
+				// Define the BITMAPINFO structure used to draw text.
+				// Note that biHeight is negative. This is done because
+				// DrawThemeTextEx() needs the bitmap to be in top-to-bottom
+				// order.
+				BITMAPINFO dib = { 0 };
+				dib.bmiHeader.biSize            = sizeof(BITMAPINFOHEADER);
+				dib.bmiHeader.biWidth           = cx;
+				dib.bmiHeader.biHeight          = -cy;
+				dib.bmiHeader.biPlanes          = 1;
+				dib.bmiHeader.biBitCount        = 32;
+				dib.bmiHeader.biCompression     = BI_RGB;
+
+
+				HBITMAP hbm = ::CreateDIBSection((HDC)dc, &dib, DIB_RGB_COLORS, NULL, NULL, 0);
+				if (hbm)
+				{
+					HBITMAP hbmOld = (HBITMAP)hdcPaint.SelectObject(hbm);
+
+					// Setup the theme drawing options.
+					DTTOPTS DttOpts = {sizeof(DTTOPTS)};
+					DttOpts.dwFlags = DTT_COMPOSITED | DTT_GLOWSIZE;
+					DttOpts.iGlowSize = 15;
+
+					// Select a font.
+					LOGFONT lgFont;
+					HFONT hFontOld = NULL;
+					if (SUCCEEDED(AfxGetMyApp()->m_pGetThemeSysFont(hTheme, TMT_CAPTIONFONT, &lgFont)))
+					{
+						HFONT hFont = ::CreateFontIndirect(&lgFont);
+						hFontOld = (HFONT) hdcPaint.SelectObject( hFont);
+					}
+
+					// Draw the title.
+					RECT rcPaint = rcClient;
+					rcPaint.top += 2;
+					rcPaint.right -= 125;
+					rcPaint.left += 2;
+					//rcPaint.bottom = 50;
+					HRESULT drRet = AfxGetMyApp()->m_pDrawThemeTextEx(hTheme, (HDC)hdcPaint, WP_CAPTION, CS_ACTIVE, m_szTitle, -1, DT_LEFT | DT_WORD_ELLIPSIS, &rcPaint, &DttOpts);
+					if(S_OK != drRet){
+						SVP_LogMsg5(_T("m_pDrawThemeTextEx %x"),drRet);
+					}
+
+					// Blit text to the frame.
+					dc.BitBlt(0, 0, cx, cy, &hdcPaint, 0, 0, SRCCOPY);
+
+					hdcPaint.SelectObject( hbmOld);
+					if (hFontOld)
+					{
+						hdcPaint.SelectObject( hFontOld);
+					}
+					DeleteObject(hbm);
+				}
+				hdcPaint.DeleteDC();
+			}
+			AfxGetMyApp()->m_pCloseThemeData(hTheme);
+		}
+	}
+	
+
 }

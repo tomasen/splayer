@@ -444,7 +444,6 @@ int CChildView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	// TODO:  Add your specialized creation code here
 	
-
 	return 0;
 }
 

@@ -866,11 +866,11 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 			
 			SetLayeredWindowAttributes( 0, 0xff, LWA_ALPHA);
 
-			CRect rcClient;
-			GetWindowRect( &rcClient);
+			//CRect rcClient;
+			//GetWindowRect( &rcClient);
 
 			// Inform application of the frame change.
-			::SetWindowPos(m_hWnd, NULL, rcClient.left, rcClient.top,rcClient.Width(), rcClient.Height(),SWP_FRAMECHANGED);
+			//::SetWindowPos(m_hWnd, NULL, rcClient.left, rcClient.top,rcClient.Width(), rcClient.Height(),SWP_FRAMECHANGED);
 
 		}
 		
@@ -1136,75 +1136,6 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 }
 
 
-LRESULT CMainFrame::OnNcCalcSizeNewUI(   WPARAM wParam, LPARAM lParam){
-	
-	BOOL bCalcValidRects = (BOOL)wParam;
-	NCCALCSIZE_PARAMS* lpncsp = reinterpret_cast<NCCALCSIZE_PARAMS*>(lParam);
-
-	WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
-	GetWindowPlacement(&wp);
-	if(bCalcValidRects){
-		//先把rect[1]拷贝到rect[2]，rect[0]拷贝到rect[1]
-		//memcpy( &lpncsp->rgrc[2] ,  &lpncsp->rgrc[1] , sizeof(RECT));
-		//memcpy( &lpncsp->rgrc[1] ,  &lpncsp->rgrc[0] , sizeof(RECT));
-
-		CRect rc = lpncsp->rgrc[0];
-		DWORD currentStyle = GetStyle();
-		BOOL bCaptionOn = currentStyle&WS_CAPTION ;
-		if(m_fFullScreen){
-
-		}else{
-			AppSettings& s = AfxGetAppSettings();
-			if( s.bAeroGlass && 0){
-				//LRESULT lRet = 0;
-
-				//m_pDwmDefWindowProc(m_hWnd, WM_NCCALCSIZE, (WPARAM)bCalcValidRects, (LPARAM)lpncsp, &lRet);
-				//rc.DeflateRect(2,2,2,2);
-				lpncsp->rgrc[0] = rc;
-				return 0;
-			}else if(wp.showCmd!=SW_MAXIMIZE ){
-				
-					rc.InflateRect( GetSystemMetrics(SM_CXFRAME) - 4,  GetSystemMetrics(SM_CXFRAME) - 8,   GetSystemMetrics(SM_CXFRAME) - 4, GetSystemMetrics(SM_CXFRAME) - 3  );
-					if(!m_wndToolBar.IsVisible())	{
-						//rc.bottom -= 2;
-					}
-					rc.bottom -= 4;
-					rc.top -=1 ;
-					// 			CString szLog;
-					// 			szLog.Format(_T("%d %d"), GetSystemMetrics(SM_CXFRAME), GetSystemMetrics(SM_CYCAPTION));
-					// 			AfxMessageBox(szLog);
-					if(!bCaptionOn){
-						//rc.top -=3 ;
-						rc.left += 1;
-						rc.right -= 1;
-					}
-					if(m_wndToolBar.IsVisible()){
-						//rc.bottom += 2;
-						if(bCaptionOn){
-							rc.bottom += 1;
-						}
-					}
-				
-			}else{
-				//rc.InflateRect( GetSystemMetrics(SM_CXFRAME) - 3, 0,   GetSystemMetrics(SM_CXFRAME) - 3, GetSystemMetrics(SM_CXFRAME) - 2);
-
-			}
-		}			
-		
-		lpncsp->rgrc[0] = rc;
-	}
-//	__super::OnNcCalcSize(bCalcValidRects, lpncsp);
-	return DefWindowProc(WM_NCCALCSIZE, wParam, lParam);
-	/*
-	if(wp.showCmd==SW_MAXIMIZE ){
-			CString szLog;
-			szLog.Format(_T("Max Client Rect %d %d %d %d") , lpncsp->rgrc[0].left, lpncsp->rgrc[0].top, lpncsp->rgrc[0].right, lpncsp->rgrc[0].bottom);
-			//SVP_LogMsg(szLog);
-		}*/
-	
-}
-
-
 void CMainFrame::OnMove(int x, int y)
 {
 	HMONITOR hMonitor = MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST);
@@ -1234,510 +1165,18 @@ void CMainFrame::OnMove(int x, int y)
 	RedrawNonClientArea();
 }
 
-void CMainFrame::OnSize(UINT nType, int cx, int cy)
-{
-	m_tip.ClearStat();
-	__super::OnSize(nType, cx, cy);
-	
-	//SVP_LogMsg3("Winsizing @ %I64d", AfxGetMyApp()->GetPerfCounter());
-	//CAutoLock PaintLock(&m_PaintLock);
-	AppSettings& s = AfxGetAppSettings();
-
-	if(nType == SIZE_RESTORED && m_fTrayIcon && !s.fTrayIcon)
-	{
-		ShowTrayIcon(false);
-	}else if(nType == SIZE_MINIMIZED && s.fTrayIcon ){
-		ShowWindow(SW_HIDE);
-
-	}
-
-	//if(nType == SIZE_MINIMIZED)
-		
-
-	{//New UI
-		m_btnList.SetHideStat(MYHTMINTOTRAY, s.fTrayIcon);
-		
-		if(m_fFullScreen || SIZE_MAXIMIZED == nType)
-		{
-			m_btnList.SetHideStat(L"MAXIMIZE.BMP", TRUE);
-			m_btnList.SetHideStat(L"BTN_FULLSCREEN.BMP", TRUE);
-			m_btnList.SetHideStat(L"RESTORE.BMP", false);
-		}else{
-			m_btnList.SetHideStat(L"MAXIMIZE.BMP", false);
-			m_btnList.SetHideStat(L"BTN_FULLSCREEN.BMP", false);
-			m_btnList.SetHideStat(L"RESTORE.BMP", true);
-		}
-		CRect rc;
-		GetWindowRect(&rc);
-		m_btnList.OnSize( rc);
-	}
-
-	CRect r,cr;
-	m_wndView.GetClientRect(r);
-	m_wndView.GetWindowRect(cr);
-	//r.top += 20;
-	//m_wndView.MoveWindow(cr);
-	r.top += r.Height()/2;
-	cr.top += cr.Height()/2;
-	
-	rePosOSD();
-	
-	//::SetWindowPos(m_wndStatusBar.m_hWnd, m_wndView.m_hWnd, 20, 20, 100, 30,0);
-
-	if(!m_fFullScreen)
-	{
-		if(nType != SIZE_MAXIMIZED && nType != SIZE_MINIMIZED && m_WndSizeInited >= 2)
-			GetWindowRect(s.rcLastWindowPos);
-		s.lastWindowType = nType;
-
-		//if we dont use aero, set the round corner region
-		if(!s.bAeroGlass)
-		{ //New UI
-			CRect rc;
-			WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
-			GetWindowPlacement(&wp);
-			GetWindowRect(&rc);
-			rc-=rc.TopLeft();
-
-
-
-			// destroy old region
-			if((HRGN)m_rgn)
-			{
-				m_rgn.DeleteObject();
-			}
-			// create rounded rect region based on new window size
-			if (wp.showCmd != SW_MAXIMIZE )
-			{
-				rc.InflateRect(GetSystemMetrics(SM_CXBORDER), GetSystemMetrics(SM_CYBORDER));
-				m_rgn.CreateRoundRectRgn(0,0,rc.Width()-1,rc.Height()-1, 3,3);                 // rounded rect w/50 pixel corners
-
-				// set window region to make rounded window
-			}
-			else{
-				m_rgn.CreateRectRgn( 0,0, rc.Width(), rc.Height() );
-
-			}
-			SetWindowRgn(m_rgn,TRUE);
-			Invalidate();
-		}
-	}else{
-		SetWindowRgn(NULL,TRUE);   
-	}
-
-
-	
-	//SVP_LogMsg3("Winsized @ %I64d", AfxGetMyApp()->GetPerfCounter());
-
-}
-
-LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
-{
-
-
-	CString szWindowText ;
-	if(m_bDxvaInUse){
-		CString szEVR;
-		if(m_bEVRInUse){
-			szEVR = _T("+EVR");
-		}
-		szWindowText.Format( _T("[硬件高清%s] "), szEVR);
-	}else if(m_bEVRInUse){
-		szWindowText = _T("[EVR] ");
-	}
-	szWindowText.Append(m_szTitle);
-
-
-	AppSettings& s = AfxGetAppSettings();
-	if(s.bAeroGlass){
-		SetWindowText(szWindowText);
-		return DefWindowProc(WM_NCPAINT, wParam, lParam);
-	}
-	//////////////////////////////////////////////////////////////////////////
-	// Typically, we'll need the window placement information
-	// and its rect to perform painting
-	//CAutoLock PaintLock(&m_PaintLock);
-	LONGLONG startTime = AfxGetMyApp()->GetPerfCounter();
-	WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
-	GetWindowPlacement(&wp);
-	CRect rc, rcWnd;
-	GetWindowRect(&rcWnd);
-	rc = rcWnd - rcWnd.TopLeft();
-	if(wp.showCmd!=SW_MAXIMIZE && !m_fFullScreen){
-		rc.InflateRect(GetSystemMetrics(SM_CXBORDER), GetSystemMetrics(SM_CYBORDER));
-		if(!m_wndToolBar.IsVisible()){
-			//rc.bottom -=3;
-		}
-	}
-	DWORD currentStyle = GetStyle();
-	BOOL bCAPTIONon = currentStyle&WS_CAPTION ;
-
-	//////////////////////////////////////////////////////////////////////////
-	// This is an undocumented (or not very clearly documented)
-	// trick. When wParam==1, documents says that the entire
-	// window needs to be repainted, so in order to paint, we get
-	// the DC by calling GetWindowDC. Otherwise, the wParam
-	// parameter should contain the region, we make sure anything
-	// outside the region is excluded from update because it's
-	// actually possible to paint outside the region
-
-	CDC* dc;
-	if(wParam == 1)
-		dc = GetWindowDC();
-	else
-	{
-		CRgn* rgn = CRgn::FromHandle((HRGN)wParam);
-		dc = GetDCEx(rgn, DCX_WINDOW|DCX_INTERSECTRGN|0x10000);
-	}
-
-	if ((HDC)dc)
-	{
-		// when updating the window frame, we exclude the client area
-		// because we don't want to interfere with the client WM_PAINT
-		// process and cause extra cost
-		CRect rcClient  ;
-		GetClientRect(&rcClient);
-
-		rcClient.top+=3;
-		if(bCAPTIONon){
-			rcClient.top+=GetSystemMetrics(SM_CYCAPTION) + 4;
-			
-			//rcClient.bottom+=GetSystemMetrics(SM_CYCAPTION);
-		}else{
-			rcClient.top+=3;//GetSystemMetrics(SM_CYFRAME);
-		}
-		rcClient.left+=4 ;
-		rcClient.right+=4;
-		rcClient.bottom+=6 ;
-		if(m_wndToolBar.IsVisible()){
-			
-			rcClient.bottom+= 20;;//m_wndToolBar.CalcFixedLayout(TRUE, TRUE).cy;
-		}else{
-			//rcClient.bottom-=4;
-		}
-
-		int nTotalCaptionHeight = GetSystemMetrics(SM_CYCAPTION)+GetSystemMetrics(SM_CYFRAME)+( (8 - GetSystemMetrics(SM_CYFRAME) ) /2 );
-
-		if(m_fFullScreen){
-			nTotalCaptionHeight -= 4;
-		}
-		dc->ExcludeClipRect(&rcClient);
-
-		// establish double buffered painting
-		CMemoryDC hdc(dc, rc);
-// 		CBrush brush;
-// 		brush.CreateSolidBrush(RGB(0xff,0x00,0x00));
-// 		HBRUSH holdbrush = (HBRUSH)hdc.SelectObject(brush);
-		if (wp.showCmd != SW_MAXIMIZE && !m_fFullScreen){
-			//hdc.RoundRect(rc.left+1, rc.top+1, rc.right-1, rc.bottom-1, 3, 3);
-			int bSpace = 1;
-			CPen pen;
-			pen.CreatePen(PS_SOLID, 1, RGB(0x7f,0x7f,0x7f));
-			HPEN holdpen = (HPEN)hdc.SelectObject(pen);
-			hdc.MoveTo(rc.left+bSpace, rc.bottom-bSpace);
-			hdc.LineTo(rc.left+bSpace, rc.top+bSpace);
-			hdc.LineTo(rc.right-bSpace-1, rc.top+bSpace);
-			hdc.LineTo(rc.right-bSpace-1, rc.bottom-bSpace-1);
-			hdc.LineTo(rc.left+bSpace, rc.bottom-bSpace-1);
-
-			hdc.SelectObject(holdpen);
-			bSpace++;
-			CPen pen2;
-			pen2.CreatePen(PS_SOLID, 1, RGB(0xf0,0xf0,0xf0));
-			holdpen = (HPEN)hdc.SelectObject(pen2);
-			hdc.MoveTo(rc.left+bSpace, rc.bottom-bSpace);
-			hdc.LineTo(rc.left+bSpace, rc.top+bSpace);
-			hdc.LineTo(rc.right-bSpace-1, rc.top+bSpace);
-			hdc.LineTo(rc.right-bSpace-1, rc.bottom-bSpace-1);
-			hdc.LineTo(rc.left+bSpace, rc.bottom-bSpace-1);
-
-			hdc.SelectObject(holdpen);
-			bSpace++;
-			CPen pen3;
-			pen3.CreatePen(PS_SOLID, 1, RGB(0xe0,0xe0,0xe0));
-			holdpen = (HPEN)hdc.SelectObject(pen3);
-			hdc.MoveTo(rc.left+bSpace, rc.bottom-bSpace);
-			hdc.LineTo(rc.left+bSpace, rc.top+bSpace);
-			hdc.LineTo(rc.right-bSpace-1, rc.top+bSpace);
-			
-			hdc.MoveTo(rc.left+bSpace, rc.top+1+bSpace);
-			hdc.LineTo(rc.right-bSpace-1, rc.top+1+bSpace);
-			hdc.MoveTo(rc.left+bSpace, rc.top+2+bSpace);
-			hdc.LineTo(rc.right-bSpace-1, rc.top+2+bSpace);
-			
-			hdc.LineTo(rc.right-bSpace-1, rc.bottom-bSpace-1);
-			hdc.LineTo(rc.left+bSpace, rc.bottom-bSpace-1);
-			hdc.MoveTo(rc.right-bSpace-1, rc.bottom-bSpace-2);
-			hdc.LineTo(rc.left+bSpace, rc.bottom-bSpace-2);
-			hdc.MoveTo(rc.right-bSpace-1, rc.bottom-bSpace-3);
-			hdc.LineTo(rc.left+bSpace, rc.bottom-bSpace-3);
-
-			hdc.SelectObject(holdpen);
-			bSpace++;
-			CPen pen4;
-			pen4.CreatePen(PS_SOLID, 1, RGB(0x73,0x73,0x73));
-			holdpen = (HPEN)hdc.SelectObject(pen4);
-			hdc.MoveTo(rc.left+bSpace, rc.bottom-bSpace);
-			hdc.LineTo(rc.left+bSpace, rc.top+2+bSpace);
-			hdc.LineTo(rc.right-bSpace-1, rc.top+2+bSpace);
-			hdc.LineTo(rc.right-bSpace-1, rc.bottom-bSpace-1-2);
-			hdc.LineTo(rc.left+bSpace, rc.bottom-bSpace-1-2);
-
-			hdc.SelectObject(holdpen);
-			BOOL bToolBarOn = m_wndToolBar.IsVisible();
-			
-			CDC dcBmp;
-			dcBmp.CreateCompatibleDC(&hdc);
-			HBITMAP hbmpold = (HBITMAP)dcBmp.SelectObject(m_bmpBCorner);
-			hdc.SetStretchBltMode(HALFTONE);
-			hdc.SetBrushOrg(0, 0);
-			int tx = rc.Width() - 2;
-			int ty = rc.Height() - 2;
-			hdc.StretchBlt(0,0,5,7, &dcBmp, 0,0,5,7, SRCCOPY); // TopLeft
-			hdc.StretchBlt(tx-5,0,5,7, &dcBmp, 5,0,5,7, SRCCOPY); // Top Right
-			hdc.StretchBlt(0,ty-7,5,7, &dcBmp, 0,7,5,7, SRCCOPY);
-			hdc.StretchBlt(tx-5,ty-7,5,7, &dcBmp, 5,7,5,7, SRCCOPY);
-			
-			if(bToolBarOn && 0){
-				hdc.StretchBlt(0,ty-13,5,9, &dcBmp, 0,9,5,1, SRCCOPY);
-				hdc.StretchBlt(tx-5,ty-13,5,9, &dcBmp, 5,9,5,1, SRCCOPY);
-				hdc.StretchBlt(0,ty-14,5,1, &dcBmp, 0,8,5,1, SRCCOPY);
-				hdc.StretchBlt(tx-5,ty-14,5,1, &dcBmp, 5,8,5,1, SRCCOPY);
-				hdc.StretchBlt(0,ty-15,5,1, &dcBmp, 0,7,5,1, SRCCOPY);
-				hdc.StretchBlt(tx-5,ty-15,5,1, &dcBmp, 5,7,5,1, SRCCOPY);
-			}
-			dcBmp.SelectObject(hbmpold);
-		}else if(currentStyle&WS_CAPTION) {
-			//hdc.FillRect(&rc, &brush);
-		}
-
-
-// 		CString szLog;
-// 		szLog.Format(_T("%d") , nTotalCaptionHeight);
-// 		AfxMessageBox(szLog);
-		
-		// some basic styles
-		if(!m_fFullScreen){
-// 			CPen pen, penBright, penDark;
-// 			pen.CreatePen(PS_SOLID, 1, NEWUI_COLOR_PEN );
-// 			penBright.CreatePen(PS_SOLID, 1, NEWUI_COLOR_PEN_BRIGHT);
-// 			penDark.CreatePen(PS_SOLID, 1,NEWUI_COLOR_PEN_BRIGHT);
-// 			HPEN holdpen = (HPEN)hdc.SelectObject(pen);
-//			HBRUSH holdbrush = (HBRUSH)hdc.SelectObject(brush);
-// 			hdc.SelectObject(penBright);
-// 			hdc.MoveTo(rc.left+2, rc.bottom-3);
-// 			hdc.LineTo(rc.left+2, rc.top+2);
-// 			hdc.LineTo(rc.right-3, rc.top+2);
-// 			hdc.SelectObject(penDark);
-// 			hdc.MoveTo(rc.left+2, rc.bottom-3);
-// 			hdc.LineTo(rc.right-3, rc.bottom-3);
-// 			hdc.LineTo(rc.right-3, rc.top+2);
-// 			hdc.SelectObject(holdpen);
-// 			hdc.SelectObject(holdbrush);
-
-			// 		hdc.SelectObject((HBRUSH) GetStockObject(NULL_BRUSH));
-			// 		if (wp.showCmd != SW_MAXIMIZE)
-			// 			hdc.RoundRect(rc.left+1, rc.top+1, rc.right-1, rc.bottom-1, 3, 3);
-
-			
-		}
-		if(bCAPTIONon){
-			// and the title
-			
-			// painting the caption bar
-			CDC dcBmp;
-			dcBmp.CreateCompatibleDC(&hdc);
-			HBITMAP hbmpold = (HBITMAP)dcBmp.SelectObject(m_bmpCaption);
-			hdc.SetStretchBltMode(HALFTONE);
-			if(GetForegroundWindow() != this){
-				COLORADJUSTMENT cadj;
-				hdc.GetColorAdjustment(&cadj);
-				cadj.caRedGamma = 15000;
-				cadj.caGreenGamma = 15000;
-				cadj.caBlueGamma = 15000;
-				cadj.caSize = sizeof(cadj);
-				hdc.SetColorAdjustment(&cadj);
-			}
-			hdc.SetBrushOrg(0, 0);
-			hdc.StretchBlt(0, 0, 4, nTotalCaptionHeight, &dcBmp, 0, 0, 4, 25, SRCCOPY);
-			hdc.StretchBlt(4, 0, rc.Width()-4*2, nTotalCaptionHeight, &dcBmp, 4, 0, 6, 25, SRCCOPY);
-			hdc.StretchBlt(rc.Width()-2-4, 0, 4, nTotalCaptionHeight, &dcBmp, 10, 0, 4, 25, SRCCOPY);
-			dcBmp.SelectObject(hbmpold);
-
-			HFONT holdft = (HFONT)hdc.SelectObject(m_hft);
-
-			RECT rcWindowText = {0};
-			rcWindowText.top = rc.top+GetSystemMetrics(SM_CYFRAME)/2;
-			rcWindowText.left = rc.left+7+GetSystemMetrics(SM_CXFRAME);
-			rcWindowText.bottom = rc.top+nTotalCaptionHeight;
-			rcWindowText.right = rc.right;
-
-
-			CRect btnMenuRect = m_btnList.GetHTRect(MYHTMINTOTRAY);
-			rcWindowText.right = rcWindowText.right - ( rcWnd.right - btnMenuRect.left + 10 );
-			
-			//GetWindowText(szWindowText);
-			//if(m_bHasDrawShadowText )
-			//	::DrawShadowText(hdc, szWindowText, szWindowText.GetLength(), &rcWindowText, DT_LEFT|DT_SINGLELINE | DT_VCENTER, 0x00525d66, RGB(255,255,255), 1,1);
-			//else{
-				hdc.SetTextColor(0x00525d66);
-				hdc.SetBkMode(TRANSPARENT);
-				//hdc.SetBkColor( 0x00d6d7ce);
-				DrawText(hdc, szWindowText, szWindowText.GetLength(), &rcWindowText, DT_LEFT|DT_SINGLELINE | DT_VCENTER );
-			//}
-			hdc.SelectObject(holdft);
-
-			// min/max/close buttons
-			//LONG lPaintParamArray[][5] = {{1,0},{1,1},{1,2},{1,3}};
-			GetWindowRect(&rc);
-			if(wp.showCmd==SW_MAXIMIZE || m_fFullScreen){
-				//rc.top -= 8;
-			}
-			m_btnList.PaintAll(&hdc, rc);
-		}
-		/*
-
-		int nVertPos = NEWUI_BTN_MARGIN_TOP;
-		long nImagePositions[] = {0, NEWUI_BTN_HEIGTH, NEWUI_BTN_HEIGTH*2, NEWUI_BTN_HEIGTH*3};  // 正常 ; hove ; 按下 ; disabled
-		dcBmp.SelectObject(m_bmpClose);
-		BLENDFUNCTION bf = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};//
-		hdc.AlphaBlend(rc.right-NEWUI_BTN_MARGIN_RIGHT-NEWUI_BTN_WIDTH, nVertPos, NEWUI_BTN_WIDTH, NEWUI_BTN_HEIGTH, &dcBmp, 0, nImagePositions[m_nBoxStatus[0]], NEWUI_BTN_WIDTH, NEWUI_BTN_HEIGTH, bf);
-		dcBmp.SelectObject( (wp.showCmd==SW_MAXIMIZE)?m_bmpRestore:m_bmpMaximize);
-		hdc.AlphaBlend(rc.right-NEWUI_BTN_MARGIN_RIGHT-NEWUI_BTN_WIDTH*2, nVertPos, NEWUI_BTN_WIDTH, NEWUI_BTN_HEIGTH, &dcBmp, 0, nImagePositions[m_nBoxStatus[1]], NEWUI_BTN_WIDTH, NEWUI_BTN_HEIGTH, bf);
-		dcBmp.SelectObject(m_bmpMinimize);
-		hdc.AlphaBlend(rc.right-NEWUI_BTN_MARGIN_RIGHT-NEWUI_BTN_WIDTH*3, nVertPos, NEWUI_BTN_WIDTH, NEWUI_BTN_HEIGTH, &dcBmp, 0, nImagePositions[m_nBoxStatus[2]], NEWUI_BTN_WIDTH, NEWUI_BTN_HEIGTH, bf);
-		dcBmp.SelectObject(m_bmpMenu);
-		hdc.AlphaBlend(rc.right-NEWUI_BTN_MARGIN_RIGHT-NEWUI_BTN_WIDTH*4, nVertPos, NEWUI_BTN_WIDTH, NEWUI_BTN_HEIGTH, &dcBmp, 0, nImagePositions[m_nBoxStatus[3]], NEWUI_BTN_WIDTH, NEWUI_BTN_HEIGTH, bf);
-		*/
-
-
-
-		ReleaseDC(&hdc);
-		
-	}
-
-	if ((HDC)dc)
-	{
-		ReleaseDC(dc);
-	}
-	//LONGLONG costTime = AfxGetMyApp()->GetPerfCounter() - startTime;
-	//SVP_LogMsg3("NcPaint @ %I64d cost %I64d" , startTime , costTime);
-	return FALSE ;
-}
-
 LRESULT CMainFrame::OnNcActivate( WPARAM wParam, LPARAM lParam)
 {
 	//SVP_LogMsg(_T("OnNcActivate"));
 	RedrawWindow();
 	return TRUE;
 }
-
-LRESULT CMainFrame::OnNcLButtonDown( WPARAM wParam, LPARAM lParam )
-{
-	// custom processing of our min/max/close buttons
-	if (wParam == MYHTCLOSE || wParam == MYHTMAXBUTTON || wParam == MYHTMINBUTTON || MYHTMINTOTRAY == wParam || MYHTFULLSCREEN == wParam)
-	{
-		RedrawNonClientArea();
-		
-		return FALSE;
-	}else if(wParam == HTCLOSE || wParam == HTMAXBUTTON || wParam == HTMINBUTTON  )
-		return FALSE;
-
-	if(wParam == HTMENU || wParam == MYHTMENU){
-		OnMenu(m_popup.GetSubMenu(0));
-		m_btnList.ClearStat();
-		RedrawNonClientArea();
-		
-		return FALSE;
-	}
-	return DefWindowProc(WM_NCLBUTTONDOWN, wParam, lParam);
-}
+static LONGLONG m_lastTimeToggleFullsreen = 0;
 LRESULT CMainFrame::OnStatusMessage(  WPARAM wParam, LPARAM lParam){
 
 	SendStatusMessage( CString((WCHAR*)(wParam))  , (UINT)lParam);
 	return S_OK;
 
-}
-static LONGLONG m_lastTimeToggleFullsreen = 0;
-LRESULT CMainFrame::OnNcLButtonUp( WPARAM wParam, LPARAM lParam )
-{
-	// custom processing of our min/max/close buttons
-	BOOL bGlassAllow = FALSE;
-	AppSettings& s = AfxGetAppSettings();
-	if(s.bAeroGlass){
-
-		switch(wParam){
-			//my hittest
-			case HTMAXBUTTON:
-				wParam = MYHTMAXBUTTON;
-				break;
-			case HTMINBUTTON:
-				wParam = MYHTMINBUTTON;
-				break;
-			case HTCLOSE:
-				wParam = MYHTCLOSE;
-				break;
-			case HTSYSMENU:
-				wParam = MYHTMENU;
-				break;
-			case 0:
-				break;
-			default:
-				//	SVP_LogMsg5(_T("NCHIT %d"), lRet);
-				break;
-		}
-	}
-	if ( (wParam == MYHTCLOSE || wParam == MYHTMAXBUTTON || wParam == MYHTMINBUTTON || wParam == MYHTMENU || MYHTMINTOTRAY == wParam || MYHTFULLSCREEN == wParam))
-	{
-		RedrawNonClientArea();
-		WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
-		GetWindowPlacement(&wp);
-		LONGLONG tickNow = AfxGetMyApp()->GetPerfCounter();
-		if(  tickNow > ( m_lastTimeToggleFullsreen + 3000000) ){
-			if (wParam == MYHTFULLSCREEN){
-				PostMessage(WM_COMMAND , ID_VIEW_FULLSCREEN , 0);
-				m_btnList.ClearStat();
-			}
-			else if (wParam == MYHTCLOSE)
-				PostMessage(WM_CLOSE);
-			else if(wParam == MYHTMAXBUTTON)
-			{
-				//m_nBoxStatus[0] = m_nBoxStatus[1] =m_nBoxStatus[2] = 0;
-				m_btnList.ClearStat();
-				if (wp.showCmd == SW_MAXIMIZE)
-					ShowWindow(SW_NORMAL);
-				else
-					ShowWindow(SW_MAXIMIZE);
-			}
-			else if (wParam == MYHTMINBUTTON)
-			{
-				//m_nBoxStatus[0] = m_nBoxStatus[1] =m_nBoxStatus[2] = 0;
-				m_btnList.ClearStat();
-				m_tip.ClearStat();
-				ShowWindow(SW_MINIMIZE);
-			}
-			else if(MYHTMINTOTRAY == wParam ){
-				m_btnList.ClearStat();
-				m_tip.ClearStat();
-				ShowWindow(SW_HIDE);
-				ShowTrayIcon(true);
-			}
-		}
-		return FALSE;
-	}else if(wParam == HTCLOSE || wParam == HTMAXBUTTON || wParam == HTMINBUTTON || wParam == HTMENU || wParam == MYHTMENU )
-		return FALSE;
-
-	return DefWindowProc(WM_NCLBUTTONUP, wParam, lParam);
-}
-
-void CMainFrame::OnNcRButtonDown(UINT nHitTest, CPoint point)
-{
-	// TODO: Add your message handler code here and/or call default
-	OnMenu(m_popup.GetSubMenu(0));
-	m_btnList.ClearStat();
-	RedrawNonClientArea();
-	
-	//__super::OnNcRButtonDown(nHitTest, point);
 }
 
 LRESULT CMainFrame::OnImeSetContext(WPARAM wParam, LPARAM lParam )
@@ -14871,5 +14310,570 @@ void CMainFrame::OnPaint()
 		}
 	}
 	
+
+}
+
+void CMainFrame::OnSize(UINT nType, int cx, int cy)
+{
+	m_tip.ClearStat();
+	__super::OnSize(nType, cx, cy);
+
+	//SVP_LogMsg3("Winsizing @ %I64d", AfxGetMyApp()->GetPerfCounter());
+	//CAutoLock PaintLock(&m_PaintLock);
+	AppSettings& s = AfxGetAppSettings();
+
+	if(nType == SIZE_RESTORED && m_fTrayIcon && !s.fTrayIcon)
+	{
+		ShowTrayIcon(false);
+	}else if(nType == SIZE_MINIMIZED && s.fTrayIcon ){
+		ShowWindow(SW_HIDE);
+
+	}
+
+	//if(nType == SIZE_MINIMIZED)
+
+
+	{//New UI
+		m_btnList.SetHideStat(MYHTMINTOTRAY, s.fTrayIcon);
+
+		if(m_fFullScreen || SIZE_MAXIMIZED == nType)
+		{
+			m_btnList.SetHideStat(L"MAXIMIZE.BMP", TRUE);
+			m_btnList.SetHideStat(L"BTN_FULLSCREEN.BMP", TRUE);
+			m_btnList.SetHideStat(L"RESTORE.BMP", false);
+		}else{
+			m_btnList.SetHideStat(L"MAXIMIZE.BMP", false);
+			m_btnList.SetHideStat(L"BTN_FULLSCREEN.BMP", false);
+			m_btnList.SetHideStat(L"RESTORE.BMP", true);
+		}
+		CRect rc;
+		GetWindowRect(&rc);
+		m_btnList.OnSize( rc);
+	}
+
+	CRect r,cr;
+	m_wndView.GetClientRect(r);
+	m_wndView.GetWindowRect(cr);
+	//r.top += 20;
+	//m_wndView.MoveWindow(cr);
+	r.top += r.Height()/2;
+	cr.top += cr.Height()/2;
+
+	rePosOSD();
+
+	//::SetWindowPos(m_wndStatusBar.m_hWnd, m_wndView.m_hWnd, 20, 20, 100, 30,0);
+
+	if(!m_fFullScreen)
+	{
+		if(nType != SIZE_MAXIMIZED && nType != SIZE_MINIMIZED && m_WndSizeInited >= 2)
+			GetWindowRect(s.rcLastWindowPos);
+		s.lastWindowType = nType;
+
+		//if we dont use aero, set the round corner region
+		if(!s.bAeroGlass)
+		{ //New UI
+			CRect rc;
+			WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
+			GetWindowPlacement(&wp);
+			GetWindowRect(&rc);
+			rc-=rc.TopLeft();
+
+
+
+			// destroy old region
+			if((HRGN)m_rgn)
+			{
+				m_rgn.DeleteObject();
+			}
+			// create rounded rect region based on new window size
+			if (wp.showCmd != SW_MAXIMIZE )
+			{
+				rc.InflateRect(GetSystemMetrics(SM_CXBORDER), GetSystemMetrics(SM_CYBORDER));
+				m_rgn.CreateRoundRectRgn(0,0,rc.Width()-1,rc.Height()-1, 3,3);                 // rounded rect w/50 pixel corners
+
+				// set window region to make rounded window
+			}
+			else{
+				m_rgn.CreateRectRgn( 0,0, rc.Width(), rc.Height() );
+
+			}
+			SetWindowRgn(m_rgn,TRUE);
+			Invalidate();
+		}
+	}else{
+		SetWindowRgn(NULL,TRUE);   
+	}
+
+
+
+	//SVP_LogMsg3("Winsized @ %I64d", AfxGetMyApp()->GetPerfCounter());
+
+}
+
+LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
+{
+
+
+	CString szWindowText ;
+	if(m_bDxvaInUse){
+		CString szEVR;
+		if(m_bEVRInUse){
+			szEVR = _T("+EVR");
+		}
+		szWindowText.Format( _T("[硬件高清%s] "), szEVR);
+	}else if(m_bEVRInUse){
+		szWindowText = _T("[EVR] ");
+	}
+	szWindowText.Append(m_szTitle);
+
+
+	AppSettings& s = AfxGetAppSettings();
+	if(s.bAeroGlass){
+		SetWindowText(szWindowText);
+		return DefWindowProc(WM_NCPAINT, wParam, lParam);
+	}
+	//////////////////////////////////////////////////////////////////////////
+	// Typically, we'll need the window placement information
+	// and its rect to perform painting
+	//CAutoLock PaintLock(&m_PaintLock);
+	LONGLONG startTime = AfxGetMyApp()->GetPerfCounter();
+	WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
+	GetWindowPlacement(&wp);
+	CRect rc, rcWnd;
+	GetWindowRect(&rcWnd);
+	rc = rcWnd - rcWnd.TopLeft();
+	if(wp.showCmd!=SW_MAXIMIZE && !m_fFullScreen){
+		rc.InflateRect(GetSystemMetrics(SM_CXBORDER), GetSystemMetrics(SM_CYBORDER));
+		if(!m_wndToolBar.IsVisible()){
+			//rc.bottom -=3;
+		}
+	}
+	DWORD currentStyle = GetStyle();
+	BOOL bCAPTIONon = currentStyle&WS_CAPTION ;
+
+	//////////////////////////////////////////////////////////////////////////
+	// This is an undocumented (or not very clearly documented)
+	// trick. When wParam==1, documents says that the entire
+	// window needs to be repainted, so in order to paint, we get
+	// the DC by calling GetWindowDC. Otherwise, the wParam
+	// parameter should contain the region, we make sure anything
+	// outside the region is excluded from update because it's
+	// actually possible to paint outside the region
+
+	CDC* dc;
+	if(wParam == 1)
+		dc = GetWindowDC();
+	else
+	{
+		CRgn* rgn = CRgn::FromHandle((HRGN)wParam);
+		dc = GetDCEx(rgn, DCX_WINDOW|DCX_INTERSECTRGN|0x10000);
+	}
+
+	if ((HDC)dc)
+	{
+		// when updating the window frame, we exclude the client area
+		// because we don't want to interfere with the client WM_PAINT
+		// process and cause extra cost
+		CRect rcClient  ;
+		GetClientRect(&rcClient);
+
+		rcClient.top+=3;
+		if(bCAPTIONon){
+			rcClient.top+=GetSystemMetrics(SM_CYCAPTION) + 4;
+
+			//rcClient.bottom+=GetSystemMetrics(SM_CYCAPTION);
+		}else{
+			rcClient.top+=3;//GetSystemMetrics(SM_CYFRAME);
+		}
+		rcClient.left+=4 ;
+		rcClient.right+=4;
+		rcClient.bottom+=6 ;
+		if(m_wndToolBar.IsVisible()){
+
+			rcClient.bottom+= 20;;//m_wndToolBar.CalcFixedLayout(TRUE, TRUE).cy;
+		}else{
+			//rcClient.bottom-=4;
+		}
+
+		int nTotalCaptionHeight = GetSystemMetrics(SM_CYCAPTION)+GetSystemMetrics(SM_CYFRAME)+( (8 - GetSystemMetrics(SM_CYFRAME) ) /2 );
+
+		if(m_fFullScreen){
+			nTotalCaptionHeight -= 4;
+		}
+		dc->ExcludeClipRect(&rcClient);
+
+		// establish double buffered painting
+		CMemoryDC hdc(dc, rc);
+		// 		CBrush brush;
+		// 		brush.CreateSolidBrush(RGB(0xff,0x00,0x00));
+		// 		HBRUSH holdbrush = (HBRUSH)hdc.SelectObject(brush);
+		if (wp.showCmd != SW_MAXIMIZE && !m_fFullScreen){
+			//hdc.RoundRect(rc.left+1, rc.top+1, rc.right-1, rc.bottom-1, 3, 3);
+			int bSpace = 1;
+			CPen pen;
+			pen.CreatePen(PS_SOLID, 1, RGB(0x7f,0x7f,0x7f));
+			HPEN holdpen = (HPEN)hdc.SelectObject(pen);
+			hdc.MoveTo(rc.left+bSpace, rc.bottom-bSpace);
+			hdc.LineTo(rc.left+bSpace, rc.top+bSpace);
+			hdc.LineTo(rc.right-bSpace-1, rc.top+bSpace);
+			hdc.LineTo(rc.right-bSpace-1, rc.bottom-bSpace-1);
+			hdc.LineTo(rc.left+bSpace, rc.bottom-bSpace-1);
+
+			hdc.SelectObject(holdpen);
+			bSpace++;
+			CPen pen2;
+			pen2.CreatePen(PS_SOLID, 1, RGB(0xf0,0xf0,0xf0));
+			holdpen = (HPEN)hdc.SelectObject(pen2);
+			hdc.MoveTo(rc.left+bSpace, rc.bottom-bSpace);
+			hdc.LineTo(rc.left+bSpace, rc.top+bSpace);
+			hdc.LineTo(rc.right-bSpace-1, rc.top+bSpace);
+			hdc.LineTo(rc.right-bSpace-1, rc.bottom-bSpace-1);
+			hdc.LineTo(rc.left+bSpace, rc.bottom-bSpace-1);
+
+			hdc.SelectObject(holdpen);
+			bSpace++;
+			CPen pen3;
+			pen3.CreatePen(PS_SOLID, 1, RGB(0xe0,0xe0,0xe0));
+			holdpen = (HPEN)hdc.SelectObject(pen3);
+			hdc.MoveTo(rc.left+bSpace, rc.bottom-bSpace);
+			hdc.LineTo(rc.left+bSpace, rc.top+bSpace);
+			hdc.LineTo(rc.right-bSpace-1, rc.top+bSpace);
+
+			hdc.MoveTo(rc.left+bSpace, rc.top+1+bSpace);
+			hdc.LineTo(rc.right-bSpace-1, rc.top+1+bSpace);
+			hdc.MoveTo(rc.left+bSpace, rc.top+2+bSpace);
+			hdc.LineTo(rc.right-bSpace-1, rc.top+2+bSpace);
+
+			hdc.LineTo(rc.right-bSpace-1, rc.bottom-bSpace-1);
+			hdc.LineTo(rc.left+bSpace, rc.bottom-bSpace-1);
+			hdc.MoveTo(rc.right-bSpace-1, rc.bottom-bSpace-2);
+			hdc.LineTo(rc.left+bSpace, rc.bottom-bSpace-2);
+			hdc.MoveTo(rc.right-bSpace-1, rc.bottom-bSpace-3);
+			hdc.LineTo(rc.left+bSpace, rc.bottom-bSpace-3);
+
+			hdc.SelectObject(holdpen);
+			bSpace++;
+			CPen pen4;
+			pen4.CreatePen(PS_SOLID, 1, RGB(0x73,0x73,0x73));
+			holdpen = (HPEN)hdc.SelectObject(pen4);
+			hdc.MoveTo(rc.left+bSpace, rc.bottom-bSpace);
+			hdc.LineTo(rc.left+bSpace, rc.top+2+bSpace);
+			hdc.LineTo(rc.right-bSpace-1, rc.top+2+bSpace);
+			hdc.LineTo(rc.right-bSpace-1, rc.bottom-bSpace-1-2);
+			hdc.LineTo(rc.left+bSpace, rc.bottom-bSpace-1-2);
+
+			hdc.SelectObject(holdpen);
+			BOOL bToolBarOn = m_wndToolBar.IsVisible();
+
+			CDC dcBmp;
+			dcBmp.CreateCompatibleDC(&hdc);
+			HBITMAP hbmpold = (HBITMAP)dcBmp.SelectObject(m_bmpBCorner);
+			hdc.SetStretchBltMode(HALFTONE);
+			hdc.SetBrushOrg(0, 0);
+			int tx = rc.Width() - 2;
+			int ty = rc.Height() - 2;
+			hdc.StretchBlt(0,0,5,7, &dcBmp, 0,0,5,7, SRCCOPY); // TopLeft
+			hdc.StretchBlt(tx-5,0,5,7, &dcBmp, 5,0,5,7, SRCCOPY); // Top Right
+			hdc.StretchBlt(0,ty-7,5,7, &dcBmp, 0,7,5,7, SRCCOPY);
+			hdc.StretchBlt(tx-5,ty-7,5,7, &dcBmp, 5,7,5,7, SRCCOPY);
+
+			if(bToolBarOn && 0){
+				hdc.StretchBlt(0,ty-13,5,9, &dcBmp, 0,9,5,1, SRCCOPY);
+				hdc.StretchBlt(tx-5,ty-13,5,9, &dcBmp, 5,9,5,1, SRCCOPY);
+				hdc.StretchBlt(0,ty-14,5,1, &dcBmp, 0,8,5,1, SRCCOPY);
+				hdc.StretchBlt(tx-5,ty-14,5,1, &dcBmp, 5,8,5,1, SRCCOPY);
+				hdc.StretchBlt(0,ty-15,5,1, &dcBmp, 0,7,5,1, SRCCOPY);
+				hdc.StretchBlt(tx-5,ty-15,5,1, &dcBmp, 5,7,5,1, SRCCOPY);
+			}
+			dcBmp.SelectObject(hbmpold);
+		}else if(currentStyle&WS_CAPTION) {
+			//hdc.FillRect(&rc, &brush);
+		}
+
+
+		// 		CString szLog;
+		// 		szLog.Format(_T("%d") , nTotalCaptionHeight);
+		// 		AfxMessageBox(szLog);
+
+		// some basic styles
+		if(!m_fFullScreen){
+			// 			CPen pen, penBright, penDark;
+			// 			pen.CreatePen(PS_SOLID, 1, NEWUI_COLOR_PEN );
+			// 			penBright.CreatePen(PS_SOLID, 1, NEWUI_COLOR_PEN_BRIGHT);
+			// 			penDark.CreatePen(PS_SOLID, 1,NEWUI_COLOR_PEN_BRIGHT);
+			// 			HPEN holdpen = (HPEN)hdc.SelectObject(pen);
+			//			HBRUSH holdbrush = (HBRUSH)hdc.SelectObject(brush);
+			// 			hdc.SelectObject(penBright);
+			// 			hdc.MoveTo(rc.left+2, rc.bottom-3);
+			// 			hdc.LineTo(rc.left+2, rc.top+2);
+			// 			hdc.LineTo(rc.right-3, rc.top+2);
+			// 			hdc.SelectObject(penDark);
+			// 			hdc.MoveTo(rc.left+2, rc.bottom-3);
+			// 			hdc.LineTo(rc.right-3, rc.bottom-3);
+			// 			hdc.LineTo(rc.right-3, rc.top+2);
+			// 			hdc.SelectObject(holdpen);
+			// 			hdc.SelectObject(holdbrush);
+
+			// 		hdc.SelectObject((HBRUSH) GetStockObject(NULL_BRUSH));
+			// 		if (wp.showCmd != SW_MAXIMIZE)
+			// 			hdc.RoundRect(rc.left+1, rc.top+1, rc.right-1, rc.bottom-1, 3, 3);
+
+
+		}
+		if(bCAPTIONon){
+			// and the title
+
+			// painting the caption bar
+			CDC dcBmp;
+			dcBmp.CreateCompatibleDC(&hdc);
+			HBITMAP hbmpold = (HBITMAP)dcBmp.SelectObject(m_bmpCaption);
+			hdc.SetStretchBltMode(HALFTONE);
+			if(GetForegroundWindow() != this){
+				COLORADJUSTMENT cadj;
+				hdc.GetColorAdjustment(&cadj);
+				cadj.caRedGamma = 15000;
+				cadj.caGreenGamma = 15000;
+				cadj.caBlueGamma = 15000;
+				cadj.caSize = sizeof(cadj);
+				hdc.SetColorAdjustment(&cadj);
+			}
+			hdc.SetBrushOrg(0, 0);
+			hdc.StretchBlt(0, 0, 4, nTotalCaptionHeight, &dcBmp, 0, 0, 4, 25, SRCCOPY); 
+			hdc.StretchBlt(4, 0, rc.Width()-4*2 , nTotalCaptionHeight, &dcBmp, 4, 0, 6, 25, SRCCOPY);// why not correct in windows 2000
+			//SVP_LogMsg3("rc %d %d ", rc.Width(), rc.Height());
+			hdc.StretchBlt(rc.Width()-2-4, 0, 4, nTotalCaptionHeight, &dcBmp, 10, 0, 4, 25, SRCCOPY);
+			dcBmp.SelectObject(hbmpold);
+
+			HFONT holdft = (HFONT)hdc.SelectObject(m_hft);
+
+			RECT rcWindowText = {0};
+			rcWindowText.top = rc.top+GetSystemMetrics(SM_CYFRAME)/2;
+			rcWindowText.left = rc.left+7+GetSystemMetrics(SM_CXFRAME);
+			rcWindowText.bottom = rc.top+nTotalCaptionHeight;
+			rcWindowText.right = rc.right;
+
+
+			CRect btnMenuRect = m_btnList.GetHTRect(MYHTMINTOTRAY);
+			rcWindowText.right = rcWindowText.right - ( rcWnd.right - btnMenuRect.left + 10 );
+
+			//GetWindowText(szWindowText);
+			//if(m_bHasDrawShadowText )
+			//	::DrawShadowText(hdc, szWindowText, szWindowText.GetLength(), &rcWindowText, DT_LEFT|DT_SINGLELINE | DT_VCENTER, 0x00525d66, RGB(255,255,255), 1,1);
+			//else{
+			hdc.SetTextColor(0x00525d66);
+			hdc.SetBkMode(TRANSPARENT);
+			//hdc.SetBkColor( 0x00d6d7ce);
+			DrawText(hdc, szWindowText, szWindowText.GetLength(), &rcWindowText, DT_LEFT|DT_SINGLELINE | DT_VCENTER );
+			//}
+			hdc.SelectObject(holdft);
+
+			// min/max/close buttons
+			//LONG lPaintParamArray[][5] = {{1,0},{1,1},{1,2},{1,3}};
+			GetWindowRect(&rc);
+			if(wp.showCmd==SW_MAXIMIZE || m_fFullScreen){
+				//rc.top -= 8;
+			}
+			m_btnList.PaintAll(&hdc, rc);
+		}
+		/*
+
+		int nVertPos = NEWUI_BTN_MARGIN_TOP;
+		long nImagePositions[] = {0, NEWUI_BTN_HEIGTH, NEWUI_BTN_HEIGTH*2, NEWUI_BTN_HEIGTH*3};  // 正常 ; hove ; 按下 ; disabled
+		dcBmp.SelectObject(m_bmpClose);
+		BLENDFUNCTION bf = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};//
+		hdc.AlphaBlend(rc.right-NEWUI_BTN_MARGIN_RIGHT-NEWUI_BTN_WIDTH, nVertPos, NEWUI_BTN_WIDTH, NEWUI_BTN_HEIGTH, &dcBmp, 0, nImagePositions[m_nBoxStatus[0]], NEWUI_BTN_WIDTH, NEWUI_BTN_HEIGTH, bf);
+		dcBmp.SelectObject( (wp.showCmd==SW_MAXIMIZE)?m_bmpRestore:m_bmpMaximize);
+		hdc.AlphaBlend(rc.right-NEWUI_BTN_MARGIN_RIGHT-NEWUI_BTN_WIDTH*2, nVertPos, NEWUI_BTN_WIDTH, NEWUI_BTN_HEIGTH, &dcBmp, 0, nImagePositions[m_nBoxStatus[1]], NEWUI_BTN_WIDTH, NEWUI_BTN_HEIGTH, bf);
+		dcBmp.SelectObject(m_bmpMinimize);
+		hdc.AlphaBlend(rc.right-NEWUI_BTN_MARGIN_RIGHT-NEWUI_BTN_WIDTH*3, nVertPos, NEWUI_BTN_WIDTH, NEWUI_BTN_HEIGTH, &dcBmp, 0, nImagePositions[m_nBoxStatus[2]], NEWUI_BTN_WIDTH, NEWUI_BTN_HEIGTH, bf);
+		dcBmp.SelectObject(m_bmpMenu);
+		hdc.AlphaBlend(rc.right-NEWUI_BTN_MARGIN_RIGHT-NEWUI_BTN_WIDTH*4, nVertPos, NEWUI_BTN_WIDTH, NEWUI_BTN_HEIGTH, &dcBmp, 0, nImagePositions[m_nBoxStatus[3]], NEWUI_BTN_WIDTH, NEWUI_BTN_HEIGTH, bf);
+		*/
+
+
+
+		ReleaseDC(&hdc);
+
+	}
+
+	if ((HDC)dc)
+	{
+		ReleaseDC(dc);
+	}
+	//LONGLONG costTime = AfxGetMyApp()->GetPerfCounter() - startTime;
+	//SVP_LogMsg3("NcPaint @ %I64d cost %I64d" , startTime , costTime);
+	return FALSE ;
+}
+
+LRESULT CMainFrame::OnNcLButtonDown( WPARAM wParam, LPARAM lParam )
+{
+	// custom processing of our min/max/close buttons
+	if (wParam == MYHTCLOSE || wParam == MYHTMAXBUTTON || wParam == MYHTMINBUTTON || MYHTMINTOTRAY == wParam || MYHTFULLSCREEN == wParam)
+	{
+		RedrawNonClientArea();
+
+		return FALSE;
+	}else if(wParam == HTCLOSE || wParam == HTMAXBUTTON || wParam == HTMINBUTTON  )
+		return FALSE;
+
+	if(wParam == HTMENU || wParam == MYHTMENU){
+		OnMenu(m_popup.GetSubMenu(0));
+		m_btnList.ClearStat();
+		RedrawNonClientArea();
+
+		return FALSE;
+	}
+	return DefWindowProc(WM_NCLBUTTONDOWN, wParam, lParam);
+}
+
+
+LRESULT CMainFrame::OnNcLButtonUp( WPARAM wParam, LPARAM lParam )
+{
+	// custom processing of our min/max/close buttons
+	BOOL bGlassAllow = FALSE;
+	AppSettings& s = AfxGetAppSettings();
+	if(s.bAeroGlass){
+
+		switch(wParam){
+			//my hittest
+			case HTMAXBUTTON:
+				wParam = MYHTMAXBUTTON;
+				break;
+			case HTMINBUTTON:
+				wParam = MYHTMINBUTTON;
+				break;
+			case HTCLOSE:
+				wParam = MYHTCLOSE;
+				break;
+			case HTSYSMENU:
+				wParam = MYHTMENU;
+				break;
+			case 0:
+				break;
+			default:
+				//	SVP_LogMsg5(_T("NCHIT %d"), lRet);
+				break;
+		}
+	}
+	if ( (wParam == MYHTCLOSE || wParam == MYHTMAXBUTTON || wParam == MYHTMINBUTTON || wParam == MYHTMENU || MYHTMINTOTRAY == wParam || MYHTFULLSCREEN == wParam))
+	{
+		RedrawNonClientArea();
+		WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
+		GetWindowPlacement(&wp);
+		LONGLONG tickNow = AfxGetMyApp()->GetPerfCounter();
+		if(  tickNow > ( m_lastTimeToggleFullsreen + 3000000) ){
+			if (wParam == MYHTFULLSCREEN){
+				PostMessage(WM_COMMAND , ID_VIEW_FULLSCREEN , 0);
+				m_btnList.ClearStat();
+			}
+			else if (wParam == MYHTCLOSE)
+				PostMessage(WM_CLOSE);
+			else if(wParam == MYHTMAXBUTTON)
+			{
+				//m_nBoxStatus[0] = m_nBoxStatus[1] =m_nBoxStatus[2] = 0;
+				m_btnList.ClearStat();
+				if (wp.showCmd == SW_MAXIMIZE)
+					ShowWindow(SW_NORMAL);
+				else
+					ShowWindow(SW_MAXIMIZE);
+			}
+			else if (wParam == MYHTMINBUTTON)
+			{
+				//m_nBoxStatus[0] = m_nBoxStatus[1] =m_nBoxStatus[2] = 0;
+				m_btnList.ClearStat();
+				m_tip.ClearStat();
+				ShowWindow(SW_MINIMIZE);
+			}
+			else if(MYHTMINTOTRAY == wParam ){
+				m_btnList.ClearStat();
+				m_tip.ClearStat();
+				ShowWindow(SW_HIDE);
+				ShowTrayIcon(true);
+			}
+		}
+		return FALSE;
+	}else if(wParam == HTCLOSE || wParam == HTMAXBUTTON || wParam == HTMINBUTTON || wParam == HTMENU || wParam == MYHTMENU )
+		return FALSE;
+
+	return DefWindowProc(WM_NCLBUTTONUP, wParam, lParam);
+}
+
+void CMainFrame::OnNcRButtonDown(UINT nHitTest, CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+	OnMenu(m_popup.GetSubMenu(0));
+	m_btnList.ClearStat();
+	RedrawNonClientArea();
+
+	//__super::OnNcRButtonDown(nHitTest, point);
+}
+
+
+
+LRESULT CMainFrame::OnNcCalcSizeNewUI(   WPARAM wParam, LPARAM lParam){
+
+	BOOL bCalcValidRects = (BOOL)wParam;
+	NCCALCSIZE_PARAMS* lpncsp = reinterpret_cast<NCCALCSIZE_PARAMS*>(lParam);
+
+	WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
+	GetWindowPlacement(&wp);
+	if(bCalcValidRects){
+		//先把rect[1]拷贝到rect[2]，rect[0]拷贝到rect[1]
+		//memcpy( &lpncsp->rgrc[2] ,  &lpncsp->rgrc[1] , sizeof(RECT));
+		//memcpy( &lpncsp->rgrc[1] ,  &lpncsp->rgrc[0] , sizeof(RECT));
+
+		CRect rc = lpncsp->rgrc[0];
+		DWORD currentStyle = GetStyle();
+		BOOL bCaptionOn = currentStyle&WS_CAPTION ;
+		if(m_fFullScreen){
+
+		}else{
+			AppSettings& s = AfxGetAppSettings();
+			if( s.bAeroGlass && 0){
+				//LRESULT lRet = 0;
+
+				//m_pDwmDefWindowProc(m_hWnd, WM_NCCALCSIZE, (WPARAM)bCalcValidRects, (LPARAM)lpncsp, &lRet);
+				//rc.DeflateRect(2,2,2,2);
+				lpncsp->rgrc[0] = rc;
+				return 0;
+			}else if(wp.showCmd!=SW_MAXIMIZE ){
+
+				rc.InflateRect( GetSystemMetrics(SM_CXFRAME) - 4,  GetSystemMetrics(SM_CXFRAME) - 8,   GetSystemMetrics(SM_CXFRAME) - 4, GetSystemMetrics(SM_CXFRAME) - 3  );
+				if(!m_wndToolBar.IsVisible())	{
+					//rc.bottom -= 2;
+				}
+				rc.bottom -= 4;
+				rc.top -=1 ;
+				// 			CString szLog;
+				// 			szLog.Format(_T("%d %d"), GetSystemMetrics(SM_CXFRAME), GetSystemMetrics(SM_CYCAPTION));
+				// 			AfxMessageBox(szLog);
+				if(!bCaptionOn){
+					//rc.top -=3 ;
+					rc.left += 1;
+					rc.right -= 1;
+				}
+				if(m_wndToolBar.IsVisible()){
+					//rc.bottom += 2;
+					if(bCaptionOn){
+						rc.bottom += 1;
+					}
+				}
+
+			}else{
+				//rc.InflateRect( GetSystemMetrics(SM_CXFRAME) - 3, 0,   GetSystemMetrics(SM_CXFRAME) - 3, GetSystemMetrics(SM_CXFRAME) - 2);
+
+			}
+		}			
+
+		lpncsp->rgrc[0] = rc;
+	}
+	//	__super::OnNcCalcSize(bCalcValidRects, lpncsp);
+	return DefWindowProc(WM_NCCALCSIZE, wParam, lParam);
+	/*
+	if(wp.showCmd==SW_MAXIMIZE ){
+	CString szLog;
+	szLog.Format(_T("Max Client Rect %d %d %d %d") , lpncsp->rgrc[0].left, lpncsp->rgrc[0].top, lpncsp->rgrc[0].right, lpncsp->rgrc[0].bottom);
+	//SVP_LogMsg(szLog);
+	}*/
 
 }

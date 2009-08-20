@@ -621,6 +621,14 @@ void CMPCVideoDecFilter::DetectVideoCard(HWND hWnd)
 	m_VideoDriverVersion.HighPart = 0;
 	m_VideoDriverVersion.LowPart = 0;
 
+	HMODULE m_hD3D9 =  LoadLibrary(L"d3d9.dll");
+	if (m_hD3D9)
+	{
+		if(! GetProcAddress(m_hD3D9, "Direct3DCreate9") ){
+			return  ;
+		}
+	}else{	return  ;}
+
 	if (pD3D9 = Direct3DCreate9(D3D_SDK_VERSION)) 
 	{
 		D3DADAPTER_IDENTIFIER9 adapterIdentifier;

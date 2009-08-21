@@ -539,7 +539,8 @@ CMainFrame::CMainFrame() :
 	m_bDxvaInUse(false) ,
 	m_bEVRInUse(false),
 	m_bHasDrawShadowText(false),
-	m_notshowtoolbarforawhile(0)
+	m_notshowtoolbarforawhile(0),
+	m_iAudioChannelMaping(0)
 {
 }
 

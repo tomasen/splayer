@@ -731,6 +731,7 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 			if (szFName.Find(_T("TTL2 Decompressor")) >= 0 ) continue;
 			if (szFName.Find(_T("RDP DShow Redirection Filter")) >= 0 ) continue;
 			if (szFName.Find(_T("Sonic MP4 Demultiplexer")) >= 0 ) continue;
+			if (szFName.Find(_T("MainConcept")) >= 0 ) continue;
 			//if (szFName.Find(_T("AVI Decompressor (YV12)")) >= 0 ) continue;
 			//if (szFName.Find(_T("AVI Decompressor (I420)")) >= 0 ) continue;
 			//if (szFName.Find(_T("AVI Decompressor (YUY2)")) >= 0 ) continue;

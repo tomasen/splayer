@@ -4044,6 +4044,10 @@ void CMainFrame::OnUpdatePlayerStatus(CCmdUI* pCmdUI)
 
 void CMainFrame::OnFilePostOpenmedia()
 {
+
+	if(m_iAudioChannelMaping)
+		OnAudioChannalMapMenu(IDS_AUDIOCHANNALMAPNORMAL+m_iAudioChannelMaping);
+
 	OpenSetupInfoBar();
 
 	OpenSetupStatsBar();

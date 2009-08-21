@@ -13944,12 +13944,14 @@ void CMainFrame::OnDelcurfolder()
 	CString szPath = svpTool.GetDirFromPath(m_fnCurPlayingFile);
 	szMsg.Format(_T("删除当前文件夹：\r\n%s ?"), szPath);
 	if(IDYES == AfxMessageBox(szMsg, MB_YESNO)){
-		PostMessage(WM_COMMAND, ID_FILE_CLOSEMEDIA);
-		fnDelPending = szPath;
-		SetTimer(TIMER_DELETE_CUR_FOLDER, 1000, NULL);
-		
-		if(m_fFullScreen){
-			ToggleFullscreen(true, false);
+		if(IDYES == AfxMessageBox(_T("真的要删除当前文件夹么？\n此操作将无法撤消！"), MB_YESNO|MB_ICONEXCLAMATION)){
+			PostMessage(WM_COMMAND, ID_FILE_CLOSEMEDIA);
+			fnDelPending = szPath;
+			SetTimer(TIMER_DELETE_CUR_FOLDER, 1000, NULL);
+			
+			if(m_fFullScreen){
+				ToggleFullscreen(true, false);
+			}
 		}
 	}
 }

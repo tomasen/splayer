@@ -345,12 +345,12 @@ void CUpdaterDlg::OnTimer(UINT_PTR nIDEvent)
 
 				if(cup.bSVPCU_DONE){
 					KillTimer(IDT_REFRESH_STAT);
-					szTmp = _T("射手影音播放器已经更新到最新版本！\r\n本程序将在2分钟内关闭");
+					szTmp = _T("射手影音播放器已经更新到最新版本！\r\n本程序将在半分钟内关闭");
 					cs_stat.SetWindowText(szTmp);
 					csCurTask.SetWindowText(_T("当前任务： 更新已结束"));
 					KillTimer(IDT_SHOW_INTRO);
 					//cb_backgd.SetWindowText(_T("关闭"));
-					SetTimer(IDT_CLOSE_DLG, 120000, NULL);
+					SetTimer(IDT_CLOSE_DLG, 15000, NULL);
 				}
 			}
 			break;

@@ -1914,6 +1914,7 @@ CMPlayerCApp::Settings::Settings()
 	, MRUDub(0, _T("Recent Dub List"), _T("Dub%d"), 20)
 	, MRUUrl(0, _T("Recent Url List"), _T("Url%d"), 20)
 	, hAccel(NULL)
+	, bSetTempChannelMaping(0)
 {
 #define ADDCMD(cmd) wmcmds.AddTail(wmcmd##cmd)
 	ADDCMD((ID_BOSS, VK_OEM_3, FVIRTKEY|FCONTROL|FNOINVERT, _T("老板键")));
@@ -2248,6 +2249,9 @@ POSITION CMPlayerCApp::Settings::FindWmcmdsPosofCmdidByIdx(INT cmdid, int idx){
 #define SPEAKER_TOP_BACK_CENTER         0x10000
 #define SPEAKER_TOP_BACK_RIGHT          0x20000
 void CMPlayerCApp::Settings::SetChannelMapByNumberOfSpeakers( int iSS , int iNumberOfSpeakers){
+
+	if(bSetTempChannelMaping)
+		return;
 
 	if(iNumberOfSpeakers == -1){
 		iNumberOfSpeakers = GetNumberOfSpeakers();

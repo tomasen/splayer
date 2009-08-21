@@ -10544,6 +10544,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 	}
 
 	s.szFGMLog.Empty();
+	
 	s.SetChannelMapByNumberOfSpeakers(s.iDecSpeakers , -1);
 
 	m_iMediaLoadState = MLS_LOADING;
@@ -11448,6 +11449,8 @@ void CMainFrame::OnAudioChannalMapMenu(UINT nID){
 
 	if(pSS)
 	{
+		AppSettings& s = AfxGetAppSettings();
+
 		m_iAudioChannelMaping = nID - IDS_AUDIOCHANNALMAPNORMAL;
 		DWORD pSpeakerToChannelMap[18][18]; //Meaning [Total Channel Number] [Speaker] = 1 << Channel
 		memset(pSpeakerToChannelMap, 0, sizeof(pSpeakerToChannelMap));
@@ -11456,6 +11459,7 @@ void CMainFrame::OnAudioChannalMapMenu(UINT nID){
 		switch(m_iAudioChannelMaping ){
 			case 0:
 				bCustomChannelMapping = FALSE;
+				s.bSetTempChannelMaping = FALSE;
 				break;
 			case 1:
 				bCustomChannelMapping = TRUE;
@@ -11468,6 +11472,7 @@ void CMainFrame::OnAudioChannalMapMenu(UINT nID){
 				break;
 		}
 		if(bCustomChannelMapping){
+			s.bSetTempChannelMaping = TRUE;
 			int iCurChs = pSS->GetNumberOfInputChannels() - 1;
 			for(int i = 0; i < 18; i++){
 				pSpeakerToChannelMap[iCurChs][i] = 1<<iMapedChannel;

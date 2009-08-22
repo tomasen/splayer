@@ -417,7 +417,7 @@ m_MainThreadId = 0;
 		//(FARPROC &)m_pDwmEnableComposition = GetProcAddress(m_hDWMAPI, "DwmEnableComposition");
 	}
 
-	m_hD3D9 = NULL;//LoadLibrary(L"d3d9.dll");
+	m_hD3D9 =LoadLibrary(L"d3d9.dll");// NULL;//
 	if (m_hD3D9)
 	{
 		(FARPROC &)m_pDirect3DCreate9Ex = GetProcAddress(m_hD3D9, "Direct3DCreate9Ex");
@@ -945,7 +945,7 @@ HRESULT CDX9AllocatorPresenter::CreateDevice()
 //		if(m_fVMRSyncFix = AfxGetMyApp()->m_s.fVMRSyncFix)
 			
 	//SVP_LogMsg3("shit %d %d" , d3ddm.Width , d3ddm.Height);
-	if (m_pD3DEx)
+		if (m_pD3DEx)
 		{
 			hr = m_pD3DEx->CreateDeviceEx(
 								GetAdapter(m_pD3D), D3DDEVTYPE_HAL, m_hWnd,

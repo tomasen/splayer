@@ -105,7 +105,74 @@ void CBaseSplitterFile::Seek(__int64 pos)
 	m_pos = min(max(pos, 0), len);
 	BitFlush();
 }
+#if 0
 
+HRESULT CBaseSplitterFile::Read(BYTE* pData, __int64 len)
+{
+	CheckPointer(m_pAsyncReader, E_NOINTERFACE);
+
+	HRESULT hr = S_OK;
+
+	if(!m_fRandomAccess)
+	{
+		LONGLONG total = 0, available = -1;
+		m_pAsyncReader->Length(&total, &available);
+		if(total == available) {m_fRandomAccess = true; OnComplete();}
+	}
+
+	if(m_cachetotal == 0 || !m_pCache)
+	{
+		hr = m_pAsyncReader->SyncRead(m_pos, (long)len, pData);
+		m_pos += len;
+		return hr;
+	}
+
+	BYTE* pCache = m_pCache;
+
+	if(m_cachepos <= m_pos && m_pos < m_cachepos + m_cachelen)
+	{
+		__int64 minlen = min(len, m_cachelen - (m_pos - m_cachepos));
+
+		memcpy(pData, &pCache[m_pos - m_cachepos], (size_t)minlen);
+
+		len -= minlen;
+		m_pos += minlen;
+		pData += minlen;
+	}
+
+	while(len > m_cachetotal)
+	{
+		hr = m_pAsyncReader->SyncRead(m_pos, (long)m_cachetotal, pData);
+		if(S_OK != hr) return hr;
+
+		len -= m_cachetotal;
+		m_pos += m_cachetotal;
+		pData += m_cachetotal;
+	}
+
+	while(len > 0)
+	{
+		__int64 tmplen = GetLength();
+		__int64 maxlen = min(tmplen - m_pos, m_cachetotal);
+		__int64 minlen = min(len, maxlen);
+		if(minlen <= 0) return S_FALSE;
+
+		hr = m_pAsyncReader->SyncRead(m_pos, (long)maxlen, pCache);
+		if(S_OK != hr) return hr;
+
+		m_cachepos = m_pos;
+		m_cachelen = maxlen;
+
+		memcpy(pData, pCache, (size_t)minlen);
+
+		len -= minlen;
+		m_pos += minlen;
+		pData += minlen;
+	}
+
+	return hr;
+}
+#else
 HRESULT CBaseSplitterFile::Read(BYTE* pData, __int64 len)
 {
 	CheckPointer(m_pAsyncReader, E_NOINTERFACE);
@@ -198,7 +265,7 @@ HRESULT CBaseSplitterFile::Read(BYTE* pData, __int64 len)
 
 	return hr;
 }
-
+#endif
 UINT64 CBaseSplitterFile::BitRead(int nBits, bool fPeek)
 {
 	ASSERT(nBits >= 0 && nBits <= 64);

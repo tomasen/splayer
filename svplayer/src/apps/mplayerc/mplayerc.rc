@@ -1909,13 +1909,6 @@ BEGIN
                 MENUITEM "2.35:1",                      ID_ASPECTRATIO_235_1
                 MENUITEM "智能显示器校正",                     ID_VIEW_VF_COMPMONDESKARDIFF
             END
-            MENUITEM SEPARATOR
-            POPUP "在最前(前端显示)"
-            BEGIN
-                MENUITEM "从不",                          ID_ONTOP_NEVER
-                MENUITEM "总在最前",                        ID_ONTOP_ALWAYS
-                MENUITEM "仅播放时",                        ID_ONTOP_WHILEPLAYING
-            END
         END
         POPUP "DVD控制"
         BEGIN
@@ -1963,10 +1956,7 @@ BEGIN
             MENUITEM "捐助！",                         ID_DONATE
             MENUITEM SEPARATOR
             MENUITEM "检查更新...",                     ID_MANUALCHECKUPDATE
-            MENUITEM "热键设置...",                     ID_VIEW_SETHOTKEY
-            MENUITEM "界面背景设置...",                   ID_CHANGEBACKGROUND
             MENUITEM "重建文件关联",                      ID_CHECK_DEFAULT_PLAYER
-            MENUITEM "恢复默认设置",                      ID_RESET_SETTING
             MENUITEM SEPARATOR
             MENUITEM "滤镜(Filters)",                 ID__FILTERS
             MENUITEM SEPARATOR
@@ -2481,6 +2471,7 @@ BEGIN
     IDS_RS_SVPSUBSTOREDIR   "SVPSubStoreDir"
     IDS_RS_USENEWMENU       "UseNewMenu"
     IDS_RS_USEAEROGLASS     "UseAeroGlass"
+    IDS_RS_FCUSTOMSPEAKERS  "CustomSpeakers"
 END
 
 STRINGTABLE 
@@ -2498,7 +2489,6 @@ BEGIN
     IDS_RS_POPSTARTUPEXTCHECK "PouStartupExtCheck"
     IDD_PPAGESUBSTYLE2      "字幕::第二字幕"
     IDS_RS_CHECKUPDATERINTERLEAVE "CheckUpdaterInterleave"
-	IDS_RS_FCUSTOMSPEAKERS		"CustomSpeakers"
 END
 
 STRINGTABLE 
@@ -2715,7 +2705,11 @@ BEGIN
     IDS_RS_MPABOOST         "MpaBoost"
     IDS_RS_AACSC            "AACSpeakerConfig"
     IDS_RS_VMRSYNCFIX       "VMRSyncFix"
-	IDS_RS_SMOOTHMUTILMONITOR	"SmoothMutilMonitor"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_RS_SMOOTHMUTILMONITOR "SmoothMutilMonitor"
 END
 
 STRINGTABLE 

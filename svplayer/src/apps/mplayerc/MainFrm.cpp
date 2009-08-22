@@ -4004,6 +4004,7 @@ void CMainFrame::OnUpdatePlayerStatus(CCmdUI* pCmdUI)
 					if(SUCCEEDED(pAMNS->get_BufferingProgress(&BufferingProgress)) && BufferingProgress > 0)
 					{
 						msg.Format(ResStr(IDS_CONTROLS_BUFFERING), BufferingProgress);
+						SendStatusMessage(msg,1000);
 
 						__int64 start = 0, stop = 0;
 						m_wndSeekBar.GetRange(start, stop);
@@ -4017,8 +4018,10 @@ void CMainFrame::OnUpdatePlayerStatus(CCmdUI* pCmdUI)
 		else if(pAMOP)
 		{
 			__int64 t = 0, c = 0;
-			if(SUCCEEDED(pAMOP->QueryProgress(&t, &c)) && t > 0 && c < t)
+			if(SUCCEEDED(pAMOP->QueryProgress(&t, &c)) && t > 0 && c < t){
 				msg.Format(ResStr(IDS_CONTROLS_BUFFERING), c*100/t);
+				SendStatusMessage(msg,1000);
+			}
 
 			if(m_fUpdateInfoBar)
 				OpenSetupInfoBar();

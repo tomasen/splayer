@@ -42,7 +42,7 @@
 #include "timer.h"
 
 #ifndef attribute_align_arg
-#if (!defined(__ICC) || __ICC > 1100) && AV_GCC_VERSION_AT_LEAST(4,2)
+#if (!defined(__ICC) || __ICC > 1110) && AV_GCC_VERSION_AT_LEAST(4,2)
 #    define attribute_align_arg __attribute__((force_align_arg_pointer))
 #else
 #    define attribute_align_arg
@@ -101,8 +101,10 @@
 #    define offsetof(T,F) ((unsigned int)((char *)&((T *)0)->F))
 #endif
 
+#ifdef _MSC_VER
 #define snprintf _snprintf
 #define vsnprintf _vsnprintf
+#endif
 
 #if defined(__MINGW32__) || defined(__CYGWIN__)
 
@@ -114,8 +116,10 @@
 #    define EXTERN_PREFIX "_"
 #endif
 // <== End patch MPC
-
 #endif
+
+/* Use to export labels from asm. */
+#define LABEL_MANGLE(a) EXTERN_PREFIX #a
 
 // Use rip-relative addressing if compiling PIC code on x86-64.
 #if ARCH_X86_64 && defined(PIC)
@@ -256,21 +260,6 @@ if((y)<(x)){\
     }\
 }
 
-#if defined(__ICC) || defined(__SUNPRO_C)
-    #define DECLARE_ALIGNED(n,t,v)      t v __attribute__ ((aligned (n)))
-    #define DECLARE_ASM_CONST(n,t,v)    const t __attribute__ ((aligned (n))) v
-#elif defined(__GNUC__)
-    #define DECLARE_ALIGNED(n,t,v)      t v __attribute__ ((aligned (n)))
-    #define DECLARE_ASM_CONST(n,t,v)    static const t v attribute_used __attribute__ ((aligned (n)))
-#elif defined(_MSC_VER)
-    #define DECLARE_ALIGNED(n,t,v)      __declspec(align(n)) t v
-    #define DECLARE_ASM_CONST(n,t,v)    __declspec(align(n)) static const t v
-#elif HAVE_INLINE_ASM
-    #error The asm code needs alignment, but we do not know how to do it for this compiler.
-#else
-    #define DECLARE_ALIGNED(n,t,v)      t v
-    #define DECLARE_ASM_CONST(n,t,v)    static const t v
-#endif
 
 
 #ifndef __GNUC__

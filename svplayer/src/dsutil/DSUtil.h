@@ -35,6 +35,8 @@
 #endif
 #endif
 
+#define DNew new
+
 #include "NullRenderers.h"
 #include "HdmvClipInfo.h"
 #include "H264Nalu.h"

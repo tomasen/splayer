@@ -29,7 +29,12 @@ SRCS_C=\
 		$(LAVC_DIR)/cabac.c \
 		$(LAVC_DIR)/CompilatorVersion.c\
 		$(LAVC_DIR)/dsputil.c \
+		$(LAVC_DIR)/eac3dec.c \
+		$(LAVC_DIR)/eac3dec_data.c \
 		$(LAVC_DIR)/error_resilience.c \
+		$(LAVC_DIR)/faandct.c \
+		$(LAVC_DIR)/faanidct.c \
+		$(LAVC_DIR)/fft.c \
 		$(LAVC_DIR)/golomb.c \
 		$(LAVC_DIR)/h263.c \
 		$(LAVC_DIR)/h263_parser.c \
@@ -212,6 +217,7 @@ SRCS_C+=\
 		$(LAVC_DIR)/x86/idct_mmx.c \
 		$(LAVC_DIR)/x86/idct_mmx_xvid.c \
 		$(LAVC_DIR)/x86/idct_sse2_xvid.c \
+		$(LAVC_DIR)/x86/mlpdsp.c \
 		$(LAVC_DIR)/x86/mpegvideo_mmx.c \
 		$(LAVC_DIR)/x86/simple_idct_mmx.c \
 		$(LAVC_DIR)/x86/vc1dsp_mmx.c \

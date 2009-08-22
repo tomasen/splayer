@@ -1,5 +1,5 @@
 /* 
- * $Id: DXVADecoderH264.h 1141 2009-06-01 15:08:56Z casimir666 $
+ * $Id: DXVADecoderH264.h 1194 2009-07-27 19:20:43Z casimir666 $
  *
  * (C) 2006-2007 see AUTHORS
  *
@@ -28,10 +28,7 @@
 #include "H264QuantizationMatrix.h"
 
 
-class CNalu
-{
-};
-
+#define MAX_SLICES 16		// Also define in ffmpeg!
 
 class CDXVADecoderH264 : public CDXVADecoder
 {
@@ -52,20 +49,21 @@ private:
 
 	DXVA_PicParams_H264		m_DXVAPicParams;
 	DXVA_Qmatrix_H264		m_DXVAScalingMatrix;
-	DXVA_Slice_H264_Short*	m_pSliceShort;
-	DXVA_Slice_H264_Long*	m_pSliceLong; 
+	DXVA_Slice_H264_Short	m_pSliceShort[MAX_SLICES];
+	DXVA_Slice_H264_Long	m_pSliceLong[MAX_SLICES]; 
 	UINT					m_nMaxSlices;
-	UINT					m_nCurRefFrame;		// First free RefFrameList position
 	int						m_nNALLength;
 	bool					m_bUseLongSlice;
 	int						m_nOutPOC;
 	REFERENCE_TIME			m_rtOutStart;
+	REFERENCE_TIME			m_rtLastFrameDisplayed;
 
 	// Private functions
 	void					Init();
 	HRESULT					DisplayStatus();
 
 	// DXVA functions
+	void					RemoveUndisplayedFrame(int nPOC);
 	void					ClearRefFramesList();
-	void					UpdateRefFramesList (int nFrameNum, bool bRefFrame, bool bAdded, int nDXIndex);
+	void					ClearUnusedRefFrames();
 };

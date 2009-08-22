@@ -264,6 +264,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\MultiFiles.cpp"
+				>
+			</File>
+			<File
 				RelativePath="stdafx.cpp"
 				>
 				<FileConfiguration
@@ -318,6 +322,10 @@
 			</File>
 			<File
 				RelativePath=".\BaseSplitterFileEx.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MultiFiles.h"
 				>
 			</File>
 			<File

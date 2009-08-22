@@ -269,7 +269,7 @@ typedef struct H264mb {
 
     unsigned int sub_mb_type[4];
 
-    DECLARE_ALIGNED_16(DCTELEM, mb[16*24]);
+    DCTELEM mb[16*24];
     unsigned int top_samples_available,left_samples_available;
     int16_t mvd_cache[2][5*8][2];
     uint8_t direct_cache[5*8];
@@ -603,6 +603,7 @@ typedef struct H264Context{
 	int raw_slice_type;
 	int64_t outputed_rtstart;
   void*	dxva_slice_long;
+	int ref_pic_flag;
     // <== End patch MPC
 }H264Context;
 

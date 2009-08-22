@@ -706,7 +706,8 @@ assert(s->current_picture.pict_type == s->pict_type);
 
     /* Return the Picture timestamp as the frame number */
     /* we subtract 1 because it is added on utils.c     */
-    avctx->frame_number = s->picture_number - 1;
+    //avctx->frame_number = s->picture_number - 1;
+		//seem not more this problem 09/08/22 mpchc1242
 
 #ifdef PRINT_FRAME_TIME
 av_log(avctx, AV_LOG_DEBUG, "%"PRId64"\n", rdtsc()-time);

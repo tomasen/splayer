@@ -122,11 +122,13 @@ void CDXVADecoder::Flush()
 		m_pPictureStore[i].bDisplayed	= false;
 		m_pPictureStore[i].pSample		= NULL;
 		m_pPictureStore[i].nCodecSpecific = -1;
+		m_pPictureStore[i].dwDisplayCount = 0;
 	}
 
 	m_nWaitingPics	= 0;
 	m_bFlushed		= true;
 	m_nFieldSurface = -1;
+	m_dwDisplayCount= 1;
 	m_pFieldSample	= NULL;
 }
 
@@ -627,7 +629,7 @@ HRESULT CDXVADecoder::DisplayNextFrame()
 
 #if defined(_DEBUG) && 0
 			static REFERENCE_TIME	rtLast = 0;
-			TRACE ("Deliver : %10I64d - %10I64d   (Dur = %10I64d) {Delta = %10I64d}   Ind = %d  Codec=%d  Ref=%d\n", 
+			TRACE ("Deliver : %10I64d - %10I64d   (Dur = %10I64d) {Delta = %10I64d}   Ind = %02d  Codec=%d  Ref=%d\n", 
 						m_pPictureStore[nPicIndex].rtStart, 
 						m_pPictureStore[nPicIndex].rtStop, 
 						m_pPictureStore[nPicIndex].rtStop - m_pPictureStore[nPicIndex].rtStart, 
@@ -649,7 +651,8 @@ HRESULT CDXVADecoder::DisplayNextFrame()
 HRESULT CDXVADecoder::GetFreeSurfaceIndex(int& nSurfaceIndex, IMediaSample** ppSampleToDeliver, REFERENCE_TIME rtStart, REFERENCE_TIME rtStop)
 {
 	HRESULT		hr = E_UNEXPECTED;
-
+	int			nPos		 = -1;
+	DWORD		dwMinDisplay = MAXDWORD;
 	if (m_nFieldSurface != -1)
 	{
 		nSurfaceIndex		= m_nFieldSurface;
@@ -662,11 +665,17 @@ HRESULT CDXVADecoder::GetFreeSurfaceIndex(int& nSurfaceIndex, IMediaSample** ppS
 	case ENGINE_DXVA1 :
 		for (int i=0; i<m_nPicEntryNumber; i++)
 		{
-			if (!m_pPictureStore[i].bInUse)
+			if (!m_pPictureStore[i].bInUse && m_pPictureStore[i].dwDisplayCount < dwMinDisplay)
 			{
-				nSurfaceIndex = i;
-				return S_OK;
+				dwMinDisplay = m_pPictureStore[i].dwDisplayCount;
+				nPos  = i;
 			}
+		}
+
+		if (nPos != -1)
+		{
+			nSurfaceIndex = nPos;
+			return S_OK;
 		}
 		// Ho ho... 
 		ASSERT (FALSE);
@@ -694,9 +703,11 @@ HRESULT CDXVADecoder::GetFreeSurfaceIndex(int& nSurfaceIndex, IMediaSample** ppS
 void CDXVADecoder::FreePictureSlot (int nSurfaceIndex)
 {
 //	TRACE ("Free    : %d\n", nSurfaceIndex);
+	m_pPictureStore[nSurfaceIndex].dwDisplayCount = m_dwDisplayCount++;
 	m_pPictureStore[nSurfaceIndex].bInUse		= false;
 	m_pPictureStore[nSurfaceIndex].bDisplayed	= false;
 	m_pPictureStore[nSurfaceIndex].pSample		= NULL;
+	m_pPictureStore[nSurfaceIndex].nCodecSpecific = -1;
 	m_nWaitingPics--;
 }
 

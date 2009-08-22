@@ -554,6 +554,7 @@ CMPCVideoDecFilter::CMPCVideoDecFilter(LPUNKNOWN lpunk, HRESULT* phr)
 	m_hDevice				= INVALID_HANDLE_VALUE;
 
 	m_nARMode				= 1;
+	m_nPosB					= 1;
 	m_sar.SetSize(1,1);
 	
 	CRegKey key;
@@ -1084,9 +1085,9 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 				
 
 			// Force single thread for DXVA !
-			if (IsDXVASupported())
-				avcodec_thread_init(m_pAVCtx, 1);
-			else if (m_bUseDXVA)
+			if (IsDXVASupported()){
+				//avcodec_thread_init(m_pAVCtx, 1);
+			}else if (m_bUseDXVA)
 				return VFW_E_INVALIDMEDIATYPE;
 
 

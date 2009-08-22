@@ -809,15 +809,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\SVPButton.h"
-				>
-			</File>
-			<File
 				RelativePath=".\SVPDialog.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\SVPDialog.h"
 				>
 			</File>
 			<File
@@ -825,15 +817,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\SVPSliderCtrl.h"
-				>
-			</File>
-			<File
 				RelativePath=".\SVPStatic.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\SVPStatic.h"
 				>
 			</File>
 			<File
@@ -1303,6 +1287,22 @@
 			</File>
 			<File
 				RelativePath=".\SUIButton.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SVPButton.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SVPDialog.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SVPSliderCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SVPStatic.h"
 				>
 			</File>
 			<File
@@ -2060,11 +2060,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 		<File

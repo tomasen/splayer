@@ -1,5 +1,5 @@
 /* 
- * $Id: FfmpegContext.h 1156 2009-06-07 14:10:39Z casimir666 $
+ * $Id: FfmpegContext.h 1207 2009-08-02 15:35:14Z casimir666 $
  *
  * (C) 2006-2007 see AUTHORS
  *
@@ -27,10 +27,14 @@
 struct AVCodecContext;
 
 // === H264 functions
-void			FFH264DecodeBuffer (struct AVCodecContext* pAVCtx, BYTE* pBuffer, UINT nSize, BOOL bEndFrame, int* pFramePOC, int* pOutPOC, REFERENCE_TIME* pOutrtStart);
+void			FFH264DecodeBuffer (struct AVCodecContext* pAVCtx, BYTE* pBuffer, UINT nSize, int* pFramePOC, int* pOutPOC, REFERENCE_TIME* pOutrtStart);
 HRESULT			FFH264BuildPicParams (DXVA_PicParams_H264* pDXVAPicParams, DXVA_Qmatrix_H264* pDXVAScalingMatrix, int* nFieldType, int* nSliceType, struct AVCodecContext* pAVCtx, int nPCIVendor);
 int				FFH264CheckCompatibility(int nWidth, int nHeight, struct AVCodecContext* pAVCtx, BYTE* pBuffer, UINT nSize, int nPCIVendor, LARGE_INTEGER VideoDriverVersion);
-void			FF264BuildSliceLong(DXVA_PicParams_H264* pDXVAPicParams, DXVA_Slice_H264_Long* pSlice, struct AVCodecContext* pAVCtx, int nPCIVendor);
+void			FFH264SetCurrentPicture (int nIndex, DXVA_PicParams_H264* pDXVAPicParams, struct AVCodecContext* pAVCtx);
+void			FFH264UpdateRefFramesList (DXVA_PicParams_H264* pDXVAPicParams, struct AVCodecContext* pAVCtx);
+BOOL			FFH264IsRefFrameInUse (int nFrameNum, struct AVCodecContext* pAVCtx);
+void			FF264UpdateRefFrameSliceLong(DXVA_PicParams_H264* pDXVAPicParams, DXVA_Slice_H264_Long* pSlice, struct AVCodecContext* pAVCtx);
+void			FFH264SetDxvaSliceLong (struct AVCodecContext* pAVCtx, void* pSliceLong);
 
 // === VC1 functions
 HRESULT			FFVC1UpdatePictureParam (DXVA_PictureParameters* pPicParams, struct AVCodecContext* pAVCtx, int* nFieldType, int* nSliceType, BYTE* pBuffer, UINT nSize);

@@ -409,7 +409,7 @@ void FFH264UpdateRefFramesList (DXVA_PicParams_H264* pDXVAPicParams, struct AVCo
 		{
 			pDXVAPicParams->FrameNumList[i]					= pic->frame_num;
 			pDXVAPicParams->FieldOrderCntList[i][0]			= pic->field_poc [0]!=INT_MAX ? pic->field_poc [0] : 0;
-			if (pic->field_poc [1] == INT_MAX)
+			if (pic->field_poc [1] == INT_MAX && 0 ) //this is causing 1080i ts decoding problem. removed it temprarily
 			{
 				pDXVAPicParams->FieldOrderCntList[i][1]		= 0;
 				nUseRefIndex--;

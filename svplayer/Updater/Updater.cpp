@@ -141,7 +141,7 @@ BOOL CUpdaterApp::InitInstance()
 		dlg.verbose = m_verbose;
 	}else{
 		dlg.bHide  = TRUE;
-		dlg.verbose = !m_verbose;
+		dlg.verbose = m_verbose;
 	}
 	m_pMainWnd = &dlg;
 	INT_PTR nResponse = dlg.DoModal();

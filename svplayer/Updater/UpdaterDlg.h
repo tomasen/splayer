@@ -31,6 +31,8 @@ public:
 	NOTIFYICONDATA tnid;
 
 	LRESULT On_WM_NOTIFYICON(WPARAM wParam, LPARAM lParam);
+private:
+	bool notYetShow;
 // Implementation
 protected:
 	HICON m_hIcon;
@@ -57,4 +59,7 @@ public:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	CStatic szSpeed;
 	CStatic cszSizeTotal;
+	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
+	virtual INT_PTR DoModal();
+	afx_msg void OnWindowPosChanging(WINDOWPOS* lpwndpos);
 };

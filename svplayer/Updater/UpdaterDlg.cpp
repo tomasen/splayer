@@ -45,6 +45,7 @@ CUpdaterDlg::CUpdaterDlg(CWnd* pParent /*=NULL*/)
 ,bHide(1)
 ,m_bGoodToGo(0)
 ,verbose(0)
+, notYetShow(1)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -74,6 +75,8 @@ BEGIN_MESSAGE_MAP(CUpdaterDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON1, &CUpdaterDlg::OnBnClickedButton1)
 	ON_NOTIFY(NM_CLICK, IDC_SYSLINK1, &CUpdaterDlg::OnNMClickSyslink1)
 	ON_WM_CREATE()
+	ON_WM_SHOWWINDOW()
+	ON_WM_WINDOWPOSCHANGING()
 END_MESSAGE_MAP()
 
 
@@ -82,7 +85,8 @@ END_MESSAGE_MAP()
 BOOL CUpdaterDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
-
+	
+	
 	// Set the icon for this dialog.  The framework does this automatically
 	//  when the application's main window is not a dialog
 	SetIcon(m_hIcon, TRUE);			// Set big icon
@@ -126,7 +130,8 @@ BOOL CUpdaterDlg::OnInitDialog()
 	csCurTask.SetWindowText(_T("当前任务：正在计算下载量"));
 	SetTimer(IDT_START_CHECK, 1000, NULL);
 
-	
+
+
 	tnid.cbSize = sizeof(NOTIFYICONDATA); 
 	tnid.hWnd = this->m_hWnd; 
 	tnid.uID = IDR_MAINFRAME; 
@@ -135,6 +140,7 @@ BOOL CUpdaterDlg::OnInitDialog()
 	tnid.hIcon = this->m_hIcon; 
 	wcscpy_s(tnid.szTip, _T("射手影音播放器自动更新程序"));
 	Shell_NotifyIcon(NIM_ADD, &tnid); 
+
 
 	szaIntro.Add(_T("只要在设置中启用“智能拖拽”，鼠标拖住画面就可以方便的改变画面比例"));
 	szaIntro.Add(_T("在界面设置中可以设置自定义的背景界面"));
@@ -153,13 +159,17 @@ BOOL CUpdaterDlg::OnInitDialog()
 	szaIntro.Add(_T("自动升级随时更新最新版本、体验最新功能。"));
 	szaIntro.Add(_T("射手播放器拥护GPL授权协议，是开源软件。"));
 
+	
 	if(bHide){
-		ShowWindow(SW_HIDE);
 		ShowWindow(SW_MINIMIZE);
+		ShowWindow(SW_HIDE);
+
 	}else{
+		notYetShow = false;
 		ShowWindow(SW_SHOW);
 		ShowWindow(SW_RESTORE);
 	}
+	
 	return FALSE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -248,8 +258,7 @@ void CUpdaterDlg::OnTimer(UINT_PTR nIDEvent)
 		case IDT_START_CHECK:
 			{
 				KillTimer(IDT_START_CHECK);
-
-				
+				notYetShow = false;
 				if(cup.downloadList()){
 					
 					cs_stat.SetWindowText(_T("正在更新到射手播放器的最新版本..."));
@@ -408,11 +417,39 @@ void CUpdaterDlg::OnNMClickSyslink1(NMHDR *pNMHDR, LRESULT *pResult)
 
 int CUpdaterDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
-	lpCreateStruct->style &= ~WS_VISIBLE;;
+	//lpCreateStruct->style &= ~WS_VISIBLE;;
 	if (CDialog::OnCreate(lpCreateStruct) == -1)
 		return -1;
 
 	// TODO:  Add your specialized creation code here
 
 	return 0;
+}
+
+void CUpdaterDlg::OnShowWindow(BOOL bShow, UINT nStatus)
+{
+	//if(notYetShow)
+		CDialog::OnShowWindow(bShow, nStatus);
+	//else	
+	//	CDialog::OnShowWindow(bShow, nStatus);
+
+	
+	// TODO: Add your message handler code here
+}
+
+INT_PTR CUpdaterDlg::DoModal()
+{
+	// TODO: Add your specialized code here and/or call the base class
+
+	return CDialog::DoModal();
+}
+
+void CUpdaterDlg::OnWindowPosChanging(WINDOWPOS* lpwndpos)
+{
+	if ( notYetShow )
+		lpwndpos->flags &= ~SWP_SHOWWINDOW ;
+
+	CDialog::OnWindowPosChanging(lpwndpos);
+
+	// TODO: Add your message handler code here
 }

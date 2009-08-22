@@ -78,7 +78,7 @@ IDR_MAINFRAME           ICON                    "res\\Updater.ico"
 //
 
 IDD_UPDATER_DIALOG DIALOGEX 0, 0, 287, 144
-STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_MINIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_MINIMIZEBOX | WS_POPUP  | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_APPWINDOW
 CAPTION "射手影音自动更新程序"
 FONT 9, "Microsoft Sans Serif", 400, 0, 0x0
@@ -101,8 +101,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,20
- PRODUCTVERSION 1,0,0,20
+ FILEVERSION 1,0,0,21
+ PRODUCTVERSION 1,0,0,21
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -119,12 +119,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Shooter.cn"
             VALUE "FileDescription", "射手影音播放器自动升级程序"
-            VALUE "FileVersion", "1.0.0.20"
+            VALUE "FileVersion", "1.0.0.21"
             VALUE "InternalName", "Updater.exe"
             VALUE "LegalCopyright", "(c) Shooter.cn.  All rights reserved."
             VALUE "OriginalFilename", "Updater.exe"
             VALUE "ProductName", "射手影音播放器自动升级程序"
-            VALUE "ProductVersion", "1.0.0.20"
+            VALUE "ProductVersion", "1.0.0.21"
         END
     END
     BLOCK "VarFileInfo"

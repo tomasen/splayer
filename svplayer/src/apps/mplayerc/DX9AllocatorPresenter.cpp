@@ -24,6 +24,7 @@
 #include <atlbase.h>
 #include <atlcoll.h>
 #include "..\..\DSUtil\DSUtil.h"
+#include <strsafe.h> // Required in CGenlock
 
 #include <Videoacc.h>
 
@@ -439,6 +440,10 @@ m_MainThreadId = 0;
 	m_DetectedScanlineTime = 0;
 	m_DetectedScanlineTimePrim = 0;
 	m_DetectedRefreshRate = 0;
+
+	//m_pGenlock = NULL;
+	//m_pGenlock = new CGenlock(s.m_RenderSettings.fTargetSyncOffset, s.m_RenderSettings.fControlLimit, s.m_RenderSettings.iLineDelta, s.m_RenderSettings.iColumnDelta, s.m_RenderSettings.fCycleDelta, 0); // Must be done before CreateDevice
+
 	hr = CreateDevice();
 	m_bDesktopCompositionDisabled = true;
 

@@ -142,13 +142,13 @@ HRESULT CreateAP9(const CLSID& clsid, HWND hWnd, ISubPicAllocatorPresenter** ppA
 		Error += L"\n";
 		Error += GetWindowsErrorMessage(hr, NULL);
 
-		MessageBox(hWnd, Error, L"Error creating DX9 presenter object", MB_OK|MB_ICONERROR);
+		//MessageBox(hWnd, Error, L"Error creating DX9 presenter object", MB_OK|MB_ICONERROR);
 		(*ppAP)->Release();
 		*ppAP = NULL;
 	}
 	else if (!Error.IsEmpty())
 	{
-		MessageBox(hWnd, Error, L"Warning creating DX9 presenter object", MB_OK|MB_ICONWARNING);
+		//MessageBox(hWnd, Error, L"Warning creating DX9 presenter object", MB_OK|MB_ICONWARNING);
 	}
 
 	return hr;

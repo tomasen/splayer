@@ -476,6 +476,35 @@ public:
 		bool fReportFailedPins;
 		bool fUploadFailedPinsInfo;
 
+		class CRendererSettingsEVR
+		{
+		public:
+			//Genlock settings
+			int bSynchronizeVideo;
+			int bSynchronizeDisplay;
+			int bSynchronizeNearest;
+			int iLineDelta;
+			int iColumnDelta;
+			double fCycleDelta;
+			double fTargetSyncOffset;
+			double fControlLimit;
+
+			CRendererSettingsEVR()
+			{
+				bSynchronizeVideo = 0;
+				bSynchronizeDisplay = 0;
+				bSynchronizeNearest = 1;
+				iLineDelta = 0;
+				iColumnDelta = 0;
+				fCycleDelta = 0.0012;
+				fTargetSyncOffset = 8.0;//10.0;
+				fControlLimit = 2.0;
+			}
+			
+		};
+
+		CRendererSettingsEVR m_RenderSettings;
+
 		bool bUsePowerDVD;
 		bool fAllowMultipleInst;
 		int iTitleBarTextStyle;

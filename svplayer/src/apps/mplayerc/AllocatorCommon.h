@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "../../../src/filters/misc/SyncClock/SyncClock.h"
+#include "../../../src/filters/misc/SyncClock/Interfaces.h"
 
 #define VMRBITMAP_UPDATE            0x80000000
 #define MAX_PICTURE_SLOTS			(60+2)				// Last 2 for pixels shader!
@@ -294,6 +294,11 @@ namespace DSObjects
 		float m_bicubicA;
 		HRESULT InitResizers(float bicubicA, bool bNeedScreenSizeTexture);
 
+		// Functions to trace timing performance
+		void SyncStats(LONGLONG syncTime);
+		void SyncOffsetStats(LONGLONG syncOffset);
+
+
 		bool GetVBlank(int &_ScanLine, int &_bInVBlank, bool _bMeasureTime);
 		bool WaitForVBlankRange(int &_RasterStart, int _RasterEnd, bool _bWaitIfInside, bool _bNeedAccurate, bool _bMeasure, bool &_bTakenLock);
 		bool WaitForVBlank(bool &_Waited, bool &_bTakenLock);
@@ -369,11 +374,23 @@ namespace DSObjects
 		bool					m_bNeedPendingResetDevice;
 		bool					m_bPendingResetDevice;
 
-		double					m_fAvrFps;						// Estimate the real FPS
-		double					m_fJitterStdDev;				// Estimate the Jitter std dev
-		double					m_fJitterMean;
-		double					m_fSyncOffsetStdDev;
-		double					m_fSyncOffsetAvr;
+
+		LONG m_lNextSampleWait; // Waiting time for next sample in EVR
+		LONG m_lShiftToNearest, m_lShiftToNearestPrev; // Correction to sample presentation time in sync to nearest
+		bool m_bVideoSlowerThanDisplay; // True if this fact is detected in sync to nearest
+		UINT m_uSyncGlitches; // Number of synchronization glithes since the last reset of stats, if using sync to nearest
+		bool m_bSnapToVSync; // True if framerate is low enough so that snap to vsync makes sense
+
+		UINT m_uScanLineEnteringPaint; // The active scan line when entering Paint()
+		REFERENCE_TIME m_rtEstVSyncTime; // Next vsync time in reference clock "coordinates"
+
+		double m_fAvrFps; // Estimate the true FPS as given by the distance between vsyncs when a frame has been presented
+		double m_fJitterStdDev; // VSync estimate std dev
+		double m_fJitterMean; // Mean time between two syncpulses when a frame has been presented (i.e. when Paint() has been called
+
+		double m_fSyncOffsetAvr; // Mean time between the call of Paint() and vsync. To avoid tearing this should be several ms at least
+		double m_fSyncOffsetStdDev; // The std dev of the above
+
 		double					m_DetectedRefreshRate;
 
 		CCritSec				m_RefreshRateLock;
@@ -382,6 +399,20 @@ namespace DSObjects
 		double					m_DetectedScanlineTime;
 		double					m_DetectedScanlineTimePrim;
 		double					m_DetectedScanlinesPerFrame;
+
+		// Display and frame rates and cycles
+		double m_dDetectedScanlineTime; // Time for one (horizontal) scan line. Extracted at stream start and used to calculate vsync time
+		UINT m_uD3DRefreshRate; // As got when creating the d3d device
+		double m_dD3DRefreshCycle; // Display refresh cycle ms
+		double m_dEstRefreshCycle; // As estimated from scan lines
+		REFERENCE_TIME m_rtFrameCycle; // Time per frame of video in 100ns units. As extracted from video header or stream
+		double m_dFrameCycle; // Same as above but in ms units
+		// double m_fps is defined in ISubPic.h
+		double m_dOptimumDisplayCycle; // The display cycle that is closest to the frame rate. A multiple of the actual display cycle
+		double m_dCycleDifference; // Difference in video and display cycle time relative to the video cycle time
+
+		UINT m_pcFramesDropped;
+		UINT m_pcFramesDrawn;
 
 		CGenlock *m_pGenlock; // The video - display synchronizer class
 		CComPtr<IReferenceClock> m_pRefClock; // The reference clock. Used in Paint()
@@ -392,9 +423,62 @@ namespace DSObjects
 
 		double GetRefreshRate()
 		{
+			if (m_pGenlock->powerstripTimingExists) return m_pGenlock->curDisplayFreq;
+			else return (double)m_uD3DRefreshRate;
+
 			if (m_DetectedRefreshRate)
 				return m_DetectedRefreshRate;
 			return m_RefreshRate;
+		}
+
+		// Get the best estimate of the display cycle time in milliseconds
+		double GetDisplayCycle()
+		{
+			if (m_pGenlock->powerstripTimingExists) return 1000.0 / m_pGenlock->curDisplayFreq;
+			else return (double)m_dD3DRefreshCycle;
+		}
+
+		// Get the difference in video and display cycle times.
+		double GetCycleDifference()
+		{
+			_tprintf(_T("display cycle; frame cycle %.3f, %.3f\n"), GetDisplayCycle(), m_dFrameCycle);
+			double dBaseDisplayCycle = GetDisplayCycle();
+			UINT i;
+			double minDiff = 1.0;
+			if (dBaseDisplayCycle == 0.0 || m_dFrameCycle == 0.0)
+				return 1.0;
+			else
+			{
+				for (i = 1; i <= 8; i++) // Try a lot of multiples of the display frequency
+				{
+					double dDisplayCycle = i * dBaseDisplayCycle;
+					double diff = (dDisplayCycle - m_dFrameCycle) / m_dFrameCycle;
+					if (abs(diff) < abs(minDiff))
+					{
+						minDiff = diff;
+						m_dOptimumDisplayCycle = dDisplayCycle;
+					}
+				}
+			}
+			return minDiff;
+		}
+
+		// Estimate the times for one scan line and one frame respectively from the actual refresh data
+		void EstimateRefreshTimings();
+
+
+		bool ExtractInterlaced(const AM_MEDIA_TYPE* pmt)
+		{
+			if (pmt->formattype==FORMAT_VideoInfo)
+				return false;
+			else if (pmt->formattype==FORMAT_VideoInfo2)
+				return (((VIDEOINFOHEADER2*)pmt->pbFormat)->dwInterlaceFlags & AMINTERLACE_IsInterlaced) != 0;
+			else if (pmt->formattype==FORMAT_MPEGVideo)
+				return false;
+			else if (pmt->formattype==FORMAT_MPEG2Video)
+				return (((MPEG2VIDEOINFO*)pmt->pbFormat)->hdr.dwInterlaceFlags & AMINTERLACE_IsInterlaced) != 0;
+			else
+				return false;
 		}
 
 		LONG GetScanLines()
@@ -412,6 +496,9 @@ namespace DSObjects
 		LONGLONG				m_pllSyncOffset [NB_JITTER];		// Jitter buffer for stats
 		LONGLONG				m_llLastPerf;
 		LONGLONG				m_JitterStdDev;
+		
+		LONGLONG m_llLastSyncTime;
+		
 		LONGLONG				m_MaxJitter;
 		LONGLONG				m_MinJitter;
 		LONGLONG				m_MaxSyncOffset;
@@ -426,6 +513,9 @@ namespace DSObjects
 		LONGLONG				m_DetectedFrameTimeHistory[60];
 		double					m_DetectedFrameTimeHistoryHisotry[500];
 		int						m_DetectedFrameTimePos;
+		LONGLONG m_llSampleTime, m_llLastSampleTime; // Present time for the current sample
+		LONGLONG m_llHysteresis; // If != 0 then a "snap to vsync" is active, see EVR
+
 		int						m_bInterlaced;
 
 		double					m_TextScale;
@@ -477,6 +567,7 @@ namespace DSObjects
 	public:
 		CDX9AllocatorPresenter(HWND hWnd, HRESULT& hr, bool bIsEVR);
 		~CDX9AllocatorPresenter();
+		void ResetStats(); // Reset all tracing stats
 
 		// ISubPicAllocatorPresenter
 		STDMETHODIMP CreateRenderer(IUnknown** ppRenderer);

@@ -284,7 +284,7 @@ BOOL CUESettingPanel::OnInitDialog()
 	}else{
 		m_sgi_videorender = 2; //×Ô¶¨Òå
 	}
-	m_sgi_lockbackbuff = s.fVMRSyncFix;
+	m_sgi_lockbackbuff = s.m_RenderSettings.bSynchronizeNearest ;//s.fVMRSyncFix;
 	m_sgi_smothmutilmonitor = s.fbSmoothMutilMonitor;
 	m_sgi_gpuacel = s.useGPUAcel;
 	m_sgs_decoder = s.optionDecoder;
@@ -516,7 +516,8 @@ void CUESettingPanel::ApplyAllSetting(){
 
 	}
 	s.fTrayIcon = m_sgi_chktrayicon;
-	s.fVMRSyncFix = !!m_sgi_lockbackbuff;
+	//s.fVMRSyncFix = !!m_sgi_lockbackbuff;
+	s.m_RenderSettings.bSynchronizeNearest = !!m_sgi_lockbackbuff;
 	s.useGPUAcel = !!m_sgi_gpuacel;
 	s.optionDecoder = m_sgs_decoder;
 	s.useGPUCUDA = 0;

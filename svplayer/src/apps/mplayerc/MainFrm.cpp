@@ -93,6 +93,9 @@ static UINT WM_NOTIFYICON = RegisterWindowMessage(TEXT("MYWM_NOTIFYICON"));
 
 #include "..\..\svplib\SVPToolBox.h"
 
+bool g_bNoDuration = false;
+bool g_bExternalSubtitleTime = false;
+
 class CSubClock : public CUnknown, public ISubClock
 {
 	STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void** ppv)
@@ -2436,7 +2439,32 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 */
 		}
 
-		if(m_pCAP && m_iPlaybackMode != PM_FILE) m_pCAP->SetTime(/*rtNow*/m_wndSeekBar.GetPos());
+		if(m_pCAP && m_iPlaybackMode != PM_FILE)
+		{
+			g_bExternalSubtitleTime = true;
+			if (pDVDI)
+			{
+				DVD_PLAYBACK_LOCATION2 Location;
+				if (pDVDI->GetCurrentLocation(&Location) == S_OK)
+				{
+					double fps = Location.TimeCodeFlags == DVD_TC_FLAG_25fps ? 25.0
+						: Location.TimeCodeFlags == DVD_TC_FLAG_30fps ? 30.0
+						: Location.TimeCodeFlags == DVD_TC_FLAG_DropFrame ? 29.97
+						: 25.0;
+
+					LONGLONG rtTimeCode = HMSF2RT(Location.TimeCode, fps);
+					m_pCAP->SetTime(rtTimeCode);
+				}
+				else
+					m_pCAP->SetTime(/*rtNow*/m_wndSeekBar.GetPos());
+			}
+			else
+			{
+				m_pCAP->SetTime(/*rtNow*/m_wndSeekBar.GetPos());
+			}
+		}
+		else
+			g_bExternalSubtitleTime = false;
 	}
 	else if(nIDEvent == TIMER_STREAMPOSPOLLER2 && m_iMediaLoadState == MLS_LOADED)
 	{

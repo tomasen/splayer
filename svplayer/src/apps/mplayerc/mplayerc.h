@@ -346,6 +346,7 @@ public:
 
 	CString		m_strD3DX9Version;
 	LONGLONG	m_PerfFrequency;
+	BOOL		m_fDisplayStats;
 	void ShowCmdlnSwitches();
 
 	bool StoreSettingsToIni();

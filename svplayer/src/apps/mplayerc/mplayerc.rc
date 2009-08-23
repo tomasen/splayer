@@ -2022,6 +2022,7 @@ BEGIN
                 MENUITEM "视频捕捉控制面板\tCtrl+8",            ID_VIEW_CAPTURE
                 MENUITEM "特效(Shader)编辑器\tCtrl+9",       ID_VIEW_SHADEREDITOR
                 MENUITEM "DSM转换器(&n)...",               ID_FILE_CONVERT
+                MENUITEM "显示画面渲染信息",                    ID_SHOWDRAWSTAT
             END
             POPUP "A-B控制"
             BEGIN

@@ -1882,7 +1882,7 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 		m_VMR9AlphaBitmap.dwFlags ^= VMRBITMAP_UPDATE;
 	}
 
-	//if (pApp->m_fDisplayStats) DrawStats();
+	if (AfxGetMyApp()->m_fDisplayStats) DrawStats();
 	if (m_pOSDTexture) AlphaBlt(rSrcPri, rDstPri, m_pOSDTexture);
 	m_pD3DDev->EndScene();
 
@@ -1955,10 +1955,9 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 				D3DDISPLAYMODE d3ddm;
 				HRESULT hr;
 				ZeroMemory(&d3ddm, sizeof(d3ddm));
-				if(FAILED(m_pD3D->GetAdapterDisplayMode(CurrentMonitor, &d3ddm)))
-					return E_UNEXPECTED;
+				if(SUCCEEDED(m_pD3D->GetAdapterDisplayMode(CurrentMonitor, &d3ddm)))
+					m_pGenlock->SetDisplayResolution(d3ddm.Width, d3ddm.Height);
 
-				m_pGenlock->SetDisplayResolution(d3ddm.Width, d3ddm.Height);
 			}
 
 			//resetdevice

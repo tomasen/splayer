@@ -337,6 +337,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND_RANGE(ID_ONTOP_NEVER, ID_ONTOP_WHILEPLAYING, OnViewOntop)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_ONTOP_NEVER, ID_ONTOP_WHILEPLAYING, OnUpdateViewOntop)
 	ON_COMMAND(ID_VIEW_OPTIONS, OnViewOptions)
+	ON_COMMAND(ID_SHOWDRAWSTAT, OnShowDrawStats)
 	
 	ON_COMMAND_RANGE(ID_SUB_DELAY_DOWN, ID_SUB_DELAY_UP, OnSubtitleDelay)
 	ON_COMMAND_RANGE(ID_SUB_DELAY_DOWN2, ID_SUB_DELAY_UP2, OnSubtitleDelay2)
@@ -6522,7 +6523,9 @@ void CMainFrame::OnUpdateViewOntop(CCmdUI* pCmdUI)
 {
 	pCmdUI->SetRadio(AfxGetAppSettings().iOnTop == (pCmdUI->m_nID - ID_ONTOP_NEVER));
 }
-
+void CMainFrame::OnShowDrawStats(){
+	AfxGetMyApp()->m_fDisplayStats = !AfxGetMyApp()->m_fDisplayStats;
+}
 void CMainFrame::OnViewOptions()
 {
 	ShowOptions();

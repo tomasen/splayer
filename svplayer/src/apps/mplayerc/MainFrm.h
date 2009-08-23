@@ -713,6 +713,7 @@ public:
 	afx_msg void OnViewOntop(UINT nID);
 	afx_msg void OnUpdateViewOntop(CCmdUI* pCmdUI);
 	afx_msg void OnViewOptions();
+	afx_msg void OnShowDrawStats();
 
 	afx_msg void OnPlayPlay();
 	afx_msg void OnPlayPause();

@@ -561,6 +561,7 @@ CMPlayerCApp::CMPlayerCApp()
 , m_bMouseInOutUnknown(TRUE)      // don't know whether in or out yet
 , m_bGenerateMouseInOutMessages(TRUE) 
 , m_cnetupdater(NULL)
+, m_fDisplayStats(FALSE)
 {
 	m_pMainWnd = NULL;
 	::SetUnhandledExceptionFilter(DebugMiniDumpFilter);
@@ -2052,7 +2053,6 @@ CMPlayerCApp::Settings::Settings()
 	ADDCMD((ID_NAVIGATE_MENU_ACTIVATE, 0, FVIRTKEY|FNOINVERT, _T("DVD Menu Activate")));
 	ADDCMD((ID_NAVIGATE_MENU_BACK, 0, FVIRTKEY|FNOINVERT, _T("DVD Menu Back")));
 	ADDCMD((ID_NAVIGATE_MENU_LEAVE, 0, FVIRTKEY|FNOINVERT, _T("DVD Menu Leave")));
-	
 	ADDCMD((ID_MENU_PLAYER_SHORT, 0, FVIRTKEY|FNOINVERT, _T("Player Menu (short)"), 0, wmcmd::RUP));
 	ADDCMD((ID_MENU_PLAYER_LONG, 0, FVIRTKEY|FNOINVERT, _T("Player Menu (long)")));
 	ADDCMD((ID_MENU_FILTERS, 0, FVIRTKEY|FNOINVERT, _T("Filters Menu")));
@@ -2074,6 +2074,7 @@ CMPlayerCApp::Settings::Settings()
 	ADDCMD((ID_DVD_SUB_NEXT, 0, FVIRTKEY|FNOINVERT, _T("Next Subtitle (DVD)")));
 	ADDCMD((ID_DVD_SUB_PREV, 0, FVIRTKEY|FNOINVERT, _T("Prev Subtitle (DVD)")));
 	ADDCMD((ID_DVD_SUB_ONOFF, 0, FVIRTKEY|FNOINVERT, _T("On/Off Subtitle (DVD)")));
+	ADDCMD((ID_SHOWDRAWSTAT, 'J', FVIRTKEY|FCONTROL|FNOINVERT, _T("显示画面输出信息")));
 #undef ADDCMD
 }
 

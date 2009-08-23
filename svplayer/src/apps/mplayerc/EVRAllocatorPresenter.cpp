@@ -605,9 +605,9 @@ CEVRAllocatorPresenter::CEVRAllocatorPresenter(HWND hWnd, HRESULT& hr)
 
 	// Bufferize frame only with 3D texture
 	if (s.iAPSurfaceUsage == VIDRNDT_AP_TEXTURE3D)
-		m_nNbDXSurface	= max (min (s.iEvrBuffers, MAX_PICTURE_SLOTS-2), 4);
+		m_nDXSurface	= max (min (s.iEvrBuffers, MAX_PICTURE_SLOTS-2), 4);
 	else
-		m_nNbDXSurface = 1;
+		m_nDXSurface = 1;
 
 	m_nRenderState = Shutdown;
 	m_bUseInternalTimer = false;
@@ -1386,7 +1386,7 @@ STDMETHODIMP CEVRAllocatorPresenter::GetIdealVideoSize(SIZE *pszMin, SIZE *pszMa
 }
 STDMETHODIMP CEVRAllocatorPresenter::SetVideoPosition(const MFVideoNormalizedRect *pnrcSource, const LPRECT prcDest)
 {
-	return S_OK;
+	return E_NOTIMPL;
 }
 STDMETHODIMP CEVRAllocatorPresenter::GetVideoPosition(MFVideoNormalizedRect *pnrcSource, LPRECT prcDest)
 {
@@ -1578,7 +1578,7 @@ STDMETHODIMP CEVRAllocatorPresenter::InitializeDevice(AM_MEDIA_TYPE*	pMediaType)
 		hr = AllocSurfaces(D3DFMT_X8R8G8B8);
 
 
-	for(int i = 0; i < m_nNbDXSurface; i++)
+	for(int i = 0; i < m_nDXSurface; i++)
 	{
 		CComPtr<IMFSample>		pMFSample;
 		hr = pfMFCreateVideoSampleFromSurface(m_pVideoSurface[i], &pMFSample);
@@ -1788,7 +1788,7 @@ void CEVRAllocatorPresenter::RenderThread()
 				RemoveAllSamples();
 				CDX9AllocatorPresenter::ResetDevice();
 
-				for(int i = 0; i < m_nNbDXSurface; i++)
+				for(int i = 0; i < m_nDXSurface; i++)
 				{
 					CComPtr<IMFSample> pMFSample;
 					HRESULT hr = pfMFCreateVideoSampleFromSurface (m_pVideoSurface[i], &pMFSample);

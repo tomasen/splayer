@@ -1356,8 +1356,9 @@ STDMETHODIMP CEVRAllocatorPresenter::GetNativeVideoSize(SIZE *pszVideo, SIZE *ps
 	}
 	if (pszARVideo)
 	{
-		pszARVideo->cx  = m_AspectRatio.cx; // m_NativeVideoSize.cx *
+		pszARVideo->cx  = m_AspectRatio.cx; // m_NativeVideoSize.cx * 
 		pszARVideo->cy  = m_AspectRatio.cy;// m_NativeVideoSize.cy *
+
 	}
 	return S_OK;
 }
@@ -1386,7 +1387,7 @@ STDMETHODIMP CEVRAllocatorPresenter::GetIdealVideoSize(SIZE *pszMin, SIZE *pszMa
 }
 STDMETHODIMP CEVRAllocatorPresenter::SetVideoPosition(const MFVideoNormalizedRect *pnrcSource, const LPRECT prcDest)
 {
-	return E_NOTIMPL;
+	return S_OK;//E_NOTIMPL;
 }
 STDMETHODIMP CEVRAllocatorPresenter::GetVideoPosition(MFVideoNormalizedRect *pnrcSource, LPRECT prcDest)
 {
@@ -1418,7 +1419,7 @@ STDMETHODIMP CEVRAllocatorPresenter::GetAspectRatioMode(DWORD *pdwAspectRatioMod
 STDMETHODIMP CEVRAllocatorPresenter::SetVideoWindow(HWND hwndVideo)
 {
 	ASSERT (m_hWnd == hwndVideo);	// What if not ??
-	m_hWnd = hwndVideo;
+	//m_hWnd = hwndVideo;
 	return S_OK;
 }
 STDMETHODIMP CEVRAllocatorPresenter::GetVideoWindow(HWND *phwndVideo)

@@ -8614,9 +8614,7 @@ CSize CMainFrame::GetVideoSize()
 		wh = m_pCAP->GetVideoSize(false);
 		arxy = m_pCAP->GetVideoSize(fKeepAspectRatio);
 
-		//CString szLog;
-		//szLog.Format(_T("vSize %d %d %d %d") , wh.cx, wh.cy , arxy.cx , arxy.cy);
-		//SVP_LogMsg(szLog);
+		
 	}
 	else
 	{
@@ -8627,6 +8625,10 @@ CSize CMainFrame::GetVideoSize()
 		if(pBV2 && SUCCEEDED(pBV2->GetPreferredAspectRatio(&arx, &ary)) && arx > 0 && ary > 0)
 			arxy.SetSize(arx, ary);
 	}
+
+	//CString szLog;
+	//szLog.Format(_T("vSize %d %d %d %d") , wh.cx, wh.cy , arxy.cx , arxy.cy);
+	//SVP_LogMsg(szLog);
 
 	if(wh.cx <= 0 || wh.cy <= 0)
 		return ret;
@@ -10672,6 +10674,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 			::GetClientRect (m_wndView.m_hWnd, &Rect);
 			m_pMFVDC->SetVideoWindow (m_wndView.m_hWnd);
 			m_pMFVDC->SetVideoPosition(NULL, &Rect);
+			//AfxMessageBox(_T("m_pMFVDC"));
 		}
 
 		if(m_fOpeningAborted) throw aborted;

@@ -495,7 +495,7 @@ m_dCycleDifference(1.0)
 		(FARPROC &)m_pDwmEnableComposition = GetProcAddress(m_hDWMAPI, "DwmEnableComposition");
 	}
 
-	m_hD3D9 = NULL;// LoadLibrary(L"d3d9.dll");
+	m_hD3D9 = LoadLibrary(L"d3d9.dll");// 
 	if (m_hD3D9)
 	{
 		(FARPROC &)m_pDirect3DCreate9Ex = GetProcAddress(m_hD3D9, "Direct3DCreate9Ex");
@@ -1126,7 +1126,7 @@ HRESULT CDX9AllocatorPresenter::InitResizers(float bicubicA, bool bNeedScreenSiz
 	A.Format("(%f)", bicubicA);
 	str.Replace("_The_Value_Of_A_Is_Set_Here_", A);
 
-	SVP_LogMsg3(str);
+	//SVP_LogMsg3(str);
 	LPCSTR pEntries[] = {"main_bilinear", "main_bicubic1pass", "main_bicubic2pass_pass1", "main_bicubic2pass_pass2"}; 
 
 	ASSERT(countof(pEntries) == countof(m_pResizerPixelShader));
@@ -1138,7 +1138,7 @@ HRESULT CDX9AllocatorPresenter::InitResizers(float bicubicA, bool bNeedScreenSiz
 		hr = m_pPSC->CompileShader(str, pEntries[i], pProfile, 0, &m_pResizerPixelShader[i], &DissAssembly, &ErrorMessage);
 		if(FAILED(hr)) 
 		{
-			SVP_LogMsg3("%ws", ErrorMessage.GetString());
+			//SVP_LogMsg3("%ws", ErrorMessage.GetString());
 			ASSERT (0);
 			return hr;
 		}

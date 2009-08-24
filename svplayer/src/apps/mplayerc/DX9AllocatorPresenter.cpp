@@ -2072,7 +2072,7 @@ bool CDX9AllocatorPresenter::WaitForVBlankRange(int &_RasterStart, int _RasterSi
 		LastLineDiffSleep = ScanLineDiffSleep;
 
 		LONGLONG waitEd = AfxGetMyApp()->GetPerfCounter() - waitStart; 
-		if(waitEd > 1000000){ //not wait more than 1 sec 
+		    if(waitEd > 1000000){ //not wait more than 1 sec 
 			//SVP_LogMsg3("GetVBlank2 %u", waitEd); 
 			break; 
 		} 

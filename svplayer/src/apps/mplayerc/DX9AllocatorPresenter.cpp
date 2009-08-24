@@ -940,8 +940,8 @@ if (FAILED(g_pD3D->CreateDevice( AdapterToUse, DeviceType, hWnd,
 	if (m_bIsFullscreen)
 	{
 		pp.Windowed = false; 
-		pp.BackBufferWidth = d3ddm.Width; 
-		pp.BackBufferHeight = d3ddm.Height; 
+		pp.BackBufferWidth = m_ScreenSize.cx; 
+		pp.BackBufferHeight = m_ScreenSize.cy; 
 		pp.hDeviceWindow = m_hWnd;
 		if(m_bAlternativeVSync)
 		{
@@ -1018,8 +1018,8 @@ if (FAILED(g_pD3D->CreateDevice( AdapterToUse, DeviceType, hWnd,
 		pp.SwapEffect = D3DSWAPEFFECT_COPY;
 		pp.Flags = D3DPRESENTFLAG_VIDEO;
 		pp.BackBufferCount = 1; 
-		pp.BackBufferWidth = d3ddm.Width;
-		pp.BackBufferHeight = d3ddm.Height;
+		pp.BackBufferWidth = m_ScreenSize.cx;
+		pp.BackBufferHeight = m_ScreenSize.cy;
 		m_BackbufferType = d3ddm.Format;
 		m_DisplayType = d3ddm.Format;
 		if (m_bHighColorResolution)

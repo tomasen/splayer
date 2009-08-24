@@ -153,7 +153,10 @@ void SVP_UploadCrashDmp(CString szDmppath, CString szLogPath){
 void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath, CStringArray* szSubArray, CAtlList<CString> * szStatMsg, CString szLang ){
 		
 	szGStatMsg = szStatMsg;
-	SVP_LogMsg(_T("正在通过射手影音字幕智能匹配系统寻找字幕"), 31);
+	if(szLang.IsEmpty())
+		SVP_LogMsg(_T("正在通过射手影音字幕智能匹配系统寻找中文字幕"), 31);
+	else
+		SVP_LogMsg(_T("正在通过射手影音字幕智能匹配系统寻找英文字幕"), 31);
 	CSVPNet svpNet;
 	CSVPhash svpHash;
 	CString szFileHash  = svpHash.ComputerFileHash(fnVideoFilePath);

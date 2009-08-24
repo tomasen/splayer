@@ -59,6 +59,7 @@ public:
 	void UpdateButtonStat();
 	CPlayerToolBar();
 	virtual ~CPlayerToolBar();
+	BOOL m_bMouseDown ;
 
 	UINT iBottonClicked;
 	UINT iFastFFWCount;

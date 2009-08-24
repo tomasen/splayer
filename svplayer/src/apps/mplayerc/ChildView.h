@@ -38,10 +38,12 @@ class CChildView : public CWnd
 	UINT m_nItemToTrack;
 	int iBottonClicked;
 	CRect m_logo_r;
+	
 public:
 	CChildView();
 	virtual ~CChildView();
 
+	BOOL m_bMouseDown ;
 	CPngImage* m_cover;
 	CSUIBtnList m_btnList;
 	CSUIBtnList m_btnBBList;

@@ -40,6 +40,7 @@ static char THIS_FILE[] = __FILE__;
 CChildView::CChildView() :
 m_vrect(0,0,0,0)
 ,m_cover(NULL)
+,m_bMouseDown(FALSE)
 {
 	m_lastlmdowntime = 0;
 	m_lastlmdownpoint.SetPoint(0, 0);
@@ -472,7 +473,6 @@ void CChildView::OnMouseMove(UINT nFlags, CPoint point)
 	}
 	CWnd::OnMouseMove(nFlags, point);
 }
-static BOOL m_bMouseDown = FALSE;
 void CChildView::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	// TODO: Add your message handler code here and/or call default

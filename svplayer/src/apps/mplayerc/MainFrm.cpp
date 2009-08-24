@@ -3411,7 +3411,8 @@ LRESULT CMainFrame::OnMouseMoveIn(WPARAM /*wparam*/, LPARAM /*lparam*/) {
 LRESULT CMainFrame::OnMouseMoveOut(WPARAM /*wparam*/, LPARAM /*lparam*/) {
 	TRACE("OnMouseMoveOut\n");
 	m_btnList.ClearStat();
-
+	m_wndView.m_bMouseDown = false;
+	m_wndToolBar.m_bMouseDown = false;
 	m_wndToolTopBar.ShowWindow(SW_HIDE);
 
 	AppSettings&s = AfxGetAppSettings();

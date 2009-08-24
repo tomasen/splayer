@@ -40,7 +40,8 @@ CPlayerToolBar::CPlayerToolBar() :
 m_hovering(0),
 holdStatStr(0),
 iButtonWidth (30),
-m_pbtnList(&m_btnList)
+m_pbtnList(&m_btnList),
+m_bMouseDown(FALSE)
 {
 	 
 }
@@ -582,7 +583,6 @@ BOOL CPlayerToolBar::OnVolumeDown(UINT nID)
 	m_volctrl.DecreaseVolume();
 	return FALSE;
 }
-static BOOL m_bMouseDown = FALSE;
 bool  CPlayerToolBar::OnSetVolByMouse(CPoint point, BOOL byClick){
 	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
 	long nTBPos = point.x - m_btnVolBG->m_rcHitest.left;

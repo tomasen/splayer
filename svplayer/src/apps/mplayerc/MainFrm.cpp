@@ -360,6 +360,9 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND_RANGE(ID_SUB2DELAYDEC,ID_SUB2DELAYINC, OnPlaySub2Delay )
 	ON_UPDATE_COMMAND_UI_RANGE(ID_SUB2DELAYDEC, ID_SUB2DELAYINC, OnUpdatePlaySub2Delay )
 
+	ON_COMMAND_RANGE(ID_RESIZER_NORMAL, ID_RESIZER_SMARTBICUBIC, OnChangeResizer )
+	ON_UPDATE_COMMAND_UI_RANGE(ID_RESIZER_NORMAL, ID_RESIZER_SMARTBICUBIC, OnUpdateChangeResizer)
+
 	ON_COMMAND_RANGE(ID_PLAY_FRAMESTEP, ID_PLAY_FRAMESTEPCANCEL, OnPlayFramestep)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_PLAY_FRAMESTEP, ID_PLAY_FRAMESTEPCANCEL, OnUpdatePlayFramestep)
 	ON_COMMAND_RANGE(ID_PLAY_BWD, ID_PLAY_FWD, OnSmartSeek)
@@ -12318,8 +12321,34 @@ void CMainFrame::SetupShadersSubMenu()
 			id++;
 		}
 	}
-}
 
+	pSub->AppendMenu( MF_SEPARATOR );
+	pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_RESIZER_NORMAL, _T("标准优化缩放"));
+	pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_RESIZER_SMARTBICUBIC, _T("智能倍线缩放"));
+	
+	
+}
+void CMainFrame::OnUpdateChangeResizer(CCmdUI* pCmdUI){
+	switch(pCmdUI->m_nID){
+		case ID_RESIZER_NORMAL:
+			pCmdUI->SetRadio(AfxGetAppSettings().iDX9Resizer == 1);
+			break;
+		case ID_RESIZER_SMARTBICUBIC:
+			pCmdUI->SetRadio(AfxGetAppSettings().iDX9Resizer == 7);
+			break;
+	}
+}
+void CMainFrame::OnChangeResizer(UINT nID){
+	switch(nID){
+		case ID_RESIZER_NORMAL:
+			AfxGetAppSettings().iDX9Resizer = 1;
+			return;
+		case ID_RESIZER_SMARTBICUBIC:
+			AfxGetAppSettings().iDX9Resizer = 7;
+			return;
+	}
+
+}
 /////////////
 
 void CMainFrame::ShowControls(int nCS, bool fSave)

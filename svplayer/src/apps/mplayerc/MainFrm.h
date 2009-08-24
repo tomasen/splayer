@@ -728,7 +728,9 @@ public:
 	afx_msg void OnUpdatePlaySub2Delay(CCmdUI* pCmdUI);
 
 	afx_msg void OnPlayFramestep(UINT nID);
+	afx_msg void OnChangeResizer(UINT nID);
 	afx_msg void OnUpdatePlayFramestep(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateChangeResizer(CCmdUI* pCmdUI);
 	afx_msg void OnPlaySeek(UINT nID);
 	afx_msg void OnSmartSeek(UINT nID);
 	afx_msg void OnPlaySeekKey(UINT nID); // no menu item

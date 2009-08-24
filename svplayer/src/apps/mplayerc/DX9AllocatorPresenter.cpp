@@ -1351,7 +1351,7 @@ HRESULT CDX9AllocatorPresenter::TextureResizeBicubic1pass(CComPtr<IDirect3DTextu
 HRESULT CDX9AllocatorPresenter::TextureResizeBicubic2pass(CComPtr<IDirect3DTexture9> pTexture, Vector dst[4], const CRect &SrcRect)
 {
 	// The 2 pass sampler is incorrect in that it only does bilinear resampling in the y direction.
-	return TextureResizeBicubic1pass(pTexture, dst, SrcRect);
+	//return TextureResizeBicubic1pass(pTexture, dst, SrcRect);
 
 	HRESULT hr;
 
@@ -1743,6 +1743,15 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 			case 3: A = -0.60f; break;
 			case 4: A = -0.751f; break;	// FIXME : 0.75 crash recent D3D, or eat CPU 
 			case 5: A = -1.00f; break;
+			case 7: 
+				{
+					if(m_WindowRect.Width() > m_NativeVideoSize.cx)
+						A = -0.751f ;
+					else
+						A = -0.60f ;
+					
+				}
+				break;
 			}
 			bool bScreenSpacePixelShaders = !m_pPixelShadersScreenSpace.IsEmpty();
 

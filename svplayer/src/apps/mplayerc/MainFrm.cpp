@@ -2403,6 +2403,17 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 								SVP_UploadSubFileByVideoAndSubFilePath(fnVideoFile , fnSubtitleFile, subDelayMS) ;
 								m_fnsAlreadyUploadedSubfile.Append( fnVideoFile+fnSubtitleFile+_T(";") );
 							}
+							int subDelayMS2 = 0;
+							CString fnSubtitleFile2 = getCurPlayingSubfile(&subDelayMS2);
+							if(!fnSubtitleFile2.IsEmpty()){
+								if(m_fnsAlreadyUploadedSubfile.Find( fnVideoFile+fnSubtitleFile2 ) < 0 ){
+									//upload subtitle
+									szLog.Format(_T("Uploading sub2 %s of %s width delay %d ms since user played %d sec of %d sec ( more than 1/2 length video ) ") , fnSubtitleFile2, fnVideoFile ,subDelayMS2, totalplayedtime , iTotalLenSec  );
+									SVP_LogMsg(szLog);
+									SVP_UploadSubFileByVideoAndSubFilePath(fnVideoFile , fnSubtitleFile2, subDelayMS2) ;
+									m_fnsAlreadyUploadedSubfile.Append( fnVideoFile+fnSubtitleFile2+_T(";") );
+								}
+							}
 
 						}
 					}
@@ -9516,20 +9527,35 @@ UINT __cdecl SVPThreadLoadThread( LPVOID lpParam )
 	CSVPThreadLoadThreadData* pData = (CSVPThreadLoadThreadData*)lpParam;
 
 	// Print the parameter values using thread-safe functions.
-	CStringArray szSubArray;
-	CUIntArray siSubDelayArray;
 	pData->pFrame->m_bSubDownloading = TRUE;
-	SVP_FetchSubFileByVideoFilePath( pData->szVidPath, &szSubArray , pData->statusmsgs) ;
-	pData->pFrame->m_bSubDownloading = FALSE;
-	BOOL bSubSelected = false;
-	for(INT i = 0 ;i < szSubArray.GetCount(); i++){
-		if(pData->pFrame->LoadSubtitle(szSubArray[i]) && !bSubSelected){
-			pData->pFrame->SetSubtitle( pData->pFrame->m_pSubStreams.GetTail()  ); //Enable Subtitle
-			//TODO: select correct language for idx+sub
-			bSubSelected = true;
+	
+	{
+		CStringArray szSubArray;
+		//CUIntArray siSubDelayArray;
+		SVP_FetchSubFileByVideoFilePath( pData->szVidPath, &szSubArray , pData->statusmsgs) ;
+		BOOL bSubSelected = false;
+		for(INT i = 0 ;i < szSubArray.GetCount(); i++){
+			if(pData->pFrame->LoadSubtitle(szSubArray[i]) && !bSubSelected){
+				pData->pFrame->SetSubtitle( pData->pFrame->m_pSubStreams.GetTail()  ); //Enable Subtitle
+				//TODO: select correct language for idx+sub
+				bSubSelected = true;
+			}
+		}
+	}
+	if( AfxGetAppSettings().fAutoloadSubtitles2 ){
+		CStringArray szSubArray2;
+		SVP_FetchSubFileByVideoFilePath( pData->szVidPath, &szSubArray2 , pData->statusmsgs, _T("eng")) ;
+		BOOL bSubSelected = false;
+		for(INT i = 0 ;i < szSubArray2.GetCount(); i++){
+			if(pData->pFrame->LoadSubtitle(szSubArray2[i]) && !bSubSelected){
+				pData->pFrame->SetSubtitle2( pData->pFrame->m_pSubStreams2.GetTail()  ); //Enable Subtitle
+				//TODO: select correct language for idx+sub
+				bSubSelected = true;
+			}
 		}
 
 	}
+	pData->pFrame->m_bSubDownloading = FALSE;
 	delete pData;
 	return 0; 
 } 

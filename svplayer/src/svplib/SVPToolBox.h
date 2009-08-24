@@ -38,6 +38,7 @@ public:
 	int GetGPUString(CStringArray * szaGPUString);
 	CString GetTempDir();
 	int DetectFileCharset(CString fn);
+	CString DetectSubFileLanguage(CString fn);
 	CString GetPlayerPath(CString progName = _T(""));
 	BOOL CreatDirForFile(CString cPath);
 	BOOL CreatDirRecursive(CString cPath);

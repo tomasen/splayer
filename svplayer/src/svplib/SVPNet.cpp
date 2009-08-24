@@ -323,12 +323,14 @@ int CSVPNet::UploadSubFileByVideoAndHash(CString fnVideoFilePath, CString szFile
 
 	return 0;
 }
-int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, CString szVHash  )
+#include "MD5Checksum.h"
+int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, CString szVHash , CString szLang )
 {
 	CURL *curl;
 	CURLcode res;
 	int ret = 0;
-	CString szPostPerm = _T( "pathinfo=" ) + szFilePath + _T("&filehash=") + szFileHash + _T("&vhash=") + szVHash;
+	CString szPostPerm = _T( "pathinfo=" ) + szFilePath + _T("&filehash=") + szFileHash 
+		+ _T("&vhash=") + szVHash + _T("&lang=") + szLang;
 	struct curl_httppost *formpost=NULL;
 	struct curl_httppost *lastptr=NULL;
 
@@ -344,12 +346,25 @@ int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, C
 	curl_formadd(&formpost,	&lastptr, CURLFORM_COPYNAME, "filehash", CURLFORM_COPYCONTENTS, szTerm2,CURLFORM_END);
 	free(szTerm2);
 
+	char buffx[100];
+	sprintf_s( buffx, 100, "\x53\x50\x2c\x61\x65\x72 %d \x26\x65\x28\xd7\x02", SVP_REV_NUMBER);
+	CMD5Checksum cmd5;
+	szVHash = cmd5.GetMD5((BYTE*)buffx, strlen(buffx));
+	
+
 	if(!szVHash.IsEmpty()){
 		szTerm2 = svpToolBox.CStringToUTF8(szVHash, &iDescLen);
 		curl_formadd(&formpost,	&lastptr, CURLFORM_COPYNAME, "vhash", CURLFORM_COPYCONTENTS, szTerm2,CURLFORM_END);
 		free(szTerm2);
 	}
 
+	
+
+	if(!szLang.IsEmpty()){
+		szTerm2 = svpToolBox.CStringToUTF8(szLang, &iDescLen);
+		curl_formadd(&formpost,	&lastptr, CURLFORM_COPYNAME, "lang", CURLFORM_COPYCONTENTS, szTerm2,CURLFORM_END);
+		free(szTerm2);
+	}
 	FILE *stream_http_recv_buffer = svpToolBox.getTmpFileSteam();
 	if(!stream_http_recv_buffer){
 		SVP_LogMsg(_T("TmpFile Creation for http recv buff fail")); //// TODO: 1. warning!! OR switch to memfile system

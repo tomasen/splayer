@@ -150,7 +150,7 @@ void SVP_UploadCrashDmp(CString szDmppath, CString szLogPath){
 	svpdata->szLogPath = szLogPath;
 	AfxBeginThread( SVPThreadUploadCrashDmp, (LPVOID)svpdata, THREAD_PRIORITY_LOWEST);
 }
-void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath, CStringArray* szSubArray, CAtlList<CString> * szStatMsg){
+void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath, CStringArray* szSubArray, CAtlList<CString> * szStatMsg, CString szLang ){
 		
 	szGStatMsg = szStatMsg;
 	SVP_LogMsg(_T("正在通过射手影音字幕智能匹配系统寻找字幕"), 31);
@@ -158,7 +158,7 @@ void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath, CStringArray* szSu
 	CSVPhash svpHash;
 	CString szFileHash  = svpHash.ComputerFileHash(fnVideoFilePath);
 	for(int i = 1; i < 8; i++){
-		int err =  svpNet.QuerySubByVideoPathOrHash(fnVideoFilePath,szFileHash) ;
+		int err =  svpNet.QuerySubByVideoPathOrHash(fnVideoFilePath,szFileHash, _T("") , szLang) ;
 		if(err){
 			Sleep(2300 * i);
 			if(i >= 3)

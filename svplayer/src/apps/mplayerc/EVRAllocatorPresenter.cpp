@@ -957,7 +957,9 @@ STDMETHODIMP CEVRAllocatorPresenter::ProcessMessage(MFVP_MESSAGE_TYPE eMessage, 
 
 	case MFVP_MESSAGE_ENDSTREAMING :
 		{
-			m_pGenlock->ResetTiming();
+			if(m_pGenlock)
+				m_pGenlock->ResetTiming();
+
 			m_pRefClock = NULL;
 		}
 		break;
@@ -1630,7 +1632,7 @@ void CEVRAllocatorPresenter::MixerThread()
 				{
 					bNewSample = GetSampleFromMixer();
 				}
-				if (m_rtFrameCycle == 0 && bNewSample) // Get frame time and type from the input pin				
+				if (m_pGenlock && m_rtFrameCycle == 0 && bNewSample) // Get frame time and type from the input pin				
 				{
 					CComPtr<IPin> pPin;
 					CMediaType mt;
@@ -1652,9 +1654,12 @@ void CEVRAllocatorPresenter::MixerThread()
 						m_bInterlaced = ExtractInterlaced(&mt);
 					}
 					// Update internal subtitle clock
-					if(m_bUseInternalTimer && m_pSubPicQueue)
+					if(m_bUseInternalTimer && ( m_pSubPicQueue || m_pSubPicQueue2) )
 					{
-						m_pSubPicQueue->SetFPS(m_fps);
+						if(m_pSubPicQueue)
+							m_pSubPicQueue->SetFPS(m_fps);
+						if(m_pSubPicQueue2)
+							m_pSubPicQueue2->SetFPS(m_fps);
 					}
 				}
 			}
@@ -1694,7 +1699,8 @@ void CEVRAllocatorPresenter::RenderThread()
 	if (pfAvSetMmThreadPriority) pfAvSetMmThreadPriority (hAvrt, AVRT_PRIORITY_HIGH);
 
 	AppSettings& s = AfxGetAppSettings();
-	m_pGenlock->GetTargetSyncOffset(&targetSyncOffset); // Target sync offset from settings
+	if(m_pGenlock)
+		m_pGenlock->GetTargetSyncOffset(&targetSyncOffset); // Target sync offset from settings
 
 	// Set timer resolution
 	timeGetDevCaps(&tc, sizeof(TIMECAPS));
@@ -1940,27 +1946,31 @@ HRESULT CEVRAllocatorPresenter::BeginStreaming()
 
 //	if (s.m_RenderSettings.bSynchronizeVideo)
 //		m_pGenlock->AdviseSyncClock(((CMainFrame*)(AfxGetApp()->m_pMainWnd))->m_pSyncClock);
-	CComPtr<IBaseFilter> pEVR;
-	FILTER_INFO filterInfo;
-	ZeroMemory(&filterInfo, sizeof(filterInfo));
-	m_pOuterEVR->QueryInterface (__uuidof(IBaseFilter), (void**)&pEVR);
-	pEVR->QueryFilterInfo(&filterInfo); // This addref's the pGraph member
+	if(m_pGenlock){
+		CComPtr<IBaseFilter> pEVR;
+		FILTER_INFO filterInfo;
+		ZeroMemory(&filterInfo, sizeof(filterInfo));
+		m_pOuterEVR->QueryInterface (__uuidof(IBaseFilter), (void**)&pEVR);
+		pEVR->QueryFilterInfo(&filterInfo); // This addref's the pGraph member
 
-	BeginEnumFilters(filterInfo.pGraph, pEF, pBF)
-		if(CComQIPtr<IAMAudioRendererStats> pAS = pBF)
-		{
-			m_pAudioStats = pAS;
-		};
-	EndEnumFilters
+		BeginEnumFilters(filterInfo.pGraph, pEF, pBF)
+			if(CComQIPtr<IAMAudioRendererStats> pAS = pBF)
+			{
+				m_pAudioStats = pAS;
+			};
+		EndEnumFilters
 
-		pEVR->GetSyncSource(&m_pRefClock);
-	if (filterInfo.pGraph) filterInfo.pGraph->Release();
-	m_pGenlock->SetMonitor(GetAdapter(m_pD3D));
-	m_pGenlock->GetTiming();
+			pEVR->GetSyncSource(&m_pRefClock);
+		if (filterInfo.pGraph) filterInfo.pGraph->Release();
+		m_pGenlock->SetMonitor(GetAdapter(m_pD3D));
+		m_pGenlock->GetTiming();
 
-	ResetStats();
-	EstimateRefreshTimings();
-	if (m_rtFrameCycle > 0.0) m_dCycleDifference = GetCycleDifference(); // Might have moved to another display
+		ResetStats();
+		EstimateRefreshTimings();
+		if (m_rtFrameCycle > 0.0) m_dCycleDifference = GetCycleDifference(); // Might have moved to another display
+	}
+	
+	
 
 	return S_OK;
 }

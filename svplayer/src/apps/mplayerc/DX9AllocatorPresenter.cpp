@@ -520,7 +520,9 @@ m_dCycleDifference(1.0)
 	}
 
 	m_pGenlock = NULL;
-	m_pGenlock = new CGenlock(s.m_RenderSettings.fTargetSyncOffset, s.m_RenderSettings.fControlLimit, s.m_RenderSettings.iLineDelta, s.m_RenderSettings.iColumnDelta, s.m_RenderSettings.fCycleDelta, 0); // Must be done before CreateDevice
+	if(s.fVMRSyncFix)
+		m_pGenlock = new CGenlock(s.m_RenderSettings.fTargetSyncOffset, s.m_RenderSettings.fControlLimit, s.m_RenderSettings.iLineDelta, s.m_RenderSettings.iColumnDelta, s.m_RenderSettings.fCycleDelta, 0); // Must be done before CreateDevice
+
 	m_lAudioLag = 0;
 	m_lAudioLagMin = 10000;
 	m_lAudioLagMax = -10000;
@@ -578,7 +580,9 @@ CDX9AllocatorPresenter::~CDX9AllocatorPresenter()
 
 void CDX9AllocatorPresenter::ResetStats()
 {
-	m_pGenlock->ResetStats();
+	if(m_pGenlock)
+		m_pGenlock->ResetStats();
+
 	m_lAudioLag = 0;
 	m_lAudioLagMin = 10000;
 	m_lAudioLagMax = -10000;
@@ -715,10 +719,12 @@ HRESULT CDX9AllocatorPresenter::CreateDevice()
 	m_uD3DRefreshRate = d3ddm.RefreshRate;
 	m_dD3DRefreshCycle = 1000.0 / (double)m_uD3DRefreshRate; // In ms
 	m_ScreenSize.SetSize(d3ddm.Width, d3ddm.Height);
-	m_pGenlock->SetDisplayResolution(d3ddm.Width, d3ddm.Height);
+	if(m_pGenlock){
+		m_pGenlock->SetDisplayResolution(d3ddm.Width, d3ddm.Height);
 
-	SVP_LogMsg5(_T("TargetSyncOffset %02f ") , 1000.0/m_uD3DRefreshRate/2);
-	m_pGenlock->SetDisplayResolution(d3ddm.Width, d3ddm.Height);
+		SVP_LogMsg5(_T("TargetSyncOffset %02f ") , 1000.0/m_uD3DRefreshRate/2);
+		m_pGenlock->SetTargetSyncOffset(1000.0/m_uD3DRefreshRate/2);
+	}
 
 	if(s.fbSmoothMutilMonitor)
 		EnumDisplayMonitors(NULL, NULL, MonitorEnumProcDxDetect, (LPARAM)&m_ScreenSize);
@@ -820,7 +826,7 @@ HRESULT CDX9AllocatorPresenter::CreateDevice()
 		}
 		else
 		{
-			pp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;//D3DPRESENT_INTERVAL_ONE;
+			pp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;//D3DPRESENT_INTERVAL_ONE;//
 		}
 		if (m_pD3DEx)
 		{
@@ -1623,18 +1629,21 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 
 	if (m_pD3DDev)
 	{
-		m_pD3DDev->GetRasterStatus(0, &rasterStatus);
-		m_uScanLineEnteringPaint = rasterStatus.ScanLine;
-		msSyncOffset = (m_ScreenSize.cy - m_uScanLineEnteringPaint) * m_dDetectedScanlineTime;
-		rtSyncOffset = REFERENCE_TIME(10000.0 * msSyncOffset);
-		rtCurRefTime = 0;
-		if (m_pRefClock) m_pRefClock->GetTime(&rtCurRefTime);
-		m_rtEstVSyncTime = rtCurRefTime + rtSyncOffset;
-		SyncStats(m_rtEstVSyncTime);
-		SyncOffsetStats(-rtSyncOffset); // Minus because we want time to flow downward in the graph in DrawStats
-		if (s.m_RenderSettings.bSynchronizeVideo) m_pGenlock->ControlClock(msSyncOffset);
-		else if (s.m_RenderSettings.bSynchronizeDisplay) m_pGenlock->ControlDisplay(msSyncOffset);
-		else m_pGenlock->UpdateStats(msSyncOffset); // No sync or sync to nearest neighbor
+		if(m_pGenlock){
+			m_pD3DDev->GetRasterStatus(0, &rasterStatus);
+			m_uScanLineEnteringPaint = rasterStatus.ScanLine;
+			msSyncOffset = (m_ScreenSize.cy - m_uScanLineEnteringPaint) * m_dDetectedScanlineTime;
+			rtSyncOffset = REFERENCE_TIME(10000.0 * msSyncOffset);
+			rtCurRefTime = 0;
+			if (m_pRefClock) m_pRefClock->GetTime(&rtCurRefTime);
+			m_rtEstVSyncTime = rtCurRefTime + rtSyncOffset;
+			SyncStats(m_rtEstVSyncTime);
+			SyncOffsetStats(-rtSyncOffset); // Minus because we want time to flow downward in the graph in DrawStats
+			if (s.m_RenderSettings.bSynchronizeVideo) m_pGenlock->ControlClock(msSyncOffset);
+			else if (s.m_RenderSettings.bSynchronizeDisplay) m_pGenlock->ControlDisplay(msSyncOffset);
+			else m_pGenlock->UpdateStats(msSyncOffset); // No sync or sync to nearest neighbor
+		}
+		
 	}
 	else
 		return false; // Only came to check the vsync timing, not to really present anything
@@ -1951,18 +1960,20 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 				fResetDevice = true;
 			}
 
-			{
+			if(m_pGenlock){
 				D3DDISPLAYMODE d3ddm;
 				HRESULT hr;
 				ZeroMemory(&d3ddm, sizeof(d3ddm));
 				if(SUCCEEDED(m_pD3D->GetAdapterDisplayMode(CurrentMonitor, &d3ddm)))
 					m_pGenlock->SetDisplayResolution(d3ddm.Width, d3ddm.Height);
 
+				//resetdevice
+				m_pGenlock->SetMonitor(CurrentMonitor);
+				m_pGenlock->GetTiming();
+
 			}
 
-			//resetdevice
-			m_pGenlock->SetMonitor(CurrentMonitor);
-			m_pGenlock->GetTiming();
+			
 		}
 	}
 
@@ -1995,8 +2006,10 @@ bool CDX9AllocatorPresenter::ResetDevice()
 	{
 		return false;
 	}
-	m_pGenlock->SetMonitor(GetAdapter(m_pD3D));
-	m_pGenlock->GetTiming();
+	if(m_pGenlock){
+		m_pGenlock->SetMonitor(GetAdapter(m_pD3D));
+		m_pGenlock->GetTiming();
+	}
 	OnResetDevice();
 	return true;
 }
@@ -2092,7 +2105,7 @@ void CDX9AllocatorPresenter::DrawStats()
 		DrawText(rc, strText, 1);
 		OffsetRect(&rc, 0, TextHeight);
 
-		if (m_pGenlock->powerstripTimingExists)
+		if (m_pGenlock && m_pGenlock->powerstripTimingExists)
 		{
 			strText.Format(L"Display cycle from Powerstrip: %.3f ms | Display refresh rate from Powerstrip: %.3f Hz", 1000.0 / m_pGenlock->curDisplayFreq, m_pGenlock->curDisplayFreq);
 			DrawText(rc, strText, 1);
@@ -2117,7 +2130,7 @@ void CDX9AllocatorPresenter::DrawStats()
 			DrawText(rc, strText, 1);
 			OffsetRect(&rc, 0, TextHeight);
 
-			if (s.m_RenderSettings.bSynchronizeDisplay || s.m_RenderSettings.bSynchronizeVideo)
+			if (m_pGenlock && ( s.m_RenderSettings.bSynchronizeDisplay || s.m_RenderSettings.bSynchronizeVideo ))
 			{
 				if (s.m_RenderSettings.bSynchronizeDisplay && !m_pGenlock->PowerstripRunning())
 				{
@@ -2134,9 +2147,11 @@ void CDX9AllocatorPresenter::DrawStats()
 			}
 		}
 
-		strText.Format(L"Average sync offset: %+5.1f ms [%.1f ms, %.1f ms]", m_fSyncOffsetAvr/10000.0, -m_pGenlock->maxSyncOffset, -m_pGenlock->minSyncOffset);
-		DrawText(rc, strText, 1);
-		OffsetRect(&rc, 0, TextHeight);
+		if(m_pGenlock){
+			strText.Format(L"Average sync offset: %+5.1f ms [%.1f ms, %.1f ms]", m_fSyncOffsetAvr/10000.0, -m_pGenlock->maxSyncOffset, -m_pGenlock->minSyncOffset);
+			DrawText(rc, strText, 1);
+			OffsetRect(&rc, 0, TextHeight);
+		}
 
 		if ((bDetailedStats > 1) && m_pAudioStats && s.m_RenderSettings.bSynchronizeVideo)
 		{
@@ -3021,19 +3036,25 @@ STDMETHODIMP CVMR9AllocatorPresenter::StartPresenting(DWORD_PTR dwUserID)
 			pVMR9->GetSyncSource(&m_pRefClock);
 		if (filterInfo.pGraph) filterInfo.pGraph->Release();
 	}
-	m_pGenlock->SetMonitor(GetAdapter(m_pD3D));
-	if (!m_pGenlock->powerstripTimingExists) m_pGenlock->GetTiming(); // StartPresenting seems to get called more often than StopPresenting
+	if(m_pGenlock){
+		m_pGenlock->SetMonitor(GetAdapter(m_pD3D));
+		if (!m_pGenlock->powerstripTimingExists) m_pGenlock->GetTiming(); // StartPresenting seems to get called more often than StopPresenting
 
-	ResetStats();
-	EstimateRefreshTimings();
-	if (m_rtFrameCycle > 0.0) m_dCycleDifference = GetCycleDifference(); // Might have moved to another display
+		ResetStats();
+		EstimateRefreshTimings();
+		if (m_rtFrameCycle > 0.0) m_dCycleDifference = GetCycleDifference(); // Might have moved to another display
+	}
+
+	
 
 	return S_OK;
 }
 
 STDMETHODIMP CVMR9AllocatorPresenter::StopPresenting(DWORD_PTR dwUserID)
 {
-	m_pGenlock->ResetTiming();
+	if(m_pGenlock)
+		m_pGenlock->ResetTiming();
+
 	m_pRefClock = NULL;
 	return S_OK;
 }
@@ -3058,7 +3079,7 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 		{
 			ExtractAvgTimePerFrame(&mt, m_rtFrameCycle);
 			m_dFrameCycle = m_rtFrameCycle / 10000.0;
-			if (m_rtFrameCycle > 0.0)
+			if (m_rtFrameCycle > 0.0 && m_pGenlock)
 			{
 				m_fps = 10000000.0 / m_rtFrameCycle;
 				m_dCycleDifference = GetCycleDifference();

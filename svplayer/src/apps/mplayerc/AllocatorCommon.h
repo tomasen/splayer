@@ -401,14 +401,14 @@ namespace DSObjects
 		// Get the best estimate of the display refresh rate in Hz
 		double GetRefreshRate()
 		{
-			if (m_pGenlock->powerstripTimingExists) return m_pGenlock->curDisplayFreq;
+			if (m_pGenlock && m_pGenlock->powerstripTimingExists) return m_pGenlock->curDisplayFreq;
 			else return (double)m_uD3DRefreshRate;
 		}
 
 		// Get the best estimate of the display cycle time in milliseconds
 		double GetDisplayCycle()
 		{
-			if (m_pGenlock->powerstripTimingExists) return 1000.0 / m_pGenlock->curDisplayFreq;
+			if (m_pGenlock && m_pGenlock->powerstripTimingExists) return 1000.0 / m_pGenlock->curDisplayFreq;
 			else return (double)m_dD3DRefreshCycle;
 		}
 

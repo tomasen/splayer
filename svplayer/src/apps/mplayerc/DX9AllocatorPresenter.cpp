@@ -717,7 +717,8 @@ HRESULT CDX9AllocatorPresenter::CreateDevice()
 #endif
 
 	m_uD3DRefreshRate = d3ddm.RefreshRate;
-	m_dD3DRefreshCycle = 1000.0 / (double)m_uD3DRefreshRate; // In ms
+	if(m_uD3DRefreshRate)
+		m_dD3DRefreshCycle = 1000.0 / (double)m_uD3DRefreshRate; // In ms
 	m_ScreenSize.SetSize(d3ddm.Width, d3ddm.Height);
 	if(m_pGenlock){
 		m_pGenlock->SetDisplayResolution(d3ddm.Width, d3ddm.Height);
@@ -1351,7 +1352,7 @@ HRESULT CDX9AllocatorPresenter::TextureResizeBicubic1pass(CComPtr<IDirect3DTextu
 HRESULT CDX9AllocatorPresenter::TextureResizeBicubic2pass(CComPtr<IDirect3DTexture9> pTexture, Vector dst[4], const CRect &SrcRect)
 {
 	// The 2 pass sampler is incorrect in that it only does bilinear resampling in the y direction.
-	//return TextureResizeBicubic1pass(pTexture, dst, SrcRect);
+	return TextureResizeBicubic1pass(pTexture, dst, SrcRect);
 
 	HRESULT hr;
 
@@ -1563,7 +1564,9 @@ void CDX9AllocatorPresenter::SyncStats(LONGLONG syncTime)
 	}
 
 	m_fJitterStdDev = sqrt(DeviationSum/NB_JITTER);
-	m_fAvrFps = 10000000.0/(double(llJitterSum)/NB_JITTER);
+	if(llJitterSum)
+		m_fAvrFps = 10000000.0/(double(llJitterSum)/NB_JITTER);
+
 	m_llLastSyncTime = syncTime;
 }
 
@@ -2106,9 +2109,11 @@ void CDX9AllocatorPresenter::DrawStats()
 		DrawText(rc, strText, 1);
 		OffsetRect(&rc, 0, TextHeight);
 
-		strText.Format(L"Actual frame cycle: %+5.3f ms [%+.3f ms, %+.3f ms] | Actual frame rate: %.3f fps", m_fJitterMean / 10000.0, (double(llMinJitter)/10000.0), (double(llMaxJitter)/10000.0), 10000000.0 / m_fJitterMean);
-		DrawText(rc, strText, 1);
-		OffsetRect(&rc, 0, TextHeight);
+		if(m_fJitterMean){
+			strText.Format(L"Actual frame cycle: %+5.3f ms [%+.3f ms, %+.3f ms] | Actual frame rate: %.3f fps", m_fJitterMean / 10000.0, (double(llMinJitter)/10000.0), (double(llMaxJitter)/10000.0), 10000000.0 / m_fJitterMean);
+			DrawText(rc, strText, 1);
+			OffsetRect(&rc, 0, TextHeight);
+		}
 
 		strText.Format(L"Display cycle from Windows: %.3f ms | Display refresh rate from Windows: %d Hz", m_dD3DRefreshCycle, m_uD3DRefreshRate);
 		DrawText(rc, strText, 1);
@@ -3087,14 +3092,17 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 			SUCCEEDED (pPin->ConnectionMediaType(&mt)) )
 		{
 			ExtractAvgTimePerFrame(&mt, m_rtFrameCycle);
-			m_dFrameCycle = m_rtFrameCycle / 10000.0;
-			if (m_rtFrameCycle > 0.0 && m_pGenlock)
-			{
-				m_fps = 10000000.0 / m_rtFrameCycle;
-				m_dCycleDifference = GetCycleDifference();
-			}
-			m_bInterlaced = ExtractInterlaced(&mt);
+			if(m_pGenlock){
+				m_dFrameCycle = m_rtFrameCycle / 10000.0;
+				if (m_rtFrameCycle > 0.0 && m_pGenlock)
+				{
+					m_fps = 10000000.0 / m_rtFrameCycle;
+					m_dCycleDifference = GetCycleDifference();
+				}
+				m_bInterlaced = ExtractInterlaced(&mt);
 
+			}
+			
 			CSize NativeVideoSize = m_NativeVideoSize;
 			CSize AspectRatio = m_AspectRatio;
 			if (mt.formattype==FORMAT_VideoInfo || mt.formattype==FORMAT_MPEGVideo)

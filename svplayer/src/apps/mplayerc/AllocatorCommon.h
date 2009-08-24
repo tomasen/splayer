@@ -408,7 +408,7 @@ namespace DSObjects
 		// Get the best estimate of the display cycle time in milliseconds
 		double GetDisplayCycle()
 		{
-			if (m_pGenlock && m_pGenlock->powerstripTimingExists) return 1000.0 / m_pGenlock->curDisplayFreq;
+			if (m_pGenlock && m_pGenlock->powerstripTimingExists && m_pGenlock->curDisplayFreq) return 1000.0 / m_pGenlock->curDisplayFreq;
 			else return (double)m_dD3DRefreshCycle;
 		}
 

@@ -1699,8 +1699,9 @@ void CEVRAllocatorPresenter::RenderThread()
 	if (pfAvSetMmThreadPriority) pfAvSetMmThreadPriority (hAvrt, AVRT_PRIORITY_HIGH);
 
 	AppSettings& s = AfxGetAppSettings();
-	if(m_pGenlock)
+	if(m_pGenlock){
 		m_pGenlock->GetTargetSyncOffset(&targetSyncOffset); // Target sync offset from settings
+	}
 
 	// Set timer resolution
 	timeGetDevCaps(&tc, sizeof(TIMECAPS));
@@ -1709,60 +1710,67 @@ void CEVRAllocatorPresenter::RenderThread()
 
 	while (!bQuit)
 	{
-		pNewSample = NULL;
-		m_lNextSampleWait = 1;
-		samplesLeft = 0;
-		bSynchronizeNearest = s.m_RenderSettings.bSynchronizeNearest;
+		
+			pNewSample = NULL;
+			m_lNextSampleWait = 1;
+			samplesLeft = 0;
+			bSynchronizeNearest = s.m_RenderSettings.bSynchronizeNearest;
 
-		if (m_nRenderState == Started || !m_bPrerolled) // If either streaming or the pre-roll sample
-		{
-			if (SUCCEEDED(GetScheduledSample(&pNewSample, samplesLeft))) // Get the next sample
+			if (m_nRenderState == Started || !m_bPrerolled) // If either streaming or the pre-roll sample
 			{
-				m_llLastSampleTime = m_llSampleTime;
-				if (!m_bPrerolled)
+				if (SUCCEEDED(GetScheduledSample(&pNewSample, samplesLeft))) // Get the next sample
 				{
-					m_bPrerolled = true; // m_bPrerolled is a ticket to show one (1) frame and no more until streaming
-					m_lNextSampleWait = 0; // Present immediately
-				}
-				else if (SUCCEEDED(pNewSample->GetSampleTime(&m_llSampleTime))) // Get zero-based sample due time
-				{
-					m_pClock->GetCorrelatedTime(0, &llRefClockTime, &systemTime); // Get zero-based reference clock time. systemTime is not used for anything here
-					m_lNextSampleWait = (LONG)((m_llSampleTime - llRefClockTime) / 10000); // Time left until sample is due, in ms
-					if (m_lNextSampleWait < 0)
-						m_lNextSampleWait = 0; // We came too late. Race through, discard the sample and get a new one
-					else if (bSynchronizeNearest) // Present at the closest "safe" occasion at tergetSyncOffset ms before vsync to avoid tearing
+					m_llLastSampleTime = m_llSampleTime;
+					if (!m_bPrerolled)
 					{
-						REFERENCE_TIME rtRefClockTimeNow; if (m_pRefClock) m_pRefClock->GetTime(&rtRefClockTimeNow); // Reference clock time now
-						LONG lLastVsyncTime = (LONG)((m_rtEstVSyncTime - rtRefClockTimeNow) / 10000); // Time of previous vsync relative to now
-
-						LONGLONG llNextSampleWait = (LONGLONG)(((double)lLastVsyncTime + GetDisplayCycle() - targetSyncOffset) * 10000); // Next safe time to Paint()
-						while ((llRefClockTime + llNextSampleWait) < (m_llSampleTime + m_llHysteresis)) // While the proposed time is in the past of sample presentation time
+						m_bPrerolled = true; // m_bPrerolled is a ticket to show one (1) frame and no more until streaming
+						m_lNextSampleWait = 0; // Present immediately
+					}
+					else if (SUCCEEDED(pNewSample->GetSampleTime(&m_llSampleTime))) // Get zero-based sample due time
+					{
+						m_pClock->GetCorrelatedTime(0, &llRefClockTime, &systemTime); // Get zero-based reference clock time. systemTime is not used for anything here
+						m_lNextSampleWait = (LONG)((m_llSampleTime - llRefClockTime) / 10000); // Time left until sample is due, in ms
+						if (m_lNextSampleWait < 0)
+							m_lNextSampleWait = 0; // We came too late. Race through, discard the sample and get a new one
+						else if (bSynchronizeNearest) // Present at the closest "safe" occasion at tergetSyncOffset ms before vsync to avoid tearing
 						{
-							llNextSampleWait = llNextSampleWait + (LONGLONG)(GetDisplayCycle() * 10000); // Try the next possible time, one display cycle ahead
-						}
-						m_lNextSampleWait = (LONG)(llNextSampleWait / 10000);
-						m_lShiftToNearestPrev = m_lShiftToNearest;
-						m_lShiftToNearest = (LONG)((llRefClockTime + llNextSampleWait - m_llSampleTime) / 10000); // The adjustment made to get to the sweet point in time, in ms
+							if(m_pGenlock){
 
-						if (m_bSnapToVSync)
-						{
-							if ((m_lShiftToNearestPrev - m_lShiftToNearest) > (GetDisplayCycle() / 2.0)) // If a step down
-							{
-								m_bVideoSlowerThanDisplay = false;
-								m_llHysteresis = -(LONGLONG)(10000.0 * GetDisplayCycle() / 3.0);
+								REFERENCE_TIME rtRefClockTimeNow; if (m_pRefClock) m_pRefClock->GetTime(&rtRefClockTimeNow); // Reference clock time now
+								LONG lLastVsyncTime = (LONG)((m_rtEstVSyncTime - rtRefClockTimeNow) / 10000); // Time of previous vsync relative to now
+
+								LONGLONG llNextSampleWait = (LONGLONG)(((double)lLastVsyncTime + GetDisplayCycle() - targetSyncOffset) * 10000); // Next safe time to Paint()
+								while ((llRefClockTime + llNextSampleWait) < (m_llSampleTime + m_llHysteresis)) // While the proposed time is in the past of sample presentation time
+								{
+									llNextSampleWait = llNextSampleWait + (LONGLONG)(GetDisplayCycle() * 10000); // Try the next possible time, one display cycle ahead
+								}
+								m_lNextSampleWait = (LONG)(llNextSampleWait / 10000);
+								m_lShiftToNearestPrev = m_lShiftToNearest;
+								m_lShiftToNearest = (LONG)((llRefClockTime + llNextSampleWait - m_llSampleTime) / 10000); // The adjustment made to get to the sweet point in time, in ms
+
+								if (m_bSnapToVSync)
+								{
+									if ((m_lShiftToNearestPrev - m_lShiftToNearest) > (GetDisplayCycle() / 2.0)) // If a step down
+									{
+										m_bVideoSlowerThanDisplay = false;
+										m_llHysteresis = -(LONGLONG)(10000.0 * GetDisplayCycle() / 3.0);
+									}
+									else if ((m_lShiftToNearest - m_lShiftToNearestPrev) > (GetDisplayCycle() / 2.0)) // If a step up
+									{
+										m_bVideoSlowerThanDisplay = true;
+										m_llHysteresis = (LONGLONG)(10000.0 * GetDisplayCycle() / 3.0);
+									}
+									else if ((m_lShiftToNearest < (2 * (LONG)(GetDisplayCycle() / 3.0))) && (m_lShiftToNearest > (LONG)(GetDisplayCycle() / 3.0)))
+										m_llHysteresis = 0; // Reset when between 1/3 and 2/3 of the way either way
+								}
+							}else{
+								//m_lNextSampleWait = 0;
 							}
-							else if ((m_lShiftToNearest - m_lShiftToNearestPrev) > (GetDisplayCycle() / 2.0)) // If a step up
-							{
-								m_bVideoSlowerThanDisplay = true;
-								m_llHysteresis = (LONGLONG)(10000.0 * GetDisplayCycle() / 3.0);
-							}
-							else if ((m_lShiftToNearest < (2 * (LONG)(GetDisplayCycle() / 3.0))) && (m_lShiftToNearest > (LONG)(GetDisplayCycle() / 3.0)))
-								m_llHysteresis = 0; // Reset when between 1/3 and 2/3 of the way either way
 						}
 					}
 				}
 			}
-		}
+		
 		// Wait for the next presentation time or a quit or flush event
 		dwObject = WaitForMultipleObjects(countof(hEvts), hEvts, FALSE, (DWORD)m_lNextSampleWait); 
 		switch (dwObject)

@@ -1,27 +1,30 @@
-/* 
- *	Copyright (C) 2003-2006 Gabest
- *	http://www.gabest.org
+/*
+ * $Id: DX9AllocatorPresenter.h 1133 2009-05-31 06:22:04Z casimir666 $
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *   
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *   
- *  You should have received a copy of the GNU General Public License
- *  along with GNU Make; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. 
- *  http://www.gnu.org/copyleft/gpl.html
+ * (C) 2003-2006 Gabest
+ * (C) 2006-2007 see AUTHORS
+ *
+ * This file is part of mplayerc.
+ *
+ * Mplayerc is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Mplayerc is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
 #pragma once
 
 #include "..\..\SubPic\ISubPic.h"
+
 
 // {4E4834FA-22C2-40e2-9446-F77DD05D245E}
 DEFINE_GUID(CLSID_VMR9AllocatorPresenter,
@@ -42,6 +45,7 @@ DEFINE_GUID(CLSID_DXRAllocatorPresenter,
 // {C7ED3100-9002-4595-9DCA-B30B30413429}
 DEFINE_GUID(CLSID_madVRAllocatorPresenter, 
 0xc7ed3100, 0x9002, 0x4595, 0x9d, 0xca, 0xb3, 0xb, 0x30, 0x41, 0x34, 0x29);
+
 
 extern HRESULT CreateAP9(const CLSID& clsid, HWND hWnd, ISubPicAllocatorPresenter** ppAP);
 

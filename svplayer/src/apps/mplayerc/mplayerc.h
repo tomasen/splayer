@@ -489,6 +489,9 @@ public:
 			double fCycleDelta;
 			double fTargetSyncOffset;
 			double fControlLimit;
+			int iVMRFlushGPUBeforeVSync;
+			int iVMRFlushGPUWait;
+			int iVMRFlushGPUAfterPresent;
 
 			CRendererSettingsEVR()
 			{
@@ -497,6 +500,9 @@ public:
 				bSynchronizeNearest = 1;
 				iLineDelta = 0;
 				iColumnDelta = 0;
+				iVMRFlushGPUBeforeVSync = 0;
+				iVMRFlushGPUWait = 0;
+				iVMRFlushGPUAfterPresent = 0;
 				fCycleDelta = 0.0012;
 				fTargetSyncOffset = 8.0;//10.0;
 				fControlLimit = 2.0;

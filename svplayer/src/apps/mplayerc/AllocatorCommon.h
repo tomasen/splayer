@@ -330,7 +330,27 @@ namespace DSObjects
 		LONGLONG				m_LastSampleTime;
 
 		CString					m_strStatsMsg[10];
+		
+		double m_targetSyncOffset;
+		double m_dD3DRefreshCycle; // Display refresh cycle ms
+		LONG m_lNextSampleWait; // Waiting time for next sample in EVR
+		LONGLONG m_llSampleTime, m_llLastSampleTime; // Present time for the current sample
+		LONGLONG m_llHysteresis; // If != 0 then a "snap to vsync" is active, see EVR
+		REFERENCE_TIME m_rtEstVSyncTime; // Next vsync time in reference clock "coordinates"
+		double m_dDetectedScanlineTime; // Time for one (horizontal) scan line. Extracted at stream start and used to calculate vsync time
+		CComPtr<IReferenceClock> m_pRefClock; // The reference clock. Used in Paint()
+		LONG m_lShiftToNearest, m_lShiftToNearestPrev; // Correction to sample presentation time in sync to nearest
+		bool m_bVideoSlowerThanDisplay; // True if this fact is detected in sync to nearest
+		bool m_bSnapToVSync; // True if framerate is low enough so that snap to vsync makes sense
+		REFERENCE_TIME m_llLastSyncTime;
 
+		// Get the best estimate of the display cycle time in milliseconds
+		double GetDisplayCycle()
+		{
+			return (double)m_dD3DRefreshCycle;
+		}
+
+		void EstimateRefreshTimings();
 	public:
 		CDX9AllocatorPresenter(HWND hWnd, HRESULT& hr, bool bIsEVR );
 		~CDX9AllocatorPresenter();

@@ -696,13 +696,16 @@ DWORD WINAPI CDX9AllocatorPresenter::VSyncThreadStatic(LPVOID lpParam)
 
 void CDX9AllocatorPresenter::StartWorkerThreads()
 {
-	DWORD		dwThreadId;
+	AppSettings& s = AfxGetAppSettings();
+	if(!s.fVMRGothSyncFix){ //nessery for EVR
+		DWORD		dwThreadId;
 
-	m_hEvtQuit		= CreateEvent (NULL, TRUE, FALSE, NULL);
-	if (m_bIsEVR)
-	{
-		m_hVSyncThread = ::CreateThread(NULL, 0, VSyncThreadStatic, (LPVOID)this, 0, &dwThreadId);
-		SetThreadPriority(m_hVSyncThread, THREAD_PRIORITY_HIGHEST);
+		m_hEvtQuit		= CreateEvent (NULL, TRUE, FALSE, NULL);
+		if (m_bIsEVR)
+		{
+			m_hVSyncThread = ::CreateThread(NULL, 0, VSyncThreadStatic, (LPVOID)this, 0, &dwThreadId);
+			SetThreadPriority(m_hVSyncThread, THREAD_PRIORITY_HIGHEST);
+		}
 	}
 }
 
@@ -924,6 +927,12 @@ if (FAILED(g_pD3D->CreateDevice( AdapterToUse, DeviceType, hWnd,
 		EnumDisplayMonitors(NULL, NULL, MonitorEnumProcDxDetect, (LPARAM)&m_ScreenSize);
 
 	SVP_LogMsg5(_T("m_ScreenSize DX9 %d %d ") , m_ScreenSize.cx, m_ScreenSize.cy);
+	if(!m_RefreshRate)
+		m_RefreshRate = 50;
+	m_targetSyncOffset = 1000.0/m_RefreshRate/2;
+	m_dD3DRefreshCycle = 1000.0 /m_RefreshRate; // In ms
+
+	SVP_LogMsg5(_T("m_targetSyncOffset %f m_dD3DRefreshCycle %f") , m_targetSyncOffset, m_dD3DRefreshCycle);
 
     D3DPRESENT_PARAMETERS pp;
     ZeroMemory(&pp, sizeof(pp));
@@ -2212,9 +2221,33 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 #endif
 
 	CMPlayerCApp * pApp = AfxGetMyApp();
+	BOOL bCompositionEnabled = m_bCompositionEnabled;
 
 	LONGLONG StartPaint = pApp->GetPerfCounter();
 	CAutoLock cRenderLock(&m_RenderLock);
+
+	if(s.fVMRGothSyncFix){
+		m_bSyncStatsAvailable = true;
+		double msSyncOffset = 0.0;
+		REFERENCE_TIME rtSyncOffset = 0;
+		D3DRASTER_STATUS rasterStatus;
+		REFERENCE_TIME rtCurRefTime = 0;
+		m_pD3DDev->GetRasterStatus(0, &rasterStatus);	
+		UINT m_uScanLineEnteringPaint = rasterStatus.ScanLine;
+		if (m_pRefClock) m_pRefClock->GetTime(&rtCurRefTime);
+		msSyncOffset = (m_ScreenSize.cy - m_uScanLineEnteringPaint) * m_dDetectedScanlineTime;
+		rtSyncOffset = REFERENCE_TIME(10000.0 * msSyncOffset);
+		m_rtEstVSyncTime = rtCurRefTime + rtSyncOffset;
+		//SyncStats(m_rtEstVSyncTime);
+		//SyncOffsetStats(-rtSyncOffset); // Minus because we want time to flow downward in the graph in DrawStats
+
+		m_nNextSyncOffset = (m_nNextSyncOffset+1) % NB_JITTER;
+		m_pllSyncOffset[m_nNextSyncOffset] = -rtSyncOffset;
+
+		m_nNextJitter = (m_nNextJitter+1) % NB_JITTER;
+		m_pllJitter[m_nNextJitter] = m_rtEstVSyncTime - m_llLastSyncTime;
+		m_llLastSyncTime = m_rtEstVSyncTime;
+	}
 
 	if(m_WindowRect.right <= m_WindowRect.left || m_WindowRect.bottom <= m_WindowRect.top
 	|| m_NativeVideoSize.cx <= 0 || m_NativeVideoSize.cy <= 0
@@ -2246,20 +2279,14 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 
 	m_pD3DDev->SetRenderTarget(0, pBackBuffer);
 
-//	if(fAll)
-	{
-		// clear the backbuffer
-
+	if(s.fVMRGothSyncFix){
 		hr = m_pD3DDev->Clear(0, NULL, D3DCLEAR_TARGET, 0, 1.0f, 0);
-
-		// paint the video on the backbuffer
-
 		if(!rDstVid.IsRectEmpty())
 		{
 			if(m_pVideoTexture[m_nCurSurface])
 			{
 				CComPtr<IDirect3DTexture9> pVideoTexture = m_pVideoTexture[m_nCurSurface];
-
+				// If there is a pixel shader
 				if(m_pVideoTexture[m_nNbDXSurface] && m_pVideoTexture[m_nNbDXSurface+1] && !m_pPixelShaders.IsEmpty())
 				{
 					static __int64 counter = 0;
@@ -2275,25 +2302,15 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 					D3DSURFACE_DESC desc;
 					m_pVideoTexture[src]->GetLevelDesc(0, &desc);
 
-#if 1
 					float fConstData[][4] = 
 					{
 						{(float)desc.Width, (float)desc.Height, (float)(counter++), (float)diff / CLOCKS_PER_SEC},
 						{1.0f / desc.Width, 1.0f / desc.Height, 0, 0},
 					};
-#else
-					float fConstData[][4] = 
-					{
-						{(float)m_NativeVideoSize.cx, (float)m_NativeVideoSize.cy, (float)(counter++), (float)diff / CLOCKS_PER_SEC},
-						{1.0f / m_NativeVideoSize.cx, 1.0f / m_NativeVideoSize.cy, 0, 0},
-					};
-#endif
 
 					hr = m_pD3DDev->SetPixelShaderConstantF(0, (float*)fConstData, countof(fConstData));
-
 					CComPtr<IDirect3DSurface9> pRT;
 					hr = m_pD3DDev->GetRenderTarget(0, &pRT);
-
 					POSITION pos = m_pPixelShaders.GetHeadPosition();
 					while(pos)
 					{
@@ -2305,13 +2322,9 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 							Shader.Compile(m_pPSC);
 						hr = m_pD3DDev->SetPixelShader(Shader.m_pPixelShader);
 						TextureCopy(m_pVideoTexture[src]);
-
-						//if(++src > 2) src = 1;
-						//if(++dst > 2) dst = 1;
 						src		= dst;
 						if(++dst >= m_nNbDXSurface+2) dst = m_nNbDXSurface;
 					}
-
 					hr = m_pD3DDev->SetRenderTarget(0, pRT);
 					hr = m_pD3DDev->SetPixelShader(NULL);
 				}
@@ -2325,18 +2338,18 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 
 				switch(iDX9Resizer)
 				{
-					case 3: A = -0.60f; break;
-					case 4: A = -0.751f; break;	// FIXME : 0.75 crash recent D3D, or eat CPU 
-					case 5: A = -1.00f; break;
-					case 7: 
-						{
-							if(m_WindowRect.Width() > m_NativeVideoSize.cx)
-								A = -0.751f ;
-							else
-								A = -0.60f ;
+				case 3: A = -0.60f; break;
+				case 4: A = -0.751f; break;	// FIXME : 0.75 crash recent D3D, or eat CPU 
+				case 5: A = -1.00f; break;
+				case 7: 
+					{
+						if(m_WindowRect.Width() > m_NativeVideoSize.cx)
+							A = -0.751f ;
+						else
+							A = -0.60f ;
 
-						}
-						break;
+					}
+					break;
 				}
 				bool bScreenSpacePixelShaders = !m_pPixelShadersScreenSpace.IsEmpty();
 
@@ -2360,7 +2373,6 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 					}
 				}
 
-//				if((iDX9Resizer == 0 || iDX9Resizer == 1 || rSrcVid.Size() == rDstVid.Size() || FAILED(hr)))
 				if(iDX9Resizer == 0 || iDX9Resizer == 1)
 				{
 					D3DTEXTUREFILTERTYPE Filter = iDX9Resizer == 0 ? D3DTEXF_POINT : D3DTEXF_LINEAR;
@@ -2390,23 +2402,15 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 					D3DSURFACE_DESC desc;
 					m_pScreenSizeTemporaryTexture[0]->GetLevelDesc(0, &desc);
 
-#if 1
 					float fConstData[][4] = 
 					{
 						{(float)desc.Width, (float)desc.Height, (float)(counter++), (float)diff / CLOCKS_PER_SEC},
 						{1.0f / desc.Width, 1.0f / desc.Height, 0, 0},
 					};
-#else
-					float fConstData[][4] = 
-					{
-						{(float)m_ScreenSize.cx, (float)m_ScreenSize.cy, (float)(counter++), (float)diff / CLOCKS_PER_SEC},
-						{1.0f / m_ScreenSize.cx, 1.0f / m_ScreenSize.cy, 0, 0},
-					};
-#endif
 
 					hr = m_pD3DDev->SetPixelShaderConstantF(0, (float*)fConstData, countof(fConstData));
 
-					int src = 1, dst = 0 , tmp = 0;
+					int src = 1, dst = 0, tmp = 0;
 
 					POSITION pos = m_pPixelShadersScreenSpace.GetHeadPosition();
 					while(pos)
@@ -2423,17 +2427,13 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 						}
 
 						CExternalPixelShader &Shader = m_pPixelShadersScreenSpace.GetNext(pos);
-						if (!Shader.m_pPixelShader)
-							Shader.Compile(m_pPSC);
+						if (!Shader.m_pPixelShader) Shader.Compile(m_pPSC);
 						hr = m_pD3DDev->SetPixelShader(Shader.m_pPixelShader);
 						TextureCopy(m_pScreenSizeTemporaryTexture[src]);
-
 						tmp = src;
 						src = dst;
 						dst = tmp;
-						//swap(src, dst);
 					}
-
 					hr = m_pD3DDev->SetPixelShader(NULL);
 				}
 			}
@@ -2441,164 +2441,48 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 			{
 				if(pBackBuffer)
 				{
-					ClipToSurface(pBackBuffer, rSrcVid, rDstVid); // grrr
-					// IMPORTANT: rSrcVid has to be aligned on mod2 for yuy2->rgb conversion with StretchRect!!!
+					ClipToSurface(pBackBuffer, rSrcVid, rDstVid);
+					// rSrcVid has to be aligned on mod2 for yuy2->rgb conversion with StretchRect
 					rSrcVid.left &= ~1; rSrcVid.right &= ~1;
 					rSrcVid.top &= ~1; rSrcVid.bottom &= ~1;
 					hr = m_pD3DDev->StretchRect(m_pVideoSurface[m_nCurSurface], rSrcVid, pBackBuffer, rDstVid, m_filter);
-
-					// Support ffdshow queueing
-					// m_pD3DDev->StretchRect may fail if ffdshow is using queue output samples.
-					// Here we don't want to show the black buffer.
-					if(FAILED(hr)) 
+					if(FAILED(hr)) return false;
+				}
+			}
+		}
+		AlphaBltSubPic(rSrcPri.Size());
+		if (m_VMR9AlphaBitmap.dwFlags & VMRBITMAP_UPDATE)
+		{
+			CAutoLock BitMapLock(&m_VMR9AlphaBitmapLock);
+			CRect		rcSrc (m_VMR9AlphaBitmap.rSrc);
+			m_pOSDTexture	= NULL;
+			m_pOSDSurface	= NULL;
+			if ((m_VMR9AlphaBitmap.dwFlags & VMRBITMAP_DISABLE) == 0 && (BYTE *)m_VMR9AlphaBitmapData)
+			{
+				if( (m_pD3DXLoadSurfaceFromMemory != NULL) &&
+					SUCCEEDED(hr = m_pD3DDev->CreateTexture(rcSrc.Width(), rcSrc.Height(), 1, 
+					D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, 
+					D3DPOOL_DEFAULT, &m_pOSDTexture, NULL)) )
+				{
+					if (SUCCEEDED (hr = m_pOSDTexture->GetSurfaceLevel(0, &m_pOSDSurface)))
 					{
-						if (m_OrderedPaint)
-							--m_OrderedPaint;
-						else
-						{
-							TRACE("UNORDERED PAINT!!!!!!\n");
-						}
-
-						return false;
+						hr = m_pD3DXLoadSurfaceFromMemory (m_pOSDSurface, NULL, NULL, (BYTE *)m_VMR9AlphaBitmapData, D3DFMT_A8R8G8B8, m_VMR9AlphaBitmapWidthBytes,
+							NULL, &m_VMR9AlphaBitmapRect, D3DX_FILTER_NONE, m_VMR9AlphaBitmap.clrSrcKey);
+					}
+					if (FAILED (hr))
+					{
+						m_pOSDTexture	= NULL;
+						m_pOSDSurface	= NULL;
 					}
 				}
 			}
+			m_VMR9AlphaBitmap.dwFlags ^= VMRBITMAP_UPDATE;
 		}
-
-		// paint the text on the backbuffer
-
-		AlphaBltSubPic(rSrcPri.Size());
-	}
+		if (pApp->m_fDisplayStats) DrawStats();
+		if (m_pOSDTexture) AlphaBlt(rSrcPri, rDstPri, m_pOSDTexture);
+		m_pD3DDev->EndScene();
 
 
-	// Casimir666 : affichage de l'OSD
-	if (m_VMR9AlphaBitmap.dwFlags & VMRBITMAP_UPDATE)
-	{
-		CAutoLock BitMapLock(&m_VMR9AlphaBitmapLock);
-		CRect		rcSrc (m_VMR9AlphaBitmap.rSrc);
-		m_pOSDTexture	= NULL;
-		m_pOSDSurface	= NULL;
-		if ((m_VMR9AlphaBitmap.dwFlags & VMRBITMAP_DISABLE) == 0 && (BYTE *)m_VMR9AlphaBitmapData)
-		{
-			if( (m_pD3DXLoadSurfaceFromMemory != NULL) &&
-				SUCCEEDED(hr = m_pD3DDev->CreateTexture(rcSrc.Width(), rcSrc.Height(), 1, 
-												D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, 
-												D3DPOOL_DEFAULT, &m_pOSDTexture, NULL)) )
-			{
-				if (SUCCEEDED (hr = m_pOSDTexture->GetSurfaceLevel(0, &m_pOSDSurface)))
-				{
-					hr = m_pD3DXLoadSurfaceFromMemory (m_pOSDSurface,
-												NULL,
-												NULL,
-												(BYTE *)m_VMR9AlphaBitmapData,
-												D3DFMT_A8R8G8B8,
-												m_VMR9AlphaBitmapWidthBytes,
-												NULL,
-												&m_VMR9AlphaBitmapRect,
-												D3DX_FILTER_NONE,
-												m_VMR9AlphaBitmap.clrSrcKey);
-				}
-				if (FAILED (hr))
-				{
-					m_pOSDTexture	= NULL;
-					m_pOSDSurface	= NULL;
-				}
-			}
-		}
-		m_VMR9AlphaBitmap.dwFlags ^= VMRBITMAP_UPDATE;
-
-	}
-
-	if (pApp->m_fDisplayStats)
-		DrawStats();
-
-	{
-		CString Temp;
-		Temp.Format(L"GPU %7.3f ms", (double(m_WaitForGPUTime)/10000.0));
-
-//		TRACE("%ws\n", Temp.GetString());
-	}
-
-	if (m_pOSDTexture) AlphaBlt(rSrcPri, rDstPri, m_pOSDTexture);
-
-	m_pD3DDev->EndScene();
-
-	BOOL bCompositionEnabled = m_bCompositionEnabled;
-
-	bool bDoVSyncInPresent = (!bCompositionEnabled && !m_bAlternativeVSync) || !s.fVMRSyncFix;
-
-	LONGLONG PresentWaitTime = 0;
-/*	if(fAll && m_fVMRSyncFix && bDoVSyncInPresent)
-	{
-		LONGLONG llPerf = pApp->GetPerfCounter();
-		D3DLOCKED_RECT lr;
-		if(SUCCEEDED(pBackBuffer->LockRect(&lr, NULL, 0)))
-			pBackBuffer->UnlockRect();
-		PresentWaitTime = pApp->GetPerfCounter() - llPerf;
-	}*/
-
-	CComPtr<IDirect3DQuery9> pEventQuery;
-
-	m_pD3DDev->CreateQuery(D3DQUERYTYPE_EVENT, &pEventQuery);
-	if (pEventQuery)
-		pEventQuery->Issue(D3DISSUE_END);
-
-	if (s.m_RenderSettings.iVMRFlushGPUBeforeVSync && pEventQuery)
-	{
-		LONGLONG llPerf = pApp->GetPerfCounter();
-		BOOL Data;
-		//Sleep(5);
-		LONGLONG FlushStartTime = pApp->GetPerfCounter();
-		while(S_FALSE == pEventQuery->GetData( &Data, sizeof(Data), D3DGETDATA_FLUSH ))
-		{
-			if (!s.m_RenderSettings.iVMRFlushGPUWait)
-				break;
-			Sleep(1);
-			if (pApp->GetPerfCounter() - FlushStartTime > 500000)
-				break; // timeout after 50 ms
-		}
-		if (s.m_RenderSettings.iVMRFlushGPUWait)
-			m_WaitForGPUTime = pApp->GetPerfCounter() - llPerf;
-		else
-			m_WaitForGPUTime = 0;
-	}
-	else
-		m_WaitForGPUTime = 0;
-	if (fAll)
-	{
-		m_PaintTime = (AfxGetMyApp()->GetPerfCounter() - StartPaint);
-		m_PaintTimeMin = min(m_PaintTimeMin, m_PaintTime);
-		m_PaintTimeMax = max(m_PaintTimeMax, m_PaintTime);
-		
-	}
-
-	bool bWaited = false;
-	bool bTakenLock = false;
-	if (fAll)
-	{
-		// Only sync to refresh when redrawing all
-		bool bTest = WaitForVBlank(bWaited, bTakenLock);
-		ASSERT(bTest == bDoVSyncInPresent);
-		if (!bDoVSyncInPresent)
-		{
-			LONGLONG Time = pApp->GetPerfCounter();
-			OnVBlankFinished(fAll, Time);
-			if (!m_bIsEVR || m_OrderedPaint)
-				CalculateJitter(Time);
-		}
-	}
-
-
-	// Create a device pointer m_pd3dDevice
-
-	// Create a query object
-
-
-	{
-		CComPtr<IDirect3DQuery9> pEventQuery;
-		m_pD3DDev->CreateQuery(D3DQUERYTYPE_EVENT, &pEventQuery);
-
-		LONGLONG llPerf = pApp->GetPerfCounter();
 		if (m_pD3DDevEx)
 		{
 			if (m_bIsFullscreen)
@@ -2613,79 +2497,452 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 			else
 				hr = m_pD3DDev->Present(rSrcPri, rDstPri, NULL, NULL);
 		}
-		// Issue an End event
+
+		//m_pGenlock->UpdateStats(msSyncOffset); // No sync or sync to nearest neighbor
+
+		
+	}else{
+		//	if(fAll)
+		{
+			// clear the backbuffer
+
+			hr = m_pD3DDev->Clear(0, NULL, D3DCLEAR_TARGET, 0, 1.0f, 0);
+
+			// paint the video on the backbuffer
+
+			if(!rDstVid.IsRectEmpty())
+			{
+				if(m_pVideoTexture[m_nCurSurface])
+				{
+					CComPtr<IDirect3DTexture9> pVideoTexture = m_pVideoTexture[m_nCurSurface];
+
+					if(m_pVideoTexture[m_nNbDXSurface] && m_pVideoTexture[m_nNbDXSurface+1] && !m_pPixelShaders.IsEmpty())
+					{
+						static __int64 counter = 0;
+						static long start = clock();
+
+						long stop = clock();
+						long diff = stop - start;
+
+						if(diff >= 10*60*CLOCKS_PER_SEC) start = stop; // reset after 10 min (ps float has its limits in both range and accuracy)
+
+						int src = m_nCurSurface, dst = m_nNbDXSurface;
+
+						D3DSURFACE_DESC desc;
+						m_pVideoTexture[src]->GetLevelDesc(0, &desc);
+
+#if 1
+						float fConstData[][4] = 
+						{
+							{(float)desc.Width, (float)desc.Height, (float)(counter++), (float)diff / CLOCKS_PER_SEC},
+							{1.0f / desc.Width, 1.0f / desc.Height, 0, 0},
+						};
+#else
+						float fConstData[][4] = 
+						{
+							{(float)m_NativeVideoSize.cx, (float)m_NativeVideoSize.cy, (float)(counter++), (float)diff / CLOCKS_PER_SEC},
+							{1.0f / m_NativeVideoSize.cx, 1.0f / m_NativeVideoSize.cy, 0, 0},
+						};
+#endif
+
+						hr = m_pD3DDev->SetPixelShaderConstantF(0, (float*)fConstData, countof(fConstData));
+
+						CComPtr<IDirect3DSurface9> pRT;
+						hr = m_pD3DDev->GetRenderTarget(0, &pRT);
+
+						POSITION pos = m_pPixelShaders.GetHeadPosition();
+						while(pos)
+						{
+							pVideoTexture = m_pVideoTexture[dst];
+
+							hr = m_pD3DDev->SetRenderTarget(0, m_pVideoSurface[dst]);
+							CExternalPixelShader &Shader = m_pPixelShaders.GetNext(pos);
+							if (!Shader.m_pPixelShader)
+								Shader.Compile(m_pPSC);
+							hr = m_pD3DDev->SetPixelShader(Shader.m_pPixelShader);
+							TextureCopy(m_pVideoTexture[src]);
+
+							//if(++src > 2) src = 1;
+							//if(++dst > 2) dst = 1;
+							src		= dst;
+							if(++dst >= m_nNbDXSurface+2) dst = m_nNbDXSurface;
+						}
+
+						hr = m_pD3DDev->SetRenderTarget(0, pRT);
+						hr = m_pD3DDev->SetPixelShader(NULL);
+					}
+
+					Vector dst[4];
+					Transform(rDstVid, dst);
+
+					DWORD iDX9Resizer = s.iDX9Resizer;
+
+					float A = 0;
+
+					switch(iDX9Resizer)
+					{
+					case 3: A = -0.60f; break;
+					case 4: A = -0.751f; break;	// FIXME : 0.75 crash recent D3D, or eat CPU 
+					case 5: A = -1.00f; break;
+					case 7: 
+						{
+							if(m_WindowRect.Width() > m_NativeVideoSize.cx)
+								A = -0.751f ;
+							else
+								A = -0.60f ;
+
+						}
+						break;
+					}
+					bool bScreenSpacePixelShaders = !m_pPixelShadersScreenSpace.IsEmpty();
+
+					hr = InitResizers(A, bScreenSpacePixelShaders);
+
+					if (!m_pScreenSizeTemporaryTexture[0] || !m_pScreenSizeTemporaryTexture[1])
+						bScreenSpacePixelShaders = false;
+
+					if (bScreenSpacePixelShaders)
+					{
+						CComPtr<IDirect3DSurface9> pRT;
+						hr = m_pScreenSizeTemporaryTexture[1]->GetSurfaceLevel(0, &pRT);
+						if (hr != S_OK)
+							bScreenSpacePixelShaders = false;
+						if (bScreenSpacePixelShaders)
+						{
+							hr = m_pD3DDev->SetRenderTarget(0, pRT);
+							if (hr != S_OK)
+								bScreenSpacePixelShaders = false;
+							hr = m_pD3DDev->Clear(0, NULL, D3DCLEAR_TARGET, 0, 1.0f, 0);
+						}
+					}
+
+					//				if((iDX9Resizer == 0 || iDX9Resizer == 1 || rSrcVid.Size() == rDstVid.Size() || FAILED(hr)))
+					if(iDX9Resizer == 0 || iDX9Resizer == 1)
+					{
+						D3DTEXTUREFILTERTYPE Filter = iDX9Resizer == 0 ? D3DTEXF_POINT : D3DTEXF_LINEAR;
+						if (rSrcVid.Size() == rDstVid.Size())
+							Filter = D3DTEXF_POINT;
+						hr = TextureResize(pVideoTexture, dst, Filter, rSrcVid);
+					}
+					else if(iDX9Resizer == 2)
+					{
+						hr = TextureResizeBilinear(pVideoTexture, dst, rSrcVid);
+					}
+					else if(iDX9Resizer >= 3)
+					{
+						hr = TextureResizeBicubic2pass(pVideoTexture, dst, rSrcVid);
+					}
+
+					if (bScreenSpacePixelShaders)
+					{
+						static __int64 counter = 555;
+						static long start = clock() + 333;
+
+						long stop = clock() + 333;
+						long diff = stop - start;
+
+						if(diff >= 10*60*CLOCKS_PER_SEC) start = stop; // reset after 10 min (ps float has its limits in both range and accuracy)
+
+						D3DSURFACE_DESC desc;
+						m_pScreenSizeTemporaryTexture[0]->GetLevelDesc(0, &desc);
+
+#if 1
+						float fConstData[][4] = 
+						{
+							{(float)desc.Width, (float)desc.Height, (float)(counter++), (float)diff / CLOCKS_PER_SEC},
+							{1.0f / desc.Width, 1.0f / desc.Height, 0, 0},
+						};
+#else
+						float fConstData[][4] = 
+						{
+							{(float)m_ScreenSize.cx, (float)m_ScreenSize.cy, (float)(counter++), (float)diff / CLOCKS_PER_SEC},
+							{1.0f / m_ScreenSize.cx, 1.0f / m_ScreenSize.cy, 0, 0},
+						};
+#endif
+
+						hr = m_pD3DDev->SetPixelShaderConstantF(0, (float*)fConstData, countof(fConstData));
+
+						int src = 1, dst = 0 , tmp = 0;
+
+						POSITION pos = m_pPixelShadersScreenSpace.GetHeadPosition();
+						while(pos)
+						{
+							if (m_pPixelShadersScreenSpace.GetTailPosition() == pos)
+							{
+								m_pD3DDev->SetRenderTarget(0, pBackBuffer);
+							}
+							else
+							{
+								CComPtr<IDirect3DSurface9> pRT;
+								hr = m_pScreenSizeTemporaryTexture[dst]->GetSurfaceLevel(0, &pRT);
+								m_pD3DDev->SetRenderTarget(0, pRT);
+							}
+
+							CExternalPixelShader &Shader = m_pPixelShadersScreenSpace.GetNext(pos);
+							if (!Shader.m_pPixelShader)
+								Shader.Compile(m_pPSC);
+							hr = m_pD3DDev->SetPixelShader(Shader.m_pPixelShader);
+							TextureCopy(m_pScreenSizeTemporaryTexture[src]);
+
+							tmp = src;
+							src = dst;
+							dst = tmp;
+							//swap(src, dst);
+						}
+
+						hr = m_pD3DDev->SetPixelShader(NULL);
+					}
+				}
+				else
+				{
+					if(pBackBuffer)
+					{
+						ClipToSurface(pBackBuffer, rSrcVid, rDstVid); // grrr
+						// IMPORTANT: rSrcVid has to be aligned on mod2 for yuy2->rgb conversion with StretchRect!!!
+						rSrcVid.left &= ~1; rSrcVid.right &= ~1;
+						rSrcVid.top &= ~1; rSrcVid.bottom &= ~1;
+						hr = m_pD3DDev->StretchRect(m_pVideoSurface[m_nCurSurface], rSrcVid, pBackBuffer, rDstVid, m_filter);
+
+						// Support ffdshow queueing
+						// m_pD3DDev->StretchRect may fail if ffdshow is using queue output samples.
+						// Here we don't want to show the black buffer.
+						if(FAILED(hr)) 
+						{
+							if (m_OrderedPaint)
+								--m_OrderedPaint;
+							else
+							{
+								TRACE("UNORDERED PAINT!!!!!!\n");
+							}
+
+							return false;
+						}
+					}
+				}
+			}
+
+			// paint the text on the backbuffer
+
+			AlphaBltSubPic(rSrcPri.Size());
+		}
+
+
+		// Casimir666 : affichage de l'OSD
+		if (m_VMR9AlphaBitmap.dwFlags & VMRBITMAP_UPDATE)
+		{
+			CAutoLock BitMapLock(&m_VMR9AlphaBitmapLock);
+			CRect		rcSrc (m_VMR9AlphaBitmap.rSrc);
+			m_pOSDTexture	= NULL;
+			m_pOSDSurface	= NULL;
+			if ((m_VMR9AlphaBitmap.dwFlags & VMRBITMAP_DISABLE) == 0 && (BYTE *)m_VMR9AlphaBitmapData)
+			{
+				if( (m_pD3DXLoadSurfaceFromMemory != NULL) &&
+					SUCCEEDED(hr = m_pD3DDev->CreateTexture(rcSrc.Width(), rcSrc.Height(), 1, 
+					D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, 
+					D3DPOOL_DEFAULT, &m_pOSDTexture, NULL)) )
+				{
+					if (SUCCEEDED (hr = m_pOSDTexture->GetSurfaceLevel(0, &m_pOSDSurface)))
+					{
+						hr = m_pD3DXLoadSurfaceFromMemory (m_pOSDSurface,
+							NULL,
+							NULL,
+							(BYTE *)m_VMR9AlphaBitmapData,
+							D3DFMT_A8R8G8B8,
+							m_VMR9AlphaBitmapWidthBytes,
+							NULL,
+							&m_VMR9AlphaBitmapRect,
+							D3DX_FILTER_NONE,
+							m_VMR9AlphaBitmap.clrSrcKey);
+					}
+					if (FAILED (hr))
+					{
+						m_pOSDTexture	= NULL;
+						m_pOSDSurface	= NULL;
+					}
+				}
+			}
+			m_VMR9AlphaBitmap.dwFlags ^= VMRBITMAP_UPDATE;
+
+		}
+
+		if (pApp->m_fDisplayStats)
+			DrawStats();
+
+		{
+			CString Temp;
+			Temp.Format(L"GPU %7.3f ms", (double(m_WaitForGPUTime)/10000.0));
+
+			//		TRACE("%ws\n", Temp.GetString());
+		}
+
+		if (m_pOSDTexture) AlphaBlt(rSrcPri, rDstPri, m_pOSDTexture);
+
+		m_pD3DDev->EndScene();
+
+		
+		bool bDoVSyncInPresent = (!bCompositionEnabled && !m_bAlternativeVSync) || !s.fVMRSyncFix;
+
+		LONGLONG PresentWaitTime = 0;
+		/*	if(fAll && m_fVMRSyncFix && bDoVSyncInPresent)
+		{
+		LONGLONG llPerf = pApp->GetPerfCounter();
+		D3DLOCKED_RECT lr;
+		if(SUCCEEDED(pBackBuffer->LockRect(&lr, NULL, 0)))
+		pBackBuffer->UnlockRect();
+		PresentWaitTime = pApp->GetPerfCounter() - llPerf;
+		}*/
+
+		CComPtr<IDirect3DQuery9> pEventQuery;
+
+		m_pD3DDev->CreateQuery(D3DQUERYTYPE_EVENT, &pEventQuery);
 		if (pEventQuery)
 			pEventQuery->Issue(D3DISSUE_END);
 
-		BOOL Data;
-
-		if (s.m_RenderSettings.iVMRFlushGPUAfterPresent && pEventQuery)
+		if (s.m_RenderSettings.iVMRFlushGPUBeforeVSync && pEventQuery)
 		{
+			LONGLONG llPerf = pApp->GetPerfCounter();
+			BOOL Data;
+			//Sleep(5);
 			LONGLONG FlushStartTime = pApp->GetPerfCounter();
-			while (S_FALSE == pEventQuery->GetData( &Data, sizeof(Data), D3DGETDATA_FLUSH ))
+			while(S_FALSE == pEventQuery->GetData( &Data, sizeof(Data), D3DGETDATA_FLUSH ))
 			{
 				if (!s.m_RenderSettings.iVMRFlushGPUWait)
 					break;
+				Sleep(1);
 				if (pApp->GetPerfCounter() - FlushStartTime > 500000)
 					break; // timeout after 50 ms
 			}
-		}
-
-		int ScanLine;
-		int bInVBlank;
-		GetVBlank(ScanLine, bInVBlank, false);
-
-		if (fAll && (!m_bIsEVR || m_OrderedPaint))
-		{
-			m_VBlankEndPresent = ScanLine;
-		}
-
-		while (ScanLine == 0 || bInVBlank)
-		{
-			GetVBlank(ScanLine, bInVBlank, false);
-
-		}
-		m_VBlankStartMeasureTime = pApp->GetPerfCounter();
-		m_VBlankStartMeasure = ScanLine;
-
-		if (fAll && bDoVSyncInPresent)
-		{
-			m_PresentWaitTime = (pApp->GetPerfCounter() - llPerf) + PresentWaitTime;
-			m_PresentWaitTimeMin = min(m_PresentWaitTimeMin, m_PresentWaitTime);
-			m_PresentWaitTimeMax = max(m_PresentWaitTimeMax, m_PresentWaitTime);
+			if (s.m_RenderSettings.iVMRFlushGPUWait)
+				m_WaitForGPUTime = pApp->GetPerfCounter() - llPerf;
+			else
+				m_WaitForGPUTime = 0;
 		}
 		else
+			m_WaitForGPUTime = 0;
+		if (fAll)
 		{
-			m_PresentWaitTime = 0;
-			m_PresentWaitTimeMin = min(m_PresentWaitTimeMin, m_PresentWaitTime);
-			m_PresentWaitTimeMax = max(m_PresentWaitTimeMax, m_PresentWaitTime);
+			m_PaintTime = (AfxGetMyApp()->GetPerfCounter() - StartPaint);
+			m_PaintTimeMin = min(m_PaintTimeMin, m_PaintTime);
+			m_PaintTimeMax = max(m_PaintTimeMax, m_PaintTime);
+
 		}
-	}
 
-	if (bDoVSyncInPresent)
-	{
-		LONGLONG Time = pApp->GetPerfCounter();
-		if (!m_bIsEVR || m_OrderedPaint)
-			CalculateJitter(Time);
-		OnVBlankFinished(fAll, Time);
-	}
+		bool bWaited = false;
+		bool bTakenLock = false;
+		if (fAll)
+		{
+			// Only sync to refresh when redrawing all
+			bool bTest = WaitForVBlank(bWaited, bTakenLock);
+			ASSERT(bTest == bDoVSyncInPresent);
+			if (!bDoVSyncInPresent)
+			{
+				LONGLONG Time = pApp->GetPerfCounter();
+				OnVBlankFinished(fAll, Time);
+				if (!m_bIsEVR || m_OrderedPaint)
+					CalculateJitter(Time);
+			}
+		}
 
-	if (bTakenLock)
-		UnlockD3DDevice();
 
-	
-/*	if (!bWaited)
-	{
+		// Create a device pointer m_pd3dDevice
+
+		// Create a query object
+
+
+		{
+			CComPtr<IDirect3DQuery9> pEventQuery;
+			m_pD3DDev->CreateQuery(D3DQUERYTYPE_EVENT, &pEventQuery);
+
+			LONGLONG llPerf = pApp->GetPerfCounter();
+			if (m_pD3DDevEx)
+			{
+				if (m_bIsFullscreen)
+					hr = m_pD3DDevEx->PresentEx(NULL, NULL, NULL, NULL, NULL);
+				else
+					hr = m_pD3DDevEx->PresentEx(rSrcPri, rDstPri, NULL, NULL, NULL);
+			}
+			else
+			{
+				if (m_bIsFullscreen)
+					hr = m_pD3DDev->Present(NULL, NULL, NULL, NULL);
+				else
+					hr = m_pD3DDev->Present(rSrcPri, rDstPri, NULL, NULL);
+			}
+			// Issue an End event
+			if (pEventQuery)
+				pEventQuery->Issue(D3DISSUE_END);
+
+			BOOL Data;
+
+			if (s.m_RenderSettings.iVMRFlushGPUAfterPresent && pEventQuery)
+			{
+				LONGLONG FlushStartTime = pApp->GetPerfCounter();
+				while (S_FALSE == pEventQuery->GetData( &Data, sizeof(Data), D3DGETDATA_FLUSH ))
+				{
+					if (!s.m_RenderSettings.iVMRFlushGPUWait)
+						break;
+					if (pApp->GetPerfCounter() - FlushStartTime > 500000)
+						break; // timeout after 50 ms
+				}
+			}
+
+			int ScanLine;
+			int bInVBlank;
+			GetVBlank(ScanLine, bInVBlank, false);
+
+			if (fAll && (!m_bIsEVR || m_OrderedPaint))
+			{
+				m_VBlankEndPresent = ScanLine;
+			}
+
+			while (ScanLine == 0 || bInVBlank)
+			{
+				GetVBlank(ScanLine, bInVBlank, false);
+
+			}
+			m_VBlankStartMeasureTime = pApp->GetPerfCounter();
+			m_VBlankStartMeasure = ScanLine;
+
+			if (fAll && bDoVSyncInPresent)
+			{
+				m_PresentWaitTime = (pApp->GetPerfCounter() - llPerf) + PresentWaitTime;
+				m_PresentWaitTimeMin = min(m_PresentWaitTimeMin, m_PresentWaitTime);
+				m_PresentWaitTimeMax = max(m_PresentWaitTimeMax, m_PresentWaitTime);
+			}
+			else
+			{
+				m_PresentWaitTime = 0;
+				m_PresentWaitTimeMin = min(m_PresentWaitTimeMin, m_PresentWaitTime);
+				m_PresentWaitTimeMax = max(m_PresentWaitTimeMax, m_PresentWaitTime);
+			}
+		}
+
+		if (bDoVSyncInPresent)
+		{
+			LONGLONG Time = pApp->GetPerfCounter();
+			if (!m_bIsEVR || m_OrderedPaint)
+				CalculateJitter(Time);
+			OnVBlankFinished(fAll, Time);
+		}
+
+		if (bTakenLock)
+			UnlockD3DDevice();
+
+
+		/*	if (!bWaited)
+		{
 		bWaited = true;
 		WaitForVBlank(bWaited);
 		TRACE("Double VBlank\n");
 		ASSERT(bWaited);
 		if (!bDoVSyncInPresent)
 		{
-			CalculateJitter();
-			OnVBlankFinished(fAll);
+		CalculateJitter();
+		OnVBlankFinished(fAll);
 		}
-	}*/
+		}*/
+
+	}
 	bool fResetDevice = m_bPendingResetDevice;
 
 	if(hr == D3DERR_DEVICELOST && m_pD3DDev->TestCooperativeLevel() == D3DERR_DEVICENOTRESET
@@ -2861,6 +3118,20 @@ void CDX9AllocatorPresenter::DrawStats()
 			strText.Format(L"Frame rate   : %7.03f   (%.03f%s)", m_fAvrFps, GetFrameRate(), m_DetectedLock ? L" L" : L"");
 		DrawText(rc, strText, 1);
 		OffsetRect (&rc, 0, TextHeight);
+
+		if (m_bIsEVR)
+		{
+			strText.Format(L"Sample waiting time: %d ms", m_lNextSampleWait);
+			DrawText(rc, strText, 1);
+			OffsetRect(&rc, 0, TextHeight);
+			//if (s.m_RenderSettings.bSynchronizeNearest)
+			{
+				strText.Format(L"Sample paint time correction: %2d ms %s", m_lShiftToNearest, (m_llHysteresis == 0) ? L"| No snap to vsync" : L"| Snap to vsync");
+				DrawText(rc, strText, 1);
+				OffsetRect(&rc, 0, TextHeight);
+
+			}
+		}
 
 		if (bDetailedStats > 1)
 		{
@@ -3115,7 +3386,7 @@ void CDX9AllocatorPresenter::DrawStats()
 			if (i == 250) Points[1].x += 50;
 			m_pLine->Draw (Points, 2, D3DCOLOR_XRGB(100,100,255));
 		}
-
+		
 		// === Jitter curve
 		if (m_rtTimePerFrame)
 		{
@@ -3232,7 +3503,7 @@ STDMETHODIMP CDX9AllocatorPresenter::SetPixelShader2(LPCSTR pSrcData, LPCSTR pTa
 
 	pPixelShaders->AddTail(Shader);
 
-	Paint(false);
+	//Paint(false);
 
 	return S_OK;
 }
@@ -3803,6 +4074,12 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 	CheckPointer(m_pIVMRSurfAllocNotify, E_UNEXPECTED);
 
 	m_MainThreadId = GetCurrentThreadId();
+	AppSettings& s = AfxGetAppSettings();
+	if(s.fVMRGothSyncFix){ //nessery for EVR
+		m_llLastSampleTime = m_llSampleTime;
+		m_llSampleTime = lpPresInfo->rtStart;
+		SVP_LogMsg5(L"CVMR9AllocatorPresenter::PresentImage");
+	}
 
 	if (m_rtTimePerFrame == 0 || m_bNeedCheckSample)
 	{
@@ -4701,4 +4978,54 @@ STDMETHODIMP CmadVRAllocatorPresenter::GetDIB(BYTE* lpDib, DWORD* size)
 STDMETHODIMP CmadVRAllocatorPresenter::SetPixelShader(LPCSTR pSrcData, LPCSTR pTarget)
 {
 	return E_NOTIMPL; // TODO
+}
+
+void CDX9AllocatorPresenter::EstimateRefreshTimings()
+{
+	if (m_pD3DDev)
+	{
+		CMPlayerCApp *pApp = AfxGetMyApp();
+		D3DRASTER_STATUS rasterStatus;
+		m_pD3DDev->GetRasterStatus(0, &rasterStatus);
+		while (rasterStatus.ScanLine != 0) m_pD3DDev->GetRasterStatus(0, &rasterStatus);
+		while (rasterStatus.ScanLine == 0) m_pD3DDev->GetRasterStatus(0, &rasterStatus);
+		m_pD3DDev->GetRasterStatus(0, &rasterStatus);
+		LONGLONG startTime = pApp->GetPerfCounter();
+		UINT startLine = rasterStatus.ScanLine;
+		LONGLONG endTime = 0;
+		LONGLONG time = 0;
+		UINT endLine = 0;
+		UINT line = 0;
+		bool done = false;
+		while (!done) // Estimate time for one scan line
+		{
+			m_pD3DDev->GetRasterStatus(0, &rasterStatus);
+			line = rasterStatus.ScanLine;
+			time = pApp->GetPerfCounter();
+			if (line > 0)
+			{
+				endLine = line;
+				endTime = time;
+			}
+			else
+				done = true;
+		}
+		m_dDetectedScanlineTime = (double)(endTime - startTime) / (double)((endLine - startLine) * 10000.0);
+
+		// Estimate the display refresh rate from the vsyncs
+		m_pD3DDev->GetRasterStatus(0, &rasterStatus);
+		while (rasterStatus.ScanLine != 0) m_pD3DDev->GetRasterStatus(0, &rasterStatus);
+		// Now we're at the start of a vsync
+		startTime = pApp->GetPerfCounter();
+		UINT i;
+		for (i = 1; i <= 50; i++)
+		{
+			m_pD3DDev->GetRasterStatus(0, &rasterStatus);
+			while (rasterStatus.ScanLine == 0) m_pD3DDev->GetRasterStatus(0, &rasterStatus);
+			while (rasterStatus.ScanLine != 0) m_pD3DDev->GetRasterStatus(0, &rasterStatus);
+			// Now we're at the next vsync
+		}
+		endTime = pApp->GetPerfCounter();
+		//m_dEstRefreshCycle = (double)(endTime - startTime) / ((i - 1) * 10000.0); Tomsen: useless for Sync
+	}
 }

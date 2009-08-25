@@ -98,7 +98,7 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_DHtml_CheckBox(pDX, _T("usenewmenu"), m_sgi_usenewmenu);
 	DDX_DHtml_CheckBox(pDX, _T("useaeroglass"), m_sgi_useaeroglass);
 	DDX_DHtml_CheckBox(pDX, _T("smothmutilmonitor"), m_sgi_smothmutilmonitor);
-	
+	DDX_DHtml_CheckBox(pDX, _T("GothSync"), m_sgi_GothSync);
 	DDX_DHtml_ElementValue (pDX, _T("custompicfile"), m_sgs_custompicfile);
 
 	DDX_DHtml_CheckBox(pDX, _T("useCustomSpeakerSetting"), m_sgi_useCustomSpeakerSetting);
@@ -285,6 +285,7 @@ BOOL CUESettingPanel::OnInitDialog()
 		m_sgi_videorender = 2; //×Ô¶¨Òå
 	}
 	m_sgi_lockbackbuff = s.fVMRSyncFix; ;// s.m_RenderSettings.bSynchronizeNearest
+	m_sgi_GothSync = s.fVMRGothSyncFix;
 	m_sgi_smothmutilmonitor = s.fbSmoothMutilMonitor;
 	m_sgi_gpuacel = s.useGPUAcel;
 	m_sgs_decoder = s.optionDecoder;
@@ -517,6 +518,10 @@ void CUESettingPanel::ApplyAllSetting(){
 	}
 	s.fTrayIcon = m_sgi_chktrayicon;
 	s.fVMRSyncFix = !!m_sgi_lockbackbuff;
+	s.fVMRGothSyncFix = !!m_sgi_GothSync;
+	if(s.fVMRGothSyncFix){
+		s.fVMRSyncFix = false;
+	}
 	//s.m_RenderSettings.bSynchronizeNearest = !!m_sgi_lockbackbuff;
 	s.useGPUAcel = !!m_sgi_gpuacel;
 	s.optionDecoder = m_sgs_decoder;

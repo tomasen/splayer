@@ -456,6 +456,8 @@ private :
 	bool									m_bPendingRenegotiate;
 	bool									m_bPendingMediaFinished;
 
+	bool m_bPrerolled; // true if first sample has been displayed.
+
 	HANDLE									m_hThread;
 	HANDLE									m_hGetMixerThread;
 	RENDER_STATE							m_nRenderState;
@@ -736,6 +738,7 @@ CEVRAllocatorPresenter::CEVRAllocatorPresenter(HWND hWnd, HRESULT& hr )
 	ZeroMemory(m_VSyncOffsetHistory, sizeof(m_VSyncOffsetHistory));
 	m_VSyncOffsetHistoryPos = 0;
 	m_bLastSampleOffsetValid	= false;
+	m_bPrerolled = false;
 }
 
 CEVRAllocatorPresenter::~CEVRAllocatorPresenter(void)
@@ -1135,7 +1138,19 @@ STDMETHODIMP CEVRAllocatorPresenter::ProcessMessage(MFVP_MESSAGE_TYPE eMessage, 
 	switch (eMessage)
 	{
 	case MFVP_MESSAGE_BEGINSTREAMING :			// The EVR switched from stopped to paused. The presenter should allocate resources
-		ResetStats();		
+		{
+			CComPtr<IBaseFilter> pEVR;
+			FILTER_INFO filterInfo;
+			ZeroMemory(&filterInfo, sizeof(filterInfo));
+			m_pOuterEVR->QueryInterface (__uuidof(IBaseFilter), (void**)&pEVR);
+
+			pEVR->GetSyncSource(&m_pRefClock);
+
+			ResetStats();
+			EstimateRefreshTimings();
+		}
+		
+
 		TRACE_EVR ("MFVP_MESSAGE_BEGINSTREAMING\n");
 		break;
 
@@ -2306,378 +2321,513 @@ void CEVRAllocatorPresenter::RenderThread()
     dwResolution = min(max(tc.wPeriodMin, 0), tc.wPeriodMax);
     dwUser		= timeBeginPeriod(dwResolution);
 	AppSettings& s = AfxGetAppSettings();
+	if(s.fVMRGothSyncFix){
+		double targetSyncOffset = m_targetSyncOffset; //Tomasen: m_targetSyncOffset need init 
+		int samplesLeft = 0;
+		LONGLONG llRefClockTime;
+		MFTIME systemTime;
 
-	int NextSleepTime = 1;
-	while (!bQuit)
-	{
-		LONGLONG	llPerf = AfxGetMyApp()->GetPerfCounter();
-		if (!0 && NextSleepTime == 0)//s.m_RenderSettings.iVMR9VSyncAccurate
-			NextSleepTime = 1;
-		dwObject = WaitForMultipleObjects (countof(hEvts), hEvts, FALSE, max(NextSleepTime < 0 ? 1 : NextSleepTime, 0));
-/*		dwObject = WAIT_TIMEOUT;
-		if (m_bEvtFlush)
-			dwObject = WAIT_OBJECT_0 + 1;
-		else if (m_bEvtQuit)
-			dwObject = WAIT_OBJECT_0;*/
-//		if (NextSleepTime)
-//			TRACE("Sleep: %7.3f\n", double(AfxGetMyApp()->GetPerfCounter()-llPerf) / 10000.0);
-		if (NextSleepTime > 1)
-			NextSleepTime = 0;
-		else if (NextSleepTime == 0)
-			NextSleepTime = -1;			
-		switch (dwObject)
+		while (!bQuit)
 		{
-		case WAIT_OBJECT_0 :
-			bQuit = true;
-			break;
-		case WAIT_OBJECT_0 + 1 :
-			// Flush pending samples!
-			FlushSamples();
-			m_bEvtFlush = false;
-			ResetEvent(m_hEvtFlush);
-			TRACE_EVR ("Flush done!\n");
-			break;
+			CComPtr<IMFSample>pNewSample = NULL; // The sample next in line to be presented
+			pNewSample = NULL;
+			m_lNextSampleWait = 1;
+			samplesLeft = 0;
+			BOOL bSynchronizeNearest = 1;
 
-		case WAIT_TIMEOUT :
-
-			//s.m_RenderSettings.iEVROutputRange 
-			if (m_LastSetOutputRange != -1 && m_LastSetOutputRange != 0|| m_bPendingRenegotiate)
+			if (m_nRenderState == Started || !m_bPrerolled) // If either streaming or the pre-roll sample
 			{
-				FlushSamples();
-				RenegotiateMediaType();
-				m_bPendingRenegotiate = false;
-			}
-			if (m_bPendingResetDevice)
-			{
-				m_bPendingResetDevice = false;
-				CAutoLock lock(this);
-				CAutoLock lock2(&m_ImageProcessingLock);
-				CAutoLock cRenderLock(&m_RenderLock);
-
-				
-				RemoveAllSamples();
-
-				CDX9AllocatorPresenter::ResetDevice();
-
-				for(int i = 0; i < m_nNbDXSurface; i++)
+				if (SUCCEEDED(GetScheduledSample(&pNewSample, samplesLeft))) // Get the next sample
 				{
-					CComPtr<IMFSample>		pMFSample;
-					HRESULT hr = pfMFCreateVideoSampleFromSurface (m_pVideoSurface[i], &pMFSample);
-
-					if (SUCCEEDED (hr))
+					m_llLastSampleTime = m_llSampleTime;
+					if (!m_bPrerolled)
 					{
-						pMFSample->SetUINT32 (GUID_SURFACE_INDEX, i);
-						m_FreeSamples.AddTail (pMFSample);
+						m_bPrerolled = true; // m_bPrerolled is a ticket to show one (1) frame and no more until streaming
+						m_lNextSampleWait = 0; // Present immediately
 					}
-					ASSERT (SUCCEEDED (hr));
+					else if (SUCCEEDED(pNewSample->GetSampleTime(&m_llSampleTime))) // Get zero-based sample due time
+					{
+						m_pClock->GetCorrelatedTime(0, &llRefClockTime, &systemTime); // Get zero-based reference clock time. systemTime is not used for anything here
+						m_lNextSampleWait = (LONG)((m_llSampleTime - llRefClockTime) / 10000); // Time left until sample is due, in ms
+						if (m_lNextSampleWait < 0)
+							m_lNextSampleWait = 0; // We came too late. Race through, discard the sample and get a new one
+						else if (bSynchronizeNearest) // Present at the closest "safe" occasion at tergetSyncOffset ms before vsync to avoid tearing
+						{
+							REFERENCE_TIME rtRefClockTimeNow; if (m_pRefClock) m_pRefClock->GetTime(&rtRefClockTimeNow); // Reference clock time now
+							LONG lLastVsyncTime = (LONG)((m_rtEstVSyncTime - rtRefClockTimeNow) / 10000); // Time of previous vsync relative to now //Tomasen: m_rtEstVSyncTime need Set and check
+
+							LONGLONG llNextSampleWait = (LONGLONG)(((double)lLastVsyncTime + GetDisplayCycle() - targetSyncOffset) * 10000); // Next safe time to Paint()
+							while ((llRefClockTime + llNextSampleWait) < (m_llSampleTime + m_llHysteresis)) // While the proposed time is in the past of sample presentation time
+							{
+								llNextSampleWait = llNextSampleWait + (LONGLONG)(GetDisplayCycle() * 10000); // Try the next possible time, one display cycle ahead
+							}
+							m_lNextSampleWait = (LONG)(llNextSampleWait / 10000);
+							m_lShiftToNearestPrev = m_lShiftToNearest;
+							m_lShiftToNearest = (LONG)((llRefClockTime + llNextSampleWait - m_llSampleTime) / 10000); // The adjustment made to get to the sweet point in time, in ms
+
+							if (m_bSnapToVSync)
+							{
+								if ((m_lShiftToNearestPrev - m_lShiftToNearest) > (GetDisplayCycle() / 2.0)) // If a step down
+								{
+									m_bVideoSlowerThanDisplay = false;
+									m_llHysteresis = -(LONGLONG)(10000.0 * GetDisplayCycle() / 3.0);
+								}
+								else if ((m_lShiftToNearest - m_lShiftToNearestPrev) > (GetDisplayCycle() / 2.0)) // If a step up
+								{
+									m_bVideoSlowerThanDisplay = true;
+									m_llHysteresis = (LONGLONG)(10000.0 * GetDisplayCycle() / 3.0);
+								}
+								else if ((m_lShiftToNearest < (2 * (LONG)(GetDisplayCycle() / 3.0))) && (m_lShiftToNearest > (LONG)(GetDisplayCycle() / 3.0)))
+									m_llHysteresis = 0; // Reset when between 1/3 and 2/3 of the way either way
+							}
+						}
+					}
+				}
+			}
+			// Wait for the next presentation time or a quit or flush event
+			dwObject = WaitForMultipleObjects(countof(hEvts), hEvts, FALSE, (DWORD)m_lNextSampleWait); 
+			switch (dwObject)
+			{
+			case WAIT_OBJECT_0: // Quit event
+				bQuit = true;
+				break;
+
+			case WAIT_OBJECT_0 + 1: // Flush event
+				FlushSamples();
+				m_bEvtFlush = false;
+				ResetEvent(m_hEvtFlush);
+				m_bPrerolled = false;
+				break;
+
+			case WAIT_TIMEOUT: // Time to show the sample or something
+				if (m_bPendingRenegotiate)//m_LastSetOutputRange != -1 && m_LastSetOutputRange != s.m_RenderSettings.iEVROutputRange || 
+				{
+					FlushSamples();
+					RenegotiateMediaType();
+					m_bPendingRenegotiate = false;
 				}
 
-			}
-			// Discard timer events if playback stop
-//			if ((dwObject == WAIT_OBJECT_0 + 3) && (m_nRenderState != Started)) continue;
+				if (m_bPendingResetDevice)
+				{
+					m_bPendingResetDevice = false;
+					CAutoLock lock(this);
+					CAutoLock lock2(&m_ImageProcessingLock);
+					CAutoLock cRenderLock(&m_RenderLock);
+					if (pNewSample) MoveToFreeList(pNewSample, true);
+					pNewSample = NULL;
+					RemoveAllSamples();
+					CDX9AllocatorPresenter::ResetDevice();
 
-//			TRACE_EVR ("RenderThread ==>> Waiting buffer\n");
-			
-//			if (WaitForMultipleObjects (countof(hEvtsBuff), hEvtsBuff, FALSE, INFINITE) == WAIT_OBJECT_0+2)
+					for(int i = 0; i < m_nNbDXSurface; i++)
+					{
+						CComPtr<IMFSample> pMFSample;
+						HRESULT hr = pfMFCreateVideoSampleFromSurface (m_pVideoSurface[i], &pMFSample);
+						if (SUCCEEDED (hr))
+						{
+							pMFSample->SetUINT32(GUID_SURFACE_INDEX, i);
+							m_FreeSamples.AddTail(pMFSample);
+						}
+						ASSERT(SUCCEEDED (hr));
+					}
+				}
+				else if (m_nStepCount < 0)
+				{
+					m_nStepCount = 0;
+					m_pcFrames++;//m_pcFramesDropped++;
+				}
+				else if ((m_nStepCount > 0) && pNewSample)
+				{
+					pNewSample->GetUINT32(GUID_SURFACE_INDEX, (UINT32 *)&m_nCurSurface);
+					if (!g_bExternalSubtitleTime) __super::SetTime (g_tSegmentStart + m_llSampleTime);
+					Paint(true);
+					CompleteFrameStep(false);
+				}
+				else if (pNewSample)
+				{
+					pNewSample->GetUINT32(GUID_SURFACE_INDEX, (UINT32*)&m_nCurSurface);
+					if (!g_bExternalSubtitleTime) __super::SetTime (g_tSegmentStart + m_llSampleTime);
+					Paint(true);
+					m_pcFramesDrawn++;
+				}
+				break;
+			} // switch
+			if (pNewSample) MoveToFreeList(pNewSample, true);
+			pNewSample = NULL;
+		} // while
+	}else{
+		int NextSleepTime = 1;
+		while (!bQuit)
+		{
+			LONGLONG	llPerf = AfxGetMyApp()->GetPerfCounter();
+			if (!0 && NextSleepTime == 0)//s.m_RenderSettings.iVMR9VSyncAccurate
+				NextSleepTime = 1;
+			dwObject = WaitForMultipleObjects (countof(hEvts), hEvts, FALSE, max(NextSleepTime < 0 ? 1 : NextSleepTime, 0));
+			/*		dwObject = WAIT_TIMEOUT;
+			if (m_bEvtFlush)
+			dwObject = WAIT_OBJECT_0 + 1;
+			else if (m_bEvtQuit)
+			dwObject = WAIT_OBJECT_0;*/
+			//		if (NextSleepTime)
+			//			TRACE("Sleep: %7.3f\n", double(AfxGetMyApp()->GetPerfCounter()-llPerf) / 10000.0);
+			if (NextSleepTime > 1)
+				NextSleepTime = 0;
+			else if (NextSleepTime == 0)
+				NextSleepTime = -1;			
+			switch (dwObject)
 			{
-				CComPtr<IMFSample>		pMFSample;
-				LONGLONG	llPerf = AfxGetMyApp()->GetPerfCounter();
-				int nSamplesLeft = 0;
-				if (SUCCEEDED (GetScheduledSample(&pMFSample, nSamplesLeft)))
-				{ 
-//					pMFSample->GetUINT32 (GUID_SURFACE_INDEX, (UINT32*)&m_nCurSurface);
-					m_pCurrentDisplaydSample = pMFSample;
+			case WAIT_OBJECT_0 :
+				bQuit = true;
+				break;
+			case WAIT_OBJECT_0 + 1 :
+				// Flush pending samples!
+				FlushSamples();
+				m_bEvtFlush = false;
+				ResetEvent(m_hEvtFlush);
+				TRACE_EVR ("Flush done!\n");
+				break;
 
-					bool bValidSampleTime = true;
-					HRESULT hGetSampleTime = pMFSample->GetSampleTime (&nsSampleTime);
-					if (hGetSampleTime != S_OK || nsSampleTime == 0)
-					{
-						bValidSampleTime = false;
-					}
-					// We assume that all samples have the same duration
-					LONGLONG SampleDuration = 0; 
-					pMFSample->GetSampleDuration(&SampleDuration);
+			case WAIT_TIMEOUT :
 
-//					TRACE_EVR ("RenderThread ==>> Presenting surface %d  (%I64d)\n", m_nCurSurface, nsSampleTime);
+				//s.m_RenderSettings.iEVROutputRange 
+				if (m_LastSetOutputRange != -1 && m_LastSetOutputRange != 0|| m_bPendingRenegotiate)
+				{
+					FlushSamples();
+					RenegotiateMediaType();
+					m_bPendingRenegotiate = false;
+				}
+				if (m_bPendingResetDevice)
+				{
+					m_bPendingResetDevice = false;
+					CAutoLock lock(this);
+					CAutoLock lock2(&m_ImageProcessingLock);
+					CAutoLock cRenderLock(&m_RenderLock);
 
-					bool bStepForward = false;
 
-					if (m_nStepCount < 0)
+					RemoveAllSamples();
+
+					CDX9AllocatorPresenter::ResetDevice();
+
+					for(int i = 0; i < m_nNbDXSurface; i++)
 					{
-						// Drop frame
-						TRACE_EVR ("Dropped frame\n");
-						m_pcFrames++;
-						bStepForward = true;
-						m_nStepCount = 0;
-					}
-					else if (m_nStepCount > 0)
-					{
-						pMFSample->GetUINT32(GUID_SURFACE_INDEX, (UINT32 *)&m_nCurSurface);
-						++m_OrderedPaint;
-						if (!g_bExternalSubtitleTime)
-							__super::SetTime (g_tSegmentStart + nsSampleTime);
-						Paint(true);
-						m_nDroppedUpdate = 0;
-						CompleteFrameStep (false);
-						bStepForward = true;
-					}
-					else if ((m_nRenderState == Started))
-					{
-						LONGLONG CurrentCounter = AfxGetMyApp()->GetPerfCounter();
-						// Calculate wake up timer
-						if (!m_bSignaledStarvation)
+						CComPtr<IMFSample>		pMFSample;
+						HRESULT hr = pfMFCreateVideoSampleFromSurface (m_pVideoSurface[i], &pMFSample);
+
+						if (SUCCEEDED (hr))
 						{
-							llClockTime = GetClockTime(CurrentCounter);
-							m_StarvationClock = llClockTime;
+							pMFSample->SetUINT32 (GUID_SURFACE_INDEX, i);
+							m_FreeSamples.AddTail (pMFSample);
 						}
-						else
-						{
-							llClockTime = m_StarvationClock;
-						}
+						ASSERT (SUCCEEDED (hr));
+					}
 
-						if (!bValidSampleTime)
+				}
+				// Discard timer events if playback stop
+				//			if ((dwObject == WAIT_OBJECT_0 + 3) && (m_nRenderState != Started)) continue;
+
+				//			TRACE_EVR ("RenderThread ==>> Waiting buffer\n");
+
+				//			if (WaitForMultipleObjects (countof(hEvtsBuff), hEvtsBuff, FALSE, INFINITE) == WAIT_OBJECT_0+2)
+				{
+					CComPtr<IMFSample>		pMFSample;
+					LONGLONG	llPerf = AfxGetMyApp()->GetPerfCounter();
+					int nSamplesLeft = 0;
+					if (SUCCEEDED (GetScheduledSample(&pMFSample, nSamplesLeft)))
+					{ 
+						//					pMFSample->GetUINT32 (GUID_SURFACE_INDEX, (UINT32*)&m_nCurSurface);
+						m_pCurrentDisplaydSample = pMFSample;
+
+						bool bValidSampleTime = true;
+						HRESULT hGetSampleTime = pMFSample->GetSampleTime (&nsSampleTime);
+						if (hGetSampleTime != S_OK || nsSampleTime == 0)
 						{
-							// Just play as fast as possible
+							bValidSampleTime = false;
+						}
+						// We assume that all samples have the same duration
+						LONGLONG SampleDuration = 0; 
+						pMFSample->GetSampleDuration(&SampleDuration);
+
+						//					TRACE_EVR ("RenderThread ==>> Presenting surface %d  (%I64d)\n", m_nCurSurface, nsSampleTime);
+
+						bool bStepForward = false;
+
+						if (m_nStepCount < 0)
+						{
+							// Drop frame
+							TRACE_EVR ("Dropped frame\n");
+							m_pcFrames++;
 							bStepForward = true;
+							m_nStepCount = 0;
+						}
+						else if (m_nStepCount > 0)
+						{
 							pMFSample->GetUINT32(GUID_SURFACE_INDEX, (UINT32 *)&m_nCurSurface);
 							++m_OrderedPaint;
 							if (!g_bExternalSubtitleTime)
 								__super::SetTime (g_tSegmentStart + nsSampleTime);
 							Paint(true);
+							m_nDroppedUpdate = 0;
+							CompleteFrameStep (false);
+							bStepForward = true;
 						}
-						else
+						else if ((m_nRenderState == Started))
 						{
-							LONGLONG TimePerFrame = GetFrameTime() * 10000000.0;
-							LONGLONG DrawTime = (m_PaintTime) * 0.9 - 20000.0; // 2 ms offset
-							//if (!s.iVMR9VSync)
-								DrawTime = 0;
-
-							LONGLONG SyncOffset = 0;
-							LONGLONG VSyncTime = 0;
-							LONGLONG RefreshTime = 0;
-							LONGLONG TimeToNextVSync = -1;
-							bool bVSyncCorrection = false;
-							double DetectedRefreshTime;
-							double DetectedScanlinesPerFrame;
-							double DetectedScanlineTime;
-							int DetectedRefreshRatePos;
+							LONGLONG CurrentCounter = AfxGetMyApp()->GetPerfCounter();
+							// Calculate wake up timer
+							if (!m_bSignaledStarvation)
 							{
-								CAutoLock Lock(&m_RefreshRateLock);	
-								DetectedRefreshTime = m_DetectedRefreshTime;
-								DetectedRefreshRatePos = m_DetectedRefreshRatePos;
-								DetectedScanlinesPerFrame = m_DetectedScanlinesPerFrame;
-								DetectedScanlineTime = m_DetectedScanlineTime;
-							}
-
-							if (DetectedRefreshRatePos < 20 || !DetectedRefreshTime || !DetectedScanlinesPerFrame)
-							{
-								DetectedRefreshTime = 1.0/m_RefreshRate;
-								DetectedScanlinesPerFrame = m_ScreenSize.cy;
-								DetectedScanlineTime = DetectedRefreshTime / double(m_ScreenSize.cy);
-							}
-
-							if (s.fVMRSyncFix)
-							{
-								bVSyncCorrection = true;
-								double TargetVSyncPos = GetVBlackPos();
-								double RefreshLines = DetectedScanlinesPerFrame;
-								double RefreshTime = DetectedRefreshTime;
-								double ScanlinesPerSecond = 1.0/DetectedScanlineTime;
-								double CurrentVSyncPos = fmod(double(m_VBlankStartMeasure) + ScanlinesPerSecond * ((CurrentCounter - m_VBlankStartMeasureTime) / 10000000.0), RefreshLines);
-								double LinesUntilVSync = 0;
-								//TargetVSyncPos -= ScanlinesPerSecond * (DrawTime/10000000.0);
-								//TargetVSyncPos -= 10;
-								TargetVSyncPos = fmod(TargetVSyncPos, RefreshLines);
-								if (TargetVSyncPos < 0)
-									TargetVSyncPos += RefreshLines;
-								if (TargetVSyncPos > CurrentVSyncPos)
-									LinesUntilVSync = TargetVSyncPos - CurrentVSyncPos;
-								else
-									LinesUntilVSync = (RefreshLines - CurrentVSyncPos) + TargetVSyncPos;
-								double TimeUntilVSync = LinesUntilVSync * DetectedScanlineTime;
-								TimeToNextVSync = TimeUntilVSync * 10000000.0;
-								VSyncTime = DetectedRefreshTime * 10000000.0;
-								RefreshTime = VSyncTime;
-
-								LONGLONG ClockTimeAtNextVSync = llClockTime + (TimeUntilVSync * 10000000.0) * m_ModeratedTimeSpeed;
-	
-								SyncOffset = (nsSampleTime - ClockTimeAtNextVSync);
-
-//								if (SyncOffset < 0)
-//									TRACE("SyncOffset(%d): %I64d     %I64d     %I64d\n", m_nCurSurface, SyncOffset, TimePerFrame, VSyncTime);
+								llClockTime = GetClockTime(CurrentCounter);
+								m_StarvationClock = llClockTime;
 							}
 							else
-								SyncOffset = (nsSampleTime - llClockTime);
-							
-							//LONGLONG SyncOffset = nsSampleTime - llClockTime;
-							TRACE_EVR ("SyncOffset: %I64d SampleFrame: %I64d ClockFrame: %I64d\n", SyncOffset, nsSampleTime/TimePerFrame, llClockTime /TimePerFrame);
-							if (SampleDuration > 1 && !m_DetectedLock)
-								TimePerFrame = SampleDuration;
-
-							LONGLONG MinMargin;
-							if (m_FrameTimeCorrection && 0)
-								MinMargin = 15000.0;
-							else
-								MinMargin = 15000.0 + min(m_DetectedFrameTimeStdDev, 20000.0);
-							LONGLONG TimePerFrameMargin = min(double(TimePerFrame)*0.11, max(double(TimePerFrame)*0.02, MinMargin));
-							LONGLONG TimePerFrameMargin0 = TimePerFrameMargin/2;
-							LONGLONG TimePerFrameMargin1 = 0;
-
-							if (m_DetectedLock && TimePerFrame < VSyncTime)
-								VSyncTime = TimePerFrame;
-
-							if (m_VSyncMode == 1)
-								TimePerFrameMargin1 = -TimePerFrameMargin;
-							else if (m_VSyncMode == 2)
-								TimePerFrameMargin1 = TimePerFrameMargin;
-
-							m_LastSampleOffset = SyncOffset;
-							m_bLastSampleOffsetValid = true;
-
-							LONGLONG VSyncOffset0 = 0;
-							bool bDoVSyncCorrection = false;
-							if ((SyncOffset < -(TimePerFrame + TimePerFrameMargin0 - TimePerFrameMargin1)) && nSamplesLeft > 0) // Only drop if we have something else to display at once
 							{
-								// Drop frame
-								TRACE_EVR ("Dropped frame\n");
-								m_pcFrames++;
-								bStepForward = true;
-								++m_nDroppedUpdate;
-								NextSleepTime = 0;
-//								VSyncOffset0 = (-SyncOffset) - VSyncTime;
-								//VSyncOffset0 = (-SyncOffset) - VSyncTime + TimePerFrameMargin1;
-								//m_LastPredictedSync = VSyncOffset0;
-								bDoVSyncCorrection = false;
+								llClockTime = m_StarvationClock;
 							}
-							else if (SyncOffset < TimePerFrameMargin1)
+
+							if (!bValidSampleTime)
 							{
-
-								if (bVSyncCorrection)
-								{
-//									VSyncOffset0 = -SyncOffset;
-									VSyncOffset0 = -SyncOffset;
-									bDoVSyncCorrection = true;
-								}
-
-								// Paint and prepare for next frame
-								TRACE_EVR ("Normalframe\n");
-								m_nDroppedUpdate = 0;
+								// Just play as fast as possible
 								bStepForward = true;
 								pMFSample->GetUINT32(GUID_SURFACE_INDEX, (UINT32 *)&m_nCurSurface);
-								m_LastFrameDuration = nsSampleTime - m_LastSampleTime;
-								m_LastSampleTime = nsSampleTime;
-								m_LastPredictedSync = VSyncOffset0;
-
 								++m_OrderedPaint;
-
 								if (!g_bExternalSubtitleTime)
 									__super::SetTime (g_tSegmentStart + nsSampleTime);
 								Paint(true);
-								//m_pSink->Notify(EC_SCRUB_TIME, LODWORD(nsSampleTime), HIDWORD(nsSampleTime));
-								
-								NextSleepTime = 0;
-								m_pcFramesDrawn++;
 							}
 							else
 							{
-								if (TimeToNextVSync >= 0 && SyncOffset > 0)
+								LONGLONG TimePerFrame = GetFrameTime() * 10000000.0;
+								LONGLONG DrawTime = (m_PaintTime) * 0.9 - 20000.0; // 2 ms offset
+								//if (!s.iVMR9VSync)
+								DrawTime = 0;
+
+								LONGLONG SyncOffset = 0;
+								LONGLONG VSyncTime = 0;
+								LONGLONG RefreshTime = 0;
+								LONGLONG TimeToNextVSync = -1;
+								bool bVSyncCorrection = false;
+								double DetectedRefreshTime;
+								double DetectedScanlinesPerFrame;
+								double DetectedScanlineTime;
+								int DetectedRefreshRatePos;
 								{
-									NextSleepTime = ((TimeToNextVSync)/10000) - 2;
+									CAutoLock Lock(&m_RefreshRateLock);	
+									DetectedRefreshTime = m_DetectedRefreshTime;
+									DetectedRefreshRatePos = m_DetectedRefreshRatePos;
+									DetectedScanlinesPerFrame = m_DetectedScanlinesPerFrame;
+									DetectedScanlineTime = m_DetectedScanlineTime;
+								}
+
+								if (DetectedRefreshRatePos < 20 || !DetectedRefreshTime || !DetectedScanlinesPerFrame)
+								{
+									DetectedRefreshTime = 1.0/m_RefreshRate;
+									DetectedScanlinesPerFrame = m_ScreenSize.cy;
+									DetectedScanlineTime = DetectedRefreshTime / double(m_ScreenSize.cy);
+								}
+
+								if (s.fVMRSyncFix)
+								{
+									bVSyncCorrection = true;
+									double TargetVSyncPos = GetVBlackPos();
+									double RefreshLines = DetectedScanlinesPerFrame;
+									double RefreshTime = DetectedRefreshTime;
+									double ScanlinesPerSecond = 1.0/DetectedScanlineTime;
+									double CurrentVSyncPos = fmod(double(m_VBlankStartMeasure) + ScanlinesPerSecond * ((CurrentCounter - m_VBlankStartMeasureTime) / 10000000.0), RefreshLines);
+									double LinesUntilVSync = 0;
+									//TargetVSyncPos -= ScanlinesPerSecond * (DrawTime/10000000.0);
+									//TargetVSyncPos -= 10;
+									TargetVSyncPos = fmod(TargetVSyncPos, RefreshLines);
+									if (TargetVSyncPos < 0)
+										TargetVSyncPos += RefreshLines;
+									if (TargetVSyncPos > CurrentVSyncPos)
+										LinesUntilVSync = TargetVSyncPos - CurrentVSyncPos;
+									else
+										LinesUntilVSync = (RefreshLines - CurrentVSyncPos) + TargetVSyncPos;
+									double TimeUntilVSync = LinesUntilVSync * DetectedScanlineTime;
+									TimeToNextVSync = TimeUntilVSync * 10000000.0;
+									VSyncTime = DetectedRefreshTime * 10000000.0;
+									RefreshTime = VSyncTime;
+
+									LONGLONG ClockTimeAtNextVSync = llClockTime + (TimeUntilVSync * 10000000.0) * m_ModeratedTimeSpeed;
+
+									SyncOffset = (nsSampleTime - ClockTimeAtNextVSync);
+
+									//								if (SyncOffset < 0)
+									//									TRACE("SyncOffset(%d): %I64d     %I64d     %I64d\n", m_nCurSurface, SyncOffset, TimePerFrame, VSyncTime);
 								}
 								else
-									NextSleepTime = ((SyncOffset)/10000) - 2;
+									SyncOffset = (nsSampleTime - llClockTime);
 
-								if (NextSleepTime > TimePerFrame)
-									NextSleepTime = 1;
+								//LONGLONG SyncOffset = nsSampleTime - llClockTime;
+								TRACE_EVR ("SyncOffset: %I64d SampleFrame: %I64d ClockFrame: %I64d\n", SyncOffset, nsSampleTime/TimePerFrame, llClockTime /TimePerFrame);
+								if (SampleDuration > 1 && !m_DetectedLock)
+									TimePerFrame = SampleDuration;
 
-								if (NextSleepTime < 0)
-									NextSleepTime = 0;
-								NextSleepTime = 1;
-								//TRACE_EVR ("Delay\n");
-							}
+								LONGLONG MinMargin;
+								if (m_FrameTimeCorrection && 0)
+									MinMargin = 15000.0;
+								else
+									MinMargin = 15000.0 + min(m_DetectedFrameTimeStdDev, 20000.0);
+								LONGLONG TimePerFrameMargin = min(double(TimePerFrame)*0.11, max(double(TimePerFrame)*0.02, MinMargin));
+								LONGLONG TimePerFrameMargin0 = TimePerFrameMargin/2;
+								LONGLONG TimePerFrameMargin1 = 0;
 
-							if (bDoVSyncCorrection)
-							{
-								//LONGLONG VSyncOffset0 = (((SyncOffset) % VSyncTime) + VSyncTime) % VSyncTime;
-								LONGLONG Margin = TimePerFrameMargin;
+								if (m_DetectedLock && TimePerFrame < VSyncTime)
+									VSyncTime = TimePerFrame;
 
-								LONGLONG VSyncOffsetMin = 30000000000000;
-								LONGLONG VSyncOffsetMax = -30000000000000;
-								for (int i = 0; i < 5; ++i)
-								{
-									VSyncOffsetMin = min(m_VSyncOffsetHistory[i], VSyncOffsetMin);
-									VSyncOffsetMax = max(m_VSyncOffsetHistory[i], VSyncOffsetMax);
-								}
-
-								m_VSyncOffsetHistory[m_VSyncOffsetHistoryPos] = VSyncOffset0;
-								m_VSyncOffsetHistoryPos = (m_VSyncOffsetHistoryPos + 1) % 5;
-
-//								LONGLONG VSyncTime2 = VSyncTime2 + (VSyncOffsetMax - VSyncOffsetMin);
-								//VSyncOffsetMin; = (((VSyncOffsetMin) % VSyncTime) + VSyncTime) % VSyncTime;
-								//VSyncOffsetMax = (((VSyncOffsetMax) % VSyncTime) + VSyncTime) % VSyncTime;
-
-//								TRACE("SyncOffset(%d, %d): %8I64d     %8I64d     %8I64d     %8I64d\n", m_nCurSurface, m_VSyncMode,VSyncOffset0, VSyncOffsetMin, VSyncOffsetMax, VSyncOffsetMax - VSyncOffsetMin);
-
-								if (m_VSyncMode == 0)
-								{
-									// 23.976 in 60 Hz
-									if (VSyncOffset0 < Margin && VSyncOffsetMax > (VSyncTime - Margin))
-									{
-										m_VSyncMode = 2;
-									}
-									else if (VSyncOffset0 > (VSyncTime - Margin) && VSyncOffsetMin < Margin)
-									{
-										m_VSyncMode = 1;
-									}
-								}
+								if (m_VSyncMode == 1)
+									TimePerFrameMargin1 = -TimePerFrameMargin;
 								else if (m_VSyncMode == 2)
-								{
-									if (VSyncOffsetMin > (Margin))
-									{
-										m_VSyncMode = 0;
-									}
-								}
-								else if (m_VSyncMode == 1)
-								{
-									if (VSyncOffsetMax < (VSyncTime - Margin))
-									{
-										m_VSyncMode = 0;
-									}
-								}
-							}
+									TimePerFrameMargin1 = TimePerFrameMargin;
 
+								m_LastSampleOffset = SyncOffset;
+								m_bLastSampleOffsetValid = true;
+
+								LONGLONG VSyncOffset0 = 0;
+								bool bDoVSyncCorrection = false;
+								if ((SyncOffset < -(TimePerFrame + TimePerFrameMargin0 - TimePerFrameMargin1)) && nSamplesLeft > 0) // Only drop if we have something else to display at once
+								{
+									// Drop frame
+									TRACE_EVR ("Dropped frame\n");
+									m_pcFrames++;
+									bStepForward = true;
+									++m_nDroppedUpdate;
+									NextSleepTime = 0;
+									//								VSyncOffset0 = (-SyncOffset) - VSyncTime;
+									//VSyncOffset0 = (-SyncOffset) - VSyncTime + TimePerFrameMargin1;
+									//m_LastPredictedSync = VSyncOffset0;
+									bDoVSyncCorrection = false;
+								}
+								else if (SyncOffset < TimePerFrameMargin1)
+								{
+
+									if (bVSyncCorrection)
+									{
+										//									VSyncOffset0 = -SyncOffset;
+										VSyncOffset0 = -SyncOffset;
+										bDoVSyncCorrection = true;
+									}
+
+									// Paint and prepare for next frame
+									TRACE_EVR ("Normalframe\n");
+									m_nDroppedUpdate = 0;
+									bStepForward = true;
+									pMFSample->GetUINT32(GUID_SURFACE_INDEX, (UINT32 *)&m_nCurSurface);
+									m_LastFrameDuration = nsSampleTime - m_LastSampleTime;
+									m_LastSampleTime = nsSampleTime;
+									m_LastPredictedSync = VSyncOffset0;
+
+									++m_OrderedPaint;
+
+									if (!g_bExternalSubtitleTime)
+										__super::SetTime (g_tSegmentStart + nsSampleTime);
+									Paint(true);
+									//m_pSink->Notify(EC_SCRUB_TIME, LODWORD(nsSampleTime), HIDWORD(nsSampleTime));
+
+									NextSleepTime = 0;
+									m_pcFramesDrawn++;
+								}
+								else
+								{
+									if (TimeToNextVSync >= 0 && SyncOffset > 0)
+									{
+										NextSleepTime = ((TimeToNextVSync)/10000) - 2;
+									}
+									else
+										NextSleepTime = ((SyncOffset)/10000) - 2;
+
+									if (NextSleepTime > TimePerFrame)
+										NextSleepTime = 1;
+
+									if (NextSleepTime < 0)
+										NextSleepTime = 0;
+									NextSleepTime = 1;
+									//TRACE_EVR ("Delay\n");
+								}
+
+								if (bDoVSyncCorrection)
+								{
+									//LONGLONG VSyncOffset0 = (((SyncOffset) % VSyncTime) + VSyncTime) % VSyncTime;
+									LONGLONG Margin = TimePerFrameMargin;
+
+									LONGLONG VSyncOffsetMin = 30000000000000;
+									LONGLONG VSyncOffsetMax = -30000000000000;
+									for (int i = 0; i < 5; ++i)
+									{
+										VSyncOffsetMin = min(m_VSyncOffsetHistory[i], VSyncOffsetMin);
+										VSyncOffsetMax = max(m_VSyncOffsetHistory[i], VSyncOffsetMax);
+									}
+
+									m_VSyncOffsetHistory[m_VSyncOffsetHistoryPos] = VSyncOffset0;
+									m_VSyncOffsetHistoryPos = (m_VSyncOffsetHistoryPos + 1) % 5;
+
+									//								LONGLONG VSyncTime2 = VSyncTime2 + (VSyncOffsetMax - VSyncOffsetMin);
+									//VSyncOffsetMin; = (((VSyncOffsetMin) % VSyncTime) + VSyncTime) % VSyncTime;
+									//VSyncOffsetMax = (((VSyncOffsetMax) % VSyncTime) + VSyncTime) % VSyncTime;
+
+									//								TRACE("SyncOffset(%d, %d): %8I64d     %8I64d     %8I64d     %8I64d\n", m_nCurSurface, m_VSyncMode,VSyncOffset0, VSyncOffsetMin, VSyncOffsetMax, VSyncOffsetMax - VSyncOffsetMin);
+
+									if (m_VSyncMode == 0)
+									{
+										// 23.976 in 60 Hz
+										if (VSyncOffset0 < Margin && VSyncOffsetMax > (VSyncTime - Margin))
+										{
+											m_VSyncMode = 2;
+										}
+										else if (VSyncOffset0 > (VSyncTime - Margin) && VSyncOffsetMin < Margin)
+										{
+											m_VSyncMode = 1;
+										}
+									}
+									else if (m_VSyncMode == 2)
+									{
+										if (VSyncOffsetMin > (Margin))
+										{
+											m_VSyncMode = 0;
+										}
+									}
+									else if (m_VSyncMode == 1)
+									{
+										if (VSyncOffsetMax < (VSyncTime - Margin))
+										{
+											m_VSyncMode = 0;
+										}
+									}
+								}
+
+							}
+						}
+
+						m_pCurrentDisplaydSample = NULL;
+						if (bStepForward)
+						{
+							MoveToFreeList(pMFSample, true);
+							CheckWaitingSampleFromMixer();
+							m_MaxSampleDuration = max(SampleDuration, m_MaxSampleDuration);
+						}
+						else
+							MoveToScheduledList(pMFSample, true);
+					}
+					else if (m_bLastSampleOffsetValid && m_LastSampleOffset < -10000000) // Only starve if we are 1 seconds behind
+					{
+						if (m_nRenderState == Started && !g_bNoDuration)
+						{
+							m_pSink->Notify(EC_STARVATION, 0, 0);
+							m_bSignaledStarvation = true;
 						}
 					}
+					//GetImageFromMixer();
+				}
+				//			else
+				//			{				
+				//				TRACE_EVR ("RenderThread ==>> Flush before rendering frame!\n");
+				//			}
 
-					m_pCurrentDisplaydSample = NULL;
-					if (bStepForward)
-					{
-						MoveToFreeList(pMFSample, true);
-						CheckWaitingSampleFromMixer();
-						m_MaxSampleDuration = max(SampleDuration, m_MaxSampleDuration);
-					}
-					else
-						MoveToScheduledList(pMFSample, true);
-				}
-				else if (m_bLastSampleOffsetValid && m_LastSampleOffset < -10000000) // Only starve if we are 1 seconds behind
-				{
-					if (m_nRenderState == Started && !g_bNoDuration)
-					{
-						m_pSink->Notify(EC_STARVATION, 0, 0);
-						m_bSignaledStarvation = true;
-					}
-				}
-				//GetImageFromMixer();
+				break;
 			}
-//			else
-//			{				
-//				TRACE_EVR ("RenderThread ==>> Flush before rendering frame!\n");
-//			}
-
-			break;
 		}
-	}
 
+	}
+	
 	timeEndPeriod (dwResolution);
 	if (pfAvRevertMmThreadCharacteristics) pfAvRevertMmThreadCharacteristics (hAvrt);
 }
@@ -3026,6 +3176,7 @@ void CEVRAllocatorPresenter::FlushSamples()
 
 void CEVRAllocatorPresenter::FlushSamplesInternal()
 {
+	m_bPrerolled = false;
 	while (m_ScheduledSamples.GetCount() > 0)
 	{
 		CComPtr<IMFSample>		pMFSample;

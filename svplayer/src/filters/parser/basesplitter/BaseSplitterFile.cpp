@@ -202,12 +202,12 @@ HRESULT CBaseSplitterFile::Read(BYTE* pData, __int64 len)
 		__int64 minlen = min(len, m_cachelen - (m_pos - m_cachepos));
  		
 		if(!pData || len <= 0 || minlen <= 0) {
-			SVP_LogMsg5(_T("!pData || len <= 0 || minlen <= 0"));
+			//SVP_LogMsg5(_T("!pData || len <= 0 || minlen <= 0"));
 		    return S_OK; 
 		}
 		__try{ 
 		      memcpy_s(pData, len, &pCache[m_pos - m_cachepos], (size_t)minlen); 
-		}__except(EXCEPTION_EXECUTE_HANDLER){SVP_LogMsg5(_T(" memcpy_s(pData, len, &pCache[m_pos - m_cachepos], (size_t)minlen); ")); return S_OK;} 
+		}__except(EXCEPTION_EXECUTE_HANDLER){/*SVP_LogMsg5(_T(" memcpy_s(pData, len, &pCache[m_pos - m_cachepos], (size_t)minlen); ")); */return S_OK;} 
 	/*	if(pData && len > 0){
 			__try{
 				memcpy_s(pData, len, &pCache[m_pos - m_cachepos], (size_t)minlen);
@@ -251,7 +251,7 @@ HRESULT CBaseSplitterFile::Read(BYTE* pData, __int64 len)
 
 		__try{		
 			memcpy(pData, pCache, (size_t)minlen);
-		}__except(EXCEPTION_EXECUTE_HANDLER){ SVP_LogMsg5(_T( "memcpy(pData, pCache, (size_t)minlen)")); return S_OK; }
+		}__except(EXCEPTION_EXECUTE_HANDLER){ /*SVP_LogMsg5(_T( "memcpy(pData, pCache, (size_t)minlen)"));*/ return S_OK; }
 		/*if(pData && minlen > 0){
 			__try{
 				memcpy(pData, pCache, (size_t)minlen);

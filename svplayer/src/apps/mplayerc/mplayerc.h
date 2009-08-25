@@ -451,6 +451,7 @@ public:
 		int iQTVideoRendererType;
 		int iAPSurfaceUsage;
 		bool fVMRSyncFix;
+		bool fVMRGothSyncFix;
 		int useGPUAcel;
 		CStringArray szaGPUStrings;
 		CString optionDecoder;

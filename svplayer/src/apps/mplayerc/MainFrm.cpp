@@ -6539,7 +6539,10 @@ void CMainFrame::OnUpdateViewOntop(CCmdUI* pCmdUI)
 	pCmdUI->SetRadio(AfxGetAppSettings().iOnTop == (pCmdUI->m_nID - ID_ONTOP_NEVER));
 }
 void CMainFrame::OnShowDrawStats(){
-	AfxGetMyApp()->m_fDisplayStats = !AfxGetMyApp()->m_fDisplayStats;
+	AfxGetMyApp()->m_fDisplayStats++;
+	if(AfxGetMyApp()->m_fDisplayStats > 3){
+		AfxGetMyApp()->m_fDisplayStats = 0;
+	}
 }
 void CMainFrame::OnViewOptions()
 {

@@ -2357,10 +2357,10 @@ void CEVRAllocatorPresenter::RenderThread()
 							LONG lLastVsyncTime = (LONG)((m_rtEstVSyncTime - rtRefClockTimeNow) / 10000); // Time of previous vsync relative to now //Tomasen: m_rtEstVSyncTime need Set and check
 
 							LONGLONG llNextSampleWait = (LONGLONG)(((double)lLastVsyncTime + GetDisplayCycle() - targetSyncOffset) * 10000); // Next safe time to Paint()
-							while ((llRefClockTime + llNextSampleWait) < (m_llSampleTime + m_llHysteresis)) // While the proposed time is in the past of sample presentation time
-							{
-								llNextSampleWait = llNextSampleWait + (LONGLONG)(GetDisplayCycle() * 10000); // Try the next possible time, one display cycle ahead
-							}
+							LONGLONG eachStep = (GetDisplayCycle() * 10000); // While the proposed time is in the past of sample presentation time
+							LONGLONG howManyStepWeNeed = ((m_llSampleTime + m_llHysteresis) - (llRefClockTime + llNextSampleWait)) / eachStep;   // Try the next possible time, one display cycle ahead
+							llNextSampleWait += eachStep * howManyStepWeNeed;
+							
 							m_lNextSampleWait = (LONG)(llNextSampleWait / 10000);
 							m_lShiftToNearestPrev = m_lShiftToNearest;
 							m_lShiftToNearest = (LONG)((llRefClockTime + llNextSampleWait - m_llSampleTime) / 10000); // The adjustment made to get to the sweet point in time, in ms
@@ -2382,6 +2382,11 @@ void CEVRAllocatorPresenter::RenderThread()
 							}
 						}
 					}
+				}
+				if(m_lNextSampleWait < 0 || m_lNextSampleWait > 50){
+					SVP_LogMsg5(_T("m_lNextSampleWait %d %f %f %f %f %f %f"), m_lNextSampleWait , m_llSampleTime, m_rtEstVSyncTime, m_dD3DRefreshCycle, targetSyncOffset
+						 , m_bVideoSlowerThanDisplay , m_llHysteresis );
+					m_lNextSampleWait = min ( max(m_lNextSampleWait , 0) , 50);
 				}
 			}
 			// Wait for the next presentation time or a quit or flush event

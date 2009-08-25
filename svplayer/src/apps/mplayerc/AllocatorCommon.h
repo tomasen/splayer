@@ -201,7 +201,9 @@ namespace DSObjects
 										LPCWSTR			pFaceName,
 										LPD3DXFONT*		ppFont);
 
-
+		// Functions to trace timing performance
+		void SyncStats(LONGLONG syncTime);
+		void SyncOffsetStats(LONGLONG syncOffset);
 		void				DrawText(const RECT &rc, const CString &strText, int _Priority);
 		void				DrawStats();
 		HRESULT				AlphaBlt(RECT* pSrc, RECT* pDst, CComPtr<IDirect3DTexture9> pTexture);
@@ -414,6 +416,8 @@ namespace DSObjects
 		STDMETHODIMP GetCurrentImage(BYTE** lpDib);
 		STDMETHODIMP SetBorderColor(COLORREF Clr);
 		STDMETHODIMP GetBorderColor(COLORREF* lpClr);
+	private:
+		CComPtr<IMFClock>						m_pClock;
 	};
 
 	class CRM9AllocatorPresenter

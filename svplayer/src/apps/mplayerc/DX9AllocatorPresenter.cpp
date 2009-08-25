@@ -712,7 +712,7 @@ void CDX9AllocatorPresenter::StartWorkerThreads()
 void CDX9AllocatorPresenter::StopWorkerThreads()
 {
 	SetEvent (m_hEvtQuit);
-	if ((m_hVSyncThread != INVALID_HANDLE_VALUE) && (WaitForSingleObject (m_hVSyncThread, 10000) == WAIT_TIMEOUT))
+	if ((m_hVSyncThread != INVALID_HANDLE_VALUE) && (WaitForSingleObject (m_hVSyncThread, 3000) == WAIT_TIMEOUT))
 	{
 		ASSERT (FALSE);
 		TerminateThread (m_hVSyncThread, 0xDEAD);
@@ -936,6 +936,27 @@ if (FAILED(g_pD3D->CreateDevice( AdapterToUse, DeviceType, hWnd,
 		 m_bVideoSlowerThanDisplay = 0; // True if this fact is detected in sync to nearest
 		 m_bSnapToVSync = 0; // True if framerate is low enough so that snap to vsync makes sense
 		 m_llLastSyncTime = 0;
+
+		 m_MinJitter = MAXLONG64;
+		 m_MaxJitter = MINLONG64;
+		 m_MinSyncOffset = MAXLONG64;
+		 m_MaxSyncOffset = MINLONG64;
+
+		 m_rtTimePerFrame = 0;
+		 //m_bInterlaced = 0;
+		 //m_nUsedBuffer = 0;
+		 //m_bNeedPendingResetDevice = 0;
+		 //m_bPendingResetDevice = 0;
+		 m_OrderedPaint = 0;
+		 m_bCorrectedFrameTime = 0;
+		 m_FrameTimeCorrection = 0;
+		 m_LastSampleTime = 0;
+		 m_LastFrameDuration = 0;
+		 m_bAlternativeVSync = 0;
+		 m_VSyncMode = 0;
+		 m_TextScale = 0.7;
+
+		 m_WaitForGPUTime = 0;
 
 		 memset (m_pllJitter, 0, sizeof(m_pllJitter));
 		 memset (m_pllSyncOffset, 0, sizeof(m_pllSyncOffset));
@@ -2219,6 +2240,71 @@ void CDX9AllocatorPresenter::UpdateAlphaBitmap()
 	}
 }
 
+// Update the array m_pllJitter with a new vsync period. Calculate min, max and stddev.
+void CDX9AllocatorPresenter::SyncStats(LONGLONG syncTime)
+{
+	m_nNextJitter = (m_nNextJitter+1) % NB_JITTER;
+	m_pllJitter[m_nNextJitter] = syncTime - m_llLastSyncTime;
+	double syncDeviation = ((double)m_pllJitter[m_nNextJitter] - m_fJitterMean) / 10000.0;
+	//if (abs(syncDeviation) > (GetDisplayCycle() / 2))
+	//	m_uSyncGlitches++;
+
+	LONGLONG llJitterSum = 0;
+	LONGLONG llJitterSumAvg = 0;
+	for (int i=0; i<NB_JITTER; i++)
+	{
+		LONGLONG Jitter = m_pllJitter[i];
+		llJitterSum += Jitter;
+		llJitterSumAvg += Jitter;
+	}
+	m_fJitterMean = double(llJitterSumAvg) / NB_JITTER ;
+	double DeviationSum = 0;
+	m_MinJitter = MAXLONG64;
+	m_MaxJitter = MINLONG64;
+	for (int i=0; i<NB_JITTER; i++)
+	{
+		LONGLONG DevInt = m_pllJitter[i] - m_fJitterMean;
+		double Deviation = DevInt;
+		DeviationSum += Deviation*Deviation;
+		m_MaxJitter = max(m_MaxJitter, DevInt);
+		m_MinJitter = min(m_MinJitter, DevInt);
+	}
+
+	m_fJitterStdDev = sqrt(DeviationSum/NB_JITTER);
+	m_fAvrFps = 10000000.0/(double(llJitterSum)/NB_JITTER);
+	m_llLastSyncTime = syncTime;
+}
+
+// Collect the difference between periodEnd and periodStart in an array, calculate mean and stddev.
+void CDX9AllocatorPresenter::SyncOffsetStats(LONGLONG syncOffset)
+{
+	m_nNextSyncOffset = (m_nNextSyncOffset+1) % NB_JITTER;
+	m_pllSyncOffset[m_nNextSyncOffset] = syncOffset;
+	m_MinSyncOffset = MAXLONG64;
+	m_MaxSyncOffset = MINLONG64;
+
+	LONGLONG AvrageSum = 0;
+	for (int i=0; i<NB_JITTER; i++)
+	{
+		LONGLONG Offset = m_pllSyncOffset[i];
+		AvrageSum += Offset;
+		m_MaxSyncOffset = max(m_MaxSyncOffset, Offset);
+		m_MinSyncOffset = min(m_MinSyncOffset, Offset);
+	}
+	double MeanOffset = double(AvrageSum)/NB_JITTER;
+	double DeviationSum = 0;
+	for (int i=0; i<NB_JITTER; i++)
+	{
+		double Deviation = double(m_pllSyncOffset[i]) - MeanOffset;
+		DeviationSum += Deviation*Deviation;
+	}
+	double StdDev = sqrt(DeviationSum/NB_JITTER);
+
+	m_fSyncOffsetAvr = MeanOffset;
+	m_fSyncOffsetStdDev = StdDev;
+}
+
+
 STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 {
 //	if (!fAll)
@@ -2258,32 +2344,9 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 		msSyncOffset = (m_ScreenSize.cy - m_uScanLineEnteringPaint) * m_dDetectedScanlineTime;
 		rtSyncOffset = REFERENCE_TIME(10000.0 * msSyncOffset);
 		m_rtEstVSyncTime = rtCurRefTime + rtSyncOffset;
-		//SyncStats(m_rtEstVSyncTime);
-		//SyncOffsetStats(-rtSyncOffset); // Minus because we want time to flow downward in the graph in DrawStats
+		SyncStats(m_rtEstVSyncTime);
+		SyncOffsetStats(-rtSyncOffset); // Minus because we want time to flow downward in the graph in DrawStats
 
-		m_nNextSyncOffset = (m_nNextSyncOffset+1) % NB_JITTER;
-		m_pllSyncOffset[m_nNextSyncOffset] = -rtSyncOffset;
-
-		m_nNextJitter = (m_nNextJitter+1) % NB_JITTER;
-		m_pllJitter[m_nNextJitter] = m_rtEstVSyncTime - m_llLastSyncTime;
-		m_llLastSyncTime = m_rtEstVSyncTime;
-
-		LONGLONG llJitterSumAvg = 0;
-		
-		for (int i=0; i<NB_JITTER; i++)
-		{
-			LONGLONG Jitter = m_pllJitter[i];
-			llJitterSumAvg += Jitter;
-			
-		}
-		m_MaxJitter = m_fJitterMean;
-		m_MinJitter = m_fJitterMean;
-		for (int i=0; i<NB_JITTER; i++)
-		{
-			LONGLONG DevInt = m_pllJitter[i] - m_fJitterMean;
-			m_MaxJitter = max(m_MaxJitter, DevInt);
-			m_MinJitter = min(m_MinJitter, DevInt);
-		}
 		
 	}
 
@@ -2318,6 +2381,7 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 	m_pD3DDev->SetRenderTarget(0, pBackBuffer);
 
 	if(s.fVMRGothSyncFix){
+
 		hr = m_pD3DDev->Clear(0, NULL, D3DCLEAR_TARGET, 0, 1.0f, 0);
 		if(!rDstVid.IsRectEmpty())
 		{
@@ -3157,11 +3221,16 @@ void CDX9AllocatorPresenter::DrawStats()
 		DrawText(rc, strText, 1);
 		OffsetRect (&rc, 0, TextHeight);
 
-		if (m_bIsEVR)
+		//if (m_bIsEVR)
 		{
-			strText.Format(L"Sample waiting time: %d ms", m_lNextSampleWait);
+
+			
+			strText.Format(L"Sample waiting time: %d ms ", m_lNextSampleWait );
 			DrawText(rc, strText, 1);
 			OffsetRect(&rc, 0, TextHeight);
+
+
+	
 			//if (s.m_RenderSettings.bSynchronizeNearest)
 			{
 				strText.Format(L"Sample paint time correction: %2d ms %s", m_lShiftToNearest, (m_llHysteresis == 0) ? L"| No snap to vsync" : L"| Snap to vsync");
@@ -4098,6 +4167,7 @@ STDMETHODIMP CVMR9AllocatorPresenter::StartPresenting(DWORD_PTR dwUserID)
 
     ASSERT(m_pD3DDev);
 
+
 	return m_pD3DDev ? S_OK : E_FAIL;
 }
 
@@ -4113,10 +4183,97 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 
 	m_MainThreadId = GetCurrentThreadId();
 	AppSettings& s = AfxGetAppSettings();
-	if(s.fVMRGothSyncFix){ //nessery for EVR
+	if(0 && s.fVMRGothSyncFix && !m_bIsEVR){ //nessery for EVR ??
 		m_llLastSampleTime = m_llSampleTime;
 		m_llSampleTime = lpPresInfo->rtStart;
-		SVP_LogMsg5(L"CVMR9AllocatorPresenter::PresentImage");
+		//SVP_LogMsg5(L"CVMR9AllocatorPresenter::PresentImage");
+		m_lNextSampleWait = 1;
+		BOOL bSynchronizeNearest = 1;
+		double targetSyncOffset = m_targetSyncOffset; //Tomasen: m_targetSyncOffset need init 
+		
+		LONGLONG llRefClockTime;
+		MFTIME systemTime;
+
+			
+				/*
+				if (!m_bPrerolled)
+								{
+									m_bPrerolled = true; // m_bPrerolled is a ticket to show one (1) frame and no more until streaming
+									m_lNextSampleWait = 0; // Present immediately
+								}
+								else // Get zero-based sample due time*/
+				
+				{
+					//m_pClock->GetCorrelatedTime(0, &llRefClockTime, &systemTime); // Get zero-based reference clock time. systemTime is not used for anything here
+					//llRefClockTime = AfxGetMyApp()->GetPerfCounter();
+					REFERENCE_TIME rtRefClockTimeNow; 
+					//if (m_pRefClock) m_pRefClock->GetTime(&rtRefClockTimeNow); // Reference clock time now
+					//else SVP_LogMsg3("No m_pRefClock");
+
+					llRefClockTime = rtRefClockTimeNow;
+					m_lNextSampleWait = (LONG)((m_llSampleTime - llRefClockTime) / 10000); // Time left until sample is due, in ms
+					//SVP_LogMsg3("fyck %d , %f, %d " , m_llSampleTime, double(llRefClockTime)/10000.0 , m_lNextSampleWait);// ,  , 
+					if (m_lNextSampleWait < 0)
+						m_lNextSampleWait = 0; // We came too late. Race through, discard the sample and get a new one
+					else if (bSynchronizeNearest) // Present at the closest "safe" occasion at tergetSyncOffset ms before vsync to avoid tearing
+					{
+						
+						LONG lLastVsyncTime = (LONG)((m_rtEstVSyncTime - rtRefClockTimeNow) / 10000); // Time of previous vsync relative to now //Tomasen: m_rtEstVSyncTime need Set and check
+
+						LONGLONG llNextSampleWait = (LONGLONG)(((double)lLastVsyncTime + GetDisplayCycle() - targetSyncOffset) * 10000); // Next safe time to Paint()
+						LONGLONG eachStep = (GetDisplayCycle() * 10000); // While the proposed time is in the past of sample presentation time
+						LONGLONG howManyStepWeNeed = ((m_llSampleTime + m_llHysteresis) - (llRefClockTime + llNextSampleWait)) / eachStep;   // Try the next possible time, one display cycle ahead
+						llNextSampleWait += eachStep * howManyStepWeNeed;
+
+						m_lNextSampleWait = (LONG)(llNextSampleWait / 10000);
+						m_lShiftToNearestPrev = m_lShiftToNearest;
+						m_lShiftToNearest = (LONG)((llRefClockTime + llNextSampleWait - m_llSampleTime) / 10000); // The adjustment made to get to the sweet point in time, in ms
+
+						if (m_bSnapToVSync)
+						{
+							if ((m_lShiftToNearestPrev - m_lShiftToNearest) > (GetDisplayCycle() / 2.0)) // If a step down
+							{
+								m_bVideoSlowerThanDisplay = false;
+								m_llHysteresis = -(LONGLONG)(10000.0 * GetDisplayCycle() / 3.0);
+							}
+							else if ((m_lShiftToNearest - m_lShiftToNearestPrev) > (GetDisplayCycle() / 2.0)) // If a step up
+							{
+								m_bVideoSlowerThanDisplay = true;
+								m_llHysteresis = (LONGLONG)(10000.0 * GetDisplayCycle() / 3.0);
+							}
+							else if ((m_lShiftToNearest < (2 * (LONG)(GetDisplayCycle() / 3.0))) && (m_lShiftToNearest > (LONG)(GetDisplayCycle() / 3.0)))
+								m_llHysteresis = 0; // Reset when between 1/3 and 2/3 of the way either way
+						}
+					}
+		
+			
+			if(m_lNextSampleWait < 0 || m_lNextSampleWait > 50){
+				SVP_LogMsg5(_T("m_lNextSampleWait VMR %d %f %f %f %f %f %f"), m_lNextSampleWait , m_llSampleTime, m_rtEstVSyncTime, m_dD3DRefreshCycle, targetSyncOffset
+					, m_bVideoSlowerThanDisplay , m_llHysteresis );
+				m_lNextSampleWait = min ( max(m_lNextSampleWait , 0) , 50);
+			}
+		}
+		// Wait for the next presentation time or a quit or flush event
+		DWORD dwObject = WaitForSingleObject(m_hEvtQuit, (DWORD)m_lNextSampleWait); 
+		switch (dwObject)
+		{
+			case WAIT_OBJECT_0: // Quit event
+				//bQuit = true;
+				break;
+
+			case WAIT_OBJECT_0 + 1: // Flush event
+				/*
+				FlushSamples();
+								m_bEvtFlush = false;
+								ResetEvent(m_hEvtFlush);
+								m_bPrerolled = false;
+				*/
+				
+				break;
+
+			case WAIT_TIMEOUT: 
+				break;
+		}
 	}
 
 	if (m_rtTimePerFrame == 0 || m_bNeedCheckSample)
@@ -4126,10 +4283,12 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 		CComPtr<IPin>			pPin;
 		CMediaType				mt;
 		
+		
 		if (SUCCEEDED (m_pIVMRSurfAllocNotify->QueryInterface (__uuidof(IBaseFilter), (void**)&pVMR9)) &&
 			SUCCEEDED (pVMR9->FindPin(L"VMR Input0", &pPin)) &&
 			SUCCEEDED (pPin->ConnectionMediaType(&mt)) )
 		{
+			
 			ExtractAvgTimePerFrame (&mt, m_rtTimePerFrame);
 
 			CSize NativeVideoSize = m_NativeVideoSize;

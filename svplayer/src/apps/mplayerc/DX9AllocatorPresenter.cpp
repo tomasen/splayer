@@ -920,6 +920,26 @@ if (FAILED(g_pD3D->CreateDevice( AdapterToUse, DeviceType, hWnd,
 	}
 #endif
 
+	{
+
+		 m_targetSyncOffset = 0;
+		 m_dD3DRefreshCycle = 0; // Display refresh cycle ms
+		 m_lNextSampleWait = 0; // Waiting time for next sample in EVR
+		 m_llSampleTime =0;
+		 m_llLastSampleTime = 0; // Present time for the current sample
+		 m_llHysteresis = 0; // If != 0 then a "snap to vsync" is active, see EVR
+		 m_rtEstVSyncTime = 0; // Next vsync time in reference clock "coordinates"
+		 m_dDetectedScanlineTime = 0; // Time for one (horizontal) scan line. Extracted at stream start and used to calculate vsync time
+		 m_pRefClock = 0; // The reference clock. Used in Paint()
+		 m_lShiftToNearest = 0;
+		 m_lShiftToNearestPrev = 0; // Correction to sample presentation time in sync to nearest
+		 m_bVideoSlowerThanDisplay = 0; // True if this fact is detected in sync to nearest
+		 m_bSnapToVSync = 0; // True if framerate is low enough so that snap to vsync makes sense
+		 m_llLastSyncTime = 0;
+
+		 memset (m_pllJitter, 0, sizeof(m_pllJitter));
+		 memset (m_pllSyncOffset, 0, sizeof(m_pllSyncOffset));
+	}
 	m_RefreshRate = d3ddm.RefreshRate;
 	m_ScreenSize.SetSize(d3ddm.Width, d3ddm.Height);
 
@@ -2247,6 +2267,24 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 		m_nNextJitter = (m_nNextJitter+1) % NB_JITTER;
 		m_pllJitter[m_nNextJitter] = m_rtEstVSyncTime - m_llLastSyncTime;
 		m_llLastSyncTime = m_rtEstVSyncTime;
+
+		LONGLONG llJitterSumAvg = 0;
+		
+		for (int i=0; i<NB_JITTER; i++)
+		{
+			LONGLONG Jitter = m_pllJitter[i];
+			llJitterSumAvg += Jitter;
+			
+		}
+		m_MaxJitter = m_fJitterMean;
+		m_MinJitter = m_fJitterMean;
+		for (int i=0; i<NB_JITTER; i++)
+		{
+			LONGLONG DevInt = m_pllJitter[i] - m_fJitterMean;
+			m_MaxJitter = max(m_MaxJitter, DevInt);
+			m_MinJitter = min(m_MinJitter, DevInt);
+		}
+		
 	}
 
 	if(m_WindowRect.right <= m_WindowRect.left || m_WindowRect.bottom <= m_WindowRect.top

@@ -497,7 +497,7 @@ HRESULT CDX7AllocatorPresenter::AllocSurfaces()
 			return hr;
 	}
 
-	if(s.iAPSurfaceUsage == VIDRNDT_AP_TEXTURE3D)
+	if(s.iAPSurfaceUsage == VIDRNDT_AP_TEXTURE3D && 0) //Only use 2D in DX7
 		m_pVideoTexture = m_pVideoSurface;
 
 	DDBLTFX fx;

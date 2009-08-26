@@ -1113,7 +1113,9 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 		}else{
 			BOOL bSomethingChanged = false;
 			DWORD dnCS = s.nCS;
-			if(point.y < 20){
+			CPoint ptop(point);
+			MapWindowPoints(&m_wndView, &ptop, 1);
+			if(ptop.y < 20){
 				if(!m_wndToolTopBar.IsWindowVisible()){
 					m_wndToolTopBar.ShowWindow(SW_SHOW);
 					bSomethingChanged = true;
@@ -1853,7 +1855,7 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
 			CRect rc;
 			m_wndToolTopBar.GetWindowRect(rc);
 			//SVP_LogMsg3("M %u %u %d %d %d %d %d %d ", pMsg->hwnd, m_wndToolTopBar.m_hWnd , rc.left, rc.top, rc.right, rc.bottom, p.x ,p.y);
-			if( p.x < rc.Width() && p.y <rc.Height()){
+			if(!rc.IsRectEmpty() &&  p.x > 0 &&  p.x < rc.Width() && p.y > 0 && p.y <rc.Height()){
 				m_wndToolTopBar.PostMessage(pMsg->message, pMsg->wParam, MAKELPARAM(p.x, p.y));
 				return TRUE;
 			}

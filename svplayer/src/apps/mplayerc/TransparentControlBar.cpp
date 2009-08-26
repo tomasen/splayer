@@ -53,29 +53,46 @@ int CTransparentControlBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	return 0;
 }
+static bool bNeedLayed = true;
 void CTransparentControlBar::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
 
 	CMainFrame* pMFrame = (CMainFrame*)AfxGetMainWnd();
 	if (pScrollBar == GetDlgItem(IDC_SLIDER1) && pMFrame){
 		int pos = csl_trans.GetPos();
+		AppSettings& s = AfxGetAppSettings();
 
 		if(pos < 0xff){
 			//::SetWindowLong(this->m_hWnd , GWL_EXSTYLE, ::GetWindowLong(this->m_hWnd, GWL_EXSTYLE) | WS_EX_LAYERED);
-			pMFrame->ModifyStyle(0, WS_POPUP);
-			pMFrame->ModifyStyleEx(  0, WS_EX_LAYERED);
-			pMFrame->SetLayeredWindowAttributes( 0, pos, LWA_ALPHA);
-			//pMFrame->m_wndToolTopBar.ModifyStyleEx(  0, WS_EX_LAYERED);
-			//pMFrame->m_wndToolTopBar.SetLayeredWindowAttributes( 0, pos, LWA_ALPHA);
+			if(bNeedLayed){
+				pMFrame->ModifyStyle(0, WS_POPUP);
+				pMFrame->ModifyStyleEx(  0, WS_EX_LAYERED);
+				pMFrame->m_wndToolTopBar.ModifyStyleEx(  0, WS_EX_LAYERED);
+				pMFrame->m_wndNewOSD.ModifyStyleEx(  0, WS_EX_LAYERED);
+				pMFrame->m_wndColorControlBar.ModifyStyleEx(  0, WS_EX_LAYERED);
+				bNeedLayed = false;
+			}
+				
+				pMFrame->SetLayeredWindowAttributes( 0, pos, LWA_ALPHA);
+				pMFrame->m_wndToolTopBar.SetLayeredWindowAttributes( 0, pos, LWA_ALPHA);
+				pMFrame->m_wndNewOSD.SetLayeredWindowAttributes( 0, pos, LWA_ALPHA);
+				pMFrame->m_wndColorControlBar.SetLayeredWindowAttributes( 0, pos, LWA_ALPHA);
+			
 			//ModifyStyleEx(  0, WS_EX_LAYERED);
 			//SetLayeredWindowAttributes( 0, pos, LWA_ALPHA);
 		}else{
-			AppSettings& s = AfxGetAppSettings();
+			bNeedLayed = true;
 			if(s.bAeroGlass){
 				pMFrame->SetLayeredWindowAttributes( 0, 0xff, LWA_ALPHA);
+				pMFrame->m_wndToolTopBar.SetLayeredWindowAttributes( 0, 0xff, LWA_ALPHA);
+				pMFrame->m_wndNewOSD.SetLayeredWindowAttributes( 0, 0xff, LWA_ALPHA);
+				pMFrame->m_wndColorControlBar.SetLayeredWindowAttributes( 0, 0xff, LWA_ALPHA);
 			}else{
 				pMFrame->ModifyStyleEx( WS_EX_LAYERED, 0);
 				pMFrame->ModifyStyle(WS_POPUP,0 );
+				pMFrame->m_wndToolTopBar.ModifyStyleEx(   WS_EX_LAYERED , 0);
+				pMFrame->m_wndNewOSD.ModifyStyleEx(   WS_EX_LAYERED , 0);
+				pMFrame->m_wndColorControlBar.ModifyStyleEx(   WS_EX_LAYERED , 0);
 			}
 			
 		}

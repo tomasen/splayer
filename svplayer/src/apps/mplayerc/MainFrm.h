@@ -499,7 +499,6 @@ protected:  // control bar embedded members
 	CPlayerInfoBar m_wndInfoBar;
 	CPlayerInfoBar m_wndStatsBar;
 	CPlayerStatusBar m_wndStatusBar;
-	CPlayerColorControlBar m_wndColorControlBar;
 	CTransparentControlBar m_wndTransparentControlBar;
 	CList<CControlBar*> m_bars;
 
@@ -509,8 +508,7 @@ protected:  // control bar embedded members
 	CPlayerShaderEditorBar m_wndShaderEditorBar;
 	CList<CSizingControlBar*> m_dockingbars;
 
-	CNEWOSDWnd m_wndNewOSD;
-
+	
 	CFileDropTarget m_fileDropTarget;
 	// TODO
 	DROPEFFECT OnDragEnter(COleDataObject* pDataObject, DWORD dwKeyState, CPoint point);
@@ -532,6 +530,9 @@ protected:  // control bar embedded members
 	DECLARE_MESSAGE_MAP()
 
 public:
+
+	CNEWOSDWnd m_wndNewOSD;
+	CPlayerColorControlBar m_wndColorControlBar;
 
 	//Mouse Relate
 	void PreFocused();

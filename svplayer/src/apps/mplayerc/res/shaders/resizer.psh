@@ -1,9 +1,9 @@
 
 sampler s0 : register(s0);
-sampler s1 : register(s1);
-sampler s2 : register(s2);
-sampler s3 : register(s3);
-sampler s4 : register(s4);
+//sampler s1 : register(s1);
+//sampler s2 : register(s2);
+//sampler s3 : register(s3);
+//sampler s4 : register(s4);
 
 float4 dxdy05  : register(c0);
 float2 dxdy : register(c1);
@@ -19,10 +19,10 @@ float2 dy : register(c3);
 struct PS_INPUT
 {
 	float2 t0 : TEXCOORD0;
-	float2 t1 : TEXCOORD1;
-	float2 t2 : TEXCOORD2;
-	float2 t3 : TEXCOORD3;
-	float2 t4 : TEXCOORD4;
+//	float2 t1 : TEXCOORD1;
+//	float2 t2 : TEXCOORD2;
+//	float2 t3 : TEXCOORD3;
+//	float2 t4 : TEXCOORD4;
 };
 
 float4 main_bilinear(PS_INPUT input) : COLOR
@@ -68,13 +68,15 @@ float4 SampleX(float4 tx, float2 t0)
 
 float4 SampleY(float4 tx, float4 ty, float2 t0)
 {
+	//not sure with the reason, but without *0.99 it doesn't seem to work under 945G etc
+	//   -- by Tomasen
 	return
 		mul(ty,
 			float4x4(
-				SampleX(tx, t0 - dy),
-				SampleX(tx, t0),
-				SampleX(tx, t0 + dy),
-				SampleX(tx, t0 + dy + dy)
+				SampleX(tx, t0 - dy)*0.99, 
+				SampleX(tx, t0)*0.99,
+				SampleX(tx, t0 + dy)*0.99,
+				SampleX(tx, t0 + dy + dy)*0.99
 			)
 		);
 }

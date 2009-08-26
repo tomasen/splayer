@@ -1415,6 +1415,8 @@ HRESULT CDX9AllocatorPresenter::InitResizers(float bicubicA, bool bNeedScreenSiz
 	CStringA A;
 	A.Format("(%f)", bicubicA);
 	str.Replace("_The_Value_Of_A_Is_Set_Here_", A);
+	if( m_caps.PixelShaderVersion >= D3DPS_VERSION(3, 0) )
+		str.Replace("*0.99", "");
 
 	LPCSTR pEntries[] = {"main_bilinear", "main_bicubic1pass", "main_bicubic2pass_pass1", "main_bicubic2pass_pass2"};
 
@@ -1427,7 +1429,7 @@ HRESULT CDX9AllocatorPresenter::InitResizers(float bicubicA, bool bNeedScreenSiz
 		hr = m_pPSC->CompileShader(str, pEntries[i], pProfile, 0, &m_pResizerPixelShader[i], &DissAssembly, &ErrorMessage);
 		if(FAILED(hr)) 
 		{
-			TRACE("%ws", ErrorMessage.GetString());
+			SVP_LogMsg5(L"%s", ErrorMessage.GetString());
 			ASSERT (0);
 			return hr;
 		}
@@ -4221,10 +4223,12 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 						LONG lLastVsyncTime = (LONG)((m_rtEstVSyncTime - rtRefClockTimeNow) / 10000); // Time of previous vsync relative to now //Tomasen: m_rtEstVSyncTime need Set and check
 
 						LONGLONG llNextSampleWait = (LONGLONG)(((double)lLastVsyncTime + GetDisplayCycle() - targetSyncOffset) * 10000); // Next safe time to Paint()
-						LONGLONG eachStep = (GetDisplayCycle() * 10000); // While the proposed time is in the past of sample presentation time
-						LONGLONG howManyStepWeNeed = ((m_llSampleTime + m_llHysteresis) - (llRefClockTime + llNextSampleWait)) / eachStep;   // Try the next possible time, one display cycle ahead
-						llNextSampleWait += eachStep * howManyStepWeNeed;
-
+						LONGLONG llEachStep = (GetDisplayCycle() * 10000); // While the proposed time is in the past of sample presentation time
+						if(llEachStep){
+							LONGLONG llHowManyStepWeNeed = ((m_llSampleTime + m_llHysteresis) - (llRefClockTime + llNextSampleWait)) / llEachStep;   // Try the next possible time, one display cycle ahead
+							llNextSampleWait += llEachStep * llHowManyStepWeNeed;
+						}
+						
 						m_lNextSampleWait = (LONG)(llNextSampleWait / 10000);
 						m_lShiftToNearestPrev = m_lShiftToNearest;
 						m_lShiftToNearest = (LONG)((llRefClockTime + llNextSampleWait - m_llSampleTime) / 10000); // The adjustment made to get to the sweet point in time, in ms
@@ -4248,8 +4252,8 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 		
 			
 			if(m_lNextSampleWait < 0 || m_lNextSampleWait > 50){
-				SVP_LogMsg5(_T("m_lNextSampleWait VMR %d %f %f %f %f %f %f"), m_lNextSampleWait , m_llSampleTime, m_rtEstVSyncTime, m_dD3DRefreshCycle, targetSyncOffset
-					, m_bVideoSlowerThanDisplay , m_llHysteresis );
+				//SVP_LogMsg5(_T("m_lNextSampleWait VMR %d %f %f %f %f %f %f"), m_lNextSampleWait , m_llSampleTime, m_rtEstVSyncTime, m_dD3DRefreshCycle, targetSyncOffset
+				//	, m_bVideoSlowerThanDisplay , m_llHysteresis );
 				m_lNextSampleWait = min ( max(m_lNextSampleWait , 0) , 50);
 			}
 		}

@@ -960,6 +960,7 @@ if (FAILED(g_pD3D->CreateDevice( AdapterToUse, DeviceType, hWnd,
 
 		 memset (m_pllJitter, 0, sizeof(m_pllJitter));
 		 memset (m_pllSyncOffset, 0, sizeof(m_pllSyncOffset));
+		 memset (m_pllPaintTimer, 0, sizeof(m_pllPaintTimer));
 	}
 	m_RefreshRate = d3ddm.RefreshRate;
 	m_ScreenSize.SetSize(d3ddm.Width, d3ddm.Height);
@@ -970,7 +971,7 @@ if (FAILED(g_pD3D->CreateDevice( AdapterToUse, DeviceType, hWnd,
 	SVP_LogMsg5(_T("m_ScreenSize DX9 %d %d ") , m_ScreenSize.cx, m_ScreenSize.cy);
 	if(!m_RefreshRate)
 		m_RefreshRate = 50;
-	m_targetSyncOffset = 1000.0/m_RefreshRate * 9/10;
+	m_targetSyncOffset = 1000.0/m_RefreshRate/ 2/** 0.5*/;
 	m_dD3DRefreshCycle = 1000.0 /m_RefreshRate; // In ms
 
 	SVP_LogMsg5(_T("m_targetSyncOffset %f m_dD3DRefreshCycle %f") , m_targetSyncOffset, m_dD3DRefreshCycle);
@@ -2293,6 +2294,7 @@ void CDX9AllocatorPresenter::SyncOffsetStats(LONGLONG syncOffset)
 		m_MaxSyncOffset = max(m_MaxSyncOffset, Offset);
 		m_MinSyncOffset = min(m_MinSyncOffset, Offset);
 	}
+
 	double MeanOffset = double(AvrageSum)/NB_JITTER;
 	double DeviationSum = 0;
 	for (int i=0; i<NB_JITTER; i++)
@@ -2304,6 +2306,13 @@ void CDX9AllocatorPresenter::SyncOffsetStats(LONGLONG syncOffset)
 
 	m_fSyncOffsetAvr = MeanOffset;
 	m_fSyncOffsetStdDev = StdDev;
+
+	LONGLONG llPaintAvrageSum = 0;
+	for (int i=0; i<NB_JITTER; i++)
+	{
+		llPaintAvrageSum += m_pllPaintTimer[i];
+	}
+	m_pllPaintTimeAvg = double(llPaintAvrageSum) / NB_JITTER;
 }
 
 
@@ -2329,6 +2338,7 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 #endif
 
 	CMPlayerCApp * pApp = AfxGetMyApp();
+	LONGLONG llPaintStartTime = pApp->GetPerfCounter();
 	BOOL bCompositionEnabled = m_bCompositionEnabled;
 
 	LONGLONG StartPaint = pApp->GetPerfCounter();
@@ -2366,7 +2376,7 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 
 		return(false);
 	}
-
+	
 	HRESULT hr;
 
 	CRect rSrcVid(CPoint(0, 0), m_NativeVideoSize);
@@ -2384,6 +2394,7 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 
 	if(s.fVMRGothSyncFix){
 
+		
 		hr = m_pD3DDev->Clear(0, NULL, D3DCLEAR_TARGET, 0, 1.0f, 0);
 		if(!rDstVid.IsRectEmpty())
 		{
@@ -2586,7 +2597,7 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 		if (m_pOSDTexture) AlphaBlt(rSrcPri, rDstPri, m_pOSDTexture);
 		m_pD3DDev->EndScene();
 
-
+		
 		if (m_pD3DDevEx)
 		{
 			if (m_bIsFullscreen)
@@ -2601,6 +2612,9 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 			else
 				hr = m_pD3DDev->Present(rSrcPri, rDstPri, NULL, NULL);
 		}
+		LONGLONG llPaintCostTime = pApp->GetPerfCounter() - llPaintStartTime;
+		m_nNextPaintTimer = (m_nNextPaintTimer+1) % NB_JITTER;
+		m_pllPaintTimer[m_nNextPaintTimer] = llPaintCostTime;
 
 		//m_pGenlock->UpdateStats(msSyncOffset); // No sync or sync to nearest neighbor
 
@@ -3331,6 +3345,10 @@ void CDX9AllocatorPresenter::DrawStats()
 			OffsetRect (&rc, 0, TextHeight);
 		}
 
+		strText.Format(L"Paint Timer : Last %+8.1f / Avg %+8.1f ",  double( m_pllPaintTimer[m_nNextPaintTimer] ) , m_pllPaintTimeAvg );
+		DrawText(rc, strText, 1);
+		OffsetRect (&rc, 0, TextHeight);
+
 		if (m_pAllocator && bDetailedStats > 1)
 		{
 			CDX9SubPicAllocator *pAlloc = (CDX9SubPicAllocator *)m_pAllocator.p;
@@ -3522,6 +3540,17 @@ void CDX9AllocatorPresenter::DrawStats()
 				}		
 				m_pLine->Draw (Points, NB_JITTER, D3DCOLOR_XRGB(100,200,100));
 			}
+
+			for (int i=0; i<NB_JITTER; i++)
+			{
+				nIndex = (m_nNextPaintTimer+1+i) % NB_JITTER;
+				if (nIndex < 0)
+					nIndex += NB_JITTER;
+				double dPaintTimer = m_pllPaintTimer[nIndex] ;
+				Points[i].x  = (FLOAT)(StartX + (i*5*ScaleX+5));
+				Points[i].y  = (FLOAT)(StartY + ((dPaintTimer*ScaleY)/5000.0 + 250.0* ScaleY));
+			}		
+			m_pLine->Draw (Points, NB_JITTER, D3DCOLOR_XRGB(255,255,100));
 		}
 		m_pLine->End();
 	}

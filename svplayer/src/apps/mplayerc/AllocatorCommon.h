@@ -269,6 +269,9 @@ namespace DSObjects
 		bool					m_bSyncStatsAvailable;						
 		LONGLONG				m_pllJitter [NB_JITTER];		// Jitter buffer for stats
 		LONGLONG				m_pllSyncOffset [NB_JITTER];		// Jitter buffer for stats
+		LONGLONG				m_pllPaintTimer [NB_JITTER];		// Tom: PaintTime for stats
+		int						m_nNextPaintTimer;
+		double					m_pllPaintTimeAvg;
 		LONGLONG				m_llLastPerf;
 		LONGLONG				m_JitterStdDev;
 		LONGLONG				m_MaxJitter;

@@ -2322,7 +2322,15 @@ void CEVRAllocatorPresenter::RenderThread()
     dwUser		= timeBeginPeriod(dwResolution);
 	AppSettings& s = AfxGetAppSettings();
 	if(s.fVMRGothSyncFix){
-		double targetSyncOffset = m_targetSyncOffset; //Tomasen: m_targetSyncOffset need init 
+		double targetSyncOffset = m_targetSyncOffset;
+		targetSyncOffset *= 1.9;
+		if( s.dBrightness != 100.0 ||  s.dBrightness != 1.0){
+			targetSyncOffset *= 0.9;
+		}
+		
+		
+		
+		; //Tomasen: m_targetSyncOffset need init 
 		int samplesLeft = 0;
 		LONGLONG llRefClockTime;
 		MFTIME systemTime;
@@ -2349,7 +2357,7 @@ void CEVRAllocatorPresenter::RenderThread()
 					{
 						m_pClock->GetCorrelatedTime(0, &llRefClockTime, &systemTime); // Get zero-based reference clock time. systemTime is not used for anything here
 						m_lNextSampleWait = (LONG)((m_llSampleTime - llRefClockTime) / 10000); // Time left until sample is due, in ms
-						if (m_lNextSampleWait < 0)
+						if (m_lNextSampleWait < 0 || targetSyncOffset < 2)
 							m_lNextSampleWait = 0; // We came too late. Race through, discard the sample and get a new one
 						else if (bSynchronizeNearest) // Present at the closest "safe" occasion at tergetSyncOffset ms before vsync to avoid tearing
 						{
@@ -2384,8 +2392,8 @@ void CEVRAllocatorPresenter::RenderThread()
 					}
 				}
 				if(m_lNextSampleWait < 0 || m_lNextSampleWait > 50){
-					SVP_LogMsg5(_T("m_lNextSampleWait %d %f %f %f %f %f %f"), m_lNextSampleWait , m_llSampleTime, m_rtEstVSyncTime, m_dD3DRefreshCycle, targetSyncOffset
-						 , m_bVideoSlowerThanDisplay , m_llHysteresis );
+					//SVP_LogMsg5(_T("m_lNextSampleWait %d %f %f %f %f %f %f"), m_lNextSampleWait , m_llSampleTime, m_rtEstVSyncTime, m_dD3DRefreshCycle, targetSyncOffset
+					//	 , m_bVideoSlowerThanDisplay , m_llHysteresis );
 					m_lNextSampleWait = min ( max(m_lNextSampleWait , 0) , 50);
 				}
 			}

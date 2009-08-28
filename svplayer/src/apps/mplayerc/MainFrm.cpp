@@ -10758,7 +10758,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 							if(SUCCEEDED(pSubStream->GetStreamInfo(i, &pName, NULL)))
 							{
 								CString name(pName);
-								if( name.Find(_T("en")) >= 0){
+								if( name.Find(_T(".en.")) >= 0 ||  name.Find(_T(".eng.")) >= 0 ||  name.Find(_T("英文")) >= 0){
 									SetSubtitle2( pSubStream);
 									HavSubs = true;
 								}

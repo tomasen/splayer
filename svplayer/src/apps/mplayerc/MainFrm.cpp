@@ -738,7 +738,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		AfxMessageBox(_T("OSD 创建失败！"));
 	}
 
-	if(!m_wndToolTopBar.CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, _T("STATIC"), _T("TOPTOOL"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0)){//
+	if(!m_wndToolTopBar.CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, _T("STATIC"), _T("TOPTOOL"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0)){
 		AfxMessageBox(_T("Top Toolbar 创建失败！"));
 	}
 

@@ -1683,6 +1683,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	pFGF->AddType(MEDIATYPE_MPEG2_PACK, MEDIASUBTYPE_MPEG2_VIDEO);
 	pFGF->AddType(MEDIATYPE_MPEG2_PES, MEDIASUBTYPE_MPEG2_VIDEO);
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_MPEG2_VIDEO);
+	//pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_MMES);
 	m_transform.AddTail(pFGF);
 
 	
@@ -1912,6 +1913,12 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 	pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(_T("MJPEG Video Decoder"), MERIT64_UNLIKELY);
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_QTJpeg);
 	m_transform.AddTail(pFGF);
+
+	
+	pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(_T("MMES Video Decoder"), MERIT64_UNLIKELY);
+	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_MMES);
+	m_transform.AddTail(pFGF);
+
 	// High merit MPC Video Decoder
 	UINT dxva_filters = s.DXVAFilters;
 	UINT ffmpeg_filters = s.FFmpegFilters;

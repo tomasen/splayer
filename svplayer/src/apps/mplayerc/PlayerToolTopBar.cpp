@@ -244,11 +244,13 @@ void CPlayerToolTopBar::UpdateButtonStat(){
 	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
 	BOOL ontop = !!AfxGetAppSettings().iOnTop ;
 	BOOL fullscreen = pFrame->m_fFullScreen;
+	BOOL bCaptionHidden = pFrame->IsCaptionMenuHidden();
+	
 	m_btnList.SetHideStat( ID_ONTOP_NEVER , !ontop );
 	m_btnList.SetHideStat( ID_ONTOP_ALWAYS , ontop );
 
-	m_btnList.SetHideStat( ID_FILE_EXIT , !fullscreen );
-	m_btnList.SetHideStat( L"TOP_FULLSCREEN.BMP" , fullscreen );
+	m_btnList.SetHideStat( ID_FILE_EXIT , !fullscreen && !bCaptionHidden );
+	m_btnList.SetHideStat( L"TOP_FULLSCREEN.BMP" , fullscreen  );
 	m_btnList.SetHideStat( L"TOP_RESTORE.BMP" , !fullscreen );
 }
 void CPlayerToolTopBar::OnMove(int x, int y)
@@ -285,6 +287,7 @@ void CPlayerToolTopBar::OnPaint()
 	//hdc.FillSolidRect(rcBottomSqu, RGB(89,89,89));
 	UpdateButtonStat();
 	m_btnList.PaintAll(&hdc, rc);
+	
 }
 
 void CPlayerToolTopBar::OnSize(UINT nType, int cx, int cy)
@@ -392,7 +395,7 @@ void CPlayerToolTopBar::OnMouseMove(UINT nFlags, CPoint point)
 	// TODO: Add your message handler code here and/or call default
 	CSize diff = m_lastMouseMove - point;
 	CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
-
+	
 	BOOL bMouseMoved =  diff.cx || diff.cy ;
 	if(bMouseMoved){
 		KillTimer(IDT_CLOSE);

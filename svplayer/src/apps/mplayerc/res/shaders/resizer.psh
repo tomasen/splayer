@@ -73,10 +73,10 @@ float4 SampleY(float4 tx, float4 ty, float2 t0)
 	return
 		mul(ty,
 			float4x4(
-				SampleX(tx, t0 - dy)*0.99, 
-				SampleX(tx, t0)*0.99,
-				SampleX(tx, t0 + dy)*0.99,
-				SampleX(tx, t0 + dy + dy)*0.99
+				SampleX(tx, t0 - dy)+0.001, 
+				SampleX(tx, t0)+0.001,
+				SampleX(tx, t0 + dy)+0.001,
+				SampleX(tx, t0 + dy + dy)+0.001
 			)
 		);
 }

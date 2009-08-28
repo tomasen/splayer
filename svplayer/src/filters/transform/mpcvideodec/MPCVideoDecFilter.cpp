@@ -292,6 +292,7 @@ FFMPEG_CODECS		ffCodecs[] =
 	{ &MEDIASUBTYPE_RV30, CODEC_ID_RV30, MAKEFOURCC('R','V','3','0'),	NULL },
 	{ &MEDIASUBTYPE_RV40, CODEC_ID_RV40, MAKEFOURCC('R','V','4','0'),	NULL },
 	
+	{ &MEDIASUBTYPE_MMES, CODEC_ID_MPEG2VIDEO,  MAKEFOURCC('M','M','E','S'),	NULL },
 };
 
 /* Important: the order should be exactly the same as in ffCodecs[] */
@@ -460,9 +461,9 @@ const AMOVIESETUP_MEDIATYPE CMPCVideoDecFilter::sudPinTypesIn[] =
 	{ &MEDIATYPE_Video, &MEDIASUBTYPE_RV40   },
 
 	{ &MEDIATYPE_Video, &MEDIASUBTYPE_tscc   },
-	{ &MEDIATYPE_Video, &MEDIASUBTYPE_QTJpeg   }
+	{ &MEDIATYPE_Video, &MEDIASUBTYPE_QTJpeg   },
 	
-	
+	{ &MEDIATYPE_Video, &MEDIASUBTYPE_MMES   }
 };
 
 // Workaround : graphedit crash when filter expose more than 115 input MediaTypes !

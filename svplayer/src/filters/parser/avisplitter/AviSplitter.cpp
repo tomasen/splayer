@@ -24,6 +24,7 @@
 #include "AviFile.h"
 #include "AviReportWnd.h"
 #include "AviSplitter.h"
+#include "../../../svplib/svplib.h"
 
 #ifdef REGISTER_FILTER
 
@@ -513,6 +514,7 @@ bool CAviSplitterFilter::DemuxLoop()
 			if(fUrgent) break;
 		}
 
+		//SVP_LogMsg5(L"%d %d",minTrack , nTracks);
 		if(minTrack == nTracks)
 			break;
 

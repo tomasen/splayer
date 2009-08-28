@@ -77,8 +77,8 @@ void avcodec_register_all(void)
     //REGISTER_ENCDEC  (MJPEG, mjpeg);
     REGISTER_DECODER (MJPEG, mjpeg);
     REGISTER_DECODER (MJPEGB, mjpegb);
-    REGISTER_ENCDEC  (MPEG1VIDEO, mpeg1video);
-    REGISTER_ENCDEC  (MPEG2VIDEO, mpeg2video);
+    REGISTER_DECODER  (MPEG1VIDEO, mpeg1video);
+    REGISTER_DECODER  (MPEG2VIDEO, mpeg2video);
     REGISTER_DECODER  (MPEG4, mpeg4);
     REGISTER_DECODER  (MSMPEG4V1, msmpeg4v1);
     REGISTER_DECODER  (MSMPEG4V2, msmpeg4v2);

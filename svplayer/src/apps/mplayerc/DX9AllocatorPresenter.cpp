@@ -970,7 +970,7 @@ if (FAILED(g_pD3D->CreateDevice( AdapterToUse, DeviceType, hWnd,
 	SVP_LogMsg5(_T("m_ScreenSize DX9 %d %d ") , m_ScreenSize.cx, m_ScreenSize.cy);
 	if(!m_RefreshRate)
 		m_RefreshRate = 50;
-	m_targetSyncOffset = 1000.0/m_RefreshRate/2;
+	m_targetSyncOffset = 1000.0/m_RefreshRate * 9/10;
 	m_dD3DRefreshCycle = 1000.0 /m_RefreshRate; // In ms
 
 	SVP_LogMsg5(_T("m_targetSyncOffset %f m_dD3DRefreshCycle %f") , m_targetSyncOffset, m_dD3DRefreshCycle);
@@ -1416,7 +1416,7 @@ HRESULT CDX9AllocatorPresenter::InitResizers(float bicubicA, bool bNeedScreenSiz
 	A.Format("(%f)", bicubicA);
 	str.Replace("_The_Value_Of_A_Is_Set_Here_", A);
 	if( m_caps.PixelShaderVersion >= D3DPS_VERSION(3, 0) )
-		str.Replace("*0.99", "");
+		str.Replace("+0.001", "");
 
 	LPCSTR pEntries[] = {"main_bilinear", "main_bicubic1pass", "main_bicubic2pass_pass1", "main_bicubic2pass_pass2"};
 

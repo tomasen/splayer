@@ -99,7 +99,7 @@ public:
 	OpenMediaData* GetCurOMD(REFERENCE_TIME rtStart = 0);
 
 	void LoadPlaylist();
-	void SavePlaylist();
+	void SavePlaylist(BOOL bDeletePlayList = false);
 
 	POSITION FindPosByFilename(CString fn, BOOL movePos = true);
 

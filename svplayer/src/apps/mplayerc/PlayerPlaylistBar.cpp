@@ -1031,7 +1031,7 @@ void CPlayerPlaylistBar::LoadPlaylist()
 	}
 }
 
-void CPlayerPlaylistBar::SavePlaylist()
+void CPlayerPlaylistBar::SavePlaylist(BOOL bDeletePlayList)
 {
 	CString base;
 	if(AfxGetMyApp()->GetAppDataPath(base))
@@ -1039,7 +1039,7 @@ void CPlayerPlaylistBar::SavePlaylist()
 		CPath p;
 		p.Combine(base, _T("default.mpcpl"));
 
-		if(!AfxGetApp()->GetProfileInt(ResStr(IDS_R_SETTINGS), _T("RememberPlaylistItems"), TRUE))
+		if(!AfxGetApp()->GetProfileInt(ResStr(IDS_R_SETTINGS), _T("RememberPlaylistItems"), TRUE) || bDeletePlayList)
 		{
 			DeleteFile(p);
 		}

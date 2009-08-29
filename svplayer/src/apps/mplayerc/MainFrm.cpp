@@ -1504,10 +1504,13 @@ void CMainFrame::OnClose()
 		strList += m_shaderlabels.GetAt (pos) + "|";
 		m_dockingbars.GetNext(pos);
 	}
-	AfxGetAppSettings().strShaderList = strList;
+	AppSettings& s = AfxGetAppSettings();
+
+
+	s.strShaderList = strList;
 	// end
 	
-	m_wndPlaylistBar.SavePlaylist();
+	m_wndPlaylistBar.SavePlaylist(!s.fKeepHistory);
 
 	SaveControlBars();
  

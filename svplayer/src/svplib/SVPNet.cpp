@@ -330,7 +330,7 @@ int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, C
 	CURLcode res;
 	int ret = 0;
 	CString szPostPerm = _T( "pathinfo=" ) + szFilePath + _T("&filehash=") + szFileHash 
-		+ _T("&vhash=") + szVHash + _T("&lang=") + szLang;
+		+ _T("&vhash=") + szVHash + _T("&lang=") + szLang + _T("&shortname=") + svpToolBox.GetShortFileNameForSearch(szFilePath);
 	struct curl_httppost *formpost=NULL;
 	struct curl_httppost *lastptr=NULL;
 
@@ -365,6 +365,11 @@ int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, C
 		curl_formadd(&formpost,	&lastptr, CURLFORM_COPYNAME, "lang", CURLFORM_COPYCONTENTS, szTerm2,CURLFORM_END);
 		free(szTerm2);
 	}
+
+	szTerm2 = svpToolBox.CStringToUTF8(svpToolBox.GetShortFileNameForSearch(szFilePath), &iDescLen);
+	curl_formadd(&formpost,	&lastptr, CURLFORM_COPYNAME, "shortname", CURLFORM_COPYCONTENTS, szTerm2,CURLFORM_END);
+	free(szTerm2);
+
 	FILE *stream_http_recv_buffer = svpToolBox.getTmpFileSteam();
 	if(!stream_http_recv_buffer){
 		SVP_LogMsg(_T("TmpFile Creation for http recv buff fail")); //// TODO: 1. warning!! OR switch to memfile system

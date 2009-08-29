@@ -13922,12 +13922,13 @@ void CMainFrame::OnFileISDBSearch()
 {
 	CSearchSubDlg ssub;
 	CSVPToolBox svpTool;
+	/*
 	CStringArray szaPathArr;
 	svpTool.getVideoFileBasename(m_fnCurPlayingFile, &szaPathArr);
-	if(szaPathArr.GetCount() >= 4){
-		ssub.m_skeywords = szaPathArr.GetAt(3);
-		
-	}
+		if(szaPathArr.GetCount() >= 4){
+			ssub.m_skeywords = szaPathArr.GetAt(3);	
+		}*/
+	ssub.m_skeywords = svpTool.GetShortFileNameForSearch(m_fnCurPlayingFile);
 	ssub.DoModal();
 }
 void CMainFrame::OnCheckDefaultPlayer(){

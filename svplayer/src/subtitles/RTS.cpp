@@ -23,6 +23,10 @@
 #include <math.h>
 #include <time.h>
 #include "RTS.h"
+
+#include <afxtempl.h>
+#include "..\apps\mplayerc\mplayerc.h"
+
 #include "../svplib/SVPToolBox.h"
 // WARNING: this isn't very thread safe, use only one RTS a time.
 static HDC g_hDC;
@@ -1364,6 +1368,7 @@ void CRenderedTextSubtitle::ParseString(CSubtitle* sub, CStringW str, STSStyle& 
 			style.fontSize = orgFontSize;
 		}
 
+		style.fontSize *= AfxGetAppSettings().dGSubFontRatio;
 // 		if(c == '\n') {
 // 			str.SetAt(j, ' '); continue;;
 // 		}

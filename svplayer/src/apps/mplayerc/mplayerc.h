@@ -513,6 +513,7 @@ public:
 
 		CRendererSettingsEVR m_RenderSettings;
 
+		double dGSubFontRatio;
 		bool bUsePowerDVD;
 		bool fAllowMultipleInst;
 		int iTitleBarTextStyle;

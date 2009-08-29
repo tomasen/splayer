@@ -2823,6 +2823,11 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		strTemp.Format (_T("%f"), dSaturation);
 		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_COLOR_SATURATION), strTemp);
 
+		
+		strTemp.Format (_T("%f"), dGSubFontRatio);
+		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_GLOBAL_SUBFONTRATIO), strTemp);
+
+
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_WINLIRC), fWinLirc);
 		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_WINLIRCADDR), WinLircAddr);
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_UICE), fUIce);
@@ -3125,6 +3130,9 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		dHue			= (float)_tstof(pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_COLOR_HUE),			_T("0")));
 		dSaturation		= (float)_tstof(pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_COLOR_SATURATION),	_T("1")));
 
+		dGSubFontRatio		= (float)_tstof(pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_GLOBAL_SUBFONTRATIO),	_T("1.0")));
+
+		
 		bNotChangeFontToYH = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_NOTCHANGEFONTTOYH), 0);
 //		disableSmartDrag = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DISABLESMARTDRAG),  -1 );
 		bDisableEVR = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DISABLE_EVR), 0);

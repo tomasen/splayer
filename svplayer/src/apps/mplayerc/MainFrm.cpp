@@ -13862,23 +13862,25 @@ afx_msg void CMainFrame::OnSubtitleFontChange(UINT nID)
 
 		switch(nID){
 			case ID_SUBFONTUPBOTH:
-				
+				s.dGSubFontRatio *= 1.05;
+				break;
 			case ID_SUB1FONTUP:
 				s.subdefstyle.fontSize += 1;
-				if(nID != ID_SUBFONTUPBOTH)
-					break;
+				break;
 			case ID_SUB2FONTUP:
 				s.subdefstyle2.fontSize += 1;
 				
 				break;
 			case ID_SUBFONTDOWNBOTH:
+				s.dGSubFontRatio *= 0.95;
 				
+				break;
 			case ID_SUB1FONTDOWN:
 				s.subdefstyle.fontSize -= 1;
 				if(s.subdefstyle.fontSize < 3)
 					s.subdefstyle.fontSize = 3;
-				if(nID != ID_SUBFONTDOWNBOTH)
-					break;
+				
+				break;
 			case ID_SUB2FONTDOWN:
 				s.subdefstyle2.fontSize -= 1;
 				if(s.subdefstyle2.fontSize < 3)

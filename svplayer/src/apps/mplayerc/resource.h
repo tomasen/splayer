@@ -725,6 +725,7 @@
 #define IDS_RS_USERGBONLY               13157
 #define IDS_RS_VMDETECTED               13158
 #define IDS_RS_SAVESVPSUBWITHVIDEO      13159
+#define IDS_RS_GLOBAL_SUBFONTRATIO		13160
 #define IDS_SRC_RADGT                   14000
 #define IDS_SRC_CDDA                    14001
 #define IDS_SRC_AVI                     14002

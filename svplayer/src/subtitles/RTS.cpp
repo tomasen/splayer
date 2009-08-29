@@ -1339,7 +1339,7 @@ void CRenderedTextSubtitle::ParseString(CSubtitle* sub, CStringW str, STSStyle& 
 	
 	CAtlList<CString> szaEachLines;
 	Explode(str, szaEachLines, _T("\n"));
-	double orgFontSize = style.fontSize;
+	double orgFontSize = style.fontSize * AfxGetAppSettings().dGSubFontRatio;
 	BOOL bNeedChkEngLine = true;
 	BOOL bIsEngLine = true;
 	
@@ -1368,7 +1368,6 @@ void CRenderedTextSubtitle::ParseString(CSubtitle* sub, CStringW str, STSStyle& 
 			style.fontSize = orgFontSize;
 		}
 
-		style.fontSize *= AfxGetAppSettings().dGSubFontRatio;
 // 		if(c == '\n') {
 // 			str.SetAt(j, ' '); continue;;
 // 		}

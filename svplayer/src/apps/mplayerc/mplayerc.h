@@ -332,6 +332,7 @@ class CMPlayerCApp : public CWinApp
 
 public:
 	CMPlayerCApp();
+	UINT GetBottomSubOffset();
 
 
 	HRESULT (__stdcall * m_pDwmIsCompositionEnabled)(__out BOOL* pfEnabled);
@@ -673,7 +674,6 @@ public:
 	afx_msg void OnAppAbout();
 	afx_msg void OnFileExit();
 	afx_msg void OnHelpShowcommandlineswitches();
-
 	bool m_bMouseIn;
 	bool m_bMouseInOutUnknown;
 	bool m_bGenerateMouseInOutMessages;

@@ -3756,7 +3756,10 @@ void CMPlayerCApp::OnHelpShowcommandlineswitches()
 {
 	ShowCmdlnSwitches();
 }
-
+UINT CMPlayerCApp::GetBottomSubOffset(){
+	CMainFrame* pFrame = (CMainFrame*)m_pMainWnd;
+	return pFrame->GetBottomSubOffset();
+}
 //
 
 void GetCurDispMode(dispmode& dm)

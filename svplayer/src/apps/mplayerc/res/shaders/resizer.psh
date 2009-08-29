@@ -68,7 +68,8 @@ float4 SampleX(float4 tx, float2 t0)
 
 float4 SampleY(float4 tx, float4 ty, float2 t0)
 {
-	//not sure with the reason, but without *0.99 it doesn't seem to work under 945G etc
+	//not sure with the reason, but without +0.001 it doesn't seem to work under 945G etc
+	// if you found better way, just email tomasen@gmail.com
 	//   -- by Tomasen
 	return
 		mul(ty,

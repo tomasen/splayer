@@ -23,6 +23,8 @@
 #include "ISubPic.h"
 #include "..\DSUtil\DSUtil.h"
 
+#include <afxtempl.h>
+#include "..\apps\mplayerc\mplayerc.h"
 //
 // ISubPicImpl
 //
@@ -809,6 +811,8 @@ STDMETHODIMP ISubPicAllocatorPresenterImpl::NonDelegatingQueryInterface(REFIID r
 
 void ISubPicAllocatorPresenterImpl::AlphaBltSubPic(CSize size, SubPicDesc* pTarget)
 {
+	size.cy -= AfxGetMyApp()->GetBottomSubOffset();
+
 	CComPtr<ISubPic> pSubPic;
 	CComPtr<ISubPic> pSubPic2;
 	BOOL bltSub1 = false, bltSub2 = false;

@@ -200,6 +200,7 @@ class CMainFrame : public CFrameWnd, public CDropTarget  , protected ISkinMenuRe
 	void SetDefaultWindowRect(int iMonitor = 0);
 	void RestoreDefaultWindowRect();
 	void ZoomVideoWindow(double scale = -1);
+	UINT GetBottomSubOffset();
 	double GetZoomAutoFitScale();
 
 	void SetAlwaysOnTop(int i, BOOL setSetting = TRUE);

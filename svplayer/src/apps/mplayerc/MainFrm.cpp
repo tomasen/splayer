@@ -8792,8 +8792,8 @@ void CMainFrame::MoveVideoWindow(bool fShowStats)
 		if(!m_fFullScreen && ( s.nCS & CS_TOOLBAR ) )
 		{
 			m_wndView.GetClientRect(wr);
-			if(!s.fHideCaptionMenu)
-				wr.DeflateRect(2, 2);
+			//if(!s.fHideCaptionMenu)
+			//	wr.DeflateRect(1, 1);
 
 			
 			/*
@@ -8969,6 +8969,18 @@ void CMainFrame::rePosOSD(){
 		}
 	}
 	return;
+}
+UINT CMainFrame::GetBottomSubOffset(){
+	if(m_fFullScreen || AfxGetAppSettings().fHideCaptionMenu){
+		CRect vr , mr;
+		m_wndView.GetWindowRect(vr);
+		GetWindowRect(mr);
+		int offset = mr.bottom - vr.bottom;
+		if(offset > 0 && offset < vr.Height());
+			return offset;
+	}
+
+	return 0;
 }
 void CMainFrame::ZoomVideoWindow(double scale)
 {

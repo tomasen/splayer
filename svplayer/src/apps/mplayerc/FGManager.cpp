@@ -177,13 +177,15 @@ HRESULT CFGManager::EnumSourceFilters(LPCWSTR lpcwstrFileName, CFGFilterList& fl
 	CStringW ext = CPathW(fn).GetExtension().MakeLower();
 
 	HANDLE hFile = INVALID_HANDLE_VALUE;
-
-	if(protocol.GetLength() <= 1 || protocol == L"file")
+	//SVP_LogMsg5(_T("FGM: EnumSourceFilters 1 %s"), fn);
+	BOOL bIsRAR = (fn.Left(6).MakeLower() == _T("rar://"));
+	if( ( protocol.GetLength() <= 1 || protocol == L"file" ) && !bIsRAR )
 	{
 		hFile = CreateFile(CString(fn), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, (HANDLE)NULL);
 
 		if(hFile == INVALID_HANDLE_VALUE)
 		{
+			//SVP_LogMsg5(_T("FGM: EnumSourceFilters VFW_E_NOT_FOUND %s"), fn);
 			return VFW_E_NOT_FOUND;
 		}
 	}
@@ -198,7 +200,7 @@ HRESULT CFGManager::EnumSourceFilters(LPCWSTR lpcwstrFileName, CFGFilterList& fl
 	TCHAR buff[256], buff2[256];
 	ULONG len, len2;
 
-	if(hFile == INVALID_HANDLE_VALUE )
+	if(hFile == INVALID_HANDLE_VALUE && !bIsRAR)
 	{
 		// internal / protocol
 
@@ -222,7 +224,8 @@ HRESULT CFGManager::EnumSourceFilters(LPCWSTR lpcwstrFileName, CFGFilterList& fl
 			POSITION pos2 = pFGF->m_chkbytes.GetHeadPosition();
 			while(pos2)
 			{
-				if(CheckBytes(hFile, pFGF->m_chkbytes.GetNext(pos2)))
+				//RARTODO : 支持 Rar内文件的  CheckBytes
+				if(CheckBytes(hFile, pFGF->m_chkbytes.GetNext(pos2)) || bIsRAR)
 				{
 					SVP_LogMsg5(_T("FGM: AddSourceFilter1 '%s' %s\n"), CStringFromGUID(pFGF->GetCLSID()) , pFGF->GetName());
 					fl.Insert(pFGF, 1, false, false);
@@ -1323,6 +1326,12 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		m_source.AddTail(pFGF);
 	}
 
+	{
+
+		//pFGF = new CFGFilterInternal<CRarSource>(_T("CRarSource"), MERIT64_ABOVE_DSHOW);
+		//pFGF->m_protocols.AddTail(_T("rar"));
+		//m_source.AddTail(pFGF);
+	}
 	// if(src & SRC_UDP)
 	{
 		pFGF = new CFGFilterInternal<CUDPReader>(_T("CUDPReader"), MERIT64_ABOVE_DSHOW);

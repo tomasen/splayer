@@ -447,8 +447,28 @@ bool CPPageFormats::RegisterExt(CString ext, bool fRegister)
 		strLabel = buff;
 	}
 
+	BOOL bIsRAR = ( ext.Right(3).MakeLower() == _T("rar") );
+	if(bIsRAR) {
 
-	if(!fRegister)
+		return true;
+		// Create ProgID for this file type
+		if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, strProgID)) return(false);
+		if(ERROR_SUCCESS != key.SetStringValue(NULL, _T("SPlayer.RARFile"))) return(false);
+
+		if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, strProgID + _T("\\shell\\enqueue"))) return(false);
+		if(ERROR_SUCCESS != key.SetStringValue(NULL, ResStr(IDS_ADD_TO_PLAYLIST))) return(false);
+		if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, strProgID + _T("\\shell\\enqueue\\command"))) return(false);
+		if(bSetValue && (ERROR_SUCCESS != key.SetStringValue(NULL, GetEnqueueCommand()))) return(false);
+
+		if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, strProgID + _T("\\shell\\play"))) return(false);
+		if(ERROR_SUCCESS != key.SetStringValue(NULL, ResStr(IDS_OPEN_WITH_MPC))) return(false);
+		if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, strProgID + _T("\\shell\\play\\command"))) return(false);
+		if(bSetValue && (ERROR_SUCCESS != key.SetStringValue(NULL, GetOpenCommand()))) return(false);
+
+		return true;
+	}
+	
+	if(!fRegister && !bIsRAR)
 	{
 		if(fRegister != IsRegistered(ext))
 			SetFileAssociation (ext, strProgID, fRegister);
@@ -464,7 +484,7 @@ bool CPPageFormats::RegisterExt(CString ext, bool fRegister)
 	if(ERROR_SUCCESS != key.SetStringValue(NULL, strLabel)) return(false);
 
 	// Add to playlist option
-	if(f_setContextFiles)
+	if(f_setContextFiles || bIsRAR)
 	{
 		if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, strProgID + _T("\\shell\\enqueue"))) return(false);
 		if(ERROR_SUCCESS != key.SetStringValue(NULL, ResStr(IDS_ADD_TO_PLAYLIST))) return(false);
@@ -480,7 +500,7 @@ bool CPPageFormats::RegisterExt(CString ext, bool fRegister)
 
 	// Play option
 	if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, strProgID + _T("\\shell\\open"))) return(false);
-	if(f_setContextFiles)
+	if(f_setContextFiles || bIsRAR)
 	{
 		if(ERROR_SUCCESS != key.SetStringValue(NULL, ResStr(IDS_OPEN_WITH_MPC))) return(false);
 	}
@@ -495,7 +515,7 @@ bool CPPageFormats::RegisterExt(CString ext, bool fRegister)
 	if(ERROR_SUCCESS != key.Create(HKEY_LOCAL_MACHINE, g_strRegisteredKey + _T("\\FileAssociations"))) return(false);
 	if(ERROR_SUCCESS != key.SetStringValue(ext, strProgID)) return(false);
 
-	if(f_setAssociatedWithIcon)
+	if(f_setAssociatedWithIcon && !bIsRAR)
 	{
  		CString AppIcon = GetFileIcon(ext);
  		TCHAR buff[MAX_PATH];
@@ -532,7 +552,7 @@ bool CPPageFormats::RegisterExt(CString ext, bool fRegister)
 		key.RecurseDeleteKey(strProgID + _T("\\DefaultIcon"));
 	}
 
-	if(fRegister != IsRegistered(ext))
+	if(fRegister != IsRegistered(ext) && !bIsRAR)
 		SetFileAssociation (ext, strProgID, fRegister);
 
 	return(true);

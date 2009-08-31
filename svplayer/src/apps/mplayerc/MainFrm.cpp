@@ -92,6 +92,7 @@ static UINT WM_NOTIFYICON = RegisterWindowMessage(TEXT("MYWM_NOTIFYICON"));
 #include "..\..\filters\transform\vsfilter\IDirectVobSub.h"
 
 #include "..\..\svplib\SVPToolBox.h"
+#include "../../svplib/SVPRarLib.h"
 
 bool g_bNoDuration = false;
 bool g_bExternalSubtitleTime = false;
@@ -9725,7 +9726,15 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 				if(!svpTool.ifFileExist(szSubFn))
 					pOFD->subs.RemoveAt(cur);
 			}
-			GetSubFileNames(fn, subSearchPaths, ret);
+			CSVPRarLib svpRar;
+			if( svpRar.SplitPath(fn) ){
+				GetSubFileNames(svpRar.m_fnRAR, subSearchPaths, ret);
+				CAtlArray<SubFile> ret2;
+				GetSubFileNames(svpRar.m_fnInsideRar, subSearchPaths, ret2);
+				ret.Append(ret2);
+			}else
+				GetSubFileNames(fn, subSearchPaths, ret);
+
 			for(int i = 0; i < ret.GetCount(); i++){
 				SubFile szBuf = ret.GetAt(i);
 				if ( pOFD->subs.Find( szBuf.fn ) == NULL){
@@ -10686,6 +10695,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 				}else{
 					CSVPToolBox svpTool;
 					if(!svpTool.ifFileExist(fn, true)){
+						//SVP_LogMsg5(L"SVP 文件不存在" );
 						throw _T("文件不存在");
 					}
 				}
@@ -14049,6 +14059,11 @@ void CMainFrame::OnDeletecurfile()
 	// TODO: Add your command handler code here
 	CString szMsg;
 	CSVPToolBox svpTool;
+	CString fnPlayingFile = m_fnCurPlayingFile;
+	CSVPRarLib svpRar;
+	if( svpRar.SplitPath( fnPlayingFile )) 
+		fnPlayingFile = svpRar.m_fnRAR;
+
 	szMsg.Format(_T("删除当前文件：\r\n%s ?"),  m_fnCurPlayingFile);
 	if(IDYES == AfxMessageBox(szMsg, MB_YESNO)){
 		PostMessage(WM_COMMAND, ID_FILE_CLOSEMEDIA);
@@ -14066,7 +14081,12 @@ void CMainFrame::OnDelcurfolder()
 	// TODO: Add your command handler code here
 	CString szMsg;
 	CSVPToolBox svpTool;
-	CString szPath = svpTool.GetDirFromPath(m_fnCurPlayingFile);
+	CString fnPlayingFile = m_fnCurPlayingFile;
+	CSVPRarLib svpRar;
+	if( svpRar.SplitPath( fnPlayingFile )) 
+		fnPlayingFile = svpRar.m_fnRAR;
+
+	CString szPath = svpTool.GetDirFromPath(fnPlayingFile);
 	szMsg.Format(_T("删除当前文件夹：\r\n%s ?"), szPath);
 	if(IDYES == AfxMessageBox(szMsg, MB_YESNO)){
 		if(IDYES == AfxMessageBox(_T("真的要删除当前文件夹么？\n此操作将无法撤消！"), MB_YESNO|MB_ICONEXCLAMATION)){

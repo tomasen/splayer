@@ -22,6 +22,7 @@
 #pragma once
 
 
+
 interface __declspec(uuid("6DDB4EE7-45A0-4459-A508-BD77B32C91B2")) ISyncReader : public IUnknown
 {
 	STDMETHOD_(void, SetBreakEvent) (HANDLE hBreakEvent) = 0;
@@ -42,11 +43,24 @@ protected:
 	HANDLE m_hBreakEvent;
 	LONG m_lOsError; // CFileException::m_lOsError
 
+	//For RAR Reader
+	BOOL m_bIsRAR;
+	HANDLE m_hRar;
+
+	CString m_fnRAR;
+	CString m_fnInsideRar;
 public:
 	CAsyncFileReader(CString fn, HRESULT& hr);
+	virtual ~CAsyncFileReader();
 
 	DECLARE_IUNKNOWN;
 	STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void** ppv);
+
+	//RAR
+	int HandlerRarCallback(UINT msg,LPARAM P1,LPARAM P2);
+
+	//CFile
+	UINT Read( void* lpBuf,	UINT nCount );
 
 	// IAsyncReader
 

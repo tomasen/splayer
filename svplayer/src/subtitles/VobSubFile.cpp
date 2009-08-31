@@ -22,7 +22,7 @@
 #include "stdafx.h"
 #include <winioctl.h>
 #include "TextFile.h"
-#include "..\..\include\unrar\unrar.h"
+#include "..\..\include\libunrar\dll.hpp"
 #include "VobSubFile.h"
 
 //
@@ -674,6 +674,7 @@ bool CVobSubFile::ReadSub(CString fn)
 
 	return(true);
 }
+/*
 
 static unsigned char* RARbuff = NULL;
 static unsigned int RARpos = 0;
@@ -686,27 +687,30 @@ static int PASCAL MyProcessDataProc(unsigned char* Addr, int Size)
 	RARpos += Size;
 
 	return(1);
-}
+}*/
+
 
 bool CVobSubFile::ReadRar(CString fn)
 {
+	/*
 	HMODULE h = LoadLibrary(_T("unrar.dll"));
-	if(!h) return(false);
-
-	RAROpenArchiveEx OpenArchiveEx = (RAROpenArchiveEx)GetProcAddress(h, "RAROpenArchiveEx");
-	RARCloseArchive CloseArchive = (RARCloseArchive)GetProcAddress(h, "RARCloseArchive");
-	RARReadHeaderEx ReadHeaderEx = (RARReadHeaderEx)GetProcAddress(h, "RARReadHeaderEx");
-	RARProcessFile ProcessFile = (RARProcessFile)GetProcAddress(h, "RARProcessFile");
-	RARSetChangeVolProc SetChangeVolProc = (RARSetChangeVolProc)GetProcAddress(h, "RARSetChangeVolProc");
-	RARSetProcessDataProc SetProcessDataProc = (RARSetProcessDataProc)GetProcAddress(h, "RARSetProcessDataProc");
-	RARSetPassword SetPassword = (RARSetPassword)GetProcAddress(h, "RARSetPassword");
-
-	if(!(OpenArchiveEx && CloseArchive && ReadHeaderEx && ProcessFile 
-	&& SetChangeVolProc && SetProcessDataProc && SetPassword))
-	{
-		FreeLibrary(h);
-		return(false);
-	}
+		if(!h) return(false);
+	
+		RAROpenArchiveEx OpenArchiveEx = (RAROpenArchiveEx)GetProcAddress(h, "RAROpenArchiveEx");
+		RARCloseArchive CloseArchive = (RARCloseArchive)GetProcAddress(h, "RARCloseArchive");
+		RARReadHeaderEx ReadHeaderEx = (RARReadHeaderEx)GetProcAddress(h, "RARReadHeaderEx");
+		RARProcessFile ProcessFile = (RARProcessFile)GetProcAddress(h, "RARProcessFile");
+		RARSetChangeVolProc SetChangeVolProc = (RARSetChangeVolProc)GetProcAddress(h, "RARSetChangeVolProc");
+		RARSetProcessDataProc SetProcessDataProc = (RARSetProcessDataProc)GetProcAddress(h, "RARSetProcessDataProc");
+		RARSetPassword SetPassword = (RARSetPassword)GetProcAddress(h, "RARSetPassword");
+	
+		if(!(OpenArchiveEx && CloseArchive && ReadHeaderEx && ProcessFile 
+		&& SetChangeVolProc && SetProcessDataProc && SetPassword))
+		{
+			FreeLibrary(h);
+			return(false);
+		}*/
+	
 
 	struct RAROpenArchiveDataEx ArchiveDataEx;
 	memset(&ArchiveDataEx, 0, sizeof(ArchiveDataEx));
@@ -720,19 +724,19 @@ bool CVobSubFile::ReadRar(CString fn)
 #endif
 	ArchiveDataEx.OpenMode = RAR_OM_EXTRACT;
 	ArchiveDataEx.CmtBuf = 0;
-	HANDLE hrar = OpenArchiveEx(&ArchiveDataEx);
+	HANDLE hrar = RAROpenArchiveEx(&ArchiveDataEx);
 	if(!hrar) 
 	{
-		FreeLibrary(h);
+		//FreeLibrary(h);
 		return(false);
 	}
 
-	SetProcessDataProc(hrar, MyProcessDataProc);
+//	RARSetProcessDataProc(hrar, MyProcessDataProc);
 
 	struct RARHeaderDataEx HeaderDataEx;
 	HeaderDataEx.CmtBuf = NULL;
 	
-	while(ReadHeaderEx(hrar, &HeaderDataEx) == 0)
+	while(RARReadHeaderEx(hrar, &HeaderDataEx) == 0)
 	{
 #ifdef UNICODE
 		CString subfn(HeaderDataEx.FileNameW);
@@ -742,41 +746,49 @@ bool CVobSubFile::ReadRar(CString fn)
 
 		if(!subfn.Right(4).CompareNoCase(_T(".sub")))
 		{
-			CAutoVectorPtr<BYTE> buff;
+			CAutoVectorPtr<char> buff;
 			if(!buff.Allocate(HeaderDataEx.UnpSize))
 			{
-				CloseArchive(hrar);
-				FreeLibrary(h);
+				RARCloseArchive(hrar);
+				//FreeLibrary(h);
 				return(false);
 			}
 
+			/*
 			RARbuff = buff;
-			RARpos = 0;
-
-			if(ProcessFile(hrar, RAR_TEST, NULL, NULL))
-			{
-				CloseArchive(hrar);
-				FreeLibrary(h);
-				
-				return(false);
+						RARpos = 0;
+			
+						if(RARProcessFile(hrar, RAR_TEST, NULL, NULL))
+						{
+							RARCloseArchive(hrar);
+							//FreeLibrary(h);
+							
+							return(false);
+						}*/
+			int errRar = RARExtractChunkInit(hrar, HeaderDataEx.FileName);
+			if (errRar != 0) {
+				RARCloseArchive(hrar);
+				//SVP_LogMsg5(L"RARExtractChunkInit Failed");
+				break;
 			}
+
+			RARExtractChunk(hrar, (char*)buff, HeaderDataEx.UnpSize);
 
 			m_sub.SetLength(HeaderDataEx.UnpSize);
 			m_sub.SeekToBegin();
 			m_sub.Write(buff, HeaderDataEx.UnpSize);
 			m_sub.SeekToBegin();
 
-			RARbuff = NULL;
-			RARpos = 0;
+			RARExtractChunkClose(hrar);
 
 			break;
 		}
 
-		ProcessFile(hrar, RAR_SKIP, NULL, NULL);
+		RARProcessFile(hrar, RAR_SKIP, NULL, NULL);
 	}
 
-	CloseArchive(hrar);
-	FreeLibrary(h);
+	RARCloseArchive(hrar);
+	//FreeLibrary(h);
 
 	return(true);
 }

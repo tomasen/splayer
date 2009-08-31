@@ -344,5 +344,9 @@
 			Name="DevPartner_IsInstrumented"
 			Value="0"
 		/>
+		<Global
+			Name="RESOURCE_FILE"
+			Value="\-=SVN=-\svplayer\src\filters\source\d2vsource\d2vsource.rc"
+		/>
 	</Globals>
 </VisualStudioProject>

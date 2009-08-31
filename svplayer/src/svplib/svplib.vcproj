@@ -181,6 +181,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SVPRarLib.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\SVPToolBox.cpp"
 				>
 			</File>
@@ -208,6 +212,10 @@
 			</File>
 			<File
 				RelativePath=".\SVPNet.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SVPRarLib.h"
 				>
 			</File>
 			<File

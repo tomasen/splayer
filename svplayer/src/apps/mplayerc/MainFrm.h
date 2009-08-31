@@ -60,7 +60,6 @@
 #include <evr9.h>
 #include "WebServer.h"
 #include "NEWOSDWnd.h"
-#include "MenuEx.h"
 
 #include "SUIButton.h"
 

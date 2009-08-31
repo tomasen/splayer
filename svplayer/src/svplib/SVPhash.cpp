@@ -1,6 +1,10 @@
 #include "SVPhash.h"
 #include "MD5Checksum.h"
 #include "SVPToolBox.h"
+#include "..\..\include\libunrar\dll.hpp"
+#include "SVPRarLib.h"
+
+#define  SVP_LogMsg5 __noop
 
 CSVPhash::CSVPhash(void)
 {
@@ -62,38 +66,121 @@ CString CSVPhash::HexToString(BYTE* lpszMD5){
 }
 CString CSVPhash::ComputerFileHash(CString szFilePath)
 {
-	int stream;
-	errno_t err;
-	_int64 offset[4];
-	DWORD timecost = GetTickCount();
+
 	CString szRet = _T("");
-	err =  _wsopen_s(&stream, szFilePath, _O_BINARY|_O_RDONLY , _SH_DENYNO , _S_IREAD );
-	if(!err){
-		__int64 ftotallen  = _filelengthi64( stream );
-		if (ftotallen < 8192){
-			//a video file less then 8k? impossible!
-			
-		}else{
-			offset[3] = ftotallen - 8192;
-			offset[2] = ftotallen / 3;
-			offset[1] = ftotallen / 3 * 2;
-			offset[0] = 4096;
-			CMD5Checksum mMd5;
-			 BYTE bBuf[4096];
-			for(int i = 0; i < 4;i++){
-				_lseeki64(stream, offset[i], 0);
-				//hash 4k block
-				int readlen = _read( stream, bBuf, 4096);
-				CString szMD5 = mMd5.GetMD5( bBuf , readlen); 
-				if(!szRet.IsEmpty()){
-					szRet.Append( _T(";") );
+	_int64 offset[4];
+
+	
+	CSVPRarLib svpRar;
+	if( svpRar.SplitPath( szFilePath ) ){
+		// this is RAR path
+		SVP_LogMsg5(L"this is RAR path %s " , szFilePath);
+
+
+		struct RAROpenArchiveDataEx ArchiveDataEx;
+		memset(&ArchiveDataEx, 0, sizeof(ArchiveDataEx));
+
+		ArchiveDataEx.ArcNameW = (LPTSTR)(LPCTSTR)svpRar.m_fnRAR;
+		char fnA[MAX_PATH];
+		if(wcstombs(fnA, svpRar.m_fnRAR, svpRar.m_fnRAR.GetLength()+1) == -1) fnA[0] = 0;
+		ArchiveDataEx.ArcName = fnA;
+
+		ArchiveDataEx.OpenMode = RAR_OM_EXTRACT;
+		ArchiveDataEx.CmtBuf = 0;
+		HANDLE hrar = RAROpenArchiveEx(&ArchiveDataEx);
+		if(!hrar) 
+			return szRet;
+		
+		struct RARHeaderDataEx HeaderDataEx;
+		HeaderDataEx.CmtBuf = NULL;
+		
+		while(RARReadHeaderEx(hrar, &HeaderDataEx) == 0)
+		{
+
+			CString subfn(HeaderDataEx.FileNameW);
+
+SVP_LogMsg5(L"Got m_fnInsideRar RAR path %s %s " ,  svpRar.m_fnInsideRar , subfn);
+			if(subfn.CompareNoCase( svpRar.m_fnInsideRar ) == 0 )
+			{
+				
+				int errRar = RARExtractChunkInit(hrar, HeaderDataEx.FileName);
+				if (errRar != 0) {
+					RARCloseArchive(hrar);
+					break;
 				}
-				szRet.Append(szMD5);
+
+				__int64 ftotallen = HeaderDataEx.UnpSize;
+
+				if (ftotallen < 8192){
+					//a video file less then 8k? impossible!
+
+				}else{
+					offset[3] = ftotallen - 8192;
+					offset[2] = ftotallen / 3;
+					offset[1] = ftotallen / 3 * 2;
+					offset[0] = 4096;
+					CMD5Checksum mMd5;
+					char bBuf[4096];
+					for(int i = 0; i < 4;i++){
+						RARExtractChunkSeek( hrar, offset[i], SEEK_SET);
+						//hash 4k block
+						int readlen = RARExtractChunk(hrar, (char*)bBuf, 4096);
+						
+						CString szMD5 = mMd5.GetMD5( (BYTE*)bBuf , 4096); //min(readlen, 
+						if(!szRet.IsEmpty()){
+							szRet.Append( _T(";") );
+						}
+						szRet.Append(szMD5);
+					}
+				}
+
+				
+				RARExtractChunkClose(hrar);
+
+
+				break;
 			}
+
+			RARProcessFile(hrar, RAR_SKIP, NULL, NULL);
 		}
-		_close(stream);
+
+		RARCloseArchive(hrar);
+	}else{
+		int stream;
+		errno_t err;
+		DWORD timecost = GetTickCount();
+		err =  _wsopen_s(&stream, szFilePath, _O_BINARY|_O_RDONLY , _SH_DENYNO , _S_IREAD );
+		if(!err){
+			__int64 ftotallen  = _filelengthi64( stream );
+			if (ftotallen < 8192){
+				//a video file less then 8k? impossible!
+
+			}else{
+				offset[3] = ftotallen - 8192;
+				offset[2] = ftotallen / 3;
+				offset[1] = ftotallen / 3 * 2;
+				offset[0] = 4096;
+				CMD5Checksum mMd5;
+				BYTE bBuf[4096];
+				for(int i = 0; i < 4;i++){
+					_lseeki64(stream, offset[i], 0);
+					//hash 4k block
+					int readlen = _read( stream, bBuf, 4096);
+					CString szMD5 = mMd5.GetMD5( bBuf , readlen); 
+					if(!szRet.IsEmpty()){
+						szRet.Append( _T(";") );
+					}
+					szRet.Append(szMD5);
+				}
+			}
+			_close(stream);
+		}
+		timecost =  GetTickCount() - timecost;
+
 	}
-	timecost =  GetTickCount() - timecost;
+
+
+	
 	//szFilePath.Format(_T("Vid Hash Cost %d milliseconds "), timecost);
 	//SVP_LogMsg(szFilePath);
 	return szRet;

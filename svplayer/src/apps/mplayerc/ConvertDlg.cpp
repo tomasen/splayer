@@ -32,7 +32,6 @@
 #include "ConvertResDlg.h"
 #include "ConvertChapDlg.h"
 #include "ConvertDlg.h"
-#include "MenuEx.h"
 
 // TODO: subtitle source filter for vobsub
 

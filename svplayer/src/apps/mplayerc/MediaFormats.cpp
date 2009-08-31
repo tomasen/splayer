@@ -228,7 +228,7 @@ void CMediaFormats::UpdateData(bool fSave)
 		ADDFMT((_T("Shockwave Audio file"), _T("swa"), true, _T("ShockWave ActiveX control"), ShockWave));
 		ADDFMT((_T("Quicktime file"), _T("mov qt amr 3g2 3gp2"), false, _T("QuickTime or codec pack")));//QuickTime
 		ADDFMT((_T("Image file"), _T("jpeg jpg bmp gif pic dib tiff tif") )); //png not supported
-		ADDFMT((_T("Playlist file"), _T("asx m3u pls wvx wax wmx mpcpl")));
+		ADDFMT((_T("Playlist file"), _T("asx m3u pls wvx wax wmx mpcpl rar")));
 		ADDFMT((_T("Subtitle file"), _T("srt idx sub ssa ass xss usf")));
 		ADDFMT((_T("Other"), _T("divx vp6 rmvb amv")));
 #undef ADDFMT

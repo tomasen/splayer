@@ -160,6 +160,8 @@ void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath, CStringArray* szSu
 	CSVPNet svpNet;
 	CSVPhash svpHash;
 	CString szFileHash  = svpHash.ComputerFileHash(fnVideoFilePath);
+	SVP_LogMsg5(L"FileHash %s for %s ", szFileHash , fnVideoFilePath);
+
 	for(int i = 1; i < 8; i++){
 		int err =  svpNet.QuerySubByVideoPathOrHash(fnVideoFilePath,szFileHash, _T("") , szLang) ;
 		if(err){

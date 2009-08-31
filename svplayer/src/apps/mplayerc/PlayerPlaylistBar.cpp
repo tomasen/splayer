@@ -31,6 +31,7 @@
 #include ".\playerplaylistbar.h"
 #include "../../svplib/svplib.h"
 #include "../../svplib/SVPToolBox.h"
+#include "../../svplib/SVPRarLib.h"
 #include "OpenFileDlg.h"
 
 IMPLEMENT_DYNAMIC(CPlayerPlaylistBar, CSizingControlBarG)
@@ -290,6 +291,44 @@ void CPlayerPlaylistBar::ParsePlayList(CAtlList<CString>& fns, CAtlList<CString>
 {
 	if(fns.IsEmpty()) return;
 
+	AppSettings& s = AfxGetAppSettings();
+
+	// resolve rar file
+	{
+		CMediaFormats& mf = s.Formats;
+
+		CSVPRarLib svpRar;
+		POSITION pos = fns.GetHeadPosition();
+		while( pos)
+		{
+			POSITION cur = pos;
+			CString fn = fns.GetNext(pos);
+			if(fn.Left(6) == _T("rar://"))
+				continue;
+
+			if( CPath(fn).GetExtension().MakeLower() == _T(".rar")  ){
+				CStringArray szFnsInRar;
+				svpRar.ListRar(fn, &szFnsInRar);
+
+				fns.RemoveAt(cur);
+				//AfxMessageBox(fn);
+				for(int i = 0; i < szFnsInRar.GetCount();i++){
+					//detect if its known file type
+					CString szThisFn = szFnsInRar.GetAt(i);
+					if(!mf.IsUnPlayableFile( szThisFn ) &&  CPath(szThisFn).GetExtension().MakeLower() != _T(".rar") ){
+						AddItem(CString(_T("rar://")) + fn + _T("?") + szThisFn , subs);
+						//AfxMessageBox(szThisFn);
+					}
+				}
+			}
+
+			
+		}
+	}
+	if(fns.GetCount() <= 0){
+     return;
+	}
+//AfxMessageBox(_T("Done"));
 	// resolve .lnk files
 
 	CComPtr<IShellLink> pSL;
@@ -311,7 +350,6 @@ void CPlayerPlaylistBar::ParsePlayList(CAtlList<CString>& fns, CAtlList<CString>
 	}
 
 	//	
-
 	CAtlList<CString> sl;
 	if(SearchFiles(fns.GetHead(), sl))
 	{
@@ -320,7 +358,7 @@ void CPlayerPlaylistBar::ParsePlayList(CAtlList<CString>& fns, CAtlList<CString>
 		while(pos) ParsePlayList(sl.GetNext(pos), subs);
 		return;
 	}
-
+	
 	CAtlList<CString> redir;
 	CStringA ct = GetContentType(fns.GetHead(), &redir);
 	if(!redir.IsEmpty())
@@ -329,13 +367,13 @@ void CPlayerPlaylistBar::ParsePlayList(CAtlList<CString>& fns, CAtlList<CString>
 		while(pos) ParsePlayList(sl.GetNext(pos), subs);
 		return;
 	}
-
+	
 	if(ct == "application/x-mpc-playlist")
 	{
 		ParseMPCPlayList(fns.GetHead());
 		return;
 	}
-
+	
 	AddItem(fns, subs);
 }
 

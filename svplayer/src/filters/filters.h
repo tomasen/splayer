@@ -20,6 +20,7 @@
 #include ".\reader\CDXAReader\CDXAReader.h"
 #include ".\reader\UDPReader\UDPReader.h"
 #include ".\reader\VTSReader\VTSReader.h"
+//#include ".\source\RarSource\RarSource.h"
 #include ".\source\D2VSource\D2VSource.h"
 #include ".\source\DTSAC3Source\DTSAC3Source.h"
 #include ".\source\FLICSource\FLICSource.h"

@@ -2926,7 +2926,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 			// WINBUG: on win2k this would crash WritePrivateProfileString
 			pApp->WriteProfileInt(_T(""), _T(""), pApp->GetProfileInt(_T(""), _T(""), 0)?0:1);
 		}
-		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("LastVersion"), 580);		
+		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("LastVersion"), 652);		
 		
 	}
 	else
@@ -3050,8 +3050,24 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 
 		fBUltraFastMode = 0;// !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_ULTRAFAST), 1);
 		autoDownloadSVPSub = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUTODOWNLAODSVPSUB), 1);
-		fVMRSyncFix = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VMRSYNCFIX), FALSE);
-		fVMRGothSyncFix = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VMRSYNCFIX) + _T("Goth"), FALSE);
+
+		BOOL bDefaultVSync = false;
+		BOOL bDefaultGothSync = false;
+		if(!IsVista()){
+			HINSTANCE hEVR = LoadLibrary(_T("evr.dll"));
+			if(hEVR){
+				bDefaultGothSync = true;
+				FreeLibrary(hEVR);
+			}else
+				bDefaultVSync = true;
+		}
+
+		fVMRSyncFix = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VMRSYNCFIX), bDefaultVSync);
+		fVMRGothSyncFix = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VMRSYNCFIX) + _T("Goth"), bDefaultGothSync);
+		if(iUpgradeReset < 652){
+			fVMRSyncFix = bDefaultVSync;
+			fVMRGothSyncFix = bDefaultGothSync;
+		}
 		//fVMRSyncFix = 0;
 		iDX9Resizer = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DX9_RESIZER), 1);
 		fVMR9MixerMode = FALSE;//!!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VMR9MIXERMODE), FALSE);

@@ -29,8 +29,8 @@
 
 #include "..\..\..\..\include\libunrar\dll.hpp"
 
-#define SVP_LogMsg5 __noop
-#define SVP_LogMsg3 __noop
+//#define SVP_LogMsg5 __noop
+//#define SVP_LogMsg3 __noop
 //
 // CAsyncFileReader
 //
@@ -69,7 +69,7 @@ CAsyncFileReader::CAsyncFileReader(CString fn, HRESULT& hr)
 #ifdef UNICODE
 					ArchiveDataEx.ArcNameW = (LPTSTR)(LPCTSTR)m_fnRAR;
 					char fnA[MAX_PATH];
-					if(wcstombs(fnA, fn, fn.GetLength()+1) == -1) fnA[0] = 0;
+					if(wcstombs(fnA, m_fnRAR, m_fnRAR.GetLength()+1) == -1) fnA[0] = 0;
 					ArchiveDataEx.ArcName = fnA;
 #else
 					ArchiveDataEx.ArcName = (LPTSTR)(LPCTSTR)m_fnRAR;

@@ -4,7 +4,9 @@
 #include "..\..\include\libunrar\dll.hpp"
 #include "SVPRarLib.h"
 
-#define  SVP_LogMsg5 __noop
+#define SVP_LogMsg5 __noop
+#define SVP_LogMsg3 __noop
+
 
 CSVPhash::CSVPhash(void)
 {
@@ -74,12 +76,12 @@ CString CSVPhash::ComputerFileHash(CString szFilePath)
 	CSVPRarLib svpRar;
 	if( svpRar.SplitPath( szFilePath ) ){
 		// this is RAR path
-		SVP_LogMsg5(L"this is RAR path %s " , szFilePath);
+		SVP_LogMsg5(L" CSVPhash::ComputerFileHash this is RAR path %s " , svpRar.m_fnRAR);
 
 
 		struct RAROpenArchiveDataEx ArchiveDataEx;
 		memset(&ArchiveDataEx, 0, sizeof(ArchiveDataEx));
-
+		
 		ArchiveDataEx.ArcNameW = (LPTSTR)(LPCTSTR)svpRar.m_fnRAR;
 		char fnA[MAX_PATH];
 		if(wcstombs(fnA, svpRar.m_fnRAR, svpRar.m_fnRAR.GetLength()+1) == -1) fnA[0] = 0;

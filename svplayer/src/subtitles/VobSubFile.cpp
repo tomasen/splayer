@@ -24,7 +24,10 @@
 #include "TextFile.h"
 #include "..\..\include\libunrar\dll.hpp"
 #include "VobSubFile.h"
+#include "..\..\src\svplib\svplib.h"
 
+#define SVP_LogMsg5 __noop
+#define SVP_LogMsg3 __noop
 //
 
 struct lang_type {unsigned short id; LPCSTR lang_long;} lang_tbl[] =
@@ -714,6 +717,7 @@ bool CVobSubFile::ReadRar(CString fn)
 
 	struct RAROpenArchiveDataEx ArchiveDataEx;
 	memset(&ArchiveDataEx, 0, sizeof(ArchiveDataEx));
+	SVP_LogMsg5(L"CVobSubFile::ReadRar %s" , fn);
 #ifdef UNICODE
 	ArchiveDataEx.ArcNameW = (LPTSTR)(LPCTSTR)fn;
 	char fnA[MAX_PATH];

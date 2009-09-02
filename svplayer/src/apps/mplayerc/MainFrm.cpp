@@ -94,6 +94,8 @@ static UINT WM_NOTIFYICON = RegisterWindowMessage(TEXT("MYWM_NOTIFYICON"));
 #include "..\..\svplib\SVPToolBox.h"
 #include "../../svplib/SVPRarLib.h"
 
+#include "../../filters/misc/SyncClock/SyncClock.h"
+
 bool g_bNoDuration = false;
 bool g_bExternalSubtitleTime = false;
 
@@ -10186,7 +10188,25 @@ void CMainFrame::OpenCustomizeGraph()
 			}
 		}
 	}
+	AppSettings& s = AfxGetAppSettings();
+	if (s.m_RenderSettings.bSynchronizeVideo)
+	{
+		HRESULT hr;
+		m_pRefClock = DNew CSyncClockFilter(NULL, &hr);
+		CStringW name;
+		name.Format(L"SyncClock Filter");
+		pGB->AddFilter(m_pRefClock, name);
 
+		CComPtr<IReferenceClock> refClock;
+		m_pRefClock->QueryInterface(IID_IReferenceClock, reinterpret_cast<void**>(&refClock));
+		CComPtr<IMediaFilter> mediaFilter;
+		pGB->QueryInterface(IID_IMediaFilter, reinterpret_cast<void**>(&mediaFilter));
+		mediaFilter->SetSyncSource(refClock);
+		mediaFilter = NULL;
+		refClock = NULL;
+
+		m_pRefClock->QueryInterface(IID_ISyncClock, reinterpret_cast<void**>(&m_pSyncClock));
+	}
 	if(m_iPlaybackMode == PM_DVD)
 	{
 		BeginEnumFilters(pGB, pEF, pBF)
@@ -10958,6 +10978,9 @@ void CMainFrame::CloseMediaPrivate()
 	pMC.Release(); pME.Release(); pMS.Release();
 	pVW.Release(); pBV.Release();
 	pBA.Release();
+
+	m_pRefClock = NULL;
+	m_pSyncClock = NULL;
 
 	if(pGB) pGB->RemoveFromROT();
 	pGB.Release();

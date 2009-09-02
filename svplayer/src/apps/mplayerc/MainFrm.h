@@ -64,6 +64,7 @@
 #include "SUIButton.h"
 
 #include "..\..\ui\SkinWindows\SkinMenuMgr.h"
+#include "../../filters/misc/SyncClock/Interfaces.h"
 
 enum {PM_NONE, PM_FILE, PM_DVD, PM_CAPTURE};
 
@@ -365,6 +366,9 @@ public:
 	bool m_fPlaylistBeforeToggleFullScreen;
 	int m_WndSizeInited;
 	bool m_fHideCursor;
+
+	CComPtr<IBaseFilter> m_pRefClock; // Adjustable reference clock. GothSync
+	CComPtr<ISyncClock> m_pSyncClock;
 
 	bool IsFrameLessWindow() {return(m_fFullScreen || AfxGetAppSettings().fHideCaptionMenu);}
 	bool IsCaptionMenuHidden() {return(!m_fFullScreen && AfxGetAppSettings().fHideCaptionMenu);}

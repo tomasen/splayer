@@ -562,6 +562,8 @@ CMPlayerCApp::CMPlayerCApp()
 , m_bGenerateMouseInOutMessages(TRUE) 
 , m_cnetupdater(NULL)
 , m_fDisplayStats(FALSE)
+, m_fTearingTest(0)
+, m_fResetStats(0)
 {
 	m_pMainWnd = NULL;
 	::SetUnhandledExceptionFilter(DebugMiniDumpFilter);
@@ -3062,12 +3064,15 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 				bDefaultVSync = true;
 		}
 
-		fVMRSyncFix = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VMRSYNCFIX), bDefaultVSync);
+		fVMRSyncFix = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VMRSYNCFIX), 0);//bDefaultVSync
 		fVMRGothSyncFix = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VMRSYNCFIX) + _T("Goth"), bDefaultGothSync);
 		if(iUpgradeReset < 652){
 			fVMRSyncFix = bDefaultVSync;
 			fVMRGothSyncFix = bDefaultGothSync;
 		}
+		m_RenderSettings.bSynchronizeNearest = fVMRGothSyncFix;
+		m_RenderSettings.bSynchronizeVideo = fVMRSyncFix;
+
 		//fVMRSyncFix = 0;
 		iDX9Resizer = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DX9_RESIZER), 1);
 		fVMR9MixerMode = FALSE;//!!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VMR9MIXERMODE), FALSE);

@@ -345,9 +345,14 @@ public:
 	HRESULT (__stdcall * m_pDwmDefWindowProc)( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, LRESULT *plResult);
 
 
+	// === CASIMIR666 : Ajout CMPlayerCApp
+	bool		m_fTearingTest;
+	int			m_fDisplayStats;
+	int			m_fResetStats; // Set to reset the presentation statistics
+
 	CString		m_strD3DX9Version;
 	LONGLONG	m_PerfFrequency;
-	BOOL		m_fDisplayStats;
+	
 	void ShowCmdlnSwitches();
 
 	bool StoreSettingsToIni();
@@ -495,6 +500,11 @@ public:
 			int iVMRFlushGPUWait;
 			int iVMRFlushGPUAfterPresent;
 
+			int iVMRDisableDesktopComposition;
+			int iVMR9FullscreenGUISupport;
+			int iEVRHighColorResolution;
+
+			int iEVROutputRange;
 			CRendererSettingsEVR()
 			{
 				bSynchronizeVideo = 0;
@@ -508,6 +518,11 @@ public:
 				fCycleDelta = 0.0012;
 				fTargetSyncOffset = 8.0;//10.0;
 				fControlLimit = 2.0;
+
+				iVMRDisableDesktopComposition = 0;
+				iVMR9FullscreenGUISupport = 0;
+				iEVRHighColorResolution = 0;
+				iEVROutputRange = 0;
 			}
 			
 		};

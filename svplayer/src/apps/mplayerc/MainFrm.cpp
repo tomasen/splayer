@@ -886,6 +886,48 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		
 	}
 
+	
+	if(!s.AudioRendererDisplayName.IsEmpty()){
+		if(m_AudioDevice.GetCount() <= 0 ){
+			BeginEnumSysDev(CLSID_AudioRendererCategory, pMoniker)
+			{
+				LPOLESTR olestr = NULL;
+				if(FAILED(pMoniker->GetDisplayName(0, 0, &olestr)))
+					continue;
+
+				CStringW str(olestr);
+				CoTaskMemFree(olestr);
+
+
+
+				CComPtr<IPropertyBag> pPB;
+				if(SUCCEEDED(pMoniker->BindToStorage(0, 0, IID_IPropertyBag, (void**)&pPB)))
+				{
+					CComVariant var;
+					pPB->Read(CComBSTR(_T("FriendlyName")), &var, NULL);
+
+					CString fstr(var.bstrVal);
+
+					m_AudioDevice.Add(fstr);
+					m_AudioDevice.Add(CString(str));
+
+					
+				}
+			}
+			EndEnumSysDev
+		}
+		BOOL bNotDefault = false;
+		for(int i = 0; i < m_AudioDevice.GetCount() ; i+=2){
+			if( s.AudioRendererDisplayName == m_AudioDevice.GetAt(i + 1) ){
+				bNotDefault = true;
+				break;
+			}
+		}
+		if(!bNotDefault){
+			s.AudioRendererDisplayName.Empty();
+		}
+	}
+	
 	m_WndSizeInited++;
 	return 0;
 }

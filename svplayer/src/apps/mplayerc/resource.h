@@ -355,8 +355,8 @@
 #define IDS_CHANGE_AUDIO_DEVICE_END     4500
 #define ID_SHADERS_SETDX9               4501
 #define ID_FILE_LOAD_SUBTITLE2          4502
-#define ID_RESIZER_NORMAL				4503
-#define ID_RESIZER_SMARTBICUBIC			4504
+#define ID_RESIZER_NORMAL               4503
+#define ID_RESIZER_SMARTBICUBIC         4504
 #define ID_RECENT_FILE_START            5000
 #define ID_RECENT_FILE_END              5200
 #define ID_FILE_COPYTOCLIPBOARD         5201
@@ -725,7 +725,7 @@
 #define IDS_RS_USERGBONLY               13157
 #define IDS_RS_VMDETECTED               13158
 #define IDS_RS_SAVESVPSUBWITHVIDEO      13159
-#define IDS_RS_GLOBAL_SUBFONTRATIO		13160
+#define IDS_RS_GLOBAL_SUBFONTRATIO      13160
 #define IDS_SRC_RADGT                   14000
 #define IDS_SRC_CDDA                    14001
 #define IDS_SRC_AVI                     14002
@@ -897,6 +897,7 @@
 #define IDS_RS_USEAEROGLASS             14238
 #define IDS_RS_FCUSTOMSPEAKERS          14239
 #define IDS_RS_SMOOTHMUTILMONITOR       14240
+#define IDS_RS_FASTERSEEKING            14241
 #define IDD_DHTML_SETTING               20000
 #define IDR_DEFAULT1                    20006
 #define IDD_DEFAULT_PLAYER              20007
@@ -913,6 +914,7 @@
 #define IDD_INFOREPORT                  20012
 #define IDR_MENU1                       20015
 #define IDR_POPUPAB                     20015
+#define IDR_MENU2                       20016
 #define IDC_CHK_NOMOREQUES              22000
 #define IDC_CHECK_DEFAULTPLAYER         22001
 #define IDC_STATIC_VFILE                22002
@@ -1011,6 +1013,9 @@
 #define ID__32861                       32861
 #define ID_32862                        32862
 #define ID_SHOW                         32863
+#define ID__32864                       32864
+#define ID_32865                        32865
+#define ID_32866                        32866
 #define IDS_VOLUME_BOOST_INC            33129
 #define IDS_VOLUME_BOOST_DEC            33130
 #define IDS_VOLUME_BOOST_MIN            33131
@@ -1084,8 +1089,8 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        20016
-#define _APS_NEXT_COMMAND_VALUE         32864
+#define _APS_NEXT_RESOURCE_VALUE        20017
+#define _APS_NEXT_COMMAND_VALUE         32867
 #define _APS_NEXT_CONTROL_VALUE         22004
 #define _APS_NEXT_SYMED_VALUE           24001
 #endif

@@ -1910,23 +1910,7 @@ BEGIN
                 MENUITEM "智能显示器校正",                     ID_VIEW_VF_COMPMONDESKARDIFF
             END
         END
-        POPUP "DVD控制"
-        BEGIN
-            MENUITEM "上一段(&P)\t上一页",                ID_NAVIGATE_SKIPBACK
-            MENUITEM "下一段(&N)\t下一页",                ID_NAVIGATE_SKIPFORWARD
-            MENUITEM "跳至(&J)...",                   ID_DVD32789
-            MENUITEM SEPARATOR
-            MENUITEM "声轨选择",                        ID_DVD32790
-            MENUITEM "字幕语言",                        ID_DVD32791
-            MENUITEM "视角切换",                        ID_DVD32792
-            MENUITEM SEPARATOR
-            MENUITEM "标题选单(&T)",                    ID_NAVIGATE_TITLEMENU
-            MENUITEM "主菜单(&R)",                     ID_NAVIGATE_ROOTMENU
-            MENUITEM "字幕选单(&S)",                    ID_NAVIGATE_SUBPICTUREMENU
-            MENUITEM "音频选单(&A)",                    ID_NAVIGATE_AUDIOMENU
-            MENUITEM "视角选单(&g)",                    ID_NAVIGATE_ANGLEMENU
-            MENUITEM "章节选单(&C)",                    ID_NAVIGATE_CHAPTERMENU
-        END
+        MENUITEM "播放",                          ID__32864
         MENUITEM SEPARATOR
         POPUP "截图"
         BEGIN
@@ -2023,13 +2007,6 @@ BEGIN
                 MENUITEM "特效(Shader)编辑器\tCtrl+9",       ID_VIEW_SHADEREDITOR
                 MENUITEM "DSM转换器(&n)...",               ID_FILE_CONVERT
                 MENUITEM "显示画面渲染信息",                    ID_SHOWDRAWSTAT
-            END
-            POPUP "A-B控制"
-            BEGIN
-                MENUITEM "设置A点",                        ID_ABCONTROL_SETA
-                MENUITEM "设置B点",                        ID_ABCONTROL_SETB
-                MENUITEM "启用",                          ID_ABCONTROL_ON
-                MENUITEM "关闭",                          ID_ABCONTROL_OFF
             END
             MENUITEM SEPARATOR
             MENUITEM "生成DEBUG反馈信息",                 ID_DEBUGREPORT
@@ -2298,6 +2275,40 @@ BEGIN
     END
 END
 
+IDR_MENU2 MENU 
+BEGIN
+    POPUP "DVD控制"
+    BEGIN
+        MENUITEM "上一段(&P)\t上一页",                ID_NAVIGATE_SKIPBACK
+        MENUITEM "下一段(&N)\t下一页",                ID_NAVIGATE_SKIPFORWARD
+        MENUITEM "跳至(&J)...",                   ID_DVD32789
+        MENUITEM SEPARATOR
+        MENUITEM "声轨选择",                        ID_DVD32790
+        MENUITEM "字幕语言",                        ID_DVD32791
+        MENUITEM "视角切换",                        ID_DVD32792
+        MENUITEM SEPARATOR
+        MENUITEM "标题选单(&T)",                    ID_NAVIGATE_TITLEMENU
+        MENUITEM "主菜单(&R)",                     ID_NAVIGATE_ROOTMENU
+        MENUITEM "字幕选单(&S)",                    ID_NAVIGATE_SUBPICTUREMENU
+        MENUITEM "音频选单(&A)",                    ID_NAVIGATE_AUDIOMENU
+        MENUITEM "视角选单(&g)",                    ID_NAVIGATE_ANGLEMENU
+        MENUITEM "章节选单(&C)",                    ID_NAVIGATE_CHAPTERMENU
+    END
+    POPUP "播放"
+    BEGIN
+        MENUITEM "加快播放速度",                      ID_PLAY_INCRATE
+        MENUITEM "减慢播放速度",                      ID_PLAY_DECRATE
+        MENUITEM SEPARATOR
+        POPUP "A-B控制"
+        BEGIN
+            MENUITEM "设置A点",                        ID_ABCONTROL_SETA
+            MENUITEM "设置B点",                        ID_ABCONTROL_SETB
+            MENUITEM "启用",                          ID_ABCONTROL_ON
+            MENUITEM "关闭",                          ID_ABCONTROL_OFF
+        END
+    END
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -2398,6 +2409,7 @@ BEGIN
     IDS_RS_USERGBONLY       "UseRGBOnly"
     IDS_RS_VMDETECTED       "VMDetected"
     IDS_RS_SAVESVPSUBWITHVIDEO "SaveSVPSubWithVideo"
+    IDS_RS_GLOBAL_SUBFONTRATIO "GlobalSubFontRatio"
 END
 
 STRINGTABLE 
@@ -2529,7 +2541,6 @@ BEGIN
     IDS_RS_QUICKTIMERENDERER "QuickTimeRenderer"
     IDS_RS_REALMEDIAFPS     "RealMediaFPS"
     IDS_RS_AUDIOTIMESHIFT   "AudioTimeShift"
-	IDS_RS_GLOBAL_SUBFONTRATIO	"GlobalSubFontRatio"
 END
 
 STRINGTABLE 
@@ -2637,6 +2648,12 @@ END
 
 STRINGTABLE 
 BEGIN
+    IDS_RS_SMOOTHMUTILMONITOR "SmoothMutilMonitor"
+    IDS_RS_FASTERSEEKING    "FasterSeeking"
+END
+
+STRINGTABLE 
+BEGIN
     IDS_RS_MPEGHUE          "MPEGHue"
     IDS_RS_MPEGSAT          "MPEGSat"
     IDS_RS_MPEGFORCEDSUBS   "MPEGForcedSubs"
@@ -2707,11 +2724,6 @@ BEGIN
     IDS_RS_MPABOOST         "MpaBoost"
     IDS_RS_AACSC            "AACSpeakerConfig"
     IDS_RS_VMRSYNCFIX       "VMRSyncFix"
-END
-
-STRINGTABLE 
-BEGIN
-    IDS_RS_SMOOTHMUTILMONITOR "SmoothMutilMonitor"
 END
 
 STRINGTABLE 

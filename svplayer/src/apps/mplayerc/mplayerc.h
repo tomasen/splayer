@@ -466,6 +466,7 @@ public:
 		int iDX9Resizer;
 		bool fVMR9MixerMode;
 		bool fVMR9MixerYUV;
+		bool fFasterSeeking;
 
 		int nVolume;
 		int nBalance;

@@ -69,6 +69,8 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 {
 	CDHtmlDialog::DoDataExchange(pDX);
 
+	
+	DDX_DHtml_CheckBox(pDX, _T("NotUseFasterSeeking") , m_sgi_NotUseFasterSeeking);
 	DDX_DHtml_CheckBox(pDX, _T("chkremhistory") , m_sgs_chkremhistory);
 	DDX_DHtml_ElementInnerText(pDX, _T("initvarblock") , m_sgs_initblock);
 	DDX_DHtml_ElementInnerText(pDX, _T("isvista") , m_sgs_isvista);
@@ -274,6 +276,7 @@ BOOL CUESettingPanel::OnInitDialog()
 	m_sgs_stepsmall.Format(_T("%d"), s.nJumpDistS/1000) ;
 	m_sgs_stepmed.Format(_T("%d"), s.nJumpDistM/1000) ;
 	m_sgs_stepbig.Format(_T("%d"), s.nJumpDistL/1000) ;
+	m_sgi_NotUseFasterSeeking = !s.fFasterSeeking;
 
 	//Video Setting
 	m_sgi_uservmrmixer = s.fVMR9MixerMode;
@@ -478,6 +481,7 @@ void CUESettingPanel::ApplyAllSetting(){
 		s.SetFav(FAV_FILE, sl, 1);
 		s.SetFav(FAV_DVD, sl, 1);
 	}
+	s.fFasterSeeking = !m_sgi_NotUseFasterSeeking;
 	s.fExitFullScreenAtTheEnd = !!m_sgi_chkexitfullscreen ;
 	s.fRememberWindowPos = !!m_sgi_chkremwinpos;
 	//s.fRememberWindowSize = !!m_sgi_chkremwinpos;

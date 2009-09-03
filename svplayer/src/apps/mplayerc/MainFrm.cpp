@@ -6925,7 +6925,7 @@ void CMainFrame::OnPlaySeek(UINT nID)
 		iDirect = -1;
 	}
 
-	if(ID_PLAY_SEEKBACKWARDSMALLC == nID || ID_PLAY_SEEKFORWARDSMALLC == nID){
+	if(ID_PLAY_SEEKBACKWARDSMALLC == nID || ID_PLAY_SEEKFORWARDSMALLC == nID || !s.fFasterSeeking){
 		iDirect = 0;
 	}
 
@@ -7017,6 +7017,17 @@ void CMainFrame::OnPlaySeekKey(UINT nID)
 
 void CMainFrame::SeekTo(REFERENCE_TIME rtPos, int fSeekToKeyFrame, REFERENCE_TIME maxStep)
 {
+
+	AppSettings& s = AfxGetAppSettings();
+	if(fSeekToKeyFrame == -99){
+		if(s.fFasterSeeking){
+			if(rtPos >= m_wndSeekBar.GetPos())
+				fSeekToKeyFrame = 1;
+			else
+				fSeekToKeyFrame = -1;
+		}else
+			fSeekToKeyFrame = 0;
+	}
 	OAFilterState fs = GetMediaState();
 
 	if(rtPos < 0) rtPos = 0;

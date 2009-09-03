@@ -915,6 +915,7 @@
 #define IDR_MENU1                       20015
 #define IDR_POPUPAB                     20015
 #define IDR_MENU2                       20016
+#define IDR_PLAYBACK_MENU               20016
 #define IDC_CHK_NOMOREQUES              22000
 #define IDC_CHECK_DEFAULTPLAYER         22001
 #define IDC_STATIC_VFILE                22002

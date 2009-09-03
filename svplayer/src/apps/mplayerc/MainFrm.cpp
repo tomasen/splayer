@@ -928,6 +928,10 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		}
 	}
 	
+
+	m_playbackmenu.LoadMenu(IDR_PLAYBACK_MENU);
+	m_playback_resmenu.LoadMenu(IDR_PLAYBACK_MENU);
+
 	m_WndSizeInited++;
 	return 0;
 }
@@ -3780,6 +3784,16 @@ void CMainFrame::OnInitMenuPopup(CMenu * pPopupMenu, UINT nIndex, BOOL bSysMenu)
 				: (MF_DISABLED|MF_GRAYED);
 
 			pPopupMenu->EnableMenuItem(i, MF_BYPOSITION|fState);
+		}else if(str == _T("播放"))
+		{
+			while(m_playbackmenu.RemoveMenu(0, MF_BYPOSITION));
+			MenuMerge( &m_playbackmenu , m_playback_resmenu.GetSubMenu(1) );
+			
+			if(m_iPlaybackMode == PM_DVD)
+				MenuMerge( &m_playbackmenu , m_playback_resmenu.GetSubMenu(0) );
+				
+
+			pSubMenu = &m_playbackmenu;
 		}
 		else if(str == _T("打开"))//ResStr(IDS_OPENCDROM_POPUP)
 		{

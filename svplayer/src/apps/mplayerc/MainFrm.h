@@ -223,7 +223,7 @@ class CMainFrame : public CFrameWnd, public CDropTarget  , protected ISkinMenuRe
 	void OnNavStreamSelectSubMenu(UINT id, DWORD dwSelGroup);
 
 	CMenu m_popupmain, m_popup;
-	CMenu m_opencds, m_openmore;
+	CMenu m_opencds, m_openmore, m_playback_resmenu, m_playbackmenu;
 	CMenu m_filters, m_subtitles, m_subtitles2, m_audios, m_audiodevices , m_subtoolmenu;
 	CStringArray m_AudioDevice;
 	CAutoPtrArray<CMenu> m_filterpopups;

@@ -1780,6 +1780,8 @@ void CEVRAllocatorPresenter::RenderThread()
 					else
 						m_lOverWaitCounter = 0;
 					
+					if (m_lNextSampleWait < 0)
+						m_lNextSampleWait = 0;
 				}
 				
 			}

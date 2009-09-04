@@ -333,6 +333,7 @@ namespace DSObjects
 		bool m_bNeedPendingResetDevice;
 		bool m_bPendingResetDevice;
 
+		LONG m_lOverWaitCounter; //count and When Sync Wait Too much more disable it in a role
 		LONG m_lNextSampleWait; // Waiting time for next sample in EVR
 		LONG m_lShiftToNearest, m_lShiftToNearestPrev; // Correction to sample presentation time in sync to nearest
 		bool m_bVideoSlowerThanDisplay; // True if this fact is detected in sync to nearest

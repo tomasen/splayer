@@ -1736,7 +1736,7 @@ void CEVRAllocatorPresenter::RenderThread()
 					m_lNextSampleWait = (LONG)((m_llSampleTime - llRefClockTime) / 10000); // Time left until sample is due, in ms
 					if (m_lNextSampleWait < 0)
 						m_lNextSampleWait = 0; // We came too late. Race through, discard the sample and get a new one
-					else if (s.m_RenderSettings.bSynchronizeNearest) // Present at the closest "safe" occasion at tergetSyncOffset ms before vsync to avoid tearing
+					else if (s.m_RenderSettings.bSynchronizeNearest && m_lOverWaitCounter < 20) // Present at the closest "safe" occasion at tergetSyncOffset ms before vsync to avoid tearing
 					{
 						REFERENCE_TIME rtRefClockTimeNow; if (m_pRefClock) m_pRefClock->GetTime(&rtRefClockTimeNow); // Reference clock time now
 						LONG lLastVsyncTime = (LONG)((m_rtEstVSyncTime - rtRefClockTimeNow) / 10000); // Time of previous vsync relative to now
@@ -1775,9 +1775,15 @@ void CEVRAllocatorPresenter::RenderThread()
 								m_llHysteresis = 0; // Reset when between 1/3 and 2/3 of the way either way
 						}
 					}
+					if(m_lNextSampleWait > 100)
+						m_lOverWaitCounter++;
+					else
+						m_lOverWaitCounter = 0;
+					
 				}
+				
 			}
-			m_lNextSampleWait = min(max(m_lNextSampleWait , 0), 50);
+			
 		}
 		// Wait for the next presentation time or a quit or flush event
 		dwObject = WaitForMultipleObjects(countof(hEvts), hEvts, FALSE, (DWORD)m_lNextSampleWait); 

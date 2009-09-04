@@ -116,8 +116,9 @@ public:
 	BOOL m_NotButton;
 
 	void CountDPI();
-private:
 	void PreMultiplyBitmap( CBitmap& bmp );
+
+private:
 	LONG CalcRealMargin(LONG Mlen, LONG bW, LONG wW);
 	
 	

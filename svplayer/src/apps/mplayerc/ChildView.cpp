@@ -47,9 +47,13 @@ m_vrect(0,0,0,0)
 
 	//m_watermark.LoadFromResource(IDF_LOGO2);
 	LoadLogo();
-	CSUIButton * btnFileOpen = new CSUIButton(L"BTN_BIGOPEN.BMP" , ALIGN_TOPLEFT, CRect(-50 , -62, 0,0)  , FALSE, ID_FILE_OPENQUICK, FALSE  ) ;
-	m_btnList.AddTail( btnFileOpen);
+	AppSettings& s = AfxGetAppSettings();
+	if(!s.bDisableCenterBigOpenBmp){
+		CSUIButton * btnFileOpen = new CSUIButton(L"BTN_BIGOPEN.BMP" , ALIGN_TOPLEFT, CRect(-50 , -62, 0,0)  , FALSE, ID_FILE_OPENQUICK, FALSE  ) ;
+		m_btnList.AddTail( btnFileOpen);
 
+	}
+	
 	//m_btnList.AddTail( new CSUIButton(L"BTN_OPENADV.BMP" ,ALIGN_TOPLEFT, CRect(-50 , -62, 0,0)  , FALSE, ID_FILE_OPENMEDIA, FALSE, ALIGN_LEFT,btnFileOpen,  CRect(3,3,3,3) ) ) ;
 	
 	m_btnList.AddTail( new CSUIButton(L"WATERMARK2.BMP" , ALIGN_BOTTOMRIGHT, CRect(6 , 6, 0,6)  , TRUE, 0, FALSE  ) );
@@ -146,7 +150,25 @@ void CChildView::SetVideoRect(CRect r)
 
 	Invalidate();
 }
+static void SVPPreMultiplyBitmap( CBitmap& bmp ){
+	BITMAP bm;
+	bmp.GetBitmap(&bm);
 
+	if(bm.bmBitsPixel != 32){
+		return;
+	}
+	for (int y=0; y<bm.bmHeight; y++)
+	{
+		BYTE * pPixel = (BYTE *) bm.bmBits + bm.bmWidth * 4 * y;
+		for (int x=0; x<bm.bmWidth; x++)
+		{
+			pPixel[0] = pPixel[0] * pPixel[3] / 255; 
+			pPixel[1] = pPixel[1] * pPixel[3] / 255; 
+			pPixel[2] = pPixel[2] * pPixel[3] / 255; 
+			pPixel += 4;
+		}
+	}
+}
 void CChildView::LoadLogo()
 {
 	AppSettings& s = AfxGetAppSettings();
@@ -169,8 +191,10 @@ void CChildView::LoadLogo()
 		CSVPToolBox svpTool;
 		OEMBGPath = svpTool.GetPlayerPath(_T("skins\\oembg.png"));
 		if(svpTool.ifFileExist(OEMBGPath)){
-			if(s.fXpOrBetter)
+			if(s.fXpOrBetter){
 				m_logo.Load(OEMBGPath);
+				
+			}
 			else if(HANDLE h = LoadImage(NULL, OEMBGPath, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE))
 				m_logo.Attach((HBITMAP)h); 
 		}
@@ -185,6 +209,15 @@ void CChildView::LoadLogo()
 	if(m_logo.IsNull())
 	{
 		m_logo.LoadFromResource(IDF_LOGO7);
+	}
+	if(!m_logo.IsNull()){
+		if(m_logo.IsDIBSection()){
+
+			m_logo_bitmap.Attach((HBITMAP)m_logo);
+			SVPPreMultiplyBitmap(m_logo_bitmap);
+			m_logo.Detach();
+			m_logo.Attach((HBITMAP)m_logo_bitmap);
+		}
 	}
 	if(m_hWnd) Invalidate();
 }

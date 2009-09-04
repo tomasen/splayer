@@ -416,6 +416,7 @@ public:
 		void ParseCommandLine(CAtlList<CString>& cmdln);
 
 		bool fXpOrBetter;
+		bool bDisableCenterBigOpenBmp;
 		int iDXVer;
 		UINT iAdminOption;
 

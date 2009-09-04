@@ -2833,7 +2833,9 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		strTemp.Format (_T("%f"), dGSubFontRatio);
 		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_GLOBAL_SUBFONTRATIO), strTemp);
 
-
+		
+		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DISABLECENTERBIGOPENBMP), bDisableCenterBigOpenBmp);
+		 
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_WINLIRC), fWinLirc);
 		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_WINLIRCADDR), WinLircAddr);
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_UICE), fUIce);
@@ -2965,11 +2967,11 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		}
 
 		CRegKey oem;
-		if(ERROR_SUCCESS == dxver.Open(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\SPlayer"), KEY_READ))
+		if(ERROR_SUCCESS == oem.Open(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\SPlayer"), KEY_READ))
 		{
 			CString str;
 			ULONG len = 640;
-			if(ERROR_SUCCESS == dxver.QueryStringValue(_T("OEM"), str.GetBuffer(len), &len))
+			if(ERROR_SUCCESS == oem.QueryStringValue(_T("OEM"), str.GetBuffer(len), &len))
 			{
 				str.ReleaseBuffer(len);
 				szOEMTitle = str;
@@ -3013,6 +3015,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 
 		logostretch = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LOGOSTRETCH), 1);
 
+		bDisableCenterBigOpenBmp = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DISABLECENTERBIGOPENBMP), 0);
 
 		CSVPToolBox svptoolbox;
 		fForceRGBrender = 0;

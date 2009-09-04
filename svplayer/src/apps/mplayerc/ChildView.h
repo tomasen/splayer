@@ -33,6 +33,7 @@ class CChildView : public CWnd
 
 	CCritSec m_csLogo;
 	CPngImage m_logo;
+	CBitmap m_logo_bitmap;
 	//CPngImage m_watermark;
 	CPoint m_lastMouseMove;
 	UINT m_nItemToTrack;

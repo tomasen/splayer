@@ -70,6 +70,7 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 	CDHtmlDialog::DoDataExchange(pDX);
 
 	
+	DDX_DHtml_CheckBox(pDX, _T("chkDisableCenterBigOpenBmp") , m_sgi_bDisableCenterBigOpenBmp);
 	DDX_DHtml_CheckBox(pDX, _T("NotUseFasterSeeking") , m_sgi_NotUseFasterSeeking);
 	DDX_DHtml_CheckBox(pDX, _T("chkremhistory") , m_sgs_chkremhistory);
 	DDX_DHtml_ElementInnerText(pDX, _T("initvarblock") , m_sgs_initblock);
@@ -351,7 +352,7 @@ BOOL CUESettingPanel::OnInitDialog()
 	m_sgi_keepbgar = !!(s.logostretch & 1);
 	m_sgi_bgstrech = !!(s.logostretch & 2);
 	
-
+	m_sgi_bDisableCenterBigOpenBmp = s.bDisableCenterBigOpenBmp;
 	m_sgi_usenewmenu = s.bNewMenu;
 	m_sgi_useaeroglass = s.bAeroGlass;
 	
@@ -642,6 +643,8 @@ void CUESettingPanel::ApplyAllSetting(){
 	 s.tLastCheckUpdater = 2000000000;
 	}
 	s.useGPUCUDA = SVP_SetCoreAvcCUDA(s.useGPUCUDA);
+
+	s.bDisableCenterBigOpenBmp = m_sgi_bDisableCenterBigOpenBmp;
 
 	CSVPToolBox svpTool;
 	CPath updPath( svpTool.GetPlayerPath(_T("UPD")));

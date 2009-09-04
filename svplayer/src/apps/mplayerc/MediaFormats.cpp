@@ -237,8 +237,8 @@ void CMediaFormats::UpdateData(bool fSave)
 		m_fRtspFileExtFirst = !!AfxGetApp()->GetProfileInt(_T("FileFormats"), _T("RtspFileExtFirst"), 1);
 	}
 
-	for(int i = 0; i < GetCount(); i++)
-		GetAt(i).UpdateData(fSave);
+	//for(int i = 0; i < GetCount(); i++)
+	//	GetAt(i).UpdateData(fSave);
 }
 
 engine_t CMediaFormats::GetRtspHandler(bool& fRtspFileExtFirst)
@@ -353,7 +353,6 @@ void CMediaFormats::GetFilter(CString& filter, CAtlArray<CString>& mask)
 BOOL CMediaFormats::IsUnPlayableFile(CString szFilename){
 	CPath fPath(szFilename);
 	CString szThisExtention = fPath.GetExtension();
-
 	for(int i = 0; i < GetCount(); i++)
 	{
 		CMediaFormatCategory& mfc = GetAt(i);
@@ -365,9 +364,11 @@ BOOL CMediaFormats::IsUnPlayableFile(CString szFilename){
 			if ( szLabel.Find(_T("Image file")) >= 0 || szLabel.Find(_T("图片")) >= 0){
 				return TRUE;
 			}
+
+			return FALSE;
 		}
 	}
-	return FALSE;
+	return TRUE;
 }
 BOOL CMediaFormats::IsAudioFile(CString szFilename){
 	CPath fPath(szFilename);

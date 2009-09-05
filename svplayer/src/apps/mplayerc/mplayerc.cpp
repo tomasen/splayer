@@ -656,19 +656,23 @@ HWND g_hWnd = NULL;
 
 bool CMPlayerCApp::StoreSettingsToIni()
 {
-	CString ini = GetIniPath();
-
-	FILE* f;
-	if(!(f = _tfopen(ini, _T("r+"))) && !(f = _tfopen(ini, _T("w"))))
-		return StoreSettingsToRegistry();
-	fclose(f);
-
-	if(m_pszRegistryKey) free((void*)m_pszRegistryKey);
-	m_pszRegistryKey = NULL;
-	if(m_pszProfileName) free((void*)m_pszProfileName);
-	m_pszProfileName = _tcsdup(ini);
-
-	return(true);
+	return StoreSettingsToRegistry();
+/*
+	
+		CString ini = GetIniPath();
+	
+		FILE* f;
+		if(!(f = _tfopen(ini, _T("r+"))) && !(f = _tfopen(ini, _T("w"))))
+			return StoreSettingsToRegistry();
+		fclose(f);
+	
+		if(m_pszRegistryKey) free((void*)m_pszRegistryKey);
+		m_pszRegistryKey = NULL;
+		if(m_pszProfileName) free((void*)m_pszProfileName);
+		m_pszProfileName = _tcsdup(ini);
+	
+		return(true);*/
+	
 }
 
 bool CMPlayerCApp::StoreSettingsToRegistry()
@@ -703,8 +707,9 @@ CString CMPlayerCApp::GetIniPath()
 
 bool CMPlayerCApp::IsIniValid()
 {
-	CFileStatus fs;
-	return CFileGetStatus(GetIniPath(), fs) && fs.m_size > 0;
+	return FALSE;
+	//CFileStatus fs;
+	//return CFileGetStatus(GetIniPath(), fs) && fs.m_size > 0;
 }
 #include <strsafe.h>
 #pragma comment(lib , "strsafe.lib")

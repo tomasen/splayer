@@ -381,7 +381,7 @@ function myInit(){
 <input type="checkbox" id="chktrayicon" /><label for="chktrayicon">最小化到系统托盘</label><br />
 <input type="checkbox" id="chkautoresumeplay" /><label for="chkautoresumeplay" title="从上次关闭的位置打开文件">启用断点播放功能</label><br />
 <input type="checkbox" id="chkremwinpos" /><label for="chkremwinpos">记忆窗口位置和尺寸</label><br />
-<input type="checkbox" id="chkuseini" /><label for="chkuseini" title="不将配置文件写入注册表">将设置保存至ini</label><br />
+<div style="display:none;"><input type="checkbox" id="chkuseini" /><label for="chkuseini" title="不将配置文件写入注册表">将设置保存至ini</label><br /></div>
 <input type="checkbox" id="chkfileass" /><label for="chkfileass">启动时检查文件关联</label> <input type="button" value="*" style="font-size:7px;margin-left:5px;width:12px;" onclick="ueAPI.toggelblock('startupcheckextsdiv');" /><br />
 <div id='startupcheckextsdiv' style="display:none;margin:auto;">
     <textarea rows="3" id="startupcheckexts" style="margin-left:20px;margin-right:auto;" wrap="hard"></textarea>

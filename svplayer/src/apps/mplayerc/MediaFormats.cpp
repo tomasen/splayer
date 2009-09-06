@@ -345,14 +345,18 @@ void CMediaFormats::GetFilter(CString& filter, CAtlArray<CString>& mask)
 		mask.Add(mfc.GetFilter());
 	}
 
-	filter += _T("All files (*.*)|(*.*)|");
+	filter += _T("所有文件类型 (*.*)|*.*|");
 	mask.Add(_T("*.*"));
 
 	filter += _T("|");
 }
-BOOL CMediaFormats::IsUnPlayableFile(CString szFilename){
+BOOL CMediaFormats::IsUnPlayableFile(CString szFilename, bool bRestrict){
 	CPath fPath(szFilename);
 	CString szThisExtention = fPath.GetExtension();
+	BOOL bDefaultRet = false;
+	if(bRestrict)
+		bDefaultRet = true;
+
 	for(int i = 0; i < GetCount(); i++)
 	{
 		CMediaFormatCategory& mfc = GetAt(i);
@@ -368,7 +372,7 @@ BOOL CMediaFormats::IsUnPlayableFile(CString szFilename){
 			return FALSE;
 		}
 	}
-	return TRUE;
+	return bDefaultRet;
 }
 BOOL CMediaFormats::IsAudioFile(CString szFilename){
 	CPath fPath(szFilename);

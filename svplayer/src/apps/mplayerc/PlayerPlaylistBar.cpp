@@ -315,7 +315,7 @@ void CPlayerPlaylistBar::ParsePlayList(CAtlList<CString>& fns, CAtlList<CString>
 				for(int i = 0; i < szFnsInRar.GetCount();i++){
 					//detect if its known file type
 					CString szThisFn = szFnsInRar.GetAt(i);
-					if(!mf.IsUnPlayableFile( szThisFn ) &&  CPath(szThisFn).GetExtension().MakeLower() != _T(".rar") ){
+					if(!mf.IsUnPlayableFile( szThisFn , true ) &&  CPath(szThisFn).GetExtension().MakeLower() != _T(".rar") ){
 						AddItem(CString(_T("rar://")) + fn + _T("?") + szThisFn , subs);
 						//AfxMessageBox(szThisFn);
 					}

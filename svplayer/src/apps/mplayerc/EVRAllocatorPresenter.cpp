@@ -1739,6 +1739,8 @@ void CEVRAllocatorPresenter::RenderThread()
 					else if (s.m_RenderSettings.bSynchronizeNearest && m_lOverWaitCounter < 20) // Present at the closest "safe" occasion at tergetSyncOffset ms before vsync to avoid tearing
 					{
 						REFERENCE_TIME rtRefClockTimeNow; if (m_pRefClock) m_pRefClock->GetTime(&rtRefClockTimeNow); // Reference clock time now
+						//SVP_LogMsg3(" EVR %f %f %f %f ", double(m_llLastSampleTime ) , double(rtRefClockTimeNow),  double(m_llSampleTime) , double(llRefClockTime));
+
 						LONG lLastVsyncTime = (LONG)((m_rtEstVSyncTime - rtRefClockTimeNow) / 10000); // Time of previous vsync relative to now
 
  						LONGLONG llNextSampleWait = (LONGLONG)(((double)lLastVsyncTime + GetDisplayCycle() - targetSyncOffset) * 10000); // Next safe time to Paint()

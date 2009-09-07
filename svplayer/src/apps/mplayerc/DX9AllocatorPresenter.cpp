@@ -1939,7 +1939,7 @@ void CDX9AllocatorPresenter::DrawStats()
 			OffsetRect(&rc, 0, TextHeight);
 		}
 
-		if (m_bIsEVR)
+		//if (m_bIsEVR)
 		{
 			strText.Format(L"Sample waiting time: %d ms", m_lNextSampleWait);
 			DrawText(rc, strText, 1);
@@ -2954,6 +2954,73 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 
 		m_nTearingPos = (m_nTearingPos + 7) % m_NativeVideoSize.cx;
 	}
+
+	if(0){
+		double targetSyncOffset;
+		AppSettings& s = AfxGetAppSettings();
+		m_pGenlock->GetTargetSyncOffset(&targetSyncOffset); // Target sync offset from settings
+
+		REFERENCE_TIME rtCurRefTime;
+		if (m_pRefClock) m_pRefClock->GetTime(&rtCurRefTime);
+		LONGLONG llRefClockTime = lpPresInfo->rtStart - (LONGLONG)((double)(lpPresInfo->rtEnd - lpPresInfo->rtStart) * 0.8);
+		//SVP_LogMsg3(" CVMR9AllocatorPresenter::PresentImage %f %f %f %f ", double(m_llLastSampleTime ) , double(rtCurRefTime),  double(lpPresInfo->rtStart) , double(lpPresInfo->rtEnd));
+		//SVP_LogMsg3(" CVMR9AllocatorPresenter::PresentImage %f %f %f %f ", (double)g_tSegmentStart , (double)g_tSampleStart , (double)llRefClockTime, double(lpPresInfo->rtStart));
+		m_lNextSampleWait = (LONG)((m_llSampleTime - llRefClockTime) / 10000); // Time left until sample is due, in ms
+		if (m_lNextSampleWait < 0)
+			m_lNextSampleWait = 0; // We came too late. Race through, discard the sample and get a new one
+		else if (s.m_RenderSettings.bSynchronizeNearest && m_lOverWaitCounter < 20) // Present at the closest "safe" occasion at tergetSyncOffset ms before vsync to avoid tearing
+		{
+			REFERENCE_TIME rtRefClockTimeNow; if (m_pRefClock) m_pRefClock->GetTime(&rtRefClockTimeNow); // Reference clock time now
+			//SVP_LogMsg3(" VMR9 fake EVR %f %f %f %f ", double(m_llLastSampleTime ) , double(rtRefClockTimeNow),  double(m_llSampleTime) , double(llRefClockTime));
+			LONG lLastVsyncTime = (LONG)((m_rtEstVSyncTime - rtRefClockTimeNow) / 10000); // Time of previous vsync relative to now
+
+			LONGLONG llNextSampleWait = (LONGLONG)(((double)lLastVsyncTime + GetDisplayCycle() - targetSyncOffset) * 10000); // Next safe time to Paint()
+			// 						while ((llRefClockTime + llNextSampleWait) < (m_llSampleTime + m_llHysteresis)) // While the proposed time is in the past of sample presentation time
+			// 						{
+			// 							llNextSampleWait = llNextSampleWait + (LONGLONG)(GetDisplayCycle() * 10000); // Try the next possible time, one display cycle ahead
+			// 						}
+			//By Tomasen: The while loop seems un-nesssery
+			LONGLONG llEachStep = (GetDisplayCycle() * 10000); // While the proposed time is in the past of sample presentation time
+			if(llEachStep){
+				LONGLONG llHowManyStepWeNeed = ((m_llSampleTime + m_llHysteresis) - (llRefClockTime + llNextSampleWait)) / llEachStep;   // Try the next possible time, one display cycle ahead
+				llNextSampleWait += llEachStep * llHowManyStepWeNeed;
+			}else
+				llNextSampleWait = 10000;
+			m_lNextSampleWait = (LONG)(llNextSampleWait / 10000);
+			m_lShiftToNearestPrev = m_lShiftToNearest;
+			m_lShiftToNearest = (LONG)((llRefClockTime + llNextSampleWait - m_llSampleTime) / 10000); // The adjustment made to get to the sweet point in time, in ms
+
+			if (m_bSnapToVSync)
+			{
+				LONG lDisplayCycle2 = (LONG)(GetDisplayCycle() / 2.0); // These are a couple of empirically determined constants used the control the "snap" function
+				LONG lDisplayCycle3 = (LONG)(GetDisplayCycle() / 3.0);
+				if ((m_lShiftToNearestPrev - m_lShiftToNearest) > lDisplayCycle2) // If a step down in the m_lShiftToNearest function. Display slower than video. 
+				{
+					m_bVideoSlowerThanDisplay = false;
+					m_llHysteresis = -(LONGLONG)(10000 * lDisplayCycle3);
+				}
+				else if ((m_lShiftToNearest - m_lShiftToNearestPrev) > lDisplayCycle2) // If a step up
+				{
+					m_bVideoSlowerThanDisplay = true;
+					m_llHysteresis = (LONGLONG)(10000 * lDisplayCycle3);
+				}
+				else if ((m_lShiftToNearest < (2 * lDisplayCycle3)) && (m_lShiftToNearest > lDisplayCycle3))
+					m_llHysteresis = 0; // Reset when between 1/3 and 2/3 of the way either way
+			}
+		}
+		if(m_lNextSampleWait > 100){
+			m_lOverWaitCounter++;m_lNextSampleWait = 100;
+		}else
+			m_lOverWaitCounter = 0;
+
+		if (m_lNextSampleWait <= 0)
+			m_lNextSampleWait = 0;
+		else{
+			Sleep(m_lNextSampleWait);
+			//SVP_LogMsg3("Should Sleep %d ",m_lNextSampleWait);
+		}
+	}
+	
 
 	Paint(true);
 	m_pcFramesDrawn++;

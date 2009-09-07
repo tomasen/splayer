@@ -504,7 +504,7 @@ void CUESettingPanel::ApplyAllSetting(){
 	s.nJumpDistL = _wtof(m_sgs_stepbig) * 1000;
 	
 	//Video Setting
-	s.bDisableEVR = !m_sgi_gpuacel;
+	//s.bDisableEVR = !m_sgi_gpuacel;
 
 	//s.fVMR9MixerMode = m_sgi_uservmrmixer ;
 	if(s.fVMR9MixerMode){
@@ -525,9 +525,9 @@ void CUESettingPanel::ApplyAllSetting(){
 	s.fVMRSyncFix = !!m_sgi_lockbackbuff;
 	s.fVMRGothSyncFix = !!m_sgi_GothSync;
 	
-	if(s.fVMRGothSyncFix){
-		s.fVMRSyncFix = false;
-	}
+	
+	s.fVMRSyncFix = false;
+	
 	s.m_RenderSettings.bSynchronizeNearest =  s.fVMRGothSyncFix;
 	s.m_RenderSettings.bSynchronizeVideo =   s.fVMRSyncFix;
 

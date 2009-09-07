@@ -634,6 +634,7 @@ HRESULT CDX9AllocatorPresenter::CreateDevice( )
 	m_ScreenSize.SetSize(d3ddm.Width, d3ddm.Height);
 	m_pGenlock->SetDisplayResolution(d3ddm.Width, d3ddm.Height);
 
+	m_ScreenSizeCurrent = m_ScreenSize;
 	if(s.fbSmoothMutilMonitor)
 		EnumDisplayMonitors(NULL, NULL, MonitorEnumProcDxDetect, (LPARAM)&m_ScreenSize);
 
@@ -1480,7 +1481,7 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 	m_pD3DDev->GetRasterStatus(0, &rasterStatus);	
 	m_uScanLineEnteringPaint = rasterStatus.ScanLine;
 	if (m_pRefClock) m_pRefClock->GetTime(&rtCurRefTime);
-	msSyncOffset = (m_ScreenSize.cy - m_uScanLineEnteringPaint) * m_dDetectedScanlineTime;
+	msSyncOffset = (m_ScreenSizeCurrent.cy - m_uScanLineEnteringPaint) * m_dDetectedScanlineTime;
 	rtSyncOffset = REFERENCE_TIME(10000.0 * msSyncOffset);
 	m_rtEstVSyncTime = rtCurRefTime + rtSyncOffset;
 
@@ -1757,7 +1758,29 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 				SVP_LogMsg5(_T("SUCCEEDED(m_pD3DDev->GetCreationParameters(&Parameters)) && m_pD3D->GetAdapterMonitor(Parameters.AdapterOrdinal) != m_pD3D->GetAdapterMonitor(GetAdapter(m_pD3D)))") );
 				fResetDevice = true;
 			}else{
-				m_pGenlock->SetMonitor(GetAdapter(m_pD3D));
+				D3DDISPLAYMODE d3ddm;
+				HRESULT hr;
+				ZeroMemory(&d3ddm, sizeof(d3ddm));
+				if(FAILED(m_pD3D->GetAdapterDisplayMode(CurrentMonitor, &d3ddm)))
+				{
+					//_Error += L"GetAdapterDisplayMode failed\n";
+					
+				}else{
+				
+					m_ScreenSizeCurrent.SetSize(d3ddm.Width, d3ddm.Height);
+
+					m_uD3DRefreshRate = d3ddm.RefreshRate;
+					DOUBLE dTargetSyncOffset = 500.0/m_uD3DRefreshRate ;
+					if(s.m_RenderSettings.fTargetSyncOffset != 1.0 ){
+						dTargetSyncOffset *= s.m_RenderSettings.fTargetSyncOffset;
+					}
+
+					m_pGenlock->SetTargetSyncOffset(dTargetSyncOffset);
+
+				}
+
+				
+				m_pGenlock->SetMonitor(CurrentMonitor);
 				m_pGenlock->GetTiming();
 			}
 
@@ -1946,7 +1969,7 @@ void CDX9AllocatorPresenter::DrawStats()
 			OffsetRect(&rc, 0, TextHeight);
 			if (s.m_RenderSettings.bSynchronizeNearest)
 			{
-				strText.Format(L"Sample paint time correction: %2d ms %s", m_lShiftToNearest, (m_llHysteresis == 0) ? L"| No snap to vsync" : L"| Snap to vsync");
+				strText.Format(L"Sample paint time correction: %+02d ms %s", m_lShiftToNearest, (m_llHysteresis == 0) ? L"| Snap to vsync : No " : L"| Snap to vsync : Yes");
 				DrawText(rc, strText, 1);
 				OffsetRect(&rc, 0, TextHeight);
 
@@ -2807,6 +2830,8 @@ STDMETHODIMP CVMR9AllocatorPresenter::StartPresenting(DWORD_PTR dwUserID)
 	EstimateRefreshTimings();
 	if (m_rtFrameCycle > 0.0) m_dCycleDifference = GetCycleDifference(); // Might have moved to another display
 
+	hEventGoth = CreateEvent(NULL, TRUE, FALSE, NULL);
+
 	return S_OK;
 }
 
@@ -2814,6 +2839,8 @@ STDMETHODIMP CVMR9AllocatorPresenter::StopPresenting(DWORD_PTR dwUserID)
 {
 	m_pGenlock->ResetTiming();
 	m_pRefClock = NULL;
+	if(hEventGoth)
+		CloseHandle(hEventGoth);
 	return S_OK;
 }
 
@@ -2841,6 +2868,11 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 			{
 				m_fps = 10000000.0 / m_rtFrameCycle;
 				m_dCycleDifference = GetCycleDifference();
+
+				if (abs(m_dCycleDifference) < 0.05) // If less than 5%
+					m_bSnapToVSync = true;
+				else
+					m_bSnapToVSync = false;
 			}
 			m_bInterlaced = ExtractInterlaced(&mt);
 
@@ -2955,14 +2987,22 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 		m_nTearingPos = (m_nTearingPos + 7) % m_NativeVideoSize.cx;
 	}
 
-	if(0){
+	AppSettings& s = AfxGetAppSettings();
+	if(s.m_RenderSettings.bSynchronizeNearest){
 		double targetSyncOffset;
-		AppSettings& s = AfxGetAppSettings();
 		m_pGenlock->GetTargetSyncOffset(&targetSyncOffset); // Target sync offset from settings
 
 		REFERENCE_TIME rtCurRefTime;
 		if (m_pRefClock) m_pRefClock->GetTime(&rtCurRefTime);
-		LONGLONG llRefClockTime = lpPresInfo->rtStart - (LONGLONG)((double)(lpPresInfo->rtEnd - lpPresInfo->rtStart) * 0.8);
+		LONGLONG llRefClockTime = lpPresInfo->rtStart - min( (GetDisplayCycle() * 10000) , (lpPresInfo->rtEnd - lpPresInfo->rtStart)) ;//- (LONGLONG)((double)(lpPresInfo->rtEnd - lpPresInfo->rtStart) * 0.1);
+
+		//Guess the CorrelatedTime
+		//m_rtLastPresentTimer += (lpPresInfo->rtEnd - lpPresInfo->rtStart); 
+		//if(m_rtLastPresentTimer < lpPresInfo->rtStart && m_rtLastPresentTimer > (lpPresInfo->rtStart - (lpPresInfo->rtEnd - lpPresInfo->rtStart)) ){
+			//llRefClockTime = m_rtLastPresentTimer;
+		//}else
+		//	m_rtLastPresentTimer = rtCurRefTime;
+
 		//SVP_LogMsg3(" CVMR9AllocatorPresenter::PresentImage %f %f %f %f ", double(m_llLastSampleTime ) , double(rtCurRefTime),  double(lpPresInfo->rtStart) , double(lpPresInfo->rtEnd));
 		//SVP_LogMsg3(" CVMR9AllocatorPresenter::PresentImage %f %f %f %f ", (double)g_tSegmentStart , (double)g_tSampleStart , (double)llRefClockTime, double(lpPresInfo->rtStart));
 		m_lNextSampleWait = (LONG)((m_llSampleTime - llRefClockTime) / 10000); // Time left until sample is due, in ms
@@ -2990,11 +3030,11 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 			m_lShiftToNearestPrev = m_lShiftToNearest;
 			m_lShiftToNearest = (LONG)((llRefClockTime + llNextSampleWait - m_llSampleTime) / 10000); // The adjustment made to get to the sweet point in time, in ms
 
-			if (m_bSnapToVSync)
+			if (abs(GetCycleDifference()) < 0.05)
 			{
 				LONG lDisplayCycle2 = (LONG)(GetDisplayCycle() / 2.0); // These are a couple of empirically determined constants used the control the "snap" function
 				LONG lDisplayCycle3 = (LONG)(GetDisplayCycle() / 3.0);
-				if ((m_lShiftToNearestPrev - m_lShiftToNearest) > lDisplayCycle2) // If a step down in the m_lShiftToNearest function. Display slower than video. 
+				if (m_bSnapToVSync) // If a step down in the m_lShiftToNearest function. Display slower than video. 
 				{
 					m_bVideoSlowerThanDisplay = false;
 					m_llHysteresis = -(LONGLONG)(10000 * lDisplayCycle3);
@@ -3008,15 +3048,19 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 					m_llHysteresis = 0; // Reset when between 1/3 and 2/3 of the way either way
 			}
 		}
-		if(m_lNextSampleWait > 100){
-			m_lOverWaitCounter++;m_lNextSampleWait = 100;
+		if(m_lNextSampleWait*10000 > (lpPresInfo->rtEnd - lpPresInfo->rtStart)){
+			//m_pcFramesDropped++;
+			//return S_OK;
+			//m_lNextSampleWait = 50;
 		}else
 			m_lOverWaitCounter = 0;
 
 		if (m_lNextSampleWait <= 0)
 			m_lNextSampleWait = 0;
 		else{
-			Sleep(m_lNextSampleWait);
+			if(hEventGoth)
+				WaitForSingleObject(hEventGoth, m_lNextSampleWait);
+
 			//SVP_LogMsg3("Should Sleep %d ",m_lNextSampleWait);
 		}
 	}

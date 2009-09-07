@@ -342,6 +342,7 @@ namespace DSObjects
 
 		UINT m_uScanLineEnteringPaint; // The active scan line when entering Paint()
 		REFERENCE_TIME m_rtEstVSyncTime; // Next vsync time in reference clock "coordinates"
+		HANDLE hEventGoth; // Last PresentImage Tiem for VMR9 
 
 		double m_fAvrFps; // Estimate the true FPS as given by the distance between vsyncs when a frame has been presented
 		double m_fJitterStdDev; // VSync estimate std dev
@@ -359,6 +360,7 @@ namespace DSObjects
 		DWORD m_dMainThreadId;
 
 		CSize m_ScreenSize;
+		CSize m_ScreenSizeCurrent;
 
 		// Display and frame rates and cycles
 		double m_dDetectedScanlineTime; // Time for one (horizontal) scan line. Extracted at stream start and used to calculate vsync time

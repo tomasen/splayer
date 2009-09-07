@@ -2721,7 +2721,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUDIONORMALIZERECOVER), fAudioNormalizeRecover);		
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUDIOBOOST), (int)AudioBoost);
 
-		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DISABLE_EVR), bDisableEVR);
+		//pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DISABLE_EVR), bDisableEVR);
 
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_FASTERSEEKING), fFasterSeeking);
 
@@ -3074,15 +3074,16 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		BOOL bDefaultVSync = false;
 		BOOL bDefaultGothSync = false;
 		if(!IsVista()){
-			HINSTANCE hEVR = LoadLibrary(_T("evr.dll"));
-			if(hEVR){
-				bDefaultGothSync = true;
-				FreeLibrary(hEVR);
-			}else
-				bDefaultVSync = true;
+			//HINSTANCE hEVR = LoadLibrary(_T("evr.dll"));
+			//if(hEVR){
+			bDefaultGothSync = true;
+			//	FreeLibrary(hEVR);
+			//}else
+			//	bDefaultVSync = true;
 		}
 
-		fVMRSyncFix = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VMRSYNCFIX), 0);//bDefaultVSync
+		//fVMRSyncFix = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VMRSYNCFIX), 0);//bDefaultVSync
+		fVMRSyncFix = 0;
 		fVMRGothSyncFix = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VMRSYNCFIX) + _T("Goth"), bDefaultGothSync);
 		if(iUpgradeReset < 652){
 			fVMRSyncFix = bDefaultVSync;
@@ -3184,7 +3185,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		
 		bNotChangeFontToYH = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_NOTCHANGEFONTTOYH), 0);
 //		disableSmartDrag = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DISABLESMARTDRAG),  -1 );
-		bDisableEVR = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DISABLE_EVR), 0);
+		//bDisableEVR = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DISABLE_EVR), 0);
 		bUseWaveOutDeviceByDefault = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEWAVEOUTDEVICEBYDEFAULT), 0);
 		fCustomChannelMapping = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_CUSTOMCHANNELMAPPING), 1);
 		iDecSpeakers = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DECSPEAKERS), -1);

@@ -733,6 +733,7 @@ public:
 	afx_msg void OnUpdatePlaySub2Delay(CCmdUI* pCmdUI);
 
 	afx_msg void OnPlayFramestep(UINT nID);
+	afx_msg void OnChangeVSyncOffset(UINT nID);
 	afx_msg void OnChangeResizer(UINT nID);
 	afx_msg void OnUpdatePlayFramestep(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateChangeResizer(CCmdUI* pCmdUI);

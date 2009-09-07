@@ -2087,6 +2087,8 @@ CMPlayerCApp::Settings::Settings()
 	ADDCMD((ID_DVD_SUB_NEXT, 0, FVIRTKEY|FNOINVERT, _T("Next Subtitle (DVD)")));
 	ADDCMD((ID_DVD_SUB_PREV, 0, FVIRTKEY|FNOINVERT, _T("Prev Subtitle (DVD)")));
 	ADDCMD((ID_DVD_SUB_ONOFF, 0, FVIRTKEY|FNOINVERT, _T("On/Off Subtitle (DVD)")));
+	ADDCMD((ID_VSYNC_OFFSET_MORE, VK_UP, FVIRTKEY|FALT|FCONTROL|FSHIFT|FNOINVERT, _T("加大VSync Offset")));
+	ADDCMD((ID_VSYNC_OFFSET_LESS, VK_DOWN, FVIRTKEY|FALT|FCONTROL|FSHIFT|FNOINVERT, _T("加大VSync Offset")));
 	ADDCMD((ID_SHOWDRAWSTAT, 'J', FVIRTKEY|FCONTROL|FNOINVERT, _T("显示画面输出信息")));
 #undef ADDCMD
 }
@@ -2824,6 +2826,9 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 			
 		}
 		CString		strTemp;
+		strTemp.Format (_T("%f"), m_RenderSettings.fTargetSyncOffset);
+		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VSYNC_TARGETOFFSET), strTemp);
+
 
 		strTemp.Format (_T("%f"), dBrightness);
 		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_COLOR_BRIGHTNESS), strTemp);
@@ -3018,6 +3023,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		fRewind = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_REWIND), FALSE);
 		iZoomLevel = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_ZOOM), 1);
 
+		
 		logostretch = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LOGOSTRETCH), 1);
 
 		bDisableCenterBigOpenBmp = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DISABLECENTERBIGOPENBMP), 0);
@@ -3085,6 +3091,9 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		m_RenderSettings.bSynchronizeNearest = fVMRGothSyncFix;
 		m_RenderSettings.bSynchronizeVideo = fVMRSyncFix;
 
+		{
+			
+		}
 		//fVMRSyncFix = 0;
 		iDX9Resizer = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DX9_RESIZER), 1);
 		fVMR9MixerMode = FALSE;//!!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VMR9MIXERMODE), FALSE);
@@ -3158,6 +3167,10 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		CheckSVPSubExts = _T(" .ts; .avi; .mkv;");
 		fbSmoothMutilMonitor = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SMOOTHMUTILMONITOR), 1);
 		bShowControlBar = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SHOWCONTROLBAR), 0);
+
+		m_RenderSettings.fTargetSyncOffset = (float)_tstof(pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VSYNC_TARGETOFFSET), _T("1.85")));
+
+
 		dBrightness		= (float)_tstof(pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_COLOR_BRIGHTNESS),	_T("100")));
 		if(iUpgradeReset < 580){
 			dBrightness = 100;

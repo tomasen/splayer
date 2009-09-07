@@ -365,7 +365,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 
 	ON_COMMAND_RANGE(ID_RESIZER_NORMAL, ID_RESIZER_SMARTBICUBIC, OnChangeResizer )
 	ON_UPDATE_COMMAND_UI_RANGE(ID_RESIZER_NORMAL, ID_RESIZER_SMARTBICUBIC, OnUpdateChangeResizer)
-
+	ON_COMMAND_RANGE(ID_VSYNC_OFFSET_MORE,ID_VSYNC_OFFSET_LESS, OnChangeVSyncOffset )
 	ON_COMMAND_RANGE(ID_PLAY_FRAMESTEP, ID_PLAY_FRAMESTEPCANCEL, OnPlayFramestep)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_PLAY_FRAMESTEP, ID_PLAY_FRAMESTEPCANCEL, OnUpdatePlayFramestep)
 	ON_COMMAND_RANGE(ID_PLAY_BWD, ID_PLAY_FWD, OnSmartSeek)
@@ -6832,7 +6832,19 @@ void CMainFrame::OnUpdatePlayPauseStop(CCmdUI* pCmdUI)
 	if(pCmdUI->m_nID == ID_PLAY_PLAY) fEnable = true;
 	pCmdUI->Enable(fEnable);
 }
+void CMainFrame::OnChangeVSyncOffset(UINT nID){
+	AppSettings& s = AfxGetAppSettings();
+	if(nID == ID_VSYNC_OFFSET_MORE)
+		s.m_RenderSettings.fTargetSyncOffset += 0.05;
+	else
+		s.m_RenderSettings.fTargetSyncOffset -= 0.05;
 
+	s.m_RenderSettings.fTargetSyncOffset = max(0.0, min(2.0,s.m_RenderSettings.fTargetSyncOffset));
+	CString szMsg;
+	szMsg.Format(_T("新的VSync TargetSyncOffset %0.2f ") , s.m_RenderSettings.fTargetSyncOffset);
+	SendStatusMessage(szMsg, 3000);
+	
+}
 void CMainFrame::OnPlayFramestep(UINT nID)
 {
 	REFERENCE_TIME rt;

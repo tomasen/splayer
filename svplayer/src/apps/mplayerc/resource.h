@@ -315,6 +315,8 @@
 #define ID_ABCONTROL_TOGGLE             1205
 #define ID_STATUS_MESSAGE               1324
 #define ID_SHOWDRAWSTAT                 1325
+#define ID_VSYNC_OFFSET_MORE            1326
+#define ID_VSYNC_OFFSET_LESS            1327
 #define ID_FILTERS_SUBITEM_START        2000
 #define ID_FILTERS_SUBITEM_END          2099
 #define ID_FILTERSTREAMS_SUBITEM_START  2100
@@ -726,6 +728,7 @@
 #define IDS_RS_VMDETECTED               13158
 #define IDS_RS_SAVESVPSUBWITHVIDEO      13159
 #define IDS_RS_GLOBAL_SUBFONTRATIO      13160
+#define IDS_RS_VSYNC_TARGETOFFSET       13161
 #define IDS_SRC_RADGT                   14000
 #define IDS_SRC_CDDA                    14001
 #define IDS_SRC_AVI                     14002

@@ -626,6 +626,9 @@ HRESULT CDX9AllocatorPresenter::CreateDevice( )
 
 	m_uD3DRefreshRate = d3ddm.RefreshRate;
 	DOUBLE dTargetSyncOffset = 500.0/m_uD3DRefreshRate ;
+	if(s.m_RenderSettings.fTargetSyncOffset != 1.0 ){
+		dTargetSyncOffset *= s.m_RenderSettings.fTargetSyncOffset;
+	}
 	m_pGenlock->SetTargetSyncOffset(dTargetSyncOffset);
 	m_dD3DRefreshCycle = 1000.0 / (double)m_uD3DRefreshRate; // In ms
 	m_ScreenSize.SetSize(d3ddm.Width, d3ddm.Height);

@@ -518,7 +518,7 @@ public:
 				iVMRFlushGPUWait = 0;
 				iVMRFlushGPUAfterPresent = 0;
 				fCycleDelta = 0.0012;
-				fTargetSyncOffset = 8.0;//10.0;
+				fTargetSyncOffset = 1.9;//10.0;
 				fControlLimit = 2.0;
 
 				iVMRDisableDesktopComposition = 0;

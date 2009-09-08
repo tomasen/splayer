@@ -3976,6 +3976,8 @@ void CMainFrame::SetupSVPAudioMenu(){
 
 		if(!(s.bNotAutoCheckSpeaker > 1 && s.fCustomSpeakers)){
 			szAudioChannel.Append(_T("(自动探测)"));
+		}else{
+			szAudioChannel.Append(_T("(手动指定)"));
 		}
 
 

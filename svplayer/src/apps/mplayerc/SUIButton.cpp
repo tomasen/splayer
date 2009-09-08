@@ -302,7 +302,7 @@ void CSUIBtnList::SetHideStat(UINT iMsgID, BOOL bHide){
 		CSUIButton* cBtn =  GetNext(pos);
 		if( iMsgID == cBtn->m_htMsgID ){
 			cBtn->m_hide = bHide;
-			break;
+			//break;
 		}
 	}
 

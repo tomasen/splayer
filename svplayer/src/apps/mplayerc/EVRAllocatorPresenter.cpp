@@ -1740,8 +1740,8 @@ void CEVRAllocatorPresenter::RenderThread()
 					{
 						while(m_lOverWaitCounter < 20){
 							if (m_rtFrameCycle > 0.0){
-								if(targetSyncOffset*20000 > m_rtFrameCycle){
-									targetSyncOffset = m_rtFrameCycle * 1/2;
+								if(targetSyncOffset*15000 > m_rtFrameCycle){
+									targetSyncOffset = (double)m_rtFrameCycle /15000;
 									m_pGenlock->SetTargetSyncOffset(targetSyncOffset);
 									m_lOverWaitCounter = 99;
 									break;

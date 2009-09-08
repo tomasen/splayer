@@ -107,8 +107,8 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 	CSUIButton* btnLogo =  new CSUIButton(L"SPLAYER.BMP" , ALIGN_TOPLEFT, CRect(20 , 7, 3,3)  , TRUE, 0, FALSE   ) ;
 	m_btnList.AddTail(btnLogo);
 
-	CSUIButton* btnSubFont =   new CSUIButton(L"BTN_FONT.BMP" , ALIGN_TOPLEFT, CRect(-47 , 5, 3,3)  , 0, ID_SUBSETFONTBOTH /*sub font*/, TRUE, ALIGN_RIGHT, btnPrev , CRect(20 , 10 , 30, 10) );
-	btnSubFont->addAlignRelButton(ALIGN_RIGHT, btnFFBack   , CRect(20 , 10 , 30, 10) );
+	CSUIButton* btnSubFont =   new CSUIButton(L"BTN_FONT.BMP" , ALIGN_TOPLEFT, CRect(-29 , 5, 3,3)  , 0, ID_SUBSETFONTBOTH /*sub font*/, TRUE, ALIGN_RIGHT, btnPrev , CRect(20 , 10 , 20, 10) );
+	btnSubFont->addAlignRelButton(ALIGN_RIGHT, btnFFBack   , CRect(20 , 10 , 20, 10) );
 	m_btnList.AddTail( btnSubFont );
 
  	CSUIButton* btnSubFontPlus =   new CSUIButton(L"BTN_FONT_PLUS.BMP" , ALIGN_TOPLEFT, CRect(-10 , 5, 3,3)  , 0, ID_SUBFONTUPBOTH , TRUE, ALIGN_LEFT, btnSubFont , CRect(3 , 10 , 3, 10) );
@@ -118,14 +118,16 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
  	btnSubFontMinus->addAlignRelButton(ALIGN_TOP, btnSubFontPlus ,  CRect(3 , 0 , 3, 0) );
  	m_btnList.AddTail( btnSubFontMinus );
 
-	CSUIButton* btnSubSwitch = new CSUIButton(L"BTN_SUB.BMP" , ALIGN_TOPLEFT, CRect(-37 , 5, 3,3)  , 0, ID_SUBTOOLBARBUTTON, TRUE, ALIGN_RIGHT, btnFFBack , CRect(20 , 10 , 80, 10) );
-	btnSubSwitch->addAlignRelButton(ALIGN_RIGHT, btnSubFont ,  CRect(20 , 10 , 35, 10) );
+	CSUIButton* btnSubSwitch = new CSUIButton(L"BTN_SUB.BMP" , ALIGN_TOPLEFT, CRect(-20 , 5, 3,3)  , 0, ID_SUBTOOLBARBUTTON, TRUE, ALIGN_RIGHT, btnFFBack , CRect(20 , 10 , 22, 10) );
+	btnSubSwitch->addAlignRelButton(ALIGN_LEFT, btnLogo ,  CRect(10 , 10 , 10, 10) );
+	btnSubSwitch->addAlignRelButton(ALIGN_RIGHT, btnPrev ,  CRect(20 , 10 , 22, 10) );
+	btnSubSwitch->addAlignRelButton(ALIGN_RIGHT, btnSubFont ,  CRect(20 , 10 , 18, 10) );
 	m_btnList.AddTail( btnSubSwitch );
 
 	m_btnList.AddTail( new CSUIButton(L"BTN_SUB_DELAY_REDUCE.BMP" , ALIGN_TOPLEFT, CRect(-42 , 7, 3,3)  , 0, ID_SUBDELAYDEC, TRUE, ALIGN_RIGHT, btnSubSwitch , CRect(2 , 3 , 2, 3) ) );
 	m_btnList.AddTail( new CSUIButton(L"BTN_SUB_DELAY_INCREASE.BMP" , ALIGN_TOPLEFT, CRect(-10 , 7, 3,3)  , 0, ID_SUBDELAYINC, TRUE, ALIGN_LEFT, btnSubSwitch , CRect(2 , 3 , 2, 3) ) );
 	
-	m_btnVolBG = new CSUIButton(L"VOLUME_BG.BMP" , ALIGN_TOPRIGHT, CRect(3 , 11, 20,3)  , TRUE, 0, FALSE ) ;
+	m_btnVolBG = new CSUIButton(L"VOLUME_BG.BMP" , ALIGN_TOPRIGHT, CRect(3 , 11, 15,3)  , TRUE, 0, FALSE ) ;
 	m_btnList.AddTail( m_btnVolBG );
 
 	BOOL bIsMuted = IsMuted();
@@ -135,13 +137,14 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 	CSUIButton* btnVol =  new CSUIButton(L"VOLUME.BMP" , ALIGN_TOPRIGHT, CRect(3 , 10, 105,3)  , FALSE, ID_VOLUME_MUTE, bIsMuted  , ALIGN_RIGHT, m_btnVolBG,  CRect(3 , 3 , 3, 3)) ;
 	m_btnList.AddTail(btnVol);
 
-	CSUIButton* btnSetting = new CSUIButton(L"BTN_SETTING.BMP" , ALIGN_TOPRIGHT, CRect(-70 , 5, 105,3)  , FALSE, ID_VIEW_OPTIONS, TRUE , ALIGN_RIGHT, btnMute , CRect(10 , 10 , 10, 10)) ;
-	btnSetting->addAlignRelButton( ALIGN_RIGHT , btnVol , CRect(10 , 10 , 10, 10) );
+	CSUIButton* btnSetting = new CSUIButton(L"BTN_SETTING.BMP" , ALIGN_TOPRIGHT, CRect(-70 , 5, 105,3)  , FALSE, ID_VIEW_OPTIONS, TRUE , ALIGN_RIGHT, btnMute , CRect(3 , 10 , 3, 10)) ;
+	btnSetting->addAlignRelButton( ALIGN_RIGHT , btnVol , CRect(3 , 10 , 3, 10) );
 	m_btnList.AddTail( btnSetting );
 
-	CSUIButton* btnPlayList = new CSUIButton(L"BTN_PLAYLIST.BMP" , ALIGN_TOPRIGHT, CRect(3 , 5, 105,3)  , FALSE, ID_VIEW_PLAYLIST, TRUE , ALIGN_RIGHT, btnSetting , CRect(3 , 10 , 3, 10)) ;
-	btnPlayList->addAlignRelButton( ALIGN_RIGHT , btnVol , CRect(10 , 10 , 10, 10) );
-	btnPlayList->addAlignRelButton( ALIGN_RIGHT , btnMute , CRect(10 , 10 , 10, 10) );
+	CSUIButton* btnPlayList = new CSUIButton(L"BTN_PLAYLIST.BMP" , ALIGN_TOPRIGHT, CRect(3 , 5, 33,3)  , FALSE, ID_VIEW_PLAYLIST, FALSE , ALIGN_RIGHT, btnSetting , CRect(3 , 10 , 3, 10)) ;
+	btnPlayList->addAlignRelButton( ALIGN_RIGHT , btnVol , CRect(3 , 10 , 3, 10) );
+	btnPlayList->addAlignRelButton( ALIGN_RIGHT , btnMute , CRect(3 , 10 , 3, 10) );
+	btnPlayList->addAlignRelButton( ALIGN_RIGHT , m_btnVolBG , CRect(3 , 10 , 3, 10) );
 	m_btnList.AddTail( btnPlayList );
 
 
@@ -197,36 +200,41 @@ void CPlayerToolBar::OnSize(UINT nType, int cx, int cy)
 	BOOL hideT2 = TRUE;
 	BOOL hideT3 = TRUE;
 	BOOL hideT4 = TRUE;
-	if( iWidth > 510 ){
+	if( iWidth > (382 * m_nLogDPIY / 96) ){
 			hideT1 = false;
 	}
-	if( iWidth > 580 ){
+	if( iWidth > (425 * m_nLogDPIY / 96) ){
 		hideT2 = false;
 	}
-	if( iWidth > 635 ){
+	if( iWidth > (490 * m_nLogDPIY / 96) ){
 		hideT3 = false;
 	}
-	if( iWidth > 680 ){
+	if( iWidth > (570 * m_nLogDPIY / 96) ){
 		hideT4 = false;
 	}
 
 	m_btnList.SetHideStat(ID_NAVIGATE_SKIPBACK , hideT1);
 	m_btnList.SetHideStat(ID_NAVIGATE_SKIPFORWARD , hideT1);
 
-	m_btnList.SetHideStat(ID_VIEW_PLAYLIST , hideT2);
-	m_btnList.SetHideStat(ID_SUBTOOLBARBUTTON , hideT2);
-	m_btnList.SetHideStat(ID_SUBDELAYDEC , hideT2);
-	m_btnList.SetHideStat(ID_SUBDELAYINC , hideT2);
-	m_btnList.SetHideStat(ID_FILE_OPENQUICK , hideT2);
-
+	m_btnList.SetHideStat(ID_VOLUME_MUTE , hideT2);
 	
-	m_btnList.SetHideStat(ID_FILE_SAVE_IMAGE , hideT3);
+	m_btnList.SetHideStat(ID_SUBTOOLBARBUTTON , hideT3);
+	m_btnList.SetHideStat(ID_SUBDELAYDEC , hideT3);
+	m_btnList.SetHideStat(ID_SUBDELAYINC , hideT3);
+	
+	m_btnList.SetHideStat(ID_FILE_SAVE_IMAGE , hideT4);
 	m_btnList.SetHideStat(ID_VIEW_OPTIONS , hideT3);
 	
 
 	m_btnList.SetHideStat(ID_SUBSETFONTBOTH , hideT4);
 	m_btnList.SetHideStat(ID_SUBFONTUPBOTH , hideT4);
 	m_btnList.SetHideStat(ID_SUBFONTDOWNBOTH , hideT4);
+
+	m_btnList.SetHideStat(ID_FILE_OPENQUICK , hideT4);
+
+	m_btnList.SetHideStat(ID_PLAY_FRAMESTEP , hideT4);
+	m_btnList.SetHideStat(ID_PLAY_STOP , hideT4);
+	
 
 	m_btnList.OnSize( rc);
 }
@@ -455,7 +463,7 @@ void CPlayerToolBar::UpdateButtonStat(){
 	m_btnList.SetHideStat( ID_PLAY_PAUSE , !fShow );
 	BOOL bLogo = pFrame->IsSomethingLoaded();
 	m_btnList.SetHideStat(_T("SPLAYER.BMP"), bLogo);
-	m_btnList.SetDisableStat(ID_SUBTOOLBARBUTTON, !bLogo);
+	//m_btnList.SetDisableStat(ID_SUBTOOLBARBUTTON, !bLogo);
 	if(!bLogo){
 		m_timerstr.Empty();
 	}

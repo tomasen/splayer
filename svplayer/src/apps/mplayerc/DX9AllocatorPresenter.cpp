@@ -2988,9 +2988,22 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 	}
 
 	AppSettings& s = AfxGetAppSettings();
-	if(s.m_RenderSettings.bSynchronizeNearest){
+	while(s.m_RenderSettings.bSynchronizeNearest && m_lOverWaitCounter < 20){
 		double targetSyncOffset;
 		m_pGenlock->GetTargetSyncOffset(&targetSyncOffset); // Target sync offset from settings
+		if (m_rtFrameCycle > 0.0){
+			if(targetSyncOffset*20000 > m_rtFrameCycle){
+				targetSyncOffset = m_rtFrameCycle * 1/2;
+				m_pGenlock->SetTargetSyncOffset(targetSyncOffset);
+				m_lOverWaitCounter = 30;
+				break;
+			}
+		}else{
+			if(targetSyncOffset*20000 >(lpPresInfo->rtEnd - lpPresInfo->rtStart)){
+				m_lOverWaitCounter++;
+				break;
+			}
+		}
 
 		REFERENCE_TIME rtCurRefTime;
 		if (m_pRefClock) m_pRefClock->GetTime(&rtCurRefTime);
@@ -3052,6 +3065,7 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 			//m_pcFramesDropped++;
 			//return S_OK;
 			//m_lNextSampleWait = 50;
+			//m_lOverWaitCounter++;
 		}else
 			m_lOverWaitCounter = 0;
 
@@ -3063,6 +3077,8 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 
 			//SVP_LogMsg3("Should Sleep %d ",m_lNextSampleWait);
 		}
+
+		break;
 	}
 	
 

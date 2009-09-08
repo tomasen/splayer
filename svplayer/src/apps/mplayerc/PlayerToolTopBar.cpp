@@ -165,7 +165,7 @@ int CPlayerToolTopBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	m_nLogDPIY = pFrame->m_nLogDPIY;
 
-	CSUIButton* btnClose = new CSUIButton(L"TOP_CLOSE.BMP" , ALIGN_TOPRIGHT, CRect(1 , 1, 1,1)  , 0, ID_FILE_EXIT, TRUE, 0, 0 ) ;
+	CSUIButton* btnClose = new CSUIButton(L"TOP_CLOSE.BMP" , ALIGN_TOPRIGHT, CRect(1 , 1, 1,1)  , 0, ID_FILE_BTN_EXIT, TRUE, 0, 0 ) ;
 	m_btnList.AddTail( btnClose );
 	CSUIButton* btnPin1 = new CSUIButton(L"PINAIL.BMP" , ALIGN_TOPRIGHT, CRect(1 , 1, 1,1)  , 0, ID_ONTOP_ALWAYS, FALSE,ALIGN_RIGHT,  btnClose, CRect(1,1,1,1)) ;
 	m_btnList.AddTail( btnPin1 );
@@ -249,7 +249,7 @@ void CPlayerToolTopBar::UpdateButtonStat(){
 	m_btnList.SetHideStat( ID_ONTOP_NEVER , !ontop );
 	m_btnList.SetHideStat( ID_ONTOP_ALWAYS , ontop );
 
-	m_btnList.SetHideStat( ID_FILE_EXIT , !fullscreen && !bCaptionHidden );
+	m_btnList.SetHideStat( ID_FILE_BTN_EXIT , !fullscreen && !bCaptionHidden );
 	m_btnList.SetHideStat( L"TOP_FULLSCREEN.BMP" , fullscreen  );
 	m_btnList.SetHideStat( L"TOP_RESTORE.BMP" , !fullscreen );
 }

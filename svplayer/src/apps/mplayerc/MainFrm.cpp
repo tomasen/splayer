@@ -415,6 +415,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND_RANGE(ID_NAVIGATE_MENU_LEFT, ID_NAVIGATE_MENU_LEAVE, OnNavigateMenuItem)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_NAVIGATE_MENU_LEFT, ID_NAVIGATE_MENU_LEAVE, OnUpdateNavigateMenuItem)
 
+	ON_COMMAND(ID_FILE_BTN_EXIT, OnTopBtnFileExit)
+
 	ON_COMMAND(ID_FAVORITES_ADD, OnFavoritesAdd)
 	ON_UPDATE_COMMAND_UI(ID_FAVORITES_ADD, OnUpdateFavoritesAdd)
 	ON_COMMAND(ID_FAVORITES_ORGANIZE, OnFavoritesOrganize)
@@ -3013,6 +3015,13 @@ bool CMainFrame::DoAfterPlaybackEvent()
 	return true;
 }
 
+void CMainFrame::OnTopBtnFileExit(){
+	if(m_fFullScreen){
+		SendMessage(WM_COMMAND, ID_VIEW_FULLSCREEN);
+	}else{
+		SendMessage(WM_COMMAND, ID_FILE_EXIT);
+	}
+}
 //
 // our WM_GRAPHNOTIFY handler
 //

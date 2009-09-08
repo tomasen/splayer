@@ -363,6 +363,7 @@ public:
 	int m_iPlaybackMode;
 
 	bool m_fFullScreen;
+	bool m_fScreenHigherThanVideo;
 	bool m_fPlaylistBeforeToggleFullScreen;
 	int m_WndSizeInited;
 	bool m_fHideCursor;

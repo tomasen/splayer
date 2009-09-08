@@ -200,14 +200,27 @@ int CPlayerToolTopBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 
 	m_btnList.AddTail( new CSUIButton(L"TOP_1X.BMP" , ALIGN_TOPLEFT, CRect(1 , 1, 1,1)  , 0, ID_VIEW_ZOOM_100, FALSE, 0, 0 ) );
-	m_btnList.AddTail( new CSUIButton(L"TOP_2X.BMP" , ALIGN_TOPLEFT, CRect(1 , 1, 1,1)  , 0, ID_VIEW_ZOOM_200, FALSE, ALIGN_LEFT, m_btnList.GetTail() , CRect(1,1,1,1)  ) );
+	CSUIButton* btn2X =  new CSUIButton(L"TOP_2X.BMP" , ALIGN_TOPLEFT, CRect(1 , 1, 1,1)  , 0, ID_VIEW_ZOOM_200, FALSE, ALIGN_LEFT, m_btnList.GetTail() , CRect(1,1,1,1)  );
+	m_btnList.AddTail(btn2X );
 
 
-	m_btnList.AddTail( new CSUIButton(L"TOP_NORMAL.BMP" , ALIGN_TOPLEFT, CRect(1 , 1, 1,1)  , 0, ID_VIEW_VF_FROMINSIDE, FALSE, ALIGN_LEFT, m_btnList.GetTail() , CRect(1,1,1,1)  ) );
-	CSUIButton* btnLetter  = new CSUIButton(L"TOP_LETTERBOX.BMP" , ALIGN_TOPLEFT, CRect(1 , 1, 1,1)  , 0, ID_VIEW_VF_FROMOUTSIDE, FALSE, ALIGN_LEFT, m_btnList.GetTail() , CRect(1,1,1,1)  ) ;
+	CSUIButton* btnNormal = new CSUIButton(L"TOP_NORMAL.BMP" , ALIGN_TOPLEFT, CRect(1 , 1, 1,1)  , 0, ID_VIEW_VF_FROMINSIDE, FALSE, ALIGN_LEFT, btn2X , CRect(1,1,1,1)  );
+	m_btnList.AddTail( btnNormal );
+
+	CSUIButton* btnNormalWider = new CSUIButton(L"TOP_NORMAL_WIDER.BMP" , ALIGN_TOPLEFT, CRect(1 , 1, 1,1)  , 0, ID_VIEW_VF_FROMINSIDE, TRUE, ALIGN_LEFT, btn2X , CRect(1,1,1,1)  );
+	m_btnList.AddTail( btnNormalWider );
+
+	CSUIButton* btnLetter  = new CSUIButton(L"TOP_LETTERBOX.BMP" , ALIGN_TOPLEFT, CRect(1 , 1, 1,1)  , 0, ID_VIEW_VF_FROMOUTSIDE, TRUE, ALIGN_LEFT, btn2X , CRect(1,1,1,1)  ) ;
 	m_btnList.AddTail( btnLetter);
-	
+
+	CSUIButton* btnLetterWider  = new CSUIButton(L"TOP_LETTERBOX_WIDER.BMP" , ALIGN_TOPLEFT, CRect(1 , 1, 1,1)  , 0, ID_VIEW_VF_FROMOUTSIDE, TRUE, ALIGN_LEFT, btn2X, CRect(1,1,1,1)  ) ;
+	m_btnList.AddTail( btnLetterWider);
+
+
 	CSUIButton* btnAudio  = new CSUIButton(L"TOP_AUDIO.BMP" , ALIGN_TOPLEFT, CRect(1 , 1, 1,1)  , 0, ID_MENU_AUDIO, FALSE, ALIGN_LEFT, btnLetter , CRect(5,1,1,1)  ) ;
+	btnAudio->addAlignRelButton( ALIGN_LEFT, btnLetterWider , CRect(5,1,1,1) );
+	btnAudio->addAlignRelButton( ALIGN_LEFT, btnNormalWider , CRect(5,1,1,1) );
+	btnAudio->addAlignRelButton( ALIGN_LEFT, btnNormal , CRect(5,1,1,1) );
 	m_btnList.AddTail( btnAudio);
 	
 	
@@ -252,6 +265,14 @@ void CPlayerToolTopBar::UpdateButtonStat(){
 	m_btnList.SetHideStat( ID_FILE_BTN_EXIT , !fullscreen && !bCaptionHidden );
 	m_btnList.SetHideStat( L"TOP_FULLSCREEN.BMP" , fullscreen  );
 	m_btnList.SetHideStat( L"TOP_RESTORE.BMP" , !fullscreen );
+
+	BOOL bViewFROMOUTSIDE = (AfxGetAppSettings().iDefaultVideoSize == 5);
+
+	m_btnList.SetHideStat( L"TOP_LETTERBOX_WIDER.BMP" , pFrame->m_fScreenHigherThanVideo || bViewFROMOUTSIDE);
+	m_btnList.SetHideStat( L"TOP_LETTERBOX.BMP" , !pFrame->m_fScreenHigherThanVideo || bViewFROMOUTSIDE);
+	m_btnList.SetHideStat( L"TOP_NORMAL_WIDER.BMP" , pFrame->m_fScreenHigherThanVideo || !bViewFROMOUTSIDE);
+	m_btnList.SetHideStat( L"TOP_NORMAL.BMP" , !pFrame->m_fScreenHigherThanVideo || !bViewFROMOUTSIDE);
+
 }
 void CPlayerToolTopBar::OnMove(int x, int y)
 {

@@ -209,6 +209,7 @@ class CMainFrame : public CFrameWnd, public CDropTarget  , protected ISkinMenuRe
 
 	void SetupOpenCDSubMenu();
 	void SetupFiltersSubMenu();
+	void SetupSVPAudioMenu();
 	void SetupAudioSwitcherSubMenu();
 	void SetupSubtitlesSubMenu(int subid = 1);
 	void SetupNavAudioSubMenu();
@@ -719,6 +720,7 @@ public:
 	afx_msg void OnViewOntop(UINT nID);
 	afx_msg void OnUpdateViewOntop(CCmdUI* pCmdUI);
 	afx_msg void OnViewOptions();
+	afx_msg void OnSetAudioNumberOfSpeaker();
 	afx_msg void OnShowDrawStats();
 
 	afx_msg void OnPlayPlay();

@@ -342,6 +342,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_VIEW_OPTIONS, OnViewOptions)
 	ON_COMMAND(ID_SHOWDRAWSTAT, OnShowDrawStats)
 	
+	ON_COMMAND(ID_SET_AUDIO_NUMBER_SPEAKER, OnSetAudioNumberOfSpeaker)
+
 	ON_COMMAND_RANGE(ID_SUB_DELAY_DOWN, ID_SUB_DELAY_UP, OnSubtitleDelay)
 	ON_COMMAND_RANGE(ID_SUB_DELAY_DOWN2, ID_SUB_DELAY_UP2, OnSubtitleDelay2)
 
@@ -3819,19 +3821,8 @@ void CMainFrame::OnInitMenuPopup(CMenu * pPopupMenu, UINT nIndex, BOOL bSysMenu)
 		}
 		else if(str == ResStr(IDS_AUDIO_POPUP)  )
 		{
-			SetupAudioSwitcherSubMenu();
-			SetupNavAudioSubMenu();
-			MenuMerge( &m_audios ,  &m_navaudio );
-			SetupAudioDeviceSubMenu();
-			CMenu* pSubMenuAD = &m_audiodevices;
-			if(pSubMenuAD ){
-				//if(m_audios.GetMenuItemCount())
-				//	m_audios.AppendMenu(MF_SEPARATOR);
-
-				m_audios.AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_USINGSPDIF, _T("数字输出(光纤/SPDIF/HDMI)"));
-				m_audios.AppendMenu(MF_POPUP, (UINT_PTR) pSubMenuAD->m_hMenu, _T("将声音输出至..."));
-			}
-
+			SetupSVPAudioMenu();
+			
 			pSubMenu = &m_audios;
 		}
 		else if(str == _T("字幕")) //ResStr(IDS_SUBTITLES_POPUP)
@@ -3969,7 +3960,31 @@ void CMainFrame::OnInitMenuPopup(CMenu * pPopupMenu, UINT nIndex, BOOL bSysMenu)
 		}
 	}
 }
+void CMainFrame::SetupSVPAudioMenu(){
+	SetupAudioSwitcherSubMenu();
+	SetupNavAudioSubMenu();
+	MenuMerge( &m_audios ,  &m_navaudio );
+	SetupAudioDeviceSubMenu();
+	CMenu* pSubMenuAD = &m_audiodevices;
+	if(pSubMenuAD ){
+		//if(m_audios.GetMenuItemCount())
+		//	m_audios.AppendMenu(MF_SEPARATOR);
+		AppSettings& s = AfxGetAppSettings();
 
+		CString szAudioChannel;
+		szAudioChannel.Format( _T("系统有 %d 个扬声器"), AfxGetMyApp()->GetNumberOfSpeakers() );
+
+		if(!(s.bNotAutoCheckSpeaker > 1 && s.fCustomSpeakers)){
+			szAudioChannel.Append(_T("(自动探测)"));
+		}
+
+
+		m_audios.AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_USINGSPDIF, _T("数字输出(光纤/SPDIF/HDMI)"));
+		m_audios.AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_SET_AUDIO_NUMBER_SPEAKER, szAudioChannel);
+		m_audios.AppendMenu(MF_POPUP, (UINT_PTR) pSubMenuAD->m_hMenu, _T("将声音输出至..."));
+	}
+
+}
 BOOL CMainFrame::OnMenu(CMenu* pMenu)
 {
 	if(!pMenu) return FALSE;
@@ -6616,6 +6631,9 @@ void CMainFrame::OnShowDrawStats(){
 	if(AfxGetMyApp()->m_fDisplayStats > 3){
 		AfxGetMyApp()->m_fDisplayStats = 0;
 	}
+}
+void CMainFrame::OnSetAudioNumberOfSpeaker(){
+	ShowOptions(CPPageAudioSwitcher::IDD);
 }
 void CMainFrame::OnViewOptions()
 {
@@ -14263,18 +14281,8 @@ void CMainFrame::OnUpdateSetAutoLoadSubtitle(CCmdUI *pCmdUI){
 	pCmdUI->SetCheck(s.fAutoloadSubtitles2 );
 }
 void CMainFrame::OnMenuAudio(){
-	SetupAudioSwitcherSubMenu();
-	SetupNavAudioSubMenu();
-	MenuMerge( &m_audios ,  &m_navaudio );
-	SetupAudioDeviceSubMenu();
-	CMenu* pSubMenuAD = &m_audiodevices;
-	if(pSubMenuAD ){
-		//if(m_audios.GetMenuItemCount())
-		//	m_audios.AppendMenu(MF_SEPARATOR);
-
-		m_audios.AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_USINGSPDIF, _T("数字输出(光纤/SPDIF/HDMI)"));
-		m_audios.AppendMenu(MF_POPUP, (UINT_PTR) pSubMenuAD->m_hMenu, _T("将声音输出至..."));
-	}
+	
+	SetupSVPAudioMenu();
 	OnMenu( &m_audios );
 }
 void CMainFrame::OnMenuVideo(){

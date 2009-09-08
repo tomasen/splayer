@@ -4212,11 +4212,15 @@ BOOL CALLBACK DS_GetAudioDeviceGUID(LPGUID lpGuid,
 								  LPGUID* pGuid) {
 								CString m_DisplayName = AfxGetAppSettings().AudioRendererDisplayName ;
 
-								if(m_DisplayName.Find( lpstrDescription) >=0){
+								//SVP_LogMsg3("%s vs %s %s" , CStringA(lpstrDescription) , CStringA(m_DisplayName) , CStringA(CStringFromGUID( *lpGuid )) );
+								//|| m_DisplayName.Find( CStringFromGUID( *lpGuid ) ) >= 0
+								if(m_DisplayName.Find( lpstrDescription) >=0 ){
+								//	SVP_LogMsg3("Got match audio");
 									if (lpGuid == NULL) {
-										memset(&(pGuid), 0, sizeof(GUID));
+								//		SVP_LogMsg3("Got match audio NULL");
+										memset(*(pGuid), 0, sizeof(GUID));
 									} else {
-										memcpy(&(pGuid), lpGuid, sizeof(GUID));
+										memcpy(*(pGuid), lpGuid, sizeof(GUID));
 									}
 
 								}
@@ -4233,9 +4237,12 @@ int  CMPlayerCApp::GetNumberOfSpeakers(LPCGUID lpcGUID, HWND hWnd){
 	CComPtr<IDirectSound> pDS;
 	DWORD spc = 0, defchnum = 2;
 	CString m_DisplayName = s.AudioRendererDisplayName ;
+	GUID GUID_Audio;
 	
 	if(!lpcGUID && !m_DisplayName.IsEmpty()){
-
+		if(!lpcGUID)
+			lpcGUID = &GUID_Audio;
+		//SVP_LogMsg3("DirectSoundEnumerate");
 		DirectSoundEnumerate((LPDSENUMCALLBACK) DS_GetAudioDeviceGUID, &lpcGUID);
 
 	}
@@ -4262,7 +4269,12 @@ int  CMPlayerCApp::GetNumberOfSpeakers(LPCGUID lpcGUID, HWND hWnd){
 			}
 			AfxGetAppSettings().szFGMLog.AppendFormat(_T("\r\nGotNumberOfSpeakers %d for %s"), defchnum, m_DisplayName);
 
+		//	SVP_LogMsg3("nGotNumberOfSpeakers %d for %s", defchnum , CStringA(m_DisplayName));
+
 		}
+		//SVP_LogMsg3("nGotNumberOfSpeakers %d for %s", defchnum , CStringA(m_DisplayName));
+	}else{
+		//SVP_LogMsg3("DirectSoundCreate fail");
 	}
 
 	return defchnum;

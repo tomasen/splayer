@@ -1022,6 +1022,7 @@
 #define ID__32864                       32864
 #define ID_32865                        32865
 #define ID_32866                        32866
+#define ID_SET_AUDIO_NUMBER_SPEAKER     32867
 #define IDS_VOLUME_BOOST_INC            33129
 #define IDS_VOLUME_BOOST_DEC            33130
 #define IDS_VOLUME_BOOST_MIN            33131

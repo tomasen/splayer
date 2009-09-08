@@ -529,7 +529,7 @@ void CUESettingPanel::ApplyAllSetting(){
 	s.fVMRSyncFix = false;
 	
 	s.m_RenderSettings.bSynchronizeNearest =  s.fVMRGothSyncFix;
-	s.m_RenderSettings.bSynchronizeVideo =   s.fVMRSyncFix;
+	s.m_RenderSettings.bSynchronizeVideo =  0;// s.fVMRSyncFix;
 
 	//s.m_RenderSettings.bSynchronizeNearest = !!m_sgi_lockbackbuff;
 	s.useGPUAcel = !!m_sgi_gpuacel;

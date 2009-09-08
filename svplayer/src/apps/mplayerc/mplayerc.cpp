@@ -2273,9 +2273,9 @@ void CMPlayerCApp::Settings::SetChannelMapByNumberOfSpeakers( int iSS , int iNum
 		iNumberOfSpeakers = GetNumberOfSpeakers();
 	}
 	memset(pSpeakerToChannelMap, 0, sizeof(pSpeakerToChannelMap));
-	for(int j = 0; j < 18; j++)
-		for(int i = 0; i <= j; i++)
-			pSpeakerToChannelMap[j][i] = 1<<i;
+ 	for(int j = 0; j < 18; j++)
+ 		for(int i = 0; i <= j; i++)
+ 			pSpeakerToChannelMap[j][i] = 1<<i;
 	if(!iSS){
 		switch( iNumberOfSpeakers ){
 				case 1: iDecSpeakers = 100;	break;
@@ -2721,7 +2721,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUDIONORMALIZERECOVER), fAudioNormalizeRecover);		
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUDIOBOOST), (int)AudioBoost);
 
-		//pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DISABLE_EVR), bDisableEVR);
+		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DISABLE_EVR), bDisableEVR);
 
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_FASTERSEEKING), fFasterSeeking);
 
@@ -2944,7 +2944,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 			// WINBUG: on win2k this would crash WritePrivateProfileString
 			pApp->WriteProfileInt(_T(""), _T(""), pApp->GetProfileInt(_T(""), _T(""), 0)?0:1);
 		}
-		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("LastVersion"), 652);		
+		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("LastVersion"), 670);		
 		
 	}
 	else
@@ -3090,7 +3090,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 			fVMRGothSyncFix = bDefaultGothSync;
 		}
 		m_RenderSettings.bSynchronizeNearest = fVMRGothSyncFix;
-		m_RenderSettings.bSynchronizeVideo = fVMRSyncFix;
+		m_RenderSettings.bSynchronizeVideo = 0;//fVMRSyncFix;
 
 		{
 			
@@ -3185,7 +3185,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		
 		bNotChangeFontToYH = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_NOTCHANGEFONTTOYH), 0);
 //		disableSmartDrag = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DISABLESMARTDRAG),  -1 );
-		//bDisableEVR = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DISABLE_EVR), 0);
+		bDisableEVR = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DISABLE_EVR), 0);
 		bUseWaveOutDeviceByDefault = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEWAVEOUTDEVICEBYDEFAULT), 0);
 		fCustomChannelMapping = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_CUSTOMCHANNELMAPPING), 1);
 		iDecSpeakers = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DECSPEAKERS), -1);
@@ -3264,7 +3264,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		if(iUpgradeReset < 122){
 			fDownSampleTo441 = 0;
 		}
-		if(iUpgradeReset < 410){
+		if(iUpgradeReset < 670){
 			bDisableEVR = 0;
 		}
 		

@@ -296,6 +296,8 @@ m_ffmpeg_ac3[] =
 	{6, {0, 2, 1, 5, 3, 4,-1,-1}, SPEAKER_FRONT_LEFT|SPEAKER_FRONT_RIGHT|SPEAKER_FRONT_CENTER|SPEAKER_LOW_FREQUENCY|SPEAKER_BACK_LEFT|SPEAKER_BACK_RIGHT},// AC3_CHMODE_3F2R
 };
 
+double   CMpaDecFilter::m_dCenterChannelGain = 2.0;	
+
 CMpaDecFilter::CMpaDecFilter(LPUNKNOWN lpunk, HRESULT* phr) 
 	: CTransformFilter(NAME("CMpaDecFilter"), lpunk, __uuidof(this))
 	, m_iSampleFormat(SF_PCM16)
@@ -573,12 +575,21 @@ HRESULT CMpaDecFilter::ProcessLPCM()
 				{
 					int		nRemap = remap->ch[j];
 					*pDataOut = float(Temp[0][nRemap]) / float(SHRT_MAX);
+
+					if( nChannels > 5 && j == 2) //increase center volum
+						*pDataOut *= m_dCenterChannelGain;
+
 					++pDataOut;
 				}
 				for(int j = 0; j < nChannels; j++)
 				{
 					int		nRemap = remap->ch[j];
 					*pDataOut = float(Temp[1][nRemap]) / float(SHRT_MAX);
+
+					if( nChannels > 5 && j == 2) //increase center volum
+						*pDataOut *= m_dCenterChannelGain;
+
+
 					++pDataOut;
 				}
 			}
@@ -626,12 +637,20 @@ HRESULT CMpaDecFilter::ProcessLPCM()
 				{
 					int		nRemap = remap->ch[j];
 					*pDataOut = float(Temp[0][nRemap]) / float(1<<23);
+
+					if( nChannels > 5 && j == 2) //increase center volum
+						*pDataOut *= m_dCenterChannelGain;
+
 					++pDataOut;
 				}
 				for(int j = 0; j < nChannels; j++)
 				{
 					int		nRemap = remap->ch[j];
 					*pDataOut = float(Temp[1][nRemap]) / float(1<<23);
+					
+					if( nChannels > 5 && j == 2) //increase center volum
+						*pDataOut *= m_dCenterChannelGain;
+
 					++pDataOut;
 				}
 			}
@@ -673,12 +692,20 @@ HRESULT CMpaDecFilter::ProcessLPCM()
 				{
 					int		nRemap = remap->ch[j];
 					*pDataOut = float(Temp[0][nRemap]) / float(1<<23);
+
+					if( nChannels > 5 && j == 2) //increase center volum
+						*pDataOut *= m_dCenterChannelGain;
+
 					++pDataOut;
 				}
 				for(int j = 0; j < nChannels; j++)
 				{
 					int		nRemap = remap->ch[j];
 					*pDataOut = float(Temp[1][nRemap]) / float(1<<23);
+
+					if( nChannels > 5 && j == 2) //increase center volum
+						*pDataOut *= m_dCenterChannelGain;
+
 					++pDataOut;
 				}
 			}
@@ -721,7 +748,12 @@ HRESULT CMpaDecFilter::ProcessHdmvLPCM(bool bAlignOldBuffer) // Blu ray LPCM
 			for(int j = 0; j < wfein->nChannels; j++)
 			{
 				int		nRemap = remap->ch[j];
-				*pDataOut = (float)(short)((pDataIn[nRemap*2]<<8)|pDataIn[nRemap*2+1]) / SHRT_MAX;
+
+				sample_t thisch_level = 1.0;
+				if( wfein->nChannels > 5 && j == 2) //increase center volum
+					thisch_level = 1.0/m_dCenterChannelGain;
+
+				*pDataOut = (float)((short)((pDataIn[nRemap*2]<<8)|pDataIn[nRemap*2+1]) / SHRT_MAX) / thisch_level;
 				pDataOut++;
 			}
 			pDataIn += wfein->nChannels*2;
@@ -738,8 +770,12 @@ HRESULT CMpaDecFilter::ProcessHdmvLPCM(bool bAlignOldBuffer) // Blu ray LPCM
 			{
 				BYTE		nRemap = remap->ch[j];
 
+				sample_t thisch_level = 1.0;
+				if( wfein->nChannels > 5 && j == 2) //increase center volum
+					thisch_level = 1.0/m_dCenterChannelGain;
+
 				lSample = (long)pDataIn[nRemap*3]<<24 | (long)pDataIn[nRemap*3+1]<<16 | (long)pDataIn[nRemap*3+2]<<8;
-				*pDataOut = (float)(long)lSample / 0x80000000;
+				*pDataOut = ((float)(long)lSample / 0x80000000) / thisch_level;
 
 				pDataOut++;
 			}
@@ -796,7 +832,8 @@ HRESULT CMpaDecFilter::ProcessA52(BYTE* p, int buffsize, int& size, bool& fEnoug
 					iSpeakerConfig = abs(iSpeakerConfig);
 					SetSpeakerConfig(ac3,iSpeakerConfig);
 				}
-				flags = iSpeakerConfig&(A52_CHANNEL_MASK|A52_LFE);
+				//Let audio switch to handle channel mapping
+				flags = A52_3F2R|A52_LFE;//&(A52_CHANNEL_MASK|A52_LFE);
 				flags |= A52_ADJUST_LEVEL;
 
 				sample_t level = 1, gain = 1, bias = 0;
@@ -816,6 +853,8 @@ HRESULT CMpaDecFilter::ProcessA52(BYTE* p, int buffsize, int& size, bool& fEnoug
 
 					int i = 0;
 
+					//SVP_LogMsg3("%d Ch" , scmap.nChannels);
+
 					for(; i < 6 && a52_block(m_a52_state) == 0; i++)
 					{
 						sample_t* samples = a52_samples(m_a52_state);
@@ -825,7 +864,11 @@ HRESULT CMpaDecFilter::ProcessA52(BYTE* p, int buffsize, int& size, bool& fEnoug
 							for(int ch = 0; ch < scmap.nChannels; ch++)
 							{
 								ASSERT(scmap.ch[ch] != -1);
-								*p++ = (float)(*(samples + 256*scmap.ch[ch]) / level);
+								sample_t thisch_level = level;
+								if( scmap.nChannels > 5 && ch == 2) //increase center volum
+									thisch_level = 1.0/m_dCenterChannelGain;
+
+								*p++ = (float)(*(samples + 256*scmap.ch[ch]) / thisch_level);
 							}
 						}
 					}
@@ -1091,7 +1134,7 @@ HRESULT CMpaDecFilter::ProcessDTS()
 						SetSpeakerConfig(dts,iSpeakerConfig);
 					}
 					
-					flags = iSpeakerConfig&(DTS_CHANNEL_MASK|DTS_LFE);
+					flags = DTS_3F2R|DTS_LFE;// iSpeakerConfig&(DTS_CHANNEL_MASK|DTS_LFE);
 					flags |= DTS_ADJUST_LEVEL;
 
 					sample_t level = 1, gain = 1, bias = 0;
@@ -1112,17 +1155,22 @@ HRESULT CMpaDecFilter::ProcessDTS()
 						float* p = pBuff.GetData();
 
 						int i = 0;
-
+						//SVP_LogMsg3("%d ch", scmap.nChannels);
 						for(; i < blocks && dts_block(m_dts_state) == 0; i++)
 						{
 							sample_t* samples = dts_samples(m_dts_state);
 
 							for(int j = 0; j < 256; j++, samples++)
 							{
+								
 								for(int ch = 0; ch < scmap.nChannels; ch++)
 								{
 									ASSERT(scmap.ch[ch] != -1);
-									*p++ = (float)(*(samples + 256*scmap.ch[ch]) / level);
+									sample_t thisch_level = level;
+									if( scmap.nChannels > 5 && ch == 2) //increase center volum
+										thisch_level = 1.0/m_dCenterChannelGain;
+
+									*p++ = (float)(*(samples + 256*scmap.ch[ch]) / thisch_level);
 								}
 							}
 						}

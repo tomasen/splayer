@@ -156,6 +156,7 @@ public:
 	CMpaDecFilter(LPUNKNOWN lpunk, HRESULT* phr);
 	virtual ~CMpaDecFilter();
 
+	static double  m_dCenterChannelGain;
 	bool m_fbUseSPDIF;
 	DECLARE_IUNKNOWN
     STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void** ppv);

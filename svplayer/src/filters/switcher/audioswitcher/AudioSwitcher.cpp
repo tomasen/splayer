@@ -88,7 +88,7 @@ CFilterApp theApp;
 
 CAudioSwitcherFilter::CAudioSwitcherFilter(LPUNKNOWN lpunk, HRESULT* phr)
 	: CStreamSwitcherFilter(lpunk, phr, __uuidof(this))
-	, m_fCustomChannelMapping(false)
+	, m_fCustomChannelMapping(true)
 	, m_fDownSampleTo441(false)
 	, m_rtAudioTimeShift(0)
 	, m_rtNextStart(0)
@@ -538,6 +538,7 @@ STDMETHODIMP CAudioSwitcherFilter::GetSpeakerConfig(bool* pfCustomChannelMapping
 
 STDMETHODIMP CAudioSwitcherFilter::SetSpeakerConfig(bool fCustomChannelMapping, DWORD pSpeakerToChannelMap[18][18])
 {
+	fCustomChannelMapping = true;
 	if(m_State == State_Stopped || m_fCustomChannelMapping != fCustomChannelMapping
 	|| memcmp(m_pSpeakerToChannelMap, pSpeakerToChannelMap, sizeof(m_pSpeakerToChannelMap)))
 	{

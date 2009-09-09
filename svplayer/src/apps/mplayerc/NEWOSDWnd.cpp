@@ -38,6 +38,7 @@ BEGIN_MESSAGE_MAP(CNEWOSDWnd, CWnd)
 	ON_WM_ERASEBKGND()
 	ON_WM_ENABLE()
 	ON_WM_CLOSE()
+	ON_WM_SETFOCUS()
 END_MESSAGE_MAP()
 
 
@@ -313,4 +314,10 @@ void CNEWOSDWnd::OnClose()
 
 void CNEWOSDWnd::OnRealClose(){
 	__super::OnClose();
+}
+void CNEWOSDWnd::OnSetFocus(CWnd* pOldWnd)
+{
+	//CWnd::OnSetFocus(pOldWnd);
+
+	AfxGetMainWnd()->SendMessage(WM_SETFOCUS, (WPARAM )m_hWnd, NULL);
 }

@@ -58,6 +58,9 @@ public:
 	afx_msg void OnDestroy();
 	afx_msg void OnMouseLeave();
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
+	afx_msg BOOL OnNcActivate(BOOL bActive);
+	afx_msg void OnSetFocus(CWnd* pOldWnd);
+	afx_msg void OnWindowPosChanging(WINDOWPOS* lpwndpos);
 };
 
 

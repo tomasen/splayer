@@ -28,6 +28,7 @@ BEGIN_MESSAGE_MAP(CSeekBarTip, CWnd)
 	ON_WM_CLOSE()
 	ON_WM_MOUSEMOVE()
 	ON_WM_TIMER()
+	ON_WM_SETFOCUS()
 END_MESSAGE_MAP()
 
 
@@ -237,4 +238,11 @@ void CSeekBarTip::OnTimer(UINT_PTR nIDEvent)
 		SetTips(m_delayText, m_delayMove, &m_delayPoint);
 	}
 	CWnd::OnTimer(nIDEvent);
+}
+
+void CSeekBarTip::OnSetFocus(CWnd* pOldWnd)
+{
+	//CWnd::OnSetFocus(pOldWnd);
+
+	AfxGetMainWnd()->SendMessage(WM_SETFOCUS, (WPARAM )m_hWnd, NULL);;
 }

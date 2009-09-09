@@ -13,6 +13,7 @@ IMPLEMENT_DYNAMIC(CSVPDialog, CWnd)
 CSVPDialog::CSVPDialog()
 : m_bgColor(0)
 , m_borderColor(0xefefef)
+, m_bFocused(0)
 {
 	m_btnClose.m_btnMode = 1; //x
 	m_btnClose.m_borderColor = 0x787878;
@@ -34,6 +35,8 @@ BEGIN_MESSAGE_MAP(CSVPDialog, CWnd)
 	ON_WM_MOVE()
 	ON_WM_TIMER()
 	ON_WM_SHOWWINDOW()
+	ON_WM_SETFOCUS()
+	ON_WM_KILLFOCUS()
 END_MESSAGE_MAP()
 
 // CSVPDialog message handlers
@@ -161,4 +164,22 @@ void CSVPDialog::OnShowWindow(BOOL bShow, UINT nStatus)
 	if(bShow)
 		SetTimer(IDT_CLOSE, 3000, NULL);
 	// TODO: Add your message handler code here
+}
+
+void CSVPDialog::OnSetFocus(CWnd* pOldWnd)
+{
+	CWnd::OnSetFocus(pOldWnd);
+
+	m_bFocused = TRUE;
+
+	AfxGetMainWnd()->SendMessage(WM_NCACTIVATE, TRUE, NULL);;
+}
+
+void CSVPDialog::OnKillFocus(CWnd* pNewWnd)
+{
+	CWnd::OnKillFocus(pNewWnd);
+
+	m_bFocused = FALSE;
+
+	
 }

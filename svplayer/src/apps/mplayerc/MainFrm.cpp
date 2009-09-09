@@ -505,6 +505,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_WM_NCCREATE()
 	ON_WM_ACTIVATE()
 	ON_WM_PAINT()
+	ON_WM_WINDOWPOSCHANGING()
 	END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1229,9 +1230,19 @@ void CMainFrame::OnMove(int x, int y)
 
 LRESULT CMainFrame::OnNcActivate( WPARAM wParam, LPARAM lParam)
 {
-	//SVP_LogMsg(_T("OnNcActivate"));
-	RedrawWindow();
-	return TRUE;
+	
+	AppSettings& s = AfxGetAppSettings();
+	if(s.bAeroGlass){
+		//return DefWindowProc(WM_NCACTIVATE , wParam, lParam);;
+		 
+		//| GetForegroundWindow()->m_hWnd == m_wndColorControlBar.m_hWnd 
+		return __super::OnNcActivate(wParam );//|| (::IsChild(m_hWnd, tWnd->m_hWnd))
+	}else{
+		//SVP_LogMsg(_T("OnNcActivate"));
+		RedrawWindow();
+		return TRUE;
+	}
+	
 }
 static LONGLONG m_lastTimeToggleFullsreen = 0;
 LRESULT CMainFrame::OnStatusMessage(  WPARAM wParam, LPARAM lParam){
@@ -14144,6 +14155,7 @@ void CMainFrame::OnSetsnapshotpath()
 
 void CMainFrame::OnKillFocus(CWnd* pNewWnd)
 {
+
 	__super::OnKillFocus(pNewWnd);
 
 	// TODO: Add your message handler code here
@@ -15164,4 +15176,16 @@ LRESULT CMainFrame::OnNcCalcSizeNewUI(   WPARAM wParam, LPARAM lParam){
 	//SVP_LogMsg(szLog);
 	}*/
 
+}
+
+void CMainFrame::OnWindowPosChanging(WINDOWPOS* lpwndpos)
+{
+// 	if(lpwndpos->hwndInsertAfter == m_wndToolTopBar.m_hWnd || lpwndpos->hwnd == m_wndToolTopBar.m_hWnd){
+// 		//AfxMessageBox(_T("sd"));
+// 		
+// 		return;
+// 	}
+	__super::OnWindowPosChanging(lpwndpos);
+
+	// TODO: Add your message handler code here
 }

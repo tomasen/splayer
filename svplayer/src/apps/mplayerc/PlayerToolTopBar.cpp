@@ -46,6 +46,9 @@ BEGIN_MESSAGE_MAP(CPlayerToolTopBar, CWnd)
 	ON_WM_DESTROY()
 	ON_WM_MOUSELEAVE()
 	ON_WM_SHOWWINDOW()
+	ON_WM_NCACTIVATE()
+	ON_WM_SETFOCUS()
+	ON_WM_WINDOWPOSCHANGING()
 END_MESSAGE_MAP()
 
 
@@ -571,5 +574,30 @@ void CPlayerToolTopBar::OnShowWindow(BOOL bShow, UINT nStatus)
 	
 	CWnd::OnShowWindow(bShow, nStatus);
 
+}
+
+BOOL CPlayerToolTopBar::OnNcActivate(BOOL bActive)
+{
+	// TODO: Add your message handler code here and/or call default
+	//CWnd::
+	return __super::OnNcActivate(bActive);;
+}
+
+void CPlayerToolTopBar::OnSetFocus(CWnd* pOldWnd)
+{
 	
+	//CWnd::OnSetFocus(pOldWnd);
+
+	AfxGetMainWnd()->SendMessage(WM_SETFOCUS, (WPARAM )m_hWnd, NULL);
+
+	//::SetForegroundWindow( AfxGetMainWnd()->m_hWnd );
+
+	// TODO: Add your message handler code here
+}
+
+void CPlayerToolTopBar::OnWindowPosChanging(WINDOWPOS* lpwndpos)
+{
+	CWnd::OnWindowPosChanging(lpwndpos);
+
+	// TODO: Add your message handler code here
 }

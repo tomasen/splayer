@@ -41,6 +41,7 @@ public:
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnEnable(BOOL bEnable);
 	afx_msg void OnClose();
+	afx_msg void OnSetFocus(CWnd* pOldWnd);
 };
 
 

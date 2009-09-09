@@ -3452,7 +3452,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		iEvrBuffers		= pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_EVR_BUFFERS), 5);
 
 		bNewMenu		= pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USENEWMENU), 0);
-		bAeroGlass		= pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEAEROGLASS), 0);//bAeroGlassAvalibility
+		bAeroGlass		= pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEAEROGLASS), bAeroGlassAvalibility);//bAeroGlassAvalibility
 		if(!bAeroGlassAvalibility)
 			bAeroGlass = false;
 

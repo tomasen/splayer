@@ -1937,7 +1937,7 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 	//pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_MPEG1Payload);
 	//m_transform.AddTail(pFGF);
 
-	if ( s.useGPUAcel )
+	if ( s.useGPUAcel && !s.bIsIVM)
 	{
 		UINT64 gMerit =  MERIT64_ABOVE_DSHOW+100;
 		if(s.useGPUCUDA){gMerit =  MERIT64_ABOVE_DSHOW+5;}

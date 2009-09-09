@@ -9771,6 +9771,7 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 			//render mms our own way	
 			hr = OpenMMSUrlStream(fn);
 		}
+		
 		if(FAILED(hr))
 			hr = pGB->RenderFile(CStringW(fn), NULL);
 
@@ -10775,6 +10776,9 @@ void CMainFrame::OnEnableDX9(){
 bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 {
 	AppSettings& s = AfxGetAppSettings();
+
+	s.bIsIVM = false;
+
 	if(m_iMediaLoadState != MLS_CLOSED && m_iMediaLoadState != MLS_LOADING)
 	{
 		ASSERT(0);
@@ -10803,6 +10807,9 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 			if(pOFD->fns.IsEmpty()) throw _T("没有找到文件");
 
 			CString fn = pOFD->fns.GetHead();
+
+			if(fn.Right(4).MakeLower() == _T(".ivm"))
+				s.bIsIVM = true;
 
 			int i = fn.Find(_T(":\\"));
 			if(i > 0)
@@ -13786,6 +13793,8 @@ void CMainFrame::OpenMedia(CAutoPtr<OpenMediaData> pOMD)
 
 void CMainFrame::CloseMedia()
 {
+
+	AfxGetAppSettings().bIsIVM = false;
 
 	PostMessage(WM_COMMAND, ID_PLAY_PAUSE);
 

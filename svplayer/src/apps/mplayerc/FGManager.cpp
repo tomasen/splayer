@@ -2465,6 +2465,8 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 	
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("NeSplitter.ax")) ); 
 
+	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("IVMSource.ax")) );
+
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("scmpack.dll")) );
 	
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("rlapedec.ax")) ); 
@@ -2513,6 +2515,9 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 							m_source.AddTail(pFGF);
 						//else
 						//	m_transform.AddTail(pFGF);
+					}else	if(szFPath.Find(_T("IVMSource.ax")) > 0){
+						pFGF->m_extensions.AddTail(_T(".ivm"));
+						m_source.AddTail(pFGF);
 					}else	if(szFPath.Find(_T("NeSplitter.ax")) > 0){
 						pFGF->m_extensions.AddTail(_T(".ts"));
 						pFGF->m_extensions.AddTail(_T(".m2ts"));
@@ -2690,6 +2695,12 @@ CFGManagerPlayer::CFGManagerPlayer(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_OverlayMixer, L"Overlay Mixer", MERIT64_DO_NOT_USE));
 	}
 	//m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, GUIDFromCString(_T("{95F57653-71ED-42BA-9131-986CA0C6514F}")), L"Unknown Overlay Mixer", MERIT64_DO_NOT_USE));
+
+	if(s.bIsIVM){
+
+		m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VideoMixingRenderer, L"IVMäÖÈ¾Æ÷(DX7)", m_vrmerit+10));
+		m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VideoMixingRenderer9, L"IVMäÖÈ¾Æ÷(DX9)", m_vrmerit + ( (s.iDSVideoRendererType == VIDRNDT_DS_VMR9RENDERLESS) ? 12 : 8 ) ));
+	}
 
 	if(s.iDSVideoRendererType == VIDRNDT_DS_OLDRENDERER)
 		m_transform.AddTail(new CFGFilterRegistry(CLSID_VideoRenderer, m_vrmerit));

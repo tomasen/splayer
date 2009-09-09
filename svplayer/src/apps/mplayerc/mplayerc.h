@@ -598,6 +598,7 @@ public:
 		float			dHue;
 		float			dSaturation;
 
+		bool bIsIVM;
 		bool fEnableAudioSwitcher;
 		bool fDownSampleTo441;
 		bool fAudioTimeShift;

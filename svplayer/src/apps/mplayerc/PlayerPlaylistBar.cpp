@@ -948,6 +948,22 @@ CString CPlayerPlaylistBar::GetCur()
 	return(fn);
 }
 
+void CPlayerPlaylistBar::SetRandom(){
+	POSITION posCur = m_pl.GetPos();
+	POSITION pos = NULL;
+
+	for(int i = 0; i < 4; i++){
+		pos = m_pl.Shuffle();
+		if(pos != posCur)
+			break;
+	}
+
+	if(pos){
+		m_pl.SetPos(pos);
+		EnsureVisible(pos);
+	}
+	return ;
+}
 void CPlayerPlaylistBar::SetNext()
 {
 	POSITION pos = m_pl.GetPos(), org = pos;

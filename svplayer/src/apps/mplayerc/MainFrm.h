@@ -250,6 +250,7 @@ class CMainFrame : public CFrameWnd, public CDropTarget  , protected ISkinMenuRe
 	
 	CCritSec m_PaintLock;
 	int m_nLoops;
+	int m_nLoopSetting;
 
 	bool m_fCustomGraph;
 	bool m_fRealMediaGraph, m_fShockwaveGraph, m_fQuicktimeGraph;
@@ -729,6 +730,10 @@ public:
 	afx_msg void OnPlayPlaypause();
 	afx_msg void OnPlayStop();
 	afx_msg void OnUpdatePlayPauseStop(CCmdUI* pCmdUI);
+	
+	afx_msg void OnPlayMenuLoopSetting(UINT nID); 
+	afx_msg void OnUpdatePlayMenuLoopSetting(CCmdUI* pCmdUI);
+
 	afx_msg void OnPlaySubDelay(UINT nID); //SubDelay Button
 	afx_msg void OnUpdatePlaySubDelay(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateSubtitleFontChange(CCmdUI* pCmdUI);
@@ -787,6 +792,9 @@ public:
 	afx_msg void OnNavigateMenuItem(UINT nID);
 	afx_msg void OnUpdateNavigateMenuItem(CCmdUI* pCmdUI);
 
+	afx_msg void OnPlayListRandom();
+	afx_msg void OnUpdatePlayListRandom(CCmdUI* pCmdUI);
+
 	afx_msg void OnFavoritesAdd();
 	afx_msg void OnTopBtnFileExit();
 	void OnFavoritesAddReal( BOOL bRecent = FALSE );
@@ -813,10 +821,16 @@ public:
 	afx_msg void OnManualcheckupdate();
 	afx_msg void OnSvpsubMenuenable();
 	afx_msg void OnUpdateSvpsubMenuenable(CCmdUI *pCmdUI);
+	afx_msg void OnSmartDragEnable();
+	afx_msg void OnUpdateSmartDragEnable(CCmdUI *pCmdUI);
 	UINT m_iAudioChannelMaping;
 	afx_msg void OnAudioChannalMapMenu(UINT nID);
 	afx_msg void OnUpdateChannalMapMenu(CCmdUI *pCmdUI);
 	void SetupSubMenuToolbar();
+	afx_msg void OnThemeChangeMenu(UINT nID);
+	afx_msg void OnUpdateThemeChangeMenu(CCmdUI *pCmdUI);
+
+
 	afx_msg void OnAudioDeviceChange(UINT nID);
 	afx_msg void OnUpdateAudioDeviceChange(CCmdUI *pCmdUI);
 	afx_msg void OnVisitbbs();

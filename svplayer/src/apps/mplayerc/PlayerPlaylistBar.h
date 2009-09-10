@@ -81,7 +81,7 @@ public:
 	bool IsAtEnd();
 	bool GetCur(CPlaylistItem& pli);
 	CString GetCur();
-	void SetNext(), SetPrev(), SetFirst(), SetLast();
+	void SetNext(), SetPrev(), SetFirst(), SetLast(), SetRandom();
 	void SetCurValid(bool fValid);
 	void SetCurTime(REFERENCE_TIME rt);
 	int GetTotalTimeBeforeCur();

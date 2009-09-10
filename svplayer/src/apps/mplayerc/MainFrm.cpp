@@ -359,6 +359,9 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI(ID_PLAY_PAUSE, OnUpdatePlayPauseStop)
 	ON_UPDATE_COMMAND_UI(ID_PLAY_PLAYPAUSE, OnUpdatePlayPauseStop)
 	ON_UPDATE_COMMAND_UI(ID_PLAY_STOP, OnUpdatePlayPauseStop)
+	ON_COMMAND_RANGE(ID_PLAYBACK_LOOP_NORMAL,ID_PLAYBACK_LOOP_RANDOM, OnPlayMenuLoopSetting )
+	ON_UPDATE_COMMAND_UI_RANGE(ID_PLAYBACK_LOOP_NORMAL, ID_PLAYBACK_LOOP_RANDOM, OnUpdatePlayMenuLoopSetting )
+	
 	//Sub Delay Button
 	ON_COMMAND_RANGE(ID_SUBDELAYDEC,ID_SUBDELAYINC, OnPlaySubDelay )
 	ON_UPDATE_COMMAND_UI_RANGE(ID_SUBDELAYDEC, ID_SUBDELAYINC, OnUpdatePlaySubDelay )
@@ -419,6 +422,10 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 
 	ON_COMMAND(ID_FILE_BTN_EXIT, OnTopBtnFileExit)
 
+	
+	ON_COMMAND(ID_NAVIGATE_SKIPRANDOM, OnPlayListRandom)
+	ON_UPDATE_COMMAND_UI(ID_NAVIGATE_SKIPRANDOM, OnUpdatePlayListRandom)
+
 	ON_COMMAND(ID_FAVORITES_ADD, OnFavoritesAdd)
 	ON_UPDATE_COMMAND_UI(ID_FAVORITES_ADD, OnUpdateFavoritesAdd)
 	ON_COMMAND(ID_FAVORITES_ORGANIZE, OnFavoritesOrganize)
@@ -448,8 +455,14 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_DONATE, &CMainFrame::OnDonate)
 	ON_COMMAND(ID_JOINTEAM, &CMainFrame::OnJointeam)
 
+	ON_COMMAND(ID_SMART_DRAG_ENABLE, OnSmartDragEnable)
+	ON_UPDATE_COMMAND_UI(ID_SMART_DRAG_ENABLE , OnUpdateSmartDragEnable)
 
 	ON_COMMAND_RANGE(ID_BRIGHTINC, ID_BRIGHTDEC, OnColorControl )
+
+	
+	ON_COMMAND_RANGE(ID_THEME_AEROGLASS, ID_THEME_COLORMENU, OnThemeChangeMenu )
+	ON_UPDATE_COMMAND_UI_RANGE(ID_THEME_AEROGLASS, ID_THEME_COLORMENU, OnUpdateThemeChangeMenu )
 
 	ON_COMMAND_RANGE(IDS_CHANGE_AUDIO_DEVICE, IDS_CHANGE_AUDIO_DEVICE_END, OnAudioDeviceChange )
 	ON_UPDATE_COMMAND_UI_RANGE(IDS_CHANGE_AUDIO_DEVICE, IDS_CHANGE_AUDIO_DEVICE_END, OnUpdateAudioDeviceChange )
@@ -936,6 +949,11 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	m_playbackmenu.LoadMenu(IDR_PLAYBACK_MENU);
 	m_playback_resmenu.LoadMenu(IDR_PLAYBACK_MENU);
+
+	if(AfxGetAppSettings().fLoopForever)
+		m_nLoopSetting = ID_PLAYBACK_LOOP_PLAYLIST;
+	else
+		m_nLoopSetting = ID_PLAYBACK_LOOP_NORMAL;
 
 	m_WndSizeInited++;
 	return 0;
@@ -2252,6 +2270,21 @@ LRESULT CMainFrame::OnAppCommand(WPARAM wParam, LPARAM lParam)
 
 	return Default();
 }
+void CMainFrame::OnPlayMenuLoopSetting(UINT nID){
+	m_nLoopSetting = nID;
+}
+void CMainFrame::OnUpdatePlayMenuLoopSetting(CCmdUI* pCmdUI){
+	if(m_nLoopSetting)
+		pCmdUI->SetRadio(pCmdUI->m_nID == m_nLoopSetting);
+	else{
+
+		if(AfxGetAppSettings().fLoopForever)
+			m_nLoopSetting = ID_PLAYBACK_LOOP_PLAYLIST;
+		else
+			m_nLoopSetting = ID_PLAYBACK_LOOP_NORMAL;
+	}
+}
+
 //Play Toolbar Set Sub Delay
 void CMainFrame::OnPlaySubDelay(UINT nID)
 {
@@ -3062,13 +3095,15 @@ LRESULT CMainFrame::OnGraphNotify(WPARAM wParam, LPARAM lParam)
         {
 			AppSettings& s = AfxGetAppSettings();
 
+			if(DoAfterPlaybackEvent()) return hr;
+
+
 			if(m_wndPlaylistBar.GetCount() <= 1)
 			{
 				m_nLoops++;
 
-				if(DoAfterPlaybackEvent()) return hr;
-
-				if(s.fLoopForever || m_nLoops < s.nLoops)
+				
+				if((s.fLoopForever || m_nLoops < s.nLoops) && m_nLoopSetting != ID_PLAYBACK_LOOP_NORMAL)
 				{
 					if(GetMediaState() == State_Stopped)
 					{
@@ -3097,35 +3132,57 @@ LRESULT CMainFrame::OnGraphNotify(WPARAM wParam, LPARAM lParam)
 			}
 			else if(m_wndPlaylistBar.GetCount() > 1)
 			{
-				if(m_wndPlaylistBar.IsAtEnd())
-				{
-					if(DoAfterPlaybackEvent()) return hr;
-
+				if(m_nLoopSetting == ID_PLAYBACK_LOOP_CURRENT){
 					m_nLoops++;
-				}
 
-				if(s.fLoopForever || m_nLoops < s.nLoops)
-				{
-					int nLoops = m_nLoops;
-					PostMessage(WM_COMMAND, ID_NAVIGATE_SKIPFORWARD);
-					m_nLoops = nLoops;
-				}
-				else 
-				{
-					if(m_fFullScreen && s.fExitFullScreenAtTheEnd) 
-						OnViewFullscreen();
-
-					if(s.fRewind)
+					if(GetMediaState() == State_Stopped)
 					{
-						AfxGetAppSettings().nCLSwitches |= CLSW_OPEN; // HACK
-						PostMessage(WM_COMMAND, ID_NAVIGATE_SKIPFORWARD);
+						SendMessage(WM_COMMAND, ID_PLAY_PLAY);
 					}
 					else
 					{
-						m_fEndOfStream = true;
-						PostMessage(WM_COMMAND, ID_PLAY_PAUSE);
+						LONGLONG pos = 0;
+						pMS->SetPositions(&pos, AM_SEEKING_AbsolutePositioning, NULL, AM_SEEKING_NoPositioning);
+
+						if(GetMediaState() == State_Paused)
+						{
+							SendMessage(WM_COMMAND, ID_PLAY_PLAY);
+						}
+					}
+				}else if(m_nLoopSetting == ID_PLAYBACK_LOOP_RANDOM){
+					PostMessage(WM_COMMAND, ID_NAVIGATE_SKIPRANDOM);
+				
+				}else{
+
+					if(m_wndPlaylistBar.IsAtEnd())
+					{
+						m_nLoops++;
+					}
+
+					if( (s.fLoopForever || m_nLoops < s.nLoops || m_nLoopSetting == ID_PLAYBACK_LOOP_PLAYLIST) && !( m_wndPlaylistBar.IsAtEnd() && m_nLoopSetting == ID_PLAYBACK_LOOP_NORMAL ) )
+					{
+						int nLoops = m_nLoops;
+						PostMessage(WM_COMMAND, ID_NAVIGATE_SKIPFORWARD);
+						m_nLoops = nLoops;
+					}
+					else 
+					{
+						if(m_fFullScreen && s.fExitFullScreenAtTheEnd) 
+							OnViewFullscreen();
+
+						if(s.fRewind)
+						{
+							AfxGetAppSettings().nCLSwitches |= CLSW_OPEN; // HACK
+							PostMessage(WM_COMMAND, ID_NAVIGATE_SKIPFORWARD);
+						}
+						else
+						{
+							m_fEndOfStream = true;
+							PostMessage(WM_COMMAND, ID_PLAY_PAUSE);
+						}
 					}
 				}
+				
 			}
         }
 		else if(EC_ERRORABORT == evCode)
@@ -3809,12 +3866,27 @@ void CMainFrame::OnInitMenuPopup(CMenu * pPopupMenu, UINT nIndex, BOOL bSysMenu)
 		}else if(str == _T("播放"))
 		{
 			while(m_playbackmenu.RemoveMenu(0, MF_BYPOSITION));
+
+			if(m_iPlaybackMode != PM_DVD){
+				m_playbackmenu.AppendMenu(MF_STRING|MF_ENABLED, ID_PLAYBACK_LOOP_NORMAL, _T("不循环播放"));
+
+				
+				if(m_wndPlaylistBar.GetCount() > 1){
+					m_playbackmenu.AppendMenu(MF_STRING|MF_ENABLED, ID_PLAYBACK_LOOP_PLAYLIST, _T("循环播放(播放列表)"));
+					m_playbackmenu.AppendMenu(MF_STRING|MF_ENABLED, ID_PLAYBACK_LOOP_CURRENT, _T("循环播放(当前影片)"));
+					m_playbackmenu.AppendMenu(MF_STRING|MF_ENABLED, ID_PLAYBACK_LOOP_RANDOM, _T("随机播放(播放列表)"));
+				}else{
+					m_playbackmenu.AppendMenu(MF_STRING|MF_ENABLED, ID_PLAYBACK_LOOP_PLAYLIST, _T("循环播放"));
+				}
+			}
+
 			MenuMerge( &m_playbackmenu , m_playback_resmenu.GetSubMenu(1) );
 			
 			if(m_iPlaybackMode == PM_DVD)
 				MenuMerge( &m_playbackmenu , m_playback_resmenu.GetSubMenu(0) );
 				
 
+			MenuMerge( &m_playbackmenu ,m_playback_resmenu.GetSubMenu(2));
 			pSubMenu = &m_playbackmenu;
 		}
 		else if(str == _T("打开"))//ResStr(IDS_OPENCDROM_POPUP)
@@ -6256,6 +6328,26 @@ void CMainFrame::OnUpdateViewControlBar(CCmdUI* pCmdUI)
 
 void CMainFrame::OnViewSubresync()
 {
+	if(!m_wndSubresyncBar.IsWindowVisible() && m_pCAP){
+		if(m_pSubStreams.GetCount() > 0 && m_iSubtitleSel >= 0 ) {
+			int i = m_iSubtitleSel;
+			CComPtr<ISubStream> pSubStream;
+			POSITION pos = m_pSubStreams.GetHeadPosition();
+			while(pos && i >= 0)
+			{
+				pSubStream = m_pSubStreams.GetNext(pos);
+
+				if(i < pSubStream->GetStreamCount())
+				{
+					break;
+				}
+
+				i -= pSubStream->GetStreamCount();
+			}
+			if (pSubStream)
+				m_wndSubresyncBar.SetSubtitle(pSubStream, m_pCAP->GetFPS());
+		}
+	}
 	ShowControlBar(&m_wndSubresyncBar, !m_wndSubresyncBar.IsWindowVisible(), TRUE);
 }
 
@@ -8403,6 +8495,15 @@ void CMainFrame::OnFavoritesAddReal( BOOL bRecent)
 		// TODO
 	}
 }
+
+void CMainFrame::OnPlayListRandom(){
+	m_wndPlaylistBar.SetRandom();
+	OpenCurPlaylistItem( -1);
+}
+void CMainFrame::OnUpdatePlayListRandom(CCmdUI* pCmdUI){
+	pCmdUI->Enable( m_wndPlaylistBar.GetCount() > 1 );
+}
+
 
 void CMainFrame::OnUpdateFavoritesAdd(CCmdUI* pCmdUI)
 {
@@ -11291,6 +11392,35 @@ void CMainFrame::SetupOpenCDSubMenu()
 			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, id++, str);
 	}
 }
+void CMainFrame::OnThemeChangeMenu(UINT nID){
+	AppSettings& s = AfxGetAppSettings();
+	switch(nID){
+		case ID_THEME_AEROGLASS:
+			s.bAeroGlass = !s.bAeroGlass && s.bAeroGlassAvalibility;
+			break;
+		case ID_THEME_COLORMENU:
+			s.bNewMenu = !s.bNewMenu;
+			break;
+	}
+}
+
+void CMainFrame::OnUpdateThemeChangeMenu(CCmdUI *pCmdUI){
+	AppSettings& s = AfxGetAppSettings();
+	switch(pCmdUI->m_nID){
+		case ID_THEME_AEROGLASS:
+			pCmdUI->Enable(s.bAeroGlassAvalibility);
+
+			if(s.bAeroGlassAvalibility){
+				pCmdUI->SetCheck(s.bAeroGlass);
+			}else{
+				pCmdUI->SetText(_T("玻璃效果(系统不支持)"));
+			}
+			break;
+		case ID_THEME_COLORMENU:
+			pCmdUI->SetCheck(s.bNewMenu);
+			break;
+	}
+}
 void CMainFrame::OnUpdateAudioDeviceChange(CCmdUI *pCmdUI){
 	AppSettings& s = AfxGetAppSettings();
 	if( IDS_CHANGE_AUDIO_DEVICE == pCmdUI->m_nID ){
@@ -14078,6 +14208,14 @@ afx_msg void CMainFrame::OnSubtitleFontChange(UINT nID)
 		// 			m_pCAP->Invalidate();
 	}
 }
+
+void CMainFrame::OnSmartDragEnable(){
+	AppSettings& s = AfxGetAppSettings();
+	s.useSmartDrag = !s.useSmartDrag;
+}
+void CMainFrame::OnUpdateSmartDragEnable(CCmdUI *pCmdUI){
+	pCmdUI->SetCheck(!!(AfxGetAppSettings().useSmartDrag ));
+}
 void CMainFrame::OnSvpsubMenuenable()
 {
 	AppSettings& s = AfxGetAppSettings();
@@ -14259,10 +14397,10 @@ void CMainFrame::OnUpdateDeleteCurs(CCmdUI *pCmdUI)
 		pCmdUI->Enable(FALSE);
 		switch(pCmdUI->m_nID){
 			case ID_DELETECURFILE:
-				pCmdUI->SetText(_T("当前文件"));
+				pCmdUI->SetText(_T("删除当前文件"));
 			break;
 			case ID_DELCURFOLDER:
-				pCmdUI->SetText(_T("当前文件夹"));
+				pCmdUI->SetText(_T("删除当前文件夹"));
 			break;
 		}
 	}else{
@@ -14270,11 +14408,11 @@ void CMainFrame::OnUpdateDeleteCurs(CCmdUI *pCmdUI)
 		CString szMText ;
 		switch(pCmdUI->m_nID){
 			case ID_DELETECURFILE:
-				szMText.Format(_T("当前文件(%s)"), m_fnCurPlayingFile);
+				szMText.Format(_T("删除当前文件(%s)"), m_fnCurPlayingFile);
 				break;
 			case ID_DELCURFOLDER:
 				CSVPToolBox svpTool;
-				szMText.Format(_T("当前文件夹(%s)"), svpTool.GetDirFromPath(m_fnCurPlayingFile));
+				szMText.Format(_T("删除当前文件夹(%s)"), svpTool.GetDirFromPath(m_fnCurPlayingFile));
 				break;
 		}
 		pCmdUI->SetText(szMText);

@@ -1707,7 +1707,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\newui\TOP_LETTERBOX_WIDER.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\newui\TOP_NORMAL.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\TOP_NORMAL_WIDER.bmp"
 				>
 			</File>
 			<File
@@ -2052,11 +2060,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 		<File

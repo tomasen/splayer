@@ -1449,8 +1449,9 @@ BTN_FULLSCREEN.BMP      BITMAP                  "res\\newui\\BTN_FULLSCREEN.bmp"
 SLIDER_TM.BMP           BITMAP                  "res\\newui\\SLIDER_TM.bmp"
 TOP_GAMMA.BMP           BITMAP                  "res\\newui\\TOP_GAMMA.bmp"
 TOP_TRANS.BMP           BITMAP                  "res\\newui\\TOP_TRANS.bmp"
-TOP_LETTERBOX_WIDER.BMP           BITMAP                  "res\\newui\\TOP_LETTERBOX_WIDER.bmp"
-TOP_NORMAL_WIDER.BMP           BITMAP                  "res\\newui\\TOP_NORMAL_WIDER.bmp"
+TOP_LETTERBOX_WIDER.BMP BITMAP                  "res\\newui\\TOP_LETTERBOX_WIDER.bmp"
+TOP_NORMAL_WIDER.BMP    BITMAP                  "res\\newui\\TOP_NORMAL_WIDER.bmp"
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // FILE
@@ -1889,7 +1890,15 @@ BEGIN
             MENUITEM "智能去黑边(&O)",                   ID_VIEW_VF_FROMOUTSIDE
             MENUITEM "铺满播放窗口(&S)",                  ID_VIEW_VF_STRETCH
             MENUITEM SEPARATOR
-            MENUITEM "播放效果调节",                      ID__SHADERS
+            POPUP "宽高比"
+            BEGIN
+                MENUITEM "默认",                          ID_ASPECTRATIO_SOURCE
+                MENUITEM "4:3",                         ID_ASPECTRATIO_4_3
+                MENUITEM "5:4",                         ID_ASPECTRATIO_5_4
+                MENUITEM "16:9",                        ID_ASPECTRATIO_16_9
+                MENUITEM "2.35:1",                      ID_ASPECTRATIO_235_1
+                MENUITEM "智能显示器校正",                     ID_VIEW_VF_COMPMONDESKARDIFF
+            END
             POPUP "画面翻转"
             BEGIN
                 MENUITEM "水平翻转",                        ID_ROTATE_H
@@ -1901,14 +1910,25 @@ BEGIN
                 MENUITEM SEPARATOR
                 MENUITEM "启用画面翻转",                      ID_ENABLE_ROTATE
             END
-            POPUP "宽高比"
+            MENUITEM "半透明调节",                       ID_SHOWTRANSPRANTBAR
+            MENUITEM "播放效果调节",                      ID__SHADERS
+            MENUITEM "启用智能拖拽调节",                    ID_SMART_DRAG_ENABLE
+            POPUP "画面微调"
             BEGIN
-                MENUITEM "默认",                          ID_ASPECTRATIO_SOURCE
-                MENUITEM "4:3",                         ID_ASPECTRATIO_4_3
-                MENUITEM "5:4",                         ID_ASPECTRATIO_5_4
-                MENUITEM "16:9",                        ID_ASPECTRATIO_16_9
-                MENUITEM "2.35:1",                      ID_ASPECTRATIO_235_1
-                MENUITEM "智能显示器校正",                     ID_VIEW_VF_COMPMONDESKARDIFF
+                MENUITEM "画面放大\tNumpad 9",              ID_VIEW_INCSIZE
+                MENUITEM "画面缩小\tNumpad 1",              ID_VIEW_DECSIZE
+                MENUITEM "画面更宽\tNumpad 6",              ID_VIEW_INCWIDTH
+                MENUITEM "画面更窄\tNumpad 4",              ID_VIEW_DECWIDTH
+                MENUITEM "画面更高\tNumpad 8",              ID_VIEW_INCHEIGHT
+                MENUITEM "画面更矮\tNumpad 2",              ID_VIEW_DECHEIGHT
+                MENUITEM SEPARATOR
+                MENUITEM "画面右移\tCtrl+Numpad 6",         ID_PANSCAN_MOVERIGHT
+                MENUITEM "画面左移\tCtrl+Numpad 4",         ID_PANSCAN_MOVELEFT
+                MENUITEM "画面上移\tCtrl+Numpad 8",         ID_PANSCAN_MOVEUP
+                MENUITEM "画面下移\tCtrl+Numpad 2",         ID_PANSCAN_MOVEDOWN
+                MENUITEM "画面居中\tCtrl+Numpad 5",         ID_PANSCAN_CENTER
+                MENUITEM SEPARATOR
+                MENUITEM "画面重置\tNumpad 5",              ID_VIEW_RESET
             END
         END
         MENUITEM "播放",                          ID__32864
@@ -1921,80 +1941,17 @@ BEGIN
             MENUITEM SEPARATOR
             MENUITEM "设置默认保存文件夹",                   ID_SETSNAPSHOTPATH
         END
-        POPUP "删除"
+        POPUP "界面"
         BEGIN
-            MENUITEM "当前文件",                        ID_DELETECURFILE
-            MENUITEM "当前文件夹",                       ID_DELCURFOLDER
-        END
-        MENUITEM "播放器设置(&O)...",                ID_VIEW_OPTIONS
-        MENUITEM SEPARATOR
-        MENUITEM "文件信息(&r)",                    ID_FILE_PROPERTIES
-        POPUP "更多..."
-        BEGIN
-            POPUP "意见和反馈"
-            BEGIN
-                MENUITEM "论坛发表反馈",                      ID_VISITBBS
-                MENUITEM "Email发表意见",                   ID_SENDEMAIL
-                MENUITEM "QQ或MSN聊聊想法",                  ID_VISITCONTACTINFO
-            END
-            MENUITEM "关于(&A)...",                   ID_HELP_ABOUT
-            MENUITEM "捐助！",                         ID_DONATE
+            MENUITEM "小巧",                          ID_VIEW_PRESETS_MINIMAL
+            MENUITEM "标准",                          ID_VIEW_PRESETS_COMPACT
             MENUITEM SEPARATOR
-            MENUITEM "检查更新...",                     ID_MANUALCHECKUPDATE
-            MENUITEM "重建文件关联",                      ID_CHECK_DEFAULT_PLAYER
+            MENUITEM "显隐播放列表",                      ID_VIEW_PLAYLIST
+            MENUITEM "显隐半透明控制",                     ID_SHOWTRANSPRANTBAR
             MENUITEM SEPARATOR
-            MENUITEM "滤镜(Filters)",                 ID__FILTERS
+            MENUITEM "多彩菜单(需重启播放器)",                ID_THEME_COLORMENU
+            MENUITEM "玻璃效果(需重启播放器)",                ID_THEME_AEROGLASS
             MENUITEM SEPARATOR
-            POPUP "视频尺寸(&V)"
-            BEGIN
-                MENUITEM "50% (&H)",                    ID_VIEW_VF_HALF
-                MENUITEM "100% (&N)",                   ID_VIEW_VF_NORMAL
-                MENUITEM "200% (&D)",                   ID_VIEW_VF_DOUBLE
-                MENUITEM "铺满播放窗口(&S)",                  ID_VIEW_VF_STRETCH
-                MENUITEM "标准画面\tC",                     ID_VIEW_VF_FROMINSIDE
-                MENUITEM "智能去黑边(&O)",                   ID_VIEW_VF_FROMOUTSIDE
-                MENUITEM SEPARATOR
-                MENUITEM "保持画面比例(&K)",                  ID_VIEW_VF_KEEPASPECTRATIO
-                POPUP "强制画面比例"
-                BEGIN
-                    MENUITEM "默认",                          ID_ASPECTRATIO_SOURCE
-                    MENUITEM "4:3",                         ID_ASPECTRATIO_4_3
-                    MENUITEM "5:4",                         ID_ASPECTRATIO_5_4
-                    MENUITEM "16:9",                        ID_ASPECTRATIO_16_9
-                    MENUITEM "2.35:1",                      ID_ASPECTRATIO_235_1
-                END
-                MENUITEM "智能显示器校正",                     ID_VIEW_VF_COMPMONDESKARDIFF
-            END
-            POPUP "画面微调(&c)"
-            BEGIN
-                MENUITEM "Increase Size\tNumpad 9",     ID_VIEW_INCSIZE
-                MENUITEM "Decrease Size\tNumpad 1",     ID_VIEW_DECSIZE
-                MENUITEM "Increase Width\tNumpad 6",    ID_VIEW_INCWIDTH
-                MENUITEM "Decrease Width\tNumpad 4",    ID_VIEW_DECWIDTH
-                MENUITEM "Increase Height\tNumpad 8",   ID_VIEW_INCHEIGHT
-                MENUITEM "Decrease Height\tNumpad 2",   ID_VIEW_DECHEIGHT
-                MENUITEM SEPARATOR
-                MENUITEM "Move Right\tCtrl+Numpad 6",   ID_PANSCAN_MOVERIGHT
-                MENUITEM "Move Left\tCtrl+Numpad 4",    ID_PANSCAN_MOVELEFT
-                MENUITEM "Move Up\tCtrl+Numpad 8",      ID_PANSCAN_MOVEUP
-                MENUITEM "Move Down\tCtrl+Numpad 2",    ID_PANSCAN_MOVEDOWN
-                MENUITEM "Center\tCtrl+Numpad 5",       ID_PANSCAN_CENTER
-                MENUITEM SEPARATOR
-                MENUITEM "Reset\tNumpad 5",             ID_VIEW_RESET
-            END
-            POPUP "界面缩放(&Z)"
-            BEGIN
-                MENUITEM "&50%\tAlt+1",                 ID_VIEW_ZOOM_50
-                MENUITEM "&100%\tAlt+2",                ID_VIEW_ZOOM_100
-                MENUITEM "&200%\tAlt+3",                ID_VIEW_ZOOM_200
-                MENUITEM "自动缩放\tAlt+4",                 ID_32794
-            END
-            MENUITEM SEPARATOR
-            POPUP "预设界面..."
-            BEGIN
-                MENUITEM "小巧",                          ID_VIEW_PRESETS_MINIMAL
-                MENUITEM "标准",                          ID_VIEW_PRESETS_NORMAL
-            END
             POPUP "更多功能面板(&e)"
             BEGIN
                 MENUITEM "显示标题和菜单(&M)\tCtrl+0",         ID_VIEW_CAPTIONMENU
@@ -2009,6 +1966,27 @@ BEGIN
                 MENUITEM "DSM转换器(&n)...",               ID_FILE_CONVERT
                 MENUITEM "显示画面渲染信息",                    ID_SHOWDRAWSTAT
             END
+        END
+        MENUITEM "播放器设置(&O)...",                ID_VIEW_OPTIONS
+        MENUITEM SEPARATOR
+        POPUP "文件"
+        BEGIN
+            MENUITEM "文件信息",                        ID_FILE_PROPERTIES
+            MENUITEM SEPARATOR
+            MENUITEM "删除当前文件",                      ID_DELETECURFILE
+            MENUITEM "删除当前文件夹",                     ID_DELCURFOLDER
+        END
+        POPUP "更多..."
+        BEGIN
+            MENUITEM "捐助！",                         ID_DONATE
+            MENUITEM "关于(&A)...",                   ID_HELP_ABOUT
+            MENUITEM "帮助文档",                        ID_HELP_DOCUMENTATION
+            MENUITEM "意见和反馈",                       ID_VISITCONTACTINFO
+            MENUITEM SEPARATOR
+            MENUITEM "检查更新...",                     ID_MANUALCHECKUPDATE
+            MENUITEM "重建文件关联",                      ID_CHECK_DEFAULT_PLAYER
+            MENUITEM SEPARATOR
+            MENUITEM "滤镜(Filters)",                 ID__FILTERS
             MENUITEM SEPARATOR
             MENUITEM "生成DEBUG反馈信息",                 ID_DEBUGREPORT
         END
@@ -2017,16 +1995,6 @@ BEGIN
             MENUITEM "从不",                          ID_ONTOP_NEVER
             MENUITEM "总在最前",                        ID_ONTOP_ALWAYS
             MENUITEM "仅播放时",                        ID_ONTOP_WHILEPLAYING
-        END
-        POPUP "播放结束后"
-        BEGIN
-            MENUITEM "退出视频",                        ID_AFTERPLAYBACK_CLOSE
-            MENUITEM "进入待机",                        ID_AFTERPLAYBACK_STANDBY
-            MENUITEM "进入休眠",                        ID_AFTERPLAYBACK_HIBERNATE
-            MENUITEM "关机",                          ID_AFTERPLAYBACK_SHUTDOWN
-            MENUITEM "注销当前用户",                      ID_AFTERPLAYBACK_LOGOFF
-            MENUITEM SEPARATOR
-            MENUITEM "什么都不做",                       ID_AFTERPLAYBACK_DONOTHING
         END
         MENUITEM "退出(&X)",                      ID_FILE_EXIT
     END
@@ -2299,14 +2267,19 @@ BEGIN
     BEGIN
         MENUITEM "加快播放速度",                      ID_PLAY_INCRATE
         MENUITEM "减慢播放速度",                      ID_PLAY_DECRATE
+    END
+    POPUP "播放2"
+    BEGIN
+        MENUITEM "设置A点",                        ID_ABCONTROL_SETA
+        MENUITEM "设置B点",                        ID_ABCONTROL_SETB
+        MENUITEM "开始A-B循环",                     ID_ABCONTROL_ON
+        MENUITEM "停止A-B循环",                     ID_ABCONTROL_OFF
         MENUITEM SEPARATOR
-        POPUP "A-B控制"
-        BEGIN
-            MENUITEM "设置A点",                        ID_ABCONTROL_SETA
-            MENUITEM "设置B点",                        ID_ABCONTROL_SETB
-            MENUITEM "启用",                          ID_ABCONTROL_ON
-            MENUITEM "关闭",                          ID_ABCONTROL_OFF
-        END
+        MENUITEM "结束后退出",                       ID_AFTERPLAYBACK_CLOSE
+        MENUITEM "结束后待机",                       ID_AFTERPLAYBACK_STANDBY
+        MENUITEM "结束后休眠",                       ID_AFTERPLAYBACK_HIBERNATE
+        MENUITEM "结束后关机",                       ID_AFTERPLAYBACK_SHUTDOWN
+        MENUITEM "结束后注销用户",                     ID_AFTERPLAYBACK_LOGOFF
     END
 END
 
@@ -2651,6 +2624,7 @@ STRINGTABLE
 BEGIN
     IDS_RS_SMOOTHMUTILMONITOR "SmoothMutilMonitor"
     IDS_RS_FASTERSEEKING    "FasterSeeking"
+    IDS_RS_DISABLECENTERBIGOPENBMP "DisableCenterBigOpenBmp"
 END
 
 STRINGTABLE 
@@ -2821,7 +2795,6 @@ BEGIN
     IDS_RS_VMR9MIXERMODE    "VMR9MixerMode"
     IDS_RS_THUMBROWS        "ThumbRows"
     IDS_RS_THUMBCOLS        "ThumbCols"
-	IDS_RS_DISABLECENTERBIGOPENBMP	"DisableCenterBigOpenBmp"
 END
 
 STRINGTABLE 

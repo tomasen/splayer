@@ -367,6 +367,11 @@
 #define ID_RECENTFILE_DISABLE           5203
 #define ID_RECENTFILE_ENABLE            5204
 #define ID_CONFIG_AUTOLOADSUBTITLE2     5205
+#define ID_PLAYBACK_LOOP_NORMAL		    5206
+#define ID_PLAYBACK_LOOP_PLAYLIST	    5207
+#define ID_PLAYBACK_LOOP_CURRENT	    5208
+#define ID_PLAYBACK_LOOP_RANDOM		    5209
+#define ID_NAVIGATE_SKIPRANDOM			5210
 #define TIMER_FASTFORWORD               7001
 #define TIMER_STOPFASTFORWORD           7002
 #define TIMER_STATERASER                7003
@@ -902,7 +907,7 @@
 #define IDS_RS_FCUSTOMSPEAKERS          14239
 #define IDS_RS_SMOOTHMUTILMONITOR       14240
 #define IDS_RS_FASTERSEEKING            14241
-#define IDS_RS_DISABLECENTERBIGOPENBMP   14242
+#define IDS_RS_DISABLECENTERBIGOPENBMP  14242
 #define IDD_DHTML_SETTING               20000
 #define IDR_DEFAULT1                    20006
 #define IDD_DEFAULT_PLAYER              20007
@@ -1023,6 +1028,20 @@
 #define ID_32865                        32865
 #define ID_32866                        32866
 #define ID_SET_AUDIO_NUMBER_SPEAKER     32867
+#define ID_32867                        32867
+#define ID_32868                        32868
+#define ID_32869                        32869
+#define ID_32870                        32870
+#define ID_SMART_DRAG_ENABLE            32871
+#define ID_32872                        32872
+#define ID_32873                        32873
+#define ID_USE_COLORMENU                32874
+#define ID_THEME_AEROGLASS              32875
+#define ID_THEME_COLORMENU              32876
+#define ID_32877                        32877
+#define ID__32878                       32878
+#define ID_32879                        32879
+#define ID_Menu                         32880
 #define IDS_VOLUME_BOOST_INC            33129
 #define IDS_VOLUME_BOOST_DEC            33130
 #define IDS_VOLUME_BOOST_MIN            33131
@@ -1097,7 +1116,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        20017
-#define _APS_NEXT_COMMAND_VALUE         32867
+#define _APS_NEXT_COMMAND_VALUE         32881
 #define _APS_NEXT_CONTROL_VALUE         22004
 #define _APS_NEXT_SYMED_VALUE           24001
 #endif

@@ -336,6 +336,8 @@ function myInit(){
         if(obtisvista.innerHTML.indexOf( 'aero' ) >= 0 ){
             ueAPI.isvistaaero = true;
             ueAPI.fobj('vistaaeroglass').style.display = "block";
+            ueAPI.fobj('GothSyncLine').style.display = "none";
+            ueAPI.fobj('GothSync').checked = 0;
         }
     }
     //alert(typeof(ueg_DefaultBlock));

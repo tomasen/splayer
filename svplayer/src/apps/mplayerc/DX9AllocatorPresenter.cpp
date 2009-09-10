@@ -728,6 +728,11 @@ HRESULT CDX9AllocatorPresenter::CreateDevice( )
 		{
 			// Desktop composition takes care of the VSYNC
 			pp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
+			s.fVMRGothSyncFix = 0;
+			s.fVMRSyncFix = 0;
+			s.m_RenderSettings.bSynchronizeVideo = 0;
+			s.m_RenderSettings.bSynchronizeNearest = 0;
+
 		}
 		else
 		{

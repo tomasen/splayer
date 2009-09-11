@@ -411,7 +411,7 @@ function myInit(){
 
 </div>
 <div id="videosetting" class="hiddenarea">
-&nbsp;<select id="videorender" onchange="if(this.value!='DX9' && ueAPI.isvista){ueAPI.fobj('gpuacelbase').checked = false;}"><option value="DX9" >画质优先模式(DX9)</option>
+&nbsp;<select id="videorender" onchange="if(this.value=='DX7'){ueAPI.hideobj('GothSyncLine');}else if(!ueAPI.isvistaaero){ueAPI.showblock('GothSyncLine');} if(this.value!='DX9' && ueAPI.isvista){ueAPI.fobj('gpuacelbase').checked = false;}"><option value="DX9" >画质优先模式(DX9)</option>
 <option value="DX7">性能优先模式(DX7)</option>
 <option value="ADV">使用自定义高级设置</option></select><br />
 <span id="decoderline" style="display:none;">解码器：<select id="decoder" onchange="ueAPI.selectDecoder(this.value);" ></select></span>

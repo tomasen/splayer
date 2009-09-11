@@ -3045,6 +3045,30 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 				useGPUAcel = 0;
 			}
 		}
+
+
+		BOOL bDefaultVSync = false;
+		BOOL bDefaultGothSync = false;
+		if(!bAeroGlassAvalibility && !useGPUAcel){
+			//HINSTANCE hEVR = LoadLibrary(_T("evr.dll"));
+			//if(hEVR){
+			bDefaultGothSync = true;
+			//	FreeLibrary(hEVR);
+			//}else
+			//	bDefaultVSync = true;
+		}
+
+		//fVMRSyncFix = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VMRSYNCFIX), 0);//bDefaultVSync
+		fVMRSyncFix = 0;
+		fVMRGothSyncFix = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VMRSYNCFIX) + _T("Goth"), bDefaultGothSync);
+		if(iUpgradeReset < 652){
+			fVMRSyncFix = bDefaultVSync;
+			fVMRGothSyncFix = bDefaultGothSync;
+		}
+		m_RenderSettings.bSynchronizeNearest = fVMRGothSyncFix;
+		m_RenderSettings.bSynchronizeVideo = 0;//fVMRSyncFix;
+
+
 		optionDecoder = pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_OPTIONDECODER), _T("CoreAVCdec"));
 		iDXVer = 7;
 		if(useGPUAcel){
@@ -3077,30 +3101,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		fBUltraFastMode = 0;// !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_ULTRAFAST), 1);
 		autoDownloadSVPSub = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUTODOWNLAODSVPSUB), 1);
 
-		BOOL bDefaultVSync = false;
-		BOOL bDefaultGothSync = false;
-		if(!IsVista()){
-			//HINSTANCE hEVR = LoadLibrary(_T("evr.dll"));
-			//if(hEVR){
-			bDefaultGothSync = true;
-			//	FreeLibrary(hEVR);
-			//}else
-			//	bDefaultVSync = true;
-		}
 
-		//fVMRSyncFix = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VMRSYNCFIX), 0);//bDefaultVSync
-		fVMRSyncFix = 0;
-		fVMRGothSyncFix = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VMRSYNCFIX) + _T("Goth"), bDefaultGothSync);
-		if(iUpgradeReset < 652){
-			fVMRSyncFix = bDefaultVSync;
-			fVMRGothSyncFix = bDefaultGothSync;
-		}
-		m_RenderSettings.bSynchronizeNearest = fVMRGothSyncFix;
-		m_RenderSettings.bSynchronizeVideo = 0;//fVMRSyncFix;
-
-		{
-			
-		}
 		//fVMRSyncFix = 0;
 		iDX9Resizer = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DX9_RESIZER), 1);
 		fVMR9MixerMode = FALSE;//!!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VMR9MIXERMODE), FALSE);

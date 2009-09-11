@@ -172,9 +172,9 @@ UINT CAsyncFileReader::Read( void* lpBuf,	UINT nCount ){
 			{
 				
 				int iExtractRet = RARExtractChunk(m_hRar, (char*)lpBuf, nCount);
-
+				SVP_LogMsg3(" CAsyncFileReader::Rea RARExtractChunk %0.1f  ", double(nCount) );
 				if ( iExtractRet <= 0 ) {
-					SVP_LogMsg5(L" CAsyncFileReader::Read  RARExtractChunk %d ", iExtractRet);
+					SVP_LogMsg3(" CAsyncFileReader::Read  RARExtractChunk %d ", iExtractRet);
 					return E_FAIL; 
 				}
 				//
@@ -211,32 +211,32 @@ STDMETHODIMP CAsyncFileReader::SyncRead(LONGLONG llPosition, LONG lLength, BYTE*
 				}
 
 				int iSeekRet = RARExtractChunkSeek(m_hRar, llPosition, SEEK_SET) ;
-SVP_LogMsg3("CAsyncFileReader::SyncRead RARExtractChunkSeek %0.1f  ", double(llPosition) );
+SVP_LogMsg3("CAsyncFileReader::SyncRead RARExtractChunkSeek %0.1f  ", double(llPosition*10) );
 				if ( iSeekRet != 0 ) {
-					SVP_LogMsg5(L"CAsyncFileReader::SyncRead RARExtractChunkSeek %d ", iSeekRet);
+					SVP_LogMsg5(L"CAsyncFileReader::SyncRead FAILSeek RARExtractChunkSeek %d ", iSeekRet);
 					return E_FAIL; 
 				}
 
 				int iExtractRet = RARExtractChunk(m_hRar, (char*)pBuffer, lLength);
 				SVP_LogMsg3("CAsyncFileReader::SyncRead RARExtractChunk %0.1f %d %d ", double(llPosition), iExtractRet , lLength);
-				SVP_LogMsg3("CAsyncFileReader::SyncRead RARExtractChunk %d %d %d %d %d %d ", pBuffer[0] ,  pBuffer[1], pBuffer[2] ,  pBuffer[3], pBuffer[4] ,  pBuffer[5]);
+				//SVP_LogMsg3("CAsyncFileReader::SyncRead RARExtractChunk %d %d %d %d %d %d ", pBuffer[0] ,  pBuffer[1], pBuffer[2] ,  pBuffer[3], pBuffer[4] ,  pBuffer[5]);
 				if ( iExtractRet < 0 ) {
-					SVP_LogMsg5(L"CAsyncFileReader::SyncRead RARExtractChunk %0.1f %d %d ", double(llPosition), iExtractRet , lLength);
+					SVP_LogMsg5(L"CAsyncFileReader::SyncRead FAIL RARExtractChunk %0.1f %d %d ", double(llPosition), iExtractRet , lLength);
 					return E_FAIL; 
 				}
 				if ( iExtractRet == 0 ) {
-					SVP_LogMsg3("CAsyncFileReader::SyncRead RARExtractChunk Error %0.1f %d %d ", double(llPosition), iExtractRet , lLength);
+					SVP_LogMsg3("CAsyncFileReader::SyncRead FAIL0 RARExtractChunk Error %0.1f %d %d ", double(llPosition), iExtractRet , lLength);
 					RARExtractChunkSeek(m_hRar, llPosition-lLength, SEEK_SET) ;
 					iExtractRet = RARExtractChunk(m_hRar, (char*)pBuffer, lLength);
-					SVP_LogMsg3("CAsyncFileReader::SyncRead RARExtractChunk Error2 %0.1f %d %d ", double(m_len), iExtractRet , lLength);
+					SVP_LogMsg3("CAsyncFileReader::SyncRead FAIL1 RARExtractChunk Error2 %0.1f %d %d ", double(m_len), iExtractRet , lLength);
 					RARExtractChunkSeek(m_hRar, llPosition, SEEK_SET) ;
 					iExtractRet = RARExtractChunk(m_hRar, (char*)pBuffer, lLength);
-					SVP_LogMsg3("CAsyncFileReader::SyncRead RARExtractChunk Error3 %0.1f %d %d ", double(m_len), iExtractRet , lLength);
-					SVP_LogMsg3("CAsyncFileReader::SyncRead RARExtractChunk %d %d %d %d %d %d ", pBuffer[0] ,  pBuffer[1], pBuffer[2] ,  pBuffer[3], pBuffer[4] ,  pBuffer[5]);
+					SVP_LogMsg3("CAsyncFileReader::SyncRead FAIL2 RARExtractChunk Error3 %0.1f %d %d ", double(m_len), iExtractRet , lLength);
+					SVP_LogMsg3("CAsyncFileReader::SyncRead FAIL3 RARExtractChunk %d %d %d %d %d %d ", pBuffer[0] ,  pBuffer[1], pBuffer[2] ,  pBuffer[3], pBuffer[4] ,  pBuffer[5]);
 					return S_OK; 
 				}
 
-	
+		
 	//			SVP_LogMsg5(L"%d %d %d %d %d %d",pBuffer[1],pBuffer[2],pBuffer[3],pBuffer[4],pBuffer[5],pBuffer[6]);
 				//
 				//if(llPosition != Seek(llPosition, begin)) return E_FAIL;

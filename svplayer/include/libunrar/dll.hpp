@@ -3,8 +3,6 @@
 #ifndef _UNRAR_DLL_
 #define _UNRAR_DLL_
 
-
-
 #define ERAR_END_ARCHIVE        10
 #define ERAR_NO_MEMORY          11
 #define ERAR_BAD_DATA           12
@@ -33,13 +31,18 @@
 
 #define RAR_DLL_VERSION       4
 
+#ifdef _UNIX
 //#define CALLBACK
 //#define PASCAL
 #define LONG long
 #define HANDLE void *
+#define LPARAM long
 #define UINT unsigned int
-#define LPARAM long 
+#endif
 
+#ifndef uint64_t
+#define uint64_t UINT64
+#endif
 struct RARHeaderData
 {
   char         ArcName[260];
@@ -136,10 +139,12 @@ void   PASCAL RARSetProcessDataProc(HANDLE hArcData,PROCESSDATAPROC ProcessDataP
 void   PASCAL RARSetPassword(HANDLE hArcData,char *Password);
 int    PASCAL RARGetDllVersion();
 
+
 int PASCAL RARExtractChunkInit(HANDLE hArcData, char *file);
 void PASCAL RARExtractChunkClose(HANDLE hArcData);
 int PASCAL RARExtractChunk(HANDLE hArcData, char *buf, size_t len);
-int PASCAL RARExtractChunkSeek(HANDLE hArcData, UINT64 offset, int flag);
+int PASCAL RARExtractChunkSeek(HANDLE hArcData, uint64_t offset, int flag);
+
 
 #ifdef __cplusplus
 }

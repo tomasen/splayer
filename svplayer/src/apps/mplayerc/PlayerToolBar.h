@@ -51,6 +51,7 @@ private:
 public:
 	CString m_timerstr;
 	CString m_timerqueryedstr;
+	CString m_buffering;
 	BOOL holdStatStr;
 	int m_nLogDPIY;
 	CSUIBtnList m_btnList;

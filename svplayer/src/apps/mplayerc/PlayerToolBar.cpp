@@ -566,7 +566,7 @@ void CPlayerToolBar::SetStatusTimer(REFERENCE_TIME rtNow, REFERENCE_TIME rtDur, 
 	}
 
 //szPlayingFileName
-	SetStatusTimer( str + szPlayrate + szPower  );
+	SetStatusTimer( str + szPlayrate + szPower + m_buffering );
 }
 BOOL CPlayerToolBar::OnVolumeMute(UINT nID)
 {

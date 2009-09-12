@@ -2468,6 +2468,8 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 		KillTimer(TIMER_MOUSELWOWN);
 	}else if(nIDEvent == TIMER_STREAMPOSPOLLER && m_iMediaLoadState == MLS_LOADED)
 	{
+
+		
 		REFERENCE_TIME rtNow = 0, rtDur = 0;
 
 		if(m_iPlaybackMode == PM_FILE)
@@ -2585,6 +2587,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 	}
 	else if(nIDEvent == TIMER_STREAMPOSPOLLER2 && m_iMediaLoadState == MLS_LOADED)
 	{
+		
 		__int64 start, stop, pos;
 		m_wndSeekBar.GetRange(start, stop);
 		pos = m_wndSeekBar.GetPosReal();
@@ -2692,6 +2695,39 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 	}
 	else if(nIDEvent == TIMER_STATS)
 	{
+		{
+			CString msg;
+			if(m_fBuffering)
+			{
+				BeginEnumFilters(pGB, pEF, pBF)
+				{
+					if(CComQIPtr<IAMNetworkStatus, &IID_IAMNetworkStatus> pAMNS = pBF)
+					{
+						long BufferingProgress = 0;
+						if(SUCCEEDED(pAMNS->get_BufferingProgress(&BufferingProgress)) && BufferingProgress > 0 && BufferingProgress < 99)
+						{
+							msg.Format(ResStr(IDS_CONTROLS_BUFFERING), BufferingProgress);
+							//SendStatusMessage(msg,1000);
+							
+
+						}
+						break;
+					}
+				}
+				EndEnumFilters
+			}
+			else if(pAMOP)
+			{
+				__int64 t = 0, c = 0;
+				if(SUCCEEDED(pAMOP->QueryProgress(&t, &c)) && t > 0 && c < t){
+					msg.Format(ResStr(IDS_CONTROLS_BUFFERING), c*100/t);
+					//SendStatusMessage(msg,1000);
+					
+				}
+			}
+			m_wndToolBar.m_buffering  = msg;
+
+		}
 		if(pQP)
 		{
 			CString rate;
@@ -4221,7 +4257,8 @@ void CMainFrame::OnUpdatePlayerStatus(CCmdUI* pCmdUI)
 					if(SUCCEEDED(pAMNS->get_BufferingProgress(&BufferingProgress)) && BufferingProgress > 0)
 					{
 						msg.Format(ResStr(IDS_CONTROLS_BUFFERING), BufferingProgress);
-						SendStatusMessage(msg,1000);
+						SendStatusMessage(msg,2000);
+						SVP_LogMsg5(msg);
 
 						__int64 start = 0, stop = 0;
 						m_wndSeekBar.GetRange(start, stop);
@@ -4237,7 +4274,8 @@ void CMainFrame::OnUpdatePlayerStatus(CCmdUI* pCmdUI)
 			__int64 t = 0, c = 0;
 			if(SUCCEEDED(pAMOP->QueryProgress(&t, &c)) && t > 0 && c < t){
 				msg.Format(ResStr(IDS_CONTROLS_BUFFERING), c*100/t);
-				SendStatusMessage(msg,1000);
+				SendStatusMessage(msg,2000);
+				SVP_LogMsg5(msg);
 			}
 
 			if(m_fUpdateInfoBar)
@@ -9867,6 +9905,13 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 		if(fn.IsEmpty() && !fFirst)
 			break;
 
+		HRESULT hr = pGB->RenderFile(CStringW(fn), NULL);
+		if(FAILED(hr) && ( fn.MakeLower().Find(_T("mms://")) == 0 || fn.MakeLower().Find(_T("mmsh://")) == 0 || fn.MakeLower().Find(_T("http://")) == 0 )){ // 
+			//render mms our own way
+			hr = OpenMMSUrlStream(fn);
+		}
+
+		/* not sure why this is not work for http youku etc
 		HRESULT hr = -1;
 		if( ( fn.MakeLower().Find(_T("mms://")) == 0 || fn.MakeLower().Find(_T("mmsh://")) == 0 || (fn.MakeLower().Find(_T("http:")) == 0 && fn.MakeLower().Find(_T(":8902")) > 0 ))){ 
 			//render mms our own way	
@@ -9875,6 +9920,7 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 		
 		if(FAILED(hr))
 			hr = pGB->RenderFile(CStringW(fn), NULL);
+		*/
 
 		if(FAILED(hr))
 		{

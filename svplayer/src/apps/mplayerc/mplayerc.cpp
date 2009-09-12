@@ -3496,7 +3496,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		CAtlList<UINT> shader_ids;
 		shader_ids.AddTail(IDF_SHADER_SHARPEN);
 		shader_ids.AddTail(IDF_SHADER_DENOISE);
-		//shader_ids.AddTail(IDF_SHADER_LEVELS);
+		shader_ids.AddTail(IDF_SHADER_LEVELS);
 		shader_ids.AddTail(IDF_SHADER_LEVELS2);
 		shader_ids.AddTail(IDF_SHADER_LEVELS3);
 		//shader_ids.AddTail(IDF_SHADER_BT601_BT701);
@@ -3581,7 +3581,11 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		}
 
 */
-		strShaderList	= pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SHADERLIST), _T(""));
+		CString szDefaultShaders = _T("");
+		if(useGPUAcel){
+			szDefaultShaders = ResStr(IDF_SHADER_LEVELS);
+		}
+		strShaderList	= pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SHADERLIST), szDefaultShaders);
 
 		// TODO: sort shaders by label
 

@@ -14122,10 +14122,10 @@ afx_msg void CMainFrame::OnSubtitleDelay2(UINT nID)
 		int newDelay;
 		int oldDelay = m_pCAP->GetSubtitleDelay2();
 
-		if(nID == ID_SUB_DELAY_DOWN)
-			newDelay = oldDelay-AfxGetAppSettings().nSubDelayInterval;
+		if(nID == ID_SUB_DELAY_DOWN2)
+			newDelay = oldDelay - AfxGetAppSettings().nSubDelayInterval;
 		else
-			newDelay = oldDelay+AfxGetAppSettings().nSubDelayInterval;
+			newDelay = oldDelay + AfxGetAppSettings().nSubDelayInterval;
 
 		CString str;
 		str.Format(_T("第二字幕延时已经设为： %d ms"), newDelay);

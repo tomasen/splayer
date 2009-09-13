@@ -1682,6 +1682,8 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		(s.fVMDetected) ? L"MPEG-1 Video Decoder" : L"MPEG-1 Video Decoder (low merit)", 
 		(s.fVMDetected) ? MERIT64_ABOVE_DSHOW : MERIT64_UNLIKELY);
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_MPEG1Packet);
+	//pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_MPEG1Video);
+	//pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_MPEG1VideoCD);
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_MPEG1Payload);
 	m_transform.AddTail(pFGF);
 
@@ -2704,24 +2706,28 @@ CFGManagerPlayer::CFGManagerPlayer(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 
 	if(s.iDSVideoRendererType == VIDRNDT_DS_OLDRENDERER)
 		m_transform.AddTail(new CFGFilterRegistry(CLSID_VideoRenderer, m_vrmerit));
-	else if(s.iDSVideoRendererType == VIDRNDT_DS_OVERLAYMIXER)
+	else if(s.iDSVideoRendererType == VIDRNDT_DS_OVERLAYMIXER){
 		m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_OverlayMixer, L"Overlay Mixer", m_vrmerit));
-	else if(s.iDSVideoRendererType == VIDRNDT_DS_VMR7WINDOWED)
-		m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VideoMixingRenderer, L"Video Mixing Render 7 (Windowed)", m_vrmerit));
-	else if(s.iDSVideoRendererType == VIDRNDT_DS_VMR9WINDOWED)
-		m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VideoMixingRenderer9, L"Video Mixing Render 9 (Windowed)", m_vrmerit));
-	else if(s.iDSVideoRendererType == VIDRNDT_DS_VMR7RENDERLESS)
-		m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VMR7AllocatorPresenter, L"DX7(VMR)äÖÈ¾Æ÷", m_vrmerit));
-	else if(s.iDSVideoRendererType == VIDRNDT_DS_VMR9RENDERLESS)
-	{
-		if (CMPlayerCApp::IsVista() || (!CMPlayerCApp::IsVista() && s.useGPUAcel) )//s.fVMRGothSyncFix ) && !s.bDisableEVR )//
-			m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_EVRAllocatorPresenter, L"EVRäÖÈ¾Æ÷", m_vrmerit+1));
-		
-		m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VMR9AllocatorPresenter, L"DX9(VMR)äÖÈ¾Æ÷", m_vrmerit));
-		m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VMR7AllocatorPresenter, L"DX7(VMR)äÖÈ¾Æ÷", m_vrmerit-1));
+	/*
+		else if(s.iDSVideoRendererType == VIDRNDT_DS_VMR7WINDOWED)
+				m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VideoMixingRenderer, L"Video Mixing Render 7 (Windowed)", m_vrmerit));
+			else if(s.iDSVideoRendererType == VIDRNDT_DS_VMR9WINDOWED)
+				m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VideoMixingRenderer9, L"Video Mixing Render 9 (Windowed)", m_vrmerit));
+			else if(s.iDSVideoRendererType == VIDRNDT_DS_VMR7RENDERLESS)
+				m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VMR7AllocatorPresenter, L"DX7(VMR)äÖÈ¾Æ÷", m_vrmerit));*/
 	}
 	else if(s.iDSVideoRendererType == VIDRNDT_DS_DXR)
 		m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_DXRAllocatorPresenter, L"Haali's Video Renderer", m_vrmerit));
+	else //if(s.iDSVideoRendererType == VIDRNDT_DS_VMR9RENDERLESS)
+	{
+		if (CMPlayerCApp::IsVista() || (!CMPlayerCApp::IsVista() && s.useGPUAcel) )//s.fVMRGothSyncFix ) && !s.bDisableEVR )//
+			m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_EVRAllocatorPresenter, L"EVRäÖÈ¾Æ÷", m_vrmerit+1));
+
+		m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VMR9AllocatorPresenter, L"DX9(VMR)äÖÈ¾Æ÷", m_vrmerit));
+		m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VMR7AllocatorPresenter, L"DX7(VMR)äÖÈ¾Æ÷", m_vrmerit-1));
+	}
+
+/*
 	else if(s.iDSVideoRendererType == VIDRNDT_DS_NULL_COMP)
 	{
 		pFGF = new CFGFilterInternal<CNullVideoRenderer>(L"Null Video Renderer (Any)", MERIT64_ABOVE_DSHOW+2);
@@ -2733,7 +2739,8 @@ CFGManagerPlayer::CFGManagerPlayer(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		pFGF = new CFGFilterInternal<CNullUVideoRenderer>(L"Null Video Renderer (Uncompressed)", MERIT64_ABOVE_DSHOW+2);
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_NULL);
 		m_transform.AddTail(pFGF);
-	}
+	}*/
+
 
 	if(s.AudioRendererDisplayName == AUDRNDT_NULL_COMP)
 	{
@@ -2787,7 +2794,7 @@ CFGManagerDVD::CFGManagerDVD(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT tra, 
 
 	// have to avoid the old video renderer
 	if(!s.fXpOrBetter && s.iDSVideoRendererType != VIDRNDT_DS_OVERLAYMIXER || s.iDSVideoRendererType == VIDRNDT_DS_OLDRENDERER)
-		m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_OverlayMixer, L"Overlay Mixer", m_vrmerit-1));
+		m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_OverlayMixer, L"Overlay Mixer", MERIT64_DO_NOT_USE));
 
 	// elecard's decoder isn't suited for dvd playback (atm)
 	m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{F50B3F13-19C4-11CF-AA9A-02608C9BABA2}")), MERIT64_DO_NOT_USE));

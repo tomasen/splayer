@@ -49,6 +49,8 @@ const AMOVIESETUP_MEDIATYPE sudPinTypesIn[] =
 	//{&MEDIATYPE_Video, &MEDIASUBTYPE_MMES},
 #ifndef MPEG2ONLY
 	{&MEDIATYPE_Video, &MEDIASUBTYPE_MPEG1Packet},
+	{&MEDIATYPE_Video, &MEDIASUBTYPE_MPEG1Video},
+	{&MEDIATYPE_Video, &MEDIASUBTYPE_MPEG1VideoCD},
 	{&MEDIATYPE_Video, &MEDIASUBTYPE_MPEG1Payload},
 #endif
 };
@@ -856,6 +858,8 @@ HRESULT CMpeg2DecFilter::CheckInputType(const CMediaType* mtIn)
 			|| mtIn->majortype == MEDIATYPE_MPEG2_PES && mtIn->subtype == MEDIASUBTYPE_MPEG2_VIDEO
 			|| mtIn->majortype == MEDIATYPE_Video && mtIn->subtype == MEDIASUBTYPE_MPEG2_VIDEO
 			|| mtIn->majortype == MEDIATYPE_Video && mtIn->subtype == MEDIASUBTYPE_MPEG1Packet
+			|| mtIn->majortype == MEDIATYPE_Video && mtIn->subtype == MEDIASUBTYPE_MPEG1Video
+			|| mtIn->majortype == MEDIATYPE_Video && mtIn->subtype == MEDIASUBTYPE_MPEG1VideoCD
 			|| mtIn->majortype == MEDIATYPE_Video && mtIn->subtype == MEDIASUBTYPE_MPEG1Payload
 			|| mtIn->majortype == MEDIATYPE_Video && mtIn->subtype == MEDIASUBTYPE_MMES
 			)

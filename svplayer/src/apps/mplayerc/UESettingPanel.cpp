@@ -514,10 +514,12 @@ void CUESettingPanel::ApplyAllSetting(){
 		s.iDSVideoRendererType = 6;
 		s.iRMVideoRendererType = 2;
 		s.iQTVideoRendererType = 2;
+		s.iAPSurfaceUsage = VIDRNDT_AP_TEXTURE3D;
 	}else if(m_sgs_videorender == _T("DX7")){
 		s.iDSVideoRendererType = 5;
 		s.iRMVideoRendererType = 1;
 		s.iQTVideoRendererType = 1;
+		
 	}else{
 
 	}

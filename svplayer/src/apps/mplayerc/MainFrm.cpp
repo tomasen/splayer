@@ -13966,7 +13966,10 @@ void CMainFrame::OpenMedia(CAutoPtr<OpenMediaData> pOMD)
 		s_fOpenedThruThread = false;
 	}
 }
-
+int CMainFrame::SVPMessageBox(LPCTSTR lpszText, UINT nType  ,	UINT   , UINT idWMCommandMsg )
+{
+	return S_OK;
+}
 void CMainFrame::CloseMedia()
 {
 

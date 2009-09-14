@@ -433,6 +433,7 @@ public:
 	void OpenMedia(CAutoPtr<OpenMediaData> pOMD);
 	void CloseMedia();
 
+	int SVPMessageBox(LPCTSTR lpszText, UINT nType = MB_OK,	UINT ulTimeout = 2000 , UINT idWMCommandMsg = 0);
 	
 	void AddCurDevToPlaylist();
 

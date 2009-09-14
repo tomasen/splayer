@@ -56,8 +56,6 @@ public:
 	DECLARE_IUNKNOWN;
 	STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void** ppv);
 
-	//RAR
-	int HandlerRarCallback(UINT msg,LPARAM P1,LPARAM P2);
 
 	//CFile
 	UINT Read( void* lpBuf,	UINT nCount );

@@ -2408,7 +2408,7 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 		}
 //	}
 
-		if(	s.iDSVideoRendererType == VIDRNDT_DS_OVERLAYMIXER || VIDRNDT_DS_OLDRENDERER == s.iDSVideoRendererType){
+		if(	0 && ( s.iDSVideoRendererType == VIDRNDT_DS_OVERLAYMIXER || VIDRNDT_DS_OLDRENDERER == s.iDSVideoRendererType) ){
 			pFGF = new CFGFilterInternal<CSVPSubFilter>(
 				L"SVPlayer ×ÖÄ»×é¼þ" ,
 				MERIT64_ABOVE_DSHOW );
@@ -2738,8 +2738,11 @@ CFGManagerPlayer::CFGManagerPlayer(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	}
 	else if(s.iDSVideoRendererType == VIDRNDT_DS_DXR)
 		m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_DXRAllocatorPresenter, L"Haali's Video Renderer", m_vrmerit));
-	else //if(s.iDSVideoRendererType == VIDRNDT_DS_VMR9RENDERLESS)
+	else //
 	{
+		if(s.iDSVideoRendererType == VIDRNDT_DS_VMR7RENDERLESS)
+			m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VMR7AllocatorPresenter, L"DX7(VMR)äÖÈ¾Æ÷", m_vrmerit+5));
+
 		if (CMPlayerCApp::IsVista() || (!CMPlayerCApp::IsVista() && s.useGPUAcel) )//s.fVMRGothSyncFix ) && !s.bDisableEVR )//
 			m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_EVRAllocatorPresenter, L"EVRäÖÈ¾Æ÷", m_vrmerit+1));
 

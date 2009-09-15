@@ -37,6 +37,9 @@
 #include "../../svplib/SVPToolBox.h"
 #include <evr.h>
 #include <evr9.h>
+
+#include "..\..\filters\transform\svpfilter\SVPSubFilter.h"
+
 //
 // CFGManager
 //
@@ -2404,6 +2407,23 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 			m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{9852A670-F845-491B-9BE6-EBD841B8A613}")), MERIT64_DO_NOT_USE));			
 		}
 //	}
+
+		if(	s.iDSVideoRendererType == VIDRNDT_DS_OVERLAYMIXER || VIDRNDT_DS_OLDRENDERER == s.iDSVideoRendererType){
+			pFGF = new CFGFilterInternal<CSVPSubFilter>(
+				L"SVPlayer ×ÖÄ»×é¼þ" ,
+				MERIT64_ABOVE_DSHOW );
+			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_YV12);
+			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_I420);
+			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_IYUV);
+			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_YUY2);
+			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RGB32);
+			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RGB24);
+			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RGB565);
+			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RGB555);
+
+			m_transform.AddTail(pFGF);
+		}
+
 	if(s.iDSVideoRendererType != VIDRNDT_DS_OVERLAYMIXER ){
 		// {CD8743A1-3736-11d0-9E69-00C04FD7C15B}
 		m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{CD8743A1-3736-11d0-9E69-00C04FD7C15B}")), MERIT64_DO_NOT_USE));

@@ -254,7 +254,7 @@ s_scmap_hdmv[] =
 	{6, { 0, 1, 2, 3, 4,-1,-1,-1 }, SPEAKER_FRONT_LEFT|SPEAKER_FRONT_RIGHT|SPEAKER_FRONT_CENTER|SPEAKER_BACK_LEFT|SPEAKER_BACK_RIGHT},						// 3/2			FL, FR, FC, BL, BR
 	{6, { 0, 1, 2, 5, 3, 4,-1,-1 }, SPEAKER_FRONT_LEFT|SPEAKER_FRONT_RIGHT|SPEAKER_FRONT_CENTER|SPEAKER_LOW_FREQUENCY|SPEAKER_BACK_LEFT|SPEAKER_BACK_RIGHT},// 3/2+LFe		FL, FR, FC, BL, BR, LFe
 	{8, { 0, 1, 2, 3, 6, 4, 5,-1 }, SPEAKER_FRONT_LEFT|SPEAKER_FRONT_RIGHT|SPEAKER_FRONT_CENTER|SPEAKER_BACK_LEFT|SPEAKER_BACK_RIGHT|SPEAKER_SIDE_LEFT|SPEAKER_SIDE_RIGHT},	// 3/4			FL, FR, FC, BL, Bls, Brs, BR
-	{8, { 0, 1, 2, 7, 3, 6, 4, 5 }, SPEAKER_FRONT_LEFT|SPEAKER_FRONT_RIGHT|SPEAKER_FRONT_CENTER|SPEAKER_LOW_FREQUENCY|SPEAKER_BACK_LEFT|SPEAKER_BACK_RIGHT|SPEAKER_SIDE_LEFT|SPEAKER_SIDE_RIGHT},// 3/4+LFe		FL, FR, FC, BL, Bls, Brs, BR, LFe
+	{8, { 0, 1, 2, 7, 4, 5, 3, 6 }, SPEAKER_FRONT_LEFT|SPEAKER_FRONT_RIGHT|SPEAKER_FRONT_CENTER|SPEAKER_LOW_FREQUENCY|SPEAKER_BACK_LEFT|SPEAKER_BACK_RIGHT|SPEAKER_SIDE_LEFT|SPEAKER_SIDE_RIGHT},// 3/4+LFe		FL, FR, FC, BL, Bls, Brs, BR, LFe
 },
 s_scmap_lpcm[] =
 {
@@ -1807,7 +1807,9 @@ HRESULT CMpaDecFilter::Deliver(BYTE* pBuff, int size, int bit_rate, BYTE type)
 	if(FAILED(GetDeliveryBuffer(&pOut, &pDataOut)))
 		return E_FAIL;
 
-	REFERENCE_TIME rtDur = 10000000i64 * size*8 / bit_rate;
+	//	REFERENCE_TIME rtDur = 10000000i64 * size*8 / bit_rate;
+	size_t blocks = (size + length - 1) / length;
+	REFERENCE_TIME rtDur = 10000000i64 * blocks * length*8 / bit_rate;
 	REFERENCE_TIME rtStart = m_rtStart, rtStop = m_rtStart + rtDur;
 	//SVP_LogMsg5(_T("CMpaDecFilter Deliver2: %I64d - %I64d =  %I64d \n"), rtStart/10000, rtStop/10000 , rtDur/10000);
 	m_rtStart += rtDur;
@@ -1834,8 +1836,8 @@ HRESULT CMpaDecFilter::Deliver(BYTE* pBuff, int size, int bit_rate, BYTE type)
 	pDataOutW[0] = 0xf872;
 	pDataOutW[1] = 0x4e1f;
 	pDataOutW[2] = type;
-	pDataOutW[3] = size*8;
-	_swab((char*)pBuff, (char*)&pDataOutW[4], size);
+	pDataOutW[3] = length*8;	
+	_swab((char*)pBuff, (char*)&pDataOutW[4], length);
 
 	return m_pOutput->Deliver(pOut);
 }

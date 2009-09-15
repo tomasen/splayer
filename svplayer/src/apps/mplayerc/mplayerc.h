@@ -463,6 +463,7 @@ public:
 		CStringArray szaGPUStrings;
 		CString optionDecoder;
 		int useGPUCUDA;
+		int useFFMPEGWMV;
 		int autoDownloadSVPSub;
 		int iDX9Resizer;
 		bool fVMR9MixerMode;

@@ -69,6 +69,7 @@ class CUESettingPanel : public CDHtmlDialog
 
 	CString m_sgs_speaker;
 
+	int m_sgi_useffmpegwmv;
 	int m_sgi_bDisableCenterBigOpenBmp;
 	int m_sgi_NotUseFasterSeeking;
 	CString m_sgs_initblock;

@@ -69,7 +69,7 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 {
 	CDHtmlDialog::DoDataExchange(pDX);
 
-	
+	DDX_DHtml_CheckBox(pDX, _T("useffmpegwmv") , m_sgi_useffmpegwmv);
 	DDX_DHtml_CheckBox(pDX, _T("chkDisableCenterBigOpenBmp") , m_sgi_bDisableCenterBigOpenBmp);
 	DDX_DHtml_CheckBox(pDX, _T("NotUseFasterSeeking") , m_sgi_NotUseFasterSeeking);
 	DDX_DHtml_CheckBox(pDX, _T("chkremhistory") , m_sgs_chkremhistory);
@@ -280,6 +280,7 @@ BOOL CUESettingPanel::OnInitDialog()
 	m_sgi_NotUseFasterSeeking = !s.fFasterSeeking;
 
 	//Video Setting
+	m_sgi_useffmpegwmv = !s.useFFMPEGWMV;
 	m_sgi_uservmrmixer = s.fVMR9MixerMode;
 	if(s.iDSVideoRendererType == 6 && s.iRMVideoRendererType == 2 && s.iQTVideoRendererType == 2){
 		m_sgi_videorender = 0; //DX9
@@ -506,6 +507,7 @@ void CUESettingPanel::ApplyAllSetting(){
 	//Video Setting
 	//s.bDisableEVR = !m_sgi_gpuacel;
 
+	s.useFFMPEGWMV = !m_sgi_useffmpegwmv ;
 	//s.fVMR9MixerMode = m_sgi_uservmrmixer ;
 	if(s.fVMR9MixerMode){
 		m_sgs_videorender = _T("DX9");

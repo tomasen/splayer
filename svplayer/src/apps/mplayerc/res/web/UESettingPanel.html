@@ -422,6 +422,7 @@ function myInit(){
 <div style="display:none;"><input type="checkbox" id="lockbackbuff" onclick="if(this.checked) ueAPI.fobj('GothSync').checked = false;" /><label for="lockbackbuff" title="在部分显卡驱动上会造成CPU占用过高的问题">修正画面横向撕裂问题（SPDIF输出下无效但效果更好）</label><br /></div>
 <div id='GothSyncLine' style="display:block;">&nbsp; &nbsp; <input type="checkbox" id="GothSync" onclick="if(this.checked){ ueAPI.useDX9(1);ueAPI.fobj('lockbackbuff').checked = false; }"  /><label for="GothSync" title="GothSync">修正画面横向撕裂问题（[<a href='?http://blog.splayer.org/?p=1756'><b>?</b></a>]）</label><br /></div>
 <div id='divdxvacompat' ><input type="checkbox" id="dxvacompat" /><label for="dxvacompat">使硬件高清兼容更多文件（不推荐！显卡能力不足时会造成花屏）</label> <br /></div>
+<input type="checkbox" id="useffmpegwmv" /><label for="useffmpegwmv">使用系统现有的WMV解码器播放WMV</label>
 <br />
 <fieldset style="display:none"><legend>专家设置</legend>
 <input type="checkbox" id="internaltspliteronly" /><label for="internaltspliteronly" title="使用兼容性更好的TS分离器">使用兼容性更好的TS分离器（解决TS文件无画面的问题，但不方便选择TS音轨）</label><br />

@@ -2873,8 +2873,9 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		pApp->WriteProfileInt(ResStr(IDS_R_INTERNAL_FILTERS), ResStr(IDS_RS_TRAFILTERS), TraFilters|~(TRA_LAST-1));
 
 		pApp->WriteProfileInt(ResStr(IDS_R_INTERNAL_FILTERS), ResStr(IDS_RS_DXVACOMPAT), bDVXACompat);
-		
 
+		pApp->WriteProfileInt(ResStr(IDS_R_INTERNAL_FILTERS), ResStr(IDS_RS_USERFFMPEGWMV), useFFMPEGWMV);
+		
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SMOOTHMUTILMONITOR), fbSmoothMutilMonitor);
 
 		//pApp->WriteProfileInt(ResStr(IDS_R_INTERNAL_FILTERS), ResStr(IDS_RS_DXVAFILTERS), DXVAFilters|~(DXVA_LAST-1));
@@ -3005,6 +3006,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		
 		bIsIVM = false;
 
+
 		fCheckFileAsscOnStartup = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_CHECKFILEASSCONSTARTUP), 1);
 		szStartUPCheckExts = pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_CHECKFILEEXTSASSCONSTARTUP), _T(".mkv .avi .rmvb .rm .wmv .asf .mov .mp4 .mpeg .mpg .3gp"));
 		fPopupStartUpExtCheck = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_POPSTARTUPEXTCHECK), 1);
@@ -3076,6 +3078,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		}
 		bRGBOnly = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USERGBONLY), 0);
 
+		useFFMPEGWMV = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USERFFMPEGWMV), 0);
  		if(fVMDetected ){
  			//fForceRGBrender = 1;
 			bRGBOnly = 1;

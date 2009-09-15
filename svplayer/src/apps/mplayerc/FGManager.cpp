@@ -1971,9 +1971,13 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 #if INCLUDE_MPC_VIDEO_DECODER | INCLUDE_MPC_DXVA_VIDEO_DECODER
 
 #if INTERNAL_DECODER_WMV
-	if (ffmpeg_filters & FFM_WMV )
+	//if (ffmpeg_filters & FFM_WMV )
 	{
-		pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(_T("WMV SVP Video Decoder"), MERIT64_NORMAL);
+		UINT64 gMerit = MERIT64_NORMAL;
+		if(s.useFFMPEGWMV)
+			 gMerit = MERIT64_ABOVE_DSHOW+100;
+
+		pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(_T("WMV SVP Video Decoder"), gMerit);
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_WMV1);
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_wmv1);
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_WMV2);

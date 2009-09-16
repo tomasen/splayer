@@ -11022,8 +11022,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 		else throw _T("Can't open, invalid input parameters");
 
 		
-
-		pGB->FindInterface(__uuidof(ISubPicAllocatorPresenter), (void**)&m_pCAP, TRUE);
+		pGB->FindInterface(__uuidof(ISubPicAllocatorPresenter), (void**)&m_pCAP, FALSE);
 		pGB->FindInterface(__uuidof(ISubPicAllocatorPresenterRender), (void**)&m_pCAPR, TRUE);
 		pGB->FindInterface(__uuidof(ISubPicAllocatorPresenter2), (void**)&m_pCAP2, TRUE);
 		pGB->FindInterface(__uuidof(IVMRMixerControl9),			(void**)&m_pMC,  TRUE);
@@ -11043,7 +11042,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 			m_pMFVDC->SetVideoPosition(NULL, &Rect);
 			//AfxMessageBox(_T("m_pMFVDC"));
 		}
-
+		
 		if(!m_pCAP){
 			CComQIPtr<ISubPicAllocatorPresenter> pCAP =  FindFilter(__uuidof(CSVPSubFilter), pGB);
 			if(pCAP){
@@ -13614,7 +13613,7 @@ bool CMainFrame::BuildGraphVideoAudio(int fVPreview, bool fVCapture, int fAPrevi
 			m_pCAP2 = NULL;
 			m_pCAPR = NULL;
 			pGB->Render(pVidPrevPin);
-			pGB->FindInterface(__uuidof(ISubPicAllocatorPresenter), (void**)&m_pCAP, TRUE);
+			pGB->FindInterface(__uuidof(ISubPicAllocatorPresenter), (void**)&m_pCAP, FALSE);
 			pGB->FindInterface(__uuidof(ISubPicAllocatorPresenterRender), (void**)&m_pCAPR, TRUE);
 			pGB->FindInterface(__uuidof(ISubPicAllocatorPresenter2), (void**)&m_pCAP2, TRUE);
 		}

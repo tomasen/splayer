@@ -505,7 +505,7 @@ HRESULT CFGFilterVideoRenderer::Create(IBaseFilter** ppBF, CInterfaceList<IUnkno
 			{
 				*ppBF = CComQIPtr<IBaseFilter>(pRenderer).Detach();
 				pUnks.AddTail(pCAP);
-
+				
 			
 			}
 		}

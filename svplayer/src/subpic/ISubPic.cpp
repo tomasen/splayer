@@ -804,6 +804,7 @@ ISubPicAllocatorPresenterImpl::~ISubPicAllocatorPresenterImpl()
 
 STDMETHODIMP ISubPicAllocatorPresenterImpl::NonDelegatingQueryInterface(REFIID riid, void** ppv)
 {
+	SVP_LogMsg5(L"ISubPic %s" , CStringFromGUID(riid));
 	return 
 		QI(ISubPicAllocatorPresenter)
 		QI(ISubPicAllocatorPresenterRender)

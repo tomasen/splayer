@@ -731,6 +731,8 @@ STDMETHODIMP_(bool) CEVRAllocatorPresenter::Paint(bool fAll)
 
 STDMETHODIMP CEVRAllocatorPresenter::NonDelegatingQueryInterface(REFIID riid, void** ppv)
 {
+	SVP_LogMsg5(CStringFromGUID(riid));
+
 	HRESULT		hr;
 	if(riid == __uuidof(IMFClockStateSink))
 		hr = GetInterface((IMFClockStateSink*)this, ppv);

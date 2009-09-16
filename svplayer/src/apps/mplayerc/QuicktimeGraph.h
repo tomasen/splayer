@@ -75,7 +75,7 @@ protected:
 	CPlayerWindow m_wndWindowFrame;
 	CQuicktimeWindow m_wndDestFrame;
 
-	CComPtr<ISubPicAllocatorPresenter> m_pQTAP;
+	CComPtr<ISubPicAllocatorPresenterRender> m_pQTAP;
 
 public:
 	CQuicktimeGraph(HWND hParent, HRESULT& hr);

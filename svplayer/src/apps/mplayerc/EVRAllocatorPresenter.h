@@ -25,4 +25,4 @@
 DEFINE_GUID(CLSID_EVRAllocatorPresenter, 
 0x7612b889, 0xe070, 0x4bcc, 0xb8, 0x8, 0x91, 0xcb, 0x79, 0x41, 0x74, 0xab);
 
-HRESULT CreateEVR(const CLSID& clsid, HWND hWnd, ISubPicAllocatorPresenter** ppAP);
+HRESULT CreateEVR(const CLSID& clsid, HWND hWnd, ISubPicAllocatorPresenterRender** ppAP);

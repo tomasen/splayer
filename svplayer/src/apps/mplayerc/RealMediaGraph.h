@@ -165,7 +165,7 @@ public:
 class CRealMediaPlayerWindowless
 	: public CRealMediaPlayer
 {
-	CComPtr<ISubPicAllocatorPresenter> m_pRMAP;
+	CComPtr<ISubPicAllocatorPresenterRender> m_pRMAP;
 
 public:
 	CRealMediaPlayerWindowless(HWND hWndParent, CRealMediaGraph* pRMG);

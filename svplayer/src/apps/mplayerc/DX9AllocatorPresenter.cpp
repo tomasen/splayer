@@ -114,7 +114,7 @@ bool IsVMR9InGraph(IFilterGraph* pFG)
 
 using namespace DSObjects;
 
-HRESULT CreateAP9(const CLSID& clsid, HWND hWnd, ISubPicAllocatorPresenter** ppAP)
+HRESULT CreateAP9(const CLSID& clsid, HWND hWnd, ISubPicAllocatorPresenterRender** ppAP)
 {
 	CheckPointer(ppAP, E_POINTER);
 

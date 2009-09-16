@@ -486,22 +486,27 @@ HRESULT CFGFilterVideoRenderer::Create(IBaseFilter** ppBF, CInterfaceList<IUnkno
 
 	HRESULT hr = S_OK;
 
-	CComPtr<ISubPicAllocatorPresenter> pCAP;
+	CComPtr<ISubPicAllocatorPresenterRender> pCAP;
 
 	if(m_clsid == CLSID_VMR7AllocatorPresenter 
 	|| m_clsid == CLSID_VMR9AllocatorPresenter 
 	|| m_clsid == CLSID_DXRAllocatorPresenter
 	|| m_clsid == CLSID_EVRAllocatorPresenter)
 	{
+		
 		if(SUCCEEDED(CreateAP7(m_clsid, m_hWnd, &pCAP))
-		|| SUCCEEDED(CreateAP9(m_clsid, m_hWnd, &pCAP))
-		|| SUCCEEDED(CreateEVR(m_clsid, m_hWnd, &pCAP)))
+			|| SUCCEEDED(CreateAP9(m_clsid, m_hWnd, &pCAP))
+			|| SUCCEEDED(CreateEVR(m_clsid, m_hWnd, &pCAP)))
 		{
 			CComPtr<IUnknown> pRenderer;
-			if(SUCCEEDED(hr = pCAP->CreateRenderer(&pRenderer)))
+			
+			
+			if( SUCCEEDED(hr = pCAP->CreateRenderer(&pRenderer)))
 			{
 				*ppBF = CComQIPtr<IBaseFilter>(pRenderer).Detach();
 				pUnks.AddTail(pCAP);
+
+			
 			}
 		}
 	}

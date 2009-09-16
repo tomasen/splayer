@@ -182,7 +182,7 @@ class CMainFrame : public CFrameWnd, public CDropTarget  , protected ISkinMenuRe
 
 	CComPtr<ISubPicAllocatorPresenter> m_pCAP;
 	CComPtr<ISubPicAllocatorPresenter2> m_pCAP2;
-	
+	CComPtr<ISubPicAllocatorPresenterRender> m_pCAPR ;
 
 	void SetBalance(int balance);
 

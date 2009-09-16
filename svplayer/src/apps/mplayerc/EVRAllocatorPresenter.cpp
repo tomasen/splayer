@@ -502,7 +502,7 @@ COuterEVR::~COuterEVR()
 
 CString GetWindowsErrorMessage(HRESULT _Error, HMODULE _Module);
 
-HRESULT CreateEVR(const CLSID& clsid, HWND hWnd, ISubPicAllocatorPresenter** ppAP)
+HRESULT CreateEVR(const CLSID& clsid, HWND hWnd, ISubPicAllocatorPresenterRender** ppAP)
 {
 	HRESULT		hr = E_FAIL;
 	if (clsid == CLSID_EVRAllocatorPresenter)

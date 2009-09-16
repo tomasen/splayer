@@ -806,6 +806,8 @@ STDMETHODIMP ISubPicAllocatorPresenterImpl::NonDelegatingQueryInterface(REFIID r
 {
 	return 
 		QI(ISubPicAllocatorPresenter)
+		QI(ISubPicAllocatorPresenterRender)
+		QI(ISubPicAllocatorPresenter2)
 		__super::NonDelegatingQueryInterface(riid, ppv);
 }
 

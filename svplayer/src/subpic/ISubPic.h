@@ -363,12 +363,8 @@ public:
 
 interface __declspec(uuid("CF75B1F0-535C-4074-8869-B15F177F944E")) ISubPicAllocatorPresenter : public IUnknown
 {
-	STDMETHOD (CreateRenderer) (IUnknown** ppRenderer) PURE;
-
-	STDMETHOD_(SIZE, GetVideoSize) (bool fCorrectAR = true) PURE;
-	STDMETHOD_(void, SetPosition) (RECT w, RECT v) PURE;
-	STDMETHOD_(bool, Paint) (bool fAll) PURE;
-
+	
+	
 	STDMETHOD_(void, SetTime) (REFERENCE_TIME rtNow) PURE;
 	STDMETHOD_(void, SetSubtitleDelay) (int delay_ms) PURE;
 	STDMETHOD_(int, GetSubtitleDelay) () PURE;
@@ -383,12 +379,21 @@ interface __declspec(uuid("CF75B1F0-535C-4074-8869-B15F177F944E")) ISubPicAlloca
 
 	STDMETHOD (GetDIB) (BYTE* lpDib, DWORD* size) PURE;
 
-	STDMETHOD (SetVideoAngle) (Vector v, bool fRepaint = true) PURE;
-	STDMETHOD (SetPixelShader) (LPCSTR pSrcData, LPCSTR pTarget ) PURE;
+	
 };
 
+interface __declspec(uuid("5F5397D8-8C35-4234-9012-F1C31452AA34")) ISubPicAllocatorPresenterRender : public ISubPicAllocatorPresenter
+{
+	STDMETHOD (CreateRenderer) (IUnknown** ppRenderer) PURE;
+	STDMETHOD_(bool, Paint) (bool fAll) PURE;
+	STDMETHOD (SetPixelShader) (LPCSTR pSrcData, LPCSTR pTarget ) PURE;
 
-interface __declspec(uuid("767AEBA8-A084-488a-89C8-F6B74E53A90F")) ISubPicAllocatorPresenter2 : public ISubPicAllocatorPresenter
+	STDMETHOD_(SIZE, GetVideoSize) (bool fCorrectAR = true) PURE;
+	STDMETHOD_(void, SetPosition) (RECT w, RECT v) PURE;
+	STDMETHOD (SetVideoAngle) (Vector v, bool fRepaint = true) PURE;
+};
+
+interface __declspec(uuid("767AEBA8-A084-488a-89C8-F6B74E53A90F")) ISubPicAllocatorPresenter2 : public ISubPicAllocatorPresenterRender
 {
 	STDMETHOD (SetPixelShader2) (LPCSTR pSrcData, LPCSTR pTarget, bool bScreenSpace) PURE;
 };

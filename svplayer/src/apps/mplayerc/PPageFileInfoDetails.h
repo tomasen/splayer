@@ -32,6 +32,7 @@ class CPPageFileInfoDetails : public CPropertyPage
 private:
 	CComPtr<IFilterGraph> m_pFG;
 	CComPtr<ISubPicAllocatorPresenter> m_pCAP;
+	CComPtr<ISubPicAllocatorPresenterRender> m_pCAPR;
 
 	HICON m_hIcon;
     

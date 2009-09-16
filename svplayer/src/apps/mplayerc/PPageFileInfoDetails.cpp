@@ -39,6 +39,7 @@ CPPageFileInfoDetails::CPPageFileInfoDetails(CString fn, IFilterGraph* pFG, ISub
 	, m_fn(fn)
 	, m_pFG(pFG)
 	, m_pCAP(pCAP)
+	, m_pCAPR(NULL)
 	, m_hIcon(NULL)
 	, m_type(_T("Not known"))
 	, m_size(_T("Not known"))
@@ -46,6 +47,11 @@ CPPageFileInfoDetails::CPPageFileInfoDetails(CString fn, IFilterGraph* pFG, ISub
 	, m_res(_T("Not known"))
 	, m_created(_T("Not known"))
 {
+	if(m_pCAP){
+		CComQIPtr<ISubPicAllocatorPresenterRender> pCAPR = m_pCAP;
+		if(pCAPR)
+			m_pCAPR = pCAPR;
+	}
 }
 
 CPPageFileInfoDetails::~CPPageFileInfoDetails()
@@ -174,10 +180,10 @@ BOOL CPPageFileInfoDetails::OnInitDialog()
 	CSize wh(0, 0), arxy(0, 0);
 	long fps = 0;
 
-	if(m_pCAP)
+	if(m_pCAPR)
 	{
-		wh = m_pCAP->GetVideoSize(false);
-		arxy = m_pCAP->GetVideoSize(true);
+		wh = m_pCAPR->GetVideoSize(false);
+		arxy = m_pCAPR->GetVideoSize(true);
 	}
 	else
 	{
@@ -250,6 +256,7 @@ BOOL CPPageFileInfoDetails::OnInitDialog()
 
 	m_pFG = NULL;
 	m_pCAP = NULL;
+	m_pCAPR = NULL;
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE

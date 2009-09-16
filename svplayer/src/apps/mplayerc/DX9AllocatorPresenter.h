@@ -47,7 +47,7 @@ DEFINE_GUID(CLSID_madVRAllocatorPresenter,
 0xc7ed3100, 0x9002, 0x4595, 0x9d, 0xca, 0xb3, 0xb, 0x30, 0x41, 0x34, 0x29);
 
 
-extern HRESULT CreateAP9(const CLSID& clsid, HWND hWnd, ISubPicAllocatorPresenter** ppAP);
+extern HRESULT CreateAP9(const CLSID& clsid, HWND hWnd, ISubPicAllocatorPresenterRender** ppAP);
 
 extern bool IsVMR9InGraph(IFilterGraph* pFG);
 

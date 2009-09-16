@@ -2412,7 +2412,8 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 		}
 //	}
 
-		if(	0 && ( s.iDSVideoRendererType == VIDRNDT_DS_OVERLAYMIXER || VIDRNDT_DS_OLDRENDERER == s.iDSVideoRendererType) ){
+		if(	0 ){ // ( s.iDSVideoRendererType == VIDRNDT_DS_OVERLAYMIXER || VIDRNDT_DS_OLDRENDERER == s.iDSVideoRendererType)
+			s.iDSVideoRendererType = VIDRNDT_DS_OVERLAYMIXER;
 			pFGF = new CFGFilterInternal<CSVPSubFilter>(
 				L"SVPlayer ×ÖÄ»×é¼þ" ,
 				MERIT64_ABOVE_DSHOW );

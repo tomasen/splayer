@@ -96,6 +96,8 @@ static UINT WM_NOTIFYICON = RegisterWindowMessage(TEXT("MYWM_NOTIFYICON"));
 
 #include "../../filters/misc/SyncClock/SyncClock.h"
 
+#include "..\..\filters\transform\svpfilter\SVPSubFilter.h"
+
 bool g_bNoDuration = false;
 bool g_bExternalSubtitleTime = false;
 
@@ -2630,7 +2632,9 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 
 		m_wndSubresyncBar.SetTime(pos);
 
-		if(m_pCAP && GetMediaState() == State_Paused) m_pCAP->Paint(true);
+		if(m_pCAPR && GetMediaState() == State_Paused ){
+			m_pCAPR->Paint(true);
+		}
 	}else if(nIDEvent == TIMER_STATUSBARHIDER)
 	{
 		if (!( AfxGetAppSettings().nCS & CS_STATUSBAR)){
@@ -5506,10 +5510,10 @@ void CMainFrame::SaveThumbnails(LPCTSTR fn)
 	{
 		m_pMFVDC->GetNativeVideoSize(&wh, &arxy);
 	}
-	else if(m_pCAP)
+	else if(m_pCAPR)
 	{
-		wh = m_pCAP->GetVideoSize(false);
-		arxy = m_pCAP->GetVideoSize(true);
+		wh = m_pCAPR->GetVideoSize(false);
+		arxy = m_pCAPR->GetVideoSize(true);
 	}
 	else
 	{
@@ -6653,7 +6657,7 @@ void CMainFrame::OnViewRotate(UINT nID)
 		return OnEnableDX9();
 	}
 	AppSettings& s = AfxGetAppSettings();
-	if(!m_pCAP || s.iDSVideoRendererType != 6 || s.iRMVideoRendererType != 2 || s.iQTVideoRendererType != 2 || s.iAPSurfaceUsage != VIDRNDT_AP_TEXTURE3D){
+	if(!m_pCAPR || s.iDSVideoRendererType != 6 || s.iRMVideoRendererType != 2 || s.iQTVideoRendererType != 2 || s.iAPSurfaceUsage != VIDRNDT_AP_TEXTURE3D){
 
 		SetupShadersSubMenu();
 		OnMenu(  &m_shaders );;
@@ -6694,7 +6698,7 @@ void CMainFrame::OnViewRotate(UINT nID)
 	default: return;
 	}
 
-	m_pCAP->SetVideoAngle(Vector(DegToRad(m_AngleX), DegToRad(m_AngleY), DegToRad(m_AngleZ)));
+	m_pCAPR->SetVideoAngle(Vector(DegToRad(m_AngleX), DegToRad(m_AngleY), DegToRad(m_AngleZ)));
 
 	CString info;
 	info.Format(_T("x: %d, y: %d, z: %d"), m_AngleX, m_AngleY, m_AngleZ);
@@ -8896,10 +8900,10 @@ CSize CMainFrame::GetVideoSize()
 	{
 		m_pMFVDC->GetNativeVideoSize(&wh, &arxy);	// TODO : check AR !!
 	}
-	else if(m_pCAP)
+	else if(m_pCAPR)
 	{
-		wh = m_pCAP->GetVideoSize(false);
-		arxy = m_pCAP->GetVideoSize(fKeepAspectRatio);
+		wh = m_pCAPR->GetVideoSize(false);
+		arxy = m_pCAPR->GetVideoSize(fKeepAspectRatio);
 
 		
 	}
@@ -9150,10 +9154,10 @@ void CMainFrame::MoveVideoWindow(bool fShowStats)
 		//CString szLog;
 		//szLog.Format(_T("WVSize3 %d %d %d %d %d %d %d "), wr.Width(), wr.Height(), vr.Width(), vr.Height(), m_AngleX , m_AngleY , m_AngleZ);
 		//SVP_LogMsg(szLog);
-		if(m_pCAP)
+		if(m_pCAPR)
 		{
-			m_pCAP->SetPosition(wr, vr);
-			m_pCAP->SetVideoAngle(Vector(DegToRad(m_AngleX), DegToRad(m_AngleY), DegToRad(m_AngleZ)));
+			m_pCAPR->SetPosition(wr, vr);
+			m_pCAPR->SetVideoAngle(Vector(DegToRad(m_AngleX), DegToRad(m_AngleY), DegToRad(m_AngleZ)));
 		}
 		else
 		{
@@ -9395,7 +9399,9 @@ double CMainFrame::GetZoomAutoFitScale()
 
 void CMainFrame::RepaintVideo()
 {
-	if(m_pCAP) m_pCAP->Paint(false);
+	if(m_pCAPR) {
+		m_pCAPR->Paint(false);
+	}
 }
 
 void CMainFrame::SetVMR9ColorControl(float dBrightness, float dContrast, float dHue, float dSaturation, BOOL silent)
@@ -9430,27 +9436,29 @@ void CMainFrame::SetVMR9ColorControl(float dBrightness, float dContrast, float d
 		
 		szMsg.Format(_T("亮度: %0.2f  对比度: %0.2f "),dBrightness,dContrast);
 
-		if(m_pCAP) {
-			if(!silent){
-				m_pCAP->SetPixelShader(NULL, NULL);
-				if (m_pCAP2)
-					m_pCAP2->SetPixelShader2(NULL, NULL, true);
-			}
-				
-			if( dContrast != 1.0 || dBrightness != 100.0 ){
-
-				CStringA szSrcData;
-				szSrcData.Format( ("sampler s0:register(s0);float4 p0 : register(c0);float4 main(float2 tex : TEXCOORD0) : COLOR { return (tex2D(s0,tex) - 0.3) * %0.3f + 0.3 + %0.3f; }")
-					, dContrast , dBrightness / 100 - 1.0  );
-
-				HRESULT hr = m_pCAP->SetPixelShader(szSrcData, ("ps_2_0"));
-				if(FAILED(hr)){
-					if(!AfxGetMyApp()->GetD3X9Dll())
-						szMsg = _T("请通过自动更新下载必要的组件(d3d9x.dll)");
-					else
-						szMsg = _T("需要硬件 Pixel Shader 2.0") ;
+		if(m_pCAPR) {
+			
+				if(!silent){
+					m_pCAPR->SetPixelShader(NULL, NULL);
+					if (m_pCAP2)
+						m_pCAP2->SetPixelShader2(NULL, NULL, true);
 				}
-			}
+					
+				if( dContrast != 1.0 || dBrightness != 100.0 ){
+
+					CStringA szSrcData;
+					szSrcData.Format( ("sampler s0:register(s0);float4 p0 : register(c0);float4 main(float2 tex : TEXCOORD0) : COLOR { return (tex2D(s0,tex) - 0.3) * %0.3f + 0.3 + %0.3f; }")
+						, dContrast , dBrightness / 100 - 1.0  );
+
+					HRESULT hr = m_pCAPR->SetPixelShader(szSrcData, ("ps_2_0"));
+					if(FAILED(hr)){
+						if(!AfxGetMyApp()->GetD3X9Dll())
+							szMsg = _T("请通过自动更新下载必要的组件(d3d9x.dll)");
+						else
+							szMsg = _T("需要硬件 Pixel Shader 2.0") ;
+					}
+				}
+			
 			
 		}
 		if(!silent)
@@ -9463,8 +9471,8 @@ void CMainFrame::SetVMR9ColorControl(float dBrightness, float dContrast, float d
 }
 void CMainFrame::SetShaders( BOOL silent )
 {
-	if(!m_pCAP) return;
-
+	if(!m_pCAPR) return;
+	
 	AppSettings& s = AfxGetAppSettings();
 
 	CAtlStringMap<const AppSettings::Shader*> s2s;
@@ -9476,7 +9484,7 @@ void CMainFrame::SetShaders( BOOL silent )
 		s2s[pShader->label] = pShader;
 	}
 	if(!silent){
-		m_pCAP->SetPixelShader(NULL, NULL);
+		m_pCAPR->SetPixelShader(NULL, NULL);
 		if (m_pCAP2)
 			m_pCAP2->SetPixelShader2(NULL, NULL, true);
 
@@ -9493,7 +9501,7 @@ void CMainFrame::SetShaders( BOOL silent )
 			CStringA target = pShader->target;
 			CStringA srcdata = pShader->srcdata;
 
-			HRESULT hr = m_pCAP->SetPixelShader(srcdata, target );
+			HRESULT hr = m_pCAPR->SetPixelShader(srcdata, target );
 
 			if(FAILED(hr))
 			{
@@ -10552,9 +10560,9 @@ void CMainFrame::OpenSetupVideo()
 	{
 		m_fAudioOnly = false;
 	}
-	else if(m_pCAP)
+	else if(m_pCAPR)
 	{
-		CSize vs = m_pCAP->GetVideoSize();
+		CSize vs = m_pCAPR->GetVideoSize();
 		m_fAudioOnly = (vs.cx <= 0 || vs.cy <= 0);
 	}
 	else
@@ -11016,8 +11024,11 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 		
 
 		pGB->FindInterface(__uuidof(ISubPicAllocatorPresenter), (void**)&m_pCAP, TRUE);
+		pGB->FindInterface(__uuidof(ISubPicAllocatorPresenterRender), (void**)&m_pCAPR, TRUE);
 		pGB->FindInterface(__uuidof(ISubPicAllocatorPresenter2), (void**)&m_pCAP2, TRUE);
 		pGB->FindInterface(__uuidof(IVMRMixerControl9),			(void**)&m_pMC,  TRUE);
+	
+		
 		if (m_pMC)
 		{
 			SetVMR9ColorControl(s.dBrightness, s.dContrast, s.dHue, s.dSaturation);
@@ -11031,6 +11042,13 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 			m_pMFVDC->SetVideoWindow (m_wndView.m_hWnd);
 			m_pMFVDC->SetVideoPosition(NULL, &Rect);
 			//AfxMessageBox(_T("m_pMFVDC"));
+		}
+
+		if(!m_pCAP){
+			CComQIPtr<ISubPicAllocatorPresenter> pCAP =  FindFilter(__uuidof(CSVPSubFilter), pGB);
+			if(pCAP){
+				m_pCAP = pCAP;
+			}
 		}
 
 		if(m_fOpeningAborted) throw aborted;
@@ -11047,6 +11065,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 
 		if(m_fOpeningAborted) throw aborted;
 
+		
 		if(m_pCAP && (!m_fAudioOnly || m_fRealMediaGraph))
 		{
 			POSITION pos = pOMD->subs.GetHeadPosition();
@@ -11239,6 +11258,7 @@ void CMainFrame::CloseMediaPrivate()
 
 	m_pCAP = NULL; // IMPORTANT: IVMRSurfaceAllocatorNotify/IVMRSurfaceAllocatorNotify9 has to be released before the VMR/VMR9, otherwise it will crash in Release()
 	m_pCAP2  = NULL;
+	m_pCAPR = NULL;
 	m_pMC	 = NULL;
 	m_pMFVDC = NULL;
 
@@ -13592,8 +13612,10 @@ bool CMainFrame::BuildGraphVideoAudio(int fVPreview, bool fVCapture, int fAPrevi
 		{
 			m_pCAP = NULL;
 			m_pCAP2 = NULL;
+			m_pCAPR = NULL;
 			pGB->Render(pVidPrevPin);
 			pGB->FindInterface(__uuidof(ISubPicAllocatorPresenter), (void**)&m_pCAP, TRUE);
+			pGB->FindInterface(__uuidof(ISubPicAllocatorPresenterRender), (void**)&m_pCAPR, TRUE);
 			pGB->FindInterface(__uuidof(ISubPicAllocatorPresenter2), (void**)&m_pCAP2, TRUE);
 		}
 

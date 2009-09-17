@@ -35,6 +35,7 @@ BEGIN_DHTML_EVENT_MAP(CUESettingPanel)
 	DHTML_EVENT_ONCLICK(_T("ButtonOK"), OnButtonOK)
 	DHTML_EVENT_ONCLICK(_T("ButtonCancel"), OnButtonCancel)
 	DHTML_EVENT_ONCLICK(_T("ButtonApply"), OnButtonApply)
+	DHTML_EVENT_ONCLICK(_T("IDCHANNELMAPPING"), OnButtonAudioChannelMapping)
 	DHTML_EVENT_ONCLICK(_T("ButtonAdvanceSetting"), OnButtonAdvanceSetting)
 	DHTML_EVENT_ONCLICK(_T("sub1c1"), OnColorSub)
 	DHTML_EVENT_ONCLICK(_T("sub1c2"), OnColorSub)
@@ -46,8 +47,8 @@ BEGIN_DHTML_EVENT_MAP(CUESettingPanel)
 	DHTML_EVENT_ONCLICK(_T("sub2c4"), OnColorSub)
 	DHTML_EVENT_ONCLICK(_T("subfont1"), OnFontSetting)
 	DHTML_EVENT_ONCLICK(_T("subfont2"), OnFontSetting)
-	DHTML_EVENT_ONCLICK(_T("IDFileAss"), OnFileAss)
-	DHTML_EVENT_ONCLICK(_T("IDHotKey"), OnHotKey)
+	DHTML_EVENT_ONCLICK(_T("fillassoc_font"), OnFileAss)
+	DHTML_EVENT_ONCLICK(_T("hotkeysetting_font"), OnHotKey)
 	DHTML_EVENT_ONCLICK(_T("IDBROWERPIC"), OnBrowerPic)
 	DHTML_EVENT_ONCLICK(_T("SELSVPSTOREPATH"), OnBrowerSVPStoreFolder)
 	//DHTML_EVENT_ONCLICK(_T("IDBGCHG"), OnChangeBG)
@@ -722,6 +723,16 @@ HRESULT CUESettingPanel::OnButtonReset(IHTMLElement* /*pElement*/)
 	OnCancel();
 	return S_OK;
 }
+HRESULT CUESettingPanel::OnButtonAudioChannelMapping(IHTMLElement* /*pElement*/)
+{
+	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
+	CAutoPtr<CPPageAudioSwitcher> page(new CPPageAudioSwitcher(pFrame->pGB));
+	CPropertySheet dlg(_T("ÉùµÀÓ³Éä..."), this);
+	dlg.AddPage(page);
+	dlg.DoModal() ;
+
+	return S_OK;
+}
 HRESULT CUESettingPanel::OnButtonApply(IHTMLElement* /*pElement*/)
 {
 	this->ApplyAllSetting();
@@ -814,6 +825,8 @@ HRESULT CUESettingPanel::OnFileAss(IHTMLElement* /*pElement*/){
 HRESULT CUESettingPanel::OnButtonOK(IHTMLElement* /*pElement*/)
 {
 	this->ApplyAllSetting();
+	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
+	pFrame->OnSettingFinished();
 	OnOK();
 	return S_OK;
 }
@@ -821,4 +834,40 @@ HRESULT CUESettingPanel::OnButtonCancel(IHTMLElement* /*pElement*/)
 {
 	OnCancel();
 	return S_OK;
+}
+
+BOOL CUESettingPanel::Create(UINT ulTemplateName, CWnd* pParentWnd)
+{
+	// TODO: Add your specialized code here and/or call the base class
+
+	return CDHtmlDialog::Create( ulTemplateName, pParentWnd);
+}
+
+BOOL CUESettingPanel::PreTranslateMessage(MSG* pMsg)
+{
+	// TODO: Add your specialized code here and/or call the base class
+	
+	return CDHtmlDialog::PreTranslateMessage(pMsg);
+}
+
+void CUESettingPanel::OnCancel()
+{
+	// TODO: Add your specialized code here and/or call the base class
+	DestroyWindow();
+
+	//CDHtmlDialog::OnCancel();
+}
+
+void CUESettingPanel::OnOK()
+{
+	// TODO: Add your specialized code here and/or call the base class
+	if (!UpdateData(TRUE))
+	{
+		TRACE0("UpdateData failed during dialog termination\n");
+		// The UpdateData routine will set focus to correct item
+		return;
+	}
+	DestroyWindow();
+
+	//CDHtmlDialog::OnOK();
 }

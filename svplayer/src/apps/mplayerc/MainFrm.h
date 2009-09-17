@@ -156,7 +156,6 @@ class CMainFrame : public CFrameWnd, public CDropTarget  , protected ISkinMenuRe
 
 	DWORD m_dwRegister;
 
-	CComPtr<IGraphBuilder2> pGB;
 	CComQIPtr<IMediaControl> pMC;
 	CComQIPtr<IMediaEventEx> pME;
 	CComQIPtr<IVideoWindow> pVW;
@@ -304,6 +303,8 @@ private:
 	CPoint m_pLastClickPoint;
 	CPoint m_pDragFuncStartPoint;
 public:
+	CComPtr<IGraphBuilder2> pGB;
+
 	enum
 	{
 		TIMER_STREAMPOSPOLLER = 1, 
@@ -913,4 +914,6 @@ public:
 	afx_msg void OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized);
 	afx_msg void OnPaint();
 	afx_msg void OnWindowPosChanging(WINDOWPOS* lpwndpos);
+
+	void OnSettingFinished();
 };

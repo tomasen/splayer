@@ -1910,6 +1910,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\res\web\uesetbg.jpg"
+					>
+				</File>
+				<File
+					RelativePath=".\res\web\uesetbg_hover.jpg"
+					>
+				</File>
+				<File
 					RelativePath=".\res\web\UESettingPanel.html"
 					>
 				</File>
@@ -2060,11 +2068,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 		<File

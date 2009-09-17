@@ -98,24 +98,24 @@ IDD_PPAGEAUDIOSWITCHER DIALOGEX 0, 0, 296, 198
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    CONTROL         "启用内置音频分离器 ",IDC_CHECK2,"Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,7,5,273,10
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,7,18,282,1
-    CONTROL         "修正音频采样率为 44100 Hz (建议不要使用此功能)",IDC_CHECK3,"Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,7,35,256,10
-    CONTROL         "音频延迟调整(time shift)",IDC_CHECK4,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,48,99,10
-    EDITTEXT        IDC_EDIT2,107,47,46,13,ES_AUTOHSCROLL,WS_EX_RIGHT
-    CONTROL         "",IDC_SPIN2,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS | UDS_HOTTRACK,155,46,11,14
-    CONTROL         "启用自定义声道映射规则",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,61,117,10
-    LTEXT           "当前的音频有",IDC_STATIC1,7,76,41,8
-    EDITTEXT        IDC_EDIT1,53,74,29,13,ES_CENTER | ES_AUTOHSCROLL
-    CONTROL         "",IDC_SPIN1,"msctls_updown32",UDS_WRAP | UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS | UDS_HOTTRACK,183,73,11,14
-    LTEXT           "个声道:",IDC_STATIC2,89,76,51,8
-    CONTROL         "",IDC_LIST1,"SysListView32",LVS_REPORT | LVS_OWNERDRAWFIXED | LVS_ALIGNLEFT | LVS_NOCOLUMNHEADER | WS_BORDER | WS_TABSTOP,7,93,282,94
+    CONTROL         "启用内置音频分离器 ",IDC_CHECK2,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_DISABLED | WS_TABSTOP,14,114,273,10
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ | NOT WS_VISIBLE,14,127,281,1
+    CONTROL         "修正音频采样率为 44100 Hz (建议不要使用此功能)",IDC_CHECK3,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_DISABLED | WS_TABSTOP,14,144,256,10
+    CONTROL         "音频延迟调整(time shift)",IDC_CHECK4,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,14,157,99,10
+    EDITTEXT        IDC_EDIT2,114,156,46,13,ES_AUTOHSCROLL | NOT WS_VISIBLE,WS_EX_RIGHT
+    CONTROL         "",IDC_SPIN2,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS | UDS_HOTTRACK | NOT WS_VISIBLE,162,155,11,14
+    CONTROL         "启用自定义声道映射规则",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,5,117,10
+    LTEXT           "当前的音频有",IDC_STATIC1,7,22,41,8
+    EDITTEXT        IDC_EDIT1,53,20,29,13,ES_CENTER | ES_AUTOHSCROLL
+    CONTROL         "",IDC_SPIN1,"msctls_updown32",UDS_WRAP | UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS | UDS_HOTTRACK,183,19,11,14
+    LTEXT           "个声道:",IDC_STATIC2,89,22,51,8
+    CONTROL         "",IDC_LIST1,"SysListView32",LVS_REPORT | LVS_OWNERDRAWFIXED | LVS_ALIGNLEFT | LVS_NOCOLUMNHEADER | WS_BORDER | WS_TABSTOP,7,38,282,149
     CTEXT           "按下SHIFT键再点击可使设置立刻生效",IDC_STATIC3,7,189,282,8
-    CONTROL         "智能音量放大",IDC_CHECK5,"Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,7,23,65,8
-    CONTROL         "",IDC_SLIDER1,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,187,23,102,11
-    CONTROL         "智能音量回归",IDC_CHECK6,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,77,22,64,10
-    LTEXT           "毫秒",IDC_STATIC,175,49,19,8
-    LTEXT           "额外增益:",IDC_STATIC,148,22,38,10,SS_CENTERIMAGE
+    CONTROL         "智能音量放大",IDC_CHECK5,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_GROUP | WS_TABSTOP,14,132,65,8
+    CONTROL         "",IDC_SLIDER1,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | NOT WS_VISIBLE | WS_TABSTOP,194,132,102,11
+    CONTROL         "智能音量回归",IDC_CHECK6,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,84,131,64,10
+    LTEXT           "毫秒",IDC_STATIC,182,158,19,8,NOT WS_VISIBLE
+    LTEXT           "额外增益:",IDC_STATIC,155,131,38,10,SS_CENTERIMAGE | NOT WS_VISIBLE
 END
 
 IDD_GOTO_DLG DIALOGEX 0, 0, 157, 113
@@ -1472,7 +1472,7 @@ IDF_SHADER_SPHERE       FILE                    "res\\shaders\\sphere.psh"
 IDF_SHADER_SPOTLIGHT    FILE                    "res\\shaders\\spotlight.psh"
 IDF_SHADER_WAVE         FILE                    "res\\shaders\\wave.psh"
 IDF_SHADER_LEVELS2      FILE                    "res\\shaders\\levels2.psh"
-IDF_SHADER_LEVELS      FILE                    "res\\shaders\\levels.psh"
+IDF_SHADER_LEVELS       FILE                    "res\\shaders\\levels.psh"
 IDF_SHADER_NIGHTVISION  FILE                    "res\\shaders\\nightvision.psh"
 IDF_SHADER_EDGE_SHARPEN FILE                    "res\\shaders\\EdgeSharpen.psh"
 IDF_SHADER_SHARPEN_COMPLEX FILE                    "res\\shaders\\SharpenComplex.psh"
@@ -2309,8 +2309,8 @@ IDR_HTML_UESETTINGPANEL HTML                    "res\\web\\UESettingPanel.html"
 // 2110
 //
 
-UESETBG.PNG             2110                    "res\\web\\uesetbg.png"
-UESETBG_HOVER.PNG       2110                    "res\\web\\uesetbg_hover.png"
+UESETBG.JPG             2110                    "res\\web\\uesetbg.jpg"
+UESETBG_HOVER.JPG       2110                    "res\\web\\uesetbg_hover.jpg"
 BLANK.GIF               2110                    "res\\web\\blank.gif"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -2440,7 +2440,14 @@ BEGIN
     IDS_RS_AUDIOLANG        "AudioLang"
     IDS_RS_SUBTITLESLANG    "SubtitlesLang"
     IDS_RS_SPLOGFONT        "SPDefaultStyle"
-	IDS_RS_USERFFMPEGWMV	"UserFFMPEGWMV"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_RS_SMOOTHMUTILMONITOR "SmoothMutilMonitor"
+    IDS_RS_FASTERSEEKING    "FasterSeeking"
+    IDS_RS_DISABLECENTERBIGOPENBMP "DisableCenterBigOpenBmp"
+    IDS_RS_USERFFMPEGWMV    "UserFFMPEGWMV"
 END
 
 STRINGTABLE 
@@ -2620,13 +2627,6 @@ BEGIN
     IDS_RS_MPEGDI           "MPEGDI"
     IDS_RS_MPEGBRIGHT       "MPEGBright"
     IDS_RS_MPEGCONT         "MPEGCont"
-END
-
-STRINGTABLE 
-BEGIN
-    IDS_RS_SMOOTHMUTILMONITOR "SmoothMutilMonitor"
-    IDS_RS_FASTERSEEKING    "FasterSeeking"
-    IDS_RS_DISABLECENTERBIGOPENBMP "DisableCenterBigOpenBmp"
 END
 
 STRINGTABLE 

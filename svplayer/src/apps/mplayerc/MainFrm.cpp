@@ -13775,40 +13775,49 @@ void CMainFrame::OnAdvOptions()
 		ShowTrayIcon(s.fTrayIcon);
 		RedrawNonClientArea();
 }
-
-void CMainFrame::ShowOptions(int idPage)
-{
+void CMainFrame::OnSettingFinished(){
 	AppSettings& s = AfxGetAppSettings();
-	
-	CUESettingPanel ueOption(pGB, this, idPage);
-	
-	if(ueOption.DoModal() == IDOK)
-	{
-		if(!m_fFullScreen)
-			SetAlwaysOnTop(s.iOnTop);
 
-	
-		
-	}else if(ueOption.bOpenAdvancePanel){
-		CPPageSheet options(ResStr(IDS_OPTIONS_CAPTION), pGB, this, idPage);
-
-		if(options.DoModal() == IDOK)
-		{
-			if(!m_fFullScreen)
-				SetAlwaysOnTop(s.iOnTop);
-
-			m_wndView.LoadLogo();
-
-			s.UpdateData(true);
-
-			UpdateSubtitle(true);
-			UpdateSubtitle2(true);
-		}		
-	}
+	if(!m_fFullScreen)
+		SetAlwaysOnTop(s.iOnTop);
 
 	m_btnList.SetHideStat( MYHTMINTOTRAY,   s.fTrayIcon);
 	ShowTrayIcon(s.fTrayIcon);
 	RedrawNonClientArea();
+}
+void CMainFrame::ShowOptions(int idPage)
+{
+	
+	
+	CUESettingPanel* ueOption = new CUESettingPanel(pGB, this, idPage);
+	ueOption->Create(IDD_DHTML_SETTING, this);
+	ueOption->ShowWindow(SW_SHOW);
+	/*
+	
+		if(ueOption.DoModal() == IDOK)
+		{
+			
+	
+		
+			
+		}else if(ueOption.bOpenAdvancePanel){
+			CPPageSheet options(ResStr(IDS_OPTIONS_CAPTION), pGB, this, idPage);
+	
+			if(options.DoModal() == IDOK)
+			{
+				if(!m_fFullScreen)
+					SetAlwaysOnTop(s.iOnTop);
+	
+				m_wndView.LoadLogo();
+	
+				s.UpdateData(true);
+	
+				UpdateSubtitle(true);
+				UpdateSubtitle2(true);
+			}		
+		}*/
+	
+
 }
 
 void CMainFrame::StartWebServer(int nPort)

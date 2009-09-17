@@ -136,6 +136,7 @@ public:
 	HRESULT OnButtonOK(IHTMLElement *pElement);
 	HRESULT OnButtonCancel(IHTMLElement *pElement);
 	HRESULT OnButtonApply(IHTMLElement *pElement);
+	HRESULT OnButtonAudioChannelMapping(IHTMLElement *pElement);
 	HRESULT OnButtonReset(IHTMLElement *pElement);
 	
 	HRESULT OnButtonAdvanceSetting(IHTMLElement *pElement);
@@ -153,4 +154,10 @@ protected:
 	DECLARE_MESSAGE_MAP()
 	DECLARE_DHTML_EVENT_MAP()
 	DECLARE_EVENTSINK_MAP()
+public:
+	virtual BOOL Create(UINT ulTemplateName, CWnd* pParentWnd = NULL);
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
+protected:
+	virtual void OnCancel();
+	virtual void OnOK();
 };

@@ -137,6 +137,7 @@ public:
 	HRESULT OnButtonCancel(IHTMLElement *pElement);
 	HRESULT OnButtonApply(IHTMLElement *pElement);
 	HRESULT OnButtonAudioChannelMapping(IHTMLElement *pElement);
+	HRESULT OnButtonUseExtCodec(IHTMLElement *pElement);
 	HRESULT OnButtonReset(IHTMLElement *pElement);
 	
 	HRESULT OnButtonAdvanceSetting(IHTMLElement *pElement);

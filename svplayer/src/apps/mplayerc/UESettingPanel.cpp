@@ -36,6 +36,7 @@ BEGIN_DHTML_EVENT_MAP(CUESettingPanel)
 	DHTML_EVENT_ONCLICK(_T("ButtonCancel"), OnButtonCancel)
 	DHTML_EVENT_ONCLICK(_T("ButtonApply"), OnButtonApply)
 	DHTML_EVENT_ONCLICK(_T("IDCHANNELMAPPING"), OnButtonAudioChannelMapping)
+	DHTML_EVENT_ONCLICK(_T("IDUSEEXTCODEC"), OnButtonUseExtCodec)
 	DHTML_EVENT_ONCLICK(_T("ButtonAdvanceSetting"), OnButtonAdvanceSetting)
 	DHTML_EVENT_ONCLICK(_T("sub1c1"), OnColorSub)
 	DHTML_EVENT_ONCLICK(_T("sub1c2"), OnColorSub)
@@ -216,6 +217,8 @@ HRESULT CUESettingPanel::OnFontSetting(IHTMLElement *pElement){
 BOOL CUESettingPanel::OnInitDialog()
 {
 	CDHtmlDialog::OnInitDialog();
+
+	SetIcon(AfxGetApp()->LoadIcon(IDR_MAINFRAME), TRUE);
 	switch(this->idPage){
 		case IDD_PPAGEAUDIOSWITCHER:
 			m_sgs_initblock = _T("audiosetting");
@@ -704,12 +707,16 @@ HRESULT STDMETHODCALLTYPE CUESettingPanel::ShowContextMenu(DWORD /*dwID*/, POINT
 }
 HRESULT CUESettingPanel::OnButtonAdvanceSetting(IHTMLElement* /*pElement*/)
 {
-	if(AfxMessageBox(_T("射手播放器并不推荐您使用旧的“高级设置”面板\r\n不当的操作可能会带来难以预知的问题\r\n确定要继续么？"),MB_YESNO|MB_DEFBUTTON2 ) == IDYES){
+	if(AfxMessageBox(_T("射手播放器并不推荐您使用已经废弃的旧设置面板\r\n不当的操作可能会带来难以预知的问题\r\n确定要继续么？"),MB_YESNO|MB_DEFBUTTON2 ) == IDYES){
 		this->bOpenAdvancePanel = TRUE;
 	// 	if(AfxMessageBox(_T("是否保存当前的修改"),MB_YESNO) == IDYES){
 	// 		ApplyAllSetting();
 	// 	}
 	// 	
+		CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
+		if(pFrame){
+			pFrame->PostMessage(WM_COMMAND, ID_ADV_OPTIONS);
+		}
 		OnCancel();
 	}
 	return S_OK;
@@ -721,6 +728,16 @@ HRESULT CUESettingPanel::OnButtonReset(IHTMLElement* /*pElement*/)
 		pFrame->PostMessage(WM_COMMAND, ID_RESET_SETTING);
 	}
 	OnCancel();
+	return S_OK;
+}
+HRESULT CUESettingPanel::OnButtonUseExtCodec(IHTMLElement* /*pElement*/)
+{
+	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
+	CAutoPtr<CPPageExternalFilters> page(new CPPageExternalFilters());
+	CPropertySheet dlg(_T("外置解码器..."), this);
+	dlg.AddPage(page);
+	dlg.DoModal() ;
+
 	return S_OK;
 }
 HRESULT CUESettingPanel::OnButtonAudioChannelMapping(IHTMLElement* /*pElement*/)

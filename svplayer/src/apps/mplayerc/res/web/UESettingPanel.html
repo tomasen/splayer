@@ -626,7 +626,8 @@ function myInit(){
 &nbsp;<select id="videorender" onchange="if(this.value=='DX7'){ueAPI.hideobj('GothSyncLine');}else if(!ueAPI.isvistaaero){ueAPI.showblock('GothSyncLine');} if(this.value!='DX9' && ueAPI.isvista){ueAPI.fobj('gpuacelbase').checked = false;}"><option value="DX9" >画质优先模式(DX9)</option>
 <option value="DX7">性能优先模式(DX7)</option>
 <option value="ADV">使用自定义高级设置</option></select><br />
-<span id="decoderline" style="display:none;">解码器：<select id="decoder" onchange="ueAPI.selectDecoder(this.value);" ></select></span>
+<span id="decoderline" style="display:none;">解码器：<select id="decoder" onchange="ueAPI.selectDecoder(this.value);" ></select>
+&nbsp; &nbsp; <a href='#' id='IDUSEEXTCODEC'>使用外置解码器(专家)</a></span>
  <span id="remarkfordecoder" style="display:none;" ></span><br />
 <input type="checkbox" id="gpuacelbase" onclick="ueAPI.useGPUAcel(this.checked);" /><label for="gpuacelbase" title="只能在画质优先模式中使用">显卡硬件（GPU）加速 [<a href='?http://www.shooter.cn/wiki/%E5%B0%84%E6%89%8B%E6%92%AD%E6%94%BE%E5%99%A8_%E9%AB%98%E6%B8%85%E7%A1%AC%E4%BB%B6%E8%A7%A3%E7%A0%81%E7%9A%84%E6%94%AF%E6%8C%81%E5%88%97%E8%A1%A8'><b>?</b></a>]</label> <br /><br />
 <div style="display:none;"><input type="checkbox" id="vmr9mixer" onclick="ueAPI.useDX9(this.checked);"  /><label for="vmr9mixer" title="启用播放器的亮度调节功能">启用内置亮度调节(需DX9，不能使用CoreAVC解码器)</label><br /></div>
@@ -656,7 +657,7 @@ function myInit(){
 <option value='210'>2 前置 + 1 后置音箱</option>
 <option value='310'>3 前置 + 1 后置音箱</option>
 <option value='320'>3 前置 + 2 后置音箱</option>
-</select>  <a href='#' id='IDCHANNELMAPPING'>声道映射</a></div>
+</select> &nbsp; &nbsp; <a href='#' id='IDCHANNELMAPPING'>手动声道映射</a></div>
 <br />
 <input type="checkbox" id="usespdif" /><label for="usespdif" title="通过光纤或同轴发送数字信号至外部功放进行音频解码">优先使用SPDIF输出</label><br />
 <br /><input type="checkbox" id="normalize" /><label for="normalize" title="当视频声音较轻时自动提高音量">智能音量放大 (试验阶段)</label><br />
@@ -718,8 +719,8 @@ function myInit(){
 </tr>
 <tr height="8%">
 <td align="right" nowrap="nowrap"> 
-<input type="button" style="width:75px;" id="ButtonReset" value="恢复默认" /> &nbsp; <input type="button" style="width:75px;" id="ButtonOK" value="确定" /> &nbsp; 
-<input type="button" style="width:75px;" id="ButtonCancel" value="取消" /> &nbsp; <input type="button" style="width:75px;" id="ButtonApply" value="应用" /> 
+<input type="button" style="width:75px;" id="ButtonReset" value="恢复默认" /> &nbsp; &nbsp; &nbsp;   <input type="button" style="width:75px;" id="ButtonOK" value="确定" /> &nbsp; 
+<input type="button" style="width:75px;" id="ButtonCancel" value="取消" /> &nbsp; <input type="button" style="width:75px;" id="ButtonApply" value="应用" /> &nbsp; &nbsp; 
 </td>
 </tr>
 </table>

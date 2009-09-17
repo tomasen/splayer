@@ -3751,7 +3751,14 @@ void CMainFrame::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	}
 	else if(pScrollBar->IsKindOf(RUNTIME_CLASS(CPlayerSeekBar)) && m_iMediaLoadState == MLS_LOADED)
 	{
-		SeekTo(m_wndSeekBar.GetPos(), !!(::GetKeyState(VK_SHIFT)&0x8000));
+		if((::GetKeyState(VK_SHIFT)&0x8000)){
+			SeekTo(m_wndSeekBar.GetPos(), 0);
+		}else{
+			int fSeekToKeyFrame = nPos;
+			fSeekToKeyFrame--;
+
+			SeekTo(m_wndSeekBar.GetPos() , fSeekToKeyFrame);
+		}
 	}
 
 	__super::OnHScroll(nSBCode, nPos, pScrollBar);

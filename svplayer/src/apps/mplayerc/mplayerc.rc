@@ -2309,8 +2309,22 @@ IDR_HTML_UESETTINGPANEL HTML                    "res\\web\\UESettingPanel.html"
 // 2110
 //
 
-UESETBG.JPG             2110                    "res\\web\\uesetbg.jpg"
-UESETBG_HOVER.JPG       2110                    "res\\web\\uesetbg_hover.jpg"
+audiosetting_uesetbg_hover.JPG             2110                    "res\\web\\audiosetting_uesetbg_hover.jpg"
+audiosetting_uesetbg.JPG             2110                    "res\\web\\audiosetting_uesetbg.jpg"
+fillassoc_uesetbg_hover.JPG             2110                    "res\\web\\fillassoc_uesetbg_hover.jpg"
+fillassoc_uesetbg.JPG             2110                    "res\\web\\fillassoc_uesetbg.jpg"
+generalseting_uesetbg_hover.JPG             2110                    "res\\web\\generalseting_uesetbg_hover.jpg"
+generalseting_uesetbg.JPG             2110                    "res\\web\\generalseting_uesetbg.jpg"
+hotkeysetting_uesetbg_hover.JPG             2110                    "res\\web\\hotkeysetting_uesetbg_hover.jpg"
+hotkeysetting_uesetbg.JPG             2110                    "res\\web\\hotkeysetting_uesetbg.jpg"
+subsetting_uesetbg_hover.JPG             2110                    "res\\web\\subsetting_uesetbg_hover.jpg"
+subsetting_uesetbg.JPG             2110                    "res\\web\\subsetting_uesetbg.jpg"
+themesetting_uesetbg_hover.JPG             2110                    "res\\web\\themesetting_uesetbg_hover.jpg"
+themesetting_uesetbg.JPG             2110                    "res\\web\\themesetting_uesetbg.jpg"
+updatesetting_uesetbg_hover.JPG             2110                    "res\\web\\updatesetting_uesetbg_hover.jpg"
+updatesetting_uesetbg.JPG             2110                    "res\\web\\updatesetting_uesetbg.jpg"
+videosetting_uesetbg_hover.JPG             2110                    "res\\web\\videosetting_uesetbg_hover.jpg"
+videosetting_uesetbg.JPG             2110                    "res\\web\\videosetting_uesetbg.jpg"
 BLANK.GIF               2110                    "res\\web\\blank.gif"
 
 /////////////////////////////////////////////////////////////////////////////

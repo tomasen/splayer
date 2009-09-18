@@ -36,6 +36,9 @@
 #include <d3dx9.h>
 #include "DlgChkUpdater.h"
 #include <dsound.h>
+
+#define  SPI_GETDESKWALLPAPER 115
+
 #include "..\..\filters\switcher\AudioSwitcher\AudioSwitcher.h"
 #include "..\..\filters\transform\mpadecfilter\MpaDecFilter.h"
 
@@ -3032,7 +3035,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		iZoomLevel = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_ZOOM), 1);
 
 		
-		logostretch = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LOGOSTRETCH), 1);
+	
 
 		bDisableCenterBigOpenBmp = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DISABLECENTERBIGOPENBMP), 0);
 
@@ -3104,7 +3107,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		fBUltraFastMode = 0;// !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_ULTRAFAST), 1);
 		autoDownloadSVPSub = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUTODOWNLAODSVPSUB), 1);
 
-
+		
 		//fVMRSyncFix = 0;
 		iDX9Resizer = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DX9_RESIZER), 1);
 		fVMR9MixerMode = FALSE;//!!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VMR9MIXERMODE), FALSE);
@@ -3439,10 +3442,21 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		bDVXACompat = pApp->GetProfileInt(ResStr(IDS_R_INTERNAL_FILTERS), ResStr(IDS_RS_DXVACOMPAT), 0);
 		
 		
+		int iDefaultExtLogo = 0;
+		CString szExtLogoFn = _T("");
+		if(bAeroGlassAvalibility){
 
-		logofn = pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LOGOFILE), _T(""));
+			LPWSTR sWallpaper = new WCHAR[MAX_PATH];
+			if( SystemParametersInfo( SPI_GETDESKWALLPAPER,MAX_PATH-1, sWallpaper,	0) ){
+				szExtLogoFn = CString(sWallpaper);
+				iDefaultExtLogo = 1;
+			}
+
+		}
+		logostretch = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LOGOSTRETCH), 1);
+		logofn = pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LOGOFILE), szExtLogoFn);
 		logoid = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LOGOID), IDF_LOGO7);
-		logoext = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LOGOEXT), 0);
+		logoext = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LOGOEXT), iDefaultExtLogo);
 
 		fHideCDROMsSubMenu = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_HIDECDROMSSUBMENU), 0);		
 

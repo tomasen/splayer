@@ -2452,7 +2452,7 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_RS_DISABLE_EVR      "DisableEVR"
+    IDS_RS_DISABLE_EVR      "DisableEVR2"
     IDS_RS_OPTIONDECODER    "OptionDecoder"
     IDS_RS_LOGOSTRETCH      "LogoStretch"
     IDS_RS_ULTRAFAST        "UltraFastOpen"

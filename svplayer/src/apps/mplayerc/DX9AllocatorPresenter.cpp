@@ -1482,13 +1482,18 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 	
 	CMPlayerCApp * pApp = AfxGetMyApp();
 	CAutoLock cRenderLock(&m_RenderLock);
+	REFERENCE_TIME rtStartEst = 1000, rtEndEst = 0;
+	if (m_pRefClock) m_pRefClock->GetTime(&rtStartEst);
 
-	m_pD3DDev->GetRasterStatus(0, &rasterStatus);	
-	m_uScanLineEnteringPaint = rasterStatus.ScanLine;
-	if (m_pRefClock) m_pRefClock->GetTime(&rtCurRefTime);
-	msSyncOffset = (m_ScreenSizeCurrent.cy - m_uScanLineEnteringPaint) * m_dDetectedScanlineTime;
-	rtSyncOffset = REFERENCE_TIME(10000.0 * msSyncOffset);
-	m_rtEstVSyncTime = rtCurRefTime + rtSyncOffset;
+	if(m_pRefClock){
+		m_pD3DDev->GetRasterStatus(0, &rasterStatus);	
+		m_uScanLineEnteringPaint = rasterStatus.ScanLine;
+		if (m_pRefClock) m_pRefClock->GetTime(&rtCurRefTime);
+		msSyncOffset = (m_ScreenSizeCurrent.cy - m_uScanLineEnteringPaint) * m_dDetectedScanlineTime;
+		rtSyncOffset = REFERENCE_TIME(10000.0 * msSyncOffset);
+		m_rtEstVSyncTime = rtCurRefTime + rtSyncOffset;
+		
+	}
 
 	if(m_WindowRect.right <= m_WindowRect.left || m_WindowRect.bottom <= m_WindowRect.top
 		|| m_NativeVideoSize.cx <= 0 || m_NativeVideoSize.cy <= 0
@@ -1713,7 +1718,8 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 	if (m_pRefClock) m_pRefClock->GetTime(&rtCurRefTime); // To check if we called Present too late to hit the right vsync
 	SyncStats(max(m_rtEstVSyncTime, rtCurRefTime)); // Max of estimate and real. Sometimes Present may actually return immediately so we need the estimate as a lower bound
 	SyncOffsetStats(-rtSyncOffset); // Minus because we want time to flow downward in the graph in DrawStats
-
+	if (m_pRefClock) m_pRefClock->GetTime(&rtEndEst);
+	//SVP_LogMsg3(" m_rtEstVSyncTime Cost %f %f %f" , double (rtEndEst - rtStartEst), double (rtEndEst - rtCurRefTime), double(m_rtEstVSyncTime));
 	// Adjust sync
 	if (s.m_RenderSettings.bSynchronizeVideo) m_pGenlock->ControlClock(msSyncOffset);
 	else if (s.m_RenderSettings.bSynchronizeDisplay) m_pGenlock->ControlDisplay(msSyncOffset);
@@ -2800,13 +2806,8 @@ STDMETHODIMP CVMR9AllocatorPresenter::AdviseNotify(IVMRSurfaceAllocatorNotify9* 
 
     return S_OK;
 }
-
-// IVMRImagePresenter9
-
-STDMETHODIMP CVMR9AllocatorPresenter::StartPresenting(DWORD_PTR dwUserID)
-{
-    CAutoLock cAutoLock(this);
-	CAutoLock cRenderLock(&m_RenderLock);
+void CVMR9AllocatorPresenter::ThreadStartPresenting(){
+	//SVP_LogMsg3("StartPresenting Start ");
 
 	AppSettings& s = AfxGetAppSettings();
 	m_pcFramesDrawn = 0;
@@ -2828,7 +2829,7 @@ STDMETHODIMP CVMR9AllocatorPresenter::StartPresenting(DWORD_PTR dwUserID)
 			};
 		EndEnumFilters
 
-		pVMR9->GetSyncSource(&m_pRefClock);
+			pVMR9->GetSyncSource(&m_pRefClock);
 		if (filterInfo.pGraph) filterInfo.pGraph->Release();
 	}
 	m_pGenlock->SetMonitor(GetAdapter(m_pD3D));
@@ -2839,6 +2840,24 @@ STDMETHODIMP CVMR9AllocatorPresenter::StartPresenting(DWORD_PTR dwUserID)
 	if (m_rtFrameCycle > 0.0) m_dCycleDifference = GetCycleDifference(); // Might have moved to another display
 
 	hEventGoth = CreateEvent(NULL, TRUE, FALSE, NULL);
+	//if (m_pRefClock) m_pRefClock->GetTime(&rtEndEst);
+
+	//SVP_LogMsg3("StartPresenting End ");
+}
+UINT __cdecl ThreadVMR9AllocatorPresenterStartPresenting( LPVOID lpParam ) 
+{ 
+	CVMR9AllocatorPresenter* pVMRA = (CVMR9AllocatorPresenter*)lpParam;
+	pVMRA->ThreadStartPresenting();
+	return 0; 
+}
+// IVMRImagePresenter9
+
+STDMETHODIMP CVMR9AllocatorPresenter::StartPresenting(DWORD_PTR dwUserID)
+{
+    CAutoLock cAutoLock(this);
+	CAutoLock cRenderLock(&m_RenderLock);
+	
+	AfxBeginThread(ThreadVMR9AllocatorPresenterStartPresenting, (LPVOID)this, THREAD_PRIORITY_BELOW_NORMAL);
 
 	return S_OK;
 }
@@ -2855,6 +2874,9 @@ STDMETHODIMP CVMR9AllocatorPresenter::StopPresenting(DWORD_PTR dwUserID)
 STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9PresentationInfo* lpPresInfo)
 {
 	CheckPointer(m_pIVMRSurfAllocNotify, E_UNEXPECTED);
+
+	REFERENCE_TIME rtStartEst = 1000, rtEndEst = 0;
+	if (m_pRefClock) m_pRefClock->GetTime(&rtStartEst);
 
 	m_dMainThreadId = GetCurrentThreadId();
 	m_llLastSampleTime = m_llSampleTime;
@@ -3083,13 +3105,15 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 			if(hEventGoth)
 				WaitForSingleObject(hEventGoth, m_lNextSampleWait);
 
-			//SVP_LogMsg3("Should Sleep %d ",m_lNextSampleWait);
+			
 		}
 
 		break;
 	}
 	
+	if (m_pRefClock) m_pRefClock->GetTime(&rtEndEst);
 
+	//SVP_LogMsg3("Prefsent Cost %f ", double(rtEndEst - rtStartEst));
 	Paint(true);
 	m_pcFramesDrawn++;
     return S_OK;

@@ -485,6 +485,8 @@ namespace DSObjects
 	public:
 		CVMR9AllocatorPresenter(HWND hWnd, HRESULT& hr );
 
+		void ThreadStartPresenting();
+
 		DECLARE_IUNKNOWN
 		STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void** ppv);
 

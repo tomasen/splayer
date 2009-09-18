@@ -470,11 +470,7 @@ void CPlayerSeekBar::OnLButtonDown(UINT nFlags, CPoint point)
 		SetCapture();
 		__int64 posBefore = m_pos;
 		MoveThumb(point);
-		short uiDir = 2;
-		if(posBefore > m_pos){
-			uiDir = 0;
-		}
-		GetParent()->PostMessage(WM_HSCROLL, MAKEWPARAM(uiDir, SB_THUMBPOSITION), (LPARAM)m_hWnd);
+		GetParent()->PostMessage(WM_HSCROLL, MAKEWPARAM((short)m_pos, SB_THUMBPOSITION), (LPARAM)m_hWnd);
 	}
 
 	CDialogBar::OnLButtonDown(nFlags, point);

@@ -2748,7 +2748,7 @@ CFGManagerPlayer::CFGManagerPlayer(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		if(s.iDSVideoRendererType == VIDRNDT_DS_VMR7RENDERLESS)
 			m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VMR7AllocatorPresenter, L"DX7(VMR)äÖÈ¾Æ÷", m_vrmerit+5));
 
-		if (CMPlayerCApp::IsVista() || (!CMPlayerCApp::IsVista() && s.useGPUAcel) )//s.fVMRGothSyncFix ) && !s.bDisableEVR )//
+		if ( (CMPlayerCApp::IsVista() || (!CMPlayerCApp::IsVista() && s.useGPUAcel) ) && !s.bDisableEVR ) //s.fVMRGothSyncFix )//
 			m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_EVRAllocatorPresenter, L"EVRäÖÈ¾Æ÷", m_vrmerit+1));
 
 		m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VMR9AllocatorPresenter, L"DX9(VMR)äÖÈ¾Æ÷", m_vrmerit));

@@ -2013,7 +2013,7 @@ CMPlayerCApp::Settings::Settings()
 	ADDCMD((ID_VIEW_SHADEREDITOR, '9', FVIRTKEY|FCONTROL|FNOINVERT, _T("显隐画质特效编辑工具")));
 	ADDCMD((ID_VIEW_PRESETS_MINIMAL, '1', FVIRTKEY|FNOINVERT, _T("精简界面")));
 	ADDCMD((ID_VIEW_PRESETS_COMPACT, '2', FVIRTKEY|FNOINVERT, _T("标准界面")));
-	//ADDCMD((ID_VIEW_PRESETS_NORMAL, '3', FVIRTKEY|FNOINVERT, _T("View Normal")));
+	ADDCMD((ID_VIEW_PRESETS_NORMAL, '3', FVIRTKEY|FNOINVERT, _T("View Normal")));
 	ADDCMD((ID_VIEW_FULLSCREEN_SECONDARY, VK_F11, FVIRTKEY|FNOINVERT, _T("切换全屏")));
 	ADDCMD((ID_VIEW_ZOOM_50, '1', FVIRTKEY|FALT|FNOINVERT, _T("画面 50%")));
 	ADDCMD((ID_VIEW_ZOOM_100, '2', FVIRTKEY|FALT|FNOINVERT, _T("画面 100%")));
@@ -3020,8 +3020,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 
 		autoResumePlay = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUTORESUMEPLAY), 1);
 		fHideCaptionMenu = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_HIDECAPTIONMENU), 0);
-		nCS = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_CONTROLSTATE), CS_SEEKBAR|CS_TOOLBAR) & ~CS_COLORCONTROLBAR; //CS_STATUSBAR
-
+		
 
 		iDefaultVideoSize = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DEFAULTVIDEOFRAME), DVS_FROMINSIDE);
 		fKeepAspectRatio = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_KEEPASPECTRATIO), TRUE);
@@ -3444,12 +3443,14 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		
 		int iDefaultExtLogo = 0;
 		CString szExtLogoFn = _T("");
+		int iDefaultNCS = CS_SEEKBAR|CS_TOOLBAR;
 		if(bAeroGlassAvalibility){
 
 			LPWSTR sWallpaper = new WCHAR[MAX_PATH];
 			if( SystemParametersInfo( SPI_GETDESKWALLPAPER,MAX_PATH-1, sWallpaper,	0) ){
 				szExtLogoFn = CString(sWallpaper);
 				iDefaultExtLogo = 1;
+				iDefaultNCS = 0;
 			}
 
 		}
@@ -3457,6 +3458,8 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		logofn = pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LOGOFILE), szExtLogoFn);
 		logoid = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LOGOID), IDF_LOGO7);
 		logoext = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LOGOEXT), iDefaultExtLogo);
+
+		nCS = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_CONTROLSTATE), iDefaultNCS) & ~CS_COLORCONTROLBAR; //CS_STATUSBAR
 
 		fHideCDROMsSubMenu = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_HIDECDROMSSUBMENU), 0);		
 

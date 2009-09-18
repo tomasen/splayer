@@ -1944,8 +1944,9 @@ BEGIN
         END
         POPUP "界面"
         BEGIN
-            MENUITEM "小巧",                          ID_VIEW_PRESETS_MINIMAL
-            MENUITEM "标准",                          ID_VIEW_PRESETS_COMPACT
+            MENUITEM "小巧(无标题栏)",                    ID_VIEW_PRESETS_MINIMAL
+            MENUITEM "精简(有标题栏)",                    ID_VIEW_PRESETS_COMPACT
+            MENUITEM "标准",                          ID_VIEW_PRESETS_NORMAL
             MENUITEM SEPARATOR
             MENUITEM "显隐播放列表",                      ID_VIEW_PLAYLIST
             MENUITEM "显隐半透明控制",                     ID_SHOWTRANSPRANTBAR
@@ -2309,22 +2310,22 @@ IDR_HTML_UESETTINGPANEL HTML                    "res\\web\\UESettingPanel.html"
 // 2110
 //
 
-audiosetting_uesetbg_hover.JPG             2110                    "res\\web\\audiosetting_uesetbg_hover.jpg"
-audiosetting_uesetbg.JPG             2110                    "res\\web\\audiosetting_uesetbg.jpg"
-fillassoc_uesetbg_hover.JPG             2110                    "res\\web\\fillassoc_uesetbg_hover.jpg"
-fillassoc_uesetbg.JPG             2110                    "res\\web\\fillassoc_uesetbg.jpg"
-generalseting_uesetbg_hover.JPG             2110                    "res\\web\\generalseting_uesetbg_hover.jpg"
-generalseting_uesetbg.JPG             2110                    "res\\web\\generalseting_uesetbg.jpg"
-hotkeysetting_uesetbg_hover.JPG             2110                    "res\\web\\hotkeysetting_uesetbg_hover.jpg"
-hotkeysetting_uesetbg.JPG             2110                    "res\\web\\hotkeysetting_uesetbg.jpg"
-subsetting_uesetbg_hover.JPG             2110                    "res\\web\\subsetting_uesetbg_hover.jpg"
-subsetting_uesetbg.JPG             2110                    "res\\web\\subsetting_uesetbg.jpg"
-themesetting_uesetbg_hover.JPG             2110                    "res\\web\\themesetting_uesetbg_hover.jpg"
-themesetting_uesetbg.JPG             2110                    "res\\web\\themesetting_uesetbg.jpg"
-updatesetting_uesetbg_hover.JPG             2110                    "res\\web\\updatesetting_uesetbg_hover.jpg"
-updatesetting_uesetbg.JPG             2110                    "res\\web\\updatesetting_uesetbg.jpg"
-videosetting_uesetbg_hover.JPG             2110                    "res\\web\\videosetting_uesetbg_hover.jpg"
-videosetting_uesetbg.JPG             2110                    "res\\web\\videosetting_uesetbg.jpg"
+AUDIOSETTING_UESETBG_HOVER.JPG 2110                    "res\\web\\audiosetting_uesetbg_hover.jpg"
+AUDIOSETTING_UESETBG.JPG 2110                    "res\\web\\audiosetting_uesetbg.jpg"
+FILLASSOC_UESETBG_HOVER.JPG 2110                    "res\\web\\fillassoc_uesetbg_hover.jpg"
+FILLASSOC_UESETBG.JPG   2110                    "res\\web\\fillassoc_uesetbg.jpg"
+GENERALSETING_UESETBG_HOVER.JPG 2110                    "res\\web\\generalseting_uesetbg_hover.jpg"
+GENERALSETING_UESETBG.JPG 2110                    "res\\web\\generalseting_uesetbg.jpg"
+HOTKEYSETTING_UESETBG_HOVER.JPG 2110                    "res\\web\\hotkeysetting_uesetbg_hover.jpg"
+HOTKEYSETTING_UESETBG.JPG 2110                    "res\\web\\hotkeysetting_uesetbg.jpg"
+SUBSETTING_UESETBG_HOVER.JPG 2110                    "res\\web\\subsetting_uesetbg_hover.jpg"
+SUBSETTING_UESETBG.JPG  2110                    "res\\web\\subsetting_uesetbg.jpg"
+THEMESETTING_UESETBG_HOVER.JPG 2110                    "res\\web\\themesetting_uesetbg_hover.jpg"
+THEMESETTING_UESETBG.JPG 2110                    "res\\web\\themesetting_uesetbg.jpg"
+UPDATESETTING_UESETBG_HOVER.JPG 2110                    "res\\web\\updatesetting_uesetbg_hover.jpg"
+UPDATESETTING_UESETBG.JPG 2110                    "res\\web\\updatesetting_uesetbg.jpg"
+VIDEOSETTING_UESETBG_HOVER.JPG 2110                    "res\\web\\videosetting_uesetbg_hover.jpg"
+VIDEOSETTING_UESETBG.JPG 2110                    "res\\web\\videosetting_uesetbg.jpg"
 BLANK.GIF               2110                    "res\\web\\blank.gif"
 
 /////////////////////////////////////////////////////////////////////////////

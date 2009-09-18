@@ -1110,7 +1110,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 
 	}
 	
-	if( ( m_fFullScreen || s.fHideCaptionMenu) && bMouseMoved && m_notshowtoolbarforawhile <= 0)
+	if( ( m_fFullScreen || s.fHideCaptionMenu || !(s.nCS&CS_TOOLBAR) ) && bMouseMoved && m_notshowtoolbarforawhile <= 0)
 	{
 		int nTimeOut = s.nShowBarsWhenFullScreenTimeOut; //Should Be 0
 
@@ -1131,9 +1131,11 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 			GetClientRect(r);
 			r.top = r.bottom;
 			DWORD dnCS = s.nCS;
-			if( s.fHideCaptionMenu){
-				dnCS |= CS_TOOLBAR|CS_SEEKBAR;
-			}
+			
+			dnCS |= CS_TOOLBAR;
+			if(m_iMediaLoadState != MLS_CLOSED)
+				dnCS |= CS_SEEKBAR;
+
 			POSITION pos = m_bars.GetHeadPosition();
 			for(int i = 1; pos; i <<= 1)
 			{
@@ -1461,7 +1463,7 @@ void CMainFrame::OnViewCompact()
 {
 	if(AfxGetAppSettings().fHideCaptionMenu)
 		SendMessage(WM_COMMAND, ID_VIEW_CAPTIONMENU);
-	ShowControls(CS_TOOLBAR|CS_SEEKBAR);
+	ShowControls(0);
 }
 
 void CMainFrame::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
@@ -6457,7 +6459,7 @@ void CMainFrame::OnViewNormal()
 {
 	if(AfxGetAppSettings().fHideCaptionMenu)
 		SendMessage(WM_COMMAND, ID_VIEW_CAPTIONMENU);
-	ShowControls(CS_SEEKBAR|CS_TOOLBAR|CS_STATUSBAR);//CS_INFOBAR
+	ShowControls(CS_SEEKBAR|CS_TOOLBAR);//CS_INFOBAR
 }
 
 void CMainFrame::OnUpdateViewNormal(CCmdUI* pCmdUI)

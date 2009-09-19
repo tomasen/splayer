@@ -256,6 +256,7 @@ namespace DSObjects
 		D3DCAPS9 m_caps;
 
 		bool SettingsNeedResetDevice();
+		void ResetGothSyncVars();
 		virtual HRESULT CreateDevice();
 		virtual HRESULT AllocSurfaces(D3DFORMAT Format = D3DFMT_A8R8G8B8);
 		virtual void DeleteSurfaces();

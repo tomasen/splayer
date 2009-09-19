@@ -2,6 +2,10 @@
 #include "../apps/mplayerc/revision.h"
 
 
+#include <streams.h>
+#include <afxtempl.h>
+#include "..\apps\mplayerc\mplayerc.h"
+
 CSVPNet::CSVPNet(void)
 {
 }
@@ -18,9 +22,18 @@ int CSVPNet::SetCURLopt(CURL *curl )
 {
 	//struct curl_slist *headerlist=NULL;
 	//static const char buf[] = "Expect:";
+	AppSettings& s = AfxGetAppSettings();
 
 	char buff[MAX_PATH];
-	sprintf_s( buff, "SPlayer Build %d", SVP_REV_NUMBER);
+	if(s.szOEMTitle.IsEmpty()){
+		sprintf_s( buff, "SPlayer Build %d", SVP_REV_NUMBER );
+	}else{
+		CSVPToolBox svpToolBox;
+		int iDescLen = 0;
+		char *oem = svpToolBox.CStringToUTF8(s.szOEMTitle, &iDescLen);
+		sprintf_s( buff, "SPlayer Build %d OEM%s", SVP_REV_NUMBER ,oem );
+		free(oem);
+	}
 
 	curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1);
 	curl_easy_setopt(curl, CURLOPT_USERAGENT, buff);

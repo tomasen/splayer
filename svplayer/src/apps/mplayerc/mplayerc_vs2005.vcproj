@@ -1347,6 +1347,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\web\audiosetting_uesetbg.jpg"
+				>
+			</File>
+			<File
+				RelativePath=".\res\web\audiosetting_uesetbg_hover.jpg"
+				>
+			</File>
+			<File
 				RelativePath=".\res\authhdrpic.bmp"
 				>
 			</File>
@@ -1515,7 +1523,31 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\web\fillassoc_uesetbg.jpg"
+				>
+			</File>
+			<File
+				RelativePath=".\res\web\fillassoc_uesetbg_hover.jpg"
+				>
+			</File>
+			<File
 				RelativePath=".\res\icon\Flash.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\web\generalseting_uesetbg.jpg"
+				>
+			</File>
+			<File
+				RelativePath=".\res\web\generalseting_uesetbg_hover.jpg"
+				>
+			</File>
+			<File
+				RelativePath=".\res\web\hotkeysetting_uesetbg.jpg"
+				>
+			</File>
+			<File
+				RelativePath=".\res\web\hotkeysetting_uesetbg_hover.jpg"
 				>
 			</File>
 			<File
@@ -1659,7 +1691,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\web\subsetting_uesetbg.jpg"
+				>
+			</File>
+			<File
+				RelativePath=".\res\web\subsetting_uesetbg_hover.jpg"
+				>
+			</File>
+			<File
 				RelativePath=".\res\icon\Subtitle_File.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\web\themesetting_uesetbg.jpg"
+				>
+			</File>
+			<File
+				RelativePath=".\res\web\themesetting_uesetbg_hover.jpg"
 				>
 			</File>
 			<File
@@ -1739,11 +1787,27 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\web\updatesetting_uesetbg.jpg"
+				>
+			</File>
+			<File
+				RelativePath=".\res\web\updatesetting_uesetbg_hover.jpg"
+				>
+			</File>
+			<File
 				RelativePath=".\res\icon\video.ico"
 				>
 			</File>
 			<File
 				RelativePath=".\res\icon\Video_CD.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\web\videosetting_uesetbg.jpg"
+				>
+			</File>
+			<File
+				RelativePath=".\res\web\videosetting_uesetbg_hover.jpg"
 				>
 			</File>
 			<File
@@ -2068,11 +2132,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 		<File

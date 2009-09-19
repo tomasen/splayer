@@ -2149,9 +2149,9 @@ void CMainFrame::OnDisplayChange() // untested, not sure if it's working...
 {
 	TRACE(_T("*** CMainFrame::OnDisplayChange()\n"));
 //	AfxMessageBox(_T("SD"));
-	if(m_iMediaLoadState == MLS_LOADED && m_pCAP && !AfxGetAppSettings().fbSmoothMutilMonitor ) {
+	if(m_iMediaLoadState == MLS_LOADED && m_pCAPR && !AfxGetAppSettings().fbSmoothMutilMonitor ) {
 //AfxMessageBox(_T("SD2"));
-		if ( CComQIPtr<IVMRWindowlessControl> pCAP = m_pCAP ){
+		if ( CComQIPtr<IVMRWindowlessControl> pCAP = m_pCAPR ){
 
 			pCAP->DisplayModeChanged(); // 重建Surface才能在另一个更大的显示器上满屏
 		}
@@ -2754,7 +2754,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 
 			pQP->get_AvgFrameRate(&val);
 			info.Format(_T("%d.%02d %s"), val/100, val%100, rate);
-			m_wndStatsBar.SetLine(_T("Frame-rate"), info);
+			m_wndStatsBar.SetLine(_T("帧率"), info);
 
 			int avg, dev;
 			pQP->get_AvgSyncOffset(&avg);
@@ -6780,10 +6780,10 @@ void CMainFrame::OnUpdateViewOntop(CCmdUI* pCmdUI)
 	pCmdUI->SetRadio(AfxGetAppSettings().iOnTop == (pCmdUI->m_nID - ID_ONTOP_NEVER));
 }
 void CMainFrame::OnShowDrawStats(){
-	AfxGetMyApp()->m_fDisplayStats++;
-	if(AfxGetMyApp()->m_fDisplayStats > 3){
-		AfxGetMyApp()->m_fDisplayStats = 0;
-	}
+	AfxGetMyApp()->m_fDisplayStats = !AfxGetMyApp()->m_fDisplayStats;
+	//if(AfxGetMyApp()->m_fDisplayStats > 3){
+		//AfxGetMyApp()->m_fDisplayStats = 0;
+	//}
 }
 void CMainFrame::OnSetAudioNumberOfSpeaker(){
 	ShowOptions(CPPageAudioSwitcher::IDD);
@@ -10038,7 +10038,7 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 					if(s.CheckSVPSubExts.Find(szExt) >= 0 ){
 						SVPSubDownloadByVPath(fn);
 					}else{
-						SendStatusMessage(  _T("正在播放的文件类型看来不需要字幕，终止自动智能匹配"), 1000);
+						//SendStatusMessage(  _T("正在播放的文件类型看来不需要字幕，终止自动智能匹配"), 1000);
 					}
 
 					

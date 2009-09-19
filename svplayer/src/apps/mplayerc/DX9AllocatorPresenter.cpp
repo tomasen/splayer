@@ -526,7 +526,40 @@ bool CDX9AllocatorPresenter::SettingsNeedResetDevice()
 	m_LastRendererSettings = s.m_RenderSettings;
 	return bRet;
 }
+void CDX9AllocatorPresenter::ResetGothSyncVars(){
+	m_dD3DRefreshCycle = 0; // Display refresh cycle ms
+	m_lNextSampleWait = 0; // Waiting time for next sample in EVR
+	m_llSampleTime =0;
+	m_llLastSampleTime = 0; // Present time for the current sample
+	m_llHysteresis = 0; // If != 0 then a "snap to vsync" is active, see EVR
+	m_rtEstVSyncTime = 0; // Next vsync time in reference clock "coordinates"
+	m_dDetectedScanlineTime = 0; // Time for one (horizontal) scan line. Extracted at stream start and used to calculate vsync time
+	m_pRefClock = 0; // The reference clock. Used in Paint()
+	m_lShiftToNearest = 0;
+	m_lShiftToNearestPrev = 0; // Correction to sample presentation time in sync to nearest
+	m_bVideoSlowerThanDisplay = 0; // True if this fact is detected in sync to nearest
+	m_bSnapToVSync = 0; // True if framerate is low enough so that snap to vsync makes sense
+	m_llLastSyncTime = 0;
 
+	m_lOverWaitCounter = 0;
+
+	m_MinJitter = MAXLONG64;
+	m_MaxJitter = MINLONG64;
+	m_MinSyncOffset = MAXLONG64;
+	m_MaxSyncOffset = MINLONG64;
+
+	m_bInterlaced = 0;
+	m_nUsedBuffer = 0;
+	m_bNeedPendingResetDevice = 0;
+	m_bPendingResetDevice = 0;
+
+	m_TextScale = 0.7;
+
+
+	memset (m_pllJitter, 0, sizeof(m_pllJitter));
+	memset (m_pllSyncOffset, 0, sizeof(m_pllSyncOffset));
+
+}
 HRESULT CDX9AllocatorPresenter::CreateDevice( )
 {
 	AppSettings& s = AfxGetAppSettings();
@@ -583,36 +616,7 @@ HRESULT CDX9AllocatorPresenter::CreateDevice( )
 		m_pD3D = m_pD3DEx;
 	{
 
-		m_dD3DRefreshCycle = 0; // Display refresh cycle ms
-		m_lNextSampleWait = 0; // Waiting time for next sample in EVR
-		m_llSampleTime =0;
-		m_llLastSampleTime = 0; // Present time for the current sample
-		m_llHysteresis = 0; // If != 0 then a "snap to vsync" is active, see EVR
-		m_rtEstVSyncTime = 0; // Next vsync time in reference clock "coordinates"
-		m_dDetectedScanlineTime = 0; // Time for one (horizontal) scan line. Extracted at stream start and used to calculate vsync time
-		m_pRefClock = 0; // The reference clock. Used in Paint()
-		m_lShiftToNearest = 0;
-		m_lShiftToNearestPrev = 0; // Correction to sample presentation time in sync to nearest
-		m_bVideoSlowerThanDisplay = 0; // True if this fact is detected in sync to nearest
-		m_bSnapToVSync = 0; // True if framerate is low enough so that snap to vsync makes sense
-		m_llLastSyncTime = 0;
-
-		m_MinJitter = MAXLONG64;
-		m_MaxJitter = MINLONG64;
-		m_MinSyncOffset = MAXLONG64;
-		m_MaxSyncOffset = MINLONG64;
-
-		m_bInterlaced = 0;
-		m_nUsedBuffer = 0;
-		m_bNeedPendingResetDevice = 0;
-		m_bPendingResetDevice = 0;
-		
-		m_TextScale = 0.7;
-
-		
-		memset (m_pllJitter, 0, sizeof(m_pllJitter));
-		memset (m_pllSyncOffset, 0, sizeof(m_pllSyncOffset));
-	
+		ResetGothSyncVars();
 	}
 
 	D3DDISPLAYMODE d3ddm;
@@ -1482,13 +1486,11 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 	
 	CMPlayerCApp * pApp = AfxGetMyApp();
 	CAutoLock cRenderLock(&m_RenderLock);
-	REFERENCE_TIME rtStartEst = 1000, rtEndEst = 0;
-	if (m_pRefClock) m_pRefClock->GetTime(&rtStartEst);
-
+	
 	if(m_pRefClock){
 		m_pD3DDev->GetRasterStatus(0, &rasterStatus);	
 		m_uScanLineEnteringPaint = rasterStatus.ScanLine;
-		if (m_pRefClock) m_pRefClock->GetTime(&rtCurRefTime);
+		m_pRefClock->GetTime(&rtCurRefTime);
 		msSyncOffset = (m_ScreenSizeCurrent.cy - m_uScanLineEnteringPaint) * m_dDetectedScanlineTime;
 		rtSyncOffset = REFERENCE_TIME(10000.0 * msSyncOffset);
 		m_rtEstVSyncTime = rtCurRefTime + rtSyncOffset;
@@ -1715,10 +1717,13 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 	}
 
 	// Calculate timing statistics
-	if (m_pRefClock) m_pRefClock->GetTime(&rtCurRefTime); // To check if we called Present too late to hit the right vsync
+	if (m_pRefClock) 
+		m_pRefClock->GetTime(&rtCurRefTime); // To check if we called Present too late to hit the right vsync
+	else
+		rtCurRefTime = 0;
 	SyncStats(max(m_rtEstVSyncTime, rtCurRefTime)); // Max of estimate and real. Sometimes Present may actually return immediately so we need the estimate as a lower bound
 	SyncOffsetStats(-rtSyncOffset); // Minus because we want time to flow downward in the graph in DrawStats
-	if (m_pRefClock) m_pRefClock->GetTime(&rtEndEst);
+	
 	//SVP_LogMsg3(" m_rtEstVSyncTime Cost %f %f %f" , double (rtEndEst - rtStartEst), double (rtEndEst - rtCurRefTime), double(m_rtEstVSyncTime));
 	// Adjust sync
 	if (s.m_RenderSettings.bSynchronizeVideo) m_pGenlock->ControlClock(msSyncOffset);
@@ -1975,7 +1980,7 @@ void CDX9AllocatorPresenter::DrawStats()
 
 		//if (m_bIsEVR)
 		{
-			strText.Format(L"Sample waiting time: %d ms", m_lNextSampleWait);
+			strText.Format(L"Sample waiting time: %03d ms | %d", m_lNextSampleWait, m_lOverWaitCounter);
 			DrawText(rc, strText, 1);
 			OffsetRect(&rc, 0, TextHeight);
 			if (s.m_RenderSettings.bSynchronizeNearest)
@@ -2809,6 +2814,9 @@ STDMETHODIMP CVMR9AllocatorPresenter::AdviseNotify(IVMRSurfaceAllocatorNotify9* 
 void CVMR9AllocatorPresenter::ThreadStartPresenting(){
 	//SVP_LogMsg3("StartPresenting Start ");
 
+	//ResetGothSyncVars();
+	hEventGoth = CreateEvent(NULL, TRUE, FALSE, NULL);
+
 	AppSettings& s = AfxGetAppSettings();
 	m_pcFramesDrawn = 0;
 
@@ -2839,7 +2847,6 @@ void CVMR9AllocatorPresenter::ThreadStartPresenting(){
 	EstimateRefreshTimings();
 	if (m_rtFrameCycle > 0.0) m_dCycleDifference = GetCycleDifference(); // Might have moved to another display
 
-	hEventGoth = CreateEvent(NULL, TRUE, FALSE, NULL);
 	//if (m_pRefClock) m_pRefClock->GetTime(&rtEndEst);
 
 	//SVP_LogMsg3("StartPresenting End ");
@@ -3016,9 +3023,9 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 
 		m_nTearingPos = (m_nTearingPos + 7) % m_NativeVideoSize.cx;
 	}
-
+	
 	AppSettings& s = AfxGetAppSettings();
-	while(s.m_RenderSettings.bSynchronizeNearest && m_lOverWaitCounter < 20){
+	while(s.m_RenderSettings.bSynchronizeNearest && m_lOverWaitCounter < 20){//
 		double targetSyncOffset;
 		m_pGenlock->GetTargetSyncOffset(&targetSyncOffset); // Target sync offset from settings
 		if (m_rtFrameCycle > 0.0){
@@ -3051,7 +3058,7 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 		m_lNextSampleWait = (LONG)((m_llSampleTime - llRefClockTime) / 10000); // Time left until sample is due, in ms
 		if (m_lNextSampleWait < 0)
 			m_lNextSampleWait = 0; // We came too late. Race through, discard the sample and get a new one
-		else if (s.m_RenderSettings.bSynchronizeNearest && m_lOverWaitCounter < 20) // Present at the closest "safe" occasion at tergetSyncOffset ms before vsync to avoid tearing
+		else if (s.m_RenderSettings.bSynchronizeNearest && m_lOverWaitCounter < 20) //  Present at the closest "safe" occasion at tergetSyncOffset ms before vsync to avoid tearing
 		{
 			REFERENCE_TIME rtRefClockTimeNow; if (m_pRefClock) m_pRefClock->GetTime(&rtRefClockTimeNow); // Reference clock time now
 			//SVP_LogMsg3(" VMR9 fake EVR %f %f %f %f ", double(m_llLastSampleTime ) , double(rtRefClockTimeNow),  double(m_llSampleTime) , double(llRefClockTime));
@@ -3097,7 +3104,7 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 			//m_lNextSampleWait = 50;
 			//m_lOverWaitCounter++;
 		}else
-			m_lOverWaitCounter = 0;
+			m_lOverWaitCounter = 1;
 
 		if (m_lNextSampleWait <= 0)
 			m_lNextSampleWait = 0;

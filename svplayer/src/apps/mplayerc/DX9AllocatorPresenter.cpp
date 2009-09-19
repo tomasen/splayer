@@ -2864,6 +2864,7 @@ STDMETHODIMP CVMR9AllocatorPresenter::StartPresenting(DWORD_PTR dwUserID)
     CAutoLock cAutoLock(this);
 	CAutoLock cRenderLock(&m_RenderLock);
 	
+	m_lOverWaitCounter = 0;
 	AfxBeginThread(ThreadVMR9AllocatorPresenterStartPresenting, (LPVOID)this, THREAD_PRIORITY_BELOW_NORMAL);
 
 	return S_OK;

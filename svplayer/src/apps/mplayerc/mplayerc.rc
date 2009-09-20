@@ -2327,7 +2327,8 @@ UPDATESETTING_UESETBG.JPG 2110                    "res\\web\\updatesetting_ueset
 VIDEOSETTING_UESETBG_HOVER.JPG 2110                    "res\\web\\videosetting_uesetbg_hover.jpg"
 VIDEOSETTING_UESETBG.JPG 2110                    "res\\web\\videosetting_uesetbg.jpg"
 BLANK.GIF               2110                    "res\\web\\blank.gif"
-
+bg-h.GIF               2110                    "res\\web\\bg-h.gif"
+thumb-n.GIF               2110                    "res\\web\\thumb-n.gif"
 /////////////////////////////////////////////////////////////////////////////
 //
 // String Table

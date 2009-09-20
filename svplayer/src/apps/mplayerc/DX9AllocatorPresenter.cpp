@@ -3104,15 +3104,19 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 			//return S_OK;
 			//m_lNextSampleWait = 50;
 			//m_lOverWaitCounter++;
+			m_lOverWaitCounter = 4;
 		}else
 			m_lOverWaitCounter = 1;
 
 		if (m_lNextSampleWait <= 0)
 			m_lNextSampleWait = 0;
 		else{
-			if(hEventGoth)
-				WaitForSingleObject(hEventGoth, m_lNextSampleWait);
-
+			if(hEventGoth){
+				if(WAIT_TIMEOUT != WaitForSingleObject(hEventGoth, m_lNextSampleWait) ){
+					m_lOverWaitCounter = 3;
+				}
+			}else
+				m_lOverWaitCounter = 2;
 			
 		}
 

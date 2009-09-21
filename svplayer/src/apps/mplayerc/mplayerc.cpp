@@ -37,7 +37,7 @@
 #include "DlgChkUpdater.h"
 #include <dsound.h>
 
-#define  SPI_GETDESKWALLPAPER 115
+//#define  SPI_GETDESKWALLPAPER 115
 
 #include "..\..\filters\switcher\AudioSwitcher\AudioSwitcher.h"
 #include "..\..\filters\transform\mpadecfilter\MpaDecFilter.h"
@@ -3685,6 +3685,47 @@ void CMPlayerCApp::Settings::ParseCommandLine(CAtlList<CString>& cmdln)
 	}
 }
 
+
+COLORREF CMPlayerCApp::Settings::GetColorFromTheme(CString clrName, COLORREF clrDefault){
+	if( colorsTheme.IsEmpty() ){
+		//check skins file
+		CSVPToolBox svpTool;
+		CPath skinsColorPath( svpTool.GetPlayerPath(_T("skins")));
+		skinsColorPath.AddBackslash();
+		skinsColorPath.Append(_T("color.ini"));
+		CWebTextFile f;
+		CString str;
+		if(f.Open(skinsColorPath) ){
+			
+
+			if(f.GetEncoding() == CTextFile::ASCII) 
+				f.SetEncoding(CTextFile::ANSI);
+
+			int idxCurrent = -1;
+
+			while(f.ReadString(str))
+			{
+				CAtlList<CString> sl;
+				Explode(str, sl, '=', 2);
+				if(sl.GetCount() != 2) continue;
+
+				CString key = sl.RemoveHead();
+				CString cvalue = sl.RemoveHead();
+				cvalue.Trim(_T("#\t\r\n "));
+
+				
+			}
+		}
+		colorsTheme[_T("NULL")] = 0x000000;
+	}
+	COLORREF cTmp;
+	if( colorsTheme.Lookup(clrName , cTmp) ){
+		return cTmp;
+	}else{
+		colorsTheme[clrName] = clrDefault;
+		return clrDefault;
+	}
+}
 void CMPlayerCApp::Settings::GetFav(favtype ft, CAtlList<CString>& sl, BOOL bRecent)
 {
 	sl.RemoveAll();

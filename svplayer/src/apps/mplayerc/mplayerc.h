@@ -670,6 +670,8 @@ public:
 		
 		CString	strShaderList;
 		CString szFGMLog;
+
+		CAtlMap<CString, COLORREF , CStringElementTraits<CString>> colorsTheme;
 	public:
 		Settings();
 		virtual ~Settings();
@@ -685,6 +687,7 @@ public:
 		void SetFav(favtype ft, CAtlList<CString>& sl, BOOL bRecent = FALSE);
 		void DelFavByFn(favtype ft, BOOL bRecent, CString szMatch);
 		void AddFav(favtype ft, CString s, BOOL bRecent = FALSE, CString szMatch = _T(""));
+		COLORREF GetColorFromTheme(CString clrName, COLORREF clrDefault);
 	} m_s;
 
 public:

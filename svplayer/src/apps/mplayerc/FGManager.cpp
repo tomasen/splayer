@@ -1347,6 +1347,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		pFGF = new CFGFilterInternal<CAviSourceFilter>(_T("CAviSourceFilter"), MERIT64_ABOVE_DSHOW);
 		pFGF->m_chkbytes.AddTail(_T("0,4,,52494646,8,4,,41564920"));
 		pFGF->m_chkbytes.AddTail(_T("0,4,,52494646,8,4,,41564958"));
+		//pFGF->m_extensions.AddTail(_T(".vp6")); //not work in this way?
 		m_source.AddTail(pFGF);
 	}
 
@@ -1360,6 +1361,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		pFGF->m_chkbytes.AddTail(_T("4,12,ffffffff00000000ffffffff,77696465027fe3706d646174")); // wide ? mdat
 		pFGF->m_chkbytes.AddTail(_T("3,3,,000001")); // raw mpeg4 video
 		pFGF->m_extensions.AddTail(_T(".mov"));
+		//pFGF->m_extensions.AddTail(_T(".vp6")); 
 		m_source.AddTail(pFGF);
 	}
 

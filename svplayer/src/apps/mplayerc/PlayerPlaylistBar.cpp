@@ -405,6 +405,8 @@ bool CPlayerPlaylistBar::ParseMPCPlayList(CString fn)
 	CPath base(fn);
 	base.RemoveFileSpec();
 
+	int idxCurrent = -1;
+
 	while(f.ReadString(str))
 	{
 		CAtlList<CString> sl;
@@ -418,6 +420,7 @@ bool CPlayerPlaylistBar::ParseMPCPlayList(CString fn)
 
 			if(key == _T("type")) {pli[i].m_type = (CPlaylistItem::type_t)_ttol(value); idx.Add(i);}
 			else if(key == _T("label")) pli[i].m_label = value;
+			else if(key == _T("iscurrent") ) { idxCurrent = i; }
 			else if(key == _T("filename")) {value = CombinePath(base, value); pli[i].m_fns.AddTail(value);}
 			else if(key == _T("subtitle")) {value = CombinePath(base, value); pli[i].m_subs.AddTail(value);}
 			else if(key == _T("video")) {while(pli[i].m_fns.GetCount() < 2) pli[i].m_fns.AddTail(_T("")); pli[i].m_fns.GetHead() = value;}
@@ -430,8 +433,12 @@ bool CPlayerPlaylistBar::ParseMPCPlayList(CString fn)
 	}
 
 	qsort(idx.GetData(), idx.GetCount(), sizeof(int), s_int_comp);
-	for(size_t i = 0; i < idx.GetCount(); i++)
+	for(size_t i = 0; i < idx.GetCount(); i++){
 		m_pl.AddTail(pli[idx[i]]);
+		if(idxCurrent > 0 && idxCurrent == idx[i]){
+			m_pl.SetPos( m_pl.GetTailPosition());
+		}
+	}
 
 	return pli.GetCount() > 0;
 }
@@ -444,9 +451,15 @@ bool CPlayerPlaylistBar::SaveMPCPlayList(CString fn, CTextFile::enc e, bool fRem
 
 	f.WriteString(_T("MPCPLAYLIST\n"));
 
+	POSITION posCur = m_pl.GetPos();
+	
 	POSITION pos = m_pl.GetHeadPosition(), pos2;
 	for(int i = 1; pos; i++)
 	{
+		BOOL bCurrentFile = false;
+		if(posCur && posCur == pos){
+			bCurrentFile = true;
+		}
 		CPlaylistItem& pli = m_pl.GetNext(pos);
 
 		CString idx;
@@ -459,6 +472,9 @@ bool CPlayerPlaylistBar::SaveMPCPlayList(CString fn, CTextFile::enc e, bool fRem
 		if(!pli.m_label.IsEmpty()) 
 			f.WriteString(idx + _T(",label,") + pli.m_label + _T("\n"));
 
+		if(bCurrentFile){
+			f.WriteString(idx + _T(",iscurrent,1\n"));
+		}
 		if(pli.m_type == CPlaylistItem::file)
 		{
 			pos2 = pli.m_fns.GetHeadPosition();

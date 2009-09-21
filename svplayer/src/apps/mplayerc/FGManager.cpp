@@ -652,7 +652,7 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 				continue;
 			//if(GetCLSID(pPinOut) == GUIDFromCString(_T("{95F57653-71ED-42BA-9131-986CA0C6514F}")) || GetCLSID(pBF) == GUIDFromCString(_T("{95F57653-71ED-42BA-9131-986CA0C6514F}")) ) continue;
 
-			//SVP_LogMsg5(_T(" Try filters in the graph %s %s") , CStringFromGUID(GetCLSID(pPinOut)) , CStringFromGUID(GetCLSID(pBF)));
+			SVP_LogMsg5(_T(" Try filters in the graph %s %s") , CStringFromGUID(GetCLSID(pPinOut)) , CStringFromGUID(GetCLSID(pBF)));
 			pBFs.AddTail(pBF);
 		}
 		EndEnumFilters
@@ -765,7 +765,7 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 			if ( FGID == GUIDFromCString(_T("{1643E180-90F5-11CE-97D5-00AA0055595A}")) ) continue;  //Color Space Converter
 			//if ( FGID == GUIDFromCString(_T("{CF49D4E0-1115-11CE-B03A-0020AF0BA770}")) ) continue;  //AVI Decompressor
 			
-			//SVP_LogMsg5(_T("FGM: Connecting '%s' %s "), szFName, CStringFromGUID(pFGF->GetCLSID()) );
+			SVP_LogMsg5(_T("FGM: Connecting '%s' %s "), szFName, CStringFromGUID(pFGF->GetCLSID()) );
 			//AfxGetAppSettings().szFGMLog.AppendFormat(_T("\r\nFGM: Connecting '%s' %s "), szFName, CStringFromGUID(pFGF->GetCLSID()) );
 
 			CComPtr<IBaseFilter> pBF;
@@ -1994,6 +1994,8 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 	}
 	pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(_T("MPC Video Decoder"),  merit);
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_tscc);
+
+	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_QTSmc);
 	
 #if INTERNAL_DECODER_FLV
 	if (ffmpeg_filters & FFM_FLV4)
@@ -2091,8 +2093,8 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_wv1f);
 	}
 #endif
-#if INTERNAL_DECODER_DIVX
-	if (ffmpeg_filters & FFM_DIVX)
+#if 1 //INTERNAL_DECODER_DIVX
+	//if (ffmpeg_filters & FFM_DIVX)
 	{
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_DIVX);
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_divx);

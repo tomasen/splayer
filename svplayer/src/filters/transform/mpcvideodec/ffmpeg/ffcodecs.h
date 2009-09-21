@@ -227,7 +227,8 @@
  CODEC_OP(CODEC_ID_GSM           ,2101,"GSM") \
  CODEC_OP(CODEC_ID_GIF           ,2102,"Gif") \
  CODEC_OP(CODEC_ID_TIFF          ,2103,"Tiff") \
- CODEC_OP(CODEC_ID_TTF           ,2104,"TTF")
+ CODEC_OP(CODEC_ID_TTF           ,2104,"TTF")  \
+ CODEC_OP(CODEC_ID_SMC          ,2200,"Apple Graphics (SMC)") 
 enum CodecID
 {
  #define CODEC_OP(codecEnum,codecId,codecName) codecEnum=codecId,

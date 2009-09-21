@@ -293,6 +293,9 @@ FFMPEG_CODECS		ffCodecs[] =
 	{ &MEDIASUBTYPE_RV40, CODEC_ID_RV40, MAKEFOURCC('R','V','4','0'),	NULL },
 	
 	{ &MEDIASUBTYPE_MMES, CODEC_ID_MPEG2VIDEO,  MAKEFOURCC('M','M','E','S'),	NULL },
+
+	{ &MEDIASUBTYPE_QTSmc, CODEC_ID_SMC,  MAKEFOURCC('s', 'm', 'c', ' '),	NULL },
+	
 };
 
 /* Important: the order should be exactly the same as in ffCodecs[] */
@@ -463,7 +466,9 @@ const AMOVIESETUP_MEDIATYPE CMPCVideoDecFilter::sudPinTypesIn[] =
 	{ &MEDIATYPE_Video, &MEDIASUBTYPE_tscc   },
 	{ &MEDIATYPE_Video, &MEDIASUBTYPE_QTJpeg   },
 	
-	{ &MEDIATYPE_Video, &MEDIASUBTYPE_MMES   }
+	{ &MEDIATYPE_Video, &MEDIASUBTYPE_MMES   },
+	{ &MEDIATYPE_Video, &MEDIASUBTYPE_QTSmc   } 
+	
 };
 
 // Workaround : graphedit crash when filter expose more than 115 input MediaTypes !
@@ -979,6 +984,11 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 				}else if( m_pAVCodec->id == CODEC_ID_TSCC ){
 					m_bUSERGB = true;
 					m_pAVCtx->bits_per_coded_sample = vih->bmiHeader.biBitCount;
+				}else if( m_pAVCodec->id == CODEC_ID_SMC ){ 
+					m_bUSERGB = true; //TODO: how to get platte?
+					m_pAVCtx->bits_per_coded_sample = 2;
+					//SVP_LogMsg3( " CODEC_ID_SMC %d" , vih->bmiHeader.biBitCount);
+					m_pAVCtx->color_table_id = 0;
 				}
 				
 			}
@@ -1028,9 +1038,10 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 				case CODEC_ID_VP6:
 					m_nIDCTAlgo = FF_IDCT_VP3;
 					break;
+				
 				//FF_IDCT_AUTO // //
 			}
-
+			
 			m_pAVCtx->idct_algo				= m_nIDCTAlgo;
 			m_pAVCtx->skip_loop_filter		= (AVDiscard)m_nDiscardMode;
 			m_pAVCtx->dsp_mask				= FF_MM_FORCE | m_pCpuId->GetFeatures();

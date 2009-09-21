@@ -302,7 +302,7 @@ HRESULT CAviSplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 			continue;
 		}
 
-		name.Format(L"%s %d", !s->strn.IsEmpty() ? CStringW(s->strn) : label, i);
+		name.Format(L"%s %d (%s)",label, i , CStringW(s->strn) );
 
 		HRESULT hr;
 

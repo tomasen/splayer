@@ -149,6 +149,7 @@ void avcodec_register_all(void)
     REGISTER_DECODER (WMAV1, wmav1);
     REGISTER_DECODER (WMAV2, wmav2);
 
+		REGISTER_DECODER (SMC, smc);
     /* pcm codecs */
     //REGISTER_DECODER (PCM_ALAW, pcm_alaw);
     //REGISTER_DECODER (PCM_MULAW,pcm_mulaw);

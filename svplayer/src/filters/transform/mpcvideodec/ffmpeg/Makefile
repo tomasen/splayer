@@ -13,6 +13,7 @@ CFLAGS+= -I. -I.. -I$(LAVC_DIR) -I$(LAVU_DIR) -I$(LAVF_DIR) -I../codecs -I../img
 CC=gcc
 
 SRCS_C=\
+		$(LAVC_DIR)/smc.c \
 		$(LAVC_DIR)/wma.c \
 		$(LAVC_DIR)/wmadec.c \
 		$(LAVC_DIR)/rv30dsp.c \

@@ -2291,7 +2291,7 @@ STDMETHODIMP CVMR9AllocatorPresenter::NonDelegatingQueryInterface(REFIID riid, v
 {
     CheckPointer(ppv, E_POINTER);
 
-	SVP_LogMsg5(CStringFromGUID(riid));
+	//SVP_LogMsg5(CStringFromGUID(riid));
 	return 
 		QI(IVMRSurfaceAllocator9)
 		QI(IVMRImagePresenter9)

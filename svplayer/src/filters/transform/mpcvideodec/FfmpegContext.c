@@ -189,7 +189,7 @@ int FFH264CheckCompatibility(int nWidth, int nHeight, struct AVCodecContext* pAV
 						return 2;	// Too much ref frames
 				}
 			} else {
-				if (cur_sps->ref_frame_count > 14)
+				if (cur_sps->ref_frame_count > 11)//14 ª®∆¡Œ Ã‚
 					return 2;	// Too much ref frames
 			}
 		} else {

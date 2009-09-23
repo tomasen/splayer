@@ -89,7 +89,7 @@
 static UINT s_uTaskbarRestart = RegisterWindowMessage(TEXT("TaskbarCreated"));
 static UINT WM_NOTIFYICON = RegisterWindowMessage(TEXT("MYWM_NOTIFYICON"));
 
-#include "..\..\filters\transform\vsfilter\IDirectVobSub.h"
+//#include "..\..\filters\transform\vsfilter\IDirectVobSub.h"
 
 #include "..\..\svplib\SVPToolBox.h"
 #include "../../svplib/SVPRarLib.h"
@@ -10489,7 +10489,7 @@ void CMainFrame::OpenCustomizeGraph()
 
 		m_pRefClock->QueryInterface(IID_ISyncClock, reinterpret_cast<void**>(&m_pSyncClock));
 	}
-	if(m_iPlaybackMode == PM_DVD)
+	/*if(m_iPlaybackMode == PM_DVD)
 	{
 		BeginEnumFilters(pGB, pEF, pBF)
 		{
@@ -10504,7 +10504,7 @@ void CMainFrame::OpenCustomizeGraph()
 			}
 		}
 		EndEnumFilters
-	}
+	}*/
 
 	BeginEnumFilters(pGB, pEF, pBF)
 	{

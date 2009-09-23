@@ -1363,6 +1363,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\web\bg-h.gif"
+				>
+			</File>
+			<File
 				RelativePath=".\res\web\blank.gif"
 				>
 			</File>
@@ -1708,6 +1712,10 @@
 			</File>
 			<File
 				RelativePath=".\res\web\themesetting_uesetbg_hover.jpg"
+				>
+			</File>
+			<File
+				RelativePath=".\res\web\thumb-n.gif"
 				>
 			</File>
 			<File
@@ -2132,11 +2140,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 		<File

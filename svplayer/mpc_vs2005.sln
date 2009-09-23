@@ -325,7 +325,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "subpic", "src\subpic\subpic
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BaseClasses", "src\filters\BaseClasses\baseclasses_vs2005.vcproj", "{E8A3F6FA-AE1C-4C8E-A0B6-9C8480324EAA}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "svplib", "src\svplib\svplib.vcproj", "{FAB25039-6D61-4729-9940-76FC6FDC806E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "svplib", "src\svplib.svp\svplib.vcproj", "{FAB25039-6D61-4729-9940-76FC6FDC806E}"
 	ProjectSection(ProjectDependencies) = postProject
 		{87EE9DA4-DE1E-4448-8324-183C98DCA588} = {87EE9DA4-DE1E-4448-8324-183C98DCA588}
 	EndProjectSection
@@ -356,9 +356,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{71E4D6C1-C
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SyncClock", "src\filters\misc\SyncClock\SyncClock.vcproj", "{0B63409D-674D-47F8-A84E-87DBB7783189}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libunrar", "include\libunrar\libunrar.vcproj", "{BEA3275A-23B5-4343-BB3A-42CB10DF3652}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libunrar", "include\libunrar.svp\libunrar.vcproj", "{BEA3275A-23B5-4343-BB3A-42CB10DF3652}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "svpfilter", "src\filters\transform\svpfilter\svpfilter.vcproj", "{8D944019-7997-4EFD-8157-4929E6EB2AA8}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "svpfilter", "src\filters\transform\svpfilter.svp\svpfilter.vcproj", "{8D944019-7997-4EFD-8157-4929E6EB2AA8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

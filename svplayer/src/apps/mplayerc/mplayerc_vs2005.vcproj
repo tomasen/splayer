@@ -27,7 +27,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="&quot;C:\Program Files\TortoiseSVN\bin\SubWCRev.exe&quot; ..\..\..\ .\SubWCRev.conf .\revision.h"
+				CommandLine="&quot;C:\Program Files\TortoiseSVN\bin\SubWCRev.exe&quot; ..\..\..\ .\SubWCRev.conf .\revision.h&#x0D;&#x0A;&quot;D:\-=SVN=-\svplayer\Setup\copylib.bat&quot;"
 				ExcludedFromBuild="false"
 			/>
 			<Tool
@@ -2140,11 +2140,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 		<File

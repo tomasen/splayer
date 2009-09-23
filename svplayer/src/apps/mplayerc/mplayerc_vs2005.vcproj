@@ -27,7 +27,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="&quot;C:\Program Files\TortoiseSVN\bin\SubWCRev.exe&quot; ..\..\..\ .\SubWCRev.conf .\revision.h&#x0D;&#x0A;&quot;D:\-=SVN=-\svplayer\Setup\copylib.bat&quot;"
+				CommandLine="&quot;C:\Program Files\TortoiseSVN\bin\SubWCRev.exe&quot; ..\..\..\ .\SubWCRev.conf .\revision.h&#x0D;&#x0A;"
 				ExcludedFromBuild="false"
 			/>
 			<Tool

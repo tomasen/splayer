@@ -105,10 +105,10 @@ BEGIN
     EDITTEXT        IDC_EDIT2,114,156,46,13,ES_AUTOHSCROLL | NOT WS_VISIBLE,WS_EX_RIGHT
     CONTROL         "",IDC_SPIN2,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS | UDS_HOTTRACK | NOT WS_VISIBLE,162,155,11,14
     CONTROL         "启用自定义声道映射规则",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,5,117,10
-    LTEXT           "当前的音频有",IDC_STATIC1,7,22,41,8
-    EDITTEXT        IDC_EDIT1,53,20,29,13,ES_CENTER | ES_AUTOHSCROLL
-    CONTROL         "",IDC_SPIN1,"msctls_updown32",UDS_WRAP | UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS | UDS_HOTTRACK,183,19,11,14
-    LTEXT           "个声道:",IDC_STATIC2,89,22,51,8
+    LTEXT           "当音频有",IDC_STATIC1,7,22,41,8
+    EDITTEXT        IDC_EDIT1,44,20,29,13,ES_CENTER | ES_AUTOHSCROLL
+    CONTROL         "",IDC_SPIN1,"msctls_updown32",UDS_WRAP | UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS | UDS_HOTTRACK,174,19,11,14
+    LTEXT           "声道时:",IDC_STATIC2,80,22,51,8
     CONTROL         "",IDC_LIST1,"SysListView32",LVS_REPORT | LVS_OWNERDRAWFIXED | LVS_ALIGNLEFT | LVS_NOCOLUMNHEADER | WS_BORDER | WS_TABSTOP,7,38,282,149
     CTEXT           "按下SHIFT键再点击可使设置立刻生效",IDC_STATIC3,7,189,282,8
     CONTROL         "智能音量放大",IDC_CHECK5,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_GROUP | WS_TABSTOP,14,132,65,8
@@ -2327,8 +2327,9 @@ UPDATESETTING_UESETBG.JPG 2110                    "res\\web\\updatesetting_ueset
 VIDEOSETTING_UESETBG_HOVER.JPG 2110                    "res\\web\\videosetting_uesetbg_hover.jpg"
 VIDEOSETTING_UESETBG.JPG 2110                    "res\\web\\videosetting_uesetbg.jpg"
 BLANK.GIF               2110                    "res\\web\\blank.gif"
-bg-h.GIF               2110                    "res\\web\\bg-h.gif"
-thumb-n.GIF               2110                    "res\\web\\thumb-n.gif"
+BG-H.GIF                2110                    "res\\web\\bg-h.gif"
+THUMB-N.GIF             2110                    "res\\web\\thumb-n.gif"
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // String Table

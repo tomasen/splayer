@@ -320,6 +320,7 @@ BOOL CUESettingPanel::OnInitDialog()
 		s.iDecSpeakers = 200;
 	}
 	m_sgs_speaker.Format(_T("%d") , s.iDecSpeakers   );
+	//AfxMessageBox(m_sgs_speaker);
 	m_sgi_usespdif = s.fbUseSPDIF;
 	//m_sgi_downsample44k = s.fDownSampleTo441;
 
@@ -611,9 +612,14 @@ void CUESettingPanel::ApplyAllSetting(){
 			//SVP_LogMsg5(_T("s.bNotAutoCheckSpeaker %d") , s.bNotAutoCheckSpeaker);
 			s.SetChannelMapByNumberOfSpeakers(iSS, s.bNotAutoCheckSpeaker );
 
+			
 		}
 	}
 	
+	if(m_pASF)
+	{
+		m_pASF->SetSpeakerConfig(s.fCustomChannelMapping, s.pSpeakerToChannelMap);
+	}
 
 	//Sub Setting
 	s.autoDownloadSVPSub = m_sgi_chkautodownloadsvpsub ;

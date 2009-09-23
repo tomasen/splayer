@@ -2275,7 +2275,7 @@ void CMPlayerCApp::Settings::SetChannelMapByNumberOfSpeakers( int iSS , int iNum
 
 	if(bSetTempChannelMaping)
 		return;
-
+//SVP_LogMsg5(L"iNumberOfSpeakers2 %d", iNumberOfSpeakers);
 	if(iNumberOfSpeakers == -1){
 		iNumberOfSpeakers = GetNumberOfSpeakers();
 	}
@@ -2291,15 +2291,16 @@ void CMPlayerCApp::Settings::SetChannelMapByNumberOfSpeakers( int iSS , int iNum
 				case 4: iDecSpeakers = 220;	break;
 				case 5: iDecSpeakers = 221;	break;
 				case 6: iDecSpeakers = 321;	break;
-				case 7: iDecSpeakers = 321;	break;
-				case 8: iDecSpeakers = 321;	break;
+				case 7: iDecSpeakers = 341;	break;
+				case 8: iDecSpeakers = 341;	break;
 		}
 		iSS = iDecSpeakers;
 	}else{
-		//iSS = abs(iSS);
-		//iDecSpeakers = iSS;
-		//iNumberOfSpeakers = max(iNumberOfSpeakers, (iSS % 10) + ( (int)(iSS/10) % 10 ) + ( (int)(iSS/100) % 10 ) );
+		iSS = abs(iSS);
+		iDecSpeakers = iSS;
+		//iNumberOfSpeakers =  (iSS % 10) + ( (int)(iSS/10) % 10 ) + ( (int)(iSS/100) % 10 ) ;
 	}
+//	SVP_LogMsg5(L"iNumberOfSpeakers %d", iNumberOfSpeakers);
 	switch(iNumberOfSpeakers){
 		case 1:
 			//2 Channel
@@ -2342,13 +2343,13 @@ void CMPlayerCApp::Settings::SetChannelMapByNumberOfSpeakers( int iSS , int iNum
 			//pSpeakerToChannelMap[2][2] = 0;
 
 			//4 Channel
-			pSpeakerToChannelMap[3][0] = SPEAKER_FRONT_LEFT|SPEAKER_BACK_LEFT;
-			pSpeakerToChannelMap[3][1] =  SPEAKER_FRONT_RIGHT|SPEAKER_BACK_RIGHT;
+			pSpeakerToChannelMap[3][0] = SPEAKER_FRONT_LEFT|SPEAKER_BACK_LEFT|SPEAKER_FRONT_CENTER;
+			pSpeakerToChannelMap[3][1] =  SPEAKER_FRONT_RIGHT|SPEAKER_BACK_RIGHT|SPEAKER_FRONT_CENTER;
 			//pSpeakerToChannelMap[3][2] = pSpeakerToChannelMap[3][3] = 0;
 
 			//5 Channel
-			pSpeakerToChannelMap[4][0] = SPEAKER_FRONT_LEFT|SPEAKER_BACK_LEFT|SPEAKER_LOW_FREQUENCY;
-			pSpeakerToChannelMap[4][1] =  SPEAKER_FRONT_RIGHT|SPEAKER_BACK_RIGHT|SPEAKER_LOW_FREQUENCY;
+			pSpeakerToChannelMap[4][0] = SPEAKER_FRONT_LEFT|SPEAKER_BACK_LEFT|SPEAKER_LOW_FREQUENCY|SPEAKER_FRONT_CENTER;
+			pSpeakerToChannelMap[4][1] =  SPEAKER_FRONT_RIGHT|SPEAKER_BACK_RIGHT|SPEAKER_LOW_FREQUENCY|SPEAKER_FRONT_CENTER;
 			//pSpeakerToChannelMap[4][2] = pSpeakerToChannelMap[4][3] = pSpeakerToChannelMap[4][4]= 0;
 
 			//6 Channel
@@ -2587,9 +2588,9 @@ void CMPlayerCApp::Settings::SetChannelMapByNumberOfSpeakers( int iSS , int iNum
 		CComQIPtr<IMpaDecFilter> m_pMDF;
 		if(m_pMDF){
 			//m_pMDF->SetSampleFormat((MPCSampleFormat)m_outputformat);
-			m_pMDF->SetSpeakerConfig(IMpaDecFilter::ac3, m_ac3spkcfg);
+			//m_pMDF->SetSpeakerConfig(IMpaDecFilter::ac3, m_ac3spkcfg);
 			//m_pMDF->SetDynamicRangeControl(IMpaDecFilter::ac3, m_ac3drc);
-			m_pMDF->SetSpeakerConfig(IMpaDecFilter::dts, m_dtsspkcfg);
+			//m_pMDF->SetSpeakerConfig(IMpaDecFilter::dts, m_dtsspkcfg);
 			//m_pMDF->SetDynamicRangeControl(IMpaDecFilter::dts, m_dtsdrc);
 			m_pMDF->SetSpeakerConfig(IMpaDecFilter::aac, m_aacdownmix);
 		}
@@ -2597,14 +2598,14 @@ void CMPlayerCApp::Settings::SetChannelMapByNumberOfSpeakers( int iSS , int iNum
 		CRegKey key;
 		if(ERROR_SUCCESS == key.Create(HKEY_CURRENT_USER, _T("Software\\SPlayer\\Filters\\MPEG Audio Decoder")))
 		{
-			key.SetDWORDValue(_T("Ac3SpeakerConfig"), m_ac3spkcfg);
-			key.SetDWORDValue(_T("DtsSpeakerConfig"), m_dtsspkcfg);
+			//key.SetDWORDValue(_T("Ac3SpeakerConfig"), m_ac3spkcfg);
+			//key.SetDWORDValue(_T("DtsSpeakerConfig"), m_dtsspkcfg);
 			key.SetDWORDValue(_T("AacSpeakerConfig"), m_aacdownmix);
 
 		}
 	}
 	
-	//fCustomChannelMapping = !IsVista();
+	fCustomChannelMapping = true;//!IsVista();
 
 }
 void CMPlayerCApp::Settings::UpdateData(bool fSave)

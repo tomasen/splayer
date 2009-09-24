@@ -9920,12 +9920,22 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 		if(fn.IsEmpty() && !fFirst)
 			break;
 
-		HRESULT hr = pGB->RenderFile(CStringW(fn), NULL);
-		if(FAILED(hr) && ( fn.MakeLower().Find(_T("mms://")) == 0 || fn.MakeLower().Find(_T("mmsh://")) == 0 || fn.MakeLower().Find(_T("http://")) == 0 )){ // 
+		CString fnLower = fn;
+		fnLower.MakeLower();
+
+		HRESULT hr = -1;
+		if(FAILED(hr) && ( fnLower.Find(_T("mms://")) == 0 || fnLower.Find(_T("mmsh://")) == 0 )){ // 
 			//render mms our own way
 			hr = OpenMMSUrlStream(fn);
 		}
-
+		if(FAILED(hr))
+			hr = pGB->RenderFile(CStringW(fn), NULL);
+		
+		if(FAILED(hr) && ( fnLower.Find(_T("http") == 0 || fnLower.Find(_T("https://")) == 0
+			|| fnLower.Find(_T("udp://")) == 0 || fnLower.Find(_T("tcp://")) == 0)) ){ // 
+			//render mms our own way
+			hr = OpenMMSUrlStream(fn);
+		}
 		/* not sure why this is not work for http youku etc
 		HRESULT hr = -1;
 		if( ( fn.MakeLower().Find(_T("mms://")) == 0 || fn.MakeLower().Find(_T("mmsh://")) == 0 || (fn.MakeLower().Find(_T("http:")) == 0 && fn.MakeLower().Find(_T(":8902")) > 0 ))){ 

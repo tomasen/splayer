@@ -504,7 +504,7 @@ STDMETHODIMP CRealMediaPlayerWindowless::NonDelegatingQueryInterface(REFIID riid
     CheckPointer(ppv, E_POINTER);
 
 	return 
-		(m_pRMAP && (riid == __uuidof(ISubPicAllocatorPresenter) || riid == IID_IRMAVideoSurface)) ? m_pRMAP->QueryInterface(riid, ppv) : 
+		(m_pRMAP && (riid == __uuidof(ISubPicAllocatorPresenter)  || riid == __uuidof(ISubPicAllocatorPresenterRender) || riid == IID_IRMAVideoSurface)) ? m_pRMAP->QueryInterface(riid, ppv) : 
 		__super::NonDelegatingQueryInterface(riid, ppv);
 }
 
@@ -588,7 +588,7 @@ STDMETHODIMP CRealMediaGraph::NonDelegatingQueryInterface(REFIID riid, void** pp
     CheckPointer(ppv, E_POINTER);
 
 	return 
-		(m_pRMP && (riid == __uuidof(ISubPicAllocatorPresenter) || riid == __uuidof(ISubPicAllocatorPresenter))) ? m_pRMP->QueryInterface(riid, ppv) : 
+		(m_pRMP && (riid == __uuidof(ISubPicAllocatorPresenterRender) || riid == __uuidof(ISubPicAllocatorPresenter))) ? m_pRMP->QueryInterface(riid, ppv) : 
 		__super::NonDelegatingQueryInterface(riid, ppv);
 }
 

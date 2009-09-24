@@ -92,7 +92,7 @@ STDMETHODIMP CQuicktimeGraph::NonDelegatingQueryInterface(REFIID riid, void** pp
 
 	return 
 		QI(IVideoFrameStep)
-		(m_pQTAP && (riid == __uuidof(ISubPicAllocatorPresenter) || riid == __uuidof(IQTVideoSurface))) ? m_pQTAP->QueryInterface(riid, ppv) : 
+		(m_pQTAP && (riid == __uuidof(ISubPicAllocatorPresenterRender) || riid == __uuidof(ISubPicAllocatorPresenter) || riid == __uuidof(IQTVideoSurface))) ? m_pQTAP->QueryInterface(riid, ppv) : 
 		__super::NonDelegatingQueryInterface(riid, ppv);
 }
 

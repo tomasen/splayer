@@ -3445,7 +3445,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		int iDefaultExtLogo = 0;
 		CString szExtLogoFn = _T("");
 		int iDefaultNCS = CS_SEEKBAR|CS_TOOLBAR;
-		if(bAeroGlassAvalibility){
+		if(bAeroGlassAvalibility && szOEMTitle.IsEmpty()){
 
 			LPWSTR sWallpaper = new WCHAR[MAX_PATH];
 			if( SystemParametersInfo( SPI_GETDESKWALLPAPER,MAX_PATH-1, sWallpaper,	0) ){

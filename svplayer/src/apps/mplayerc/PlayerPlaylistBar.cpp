@@ -56,6 +56,8 @@ BOOL CPlayerPlaylistBar::Create(CWnd* pParentWnd)
 	if(!CSizingControlBarG::Create(_T("Playlist"), pParentWnd, 0))
 		return FALSE;
 
+	AppSettings& s = AfxGetAppSettings();
+
 	m_list.CreateEx(
 		WS_EX_DLGMODALFRAME|WS_EX_CLIENTEDGE, 
 		WS_CHILD|WS_VISIBLE|WS_CLIPSIBLINGS|WS_CLIPCHILDREN|WS_TABSTOP
@@ -69,7 +71,7 @@ BOOL CPlayerPlaylistBar::Create(CWnd* pParentWnd)
 
 	m_list.InsertColumn(COL_NAME, _T("ÎÄ¼þÃû"), LVCFMT_LEFT, 380);
 
-	m_list.SetBkColor(0xdddddd);
+	m_list.SetBkColor(s.GetColorFromTheme(_T("PlayListBG"), 0xdddddd));
 	CDC* pDC = m_list.GetDC();
 	CFont* old = pDC->SelectObject(GetFont());
 	m_nTimeColWidth = pDC->GetTextExtent(_T("000:00:00")).cx + 5;
@@ -1303,20 +1305,22 @@ void CPlayerPlaylistBar::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruc
 	POSITION pos = FindPos(nItem);
 	bool fSelected = pos == m_pl.GetPos();
 	
+	AppSettings& s = AfxGetAppSettings();
 
 	CDC* pDC = CDC::FromHandle(lpDrawItemStruct->hDC);
 
 	if(!!m_list.GetItemState(nItem, LVIS_SELECTED))
 	{
-		FillRect(pDC->m_hDC, rcItem, CBrush(0xf1dacc));
-		FrameRect(pDC->m_hDC, rcItem, CBrush(0xc56a31));
+		FillRect(pDC->m_hDC, rcItem, CBrush(s.GetColorFromTheme(_T("PlayListItemSelectedBG"), 0xf1dacc)));
+		FrameRect(pDC->m_hDC, rcItem, CBrush(s.GetColorFromTheme(_T("PlayListItemSelectedBorder"), 0xc56a31)));
 	}
 	else
 	{
-		FillRect(pDC->m_hDC, rcItem, CBrush(0xdddddd));
+		FillRect(pDC->m_hDC, rcItem, CBrush(s.GetColorFromTheme(_T("PlayListItemNormalBG"), 0xdddddd)));
 	}
 	CString time = _T("Invalid");
-	COLORREF textcolor = fSelected?0xd6811c:0;
+	COLORREF textcolor = fSelected? s.GetColorFromTheme(_T("PlayListItemSelectedText"),0xd6811c):
+		s.GetColorFromTheme(_T("PlayListItemNormalText"),0);
 	{
 		CAutoLock dataLock(m_csDataLock);
 		try 
@@ -1332,7 +1336,7 @@ void CPlayerPlaylistBar::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruc
 			}
 			//CPlaylistItem& pli = ; // not sure is this a proper way to avoid crash after this
 			if(bHasPos) {
-				textcolor |= 0xA0A0A0;
+				textcolor |= s.GetColorFromTheme(_T("PlayListItemInvalidTextMaskColor"),0xA0A0A0);
 			}
 			else time = m_list.GetItemText(nItem, COL_TIME);
 			

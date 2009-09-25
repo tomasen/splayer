@@ -265,14 +265,16 @@ void CPlayerSeekBar::OnPaint()
 
 	bool fEnabled = m_fEnabled && m_start < m_stop;
 
+	AppSettings& s = AfxGetAppSettings();
+
 	COLORREF 
-		white = NEWUI_COLOR_SEEKBAR_PLAYED,
-		shadow = NEWUI_COLOR_BG, 
-		light = NEWUI_COLOR_BG, 
-		bkg = NEWUI_COLOR_TOOLBAR_UPPERBG;
+//		white = s.GetColorFromTheme(_T("SeekBarPlayed"), NEWUI_COLOR_SEEKBAR_PLAYED),
+//		shadow = s.GetColorFromTheme(_T("SeekBarBottomBorderBG"), NEWUI_COLOR_BG), 
+//		light = s.GetColorFromTheme(_T("SeekBarPlayed"), NEWUI_COLOR_BG), 
+		bkg = s.GetColorFromTheme(_T("SeekBarBG"), NEWUI_COLOR_TOOLBAR_UPPERBG);
 
 	CBrush bBkg(bkg);
-	// thumb
+	/*/ thumb
 	if(0){
 		CRect r = GetThumbRect(), r2 = GetInnerThumbRect();
 		CRect rt = r, rit = r2;
@@ -315,7 +317,7 @@ void CPlayerSeekBar::OnPaint()
 			ExtSelectClipRgn(dc, rgn2, RGN_OR);
 		}
 	}
-
+*/
 	// channel
 	{
 		CRect r = GetChannelRect();
@@ -323,9 +325,15 @@ void CPlayerSeekBar::OnPaint()
 		int cur = r.left + (int)((m_start < m_stop /*&& fEnabled*/) ? (__int64)r.Width() * (m_pos - m_start) / (m_stop - m_start) : 0);
 		
 #define CORBARS 8
-		COLORREF havntplayed = 0x00434343;
-		COLORREF Bars[CORBARS] = {0x000f412d
-		, 0x0083ffdf, 0x0071fdd4, 0x0061f9c6 ,0x005ff5ba ,	0x0064f1b2,	0x006fefb0,	0x000f412d};
+		COLORREF havntplayed = s.GetColorFromTheme(_T("SeekBarUnPlayed"), 0x00434343);
+		COLORREF Bars[CORBARS] = {s.GetColorFromTheme(_T("SeekBarPlayed1"), 0x000f412d), 
+			s.GetColorFromTheme(_T("SeekBarPlayed1"), 0x0083ffdf), 
+			s.GetColorFromTheme(_T("SeekBarPlayed1"), 0x0071fdd4), 
+			s.GetColorFromTheme(_T("SeekBarPlayed1"), 0x0061f9c6) ,
+			s.GetColorFromTheme(_T("SeekBarPlayed1"), 0x005ff5ba) ,	
+			s.GetColorFromTheme(_T("SeekBarPlayed1"), 0x0064f1b2),	
+			s.GetColorFromTheme(_T("SeekBarPlayed1"), 0x006fefb0),	
+			s.GetColorFromTheme(_T("SeekBarPlayed1"), 0x000f412d)};
 
 		{
 			CPen line(PS_INSIDEFRAME, 1, bkg);
@@ -350,8 +358,8 @@ void CPlayerSeekBar::OnPaint()
 		}
 
 		{
-			COLORREF P2 = 0x000d3324;
-			COLORREF P1 = 0x00091611;
+			COLORREF P2 = s.GetColorFromTheme(_T("SeekBarBorder1"), 0x000d3324);
+			COLORREF P1 = s.GetColorFromTheme(_T("SeekBarBorder2"),0x00091611);
 			dc.SetPixel(r.left-1, r.top+1, P2);
 			dc.SetPixel(r.left, r.top, P2);
 			dc.SetPixel(r.left-1, r.bottom-2, P2);

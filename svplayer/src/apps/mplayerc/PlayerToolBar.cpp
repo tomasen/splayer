@@ -396,7 +396,7 @@ void CPlayerToolBar::OnPaint()
 	//LONGLONG startTime = AfxGetMyApp()->GetPerfCounter();
 	CPaintDC dc(this); // device context for painting
 	CRect paintRect(dc.m_ps.rcPaint);
-
+	AppSettings& s = AfxGetAppSettings();
 	
 	CRect rcClient;
 	GetClientRect(&rcClient);
@@ -418,7 +418,7 @@ void CPlayerToolBar::OnPaint()
 
 	CRect rcUpperSqu = rcClient;
 	//rcUpperSqu.bottom = rcUpperSqu.bottom - 10;
-	hdc.FillSolidRect(rcUpperSqu, NEWUI_COLOR_TOOLBAR_UPPERBG);
+	hdc.FillSolidRect(rcUpperSqu, s.GetColorFromTheme(_T("ToolBarBG"), NEWUI_COLOR_TOOLBAR_UPPERBG));
 
 
  	UpdateButtonStat();
@@ -438,7 +438,7 @@ void CPlayerToolBar::OnPaint()
 		
 		HFONT holdft = (HFONT)hdc.SelectObject(m_statft);
 
-		hdc.SetTextColor(0xffffff);
+		hdc.SetTextColor(s.GetColorFromTheme(_T("ToolBarTimeText"), 0xffffff) );
 		CSize size = hdc.GetTextExtent(m_timerstr);
 		CRect frc ( rcClient );
 		size.cx = min( rcClient.Width() /3, size.cx);

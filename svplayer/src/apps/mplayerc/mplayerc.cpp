@@ -3711,9 +3711,11 @@ COLORREF CMPlayerCApp::Settings::GetColorFromTheme(CString clrName, COLORREF clr
 				if(sl.GetCount() != 2) continue;
 
 				CString key = sl.RemoveHead();
+				key.Trim(_T("#\t\r\n "));
 				CString cvalue = sl.RemoveHead();
 				cvalue.Trim(_T("#\t\r\n "));
-
+				
+				colorsTheme[key] = svpTool._httoi( cvalue );
 				
 			}
 		}

@@ -1459,12 +1459,7 @@ pPixel += 4;
 }
 }
 }*/
-void CMainFrame::OnViewCompact()
-{
-	if(AfxGetAppSettings().fHideCaptionMenu)
-		SendMessage(WM_COMMAND, ID_VIEW_CAPTIONMENU);
-	ShowControls(0);
-}
+
 
 void CMainFrame::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
 {
@@ -6438,12 +6433,23 @@ void CMainFrame::OnUpdateViewShaderEditor(CCmdUI* pCmdUI)
 	pCmdUI->SetCheck(m_wndShaderEditorBar.IsWindowVisible());
 	pCmdUI->Enable(TRUE);
 }
-
+void CMainFrame::OnViewCompact()
+{
+	if(AfxGetAppSettings().fHideCaptionMenu)
+		SendMessage(WM_COMMAND, ID_VIEW_CAPTIONMENU);
+	ShowControls(0);
+}
 void CMainFrame::OnViewMinimal()
 {
 	if(!AfxGetAppSettings().fHideCaptionMenu)
 		SendMessage(WM_COMMAND, ID_VIEW_CAPTIONMENU);
 	ShowControls(0);
+}
+void CMainFrame::OnViewNormal()
+{
+	if(AfxGetAppSettings().fHideCaptionMenu)
+		SendMessage(WM_COMMAND, ID_VIEW_CAPTIONMENU);
+	ShowControls(CS_SEEKBAR|CS_TOOLBAR);//CS_INFOBAR
 }
 
 void CMainFrame::OnUpdateViewMinimal(CCmdUI* pCmdUI)
@@ -6455,12 +6461,6 @@ void CMainFrame::OnUpdateViewCompact(CCmdUI* pCmdUI)
 {
 }
 
-void CMainFrame::OnViewNormal()
-{
-	if(AfxGetAppSettings().fHideCaptionMenu)
-		SendMessage(WM_COMMAND, ID_VIEW_CAPTIONMENU);
-	ShowControls(CS_SEEKBAR|CS_TOOLBAR);//CS_INFOBAR
-}
 
 void CMainFrame::OnUpdateViewNormal(CCmdUI* pCmdUI)
 {
@@ -15054,7 +15054,7 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 			//hdc.RoundRect(rc.left+1, rc.top+1, rc.right-1, rc.bottom-1, 3, 3);
 			int bSpace = 1;
 			CPen pen;
-			pen.CreatePen(PS_SOLID, 1, RGB(0x7f,0x7f,0x7f));
+			pen.CreatePen(PS_SOLID, 1, s.GetColorFromTheme(_T("WinFrame1"), RGB(0x7f,0x7f,0x7f)));
 			HPEN holdpen = (HPEN)hdc.SelectObject(pen);
 			hdc.MoveTo(rc.left+bSpace, rc.bottom-bSpace);
 			hdc.LineTo(rc.left+bSpace, rc.top+bSpace);
@@ -15065,7 +15065,7 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 			hdc.SelectObject(holdpen);
 			bSpace++;
 			CPen pen2;
-			pen2.CreatePen(PS_SOLID, 1, RGB(0xf0,0xf0,0xf0));
+			pen2.CreatePen(PS_SOLID, 1, s.GetColorFromTheme(_T("WinFrame2"),RGB(0xf0,0xf0,0xf0)));
 			holdpen = (HPEN)hdc.SelectObject(pen2);
 			hdc.MoveTo(rc.left+bSpace, rc.bottom-bSpace);
 			hdc.LineTo(rc.left+bSpace, rc.top+bSpace);
@@ -15076,7 +15076,7 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 			hdc.SelectObject(holdpen);
 			bSpace++;
 			CPen pen3;
-			pen3.CreatePen(PS_SOLID, 1, RGB(0xe0,0xe0,0xe0));
+			pen3.CreatePen(PS_SOLID, 1, s.GetColorFromTheme(_T("WinFrame3"),RGB(0xe0,0xe0,0xe0)));
 			holdpen = (HPEN)hdc.SelectObject(pen3);
 			hdc.MoveTo(rc.left+bSpace, rc.bottom-bSpace);
 			hdc.LineTo(rc.left+bSpace, rc.top+bSpace);
@@ -15097,7 +15097,7 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 			hdc.SelectObject(holdpen);
 			bSpace++;
 			CPen pen4;
-			pen4.CreatePen(PS_SOLID, 1, RGB(0x73,0x73,0x73));
+			pen4.CreatePen(PS_SOLID, 1, s.GetColorFromTheme(_T("WinFrame4"),RGB(0x73,0x73,0x73)));
 			holdpen = (HPEN)hdc.SelectObject(pen4);
 			hdc.MoveTo(rc.left+bSpace, rc.bottom-bSpace);
 			hdc.LineTo(rc.left+bSpace, rc.top+2+bSpace);
@@ -15203,7 +15203,7 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 			//if(m_bHasDrawShadowText )
 			//	::DrawShadowText(hdc, szWindowText, szWindowText.GetLength(), &rcWindowText, DT_LEFT|DT_SINGLELINE | DT_VCENTER, 0x00525d66, RGB(255,255,255), 1,1);
 			//else{
-			hdc.SetTextColor(0x00525d66);
+			hdc.SetTextColor(s.GetColorFromTheme(_T("WinFrameTitleText"),0x00525d66));
 			hdc.SetBkMode(TRANSPARENT);
 			//hdc.SetBkColor( 0x00d6d7ce);
 			DrawText(hdc, szWindowText, szWindowText.GetLength(), &rcWindowText, DT_LEFT|DT_SINGLELINE | DT_VCENTER );

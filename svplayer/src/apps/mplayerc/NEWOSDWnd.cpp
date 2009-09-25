@@ -216,13 +216,14 @@ void CNEWOSDWnd::OnWindowPosChanged(WINDOWPOS* lpwndpos)
 void CNEWOSDWnd::OnPaint()
 {
 	CPaintDC dc(this); // device context for painting
+	AppSettings& s = AfxGetAppSettings();
 	CRect rcClient;
 	GetClientRect(&rcClient);
 	CMemoryDC hdc(&dc, rcClient);
-	hdc.FillSolidRect(rcClient, RGB(0x3f,0x3f,0x3f) );
+	hdc.FillSolidRect(rcClient,  s.GetColorFromTheme(_T("OSDBackGround"), RGB(0x3f,0x3f,0x3f) ) );
 
 	HFONT holdft = (HFONT)hdc.SelectObject(m_statft);
-	hdc.SetTextColor(0xffffff);
+	hdc.SetTextColor( s.GetColorFromTheme(_T("OSDTextColor"),0xffffff));
 	if(!m_osdStr.IsEmpty()){
 		rcClient.left += 2;
 		::DrawText(hdc, m_osdStr, m_osdStr.GetLength(), rcClient,  DT_LEFT|DT_SINGLELINE| DT_VCENTER);

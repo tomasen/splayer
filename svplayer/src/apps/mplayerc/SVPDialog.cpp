@@ -15,9 +15,11 @@ CSVPDialog::CSVPDialog()
 , m_borderColor(0xefefef)
 , m_bFocused(0)
 {
+	AppSettings& s = AfxGetAppSettings();
 	m_btnClose.m_btnMode = 1; //x
-	m_btnClose.m_borderColor = 0x787878;
-
+	m_btnClose.m_borderColor = s.GetColorFromTheme(_T("FloatDialogButtonBorder"), 0x787878);
+	m_bgColor = s.GetColorFromTheme(_T("FloatDialogBG"), 0x00);
+	m_borderColor = s.GetColorFromTheme(_T("FloatDialogBorder"), 0xefefef);
 }
 
 CSVPDialog::~CSVPDialog()

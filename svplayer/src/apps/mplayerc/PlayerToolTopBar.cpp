@@ -305,6 +305,9 @@ void CPlayerToolTopBar::OnMove(int x, int y)
 void CPlayerToolTopBar::OnPaint()
 {
 	CPaintDC dc(this); // device context for painting
+	
+	AppSettings& s = AfxGetAppSettings();
+	
 	CRect rcClient;
 	GetClientRect(&rcClient);
 	CMemoryDC hdc(&dc, rcClient);
@@ -319,9 +322,9 @@ void CPlayerToolTopBar::OnPaint()
 	CRect rcUpperSqu = rcClient;
 	rcUpperSqu.bottom--;
 	//rcUpperSqu.right--;
-	hdc.FillSolidRect(rcUpperSqu, RGB(61,65,69));
+	hdc.FillSolidRect(rcUpperSqu, s.GetColorFromTheme(_T("TopToolBarBG"), RGB(61,65,69) ));
 
-	hdc.FillSolidRect(rcBottomSqu, RGB(89,89,89));
+	hdc.FillSolidRect(rcBottomSqu,s.GetColorFromTheme(_T("TopToolBarBorder"), RGB(89,89,89)));
 
 	//rcBottomSqu = rcClient;
 	//rcBottomSqu.left = rcBottomSqu.right - 1;

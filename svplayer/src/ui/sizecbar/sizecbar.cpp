@@ -58,6 +58,10 @@
 #include "stdafx.h"
 #include "sizecbar.h"
 
+#include <streams.h>
+#include <afxtempl.h>
+#include "..\..\apps\mplayerc\mplayerc.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -532,6 +536,8 @@ void CSizingControlBar::OnNcPaint()
     // get window DC that is clipped to the non-client area
     CWindowDC dc(this); // the HDC will be released by the destructor
 
+	AppSettings& s = AfxGetAppSettings();
+
     CRect rcClient, rcBar;
     GetClientRect(rcClient);
     ClientToScreen(rcClient);
@@ -551,15 +557,15 @@ void CSizingControlBar::OnNcPaint()
     DrawBorders(&mdc, rcDraw);
 
     // erase the NC background
-    mdc.FillSolidRect(rcDraw, 0xd6d6d6 );
+    mdc.FillSolidRect(rcDraw, s.GetColorFromTheme(_T("PlaylistBorder"),  0xd6d6d6 ));
 
     if (m_dwSCBStyle & SCBS_SHOWEDGES)
     {
         CRect rcEdge; // paint the sizing edges
         for (int i = 0; i < 4; i++)
             if (GetEdgeRect(rcBar, GetEdgeHTCode(i), rcEdge))
-                mdc.Draw3dRect(rcEdge,0xeeeeee ,
-                    0xb2b2b2);
+                mdc.Draw3dRect(rcEdge,s.GetColorFromTheme(_T("Playlist3DBorder1"),0xeeeeee) ,
+                    s.GetColorFromTheme(_T("Playlist3DBorder2"),0xb2b2b2 ) );
     }
 
     NcPaintGripper(&mdc, rcClient);

@@ -170,10 +170,12 @@ void CSeekBarTip::OnPaint()
 	CRect rcClient;
 	GetClientRect(&rcClient);
 	CMemoryDC hdc(&dc, rcClient);
-	hdc.FillSolidRect(rcClient, RGB(0xcf,0xcf,0xcf) );
+	AppSettings& s = AfxGetAppSettings();
+
+	hdc.FillSolidRect(rcClient, s.GetColorFromTheme(_T("ToolTipBackground"), RGB(0xcf,0xcf,0xcf) ));
 
 	HFONT holdft = (HFONT)hdc.SelectObject(m_statft);
-	hdc.SetTextColor(0x121212);
+	hdc.SetTextColor(s.GetColorFromTheme(_T("ToolTipTextColor"),0x121212));
 	if(!m_text.IsEmpty()){ 
 		//rcClient.left += 2; 
 		//hdc.SetTextAlign( TA_TOP |TA_CENTER | TA_NOUPDATECP );

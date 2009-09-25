@@ -2638,7 +2638,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 				szCDATA += szBuf;
 				
 			}
-			svpTool.filePutContent(_T("D:\\-=SVN=-\\color.ini"), szCDATA);
+			svpTool.filePutContent(_T("D:\\-=SVN=-\\ui.ini"), szCDATA);
 		}
 
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_CHECKFILEASSCONSTARTUP), fCheckFileAsscOnStartup);
@@ -3711,7 +3711,7 @@ COLORREF CMPlayerCApp::Settings::GetColorFromTheme(CString clrName, COLORREF clr
 		CSVPToolBox svpTool;
 		CPath skinsColorPath( svpTool.GetPlayerPath(_T("skins")));
 		skinsColorPath.AddBackslash();
-		skinsColorPath.Append(_T("color.ini"));
+		skinsColorPath.Append(_T("ui.ini"));
 		CWebTextFile f;
 		CString str;
 		if(f.Open(skinsColorPath) ){
@@ -3724,6 +3724,13 @@ COLORREF CMPlayerCApp::Settings::GetColorFromTheme(CString clrName, COLORREF clr
 
 			while(f.ReadString(str))
 			{
+				str.Trim();
+				int pos_of_comm = str.Find(_T("//"));
+				if(pos_of_comm <=3){
+					continue;
+				}else if(pos_of_comm >= 0){
+					str = str.Left(pos_of_comm);
+				}
 				CAtlList<CString> sl;
 				Explode(str, sl, '=', 2);
 				if(sl.GetCount() != 2) continue;
@@ -3731,9 +3738,19 @@ COLORREF CMPlayerCApp::Settings::GetColorFromTheme(CString clrName, COLORREF clr
 				CString key = sl.RemoveHead();
 				key.Trim(_T("#\t\r\n "));
 				CString cvalue = sl.RemoveHead();
+				cvalue.Trim();
+				bool isHex = false;
+				if(cvalue.Find('#') == 0){
+					isHex = true;
+				}
+				if(cvalue.GetLength() >= 6){
+					isHex = true;
+				}
 				cvalue.Trim(_T("#\t\r\n "));
-				
-				colorsTheme[key] = svpTool._httoi( cvalue );
+				if(isHex)
+					colorsTheme[key] = svpTool._httoi( cvalue );	
+				else
+					colorsTheme[key] = _ttoi( cvalue );	
 				
 			}
 		}

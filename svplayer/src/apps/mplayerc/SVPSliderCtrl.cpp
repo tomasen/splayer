@@ -18,6 +18,8 @@ m_bVertical(0),
 m_style(0),
 colorBackGround(0)
 {
+	AppSettings& s = AfxGetAppSettings();
+	colorBackGround = s.GetColorFromTheme(_T("FloatDialogBG"), 0x00);
 
 }
 

@@ -169,37 +169,61 @@ static void SVPPreMultiplyBitmap( CBitmap& bmp ){
 		}
 	}
 }
+void CChildView::LoadLogoFromFile(CString fnLogo)
+{
+	AppSettings& s = AfxGetAppSettings();
+	if(s.fXpOrBetter)
+		m_logo.Load(fnLogo);
+	else if(HANDLE h = LoadImage(NULL, fnLogo, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE))
+		m_logo.Attach((HBITMAP)h); // win9x bug: Inside Attach GetObject() will return all zeros in DIBSECTION and silly CImage uses that to init width, height, bpp, ... so we can't use CImage::Draw later
+
+}
 void CChildView::LoadLogo()
 {
 	AppSettings& s = AfxGetAppSettings();
 
 	CAutoLock cAutoLock(&m_csLogo);
 
+	isUsingSkinBG = false;
 	m_logo.Destroy();
 	
 	if(s.logoext)
 	{
-		if(s.fXpOrBetter)
-			m_logo.Load(s.logofn);
-		else if(HANDLE h = LoadImage(NULL, s.logofn, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE))
-			m_logo.Attach((HBITMAP)h); // win9x bug: Inside Attach GetObject() will return all zeros in DIBSECTION and silly CImage uses that to init width, height, bpp, ... so we can't use CImage::Draw later
+		LoadLogoFromFile(s.logofn);		
 	}
 
+	//Try Skin BG Logo
+	if(m_logo.IsNull() && IDF_LOGO7 == s.logoid){
+		
+		CSVPToolBox svpTool;
+		CPath skinsBGPath( svpTool.GetPlayerPath(_T("skins")));
+		skinsBGPath.AddBackslash();
+		skinsBGPath.Append(_T("background"));
+		CString realSkinsBGPath;
+		if(svpTool.ifFileExist(skinsBGPath + _T(".jpg"))){
+			 realSkinsBGPath = skinsBGPath + _T(".jpg");
+		}else if(svpTool.ifFileExist(skinsBGPath + _T(".png"))){
+			realSkinsBGPath = skinsBGPath + _T(".png");
+		}
+
+		if(!realSkinsBGPath.IsEmpty()){
+			LoadLogoFromFile(realSkinsBGPath);
+
+			if(!m_logo.IsNull())
+				isUsingSkinBG = TRUE;
+		}
+
+	}
+	
 	if(m_logo.IsNull() && IDF_LOGO7 == s.logoid)
 	{
+		//Try OEM Logo
 		CString OEMBGPath;
 		CSVPToolBox svpTool;
 		OEMBGPath = svpTool.GetPlayerPath(_T("skins\\oembg.png"));
 		if(svpTool.ifFileExist(OEMBGPath)){
-			if(s.fXpOrBetter){
-				m_logo.Load(OEMBGPath);
-				
-			}
-			else if(HANDLE h = LoadImage(NULL, OEMBGPath, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE))
-				m_logo.Attach((HBITMAP)h); 
+			LoadLogoFromFile(OEMBGPath);
 		}
-
-
 	}
 	if(m_logo.IsNull())
 	{
@@ -274,7 +298,7 @@ void CChildView::OnPaint()
 		CRect rcClient;
 		GetClientRect(&rcClient);
 		CMemoryDC hdc(&dc, rcClient);
-		hdc.FillSolidRect( rcClient, 0);
+		hdc.FillSolidRect( rcClient, s.GetColorFromTheme(_T("MainBackgroundColor"),0));
 		if(m_cover && !m_cover->IsNull()){
 			BITMAP bm;
 			GetObject(*m_cover, sizeof(bm), &bm);
@@ -313,7 +337,7 @@ void CChildView::OnPaint()
 							int y = (r.Height() - h) / 2;
 							m_logo_r = CRect(CPoint(x, y), CSize(w, h));
 						}else */
-			if( s.logostretch == 2){ // 缩放 不保持宽高比
+			if( s.logostretch == 2 || isUsingSkinBG){ // 缩放 不保持宽高比
 				m_logo_r = r;
 			}else if(s.logostretch == 3){// 缩放 保持宽高比
 				if ( bm.bmWidth * 100 / bm.bmHeight > r.Width() * 100 / r.Height() ){

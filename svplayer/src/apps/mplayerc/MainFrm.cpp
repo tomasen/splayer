@@ -14946,7 +14946,8 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 			if (wp.showCmd != SW_MAXIMIZE )
 			{
 				rc.InflateRect(GetSystemMetrics(SM_CXBORDER), GetSystemMetrics(SM_CYBORDER));
-				m_rgn.CreateRoundRectRgn(0,0,rc.Width()-1,rc.Height()-1, 3,3);                 // rounded rect w/50 pixel corners
+				int l_size_of_corner = s.GetColorFromTheme(_T("WinFrameSizeOfCorner"), 3);
+				m_rgn.CreateRoundRectRgn(0,0,rc.Width()-1,rc.Height()-1, l_size_of_corner,l_size_of_corner);                 // rounded rect w/50 pixel corners
 
 				// set window region to make rounded window
 			}
@@ -15129,10 +15130,18 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 			hdc.SetBrushOrg(0, 0);
 			int tx = rc.Width() - 2;
 			int ty = rc.Height() - 2;
-			hdc.StretchBlt(0,0,5,7, &dcBmp, 0,0,5,7, SRCCOPY); // TopLeft
-			hdc.StretchBlt(tx-5,0,5,7, &dcBmp, 5,0,5,7, SRCCOPY); // Top Right
-			hdc.StretchBlt(0,ty-7,5,7, &dcBmp, 0,7,5,7, SRCCOPY);
-			hdc.StretchBlt(tx-5,ty-7,5,7, &dcBmp, 5,7,5,7, SRCCOPY);
+			
+			int pos_of_hor_splite = s.GetColorFromTheme(_T("WinFrameCornerHorSplit"), 5);
+			int pos_of_ver_splite = s.GetColorFromTheme(_T("WinFrameCornerVerSplit"), 7);
+			hdc.StretchBlt(0,0,pos_of_hor_splite,pos_of_ver_splite, &dcBmp, 0,0,
+				pos_of_hor_splite,pos_of_ver_splite, SRCCOPY); // TopLeft
+			hdc.StretchBlt(tx-pos_of_hor_splite,0,pos_of_hor_splite,pos_of_ver_splite, &dcBmp, 
+				pos_of_hor_splite,0,pos_of_hor_splite,pos_of_ver_splite, SRCCOPY); // Top Right
+			hdc.StretchBlt(0,ty-pos_of_ver_splite,pos_of_hor_splite,pos_of_ver_splite, &dcBmp, 0,
+				pos_of_ver_splite,pos_of_hor_splite,pos_of_ver_splite, SRCCOPY);
+			hdc.StretchBlt(tx-pos_of_hor_splite,ty-pos_of_ver_splite,pos_of_hor_splite,pos_of_ver_splite, &dcBmp, 
+				pos_of_hor_splite,pos_of_ver_splite,pos_of_hor_splite,pos_of_ver_splite, SRCCOPY);
+/*
 
 			if(bToolBarOn && 0){
 				hdc.StretchBlt(0,ty-13,5,9, &dcBmp, 0,9,5,1, SRCCOPY);
@@ -15142,6 +15151,7 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 				hdc.StretchBlt(0,ty-15,5,1, &dcBmp, 0,7,5,1, SRCCOPY);
 				hdc.StretchBlt(tx-5,ty-15,5,1, &dcBmp, 5,7,5,1, SRCCOPY);
 			}
+*/
 			dcBmp.SelectObject(hbmpold);
 		}else if(currentStyle&WS_CAPTION) {
 			//hdc.FillRect(&rc, &brush);

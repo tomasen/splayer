@@ -56,6 +56,8 @@ public:
 	CRect GetVideoRect() {return(m_vrect);}
 
 	void LoadLogo();
+	void LoadLogoFromFile(CString fnLogo);
+	BOOL isUsingSkinBG;
 	CSize GetLogoSize();
 	
 protected:

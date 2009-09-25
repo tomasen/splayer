@@ -11,8 +11,10 @@
 IMPLEMENT_DYNAMIC(CSVPStatic, CStatic)
 
 CSVPStatic::CSVPStatic()
-:m_bgColor(0), m_textColor(0xffffff)
 {
+	AppSettings& s = AfxGetAppSettings();
+	m_textColor = s.GetColorFromTheme(_T("FloatDialogButtonTextColor"), 0xffffff);
+	m_bgColor = s.GetColorFromTheme(_T("FloatDialogBG"), 0x00);
 
 }
 

@@ -12,14 +12,15 @@
 IMPLEMENT_DYNAMIC(CSVPButton, CButton)
 
 CSVPButton::CSVPButton():
-m_textColor(0xffffff)
-,m_btnBgColor(0)
-,m_bgColor(0)
-, m_pushedColor(0x232323)
-, m_borderColor(0xffffff)
-, m_textGrayColor(0x454545)
-, m_btnMode(0)
+ m_btnMode(0)
 {
+	AppSettings& s = AfxGetAppSettings();
+	m_textColor = s.GetColorFromTheme(_T("FloatDialogButtonTextColor"), 0xffffff);
+	m_bgColor = s.GetColorFromTheme(_T("FloatDialogBG"), 0x00);
+	m_btnBgColor = s.GetColorFromTheme(_T("FloatDialogButtonColor"), 0x00);
+	m_pushedColor = s.GetColorFromTheme(_T("FloatDialogButtonPushedColor"), 0x232323);
+	m_borderColor = s.GetColorFromTheme(_T("FloatDialogButtonBorder"), 0xffffff);
+	m_textGrayColor = s.GetColorFromTheme(_T("FloatDialogButtonGray"), 0x454545);
 
 }
 

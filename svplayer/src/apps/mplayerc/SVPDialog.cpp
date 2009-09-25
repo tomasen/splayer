@@ -11,13 +11,11 @@
 IMPLEMENT_DYNAMIC(CSVPDialog, CWnd)
 
 CSVPDialog::CSVPDialog()
-: m_bgColor(0)
-, m_borderColor(0xefefef)
-, m_bFocused(0)
+: m_bFocused(0)
 {
 	AppSettings& s = AfxGetAppSettings();
 	m_btnClose.m_btnMode = 1; //x
-	m_btnClose.m_borderColor = s.GetColorFromTheme(_T("FloatDialogButtonBorder"), 0x787878);
+	m_btnClose.m_borderColor = s.GetColorFromTheme(_T("FloatDialogCloseButtonBorder"), 0x787878);
 	m_bgColor = s.GetColorFromTheme(_T("FloatDialogBG"), 0x00);
 	m_borderColor = s.GetColorFromTheme(_T("FloatDialogBorder"), 0xefefef);
 }
@@ -101,6 +99,7 @@ void CSVPDialog::OnPaint()
 
 int CSVPDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
+	
 	if (CWnd::OnCreate(lpCreateStruct) == -1)
 		return -1;
 

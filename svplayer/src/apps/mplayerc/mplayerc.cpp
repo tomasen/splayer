@@ -3726,9 +3726,10 @@ COLORREF CMPlayerCApp::Settings::GetColorFromTheme(CString clrName, COLORREF clr
 			{
 				str.Trim();
 				int pos_of_comm = str.Find(_T("//"));
-				if(pos_of_comm <=3){
-					continue;
-				}else if(pos_of_comm >= 0){
+				if(pos_of_comm >= 0){
+					if(pos_of_comm <=3){
+						continue;
+					}
 					str = str.Left(pos_of_comm);
 				}
 				CAtlList<CString> sl;
@@ -3752,6 +3753,7 @@ COLORREF CMPlayerCApp::Settings::GetColorFromTheme(CString clrName, COLORREF clr
 				else
 					colorsTheme[key] = _ttoi( cvalue );	
 				
+				SVP_LogMsg5(_T("theme %s %d") , key, cvalue);
 			}
 		}
 		colorsTheme[_T("NULL")] = 0x000000;

@@ -114,6 +114,7 @@ class CUESettingPanel : public CDHtmlDialog
 
 	CString m_sgs_updateversion;
 	int m_sgi_autoupdate;
+	BOOL m_bFirstNav;
 
 
 	STSStyle m_stss;

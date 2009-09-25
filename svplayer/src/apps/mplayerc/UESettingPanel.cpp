@@ -17,6 +17,7 @@
 IMPLEMENT_DYNAMIC(CUESettingPanel, CDHtmlDialog)
 CUESettingPanel::CUESettingPanel(IFilterGraph* pFG, CWnd* pParentWnd, UINT idPagein)
 : CDHtmlDialog(CUESettingPanel::IDD, CUESettingPanel::IDH, pParentWnd)
+,m_bFirstNav(1)
 {
 	this->bOpenAdvancePanel = FALSE;
 	m_pASF = FindFilter(__uuidof(CAudioSwitcherFilter), pFG);
@@ -218,6 +219,18 @@ BOOL CUESettingPanel::OnInitDialog()
 {
 	CDHtmlDialog::OnInitDialog();
 
+	CSVPToolBox svpTool;
+	CPath skinsUEPath( svpTool.GetPlayerPath(_T("skins")));
+	skinsUEPath.AddBackslash();
+	skinsUEPath.Append(_T("UE"));
+	skinsUEPath.AddBackslash();
+	skinsUEPath.Append(_T("UESettingPanel.html"));
+	if(svpTool.ifFileExist(skinsUEPath)){
+		__super::Navigate(skinsUEPath);
+	}
+	
+
+	
 	SetIcon(AfxGetApp()->LoadIcon(IDR_MAINFRAME), TRUE);
 	switch(this->idPage){
 		case IDD_PPAGEAUDIOSWITCHER:
@@ -230,7 +243,7 @@ BOOL CUESettingPanel::OnInitDialog()
 
 	AppSettings& s = AfxGetAppSettings();
 
-	CSVPToolBox svpTool;
+	
 	CPath updPath( svpTool.GetPlayerPath(_T("UPD")));
 	updPath.AddBackslash();
 	CString szUpdfilesPath(updPath);
@@ -679,11 +692,13 @@ void CUESettingPanel::ApplyAllSetting(){
 void CUESettingPanel::OnBeforeNavigate2(LPDISPATCH pDisp, VARIANT FAR* URL, VARIANT FAR* Flags, VARIANT FAR* TargetFrameName, VARIANT FAR* PostData, VARIANT FAR* Headers, BOOL FAR* Cancel)
 {
 	CString str(V_BSTR(URL));
+	
 	if(0){
 		CString sMsg;
 		sMsg.Format(L"OnBeforeNavigate2 %s\r\n",str);
 		AfxMessageBox(sMsg);
 	}
+	
 	int wheres = str.Find(_T("\?http"));
 	if( wheres >= 0 ){
 		str=str.Right( str.GetLength() - wheres - 1);
@@ -713,6 +728,7 @@ HRESULT STDMETHODCALLTYPE CUESettingPanel::ShowContextMenu(DWORD /*dwID*/, POINT
 }
 HRESULT CUESettingPanel::OnButtonAdvanceSetting(IHTMLElement* /*pElement*/)
 {
+
 	if(AfxMessageBox(_T("射手播放器并不推荐您使用已经废弃的旧设置面板\r\n不当的操作可能会带来难以预知的问题\r\n确定要继续么？"),MB_YESNO|MB_DEFBUTTON2 ) == IDYES){
 		this->bOpenAdvancePanel = TRUE;
 	// 	if(AfxMessageBox(_T("是否保存当前的修改"),MB_YESNO) == IDYES){

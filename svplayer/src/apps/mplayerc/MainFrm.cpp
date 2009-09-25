@@ -6435,15 +6435,29 @@ void CMainFrame::OnUpdateViewShaderEditor(CCmdUI* pCmdUI)
 }
 void CMainFrame::OnViewCompact()
 {
-	if(AfxGetAppSettings().fHideCaptionMenu)
-		SendMessage(WM_COMMAND, ID_VIEW_CAPTIONMENU);
-	ShowControls(0);
+	AppSettings& s = AfxGetAppSettings();
+	if(s.nCS == 0 && !s.fHideCaptionMenu){ //is Compact
+		OnViewNormal();
+	}else{
+
+		if(s.fHideCaptionMenu)
+			SendMessage(WM_COMMAND, ID_VIEW_CAPTIONMENU);
+		ShowControls(0);
+	}
+	
 }
 void CMainFrame::OnViewMinimal()
 {
-	if(!AfxGetAppSettings().fHideCaptionMenu)
-		SendMessage(WM_COMMAND, ID_VIEW_CAPTIONMENU);
-	ShowControls(0);
+	AppSettings& s = AfxGetAppSettings();
+	
+	if(s.nCS == 0 && s.fHideCaptionMenu){ //is Minimal
+		OnViewNormal();
+	}else{
+
+		if(!s.fHideCaptionMenu)
+			SendMessage(WM_COMMAND, ID_VIEW_CAPTIONMENU);
+		ShowControls(0);
+	}
 }
 void CMainFrame::OnViewNormal()
 {

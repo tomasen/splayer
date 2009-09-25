@@ -160,7 +160,7 @@ BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,11,17,21,20
     LTEXT           "射手影音播放器(Based on MPC)",IDC_STATIC1,40,12,126,8,SS_NOPREFIX
     LTEXT           "Copyright (C) 2008-2009 Tomasen \n  Thanks for Gabest, casimir666, ffmpeg and\n    everyone with them",IDC_STATIC,40,26,170,29
-    LTEXT           "Version: 2.3",IDC_VERSION,40,57,170,8
+    LTEXT           "Version: 3.0",IDC_VERSION,40,57,170,8
     PUSHBUTTON      "关闭",IDOK,160,8,50,14,WS_GROUP
     LTEXT           "本软件为免费软件(freeware)\n同时采用GNU授权协议",IDC_STATIC,40,69,170,25
 END
@@ -1398,14 +1398,14 @@ IDB_NOAUDIO             BITMAP                  "res\\noaudio.bmp"
 IDB_AUTHHDRPIC          BITMAP                  "res\\authhdrpic.bmp"
 IDB_STREAMTYPES         BITMAP                  "res\\streamtypes.bmp"
 BORDER_CORNER.BMP       BITMAP                  "res\\newui\\BORDER_CORNER.bmp"
-CAPTION.BMP             BITMAP                  "res\\newui\\caption.bmp"
+CAPTION.BMP             BITMAP                  "res\\newui\\CAPTION.bmp"
 CLOSE.BMP               BITMAP                  "res\\newui\\BTN_CLOSE.bmp"
 MAXIMIZE.BMP            BITMAP                  "res\\newui\\BTN_MAX.bmp"
 MINIMIZE.BMP            BITMAP                  "res\\newui\\BTN_MIN.bmp"
 RESTORE.BMP             BITMAP                  "res\\newui\\BTN_RESTORE.bmp"
 MENU.BMP                BITMAP                  "res\\newui\\BTN_MENU.bmp"
-BTN_PLAY.BMP            BITMAP                  "res\\newui\\BTN_PLAY2.bmp"
-BTN_PAUSE.BMP           BITMAP                  "res\\newui\\BTN_PAUSE2.bmp"
+BTN_PLAY.BMP            BITMAP                  "res\\newui\\BTN_PLAY.bmp"
+BTN_PAUSE.BMP           BITMAP                  "res\\newui\\BTN_PAUSE.bmp"
 BTN_STOP.BMP            BITMAP                  "res\\newui\\BTN_STOP.bmp"
 FAST_FORWORD.BMP        BITMAP                  "res\\newui\\FAST_FORWORD.bmp"
 FAST_BACKWORD.BMP       BITMAP                  "res\\newui\\FAST_BACKWORD.bmp"
@@ -1422,10 +1422,10 @@ BTN_SUB_DELAY_REDUCE.BMP BITMAP                  "res\\newui\\BTN_SUB_DELAY_REDU
 BTN_SUB_DELAY_INCREASE.BMP BITMAP                  "res\\newui\\BTN_SUB_DELAY_INCREASE.bmp"
 BTN_SETTING.BMP         BITMAP                  "res\\newui\\BTN_SETTING.bmp"
 BTN_CAPTURE.BMP         BITMAP                  "res\\newui\\BTN_CAPTURE.bmp"
-WATERMARK2.BMP          BITMAP                  "res\\newui\\watermark2.bmp"
+WATERMARK2.BMP          BITMAP                  "res\\newui\\WATERMARK2.bmp"
 BTN_OPENFILE_SMALL.BMP  BITMAP                  "res\\newui\\BTN_OPENFILE_SMALL.bmp"
 BTN_BIGOPEN.BMP         BITMAP                  "res\\newui\\BTN_BIGOPEN.bmp"
-BTN_OPENADV.BMP         BITMAP                  "res\\newui\\BTN_OPENADV2.bmp"
+BTN_OPENADV.BMP         BITMAP                  "res\\newui\\BTN_OPENADV.bmp"
 BTN_MINTOTRAY.BMP       BITMAP                  "res\\newui\\BTN_MINTOTRAY.bmp"
 BTN_FONT.BMP            BITMAP                  "res\\newui\\BTN_FONT.bmp"
 BTN_FONT_MINUS.BMP      BITMAP                  "res\\newui\\BTN_FONT_MINUS.bmp"
@@ -1440,8 +1440,6 @@ TOP_VIDEO.BMP           BITMAP                  "res\\newui\\TOP_VIDEO.bmp"
 TOP_FULLSCREEN.BMP      BITMAP                  "res\\newui\\TOP_FULLSCREEN.bmp"
 TOP_NORMAL.BMP          BITMAP                  "res\\newui\\TOP_NORMAL.bmp"
 TOP_LETTERBOX.BMP       BITMAP                  "res\\newui\\TOP_LETTERBOX.bmp"
-TOP_ROTATE.BMP          BITMAP                  "res\\newui\\TOP_ROTATE.bmp"
-TOP_FLIP.BMP            BITMAP                  "res\\newui\\TOP_FLIP.bmp"
 TOP_CAPTURE.BMP         BITMAP                  "res\\newui\\TOP_CAPTURE.bmp"
 TOP_CLOSE.BMP           BITMAP                  "res\\newui\\TOP_CLOSE.bmp"
 TOP_RESTORE.BMP         BITMAP                  "res\\newui\\TOP_RESTORE.bmp"
@@ -1451,6 +1449,8 @@ TOP_GAMMA.BMP           BITMAP                  "res\\newui\\TOP_GAMMA.bmp"
 TOP_TRANS.BMP           BITMAP                  "res\\newui\\TOP_TRANS.bmp"
 TOP_LETTERBOX_WIDER.BMP BITMAP                  "res\\newui\\TOP_LETTERBOX_WIDER.bmp"
 TOP_NORMAL_WIDER.BMP    BITMAP                  "res\\newui\\TOP_NORMAL_WIDER.bmp"
+//TOP_ROTATE.BMP          BITMAP                  "res\\newui\\TOP_ROTATE.bmp"
+//TOP_FLIP.BMP            BITMAP                  "res\\newui\\TOP_FLIP.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1650,8 +1650,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,3,0,0
- PRODUCTVERSION 2,3,0,0
+ FILEVERSION 3,0,0,0
+ PRODUCTVERSION 3,0,0,0
  FILEFLAGSMASK 0x1fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -1668,7 +1668,7 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Tomasen, Gabest, casimir666, ffmpeg"
             VALUE "FileDescription", "射手影音播放器"
-            VALUE "FileVersion", "2.3"
+            VALUE "FileVersion", "3.0"
             VALUE "InternalName", "射手影音播放器"
             VALUE "LegalCopyright", "Copyright (C) 2008-2009 Tomasen, Gabest, casimir666, ffmpeg"
             VALUE "OriginalFilename", "splayer.exe"

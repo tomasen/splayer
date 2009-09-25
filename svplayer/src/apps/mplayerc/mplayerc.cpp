@@ -2623,6 +2623,24 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		if(!AfxGetMyApp()->IsIniValid())
 			AfxGetMyApp()->SetRegistryKey(_T("SPlayer"));
 
+		if(0){ //save color theme sample ini
+			CSVPToolBox svpTool;
+			POSITION pos = colorsTheme.GetStartPosition();
+			CString szCDATA;
+			while(pos)
+			{
+				DWORD cVal;
+				CString cKey;
+				colorsTheme.GetNextAssoc(pos, cKey, cVal);
+
+				CString szBuf;
+				szBuf.Format(_T("%s=#%06x\r\n"), cKey , cVal);
+				szCDATA += szBuf;
+				
+			}
+			svpTool.filePutContent(_T("D:\\-=SVN=-\\color.ini"), szCDATA);
+		}
+
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_CHECKFILEASSCONSTARTUP), fCheckFileAsscOnStartup);
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_POPSTARTUPEXTCHECK), fPopupStartUpExtCheck);
 		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_CHECKFILEEXTSASSCONSTARTUP), szStartUPCheckExts);

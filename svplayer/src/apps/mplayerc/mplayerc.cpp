@@ -2623,7 +2623,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		if(!AfxGetMyApp()->IsIniValid())
 			AfxGetMyApp()->SetRegistryKey(_T("SPlayer"));
 
-		if(0){ //save color theme sample ini
+		if( bGenUIINIOnExit){ //save color theme sample ini
 			CSVPToolBox svpTool;
 			POSITION pos = colorsTheme.GetStartPosition();
 			CString szCDATA;
@@ -2634,11 +2634,17 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 				colorsTheme.GetNextAssoc(pos, cKey, cVal);
 
 				CString szBuf;
-				szBuf.Format(_T("%s=#%06x\r\n"), cKey , cVal);
+				if(cVal > 10 || cVal == 0){
+					DWORD result = cVal;
+					cVal = (result&0xff000000 | ((result&0x000000ff) << 16) | ((result&0x0000ff00)) | ((result&0x00ff0000) >> 16)) ;
+					szBuf.Format(_T("%s=#%06x\r\n"), cKey , cVal);
+				}else{
+					szBuf.Format(_T("%s=%d\r\n"), cKey , cVal);
+				}
 				szCDATA += szBuf;
 				
 			}
-			svpTool.filePutContent(_T("D:\\-=SVN=-\\ui.ini"), szCDATA);
+			svpTool.filePutContent(svpTool.GetPlayerPath(_T("uisample.ini")), szCDATA);
 		}
 
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_CHECKFILEASSCONSTARTUP), fCheckFileAsscOnStartup);
@@ -3644,7 +3650,7 @@ void CMPlayerCApp::Settings::ParseCommandLine(CAtlList<CString>& cmdln)
 	rtStart = 0;
 	fixedWindowSize.SetSize(0, 0);
 	iMonitor = 0;
-
+	bGenUIINIOnExit = false;
 	if(launchfullscreen) nCLSwitches |= CLSW_FULLSCREEN;
 
 	POSITION pos = cmdln.GetHeadPosition();
@@ -3682,6 +3688,7 @@ void CMPlayerCApp::Settings::ParseCommandLine(CAtlList<CString>& cmdln)
 			else if(sw == _T("hibernate")) nCLSwitches |= CLSW_HIBERNATE;
 			else if(sw == _T("shutdown")) nCLSwitches |= CLSW_SHUTDOWN;
 			else if(sw == _T("logoff")) nCLSwitches |= CLSW_LOGOFF;
+			else if(sw == _T("genui")) {nCLSwitches |= CLSW_GENUIINI;bGenUIINIOnExit = true; }
 			else if(sw == _T("adminoption")) { nCLSwitches |= CLSW_ADMINOPTION; iAdminOption = _ttoi (cmdln.GetNext(pos)); }
 			else if(sw == _T("fixedsize") && pos)
 			{

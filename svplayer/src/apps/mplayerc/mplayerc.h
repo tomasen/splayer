@@ -104,7 +104,8 @@ enum
 	CLSW_FIXEDSIZE=CLSW_NOFOCUS<<1,
 	CLSW_MONITOR=CLSW_FIXEDSIZE<<1,	
 	CLSW_ADMINOPTION=CLSW_MONITOR<<1,
-	CLSW_UNRECOGNIZEDSWITCH=CLSW_ADMINOPTION<<1	
+	CLSW_GENUIINI=CLSW_ADMINOPTION<<1,
+	CLSW_UNRECOGNIZEDSWITCH=CLSW_GENUIINI<<1
 };
 
 enum
@@ -406,6 +407,7 @@ public:
 	public:
 		// cmdline params
 		int nCLSwitches;
+		BOOL bGenUIINIOnExit;
 		CAtlList<CString> slFiles, slDubs, slSubs, slFilters;
 		__int64 rtStart;
 		CSize fixedWindowSize;

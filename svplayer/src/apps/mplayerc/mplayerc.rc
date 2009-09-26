@@ -1425,7 +1425,6 @@ BTN_CAPTURE.BMP         BITMAP                  "res\\newui\\BTN_CAPTURE.bmp"
 WATERMARK2.BMP          BITMAP                  "res\\newui\\WATERMARK2.bmp"
 BTN_OPENFILE_SMALL.BMP  BITMAP                  "res\\newui\\BTN_OPENFILE_SMALL.bmp"
 BTN_BIGOPEN.BMP         BITMAP                  "res\\newui\\BTN_BIGOPEN.bmp"
-BTN_OPENADV.BMP         BITMAP                  "res\\newui\\BTN_OPENADV.bmp"
 BTN_MINTOTRAY.BMP       BITMAP                  "res\\newui\\BTN_MINTOTRAY.bmp"
 BTN_FONT.BMP            BITMAP                  "res\\newui\\BTN_FONT.bmp"
 BTN_FONT_MINUS.BMP      BITMAP                  "res\\newui\\BTN_FONT_MINUS.bmp"
@@ -1451,6 +1450,7 @@ TOP_LETTERBOX_WIDER.BMP BITMAP                  "res\\newui\\TOP_LETTERBOX_WIDER
 TOP_NORMAL_WIDER.BMP    BITMAP                  "res\\newui\\TOP_NORMAL_WIDER.bmp"
 //TOP_ROTATE.BMP          BITMAP                  "res\\newui\\TOP_ROTATE.bmp"
 //TOP_FLIP.BMP            BITMAP                  "res\\newui\\TOP_FLIP.bmp"
+//BTN_OPENADV.BMP         BITMAP                  "res\\newui\\BTN_OPENADV.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //

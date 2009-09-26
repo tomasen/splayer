@@ -24,7 +24,7 @@
 #include "PPageFileInfoClip.h"
 #include "PPageFileInfoDetails.h"
 #include "PPageFileInfoRes.h"
-
+#include "PPageFileMediaInfo.h"
 class CMainFrame;
 
 // CPPageFileInfoSheet
@@ -37,11 +37,12 @@ private:
 	CPPageFileInfoClip m_clip;
 	CPPageFileInfoDetails m_details;
 	CPPageFileInfoRes m_res;
+	CPPageFileMediaInfo m_mi;
 
 public:
 	CPPageFileInfoSheet(CString fn, CMainFrame* pParentWnd);
 	virtual ~CPPageFileInfoSheet();
-
+	CString m_fn;
 protected:
 	virtual BOOL OnInitDialog();
 

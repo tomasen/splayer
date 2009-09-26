@@ -435,6 +435,7 @@
 #define IDD_OPEN_DLG1                   10052
 #define IDD_OPENURL_DLG                 10052
 #define IDD_PLAYERCOLORCONTROLSBAR      10053
+#define IDD_FILEMEDIAINFO				10054
 #define IDC_COMBO1                      11000
 #define IDC_COMBO2                      11001
 #define IDC_COMBO3                      11002
@@ -474,6 +475,7 @@
 #define IDC_EDIT8                       11067
 #define IDC_EDIT9                       11068
 #define IDC_EDIT10                      11069
+#define IDC_MIEDIT						11070
 #define IDC_CHECK1                      11080
 #define IDC_CHECK2                      11081
 #define IDC_CHECK3                      11082

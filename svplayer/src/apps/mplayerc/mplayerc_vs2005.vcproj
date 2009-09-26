@@ -50,7 +50,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/D &quot;CURL_STATICLIB&quot; /D &quot;WINVER=0x0600&quot; /D &quot;_WIN32_WINNT=0x0600&quot; /D &quot;NTDDI_VERSION=NTDDI_VISTA&quot;"
 				Optimization="2"
-				AdditionalIncludeDirectories="..\..\..\include"
+				AdditionalIncludeDirectories="..\..\ZenLib\Source;..\..\..\include;..\..\mediainfo\Source\;..\..\mediainfo\Source\MediaInfo\"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;WINVER=0x501"
 				EnableEnhancedInstructionSet="0"
 				OpenMP="false"
@@ -645,6 +645,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\PPageFileMediaInfo.cpp"
+				>
+			</File>
+			<File
 				RelativePath="PPageFormats.cpp"
 				>
 			</File>
@@ -1143,6 +1147,10 @@
 			</File>
 			<File
 				RelativePath="PPageFileInfoSheet.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PPageFileMediaInfo.h"
 				>
 			</File>
 			<File
@@ -2140,11 +2148,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 		<File

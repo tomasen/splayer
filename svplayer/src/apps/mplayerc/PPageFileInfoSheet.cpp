@@ -35,6 +35,8 @@ CPPageFileInfoSheet::CPPageFileInfoSheet(CString fn, CMainFrame* pParentWnd)
 	, m_clip(fn, pParentWnd->pGB)
 	, m_details(fn, pParentWnd->pGB, pParentWnd->m_pCAP)
 	, m_res(fn, pParentWnd->pGB)
+	, m_mi(fn)
+	, m_fn(fn)
 {
 	AddPage(&m_details);
 
@@ -50,7 +52,7 @@ CPPageFileInfoSheet::CPPageFileInfoSheet(CString fn, CMainFrame* pParentWnd)
 	EndEnumFilters
 
 	AddPage(&m_clip);
-
+	AddPage(&m_mi);
 }
 
 CPPageFileInfoSheet::~CPPageFileInfoSheet()

@@ -327,13 +327,13 @@ void CPlayerSeekBar::OnPaint()
 #define CORBARS 8
 		COLORREF havntplayed = s.GetColorFromTheme(_T("SeekBarUnPlayed"), 0x00434343);
 		COLORREF Bars[CORBARS] = {s.GetColorFromTheme(_T("SeekBarPlayed1"), 0x000f412d), 
-			s.GetColorFromTheme(_T("SeekBarPlayed1"), 0x0083ffdf), 
-			s.GetColorFromTheme(_T("SeekBarPlayed1"), 0x0071fdd4), 
-			s.GetColorFromTheme(_T("SeekBarPlayed1"), 0x0061f9c6) ,
-			s.GetColorFromTheme(_T("SeekBarPlayed1"), 0x005ff5ba) ,	
-			s.GetColorFromTheme(_T("SeekBarPlayed1"), 0x0064f1b2),	
-			s.GetColorFromTheme(_T("SeekBarPlayed1"), 0x006fefb0),	
-			s.GetColorFromTheme(_T("SeekBarPlayed1"), 0x000f412d)};
+			s.GetColorFromTheme(_T("SeekBarPlayed2"), 0x0083ffdf), 
+			s.GetColorFromTheme(_T("SeekBarPlayed3"), 0x0071fdd4), 
+			s.GetColorFromTheme(_T("SeekBarPlayed4"), 0x0061f9c6) ,
+			s.GetColorFromTheme(_T("SeekBarPlayed5"), 0x005ff5ba) ,	
+			s.GetColorFromTheme(_T("SeekBarPlayed6"), 0x0064f1b2),	
+			s.GetColorFromTheme(_T("SeekBarPlayed7"), 0x006fefb0),	
+			s.GetColorFromTheme(_T("SeekBarPlayed8"), 0x000f412d)};
 
 		{
 			CPen line(PS_INSIDEFRAME, 1, bkg);

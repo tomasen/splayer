@@ -3505,8 +3505,8 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 
 		bNewMenu		= pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USENEWMENU), 0);
 		bAeroGlass		= pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEAEROGLASS), bAeroGlassAvalibility);//bAeroGlassAvalibility
-		if(!bAeroGlassAvalibility)
-			bAeroGlass = false;
+		//if(!bAeroGlassAvalibility)
+		//	bAeroGlass = false;
 
 		bSaveSVPSubWithVideo  = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SAVESVPSUBWITHVIDEO), 0);
 

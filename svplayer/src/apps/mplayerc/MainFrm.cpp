@@ -670,10 +670,11 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		TRACE0("Failed to create all control bars\n");
 		return -1;      // fail to create
 	}
-
+	AppSettings& s = AfxGetAppSettings();
 
 	m_bars.AddTail(&m_wndSeekBar);
 	m_bars.AddTail(&m_wndToolBar);
+
 	m_bars.AddTail(&m_wndInfoBar);
 	m_bars.AddTail(&m_wndStatsBar);
 	
@@ -732,8 +733,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	GetDesktopWindow()->GetWindowRect(&m_rcDesktop);
 
-	AppSettings& s = AfxGetAppSettings();
-
+	
 
 	ShowControls( ( s.nCS | (s.bShowControlBar ? CS_COLORCONTROLBAR : 0) ) & ~CS_SEEKBAR , false );
 	
@@ -882,7 +882,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_ABMenu.AppendMenu(MF_ENABLED |MF_STRING , ID_ABCONTROL_OFF, _T("关闭A-B循环"));
 	*/
 
-	if(s.bAeroGlass){
+	if(s.bAeroGlassAvalibility){
 
 		
 
@@ -893,7 +893,13 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 			//m_wndView.ModifyStyle(0, WS_POPUP);
 			//m_wndView.ModifyStyleEx(  0, WS_EX_LAYERED);
 			//m_wndView.SetLayeredWindowAttributes( 0, 0x43, LWA_ALPHA);
-			
+/*
+			m_wndToolBar.ModifyStyle(0, WS_POPUP);
+			m_wndToolBar.ModifyStyleEx(  0, WS_EX_LAYERED);
+
+			m_wndSeekBar.ModifyStyle(0, WS_POPUP);
+			m_wndSeekBar.ModifyStyleEx(  0, WS_EX_LAYERED);
+*/			
 			SetLayeredWindowAttributes( 0, 0xff, LWA_ALPHA);
 
 			//CRect rcClient;
@@ -1254,7 +1260,7 @@ LRESULT CMainFrame::OnNcActivate( WPARAM wParam, LPARAM lParam)
 {
 	
 	AppSettings& s = AfxGetAppSettings();
-	if(s.bAeroGlass){
+	if(s.bAeroGlass && s.bAeroGlassAvalibility){
 		//return DefWindowProc(WM_NCACTIVATE , wParam, lParam);;
 		 
 		//| GetForegroundWindow()->m_hWnd == m_wndColorControlBar.m_hWnd 
@@ -1284,7 +1290,7 @@ LRESULT CMainFrame::OnNcHitTestNewUI(WPARAM wParam, LPARAM lParam )
 {
 	
 	AppSettings& s = AfxGetAppSettings();
-	if(s.bAeroGlass){
+	if(s.bAeroGlass && s.bAeroGlassAvalibility){
 		LRESULT lRet = 0;
 		if(!AfxGetMyApp()->m_pDwmDefWindowProc){
 			//SVP_LogMsg5(_T("NFUCK"));
@@ -14927,7 +14933,7 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 		s.lastWindowType = nType;
 
 		//if we dont use aero, set the round corner region
-		if(!s.bAeroGlass)
+		if(!s.bAeroGlass || !s.bAeroGlassAvalibility)
 		{ //New UI
 			CRect rc;
 			WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
@@ -14986,7 +14992,7 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 
 
 	AppSettings& s = AfxGetAppSettings();
-	if(s.bAeroGlass){
+	if(s.bAeroGlass && s.bAeroGlassAvalibility){
 		SetWindowText(szWindowText);
 		return DefWindowProc(WM_NCPAINT, wParam, lParam);
 	}
@@ -15299,7 +15305,7 @@ LRESULT CMainFrame::OnNcLButtonUp( WPARAM wParam, LPARAM lParam )
 	// custom processing of our min/max/close buttons
 	BOOL bGlassAllow = FALSE;
 	AppSettings& s = AfxGetAppSettings();
-	if(s.bAeroGlass){
+	if(s.bAeroGlass && s.bAeroGlassAvalibility){
 
 		switch(wParam){
 			//my hittest

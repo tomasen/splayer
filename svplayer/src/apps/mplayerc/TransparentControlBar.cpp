@@ -48,7 +48,7 @@ int CTransparentControlBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	csl_trans.Create( WS_CHILD|WS_VISIBLE|TBS_AUTOTICKS|TBS_VERT|TBS_NOTICKS  , r, this, IDC_SLIDER1);
 	csl_trans.SetThumbLength(15);
 	csl_trans.EnableWindow();
-	csl_trans.SetRange(0, 0xff);
+	csl_trans.SetRange(30, 0xff);
 	csl_trans.SetPos(0xff);
 
 	return 0;
@@ -82,7 +82,7 @@ void CTransparentControlBar::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScr
 			//SetLayeredWindowAttributes( 0, pos, LWA_ALPHA);
 		}else{
 			bNeedLayed = true;
-			if(s.bAeroGlass){
+			if(s.bAeroGlass  && s.bAeroGlassAvalibility){
 				pMFrame->SetLayeredWindowAttributes( 0, 0xff, LWA_ALPHA);
 				pMFrame->m_wndToolTopBar.SetLayeredWindowAttributes( 0, 0xff, LWA_ALPHA);
 				pMFrame->m_wndNewOSD.SetLayeredWindowAttributes( 0, 0xff, LWA_ALPHA);

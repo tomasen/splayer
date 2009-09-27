@@ -392,10 +392,10 @@ void CPlayerSeekBar::OnPaint()
 			else
 				rFilled.right = rFilled.left + 1;
 
-			rFilled.top++;
-			rFilled.bottom--;
+			rFilled.top+=2;
+			rFilled.bottom-=2;
 
-			CBrush nBrush(HS_FDIAGONAL,  s.GetColorFromTheme(_T("SeekBarABArea"), 0x003fff9a ));
+			CBrush nBrush(HS_DIAGCROSS,  s.GetColorFromTheme(_T("SeekBarABArea"), 0x003fff9a ));
 			dc.FillRect(&rFilled,&nBrush ); //fEnabled ?
 		}
 		

@@ -3,7 +3,7 @@
 
 // CPlayerFloatToolBar
 
-class CPlayerFloatToolBar : public CWnd
+class CPlayerFloatToolBar : public CFrameWnd
 {
 	DECLARE_DYNAMIC(CPlayerFloatToolBar)
 
@@ -11,11 +11,14 @@ class CPlayerFloatToolBar : public CWnd
 public:
 	CPlayerFloatToolBar();
 	virtual ~CPlayerFloatToolBar();
-
+	
+	int m_lSeekBarHeight;
+	int m_lToolBarHeight;
 
 protected:
 	DECLARE_MESSAGE_MAP()
 public:
+	int m_nLogDPIY;
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnEnable(BOOL bEnable);
 	afx_msg void OnClose();
@@ -28,6 +31,8 @@ public:
 	BOOL m_bFocused;
 	int GetUIHeight();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg void OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp);
+	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 };
 
 

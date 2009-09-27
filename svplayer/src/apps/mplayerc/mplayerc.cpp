@@ -596,6 +596,11 @@ BOOL CMPlayerCApp::PumpMessage() {
 						m_bMouseInOutUnknown = FALSE;
 						if ( pMsgWnd != pMainWnd && !pMainWnd->IsChild(pMsgWnd)
 							&& pMsgWnd != &(pFrame->m_wndToolTopBar) ) {
+
+								if(m_s.bUserAeroUI() ){
+									if( pMsgWnd == &(pFrame->m_wndFloatToolBar) || pFrame->m_wndFloatToolBar.IsChild(pMsgWnd) )
+										break;
+								}
 							if( (m_bMouseIn || m_bMouseInOutUnknown) ){
 								m_bMouseIn = FALSE;
 								pMainWnd->PostMessage(WM_MOUSEMOVEOUT, 0, 0L);
@@ -2611,7 +2616,7 @@ void CMPlayerCApp::Settings::SetChannelMapByNumberOfSpeakers( int iSS , int iNum
 
 }
 BOOL CMPlayerCApp::Settings::bUserAeroUI(){
-	return 1 || bAeroGlassAvalibility && bAeroGlass;
+	return  bAeroGlassAvalibility && bAeroGlass;
 }
 BOOL CMPlayerCApp::Settings::bUserAeroTitle(){
 	return  bAeroGlassAvalibility && bAeroGlass;

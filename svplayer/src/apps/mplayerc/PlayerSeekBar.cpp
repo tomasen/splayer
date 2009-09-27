@@ -479,7 +479,7 @@ void CPlayerSeekBar::OnLButtonDown(UINT nFlags, CPoint point)
 		SetCapture();
 		__int64 posBefore = m_pos;
 		MoveThumb(point);
-		GetParent()->PostMessage(WM_HSCROLL, MAKEWPARAM((short)m_pos, SB_THUMBPOSITION), (LPARAM)m_hWnd);
+		AfxGetMainWnd()->PostMessage(WM_HSCROLL, MAKEWPARAM((short)m_pos, SB_THUMBPOSITION), (LPARAM)m_hWnd);
 	}
 
 	CDialogBar::OnLButtonDown(nFlags, point);
@@ -503,7 +503,7 @@ void CPlayerSeekBar::OnMouseMove(UINT nFlags, CPoint point)
 	if(w && w->m_hWnd == m_hWnd && (nFlags & MK_LBUTTON))
 	{
 		MoveThumb(point);
-		GetParent()->PostMessage(WM_HSCROLL, MAKEWPARAM((short)m_pos, SB_THUMBTRACK), (LPARAM)m_hWnd);
+		AfxGetMainWnd()->PostMessage(WM_HSCROLL, MAKEWPARAM((short)m_pos, SB_THUMBTRACK), (LPARAM)m_hWnd);
 	}
 	if(bMouseMoved){
 		CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();

@@ -606,9 +606,9 @@ BOOL CPlayerToolTopBar::OnNcActivate(BOOL bActive)
 void CPlayerToolTopBar::OnSetFocus(CWnd* pOldWnd)
 {
 	
-	//CWnd::OnSetFocus(pOldWnd);
+	__super::OnSetFocus(pOldWnd);
 
-	AfxGetMainWnd()->SendMessage(WM_SETFOCUS, (WPARAM )m_hWnd, NULL);
+	//AfxGetMainWnd()->SendMessage(WM_SETFOCUS, (WPARAM )m_hWnd, NULL);
 
 	//::SetForegroundWindow( AfxGetMainWnd()->m_hWnd );
 

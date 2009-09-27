@@ -4,11 +4,11 @@
 #include "stdafx.h"
 #include "mplayerc.h"
 #include "PlayerFloatToolBar.h"
-
+#include "MainFrm.h"
 
 // CPlayerFloatToolBar
 
-IMPLEMENT_DYNAMIC(CPlayerFloatToolBar, CWnd)
+IMPLEMENT_DYNAMIC(CPlayerFloatToolBar, CFrameWnd)
 
 CPlayerFloatToolBar::CPlayerFloatToolBar()
 {
@@ -20,7 +20,7 @@ CPlayerFloatToolBar::~CPlayerFloatToolBar()
 }
 
 
-BEGIN_MESSAGE_MAP(CPlayerFloatToolBar, CWnd)
+BEGIN_MESSAGE_MAP(CPlayerFloatToolBar, CFrameWnd)
 	ON_WM_SIZE()
 	ON_WM_ENABLE()
 	ON_WM_CLOSE()
@@ -29,6 +29,8 @@ BEGIN_MESSAGE_MAP(CPlayerFloatToolBar, CWnd)
 	ON_WM_SHOWWINDOW()
 	ON_WM_KILLFOCUS()
 	ON_WM_TIMER()
+	ON_WM_NCCALCSIZE()
+	ON_WM_CREATE()
 END_MESSAGE_MAP()
 
 
@@ -39,14 +41,38 @@ END_MESSAGE_MAP()
 
 void CPlayerFloatToolBar::OnSize(UINT nType, int cx, int cy)
 {
-	CWnd::OnSize(nType, cx, cy);
+	__super::OnSize(nType, cx, cy);
 
-	// TODO: Add your message handler code here
+	CRect r,cr;
+
+	{ //New UI
+		CRect rc;
+		//GetWindowRect(&rc);
+		//rc-=rc.TopLeft();
+		GetClientRect(&rc);
+		
+
+
+
+		// destroy old region
+		if((HRGN)m_rgn)
+		{
+			m_rgn.DeleteObject();
+		}
+
+		m_rgn.CreateRoundRectRgn(2,1,rc.Width()-1,rc.Height()-1, 2,1);                 // rounded rect w/50 pixel corners
+
+		
+		SetWindowRgn(m_rgn,TRUE);
+
+		
+	}
+
 }
 
 void CPlayerFloatToolBar::OnEnable(BOOL bEnable)
 {
-	CWnd::OnEnable(bEnable);
+	__super::OnEnable(bEnable);
 
 	// TODO: Add your message handler code here
 }
@@ -55,54 +81,85 @@ void CPlayerFloatToolBar::OnClose()
 {
 	// TODO: Add your message handler code here and/or call default
 
-	CWnd::OnClose();
+	__super::OnClose();
 }
 
 BOOL CPlayerFloatToolBar::PreTranslateMessage(MSG* pMsg)
 {
 	// TODO: Add your specialized code here and/or call the base class
 
-	return CWnd::PreTranslateMessage(pMsg);
+	return __super::PreTranslateMessage(pMsg);
 }
 
 void CPlayerFloatToolBar::OnMove(int x, int y)
 {
-	CWnd::OnMove(x, y);
+	__super::OnMove(x, y);
 
 	// TODO: Add your message handler code here
 }
 
 void CPlayerFloatToolBar::OnSetFocus(CWnd* pOldWnd)
 {
-	CWnd::OnSetFocus(pOldWnd);
+	__super::OnSetFocus(pOldWnd);
 
 	// TODO: Add your message handler code here
 }
 
 void CPlayerFloatToolBar::OnShowWindow(BOOL bShow, UINT nStatus)
 {
-	CWnd::OnShowWindow(bShow, nStatus);
+	__super::OnShowWindow(bShow, nStatus);
 
 	// TODO: Add your message handler code here
 }
 
 void CPlayerFloatToolBar::OnKillFocus(CWnd* pNewWnd)
 {
-	CWnd::OnKillFocus(pNewWnd);
+	__super::OnKillFocus(pNewWnd);
 
 	// TODO: Add your message handler code here
 }
 
 void CPlayerFloatToolBar::OnRealClose()
 {
-	CWnd::OnClose();
+	__super::OnClose();
 }
 int CPlayerFloatToolBar::GetUIHeight(){
-	return 100;
+	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
+	if(pFrame && ::IsWindow(pFrame->m_hWnd)  )
+	{
+		
+		m_lSeekBarHeight = 8;
+		m_lToolBarHeight = TOOLBAR_HEIGHT * m_nLogDPIY / 96 ;
+		
+		if(pFrame->IsSomethingLoaded()){
+			return m_lSeekBarHeight + m_lToolBarHeight;;
+		}
+		
+		return m_lToolBarHeight;;
+	}
+	return 0;
 }
 void CPlayerFloatToolBar::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO: Add your message handler code here and/or call default
 
-	CWnd::OnTimer(nIDEvent);
+	__super::OnTimer(nIDEvent);
+}
+
+void CPlayerFloatToolBar::OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp)
+{
+	// TODO: Add your message handler code here and/or call default
+
+	CFrameWnd::OnNcCalcSize(bCalcValidRects, lpncsp);
+}
+
+int CPlayerFloatToolBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
+{
+	if (CFrameWnd::OnCreate(lpCreateStruct) == -1)
+		return -1;
+
+	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
+	m_nLogDPIY = pFrame->m_nLogDPIY;
+
+	return 0;
 }

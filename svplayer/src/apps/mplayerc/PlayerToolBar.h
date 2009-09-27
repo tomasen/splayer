@@ -25,7 +25,7 @@
 
 #include "VolumeCtrl.h"
 
-
+#define TOOLBAR_HEIGHT 33
 // CPlayerToolBar
 
 class CPlayerToolBar : public CToolBar

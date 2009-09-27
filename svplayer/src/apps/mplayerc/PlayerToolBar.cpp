@@ -118,10 +118,10 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
  	btnSubFontMinus->addAlignRelButton(ALIGN_TOP, btnSubFontPlus ,  CRect(3 , 0 , 3, 0) );
  	m_btnList.AddTail( btnSubFontMinus );
 
-	CSUIButton* btnSubSwitch = new CSUIButton(L"BTN_SUB.BMP" , ALIGN_TOPLEFT, CRect(-20 , 5, 3,3)  , 0, ID_SUBTOOLBARBUTTON, TRUE, ALIGN_RIGHT, btnFFBack , CRect(20 , 10 , 22, 10) );
+	CSUIButton* btnSubSwitch = new CSUIButton(L"BTN_SUB.BMP" , ALIGN_TOPLEFT, CRect(-30 , 5, 3,3)  , 0, ID_SUBTOOLBARBUTTON, TRUE, ALIGN_RIGHT, btnFFBack , CRect(20 , 10 , 22, 10) );
 	btnSubSwitch->addAlignRelButton(ALIGN_LEFT, btnLogo ,  CRect(10 , 10 , 10, 10) );
 	btnSubSwitch->addAlignRelButton(ALIGN_RIGHT, btnPrev ,  CRect(20 , 10 , 22, 10) );
-	btnSubSwitch->addAlignRelButton(ALIGN_RIGHT, btnSubFont ,  CRect(20 , 10 , 18, 10) );
+	btnSubSwitch->addAlignRelButton(ALIGN_RIGHT, btnSubFont ,  CRect(20 , 10 , 28, 10) );
 	m_btnList.AddTail( btnSubSwitch );
 
 	m_btnList.AddTail( new CSUIButton(L"BTN_SUB_DELAY_REDUCE.BMP" , ALIGN_TOPLEFT, CRect(-42 , 7, 3,3)  , 0, ID_SUBDELAYDEC, TRUE, ALIGN_RIGHT, btnSubSwitch , CRect(2 , 3 , 2, 3) ) );
@@ -197,11 +197,15 @@ void CPlayerToolBar::OnSize(UINT nType, int cx, int cy)
 	GetWindowRect(&rc);
 	long iWidth = rc.Width();
 	BOOL hideT1 = TRUE;
+	BOOL hideT15 = TRUE;
 	BOOL hideT2 = TRUE;
 	BOOL hideT3 = TRUE;
 	BOOL hideT4 = TRUE;
 	if( iWidth > (382 * m_nLogDPIY / 96) ){
 			hideT1 = false;
+	}
+	if( iWidth > (400 * m_nLogDPIY / 96) ){
+		hideT15 = false;
 	}
 	if( iWidth > (425 * m_nLogDPIY / 96) ){
 		hideT2 = false;
@@ -218,9 +222,9 @@ void CPlayerToolBar::OnSize(UINT nType, int cx, int cy)
 
 	m_btnList.SetHideStat(ID_VOLUME_MUTE , hideT2);
 	
-	m_btnList.SetHideStat(ID_SUBTOOLBARBUTTON , hideT3);
-	m_btnList.SetHideStat(ID_SUBDELAYDEC , hideT3);
-	m_btnList.SetHideStat(ID_SUBDELAYINC , hideT3);
+	m_btnList.SetHideStat(ID_SUBTOOLBARBUTTON , hideT2);
+	m_btnList.SetHideStat(ID_SUBDELAYDEC , hideT2);
+	m_btnList.SetHideStat(ID_SUBDELAYINC , hideT2);
 	
 	m_btnList.SetHideStat(ID_FILE_SAVE_IMAGE , hideT4);
 	m_btnList.SetHideStat(ID_VIEW_OPTIONS , hideT3);
@@ -372,9 +376,9 @@ BOOL CPlayerToolBar::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message){
 CSize CPlayerToolBar::CalcFixedLayout(BOOL bStretch,BOOL bHorz ){
 
 	
-	CSize size( 32767, 33 * m_nLogDPIY / 96 );
+	CSize size( 32767, TOOLBAR_HEIGHT * m_nLogDPIY / 96 );
 
-	if ( CWnd* pParent = AfxGetMainWnd() )
+	if ( CWnd* pParent = GetParentFrame() )
 	{
 		CRect rc;
 		pParent->GetWindowRect( &rc );
@@ -421,6 +425,23 @@ void CPlayerToolBar::OnPaint()
 	hdc.FillSolidRect(rcUpperSqu, s.GetColorFromTheme(_T("ToolBarBG"), NEWUI_COLOR_TOOLBAR_UPPERBG));
 
 
+	if(!m_timerstr.IsEmpty()){
+
+		HFONT holdft = (HFONT)hdc.SelectObject(m_statft);
+
+		hdc.SetTextColor(s.GetColorFromTheme(_T("ToolBarTimeText"), 0xffffff) );
+		CSize size = hdc.GetTextExtent(m_timerstr);
+		CRect frc ( rcClient );
+		size.cx = min( rcClient.Width() /3, size.cx);
+		frc.left += 15;
+		frc.bottom -= 7;
+		frc.right = frc.left + size.cx;
+
+		::DrawText(hdc, m_timerstr, m_timerstr.GetLength(), frc,  DT_LEFT|DT_SINGLELINE| DT_VCENTER);
+		hdc.SelectObject(holdft);
+
+
+	}
  	UpdateButtonStat();
 	
 	int volume = min( m_volctrl.GetPos() , m_volctrl.GetRangeMax() );
@@ -434,23 +455,6 @@ void CPlayerToolBar::OnPaint()
 	
  	m_btnList.PaintAll(&hdc, rc);
 
-	if(!m_timerstr.IsEmpty()){
-		
-		HFONT holdft = (HFONT)hdc.SelectObject(m_statft);
-
-		hdc.SetTextColor(s.GetColorFromTheme(_T("ToolBarTimeText"), 0xffffff) );
-		CSize size = hdc.GetTextExtent(m_timerstr);
-		CRect frc ( rcClient );
-		size.cx = min( rcClient.Width() /3, size.cx);
-		frc.left += 20;
-		frc.bottom -= 7;
-		frc.right = frc.left + size.cx;
-		
-		::DrawText(hdc, m_timerstr, m_timerstr.GetLength(), frc,  DT_LEFT|DT_SINGLELINE| DT_VCENTER);
-		hdc.SelectObject(holdft);
-
-		
-	}
 	//LONGLONG costTime = AfxGetMyApp()->GetPerfCounter() - startTime;
 	//SVP_LogMsg3("Toolbar Paint @ %I64d cost %I64d" , startTime , costTime);
 }

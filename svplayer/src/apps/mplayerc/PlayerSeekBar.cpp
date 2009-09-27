@@ -42,6 +42,7 @@ CPlayerSeekBar::~CPlayerSeekBar()
 }
 BOOL CPlayerSeekBar::Create(CWnd* pParentWnd)
 {
+
 	if(!CDialogBar::Create(pParentWnd, IDD_PLAYERSEEKBAR, WS_CHILD|WS_VISIBLE|CBRS_ALIGN_BOTTOM, IDD_PLAYERSEEKBAR))
 		return FALSE;
 

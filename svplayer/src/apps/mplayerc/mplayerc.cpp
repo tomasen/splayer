@@ -582,6 +582,7 @@ BOOL CMPlayerCApp::PumpMessage() {
 			//mouse is not in then check if it has come in.
 			MSG m_msgCur;
 			CWnd* pMainWnd = ::AfxGetMainWnd();
+			CMainFrame* pFrame = (CMainFrame*)pMainWnd;
 			if (pMainWnd) {
 				//As long as there is no message for this application
 				//track the mouse cursor position.
@@ -593,7 +594,8 @@ BOOL CMPlayerCApp::PumpMessage() {
 						//app's window and not any of its child windows
 						//then it means mouse has left the app area.
 						m_bMouseInOutUnknown = FALSE;
-						if ( pMsgWnd != pMainWnd && !pMainWnd->IsChild(pMsgWnd)) {
+						if ( pMsgWnd != pMainWnd && !pMainWnd->IsChild(pMsgWnd)
+							&& pMsgWnd != &(pFrame->m_wndToolTopBar) ) {
 							if( (m_bMouseIn || m_bMouseInOutUnknown) ){
 								m_bMouseIn = FALSE;
 								pMainWnd->PostMessage(WM_MOUSEMOVEOUT, 0, 0L);
@@ -2608,6 +2610,12 @@ void CMPlayerCApp::Settings::SetChannelMapByNumberOfSpeakers( int iSS , int iNum
 	fCustomChannelMapping = true;//!IsVista();
 
 }
+BOOL CMPlayerCApp::Settings::bUserAeroUI(){
+	return bAeroGlassAvalibility && bAeroGlass;
+}
+BOOL CMPlayerCApp::Settings::bUserAeroTitle(){
+	return bAeroGlassAvalibility && bAeroGlass;
+}
 void CMPlayerCApp::Settings::UpdateData(bool fSave)
 {
 	CWinApp* pApp = AfxGetApp();
@@ -3479,6 +3487,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 			}
 
 		}
+		lAeroTransparent = 0xaf;
 		logostretch = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LOGOSTRETCH), 1);
 		logofn = pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LOGOFILE), szExtLogoFn);
 		logoid = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LOGOID), IDF_LOGO7);

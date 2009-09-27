@@ -565,6 +565,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\PlayerFloatToolBar.cpp"
+				>
+			</File>
+			<File
 				RelativePath="PlayerInfoBar.cpp"
 				>
 			</File>
@@ -1067,6 +1071,10 @@
 			</File>
 			<File
 				RelativePath=".\PlayerColorControlBar.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PlayerFloatToolBar.h"
 				>
 			</File>
 			<File
@@ -2148,11 +2156,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 		<File

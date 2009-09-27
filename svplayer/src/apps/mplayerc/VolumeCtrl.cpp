@@ -241,7 +241,7 @@ void CVolumeCtrl::HScroll(UINT nSBCode, UINT nPos)
 {
 	AfxGetAppSettings().nVolume = GetPos();
 
-	CFrameWnd* pFrame = GetParentFrame();
+	CFrameWnd* pFrame = (CFrameWnd*)AfxGetMainWnd();
 	if(pFrame && pFrame != GetParent())
 		pFrame->PostMessage(WM_HSCROLL, MAKEWPARAM((short)nPos, nSBCode), (LPARAM)m_hWnd);
 }

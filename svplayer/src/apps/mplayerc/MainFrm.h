@@ -38,6 +38,7 @@
 #include "PPageFileInfoSheet.h"
 #include "OpenCapDeviceDlg.h"
 #include "PlayerToolTopBar.h"
+#include "PlayerFloatToolBar.h"
 
 #include "FileDropTarget.h"
 
@@ -320,7 +321,8 @@ public:
 		TIMER_STATUSBARHIDER,
 		TIMER_START_CHECKUPDATER,
 		TIMER_DELETE_CUR_FILE,
-		TIMER_DELETE_CUR_FOLDER
+		TIMER_DELETE_CUR_FOLDER,
+		TIMER_TRANSPARENTTOOLBARSTAT
 	};
 
 
@@ -365,6 +367,7 @@ public:
 public:
 	int m_iPlaybackMode;
 
+	int m_lTransparentToolbarStat;
 	bool m_fFullScreen;
 	bool m_fScreenHigherThanVideo;
 	bool m_fPlaylistBeforeToggleFullScreen;
@@ -503,8 +506,6 @@ public:
 protected:  // control bar embedded members
 
 	
-	CPlayerSeekBar m_wndSeekBar;
-	CPlayerToolBar m_wndToolBar;
 	CPlayerInfoBar m_wndInfoBar;
 	CPlayerInfoBar m_wndStatsBar;
 	CPlayerStatusBar m_wndStatusBar;
@@ -539,7 +540,10 @@ protected:  // control bar embedded members
 	DECLARE_MESSAGE_MAP()
 
 public:
+	CPlayerSeekBar m_wndSeekBar;
+	CPlayerToolBar m_wndToolBar;
 
+	CPlayerFloatToolBar m_wndFloatToolBar;
 	CNEWOSDWnd m_wndNewOSD;
 	CPlayerColorControlBar m_wndColorControlBar;
 

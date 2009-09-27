@@ -657,6 +657,7 @@ public:
 		bool fWebServerUseCompression;
 		bool fWebServerLocalhostOnly;
 		CString WebRoot, WebDefIndex;
+		BYTE lAeroTransparent;
 		BOOL bOldLumaControl;
 		CString WebServerCGI;
 		CString SVPSubStoreDir;
@@ -681,7 +682,8 @@ public:
 		void SetChannelMapByNumberOfSpeakers(int iSS, int iNumberOfSpeakers);
 		void RegGlobalAccelKey(HWND hWnd = NULL);
 		void UpdateData(bool fSave);
-
+		BOOL bUserAeroUI();
+		BOOL bUserAeroTitle();
 		int  FindWmcmdsIDXofCmdid(UINT cmdid, POSITION pos);
 		POSITION  FindWmcmdsPosofCmdidByIdx(INT cmdid, int idx);
 

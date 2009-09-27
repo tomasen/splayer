@@ -353,7 +353,7 @@ BOOL CPlayerToolTopBar::OnEraseBkgnd(CDC* pDC)
 void CPlayerToolTopBar::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	// TODO: Add your message handler code here and/or call default
-	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
+	CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
 	
 	ReleaseCapture();
 

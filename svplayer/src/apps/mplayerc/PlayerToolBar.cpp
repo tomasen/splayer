@@ -455,7 +455,7 @@ void CPlayerToolBar::OnPaint()
 	//SVP_LogMsg3("Toolbar Paint @ %I64d cost %I64d" , startTime , costTime);
 }
 void CPlayerToolBar::UpdateButtonStat(){
-	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
+	CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
 	BOOL fShow = pFrame->GetUIStat( ID_PLAY_STOP );
 	m_btnList.SetHideStat( ID_PLAY_PLAY , fShow );
 	//m_btnList.SetHideStat( ID_PLAY_STOP , !fShow );
@@ -559,7 +559,7 @@ void CPlayerToolBar::SetStatusTimer(REFERENCE_TIME rtNow, REFERENCE_TIME rtDur, 
 		szPlayrate.Format(_T("  ËÙÂÊ %0.1fx "), playRate);
 	}
 
-	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
+	CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
 	CString szPlayingFileName = pFrame->GetCurPlayingFileName();
 	if(!szPlayingFileName.IsEmpty()){
 		//szPlayingFileName.Append(_T("  "));
@@ -592,7 +592,7 @@ BOOL CPlayerToolBar::OnVolumeDown(UINT nID)
 	return FALSE;
 }
 bool  CPlayerToolBar::OnSetVolByMouse(CPoint point, BOOL byClick){
-	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
+	CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
 	long nTBPos = point.x - m_btnVolBG->m_rcHitest.left;
 	long TBMax = m_btnVolBG->m_rcHitest.right-m_btnVolBG->m_rcHitest.left ;
 	nTBPos = max(0 , min(TBMax , nTBPos) );
@@ -636,7 +636,7 @@ INT_PTR CPlayerToolBar::OnToolHitTest(	CPoint point,TOOLINFO* pTI 	) const
 	}
 	
 	CRect rc;
-	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
+	CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
 	GetWindowRect(&rc);
 	point += rc.TopLeft() ;
 	//CSUIBtnList* x = (CSUIBtnList*)&m_btnList;
@@ -663,7 +663,7 @@ INT_PTR CPlayerToolBar::OnToolHitTest(	CPoint point,TOOLINFO* pTI 	) const
 void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point){
 
 	CSize diff = m_lastMouseMove - point;
-	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
+	CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
 	BOOL bMouseMoved =  diff.cx || diff.cy ;
 	if(bMouseMoved){
 		m_lastMouseMove = point;
@@ -785,7 +785,7 @@ void CPlayerToolBar::OnLButtonDown(UINT nFlags, CPoint point)
 	KillTimer(TIMER_FASTFORWORD);
 	KillTimer(TIMER_CLOSETOOLBAR);
 	
-	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
+	CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
 	iBottonClicked = -1;
 	m_bMouseDown = TRUE;
 	CRect rc;
@@ -824,7 +824,7 @@ void CPlayerToolBar::OnLButtonDown(UINT nFlags, CPoint point)
 
 void CPlayerToolBar::OnLButtonUp(UINT nFlags, CPoint point)
 {
-	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
+	CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
 	KillTimer(TIMER_FASTFORWORD);
 	KillTimer(TIMER_CLOSETOOLBAR);
 	ReleaseCapture();
@@ -844,7 +844,7 @@ void CPlayerToolBar::OnLButtonUp(UINT nFlags, CPoint point)
 	if(m_nItemToTrack == iBottonClicked ){
 		if(iFastFFWCount == 0){
 			int iMsg = 0;
-			CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
+			CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
 			// not increase or decrease play rate
 			if(iBottonClicked == ID_PLAY_BWD){
 				iMsg = ID_PLAY_SEEKBACKWARDSMALLC;
@@ -928,7 +928,7 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
 			iFastFFWCount++;
 			//fast forward or backword
 			{
-				CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
+				CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
 				int iMsg;
 				if(iBottonClicked == ID_PLAY_BWD){
 					iMsg = ID_PLAY_SEEKBACKWARDSMALL;
@@ -949,7 +949,7 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
 		case TIMER_CLOSETOOLBAR:
 			{
 				KillTimer(TIMER_CLOSETOOLBAR);
-				CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
+				CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
 				if(pFrame->m_fFullScreen && pFrame->IsSomethingLoaded()){
 					pFrame->m_notshowtoolbarforawhile = 3;
 					pFrame->ShowControls(0, FALSE);

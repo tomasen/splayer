@@ -634,7 +634,13 @@ BOOL CMainFrame::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 
 	return bRet;
 }
-
+LRESULT CALLBACK SVPLayeredWndProc(HWND hwnd,         // Window handle
+								   UINT uMsg,         // Message ID
+								   WPARAM wParam,     // First parameter
+								   LPARAM lParam)     // Other parameter
+{
+	return(DefWindowProc(hwnd, uMsg, wParam, lParam));
+}
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if(__super::OnCreate(lpCreateStruct) == -1)
@@ -710,11 +716,27 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	LoadControlBar(&m_wndShaderEditorBar, AFX_IDW_DOCKBAR_TOP);
 
 
+	WNDCLASSEX layeredClass;
+	layeredClass.cbSize        = sizeof(WNDCLASSEX);
+	layeredClass.style         = CS_HREDRAW | CS_VREDRAW;
+	layeredClass.lpfnWndProc   = SVPLayeredWndProc;
+	layeredClass.cbClsExtra    = 0;
+	layeredClass.cbWndExtra    = 0;
+	layeredClass.hInstance     = AfxGetMyApp()->m_hInstance;
+	layeredClass.hIcon         = NULL;
+	layeredClass.hCursor       = NULL;
+	layeredClass.hbrBackground = NULL;
+	layeredClass.lpszMenuName  = NULL;
+	layeredClass.lpszClassName = _T("SVPLayered");
+	layeredClass.hIconSm       = NULL;
+	RegisterClassEx(&layeredClass) ;
+
+
 	
-	if(m_wndColorControlBar.CreateEx(WS_EX_TOPMOST, _T("STATIC"), _T("COLORCONTROL"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0))//WS_EX_NOACTIVATE
+	if(m_wndColorControlBar.CreateEx(WS_EX_TOPMOST, _T("SVPLayered"), _T("COLORCONTROL"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0))//WS_EX_NOACTIVATE
 		m_wndColorControlBar.ShowWindow( SW_HIDE);
 	
-	if(m_wndTransparentControlBar.CreateEx(WS_EX_TOPMOST, _T("STATIC"), _T("TRANSPARENTCONTROL"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0))//WS_EX_NOACTIVATE
+	if(m_wndTransparentControlBar.CreateEx(WS_EX_TOPMOST, _T("SVPLayered"), _T("TRANSPARENTCONTROL"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0))//WS_EX_NOACTIVATE
 		m_wndTransparentControlBar.ShowWindow( SW_HIDE);
 
 
@@ -755,13 +777,12 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	SetFocus();
 
-
 	//WS_EX_NOACTIVATE
-	if(!m_wndNewOSD.CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, _T("STATIC"), _T("OSD"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0)){
+	if(!m_wndNewOSD.CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, _T("SVPLayered"), _T("OSD"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0)){
 		AfxMessageBox(_T("OSD 创建失败！"));
 	}
 
-	if(!m_wndToolTopBar.CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, _T("STATIC"), _T("TOPTOOL"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0)){
+	if(!m_wndToolTopBar.CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, _T("SVPLayered"), _T("TOPTOOL"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0)){
 		AfxMessageBox(_T("Top Toolbar 创建失败！"));
 	}
 
@@ -853,7 +874,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	//ImmAssociateContext((HWND)m_wndView, 0);
 	/*NEW UI END*/
 
-	if(!m_tip.CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, _T("STATIC"), _T("TIPS"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0)){
+	if(!m_tip.CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, _T("SVPLayered"), _T("TIPS"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0)){
 		AfxMessageBox(_T("SEEKTIP 创建失败！"));
 	}
 
@@ -882,24 +903,28 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_ABMenu.AppendMenu(MF_ENABLED |MF_STRING , ID_ABCONTROL_OFF, _T("关闭A-B循环"));
 	*/
 
-	if(s.bAeroGlassAvalibility){
+	if(s.bUserAeroUI()){
 
-		
-
-		if(s.bAeroGlass){
 			ModifyStyle(0, WS_POPUP);
 			ModifyStyleEx(  0, WS_EX_LAYERED);
 
 			//m_wndView.ModifyStyle(0, WS_POPUP);
 			//m_wndView.ModifyStyleEx(  0, WS_EX_LAYERED);
 			//m_wndView.SetLayeredWindowAttributes( 0, 0x43, LWA_ALPHA);
-/*
-			m_wndToolBar.ModifyStyle(0, WS_POPUP);
-			m_wndToolBar.ModifyStyleEx(  0, WS_EX_LAYERED);
 
-			m_wndSeekBar.ModifyStyle(0, WS_POPUP);
-			m_wndSeekBar.ModifyStyleEx(  0, WS_EX_LAYERED);
-*/			
+			m_wndToolBar.ModifyStyle(WS_CHILD|WS_VISIBLE, WS_POPUP);
+			m_wndToolBar.ModifyStyleEx(  0, WS_EX_LAYERED|WS_EX_TOPMOST);
+			m_wndToolBar.SetLayeredWindowAttributes( 0, s.lAeroTransparent, LWA_ALPHA);
+
+			m_wndSeekBar.ModifyStyle(WS_CHILD|WS_VISIBLE, WS_POPUP);
+			m_wndSeekBar.ModifyStyleEx(  0, WS_EX_LAYERED|WS_EX_TOPMOST);
+			m_wndSeekBar.SetLayeredWindowAttributes( 0, s.lAeroTransparent, LWA_ALPHA);
+			
+			m_wndNewOSD.ModifyStyleEx(  0, WS_EX_LAYERED|WS_EX_TOPMOST);
+			m_wndNewOSD.SetLayeredWindowAttributes( 0, s.lAeroTransparent, LWA_ALPHA);
+			
+			m_wndToolTopBar.ModifyStyleEx(  0, WS_EX_LAYERED|WS_EX_TOPMOST);
+			//m_wndToolTopBar.SetLayeredWindowAttributes( 0, s.lAeroTransparent, LWA_ALPHA);
 			SetLayeredWindowAttributes( 0, 0xff, LWA_ALPHA);
 
 			//CRect rcClient;
@@ -908,7 +933,6 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 			// Inform application of the frame change.
 			//::SetWindowPos(m_hWnd, NULL, rcClient.left, rcClient.top,rcClient.Width(), rcClient.Height(),SWP_FRAMECHANGED);
 
-		}
 		
 	}
 
@@ -1066,6 +1090,8 @@ static bool bNoMoreHideMouse = false;
 static int m_nomoretopbarforawhile = 0;
 void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 {
+	BOOL bSomethingChanged = false;
+
 	m_wndSeekBar.CloseToolTips();
 	if( m_iMediaLoadState == MLS_CLOSED )
 		m_wndView.OnMouseMove(nFlags,point);
@@ -1115,11 +1141,20 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 		s_fLDown = false;
 
 	}
-	
+	if(s.bUserAeroUI() && m_lTransparentToolbarStat <= 0){
+
+		//show tranparent control bar :)
+		KillTimer(TIMER_TRANSPARENTTOOLBARSTAT);
+		m_lTransparentToolbarStat = 1;
+		SetTimer(TIMER_TRANSPARENTTOOLBARSTAT, 300,NULL);
+		bSomethingChanged = true;
+	}
 	if( ( m_fFullScreen || s.fHideCaptionMenu || !(s.nCS&CS_TOOLBAR) ) && bMouseMoved && m_notshowtoolbarforawhile <= 0)
 	{
-		int nTimeOut = s.nShowBarsWhenFullScreenTimeOut; //Should Be 0
+		
 
+		/* Useless
+		int nTimeOut = s.nShowBarsWhenFullScreenTimeOut; //Should Be 0
 		if(nTimeOut < 0)
 		{
 			m_fHideCursor = false;
@@ -1131,8 +1166,9 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 			KillTimer(TIMER_FULLSCREENCONTROLBARHIDER);
 			//			SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
 		}
-		else if(nTimeOut == 0)
+		else if(nTimeOut == 0)*/
 		{
+
 			CRect r;
 			GetClientRect(r);
 			r.top = r.bottom;
@@ -1146,6 +1182,10 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 			for(int i = 1; pos; i <<= 1)
 			{
 				CControlBar* pNext = m_bars.GetNext(pos);
+				if(s.bUserAeroUI() && (i& ( CS_TOOLBAR | CS_SEEKBAR)))
+				{
+					continue;
+				}
 				CSize sz = pNext->CalcFixedLayout(FALSE, TRUE);
 				if(dnCS&i) r.top -= sz.cy;
 			}
@@ -1175,17 +1215,19 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 
 			//SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
 		}
+		/*
 		else
-		{
-			m_fHideCursor = false;
-			if(s.fShowBarsWhenFullScreen){
-				ShowControls(s.nCS |  ( s.bShowControlBar ? CS_COLORCONTROLBAR : 0), false );
-				//m_wndColorControlBar.ShowWindow(SW_SHOW);
-			}
-
-			SetTimer(TIMER_FULLSCREENCONTROLBARHIDER, nTimeOut*1000, NULL);
-			//SetTimer(TIMER_FULLSCREENMOUSEHIDER, max(nTimeOut*1000, 2000), NULL);
-		}
+				{
+					m_fHideCursor = false;
+					if(s.fShowBarsWhenFullScreen){
+						ShowControls(s.nCS |  ( s.bShowControlBar ? CS_COLORCONTROLBAR : 0), false );
+						//m_wndColorControlBar.ShowWindow(SW_SHOW);
+					}
+		
+					SetTimer(TIMER_FULLSCREENCONTROLBARHIDER, nTimeOut*1000, NULL);
+					//SetTimer(TIMER_FULLSCREENMOUSEHIDER, max(nTimeOut*1000, 2000), NULL);
+				}*/
+		
 	}
 
 
@@ -1193,7 +1235,6 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 		if(m_nomoretopbarforawhile > 0){
 			m_nomoretopbarforawhile --;
 		}else{
-			BOOL bSomethingChanged = false;
 			DWORD dnCS = s.nCS;
 			CPoint ptop(point);
 			MapWindowPoints(&m_wndView, &ptop, 1);
@@ -1210,15 +1251,15 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 				}
 			}
 
-			if(bSomethingChanged){
-				rePosOSD();
-			}
+			
 		}
 	}
 
 
 
-
+	if(bSomethingChanged){
+		rePosOSD();
+	}
 	
 	__super::OnMouseMove(nFlags, point);
 
@@ -1260,7 +1301,7 @@ LRESULT CMainFrame::OnNcActivate( WPARAM wParam, LPARAM lParam)
 {
 	
 	AppSettings& s = AfxGetAppSettings();
-	if(s.bAeroGlass && s.bAeroGlassAvalibility){
+	if(s.bUserAeroTitle()){
 		//return DefWindowProc(WM_NCACTIVATE , wParam, lParam);;
 		 
 		//| GetForegroundWindow()->m_hWnd == m_wndColorControlBar.m_hWnd 
@@ -1290,7 +1331,7 @@ LRESULT CMainFrame::OnNcHitTestNewUI(WPARAM wParam, LPARAM lParam )
 {
 	
 	AppSettings& s = AfxGetAppSettings();
-	if(s.bAeroGlass && s.bAeroGlassAvalibility){
+	if(s.bUserAeroTitle()){
 		LRESULT lRet = 0;
 		if(!AfxGetMyApp()->m_pDwmDefWindowProc){
 			//SVP_LogMsg5(_T("NFUCK"));
@@ -1499,13 +1540,17 @@ void CMainFrame::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
 	if(style&WS_CAPTION) lpMMI->ptMinTrackSize.y += GetSystemMetrics(SM_CYCAPTION);
 	if(style&WS_THICKFRAME) lpMMI->ptMinTrackSize.y += GetSystemMetrics((style&WS_CAPTION)?SM_CYSIZEFRAME:SM_CYFIXEDFRAME)*2;
 	//lpMMI->ptMinTrackSize.y += (mbi.rcBar.bottom - mbi.rcBar.top);
-	
-	if(!AfxGetAppSettings().fHideCaptionMenu) lpMMI->ptMinTrackSize.y += 3;
+	AppSettings& s = AfxGetAppSettings();
+	if(!s.fHideCaptionMenu) lpMMI->ptMinTrackSize.y += 3;
 	
 	POSITION pos = m_bars.GetHeadPosition();
-	while(pos) 
+	for(int i = 1;pos; i<<=1) 
 	{
 		CControlBar* pCB = m_bars.GetNext(pos);
+		if(s.bUserAeroUI() && (i& ( CS_TOOLBAR | CS_SEEKBAR)))
+		{
+			continue;
+		}
 		if(!IsWindow(pCB->m_hWnd) || !pCB->IsVisible()) continue;
 
 		lpMMI->ptMinTrackSize.y += pCB->CalcFixedLayout(TRUE, TRUE).cy;
@@ -2010,10 +2055,18 @@ BOOL CMainFrame::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO*
 	if(m_wndView.OnCmdMsg(nID, nCode, pExtra, pHandlerInfo))
 		return TRUE;
 
+	AppSettings& s = AfxGetAppSettings();
+
 	POSITION pos = m_bars.GetHeadPosition();
-	while(pos) 
+	for(int i=1;pos;i<<=1) 
 	{
-		if(m_bars.GetNext(pos)->OnCmdMsg(nID, nCode, pExtra, pHandlerInfo))
+		CControlBar* pCB = m_bars.GetNext(pos);
+		//no need do this here
+		//if(s.bUserAeroUI() && (i& ( CS_TOOLBAR | CS_SEEKBAR)))
+		{
+			//continue;
+		}
+		if(pCB->OnCmdMsg(nID, nCode, pExtra, pHandlerInfo))
 			return TRUE;
 	}
 
@@ -2098,9 +2151,13 @@ void CMainFrame::OnSizing(UINT fwSide, LPRECT pRect)
 		if(!AfxGetAppSettings().fHideCaptionMenu) fsize.cy += 3;
 
 		POSITION pos = m_bars.GetHeadPosition();
-		while(pos) 
+		for(int i=1;pos;i<<=1) 
 		{
 			CControlBar* pCB = m_bars.GetNext(pos);
+			if(s.bUserAeroUI() && (i& ( CS_TOOLBAR | CS_SEEKBAR)))
+			{
+				continue;
+			}
 			if(IsWindow(pCB->m_hWnd) && pCB->IsVisible())
 				fsize.cy += pCB->CalcFixedLayout(TRUE, TRUE).cy;
 		}
@@ -9224,7 +9281,9 @@ void CMainFrame::rePosOSD(){
 		CRect rcTopToolBar(rcView);
 		CRect rcRightTopWnd(rcView);
 		CRect rcRightVertWnd(rcView);
-			
+		CRect rcToolBar(rcView);
+		CRect rcSeekBar(rcView);
+
 		//rcView -= rcView.TopLeft();
 		if(!m_wndNewOSD.m_osdStr.IsEmpty()){
 			if(m_iOSDAlign == 1) { //TopLeft
@@ -9261,6 +9320,21 @@ void CMainFrame::rePosOSD(){
 			rcRightTopWnd.left = rcRightTopWnd.right - 220  * m_nLogDPIY / 96;
 			rcRightTopWnd.bottom = rcRightTopWnd.top + 80  * m_nLogDPIY / 96;
 			m_wndColorControlBar.MoveWindow(rcRightTopWnd);
+		}
+
+		AppSettings& s = AfxGetAppSettings();
+
+		if(m_lTransparentToolbarStat > 0 && s.bUserAeroUI() ){
+			rcToolBar.top = rcToolBar.bottom - 100;
+			m_wndToolBar.MoveWindow(rcToolBar);
+			m_wndToolBar.ShowWindow(SW_SHOW);
+
+			rcSeekBar.bottom = rcToolBar.top ;
+			rcSeekBar.top = rcSeekBar.bottom - 20;
+			m_wndSeekBar.MoveWindow(rcSeekBar);
+			m_wndSeekBar.ShowWindow(SW_SHOW);
+
+			
 		}
 	}
 	return;
@@ -12791,7 +12865,8 @@ void CMainFrame::OnChangeResizer(UINT nID){
 
 void CMainFrame::ShowControls(int nCS, bool fSave)
 {
-	int nCSprev = AfxGetAppSettings().nCS;
+	AppSettings& s = AfxGetAppSettings();
+	int nCSprev = s.nCS;
 	int hbefore = 0, hafter = 0;
 	BOOL bSomthingChanged = false;
 	
@@ -12828,8 +12903,13 @@ void CMainFrame::ShowControls(int nCS, bool fSave)
 			SendStatusMessage(CString(_T("正在播放: ")) + CString(fuPath) + _T(" 位于: ") + svpTool.GetDirFromPath(m_fnCurPlayingFile), 2000);
 		}
 
-		if( !!(nCS&i) != !!pNext->IsVisible() )
+		if(s.bUserAeroUI() && (i& ( CS_TOOLBAR | CS_SEEKBAR)))
+		{
+			continue;
+		}
+		if( !!(nCS&i) != !!pNext->IsVisible() ){
 			ShowControlBar(pNext, !!(nCS&i), TRUE);
+		}
 
 		if(nCS&i) m_pLastBar = pNext;
 		CSize s = pNext->CalcFixedLayout(FALSE, TRUE);
@@ -12852,7 +12932,7 @@ void CMainFrame::ShowControls(int nCS, bool fSave)
 	
 	
     if(fSave)
-		AfxGetAppSettings().nCS = nCS&~CS_TOOLTOPBAR;
+		s.nCS = nCS&~CS_TOOLTOPBAR;
 
 	if(bSomthingChanged){
 		if(!m_fFullScreen){
@@ -14933,7 +15013,7 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 		s.lastWindowType = nType;
 
 		//if we dont use aero, set the round corner region
-		if(!s.bAeroGlass || !s.bAeroGlassAvalibility)
+		if(!s.bUserAeroTitle())
 		{ //New UI
 			CRect rc;
 			WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
@@ -14992,7 +15072,7 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 
 
 	AppSettings& s = AfxGetAppSettings();
-	if(s.bAeroGlass && s.bAeroGlassAvalibility){
+	if(s.bUserAeroTitle()){
 		SetWindowText(szWindowText);
 		return DefWindowProc(WM_NCPAINT, wParam, lParam);
 	}
@@ -15305,7 +15385,7 @@ LRESULT CMainFrame::OnNcLButtonUp( WPARAM wParam, LPARAM lParam )
 	// custom processing of our min/max/close buttons
 	BOOL bGlassAllow = FALSE;
 	AppSettings& s = AfxGetAppSettings();
-	if(s.bAeroGlass && s.bAeroGlassAvalibility){
+	if(s.bUserAeroTitle()){
 
 		switch(wParam){
 			//my hittest

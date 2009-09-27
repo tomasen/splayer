@@ -82,7 +82,7 @@ void CTransparentControlBar::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScr
 			//SetLayeredWindowAttributes( 0, pos, LWA_ALPHA);
 		}else{
 			bNeedLayed = true;
-			if(s.bAeroGlass  && s.bAeroGlassAvalibility){
+			if(s.bUserAeroUI() || s.bUserAeroTitle()){
 				pMFrame->SetLayeredWindowAttributes( 0, 0xff, LWA_ALPHA);
 				pMFrame->m_wndToolTopBar.SetLayeredWindowAttributes( 0, 0xff, LWA_ALPHA);
 				pMFrame->m_wndNewOSD.SetLayeredWindowAttributes( 0, 0xff, LWA_ALPHA);

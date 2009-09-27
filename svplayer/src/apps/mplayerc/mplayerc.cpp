@@ -2611,10 +2611,10 @@ void CMPlayerCApp::Settings::SetChannelMapByNumberOfSpeakers( int iSS , int iNum
 
 }
 BOOL CMPlayerCApp::Settings::bUserAeroUI(){
-	return bAeroGlassAvalibility && bAeroGlass;
+	return 1 || bAeroGlassAvalibility && bAeroGlass;
 }
 BOOL CMPlayerCApp::Settings::bUserAeroTitle(){
-	return bAeroGlassAvalibility && bAeroGlass;
+	return  bAeroGlassAvalibility && bAeroGlass;
 }
 void CMPlayerCApp::Settings::UpdateData(bool fSave)
 {

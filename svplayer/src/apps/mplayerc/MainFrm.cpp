@@ -665,19 +665,42 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 	}
 
-	// static bars
 
+	WNDCLASSEX layeredClass;
+	layeredClass.cbSize        = sizeof(WNDCLASSEX);
+	layeredClass.style         = CS_HREDRAW | CS_VREDRAW;
+	layeredClass.lpfnWndProc   = SVPLayeredWndProc;
+	layeredClass.cbClsExtra    = 0;
+	layeredClass.cbWndExtra    = 0;
+	layeredClass.hInstance     = AfxGetMyApp()->m_hInstance;
+	layeredClass.hIcon         = NULL;
+	layeredClass.hCursor       = NULL;
+	layeredClass.hbrBackground = NULL;
+	layeredClass.lpszMenuName  = NULL;
+	layeredClass.lpszClassName = _T("SVPLayered");
+	layeredClass.hIconSm       = NULL;
+	RegisterClassEx(&layeredClass) ;
+
+	// static bars
+	AppSettings& s = AfxGetAppSettings();
+	CWnd* pParent = this;
+	if(s.bUserAeroUI()){
+		if(m_wndFloatToolBar.CreateEx(WS_EX_TOPMOST, _T("SVPLayered"), _T("FLOATWND"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0))//WS_EX_NOACTIVATE
+		{
+			m_wndFloatToolBar.ShowWindow( SW_HIDE);
+			pParent = &m_wndFloatToolBar;
+		}
+	}
 	if(!m_wndStatsBar.Create(this)
 	|| !m_wndInfoBar.Create(this)
-	|| !m_wndToolBar.Create(this)
-	|| !m_wndSeekBar.Create(this)
+	|| !m_wndToolBar.Create(pParent)
+	|| !m_wndSeekBar.Create(pParent)
 	)
 	{
 		TRACE0("Failed to create all control bars\n");
 		return -1;      // fail to create
 	}
-	AppSettings& s = AfxGetAppSettings();
-
+	
 	m_bars.AddTail(&m_wndSeekBar);
 	m_bars.AddTail(&m_wndToolBar);
 
@@ -714,22 +737,6 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_wndShaderEditorBar.SetBarStyle(m_wndShaderEditorBar.GetBarStyle() | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
 	m_wndShaderEditorBar.EnableDocking(CBRS_ALIGN_ANY);
 	LoadControlBar(&m_wndShaderEditorBar, AFX_IDW_DOCKBAR_TOP);
-
-
-	WNDCLASSEX layeredClass;
-	layeredClass.cbSize        = sizeof(WNDCLASSEX);
-	layeredClass.style         = CS_HREDRAW | CS_VREDRAW;
-	layeredClass.lpfnWndProc   = SVPLayeredWndProc;
-	layeredClass.cbClsExtra    = 0;
-	layeredClass.cbWndExtra    = 0;
-	layeredClass.hInstance     = AfxGetMyApp()->m_hInstance;
-	layeredClass.hIcon         = NULL;
-	layeredClass.hCursor       = NULL;
-	layeredClass.hbrBackground = NULL;
-	layeredClass.lpszMenuName  = NULL;
-	layeredClass.lpszClassName = _T("SVPLayered");
-	layeredClass.hIconSm       = NULL;
-	RegisterClassEx(&layeredClass) ;
 
 
 	
@@ -778,7 +785,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	SetFocus();
 
 	//WS_EX_NOACTIVATE
-	if(!m_wndNewOSD.CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, _T("SVPLayered"), _T("OSD"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0)){
+	if(!m_wndNewOSD.CreateEx(WS_EX_NOACTIVATE|WS_EX_TRANSPARENT|WS_EX_TOPMOST, _T("SVPLayered"), _T("OSD"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0)){
 		AfxMessageBox(_T("OSD 创建失败！"));
 	}
 
@@ -903,15 +910,17 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_ABMenu.AppendMenu(MF_ENABLED |MF_STRING , ID_ABCONTROL_OFF, _T("关闭A-B循环"));
 	*/
 
+	
 	if(s.bUserAeroUI()){
 
-			ModifyStyle(0, WS_POPUP);
-			ModifyStyleEx(  0, WS_EX_LAYERED);
-
-			//m_wndView.ModifyStyle(0, WS_POPUP);
+		
+		ModifyStyle(0, WS_POPUP);
+		ModifyStyleEx(  0, WS_EX_LAYERED);
+		SetLayeredWindowAttributes( 0, 0xff, LWA_ALPHA);
+		//m_wndView.ModifyStyle(0, WS_POPUP);
 			//m_wndView.ModifyStyleEx(  0, WS_EX_LAYERED);
 			//m_wndView.SetLayeredWindowAttributes( 0, 0x43, LWA_ALPHA);
-
+/*
 			m_wndToolBar.ModifyStyle(WS_CHILD|WS_VISIBLE, WS_POPUP);
 			m_wndToolBar.ModifyStyleEx(  0, WS_EX_LAYERED|WS_EX_TOPMOST);
 			m_wndToolBar.SetLayeredWindowAttributes( 0, s.lAeroTransparent, LWA_ALPHA);
@@ -919,13 +928,13 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 			m_wndSeekBar.ModifyStyle(WS_CHILD|WS_VISIBLE, WS_POPUP);
 			m_wndSeekBar.ModifyStyleEx(  0, WS_EX_LAYERED|WS_EX_TOPMOST);
 			m_wndSeekBar.SetLayeredWindowAttributes( 0, s.lAeroTransparent, LWA_ALPHA);
-			
+*/			
 			m_wndNewOSD.ModifyStyleEx(  0, WS_EX_LAYERED|WS_EX_TOPMOST);
 			m_wndNewOSD.SetLayeredWindowAttributes( 0, s.lAeroTransparent, LWA_ALPHA);
 			
 			m_wndToolTopBar.ModifyStyleEx(  0, WS_EX_LAYERED|WS_EX_TOPMOST);
-			//m_wndToolTopBar.SetLayeredWindowAttributes( 0, s.lAeroTransparent, LWA_ALPHA);
-			SetLayeredWindowAttributes( 0, 0xff, LWA_ALPHA);
+			m_wndToolTopBar.SetLayeredWindowAttributes( 0, s.lAeroTransparent , LWA_ALPHA);
+			
 
 			//CRect rcClient;
 			//GetWindowRect( &rcClient);
@@ -9282,7 +9291,7 @@ void CMainFrame::rePosOSD(){
 		CRect rcRightTopWnd(rcView);
 		CRect rcRightVertWnd(rcView);
 		CRect rcToolBar(rcView);
-		CRect rcSeekBar(rcView);
+		
 
 		//rcView -= rcView.TopLeft();
 		if(!m_wndNewOSD.m_osdStr.IsEmpty()){
@@ -9325,16 +9334,20 @@ void CMainFrame::rePosOSD(){
 		AppSettings& s = AfxGetAppSettings();
 
 		if(m_lTransparentToolbarStat > 0 && s.bUserAeroUI() ){
-			rcToolBar.top = rcToolBar.bottom - 100;
-			m_wndToolBar.MoveWindow(rcToolBar);
-			m_wndToolBar.ShowWindow(SW_SHOW);
 
-			rcSeekBar.bottom = rcToolBar.top ;
-			rcSeekBar.top = rcSeekBar.bottom - 20;
-			m_wndSeekBar.MoveWindow(rcSeekBar);
-			m_wndSeekBar.ShowWindow(SW_SHOW);
+			rcToolBar.left += rcView.Height() * 0.06;
+			rcToolBar.right -= rcView.Height() * 0.06;
+			int uiHeight = m_wndFloatToolBar.GetUIHeight();
+			if(uiHeight > rcToolBar.Height() * 0.8){
+				rcToolBar.top += rcView.Height() * 0.1;
+				rcToolBar.bottom =  rcToolBar.top + uiHeight;
+			}else{
+				rcToolBar.bottom -= rcView.Height() * 0.1;
+				rcToolBar.top = rcToolBar.bottom - uiHeight;
+			}
+			m_wndFloatToolBar.MoveWindow(rcToolBar);
+			m_wndFloatToolBar.ShowWindow(SW_SHOW);
 
-			
 		}
 	}
 	return;

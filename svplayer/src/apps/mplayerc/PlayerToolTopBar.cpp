@@ -337,6 +337,7 @@ void CPlayerToolTopBar::OnPaint()
 
 void CPlayerToolTopBar::OnSize(UINT nType, int cx, int cy)
 {
+	
 	__super::OnSize(nType, cx, cy);
 
 	ReCalcBtnPos();

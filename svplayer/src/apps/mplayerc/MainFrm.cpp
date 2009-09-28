@@ -640,8 +640,13 @@ LRESULT CALLBACK SVPLayeredWndProc(HWND hwnd,         // Window handle
 								   LPARAM lParam)     // Other parameter
 {
 	if( uMsg == WM_MOUSEACTIVATE){
-		
 		return MA_NOACTIVATE;
+	}
+	if(uMsg == WM_ACTIVATEAPP ||  uMsg == WM_ACTIVATE){
+		return 0;
+	}
+	if(WM_SHOWWINDOW  == uMsg && SW_PARENTOPENING == lParam){
+		return 0;
 	}
 	return(DefWindowProc(hwnd, uMsg, wParam, lParam));
 }
@@ -9433,6 +9438,12 @@ void CMainFrame::ZoomVideoWindow(double scale)
 
 	AppSettings& s = AfxGetAppSettings();
 
+	if(s.bUserAeroUI()){
+		m_lTransparentToolbarStat = 0;
+		m_wndFloatToolBar.ShowWindow(SW_HIDE);
+	}
+
+
 	BOOL bThisIsAutoZoom = false;
 
 	if(scale <= 0)
@@ -11125,10 +11136,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 		ASSERT(0);
 		return(false);
 	}
-	if(s.bUserAeroUI()){
-		m_lTransparentToolbarStat = 0;
-		m_wndFloatToolBar.ShowWindow(SW_HIDE);
-	}
+	
 
 	s.szFGMLog.Empty();
 	
@@ -15031,12 +15039,15 @@ void CMainFrame::OnPaint()
 
 void CMainFrame::OnSize(UINT nType, int cx, int cy)
 {
+
+	AppSettings& s = AfxGetAppSettings();
+
 	m_tip.ClearStat();
 	__super::OnSize(nType, cx, cy);
 
 	//SVP_LogMsg3("Winsizing @ %I64d", AfxGetMyApp()->GetPerfCounter());
 	//CAutoLock PaintLock(&m_PaintLock);
-	AppSettings& s = AfxGetAppSettings();
+
 
 	if(nType == SIZE_RESTORED && m_fTrayIcon && !s.fTrayIcon)
 	{

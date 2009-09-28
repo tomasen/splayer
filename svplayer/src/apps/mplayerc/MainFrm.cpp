@@ -639,6 +639,10 @@ LRESULT CALLBACK SVPLayeredWndProc(HWND hwnd,         // Window handle
 								   WPARAM wParam,     // First parameter
 								   LPARAM lParam)     // Other parameter
 {
+	if( uMsg == WM_MOUSEACTIVATE){
+		
+		return MA_NOACTIVATE;
+	}
 	return(DefWindowProc(hwnd, uMsg, wParam, lParam));
 }
 

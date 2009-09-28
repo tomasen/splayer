@@ -9448,7 +9448,6 @@ void CMainFrame::ZoomVideoWindow(double scale)
 		m_wndFloatToolBar.ShowWindow(SW_HIDE);
 	}
 
-
 	BOOL bThisIsAutoZoom = false;
 
 	if(scale <= 0)
@@ -9559,8 +9558,10 @@ void CMainFrame::ZoomVideoWindow(double scale)
 		MoveWindow(r);
 	}
 
+	//AfxMessageBox(_T("1"));
+	//Sleep(200);
 //	ShowWindow(SW_SHOWNORMAL);
-
+	
 	MoveVideoWindow();
 }
 DWORD CMainFrame::GetUIStat(UINT n_CmdID)

@@ -291,6 +291,8 @@ public:
 	CEVRAllocatorPresenter(HWND hWnd, HRESULT& hr );
 	~CEVRAllocatorPresenter(void);
 
+	void ThreadBeginStreaming();
+
 	DECLARE_IUNKNOWN;
 	STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void** ppv);
 
@@ -1977,14 +1979,8 @@ void CEVRAllocatorPresenter::FlushSamplesInternal()
 		TRACE(_T("--- m_ScheduledSamples.GetCount: %d\n"), m_ScheduledSamples.GetCount());
 	}
 }
-
-// Called when streaming begins.
-HRESULT CEVRAllocatorPresenter::BeginStreaming()
-{
+void CEVRAllocatorPresenter::ThreadBeginStreaming(){
 	AppSettings& s = AfxGetAppSettings();
-	m_pcFramesDropped = 0;
-	m_pcFramesDrawn = 0;
-
 	if (s.m_RenderSettings.bSynchronizeVideo)
 		m_pGenlock->AdviseSyncClock(((CMainFrame*)(AfxGetApp()->m_pMainWnd))->m_pSyncClock);
 	CComPtr<IBaseFilter> pEVR;
@@ -2000,7 +1996,7 @@ HRESULT CEVRAllocatorPresenter::BeginStreaming()
 		};
 	EndEnumFilters
 
-	pEVR->GetSyncSource(&m_pRefClock);
+		pEVR->GetSyncSource(&m_pRefClock);
 	if (filterInfo.pGraph) filterInfo.pGraph->Release();
 	m_pGenlock->SetMonitor(GetAdapter(m_pD3D));
 	m_pGenlock->GetTiming();
@@ -2008,6 +2004,23 @@ HRESULT CEVRAllocatorPresenter::BeginStreaming()
 	ResetStats();
 	EstimateRefreshTimings();
 	if (m_rtFrameCycle > 0.0) m_dCycleDifference = GetCycleDifference(); // Might have moved to another display
+}
+
+UINT __cdecl ThreadEVRAllocatorPresenterStartPresenting( LPVOID lpParam ) 
+{ 
+	CEVRAllocatorPresenter* pEVRA = (CEVRAllocatorPresenter*)lpParam;
+	pEVRA->ThreadBeginStreaming();
+	return 0; 
+}
+// Called when streaming begins.
+HRESULT CEVRAllocatorPresenter::BeginStreaming()
+{
+	m_pcFramesDropped = 0;
+	m_pcFramesDrawn = 0;
+
+	AfxBeginThread(ThreadEVRAllocatorPresenterStartPresenting, (LPVOID)this, THREAD_PRIORITY_BELOW_NORMAL);
+
+	
 
 	return S_OK;
 }

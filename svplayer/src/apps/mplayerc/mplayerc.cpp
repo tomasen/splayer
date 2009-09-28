@@ -3642,7 +3642,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 */
 		CString szDefaultShaders = _T("");
 		if(useGPUAcel){
-			szDefaultShaders = ResStr(IDF_SHADER_LEVELS);
+			//szDefaultShaders = ResStr(IDF_SHADER_LEVELS);
 		}
 		strShaderList	= pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SHADERLIST), szDefaultShaders);
 

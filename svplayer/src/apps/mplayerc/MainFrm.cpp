@@ -714,8 +714,10 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	
 	m_bars.AddTail(&m_wndSeekBar);
 	m_bars.AddTail(&m_wndToolBar);
+	DWORD dwTransFlag = 0; 
 	if(s.bUserAeroUI()){
 		m_wndFloatToolBar.EnableDocking(CBRS_ALIGN_ANY);
+		dwTransFlag = WS_EX_TRANSPARENT;
 	}
 	m_bars.AddTail(&m_wndInfoBar);
 	m_bars.AddTail(&m_wndStatsBar);
@@ -798,7 +800,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	SetFocus();
 
 	//WS_EX_NOACTIVATE
-	if(!m_wndNewOSD.CreateEx(WS_EX_NOACTIVATE|WS_EX_TRANSPARENT|WS_EX_TOPMOST, _T("SVPLayered"), _T("OSD"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0)){
+	if(!m_wndNewOSD.CreateEx(WS_EX_NOACTIVATE|dwTransFlag|WS_EX_TOPMOST, _T("SVPLayered"), _T("OSD"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0)){
 		AfxMessageBox(_T("OSD 创建失败！"));
 	}
 
@@ -894,7 +896,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	//ImmAssociateContext((HWND)m_wndView, 0);
 	/*NEW UI END*/
 
-	if(!m_tip.CreateEx(WS_EX_NOACTIVATE|WS_EX_TRANSPARENT|WS_EX_TOPMOST, _T("SVPLayered"), _T("TIPS"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0)){
+	if(!m_tip.CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST|dwTransFlag, _T("SVPLayered"), _T("TIPS"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0)){
 		AfxMessageBox(_T("SEEKTIP 创建失败！"));
 	}
 

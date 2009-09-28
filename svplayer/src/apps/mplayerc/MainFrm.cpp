@@ -950,6 +950,11 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 			m_wndToolTopBar.ModifyStyleEx(  0, WS_EX_LAYERED);
 			m_wndToolTopBar.SetLayeredWindowAttributes( 0, s.lAeroTransparent/2+0x7f , LWA_ALPHA);//
 			
+			m_wndTransparentControlBar.ModifyStyleEx(  0, WS_EX_LAYERED);
+			m_wndTransparentControlBar.SetLayeredWindowAttributes( 0, s.lAeroTransparent/2+0x7f , LWA_ALPHA);
+		    m_wndColorControlBar.ModifyStyleEx(  0, WS_EX_LAYERED);
+			m_wndColorControlBar.SetLayeredWindowAttributes( 0, s.lAeroTransparent/2+0x7f , LWA_ALPHA);
+
 			m_wndFloatToolBar.ModifyStyleEx(  WS_EX_CLIENTEDGE|WS_EX_RIGHTSCROLLBAR, WS_EX_LAYERED);
 			m_wndFloatToolBar.SetLayeredWindowAttributes(0, 0, LWA_ALPHA);
 			m_lTransparentToolbarStat = 0;

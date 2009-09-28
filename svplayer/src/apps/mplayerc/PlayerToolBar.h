@@ -47,7 +47,8 @@ private:
 	CFont m_statft;
 	CString m_tooltip ;
 	CPoint m_lastMouseMove;
-
+	int m_lastLeftText;
+	CSUIButton* btnSubSwitch;
 public:
 	CString m_timerstr;
 	CString m_timerqueryedstr;

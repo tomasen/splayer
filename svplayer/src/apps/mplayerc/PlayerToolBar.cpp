@@ -104,22 +104,26 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 
 	m_btnList.AddTail( new CSUIButton(L"BTN_NEXT.BMP" , ALIGN_TOPLEFT, CRect(-48 ,10, 3,3)  , 0, ID_NAVIGATE_SKIPFORWARD, FALSE, ALIGN_LEFT, btnFFwd , CRect(10 , 10 , 10, 10) ) );
 	
-	CSUIButton* btnLogo =  new CSUIButton(L"SPLAYER.BMP" , ALIGN_TOPLEFT, CRect(20 , 7, 3,3)  , TRUE, 0, FALSE   ) ;
+	CSUIButton* btnLogo =  new CSUIButton(L"SPLAYER.BMP" , ALIGN_TOPLEFT, CRect(14 , 7, 3,3)  , TRUE, 0, FALSE   ) ;
 	m_btnList.AddTail(btnLogo);
 
-	CSUIButton* btnSubFont =   new CSUIButton(L"BTN_FONT.BMP" , ALIGN_TOPLEFT, CRect(-29 , 5, 3,3)  , 0, ID_SUBSETFONTBOTH /*sub font*/, TRUE, ALIGN_RIGHT, btnPrev , CRect(20 , 10 , 20, 10) );
+
+
+	CSUIButton* btnSubFont =   new CSUIButton(L"BTN_FONT.BMP" , ALIGN_TOPLEFT, CRect(-35 , 5, 3,3)  , 0, ID_SUBSETFONTBOTH /*sub font*/, TRUE, ALIGN_RIGHT, btnPrev , CRect(20 , 10 , 20, 10) );
 	btnSubFont->addAlignRelButton(ALIGN_RIGHT, btnFFBack   , CRect(20 , 10 , 20, 10) );
 	m_btnList.AddTail( btnSubFont );
 
- 	CSUIButton* btnSubFontPlus =   new CSUIButton(L"BTN_FONT_PLUS.BMP" , ALIGN_TOPLEFT, CRect(-10 , 5, 3,3)  , 0, ID_SUBFONTUPBOTH , TRUE, ALIGN_LEFT, btnSubFont , CRect(3 , 10 , 3, 10) );
- 	m_btnList.AddTail( btnSubFontPlus );
- 
- 	CSUIButton* btnSubFontMinus =   new CSUIButton(L"BTN_FONT_MINUS.BMP" , ALIGN_TOPLEFT, CRect(-10 , 15, 3,3)  , 0, ID_SUBFONTDOWNBOTH , TRUE, ALIGN_LEFT, btnSubFont , CRect(3 , 10 , 3, 10) );
- 	btnSubFontMinus->addAlignRelButton(ALIGN_TOP, btnSubFontPlus ,  CRect(3 , 0 , 3, 0) );
- 	m_btnList.AddTail( btnSubFontMinus );
+	CSUIButton* btnSubFontPlus =   new CSUIButton(L"BTN_FONT_PLUS.BMP" , ALIGN_TOPLEFT, CRect(-10 , 5, 3,3)  , 0, ID_SUBFONTUPBOTH , TRUE, ALIGN_LEFT, btnSubFont , CRect(3 , 10 , 3, 10) );
+	m_btnList.AddTail( btnSubFontPlus );
 
-	CSUIButton* btnSubSwitch = new CSUIButton(L"BTN_SUB.BMP" , ALIGN_TOPLEFT, CRect(-30 , 5, 3,3)  , 0, ID_SUBTOOLBARBUTTON, TRUE, ALIGN_RIGHT, btnFFBack , CRect(20 , 10 , 22, 10) );
-	btnSubSwitch->addAlignRelButton(ALIGN_LEFT, btnLogo ,  CRect(10 , 10 , 10, 10) );
+	CSUIButton* btnSubFontMinus =   new CSUIButton(L"BTN_FONT_MINUS.BMP" , ALIGN_TOPLEFT, CRect(-10 , 15, 3,3)  , 0, ID_SUBFONTDOWNBOTH , TRUE, ALIGN_LEFT, btnSubFont , CRect(3 , 10 , 3, 10) );
+	btnSubFontMinus->addAlignRelButton(ALIGN_TOP, btnSubFontPlus ,  CRect(3 , 0 , 3, 0) );
+	m_btnList.AddTail( btnSubFontMinus );
+
+
+
+	btnSubSwitch = new CSUIButton(L"BTN_SUB.BMP" , ALIGN_TOPLEFT, CRect(-23 , 5, 3,3)  , 0, ID_SUBTOOLBARBUTTON, TRUE, ALIGN_RIGHT, btnFFBack , CRect(20 , 10 , 22, 10) );
+	btnSubSwitch->addAlignRelButton(ALIGN_LEFT, btnLogo ,  CRect(15 , 10 , 10, 10) );
 	btnSubSwitch->addAlignRelButton(ALIGN_RIGHT, btnPrev ,  CRect(20 , 10 , 22, 10) );
 	btnSubSwitch->addAlignRelButton(ALIGN_RIGHT, btnSubFont ,  CRect(20 , 10 , 28, 10) );
 	m_btnList.AddTail( btnSubSwitch );
@@ -432,16 +436,22 @@ void CPlayerToolBar::OnPaint()
 		hdc.SetTextColor(s.GetColorFromTheme(_T("ToolBarTimeText"), 0xffffff) );
 		CSize size = hdc.GetTextExtent(m_timerstr);
 		CRect frc ( rcClient );
-		size.cx = min( rcClient.Width() /3, size.cx);
-		frc.left += 15;
+		//size.cx = min( rcClient.Width() /3, size.cx);
+		frc.left += min( 15 , max( 7, 7+(rcClient.Width()-300) /100 ));
 		frc.bottom -= 7;
-		frc.right = frc.left + size.cx;
-
-		::DrawText(hdc, m_timerstr, m_timerstr.GetLength(), frc,  DT_LEFT|DT_SINGLELINE| DT_VCENTER);
+		frc.right = frc.left +  size.cx;
+		//SVP_LogMsg5(_T("%d %d %d"), frc.right , rcClient.left , btnSubSwitch->m_rcHitest.left - rc.left);
+		int btnPos = btnSubSwitch->m_rcHitest.left - rc.left;
+		if( !btnSubSwitch->m_hide && (frc.right - rcClient.left + 16) > btnPos ){
+			frc.right = rcClient.left + btnPos - 16;
+			frc.left = rcClient.left + 7;
+		}
+		::DrawText(hdc, m_timerstr, m_timerstr.GetLength(), frc,  DT_LEFT|DT_END_ELLIPSIS|DT_SINGLELINE| DT_VCENTER);
 		hdc.SelectObject(holdft);
 
 
 	}
+
  	UpdateButtonStat();
 	
 	int volume = min( m_volctrl.GetPos() , m_volctrl.GetRangeMax() );

@@ -8,6 +8,7 @@ class CPlayerFloatToolBar : public CFrameWnd
 	DECLARE_DYNAMIC(CPlayerFloatToolBar)
 
 	CRgn m_rgn;
+	CPoint m_lastMouseMove;
 public:
 	CPlayerFloatToolBar();
 	virtual ~CPlayerFloatToolBar();
@@ -33,6 +34,7 @@ public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp);
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 };
 
 

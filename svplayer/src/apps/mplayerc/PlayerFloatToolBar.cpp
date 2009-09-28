@@ -31,6 +31,7 @@ BEGIN_MESSAGE_MAP(CPlayerFloatToolBar, CFrameWnd)
 	ON_WM_TIMER()
 	ON_WM_NCCALCSIZE()
 	ON_WM_CREATE()
+	ON_WM_MOUSEMOVE()
 END_MESSAGE_MAP()
 
 
@@ -162,4 +163,25 @@ int CPlayerFloatToolBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_nLogDPIY = pFrame->m_nLogDPIY;
 
 	return 0;
+}
+
+void CPlayerFloatToolBar::OnMouseMove(UINT nFlags, CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+	CSize diff = m_lastMouseMove - point;
+	CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
+
+	BOOL bMouseMoved =  diff.cx || diff.cy ;
+	if(bMouseMoved){
+		pFrame->KillTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER);
+
+		if(pFrame->IsSomethingLoaded()){
+			pFrame->SetTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER, 5000, NULL); 
+		}
+
+		//SetTimer(IDT_CLOSE, 8000 , NULL);
+		m_lastMouseMove = point;
+	}
+
+	CFrameWnd::OnMouseMove(nFlags, point);
 }

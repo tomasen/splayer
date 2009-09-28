@@ -1116,6 +1116,7 @@ void CMainFrame::HideFloatTransparentBar(){
 /*NEW UI*/
 static bool bNoMoreHideMouse = false;
 static int m_nomoretopbarforawhile = 0;
+static int m_nomorefloatbarforawhile = 0;
 void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 {
 	BOOL bSomethingChanged = false;
@@ -1170,26 +1171,29 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 
 	}
 	if(bMouseMoved && s.bUserAeroUI()){
-		CRect r;
-		GetClientRect(r);
-		r.top += r.Height() * 2/3;
-		if( m_lTransparentToolbarStat && !r.PtInRect(point) ){
+		if(m_nomorefloatbarforawhile > 0){
+			m_nomorefloatbarforawhile--;
+		}else{
+			CRect r;
+			GetClientRect(r);
+			r.top += r.Height() * 2/3;
+			if( m_lTransparentToolbarStat && !r.PtInRect(point) ){
 
+				
+				m_lTransparentToolbarStat = 0 - min(4, abs(m_lTransparentToolbarStat));
+				bSomethingChanged = true;
+			}else if( !m_lTransparentToolbarStat && r.PtInRect(point) ){
+
+				m_lTransparentToolbarStat = max(1,abs(m_lTransparentToolbarStat) );
+				bSomethingChanged = true;
+			}
 			
-			m_lTransparentToolbarStat = 0 - min(4, abs(m_lTransparentToolbarStat));
-			bSomethingChanged = true;
-		}else if( !m_lTransparentToolbarStat && r.PtInRect(point) ){
-
-			m_lTransparentToolbarStat = max(1,abs(m_lTransparentToolbarStat) );
-			bSomethingChanged = true;
+			if(bSomethingChanged){
+				//show tranparent control bar :)
+				KillTimer(TIMER_TRANSPARENTTOOLBARSTAT);
+				SetTimer(TIMER_TRANSPARENTTOOLBARSTAT, 50,NULL);
+			}
 		}
-		
-		if(bSomethingChanged){
-			//show tranparent control bar :)
-			KillTimer(TIMER_TRANSPARENTTOOLBARSTAT);
-			SetTimer(TIMER_TRANSPARENTTOOLBARSTAT, 50,NULL);
-		}
-		
 		
 	}
 	if( ( m_fFullScreen || s.fHideCaptionMenu || !(s.nCS&CS_TOOLBAR) ) && bMouseMoved && m_notshowtoolbarforawhile <= 0)
@@ -1283,7 +1287,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 			MapWindowPoints(&m_wndView, &ptop, 1);
 			if(ptop.y < 20){
 				if(!m_wndToolTopBar.IsWindowVisible()){
-					m_wndToolTopBar.ShowWindow(SW_SHOW);
+					m_wndToolTopBar.ShowWindow(SW_SHOWNOACTIVATE);
 					bSomethingChanged = true;
 				}
 			}else{
@@ -2792,6 +2796,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 				SetCursor(NULL);
 			}
 			m_nomoretopbarforawhile = 2;
+			m_nomorefloatbarforawhile = 2;
 			m_wndToolTopBar.SetTimer(m_wndToolTopBar.IDT_CLOSE,800,NULL);
 
 			if(AfxGetAppSettings().bUserAeroUI())
@@ -3731,7 +3736,7 @@ void CMainFrame::OnShowTranparentControlBar(){
 	if(m_wndTransparentControlBar.IsWindowVisible()){
 		m_wndTransparentControlBar.ShowWindow(SW_HIDE);
 	}else{
-		m_wndTransparentControlBar.ShowWindow(SW_SHOW);
+		m_wndTransparentControlBar.ShowWindow(SW_SHOWNOACTIVATE);
 		rePosOSD();
 	}
 }
@@ -3746,7 +3751,7 @@ void CMainFrame::OnShowColorControlBar()
 		s.bShowControlBar = !m_wndColorControlBar.IsWindowVisible();
 		//ShowControlBar(&m_wndColorControlBar, (s.bShowControlBar ? SW_SHOW : SW_HIDE) , false);
 		if(s.bShowControlBar){
-			m_wndColorControlBar.ShowWindow(SW_SHOW);
+			m_wndColorControlBar.ShowWindow(SW_SHOWNOACTIVATE);
 			rePosOSD();
 			bNotHideColorControlBar = TRUE;
 			SetTimer(TIMER_STATUSBARHIDER, 3000 , NULL);
@@ -9399,7 +9404,7 @@ void CMainFrame::rePosOSD(){
 				rcToolBar.top = rcToolBar.bottom - uiHeight;
 			}
 			m_wndFloatToolBar.MoveWindow(rcToolBar);
-			m_wndFloatToolBar.ShowWindow(SW_SHOW);
+			m_wndFloatToolBar.ShowWindow(SW_SHOWNOACTIVATE);
 
 		}
 	}

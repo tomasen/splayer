@@ -98,7 +98,7 @@ void CSeekBarTip::SetTips(CString szText, BOOL bMove , CPoint* mPoint, UINT dela
 			}
 
 			MoveWindow( rcTip );
-			ShowWindow(SW_SHOW);
+			ShowWindow(SW_SHOWNOACTIVATE);
 			Invalidate();
 			KillTimer(IDT_CLOSTTIPS);
 			SetTimer(IDT_CLOSTTIPS, 3000, NULL);

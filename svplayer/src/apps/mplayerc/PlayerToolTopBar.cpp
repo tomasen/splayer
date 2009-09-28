@@ -612,6 +612,7 @@ void CPlayerToolTopBar::OnSetFocus(CWnd* pOldWnd)
 
 	//AfxGetMainWnd()->SendMessage(WM_SETFOCUS, (WPARAM )m_hWnd, NULL);
 
+	//ModifyStyleEx(0, WS_EX_NOACTIVATE);
 	//::SetForegroundWindow( AfxGetMainWnd()->m_hWnd );
 
 	// TODO: Add your message handler code here

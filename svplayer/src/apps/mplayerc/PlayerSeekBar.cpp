@@ -622,7 +622,7 @@ void CPlayerSeekBar::SetTimecodeTip(){
 			}
 
 			pFrame->m_tip.MoveWindow( rcTip );
-			pFrame->m_tip.ShowWindow(SW_SHOW);
+			pFrame->m_tip.ShowWindow(SW_SHOWNOACTIVATE);
 			pFrame->m_tip.Invalidate();
 		}
 	}

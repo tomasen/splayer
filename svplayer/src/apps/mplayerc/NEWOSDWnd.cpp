@@ -163,7 +163,7 @@ void CNEWOSDWnd::OnTimer(UINT_PTR nIDEvent)
 				if(minIdx >= 0){
 					CString szOsd = m_szaOsd.GetAt(minIdx);
 					if( m_osdStr != szOsd && (m_sziOsd.GetAt(minIdx) - curTime)  > 1){
-						ShowWindow(SW_SHOW);
+						ShowWindow(SW_SHOWNOACTIVATE);
 						SetTimer(IDT_HIDE , (m_sziOsd.GetAt(minIdx) - curTime) * 1000, NULL);
 						CountSize();
 						Invalidate();
@@ -270,7 +270,7 @@ int CNEWOSDWnd::SendOSDMsg(CString szMsg, int lTime ){
 	if(m_osdStr.IsEmpty()){
 		ShowWindow(SW_HIDE);
 	}else{
-		ShowWindow(SW_SHOW);
+		ShowWindow(SW_SHOWNOACTIVATE);
 		SetTimer(IDT_HIDE , 2000, NULL);
 		CountSize();
 		Invalidate();

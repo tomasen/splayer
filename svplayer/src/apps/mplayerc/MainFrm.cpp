@@ -1151,6 +1151,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 
 	CSize diff = m_lastMouseMove - point;
 	BOOL bMouseMoved =  diff.cx || diff.cy ;
+	AppSettings& s = AfxGetAppSettings();
 	if(bMouseMoved){
 		//SVP_LogMsg3("M %d %d %d %d",m_lastMouseMove.x, m_lastMouseMove.y, point.x, point.y);
 		if(m_notshowtoolbarforawhile>0)
@@ -1159,10 +1160,14 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 		m_lastMouseMove = point;
 		m_fHideCursor = false;
 		KillTimer(TIMER_FULLSCREENMOUSEHIDER);
-		if(!bNoMoreHideMouse && m_iMediaLoadState == MLS_LOADED)
-			SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
+		if(!bNoMoreHideMouse && m_iMediaLoadState == MLS_LOADED){
+			if(s.bUserAeroUI())
+				SetTimer(TIMER_FULLSCREENMOUSEHIDER, 7000, NULL);
+			else
+				SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
+		}
 	}
-	AppSettings& s = AfxGetAppSettings();
+	
 	int iDistance = sqrt( pow( (double)abs(point.x - m_pLastClickPoint.x) , 2)  + pow( (double)abs( point.y - m_pLastClickPoint.y ) , 2) );
 	if( ( iDistance > 30 || s_mDragFucOn) && s_mDragFuc){
 		if(!s_mDragFucOn){

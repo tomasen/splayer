@@ -49,6 +49,7 @@ BEGIN_MESSAGE_MAP(CPlayerToolTopBar, CWnd)
 	ON_WM_NCACTIVATE()
 	ON_WM_SETFOCUS()
 	ON_WM_WINDOWPOSCHANGING()
+	ON_WM_ACTIVATEAPP()
 END_MESSAGE_MAP()
 
 
@@ -522,15 +523,6 @@ void CPlayerToolTopBar::OnEnable(BOOL bEnable)
 	// TODO: Add your message handler code here
 }
 
-void CPlayerToolTopBar::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
-{
-
-//
-	CWnd::OnActivate(WA_INACTIVE, pWndOther, bMinimized); //
-
-
-}
-
 BOOL CPlayerToolTopBar::Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID, CCreateContext* pContext)
 {
 	// TODO: Add your specialized code here and/or call the base class
@@ -596,10 +588,20 @@ void CPlayerToolTopBar::OnShowWindow(BOOL bShow, UINT nStatus)
 
 }
 
+void CPlayerToolTopBar::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
+{
+
+//
+	CWnd::OnActivate(WA_INACTIVE, pWndOther, bMinimized); //
+
+
+}
+
 BOOL CPlayerToolTopBar::OnNcActivate(BOOL bActive)
 {
 	// TODO: Add your message handler code here and/or call default
 	//CWnd::
+	bActive = false;
 	return __super::OnNcActivate(bActive);;
 }
 
@@ -617,7 +619,16 @@ void CPlayerToolTopBar::OnSetFocus(CWnd* pOldWnd)
 
 void CPlayerToolTopBar::OnWindowPosChanging(WINDOWPOS* lpwndpos)
 {
+	//lpwndpos->flags |= SWP_NOACTIVATE;
 	CWnd::OnWindowPosChanging(lpwndpos);
+
+	// TODO: Add your message handler code here
+}
+
+void CPlayerToolTopBar::OnActivateApp(BOOL bActive, DWORD dwThreadID)
+{
+	//bActive = false;
+	CWnd::OnActivateApp(bActive, dwThreadID);
 
 	// TODO: Add your message handler code here
 }

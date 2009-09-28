@@ -3260,9 +3260,8 @@ LRESULT CMainFrame::OnGraphNotify(WPARAM wParam, LPARAM lParam)
 			if(m_wndPlaylistBar.GetCount() <= 1)
 			{
 				m_nLoops++;
-
 				
-				if((s.fLoopForever || m_nLoops < s.nLoops) && m_nLoopSetting != ID_PLAYBACK_LOOP_NORMAL)
+				if((s.fLoopForever || m_nLoops < s.nLoops) && m_nLoopSetting != ID_PLAYBACK_LOOP_NORMAL || ID_PLAYBACK_LOOP_PLAYLIST == m_nLoopSetting)
 				{
 					if(GetMediaState() == State_Stopped)
 					{
@@ -8900,13 +8899,12 @@ MENUBARINFO mbi;
 		{
 			w = s.rcLastWindowPos.Width();
 			h = s.rcLastWindowPos.Height();
-		}else{
+		}
 			
 			w = max( DEFCLIENTW , min( (mi.rcWork.right - mi.rcWork.left)  * 51 /100 , s.rcLastWindowPos.Width() ) ) ;
 			h = max( DEFCLIENTH , min( (mi.rcWork.bottom - mi.rcWork.top) * 51 /100, s.rcLastWindowPos.Height()) );
 			
-		}
-
+		
 		int x = (mi.rcWork.left+mi.rcWork.right-w)/2;
 		int y = (mi.rcWork.top+mi.rcWork.bottom-h)/2;
 
@@ -11117,6 +11115,10 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 	{
 		ASSERT(0);
 		return(false);
+	}
+	if(s.bUserAeroUI()){
+		m_lTransparentToolbarStat = 0;
+		m_wndFloatToolBar.ShowWindow(SW_HIDE);
 	}
 
 	s.szFGMLog.Empty();
@@ -14268,6 +14270,8 @@ void CMainFrame::CloseMedia()
 	}
 
 	UnloadExternalObjects();
+
+	
 }
 
 //

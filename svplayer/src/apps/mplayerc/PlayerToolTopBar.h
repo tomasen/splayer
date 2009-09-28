@@ -61,6 +61,7 @@ public:
 	afx_msg BOOL OnNcActivate(BOOL bActive);
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
 	afx_msg void OnWindowPosChanging(WINDOWPOS* lpwndpos);
+	afx_msg void OnActivateApp(BOOL bActive, DWORD dwThreadID);
 };
 
 

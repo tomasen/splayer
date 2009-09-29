@@ -2329,7 +2329,6 @@ IDR_HTML_UESETTINGPANEL HTML                    "res\\web\\UESettingPanel.html"
 //
 // 2110
 //
-
 AUDIOSETTING_UESETBG_HOVER.JPG 2110                    "res\\web\\audiosetting_uesetbg_hover.jpg"
 AUDIOSETTING_UESETBG.JPG 2110                    "res\\web\\audiosetting_uesetbg.jpg"
 FILLASSOC_UESETBG_HOVER.JPG 2110                    "res\\web\\fillassoc_uesetbg_hover.jpg"
@@ -2504,6 +2503,7 @@ BEGIN
     IDS_RS_SVPSUBSTOREDIR   "SVPSubStoreDir"
     IDS_RS_USENEWMENU       "UseNewMenu"
     IDS_RS_USEAEROGLASS     "UseAeroGlass"
+	IDS_RS_USETRANSCONTROL	"UseTransControl"
     IDS_RS_FCUSTOMSPEAKERS  "CustomSpeakers"
 END
 

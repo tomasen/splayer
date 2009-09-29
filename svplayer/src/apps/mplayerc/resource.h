@@ -911,6 +911,7 @@
 #define IDS_RS_FASTERSEEKING            14241
 #define IDS_RS_DISABLECENTERBIGOPENBMP  14242
 #define IDS_RS_USERFFMPEGWMV            14243
+#define IDS_RS_USETRANSCONTROL			14244
 #define IDD_DHTML_SETTING               20000
 #define IDR_DEFAULT1                    20006
 #define IDD_DEFAULT_PLAYER              20007

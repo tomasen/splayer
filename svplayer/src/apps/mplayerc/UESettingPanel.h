@@ -49,6 +49,8 @@ class CUESettingPanel : public CDHtmlDialog
 	int m_sgi_chkautoresumeplay;
 	int m_sgi_chktrayicon;
 	int m_sgi_dxvacompat;
+	int m_sgi_usetranscontrol;
+	int m_sgi_launchfullscreen;
 	int m_sgi_savesvpsubwithvideo;
 	int m_sgi_savesvpstore;
 

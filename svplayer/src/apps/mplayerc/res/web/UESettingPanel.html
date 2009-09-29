@@ -640,36 +640,39 @@ onmouseover="ueAPI.setcurblock('hotkeysetting');" border="0"/></a>
 <br />
 </fieldset>
 <br />
-<input type="checkbox" id="usenewmenu" /><label for="usenewmenu">使用多彩菜单</label><br />
+<input type="checkbox" id="usenewmenu" /><label for="usenewmenu">启用多彩菜单</label><br />
+<input type="checkbox" id="usetranscontrol" /><label for="usetranscontrol" title="Win7/Vista下默认为开启状态
+如果在XP下，需要较强劲的显卡">启用半透明界面风格</label><br />
 <div id="vistaaeroglass" style="display:none;"><input type="checkbox" id="useaeroglass" /><label for="useaeroglass">使用玻璃界面效果</label><br /></div>
 <br />
 <input type="checkbox" id="chkDisableCenterBigOpenBmp" /><label for="chkDisableCenterBigOpenBmp">不显示界面中心的打开文件按钮(双击打开文件)</label>
 <br />注：本栏目大部分设置需要重新启动软件方可生效
 </div>
 <div id="generalseting" class="hiddenarea">
+<input type="checkbox" id="chkplayrepeat" /><label for="chkplayrepeat">循环播放视频</label><br />
 <input type="checkbox" id="chktrayicon" /><label for="chktrayicon">最小化到系统托盘</label><br />
 <input type="checkbox" id="chkautoresumeplay" /><label for="chkautoresumeplay" title="从上次关闭的位置打开文件">启用断点播放功能</label><br />
-<input type="checkbox" id="chkremwinpos" /><label for="chkremwinpos">记忆窗口位置和尺寸</label><br />
-<div style="display:none;"><input type="checkbox" id="chkuseini" /><label for="chkuseini" title="不将配置文件写入注册表">将设置保存至ini</label><br /></div>
+<input type="checkbox" id="launchfullscreen" /><label for="launchfullscreen">开始播放时自动全屏</label><br />
+<div style="display:none;"><input type="checkbox" id="chkremwinpos" /><label for="chkremwinpos">记忆窗口位置和尺寸</label><br />
+<input type="checkbox" id="chkuseini" /><label for="chkuseini" title="不将配置文件写入注册表">将设置保存至ini</label><br /></div>
+<input type="checkbox" id="chkusesmartdrag" /><label title="启用智能拖拽功能后，
+鼠标在画面右上角拖拽可以缩放画面，
+在画面中心拖拽可以移动画面" for="chkusesmartdrag">启用智能拖拽功能 [<a href="?http://blog.splayer.org/?page_id=796" ><b>?</b></a>]</label><br />
 <input type="checkbox" id="chkfileass" /><label for="chkfileass">启动时检查文件关联</label> <input type="button" value="*" style="font-size:7px;margin-left:5px;width:12px;" onclick="ueAPI.toggelblock('startupcheckextsdiv');" /><br />
 <div id='startupcheckextsdiv' style="display:none;margin:auto;">
     <textarea rows="3" id="startupcheckexts" style="margin-left:20px;margin-right:auto;" wrap="hard"></textarea>
 </div>
-<input type="checkbox" id="chkusesmartdrag" /><label title="启用智能拖拽功能后，
-鼠标在画面右上角拖拽可以缩放画面，
-在画面中心拖拽可以移动画面" for="chkusesmartdrag">启用智能拖拽功能 [<a href="?http://blog.splayer.org/?page_id=796" ><b>?</b></a>]</label><br />
 <!--<input type="checkbox" id="chkabnormal" /><label for="chkabnormal" title="允许播放器使用更多的CPU运算资源
 但播放时也有可能影响其他软件运行效率，特别是在低配置的电脑上。">提高进程优先级</label><br />-->
-<input type="checkbox" id="chkplayrepeat" /><label for="chkplayrepeat">循环播放</label><br />
 <input type="checkbox" id="chkautozoom" /><label for="chkautozoom">根据视频画面尺寸改变窗口大小</label><br />
+<input type="checkbox" id="UseWaveOutDeviceByDefault" /><label for="UseWaveOutDeviceByDefault" title="优先使用WaveOut而非DirectSound音频设备">使变速播放支持2倍以上速度快进</label><br />
 <input type="checkbox" id="chkautoupdate" /><label for="chkautoupdate">通过网络自动升级</label>到最新的　<select id="updateversion"><option value="stable">稳定版</option><option value="beta">前卫版</option></select>　<br />
 <div style="display:none;"><input type="checkbox" id="chkremhistory" /><label for="chkremhistory"  style="display:none;">保存播放记录</label><br />
 <input type="checkbox" id="chkcdromenu" /><label for="chkcdromenu" title="在“文件”菜单下显示光盘驱动器列表菜单
 可能会影响菜单打开的速度">隐藏光盘驱动器菜单</label><br />
 <input type="checkbox" id="chkexitfullscreen" /><label for="chkexitfullscreen">播放结束后自动退出全屏</label><br />
 </div>
-<input type="checkbox" id="UseWaveOutDeviceByDefault" /><label for="UseWaveOutDeviceByDefault" title="优先使用WaveOut而非DirectSound音频设备">使变速播放支持2倍以上速度快进</label><br /><br />
-快进步幅： <div id="stepsliderbg"> 
+快进步幅： <div id="stepsliderbg" title="小窍门：按住快进(退)按钮时，按下的时间越长，快进(退)的步幅越大"> 
 	    <div id="stepsliderthumb"><img src="thumb-n.gif"></div>
 	</div> <br/>
  小幅： <input type="text" id="stepsmall" class='smallstepipt' size="2"/>秒  
@@ -677,7 +680,7 @@ onmouseover="ueAPI.setcurblock('hotkeysetting');" border="0"/></a>
  大幅： <input type="text" id="stepbig" class='smallstepipt' size="2"/>秒<br/>
  <input type="checkbox" id="NotUseFasterSeeking" /><label for="NotUseFasterSeeking" title="射手播放器默认使用优化算法提高快进时的画面响应速度，
  但快进/退步幅也会对应优化以实现高速画面响应">快进/退时使用精确定位(某些影片可能会降低响应速度)</label><br />
- <i>小窍门：按住快进(退)按钮时，按下的时间越长，快进(退)的步幅越大</i><br />
+ 
 </div>
 <div id="videosetting" class="hiddenarea">
 &nbsp;<select id="videorender" onchange="if(this.value=='DX7'){ueAPI.hideobj('GothSyncLine');}else if(!ueAPI.isvistaaero){ueAPI.showblock('GothSyncLine');} if(this.value!='DX9' && ueAPI.isvista){ueAPI.fobj('gpuacelbase').checked = false;}"><option value="DX9" >画质优先模式(DX9)</option>

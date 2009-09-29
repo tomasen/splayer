@@ -93,7 +93,7 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_DHtml_CheckBox(pDX, _T("chkautoresumeplay"), m_sgi_chkautoresumeplay);
 	DDX_DHtml_CheckBox(pDX, _T("chktrayicon"), m_sgi_chktrayicon);
 	DDX_DHtml_CheckBox(pDX, _T("dxvacompat"), m_sgi_dxvacompat);
-
+	DDX_DHtml_CheckBox(pDX, _T("usetranscontrol"), m_sgi_usetranscontrol);
 	DDX_DHtml_CheckBox(pDX, _T("savesvpsubwithvideo"), m_sgi_savesvpsubwithvideo);	
 	DDX_DHtml_CheckBox(pDX, _T("savesvpstore"), m_sgi_savesvpstore);	
 
@@ -108,6 +108,7 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_DHtml_ElementValue (pDX, _T("custompicfile"), m_sgs_custompicfile);
 
 	DDX_DHtml_CheckBox(pDX, _T("useCustomSpeakerSetting"), m_sgi_useCustomSpeakerSetting);
+	DDX_DHtml_CheckBox(pDX, _T("launchfullscreen"), m_sgi_launchfullscreen);
 	
 	DDX_DHtml_CheckBox(pDX, _T("chkusesmartdrag"), m_sgi_chkuseSmartDrag);
 	
@@ -370,11 +371,12 @@ BOOL CUESettingPanel::OnInitDialog()
 	m_sgi_custompic = !m_sgi_nobgpic;
 	m_sgi_keepbgar = !!(s.logostretch & 1);
 	m_sgi_bgstrech = !!(s.logostretch & 2);
-	
+	m_sgi_usetranscontrol = s.bTransControl;
 	m_sgi_bDisableCenterBigOpenBmp = s.bDisableCenterBigOpenBmp;
 	m_sgi_usenewmenu = s.bNewMenu;
 	m_sgi_useaeroglass = s.bAeroGlass;
-	
+
+	m_sgi_launchfullscreen = s.launchfullscreen ;
 
 
 	if(CMPlayerCApp::IsVista()){
@@ -478,7 +480,8 @@ void CUESettingPanel::ApplyAllSetting(){
 
 	s.bNewMenu = m_sgi_usenewmenu ;
 	s.bAeroGlass = m_sgi_useaeroglass;
-
+	s.bTransControl = m_sgi_usetranscontrol;
+	s.launchfullscreen = m_sgi_launchfullscreen;
 	((CMainFrame*)AfxGetMainWnd())->m_wndView.LoadLogo();
 
 	//Genral Setting

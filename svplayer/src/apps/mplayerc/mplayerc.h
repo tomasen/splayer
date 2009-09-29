@@ -455,6 +455,7 @@ public:
 		BOOL bSaveSVPSubWithVideo;
 		BOOL bAeroGlass;
 		BOOL bAeroGlassAvalibility;
+		BOOL bTransControl;
 		int iDSVideoRendererType;
 		int iRMVideoRendererType;
 		int iQTVideoRendererType;

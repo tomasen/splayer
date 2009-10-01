@@ -190,7 +190,7 @@ void CMediaFormats::UpdateData(bool fSave)
 		ADDFMT((_T("Windows Media Audio file"), _T("wma"), true));
 		ADDFMT((_T("Video file"), _T("avi")));
 		ADDFMT((_T("Audio file"), _T("wav"), true));
-		ADDFMT((_T("MPEG Media file"), _T("mpg mpeg mpe m1v m2v mpv2 mp2v")));
+		ADDFMT((_T("MPEG Media file"), _T("mpg mpeg mpe m1v m2v mpv2 mp2v dat")));
 		ADDFMT((_T("MPEG Transport-Stream file"), _T("ts tp tpr pva pss m2ts m2t mts evo")));
 		ADDFMT((_T("MPEG Audio file"), _T("mpa mp2 m1a m2a"), true));
 		ADDFMT((_T("DVD file"), _T("vob ifo")));

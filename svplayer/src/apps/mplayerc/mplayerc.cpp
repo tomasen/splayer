@@ -567,6 +567,7 @@ CMPlayerCApp::CMPlayerCApp()
 , m_fDisplayStats(FALSE)
 , m_fTearingTest(0)
 , m_fResetStats(0)
+, m_isVista(-1)
 {
 	m_pMainWnd = NULL;
 	::SetUnhandledExceptionFilter(DebugMiniDumpFilter);
@@ -4418,16 +4419,20 @@ int  CMPlayerCApp::GetNumberOfSpeakers(LPCGUID lpcGUID, HWND hWnd){
 }
 bool CMPlayerCApp::IsVista()
 {
-	OSVERSIONINFO osver;
+	if(m_isVista < 0 ){
+		m_isVista = 0;
+		OSVERSIONINFO osver;
 
-	osver.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
-	
-	if (	::GetVersionEx( &osver ) && 
+		osver.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
+
+		if (	::GetVersionEx( &osver ) && 
 			osver.dwPlatformId == VER_PLATFORM_WIN32_NT && 
 			(osver.dwMajorVersion >= 6 ) )
-		return TRUE;
+			m_isVista = 1;
 
-	return FALSE;
+	}
+	
+	return m_isVista;
 }
 
 bool CMPlayerCApp::IsVSFilterInstalled()

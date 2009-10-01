@@ -330,6 +330,7 @@ class CMPlayerCApp : public CWinApp
 	BOOL SendCommandLine(HWND hWnd, BOOL bPostMessage = false);
 	HINSTANCE				m_hD3DX9Dll;
 	int						m_nDXSdkRelease;
+	int						m_isVista;
 
 public:
 	CMPlayerCApp();
@@ -434,6 +435,7 @@ public:
 		bool fKeepAspectRatio;
 		bool fCompMonDeskARDiff;
 		int autoResumePlay;
+		int lHardwareDecoderFailCount;
 
 		int iDecSpeakers;
 		int bUseWaveOutDeviceByDefault;

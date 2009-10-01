@@ -334,6 +334,7 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Updater", "Updater\Updater.vcproj", "{5DC7AA08-46C2-481E-99E1-253ABA337937}"
 	ProjectSection(ProjectDependencies) = postProject
 		{FAB25039-6D61-4729-9940-76FC6FDC806E} = {FAB25039-6D61-4729-9940-76FC6FDC806E}
+		{BEA3275A-23B5-4343-BB3A-42CB10DF3652} = {BEA3275A-23B5-4343-BB3A-42CB10DF3652}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libflac", "src\filters\transform\mpadecfilter\libflac\src\libFLAC\libflac.vcproj", "{4CEFBC84-C215-11DB-8314-0800200C9A66}"

@@ -77,13 +77,13 @@ s_filters[] =
 	//{_T("VP62"), 1, TRA_VP62, 0, NULL},
 
 #if INTERNAL_DECODER_H264_DXVA
-	{_T("H264/AVC (DXVA)"), 2, DXVA_H264, IDS_TRA_FFMPEG, CreateInstance<CMPCVideoDecFilter>},
+	{_T("H264/AVC (DXVA)"), 2, MPCDXVA_H264, IDS_TRA_FFMPEG, CreateInstance<CMPCVideoDecFilter>},
 #endif
 #if INTERNAL_DECODER_H264
 	{_T("H264/AVC (FFmpeg)"), 3, FFM_H264, IDS_TRA_FFMPEG, CreateInstance<CMPCVideoDecFilter>},
 #endif
 #if INTERNAL_DECODER_VC1_DXVA
-	{_T("VC1 (DXVA)"), 2, DXVA_VC1, IDS_TRA_FFMPEG, CreateInstance<CMPCVideoDecFilter>},
+	{_T("VC1 (DXVA)"), 2, MPCDXVA_VC1, IDS_TRA_FFMPEG, CreateInstance<CMPCVideoDecFilter>},
 #endif
 #if INTERNAL_DECODER_VC1
 	{_T("VC1 (FFmpeg)"), 3, FFM_VC1, IDS_TRA_FFMPEG, CreateInstance<CMPCVideoDecFilter>},

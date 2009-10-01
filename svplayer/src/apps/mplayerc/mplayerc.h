@@ -193,9 +193,9 @@ enum
 
 enum
 {
-	DXVA_H264  = 1,
-	DXVA_VC1   = DXVA_H264<<1,
-	DXVA_LAST  = DXVA_VC1<<1
+	MPCDXVA_H264  = 1,
+	MPCDXVA_VC1   = MPCDXVA_H264<<1,
+	MPCDXVA_LAST  = MPCDXVA_VC1<<1
 };
 
 enum
@@ -330,7 +330,6 @@ class CMPlayerCApp : public CWinApp
 	BOOL SendCommandLine(HWND hWnd, BOOL bPostMessage = false);
 	HINSTANCE				m_hD3DX9Dll;
 	int						m_nDXSdkRelease;
-	int						m_isVista;
 
 public:
 	CMPlayerCApp();
@@ -366,6 +365,7 @@ public:
 	bool GetAppDataPath(CString& path);
 	
 	bool m_bGotResponse;
+	static int	m_isVista;
 	static bool	IsVista();
 	static void GainAdminPrivileges(UINT idd, BOOL bWait = true);
 	static int GetNumberOfSpeakers(LPCGUID lpcGUID = NULL, HWND hWnd = NULL);

@@ -51,6 +51,9 @@ extern "C"
 
 #include "../../../apps/mplayerc/internal_filter_config.h"
 
+#include <afxtempl.h>
+#include "../../../apps\mplayerc\mplayerc.h"
+
 
 #include "../../../svplib/svplib.h"
 
@@ -1313,9 +1316,14 @@ HRESULT CMPCVideoDecFilter::CompleteConnect(PIN_DIRECTION direction, IPin* pRece
 			
 						if(hrDXVA == VFW_E_INVALIDMEDIATYPE){
 							//SVP_LogMsg5(_T("Create DXVA Failed"));
+							AppSettings& s = AfxGetAppSettings();
+							s.lHardwareDecoderFailCount++;
+							if(s.lHardwareDecoderFailCount > 10){
+								s.useGPUAcel = 0;
+							}
 							return VFW_E_INVALIDMEDIATYPE;
 						}
-			
+			AfxGetAppSettings().lHardwareDecoderFailCount = 0;
 		}
 
 		CLSID	ClsidSourceFilter = GetCLSID(m_pInput->GetConnected());

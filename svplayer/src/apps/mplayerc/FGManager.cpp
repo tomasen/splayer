@@ -1949,7 +1949,7 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 		UINT64 gMerit =  MERIT64_ABOVE_DSHOW+100;
 		if(s.useGPUCUDA){gMerit =  MERIT64_ABOVE_DSHOW+5;}
 		pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(_T("MPC Video Decoder DXVA"), gMerit);
-		if(dxva_filters & DXVA_H264){
+		if(dxva_filters & MPCDXVA_H264){
 			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_H264);
 			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_h264);
 			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_X264);
@@ -1964,7 +1964,7 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_avc1);
 			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_H264_bis);
 		}
-		if(dxva_filters & DXVA_VC1){
+		if(dxva_filters & MPCDXVA_VC1){
 			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_WVC1);
 			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_wvc1);
 		}
@@ -2026,7 +2026,7 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 	}
 #endif
 #if INTERNAL_DECODER_H264 | INTERNAL_DECODER_H264_DXVA
-	if ((ffmpeg_filters & FFM_H264) || (dxva_filters & DXVA_H264))
+	if ((ffmpeg_filters & FFM_H264) || (dxva_filters & MPCDXVA_H264))
 	{
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_H264);
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_h264);
@@ -2044,7 +2044,7 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 	}
 #endif
 #if INTERNAL_DECODER_VC1 | INTERNAL_DECODER_VC1_DXVA
-	if ((ffmpeg_filters & FFM_VC1) || (dxva_filters & DXVA_VC1))
+	if ((ffmpeg_filters & FFM_VC1) || (dxva_filters & MPCDXVA_VC1))
 	{
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_WVC1); //不支持隔行VC1 :(
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_wvc1);
@@ -2200,7 +2200,7 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 	}
 #endif
 #if INTERNAL_DECODER_H264 | INTERNAL_DECODER_H264_DXVA
-	if (!(ffmpeg_filters & FFM_H264) && !(dxva_filters & DXVA_H264))
+	if (!(ffmpeg_filters & FFM_H264) && !(dxva_filters & MPCDXVA_H264))
 	{
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_H264);
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_h264);
@@ -2220,7 +2220,7 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 #endif
 	
 #if INTERNAL_DECODER_VC1 | INTERNAL_DECODER_VC1_DXVA
-	if (!(ffmpeg_filters & FFM_VC1) && !(dxva_filters & DXVA_VC1))
+	if (!(ffmpeg_filters & FFM_VC1) && !(dxva_filters & MPCDXVA_VC1))
 	{
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_WVC1);
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_wvc1);

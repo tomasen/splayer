@@ -558,6 +558,8 @@ END_MESSAGE_MAP()
 // CMPlayerCApp construction
 const UINT WM_MOUSEMOVEIN = ::RegisterWindowMessage(_T("WM_MOUSEMOVEIN"));
 const UINT WM_MOUSEMOVEOUT = ::RegisterWindowMessage(_T("WM_MOUSEMOVEOUT"));
+int CMPlayerCApp::m_isVista = -1;
+
 CMPlayerCApp::CMPlayerCApp()
 //	: m_hMutexOneInstance(NULL)
 :  m_bMouseIn(FALSE)      // doesn't matter because don't know yet
@@ -567,7 +569,6 @@ CMPlayerCApp::CMPlayerCApp()
 , m_fDisplayStats(FALSE)
 , m_fTearingTest(0)
 , m_fResetStats(0)
-, m_isVista(-1)
 {
 	m_pMainWnd = NULL;
 	::SetUnhandledExceptionFilter(DebugMiniDumpFilter);
@@ -2944,6 +2945,8 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USERGBONLY), bRGBOnly);
 
+		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_HARDWAREDECODERFAILCOUNT), lHardwareDecoderFailCount);
+		
 		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SNAPSHOTPATH), SnapShotPath);
 		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SNAPSHOTEXT), SnapShotExt);
 
@@ -3072,8 +3075,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		fRewind = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_REWIND), FALSE);
 		iZoomLevel = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_ZOOM), 1);
 
-		
-	
+		lHardwareDecoderFailCount = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_HARDWAREDECODERFAILCOUNT), 0);
 
 		bDisableCenterBigOpenBmp = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DISABLECENTERBIGOPENBMP), 0);
 

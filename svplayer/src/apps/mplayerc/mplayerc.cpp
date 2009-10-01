@@ -2917,7 +2917,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 
 		pApp->WriteProfileInt(ResStr(IDS_R_INTERNAL_FILTERS), ResStr(IDS_RS_DXVACOMPAT), bDVXACompat);
 
-		pApp->WriteProfileInt(ResStr(IDS_R_INTERNAL_FILTERS), ResStr(IDS_RS_USERFFMPEGWMV), useFFMPEGWMV);
+		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USERFFMPEGWMV), useFFMPEGWMV);
 		
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SMOOTHMUTILMONITOR), fbSmoothMutilMonitor);
 
@@ -3121,7 +3121,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		}
 		bRGBOnly = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USERGBONLY), 0);
 
-		useFFMPEGWMV = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USERFFMPEGWMV), 0);
+		useFFMPEGWMV = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USERFFMPEGWMV), 1);
  		if(fVMDetected ){
  			//fForceRGBrender = 1;
 			bRGBOnly = 1;

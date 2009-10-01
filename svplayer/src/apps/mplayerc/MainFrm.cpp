@@ -1154,7 +1154,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 	CSize diff = m_lastMouseMove - point;
 	BOOL bMouseMoved =  diff.cx || diff.cy ;
 	AppSettings& s = AfxGetAppSettings();
-	if(bMouseMoved){
+	if(bMouseMoved || m_wndToolBar.m_bMouseDown){
 		//SVP_LogMsg3("M %d %d %d %d",m_lastMouseMove.x, m_lastMouseMove.y, point.x, point.y);
 		if(m_notshowtoolbarforawhile>0)
 			m_notshowtoolbarforawhile--;

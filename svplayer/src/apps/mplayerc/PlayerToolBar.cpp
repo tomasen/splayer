@@ -679,7 +679,7 @@ void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point){
 	CSize diff = m_lastMouseMove - point;
 	CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
 	BOOL bMouseMoved =  diff.cx || diff.cy ;
-	if(bMouseMoved){
+	if(bMouseMoved || m_bMouseDown){
 		m_lastMouseMove = point;
 		KillTimer(TIMER_CLOSETOOLBAR);
 		if(pFrame->IsSomethingLoaded() && pFrame->m_fFullScreen){

@@ -6117,7 +6117,7 @@ void CMainFrame::OnFileSaveThumbnails()
 	if(pdst.GetExtension().MakeLower() != s.SnapShotExt) pdst = CPath((LPCTSTR)pdst + s.SnapShotExt);
 	CString path = (LPCTSTR)pdst;
 	pdst.RemoveFileSpec();
-	s.SnapShotPath = (LPCTSTR)pdst;
+	//s.SnapShotPath = (LPCTSTR)pdst;
 
 	SaveThumbnails(path);
 }

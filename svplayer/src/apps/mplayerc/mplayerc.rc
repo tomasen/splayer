@@ -2042,9 +2042,10 @@ BEGIN
             MENUITEM "另存为(&S)...",                  ID_FILE_SAVE_COPY
             POPUP "截取图片"
             BEGIN
-                MENUITEM "复制到剪切板\tCtrl+C",              ID_FILE_COPYTOCLIPBOARD
-                MENUITEM "抓取快照(&I)...\tF5",             ID_FILE_SAVE_IMAGE
+                MENUITEM "抓取快照...\tCtrl+I",             ID_FILE_SAVE_IMAGE
                 MENUITEM "生成缩略图...",                    ID_FILE_SAVE_THUMBNAILS
+                MENUITEM "复制到剪切板\tCtrl+C",              ID_FILE_COPYTOCLIPBOARD
+				MENUITEM "快速截图到默认目录...\tF5",             ID_FILE_SAVE_IMAGE_AUTO
                 MENUITEM SEPARATOR
                 MENUITEM "设置默认保存文件夹",                   ID_SETSNAPSHOTPATH
             END

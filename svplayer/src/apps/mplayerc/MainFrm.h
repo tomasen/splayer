@@ -655,6 +655,7 @@ public:
 	afx_msg void OnUpdateABControl(CCmdUI* pCmdUI);
 	afx_msg BOOL OnCopyData(CWnd* pWnd, COPYDATASTRUCT* pCopyDataStruct);
 	afx_msg void OnFileOpendvd();
+	afx_msg void OnFileOpenBdvd();
 	afx_msg void OnFileOpendevice();
 	afx_msg void OnFileOpenCD(UINT nID);
 	afx_msg void OnDropFiles(HDROP hDropInfo); // no menu item

@@ -2241,6 +2241,7 @@ END
 IDR_OPENMORE MENU 
 BEGIN
     MENUITEM "DVD(&D)...\tCtrl+D",          ID_FILE_OPENDVD
+	MENUITEM "蓝光(&B)...\tCtrl+B",          ID_FILE_OPENBDVD
     MENUITEM "网址(&U)...\tCtrl+U",           ID_FILE_OPENURLSTREAM
     MENUITEM "文件夹(&F)...\tCtrl+F",          ID_FILE_OPENFOLDER
     MENUITEM "视频捕捉(&V)...\tCtrl+V",         ID_FILE_OPENDEVICE

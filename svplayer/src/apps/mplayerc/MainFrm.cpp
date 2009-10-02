@@ -261,6 +261,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_WM_COPYDATA()
 	ON_COMMAND(ID_FILE_OPENDVD, OnFileOpendvd)
 	ON_UPDATE_COMMAND_UI(ID_FILE_OPENDVD, OnUpdateFileOpen)
+	ON_COMMAND(ID_FILE_OPENBDVD, OnFileOpenBdvd)
+	ON_UPDATE_COMMAND_UI(ID_FILE_OPENBDVD, OnUpdateFileOpen)
 	ON_COMMAND(ID_FILE_OPENDEVICE, OnFileOpendevice)
 	ON_UPDATE_COMMAND_UI(ID_FILE_OPENDEVICE, OnUpdateFileOpen)
 	ON_COMMAND_RANGE(ID_FILE_OPEN_CD_START, ID_FILE_OPEN_CD_END, OnFileOpenCD)
@@ -5278,18 +5280,28 @@ void CMainFrame::OnFileOpendvd()
 	}
 	OpenMedia(p);
 
-/* for bd
+}
+
+void CMainFrame::OnFileOpenBdvd()
+{
+	if(m_iMediaLoadState == MLS_LOADING) return;
+
+	SendMessage(WM_COMMAND, ID_FILE_CLOSEMEDIA);
+	SetForegroundWindow();
+
+	ShowWindow(SW_SHOW);
+	
 	AppSettings& s = AfxGetAppSettings();
 	TCHAR path[MAX_PATH];
 
-	CString		strTitle = ResStr(IDS_MAINFRM_46);
+	CString		strTitle = _T("文件模式打开BD目录");
 	BROWSEINFO bi;
 	bi.hwndOwner = m_hWnd;
 	bi.pidlRoot = NULL;
 	bi.pszDisplayName = path;
 	bi.lpszTitle = strTitle;
 	bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_VALIDATE | BIF_USENEWUI | BIF_NONEWFOLDERBUTTON;
-	bi.lpfn = BrowseCallbackProc;
+	bi.lpfn = BrowseCtrlCallback;
 	bi.lParam = 0;
 	bi.iImage = 0; 
 
@@ -5318,7 +5330,7 @@ void CMainFrame::OnFileOpendvd()
 
 			OpenMedia(p);
 		}
-	}*/
+	}
 }
 
 void CMainFrame::OnFileOpendevice()

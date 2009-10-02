@@ -308,6 +308,7 @@
 #define ID_MENU_VIDEO                   1038
 #define ID_PLAY_SEEKBACKWARDSMALLC      1039
 #define ID_PLAY_SEEKFORWARDSMALLC       1040
+#define ID_FILE_OPENBDVD                 1041
 #define ID_ABCONTROL_SETA               1201
 #define ID_ABCONTROL_SETB               1202
 #define ID_ABCONTROL_ON                 1203

@@ -276,7 +276,8 @@ void CPlayerToolTopBar::ReCalcBtnPos(){
 }
 void CPlayerToolTopBar::UpdateButtonStat(){
 	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
-	BOOL ontop = !!AfxGetAppSettings().iOnTop ;
+	AppSettings& s = AfxGetAppSettings();
+	BOOL ontop = !!s.iOnTop ;
 	BOOL fullscreen = pFrame->m_fFullScreen;
 	BOOL bCaptionHidden = pFrame->IsCaptionMenuHidden();
 	
@@ -284,10 +285,10 @@ void CPlayerToolTopBar::UpdateButtonStat(){
 	m_btnList.SetHideStat( ID_ONTOP_ALWAYS , ontop );
 
 	m_btnList.SetHideStat( ID_FILE_EXIT , !fullscreen && !bCaptionHidden );
-	m_btnList.SetHideStat( L"TOP_FULLSCREEN.BMP" , fullscreen  );
+	m_btnList.SetHideStat( L"TOP_FULLSCREEN.BMP" , fullscreen || ( !bCaptionHidden && !s.bUserAeroTitle() ) );
 	m_btnList.SetHideStat( L"TOP_RESTORE.BMP" , !fullscreen );
 
-	BOOL bViewFROMOUTSIDE = (AfxGetAppSettings().iDefaultVideoSize == 5);
+	BOOL bViewFROMOUTSIDE = (s.iDefaultVideoSize == 5);
 
 	m_btnList.SetHideStat( L"TOP_LETTERBOX_WIDER.BMP" , pFrame->m_fScreenHigherThanVideo || bViewFROMOUTSIDE);
 	m_btnList.SetHideStat( L"TOP_LETTERBOX.BMP" , !pFrame->m_fScreenHigherThanVideo || bViewFROMOUTSIDE);

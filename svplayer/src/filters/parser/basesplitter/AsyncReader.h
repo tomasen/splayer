@@ -21,13 +21,14 @@
 
 #pragma once
 
-
+#include "MultiFiles.h"
 
 interface __declspec(uuid("6DDB4EE7-45A0-4459-A508-BD77B32C91B2")) ISyncReader : public IUnknown
 {
 	STDMETHOD_(void, SetBreakEvent) (HANDLE hBreakEvent) = 0;
 	STDMETHOD_(bool, HasErrors) () = 0;
 	STDMETHOD_(void, ClearErrors) () = 0;
+	STDMETHOD_(void, SetPTSOffset) (REFERENCE_TIME* rtPTSOffset) = 0;
 };
 
 
@@ -36,7 +37,7 @@ interface __declspec(uuid("7D55F67A-826E-40B9-8A7D-3DF0CBBD272D")) IFileHandle :
 	STDMETHOD_(HANDLE, GetFileHandle)() = 0;
 };
 
-class CAsyncFileReader : public CUnknown, public CFile, public IAsyncReader, public ISyncReader, public IFileHandle
+class CAsyncFileReader : public CUnknown, public CMultiFiles, public IAsyncReader, public ISyncReader, public IFileHandle
 {
 protected:
 	ULONGLONG m_len;
@@ -51,6 +52,7 @@ protected:
 	CString m_fnInsideRar;
 public:
 	CAsyncFileReader(CString fn, HRESULT& hr);
+	CAsyncFileReader(CAtlList<CHdmvClipInfo::PlaylistItem>& Items, HRESULT& hr);
 	virtual ~CAsyncFileReader();
 
 	DECLARE_IUNKNOWN;
@@ -76,6 +78,7 @@ public:
 	STDMETHODIMP_(void) SetBreakEvent(HANDLE hBreakEvent) {m_hBreakEvent = hBreakEvent;}
 	STDMETHODIMP_(bool) HasErrors() {return m_lOsError != 0;}
 	STDMETHODIMP_(void) ClearErrors() {m_lOsError = 0;}
+	STDMETHODIMP_(void) SetPTSOffset (REFERENCE_TIME* rtPTSOffset) { m_pCurrentPTSOffset = rtPTSOffset;};
 
 	// IFileHandle
 

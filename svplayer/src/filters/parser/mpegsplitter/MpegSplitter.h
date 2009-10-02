@@ -34,10 +34,12 @@ class __declspec(uuid("DC257063-045F-4BE2-BD5B-E12279C464F0")) CMpegSplitterFilt
 protected:
 	CAutoPtr<CMpegSplitterFile> m_pFile;
 	HRESULT CreateOutputs(IAsyncReader* pAsyncReader);
+	void	ReadClipInfo(LPCOLESTR pszFileName);
 
 	bool DemuxInit();
 	void DemuxSeek(REFERENCE_TIME rt);
 	bool DemuxLoop();
+	bool BuildPlaylist(LPCTSTR pszFileName, CAtlList<CHdmvClipInfo::PlaylistItem>& files);
 
 	HRESULT DemuxNextPacket(REFERENCE_TIME rtStartOffset);
 

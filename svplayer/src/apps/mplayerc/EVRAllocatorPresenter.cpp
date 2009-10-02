@@ -1981,23 +1981,9 @@ void CEVRAllocatorPresenter::FlushSamplesInternal()
 }
 void CEVRAllocatorPresenter::ThreadBeginStreaming(){
 	AppSettings& s = AfxGetAppSettings();
-	if (s.m_RenderSettings.bSynchronizeVideo)
-		m_pGenlock->AdviseSyncClock(((CMainFrame*)(AfxGetApp()->m_pMainWnd))->m_pSyncClock);
-	CComPtr<IBaseFilter> pEVR;
-	FILTER_INFO filterInfo;
-	ZeroMemory(&filterInfo, sizeof(filterInfo));
-	m_pOuterEVR->QueryInterface (__uuidof(IBaseFilter), (void**)&pEVR);
-	pEVR->QueryFilterInfo(&filterInfo); // This addref's the pGraph member
-
-	BeginEnumFilters(filterInfo.pGraph, pEF, pBF)
-		if(CComQIPtr<IAMAudioRendererStats> pAS = pBF)
-		{
-			m_pAudioStats = pAS;
-		};
-	EndEnumFilters
-
-		pEVR->GetSyncSource(&m_pRefClock);
-	if (filterInfo.pGraph) filterInfo.pGraph->Release();
+	
+		
+	
 	m_pGenlock->SetMonitor(GetAdapter(m_pD3D));
 	m_pGenlock->GetTiming();
 
@@ -2018,8 +2004,28 @@ HRESULT CEVRAllocatorPresenter::BeginStreaming()
 	m_pcFramesDropped = 0;
 	m_pcFramesDrawn = 0;
 
-	AfxBeginThread(ThreadEVRAllocatorPresenterStartPresenting, (LPVOID)this, THREAD_PRIORITY_BELOW_NORMAL);
+	
+	AppSettings& s = AfxGetAppSettings();
+	//SVP_LogMsg5(L"CEVRAllocatorPresenter::BeginStreaming1");
+	if (s.m_RenderSettings.bSynchronizeVideo)
+		m_pGenlock->AdviseSyncClock(((CMainFrame*)(AfxGetApp()->m_pMainWnd))->m_pSyncClock);
+	CComPtr<IBaseFilter> pEVR;
+	FILTER_INFO filterInfo;
+	ZeroMemory(&filterInfo, sizeof(filterInfo));
+	m_pOuterEVR->QueryInterface (__uuidof(IBaseFilter), (void**)&pEVR);
+	pEVR->QueryFilterInfo(&filterInfo); // This addref's the pGraph member
 
+	BeginEnumFilters(filterInfo.pGraph, pEF, pBF)
+		if(CComQIPtr<IAMAudioRendererStats> pAS = pBF)
+		{
+			m_pAudioStats = pAS;
+		};
+	EndEnumFilters
+	pEVR->GetSyncSource(&m_pRefClock);
+	if (filterInfo.pGraph) filterInfo.pGraph->Release();
+	//SVP_LogMsg5(L"CEVRAllocatorPresenter::BeginStreaming2");
+	AfxBeginThread(ThreadEVRAllocatorPresenterStartPresenting, (LPVOID)this, THREAD_PRIORITY_BELOW_NORMAL);
+		
 	
 
 	return S_OK;

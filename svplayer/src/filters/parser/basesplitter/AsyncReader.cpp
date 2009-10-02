@@ -151,7 +151,15 @@ CAsyncFileReader::CAsyncFileReader(CString fn, HRESULT& hr)
 	}
 	
 }
-
+CAsyncFileReader::CAsyncFileReader(CAtlList<CHdmvClipInfo::PlaylistItem>& Items, HRESULT& hr) 
+: CUnknown(NAME("CAsyncFileReader"), NULL, &hr)
+, m_len(-1)
+, m_hBreakEvent(NULL)
+, m_lOsError(0)
+{
+	hr = OpenFiles(Items, modeRead|shareDenyNone|typeBinary|osSequentialScan) ? S_OK : E_FAIL;
+	if(SUCCEEDED(hr)) m_len = GetLength();
+}
 STDMETHODIMP CAsyncFileReader::NonDelegatingQueryInterface(REFIID riid, void** ppv)
 {
 	CheckPointer(ppv, E_POINTER);
@@ -340,7 +348,7 @@ CAsyncUrlReader::~CAsyncUrlReader()
 
 	if(!m_fn.IsEmpty())
 	{
-		CFile::Close();
+		CMultiFiles::Close();
 		DeleteFile(m_fn);
 	}
 }

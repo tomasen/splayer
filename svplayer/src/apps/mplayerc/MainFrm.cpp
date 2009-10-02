@@ -5277,6 +5277,48 @@ void CMainFrame::OnFileOpendvd()
 		}
 	}
 	OpenMedia(p);
+
+/* for bd
+	AppSettings& s = AfxGetAppSettings();
+	TCHAR path[MAX_PATH];
+
+	CString		strTitle = ResStr(IDS_MAINFRM_46);
+	BROWSEINFO bi;
+	bi.hwndOwner = m_hWnd;
+	bi.pidlRoot = NULL;
+	bi.pszDisplayName = path;
+	bi.lpszTitle = strTitle;
+	bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_VALIDATE | BIF_USENEWUI | BIF_NONEWFOLDERBUTTON;
+	bi.lpfn = BrowseCallbackProc;
+	bi.lParam = 0;
+	bi.iImage = 0; 
+
+	static LPITEMIDLIST iil;
+
+	if(iil = SHBrowseForFolder(&bi))
+	{
+		CHdmvClipInfo		ClipInfo;
+		CString				strPlaylistFile;
+		CAtlList<CHdmvClipInfo::PlaylistItem>	MainPlaylist;
+		SHGetPathFromIDList(iil, path);
+		s.sDVDPath = path;
+
+		if (SUCCEEDED (ClipInfo.FindMainMovie (path, strPlaylistFile, MainPlaylist)))
+		{
+			CAutoPtr<OpenFileData> p(DNew OpenFileData());
+			p->fns.AddTail(strPlaylistFile);
+			OpenMedia(p);
+		}
+		else
+		{
+			CAutoPtr<OpenDVDData> p(DNew OpenDVDData());
+			p->path = path;
+			p->path.Replace('/', '\\');
+			if(p->path[p->path.GetLength()-1] != '\\') p->path += '\\';
+
+			OpenMedia(p);
+		}
+	}*/
 }
 
 void CMainFrame::OnFileOpendevice()

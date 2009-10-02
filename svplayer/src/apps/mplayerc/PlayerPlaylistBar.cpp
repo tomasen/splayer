@@ -282,6 +282,27 @@ static bool SearchFiles(CString mask, CAtlList<CString>& sl)
 		|| sl.GetCount() == 0 && mask.FindOneOf(_T("?*")) >= 0);
 }
 
+
+bool CPlayerPlaylistBar::ParseBDMVPlayList(CString fn)
+{
+	CHdmvClipInfo		ClipInfo;
+	CString				strPlaylistFile;
+	CAtlList<CHdmvClipInfo::PlaylistItem>	MainPlaylist;
+
+	CPath Path(fn);
+	Path.RemoveFileSpec();
+	Path.RemoveFileSpec();
+
+	if (SUCCEEDED (ClipInfo.FindMainMovie (Path + L"\\", strPlaylistFile, MainPlaylist)))
+	{
+		CAtlList<CString>		strFiles;
+		strFiles.AddHead (strPlaylistFile);
+		Append(strFiles, MainPlaylist.GetCount()>1, NULL);
+	}
+
+	return m_pl.GetCount() > 0;
+}
+
 void CPlayerPlaylistBar::ParsePlayList(CString fn, CAtlList<CString>* subs)
 {
 	CAtlList<CString> sl;
@@ -375,7 +396,12 @@ void CPlayerPlaylistBar::ParsePlayList(CAtlList<CString>& fns, CAtlList<CString>
 		ParseMPCPlayList(fns.GetHead());
 		return;
 	}
-	
+	else if(ct == "application/x-bdmv-playlist")
+	{
+		ParseBDMVPlayList(fns.GetHead());
+		return;
+	}
+
 	AddItem(fns, subs);
 }
 

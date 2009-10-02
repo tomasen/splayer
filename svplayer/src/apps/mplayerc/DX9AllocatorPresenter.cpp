@@ -2818,28 +2818,7 @@ void CVMR9AllocatorPresenter::ThreadStartPresenting(){
 	hEventGoth = CreateEvent(NULL, TRUE, FALSE, NULL);
 
 	AppSettings& s = AfxGetAppSettings();
-	m_pcFramesDrawn = 0;
-
-	if (s.m_RenderSettings.bSynchronizeVideo)
-		m_pGenlock->AdviseSyncClock(((CMainFrame*)(AfxGetApp()->m_pMainWnd))->m_pSyncClock);
-
-	{
-		CComPtr<IBaseFilter> pVMR9;
-		FILTER_INFO filterInfo;
-		ZeroMemory(&filterInfo, sizeof(filterInfo));
-		m_pIVMRSurfAllocNotify->QueryInterface (__uuidof(IBaseFilter), (void**)&pVMR9);
-		pVMR9->QueryFilterInfo(&filterInfo); // This addref's the pGraph member
-
-		BeginEnumFilters(filterInfo.pGraph, pEF, pBF)
-			if(CComQIPtr<IAMAudioRendererStats> pAS = pBF)
-			{
-				m_pAudioStats = pAS;
-			};
-		EndEnumFilters
-
-			pVMR9->GetSyncSource(&m_pRefClock);
-		if (filterInfo.pGraph) filterInfo.pGraph->Release();
-	}
+	
 	m_pGenlock->SetMonitor(GetAdapter(m_pD3D));
 	if (!m_pGenlock->powerstripTimingExists) m_pGenlock->GetTiming(); // StartPresenting seems to get called more often than StopPresenting
 
@@ -2865,6 +2844,30 @@ STDMETHODIMP CVMR9AllocatorPresenter::StartPresenting(DWORD_PTR dwUserID)
 	CAutoLock cRenderLock(&m_RenderLock);
 	
 	m_lOverWaitCounter = 0;
+	AppSettings& s = AfxGetAppSettings();
+	m_pcFramesDrawn = 0;
+
+	if (s.m_RenderSettings.bSynchronizeVideo)
+		m_pGenlock->AdviseSyncClock(((CMainFrame*)(AfxGetApp()->m_pMainWnd))->m_pSyncClock);
+
+	{
+		CComPtr<IBaseFilter> pVMR9;
+		FILTER_INFO filterInfo;
+		ZeroMemory(&filterInfo, sizeof(filterInfo));
+		m_pIVMRSurfAllocNotify->QueryInterface (__uuidof(IBaseFilter), (void**)&pVMR9);
+		pVMR9->QueryFilterInfo(&filterInfo); // This addref's the pGraph member
+
+		BeginEnumFilters(filterInfo.pGraph, pEF, pBF)
+			if(CComQIPtr<IAMAudioRendererStats> pAS = pBF)
+			{
+				m_pAudioStats = pAS;
+			};
+		EndEnumFilters
+
+		pVMR9->GetSyncSource(&m_pRefClock);
+		if (filterInfo.pGraph) filterInfo.pGraph->Release();
+	}
+
 	AfxBeginThread(ThreadVMR9AllocatorPresenterStartPresenting, (LPVOID)this, THREAD_PRIORITY_BELOW_NORMAL);
 
 	return S_OK;

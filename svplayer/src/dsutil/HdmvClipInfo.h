@@ -132,7 +132,26 @@ public:
 		LPCTSTR Format();
 	};
 
+
+	struct PlaylistItem
+	{
+		CString					m_strFileName;
+		REFERENCE_TIME			m_rtIn;
+		REFERENCE_TIME			m_rtOut;
+
+		REFERENCE_TIME Duration()
+		{
+			return m_rtOut - m_rtIn;
+		}
+
+		bool operator == (const PlaylistItem& pi) const
+		{
+			return pi.m_strFileName == m_strFileName;
+		}
+	};
+
 	CHdmvClipInfo(void);
+	~CHdmvClipInfo();
 
 	HRESULT		ReadInfo(LPCTSTR strFile);
 	Stream*		FindStream(SHORT wPID);
@@ -140,7 +159,8 @@ public:
 	int			GetStreamNumber()			{ return int(m_Streams.GetCount()); };
 	Stream*		GetStreamByIndex(int nIndex){ return (unsigned(nIndex) < m_Streams.GetCount()) ? &m_Streams[nIndex] : NULL; };
 
-	HRESULT		FindMainMovie(LPCTSTR strFolder, CAtlList<CString>& MainPlaylist);
+	HRESULT		FindMainMovie(LPCTSTR strFolder, CString& strPlaylistFile, CAtlList<PlaylistItem>& MainPlaylist);
+	HRESULT		ReadPlaylist(CString strPlaylistFile, REFERENCE_TIME& rtDuration, CAtlList<PlaylistItem>& Playlist);
 
 private :
 	DWORD		SequenceInfo_start_address;
@@ -159,4 +179,5 @@ private :
 
 	HRESULT		ReadProgramInfo();
 	HRESULT		ReadPlaylist(LPCTSTR strPath, LPCTSTR strFile, REFERENCE_TIME& rtDuration, CAtlList<CString>& Playlist);
+	HRESULT		CloseFile(HRESULT hr);
 };

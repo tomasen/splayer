@@ -191,7 +191,7 @@ void CMediaFormats::UpdateData(bool fSave)
 		ADDFMT((_T("Video file"), _T("avi")));
 		ADDFMT((_T("Audio file"), _T("wav"), true));
 		ADDFMT((_T("MPEG Media file"), _T("mpg mpeg mpe m1v m2v mpv2 mp2v dat")));
-		ADDFMT((_T("MPEG Transport-Stream file"), _T("ts tp tpr pva pss m2ts m2t mts evo")));
+		ADDFMT((_T("MPEG Transport-Stream file"), _T("ts tp tpr pva pss m2ts m2t mts evo m2p mpls")));
 		ADDFMT((_T("MPEG Audio file"), _T("mpa mp2 m1a m2a"), true));
 		ADDFMT((_T("DVD file"), _T("vob ifo")));
 		ADDFMT((_T("DVD Audio file"), _T("ac3 dts"), true));
@@ -223,7 +223,7 @@ void CMediaFormats::UpdateData(bool fSave)
 		ADDFMT((_T("Musepack file"), _T("mpc"), true));
 		ADDFMT((_T("FLAC Audio file"), _T("flac"), true));
 		ADDFMT((_T("ALAC Audio file"), _T("alac"), true));
-		ADDFMT((_T("Flash Video file"), _T("flv")));
+		ADDFMT((_T("Flash Video file"), _T("flv iflv f4v")));
 		ADDFMT((_T("Shockwave Flash file"), _T("swf"), false, _T("ShockWave ActiveX control"), ShockWave));
 		ADDFMT((_T("Shockwave Audio file"), _T("swa"), true, _T("ShockWave ActiveX control"), ShockWave));
 		ADDFMT((_T("Quicktime file"), _T("mov qt amr 3g2 3gp2"), false, _T("QuickTime or codec pack")));//QuickTime

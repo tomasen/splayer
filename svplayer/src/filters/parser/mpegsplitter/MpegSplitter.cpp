@@ -122,7 +122,8 @@ STDMETHODIMP CMpegSplitterFilter::GetClassID(CLSID* pClsID)
 		return __super::GetClassID(pClsID);
 }
 
-STDMETHODIMP CMpegSplitterFilter::Load(LPCOLESTR pszFileName, const AM_MEDIA_TYPE* pmt)
+
+void CMpegSplitterFilter::ReadClipInfo(LPCOLESTR pszFileName)
 {
 	if (wcslen (pszFileName) > 0)
 	{
@@ -130,7 +131,7 @@ STDMETHODIMP CMpegSplitterFilter::Load(LPCOLESTR pszFileName, const AM_MEDIA_TYP
 		WCHAR		Dir[MAX_PATH];
 		WCHAR		Filename[MAX_PATH];
 		WCHAR		Ext[10];
-		
+
 		if (_wsplitpath_s (pszFileName, Drive, countof(Drive), Dir, countof(Dir), Filename, countof(Filename), Ext, countof(Ext)) == 0)
 		{
 			CString		strClipInfo;
@@ -141,7 +142,12 @@ STDMETHODIMP CMpegSplitterFilter::Load(LPCOLESTR pszFileName, const AM_MEDIA_TYP
 			m_ClipInfo.ReadInfo (strClipInfo);
 		}
 	}
-	
+}
+
+STDMETHODIMP CMpegSplitterFilter::Load(LPCOLESTR pszFileName, const AM_MEDIA_TYPE* pmt)
+{
+	ReadClipInfo (pszFileName);
+
 	return __super::Load (pszFileName, pmt);
 }
 
@@ -441,6 +447,13 @@ bool CMpegSplitterFilter::DemuxLoop()
 	}
 
 	return(true);
+}
+
+
+bool CMpegSplitterFilter::BuildPlaylist(LPCTSTR pszFileName, CAtlList<CHdmvClipInfo::PlaylistItem>& Items)
+{
+	REFERENCE_TIME	rtDuration;
+	return SUCCEEDED (m_ClipInfo.ReadPlaylist (pszFileName, rtDuration, Items)) ? true : false;
 }
 
 // IAMStreamSelect

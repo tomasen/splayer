@@ -141,6 +141,7 @@ protected:
 	void				CalcAvgTimePerFrame();
 	void				DetectVideoCard(HWND hWnd);
 	UINT				GetAdapter(IDirect3D9* pD3D, HWND hWnd);
+	int					m_dxvaAvalibility;
 
 	void				SetTypeSpecificFlags(IMediaSample* pMS);
 	HRESULT				SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int nSize, REFERENCE_TIME& rtStart, REFERENCE_TIME& rtStop);

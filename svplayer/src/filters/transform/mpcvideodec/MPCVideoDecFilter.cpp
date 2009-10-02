@@ -583,6 +583,7 @@ CMPCVideoDecFilter::CMPCVideoDecFilter(LPUNKNOWN lpunk, HRESULT* phr)
 	ff_avcodec_default_release_buffer	= avcodec_default_release_buffer;
 	ff_avcodec_default_reget_buffer		= avcodec_default_reget_buffer;
 
+	m_dxvaAvalibility = 1;//take a guess
 	avcodec_init();
 	avcodec_register_all();
 
@@ -1296,8 +1297,11 @@ HRESULT CMPCVideoDecFilter::CompleteConnect(PIN_DIRECTION direction, IPin* pRece
 
 	//	Sleep(100);
 		
-		if (IsDXVASupported())
+		if (IsDXVASupported() )
 		{
+			if(!m_dxvaAvalibility){
+				return VFW_E_INVALIDMEDIATYPE;
+			}
 			//SVP_LogMsg5(_T("Creating DXVA "));
 			if (m_nDXVAMode == MODE_DXVA1)
 				m_pDXVADecoder->ConfigureDXVA1();	// TODO : check errors!
@@ -1318,6 +1322,7 @@ HRESULT CMPCVideoDecFilter::CompleteConnect(PIN_DIRECTION direction, IPin* pRece
 							//SVP_LogMsg5(_T("Create DXVA Failed"));
 							AppSettings& s = AfxGetAppSettings();
 							s.lHardwareDecoderFailCount++;
+							m_dxvaAvalibility = 0;
 							if(s.lHardwareDecoderFailCount > 10){
 								s.useGPUAcel = 0;
 							}

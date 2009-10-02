@@ -581,6 +581,7 @@ void CUESettingPanel::ApplyAllSetting(){
 	//Audio Setting
 	s.fAudioNormalize = !!m_sgi_normalize  ;
 	s.fAudioNormalizeRecover = TRUE;
+	s.fbUseSPDIF = m_sgi_usespdif ;
 // 	if(m_sgi_noaudioboost)
 // 		s.AudioBoost = 1;
 // 	else

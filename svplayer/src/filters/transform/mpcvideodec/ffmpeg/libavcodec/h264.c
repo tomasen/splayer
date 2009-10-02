@@ -2013,22 +2013,22 @@ static int alloc_tables(H264Context *h){
     const int big_mb_num= s->mb_stride * (s->mb_height+1);
     int x,y;
 
-    CHECKED_ALLOCZ(h->intra4x4_pred_mode, big_mb_num * 8  * sizeof(uint8_t))
+    FF_ALLOCZ_OR_GOTO(h->s.avctx, h->intra4x4_pred_mode, big_mb_num * 8  * sizeof(uint8_t), fail)
 
-    CHECKED_ALLOCZ(h->non_zero_count    , big_mb_num * 16 * sizeof(uint8_t))
-    CHECKED_ALLOCZ(h->slice_table_base  , (big_mb_num+s->mb_stride) * sizeof(*h->slice_table_base))
-    CHECKED_ALLOCZ(h->cbp_table, big_mb_num * sizeof(uint16_t))
+    FF_ALLOCZ_OR_GOTO(h->s.avctx, h->non_zero_count    , big_mb_num * 16 * sizeof(uint8_t), fail)
+    FF_ALLOCZ_OR_GOTO(h->s.avctx, h->slice_table_base  , (big_mb_num+s->mb_stride) * sizeof(*h->slice_table_base), fail)
+    FF_ALLOCZ_OR_GOTO(h->s.avctx, h->cbp_table, big_mb_num * sizeof(uint16_t), fail)
 
-    CHECKED_ALLOCZ(h->chroma_pred_mode_table, big_mb_num * sizeof(uint8_t))
-    CHECKED_ALLOCZ(h->mvd_table[0], 32*big_mb_num * sizeof(uint16_t));
-    CHECKED_ALLOCZ(h->mvd_table[1], 32*big_mb_num * sizeof(uint16_t));
-    CHECKED_ALLOCZ(h->direct_table, 32*big_mb_num * sizeof(uint8_t));
+    FF_ALLOCZ_OR_GOTO(h->s.avctx, h->chroma_pred_mode_table, big_mb_num * sizeof(uint8_t), fail)
+    FF_ALLOCZ_OR_GOTO(h->s.avctx, h->mvd_table[0], 32*big_mb_num * sizeof(uint16_t), fail);
+    FF_ALLOCZ_OR_GOTO(h->s.avctx, h->mvd_table[1], 32*big_mb_num * sizeof(uint16_t), fail);
+    FF_ALLOCZ_OR_GOTO(h->s.avctx, h->direct_table, 32*big_mb_num * sizeof(uint8_t) , fail);
 
     memset(h->slice_table_base, -1, (big_mb_num+s->mb_stride)  * sizeof(*h->slice_table_base));
     h->slice_table= h->slice_table_base + s->mb_stride*2 + 1;
 
-    CHECKED_ALLOCZ(h->mb2b_xy  , big_mb_num * sizeof(uint32_t));
-    CHECKED_ALLOCZ(h->mb2b8_xy , big_mb_num * sizeof(uint32_t));
+    FF_ALLOCZ_OR_GOTO(h->s.avctx, h->mb2b_xy  , big_mb_num * sizeof(uint32_t), fail);
+    FF_ALLOCZ_OR_GOTO(h->s.avctx, h->mb2b8_xy , big_mb_num * sizeof(uint32_t), fail);
     for(y=0; y<s->mb_height; y++){
         for(x=0; x<s->mb_width; x++){
             const int mb_xy= x + y*s->mb_stride;
@@ -2075,8 +2075,8 @@ static void clone_tables(H264Context *dst, H264Context *src){
  * Allocate buffers which are not shared amongst multiple threads.
  */
 static int context_init(H264Context *h){
-    CHECKED_ALLOCZ(h->top_borders[0], h->s.mb_width * (16+8+8) * sizeof(uint8_t))
-    CHECKED_ALLOCZ(h->top_borders[1], h->s.mb_width * (16+8+8) * sizeof(uint8_t))
+    FF_ALLOCZ_OR_GOTO(h->s.avctx, h->top_borders[0], h->s.mb_width * (16+8+8) * sizeof(uint8_t), fail)
+    FF_ALLOCZ_OR_GOTO(h->s.avctx, h->top_borders[1], h->s.mb_width * (16+8+8) * sizeof(uint8_t), fail)
 
     return 0;
 fail:
@@ -6041,7 +6041,7 @@ static void filter_mb_edgev( H264Context *h, uint8_t *pix, int stride, int16_t b
     const int alpha = (alpha_table+52)[index_a];
     const int beta  = (beta_table+52)[qp + h->slice_beta_offset];
     if (alpha ==0 || beta == 0) return;
-		
+
     if( bS[0] < 4 ) {
         int8_t tc[4];
         tc[0] = (tc0_table+52)[index_a][bS[0]];
@@ -6058,7 +6058,7 @@ static void filter_mb_edgecv( H264Context *h, uint8_t *pix, int stride, int16_t 
     const int alpha = (alpha_table+52)[index_a];
     const int beta  = (beta_table+52)[qp + h->slice_beta_offset];
     if (alpha ==0 || beta == 0) return;
-		
+
     if( bS[0] < 4 ) {
         int8_t tc[4];
         tc[0] = (tc0_table+52)[index_a][bS[0]]+1;
@@ -6227,7 +6227,7 @@ static void filter_mb_edgeh( H264Context *h, uint8_t *pix, int stride, int16_t b
     const int alpha = (alpha_table+52)[index_a];
     const int beta  = (beta_table+52)[qp + h->slice_beta_offset];
     if (alpha ==0 || beta == 0) return;
-    
+
     if( bS[0] < 4 ) {
         int8_t tc[4];
         tc[0] = (tc0_table+52)[index_a][bS[0]];
@@ -6245,7 +6245,7 @@ static void filter_mb_edgech( H264Context *h, uint8_t *pix, int stride, int16_t 
     const int alpha = (alpha_table+52)[index_a];
     const int beta  = (beta_table+52)[qp + h->slice_beta_offset];
     if (alpha ==0 || beta == 0) return;
-    
+
     if( bS[0] < 4 ) {
         int8_t tc[4];
         tc[0] = (tc0_table+52)[index_a][bS[0]]+1;
@@ -6908,7 +6908,7 @@ static void copy_context_to_mb(H264mb *dst, H264Context *src)
         memcpy(dst->direct_cache,             src->direct_cache,             sizeof(src->direct_cache));
         memcpy(dst->ref_cache,                src->ref_cache,                sizeof(src->ref_cache));
     }
- 
+
     dst->top_mb_xy                      = src->top_mb_xy;
     dst->left_mb_xy[0]                  = src->left_mb_xy[0];
     dst->left_mb_xy[1]                  = src->left_mb_xy[1];
@@ -6936,8 +6936,6 @@ static void copy_mb_to_context(H264Context *dst, H264mb *src)
     memcpy(dst->mb,                       src->mb,                       sizeof(src->mb));
     memcpy(dst->intra4x4_pred_mode_cache, src->intra4x4_pred_mode_cache, sizeof(src->intra4x4_pred_mode_cache));
     memcpy(dst->non_zero_count_cache,     src->non_zero_count_cache,     sizeof(src->non_zero_count_cache));
-	//av_log(NULL, AV_LOG_DEBUG, "how many being copied? copy_mb_to_context :\n   %d %d %d %d \n", 
-	//	sizeof(src->mb) , sizeof(src->intra4x4_pred_mode_cache) , sizeof(src->non_zero_count_cache) ,5*8*2 );
 
     if(dst->slice_type != FF_I_TYPE && dst->slice_type != FF_SI_TYPE) {
         memcpy(dst->sub_mb_type,              src->sub_mb_type,              sizeof(src->sub_mb_type));
@@ -6945,14 +6943,9 @@ static void copy_mb_to_context(H264Context *dst, H264mb *src)
         memcpy(dst->mvd_cache,                src->mvd_cache,                sizeof(src->mvd_cache));
         memcpy(dst->direct_cache,             src->direct_cache,             sizeof(src->direct_cache));
         memcpy(dst->ref_cache,                src->ref_cache,                sizeof(src->ref_cache));
-
-		//av_log(NULL, AV_LOG_DEBUG, "how many being copied? copy_mb_to_context2 :\n   %ul %ul %ul %ul %ul\n", 
-		//	sizeof(src->sub_mb_type) , 	sizeof(src->mv_cache) , sizeof(src->mvd_cache) , sizeof(src->direct_cache) , sizeof(src->ref_cache) );
-
-
     }
 
-	/* Needed for deblocking */
+    /* Needed for deblocking */
 
     dst->top_mb_xy                      = src->top_mb_xy;
     dst->left_mb_xy[0]                  = src->left_mb_xy[0];
@@ -7123,6 +7116,7 @@ static int av_noinline decode_picture_timing(H264Context *h){
                     skip_bits(&s->gb, h->sps.time_offset_length); /* time_offset */
             }
         }
+
         if(s->avctx->debug & FF_DEBUG_PICT_INFO)
             av_log(s->avctx, AV_LOG_DEBUG, "ct_type:%X pic_struct:%d\n", h->sei_ct_type, h->sei_pic_struct);
     }
@@ -7311,6 +7305,10 @@ static inline int decode_vui_parameters(H264Context *h, SPS *sps){
     if(sps->timing_info_present_flag){
         sps->num_units_in_tick = get_bits_long(&s->gb, 32);
         sps->time_scale = get_bits_long(&s->gb, 32);
+        if(sps->num_units_in_tick-1 > 0x7FFFFFFEU || sps->time_scale-1 > 0x7FFFFFFEU){
+            av_log(h->s.avctx, AV_LOG_ERROR, "time_scale/num_units_in_tick invalid or unsupported (%d/%d)\n", sps->time_scale, sps->num_units_in_tick);
+            return -1;
+        }
         sps->fixed_frame_rate_flag = get_bits1(&s->gb);
     }
 
@@ -7829,8 +7827,10 @@ static int decode_nal_units(H264Context *h, const uint8_t *buf, int buf_size){
             init_get_bits(&hx->s.gb, ptr, bit_length);
             hx->intra_gb_ptr=
             hx->inter_gb_ptr= NULL;
+
             if ((err = decode_slice_header(hx, h)) < 0)
                 break;
+
             hx->s.data_partitioning = 1;
 
             break;
@@ -8050,6 +8050,7 @@ static int decode_frame(AVCodecContext *avctx,
                     cur->repeat_pict = 4;
                     break;
                 }
+
                 if ((h->sei_ct_type & 3) && h->sei_pic_struct <= SEI_PIC_STRUCT_BOTTOM_TOP)
                     cur->interlaced_frame = (h->sei_ct_type & (1<<1)) != 0;
             }else{
@@ -8346,5 +8347,7 @@ AVCodec h264_decoder = {
     /*.long_name = */NULL_IF_CONFIG_SMALL("H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10"),
 };
 
+#if CONFIG_SVQ3_DECODER
 #include "svq3.c"
+#endif
 #include "h264_dxva.c"

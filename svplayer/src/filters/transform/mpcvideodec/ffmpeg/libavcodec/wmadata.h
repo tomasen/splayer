@@ -20,16 +20,14 @@
  */
 
 /**
- * @file wmadata.h
+ * @file libavcodec/wmadata.h
  * Various WMA tables.
  */
 
 #ifndef AVCODEC_WMADATA_H
 #define AVCODEC_WMADATA_H
 
-#ifdef __GNUC__
 #include <stdint.h>
-#endif
 #include "wma.h"
 
 static const uint16_t wma_critical_freqs[25] = {

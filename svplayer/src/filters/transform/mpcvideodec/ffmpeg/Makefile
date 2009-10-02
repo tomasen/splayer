@@ -13,6 +13,7 @@ CFLAGS+= -I. -I.. -I$(LAVC_DIR) -I$(LAVU_DIR) -I$(LAVF_DIR) -I../codecs -I../img
 CC=gcc
 
 SRCS_C=\
+		$(LAVC_DIR)/atrac.c \
 		$(LAVC_DIR)/smc.c \
 		$(LAVC_DIR)/wma.c \
 		$(LAVC_DIR)/wmadec.c \
@@ -230,6 +231,7 @@ SRCS_C+=\
 
 ifneq ($(64BIT),yes)
 SRCS_C+=\
+			$(LAVC_DIR)/x86/fft.c \
       $(LAVC_DIR)/x86/fft_3dn.c \
       $(LAVC_DIR)/x86/fft_3dn2.c \
       $(LAVC_DIR)/x86/fft_sse.c

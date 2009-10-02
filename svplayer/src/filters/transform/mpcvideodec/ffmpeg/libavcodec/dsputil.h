@@ -66,8 +66,6 @@ void ff_h264_idct_add16intra_c(uint8_t *dst, const int *blockoffset, DCTELEM *bl
 void ff_h264_idct8_add4_c(uint8_t *dst, const int *blockoffset, DCTELEM *block, int stride, const uint8_t nnzc[6*8]);
 void ff_h264_idct_add8_c(uint8_t **dest, const int *blockoffset, DCTELEM *block, int stride, const uint8_t nnzc[6*8]);
 
-void ff_vector_fmul_add_add_c(float *dst, const float *src0, const float *src1,
-                              const float *src2, int src3, int blocksize, int step);
 void ff_vector_fmul_window_c(float *dst, const float *src0, const float *src1,
                              const float *win, float add_bias, int len);
 void ff_float_to_int16_c(int16_t *dst, const float *src, long len);
@@ -385,11 +383,62 @@ typedef struct DSPContext {
     void (*vector_fmul)(float *dst, const float *src, int len);
     void (*vector_fmul_reverse)(float *dst, const float *src0, const float *src1, int len);
     /* assume len is a multiple of 8, and src arrays are 16-byte aligned */
-    void (*vector_fmul_add_add)(float *dst, const float *src0, const float *src1, const float *src2, int src3, int len, int step);
+    void (*vector_fmul_add)(float *dst, const float *src0, const float *src1, const float *src2, int len);
     /* assume len is a multiple of 4, and arrays are 16-byte aligned */
     void (*vector_fmul_window)(float *dst, const float *src0, const float *src1, const float *win, float add_bias, int len);
     /* assume len is a multiple of 8, and arrays are 16-byte aligned */
     void (*int32_to_float_fmul_scalar)(float *dst, const int *src, float mul, int len);
+   void (*vector_clipf)(float *dst /* align 16 */, const float *src /* align 16 */, float min, float max, int len /* align 16 */);
+    /**
+     * Multiply a vector of floats by a scalar float.  Source and
+     * destination vectors must overlap exactly or not at all.
+     * @param dst result vector, 16-byte aligned
+     * @param src input vector, 16-byte aligned
+     * @param mul scalar value
+     * @param len length of vector, multiple of 4
+     */
+    void (*vector_fmul_scalar)(float *dst, const float *src, float mul,
+                               int len);
+    /**
+     * Multiply a vector of floats by concatenated short vectors of
+     * floats and by a scalar float.  Source and destination vectors
+     * must overlap exactly or not at all.
+     * [0]: short vectors of length 2, 8-byte aligned
+     * [1]: short vectors of length 4, 16-byte aligned
+     * @param dst output vector, 16-byte aligned
+     * @param src input vector, 16-byte aligned
+     * @param sv  array of pointers to short vectors
+     * @param mul scalar value
+     * @param len number of elements in src and dst, multiple of 4
+     */
+    void (*vector_fmul_sv_scalar[2])(float *dst, const float *src,
+                                     const float **sv, float mul, int len);
+    /**
+     * Multiply short vectors of floats by a scalar float, store
+     * concatenated result.
+     * [0]: short vectors of length 2, 8-byte aligned
+     * [1]: short vectors of length 4, 16-byte aligned
+     * @param dst output vector, 16-byte aligned
+     * @param sv  array of pointers to short vectors
+     * @param mul scalar value
+     * @param len number of output elements, multiple of 4
+     */
+    void (*sv_fmul_scalar[2])(float *dst, const float **sv,
+                              float mul, int len);
+    /**
+     * Calculate the scalar product of two vectors of floats.
+     * @param v1  first vector, 16-byte aligned
+     * @param v2  second vector, 16-byte aligned
+     * @param len length of vectors, multiple of 4
+     */
+    float (*scalarproduct_float)(const float *v1, const float *v2, int len);
+    /**
+     * Calculate the sum and difference of two vectors of floats.
+     * @param v1  first input vector, sum output, 16-byte aligned
+     * @param v2  second input vector, difference output, 16-byte aligned
+     * @param len length of vectors, multiple of 4
+     */
+    void (*butterflies_float)(float *restrict v1, float *restrict v2, int len);
 
     /* C version: convert floats from the range [384.0,386.0] to ints in [-32768,32767]
      * simd versions: convert floats from [-32768.0,32767.0] without rescaling and arrays are 16byte aligned */
@@ -460,11 +509,6 @@ typedef struct DSPContext {
     void (*h264_idct_add8)(uint8_t **dst/*align 16*/, const int *blockoffset, DCTELEM *block/*align 16*/, int stride, const uint8_t nnzc[6*8]);
     void (*h264_idct_add16intra)(uint8_t *dst/*align 16*/, const int *blockoffset, DCTELEM *block/*align 16*/, int stride, const uint8_t nnzc[6*8]);
 
-    /* snow wavelet */
-    void (*vertical_compose97i)(IDWTELEM *b0, IDWTELEM *b1, IDWTELEM *b2, IDWTELEM *b3, IDWTELEM *b4, IDWTELEM *b5, int width);
-    void (*horizontal_compose97i)(IDWTELEM *b, int width);
-    void (*inner_add_yblock)(const uint8_t *obmc, const int obmc_stride, uint8_t * * block, int b_w, int b_h, int src_x, int src_y, int src_stride, slice_buffer * sb, int add, uint8_t * dst8);
-
     void (*prefetch)(void *mem, int stride, int h);
 
     void (*shrink[4])(uint8_t *dst, int dst_wrap, const uint8_t *src, int src_wrap, int width, int height);
@@ -484,7 +528,6 @@ typedef struct DSPContext {
     void (*vc1_inv_trans_8x4_dc)(uint8_t *dest, int line_size, DCTELEM *block);
     void (*vc1_inv_trans_4x8_dc)(uint8_t *dest, int line_size, DCTELEM *block);
     void (*vc1_inv_trans_4x4_dc)(uint8_t *dest, int line_size, DCTELEM *block);
-    
     void (*vc1_v_overlap)(uint8_t* src, int stride);
     void (*vc1_h_overlap)(uint8_t* src, int stride);
     void (*vc1_v_loop_filter4)(uint8_t *src, int stride, int pq);
@@ -503,7 +546,8 @@ typedef struct DSPContext {
     void (*x8_spatial_compensation[12])(uint8_t *src , uint8_t *dst, int linesize);
     void (*x8_setup_spatial_compensation)(uint8_t *src, uint8_t *dst, int linesize,
            int * range, int * sum,  int edges);
-    /* ape functions */
+
+/* ape functions */
     /**
      * Add contents of the second vector to the first one.
      * @param len length of vectors, should be multiple of 16
@@ -520,6 +564,7 @@ typedef struct DSPContext {
      * @param shift number of bits to discard from product
      */
     int32_t (*scalarproduct_int16)(int16_t *v1, int16_t *v2/*align 16*/, int len, int shift);
+
     /* rv30 functions */
     qpel_mc_func put_rv30_tpel_pixels_tab[4][16];
     qpel_mc_func avg_rv30_tpel_pixels_tab[4][16];
@@ -590,20 +635,16 @@ static inline int get_penalty_factor(int lambda, int lambda2, int type){
 /* should be defined by architectures supporting
    one or more MultiMedia extension */
 int mm_support(void);
+extern int mm_flags;
 
 void dsputil_init_mmx(DSPContext* c, AVCodecContext *avctx);
 
 #define DECLARE_ALIGNED_16(t, v) DECLARE_ALIGNED(16, t, v)
+#define DECLARE_ALIGNED_8(t, v)  DECLARE_ALIGNED(8, t, v)
 
 #if HAVE_MMX
 
 #undef emms_c
-
-extern int mm_flags;
-
-void add_pixels_clamped_mmx(const DCTELEM *block, uint8_t *pixels, int line_size);
-void put_pixels_clamped_mmx(const DCTELEM *block, uint8_t *pixels, int line_size);
-void put_signed_pixels_clamped_mmx(const DCTELEM *block, uint8_t *pixels, int line_size);
 
 static inline void emms(void)
 {
@@ -621,17 +662,11 @@ static inline void emms(void)
         emms();\
 }
 
-void dsputil_init_pix_mmx(DSPContext* c, AVCodecContext *avctx);
-
 #else
 
 #define mm_flags 0
 #define mm_support() 0
 
-#endif
-
-#ifndef DECLARE_ALIGNED_8
-#   define DECLARE_ALIGNED_8(t, v) DECLARE_ALIGNED(8, t, v)
 #endif
 
 #ifndef STRIDE_ALIGN
@@ -649,8 +684,6 @@ void get_psnr(uint8_t *orig_image[3], uint8_t *coded_image[3],
    FFTSample type */
 typedef float FFTSample;
 
-struct MDCTContext;
-
 typedef struct FFTComplex {
     FFTSample re, im;
 } FFTComplex;
@@ -662,13 +695,23 @@ typedef struct FFTContext {
     FFTComplex *exptab;
     FFTComplex *exptab1; /* only used by SSE code */
     FFTComplex *tmp_buf;
+    int mdct_size; /* size of MDCT (i.e. number of input data * 2) */
+    int mdct_bits; /* n = 2^nbits */
+    /* pre/post rotation tables */
+    FFTSample *tcos;
+    FFTSample *tsin;
     void (*fft_permute)(struct FFTContext *s, FFTComplex *z);
     void (*fft_calc)(struct FFTContext *s, FFTComplex *z);
-    void (*imdct_calc)(struct MDCTContext *s, FFTSample *output, const FFTSample *input);
-    void (*imdct_half)(struct MDCTContext *s, FFTSample *output, const FFTSample *input);
+    void (*imdct_calc)(struct FFTContext *s, FFTSample *output, const FFTSample *input);
+    void (*imdct_half)(struct FFTContext *s, FFTSample *output, const FFTSample *input);
+    void (*mdct_calc)(struct FFTContext *s, FFTSample *output, const FFTSample *input);
+    int split_radix;
+    int permutation;
+#define FF_MDCT_PERM_NONE       0
+#define FF_MDCT_PERM_INTERLEAVE 1
 } FFTContext;
 
-extern FFTSample* ff_cos_tabs[13];
+extern FFTSample* const ff_cos_tabs[13];
 
 /**
  * Sets up a complex FFT.
@@ -677,12 +720,7 @@ extern FFTSample* ff_cos_tabs[13];
  */
 int ff_fft_init(FFTContext *s, int nbits, int inverse);
 void ff_fft_permute_c(FFTContext *s, FFTComplex *z);
-void ff_fft_permute_sse(FFTContext *s, FFTComplex *z);
 void ff_fft_calc_c(FFTContext *s, FFTComplex *z);
-void ff_fft_calc_sse(FFTContext *s, FFTComplex *z);
-void ff_fft_calc_3dn(FFTContext *s, FFTComplex *z);
-void ff_fft_calc_3dn2(FFTContext *s, FFTComplex *z);
-void ff_fft_calc_altivec(FFTContext *s, FFTComplex *z);
 
 /**
  * Do the permutation needed BEFORE calling ff_fft_calc().
@@ -703,22 +741,19 @@ void ff_fft_end(FFTContext *s);
 
 /* MDCT computation */
 
-typedef struct MDCTContext {
-    int n;  /* size of MDCT (i.e. number of input data * 2) */
-    int nbits; /* n = 2^nbits */
-    /* pre/post rotation tables */
-    FFTSample *tcos;
-    FFTSample *tsin;
-    FFTContext fft;
-} MDCTContext;
-
-static inline void ff_imdct_calc(MDCTContext *s, FFTSample *output, const FFTSample *input)
+static inline void ff_imdct_calc(FFTContext *s, FFTSample *output, const FFTSample *input)
 {
-    s->fft.imdct_calc(s, output, input);
+    s->imdct_calc(s, output, input);
 }
-static inline void ff_imdct_half(MDCTContext *s, FFTSample *output, const FFTSample *input)
+static inline void ff_imdct_half(FFTContext *s, FFTSample *output, const FFTSample *input)
 {
-    s->fft.imdct_half(s, output, input);
+    s->imdct_half(s, output, input);
+}
+
+static inline void ff_mdct_calc(FFTContext *s, FFTSample *output,
+                                const FFTSample *input)
+{
+    s->mdct_calc(s, output, input);
 }
 
 /**
@@ -735,25 +770,21 @@ void ff_kbd_window_init(float *window, float alpha, int n);
  * @param   n       size of half window
  */
 void ff_sine_window_init(float *window, int n);
+extern float ff_sine_32  [  32];
+extern float ff_sine_64  [  64];
 extern float ff_sine_128 [ 128];
 extern float ff_sine_256 [ 256];
 extern float ff_sine_512 [ 512];
 extern float ff_sine_1024[1024];
 extern float ff_sine_2048[2048];
 extern float ff_sine_4096[4096];
-extern float *ff_sine_windows[6];
+extern float * const ff_sine_windows[13];
 
-int ff_mdct_init(MDCTContext *s, int nbits, int inverse, double scale);
-void ff_imdct_calc_c(MDCTContext *s, FFTSample *output, const FFTSample *input);
-void ff_imdct_half_c(MDCTContext *s, FFTSample *output, const FFTSample *input);
-void ff_imdct_calc_3dn(MDCTContext *s, FFTSample *output, const FFTSample *input);
-void ff_imdct_half_3dn(MDCTContext *s, FFTSample *output, const FFTSample *input);
-void ff_imdct_calc_3dn2(MDCTContext *s, FFTSample *output, const FFTSample *input);
-void ff_imdct_half_3dn2(MDCTContext *s, FFTSample *output, const FFTSample *input);
-void ff_imdct_calc_sse(MDCTContext *s, FFTSample *output, const FFTSample *input);
-void ff_imdct_half_sse(MDCTContext *s, FFTSample *output, const FFTSample *input);
-void ff_mdct_calc(MDCTContext *s, FFTSample *out, const FFTSample *input);
-void ff_mdct_end(MDCTContext *s);
+int ff_mdct_init(FFTContext *s, int nbits, int inverse, double scale);
+void ff_imdct_calc_c(FFTContext *s, FFTSample *output, const FFTSample *input);
+void ff_imdct_half_c(FFTContext *s, FFTSample *output, const FFTSample *input);
+void ff_mdct_calc_c(FFTContext *s, FFTSample *output, const FFTSample *input);
+void ff_mdct_end(FFTContext *s);
 
 /* Real Discrete Fourier Transform */
 

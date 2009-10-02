@@ -5649,16 +5649,30 @@ void CMainFrame::SaveDIB(LPCTSTR fn, BYTE* pData, long size)
 	}
 
 	CPath p(fn);
+/*
+	
+		if(CDC* pDC = m_wndStatusBar.m_status.GetDC())
+		{
+			CRect r;
+			//m_wndStatusBar.m_status.GetClientRect(r);
+			
+			m_wndStatusBar.m_status.ReleaseDC(pDC);
+		}*/
+	
+	/*
+	CRect rcView;
+		GetClientRect(rcView);
+		if(HDC hDC = ::GetDC(0))
+		{
+			p.CompactPath(hDC, rcView.Width()/3);
+			::ReleaseDC(0, hDC);
+		}*/
+	
+	
+	CString szMsg;
 
-	if(CDC* pDC = m_wndStatusBar.m_status.GetDC())
-	{
-		CRect r;
-		m_wndStatusBar.m_status.GetClientRect(r);
-		p.CompactPath(pDC->m_hDC, r.Width());
-		m_wndStatusBar.m_status.ReleaseDC(pDC);
-	}
-
-	SendStatusMessage((LPCTSTR)p, 3000);
+	szMsg.Format(_T("截图已保存至 %s"),(LPCTSTR)p);
+	SendStatusMessage(szMsg, 3000);
 }
 void CMainFrame::OnFileCopyImageToCLipBoard(){
 	SaveImage();

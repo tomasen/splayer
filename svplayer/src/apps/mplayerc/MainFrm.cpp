@@ -6031,7 +6031,7 @@ void CMainFrame::OnFileSaveImage()
 
 	/* Check if a compatible renderer is being used */
 	if(!IsRendererCompatibleWithSaveImage()) {
-		SendStatusMessage(_T("当前配置模式无法抓取截图，请进入选项面板选择DX9或DX7模式") , 3000);
+		SendStatusMessage(_T("当前配置模式无法抓取截图，请进入选项-画面控制面板，选择画质或性能模式") , 3000);
 		return;
 	}
 
@@ -6085,7 +6085,7 @@ void CMainFrame::OnFileSaveImageAuto()
 
 	/* Check if a compatible renderer is being used */
 	if(!IsRendererCompatibleWithSaveImage()) {
-		SendStatusMessage(_T("当前配置模式无法抓取截图，请进入选项面板选择DX9或DX7模式") , 3000);
+		SendStatusMessage(_T("当前配置模式无法抓取截图，请进入选项-画面控制面板选择画质模式") , 3000);
 		return;
 	}
 
@@ -6153,7 +6153,7 @@ void CMainFrame::OnUpdateFileConvert(CCmdUI* pCmdUI)
 {
 	// TODO: Add your command update UI handler code here
 }
-#define NOTSUPPORTSUB  _T("启用播放器内置字幕功能需要DX7或DX9中的一些高级功能\n如果您看到本提示，可能说明您需要升级显卡驱动\n或者您的显卡没有能力支持所需功能(VMR7或9)")
+#define NOTSUPPORTSUB  _T("启用播放器内置字幕功能需要进入选项设置面板选择画质模式\n如果您看到本提示，可能说明您需要升级显卡驱动\n或者您的显卡没有能力支持所需功能(VMR7或9)")
 void CMainFrame::OnFileLoadsubtitle()
 {
 #ifndef DEBUG
@@ -12974,7 +12974,7 @@ void CMainFrame::SetupShadersSubMenu()
 	AppSettings& s = AfxGetAppSettings();
 	
 	if(s.iDSVideoRendererType != 6 || s.iRMVideoRendererType != 2 || s.iQTVideoRendererType != 2 || s.iAPSurfaceUsage != VIDRNDT_AP_TEXTURE3D){
-		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_SHADERS_SETDX9,_T("需要启用DX9..."));
+		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_SHADERS_SETDX9,_T("启用画质模式..."));
 		return;
 	}
 

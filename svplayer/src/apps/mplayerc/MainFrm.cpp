@@ -5995,6 +5995,8 @@ static CString MakeSnapshotFileName(LPCTSTR prefix)
 BOOL CMainFrame::IsRendererCompatibleWithSaveImage()
 {
 	BOOL result = TRUE;
+	if(m_pCAP)
+		return TRUE;
 	AppSettings& s = AfxGetAppSettings();
 
 	if(m_fRealMediaGraph) {

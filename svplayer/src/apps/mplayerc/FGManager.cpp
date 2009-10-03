@@ -2421,7 +2421,7 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 
 		if(	s.iSVPRenderType == 0 ){ // ( s.iDSVideoRendererType == VIDRNDT_DS_OVERLAYMIXER || VIDRNDT_DS_OLDRENDERER == s.iDSVideoRendererType)
 			s.bDontNeedSVPSubFilter = false;
-			
+			///
 			if(AfxGetMyApp()->IsVista())
 				s.iDSVideoRendererType = VIDRNDT_DS_OLDRENDERER;
 			else

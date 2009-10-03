@@ -1,6 +1,7 @@
 <html><head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title></title>
+
 <script type="text/javascript">
 /*
 Copyright (c) 2009, Yahoo! Inc. All rights reserved.
@@ -683,9 +684,9 @@ onmouseover="ueAPI.setcurblock('hotkeysetting');" border="0"/></a>
  
 </div>
 <div id="videosetting" class="hiddenarea">
-&nbsp;<select id="videorender" onchange="if(this.value=='DX7'){ueAPI.hideobj('GothSyncLine');}else if(!ueAPI.isvistaaero){ueAPI.showblock('GothSyncLine');} if(this.value!='DX9' && ueAPI.isvista){ueAPI.fobj('gpuacelbase').checked = false;}"><option value="DX9" >画质优先模式(DX9)</option>
-<option value="DX7">性能优先模式(DX7)</option>
-<option value="ADV">使用自定义高级设置</option></select><br />
+&nbsp;<select id="videorender" onchange="if(this.value=='DX7'){ueAPI.hideobj('GothSyncLine');}else if(!ueAPI.isvistaaero){ueAPI.showblock('GothSyncLine');} if(this.value!='DX9' && ueAPI.isvista){ueAPI.fobj('gpuacelbase').checked = false;}"><option value="DX9" >画质优先模式</option>
+<option value="DX7">性能优先模式</option>
+</select><br />
 <span id="decoderline" style="display:none;">解码器：<select id="decoder" onchange="ueAPI.selectDecoder(this.value);" ></select>
 &nbsp; &nbsp; <a href='#' id='IDUSEEXTCODEC'>使用外置解码器(专家)</a></span>
  <span id="remarkfordecoder" style="display:none;" ></span><br />
@@ -693,7 +694,12 @@ onmouseover="ueAPI.setcurblock('hotkeysetting');" border="0"/></a>
 <div style="display:none;"><input type="checkbox" id="vmr9mixer" onclick="ueAPI.useDX9(this.checked);"  /><label for="vmr9mixer" title="启用播放器的亮度调节功能">启用内置亮度调节(需DX9，不能使用CoreAVC解码器)</label><br /></div>
 <input type="checkbox" id="smothmutilmonitor" /><label for="smothmutilmonitor" title="播放器在多个显示器间移动时保持画面流畅。但可能在部分老式电视连接时因刷新率不同而出现问题">多显示器平滑移动</label><br />
 <div style="display:none;"><input type="checkbox" id="lockbackbuff" onclick="if(this.checked) ueAPI.fobj('GothSync').checked = false;" /><label for="lockbackbuff" title="在部分显卡驱动上会造成CPU占用过高的问题">修正画面横向撕裂问题（SPDIF输出下无效但效果更好）</label><br /></div>
-<div id='GothSyncLine' style="display:block;">&nbsp; &nbsp; <input type="checkbox" id="GothSync" onclick="if(this.checked){ ueAPI.useDX9(1);ueAPI.fobj('lockbackbuff').checked = false; }"  /><label for="GothSync" title="GothSync">修正画面横向撕裂问题（[<a href='?http://blog.splayer.org/?p=1756'><b>?</b></a>]）</label><br /></div>
+<div id='GothSyncLine' style="display:block;">&nbsp; &nbsp; <input type="checkbox" id="GothSync" onclick="if(this.checked){ ueAPI.useDX9(1);ueAPI.fobj('lockbackbuff').checked = false; }"  />
+<label for="GothSync" title="使用GothSync算法修正画面横向撕裂问题
+提醒：使用性能优先模式也可以解决画面横向撕裂问题
+">修正画面横向撕裂问题（[<a href='?http://blog.splayer.org/?p=1756'><b>?</b></a>]）</label><br />
+<i> 提醒：使用性能优先模式也可以解决画面横向撕裂问题</i>
+</div>
 <div id='divdxvacompat' ><input type="checkbox" id="dxvacompat" /><label for="dxvacompat">使硬件高清兼容更多文件（不推荐！显卡能力不足时会造成花屏）</label> <br /></div>
 <input type="checkbox" id="useffmpegwmv" /><label for="useffmpegwmv">使用系统现有的WMV解码器播放WMV</label>
 <br />

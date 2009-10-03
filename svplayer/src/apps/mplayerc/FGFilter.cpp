@@ -27,6 +27,7 @@
 #include "EVRAllocatorPresenter.h"
 #include "..\..\..\include\moreuuids.h"
 
+#include "mplayerc.h"
 //
 // CFGFilter
 //
@@ -506,6 +507,9 @@ HRESULT CFGFilterVideoRenderer::Create(IBaseFilter** ppBF, CInterfaceList<IUnkno
 				*ppBF = CComQIPtr<IBaseFilter>(pRenderer).Detach();
 				pUnks.AddTail(pCAP);
 				
+				//AfxGetAppSettings().bDontNeedSVPSubFilter = true;
+
+				//SVP_LogMsg5(L"RenderIsOn");
 			
 			}
 		}

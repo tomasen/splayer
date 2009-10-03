@@ -300,13 +300,13 @@ BOOL CUESettingPanel::OnInitDialog()
 	//Video Setting
 	m_sgi_useffmpegwmv = !s.useFFMPEGWMV;
 	m_sgi_uservmrmixer = s.fVMR9MixerMode;
-	if(s.iDSVideoRendererType == 6 && s.iRMVideoRendererType == 2 && s.iQTVideoRendererType == 2){
+	if(s.iSVPRenderType || s.iDSVideoRendererType == 6 && s.iRMVideoRendererType == 2 && s.iQTVideoRendererType == 2){
 		m_sgi_videorender = 0; //DX9
-	}else if(s.iDSVideoRendererType == 5 && s.iRMVideoRendererType == 1 && s.iQTVideoRendererType == 1){
+	}else{// if(s.iDSVideoRendererType == 5 && s.iRMVideoRendererType == 1 && s.iQTVideoRendererType == 1)
 		m_sgi_videorender = 1; //DX7
-	}else{
-		m_sgi_videorender = 2; //自定义
 	}
+	//	m_sgi_videorender = 2; //自定义
+	
 	m_sgi_lockbackbuff = s.fVMRSyncFix;//s.m_RenderSettings.bSynchronizeVideo;//; ;// s.m_RenderSettings.bSynchronizeNearest
 	m_sgi_GothSync = s.fVMRGothSyncFix ; //s.m_RenderSettings.bSynchronizeNearest;
 	m_sgi_smothmutilmonitor = s.fbSmoothMutilMonitor;
@@ -534,17 +534,17 @@ void CUESettingPanel::ApplyAllSetting(){
 		m_sgs_videorender = _T("DX9");
 	}
 	if(m_sgs_videorender == _T("DX9")){
+		s.iSVPRenderType = 1;
 		s.iDSVideoRendererType = 6;
 		s.iRMVideoRendererType = 2;
 		s.iQTVideoRendererType = 2;
 		s.iAPSurfaceUsage = VIDRNDT_AP_TEXTURE3D;
-	}else if(m_sgs_videorender == _T("DX7")){
+	}else{// if(m_sgs_videorender == _T("DX7"))
+		s.iSVPRenderType = 0; 
 		s.iDSVideoRendererType = 5;
 		s.iRMVideoRendererType = 1;
 		s.iQTVideoRendererType = 1;
 		
-	}else{
-
 	}
 	s.fTrayIcon = m_sgi_chktrayicon;
 	s.fVMRSyncFix = !!m_sgi_lockbackbuff;

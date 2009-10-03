@@ -2891,7 +2891,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		strTemp.Format (_T("%f"), dGSubFontRatio);
 		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_GLOBAL_SUBFONTRATIO), strTemp);
 
-		
+		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DSSVPRENDERTYE), iSVPRenderType);
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DISABLECENTERBIGOPENBMP), bDisableCenterBigOpenBmp);
 		 
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_WINLIRC), fWinLirc);
@@ -3128,6 +3128,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 			bRGBOnly = 1;
  			iDXVer = 7;
  		}
+		iSVPRenderType =  pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DSSVPRENDERTYE), !!(IsVista() || iDXVer >= 9) );
 		iDSVideoRendererType = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DSVIDEORENDERERTYPE), ( (IsVista() || iDXVer >= 9) ? VIDRNDT_DS_VMR9RENDERLESS : VIDRNDT_DS_VMR7RENDERLESS) );
 		if((iDSVideoRendererType != VIDRNDT_DS_VMR7RENDERLESS && iDSVideoRendererType != VIDRNDT_DS_VMR9RENDERLESS) || fVMDetected){//|| iDSVideoRendererType != VIDRNDT_DS_OVERLAYMIXER
 			iDSVideoRendererType = VIDRNDT_DS_VMR7RENDERLESS;

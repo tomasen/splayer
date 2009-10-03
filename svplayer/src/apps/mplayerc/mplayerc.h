@@ -461,6 +461,10 @@ public:
 		int iDSVideoRendererType;
 		int iRMVideoRendererType;
 		int iQTVideoRendererType;
+		int iSVPRenderType;
+		
+		bool bDontNeedSVPSubFilter;
+
 		int iAPSurfaceUsage;
 		bool fVMRSyncFix;
 		bool fVMRGothSyncFix;

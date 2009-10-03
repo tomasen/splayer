@@ -13548,7 +13548,6 @@ void CMainFrame::SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle)
 		szBuf.Format(_T("正在显示主字幕 %s 延时设为 %d 毫秒 高度：%d%%"), subName,  pSubStream->sub_delay_ms,s.nVerPos);
 		SVP_LogMsg(szBuf);
 		SendStatusMessage(szBuf , 4000 );
-		
 		m_pCAP->SetSubPicProvider(CComQIPtr<ISubPicProvider>(pSubStream));
 		SetSubtitleDelay(pSubStream->sub_delay_ms); 
 		

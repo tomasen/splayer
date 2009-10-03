@@ -750,9 +750,11 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 			
 			//if (szFName.Find(_T("Color Space Converter")) >= 0 ) continue;
 			
-			
-			if(s.iDSVideoRendererType == VIDRNDT_DS_VMR7RENDERLESS || s.iDSVideoRendererType == VIDRNDT_DS_VMR9RENDERLESS || s.iDSVideoRendererType == VIDRNDT_DS_DXR) {
+			CLSID FGID = pFGF->GetCLSID() ;
+
+			if(s.bDontNeedSVPSubFilter) {
 				if (szFName.Find(_T("DirectVobSub")) >= 0 ) continue;
+				if (FGID == GUIDFromCString(_T("{E8D381DD-8C7D-4a6f-96ED-92BBB64064CF}"))  ) continue;
 			}
 
 			
@@ -760,7 +762,6 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 			
 			
 				
-			CLSID FGID = pFGF->GetCLSID() ;
 			if ( FGID == GUIDFromCString(_T("{AA59CBFA-F731-49E9-BE78-08665F339EFC}")) ) continue;  //disable  Bicubic Video Resizer  that may cause flip
 			if ( FGID == GUIDFromCString(_T("{1643E180-90F5-11CE-97D5-00AA0055595A}")) ) continue;  //Color Space Converter
 			//if ( FGID == GUIDFromCString(_T("{CF49D4E0-1115-11CE-B03A-0020AF0BA770}")) ) continue;  //AVI Decompressor
@@ -2413,13 +2414,19 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 	
 	// Block VSFilter when internal subtitle renderer will get used
 //	if(s.fAutoloadSubtitles && s.fBlockVSFilter) {
-		if(s.iDSVideoRendererType == VIDRNDT_DS_VMR7RENDERLESS || s.iDSVideoRendererType == VIDRNDT_DS_VMR9RENDERLESS || s.iDSVideoRendererType == VIDRNDT_DS_DXR) {
+		//if(s.iDSVideoRendererType == VIDRNDT_DS_VMR7RENDERLESS || s.iDSVideoRendererType == VIDRNDT_DS_VMR9RENDERLESS || s.iDSVideoRendererType == VIDRNDT_DS_DXR) {
 			m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{9852A670-F845-491B-9BE6-EBD841B8A613}")), MERIT64_DO_NOT_USE));			
-		}
+		//}
 //	}
 
-		if(	1 ){ // ( s.iDSVideoRendererType == VIDRNDT_DS_OVERLAYMIXER || VIDRNDT_DS_OLDRENDERER == s.iDSVideoRendererType)
-			s.iDSVideoRendererType = VIDRNDT_DS_OLDRENDERER;
+		if(	s.iSVPRenderType == 0 ){ // ( s.iDSVideoRendererType == VIDRNDT_DS_OVERLAYMIXER || VIDRNDT_DS_OLDRENDERER == s.iDSVideoRendererType)
+			s.bDontNeedSVPSubFilter = false;
+			
+			if(AfxGetMyApp()->IsVista())
+				s.iDSVideoRendererType = VIDRNDT_DS_OLDRENDERER;
+			else
+				s.iDSVideoRendererType = VIDRNDT_DS_OVERLAYMIXER;
+			//*/
 			pFGF = new CFGFilterInternal<CSVPSubFilter>(
 				L"射手播放器字幕组件" ,
 				MERIT64_ABOVE_DSHOW );

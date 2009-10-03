@@ -48,8 +48,8 @@ protected:
 	long m_connRetry;
 
 	HRESULT GetDeliveryBuffer(int w, int h, IMediaSample** ppOut);
-	HRESULT CopyBuffer(BYTE* pOut, BYTE* pIn, int w, int h, int pitchIn, const GUID& subtype, bool fInterlaced = false);
-	HRESULT CopyBuffer(BYTE* pOut, BYTE** ppIn, int w, int h, int pitchIn, const GUID& subtype, bool fInterlaced = false);
+	HRESULT CopyBuffer(BYTE* pOut, BYTE* pIn, int w, int h, int pitchIn, const GUID& subtype, bool fInterlaced = false, BITMAPINFOHEADER* pForeOutputBIH = 0);
+	HRESULT CopyBuffer(BYTE* pOut, BYTE** ppIn, int w, int h, int pitchIn, const GUID& subtype, bool fInterlaced = false, BITMAPINFOHEADER* pForeOutputBIH = 0);
 
 	virtual void GetOutputSize(int& w, int& h, int& arx, int& ary, int &RealWidth, int &RealHeight) {}
 	virtual HRESULT Transform(IMediaSample* pIn) = 0;

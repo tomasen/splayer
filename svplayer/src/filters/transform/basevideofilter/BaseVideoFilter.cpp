@@ -283,11 +283,11 @@ HRESULT hr1 = 0, hr2 = 0;
 	return S_FALSE;
 }
 
-HRESULT CBaseVideoFilter::CopyBuffer(BYTE* pOut, BYTE* pIn, int w, int h, int pitchIn, const GUID& subtype, bool fInterlaced)
+HRESULT CBaseVideoFilter::CopyBuffer(BYTE* pOut, BYTE* pIn, int w, int h, int pitchIn, const GUID& subtype, bool fInterlaced, BITMAPINFOHEADER* pForeOutputBIH)
 {
 	int abs_h = abs(h);
 	BYTE* pInYUV[3] = {pIn, pIn + pitchIn*abs_h, pIn + pitchIn*abs_h + (pitchIn>>1)*(abs_h>>1)};
-	return CopyBuffer(pOut, pInYUV, w, h, pitchIn, subtype, fInterlaced);
+	return CopyBuffer(pOut, pInYUV, w, h, pitchIn, subtype, fInterlaced, pForeOutputBIH);
 }
 #include "../../../svplib/svplib.h"
 /*
@@ -361,13 +361,16 @@ static bool BitBltFromYUVToRGB(int w, int h, BYTE* dst, int dstpitch, int dbpp, 
 
 	return true;
 }
-HRESULT CBaseVideoFilter::CopyBuffer(BYTE* pOut, BYTE** ppIn, int w, int h, int pitchIn, const GUID& subtype, bool fInterlaced)
+HRESULT CBaseVideoFilter::CopyBuffer(BYTE* pOut, BYTE** ppIn, int w, int h, int pitchIn, const GUID& subtype, bool fInterlaced, BITMAPINFOHEADER* pForeOutputBIH )
 {
 	BITMAPINFOHEADER bihOut;
 	ExtractBIH(&m_pOutput->CurrentMediaType(), &bihOut);
 
 	int pitchOut = 0;
-
+	if(pForeOutputBIH){
+		memcpy(&bihOut, pForeOutputBIH, sizeof(BITMAPINFOHEADER));
+	}
+	//SVP_LogMsg5(L"bihOut.biBitCount = %d %d %d", bihOut.biBitCount , bihOut.biHeight, bihOut.biWidth);
 	if(bihOut.biCompression == 'BGRA' || bihOut.biCompression == BI_RGB || bihOut.biCompression == BI_BITFIELDS)
 	{
 		pitchOut = bihOut.biWidth*bihOut.biBitCount>>3;

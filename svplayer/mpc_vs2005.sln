@@ -361,6 +361,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libunrar", "include\libunrar.svp\libunrar.vcproj", "{BEA3275A-23B5-4343-BB3A-42CB10DF3652}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "svpfilter", "src\filters\transform\svpfilter.svp\svpfilter.vcproj", "{8D944019-7997-4EFD-8157-4929E6EB2AA8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{54DDA60F-E528-4D07-A152-960A1E818680} = {54DDA60F-E528-4D07-A152-960A1E818680}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MediaInfoLib", "src\mediainfo\Project\MSVC\Library\MediaInfoLib.vcproj", "{20E0F8D6-213C-460B-B361-9C725CB375C7}"
 	ProjectSection(ProjectDependencies) = postProject

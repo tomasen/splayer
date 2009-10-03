@@ -2418,10 +2418,10 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 		}
 //	}
 
-		if(	0 ){ // ( s.iDSVideoRendererType == VIDRNDT_DS_OVERLAYMIXER || VIDRNDT_DS_OLDRENDERER == s.iDSVideoRendererType)
-			s.iDSVideoRendererType = VIDRNDT_DS_OVERLAYMIXER;
+		if(	1 ){ // ( s.iDSVideoRendererType == VIDRNDT_DS_OVERLAYMIXER || VIDRNDT_DS_OLDRENDERER == s.iDSVideoRendererType)
+			s.iDSVideoRendererType = VIDRNDT_DS_OLDRENDERER;
 			pFGF = new CFGFilterInternal<CSVPSubFilter>(
-				L"SVPlayer 字幕组件" ,
+				L"射手播放器字幕组件" ,
 				MERIT64_ABOVE_DSHOW );
 			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_YV12);
 			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_I420);

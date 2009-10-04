@@ -191,8 +191,13 @@ UESAPI.prototype = {
     },
     realsetcurblock:function(idname){
     	 this.blockCur = idname;
+    	 var obtg = this.fobj("lastpanelid");
+    	 	if(obtg){
+    	 		obtg.innerHTML = idname;
+    	 	}
     	 if(!this.isinHoving(idname)){
     	 	this.setcurblock(idname);
+    	 	
     	 }
         var pannelset = this.fobj("pannelset");
         if(pannelset){
@@ -621,7 +626,7 @@ i {font-size: 9pt;font-style :normal;color: #747474;}
 </style>
 </head>
 <body id="CUESettingPanel" onload="myInit();" >
-<div id='isvista' style="display:none"></div>
+<div id='isvista' style="display:none"></div><div id='lastpanelid' style="display:none"></div>
 <div id='initvarblock' style="display:none"></div><div id='haveCUDAforCoreAVC' style="display:none"></div><div id='canFFGPU' style="display:none"></div><div id='decodervalue' style="display:none"></div>
 <table width="100%" style="height:100%;" >
 <tr >

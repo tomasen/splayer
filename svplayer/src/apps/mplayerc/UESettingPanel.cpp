@@ -124,6 +124,7 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_DHtml_ElementInnerHtml (pDX, _T("startupcheckexts"), m_sgi_startupcheckexts);
 	DDX_DHtml_ElementInnerHtml (pDX, _T("gpulist"), m_sgs_gpulist);
 	DDX_DHtml_ElementInnerHtml (pDX, _T("decodervalue"), m_sgs_decoderinitvalue);
+	DDX_DHtml_ElementInnerHtml (pDX, _T("lastpanelid"), m_sgs_lastpanelid);
 
 	DDX_DHtml_ElementValue (pDX, _T("subfont1"), m_sgs_subfont1);
 	DDX_DHtml_SelectValue( pDX, _T("subalign1"), m_sgs_subalign1);
@@ -233,6 +234,9 @@ BOOL CUESettingPanel::OnInitDialog()
 
 	
 	SetIcon(AfxGetApp()->LoadIcon(IDR_MAINFRAME), TRUE);
+
+
+	AppSettings& s = AfxGetAppSettings();
 	switch(this->idPage){
 		case IDD_PPAGEAUDIOSWITCHER:
 			m_sgs_initblock = _T("audiosetting");
@@ -240,10 +244,10 @@ BOOL CUESettingPanel::OnInitDialog()
 		case IDD_PPAGESUBTITLES:
 			m_sgs_initblock = _T("subsetting");
 			break;
+		default:
+			m_sgs_initblock = s.szUELastPanel;
+			break;
 	}
-
-	AppSettings& s = AfxGetAppSettings();
-
 	
 	CPath updPath( svpTool.GetPlayerPath(_T("UPD")));
 	updPath.AddBackslash();
@@ -896,6 +900,10 @@ BOOL CUESettingPanel::PreTranslateMessage(MSG* pMsg)
 void CUESettingPanel::OnCancel()
 {
 	// TODO: Add your specialized code here and/or call the base class
+	UpdateData(TRUE);
+	AppSettings& s = AfxGetAppSettings();
+	s.szUELastPanel = m_sgs_lastpanelid;
+
 	DestroyWindow();
 
 	//CDHtmlDialog::OnCancel();
@@ -910,6 +918,9 @@ void CUESettingPanel::OnOK()
 		// The UpdateData routine will set focus to correct item
 		return;
 	}
+	AppSettings& s = AfxGetAppSettings();
+	s.szUELastPanel = m_sgs_lastpanelid;
+	
 	DestroyWindow();
 
 	//CDHtmlDialog::OnOK();

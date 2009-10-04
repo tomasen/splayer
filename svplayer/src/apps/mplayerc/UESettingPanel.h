@@ -80,6 +80,7 @@ class CUESettingPanel : public CDHtmlDialog
 	CString m_sgs_FFGPU;
 	CString m_sgi_startupcheckexts;
 	CString m_sgs_decoderinitvalue;
+	CString m_sgs_lastpanelid;
 	CString m_sgs_gpulist;
 	CString m_sgs_videorender;
 	CString m_sgs_decoder;

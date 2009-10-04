@@ -561,6 +561,8 @@ public:
 		UINT lastWindowType;
 		CSize AspectRatio;
 		bool fKeepHistory;
+
+		CString szUELastPanel;
 		
 		bool bHasCUDAforCoreAVC;
 		bool bSupportFFGPU;

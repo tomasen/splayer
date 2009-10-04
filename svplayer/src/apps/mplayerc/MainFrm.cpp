@@ -7103,10 +7103,13 @@ void CMainFrame::OnPlayPlay()
 
 		MoveVideoWindow();
 	}else{
-		if(m_wndPlaylistBar.GetCount()){
-			OpenCurPlaylistItem();
-		}else
-			SendMessage(WM_COMMAND, ID_FILE_OPENMEDIA);
+		if(m_WndSizeInited >= 2){
+			if(m_wndPlaylistBar.GetCount()){
+				OpenCurPlaylistItem();
+			//}else
+			//	SendMessage(WM_COMMAND, ID_FILE_OPENMEDIA);
+		}
+		
 	}
 
 	

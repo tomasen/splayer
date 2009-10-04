@@ -930,9 +930,9 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if(s.bUserAeroUI()){
 
 		if(s.bAeroGlassAvalibility){
-			ModifyStyle(0, WS_POPUP);
-			ModifyStyleEx(  0, WS_EX_LAYERED);
-			SetLayeredWindowAttributes( 0, 0xff, LWA_ALPHA);
+			//ModifyStyle(0, WS_POPUP);
+			//ModifyStyleEx(  0, WS_EX_LAYERED);
+			//SetLayeredWindowAttributes( 0, 0xff, LWA_ALPHA);
 		}
 
 		//m_wndView.ModifyStyle(0, WS_POPUP);

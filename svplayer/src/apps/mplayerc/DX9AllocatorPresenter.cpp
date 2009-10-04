@@ -1490,7 +1490,7 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 	if(m_pRefClock){
 		m_pD3DDev->GetRasterStatus(0, &rasterStatus);	
 		m_uScanLineEnteringPaint = rasterStatus.ScanLine;
-		m_pRefClock->GetTime(&rtCurRefTime);
+		if(m_pRefClock) m_pRefClock->GetTime(&rtCurRefTime);
 		msSyncOffset = (m_ScreenSizeCurrent.cy - m_uScanLineEnteringPaint) * m_dDetectedScanlineTime;
 		rtSyncOffset = REFERENCE_TIME(10000.0 * msSyncOffset);
 		m_rtEstVSyncTime = rtCurRefTime + rtSyncOffset;

@@ -65,6 +65,11 @@ public:
 	void findMoreFileByDir(  CString szDir, CAtlList<CString>&  szaRet,  CAtlArray<CString>& szaExt , BOOL bSubDir = false);
 	BOOL GetDirectoryLeft(CPath* tPath, int rCount );
 	static BOOL isAlaphbet(WCHAR wchr);
+
+	HWND m_hWnd;
+	UINT GetAdapter(LPVOID lpD3D);
+	bool TestD3DCreationAbility(HWND hWnd);
+
 private:
 	CStringArray szaTmpFileNames;
 };

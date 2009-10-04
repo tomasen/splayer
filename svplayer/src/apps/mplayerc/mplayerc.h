@@ -344,7 +344,7 @@ public:
 	HRESULT (__stdcall * m_pCloseThemeData)(HTHEME hTheme);
 	HRESULT (__stdcall * m_pDrawThemeTextEx)( HTHEME hTheme, HDC hdc,int iPartId,int iStateId,LPCWSTR pszText,int iCharCount,DWORD dwFlags,LPRECT pRect,const DTTOPTS *pOptions);
 	HRESULT (__stdcall * m_pDwmDefWindowProc)( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, LRESULT *plResult);
-
+	HRESULT (__stdcall * m_pDirect3DCreate9Ex)(UINT SDKVersion, LPVOID**);
 
 	// === CASIMIR666 : Ajout CMPlayerCApp
 	bool		m_fTearingTest;

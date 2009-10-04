@@ -507,9 +507,9 @@ HRESULT CFGFilterVideoRenderer::Create(IBaseFilter** ppBF, CInterfaceList<IUnkno
 				*ppBF = CComQIPtr<IBaseFilter>(pRenderer).Detach();
 				pUnks.AddTail(pCAP);
 				
-				//AfxGetAppSettings().bDontNeedSVPSubFilter = true;
+				AfxGetAppSettings().bDontNeedSVPSubFilter = true;
 
-				//SVP_LogMsg5(L"RenderIsOn");
+				SVP_LogMsg5(L"RenderIsOn");
 			
 			}
 		}

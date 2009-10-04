@@ -24,6 +24,7 @@
 
 #include "stdafx.h"
 #include <imagehlp.h>
+
 #include "mplayerc.h"
 #include <atlsync.h>
 #include <Tlhelp32.h>
@@ -1561,6 +1562,12 @@ BOOL CMPlayerCApp::InitInstance()
 
 	}else
 		m_s.bAeroGlassAvalibility = false;
+
+	HMODULE hD3D9 = LoadLibrary(L"d3d9.dll");
+	if (hD3D9)
+		(FARPROC &)m_pDirect3DCreate9Ex = GetProcAddress(hD3D9, "Direct3DCreate9Ex");
+	else
+		m_pDirect3DCreate9Ex = NULL;
 
 	m_s.UpdateData(false);
 	if (m_s.nCLSwitches & CLSW_ADMINOPTION)

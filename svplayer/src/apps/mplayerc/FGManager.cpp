@@ -766,7 +766,7 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 			if ( FGID == GUIDFromCString(_T("{1643E180-90F5-11CE-97D5-00AA0055595A}")) ) continue;  //Color Space Converter
 			//if ( FGID == GUIDFromCString(_T("{CF49D4E0-1115-11CE-B03A-0020AF0BA770}")) ) continue;  //AVI Decompressor
 			
-			SVP_LogMsg5(_T("FGM: Connecting '%s' %s "), szFName, CStringFromGUID(pFGF->GetCLSID()) );
+			SVP_LogMsg5(_T("FGM: Connecting '%s' %s %d"), szFName, CStringFromGUID(pFGF->GetCLSID()) , s.bDontNeedSVPSubFilter);
 			//AfxGetAppSettings().szFGMLog.AppendFormat(_T("\r\nFGM: Connecting '%s' %s "), szFName, CStringFromGUID(pFGF->GetCLSID()) );
 
 			CComPtr<IBaseFilter> pBF;
@@ -1317,7 +1317,22 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	}else{
 		s.DXVAFilters = ~0;
 	}
-	
+
+	if(s.iSVPRenderType ){
+		s.iDSVideoRendererType = VIDRNDT_DS_VMR9RENDERLESS;
+		s.iRMVideoRendererType = VIDRNDT_RM_DX9;
+		s.iQTVideoRendererType = VIDRNDT_QT_DX9;
+		s.iAPSurfaceUsage = VIDRNDT_AP_TEXTURE3D;
+	}else{// if(m_sgs_videorender == _T("DX7"))
+		s.iSVPRenderType = 0; 
+		if(AfxGetMyApp()->IsVista())
+			s.iDSVideoRendererType = VIDRNDT_DS_OLDRENDERER;
+		else
+			s.iDSVideoRendererType = VIDRNDT_DS_OVERLAYMIXER;
+
+		s.iRMVideoRendererType = VIDRNDT_RM_DEFAULT;
+		s.iQTVideoRendererType = VIDRNDT_QT_DEFAULT;
+	}
 	
 	CFGFilter* pFGF;
 
@@ -2408,6 +2423,14 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 	// NVIDIA Transport Demux crashed for someone, I could not reproduce it
 	m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{735823C1-ACC4-11D3-85AC-006008376FB8}")), MERIT64_DO_NOT_USE));	
 */
+
+	if(s.iDSVideoRendererType != VIDRNDT_DS_OVERLAYMIXER ){
+		// {CD8743A1-3736-11d0-9E69-00C04FD7C15B}
+		m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{CD8743A1-3736-11d0-9E69-00C04FD7C15B}")), MERIT64_DO_NOT_USE));
+		//m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{95F57653-71ED-42BA-9131-986CA0C6514F}")), MERIT64_DO_NOT_USE)); //disable overlay
+		//m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("F683B0C4-AF99-4B62-87B1-947C1075EF4F")) , MERIT64_DO_NOT_USE)); //SMV
+	}
+
 	// mainconcept color space converter
 	m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{272D77A0-A852-4851-ADA4-9091FEAD4C86}")), MERIT64_DO_NOT_USE));
 	
@@ -2418,37 +2441,7 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 			m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{9852A670-F845-491B-9BE6-EBD841B8A613}")), MERIT64_DO_NOT_USE));			
 		//}
 //	}
-
-		if(	s.iSVPRenderType == 0 ){ // ( s.iDSVideoRendererType == VIDRNDT_DS_OVERLAYMIXER || VIDRNDT_DS_OLDRENDERER == s.iDSVideoRendererType)
-			s.bDontNeedSVPSubFilter = false;
-			///
-			if(AfxGetMyApp()->IsVista())
-				s.iDSVideoRendererType = VIDRNDT_DS_OLDRENDERER;
-			else
-				s.iDSVideoRendererType = VIDRNDT_DS_OVERLAYMIXER;
-			//*/
-			pFGF = new CFGFilterInternal<CSVPSubFilter>(
-				L"ÉäÊÖ²¥·ÅÆ÷×ÖÄ»×é¼þ" ,
-				MERIT64_ABOVE_DSHOW );
-			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_YV12);
-			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_I420);
-			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_IYUV);
-			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_YUY2);
-			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RGB32);
-			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RGB24);
-			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RGB565);
-			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RGB555);
-
-			m_transform.AddTail(pFGF);
-		}
-
-	if(s.iDSVideoRendererType != VIDRNDT_DS_OVERLAYMIXER ){
-		// {CD8743A1-3736-11d0-9E69-00C04FD7C15B}
-		m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{CD8743A1-3736-11d0-9E69-00C04FD7C15B}")), MERIT64_DO_NOT_USE));
-		//m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{95F57653-71ED-42BA-9131-986CA0C6514F}")), MERIT64_DO_NOT_USE)); //disable overlay
-		//m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("F683B0C4-AF99-4B62-87B1-947C1075EF4F")) , MERIT64_DO_NOT_USE)); //SMV
-	}
-
+			
 	
 	m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{3D446B6F-71DE-4437-BE15-8CE47174340F}")), MERIT64_DO_NOT_USE)); //AC3Filter
 	m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{04FE9017-F873-410E-871E-AB91661A4EF7}")), MERIT64_DO_NOT_USE)); //ffdshow video
@@ -2458,9 +2451,9 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 
 	SVP_ForbidenCoreAVCTrayIcon();
 
-
-	CStringArray szaExtFilterPaths;
 	CSVPToolBox svptoolbox;
+	CStringArray szaExtFilterPaths;
+	
 	szaExtFilterPaths.RemoveAll();
 	
 	//if(!s.onlyUseInternalDec){
@@ -2672,6 +2665,26 @@ CFGManagerPlayer::CFGManagerPlayer(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	CFGFilter* pFGF;
 
 	AppSettings& s = AfxGetAppSettings();
+	
+	CSVPToolBox svptoolbox;
+	if( 1 && ( s.iSVPRenderType == 0 ) || !svptoolbox.TestD3DCreationAbility(m_hWnd) ){ // ( s.iDSVideoRendererType == VIDRNDT_DS_OVERLAYMIXER || VIDRNDT_DS_OLDRENDERER == s.iDSVideoRendererType)
+		s.bDontNeedSVPSubFilter = false;
+		
+		pFGF = new CFGFilterInternal<CSVPSubFilter>(
+			L"ÉäÊÖ²¥·ÅÆ÷×ÖÄ»×é¼þ" ,
+			MERIT64_ABOVE_DSHOW );
+		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_YV12);
+		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_I420);
+		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_IYUV);
+		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_YUY2);
+		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RGB32);
+		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RGB24);
+		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RGB565);
+		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RGB555);
+
+		m_transform.AddTail(pFGF);
+	}
+
 
 	if(m_pFM)
 	{
@@ -2763,6 +2776,7 @@ CFGManagerPlayer::CFGManagerPlayer(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 
 		if ( (CMPlayerCApp::IsVista() || (!CMPlayerCApp::IsVista() && s.useGPUAcel) ) && !s.bDisableEVR ) //s.fVMRGothSyncFix )//
 			m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_EVRAllocatorPresenter, L"EVRäÖÈ¾Æ÷", m_vrmerit+1));
+
 
 		m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VMR9AllocatorPresenter, L"DX9(VMR)äÖÈ¾Æ÷", m_vrmerit));
 		m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VMR7AllocatorPresenter, L"DX7(VMR)äÖÈ¾Æ÷", m_vrmerit-1));

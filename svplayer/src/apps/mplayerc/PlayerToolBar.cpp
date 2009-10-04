@@ -957,6 +957,20 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
 					iStepPow = min(8, iStepPow);
 					iMsg += iStepPow;
 				}
+
+				
+								pFrame->KillTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER);
+				
+								
+								if( pFrame->IsSomethingLoaded()){
+									AppSettings& s = AfxGetAppSettings();
+									if(s.bUserAeroUI())
+										pFrame->SetTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER, 7000, NULL);
+									else
+										pFrame->SetTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
+								}
+								
+				
 				pFrame->PostMessage( WM_COMMAND, iMsg);
 			}
 			break;
@@ -965,8 +979,14 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
 				KillTimer(TIMER_CLOSETOOLBAR);
 				CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
 				if(pFrame->m_fFullScreen && pFrame->IsSomethingLoaded()){
-					pFrame->m_notshowtoolbarforawhile = 3;
-					pFrame->ShowControls(0, FALSE);
+					AppSettings& s = AfxGetAppSettings();
+					if(s.bUserAeroUI()){
+						pFrame->KillTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER);
+						SetTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER,100, NULL);
+					}else{
+						pFrame->m_notshowtoolbarforawhile = 3;
+						pFrame->ShowControls(0, FALSE);
+					}
 				}
 				
 			}

@@ -652,7 +652,7 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 				continue;
 			//if(GetCLSID(pPinOut) == GUIDFromCString(_T("{95F57653-71ED-42BA-9131-986CA0C6514F}")) || GetCLSID(pBF) == GUIDFromCString(_T("{95F57653-71ED-42BA-9131-986CA0C6514F}")) ) continue;
 
-			SVP_LogMsg5(_T(" Try filters in the graph %s %s") , CStringFromGUID(GetCLSID(pPinOut)) , CStringFromGUID(GetCLSID(pBF)));
+			//SVP_LogMsg5(_T(" Try filters in the graph %s %s") , CStringFromGUID(GetCLSID(pPinOut)) , CStringFromGUID(GetCLSID(pBF)));
 			pBFs.AddTail(pBF);
 		}
 		EndEnumFilters

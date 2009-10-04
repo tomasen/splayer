@@ -3925,7 +3925,10 @@ void CMainFrame::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 		if((::GetKeyState(VK_SHIFT)&0x8000)){
 			SeekTo(m_wndSeekBar.GetPos(), 0);
 		}else{
-			SeekTo(m_wndSeekBar.GetPos() , 1);
+			__int64 t_start_time,t_stop_time;
+			m_wndSeekBar.GetRange(t_start_time, t_stop_time);
+			
+			SeekTo(m_wndSeekBar.GetPos() , 1, _abs64(t_stop_time - t_start_time ) / 100  );
 		}
 	}
 
@@ -7510,7 +7513,7 @@ void CMainFrame::SeekTo(REFERENCE_TIME rtPos, int fSeekToKeyFrame, REFERENCE_TIM
 					if( maxStep <= 0 || ( maxStep > 0 && _abs64( m_kfs[i] - rtPos ) < maxStep ) ){
 						rtPos = m_kfs[i];
 						iKeyFlag = AM_SEEKING_SeekToKeyFrame;
-						//SVP_LogMsg3("Got seek to keyframe");
+						//SVP_LogMsg5(L"Got seek to keyframe");
 					}
 					
 				}

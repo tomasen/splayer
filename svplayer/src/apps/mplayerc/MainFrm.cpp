@@ -7102,12 +7102,13 @@ void CMainFrame::OnPlayPlay()
 		m_wndColorControlBar.CheckAbility();
 
 		MoveVideoWindow();
-	}else{
+	}else if(m_iMediaLoadState == MLS_CLOSED){
 		if(m_WndSizeInited >= 2){
 			if(m_wndPlaylistBar.GetCount()){
 				OpenCurPlaylistItem();
 			//}else
 			//	SendMessage(WM_COMMAND, ID_FILE_OPENMEDIA);
+			}
 		}
 		
 	}

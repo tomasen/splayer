@@ -752,10 +752,10 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 			
 			CLSID FGID = pFGF->GetCLSID() ;
 
-			if(s.bDontNeedSVPSubFilter) {
+			//if(s.bDontNeedSVPSubFilter) {
 				if (szFName.Find(_T("DirectVobSub")) >= 0 ) continue;
-				if (FGID == GUIDFromCString(_T("{E8D381DD-8C7D-4a6f-96ED-92BBB64064CF}"))  ) continue;
-			}
+				//if (FGID == GUIDFromCString(_T("{E8D381DD-8C7D-4a6f-96ED-92BBB64064CF}"))  ) continue;
+			//}
 
 			
 			if (s.TraFilters & TRA_AC3 && szFName.Find(_T("AC3Filter")) >= 0 ) continue; //disable AC3 filter if internal AC3 is enabled

@@ -530,7 +530,7 @@ HRESULT CFGFilterVideoRenderer::Create(IBaseFilter** ppBF, CInterfaceList<IUnkno
 				
 				AfxGetAppSettings().bDontNeedSVPSubFilter = true;
 
-				SVP_LogMsg5(L"RenderIsOn");
+				//SVP_LogMsg5(L"RenderIsOn");
 			
 			}
 		}
@@ -557,7 +557,7 @@ HRESULT CFGFilterVideoRenderer::Create(IBaseFilter** ppBF, CInterfaceList<IUnkno
 	if(!*ppBF) hr = E_FAIL;
 	
 	//m_lastpBFF = *ppBF;
-	SVP_LogMsg5(L"CFGFilterVideoRenderer::Create Done");
+	//SVP_LogMsg5(L"CFGFilterVideoRenderer::Create Done");
 	//m_lastCreateHr = hr;
 	return hr;
 }

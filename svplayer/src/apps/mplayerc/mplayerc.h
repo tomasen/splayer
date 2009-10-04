@@ -692,6 +692,7 @@ public:
 		void RegGlobalAccelKey(HWND hWnd = NULL);
 		void UpdateData(bool fSave);
 		BOOL bUserAeroUI();
+		CString GetSVPSubStorePath();
 		BOOL bUserAeroTitle();
 		int  FindWmcmdsIDXofCmdid(UINT cmdid, POSITION pos);
 		POSITION  FindWmcmdsPosofCmdidByIdx(INT cmdid, int idx);

@@ -212,7 +212,7 @@ void CPlayerPlaylistBar::AddItem(CAtlList<CString>& fns, CAtlList<CString>* subs
 		paths.Add(_T(".\\subtitles"));
 		paths.Add(_T(".\\Subs"));
 		paths.Add(_T("c:\\subtitles"));
-		paths.Add(s.SVPSubStoreDir);
+		paths.Add(s.GetSVPSubStorePath());
 		paths.Add();
 
 		CAtlArray<SubFile> ret;

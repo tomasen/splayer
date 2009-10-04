@@ -2625,6 +2625,35 @@ void CMPlayerCApp::Settings::SetChannelMapByNumberOfSpeakers( int iSS , int iNum
 	fCustomChannelMapping = true;//!IsVista();
 
 }
+CString CMPlayerCApp::Settings::GetSVPSubStorePath(){
+	CString StoreDir = SVPSubStoreDir;
+	CSVPToolBox svpTool;
+	if(StoreDir.IsEmpty() || !svpTool.ifDirExist(StoreDir) || !svpTool.ifDirWritable(StoreDir)){
+		StoreDir =  svpTool.GetPlayerPath(_T("SVPSub"));
+		_wmkdir(StoreDir);
+		if(StoreDir.IsEmpty() || !svpTool.ifDirExist(StoreDir) || !svpTool.ifDirWritable(StoreDir)){
+			svpTool.GetAppDataPath(StoreDir);
+			CPath tmPath(StoreDir);
+			tmPath.RemoveBackslash();
+			tmPath.AddBackslash();
+			tmPath.Append( _T("SVPSub"));
+			StoreDir = (CString)tmPath;
+			_wmkdir(StoreDir);
+			if(StoreDir.IsEmpty() || !svpTool.ifDirExist(StoreDir) || !svpTool.ifDirWritable(StoreDir)){
+
+				//WTF cant create fordler ?
+				StoreDir = _T("%temp%");
+				
+			}else{
+				SVPSubStoreDir = StoreDir;
+			}
+		}else{
+			SVPSubStoreDir = StoreDir;
+		}
+	}
+
+	return StoreDir;
+}
 BOOL CMPlayerCApp::Settings::bUserAeroUI(){
 	return  (bAeroGlassAvalibility && bAeroGlass) || bTransControl;
 }
@@ -3142,6 +3171,22 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		}
 		iRMVideoRendererType = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_RMVIDEORENDERERTYPE), ( (IsVista() || iDXVer >= 9) ? VIDRNDT_RM_DX9 : VIDRNDT_RM_DX7 ) );
 		iQTVideoRendererType = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_QTVIDEORENDERERTYPE),  ( (IsVista() || iDXVer >= 9) ? VIDRNDT_QT_DX9 : VIDRNDT_QT_DX7 ) );
+		if(iSVPRenderType ){
+			iDSVideoRendererType = VIDRNDT_DS_VMR9RENDERLESS;
+			iRMVideoRendererType = VIDRNDT_RM_DX9;
+			iQTVideoRendererType = VIDRNDT_QT_DX9;
+			iAPSurfaceUsage = VIDRNDT_AP_TEXTURE3D;
+		}else{// if(m_sgs_videorender == _T("DX7"))
+			iSVPRenderType = 0; 
+			if(IsVista())
+				iDSVideoRendererType = VIDRNDT_DS_OLDRENDERER;
+			else
+				iDSVideoRendererType = VIDRNDT_DS_OVERLAYMIXER;
+
+			iRMVideoRendererType = VIDRNDT_RM_DEFAULT;
+			iQTVideoRendererType = VIDRNDT_QT_DEFAULT;
+		}
+
 		iAPSurfaceUsage = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_APSURACEFUSAGE), VIDRNDT_AP_TEXTURE3D);
 		iAPSurfaceUsage = VIDRNDT_AP_TEXTURE3D;
 		useGPUCUDA = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEGPUCUDA), 0);

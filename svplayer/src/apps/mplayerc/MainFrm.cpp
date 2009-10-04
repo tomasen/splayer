@@ -10298,7 +10298,7 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 			//搜索目录下同名字幕
 			CAtlArray<CString> subSearchPaths;
 			subSearchPaths.Add(_T("."));
-			subSearchPaths.Add(s.SVPSubStoreDir);
+			subSearchPaths.Add(s.GetSVPSubStorePath());
 			subSearchPaths.Add(_T(".\\subtitles"));
 			subSearchPaths.Add(_T(".\\Subs"));
 			subSearchPaths.Add(_T("c:\\subtitles"));
@@ -11338,7 +11338,16 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 		pGB->FindInterface(__uuidof(ISubPicAllocatorPresenter2), (void**)&m_pCAP2, TRUE);
 		pGB->FindInterface(__uuidof(IVMRMixerControl9),			(void**)&m_pMC,  TRUE);
 	
-		
+
+		if(!m_pCAP){
+			//SVP_LogMsg5(L"No m_pCAP");
+			CComQIPtr<ISubPicAllocatorPresenter> pCAP =  FindFilter(__uuidof(CSVPSubFilter), pGB);
+			if(pCAP){
+				//SVP_LogMsg5(L"Got m_pCAP");
+				m_pCAP = pCAP;
+			}
+		}
+
 		if (m_pMC)
 		{
 			SetVMR9ColorControl(s.dBrightness, s.dContrast, s.dHue, s.dSaturation);
@@ -11354,12 +11363,6 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 			//AfxMessageBox(_T("m_pMFVDC"));
 		}
 		
-		if(!m_pCAP){
-			CComQIPtr<ISubPicAllocatorPresenter> pCAP =  FindFilter(__uuidof(CSVPSubFilter), pGB);
-			if(pCAP){
-				m_pCAP = pCAP;
-			}
-		}
 
 		if(m_fOpeningAborted) throw aborted;
 

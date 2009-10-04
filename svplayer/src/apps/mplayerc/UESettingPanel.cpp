@@ -349,7 +349,7 @@ BOOL CUESettingPanel::OnInitDialog()
 
 	 //Sub Setting
 	m_sgi_chkautodownloadsvpsub = s.autoDownloadSVPSub;
-	m_sgs_savesvpstorepath = s.SVPSubStoreDir;
+	m_sgs_savesvpstorepath = s.GetSVPSubStorePath();
 	m_sgs_subfont1.Format( _T("%s(%d)"), s.subdefstyle.fontName , (INT)s.subdefstyle.fontSize);
 	m_sgs_subalign1.Format( _T("%d") , s.subdefstyle.scrAlignment ); 
 	m_sgi_suboveride1 = s.fOverridePlacement;

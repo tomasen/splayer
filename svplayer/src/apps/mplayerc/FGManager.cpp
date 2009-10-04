@@ -2665,25 +2665,6 @@ CFGManagerPlayer::CFGManagerPlayer(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	CFGFilter* pFGF;
 
 	AppSettings& s = AfxGetAppSettings();
-	
-	CSVPToolBox svptoolbox;
-	if( 1 && ( s.iSVPRenderType == 0 ) || !svptoolbox.TestD3DCreationAbility(m_hWnd) ){ // ( s.iDSVideoRendererType == VIDRNDT_DS_OVERLAYMIXER || VIDRNDT_DS_OLDRENDERER == s.iDSVideoRendererType)
-		s.bDontNeedSVPSubFilter = false;
-		
-		pFGF = new CFGFilterInternal<CSVPSubFilter>(
-			L"ÉäÊÖ²¥·ÅÆ÷×ÖÄ»×é¼þ" ,
-			MERIT64_ABOVE_DSHOW );
-		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_YV12);
-		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_I420);
-		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_IYUV);
-		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_YUY2);
-		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RGB32);
-		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RGB24);
-		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RGB565);
-		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RGB555);
-
-		m_transform.AddTail(pFGF);
-	}
 
 
 	if(m_pFM)
@@ -2730,6 +2711,46 @@ CFGManagerPlayer::CFGManagerPlayer(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 
 		m_armerit += 0x100;
 	}
+/*
+
+
+	CComPtr<IBaseFilter> pBF;
+	CInterfaceList<IUnknown, &IID_IUnknown> pUnks;
+	HRESULT d3dhr;
+	CFGFilterVideoRenderer* pFGRVMR9 = new CFGFilterVideoRenderer(m_hWnd, CLSID_VMR9AllocatorPresenter, L"DX9(VMR)äÖÈ¾Æ÷", m_vrmerit);
+	CFGFilterVideoRenderer* pFGREVR;
+	if ( (CMPlayerCApp::IsVista()  ) && !s.bDisableEVR ) {
+		pFGREVR = new CFGFilterVideoRenderer(m_hWnd, CLSID_EVRAllocatorPresenter, L"EVRäÖÈ¾Æ÷", m_vrmerit+1);
+		d3dhr = pFGREVR->Create(&pBF, pUnks);
+	}else{
+		d3dhr = pFGRVMR9->Create(&pBF, pUnks);
+
+
+	}
+	
+	FAILED(d3dhr)*/
+
+	
+
+		CSVPToolBox svptoolbox;
+	if( 1 && ( s.iSVPRenderType == 0 || !svptoolbox.TestD3DCreationAbility(m_hWnd))  ){ //( s.iDSVideoRendererType == VIDRNDT_DS_OVERLAYMIXER || VIDRNDT_DS_OLDRENDERER == s.iDSVideoRendererType)
+		s.bDontNeedSVPSubFilter = false;
+
+		pFGF = new CFGFilterInternal<CSVPSubFilter>(
+			L"ÉäÊÖ²¥·ÅÆ÷×ÖÄ»×é¼þ" ,
+			MERIT64_ABOVE_DSHOW );
+		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_YV12);
+		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_I420);
+		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_IYUV);
+		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_YUY2);
+		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RGB32);
+		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RGB24);
+		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RGB565);
+		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RGB555);
+
+		m_transform.AddTail(pFGF);
+	}
+
 
 	// Switchers
 
@@ -2774,9 +2795,9 @@ CFGManagerPlayer::CFGManagerPlayer(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		if(s.iDSVideoRendererType == VIDRNDT_DS_VMR7RENDERLESS)
 			m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VMR7AllocatorPresenter, L"DX7(VMR)äÖÈ¾Æ÷", m_vrmerit+5));
 
-		if ( (CMPlayerCApp::IsVista() || (!CMPlayerCApp::IsVista() && s.useGPUAcel) ) && !s.bDisableEVR ) //s.fVMRGothSyncFix )//
-			m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_EVRAllocatorPresenter, L"EVRäÖÈ¾Æ÷", m_vrmerit+1));
 
+		if ( (CMPlayerCApp::IsVista()  ) && !s.bDisableEVR ) //s.fVMRGothSyncFix )//|| (!CMPlayerCApp::IsVista() && s.useGPUAcel) // No EVR for XP!
+			m_transform.AddTail( new CFGFilterVideoRenderer(m_hWnd, CLSID_EVRAllocatorPresenter, L"EVRäÖÈ¾Æ÷", m_vrmerit+1));
 
 		m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VMR9AllocatorPresenter, L"DX9(VMR)äÖÈ¾Æ÷", m_vrmerit));
 		m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VMR7AllocatorPresenter, L"DX7(VMR)äÖÈ¾Æ÷", m_vrmerit-1));

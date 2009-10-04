@@ -587,7 +587,7 @@ HRESULT CDX9AllocatorPresenter::CreateDevice( )
 		CExternalPixelShader &Shader = m_pPixelShaders.GetNext(pos);
 		Shader.m_pPixelShader = NULL;
 	}
-
+//SVP_LogMsg5(L"CDX9AllocatorPresenter::CreateDevice start");
 	m_pD3DEx = NULL;
 	m_pD3D = NULL;
 
@@ -762,7 +762,7 @@ HRESULT CDX9AllocatorPresenter::CreateDevice( )
 							&pp, &m_pD3DDev);
 		}
 	}
-
+//SVP_LogMsg5(L"CDX9AllocatorPresenter::CreateDevice end");
 	if (m_pD3DDevEx)
 	{
 		m_pD3DDevEx->SetGPUThreadPriority(7);

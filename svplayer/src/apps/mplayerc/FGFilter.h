@@ -20,7 +20,9 @@
  */
 
 #pragma once
-
+#include "DX7AllocatorPresenter.h"
+#include "DX9AllocatorPresenter.h"
+#include "EVRAllocatorPresenter.h"
 #define MERIT64(merit) (((UINT64)(merit))<<16)
 #define MERIT64_DO_NOT_USE MERIT64(MERIT_DO_NOT_USE)
 #define MERIT64_DO_USE MERIT64(MERIT_DO_NOT_USE+1)
@@ -111,11 +113,18 @@ class CFGFilterVideoRenderer : public CFGFilter
 {
 protected:
 	HWND m_hWnd;
-
+	/*
+	HRESULT m_lastCreateHr;
+		CComPtr<ISubPicAllocatorPresenterRender> pCAP;
+		CComQIPtr<IMixerPinConfig, &IID_IMixerPinConfig> pMPC;
+		IBaseFilter* m_lastpBFF;
+		CComPtr<IUnknown> pRenderer;*/
+	
 public:
 	CFGFilterVideoRenderer(HWND hWnd, const CLSID& clsid, CStringW name = L"", UINT64 merit = MERIT64_DO_USE);
 
 	HRESULT Create(IBaseFilter** ppBF, CInterfaceList<IUnknown, &IID_IUnknown>& pUnks);
+
 };
 
 class CFGFilterList

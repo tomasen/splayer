@@ -22,9 +22,7 @@
 #include "stdafx.h"
 #include "FGFilter.h"
 #include "..\..\DSUtil\DSUtil.h"
-#include "DX7AllocatorPresenter.h"
-#include "DX9AllocatorPresenter.h"
-#include "EVRAllocatorPresenter.h"
+
 #include "..\..\..\include\moreuuids.h"
 
 #include "mplayerc.h"
@@ -477,6 +475,7 @@ HRESULT CFGFilterFile::Create(IBaseFilter** ppBF, CInterfaceList<IUnknown, &IID_
 CFGFilterVideoRenderer::CFGFilterVideoRenderer(HWND hWnd, const CLSID& clsid, CStringW name, UINT64 merit) 
 	: CFGFilter(clsid, name, merit)
 	, m_hWnd(hWnd)
+//	, m_lastCreateHr(SEC_E_OUT_OF_SEQUENCE)
 {
 	AddType(MEDIATYPE_Video, MEDIASUBTYPE_NULL);
 }
@@ -484,17 +483,39 @@ CFGFilterVideoRenderer::CFGFilterVideoRenderer(HWND hWnd, const CLSID& clsid, CS
 HRESULT CFGFilterVideoRenderer::Create(IBaseFilter** ppBF, CInterfaceList<IUnknown, &IID_IUnknown>& pUnks)
 {
 	CheckPointer(ppBF, E_POINTER);
-
+	/*
+	SVP_LogMsg5(L"CFGFilterVideoRenderer::Create start");
+		if(m_lastCreateHr != SEC_E_OUT_OF_SEQUENCE){
+			if(m_lastCreateHr == S_OK){
+				if(pCAP){
+					CComPtr<IUnknown> pRenderer;
+	
+	
+					if( SUCCEEDED( pCAP->CreateRenderer(&pRenderer)))
+					{
+						*ppBF = CComQIPtr<IBaseFilter>(pRenderer).Detach();
+						pUnks.AddTail(pCAP);
+						SVP_LogMsg5(L"Render on is cached");
+						return S_OK;
+					}
+					
+				
+				}
+			}
+			
+			
+		}*/
+	
 	HRESULT hr = S_OK;
+	
 
-	CComPtr<ISubPicAllocatorPresenterRender> pCAP;
-
+	
 	if(m_clsid == CLSID_VMR7AllocatorPresenter 
 	|| m_clsid == CLSID_VMR9AllocatorPresenter 
 	|| m_clsid == CLSID_DXRAllocatorPresenter
 	|| m_clsid == CLSID_EVRAllocatorPresenter)
 	{
-		
+		CComPtr<ISubPicAllocatorPresenterRender> pCAP;
 		if(SUCCEEDED(CreateAP7(m_clsid, m_hWnd, &pCAP))
 			|| SUCCEEDED(CreateAP9(m_clsid, m_hWnd, &pCAP))
 			|| SUCCEEDED(CreateEVR(m_clsid, m_hWnd, &pCAP)))
@@ -521,7 +542,7 @@ HRESULT CFGFilterVideoRenderer::Create(IBaseFilter** ppBF, CInterfaceList<IUnkno
 		{
 			BeginEnumPins(pBF, pEP, pPin)
 			{
-				if(CComQIPtr<IMixerPinConfig, &IID_IMixerPinConfig> pMPC = pPin)
+				if(CComQIPtr<IMixerPinConfig, &IID_IMixerPinConfig>  pMPC = pPin)
 				{
 					pUnks.AddTail(pMPC);
 					break;
@@ -534,7 +555,10 @@ HRESULT CFGFilterVideoRenderer::Create(IBaseFilter** ppBF, CInterfaceList<IUnkno
 	}
 
 	if(!*ppBF) hr = E_FAIL;
-
+	
+	//m_lastpBFF = *ppBF;
+	SVP_LogMsg5(L"CFGFilterVideoRenderer::Create Done");
+	//m_lastCreateHr = hr;
 	return hr;
 }
 

@@ -7156,9 +7156,10 @@ void CMainFrame::OnPlayPause()
 
 void CMainFrame::OnPlayPlaypause()
 {
+	//AfxMessageBox(L"1");
 	OAFilterState fs = GetMediaState();
 	if(fs == State_Running) SendMessage(WM_COMMAND, ID_PLAY_PAUSE);
-	else if(fs == State_Stopped || fs == State_Paused) SendMessage(WM_COMMAND, ID_PLAY_PLAY);
+	else  SendMessage(WM_COMMAND, ID_PLAY_PLAY); //if(fs == State_Stopped || fs == State_Paused)
 }
 
 void CMainFrame::OnPlayStop()
@@ -7268,7 +7269,7 @@ void CMainFrame::OnUpdatePlayPauseStop(CCmdUI* pCmdUI)
 			if(fs == State_Stopped && pCmdUI->m_nID == ID_PLAY_PAUSE) fEnable = false;
 		}
 	}
-	if(pCmdUI->m_nID == ID_PLAY_PLAY) fEnable = true;
+	if(pCmdUI->m_nID == ID_PLAY_PLAY || pCmdUI->m_nID == ID_PLAY_PLAYPAUSE) fEnable = true;
 	pCmdUI->Enable(fEnable);
 }
 void CMainFrame::OnChangeVSyncOffset(UINT nID){
@@ -12831,6 +12832,7 @@ void CMainFrame::OnRecentFileEnable(){
 void CMainFrame::OnRecentFileDisable(){
 	AppSettings& s = AfxGetAppSettings();
 	s.fKeepHistory = false;
+	OnRecentFileClear();
 }
 void CMainFrame::SetupRecentFileSubMenu(){
 	CMenu* pSub = &m_recentfiles;
@@ -12849,19 +12851,21 @@ void CMainFrame::SetupRecentFileSubMenu(){
 
 	UINT flags = MF_BYCOMMAND|MF_STRING|MF_ENABLED;
 	CSVPToolBox svpTool;
+	if(s.fKeepHistory){
+		for(int i = 0; i < MRU.GetSize(); i++){
+			if(i > 10)
+				break;
+			if(!MRU[i].IsEmpty()){
+				//SVP_LogMsg5(MRU[i]);
+				if(svpTool.ifFileExist(MRU[i], false)){
+					pSub->AppendMenu(flags, ID_RECENT_FILE_START+i, MRU[i]);
+					nLastGroupStart ++;
+				}
 
-	for(int i = 0; i < MRU.GetSize(); i++){
-		if(i > 10)
-			break;
-		if(!MRU[i].IsEmpty()){
-			//SVP_LogMsg5(MRU[i]);
-			if(svpTool.ifFileExist(MRU[i], false)){
-				pSub->AppendMenu(flags, ID_RECENT_FILE_START+i, MRU[i]);
-				nLastGroupStart ++;
 			}
-			
 		}
 	}
+	
 	if(nLastGroupStart || s.fKeepHistory ){
 		if(nLastGroupStart){
 			pSub->InsertMenu(nLastGroupStart, MF_SEPARATOR|MF_ENABLED|MF_BYPOSITION);

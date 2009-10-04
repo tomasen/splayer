@@ -458,6 +458,7 @@ void CChildView::OnWindowPosChanged(WINDOWPOS* lpwndpos)
 BOOL CChildView::OnPlayPlayPauseStop(UINT nID)
 {
 	if(nID == ID_PLAY_STOP) SetVideoRect();
+	
 	return FALSE;
 }
 

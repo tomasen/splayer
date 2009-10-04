@@ -11222,6 +11222,7 @@ void CMainFrame::ReRenderOrLoadMedia(){
 }
 void CMainFrame::OnEnableDX9(){
 	AppSettings& s = AfxGetAppSettings();
+	s.iSVPRenderType = 1;
 		s.iDSVideoRendererType = 6;
 		s.iRMVideoRendererType = 2;
 		s.iQTVideoRendererType = 2;
@@ -12999,7 +13000,7 @@ void CMainFrame::SetupShadersSubMenu()
 	CWinApp* pApp = AfxGetApp();
 	AppSettings& s = AfxGetAppSettings();
 	
-	if(s.iDSVideoRendererType != 6 || s.iRMVideoRendererType != 2 || s.iQTVideoRendererType != 2 || s.iAPSurfaceUsage != VIDRNDT_AP_TEXTURE3D){
+	if( s.iSVPRenderType == 0 || (this->IsSomethingLoaded() && !m_pCAPR)  ){//s.iDSVideoRendererType != 6 || s.iRMVideoRendererType != 2 || s.iQTVideoRendererType != 2 || s.iAPSurfaceUsage != VIDRNDT_AP_TEXTURE3D
 		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_SHADERS_SETDX9,_T("启用画质模式..."));
 		return;
 	}

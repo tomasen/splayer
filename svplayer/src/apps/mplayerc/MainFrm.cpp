@@ -2624,57 +2624,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 			pMS->GetCurrentPosition(&rtNow);
 			pMS->GetDuration(&rtDur);
 
-			UINT iTotalLenSec = (UINT)( (INT64) rtDur / 20000000 );
-			//如果视频长度大于1分钟， 而且是文件模式，而且正在播放中
-			if ( iTotalLenSec >  180 && m_iPlaybackMode == PM_FILE && GetMediaState() == State_Running) {
-				
-				time_t time_now = time(NULL);
-				
-				UINT totalplayedtime =  time_now - m_tPlayStartTime;
-
-				if( time_now > ( m_tLastLogTick + 180 )){ //如果和上次检查已经超n秒
-					CString fnVideoFile , fnSubtitleFile; 
-					int subDelayMS = 0;
-					fnVideoFile = m_fnCurPlayingFile;
-					fnSubtitleFile = getCurPlayingSubfile(&subDelayMS);
-					
-					
-					if (!fnSubtitleFile.IsEmpty()){ //如果有字幕
-						CString szLog;
-
-						szLog.Format(_T(" %s ( with sub %s delay %d ) %d sec of %d sec ( 1/2 length video = %d ) ") , fnVideoFile, fnSubtitleFile,subDelayMS, totalplayedtime , iTotalLenSec, (UINT)(iTotalLenSec/2)  );
-						SVP_LogMsg(szLog);
-						//if time > 50%
-						if (totalplayedtime > (UINT)(iTotalLenSec/2)){
-							//是否已经上传过呢
-							if(m_fnsAlreadyUploadedSubfile.Find( fnVideoFile+fnSubtitleFile ) < 0 ){
-								//upload subtitle
-								szLog.Format(_T("Uploading sub %s of %s width delay %d ms since user played %d sec of %d sec ( more than 1/2 length video ) ") , fnSubtitleFile, fnVideoFile ,subDelayMS, totalplayedtime , iTotalLenSec  );
-								SVP_LogMsg(szLog);
-								SVP_UploadSubFileByVideoAndSubFilePath(fnVideoFile , fnSubtitleFile, subDelayMS) ;
-								m_fnsAlreadyUploadedSubfile.Append( fnVideoFile+fnSubtitleFile+_T(";") );
-							}
-							int subDelayMS2 = 0;
-							CString fnSubtitleFile2 = getCurPlayingSubfile(&subDelayMS2);
-							if(!fnSubtitleFile2.IsEmpty()){
-								if(m_fnsAlreadyUploadedSubfile.Find( fnVideoFile+fnSubtitleFile2 ) < 0 ){
-									//upload subtitle
-									szLog.Format(_T("Uploading sub2 %s of %s width delay %d ms since user played %d sec of %d sec ( more than 1/2 length video ) ") , fnSubtitleFile2, fnVideoFile ,subDelayMS2, totalplayedtime , iTotalLenSec  );
-									SVP_LogMsg(szLog);
-									SVP_UploadSubFileByVideoAndSubFilePath(fnVideoFile , fnSubtitleFile2, subDelayMS2) ;
-									m_fnsAlreadyUploadedSubfile.Append( fnVideoFile+fnSubtitleFile2+_T(";") );
-								}
-							}
-
-						}
-					}
-					
-
-					m_tLastLogTick = time_now;
-				}
-	
-				
-			}
+			
 			if(m_rtDurationOverride >= 0) rtDur = m_rtDurationOverride;
 
 			m_wndSeekBar.Enable(rtDur > 0);
@@ -2734,7 +2684,75 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 	}
 	else if(nIDEvent == TIMER_STREAMPOSPOLLER2 && m_iMediaLoadState == MLS_LOADED)
 	{
-		
+			/* 去除Layered如果中途切换到无Composition状态，不过看来没什么用
+			AppSettings&s = AfxGetAppSettings();
+				if(s.bUserAeroUI() && s.bAeroGlassAvalibility){
+					
+					BOOL bComposited = false;
+					AfxGetMyApp()->m_pDwmIsCompositionEnabled(&bComposited);
+					if(!bComposited)
+						ModifyStyleEx(  WS_EX_LAYERED,0 );
+					//	SetLayeredWindowAttributes( 0, 0xff, LWA_ALPHA);
+				}*/
+		if(m_iPlaybackMode == PM_FILE){
+			REFERENCE_TIME rtNow = 0, rtDur = 0;
+			pMS->GetCurrentPosition(&rtNow);
+			pMS->GetDuration(&rtDur);
+
+			UINT iTotalLenSec = (UINT)( (INT64) rtDur / 20000000 );
+			//如果视频长度大于1分钟， 而且是文件模式，而且正在播放中
+			if ( iTotalLenSec >  180 && m_iPlaybackMode == PM_FILE && GetMediaState() == State_Running) {
+
+				time_t time_now = time(NULL);
+
+				UINT totalplayedtime =  time_now - m_tPlayStartTime;
+
+				SVP_LogMsg5(L"time_now > ( m_tLastLogTick  %f %f" , (double)time_now , (double)m_tLastLogTick);
+				if( time_now > ( m_tLastLogTick + 180 )){ //如果和上次检查已经超n秒
+					CString fnVideoFile , fnSubtitleFile; 
+					int subDelayMS = 0;
+					fnVideoFile = m_fnCurPlayingFile;
+					fnSubtitleFile = getCurPlayingSubfile(&subDelayMS);
+
+
+					if (!fnSubtitleFile.IsEmpty()){ //如果有字幕
+						CString szLog;
+
+						szLog.Format(_T(" %s ( with sub %s delay %d ) %d sec of %d sec ( 1/2 length video = %d ) ") , fnVideoFile, fnSubtitleFile,subDelayMS, totalplayedtime , iTotalLenSec, (UINT)(iTotalLenSec/2)  );
+						SVP_LogMsg(szLog);
+						//if time > 50%
+						if (totalplayedtime > (UINT)(iTotalLenSec/2)){
+							//是否已经上传过呢
+							if(m_fnsAlreadyUploadedSubfile.Find( fnVideoFile+fnSubtitleFile ) < 0 ){
+								//upload subtitle
+								szLog.Format(_T("Uploading sub %s of %s width delay %d ms since user played %d sec of %d sec ( more than 1/2 length video ) ") , fnSubtitleFile, fnVideoFile ,subDelayMS, totalplayedtime , iTotalLenSec  );
+								SVP_LogMsg(szLog);
+								SVP_UploadSubFileByVideoAndSubFilePath(fnVideoFile , fnSubtitleFile, subDelayMS) ;
+								m_fnsAlreadyUploadedSubfile.Append( fnVideoFile+fnSubtitleFile+_T(";") );
+							}
+							int subDelayMS2 = 0;
+							CString fnSubtitleFile2 = getCurPlayingSubfile(&subDelayMS2);
+							if(!fnSubtitleFile2.IsEmpty()){
+								if(m_fnsAlreadyUploadedSubfile.Find( fnVideoFile+fnSubtitleFile2 ) < 0 ){
+									//upload subtitle
+									szLog.Format(_T("Uploading sub2 %s of %s width delay %d ms since user played %d sec of %d sec ( more than 1/2 length video ) ") , fnSubtitleFile2, fnVideoFile ,subDelayMS2, totalplayedtime , iTotalLenSec  );
+									SVP_LogMsg(szLog);
+									SVP_UploadSubFileByVideoAndSubFilePath(fnVideoFile , fnSubtitleFile2, subDelayMS2) ;
+									m_fnsAlreadyUploadedSubfile.Append( fnVideoFile+fnSubtitleFile2+_T(";") );
+								}
+							}
+
+						}
+					}
+
+
+					m_tLastLogTick = time_now;
+					SVP_LogMsg5(L"m_tLastLogTick = time_now;   %f %f" , (double)time_now , (double)m_tLastLogTick);
+				}
+
+
+			}
+		}
 		__int64 start, stop, pos;
 		m_wndSeekBar.GetRange(start, stop);
 		pos = m_wndSeekBar.GetPosReal();

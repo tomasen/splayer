@@ -349,6 +349,40 @@ UESAPI.prototype = {
 	        this.selectDecoder(oSelect.value);
 	    }
 	},
+	VideoRenderChange:function(vRender){
+	 if(vRender.value=='DX7'){
+		 	this.hideobj('GothSyncLine');
+		 	this.hideobj('GPUAcelLine');
+		 	this.hideobj('SmothmutilmonitorLine');
+		 	
+	 	}else{
+	 	 this.showblock('GPUAcelLine'); 
+	 	 this.showblock('SmothmutilmonitorLine'); 
+	 	 if(!this.isvistaaero){
+	 		 this.showblock('GothSyncLine');
+	 	 } 
+	 	} 
+	 	if(vRender.value!='DX9' && this.isvista){
+	 		this.fobj('gpuacelbase').checked = false;
+	 	}
+	},
+	OnUseAeroGlass:function(chker){
+		if(chker.checked && this.isvista){
+			this.hideobj("TranscontrolLine")
+		}else{
+			this.showblock('TranscontrolLine'); 
+		}
+	},
+	OnBgstrechChange:function(chker){
+		var obt = this.fobj('keepbgarline');
+		if(obt){ 
+			if(chker.checked){
+				obt.style.display='inline';
+			}else{
+				obt.style.display='none';
+			} 
+		 }
+	},
 	selectDecoder:function(vDecoder){
 	    var remark = "";
 	    var noMixer = 0;
@@ -481,7 +515,7 @@ function myInit(){
        ueAPI.selectDecoder( oDecoder.value);
        
     }
-    
+   ueAPI.VideoRenderChange(ueAPI.fobj("videorender"));
     var pbst = ueAPI.fobj('bgstrech');
    
     var obtgar = ueAPI.fobj('keepbgarline');if(pbst && obtgar){ if(pbst.checked){obtgar.style.display='inline';}else{obtgar.style.display='none';}  }
@@ -501,6 +535,8 @@ function myInit(){
             ueAPI.fobj('GothSync').checked = 0;
         }
     }
+    ueAPI.OnUseAeroGlass(ueAPI.fobj("useaeroglass"));
+    ueAPI.OnBgstrechChange(ueAPI.fobj("bgstrech"));
     //alert(typeof(ueg_DefaultBlock));
 }
 </script>
@@ -636,15 +672,15 @@ onmouseover="ueAPI.setcurblock('hotkeysetting');" border="0"/></a>
 <input type="radio" name="bgpic" id="nobgpic" /> <label for="nobgpic">无背景图片</label> <br />
 <input type="radio" name="bgpic"  id="custompic" /> <input type="text" id="custompicfile" style="width:200px" /> <input type='button' id="IDBROWERPIC" value="选择图片" /><br />
 <br />
-<input type="checkbox" id="bgstrech" onclick="var obt = ueAPI.fobj('keepbgarline');if(obt){ if(this.checked){obt.style.display='inline';}else{obt.style.display='none';}  }"/><label for="bgstrech">根据窗口尺寸缩放</label>&nbsp;  &nbsp; &nbsp;
+<input type="checkbox" id="bgstrech" onclick="OnBgstrechChange(this); "/><label for="bgstrech">根据窗口尺寸缩放</label>&nbsp;  &nbsp; &nbsp;
 <span id='keepbgarline' style="display:none"><input type="checkbox" id="keepbgar" /><label for="keepbgar">保持宽高比</label> </span>
 <br />
 </fieldset>
 <br />
 <input type="checkbox" id="usenewmenu" /><label for="usenewmenu">启用多彩菜单</label><br />
-<input type="checkbox" id="usetranscontrol" /><label for="usetranscontrol" title="Win7/Vista下默认为开启状态
-如果在XP下，需要较强劲的显卡">启用半透明界面风格</label><br />
-<div id="vistaaeroglass" style="display:none;"><input type="checkbox" id="useaeroglass" /><label for="useaeroglass">使用玻璃界面效果</label><br /></div>
+<div id='TranscontrolLine'><input type="checkbox" id="usetranscontrol" /><label for="usetranscontrol" title="Win7/Vista下默认为开启状态
+如果在XP下，需要较强劲的显卡">启用半透明界面风格</label><br /></div>
+<div id="vistaaeroglass" style="display:none;"><input type="checkbox" id="useaeroglass"  onclick="ueAPI.OnUseAeroGlass(this);" /><label for="useaeroglass">使用玻璃界面效果</label><br /></div>
 <br />
 <input type="checkbox" id="chkDisableCenterBigOpenBmp" /><label for="chkDisableCenterBigOpenBmp">不显示界面中心的打开文件按钮(双击打开文件)</label>
 <br />注：本栏目大部分设置需要重新启动软件方可生效
@@ -684,15 +720,19 @@ onmouseover="ueAPI.setcurblock('hotkeysetting');" border="0"/></a>
  
 </div>
 <div id="videosetting" class="hiddenarea">
-&nbsp;<select id="videorender" onchange="if(this.value=='DX7'){ueAPI.hideobj('GothSyncLine');}else if(!ueAPI.isvistaaero){ueAPI.showblock('GothSyncLine');} if(this.value!='DX9' && ueAPI.isvista){ueAPI.fobj('gpuacelbase').checked = false;}"><option value="DX9" >画质优先模式</option>
+&nbsp;<select id="videorender" onchange="ueAPI.VideoRenderChange(this);"><option value="DX9" >画质优先模式</option>
 <option value="DX7">性能优先模式</option>
 </select><br />
 <span id="decoderline" style="display:none;">解码器：<select id="decoder" onchange="ueAPI.selectDecoder(this.value);" ></select>
 &nbsp; &nbsp; <a href='#' id='IDUSEEXTCODEC'>使用外置解码器(专家)</a></span>
  <span id="remarkfordecoder" style="display:none;" ></span><br />
-<input type="checkbox" id="gpuacelbase" onclick="ueAPI.useGPUAcel(this.checked);" /><label for="gpuacelbase" title="只能在画质优先模式中使用">显卡硬件（GPU）加速 [<a href='?http://www.shooter.cn/wiki/%E5%B0%84%E6%89%8B%E6%92%AD%E6%94%BE%E5%99%A8_%E9%AB%98%E6%B8%85%E7%A1%AC%E4%BB%B6%E8%A7%A3%E7%A0%81%E7%9A%84%E6%94%AF%E6%8C%81%E5%88%97%E8%A1%A8'><b>?</b></a>]</label> <br /><br />
+<div id='GPUAcelLine'><input type="checkbox" id="gpuacelbase" onclick="ueAPI.useGPUAcel(this.checked);" /><label for="gpuacelbase" title="只能在画质优先模式中使用
+不能与部分3D游戏同时运行
+">显卡硬件（GPU）加速 [<a title='兼容列表' href='?http://www.shooter.cn/wiki/%E5%B0%84%E6%89%8B%E6%92%AD%E6%94%BE%E5%99%A8_%E9%AB%98%E6%B8%85%E7%A1%AC%E4%BB%B6%E8%A7%A3%E7%A0%81%E7%9A%84%E6%94%AF%E6%8C%81%E5%88%97%E8%A1%A8'><b>?</b></a>]</label> <br />
+</div>
+<br />
 <div style="display:none;"><input type="checkbox" id="vmr9mixer" onclick="ueAPI.useDX9(this.checked);"  /><label for="vmr9mixer" title="启用播放器的亮度调节功能">启用内置亮度调节(需DX9，不能使用CoreAVC解码器)</label><br /></div>
-<input type="checkbox" id="smothmutilmonitor" /><label for="smothmutilmonitor" title="播放器在多个显示器间移动时保持画面流畅。但可能在部分老式电视连接时因刷新率不同而出现问题">多显示器平滑移动</label><br />
+<div id='SmothmutilmonitorLine' ><input type="checkbox" id="smothmutilmonitor" /><label for="smothmutilmonitor" title="播放器在多个显示器间移动时保持画面流畅。但可能在部分老式电视连接时因刷新率不同而出现问题">多显示器平滑移动</label><br /></div>
 <div style="display:none;"><input type="checkbox" id="lockbackbuff" onclick="if(this.checked) ueAPI.fobj('GothSync').checked = false;" /><label for="lockbackbuff" title="在部分显卡驱动上会造成CPU占用过高的问题">修正画面横向撕裂问题（SPDIF输出下无效但效果更好）</label><br /></div>
 <div id='GothSyncLine' style="display:block;">&nbsp; &nbsp; <input type="checkbox" id="GothSync" onclick="if(this.checked){ ueAPI.useDX9(1);ueAPI.fobj('lockbackbuff').checked = false; }"  />
 <label for="GothSync" title="使用GothSync算法修正画面横向撕裂问题

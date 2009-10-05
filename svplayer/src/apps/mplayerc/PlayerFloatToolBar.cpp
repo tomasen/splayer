@@ -125,18 +125,17 @@ void CPlayerFloatToolBar::OnRealClose()
 	__super::OnClose();
 }
 int CPlayerFloatToolBar::GetUIHeight(){
-	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
+	CMainFrame* pFrame = (CMainFrame*)GetParentFrame();
 	if(pFrame && ::IsWindow(pFrame->m_hWnd)  )
 	{
 		
 		m_lSeekBarHeight = 8;
 		m_lToolBarHeight = TOOLBAR_HEIGHT * m_nLogDPIY / 96 ;
-		
 		if(pFrame->IsSomethingLoaded()){
-			return m_lSeekBarHeight + m_lToolBarHeight;;
+			return m_lSeekBarHeight + m_lToolBarHeight;
 		}
 		
-		return m_lToolBarHeight;;
+		return m_lToolBarHeight;
 	}
 	return 0;
 }

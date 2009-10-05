@@ -9510,7 +9510,7 @@ void CMainFrame::rePosOSD(){
 
 		AppSettings& s = AfxGetAppSettings();
 
-		if(m_lTransparentToolbarStat  && s.bUserAeroUI() ){
+		if(m_lTransparentToolbarStat  && s.bUserAeroUI() && ::IsWindow(m_wndFloatToolBar.m_hWnd)){
 
 			CSize view_size (  rcToolBar.Width() , rcToolBar.Height() );
 			rcToolBar.left += view_size.cx * 0.06;

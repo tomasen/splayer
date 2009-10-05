@@ -78,6 +78,9 @@ function UESAPI(){
     this.changeBlockI = null;
     this.myAnim = null;
     this.myAnim2 = null;
+    this.StepS = 5.0;
+    this.StepM = 15.0;
+    this.StepB = 30.0;
 }
 UESAPI.prototype = {
 	 realcancelsetcurblock:function(idname){
@@ -434,11 +437,13 @@ function myInit(){
 	  var obt10 = ueAPI.fobj('stepbig');
 		if(obt8 && obt9 && obt10){
 			
-			
-			if(!obt9.value){
+			ueAPI.StepS	= new Number(obt8.value);
+			ueAPI.StepM	= new Number(obt9.value);
+			ueAPI.StepB	= new Number(obt10.value);
+			if(!ueAPI.StepM){
 				defultBarVal = 30;
 			}else{
-				defultBarVal = new Number(obt9.value) ;
+				defultBarVal = new Number(ueAPI.StepM) ;
 			}
 			if(defultBarVal > 200){
 				defultBarVal = 200;
@@ -447,15 +452,16 @@ function myInit(){
 				defultBarVal = 180 + (defultBarVal - 180)*10;
 			}
 			
-			stepslider = YAHOO.widget.Slider.getHorizSlider("stepsliderbg", "stepsliderthumb", 10, 200, 2); 
-			stepslider.setValue(defultBarVal, true);
+			stepslider = YAHOO.widget.Slider.getHorizSlider("stepsliderbg", "stepsliderthumb", 1, 200, 2); 
+			stepslider.setValue(Math.floor(defultBarVal), true);
 			
 			//alert(defultBarVal);
 			stepslider.animate = true; 
 			
 			stepslider.subscribe('slideEnd', function () { 
 				var newOffset = stepslider.getValue();
-			  var oldStep = obt9.value;
+				
+				var oldStep = obt9.value;
 		   var newMedStep = newOffset;
 		   //alert(newOffset);
 			
@@ -465,15 +471,18 @@ function myInit(){
 				if(newMedStep > 180){
 					newMedStep = 180 + (newMedStep - 180)*10;
 				}
-		    var newSmallStep =  Math.floor(obt8.value * newMedStep / oldStep + 0.5);
-		    var newBigStep =  Math.floor(obt10.value * newMedStep / oldStep + 0.5);
-		    if(newSmallStep <= 0 || isNaN(newSmallStep)) {newSmallStep = 2;}
-		    if(!isFinite(newSmallStep) ) { newSmallStep = Math.floor(newMedStep / 6 + 1); }
+		    var newSmallStep = ueAPI.StepS * newMedStep / ueAPI.StepM ;
+		    var newBigStep =  ueAPI.StepB * newMedStep / ueAPI.StepM;
+		    if(newSmallStep <= 0 || isNaN(newSmallStep)) {newSmallStep = 1;}
+		    if(!isFinite(newSmallStep) ) { newSmallStep = newMedStep / 3 ; }
 		    if(newBigStep <= 0 || isNaN(newBigStep)) {newBigStep = 3;}
-		    if(!isFinite(newBigStep) ) { newBigStep = Math.floor(newMedStep * 2 ); }
-		    obt8.value = newSmallStep;
-		    obt9.value = newMedStep;
-		    obt10.value = newBigStep;
+		    if(!isFinite(newBigStep) ) { newBigStep = newMedStep * 2 ; }
+		    ueAPI.StepS = newSmallStep;
+		    ueAPI.StepM = newMedStep;
+		    ueAPI.StepB = newBigStep;
+		    obt8.value = Math.max(1,Math.floor(newSmallStep));
+		    obt9.value = Math.max(1,  Math.floor(newMedStep));
+		    obt10.value =  Math.max(1, Math.floor(newBigStep));
 			}); 
 
 		}else{

@@ -2747,7 +2747,7 @@ CFGManagerPlayer::CFGManagerPlayer(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	
 
 		CSVPToolBox svptoolbox;
-	if(  s.iSVPRenderType == 0  ){ //|| !svptoolbox.TestD3DCreationAbility(m_hWnd)) ( s.iDSVideoRendererType == VIDRNDT_DS_OVERLAYMIXER || VIDRNDT_DS_OLDRENDERER == s.iDSVideoRendererType)
+	if(  s.iSVPRenderType == 0 || !svptoolbox.TestD3DCreationAbility(m_hWnd)  ){ //( s.iDSVideoRendererType == VIDRNDT_DS_OVERLAYMIXER || VIDRNDT_DS_OLDRENDERER == s.iDSVideoRendererType)
 		s.bDontNeedSVPSubFilter = false;
 
 		pFGF = new CFGFilterInternal<CSVPSubFilter>(

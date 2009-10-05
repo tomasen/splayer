@@ -3160,9 +3160,9 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 
 
 		optionDecoder = pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_OPTIONDECODER), _T("CoreAVCdec"));
-		iDXVer = 7;
+		//iDXVer = 7;
 		if(useGPUAcel){
-			iDXVer = 9;
+		//	iDXVer = 9;
 		}
 		bRGBOnly = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USERGBONLY), 0);
 

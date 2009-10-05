@@ -2733,7 +2733,7 @@ CFGManagerPlayer::CFGManagerPlayer(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	
 
 		CSVPToolBox svptoolbox;
-	if( 1 && ( s.iSVPRenderType == 0 || !svptoolbox.TestD3DCreationAbility(m_hWnd))  ){ //( s.iDSVideoRendererType == VIDRNDT_DS_OVERLAYMIXER || VIDRNDT_DS_OLDRENDERER == s.iDSVideoRendererType)
+	if(  s.iSVPRenderType == 0  ){ //|| !svptoolbox.TestD3DCreationAbility(m_hWnd)) ( s.iDSVideoRendererType == VIDRNDT_DS_OVERLAYMIXER || VIDRNDT_DS_OLDRENDERER == s.iDSVideoRendererType)
 		s.bDontNeedSVPSubFilter = false;
 
 		pFGF = new CFGFilterInternal<CSVPSubFilter>(
@@ -2796,7 +2796,7 @@ CFGManagerPlayer::CFGManagerPlayer(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 			m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VMR7AllocatorPresenter, L"DX7(VMR)äÖÈ¾Æ÷", m_vrmerit+5));
 
 
-		if ( (CMPlayerCApp::IsVista()  ) && !s.bDisableEVR ) //s.fVMRGothSyncFix )//|| (!CMPlayerCApp::IsVista() && s.useGPUAcel) // No EVR for XP!
+		if ( s.bShouldUseEVR() ) //s.fVMRGothSyncFix )//|| (!CMPlayerCApp::IsVista() && s.useGPUAcel) // No EVR for XP!
 			m_transform.AddTail( new CFGFilterVideoRenderer(m_hWnd, CLSID_EVRAllocatorPresenter, L"EVRäÖÈ¾Æ÷", m_vrmerit+1));
 
 		m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VMR9AllocatorPresenter, L"DX9(VMR)äÖÈ¾Æ÷", m_vrmerit));

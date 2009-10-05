@@ -1324,7 +1324,11 @@ HRESULT CMPCVideoDecFilter::CompleteConnect(PIN_DIRECTION direction, IPin* pRece
 							s.lHardwareDecoderFailCount++;
 							m_dxvaAvalibility = 0;
 							if(s.lHardwareDecoderFailCount > 10){
-								s.useGPUAcel = 0;
+								if(AfxGetMyApp()->CanUseCUDA())
+									s.useGPUCUDA = true;
+								else
+									s.useGPUAcel = 0;
+								
 							}
 							return VFW_E_INVALIDMEDIATYPE;
 						}

@@ -560,6 +560,8 @@ END_MESSAGE_MAP()
 const UINT WM_MOUSEMOVEIN = ::RegisterWindowMessage(_T("WM_MOUSEMOVEIN"));
 const UINT WM_MOUSEMOVEOUT = ::RegisterWindowMessage(_T("WM_MOUSEMOVEOUT"));
 int CMPlayerCApp::m_isVista = -1;
+int CMPlayerCApp::m_bCanUseCUDA = -1;
+int CMPlayerCApp::m_bHasEVRSupport = -1;
 
 CMPlayerCApp::CMPlayerCApp()
 //	: m_hMutexOneInstance(NULL)
@@ -2657,6 +2659,12 @@ CString CMPlayerCApp::Settings::GetSVPSubStorePath(){
 BOOL CMPlayerCApp::Settings::bUserAeroUI(){
 	return  (bAeroGlassAvalibility && bAeroGlass) || bTransControl;
 }
+BOOL CMPlayerCApp::Settings::bShouldUseEVR(){
+	//Vista下使用EVR
+	//XP下 不用GPU加速时使用EVR
+	//XP下 用CoreAVC+CUDA时使用EVR
+	return ( IsVista() || ( !IsVista() && fVMRGothSyncFix &&  ( !useGPUAcel || useGPUCUDA ) && HasEVRSupport()) )  && !bDisableEVR;
+}
 BOOL CMPlayerCApp::Settings::bUserAeroTitle(){
 	return  bAeroGlassAvalibility && bAeroGlass;
 }
@@ -3131,7 +3139,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 
 		BOOL bDefaultVSync = false;
 		BOOL bDefaultGothSync = false;
-		if(!bAeroGlassAvalibility && !useGPUAcel){
+		if(!bAeroGlassAvalibility ){//&& !useGPUAcel
 			//HINSTANCE hEVR = LoadLibrary(_T("evr.dll"));
 			//if(hEVR){
 			bDefaultGothSync = true;
@@ -4472,6 +4480,19 @@ int  CMPlayerCApp::GetNumberOfSpeakers(LPCGUID lpcGUID, HWND hWnd){
 	}
 
 	return defchnum;
+}
+bool CMPlayerCApp::HasEVRSupport(){
+	if(m_bHasEVRSupport < 0 ){
+		m_bHasEVRSupport = (bool)( LoadLibrary (L"dxva2.dll") &&  LoadLibrary (L"evr.dll") );
+	}
+	return m_bHasEVRSupport;
+}
+bool CMPlayerCApp::CanUseCUDA(){
+	if(m_bCanUseCUDA < 0 ){
+		CSVPToolBox svpTool;
+		m_bCanUseCUDA = svpTool.CanUseCUDAforCoreAVC() && svpTool.ifFileExist( svpTool.GetPlayerPath(_T("codecs\\CoreAVCDecoder.ax")) );
+	}
+	return m_bCanUseCUDA;
 }
 bool CMPlayerCApp::IsVista()
 {

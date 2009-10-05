@@ -367,6 +367,10 @@ public:
 	bool m_bGotResponse;
 	static int	m_isVista;
 	static bool	IsVista();
+	static int	m_bCanUseCUDA;
+	static bool	CanUseCUDA();
+	static int	m_bHasEVRSupport;
+	static bool	HasEVRSupport();
 	static void GainAdminPrivileges(UINT idd, BOOL bWait = true);
 	static int GetNumberOfSpeakers(LPCGUID lpcGUID = NULL, HWND hWnd = NULL);
 	static bool	IsVSFilterInstalled();
@@ -694,6 +698,7 @@ public:
 		BOOL bUserAeroUI();
 		CString GetSVPSubStorePath();
 		BOOL bUserAeroTitle();
+		BOOL bShouldUseEVR();
 		int  FindWmcmdsIDXofCmdid(UINT cmdid, POSITION pos);
 		POSITION  FindWmcmdsPosofCmdidByIdx(INT cmdid, int idx);
 

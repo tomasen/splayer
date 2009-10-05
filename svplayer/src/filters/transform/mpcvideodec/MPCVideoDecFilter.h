@@ -178,6 +178,7 @@ virtual void			GetOutputSize(int& w, int& h, int& arx, int& ary, int &RealWidth,
 	HRESULT			SetMediaType(PIN_DIRECTION direction,const CMediaType *pmt);
 	HRESULT			CheckInputType(const CMediaType* mtIn);
 	HRESULT			Transform(IMediaSample* pIn);
+	HRESULT			CheckConnect(PIN_DIRECTION dir, IPin* pPin);
 	HRESULT			CompleteConnect(PIN_DIRECTION direction,IPin *pReceivePin);
     HRESULT			DecideBufferSize(IMemAllocator* pAllocator, ALLOCATOR_PROPERTIES* pProperties);
 	HRESULT			NewSegment(REFERENCE_TIME rtStart, REFERENCE_TIME rtStop, double dRate);

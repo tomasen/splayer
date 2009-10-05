@@ -1782,8 +1782,10 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 					//_Error += L"GetAdapterDisplayMode failed\n";
 					
 				}else{
-				
+					//int l_OldSizeY = m_ScreenSizeCurrent.cy;
 					m_ScreenSizeCurrent.SetSize(d3ddm.Width, d3ddm.Height);
+					if(s.m_RenderSettings.bSynchronizeNearest)
+						EstimateRefreshTimings();
 
 					m_uD3DRefreshRate = d3ddm.RefreshRate;
 					DOUBLE dTargetSyncOffset = 500.0/m_uD3DRefreshRate ;
@@ -2146,6 +2148,7 @@ void CDX9AllocatorPresenter::EstimateRefreshTimings()
 {
 	if (m_pD3DDev)
 	{
+		SVP_LogMsg5(L"EstimateRefreshTimings Start");
 		CMPlayerCApp *pApp = AfxGetMyApp();
 		D3DRASTER_STATUS rasterStatus;
 		m_pD3DDev->GetRasterStatus(0, &rasterStatus);
@@ -2189,6 +2192,9 @@ void CDX9AllocatorPresenter::EstimateRefreshTimings()
 		}
 		endTime = pApp->GetPerfCounter();
 		m_dEstRefreshCycle = (double)(endTime - startTime) / ((i - 1) * 10000.0);
+
+		SVP_LogMsg5(L"Got ScanlineTime %f %f %f" ,
+			m_dDetectedScanlineTime, m_dDetectedScanlineTime*m_ScreenSizeCurrent.cy, m_dEstRefreshCycle);
 	}
 }
 
@@ -2823,7 +2829,9 @@ void CVMR9AllocatorPresenter::ThreadStartPresenting(){
 	if (!m_pGenlock->powerstripTimingExists) m_pGenlock->GetTiming(); // StartPresenting seems to get called more often than StopPresenting
 
 	ResetStats();
-	EstimateRefreshTimings();
+	if(m_dDetectedScanlineTime <= 0.0){
+		EstimateRefreshTimings();
+	}
 	if (m_rtFrameCycle > 0.0) m_dCycleDifference = GetCycleDifference(); // Might have moved to another display
 
 	//if (m_pRefClock) m_pRefClock->GetTime(&rtEndEst);

@@ -768,7 +768,21 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 			
 			SVP_LogMsg5(_T("FGM: Connecting '%s' %s %d"), szFName, CStringFromGUID(pFGF->GetCLSID()) , s.bDontNeedSVPSubFilter);
 			//AfxGetAppSettings().szFGMLog.AppendFormat(_T("\r\nFGM: Connecting '%s' %s "), szFName, CStringFromGUID(pFGF->GetCLSID()) );
+			if(s.bNoMoreDXVA){
+				//SVP_LogMsg5(_T("FindFilterByName(MPC Video Decoder DXVA "));
+				CComPtr<IBaseFilter> pBFX;
+				if( SUCCEEDED( FindFilterByName(L"MPC Video Decoder DXVA", &pBFX) )){
+					RemoveFilter(pBFX);
+					s.bNoMoreDXVA = false;
+					//SVP_LogMsg5(_T("FindFilterByName(MPC Video Decoder DXVA remove") );
+					//if( SUCCEEDED( FindFilterByName(L"MPC Video Decoder DXVA", &pBFX) )){
+						//SVP_LogMsg5(_T("FindFilterByName(MPC Video Decoder DXVA still here") );
+					//}
+					continue;
+				}
 
+			}
+			
 			CComPtr<IBaseFilter> pBF;
 			CInterfaceList<IUnknown, &IID_IUnknown> pUnks;
 			if(FAILED(pFGF->Create(&pBF, pUnks)))
@@ -1311,7 +1325,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	: CFGManager(pName, pUnk)
 {
 	AppSettings& s = AfxGetAppSettings();
-
+	s.bNoMoreDXVA = false;
 	if(!s.useGPUAcel ){// || s.iDSVideoRendererType == VIDRNDT_DS_VMR7RENDERLESS
 		s.DXVAFilters = 0;
 	}else{

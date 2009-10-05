@@ -1988,7 +1988,9 @@ void CEVRAllocatorPresenter::ThreadBeginStreaming(){
 	m_pGenlock->GetTiming();
 
 	ResetStats();
-	EstimateRefreshTimings();
+	if(m_dDetectedScanlineTime <= 0.0){
+		EstimateRefreshTimings();
+	}
 	if (m_rtFrameCycle > 0.0) m_dCycleDifference = GetCycleDifference(); // Might have moved to another display
 }
 

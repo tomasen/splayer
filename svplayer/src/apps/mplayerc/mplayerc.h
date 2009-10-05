@@ -468,6 +468,7 @@ public:
 		int iSVPRenderType;
 		
 		bool bDontNeedSVPSubFilter;
+		bool bNoMoreDXVA;
 
 		int iAPSurfaceUsage;
 		bool fVMRSyncFix;

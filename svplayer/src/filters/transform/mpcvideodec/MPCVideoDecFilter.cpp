@@ -929,6 +929,7 @@ STDMETHODIMP CMPCVideoDecFilter::NonDelegatingQueryInterface(REFIID riid, void**
 
 HRESULT CMPCVideoDecFilter::CheckInputType(const CMediaType* mtIn)
 {
+	//SVP_LogMsg5(L"CMPCVideoDecFilter::CheckInputType %s" , m_pName);
 	for (int i=0; i<sizeof(sudPinTypesIn)/sizeof(AMOVIESETUP_MEDIATYPE); i++)
 	{
 		if ((mtIn->majortype == *sudPinTypesIn[i].clsMajorType) && 
@@ -951,7 +952,8 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 	int		nNewCodec;
 
 	CString szName(this->m_pName);
-	m_bUseDXVA = (szName.Find(_T("DXVA")) >= 0);
+	//SVP_LogMsg5(L"CMPCVideoDecFilter::SetMediaType %s" , szName);
+		m_bUseDXVA = (szName.Find(_T("DXVA")) >= 0);
 	if(m_bUseDXVA) {DXVAFilters = ~0;}else{DXVAFilters = 0; }
 
  
@@ -1275,6 +1277,16 @@ void CMPCVideoDecFilter::AllocExtradata(AVCodecContext* pAVCtx, const CMediaType
 	}
 }
 
+HRESULT	CMPCVideoDecFilter::CheckConnect(PIN_DIRECTION dir, IPin* pPin){
+	if (IsDXVASupported() )
+	{
+		if(!m_dxvaAvalibility){
+			//SVP_LogMsg5( L"CMPCVideoDecFilter::CheckConnect Failed");
+			return VFW_E_INVALID_DIRECTION;
+		}
+	}
+	return __super::CheckConnect (dir, pPin);
+}
 
 HRESULT CMPCVideoDecFilter::CompleteConnect(PIN_DIRECTION direction, IPin* pReceivePin)
 {
@@ -1300,6 +1312,7 @@ HRESULT CMPCVideoDecFilter::CompleteConnect(PIN_DIRECTION direction, IPin* pRece
 		if (IsDXVASupported() )
 		{
 			if(!m_dxvaAvalibility){
+				//SVP_LogMsg5( L"CMPCVideoDecFilter::CompleteConnect Failed");
 				return VFW_E_INVALIDMEDIATYPE;
 			}
 			//SVP_LogMsg5(_T("Creating DXVA "));
@@ -1323,13 +1336,15 @@ HRESULT CMPCVideoDecFilter::CompleteConnect(PIN_DIRECTION direction, IPin* pRece
 							AppSettings& s = AfxGetAppSettings();
 							s.lHardwareDecoderFailCount++;
 							m_dxvaAvalibility = 0;
-							if(s.lHardwareDecoderFailCount > 10){
+							if(s.lHardwareDecoderFailCount > 5){
 								if(AfxGetMyApp()->CanUseCUDA())
 									s.useGPUCUDA = true;
 								else
 									s.useGPUAcel = 0;
 								
 							}
+							s.bNoMoreDXVA = true;
+							//SVP_LogMsg5( L"CMPCVideoDecFilter::CompleteConnect Failed++");
 							return VFW_E_INVALIDMEDIATYPE;
 						}
 			AfxGetAppSettings().lHardwareDecoderFailCount = 0;

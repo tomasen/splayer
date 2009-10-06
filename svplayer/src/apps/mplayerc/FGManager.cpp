@@ -766,7 +766,7 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 			if ( FGID == GUIDFromCString(_T("{1643E180-90F5-11CE-97D5-00AA0055595A}")) ) continue;  //Color Space Converter
 			//if ( FGID == GUIDFromCString(_T("{CF49D4E0-1115-11CE-B03A-0020AF0BA770}")) ) continue;  //AVI Decompressor
 			
-			SVP_LogMsg5(_T("FGM: Connecting '%s' %s %d"), szFName, CStringFromGUID(pFGF->GetCLSID()) , s.bDontNeedSVPSubFilter);
+			//SVP_LogMsg5(_T("FGM: Connecting '%s' %s %d"), szFName, CStringFromGUID(pFGF->GetCLSID()) , s.bDontNeedSVPSubFilter);
 			//AfxGetAppSettings().szFGMLog.AppendFormat(_T("\r\nFGM: Connecting '%s' %s "), szFName, CStringFromGUID(pFGF->GetCLSID()) );
 			if(s.bNoMoreDXVA){
 				//SVP_LogMsg5(_T("FindFilterByName(MPC Video Decoder DXVA "));
@@ -2753,6 +2753,7 @@ CFGManagerPlayer::CFGManagerPlayer(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		pFGF = new CFGFilterInternal<CSVPSubFilter>(
 			L"射手播放器字幕组件" ,
 			MERIT64_ABOVE_DSHOW );
+		
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_YV12);
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_I420);
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_IYUV);

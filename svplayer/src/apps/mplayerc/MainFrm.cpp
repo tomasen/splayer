@@ -6760,10 +6760,26 @@ void CMainFrame::OnViewDefaultVideoFrame(UINT nID)
 {
 	INT actionID =  nID ;//- ID_VIEW_VF_HALF;
 	if(actionID == (AfxGetAppSettings().iDefaultVideoSize + ID_VIEW_VF_HALF)){
-		if(ID_VIEW_VF_FROMINSIDE  == actionID)
+		if(ID_VIEW_VF_FROMINSIDE  == actionID){
+			
 			actionID  = ID_VIEW_VF_FROMOUTSIDE;
-		else// if(ID_VIEW_VF_FROMOUTSIDE == actionID)
+		}else { // if(ID_VIEW_VF_FROMOUTSIDE == actionID)
+			
 			actionID  = ID_VIEW_VF_FROMINSIDE; //标准画面
+		}
+	}
+	//SVP_LogMsg5(L"OnViewDefaultVideoFrame");
+
+	if(m_pSVPSub){
+
+		switch(actionID){
+			case ID_VIEW_VF_FROMOUTSIDE:
+				m_pSVPSub->Set_AutoEnlargeARForSub(false);
+				break;
+			case ID_VIEW_VF_FROMINSIDE:
+				m_pSVPSub->Set_AutoEnlargeARForSub(true);
+				break;
+		}
 	}
 	AfxGetAppSettings().iDefaultVideoSize = actionID- ID_VIEW_VF_HALF;
 	m_ZoomX = m_ZoomY = 1; 
@@ -11326,6 +11342,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 
 		m_pCAP2 = NULL;
 		m_pCAP = NULL;
+		m_pSVPSub = NULL;
 
 		if(OpenFileData* p = dynamic_cast<OpenFileData*>(pOMD.m_p)) OpenFile(p);
 		else if(OpenDVDData* p = dynamic_cast<OpenDVDData*>(pOMD.m_p)) OpenDVD(p);
@@ -11341,10 +11358,16 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 
 		if(!m_pCAP){
 			//SVP_LogMsg5(L"No m_pCAP");
+			//IBaseFilter * ppPBF =  FindFilter(__uuidof(CSVPSubFilter), pGB);
 			CComQIPtr<ISubPicAllocatorPresenter> pCAP =  FindFilter(__uuidof(CSVPSubFilter), pGB);
 			if(pCAP){
 				//SVP_LogMsg5(L"Got m_pCAP");
 				m_pCAP = pCAP;
+				CComQIPtr<ISVPSubFilter> pSVPSub= pCAP;
+				if(pSVPSub){
+					m_pSVPSub = pSVPSub;
+					//SVP_LogMsg5(L"Got m_pSVPSub");
+				}
 			}
 		}
 
@@ -11574,6 +11597,7 @@ void CMainFrame::CloseMediaPrivate()
 	m_pCAPR = NULL;
 	m_pMC	 = NULL;
 	m_pMFVDC = NULL;
+	m_pSVPSub = NULL;
 
 	pAMXBar.Release(); pAMTuner.Release(); pAMDF.Release();
 	pAMVCCap.Release(); pAMVCPrev.Release(); pAMVSCCap.Release(); pAMVSCPrev.Release(); pAMASC.Release();

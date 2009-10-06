@@ -67,6 +67,8 @@
 #include "..\..\ui\SkinWindows\SkinMenuMgr.h"
 #include "../../filters/misc/SyncClock/Interfaces.h"
 
+#include "../../filters/transform/svpfilter/ISVPSubFilter.h"
+
 enum {PM_NONE, PM_FILE, PM_DVD, PM_CAPTURE};
 
 class OpenMediaData
@@ -180,6 +182,7 @@ class CMainFrame : public CFrameWnd, public CDropTarget  , protected ISkinMenuRe
 	CComPtr<IAMTVTuner> pAMTuner;
 	CComPtr<IAMDroppedFrames> pAMDF;
 
+	CComPtr<ISVPSubFilter> m_pSVPSub;
 	CComPtr<ISubPicAllocatorPresenter> m_pCAP;
 	CComPtr<ISubPicAllocatorPresenter2> m_pCAP2;
 	CComPtr<ISubPicAllocatorPresenterRender> m_pCAPR ;

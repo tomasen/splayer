@@ -2670,7 +2670,7 @@ STDMETHODIMP CFGManagerCustom::AddFilter(IBaseFilter* pBF, LPCWSTR pName)
 // 	CFGManagerPlayer
 //
 
-CFGManagerPlayer::CFGManagerPlayer(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT tra, HWND hWnd)
+CFGManagerPlayer::CFGManagerPlayer(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT tra, HWND hWnd, BOOL isCapture)
 	: CFGManagerCustom(pName, pUnk, src, tra)
 	, m_hWnd(hWnd)
 	, m_vrmerit(MERIT64(MERIT_PREFERRED))
@@ -2747,7 +2747,7 @@ CFGManagerPlayer::CFGManagerPlayer(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	
 
 		CSVPToolBox svptoolbox;
-	if(  s.iSVPRenderType == 0 || !svptoolbox.TestD3DCreationAbility(m_hWnd)  ){ //( s.iDSVideoRendererType == VIDRNDT_DS_OVERLAYMIXER || VIDRNDT_DS_OLDRENDERER == s.iDSVideoRendererType)
+	if( !isCapture && ( s.iSVPRenderType == 0 || !svptoolbox.TestD3DCreationAbility(m_hWnd) ) ){ //( s.iDSVideoRendererType == VIDRNDT_DS_OVERLAYMIXER || VIDRNDT_DS_OLDRENDERER == s.iDSVideoRendererType)
 		s.bDontNeedSVPSubFilter = false;
 
 		pFGF = new CFGFilterInternal<CSVPSubFilter>(
@@ -2970,7 +2970,7 @@ STDMETHODIMP CFGManagerDVD::AddSourceFilter(LPCWSTR lpcwstrFileName, LPCWSTR lpc
 //
 
 CFGManagerCapture::CFGManagerCapture(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT tra, HWND hWnd)
-	: CFGManagerPlayer(pName, pUnk, src, tra, hWnd)
+	: CFGManagerPlayer(pName, pUnk, src, tra, hWnd, true)
 {
 	AppSettings& s = AfxGetAppSettings();
 

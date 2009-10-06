@@ -11372,6 +11372,11 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 					m_pSVPSub = pSVPSub;
 					//SVP_LogMsg5(L"Got m_pSVPSub");
 				}
+			}else{
+				if(s.iSVPRenderType != 0){
+					//s.iSVPRenderType = 0;
+					//ReRenderOrLoadMedia();
+				}
 			}
 		}
 
@@ -13346,7 +13351,7 @@ void CMainFrame::UpdateSubtitle2(bool fApplyDefStyle)
 
 		i -= pSubStream->GetStreamCount();
 	}
-	SendStatusMessage(_T("第二字幕已关闭") , 4000 );
+	//SendStatusMessage(_T("第二字幕已关闭") , 4000 );
 	m_pCAP->SetSubPicProvider2(NULL);
 }
 void CMainFrame::UpdateSubtitle(bool fApplyDefStyle)
@@ -13370,7 +13375,7 @@ void CMainFrame::UpdateSubtitle(bool fApplyDefStyle)
 
 		i -= pSubStream->GetStreamCount();
 	}
-	SendStatusMessage(_T("主字幕已关闭") , 4000 );
+	//SendStatusMessage(_T("主字幕已关闭") , 4000 );
 	m_pCAP->SetSubPicProvider(NULL);
 }
 void CMainFrame::SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle)
@@ -13492,7 +13497,7 @@ void CMainFrame::SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle)
 		SetSubtitleDelay2(pSubStream->sub_delay_ms); 
 
 	}else{
-		SendStatusMessage(_T("第二字幕已关闭") , 4000 );
+		//SendStatusMessage(_T("第二字幕已关闭") , 4000 );
 	}
 }
 void CMainFrame::SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle)
@@ -13618,7 +13623,7 @@ void CMainFrame::SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle)
 		
 		
 	}else{
-		SendStatusMessage(_T("主字幕已关闭") , 4000 );
+		//SendStatusMessage(_T("主字幕已关闭") , 4000 );
 	}
 }
 

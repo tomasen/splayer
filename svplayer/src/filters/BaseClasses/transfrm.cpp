@@ -777,7 +777,10 @@ CTransformInputPin::NewSegment(
 {
     //  Save the values in the pin
     CBasePin::NewSegment(tStart, tStop, dRate);
-    return m_pTransformFilter->NewSegment(tStart, tStop, dRate);
+	if(m_pTransformFilter)
+		return m_pTransformFilter->NewSegment(tStart, tStop, dRate);
+
+	return S_OK;
 }
 
 

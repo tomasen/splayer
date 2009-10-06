@@ -24,6 +24,7 @@
 interface __declspec(uuid("CEDB2890-53AE-4231-91A3-B0AAFCD1DBDE")) IAudioSwitcherFilter : public IUnknown
 {
 	STDMETHOD(GetInputSpeakerConfig) (DWORD* pdwChannelMask) = 0;
+	STDMETHOD(ResetAudioSwitch) () = 0;
     STDMETHOD(GetSpeakerConfig) (bool* pfCustomChannelMapping, DWORD pSpeakerToChannelMap[18][18]) = 0;
     STDMETHOD(SetSpeakerConfig) (bool fCustomChannelMapping, DWORD pSpeakerToChannelMap[18][18]) = 0;
     STDMETHOD_(int, GetNumberOfInputChannels) () = 0;
@@ -54,6 +55,8 @@ class __declspec(uuid("18C16B08-6497-420e-AD14-22D21C2CEAB7")) CAudioSwitcherFil
 
 	REFERENCE_TIME m_rtNextStart, m_rtNextStop;
 
+	bool m_bNoMoreCheckConnection;
+	int m_l_number_of_channels;
 public:
 	CAudioSwitcherFilter(LPUNKNOWN lpunk, HRESULT* phr);
 
@@ -79,7 +82,7 @@ public:
 	STDMETHODIMP SetAudioTimeShift(REFERENCE_TIME rtAudioTimeShift);
 	STDMETHODIMP GetNormalizeBoost(bool& fNormalize, bool& fNormalizeRecover, float& boost);
 	STDMETHODIMP SetNormalizeBoost(bool fNormalize, bool fNormalizeRecover, float boost);
-
+	STDMETHODIMP ResetAudioSwitch();
 	// IAMStreamSelect
 	STDMETHODIMP Enable(long lIndex, DWORD dwFlags);
 };

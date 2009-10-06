@@ -2553,7 +2553,11 @@ void CMPlayerCApp::Settings::SetChannelMapByNumberOfSpeakers( int iSS , int iNum
 			break;
 		
 	}
-	
+	for(int j = 0; j < 18; j++)
+		for(int i = 0; i < 18; i++)
+			if(i>j)
+				pSpeakerToChannelMap[j][i] = 0;
+
 	{
 		int iFRS = iSS/10;
 		BOOL iLFE = iSS % 10;

@@ -30,7 +30,8 @@
 
 #include <initguid.h>
 #include "..\..\..\..\include\moreuuids.h"
-
+#include "..\..\..\svplib\svplib.h"
+//#define TRACE SVP_LogMsg5
 #define BLOCKSTREAM
 
 //
@@ -1198,7 +1199,10 @@ HRESULT CStreamSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 	long len = pIn->GetActualDataLength();
 	long size = pOut->GetSize();
 
-	if(!pDataIn || !pDataOut /*|| len > size || len <= 0*/) return S_FALSE; // FIXME
+	if(!pDataIn || !pDataOut /*|| len > size || len <= 0*/) {
+		TRACE(L"CStreamSwitcherFilter::Transform Fail");
+		return S_FALSE; // FIXME
+	}
 
 	memcpy(pDataOut, pDataIn, min(len, size));
 	pOut->SetActualDataLength(min(len, size));

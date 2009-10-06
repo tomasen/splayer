@@ -2032,11 +2032,11 @@ void CRealAudioDecoder::FreeRA()
 		m_dwCookie = 0;
 	}
 }
-
+#define SVP_LogMsg5 __noop
 HRESULT CRealAudioDecoder::Receive(IMediaSample* pIn)
 {
 	CAutoLock cAutoLock(&m_csReceive);
-
+    SVP_LogMsg5(L"CRealAudioDecoder::Receive");
 	HRESULT hr;
 
 	AM_SAMPLE2_PROPERTIES* const pProps = m_pInput->SampleProps();
@@ -2165,7 +2165,7 @@ HRESULT CRealAudioDecoder::Receive(IMediaSample* pIn)
 
 		if(FAILED(hr))
 		{
-			TRACE(_T("RA returned an error code!!!\n"));
+			SVP_LogMsg5(_T("RA returned an error code!!!\n"));
 			continue;
 			//			return hr;
 		}
@@ -2181,8 +2181,8 @@ HRESULT CRealAudioDecoder::Receive(IMediaSample* pIn)
 
 		pOut->SetActualDataLength(len);
 
-		DbgLog((LOG_TRACE, 0, _T("A: rtStart=%I64d, rtStop=%I64d, disc=%d, sync=%d"), 
-			rtStart, rtStop, pOut->IsDiscontinuity() == S_OK, pOut->IsSyncPoint() == S_OK));
+		SVP_LogMsg5( _T("A: rtStart=%I64d, rtStop=%I64d, disc=%d, sync=%d"), 
+			rtStart, rtStop, pOut->IsDiscontinuity() == S_OK, pOut->IsSyncPoint() == S_OK);
 
 		if(rtStart >= 0 && S_OK != (hr = m_pOutput->Deliver(pOut)))
 			return hr;

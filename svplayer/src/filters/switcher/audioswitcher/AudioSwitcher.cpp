@@ -34,8 +34,10 @@
 #include <initguid.h>
 #include "..\..\..\..\include\moreuuids.h"
 #include "..\..\..\svplib\svplib.h"
+#include <afxtempl.h>
+#include "..\..\..\apps\mplayerc\mplayerc.h"
 
-
+//#define TRACE SVP_LogMsg5
 #ifdef REGISTER_FILTER
 
 const AMOVIESETUP_MEDIATYPE sudPinTypesIn[] =
@@ -97,6 +99,8 @@ CAudioSwitcherFilter::CAudioSwitcherFilter(LPUNKNOWN lpunk, HRESULT* phr)
 	, m_fNormalizeRecover(false)
 	, m_boost(1)
 	, m_sample_max(0.1f)
+	, m_l_number_of_channels(-1)
+	, m_bNoMoreCheckConnection(0)
 {
 	memset(m_pSpeakerToChannelMap, 0, sizeof(m_pSpeakerToChannelMap));
 
@@ -314,8 +318,10 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 	else
 	{
 		HRESULT hr;
-		if(S_OK != (hr = __super::Transform(pIn, pOut)))
+		if(S_OK != (hr = __super::Transform(pIn, pOut))){
+			TRACE(L"FAUK");
 			return hr;
+		}
 	}
 
 	if(m_fDownSampleTo441
@@ -410,7 +416,68 @@ CMediaType CAudioSwitcherFilter::CreateNewOutputMediaType(CMediaType mt, long& c
 
 	WAVEFORMATEX* wfe = (WAVEFORMATEX*)pInPin->CurrentMediaType().pbFormat;
 
-	if(m_fCustomChannelMapping)
+	/*
+	
+	
+		if(!m_bNoMoreCheckConnection){
+			CComPtr<IEnumFilters> pEnumFilters; 
+			if(m_pGraph && SUCCEEDED(m_pGraph->EnumFilters(&pEnumFilters))) 
+			{ 
+				for(CComPtr<IBaseFilter> pBaseFilter; S_OK == pEnumFilters->Next(1, &pBaseFilter, 0); pBaseFilter = NULL) 
+				{ 
+					CLSID clsid;
+					memcpy(&clsid, &GUID_NULL, sizeof(clsid));
+					pBaseFilter->GetClassID(&clsid);
+	
+					if( clsid == CLSID_DSoundRender || clsid == CLSID_AudioRender ){
+	
+						{
+							int nIn, nOut, nInC, nOutC;
+							CountPins(pBaseFilter, nIn, nOut, nInC, nOutC);
+	
+							if(nInC > 0 && nOut == 0 && CComQIPtr<IBasicAudio>(pBaseFilter))
+							{
+								BeginEnumPins(pBaseFilter, pEP, pPin)
+								{
+	
+									
+									{
+										AM_MEDIA_TYPE mt;
+										if(S_OK != pPin->ConnectionMediaType(&mt))
+											continue;
+										if(mt.majortype == MEDIATYPE_Audio )
+										{
+	
+											SVP_LogMsg5(L"wfe->nChannels %d %d %s", wfe->nChannels , ((WAVEFORMATEX*)mt.pbFormat)->nChannels , CStringFromGUID(clsid));//&& !mt.bTemporalCompression
+										}
+										FreeMediaType(mt);
+	
+										continue;;
+									}
+									
+								}
+								EndEnumPins
+							}
+						}
+						
+	
+						m_bNoMoreCheckConnection = true;
+						
+						break;
+					}
+	
+				}
+			}
+		}
+
+		if(m_l_number_of_channels < 0){
+		m_l_number_of_channels = AfxGetMyApp()->GetNumberOfSpeakers();
+		}
+		*/
+	
+	
+	
+	if(m_fCustomChannelMapping  )
 	{
 		m_chs[wfe->nChannels-1].RemoveAll();
 
@@ -444,6 +511,7 @@ CMediaType CAudioSwitcherFilter::CreateNewOutputMediaType(CMediaType mt, long& c
 			wfex->Format.nChannels = (WORD)m_chs[wfe->nChannels-1].GetCount();
 			wfex->Format.nBlockAlign = wfex->Format.nChannels*wfex->Format.wBitsPerSample>>3;
 			wfex->Format.nAvgBytesPerSec = wfex->Format.nBlockAlign*wfex->Format.nSamplesPerSec;
+
 		}
 	}
 
@@ -465,10 +533,15 @@ CMediaType CAudioSwitcherFilter::CreateNewOutputMediaType(CMediaType mt, long& c
 
 //	mt.lSampleSize = (ULONG)max(mt.lSampleSize, wfe->nAvgBytesPerSec * rtLen / 10000000i64);
 //	mt.lSampleSize = (mt.lSampleSize + (wfe->nBlockAlign-1)) & ~(wfe->nBlockAlign-1);
-
+	//mt.lSampleSize  = 14880;
+	//mt.bTemporalCompression = 0;
 	return mt;
 }
+STDMETHODIMP CAudioSwitcherFilter::ResetAudioSwitch(){
 
+	
+	return S_OK;
+}
 void CAudioSwitcherFilter::OnNewOutputMediaType(const CMediaType& mtIn, const CMediaType& mtOut)
 {
 	const WAVEFORMATEX* wfe = (WAVEFORMATEX*)mtIn.pbFormat;
@@ -496,6 +569,7 @@ HRESULT CAudioSwitcherFilter::DeliverEndFlush()
 HRESULT CAudioSwitcherFilter::DeliverNewSegment(REFERENCE_TIME tStart, REFERENCE_TIME tStop, double dRate)
 {
 	TRACE(_T("CAudioSwitcherFilter::DeliverNewSegment\n"));
+	
 	m_sample_max = 0.1f;
 	return __super::DeliverNewSegment(tStart, tStop, dRate);
 }

@@ -4575,7 +4575,11 @@ void CMainFrame::OnFilePostOpenmedia()
 	SendNowPlayingToMSN();
 	SendNowPlayingTomIRC();
 
-
+	if(m_iPlaybackMode == PM_FILE){
+		if(!m_pCAP && s.iSVPRenderType){
+			SendStatusMessage( _T("建议在选项中切换至“性能优先模式”以支持您的设备"), 4000);
+		}
+	}
 }
 
 void CMainFrame::OnUpdateFilePostOpenmedia(CCmdUI* pCmdUI)

@@ -14702,7 +14702,7 @@ void CMainFrame::OnSendemail()
 void CMainFrame::OnVisitcontactinfo()
 {
 	
-	ShellExecute(m_hWnd, _T("open"), _T("http://shooter.cn/splayer/contact.html"), NULL, NULL, SW_SHOWDEFAULT);
+	ShellExecute(m_hWnd, _T("open"), _T("http://shooter.cn/splayer/feedback.html"), NULL, NULL, SW_SHOWDEFAULT);
 }
 
 void CMainFrame::OnDonate()

@@ -629,7 +629,7 @@ BOOL CPPageAccelTbl::OnInitDialog()
 	m_list.InsertColumn(COL_MOUSE, _T("鼠标"), LVCFMT_LEFT, 80);
 	m_list.InsertColumn(COL_TYPE, _T("类型"), LVCFMT_LEFT, 40);
 	m_list.InsertColumn(COL_ID, _T("ID"), LVCFMT_LEFT, 40);
-	m_list.InsertColumn(COL_APPCMD, _T("App Command"), LVCFMT_LEFT, 120);
+	m_list.InsertColumn(COL_APPCMD, _T("多媒体键"), LVCFMT_LEFT, 90);
 	m_list.InsertColumn(COL_RMCMD, _T("RemoteCmd"), LVCFMT_LEFT, 80);
 	m_list.InsertColumn(COL_RMREPCNT, _T("RepCnt"), LVCFMT_CENTER, 60);
 

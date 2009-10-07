@@ -192,6 +192,13 @@ UESAPI.prototype = {
             this.realsetcurblock(idname);
         }
     },
+    realsetcurblock2:function(idname){
+    	 this.blockCur = idname;
+    	 var obtg = this.fobj("lastpanelid");
+    	 	if(obtg){
+    	 		obtg.innerHTML = idname;
+    	 	}
+    },
     realsetcurblock:function(idname){
     	 this.blockCur = idname;
     	 var obtg = this.fobj("lastpanelid");
@@ -517,7 +524,8 @@ function myInit(){
         oDecoder.selectedIndex = 0;
     }
    
-    ueAPI.realsetcurblock(ueg_DefaultBlock);
+    ueAPI.realsetcurblock2(ueg_DefaultBlock);
+    //ueAPI.blockCur = ueg_DefaultBlock;
     var val = ueAPI.fobj("decodervalue").innerHTML ;
     //val = "internaldec";
     for(var i = 0; i < oDecoder.length; i++){
@@ -552,6 +560,124 @@ function myInit(){
     ueAPI.OnUseAeroGlass(ueAPI.fobj("useaeroglass"));
     ueAPI.OnBgstrechChange(ueAPI.fobj("bgstrech"));
     //alert(typeof(ueg_DefaultBlock));
+    myInit2();
+}
+var g_pannels = new Array('generalseting', 'videosetting', 'audiosetting', 'subsetting',  'themesetting', 'morepanel');
+var g_pannels_tip = new Array('常用设置', '视频与画面', '音频相关设置', '字幕设置',  '界面与主题', '文件关联与热键绑定');
+var g_lastPadding = 0;
+function hiddenVanBeforeCurr(){
+	for(var i = 0 ; i  < g_pannels.length; i++ ){
+		var obtx = ueAPI.fobj(g_pannels[i]);
+		if(obtx){
+			if(ueAPI.blockCur == g_pannels[i]){
+				break;
+			}
+			obtx.style.visibility = 'hidden';
+		}
+	}
+}
+function wndResize(){
+	
+	var currentWndWidth = YAHOO.util.Dom.getViewportWidth();
+	var currentWndHeight = YAHOO.util.Dom.getViewportHeight()-3;
+	
+//alert(currentWndWidth);
+	ueAPI.fobj('navright').style.width = '50px';
+	ueAPI.fobj('navleft').style.width = '50px';
+	var mainTable = ueAPI.fobj('maintable');
+	mainTable.style.width = currentWndWidth +'px';
+	mainTable.style.height = currentWndHeight +'px';
+	
+	var blockWidth = (currentWndWidth - 100);
+	var blockHeight = (currentWndHeight - 38);
+	
+	var navmaintd = ueAPI.fobj('navmaintd');
+	navmaintd.style.width = blockWidth+"px";
+	navmaintd.style.height = blockHeight+"px";
+    
+	var navmain = ueAPI.fobj('navmain');
+	navmain.style.height = blockHeight+"px";
+	navmain.style.width = (blockWidth)+"px";
+	var left = 0;
+	var newLeft = 0 ; 
+	var noMoreBlock = 0;
+	for(var i = 0 ; i  < g_pannels.length; i++ ){
+		var obtx = ueAPI.fobj(g_pannels[i]);
+		if(obtx){
+			obtx.style.width = blockWidth+"px";
+			obtx.style.height = blockHeight+"px";
+			obtx.style.position = 'absolute';
+			obtx.style.left = left + 'px';
+			obtx.style.top = '0px';
+			obtx.style.visibility = 'visible';
+			obtx.style.overflowY  = 'auto';
+
+
+			if(noMoreBlock){
+				obtx.style.display = 'none';
+			}else{
+				obtx.style.display = 'block';
+			}
+			
+			if(ueAPI.blockCur == g_pannels[i]){
+				newLeft = left;
+				noMoreBlock = 1;
+			}
+			left += blockWidth;
+		}
+	}
+	
+	if(newLeft != g_lastPadding){
+		g_lastPadding =  0-newLeft;
+		var myAnim = new YAHOO.util.Anim("navmain", { left: { to: g_lastPadding }  }, 0.2, YAHOO.util.Easing. easeIn ); 
+		myAnim.onComplete.subscribe(hiddenVanBeforeCurr); 
+		myAnim.animate(); 
+	}
+	
+
+
+}
+function flipNavSVP(offset){
+	for(var i = 0 ; i  < g_pannels.length; i++ ){
+		if(ueAPI.blockCur == g_pannels[i]){
+			var newOff = i + offset;
+			if( newOff < 0){
+				newOff = g_pannels.length - 1;
+			}
+			if(newOff >= g_pannels.length){
+				newOff = 0;
+			}
+			if( newOff >= 0 &&  newOff < g_pannels.length  ){
+				ueAPI.realsetcurblock2(g_pannels[newOff]);
+				wndResize();
+				ueAPI.fobj('paneltip').innerHTML = g_pannels_tip[newOff];
+			}
+			
+			if( newOff <= 0){
+				//ueAPI.fobj('navp').style.visibility = 'hidden';
+				ueAPI.fobj('navp').title = g_pannels_tip[g_pannels.length-1];
+			}else{
+				//ueAPI.fobj('navp').style.visibility = 'visible';
+				ueAPI.fobj('navp').title = g_pannels_tip[newOff-1];
+			}
+			
+			if( newOff >= (g_pannels.length - 1)){
+				ueAPI.fobj('navn').title = g_pannels_tip[0];
+				//ueAPI.fobj('navn').style.visibility = 'hidden';
+			}else{
+				//ueAPI.fobj('navn').style.visibility = 'visible';
+				ueAPI.fobj('navn').title = g_pannels_tip[newOff+1];
+			}
+			break;
+		}
+	}
+}
+function myInit2(){
+	wndResize();
+	YAHOO.util.Event.on(window,'resize',function(){
+      wndResize();
+    });
+	flipNavSVP(0);
 }
 </script>
 <style type="text/css">
@@ -632,54 +758,49 @@ div.hiddenarea{display:none;padding:2px 20px 5px 20px;}
 #remarkfordecoder a{color:#588cf6; text-decoration:underline;}
 #gpulist {color: #3f3f3f;margin: 15px 15px 15px 15px;border:1px solid #3f3f3f;}
 i {font-size: 9pt;font-style :normal;color: #747474;}
+td.navmain{position:relative;}
+div.navmain{position:absolute;}
+div.paneltip{
+float:left;
+margin-left:8px;
+margin-top:3px;
+color:#cecece;
+font-size:13pt;
+font-family:黑体, arial,sans serif;
+}
+#navp, #navn {
+color:#63aed6;
+display:block;
+font-size:8em;
+margin-top:-100px;
+padding:100px 0;
+text-decoration:none;
+font-family:arial,sans serif;
+}
+#navp:hover, #navn:hover {
+font-size:10em;
+}
+#navp.disabled, #navn.disabled {
+display:none;
+}
+#maintable{
+border:1px none ;
+}
+#maintable tr{
+border:1px none ;
+}
+#maintable tr td{
+border:1px solid #efefef ;
+}
 </style>
 </head>
 <body id="CUESettingPanel" onload="myInit();" >
-<div id='isvista' style="display:none"></div><div id='lastpanelid' style="display:none"></div>
-<div id='initvarblock' style="display:none"></div><div id='haveCUDAforCoreAVC' style="display:none"></div><div id='canFFGPU' style="display:none"></div><div id='decodervalue' style="display:none"></div>
-<table width="100%" style="height:100%;" >
-<tr >
-<td rowspan='3' style="text-align:center;padding-top:2px;width:160px !important;"  valign="top" >
-<div class="panelbutton"  >
-<a href="#"   onfocus="this.blur()" ><img id='generalseting_img' class="panelbutton"   src='generalseting_uesetbg.jpg' onmouseout="ueAPI.cancelsetcurblock('generalseting');"  
-onclick="ueAPI.realsetcurblock('generalseting');" onmouseover="ueAPI.setcurblock('generalseting');" border="0"/></a>
-</div>
-<div style="display:none;" class="panelbutton"><a onmouseover="ueAPI.setcurblock('playseting');" href="#" onmouseout="ueAPI.cancelsetcurblock();" class="panelbutton"  onclick="ueAPI.realsetcurblock('playseting');">播放设置</a></div>
-<div class="panelbutton"  >
-<a href="#"   onfocus="this.blur()" ><img id='videosetting_img' class="panelbutton"   src='videosetting_uesetbg.jpg' onmouseout="ueAPI.cancelsetcurblock('videosetting');"  
-onclick="ueAPI.realsetcurblock('videosetting');" onmouseover="ueAPI.setcurblock('videosetting');" border="0" /></a>
+<table border="1" width="100%" id="maintable" height="100%">
+<tr><td width="20px" id='navleft' align="center">
+<a id="navp" class="" onfocus="this.blur()" onclick="return flipNavSVP(-1);" href="#previous">‹</a>
+</td><td id='navmaintd' class='navmain'  align="left">
+<div class="navmain" id='navmain' >
 
-</div>
-<div class="panelbutton"  >
-<a href="#"   onfocus="this.blur()" ><img id='audiosetting_img' class="panelbutton"   src='audiosetting_uesetbg.jpg' onmouseout="ueAPI.cancelsetcurblock('audiosetting');"  
-onclick="ueAPI.realsetcurblock('audiosetting');" onmouseover="ueAPI.setcurblock('audiosetting');" border="0"/></a>
-
-</div>
-<div class="panelbutton"  >
-<a href="#"   onfocus="this.blur()" ><img id='subsetting_img' class="panelbutton"   src='subsetting_uesetbg.jpg' onmouseout="ueAPI.cancelsetcurblock('subsetting');"  
-onclick="ueAPI.realsetcurblock('subsetting');" onmouseover="ueAPI.setcurblock('subsetting');" border="0"/></a>
-</div>
-<div class="panelbutton"  style="display:none;"  >
-<a href="#"    onfocus="this.blur()" ><img id='updatesetting_img' class="panelbutton"   src='updatesetting_uesetbg.jpg' onmouseout="ueAPI.cancelsetcurblock('updatesetting');"  
-onclick="ueAPI.realsetcurblock('updatesetting');" onmouseover="ueAPI.setcurblock('updatesetting');" border="0"/></a>
-</div>
-<divclass="panelbutton"  >
-<a href="#"   onfocus="this.blur()" ><img id='themesetting_img' class="panelbutton"   src='themesetting_uesetbg.jpg' onmouseout="ueAPI.cancelsetcurblock('themesetting');"  
-onclick="ueAPI.realsetcurblock('themesetting');" onmouseover="ueAPI.setcurblock('themesetting');" border="0"/></a>
-
-</div>
-<div class="panelbutton"  >
-<a href="#" id='fillassoc_font'  onfocus="this.blur()" ><img id='fillassoc_img' class="panelbutton"   src='fillassoc_uesetbg.jpg' onmouseout="ueAPI.cancelsetcurblock('fillassoc');"  
- onmouseover="ueAPI.setcurblock('fillassoc');"  border="0"/></a>
-</div>
-<div class="panelbutton"  >
-<a href="#" id='hotkeysetting_font'  onfocus="this.blur()" ><img id='hotkeysetting_img' class="panelbutton"   src='hotkeysetting_uesetbg.jpg' onmouseout="ueAPI.cancelsetcurblock('hotkeysetting');"  
-onmouseover="ueAPI.setcurblock('hotkeysetting');" border="0"/></a>
-
-</div>
-
-</td><td  valign="top" align="left" id="pannelset" style="width:98%" ><div id="playseting" class="hiddenarea" >
-</div>
 
 <div id="themesetting" class="hiddenarea">
 <fieldset><legend>背景图片</legend>
@@ -748,11 +869,10 @@ onmouseover="ueAPI.setcurblock('hotkeysetting');" border="0"/></a>
 <div style="display:none;"><input type="checkbox" id="vmr9mixer" onclick="ueAPI.useDX9(this.checked);"  /><label for="vmr9mixer" title="启用播放器的亮度调节功能">启用内置亮度调节(需DX9，不能使用CoreAVC解码器)</label><br /></div>
 <div id='SmothmutilmonitorLine' ><input type="checkbox" id="smothmutilmonitor" /><label for="smothmutilmonitor" title="播放器在多个显示器间移动时保持画面流畅。但可能在部分老式电视连接时因刷新率不同而出现问题">多显示器平滑移动</label><br /></div>
 <div style="display:none;"><input type="checkbox" id="lockbackbuff" onclick="if(this.checked) ueAPI.fobj('GothSync').checked = false;" /><label for="lockbackbuff" title="在部分显卡驱动上会造成CPU占用过高的问题">修正画面横向撕裂问题（SPDIF输出下无效但效果更好）</label><br /></div>
-<div id='GothSyncLine' style="display:block;">&nbsp; &nbsp; <input type="checkbox" id="GothSync" onclick="if(this.checked){ ueAPI.useDX9(1);ueAPI.fobj('lockbackbuff').checked = false; }"  />
-<label for="GothSync" title="使用GothSync算法修正画面横向撕裂问题
-&nbsp; &nbsp; 提醒：使用性能优先模式也可以解决画面横向撕裂问题
+<div id='GothSyncLine' style="display:block;"><input type="checkbox" id="GothSync" onclick="if(this.checked){ ueAPI.useDX9(1);ueAPI.fobj('lockbackbuff').checked = false; }"  /><label for="GothSync" title="使用GothSync算法修正画面横向撕裂问题
+ 提醒：使用性能优先模式也可以解决画面横向撕裂问题
 ">修正画面横向撕裂问题（[<a href='?http://blog.splayer.org/?p=1756'><b>?</b></a>]）</label><br />
-<i> 提醒：使用性能优先模式也可以解决画面横向撕裂问题</i>
+<i>&nbsp; &nbsp;&nbsp; &nbsp; 提醒：使用性能优先模式也可以解决画面横向撕裂问题</i>
 </div>
 <div id='divdxvacompat' ><input type="checkbox" id="dxvacompat" /><label for="dxvacompat">使硬件高清兼容更多文件（不推荐！显卡能力不足时会造成花屏）</label> <br /></div>
 <input type="checkbox" id="useffmpegwmv" /><label for="useffmpegwmv">使用系统现有的WMV解码器播放WMV</label>
@@ -833,6 +953,76 @@ onmouseover="ueAPI.setcurblock('hotkeysetting');" border="0"/></a>
 <div id="updatesetting" class="hiddenarea">
 　<br />
 </div>
+<div id="morepanel" class="hiddenarea">
+<center>
+<br/>
+<a href="#" id='fillassoc_font'  onfocus="this.blur()" ><img id='fillassoc_img'  src='fillassoc.jpg' onmouseout="this.src='fillassoc.jpg';"  
+ onmouseover="this.src='fillassoc_hover.jpg';"  border="0"/></a>
+<br/><br/>
+<a href="#" id='hotkeysetting_font'  onfocus="this.blur()" ><img id='hotkeysetting_img'   src='hotkey.jpg' onmouseout="this.src='hotkey.jpg';"  
+onmouseover="this.src='hotkey_hover.jpg';"   border="0"/></a>
+</center>
+</div>
+</div>
+</td><td id='navright' width="20px"  align="center">
+<a id="navn" class="" onfocus="this.blur()" onclick="return flipNavSVP(1);" href="#next">›</a>
+</td></tr>
+<tr><td colspan="3" align="right" height="25px">
+<div class="paneltip" id='paneltip'></div>
+<a href="#" onfocus="this.blur()" ><img id="ButtonReset"   src='reset.jpg' onmouseout="this.src='reset.jpg';"  
+onmouseover="this.src='reset_hover.jpg';"   border="0"/></a>&nbsp; &nbsp; &nbsp; 
+<a href="#" onfocus="this.blur()" ><img id="ButtonOK"   src='ok.jpg' onmouseout="this.src='ok.jpg';"  
+onmouseover="this.src='ok_hover.jpg';"   border="0"/></a>
+<a href="#" onfocus="this.blur()" ><img id="ButtonCancel"   src='cancel.jpg' onmouseout="this.src='cancel.jpg';"  
+onmouseover="this.src='cancel_hover.jpg';"   border="0"/></a>
+<a href="#" onfocus="this.blur()" ><img id="ButtonApply"   src='apply.jpg' onmouseout="this.src='apply.jpg';"  
+onmouseover="this.src='apply_hover.jpg';"   border="0"/></a>
+</table>
+
+<div id='isvista' style="display:none"></div><div id='lastpanelid' style="display:none"></div>
+<div id='initvarblock' style="display:none"></div><div id='haveCUDAforCoreAVC' style="display:none"></div>
+<div id='canFFGPU' style="display:none"></div><div id='decodervalue' style="display:none"></div>
+<table width="100%" style="height:100%;display:none;" >
+<tr >
+<td rowspan='3' style="text-align:center;padding-top:2px;width:160px !important;"  valign="top" >
+<div class="panelbutton"  >
+<a href="#"   onfocus="this.blur()" ><img id='generalseting_img' class="panelbutton"   src='generalseting_uesetbg.jpg' onmouseout="ueAPI.cancelsetcurblock('generalseting');"  
+onclick="ueAPI.realsetcurblock('generalseting');" onmouseover="ueAPI.setcurblock('generalseting');" border="0"/></a>
+</div>
+<div style="display:none;" class="panelbutton"><a onmouseover="ueAPI.setcurblock('playseting');" href="#" onmouseout="ueAPI.cancelsetcurblock();" class="panelbutton"  onclick="ueAPI.realsetcurblock('playseting');">播放设置</a></div>
+<div class="panelbutton"  >
+<a href="#"   onfocus="this.blur()" ><img id='videosetting_img' class="panelbutton"   src='videosetting_uesetbg.jpg' onmouseout="ueAPI.cancelsetcurblock('videosetting');"  
+onclick="ueAPI.realsetcurblock('videosetting');" onmouseover="ueAPI.setcurblock('videosetting');" border="0" /></a>
+
+</div>
+<div class="panelbutton"  >
+<a href="#"   onfocus="this.blur()" ><img id='audiosetting_img' class="panelbutton"   src='audiosetting_uesetbg.jpg' onmouseout="ueAPI.cancelsetcurblock('audiosetting');"  
+onclick="ueAPI.realsetcurblock('audiosetting');" onmouseover="ueAPI.setcurblock('audiosetting');" border="0"/></a>
+
+</div>
+<div class="panelbutton"  >
+<a href="#"   onfocus="this.blur()" ><img id='subsetting_img' class="panelbutton"   src='subsetting_uesetbg.jpg' onmouseout="ueAPI.cancelsetcurblock('subsetting');"  
+onclick="ueAPI.realsetcurblock('subsetting');" onmouseover="ueAPI.setcurblock('subsetting');" border="0"/></a>
+</div>
+<div class="panelbutton"  style="display:none;"  >
+<a href="#"    onfocus="this.blur()" ><img id='updatesetting_img' class="panelbutton"   src='updatesetting_uesetbg.jpg' onmouseout="ueAPI.cancelsetcurblock('updatesetting');"  
+onclick="ueAPI.realsetcurblock('updatesetting');" onmouseover="ueAPI.setcurblock('updatesetting');" border="0"/></a>
+</div>
+<div class="panelbutton"  >
+<a href="#"   onfocus="this.blur()" ><img id='themesetting_img' class="panelbutton"   src='themesetting_uesetbg.jpg' onmouseout="ueAPI.cancelsetcurblock('themesetting');"  
+onclick="ueAPI.realsetcurblock('themesetting');" onmouseover="ueAPI.setcurblock('themesetting');" border="0"/></a>
+
+</div>
+<div class="panelbutton"  >
+
+</div>
+<div class="panelbutton"  >
+
+</div>
+
+</td><td  valign="top" align="left" id="pannelset" style="width:98%" ><div id="playseting" class="hiddenarea" >
+</div>
+
 </td>
 </tr><tr height="10">
 <td align="center"><a href="?https://bbs.shooter.cn/forumdisplay.php?fid=6" style="font-size:10px;color:Blue;">没有找到您需要的设置？请告诉我们你想要它出现在哪</a> <a id="ButtonAdvanceSetting" href='#' title='旧设置面板，仅对开发者保留'>※</a></td>

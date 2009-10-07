@@ -2151,9 +2151,17 @@ void CDX9AllocatorPresenter::EstimateRefreshTimings()
 		SVP_LogMsg5(L"EstimateRefreshTimings Start");
 		CMPlayerCApp *pApp = AfxGetMyApp();
 		D3DRASTER_STATUS rasterStatus;
+		if(!m_pD3DDev) return;
 		m_pD3DDev->GetRasterStatus(0, &rasterStatus);
-		while (rasterStatus.ScanLine != 0) m_pD3DDev->GetRasterStatus(0, &rasterStatus);
-		while (rasterStatus.ScanLine == 0) m_pD3DDev->GetRasterStatus(0, &rasterStatus);
+		while (rasterStatus.ScanLine != 0) {
+			if(!m_pD3DDev) return;
+			m_pD3DDev->GetRasterStatus(0, &rasterStatus);
+		}
+		while (rasterStatus.ScanLine == 0){
+			if(!m_pD3DDev) return;
+			m_pD3DDev->GetRasterStatus(0, &rasterStatus);
+		}
+		if(!m_pD3DDev) return;
 		m_pD3DDev->GetRasterStatus(0, &rasterStatus);
 		LONGLONG startTime = pApp->GetPerfCounter();
 		UINT startLine = rasterStatus.ScanLine;
@@ -2164,6 +2172,7 @@ void CDX9AllocatorPresenter::EstimateRefreshTimings()
 		bool done = false;
 		while (!done) // Estimate time for one scan line
 		{
+			if(!m_pD3DDev) return;
 			m_pD3DDev->GetRasterStatus(0, &rasterStatus);
 			line = rasterStatus.ScanLine;
 			time = pApp->GetPerfCounter();
@@ -2178,16 +2187,27 @@ void CDX9AllocatorPresenter::EstimateRefreshTimings()
 		m_dDetectedScanlineTime = (double)(endTime - startTime) / (double)((endLine - startLine) * 10000.0);
 
 		// Estimate the display refresh rate from the vsyncs
+		if(!m_pD3DDev) return;
 		m_pD3DDev->GetRasterStatus(0, &rasterStatus);
-		while (rasterStatus.ScanLine != 0) m_pD3DDev->GetRasterStatus(0, &rasterStatus);
+		while (rasterStatus.ScanLine != 0){
+			if(!m_pD3DDev) return;
+			m_pD3DDev->GetRasterStatus(0, &rasterStatus);
+		}
 		// Now we're at the start of a vsync
 		startTime = pApp->GetPerfCounter();
 		UINT i;
 		for (i = 1; i <= 50; i++)
 		{
+			if(!m_pD3DDev) return;
 			m_pD3DDev->GetRasterStatus(0, &rasterStatus);
-			while (rasterStatus.ScanLine == 0) m_pD3DDev->GetRasterStatus(0, &rasterStatus);
-			while (rasterStatus.ScanLine != 0) m_pD3DDev->GetRasterStatus(0, &rasterStatus);
+			while (rasterStatus.ScanLine == 0){
+				if(!m_pD3DDev) return;
+				m_pD3DDev->GetRasterStatus(0, &rasterStatus);
+			}
+			while (rasterStatus.ScanLine != 0){
+				if(!m_pD3DDev) return;
+				m_pD3DDev->GetRasterStatus(0, &rasterStatus);
+			}
 			// Now we're at the next vsync
 		}
 		endTime = pApp->GetPerfCounter();

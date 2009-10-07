@@ -585,6 +585,7 @@ public:
 	afx_msg LRESULT OnResumeFromState(WPARAM wParam, LPARAM lParam);
 
 	BOOL OnButton(UINT id, UINT nFlags, CPoint point);
+	bool GetNoResponseRect(CRgn& pRgn);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);

@@ -3635,14 +3635,67 @@ void CMainFrame::PreFocused(){
 	//bRecentFocused = TRUE;
 	//SetTimer(TIMER_RECENTFOCUSED, 100, NULL);
 }
-void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
-{
-	if( m_iMediaLoadState == MLS_CLOSED )
-		m_wndView.OnLButtonDown(nFlags ,point );
-
-	SetFocus();
+bool CMainFrame::GetNoResponseRect(CRgn& pRgn){
+	AppSettings& s = AfxGetAppSettings();
+	CRect rcStop, rcClient;
+	CRgn tRgn,tRgn2;
+	m_wndView.GetWindowRect(rcClient);
+	if(s.bUserAeroUI()){
+		if( m_wndFloatToolBar.IsWindowVisible() ){
+			m_wndFloatToolBar.GetWindowRect(rcStop);
+			rcStop -= rcClient.TopLeft();
+			rcStop.InflateRect(14,15);
+			pRgn.CreateRectRgnIndirect(rcStop);
+			
+		}
+		//SVP_LogMsg5(L"rc1 %d %d", rcStop.left, rcStop.top);
+		//SVP_LogMsg5(L"rc %d %d", rcStop.left, rcStop.top);
+	}else{
+		if(m_wndSeekBar.IsWindowVisible()){
+			m_wndSeekBar.GetWindowRect(rcStop);
+			rcStop -= rcClient.TopLeft();
+			rcStop.InflateRect(10,20);
+			pRgn.CreateRectRgnIndirect(rcStop);
+		}
+		/*
+		if(m_wndToolBar.IsWindowVisible()){
+					m_wndToolBar.GetWindowRect(rcStop);
+					rcStop -= rcClient.TopLeft();
+					rcStop.InflateRect(10,10);
+				}*/
+		
+	}
+/*
+		if(m_wndToolTopBar.IsWindowVisible()){
+			m_wndToolTopBar.GetWindowRect(rcStop);
+			rcStop -= rcClient.TopLeft();
+			rcStop.InflateRect(10,10);
+	
+			tRgn2.CreateRectRgnIndirect(rcStop);
+			
+		}*/
 	
 
+	//pRgn.CombineRgn( &tRgn2, &tRgn, RGN_OR);
+
+	return true;
+}
+void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	CRgn rcStop ;
+	GetNoResponseRect(rcStop);
+	//SVP_LogMsg5(L"%d %d", point.x, point.y);
+	if(rcStop.PtInRegion(point)){
+		//AfxMessageBox(_T("1"));
+		__super::OnLButtonDown(nFlags, point);
+		return;
+	}
+
+	if( m_iMediaLoadState == MLS_CLOSED )
+		m_wndView.OnLButtonDown(nFlags ,point );
+	else
+		SetFocus();
+	
 	m_pLastClickPoint = point;
 	CRect rVideo = m_wndView.GetVideoRect();
 	CPoint p = point - rVideo.TopLeft();
@@ -3676,6 +3729,7 @@ void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 	{
 		bool fLeftMouseBtnUnassigned = true;
 		AppSettings& s = AfxGetAppSettings();
+
 		POSITION pos = s.wmcmds.GetHeadPosition();
 		while(pos && fLeftMouseBtnUnassigned)
 			if(s.wmcmds.GetNext(pos).mouse == wmcmd::LDOWN)
@@ -3701,17 +3755,31 @@ void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 			
 			//if(OnButton(wmcmd::LDOWN, nFlags, point))
 			//SetTimer(TIMER_MOUSELWOWN, 300, NULL);
-			return;
+			//return;
 		}
 	}
-
+	SetCapture();
+//SVP_LogMsg5(L"MDO");
 	__super::OnLButtonDown(nFlags, point);
 }
 
 void CMainFrame::OnLButtonUp(UINT nFlags, CPoint point)
 {
-	if( m_iMediaLoadState == MLS_CLOSED )
+//SVP_LogMsg5(L"MUP1");
+	ReleaseCapture();
+	CRgn rcStop ;
+	GetNoResponseRect(rcStop);
+	if(rcStop.PtInRegion(point)){
+		__super::OnLButtonUp(nFlags, point);
+		return;
+	}
+
+//	SVP_LogMsg5(L"MUP");
+	if( m_iMediaLoadState == MLS_CLOSED ){
 		m_wndView.OnLButtonUp(nFlags ,point );
+		__super::OnLButtonUp(nFlags, point);
+		return;
+	}
 
 	int iDistance = sqrt( pow( (double)abs(point.x - m_pLastClickPoint.x) , 2)  + pow( (double)abs( point.y - m_pLastClickPoint.y ) , 2) );
 	//!bRecentFocused &&

@@ -566,8 +566,9 @@ void CChildView::OnLButtonUp(UINT nFlags, CPoint point)
 	CPoint xpoint = point + rc.TopLeft() ;
 	UINT ret = m_btnList.OnHitTest(xpoint,rc);
 	if( m_btnList.HTRedrawRequired ){
-		if(ret)
+		if(ret){
 			pFrame->PostMessage( WM_COMMAND, ret);
+		}
 		Invalidate();
 	}
 	m_nItemToTrack = ret;

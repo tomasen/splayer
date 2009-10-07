@@ -891,7 +891,7 @@ BEGIN
     PUSHBUTTON      "取消",IDCANCEL,283,25,47,14
 END
 
-IDD_DHTML_SETTING DIALOGEX 0, 0, 373, 249
+IDD_DHTML_SETTING DIALOGEX 0, 0, 373, 209
 STYLE DS_SETFONT | DS_3DLOOK | DS_FIXEDSYS | DS_CENTER | DS_CENTERMOUSE | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 EXSTYLE WS_EX_APPWINDOW
 CAPTION "选项"
@@ -2356,7 +2356,7 @@ apply.JPG				2110                    "res\\web\\apply.jpg"
 apply_hover.JPG				2110                    "res\\web\\apply_hover.jpg"
 reset.JPG				2110                    "res\\web\\reset.jpg"
 reset_hover.JPG				2110                    "res\\web\\reset_hover.jpg"
-
+donate.GIF				2110                    "res\\web\\donate.gif"
 hotkey.JPG				2110                    "res\\web\\hotkey.jpg"
 hotkey_hover.JPG				2110                    "res\\web\\hotkey_hover.jpg"
 fillassoc.JPG				2110                    "res\\web\\fillassoc.jpg"

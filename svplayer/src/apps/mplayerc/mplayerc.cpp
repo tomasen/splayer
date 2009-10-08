@@ -2974,6 +2974,9 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		//pApp->WriteProfileInt(ResStr(IDS_R_INTERNAL_FILTERS), ResStr(IDS_RS_FFMPEGFILTERS), FFmpegFilters|~(FFM_LAST-1));
 
 		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LOGOFILE), logofn);
+
+		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_UELASTPANEL), szUELastPanel);
+		
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LOGOID), logoid);
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LOGOEXT), logoext);
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LOGOSTRETCH), logostretch);
@@ -3164,6 +3167,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		m_RenderSettings.bSynchronizeNearest = fVMRGothSyncFix;
 		m_RenderSettings.bSynchronizeVideo = 0;//fVMRSyncFix;
 
+		szUELastPanel = pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_UELASTPANEL), _T(""));
 
 		optionDecoder = pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_OPTIONDECODER), _T("CoreAVCdec"));
 		//iDXVer = 7;

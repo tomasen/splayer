@@ -369,8 +369,11 @@ UESAPI.prototype = {
 		 	this.hideobj('GothSyncLine');
 		 	this.hideobj('GPUAcelLine');
 		 	this.hideobj('SmothmutilmonitorLine');
-		 	
+		 	if(!this.isvista){
+		 		this.showblock('tipforperformancemode'); 
+		 	}
 	 	}else{
+	 		this.hideobj('tipforperformancemode');
 	 	 this.showblock('GPUAcelLine'); 
 	 	 this.showblock('SmothmutilmonitorLine'); 
 	 	 if(!this.isvistaaero){
@@ -877,9 +880,12 @@ border:1px solid #efefef ;
 <div id='divdxvacompat' ><input type="checkbox" id="dxvacompat" /><label for="dxvacompat">使硬件高清兼容更多文件（不推荐！显卡能力不足时会造成花屏）</label> <br /></div>
 <input type="checkbox" id="useffmpegwmv" /><label for="useffmpegwmv">使用系统现有的WMV解码器播放WMV</label>
 <br />
+<div id='tipforperformancemode' style="display:none;">
+<i>提醒：性能优先模式下字幕只能在画面内显示</i>
+<br />
+</div>
 <fieldset style="display:none"><legend>专家设置</legend>
 <input type="checkbox" id="internaltspliteronly" /><label for="internaltspliteronly" title="使用兼容性更好的TS分离器">使用兼容性更好的TS分离器（解决TS文件无画面的问题，但不方便选择TS音轨）</label><br />
-
 </fieldset>
 <div id='gpulist'></div>
 <a style="display:block;float:right;" href="#" onclick="ueAPI.showblock('decoderline');ueAPI.showblock('remarkfordecoder');this.style.display='none';">显示隐藏选项</a>

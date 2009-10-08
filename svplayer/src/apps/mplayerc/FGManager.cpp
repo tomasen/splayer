@@ -764,7 +764,7 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 			if ( FGID == GUIDFromCString(_T("{1643E180-90F5-11CE-97D5-00AA0055595A}")) ) continue;  //Color Space Converter
 			//if ( FGID == GUIDFromCString(_T("{CF49D4E0-1115-11CE-B03A-0020AF0BA770}")) ) continue;  //AVI Decompressor
 			
-			//AfxGetAppSettings().szFGMLog.AppendFormat(_T("\r\nFGM: Connecting '%s' %s "), szFName, CStringFromGUID(pFGF->GetCLSID()) );
+			AfxGetAppSettings().szFGMLog.AppendFormat(_T("\r\nFGM: Connecting '%s' %s "), szFName, CStringFromGUID(pFGF->GetCLSID()) );
 			if(s.bNoMoreDXVA){
 				//SVP_LogMsg5(_T("FindFilterByName(MPC Video Decoder DXVA "));
 				CComPtr<IBaseFilter> pBFX;
@@ -1336,10 +1336,10 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		s.iAPSurfaceUsage = VIDRNDT_AP_TEXTURE3D;
 	}else{// if(m_sgs_videorender == _T("DX7"))
 		s.iSVPRenderType = 0; 
-		if(AfxGetMyApp()->IsVista())
+		//if(AfxGetMyApp()->IsVista())
 			s.iDSVideoRendererType = VIDRNDT_DS_OLDRENDERER;
-		else
-			s.iDSVideoRendererType = VIDRNDT_DS_OVERLAYMIXER;
+		//else
+		//	s.iDSVideoRendererType = VIDRNDT_DS_OVERLAYMIXER;
 
 		s.iRMVideoRendererType = VIDRNDT_RM_DEFAULT;
 		s.iQTVideoRendererType = VIDRNDT_QT_DEFAULT;

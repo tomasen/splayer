@@ -508,17 +508,18 @@ HRESULT CFGFilterVideoRenderer::Create(IBaseFilter** ppBF, CInterfaceList<IUnkno
 	
 	HRESULT hr = S_OK;
 	
-
+	AppSettings& s = AfxGetAppSettings();
 	
 	if(m_clsid == CLSID_VMR7AllocatorPresenter 
 	|| m_clsid == CLSID_VMR9AllocatorPresenter 
 	|| m_clsid == CLSID_DXRAllocatorPresenter
 	|| m_clsid == CLSID_EVRAllocatorPresenter)
 	{
+		SVP_LogMsg5(L"Creating Render %s", CStringFromGUID(m_clsid));
 		CComPtr<ISubPicAllocatorPresenterRender> pCAP;
-		if(SUCCEEDED(CreateAP7(m_clsid, m_hWnd, &pCAP))
-			|| SUCCEEDED(CreateAP9(m_clsid, m_hWnd, &pCAP))
-			|| SUCCEEDED(CreateEVR(m_clsid, m_hWnd, &pCAP)))
+		if( SUCCEEDED(CreateAP9(m_clsid, m_hWnd, &pCAP))
+			|| SUCCEEDED(CreateEVR(m_clsid, m_hWnd, &pCAP))
+			|| SUCCEEDED(CreateAP7(m_clsid, m_hWnd, &pCAP)) )
 		{
 			CComPtr<IUnknown> pRenderer;
 			
@@ -528,9 +529,9 @@ HRESULT CFGFilterVideoRenderer::Create(IBaseFilter** ppBF, CInterfaceList<IUnkno
 				*ppBF = CComQIPtr<IBaseFilter>(pRenderer).Detach();
 				pUnks.AddTail(pCAP);
 				
-				AfxGetAppSettings().bDontNeedSVPSubFilter = true;
+				s.bDontNeedSVPSubFilter = true;
 
-				//SVP_LogMsg5(L"RenderIsOn");
+				SVP_LogMsg5(L"RenderIsOn");
 			
 			}
 		}
@@ -555,9 +556,10 @@ HRESULT CFGFilterVideoRenderer::Create(IBaseFilter** ppBF, CInterfaceList<IUnkno
 	}
 
 	if(!*ppBF) hr = E_FAIL;
+
 	
 	//m_lastpBFF = *ppBF;
-	//SVP_LogMsg5(L"CFGFilterVideoRenderer::Create Done");
+	SVP_LogMsg5(L"CFGFilterVideoRenderer::Create Done");
 	//m_lastCreateHr = hr;
 	return hr;
 }

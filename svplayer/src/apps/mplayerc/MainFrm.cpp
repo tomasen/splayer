@@ -1173,7 +1173,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 	}
 	
 	int iDistance = sqrt( pow( (double)abs(point.x - m_pLastClickPoint.x) , 2)  + pow( (double)abs( point.y - m_pLastClickPoint.y ) , 2) );
-	if( ( iDistance > 30 || s_mDragFucOn) && s_mDragFuc){
+	if( ( iDistance > 30 || s_mDragFucOn) && bMouseMoved && s_mDragFuc){
 		if(!s_mDragFucOn){
 			m_pDragFuncStartPoint = point;
 			SetAlwaysOnTop(s.iOnTop , FALSE);
@@ -1188,6 +1188,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 			m_ZoomY += (double)(m_pDragFuncStartPoint.y - point.y ) / CVideoRect.Height() ;
 			MoveVideoWindow(true);
 		}else if(s_mDragFuc == 3){
+			//SVP_LogMsg5(L"WM_NCLBUTTONDOWN Move");
 			PostMessage(WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM(point.x, point.y));
 		}
 		m_pDragFuncStartPoint = point;
@@ -3758,7 +3759,7 @@ void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 			//return;
 		}
 	}
-	SetCapture();
+	//SetCapture();
 //SVP_LogMsg5(L"MDO");
 	__super::OnLButtonDown(nFlags, point);
 }
@@ -3766,7 +3767,8 @@ void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 void CMainFrame::OnLButtonUp(UINT nFlags, CPoint point)
 {
 //SVP_LogMsg5(L"MUP1");
-	ReleaseCapture();
+	//SetCapture();
+	//ReleaseCapture();
 	CRgn rcStop ;
 	GetNoResponseRect(rcStop);
 	if(rcStop.PtInRegion(point)){
@@ -4644,8 +4646,9 @@ void CMainFrame::OnFilePostOpenmedia()
 	SendNowPlayingTomIRC();
 
 	if(m_iPlaybackMode == PM_FILE){
-		if(!m_pCAP && s.iSVPRenderType){
-			SendStatusMessage( _T("建议在选项中切换至“性能优先模式”以支持您的设备"), 4000);
+		if(!s.bDontNeedSVPSubFilter && !m_pCAP && s.iSVPRenderType ){
+			s.iSVPRenderType = 0;
+			SendStatusMessage( _T("您的设备不支持画质优先模式，自动启用“性能优先模式”，建议重新打开文件"), 2000);
 		}
 	}
 }

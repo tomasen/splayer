@@ -752,11 +752,9 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 			
 			CLSID FGID = pFGF->GetCLSID() ;
 
-			//if(s.bDontNeedSVPSubFilter) {
 				if (szFName.Find(_T("DirectVobSub")) >= 0 ) continue;
-				//if (FGID == GUIDFromCString(_T("{E8D381DD-8C7D-4a6f-96ED-92BBB64064CF}"))  ) continue;
-			//}
-
+				//if (FGID == GUIDFromCString(_T("{E8D381DD-8C7D-4a6f-96ED-92BBB64064CF}"))  ) continue; SVPSubFilter
+			
 			
 			if (s.TraFilters & TRA_AC3 && szFName.Find(_T("AC3Filter")) >= 0 ) continue; //disable AC3 filter if internal AC3 is enabled
 			
@@ -766,7 +764,6 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 			if ( FGID == GUIDFromCString(_T("{1643E180-90F5-11CE-97D5-00AA0055595A}")) ) continue;  //Color Space Converter
 			//if ( FGID == GUIDFromCString(_T("{CF49D4E0-1115-11CE-B03A-0020AF0BA770}")) ) continue;  //AVI Decompressor
 			
-			//SVP_LogMsg5(_T("FGM: Connecting '%s' %s %d"), szFName, CStringFromGUID(pFGF->GetCLSID()) , s.bDontNeedSVPSubFilter);
 			//AfxGetAppSettings().szFGMLog.AppendFormat(_T("\r\nFGM: Connecting '%s' %s "), szFName, CStringFromGUID(pFGF->GetCLSID()) );
 			if(s.bNoMoreDXVA){
 				//SVP_LogMsg5(_T("FindFilterByName(MPC Video Decoder DXVA "));
@@ -2746,10 +2743,9 @@ CFGManagerPlayer::CFGManagerPlayer(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 
 	
 
-		CSVPToolBox svptoolbox;
-	if( !isCapture && ( s.iSVPRenderType == 0 || !svptoolbox.TestD3DCreationAbility(m_hWnd) ) ){ //( s.iDSVideoRendererType == VIDRNDT_DS_OVERLAYMIXER || VIDRNDT_DS_OLDRENDERER == s.iDSVideoRendererType)
-		s.bDontNeedSVPSubFilter = false;
-
+	CSVPToolBox svptoolbox;
+	if( !isCapture && ( s.iSVPRenderType == 0 ) ){ //|| !svptoolbox.TestD3DCreationAbility(m_hWnd) ( s.iDSVideoRendererType == VIDRNDT_DS_OVERLAYMIXER || VIDRNDT_DS_OLDRENDERER == s.iDSVideoRendererType)
+		
 		pFGF = new CFGFilterInternal<CSVPSubFilter>(
 			L"射手播放器字幕组件" ,
 			MERIT64_ABOVE_DSHOW );

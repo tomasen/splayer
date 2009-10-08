@@ -2699,6 +2699,7 @@ BEGIN
     IDS_R_LOGINS            "Logins"
     IDS_RS_ENABLEWEBSERVER  "EnableWebServer"
     IDS_RS_WEBSERVERPORT    "WebServerPort"
+	IDS_RS_DONTNEEDSVPSUBFILTER	"DontNeedSVPSubFilter"
     IDS_RS_LASTWINDOWTYPE   "LastWindowType"
 END
 

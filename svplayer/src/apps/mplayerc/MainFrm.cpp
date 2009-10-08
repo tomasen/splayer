@@ -9422,7 +9422,7 @@ void CMainFrame::MoveVideoWindow(bool fShowStats)
 		AppSettings &s = AfxGetAppSettings();
 		CRect wr;
 		
-		if(!m_fFullScreen && ( s.nCS & CS_TOOLBAR ) )
+		if(!m_fFullScreen  )//&& (s.bUserAeroUI() || (!s.bUserAeroUI() && ( s.nCS & CS_TOOLBAR )))
 		{
 			m_wndView.GetClientRect(wr);
 			//if(!s.fHideCaptionMenu)
@@ -9436,11 +9436,13 @@ void CMainFrame::MoveVideoWindow(bool fShowStats)
 							wr.bottom += rt.Height();
 						}*/
 			
+			/*
 			if( m_wndStatusBar.IsVisible() &&  !( s.nCS & CS_STATUSBAR )  ){
-				CRect rt ;
-				m_wndStatusBar.GetClientRect(rt);
-				wr.bottom += rt.Height();
-			}
+							CRect rt ;
+							m_wndStatusBar.GetClientRect(rt);
+							wr.bottom += rt.Height();
+						}*/
+			
 		}
 		else
 		{
@@ -9682,30 +9684,34 @@ void CMainFrame::ZoomVideoWindow(double scale)
 
 		DWORD style = GetStyle();
 
-		CRect r1, r2;
-		GetClientRect(&r1);
-		m_wndView.GetClientRect(&r2);
+		CRect r1, r2, r3 ,r4;
+		GetWindowRect(r3);
+		m_wndView.GetWindowRect(r4);
+		//GetClientRect(&r1);
+		//m_wndView.GetClientRect(&r2);
 
-		w = GetSystemMetrics((style&WS_CAPTION)?SM_CXSIZEFRAME:SM_CXFIXEDFRAME)*2
-				+ r1.Width() - r2.Width()
+		w = + r3.Width() - r4.Width()
+		//		+ r1.Width() - r2.Width()
 				+ lWidth;
 
 		
-		MENUBARINFO mbi;
+		/*
+MENUBARINFO mbi;
 		memset(&mbi, 0, sizeof(mbi));
 		mbi.cbSize = sizeof(mbi);
 		::GetMenuBarInfo(m_hWnd, OBJID_MENU, 0, &mbi);
+*/
 
-		h = GetSystemMetrics((style&WS_CAPTION)?SM_CYSIZEFRAME:SM_CYFIXEDFRAME)*2
-				+ (mbi.rcBar.bottom - mbi.rcBar.top)
-				+ r1.Height() - r2.Height()
+		h = r3.Height() - r4.Height()
+//				+ (mbi.rcBar.bottom - mbi.rcBar.top)
+		//		+ r1.Height() - r2.Height()
 				+ lHeight;
 
 		if(style&WS_CAPTION)
 		{
-			h += GetSystemMetrics(SM_CYCAPTION);
-			w += 2; h += 2; // for the 1 pixel wide sunken frame
-			w += 2; h += 3; // for the inner black border
+			//h += GetSystemMetrics(SM_CYCAPTION);
+			//w += 2; h += 2; // for the 1 pixel wide sunken frame
+			//w += 2; h += 3; // for the inner black border
 		}
 
 		GetWindowRect(r);
@@ -15451,13 +15457,24 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 		rcClient.left+=4 ;
 		rcClient.right+=4;
 		rcClient.bottom+=6 ;
-		if(m_wndToolBar.IsVisible()){
-
-			rcClient.bottom+= 20;;//m_wndToolBar.CalcFixedLayout(TRUE, TRUE).cy;
+		
+		if(s.bUserAeroTitle()){
+				rcClient.left-=2;
+				rcClient.right-=2;
+			
 		}else{
-			//rcClient.bottom-=4;
-		}
+			//if(m_wndToolBar.IsVisible()){
 
+				if(bCAPTIONon){
+					rcClient.bottom+= GetSystemMetrics(SM_CYCAPTION);// m_wndToolBar.CalcFixedLayout(TRUE, TRUE).cy - 6;//20;;//
+
+				}
+			//}else{
+				//rcClient.bottom-=4;
+			//}
+
+		}
+		
 		int nTotalCaptionHeight = GetSystemMetrics(SM_CYCAPTION)+GetSystemMetrics(SM_CYFRAME)+( (8 - GetSystemMetrics(SM_CYFRAME) ) /2 );
 
 		if(m_fFullScreen){
@@ -15823,6 +15840,7 @@ LRESULT CMainFrame::OnNcCalcSizeNewUI(   WPARAM wParam, LPARAM lParam){
 					//rc.top -=3 ;
 					rc.left += 1;
 					rc.right -= 1;
+
 				}
 				if(m_wndToolBar.IsVisible()){
 					//rc.bottom += 2;

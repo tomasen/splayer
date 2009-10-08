@@ -131,7 +131,7 @@ protected:
 
 	HRESULT GetDeliveryBuffer(IMediaSample** pSample, BYTE** pData);
 	HRESULT Deliver(CAtlArray<float>& pBuff, DWORD nSamplesPerSec, WORD nChannels, DWORD dwChannelMask = 0);
-	HRESULT Deliver(BYTE* pBuff, int size, int bit_rate, BYTE type);
+	HRESULT Deliver(BYTE* pBuff, int size, int bit_rate, BYTE type, BOOL b_is_dts = false);
 	HRESULT ReconnectOutput(int nSamples, CMediaType& mt);
 	CMediaType CreateMediaType(MPCSampleFormat sf, DWORD nSamplesPerSec, WORD nChannels, DWORD dwChannelMask = 0);
 	CMediaType CreateMediaTypeSPDIF();

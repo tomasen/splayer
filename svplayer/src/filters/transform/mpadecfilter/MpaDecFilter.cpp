@@ -1110,7 +1110,7 @@ HRESULT CMpaDecFilter::ProcessDTS()
 			{
 				int iSpeakerConfig = GetSpeakerConfig(dts);
 				
-				if(abs(iSpeakerConfig)&DTS_CHANNEL_MASK > DTS_CHANNEL_MAX){
+				if((abs(iSpeakerConfig)&DTS_CHANNEL_MASK) > DTS_CHANNEL_MAX){
 					iSpeakerConfig = abs(iSpeakerConfig) & ~DTS_CHANNEL_MASK | DTS_STEREO;
 					SetSpeakerConfig(dts,iSpeakerConfig);
 					//this shouldn't happened
@@ -1119,7 +1119,7 @@ HRESULT CMpaDecFilter::ProcessDTS()
 				if(m_fbUseSPDIF ) //  //if(iSpeakerConfig < 0)
 				{
 					HRESULT hr;
-					if(S_OK != (hr = Deliver(p, size, bit_rate, 0x000b))){
+					if(S_OK != (hr = Deliver(p, size, bit_rate, 0x000b, true))){
 						return hr;
 						//iSpeakerConfig = -iSpeakerConfig;
 						
@@ -1787,7 +1787,7 @@ ASSERT(wfeout->nSamplesPerSec == wfe->nSamplesPerSec);
 	return m_pOutput->Deliver(pOut);
 }
 
-HRESULT CMpaDecFilter::Deliver(BYTE* pBuff, int size, int bit_rate, BYTE type)
+HRESULT CMpaDecFilter::Deliver(BYTE* pBuff, int size, int bit_rate, BYTE type, BOOL b_is_dts)
 {
 	HRESULT hr;
 
@@ -1808,8 +1808,14 @@ HRESULT CMpaDecFilter::Deliver(BYTE* pBuff, int size, int bit_rate, BYTE type)
 		return E_FAIL;
 
 	//	REFERENCE_TIME rtDur = 10000000i64 * size*8 / bit_rate;
-	size_t blocks = (size + length - 1) / length;
-	REFERENCE_TIME rtDur = 10000000i64 * blocks * length*8 / bit_rate;
+	REFERENCE_TIME rtDur;
+	if(b_is_dts){
+		size_t blocks = (size + length - 1) / length;
+		rtDur = 10000000i64 * blocks * length*8 / bit_rate;
+	}else{
+		rtDur = 10000000i64 * size*8 / bit_rate; 
+	}
+
 	REFERENCE_TIME rtStart = m_rtStart, rtStop = m_rtStart + rtDur;
 	//SVP_LogMsg5(_T("CMpaDecFilter Deliver2: %I64d - %I64d =  %I64d \n"), rtStart/10000, rtStop/10000 , rtDur/10000);
 	m_rtStart += rtDur;
@@ -1836,8 +1842,14 @@ HRESULT CMpaDecFilter::Deliver(BYTE* pBuff, int size, int bit_rate, BYTE type)
 	pDataOutW[0] = 0xf872;
 	pDataOutW[1] = 0x4e1f;
 	pDataOutW[2] = type;
-	pDataOutW[3] = length*8;	
-	_swab((char*)pBuff, (char*)&pDataOutW[4], length);
+	if(b_is_dts){
+		pDataOutW[3] = length*8;	
+		_swab((char*)pBuff, (char*)&pDataOutW[4], length);
+	}else{
+		pDataOutW[3] = size*8;	
+		_swab((char*)pBuff, (char*)&pDataOutW[4], size);
+	}
+	
 
 	return m_pOutput->Deliver(pOut);
 }

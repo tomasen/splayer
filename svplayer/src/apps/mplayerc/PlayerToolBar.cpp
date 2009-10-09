@@ -178,6 +178,7 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 	
 	EnableToolTips(TRUE);
 
+	SetMute(IsMuted()); 
 
 	return TRUE;
 }

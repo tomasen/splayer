@@ -3998,13 +3998,16 @@ void CMainFrame::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	}
 	else if(pScrollBar->IsKindOf(RUNTIME_CLASS(CPlayerSeekBar)) && m_iMediaLoadState == MLS_LOADED)
 	{
+ 		__int64 t_start_time,t_stop_time, t_target_time;
+ 		m_wndSeekBar.GetRange(t_start_time, t_stop_time);
+// 		t_target_time = max( t_start_time , min( t_stop_time , m_wndSeekBar.GetPos()) );
+
+
 		if((::GetKeyState(VK_SHIFT)&0x8000)){
-			SeekTo(m_wndSeekBar.GetPos(), 0);
+			SeekTo( m_wndSeekBar.GetPos(), 0);
 		}else{
-			__int64 t_start_time,t_stop_time;
-			m_wndSeekBar.GetRange(t_start_time, t_stop_time);
 			
-			SeekTo(m_wndSeekBar.GetPos() , 1, _abs64(t_stop_time - t_start_time ) / 100  );
+			SeekTo( m_wndSeekBar.GetPos(), 1, _abs64(t_stop_time - t_start_time ) / 100  );
 		}
 	}
 
@@ -7625,6 +7628,13 @@ void CMainFrame::SeekTo(REFERENCE_TIME rtPos, int fSeekToKeyFrame, REFERENCE_TIM
 				}
 			}
 			
+		}
+		__int64 t_start_time,t_stop_time, t_target_time;
+		m_wndSeekBar.GetRange(t_start_time, t_stop_time);
+		t_target_time = max( t_start_time , min( t_stop_time , rtPos) );
+		if(t_target_time != rtPos){
+			iKeyFlag = 0;
+			rtPos = t_target_time;
 		}
 
 		hr = pMS->SetPositions(&rtPos, AM_SEEKING_AbsolutePositioning|iKeyFlag, NULL, AM_SEEKING_NoPositioning);

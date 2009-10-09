@@ -2868,6 +2868,10 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 
 			}
 		}
+
+	if(m_wndStatsBar.IsWindowVisible()){
+
+		
 		{
 			CString msg;
 			if(m_fBuffering)
@@ -3006,12 +3010,12 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 			}
 		}
 		EndEnumFilters
-
+	}
 		if(m_iPlaybackMode == PM_FILE)
 		{
 			SetupChapters();
 		}
-
+	if(m_wndInfoBar.IsWindowVisible()){
 		if(m_iPlaybackMode == PM_DVD) // we also use this timer to update the info panel for dvd playback
 		{
 			ULONG ulAvailable, ulCurrent;
@@ -3146,7 +3150,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 
 			m_wndInfoBar.SetLine(ResStr(IDS_INFOBAR_SUBTITLES), Subtitles);
 		}
-
+	  }
 		if(GetMediaState() == State_Running)
 		{
 			if(m_fAudioOnly){
@@ -3177,6 +3181,8 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 			}
 			
 		}
+	  
+
 	}
 	else if(nIDEvent == TIMER_STATUSERASER)
 	{

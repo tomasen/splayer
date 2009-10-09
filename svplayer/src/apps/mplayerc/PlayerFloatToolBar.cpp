@@ -32,6 +32,9 @@ BEGIN_MESSAGE_MAP(CPlayerFloatToolBar, CFrameWnd)
 	ON_WM_NCCALCSIZE()
 	ON_WM_CREATE()
 	ON_WM_MOUSEMOVE()
+	ON_WM_NCHITTEST()
+	ON_WM_LBUTTONDOWN()
+	ON_WM_LBUTTONUP()
 END_MESSAGE_MAP()
 
 
@@ -177,10 +180,74 @@ void CPlayerFloatToolBar::OnMouseMove(UINT nFlags, CPoint point)
 		if(pFrame->IsSomethingLoaded()){
 			pFrame->SetTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER, 8000, NULL); 
 		}
+		
 
 		//SetTimer(IDT_CLOSE, 8000 , NULL);
 		m_lastMouseMove = point;
 	}
+	
 
 	CFrameWnd::OnMouseMove(nFlags, point);
+}
+
+LRESULT CPlayerFloatToolBar::OnNcHitTest(CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+	
+	UINT hit = __super::OnNcHitTest(point);
+// 	if (m_bDraging && hit == HTCLIENT )
+// 		return HTCAPTION;
+// 	else
+
+/*
+
+
+	if(m_bDraging ){
+
+		CRect r;
+		GetClientRect(&r);
+		ClientToScreen(&r);
+		ClientToScreen(&point);
+
+		if(r.PtInRect(point))
+		{       
+			if(m_mousedown)
+			{   
+				AfxGetMainWnd()->GetWindowRect(&r); 
+
+				AfxGetMainWnd()->MoveWindow(
+					r.left - (m_lastpoint.x - point.x),
+					r.top - (m_lastpoint.y - point.y),
+					r.Width(),r.Height());
+				m_lastpoint = point;                
+			}
+		}
+	}
+*/
+
+	return hit;
+	
+}
+
+void CPlayerFloatToolBar::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+	/*
+m_mousedown = true; 
+	ClientToScreen(&point);
+	m_lastpoint = point;
+
+*/
+
+	__super::OnLButtonDown(nFlags, point);
+}
+
+void CPlayerFloatToolBar::OnLButtonUp(UINT nFlags, CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+	/*
+m_mousedown = false;
+*/
+
+	__super::OnLButtonUp(nFlags, point);
 }

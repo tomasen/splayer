@@ -677,16 +677,18 @@ INT_PTR CPlayerToolBar::OnToolHitTest(	CPoint point,TOOLINFO* pTI 	) const
 };
 void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point){
 
-	CSize diff = m_lastMouseMove - point;
+	int diffx = m_lastMouseMove.x - point.x;
+	int diffy = m_lastMouseMove.y - point.y;
+	CPoint lastMouseMove = m_lastMouseMove;
 	CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
-	BOOL bMouseMoved =  diff.cx || diff.cy ;
+	BOOL bMouseMoved =  diffx || diffy ;
 	if(bMouseMoved || m_bMouseDown){
 		m_lastMouseMove = point;
 		KillTimer(TIMER_CLOSETOOLBAR);
 		if(pFrame->IsSomethingLoaded() && pFrame->m_fFullScreen){
 			SetTimer(TIMER_CLOSETOOLBAR, 5000, NULL);
-			
 		}
+		
 	}
 
 	CRect rc;
@@ -712,6 +714,13 @@ void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point){
 		}
 		if( m_btnList.HTRedrawRequired ){
 			Invalidate();
+		}
+
+		AppSettings& s = AfxGetAppSettings();
+		if(s.bUserAeroUI() && bMouseMoved && m_bMouseDown && pFrame ){
+			pFrame->m_lTransparentToolbarPosStat = 1;
+			
+			pFrame->m_wndFloatToolBar.PostMessage(WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM(point.x, point.y));
 		}
 	}
 	

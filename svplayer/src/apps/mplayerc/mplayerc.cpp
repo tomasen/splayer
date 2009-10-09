@@ -3048,6 +3048,10 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 			// WINBUG: on win2k this would crash WritePrivateProfileString
 			pApp->WriteProfileInt(_T(""), _T(""), pApp->GetProfileInt(_T(""), _T(""), 0)?0:1);
 		}
+
+		if(bUserAeroUI()){
+			pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_TRANSPARENTTOOLBARPOSOFFSET), m_lTransparentToolbarPosOffset);		
+		}
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("LastVersion"), 720);		
 		
 	}
@@ -3730,6 +3734,10 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		// TODO: sort shaders by label
 
 		m_shadercombine = pApp->GetProfileString(_T("Shaders"), _T("Combine"), _T(""));
+
+		if(bUserAeroUI()){
+			m_lTransparentToolbarPosOffset =  pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_TRANSPARENTTOOLBARPOSOFFSET), 0);
+		}
 
 		fInitialized = true;
 	}

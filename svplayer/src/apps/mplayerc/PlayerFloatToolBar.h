@@ -20,6 +20,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	int m_nLogDPIY;
+	bool m_bDraging;
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnEnable(BOOL bEnable);
 	afx_msg void OnClose();
@@ -35,6 +36,11 @@ public:
 	afx_msg void OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp);
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg LRESULT OnNcHitTest(CPoint point);
+	CPoint m_lastpoint;
+	BOOL m_mousedown;
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 };
 
 

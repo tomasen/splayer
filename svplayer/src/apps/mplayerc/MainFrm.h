@@ -371,6 +371,9 @@ public:
 	int m_iPlaybackMode;
 
 	int m_lTransparentToolbarStat;
+	int  m_lTransparentToolbarPosStat;
+	CPoint m_lTransparentToolbarPosOffset;
+	
 	bool m_fFullScreen;
 	bool m_fScreenHigherThanVideo;
 	bool m_fPlaylistBeforeToggleFullScreen;

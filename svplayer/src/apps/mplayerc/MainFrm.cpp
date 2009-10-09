@@ -571,7 +571,9 @@ CMainFrame::CMainFrame() :
 	m_bDxvaInUse(false) ,
 	m_bEVRInUse(false),
 	m_bHasDrawShadowText(false),
-	m_notshowtoolbarforawhile(0)
+	m_notshowtoolbarforawhile(0),
+	m_lTransparentToolbarPosOffset(0),
+	m_lTransparentToolbarPosStat(0)
 {
 }
 
@@ -650,6 +652,16 @@ LRESULT CALLBACK SVPLayeredWndProc(HWND hwnd,         // Window handle
 	if(WM_SHOWWINDOW  == uMsg && SW_PARENTOPENING == lParam){
 		return 0;
 	}
+	/*
+	if(WM_WINDOWPOSCHANGING == uMsg || WM_WINDOWPOSCHANGED == uMsg){
+			WINDOWPOS* tPos = (WINDOWPOS*)lParam;
+			tPos->flags |= SWP_NOACTIVATE;
+		}
+		if(WM_FLOATSTATUS == uMsg){
+			wParam &= ~FS_ACTIVATE;
+			wParam &= ~FS_SYNCACTIVE;
+		}*/
+	
 	return(DefWindowProc(hwnd, uMsg, wParam, lParam));
 }
 
@@ -1343,6 +1355,8 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 
 void CMainFrame::OnMove(int x, int y)
 {
+	m_lTransparentToolbarPosStat = 0;
+
 	HMONITOR hMonitor = MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST);
 	if(m_HLastMonitor != hMonitor){
 		m_HLastMonitor = hMonitor;
@@ -9581,6 +9595,7 @@ void CMainFrame::rePosOSD(){
 		CRect rcRightTopWnd(rcView);
 		CRect rcRightVertWnd(rcView);
 		CRect rcToolBar(rcView);
+		CRect rcBaseView(rcView);
 		
 
 		//rcView -= rcView.TopLeft();
@@ -9623,20 +9638,68 @@ void CMainFrame::rePosOSD(){
 
 		AppSettings& s = AfxGetAppSettings();
 
-		if(m_lTransparentToolbarStat  && s.bUserAeroUI() && ::IsWindow(m_wndFloatToolBar.m_hWnd)){
+		if(m_lTransparentToolbarStat  && s.bUserAeroUI() && ::IsWindow(m_wndFloatToolBar.m_hWnd) ){
 
 			CSize view_size (  rcToolBar.Width() , rcToolBar.Height() );
 			rcToolBar.left += view_size.cx * 0.06;
 			rcToolBar.right -= view_size.cx * 0.06;
 			int uiHeight = m_wndFloatToolBar.GetUIHeight();
 			if(uiHeight > view_size.cy * 0.9){
-				rcToolBar.top += view_size.cy * 0.05;
+				rcToolBar.top += view_size.cy * ( 5 + s.m_lTransparentToolbarPosOffset ) /100;
 				rcToolBar.bottom =  rcToolBar.top + uiHeight;
 			}else{
-				rcToolBar.bottom -= view_size.cy * 0.05;
+				rcToolBar.bottom -= view_size.cy * ( 5 + s.m_lTransparentToolbarPosOffset ) /100;
 				rcToolBar.top = rcToolBar.bottom - uiHeight;
 			}
-			m_wndFloatToolBar.MoveWindow(rcToolBar);
+
+			if(!m_lTransparentToolbarPosStat){
+				m_wndFloatToolBar.MoveWindow(rcToolBar);
+			}else{
+				CRect rcCur;
+				m_wndFloatToolBar.GetWindowRect(rcCur);
+				BOOL bChanged = false;
+				if( rcCur.top < ( rcBaseView.top + view_size.cy * 2/ 3)  ){
+					rcCur.MoveToY( rcBaseView.top + view_size.cy * 2/ 3 );
+					bChanged = true;
+				}else if( rcCur.bottom > rcBaseView.bottom   ){
+					rcCur.MoveToY( rcBaseView.bottom - rcCur.Height() );
+					bChanged = true;
+				}
+				if( rcCur.left <  rcBaseView.left  ){
+					rcCur.MoveToX( rcBaseView.left );
+					bChanged = true;
+				}else if( rcCur.right >  rcBaseView.right  ){
+					rcCur.MoveToX( rcBaseView.right - rcCur.Width() );
+					bChanged = true;
+				}
+
+				s.m_lTransparentToolbarPosOffset = ( rcBaseView.bottom - rcCur.bottom ) * 100 / rcBaseView.Height() - 5;
+				if(bChanged)
+					m_wndFloatToolBar.MoveWindow(rcCur);
+			}
+
+			
+			
+/*
+			
+						if( m_lTransparentToolbarPosStat-- <= 0){
+							m_wndFloatToolBar.MoveWindow(rcToolBar);
+						}else{
+							CRect rcCur;
+							m_wndFloatToolBar.GetWindowRect(rcCur);
+							CPoint pCurrSB = rcCur.CenterPoint();
+							pCurrSB.x -= rcToolBar.Width()/2;
+							pCurrSB.y -= rcToolBar.Height()/2;
+							
+							CPoint pShoudBE = rcToolBar.TopLeft();
+							rcToolBar.MoveToXY( pCurrSB.x  , pCurrSB.y );
+							m_wndFloatToolBar.MoveWindow(rcToolBar);
+						}
+						*/
+			
+			//rcToolBar += m_lTransparentToolbarPosOffset;
+			
+			
 			m_wndFloatToolBar.ShowWindow(SW_SHOWNOACTIVATE);
 
 		}
@@ -15290,7 +15353,7 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 {
 
 	AppSettings& s = AfxGetAppSettings();
-
+    
 	m_tip.ClearStat();
 	__super::OnSize(nType, cx, cy);
 
@@ -15343,6 +15406,7 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 	r.top += r.Height()/2;
 	cr.top += cr.Height()/2;
 
+	m_lTransparentToolbarPosStat = 0;
 	rePosOSD();
 
 	//::SetWindowPos(m_wndStatusBar.m_hWnd, m_wndView.m_hWnd, 20, 20, 100, 30,0);

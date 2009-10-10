@@ -3603,10 +3603,10 @@ LRESULT CMainFrame::OnResumeFromState(WPARAM wParam, LPARAM lParam)
 {
 	int iPlaybackMode = (int)wParam;
 
-	SVP_LogMsg5(L"OnResumeFromState %f", double(lParam) );
+	//SVP_LogMsg5(L"OnResumeFromState %f", double(lParam) );
 	if(iPlaybackMode == PM_FILE)
 	{
-		SVP_LogMsg5(L"OnResumeFromState SeekTo %f", double(lParam) );
+	//	SVP_LogMsg5(L"OnResumeFromState SeekTo %f", double(lParam) );
 		SeekTo(10000i64*int(lParam));
 	}
 	else if(iPlaybackMode == PM_DVD)

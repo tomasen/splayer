@@ -606,7 +606,7 @@ BOOL CMainFrame::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 	UINT_PTR nID = pNMHDR->idFrom;
 	BOOL bRet = FALSE;
 
-	if(IDD_PPAGEACCELTBL != nID){	
+	if(IDD_PPAGEACCELTBL != nID && nID != 706){	 //no idea why there is 706
 
 		// idFrom is actually the HWND of the tool
 		CString toolTip = ResStr(nID);
@@ -9452,11 +9452,11 @@ void CMainFrame::MoveVideoWindow(bool fShowStats)
 		AppSettings &s = AfxGetAppSettings();
 		CRect wr;
 		
-		if(!m_fFullScreen  )//&& (s.bUserAeroUI() || (!s.bUserAeroUI() && ( s.nCS & CS_TOOLBAR )))
+		if(!m_fFullScreen && (s.bUserAeroUI() || (!s.bUserAeroUI() && ( s.nCS & CS_TOOLBAR ))) )
 		{
 			m_wndView.GetClientRect(wr);
 			//if(!s.fHideCaptionMenu)
-			//	wr.DeflateRect(1, 1);
+			//	wr.InflateRect(0, 3);
 
 			
 			/*

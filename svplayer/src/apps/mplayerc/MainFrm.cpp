@@ -9798,8 +9798,9 @@ MENUBARINFO mbi;
 		w = max(w, 480);
 		h = max(h, 280);
 
-		if(bThisIsAutoZoom){
+		if(bThisIsAutoZoom && 0){
 			double mratio = (double)lHeight/lWidth;
+			//SVP_LogMsg5(L"%d %d %f %d %d %f",h , w, w * mratio + (h - lHeight), lHeight, lWidth, mratio);
 			h = max(h , w * mratio + (h - lHeight));
 		}
 	}

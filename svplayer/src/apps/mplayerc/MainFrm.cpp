@@ -3603,8 +3603,10 @@ LRESULT CMainFrame::OnResumeFromState(WPARAM wParam, LPARAM lParam)
 {
 	int iPlaybackMode = (int)wParam;
 
+	SVP_LogMsg5(L"OnResumeFromState %f", double(lParam) );
 	if(iPlaybackMode == PM_FILE)
 	{
+		SVP_LogMsg5(L"OnResumeFromState SeekTo %f", double(lParam) );
 		SeekTo(10000i64*int(lParam));
 	}
 	else if(iPlaybackMode == PM_DVD)
@@ -7645,12 +7647,14 @@ void CMainFrame::SeekTo(REFERENCE_TIME rtPos, int fSeekToKeyFrame, REFERENCE_TIM
 		}
 		__int64 t_start_time,t_stop_time, t_target_time;
 		m_wndSeekBar.GetRange(t_start_time, t_stop_time);
-		t_target_time = max( t_start_time , min( t_stop_time , rtPos) );
-		if(t_target_time != rtPos){
-			iKeyFlag = 0;
-			rtPos = t_target_time;
+		if(t_start_time > (t_stop_time + 1000)){
+			t_target_time = max( t_start_time , min( t_stop_time , rtPos) );
+			if(t_target_time != rtPos){
+				iKeyFlag = 0;
+				rtPos = t_target_time;
+			}
 		}
-
+		
 		hr = pMS->SetPositions(&rtPos, AM_SEEKING_AbsolutePositioning|iKeyFlag, NULL, AM_SEEKING_NoPositioning);
 	}
 	else if(m_iPlaybackMode == PM_DVD && m_iDVDDomain == DVD_DOMAIN_Title)
@@ -11431,6 +11435,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 		return(false);
 	}
 	
+	m_wndSeekBar.SetRange(0, 100);
 
 	s.szFGMLog.Empty();
 	
@@ -14394,10 +14399,11 @@ void CMainFrame::OpenCurPlaylistItem(REFERENCE_TIME rtStart)
 	if(!m_wndPlaylistBar.GetCur(pli)) m_wndPlaylistBar.SetFirst();
 	if(!m_wndPlaylistBar.GetCur(pli)) return;
 	AppSettings& s = AfxGetAppSettings();
-	
+	//SVP_LogMsg5(L"OpenCurPlaylistItem");
 	if(rtStart == 0){
 		CString fn;
 		fn = pli.m_fns.GetHead();
+	//	SVP_LogMsg5(L"GetFav Start1 %s", fn);
 		favtype ft ;
 		ft = FAV_FILE;
 		if (!fn.IsEmpty() && s.autoResumePlay){
@@ -14405,7 +14411,7 @@ void CMainFrame::OpenCurPlaylistItem(REFERENCE_TIME rtStart)
 			CStringA szMD5data(fn);
 			CString szMatchmd5 = cmd5.GetMD5((BYTE*)szMD5data.GetBuffer() , szMD5data.GetLength() );
 			szMD5data.ReleaseBuffer();
-
+//SVP_LogMsg5(L"GetFav Start %s", szMatchmd5);
 			CAtlList<CString> sl;
 			s.GetFav(ft, sl, TRUE);
 			CString PosStr ;
@@ -14425,9 +14431,9 @@ void CMainFrame::OpenCurPlaylistItem(REFERENCE_TIME rtStart)
 					CString s2 = PosStr.Right( PosStr.GetLength() - iPos - 1 );
 					_stscanf(s2, _T("%I64d"), &rtStart); // pos
 				}
-				
+				//SVP_LogMsg5(L"Got %f", double(rtStart) );
 			}
-				
+				//SVP_LogMsg5(L"GetFav Done");
 		}
 	}else if(rtStart == -1){
 		rtStart = 0;

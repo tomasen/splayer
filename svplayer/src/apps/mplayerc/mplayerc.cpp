@@ -3880,6 +3880,7 @@ void CMPlayerCApp::Settings::GetFav(favtype ft, CAtlList<CString>& sl, BOOL bRec
 {
 	sl.RemoveAll();
 
+	//SVP_LogMsg5(L"GetFav start");
 	CString root;
 
 	switch(ft)
@@ -3938,7 +3939,7 @@ void CMPlayerCApp::Settings::DelFavByFn(favtype ft, BOOL bRecent, CString szMatc
 			}
 			sl.GetNext(pos);
 		}
-		if(sl.GetCount() > 10){
+		if(sl.GetCount() > 20){
 			sl.RemoveHead();
 		}
 	}else{
@@ -3949,6 +3950,7 @@ void CMPlayerCApp::Settings::DelFavByFn(favtype ft, BOOL bRecent, CString szMatc
 }
 void CMPlayerCApp::Settings::AddFav(favtype ft, CString s, BOOL bRecent, CString szMatch)
 {
+	//SVP_LogMsg5(L"bRecent Start %s", s);
 	CAtlList<CString> sl;
 	GetFav(ft, sl, bRecent);
 	if(bRecent){
@@ -3964,7 +3966,7 @@ void CMPlayerCApp::Settings::AddFav(favtype ft, CString s, BOOL bRecent, CString
 			}
 			sl.GetNext(pos);
 		}
-		if(sl.GetCount() > 10){
+		if(sl.GetCount() > 20){
 			sl.RemoveHead();
 		}
 		s.Replace( szMatch , szMatchmd5);
@@ -3973,6 +3975,8 @@ void CMPlayerCApp::Settings::AddFav(favtype ft, CString s, BOOL bRecent, CString
 	}
 	sl.AddTail(s);
 	SetFav(ft, sl , bRecent);
+
+	//SVP_LogMsg5(L"bRecent Done %s " , s);
 }
 
 // CMPlayerCApp::Settings::CRecentFileAndURLList

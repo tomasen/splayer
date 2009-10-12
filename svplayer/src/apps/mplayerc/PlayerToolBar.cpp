@@ -975,7 +975,7 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
 								if( pFrame->IsSomethingLoaded()){
 									AppSettings& s = AfxGetAppSettings();
 									if(s.bUserAeroUI())
-										pFrame->SetTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER, 7000, NULL);
+										pFrame->SetTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER, 5000, NULL);
 									else
 										pFrame->SetTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
 								}

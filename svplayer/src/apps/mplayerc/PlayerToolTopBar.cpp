@@ -120,7 +120,7 @@ BOOL CPlayerToolTopBar::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 						toolTip = _T("截图至文件和剪贴板");
 						break;
 					case ID_SHOWTRANSPRANTBAR:
-						toolTip = _T("半透明界面");
+						toolTip = _T("窗体半透明");
 						break;
 					
 					case ID_SHOWCOLORCONTROLBAR:
@@ -189,14 +189,22 @@ int CPlayerToolTopBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	btnFull->addAlignRelButton(  ALIGN_RIGHT,  btnPin2, CRect(1,1,1,1));
 	m_btnList.AddTail(btnFull);
 
+	AppSettings& s = AfxGetAppSettings();
+	CSUIButton* btnFlip = NULL;
 	if(bExtenedBtn){
 		CSUIButton* btnRotate  = new CSUIButton(L"TOP_ROTATE.BMP" , ALIGN_TOPRIGHT, CRect(1 , 1, 1,1)  , 0, ID_ROTATE_90, FALSE, ALIGN_RIGHT, btnFull  , CRect(1,1,1,1)   ) ;
 		btnRotate->addAlignRelButton( ALIGN_RIGHT, btnRestore  , CRect(1,1,1,1)  );
 		btnRotate->addAlignRelButton( ALIGN_RIGHT, btnPin1  , CRect(1,1,1,1)  );
 		btnRotate->addAlignRelButton( ALIGN_RIGHT, btnPin2  , CRect(1,1,1,1)  );
 		m_btnList.AddTail(btnRotate);
-
-		m_btnList.AddTail( new CSUIButton(L"TOP_FLIP.BMP" , ALIGN_TOPRIGHT, CRect(1 , 1, 1,1)  , 0, ID_ROTATE_V, FALSE, ALIGN_RIGHT, m_btnList.GetTail() , CRect(1,1,1,1)  ) );
+	}
+	if(0){//s.iSVPRenderType == 0
+		
+		btnFlip = new CSUIButton(L"TOP_FLIP.BMP" , ALIGN_TOPRIGHT, CRect(1 , 1, 1,1)  , 0, ID_ROTATE_V, FALSE, ALIGN_RIGHT,btnFull , CRect(1,1,1,1)  );
+		btnFlip->addAlignRelButton( ALIGN_RIGHT, btnRestore  , CRect(1,1,1,1)  );
+		btnFlip->addAlignRelButton( ALIGN_RIGHT, btnPin1  , CRect(1,1,1,1)  );
+		btnFlip->addAlignRelButton( ALIGN_RIGHT, btnPin2  , CRect(1,1,1,1)  );
+		m_btnList.AddTail( btnFlip  );
 
 	}
 
@@ -205,9 +213,12 @@ int CPlayerToolTopBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	btnCapture->addAlignRelButton( ALIGN_RIGHT, btnRestore  , CRect(1,1,1,1)  );
 	btnCapture->addAlignRelButton( ALIGN_RIGHT, btnPin1  , CRect(1,1,1,1)  );
 	btnCapture->addAlignRelButton( ALIGN_RIGHT, btnPin2  , CRect(1,1,1,1)  );
+	if(btnFlip){
+		btnCapture->addAlignRelButton( ALIGN_RIGHT, btnFlip  , CRect(1,1,1,1)  );
+	}
 	m_btnList.AddTail(btnCapture);
 
-	if(bExtenedBtn){
+	if(AfxGetMyApp()->IsVista() && s.bUserAeroUI()){
 		m_btnList.AddTail( new CSUIButton(L"TOP_TRANS.BMP" , ALIGN_TOPRIGHT, CRect(1 , 1, 1,1)  , 0, ID_SHOWTRANSPRANTBAR, FALSE, ALIGN_RIGHT, m_btnList.GetTail() , CRect(1,1,1,1)  ) );
 	}
 

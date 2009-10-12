@@ -165,4 +165,5 @@ public:
 protected:
 	virtual void OnCancel();
 	virtual void OnOK();
+	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 };

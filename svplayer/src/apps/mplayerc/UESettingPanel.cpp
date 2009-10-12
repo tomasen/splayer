@@ -925,3 +925,14 @@ void CUESettingPanel::OnOK()
 
 	//CDHtmlDialog::OnOK();
 }
+
+BOOL CUESettingPanel::PreCreateWindow(CREATESTRUCT& cs)
+{
+	// TODO: Add your specialized code here and/or call the base class
+	
+	if(!__super::PreCreateWindow(cs))
+		return FALSE;
+	
+	//
+	return TRUE;
+}

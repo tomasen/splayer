@@ -1178,7 +1178,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 		KillTimer(TIMER_FULLSCREENMOUSEHIDER);
 		if(!bNoMoreHideMouse && m_iMediaLoadState == MLS_LOADED){
 			if(s.bUserAeroUI())
-				SetTimer(TIMER_FULLSCREENMOUSEHIDER, 7000, NULL);
+				SetTimer(TIMER_FULLSCREENMOUSEHIDER, 5000, NULL);
 			else
 				SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
 		}
@@ -14310,10 +14310,18 @@ void CMainFrame::OnSettingFinished(){
 void CMainFrame::ShowOptions(int idPage)
 {
 	
+	if(HWND hWnd = ::FindWindow(NULL, _T("射手播放器选项设置面板")))
+	{
+		
+		::SetForegroundWindow(hWnd);
+		
+	}else{
+		CUESettingPanel* ueOption = new CUESettingPanel(pGB, this, idPage);
+		ueOption->Create(IDD_DHTML_SETTING, this);
+		ueOption->ShowWindow(SW_SHOW);
+	}
+
 	
-	CUESettingPanel* ueOption = new CUESettingPanel(pGB, this, idPage);
-	ueOption->Create(IDD_DHTML_SETTING, this);
-	ueOption->ShowWindow(SW_SHOW);
 	/*
 	
 		if(ueOption.DoModal() == IDOK)

@@ -3576,6 +3576,9 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 			}
 
 		}
+		
+		
+
 		lAeroTransparent = 0xaf;
 		logostretch = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LOGOSTRETCH), 1);
 		logofn = pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LOGOFILE), szExtLogoFn);

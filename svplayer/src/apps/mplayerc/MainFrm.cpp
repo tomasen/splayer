@@ -939,6 +939,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_ABMenu.AppendMenu(MF_ENABLED |MF_STRING , ID_ABCONTROL_OFF, _T("关闭A-B循环"));
 	*/
 
+	
 	if(s.bUserAeroUI()){
 
 		if(s.bAeroGlassAvalibility){

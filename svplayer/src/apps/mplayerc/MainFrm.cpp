@@ -2383,9 +2383,9 @@ void CMainFrame::OnActivateApp(BOOL bActive, DWORD dwThreadID)
 			module = (LPCTSTR)p;
 			module.MakeLower();
 
-			CString str;
-			str.Format(_T("Focus lost to: %s - %s"), module, title);
-			SendStatusMessage(str, 5000);
+			//CString str;
+			//str.Format(_T("Focus lost to: %s - %s"), module, title);
+			//SendStatusMessage(str, 5000);
 		}
 
 		//if(fExitFullscreen) OnViewFullscreen();

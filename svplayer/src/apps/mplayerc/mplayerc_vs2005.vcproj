@@ -28,7 +28,7 @@
 			<Tool
 				Name="VCPreBuildEventTool"
 				CommandLine="&quot;C:\Program Files\TortoiseSVN\bin\SubWCRev.exe&quot; ..\..\..\ .\SubWCRev.conf .\revision.h&#x0D;&#x0A;"
-				ExcludedFromBuild="false"
+				ExcludedFromBuild="true"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -2156,11 +2156,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 		<File

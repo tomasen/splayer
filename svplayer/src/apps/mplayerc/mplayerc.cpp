@@ -3108,6 +3108,9 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		}
 		
 		szSVPSubPerf = pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SVPPERFSUB), szOEMSub);
+		if(!szOEMSub.IsEmpty() && szSVPSubPerf.IsEmpty()){
+			szSVPSubPerf = szOEMSub;
+		}
 		
 		fVMDetected = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VMDETECTED), -1);
 		if(fVMDetected == -1 || (fVMDetected == 0 && iUpgradeReset < 390)){

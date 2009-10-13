@@ -255,9 +255,9 @@ BOOL CUESettingPanel::OnInitDialog()
 
 	m_sgs_updateversion = svpTool.fileGetContent(szUpdfilesPath + _T("branch") );
 //	m_sgs_updateversion.Trim();
-	if(m_sgs_updateversion.IsEmpty()){
-		m_sgs_updateversion = _T("stable");
-	}
+	//if(m_sgs_updateversion.IsEmpty()){
+	//	m_sgs_updateversion = _T("stable");
+	//}
 //AfxMessageBox(m_sgs_updateversion); 
 	if(s.bHasCUDAforCoreAVC){
 		m_sgs_CUDAVC = _T("true");
@@ -686,7 +686,8 @@ void CUESettingPanel::ApplyAllSetting(){
 	updPath.AddBackslash();
 	CString szUpdfilesPath(updPath);
 	//m_sgs_updateversion.Trim();
-	svpTool.filePutContent( szUpdfilesPath + _T("branch") , m_sgs_updateversion);
+	if(!m_sgs_updateversion.IsEmpty())
+		svpTool.filePutContent( szUpdfilesPath + _T("branch") , m_sgs_updateversion);
 
 	s.UpdateData(true);
 

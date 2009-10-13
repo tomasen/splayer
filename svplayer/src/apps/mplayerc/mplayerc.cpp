@@ -3017,6 +3017,10 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		
 		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SVPSUBSTOREDIR), SVPSubStoreDir);
 
+
+		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SVPPERFSUB), szSVPSubPerf);
+
+
 		pApp->WriteProfileString(_T("Shaders"), NULL, NULL);
 		pApp->WriteProfileInt(_T("Shaders"), _T("Initialized"), 1);
 		pApp->WriteProfileString(_T("Shaders"), _T("Combine"), m_shadercombine);
@@ -3084,6 +3088,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 			}
 		}
 
+		CString szOEMSub;
 		CRegKey oem;
 		if(ERROR_SUCCESS == oem.Open(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\SPlayer"), KEY_READ))
 		{
@@ -3094,8 +3099,15 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 				str.ReleaseBuffer(len);
 				szOEMTitle = str;
 			}
+
+			if(ERROR_SUCCESS == oem.QueryStringValue(_T("OEMSUB"), str.GetBuffer(len), &len))
+			{
+				str.ReleaseBuffer(len);
+				szOEMSub = str;
+			}
 		}
 		
+		szSVPSubPerf = pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SVPPERFSUB), szOEMSub);
 		
 		fVMDetected = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VMDETECTED), -1);
 		if(fVMDetected == -1 || (fVMDetected == 0 && iUpgradeReset < 390)){

@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
-<!--assemblyIdentity
-    version="6.4.0.1"
-    processorArchitecture="X86"
-    name="Gabest.VobSub.MediaPlayerClassic"
-    type="win32"
-/-->
 <description>射手播放器</description>
 <dependency>
     <dependentAssembly>

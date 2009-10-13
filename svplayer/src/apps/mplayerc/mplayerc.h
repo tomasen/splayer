@@ -431,6 +431,7 @@ public:
 		UINT tLastCheckUpdater;
 		UINT tCheckUpdaterInterleave;
 		bool fCheckFileAsscOnStartup;
+		CString szSVPSubPerf;
 		int fVMDetected ;
 		CString szStartUPCheckExts;
 		bool fPopupStartUpExtCheck;

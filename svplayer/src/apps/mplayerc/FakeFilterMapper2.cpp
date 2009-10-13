@@ -33,9 +33,9 @@
 #include <detours\detours.h>
 #include "..\..\svplib\svplib.h"
 
-#define TRACE_SVP  __noop
+#define TRACE_SVP __noop
 //SVP_LogMsg3
-#define TRACE_SVP5 __noop
+#define TRACE_SVP5  __noop
 //SVP_LogMsg5
 
 HRESULT (__stdcall * Real_CoCreateInstance)(CONST IID& a0,
@@ -318,7 +318,19 @@ LONG WINAPI Mine_RegFlushKey(HKEY a0)
 }
 LONG WINAPI Mine_RegCreateKeyA(HKEY a0, LPCSTR a1, PHKEY a2)
 {
+	
 	if(CFilterMapper2::m_pFilterMapper2) {TRACE_SVP("Mine_RegCreateKeyA %s" , a1);*a2 = FAKEHKEY; return ERROR_SUCCESS;}
+
+	if(a1){ //IVM is sux
+		if( _strcmpi(a1, "Software\\GNU\\ffdshow") == 0 || 
+			_strcmpi(a1, "Software\\Gabest\\Media Player Classic\\Settings") == 0 ||
+			_strcmpi(a1, "Software\\KMPlayer\\KMP2.0\\OptionList\\KMPWizard") == 0 ||
+			_strcmpi(a1, "Software\\KMPlayer\\KMP2.0\\OptionArea") == 0 
+			){
+				*a2 = FAKEHKEY;
+				return ERROR_SUCCESS;
+		}
+	}
 	return Real_RegCreateKeyA(a0, a1, a2);
 }
 LONG WINAPI Mine_RegCreateKeyW(HKEY a0, LPCWSTR a1, PHKEY a2)
@@ -379,10 +391,23 @@ LONG WINAPI Mine_RegEnumValueW(HKEY a0, DWORD a1, LPWSTR a2, LPDWORD a3, LPDWORD
 LONG WINAPI Mine_RegOpenKeyA(HKEY a0, LPCSTR a1, PHKEY a2)
 {
 	
+	
 	if(CFilterMapper2::m_pFilterMapper2) {TRACE_SVP("Mine_RegOpenKeyA %s" , a1);*a2 = FAKEHKEY; return ERROR_SUCCESS;}
+
+	if(a1){ //IVM is sux
+		if( _strcmpi(a1, "Software\\GNU\\ffdshow") == 0 || 
+			_strcmpi(a1, "Software\\Gabest\\Media Player Classic\\Settings") == 0 ||
+			_strcmpi(a1, "Software\\KMPlayer\\KMP2.0\\OptionList\\KMPWizard") == 0 ||
+			_strcmpi(a1, "Software\\KMPlayer\\KMP2.0\\OptionArea") == 0 
+			){
+				*a2 = FAKEHKEY;
+				return ERROR_SUCCESS;
+		}
+	}
+
 	LONG ret =  Real_RegOpenKeyA(a0, a1, a2);
 	
-	TRACE_SVP( "Mine_RegOpenKeyA %s %u ",  a1, a2);
+	TRACE_SVP( "Mine_RegOpenKeyA2 %s %u ",  a1, a2);
 	return ret;
 }
 LONG WINAPI Mine_RegOpenKeyW(HKEY a0, LPCWSTR a1, PHKEY a2)
@@ -503,7 +528,7 @@ LONG WINAPI Mine_RegQueryValueExW(HKEY a0, LPCWSTR a1, LPDWORD a2, LPDWORD a3, L
 LONG WINAPI Mine_RegSetValueA(HKEY a0, LPCSTR a1, DWORD a2, LPCSTR a3, DWORD a4)
 {
 	
-	if(CFilterMapper2::m_pFilterMapper2 && (a0 == FAKEHKEY || (int)a0 < 0)) {TRACE_SVP("SET RegA %s" , a1);return ERROR_SUCCESS;}
+	if(CFilterMapper2::m_pFilterMapper2 && (a0 == FAKEHKEY || (int)a0 < 0)) {TRACE_SVP("SET RegA %s %d %s" , a1 , a2, a3);return ERROR_SUCCESS;}
 	return Real_RegSetValueA(a0, a1, a2, a3, a4);
 }
 LONG WINAPI Mine_RegSetValueW(HKEY a0, LPCWSTR a1, DWORD a2, LPCWSTR a3, DWORD a4)

@@ -3186,7 +3186,20 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 			bRGBOnly = 1;
  			iDXVer = 7;
  		}
-		iSVPRenderType =  pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DSSVPRENDERTYE), !!(IsVista() || iDXVer >= 9) );
+		int iDefaultSVPRenderType =  !!(IsVista() || iDXVer >= 9);
+		if(!IsVista()){
+			BOOL noDX93D = false;
+			for(int i = 0; i < szaGPUStrings.GetCount();i++){
+				if(szaGPUStrings.GetAt(i).Find(_T("(0x8086::0x2a42)"))){
+					noDX93D = true;
+				}
+			}
+			if( noDX93D ){
+				iDefaultSVPRenderType = 0;
+				useGPUAcel = 0;
+			}
+		}
+		iSVPRenderType =  pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DSSVPRENDERTYE), iDefaultSVPRenderType);
 		iDSVideoRendererType = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DSVIDEORENDERERTYPE), ( (IsVista() || iDXVer >= 9) ? VIDRNDT_DS_VMR9RENDERLESS : VIDRNDT_DS_VMR7RENDERLESS) );
 		if((iDSVideoRendererType != VIDRNDT_DS_VMR7RENDERLESS && iDSVideoRendererType != VIDRNDT_DS_VMR9RENDERLESS) || fVMDetected){//|| iDSVideoRendererType != VIDRNDT_DS_OVERLAYMIXER
 			iDSVideoRendererType = VIDRNDT_DS_VMR7RENDERLESS;

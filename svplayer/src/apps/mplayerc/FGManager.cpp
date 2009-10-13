@@ -2026,7 +2026,7 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 	pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(_T("MPC Video Decoder"),  merit);
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_tscc);
 
-	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_QTSmc);
+	//pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_QTSmc);
 	
 #if INTERNAL_DECODER_FLV
 	if (ffmpeg_filters & FFM_FLV4)

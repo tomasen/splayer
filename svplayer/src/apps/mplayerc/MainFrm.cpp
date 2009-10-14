@@ -358,7 +358,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_PLAY_PLAY, OnPlayPlay)
 	ON_COMMAND(ID_PLAY_PAUSE, OnPlayPause)
 	ON_COMMAND(ID_PLAY_PLAYPAUSE, OnPlayPlaypause)
-	ON_COMMAND(ID_PLAY_STOP, OnPlayStop)
+	ON_COMMAND(ID_PLAY_STOP, OnPlayStopDummy)
 	ON_UPDATE_COMMAND_UI(ID_PLAY_PLAY, OnUpdatePlayPauseStop)
 	ON_UPDATE_COMMAND_UI(ID_PLAY_PAUSE, OnUpdatePlayPauseStop)
 	ON_UPDATE_COMMAND_UI(ID_PLAY_PLAYPAUSE, OnUpdatePlayPauseStop)
@@ -3407,7 +3407,7 @@ LRESULT CMainFrame::OnGraphNotify(WPARAM wParam, LPARAM lParam)
 						else
 						{
 							m_fEndOfStream = true;
-							PostMessage(WM_COMMAND, ID_PLAY_PAUSE);
+							PostMessage(WM_COMMAND, ID_PLAY_STOP);
 						}
 					}
 				}
@@ -7282,7 +7282,14 @@ void CMainFrame::OnPlayPlaypause()
 	if(fs == State_Running) SendMessage(WM_COMMAND, ID_PLAY_PAUSE);
 	else  SendMessage(WM_COMMAND, ID_PLAY_PLAY); //if(fs == State_Stopped || fs == State_Paused)
 }
+void CMainFrame::OnPlayStopDummy(){
 
+	if(AfxGetAppSettings().iSVPRenderType == 0){
+		SendMessage(WM_COMMAND, ID_FILE_CLOSEPLAYLIST);
+	}else{
+		OnPlayStop();
+	}
+}
 void CMainFrame::OnPlayStop()
 {
 	if(m_iMediaLoadState == MLS_LOADED)
@@ -7361,6 +7368,8 @@ void CMainFrame::OnPlayStop()
 			SetAlwaysOnTop(AfxGetAppSettings().iOnTop);
 		}
 	}
+
+
 }
 
 void CMainFrame::OnUpdatePlayPauseStop(CCmdUI* pCmdUI)

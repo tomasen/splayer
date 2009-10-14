@@ -864,7 +864,7 @@ LRESULT CConvertDlg::OnGraphNotify(WPARAM wParam, LPARAM lParam)
 
 		if(fStop && m_pMC)
 		{
-			m_pMC->Stop();
+			//m_pMC->Stop();
 			m_tree.EnableWindow(TRUE);
 		}
 	}

@@ -2178,6 +2178,11 @@ void CDX9AllocatorPresenter::EstimateRefreshTimings()
 			time = pApp->GetPerfCounter();
 			if (line > 0)
 			{
+				if(endLine > line){
+					//if this looped to another vsync cycle SVP_LogMsg5(L"Shit Est");
+					startTime = time;
+					startLine = line;
+				}
 				endLine = line;
 				endTime = time;
 			}
@@ -2215,6 +2220,7 @@ void CDX9AllocatorPresenter::EstimateRefreshTimings()
 
 		SVP_LogMsg5(L"Got ScanlineTime %f %f %f" ,
 			m_dDetectedScanlineTime, m_dDetectedScanlineTime*m_ScreenSizeCurrent.cy, m_dEstRefreshCycle);
+
 	}
 }
 

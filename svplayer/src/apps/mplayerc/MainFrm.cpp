@@ -7287,10 +7287,7 @@ void CMainFrame::OnPlayStop()
 {
 	if(m_iMediaLoadState == MLS_LOADED)
 	{
-		if(AfxGetAppSettings().iSVPRenderType == 0){
-			SendMessage(WM_COMMAND, ID_FILE_CLOSEMEDIA);
-			return;
-		}
+		
 		if(m_iPlaybackMode == PM_FILE)
 		{
 			LONGLONG pos = 0;
@@ -7340,6 +7337,7 @@ void CMainFrame::OnPlayStop()
 		}
 
 		m_fEndOfStream = false;
+
 	}
 
 	m_nLoops = 0;

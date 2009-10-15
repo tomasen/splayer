@@ -14543,7 +14543,7 @@ int CMainFrame::SVPMessageBox(LPCTSTR lpszText, UINT nType  ,	UINT   , UINT idWM
 }
 void CMainFrame::CloseMedia()
 {
-
+	
 	AfxGetAppSettings().bIsIVM = false;
 
 	PostMessage(WM_COMMAND, ID_PLAY_PAUSE);

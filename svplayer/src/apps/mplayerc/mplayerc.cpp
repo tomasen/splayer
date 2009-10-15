@@ -221,7 +221,9 @@ _EXCEPTION_POINTERS ExceptionInfo;
 */
 
 					// write the dump
-					BOOL bOK = pDump( pProcess, pId,hFile,MiniDumpNormal,NULL,NULL,NULL);
+					BOOL bOK = pDump( pProcess, pId,hFile,
+						 MINIDUMP_TYPE(MiniDumpWithDataSegs  | MiniDumpWithIndirectlyReferencedMemory | MiniDumpFilterModulePaths)
+						 ,NULL,NULL,NULL);
 					if (bOK)
 					{
 						_stprintf( szScratch, _T("前一进程锁死,诊断文件已经保存到:'%s'\n请将该文件发送至tomasen@gmail.com，以便我们不断完善"), szDumpPath );

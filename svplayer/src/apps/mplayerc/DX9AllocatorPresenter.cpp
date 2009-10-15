@@ -3063,91 +3063,27 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 	}
 	
 	AppSettings& s = AfxGetAppSettings();
-	while(s.m_RenderSettings.bSynchronizeNearest && m_lOverWaitCounter < 20){//
-		double targetSyncOffset;
-		m_pGenlock->GetTargetSyncOffset(&targetSyncOffset); // Target sync offset from settings
-		if (m_rtFrameCycle > 0.0){
-			if(targetSyncOffset*15000 > m_rtFrameCycle){
-				targetSyncOffset = (double)m_rtFrameCycle /15000;
-				m_pGenlock->SetTargetSyncOffset(targetSyncOffset);
-				m_lOverWaitCounter = 30;
-				break;
+	while(s.m_RenderSettings.bSynchronizeNearest ){//
+
+		REFERENCE_TIME rtRefClockTimeNow; if (m_pRefClock) m_pRefClock->GetTime(&rtRefClockTimeNow); // Reference clock time now
+		LONG lLastVsyncTime = (LONG)((m_rtEstVSyncTime - rtRefClockTimeNow) / 10000); // Time of previous vsync relative to now
+
+		LONGLONG llNextSampleWait = (LONGLONG)(((double)lLastVsyncTime + GetDisplayCycle() * (2.0 - s.m_RenderSettings.fTargetSyncOffset)) * 10000); // Next safe time to Paint()
+		
+		LONGLONG llEachStep = (GetDisplayCycle() * 10000); // While the proposed time is in the past of sample presentation time
+		if(llEachStep > 0){
+			while(llNextSampleWait < 0){
+				llNextSampleWait += llEachStep;
 			}
-		}else{
-			if(targetSyncOffset*20000 >(lpPresInfo->rtEnd - lpPresInfo->rtStart)){
-				m_lOverWaitCounter++;
-				break;
-			}
-		}
-
-		REFERENCE_TIME rtCurRefTime;
-		if (m_pRefClock) m_pRefClock->GetTime(&rtCurRefTime);
-		LONGLONG llRefClockTime = lpPresInfo->rtStart - min( (GetDisplayCycle() * 10000) , (lpPresInfo->rtEnd - lpPresInfo->rtStart)) ;//- (LONGLONG)((double)(lpPresInfo->rtEnd - lpPresInfo->rtStart) * 0.1);
-
-		//Guess the CorrelatedTime
-		//m_rtLastPresentTimer += (lpPresInfo->rtEnd - lpPresInfo->rtStart); 
-		//if(m_rtLastPresentTimer < lpPresInfo->rtStart && m_rtLastPresentTimer > (lpPresInfo->rtStart - (lpPresInfo->rtEnd - lpPresInfo->rtStart)) ){
-			//llRefClockTime = m_rtLastPresentTimer;
-		//}else
-		//	m_rtLastPresentTimer = rtCurRefTime;
-
-		//SVP_LogMsg3(" CVMR9AllocatorPresenter::PresentImage %f %f %f %f ", double(m_llLastSampleTime ) , double(rtCurRefTime),  double(lpPresInfo->rtStart) , double(lpPresInfo->rtEnd));
-		//SVP_LogMsg3(" CVMR9AllocatorPresenter::PresentImage %f %f %f %f ", (double)g_tSegmentStart , (double)g_tSampleStart , (double)llRefClockTime, double(lpPresInfo->rtStart));
-		m_lNextSampleWait = (LONG)((m_llSampleTime - llRefClockTime) / 10000); // Time left until sample is due, in ms
-		if (m_lNextSampleWait < 0)
-			m_lNextSampleWait = 0; // We came too late. Race through, discard the sample and get a new one
-		else if (s.m_RenderSettings.bSynchronizeNearest && m_lOverWaitCounter < 20) //  Present at the closest "safe" occasion at tergetSyncOffset ms before vsync to avoid tearing
-		{
-			REFERENCE_TIME rtRefClockTimeNow; if (m_pRefClock) m_pRefClock->GetTime(&rtRefClockTimeNow); // Reference clock time now
-			//SVP_LogMsg3(" VMR9 fake EVR %f %f %f %f ", double(m_llLastSampleTime ) , double(rtRefClockTimeNow),  double(m_llSampleTime) , double(llRefClockTime));
-			LONG lLastVsyncTime = (LONG)((m_rtEstVSyncTime - rtRefClockTimeNow) / 10000); // Time of previous vsync relative to now
-
-			LONGLONG llNextSampleWait = (LONGLONG)(((double)lLastVsyncTime + GetDisplayCycle() - targetSyncOffset) * 10000); // Next safe time to Paint()
-			// 						while ((llRefClockTime + llNextSampleWait) < (m_llSampleTime + m_llHysteresis)) // While the proposed time is in the past of sample presentation time
-			// 						{
-			// 							llNextSampleWait = llNextSampleWait + (LONGLONG)(GetDisplayCycle() * 10000); // Try the next possible time, one display cycle ahead
-			// 						}
-			//By Tomasen: The while loop seems un-nesssery
-			LONGLONG llEachStep = (GetDisplayCycle() * 10000); // While the proposed time is in the past of sample presentation time
-			if(llEachStep){
-				LONGLONG llHowManyStepWeNeed = ((m_llSampleTime + m_llHysteresis) - (llRefClockTime + llNextSampleWait)) / llEachStep;   // Try the next possible time, one display cycle ahead
-				llNextSampleWait += llEachStep * llHowManyStepWeNeed;
-			}else
-				llNextSampleWait = 10000;
-			m_lNextSampleWait = (LONG)(llNextSampleWait / 10000);
-			m_lShiftToNearestPrev = m_lShiftToNearest;
-			m_lShiftToNearest = (LONG)((llRefClockTime + llNextSampleWait - m_llSampleTime) / 10000); // The adjustment made to get to the sweet point in time, in ms
-
-			if (abs(GetCycleDifference()) < 0.05)
-			{
-				LONG lDisplayCycle2 = (LONG)(GetDisplayCycle() / 2.0); // These are a couple of empirically determined constants used the control the "snap" function
-				LONG lDisplayCycle3 = (LONG)(GetDisplayCycle() / 3.0);
-				if (m_bSnapToVSync) // If a step down in the m_lShiftToNearest function. Display slower than video. 
-				{
-					m_bVideoSlowerThanDisplay = false;
-					m_llHysteresis = -(LONGLONG)(10000 * lDisplayCycle3);
-				}
-				else if ((m_lShiftToNearest - m_lShiftToNearestPrev) > lDisplayCycle2) // If a step up
-				{
-					m_bVideoSlowerThanDisplay = true;
-					m_llHysteresis = (LONGLONG)(10000 * lDisplayCycle3);
-				}
-				else if ((m_lShiftToNearest < (2 * lDisplayCycle3)) && (m_lShiftToNearest > lDisplayCycle3))
-					m_llHysteresis = 0; // Reset when between 1/3 and 2/3 of the way either way
-			}
-		}
-		if(m_lNextSampleWait*10000 > (lpPresInfo->rtEnd - lpPresInfo->rtStart)){
-			//m_pcFramesDropped++;
-			//return S_OK;
-			//m_lNextSampleWait = 50;
-			//m_lOverWaitCounter++;
-			m_lOverWaitCounter = 4;
+			
 		}else
-			m_lOverWaitCounter = 1;
+			llNextSampleWait = 0;
 
-		if (m_lNextSampleWait <= 0)
-			m_lNextSampleWait = 0;
-		else{
+		m_lNextSampleWait = (LONG)(llNextSampleWait / 10000);
+			
+		if (m_lNextSampleWait <= 0){
+		//	m_lNextSampleWait = 0;
+		}else{
 			if(hEventGoth){
 				if(WAIT_TIMEOUT != WaitForSingleObject(hEventGoth, m_lNextSampleWait) ){
 					m_lOverWaitCounter = 3;

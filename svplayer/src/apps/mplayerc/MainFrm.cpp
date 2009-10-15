@@ -1694,6 +1694,7 @@ void CMainFrame::OnDestroy()
 	m_wndNewOSD.SendMessage(WM_DESTROY,0  , 0);
 	m_wndToolTopBar.SendMessage(WM_DESTROY, 0 , 0);
 
+	OnPlayPause();
 	CloseMedia();
 
 	if(m_pGraphThread)
@@ -1741,6 +1742,7 @@ void CMainFrame::OnClose()
 	m_wndFloatToolBar.OnRealClose();
 	
 	//while(1){Sleep(333);}
+	OnPlayPause();
 	CloseMedia();
 
 	__super::OnClose();
@@ -14653,6 +14655,10 @@ END_MESSAGE_MAP()
 
 void CGraphThread::OnExit(WPARAM wParam, LPARAM lParam)
 {
+	if(m_pMainFrame){
+		m_pMainFrame->OnPlayPause();
+		m_pMainFrame->CloseMediaPrivate();
+	}
 	PostQuitMessage(0);
 	if(CAMEvent* e = (CAMEvent*)lParam) e->Set();
 }
@@ -14668,7 +14674,10 @@ void CGraphThread::OnOpen(WPARAM wParam, LPARAM lParam)
 
 void CGraphThread::OnClose(WPARAM wParam, LPARAM lParam)
 {
-	if(m_pMainFrame) m_pMainFrame->CloseMediaPrivate();
+	if(m_pMainFrame){
+		m_pMainFrame->OnPlayPause();
+		m_pMainFrame->CloseMediaPrivate();
+	}
 	if(CAMEvent* e = (CAMEvent*)lParam) e->Set();
 }
 

@@ -14658,6 +14658,7 @@ void CGraphThread::OnExit(WPARAM wParam, LPARAM lParam)
 	if(m_pMainFrame){
 		m_pMainFrame->OnPlayPause();
 		m_pMainFrame->CloseMediaPrivate();
+		m_pMainFrame->ShowWindow(SW_HIDE);
 	}
 	PostQuitMessage(0);
 	if(CAMEvent* e = (CAMEvent*)lParam) e->Set();

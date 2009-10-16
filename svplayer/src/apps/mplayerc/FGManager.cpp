@@ -2749,7 +2749,7 @@ CFGManagerPlayer::CFGManagerPlayer(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	if( !isCapture && ( s.iSVPRenderType == 0 ) ){ //|| !svptoolbox.TestD3DCreationAbility(m_hWnd) ( s.iDSVideoRendererType == VIDRNDT_DS_OVERLAYMIXER || VIDRNDT_DS_OLDRENDERER == s.iDSVideoRendererType)
 		
 		pFGF = new CFGFilterInternal<CSVPSubFilter>(
-			L"射手播放器字幕组件" ,
+			ResStr(IDS_SVP_FILTER_NAME) ,
 			MERIT64_ABOVE_DSHOW );
 		
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_YV12);

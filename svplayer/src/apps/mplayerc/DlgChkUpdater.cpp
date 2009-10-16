@@ -101,7 +101,7 @@ void CDlgChkUpdater::OnTimer(UINT_PTR nIDEvent)
 			if(moreTick == 1){
 				cprog_chker.ShowWindow(SW_HIDE);
 				cs_stat.ShowWindow(SW_SHOW);
-				cb_close.SetWindowText(_T("关闭"));
+				cb_close.SetWindowText(ResStr(IDS_DIABLOG_CLOSE_BUTTON));
 				KillTimer(IDT_CHECK_TICK);
 			}
 			if(moreTick > 1 ){
@@ -111,7 +111,7 @@ void CDlgChkUpdater::OnTimer(UINT_PTR nIDEvent)
 
 			HANDLE hMutex = OpenMutex(MUTEX_ALL_ACCESS,	FALSE, _T("SPLAYER_REAL_UPDATER"));
 			if (hMutex ) {
-				HWND hWndPrevious = ::FindWindow( NULL , _T("射手影音自动更新程序"));// ::GetDesktopWindow(),GW_CHILD);
+				HWND hWndPrevious = ::FindWindow( NULL , ResStr(IDS_UPDATER_DIALOG_TITLE_KEYWORD));// ::GetDesktopWindow(),GW_CHILD);
 				while( ::IsWindow(hWndPrevious)){
 					//if (::GetProp(hWndPrevious, "WOWSocks")){
 					//if (!::IsWindowVisible(hWndPrevious) ){

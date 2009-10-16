@@ -7,7 +7,7 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#include "afxres.h"
+#include "afxres.h"
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
@@ -3027,6 +3027,9 @@ BEGIN
     IDS_CONTROLS_CLOSING    "正在关闭..."
     IDS_CONTROLS_PLAYING    "正在播放"
     IDS_CONTROLS_PAUSED     "已暂停"
+    IDS_DIABLOG_CLOSE_BUTTON		"关闭"
+		IDS_UPDATER_DIALOG_TITLE_KEYWORD	"射手影音自动更新程序"
+		IDS_SVP_FILTER_NAME			"射手播放器字幕组件"
 END
 
 STRINGTABLE 

@@ -3072,10 +3072,10 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 		
 		LONGLONG llEachStep = (GetDisplayCycle() * 10000); // While the proposed time is in the past of sample presentation time
 		if(llEachStep > 0){
-			while(llNextSampleWait < 0){
-				llNextSampleWait += llEachStep;
+			if(llNextSampleWait < 0){
+				LONGLONG llStepWeNeed = (-llNextSampleWait) / llEachStep;
+				llNextSampleWait += llEachStep*(llStepWeNeed+1);
 			}
-			
 		}else
 			llNextSampleWait = 0;
 

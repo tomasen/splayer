@@ -301,10 +301,19 @@ void CPlayerToolTopBar::UpdateButtonStat(){
 
 	BOOL bViewFROMOUTSIDE = (s.iDefaultVideoSize == 5);
 
+
 	m_btnList.SetHideStat( L"TOP_LETTERBOX_WIDER.BMP" , pFrame->m_fScreenHigherThanVideo || bViewFROMOUTSIDE);
 	m_btnList.SetHideStat( L"TOP_LETTERBOX.BMP" , !pFrame->m_fScreenHigherThanVideo || bViewFROMOUTSIDE);
 	m_btnList.SetHideStat( L"TOP_NORMAL_WIDER.BMP" , pFrame->m_fScreenHigherThanVideo || !bViewFROMOUTSIDE);
 	m_btnList.SetHideStat( L"TOP_NORMAL.BMP" , !pFrame->m_fScreenHigherThanVideo || !bViewFROMOUTSIDE);
+
+/*
+	m_btnList.SetHideStat( L"TOP_NORMAL_WIDER.BMP" , pFrame->m_fScreenHigherThanVideo || bViewFROMOUTSIDE);
+	m_btnList.SetHideStat( L"TOP_NORMAL.BMP" , !pFrame->m_fScreenHigherThanVideo || bViewFROMOUTSIDE);
+	m_btnList.SetHideStat( L"TOP_LETTERBOX_WIDER.BMP" , pFrame->m_fScreenHigherThanVideo || !bViewFROMOUTSIDE);
+	m_btnList.SetHideStat( L"TOP_NORMAL.BMP" , !pFrame->m_fScreenHigherThanVideo || !bViewFROMOUTSIDE);
+
+	*/
 
 }
 void CPlayerToolTopBar::OnMove(int x, int y)

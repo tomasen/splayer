@@ -9593,6 +9593,16 @@ void CMainFrame::MoveVideoWindow(bool fShowStats)
 	{
 		m_wndView.SetVideoRect();
 	}
+
+	CRect r;
+	m_wndView.GetClientRect(r);
+	if(m_iMediaLoadState == MLS_LOADED){
+		float fViewRatio = (float)r.Width() / r.Height();
+		CSize vsize = GetVideoSize();
+		float fVideoRatio = (float)vsize.cx / vsize.cy;
+		m_fScreenHigherThanVideo = (fViewRatio < fVideoRatio );
+
+	}
 }
 void CMainFrame::rePosOSD(){
 
@@ -15425,13 +15435,7 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 
 	CRect r,cr;
 	m_wndView.GetClientRect(r);
-	if(m_iMediaLoadState == MLS_LOADED){
-		float fViewRatio = (float)r.Width() / r.Height();
-		CSize vsize = GetVideoSize();
-		float fVideoRatio = (float)vsize.cx / vsize.cy;
-		m_fScreenHigherThanVideo = (fViewRatio < fVideoRatio );
-		
-	}
+	
 	
 	m_wndView.GetWindowRect(cr);
 	//r.top += 20;

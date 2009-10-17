@@ -207,7 +207,7 @@ HRESULT CUESettingPanel::OnFontSetting(IHTMLElement *pElement){
 	{
 		CString str;
 		sts = lf;
-		str.Format( _T("%s(%d)"), lf.lfFaceName ,sts.fontSize );
+		str.Format( _T("%s(%d)"), lf.lfFaceName , (int)sts.fontSize );
 		
 		if (szId == _T("subfont2") ){m_stss2 = lf; m_sgs_subfont2 = str;}else{	m_stss = lf; m_sgs_subfont1 = str;}
 		UpdateData(FALSE);

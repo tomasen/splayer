@@ -29,9 +29,9 @@
 #include <shobjidl.h>
 #include "../../svplib/SVPToolBox.h"
 
-CString			g_strRegisteredAppName =  ResStr(IDS_FILEASSOC_REG_APPNAME);
+CString			g_strRegisteredAppName = _T("射手影音播放器") ;//cant use ResStr(IDS_FILEASSOC_REG_APPNAME);
 CString			g_strOldAssoc		  = _T("PreviousRegistration");
-CString			g_strRegisteredKey	= _T("Software\\Clients\\Media\\")+g_strRegisteredAppName+_T("\\Capabilities");
+CString			g_strRegisteredKey	= _T("Software\\Clients\\Media\\射手影音播放器\\Capabilities");
 BOOL f_setContextFiles  = true;
 BOOL f_setAssociatedWithIcon  = true;
 // CPPageFormats dialog
@@ -52,6 +52,8 @@ CPPageFormats::CPPageFormats()
 		
 		m_bInsufficientPrivileges = true;
 	}
+
+	//TODO: detetc language setting and change  g_strRegisteredAppName  g_strRegisteredKey
 }
 
 CPPageFormats::~CPPageFormats()
@@ -290,6 +292,7 @@ BOOL CPPageFormats::SetFileAssociation(CString strExt, CString strProgID, bool f
 			{
 				key.SetStringValue(g_strRegisteredAppName/*_T("Media Player Classic")*/, g_strRegisteredKey);
 
+				
 				if(ERROR_SUCCESS != key.Create(HKEY_LOCAL_MACHINE, g_strRegisteredKey))
 					return(false);
 

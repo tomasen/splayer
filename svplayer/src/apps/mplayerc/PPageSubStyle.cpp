@@ -1,4 +1,4 @@
-/* 
+ï»¿/* 
  *	Copyright (C) 2003-2006 Gabest
  *	http://www.gabest.org
  *
@@ -76,7 +76,7 @@ CPPageSubStyle::~CPPageSubStyle()
 void CPPageSubStyle::InitStyle(CString title, STSStyle& stss)
 {
 	if(title == _T("SVPDefault"))
-		title  = _T("²¥·ÅÆ÷Ä¬ÈÏÉèÖÃ");
+		title  = ResStr(IDS_PANEL_SUBSTYLE_DEFAULT);
 	
 	m_pPSP->pszTitle = (m_title = title);
 	m_psp.dwFlags |= PSP_USETITLE;
@@ -242,8 +242,8 @@ BOOL CPPageSubStyle::OnApply()
 			//m_stss.charSet = stss.charSet;
 			stss = m_stss;
 
-			if ( (m_stss.fontName == _T("Î¢ÈíÑÅºÚ") || m_stss.fontName == _T("Microsoft YaHei") 
-				|| m_stss.fontName == _T("ÎÄÈªæäÎ¢Ã×ºÚ") || m_stss.fontName == _T("WenQuanYi Micro Hei") ) && stss.fontName != m_stss.fontName ) 
+			if ( (m_stss.fontName == _T("å¾®è½¯é›…é»‘") || m_stss.fontName == _T("Microsoft YaHei") 
+				|| m_stss.fontName == _T("æ–‡æ³‰é©¿å¾®ç±³é»‘") || m_stss.fontName == _T("WenQuanYi Micro Hei") ) && stss.fontName != m_stss.fontName ) 
 			{
 				AfxGetAppSettings().bNotChangeFontToYH = TRUE;
 			}

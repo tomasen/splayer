@@ -1,4 +1,4 @@
-/* 
+ï»¿/* 
  *	Copyright (C) 2003-2006 Gabest
  *	http://www.gabest.org
  *
@@ -71,7 +71,7 @@ void CPPageAccelTbl::SetupList()
 
 
 		m_list.SetItemText(row, COL_MOUSE, MakeMouseButtonLabel(wc.mouse));
-		CString type = (wc.fVirt&FVIRTKEY)?_T("¼ü"):_T("×ÖÄ¸");
+		CString type = (wc.fVirt&FVIRTKEY)?ResStr(IDS_ACCEL_HOTKEY_SET_BUTTON_KEY):ResStr(IDS_ACCEL_HOTKEY_SET_BUTTON_LETTERKEY);
 		m_list.SetItemText(row, COL_TYPE, type);
 
 		CString id;
@@ -106,21 +106,21 @@ CString CPPageAccelTbl::MakeAccelVkeyLabel(WORD key, bool fVirtKey)
 	if(fVirtKey)
 	switch(key)
 	{
-	case VK_LBUTTON: str = _T("Êó±ê×ó¼ü"); break;
-	case VK_RBUTTON: str = _T("Êó±êÓÒ¼ü"); break;
+	case VK_LBUTTON: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSELEFT); break;
+	case VK_RBUTTON: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSERIGHT); break;
 	case VK_CANCEL: str = _T("Ctrl-Break"); break;
-	case VK_MBUTTON: str = _T("Êó±êÖÐ¼ü"); break;
-	case VK_XBUTTON1: str = _T("Êó±ê4¼ü"); break;
-	case VK_XBUTTON2: str = _T("Êó±ê5¼ü"); break;
-	case VK_BACK: str = _T("¡ûÍË¸ñ¼ü"); break;
-	case VK_TAB: str = _T("Tab¼ü"); break;
+	case VK_MBUTTON: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSEMIDDLE); break;
+	case VK_XBUTTON1: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE4); break;
+	case VK_XBUTTON2: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE5); break;
+	case VK_BACK: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_BACKSPACE); break;
+	case VK_TAB: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_TAB); break;
 	case VK_CLEAR: str = _T("VK_CLEAR"); break;
-	case VK_RETURN: str = _T("»Ø³µ¼ü"); break;
+	case VK_RETURN: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_RETURN); break;
 	case VK_SHIFT: str = _T("Shift"); break;
 	case VK_CONTROL: str = _T("Ctrl"); break;
 	case VK_MENU: str = _T("VK_MENU"); break;
-	case VK_PAUSE: str = _T("ÔÝÍ£(Pause)¼ü"); break;
-	case VK_CAPITAL: str = _T("´óÐ´¿ØÖÆ¼ü"); break;
+	case VK_PAUSE: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_PAUSE); break;
+	case VK_CAPITAL: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_CAPITAL); break;
 //	case VK_KANA: str = _T("VK_KANA"); break;
 //	case VK_HANGEUL: str = _T("VK_HANGEUL"); break;
 	case VK_HANGUL: str = _T("VK_HANGUL"); break;
@@ -133,42 +133,42 @@ CString CPPageAccelTbl::MakeAccelVkeyLabel(WORD key, bool fVirtKey)
 	case VK_NONCONVERT: str = _T("VK_NONCONVERT"); break;
 	case VK_ACCEPT: str = _T("VK_ACCEPT"); break;
 	case VK_MODECHANGE: str = _T("VK_MODECHANGE"); break;
-	case VK_SPACE: str = _T("¿Õ¸ñ¼ü"); break;
+	case VK_SPACE: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_SPACE); break;
 	case VK_PRIOR: str = _T("VK_PRIOR"); break;
 	case VK_NEXT: str = _T("VK_NEXT"); break;
-	case VK_END: str = _T("End¼ü"); break;
-	case VK_HOME: str = _T("Home¼ü"); break;
-	case VK_LEFT: str = _T("×ó·½Ïò¼ü"); break;
-	case VK_UP: str = _T("ÉÏ·½Ïò¼ü"); break;
-	case VK_RIGHT: str = _T("ÓÒ·½Ïò¼ü"); break;
-	case VK_DOWN: str = _T("ÏÂ·½Ïò¼ü"); break;
+	case VK_END: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_END); break;
+	case VK_HOME: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_HOME); break;
+	case VK_LEFT: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_LEFT_ARROW); break;
+	case VK_UP: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_UP_ARROW); break;
+	case VK_RIGHT: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_RIGHT_ARROW); break;
+	case VK_DOWN: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_DOWN_ARROW); break;
 	case VK_SELECT: str = _T("VK_SELECT"); break;
 	case VK_PRINT: str = _T("VK_PRINT"); break;
 	case VK_EXECUTE: str = _T("VK_EXECUTE"); break;
 	case VK_SNAPSHOT: str = _T("VK_SNAPSHOT"); break;
-	case VK_INSERT: str = _T("Ins¼ü"); break;
-	case VK_DELETE: str = _T("Del¼ü"); break;
+	case VK_INSERT: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_INS_ARROW); break;
+	case VK_DELETE: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_DEL_ARROW); break;
 	case VK_HELP: str = _T("VK_HELP"); break;
-	case VK_LWIN: str = _T("×óWin¼ü"); break;
-	case VK_RWIN: str = _T("ÓÒWin¼ü"); break;
+	case VK_LWIN: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_LEFT_WIN); break;
+	case VK_RWIN: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_RIGHT_WIN); break;
 	case VK_APPS: str = _T("VK_APPS"); break;
 	case VK_SLEEP: str = _T("VK_SLEEP"); break;
-	case VK_NUMPAD0: str = _T("Ð¡¼üÅÌ0"); break;
-	case VK_NUMPAD1: str = _T("Ð¡¼üÅÌ1"); break;
-	case VK_NUMPAD2: str = _T("Ð¡¼üÅÌ2"); break;
-	case VK_NUMPAD3: str = _T("Ð¡¼üÅÌ3"); break;
-	case VK_NUMPAD4: str = _T("Ð¡¼üÅÌ4"); break;
-	case VK_NUMPAD5: str = _T("Ð¡¼üÅÌ5"); break;
-	case VK_NUMPAD6: str = _T("Ð¡¼üÅÌ6"); break;
-	case VK_NUMPAD7: str = _T("Ð¡¼üÅÌ7"); break;
-	case VK_NUMPAD8: str = _T("Ð¡¼üÅÌ8"); break;
-	case VK_NUMPAD9: str = _T("Ð¡¼üÅÌ9"); break;
-	case VK_MULTIPLY: str = _T("Ð¡¼üÅÌ*"); break;
-	case VK_ADD: str = _T("Ð¡¼üÅÌ+"); break;
-	case VK_SEPARATOR: str = _T("Ð¡¼üÅÌ»Ø³µ"); break;
-	case VK_SUBTRACT: str = _T("Ð¡¼üÅÌ-"); break;
-	case VK_DECIMAL: str = _T("Ð¡¼üÅÌ."); break;
-	case VK_DIVIDE: str = _T("Ð¡¼üÅÌ/"); break;
+	case VK_NUMPAD0: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_0); break;
+	case VK_NUMPAD1: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_1); break;
+	case VK_NUMPAD2: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_2); break;
+	case VK_NUMPAD3: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_3); break;
+	case VK_NUMPAD4: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_4); break;
+	case VK_NUMPAD5: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_5); break;
+	case VK_NUMPAD6: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_6); break;
+	case VK_NUMPAD7: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_7); break;
+	case VK_NUMPAD8: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_8); break;
+	case VK_NUMPAD9: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_9); break;
+	case VK_MULTIPLY: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_MUTIPLY); break;
+	case VK_ADD: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_PLUS); break;
+	case VK_SEPARATOR: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_RETURN); break;
+	case VK_SUBTRACT: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_MINUS); break;
+	case VK_DECIMAL: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_DOT); break;
+	case VK_DIVIDE: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_SLASH); break;
 	case VK_F1: str = _T("F1"); break;
 	case VK_F2: str = _T("F2"); break;
 	case VK_F3: str = _T("F3"); break;
@@ -201,10 +201,10 @@ CString CPPageAccelTbl::MakeAccelVkeyLabel(WORD key, bool fVirtKey)
 	case VK_OEM_FJ_TOUROKU: str = _T("VK_OEM_FJ_TOUROKU"); break;
 	case VK_OEM_FJ_LOYA: str = _T("VK_OEM_FJ_LOYA"); break;
 	case VK_OEM_FJ_ROYA: str = _T("VK_OEM_FJ_ROYA"); break;
-	case VK_LSHIFT: str = _T("×óSHIFT"); break;
-	case VK_RSHIFT: str = _T("ÓÒSHIFT"); break;
-	case VK_LCONTROL: str = _T("×óCtrl"); break;
-	case VK_RCONTROL: str = _T("ÓÒCtrl"); break;
+	case VK_LSHIFT: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_SHIFT_LEFT); break;
+	case VK_RSHIFT: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_SHIFT_RIGHT); break;
+	case VK_LCONTROL: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_CTRL_LEFT); break;
+	case VK_RCONTROL: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_CTRL_RIGHT); break;
 	case VK_LMENU: str = _T("VK_LMENU"); break;
 	case VK_RMENU: str = _T("VK_RMENU"); break;
 	case VK_BROWSER_BACK: str = _T("VK_BROWSER_BACK"); break;
@@ -235,7 +235,7 @@ CString CPPageAccelTbl::MakeAccelVkeyLabel(WORD key, bool fVirtKey)
 	case VK_OEM_4: str = _T("["); break;
 	case VK_OEM_5: str = _T("\\"); break;
 	case VK_OEM_6: str = _T("]"); break;
-	case VK_OEM_7: str = _T("ÒýºÅ¼ü"); break;
+	case VK_OEM_7: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_QUOTE); break;
 	case VK_OEM_8: str = _T("VK_OEM_8"); break;
 	case VK_OEM_AX: str = _T("VK_OEM_AX"); break;
 	case VK_OEM_102: str = _T("VK_OEM_102"); break;
@@ -311,7 +311,7 @@ CString CPPageAccelTbl::MakeAccelShortcutLabel(ACCEL& a)
 	case VK_BACK: str = _T("Back"); break;
 	case VK_TAB: str = _T("Tab"); break;
 	case VK_CLEAR: str = _T("Clear"); break;
-	case VK_RETURN: str = _T("»Ø³µ"); break;
+	case VK_RETURN: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_RETURN); break;
 	case VK_SHIFT: str = _T("Shift"); break;
 	case VK_CONTROL: str = _T("Ctrl"); break;
 	case VK_MENU: str = _T("Alt"); break;
@@ -329,15 +329,15 @@ CString CPPageAccelTbl::MakeAccelShortcutLabel(ACCEL& a)
 	case VK_NONCONVERT: str = _T("Non Convert"); break;
 	case VK_ACCEPT: str = _T("Accept"); break;
 	case VK_MODECHANGE: str = _T("Mode Change"); break;
-	case VK_SPACE: str = _T("¿Õ¸ñ"); break;
+	case VK_SPACE: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_SPACE); break;
 	case VK_PRIOR: str = _T("PgUp"); break;
 	case VK_NEXT: str = _T("PgDn"); break;
-	case VK_END: str = _T("End¼ü"); break;
-	case VK_HOME: str = _T("Home¼ü"); break;
-	case VK_LEFT: str = _T("×ó·½Ïò¼ü"); break;
-	case VK_UP: str = _T("ÉÏ·½Ïò¼ü"); break;
-	case VK_RIGHT: str = _T("ÓÒ·½Ïò¼ü"); break;
-	case VK_DOWN: str = _T("ÏÂ·½Ïò¼ü"); break;
+	case VK_END: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_END); break;
+	case VK_HOME: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_HOME); break;
+	case VK_LEFT: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_LEFT_ARROW); break;
+	case VK_UP: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_UP_ARROW); break;
+	case VK_RIGHT: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_RIGHT_ARROW); break;
+	case VK_DOWN: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_DOWN_ARROW); break;
 	case VK_SELECT: str = _T("Select"); break;
 	case VK_PRINT: str = _T("Print"); break;
 	case VK_EXECUTE: str = _T("Execute"); break;
@@ -349,16 +349,16 @@ CString CPPageAccelTbl::MakeAccelShortcutLabel(ACCEL& a)
 	case VK_RWIN: str = _T("RWin"); break;
 	case VK_APPS: str = _T("Apps"); break;
 	case VK_SLEEP: str = _T("Sleep"); break;
-	case VK_NUMPAD0: str = _T("Ð¡¼üÅÌ0"); break;
-	case VK_NUMPAD1: str = _T("Ð¡¼üÅÌ1"); break;
-	case VK_NUMPAD2: str = _T("Ð¡¼üÅÌ2"); break;
-	case VK_NUMPAD3: str = _T("Ð¡¼üÅÌ3"); break;
-	case VK_NUMPAD4: str = _T("Ð¡¼üÅÌ4"); break;
-	case VK_NUMPAD5: str = _T("Ð¡¼üÅÌ5"); break;
-	case VK_NUMPAD6: str = _T("Ð¡¼üÅÌ6"); break;
-	case VK_NUMPAD7: str = _T("Ð¡¼üÅÌ7"); break;
-	case VK_NUMPAD8: str = _T("Ð¡¼üÅÌ8"); break;
-	case VK_NUMPAD9: str = _T("Ð¡¼üÅÌ9"); break;
+	case VK_NUMPAD0: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_0); break;
+	case VK_NUMPAD1: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_1); break;
+	case VK_NUMPAD2: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_2); break;
+	case VK_NUMPAD3: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_3); break;
+	case VK_NUMPAD4: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_4); break;
+	case VK_NUMPAD5: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_5); break;
+	case VK_NUMPAD6: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_6); break;
+	case VK_NUMPAD7: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_7); break;
+	case VK_NUMPAD8: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_8); break;
+	case VK_NUMPAD9: str = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_9); break;
 	case VK_MULTIPLY: str = _T("Multiply"); break;
 	case VK_ADD: str = _T("Add"); break;
 	case VK_SEPARATOR: str = _T("Separator"); break;
@@ -484,24 +484,24 @@ CString CPPageAccelTbl::MakeMouseButtonLabel(UINT mouse)
 	CString ret;
 	switch(mouse)
 	{
-	case wmcmd::NONE: default: ret = _T("ÎÞ"); break;
-	case wmcmd::LDOWN: ret = _T("×ó¼ü°´ÏÂ"); break;
-	case wmcmd::LUP: ret = _T("×ó¼üËÉ¿ª"); break;
-	case wmcmd::LDBLCLK: ret = _T("×ó¼üË«»÷"); break;
-	case wmcmd::MDOWN: ret = _T("ÖÐ¼ü°´ÏÂ"); break;
-	case wmcmd::MUP: ret = _T("ÖÐ¼üËÉ¿ª"); break;
-	case wmcmd::MDBLCLK: ret = _T("ÖÐ¼üË«»÷"); break;
-	case wmcmd::RDOWN: ret = _T("ÓÒ¼ü°´ÏÂ"); break;
-	case wmcmd::RUP: ret = _T("ÓÒ¼üËÉ¿ª"); break;
-	case wmcmd::RDBLCLK: ret = _T("ÓÒ¼üË«»÷"); break;
-	case wmcmd::X1DOWN: ret = _T("Êó±ê4¼ü°´ÏÂ"); break;
-	case wmcmd::X1UP: ret = _T("Êó±ê4¼üËÉ¿ª"); break;
-	case wmcmd::X1DBLCLK: ret = _T("Êó±ê4¼üË«»÷"); break;
-	case wmcmd::X2DOWN: ret = _T("Êó±ê5¼ü°´ÏÂ"); break;
-	case wmcmd::X2UP: ret = _T("Êó±ê5¼üËÉ¿ª"); break;
-	case wmcmd::X2DBLCLK: ret = _T("Êó±ê5¼üË«»÷"); break;
-	case wmcmd::WUP: ret = _T("¹öÂÖÏòÉÏ"); break;
-	case wmcmd::WDOWN: ret = _T("¹öÂÖÏòÏÂ"); break;
+	case wmcmd::NONE: default: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_NONE); break;
+	case wmcmd::LDOWN: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_LEFT_DOWN); break;
+	case wmcmd::LUP: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_LEFT_UP); break;
+	case wmcmd::LDBLCLK: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_LEFT_DBLCLK); break;
+	case wmcmd::MDOWN: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_MID_DOWN); break;
+	case wmcmd::MUP: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_MID_UP); break;
+	case wmcmd::MDBLCLK: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_MID_DBLCLK); break;
+	case wmcmd::RDOWN: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_RIGHT_DOWN); break;
+	case wmcmd::RUP: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_RIGHT_UP); break;
+	case wmcmd::RDBLCLK: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_RIGHT_DBLCLK); break;
+	case wmcmd::X1DOWN: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_4_DOWN); break;
+	case wmcmd::X1UP: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_4_UP); break;
+	case wmcmd::X1DBLCLK: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_4_DBLCLK); break;
+	case wmcmd::X2DOWN: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_5_DOWN); break;
+	case wmcmd::X2UP: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_5_UP); break;
+	case wmcmd::X2DBLCLK: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_5_DBLCLK); break;
+	case wmcmd::WUP: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MWHEEL_UP); break;
+	case wmcmd::WDOWN: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MWHEEL_DOWN); break;
 	}
 	return ret;
 }
@@ -623,13 +623,13 @@ BOOL CPPageAccelTbl::OnInitDialog()
 	m_list.SetExtendedStyle(m_list.GetExtendedStyle()|LVS_EX_FULLROWSELECT|LVS_EX_DOUBLEBUFFER);
 
 	for(int i = 0, j = m_list.GetHeaderCtrl()->GetItemCount(); i < j; i++) m_list.DeleteColumn(0);
-	m_list.InsertColumn(COL_CMD, _T("ÃüÁî"), LVCFMT_LEFT, 80);
-	m_list.InsertColumn(COL_MOD, _T("¹¦ÄÜ¼ü"), LVCFMT_LEFT, 40);
-	m_list.InsertColumn(COL_KEY, _T("°´¼ü"), LVCFMT_LEFT, 40);
-	m_list.InsertColumn(COL_MOUSE, _T("Êó±ê"), LVCFMT_LEFT, 80);
-	m_list.InsertColumn(COL_TYPE, _T("ÀàÐÍ"), LVCFMT_LEFT, 40);
+	m_list.InsertColumn(COL_CMD, ResStr(IDS_ACCEL_HOTKEY_KEYNAME_COMMAND), LVCFMT_LEFT, 80);
+	m_list.InsertColumn(COL_MOD, ResStr(IDS_ACCEL_HOTKEY_COLUMN_HEADER_VKEY), LVCFMT_LEFT, 40);
+	m_list.InsertColumn(COL_KEY, ResStr(IDS_ACCEL_HOTKEY_COLUMN_HEADER_KEY), LVCFMT_LEFT, 40);
+	m_list.InsertColumn(COL_MOUSE, ResStr(IDS_ACCEL_HOTKEY_COLUMN_HEADER_MOUSE), LVCFMT_LEFT, 80);
+	m_list.InsertColumn(COL_TYPE, ResStr(IDS_ACCEL_HOTKEY_COLUMN_HEADER_TYPE), LVCFMT_LEFT, 40);
 	m_list.InsertColumn(COL_ID, _T("ID"), LVCFMT_LEFT, 40);
-	m_list.InsertColumn(COL_APPCMD, _T("¶àÃ½Ìå¼ü"), LVCFMT_LEFT, 90);
+	m_list.InsertColumn(COL_APPCMD, ResStr(IDS_ACCEL_HOTKEY_COLUMN_HEADER_MEDIAKEY), LVCFMT_LEFT, 90);
 	m_list.InsertColumn(COL_RMCMD, _T("RemoteCmd"), LVCFMT_LEFT, 80);
 	m_list.InsertColumn(COL_RMREPCNT, _T("RepCnt"), LVCFMT_CENTER, 60);
 

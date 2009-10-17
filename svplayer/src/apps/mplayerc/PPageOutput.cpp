@@ -1,4 +1,4 @@
-/* 
+﻿/* 
  *	Copyright (C) 2003-2006 Gabest
  *	http://www.gabest.org
  *
@@ -97,7 +97,7 @@ BOOL CPPageOutput::OnInitDialog()
 	m_fVMR9MixerYUV = s.fVMR9MixerYUV;
 
 	m_AudioRendererDisplayNames.Add(_T(""));
-	m_iAudioRendererTypeCtrl.AddString(_T("ϵͳĬ��"));
+	m_iAudioRendererTypeCtrl.AddString(ResStr(IDS_PANEL_OUTPUT_AUDIO_DEFAULT));
 	m_iAudioRendererType = 0;
 
 	BeginEnumSysDev(CLSID_AudioRendererCategory, pMoniker)

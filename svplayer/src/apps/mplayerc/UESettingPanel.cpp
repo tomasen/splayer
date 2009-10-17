@@ -1,4 +1,4 @@
-// UESettingPanel.cpp : implementation file
+Ôªø// UESettingPanel.cpp : implementation file
 //
 
 #include "stdafx.h"
@@ -269,14 +269,14 @@ BOOL CUESettingPanel::OnInitDialog()
 	//if(!s.szaGPUStrings.GetCount()){
 	int bGPUPerfer = svpTool.GetGPUString(&s.szaGPUStrings);
 	//}
-	m_sgs_gpulist = L"ƒ˙”µ”–µƒœ‘ø®”–£∫<br/>";
+	m_sgs_gpulist = ResStr(IDS_UESETTING_PANEL_GPULIST);
 	for(int i = 0; i < s.szaGPUStrings.GetCount();i++){
 		m_sgs_gpulist.Append(s.szaGPUStrings[i] + _T("<br/>"));
 	}
 	if(bGPUPerfer){
-		m_sgs_gpulist.Append(L"  “À π”√GPUº”ÀŸ");
+		m_sgs_gpulist.Append(ResStr(IDS_UESETTING_PANEL_GPU_ACCEL_AVALIBLE));
 	}else{
-		m_sgs_gpulist.Append(L"ø…ƒ‹≤ª  “À π”√GPUº”ÀŸ <a class='small' href='https://bbs.shooter.cn/forumdisplay.php?fid=6'>±®∏Ê¥ÌŒÛ</a>");
+		m_sgs_gpulist.Append(ResStr(IDS_UESETTING_PANEL_GPU_ACCEL_MAYBE_NOT_AVALIBLE));
 	}
 
 	//Genral Setting
@@ -309,7 +309,7 @@ BOOL CUESettingPanel::OnInitDialog()
 	}else{// if(s.iDSVideoRendererType == 5 && s.iRMVideoRendererType == 1 && s.iQTVideoRendererType == 1)
 		m_sgi_videorender = 1; //DX7
 	}
-	//	m_sgi_videorender = 2; //◊‘∂®“Â
+	//	m_sgi_videorender = 2; //Ëá™ÂÆö‰πâ
 	
 	m_sgi_lockbackbuff = s.fVMRSyncFix;//s.m_RenderSettings.bSynchronizeVideo;//; ;// s.m_RenderSettings.bSynchronizeNearest
 	m_sgi_GothSync = s.fVMRGothSyncFix ; //s.m_RenderSettings.bSynchronizeNearest;
@@ -334,7 +334,7 @@ BOOL CUESettingPanel::OnInitDialog()
 	}
 	m_sgi_UseWaveOutDeviceByDefault = s.bUseWaveOutDeviceByDefault;
 	s.iDecSpeakers = s.iDecSpeakers % 1000;
-	if(s.iDecSpeakers == 201){ //∆‰ µ2.1æÕ «2.0
+	if(s.iDecSpeakers == 201){ //ÂÖ∂ÂÆû2.1Â∞±ÊòØ2.0
 		s.iDecSpeakers = 200;
 	}
 	m_sgs_speaker.Format(_T("%d") , s.iDecSpeakers   );
@@ -657,10 +657,10 @@ void CUESettingPanel::ApplyAllSetting(){
 	m_stss.scrAlignment = _wtoi(m_sgs_subalign1);
 	m_stss2.scrAlignment = _wtoi(m_sgs_subalign2);
 	
-	if ( ( (m_stss.fontName == _T("Œ¢»Ì—≈∫⁄") || m_stss.fontName == _T("Microsoft YaHei") 
-		|| m_stss.fontName == _T("Œƒ»™Ê‰Œ¢√◊∫⁄") || m_stss.fontName == _T("WenQuanYi Micro Hei") ) && s.subdefstyle.fontName != m_stss.fontName ) 
-			|| ( (m_stss2.fontName == _T("Œ¢»Ì—≈∫⁄") || m_stss2.fontName == _T("Microsoft YaHei") 
-			|| m_stss.fontName == _T("Œƒ»™Ê‰Œ¢√◊∫⁄") || m_stss.fontName == _T("WenQuanYi Micro Hei") ) && s.subdefstyle2.fontName != m_stss.fontName ) )
+	if ( ( (m_stss.fontName == _T("ÂæÆËΩØÈõÖÈªë") || m_stss.fontName == _T("Microsoft YaHei") 
+		|| m_stss.fontName == _T("ÊñáÊ≥âÈ©øÂæÆÁ±≥Èªë") || m_stss.fontName == _T("WenQuanYi Micro Hei") ) && s.subdefstyle.fontName != m_stss.fontName ) 
+			|| ( (m_stss2.fontName == _T("ÂæÆËΩØÈõÖÈªë") || m_stss2.fontName == _T("Microsoft YaHei") 
+			|| m_stss.fontName == _T("ÊñáÊ≥âÈ©øÂæÆÁ±≥Èªë") || m_stss.fontName == _T("WenQuanYi Micro Hei") ) && s.subdefstyle2.fontName != m_stss.fontName ) )
 	{
 		s.bNotChangeFontToYH = TRUE;
 	}
@@ -738,9 +738,9 @@ HRESULT STDMETHODCALLTYPE CUESettingPanel::ShowContextMenu(DWORD /*dwID*/, POINT
 HRESULT CUESettingPanel::OnButtonAdvanceSetting(IHTMLElement* /*pElement*/)
 {
 
-	if(AfxMessageBox(_T("…‰ ÷≤•∑≈∆˜≤¢≤ªÕ∆ºˆƒ˙ π”√“—æ≠∑œ∆˙µƒæ……Ë÷√√Ê∞Â\r\n≤ªµ±µƒ≤Ÿ◊˜ø…ƒ‹ª·¥¯¿¥ƒ—“‘‘§÷™µƒŒ Ã‚\r\n»∑∂®“™ºÃ–¯√¥£ø"),MB_YESNO|MB_DEFBUTTON2 ) == IDYES){
+	if(AfxMessageBox(ResStr(IDS_UESETTING_PANEL_MSG_NOT_SUGGEST_USE_OLD_PANEL),MB_YESNO|MB_DEFBUTTON2 ) == IDYES){
 		this->bOpenAdvancePanel = TRUE;
-	// 	if(AfxMessageBox(_T(" «∑Ò±£¥Êµ±«∞µƒ–ﬁ∏ƒ"),MB_YESNO) == IDYES){
+	// 	if(AfxMessageBox(_T("ÊòØÂê¶‰øùÂ≠òÂΩìÂâçÁöÑ‰øÆÊîπ"),MB_YESNO) == IDYES){
 	// 		ApplyAllSetting();
 	// 	}
 	// 	
@@ -765,7 +765,7 @@ HRESULT CUESettingPanel::OnButtonUseExtCodec(IHTMLElement* /*pElement*/)
 {
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CAutoPtr<CPPageExternalFilters> page(new CPPageExternalFilters());
-	CPropertySheet dlg(_T("Õ‚÷√Ω‚¬Î∆˜..."), this);
+	CPropertySheet dlg(ResStr(IDS_DIALOG_EXTERNAL_FILTER_TITLE), this);
 	dlg.AddPage(page);
 	dlg.DoModal() ;
 
@@ -775,7 +775,7 @@ HRESULT CUESettingPanel::OnButtonAudioChannelMapping(IHTMLElement* /*pElement*/)
 {
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CAutoPtr<CPPageAudioSwitcher> page(new CPPageAudioSwitcher(pFrame->pGB));
-	CPropertySheet dlg(_T("…˘µ¿”≥…‰..."), this);
+	CPropertySheet dlg(ResStr(IDS_DIALOG_EXTERNAL_AUDIO_CHANNEL_MAPPING), this);
 	dlg.AddPage(page);
 	dlg.DoModal() ;
 
@@ -788,7 +788,7 @@ HRESULT CUESettingPanel::OnButtonApply(IHTMLElement* /*pElement*/)
 }
 HRESULT CUESettingPanel::OnHotKey(IHTMLElement *pElement){
 	CAutoPtr<CPPageAccelTbl> page(new CPPageAccelTbl());
-	CPropertySheet dlg(_T("øÏΩ›º¸…Ë÷√..."), this);
+	CPropertySheet dlg(ResStr(IDS_DIALOG_HOTKEY_SETTING_PANNEL_TITLE), this);
 	dlg.AddPage(page);
 	dlg.DoModal() ;
 
@@ -796,7 +796,7 @@ HRESULT CUESettingPanel::OnHotKey(IHTMLElement *pElement){
 }
 HRESULT CUESettingPanel::OnChangeBG(IHTMLElement* /*pElement*/){
 	CAutoPtr<CPPageLogo> page(new CPPageLogo());
-	CPropertySheet dlg(_T("ΩÁ√Ê±≥æ∞…Ë÷√..."), this);
+	CPropertySheet dlg(ResStr(IDS_DIALOG_THEME_BG_IMAGE_TITLE), this);
 	dlg.AddPage(page);
 	dlg.DoModal() ;
 	return S_OK;
@@ -817,7 +817,7 @@ HRESULT CUESettingPanel::OnBrowerSVPStoreFolder(IHTMLElement *pElement){
 	bi.hwndOwner = m_hWnd;
 	bi.pidlRoot = NULL;
 	bi.pszDisplayName = buff;
-	bi.lpszTitle = _T("ƒ¨»œÕ¯¬Á◊÷ƒª±£¥ÊµΩŒƒº˛º–");
+	bi.lpszTitle = ResStr(IDS_DIALOG_DEFAULT_SUB_SAVE_FOLDER);
 	bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_VALIDATE | BIF_USENEWUI | BIF_NONEWFOLDERBUTTON;
 	bi.lpfn = BrowseCtrlCallbackSVPStore;
 	bi.lParam = (LPARAM)(LPCTSTR)szFolderPath;
@@ -864,7 +864,7 @@ HRESULT CUESettingPanel::OnFileAss(IHTMLElement* /*pElement*/){
 		AfxGetMyApp()->GainAdminPrivileges(1, FALSE);
 	}else{
 		CAutoPtr<CPPageFormats> page(new CPPageFormats());
-		CPropertySheet dlg(_T("Œƒº˛πÿ¡™…Ë÷√..."), this);
+		CPropertySheet dlg(ResStr(IDS_DIALOG_FILEASSOC_TITLE), this);
 		dlg.AddPage(page);
 		dlg.DoModal() ;
 	}

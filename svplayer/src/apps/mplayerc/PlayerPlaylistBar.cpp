@@ -1,4 +1,4 @@
-/* 
+ï»¿/* 
  *	Copyright (C) 2003-2006 Gabest
  *	http://www.gabest.org
  *
@@ -69,7 +69,7 @@ BOOL CPlayerPlaylistBar::Create(CWnd* pParentWnd)
 
 	m_list.SetExtendedStyle(m_list.GetExtendedStyle()|LVS_EX_FULLROWSELECT|LVS_EX_DOUBLEBUFFER);
 
-	m_list.InsertColumn(COL_NAME, _T("ÎÄ¼şÃû"), LVCFMT_LEFT, 380);
+	m_list.InsertColumn(COL_NAME, ResStr(IDS_PLAYLIST_COL_HEADER_FILENAME), LVCFMT_LEFT, 380);
 
 	m_list.SetBkColor(s.GetColorFromTheme(_T("PlayListBG"), 0xdddddd));
 	CDC* pDC = m_list.GetDC();
@@ -77,16 +77,16 @@ BOOL CPlayerPlaylistBar::Create(CWnd* pParentWnd)
 	m_nTimeColWidth = pDC->GetTextExtent(_T("000:00:00")).cx + 5;
 	pDC->SelectObject(old);
 	m_list.ReleaseDC(pDC);
-	m_list.InsertColumn(COL_TIME, _T("Æ¬³¤"), LVCFMT_RIGHT, m_nTimeColWidth);
+	m_list.InsertColumn(COL_TIME, ResStr(IDS_PLAYLIST_COL_HEADER_FILE_LENGTH), LVCFMT_RIGHT, m_nTimeColWidth);
 
     m_fakeImageList.Create(1, 16, ILC_COLOR4, 10, 10);
 	m_list.SetImageList(&m_fakeImageList, LVSIL_SMALL);
 	this->m_pMaindFrame = pParentWnd;
-	m_clearall.Create( _T("Çå¿Õ"), WS_VISIBLE|WS_CHILD|BS_FLAT|BS_VCENTER|BS_CENTER , CRect(0,83,40,100), this, IDC_BUTTONCLEARALL );
+	m_clearall.Create( ResStr(IDS_PLAYLIST_BUTTON_CLEAN), WS_VISIBLE|WS_CHILD|BS_FLAT|BS_VCENTER|BS_CENTER , CRect(0,83,40,100), this, IDC_BUTTONCLEARALL );
 	GetSystemFontWithScale(&font);
 	m_clearall.SetFont(&font);
 
-	m_addsubforplaylist.Create( _T("Îª¶à¶ÎÊÓÆµµ÷ÈëÒ»¶Î×ÖÄ»"), WS_VISIBLE|WS_CHILD|BS_FLAT|BS_VCENTER|BS_CENTER , CRect(0,83,40,100), this, IDC_BUTTONADDSUBFORPLAYLIST );
+	m_addsubforplaylist.Create( ResStr(IDS_PLAYLIST_BUTTON_LOAD_SUB_FOR_PLAYLIST), WS_VISIBLE|WS_CHILD|BS_FLAT|BS_VCENTER|BS_CENTER , CRect(0,83,40,100), this, IDC_BUTTONADDSUBFORPLAYLIST );
 	m_addsubforplaylist.SetFont(&font);
 	return TRUE;
 }
@@ -540,8 +540,8 @@ bool CPlayerPlaylistBar::SaveMPCPlayList(CString fn, CTextFile::enc e, bool fRem
 }
 void CPlayerPlaylistBar::CheckForPlaylistSubtitle(){
 	
-	if( m_pl.GetCount() > 1 ){ //playlist °üº¬¶àÎÄ¼ş
-		BOOL bHasSubtitles = 0 , bAllInSameDir = 1; //¼ì²éÊÇ·ñÓĞplaylist×ÖÄ»
+	if( m_pl.GetCount() > 1 ){ //playlist åŒ…å«å¤šæ–‡ä»¶
+		BOOL bHasSubtitles = 0 , bAllInSameDir = 1; //æ£€æŸ¥æ˜¯å¦æœ‰playlistå­—å¹•
 		int iFileTotal = 0;
 		CString szDir, szBuf;
 		POSITION pos = m_pl.GetHeadPosition();
@@ -567,9 +567,9 @@ void CPlayerPlaylistBar::CheckForPlaylistSubtitle(){
 				break;
 			}
 		}    
-/* ²»ºÃÓÃ
+/* ä¸å¥½ç”¨
 		if(!bHasSubtitles && bAllInSameDir && iFileTotal > 1){ 
-			//PlaylistµÄËùÔÚÎÄ¼şÄ¿Â¼ÖĞÊÇ·ñÓĞ×ÖÄ»ÎÄ¼ş
+			//Playlistçš„æ‰€åœ¨æ–‡ä»¶ç›®å½•ä¸­æ˜¯å¦æœ‰å­—å¹•æ–‡ä»¶
 
 			CAtlArray<CString> paths;
 			paths.Add(_T("."));
@@ -1726,7 +1726,7 @@ void CPlayerPlaylistBar::OnContextMenu(CWnd* /*pWnd*/, CPoint p)
 	m.AppendMenu(MF_STRING|(!fOnItem?(MF_DISABLED|MF_GRAYED):MF_ENABLED), M_OPEN, ResStr(IDS_PLAYLIST_OPEN));
 	if(((CMainFrame*)AfxGetMainWnd())->m_iPlaybackMode == PM_CAPTURE) m.AppendMenu(MF_STRING|MF_ENABLED, M_ADD, ResStr(IDS_PLAYLIST_ADD));
 	m.AppendMenu(MF_STRING|(/*fSelected||*/!fOnItem?(MF_DISABLED|MF_GRAYED):MF_ENABLED), M_REMOVE, ResStr(IDS_PLAYLIST_REMOVE));
-	m.AppendMenu(MF_STRING|MF_ENABLED, M_CLEARALL, _T("Çå¿Õ"));
+	m.AppendMenu(MF_STRING|MF_ENABLED, M_CLEARALL, ResStr(IDS_PLAYLIST_MENU_REMOVE_ALL));
 	m.AppendMenu(MF_STRING|MF_ENABLED, M_ADDFILE, ResStr(IDS_CONVERT_ADDFILE));
 	m.AppendMenu(MF_SEPARATOR);
 	m.AppendMenu(MF_STRING|(!fOnItem?(MF_DISABLED|MF_GRAYED):MF_ENABLED), M_CLIPBOARD, ResStr(IDS_PLAYLIST_COPYTOCLIPBOARD));

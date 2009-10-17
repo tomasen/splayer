@@ -1,4 +1,4 @@
-// PPageFileMediaInfo.cpp : implementation file
+ï»¿// PPageFileMediaInfo.cpp : implementation file
 //
 
 #include "stdafx.h"
@@ -63,7 +63,7 @@ BOOL CPPageFileMediaInfo::OnInitDialog()
 	MI_Text = MI.Inform().c_str();
 	MI.Close();
 #endif	
-	if(!MI_Text.Find(_T("Unable to load"))) MI_Text = _T("ÐèÒª MediaInfo.dll");
+	if(!MI_Text.Find(_T("Unable to load"))) MI_Text = ResStr(IDS_FILEINFO_MSG_NEED_MEDIAINFO_DLL);
 
 	LOGFONT lf;
 	memset( &lf, 0, sizeof(lf) );

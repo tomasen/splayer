@@ -1,4 +1,4 @@
-/* 
+ï»¿/* 
  *	Copyright (C) 2003-2006 Gabest
  *	http://www.gabest.org
  *
@@ -491,7 +491,7 @@ void CPlayerToolBar::OnNcPaint() // when using XP styles the NC area isn't drawn
 {
 	//New UI GetSysColor(COLOR_BTNFACE)
 
-	//Ìî³ä±³¾°-----------------------------------------   
+	//å¡«å……èƒŒæ™¯-----------------------------------------   
 	//dc.FillSolidRect(wr, RGB(214,219,239) );   
 
 	// Do not call CToolBar::OnNcPaint() for painting messages
@@ -565,13 +565,13 @@ void CPlayerToolBar::SetStatusTimer(REFERENCE_TIME rtNow, REFERENCE_TIME rtDur, 
 	GetSystemPowerStatus(&status);
 	CString szPower ;
 	if ( status.BatteryFlag != 128 && status.BatteryFlag != 255 && status.BatteryLifePercent < 91 ){
-		szPower.Format(_T("  µçÁ¿: %d%% "), status.BatteryLifePercent);
+		szPower.Format(ResStr(IDS_STATUS_BAR_LABEL_BATTRAY_WITH_PADDING), status.BatteryLifePercent);
 	}else{
-		//szPower = _T("µçÁ¿: ¡× ");
+		//szPower = ResStr(IDS_STATUS_BAR_LABEL_BATTRAY_UNLIMIT);
 	}
 	CString szPlayrate;
 	if(fabs(playRate - 1.0) > 0.02 && playRate > 0.01)	{
-		szPlayrate.Format(_T("  ËÙÂÊ %0.1fx "), playRate);
+		szPlayrate.Format(ResStr(IDS_STATUS_BAR_LABEL_PLAY_SPEED_WITH_PADDING), playRate);
 	}
 
 	CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
@@ -740,34 +740,34 @@ BOOL CPlayerToolBar::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 	CString toolTip;
 	switch(nID){
 				case ID_SUBDELAYDEC:
-					toolTip = _T("¼õÉÙ×ÖÄ»ÑÓÊ±");
+					toolTip = ResStr(IDS_TOOLTIP_SUBTITLE_DELAY_REDUCE);
 					break;
 				case ID_SUBDELAYINC:
-					toolTip = _T("Ôö¼Ó×ÖÄ»ÑÓÊ±");
+					toolTip = ResStr(IDS_TOOLTIP_SUBTITLE_DELAY_INCREASE);
 					break;
 				case ID_SUBTOOLBARBUTTON:
-					toolTip = _T("×ÖÄ»ÇÐ»»»òµ÷ÓÃ");
+					toolTip = ResStr(IDS_TOOLTIP_TOOLBAR_SUBTITLE_BUTTON);
 					break;
 				case ID_VIEW_PLAYLIST:
-					toolTip = _T("²¥·ÅÁÐ±í");
+					toolTip = ResStr(IDS_TOOLTIP_TOOLBAR_BUTTON_PLAYLIST);
 					break;
 				case ID_VIEW_OPTIONS:
-					toolTip = _T("ÉèÖÃÃæ°å");
+					toolTip = ResStr(IDS_TOOLTIP_TOOLBAR_BUTTON_SETTING_PANEL);
 					break;
 				case ID_FILE_SAVE_IMAGE:
-					toolTip = _T("¿ìËÙ½ØÍ¼");
+					toolTip = ResStr(IDS_TOOLTIP_TOOLBAR_BUTTON_IMAGE_CAPTURE);
 					break;
 				case ID_FILE_OPENQUICK:
-					toolTip = _T("´ò¿ªÎÄ¼þ");
+					toolTip = ResStr(IDS_TOOLTIP_TOOLBAR_BUTTON_FILE_OPEN);
 					break;		
 				case ID_SUBSETFONTBOTH:
-					toolTip = _T("ÐÞ¸Ä×ÖÄ»×ÖÌå");
+					toolTip = ResStr(IDS_TOOLTIP_TOOLBAR_BUTTON_SET_SUB_FONT);
 					break;	
 				case ID_SUBFONTUPBOTH:
-					toolTip = _T("·Å´ó×ÖÄ»");
+					toolTip = ResStr(IDS_TOOLTIP_TOOLBAR_BUTTON_SUB_FONT_INCREASE);
 					break;	
 				case ID_SUBFONTDOWNBOTH:
-					toolTip = _T("ËõÐ¡×ÖÄ»");
+					toolTip = ResStr(IDS_TOOLTIP_TOOLBAR_BUTTON_SUB_FONT_DECREASE);
 					break;	
 				default:
 					toolTip = ResStr(nID);

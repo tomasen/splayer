@@ -1,4 +1,4 @@
-/* 
+ï»¿/* 
  *	Copyright (C) 2003-2006 Gabest
  *	http://www.gabest.org
  *
@@ -241,7 +241,7 @@ BOOL CPPageFileInfoDetails::OnInitDialog()
 		if(arxy.cx > 0 && arxy.cy > 0 )
 		{
 			CString ar;
-			ar.Format(_T(" (»­Ãæ±ÈÀý %d:%d)"), arxy.cx, arxy.cy);
+			ar.Format(ResStr(IDS_FILEINFO_ASPECT_RATIO), arxy.cx, arxy.cy);
 			m_res += ar;
 		}
 	}
@@ -311,10 +311,10 @@ void CPPageFileInfoDetails::InitEncoding()
 	EndEnumFilters
 
 		
-	sl.AddTail( CString(_T("ÊÓÆµ»­Ãæ£º ")) + m_res );
-	sl.AddTail( CString(_T("Ê±¼ä³¤¶È£º ")) + m_time );
-	sl.AddTail( CString(_T("ÎÄ¼þ³ß´ç£º ")) + m_size );
-	sl.AddTail( CString(_T("ÎÄ¼þÀàÐÍ£º ")) + m_type );
+	sl.AddTail( CString(ResStr(IDS_FILEINFO_VIDEO_RESOLUTION)) + m_res );
+	sl.AddTail( CString(ResStr(IDS_FILEINFO_VIDEO_TIME_LENGTH)) + m_time );
+	sl.AddTail( CString(ResStr(IDS_FILEINFO_FILESIZE)) + m_size );
+	sl.AddTail( CString(ResStr(IDS_FILEINFO_FILE_TYPE)) + m_type );
 	CString text = Implode(sl, '\n');
 	text.Replace(_T("\n"), _T("\r\n"));
 	m_encoding.SetWindowText(text);

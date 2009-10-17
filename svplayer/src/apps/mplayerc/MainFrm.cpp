@@ -1,4 +1,4 @@
-﻿/* 
+﻿/*  
  *	Copyright (C) 2003-2006 Gabest
  *	http://www.gabest.org
  *
@@ -815,11 +815,11 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	//WS_EX_NOACTIVATE
 	if(!m_wndNewOSD.CreateEx(WS_EX_NOACTIVATE|dwTransFlag|WS_EX_TOPMOST, _T("SVPLayered"), _T("OSD"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0)){
-		AfxMessageBox(_T("OSD 创建失败！"));
+		AfxMessageBox(ResStr(IDS_MSG_CREATE_OSD_FAIL));
 	}
 
 	if(!m_wndToolTopBar.CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, _T("SVPLayered"), _T("TOPTOOL"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0)){
-		AfxMessageBox(_T("Top Toolbar 创建失败！"));
+		AfxMessageBox(ResStr(IDS_MSG_CREATE_TOPTOOLBAR_FAIL));
 	}
 
 	m_pGraphThread = (CGraphThread*)AfxBeginThread(RUNTIME_CLASS(CGraphThread));
@@ -911,7 +911,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	/*NEW UI END*/
 
 	if(!m_tip.CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST|dwTransFlag, _T("SVPLayered"), _T("TIPS"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0)){
-		AfxMessageBox(_T("SEEKTIP 创建失败！"));
+		AfxMessageBox(ResStr(IDS_MSG_CREATE_SEEKTIP_FAIL));
 	}
 
 	EnableToolTips(TRUE);
@@ -933,10 +933,10 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_ABMenu.LoadMenu(IDR_POPUPAB);
 	
 	/*
-	m_ABMenu.AppendMenu(MF_ENABLED |MF_STRING , ID_ABCONTROL_SETA, _T("设置A点"));
-	m_ABMenu.AppendMenu(MF_ENABLED |MF_STRING , ID_ABCONTROL_SETB, _T("设置B点"));
-	m_ABMenu.AppendMenu(MF_ENABLED |MF_STRING , ID_ABCONTROL_ON, _T("开始A-B循环"));
-	m_ABMenu.AppendMenu(MF_ENABLED |MF_STRING , ID_ABCONTROL_OFF, _T("关闭A-B循环"));
+	m_ABMenu.AppendMenu(MF_ENABLED |MF_STRING , ID_ABCONTROL_SETA, ResStr(IDS_ABCONTROL_SET_APOINT));
+	m_ABMenu.AppendMenu(MF_ENABLED |MF_STRING , ID_ABCONTROL_SETB, ResStr(IDS_ABCONTROL_SET_BPOINT));
+	m_ABMenu.AppendMenu(MF_ENABLED |MF_STRING , ID_ABCONTROL_ON, ResStr(IDS_ABCONTROL_START_ABLOOP));
+	m_ABMenu.AppendMenu(MF_ENABLED |MF_STRING , ID_ABCONTROL_OFF, ResStr(IDS_ABCONTROL_BREAK_ABLOOP));
 	*/
 
 	
@@ -1495,33 +1495,33 @@ LRESULT CMainFrame::OnNcHitTestNewUI(WPARAM wParam, LPARAM lParam )
 		switch(ret){
 			case MYHTFULLSCREEN:
 				if(m_fFullScreen)
-					szTips = ( _T("恢复窗口"));
+					szTips = ( ResStr(IDS_TOOLTIP_RESTORE_WINDOW));
 				else
-					szTips = ( _T("全屏切换"));
+					szTips = ( ResStr(IDS_TOOLTIP_SWITCHTO_FULLSCREEN));
 				break;
 			case MYHTMINTOTRAY:
-				szTips = ( _T("最小化到系统托盘"));
+				szTips = ( ResStr(IDS_TOOLTIP_MINTO_SYSTRAY));
 				break;
 			case MYHTMENU:
-				szTips = ( _T("菜单"));
+				szTips = ( ResStr(IDS_TOOLTIP_MAINMENU));
 				break;
 			case MYHTMINBUTTON:
-				szTips = ( _T("最小化"));
+				szTips = ( ResStr(IDS_TOOLTIP_MINIMIZE));
 				break;
 			case MYHTMAXBUTTON:
 				{
 					WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
 					GetWindowPlacement(&wp);
 					if(wp.showCmd != SW_SHOWMAXIMIZED)
-						szTips = ( _T("最大化"));
+						szTips = ( ResStr(IDS_TOOLTIP_MAXIMIZE));
 					else
-						szTips = ( _T("恢复窗口"));
+						szTips = ( ResStr(IDS_TOOLTIP_RESTORE_WINDOW));
 
 				}
 				
 				break;
 			case MYHTCLOSE:
-				szTips = ( _T("退出"));
+				szTips = ( ResStr(IDS_TOOLTIP_EXIT));
 				break;
 		}
 		if(!szTips.IsEmpty()){
@@ -1672,12 +1672,12 @@ void CMainFrame::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
 /*NEW UI END*/
 void CMainFrame::OnSetHotkey(){
 	CAutoPtr<CPPageAccelTbl> page(new CPPageAccelTbl());
-	CPropertySheet dlg(_T("快捷键设置..."), this);
+	CPropertySheet dlg(ResStr(IDS_DIALOG_HOTKEYSETTING_TITLE), this);
 	dlg.AddPage(page);
 	dlg.DoModal() ;
 }
 void CMainFrame::OnResetSetting(){
-	if(AfxMessageBox(_T("此操作将清除射手播放器的\n所有设置和播放记录，您确定么？"), MB_YESNO) == IDYES){
+	if(AfxMessageBox(ResStr(IDS_MSG_WARN_RESET_PLAYER_SETTING), MB_YESNO) == IDYES){
 
 		CMPlayerCApp* mApp = (CMPlayerCApp*)AfxGetApp();
 		mApp->RemoveAllSetting();
@@ -1984,7 +1984,7 @@ void CMainFrame::ShowTrayIcon(bool fShow)
 			tnid.hIcon = (HICON)LoadImage(AfxGetResourceHandle(), MAKEINTRESOURCE(IDR_MAINFRAME), IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR);
 			tnid.uFlags = NIF_MESSAGE|NIF_ICON|NIF_TIP; 
 			tnid.uCallbackMessage = WM_NOTIFYICON; 
-			lstrcpyn(tnid.szTip, TEXT("射手播放器"), sizeof(tnid.szTip)); 
+			lstrcpyn(tnid.szTip, ResStr(IDR_MAINFRAME_SHORTNAME), sizeof(tnid.szTip)); 
 			Shell_NotifyIcon(NIM_ADD, &tnid);
 
 			m_fTrayIcon = true;
@@ -2477,7 +2477,7 @@ void CMainFrame::OnPlaySubDelay(UINT nID)
 			break;
 	}
 	CString str;
-	str.Format(_T("主字幕延时已经设为： %d ms"), newDelay);
+	str.Format(ResStr(IDS_OSD_MSG_SET_MAINSUB_DELAY), newDelay);
 	SendStatusMessage(str, 5000);
 	this->SetSubtitleDelay(newDelay);
 }
@@ -2519,7 +2519,7 @@ void CMainFrame::OnPlaySub2Delay(UINT nID)
 			break;
 	}
 	CString str;
-	str.Format(_T("第二字幕延时已经设为： %d ms"), newDelay);
+	str.Format(ResStr(IDS_OSD_MSG_SET_2NDSUB_DELAY), newDelay);
 	SendStatusMessage(str, 5000);
 	this->SetSubtitleDelay2(newDelay);
 }
@@ -2942,7 +2942,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 
 			pQP->get_AvgFrameRate(&val);
 			info.Format(_T("%d.%02d %s"), val/100, val%100, rate);
-			m_wndStatsBar.SetLine(_T("帧率"), info);
+			m_wndStatsBar.SetLine(ResStr(IDS_STATSBAR_LABEL_FRAMERATE), info);
 
 			int avg, dev;
 			pQP->get_AvgSyncOffset(&avg);
@@ -3068,7 +3068,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 			if(SUCCEEDED(pDVDI->GetCurrentAngle(&ulAvailable, &ulCurrent))
 			&& SUCCEEDED(pDVDI->GetCurrentVideoAttributes(&VATR)))
 			{
-				Video.Format(_T("视角: %02d/%02d, %dx%d %dHz %d:%d"), 
+				Video.Format(ResStr(IDS_DVD_MSG_VIDEO_ATTR), 
 					ulAvailable, ulCurrent,
 					VATR.ulSourceResolutionX, VATR.ulSourceResolutionY, VATR.ulFrameRate,
 					VATR.ulAspectX, VATR.ulAspectY);
@@ -3093,10 +3093,10 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 				{
 				case DVD_AUD_EXT_NotSpecified:
 				default: break;
-				case DVD_AUD_EXT_Captions: lang += _T(" (字幕)"); break;
+				case DVD_AUD_EXT_Captions: lang += ResStr(IDS_DVD_INFO_SUBTITLE); break;
 				case DVD_AUD_EXT_VisuallyImpaired: lang += _T(" (Visually Impaired)"); break;
-				case DVD_AUD_EXT_DirectorComments1: lang += _T(" (导演评论1)"); break;
-				case DVD_AUD_EXT_DirectorComments2: lang += _T(" (导演评论2)"); break;
+				case DVD_AUD_EXT_DirectorComments1: lang += ResStr(IDS_DVD_INFO_DIRECTOR_COMMENT1); break;
+				case DVD_AUD_EXT_DirectorComments2: lang += ResStr(IDS_DVD_INFO_DIRECTOR_COMMENT2); break;
 				}
 
 				CString format;
@@ -3111,10 +3111,10 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 				case DVD_AudioFormat_DTS: format = _T("DTS"); break;
 				case DVD_AudioFormat_SDDS: format = _T("SDDS"); break;
 				case DVD_AudioFormat_Other: 
-				default: format = _T("未知格式"); break;
+				default: format = ResStr(IDS_DVD_INFO_AUDIO_FORMAT_UNKNOWN); break;
 				}
 
-				Audio.Format(_T("%s, %s %dHz %dbits %d 声道(s)"), 
+				Audio.Format(ResStr(IDS_DVD_INFO_AUDIO_FORMAT), 
 					lang, 
 					format,
 					AATR.dwFrequency,
@@ -3154,9 +3154,9 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 				case DVD_SP_EXT_CC_Big: lang += _T(" (CC Big)"); break;
 				case DVD_SP_EXT_CC_Children: lang += _T(" (CC Children)"); break;
 				case DVD_SP_EXT_Forced: lang += _T(" (Forced)"); break;
-				case DVD_SP_EXT_DirectorComments_Normal: lang += _T(" (导演评论)"); break;
-				case DVD_SP_EXT_DirectorComments_Big: lang += _T(" (导演评论, Big)"); break;
-				case DVD_SP_EXT_DirectorComments_Children: lang += _T(" (导演评论, Children)"); break;
+				case DVD_SP_EXT_DirectorComments_Normal: lang += ResStr(IDS_DVD_INFO_LANG_DIRCTORCOMMENT_NOTMAL); break;
+				case DVD_SP_EXT_DirectorComments_Big: lang += ResStr(IDS_DVD_INFO_LANG_DIRECTORCOMMENT_BIG); break;
+				case DVD_SP_EXT_DirectorComments_Children: lang += ResStr(IDS_DVD_INFO_LANG_DIRECTORCOMMENT_CHILDREN); break;
 				}
 
 				if(bIsDisabled) lang = _T("-");
@@ -4117,21 +4117,21 @@ void CMainFrame::OnInitMenuPopup(CMenu * pPopupMenu, UINT nIndex, BOOL bSysMenu)
 		transl[_T("PanScan")] = IDS_PANSCAN_POPUP;
 		transl[_T("Aspect Ratio")] = IDS_ASPECTRATIO_POPUP;
 		transl[_T("Zoom")] = IDS_ZOOM_POPUP;
-		transl[_T("DVD控制")] = IDS_NAVIGATE_POPUP;
-		transl[_T("播放光盘")] = IDS_OPENCDROM_POPUP;
-		transl[_T("滤镜(Filters)")] = IDS_FILTERS_POPUP;
-		transl[_T("声音")] = IDS_AUDIO_POPUP;
-		transl[_T("字幕")] = IDS_SUBTITLES_POPUP;
-		transl[_T("音轨选择")] = IDS_AUDIOLANGUAGE_POPUP;
-		transl[_T("字幕语言")] = IDS_SUBTITLELANGUAGE_POPUP;
-		transl[_T("视角切换")] = IDS_VIDEOANGLE_POPUP;
-		transl[_T("跳至...")] = IDS_JUMPTO_POPUP;
-		transl[_T("收藏夹")] = IDS_FAVORITES_POPUP;
-		transl[_T("播放效果调节")] = IDS_SHADER_POPUP;
-		transl[_T("视频尺寸")] = IDS_VIDEOFRAME_POPUP;
-		transl[_T("画面微调")] = IDS_PANSCAN_POPUP;
-		transl[_T("强制画面比例")] = IDS_ASPECTRATIO_POPUP;
-		transl[_T("界面缩放")] = IDS_ZOOM_POPUP;
+		transl[ResStr(IDS_MENU_ITEM_DVD_CONTROL)] = IDS_NAVIGATE_POPUP;
+		transl[ResStr(IDS_MENU_ITEM_OPENCDROM)] = IDS_OPENCDROM_POPUP;
+		transl[ResStr(IDS_MENU_ITEM_FILTERS)] = IDS_FILTERS_POPUP;
+		transl[ResStr(IDS_MENU_ITEM_AUDIO)] = IDS_AUDIO_POPUP;
+		transl[ResStr(IDS_MENU_ITEM_SUBTITLE)] = IDS_SUBTITLES_POPUP;
+		transl[ResStr(IDS_MENU_ITEM_AUDIOLANGUAGE)] = IDS_AUDIOLANGUAGE_POPUP;
+		transl[ResStr(IDS_MENU_ITEM_DVDSUBTITLE)] = IDS_SUBTITLELANGUAGE_POPUP;
+		transl[ResStr(IDS_MENU_ITEM_DVD_VIDEOANGLE)] = IDS_VIDEOANGLE_POPUP;
+		transl[ResStr(IDS_MENU_ITEM_JUMPTO)] = IDS_JUMPTO_POPUP;
+		transl[ResStr(IDS_MENU_ITEM_FAVORITES)] = IDS_FAVORITES_POPUP;
+		transl[ResStr(IDS_MENU_ITEM_SHADER)] = IDS_SHADER_POPUP;
+		transl[ResStr(IDS_MENU_ITEM_VIDEOFRAME)] = IDS_VIDEOFRAME_POPUP;
+		transl[ResStr(IDS_MENU_ITEM_PANSCAN)] = IDS_PANSCAN_POPUP;
+		transl[ResStr(IDS_MENU_ITEM_ASPECTRATIO)] = IDS_ASPECTRATIO_POPUP;
+		transl[ResStr(IDS_MENU_ITEM_ZOOM)] = IDS_ZOOM_POPUP;
 	}
 
 	MENUITEMINFO mii;
@@ -4179,20 +4179,20 @@ void CMainFrame::OnInitMenuPopup(CMenu * pPopupMenu, UINT nIndex, BOOL bSysMenu)
 				: (MF_DISABLED|MF_GRAYED);
 
 			pPopupMenu->EnableMenuItem(i, MF_BYPOSITION|fState);
-		}else if(str == _T("播放"))
+		}else if(str == ResStr(IDS_MENU_ITEM_PLAYBACK_CONTROL))
 		{
 			while(m_playbackmenu.RemoveMenu(0, MF_BYPOSITION));
 
 			if(m_iPlaybackMode != PM_DVD){
-				m_playbackmenu.AppendMenu(MF_STRING|MF_ENABLED, ID_PLAYBACK_LOOP_NORMAL, _T("不循环播放"));
+				m_playbackmenu.AppendMenu(MF_STRING|MF_ENABLED, ID_PLAYBACK_LOOP_NORMAL, ResStr(IDS_MENU_ITEM_PLAYLOOP_NORMAL));
 
 				
 				if(m_wndPlaylistBar.GetCount() > 1){
-					m_playbackmenu.AppendMenu(MF_STRING|MF_ENABLED, ID_PLAYBACK_LOOP_PLAYLIST, _T("循环播放(播放列表)"));
-					m_playbackmenu.AppendMenu(MF_STRING|MF_ENABLED, ID_PLAYBACK_LOOP_CURRENT, _T("循环播放(当前影片)"));
-					m_playbackmenu.AppendMenu(MF_STRING|MF_ENABLED, ID_PLAYBACK_LOOP_RANDOM, _T("随机播放(播放列表)"));
+					m_playbackmenu.AppendMenu(MF_STRING|MF_ENABLED, ID_PLAYBACK_LOOP_PLAYLIST, ResStr(IDS_MENU_ITEM_PLAYLOOP_PLAYLIST));
+					m_playbackmenu.AppendMenu(MF_STRING|MF_ENABLED, ID_PLAYBACK_LOOP_CURRENT, ResStr(IDS_MENU_ITEM_PLAYLOOP_CURRENT));
+					m_playbackmenu.AppendMenu(MF_STRING|MF_ENABLED, ID_PLAYBACK_LOOP_RANDOM, ResStr(IDS_MENU_ITEM_PLAYLOOP_RANDOM_PLAYLIST));
 				}else{
-					m_playbackmenu.AppendMenu(MF_STRING|MF_ENABLED, ID_PLAYBACK_LOOP_PLAYLIST, _T("循环播放"));
+					m_playbackmenu.AppendMenu(MF_STRING|MF_ENABLED, ID_PLAYBACK_LOOP_PLAYLIST, ResStr(IDS_MENU_ITEM_PLAYLOOP_NORMAL));
 				}
 			}
 
@@ -4205,7 +4205,7 @@ void CMainFrame::OnInitMenuPopup(CMenu * pPopupMenu, UINT nIndex, BOOL bSysMenu)
 			MenuMerge( &m_playbackmenu ,m_playback_resmenu.GetSubMenu(2));
 			pSubMenu = &m_playbackmenu;
 		}
-		else if(str == _T("打开"))//ResStr(IDS_OPENCDROM_POPUP)
+		else if(str == ResStr(IDS_MENU_ITEM_OPEN))//ResStr(IDS_OPENCDROM_POPUP)
 		{
 			SetupOpenCDSubMenu();
 			m_openmore.DestroyMenu();
@@ -4224,7 +4224,7 @@ void CMainFrame::OnInitMenuPopup(CMenu * pPopupMenu, UINT nIndex, BOOL bSysMenu)
 			
 			pSubMenu = &m_audios;
 		}
-		else if(str == _T("字幕")) //ResStr(IDS_SUBTITLES_POPUP)
+		else if(str == ResStr(IDS_MENU_ITEM_SUBTITLE_EVERYTHING)) //ResStr(IDS_SUBTITLES_POPUP)
 		{
 			SetupSubMenuToolbar();
 			pSubMenu = &m_subtoolmenu;
@@ -4262,7 +4262,7 @@ void CMainFrame::OnInitMenuPopup(CMenu * pPopupMenu, UINT nIndex, BOOL bSysMenu)
 			SetupFavoritesSubMenu();
 			pSubMenu = &m_favorites;
 		}
-		else if(str == _T("最近播放"))
+		else if(str == ResStr(IDS_MENU_ITEM_RECENT_PALYED))
 		{
 			SetupRecentFileSubMenu();
 			pSubMenu = &m_recentfiles;
@@ -4371,18 +4371,18 @@ void CMainFrame::SetupSVPAudioMenu(){
 		AppSettings& s = AfxGetAppSettings();
 
 		CString szAudioChannel;
-		szAudioChannel.Format( _T("系统有 %d 个扬声器"), AfxGetMyApp()->GetNumberOfSpeakers() );
+		szAudioChannel.Format( ResStr(IDS_MENU_ITEM_NUMOF_SPEAKER), AfxGetMyApp()->GetNumberOfSpeakers() );
 
 		if(!(s.bNotAutoCheckSpeaker > 1 && s.fCustomSpeakers)){
-			szAudioChannel.Append(_T("(自动探测)"));
+			szAudioChannel.Append(ResStr(IDS_MENU_ITEM_NUMOF_SPEAKER_AUTODETECTED));
 		}else{
-			szAudioChannel.Append(_T("(手动指定)"));
+			szAudioChannel.Append(ResStr(IDS_MENU_ITEM_NUMOF_SPEAKER_MANUAL));
 		}
 
 
-		m_audios.AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_USINGSPDIF, _T("数字输出(光纤/SPDIF/HDMI)"));
+		m_audios.AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_USINGSPDIF, ResStr(IDS_MENU_ITEM_DIGTAL_OUTPUT));
 		m_audios.AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_SET_AUDIO_NUMBER_SPEAKER, szAudioChannel);
-		m_audios.AppendMenu(MF_POPUP, (UINT_PTR) pSubMenuAD->m_hMenu, _T("将声音输出至..."));
+		m_audios.AppendMenu(MF_POPUP, (UINT_PTR) pSubMenuAD->m_hMenu, ResStr(IDS_MENU_ITEM_AUDIO_OUTPUT_TO));
 	}
 
 }
@@ -4676,7 +4676,7 @@ void CMainFrame::OnFilePostOpenmedia()
 	if(m_iPlaybackMode == PM_FILE){
 		if(!s.bDontNeedSVPSubFilter && !m_pCAP && s.iSVPRenderType ){
 			s.iSVPRenderType = 0;
-			SendStatusMessage( _T("您的设备不支持画质优先模式，自动启用“性能优先模式”，建议重新打开文件"), 2000);
+			SendStatusMessage( ResStr(IDS_OSD_MSG_DEVICE_NOT_SUPPORT_VIDEO_QMODE), 2000);
 		}
 	}
 }
@@ -5140,7 +5140,7 @@ void CMainFrame::OnFileOpenFolder(){
 	bi.hwndOwner = m_hWnd;
 	bi.pidlRoot = NULL;
 	bi.pszDisplayName = buff;
-	bi.lpszTitle = _T("打开视频文件夹");
+	bi.lpszTitle = ResStr(IDS_DIALOG_OPEN_FOLDER_TITLE);
 	bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_VALIDATE | BIF_USENEWUI | BIF_NONEWFOLDERBUTTON;
 	bi.lpfn = BrowseCtrlCallback;
 	bi.lParam = (LPARAM)(LPCTSTR)szFolderPath;
@@ -5419,7 +5419,7 @@ void CMainFrame::OnFileOpenBdvd()
 	AppSettings& s = AfxGetAppSettings();
 	TCHAR path[MAX_PATH];
 
-	CString		strTitle = _T("文件模式打开BD目录");
+	CString		strTitle = ResStr(IDS_DIALOG_OPEN_BD_FOLDER_TITLE);
 	BROWSEINFO bi;
 	bi.hwndOwner = m_hWnd;
 	bi.pidlRoot = NULL;
@@ -5796,7 +5796,7 @@ void CMainFrame::SaveDIB(LPCTSTR fn, BYTE* pData, long size)
 	
 	CString szMsg;
 
-	szMsg.Format(_T("截图已保存至 %s"),(LPCTSTR)p);
+	szMsg.Format(ResStr(IDS_OSD_MSG_IMAGE_CAPTURE_TO),(LPCTSTR)p);
 	SendStatusMessage(szMsg, 3000);
 }
 void CMainFrame::OnFileCopyImageToCLipBoard(){
@@ -6003,7 +6003,7 @@ void CMainFrame::SaveThumbnails(LPCTSTR fn)
 		{
 			delete [] pData;
 			CString str;
-			str.Format(_T("你选择的图片输出格式和视频不兼容, 未能创建缩略图 (%d bpp dibs)."), bi->bmiHeader.biBitCount);
+			str.Format(ResStr(IDS_MSG_WARN_NOT_CAPABLE_IMAGE_CAPTURE), bi->bmiHeader.biBitCount);
 			AfxMessageBox(str);
 			return;
 		}
@@ -6067,7 +6067,8 @@ void CMainFrame::SaveThumbnails(LPCTSTR fn)
 		rts.AddStyle(_T("thumbs"), style);
 
 		CStringW str;
-		str.Format(L"{\\an9\\fs%d\\b1\\bord0\\shad0\\1c&Hffffff&}%s", infoheight-10, width >= 550 ? L"射手影音播放器" : L"射手播放器");
+		str.Format(L"{\\an9\\fs%d\\b1\\bord0\\shad0\\1c&Hffffff&}%s", infoheight-10, width >= 550 ? 
+			ResStr(IDR_MAINFRAME): ResStr(IDR_MAINFRAME_SHORTNAME));
 
 		rts.Add(str, true, 0, 1, _T("thumbs"), _T(""), _T(""), CRect(0,0,0,0), -1);
 
@@ -6090,7 +6091,7 @@ void CMainFrame::SaveThumbnails(LPCTSTR fn)
 			if(shortsize > 10240) shortsize /= 1024, measure = L"KB";
 			if(shortsize > 10240) shortsize /= 1024, measure = L"MB";
 			if(shortsize > 10240) shortsize /= 1024, measure = L"GB";
-			fs.Format(L"文件尺寸: %I64d%s (%I64d bytes)\\N", shortsize, measure, size);
+			fs.Format(ResStr(IDS_FORMAT_FILE_SIZE), shortsize, measure, size);
 		}
 
 		CStringW ar;
@@ -6156,14 +6157,14 @@ void CMainFrame::OnFileSaveImage()
 
 	/* Check if a compatible renderer is being used */
 	if(!IsRendererCompatibleWithSaveImage()) {
-		SendStatusMessage(_T("当前配置模式无法抓取截图，请进入选项-画面控制面板，选择画质或性能模式") , 3000);
+		SendStatusMessage(ResStr(IDS_OSD_MSG_RENDER_NOT_COMPATE_IMAGE_CAPTURE) , 3000);
 		return;
 	}
 
 	OAFilterState fs = GetMediaState();
 
 	if(!(m_iMediaLoadState == MLS_LOADED && !m_fAudioOnly && (fs == State_Paused || fs == State_Running))){
-		SendStatusMessage(_T("当前没有播放视频，无从抓取"),3000);
+		SendStatusMessage(ResStr(IDS_OSD_MSG_DONT_HAVE_VIDEO_FOR_CAPTURE),3000);
 		return;
 	}
 
@@ -6210,7 +6211,7 @@ void CMainFrame::OnFileSaveImageAuto()
 
 	/* Check if a compatible renderer is being used */
 	if(!IsRendererCompatibleWithSaveImage()) {
-		SendStatusMessage(_T("当前配置模式无法抓取截图，请进入选项-画面控制面板选择画质模式") , 3000);
+		SendStatusMessage(ResStr(IDS_OSD_MSG_RENDER_NOT_COMPATE_IMAGE_CAPTURE) , 3000);
 		return;
 	}
 
@@ -6278,7 +6279,7 @@ void CMainFrame::OnUpdateFileConvert(CCmdUI* pCmdUI)
 {
 	// TODO: Add your command update UI handler code here
 }
-#define NOTSUPPORTSUB  _T("启用播放器内置字幕功能需要进入选项设置面板选择画质模式\n如果您看到本提示，可能说明您需要升级显卡驱动\n或者您的显卡没有能力支持所需功能(VMR7或9)")
+#define NOTSUPPORTSUB  ResStr(IDS_MSG_RENDER_SETTING_NOT_SUPPORT_SUBTITLE)
 void CMainFrame::OnFileLoadsubtitle()
 {
 #ifndef DEBUG
@@ -6437,11 +6438,11 @@ void CMainFrame::OnFileISDBUpload()
 	if (!fnSubtitleFile.IsEmpty() ){ //如果有字幕
 		CString szBuf;
 		if(subDelayMS){
-			szBuf.Format(_T("字幕延时：%d ms\r\n"),subDelayMS );
+			szBuf.Format(ResStr(IDS_OSD_MSG_UPLOAD_SUB_MSG_SUBDELAY),subDelayMS );
 		}
 		/*
 		CString szUploadMsg;
-				szUploadMsg.Format(_T("本操作将上传您正在播放中的字幕： \r\n %s \r\n%s\r\n是否继续？"), fnSubtitleFile,szBuf);
+				szUploadMsg.Format(ResStr(IDS_OSD_MSG_UPLOAD_SUB_MSG), fnSubtitleFile,szBuf);
 		
 				if ( AfxMessageBox(szUploadMsg, MB_YESNO) == IDYES){
 		
@@ -6450,7 +6451,7 @@ void CMainFrame::OnFileISDBUpload()
 					szLog.Format(_T("Uploading sub %s of %s with delay %d ms because user demand to ") , fnSubtitleFile, fnVideoFile ,subDelayMS );
 					SVP_LogMsg(szLog);
 					SVP_UploadSubFileByVideoAndSubFilePath(fnVideoFile , fnSubtitleFile, subDelayMS) ;
-					if( AfxMessageBox(_T("字幕已经上传到播放器系统。建议您通过上传网页丰富相关信息。"), MB_YESNO) != IDYES){
+					if( AfxMessageBox(ResStr(IDS_MSG_SUB_ALREADY_MANUAL_UPLOADED), MB_YESNO) != IDYES){
 					return;
 					}
 				}else*/
@@ -6475,7 +6476,7 @@ void CMainFrame::OnManualcheckupdate()
 	/*
 	if (AfxGetMyApp()->IsVista() && !IsUserAnAdmin())
 		{
-			if(IDYES == AfxMessageBox(_T("必须启动管理员权限\r\n才可以启动自动升级程序！\r\n现在进入管理员权限么？"), MB_YESNO)){
+			if(IDYES == AfxMessageBox(ResStr(IDS_MSG_WARN_NOOD_ADMIN_PRIV_TO_START_UPDATER), MB_YESNO)){
 				AfxGetMyApp()->GainAdminPrivileges(2, FALSE);
 			
 			}
@@ -6524,10 +6525,10 @@ void CMainFrame::OnFileISDBDownload()
 						if( szaSubarr.GetCount() > 0){
 							if( LoadSubtitle(szaSubarr.GetAt(0)) )
 								SetSubtitle(m_pSubStreams.GetTail());
-							szUploadMsg.Format(_T("%d 个字幕已经下载成功"),szaSubarr.GetCount());
+							szUploadMsg.Format(ResStr(IDS_MSG_HOW_MANY_SUB_HAVE_BEEN_DOWNLOADED),szaSubarr.GetCount());
 							AfxMessageBox(szUploadMsg, MB_OK);
 						}else{
-							if ( AfxMessageBox(_T("没有下载到匹配的字幕。\n要不要试试看通过网页搜索？"), MB_YESNO) == IDYES){
+							if ( AfxMessageBox(ResStr(IDS_MSG_HAVNT_GOT_ANY_MATCHED_SUBTITLE), MB_YESNO) == IDYES){
 								CStringA url = "http://shooter.cn/sub/?";
 								ShellExecute(m_hWnd, _T("open"), CString(url), NULL, NULL, SW_SHOWDEFAULT);
 							}
@@ -7415,7 +7416,7 @@ void CMainFrame::OnChangeVSyncOffset(UINT nID){
 
 	s.m_RenderSettings.fTargetSyncOffset = max(0.0, min(2.0,s.m_RenderSettings.fTargetSyncOffset));
 	CString szMsg;
-	szMsg.Format(_T("新的VSync TargetSyncOffset %0.2f ") , s.m_RenderSettings.fTargetSyncOffset);
+	szMsg.Format(ResStr(IDS_OSD_MSG_SET_NEW_VSYNC_OFFSET) , s.m_RenderSettings.fTargetSyncOffset);
 	SendStatusMessage(szMsg, 3000);
 	
 }
@@ -7861,7 +7862,7 @@ void CMainFrame::OnPlayChangeRate(UINT nID)
 				else
 					hr = pDVDC->PlayBackwards(dRate, DVD_CMD_FLAG_Block, NULL);
 			}
-			szMsg.Format(_T("播放速度变为 %0.1f"), dRate);
+			szMsg.Format(ResStr(IDS_OSD_MSG_CHANGE_PLAY_SPEED_RATE), dRate);
 			
 			if(FAILED(hr)){
 				AppSettings& s = AfxGetAppSettings();
@@ -7869,11 +7870,11 @@ void CMainFrame::OnPlayChangeRate(UINT nID)
 					s.AudioRendererDisplayName = _T("");
 					s.bUseWaveOutDeviceByDefault = true;
 					//TODO: switch to waveOut Device
-					szMsg.Format( _T("正在切换设置以允许高速播放...") );
+					szMsg.Format( ResStr(IDS_OSD_MSG_SWITCH_AUDIO_DEVICE_FOR_NEW_PLAYSPEED) );
 					SendStatusMessage(szMsg, 3000);
 					ReRenderOrLoadMedia();
 				}else{
-					szMsg.Format( _T("建议使用WaveOut而非DirectSound类音频输出选项以支持此速率 (%0.1f)"), dRate);
+					szMsg.Format( ResStr(IDS_OSD_MSG_SUGGEST_USE_WAVEOUT), dRate);
 				}
 			}
 		}
@@ -8378,15 +8379,15 @@ void CMainFrame::OnPlayVolume(UINT nID)
 			iPlayerVol = 100 +  ( iPlayerVol - 100) * 900/ 20;
 
 		if(iPlayerVol > 1000) {iPlayerVol = 1000;}
-		szStat.Format(_T("音量: %d%%  ") , iPlayerVol );
+		szStat.Format(ResStr(IDS_OSD_MSG_VOLUME_CHANGED) , iPlayerVol );
 		SendStatusMessage(szStat , 2000);
 	}
 	if(m_iMediaLoadState == MLS_LOADED) 
 	{
 		HRESULT hr = pBA->put_Volume(m_wndToolBar.Volume);
 		if(S_OK != hr){
-			SVP_LogMsg5(_T("设置音量失败 %d : %d") , hr,  m_wndToolBar.Volume);
-			SendStatusMessage(_T("您当前的音频设备不支持音量控制，请在音频菜单中选择正确的音频设备。"),4000);
+			SVP_LogMsg5(ResStr(IDS_LOG_MSG_VOLUME_CHANGED_FAIL) , hr,  m_wndToolBar.Volume);
+			SendStatusMessage(ResStr(IDS_OSD_MSG_VOLUME_CHANGING_FAILED_OR_UNSUPPORTED),4000);
 		}
 		
 	
@@ -9916,7 +9917,7 @@ void CMainFrame::SetVMR9ColorControl(float dBrightness, float dContrast, float d
 	if(s.bOldLumaControl){
 		VMR9ProcAmpControl		ClrControl;
 
-		szMsg = _T("您没有启用或显卡(或驱动)不支持亮度控制");
+		szMsg = ResStr(IDS_MSG_RENDER_NOT_SUPPORT_BRIGHT_CONTROL);
 		if(m_pMC ) // Fuck fVMR9MixerYUV && !AfxGetAppSettings().fVMR9MixerYUV
 		{
 
@@ -9929,16 +9930,16 @@ void CMainFrame::SetVMR9ColorControl(float dBrightness, float dContrast, float d
 
 
 			if(S_OK == m_pMC->SetProcAmpControl (0, &ClrControl) )
-				szMsg.Format(_T("亮度: %0.2f  对比度: %0.2f "),dBrightness,dContrast);
+				szMsg.Format(ResStr(IDS_OSD_MSG_BRIGHT_CONTRAST_CHANGE),dBrightness,dContrast);
 			else
-				szMsg = _T("您的显卡(或驱动)不支持亮度控制");
+				szMsg = ResStr(IDS_MSG_DEVICE_NOT_SUPPORT_BRIGHT_CONTRAST_CHANGE);
 
 
 		}
 
 	}else{
 		
-		szMsg.Format(_T("亮度: %0.2f  对比度: %0.2f "),dBrightness,dContrast);
+		szMsg.Format(ResStr(IDS_OSD_MSG_BRIGHT_CONTRAST_CHANGED),dBrightness,dContrast);
 
 		if(m_pCAPR) {
 			
@@ -9957,9 +9958,9 @@ void CMainFrame::SetVMR9ColorControl(float dBrightness, float dContrast, float d
 					HRESULT hr = m_pCAPR->SetPixelShader(szSrcData, ("ps_2_0"));
 					if(FAILED(hr)){
 						if(!AfxGetMyApp()->GetD3X9Dll())
-							szMsg = _T("请通过自动更新下载必要的组件(d3d9x.dll)");
+							szMsg = ResStr(IDS_MSG_NEED_D3D9X_DLL);
 						else
-							szMsg = _T("需要硬件 Pixel Shader 2.0") ;
+							szMsg = ResStr(IDS_MSG_NEED_HARDWARE_PIXEL_SHADER_2) ;
 					}
 				}
 			
@@ -10017,9 +10018,9 @@ void CMainFrame::SetShaders( BOOL silent )
 				//		m_pCAP2->SetPixelShader2(NULL, NULL, true,  !silent);
 					if(!silent){
 						if(!AfxGetMyApp()->GetD3X9Dll())
-							SendStatusMessage(_T("请通过自动更新下载必要的组件(d3d9x.dll): ") + pShader->label, 3000);
+							SendStatusMessage(ResStr(IDS_OSD_MSG_PLS_USE_UPDATER_UPDATE_D3D9X_DLL) + pShader->label, 3000);
 						else
-							SendStatusMessage(_T("需要硬件 Pixel Shader 2.0: ") + pShader->label, 3000);
+							SendStatusMessage(ResStr(IDS_OSD_MSG_REQUIRE_PIXEL_SHADER_2) + pShader->label, 3000);
 						
 						
 					}
@@ -10233,7 +10234,7 @@ void CMainFrame::OpenCreateGraphObject(OpenMediaData* pOMD)
 	|| !(pVW && pBV)
 	|| !(pBA))
 	{
-		throw _T("DirectX系统组件受损，您可能需要重新重新安装DirextX 9+");
+		throw ResStr(IDS_MSG_THROW_BROKEN_DIRECTX_SUPPORT);
 	}
 
 	if(FAILED(pME->SetNotifyWindow((OAHWND)m_hWnd, WM_GRAPHNOTIFY, 0)))
@@ -10458,19 +10459,19 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 
 				switch(hr)
 				{
-				case E_ABORT: err = _T("操作已取消"); break;
+				case E_ABORT: err = ResStr(IDS_MSG_THROW_OPRATION_CANCELED); break;
 				case E_FAIL: case E_POINTER: default: 
-					err.Format(_T("未能打开文件, %X") , hr);
+					err.Format(ResStr(IDS_MSG_THROW_UNABLE_OPEN_FILE) , hr);
 					break;
-				case E_INVALIDARG: err = _T("非法文件名"); break;
-				case E_OUTOFMEMORY: err = _T("内存不足"); break;
-				case VFW_E_CANNOT_CONNECT: err = _T("未能解码"); break;
-				case VFW_E_CANNOT_LOAD_SOURCE_FILTER: err = _T("未能打开文件(Source)"); break;
-				case VFW_E_CANNOT_RENDER: err = _T("未能打开文件(Render)"); break;
+				case E_INVALIDARG: err = ResStr(IDS_MSG_THROW_ILLEGE_FILENAME); break;
+				case E_OUTOFMEMORY: err = ResStr(IDS_MSG_THROW_OUTOF_MEMORY); break;
+				case VFW_E_CANNOT_CONNECT: err = ResStr(IDS_MSG_THROW_UNABLE_DECODE); break;
+				case VFW_E_CANNOT_LOAD_SOURCE_FILTER: err = ResStr(IDS_MSG_THROW_UNSUPPORT_SOURCE); break;
+				case VFW_E_CANNOT_RENDER: err = ResStr(IDS_MSG_THROW_FAIL_CREATE_RENDER); break;
 				case VFW_E_INVALID_FILE_FORMAT: err = _T("Invalid file format"); break;
-				case VFW_E_NOT_FOUND: err = _T("文件不存在"); break;
-				case VFW_E_UNKNOWN_FILE_TYPE: err = _T("未知文件类型"); break;
-				case VFW_E_UNSUPPORTED_STREAM: err = _T("不支持的流类型"); break;
+				case VFW_E_NOT_FOUND: err = ResStr(IDS_MSG_THROW_FILE_NOT_FOUND); break;
+				case VFW_E_UNKNOWN_FILE_TYPE: err = ResStr(IDS_MSG_THROW_UNKNOWN_FILE_TYPE); break;
+				case VFW_E_UNSUPPORTED_STREAM: err = ResStr(IDS_MSG_THROW_UNSUPPORT_STREAM_TYPE); break;
 				}
 
 				throw err;
@@ -10600,7 +10601,7 @@ CString CMainFrame::GetCurPlayingFileName(){
 		}else if(m_iPlaybackMode == PM_DVD){
 			szPlayingFileName = _T("DVD");
 		}else{
-			szPlayingFileName = _T("未知");
+			szPlayingFileName = ResStr(IDS_PLAYING_TITLENAME_UNKNOWN);
 		}
 	}
 	return szPlayingFileName;
@@ -11411,7 +11412,7 @@ void CMainFrame::OnColorControl(UINT nID){
 		s.dBrightness = min( max(s.dBrightness, ClrRange.MinValue) , ClrRange.MaxValue);
 		SetVMR9ColorControl(s.dBrightness,s.dContrast,s.dHue,s.dSaturation);
 	}else{
-		SendStatusMessage(_T("您需要在选项面板中启用内置亮度\\色彩控制器才能控制亮度") , 5000);
+		SendStatusMessage(ResStr(IDS_OSD_MSG_NEED_ENABLE_COLOR_CONTROL_IN_SETTING_PANNEL) , 5000);
 	}
 }
 void CMainFrame::ReRenderOrLoadMedia(){
@@ -11476,7 +11477,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 
 		if(OpenFileData* pOFD = dynamic_cast<OpenFileData*>(pOMD.m_p))
 		{
-			if(pOFD->fns.IsEmpty()) throw _T("没有找到文件");
+			if(pOFD->fns.IsEmpty()) throw ResStr(IDS_MSG_THROW_FILE_NOT_FOUND);
 
 			CString fn = pOFD->fns.GetHead();
 
@@ -11504,7 +11505,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 						else
 						{
 							CString msg;
-							msg.Format(_T("没有找到 %s 请插入光盘"), fn);
+							msg.Format(ResStr(IDS_MSG_WARN_NOT_FOUND_AND_PLS_INSERT_DISK), fn);
 							ret = AfxMessageBox(msg, MB_RETRYCANCEL);
 						}
 					}
@@ -11514,7 +11515,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 					CSVPToolBox svpTool;
 					if(!svpTool.ifFileExist(fn, true)){
 						//SVP_LogMsg5(L"SVP 文件不存在" );
-						throw _T("文件不存在");
+						throw ResStr(IDS_MSG_THROW_FILE_NOT_EXIST);
 					}
 				}
 			}
@@ -11711,7 +11712,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 				if( S_OK == m_wndView.m_cover->Load( szaRet.GetHead() )  )
 					m_wndView.Invalidate();
 				else
-					SendStatusMessage( CString(_T("图片读取失败 "))+szaRet.GetHead() , 3000);
+					SendStatusMessage( CString(ResStr(IDS_OSD_MSG_IMAGE_OPEN_FAILED))+szaRet.GetHead() , 3000);
 
 			}
 
@@ -11965,11 +11966,11 @@ void CMainFrame::SetupOpenCDSubMenu()
 		switch(GetCDROMType(drive, files, true))
 		{
 		case CDROM_Unknown:
-			if(label.IsEmpty()) label = _T("光盘 ");
+			if(label.IsEmpty()) label = ResStr(IDS_MENU_ITEM_LABEL_CDROM_UNKNOWN);
 			str.Format(_T("%s (%c:)"), label, drive);
 			break;
 		case CDROM_Audio:
-			if(label.IsEmpty()) label = _T("音频CD ");
+			if(label.IsEmpty()) label = ResStr(IDS_MENU_ITEM_LABEL_CDROM_AUDIOCD);
 			str.Format(_T("%s (%c:)"), label, drive);
 			break;
 		case CDROM_VideoCD:
@@ -12011,7 +12012,7 @@ void CMainFrame::OnUpdateThemeChangeMenu(CCmdUI *pCmdUI){
 			if(s.bAeroGlassAvalibility){
 				pCmdUI->SetCheck(s.bAeroGlass);
 			}else{
-				pCmdUI->SetText(_T("玻璃效果(系统不支持)"));
+				pCmdUI->SetText(ResStr(IDS_MENU_ITEM_AEROGLASS_UNSUPPORT));
 			}
 			break;
 		case ID_THEME_COLORMENU:
@@ -12086,14 +12087,14 @@ void CMainFrame::SetupAudioDeviceSubMenu(){
 		EndEnumSysDev
 	}
 	
-	pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, idstart++, _T("系统默认"));
+	pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, idstart++, ResStr(IDS_MENU_ITEM_AUDIODEVICE_SYSTEM_DEFAULT));
 	if(m_AudioDevice.GetCount())
 		pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED);
 
 	for(int i = 0 ; i < m_AudioDevice.GetCount(); i+=2){
 		CString szAudioDevice = m_AudioDevice.GetAt(i);
-		szAudioDevice.Replace(_T("Default") , _T("默认") );
-		szAudioDevice.Replace(_T("Device") , _T("设备") );
+		szAudioDevice.Replace(_T("Default") , ResStr(IDS_MENU_ITEM_AUDIODEVICE_NAMETRANSLATE_DEFAULT) );
+		szAudioDevice.Replace(_T("Device") , ResStr(IDS_MENU_ITEM_AUDIODEVICE_NAMETRANSLATE_DEVICE) );
 		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, idstart++, szAudioDevice );
 		if(idstart > IDS_CHANGE_AUDIO_DEVICE_END){
 			//too many device...
@@ -12307,16 +12308,16 @@ void CMainFrame::SetupAudioSwitcherSubMenu()
 			//if(pSubMenu )
 			//	pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED);
 
-			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPNORMAL, _T("系统默认"));
-			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPLEFT,  _T("只播放左声道"));
-			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPRIGHT,  _T("只播放右声道"));
-			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPCENTER,  _T("只播放中置声道"));
+			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPNORMAL, ResStr(IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_DEAULT));
+			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPLEFT,  ResStr(IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_LEFT));
+			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPRIGHT,  ResStr(IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_RIGHT));
+			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPCENTER,  ResStr(IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_CENTER));
 			pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED);
 
 			DWORD cStreams = 0;
 			if(SUCCEEDED(pSS->Count(&cStreams)) && cStreams > 0)
 			{
-				pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, id++, L"设置...");
+				pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, id++, ResStr(IDS_MENU_ITEM_SETTING));
 				pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED);
 
 				for(int i = 0; i < (int)cStreams; i++)
@@ -12396,10 +12397,10 @@ void CMainFrame::SetupAudioSwitcherSubMenu()
 						CString name(wname);
 						name.Replace(_T("&"), _T("&&"));
 						if(name.Find(_T("Audio")) == 0 || name.Find(_T("声")) == 0 || name.Find(_T("音")) == 0 ){
-							name.Replace(_T("Audio"), _T("音轨"));
-							name.Replace(_T("Chinese"), _T("汉语"));
-							name.Replace(_T("Japanese"), _T("日语"));
-							name.Replace(_T("English"), _T("英语"));
+							name.Replace(_T("Audio"), ResStr(IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_AUDIO));
+							name.Replace(_T("Chinese"), ResStr(IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_CHINESE));
+							name.Replace(_T("Japanese"), ResStr(IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_JAPANESE));
+							name.Replace(_T("English"), ResStr(IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_ENGLISH));
 							CString szLog;
 							szLog.Format(L" Audio Menu %d %s", idl, name);
 							SVP_LogMsg(szLog);
@@ -12496,7 +12497,7 @@ void CMainFrame::SetupSubMenuToolbar(){
 	else while(pSub->RemoveMenu(0, MF_BYPOSITION));
 
 	if(m_iMediaLoadState != MLS_LOADED || m_fAudioOnly || !m_pCAP){
-		pSub->AppendMenu(MF_STRING|MF_GRAYED, 0, _T("没有可供加载字幕的视频"));
+		pSub->AppendMenu(MF_STRING|MF_GRAYED, 0, ResStr(IDS_MENU_ITEM_SUBTITLE_NOT_SUPPORT_VIDEO));
 		return;
 	}
 
@@ -12513,7 +12514,7 @@ void CMainFrame::SetupSubMenuToolbar(){
 	if(m_subtitles2.GetMenuItemCount() ){
 		if(m_subtoolmenu.GetMenuItemCount())
 			m_subtoolmenu.AppendMenu(MF_SEPARATOR);
-		m_subtoolmenu.AppendMenu(MF_POPUP, (UINT)m_subtitles2.m_hMenu,_T("第二字幕"));
+		m_subtoolmenu.AppendMenu(MF_POPUP, (UINT)m_subtitles2.m_hMenu,ResStr(IDS_MENU_ITEM_2ND_SUBTITLE));
 	}
 	
 /*
@@ -12522,7 +12523,7 @@ void CMainFrame::SetupSubMenuToolbar(){
 	for(int iPos = 0; iPos < popmenuMain->GetMenuItemCount(); iPos++){
 		CString str;
 		if (popmenuMain->GetMenuString(iPos, str, MF_BYPOSITION)){
-			if(str.Find(_T("网络字幕")) >= 0){
+			if(str.Find(ResStr(IDS_MENU_ITEM_INTERNET_SUBTITLE)) >= 0){
 				netSubMenu = (CMenu*) popmenuMain->GetSubMenu(iPos);
 				break;
 			}
@@ -12537,7 +12538,7 @@ void CMainFrame::SetupSubMenuToolbar(){
 	m_subtitles.LoadMenu(IDR_SUBMENU);
 	MenuMerge( &m_subtoolmenu,  &m_subtitles );
 	
-	//m_subtoolmenu.AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_FILE_LOAD_SUBTITLE, _T("调入字幕文件..."));
+	//m_subtoolmenu.AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_FILE_LOAD_SUBTITLE, ResStr(IDS_MENU_ITEM_LOAD_SUBTITLE));
 
 
 }
@@ -12632,13 +12633,13 @@ void CMainFrame::SetupSubtitlesSubMenu(int subid)
 	
 	}
 	
-	pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, loadID, _T("调入字幕文件..."));
+	pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, loadID, ResStr(IDS_MENU_ITEM_LOAD_SUBTITLE));
 
 	if (subid == 2 && bHasSub){
 		if(pSub->GetMenuItemCount() > 0)
 			pSub->AppendMenu(MF_SEPARATOR);
 
-		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_CONFIG_AUTOLOADSUBTITLE2 , _T("自动启用第二字幕"));
+		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_CONFIG_AUTOLOADSUBTITLE2 , ResStr(IDS_MENU_ITEM_AUTO_LOAD_2ND_SUBTITLE));
 	}
 	
 	
@@ -12759,7 +12760,7 @@ void CMainFrame::SetupNavSubtitleSubMenu()
 		if(FAILED(pDVDI->GetDefaultSubpictureLanguage(&DefLanguage, &ext)))
 			return;
 
-		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|(bIsDisabled?0:MF_CHECKED), id++, _T("启用"));
+		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|(bIsDisabled?0:MF_CHECKED), id++, ResStr(IDS_MENU_ITEM_ENABLE_SUBTITLE));
 		pSub->AppendMenu(MF_BYCOMMAND|MF_SEPARATOR|MF_ENABLED);
 
         for(ULONG i = 0; i < ulStreamsAvailable; i++)
@@ -13097,11 +13098,11 @@ void CMainFrame::SetupRecentFileSubMenu(){
 	if(nLastGroupStart || s.fKeepHistory ){
 		if(nLastGroupStart){
 			pSub->InsertMenu(nLastGroupStart, MF_SEPARATOR|MF_ENABLED|MF_BYPOSITION);
-			pSub->AppendMenu(flags, ID_RECENTFILE_CLEAR, _T("清除历史记录"));
+			pSub->AppendMenu(flags, ID_RECENTFILE_CLEAR, ResStr(IDS_MENU_ITEM_CLEAN_PLAY_HISTORY));
 		}
-		pSub->AppendMenu(flags, ID_RECENTFILE_DISABLE, _T("禁用历史记录"));
+		pSub->AppendMenu(flags, ID_RECENTFILE_DISABLE, ResStr(IDS_MENU_ITEM_DISABLE_PLAY_HISTORY));
 	}else{
-		pSub->AppendMenu(flags, ID_RECENTFILE_ENABLE, _T("启用历史记录"));
+		pSub->AppendMenu(flags, ID_RECENTFILE_ENABLE, ResStr(IDS_MENU_ITEM_ENABLE_PLAY_HISTORY));
 	}
 
 	
@@ -13228,7 +13229,7 @@ void CMainFrame::SetupShadersSubMenu()
 	AppSettings& s = AfxGetAppSettings();
 	
 	if( s.iSVPRenderType == 0 || (this->IsSomethingLoaded() && !m_pCAPR)  ){//s.iDSVideoRendererType != 6 || s.iRMVideoRendererType != 2 || s.iQTVideoRendererType != 2 || s.iAPSurfaceUsage != VIDRNDT_AP_TEXTURE3D
-		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_SHADERS_SETDX9,_T("启用画质模式..."));
+		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_SHADERS_SETDX9,ResStr(IDS_MENU_ITEM_ENABLE_QMODE_RENDER));
 		return;
 	}
 
@@ -13261,8 +13262,8 @@ void CMainFrame::SetupShadersSubMenu()
 	}
 
 	pSub->AppendMenu( MF_SEPARATOR );
-	pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_RESIZER_NORMAL, _T("标准优化缩放"));
-	pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_RESIZER_SMARTBICUBIC, _T("智能倍线缩放"));
+	pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_RESIZER_NORMAL, ResStr(IDS_MENU_ITEM_STANDARD_RESIZER));
+	pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_RESIZER_SMARTBICUBIC, ResStr(IDS_MENU_ITEM_HIGH_Q_RESIZER));
 	
 	
 }
@@ -13326,7 +13327,7 @@ void CMainFrame::ShowControls(int nCS, bool fSave)
 			CSVPToolBox svpTool;
 			fuPath.StripPath();
 
-			SendStatusMessage(CString(_T("正在播放: ")) + CString(fuPath) + _T(" 位于: ") + svpTool.GetDirFromPath(m_fnCurPlayingFile), 2000);
+			SendStatusMessage(CString(ResStr(IDS_OSD_MSG_CURRENT_PLAYING)) + CString(fuPath) + ResStr(IDS_OSD_MSD_CURRENT_PLAYING_AT_LOCATION) + svpTool.GetDirFromPath(m_fnCurPlayingFile), 2000);
 		}
 
 		if(s.bUserAeroUI() && (i& ( CS_TOOLBAR | CS_SEEKBAR)))
@@ -13676,7 +13677,7 @@ void CMainFrame::SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle)
 			CoTaskMemFree(pName);
 		}
 
-		szBuf.Format(_T("正在显示第二字幕 %s 延时设为 %d 毫秒 高度：%d%%"), subName, pSubStream->sub_delay_ms, s.nVerPos2);
+		szBuf.Format(ResStr(IDS_OSD_MSG_CURRENT_2NDSUB_INFO), subName, pSubStream->sub_delay_ms, s.nVerPos2);
 		SVP_LogMsg(szBuf);
 		SendStatusMessage(szBuf , 4000 );
 		m_pCAP->SetSubPicProvider2(CComQIPtr<ISubPicProvider>(pSubStream));
@@ -13801,7 +13802,7 @@ void CMainFrame::SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle)
 		}
 		
 		
-		szBuf.Format(_T("正在显示主字幕 %s 延时设为 %d 毫秒 高度：%d%%"), subName,  pSubStream->sub_delay_ms,s.nVerPos);
+		szBuf.Format(ResStr(IDS_OSD_MSG_CURRENT_MAINSUB_INFO), subName,  pSubStream->sub_delay_ms,s.nVerPos);
 		SVP_LogMsg(szBuf);
 		SendStatusMessage(szBuf , 4000 );
 		m_pCAP->SetSubPicProvider(CComQIPtr<ISubPicProvider>(pSubStream));
@@ -14330,7 +14331,7 @@ void CMainFrame::OnSettingFinished(){
 void CMainFrame::ShowOptions(int idPage)
 {
 	
-	if(HWND hWnd = ::FindWindow(NULL, _T("射手播放器选项设置面板")))
+	if(HWND hWnd = ::FindWindow(NULL, ResStr(IDS_DIALOG_UESETTING_PANNEL_TITLE)))
 	{
 		
 		::SetForegroundWindow(hWnd);
@@ -14704,7 +14705,7 @@ afx_msg void CMainFrame::OnSubtitleDelay(UINT nID)
 			newDelay = oldDelay+AfxGetAppSettings().nSubDelayInterval;
 
 		CString str;
-		str.Format(_T("主字幕延时已经设为： %d ms"), newDelay);
+		str.Format(ResStr(IDS_OSD_MSG_CHANGE_MAINSUB_DELAY), newDelay);
 		SendStatusMessage(str, 5000);
 		SetSubtitleDelay(newDelay);
 	}
@@ -14722,7 +14723,7 @@ afx_msg void CMainFrame::OnSubtitleDelay2(UINT nID)
 			newDelay = oldDelay + AfxGetAppSettings().nSubDelayInterval;
 
 		CString str;
-		str.Format(_T("第二字幕延时已经设为： %d ms"), newDelay);
+		str.Format(ResStr(IDS_OSD_MSG_CHANGE_2NDSUB_DELAY), newDelay);
 		SendStatusMessage(str, 5000);
 		SetSubtitleDelay2(newDelay);
 	}
@@ -14747,13 +14748,13 @@ afx_msg void CMainFrame::OnSubtitleMove(UINT nID)
 				s.nVerPos -= 2;
 				if(s.nVerPos < 2){s.nVerPos = 2;}
 				s.fOverridePlacement = true;
-				str.Format(_T("主字幕高度已经设为：%d %%"), s.nVerPos);
+				str.Format(ResStr(IDS_OSD_MSG_CHANGE_MAINSUB_POS_HIGH), s.nVerPos);
 				break;
 			case  ID_SUBMOVEDOWN:
 				s.nVerPos += 2;
 				if(s.nVerPos > 98){s.nVerPos = 98;}
 				s.fOverridePlacement = true;
-				str.Format(_T("主字幕高度已经设为：%d %%"), s.nVerPos);
+				str.Format(ResStr(IDS_OSD_MSG_CHANGE_MAINSUB_POS_HIGH), s.nVerPos);
 				break;
 			case  ID_SUBMOVELEFT:
 				break;
@@ -14763,13 +14764,13 @@ afx_msg void CMainFrame::OnSubtitleMove(UINT nID)
 				s.nVerPos2 -= 2;
 				if(s.nVerPos2 < 2){s.nVerPos2 = 2;}
 				s.fOverridePlacement2 = true;
-				str.Format(_T("第二字幕高度已经设为：%d %%"), s.nVerPos2);
+				str.Format(ResStr(IDS_OSD_MSG_CHANGE_2NDSUB_POS_HIGH), s.nVerPos2);
 				break;
 			case  ID_SUB2MOVEDOWN:
 				s.nVerPos2 += 2;
 				if(s.nVerPos2 > 98){s.nVerPos2 = 98;}
 				s.fOverridePlacement2 = true;
-				str.Format(_T("第二字幕高度已经设为：%d %%"), s.nVerPos2);
+				str.Format(ResStr(IDS_OSD_MSG_CHANGE_2NDSUB_POS_HIGH), s.nVerPos2);
 				break;
 			case  ID_SUB2MOVELEFT:
 				break;
@@ -14835,11 +14836,11 @@ afx_msg void CMainFrame::OnSubtitleFontChange(UINT nID)
 		}
 
 		if(bSubChg1){
-			str.Format(_T("主字幕字体已经设为：%0.0f  "), s.subdefstyle.fontSize);
+			str.Format(ResStr(IDS_OSD_MSG_CHANGE_MAINSUB_FONTSIZE), s.subdefstyle.fontSize);
 			UpdateSubtitle(true); 
 		}
 		if(bSubChg2){
-			str2.Format(_T("第二字幕字体已经设为：%0.0f  "), s.subdefstyle.fontSize);
+			str2.Format(ResStr(IDS_OSD_MSG_CHANGE_2NDSUB_FONTSIZE), s.subdefstyle.fontSize);
 			UpdateSubtitle2(true);
 		}
 		SendStatusMessage(str + str2, 5000);
@@ -14924,7 +14925,7 @@ void CMainFrame::OnSetsnapshotpath()
 	bi.hwndOwner = m_hWnd;
 	bi.pidlRoot = NULL;
 	bi.pszDisplayName = buff;
-	bi.lpszTitle = _T("选择截图默认保存文件夹");
+	bi.lpszTitle = ResStr(IDS_DIALOG_SELECT_IMAGE_CAPTURE_TO_FOLDER);
 	bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_VALIDATE | BIF_USENEWUI;
 	bi.lpfn = BrowseCtrlCallback;
 	bi.lParam = (LPARAM)(LPCTSTR)s.SnapShotPath;
@@ -14953,7 +14954,7 @@ void CMainFrame::OnChangebackground()
 {
 	// TODO: Add your command handler code here
 	CAutoPtr<CPPageLogo> page(new CPPageLogo());
-	CPropertySheet dlg(_T("界面背景设置..."), this);
+	CPropertySheet dlg(ResStr(IDS_DIALOG_THEME_BACKGROUND_SETTING_TITLE), this);
 	dlg.AddPage(page);
 	dlg.DoModal() ;
 }
@@ -14994,7 +14995,7 @@ void CMainFrame::OnDeletecurfile()
 	if( svpRar.SplitPath( fnPlayingFile )) 
 		fnPlayingFile = svpRar.m_fnRAR;
 
-	szMsg.Format(_T("删除当前文件：\r\n%s ?"),  m_fnCurPlayingFile);
+	szMsg.Format(ResStr(IDS_MSG_WARNING_DELETE_CURRENT_FILE),  m_fnCurPlayingFile);
 	if(IDYES == AfxMessageBox(szMsg, MB_YESNO)){
 		PostMessage(WM_COMMAND, ID_FILE_CLOSEMEDIA);
 		fnDelPending = m_fnCurPlayingFile;
@@ -15017,9 +15018,9 @@ void CMainFrame::OnDelcurfolder()
 		fnPlayingFile = svpRar.m_fnRAR;
 
 	CString szPath = svpTool.GetDirFromPath(fnPlayingFile);
-	szMsg.Format(_T("删除当前文件夹：\r\n%s ?"), szPath);
+	szMsg.Format(ResStr(IDS_MSG_WARNING_DELETE_CURRENT_FOLDER), szPath);
 	if(IDYES == AfxMessageBox(szMsg, MB_YESNO)){
-		if(IDYES == AfxMessageBox(_T("真的要删除当前文件夹么？\n此操作将无法撤消！"), MB_YESNO|MB_ICONEXCLAMATION)){
+		if(IDYES == AfxMessageBox(ResStr(IDS_MSG_WARNING_DELETE_CURRENT_FOLDER_CONFIRM), MB_YESNO|MB_ICONEXCLAMATION)){
 			PostMessage(WM_COMMAND, ID_FILE_CLOSEMEDIA);
 			fnDelPending = szPath;
 			SetTimer(TIMER_DELETE_CUR_FOLDER, 1000, NULL);
@@ -15037,10 +15038,10 @@ void CMainFrame::OnUpdateDeleteCurs(CCmdUI *pCmdUI)
 		pCmdUI->Enable(FALSE);
 		switch(pCmdUI->m_nID){
 			case ID_DELETECURFILE:
-				pCmdUI->SetText(_T("删除当前文件"));
+				pCmdUI->SetText(ResStr(IDS_MENU_ITEM_DELETE_CURRENT_FILE));
 			break;
 			case ID_DELCURFOLDER:
-				pCmdUI->SetText(_T("删除当前文件夹"));
+				pCmdUI->SetText(ResStr(IDS_MENU_ITEM_DELETE_CURRENT_FOLDER));
 			break;
 		}
 	}else{
@@ -15048,11 +15049,11 @@ void CMainFrame::OnUpdateDeleteCurs(CCmdUI *pCmdUI)
 		CString szMText ;
 		switch(pCmdUI->m_nID){
 			case ID_DELETECURFILE:
-				szMText.Format(_T("删除当前文件(%s)"), m_fnCurPlayingFile);
+				szMText.Format(ResStr(IDS_MENU_ITEM_DELETE_CURRENT_FILE_WITH_NAME), m_fnCurPlayingFile);
 				break;
 			case ID_DELCURFOLDER:
 				CSVPToolBox svpTool;
-				szMText.Format(_T("删除当前文件夹(%s)"), svpTool.GetDirFromPath(m_fnCurPlayingFile));
+				szMText.Format(ResStr(IDS_MENU_ITEM_DELETE_CURRENT_FOLDER_WITH_PATH), svpTool.GetDirFromPath(m_fnCurPlayingFile));
 				break;
 		}
 		pCmdUI->SetText(szMText);
@@ -15234,7 +15235,7 @@ void CMainFrame::OnDebugreport()
 		szBuf.Format(_T("OS Ver %s %d.%d ")  , osver.szCSDVersion, osver.dwMajorVersion , osver.dwMinorVersion );
 		szaReport.Add(szBuf);
 		
-		szBuf.Format(_T("硬件加速 ： %d %s  无限兼容： %d")  ,m_bDxvaInUse , m_DXVAMode  , s.bDVXACompat);
+		szBuf.Format(ResStr(IDS_LOG_MSG_DXVALINE)  ,m_bDxvaInUse , m_DXVAMode  , s.bDVXACompat);
 		szaReport.Add(szBuf);
 
 		szBuf = _T("CPU ");
@@ -15506,7 +15507,7 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 		if(m_bEVRInUse){
 			szEVR = _T("+EVR");
 		}
-		szWindowText.Format( _T("[硬件高清%s] "), szEVR);
+		szWindowText.Format( ResStr(IDS_MAINFRAME_TITLE_DXVA_TAG), szEVR);
 	}else if(m_bEVRInUse){
 		szWindowText = _T("[EVR] ");
 	}

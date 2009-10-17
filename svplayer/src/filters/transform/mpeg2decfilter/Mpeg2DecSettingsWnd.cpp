@@ -1,4 +1,4 @@
-/* 
+Ôªø/* 
  *	Copyright (C) 2003-2006 Gabest
  *	http://www.gabest.org
  *
@@ -23,6 +23,11 @@
 #include "resource.h"
 #include "Mpeg2DecSettingsWnd.h"
 #include "..\..\..\dsutil\dsutil.h"
+
+
+#include <streams.h>
+#include <afxtempl.h>
+#include "..\..\..\apps\mplayerc\mplayerc.h"
 
 // ==>>> Resource identifier from "resource.h" present in mplayerc project!
 #define ResStr(id) CString(MAKEINTRESOURCE(id))
@@ -94,7 +99,7 @@ bool CMpeg2DecSettingsWnd::OnActivate()
 
 	m_ditype_static.Create(ResStr(IDS_MPEG2_DEINTERLACING), dwStyle, CRect(p, CSize(70, m_fontheight)), this);
 	m_ditype_combo.Create(dwStyle|CBS_DROPDOWNLIST, CRect(p + CSize(85, -3), CSize(100, 200)), this, IDC_PP_COMBO1);
-	m_ditype_combo.SetItemData(m_ditype_combo.AddString(_T("ƒ¨»œ”≈ªØ…Ë÷√")), (DWORD)DIAuto);
+	m_ditype_combo.SetItemData(m_ditype_combo.AddString(ResStr(IDS_PANEL_MPEG_DECODER_DEINTERLACE_DEFAULT)), (DWORD)DIAuto);
 	m_ditype_combo.SetItemData(m_ditype_combo.AddString(_T("Weave")), (DWORD)DIWeave);
 	m_ditype_combo.SetItemData(m_ditype_combo.AddString(_T("Blend")), (DWORD)DIBlend);
 	m_ditype_combo.SetItemData(m_ditype_combo.AddString(_T("Bob")), (DWORD)DIBob);

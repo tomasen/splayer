@@ -51,7 +51,7 @@ int g_cTemplates = countof(g_Templates);
 STDAPI DllRegisterServer()
 {
 	SetRegKeyValue(_T("udp"), 0, _T("Source Filter"), CStringFromGUID(__uuidof(CUDPReader)));
-	SetRegKeyValue(_T("tév?), 0, _T("Source Filter"), CStringFromGUID(__uuidof(CUDPReader)));
+	SetRegKeyValue(_T("tcp"), 0, _T("Source Filter"), CStringFromGUID(__uuidof(CUDPReader)));
 
 	return AMovieDllRegisterServer2(TRUE);
 }

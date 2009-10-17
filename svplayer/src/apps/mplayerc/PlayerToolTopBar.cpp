@@ -1,4 +1,4 @@
-// PlayerToolTopBar.cpp : implementation file
+ï»¿// PlayerToolTopBar.cpp : implementation file
 //
 
 #include "stdafx.h"
@@ -84,47 +84,47 @@ BOOL CPlayerToolTopBar::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 		m_lastTipItem = m_nItemToTrack;
 		switch(m_nItemToTrack){
 					case ID_VIEW_VF_FROMINSIDE:
-						toolTip = _T("±ê×¼»­Ãæ");
+						toolTip = ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_STANDARD_VIDEO_FRAME);
 						break;
 					case ID_VIEW_VF_FROMOUTSIDE:
-						toolTip = _T("ÖÇÄÜÈ¥ºÚ±ß");
+						toolTip = ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_VIDEO_FRAME_REMOVE_BLACK_BAR);
 						break;
 					case ID_VIEW_FULLSCREEN:
-						toolTip = _T("È«ÆÁÇÐ»»");
+						toolTip = ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_FULLSCREEN);
 						break;
 					case ID_VIEW_ZOOM_100:
-						toolTip = _T("100% ³ß´ç");
+						toolTip = ResStr(IDS_TOOLTIP_TOPTOOLBAR_ZOOM_100);
 						break;
 					case ID_VIEW_ZOOM_200:
-						toolTip = _T("200% ³ß´ç");
+						toolTip = ResStr(IDS_TOOLTIP_TOPTOOLBAR_ZOOM_200);
 						break;
 					case ID_MENU_AUDIO:
-						toolTip = _T("Òô¹ìÑ¡Ôñ");
+						toolTip = ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_AUDIO);
 						break;
 					case ID_MENU_VIDEO:
-						toolTip = _T("»­ÃæÔöÒæ");
+						toolTip = ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_VIDEO);
 						break;
 					case ID_ONTOP_ALWAYS:
-						toolTip = _T("Ê¹´°¿Ú¶¤ÔÚ×îÇ°¶Ë");
+						toolTip = ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_PIN_ONTOP);
 						break;
 					case ID_ONTOP_NEVER:
-						toolTip = _T("»Ö¸´Õý³£´°¿Ú");
+						toolTip = ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_RESTORE_WINDOW);
 						break;
 					case ID_ROTATE_90:
-						toolTip = _T("Ë³Ê±ÕëÐý×ª 90¡æ");
+						toolTip = ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_ROTATE_90);
 						break;
 					case ID_ROTATE_V:
-						toolTip = _T("´¹Ö±·­×ª");
+						toolTip = ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_FLIP_V);
 						break;
 					case ID_FILE_SAVE_IMAGE:
-						toolTip = _T("½ØÍ¼ÖÁÎÄ¼þºÍ¼ôÌù°å");
+						toolTip = ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_IMAGE_CAPTURE);
 						break;
 					case ID_SHOWTRANSPRANTBAR:
-						toolTip = _T("´°Ìå°ëÍ¸Ã÷");
+						toolTip = ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_TRANSPARENT_CONTROL_BAR);
 						break;
 					
 					case ID_SHOWCOLORCONTROLBAR:
-						toolTip = _T("ÁÁ¶ÈÓë¶Ô±È¶È");
+						toolTip = ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_BRIGHT_CONTROL);
 						break;
 					default:
 						toolTip = ResStr(m_nItemToTrack);

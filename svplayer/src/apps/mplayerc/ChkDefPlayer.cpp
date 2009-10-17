@@ -1,5 +1,5 @@
-// ChkDefPlayer.cpp : implementation file
-//
+ï»¿// ChkDefPlayer.cpp : implementation file
+// 
 
 #include "stdafx.h"
 #include "mplayerc.h"
@@ -39,7 +39,7 @@ void CChkDefPlayer::setKeyboardNativeMediaPlayers(){
 		return;
 
 	//create a key for new media player (using DisplayString as key name)
-	CString szDisplayString = ResStr(IDR_MAINFRAME);//_T("ÉäÊÖÓ°Òô²¥·ÅÆ÷");
+	CString szDisplayString = ResStr(IDR_MAINFRAME);
 	CString szExePath = buff;
 	HKEY hSubKey;
 	if ( ERROR_SUCCESS != RegCreateKeyEx(
@@ -105,7 +105,7 @@ void CChkDefPlayer::setDefaultPlayer(int ilimitime )
 {
 	CPPageFormats cpf;
 	if(cpf.m_bInsufficientPrivileges){
-		//if(IDYES == AfxMessageBox(_T("±ØÐëÆô¶¯¹ÜÀíÔ±È¨ÏÞ\r\n²Å¿ÉÒÔ½¨Á¢ÎÄ¼þ¹ØÁª£¡\r\nÏÖÔÚ½øÈë¹ÜÀíÔ±È¨ÏÞÃ´£¿"), MB_YESNO)){
+		//if(IDYES == AfxMessageBox(_T("å¿…é¡»å¯åŠ¨ç®¡ç†å‘˜æƒé™\r\næ‰å¯ä»¥å»ºç«‹æ–‡ä»¶å…³è”ï¼\r\nçŽ°åœ¨è¿›å…¥ç®¡ç†å‘˜æƒé™ä¹ˆï¼Ÿ"), MB_YESNO)){
 			AfxGetMyApp()->GainAdminPrivileges(0, FALSE);
 			__super::OnCancel();
 		//}
@@ -218,7 +218,7 @@ void CChkDefPlayer::OnBnClickedButton2()
 	// TODO: Add your control notification handler code here
 	this->OnApplySetting();
 
-	CPropertySheet dlg(_T("ÎÄ¼þ¹ØÁª..."), this);
+	CPropertySheet dlg(ResStr(IDS_DISLOG_FILEASSOC_TITLE), this);
 	dlg.AddPage(&pfpage);
 
 	if(dlg.DoModal() == IDOK)

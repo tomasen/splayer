@@ -1,4 +1,4 @@
-// PlayerColorControlBar.cpp : implementation file
+Ôªø// PlayerColorControlBar.cpp : implementation file
 //
 
 #include "stdafx.h"
@@ -97,21 +97,21 @@ int CPlayerColorControlBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	GetSystemFontWithScale(&m_font);
 
-	csBrightLabel.Create( _T("¡¡∂»: "),WS_CHILD|WS_VISIBLE|SS_CENTERIMAGE , 
+	csBrightLabel.Create( ResStr(IDS_COLOR_CONTROL_LABEL_BRIGHT),WS_CHILD|WS_VISIBLE|SS_CENTERIMAGE , 
 		r, this, IDC_STATIC);
 	csBrightLabel.SetFont(&m_font);
 
-	csConstLabel.Create( _T("∂‘±»∂»: "),  WS_CHILD|WS_VISIBLE|SS_CENTERIMAGE, 
+	csConstLabel.Create( ResStr(IDS_COLOR_CONTROL_LABEL_CONSTANT),  WS_CHILD|WS_VISIBLE|SS_CENTERIMAGE, 
 		r, this, IDC_STATIC);
 	csConstLabel.SetFont(&m_font);
 
 	csl_bright.Create( WS_CHILD|WS_VISIBLE|TBS_AUTOTICKS|TBS_HORZ|TBS_NOTICKS  , r, this, IDC_SLIDER1);
 	csl_const.Create( WS_CHILD|WS_VISIBLE|TBS_AUTOTICKS|TBS_HORZ|TBS_NOTICKS  , r, this, IDC_SLIDER2);
 
-	cb_reset.Create( _T("÷ÿ÷√"), WS_VISIBLE|WS_CHILD|BS_FLAT|BS_VCENTER|BS_CENTER, r , this, IDC_BUTTONRESETCOLORCONTROL);
+	cb_reset.Create( ResStr(IDS_COLOR_CONTROL_BUTTON_RESET), WS_VISIBLE|WS_CHILD|BS_FLAT|BS_VCENTER|BS_CENTER, r , this, IDC_BUTTONRESETCOLORCONTROL);
 	cb_reset.SetFont(&m_font);
 	
-	cb_enablectrl.Create( _T("∆Ù”√"), WS_VISIBLE|WS_CHILD|BS_FLAT|BS_VCENTER|BS_CENTER, r , this, IDC_BUTTONENABLECOLORCONTROL);
+	cb_enablectrl.Create( ResStr(IDS_COLOR_CONTROL_BUTTON_ENABLE), WS_VISIBLE|WS_CHILD|BS_FLAT|BS_VCENTER|BS_CENTER, r , this, IDC_BUTTONENABLECOLORCONTROL);
 	cb_enablectrl.SetFont(&m_font);
 
 	Relayout();
@@ -268,9 +268,9 @@ void CPlayerColorControlBar::Relayout()
 	cb_reset.Invalidate();
 	
 	if(bEnable)
-		cb_enablectrl.SetWindowText(_T("∆Ù”√"));
+		cb_enablectrl.SetWindowText(ResStr(IDS_COLOR_CONTROL_BUTTON_ENABLE));
 	else
-		cb_enablectrl.SetWindowText(_T("Ω˚”√"));
+		cb_enablectrl.SetWindowText(ResStr(IDS_COLOR_CONTROL_BUTTON_DISABLE));
 	
 	cb_enablectrl.Invalidate();
 

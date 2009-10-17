@@ -25,6 +25,8 @@
 	#error include 'stdafx.h' before including this file for PCH
 #endif
 
+#define ResStr(id) CString(MAKEINTRESOURCE(id))
+
 #include "resource.h"       // main symbols
 #include <afxadv.h>
 #include <atlsync.h>

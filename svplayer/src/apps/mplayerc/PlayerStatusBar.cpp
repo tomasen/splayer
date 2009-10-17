@@ -1,4 +1,4 @@
-/* 
+ï»¿/* 
  *	Copyright (C) 2003-2006 Gabest
  *	http://www.gabest.org
  *
@@ -223,13 +223,13 @@ void CPlayerStatusBar::SetStatusTimer(REFERENCE_TIME rtNow, REFERENCE_TIME rtDur
 	GetSystemPowerStatus(&status);
 	CString szPower ;
 	if ( status.BatteryFlag != 128 && status.BatteryFlag != 255 ){
-		szPower.Format(_T("µçÁ¿: %d%%  "), status.BatteryLifePercent);
+		szPower.Format(ResStr(IDS_STATUS_BAR_LABEL_BATTRAY), status.BatteryLifePercent);
 	}else{
-		//szPower = _T("µçÁ¿: ¡× ");
+		//szPower = ResStr(IDS_STATUS_BAR_LABEL_BATTRAY_UNLIMIT);
 	}
 	CString szPlayrate;
 	if(fabs(playRate - 1.0) > 0.02 && playRate > 0.01)	{
-		szPlayrate.Format(_T("ËÙÂÊ %0.1fx "), playRate);
+		szPlayrate.Format(ResStr(IDS_STATUS_BAR_LABEL_PLAY_SPEED), playRate);
 	}
 
 	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());

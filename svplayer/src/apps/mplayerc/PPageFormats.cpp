@@ -1,4 +1,4 @@
-/* 
+ï»¿/* 
  *	Copyright (C) 2003-2006 Gabest
  *	http://www.gabest.org
  *
@@ -29,9 +29,9 @@
 #include <shobjidl.h>
 #include "../../svplib/SVPToolBox.h"
 
-CString			g_strRegisteredAppName =  _T("ÉäÊÖÓ°Òô²¥·ÅÆ÷");//_T("Media Player Classic");
+CString			g_strRegisteredAppName =  ResStr(IDS_FILEASSOC_REG_APPNAME);
 CString			g_strOldAssoc		  = _T("PreviousRegistration");
-CString			g_strRegisteredKey	= _T("Software\\Clients\\Media\\")+g_strRegisteredAppName+_T("\\Capabilities");// _T("Software\\Clients\\Media\\ÉäÊÖÓ°Òô²¥·ÅÆ÷\\Capabilities");
+CString			g_strRegisteredKey	= _T("Software\\Clients\\Media\\")+g_strRegisteredAppName+_T("\\Capabilities");
 BOOL f_setContextFiles  = true;
 BOOL f_setAssociatedWithIcon  = true;
 // CPPageFormats dialog
@@ -865,7 +865,7 @@ void CPPageFormats::OnNMClickList1(NMHDR* pNMHDR, LRESULT* pResult)
 }
 void CPPageFormats::SetModified(){
 	if(m_bInsufficientPrivileges){
-		if(IDYES == AfxMessageBox(_T("±ØÐëÆô¶¯¹ÜÀíÔ±È¨ÏÞ\r\n²Å¿ÉÒÔ½¨Á¢»òÐÞ¸ÄÎÄ¼þ¹ØÁª£¡\r\nÏÖÔÚ½øÈë¹ÜÀíÔ±È¨ÏÞÃ´£¿"), MB_YESNO)){
+		if(IDYES == AfxMessageBox(ResStr(IDS_MSG_WARN_NOOD_ADMIN_PRIV_TO_START_FILEASSOC), MB_YESNO)){
 			AfxGetMyApp()->GainAdminPrivileges(1, FALSE);
 			
 		}

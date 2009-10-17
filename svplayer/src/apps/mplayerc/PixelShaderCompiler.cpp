@@ -1,4 +1,4 @@
-/*
+ï»¿/*
 * $Id: PixelShaderCompiler.cpp 193 2007-09-09 09:12:21Z alexwild $
 *
 * (C) 2003-2006 Gabest
@@ -44,11 +44,11 @@ CPixelShaderCompiler::CPixelShaderCompiler(IDirect3DDevice9* pD3DDev, bool fStay
 	{
 		if(!hDll)
 		{
-			AfxMessageBox(_T("Î´ÄÜµ÷ÈëDX9ÎÄ¼þDLL"), MB_OK);
+			AfxMessageBox(ResStr(IDS_MSG_WARN_UNABLE_LOAD_DX9_DLL), MB_OK);
 		}
 		else if(!m_pD3DXCompileShader || !m_pD3DXDisassembleShader) 
 		{
-			AfxMessageBox(_T("Î´ÄÜÕÒµ½ÕýÈ·µÄDLLÈë¿Ú"), MB_OK);
+			AfxMessageBox(ResStr(IDS_MSG_WARN_UNABLE_ENTRANS_D3D_DLL), MB_OK);
 		}
 	}
 }

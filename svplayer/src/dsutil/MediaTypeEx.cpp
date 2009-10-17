@@ -6,6 +6,10 @@
 #include <initguid.h>
 #include <moreuuids.h>
 
+#include <streams.h>
+#include <afxtempl.h>
+#include "..\apps\mplayerc\mplayerc.h"
+
 #pragma pack(push, 1)
 typedef struct
 {
@@ -43,7 +47,7 @@ CString CMediaTypeEx::ToString(IPin* pPin)
 	
 	if(majortype == MEDIATYPE_Video)
 	{
-		type = _T("视频");
+		type = ResStr(IDS_MEDIATYPE_INFOLABEL_VIDEO);
 
 		BITMAPINFOHEADER bih;
 		bool fBIH = ExtractBIH(this, &bih);
@@ -58,9 +62,9 @@ CString CMediaTypeEx::ToString(IPin* pPin)
 
 		if(codec.IsEmpty())
 		{
-			if(formattype == FORMAT_MPEGVideo) codec = _T("MPEG1 视频");
-			else if(formattype == FORMAT_MPEG2_VIDEO) codec = _T("MPEG2 视频");
-			else if(formattype == FORMAT_DiracVideoInfo) codec = _T("Dirac 视频");
+			if(formattype == FORMAT_MPEGVideo) codec = ResStr(IDS_MEDIATYPE_INFOLABEL_MPEG1_VIDEO);
+			else if(formattype == FORMAT_MPEG2_VIDEO) codec = ResStr(IDS_MEDIATYPE_INFOLABEL_MPEG2_VIDEO);
+			else if(formattype == FORMAT_DiracVideoInfo) codec = ResStr(IDS_MEDIATYPE_INFOLABEL_DIRAC_VIDEO);
 		}
 
 		if(fDim)
@@ -86,13 +90,13 @@ CString CMediaTypeEx::ToString(IPin* pPin)
 
 		if(subtype == MEDIASUBTYPE_DVD_SUBPICTURE)
 		{
-			type = _T("字幕");
-			codec = _T("DVD 字幕");
+			type = ResStr(IDS_MEDIATYPE_INFOLABEL_SUBTITLE);
+			codec = ResStr(IDS_MEDIATYPE_INFOLABEL_DVD_SUBTITLE);
 		}
 	}
 	else if(majortype == MEDIATYPE_Audio)
 	{
-		type = _T("音频");
+		type = ResStr(IDS_MEDIATYPE_INFOLABEL_AUDIO);
 
 		if(formattype == FORMAT_WaveFormatEx)
 		{
@@ -104,9 +108,9 @@ CString CMediaTypeEx::ToString(IPin* pPin)
 			{
 				codec = GetAudioCodecName(subtype, wfe->wFormatTag);
 				dim.Format(_T("%dHz"), wfe->nSamplesPerSec);
-				if(wfe->nChannels == 1) dim.Format(_T("%s 单声道"), CString(dim));
-				else if(wfe->nChannels == 2) dim.Format(_T("%s 立体声"), CString(dim));
-				else dim.Format(_T("%s %d声道"), CString(dim), wfe->nChannels);
+				if(wfe->nChannels == 1) dim.Format(ResStr(IDS_MEDIATYPE_INFOLABEL_AUDIO_CHANNEL_SINGLE), CString(dim));
+				else if(wfe->nChannels == 2) dim.Format(ResStr(IDS_MEDIATYPE_INFOLABEL_AUDIO_CHANNEL_STEREO), CString(dim));
+				else dim.Format(ResStr(IDS_MEDIATYPE_INFOLABEL_AUDIO_CHANNEL_MORE), CString(dim), wfe->nChannels);
 				if(wfe->nAvgBytesPerSec) rate.Format(_T("%dKbps"), wfe->nAvgBytesPerSec*8/1000);
 			}
 		}
@@ -116,9 +120,9 @@ CString CMediaTypeEx::ToString(IPin* pPin)
 
 			codec = GetAudioCodecName(subtype, 0);
 			dim.Format(_T("%dHz"), vf->nSamplesPerSec);
-			if(vf->nChannels == 1) dim.Format(_T("%s 单声道"), CString(dim));
-			else if(vf->nChannels == 2) dim.Format(_T("%s 立体声"), CString(dim));
-			else dim.Format(_T("%s %d声道"), CString(dim), vf->nChannels);
+			if(vf->nChannels == 1) dim.Format(ResStr(IDS_MEDIATYPE_INFOLABEL_AUDIO_CHANNEL_SINGLE), CString(dim));
+			else if(vf->nChannels == 2) dim.Format(ResStr(IDS_MEDIATYPE_INFOLABEL_AUDIO_CHANNEL_STEREO), CString(dim));
+			else dim.Format(ResStr(IDS_MEDIATYPE_INFOLABEL_AUDIO_CHANNEL_MORE), CString(dim), vf->nChannels);
 			if(vf->nAvgBitsPerSec) rate.Format(_T("%dKbps"), vf->nAvgBitsPerSec/1000);
 		}
 		else if(formattype == FORMAT_VorbisFormat2)
@@ -127,23 +131,23 @@ CString CMediaTypeEx::ToString(IPin* pPin)
 
 			codec = GetAudioCodecName(subtype, 0);
 			dim.Format(_T("%dHz"), vf->SamplesPerSec);
-			if(vf->Channels == 1) dim.Format(_T("%s 单声道"), CString(dim));
-			else if(vf->Channels == 2) dim.Format(_T("%s 立体声"), CString(dim));
-			else dim.Format(_T("%s %d声道"), CString(dim), vf->Channels);
+			if(vf->Channels == 1) dim.Format(ResStr(IDS_MEDIATYPE_INFOLABEL_AUDIO_CHANNEL_SINGLE), CString(dim));
+			else if(vf->Channels == 2) dim.Format(ResStr(IDS_MEDIATYPE_INFOLABEL_AUDIO_CHANNEL_STEREO), CString(dim));
+			else dim.Format(ResStr(IDS_MEDIATYPE_INFOLABEL_AUDIO_CHANNEL_MORE), CString(dim), vf->Channels);
 		}				
 	}
 	else if(majortype == MEDIATYPE_Text)
 	{
-		type = _T("文字");
+		type = ResStr(IDS_MEDIATYPE_INFOLABEL_TEXT);
 	}
 	else if(majortype == MEDIATYPE_Subtitle)
 	{
-		type = _T("字幕");
+		type = ResStr(IDS_MEDIATYPE_INFOLABEL_SUBTITLE);
 		codec = GetSubtitleCodecName(subtype);
 	}
 	else
 	{
-		type = _T("未知");
+		type = ResStr(IDS_MEDIATYPE_INFOLABEL_UNKNOWN);
 	}
 
 	if(CComQIPtr<IMediaSeeking> pMS = pPin)
@@ -222,7 +226,7 @@ CString CMediaTypeEx::GetVideoCodecName(const GUID& subtype, DWORD biCompression
 
 		if(!names.Lookup(MAKEFOURCC(b[3], b[2], b[1], b[0]), str))
 		{
-			if(subtype == MEDIASUBTYPE_DiracVideo) str = _T("Dirac 视频");
+			if(subtype == MEDIASUBTYPE_DiracVideo) str = ResStr(IDS_MEDIATYPE_INFOLABEL_DIRAC_VIDEO);
 			// else if(subtype == ) str = _T("");
 			else if(biCompression < 256) str.Format(_T("%d"), biCompression);
 			else str.Format(_T("%4.4hs"), &biCompression);

@@ -22,7 +22,7 @@
 #include "stdafx.h"
 #include <atlbase.h>
 #include "MediaFormats.h"
-
+#include "mplayerc.h"
 //
 // CMediaFormatCategory
 //
@@ -346,7 +346,7 @@ void CMediaFormats::GetFilter(CString& filter, CAtlArray<CString>& mask)
 		mask.Add(mfc.GetFilter());
 	}
 
-	filter += _T("所有文件类型 (*.*)|*.*|");
+	filter.Append( ResStr(IDS_FILEOPEN_DISLOG_ALL_MEDIA_TYPE) );
 	mask.Add(_T("*.*"));
 
 	filter += _T("|");

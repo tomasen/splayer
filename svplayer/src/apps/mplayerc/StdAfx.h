@@ -49,7 +49,7 @@
 #endif // _AFX_NO_AFXCMN_SUPPORT
 #include <afxdlgs.h>
 
-#define ResStr(id) CString(MAKEINTRESOURCE(id))
+
 
 #include <afxdisp.h>
 #include <afxole.h>

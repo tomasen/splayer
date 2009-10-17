@@ -1074,7 +1074,7 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 				//SVP_LogMsg2(_T("AVCOPEN FAIL %d") , avcRet);
 				return VFW_E_INVALIDMEDIATYPE;
 			}
-
+			CString osd_msg;
 			if (ffCodecs[m_nCodecNb].nFFCodec == CODEC_ID_H264)
 			{
 				int		nCompat;
@@ -1084,15 +1084,21 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 				{
 				case 1 :	// SAR not supported
 					 m_bDXVACompatible = false;
-					 { WCHAR *msg = _T("硬件设备可能不支持加速本文件(SAR)...") ; AfxGetMainWnd()->SendMessage(ID_STATUS_MESSAGE, (UINT_PTR)msg, 3000); }
+					 { osd_msg = ResStr(IDS_OSD_MSG_HARDWARE_NOT_SUPPORT_DXVA_SAR) ;  }
 					 if (m_nCompatibilityMode & 2) { m_bDXVACompatible = true; }
 					 break;
 				case 2 :	// Too much ref frames
 					 m_bDXVACompatible = false;
-					 { WCHAR *msg = _T("设备可能没有足够能力硬件加速本文件，请勿勾选“使硬件加速兼容更多文件”选项...") ; AfxGetMainWnd()->SendMessage(ID_STATUS_MESSAGE, (UINT_PTR)msg, 3000); }
+					 { osd_msg = ResStr(IDS_OSD_MSG_HARDWARE_MIGHTNOT_SUPPORT_DXVA) ; }
 					 if (m_nCompatibilityMode & 4) { m_bDXVACompatible = true;  }
 					 break;
 				}
+
+				if(osd_msg.IsEmpty()){
+					AfxGetMainWnd()->SendMessage(ID_STATUS_MESSAGE, (UINT_PTR)osd_msg.GetBuffer(), 3000); 
+					osd_msg.ReleaseBuffer();
+				}
+				
 
 				#ifndef REGISTER_FILTER
 					if((nCompat == 2) && (m_ref_frame_count_check_skip)) m_bDXVACompatible = true;
@@ -1105,20 +1111,28 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 			// Force single thread for DXVA !
 			if (IsDXVASupported()){
 				avcodec_thread_init(m_pAVCtx, 1);
-			}else if (m_bUseDXVA)
+			}else if (m_bUseDXVA){
 				return VFW_E_INVALIDMEDIATYPE;
+			}
 
+			osd_msg.Empty();
 
-				if( m_pAVCodec->id == CODEC_ID_VC1 && FFIsInterlaced(m_pAVCtx , m_nHeight)){
+			if( m_pAVCodec->id == CODEC_ID_VC1 && FFIsInterlaced(m_pAVCtx , m_nHeight)){
 					if(!m_bUseDXVA)
 						return VFW_E_INVALIDMEDIATYPE;
 
 					if(m_ref_frame_count_check_skip)
-					  { WCHAR *msg = _T("隔行VC1编码的文件恐怕无法进行硬件加速...") ; AfxGetMainWnd()->SendMessage(ID_STATUS_MESSAGE, (UINT_PTR)msg, 3000); }
+					  { osd_msg = ResStr(IDS_OSD_MSG_VC1_INTERLACE_DXVA_NOT_SUPPORT) ;  }
 					else 
 						return VFW_E_INVALIDMEDIATYPE;
 					
-				}
+			}
+
+			if(osd_msg.IsEmpty()){
+				AfxGetMainWnd()->SendMessage(ID_STATUS_MESSAGE, (UINT_PTR)osd_msg.GetBuffer(), 3000); 
+				osd_msg.ReleaseBuffer();
+			}
+
 			
 			
 			BuildDXVAOutputFormat();

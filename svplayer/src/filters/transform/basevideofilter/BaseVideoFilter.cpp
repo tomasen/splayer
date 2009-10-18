@@ -29,6 +29,8 @@
 #include "..\..\..\..\include\moreuuids.h"
 #include <afxtempl.h>
 #include "..\..\..\..\src\apps\mplayerc\mplayerc.h"
+
+#define  SVP_LogMsg5  __noop
 //
 // CBaseVideoFilter
 //
@@ -311,42 +313,48 @@ static bool BitBltFromYUVToRGB(int w, int h, BYTE* dst, int dstpitch, int dbpp, 
 		return false;
 	}
 
-	//SVP_LogMsg3("x %d y %d dstpitch %d srcpitch %d ", w, h,dstpitch ,srcpitch);
+	SVP_LogMsg5(L"x %d y %d dstpitch %d srcpitch %d ", w, h,dstpitch ,srcpitch);
+	int debugt = 0;
 	do
-	{
-		int i = 0;
-		do{
-			y = srcy[i];		
-			if( yuvflag == YUV444){
-				u = srcu[i];
-				v = srcv[i];
-			}else{
-				u = srcu[i/2];
-				v = srcv[i/2];
-			}
-				
-			i++;
+	{	if(debugt >= 1 && h >= 1){
+			int i = 0;
+			do{
+					y = srcy[i];		
+					if( yuvflag == YUV444){
+						u = srcu[i];
+						v = srcv[i];
+					}else{
+						u = srcu[i/2];
+						v = srcv[i/2];
+					}
+						
+					
 
-			C = y - 16;
-			D = u - 128;
-			E = v - 128;
-
-			if(dbpp == 24){
-				dst[i*3] = _clip(( 298 * C + 516 * D           + 128) >> 8);
-				dst[i*3+1] = _clip(( 298 * C - 100 * D - 208 * E + 128) >> 8);
-				dst[i*3+2] = _clip(( 298 * C           + 409 * E + 128) >> 8);
+					C = y - 16;
+					D = u - 128;
+					E = v - 128;
 				
-			}else{
-				dst[i*4] = _clip(( 298 * C + 516 * D           + 128) >> 8);
-				dst[i*4+1] = _clip(( 298 * C - 100 * D - 208 * E + 128) >> 8);
-				dst[i*4+2] = _clip(( 298 * C           + 409 * E + 128) >> 8);
-				dst[i*4+3] = 0;
-			}
-
 				
-		}while(i < w);
+					if(dbpp == 24){
+						dst[i*3] = _clip(( 298 * C + 516 * D           + 128) >> 8);
+						dst[i*3+1] = _clip(( 298 * C - 100 * D - 208 * E + 128) >> 8);
+						dst[i*3+2] = _clip(( 298 * C           + 409 * E + 128) >> 8);
+						
+					}else{
+						dst[i*4] = _clip(( 298 * C + 516 * D           + 128) >> 8);
+						dst[i*4+1] = _clip(( 298 * C - 100 * D - 208 * E + 128) >> 8);
+						dst[i*4+2] = _clip(( 298 * C           + 409 * E + 128) >> 8);
+						dst[i*4+3] = 0;
+					}
+				
+				i++;
+					
+			}while(i < w);
+		}
+		debugt++;
 
 		dst += dstpitch;
+		
 		srcy += srcpitch;
 		if( yuvflag == YUV444){
 			srcu += srcpitch;
@@ -370,28 +378,35 @@ HRESULT CBaseVideoFilter::CopyBuffer(BYTE* pOut, BYTE** ppIn, int w, int h, int 
 	if(pForeOutputBIH){
 		memcpy(&bihOut, pForeOutputBIH, sizeof(BITMAPINFOHEADER));
 	}
+	BOOL b_input_is_rgb = (subtype == MEDIASUBTYPE_ARGB32 || subtype == MEDIASUBTYPE_RGB32 || subtype == MEDIASUBTYPE_RGB24
+		|| subtype == MEDIASUBTYPE_RGB565 || subtype == MEDIASUBTYPE_RGB555);
 	//SVP_LogMsg5(L"bihOut.biBitCount = %d %d %d", bihOut.biBitCount , bihOut.biHeight, bihOut.biWidth);
 	if(bihOut.biCompression == 'BGRA' || bihOut.biCompression == BI_RGB || bihOut.biCompression == BI_BITFIELDS)
 	{
+		
 		pitchOut = bihOut.biWidth*bihOut.biBitCount>>3;
-
-		if(bihOut.biHeight > 0)
+		SVP_LogMsg5(L"x0 %d y %d %d %d ", w, h, pitchOut, bihOut.biHeight);
+		
+		if(bihOut.biHeight > 0 )
 		{
-			pOut += pitchOut*(h-1);
+			pOut += pitchOut*(abs(h)-1);
 			pitchOut = -pitchOut;
 			if(h < 0) h = -h;
 		}
+		
 	}
-
-	if(h < 0) //flip?
+	SVP_LogMsg5(L"x1 %d y %d  ", w, h);
+	if(	h < 0) //flip?
 	{
 		h = -h;
 		ppIn[0] += pitchIn*(h-1);
-		ppIn[1] += (pitchIn>>1)*((h>>1)-1);
-		ppIn[2] += (pitchIn>>1)*((h>>1)-1);
 		pitchIn = -pitchIn;
+		if(!b_input_is_rgb){
+			ppIn[1] += (pitchIn>>1)*((h>>1)-1);
+			ppIn[2] += (pitchIn>>1)*((h>>1)-1);
+		}
 	}
-
+SVP_LogMsg5(L"x2 %d y %d  ", w, h);
 	if(subtype == MEDIASUBTYPE_I420 || subtype == MEDIASUBTYPE_IYUV || subtype == MEDIASUBTYPE_YV12)
 	{
 		BYTE* pIn = ppIn[0];
@@ -458,8 +473,7 @@ HRESULT CBaseVideoFilter::CopyBuffer(BYTE* pOut, BYTE** ppIn, int w, int h, int 
 			}
 		}
 	}
-	else if(subtype == MEDIASUBTYPE_ARGB32 || subtype == MEDIASUBTYPE_RGB32 || subtype == MEDIASUBTYPE_RGB24
-		|| subtype == MEDIASUBTYPE_RGB565 || subtype == MEDIASUBTYPE_RGB555)
+	else if(b_input_is_rgb)
 	{
 		int sbpp = 
 			subtype == MEDIASUBTYPE_ARGB32 || subtype == MEDIASUBTYPE_RGB32 ? 32 :

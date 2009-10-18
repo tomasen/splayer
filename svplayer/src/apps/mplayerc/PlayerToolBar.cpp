@@ -428,9 +428,9 @@ void CPlayerToolBar::OnPaint()
 	CRect rcUpperSqu = rcClient;
 	//rcUpperSqu.bottom = rcUpperSqu.bottom - 10;
 	hdc.FillSolidRect(rcUpperSqu, s.GetColorFromTheme(_T("ToolBarBG"), NEWUI_COLOR_TOOLBAR_UPPERBG));
+	CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
 
-
-	if(!m_timerstr.IsEmpty()){
+	if(!m_timerstr.IsEmpty() && pFrame && pFrame->IsSomethingLoaded()){
 
 		HFONT holdft = (HFONT)hdc.SelectObject(m_statft);
 
@@ -476,7 +476,7 @@ void CPlayerToolBar::UpdateButtonStat(){
 	//m_btnList.SetHideStat( ID_PLAY_STOP , !fShow );
 	//m_btnList.SetHideStat( ID_PLAY_FRAMESTEP , !fShow );
 	m_btnList.SetHideStat( ID_PLAY_PAUSE , !fShow );
-	BOOL bLogo = pFrame->IsSomethingLoaded();
+	BOOL bLogo = pFrame->IsSomethingLoaded() ;
 	m_btnList.SetHideStat(_T("SPLAYER.BMP"), bLogo);
 	//m_btnList.SetDisableStat(ID_SUBTOOLBARBUTTON, !bLogo);
 	if(!bLogo){

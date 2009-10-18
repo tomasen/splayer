@@ -306,6 +306,7 @@ private:
 	CString getCurPlayingSubfile(int * iSubDelayMS = NULL,int subid = 0 );
 	CPoint m_pLastClickPoint;
 	CPoint m_pDragFuncStartPoint;
+	int m_iRedrawAfterCloseCounter;
 public:
 	CComPtr<IGraphBuilder2> pGB;
 
@@ -325,7 +326,8 @@ public:
 		TIMER_START_CHECKUPDATER,
 		TIMER_DELETE_CUR_FILE,
 		TIMER_DELETE_CUR_FOLDER,
-		TIMER_TRANSPARENTTOOLBARSTAT
+		TIMER_TRANSPARENTTOOLBARSTAT,
+		TIMER_REDRAW_WINDOW
 	};
 
 

@@ -2588,7 +2588,14 @@ CString CMainFrame::getCurPlayingSubfile(int * iSubDelayMS,int subid ){
 
 void CMainFrame::OnTimer(UINT nIDEvent)
 {
-	if( TIMER_TRANSPARENTTOOLBARSTAT == nIDEvent){
+	if( TIMER_REDRAW_WINDOW == nIDEvent){
+		if(!IsSomethingLoaded() || m_iRedrawAfterCloseCounter++ > 4){
+			KillTimer(nIDEvent);
+			RedrawNonClientArea();
+			m_wndToolBar.Invalidate();
+			m_wndPlaylistBar.Invalidate();
+		}
+	}else if( TIMER_TRANSPARENTTOOLBARSTAT == nIDEvent){
 		if(m_lTransparentToolbarStat  ){
 			m_wndFloatToolBar.SetLayeredWindowAttributes(0, abs(m_lTransparentToolbarStat) * TRANS_OPTICAL_STEP, LWA_ALPHA);
 			m_lTransparentToolbarStat++;
@@ -3353,9 +3360,12 @@ LRESULT CMainFrame::OnGraphNotify(WPARAM wParam, LPARAM lParam)
 				}
 				else 
 				{
-					if(s.fRewind) SendMessage(WM_COMMAND, ID_PLAY_STOP);
-					else m_fEndOfStream = true;
-					SendMessage(WM_COMMAND, ID_PLAY_PAUSE);
+					//if(s.fRewind) SendMessage(WM_COMMAND, ID_PLAY_STOP);
+					//else m_fEndOfStream = true;
+					//SendMessage(WM_COMMAND, ID_PLAY_PAUSE);
+
+					m_fEndOfStream = false;
+					PostMessage(WM_COMMAND, ID_PLAY_STOP);
 	
 					if(m_fFullScreen && s.fExitFullScreenAtTheEnd) 
 						OnViewFullscreen();
@@ -3408,7 +3418,7 @@ LRESULT CMainFrame::OnGraphNotify(WPARAM wParam, LPARAM lParam)
 						}
 						else
 						{
-							m_fEndOfStream = true;
+							m_fEndOfStream = false;
 							PostMessage(WM_COMMAND, ID_PLAY_STOP);
 						}
 					}
@@ -4184,7 +4194,7 @@ void CMainFrame::OnInitMenuPopup(CMenu * pPopupMenu, UINT nIndex, BOOL bSysMenu)
 			while(m_playbackmenu.RemoveMenu(0, MF_BYPOSITION));
 
 			if(m_iPlaybackMode != PM_DVD){
-				m_playbackmenu.AppendMenu(MF_STRING|MF_ENABLED, ID_PLAYBACK_LOOP_NORMAL, ResStr(IDS_MENU_ITEM_PLAYLOOP_NORMAL));
+				m_playbackmenu.AppendMenu(MF_STRING|MF_ENABLED, ID_PLAYBACK_LOOP_NORMAL, ResStr(IDS_MENU_ITEM_PLAYLOOP_NOLOOP));
 
 				
 				if(m_wndPlaylistBar.GetCount() > 1){
@@ -7180,33 +7190,44 @@ void CMainFrame::OnPlayPlay()
 	{
 		if(GetMediaState() == State_Stopped) {  m_iSpeedLevel = 0; time(&m_tPlayStartTime);}
 
-		if(m_iPlaybackMode == PM_FILE)
+		try
 		{
-			time_t ttNow;
-			time(&ttNow);
-			if( m_tPlayPauseTime > m_tPlayStartTime){
-				m_tPlayStartTime += (ttNow - m_tPlayPauseTime);
+		
+			if(m_iPlaybackMode == PM_FILE)
+			{
+				time_t ttNow;
+				time(&ttNow);
+				if( m_tPlayPauseTime > m_tPlayStartTime){
+					m_tPlayStartTime += (ttNow - m_tPlayPauseTime);
+				}
+				if(m_fEndOfStream){
+					SendMessage(WM_COMMAND, ID_PLAY_STOP);
+					Sleep(1500);
+				}
+				pMC->Run();
 			}
-			if(m_fEndOfStream) SendMessage(WM_COMMAND, ID_PLAY_STOP);
-			pMC->Run();
+			else if(m_iPlaybackMode == PM_DVD)
+			{
+				double dRate = 1.0;
+				//if(m_iSpeedLevel != -4 && m_iSpeedLevel != 0)
+				//	dRate = pow(2.0, m_iSpeedLevel >= -3 ? m_iSpeedLevel : (-m_iSpeedLevel - 8));
+				dRate = 1.0 + m_iSpeedLevel * 0.1;
+
+				pDVDC->PlayForwards(dRate, DVD_CMD_FLAG_Block, NULL);
+				pDVDC->Pause(FALSE);
+				pMC->Run();
+			}
+			else if(m_iPlaybackMode == PM_CAPTURE)
+			{			
+				pMC->Stop(); // audio preview won't be in sync if we run it from paused state
+				pMC->Run();
+			}
 		}
-		else if(m_iPlaybackMode == PM_DVD)
+		catch (...)
 		{
-			double dRate = 1.0;
-			//if(m_iSpeedLevel != -4 && m_iSpeedLevel != 0)
-			//	dRate = pow(2.0, m_iSpeedLevel >= -3 ? m_iSpeedLevel : (-m_iSpeedLevel - 8));
-			dRate = 1.0 + m_iSpeedLevel * 0.1;
-
-			pDVDC->PlayForwards(dRate, DVD_CMD_FLAG_Block, NULL);
-			pDVDC->Pause(FALSE);
-			pMC->Run();
+			SendMessage(WM_COMMAND, ID_FILE_CLOSEMEDIA);
+			return;
 		}
-		else if(m_iPlaybackMode == PM_CAPTURE)
-		{			
-			pMC->Stop(); // audio preview won't be in sync if we run it from paused state
-			pMC->Run();
-		}
-
 		SetTimer(TIMER_STREAMPOSPOLLER, 40, NULL);
 		SetTimer(TIMER_STREAMPOSPOLLER2, 500, NULL);
 		SetTimer(TIMER_STATS, 1000, NULL);
@@ -7292,6 +7313,7 @@ void CMainFrame::OnPlayStopDummy(){
 	}else{
 		OnPlayStop();
 	}
+	
 }
 void CMainFrame::OnPlayStop()
 {
@@ -14636,7 +14658,8 @@ void CMainFrame::CloseMedia()
 
 	UnloadExternalObjects();
 
-	
+	m_iRedrawAfterCloseCounter = 0;
+	SetTimer(TIMER_REDRAW_WINDOW,120,NULL);
 }
 
 //

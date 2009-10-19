@@ -764,7 +764,7 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 			//if ( FGID == GUIDFromCString(_T("{CF49D4E0-1115-11CE-B03A-0020AF0BA770}")) ) continue;  //AVI Decompressor
 			
 			AfxGetAppSettings().szFGMLog.AppendFormat(_T("\r\nFGM: Connecting '%s' %s "), szFName, CStringFromGUID(pFGF->GetCLSID()) );
-			SVP_LogMsg5(_T("\r\nFGM: Connecting '%s' %s "), szFName, CStringFromGUID(pFGF->GetCLSID()) );
+			SVP_LogMsg5(_T("FGM: Connecting '%s' %s "), szFName, CStringFromGUID(pFGF->GetCLSID()) );
 			if(s.bNoMoreDXVA){
 				//SVP_LogMsg5(_T("FindFilterByName(MPC Video Decoder DXVA "));
 				CComPtr<IBaseFilter> pBFX;
@@ -795,6 +795,8 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 			{
 				hr = ConnectFilterDirect(pPinOut, pBF, NULL);
 			}
+
+			
 /*
 			if(FAILED(hr))
 			{

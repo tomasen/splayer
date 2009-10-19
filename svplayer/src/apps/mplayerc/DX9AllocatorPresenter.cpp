@@ -2901,11 +2901,12 @@ STDMETHODIMP CVMR9AllocatorPresenter::StartPresenting(DWORD_PTR dwUserID)
 		pVMR9->GetSyncSource(&m_pRefClock);
 		if (filterInfo.pGraph) filterInfo.pGraph->Release();
 	}
-
-	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
-	if(pFrame && pFrame->m_iPlaybackMode == PM_DVD){
-		//防止DVD加载外挂字幕时的闪烁问题
-		m_bUseInternalTimer = false;
+	if(m_bUseInternalTimer){
+		CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
+		if(pFrame && pFrame->m_iPlaybackMode == PM_DVD){
+			//防止DVD加载外挂字幕时的闪烁问题
+			m_bUseInternalTimer = false;
+		}
 	}
 	AfxBeginThread(ThreadVMR9AllocatorPresenterStartPresenting, (LPVOID)this, THREAD_PRIORITY_BELOW_NORMAL);
 

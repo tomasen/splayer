@@ -297,6 +297,7 @@ R = Y + 1.4075 *ㄗV-128ㄘ
 G = Y 每 0.3455 *ㄗU 每128ㄘ 每 0.7169 *ㄗV 每128ㄘ
 B = Y + 1.779 *ㄗU 每 128ㄘ
 */
+#define SVPBB_YUY2   3
 #define YUV444 1
 #define YUV422 0
 #define YUV420 2
@@ -307,18 +308,26 @@ static bool BitBltFromYUVToRGB(int w, int h, BYTE* dst, int dstpitch, int dbpp, 
 	BYTE* srcu = src[1];
 	BYTE* srcv = src[2];
 
-	SHORT y , u , v , C , D, E;
+	SHORT y , u , v , C , D, E , R, G , B;
 
-	if( dbpp != 24 && dbpp != 32  ){
+	if( dbpp != 24 && dbpp != 32 && dbpp != 16 ){
 		return false;
 	}
 
-	SVP_LogMsg5(L"x %d y %d dstpitch %d srcpitch %d ", w, h,dstpitch ,srcpitch);
+	SVP_LogMsg5(L"x %d y %d dstpitch %d srcpitch %d  %d", w, h,dstpitch ,srcpitch , dbpp);
 	int debugt = 0;
 	do
 	{	if(debugt >= 1 && h >= 1){
 			int i = 0;
 			do{
+				if(SVPBB_YUY2 == yuvflag){
+					//y = srcy[i*2] ;
+					//y <<= 8;
+					y = srcy[i*2];
+					u = srcy[(i/2)*4+1];
+					v = srcy[(i/2)*4+3];
+					
+				}else{
 					y = srcy[i];		
 					if( yuvflag == YUV444){
 						u = srcu[i];
@@ -327,6 +336,7 @@ static bool BitBltFromYUVToRGB(int w, int h, BYTE* dst, int dstpitch, int dbpp, 
 						u = srcu[i/2];
 						v = srcv[i/2];
 					}
+				}
 						
 					
 
@@ -334,19 +344,31 @@ static bool BitBltFromYUVToRGB(int w, int h, BYTE* dst, int dstpitch, int dbpp, 
 					D = u - 128;
 					E = v - 128;
 				
-				
-					if(dbpp == 24){
-						dst[i*3] = _clip(( 298 * C + 516 * D           + 128) >> 8);
-						dst[i*3+1] = _clip(( 298 * C - 100 * D - 208 * E + 128) >> 8);
-						dst[i*3+2] = _clip(( 298 * C           + 409 * E + 128) >> 8);
-						
-					}else{
-						dst[i*4] = _clip(( 298 * C + 516 * D           + 128) >> 8);
-						dst[i*4+1] = _clip(( 298 * C - 100 * D - 208 * E + 128) >> 8);
-						dst[i*4+2] = _clip(( 298 * C           + 409 * E + 128) >> 8);
-						dst[i*4+3] = 0;
-					}
-				
+					R = _clip(( 298 * C           + 409 * E + 128) >> 8);
+					G = _clip(( 298 * C - 100 * D - 208 * E + 128) >> 8);
+					B = _clip(( 298 * C + 516 * D           + 128) >> 8);
+
+						if(dbpp == 24){
+							dst[i*3] = B;
+							dst[i*3+1] = G;
+							dst[i*3+2] = R;
+
+						}else if(dbpp == 32){
+							dst[i*4] = B;
+							dst[i*4+1] = G;
+							dst[i*4+2] = R;
+							dst[i*4+3] = 0;
+						}else if(dbpp == 16){
+							WORD RGB16 = ( (R << 8 ) & 0xf800 )
+								| ( (G << 3) & 0x07e0 )
+								| ( (B >> 3) & 0x001f )  ;
+
+							dst[i*2+1] = (RGB16 >> 8 )&0xff;
+							dst[i*2] = RGB16 & 0xff;
+						}
+
+					
+					
 				i++;
 					
 			}while(i < w);
@@ -466,7 +488,10 @@ SVP_LogMsg5(L"x2 %d y %d  ", w, h);
 		}
 		else if(bihOut.biCompression == 'BGRA' || bihOut.biCompression == BI_RGB || bihOut.biCompression == BI_BITFIELDS)
 		{
-			if(!BitBltFromYUY2ToRGB(w, h, pOut, pitchOut, bihOut.biBitCount, ppIn[0], pitchIn))
+			SVP_LogMsg5(L"x3 %d  ", bihOut.biBitCount);
+			if( 1 || bihOut.biBitCount == 16){
+				BitBltFromYUVToRGB(w, h, pOut, pitchOut, bihOut.biBitCount, ppIn, pitchIn, false, SVPBB_YUY2);
+			}else if(!BitBltFromYUY2ToRGB(w, h, pOut, pitchOut, bihOut.biBitCount, ppIn[0], pitchIn))
 			{
 				for(DWORD y = 0; y < h; y++, pOut += pitchOut)
 					memset(pOut, 0, pitchOut);

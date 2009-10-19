@@ -1832,7 +1832,20 @@ bool BitBltFromYUY2ToRGB(int w, int h, BYTE* dst, int dstpitch, int dbpp, BYTE* 
 		// TODO
 	}
 
-	if(!YUY2toRGB) return(false);
+	if(!YUY2toRGB)
+	{
+		if(dbpp == 16){
+			BYTE* tmp = (BYTE*) malloc( w*h*5) ;
+			if(tmp){
+				mmx_YUY2toRGB32(src, tmp, src + h*srcpitch, srcpitch, w, false);
+				BitBltFromRGBToRGB(w, h, dst, w*2, 16, tmp, w*4, 32 );
+				free(tmp);
+			}
+			return(true);
+		}else{
+			return(false);
+		}
+	}
 
 	YUY2toRGB(src, dst, src + h*srcpitch, srcpitch, w, false);
 

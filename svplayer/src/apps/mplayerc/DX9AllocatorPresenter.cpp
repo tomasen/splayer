@@ -1671,7 +1671,7 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 		}
 	}
 	AlphaBltSubPic(rSrcPri.Size());
-	if (m_VMR9AlphaBitmap.dwFlags & VMRBITMAP_UPDATE)
+	if (0 && m_VMR9AlphaBitmap.dwFlags & VMRBITMAP_UPDATE)
 	{
 		CAutoLock BitMapLock(&m_VMR9AlphaBitmapLock);
 		CRect		rcSrc (m_VMR9AlphaBitmap.rSrc);
@@ -1699,7 +1699,7 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 		m_VMR9AlphaBitmap.dwFlags ^= VMRBITMAP_UPDATE;
 	}
 	if (pApp->m_fDisplayStats) DrawStats();
-	if (m_pOSDTexture) AlphaBlt(rSrcPri, rDstPri, m_pOSDTexture);
+	if (0 && m_pOSDTexture) AlphaBlt(rSrcPri, rDstPri, m_pOSDTexture);
 	m_pD3DDev->EndScene();
 	if (m_pD3DDevEx)
 	{
@@ -2902,6 +2902,11 @@ STDMETHODIMP CVMR9AllocatorPresenter::StartPresenting(DWORD_PTR dwUserID)
 		if (filterInfo.pGraph) filterInfo.pGraph->Release();
 	}
 
+	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
+	if(pFrame && pFrame->m_iPlaybackMode == PM_DVD){
+		//防止DVD加载外挂字幕时的闪烁问题
+		m_bUseInternalTimer = false;
+	}
 	AfxBeginThread(ThreadVMR9AllocatorPresenterStartPresenting, (LPVOID)this, THREAD_PRIORITY_BELOW_NORMAL);
 
 	return S_OK;
@@ -3017,7 +3022,7 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 		hr = m_pD3DDev->StretchRect(lpPresInfo->lpSurf, NULL, m_pVideoSurface[m_nCurSurface], NULL, D3DTEXF_NONE);
 	}
 
-	if(lpPresInfo->rtEnd > lpPresInfo->rtStart)
+	if( lpPresInfo->rtEnd > lpPresInfo->rtStart)
 	{
 		if(m_pSubPicQueue)
 		{
@@ -3030,9 +3035,11 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 			m_pSubPicQueue2->SetFPS(m_fps);
 		}
 
-		if(m_bUseInternalTimer && (m_pSubPicQueue || m_pSubPicQueue2))
+		if( m_bUseInternalTimer && (m_pSubPicQueue || m_pSubPicQueue2))
 		{
+			//SVP_LogMsg5(L"SetTime %f", (double)g_tSegmentStart + g_tSampleStart);
 			__super::SetTime(g_tSegmentStart + g_tSampleStart);
+			
 		}
 	}
 

@@ -743,8 +743,7 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 			//if (szFName.Find(_T("AVI Decompressor (YUY2)")) >= 0 ) continue;
 			/*
 			if (szFName.Find(_T("AVI Decompressor")) >= 0 ){
-							SVP_LogMsg5(_T("FGM: Connecting '%s' WTF "), szFName );
-							AfxGetAppSettings().szFGMLog.AppendFormat(_T("FGM: Connecting '%s' WTF "), szFName );
+						
 							continue;
 						}*/
 			
@@ -765,6 +764,7 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 			//if ( FGID == GUIDFromCString(_T("{CF49D4E0-1115-11CE-B03A-0020AF0BA770}")) ) continue;  //AVI Decompressor
 			
 			AfxGetAppSettings().szFGMLog.AppendFormat(_T("\r\nFGM: Connecting '%s' %s "), szFName, CStringFromGUID(pFGF->GetCLSID()) );
+			SVP_LogMsg5(_T("\r\nFGM: Connecting '%s' %s "), szFName, CStringFromGUID(pFGF->GetCLSID()) );
 			if(s.bNoMoreDXVA){
 				//SVP_LogMsg5(_T("FindFilterByName(MPC Video Decoder DXVA "));
 				CComPtr<IBaseFilter> pBFX;
@@ -780,6 +780,7 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 
 			}
 			
+
 			CComPtr<IBaseFilter> pBF;
 			CInterfaceList<IUnknown, &IID_IUnknown> pUnks;
 			if(FAILED(pFGF->Create(&pBF, pUnks)))
@@ -2531,7 +2532,6 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("svplayer.bin\\real\\Codecs\\rv40.dll")) );
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("svplayer.bin\\real\\Codecs\\drvc.dll")) );
 	
-
 	for(int l = 0; l < szaExtFilterPaths.GetCount(); l++){
 		CString szFPath = szaExtFilterPaths.GetAt(l); //以文件模式调入解码器
 		CString szLog ; 

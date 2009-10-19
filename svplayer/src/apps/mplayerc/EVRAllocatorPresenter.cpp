@@ -1674,6 +1674,11 @@ void CEVRAllocatorPresenter::MixerThread()
 					{
 						m_pSubPicQueue->SetFPS(m_fps);
 					}
+
+					if(m_bUseInternalTimer && m_pSubPicQueue2)
+					{
+						m_pSubPicQueue2->SetFPS(m_fps);
+					}
 				}
 			}
 			break;

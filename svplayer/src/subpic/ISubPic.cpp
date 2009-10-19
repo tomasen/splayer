@@ -25,6 +25,11 @@
 
 #include <afxtempl.h>
 #include "..\apps\mplayerc\mplayerc.h"
+
+#include "..\svplib\svplib.h"
+//#define  LOGSUBRECT
+
+#define SVP_LogMsg5  __noop
 //
 // ISubPicImpl
 //
@@ -84,8 +89,6 @@ STDMETHODIMP ISubPicImpl::GetDirtyRect(RECT* pDirtyRect)
 {
 	return pDirtyRect ? *pDirtyRect = m_rcDirty, S_OK : E_POINTER;
 }
-#include "..\svplib\svplib.h"
-//#define  LOGSUBRECT
 STDMETHODIMP ISubPicImpl::GetSourceAndDest(SIZE* pSize, RECT* pRcSource, RECT* pRcDest)
 {
 	CheckPointer (pRcSource, E_POINTER);
@@ -440,6 +443,7 @@ STDMETHODIMP CSubPicQueue::SetFPS(double fps)
 
 STDMETHODIMP CSubPicQueue::SetTime(REFERENCE_TIME rtNow)
 {
+	SVP_LogMsg5(L"SetTime2 %f", double(rtNow));
 	HRESULT hr = __super::SetTime(rtNow);
 	if(FAILED(hr)) return hr;
 

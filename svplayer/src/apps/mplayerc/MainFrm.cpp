@@ -938,7 +938,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_ABMenu.AppendMenu(MF_ENABLED |MF_STRING , ID_ABCONTROL_ON, ResStr(IDS_ABCONTROL_START_ABLOOP));
 	m_ABMenu.AppendMenu(MF_ENABLED |MF_STRING , ID_ABCONTROL_OFF, ResStr(IDS_ABCONTROL_BREAK_ABLOOP));
 	*/
-
+	s.bExternalSubtitleTime = false;
 	
 	if(s.bUserAeroUI()){
 
@@ -2683,6 +2683,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 		if(m_pCAP && m_iPlaybackMode != PM_FILE)
 		{
 			g_bExternalSubtitleTime = true;
+			AfxGetAppSettings().bExternalSubtitleTime = true;
 			if (pDVDI)
 			{
 				DVD_PLAYBACK_LOCATION2 Location;
@@ -2704,8 +2705,10 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 				m_pCAP->SetTime(/*rtNow*/m_wndSeekBar.GetPos());
 			}
 		}
-		else
+		else{
 			g_bExternalSubtitleTime = false;
+			AfxGetAppSettings().bExternalSubtitleTime = false;
+		}
 	}
 	else if(nIDEvent == TIMER_STREAMPOSPOLLER2 && m_iMediaLoadState == MLS_LOADED)
 	{
@@ -10786,9 +10789,9 @@ void CMainFrame::OpenDVD(OpenDVDData* pODD)
 		throw _T("Cannot find DVD directory");
 	else if(hr == VFW_E_CANNOT_RENDER)
 		throw _T("Failed to render all pins of the DVD Navigator filter");
-	else if(hr == VFW_S_PARTIAL_RENDER)
-		throw _T("Failed to render some of the pins of the DVD Navigator filter");
-	else if(hr == E_NOINTERFACE || !pDVDC || !pDVDI)
+	else if(hr == VFW_S_PARTIAL_RENDER){
+		//throw _T("Failed to render some of the pins of the DVD Navigator filter");
+	}else if(hr == E_NOINTERFACE || !pDVDC || !pDVDI)
 		throw _T("Failed to query the needed interfaces for DVD playback");
 	else if(hr == VFW_E_CANNOT_LOAD_SOURCE_FILTER)
 		throw _T("Can't create the DVD Navigator filter");
@@ -11478,6 +11481,8 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 		return(false);
 	}
 	
+	s.bExternalSubtitleTime = false;
+
 	m_wndSeekBar.SetRange(0, 100);
 
 	s.szFGMLog.Empty();

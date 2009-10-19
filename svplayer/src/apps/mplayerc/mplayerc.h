@@ -470,6 +470,7 @@ public:
 		int iQTVideoRendererType;
 		int iSVPRenderType;
 		
+		bool bExternalSubtitleTime;
 		bool bDontNeedSVPSubFilter;
 		bool bNoMoreDXVA;
 

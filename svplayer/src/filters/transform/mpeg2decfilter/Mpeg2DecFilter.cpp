@@ -36,6 +36,9 @@
 #include <initguid.h>
 #include "..\..\..\..\include\moreuuids.h"
 
+#include "..\..\..\svplib\svplib.h"
+#define  SVP_LogMsg5  __noop
+
 #define EPSILON 1e-4
 
 #ifdef REGISTER_FILTER
@@ -215,8 +218,8 @@ CMpeg2DecFilter::CMpeg2DecFilter(LPUNKNOWN lpunk, HRESULT* phr)
 	if(FAILED(*phr)) return;
 
 	SetDeinterlaceMethod(DIAuto);
-	SetBrightness(0.0f);
-	SetContrast(1.0f);
+	SetBrightness(-16.0f);
+	SetContrast(1.16f);
 	SetHue(0.0f);
 	SetSaturation(1.0f);
 	EnableForcedSubtitles(true);
@@ -832,12 +835,17 @@ HRESULT CMpeg2DecFilter::CheckConnect(PIN_DIRECTION dir, IPin* pPin)
 			/*&& clsid != CLSID_OverlayMixer2*/
 			&& clsid != CLSID_VideoMixingRenderer 
 			&& clsid != CLSID_VideoMixingRenderer9
+			&& clsid != GUIDFromCString(_T("{E8D381DD-8C7D-4a6f-96ED-92BBB64064CF}")) // SVPSubFilter
+			//&& clsid != GUIDFromCString(_T("{70E102B0-5556-11CE-97C0-00AA0055595A}")) // Unknown Video Render
 			&& clsid != GUIDFromCString(_T("{FA10746C-9B63-4b6c-BC49-FC300EA5F256}")) // EVR
 			&& clsid != GUIDFromCString(_T("{04FE9017-F873-410E-871E-AB91661A4EF7}")) // ffdshow
 			&& (clsid != GUIDFromCString(_T("{93A22E7A-5091-45ef-BA61-6DA26156A5D0}")) || ver < 0x0234) // dvobsub
 			&& (clsid != GUIDFromCString(_T("{9852A670-F845-491b-9BE6-EBD841B8A613}")) || ver < 0x0234) // dvobsub auto
 			&& clsid != CLSID_DXR) // Haali's video renderer
+			{
+				SVP_LogMsg5(L"Mpeg2 Check Fail %s", CStringFromGUID(clsid));
 				return E_FAIL;
+			}
 		}
 	}
 

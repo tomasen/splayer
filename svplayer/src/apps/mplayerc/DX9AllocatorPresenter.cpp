@@ -2901,13 +2901,7 @@ STDMETHODIMP CVMR9AllocatorPresenter::StartPresenting(DWORD_PTR dwUserID)
 		pVMR9->GetSyncSource(&m_pRefClock);
 		if (filterInfo.pGraph) filterInfo.pGraph->Release();
 	}
-	if(m_bUseInternalTimer){
-		CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
-		if(pFrame && pFrame->m_iPlaybackMode == PM_DVD){
-			//防止DVD加载外挂字幕时的闪烁问题
-			m_bUseInternalTimer = false;
-		}
-	}
+	
 	AfxBeginThread(ThreadVMR9AllocatorPresenterStartPresenting, (LPVOID)this, THREAD_PRIORITY_BELOW_NORMAL);
 
 	return S_OK;
@@ -3022,6 +3016,8 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 	{
 		hr = m_pD3DDev->StretchRect(lpPresInfo->lpSurf, NULL, m_pVideoSurface[m_nCurSurface], NULL, D3DTEXF_NONE);
 	}
+	
+	AppSettings& s = AfxGetAppSettings();
 
 	if( lpPresInfo->rtEnd > lpPresInfo->rtStart)
 	{
@@ -3036,7 +3032,7 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 			m_pSubPicQueue2->SetFPS(m_fps);
 		}
 
-		if( m_bUseInternalTimer && (m_pSubPicQueue || m_pSubPicQueue2))
+		if( !s.bExternalSubtitleTime && (m_pSubPicQueue || m_pSubPicQueue2))
 		{
 			//SVP_LogMsg5(L"SetTime %f", (double)g_tSegmentStart + g_tSampleStart);
 			__super::SetTime(g_tSegmentStart + g_tSampleStart);
@@ -3070,7 +3066,7 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 		m_nTearingPos = (m_nTearingPos + 7) % m_NativeVideoSize.cx;
 	}
 	
-	AppSettings& s = AfxGetAppSettings();
+	
 	while(s.m_RenderSettings.bSynchronizeNearest ){//
 
 		REFERENCE_TIME rtRefClockTimeNow; if (m_pRefClock) m_pRefClock->GetTime(&rtRefClockTimeNow); // Reference clock time now

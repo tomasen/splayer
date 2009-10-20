@@ -968,16 +968,21 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
 					iMsg += iStepPow;
 				}
 
+				KillTimer(TIMER_CLOSETOOLBAR);
 				
-								pFrame->KillTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER);
-				
+					
+							pFrame->KillTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER);
 								
 								if( pFrame->IsSomethingLoaded()){
 									AppSettings& s = AfxGetAppSettings();
 									if(s.bUserAeroUI())
 										pFrame->SetTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER, 5000, NULL);
 									else
-										pFrame->SetTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER, 2000, NULL);
+										pFrame->SetTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER, 3000, NULL);
+
+									if( pFrame->m_fFullScreen){
+										SetTimer(TIMER_CLOSETOOLBAR, 5000, NULL);
+									}
 								}
 								
 				

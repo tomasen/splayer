@@ -1337,12 +1337,15 @@ void CRenderedTextSubtitle::ParseString(CSubtitle* sub, CStringW str, STSStyle& 
 	str.Replace(L"\\n", (sub->m_wrapStyle < 2 || sub->m_wrapStyle == 3) ? L" " : L"\n");
 	str.Replace(L"\\h", L"\x00A0");
 	
-	CAtlList<CString> szaEachLines;
-	Explode(str, szaEachLines, _T("\n"));
+	//CAtlList<CString> szaEachLines;
+	//Explode(str, szaEachLines, _T("\n"));
 	double orgFontSize = style.fontSize * AfxGetAppSettings().dGSubFontRatio;
 	BOOL bNeedChkEngLine = true;
 	BOOL bIsEngLine = true;
-	
+
+	int c_maxwidth = 80000 / orgFontSize;
+	//SVP_LogMsg5(L"w %d %f" , m_size.cx , orgFontSize);
+	int c_curwidth = 0;
 	for(int i = 0, j = 0, len = str.GetLength(); j <= len; j++)
 	{
 		WCHAR c = str[j];
@@ -1371,14 +1374,26 @@ void CRenderedTextSubtitle::ParseString(CSubtitle* sub, CStringW str, STSStyle& 
 // 		if(c == '\n') {
 // 			str.SetAt(j, ' '); continue;;
 // 		}
-		
-		if(c != '\n' && c != ' ' && c != '\x00A0' && c != 0)
+		if( !bIsEngLine && c_curwidth > c_maxwidth ){
+			str = str.Left(j) + _T("\n") + str.Right(len - j);
+			len = str.GetLength();
+			c = '\n';
+			//SVP_LogMsg5(str);
+		}else if(c != '\n' && c != ' ' && c != '\x00A0' && c != 0 ){
+			if(CSVPToolBox::isAlaphbet(c) ){
+				c_curwidth+=1;
+			}else{
+				c_curwidth+=2;
+			}
 			continue;
+		}
+		c_curwidth = 0;
 
 		if(i < j)
 		{
 			if(CWord* w = new CText(style, str.Mid(i, j-i), m_ktype, m_kstart, m_kend))
 			{
+				//SVP_LogMsg5(L"w %d", j-i);
 				sub->m_words.AddTail(w); 
 				m_kstart = m_kend;
 			}

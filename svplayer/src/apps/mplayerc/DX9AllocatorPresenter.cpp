@@ -1487,7 +1487,7 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 	CMPlayerCApp * pApp = AfxGetMyApp();
 	CAutoLock cRenderLock(&m_RenderLock);
 	
-	if(m_pRefClock){
+	if(m_pRefClock && s.fVMRGothSyncFix){
 		m_pD3DDev->GetRasterStatus(0, &rasterStatus);	
 		m_uScanLineEnteringPaint = rasterStatus.ScanLine;
 		if(m_pRefClock) m_pRefClock->GetTime(&rtCurRefTime);
@@ -1721,14 +1721,17 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 		m_pRefClock->GetTime(&rtCurRefTime); // To check if we called Present too late to hit the right vsync
 	else
 		rtCurRefTime = 0;
-	SyncStats(max(m_rtEstVSyncTime, rtCurRefTime)); // Max of estimate and real. Sometimes Present may actually return immediately so we need the estimate as a lower bound
-	SyncOffsetStats(-rtSyncOffset); // Minus because we want time to flow downward in the graph in DrawStats
 	
-	//SVP_LogMsg3(" m_rtEstVSyncTime Cost %f %f %f" , double (rtEndEst - rtStartEst), double (rtEndEst - rtCurRefTime), double(m_rtEstVSyncTime));
-	// Adjust sync
-	if (s.m_RenderSettings.bSynchronizeVideo) m_pGenlock->ControlClock(msSyncOffset);
-	else if (s.m_RenderSettings.bSynchronizeDisplay) m_pGenlock->ControlDisplay(msSyncOffset);
-	else m_pGenlock->UpdateStats(msSyncOffset); // No sync or sync to nearest neighbor
+	if(s.fVMRGothSyncFix){
+		SyncStats(max(m_rtEstVSyncTime, rtCurRefTime)); // Max of estimate and real. Sometimes Present may actually return immediately so we need the estimate as a lower bound
+		SyncOffsetStats(-rtSyncOffset); // Minus because we want time to flow downward in the graph in DrawStats
+	
+		//SVP_LogMsg3(" m_rtEstVSyncTime Cost %f %f %f" , double (rtEndEst - rtStartEst), double (rtEndEst - rtCurRefTime), double(m_rtEstVSyncTime));
+		// Adjust sync
+		if (s.m_RenderSettings.bSynchronizeVideo) m_pGenlock->ControlClock(msSyncOffset);
+		else if (s.m_RenderSettings.bSynchronizeDisplay) m_pGenlock->ControlDisplay(msSyncOffset);
+		else m_pGenlock->UpdateStats(msSyncOffset); // No sync or sync to nearest neighbor
+	}
 
 	// Check how well audio is matching rate (if at all)
 	DWORD tmp;
@@ -2146,6 +2149,12 @@ void CDX9AllocatorPresenter::DrawStats()
 
 void CDX9AllocatorPresenter::EstimateRefreshTimings()
 {
+	if(!AfxGetAppSettings().fVMRGothSyncFix){
+		m_dDetectedScanlineTime = 0.001;
+		m_dEstRefreshCycle = 0.01;
+		return;
+	}
+
 	if (m_pD3DDev)
 	{
 		SVP_LogMsg5(L"EstimateRefreshTimings Start");
@@ -2920,8 +2929,8 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 {
 	CheckPointer(m_pIVMRSurfAllocNotify, E_UNEXPECTED);
 
-	REFERENCE_TIME rtStartEst = 1000, rtEndEst = 0;
-	if (m_pRefClock) m_pRefClock->GetTime(&rtStartEst);
+	//REFERENCE_TIME rtStartEst = 1000, rtEndEst = 0;
+	//if (m_pRefClock) m_pRefClock->GetTime(&rtStartEst);
 
 	m_dMainThreadId = GetCurrentThreadId();
 	m_llLastSampleTime = m_llSampleTime;
@@ -3067,7 +3076,7 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 	}
 	
 	
-	while(s.m_RenderSettings.bSynchronizeNearest ){//
+	while(s.fVMRGothSyncFix && s.m_RenderSettings.bSynchronizeNearest ){//
 
 		REFERENCE_TIME rtRefClockTimeNow; if (m_pRefClock) m_pRefClock->GetTime(&rtRefClockTimeNow); // Reference clock time now
 		LONG lLastVsyncTime = (LONG)((m_rtEstVSyncTime - rtRefClockTimeNow) / 10000); // Time of previous vsync relative to now
@@ -3079,11 +3088,13 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 			if(llNextSampleWait < 0){
 				LONGLONG llStepWeNeed = (-llNextSampleWait) / llEachStep;
 				llNextSampleWait += llEachStep*(llStepWeNeed+1);
+			}else{
+				llNextSampleWait = min(llNextSampleWait , llEachStep);
 			}
 		}else
 			llNextSampleWait = 0;
 
-		m_lNextSampleWait = (LONG)(llNextSampleWait / 10000);
+		m_lNextSampleWait = (LONG)(llNextSampleWait / 10000) ;// min(40,
 			
 		if (m_lNextSampleWait <= 0){
 		//	m_lNextSampleWait = 0;
@@ -3100,7 +3111,7 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 		break;
 	}
 	
-	if (m_pRefClock) m_pRefClock->GetTime(&rtEndEst);
+	//if (m_pRefClock) m_pRefClock->GetTime(&rtEndEst);
 
 	//SVP_LogMsg3("Prefsent Cost %f ", double(rtEndEst - rtStartEst));
 	Paint(true);

@@ -2832,7 +2832,9 @@ CFGManagerPlayer::CFGManagerPlayer(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		m_transform.AddTail(pFGF);
 	}*/
 
-
+	//pFGF = new CFGFilterInternal<CMpcAudioRenderer>(_T("WSAS Audio Device"), MERIT64_ABOVE_DSHOW+4);
+	//pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_NULL);
+	//m_transform.AddTail(pFGF);
 	if(s.AudioRendererDisplayName == AUDRNDT_NULL_COMP)
 	{
 		pFGF = new CFGFilterInternal<CNullAudioRenderer>(AUDRNDT_NULL_COMP, MERIT64_ABOVE_DSHOW+2);

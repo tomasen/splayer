@@ -1745,8 +1745,9 @@ void CEVRAllocatorPresenter::RenderThread()
 					m_lNextSampleWait = (LONG)((m_llSampleTime - llRefClockTime) / 10000); // Time left until sample is due, in ms
 					if (m_lNextSampleWait < 0)
 						m_lNextSampleWait = 0; // We came too late. Race through, discard the sample and get a new one
-					else if (s.m_RenderSettings.bSynchronizeNearest ) // Present at the closest "safe" occasion at tergetSyncOffset ms before vsync to avoid tearing
+					else if (s.fVMRGothSyncFix && s.m_RenderSettings.bSynchronizeNearest ) // Present at the closest "safe" occasion at tergetSyncOffset ms before vsync to avoid tearing
 					{
+						LONG lOldNextSampleWait = m_lNextSampleWait;
 						while(m_lOverWaitCounter < 20){
 							if (m_rtFrameCycle > 0.0){
 								if(targetSyncOffset*15000 > m_rtFrameCycle){
@@ -1797,11 +1798,14 @@ void CEVRAllocatorPresenter::RenderThread()
 							}
 							break;
 						}
-						
+						//if( (m_lNextSampleWait - lOldNextSampleWait) > llEachStep) {
+						//	m_lNextSampleWait = lOldNextSampleWait + llEachStep;
+						//}
 					}
-					if(m_lNextSampleWait > 100)
+					if(m_lNextSampleWait > 200){
+						m_lNextSampleWait = 200;
 						m_lOverWaitCounter++;
-					else if(m_lOverWaitCounter != 99)
+					}else if(m_lOverWaitCounter != 99)
 						m_lOverWaitCounter = 0;
 					
 					if (m_lNextSampleWait < 0)

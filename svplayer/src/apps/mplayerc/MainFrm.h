@@ -39,7 +39,8 @@
 #include "OpenCapDeviceDlg.h"
 #include "PlayerToolTopBar.h"
 #include "PlayerFloatToolBar.h"
-
+#include "PlayerChannelNormalizer.h"
+#include "PlayerEQControlBar.h"
 #include "FileDropTarget.h"
 
 #include "KeyProvider.h"
@@ -518,6 +519,8 @@ protected:  // control bar embedded members
 	CPlayerInfoBar m_wndStatsBar;
 	CPlayerStatusBar m_wndStatusBar;
 	CTransparentControlBar m_wndTransparentControlBar;
+	CPlayerChannelNormalizer m_wndChannelNormalizerBar;
+	CPlayerEQControlBar	 m_wndPlayerEQControlBar;
 	CList<CControlBar*> m_bars;
 
 	CPlayerSubresyncBar m_wndSubresyncBar;
@@ -858,6 +861,9 @@ public:
 	afx_msg void OnJointeam();
 
 	afx_msg void OnColorControl(UINT nID);
+
+	afx_msg void OnShowEQControlBar();
+	afx_msg void OnShowChannelNormalizerBar();
 	afx_msg void OnShowColorControlBar();
 	afx_msg void OnShowTranparentControlBar();
 	afx_msg void OnRecentFileClear();

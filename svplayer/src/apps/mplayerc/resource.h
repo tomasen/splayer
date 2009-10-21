@@ -1526,6 +1526,8 @@
 #define ID_32879                        32879
 #define ID_Menu                         32880
 #define ID_32881                        32881
+#define ID_SHOWCHANNELNORMALIZERBAR		32882
+#define ID_SHOWEQCONTROLBAR				32883
 #define IDS_VOLUME_BOOST_INC            33129
 #define IDS_VOLUME_BOOST_DEC            33130
 #define IDS_VOLUME_BOOST_MIN            33131

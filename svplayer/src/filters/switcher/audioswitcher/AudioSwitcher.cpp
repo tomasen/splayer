@@ -103,6 +103,7 @@ CAudioSwitcherFilter::CAudioSwitcherFilter(LPUNKNOWN lpunk, HRESULT* phr)
 	, m_bNoMoreCheckConnection(0)
 {
 	memset(m_pSpeakerToChannelMap, 0, sizeof(m_pSpeakerToChannelMap));
+	memset(m_pChannelNormalize, 0, sizeof(m_pChannelNormalize));
 
 	if(phr)
 	{
@@ -180,16 +181,34 @@ void mix<int, INT64, (-1<<24), (+1<<24)-1>(DWORD mask, int ch, int bps, BYTE* sr
 	memcpy(dst, (BYTE*)&sum, 3);
 }
 
+static double smoothHighPeek(double s){
+	return ( 0.1 - 0.1/(s + 0.1) ) + 0.9;
+}
+
 template<class T>
 T clamp(double s, T smin, T smax)
 {
-	if(s < -1) s = -1;
-	else if(s > 1) s = 1;
-	T t = (T)(s * smax);
+	//if(s < -1) s = -1;
+	//else if(s > 1) s = 1;
+	double dAbs;
+	if(s < -0.9){
+		s = - ( smoothHighPeek(-s) );
+	}else if(s > 0.9){
+		s = smoothHighPeek(s);
+	}
+	
+
+	
+	
+	T t = (T)( (s+1.0)/2.0 * ((double)smax - smin) + smin );
+
+	//T t = (T)(s * smax);
+
 	if(t < smin) t = smin;
 	else if(t > smax) t = smax;
 	return t;
 }
+
 
 HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 {
@@ -249,6 +268,77 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 
 	memset(pDataOut, 0, pOut->GetSize());
 	
+	int iWePCMType = WETYPE_UNKNOWN;
+
+	if(fPCM && wfe->wBitsPerSample == 8) iWePCMType = WETYPE_PCM8;
+	else if(fPCM && wfe->wBitsPerSample == 16) iWePCMType = WETYPE_PCM16;
+	else if(fPCM && wfe->wBitsPerSample == 24) iWePCMType = WETYPE_PCM24;
+	else if(fPCM && wfe->wBitsPerSample == 32) iWePCMType = WETYPE_PCM32;
+	else if(fFloat && wfe->wBitsPerSample == 32) iWePCMType = WETYPE_FPCM32;
+	else if(fFloat && wfe->wBitsPerSample == 64) iWePCMType = WETYPE_FPCM64;
+
+	if(0){
+		int iTotalInputChannelNumber = wfe->nChannels;
+		int srcstep = bps*iTotalInputChannelNumber;
+		int iTotalInputChannelNumber_ThatWeCanHandle = min(18, iTotalInputChannelNumber);
+		for(int i = 0; i < iTotalInputChannelNumber_ThatWeCanHandle;i++){
+			if( m_pChannelNormalize[iTotalInputChannelNumber_ThatWeCanHandle][i] ){
+				BYTE* src = pDataIn;
+				double sample_mul = m_pChannelNormalize[iTotalInputChannelNumber_ThatWeCanHandle][i];
+				for(int k = 0; k < len; k++, src += srcstep)
+				{
+					double buff;
+
+
+					switch(iWePCMType){
+						case WETYPE_PCM8:
+							buff = (((double)((BYTE*)src)[bps*i]) - 0x7f) / 0x80;
+							break;
+						case WETYPE_PCM16:
+							buff = (double)((short*)src)[bps*i] / SHRT_MAX;
+							break;
+						case WETYPE_PCM24:
+							{int tmp; memcpy(((BYTE*)&tmp)+1, &src[bps*i*3], 3); buff = (float)(tmp >> 8) / ((1<<23)-1);}
+							break;
+						case WETYPE_PCM32:
+							buff = (double)((int*)src)[bps*i] / INT_MAX;
+							break;
+						case WETYPE_FPCM32:
+							buff = (double)((float*)src)[bps*i];
+							break;
+						case WETYPE_FPCM64:
+							buff = ((double*)src)[bps*i];
+							break;
+					}
+
+					buff *= sample_mul;
+
+				}
+			}
+		}
+		switch(iWePCMType){
+						case WETYPE_PCM8:
+
+							break;
+						case WETYPE_PCM16:
+
+							break;
+						case WETYPE_PCM24:
+
+							break;
+						case WETYPE_PCM32:
+
+							break;
+						case WETYPE_FPCM32:
+
+							break;
+						case WETYPE_FPCM64:
+
+							break;
+		}
+	}
+
+
 	if(m_fCustomChannelMapping)
 	{
 		if(m_chs[wfe->nChannels-1].GetCount() > 0)
@@ -263,49 +353,48 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 				int srcstep = bps*wfe->nChannels;
 				int dststep = bps*wfeout->nChannels;
 
-				if(fPCM && wfe->wBitsPerSample == 8)
-				{
-					for(int k = 0; k < len; k++, src += srcstep, dst += dststep)
-					{
-						mix<unsigned char, INT64, 0, UCHAR_MAX>(mask, wfe->nChannels, bps, src, dst);
-					}
+				switch(iWePCMType){
+						case WETYPE_PCM8:
+							for(int k = 0; k < len; k++, src += srcstep, dst += dststep)
+							{
+								mix<unsigned char, INT64, 0, UCHAR_MAX>(mask, wfe->nChannels, bps, src, dst);
+							}
+							break;
+						case WETYPE_PCM16:
+							for(int k = 0; k < len; k++, src += srcstep, dst += dststep)
+							{
+								mix<short, INT64, SHRT_MIN, SHRT_MAX>(mask, wfe->nChannels, bps, src, dst);
+							}
+							break;
+						case WETYPE_PCM24:
+							for(int k = 0; k < len; k++, src += srcstep, dst += dststep)
+							{
+								mix<int, INT64, (-1<<24), (+1<<24)-1>(mask, wfe->nChannels, bps, src, dst);
+							}
+							break;
+						case WETYPE_PCM32:
+
+							for(int k = 0; k < len; k++, src += srcstep, dst += dststep)
+							{
+								mix<int, __int64, INT_MIN, INT_MAX>(mask, wfe->nChannels, bps, src, dst);
+							}
+							break;
+						case WETYPE_FPCM32:
+							for(int k = 0; k < len; k++, src += srcstep, dst += dststep)
+							{
+								mix<float, double, -1, 1>(mask, wfe->nChannels, bps, src, dst);
+							}
+							break;
+						case WETYPE_FPCM64:
+							for(int k = 0; k < len; k++, src += srcstep, dst += dststep)
+							{
+								mix<double, double, -1, 1>(mask, wfe->nChannels, bps, src, dst);
+							}
+							break;
 				}
-				else if(fPCM && wfe->wBitsPerSample == 16)
-				{
-					for(int k = 0; k < len; k++, src += srcstep, dst += dststep)
-					{
-						mix<short, INT64, SHRT_MIN, SHRT_MAX>(mask, wfe->nChannels, bps, src, dst);
-					}
-				}
-				else if(fPCM && wfe->wBitsPerSample == 24)
-				{
-					for(int k = 0; k < len; k++, src += srcstep, dst += dststep)
-					{
-						mix<int, INT64, (-1<<24), (+1<<24)-1>(mask, wfe->nChannels, bps, src, dst);
-					}
-				}
-				else if(fPCM && wfe->wBitsPerSample == 32)
-				{
-					for(int k = 0; k < len; k++, src += srcstep, dst += dststep)
-					{
-						mix<int, __int64, INT_MIN, INT_MAX>(mask, wfe->nChannels, bps, src, dst);
-					}
-				}
-				else if(fFloat && wfe->wBitsPerSample == 32)
-				{
-					for(int k = 0; k < len; k++, src += srcstep, dst += dststep)
-					{
-						mix<float, double, -1, 1>(mask, wfe->nChannels, bps, src, dst);
-					}
-				}
-				else if(fFloat && wfe->wBitsPerSample == 64)
-				{
-					for(int k = 0; k < len; k++, src += srcstep, dst += dststep)
-					{
-						mix<double, double, -1, 1>(mask, wfe->nChannels, bps, src, dst);
-					}
-				}
+
 			}
+
 		}
 		else
 		{
@@ -353,14 +442,36 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 
 		if(double* buff = new double[samples])
 		{
-			for(int i = 0; i < samples; i++)
+			
 			{
-				if(fPCM && wfe->wBitsPerSample == 8) buff[i] = (double)((BYTE*)pDataOut)[i] / UCHAR_MAX;
-				else if(fPCM && wfe->wBitsPerSample == 16) buff[i] = (double)((short*)pDataOut)[i] / SHRT_MAX;
-				else if(fPCM && wfe->wBitsPerSample == 24) {int tmp; memcpy(((BYTE*)&tmp)+1, &pDataOut[i*3], 3); buff[i] = (float)(tmp >> 8) / ((1<<23)-1);}
-				else if(fPCM && wfe->wBitsPerSample == 32) buff[i] = (double)((int*)pDataOut)[i] / INT_MAX;
-				else if(fFloat && wfe->wBitsPerSample == 32) buff[i] = (double)((float*)pDataOut)[i];
-				else if(fFloat && wfe->wBitsPerSample == 64) buff[i] = ((double*)pDataOut)[i];
+				switch(iWePCMType){
+						case WETYPE_PCM8:
+							for(int i = 0; i < samples; i++)
+								buff[i] = (((double)((BYTE*)pDataOut)[i]) - 0x7f) / 0x80;//UCHAR_MAX;
+							break;
+						case WETYPE_PCM16:
+							for(int i = 0; i < samples; i++)
+								buff[i] = (double)((short*)pDataOut)[i] / SHRT_MAX;
+							break;
+						case WETYPE_PCM24:
+							for(int i = 0; i < samples; i++)
+							{int tmp; memcpy(((BYTE*)&tmp)+1, &pDataOut[i*3], 3); buff[i] = (float)(tmp >> 8) / ((1<<23)-1);}
+							break;
+						case WETYPE_PCM32:
+							for(int i = 0; i < samples; i++)
+								buff[i] = (double)((int*)pDataOut)[i] / INT_MAX;
+							break;
+						case WETYPE_FPCM32:
+							for(int i = 0; i < samples; i++)
+								buff[i] = (double)((float*)pDataOut)[i];
+							break;
+						case WETYPE_FPCM64:
+							for(int i = 0; i < samples; i++)
+								buff[i] = ((double*)pDataOut)[i];
+							break;
+				}
+
+				
 			}
 
 			double sample_mul = 1;
@@ -381,23 +492,42 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 				if(m_sample_max < 0.1) m_sample_max = 0.1;
 			}
 
+			//SVP_LogMsg5(L"maul %f %f %f %f" ,m_boost , log10(m_boost) , sample_mul, sample_mul * (1+log10(m_boost)) );
 			if(m_boost > 1)
 			{
 				sample_mul *= (1+log10(m_boost));
 			}
-
-			for(int i = 0; i < samples; i++)
-			{
-				double s = buff[i] * sample_mul;
-
-				if(fPCM && wfe->wBitsPerSample == 8) ((BYTE*)pDataOut)[i] = clamp<BYTE>(s, 0, UCHAR_MAX);
-				else if(fPCM && wfe->wBitsPerSample == 16) ((short*)pDataOut)[i] = clamp<short>(s, SHRT_MIN, SHRT_MAX);
-				else if(fPCM && wfe->wBitsPerSample == 24)  {int tmp = clamp<int>(s, -1<<23, (1<<23)-1); memcpy(&pDataOut[i*3], &tmp, 3);}
-				else if(fPCM && wfe->wBitsPerSample == 32) ((int*)pDataOut)[i] = clamp<int>(s, INT_MIN, INT_MAX);
-				else if(fFloat && wfe->wBitsPerSample == 32) ((float*)pDataOut)[i] = clamp<float>(s, -1, +1);
-				else if(fFloat && wfe->wBitsPerSample == 64) ((double*)pDataOut)[i] = clamp<double>(s, -1, +1);
+			
+			switch(iWePCMType){
+						case WETYPE_PCM8:
+							for(int i = 0; i < samples; i++)
+								((BYTE*)pDataOut)[i] = clamp<BYTE>( buff[i] * sample_mul, 0, UCHAR_MAX);
+							break;
+						case WETYPE_PCM16:
+							for(int i = 0; i < samples; i++)
+								((short*)pDataOut)[i] = clamp<short>( buff[i] * sample_mul, SHRT_MIN, SHRT_MAX);
+							break;
+						case WETYPE_PCM24:
+							for(int i = 0; i < samples; i++)
+							{int tmp = clamp<int>( buff[i] * sample_mul, -1<<23, (1<<23)-1); memcpy(&pDataOut[i*3], &tmp, 3);}
+							break;
+						case WETYPE_PCM32:
+							for(int i = 0; i < samples; i++)
+								((int*)pDataOut)[i] = clamp<int>( buff[i] * sample_mul, INT_MIN, INT_MAX);
+							break;
+						case WETYPE_FPCM32:
+							for(int i = 0; i < samples; i++)
+								((float*)pDataOut)[i] = clamp<float>( buff[i] * sample_mul, -1, +1);
+							break;
+						case WETYPE_FPCM64:
+							for(int i = 0; i < samples; i++)
+								((double*)pDataOut)[i] = clamp<double>( buff[i] * sample_mul, -1, +1);
+							break;
 			}
 
+
+			
+			
 			delete buff;
 		}
 	}
@@ -599,6 +729,32 @@ STDMETHODIMP CAudioSwitcherFilter::GetInputSpeakerConfig(DWORD* pdwChannelMask)
 		*pdwChannelMask = 0/*wfe->nChannels == 1 ? 4 : wfe->nChannels == 2 ? 3 : 0*/;
 	}
 
+	return S_OK;
+}
+STDMETHODIMP CAudioSwitcherFilter::SetChannelNormalizeBoost (float pChannelNormalize[18][18])
+{
+	if(m_State == State_Stopped || m_pChannelNormalize != pChannelNormalize
+		|| memcmp(m_pChannelNormalize, pChannelNormalize, sizeof(pChannelNormalize)))
+	{
+		PauseGraph;
+
+		CStreamSwitcherInputPin* pInput = GetInputPin();
+
+		SelectInput(NULL);
+
+		memcpy(m_pChannelNormalize, pChannelNormalize, sizeof(pChannelNormalize));
+
+		SelectInput(pInput);
+
+		ResumeGraph;
+	}
+
+	return S_OK;
+
+}
+STDMETHODIMP CAudioSwitcherFilter::GetChannelNormalizeBoost (float pChannelNormalize[18][18])
+{
+	memcpy(pChannelNormalize, m_pChannelNormalize, sizeof(m_pChannelNormalize));
 	return S_OK;
 }
 

@@ -34,6 +34,8 @@ interface __declspec(uuid("CEDB2890-53AE-4231-91A3-B0AAFCD1DBDE")) IAudioSwitche
 	STDMETHOD(SetAudioTimeShift) (REFERENCE_TIME rtAudioTimeShift) = 0;
 	STDMETHOD(GetNormalizeBoost) (bool& fNormalize, bool& fNormalizeRecover, float& boost) = 0;
 	STDMETHOD(SetNormalizeBoost) (bool fNormalize, bool fNormalizeRecover, float boost) = 0;
+	STDMETHOD(SetChannelNormalizeBoost) (float pChannelNormalize[18][18]) = 0;
+	STDMETHOD(GetChannelNormalizeBoost) (float pChannelNormalize[18][18]) = 0;
 };
 
 class AudioStreamResampler;
@@ -46,6 +48,8 @@ class __declspec(uuid("18C16B08-6497-420e-AD14-22D21C2CEAB7")) CAudioSwitcherFil
 
 	bool m_fCustomChannelMapping;
 	DWORD m_pSpeakerToChannelMap[18][18];
+	float m_pChannelNormalize[18][18]; // range : -1.0 - +1.0f
+	
 	bool m_fDownSampleTo441;
 	REFERENCE_TIME m_rtAudioTimeShift;
 	CAutoPtrArray<AudioStreamResampler> m_pResamplers;
@@ -60,6 +64,16 @@ class __declspec(uuid("18C16B08-6497-420e-AD14-22D21C2CEAB7")) CAudioSwitcherFil
 public:
 	CAudioSwitcherFilter(LPUNKNOWN lpunk, HRESULT* phr);
 
+	enum
+	{
+		WETYPE_UNKNOWN,
+		WETYPE_PCM8,
+		WETYPE_PCM16,
+		WETYPE_PCM24,
+		WETYPE_PCM32,
+		WETYPE_FPCM32,
+		WETYPE_FPCM64
+	};
 	DECLARE_IUNKNOWN
     STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void** ppv);
 
@@ -83,6 +97,10 @@ public:
 	STDMETHODIMP GetNormalizeBoost(bool& fNormalize, bool& fNormalizeRecover, float& boost);
 	STDMETHODIMP SetNormalizeBoost(bool fNormalize, bool fNormalizeRecover, float boost);
 	STDMETHODIMP ResetAudioSwitch();
+
+	STDMETHODIMP SetChannelNormalizeBoost (float pChannelNormalize[18][18]);
+	STDMETHODIMP GetChannelNormalizeBoost (float pChannelNormalize[18][18]);
+
 	// IAMStreamSelect
 	STDMETHODIMP Enable(long lIndex, DWORD dwFlags);
 };

@@ -561,7 +561,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\PlayerChannelNormalizer.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\PlayerColorControlBar.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PlayerEQControlBar.cpp"
 				>
 			</File>
 			<File
@@ -1070,7 +1078,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\PlayerChannelNormalizer.h"
+				>
+			</File>
+			<File
 				RelativePath=".\PlayerColorControlBar.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PlayerEQControlBar.h"
 				>
 			</File>
 			<File
@@ -2156,11 +2172,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 		<File

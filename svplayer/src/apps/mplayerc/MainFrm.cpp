@@ -478,6 +478,11 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_SHOWTRANSPRANTBAR, OnShowTranparentControlBar)
 	ON_COMMAND(ID_SHOWCOLORCONTROLBAR, &CMainFrame::OnShowColorControlBar)
 	ON_UPDATE_COMMAND_UI(ID_SHOWCOLORCONTROLBAR, &CMainFrame::OnUpdateShowColorControlBar)
+
+	ON_COMMAND(ID_SHOWCHANNELNORMALIZERBAR,OnShowChannelNormalizerBar)
+	ON_COMMAND(ID_SHOWEQCONTROLBAR,OnShowEQControlBar)
+	
+
 	ON_COMMAND(ID_SETSNAPSHOTPATH, &CMainFrame::OnSetsnapshotpath)
 
 	ON_MESSAGE(WM_HOTKEY,OnHotKey)
@@ -775,6 +780,11 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if(m_wndTransparentControlBar.CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, _T("SVPLayered"), _T("TRANSPARENTCONTROL"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0))//WS_EX_NOACTIVATE
 		m_wndTransparentControlBar.ShowWindow( SW_HIDE);
 
+	if(m_wndChannelNormalizerBar.CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, _T("SVPLayered"), _T("CHANNELNORMALIZERCONTROL"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0))//WS_EX_NOACTIVATE
+		m_wndChannelNormalizerBar.ShowWindow( SW_HIDE);
+
+	if(m_wndPlayerEQControlBar.CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, _T("SVPLayered"), _T("EQCONTROL"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0))//WS_EX_NOACTIVATE
+		m_wndPlayerEQControlBar.ShowWindow( SW_HIDE);
 
 	if(m_wndStatusBar.Create(this)){
 		//m_wndStatusBar.EnableDocking(0);
@@ -971,6 +981,13 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 			
 			m_wndTransparentControlBar.ModifyStyleEx(  0, WS_EX_LAYERED);
 			m_wndTransparentControlBar.SetLayeredWindowAttributes( 0, s.lAeroTransparent/2+0x7f , LWA_ALPHA);
+
+			m_wndChannelNormalizerBar.ModifyStyleEx(  0, WS_EX_LAYERED);
+			m_wndChannelNormalizerBar.SetLayeredWindowAttributes( 0, s.lAeroTransparent/2+0x7f , LWA_ALPHA);
+
+			m_wndPlayerEQControlBar.ModifyStyleEx(  0, WS_EX_LAYERED);
+			m_wndPlayerEQControlBar.SetLayeredWindowAttributes( 0, s.lAeroTransparent/2+0x7f , LWA_ALPHA);
+
 		    m_wndColorControlBar.ModifyStyleEx(  0, WS_EX_LAYERED);
 			m_wndColorControlBar.SetLayeredWindowAttributes( 0, s.lAeroTransparent/2+0x7f , LWA_ALPHA);
 
@@ -3889,6 +3906,24 @@ void CMainFrame::OnShowTranparentControlBar(){
 		m_wndTransparentControlBar.ShowWindow(SW_HIDE);
 	}else{
 		m_wndTransparentControlBar.ShowWindow(SW_SHOWNOACTIVATE);
+		rePosOSD();
+	}
+}
+void CMainFrame::OnShowEQControlBar(){
+	if(m_wndPlayerEQControlBar.IsWindowVisible()){
+		m_wndPlayerEQControlBar.ShowWindow(SW_HIDE);
+	}else{
+		m_wndChannelNormalizerBar.ShowWindow(SW_HIDE);
+		m_wndPlayerEQControlBar.ShowWindow(SW_SHOWNOACTIVATE);
+		rePosOSD();
+	}
+}
+void CMainFrame::OnShowChannelNormalizerBar(){
+	if(m_wndChannelNormalizerBar.IsWindowVisible()){
+		m_wndChannelNormalizerBar.ShowWindow(SW_HIDE);
+	}else{
+		m_wndPlayerEQControlBar.ShowWindow(SW_HIDE);
+		m_wndChannelNormalizerBar.ShowWindow(SW_SHOWNOACTIVATE);
 		rePosOSD();
 	}
 }
@@ -9643,6 +9678,7 @@ void CMainFrame::rePosOSD(){
 		GetWindowRect(&rc);
 		CRect rcTopToolBar(rcView);
 		CRect rcRightTopWnd(rcView);
+		CRect rcRightBottomWnd(rcView);
 		CRect rcRightVertWnd(rcView);
 		CRect rcToolBar(rcView);
 		CRect rcBaseView(rcView);
@@ -9685,6 +9721,17 @@ void CMainFrame::rePosOSD(){
 			rcRightTopWnd.bottom = rcRightTopWnd.top + 80  * m_nLogDPIY / 96;
 			m_wndColorControlBar.MoveWindow(rcRightTopWnd);
 		}
+		if(m_wndChannelNormalizerBar.IsWindowVisible() ){
+			rcRightBottomWnd.bottom -= 5;
+			rcRightBottomWnd.top += rcRightBottomWnd.bottom - 120 * m_nLogDPIY / 96;
+			rcRightBottomWnd.left = rcRightBottomWnd.right - 320  * m_nLogDPIY / 96;
+			m_wndChannelNormalizerBar.MoveWindow(rcRightTopWnd);
+		} else if(m_wndPlayerEQControlBar.IsWindowVisible() ){
+			rcRightBottomWnd.bottom -= 5;
+			rcRightBottomWnd.top += rcRightBottomWnd.bottom - 120 * m_nLogDPIY / 96;
+			rcRightBottomWnd.left = rcRightBottomWnd.right - 220  * m_nLogDPIY / 96;
+			m_wndPlayerEQControlBar.MoveWindow(rcRightTopWnd);
+		} 
 
 		AppSettings& s = AfxGetAppSettings();
 

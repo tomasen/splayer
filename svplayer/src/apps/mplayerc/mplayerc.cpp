@@ -3198,7 +3198,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		if(useGPUAcel){
 		//	iDXVer = 9;
 		}
-		bRGBOnly = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USERGBONLY), 0);
+		bRGBOnly = 0;//!!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USERGBONLY), 0);
 
 		useFFMPEGWMV = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USERFFMPEGWMV), 1);
  		if(fVMDetected ){

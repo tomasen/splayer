@@ -1343,7 +1343,7 @@ void CRenderedTextSubtitle::ParseString(CSubtitle* sub, CStringW str, STSStyle& 
 	BOOL bNeedChkEngLine = true;
 	BOOL bIsEngLine = true;
 
-	int c_maxwidth = 80000 / orgFontSize;
+	int c_maxwidth = 24;//80000 / orgFontSize;
 	//SVP_LogMsg5(L"w %d %f" , m_size.cx , orgFontSize);
 	int c_curwidth = 0;
 	for(int i = 0, j = 0, len = str.GetLength(); j <= len; j++)

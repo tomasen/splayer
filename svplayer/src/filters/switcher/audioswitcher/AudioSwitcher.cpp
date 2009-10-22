@@ -145,7 +145,8 @@ HRESULT CAudioSwitcherFilter::CheckMediaType(const CMediaType* pmt)
 template<class T, class U, int Umin, int Umax> 
 void mix(DWORD mask, int ch, int bps, BYTE* src, BYTE* dst)
 {
-	U sum;
+	double sum = 0;
+	int count = 0;
 	U sum_negetive = 0;
 	U sum_positive = 0;
 	U max_positive = 0;
@@ -170,31 +171,34 @@ void mix(DWORD mask, int ch, int bps, BYTE* src, BYTE* dst)
 				tmpData -= Umax/2;
 			}
 
+			sum += tmpData;
+			count++;
 			if( tmpData >= 0 ){
 				if(tmpData > max_positive){
 					max_positive = tmpData;
 				}
-				sum_positive += tmpData;
-				count_positive++;
+				
 			}else{
 				if(tmpData < max_negetive){
 					max_negetive = tmpData;
 				}
-				sum_negetive += tmpData;
-				count_negetive++;
+				
 			}
-			
+		
 		}
 	}
 
-	if( sum_negetive != max_negetive && sum_negetive && count_negetive > 1 ){
-		sum_negetive = max_negetive - ( ( max_negetive - sum_negetive ) / count_negetive );
+	
+	if(count > 1){
+		double rate = 0;
+		if(max_positive && sum > max_positive){
+			rate = (sum - max_positive) / max_positive;
+		}else if(max_negetive && sum < max_negetive){
+			rate = (sum - max_negetive ) / max_negetive;
+		}
+		if(rate)
+			sum = sum / sqrt(rate+1);
 	}
-
-	if( sum_positive != max_positive && sum_positive && count_positive > 1 ){
-		sum_positive = max_positive + ( ( sum_positive - max_positive ) / count_positive );
-	}
-	sum = max_positive + sum_negetive;
 	if(setoffsetfor8bits)
 	{
 		sum += Umax/2;

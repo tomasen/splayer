@@ -14873,7 +14873,7 @@ afx_msg void CMainFrame::OnSubtitleFontChange(UINT nID)
 		BOOL bSubChg1 = FALSE;
 		BOOL bSubChg2 = FALSE;
 		AppSettings& s = AfxGetAppSettings();
-		CString str, str2;
+		CString str, str2, str3;
 
 		if(nID >= ID_SUBFONTUPBOTH && nID <= ID_SUBFONTDOWNBOTH)
 			bSubChg1 = TRUE; bSubChg2 = TRUE;
@@ -14918,7 +14918,8 @@ afx_msg void CMainFrame::OnSubtitleFontChange(UINT nID)
 			str2.Format(ResStr(IDS_OSD_MSG_CHANGE_2NDSUB_FONTSIZE), s.subdefstyle.fontSize);
 			UpdateSubtitle2(true);
 		}
-		SendStatusMessage(str + str2, 5000);
+		str3.Format(_T("(%d%%)"), (int)s.dGSubFontRatio*100);
+		SendStatusMessage(str + str2 + str3, 5000);
 
 		// 		if(bSubChg1 || bSubChg2)
 		// 			m_pCAP->Invalidate();

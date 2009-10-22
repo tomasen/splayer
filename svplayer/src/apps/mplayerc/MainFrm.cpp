@@ -14918,7 +14918,7 @@ afx_msg void CMainFrame::OnSubtitleFontChange(UINT nID)
 			str2.Format(ResStr(IDS_OSD_MSG_CHANGE_2NDSUB_FONTSIZE), s.subdefstyle.fontSize);
 			UpdateSubtitle2(true);
 		}
-		str3.Format(_T("(%d%%)"), (int)s.dGSubFontRatio*100);
+		str3.Format(_T("(%d%%)"), (int)(s.dGSubFontRatio*100));
 		SendStatusMessage(str + str2 + str3, 5000);
 
 		// 		if(bSubChg1 || bSubChg2)

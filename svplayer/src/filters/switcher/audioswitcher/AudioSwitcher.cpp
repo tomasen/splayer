@@ -182,22 +182,20 @@ void mix<int, INT64, (-1<<24), (+1<<24)-1>(DWORD mask, int ch, int bps, BYTE* sr
 }
 
 static double smoothHighPeek(double s){
-	return ( 0.1 - 0.1/(s + 0.1) ) + 0.9;
+	return ( 0.2 - 0.2/(s + 0.2) ) + 0.8;
 }
 
+#define MAX_MUL 6
+#define SMOOTH_RATE  15  //max is more smooth
+//Plot[10*x/Sqrt[ (x*10)^2 + (MAX_MUL * SMOOTH_RATE)/k - (SMOOTH_RATE -4 )],  {x, -1, 1}, {k,1,MAX_MUL} ]
 template<class T>
-T clamp(double s, T smin, T smax)
+T clamp(double s, T smin, T smax, double k)
 {
 	//if(s < -1) s = -1;
 	//else if(s > 1) s = 1;
-	double dAbs;
-	if(s < -0.9){
-		s = - ( smoothHighPeek(-s) );
-	}else if(s > 0.9){
-		s = smoothHighPeek(s);
+	if(k > 1.0){
+		s = 10 * s / sqrt( (s * s * 100) + (MAX_MUL * SMOOTH_RATE)/k - (SMOOTH_RATE -4 )) ;
 	}
-	
-
 	
 	
 	T t = (T)( (s+1.0)/2.0 * ((double)smax - smin) + smin );
@@ -493,35 +491,35 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 			}
 
 			//SVP_LogMsg5(L"maul %f %f %f %f" ,m_boost , log10(m_boost) , sample_mul, sample_mul * (1+log10(m_boost)) );
-			if(m_boost > 1)
+			if(!m_fNormalize && m_boost > 1)
 			{
-				sample_mul *= (1+log10(m_boost));
+				sample_mul = (1+log10(m_boost));
 			}
 			
 			switch(iWePCMType){
 						case WETYPE_PCM8:
 							for(int i = 0; i < samples; i++)
-								((BYTE*)pDataOut)[i] = clamp<BYTE>( buff[i] * sample_mul, 0, UCHAR_MAX);
+								((BYTE*)pDataOut)[i] = clamp<BYTE>( buff[i] , 0, UCHAR_MAX , sample_mul);
 							break;
 						case WETYPE_PCM16:
 							for(int i = 0; i < samples; i++)
-								((short*)pDataOut)[i] = clamp<short>( buff[i] * sample_mul, SHRT_MIN, SHRT_MAX);
+								((short*)pDataOut)[i] = clamp<short>( buff[i] , SHRT_MIN, SHRT_MAX , sample_mul);
 							break;
 						case WETYPE_PCM24:
 							for(int i = 0; i < samples; i++)
-							{int tmp = clamp<int>( buff[i] * sample_mul, -1<<23, (1<<23)-1); memcpy(&pDataOut[i*3], &tmp, 3);}
+							{int tmp = clamp<int>( buff[i] , -1<<23, (1<<23)-1 , sample_mul); memcpy(&pDataOut[i*3], &tmp, 3);}
 							break;
 						case WETYPE_PCM32:
 							for(int i = 0; i < samples; i++)
-								((int*)pDataOut)[i] = clamp<int>( buff[i] * sample_mul, INT_MIN, INT_MAX);
+								((int*)pDataOut)[i] = clamp<int>( buff[i] , INT_MIN, INT_MAX , sample_mul);
 							break;
 						case WETYPE_FPCM32:
 							for(int i = 0; i < samples; i++)
-								((float*)pDataOut)[i] = clamp<float>( buff[i] * sample_mul, -1, +1);
+								((float*)pDataOut)[i] = clamp<float>( buff[i] , -1, +1 , sample_mul);
 							break;
 						case WETYPE_FPCM64:
 							for(int i = 0; i < samples; i++)
-								((double*)pDataOut)[i] = clamp<double>( buff[i] * sample_mul, -1, +1);
+								((double*)pDataOut)[i] = clamp<double>( buff[i] , -1, +1 , sample_mul);
 							break;
 			}
 

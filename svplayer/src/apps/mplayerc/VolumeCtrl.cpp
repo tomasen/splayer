@@ -68,7 +68,7 @@ void CVolumeCtrl::SetPosInternal(int pos)
 void CVolumeCtrl::IncreaseVolume()
 {
 	AppSettings& s = AfxGetAppSettings();
-	if(GetPos() > 99){
+	if(GetPos() > 99 && !s.fAudioNormalize){
 		SetPosInternal(GetPos() + 1);
 		/*
 		DWORD plVolume;

@@ -3203,14 +3203,15 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		useFFMPEGWMV = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USERFFMPEGWMV), 1);
  		if(fVMDetected ){
  			//fForceRGBrender = 1;
-			bRGBOnly = 1;
+			//bRGBOnly = 1;
  			iDXVer = 7;
  		}
-		int iDefaultSVPRenderType =  !!(IsVista() || iDXVer >= 9);
+		int iDefaultSVPRenderType =  (IsVista() || iDXVer >= 9);
+		
 		if(!IsVista()){
 			BOOL noDX93D = false;
 			for(int i = 0; i < szaGPUStrings.GetCount();i++){
-				if(szaGPUStrings.GetAt(i).Find(_T("(0x8086::0x2a42)"))){
+				if(szaGPUStrings.GetAt(i).Find(_T("(0x8086::0x2a42)")) >= 0){
 					noDX93D = true;
 				}
 			}

@@ -7,7 +7,7 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#include "afxres.h"
+#include "afxres.h"
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
@@ -892,7 +892,7 @@ BEGIN
 END
 
 IDD_DHTML_SETTING DIALOGEX 0, 0, 373, 209
-STYLE DS_SETFONT | DS_3DLOOK | DS_FIXEDSYS | DS_CENTER  | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+STYLE DS_SETFONT | DS_3DLOOK | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 EXSTYLE WS_EX_APPWINDOW
 CAPTION "射手播放器选项设置面板"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
@@ -1002,6 +1002,19 @@ BEGIN
         RIGHTMARGIN, 218
         TOPMARGIN, 7
         BOTTOMMARGIN, 40
+    END
+
+    IDD_FILEMEDIAINFO, DIALOG
+    BEGIN
+        VERTGUIDE, 8
+        VERTGUIDE, 60
+        VERTGUIDE, 73
+        VERTGUIDE, 221
+        HORZGUIDE, 42
+        HORZGUIDE, 55
+        HORZGUIDE, 68
+        HORZGUIDE, 81
+        HORZGUIDE, 94
     END
 
     IDD_OPENCAPDEVICE_DLG, DIALOG
@@ -1389,19 +1402,6 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 176
     END
-
-	IDD_FILEMEDIAINFO, DIALOG
-    BEGIN
-        VERTGUIDE, 8
-        VERTGUIDE, 60
-        VERTGUIDE, 73
-        VERTGUIDE, 221
-        HORZGUIDE, 42
-        HORZGUIDE, 55
-        HORZGUIDE, 68
-        HORZGUIDE, 81
-        HORZGUIDE, 94
-    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -1468,9 +1468,6 @@ TOP_GAMMA.BMP           BITMAP                  "res\\newui\\TOP_GAMMA.bmp"
 TOP_TRANS.BMP           BITMAP                  "res\\newui\\TOP_TRANS.bmp"
 TOP_LETTERBOX_WIDER.BMP BITMAP                  "res\\newui\\TOP_LETTERBOX_WIDER.bmp"
 TOP_NORMAL_WIDER.BMP    BITMAP                  "res\\newui\\TOP_NORMAL_WIDER.bmp"
-//TOP_ROTATE.BMP          BITMAP                  "res\\newui\\TOP_ROTATE.bmp"
-//TOP_FLIP.BMP            BITMAP                  "res\\newui\\TOP_FLIP.bmp"
-//BTN_OPENADV.BMP         BITMAP                  "res\\newui\\BTN_OPENADV.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1709,187 +1706,7 @@ END
 
 IDR_POPUPMAIN MENU 
 BEGIN
-    POPUP ""
-    BEGIN
-        POPUP "文件(&F)"
-        BEGIN
-            MENUITEM "快速打开文件(&Q)\tCtrl+Q",          ID_FILE_OPENQUICK
-            MENUITEM SEPARATOR
-            MENUITEM "打开文件(&O)...\tCtrl+O",         ID_FILE_OPENMEDIA
-            MENUITEM "打开网址(&U)...\tCtrl+U",         ID_FILE_OPENURLSTREAM
-            MENUITEM "打开DVD(&D)...\tCtrl+D",        ID_FILE_OPENDVD
-            MENUITEM "打开碟片(&P)",                    ID_32793
-            MENUITEM "关闭(&C)",                      ID_FILE_CLOSEPLAYLIST
-            MENUITEM SEPARATOR
-            MENUITEM "另存为(&S)...",                  ID_FILE_SAVE_COPY
-            MENUITEM "抓取快照(&I)...",                 ID_FILE_SAVE_IMAGE
-            MENUITEM "生成缩略图...",                    ID_FILE_SAVE_THUMBNAILS
-            MENUITEM SEPARATOR
-            MENUITEM "调入字幕(&L)...\tCtrl+L",         ID_FILE_LOAD_SUBTITLE
-            MENUITEM "另存字幕文件...\tCtrl+S",           ID_FILE_SAVE_SUBTITLE
-            MENUITEM SEPARATOR
-            MENUITEM "视频信息(&r)",                    ID_FILE_PROPERTIES
-            MENUITEM SEPARATOR
-            POPUP "工具"
-            BEGIN
-                MENUITEM "DSM转换器(&n)...",               ID_FILE_CONVERT
-            END
-        END
-        POPUP "界面(&V)"
-        BEGIN
-            POPUP "视频尺寸(&V)"
-            BEGIN
-                MENUITEM "50% (&H)",                    ID_VIEW_VF_HALF
-                MENUITEM "100% (&N)",                   ID_VIEW_VF_NORMAL
-                MENUITEM "200% (&D)",                   ID_VIEW_VF_DOUBLE
-                MENUITEM "铺满播放窗口(&S)",                  ID_VIEW_VF_STRETCH
-                MENUITEM "标准画面\tC",                     ID_VIEW_VF_FROMINSIDE
-                MENUITEM "智能去黑边(&O)",                   ID_VIEW_VF_FROMOUTSIDE
-                MENUITEM SEPARATOR
-                MENUITEM "保持画面比例(&K)",                  ID_VIEW_VF_KEEPASPECTRATIO
-                POPUP "强制画面比例"
-                BEGIN
-                    MENUITEM "默认",                          ID_ASPECTRATIO_SOURCE
-                    MENUITEM "4:3",                         ID_ASPECTRATIO_4_3
-                    MENUITEM "5:4",                         ID_ASPECTRATIO_5_4
-                    MENUITEM "16:9",                        ID_ASPECTRATIO_16_9
-                END
-                MENUITEM "智能显示器校正",                     ID_VIEW_VF_COMPMONDESKARDIFF
-            END
-            POPUP "画面微调(&c)"
-            BEGIN
-                MENUITEM "放大\t数字键盘 9",                  ID_VIEW_INCSIZE
-                MENUITEM "缩小\t数字键盘 1",                  ID_VIEW_DECSIZE
-                MENUITEM "更宽\t数字键盘 6",                  ID_VIEW_INCWIDTH
-                MENUITEM "更窄\t数字键盘 4",                  ID_VIEW_DECWIDTH
-                MENUITEM "更高\t数字键盘 8",                  ID_VIEW_INCHEIGHT
-                MENUITEM "更矮\t数字键盘 2",                  ID_VIEW_DECHEIGHT
-                MENUITEM SEPARATOR
-                MENUITEM "向右平移\tCtrl+数字键盘 6",           ID_PANSCAN_MOVERIGHT
-                MENUITEM "向左平移\tCtrl+数字键盘 4",           ID_PANSCAN_MOVELEFT
-                MENUITEM "向上移动\tCtrl+数字键盘 8",           ID_PANSCAN_MOVEUP
-                MENUITEM "向下移动\tCtrl+数字键盘 2",           ID_PANSCAN_MOVEDOWN
-                MENUITEM "回到中间\tCtrl+数字键盘 5",           ID_PANSCAN_CENTER
-                MENUITEM SEPARATOR
-                MENUITEM "恢复默认值\t数字键盘 5",               ID_VIEW_RESET
-            END
-            MENUITEM SEPARATOR
-            POPUP "前端显示"
-            BEGIN
-                MENUITEM "从不",                          ID_ONTOP_NEVER
-                MENUITEM "总在最前",                        ID_ONTOP_ALWAYS
-                MENUITEM "仅播放时",                        ID_ONTOP_WHILEPLAYING
-            END
-            POPUP "界面缩放(&Z)"
-            BEGIN
-                MENUITEM "&50%\tAlt+1",                 ID_VIEW_ZOOM_50
-                MENUITEM "&100%\tAlt+2",                ID_VIEW_ZOOM_100
-                MENUITEM "&200%\tAlt+3",                ID_VIEW_ZOOM_200
-                MENUITEM "自动缩放\tAlt+4",                 ID_VIEW_ZOOM_AUTOFIT
-            END
-            MENUITEM SEPARATOR
-            MENUITEM "全屏幕(&l)\tAlt+Enter",          ID_VIEW_FULLSCREEN
-            MENUITEM SEPARATOR
-            POPUP "界面..."
-            BEGIN
-                MENUITEM "小巧",                          ID_VIEW_PRESETS_MINIMAL
-                MENUITEM "精简",                          ID_VIEW_PRESETS_COMPACT
-                MENUITEM "标准",                          ID_VIEW_PRESETS_NORMAL
-                MENUITEM SEPARATOR
-                MENUITEM "显示标题和菜单(&M)\tCtrl+0",         ID_VIEW_CAPTIONMENU
-                MENUITEM "时间栏(&S)\tCtrl+1",             ID_VIEW_SEEKER
-                MENUITEM "显示控制按钮(&r)\tCtrl+2",          ID_VIEW_CONTROLS
-                MENUITEM "显示视频信息(&I)\tCtrl+3",          ID_VIEW_INFORMATION
-                MENUITEM "显示播放信息(&t)\tCtrl+4",          ID_VIEW_STATISTICS
-                MENUITEM "显示状态栏(&a)\tCtrl+5",           ID_VIEW_STATUS
-                MENUITEM "字幕调整\tCtrl+6",                ID_VIEW_SUBRESYNC
-                MENUITEM "显示播放列表\tCtrl+7",              ID_VIEW_PLAYLIST
-                MENUITEM "视频捕捉控制面板\tCtrl+8",            ID_VIEW_CAPTURE
-                MENUITEM "特效(Shader)编辑器\tCtrl+9",       ID_VIEW_SHADEREDITOR
-            END
-            MENUITEM SEPARATOR
-            MENUITEM "选项(&O)...",                   ID_VIEW_OPTIONS
-            MENUITEM "高级设置(&A)...",                 ID_32797
-        END
-        POPUP "播放(&P)"
-        BEGIN
-            MENUITEM "播放/暂停(&P)\t空格键",              ID_PLAY_PLAYPAUSE
-            MENUITEM "停止&S\t后退键(←)",                ID_PLAY_STOP
-            MENUITEM "逐帧播放(F&)\t右键(→)",             ID_PLAY_FRAMESTEP
-            MENUITEM "跳跃(&G)...\tCtrl+G",           ID_PLAY_GOTO
-            MENUITEM SEPARATOR
-            MENUITEM "加快播放速度(&D)\tCtrl+↑",          ID_PLAY_INCRATE
-            MENUITEM "减慢播放速度(&I)\tCtrl+↓",          ID_PLAY_DECRATE
-            MENUITEM "恢复正常速度\tCtrl+R",              ID_PLAY_RESETRATE
-        END
-        POPUP "DVD选单(&N)"
-        BEGIN
-            MENUITEM "上一段(&P)\t上一页",                ID_NAVIGATE_SKIPBACK
-            MENUITEM "下一段(&N)\t下一页",                ID_NAVIGATE_SKIPFORWARD
-            MENUITEM "跳至(&J)...",                   ID_DVD32784
-            MENUITEM SEPARATOR
-            MENUITEM "声轨选择",                        ID_32773
-            MENUITEM "字幕语言",                        ID_DVD32785
-            MENUITEM "视角切换",                        ID_DVD32786
-            MENUITEM SEPARATOR
-            MENUITEM "主菜单(&R)",                     ID_NAVIGATE_ROOTMENU
-            MENUITEM "标题选单(&T)",                    ID_NAVIGATE_TITLEMENU
-            MENUITEM "字幕选单(&S)",                    ID_NAVIGATE_SUBPICTUREMENU
-            MENUITEM "音频选单(&A)",                    ID_NAVIGATE_AUDIOMENU
-            MENUITEM "视角选单(&g)",                    ID_NAVIGATE_ANGLEMENU
-            MENUITEM "章节选单(&C)",                    ID_NAVIGATE_CHAPTERMENU
-        END
-        MENUITEM "收藏夹",                         ID__FAVORITES32779
-        POPUP "网络字幕(&S)"
-        BEGIN
-            MENUITEM "启用智能网络字幕匹配",                  ID_SVPSUB_MENUENABLE
-            MENUITEM SEPARATOR
-            MENUITEM "智能字幕匹配下载...",                 ID_FILE_ISDB_DOWNLOAD
-            MENUITEM "上传字幕...",                     ID_FILE_ISDB_UPLOAD
-            MENUITEM SEPARATOR
-            MENUITEM "调入字幕(&L)...\tCtrl+L",         ID_FILE_LOAD_SUBTITLE
-            MENUITEM SEPARATOR
-            MENUITEM "网页搜索字幕...",                   ID_FILE_ISDB_SEARCH
-        END
-        POPUP "帮助(&H)"
-        BEGIN
-            MENUITEM "检查更新...",                     ID_MANUALCHECKUPDATE
-            MENUITEM SEPARATOR
-            MENUITEM "主页",                          ID_HELP_HOMEPAGE
-            MENUITEM "捐助开发",                        ID_DONATE
-            MENUITEM "参与开发",                        ID_JOINTEAM
-            MENUITEM SEPARATOR
-            MENUITEM "使用说明",                        ID_HELP_DOCUMENTATION
-            MENUITEM "命令行用法",                       ID_HELP_SHOWCOMMANDLINESWITCHES
-            MENUITEM SEPARATOR
-            MENUITEM "关于(&A)...",                   ID_HELP_ABOUT
-        END
-        MENUITEM SEPARATOR
-        MENUITEM "字幕选择(&b)",                    ID__SUBTITLES
-        MENUITEM "音频选择(&A)",                    ID__AUDIO
-        MENUITEM SEPARATOR
-        MENUITEM "滤镜(&Filters)",                ID__FILTERS32780
-        MENUITEM "画面增益",                        ID__SHADERS32781
-        MENUITEM SEPARATOR
-        POPUP "音量(&u)"
-        BEGIN
-            MENUITEM "&Up\tUp Arrow",               ID_VOLUME_UP
-            MENUITEM "&Down\tDown Arrow",           ID_VOLUME_DOWN
-            MENUITEM "&Mute\tCtrl+M",               ID_VOLUME_MUTE
-        END
-        POPUP "播放结束后"
-        BEGIN
-            MENUITEM "退出视频",                        ID_AFTERPLAYBACK_CLOSE
-            MENUITEM "进入待机",                        ID_AFTERPLAYBACK_STANDBY
-            MENUITEM "进入休眠",                        ID_AFTERPLAYBACK_HIBERNATE
-            MENUITEM "关机",                          ID_AFTERPLAYBACK_SHUTDOWN
-            MENUITEM "注销当前用户",                      ID_AFTERPLAYBACK_LOGOFF
-            MENUITEM SEPARATOR
-            MENUITEM "什么都不做",                       ID_AFTERPLAYBACK_DONOTHING
-        END
-        MENUITEM SEPARATOR
-        MENUITEM "退出(&x)\tAlt+X",               ID_FILE_EXIT
-    END
+    MENUITEM "",                            ID_FILE_OPENQUICK
 END
 
 IDR_POPUP MENU 
@@ -1959,7 +1776,7 @@ BEGIN
             MENUITEM "抓取快照...\tCtrl+I",             ID_FILE_SAVE_IMAGE
             MENUITEM "生成缩略图...",                    ID_FILE_SAVE_THUMBNAILS
             MENUITEM "复制到剪切板\tCtrl+C",              ID_FILE_COPYTOCLIPBOARD
-			MENUITEM "快速截图到默认目录\tF5",             ID_FILE_SAVE_IMAGE_AUTO
+            MENUITEM "快速截图到默认目录\tF5",               ID_FILE_SAVE_IMAGE_AUTO
             MENUITEM SEPARATOR
             MENUITEM "设置默认保存文件夹",                   ID_SETSNAPSHOTPATH
         END
@@ -1969,12 +1786,10 @@ BEGIN
             MENUITEM "精简(有标题栏)",                    ID_VIEW_PRESETS_COMPACT
             MENUITEM "标准",                          ID_VIEW_PRESETS_NORMAL
             MENUITEM SEPARATOR
-            MENUITEM "显隐播放列表",                      ID_VIEW_PLAYLIST
-            MENUITEM "显隐半透明控制",                     ID_SHOWTRANSPRANTBAR
-            MENUITEM SEPARATOR
-            MENUITEM "多彩菜单(需重启播放器)",                ID_THEME_COLORMENU
             MENUITEM "玻璃效果(需重启播放器)",                ID_THEME_AEROGLASS
             MENUITEM SEPARATOR
+            MENUITEM "显隐播放列表",                      ID_VIEW_PLAYLIST
+            MENUITEM "显隐半透明控制",                     ID_SHOWTRANSPRANTBAR
             POPUP "更多功能面板(&e)"
             BEGIN
                 MENUITEM "显示标题和菜单(&M)\tCtrl+0",         ID_VIEW_CAPTIONMENU
@@ -1988,6 +1803,11 @@ BEGIN
                 MENUITEM "特效(Shader)编辑器\tCtrl+9",       ID_VIEW_SHADEREDITOR
                 MENUITEM "DSM转换器(&n)...",               ID_FILE_CONVERT
                 MENUITEM "显示画面渲染信息",                    ID_SHOWDRAWSTAT
+            END
+            POPUP "Language"
+            BEGIN
+                MENUITEM "English",                     ID_LANGUAGE_ENGLISH
+                MENUITEM "中文",                          ID_LANGUAGE_CHINESE_SIMPLIFIED
             END
         END
         MENUITEM "播放器设置(&O)...",                ID_VIEW_OPTIONS
@@ -2025,225 +1845,13 @@ END
 
 IDR_MAINFRAME MENU 
 BEGIN
-    POPUP ""
-    BEGIN
-        POPUP "文件(&F)"
-        BEGIN
-            MENUITEM "快速打开文件(&Q)\tCtrl+Q",          ID_FILE_OPENQUICK
-            MENUITEM SEPARATOR
-            MENUITEM "打开文件(&O)...\tCtrl+O",         ID_FILE_OPENMEDIA
-            MENUITEM "打开文件夹(&F)...\tCtrl+F",        ID_FILE_OPENFOLDER
-            MENUITEM "打开网址(&U)...\tCtrl+U",         ID_FILE_OPENURLSTREAM
-            MENUITEM "打开DVD(&D)...\tCtrl+D",        ID_FILE_OPENDVD
-            MENUITEM "视频捕捉(&V)...\tCtrl+V",         ID_FILE_OPENDEVICE
-            MENUITEM "打开碟片(&P)",                    ID_32768
-            MENUITEM "最近播放",                        ID__RECENTPLAYED
-            MENUITEM "关闭(&C)",                      ID_FILE_CLOSEPLAYLIST
-            MENUITEM SEPARATOR
-            MENUITEM "另存为(&S)...",                  ID_FILE_SAVE_COPY
-            POPUP "截取图片"
-            BEGIN
-                MENUITEM "抓取快照...\tCtrl+I",             ID_FILE_SAVE_IMAGE
-                MENUITEM "生成缩略图...",                    ID_FILE_SAVE_THUMBNAILS
-                MENUITEM "复制到剪切板\tCtrl+C",              ID_FILE_COPYTOCLIPBOARD
-				MENUITEM "快速截图到默认目录...\tF5",             ID_FILE_SAVE_IMAGE_AUTO
-                MENUITEM SEPARATOR
-                MENUITEM "设置默认保存文件夹",                   ID_SETSNAPSHOTPATH
-            END
-            MENUITEM SEPARATOR
-            MENUITEM "调入字幕(&L)...\tCtrl+L",         ID_FILE_LOAD_SUBTITLE
-            MENUITEM "另存字幕文件...\tCtrl+S",           ID_FILE_SAVE_SUBTITLE
-            MENUITEM "调入第二字幕...",                   ID_FILE_LOAD_SUBTITLE2
-            MENUITEM SEPARATOR
-            POPUP "播放结束后"
-            BEGIN
-                MENUITEM "退出视频",                        ID_AFTERPLAYBACK_CLOSE
-                MENUITEM "进入待机",                        ID_AFTERPLAYBACK_STANDBY
-                MENUITEM "进入休眠",                        ID_AFTERPLAYBACK_HIBERNATE
-                MENUITEM "关机",                          ID_AFTERPLAYBACK_SHUTDOWN
-                MENUITEM "注销当前用户",                      ID_AFTERPLAYBACK_LOGOFF
-                MENUITEM SEPARATOR
-                MENUITEM "什么都不做",                       ID_AFTERPLAYBACK_DONOTHING
-            END
-            MENUITEM "视频信息(&r)",                    ID_FILE_PROPERTIES
-            MENUITEM SEPARATOR
-            MENUITEM "退出(&x)\tAlt+X",               ID_FILE_EXIT
-        END
-        POPUP "界面(&V)"
-        BEGIN
-            POPUP "视频尺寸(&V)"
-            BEGIN
-                MENUITEM "50% (&H)",                    ID_VIEW_VF_HALF
-                MENUITEM "100% (&N)",                   ID_VIEW_VF_NORMAL
-                MENUITEM "200% (&D)",                   ID_VIEW_VF_DOUBLE
-                MENUITEM "铺满播放窗口(&S)",                  ID_VIEW_VF_STRETCH
-                MENUITEM "标准画面\tC",                     ID_VIEW_VF_FROMINSIDE
-                MENUITEM "智能去黑边(&O)",                   ID_VIEW_VF_FROMOUTSIDE
-                MENUITEM SEPARATOR
-                MENUITEM "保持画面比例(&K)",                  ID_VIEW_VF_KEEPASPECTRATIO
-                POPUP "强制画面比例"
-                BEGIN
-                    MENUITEM "默认",                          ID_ASPECTRATIO_SOURCE
-                    MENUITEM "4:3",                         ID_ASPECTRATIO_4_3
-                    MENUITEM "5:4",                         ID_ASPECTRATIO_5_4
-                    MENUITEM "16:9",                        ID_ASPECTRATIO_16_9
-                END
-                MENUITEM "智能显示器校正",                     ID_VIEW_VF_COMPMONDESKARDIFF
-            END
-            POPUP "画面微调(&c)"
-            BEGIN
-                MENUITEM "放大\t数字键盘 9",                  ID_VIEW_INCSIZE
-                MENUITEM "缩小\t数字键盘 1",                  ID_VIEW_DECSIZE
-                MENUITEM "更宽\t数字键盘 6",                  ID_VIEW_INCWIDTH
-                MENUITEM "更窄\t数字键盘 4",                  ID_VIEW_DECWIDTH
-                MENUITEM "更高\t数字键盘 8",                  ID_VIEW_INCHEIGHT
-                MENUITEM "更矮\t数字键盘 2",                  ID_VIEW_DECHEIGHT
-                MENUITEM SEPARATOR
-                MENUITEM "向右平移\tCtrl+数字键盘 6",           ID_PANSCAN_MOVERIGHT
-                MENUITEM "向左平移\tCtrl+数字键盘 4",           ID_PANSCAN_MOVELEFT
-                MENUITEM "向上移动\tCtrl+数字键盘 8",           ID_PANSCAN_MOVEUP
-                MENUITEM "向下移动\tCtrl+数字键盘 2",           ID_PANSCAN_MOVEDOWN
-                MENUITEM "回到中间\tCtrl+数字键盘 5",           ID_PANSCAN_CENTER
-                MENUITEM SEPARATOR
-                MENUITEM "恢复默认值\t数字键盘 5",               ID_VIEW_RESET
-            END
-            MENUITEM SEPARATOR
-            POPUP "前端显示"
-            BEGIN
-                MENUITEM "从不",                          ID_ONTOP_NEVER
-                MENUITEM "总在最前",                        ID_ONTOP_ALWAYS
-                MENUITEM "仅播放时",                        ID_ONTOP_WHILEPLAYING
-            END
-            POPUP "界面缩放(&Z)"
-            BEGIN
-                MENUITEM "&50%\tAlt+1",                 ID_VIEW_ZOOM_50
-                MENUITEM "&100%\tAlt+2",                ID_VIEW_ZOOM_100
-                MENUITEM "&200%\tAlt+3",                ID_VIEW_ZOOM_200
-                MENUITEM "自动缩放\tAlt+4",                 ID_VIEW_ZOOM_AUTOFIT
-            END
-            MENUITEM SEPARATOR
-            MENUITEM "全屏幕(&l)\tAlt+Enter",          ID_VIEW_FULLSCREEN
-            MENUITEM SEPARATOR
-            POPUP "界面..."
-            BEGIN
-                MENUITEM "小巧",                          ID_VIEW_PRESETS_MINIMAL
-                MENUITEM "精简",                          ID_VIEW_PRESETS_COMPACT
-                MENUITEM "标准",                          ID_VIEW_PRESETS_NORMAL
-                MENUITEM SEPARATOR
-                MENUITEM "显示标题和菜单(&M)\tCtrl+0",         ID_VIEW_CAPTIONMENU
-                MENUITEM "时间栏(&S)\tCtrl+1",             ID_VIEW_SEEKER
-                MENUITEM "显示控制按钮(&r)\tCtrl+2",          ID_VIEW_CONTROLS
-                MENUITEM "显示视频信息(&I)\tCtrl+3",          ID_VIEW_INFORMATION
-                MENUITEM "显示播放信息(&t)\tCtrl+4",          ID_VIEW_STATISTICS
-                MENUITEM "显示状态栏(&a)\tCtrl+5",           ID_VIEW_STATUS
-                MENUITEM "字幕调整\tCtrl+6",                ID_VIEW_SUBRESYNC
-                MENUITEM "显示播放列表\tCtrl+7",              ID_VIEW_PLAYLIST
-                MENUITEM "视频捕捉控制面板\tCtrl+8",            ID_VIEW_CAPTURE
-                MENUITEM "特效(Shader)编辑器\tCtrl+9",       ID_VIEW_SHADEREDITOR
-            END
-            MENUITEM "显示亮度控制栏",                     ID_SHOWCOLORCONTROLBAR
-            MENUITEM SEPARATOR
-            MENUITEM "选项(&O)...",                   ID_VIEW_OPTIONS
-            MENUITEM "高级设置(&A)...",                 ID_32797
-        END
-        POPUP "播放(&P)"
-        BEGIN
-            MENUITEM "第一字幕",                        ID_32770
-            MENUITEM "第二字幕",                        ID_32797
-            MENUITEM "音频/声道切换",                     ID_32769
-            MENUITEM SEPARATOR
-            MENUITEM "播放/暂停(&P)\t空格键",              ID_PLAY_PLAYPAUSE
-            MENUITEM "停止&S\t后退键(←)",                ID_PLAY_STOP
-            MENUITEM "逐帧播放(F&)\t右键(→)",             ID_PLAY_FRAMESTEP
-            MENUITEM "跳跃(&G)...\tCtrl+G",           ID_PLAY_GOTO
-            MENUITEM SEPARATOR
-            MENUITEM "加快播放速度(&D)\tCtrl+↑",          ID_PLAY_INCRATE
-            MENUITEM "减慢播放速度(&I)\tCtrl+↓",          ID_PLAY_DECRATE
-            MENUITEM "恢复正常速度\tCtrl+R",              ID_PLAY_RESETRATE
-            MENUITEM SEPARATOR
-            MENUITEM "滤镜(&Filters)",                ID_32772
-            MENUITEM "画面增益",                        ID_32771
-            MENUITEM SEPARATOR
-            POPUP "音量(&u)"
-            BEGIN
-                MENUITEM "提高音量(&U)\t↑",                 ID_VOLUME_UP
-                MENUITEM "降低音量(&D)\t↓",                 ID_VOLUME_DOWN
-                MENUITEM "静音(&M)\tCtrl+M",              ID_VOLUME_MUTE
-            END
-        END
-        POPUP "DVD选单(&N)"
-        BEGIN
-            MENUITEM "上一段(&P)\t上一页",                ID_NAVIGATE_SKIPBACK
-            MENUITEM "下一段(&N)\t下一页",                ID_NAVIGATE_SKIPFORWARD
-            MENUITEM "跳至(&J)...",                   ID_DVD32784
-            MENUITEM SEPARATOR
-            MENUITEM "声轨选择(&u)",                    ID_32773
-            MENUITEM "字幕语言(&b)",                    ID_DVD32785
-            MENUITEM "视角切换(&l)",                    ID_DVD32786
-            MENUITEM SEPARATOR
-            MENUITEM "主菜单(&R)",                     ID_NAVIGATE_ROOTMENU
-            MENUITEM "标题选单(&T)",                    ID_NAVIGATE_TITLEMENU
-            MENUITEM "字幕选单(&S)",                    ID_NAVIGATE_SUBPICTUREMENU
-            MENUITEM "音频选单(&A)",                    ID_NAVIGATE_AUDIOMENU
-            MENUITEM "视角选单(&g)",                    ID_NAVIGATE_ANGLEMENU
-            MENUITEM "章节选单(&C)",                    ID_NAVIGATE_CHAPTERMENU
-        END
-        MENUITEM "收藏夹",                         ID_FAVORITES
-        POPUP "选项设置(&A)"
-        BEGIN
-            MENUITEM "选项(&O)...",                   ID_VIEW_OPTIONS
-            MENUITEM "高级设置(&A)...",                 ID_32797
-            MENUITEM "热键设置...",                     ID_VIEW_SETHOTKEY
-            MENUITEM "界面背景设置...",                   ID_CHANGEBACKGROUND
-            MENUITEM SEPARATOR
-            MENUITEM "自动更新...",                     ID_MANUALCHECKUPDATE
-            MENUITEM SEPARATOR
-            MENUITEM "检查文件关联",                      ID_CHECK_DEFAULT_PLAYER
-            MENUITEM SEPARATOR
-            MENUITEM "恢复默认设置",                      ID_RESET_SETTING
-            POPUP "工具"
-            BEGIN
-                MENUITEM "DSM转换器(&n)...",               ID_FILE_CONVERT
-            END
-        END
-        POPUP "网络字幕(&S)"
-        BEGIN
-            MENUITEM "启用智能网络字幕匹配",                  ID_SVPSUB_MENUENABLE
-            MENUITEM SEPARATOR
-            MENUITEM "智能字幕匹配下载...",                 ID_FILE_ISDB_DOWNLOAD
-            MENUITEM "上传字幕...",                     ID_FILE_ISDB_UPLOAD
-            MENUITEM SEPARATOR
-            MENUITEM "调入字幕(&L)...\tCtrl+L",         ID_FILE_LOAD_SUBTITLE
-            MENUITEM SEPARATOR
-            MENUITEM "网页搜索字幕...",                   ID_FILE_ISDB_SEARCH
-        END
-        POPUP "帮助(&H)"
-        BEGIN
-            MENUITEM "自动更新...",                     ID_MANUALCHECKUPDATE
-            MENUITEM SEPARATOR
-            POPUP "意见和反馈"
-            BEGIN
-                MENUITEM "论坛发表反馈",                      ID_VISITBBS
-                MENUITEM "Email发表意见",                   ID_SENDEMAIL
-                MENUITEM "QQ或MSN聊聊想法",                  ID_VISITCONTACTINFO
-            END
-            MENUITEM SEPARATOR
-            MENUITEM "主页",                          ID_HELP_HOMEPAGE
-            MENUITEM "捐助开发",                        ID_DONATE
-            MENUITEM "参与开发",                        ID_JOINTEAM
-            MENUITEM SEPARATOR
-            MENUITEM "使用说明",                        ID_HELP_DOCUMENTATION
-            MENUITEM "命令行用法",                       ID_HELP_SHOWCOMMANDLINESWITCHES
-            MENUITEM SEPARATOR
-            MENUITEM "关于(&A)...",                   ID_HELP_ABOUT
-        END
-    END
+    MENUITEM "",                            ID_FILE_OPENQUICK
 END
 
 IDR_OPENMORE MENU 
 BEGIN
     MENUITEM "DVD(&D)...\tCtrl+D",          ID_FILE_OPENDVD
-	MENUITEM "蓝光(&B)...\tCtrl+B",          ID_FILE_OPENBDVD
+    MENUITEM "蓝光(&B)...\tCtrl+B",           ID_FILE_OPENBDVD
     MENUITEM "网址(&U)...\tCtrl+U",           ID_FILE_OPENURLSTREAM
     MENUITEM "文件夹(&F)...\tCtrl+F",          ID_FILE_OPENFOLDER
     MENUITEM "视频捕捉(&V)...\tCtrl+V",         ID_FILE_OPENDEVICE
@@ -2332,35 +1940,20 @@ IDR_HTML_UESETTINGPANEL HTML                    "res\\web\\UESettingPanel.html"
 //
 // 2110
 //
-// AUDIOSETTING_UESETBG_HOVER.JPG 2110                    "res\\web\\audiosetting_uesetbg_hover.jpg"
-// AUDIOSETTING_UESETBG.JPG 2110                    "res\\web\\audiosetting_uesetbg.jpg"
-// FILLASSOC_UESETBG_HOVER.JPG 2110                    "res\\web\\fillassoc_uesetbg_hover.jpg"
-// FILLASSOC_UESETBG.JPG   2110                    "res\\web\\fillassoc_uesetbg.jpg"
-// GENERALSETING_UESETBG_HOVER.JPG 2110                    "res\\web\\generalseting_uesetbg_hover.jpg"
-// GENERALSETING_UESETBG.JPG 2110                    "res\\web\\generalseting_uesetbg.jpg"
-// HOTKEYSETTING_UESETBG_HOVER.JPG 2110                    "res\\web\\hotkeysetting_uesetbg_hover.jpg"
-// HOTKEYSETTING_UESETBG.JPG 2110                    "res\\web\\hotkeysetting_uesetbg.jpg"
-// SUBSETTING_UESETBG_HOVER.JPG 2110                    "res\\web\\subsetting_uesetbg_hover.jpg"
-// SUBSETTING_UESETBG.JPG  2110                    "res\\web\\subsetting_uesetbg.jpg"
-// THEMESETTING_UESETBG_HOVER.JPG 2110                    "res\\web\\themesetting_uesetbg_hover.jpg"
-// THEMESETTING_UESETBG.JPG 2110                    "res\\web\\themesetting_uesetbg.jpg"
-// UPDATESETTING_UESETBG_HOVER.JPG 2110                    "res\\web\\updatesetting_uesetbg_hover.jpg"
-// UPDATESETTING_UESETBG.JPG 2110                    "res\\web\\updatesetting_uesetbg.jpg"
-// VIDEOSETTING_UESETBG_HOVER.JPG 2110                    "res\\web\\videosetting_uesetbg_hover.jpg"
-// VIDEOSETTING_UESETBG.JPG 2110                    "res\\web\\videosetting_uesetbg.jpg"
-ok.JPG				2110                    "res\\web\\ok.jpg"
-ok_hover.JPG				2110                    "res\\web\\ok_hover.jpg"
-cancel.JPG				2110                    "res\\web\\cancel.jpg"
-cancel_hover.JPG				2110                    "res\\web\\cancel_hover.jpg"
-apply.JPG				2110                    "res\\web\\apply.jpg"
-apply_hover.JPG				2110                    "res\\web\\apply_hover.jpg"
-reset.JPG				2110                    "res\\web\\reset.jpg"
-reset_hover.JPG				2110                    "res\\web\\reset_hover.jpg"
-donate.GIF				2110                    "res\\web\\donate.gif"
-hotkey.JPG				2110                    "res\\web\\hotkey.jpg"
-hotkey_hover.JPG				2110                    "res\\web\\hotkey_hover.jpg"
-fillassoc.JPG				2110                    "res\\web\\fillassoc.jpg"
-fillassoc_hover.JPG				2110                    "res\\web\\fillassoc_hover.jpg"
+
+OK.JPG                  2110                    "res\\web\\ok.jpg"
+OK_HOVER.JPG            2110                    "res\\web\\ok_hover.jpg"
+CANCEL.JPG              2110                    "res\\web\\cancel.jpg"
+CANCEL_HOVER.JPG        2110                    "res\\web\\cancel_hover.jpg"
+APPLY.JPG               2110                    "res\\web\\apply.jpg"
+APPLY_HOVER.JPG         2110                    "res\\web\\apply_hover.jpg"
+RESET.JPG               2110                    "res\\web\\reset.jpg"
+RESET_HOVER.JPG         2110                    "res\\web\\reset_hover.jpg"
+DONATE.GIF              2110                    "res\\web\\donate.gif"
+HOTKEY.JPG              2110                    "res\\web\\hotkey.jpg"
+HOTKEY_HOVER.JPG        2110                    "res\\web\\hotkey_hover.jpg"
+FILLASSOC.JPG           2110                    "res\\web\\fillassoc.jpg"
+FILLASSOC_HOVER.JPG     2110                    "res\\web\\fillassoc_hover.jpg"
 BLANK.GIF               2110                    "res\\web\\blank.gif"
 BG-H.GIF                2110                    "res\\web\\bg-h.gif"
 THUMB-N.GIF             2110                    "res\\web\\thumb-n.gif"
@@ -2500,6 +2093,18 @@ BEGIN
     IDS_RS_FASTERSEEKING    "FasterSeeking"
     IDS_RS_DISABLECENTERBIGOPENBMP "DisableCenterBigOpenBmp"
     IDS_RS_USERFFMPEGWMV    "UserFFMPEGWMV"
+    IDS_RS_USETRANSCONTROL  "UseTransControl"
+    IDS_RS_HARDWAREDECODERFAILCOUNT "HardwareDecoderFailCount"
+    IDS_RS_DSSVPRENDERTYE   "SVPRenderType"
+    IDS_RS_DONTNEEDSVPSUBFILTER "DontNeedSVPSubFilter"
+    IDS_RS_UELASTPANEL      "UELastPanel"
+    IDS_RS_TRANSPARENTTOOLBARPOSOFFSET "TransparentToolbarPosOffset"
+    IDS_RS_SVPPERFSUB       "SVPSubPerf"
+    IDS_DIABLOG_CLOSE_BUTTON "关闭"
+    IDS_UPDATER_DIALOG_TITLE_KEYWORD "射手影音自动更新程序"
+    IDS_SVP_FILTER_NAME     "射手播放器字幕组件"
+    IDS_DISLOG_FILEASSOC_TITLE "文件关联..."
+    IDS_MSG_CREATE_OSD_FAIL "OSD 创建失败！"
 END
 
 STRINGTABLE 
@@ -2519,7 +2124,6 @@ BEGIN
     IDS_RS_SVPSUBSTOREDIR   "SVPSubStoreDir"
     IDS_RS_USENEWMENU       "UseNewMenu"
     IDS_RS_USEAEROGLASS     "UseAeroGlass"
-	IDS_RS_USETRANSCONTROL	"UseTransControl"
     IDS_RS_FCUSTOMSPEAKERS  "CustomSpeakers"
 END
 
@@ -2680,7 +2284,6 @@ BEGIN
     IDS_RS_MPEGDI           "MPEGDI"
     IDS_RS_MPEGBRIGHT       "MPEGBright"
     IDS_RS_MPEGCONT         "MPEGCont"
-	IDS_RS_TRANSPARENTTOOLBARPOSOFFSET	"TransparentToolbarPosOffset"
 END
 
 STRINGTABLE 
@@ -2700,8 +2303,6 @@ BEGIN
     IDS_R_LOGINS            "Logins"
     IDS_RS_ENABLEWEBSERVER  "EnableWebServer"
     IDS_RS_WEBSERVERPORT    "WebServerPort"
-	IDS_RS_DONTNEEDSVPSUBFILTER	"DontNeedSVPSubFilter"
-	IDS_RS_UELASTPANEL	"UELastPanel"
     IDS_RS_LASTWINDOWTYPE   "LastWindowType"
 END
 
@@ -2757,7 +2358,6 @@ BEGIN
     IDS_RS_MPABOOST         "MpaBoost"
     IDS_RS_AACSC            "AACSpeakerConfig"
     IDS_RS_VMRSYNCFIX       "VMRSyncFix"
-	IDS_RS_SVPPERFSUB		"SVPSubPerf"
 END
 
 STRINGTABLE 
@@ -2853,9 +2453,7 @@ BEGIN
     IDS_RS_NOTIFYGTSDLL     "NotifyGTSdll"
     IDS_RS_VMR9MIXERMODE    "VMR9MixerMode"
     IDS_RS_THUMBROWS        "ThumbRows"
-	IDS_RS_HARDWAREDECODERFAILCOUNT	"HardwareDecoderFailCount"
     IDS_RS_THUMBCOLS        "ThumbCols"
-	IDS_RS_DSSVPRENDERTYE	"SVPRenderType"
 END
 
 STRINGTABLE 
@@ -2981,7 +2579,12 @@ STRINGTABLE
 BEGIN
     ID_NAVIGATE_SKIPBACK    "上一段"
     ID_NAVIGATE_SKIPFORWARD "下一段"
-	IDD_FILEMEDIAINFO       "MediaInfo"
+END
+
+STRINGTABLE 
+BEGIN
+    IDD_FILEPROPRES         "资源"
+    IDD_FILEMEDIAINFO       "MediaInfo"
 END
 
 STRINGTABLE 
@@ -3006,11 +2609,6 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDD_FILEPROPRES         "资源"
-END
-
-STRINGTABLE 
-BEGIN
     IDS_SUBTITLES_POPUP     "字幕"
     IDS_AUDIO_POPUP         "声音"
     IDS_FILTERS_POPUP       "滤镜(Filters)"
@@ -3027,9 +2625,6 @@ BEGIN
     IDS_CONTROLS_CLOSING    "正在关闭..."
     IDS_CONTROLS_PLAYING    "正在播放"
     IDS_CONTROLS_PAUSED     "已暂停"
-    IDS_DIABLOG_CLOSE_BUTTON		"关闭"
-		IDS_UPDATER_DIALOG_TITLE_KEYWORD	"射手影音自动更新程序"
-		IDS_SVP_FILTER_NAME			"射手播放器字幕组件"
 END
 
 STRINGTABLE 
@@ -3065,482 +2660,610 @@ END
 STRINGTABLE 
 BEGIN
     ID_PLAY_FWD             "快进"
-	IDR_MAINFRAME_SHORTNAME	"射手播放器"
-	IDS_FORMAT_FILE_SIZE	"文件尺寸: %I64d%s (%I64d bytes)\\N" 
-	IDS_MENU_ITEM_SETTING	"设置..." 
-	IDS_UESETTING_PANEL_GPULIST	"您拥有的显卡有：<br/>" 
-	IDS_UESETTING_PANEL_GPU_ACCEL_AVALIBLE	"适宜使用GPU加速" 
-	IDS_UESETTING_PANEL_GPU_ACCEL_MAYBE_NOT_AVALIBLE	"可能不适宜使用GPU加速 <a class='small' href='mailto:tomasen@gmail.com'>报告错误</a>" 
 END
 
 STRINGTABLE 
 BEGIN
-    
-	IDS_DISLOG_FILEASSOC_TITLE	"文件关联..."
-	IDS_MSG_CREATE_OSD_FAIL	"OSD 创建失败！"
-	IDS_MSG_CREATE_TOPTOOLBAR_FAIL	"Top Toolbar 创建失败！"
-	IDS_MSG_CREATE_SEEKTIP_FAIL	"SEEKTIP 创建失败！"
-	IDS_ABCONTROL_SET_APOINT	"设置A点"
-	IDS_ABCONTROL_SET_BPOINT	"设置B点"
-	IDS_ABCONTROL_START_ABLOOP	"开始A-B循环"
-	IDS_ABCONTROL_BREAK_ABLOOP	"关闭A-B循环"
-	IDS_TOOLTIP_RESTORE_WINDOW	"恢复窗口"
-	IDS_TOOLTIP_SWITCHTO_FULLSCREEN	"全屏切换"
-	IDS_TOOLTIP_MINTO_SYSTRAY	"最小化到系统托盘"
-	IDS_TOOLTIP_MAINMENU	"菜单"
-	IDS_TOOLTIP_MINIMIZE	"最小化"
-	IDS_TOOLTIP_MAXIMIZE	"最大化"
-	IDS_TOOLTIP_EXIT	"退出"
-	IDS_DIALOG_HOTKEYSETTING_TITLE	"快捷键设置..."
-	IDS_MSG_WARN_RESET_PLAYER_SETTING	"此操作将清除射手播放器的\n所有设置和播放记录，您确定么？"
-	IDS_OSD_MSG_SET_MAINSUB_DELAY	"主字幕延时已经设为： %d ms"
-	IDS_OSD_MSG_SET_2NDSUB_DELAY	"第二字幕延时已经设为： %d ms"
-	IDS_STATSBAR_LABEL_FRAMERATE	"帧率"
-	IDS_DVD_MSG_VIDEO_ATTR	"视角: %02d/%02d, %dx%d %dHz %d:%d"
-	IDS_DVD_INFO_SUBTITLE	" (字幕)"
-	IDS_DVD_INFO_DIRECTOR_COMMENT1	" (导演评论1)"
-	IDS_DVD_INFO_DIRECTOR_COMMENT2	" (导演评论2)"
-	IDS_DVD_INFO_AUDIO_FORMAT_UNKNOWN	"未知格式"
-	IDS_DVD_INFO_AUDIO_FORMAT	"%s, %s %dHz %dbits %d 声道(s)"
-	IDS_DVD_INFO_LANG_DIRCTORCOMMENT_NOTMAL	" (导演评论)"
-	IDS_DVD_INFO_LANG_DIRECTORCOMMENT_BIG	" (导演评论, Big)"
-	IDS_DVD_INFO_LANG_DIRECTORCOMMENT_CHILDREN	" (导演评论, Children)"
-	IDS_MENU_ITEM_DVD_CONTROL	"DVD控制"
-	IDS_MENU_ITEM_OPENCDROM	"播放光盘"
-	IDS_MENU_ITEM_FILTERS	"滤镜(Filters)"
-	IDS_MENU_ITEM_AUDIO	"声音"
-	IDS_MENU_ITEM_SUBTITLE	"字幕"
-	IDS_MENU_ITEM_AUDIOLANGUAGE	"音轨选择"
-	IDS_MENU_ITEM_DVDSUBTITLE	"字幕语言"
-	IDS_MENU_ITEM_DVD_VIDEOANGLE	"视角切换"
-	IDS_MENU_ITEM_JUMPTO	"跳至..."
-	IDS_MENU_ITEM_FAVORITES	"收藏夹"
-	IDS_MENU_ITEM_SHADER	"播放效果调节"
-	IDS_MENU_ITEM_VIDEOFRAME	"视频尺寸"
-	IDS_MENU_ITEM_PANSCAN	"画面微调"
-	IDS_MENU_ITEM_ASPECTRATIO	"强制画面比例"
-	IDS_MENU_ITEM_ZOOM	"界面缩放"
-	IDS_MENU_ITEM_PLAYBACK_CONTROL	"播放"
-	IDS_MENU_ITEM_PLAYLOOP_NOLOOP	"不循环播放"
-	IDS_MENU_ITEM_PLAYLOOP_PLAYLIST	"循环播放(播放列表)"
-	IDS_MENU_ITEM_PLAYLOOP_CURRENT	"循环播放(当前影片)"
-	IDS_MENU_ITEM_PLAYLOOP_RANDOM_PLAYLIST	"随机播放(播放列表)"
-	IDS_MENU_ITEM_PLAYLOOP_NORMAL	"循环播放"
-	IDS_MENU_ITEM_OPEN	"打开"
-	IDS_MENU_ITEM_SUBTITLE_EVERYTHING	"字幕"
-	IDS_MENU_ITEM_RECENT_PALYED	"最近播放"
-	IDS_MENU_ITEM_NUMOF_SPEAKER	"系统有 %d 个扬声器"
-	IDS_MENU_ITEM_NUMOF_SPEAKER_AUTODETECTED	"(自动探测)"
-	IDS_MENU_ITEM_NUMOF_SPEAKER_MANUAL	"(手动指定)"
-	IDS_MENU_ITEM_DIGTAL_OUTPUT	"数字输出(光纤/SPDIF/HDMI)"
-	IDS_MENU_ITEM_AUDIO_OUTPUT_TO	"将声音输出至..."
-	IDS_OSD_MSG_DEVICE_NOT_SUPPORT_VIDEO_QMODE	"您的设备不支持画质优先模式，自动启用“性能优先模式”，建议重新打开文件"
-	IDS_DIALOG_OPEN_FOLDER_TITLE	"打开视频文件夹"
-	IDS_DIALOG_OPEN_BD_FOLDER_TITLE	"文件模式打开BD目录"
-	IDS_OSD_MSG_IMAGE_CAPTURE_TO	"截图已保存至 %s"
-	IDS_MSG_WARN_NOT_CAPABLE_IMAGE_CAPTURE	"你选择的图片输出格式和视频不兼容, 未能创建缩略图 (%d bpp dibs)."
-	IDS_OSD_MSG_RENDER_NOT_COMPATE_IMAGE_CAPTURE	"当前配置模式无法抓取截图，请进入选项-画面控制面板，选择画质或性能模式"
-	IDS_OSD_MSG_DONT_HAVE_VIDEO_FOR_CAPTURE	"当前没有播放视频，无从抓取"
-	IDS_MSG_RENDER_SETTING_NOT_SUPPORT_SUBTITLE	"启用播放器内置字幕功能需要进入选项设置面板选择画质模式\n如果您看到本提示，可能说明您需要升级显卡驱动\n或者您的显卡没有能力支持所需功能(VMR7或9)"
-	IDS_OSD_MSG_UPLOAD_SUB_MSG_SUBDELAY	"字幕延时：%d ms\r\n"
-	IDS_OSD_MSG_UPLOAD_SUB_MSG	"本操作将上传您正在播放中的字幕： \r\n %s \r\n%s\r\n是否继续？"
-	IDS_MSG_SUB_ALREADY_MANUAL_UPLOADED	"字幕已经上传到播放器系统。建议您通过上传网页丰富相关信息。"
-	IDS_MSG_WARN_NOOD_ADMIN_PRIV_TO_START_UPDATER	"必须启动管理员权限\r\n才可以启动自动升级程序！\r\n现在进入管理员权限么？"
-	IDS_MSG_HOW_MANY_SUB_HAVE_BEEN_DOWNLOADED	"%d 个字幕已经下载成功"
-	IDS_MSG_HAVNT_GOT_ANY_MATCHED_SUBTITLE	"没有下载到匹配的字幕。\n要不要试试看通过网页搜索？"
-	IDS_OSD_MSG_SET_NEW_VSYNC_OFFSET	"新的VSync TargetSyncOffset %0.2f "
-	IDS_OSD_MSG_CHANGE_PLAY_SPEED_RATE	"播放速度变为 %0.1f"
-	IDS_OSD_MSG_SWITCH_AUDIO_DEVICE_FOR_NEW_PLAYSPEED	"正在切换设置以允许高速播放..."
-	IDS_OSD_MSG_SUGGEST_USE_WAVEOUT	"建议使用WaveOut而非DirectSound类音频输出选项以支持此速率 (%0.1f)"
-	IDS_OSD_MSG_VOLUME_CHANGED	"音量: %d%%  "
-	IDS_LOG_MSG_VOLUME_CHANGED_FAIL	"设置音量失败 %d : %d"
-	IDS_OSD_MSG_VOLUME_CHANGING_FAILED_OR_UNSUPPORTED	"您当前的音频设备不支持音量控制，请在音频菜单中选择正确的音频设备。"
-	IDS_MSG_RENDER_NOT_SUPPORT_BRIGHT_CONTROL	"您没有启用或显卡(或驱动)不支持亮度控制"
-	IDS_OSD_MSG_BRIGHT_CONTRAST_CHANGE	"亮度: %0.2f  对比度: %0.2f "
-	IDS_MSG_DEVICE_NOT_SUPPORT_BRIGHT_CONTRAST_CHANGE	"您的显卡(或驱动)不支持亮度控制"
-	IDS_OSD_MSG_BRIGHT_CONTRAST_CHANGED	"亮度: %0.2f  对比度: %0.2f "
-	IDS_MSG_NEED_D3D9X_DLL	"请通过自动更新下载必要的组件(d3d9x.dll)"
-	IDS_MSG_NEED_HARDWARE_PIXEL_SHADER_2	"需要硬件 Pixel Shader 2.0"
-	IDS_OSD_MSG_PLS_USE_UPDATER_UPDATE_D3D9X_DLL	"请通过自动更新下载必要的组件(d3d9x.dll): "
-	IDS_OSD_MSG_REQUIRE_PIXEL_SHADER_2	"需要硬件 Pixel Shader 2.0: "
-	IDS_MSG_THROW_BROKEN_DIRECTX_SUPPORT	"DirectX系统组件受损，您可能需要重新重新安装DirextX 9+"
-	IDS_MSG_THROW_OPRATION_CANCELED	"操作已取消"
-	IDS_MSG_THROW_UNABLE_OPEN_FILE	"未能打开文件, %X"
-	IDS_MSG_THROW_ILLEGE_FILENAME	"非法文件名"
-	IDS_MSG_THROW_OUTOF_MEMORY	"内存不足"
-	IDS_MSG_THROW_UNABLE_DECODE	"未能解码"
-	IDS_MSG_THROW_UNSUPPORT_SOURCE	"未能打开文件(Source)"
-	IDS_MSG_THROW_FAIL_CREATE_RENDER	"未能打开文件(Render)"
-	IDS_MSG_THROW_FILE_NOT_FOUND	"文件不存在"
-	IDS_MSG_THROW_UNKNOWN_FILE_TYPE	"未知文件类型"
-	IDS_MSG_THROW_UNSUPPORT_STREAM_TYPE	"不支持的流类型"
-	IDS_PLAYING_TITLENAME_UNKNOWN	"未知"
-	IDS_OSD_MSG_NEED_ENABLE_COLOR_CONTROL_IN_SETTING_PANNEL	"您需要在选项面板中启用内置亮度\\色彩控制器才能控制亮度"
-	IDS_MSG_WARN_NOT_FOUND_AND_PLS_INSERT_DISK	"没有找到 %s 请插入光盘"
-	IDS_MSG_THROW_FILE_NOT_EXIST	"文件不存在"
-	IDS_OSD_MSG_IMAGE_OPEN_FAILED	"图片读取失败 "
-	IDS_MENU_ITEM_LABEL_CDROM_UNKNOWN	"光盘 "
-	IDS_MENU_ITEM_LABEL_CDROM_AUDIOCD	"音频CD "
-	IDS_MENU_ITEM_AEROGLASS_UNSUPPORT	"玻璃效果(系统不支持)"
-	IDS_MENU_ITEM_AUDIODEVICE_SYSTEM_DEFAULT	"系统默认"
-	IDS_MENU_ITEM_AUDIODEVICE_NAMETRANSLATE_DEFAULT	"默认"
-	IDS_MENU_ITEM_AUDIODEVICE_NAMETRANSLATE_DEVICE	"设备"
-	IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_DEAULT	"系统默认"
-	IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_LEFT	"只播放左声道"
-	IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_RIGHT	"只播放右声道"
-	IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_CENTER	"只播放中置声道"
-	IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_AUDIO	"音轨"
-	IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_CHINESE	"汉语"
-	IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_JAPANESE	"日语"
-	IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_ENGLISH	"英语"
-	IDS_MENU_ITEM_SUBTITLE_NOT_SUPPORT_VIDEO	"没有可供加载字幕的视频"
-	IDS_MENU_ITEM_2ND_SUBTITLE	"第二字幕"
-	IDS_MENU_ITEM_INTERNET_SUBTITLE	"网络字幕"
-	IDS_MENU_ITEM_LOAD_SUBTITLE	"调入字幕文件..."
-	IDS_MENU_ITEM_AUTO_LOAD_2ND_SUBTITLE	"自动启用第二字幕"
-	IDS_MENU_ITEM_ENABLE_SUBTITLE	"启用"
-	IDS_MENU_ITEM_CLEAN_PLAY_HISTORY	"清除历史记录"
-	IDS_MENU_ITEM_DISABLE_PLAY_HISTORY	"禁用历史记录"
-	IDS_MENU_ITEM_ENABLE_PLAY_HISTORY	"启用历史记录"
-	IDS_MENU_ITEM_ENABLE_QMODE_RENDER	"启用画质模式..."
-	IDS_MENU_ITEM_STANDARD_RESIZER	"标准优化缩放"
-	IDS_MENU_ITEM_HIGH_Q_RESIZER	"智能倍线缩放"
-	IDS_OSD_MSG_CURRENT_PLAYING	"正在播放: "
-	IDS_OSD_MSG_CURRENT_2NDSUB_INFO	"正在显示第二字幕 %s 延时设为 %d 毫秒 高度：%d%%"
-	IDS_OSD_MSG_CURRENT_MAINSUB_INFO	"正在显示主字幕 %s 延时设为 %d 毫秒 高度：%d%%"
-	IDS_DIALOG_UESETTING_PANNEL_TITLE	"射手播放器选项设置面板"
-	IDS_OSD_MSG_CHANGE_MAINSUB_DELAY	"主字幕延时已经设为： %d ms"
-	IDS_OSD_MSG_CHANGE_2NDSUB_DELAY	"第二字幕延时已经设为： %d ms"
-	IDS_OSD_MSG_CHANGE_MAINSUB_POS_HIGH	"主字幕高度已经设为：%d %%"
-	IDS_OSD_MSG_CHANGE_2NDSUB_POS_HIGH	"第二字幕高度已经设为：%d %%"
-	IDS_OSD_MSG_CHANGE_MAINSUB_FONTSIZE	"主字幕字体已经设为：%0.0f  "
-	IDS_OSD_MSG_CHANGE_2NDSUB_FONTSIZE	"第二字幕字体已经设为：%0.0f  "
-	IDS_DIALOG_SELECT_IMAGE_CAPTURE_TO_FOLDER	"选择截图默认保存文件夹"
-	IDS_DIALOG_THEME_BACKGROUND_SETTING_TITLE	"界面背景设置..."
-	IDS_MSG_WARNING_DELETE_CURRENT_FILE	"删除当前文件：\r\n%s ?"
-	IDS_MSG_WARNING_DELETE_CURRENT_FOLDER	"删除当前文件夹：\r\n%s ?"
-	IDS_MSG_WARNING_DELETE_CURRENT_FOLDER_CONFIRM	"真的要删除当前文件夹么？\n此操作将无法撤消！"
-	IDS_MENU_ITEM_DELETE_CURRENT_FILE	"删除当前文件"
-	IDS_MENU_ITEM_DELETE_CURRENT_FOLDER	"删除当前文件夹"
-	IDS_MENU_ITEM_DELETE_CURRENT_FILE_WITH_NAME	"删除当前文件(%s)"
-	IDS_MENU_ITEM_DELETE_CURRENT_FOLDER_WITH_PATH	"删除当前文件夹(%s)"
-	IDS_LOG_MSG_DXVALINE	"硬件加速 ： %d %s  无限兼容： %d"
-	IDS_MAINFRAME_TITLE_DXVA_TAG	"[硬件高清%s] " IDS_OSD_MSD_CURRENT_PLAYING_AT_LOCATION	" 位于: "
-	IDS_FILEOPEN_DISLOG_ALL_MEDIA_TYPE	"所有文件类型 (*.*)|*.*|"
-	IDS_MSG_CRASH_DUMPED	"程序发生意外,诊断文件已经保存到:'%s'\n请将该文件发送至tomasen@gmail.com\n以便我们不断完善"
-	IDS_MSG_SAVE_CRASH_DUMP_FAIL	"保存文件到 '%s'失败,(错误号: %d)"
-	IDS_MSG_CRASH_DUMP_CREATION_FAILED	"在'%s'创建 dump 文件失败,(错误号 %d)"
-	IDS_MSG_DBGHELP_DLL_IS_TOO_OLD	"dbghelp.dll 文件太旧,不能支持MiniDumpWriteDump函数"
-	IDS_MSG_DBGHELP_DLL_NOT_EXIST	"dbghelp.dll 文件不存在"
-	IDS_MSG_HANGED_DUMP_CREATED	"前一进程锁死,诊断文件已经保存到:'%s'\n请将该文件发送至tomasen@gmail.com，以便我们不断完善"
-	IDS_MSG_HANG_DUMP_SAVE_FAILED	"保存文件到 '%s'失败,(错误号: %d)"
-	IDS_MSG_HANG_DUMP_CREATE_FAILED	"在'%s'创建 dump 文件失败,(错误号 %d)"
-	IDS_HOTKEY_BOSS_KEY	"老板键"
-	IDS_HOTKEY_PLAY_PAUSE	"播放/暂停"
-	IDS_HOTKEY_SEEKFORWARDMED	"快进"
-	IDS_HOTKEY_SEEKBACKFORD	"快退"
-	IDS_HOTKEY_FILEOPEN_QUICK	"快速打开文件"
-	IDS_HOTKEY_FILEOPEN_URL	"打开网址"
-	IDS_HOTKEY_FILEOPEN_NORMAL	"打开文件"
-	IDS_HOTKEY_FILEOPEN_FOLDER	"打开文件"
-	IDS_HOTKEY_SUBTITLE_MOVE_UP	"主字幕上移"
-	IDS_HOTKEY_SUBTITLE_MOVE_DOWN	"主字幕下移"
-	IDS_HOTKEY_SUBTITLE_2ND_MOVE_UP	"第二字幕上移"
-	IDS_HOTKEY_SUBTITLE_2ND_MOVE_DOWN	"第二字幕下移"
-	IDS_HOTKEY_SUBTITLE_FONT_SHRINK	"缩小字幕字体"
-	IDS_HOTKEY_SUBTITLE_FONT_ENLARGE	"放大字幕字体"
-	IDS_HOTKEY_SUBTITLE_1ST_FONT_SHRINK	"缩小主字幕字体"
-	IDS_HOTKEY_SUBTITLE_1ST_FONT_ENLARGE	"放大主字幕字体"
-	IDS_HOTKEY_SUBTITLE_2ND_FONT_SHRINK	"缩小第二字幕字体"
-	IDS_HOTKEY_SUBTITLE_2ND_FONT_ENLARGE	"放大第二字幕字体"
-	IDS_HOTKEY_SUBTITLE_1ST_DELAY_REDUCE	"减少主字幕延时"
-	IDS_HOTKEY_SUBTITLE_1ST_DELAY_PLUS	"增加主字幕延时"
-	IDS_HOTKEY_SUBTITLE_2ND_DELAY_REDUCE	"减少第二字幕延时"
-	IDS_HOTKEY_SUBTITLE_2ND_DELAY_PLUS	"增加第二字幕延时"
-	IDS_HOTKEY_BRIGHT_MORE	"提高亮度"
-	IDS_HOTKEY_BRIGHT_LESS	"降低亮度"
-	IDS_HOTKEY_ABCONTROL_TOGGEL	"切换AB控制"
-	IDS_HOTKEY_ABCONTROL_SETA	"AB控制设置A点"
-	IDS_HOTKEY_ABCONTROL_SETB	"AB控制设置B点"
-	IDS_HOTKEY_FILEOPEN_DVD	"打开DVD"
-	IDS_HOTKEY_FILEOPEN_BD	"打开蓝光"
-	IDS_HOTKEY_FILE_SAVEAS	"另存为"
-	IDS_HOTKEY_IMAGE_SAVEAS	"保存图片"
-	IDS_HOTKEY_IMAGE_SAVE_AUTO	"快速截图到默认目录"
-	IDS_HOTKEY_LOAD_SUBTITLE	"读取字幕"
-	IDS_HOTKEY_SAVE_SUBTITLE	"保存字幕"
-	IDS_HOTKEY_COPY_IMAGE_TO_CLIPBOARD	"截图至剪贴板"
-	IDS_HOTKEY_FILE_PROPERTIES	"属性"
-	IDS_HOTKEY_FILE_EXIT	"退出"
-	IDS_HOTKEY_STEAM_SUBTITLE_TOGGLE	"隐藏或显示字幕"
-	IDS_HOTKEY_PANSCAN_RESET	"重置画面位置"
-	IDS_HOTKEY_PLAY_PLAY	"开始播放"
-	IDS_HOTKEY_PLAY_STOP	"停止播放"
-	IDS_HOTKEY_PLAY_FRAMESTEP	"逐帧前进"
-	IDS_HOTKEY_PLAY_FRAMESTEP_BACK	"逐帧回退"
-	IDS_HOTKEY_PLAY_INCREASE_RATE	"加速播放"
-	IDS_HOTKEY_PLAY_DECREASE_RATE	"减速播放"
-	IDS_HOTKEY_TOGGLE_FULLSCREEN	"切换全屏"
-	IDS_HOTKEY_AUDIO_DELAY_PLUS	"音频延时 +50ms"
-	IDS_HOTKEY_AUDIO_DELAY_REDUCE	"音频延时 -50ms"
-	IDS_HOTKEY_TOGGLE_FULLSCREEN_SECONDARY	"切换全屏"
-	IDS_HOTKEY_TOGGLE_PLAYLIST	"打开播放列表"
-	IDS_HOTKEY_PLAY_RESET_PLAYRATE	"重置播放速度"
-	IDS_HOTKEY_SEEK_FORWARD_SMALL	"小幅快进"
-	IDS_HOTKEY_SEEK_BACKWARD_SMALL	"小幅快退"
-	IDS_HOTKEY_SEEK_FORWARD_MED	"中幅快进"
-	IDS_HOTKEY_SEEK_BACKWARD_MED	"中幅快退"
-	IDS_HOTKEY_SEEK_FORWARD_BIG	"大幅快进"
-	IDS_HOTKEY_SEEK_BACKWARD_BIG	"大幅快退"
-	IDS_HOTKEY_SEEK_FORWARD_KEYFRAME	"关键帧快进"
-	IDS_HOTKEY_SEEK_BACKWARD_KEYFRAME	"关键帧快退"
-	IDS_HOTKEY_NAV_SKIP_FORWARD	"下一段"
-	IDS_HOTKEY_NAV_SKIP_BACKWARD	"上一段"
-	IDS_HOTKEY_NAV_SKIP_FORWARD_PLITEM	"下一个项目"
-	IDS_HOTKEY_NAV_SKIP_BACKWARD_PLITEM	"上一个项目"
-	IDS_HOTKEY_TOGGLE_CAPTION_MENU	"显隐标题栏"
-	IDS_HOTKEY_TOGGLE_SEEK_BAR	"显隐时间栏"
-	IDS_HOTKEY_TOGGLE_TOOL_BAR	"显隐控制按钮"
-	IDS_HOTKEY_TOGGLE_PLAY_INFORMATION	"显隐视频信息"
-	IDS_HOTKEY_TOGGLE_PLAY_STATUS	"显隐播放信息"
-	IDS_HOTKEY_TOGGLE_TRANSPARENT_CONTROL_DIALOG	"显隐半透明控制"
-	IDS_HOTKEY_TOGGLE_SUBRESYNC	"显隐字幕调整工具"
-	IDS_HOTKEY_TOGGLE_CAPTURE_PANEL	"显隐视频捕捉工具"
-	IDS_HOTKEY_TOGGLE_SHADER_EDITOR_PANEL	"显隐画质特效编辑工具"
-	IDS_HOTKEY_UI_PRESET_MINIMAL	"精简界面"
-	IDS_HOTKEY_UI_PRESET_COMPACT	"标准界面"
-	IDS_HOTKEY_ZOOM_50	"画面 50%"
-	IDS_HOTKEY_ZOOM_100	"画面 100%"
-	IDS_HOTKEY_ZOOM_200	"画面 200%"
-	IDS_HOTKEY_ZOOM_AUTOFIT	"自适应画面"
-	IDS_HOTKEY_ASPECT_RATIO_NEXT	"切换画面比例"
-	IDS_HOTKEY_VIDEO_FRAME_50	"50% 画面"
-	IDS_HOTKEY_VIDEO_FRAME_100	"100% 画面"
-	IDS_HOTKEY_VIDEO_FRAME_200	"200% 画面"
-	IDS_HOTKEY_VIDEO_FRAME_STRETCH	"拉伸"
-	IDS_HOTKEY_VIDEO_FRAME_REMOVE_BLACK_BAR	"去除黑边"
-	IDS_HOTKEY_VIDEO_FRAME_STANDARD	"标准画面"
-	IDS_HOTKEY_PIN_ONTOP_ALWAYS	"钉在桌面前端"
-	IDS_HOTKEY_PLAY_GOTO	"快速跳转"
-	IDS_HOTKEY_PANSCAN_SIZE_PLUS	"画面放大"
-	IDS_HOTKEY_PANSCAN_WIDTH_PLUS	"画面更宽"
-	IDS_HOTKEY_PANSCAN_HEIGHT_PLUS	"画面更高"
-	IDS_HOTKEY_PANSCAN_SIZE_REDUCE	"画面缩小"
-	IDS_HOTKEY_PANSCAN_WIDTH_REDUCE	"画面更窄"
-	IDS_HOTKEY_PANSCAN_HEIGHT_REDUCE	"画面更矮"
-	IDS_HOTKEY_PANSCAN_CENTER	"画面居中"
-	IDS_HOTKEY_PANSCAN_MOVE_LEFT	"画面左移"
-	IDS_HOTKEY_PANSCAN_MOVE_RIGHT	"画面右移"
-	IDS_HOTKEY_PANSCAN_MOVE_UP	"画面上移"
-	IDS_HOTKEY_PANSCAN_MOVE_DOWN	"画面下移"
-	IDS_HOTKEY_PANSCAN_MOVE_UPLEFT	"画面左上移"
-	IDS_HOTKEY_PANSCAN_MOVE_UPRIGHT	"画面右上移"
-	IDS_HOTKEY_PANSCAN_MOVE_BOTTOMLEFT	"画面左下移"
-	IDS_HOTKEY_PANSCAN_MOVE_BOTTOMRIGHT	"画面右下移"
-	IDS_HOTKEY_PANSCAN_ROTATE_X_PLUS	"X轴旋转+"
-	IDS_HOTKEY_PANSCAN_ROTATE_X_REDUCE	"X轴旋转-"
-	IDS_HOTKEY_PANSCAN_ROTATE_Y_PLUS	"Y轴旋转+"
-	IDS_HOTKEY_PANSCAN_ROTATE_Y_REDUCE	"Y轴旋转-"
-	IDS_HOTKEY_PANSCAN_ROTATE_Z_PLUS	"Z轴旋转+"
-	IDS_HOTKEY_PANSCAN_ROTATE_Z_REDUCE	"Z轴旋转-"
-	IDS_HOTKEY_VOLUME_UP	"提高音量"
-	IDS_HOTKEY_VOLUME_DOWN	"降低音量"
-	IDS_HOTKEY_VOLUME_MUTE	"静音"
-	IDS_HOTKEY_DVD_TITLEMENU	"DVD标题菜单"
-	IDS_HOTKEY_DVD_ROOTMENU	"DVD主菜单"
-	IDS_HOTKEY_DVD_SUBTITLE_MENU	"DVD字幕菜单"
-	IDS_HOTKEY_DVD_AUDIO_MENU	"DVD音频菜单"
-	IDS_HOTKEY_DVD_ANGLE_MENU	"DVD视角菜单"
-	IDS_HOTKEY_DVD_CHAP_MENU	"DVD章节菜单"
-	IDS_HOTKEY_DVD_MENU_CONTROL_LEFT	"DVD菜单控制：左"
-	IDS_HOTKEY_DVD_MENU_CONTROL_RIGHT	"DVD菜单控制：右"
-	IDS_HOTKEY_DVD_MENU_CONTROL_UP	"DVD菜单控制：上"
-	IDS_HOTKEY_DVD_MENU_CONTROL_DOWN	"DVD菜单控制：下"
-	IDS_HOTKEY_DVD_MENU_CONTROL_OK	"DVD菜单控制：确认"
-	IDS_HOTKEY_DVD_MENU_CONTROL_RETURN	"DVD菜单控制：返回"
-	IDS_HOTKEY_DVD_MENU_CONTROL_EXIT	"DVD菜单控制：退出"
-	IDS_HOTKEY_DVD_MENU_CONTROL_TOGGLE_SUBTITLE	"DVD控制：开关字幕"
-	IDS_HOTKEY_DVD_MENU_CONTROL_ANGLE_NEXT	"DVD控制：下一个角度)"
-	IDS_HOTKEY_DVD_MENU_CONTROL_ANGLE_PREV	"DVD控制：上一个角度"
-	IDS_HOTKEY_DVD_MENU_CONTROL_AUDIO_NEXT	"DVD控制：下一个音轨"
-	IDS_HOTKEY_DVD_MENU_CONTROL_AUDIO_PREV	"DVD控制：上一个音轨"
-	IDS_HOTKEY_DVD_MENU_CONTROL_SUBTITLE_NEXT	"DVD控制：下一个字幕"
-	IDS_HOTKEY_DVD_MENU_CONTROL_SUBTITLE_PREV	"DVD控制：上一个字幕"
-	IDS_HOTKEY_SETTING_PANEL	"选项设置"
-	IDS_HOTKEY_AUDIO_STREAM_NEXT	"下一个音轨"
-	IDS_HOTKEY_AUDIO_STREAM_PREV	"上一个音轨"
-	IDS_HOTKEY_SUBTITLE_NEXT	"下一个字幕"
-	IDS_HOTKEY_SUBTITLE_PREV	"上一个字幕"
-	IDS_HOTKEY_SUBTITLE_TOGGLE	"显示/隐藏字幕"
-	IDS_HOTKEY_SUBTITLE_RELOAD	"重新读取字幕"
-	IDS_HOTKEY_OGM_AUDIO_STREAM_NEXT	"下一个音轨(OGM)"
-	IDS_HOTKEY_OGM_AUDIO_STREAM_PREV	"上一个音轨(OGM)"
-	IDS_HOTKEY_OGM_SUBTITLE_NEXT	"下一个字幕(OGM)"
-	IDS_HOTKEY_OGM_SUBTITLE_PREV	"上一个字幕(OGM)"
-	IDS_HOTKEY_VSYNC_OFFSET_MORE	"加大防撕裂值"
-	IDS_HOTKEY_VSYNC_OFFSET_LESS	"加大防撕裂值"
-	IDS_HOTKEY_TOGGLE_RENDER_STATUS	"显示画面输出信息"
-	IDS_SETTING_DEFAULT_MAIN_SUBTITLE_FONT_STYLE	"20,20,20,20,2,0,2.000000,2.000000,3.000000,3.000000,0x00ecec,0x00ffff,0x000000,0x000000,0x00,0x00,0x00,0x80,0,黑体,20.000000,100.000000,100.000000,0.000000,700,0,0,0,0,0.000000,0.000000,0.000000,0.000000,0,0.700000"
-	IDS_SETTING_DEFAULT_2ND_SUBTITLE_FONT_STYLE	"20,20,20,20,2,0,2.000000,2.000000,3.000000,3.000000,0x00ecec,0x00ffff,0x000000,0x000000,0x00,0x00,0x00,0x80,1,黑体,20.000000,100.000000,100.000000,0.000000,700,0,0,0,0,0.000000,0.000000,0.000000,0.000000,0,0.700000"
-	IDS_PANSCAN_PERSET_STRING_FORMAT_WIDE	"变形宽银幕,%.3f,%.3f,%.3f,%.3f"
-	IDS_MSG_WARN_UNABLE_LOAD_DX9_DLL	"未能调入DX9文件DLL"
-	IDS_MSG_WARN_UNABLE_ENTRANS_D3D_DLL	"未能找到正确的DLL入口"
-	IDS_COLOR_CONTROL_LABEL_BRIGHT	"亮度: "
-	IDS_COLOR_CONTROL_LABEL_CONSTANT	"对比度: "
-	IDS_COLOR_CONTROL_BUTTON_RESET	"重置"
-	IDS_COLOR_CONTROL_BUTTON_ENABLE	"启用"
-	IDS_COLOR_CONTROL_BUTTON_DISABLE	"禁用"
-	IDS_PLAYLIST_COL_HEADER_FILENAME	"文件名"
-	IDS_PLAYLIST_COL_HEADER_FILE_LENGTH	"片长"
-	IDS_PLAYLIST_BUTTON_CLEAN	"清空"
-	IDS_PLAYLIST_BUTTON_LOAD_SUB_FOR_PLAYLIST	"为多段视频调入一段字幕"
-	IDS_PLAYLIST_MENU_REMOVE_ALL	"清空"
-	IDS_STATUS_BAR_LABEL_BATTRAY	"电量: %d%%  "
-	IDS_STATUS_BAR_LABEL_BATTRAY_UNLIMIT	"电量: ∽ "
-	IDS_STATUS_BAR_LABEL_PLAY_SPEED	"速率 %0.1fx "
-	IDS_STATUS_BAR_LABEL_BATTRAY_WITH_PADDING	"  电量: %d%% "
-	IDS_STATUS_BAR_LABEL_PLAY_SPEED_WITH_PADDING	"  速率 %0.1fx "
-	IDS_TOOLTIP_SUBTITLE_DELAY_REDUCE	"减少字幕延时"
-	IDS_TOOLTIP_SUBTITLE_DELAY_INCREASE	"增加字幕延时"
-	IDS_TOOLTIP_TOOLBAR_SUBTITLE_BUTTON	"字幕切换或调用"
-	IDS_TOOLTIP_TOOLBAR_BUTTON_PLAYLIST	"播放列表"
-	IDS_TOOLTIP_TOOLBAR_BUTTON_SETTING_PANEL	"设置面板"
-	IDS_TOOLTIP_TOOLBAR_BUTTON_IMAGE_CAPTURE	"快速截图"
-	IDS_TOOLTIP_TOOLBAR_BUTTON_FILE_OPEN	"打开文件"
-	IDS_TOOLTIP_TOOLBAR_BUTTON_SET_SUB_FONT	"修改字幕字体"
-	IDS_TOOLTIP_TOOLBAR_BUTTON_SUB_FONT_INCREASE	"放大字幕"
-	IDS_TOOLTIP_TOOLBAR_BUTTON_SUB_FONT_DECREASE	"缩小字幕"
-	IDS_TOOLTIP_TOPTOOLBAR_BUTTON_STANDARD_VIDEO_FRAME	"标准画面"
-	IDS_TOOLTIP_TOPTOOLBAR_BUTTON_VIDEO_FRAME_REMOVE_BLACK_BAR	"智能去黑边"
-	IDS_TOOLTIP_TOPTOOLBAR_BUTTON_FULLSCREEN	"全屏切换"
-	IDS_TOOLTIP_TOPTOOLBAR_ZOOM_100	"100% 尺寸"
-	IDS_TOOLTIP_TOPTOOLBAR_ZOOM_200	"200% 尺寸"
-	IDS_TOOLTIP_TOPTOOLBAR_BUTTON_AUDIO	"音轨选择"
-	IDS_TOOLTIP_TOPTOOLBAR_BUTTON_VIDEO	"画面增益"
-	IDS_TOOLTIP_TOPTOOLBAR_BUTTON_PIN_ONTOP	"使窗口钉在最前端"
-	IDS_TOOLTIP_TOPTOOLBAR_BUTTON_RESTORE_WINDOW	"恢复正常窗口"
-	IDS_TOOLTIP_TOPTOOLBAR_BUTTON_ROTATE_90	"顺时针旋转 90℃"
-	IDS_TOOLTIP_TOPTOOLBAR_BUTTON_FLIP_V	"垂直翻转"
-	IDS_TOOLTIP_TOPTOOLBAR_BUTTON_IMAGE_CAPTURE	"截图至文件和剪贴板"
-	IDS_TOOLTIP_TOPTOOLBAR_BUTTON_TRANSPARENT_CONTROL_BAR	"窗体半透明"
-	IDS_TOOLTIP_TOPTOOLBAR_BUTTON_BRIGHT_CONTROL	"亮度与对比度"
-	IDS_ACCEL_HOTKEY_SET_BUTTON_KEY	"键"
-	IDS_ACCEL_HOTKEY_KEYNAME_MOUSELEFT	"鼠标左键"
-	IDS_ACCEL_HOTKEY_KEYNAME_MOUSERIGHT	"鼠标右键"
-	IDS_ACCEL_HOTKEY_KEYNAME_MOUSEMIDDLE	"鼠标中键"
-	IDS_ACCEL_HOTKEY_KEYNAME_MOUSE4	"鼠标4键"
-	IDS_ACCEL_HOTKEY_KEYNAME_MOUSE5	"鼠标5键"
-	IDS_ACCEL_HOTKEY_KEYNAME_BACKSPACE	"←退格键"
-	IDS_ACCEL_HOTKEY_KEYNAME_TAB	"Tab键"
-	IDS_ACCEL_HOTKEY_KEYNAME_RETURN	"回车键"
-	IDS_ACCEL_HOTKEY_KEYNAME_PAUSE	"暂停(Pause)键"
-	IDS_ACCEL_HOTKEY_KEYNAME_CAPITAL	"大写控制键"
-	IDS_ACCEL_HOTKEY_KEYNAME_SPACE	"空格键"
-	IDS_ACCEL_HOTKEY_KEYNAME_END	"End键"
-	IDS_ACCEL_HOTKEY_KEYNAME_HOME	"Home键"
-	IDS_ACCEL_HOTKEY_KEYNAME_LEFT_ARROW	"左方向键"
-	IDS_ACCEL_HOTKEY_KEYNAME_UP_ARROW	"上方向键"
-	IDS_ACCEL_HOTKEY_KEYNAME_RIGHT_ARROW	"右方向键"
-	IDS_ACCEL_HOTKEY_KEYNAME_DOWN_ARROW	"下方向键"
-	IDS_ACCEL_HOTKEY_KEYNAME_INS_ARROW	"Ins键"
-	IDS_ACCEL_HOTKEY_KEYNAME_DEL_ARROW	"Del键"
-	IDS_ACCEL_HOTKEY_KEYNAME_LEFT_WIN	"左Win键"
-	IDS_ACCEL_HOTKEY_KEYNAME_RIGHT_WIN	"右Win键"
-	IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_0	"小键盘0"
-	IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_1	"小键盘1"
-	IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_2	"小键盘2"
-	IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_3	"小键盘3"
-	IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_4	"小键盘4"
-	IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_5	"小键盘5"
-	IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_6	"小键盘6"
-	IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_7	"小键盘7"
-	IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_8	"小键盘8"
-	IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_9	"小键盘9"
-	IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_MUTIPLY	"小键盘*"
-	IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_PLUS	"小键盘+"
-	IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_RETURN	"小键盘回车"
-	IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_MINUS	"小键盘-"
-	IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_DOT	"小键盘."
-	IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_SLASH	"小键盘/"
-	IDS_ACCEL_HOTKEY_KEYNAME_SHIFT_LEFT	"左SHIFT"
-	IDS_ACCEL_HOTKEY_KEYNAME_SHIFT_RIGHT	"右SHIFT"
-	IDS_ACCEL_HOTKEY_KEYNAME_CTRL_LEFT	"左Ctrl"
-	IDS_ACCEL_HOTKEY_KEYNAME_CTRL_RIGHT	"右Ctrl"
-	IDS_ACCEL_HOTKEY_KEYNAME_QUOTE	"引号键"
-	IDS_ACCEL_HOTKEY_KEYNAME_NONE	"无"
-	IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_LEFT_DOWN	"左键按下"
-	IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_LEFT_UP	"左键松开"
-	IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_LEFT_DBLCLK	"左键双击"
-	IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_MID_DOWN	"中键按下"
-	IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_MID_UP	"中键松开"
-	IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_MID_DBLCLK	"中键双击"
-	IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_RIGHT_DOWN	"右键按下"
-	IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_RIGHT_UP	"右键松开"
-	IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_RIGHT_DBLCLK	"右键双击"
-	IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_4_DOWN	"鼠标4键按下"
-	IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_4_UP	"鼠标4键松开"
-	IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_4_DBLCLK	"鼠标4键双击"
-	IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_5_DOWN	"鼠标5键按下"
-	IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_5_UP	"鼠标5键松开"
-	IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_5_DBLCLK	"鼠标5键双击"
-	IDS_ACCEL_HOTKEY_KEYNAME_MWHEEL_UP	"滚轮向上"
-	IDS_ACCEL_HOTKEY_KEYNAME_MWHEEL_DOWN	"滚轮向下"
-	IDS_ACCEL_HOTKEY_KEYNAME_COMMAND	"命令"
-	IDS_ACCEL_HOTKEY_COLUMN_HEADER_VKEY	"功能键"
-	IDS_ACCEL_HOTKEY_COLUMN_HEADER_KEY	"按键"
-	IDS_ACCEL_HOTKEY_COLUMN_HEADER_MOUSE	"鼠标"
-	IDS_ACCEL_HOTKEY_COLUMN_HEADER_TYPE	"类型"
-	IDS_ACCEL_HOTKEY_COLUMN_HEADER_MEDIAKEY	"多媒体键"
-	IDS_FILEINFO_ASPECT_RATIO	" (画面比例 %d:%d)"
-	IDS_FILEINFO_VIDEO_RESOLUTION	"视频画面： "
-	IDS_FILEINFO_VIDEO_TIME_LENGTH	"时间长度： "
-	IDS_FILEINFO_FILESIZE	"文件尺寸： "
-	IDS_FILEINFO_FILE_TYPE	"文件类型： "
-	IDS_FILEINFO_MSG_NEED_MEDIAINFO_DLL	"需要 MediaInfo.dll"
-	IDS_FILEASSOC_REG_APPNAME	"射手影音播放器"
-	IDS_ACCEL_HOTKEY_SET_BUTTON_LETTERKEY	"字母"
-	IDS_MSG_WARN_NOOD_ADMIN_PRIV_TO_START_FILEASSOC	"必须启动管理员权限\r\n才可以建立或修改文件关联！\r\n现在进入管理员权限么？"
-	IDS_PANEL_OUTPUT_AUDIO_DEFAULT	"系统默认"
-	IDS_PANEL_SUBSTYLE_DEFAULT	"播放器默认设置"
-	IDS_UESETTING_PANEL_MSG_NOT_SUGGEST_USE_OLD_PANEL	"射手播放器并不推荐您使用已经废弃的旧设置面板\r\n不当的操作可能会带来难以预知的问题\r\n确定要继续么？"
-	IDS_DIALOG_EXTERNAL_FILTER_TITLE	"外置解码器..."
-	IDS_DIALOG_EXTERNAL_AUDIO_CHANNEL_MAPPING	"声道映射..."
-	IDS_DIALOG_HOTKEY_SETTING_PANNEL_TITLE	"快捷键设置..."
-	IDS_DIALOG_THEME_BG_IMAGE_TITLE	"界面背景设置..."
-	IDS_DIALOG_DEFAULT_SUB_SAVE_FOLDER	"默认网络字幕保存到文件夹"
-	IDS_DIALOG_FILEASSOC_TITLE	"文件关联设置..."
-	IDS_MEDIATYPE_INFOLABEL_VIDEO	"视频"
-	IDS_MEDIATYPE_INFOLABEL_MPEG1_VIDEO	"MPEG1 视频"
-	IDS_MEDIATYPE_INFOLABEL_MPEG2_VIDEO	"MPEG2 视频"
-	IDS_MEDIATYPE_INFOLABEL_DIRAC_VIDEO	"Dirac 视频"
-	IDS_MEDIATYPE_INFOLABEL_SUBTITLE	"字幕"
-	IDS_MEDIATYPE_INFOLABEL_DVD_SUBTITLE	"DVD 字幕"
-	IDS_MEDIATYPE_INFOLABEL_AUDIO	"音频"
-	IDS_MEDIATYPE_INFOLABEL_AUDIO_CHANNEL_SINGLE	"%s 单声道"
-	IDS_MEDIATYPE_INFOLABEL_AUDIO_CHANNEL_STEREO	"%s 立体声"
-	IDS_MEDIATYPE_INFOLABEL_AUDIO_CHANNEL_MORE	"%s %d声道"
-	IDS_MEDIATYPE_INFOLABEL_TEXT	"文字"
-	IDS_MEDIATYPE_INFOLABEL_UNKNOWN	"未知"
-	IDS_OSD_MSG_HARDWARE_NOT_SUPPORT_DXVA_SAR	"硬件设备可能不支持加速本文件(SAR)..."
-	IDS_OSD_MSG_HARDWARE_MIGHTNOT_SUPPORT_DXVA	"设备可能没有足够能力硬件加速本文件，请勿勾选“使硬件加速兼容更多文件”选项..."
-	IDS_OSD_MSG_VC1_INTERLACE_DXVA_NOT_SUPPORT	"隔行VC1编码的文件恐怕无法进行硬件加速..."
-	IDS_PANEL_MPEG_DECODER_DEINTERLACE_DEFAULT	"默认优化设置"
-	IDS_LOG_MSG_DETECT_NEWER_VERSION_UPDATER_STARTED	"检测到新的版本，升级程序已启动"
-	IDS_MSG_WARN_UPDATER_CANT_WRITE_DIR	"目录无法写入，升级程序暂停"
-	IDS_LOG_MSG_USING_SVPSUB_SYSTEM_LOOKINGFOR_SUB	"正在通过射手影音字幕智能匹配系统寻找中文字幕"
-	IDS_LOG_MSG_USING_SVPSUB_SYSTEM_LOOKINGFOR_ENGSUB	"正在通过射手影音字幕智能匹配系统寻找英文字幕"
-	IDS_LOG_MSG_USING_SVPSUB_SYSTEM_RETRYING	"正在重试..."
-	IDS_LOG_MSG_SVPSUB_SAMEAS_CURRENT	"射手影音字幕智能匹配系统中的字幕与当前字幕相同 "
-	IDS_LOG_MSG_SVPSUB_SUCCESS_DOWNLOAD_SUB	"成功下载到字幕文件 "
-	IDS_LOG_MSG_SVPSUB_GOT_N_SUB_FILE_DOWNLOADED	"通过射手影音字幕智能匹配系统成功下载到 %d 个字幕文件 "
-	IDS_LOG_MSG_SVPSUB_UPLOAD_FINISHED	"字幕上传完毕"
-	IDS_LOG_MSG_SVPSUB_NETWORK_FAIL	"网络通讯故障，字幕下载失败"
-	IDS_LOG_MSG_SVPSUB_NONE_MATCH_SUB	"没有找到字幕"
-	IDS_LOG_MSG_SVPSUB_DOWNLOAD_FAIL	"数据错误，字幕下载失败"
-	IDS_LOG_MSG_SVPSUB_GOTMATCHED_AND_DOWNLOADING	"字幕已经找到，正在下载"
-
+    IDS_MSG_WARN_UPDATER_CANT_WRITE_DIR "目录无法写入，升级程序暂停"
+    IDS_LOG_MSG_USING_SVPSUB_SYSTEM_LOOKINGFOR_SUB "正在通过射手影音字幕智能匹配系统寻找中文字幕"
+    IDS_LOG_MSG_USING_SVPSUB_SYSTEM_LOOKINGFOR_ENGSUB "正在通过射手影音字幕智能匹配系统寻找英文字幕"
+    IDS_LOG_MSG_USING_SVPSUB_SYSTEM_RETRYING "正在重试..."
+    IDS_LOG_MSG_SVPSUB_SAMEAS_CURRENT "射手影音字幕智能匹配系统中的字幕与当前字幕相同 "
+    IDS_LOG_MSG_SVPSUB_SUCCESS_DOWNLOAD_SUB "成功下载到字幕文件 "
+    IDS_LOG_MSG_SVPSUB_GOT_N_SUB_FILE_DOWNLOADED 
+                            "通过射手影音字幕智能匹配系统成功下载到 %d 个字幕文件 "
+    IDS_LOG_MSG_SVPSUB_UPLOAD_FINISHED "字幕上传完毕"
+    IDS_LOG_MSG_SVPSUB_NETWORK_FAIL "网络通讯故障，字幕下载失败"
+    IDS_LOG_MSG_SVPSUB_NONE_MATCH_SUB "没有找到字幕"
+    IDS_LOG_MSG_SVPSUB_DOWNLOAD_FAIL "数据错误，字幕下载失败"
+    IDS_LOG_MSG_SVPSUB_GOTMATCHED_AND_DOWNLOADING "字幕已经找到，正在下载"
+    IDS_MENU_ITEM_PLAYLOOP_NOLOOP "不循环播放"
+    IDR_MAINFRAME_SHORTNAME "射手播放器"
+    IDS_FORMAT_FILE_SIZE    "文件尺寸: %I64d%s (%I64d bytes)\\N"
+    IDS_MENU_ITEM_SETTING   "设置..."
 END
 
+STRINGTABLE 
+BEGIN
+    IDS_UESETTING_PANEL_GPULIST "您拥有的显卡有：<br/>"
+    IDS_UESETTING_PANEL_GPU_ACCEL_AVALIBLE "适宜使用GPU加速"
+    IDS_UESETTING_PANEL_GPU_ACCEL_MAYBE_NOT_AVALIBLE 
+                            "可能不适宜使用GPU加速 <a class='small' href='mailto:tomasen@gmail.com'>报告错误</a>"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_MSG_CREATE_TOPTOOLBAR_FAIL "Top Toolbar 创建失败！"
+    IDS_MSG_CREATE_SEEKTIP_FAIL "SEEKTIP 创建失败！"
+    IDS_ABCONTROL_SET_APOINT "设置A点"
+    IDS_ABCONTROL_SET_BPOINT "设置B点"
+    IDS_ABCONTROL_START_ABLOOP "开始A-B循环"
+    IDS_ABCONTROL_BREAK_ABLOOP "关闭A-B循环"
+    IDS_TOOLTIP_RESTORE_WINDOW "恢复窗口"
+    IDS_TOOLTIP_SWITCHTO_FULLSCREEN "全屏切换"
+    IDS_TOOLTIP_MINTO_SYSTRAY "最小化到系统托盘"
+    IDS_TOOLTIP_MAINMENU    "菜单"
+    IDS_TOOLTIP_MINIMIZE    "最小化"
+    IDS_TOOLTIP_MAXIMIZE    "最大化"
+    IDS_TOOLTIP_EXIT        "退出"
+    IDS_DIALOG_HOTKEYSETTING_TITLE "快捷键设置..."
+    IDS_MSG_WARN_RESET_PLAYER_SETTING "此操作将清除射手播放器的\n所有设置和播放记录，您确定么？"
+    IDS_OSD_MSG_SET_MAINSUB_DELAY "主字幕延时已经设为： %d ms"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_OSD_MSG_SET_2NDSUB_DELAY "第二字幕延时已经设为： %d ms"
+    IDS_STATSBAR_LABEL_FRAMERATE "帧率"
+    IDS_DVD_MSG_VIDEO_ATTR  "视角: %02d/%02d, %dx%d %dHz %d:%d"
+    IDS_DVD_INFO_SUBTITLE   " (字幕)"
+    IDS_DVD_INFO_DIRECTOR_COMMENT1 " (导演评论1)"
+    IDS_DVD_INFO_DIRECTOR_COMMENT2 " (导演评论2)"
+    IDS_DVD_INFO_AUDIO_FORMAT_UNKNOWN "未知格式"
+    IDS_DVD_INFO_AUDIO_FORMAT "%s, %s %dHz %dbits %d 声道(s)"
+    IDS_DVD_INFO_LANG_DIRCTORCOMMENT_NOTMAL " (导演评论)"
+    IDS_DVD_INFO_LANG_DIRECTORCOMMENT_BIG " (导演评论, Big)"
+    IDS_DVD_INFO_LANG_DIRECTORCOMMENT_CHILDREN " (导演评论, Children)"
+    IDS_MENU_ITEM_DVD_CONTROL "DVD控制"
+    IDS_MENU_ITEM_OPENCDROM "播放光盘"
+    IDS_MENU_ITEM_FILTERS   "滤镜(Filters)"
+    IDS_MENU_ITEM_AUDIO     "声音"
+    IDS_MENU_ITEM_SUBTITLE  "字幕"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_MENU_ITEM_AUDIOLANGUAGE "音轨选择"
+    IDS_MENU_ITEM_DVDSUBTITLE "字幕语言"
+    IDS_MENU_ITEM_DVD_VIDEOANGLE "视角切换"
+    IDS_MENU_ITEM_JUMPTO    "跳至..."
+    IDS_MENU_ITEM_FAVORITES "收藏夹"
+    IDS_MENU_ITEM_SHADER    "播放效果调节"
+    IDS_MENU_ITEM_VIDEOFRAME "视频尺寸"
+    IDS_MENU_ITEM_PANSCAN   "画面微调"
+    IDS_MENU_ITEM_ASPECTRATIO "强制画面比例"
+    IDS_MENU_ITEM_ZOOM      "界面缩放"
+    IDS_MENU_ITEM_PLAYBACK_CONTROL "播放"
+    IDS_MENU_ITEM_PLAYLOOP_NORMAL "循环播放"
+    IDS_MENU_ITEM_PLAYLOOP_PLAYLIST "循环播放(播放列表)"
+    IDS_MENU_ITEM_PLAYLOOP_CURRENT "循环播放(当前影片)"
+    IDS_MENU_ITEM_PLAYLOOP_RANDOM_PLAYLIST "随机播放(播放列表)"
+    IDS_MENU_ITEM_OPEN      "打开"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_MENU_ITEM_SUBTITLE_EVERYTHING "字幕"
+    IDS_MENU_ITEM_RECENT_PALYED "最近播放"
+    IDS_MENU_ITEM_NUMOF_SPEAKER "系统有 %d 个扬声器"
+    IDS_MENU_ITEM_NUMOF_SPEAKER_AUTODETECTED "(自动探测)"
+    IDS_MENU_ITEM_NUMOF_SPEAKER_MANUAL "(手动指定)"
+    IDS_MENU_ITEM_DIGTAL_OUTPUT "数字输出(光纤/SPDIF/HDMI)"
+    IDS_MENU_ITEM_AUDIO_OUTPUT_TO "将声音输出至..."
+    IDS_OSD_MSG_DEVICE_NOT_SUPPORT_VIDEO_QMODE 
+                            "您的设备不支持画质优先模式，自动启用“性能优先模式”，建议重新打开文件"
+    IDS_DIALOG_OPEN_FOLDER_TITLE "打开视频文件夹"
+    IDS_DIALOG_OPEN_BD_FOLDER_TITLE "文件模式打开BD目录"
+    IDS_OSD_MSG_IMAGE_CAPTURE_TO "截图已保存至 %s"
+    IDS_MSG_WARN_NOT_CAPABLE_IMAGE_CAPTURE 
+                            "你选择的图片输出格式和视频不兼容, 未能创建缩略图 (%d bpp dibs)."
+    IDS_OSD_MSG_RENDER_NOT_COMPATE_IMAGE_CAPTURE 
+                            "当前配置模式无法抓取截图，请进入选项-画面控制面板，选择画质或性能模式"
+    IDS_OSD_MSG_DONT_HAVE_VIDEO_FOR_CAPTURE "当前没有播放视频，无从抓取"
+    IDS_MSG_RENDER_SETTING_NOT_SUPPORT_SUBTITLE 
+                            "启用播放器内置字幕功能需要进入选项设置面板选择画质模式\n如果您看到本提示，可能说明您需要升级显卡驱动\n或者您的显卡没有能力支持所需功能(VMR7或9)"
+    IDS_OSD_MSG_UPLOAD_SUB_MSG_SUBDELAY "字幕延时：%d ms\r\n"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_OSD_MSG_UPLOAD_SUB_MSG "本操作将上传您正在播放中的字幕： \r\n %s \r\n%s\r\n是否继续？"
+    IDS_MSG_SUB_ALREADY_MANUAL_UPLOADED "字幕已经上传到播放器系统。建议您通过上传网页丰富相关信息。"
+    IDS_MSG_WARN_NOOD_ADMIN_PRIV_TO_START_UPDATER 
+                            "必须启动管理员权限\r\n才可以启动自动升级程序！\r\n现在进入管理员权限么？"
+    IDS_MSG_HOW_MANY_SUB_HAVE_BEEN_DOWNLOADED "%d 个字幕已经下载成功"
+    IDS_MSG_HAVNT_GOT_ANY_MATCHED_SUBTITLE "没有下载到匹配的字幕。\n要不要试试看通过网页搜索？"
+    IDS_OSD_MSG_SET_NEW_VSYNC_OFFSET "新的VSync TargetSyncOffset %0.2f "
+    IDS_OSD_MSG_CHANGE_PLAY_SPEED_RATE "播放速度变为 %0.1f"
+    IDS_OSD_MSG_SWITCH_AUDIO_DEVICE_FOR_NEW_PLAYSPEED "正在切换设置以允许高速播放..."
+    IDS_OSD_MSG_SUGGEST_USE_WAVEOUT 
+                            "建议使用WaveOut而非DirectSound类音频输出选项以支持此速率 (%0.1f)"
+    IDS_OSD_MSG_VOLUME_CHANGED "音量: %d%%  "
+    IDS_LOG_MSG_VOLUME_CHANGED_FAIL "设置音量失败 %d : %d"
+    IDS_OSD_MSG_VOLUME_CHANGING_FAILED_OR_UNSUPPORTED 
+                            "您当前的音频设备不支持音量控制，请在音频菜单中选择正确的音频设备。"
+    IDS_MSG_RENDER_NOT_SUPPORT_BRIGHT_CONTROL "您没有启用或显卡(或驱动)不支持亮度控制"
+    IDS_OSD_MSG_BRIGHT_CONTRAST_CHANGE "亮度: %0.2f  对比度: %0.2f "
+    IDS_MSG_DEVICE_NOT_SUPPORT_BRIGHT_CONTRAST_CHANGE "您的显卡(或驱动)不支持亮度控制"
+    IDS_OSD_MSG_BRIGHT_CONTRAST_CHANGED "亮度: %0.2f  对比度: %0.2f "
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_MSG_NEED_D3D9X_DLL  "请通过自动更新下载必要的组件(d3d9x.dll)"
+    IDS_MSG_NEED_HARDWARE_PIXEL_SHADER_2 "需要硬件 Pixel Shader 2.0"
+    IDS_OSD_MSG_PLS_USE_UPDATER_UPDATE_D3D9X_DLL "请通过自动更新下载必要的组件(d3d9x.dll): "
+    IDS_OSD_MSG_REQUIRE_PIXEL_SHADER_2 "需要硬件 Pixel Shader 2.0: "
+    IDS_MSG_THROW_BROKEN_DIRECTX_SUPPORT "DirectX系统组件受损，您可能需要重新重新安装DirextX 9+"
+    IDS_MSG_THROW_OPRATION_CANCELED "操作已取消"
+    IDS_MSG_THROW_UNABLE_OPEN_FILE "未能打开文件, %X"
+    IDS_MSG_THROW_ILLEGE_FILENAME "非法文件名"
+    IDS_MSG_THROW_OUTOF_MEMORY "内存不足"
+    IDS_MSG_THROW_UNABLE_DECODE "未能解码"
+    IDS_MSG_THROW_UNSUPPORT_SOURCE "未能打开文件(Source)"
+    IDS_MSG_THROW_FAIL_CREATE_RENDER "未能打开文件(Render)"
+    IDS_MSG_THROW_FILE_NOT_FOUND "文件不存在"
+    IDS_MSG_THROW_UNKNOWN_FILE_TYPE "未知文件类型"
+    IDS_MSG_THROW_UNSUPPORT_STREAM_TYPE "不支持的流类型"
+    IDS_PLAYING_TITLENAME_UNKNOWN "未知"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_OSD_MSG_NEED_ENABLE_COLOR_CONTROL_IN_SETTING_PANNEL 
+                            "您需要在选项面板中启用内置亮度\\色彩控制器才能控制亮度"
+    IDS_MSG_WARN_NOT_FOUND_AND_PLS_INSERT_DISK "没有找到 %s 请插入光盘"
+    IDS_MSG_THROW_FILE_NOT_EXIST "文件不存在"
+    IDS_OSD_MSG_IMAGE_OPEN_FAILED "图片读取失败 "
+    IDS_MENU_ITEM_LABEL_CDROM_UNKNOWN "光盘 "
+    IDS_MENU_ITEM_LABEL_CDROM_AUDIOCD "音频CD "
+    IDS_MENU_ITEM_AEROGLASS_UNSUPPORT "玻璃效果(系统不支持)"
+    IDS_MENU_ITEM_AUDIODEVICE_SYSTEM_DEFAULT "系统默认"
+    IDS_MENU_ITEM_AUDIODEVICE_NAMETRANSLATE_DEFAULT "默认"
+    IDS_MENU_ITEM_AUDIODEVICE_NAMETRANSLATE_DEVICE "设备"
+    IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_DEAULT "系统默认"
+    IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_LEFT "只播放左声道"
+    IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_RIGHT "只播放右声道"
+    IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_CENTER "只播放中置声道"
+    IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_AUDIO "音轨"
+    IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_CHINESE "汉语"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_JAPANESE "日语"
+    IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_ENGLISH "英语"
+    IDS_MENU_ITEM_SUBTITLE_NOT_SUPPORT_VIDEO "没有可供加载字幕的视频"
+    IDS_MENU_ITEM_2ND_SUBTITLE "第二字幕"
+    IDS_MENU_ITEM_INTERNET_SUBTITLE "网络字幕"
+    IDS_MENU_ITEM_LOAD_SUBTITLE "调入字幕文件..."
+    IDS_MENU_ITEM_AUTO_LOAD_2ND_SUBTITLE "自动启用第二字幕"
+    IDS_MENU_ITEM_ENABLE_SUBTITLE "启用"
+    IDS_MENU_ITEM_CLEAN_PLAY_HISTORY "清除历史记录"
+    IDS_MENU_ITEM_DISABLE_PLAY_HISTORY "禁用历史记录"
+    IDS_MENU_ITEM_ENABLE_PLAY_HISTORY "启用历史记录"
+    IDS_MENU_ITEM_ENABLE_QMODE_RENDER "启用画质模式..."
+    IDS_MENU_ITEM_STANDARD_RESIZER "标准优化缩放"
+    IDS_MENU_ITEM_HIGH_Q_RESIZER "智能倍线缩放"
+    IDS_OSD_MSG_CURRENT_PLAYING "正在播放: "
+    IDS_OSD_MSG_CURRENT_2NDSUB_INFO "正在显示第二字幕 %s 延时设为 %d 毫秒 高度：%d%%"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_OSD_MSG_CURRENT_MAINSUB_INFO "正在显示主字幕 %s 延时设为 %d 毫秒 高度：%d%%"
+    IDS_DIALOG_UESETTING_PANNEL_TITLE "射手播放器选项设置面板"
+    IDS_OSD_MSG_CHANGE_MAINSUB_DELAY "主字幕延时已经设为： %d ms"
+    IDS_OSD_MSG_CHANGE_2NDSUB_DELAY "第二字幕延时已经设为： %d ms"
+    IDS_OSD_MSG_CHANGE_MAINSUB_POS_HIGH "主字幕高度已经设为：%d %%"
+    IDS_OSD_MSG_CHANGE_2NDSUB_POS_HIGH "第二字幕高度已经设为：%d %%"
+    IDS_OSD_MSG_CHANGE_MAINSUB_FONTSIZE "主字幕字体已经设为：%0.0f  "
+    IDS_OSD_MSG_CHANGE_2NDSUB_FONTSIZE "第二字幕字体已经设为：%0.0f  "
+    IDS_DIALOG_SELECT_IMAGE_CAPTURE_TO_FOLDER "选择截图默认保存文件夹"
+    IDS_DIALOG_THEME_BACKGROUND_SETTING_TITLE "界面背景设置..."
+    IDS_MSG_WARNING_DELETE_CURRENT_FILE "删除当前文件：\r\n%s ?"
+    IDS_MSG_WARNING_DELETE_CURRENT_FOLDER "删除当前文件夹：\r\n%s ?"
+    IDS_MSG_WARNING_DELETE_CURRENT_FOLDER_CONFIRM "真的要删除当前文件夹么？\n此操作将无法撤消！"
+    IDS_MENU_ITEM_DELETE_CURRENT_FILE "删除当前文件"
+    IDS_MENU_ITEM_DELETE_CURRENT_FOLDER "删除当前文件夹"
+    IDS_MENU_ITEM_DELETE_CURRENT_FILE_WITH_NAME "删除当前文件(%s)"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_MENU_ITEM_DELETE_CURRENT_FOLDER_WITH_PATH "删除当前文件夹(%s)"
+    IDS_LOG_MSG_DXVALINE    "硬件加速 ： %d %s  无限兼容： %d"
+    IDS_MAINFRAME_TITLE_DXVA_TAG "[硬件高清%s] "
+    IDS_OSD_MSD_CURRENT_PLAYING_AT_LOCATION " 位于: "
+    IDS_FILEOPEN_DISLOG_ALL_MEDIA_TYPE "所有文件类型 (*.*)|*.*|"
+    IDS_MSG_CRASH_DUMPED    "程序发生意外,诊断文件已经保存到:'%s'\n请将该文件发送至tomasen@gmail.com\n以便我们不断完善"
+    IDS_MSG_SAVE_CRASH_DUMP_FAIL "保存文件到 '%s'失败,(错误号: %d)"
+    IDS_MSG_CRASH_DUMP_CREATION_FAILED "在'%s'创建 dump 文件失败,(错误号 %d)"
+    IDS_MSG_DBGHELP_DLL_IS_TOO_OLD "dbghelp.dll 文件太旧,不能支持MiniDumpWriteDump函数"
+    IDS_MSG_DBGHELP_DLL_NOT_EXIST "dbghelp.dll 文件不存在"
+    IDS_MSG_HANGED_DUMP_CREATED 
+                            "前一进程锁死,诊断文件已经保存到:'%s'\n请将该文件发送至tomasen@gmail.com，以便我们不断完善"
+    IDS_MSG_HANG_DUMP_SAVE_FAILED "保存文件到 '%s'失败,(错误号: %d)"
+    IDS_MSG_HANG_DUMP_CREATE_FAILED "在'%s'创建 dump 文件失败,(错误号 %d)"
+    IDS_HOTKEY_STEAM_SUBTITLE_TOGGLE "隐藏或显示字幕"
+    IDS_HOTKEY_BOSS_KEY     "老板键"
+    IDS_HOTKEY_PLAY_PAUSE   "播放/暂停"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_HOTKEY_SEEKFORWARDMED "快进"
+    IDS_HOTKEY_SEEKBACKFORD "快退"
+    IDS_HOTKEY_FILEOPEN_QUICK "快速打开文件"
+    IDS_HOTKEY_FILEOPEN_URL "打开网址"
+    IDS_HOTKEY_FILEOPEN_NORMAL "打开文件"
+    IDS_HOTKEY_FILEOPEN_FOLDER "打开文件"
+    IDS_HOTKEY_SUBTITLE_MOVE_UP "主字幕上移"
+    IDS_HOTKEY_SUBTITLE_MOVE_DOWN "主字幕下移"
+    IDS_HOTKEY_SUBTITLE_2ND_MOVE_UP "第二字幕上移"
+    IDS_HOTKEY_SUBTITLE_2ND_MOVE_DOWN "第二字幕下移"
+    IDS_HOTKEY_SUBTITLE_FONT_SHRINK "缩小字幕字体"
+    IDS_HOTKEY_SUBTITLE_FONT_ENLARGE "放大字幕字体"
+    IDS_HOTKEY_SUBTITLE_1ST_FONT_SHRINK "缩小主字幕字体"
+    IDS_HOTKEY_SUBTITLE_1ST_FONT_ENLARGE "放大主字幕字体"
+    IDS_HOTKEY_SUBTITLE_2ND_FONT_SHRINK "缩小第二字幕字体"
+    IDS_HOTKEY_SUBTITLE_2ND_FONT_ENLARGE "放大第二字幕字体"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_HOTKEY_SUBTITLE_1ST_DELAY_REDUCE "减少主字幕延时"
+    IDS_HOTKEY_SUBTITLE_1ST_DELAY_PLUS "增加主字幕延时"
+    IDS_HOTKEY_SUBTITLE_2ND_DELAY_REDUCE "减少第二字幕延时"
+    IDS_HOTKEY_SUBTITLE_2ND_DELAY_PLUS "增加第二字幕延时"
+    IDS_HOTKEY_BRIGHT_MORE  "提高亮度"
+    IDS_HOTKEY_BRIGHT_LESS  "降低亮度"
+    IDS_HOTKEY_ABCONTROL_TOGGEL "切换AB控制"
+    IDS_HOTKEY_ABCONTROL_SETA "AB控制设置A点"
+    IDS_HOTKEY_ABCONTROL_SETB "AB控制设置B点"
+    IDS_HOTKEY_FILEOPEN_DVD "打开DVD"
+    IDS_HOTKEY_FILEOPEN_BD  "打开蓝光"
+    IDS_HOTKEY_FILE_SAVEAS  "另存为"
+    IDS_HOTKEY_IMAGE_SAVEAS "保存图片"
+    IDS_HOTKEY_IMAGE_SAVE_AUTO "快速截图到默认目录"
+    IDS_HOTKEY_LOAD_SUBTITLE "读取字幕"
+    IDS_HOTKEY_SAVE_SUBTITLE "保存字幕"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_HOTKEY_COPY_IMAGE_TO_CLIPBOARD "截图至剪贴板"
+    IDS_HOTKEY_FILE_PROPERTIES "属性"
+    IDS_HOTKEY_FILE_EXIT    "退出"
+    IDS_HOTKEY_SUBTITLE_TOGGLE "显示/隐藏字幕"
+    IDS_HOTKEY_PANSCAN_RESET "重置画面位置"
+    IDS_HOTKEY_PLAY_PLAY    "开始播放"
+    IDS_HOTKEY_PLAY_STOP    "停止播放"
+    IDS_HOTKEY_PLAY_FRAMESTEP "逐帧前进"
+    IDS_HOTKEY_PLAY_FRAMESTEP_BACK "逐帧回退"
+    IDS_HOTKEY_PLAY_INCREASE_RATE "加速播放"
+    IDS_HOTKEY_PLAY_DECREASE_RATE "减速播放"
+    IDS_HOTKEY_TOGGLE_FULLSCREEN "切换全屏"
+    IDS_HOTKEY_AUDIO_DELAY_PLUS "音频延时 +50ms"
+    IDS_HOTKEY_AUDIO_DELAY_REDUCE "音频延时 -50ms"
+    IDS_HOTKEY_TOGGLE_FULLSCREEN_SECONDARY "切换全屏"
+    IDS_HOTKEY_TOGGLE_PLAYLIST "打开播放列表"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_HOTKEY_PLAY_RESET_PLAYRATE "重置播放速度"
+    IDS_HOTKEY_SEEK_FORWARD_SMALL "小幅快进"
+    IDS_HOTKEY_SEEK_BACKWARD_SMALL "小幅快退"
+    IDS_HOTKEY_SEEK_FORWARD_MED "中幅快进"
+    IDS_HOTKEY_SEEK_BACKWARD_MED "中幅快退"
+    IDS_HOTKEY_SEEK_FORWARD_BIG "大幅快进"
+    IDS_HOTKEY_SEEK_BACKWARD_BIG "大幅快退"
+    IDS_HOTKEY_SEEK_FORWARD_KEYFRAME "关键帧快进"
+    IDS_HOTKEY_SEEK_BACKWARD_KEYFRAME "关键帧快退"
+    IDS_HOTKEY_NAV_SKIP_FORWARD "下一段"
+    IDS_HOTKEY_NAV_SKIP_BACKWARD "上一段"
+    IDS_HOTKEY_NAV_SKIP_FORWARD_PLITEM "下一个项目"
+    IDS_HOTKEY_NAV_SKIP_BACKWARD_PLITEM "上一个项目"
+    IDS_HOTKEY_TOGGLE_CAPTION_MENU "显隐标题栏"
+    IDS_HOTKEY_TOGGLE_SEEK_BAR "显隐时间栏"
+    IDS_HOTKEY_TOGGLE_TOOL_BAR "显隐控制按钮"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_HOTKEY_TOGGLE_PLAY_INFORMATION "显隐视频信息"
+    IDS_HOTKEY_TOGGLE_PLAY_STATUS "显隐播放信息"
+    IDS_HOTKEY_TOGGLE_TRANSPARENT_CONTROL_DIALOG "显隐半透明控制"
+    IDS_HOTKEY_TOGGLE_SUBRESYNC "显隐字幕调整工具"
+    IDS_HOTKEY_TOGGLE_CAPTURE_PANEL "显隐视频捕捉工具"
+    IDS_HOTKEY_TOGGLE_SHADER_EDITOR_PANEL "显隐画质特效编辑工具"
+    IDS_HOTKEY_UI_PRESET_MINIMAL "精简界面"
+    IDS_HOTKEY_UI_PRESET_COMPACT "标准界面"
+    IDS_HOTKEY_ZOOM_50      "画面 50%"
+    IDS_HOTKEY_ZOOM_100     "画面 100%"
+    IDS_HOTKEY_ZOOM_200     "画面 200%"
+    IDS_HOTKEY_ZOOM_AUTOFIT "自适应画面"
+    IDS_HOTKEY_ASPECT_RATIO_NEXT "切换画面比例"
+    IDS_HOTKEY_VIDEO_FRAME_50 "50% 画面"
+    IDS_HOTKEY_VIDEO_FRAME_100 "100% 画面"
+    IDS_HOTKEY_VIDEO_FRAME_200 "200% 画面"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_HOTKEY_VIDEO_FRAME_STRETCH "拉伸"
+    IDS_HOTKEY_VIDEO_FRAME_REMOVE_BLACK_BAR "去除黑边"
+    IDS_HOTKEY_VIDEO_FRAME_STANDARD "标准画面"
+    IDS_HOTKEY_PIN_ONTOP_ALWAYS "钉在桌面前端"
+    IDS_HOTKEY_PLAY_GOTO    "快速跳转"
+    IDS_HOTKEY_PANSCAN_SIZE_PLUS "画面放大"
+    IDS_HOTKEY_PANSCAN_WIDTH_PLUS "画面更宽"
+    IDS_HOTKEY_PANSCAN_HEIGHT_PLUS "画面更高"
+    IDS_HOTKEY_PANSCAN_SIZE_REDUCE "画面缩小"
+    IDS_HOTKEY_PANSCAN_WIDTH_REDUCE "画面更窄"
+    IDS_HOTKEY_PANSCAN_HEIGHT_REDUCE "画面更矮"
+    IDS_HOTKEY_PANSCAN_CENTER "画面居中"
+    IDS_HOTKEY_PANSCAN_MOVE_LEFT "画面左移"
+    IDS_HOTKEY_PANSCAN_MOVE_RIGHT "画面右移"
+    IDS_HOTKEY_PANSCAN_MOVE_UP "画面上移"
+    IDS_HOTKEY_PANSCAN_MOVE_DOWN "画面下移"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_HOTKEY_PANSCAN_MOVE_UPLEFT "画面左上移"
+    IDS_HOTKEY_PANSCAN_MOVE_UPRIGHT "画面右上移"
+    IDS_HOTKEY_PANSCAN_MOVE_BOTTOMLEFT "画面左下移"
+    IDS_HOTKEY_PANSCAN_MOVE_BOTTOMRIGHT "画面右下移"
+    IDS_HOTKEY_PANSCAN_ROTATE_X_PLUS "X轴旋转+"
+    IDS_HOTKEY_PANSCAN_ROTATE_X_REDUCE "X轴旋转-"
+    IDS_HOTKEY_PANSCAN_ROTATE_Y_PLUS "Y轴旋转+"
+    IDS_HOTKEY_PANSCAN_ROTATE_Y_REDUCE "Y轴旋转-"
+    IDS_HOTKEY_PANSCAN_ROTATE_Z_PLUS "Z轴旋转+"
+    IDS_HOTKEY_PANSCAN_ROTATE_Z_REDUCE "Z轴旋转-"
+    IDS_HOTKEY_VOLUME_UP    "提高音量"
+    IDS_HOTKEY_VOLUME_DOWN  "降低音量"
+    IDS_HOTKEY_VOLUME_MUTE  "静音"
+    IDS_HOTKEY_DVD_TITLEMENU "DVD标题菜单"
+    IDS_HOTKEY_DVD_ROOTMENU "DVD主菜单"
+    IDS_HOTKEY_DVD_SUBTITLE_MENU "DVD字幕菜单"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_HOTKEY_DVD_AUDIO_MENU "DVD音频菜单"
+    IDS_HOTKEY_DVD_ANGLE_MENU "DVD视角菜单"
+    IDS_HOTKEY_DVD_CHAP_MENU "DVD章节菜单"
+    IDS_HOTKEY_DVD_MENU_CONTROL_LEFT "DVD菜单控制：左"
+    IDS_HOTKEY_DVD_MENU_CONTROL_RIGHT "DVD菜单控制：右"
+    IDS_HOTKEY_DVD_MENU_CONTROL_UP "DVD菜单控制：上"
+    IDS_HOTKEY_DVD_MENU_CONTROL_DOWN "DVD菜单控制：下"
+    IDS_HOTKEY_DVD_MENU_CONTROL_OK "DVD菜单控制：确认"
+    IDS_HOTKEY_DVD_MENU_CONTROL_RETURN "DVD菜单控制：返回"
+    IDS_HOTKEY_DVD_MENU_CONTROL_EXIT "DVD菜单控制：退出"
+    IDS_HOTKEY_DVD_MENU_CONTROL_TOGGLE_SUBTITLE "DVD控制：开关字幕"
+    IDS_HOTKEY_DVD_MENU_CONTROL_ANGLE_NEXT "DVD控制：下一个角度)"
+    IDS_HOTKEY_DVD_MENU_CONTROL_ANGLE_PREV "DVD控制：上一个角度"
+    IDS_HOTKEY_DVD_MENU_CONTROL_AUDIO_NEXT "DVD控制：下一个音轨"
+    IDS_HOTKEY_DVD_MENU_CONTROL_AUDIO_PREV "DVD控制：上一个音轨"
+    IDS_HOTKEY_DVD_MENU_CONTROL_SUBTITLE_NEXT "DVD控制：下一个字幕"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_HOTKEY_DVD_MENU_CONTROL_SUBTITLE_PREV "DVD控制：上一个字幕"
+    IDS_HOTKEY_SETTING_PANEL "选项设置"
+    IDS_HOTKEY_AUDIO_STREAM_NEXT "下一个音轨"
+    IDS_HOTKEY_AUDIO_STREAM_PREV "上一个音轨"
+    IDS_HOTKEY_SUBTITLE_NEXT "下一个字幕"
+    IDS_HOTKEY_SUBTITLE_PREV "上一个字幕"
+    IDS_HOTKEY_SUBTITLE_RELOAD "重新读取字幕"
+    IDS_HOTKEY_OGM_AUDIO_STREAM_NEXT "下一个音轨(OGM)"
+    IDS_HOTKEY_OGM_AUDIO_STREAM_PREV "上一个音轨(OGM)"
+    IDS_HOTKEY_OGM_SUBTITLE_NEXT "下一个字幕(OGM)"
+    IDS_HOTKEY_OGM_SUBTITLE_PREV "上一个字幕(OGM)"
+    IDS_HOTKEY_VSYNC_OFFSET_MORE "加大防撕裂值"
+    IDS_HOTKEY_VSYNC_OFFSET_LESS "加大防撕裂值"
+    IDS_HOTKEY_TOGGLE_RENDER_STATUS "显示画面输出信息"
+    IDS_SETTING_DEFAULT_MAIN_SUBTITLE_FONT_STYLE 
+                            "20,20,20,20,2,0,2.000000,2.000000,3.000000,3.000000,0x00ecec,0x00ffff,0x000000,0x000000,0x00,0x00,0x00,0x80,0,黑体,20.000000,100.000000,100.000000,0.000000,700,0,0,0,0,0.000000,0.000000,0.000000,0.000000,0,0.700000"
+    IDS_SETTING_DEFAULT_2ND_SUBTITLE_FONT_STYLE 
+                            "20,20,20,20,2,0,2.000000,2.000000,3.000000,3.000000,0x00ecec,0x00ffff,0x000000,0x000000,0x00,0x00,0x00,0x80,1,黑体,20.000000,100.000000,100.000000,0.000000,700,0,0,0,0,0.000000,0.000000,0.000000,0.000000,0,0.700000"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PANSCAN_PERSET_STRING_FORMAT_WIDE "变形宽银幕,%.3f,%.3f,%.3f,%.3f"
+    IDS_MSG_WARN_UNABLE_LOAD_DX9_DLL "未能调入DX9文件DLL"
+    IDS_MSG_WARN_UNABLE_ENTRANS_D3D_DLL "未能找到正确的DLL入口"
+    IDS_COLOR_CONTROL_LABEL_BRIGHT "亮度: "
+    IDS_COLOR_CONTROL_LABEL_CONSTANT "对比度: "
+    IDS_COLOR_CONTROL_BUTTON_RESET "重置"
+    IDS_COLOR_CONTROL_BUTTON_ENABLE "启用"
+    IDS_COLOR_CONTROL_BUTTON_DISABLE "禁用"
+    IDS_PLAYLIST_COL_HEADER_FILENAME "文件名"
+    IDS_PLAYLIST_COL_HEADER_FILE_LENGTH "片长"
+    IDS_PLAYLIST_BUTTON_CLEAN "清空"
+    IDS_PLAYLIST_BUTTON_LOAD_SUB_FOR_PLAYLIST "为多段视频调入一段字幕"
+    IDS_PLAYLIST_MENU_REMOVE_ALL "清空"
+    IDS_STATUS_BAR_LABEL_BATTRAY "电量: %d%%  "
+    IDS_STATUS_BAR_LABEL_BATTRAY_UNLIMIT "电量: ∽ "
+    IDS_STATUS_BAR_LABEL_PLAY_SPEED "速率 %0.1fx "
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_STATUS_BAR_LABEL_BATTRAY_WITH_PADDING "  电量: %d%% "
+    IDS_STATUS_BAR_LABEL_PLAY_SPEED_WITH_PADDING "  速率 %0.1fx "
+    IDS_TOOLTIP_SUBTITLE_DELAY_REDUCE "减少字幕延时"
+    IDS_TOOLTIP_SUBTITLE_DELAY_INCREASE "增加字幕延时"
+    IDS_TOOLTIP_TOOLBAR_SUBTITLE_BUTTON "字幕切换或调用"
+    IDS_TOOLTIP_TOOLBAR_BUTTON_PLAYLIST "播放列表"
+    IDS_TOOLTIP_TOOLBAR_BUTTON_SETTING_PANEL "设置面板"
+    IDS_TOOLTIP_TOOLBAR_BUTTON_IMAGE_CAPTURE "快速截图"
+    IDS_TOOLTIP_TOOLBAR_BUTTON_FILE_OPEN "打开文件"
+    IDS_TOOLTIP_TOOLBAR_BUTTON_SET_SUB_FONT "修改字幕字体"
+    IDS_TOOLTIP_TOOLBAR_BUTTON_SUB_FONT_INCREASE "放大字幕"
+    IDS_TOOLTIP_TOOLBAR_BUTTON_SUB_FONT_DECREASE "缩小字幕"
+    IDS_TOOLTIP_TOPTOOLBAR_BUTTON_STANDARD_VIDEO_FRAME "标准画面"
+    IDS_TOOLTIP_TOPTOOLBAR_BUTTON_VIDEO_FRAME_REMOVE_BLACK_BAR "智能去黑边"
+    IDS_TOOLTIP_TOPTOOLBAR_BUTTON_FULLSCREEN "全屏切换"
+    IDS_TOOLTIP_TOPTOOLBAR_ZOOM_100 "100% 尺寸"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_TOOLTIP_TOPTOOLBAR_ZOOM_200 "200% 尺寸"
+    IDS_TOOLTIP_TOPTOOLBAR_BUTTON_AUDIO "音轨选择"
+    IDS_TOOLTIP_TOPTOOLBAR_BUTTON_VIDEO "画面增益"
+    IDS_TOOLTIP_TOPTOOLBAR_BUTTON_PIN_ONTOP "使窗口钉在最前端"
+    IDS_TOOLTIP_TOPTOOLBAR_BUTTON_RESTORE_WINDOW "恢复正常窗口"
+    IDS_TOOLTIP_TOPTOOLBAR_BUTTON_ROTATE_90 "顺时针旋转 90℃"
+    IDS_TOOLTIP_TOPTOOLBAR_BUTTON_FLIP_V "垂直翻转"
+    IDS_TOOLTIP_TOPTOOLBAR_BUTTON_IMAGE_CAPTURE "截图至文件和剪贴板"
+    IDS_TOOLTIP_TOPTOOLBAR_BUTTON_TRANSPARENT_CONTROL_BAR "窗体半透明"
+    IDS_TOOLTIP_TOPTOOLBAR_BUTTON_BRIGHT_CONTROL "亮度与对比度"
+    IDS_ACCEL_HOTKEY_SET_BUTTON_KEY "键"
+    IDS_ACCEL_HOTKEY_KEYNAME_MOUSELEFT "鼠标左键"
+    IDS_ACCEL_HOTKEY_KEYNAME_MOUSERIGHT "鼠标右键"
+    IDS_ACCEL_HOTKEY_KEYNAME_MOUSEMIDDLE "鼠标中键"
+    IDS_ACCEL_HOTKEY_KEYNAME_MOUSE4 "鼠标4键"
+    IDS_ACCEL_HOTKEY_KEYNAME_MOUSE5 "鼠标5键"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_ACCEL_HOTKEY_KEYNAME_BACKSPACE "←退格键"
+    IDS_ACCEL_HOTKEY_KEYNAME_TAB "Tab键"
+    IDS_ACCEL_HOTKEY_KEYNAME_RETURN "回车键"
+    IDS_ACCEL_HOTKEY_KEYNAME_PAUSE "暂停(Pause)键"
+    IDS_ACCEL_HOTKEY_KEYNAME_CAPITAL "大写控制键"
+    IDS_ACCEL_HOTKEY_KEYNAME_SPACE "空格键"
+    IDS_ACCEL_HOTKEY_KEYNAME_END "End键"
+    IDS_ACCEL_HOTKEY_KEYNAME_HOME "Home键"
+    IDS_ACCEL_HOTKEY_KEYNAME_LEFT_ARROW "左方向键"
+    IDS_ACCEL_HOTKEY_KEYNAME_UP_ARROW "上方向键"
+    IDS_ACCEL_HOTKEY_KEYNAME_RIGHT_ARROW "右方向键"
+    IDS_ACCEL_HOTKEY_KEYNAME_DOWN_ARROW "下方向键"
+    IDS_ACCEL_HOTKEY_KEYNAME_INS_ARROW "Ins键"
+    IDS_ACCEL_HOTKEY_KEYNAME_DEL_ARROW "Del键"
+    IDS_ACCEL_HOTKEY_KEYNAME_LEFT_WIN "左Win键"
+    IDS_ACCEL_HOTKEY_KEYNAME_RIGHT_WIN "右Win键"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_0 "小键盘0"
+    IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_1 "小键盘1"
+    IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_2 "小键盘2"
+    IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_3 "小键盘3"
+    IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_4 "小键盘4"
+    IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_5 "小键盘5"
+    IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_6 "小键盘6"
+    IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_7 "小键盘7"
+    IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_8 "小键盘8"
+    IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_9 "小键盘9"
+    IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_MUTIPLY "小键盘*"
+    IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_PLUS "小键盘+"
+    IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_RETURN "小键盘回车"
+    IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_MINUS "小键盘-"
+    IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_DOT "小键盘."
+    IDS_ACCEL_HOTKEY_KEYNAME_NUMBERPAD_SLASH "小键盘/"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_ACCEL_HOTKEY_KEYNAME_SHIFT_LEFT "左SHIFT"
+    IDS_ACCEL_HOTKEY_KEYNAME_SHIFT_RIGHT "右SHIFT"
+    IDS_ACCEL_HOTKEY_KEYNAME_CTRL_LEFT "左Ctrl"
+    IDS_ACCEL_HOTKEY_KEYNAME_CTRL_RIGHT "右Ctrl"
+    IDS_ACCEL_HOTKEY_KEYNAME_QUOTE "引号键"
+    IDS_ACCEL_HOTKEY_KEYNAME_NONE "无"
+    IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_LEFT_DOWN "左键按下"
+    IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_LEFT_UP "左键松开"
+    IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_LEFT_DBLCLK "左键双击"
+    IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_MID_DOWN "中键按下"
+    IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_MID_UP "中键松开"
+    IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_MID_DBLCLK "中键双击"
+    IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_RIGHT_DOWN "右键按下"
+    IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_RIGHT_UP "右键松开"
+    IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_RIGHT_DBLCLK "右键双击"
+    IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_4_DOWN "鼠标4键按下"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_4_UP "鼠标4键松开"
+    IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_4_DBLCLK "鼠标4键双击"
+    IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_5_DOWN "鼠标5键按下"
+    IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_5_UP "鼠标5键松开"
+    IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_5_DBLCLK "鼠标5键双击"
+    IDS_ACCEL_HOTKEY_KEYNAME_MWHEEL_UP "滚轮向上"
+    IDS_ACCEL_HOTKEY_KEYNAME_MWHEEL_DOWN "滚轮向下"
+    IDS_ACCEL_HOTKEY_KEYNAME_COMMAND "命令"
+    IDS_ACCEL_HOTKEY_COLUMN_HEADER_VKEY "功能键"
+    IDS_ACCEL_HOTKEY_COLUMN_HEADER_KEY "按键"
+    IDS_ACCEL_HOTKEY_COLUMN_HEADER_MOUSE "鼠标"
+    IDS_ACCEL_HOTKEY_COLUMN_HEADER_TYPE "类型"
+    IDS_ACCEL_HOTKEY_COLUMN_HEADER_MEDIAKEY "多媒体键"
+    IDS_FILEINFO_ASPECT_RATIO " (画面比例 %d:%d)"
+    IDS_FILEINFO_VIDEO_RESOLUTION "视频画面： "
+    IDS_FILEINFO_VIDEO_TIME_LENGTH "时间长度： "
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_FILEINFO_FILESIZE   "文件尺寸： "
+    IDS_FILEINFO_FILE_TYPE  "文件类型： "
+    IDS_FILEINFO_MSG_NEED_MEDIAINFO_DLL "需要 MediaInfo.dll"
+    IDS_FILEASSOC_REG_APPNAME "射手影音播放器"
+    IDS_ACCEL_HOTKEY_SET_BUTTON_LETTERKEY "字母"
+    IDS_MSG_WARN_NOOD_ADMIN_PRIV_TO_START_FILEASSOC 
+                            "必须启动管理员权限\r\n才可以建立或修改文件关联！\r\n现在进入管理员权限么？"
+    IDS_PANEL_OUTPUT_AUDIO_DEFAULT "系统默认"
+    IDS_PANEL_SUBSTYLE_DEFAULT "播放器默认设置"
+    IDS_UESETTING_PANEL_MSG_NOT_SUGGEST_USE_OLD_PANEL 
+                            "射手播放器并不推荐您使用已经废弃的旧设置面板\r\n不当的操作可能会带来难以预知的问题\r\n确定要继续么？"
+    IDS_DIALOG_EXTERNAL_FILTER_TITLE "外置解码器..."
+    IDS_DIALOG_EXTERNAL_AUDIO_CHANNEL_MAPPING "声道映射..."
+    IDS_DIALOG_HOTKEY_SETTING_PANNEL_TITLE "快捷键设置..."
+    IDS_DIALOG_THEME_BG_IMAGE_TITLE "界面背景设置..."
+    IDS_DIALOG_DEFAULT_SUB_SAVE_FOLDER "默认网络字幕保存到文件夹"
+    IDS_DIALOG_FILEASSOC_TITLE "文件关联设置..."
+    IDS_MEDIATYPE_INFOLABEL_VIDEO "视频"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_MEDIATYPE_INFOLABEL_MPEG1_VIDEO "MPEG1 视频"
+    IDS_MEDIATYPE_INFOLABEL_MPEG2_VIDEO "MPEG2 视频"
+    IDS_MEDIATYPE_INFOLABEL_DIRAC_VIDEO "Dirac 视频"
+    IDS_MEDIATYPE_INFOLABEL_SUBTITLE "字幕"
+    IDS_MEDIATYPE_INFOLABEL_DVD_SUBTITLE "DVD 字幕"
+    IDS_MEDIATYPE_INFOLABEL_AUDIO "音频"
+    IDS_MEDIATYPE_INFOLABEL_AUDIO_CHANNEL_SINGLE "%s 单声道"
+    IDS_MEDIATYPE_INFOLABEL_AUDIO_CHANNEL_STEREO "%s 立体声"
+    IDS_MEDIATYPE_INFOLABEL_AUDIO_CHANNEL_MORE "%s %d声道"
+    IDS_MEDIATYPE_INFOLABEL_TEXT "文字"
+    IDS_MEDIATYPE_INFOLABEL_UNKNOWN "未知"
+    IDS_OSD_MSG_HARDWARE_NOT_SUPPORT_DXVA_SAR "硬件设备可能不支持加速本文件(SAR)..."
+    IDS_OSD_MSG_HARDWARE_MIGHTNOT_SUPPORT_DXVA 
+                            "设备可能没有足够能力硬件加速本文件，请勿勾选“使硬件加速兼容更多文件”选项..."
+    IDS_OSD_MSG_VC1_INTERLACE_DXVA_NOT_SUPPORT "隔行VC1编码的文件恐怕无法进行硬件加速..."
+    IDS_PANEL_MPEG_DECODER_DEINTERLACE_DEFAULT "默认优化设置"
+    IDS_LOG_MSG_DETECT_NEWER_VERSION_UPDATER_STARTED "检测到新的版本，升级程序已启动"
+END
 
 #endif    // Chinese (P.R.C.) resources
 /////////////////////////////////////////////////////////////////////////////

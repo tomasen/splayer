@@ -859,7 +859,7 @@ public:
 	afx_msg void OnVisitcontactinfo();
 	afx_msg void OnDonate();
 	afx_msg void OnJointeam();
-
+	afx_msg void OnLanguage(UINT nID);
 	afx_msg void OnColorControl(UINT nID);
 
 	afx_msg void OnShowEQControlBar();

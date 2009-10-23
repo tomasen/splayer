@@ -4555,6 +4555,41 @@ bool CMPlayerCApp::CanUseCUDA(){
 	}
 	return m_bCanUseCUDA;
 }
+
+LPCTSTR CMPlayerCApp::GetSatelliteDll(int nLanguage)
+{
+	switch (nLanguage)
+	{
+	case 1:		// English
+		return _T("lang\\splayer.en.dll");
+	}
+	return NULL;
+}
+
+
+void CMPlayerCApp::SetLanguage (int nLanguage)
+{
+	AppSettings&	s = AfxGetAppSettings();
+	HMODULE		hMod = NULL;
+	LPCTSTR		strSatellite;
+	bool		bNoChange = false;
+
+	s.iLanguage  = nLanguage;
+	CSVPToolBox svpTool;
+	strSatellite = svpTool.GetPlayerPath( GetSatelliteDll(nLanguage) );
+	if (strSatellite)
+	{
+		hMod = LoadLibrary (strSatellite);		
+	}
+
+	if (!hMod) 
+	{
+		hMod = AfxGetApp()->m_hInstance;
+		if (!bNoChange) s.iLanguage = 0;
+	}
+	AfxSetResourceHandle(hMod);
+}
+
 bool CMPlayerCApp::IsVista()
 {
 	if(m_isVista < 0 ){

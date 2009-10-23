@@ -71,8 +71,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				LinkLibraryDependencies="false"
 				AdditionalOptions="/MACHINE:I386  /LTCG"
-				AdditionalDependencies="Avrt.lib MpcAudioRendererFilterRU.lib SVPFilterRU.lib libunrarR.lib curllib.lib svplibRU.lib Delayimp.lib psapi.lib detours.lib qtmlClient.lib wmstub.lib dxguid.lib Dsound.lib strmbaseRU.lib dsutilRU.lib subpicRU.lib subtitlesRU.lib libssfRU.lib asyncreaderRU.lib audioswitcherRU.lib avi2ac3filterRU.lib bufferfilterRU.lib cddareaderRU.lib cdxareaderRU.lib d2vsourceRU.lib decssfilterRU.lib flicsourceRU.lib dtsac3sourceRU.lib basesourceRU.lib wavdestRU.lib shoutcastsourceRU.lib streamdrivethruRU.lib vtsreaderRU.lib basesplitterRU.lib MatroskaSplitterRU.lib MatroskaMuxerRU.lib RealMediaSplitterRU.lib AviSplitterRU.lib Mpeg2DecFilterRU.lib MpaDecFilterRU.lib RoQSplitterRU.lib OggSplitterRU.lib NutSplitterRU.lib MpegSplitterRU.lib DiracSplitterRU.lib MpaSplitterRU.lib DSMSplitterRU.lib MP4SplitterRU.lib BaseMuxerRU.lib DSMMuxerRU.lib UDPReaderRU.lib FLVSplitterRU.lib zlibR.lib subtitlesourceRU.lib filtersRU.lib libvorbisidecR.lib SSFSplitterRU.lib libpngR.lib comsuppw.lib Winmm.lib MPCVideoDecRU.lib &quot;..\..\..\lib\libdtsr.lib&quot; &quot;..\..\..\lib\basevideofilterru.lib&quot; &quot;..\..\..\lib\libfaad2r.lib&quot; &quot;..\..\..\lib\flacsourceru.lib&quot; &quot;..\..\..\lib\libdiracr.lib&quot; &quot;..\..\..\lib\liba52r.lib&quot; &quot;..\..\..\lib\resizablelibru.lib&quot; &quot;..\..\..\lib\libflac.lib&quot; &quot;..\..\..\lib\libmadr.lib&quot; &quot;..\..\..\lib\sizecbarru.lib&quot; &quot;..\..\..\lib\treepropsheetru.lib&quot; &quot;..\..\..\lib\cmduiru.lib&quot; &quot;..\..\..\lib\decssru.lib&quot; Imm32.lib &quot;..\..\..\lib\skinmenuru.lib&quot; SyncClockRU.lib"
+				AdditionalDependencies="SVPFilterRU.lib libunrarR.lib curllib.lib svplibRU.lib Delayimp.lib psapi.lib detours.lib qtmlClient.lib wmstub.lib dxguid.lib Dsound.lib strmbaseRU.lib dsutilRU.lib subpicRU.lib subtitlesRU.lib libssfRU.lib asyncreaderRU.lib audioswitcherRU.lib avi2ac3filterRU.lib bufferfilterRU.lib cddareaderRU.lib cdxareaderRU.lib d2vsourceRU.lib decssfilterRU.lib flicsourceRU.lib dtsac3sourceRU.lib basesourceRU.lib wavdestRU.lib shoutcastsourceRU.lib streamdrivethruRU.lib vtsreaderRU.lib basesplitterRU.lib MatroskaSplitterRU.lib MatroskaMuxerRU.lib RealMediaSplitterRU.lib AviSplitterRU.lib Mpeg2DecFilterRU.lib MpaDecFilterRU.lib RoQSplitterRU.lib OggSplitterRU.lib NutSplitterRU.lib MpegSplitterRU.lib DiracSplitterRU.lib MpaSplitterRU.lib DSMSplitterRU.lib MP4SplitterRU.lib BaseMuxerRU.lib DSMMuxerRU.lib UDPReaderRU.lib FLVSplitterRU.lib zlibR.lib subtitlesourceRU.lib filtersRU.lib libvorbisidecR.lib SSFSplitterRU.lib libpngR.lib comsuppw.lib Winmm.lib MPCVideoDecRU.lib &quot;..\..\..\lib\libdtsr.lib&quot; &quot;..\..\..\lib\basevideofilterru.lib&quot; &quot;..\..\..\lib\libfaad2r.lib&quot; &quot;..\..\..\lib\flacsourceru.lib&quot; &quot;..\..\..\lib\libdiracr.lib&quot; &quot;..\..\..\lib\liba52r.lib&quot; &quot;..\..\..\lib\resizablelibru.lib&quot; &quot;..\..\..\lib\libflac.lib&quot; &quot;..\..\..\lib\libmadr.lib&quot; &quot;..\..\..\lib\sizecbarru.lib&quot; &quot;..\..\..\lib\treepropsheetru.lib&quot; &quot;..\..\..\lib\cmduiru.lib&quot; &quot;..\..\..\lib\decssru.lib&quot; Imm32.lib &quot;..\..\..\lib\skinmenuru.lib&quot; SyncClockRU.lib"
 				OutputFile="..\..\..\..\splayer.exe"
 				AdditionalLibraryDirectories="../../../lib;../../../lib/wm7;../../../lib/qt6;../../../lib/detours"
 				GenerateManifest="true"
@@ -1375,6 +1376,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\web\apply.jpg"
+				>
+			</File>
+			<File
+				RelativePath=".\res\web\apply_hover.jpg"
+				>
+			</File>
+			<File
 				RelativePath=".\res\icon\Audio_File.ico"
 				>
 			</File>
@@ -1527,6 +1536,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\web\cancel.jpg"
+				>
+			</File>
+			<File
+				RelativePath=".\res\web\cancel_hover.jpg"
+				>
+			</File>
+			<File
 				RelativePath=".\res\newui\caption.bmp"
 				>
 			</File>
@@ -1543,6 +1560,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\web\donate.gif"
+				>
+			</File>
+			<File
 				RelativePath=".\res\icon\DV_Video.ico"
 				>
 			</File>
@@ -1556,6 +1577,14 @@
 			</File>
 			<File
 				RelativePath=".\res\newui\FAST_FORWORD.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\web\fillassoc.jpg"
+				>
+			</File>
+			<File
+				RelativePath=".\res\web\fillassoc_hover.jpg"
 				>
 			</File>
 			<File
@@ -1576,6 +1605,14 @@
 			</File>
 			<File
 				RelativePath=".\res\web\generalseting_uesetbg_hover.jpg"
+				>
+			</File>
+			<File
+				RelativePath=".\res\web\hotkey.jpg"
+				>
+			</File>
+			<File
+				RelativePath=".\res\web\hotkey_hover.jpg"
 				>
 			</File>
 			<File
@@ -1683,6 +1720,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\web\ok.jpg"
+				>
+			</File>
+			<File
+				RelativePath=".\res\web\ok_hover.jpg"
+				>
+			</File>
+			<File
 				RelativePath="res\onoff.bmp"
 				>
 			</File>
@@ -1704,6 +1749,14 @@
 			</File>
 			<File
 				RelativePath=".\res\icon\Real_File.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\web\reset.jpg"
+				>
+			</File>
+			<File
+				RelativePath=".\res\web\reset_hover.jpg"
 				>
 			</File>
 			<File

@@ -368,6 +368,8 @@ public:
 	
 	bool m_bGotResponse;
 	static int	m_isVista;
+	static void					SetLanguage (int nLanguage);
+	static LPCTSTR				GetSatelliteDll(int nLang);
 	static bool	IsVista();
 	static int	m_bCanUseCUDA;
 	static bool	CanUseCUDA();
@@ -487,6 +489,7 @@ public:
 		bool fVMR9MixerMode;
 		bool fVMR9MixerYUV;
 		bool fFasterSeeking;
+		int				iLanguage;
 
 		int nVolume;
 		int nBalance;

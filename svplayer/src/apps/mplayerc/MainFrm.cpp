@@ -345,7 +345,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_ONTOP_NEVER, ID_ONTOP_WHILEPLAYING, OnUpdateViewOntop)
 	ON_COMMAND(ID_VIEW_OPTIONS, OnViewOptions)
 	ON_COMMAND(ID_SHOWDRAWSTAT, OnShowDrawStats)
-	
+	ON_COMMAND_RANGE(ID_LANGUAGE_CHINESE_SIMPLIFIED, ID_LANGUAGE_LAST, OnLanguage)
+
 	ON_COMMAND(ID_SET_AUDIO_NUMBER_SPEAKER, OnSetAudioNumberOfSpeaker)
 
 	ON_COMMAND_RANGE(ID_SUB_DELAY_DOWN, ID_SUB_DELAY_UP, OnSubtitleDelay)
@@ -682,10 +683,10 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	m_popup.LoadMenu(IDR_POPUP);
 	m_openmore.LoadMenu(IDR_OPENMORE);
-	m_popupmain.LoadMenu(IDR_POPUPMAIN);
+	//m_popupmain.LoadMenu(IDR_POPUPMAIN);
 
 	//GetMenu()->ModifyMenu(ID_FAVORITES, MF_BYCOMMAND|MF_STRING, IDR_MAINFRAME, ResStr(IDS_FAVORITES_POPUP));
-	m_mainMenu.LoadMenu(IDR_MAINFRAME);
+	//m_mainMenu.LoadMenu(IDR_MAINFRAME);
 
 	// create a view to occupy the client area of the frame
 	if(!m_wndView.Create(NULL, NULL, AFX_WS_DEFAULT_VIEW,
@@ -4468,7 +4469,7 @@ void CMainFrame::OnMenuPlayerShort()
 
 void CMainFrame::OnMenuPlayerLong()
 {
-	OnMenu(m_popupmain.GetSubMenu(0));
+	//OnMenu(m_popupmain.GetSubMenu(0));
 }
 
 void CMainFrame::OnMenuFilters()
@@ -16072,4 +16073,43 @@ void CMainFrame::OnWindowPosChanging(WINDOWPOS* lpwndpos)
 	__super::OnWindowPosChanging(lpwndpos);
 
 	// TODO: Add your message handler code here
+}
+
+
+afx_msg void CMainFrame::OnLanguage(UINT nID)
+{
+	CMenu	DefaultMenu;
+	CMenu*	OldMenu;
+
+	AfxGetMyApp()->SetLanguage (nID - ID_LANGUAGE_CHINESE_SIMPLIFIED);
+
+	m_opencds.DestroyMenu();
+	m_filters.DestroyMenu();
+	m_subtitles.DestroyMenu();
+	m_audios.DestroyMenu();
+	m_navaudio.DestroyMenu();
+	m_navsubtitle.DestroyMenu();
+	m_navangle.DestroyMenu();
+	m_navchapters.DestroyMenu();
+	m_favorites.DestroyMenu();
+	m_shaders.DestroyMenu();
+	m_recentfiles.DestroyMenu();
+
+	m_popup.DestroyMenu();
+	m_popup.LoadMenu(IDR_POPUP);
+	//m_popupmain.DestroyMenu();
+	//m_popupmain.LoadMenu(IDR_POPUPMAIN);
+
+	m_openmore.DestroyMenu();
+	m_openmore.LoadMenu(IDR_OPENMORE);
+
+	m_ABMenu.DestroyMenu();
+	m_ABMenu.LoadMenu(IDR_POPUPAB);
+
+	m_playbackmenu.DestroyMenu();
+	m_playbackmenu.LoadMenu(IDR_PLAYBACK_MENU);
+
+	m_playback_resmenu.DestroyMenu();
+	m_playback_resmenu.LoadMenu(IDR_PLAYBACK_MENU);
+
 }

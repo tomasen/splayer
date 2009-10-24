@@ -454,7 +454,7 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 			return hr;
 		}
 	}
-
+/*
 	if(m_fDownSampleTo441
 	&& wfe->nSamplesPerSec > 44100 && wfeout->nSamplesPerSec == 44100 
 	&& wfe->wBitsPerSample <= 16 && fPCM)
@@ -477,7 +477,7 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 			delete [] buff;
 		}
 	}
-
+*/
 	if(m_fNormalize || m_boost > 1)
 	{
 		int samples = lenout*wfeout->nChannels;
@@ -528,10 +528,12 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 					if(m_sample_max < s) m_sample_max = s;
 				}
 
-				sample_mul = 1.0f / m_sample_max;
+				
+//if(m_fNormalizeRecover) 
+				m_sample_max -= 1.0*rtDur/200000000; // -5%/sec
+				if(m_sample_max < 0.25) m_sample_max = 0.25; // not more than 4x volume
 
-				if(m_fNormalizeRecover) m_sample_max -= 1.0*rtDur/200000000; // -5%/sec
-				if(m_sample_max < 0.1) m_sample_max = 0.1;
+				sample_mul = 1.0f / m_sample_max;
 			}
 
 			//SVP_LogMsg5(L"maul %f %f %f %f" ,m_boost , log10(m_boost) , sample_mul, sample_mul * (1+log10(m_boost)) );

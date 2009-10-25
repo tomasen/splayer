@@ -2593,11 +2593,14 @@ CString CMainFrame::getCurPlayingSubfile(int * iSubDelayMS,int subid ){
 				CSVPToolBox svpTool;
 				CString szBuf;
 				szBuf.Format(_T("%d"), iSubDelay_ms);
-				svpTool.filePutContent(fnSubtitleFile+_T(".delay"),szBuf );
-				pSubStream->sub_delay_ms = iSubDelay_ms;
-				if(!iSubDelay_ms){
+				//SVP_LogMsg5(L"SAVE delay file %s" , fnSubtitleFile);
+				if(iSubDelay_ms){
+					svpTool.filePutContent(fnSubtitleFile+_T(".delay"),szBuf );
+				}else{
 					_wunlink(fnSubtitleFile+_T(".delay"));
 				}
+				pSubStream->sub_delay_ms = iSubDelay_ms;
+
 			}
 		}
 	}

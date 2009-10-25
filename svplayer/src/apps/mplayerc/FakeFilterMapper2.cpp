@@ -34,8 +34,8 @@
 #include "..\..\svplib\svplib.h"
 
 #define TRACE_SVP __noop
-//SVP_LogMsg3
-#define TRACE_SVP5  __noop
+// SVP_LogMsg6
+#define TRACE_SVP5   __noop
 //SVP_LogMsg5
 
 HRESULT (__stdcall * Real_CoCreateInstance)(CONST IID& a0,
@@ -234,7 +234,6 @@ LONG (WINAPI * Real_RegSetValueA)(HKEY a0, LPCSTR a1, DWORD a2, LPCSTR a3, DWORD
 HRESULT WINAPI Mine_CoCreateInstance(IN REFCLSID rclsid, IN LPUNKNOWN pUnkOuter,
 									 IN DWORD dwClsContext, IN REFIID riid, OUT LPVOID FAR* ppv)
 {
-	TRACE_SVP5(_T("Mine_CoCreateInstance %s"), CStringFromGUID(rclsid));
 	if(CFilterMapper2::m_pFilterMapper2)
 	{
 		CheckPointer(ppv, E_POINTER);
@@ -275,6 +274,13 @@ HRESULT WINAPI Mine_CoCreateInstance(IN REFCLSID rclsid, IN LPUNKNOWN pUnkOuter,
 
 		TRACE_SVP5(_T("Mine_CoCreateInstance Unknown %s"), CStringFromGUID(rclsid));
 	}
+	/*
+	if( GUIDFromCString(_T("{DB43B405-43AA-4F01-82D8-D84D47E6019C}")) == rclsid){
+			CFilterMapper2::m_pFilterMapper2->AddRef();
+			*ppv = (IUnknown*)CFilterMapper2::m_pFilterMapper2;
+			return S_OK;
+		}*/
+	
 	/*	else
 	{
 	if(rclsid == CLSID_FilterMapper2)
@@ -301,7 +307,29 @@ HRESULT WINAPI Mine_CoCreateInstance(IN REFCLSID rclsid, IN LPUNKNOWN pUnkOuter,
 			}
 		}
 
-		return Real_CoCreateInstance(rclsid, pUnkOuter, dwClsContext, riid, ppv);
+		long ret;
+		
+		//if( GUIDFromCString(_T("{DB43B405-43AA-4F01-82D8-D84D47E6019C}")) == rclsid){
+			/*
+			TRACE_SVP5(_T("CoGetInstanceFromFile OGM.dll"));
+						MULTI_QI mqi [1] ;
+			
+						mqi [0].pIID = &riid ;
+						mqi [0].pItf = NULL ;
+						mqi [0].hr = 0 ;
+			
+						ret = CoGetInstanceFromFile(NULL, (CLSID*)&rclsid , pUnkOuter , dwClsContext , 0 , L"D:\\-=SVN=-\\ogm.dll", 1 ,mqi);*/
+			//rclsid = CLSID_VideoMixingRenderer;//(CLSID) ;
+		//	ret = Real_CoCreateInstance(GUIDFromCString(_T("{DB43B405-43AA-4F01-82D8-D84D47E6019D}")), pUnkOuter, dwClsContext, riid, ppv);
+		//}else{
+			ret = Real_CoCreateInstance(rclsid, pUnkOuter, dwClsContext, riid, ppv);
+		//}
+
+		
+		
+		TRACE_SVP5(_T("Mine_CoCreateInstance %s %x"), CStringFromGUID(rclsid) , ret);
+
+		return ret;
 }
 
 #define FAKEHKEY (HKEY)0x12345678
@@ -318,7 +346,7 @@ LONG WINAPI Mine_RegFlushKey(HKEY a0)
 }
 LONG WINAPI Mine_RegCreateKeyA(HKEY a0, LPCSTR a1, PHKEY a2)
 {
-	
+	TRACE_SVP("Mine_RegCreateKeyA %s" , a1);
 	if(CFilterMapper2::m_pFilterMapper2) {TRACE_SVP("Mine_RegCreateKeyA %s" , a1);*a2 = FAKEHKEY; return ERROR_SUCCESS;}
 
 	if(a1){ //IVM is sux
@@ -335,17 +363,37 @@ LONG WINAPI Mine_RegCreateKeyA(HKEY a0, LPCSTR a1, PHKEY a2)
 }
 LONG WINAPI Mine_RegCreateKeyW(HKEY a0, LPCWSTR a1, PHKEY a2)
 {
-	if(CFilterMapper2::m_pFilterMapper2) {TRACE_SVP5(L"Mine_RegCreateKeyW %s" , a1);*a2 = FAKEHKEY; return ERROR_SUCCESS;}
+	/*
+	TRACE_SVP5(L"Mine_RegCreateKeyW %s" , a1);
+		if(a1){
+			if( _wcsicmp(L"InprocServer32", a1) == 0 ||
+				 wcsstr(a1, L"CLSID\\")
+				){
+				return Real_RegCreateKeyW(a0, a1, a2);
+			}
+			
+		}*/
+	
+	
+	if(CFilterMapper2::m_pFilterMapper2) {*a2 = FAKEHKEY; return ERROR_SUCCESS;}
 	return Real_RegCreateKeyW(a0, a1, a2);
 }
 LONG WINAPI Mine_RegCreateKeyExA(HKEY a0, LPCSTR a1, DWORD a2, LPSTR a3, DWORD a4, REGSAM a5, LPSECURITY_ATTRIBUTES a6, PHKEY a7, LPDWORD a8)
 {
-	if(CFilterMapper2::m_pFilterMapper2) {TRACE_SVP("Mine_RegCreateKeyExA %s" , a1);*a7 = FAKEHKEY; return ERROR_SUCCESS;}
+	TRACE_SVP("Mine_RegCreateKeyExA %s" , a1);
+	if(CFilterMapper2::m_pFilterMapper2) {*a7 = FAKEHKEY; return ERROR_SUCCESS;}
 	return Real_RegCreateKeyExA(a0, a1, a2, a3, a4, a5, a6, a7, a8);
 }
 LONG WINAPI Mine_RegCreateKeyExW(HKEY a0, LPCWSTR a1, DWORD a2, LPWSTR a3, DWORD a4, REGSAM a5, LPSECURITY_ATTRIBUTES a6, PHKEY a7, LPDWORD a8)
 {
-	if(CFilterMapper2::m_pFilterMapper2) {TRACE_SVP5(L"Mine_RegCreateKeyExW %s" , a1);*a7 = FAKEHKEY; return ERROR_SUCCESS;}
+	TRACE_SVP5(L"Mine_RegCreateKeyExW %s" , a1);
+	if(a1 && (  wcsstr(a1, L"Media Type\\Extensions\\.mk") ||
+		 _wcsicmp(a1, L"Media Type\\{E436EB83-524F-11CE-9F53-0020AF0BA770}\\{49952F4C-3EDC-4A9B-8906-1DE02A3D4BC2}") == 0 )){
+
+		TRACE_SVP5(L"FAKING IT" );
+		*a7 = FAKEHKEY; return ERROR_SUCCESS;
+	}
+	if(CFilterMapper2::m_pFilterMapper2) {*a7 = FAKEHKEY; return ERROR_SUCCESS;}
 	return Real_RegCreateKeyExW(a0, a1, a2, a3, a4, a5, a6, a7, a8);
 }
 LONG WINAPI Mine_RegDeleteKeyA(HKEY a0, LPCSTR a1)
@@ -370,27 +418,57 @@ LONG WINAPI Mine_RegDeleteValueW(HKEY a0, LPCWSTR a1)
 }
 LONG WINAPI Mine_RegEnumKeyExA(HKEY a0, DWORD a1, LPSTR a2, LPDWORD a3, LPDWORD a4, LPSTR a5, LPDWORD a6, struct _FILETIME* a7)
 {
+	TRACE_SVP( "Mine_RegEnumKeyExA %s  %s ",  a2 , a5);
 	if(CFilterMapper2::m_pFilterMapper2 && a0 == FAKEHKEY) {return ERROR_NO_MORE_ITEMS;}
 	return Real_RegEnumKeyExA(a0, a1, a2, a3, a4, a5, a6, a7);
 }
 LONG WINAPI Mine_RegEnumKeyExW(HKEY a0, DWORD a1, LPWSTR a2, LPDWORD a3, LPDWORD a4, LPWSTR a5, LPDWORD a6, struct _FILETIME* a7)
 {
+	TRACE_SVP5( L"Mine_RegEnumKeyExW %s %s ",  a2 , a5);
 	if(CFilterMapper2::m_pFilterMapper2 && a0 == FAKEHKEY) {return ERROR_NO_MORE_ITEMS;}
 	return Real_RegEnumKeyExW(a0, a1, a2, a3, a4, a5, a6, a7);
 }
 LONG WINAPI Mine_RegEnumValueA(HKEY a0, DWORD a1, LPSTR a2, LPDWORD a3, LPDWORD a4, LPDWORD a5, LPBYTE a6, LPDWORD a7)
 {
+	
 	if(CFilterMapper2::m_pFilterMapper2 && a0 == FAKEHKEY) {return ERROR_NO_MORE_ITEMS;}
-	return Real_RegEnumValueA(a0, a1, a2, a3, a4, a5, a6, a7);
+	if( ( FAKEHKEY+14 ) == a0 && a2){
+		if(a1 == 0){
+			strcpy_s(a2, *a3, "ts.1");
+			*a3 = 5;
+			*a5 = REG_SZ;
+			strcpy_s((char*)a6, *a7, "ff,47,{B841F346-4835-4de8-AA5E-2E7CD2D4C435}");
+			*a7 = 45;
+			return  ERROR_SUCCESS ;
+		}
+		if(a1 == 1){
+			strcpy_s(a2, *a3, "ogm.1");
+			*a3 = 6;
+			*a5 = REG_SZ;
+			strcpy_s((char*)a6, *a7, "ffffffff,4f676753,{DB43B405-43AA-4f01-82D8-D84D47E6019C}");
+			*a7 = 57;
+			return  ERROR_SUCCESS ;
+		}
+		return ERROR_FILE_NOT_FOUND;
+	}
+	long ret =  Real_RegEnumValueA(a0, a1, a2, a3, a4, a5, a6, a7);
+	if(ret == ERROR_SUCCESS){
+		TRACE_SVP( "Mine_RegEnumValueA %x %x %s %x  %x  %x  %x  %x  %x  %x ", a0, a1, a2, *a3, *a4, *a5, *a6, *a7 , ret);
+	}else{
+		TRACE_SVP( "Mine_RegEnumValueA %x %x %s %x  %x  %x  %x  %x  %x  %x ", a0, a1, a2, a3, a4, a5, a6, a7 , ret);
+	}
+	
+	return ret;
 }
 LONG WINAPI Mine_RegEnumValueW(HKEY a0, DWORD a1, LPWSTR a2, LPDWORD a3, LPDWORD a4, LPDWORD a5, LPBYTE a6, LPDWORD a7)
 {
+	TRACE_SVP5( L"Mine_RegEnumValueW %s ",  a2);
 	if(CFilterMapper2::m_pFilterMapper2 && a0 == FAKEHKEY) {return ERROR_NO_MORE_ITEMS;}
 	return Real_RegEnumValueW(a0, a1, a2, a3, a4, a5, a6, a7);
 }
 LONG WINAPI Mine_RegOpenKeyA(HKEY a0, LPCSTR a1, PHKEY a2)
 {
-	
+	TRACE_SVP( "Mine_RegOpenKeyA2 %s %u ",  a1, a2);
 	
 	if(CFilterMapper2::m_pFilterMapper2) {TRACE_SVP("Mine_RegOpenKeyA %s" , a1);*a2 = FAKEHKEY; return ERROR_SUCCESS;}
 
@@ -407,12 +485,13 @@ LONG WINAPI Mine_RegOpenKeyA(HKEY a0, LPCSTR a1, PHKEY a2)
 
 	LONG ret =  Real_RegOpenKeyA(a0, a1, a2);
 	
-	TRACE_SVP( "Mine_RegOpenKeyA2 %s %u ",  a1, a2);
+	
 	return ret;
 }
 LONG WINAPI Mine_RegOpenKeyW(HKEY a0, LPCWSTR a1, PHKEY a2)
 {
-	if(CFilterMapper2::m_pFilterMapper2) {TRACE_SVP5(L"Mine_RegOpenKeyW %s" , a1);*a2 = FAKEHKEY; return ERROR_SUCCESS;}
+	TRACE_SVP5(L"Mine_RegOpenKeyW %s" , a1);
+	if(CFilterMapper2::m_pFilterMapper2) {*a2 = FAKEHKEY; return ERROR_SUCCESS;}
 	return Real_RegOpenKeyW(a0, a1, a2);
 }
 LONG WINAPI Mine_RegOpenKeyExA(HKEY a0, LPCSTR a1, DWORD a2, REGSAM a3, PHKEY a4)
@@ -442,7 +521,8 @@ LONG WINAPI Mine_RegOpenKeyExA(HKEY a0, LPCSTR a1, DWORD a2, REGSAM a3, PHKEY a4
 }
 LONG WINAPI Mine_RegOpenKeyExW(HKEY a0, LPCWSTR a1, DWORD a2, REGSAM a3, PHKEY a4)
 {
-	if(CFilterMapper2::m_pFilterMapper2 && (a3&(KEY_SET_VALUE|KEY_CREATE_SUB_KEY))) {TRACE_SVP5(L"Mine_RegOpenKeyExW %s" , a1);*a4 = FAKEHKEY; return ERROR_SUCCESS;}
+	TRACE_SVP5( L"Mine_RegOpenKeyExW  %s %x ",  a1, a2);
+	if(CFilterMapper2::m_pFilterMapper2 && (a3&(KEY_SET_VALUE|KEY_CREATE_SUB_KEY))) {*a4 = FAKEHKEY; return ERROR_SUCCESS;}
 	/*if(a0 >= FAKEHKEY && a0 <= (FAKEHKEY + 100) ){
 		TRACE_SVP5(L"Real_RegOpenKeyExW FAKEHKEY %s" , a1);
 		*a4 = a0++;
@@ -460,22 +540,30 @@ LONG WINAPI Mine_RegOpenKeyExW(HKEY a0, LPCWSTR a1, DWORD a2, REGSAM a3, PHKEY a
 		TRACE_SVP5(L"Real_RegOpenKeyExW %s" , a1);
 	}
 	*/
-	return Real_RegOpenKeyExW(a0, a1, a2, a3, a4);
+	if(  a1 && _wcsicmp(_T("Software\\HaaliMkx\\Input"), a1) == 0 ){ 
+		*a4 = FAKEHKEY+14;
+		return ERROR_SUCCESS;
+	}
+	LONG ret = Real_RegOpenKeyExW(a0, a1, a2, a3, a4);
+	TRACE_SVP5(L"Mine_RegOpenKeyExW %x %s %x" , a0, a1 , ret);
+	return ret;
 }
 LONG WINAPI Mine_RegQueryInfoKeyA(HKEY a0, LPSTR a1, LPDWORD a2, LPDWORD a3, LPDWORD a4, LPDWORD a5, LPDWORD a6, LPDWORD a7, LPDWORD a8, LPDWORD a9, LPDWORD a10, struct _FILETIME* a11)
 {
-	if(CFilterMapper2::m_pFilterMapper2 && a0 == FAKEHKEY) {TRACE_SVP("Mine_RegQueryInfoKeyA %s" , a1);return ERROR_INVALID_HANDLE;}
+	TRACE_SVP("Mine_RegQueryInfoKeyA %s" , a1);
+	if(CFilterMapper2::m_pFilterMapper2 && a0 == FAKEHKEY) {return ERROR_INVALID_HANDLE;}
 	return Real_RegQueryInfoKeyA(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11);
 }
 LONG WINAPI Mine_RegQueryInfoKeyW(HKEY a0, LPWSTR a1, LPDWORD a2, LPDWORD a3, LPDWORD a4, LPDWORD a5, LPDWORD a6, LPDWORD a7, LPDWORD a8, LPDWORD a9, LPDWORD a10, struct _FILETIME* a11)
 {
-	if(CFilterMapper2::m_pFilterMapper2 && a0 == FAKEHKEY) {TRACE_SVP5(L"Mine_RegQueryInfoKeyW %s" , a1);return ERROR_INVALID_HANDLE;}
+	TRACE_SVP5(L"Mine_RegQueryInfoKeyW %s" , a1);
+	if(CFilterMapper2::m_pFilterMapper2 && a0 == FAKEHKEY) {return ERROR_INVALID_HANDLE;}
 	return Real_RegQueryInfoKeyW(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11);
 }
 LONG WINAPI Mine_RegQueryValueA(HKEY a0, LPCSTR a1, LPSTR a2, PLONG a3)
 {
-	
-	if(CFilterMapper2::m_pFilterMapper2 && a0 == FAKEHKEY) {TRACE_SVP("Mine_RegQueryValueA %s" , a1);*a3 = 0; return ERROR_SUCCESS;}
+	TRACE_SVP("Mine_RegQueryValueA %s" , a1);
+	if(CFilterMapper2::m_pFilterMapper2 && a0 == FAKEHKEY) {*a3 = 0; return ERROR_SUCCESS;}
 	LONG ret = Real_RegQueryValueA(a0, a1, a2, a3);
 	TRACE_SVP( "Mine_RegQueryValueA %s %s",  a1, a2);
 	return ret;
@@ -483,12 +571,13 @@ LONG WINAPI Mine_RegQueryValueA(HKEY a0, LPCSTR a1, LPSTR a2, PLONG a3)
 LONG WINAPI Mine_RegQueryValueW(HKEY a0, LPCWSTR a1, LPWSTR a2, PLONG a3)
 {
 	//SVP_LogMsg5(_T("Mine_RegQueryValueW %s %s "), a1 , a2);
-	if(CFilterMapper2::m_pFilterMapper2 && a0 == FAKEHKEY) {TRACE_SVP5(L"Mine_RegQueryValueW %s" , a1);*a3 = 0; return ERROR_SUCCESS;}
+	TRACE_SVP5(L"Mine_RegQueryValueW %s" , a1);
+	if(CFilterMapper2::m_pFilterMapper2 && a0 == FAKEHKEY) {*a3 = 0; return ERROR_SUCCESS;}
 	return Real_RegQueryValueW(a0, a1, a2, a3);
 }
 LONG WINAPI Mine_RegQueryValueExA(HKEY a0, LPCSTR a1, LPDWORD a2, LPDWORD a3, LPBYTE a4, LPDWORD a5)
 {
-	
+	TRACE_SVP("Mine_RegQueryValueExA %s" , a1);
 	if(a1){
 		if ( a0 == (FAKEHKEY+1) &&  _strcmpi(a1, "Serial") == 0){
 		//*a3 = REG_SZ;
@@ -505,7 +594,7 @@ LONG WINAPI Mine_RegQueryValueExA(HKEY a0, LPCSTR a1, LPDWORD a2, LPDWORD a3, LP
 	}
 		
 	
-	if(CFilterMapper2::m_pFilterMapper2 && a0 == FAKEHKEY) {TRACE_SVP("Mine_RegQueryValueExA %s" , a1);*a5 = 0; return ERROR_SUCCESS;}
+	if(CFilterMapper2::m_pFilterMapper2 && a0 == FAKEHKEY) {*a5 = 0; return ERROR_SUCCESS;}
 	LONG ret = Real_RegQueryValueExA(a0, a1, a2, a3, a4, a5);
 	if(a1 && a0 == (FAKEHKEY+2)){
 		TRACE_SVP( "Mine_RegQueryValueExA %s %u %u %s",  a1, a3,  a4, a4);
@@ -515,9 +604,36 @@ LONG WINAPI Mine_RegQueryValueExA(HKEY a0, LPCSTR a1, LPDWORD a2, LPDWORD a3, LP
 }
 LONG WINAPI Mine_RegQueryValueExW(HKEY a0, LPCWSTR a1, LPDWORD a2, LPDWORD a3, LPBYTE a4, LPDWORD a5)
 {
-	//SVP_LogMsg5(_T("Mine_RegQueryValueExW %s %s "), a1 , a2);
-	if(CFilterMapper2::m_pFilterMapper2 && a0 == FAKEHKEY) {TRACE_SVP5(L"Mine_RegQueryValueExW %s" , a1); *a5 = 0; return ERROR_SUCCESS;}
+	if(CFilterMapper2::m_pFilterMapper2 && a0 == FAKEHKEY) { *a5 = 0; return ERROR_SUCCESS;}
+
+	if( a1){
+
+		
+		if(wcscmp(L"ui.trayicon" , a1 ) == 0){
+			memset((void*)a4, 0, 4);
+			*a3 = REG_DWORD;
+			return ERROR_SUCCESS;
+		}
+		//
+		//return ERROR_FILE_NOT_FOUND;
+	}
+	
+
 	LONG ret = Real_RegQueryValueExW(a0, a1, a2, a3, a4, a5);
+	TRACE_SVP5(_T("Mine_RegQueryValueExW %s %s %x "), a1 , a2, a3);
+		if(a4 ){
+			
+				
+				if(*a5 > 4){
+					TRACE_SVP5(_T("Mine_RegQueryValueExW Got SZ %s %x  "), a4 , ret);
+				}else if(*a5 == 4){
+					TRACE_SVP5(_T("Mine_RegQueryValueExW Got %x  %d %x %x"), *(DWORD*)a4 , *a5 , a0,  ret);
+				}
+			
+		}
+
+	
+	
 	/*
 	if(a1 && ( a0 == (FAKEHKEY+2) || a0 == (FAKEHKEY+1) )){
 			SVP_LogMsg5(_T("Mine_RegQueryValueExW %s %u %u %s"),  a1, a3,  a4, a4);
@@ -527,26 +643,26 @@ LONG WINAPI Mine_RegQueryValueExW(HKEY a0, LPCWSTR a1, LPDWORD a2, LPDWORD a3, L
 }
 LONG WINAPI Mine_RegSetValueA(HKEY a0, LPCSTR a1, DWORD a2, LPCSTR a3, DWORD a4)
 {
-	
-	if(CFilterMapper2::m_pFilterMapper2 && (a0 == FAKEHKEY || (int)a0 < 0)) {TRACE_SVP("SET RegA %s %d %s" , a1 , a2, a3);return ERROR_SUCCESS;}
+	TRACE_SVP("SET RegA %s %d %s" , a1 , a2, a3);
+	if(CFilterMapper2::m_pFilterMapper2 && (a0 == FAKEHKEY || (int)a0 < 0)) {return ERROR_SUCCESS;}
 	return Real_RegSetValueA(a0, a1, a2, a3, a4);
 }
 LONG WINAPI Mine_RegSetValueW(HKEY a0, LPCWSTR a1, DWORD a2, LPCWSTR a3, DWORD a4)
 {
-	
-	if(CFilterMapper2::m_pFilterMapper2 && (a0 == FAKEHKEY || (int)a0 < 0)) {TRACE_SVP5(_T("SET RegW %s") , a1);return ERROR_SUCCESS;}
+	TRACE_SVP5(_T("SET RegW %s") , a1);
+	if(CFilterMapper2::m_pFilterMapper2 && (a0 == FAKEHKEY || (int)a0 < 0)) {return ERROR_SUCCESS;}
 	return Real_RegSetValueW(a0, a1, a2, a3, a4);
 }
 LONG WINAPI Mine_RegSetValueExA(HKEY a0, LPCSTR a1, DWORD a2, DWORD a3, BYTE* a4, DWORD a5)
 {
-	
-	if(CFilterMapper2::m_pFilterMapper2 && (a0 == FAKEHKEY || (int)a0 < 0)) {TRACE_SVP("SET RegAeX %s" , a1);return ERROR_SUCCESS;}
+	TRACE_SVP("SET RegAeX %s" , a1);
+	if(CFilterMapper2::m_pFilterMapper2 && (a0 == FAKEHKEY || (int)a0 < 0)) {return ERROR_SUCCESS;}
 	return Real_RegSetValueExA(a0, a1, a2, a3, a4, a5);
 }
 LONG WINAPI Mine_RegSetValueExW(HKEY a0, LPCWSTR a1, DWORD a2, DWORD a3, BYTE* a4, DWORD a5)
 {
-	
-	if(CFilterMapper2::m_pFilterMapper2 && (a0 == FAKEHKEY || (int)a0 < 0)) {TRACE_SVP5(_T("SET RegWeX %s") , a1);return ERROR_SUCCESS;}
+	TRACE_SVP5(_T("SET Mine_RegSetValueExW %s") , a1);
+	if(CFilterMapper2::m_pFilterMapper2 && (a0 == FAKEHKEY || (int)a0 < 0)) {return ERROR_SUCCESS;}
 	return Real_RegSetValueExW(a0, a1, a2, a3, a4, a5);
 }
 

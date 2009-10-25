@@ -37,4 +37,5 @@ extern void SVP_LogMsg2(LPCTSTR fmt, ...);
 extern void SVP_LogMsg3(LPCSTR fmt, ...);
 extern void SVP_LogMsg4(BYTE* buff, __int64 iLen);
 extern void SVP_LogMsg5(LPCTSTR fmt, ...);
+extern void SVP_LogMsg6(LPCSTR fmt, ...);
 static UINT logTick = 0;

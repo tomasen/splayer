@@ -1311,13 +1311,25 @@ for(int i = 0; i <= 30; i++){
 	//CFilterMapper2 fm2(false);
 	if(1){
 		HKEY fKey;
+		CFilterMapper2 fmx(false);
 		if(RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{55DA30FC-F16B-49FC-BAA5-AE59FC65F82D}") , &fKey ) != ERROR_SUCCESS ){
-			csaDll.Add( _T("ts.dll"));
-			csaDll.Add( _T("ogm.dll"));
-			csaDll.Add( _T("haalis.ax"));
-		}else{
-			//RegCloseKey(fKey);
+				
+			SVP_LogMsg5(L"Reg haalis.ax");
+			RegSvr32( _T("haalis.ax"));
+			
 		}
+
+		if(RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{DB43B405-43AA-4f01-82D8-D84D47E6019C}") , &fKey ) != ERROR_SUCCESS ){
+			SVP_LogMsg5(L"Reg ogm.dll");
+			RegSvr32( _T("ogm.dll"));
+		}
+
+		if(RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{B841F346-4835-4de8-AA5E-2E7CD2D4C435}") , &fKey ) != ERROR_SUCCESS ){
+			SVP_LogMsg5(L"Reg ts.dll");
+			RegSvr32( _T("ts.dll"));
+		}
+
+		SVP_LogMsg5(L"Reg End");
 	}
 
 		//csaDll.Add( _T("tsccvid.dll"));

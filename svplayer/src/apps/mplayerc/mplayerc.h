@@ -25,6 +25,7 @@
 	#error include 'stdafx.h' before including this file for PCH
 #endif
 
+
 #define ResStr(id) CString(MAKEINTRESOURCE(id))
 
 #include "resource.h"       // main symbols
@@ -368,6 +369,7 @@ public:
 	
 	bool m_bGotResponse;
 	static int	m_isVista;
+	static HMODULE	m_hResDll;
 	static void					SetLanguage (int nLanguage);
 	static LPCTSTR				GetSatelliteDll(int nLang);
 	static bool	IsVista();
@@ -728,6 +730,9 @@ public:
 	bool m_bMouseInOutUnknown;
 	bool m_bGenerateMouseInOutMessages;
 	virtual BOOL PumpMessage();
+
+
+	
 };
 extern const UINT WM_MOUSEMOVEIN;
 extern const UINT WM_MOUSEMOVEOUT;

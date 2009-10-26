@@ -13,70 +13,6 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Bitmap
-//
-
-IDB_ONOFF               BITMAP                  "res\\onoff.bmp"
-IDB_MONO                BITMAP                  "res\\mono.bmp"
-IDB_STEREO              BITMAP                  "res\\stereo.bmp"
-IDB_NOAUDIO             BITMAP                  "res\\noaudio.bmp"
-IDB_AUTHHDRPIC          BITMAP                  "res\\authhdrpic.bmp"
-IDB_STREAMTYPES         BITMAP                  "res\\streamtypes.bmp"
-BORDER_CORNER.BMP       BITMAP                  "res\\newui\\BORDER_CORNER.bmp"
-CAPTION.BMP             BITMAP                  "res\\newui\\CAPTION.bmp"
-CLOSE.BMP               BITMAP                  "res\\newui\\BTN_CLOSE.bmp"
-MAXIMIZE.BMP            BITMAP                  "res\\newui\\BTN_MAX.bmp"
-MINIMIZE.BMP            BITMAP                  "res\\newui\\BTN_MIN.bmp"
-RESTORE.BMP             BITMAP                  "res\\newui\\BTN_RESTORE.bmp"
-MENU.BMP                BITMAP                  "res\\newui\\BTN_MENU.bmp"
-BTN_PLAY.BMP            BITMAP                  "res\\newui\\BTN_PLAY.bmp"
-BTN_PAUSE.BMP           BITMAP                  "res\\newui\\BTN_PAUSE.bmp"
-BTN_STOP.BMP            BITMAP                  "res\\newui\\BTN_STOP.bmp"
-FAST_FORWORD.BMP        BITMAP                  "res\\newui\\FAST_FORWORD.bmp"
-FAST_BACKWORD.BMP       BITMAP                  "res\\newui\\FAST_BACKWORD.bmp"
-SPLAYER.BMP             BITMAP                  "res\\newui\\SPLAYER.bmp"
-MUTED.BMP               BITMAP                  "res\\newui\\MUTED.bmp"
-VOLUME.BMP              BITMAP                  "res\\newui\\VOLUME.bmp"
-VOLUME_BG.BMP           BITMAP                  "res\\newui\\VOLUME_BG.bmp"
-VOLUME_TM.BMP           BITMAP                  "res\\newui\\VOLUME_TM.bmp"
-BTN_NEXT.BMP            BITMAP                  "res\\newui\\BTN_NEXT.bmp"
-BTN_PREV.BMP            BITMAP                  "res\\newui\\BTN_PREV.bmp"
-BTN_PLAYLIST.BMP        BITMAP                  "res\\newui\\BTN_PLAYLIST.bmp"
-BTN_SUB.BMP             BITMAP                  "res\\newui\\BTN_SUB.bmp"
-BTN_SUB_DELAY_REDUCE.BMP BITMAP                  "res\\newui\\BTN_SUB_DELAY_REDUCE.bmp"
-BTN_SUB_DELAY_INCREASE.BMP BITMAP                  "res\\newui\\BTN_SUB_DELAY_INCREASE.bmp"
-BTN_SETTING.BMP         BITMAP                  "res\\newui\\BTN_SETTING.bmp"
-BTN_CAPTURE.BMP         BITMAP                  "res\\newui\\BTN_CAPTURE.bmp"
-WATERMARK2.BMP          BITMAP                  "res\\newui\\WATERMARK2.bmp"
-BTN_OPENFILE_SMALL.BMP  BITMAP                  "res\\newui\\BTN_OPENFILE_SMALL.bmp"
-BTN_BIGOPEN.BMP         BITMAP                  "res\\newui\\BTN_BIGOPEN.bmp"
-BTN_MINTOTRAY.BMP       BITMAP                  "res\\newui\\BTN_MINTOTRAY.bmp"
-BTN_FONT.BMP            BITMAP                  "res\\newui\\BTN_FONT.bmp"
-BTN_FONT_MINUS.BMP      BITMAP                  "res\\newui\\BTN_FONT_MINUS.bmp"
-BTN_FONT_PLUS.BMP       BITMAP                  "res\\newui\\BTN_FONT_PLUS.bmp"
-BTN_STEP.BMP            BITMAP                  "res\\newui\\BTN_STEP.bmp"
-PINAIL.BMP              BITMAP                  "res\\newui\\pinail.bmp"
-PINAIL2.BMP             BITMAP                  "res\\newui\\pinail2.bmp"
-TOP_1X.BMP              BITMAP                  "res\\newui\\TOP_1X.bmp"
-TOP_2X.BMP              BITMAP                  "res\\newui\\TOP_2X.bmp"
-TOP_AUDIO.BMP           BITMAP                  "res\\newui\\TOP_AUDIO.bmp"
-TOP_VIDEO.BMP           BITMAP                  "res\\newui\\TOP_VIDEO.bmp"
-TOP_FULLSCREEN.BMP      BITMAP                  "res\\newui\\TOP_FULLSCREEN.bmp"
-TOP_NORMAL.BMP          BITMAP                  "res\\newui\\TOP_NORMAL.bmp"
-TOP_LETTERBOX.BMP       BITMAP                  "res\\newui\\TOP_LETTERBOX.bmp"
-TOP_CAPTURE.BMP         BITMAP                  "res\\newui\\TOP_CAPTURE.bmp"
-TOP_CLOSE.BMP           BITMAP                  "res\\newui\\TOP_CLOSE.bmp"
-TOP_RESTORE.BMP         BITMAP                  "res\\newui\\TOP_RESTORE.bmp"
-BTN_FULLSCREEN.BMP      BITMAP                  "res\\newui\\BTN_FULLSCREEN.bmp"
-SLIDER_TM.BMP           BITMAP                  "res\\newui\\SLIDER_TM.bmp"
-TOP_GAMMA.BMP           BITMAP                  "res\\newui\\TOP_GAMMA.bmp"
-TOP_TRANS.BMP           BITMAP                  "res\\newui\\TOP_TRANS.bmp"
-TOP_LETTERBOX_WIDER.BMP BITMAP                  "res\\newui\\TOP_LETTERBOX_WIDER.bmp"
-TOP_NORMAL_WIDER.BMP    BITMAP                  "res\\newui\\TOP_NORMAL_WIDER.bmp"
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
@@ -1044,13 +980,21 @@ BEGIN
     PUSHBUTTON      "Copy to clipboard",IDC_BUTTON1,44,162,75,14
 END
 
-/////////////////////////////////////////////////////////////////////////////
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Menu
 //
+IDR_MAINFRAME MENU 
+BEGIN
+    MENUITEM "",                            ID_FILE_OPENQUICK
+END
+
+
+IDR_POPUPMAIN MENU 
+BEGIN
+    MENUITEM "",                            ID_FILE_OPENQUICK
+END
 
 IDR_POPUP MENU 
 BEGIN
@@ -1063,7 +1007,7 @@ BEGIN
         MENUITEM "Close(&C)",                      ID_FILE_CLOSEPLAYLIST
         MENUITEM SEPARATOR
         MENUITEM "Audio",                          ID__32777
-        MENUITEM "Subtitle",                          ID__32860
+        MENUITEM "Subtitles",                          ID__32860
         POPUP "Display"
         BEGIN
             MENUITEM "StandardFull\tC",                     ID_VIEW_VF_FROMINSIDE
@@ -1256,6 +1200,29 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// AVI
+//
+
+//IDR_AVI_FILECOPY        AVI                     "res\\ani.avi"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// HTML
+//
+
+IDR_HTML_UESETTINGPANEL HTML                    "res.en\\UESettingPanel.html"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// 2110
+//
+DONATE.GIF              2110                    "res\\web\\donate.gif"
+BLANK.GIF               2110                    "res\\web\\blank.gif"
+BG-H.GIF                2110                    "res\\web\\bg-h.gif"
+THUMB-N.GIF             2110                    "res\\web\\thumb-n.gif"
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // String Table
 //
 
@@ -1264,6 +1231,70 @@ BEGIN
     IDR_MAINFRAME           "SPlayer"
 END
 
+
+STRINGTABLE 
+BEGIN
+    IDS_R_SETTINGS          "Settings"
+    IDS_RS_TITLEBARTEXTSTYLE "TitleBarTextStyle"
+    IDS_RS_USEWMASFREADER   "UseWMASFReader"
+    IDS_RS_CONTROLSTATE     "ControlState"
+    IDS_RS_VOLUME           "Volume"
+    IDS_RS_MUTE             "Mute"
+    IDS_RS_BALANCE          "Balance"
+    IDS_RS_LOOP             "Loop"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_RS_LASTCHECKUPDATER "LastCheckUpdater"
+    IDS_RS_USEGPUACEL       "USEGPUAcel"
+    IDS_RS_AUTODOWNLAODSVPSUB "AutoDownloadSVPSub"
+    IDS_RS_USEGPUCUDA       "USEGPUCUDA"
+    IDS_RS_AUTORESUMEPLAY   "autoResumePlay"
+    IDS_TRA_FFMPEG          "6.4.0.1\n»ùÓÚ ffmpeg ±àÂëÆ÷, http://ffmpeg.mplayerhq.hu/"
+    IDS_RS_DXVAFILTERS      "DXVAFilters"
+    IDS_RS_FFMPEGFILTERS    "FFmpegFilters"
+    IDS_SRC_FLAC            "1.2.1.0"
+    IDS_RS_DISABLESMARTDRAG "DisableSmartDrag"
+    IDS_RS_ONLYUSEINTERNALDEC "onlyUseInternalDec"
+    IDS_RS_USESMARTDRAG     "userSmartDrag"
+    IDS_RS_EVR_BUFFERS      "EVRBuffers"
+    IDS_RS_DECSPEAKERS      "DecSpeakers"
+    IDS_RS_USEINTERNALTSSPLITER "UseInternalTSSpliter"
+    IDS_RS_USEWAVEOUTDEVICEBYDEFAULT "UseWaveOutDeviceByDefault"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_RS_SNAPTODESKTOPEDGES "SnapToDesktopEdges"
+    IDS_RS_ENABLESUBTITLES  "EnableSubtitles"
+    IDS_RS_MPEGINTERLACED   "MPEGInterlaced"
+    IDS_RS_THUMBWIDTH       "ThumbWidth"
+    IDS_RS_AUDIONORMALIZE   "AudioNormalize"
+    IDS_RS_AUDIOBOOST       "AudioBoost"
+    IDS_RS_AUDIONORMALIZERECOVER "AudioNormalizeRecover"
+    IDS_RS_VMR9MIXERYUV     "VMRMixerYUV"
+    IDS_RS_TITLEBARTEXTTITLE "TitleBarTextTitle"
+    IDS_RS_SHADERLIST       "Shaders List"
+    IDS_RS_BLOCKVSFILTER    "BlockVSFilter"
+    IDS_RS_CHECKFILEASSCONSTARTUP "CheckFileAsscOnStartup"
+    IDS_RS_ENABLESUBTITLES2 "EnableSubtitles2"
+    IDS_RS_COLOR_BRIGHTNESS "Color Brightness"
+    IDS_RS_COLOR_CONTRAST   "Color Contrast"
+    IDS_RS_COLOR_HUE        "Color Hue"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_RS_COLOR_SATURATION "Color Saturation"
+    IDS_RS_SHOWCONTROLBAR   "ShowControlBar"
+    IDS_RS_NOTCHANGEFONTTOYH "NotChangeFontToYH"
+    IDS_RS_UPLOADFAILEDPINS "UploadFailedPins"
+    IDS_RS_USERGBONLY       "UseRGBOnly"
+    IDS_RS_VMDETECTED       "VMDetected"
+    IDS_RS_SAVESVPSUBWITHVIDEO "SaveSVPSubWithVideo"
+    IDS_RS_GLOBAL_SUBFONTRATIO "GlobalSubFontRatio"
+END
 
 STRINGTABLE 
 BEGIN
@@ -1382,7 +1413,7 @@ END
 
 STRINGTABLE 
 BEGIN
-    AFX_IDS_APP_TITLE       "ShootPlayer"
+    AFX_IDS_APP_TITLE       "SPlayer"
 END
 
 STRINGTABLE 
@@ -1825,8 +1856,8 @@ BEGIN
     IDS_FAVORITES_POPUP     "F&avorites"
     IDS_JUMPTO_POPUP        "Jump To..."
     IDS_VIDEOANGLE_POPUP    "Video Angle"
-    IDS_SUBTITLELANGUAGE_POPUP "Subtitle Language"
-    IDS_AUDIOLANGUAGE_POPUP "Audio Language"
+    IDS_SUBTITLELANGUAGE_POPUP "Subtitle Track"
+    IDS_AUDIOLANGUAGE_POPUP "Audio Track"
 END
 
 STRINGTABLE 
@@ -1840,7 +1871,7 @@ BEGIN
     IDS_AUDIO_POPUP         "Audio"
     IDS_FILTERS_POPUP       "Filters"
     IDS_OPENCDROM_POPUP     "O&pen Disc"
-    IDS_NAVIGATE_POPUP      "Navigate"
+    IDS_NAVIGATE_POPUP      "DVD Control" //Must same with Menu
     IDS_VIDEOFRAME_POPUP    "Video Frame"
     IDS_PANSCAN_POPUP       "Pan&&Scan"
     IDS_ASPECTRATIO_POPUP   "Aspect Ratio"
@@ -1884,23 +1915,6 @@ END
 
 STRINGTABLE 
 BEGIN
-    ID_SHOWCOLORCONTROLBAR  "Brightness Control\nBrightness Control"
-END
-
-STRINGTABLE 
-BEGIN
-    ID_PLAY_FWD             "Forward"
-	IDR_MAINFRAME_SHORTNAME	"ShootPlayer"
-	IDS_FORMAT_FILE_SIZE	"File Size: %I64d%s (%I64d bytes)\\N" 
-	IDS_MENU_ITEM_SETTING	"Setting..." 
-	IDS_UESETTING_PANEL_GPULIST	"Your Video Cards Is: <br/>" 
-	IDS_UESETTING_PANEL_GPU_ACCEL_AVALIBLE	"GPU acceleration is available" 
-	IDS_UESETTING_PANEL_GPU_ACCEL_MAYBE_NOT_AVALIBLE	"GPU acceleration might not be available <a class='small' href='mailto:tomasen@gmail.com'>Report Errors</a>" 
-END
-
-
-STRINGTABLE 
-BEGIN
     
 	IDS_DISLOG_FILEASSOC_TITLE	"Association..."
 	IDS_MSG_CREATE_OSD_FAIL	"Creat OSD Fall£¡"
@@ -1933,7 +1947,7 @@ BEGIN
 	IDS_DVD_INFO_LANG_DIRECTORCOMMENT_CHILDREN	" (Director Comment, Children)"
 	IDS_MENU_ITEM_DVD_CONTROL	"DVD Control"
 	IDS_MENU_ITEM_OPENCDROM	"Open CDROM"
-	IDS_MENU_ITEM_FILTERS	"Filters(Filters)"
+	IDS_MENU_ITEM_FILTERS	"Filters"
 	IDS_MENU_ITEM_AUDIO	"Audio"
 	IDS_MENU_ITEM_SUBTITLE	"Subtitle"
 	IDS_MENU_ITEM_AUDIOLANGUAGE	"Audio Language"
@@ -1946,15 +1960,15 @@ BEGIN
 	IDS_MENU_ITEM_PANSCAN	"Adjust Frame"
 	IDS_MENU_ITEM_ASPECTRATIO	"Enforce Aspect Ratio"
 	IDS_MENU_ITEM_ZOOM	"Zoom"
-	IDS_MENU_ITEM_PLAYBACK_CONTROL	"PlayBack"
-	IDS_MENU_ITEM_PLAYLOOP_NOLOOP	"PlayLoop_NoLoop"
+	IDS_MENU_ITEM_PLAYBACK_CONTROL	"Playback"
+	IDS_MENU_ITEM_PLAYLOOP_NOLOOP	"PlayLoop(NoLoop)"
 	IDS_MENU_ITEM_PLAYLOOP_PLAYLIST	"PlayLoop(PlayList)"
 	IDS_MENU_ITEM_PLAYLOOP_CURRENT	"PlayLoop(Current)"
 	IDS_MENU_ITEM_PLAYLOOP_RANDOM_PLAYLIST	"RandomPlay(PlayList)"
 	IDS_MENU_ITEM_PLAYLOOP_NORMAL	"PlayLoop_Normal"
 	IDS_MENU_ITEM_OPEN	"Open"
-	IDS_MENU_ITEM_SUBTITLE_EVERYTHING	"Subtitle"
-	IDS_MENU_ITEM_RECENT_PALYED	"Recent File"
+	IDS_MENU_ITEM_SUBTITLE_EVERYTHING	"Subtitles"
+	IDS_MENU_ITEM_RECENT_PALYED	"Recent Played"
 	IDS_MENU_ITEM_NUMOF_SPEAKER	"Exist %d Speaker"
 	IDS_MENU_ITEM_NUMOF_SPEAKER_AUTODETECTED	"(AutoDetected)"
 	IDS_MENU_ITEM_NUMOF_SPEAKER_MANUAL	"(Manual)"
@@ -2360,12 +2374,16 @@ BEGIN
 	IDS_LOG_MSG_SVPSUB_SUCCESS_DOWNLOAD_SUB	"Subtitle download successfully "
 	IDS_LOG_MSG_SVPSUB_GOT_N_SUB_FILE_DOWNLOADED	"Download %d Subtitle successfully "
 	IDS_LOG_MSG_SVPSUB_UPLOAD_FINISHED	"Upload finished"
-	IDS_LOG_MSG_SVPSUB_NETWORK_FAIL	"Network brokendown£¬Subtitle download falled"
+	IDS_LOG_MSG_SVPSUB_NETWORK_FAIL	"Network brokendown, Subtitle download falled"
 	IDS_LOG_MSG_SVPSUB_NONE_MATCH_SUB	"None matched Subtitle"
 	IDS_LOG_MSG_SVPSUB_DOWNLOAD_FAIL	"Data error£¬Subtitle download falled"
-	IDS_LOG_MSG_SVPSUB_GOTMATCHED_AND_DOWNLOADING	"Subtitle matched£¬downloading"
+	IDS_LOG_MSG_SVPSUB_GOTMATCHED_AND_DOWNLOADING	"Subtitle matched, downloading"
+	IDS_MENU_ITEM_SETTING   "Setting..."
 END
-
+STRINGTABLE 
+BEGIN
+    ID_SHOWCOLORCONTROLBAR  "Brightness Control\nBrightness Control"
+END
 
 #ifndef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////

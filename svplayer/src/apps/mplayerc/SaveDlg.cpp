@@ -65,8 +65,8 @@ BOOL CSaveDlg::OnInitDialog()
 {
 	CCmdUIDialog::OnInitDialog();
 
-	m_anim.Open(IDR_AVI_FILECOPY);
-	m_anim.Play(0, -1, -1);
+	//m_anim.Open(IDR_AVI_FILECOPY);
+	//m_anim.Play(0, -1, -1);
 
 	CString str, in = m_in, out = m_out;
 	if(in.GetLength() > 60) in = in.Left(17) + _T("..") + in.Right(43);

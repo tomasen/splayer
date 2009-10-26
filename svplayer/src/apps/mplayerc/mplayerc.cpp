@@ -455,14 +455,22 @@ bool LoadType(CString fn, CString& type)
 	return(true);
 }
 
+
 bool LoadResource(UINT resid, CStringA& str, LPCTSTR restype)
 {
+	HINSTANCE iInstance = AfxGetResourceHandle();
+
 	str.Empty();
-	HRSRC hrsrc = FindResource(AfxGetResourceHandle(), MAKEINTRESOURCE(resid), restype);
-	if(!hrsrc) return(false);
-	HGLOBAL hGlobal = LoadResource(AfxGetResourceHandle(), hrsrc);
+	HRSRC hrsrc = FindResource(iInstance, MAKEINTRESOURCE(resid), restype);
+	if(!hrsrc) {
+		iInstance = AfxGetApp()->m_hInstance;
+		hrsrc = FindResource(iInstance, MAKEINTRESOURCE(resid), restype);
+		if(!hrsrc)
+			return(false);
+	}
+	HGLOBAL hGlobal = LoadResource(iInstance, hrsrc);
 	if(!hGlobal) return(false);
-	DWORD size = SizeofResource(AfxGetResourceHandle(), hrsrc);
+	DWORD size = SizeofResource(iInstance, hrsrc);
 	if(!size) return(false);
 	memcpy(str.GetBufferSetLength(size), LockResource(hGlobal), size);
 	return(true);
@@ -564,6 +572,7 @@ const UINT WM_MOUSEMOVEOUT = ::RegisterWindowMessage(_T("WM_MOUSEMOVEOUT"));
 int CMPlayerCApp::m_isVista = -1;
 int CMPlayerCApp::m_bCanUseCUDA = -1;
 int CMPlayerCApp::m_bHasEVRSupport = -1;
+HMODULE	CMPlayerCApp::m_hResDll = NULL;
 
 CMPlayerCApp::CMPlayerCApp()
 //	: m_hMutexOneInstance(NULL)
@@ -1099,6 +1108,7 @@ LONG WINAPI Mine_ChangeDisplaySettingsExA(LPCSTR lpszDeviceName, LPDEVMODEA lpDe
 		dwFlags, 
 		lParam);
 }
+
 DWORD WINAPI Mine_GetModuleFileNameA( HMODULE hModule, LPCH lpFilename,  DWORD nSize )
 {
 	DWORD ret = Real_GetModuleFileNameA(hModule, lpFilename, nSize);
@@ -1462,6 +1472,114 @@ UINT __cdecl Thread_InitInstance( LPVOID lpParam )
 	CoUninitialize();
 	return 0; 
 }
+
+HGLOBAL (__stdcall * Real_LoadResource)( HMODULE hModule, HRSRC hResInfo ) =  ::LoadResource;
+
+HGLOBAL WINAPI Mine_LoadResource( HMODULE hModule, HRSRC hResInfo )
+{
+	//SVP_LogMsg5(L"Mine_LoadResource");
+	if(CMPlayerCApp::m_hResDll){
+		HGLOBAL hGTmp = Real_LoadResource(hModule, hResInfo);
+		if(hGTmp)
+			return hGTmp;
+		else{
+			return Real_LoadResource( AfxGetApp()->m_hInstance, hResInfo);
+		}
+	}else{
+		return Real_LoadResource(hModule, hResInfo);
+	}
+
+}
+HANDLE  (__stdcall * Real_LoadImageA)( HINSTANCE hInst, LPCSTR name, UINT type, int cx, int cy, UINT fuLoad) = ::LoadImageA;
+HANDLE  (__stdcall * Real_LoadImageW)( HINSTANCE hInst, LPCWSTR name, UINT type, int cx, int cy, UINT fuLoad) = ::LoadImageW;
+HANDLE WINAPI Mine_LoadImageA( HINSTANCE hInst, LPCSTR name, UINT type, int cx, int cy, UINT fuLoad)
+{
+	//SVP_LogMsg5(L"Mine_LoadImageA");
+	if(CMPlayerCApp::m_hResDll){
+		HANDLE hGTmp = Real_LoadImageA(hInst,  name,  type,  cx,  cy,  fuLoad);
+		if(hGTmp)
+			return hGTmp;
+		else{
+			return Real_LoadImageA(AfxGetApp()->m_hInstance,  name,  type,  cx,  cy,  fuLoad);
+		}
+	}else{
+		return Real_LoadImageA(hInst,  name,  type,  cx,  cy,  fuLoad);
+	}
+}
+HANDLE WINAPI Mine_LoadImageW( HINSTANCE hInst, LPCWSTR name, UINT type, int cx, int cy, UINT fuLoad)
+{
+	//SVP_LogMsg5(L"Mine_LoadImageW");
+	if(CMPlayerCApp::m_hResDll){
+		HANDLE hGTmp = Real_LoadImageW(hInst,  name,  type,  cx,  cy,  fuLoad);
+		if(hGTmp)
+			return hGTmp;
+		else{
+			return Real_LoadImageW(AfxGetApp()->m_hInstance,  name,  type,  cx,  cy,  fuLoad);
+		}
+	}else{
+		return Real_LoadImageW(hInst,  name,  type,  cx,  cy,  fuLoad);
+	}
+}
+
+int  (__stdcall * Real_LoadStringA)(  HINSTANCE hInstance, UINT uID, LPSTR lpBuffer, int cchBufferMax) = ::LoadStringA;
+int  (__stdcall * Real_LoadStringW)( HINSTANCE hInstance,UINT uID, LPWSTR lpBuffer, int cchBufferMax) = ::LoadStringW;
+
+int WINAPI Mine_LoadStringA( HINSTANCE hInstance, UINT uID, LPSTR lpBuffer, int cchBufferMax){
+	//SVP_LogMsg5(L"Mine_LoadStringA");
+	if(CMPlayerCApp::m_hResDll){
+		int hGTmp = Real_LoadStringA(hInstance,  uID,  lpBuffer,  cchBufferMax);
+		if(hGTmp)
+			return hGTmp;
+		else{
+	//		SVP_LogMsg5(L"Mine_LoadStringA2");
+			return Real_LoadStringA(AfxGetApp()->m_hInstance,  uID,  lpBuffer,  cchBufferMax);
+		}
+	}else{
+		return Real_LoadStringA(hInstance,  uID,  lpBuffer,  cchBufferMax);
+	}
+}
+int WINAPI Mine_LoadStringW( HINSTANCE hInstance,UINT uID, LPWSTR lpBuffer, int cchBufferMax){
+	//SVP_LogMsg5(L"Mine_LoadStringW");
+	if(CMPlayerCApp::m_hResDll){
+		int hGTmp = Real_LoadStringW(hInstance,  uID,  lpBuffer,  cchBufferMax);
+		if(hGTmp)
+			return hGTmp;
+		else{
+	//		SVP_LogMsg5(L"Mine_LoadStringW2");
+			return Real_LoadStringW(AfxGetApp()->m_hInstance,  uID,  lpBuffer,  cchBufferMax);
+		}
+	}else{
+		return Real_LoadStringW(hInstance,  uID,  lpBuffer,  cchBufferMax);
+	}
+}
+HICON  (__stdcall * Real_LoadIconA)(  HINSTANCE  hInstance, LPCSTR lpIconName) = ::LoadIconA;
+HICON  (__stdcall * Real_LoadIconW)( HINSTANCE  hInstance, LPCWSTR lpIconName) = ::LoadIconW;
+
+HICON WINAPI Mine_LoadIconA( HINSTANCE hInstance, LPCSTR lpIconName){
+	if(CMPlayerCApp::m_hResDll){
+		HICON hGTmp = Real_LoadIconA(hInstance,lpIconName);
+		if(hGTmp)
+			return hGTmp;
+		else{
+			return Real_LoadIconA(AfxGetApp()->m_hInstance,  lpIconName);
+		}
+	}else{
+		return Real_LoadIconA(hInstance, lpIconName);
+	}
+}
+HICON WINAPI Mine_LoadIconW( HINSTANCE hInstance, LPCWSTR lpIconName){
+	if(CMPlayerCApp::m_hResDll){
+		HICON hGTmp = Real_LoadIconW(hInstance,lpIconName);
+		if(hGTmp)
+			return hGTmp;
+		else{
+			return Real_LoadIconW(AfxGetApp()->m_hInstance,  lpIconName);
+		}
+	}else{
+		return Real_LoadIconW(hInstance, lpIconName);
+	}
+}
+
 BOOL CMPlayerCApp::InitInstance()
 {
 	//ssftest s;
@@ -1479,6 +1597,14 @@ BOOL CMPlayerCApp::InitInstance()
 	DetourAttach(&(PVOID&)Real_mixerSetControlDetails, (PVOID)Mine_mixerSetControlDetails);
 	DetourAttach(&(PVOID&)Real_DeviceIoControl, (PVOID)Mine_DeviceIoControl);
 	DetourAttach(&(PVOID&)Real_GetModuleFileNameA, (PVOID)Mine_GetModuleFileNameA);
+
+	DetourAttach(&(PVOID&)Real_LoadResource, (PVOID)Mine_LoadResource);
+	DetourAttach(&(PVOID&)Real_LoadImageW, (PVOID)Mine_LoadImageW);
+	DetourAttach(&(PVOID&)Real_LoadImageA, (PVOID)Mine_LoadImageA);
+	DetourAttach(&(PVOID&)Real_LoadStringW, (PVOID)Mine_LoadStringW);
+	DetourAttach(&(PVOID&)Real_LoadStringA, (PVOID)Mine_LoadStringA);
+	DetourAttach(&(PVOID&)Real_LoadIconW, (PVOID)Mine_LoadIconW);
+	DetourAttach(&(PVOID&)Real_LoadIconA, (PVOID)Mine_LoadIconA);
 #ifndef _DEBUG
 	HMODULE hNTDLL	=	LoadLibrary (_T("ntdll.dll"));
 	if (hNTDLL)
@@ -1502,7 +1628,6 @@ BOOL CMPlayerCApp::InitInstance()
 		return FALSE;
 	}
 	
-
 	
     WNDCLASS wndcls;
     memset(&wndcls, 0, sizeof(WNDCLASS));
@@ -1526,6 +1651,8 @@ BOOL CMPlayerCApp::InitInstance()
         AfxMessageBox(_T("AfxSocketInit failed!"));
 		return FALSE;
 	}
+
+	SetLanguage(-1);
 
 	PreProcessCommandLine();
 
@@ -1775,6 +1902,8 @@ int CMPlayerCApp::ExitInstance()
 
 	}*/
 
+	if(m_hResDll)
+		FreeLibrary(m_hResDll);
 	return ret;
 }
 
@@ -3728,7 +3857,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 			UINT idf = shader_ids.GetNext(pos);
 			
 			CStringA srcdata;
-			if(LoadResource(idf, srcdata, _T("FILE")))
+			if(LoadResource( idf, srcdata, _T("FILE")))
 			{
 				Shader s;
 				s.label = ResStr(idf);
@@ -4583,22 +4712,69 @@ void CMPlayerCApp::SetLanguage (int nLanguage)
 {
 	AppSettings&	s = AfxGetAppSettings();
 	HMODULE		hMod = NULL;
-	LPCTSTR		strSatellite;
+	LPCTSTR		strSatellite = NULL;
 	bool		bNoChange = false;
 
-	s.iLanguage  = nLanguage;
 	CSVPToolBox svpTool;
-	strSatellite = svpTool.GetPlayerPath( GetSatelliteDll(nLanguage) );
+	CString szLangDefault = svpTool.GetPlayerPath(  _T("lang\\default") );
+	CString szLangSeting;
+	if(nLanguage < 0)
+	{
+		BOOL langSeted = false;
+		//get default lang setting
+		
+		if(svpTool.ifFileExist(szLangDefault)){
+			szLangSeting = svpTool.fileGetContent(szLangDefault);
+			if(!szLangSeting.IsEmpty()){
+				nLanguage = _wtoi( szLangSeting );
+				if(nLanguage > 0)
+					strSatellite = GetSatelliteDll(nLanguage) ;
+				langSeted = true;
+			}
+		}
+		if(!langSeted){
+				 //LC_ALL
+				//SVP_LogMsg5(L"Loc %x" , GetSystemDefaultLCID());
+				//SVP_LogMsg5(L"Loc %x" ,GetSystemDefaultLangID());
+				switch(GetSystemDefaultLangID()){ //http://www.science.co.il/Language/Locale-Codes.asp?s=codepage
+					case 0x0804:
+					case 0x1004:
+					case 0x1404:
+					case 0x0c04:
+					case 0x0404: //Chinese 
+						nLanguage = 0;
+						break;
+					default:
+						nLanguage = 1;
+						break;
+				}
+			
+		}
+	}else{
+		strSatellite = GetSatelliteDll(nLanguage) ;
+	}
+	
 	if (strSatellite)
 	{
-		hMod = LoadLibrary (strSatellite);		
+		hMod = LoadLibrary ( svpTool.GetPlayerPath( strSatellite ) );		
+		
 	}
+
+	m_hResDll = hMod;
+	
 
 	if (!hMod) 
 	{
+		//AfxMessageBox(L"Load Lang Fail");
+		m_hResDll = NULL;
 		hMod = AfxGetApp()->m_hInstance;
-		if (!bNoChange) s.iLanguage = 0;
+		s.iLanguage = 0;
+	}else{
+		s.iLanguage  = nLanguage;
 	}
+	
+	szLangSeting.Format(L"%d" , s.iLanguage );
+	svpTool.filePutContent(szLangDefault,szLangSeting );
 	AfxSetResourceHandle(hMod);
 }
 

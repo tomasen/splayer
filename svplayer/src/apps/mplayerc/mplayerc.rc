@@ -1922,7 +1922,7 @@ END
 // AVI
 //
 
-IDR_AVI_FILECOPY        AVI                     "res\\ani.avi"
+//IDR_AVI_FILECOPY        AVI                     "res\\ani.avi"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -3264,6 +3264,7 @@ BEGIN
     IDS_PANEL_MPEG_DECODER_DEINTERLACE_DEFAULT "默认优化设置"
     IDS_LOG_MSG_DETECT_NEWER_VERSION_UPDATER_STARTED "检测到新的版本，升级程序已启动"
 END
+
 
 #endif    // Chinese (P.R.C.) resources
 /////////////////////////////////////////////////////////////////////////////

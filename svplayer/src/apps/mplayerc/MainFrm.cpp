@@ -658,6 +658,24 @@ LRESULT CALLBACK SVPLayeredWndProc(HWND hwnd,         // Window handle
 	if(WM_SHOWWINDOW  == uMsg && SW_PARENTOPENING == lParam){
 		return 0;
 	}
+	if( uMsg >= WM_MOUSEFIRST && uMsg <= WM_MYMOUSELAST && WM_MOUSEMOVE != uMsg ){
+		CMainFrame* pFrame = (CMainFrame*) AfxGetMainWnd();
+		if(pFrame){
+			pFrame->KillTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER);
+			::KillTimer(hwnd, TIMER_CLOSETOOLBAR);
+			if( pFrame->IsSomethingLoaded()){
+				AppSettings& s = AfxGetAppSettings();
+				if(s.bUserAeroUI())
+					pFrame->SetTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER, 5000, NULL);
+				else
+					pFrame->SetTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER, 3000, NULL);
+
+				if( pFrame->m_fFullScreen){
+					::SetTimer(hwnd, TIMER_CLOSETOOLBAR, 5000, NULL);
+				}
+			}
+		}
+	}
 	/*
 	if(WM_WINDOWPOSCHANGING == uMsg || WM_WINDOWPOSCHANGED == uMsg){
 			WINDOWPOS* tPos = (WINDOWPOS*)lParam;
@@ -1232,8 +1250,18 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 			m_nomorefloatbarforawhile--;
 		}else{
 			CRect r;
-			GetClientRect(r);
-			r.top += r.Height() * 2/3;
+			m_wndView.GetWindowRect(&r);
+			r = GetWhereTheTansparentToolBarShouldBe(r);
+			if(r.IsRectEmpty()){
+				GetClientRect(r);
+				r.top += r.Height() * 2/3;
+			}else{
+				//ClientToScreen(&r);
+				ScreenToClient(&r);
+				r.InflateRect(30,60);
+				//SVP_LogMsg5(L"%d %d %d", r.left, r.Width() , point.x);
+			}
+			
 			if( m_lTransparentToolbarStat && !r.PtInRect(point) ){
 
 				
@@ -9741,71 +9769,70 @@ void CMainFrame::rePosOSD(){
 
 		if(m_lTransparentToolbarStat  && s.bUserAeroUI() && ::IsWindow(m_wndFloatToolBar.m_hWnd) ){
 
-			CSize view_size (  rcToolBar.Width() , rcToolBar.Height() );
-			rcToolBar.left += view_size.cx * 0.06;
-			rcToolBar.right -= view_size.cx * 0.06;
-			int uiHeight = m_wndFloatToolBar.GetUIHeight();
-			if(uiHeight > view_size.cy * 0.9){
-				rcToolBar.top += view_size.cy * ( 5 + s.m_lTransparentToolbarPosOffset ) /100;
-				rcToolBar.bottom =  rcToolBar.top + uiHeight;
-			}else{
-				rcToolBar.bottom -= view_size.cy * ( 5 + s.m_lTransparentToolbarPosOffset ) /100;
-				rcToolBar.top = rcToolBar.bottom - uiHeight;
-			}
-
-			if(!m_lTransparentToolbarPosStat){
-				m_wndFloatToolBar.MoveWindow(rcToolBar);
-			}else{
-				CRect rcCur;
-				m_wndFloatToolBar.GetWindowRect(rcCur);
-				BOOL bChanged = false;
-				if( rcCur.top < ( rcBaseView.top + view_size.cy * 2/ 3)  ){
-					rcCur.MoveToY( rcBaseView.top + view_size.cy * 2/ 3 );
-					bChanged = true;
-				}else if( rcCur.bottom > rcBaseView.bottom   ){
-					rcCur.MoveToY( rcBaseView.bottom - rcCur.Height() );
-					bChanged = true;
-				}
-				if( rcCur.left <  rcBaseView.left  ){
-					rcCur.MoveToX( rcBaseView.left );
-					bChanged = true;
-				}else if( rcCur.right >  rcBaseView.right  ){
-					rcCur.MoveToX( rcBaseView.right - rcCur.Width() );
-					bChanged = true;
-				}
-
-				s.m_lTransparentToolbarPosOffset = ( rcBaseView.bottom - rcCur.bottom ) * 100 / rcBaseView.Height() - 5;
-				if(bChanged)
+			
+			CRect rcCur = GetWhereTheTansparentToolBarShouldBe(rcToolBar);
+			if(!rcCur.IsRectEmpty()){
+				CRect rcCurOld;
+				m_wndFloatToolBar.GetWindowRect(rcCurOld);
+				if(!rcCurOld.EqualRect(rcCur))
 					m_wndFloatToolBar.MoveWindow(rcCur);
+				
 			}
-
-			
-			
-/*
-			
-						if( m_lTransparentToolbarPosStat-- <= 0){
-							m_wndFloatToolBar.MoveWindow(rcToolBar);
-						}else{
-							CRect rcCur;
-							m_wndFloatToolBar.GetWindowRect(rcCur);
-							CPoint pCurrSB = rcCur.CenterPoint();
-							pCurrSB.x -= rcToolBar.Width()/2;
-							pCurrSB.y -= rcToolBar.Height()/2;
-							
-							CPoint pShoudBE = rcToolBar.TopLeft();
-							rcToolBar.MoveToXY( pCurrSB.x  , pCurrSB.y );
-							m_wndFloatToolBar.MoveWindow(rcToolBar);
-						}
-						*/
-			
-			//rcToolBar += m_lTransparentToolbarPosOffset;
-			
 			
 			m_wndFloatToolBar.ShowWindow(SW_SHOWNOACTIVATE);
-
 		}
 	}
 	return;
+}
+CRect CMainFrame::GetWhereTheTansparentToolBarShouldBe(CRect rcView)
+{
+	AppSettings& s = AfxGetAppSettings();
+
+	if(!s.bUserAeroUI() )
+		return CRect(0,0,0,0);
+
+	CRect rcToolBar(rcView);
+	CRect rcBaseView(rcToolBar);
+	
+	CSize view_size (  rcToolBar.Width() , rcToolBar.Height() );
+	rcToolBar.left += view_size.cx * 0.06;
+	rcToolBar.right -= view_size.cx * 0.06;
+	int uiHeight = m_wndFloatToolBar.GetUIHeight();
+	if(uiHeight > view_size.cy * 0.9){
+		rcToolBar.top += view_size.cy * ( 5 + s.m_lTransparentToolbarPosOffset ) /100;
+		rcToolBar.bottom =  rcToolBar.top + uiHeight;
+	}else{
+		rcToolBar.bottom -= view_size.cy * ( 5 + s.m_lTransparentToolbarPosOffset ) /100;
+		rcToolBar.top = rcToolBar.bottom - uiHeight;
+	}
+
+	if(!m_lTransparentToolbarPosStat){
+		return rcToolBar;
+	}else{
+		CRect rcCur;
+		m_wndFloatToolBar.GetWindowRect(rcCur);
+		BOOL bChanged = false;
+		if( rcCur.top < ( rcBaseView.top + view_size.cy /10)  ){
+			rcCur.MoveToY( rcBaseView.top + view_size.cy /10 );//+ view_size.cy * 2/ 3 
+			bChanged = true;
+		}else if( rcCur.bottom > rcBaseView.bottom   ){
+			rcCur.MoveToY( rcBaseView.bottom - rcCur.Height() );
+			bChanged = true;
+		}
+		if( rcCur.left <  rcBaseView.left  ){
+			rcCur.MoveToX( rcBaseView.left );
+			bChanged = true;
+		}else if( rcCur.right >  rcBaseView.right  ){
+			rcCur.MoveToX( rcBaseView.right - rcCur.Width() );
+			bChanged = true;
+		}
+
+		s.m_lTransparentToolbarPosOffset = ( rcBaseView.bottom - rcCur.bottom ) * 100 / rcBaseView.Height() - 5;
+		//if(bChanged)
+		return rcCur;
+	}
+
+	return CRect(0,0,0,0);
 }
 UINT CMainFrame::GetBottomSubOffset(){
 	if(m_fFullScreen || AfxGetAppSettings().fHideCaptionMenu){

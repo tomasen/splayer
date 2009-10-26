@@ -112,4 +112,5 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 };

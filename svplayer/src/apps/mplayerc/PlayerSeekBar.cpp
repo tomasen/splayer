@@ -649,3 +649,24 @@ void CPlayerSeekBar::OnClose()
 	CDialogBar::OnClose();
 }
 
+
+BOOL CPlayerSeekBar::PreTranslateMessage(MSG* pMsg)
+{
+	// TODO: Add your specialized code here and/or call the base class
+	if( pMsg->message >= WM_MOUSEFIRST && pMsg->message <= WM_MYMOUSELAST && WM_MOUSEMOVE != pMsg->message ){
+		CMainFrame* pFrame = (CMainFrame*) AfxGetMainWnd();
+		if(pFrame){
+			pFrame->KillTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER);
+			
+			if( pFrame->IsSomethingLoaded()){
+				AppSettings& s = AfxGetAppSettings();
+				if(s.bUserAeroUI())
+					pFrame->SetTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER, 5000, NULL);
+				else
+					pFrame->SetTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER, 3000, NULL);
+
+			}
+		}
+	}
+	return CDialogBar::PreTranslateMessage(pMsg);
+}

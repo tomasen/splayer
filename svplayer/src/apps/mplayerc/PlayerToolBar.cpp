@@ -1017,3 +1017,28 @@ BOOL CPlayerToolBar::OnEraseBkgnd(CDC* pDC)
 	return true;
 	//return CToolBar::OnEraseBkgnd(pDC);
 }
+
+BOOL CPlayerToolBar::PreTranslateMessage(MSG* pMsg)
+{
+	// TODO: Add your specialized code here and/or call the base class
+
+	if( pMsg->message >= WM_MOUSEFIRST && pMsg->message <= WM_MYMOUSELAST && WM_MOUSEMOVE != pMsg->message ){
+		CMainFrame* pFrame = (CMainFrame*) AfxGetMainWnd();
+		if(pFrame){
+			pFrame->KillTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER);
+			KillTimer( TIMER_CLOSETOOLBAR);
+			if( pFrame->IsSomethingLoaded()){
+				AppSettings& s = AfxGetAppSettings();
+				if(s.bUserAeroUI())
+					pFrame->SetTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER, 5000, NULL);
+				else
+					pFrame->SetTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER, 3000, NULL);
+
+				if( pFrame->m_fFullScreen){
+					SetTimer(TIMER_CLOSETOOLBAR, 5000, NULL);
+				}
+			}
+		}
+	}
+	return CToolBar::PreTranslateMessage(pMsg);
+}

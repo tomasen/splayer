@@ -205,6 +205,7 @@ class CMainFrame : public CFrameWnd, public CDropTarget  , protected ISkinMenuRe
 	void RestoreDefaultWindowRect();
 	void ZoomVideoWindow(double scale = -1);
 	UINT GetBottomSubOffset();
+	CRect GetWhereTheTansparentToolBarShouldBe(CRect rcView);
 	double GetZoomAutoFitScale();
 
 	void SetAlwaysOnTop(int i, BOOL setSetting = TRUE);

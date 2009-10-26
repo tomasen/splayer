@@ -14,6 +14,69 @@
 
 
 
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_ONOFF               BITMAP                  "res\\onoff.bmp"
+IDB_MONO                BITMAP                  "res\\mono.bmp"
+IDB_STEREO              BITMAP                  "res\\stereo.bmp"
+IDB_NOAUDIO             BITMAP                  "res\\noaudio.bmp"
+IDB_AUTHHDRPIC          BITMAP                  "res\\authhdrpic.bmp"
+IDB_STREAMTYPES         BITMAP                  "res\\streamtypes.bmp"
+BORDER_CORNER.BMP       BITMAP                  "res\\newui\\BORDER_CORNER.bmp"
+CAPTION.BMP             BITMAP                  "res\\newui\\CAPTION.bmp"
+CLOSE.BMP               BITMAP                  "res\\newui\\BTN_CLOSE.bmp"
+MAXIMIZE.BMP            BITMAP                  "res\\newui\\BTN_MAX.bmp"
+MINIMIZE.BMP            BITMAP                  "res\\newui\\BTN_MIN.bmp"
+RESTORE.BMP             BITMAP                  "res\\newui\\BTN_RESTORE.bmp"
+MENU.BMP                BITMAP                  "res\\newui\\BTN_MENU.bmp"
+BTN_PLAY.BMP            BITMAP                  "res\\newui\\BTN_PLAY.bmp"
+BTN_PAUSE.BMP           BITMAP                  "res\\newui\\BTN_PAUSE.bmp"
+BTN_STOP.BMP            BITMAP                  "res\\newui\\BTN_STOP.bmp"
+FAST_FORWORD.BMP        BITMAP                  "res\\newui\\FAST_FORWORD.bmp"
+FAST_BACKWORD.BMP       BITMAP                  "res\\newui\\FAST_BACKWORD.bmp"
+SPLAYER.BMP             BITMAP                  "res\\newui\\SPLAYER.bmp"
+MUTED.BMP               BITMAP                  "res\\newui\\MUTED.bmp"
+VOLUME.BMP              BITMAP                  "res\\newui\\VOLUME.bmp"
+VOLUME_BG.BMP           BITMAP                  "res\\newui\\VOLUME_BG.bmp"
+VOLUME_TM.BMP           BITMAP                  "res\\newui\\VOLUME_TM.bmp"
+BTN_NEXT.BMP            BITMAP                  "res\\newui\\BTN_NEXT.bmp"
+BTN_PREV.BMP            BITMAP                  "res\\newui\\BTN_PREV.bmp"
+BTN_PLAYLIST.BMP        BITMAP                  "res\\newui\\BTN_PLAYLIST.bmp"
+BTN_SUB.BMP             BITMAP                  "res\\newui\\BTN_SUB.bmp"
+BTN_SUB_DELAY_REDUCE.BMP BITMAP                  "res\\newui\\BTN_SUB_DELAY_REDUCE.bmp"
+BTN_SUB_DELAY_INCREASE.BMP BITMAP                  "res\\newui\\BTN_SUB_DELAY_INCREASE.bmp"
+BTN_SETTING.BMP         BITMAP                  "res\\newui\\BTN_SETTING.bmp"
+BTN_CAPTURE.BMP         BITMAP                  "res\\newui\\BTN_CAPTURE.bmp"
+WATERMARK2.BMP          BITMAP                  "res\\newui\\WATERMARK2.bmp"
+BTN_OPENFILE_SMALL.BMP  BITMAP                  "res\\newui\\BTN_OPENFILE_SMALL.bmp"
+BTN_BIGOPEN.BMP         BITMAP                  "res\\newui\\BTN_BIGOPEN.bmp"
+BTN_MINTOTRAY.BMP       BITMAP                  "res\\newui\\BTN_MINTOTRAY.bmp"
+BTN_FONT.BMP            BITMAP                  "res\\newui\\BTN_FONT.bmp"
+BTN_FONT_MINUS.BMP      BITMAP                  "res\\newui\\BTN_FONT_MINUS.bmp"
+BTN_FONT_PLUS.BMP       BITMAP                  "res\\newui\\BTN_FONT_PLUS.bmp"
+BTN_STEP.BMP            BITMAP                  "res\\newui\\BTN_STEP.bmp"
+PINAIL.BMP              BITMAP                  "res\\newui\\pinail.bmp"
+PINAIL2.BMP             BITMAP                  "res\\newui\\pinail2.bmp"
+TOP_1X.BMP              BITMAP                  "res\\newui\\TOP_1X.bmp"
+TOP_2X.BMP              BITMAP                  "res\\newui\\TOP_2X.bmp"
+TOP_AUDIO.BMP           BITMAP                  "res\\newui\\TOP_AUDIO.bmp"
+TOP_VIDEO.BMP           BITMAP                  "res\\newui\\TOP_VIDEO.bmp"
+TOP_FULLSCREEN.BMP      BITMAP                  "res\\newui\\TOP_FULLSCREEN.bmp"
+TOP_NORMAL.BMP          BITMAP                  "res\\newui\\TOP_NORMAL.bmp"
+TOP_LETTERBOX.BMP       BITMAP                  "res\\newui\\TOP_LETTERBOX.bmp"
+TOP_CAPTURE.BMP         BITMAP                  "res\\newui\\TOP_CAPTURE.bmp"
+TOP_CLOSE.BMP           BITMAP                  "res\\newui\\TOP_CLOSE.bmp"
+TOP_RESTORE.BMP         BITMAP                  "res\\newui\\TOP_RESTORE.bmp"
+BTN_FULLSCREEN.BMP      BITMAP                  "res\\newui\\BTN_FULLSCREEN.bmp"
+SLIDER_TM.BMP           BITMAP                  "res\\newui\\SLIDER_TM.bmp"
+TOP_GAMMA.BMP           BITMAP                  "res\\newui\\TOP_GAMMA.bmp"
+TOP_TRANS.BMP           BITMAP                  "res\\newui\\TOP_TRANS.bmp"
+TOP_LETTERBOX_WIDER.BMP BITMAP                  "res\\newui\\TOP_LETTERBOX_WIDER.bmp"
+TOP_NORMAL_WIDER.BMP    BITMAP                  "res\\newui\\TOP_NORMAL_WIDER.bmp"
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
@@ -986,12 +1049,219 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// Menu
+//
+
+IDR_POPUP MENU 
+BEGIN
+    POPUP ""
+    BEGIN
+        MENUITEM "Open Files...",                     ID_FILE_OPENQUICK
+        MENUITEM "Open",                          ID__32861
+        MENUITEM "Recent Played",                        ID__RECENTPLAYED
+        MENUITEM "Favorites",                         ID_FAVORITES
+        MENUITEM "Close(&C)",                      ID_FILE_CLOSEPLAYLIST
+        MENUITEM SEPARATOR
+        MENUITEM "Audio",                          ID__32777
+        MENUITEM "Subtitle",                          ID__32860
+        POPUP "Display"
+        BEGIN
+            MENUITEM "StandardFull\tC",                     ID_VIEW_VF_FROMINSIDE
+            MENUITEM "Full Screen(&l)",                     ID_VIEW_FULLSCREEN
+            MENUITEM "Remove Black Bar(&O)",                   ID_VIEW_VF_FROMOUTSIDE
+            MENUITEM "Stretch(&S)",                  ID_VIEW_VF_STRETCH
+            MENUITEM SEPARATOR
+            POPUP "Aspect Ratio"
+            BEGIN
+                MENUITEM "Automatic",                          ID_ASPECTRATIO_SOURCE
+                MENUITEM "4:3",                         ID_ASPECTRATIO_4_3
+                MENUITEM "5:4",                         ID_ASPECTRATIO_5_4
+                MENUITEM "16:9",                        ID_ASPECTRATIO_16_9
+                MENUITEM "2.35:1",                      ID_ASPECTRATIO_235_1
+                MENUITEM "PC-TV Correction",                     ID_VIEW_VF_COMPMONDESKARDIFF
+            END
+            POPUP "Flip"
+            BEGIN
+                MENUITEM "Flip(H)",                        ID_ROTATE_H
+                MENUITEM "Flip(V)",                        ID_ROTATE_V
+                MENUITEM "Rotate 270¡æ",                       ID_ROTATE_270
+                MENUITEM "Rotate 90¡æ",                       ID_ROTATE_90
+                MENUITEM "Rotate 180¡æ",                      ID_ROTATE_180
+                MENUITEM "Reset",                      ID_ROTATE_RESET
+                MENUITEM SEPARATOR
+                MENUITEM "Enable Rotate",                      ID_ENABLE_ROTATE
+            END
+            MENUITEM "Transparent Control",                       ID_SHOWTRANSPRANTBAR
+            MENUITEM "Effect Control",                      ID__SHADERS
+            MENUITEM "Enable Smart Drag",                    ID_SMART_DRAG_ENABLE
+            POPUP "Pan Scan"
+            BEGIN
+                MENUITEM "Inc Size\tNumpad 9",              ID_VIEW_INCSIZE
+                MENUITEM "Dec Size\tNumpad 1",              ID_VIEW_DECSIZE
+                MENUITEM "Inc Width\tNumpad 6",              ID_VIEW_INCWIDTH
+                MENUITEM "Dec Size\tNumpad 4",              ID_VIEW_DECWIDTH
+                MENUITEM "Inc Height\tNumpad 8",              ID_VIEW_INCHEIGHT
+                MENUITEM "Dec Height\tNumpad 2",              ID_VIEW_DECHEIGHT
+                MENUITEM SEPARATOR
+                MENUITEM "Move Right\tCtrl+Numpad 6",         ID_PANSCAN_MOVERIGHT
+                MENUITEM "Move Left\tCtrl+Numpad 4",         ID_PANSCAN_MOVELEFT
+                MENUITEM "Move Up\tCtrl+Numpad 8",         ID_PANSCAN_MOVEUP
+                MENUITEM "Move Down\tCtrl+Numpad 2",         ID_PANSCAN_MOVEDOWN
+                MENUITEM "Move Center\tCtrl+Numpad 5",         ID_PANSCAN_CENTER
+                MENUITEM SEPARATOR
+                MENUITEM "Reset\tNumpad 5",              ID_VIEW_RESET
+            END
+        END
+        MENUITEM "Playback",                          ID__32864
+        MENUITEM SEPARATOR
+        POPUP "Capture"
+        BEGIN
+            MENUITEM "Image...\tCtrl+I",             ID_FILE_SAVE_IMAGE
+            MENUITEM "Thumbnails...",                    ID_FILE_SAVE_THUMBNAILS
+            MENUITEM "To Clipboard\tCtrl+C",              ID_FILE_COPYTOCLIPBOARD
+            MENUITEM "Save w/o Prompt\tF5",               ID_FILE_SAVE_IMAGE_AUTO
+            MENUITEM SEPARATOR
+            MENUITEM "Set Default Folder",                   ID_SETSNAPSHOTPATH
+        END
+        POPUP "GUI"
+        BEGIN
+            MENUITEM "Minimal",                    ID_VIEW_PRESETS_MINIMAL
+            MENUITEM "Compact",                    ID_VIEW_PRESETS_COMPACT
+            MENUITEM "Standard",                          ID_VIEW_PRESETS_NORMAL
+            MENUITEM SEPARATOR
+            MENUITEM "Aero Glass Effect(Req. Restart Player)",                ID_THEME_AEROGLASS
+            MENUITEM SEPARATOR
+            MENUITEM "Playelist",                      ID_VIEW_PLAYLIST
+            MENUITEM "Transparent Control",                     ID_SHOWTRANSPRANTBAR
+            POPUP "More Panel(&e)"
+            BEGIN
+                MENUITEM "Caption(&M)\tCtrl+0",         ID_VIEW_CAPTIONMENU
+                MENUITEM "Seeker(&S)\tCtrl+1",             ID_VIEW_SEEKER
+                MENUITEM "Controls(&r)\tCtrl+2",          ID_VIEW_CONTROLS
+                MENUITEM "Information(&I)\tCtrl+3",          ID_VIEW_INFORMATION
+                MENUITEM "Statistics(&t)\tCtrl+4",          ID_VIEW_STATISTICS
+                MENUITEM "Subresync\tCtrl+6",                ID_VIEW_SUBRESYNC
+                MENUITEM "Playlist\tCtrl+7",              ID_VIEW_PLAYLIST
+                MENUITEM "Capture Video\tCtrl+8",            ID_VIEW_CAPTURE
+                MENUITEM "Shader Editor\tCtrl+9",       ID_VIEW_SHADEREDITOR
+                MENUITEM "DSM Convert(&n)...",               ID_FILE_CONVERT
+                MENUITEM "Render Stat",                    ID_SHOWDRAWSTAT
+            END
+            POPUP "Language"
+            BEGIN
+                MENUITEM "English",                     ID_LANGUAGE_ENGLISH
+				MENUITEM "ÖÐÎÄ",                          ID_LANGUAGE_CHINESE_SIMPLIFIED
+            END
+        END
+        MENUITEM "Options(&O)...",                ID_VIEW_OPTIONS
+        MENUITEM SEPARATOR
+        POPUP "File"
+        BEGIN
+            MENUITEM "Information",                        ID_FILE_PROPERTIES
+            MENUITEM SEPARATOR
+            MENUITEM "Delete File",                      ID_DELETECURFILE
+            MENUITEM "Delete Folder",                     ID_DELCURFOLDER
+        END
+        POPUP "More..."
+        BEGIN
+            MENUITEM "Donate!",                         ID_DONATE
+            MENUITEM "About(&A)...",                   ID_HELP_ABOUT
+            MENUITEM "Help",                        ID_HELP_DOCUMENTATION
+            MENUITEM "Feedback",                       ID_VISITCONTACTINFO
+            MENUITEM SEPARATOR
+            MENUITEM "Check Update...",                     ID_MANUALCHECKUPDATE
+            MENUITEM "Check File Assoc",                      ID_CHECK_DEFAULT_PLAYER
+            MENUITEM SEPARATOR
+            MENUITEM "Filters",                 ID__FILTERS
+            MENUITEM SEPARATOR
+            MENUITEM "Gen. Debug Info.",                 ID_DEBUGREPORT
+        END
+        POPUP "Pin to Front"
+        BEGIN
+            MENUITEM "Never",                          ID_ONTOP_NEVER
+            MENUITEM "Always",                        ID_ONTOP_ALWAYS
+            MENUITEM "While Playing",                        ID_ONTOP_WHILEPLAYING
+        END
+        MENUITEM "Exit(&X)",                      ID_FILE_EXIT
+    END
+END
+
+IDR_OPENMORE MENU 
+BEGIN
+    MENUITEM "DVD(&D)...\tCtrl+D",          ID_FILE_OPENDVD
+    MENUITEM "BD(&B)...\tCtrl+B",           ID_FILE_OPENBDVD
+    MENUITEM "URL(&U)...\tCtrl+U",           ID_FILE_OPENURLSTREAM
+    MENUITEM "Folder(&F)...\tCtrl+F",          ID_FILE_OPENFOLDER
+    MENUITEM "Video Capture(&V)...\tCtrl+V",         ID_FILE_OPENDEVICE
+    MENUITEM "With Audio Track(&O)...\tCtrl+O",       ID_FILE_OPENMEDIA
+END
+
+IDR_SUBMENU MENU 
+BEGIN
+    MENUITEM "Enable Smart Subtitle Matching",                  ID_SVPSUB_MENUENABLE
+    MENUITEM "Smart Subtitle Finder...",                 ID_FILE_ISDB_DOWNLOAD
+    MENUITEM "Search from Web...",                   ID_FILE_ISDB_SEARCH
+    MENUITEM "Upload Subtitle...",                     ID_FILE_ISDB_UPLOAD
+END
+
+IDR_POPUPAB MENU 
+BEGIN
+    POPUP "Set A"
+    BEGIN
+        MENUITEM "Set A",                        ID_ABCONTROL_SETA
+        MENUITEM "Set B",                        ID_ABCONTROL_SETB
+        MENUITEM "Start A-B Loop",                     ID_ABCONTROL_ON
+        MENUITEM "Stop A-B Loop",                     ID_ABCONTROL_OFF
+    END
+END
+
+IDR_PLAYBACK_MENU MENU 
+BEGIN
+    POPUP "DVD Control"
+    BEGIN
+        MENUITEM "Prev Chapter(&P)\tPrev Chapter",                ID_NAVIGATE_SKIPBACK
+        MENUITEM "Next Chapter(&N)\tNext Chapter",                ID_NAVIGATE_SKIPFORWARD
+        MENUITEM "Jump to(&J)...",                   ID_DVD32789
+        MENUITEM SEPARATOR
+        MENUITEM "Audio",                        ID_DVD32790
+        MENUITEM "Subtitle",                        ID_DVD32791
+        MENUITEM "Angle",                        ID_DVD32792
+        MENUITEM SEPARATOR
+        MENUITEM "Title Menu(&T)",                    ID_NAVIGATE_TITLEMENU
+        MENUITEM "Root Menu(&R)",                     ID_NAVIGATE_ROOTMENU
+        MENUITEM "Subtitle Menu(&S)",                    ID_NAVIGATE_SUBPICTUREMENU
+        MENUITEM "Audio Menu(&A)",                    ID_NAVIGATE_AUDIOMENU
+        MENUITEM "Angle Menu(&g)",                    ID_NAVIGATE_ANGLEMENU
+        MENUITEM "Chapter Menu(&C)",                    ID_NAVIGATE_CHAPTERMENU
+    END
+    POPUP "Playrate"
+    BEGIN
+        MENUITEM "Inc. Playrate",                      ID_PLAY_INCRATE
+        MENUITEM "Dec. Playrate",                      ID_PLAY_DECRATE
+    END
+    POPUP "Playback2"
+    BEGIN
+        MENUITEM "Set A",                        ID_ABCONTROL_SETA
+        MENUITEM "Set B",                        ID_ABCONTROL_SETB
+        MENUITEM "Start A-B Loop",                     ID_ABCONTROL_ON
+        MENUITEM "Stop A-B Loop",                     ID_ABCONTROL_OFF
+        MENUITEM SEPARATOR
+        MENUITEM "Close After Playback",                       ID_AFTERPLAYBACK_CLOSE
+        MENUITEM "Standby After Playback",                       ID_AFTERPLAYBACK_STANDBY
+        MENUITEM "Sleep After Playback",                       ID_AFTERPLAYBACK_HIBERNATE
+        MENUITEM "Shutdown After Playback",                       ID_AFTERPLAYBACK_SHUTDOWN
+        MENUITEM "Logoff After Playback",                     ID_AFTERPLAYBACK_LOGOFF
+    END
+END
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // String Table
 //
 
 STRINGTABLE 
 BEGIN
-    IDR_MAINFRAME           "ShooterPlayer"
+    IDR_MAINFRAME           "SPlayer"
 END
 
 

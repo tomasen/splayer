@@ -1579,6 +1579,33 @@ HICON WINAPI Mine_LoadIconW( HINSTANCE hInstance, LPCWSTR lpIconName){
 		return Real_LoadIconW(hInstance, lpIconName);
 	}
 }
+HBITMAP  (__stdcall * Real_LoadBitmapA)(  HINSTANCE  hInstance, LPCSTR lpBitmapName) = ::LoadBitmapA;
+HBITMAP  (__stdcall * Real_LoadBitmapW)( HINSTANCE  hInstance, LPCWSTR lpBitmapName) = ::LoadBitmapW;
+
+HBITMAP WINAPI Mine_LoadBitmapA( HINSTANCE hInstance, LPCSTR lpBitmapName){
+	if(CMPlayerCApp::m_hResDll){
+		HBITMAP hGTmp = Real_LoadBitmapA(hInstance,lpBitmapName);
+		if(hGTmp)
+			return hGTmp;
+		else{
+			return Real_LoadBitmapA(AfxGetApp()->m_hInstance,  lpBitmapName);
+		}
+	}else{
+		return Real_LoadBitmapA(hInstance, lpBitmapName);
+	}
+}
+HBITMAP WINAPI Mine_LoadBitmapW( HINSTANCE hInstance, LPCWSTR lpBitmapName){
+	if(CMPlayerCApp::m_hResDll){
+		HBITMAP hGTmp = Real_LoadBitmapW(hInstance,lpBitmapName);
+		if(hGTmp)
+			return hGTmp;
+		else{
+			return Real_LoadBitmapW(AfxGetApp()->m_hInstance,  lpBitmapName);
+		}
+	}else{
+		return Real_LoadBitmapW(hInstance, lpBitmapName);
+	}
+}
 
 BOOL CMPlayerCApp::InitInstance()
 {
@@ -1605,6 +1632,10 @@ BOOL CMPlayerCApp::InitInstance()
 	DetourAttach(&(PVOID&)Real_LoadStringA, (PVOID)Mine_LoadStringA);
 	DetourAttach(&(PVOID&)Real_LoadIconW, (PVOID)Mine_LoadIconW);
 	DetourAttach(&(PVOID&)Real_LoadIconA, (PVOID)Mine_LoadIconA);
+	DetourAttach(&(PVOID&)Real_LoadBitmapW, (PVOID)Mine_LoadBitmapW);
+	DetourAttach(&(PVOID&)Real_LoadBitmapA, (PVOID)Mine_LoadBitmapA);
+
+
 #ifndef _DEBUG
 	HMODULE hNTDLL	=	LoadLibrary (_T("ntdll.dll"));
 	if (hNTDLL)

@@ -2302,9 +2302,9 @@ void CMPlayerCApp::Settings::SetChannelMapByNumberOfSpeakers( int iSS , int iNum
 		iNumberOfSpeakers = GetNumberOfSpeakers();
 	}
 	memset(pSpeakerToChannelMap, 0, sizeof(pSpeakerToChannelMap));
- 	for(int j = 0; j < 18; j++)
- 		for(int i = 0; i <= j; i++)
- 			pSpeakerToChannelMap[j][i] = 1<<i;
+ 	//for(int j = 0; j < 18; j++)
+ 	//	for(int i = 0; i <= j; i++)
+ 	//		pSpeakerToChannelMap[j][i] = 1<<i;
 	if(!iSS){
 		switch( iNumberOfSpeakers ){
 				case 1: iDecSpeakers = 100;	break;
@@ -2556,10 +2556,10 @@ void CMPlayerCApp::Settings::SetChannelMapByNumberOfSpeakers( int iSS , int iNum
 			break;
 		
 	}
-	for(int j = 0; j < 18; j++)
-		for(int i = 0; i < 18; i++)
-			if(i>j)
-				pSpeakerToChannelMap[j][i] = 0;
+	//for(int j = 0; j < 18; j++)
+	//	for(int i = 0; i < 18; i++)
+	//		if(i>j)
+	//			pSpeakerToChannelMap[j][i] = 0;
 
 	{
 		int iFRS = iSS/10;

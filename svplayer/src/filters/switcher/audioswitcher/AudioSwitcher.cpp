@@ -385,17 +385,35 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 	{
 		if(m_chs[wfe->nChannels-1].GetCount() > 0)
 		{
-			for(int i = 0; i < wfeout->nChannels; i++)
-			{
-				DWORD mask = m_chs[wfe->nChannels-1][i].Channel;
 
-				BYTE* src = pDataIn;
-				BYTE* dst = &pDataOut[bps*i];
+			BOOL bHaveChannelMask = false;
+			for(int i = 0; i < wfeout->nChannels; i++){
+				if(m_chs[wfe->nChannels-1][i].Channel){
+					
+					bHaveChannelMask = true;
+					break;
+				}
+			}
+			if(!bHaveChannelMask){
+				
+				m_fCustomChannelMapping = false;
+				HRESULT hr;
+				if(S_OK != (hr = __super::Transform(pIn, pOut))){
+					TRACE(L"FAUK");
+					return hr;
+				}
+			}else{
+				for(int i = 0; i < wfeout->nChannels; i++)
+				{
+					DWORD mask = m_chs[wfe->nChannels-1][i].Channel;
 
-				int srcstep = bps*wfe->nChannels;
-				int dststep = bps*wfeout->nChannels;
+					BYTE* src = pDataIn;
+					BYTE* dst = &pDataOut[bps*i];
 
-				switch(iWePCMType){
+					int srcstep = bps*wfe->nChannels;
+					int dststep = bps*wfeout->nChannels;
+
+					switch(iWePCMType){
 						case WETYPE_PCM8:
 							for(int k = 0; k < len; k++, src += srcstep, dst += dststep)
 							{
@@ -433,17 +451,26 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 								mix<double, double, -1, 1>(mask, wfe->nChannels, bps, src, dst);
 							}
 							break;
-				}
+					}
 
+				}
 			}
+
+			
 
 		}
 		else
 		{
-			BYTE* pDataOut = NULL;
+			//BYTE* pDataOut = NULL;
+			//HRESULT hr;
+			//if(FAILED(hr = pOut->GetPointer(&pDataOut)) || !pDataOut) return hr;
+			//memset(pDataOut, 0, pOut->GetSize());
+			m_fCustomChannelMapping = false;
 			HRESULT hr;
-			if(FAILED(hr = pOut->GetPointer(&pDataOut)) || !pDataOut) return hr;
-			memset(pDataOut, 0, pOut->GetSize());
+			if(S_OK != (hr = __super::Transform(pIn, pOut))){
+				TRACE(L"FAUK");
+				return hr;
+			}
 		}
 	}
 	else

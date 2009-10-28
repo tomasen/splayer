@@ -1005,7 +1005,7 @@ BEGIN
     BEGIN
         MENUITEM "Open Files...",                     ID_FILE_OPENQUICK
         MENUITEM "Open",                          ID__32861
-        MENUITEM "Recent Played",                        ID__RECENTPLAYED
+        MENUITEM "Recently Played",                        ID__RECENTPLAYED
         MENUITEM "Favorites",                         ID_FAVORITES
         MENUITEM "Close(&C)",                      ID_FILE_CLOSEPLAYLIST
         MENUITEM SEPARATOR
@@ -1076,9 +1076,9 @@ BEGIN
             MENUITEM "Compact",                    ID_VIEW_PRESETS_COMPACT
             MENUITEM "Standard",                          ID_VIEW_PRESETS_NORMAL
             MENUITEM SEPARATOR
-            MENUITEM "Aero Glass Effect(Req. Restart Player)",                ID_THEME_AEROGLASS
+            MENUITEM "Use Aero Glass Effect (Req. Restart of Player)",                ID_THEME_AEROGLASS
             MENUITEM SEPARATOR
-            MENUITEM "Playelist",                      ID_VIEW_PLAYLIST
+            MENUITEM "Playlist",                      ID_VIEW_PLAYLIST
             MENUITEM "Transparent Control",                     ID_SHOWTRANSPRANTBAR
             POPUP "More Panel(&e)"
             BEGIN
@@ -1116,12 +1116,12 @@ BEGIN
             MENUITEM "Help",                        ID_HELP_DOCUMENTATION
             MENUITEM "Feedback",                       ID_VISITCONTACTINFO
             MENUITEM SEPARATOR
-            MENUITEM "Check Update...",                     ID_MANUALCHECKUPDATE
-            MENUITEM "Check File Assoc",                      ID_CHECK_DEFAULT_PLAYER
+            MENUITEM "Check for Update...",                     ID_MANUALCHECKUPDATE
+            MENUITEM "Check File Assoc.",                      ID_CHECK_DEFAULT_PLAYER
             MENUITEM SEPARATOR
             MENUITEM "Filters",                 ID__FILTERS
             MENUITEM SEPARATOR
-            MENUITEM "Gen. Debug Info.",                 ID_DEBUGREPORT
+            MENUITEM "Gen. Debug Info",                 ID_DEBUGREPORT
         END
         POPUP "Pin to Front"
         BEGIN
@@ -1479,8 +1479,8 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDD_FILEPROPDETAILS     "File Property Details"
-    IDD_FILEPROPCLIP        "File Property Clip"
+    IDD_FILEPROPDETAILS     "File Details"
+    IDD_FILEPROPCLIP        "Clip Details"
 END
 
 STRINGTABLE 
@@ -1964,14 +1964,14 @@ BEGIN
 	IDS_MENU_ITEM_ASPECTRATIO	"Enforce Aspect Ratio"
 	IDS_MENU_ITEM_ZOOM	"Zoom"
 	IDS_MENU_ITEM_PLAYBACK_CONTROL	"Playback"
-	IDS_MENU_ITEM_PLAYLOOP_NOLOOP	"PlayLoop(NoLoop)"
-	IDS_MENU_ITEM_PLAYLOOP_PLAYLIST	"PlayLoop(PlayList)"
-	IDS_MENU_ITEM_PLAYLOOP_CURRENT	"PlayLoop(Current)"
-	IDS_MENU_ITEM_PLAYLOOP_RANDOM_PLAYLIST	"RandomPlay(PlayList)"
+	IDS_MENU_ITEM_PLAYLOOP_NOLOOP	"Play All of Playlist"
+	IDS_MENU_ITEM_PLAYLOOP_PLAYLIST	"Loop Playlist"
+	IDS_MENU_ITEM_PLAYLOOP_CURRENT	"Loop Current Item"
+	IDS_MENU_ITEM_PLAYLOOP_RANDOM_PLAYLIST	"Randomly Play from Playlist"
 	IDS_MENU_ITEM_PLAYLOOP_NORMAL	"PlayLoop_Normal"
 	IDS_MENU_ITEM_OPEN	"Open"
 	IDS_MENU_ITEM_SUBTITLE_EVERYTHING	"Subtitles"
-	IDS_MENU_ITEM_RECENT_PALYED	"Recent Played"
+	IDS_MENU_ITEM_RECENT_PALYED	"Recently Played"
 	IDS_MENU_ITEM_NUMOF_SPEAKER	"Exist %d Speaker"
 	IDS_MENU_ITEM_NUMOF_SPEAKER_AUTODETECTED	"(AutoDetected)"
 	IDS_MENU_ITEM_NUMOF_SPEAKER_MANUAL	"(Manual)"
@@ -2025,7 +2025,7 @@ BEGIN
 	IDS_OSD_MSG_IMAGE_OPEN_FAILED	"Image Open Falled "
 	IDS_MENU_ITEM_LABEL_CDROM_UNKNOWN	"CDROM "
 	IDS_MENU_ITEM_LABEL_CDROM_AUDIOCD	"AudioCD "
-	IDS_MENU_ITEM_AEROGLASS_UNSUPPORT	"AeroGlass(Unsupport)"
+	IDS_MENU_ITEM_AEROGLASS_UNSUPPORT	"Aero Glass (Unsupported)"
 	IDS_MENU_ITEM_AUDIODEVICE_SYSTEM_DEFAULT	"System Default"
 	IDS_MENU_ITEM_AUDIODEVICE_NAMETRANSLATE_DEFAULT	"Default"
 	IDS_MENU_ITEM_AUDIODEVICE_NAMETRANSLATE_DEVICE	"Device"
@@ -2037,7 +2037,7 @@ BEGIN
 	IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_CHINESE	"Chinese"
 	IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_JAPANESE	"Japannese"
 	IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_ENGLISH	"English"
-	IDS_MENU_ITEM_SUBTITLE_NOT_SUPPORT_VIDEO	"Subtitle Can't support Video"
+	IDS_MENU_ITEM_SUBTITLE_NOT_SUPPORT_VIDEO	"Current video has no support for subtitles"
 	IDS_MENU_ITEM_2ND_SUBTITLE	"Second Subtitle"
 	IDS_MENU_ITEM_INTERNET_SUBTITLE	"Internet Subtitle"
 	IDS_MENU_ITEM_LOAD_SUBTITLE	"Load Subtitle..."
@@ -2416,4 +2416,3 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
-

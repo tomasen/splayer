@@ -834,7 +834,7 @@ HRESULT CMpaDecFilter::ProcessA52(BYTE* p, int buffsize, int& size, bool& fEnoug
 				}
 				//Let audio switch to handle channel mapping
 				flags = A52_3F2R|A52_LFE;//&(A52_CHANNEL_MASK|A52_LFE);
-				flags |= A52_ADJUST_LEVEL;
+				//flags |= A52_ADJUST_LEVEL;
 
 				sample_t level = 1, gain = 1, bias = 0;
 				level *= gain;
@@ -2605,8 +2605,8 @@ HRESULT CMpaDecFilter::DeliverFfmpeg(int nCodecId, BYTE* p, int buffsize, int& s
 		float*				pDataOut;
                 
 		nRemap = FFGetChannelMap (m_pAVCtx);
-		iSpeakerConfig  = GetSpeakerConfig(ac3);
-		nRemap = min (nRemap, iSpeakerConfig);		// <== TODO : correct ??
+		//iSpeakerConfig  = GetSpeakerConfig(ac3);
+		//nRemap = min (nRemap, iSpeakerConfig);		// <== TODO : correct ??
 
 		if (nRemap >=0)
 		{

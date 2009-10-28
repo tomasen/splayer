@@ -349,7 +349,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_LANGUAGE_CHINESE_SIMPLIFIED, ID_LANGUAGE_LAST, OnUpdateLanguage)
 
 	ON_COMMAND(ID_SET_AUDIO_NUMBER_SPEAKER, OnSetAudioNumberOfSpeaker)
-
+	ON_COMMAND(ID_SWITCH_AUDIO_DEVICE, OnSwitchAudioDevice)
 	ON_COMMAND_RANGE(ID_SUB_DELAY_DOWN, ID_SUB_DELAY_UP, OnSubtitleDelay)
 	ON_COMMAND_RANGE(ID_SUB_DELAY_DOWN2, ID_SUB_DELAY_UP2, OnSubtitleDelay2)
 
@@ -12163,13 +12163,90 @@ void CMainFrame::OnAudioDeviceChange(UINT nID){
 
 	ReRenderOrLoadMedia();
 }
+void CMainFrame::OnSwitchAudioDevice(){
+	AppSettings& s = AfxGetAppSettings();
+	m_AudioDevice.RemoveAll();
+	if(m_AudioDevice.GetCount() <= 0 ){
+		BeginEnumSysDev(CLSID_AudioRendererCategory, pMoniker)
+		{
+			LPOLESTR olestr = NULL;
+			if(FAILED(pMoniker->GetDisplayName(0, 0, &olestr)))
+				continue;
+
+			CStringW str(olestr);
+			CoTaskMemFree(olestr);
+
+
+
+			CComPtr<IPropertyBag> pPB;
+			if(SUCCEEDED(pMoniker->BindToStorage(0, 0, IID_IPropertyBag, (void**)&pPB)))
+			{
+				CComVariant var;
+				pPB->Read(CComBSTR(_T("FriendlyName")), &var, NULL);
+
+				CString fstr(var.bstrVal);
+
+				m_AudioDevice.Add(fstr);
+				m_AudioDevice.Add(CString(str));
+			}
+		}
+		EndEnumSysDev
+	}
+	if(m_AudioDevice.GetCount() <= 0 ){
+		SendStatusMessage(ResStr(IDS_MSG_AUDIO_DEVICE_TO_SWITCH_FAILED), 3000 );
+		return;
+	}
+	CString szAudioDeviceName;
+	{
+		bool bNextIsWhatWeWant = false;
+		if(s.AudioRendererDisplayName.IsEmpty()){
+			bNextIsWhatWeWant = true;
+		}
+		bool bWeGotWhatWeWant = false;
+		for(int i = 0 ; i < m_AudioDevice.GetCount(); i+=2){
+			CString szAudioDevice = m_AudioDevice.GetAt(i+1);
+			
+			if(bNextIsWhatWeWant){
+				if( s.bUseWaveOutDeviceByDefault && szAudioDevice.Find(_T("DirectSound")) >= 0){
+					continue;
+				}else if(!s.bUseWaveOutDeviceByDefault && szAudioDevice.Find(_T("DirectSound")) < 0 ){
+					continue;
+				}
+				szAudioDeviceName = m_AudioDevice.GetAt(i);
+				s.AudioRendererDisplayName = szAudioDevice;
+				bWeGotWhatWeWant = true;
+				break;
+			}
+			if(szAudioDevice == s.AudioRendererDisplayName){
+				bNextIsWhatWeWant = true;
+			}
+		}
+		if(!bWeGotWhatWeWant)
+		{
+			s.AudioRendererDisplayName.Empty();
+		}
+	}
+	if(s.AudioRendererDisplayName.IsEmpty())
+	{	
+		szAudioDeviceName.Empty();
+	}
+	if(szAudioDeviceName.IsEmpty()){
+		szAudioDeviceName = ResStr(IDS_MENU_ITEM_AUDIODEVICE_SYSTEM_DEFAULT);
+	}
+
+	CString szMsg;
+	szMsg.Format(ResStr(IDS_MSG_AUDIO_DEVICE_SWITCHED) ,  szAudioDeviceName );
+	SendStatusMessage(szMsg, 4000);
+
+	ReRenderOrLoadMedia();
+}
 void CMainFrame::SetupAudioDeviceSubMenu(){
 	CMenu* pSub = &m_audiodevices;
 	if(!IsMenu(pSub->m_hMenu)) pSub->CreatePopupMenu();
 	else while(pSub->RemoveMenu(0, MF_BYPOSITION));
 
 	UINT idstart = IDS_CHANGE_AUDIO_DEVICE;
-	//m_AudioDevice.RemoveAll();
+	m_AudioDevice.RemoveAll();
 	if(m_AudioDevice.GetCount() <= 0 ){
 		BeginEnumSysDev(CLSID_AudioRendererCategory, pMoniker)
 		{

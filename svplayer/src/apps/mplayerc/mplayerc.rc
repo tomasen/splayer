@@ -3268,6 +3268,9 @@ BEGIN
  	IDS_CANNOT_CHANGE_FORMAT   "SPlayer have not enough privileges to change files formats associations. Please click on ""Modify"" button to get administrator rights."
  	IDS_MAINFRM_12          "channel"
  	IDS_PPSDB_BADURL        "Bad URL, could not locate subtitle database there!"
+	IDS_HOTKEY_SWITCH_AUDIO_DEVICE	"快速切换音频输出设备"
+	IDS_MSG_AUDIO_DEVICE_TO_SWITCH_FAILED	"当前系统没有音频输出设备供切换"
+	IDS_MSG_AUDIO_DEVICE_SWITCHED		"音频输出设备切换为 %s"
 END
 
 #endif    // Chinese (P.R.C.) resources

@@ -2401,6 +2401,9 @@ BEGIN
     IDS_MAINFRM_12          "channel"
 	IDS_VDF_ERROR_RECOGNITION "Error Recognition"
     IDS_PPSDB_BADURL        "Bad URL, could not locate subtitle database there!"
+	IDS_HOTKEY_SWITCH_AUDIO_DEVICE		"Quick Switch Audio Device"
+	IDS_MSG_AUDIO_DEVICE_TO_SWITCH_FAILED	"No audio device to switch"
+	IDS_MSG_AUDIO_DEVICE_SWITCHED		"audio device switch to %s"
 END
 STRINGTABLE 
 BEGIN

@@ -78,7 +78,7 @@
 				AdditionalLibraryDirectories="../../../lib;../../../lib/wm7;../../../lib/qt6;../../../lib/detours"
 				GenerateManifest="true"
 				UACExecutionLevel="0"
-				IgnoreDefaultLibraryNames="MSVCRT"
+				IgnoreDefaultLibraryNames="MSVCRT;nafxcw.lib"
 				DelayLoadDLLs="d3d9.dll;gdiplus.dll;psapi.dll"
 				GenerateMapFile="true"
 				MapFileName="$(TargetDir)$(TargetName).map"
@@ -2225,11 +2225,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 		<File

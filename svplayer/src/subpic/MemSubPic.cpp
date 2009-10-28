@@ -18,6 +18,10 @@
  *  http://www.gnu.org/copyleft/gpl.html
  *
  */
+#ifdef _MSC_VER
+#pragma warning(disable: 4799)		// warning C4799: function has no EMMS instruction
+#endif
+
 
 #include "stdafx.h"
 #include "MemSubPic.h"

@@ -162,7 +162,7 @@
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="../lib"
 				UACExecutionLevel="0"
-				IgnoreDefaultLibraryNames="MSVCRT"
+				IgnoreDefaultLibraryNames="nafxcw.lib;MSVCRT"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="..\..\$(TargetName).pdb"
 				GenerateMapFile="true"

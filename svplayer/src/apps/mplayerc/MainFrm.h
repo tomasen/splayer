@@ -758,6 +758,7 @@ public:
 	afx_msg void OnPlaySubDelay(UINT nID); //SubDelay Button
 	afx_msg void OnUpdatePlaySubDelay(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateSubtitleFontChange(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateLanguage(CCmdUI* pCmdUI);
 	afx_msg void OnPlaySub2Delay(UINT nID);
 	afx_msg void OnUpdatePlaySub2Delay(CCmdUI* pCmdUI);
 

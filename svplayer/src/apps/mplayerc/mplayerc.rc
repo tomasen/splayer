@@ -1681,7 +1681,7 @@ VS_VERSION_INFO VERSIONINFO
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
-        BLOCK "040904b0"
+        BLOCK "080004b0"
         BEGIN
             VALUE "CompanyName", "SPlayer"
             VALUE "FileDescription", "射手播放器"
@@ -1690,11 +1690,12 @@ BEGIN
             VALUE "LegalCopyright", "Copyright (C) 2008-2009 Tomasen, Gabest, casimir666, ffmpeg"
             VALUE "OriginalFilename", "splayer.exe"
             VALUE "ProductName", "射手播放器"
+            VALUE "ProductVersion", "3, 1, 0, 0"
         END
     END
     BLOCK "VarFileInfo"
     BEGIN
-        VALUE "Translation", 0x409, 1200
+        VALUE "Translation", 0x800, 1200
     END
 END
 
@@ -1916,13 +1917,6 @@ BEGIN
     END
 END
 
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// AVI
-//
-
-//IDR_AVI_FILECOPY        AVI                     "res\\ani.avi"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -2786,12 +2780,11 @@ BEGIN
     IDS_OSD_MSG_SET_NEW_VSYNC_OFFSET "新的VSync TargetSyncOffset %0.2f "
     IDS_OSD_MSG_CHANGE_PLAY_SPEED_RATE "播放速度变为 %0.1f"
     IDS_OSD_MSG_SWITCH_AUDIO_DEVICE_FOR_NEW_PLAYSPEED "正在切换设置以允许高速播放..."
-    IDS_OSD_MSG_SUGGEST_USE_WAVEOUT 
-                            "建议使用WaveOut而非DirectSound类音频输出选项以支持此速率 (%0.1f)"
+    IDS_OSD_MSG_SUGGEST_USE_WAVEOUT      "建议使用WaveOut而非DirectSound类音频输出选项以支持此速率 (%0.1f)"
     IDS_OSD_MSG_VOLUME_CHANGED "音量: %d%%  "
     IDS_LOG_MSG_VOLUME_CHANGED_FAIL "设置音量失败 %d : %d"
-    IDS_OSD_MSG_VOLUME_CHANGING_FAILED_OR_UNSUPPORTED 
-                            "您当前的音频设备不支持音量控制，请在音频菜单中选择正确的音频设备。"
+    IDS_OSD_MSG_VOLUME_CHANGING_FAILED_OR_UNSUPPORTED  "您当前的音频设备不支持音量控制，请在音频菜单中选择正确的音频设备。"
+	IDS_OSD_MSG_VOLUME_CHANGING_UNSUPPORTED_SINCE_ITS_SPDIF  "数字输出时无法通过电脑进行音量控制，请调节功放控制音量。"
     IDS_MSG_RENDER_NOT_SUPPORT_BRIGHT_CONTROL "您没有启用或显卡(或驱动)不支持亮度控制"
     IDS_OSD_MSG_BRIGHT_CONTRAST_CHANGE "亮度: %0.2f  对比度: %0.2f "
     IDS_MSG_DEVICE_NOT_SUPPORT_BRIGHT_CONTRAST_CHANGE "您的显卡(或驱动)不支持亮度控制"
@@ -3258,13 +3251,24 @@ BEGIN
     IDS_MEDIATYPE_INFOLABEL_TEXT "文字"
     IDS_MEDIATYPE_INFOLABEL_UNKNOWN "未知"
     IDS_OSD_MSG_HARDWARE_NOT_SUPPORT_DXVA_SAR "硬件设备可能不支持加速本文件(SAR)..."
-    IDS_OSD_MSG_HARDWARE_MIGHTNOT_SUPPORT_DXVA 
-                            "设备可能没有足够能力硬件加速本文件，请勿勾选“使硬件加速兼容更多文件”选项..."
+    IDS_OSD_MSG_HARDWARE_MIGHTNOT_SUPPORT_DXVA "设备可能没有足够能力硬件加速本文件，请勿勾选“使硬件加速兼容更多文件”选项..."
     IDS_OSD_MSG_VC1_INTERLACE_DXVA_NOT_SUPPORT "隔行VC1编码的文件恐怕无法进行硬件加速..."
     IDS_PANEL_MPEG_DECODER_DEINTERLACE_DEFAULT "默认优化设置"
     IDS_LOG_MSG_DETECT_NEWER_VERSION_UPDATER_STARTED "检测到新的版本，升级程序已启动"
-END
 
+	IDS_VOLUME_BOOST_INC    "Volume boost increase"
+	IDS_VOLUME_BOOST_DEC    "Volume boost decrease"
+	IDS_VOLUME_BOOST_MIN    "Volume boost Min"
+ 	IDS_VOLUME_BOOST_MAX    "Volume boost Max"
+	IDS_UNKNOWN_SWITCH      "Unrecognized switch(es) found in command line string: \n\n"
+ 	IDS_MPEG2_CONTRAST      "Contrast"
+ 	IDS_MPEG2_HUE           "Hue"
+ 	IDS_MPEG2_SATURATION    "Saturation"
+ 	IDS_MPEG2DECSETTINGSWND_8	"can degrade performance. ""Auto"" deinterlacer will switch to ""Blend"" when necessary."
+ 	IDS_CANNOT_CHANGE_FORMAT   "SPlayer have not enough privileges to change files formats associations. Please click on ""Modify"" button to get administrator rights."
+ 	IDS_MAINFRM_12          "channel"
+ 	IDS_PPSDB_BADURL        "Bad URL, could not locate subtitle database there!"
+END
 
 #endif    // Chinese (P.R.C.) resources
 /////////////////////////////////////////////////////////////////////////////

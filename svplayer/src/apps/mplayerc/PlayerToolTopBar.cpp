@@ -296,7 +296,7 @@ void CPlayerToolTopBar::UpdateButtonStat(){
 	m_btnList.SetHideStat( ID_ONTOP_ALWAYS , ontop );
 
 	m_btnList.SetHideStat( ID_FILE_EXIT , !fullscreen && !bCaptionHidden );
-	m_btnList.SetHideStat( L"TOP_FULLSCREEN.BMP" , fullscreen || ( !bCaptionHidden && !s.bUserAeroTitle() ) );
+	//m_btnList.SetHideStat( L"TOP_FULLSCREEN.BMP" , fullscreen || ( !bCaptionHidden && !s.bUserAeroTitle() ) );
 	m_btnList.SetHideStat( L"TOP_RESTORE.BMP" , !fullscreen );
 
 	BOOL bViewFROMOUTSIDE = (s.iDefaultVideoSize == 5);

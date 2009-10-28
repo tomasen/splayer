@@ -207,7 +207,17 @@ void CSUIButton::OnPaint(CMemoryDC *hDC, CRect rc){
 }
 void CSUIButton::LoadImage(LPCTSTR szBmpName){
 
-	this->Attach((HBITMAP)::LoadImage(GetModuleHandle(NULL), szBmpName, IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION));
+	HBITMAP hGTmp = NULL;
+	if(CMPlayerCApp::m_hResDll){
+		hGTmp = (HBITMAP)::LoadImage(CMPlayerCApp::m_hResDll, szBmpName, IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION);
+		if(!hGTmp){
+			hGTmp = (HBITMAP)::LoadImage(AfxGetApp()->m_hInstance, szBmpName, IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION);
+		}
+	}else{
+		hGTmp = (HBITMAP)::LoadImage(GetModuleHandle(NULL), szBmpName, IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION);
+	}
+
+	this->Attach(hGTmp);
 }
 
 void CSUIButton::Attach(HBITMAP bmp){

@@ -346,6 +346,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_VIEW_OPTIONS, OnViewOptions)
 	ON_COMMAND(ID_SHOWDRAWSTAT, OnShowDrawStats)
 	ON_COMMAND_RANGE(ID_LANGUAGE_CHINESE_SIMPLIFIED, ID_LANGUAGE_LAST, OnLanguage)
+	ON_UPDATE_COMMAND_UI_RANGE(ID_LANGUAGE_CHINESE_SIMPLIFIED, ID_LANGUAGE_LAST, OnUpdateLanguage)
 
 	ON_COMMAND(ID_SET_AUDIO_NUMBER_SPEAKER, OnSetAudioNumberOfSpeaker)
 
@@ -901,20 +902,20 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_btnList.AddTail(bClose );
 	btnMargin.right = 3;
 
-	CSUIButton* btnFullScreen = new CSUIButton(L"BTN_FULLSCREEN.BMP" , ALIGN_TOPRIGHT, btnMargin  , 0, MYHTFULLSCREEN, FALSE, ALIGN_RIGHT, bClose );
+	//CSUIButton* btnFullScreen = new CSUIButton(L"BTN_FULLSCREEN.BMP" , ALIGN_TOPRIGHT, btnMargin  , 0, MYHTFULLSCREEN, FALSE, ALIGN_RIGHT, bClose );
 
 	CSUIButton* btnMax = new CSUIButton(L"MAXIMIZE.BMP" , ALIGN_TOPRIGHT, btnMargin  , 0, MYHTMAXBUTTON, FALSE, ALIGN_RIGHT, bClose );
-	btnMax->addAlignRelButton(ALIGN_RIGHT, btnFullScreen );
+	//btnMax->addAlignRelButton(ALIGN_RIGHT, btnFullScreen );
 	CSUIButton* btnRestore = new CSUIButton(L"RESTORE.BMP" , ALIGN_TOPRIGHT, btnMargin  , 0, MYHTMAXBUTTON, TRUE, ALIGN_RIGHT, bClose );
-	btnRestore->addAlignRelButton(ALIGN_RIGHT, btnFullScreen );
+	//btnRestore->addAlignRelButton(ALIGN_RIGHT, btnFullScreen );
 
-	m_btnList.AddTail(btnFullScreen );
+//	m_btnList.AddTail(btnFullScreen );
 	m_btnList.AddTail(btnMax );
 	m_btnList.AddTail( btnRestore );
 
 	CSUIButton* btnMin = new CSUIButton(L"MINIMIZE.BMP", ALIGN_TOPRIGHT, btnMargin  ,  0, MYHTMINBUTTON ,FALSE, ALIGN_RIGHT, btnRestore);
 	btnMin->addAlignRelButton(ALIGN_RIGHT , btnMax );
-	btnMin->addAlignRelButton(ALIGN_RIGHT , btnFullScreen );
+	//btnMin->addAlignRelButton(ALIGN_RIGHT , btnFullScreen );
 	m_btnList.AddTail( btnMin);
 	m_btnList.AddTail( new CSUIButton(L"BTN_MINTOTRAY.BMP", ALIGN_TOPRIGHT, btnMargin  ,  0, MYHTMINTOTRAY ,FALSE, ALIGN_RIGHT, m_btnList.GetTail()));
 	//CSUIButton* btnMenu = new CSUIButton(L"MENU.BMP", ALIGN_TOPRIGHT, btnMargin  ,  0, MYHTMENU, FALSE, ALIGN_RIGHT, m_btnList.GetTail(), CRect(3,3,12,3));
@@ -2527,6 +2528,7 @@ void CMainFrame::OnPlaySubDelay(UINT nID)
 	SendStatusMessage(str, 5000);
 	this->SetSubtitleDelay(newDelay);
 }
+
 void CMainFrame::OnUpdateSubtitleFontChange(CCmdUI* pCmdUI)
 {
 	bool fEnable = false;
@@ -8479,7 +8481,10 @@ void CMainFrame::OnPlayVolume(UINT nID)
 		HRESULT hr = pBA->put_Volume(m_wndToolBar.Volume);
 		if(S_OK != hr){
 			SVP_LogMsg5(ResStr(IDS_LOG_MSG_VOLUME_CHANGED_FAIL) , hr,  m_wndToolBar.Volume);
-			SendStatusMessage(ResStr(IDS_OSD_MSG_VOLUME_CHANGING_FAILED_OR_UNSUPPORTED),4000);
+			if(!s.fbUseSPDIF)
+				SendStatusMessage(ResStr(IDS_OSD_MSG_VOLUME_CHANGING_FAILED_OR_UNSUPPORTED),4000);
+			else
+				SendStatusMessage(ResStr(IDS_OSD_MSG_VOLUME_CHANGING_UNSUPPORTED_SINCE_ITS_SPDIF),4000);
 		}
 		
 	
@@ -16105,7 +16110,12 @@ void CMainFrame::OnWindowPosChanging(WINDOWPOS* lpwndpos)
 	// TODO: Add your message handler code here
 }
 
+void CMainFrame::OnUpdateLanguage(CCmdUI* pCmdUI)
+{
+	AppSettings& s = AfxGetAppSettings();
+	pCmdUI->SetCheck( s.iLanguage == ( pCmdUI->m_nID - ID_LANGUAGE_CHINESE_SIMPLIFIED ) );
 
+}
 afx_msg void CMainFrame::OnLanguage(UINT nID)
 {
 	CMenu	DefaultMenu;

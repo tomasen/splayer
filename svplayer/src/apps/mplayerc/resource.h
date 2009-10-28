@@ -319,6 +319,7 @@
 #define ID_VSYNC_OFFSET_MORE            1326
 #define ID_VSYNC_OFFSET_LESS            1327
 #define ID_FILE_BTN_EXIT                1328
+#define ID_SWITCH_AUDIO_DEVICE          1329
 #define ID_FILTERS_SUBITEM_START        2000
 #define ID_FILTERS_SUBITEM_END          2099
 #define ID_FILTERSTREAMS_SUBITEM_START  2100

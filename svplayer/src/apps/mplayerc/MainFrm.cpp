@@ -15013,19 +15013,32 @@ void CMainFrame::OnSendemail()
 
 void CMainFrame::OnVisitcontactinfo()
 {
-	
-	ShellExecute(m_hWnd, _T("open"), _T("http://shooter.cn/splayer/feedback.html"), NULL, NULL, SW_SHOWDEFAULT);
+	AppSettings& s = AfxGetAppSettings();
+	CString szUrl = _T("http://shooter.cn/splayer/feedback.html");
+	if(s.iLanguage > 0){
+		szUrl.Append(_T("#googtrans(zh-CN|en)"));
+	}
+	ShellExecute(m_hWnd, _T("open"),szUrl , NULL, NULL, SW_SHOWDEFAULT);
 }
 
 void CMainFrame::OnDonate()
 {
-	
-	ShellExecute(m_hWnd, _T("open"), _T("http://shooter.cn/donate/"), NULL, NULL, SW_SHOWDEFAULT);
+	AppSettings& s = AfxGetAppSettings();
+	CString szUrl = _T("http://shooter.cn/donate/");
+	if(s.iLanguage > 0){
+		szUrl.Append(_T("#googtrans(zh-CN|en)"));
+	}
+	ShellExecute(m_hWnd, _T("open"),szUrl, NULL, NULL, SW_SHOWDEFAULT);
 }
 
 void CMainFrame::OnJointeam()
 {
-	ShellExecute(m_hWnd, _T("open"), _T("http://shooter.cn/splayer/join.html"), NULL, NULL, SW_SHOWDEFAULT);
+	AppSettings& s = AfxGetAppSettings();
+	CString szUrl = _T("http://shooter.cn/splayer/join.html");
+	if(s.iLanguage > 0){
+		szUrl.Append(_T("#googtrans(zh-CN|en)"));
+	}
+	ShellExecute(m_hWnd, _T("open"), szUrl, NULL, NULL, SW_SHOWDEFAULT);
 }
 
 void CMainFrame::OnSetsnapshotpath()

@@ -170,9 +170,12 @@ void mix(DWORD mask, int ch, int bps, BYTE* src, BYTE* dst)
 			{
 				tmpData -= Umax/2;
 			}
+			count++;
+			if( j > 4 && i == (j-1) && count > 1){
+				tmpData /= 4;
+			}
 
 			sum += tmpData;
-			count++;
 			if( tmpData >= 0 ){
 				if(tmpData > max_positive){
 					max_positive = tmpData;
@@ -190,14 +193,19 @@ void mix(DWORD mask, int ch, int bps, BYTE* src, BYTE* dst)
 
 	
 	if(count > 1){
+		
 		double rate = 0;
 		if(max_positive && sum > max_positive){
-			rate = (sum - max_positive) / max_positive;
+			rate = sum / max_positive;
 		}else if(max_negetive && sum < max_negetive){
-			rate = (sum - max_negetive ) / max_negetive;
+			rate = sum / max_negetive;
 		}
-		if(rate)
-			sum = sum / sqrt(rate+1);
+		if(rate){
+			//sum /= pow(rate, ( 1.0 - 0.1/count));
+			//sum /= pow((float)count, (  (float)1.0 - (float)0.1/(float)rate ));
+		}
+		//sum /= pow((float)count, (1.0 - (float)1.0/(float)count));
+		sum /= sqrt((float)count);		
 	}
 	if(setoffsetfor8bits)
 	{

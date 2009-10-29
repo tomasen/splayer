@@ -1135,9 +1135,9 @@ HRESULT CMpaDecFilter::ProcessDTS()
 					}
 					
 					flags = DTS_3F2R|DTS_LFE;// iSpeakerConfig&(DTS_CHANNEL_MASK|DTS_LFE);
-					flags |= DTS_ADJUST_LEVEL;
+					//flags |= DTS_ADJUST_LEVEL;
 
-					sample_t level = 1, gain = 1, bias = 0;
+					sample_t level = 1.2, gain = 1, bias = 0;
 					level *= gain;
 
 					if(dts_frame(m_dts_state, p, &flags, &level, bias) == 0)
@@ -1168,7 +1168,7 @@ HRESULT CMpaDecFilter::ProcessDTS()
 									ASSERT(scmap.ch[ch] != -1);
 									sample_t thisch_level = level;
 									if( scmap.nChannels > 5 && ch == 2) //increase center volum
-										thisch_level = 1.0/m_dCenterChannelGain;
+										thisch_level = level/m_dCenterChannelGain;
 
 									*p++ = (float)(*(samples + 256*scmap.ch[ch]) / thisch_level);
 								}

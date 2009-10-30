@@ -6021,7 +6021,7 @@ void CMainFrame::SaveThumbnails(LPCTSTR fn)
 		REFERENCE_TIME rt = rtDur * i / (pics+1);
 		DVD_HMSF_TIMECODE hmsf = RT2HMSF(rt, 25);
 
-		SeekTo(rt);
+		SeekTo(rt, 0);
 
 		m_VolumeBeforeFrameStepping = m_wndToolBar.Volume;
 		pBA->put_Volume(-10000);
@@ -6146,11 +6146,12 @@ void CMainFrame::SaveThumbnails(LPCTSTR fn)
 		rts.m_dstScreenSize.SetSize(width, height);
 		STSStyle* style = new STSStyle();
 		style->marginRect.SetRect(margin*2, margin*2, margin*2, height-infoheight-margin);
+		style->fontName = s.subdefstyle.fontName;
 		rts.AddStyle(_T("thumbs"), style);
-
+		
 		CStringW str;
-		str.Format(L"{\\an9\\fs%d\\b1\\bord0\\shad0\\1c&Hffffff&}%s", infoheight-10, width >= 550 ? 
-			ResStr(IDR_MAINFRAME): ResStr(IDR_MAINFRAME_SHORTNAME));
+		str.Format(L"{\\an9\\fs%d\\b1\\bord0\\shad0\\1c&H555555x&}%s", infoheight-10,  
+			width >= 550 ? 	ResStr(IDR_MAINFRAME): ResStr(IDR_MAINFRAME_SHORTNAME));
 
 		rts.Add(str, true, 0, 1, _T("thumbs"), _T(""), _T(""), CRect(0,0,0,0), -1);
 
@@ -6180,8 +6181,12 @@ void CMainFrame::SaveThumbnails(LPCTSTR fn)
 		if(arxy.cx > 0 && arxy.cy > 0 && arxy.cx != wh.cx && arxy.cy != wh.cy)
 			ar.Format(L"(%d:%d)", arxy.cx, arxy.cy);
 
-		str.Format(L"{\\an7\\1c&H000000&\\fs16\\b0\\bord0\\shad0}文件名: %s\\N%s分辨率: %dx%d %s\\N总长度: %02d:%02d:%02d", 
-			fn, fs, wh.cx, wh.cy, ar, hmsf.bHours, hmsf.bMinutes, hmsf.bSeconds);
+		CString szRt = L"\\N";;
+		if(fn.GetLength() > 15){
+			szRt = L"   ";
+		}
+		str.Format(L"{\\an7\\1c&H000000&\\fs16\\b0\\bord0\\shad0}文件名: %s\\N%s分辨率: %dx%d %s%s总长度: %02d:%02d:%02d", 
+			fn, fs, wh.cx, wh.cy, ar,szRt, hmsf.bHours, hmsf.bMinutes, hmsf.bSeconds);
 		rts.Add(str, true, 0, 1, _T("thumbs"));
 
 		rts.Render(spd, 0, 25, bbox);

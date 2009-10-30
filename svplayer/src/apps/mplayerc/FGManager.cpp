@@ -2666,7 +2666,8 @@ STDMETHODIMP CFGManagerCustom::AddFilter(IBaseFilter* pBF, LPCWSTR pName)
 	if(CComQIPtr<IAudioSwitcherFilter> pASF = pBF)
 	{
 		pASF->EnableDownSamplingTo441(s.fDownSampleTo441);
-		pASF->SetSpeakerConfig(s.fCustomChannelMapping, s.pSpeakerToChannelMap);
+		//pASF->SetSpeakerConfig(s.fCustomChannelMapping, s.pSpeakerToChannelMap);
+		pASF->SetSpeakerChannelConfig(AfxGetMyApp()->GetNumberOfSpeakers(), s.pSpeakerToChannelMap2);
 		pASF->SetAudioTimeShift(s.fAudioTimeShift ? 10000i64*s.tAudioTimeShift : 0);
 		pASF->SetNormalizeBoost(s.fAudioNormalize, s.fAudioNormalizeRecover, s.AudioBoost);
 	}

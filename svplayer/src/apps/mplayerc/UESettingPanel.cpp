@@ -631,7 +631,7 @@ void CUESettingPanel::ApplyAllSetting(){
 			s.bNotAutoCheckSpeaker = (int)(iSS /100)%10 + (int)(iSS/10) %10  + iSS%10; 
 
 			//SVP_LogMsg5(_T("s.bNotAutoCheckSpeaker %d") , s.bNotAutoCheckSpeaker);
-			s.SetChannelMapByNumberOfSpeakers(iSS, s.bNotAutoCheckSpeaker );
+			s.SetNumberOfSpeakers(iSS, s.bNotAutoCheckSpeaker );
 
 			
 		}
@@ -639,7 +639,8 @@ void CUESettingPanel::ApplyAllSetting(){
 	
 	if(m_pASF)
 	{
-		m_pASF->SetSpeakerConfig(s.fCustomChannelMapping, s.pSpeakerToChannelMap);
+		//m_pASF->SetSpeakerConfig(s.fCustomChannelMapping, s.pSpeakerToChannelMap);
+		m_pASF->SetSpeakerChannelConfig(AfxGetMyApp()->GetNumberOfSpeakers(), s.pSpeakerToChannelMap2);
 	}
 
 	//Sub Setting

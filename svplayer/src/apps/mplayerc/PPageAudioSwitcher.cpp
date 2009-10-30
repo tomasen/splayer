@@ -113,7 +113,7 @@ BOOL CPPageAudioSwitcher::OnInitDialog()
 	m_tAudioTimeShift = s.tAudioTimeShift;
 	m_tAudioTimeShiftSpin.SetRange32(-1000*60*60*24, 1000*60*60*24);
 	m_fCustomChannelMapping = s.fCustomChannelMapping;
-	memcpy(m_pSpeakerToChannelMap, s.pSpeakerToChannelMap, sizeof(s.pSpeakerToChannelMap));
+	//memcpy(m_pSpeakerToChannelMap, s.pSpeakerToChannelMap2, sizeof(s.pSpeakerToChannelMap2));
 
 	if(m_pASF)
 		m_pASF->GetInputSpeakerConfig(&m_dwChannelMask);
@@ -176,11 +176,12 @@ BOOL CPPageAudioSwitcher::OnApply()
 	s.fAudioTimeShift = !!m_fAudioTimeShift;
 	s.tAudioTimeShift = m_tAudioTimeShift;
 	s.fCustomChannelMapping = !!m_fCustomChannelMapping;
-	memcpy(s.pSpeakerToChannelMap, m_pSpeakerToChannelMap, sizeof(m_pSpeakerToChannelMap));
+	//memcpy(s.pSpeakerToChannelMap, m_pSpeakerToChannelMap, sizeof(m_pSpeakerToChannelMap));
 
 	if(m_pASF)
 	{
-		m_pASF->SetSpeakerConfig(s.fCustomChannelMapping, s.pSpeakerToChannelMap);
+	//	m_pASF->SetSpeakerConfig(s.fCustomChannelMapping, s.pSpeakerToChannelMap);
+		m_pASF->SetSpeakerChannelConfig(AfxGetMyApp()->GetNumberOfSpeakers(), s.pSpeakerToChannelMap2);
 		m_pASF->EnableDownSamplingTo441(s.fDownSampleTo441);
 		m_pASF->SetAudioTimeShift(s.fAudioTimeShift ? 10000i64*s.tAudioTimeShift : 0);
 		m_pASF->SetNormalizeBoost(s.fAudioNormalize, s.fAudioNormalizeRecover, s.AudioBoost);

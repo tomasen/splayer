@@ -36,6 +36,7 @@
 #include "fakefiltermapper2.h"
 
 #include "..\..\..\Updater\cupdatenetlib.h"
+#include "..\..\filters\switcher\AudioSwitcher\AudioSwitcher.h"
 
 #ifdef UNICODE
 #define MPC_WND_CLASS_NAME L"MediaPlayerClassicW"
@@ -632,7 +633,8 @@ public:
 		bool fCustomChannelMapping;
 		bool fCustomSpeakers;
 		
-		DWORD pSpeakerToChannelMap[18][18]; //Meaning [Total Channel Number] [Speaker] = 1 << Channel
+		float pSpeakerToChannelMap2[MAX_INPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_NORMALIZE_CHANNELS]; //Meaning [Total Channel Number] [Speaker] = 1 << Channel
+		float pSpeakerToChannelMapOffset[MAX_INPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_NORMALIZE_CHANNELS];
 
 		bool fAudioNormalize;
 		bool fAudioNormalizeRecover;
@@ -703,11 +705,13 @@ public:
 		Settings();
 		virtual ~Settings();
 		void ThreadedLoading();
-		void SetChannelMapByNumberOfSpeakers(int iSS, int iNumberOfSpeakers);
+		void SetNumberOfSpeakers(int iSS, int iNumberOfSpeakers);
 		void RegGlobalAccelKey(HWND hWnd = NULL);
 		void UpdateData(bool fSave);
 		BOOL bUserAeroUI();
 		CString GetSVPSubStorePath();
+		void InitChannelMap();
+		void ChangeChannelMapByOffset();
 		BOOL bUserAeroTitle();
 		BOOL bShouldUseEVR();
 		int  FindWmcmdsIDXofCmdid(UINT cmdid, POSITION pos);

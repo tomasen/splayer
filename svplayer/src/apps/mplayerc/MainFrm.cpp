@@ -6150,7 +6150,7 @@ void CMainFrame::SaveThumbnails(LPCTSTR fn)
 		rts.AddStyle(_T("thumbs"), style);
 		
 		CStringW str;
-		str.Format(L"{\\an9\\fs%d\\b1\\bord0\\shad0\\1c&H555555x&}%s", infoheight-10,  
+		str.Format(L"{\\an9\\fs%d\\b0\\bord0\\shad0\\1c&H555555x&}%s", infoheight-10,  
 			width >= 550 ? 	ResStr(IDR_MAINFRAME): ResStr(IDR_MAINFRAME_SHORTNAME));
 
 		rts.Add(str, true, 0, 1, _T("thumbs"), _T(""), _T(""), CRect(0,0,0,0), -1);
@@ -11575,7 +11575,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 
 	s.szFGMLog.Empty();
 	
-	s.SetChannelMapByNumberOfSpeakers(s.iDecSpeakers , -1);
+	s.SetNumberOfSpeakers(s.iDecSpeakers , -1);
 
 	m_iMediaLoadState = MLS_LOADING;
 
@@ -12623,7 +12623,51 @@ void CMainFrame::OnAudioChannalMapMenu(UINT nID){
 		AppSettings& s = AfxGetAppSettings();
 
 		m_iAudioChannelMaping = nID - IDS_AUDIOCHANNALMAPNORMAL;
-		DWORD pSpeakerToChannelMap[18][18]; //Meaning [Total Channel Number] [Speaker] = 1 << Channel
+		if(pSS)
+		{
+			if(m_iAudioChannelMaping == 0)
+			{
+				//Normal
+				pSS->SetSpeakerChannelConfig(AfxGetMyApp()->GetNumberOfSpeakers(), s.pSpeakerToChannelMap2);
+			}else{
+
+				float pSpeakerToChannelMapTmp[MAX_INPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_NORMALIZE_CHANNELS]; 
+				memcpy(pSpeakerToChannelMapTmp, s.pSpeakerToChannelMap2, sizeof(pSpeakerToChannelMapTmp));
+				
+				for(int i = 1; i < MAX_INPUT_CHANNELS; i++){
+					for(int j = 0; j < MAX_OUTPUT_CHANNELS; j++){
+						for(int k = 0; k < 2; k++){
+							if(m_iAudioChannelMaping == 3){
+								pSpeakerToChannelMapTmp[i][j][k][2] = 0.7;
+								continue;
+							}
+							for(int n = 0; n < 2; n++){
+								if(m_iAudioChannelMaping == 1){
+									//left
+									if(n == 0){
+										pSpeakerToChannelMapTmp[i][j][k][n] = 0.5;
+									}else{
+										pSpeakerToChannelMapTmp[i][j][k][n] = 0;
+									}
+								}
+								else if(m_iAudioChannelMaping == 2)
+								{
+									//right
+									if(n == 0){
+										pSpeakerToChannelMapTmp[i][j][k][n] = 0;
+									}else{
+										pSpeakerToChannelMapTmp[i][j][k][n] = 0.5;
+									}
+								}
+							}
+						}
+					}
+				}
+				pSS->SetSpeakerChannelConfig(AfxGetMyApp()->GetNumberOfSpeakers(), pSpeakerToChannelMapTmp);
+			}
+			
+		}
+		/*DWORD pSpeakerToChannelMap[18][18]; //Meaning [Total Channel Number] [Speaker] = 1 << Channel
 		memset(pSpeakerToChannelMap, 0, sizeof(pSpeakerToChannelMap));
 		BOOL bCustomChannelMapping = FALSE;
 		UINT iMapedChannel = 0;
@@ -12653,6 +12697,7 @@ void CMainFrame::OnAudioChannalMapMenu(UINT nID){
 		{
 			pSS->SetSpeakerConfig(!!bCustomChannelMapping, pSpeakerToChannelMap);
 		}
+		*/
 	}
 
 }

@@ -40,7 +40,6 @@
 
 //#define  SPI_GETDESKWALLPAPER 115
 
-#include "..\..\filters\switcher\AudioSwitcher\AudioSwitcher.h"
 #include "..\..\filters\transform\mpadecfilter\MpaDecFilter.h"
 
 /////////
@@ -862,7 +861,7 @@ BOOL RegDelnode (HKEY hKeyRoot, LPTSTR lpSubKey)
 void CMPlayerCApp::RemoveAllSetting(){
 	_tremove(GetIniPath());
 	
-	HKEY hKey;
+//	HKEY hKey;
 	RegDelnode(HKEY_CURRENT_USER, L"Software\\SPlayer");
 	AppSettings& s = AfxGetAppSettings();
 	s.fInitialized = FALSE;
@@ -2275,6 +2274,30 @@ POSITION CMPlayerCApp::Settings::FindWmcmdsPosofCmdidByIdx(INT cmdid, int idx){
 	}
 	return 0;
 }
+
+void CMPlayerCApp::Settings::SetNumberOfSpeakers( int iSS , int iNumberOfSpeakers){
+
+	if(iNumberOfSpeakers == -1){
+		iNumberOfSpeakers = GetNumberOfSpeakers();
+	}
+	if(!iSS){
+		switch( iNumberOfSpeakers ){
+			case 1: iDecSpeakers = 100;	break;
+			case 2: iDecSpeakers = 200;	break;
+			case 3: iDecSpeakers = 210;	break;
+			case 4: iDecSpeakers = 220;	break;
+			case 5: iDecSpeakers = 221;	break;
+			case 6: iDecSpeakers = 321;	break;
+			case 7: iDecSpeakers = 341;	break;
+			case 8: iDecSpeakers = 341;	break;
+		}
+		iSS = iDecSpeakers;
+	}else{
+		iSS = abs(iSS);
+		iDecSpeakers = iSS;
+	}
+}
+/*
 #define SPEAKER_FRONT_LEFT              0x1
 #define SPEAKER_FRONT_RIGHT             0x2
 #define SPEAKER_FRONT_CENTER            0x4
@@ -2293,6 +2316,8 @@ POSITION CMPlayerCApp::Settings::FindWmcmdsPosofCmdidByIdx(INT cmdid, int idx){
 #define SPEAKER_TOP_BACK_LEFT           0x8000
 #define SPEAKER_TOP_BACK_CENTER         0x10000
 #define SPEAKER_TOP_BACK_RIGHT          0x20000
+
+
 void CMPlayerCApp::Settings::SetChannelMapByNumberOfSpeakers( int iSS , int iNumberOfSpeakers){
 
 	if(bSetTempChannelMaping)
@@ -2301,6 +2326,7 @@ void CMPlayerCApp::Settings::SetChannelMapByNumberOfSpeakers( int iSS , int iNum
 	if(iNumberOfSpeakers == -1){
 		iNumberOfSpeakers = GetNumberOfSpeakers();
 	}
+	/*
 	memset(pSpeakerToChannelMap, 0, sizeof(pSpeakerToChannelMap));
  	//for(int j = 0; j < 18; j++)
  	//	for(int i = 0; i <= j; i++)
@@ -2618,7 +2644,7 @@ void CMPlayerCApp::Settings::SetChannelMapByNumberOfSpeakers( int iSS , int iNum
 			//m_pMDF->SetDynamicRangeControl(IMpaDecFilter::ac3, m_ac3drc);
 			//m_pMDF->SetSpeakerConfig(IMpaDecFilter::dts, m_dtsspkcfg);
 			//m_pMDF->SetDynamicRangeControl(IMpaDecFilter::dts, m_dtsdrc);
-			m_pMDF->SetSpeakerConfig(IMpaDecFilter::aac, m_aacdownmix);
+			//m_pMDF->SetSpeakerConfig(IMpaDecFilter::aac, m_aacdownmix);
 		}
 
 		CRegKey key;
@@ -2631,8 +2657,43 @@ void CMPlayerCApp::Settings::SetChannelMapByNumberOfSpeakers( int iSS , int iNum
 		}
 	}
 	
-	fCustomChannelMapping = true;//!IsVista();
+	//fCustomChannelMapping = true;//!IsVista();
+	
+}*/
+#define INITDBARR(d,...) { float x[] = { __VA_ARGS__ };memcpy(d,x,sizeof(x));delete x; }
 
+
+#define LEVEL_PLUS6DB 2.0
+#define LEVEL_PLUS3DB 1.4142135623730951
+#define LEVEL_STANDARD 1.0
+#define LEVEL_3DB 0.7071067811865476
+#define LEVEL_45DB 0.5946035575013605
+#define LEVEL_6DB 0.5
+void CMPlayerCApp::Settings::InitChannelMap()
+{
+	memset(pSpeakerToChannelMap2, 0 , sizeof(pSpeakerToChannelMap2));
+
+	//5.1 => 2.0
+	INITDBARR( pSpeakerToChannelMap2[5][1][0] , LEVEL_STANDARD,0,LEVEL_PLUS3DB,LEVEL_3DB,0,LEVEL_6DB );
+	INITDBARR( pSpeakerToChannelMap2[5][1][1] , 0,LEVEL_STANDARD,LEVEL_PLUS3DB,0,LEVEL_3DB,LEVEL_6DB );
+}
+void CMPlayerCApp::Settings::ChangeChannelMapByOffset()
+{
+	return;
+	for(int i = 1; i < MAX_INPUT_CHANNELS; i++){
+		for(int j = 0; j < MAX_OUTPUT_CHANNELS; j++){
+			for(int k = 0; k < MAX_OUTPUT_CHANNELS; k++){
+				for(int n = 0; n < MAX_NORMALIZE_CHANNELS; n++){
+					if(pSpeakerToChannelMap2[i][j][k][n] > 0 ){
+						pSpeakerToChannelMap2[i][j][k][n] += pSpeakerToChannelMapOffset[i][j][k][n];
+					}
+					if(pSpeakerToChannelMap2[i][j][k][n] < 0){
+						pSpeakerToChannelMap2[i][j][k][n] = 0;
+					}
+				}
+			}
+		}
+	}
 }
 CString CMPlayerCApp::Settings::GetSVPSubStorePath(){
 	CString StoreDir = SVPSubStoreDir;
@@ -2989,7 +3050,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUDIOTIMESHIFT), tAudioTimeShift);
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DOWNSAMPLETO441), fDownSampleTo441);
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_CUSTOMCHANNELMAPPING), fCustomChannelMapping);
-		pApp->WriteProfileBinary(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPEAKERTOCHANNELMAPPING), (BYTE*)pSpeakerToChannelMap, sizeof(pSpeakerToChannelMap));
+		pApp->WriteProfileBinary(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPEAKERTOCHANNELMAPPING)+_T("Offset"), (BYTE*)pSpeakerToChannelMapOffset, sizeof(pSpeakerToChannelMapOffset));
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUDIONORMALIZE), fAudioNormalize);
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUDIONORMALIZERECOVER), fAudioNormalizeRecover);		
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUDIOBOOST), min((int)AudioBoost, 56)); // not more than 415%
@@ -3546,19 +3607,19 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 			}
 		}
 
-		if((iUpgradeReset >= 400) && pApp->GetProfileBinary(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPEAKERTOCHANNELMAPPING), &ptr, &len) && fCustomChannelMapping )
+		InitChannelMap();
+
+		if((iUpgradeReset >= 400) && pApp->GetProfileBinary(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPEAKERTOCHANNELMAPPING)+_T("Offset"), &ptr, &len)  )
 		{
-			memcpy(pSpeakerToChannelMap, ptr, sizeof(pSpeakerToChannelMap));
+			memset(pSpeakerToChannelMapOffset, 0 , sizeof(pSpeakerToChannelMapOffset));
+			memcpy(pSpeakerToChannelMapOffset, ptr, sizeof(pSpeakerToChannelMapOffset));
 			delete [] ptr;
 
-			//AfxMessageBox(_T("1"));
-		}
-		else
-		{
-			//AfxMessageBox(_T("2"));
-			SetChannelMapByNumberOfSpeakers(iDecSpeakers, iNumberOfSpeakers);
+			ChangeChannelMapByOffset();
 			
 		}
+		//SVP_LogMsg5(L"Init ChannelMap %f", pSpeakerToChannelMap2[5][1][0][1]);
+
 		fbUseSPDIF = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USESPDIF), 0);
 
 		fUseInternalTSSpliter = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEINTERNALTSSPLITER), 0);

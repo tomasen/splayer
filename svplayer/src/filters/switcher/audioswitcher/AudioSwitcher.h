@@ -20,13 +20,16 @@
 
 #include "StreamSwitcher.h"
 
+#define MAX_OUTPUT_CHANNELS 18
+#define MAX_INPUT_CHANNELS 18
+#define MAX_NORMALIZE_CHANNELS 18
 
 interface __declspec(uuid("CEDB2890-53AE-4231-91A3-B0AAFCD1DBDE")) IAudioSwitcherFilter : public IUnknown
 {
 	STDMETHOD(GetInputSpeakerConfig) (DWORD* pdwChannelMask) = 0;
 	STDMETHOD(ResetAudioSwitch) () = 0;
-    STDMETHOD(GetSpeakerConfig) (bool* pfCustomChannelMapping, DWORD pSpeakerToChannelMap[18][18]) = 0;
-    STDMETHOD(SetSpeakerConfig) (bool fCustomChannelMapping, DWORD pSpeakerToChannelMap[18][18]) = 0;
+    //STDMETHOD(GetSpeakerConfig) (bool* pfCustomChannelMapping, DWORD pSpeakerToChannelMap[18][18]) = 0;
+    //STDMETHOD(SetSpeakerConfig) (bool fCustomChannelMapping, DWORD pSpeakerToChannelMap[18][18]) = 0;
     STDMETHOD_(int, GetNumberOfInputChannels) () = 0;
 	STDMETHOD_(bool, IsDownSamplingTo441Enabled) () = 0;
 	STDMETHOD(EnableDownSamplingTo441) (bool fEnable) = 0;
@@ -34,8 +37,8 @@ interface __declspec(uuid("CEDB2890-53AE-4231-91A3-B0AAFCD1DBDE")) IAudioSwitche
 	STDMETHOD(SetAudioTimeShift) (REFERENCE_TIME rtAudioTimeShift) = 0;
 	STDMETHOD(GetNormalizeBoost) (bool& fNormalize, bool& fNormalizeRecover, float& boost) = 0;
 	STDMETHOD(SetNormalizeBoost) (bool fNormalize, bool fNormalizeRecover, float boost) = 0;
-	STDMETHOD(SetChannelNormalizeBoost) (float pChannelNormalize[18][18]) = 0;
-	STDMETHOD(GetChannelNormalizeBoost) (float pChannelNormalize[18][18]) = 0;
+	STDMETHOD(GetSpeakerChannelConfig) (int *plTotalOutputChannel , float pChannelNormalize[MAX_INPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_NORMALIZE_CHANNELS]) = 0;
+	STDMETHOD(SetSpeakerChannelConfig) (int lTotalOutputChannel , float pChannelNormalize[MAX_INPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_NORMALIZE_CHANNELS]) = 0;
 };
 
 class AudioStreamResampler;
@@ -43,12 +46,16 @@ class AudioStreamResampler;
 
 class __declspec(uuid("18C16B08-6497-420e-AD14-22D21C2CEAB7")) CAudioSwitcherFilter : public CStreamSwitcherFilter, public IAudioSwitcherFilter
 {
-	typedef struct {DWORD Speaker, Channel;} ChMap;
-	CAtlArray<ChMap> m_chs[18];
+	//typedef struct {DWORD Speaker, Channel;} ChMap;
+	//CAtlArray<ChMap> m_chs[18];
 
-	bool m_fCustomChannelMapping;
-	DWORD m_pSpeakerToChannelMap[18][18];
-	float m_pChannelNormalize[18][18]; // range : -1.0 - +1.0f
+	int m_fCustomChannelMapping2;
+	// -- DWORD m_pSpeakerToChannelMap[18][18];
+	// -- TotalOutputChannel set by function
+	int m_lTotalOutputChannel;
+	// TotalInputChannel-1 | TotalOutputChannel - 1 | OutputChannelID | LevelOfEachChannel  range : -0.0 - 2.0f+/-
+	float m_pChannelNormalize2[MAX_INPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_NORMALIZE_CHANNELS];
+	
 	
 	bool m_fDownSampleTo441;
 	REFERENCE_TIME m_rtAudioTimeShift;
@@ -87,8 +94,8 @@ public:
 
 	// IAudioSwitcherFilter
 	STDMETHODIMP GetInputSpeakerConfig(DWORD* pdwChannelMask);
-    STDMETHODIMP GetSpeakerConfig(bool* pfCustomChannelMapping, DWORD pSpeakerToChannelMap[18][18]);
-    STDMETHODIMP SetSpeakerConfig(bool fCustomChannelMapping, DWORD pSpeakerToChannelMap[18][18]);
+    //STDMETHODIMP GetSpeakerConfig(bool* pfCustomChannelMapping, DWORD pSpeakerToChannelMap[18][18]);
+    //STDMETHODIMP SetSpeakerConfig(bool fCustomChannelMapping, DWORD pSpeakerToChannelMap[18][18]);
     STDMETHODIMP_(int) GetNumberOfInputChannels();
 	STDMETHODIMP_(bool) IsDownSamplingTo441Enabled();
 	STDMETHODIMP EnableDownSamplingTo441(bool fEnable);
@@ -98,8 +105,8 @@ public:
 	STDMETHODIMP SetNormalizeBoost(bool fNormalize, bool fNormalizeRecover, float boost);
 	STDMETHODIMP ResetAudioSwitch();
 
-	STDMETHODIMP SetChannelNormalizeBoost (float pChannelNormalize[18][18]);
-	STDMETHODIMP GetChannelNormalizeBoost (float pChannelNormalize[18][18]);
+	STDMETHODIMP GetSpeakerChannelConfig (int *plTotalOutputChannel , float pChannelNormalize[MAX_INPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_NORMALIZE_CHANNELS]);
+	STDMETHODIMP SetSpeakerChannelConfig (int lTotalOutputChannel , float pChannelNormalize[MAX_INPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_NORMALIZE_CHANNELS]);
 
 	// IAMStreamSelect
 	STDMETHODIMP Enable(long lIndex, DWORD dwFlags);

@@ -2674,8 +2674,8 @@ void CMPlayerCApp::Settings::InitChannelMap()
 	memset(pSpeakerToChannelMap2, 0 , sizeof(pSpeakerToChannelMap2));
 
 	//5.1 => 2.0
-	INITDBARR( pSpeakerToChannelMap2[5][1][0] , LEVEL_STANDARD,0,LEVEL_PLUS3DB,LEVEL_3DB,0,LEVEL_6DB );
-	INITDBARR( pSpeakerToChannelMap2[5][1][1] , 0,LEVEL_STANDARD,LEVEL_PLUS3DB,0,LEVEL_3DB,LEVEL_6DB );
+	INITDBARR( pSpeakerToChannelMap2[5][1][0] , LEVEL_3DB,0,LEVEL_PLUS3DB,LEVEL_45DB,0,LEVEL_6DB );
+	INITDBARR( pSpeakerToChannelMap2[5][1][1] , 0,LEVEL_3DB,LEVEL_PLUS3DB,0,LEVEL_45DB,LEVEL_6DB );
 }
 void CMPlayerCApp::Settings::ChangeChannelMapByOffset()
 {

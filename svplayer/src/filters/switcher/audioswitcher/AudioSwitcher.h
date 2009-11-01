@@ -50,6 +50,10 @@ class __declspec(uuid("18C16B08-6497-420e-AD14-22D21C2CEAB7")) CAudioSwitcherFil
 	//CAtlArray<ChMap> m_chs[18];
 
 	int m_fCustomChannelMapping2;
+	int m_lastInputChannelCount;
+	int m_lastOutputChannelCount;
+
+	float m_pCurrentChannelNormalize2[MAX_OUTPUT_CHANNELS][MAX_NORMALIZE_CHANNELS];
 	// -- DWORD m_pSpeakerToChannelMap[18][18];
 	// -- TotalOutputChannel set by function
 	int m_lTotalOutputChannel;

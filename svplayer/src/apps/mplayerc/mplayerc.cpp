@@ -2661,21 +2661,225 @@ void CMPlayerCApp::Settings::SetChannelMapByNumberOfSpeakers( int iSS , int iNum
 	
 }*/
 #define INITDBARR(d,...) { float x[] = { __VA_ARGS__ };memcpy(d,x,sizeof(x));delete x; }
+#define DEBUGVARFCMAP(x) 0
+//x
 
-
-#define LEVEL_PLUS6DB 2.0
-#define LEVEL_PLUS3DB 1.4142135623730951
-#define LEVEL_STANDARD 1.0
-#define LEVEL_3DB 0.7071067811865476
-#define LEVEL_45DB 0.5946035575013605
-#define LEVEL_6DB 0.5
 void CMPlayerCApp::Settings::InitChannelMap()
 {
 	memset(pSpeakerToChannelMap2, 0 , sizeof(pSpeakerToChannelMap2));
+	//CString szOut;
+	for(int iInputChannelCount = 1; iInputChannelCount <= MAX_INPUT_CHANNELS; iInputChannelCount++){
+		for(int iOutputChannelCount = 1; iOutputChannelCount <= MAX_OUTPUT_CHANNELS; iOutputChannelCount++){
+			if(iOutputChannelCount >= iInputChannelCount )
+				break;
 
+			//szOut.AppendFormat(_T("[%d] -> [%d] \r\n") , iInputChannelCount , iOutputChannelCount);
+			
+			for(int iSpeakerID = 0; iSpeakerID < iOutputChannelCount; iSpeakerID++){
+				//szOut.AppendFormat(_T("[%d] -> [%d] @ %d : { ") , iInputChannelCount , iOutputChannelCount , iSpeakerID);
+				CString szFloatList;
+				for(int iChannelID = 0; iChannelID < iInputChannelCount; iChannelID++){
+					float fTmpVal = 1.0;
+					if( iInputChannelCount > 2 && iChannelID < 2){	 // 前置左右声道
+						fTmpVal = 1.0;
+					}else if( iInputChannelCount > 4 && iChannelID == 2){ //中置声道
+						fTmpVal = 1.5;
+					}else if( iInputChannelCount > 5 && iChannelID == (iInputChannelCount - 1) ){ //重低音 降低
+						fTmpVal = 0.75;
+					}else if(iInputChannelCount > 2 && iChannelID >= 2){ //除中置 重低音外的声道
+						fTmpVal = 0.8;
+					}
+					if(iOutputChannelCount == 1){  //输出至单声道
+						fTmpVal = fTmpVal;
+					}else{  //输出双单声道
+						// iOutputChannelCount >= 2
+						int iRearOutputCount2 = iOutputChannelCount;
+						if(iOutputChannelCount > 5){
+							iRearOutputCount2--;
+						}
+						if(iRearOutputCount2 > 3 && (iRearOutputCount2%2)==0 ){
+							iRearOutputCount2--;
+						}
+
+						if( iInputChannelCount > 4 && iChannelID == 2){ //中置声道
+							
+							if( iOutputChannelCount <= 4  ){
+								if(iSpeakerID >= 2)
+									fTmpVal = DEBUGVARFCMAP(0.00118);
+
+							}else if(iOutputChannelCount > 4 ){
+								if(iSpeakerID != 2)
+									fTmpVal = DEBUGVARFCMAP(0.00116);
+							}
+						}else if( iChannelID < iRearOutputCount2 || (iInputChannelCount > 4 &&  iChannelID < iRearOutputCount2) ) { //输出声道足够时仅 1 1 映射
+							if( iInputChannelCount > 4 && iOutputChannelCount <= 4 && iSpeakerID >= 2){ //有中置
+								if(iChannelID != (iSpeakerID+1)){
+									fTmpVal = DEBUGVARFCMAP(0.00115);
+								}
+							}else if(iChannelID != iSpeakerID){
+								fTmpVal = DEBUGVARFCMAP(0.00112);
+							}
+						}else {//音源声道多于输出声道 
+							if(iOutputChannelCount > 5 && iSpeakerID < (iOutputChannelCount-1) && 
+								iInputChannelCount > 5 && iChannelID == (iInputChannelCount - 1)){ //输出有重低音且输入有重低音时
+								fTmpVal = DEBUGVARFCMAP(0.0004); //不映射重低音至非重低音音箱
+							}else if( iInputChannelCount > 4 && iChannelID == 2){ //有中置声道音源
+								if( iOutputChannelCount == 4 ){ // 没有中置音箱时不映射到后置音箱
+									if(iSpeakerID >= 2)
+										fTmpVal = DEBUGVARFCMAP(0.0002);
+								}else if( iOutputChannelCount > 4 && iSpeakerID >= 3 ){ // 有中置音箱时不映射到后置音箱
+									fTmpVal = DEBUGVARFCMAP(0.0001);
+								}
+								
+							}else if( iInputChannelCount > 5 && iChannelID == (iInputChannelCount-1) ){  //有重低音音源
+								if(iOutputChannelCount > 5 && iSpeakerID == (iOutputChannelCount-1)){ //以1:1能量输出至重低音音箱
+									fTmpVal = 1.0;
+								}
+							}else{
+								int iRearInputCount = iInputChannelCount; //这段是取最后2个非中置非重低音音箱和声源声道ID的部分
+								int iRearOutputCount = iOutputChannelCount;
+								if(iInputChannelCount >= 5){
+									iRearInputCount--;
+								}
+								if(iInputChannelCount > 5){
+									iRearInputCount--;
+								}
+								if(iOutputChannelCount >= 5){
+									iRearOutputCount--;
+								}
+								if(iOutputChannelCount > 5){
+									iRearOutputCount--;
+								}
+								int iRearInputEnd = iInputChannelCount - 1;
+								if(iInputChannelCount > 5){
+									iRearInputEnd--;
+								}
+								if(iInputChannelCount >= 5){
+									if(iRearInputEnd == 2){
+										iRearInputEnd--;
+									}
+								}
+								int iRearInputEnd2 = iRearInputEnd-1;
+								if(iInputChannelCount >= 5){
+									if(iRearInputEnd2 == 2){
+										iRearInputEnd2--;
+									}
+								}
+
+								int iRearOuputEnd = iOutputChannelCount - 1;
+								if(iOutputChannelCount > 5){
+									iRearOuputEnd--;
+								}
+								if(iOutputChannelCount >= 5){
+									if(iRearOuputEnd == 2){
+										iRearOuputEnd--;
+									}
+								}
+								int iRearOuputEnd2 = iRearOuputEnd - 1;
+								if(iOutputChannelCount >= 5){
+									if(iRearOuputEnd2 == 2){
+										iRearOuputEnd2--;
+									}
+								}
+
+								BOOL bPass = false;
+								
+								if( (iRearOutputCount%2) && (iRearInputCount%2) == 0 ){ //如果后置音箱有单数
+									//将最后2个音源映射到 最后一个音箱, 而且不映射到别的地方
+									
+									if(  iChannelID == iRearInputEnd || iChannelID == iRearInputEnd2) {
+										bPass = true;
+										if(iSpeakerID == iRearOuputEnd){
+											//pass
+											//fTmpVal = 0.576;
+										}else{
+											fTmpVal = DEBUGVARFCMAP(0.00224);
+										}
+										
+									}
+									
+								}else if( (iRearOutputCount%2) == 0 && (iRearInputCount%2)  ){//如果后置音源有单数，
+									//将最后1个音源映射到 最后2个音箱, 而且不映射到别的地方
+									
+									if( iChannelID == iRearInputEnd  ){
+										bPass = true;
+										if(( iSpeakerID == iRearOuputEnd || iSpeakerID == iRearOuputEnd2)){
+											//pass
+											//fTmpVal = 0.576;
+										}else{
+											fTmpVal = DEBUGVARFCMAP(0.00223);
+										}
+									}
+									
+								}
+								
+								if(!bPass){
+									if(iInputChannelCount >= 5){ //音源有中置音源
+										if(iOutputChannelCount >= 5){//音箱有中置音箱
+												int iWhereitShoulbe = iChannelID;
+												while(iWhereitShoulbe > iRearOuputEnd){
+													iWhereitShoulbe-=2;
+												}
+											
+												if(iWhereitShoulbe != (iSpeakerID)){  //channel 3 => 0
+													fTmpVal = DEBUGVARFCMAP(0.0011);
+												}
+											
+										}else{//音箱没有中置音箱输出
+											int iWhereitShoulbe = -1;
+											if(iOutputChannelCount == 3){ //单数
+												iWhereitShoulbe = 2;
+											}else if(iOutputChannelCount == 4){
+												if(iChannelID > 2){
+													iWhereitShoulbe = (iChannelID-3)%2 + 2;
+												}else{
+													iWhereitShoulbe = iChannelID;
+												}
+
+											}else if(iOutputChannelCount == 2){
+												if(iChannelID > 2){
+													iWhereitShoulbe = (iChannelID-3)%2 ;
+												}else{
+													iWhereitShoulbe = iChannelID;
+												}
+											}
+											
+
+											if( iWhereitShoulbe != iSpeakerID){  //channel 3 => 0
+												fTmpVal = DEBUGVARFCMAP(0.0023);
+											}
+										}
+									}else{
+										if( (iChannelID%iOutputChannelCount) != iSpeakerID){  // channel 2 => 0
+											fTmpVal = DEBUGVARFCMAP(0.0022);
+										}
+									}
+								}
+
+							}
+							
+						}
+
+						//default
+					}
+					
+					pSpeakerToChannelMap2[iInputChannelCount-1][iOutputChannelCount-1][iSpeakerID][iChannelID] = fTmpVal;
+				}
+				//for(int iChannelID = 0; iChannelID < iInputChannelCount; iChannelID++){
+				//	szFloatList.AppendFormat(_T(" %f ,"), pSpeakerToChannelMap2[iInputChannelCount-1][iOutputChannelCount-1][iSpeakerID][iChannelID]);
+				//}
+				//szOut += szFloatList.TrimRight(_T(",")) + _T(" } \r\n");
+			}
+			//szOut += _T("\r\n");
+		}
+	}
+
+	//CSVPToolBox svpTool;
+	//svpTool.filePutContent( svpTool.GetPlayerPath(_T("ChannelSetting.txt")),  szOut);
+		
 	//5.1 => 2.0
-	INITDBARR( pSpeakerToChannelMap2[5][1][0] , LEVEL_3DB,0,LEVEL_PLUS3DB,LEVEL_45DB,0,LEVEL_6DB );
-	INITDBARR( pSpeakerToChannelMap2[5][1][1] , 0,LEVEL_3DB,LEVEL_PLUS3DB,0,LEVEL_45DB,LEVEL_6DB );
+	//INITDBARR( pSpeakerToChannelMap2[5][1][0] , LEVEL_3DB,0,LEVEL_PLUS3DB,LEVEL_45DB,0,LEVEL_6DB );
+	//INITDBARR( pSpeakerToChannelMap2[5][1][1] , 0,LEVEL_3DB,LEVEL_PLUS3DB,0,LEVEL_45DB,LEVEL_6DB );
 }
 void CMPlayerCApp::Settings::ChangeChannelMapByOffset()
 {

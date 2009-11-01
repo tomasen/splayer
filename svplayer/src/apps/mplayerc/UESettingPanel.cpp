@@ -774,12 +774,14 @@ HRESULT CUESettingPanel::OnButtonUseExtCodec(IHTMLElement* /*pElement*/)
 }
 HRESULT CUESettingPanel::OnButtonAudioChannelMapping(IHTMLElement* /*pElement*/)
 {
+	/*
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CAutoPtr<CPPageAudioSwitcher> page(new CPPageAudioSwitcher(pFrame->pGB));
 	CPropertySheet dlg(ResStr(IDS_DIALOG_EXTERNAL_AUDIO_CHANNEL_MAPPING), this);
 	dlg.AddPage(page);
 	dlg.DoModal() ;
-
+	*/
+	
 	return S_OK;
 }
 HRESULT CUESettingPanel::OnButtonApply(IHTMLElement* /*pElement*/)

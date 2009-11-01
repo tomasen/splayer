@@ -102,6 +102,8 @@ CAudioSwitcherFilter::CAudioSwitcherFilter(LPUNKNOWN lpunk, HRESULT* phr)
 	, m_l_number_of_channels(-1)
 	, m_bNoMoreCheckConnection(0)
 	, m_lTotalOutputChannel(2)
+	, m_lastInputChannelCount(-1)
+	, m_lastOutputChannelCount(-1)
 {
 	//memset(m_pSpeakerToChannelMap, 0, sizeof(m_pSpeakerToChannelMap));
 	memset(m_pChannelNormalize2, 0, sizeof(m_pChannelNormalize2));
@@ -328,6 +330,27 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 
 	if( m_fCustomChannelMapping2 )
 	{
+		if(m_lastInputChannelCount != lTotalInputChannels || m_lastOutputChannelCount != lTotalOutputChannels ){
+
+			memset(m_pCurrentChannelNormalize2, 0, sizeof(m_pCurrentChannelNormalize2));
+
+			for(int iSpeakerID = 0; iSpeakerID < lTotalOutputChannels; iSpeakerID++)
+			{
+				float countBase = 0;
+				for(int iChannelID = 0; iChannelID < lTotalInputChannels; iChannelID++){
+					if(m_pChannelNormalize2[lTotalInputChannels-1][lTotalOutputChannels-1][iSpeakerID][iChannelID] > 0){
+						countBase++;
+					}
+				}
+				if(countBase > 0){
+					for(int iChannelID = 0; iChannelID < lTotalInputChannels; iChannelID++){
+						m_pCurrentChannelNormalize2[iSpeakerID][iChannelID] = m_pChannelNormalize2[lTotalInputChannels-1][lTotalOutputChannels-1][iSpeakerID][iChannelID] / countBase;
+					}
+				}
+			}
+			m_lastInputChannelCount = lTotalInputChannels;
+			m_lastOutputChannelCount = lTotalOutputChannels;
+		}
 		//SVP_LogMsg5(L"m_fCustomChannelMapping2 %d ",m_fCustomChannelMapping2);
 			{
 				for(int i = 0; i < wfeout->nChannels; i++)
@@ -344,21 +367,21 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 						case WETYPE_PCM8:
 							for(int k = 0; k < len; k++, src += srcstep, dst += dststep)
 							{
-								mix<unsigned char, INT64, 0, UCHAR_MAX>(m_pChannelNormalize2[lTotalInputChannels-1][lTotalOutputChannels-1][i]
+								mix<unsigned char, INT64, 0, UCHAR_MAX>(m_pCurrentChannelNormalize2[i]
 									, wfe->nChannels, bps, src, dst);
 							}
 							break;
 						case WETYPE_PCM16:
 							for(int k = 0; k < len; k++, src += srcstep, dst += dststep)
 							{
-								mix<short, INT64, SHRT_MIN, SHRT_MAX>(m_pChannelNormalize2[lTotalInputChannels-1][lTotalOutputChannels-1][i],
+								mix<short, INT64, SHRT_MIN, SHRT_MAX>(m_pCurrentChannelNormalize2[i],
 									wfe->nChannels, bps, src, dst);
 							}
 							break;
 						case WETYPE_PCM24:
 							for(int k = 0; k < len; k++, src += srcstep, dst += dststep)
 							{
-								mix<int, INT64, (-1<<24), (+1<<24)-1>(m_pChannelNormalize2[lTotalInputChannels-1][lTotalOutputChannels-1][i],
+								mix<int, INT64, (-1<<24), (+1<<24)-1>(m_pCurrentChannelNormalize2[i],
 									 wfe->nChannels, bps, src, dst);
 							}
 							break;
@@ -366,21 +389,21 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 
 							for(int k = 0; k < len; k++, src += srcstep, dst += dststep)
 							{
-								mix<int, __int64, INT_MIN, INT_MAX>(m_pChannelNormalize2[lTotalInputChannels-1][lTotalOutputChannels-1][i],
+								mix<int, __int64, INT_MIN, INT_MAX>(m_pCurrentChannelNormalize2[i],
 									wfe->nChannels, bps, src, dst);
 							}
 							break;
 						case WETYPE_FPCM32:
 							for(int k = 0; k < len; k++, src += srcstep, dst += dststep)
 							{
-								mix<float, double, -1, 1>(m_pChannelNormalize2[lTotalInputChannels-1][lTotalOutputChannels-1][i],
+								mix<float, double, -1, 1>(m_pCurrentChannelNormalize2[i],
 									wfe->nChannels, bps, src, dst);
 							}
 							break;
 						case WETYPE_FPCM64:
 							for(int k = 0; k < len; k++, src += srcstep, dst += dststep)
 							{
-								mix<double, double, -1, 1>(m_pChannelNormalize2[lTotalInputChannels-1][lTotalOutputChannels-1][i],
+								mix<double, double, -1, 1>(m_pCurrentChannelNormalize2[i],
 									wfe->nChannels, bps, src, dst);
 							}
 							break;

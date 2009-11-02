@@ -339,12 +339,12 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 				float countBase = 0;
 				for(int iChannelID = 0; iChannelID < lTotalInputChannels; iChannelID++){
 					if(m_pChannelNormalize2[lTotalInputChannels-1][lTotalOutputChannels-1][iSpeakerID][iChannelID] > 0){
-						countBase++;
+						countBase+=0.5;
 					}
 				}
 				if(countBase > 0){
 					for(int iChannelID = 0; iChannelID < lTotalInputChannels; iChannelID++){
-						m_pCurrentChannelNormalize2[iSpeakerID][iChannelID] = m_pChannelNormalize2[lTotalInputChannels-1][lTotalOutputChannels-1][iSpeakerID][iChannelID] / (countBase/2);
+						m_pCurrentChannelNormalize2[iSpeakerID][iChannelID] = m_pChannelNormalize2[lTotalInputChannels-1][lTotalOutputChannels-1][iSpeakerID][iChannelID] / countBase;
 					}
 				}
 			}

@@ -2685,13 +2685,13 @@ void CMPlayerCApp::Settings::InitChannelMap()
 				for(int iChannelID = 0; iChannelID < iInputChannelCount; iChannelID++){
 					float fTmpVal = 1.0;
 					if( iInputChannelCount > 2 && iChannelID < 2){	 // 前置左右声道
-						fTmpVal = LEVEL_PLUS3DB;
+						fTmpVal = 1.0;
 					}else if( iInputChannelCount > 4 && iChannelID == 2){ //中置声道
 						fTmpVal = LEVEL_PLUS6DB;
 					}else if( iInputChannelCount > 5 && iChannelID == (iInputChannelCount - 1) ){ //重低音 降低
-						fTmpVal = 1.0;
+						fTmpVal = 0.9;
 					}else if(iInputChannelCount > 2 && iChannelID >= 2){ //除中置 重低音外的声道
-						fTmpVal = 1.0;
+						fTmpVal = 0.9;
 					}
 					if(iOutputChannelCount == 1){  //输出至单声道
 						fTmpVal = fTmpVal;

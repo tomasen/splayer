@@ -2663,7 +2663,11 @@ void CMPlayerCApp::Settings::SetChannelMapByNumberOfSpeakers( int iSS , int iNum
 #define INITDBARR(d,...) { float x[] = { __VA_ARGS__ };memcpy(d,x,sizeof(x));delete x; }
 #define DEBUGVARFCMAP(x) 0
 //x
-
+#define LEVEL_PLUS6DB 2.0
+#define LEVEL_PLUS3DB 1.4142135623730951
+#define LEVEL_3DB 0.7071067811865476
+#define LEVEL_45DB 0.5946035575013605
+#define LEVEL_6DB 0.5
 void CMPlayerCApp::Settings::InitChannelMap()
 {
 	memset(pSpeakerToChannelMap2, 0 , sizeof(pSpeakerToChannelMap2));
@@ -2681,13 +2685,13 @@ void CMPlayerCApp::Settings::InitChannelMap()
 				for(int iChannelID = 0; iChannelID < iInputChannelCount; iChannelID++){
 					float fTmpVal = 1.0;
 					if( iInputChannelCount > 2 && iChannelID < 2){	 // 前置左右声道
-						fTmpVal = 1.0;
+						fTmpVal = LEVEL_PLUS3DB;
 					}else if( iInputChannelCount > 4 && iChannelID == 2){ //中置声道
-						fTmpVal = 1.5;
+						fTmpVal = LEVEL_PLUS6DB;
 					}else if( iInputChannelCount > 5 && iChannelID == (iInputChannelCount - 1) ){ //重低音 降低
-						fTmpVal = 0.75;
+						fTmpVal = 1.0;
 					}else if(iInputChannelCount > 2 && iChannelID >= 2){ //除中置 重低音外的声道
-						fTmpVal = 0.8;
+						fTmpVal = 1.0;
 					}
 					if(iOutputChannelCount == 1){  //输出至单声道
 						fTmpVal = fTmpVal;

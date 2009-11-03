@@ -11,6 +11,7 @@
 IMPLEMENT_DYNAMIC(CSVPStatic, CStatic)
 
 CSVPStatic::CSVPStatic()
+: m_dwAlign(DT_LEFT)
 {
 	AppSettings& s = AfxGetAppSettings();
 	m_textColor = s.GetColorFromTheme(_T("FloatDialogButtonTextColor"), 0xffffff);
@@ -68,7 +69,7 @@ void CSVPStatic::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	COLORREF crOldColor = ::SetTextColor(lpDrawItemStruct->hDC, m_textColor);
 	::SetBkMode( lpDrawItemStruct->hDC, TRANSPARENT);
 	::DrawText(lpDrawItemStruct->hDC, strText, strText.GetLength(), 
-		&lpDrawItemStruct->rcItem, DT_SINGLELINE|DT_VCENTER|DT_LEFT);
+		&lpDrawItemStruct->rcItem, DT_SINGLELINE|DT_VCENTER|m_dwAlign);
 	::SetTextColor(lpDrawItemStruct->hDC, crOldColor);
 
 }

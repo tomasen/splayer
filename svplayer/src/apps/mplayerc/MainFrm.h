@@ -680,6 +680,8 @@ public:
 	afx_msg void OnUpdateFileSaveImage(CCmdUI* pCmdUI);
 	afx_msg void OnFileSaveThumbnails();
 	afx_msg void OnUpdateFileSaveThumbnails(CCmdUI* pCmdUI);
+	afx_msg void OnShowEQControl();
+	afx_msg void OnShowChannelControl();
 	afx_msg void OnFileConvert();
 	afx_msg void OnUpdateFileConvert(CCmdUI* pCmdUI);
 	afx_msg void OnFileLoadsubtitle();
@@ -883,6 +885,7 @@ public:
 	LRESULT OnNcHitTestNewUI(  WPARAM wParam, LPARAM lParam);
 	LRESULT OnNcCalcSizeNewUI(  WPARAM wParam, LPARAM lParam);
 	LRESULT OnStatusMessage(  WPARAM wParam, LPARAM lParam);
+	LRESULT OnSuggestVolume(  WPARAM wParam, LPARAM lParam);
 	LRESULT OnImeSetContext(  WPARAM wParam, LPARAM lParam);
 	
 

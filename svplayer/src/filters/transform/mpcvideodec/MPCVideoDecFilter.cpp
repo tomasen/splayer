@@ -1095,7 +1095,7 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 				}
 
 				if(osd_msg.IsEmpty()){
-					AfxGetMainWnd()->SendMessage(ID_STATUS_MESSAGE, (UINT_PTR)osd_msg.GetBuffer(), 3000); 
+					AfxGetMainWnd()->SendMessage(WM_USER+31, (UINT_PTR)osd_msg.GetBuffer(), 3000); 
 					osd_msg.ReleaseBuffer();
 				}
 				
@@ -1129,7 +1129,7 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 			}
 
 			if(osd_msg.IsEmpty()){
-				AfxGetMainWnd()->SendMessage(ID_STATUS_MESSAGE, (UINT_PTR)osd_msg.GetBuffer(), 3000); 
+				AfxGetMainWnd()->SendMessage(WM_USER+31, (UINT_PTR)osd_msg.GetBuffer(), 3000); 
 				osd_msg.ReleaseBuffer();
 			}
 

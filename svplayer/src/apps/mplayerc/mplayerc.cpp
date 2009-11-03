@@ -2888,20 +2888,8 @@ void CMPlayerCApp::Settings::InitChannelMap()
 void CMPlayerCApp::Settings::ChangeChannelMapByOffset()
 {
 	return;
-	for(int i = 1; i < MAX_INPUT_CHANNELS; i++){
-		for(int j = 0; j < MAX_OUTPUT_CHANNELS; j++){
-			for(int k = 0; k < MAX_OUTPUT_CHANNELS; k++){
-				for(int n = 0; n < MAX_NORMALIZE_CHANNELS; n++){
-					if(pSpeakerToChannelMap2[i][j][k][n] > 0 ){
-						pSpeakerToChannelMap2[i][j][k][n] += pSpeakerToChannelMapOffset[i][j][k][n];
-					}
-					if(pSpeakerToChannelMap2[i][j][k][n] < 0){
-						pSpeakerToChannelMap2[i][j][k][n] = 0;
-					}
-				}
-			}
-		}
-	}
+	
+	
 }
 CString CMPlayerCApp::Settings::GetSVPSubStorePath(){
 	CString StoreDir = SVPSubStoreDir;

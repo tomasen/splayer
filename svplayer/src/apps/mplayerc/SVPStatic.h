@@ -10,7 +10,7 @@ class CSVPStatic : public CStatic
 public:
 	CSVPStatic();
 	virtual ~CSVPStatic();
-
+	DWORD m_dwAlign;
 	DWORD m_bgColor, m_textColor;
 protected:
 	DECLARE_MESSAGE_MAP()

@@ -59,6 +59,27 @@ void CPlayerEQControlBar::OnSize(UINT nType, int cx, int cy)
 	Relayout();
 }
 
+bool CPlayerEQControlBar::InitSettings()
+{
+
+	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
+	if(pFrame ){
+		m_nLogDPIY = pFrame->m_nLogDPIY;
+		if( pFrame->IsSomethingLoaded()){
+			m_pASF = FindFilter(__uuidof(CAudioSwitcherFilter), pFrame->pGB);
+
+		}
+
+	}
+	Relayout();
+	return false;
+}
+CSize CPlayerEQControlBar::getSizeOfWnd()
+{
+
+	return CSize( (5+ 25*MAX_EQ_BRAND) * m_nLogDPIY / 96 , 120 * m_nLogDPIY / 96 );
+
+}
 void CPlayerEQControlBar::Relayout()
 {
 

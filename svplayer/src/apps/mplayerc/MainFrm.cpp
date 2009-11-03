@@ -185,7 +185,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_WM_MEASUREITEM()  
 	/*NEW UI END*/
 
-	ON_MESSAGE(ID_STATUS_MESSAGE, OnStatusMessage)
+	ON_MESSAGE(WM_USER+31, OnStatusMessage)
+	ON_MESSAGE(WM_USER+32, OnSuggestVolume)
 
 	ON_MESSAGE(WM_IME_SETCONTEXT, OnImeSetContext)
 
@@ -278,6 +279,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI(ID_FILE_SAVE_IMAGE_AUTO, OnUpdateFileSaveImage)
 	ON_COMMAND(ID_FILE_SAVE_THUMBNAILS, OnFileSaveThumbnails)
 	ON_UPDATE_COMMAND_UI(ID_FILE_SAVE_THUMBNAILS, OnUpdateFileSaveThumbnails)
+	ON_COMMAND(IDS_SHOW_AUDIO_EQ_CONTROL, OnShowEQControl)
+	ON_COMMAND(IDS_SHOW_AUDIO_CHANNEL_CONTROL, OnShowChannelControl)
 	ON_COMMAND(ID_FILE_CONVERT, OnFileConvert)
 	ON_UPDATE_COMMAND_UI(ID_FILE_CONVERT, OnUpdateFileConvert)
 	ON_COMMAND(ID_FILE_LOAD_SUBTITLE, OnFileLoadsubtitle)
@@ -1447,6 +1450,11 @@ LRESULT CMainFrame::OnNcActivate( WPARAM wParam, LPARAM lParam)
 		return TRUE;
 	}
 	
+}
+LRESULT CMainFrame::OnSuggestVolume(  WPARAM wParam, LPARAM lParam){
+	//TODO
+
+	return S_OK;
 }
 static LONGLONG m_lastTimeToggleFullsreen = 0;
 LRESULT CMainFrame::OnStatusMessage(  WPARAM wParam, LPARAM lParam){
@@ -6356,6 +6364,26 @@ void CMainFrame::OnUpdateFileSaveThumbnails(CCmdUI* pCmdUI)
 	OAFilterState fs = GetMediaState();
 	pCmdUI->Enable(m_iMediaLoadState == MLS_LOADED && !m_fAudioOnly && (m_iPlaybackMode == PM_FILE /*|| m_iPlaybackMode == PM_DVD*/));
 }
+void CMainFrame::OnShowEQControl()
+{
+	
+	SendStatusMessage(_T("havn't finished"),4000);
+}
+void CMainFrame::OnShowChannelControl()
+{
+
+	if(m_iMediaLoadState == MLS_LOADED)
+	{
+		m_wndChannelNormalizerBar.InitChannels();
+		m_wndChannelNormalizerBar.ShowWindow(SW_SHOWNOACTIVATE);
+		rePosOSD();
+	}else{
+
+		SendStatusMessage(ResStr(IDS_OSD_MSG_ONLY_WORK_WHEN_AUDIO_LOADED),4000);
+
+	}
+	
+}
 
 void CMainFrame::OnFileConvert()
 {
@@ -9765,14 +9793,16 @@ void CMainFrame::rePosOSD(){
 		}
 		if(m_wndChannelNormalizerBar.IsWindowVisible() ){
 			rcRightBottomWnd.bottom -= 5;
-			rcRightBottomWnd.top += rcRightBottomWnd.bottom - 120 * m_nLogDPIY / 96;
-			rcRightBottomWnd.left = rcRightBottomWnd.right - 320  * m_nLogDPIY / 96;
-			m_wndChannelNormalizerBar.MoveWindow(rcRightTopWnd);
+			CSize sizeOfCNWnd = m_wndChannelNormalizerBar.getSizeOfWnd();
+			rcRightBottomWnd.top = rcRightBottomWnd.bottom - sizeOfCNWnd.cy  ;
+			rcRightBottomWnd.left = rcRightBottomWnd.right - sizeOfCNWnd.cx ;
+			m_wndChannelNormalizerBar.MoveWindow(rcRightBottomWnd);
 		} else if(m_wndPlayerEQControlBar.IsWindowVisible() ){
 			rcRightBottomWnd.bottom -= 5;
-			rcRightBottomWnd.top += rcRightBottomWnd.bottom - 120 * m_nLogDPIY / 96;
-			rcRightBottomWnd.left = rcRightBottomWnd.right - 220  * m_nLogDPIY / 96;
-			m_wndPlayerEQControlBar.MoveWindow(rcRightTopWnd);
+			CSize sizeOfCNWnd = m_wndPlayerEQControlBar.getSizeOfWnd();
+			rcRightBottomWnd.top = rcRightBottomWnd.bottom -  sizeOfCNWnd.cy;
+			rcRightBottomWnd.left = rcRightBottomWnd.right - sizeOfCNWnd.cx;
+			m_wndPlayerEQControlBar.MoveWindow(rcRightBottomWnd);
 		} 
 
 		AppSettings& s = AfxGetAppSettings();
@@ -12509,7 +12539,7 @@ void CMainFrame::SetupAudioSwitcherSubMenu()
 			DWORD cStreams = 0;
 			if(SUCCEEDED(pSS->Count(&cStreams)) && cStreams > 0)
 			{
-				pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, id++, ResStr(IDS_MENU_ITEM_SETTING));
+				pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, id++, ResStr(IDS_MENU_ITEM_AUDIO_SETTING));
 				pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED);
 
 				for(int i = 0; i < (int)cStreams; i++)
@@ -12595,7 +12625,7 @@ void CMainFrame::SetupAudioSwitcherSubMenu()
 							name.Replace(_T("English"), ResStr(IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_ENGLISH));
 							CString szLog;
 							szLog.Format(L" Audio Menu %d %s", idl, name);
-							SVP_LogMsg(szLog);
+							//SVP_LogMsg(szLog);
 							pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, idl, name) ;
 							
 						}
@@ -12613,6 +12643,11 @@ void CMainFrame::SetupAudioSwitcherSubMenu()
 			EndEnumFilters
 		}
 	}
+
+	pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_SHOW_AUDIO_EQ_CONTROL , ResStr(IDS_MENU_ITEM_AUDIO_EQ_CONTROL));
+	pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_SHOW_AUDIO_CHANNEL_CONTROL, ResStr(IDS_MENU_ITEM_AUDIO_CHANNEL_CONTROL));
+	pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED);
+
 }
 void CMainFrame::OnAudioChannalMapMenu(UINT nID){
 	CComQIPtr<IAudioSwitcherFilter>  pSS = FindFilter(__uuidof(CAudioSwitcherFilter), pGB);
@@ -12625,47 +12660,10 @@ void CMainFrame::OnAudioChannalMapMenu(UINT nID){
 		m_iAudioChannelMaping = nID - IDS_AUDIOCHANNALMAPNORMAL;
 		if(pSS)
 		{
-			if(m_iAudioChannelMaping == 0)
-			{
-				//Normal
-				pSS->SetSpeakerChannelConfig(AfxGetMyApp()->GetNumberOfSpeakers(), s.pSpeakerToChannelMap2);
-			}else{
-
-				float pSpeakerToChannelMapTmp[MAX_INPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_NORMALIZE_CHANNELS]; 
-				memcpy(pSpeakerToChannelMapTmp, s.pSpeakerToChannelMap2, sizeof(pSpeakerToChannelMapTmp));
-				
-				for(int i = 1; i < MAX_INPUT_CHANNELS; i++){
-					for(int j = 0; j < MAX_OUTPUT_CHANNELS; j++){
-						for(int k = 0; k < 2; k++){
-							if(m_iAudioChannelMaping == 3){
-								pSpeakerToChannelMapTmp[i][j][k][2] = 0.7;
-								continue;
-							}
-							for(int n = 0; n < 2; n++){
-								if(m_iAudioChannelMaping == 1){
-									//left
-									if(n == 0){
-										pSpeakerToChannelMapTmp[i][j][k][n] = 0.5;
-									}else{
-										pSpeakerToChannelMapTmp[i][j][k][n] = 0;
-									}
-								}
-								else if(m_iAudioChannelMaping == 2)
-								{
-									//right
-									if(n == 0){
-										pSpeakerToChannelMapTmp[i][j][k][n] = 0;
-									}else{
-										pSpeakerToChannelMapTmp[i][j][k][n] = 0.5;
-									}
-								}
-							}
-						}
-					}
-				}
-				pSS->SetSpeakerChannelConfig(AfxGetMyApp()->GetNumberOfSpeakers(), pSpeakerToChannelMapTmp);
-			}
+			//Normal
+			pSS->SetSpeakerChannelConfig(AfxGetMyApp()->GetNumberOfSpeakers(), s.pSpeakerToChannelMap2, s.pSpeakerToChannelMapOffset , m_iAudioChannelMaping%4);
 			
+			SendStatusMessage(ResStr(IDS_OSD_MSG_CHANGING_CHANNAL_MAPING_LEFT_RIGHT_CENTER), 3000);
 		}
 		/*DWORD pSpeakerToChannelMap[18][18]; //Meaning [Total Channel Number] [Speaker] = 1 << Channel
 		memset(pSpeakerToChannelMap, 0, sizeof(pSpeakerToChannelMap));
@@ -12728,7 +12726,7 @@ void CMainFrame::OnUpdateChannalMapMenu(CCmdUI *pCmdUI){
 
 }
 void CMainFrame::SetupSubMenuToolbar(){
-	CMenu* pSubMenu;
+//	CMenu* pSubMenu;
 	CMenu* pSub = &m_subtoolmenu;
 	if(!IsMenu(pSub->m_hMenu)) pSub->CreatePopupMenu();
 	else while(pSub->RemoveMenu(0, MF_BYPOSITION));
@@ -16259,7 +16257,7 @@ void CMainFrame::OnUpdateLanguage(CCmdUI* pCmdUI)
 afx_msg void CMainFrame::OnLanguage(UINT nID)
 {
 	CMenu	DefaultMenu;
-	CMenu*	OldMenu;
+//	CMenu*	OldMenu;
 
 	AfxGetMyApp()->SetLanguage (nID - ID_LANGUAGE_CHINESE_SIMPLIFIED);
 

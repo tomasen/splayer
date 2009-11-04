@@ -1451,11 +1451,7 @@ LRESULT CMainFrame::OnNcActivate( WPARAM wParam, LPARAM lParam)
 	}
 	
 }
-LRESULT CMainFrame::OnSuggestVolume(  WPARAM wParam, LPARAM lParam){
-	//TODO
 
-	return S_OK;
-}
 static LONGLONG m_lastTimeToggleFullsreen = 0;
 LRESULT CMainFrame::OnStatusMessage(  WPARAM wParam, LPARAM lParam){
 
@@ -8488,7 +8484,27 @@ void CMainFrame::OnUpdatePlayLanguage(CCmdUI* pCmdUI)
 	else if(flags&AMSTREAMSELECTINFO_ENABLED) pCmdUI->SetCheck(TRUE);	
 	else pCmdUI->SetCheck(FALSE);
 }
+LRESULT CMainFrame::OnSuggestVolume(  WPARAM wParam, LPARAM lParam){
+	//TODO
 
+	AppSettings& s = AfxGetAppSettings();
+	double f_suggest_vol = *(double*)wParam;
+	int iVol = 90;
+	if(f_suggest_vol <= 4){
+		iVol = 70;
+	}
+	m_wndToolBar.m_volctrl.SetPos(iVol);
+
+	s.AudioBoost = 1;
+	
+	CString szStat;
+	szStat.Format(ResStr(IDS_OSD_MSG_SUGGEST_VOLUME_CHANGED) , iVol  );// + L" %f"
+	SendStatusMessage(szStat , 2000);
+
+	OnPlayVolume(113);
+
+	return S_OK;
+}
 void CMainFrame::OnPlayVolume(UINT nID)
 {
 	AppSettings& s = AfxGetAppSettings();
@@ -8506,8 +8522,11 @@ void CMainFrame::OnPlayVolume(UINT nID)
 			iPlayerVol = 100 +  ( iPlayerVol - 100) * 900/ 20;
 
 		if(iPlayerVol > 1000) {iPlayerVol = 1000;}
-		szStat.Format(ResStr(IDS_OSD_MSG_VOLUME_CHANGED) , iPlayerVol );
-		SendStatusMessage(szStat , 2000);
+		if(nID != 113){
+			szStat.Format(ResStr(IDS_OSD_MSG_VOLUME_CHANGED) , iPlayerVol );
+			SendStatusMessage(szStat , 2000);
+		}
+		
 	}
 	if(m_iMediaLoadState == MLS_LOADED) 
 	{

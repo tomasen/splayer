@@ -38,6 +38,8 @@
 #include "..\..\..\apps\mplayerc\mplayerc.h"
 
 //#define TRACE SVP_LogMsg5
+
+
 #ifdef REGISTER_FILTER
 
 const AMOVIESETUP_MEDIATYPE sudPinTypesIn[] =
@@ -105,6 +107,7 @@ CAudioSwitcherFilter::CAudioSwitcherFilter(LPUNKNOWN lpunk, HRESULT* phr)
 	, m_lastInputChannelCount(-1)
 	, m_lastOutputChannelCount(-1)
 	, m_iSimpleSwitch(-1)
+	, m_fVolSuggested(0)
 {
 	//memset(m_pSpeakerToChannelMap, 0, sizeof(m_pSpeakerToChannelMap));
 	memset(m_pChannelNormalize2, 0, sizeof(m_pChannelNormalize2));
@@ -298,7 +301,7 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 	int lTotalOutputChannels =  wfeout->nChannels;
 	
 	if(m_fCustomChannelMapping2 < 0 ){
-		//CAutoLock dataLock(&m_csDataLock);
+		CAutoLock dataLock(&m_csDataLock);
 			//SVP_LogMsg5(L"ChanTest %d %d",lTotalInputChannels ,lTotalOutputChannels );
 		m_fCustomChannelMapping2 = 0;
 
@@ -353,7 +356,7 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 	{
 		if(m_fCustomChannelMapping2 == 1 || m_lastInputChannelCount != lTotalInputChannels || m_lastOutputChannelCount != lTotalOutputChannels ){
 
-			//CAutoLock dataLock(&m_csDataLock);
+			CAutoLock dataLock(&m_csDataLock);
 			memset(m_pCurrentChannelNormalize2, 0, sizeof(m_pCurrentChannelNormalize2));
 
 			for(int iSpeakerID = 0; iSpeakerID < lTotalOutputChannels; iSpeakerID++)
@@ -517,10 +520,11 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 		}
 	}
 */
+	
 	if(m_fNormalize || m_boost > 1)
 	{
 		int samples = lenout*wfeout->nChannels;
-
+		
 		if(double* buff = new double[samples])
 		{
 			
@@ -555,10 +559,8 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 				
 			}
 
-			double sample_mul = 1;
+				double sample_mul = 1;
 
-			if(m_fNormalize)
-			{
 				for(int i = 0; i < samples; i++)
 				{
 					double s = buff[i];
@@ -567,49 +569,98 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 					if(m_sample_max < s) m_sample_max = s;
 				}
 
-				
+			
 //if(m_fNormalizeRecover) 
+				
+			if(m_fNormalize)
+			{
 				m_sample_max -= 1.0*rtDur/200000000; // -5%/sec
 				if(m_sample_max < 0.25) m_sample_max = 0.25; // not more than 4x volume
-
 				sample_mul = 1.0f / m_sample_max;
-			}
+			}else{
+				if( m_boost > 1)
+				{
+					sample_mul = (1+log10(m_boost));
+					{
+						BOOL bMulChanged = FALSE;
+						
+						double old_sample_mul = sample_mul;
+						
+						while(sample_mul > 1 && clamp<double>( m_sample_max , -1, +1 , sample_mul) > 0.95){
+							//m_boost = 1;
 
-			//SVP_LogMsg5(L"maul %f %f %f %f" ,m_boost , log10(m_boost) , sample_mul, sample_mul * (1+log10(m_boost)) );
-			if(!m_fNormalize && m_boost > 1)
-			{
-				sample_mul = (1+log10(m_boost));
-			}
+							bMulChanged = TRUE;
+							sample_mul -= 0.5;
+
+						}
+						double f_suggest_sample_mul = sample_mul;
+						if(!m_fVolSuggested){
+							while(f_suggest_sample_mul > 1 && clamp<double>( m_sample_max , -1, +1 , f_suggest_sample_mul) > 0.7){
+								//m_boost = 1;
+
+								bMulChanged = TRUE;
+								f_suggest_sample_mul -= 0.5;
+
+							}
+						}
+						//float fSuggestVol = sample_mul;
+
+						if(bMulChanged){
+							
+							if(!m_fVolSuggested){
+								
+								::SendMessage(AfxGetApp()->m_pMainWnd->m_hWnd, WM_USER+32, (WPARAM)&f_suggest_sample_mul,0);
+								sample_mul = f_suggest_sample_mul;
+							}
+
+							m_fVolSuggested = TRUE;
+
+							//SVP_LogMsg5(L"SafeVol1 %f %f" , old_sample_mul, m_boost);
+							if(sample_mul <= 1){
+								m_boost = 1;
+							}else{
+								m_boost = pow((double)10, (sample_mul-1));
+							}
+							//SVP_LogMsg5(L"SafeVol2 %f %f" , sample_mul, m_boost);
+						}
+					}
+					
+				}
 			
-			switch(iWePCMType){
-						case WETYPE_PCM8:
-							for(int i = 0; i < samples; i++)
-								((BYTE*)pDataOut)[i] = clamp<BYTE>( buff[i] , 0, UCHAR_MAX , sample_mul);
-							break;
-						case WETYPE_PCM16:
-							for(int i = 0; i < samples; i++)
-								((short*)pDataOut)[i] = clamp<short>( buff[i] , SHRT_MIN, SHRT_MAX , sample_mul);
-							break;
-						case WETYPE_PCM24:
-							for(int i = 0; i < samples; i++)
-							{int tmp = clamp<int>( buff[i] , -1<<23, (1<<23)-1 , sample_mul); memcpy(&pDataOut[i*3], &tmp, 3);}
-							break;
-						case WETYPE_PCM32:
-							for(int i = 0; i < samples; i++)
-								((int*)pDataOut)[i] = clamp<int>( buff[i] , INT_MIN, INT_MAX , sample_mul);
-							break;
-						case WETYPE_FPCM32:
-							for(int i = 0; i < samples; i++)
-								((float*)pDataOut)[i] = clamp<float>( buff[i] , -1, +1 , sample_mul);
-							break;
-						case WETYPE_FPCM64:
-							for(int i = 0; i < samples; i++)
-								((double*)pDataOut)[i] = clamp<double>( buff[i] , -1, +1 , sample_mul);
-							break;
 			}
 
+			if(sample_mul > 1){
+				//SVP_LogMsg5(L"maul %f %f %f %f" ,m_boost , log10(m_boost) , sample_mul, sample_mul * (1+log10(m_boost)) );
+				
+				switch(iWePCMType){
+							case WETYPE_PCM8:
+								for(int i = 0; i < samples; i++)
+									((BYTE*)pDataOut)[i] = clamp<BYTE>( buff[i] , 0, UCHAR_MAX , sample_mul);
+								break;
+							case WETYPE_PCM16:
+								for(int i = 0; i < samples; i++)
+									((short*)pDataOut)[i] = clamp<short>( buff[i] , SHRT_MIN, SHRT_MAX , sample_mul);
+								break;
+							case WETYPE_PCM24:
+								for(int i = 0; i < samples; i++)
+								{int tmp = clamp<int>( buff[i] , -1<<23, (1<<23)-1 , sample_mul); memcpy(&pDataOut[i*3], &tmp, 3);}
+								break;
+							case WETYPE_PCM32:
+								for(int i = 0; i < samples; i++)
+									((int*)pDataOut)[i] = clamp<int>( buff[i] , INT_MIN, INT_MAX , sample_mul);
+								break;
+							case WETYPE_FPCM32:
+								for(int i = 0; i < samples; i++)
+									((float*)pDataOut)[i] = clamp<float>( buff[i] , -1, +1 , sample_mul);
+								break;
+							case WETYPE_FPCM64:
+								for(int i = 0; i < samples; i++)
+									((double*)pDataOut)[i] = clamp<double>( buff[i] , -1, +1 , sample_mul);
+								break;
+				}
 
-			
+
+			}
 			
 			delete buff;
 		}
@@ -828,7 +879,7 @@ STDMETHODIMP CAudioSwitcherFilter::SetSpeakerChannelConfig (int lTotalOutputChan
 		//CStreamSwitcherInputPin* pInput = GetInputPin();
 
 		//SelectInput(NULL);
-		//CAutoLock dataLock(&m_csDataLock);
+		CAutoLock dataLock(&m_csDataLock);
 
 		//SVP_LogMsg5(L"Set channel maping");
 		memcpy(m_pChannelNormalize2, pChannelNormalize, sizeof(m_pChannelNormalize2));

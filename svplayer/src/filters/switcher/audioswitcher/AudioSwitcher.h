@@ -70,6 +70,7 @@ class __declspec(uuid("18C16B08-6497-420e-AD14-22D21C2CEAB7")) CAudioSwitcherFil
 	CAutoPtrArray<AudioStreamResampler> m_pResamplers;
 	double m_sample_max;
 	bool m_fNormalize, m_fNormalizeRecover;
+	bool m_fVolSuggested;
 	float m_boost;
 
 	REFERENCE_TIME m_rtNextStart, m_rtNextStop;

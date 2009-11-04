@@ -3289,6 +3289,7 @@ BEGIN
 	IDS_CHANNEL_DESCBYID_FORMAT	"声道%d"
 
 	IDS_OSD_MSG_CHANGING_CHANNAL_MAPING_LEFT_RIGHT_CENTER "正在进行声道切换..."
+	IDS_OSD_MSG_SUGGEST_VOLUME_CHANGED		"智能音量系統建议音量：%d%%"
 END
 
 #endif    // Chinese (P.R.C.) resources

@@ -426,6 +426,15 @@ protected:
 	CComPtr<ISubPicQueue> m_pSubPicQueue2;
 
 	void AlphaBltSubPic(CSize size, SubPicDesc* pTarget = NULL);
+	int m_last_2ndSubBaseLineUp;
+	int m_last_2ndSubBaseLineDown;
+	int m_last_2ndSubBaseLineUp2;
+	int m_last_2ndSubBaseLineDown2;
+	int m_last_2sub_relative;
+	int m_force_pos_counter;
+	void ResSetForcePos(int s = 0);
+	CComPtr<ISubPic> m_last_pSubPic;
+	CComPtr<ISubPic> m_last_pSubPic2;
 
     XForm m_xform;
 	void Transform(CRect r, Vector v[4]);

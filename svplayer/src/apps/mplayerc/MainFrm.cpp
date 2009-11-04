@@ -11775,10 +11775,9 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 			}
 
 			if(s.fEnableSubtitles && m_pSubStreams.GetCount() > 0){
-				
-				SetSubtitle(m_pSubStreams.GetHead());
-				if(s.fAutoloadSubtitles2 && m_pSubStreams2.GetCount() > 1 ){
-					BOOL HavSubs = false;
+				BOOL HavSubs1 = FALSE;
+				if(!s.sSubStreamName1.IsEmpty()){
+
 					POSITION pos = m_pSubStreams2.GetHeadPosition();
 					while(pos){
 						CComPtr<ISubStream> pSubStream = m_pSubStreams2.GetNext(pos);
@@ -11791,13 +11790,81 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 							if(SUCCEEDED(pSubStream->GetStreamInfo(i, &pName, NULL)))
 							{
 								CString name(pName);
-								if( name.Find(_T(".en.")) >= 0 ||  name.Find(_T(".eng.")) >= 0 ||  name.Find(_T("英文")) >= 0){
-									SetSubtitle2( pSubStream);
-									HavSubs = true;
+								//SVP_LogMsg5(L"sub2 %s", name);
+								if( name == s.sSubStreamName1){
+									SetSubtitle( pSubStream);
+									HavSubs1 = true;
 								}
 								CoTaskMemFree(pName);
+								if(HavSubs1)
+									break;
 							}
-							
+
+						}
+						if(HavSubs1)
+							break;
+					}
+				}
+				if(!HavSubs1)
+					SetSubtitle(m_pSubStreams.GetHead());
+
+				if(s.fAutoloadSubtitles2 && m_pSubStreams2.GetCount() > 1 ){
+					BOOL HavSubs = false;
+					if(!s.sSubStreamName2.IsEmpty()){
+						POSITION pos = m_pSubStreams2.GetHeadPosition();
+						while(pos){
+							CComPtr<ISubStream> pSubStream = m_pSubStreams2.GetNext(pos);
+
+							if(!pSubStream) continue;
+
+							for(int i = 0, j = pSubStream->GetStreamCount(); i < j; i++)
+							{
+								WCHAR* pName = NULL;
+								if(SUCCEEDED(pSubStream->GetStreamInfo(i, &pName, NULL)))
+								{
+									CString name(pName);
+									//SVP_LogMsg5(L"sub2 %s", name);
+									if((!s.sSubStreamName2.IsEmpty() && name == s.sSubStreamName2)  ){
+										SetSubtitle2( pSubStream);
+										HavSubs = true;
+									}
+									CoTaskMemFree(pName);
+									if(HavSubs)
+										break;
+								}
+
+							}
+							if(HavSubs)
+								break;
+						}
+					}
+					
+					if(!HavSubs){
+						POSITION pos = m_pSubStreams2.GetHeadPosition();
+						while(pos){
+							CComPtr<ISubStream> pSubStream = m_pSubStreams2.GetNext(pos);
+
+							if(!pSubStream) continue;
+
+							for(int i = 0, j = pSubStream->GetStreamCount(); i < j; i++)
+							{
+								WCHAR* pName = NULL;
+								if(SUCCEEDED(pSubStream->GetStreamInfo(i, &pName, NULL)))
+								{
+									CString name(pName);
+									//SVP_LogMsg5(L"sub2 %s", name);
+									if( ( name.Find(_T("en")) >= 0 ||  name.Find(_T("eng")) >= 0 ||  name.Find(_T("英文")) >= 0) ){
+										SetSubtitle2( pSubStream);
+										HavSubs = true;
+									}
+									CoTaskMemFree(pName);
+									if(HavSubs)
+										break;
+								}
+
+							}
+							if(HavSubs)
+								break;
 						}
 					}
 					if(!HavSubs){
@@ -13927,6 +13994,7 @@ void CMainFrame::SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle)
 		if(SUCCEEDED(pSubStream->GetStreamInfo(pSubStream->GetStream(), &pName, NULL)))
 		{
 			subName = CString(pName);
+			s.sSubStreamName2 = subName;
 			subName.Replace(_T("&"), _T("&&"));
 			CoTaskMemFree(pName);
 		}
@@ -14051,6 +14119,7 @@ void CMainFrame::SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle)
 		if(SUCCEEDED(pSubStream->GetStreamInfo(pSubStream->GetStream(), &pName, NULL)))
 		{
 			subName = CString(pName);
+			s.sSubStreamName1 = subName;
 			subName.Replace(_T("&"), _T("&&"));
 			CoTaskMemFree(pName);
 		}

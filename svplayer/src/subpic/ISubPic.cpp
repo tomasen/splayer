@@ -795,6 +795,10 @@ ISubPicAllocatorPresenterImpl::ISubPicAllocatorPresenterImpl(HWND hWnd, HRESULT&
 	, m_fps(25.0)
 	, m_lSubtitleDelay(0), m_lSubtitleDelay2(0)
 	, m_pSubPicQueue(NULL) , m_pSubPicQueue2(NULL)
+	, m_last_2ndSubBaseLineUp(-1), m_last_2ndSubBaseLineDown(1000000)
+	, m_last_2ndSubBaseLineUp2(-1), m_last_2ndSubBaseLineDown2(1000000)
+	, m_last_2sub_relative(-1)
+	, m_force_pos_counter(0)
 {
     if(!IsWindow(m_hWnd)) {hr = E_INVALIDARG; return;}
 	GetWindowRect(m_hWnd, &m_WindowRect);
@@ -855,31 +859,70 @@ void ISubPicAllocatorPresenterImpl::AlphaBltSubPic(CSize size, SubPicDesc* pTarg
 #endif			
 	}
 
-	if(bltSub1 && bltSub2){
+	if(bltSub2 && rcDest2.top < 0)
+		rcDest2.MoveToY(0);
+	if(bltSub1 && rcDest1.top < 0)
+		rcDest1.MoveToY(0);
+
+	BOOL bForcePosBy2 =  (m_last_2ndSubBaseLineDown2 < 1000000) || (m_last_2ndSubBaseLineUp2 >= 0) ;
+	BOOL bForcePosBy1 =  (m_last_2ndSubBaseLineDown < 1000000) || (m_last_2ndSubBaseLineUp >= 0);
+	BOOL bForcePos =  bForcePosBy1 || bForcePosBy2 ;
+	if(bltSub1 && bltSub2 || (bForcePos && (bltSub1 || bltSub2 ) )){
 		//avoid overlap
 		CRect rectInter;
-		if(rectInter.IntersectRect(rcDest1, rcDest2) ){
+		if(rectInter.IntersectRect(rcDest1, rcDest2) || bForcePos ){
+			
 			//there is overlap
 			CPoint cent1 = rcDest1.CenterPoint(); // sub1 center
 			CPoint cent2 = rcDest2.CenterPoint(); // sub2 center
 			CPoint vcent( size.cx /2 , size.cy /2)  ; //video center
-			
+			int i_targetY = -1;
+
 			//which one is closer to border?
-			if  ( abs(cent1.y - vcent.y) > abs(cent2.y - vcent.y) ){ 
+			if  ( abs(cent1.y - vcent.y) > abs(cent2.y - vcent.y) && pSubPic2 ){ 
 				//rcDest1 is outer(fixed) , move rcDest2
-				if(cent2.y > cent1.y ){ //sub2 is under sub1 and there are on top area of sreen
-					rcDest2.MoveToY(rcDest1.bottom);  //moving down
+				
+				if(cent2.y > cent1.y && pSubPic || (!pSubPic && m_last_2sub_relative == 1 ) ){ //sub2 is under sub1 and there are on top area of sreen
+					m_last_2ndSubBaseLineUp =  max(m_last_2ndSubBaseLineUp ,  rcDest1.bottom);
+					i_targetY = m_last_2ndSubBaseLineUp;
+					m_last_2sub_relative = 1;
+					  //moving down
 				}else{
-					rcDest2.MoveToY(rcDest1.top - rcDest2.Height()); //moving up
+					if(rcDest1.top)
+					{
+						m_last_2ndSubBaseLineDown = min(m_last_2ndSubBaseLineDown, rcDest1.top );
+						m_last_2sub_relative = 2;
+					}
+
+					i_targetY = m_last_2ndSubBaseLineDown  - rcDest2.Height()  ;
+					
+					 //moving up
 				}
+				if(i_targetY >= 0 && i_targetY < 1000000)
+					rcDest2.MoveToY(i_targetY);
 			}else{
 				//rcDest2 is outer(fixed) , move rcDest1
-				if(cent1.y > cent2.y ){ //sub1 is under sub2 and there are on top area of sreen
-					rcDest1.MoveToY(rcDest2.bottom);  //moving down
+				if(cent1.y > cent2.y && pSubPic2 || (!pSubPic2 && m_last_2sub_relative == 3)){ //sub1 is under sub2 and there are on top area of sreen
+					if(pSubPic2 ){
+						m_last_2sub_relative = 3;	
+						m_last_2ndSubBaseLineUp2 =  max( m_last_2ndSubBaseLineUp2 , rcDest2.bottom);  //moving down
+					}
+					i_targetY = m_last_2ndSubBaseLineUp2 ;
+					
 				}else{
-					rcDest1.MoveToY(rcDest2.top - rcDest1.Height()); //moving up
+					if(pSubPic2){
+						m_last_2ndSubBaseLineDown2 = min(m_last_2ndSubBaseLineDown2, rcDest2.top );
+						m_last_2sub_relative = 4;	
+					}
+					i_targetY = m_last_2ndSubBaseLineDown2  - rcDest1.Height() ; //moving up
+					
 				}
+				if(i_targetY >= 0 && i_targetY < 1000000)
+					rcDest1.MoveToY(i_targetY);
 			}
+
+			m_last_pSubPic = pSubPic;
+			m_last_pSubPic2 = pSubPic2;
 
 		}
 	}
@@ -887,6 +930,14 @@ void ISubPicAllocatorPresenterImpl::AlphaBltSubPic(CSize size, SubPicDesc* pTarg
 		pSubPic->AlphaBlt(rcSource1, rcDest1, pTarget);
 	if(bltSub2){
 		pSubPic2->AlphaBlt(rcSource2, rcDest2, pTarget);
+	}
+
+	if( !bltSub1 && !bltSub2 && bForcePos){
+		m_force_pos_counter++;
+		if(m_force_pos_counter > 10){
+			ResSetForcePos();
+		}
+		
 	}
 
 	
@@ -949,8 +1000,19 @@ STDMETHODIMP_(void) ISubPicAllocatorPresenterImpl::SetPosition(RECT w, RECT v)
 
 	if(fWindowPosChanged || fVideoRectChanged)
 		Paint(fWindowSizeChanged || fVideoRectChanged);
-}
 
+	ResSetForcePos();
+}
+void ISubPicAllocatorPresenterImpl::ResSetForcePos(int s)
+{
+	m_last_2ndSubBaseLineUp = (-1); 
+	m_last_2ndSubBaseLineDown = (1000000);
+	m_last_2ndSubBaseLineUp2 = (-1); 
+	m_last_2ndSubBaseLineDown2 = (1000000);
+	m_last_2sub_relative = (-1);
+	m_force_pos_counter = 0;
+
+}
 STDMETHODIMP_(void) ISubPicAllocatorPresenterImpl::SetTime(REFERENCE_TIME rtNow)
 {
 /*
@@ -997,6 +1059,8 @@ STDMETHODIMP_(void) ISubPicAllocatorPresenterImpl::SetSubPicProvider(ISubPicProv
 {
 	m_SubPicProvider = pSubPicProvider;
 
+	ResSetForcePos();
+
 	if(m_pSubPicQueue)
 		m_pSubPicQueue->SetSubPicProvider(pSubPicProvider);
 }
@@ -1004,12 +1068,17 @@ STDMETHODIMP_(void) ISubPicAllocatorPresenterImpl::SetSubPicProvider2(ISubPicPro
 {
 	m_SubPicProvider2 = pSubPicProvider;
 
+	ResSetForcePos();
+
 	if(m_pSubPicQueue2)
 		m_pSubPicQueue2->SetSubPicProvider(pSubPicProvider);
 }
 
 STDMETHODIMP_(void) ISubPicAllocatorPresenterImpl::Invalidate(REFERENCE_TIME rtInvalidate)
 {
+
+	 ResSetForcePos();
+
 	if(m_pSubPicQueue)
 		m_pSubPicQueue->Invalidate(rtInvalidate);
 

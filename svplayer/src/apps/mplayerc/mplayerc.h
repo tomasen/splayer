@@ -606,6 +606,9 @@ public:
 		bool fEnableSubtitles;
 		bool fEnableSubtitles2;
 
+		CString sSubStreamName1;
+		CString sSubStreamName2;
+
 		bool fUseInternalTSSpliter;
 
 		bool fDisabeXPToolbars;

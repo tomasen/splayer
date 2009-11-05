@@ -15332,6 +15332,7 @@ void CMainFrame::OnSetsnapshotpath()
 	bi.lpfn = BrowseCtrlCallback;
 	bi.lParam = (LPARAM)(LPCTSTR)s.SnapShotPath;
 	bi.iImage = 0; 
+	
 
 	LPITEMIDLIST iil;
 	if(iil = SHBrowseForFolder(&bi))

@@ -3298,6 +3298,7 @@ BEGIN
 	IDS_OSD_MSG_DVD_OP_SWITCH_AUDIO_STREAM_DISABLED  "该音轨已被禁用"
 	IDS_OSD_MSG_DVD_OP_SWITCH_AUDIO    "未知原因 %x"
 
+	IDS_MENU_TIEM_TOOLBAR_SAVE_POS "记忆控制栏位置"
 END
 
 #endif    // Chinese (P.R.C.) resources

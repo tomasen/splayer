@@ -210,7 +210,7 @@ void CPlayerChannelNormalizer::OnRButtonUp(UINT nFlags, CPoint point)
 {
 	// TODO: Add your message handler code here and/or call default
 
-	CSVPDialog::OnRButtonUp(nFlags, point);
+	__super::OnRButtonUp(nFlags, point);
 
 	enum 
 	{

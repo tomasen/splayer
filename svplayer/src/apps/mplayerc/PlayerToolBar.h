@@ -39,6 +39,7 @@ private:
 	CImageList m_ToolBarDisabledImages;
 	
 	UINT m_nItemToTrack;
+	UINT m_nItemToTrackR;
 	bool m_hovering;
 	HCURSOR cursorHand;
 	CSUIButton* m_btnVolTm ;
@@ -113,4 +114,6 @@ protected:
 public:
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
+	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
 };

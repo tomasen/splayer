@@ -3488,7 +3488,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		}
 
 		if(bUserAeroUI()){
-			pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_TRANSPARENTTOOLBARPOSOFFSET), m_lTransparentToolbarPosOffset);		
+			//pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_TRANSPARENTTOOLBARPOSOFFSET)+_T("2"), m_lTransparentToolbarPosOffset);		
 		}
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("LastVersion"), 720);		
 		
@@ -4202,7 +4202,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		m_shadercombine = pApp->GetProfileString(_T("Shaders"), _T("Combine"), _T(""));
 
 		if(bUserAeroUI()){
-			m_lTransparentToolbarPosOffset = 0;// pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_TRANSPARENTTOOLBARPOSOFFSET), 0);
+			m_lTransparentToolbarPosOffset = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_TRANSPARENTTOOLBARPOSOFFSET)+_T("2"), 0);
 		}
 
 		fInitialized = true;

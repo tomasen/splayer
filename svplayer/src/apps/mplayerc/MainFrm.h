@@ -214,7 +214,6 @@ class CMainFrame : public CFrameWnd, public CDropTarget  , protected ISkinMenuRe
 
 	void SetupOpenCDSubMenu();
 	void SetupFiltersSubMenu();
-	void SetupSVPAudioMenu();
 	void SetupAudioSwitcherSubMenu();
 	void SetupSubtitlesSubMenu(int subid = 1);
 	void SetupNavAudioSubMenu();
@@ -230,7 +229,7 @@ class CMainFrame : public CFrameWnd, public CDropTarget  , protected ISkinMenuRe
 
 	CMenu m_popupmain, m_popup;
 	CMenu m_opencds, m_openmore, m_playback_resmenu, m_playbackmenu;
-	CMenu m_filters, m_subtitles, m_subtitles2, m_audios, m_audiodevices , m_subtoolmenu;
+	CMenu m_filters, m_subtitles, m_subtitles2,  m_audiodevices , m_subtoolmenu;
 	CStringArray m_AudioDevice;
 	CAutoPtrArray<CMenu> m_filterpopups;
 	CMenu m_navaudio, m_navsubtitle, m_navangle;
@@ -310,6 +309,9 @@ private:
 	CPoint m_pDragFuncStartPoint;
 	int m_iRedrawAfterCloseCounter;
 public:
+	void SetupSVPAudioMenu();
+	CMenu m_audios;
+
 	CComPtr<IGraphBuilder2> pGB;
 
 	enum

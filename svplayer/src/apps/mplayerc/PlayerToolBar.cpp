@@ -360,6 +360,8 @@ BEGIN_MESSAGE_MAP(CPlayerToolBar, CToolBar)
 	ON_WM_SETCURSOR()
 	ON_WM_ERASEBKGND()
 	ON_NOTIFY_EX(TTN_NEEDTEXT, 0, OnTtnNeedText)
+	ON_WM_RBUTTONUP()
+	ON_WM_RBUTTONDOWN()
 END_MESSAGE_MAP()
 
 // CPlayerToolBar message handlers
@@ -803,6 +805,94 @@ BOOL CPlayerToolBar::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 	return bRet;
 }
 
+
+void CPlayerToolBar::OnRButtonUp(UINT nFlags, CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+	CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
+	KillTimer(TIMER_FASTFORWORD);
+	KillTimer(TIMER_CLOSETOOLBAR);
+	ReleaseCapture();
+
+	CRect rc;
+	GetWindowRect(&rc);
+
+	CPoint xpoint = point + rc.TopLeft() ;
+	UINT ret = m_btnList.OnHitTest(xpoint,rc);
+	if( m_btnList.HTRedrawRequired ){
+		
+		Invalidate();
+	}
+	m_nItemToTrackR = ret;
+	__super::OnRButtonUp(nFlags, point);
+	
+	
+	if(!pFrame)
+		return;
+
+	AppSettings& s = AfxGetAppSettings();
+	if(ID_VOLUME_MUTE == m_nItemToTrackR ){
+
+		pFrame->SetupSVPAudioMenu();
+		pFrame->OnMenu( &pFrame->m_audios );
+		
+	}else if(!m_nItemToTrackR && s.bUserAeroUI()){
+
+
+		enum 
+		{
+			M_RESET_POS=1 , M_SAVE_POS=2
+		};
+		CMenu m;
+		m.CreatePopupMenu();
+		m.AppendMenu(MF_STRING|MF_ENABLED, M_SAVE_POS, ResStr(IDS_MENU_TIEM_TOOLBAR_SAVE_POS));
+		m.AppendMenu(MF_STRING|MF_ENABLED, M_RESET_POS, ResStr(IDS_COLOR_CONTROL_BUTTON_RESET));
+
+		ClientToScreen(&point);
+		int nID = (int)m.TrackPopupMenu(TPM_LEFTBUTTON|TPM_RETURNCMD, point.x, point.y, this);
+
+		switch(nID)
+		{
+			case M_RESET_POS:
+				s.m_lTransparentToolbarPosOffset = 0;
+
+				break;
+			case M_SAVE_POS:
+				
+				break;
+			default:
+				return;
+				break;
+		}
+		pFrame->rePosOSD();
+		pFrame->RedrawNonClientArea();
+		AfxGetMyApp()->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_TRANSPARENTTOOLBARPOSOFFSET)+_T("2"), s.m_lTransparentToolbarPosOffset);		
+	}
+
+	
+
+}
+
+void CPlayerToolBar::OnRButtonDown(UINT nFlags, CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+	KillTimer(TIMER_FASTFORWORD);
+	KillTimer(TIMER_CLOSETOOLBAR);
+
+	CRect rc;
+	GetWindowRect(&rc);
+
+	CPoint xpoint = point + rc.TopLeft() ;
+	UINT ret = m_btnList.OnHitTest(xpoint,rc);
+	if( m_btnList.HTRedrawRequired ){
+		if(ret){
+			SetCapture();
+		}
+		Invalidate();
+	}
+	m_nItemToTrackR = ret;
+	//CToolBar::OnRButtonDown(nFlags, point);
+}
 
 void CPlayerToolBar::OnLButtonDown(UINT nFlags, CPoint point)
 {

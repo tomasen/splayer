@@ -75,9 +75,9 @@ void CPlayerChannelNormalizer::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pS
 
 			s.pSpeakerToChannelMapOffset[m_nChannels-1][i] = -float(pos-50) / 50;
 
-			//CString szMsg;
-			//szMsg.Format(L" %d %f" ,pos , s.pSpeakerToChannelMapOffset[m_nChannels-1][i] );
-			//((CMainFrame*)AfxGetMainWnd())->SendStatusMessage(szMsg , 5000);
+// 			CString szMsg;
+// 			szMsg.Format(L"%d  %d %f" , i ,pos , s.pSpeakerToChannelMapOffset[m_nChannels-1][i] );
+// 			((CMainFrame*)AfxGetMainWnd())->SendStatusMessage(szMsg , 5000);
 
 			SetTimer(TIMER_SETCHANNELMAPING, 700, NULL);
 

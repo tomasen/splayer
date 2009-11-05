@@ -4452,8 +4452,9 @@ void CMainFrame::SetupSVPAudioMenu(){
 	SetupAudioDeviceSubMenu();
 	CMenu* pSubMenuAD = &m_audiodevices;
 	if(pSubMenuAD ){
-		//if(m_audios.GetMenuItemCount())
-		//	m_audios.AppendMenu(MF_SEPARATOR);
+
+		if(m_audios.GetMenuItemCount())
+			m_audios.AppendMenu(MF_SEPARATOR);
 		AppSettings& s = AfxGetAppSettings();
 
 		CString szAudioChannel;
@@ -8210,9 +8211,115 @@ void CMainFrame::OnUpdatePlayShaders(CCmdUI* pCmdUI)
 	}
 }
 
+void CMainFrame::OnPlayLanguage(UINT nID)
+{
+
+	nID -= ID_FILTERSTREAMS_SUBITEM_START;
+	CComPtr<IAMStreamSelect> pAMSS = m_ssarray[nID];
+	UINT i = nID;
+	CString strMsg;
+	strMsg.Format(L"Lang %d" , nID);
+	SendStatusMessage(strMsg, 4000);
+
+	while(i > 0 && pAMSS == m_ssarray[i-1]) i--;
+	if(FAILED(pAMSS->Enable(nID-i, AMSTREAMSELECTENABLE_ENABLE)))
+		MessageBeep(-1);
+
+	OpenSetupStatusBar();
+}
+
+void CMainFrame::OnUpdatePlayLanguage(CCmdUI* pCmdUI)
+{
+
+	UINT nID = pCmdUI->m_nID;
+	nID -= ID_FILTERSTREAMS_SUBITEM_START-1;
+	if(nID >= m_ssarray.GetCount()){
+		return;
+	}
+	CComPtr<IAMStreamSelect> pAMSS = m_ssarray.GetAt(nID);
+
+	UINT i = nID;
+	while(i > 0 && pAMSS == m_ssarray[i-1]) i--;
+	DWORD flags = 0;
+	pAMSS->Info(nID-i, NULL, &flags, NULL, NULL, NULL, NULL, NULL);
+	if(flags&AMSTREAMSELECTINFO_EXCLUSIVE) pCmdUI->SetRadio(TRUE);
+	else if(flags&AMSTREAMSELECTINFO_ENABLED) pCmdUI->SetCheck(TRUE);	
+	else pCmdUI->SetCheck(FALSE);
+}
+
+void CMainFrame::OnNavigateAudio(UINT nID)
+{
+	nID -= ID_NAVIGATE_AUDIO_SUBITEM_START;
+
+	//CString strMsg;
+	//strMsg.Format(L"Stream %d" , nID);
+	//SendStatusMessage(strMsg, 4000);
+	CString strMsg;
+	if(m_iPlaybackMode == PM_FILE)
+	{
+		OnNavStreamSelectSubMenu(nID, 1);
+	}
+	else if(m_iPlaybackMode == PM_DVD)
+	{
+		HRESULT hr = pDVDC->SelectAudioStream(nID, DVD_CMD_FLAG_Block, NULL);
+		switch(hr){
+			case S_FALSE:
+
+
+				//No default audio stream was found; or dwFlags is not zero.
+				strMsg = ResStr(IDS_OSD_MSG_DVD_OP_SWITCH_AUDIO_S_FALSE);
+				break;
+			case S_OK:
+
+
+				//strMsg = ResStr(IDS_OSD_MSG_DVD_STREAM_DISABLED);
+				//Success.
+				break;
+
+			case E_INVALIDARG:
+
+
+				strMsg = ResStr(IDS_OSD_MSG_DVD_OP_SWITCH_AUDIO_E_INVALIDARG);
+				//ulAudio is out of range, or doesn't correspond to an audio stream.
+
+				break;
+			case E_UNEXPECTED:
+
+
+				strMsg = ResStr(IDS_OSD_MSG_DVD_OP_SWITCH_AUDIO_E_UNEXPECTED);
+				//The ulAudio value is valid, but the DVD Navigator could not set it for some reason.
+				break;
+
+			case VFW_E_DVD_OPERATION_INHIBITED:
+
+
+				strMsg = ResStr(IDS_OSD_MSG_DVD_OP_SWITCH_AUDIO_INHIBITED);
+				//UOP control prohibits the operation.
+				break;
+
+			case VFW_E_DVD_STREAM_DISABLED:
+
+
+				strMsg = ResStr(IDS_OSD_MSG_DVD_OP_SWITCH_AUDIO_STREAM_DISABLED);
+				//The specified stream is disabled.
+				break;
+			default:
+
+				//Unknow
+				strMsg.Format(ResStr(IDS_OSD_MSG_DVD_OP_SWITCH_AUDIO) , hr);
+				break;
+		}
+		if(!strMsg.IsEmpty())
+			SendStatusMessage(strMsg, 4000);
+	}
+}
 void CMainFrame::OnPlayAudio(UINT nID)
 {
 	int i = (int)nID - (1 + ID_AUDIO_SUBITEM_START);
+
+// 	CString strMsg;
+// 	strMsg.Format(L"Audio %d" , i);
+// 	SendStatusMessage(strMsg, 4000);
 
 	CComQIPtr<IAMStreamSelect> pSS = FindFilter(__uuidof(CAudioSwitcherFilter), pGB);
 	if(!pSS) pSS = FindFilter(L"{D3CD7858-971A-4838-ACEC-40CA5D529DC8}", pGB);
@@ -8454,36 +8561,6 @@ void CMainFrame::OnUpdatePlaySubtitles(CCmdUI* pCmdUI)
 	}
 }
 
-void CMainFrame::OnPlayLanguage(UINT nID)
-{
-	nID -= ID_FILTERSTREAMS_SUBITEM_START;
-	CComPtr<IAMStreamSelect> pAMSS = m_ssarray[nID];
-	UINT i = nID;
-	while(i > 0 && pAMSS == m_ssarray[i-1]) i--;
-	if(FAILED(pAMSS->Enable(nID-i, AMSTREAMSELECTENABLE_ENABLE)))
-		MessageBeep(-1);
-
-	OpenSetupStatusBar();
-}
-
-void CMainFrame::OnUpdatePlayLanguage(CCmdUI* pCmdUI)
-{
-
-	UINT nID = pCmdUI->m_nID;
-	nID -= ID_FILTERSTREAMS_SUBITEM_START;
-	if(nID >= m_ssarray.GetCount()){
-		return;
-	}
-	CComPtr<IAMStreamSelect> pAMSS = m_ssarray.GetAt(nID);
-	
-	UINT i = nID;
-	while(i > 0 && pAMSS == m_ssarray[i-1]) i--;
-	DWORD flags = 0;
-	pAMSS->Info(nID-i, NULL, &flags, NULL, NULL, NULL, NULL, NULL);
-	if(flags&AMSTREAMSELECTINFO_EXCLUSIVE) pCmdUI->SetRadio(TRUE);
-	else if(flags&AMSTREAMSELECTINFO_ENABLED) pCmdUI->SetCheck(TRUE);	
-	else pCmdUI->SetCheck(FALSE);
-}
 LRESULT CMainFrame::OnSuggestVolume(  WPARAM wParam, LPARAM lParam){
 	//TODO
 
@@ -8783,19 +8860,6 @@ void CMainFrame::OnUpdateNavigateMenu(CCmdUI* pCmdUI)
 	pCmdUI->Enable(!(ulUOPs & (UOP_FLAG_ShowMenu_Title << nID)));
 }
 
-void CMainFrame::OnNavigateAudio(UINT nID)
-{
-	nID -= ID_NAVIGATE_AUDIO_SUBITEM_START;
-
-	if(m_iPlaybackMode == PM_FILE)
-	{
-		OnNavStreamSelectSubMenu(nID, 1);
-	}
-	else if(m_iPlaybackMode == PM_DVD)
-	{
-		pDVDC->SelectAudioStream(nID, DVD_CMD_FLAG_Block, NULL);
-	}
-}
 
 void CMainFrame::OnNavigateSubpic(UINT nID)
 {
@@ -12732,7 +12796,7 @@ void CMainFrame::SetupAudioSwitcherSubMenu()
 
 	pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_SHOW_AUDIO_EQ_CONTROL , ResStr(IDS_MENU_ITEM_AUDIO_EQ_CONTROL));
 	pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_SHOW_AUDIO_CHANNEL_CONTROL, ResStr(IDS_MENU_ITEM_AUDIO_CHANNEL_CONTROL));
-	pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED);
+	//pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED);
 
 }
 void CMainFrame::OnAudioChannalMapMenu(UINT nID){

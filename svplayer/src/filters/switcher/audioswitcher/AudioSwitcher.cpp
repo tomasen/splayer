@@ -38,7 +38,7 @@
 #include "..\..\..\apps\mplayerc\mplayerc.h"
 
 //#define TRACE SVP_LogMsg5
-
+#define SVP_LogMsg5 __noop
 
 #ifdef REGISTER_FILTER
 
@@ -362,9 +362,13 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 			for(int iSpeakerID = 0; iSpeakerID < lTotalOutputChannels; iSpeakerID++)
 			{
 				float countBase = 0;
+				bool bThereisOffset = FALSE;
 				for(int iChannelID = 0; iChannelID < lTotalInputChannels; iChannelID++){
 					if(m_pChannelNormalize2[lTotalInputChannels-1][lTotalOutputChannels-1][iSpeakerID][iChannelID] > 0){
 						countBase+=0.33;
+					}
+					if(m_pSpeakerToChannelMapOffset[lTotalInputChannels-1][iChannelID] != 0){
+						bThereisOffset = true;
 					}
 				}
 				if(countBase > 0){
@@ -379,8 +383,14 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 
 						}
 						
-						//SVP_LogMsg5(L"%f %f" , m_pSpeakerToChannelMapOffset[lTotalInputChannels-1][iChannelID] , m_pCurrentChannelNormalize2[iSpeakerID][iChannelID]);
+						SVP_LogMsg5(L"%f %f" , m_pSpeakerToChannelMapOffset[lTotalInputChannels-1][iChannelID] , m_pCurrentChannelNormalize2[iSpeakerID][iChannelID]);
 					}
+				}
+
+				if(countBase <= 0 && bThereisOffset && iSpeakerID < lTotalInputChannels){
+					
+					m_pCurrentChannelNormalize2[iSpeakerID][iSpeakerID] = 1.0 * ( m_pSpeakerToChannelMapOffset[lTotalInputChannels-1][iSpeakerID] + 1.0);
+					
 				}
 			}
 			if( (m_iSimpleSwitch > 2 && lTotalInputChannels > 2) || (m_iSimpleSwitch > 0 && m_iSimpleSwitch <= 2 && lTotalInputChannels > 1) ){
@@ -423,7 +433,7 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 			m_lastOutputChannelCount = lTotalOutputChannels;
 			m_fCustomChannelMapping2 = 2;
 		}
-		//SVP_LogMsg5(L"m_fCustomChannelMapping2 %d ",m_fCustomChannelMapping2);
+		SVP_LogMsg5(L"m_fCustomChannelMapping2 %d ",m_fCustomChannelMapping2);
 			{
 				for(int i = 0; i < wfeout->nChannels; i++)
 				{
@@ -489,7 +499,7 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 	}
 	else
 	{
-		//SVP_LogMsg5(L"No channel maping");
+		SVP_LogMsg5(L"No channel maping");
 		HRESULT hr;
 		if(S_OK != (hr = __super::Transform(pIn, pOut))){
 			TRACE(L"FAUK");
@@ -1000,6 +1010,11 @@ STDMETHODIMP CAudioSwitcherFilter::SetNormalizeBoost(bool fNormalize, bool fNorm
 STDMETHODIMP CAudioSwitcherFilter::Enable(long lIndex, DWORD dwFlags)
 {
 	HRESULT hr = __super::Enable(lIndex, dwFlags);
-	if(S_OK == hr) m_sample_max = 0.1f;
+	if(S_OK == hr){
+		m_sample_max = 0.1f;
+		m_fCustomChannelMapping2 = -1;
+		SVP_LogMsg5(L"switched");
+	}
+	SVP_LogMsg5(L"switched2");
 	return hr;
 }

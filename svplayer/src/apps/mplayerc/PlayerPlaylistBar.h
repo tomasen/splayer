@@ -48,6 +48,7 @@ private:
 
 	bool ParseBDMVPlayList(CString fn);
 	bool ParseMPCPlayList(CString fn);
+	bool ParseCUEPlayList(CString fn);
 	bool SaveMPCPlayList(CString fn, CTextFile::enc e, bool fRemovePath);
 
 	void SetupList();	

@@ -391,6 +391,12 @@ void CPlayerPlaylistBar::ParsePlayList(CAtlList<CString>& fns, CAtlList<CString>
 		return;
 	}
 	
+	if(ct == "application/x-cue-playlist")
+	{
+		ParseCUEPlayList(fns.GetHead());
+		return;
+
+	}
 	if(ct == "application/x-mpc-playlist")
 	{
 		ParseMPCPlayList(fns.GetHead());
@@ -416,7 +422,71 @@ static CString CombinePath(CPath p, CString fn)
 	p.Append(CPath(fn));
 	return (LPCTSTR)p;
 }
+bool CPlayerPlaylistBar::ParseCUEPlayList(CString fn)
+{
+	CString str;
+	CAtlMap<int, CPlaylistItem> pli;
+	CAtlArray<int> idx;
 
+	CWebTextFile f;
+	if(!f.Open(fn) || !f.ReadString(str) )
+		return false;
+
+	if(f.GetEncoding() == CTextFile::ASCII) 
+		f.SetEncoding(CTextFile::ANSI);
+
+	CPath base(fn);
+	base.RemoveFileSpec();
+
+	int idxCurrent = -1;
+
+	CSVPToolBox svpToolBox;
+
+	while(f.ReadString(str))
+	{
+		str.Trim();
+		int pos = str.Find(_T("FILE"));
+		if( pos >= 0){
+			int pos2 = str.ReverseFind(' ');
+			int pos3 = str.ReverseFind('\t');
+			pos2 = max(pos2, pos3);
+
+			CString fn = str.Mid(  pos+5, pos2-pos-5);
+			fn.Trim();
+			fn.Trim('"');
+
+			if (!svpToolBox.ifFileExist( fn ) ){
+
+				CString fnPath(PathFindFileName(fn.GetBuffer()));
+				CPath myBase(base);
+				myBase.RemoveBackslash();
+				myBase.Append(fnPath);
+
+				fn = CString(myBase);
+
+				if (!svpToolBox.ifFileExist( fn ) ){
+					continue;
+				}
+			}
+
+
+			CPlaylistItem pli;
+			pli.m_fns.AddTail( fn);
+			m_pl.AddTail(pli );
+		}
+	}
+
+	
+	for(size_t i = 0; i < idx.GetCount(); i++){
+		m_pl.AddTail(pli[idx[i]]);
+		if(idxCurrent > 0 && idxCurrent == idx[i]){
+			m_pl.SetPos( m_pl.GetTailPosition());
+		}
+	}
+
+	return pli.GetCount() > 0;
+
+}
 bool CPlayerPlaylistBar::ParseMPCPlayList(CString fn)
 {
 	CString str;

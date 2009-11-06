@@ -2674,6 +2674,7 @@ void CMPlayerCApp::Settings::InitChannelMap()
 	//CString szOut;
 	for(int iInputChannelCount = 1; iInputChannelCount <= MAX_INPUT_CHANNELS; iInputChannelCount++){
 		for(int iOutputChannelCount = 1; iOutputChannelCount <= MAX_OUTPUT_CHANNELS; iOutputChannelCount++){
+			
 			if(iOutputChannelCount >= iInputChannelCount )
 				break;
 
@@ -2875,6 +2876,23 @@ void CMPlayerCApp::Settings::InitChannelMap()
 				//szOut += szFloatList.TrimRight(_T(",")) + _T(" } \r\n");
 			}
 			//szOut += _T("\r\n");
+		}
+	}
+
+	for(int iInputChannelCount = 5; iInputChannelCount <= MAX_INPUT_CHANNELS; iInputChannelCount++){
+		for(int iOutputChannelCount = 3; iOutputChannelCount <= MAX_OUTPUT_CHANNELS; iOutputChannelCount++){
+			if(iInputChannelCount <= iOutputChannelCount){
+				for(int iSpeakerID = 0; iSpeakerID < iInputChannelCount; iSpeakerID++){
+					pSpeakerToChannelMap2[iInputChannelCount-1][iOutputChannelCount-1][iSpeakerID][iSpeakerID] = 1.0;
+				}
+			}
+			
+			if(pSpeakerToChannelMap2[iInputChannelCount-1][iOutputChannelCount-1][0][2] <= 0)
+				pSpeakerToChannelMap2[iInputChannelCount-1][iOutputChannelCount-1][0][2] = 1.0;
+
+			if(pSpeakerToChannelMap2[iInputChannelCount-1][iOutputChannelCount-1][1][2] <= 0)
+				pSpeakerToChannelMap2[iInputChannelCount-1][iOutputChannelCount-1][1][2] = 1.0;
+
 		}
 	}
 

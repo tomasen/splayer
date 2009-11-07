@@ -1980,6 +1980,7 @@ BEGIN
 	IDS_MENU_ITEM_AUDIO_SETTING		"Audio settings..."
 	IDS_MENU_ITEM_AUDIO_EQ_CONTROL	"Equalizer Controller"
 	IDS_MENU_ITEM_AUDIO_CHANNEL_CONTROL	 "Channel Controller"
+	IDS_OSD_MSG_ONLY_WORK_WHEN_AUDIO_LOADED "This function only works when audio is loaded" 
 	IDS_OSD_MSG_DEVICE_NOT_SUPPORT_VIDEO_QMODE	"You video driver don't support Quality Mode, Please switch to Performance Mode and reopen the file"
 	IDS_DIALOG_OPEN_FOLDER_TITLE	"Open Folder"
 	IDS_DIALOG_OPEN_BD_FOLDER_TITLE	"Open BD Folder"

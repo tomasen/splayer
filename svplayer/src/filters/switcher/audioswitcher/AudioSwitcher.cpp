@@ -216,8 +216,8 @@ void mix<int, INT64, (-1<<24), (+1<<24)-1>(float mask[MAX_NORMALIZE_CHANNELS], i
 template<class T>
 T clamp(double s, T smin, T smax, double k)
 {
-	//if(s < -1) s = -1;
-	//else if(s > 1) s = 1;
+	if(s < -1) s = -1;
+	else if(s > 1) s = 1;
 	if(k > 1.0){
 		s = 10 * s / sqrt( (s * s * 100) + (MAX_MUL * SMOOTH_RATE)/k - (SMOOTH_RATE -4 )) ;
 	}

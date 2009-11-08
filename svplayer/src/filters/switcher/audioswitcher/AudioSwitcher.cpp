@@ -108,10 +108,11 @@ CAudioSwitcherFilter::CAudioSwitcherFilter(LPUNKNOWN lpunk, HRESULT* phr)
 	, m_lastOutputChannelCount(-1)
 	, m_iSimpleSwitch(-1)
 	, m_fVolSuggested(0)
+	, m_fEQControlOn(0)
 {
 	//memset(m_pSpeakerToChannelMap, 0, sizeof(m_pSpeakerToChannelMap));
 	memset(m_pChannelNormalize2, 0, sizeof(m_pChannelNormalize2));
-	
+	memset(m_pEQBandControlCurrent, 0, sizeof(m_pEQBandControlCurrent));
 
 	if(phr)
 	{
@@ -1017,4 +1018,30 @@ STDMETHODIMP CAudioSwitcherFilter::Enable(long lIndex, DWORD dwFlags)
 	}
 	SVP_LogMsg5(L"switched2");
 	return hr;
+}
+
+
+STDMETHODIMP CAudioSwitcherFilter::SetEQControl ( int lEQBandControlPreset, float pEQBandControl[MAX_EQ_BAND])
+{
+	if(m_State == State_Stopped || m_pEQBandControlCurrent != pEQBandControl
+		|| memcmp(m_pEQBandControlCurrent, pEQBandControl, sizeof(m_pEQBandControlCurrent))  )
+	{
+		
+		if(pEQBandControl)
+			memcpy(m_pEQBandControlCurrent, pEQBandControl, sizeof(m_pEQBandControlCurrent));
+		else if(lEQBandControlPreset > 0){
+			//TODO set according to preset
+		}
+		m_fEQControlOn = 0;
+		for(int i = 0 ; i < MAX_EQ_BAND; i++){
+			if(m_pEQBandControlCurrent[i] != 0){
+				m_fEQControlOn = 1;
+				break;
+			}
+		}
+		
+	}
+
+	return S_OK;
+
 }

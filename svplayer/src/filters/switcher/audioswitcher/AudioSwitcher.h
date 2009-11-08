@@ -20,6 +20,7 @@
 
 #include "StreamSwitcher.h"
 
+#define MAX_EQ_BAND 10
 #define MAX_OUTPUT_CHANNELS 18
 #define MAX_INPUT_CHANNELS 18
 #define MAX_NORMALIZE_CHANNELS 18
@@ -40,6 +41,7 @@ interface __declspec(uuid("CEDB2890-53AE-4231-91A3-B0AAFCD1DBDE")) IAudioSwitche
 	STDMETHOD(GetSpeakerChannelConfig) (int *plTotalOutputChannel , float pChannelNormalize[MAX_INPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_NORMALIZE_CHANNELS]) = 0;
 	STDMETHOD(SetSpeakerChannelConfig) (int lTotalOutputChannel , float pChannelNormalize[MAX_INPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_NORMALIZE_CHANNELS]
 			,float pSpeakerToChannelMapOffset[MAX_INPUT_CHANNELS][MAX_NORMALIZE_CHANNELS], int iSimpleSwitch) = 0;
+	STDMETHOD(SetEQControl) ( int lEQBandControlPreset, float pEQBandControl[MAX_EQ_BAND]) = 0;
 };
 
 class AudioStreamResampler;
@@ -64,6 +66,9 @@ class __declspec(uuid("18C16B08-6497-420e-AD14-22D21C2CEAB7")) CAudioSwitcherFil
 	// 0 - 2.0
 	float m_pSpeakerToChannelMapOffset[MAX_INPUT_CHANNELS][MAX_NORMALIZE_CHANNELS];
 	int m_iSimpleSwitch;
+
+	int m_fEQControlOn;
+	float m_pEQBandControlCurrent[MAX_EQ_BAND];
 	
 	bool m_fDownSampleTo441;
 	REFERENCE_TIME m_rtAudioTimeShift;
@@ -120,6 +125,7 @@ public:
 	STDMETHODIMP SetSpeakerChannelConfig (int lTotalOutputChannel , float pChannelNormalize[MAX_INPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_NORMALIZE_CHANNELS]
 			,float pSpeakerToChannelMapOffset[MAX_INPUT_CHANNELS][MAX_NORMALIZE_CHANNELS], int iSimpleSwitch );
 
+	STDMETHODIMP SetEQControl ( int lEQBandControlPreset, float pEQBandControl[MAX_EQ_BAND]);
 	// IAMStreamSelect
 	STDMETHODIMP Enable(long lIndex, DWORD dwFlags);
 };

@@ -38,7 +38,6 @@ int CTransparentControlBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (CSVPDialog::OnCreate(lpCreateStruct) == -1)
 		return -1;
 
-	m_bgColor = 0x333333;
 
 	CRect r;
 	GetClientRect(r);

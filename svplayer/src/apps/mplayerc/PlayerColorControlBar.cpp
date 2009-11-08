@@ -90,8 +90,7 @@ int CPlayerColorControlBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if(__super::OnCreate(lpCreateStruct) == -1)
 		return -1;
 
-	m_bgColor = 0x333333;
-
+	
 	CRect r;
 	GetClientRect(r);
 

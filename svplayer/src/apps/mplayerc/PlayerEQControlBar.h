@@ -5,16 +5,22 @@
 #include "SVPStatic.h"
 #include "SVPDialog.h"
 
-#define MAX_EQ_BRAND 10
+
 
 class CPlayerEQControlBar :
 	public CSVPDialog
 {
 	DECLARE_DYNAMIC(CPlayerEQControlBar)
-	CSVPSliderCtrl csl_trans[MAX_EQ_BRAND];
+	CSVPSliderCtrl csl_trans[MAX_EQ_BAND];
+	CSVPStatic cslLabel[MAX_EQ_BAND];
 	CComQIPtr<IAudioSwitcherFilter> m_pASF;
 	int m_nLogDPIY;
 	CFont m_font;
+	CPoint m_lastMousePoint;
+	enum 
+	{
+		TIMER_SETEQCONTROL = 12177
+	};
 public:
 	CPlayerEQControlBar(void);
 	~CPlayerEQControlBar(void);
@@ -29,4 +35,8 @@ public:
 	CSize getSizeOfWnd();
 	bool InitSettings();
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };

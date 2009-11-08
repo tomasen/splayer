@@ -3265,6 +3265,8 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DOWNSAMPLETO441), fDownSampleTo441);
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_CUSTOMCHANNELMAPPING), fCustomChannelMapping);
 		pApp->WriteProfileBinary(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPEAKERTOCHANNELMAPPING)+_T("Offset"), (BYTE*)pSpeakerToChannelMapOffset, sizeof(pSpeakerToChannelMapOffset));
+		pApp->WriteProfileBinary(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_EQCONTROL), (BYTE*)pEQBandControlCustom, sizeof(pEQBandControlCustom));
+		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_EQCONTROLPERSET), pEQBandControlPerset);
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUDIONORMALIZE), fAudioNormalize);
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUDIONORMALIZERECOVER), fAudioNormalizeRecover);		
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUDIOBOOST), min((int)AudioBoost, 56)); // not more than 415%
@@ -3823,14 +3825,22 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 
 		InitChannelMap();
 
-		if((iUpgradeReset >= 400) && pApp->GetProfileBinary(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPEAKERTOCHANNELMAPPING)+_T("Offset"), &ptr, &len)  )
+		memset(pSpeakerToChannelMapOffset, 0 , sizeof(pSpeakerToChannelMapOffset));
+		if( pApp->GetProfileBinary(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPEAKERTOCHANNELMAPPING)+_T("Offset"), &ptr, &len)  )
 		{
-			memset(pSpeakerToChannelMapOffset, 0 , sizeof(pSpeakerToChannelMapOffset));
 			memcpy(pSpeakerToChannelMapOffset, ptr, sizeof(pSpeakerToChannelMapOffset));
 			delete [] ptr;
 
 			ChangeChannelMapByOffset();
 			
+		}
+		pEQBandControlPerset = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_EQCONTROLPERSET), 0);
+
+		memset(pEQBandControlCustom, 0 , sizeof(pEQBandControlCustom));
+		if(pApp->GetProfileBinary(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_EQCONTROL), &ptr, &len)  )
+		{
+			memcpy(pEQBandControlCustom, ptr, sizeof(pEQBandControlCustom));
+			delete [] ptr;
 		}
 		//SVP_LogMsg5(L"Init ChannelMap %f", pSpeakerToChannelMap2[5][1][0][1]);
 

@@ -6368,7 +6368,17 @@ void CMainFrame::OnUpdateFileSaveThumbnails(CCmdUI* pCmdUI)
 void CMainFrame::OnShowEQControl()
 {
 	
-	SendStatusMessage(_T("havn't finished"),4000);
+	if(m_iMediaLoadState == MLS_LOADED)
+	{
+		m_wndPlayerEQControlBar.InitSettings();
+		m_wndPlayerEQControlBar.ShowWindow(SW_SHOWNOACTIVATE);
+		rePosOSD();
+	}else{
+
+		SendStatusMessage(ResStr(IDS_OSD_MSG_ONLY_WORK_WHEN_AUDIO_LOADED),4000);
+
+	}
+
 }
 void CMainFrame::OnShowChannelControl()
 {

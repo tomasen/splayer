@@ -1520,6 +1520,8 @@ BEGIN
     IDS_RS_WINLIRCADDR      "WinLircAddr"
     IDS_R_COMMANDS          "Commands2"
     IDS_RS_WINLIRC          "UseWinLirc"
+	IDS_RS_EQCONTROL		"EQControlSet"
+	IDS_RS_EQCONTROLPERSET	"EQControlPreset"
 END
 
 STRINGTABLE 

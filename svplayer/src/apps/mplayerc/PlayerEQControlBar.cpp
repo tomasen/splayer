@@ -24,6 +24,7 @@ BEGIN_MESSAGE_MAP(CPlayerEQControlBar, CSVPDialog)
 	ON_WM_MOUSEMOVE()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_TIMER()
+	ON_BN_CLICKED(IDC_BUTTONRESETEQCONTROL,   OnButtonReset)
 END_MESSAGE_MAP()
 
 
@@ -41,6 +42,10 @@ int CPlayerEQControlBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	CRect r;
 	GetClientRect(r);
 
+	GetSystemFontWithScale(&m_font );
+
+	cb_reset.Create( ResStr(IDS_COLOR_CONTROL_BUTTON_RESET), WS_VISIBLE|WS_CHILD|BS_FLAT|BS_VCENTER|BS_CENTER, r , this, IDC_BUTTONRESETEQCONTROL);
+	cb_reset.SetFont(&m_font);
 
 	for(int i = 0;i < MAX_EQ_BAND; i++){
 
@@ -71,7 +76,7 @@ void CPlayerEQControlBar::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScroll
 		KillTimer(TIMER_SETEQCONTROL);
 		int pos = csl_trans[i].GetPos();
 
-		s.pEQBandControlCustom[i] = -float(pos-50) / 50;
+		s.pEQBandControlCustom[i] = -float(pos-50) / 50; // -1.0 - +1.0
 
 		s.pEQBandControlPerset = 0;
 		SetTimer(TIMER_SETEQCONTROL, 700, NULL);
@@ -118,7 +123,7 @@ bool CPlayerEQControlBar::InitSettings()
 CSize CPlayerEQControlBar::getSizeOfWnd()
 {
 
-	return CSize( (5+ 25*MAX_EQ_BAND) * m_nLogDPIY / 96 , 120 * m_nLogDPIY / 96 );
+	return CSize( (5+ 25*MAX_EQ_BAND + 100) * m_nLogDPIY / 96 , 120 * m_nLogDPIY / 96 );
 
 }
 void CPlayerEQControlBar::Relayout()
@@ -150,6 +155,14 @@ void CPlayerEQControlBar::Relayout()
 	}
 
 
+	CRect r2(r);
+	r2.right -= 35;
+	r2.left = r2.right - 40;
+	r2.bottom -= 20;
+	r2.top = r2.bottom - 20;
+	cb_reset.MoveWindow(&r2);
+	cb_reset.EnableWindow(TRUE);
+
 	Invalidate();
 
 }
@@ -174,16 +187,7 @@ void CPlayerEQControlBar::OnRButtonUp(UINT nFlags, CPoint point)
 	{
 	case M_RESET:
 		{
-			AppSettings& s = AfxGetAppSettings();
-			for(int i = 0;i < MAX_EQ_BAND; i++){
-				csl_trans[i].SetPos( 50 );
-				s.pEQBandControlCustom[i] = 0;
-				s.pEQBandControlPerset = 0;
-			}
-			if(m_pASF)
-				m_pASF->SetEQControl(s.pEQBandControlPerset, s.pEQBandControlCustom);
-				
-
+			OnButtonReset();
 		}
 		break;
 	}
@@ -215,4 +219,18 @@ void CPlayerEQControlBar::OnTimer(UINT_PTR nIDEvent)
 
 	}
 	CSVPDialog::OnTimer(nIDEvent);
+}
+
+void  CPlayerEQControlBar::OnButtonReset()
+{
+	AppSettings& s = AfxGetAppSettings();
+	for(int i = 0;i < MAX_EQ_BAND; i++){
+		csl_trans[i].SetPos( 50 );
+		s.pEQBandControlCustom[i] = 0;
+		s.pEQBandControlPerset = 0;
+	}
+	if(m_pASF)
+		m_pASF->SetEQControl(s.pEQBandControlPerset, s.pEQBandControlCustom);
+
+
 }

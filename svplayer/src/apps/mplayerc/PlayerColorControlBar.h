@@ -30,7 +30,7 @@ public:
 	CSVPSliderCtrl csl_const;
 
 	CSVPButton  cb_reset;
-	CSVPButton  cb_enablectrl;
+	//CSVPButton  cb_enablectrl;
 
 	CFont m_font;
 

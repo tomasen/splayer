@@ -6368,16 +6368,11 @@ void CMainFrame::OnUpdateFileSaveThumbnails(CCmdUI* pCmdUI)
 void CMainFrame::OnShowEQControl()
 {
 	
-	if(m_iMediaLoadState == MLS_LOADED)
-	{
+	
 		m_wndPlayerEQControlBar.InitSettings();
 		m_wndPlayerEQControlBar.ShowWindow(SW_SHOWNOACTIVATE);
 		rePosOSD();
-	}else{
-
-		SendStatusMessage(ResStr(IDS_OSD_MSG_ONLY_WORK_WHEN_AUDIO_LOADED),4000);
-
-	}
+	
 
 }
 void CMainFrame::OnShowChannelControl()
@@ -8581,7 +8576,7 @@ LRESULT CMainFrame::OnSuggestVolume(  WPARAM wParam, LPARAM lParam){
 	AppSettings& s = AfxGetAppSettings();
 	double f_suggest_vol = *(double*)wParam;
 	int iVol = 90;
-	if(f_suggest_vol <= 4){
+	if(f_suggest_vol <= 3){
 		iVol = 70;
 	}
 	m_wndToolBar.m_volctrl.SetPos(iVol);

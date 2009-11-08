@@ -110,8 +110,8 @@ int CPlayerColorControlBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	cb_reset.Create( ResStr(IDS_COLOR_CONTROL_BUTTON_RESET), WS_VISIBLE|WS_CHILD|BS_FLAT|BS_VCENTER|BS_CENTER, r , this, IDC_BUTTONRESETCOLORCONTROL);
 	cb_reset.SetFont(&m_font);
 	
-	cb_enablectrl.Create( ResStr(IDS_COLOR_CONTROL_BUTTON_ENABLE), WS_VISIBLE|WS_CHILD|BS_FLAT|BS_VCENTER|BS_CENTER, r , this, IDC_BUTTONENABLECOLORCONTROL);
-	cb_enablectrl.SetFont(&m_font);
+	//cb_enablectrl.Create( ResStr(IDS_COLOR_CONTROL_BUTTON_ENABLE), WS_VISIBLE|WS_CHILD|BS_FLAT|BS_VCENTER|BS_CENTER, r , this, IDC_BUTTONENABLECOLORCONTROL);
+	//cb_enablectrl.SetFont(&m_font);
 
 	Relayout();
 	CheckAbility();
@@ -243,13 +243,15 @@ void CPlayerColorControlBar::Relayout()
 	cb_reset.MoveWindow(&r2);
 	cb_reset.EnableWindow(TRUE);
 
-	r2 = r;
+	/*
+r2 = r;
 	r2.left += 90;
 	r2.right = r2.left + 35;
 	r2.top += 54;
 	r2.bottom = r2.top + 20;
 	cb_enablectrl.MoveWindow(&r2);
 	cb_enablectrl.EnableWindow(TRUE);
+*/
 
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	AppSettings& s  = AfxGetAppSettings();
@@ -266,12 +268,12 @@ void CPlayerColorControlBar::Relayout()
 	cb_reset.EnableWindow(TRUE);
 	cb_reset.Invalidate();
 	
-	if(bEnable)
-		cb_enablectrl.SetWindowText(ResStr(IDS_COLOR_CONTROL_BUTTON_ENABLE));
-	else
-		cb_enablectrl.SetWindowText(ResStr(IDS_COLOR_CONTROL_BUTTON_DISABLE));
+	//if(bEnable)
+	//	cb_enablectrl.SetWindowText(ResStr(IDS_COLOR_CONTROL_BUTTON_ENABLE));
+	//else
+	//	cb_enablectrl.SetWindowText(ResStr(IDS_COLOR_CONTROL_BUTTON_DISABLE));
 	
-	cb_enablectrl.Invalidate();
+	//cb_enablectrl.Invalidate();
 
 	Invalidate();
 }

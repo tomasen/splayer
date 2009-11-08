@@ -19,8 +19,9 @@
 #pragma once
 
 #include "StreamSwitcher.h"
+#include "..\..\..\svplib\SVPEqualizer.h"
 
-#define MAX_EQ_BAND 10
+
 #define MAX_OUTPUT_CHANNELS 18
 #define MAX_INPUT_CHANNELS 18
 #define MAX_NORMALIZE_CHANNELS 18
@@ -55,6 +56,7 @@ class __declspec(uuid("18C16B08-6497-420e-AD14-22D21C2CEAB7")) CAudioSwitcherFil
 	int m_fCustomChannelMapping2;
 	int m_lastInputChannelCount;
 	int m_lastOutputChannelCount;
+	time_t m_tPlayedtime;
 
 	float m_pCurrentChannelNormalize2[MAX_OUTPUT_CHANNELS][MAX_NORMALIZE_CHANNELS];
 	// -- DWORD m_pSpeakerToChannelMap[18][18];
@@ -82,6 +84,8 @@ class __declspec(uuid("18C16B08-6497-420e-AD14-22D21C2CEAB7")) CAudioSwitcherFil
 
 	bool m_bNoMoreCheckConnection;
 	int m_l_number_of_channels;
+
+	CSVPEqualizer m_EQualizer;
 public:
 	CAudioSwitcherFilter(LPUNKNOWN lpunk, HRESULT* phr);
 
@@ -99,6 +103,7 @@ public:
     STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void** ppv);
 
 	CCritSec m_csDataLock;
+	CCritSec m_csEQLock;
 
 	HRESULT CheckMediaType(const CMediaType* pmt);
 	HRESULT Transform(IMediaSample* pIn, IMediaSample* pOut);

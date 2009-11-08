@@ -638,7 +638,7 @@ public:
 		
 		float pSpeakerToChannelMap2[MAX_INPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_NORMALIZE_CHANNELS]; //Meaning [Total Channel Number] [Speaker] = 1 << Channel
 		float pSpeakerToChannelMapOffset[MAX_INPUT_CHANNELS][MAX_NORMALIZE_CHANNELS];
-		float pEQBandControlCustom[MAX_EQ_BAND];
+		float pEQBandControlCustom[MAX_EQ_BAND+1];
 		int pEQBandControlPerset;
 
 		bool fAudioNormalize;

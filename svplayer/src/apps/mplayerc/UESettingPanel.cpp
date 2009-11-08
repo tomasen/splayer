@@ -619,6 +619,7 @@ void CUESettingPanel::ApplyAllSetting(){
 		//m_pASF->EnableDownSamplingTo441(s.fDownSampleTo441);
 		//m_pASF->SetAudioTimeShift(s.fAudioTimeShift ? 10000i64*s.tAudioTimeShift : 0);
 		m_pASF->SetNormalizeBoost(s.fAudioNormalize, s.fAudioNormalizeRecover, s.AudioBoost);
+		m_pASF->SetEQControl(s.pEQBandControlPerset, s.pEQBandControlCustom);
 	}
 
 	s.bUseWaveOutDeviceByDefault = m_sgi_UseWaveOutDeviceByDefault ;

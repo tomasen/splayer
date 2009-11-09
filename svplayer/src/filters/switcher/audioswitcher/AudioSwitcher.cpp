@@ -212,15 +212,20 @@ void mix<int, INT64, (-1<<24), (+1<<24)-1>(float mask[MAX_NORMALIZE_CHANNELS], i
 
 #define MAX_MUL 6
 #define SMOOTH_RATE  15  //max is more smooth
+static double BetterSampleMul(double s, double k){
+	if(k > 1){
+		return 10 * s / sqrt( (s * s * 100) + (MAX_MUL * SMOOTH_RATE)/k - (SMOOTH_RATE -4 )) ;
+	}else{
+		return s;
+	}
+}
+
 //Plot[10*x/Sqrt[ (x*10)^2 + (MAX_MUL * SMOOTH_RATE)/k - (SMOOTH_RATE -4 )],  {x, -1, 1}, {k,1,MAX_MUL} ]
 template<class T>
-T clamp(double s, T smin, T smax, double k)
+T clamp(double s, T smin, T smax)
 {
 	if(s < -1) s = -1;
 	else if(s > 1) s = 1;
-	if(k > 1.0){
-		s = 10 * s / sqrt( (s * s * 100) + (MAX_MUL * SMOOTH_RATE)/k - (SMOOTH_RATE -4 )) ;
-	}
 	
 	
 	T t = (T)( (s+1.0)/2.0 * ((double)smax - smin) + smin );
@@ -603,7 +608,7 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 							
 							double old_sample_mul = sample_mul;
 							
-							while(sample_mul > 1 && clamp<double>( m_sample_max , -1, +1 , sample_mul) > 0.95){
+							while(sample_mul > 1 && BetterSampleMul( m_sample_max , sample_mul) > 0.95){
 								//m_boost = 1;
 
 								bMulChanged = TRUE;
@@ -612,7 +617,7 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 							}
 							double f_suggest_sample_mul = sample_mul;
 							if(!m_fVolSuggested){
-								while(f_suggest_sample_mul > 1 && clamp<double>( m_sample_max , -1, +1 , f_suggest_sample_mul) > 0.85){
+								while(f_suggest_sample_mul > 1 && BetterSampleMul( m_sample_max , f_suggest_sample_mul) > 0.85){
 									//m_boost = 1;
 
 									bMulChanged = TRUE;
@@ -650,6 +655,11 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 
 			}
 
+			if(sample_mul > 1){
+				for(int i = 0; i < samples; i++){
+					buff[i] = BetterSampleMul(buff[i] , sample_mul);
+				}
+			}
 			SVP_LogMsg5(L"EQ ON %d"  , m_fEQControlOn);
 			if(m_fEQControlOn){
 				CAutoLock dataLock(&m_csEQLock);
@@ -657,37 +667,34 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 				m_EQualizer.m_rate = wfeout->nSamplesPerSec;
 				m_EQualizer.EqzFilter(buff, buff, samplesPerChannel , wfeout->nChannels );
 			}
-
-			if(sample_mul <= 1)
-				sample_mul = 1;
-			
+	
 			if(m_fEQControlOn || sample_mul > 1 ){
 				//SVP_LogMsg5(L"maul %f %f %f %f" ,m_boost , log10(m_boost) , sample_mul, sample_mul * (1+log10(m_boost)) );
 
 				switch(iWePCMType){
 								case WETYPE_PCM8:
 									for(int i = 0; i < samples; i++)
-										((BYTE*)pDataOut)[i] = clamp<BYTE>( buff[i] , 0, UCHAR_MAX , sample_mul);
+										((BYTE*)pDataOut)[i] = clamp<BYTE>( buff[i] , 0, UCHAR_MAX );
 									break;
 								case WETYPE_PCM16:
 									for(int i = 0; i < samples; i++)
-										((short*)pDataOut)[i] = clamp<short>( buff[i] , SHRT_MIN, SHRT_MAX , sample_mul);
+										((short*)pDataOut)[i] = clamp<short>( buff[i] , SHRT_MIN, SHRT_MAX );
 									break;
 								case WETYPE_PCM24:
 									for(int i = 0; i < samples; i++)
-									{int tmp = clamp<int>( buff[i] , -1<<23, (1<<23)-1 , sample_mul); memcpy(&pDataOut[i*3], &tmp, 3);}
+									{int tmp = clamp<int>( buff[i] , -1<<23, (1<<23)-1 ); memcpy(&pDataOut[i*3], &tmp, 3);}
 									break;
 								case WETYPE_PCM32:
 									for(int i = 0; i < samples; i++)
-										((int*)pDataOut)[i] = clamp<int>( buff[i] , INT_MIN, INT_MAX , sample_mul);
+										((int*)pDataOut)[i] = clamp<int>( buff[i] , INT_MIN, INT_MAX );
 									break;
 								case WETYPE_FPCM32:
 									for(int i = 0; i < samples; i++)
-										((float*)pDataOut)[i] = clamp<float>( buff[i] , -1, +1 , sample_mul);
+										((float*)pDataOut)[i] = clamp<float>( buff[i] , -1, +1 );
 									break;
 								case WETYPE_FPCM64:
 									for(int i = 0; i < samples; i++)
-										((double*)pDataOut)[i] = clamp<double>( buff[i] , -1, +1 , sample_mul);
+										((double*)pDataOut)[i] = clamp<double>( buff[i] , -1, +1 );
 									break;
 				}
 

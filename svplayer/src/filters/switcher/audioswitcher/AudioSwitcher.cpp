@@ -38,7 +38,7 @@
 #include "..\..\..\apps\mplayerc\mplayerc.h"
 
 //#define TRACE SVP_LogMsg5
-//#define SVP_LogMsg5 __noop
+#define SVP_LogMsg5 __noop
 
 #ifdef REGISTER_FILTER
 
@@ -1099,11 +1099,20 @@ STDMETHODIMP CAudioSwitcherFilter::SetEQControl ( int lEQBandControlPreset, floa
 	if(m_State == State_Stopped || m_pEQBandControlCurrent != pEQBandControl
 		|| memcmp(m_pEQBandControlCurrent, pEQBandControl, sizeof(m_pEQBandControlCurrent))  )
 	{
+		BOOL bNoPerset = true;
+		if(lEQBandControlPreset > 0){
+
+			AppSettings& s = AfxGetAppSettings();
+			eq_perset_setting t;
+
+			if( s.eqPerset.Lookup(lEQBandControlPreset , t) ){
+				memcpy(m_pEQBandControlCurrent, t.f_amp, sizeof(m_pEQBandControlCurrent));
+				bNoPerset = false;
+			}
+		}
 		
-		if(pEQBandControl)
+		if(bNoPerset && pEQBandControl){
 			memcpy(m_pEQBandControlCurrent, pEQBandControl, sizeof(m_pEQBandControlCurrent));
-		else if(lEQBandControlPreset > 0){
-			//TODO set according to preset
 		}
 		m_fEQControlOn = 0;
 		for(int i = 0 ; i < MAX_EQ_BAND; i++){

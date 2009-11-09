@@ -62,6 +62,16 @@ extern bool LoadResource(UINT resid, CStringA& str, LPCTSTR restype);
 extern CString GetContentType(CString fn, CAtlList<CString>* redir = NULL);
 extern void GetSystemFontWithScale(CFont* pFont, double dDefaultSize = 14.0, int iWeight = FW_NORMAL);
 
+struct eq_perset_setting
+{
+	/* Filter static config */
+	CString szPersetName;
+	int  i_band;
+	float f_preamp;
+	float f_amp[MAX_EQ_BAND];   /* Per band amp */
+	
+
+};
 /////////////////////////////////////////////////////////////////////////////
 // CMPlayerCApp:
 // See mplayerc.cpp for the implementation of this class
@@ -639,7 +649,10 @@ public:
 		float pSpeakerToChannelMap2[MAX_INPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_NORMALIZE_CHANNELS]; //Meaning [Total Channel Number] [Speaker] = 1 << Channel
 		float pSpeakerToChannelMapOffset[MAX_INPUT_CHANNELS][MAX_NORMALIZE_CHANNELS];
 		float pEQBandControlCustom[MAX_EQ_BAND+1];
+		
 		int pEQBandControlPerset;
+
+		CAtlMap<DWORD, eq_perset_setting > eqPerset;
 
 		bool fAudioNormalize;
 		bool fAudioNormalizeRecover;
@@ -706,6 +719,7 @@ public:
 		CString szFGMLog;
 
 		CAtlMap<CString, COLORREF , CStringElementTraits<CString>> colorsTheme;
+		
 	public:
 		Settings();
 		virtual ~Settings();
@@ -716,6 +730,7 @@ public:
 		BOOL bUserAeroUI();
 		CString GetSVPSubStorePath();
 		void InitChannelMap();
+		void InitEQPerset();
 		void ChangeChannelMapByOffset();
 		BOOL bUserAeroTitle();
 		BOOL bShouldUseEVR();

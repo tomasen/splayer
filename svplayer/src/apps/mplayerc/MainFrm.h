@@ -311,6 +311,9 @@ private:
 public:
 	void SetupSVPAudioMenu();
 	CMenu m_audios;
+	void SetupEQPersetMenu();
+	CMenu m_eqperset_menu;
+	void MenuMerge(CMenu* Org, CMenu* New);
 
 	CComPtr<IGraphBuilder2> pGB;
 
@@ -734,6 +737,9 @@ public:
 	afx_msg void OnViewCompMonDeskARDiff();
 	afx_msg void OnUpdateViewCompMonDeskARDiff(CCmdUI* pCmdUI);
 	afx_msg void OnViewPanNScan(UINT nID);
+	afx_msg void OnEQPerset(UINT nID);
+	afx_msg void OnEQPersetReset();
+	afx_msg void OnUpdateEQPerset(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateViewPanNScan(CCmdUI* pCmdUI);
 	afx_msg void OnViewPanNScanPresets(UINT nID);
 	afx_msg void OnUpdateViewPanNScanPresets(CCmdUI* pCmdUI);

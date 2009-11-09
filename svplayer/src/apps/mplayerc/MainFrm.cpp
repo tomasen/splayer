@@ -333,6 +333,9 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_VF_KEEPASPECTRATIO, OnUpdateViewKeepaspectratio)
 	ON_COMMAND(ID_VIEW_VF_COMPMONDESKARDIFF, OnViewCompMonDeskARDiff)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_VF_COMPMONDESKARDIFF, OnUpdateViewCompMonDeskARDiff)
+	ON_COMMAND(ID_EQPERSET_RESET , OnEQPersetReset)
+	ON_COMMAND_RANGE(ID_EQPERSET_START, ID_EQPERSET_END, OnEQPerset)
+	ON_UPDATE_COMMAND_UI_RANGE(ID_EQPERSET_START, ID_EQPERSET_END, OnUpdateEQPerset)
 	ON_COMMAND_RANGE(ID_VIEW_RESET, ID_PANSCAN_CENTER, OnViewPanNScan)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_VIEW_RESET, ID_PANSCAN_CENTER, OnUpdateViewPanNScan)
 	ON_COMMAND_RANGE(ID_PANNSCAN_PRESETS_START, ID_PANNSCAN_PRESETS_END, OnViewPanNScanPresets)
@@ -3956,6 +3959,7 @@ void CMainFrame::OnShowEQControlBar(){
 		m_wndPlayerEQControlBar.ShowWindow(SW_HIDE);
 	}else{
 		m_wndChannelNormalizerBar.ShowWindow(SW_HIDE);
+		m_wndPlayerEQControlBar.InitSettings();
 		m_wndPlayerEQControlBar.ShowWindow(SW_SHOWNOACTIVATE);
 		rePosOSD();
 	}
@@ -4157,7 +4161,7 @@ void CMainFrame::OnInitMenu(CMenu* pMenu)
 	}
 	
 }
-void MenuMerge(CMenu* Org, CMenu* New){
+void CMainFrame::MenuMerge(CMenu* Org, CMenu* New){
 	if(!Org || !New){ return;};
 	if(Org->GetMenuItemCount() > 0 && New->GetMenuItemCount() > 0 ){
 		Org->AppendMenu(MF_SEPARATOR);
@@ -4447,6 +4451,30 @@ void CMainFrame::OnInitMenuPopup(CMenu * pPopupMenu, UINT nIndex, BOOL bSysMenu)
 			pPopupMenu->InsertMenu(ID_VIEW_RESET, MF_BYCOMMAND, ID_PANNSCAN_PRESETS_START+i, ResStr(IDS_PANSCAN_EDIT));
 			pPopupMenu->InsertMenu(ID_VIEW_RESET, MF_BYCOMMAND|MF_SEPARATOR);
 		}
+	}
+}
+void CMainFrame::SetupEQPersetMenu(){
+	
+	CMenu* pSub = &m_eqperset_menu;
+	if(!IsMenu(pSub->m_hMenu)) pSub->CreatePopupMenu();
+	else while(pSub->RemoveMenu(0, MF_BYPOSITION));
+
+	pSub->AppendMenu(MF_STRING|MF_ENABLED, ID_EQPERSET_RESET, ResStr(IDS_COLOR_CONTROL_BUTTON_RESET));
+	pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED);
+	pSub->AppendMenu(MF_STRING|MF_ENABLED, ID_EQPERSET_START, ResStr(IDS_EQ_PERSET_CUSTOM));
+
+	AppSettings& s = AfxGetAppSettings();
+
+	POSITION pos = s.eqPerset.GetStartPosition();
+	while(pos)
+	{
+		eq_perset_setting cVal;
+		DWORD cKey;
+		s.eqPerset.GetNextAssoc(pos, cKey, cVal);
+
+		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_EQPERSET_START+cKey, cVal.szPersetName);
+		
+
 	}
 }
 void CMainFrame::SetupSVPAudioMenu(){
@@ -7048,7 +7076,38 @@ void CMainFrame::OnUpdateViewCompMonDeskARDiff(CCmdUI* pCmdUI)
 	pCmdUI->Enable(m_iMediaLoadState == MLS_LOADED && !m_fAudioOnly);
 	pCmdUI->SetCheck(AfxGetAppSettings().fCompMonDeskARDiff);
 }
+void CMainFrame::OnUpdateEQPerset(CCmdUI* pCmdUI)
+{
+	AppSettings& s = AfxGetAppSettings();
+	pCmdUI->SetRadio( (pCmdUI->m_nID-ID_EQPERSET_START) == s.pEQBandControlPerset );
+	
+}
+void CMainFrame::OnEQPersetReset(){
+	m_wndPlayerEQControlBar.OnButtonReset();
+}
+void CMainFrame::OnEQPerset(UINT nID)
+{
 
+	AppSettings& s = AfxGetAppSettings();
+	eq_perset_setting t;
+
+	if( s.eqPerset.Lookup(nID-ID_EQPERSET_START , t) ){
+		s.pEQBandControlPerset = nID-ID_EQPERSET_START;
+		
+		
+	}else{
+		s.pEQBandControlPerset = 0;
+	}
+	if( m_iMediaLoadState == MLS_LOADED){
+		if( CComQIPtr<IAudioSwitcherFilter> pASF = FindFilter(__uuidof(CAudioSwitcherFilter), pGB))
+		{
+			pASF->SetEQControl( s.pEQBandControlPerset , s.pEQBandControlCustom);
+		}
+	}
+	m_wndPlayerEQControlBar.InitSettings();
+
+
+}
 void CMainFrame::OnViewPanNScan(UINT nID)
 {
 	if(m_iMediaLoadState != MLS_LOADED) return;

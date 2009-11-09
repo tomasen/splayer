@@ -2668,6 +2668,99 @@ void CMPlayerCApp::Settings::SetChannelMapByNumberOfSpeakers( int iSS , int iNum
 #define LEVEL_3DB 0.7071067811865476
 #define LEVEL_45DB 0.5946035575013605
 #define LEVEL_6DB 0.5
+
+
+static inline float EqzConvertdBRevert( float db )
+{
+	/* Map it to gain,
+	* (we do as if the input of iir is /EQZ_IN_FACTOR, but in fact it's the non iir data that is *EQZ_IN_FACTOR)
+	* db = 20*log( out / in ) with out = in + amp*iir(i/EQZ_IN_FACTOR)
+	* or iir(i) == i for the center freq so
+	* db = 20*log( 1 + amp/EQZ_IN_FACTOR )
+	* -> amp = EQZ_IN_FACTOR*(10^(db/20) - 1)
+	**/
+
+ 	if( db < -20.0 )
+ 		db = -20.0;
+ 	else if(  db > 20.0 )
+ 		db = 20.0;
+// 	return EQZ_IN_FACTOR * ( pow( 10, db / 20.0 ) - 1.0 );
+
+	return db / 20;
+	//EqzConvertdB( pEQBandControlCurrent[i] * 20);
+}
+
+#define INITEQPERSET(d,n,x1,x2,...) { eq_perset_setting t = { n ,x1,x2, { __VA_ARGS__ } }; d = t; }
+void CMPlayerCApp::Settings::InitEQPerset(){
+
+	//init eq perset
+
+	INITEQPERSET(eqPerset[1] , ResStr(IDS_EQ_PERSET_NAME_CLASSICAL), 10, 12.0,
+		-1.11022e-15, -1.11022e-15, -1.11022e-15, -1.11022e-15, -1.11022e-15, -1.11022e-15, -7.2, -7.2, -7.2, -9.6  );
+
+	INITEQPERSET(eqPerset[2] , ResStr(IDS_EQ_PERSET_NAME_CLUB), 10, 6.0,
+		-1.11022e-15, -1.11022e-15, 8, 5.6, 5.6, 5.6, 3.2, -1.11022e-15, -1.11022e-15, -1.11022e-15  );
+
+	INITEQPERSET(eqPerset[3] , ResStr(IDS_EQ_PERSET_NAME_DANCE), 10, 5.0,
+		9.6, 7.2, 2.4, -1.11022e-15, -1.11022e-15, -5.6, -7.2, -7.2, -1.11022e-15, -1.11022e-15  );
+
+	INITEQPERSET(eqPerset[4] , ResStr(IDS_EQ_PERSET_NAME_FULLBASS), 10, 5.0,
+		-8, 9.6, 9.6, 5.6, 1.6, -4, -8, -10.4, -11.2, -11.2   );
+
+	INITEQPERSET(eqPerset[5] , ResStr(IDS_EQ_PERSET_NAME_FULLBASSTREBLE), 10, 4.0,
+		7.2, 5.6, -1.11022e-15, -7.2, -4.8, 1.6, 8, 11.2, 12, 12  );
+
+	INITEQPERSET(eqPerset[6] , ResStr(IDS_EQ_PERSET_NAME_FULLTREBLE), 10, 3.0,
+		-9.6, -9.6, -9.6, -4, 2.4, 11.2, 16, 16, 16, 16.8  );
+
+	INITEQPERSET(eqPerset[7] , ResStr(IDS_EQ_PERSET_NAME_HEADPHONES), 10, 4.0,
+		4.8, 11.2, 5.6, -3.2, -2.4, 1.6, 4.8, 9.6, 12.8, 14.4  );
+
+	INITEQPERSET(eqPerset[8] , ResStr(IDS_EQ_PERSET_NAME_LARGEHALL), 10, 5.0,
+		10.4, 10.4, 5.6, 5.6, -1.11022e-15, -4.8, -4.8, -4.8, -1.11022e-15, -1.11022e-15  );
+
+	INITEQPERSET(eqPerset[9] , ResStr(IDS_EQ_PERSET_NAME_LIVE), 10, 7.0,
+		-4.8, -1.11022e-15, 4, 5.6, 5.6, 5.6, 4, 2.4, 2.4, 2.4  );
+
+	INITEQPERSET(eqPerset[10] , ResStr(IDS_EQ_PERSET_NAME_PARTY), 10, 6.0,
+		7.2, 7.2, -1.11022e-15, -1.11022e-15, -1.11022e-15, -1.11022e-15, -1.11022e-15, -1.11022e-15, 7.2, 7.2  );
+
+	INITEQPERSET(eqPerset[11] , ResStr(IDS_EQ_PERSET_NAME_POP), 10, 6.0,
+		-1.6, 4.8, 7.2, 8, 5.6, -1.11022e-15, -2.4, -2.4, -1.6, -1.6  );
+
+	INITEQPERSET(eqPerset[12] , ResStr(IDS_EQ_PERSET_NAME_REGGAE), 10, 8.0,
+		-1.11022e-15, -1.11022e-15, -1.11022e-15, -5.6, -1.11022e-15, 6.4, 6.4, -1.11022e-15, -1.11022e-15, -1.11022e-15  );
+
+	INITEQPERSET(eqPerset[13] , ResStr(IDS_EQ_PERSET_NAME_ROCK), 10, 5.0,
+		8, 4.8, -5.6, -8, -3.2, 4, 8.8, 11.2, 11.2, 11.2  );
+
+	INITEQPERSET(eqPerset[14] , ResStr(IDS_EQ_PERSET_NAME_SKA), 10, 6.0,
+		-2.4, -4.8, -4, -1.11022e-15, 4, 5.6, 8.8, 9.6, 11.2, 9.6  );
+
+	INITEQPERSET(eqPerset[15] , ResStr(IDS_EQ_PERSET_NAME_SOFT), 10, 5.0,
+		4.8, 1.6, -1.11022e-15, -2.4, -1.11022e-15, 4, 8, 9.6, 11.2, 12  );
+
+	INITEQPERSET(eqPerset[16] , ResStr(IDS_EQ_PERSET_NAME_SOFTROCK), 10, 7.0,
+		4, 4, 2.4, -1.11022e-15, -4, -5.6, -3.2, -1.11022e-15, 2.4, 8.8  );
+
+	INITEQPERSET(eqPerset[17] , ResStr(IDS_EQ_PERSET_NAME_TECHNO), 10, 5.0,
+		8, 5.6, -1.11022e-15, -5.6, -4.8, -1.11022e-15, 8, 9.6, 9.6, 8.8  );
+
+	POSITION pos = eqPerset.GetStartPosition();
+	while(pos)
+	{
+		eq_perset_setting cVal;
+		DWORD cKey;
+		eqPerset.GetNextAssoc(pos, cKey, cVal);
+
+		for(int i = 0; i < MAX_EQ_BAND; i++){
+			eqPerset[cKey].f_amp[i] = EqzConvertdBRevert(cVal.f_preamp-12+cVal.f_amp[i]);
+		}
+
+
+	}
+
+}
 void CMPlayerCApp::Settings::InitChannelMap()
 {
 	memset(pSpeakerToChannelMap2, 0 , sizeof(pSpeakerToChannelMap2));
@@ -3842,6 +3935,9 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 			memcpy(pEQBandControlCustom, ptr, sizeof(pEQBandControlCustom));
 			delete [] ptr;
 		}
+
+		InitEQPerset();
+		
 		//SVP_LogMsg5(L"Init ChannelMap %f", pSpeakerToChannelMap2[5][1][0][1]);
 
 		fbUseSPDIF = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USESPDIF), 0);

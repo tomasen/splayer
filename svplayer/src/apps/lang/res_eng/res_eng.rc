@@ -2414,6 +2414,26 @@ END
 STRINGTABLE 
 BEGIN
     ID_SHOWCOLORCONTROLBAR  "Brightness Control\nBrightness Control"
+
+	IDS_EQ_PERSET_NAME_CLASSICAL             "classical" 
+	IDS_EQ_PERSET_NAME_CLUB                  "club" 
+	IDS_EQ_PERSET_NAME_DANCE                 "dance" 
+	IDS_EQ_PERSET_NAME_FULLBASS              "fullbass" 
+	IDS_EQ_PERSET_NAME_FULLBASSTREBLE        "fullbasstreble" 
+	IDS_EQ_PERSET_NAME_FULLTREBLE            "fulltreble" 
+	IDS_EQ_PERSET_NAME_HEADPHONES            "headphones" 
+	IDS_EQ_PERSET_NAME_LARGEHALL             "largehall" 
+	IDS_EQ_PERSET_NAME_LIVE                  "live" 
+	IDS_EQ_PERSET_NAME_PARTY                 "party" 
+	IDS_EQ_PERSET_NAME_POP                   "pop" 
+	IDS_EQ_PERSET_NAME_REGGAE                "reggae" 
+	IDS_EQ_PERSET_NAME_ROCK                  "rock" 
+	IDS_EQ_PERSET_NAME_SKA                   "ska"  
+	IDS_EQ_PERSET_NAME_SOFT                  "soft" 
+	IDS_EQ_PERSET_NAME_SOFTROCK              "softrock"  
+	IDS_EQ_PERSET_NAME_TECHNO                "techno"  
+	IDS_EQ_PERSET_CUSTOM					"Custom"
+
 END
 
 #ifndef APSTUDIO_INVOKED

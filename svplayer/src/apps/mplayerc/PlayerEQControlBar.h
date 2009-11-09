@@ -3,6 +3,7 @@
 #include "SVPSliderCtrl.h"
 #include "SVPButton.h"
 #include "SVPStatic.h"
+#include "SVPCombo.h"
 #include "SVPDialog.h"
 
 
@@ -14,6 +15,7 @@ class CPlayerEQControlBar :
 	CSVPSliderCtrl csl_trans[MAX_EQ_BAND];
 	CSVPStatic cslLabel[MAX_EQ_BAND];
 	CSVPButton cb_reset;
+	CSVPButton cb_CurrentPerset;
 	CComQIPtr<IAudioSwitcherFilter> m_pASF;
 	int m_nLogDPIY;
 	CFont m_font;
@@ -41,4 +43,5 @@ public:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnButtonReset();
+	afx_msg void OnPersetMenu();
 };

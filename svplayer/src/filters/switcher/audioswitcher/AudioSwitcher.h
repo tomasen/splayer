@@ -43,6 +43,8 @@ interface __declspec(uuid("CEDB2890-53AE-4231-91A3-B0AAFCD1DBDE")) IAudioSwitche
 	STDMETHOD(SetSpeakerChannelConfig) (int lTotalOutputChannel , float pChannelNormalize[MAX_INPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_NORMALIZE_CHANNELS]
 			,float pSpeakerToChannelMapOffset[MAX_INPUT_CHANNELS][MAX_NORMALIZE_CHANNELS], int iSimpleSwitch) = 0;
 	STDMETHOD(SetEQControl) ( int lEQBandControlPreset, float pEQBandControl[MAX_EQ_BAND]) = 0;
+
+	STDMETHOD (SetRate)(double dRate) = 0;
 };
 
 class AudioStreamResampler;
@@ -79,6 +81,7 @@ class __declspec(uuid("18C16B08-6497-420e-AD14-22D21C2CEAB7")) CAudioSwitcherFil
 	bool m_fNormalize, m_fNormalizeRecover;
 	bool m_fVolSuggested;
 	float m_boost;
+	float m_dRate;
 
 	REFERENCE_TIME m_rtNextStart, m_rtNextStop;
 
@@ -126,6 +129,8 @@ public:
 	STDMETHODIMP SetNormalizeBoost(bool fNormalize, bool fNormalizeRecover, float boost);
 	STDMETHODIMP ResetAudioSwitch();
 
+	STDMETHODIMP SetRate(double dRate);
+
 	STDMETHODIMP GetSpeakerChannelConfig (int *plTotalOutputChannel , float pChannelNormalize[MAX_INPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_NORMALIZE_CHANNELS]);
 	STDMETHODIMP SetSpeakerChannelConfig (int lTotalOutputChannel , float pChannelNormalize[MAX_INPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_NORMALIZE_CHANNELS]
 			,float pSpeakerToChannelMapOffset[MAX_INPUT_CHANNELS][MAX_NORMALIZE_CHANNELS], int iSimpleSwitch );
@@ -133,4 +138,5 @@ public:
 	STDMETHODIMP SetEQControl ( int lEQBandControlPreset, float pEQBandControl[MAX_EQ_BAND]);
 	// IAMStreamSelect
 	STDMETHODIMP Enable(long lIndex, DWORD dwFlags);
+
 };

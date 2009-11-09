@@ -38,7 +38,7 @@
 #include "..\..\..\apps\mplayerc\mplayerc.h"
 
 //#define TRACE SVP_LogMsg5
-#define SVP_LogMsg5 __noop
+//#define SVP_LogMsg5 __noop
 
 #ifdef REGISTER_FILTER
 
@@ -110,6 +110,7 @@ CAudioSwitcherFilter::CAudioSwitcherFilter(LPUNKNOWN lpunk, HRESULT* phr)
 	, m_fVolSuggested(0)
 	, m_fEQControlOn(0)
 	, m_tPlayedtime(0)
+	, m_dRate(1.0)
 {
 	//memset(m_pSpeakerToChannelMap, 0, sizeof(m_pSpeakerToChannelMap));
 	memset(m_pChannelNormalize2, 0, sizeof(m_pChannelNormalize2));
@@ -538,8 +539,9 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 		}
 	}
 */
-	
-	if(m_fNormalize || m_boost > 1 || m_fEQControlOn)
+	BOOL bChangeRate = (m_dRate != 1.0 && m_dRate > 0);
+
+	if(m_fNormalize || m_boost > 1 || m_fEQControlOn || bChangeRate)
 	{
 		int samples = lenout*wfeout->nChannels;
 		
@@ -579,6 +581,42 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 			
 			double sample_mul = 1;
 
+			if(bChangeRate){
+				//todo: scale tempo by rate
+				int iStep = wfeout->nChannels;
+				if(m_dRate > 1){
+					//…Ï’π
+					for(int i = (lenout-1); i >= 0; i--){
+						int srcBlock = (int)((double)i/m_dRate);
+						if( srcBlock >= lenout){
+							break;
+						}
+						if(i == srcBlock)
+							continue;
+						for(int j = 0 ; j < iStep; j++){
+							buff[i*iStep+j] = buff[iStep*srcBlock+j];
+						}
+						
+					}
+					
+				}else if(m_dRate < 1 && m_dRate > 0){
+					// ’Àı
+					for(int i = 0; i < lenout; i++){
+						int srcBlock = (int)((double)i/m_dRate);
+						if( srcBlock >= lenout){
+							for(int j = 0 ; j < iStep; j++){
+								buff[i*iStep+j] = 0;
+							}
+							continue;
+						}
+						if(i == srcBlock)
+							continue;
+						for(int j = 0 ; j < iStep; j++){
+							buff[i*iStep+j] = buff[iStep*srcBlock+j];
+						}
+					}
+				}
+			}
 
 			if(m_fNormalize || m_boost > 1){
 
@@ -595,6 +633,7 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 					
 				if(m_fNormalize)
 				{
+					//Automatic Normalize
 					m_sample_max -= 1.0*rtDur/200000000; // -5%/sec
 					if(m_sample_max < 0.25) m_sample_max = 0.25; // not more than 4x volume
 					sample_mul = 1.0f / m_sample_max;
@@ -660,7 +699,7 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 					buff[i] = BetterSampleMul(buff[i] , sample_mul);
 				}
 			}
-			SVP_LogMsg5(L"EQ ON %d"  , m_fEQControlOn);
+			//SVP_LogMsg5(L"EQ ON %d"  , m_fEQControlOn);
 			if(m_fEQControlOn){
 				CAutoLock dataLock(&m_csEQLock);
 				int samplesPerChannel = lenout;
@@ -668,7 +707,7 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 				m_EQualizer.EqzFilter(buff, buff, samplesPerChannel , wfeout->nChannels );
 			}
 	
-			if(m_fEQControlOn || sample_mul > 1 ){
+			if(m_fEQControlOn || sample_mul > 1 || bChangeRate ){
 				//SVP_LogMsg5(L"maul %f %f %f %f" ,m_boost , log10(m_boost) , sample_mul, sample_mul * (1+log10(m_boost)) );
 
 				switch(iWePCMType){
@@ -703,6 +742,9 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 			delete buff;
 		}
 	}
+
+	
+	SVP_LogMsg5(L"Buffer Size %d, ActualLength %d", pOut->GetSize(), lenout*bps*wfeout->nChannels);
 
 	pOut->SetActualDataLength(lenout*bps*wfeout->nChannels);
 
@@ -1041,12 +1083,16 @@ STDMETHODIMP CAudioSwitcherFilter::Enable(long lIndex, DWORD dwFlags)
 	if(S_OK == hr){
 		m_sample_max = 0.1f;
 		m_fCustomChannelMapping2 = -1;
-		SVP_LogMsg5(L"switched");
+		//SVP_LogMsg5(L"switched");
 	}
-	SVP_LogMsg5(L"switched2");
+	//SVP_LogMsg5(L"switched2");
 	return hr;
 }
-
+STDMETHODIMP  CAudioSwitcherFilter::SetRate(double dRate){
+	SVP_LogMsg5(L"SetRate %f", dRate);;
+	m_dRate = dRate;
+	return S_OK ;
+}
 
 STDMETHODIMP CAudioSwitcherFilter::SetEQControl ( int lEQBandControlPreset, float pEQBandControl[MAX_EQ_BAND])
 {

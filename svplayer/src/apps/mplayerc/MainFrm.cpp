@@ -8009,6 +8009,11 @@ void CMainFrame::OnPlayChangeRate(UINT nID)
 				}else{
 					szMsg.Format( ResStr(IDS_OSD_MSG_SUGGEST_USE_WAVEOUT), dRate);
 				}
+			}else{
+				if(CComQIPtr<IAudioSwitcherFilter> pASF = FindFilter(__uuidof(CAudioSwitcherFilter), pGB))
+				{
+					pASF->SetRate(dRate);
+				}
 			}
 		}
 

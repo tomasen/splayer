@@ -3317,8 +3317,14 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 				SetThreadExecutionState(ES_DISPLAY_REQUIRED|ES_SYSTEM_REQUIRED); //this is the right way, only this work under vista . no ES_CONTINUOUS  so it can goes to sleep when not playing
 			}
 
+			
 			if( GetExStyle() & WS_EX_LAYERED){
-				ModifyStyleEx( WS_EX_LAYERED , 0);
+				BYTE dAlpha = 0 ;
+				DWORD dwFlag = 0;
+				GetLayeredWindowAttributes(NULL, &dAlpha , &dwFlag);
+				if(dAlpha == 255 ){
+					ModifyStyleEx( WS_EX_LAYERED , 0);
+				}
 			}
 			
 		}

@@ -26,6 +26,8 @@
 #include "AviSplitter.h"
 #include "../../../svplib/svplib.h"
 
+//#define TRACE SVP_LogMsg5
+#define SVP_LogMsg5 __noop
 #ifdef REGISTER_FILTER
 
 const AMOVIESETUP_MEDIATYPE sudPinTypesIn[] =
@@ -161,7 +163,7 @@ HRESULT CAviSplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 			AfxGetApp()->WriteProfileInt(_T("Settings"), _T("HideAviSplitterWarning"), fHideWarning);
 		}
 
-		if(fShowWarningText) hr = E_FAIL;
+		//if(fShowWarningText) hr = E_FAIL;
 	}
 
 	if(FAILED(hr)) {m_pFile.Free(); return hr;}
@@ -294,6 +296,8 @@ HRESULT CAviSplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 				? s->strh.dwSuggestedBufferSize*3/2
 				: (1024*1024));
 			mts.Add(mt);
+		}else{
+			SVP_LogMsg5(L"CAviSourceFilter: Unsupported fcc %x" , s->strh.fccType);
 		}
 
 		if(mts.IsEmpty())
@@ -303,6 +307,7 @@ HRESULT CAviSplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 		}
 
 		name.Format(L"%s %d (%s)", label, i , CStringW(s->strn) );
+		SVP_LogMsg5(L"CAviSourceFilter Got %s", name);
 
 		HRESULT hr;
 

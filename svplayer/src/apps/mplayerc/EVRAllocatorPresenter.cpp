@@ -1989,9 +1989,8 @@ void CEVRAllocatorPresenter::FlushSamplesInternal()
 	}
 }
 void CEVRAllocatorPresenter::ThreadBeginStreaming(){
-	AppSettings& s = AfxGetAppSettings();
-	
-		
+	CAutoLock threadLock(&m_csTread);
+	AppSettings& s = AfxGetAppSettings();	
 	
 	m_pGenlock->SetMonitor(GetAdapter(m_pD3D));
 	m_pGenlock->GetTiming();

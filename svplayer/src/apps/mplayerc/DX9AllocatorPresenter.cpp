@@ -445,6 +445,7 @@ CDX9AllocatorPresenter::CDX9AllocatorPresenter(HWND hWnd, HRESULT& hr, bool bIsE
 
 CDX9AllocatorPresenter::~CDX9AllocatorPresenter() 
 {
+	CAutoLock threadLock(&m_csTread);
 	if (m_bDesktopCompositionDisabled)
 	{
 		m_bDesktopCompositionDisabled = false;
@@ -2854,6 +2855,8 @@ STDMETHODIMP CVMR9AllocatorPresenter::AdviseNotify(IVMRSurfaceAllocatorNotify9* 
 }
 void CVMR9AllocatorPresenter::ThreadStartPresenting(){
 	//SVP_LogMsg3("StartPresenting Start ");
+
+	CAutoLock threadLock(&m_csTread);
 
 	//ResetGothSyncVars();
 	hEventGoth = CreateEvent(NULL, TRUE, FALSE, NULL);

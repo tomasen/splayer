@@ -462,6 +462,7 @@ namespace DSObjects
 	public:
 		CDX9AllocatorPresenter(HWND hWnd, HRESULT& hr, bool bIsEVR );
 		~CDX9AllocatorPresenter();
+		CCritSec m_csTread; //avoid destroy class before thread end
 		void ResetStats(); // Reset all tracing stats
 
 		// ISubPicAllocatorPresenter

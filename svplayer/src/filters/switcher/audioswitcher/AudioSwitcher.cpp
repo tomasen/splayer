@@ -242,6 +242,7 @@ T clamp(double s, T smin, T smax)
 
 HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 {
+	
 	CStreamSwitcherInputPin* pInPin = GetInputPin();
 	CStreamSwitcherOutputPin* pOutPin = GetOutputPin();
 	if(!pInPin || !pOutPin) 
@@ -255,7 +256,7 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 	int bps = wfe->wBitsPerSample>>3;
 
 	int len = pIn->GetActualDataLength() / (bps*wfe->nChannels);
-	int lenout = len * wfeout->nSamplesPerSec / wfe->nSamplesPerSec;
+	int lenout = (INT64)len * wfeout->nSamplesPerSec / wfe->nSamplesPerSec;
 
 	REFERENCE_TIME rtStart, rtStop;
 	if(SUCCEEDED(pIn->GetTime(&rtStart, &rtStop)))
@@ -281,6 +282,7 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 	{
 		m_sample_max = 0.1f;
 	}
+	//SVP_LogMsg5(L"Conn %d %d %f %f %f",  pInPin->IsConnected() , pOutPin->IsConnected() , (double) rtStart ,  (double) rtStop, (double) rtDur);
 
 	WORD tag = wfe->wFormatTag;
 	bool fPCM = tag == WAVE_FORMAT_PCM || tag == WAVE_FORMAT_EXTENSIBLE && wfex->SubFormat == KSDATAFORMAT_SUBTYPE_PCM;
@@ -785,6 +787,7 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 
 	
 	SVP_LogMsg5(L"Buffer Size %d, ActualLength %d", pOut->GetSize(), lenout*bps*wfeout->nChannels);
+	//SVP_LogMsg5(L"Out %d %d %d %d %d %d %d" , ((short*)pDataOut)[1], ((short*)pDataOut)[11], ((short*)pDataOut)[21], ((short*)pDataOut)[61], ((short*)pDataOut)[91], ((short*)pDataOut)[111], ((short*)pDataOut)[121]);
 
 	pOut->SetActualDataLength(lenout*bps*wfeout->nChannels);
 
@@ -967,6 +970,7 @@ HRESULT CAudioSwitcherFilter::DeliverEndFlush()
 HRESULT CAudioSwitcherFilter::DeliverNewSegment(REFERENCE_TIME tStart, REFERENCE_TIME tStop, double dRate)
 {
 	TRACE(_T("CAudioSwitcherFilter::DeliverNewSegment\n"));
+	SVP_LogMsg5(L"CAudioSwitcherFilter::DeliverNewSegment %f %f %f", (double)tStart, (double)tStop ,dRate );
 	
 	m_sample_max = 0.1f;
 	return __super::DeliverNewSegment(tStart, tStop, dRate);

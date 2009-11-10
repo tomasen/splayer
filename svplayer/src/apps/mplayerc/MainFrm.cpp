@@ -2654,7 +2654,10 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 			m_wndPlaylistBar.Invalidate();
 		}
 	}else if( TIMER_TRANSPARENTTOOLBARSTAT == nIDEvent){
-		if(m_lTransparentToolbarStat  ){
+		if(m_fAudioOnly && IsSomethingLoaded()){
+			m_lTransparentToolbarStat = max(4, m_lTransparentToolbarStat);
+		}
+		if(m_lTransparentToolbarStat ){
 			m_wndFloatToolBar.SetLayeredWindowAttributes(0, abs(m_lTransparentToolbarStat) * TRANS_OPTICAL_STEP, LWA_ALPHA);
 			m_lTransparentToolbarStat++;
 			if(m_lTransparentToolbarStat > 4){
@@ -2894,6 +2897,54 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 	}
 	else if(nIDEvent == TIMER_STATS)
 	{
+		if(IsSomethingLoaded() && m_fAudioOnly ){
+
+			m_wndView.m_AudioInfoCounter++;
+			BOOL bHaveInfo = false;
+
+			for(int i = 0; i < 4; i++){
+
+				
+				if( (m_wndView.m_AudioInfoCounter%4) == 0 || m_wndView.m_strAudioInfo.IsEmpty()){
+
+					CString szInfo;
+					switch(m_wndView.m_AudioInfoCounter/4 %4){
+						case 0:
+							m_wndInfoBar.GetLine(ResStr(IDS_INFOBAR_TITLE), szInfo);
+							break;
+						case 1:
+							m_wndInfoBar.GetLine(ResStr(IDS_INFOBAR_AUTHOR), szInfo);
+							break;
+						case 2:
+							m_wndInfoBar.GetLine(ResStr(IDS_INFOBAR_DESCRIPTION),szInfo);
+							break;
+						case 3:
+							m_wndInfoBar.GetLine(ResStr(IDS_INFOBAR_COPYRIGHT),szInfo);
+							break;
+					}
+				
+					
+					if(szInfo.IsEmpty()){
+						m_wndView.m_AudioInfoCounter+=4;
+						continue;
+					}else{
+						m_wndView.m_strAudioInfo = szInfo;
+						m_wndView.Invalidate();
+						bHaveInfo = true;
+					}
+				}
+				
+
+				break;
+			}
+			
+			if(!bHaveInfo){
+				//TODO: stop fetch info from audio
+
+			}
+
+		}
+		
 		if(m_iPlaybackMode == PM_FILE){
 			REFERENCE_TIME rtNow = 0, rtDur = 0;
 			pMS->GetCurrentPosition(&rtNow);
@@ -9963,7 +10014,7 @@ void CMainFrame::rePosOSD(){
 
 		AppSettings& s = AfxGetAppSettings();
 
-		if(m_lTransparentToolbarStat  && s.bUserAeroUI() && ::IsWindow(m_wndFloatToolBar.m_hWnd) ){
+		if( (m_lTransparentToolbarStat || m_fAudioOnly ) && s.bUserAeroUI() && ::IsWindow(m_wndFloatToolBar.m_hWnd) ){
 
 			
 			CRect rcCur = GetWhereTheTansparentToolBarShouldBe(rcToolBar);
@@ -10132,8 +10183,13 @@ MENUBARINFO mbi;
 	{
 		GetWindowRect(r);
 
-		w = r.Width(); // mmi.ptMinTrackSize.x;
-		h = r.Height();//mmi.ptMinTrackSize.y;
+		//w = r.Width(); //;mmi.ptMinTrackSize.x;
+		//h = r.Height();//;mmi.ptMinTrackSize.y;
+		w = 320;
+		if(s.bUserAeroUI()){
+			w /= 0.9;
+		}
+		h = 110;
 	}
 
 	// center window
@@ -12069,6 +12125,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 		if(!m_pCAP && m_fAudioOnly){
 			
 			//if there is jpg/png in music dir display it
+			/*
 			CSVPToolBox svpTool;
 			CAtlList<CString> szaRet;
 			CAtlArray<CString> szaExt;
@@ -12088,6 +12145,12 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 			CRect rcView;
 			m_wndView.GetWindowRect(&rcView);
 			m_wndPlaylistBar.MoveWindow(rcView);
+			*/
+			m_wndView.m_strAudioInfo.Empty();
+			KillTimer(TIMER_TRANSPARENTTOOLBARSTAT);
+			SetTimer(TIMER_TRANSPARENTTOOLBARSTAT, 50,NULL);
+			rePosOSD();
+
 		}
 
 	}
@@ -13756,10 +13819,16 @@ void CMainFrame::ShowControls(int nCS, bool fSave)
 	BOOL bSomthingChanged = false;
 	
 	nCS &= ~CS_STATUSBAR;
+
+	int nCSR = nCS;
 	//if(!IsSomethingLoaded()){
 		//nCS &= ~CS_SEEKBAR;
 	//}
 	m_pLastBar = NULL;
+
+	if(m_fAudioOnly && IsSomethingLoaded()){
+		nCSR |= CS_TOOLBAR|CS_SEEKBAR;
+	}
 
 	POSITION pos = m_bars.GetHeadPosition();
 	for(int i = 1; pos; i <<= 1)
@@ -13767,7 +13836,7 @@ void CMainFrame::ShowControls(int nCS, bool fSave)
 		CControlBar* pNext = m_bars.GetNext(pos);
 
 		if(!bSomthingChanged){
-			if(nCS&i){
+			if(nCSR&i){
 				if(!pNext->IsVisible()){
 					bSomthingChanged = true;
 					
@@ -13780,7 +13849,7 @@ void CMainFrame::ShowControls(int nCS, bool fSave)
 			}
 		}
 
-		if( (nCS&i) == CS_TOOLBAR && !pNext->IsVisible() && !m_fnCurPlayingFile.IsEmpty()){
+		if( (nCSR&i) == CS_TOOLBAR && !pNext->IsVisible() && !m_fnCurPlayingFile.IsEmpty() && !m_fAudioOnly){
 			CPath fuPath(m_fnCurPlayingFile);
 			CSVPToolBox svpTool;
 			fuPath.StripPath();
@@ -13792,14 +13861,14 @@ void CMainFrame::ShowControls(int nCS, bool fSave)
 		{
 			continue;
 		}
-		if( !!(nCS&i) != !!pNext->IsVisible() ){
-			ShowControlBar(pNext, !!(nCS&i), TRUE);
+		if( !!(nCSR&i) != !!pNext->IsVisible() ){
+			ShowControlBar(pNext, !!(nCSR&i), TRUE);
 		}
 
-		if(nCS&i) m_pLastBar = pNext;
+		if(nCSR&i) m_pLastBar = pNext;
 		CSize s = pNext->CalcFixedLayout(FALSE, TRUE);
 		if(nCSprev&i) hbefore += s.cy;
-		if(nCS&i) hafter += s.cy;
+		if(nCSR&i) hafter += s.cy;
 	}
 
 	WINDOWPLACEMENT wp;
@@ -15067,12 +15136,12 @@ void CMainFrame::CloseMedia()
 	OnFilePostClosemedia();
 
 
-	if(m_wndView.m_cover && !m_wndView.m_cover->IsNull()){
+/*	if(m_wndView.m_cover && !m_wndView.m_cover->IsNull()){
 		m_wndView.m_cover->Destroy();
 		m_wndView.m_cover = NULL;
 		m_wndView.Invalidate();
 	}
-
+*/
 	if(m_pGraphThread && s_fOpenedThruThread)
 	{
 		CAMEvent e;

@@ -57,6 +57,8 @@ m_vrect(0,0,0,0)
 	//m_btnList.AddTail( new CSUIButton(L"BTN_OPENADV.BMP" ,ALIGN_TOPLEFT, CRect(-50 , -62, 0,0)  , FALSE, ID_FILE_OPENMEDIA, FALSE, ALIGN_LEFT,btnFileOpen,  CRect(3,3,3,3) ) ) ;
 	
 	m_btnList.AddTail( new CSUIButton(L"WATERMARK2.BMP" , ALIGN_BOTTOMRIGHT, CRect(6 , 6, 0,6)  , TRUE, 0, FALSE  ) );
+
+	m_cover = new CSUIButton(L"AUDIO_BG.BMP" , ALIGN_TOPLEFT, CRect(-50 , -44, 0,0)  , TRUE, 0, FALSE  ) ;
 }
 
 CChildView::~CChildView()
@@ -290,7 +292,7 @@ void CChildView::OnPaint()
 	pFrame->RepaintVideo();
 
 	
-	if(!pFrame->IsSomethingLoaded() || (pFrame->IsSomethingLoaded() && pFrame->m_fAudioOnly)){
+	if(!pFrame->IsSomethingLoaded() || (pFrame->IsSomethingLoaded() && pFrame->m_fAudioOnly) ){
 		AppSettings& s = AfxGetAppSettings();
 
 		CRect rcWnd;
@@ -299,7 +301,7 @@ void CChildView::OnPaint()
 		GetClientRect(&rcClient);
 		CMemoryDC hdc(&dc, rcClient);
 		hdc.FillSolidRect( rcClient, s.GetColorFromTheme(_T("MainBackgroundColor"),0));
-		if(m_cover && !m_cover->IsNull()){
+		/*if(m_cover && !m_cover->IsNull()){
 			BITMAP bm;
 			GetObject(*m_cover, sizeof(bm), &bm);
 
@@ -323,7 +325,8 @@ void CChildView::OnPaint()
 			}
 			int oldmode = hdc.SetStretchBltMode(STRETCH_HALFTONE);
 			m_cover->StretchBlt(hdc, cover_r, CRect(0,0,bm.bmWidth,abs(bm.bmHeight)));
-		}else	if( !m_logo.IsNull() ){ 
+		}else	*/
+		if( !m_logo.IsNull() ){ 
 			BITMAP bm;
 			GetObject(m_logo, sizeof(bm), &bm);
 
@@ -367,8 +370,22 @@ void CChildView::OnPaint()
 			int oldmode = hdc.SetStretchBltMode(STRETCH_HALFTONE);
 			m_logo.StretchBlt(hdc, m_logo_r, CRect(0,0,bm.bmWidth,abs(bm.bmHeight)));
 		}
+		if(!pFrame->m_fAudioOnly)
+			m_btnList.PaintAll( &hdc, rcWnd );
+		else{
+			m_cover->OnPaint(&hdc, rcWnd );
 
-		m_btnList.PaintAll( &hdc, rcWnd );
+			if(!m_strAudioInfo.IsEmpty()){
+				HFONT holdft = (HFONT)hdc.SelectObject(m_font);
+				hdc.SetTextColor(s.GetColorFromTheme(_T("AudioOnlyInfoText"),0xffffff));
+				hdc.SetBkMode(TRANSPARENT);
+				//hdc.SetBkColor( 0x00d6d7ce);
+				CRect rcTextArea( CPoint(10,5)  , CSize(rcWnd.Width()-20, 18));
+				DrawText(hdc, m_strAudioInfo, m_strAudioInfo.GetLength(), &rcTextArea, DT_LEFT|DT_SINGLELINE | DT_VCENTER );
+				//SVP_LogMsg5( L"shduf %s" , m_strAudioInfo);
+				hdc.SelectObject(holdft);
+			}
+		}
 	}
 	// Do not call CWnd::OnPaint() for painting messages
 }
@@ -376,6 +393,7 @@ void CChildView::ReCalcBtn(){
 	CRect rcWnd;
 	GetWindowRect(rcWnd);
 	m_btnList.OnSize(rcWnd);
+	m_cover->OnSize(rcWnd);
 }
 void CChildView::OnSetFocus(CWnd* pOldWnd){
 	
@@ -501,6 +519,7 @@ int CChildView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (CWnd::OnCreate(lpCreateStruct) == -1)
 		return -1;
 
+	GetSystemFontWithScale(&m_font, 14.0);
 	// TODO:  Add your specialized creation code here
 	
 	return 0;

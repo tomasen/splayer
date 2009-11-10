@@ -38,7 +38,7 @@
 #include "..\..\..\apps\mplayerc\mplayerc.h"
 
 //#define TRACE SVP_LogMsg5
-//#define SVP_LogMsg5 __noop
+#define SVP_LogMsg5 __noop
 
 #ifdef REGISTER_FILTER
 
@@ -267,9 +267,11 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 
 		m_rtNextStart = rtStart;
 		m_rtNextStop = rtStop;
+		//SVP_LogMsg5(L"pIn->GetTime");
 	}
 	else
 	{
+		//SVP_LogMsg5(L"Just guessing time");
 		pOut->SetTime(&m_rtNextStart, &m_rtNextStop);
 	}
 
@@ -282,7 +284,7 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 	{
 		m_sample_max = 0.1f;
 	}
-	//SVP_LogMsg5(L"Conn %d %d %f %f %f",  pInPin->IsConnected() , pOutPin->IsConnected() , (double) rtStart ,  (double) rtStop, (double) rtDur);
+	SVP_LogMsg5(L"Conn %d %d %f %f %f",  pInPin->IsConnected() , pOutPin->IsConnected() , (double) rtStart ,  (double) rtStop, (double) rtDur);
 
 	WORD tag = wfe->wFormatTag;
 	bool fPCM = tag == WAVE_FORMAT_PCM || tag == WAVE_FORMAT_EXTENSIBLE && wfex->SubFormat == KSDATAFORMAT_SUBTYPE_PCM;
@@ -445,7 +447,7 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 			m_lastOutputChannelCount = lTotalOutputChannels;
 			m_fCustomChannelMapping2 = 2;
 		}
-		//SVP_LogMsg5(L"m_fCustomChannelMapping2 %d ",m_fCustomChannelMapping2);
+		SVP_LogMsg5(L"m_fCustomChannelMapping2 %d ",m_fCustomChannelMapping2);
 			{
 				for(int i = 0; i < wfeout->nChannels; i++)
 				{
@@ -511,7 +513,7 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 	}
 	else
 	{
-		//SVP_LogMsg5(L"No channel maping");
+		SVP_LogMsg5(L"No channel maping");
 		HRESULT hr;
 		if(S_OK != (hr = __super::Transform(pIn, pOut))){
 			SVP_LogMsg5(L"FAUK");
@@ -643,11 +645,12 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 					
 				}else if(m_dRate < 1 && m_dRate > 0){
 					// ’Àı
+					double* lastBuff = new double[iStep];;
 					for(int i = 0; i < lenout; i++){
 						int srcBlock = (int)((double)i/m_dRate);
 						if( srcBlock >= lenout){
 							for(int j = 0 ; j < iStep; j++){
-								buff[i*iStep+j] = 0;
+								buff[i*iStep+j] = lastBuff[j];
 							}
 							continue;
 						}
@@ -655,8 +658,10 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 							continue;
 						for(int j = 0 ; j < iStep; j++){
 							buff[i*iStep+j] = buff[iStep*srcBlock+j];
+							lastBuff[j] = buff[i*iStep+j];
 						}
 					}
+					delete lastBuff;
 				}
 			}
 

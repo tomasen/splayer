@@ -34,18 +34,21 @@ class CChildView : public CWnd
 	CCritSec m_csLogo;
 	CPngImage m_logo;
 	CBitmap m_logo_bitmap;
+
 	//CPngImage m_watermark;
 	CPoint m_lastMouseMove;
 	UINT m_nItemToTrack;
 	int iBottonClicked;
 	CRect m_logo_r;
-	
+	CFont m_font;
 public:
 	CChildView();
 	virtual ~CChildView();
 
 	BOOL m_bMouseDown ;
-	CPngImage* m_cover;
+	CString m_strAudioInfo;
+	int m_AudioInfoCounter;
+	CSUIButton* m_cover;
 	CSUIBtnList m_btnList;
 	CSUIBtnList m_btnBBList;
 	void ReCalcBtn();

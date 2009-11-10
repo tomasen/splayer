@@ -1468,6 +1468,7 @@ TOP_GAMMA.BMP           BITMAP                  "res\\newui\\TOP_GAMMA.bmp"
 TOP_TRANS.BMP           BITMAP                  "res\\newui\\TOP_TRANS.bmp"
 TOP_LETTERBOX_WIDER.BMP BITMAP                  "res\\newui\\TOP_LETTERBOX_WIDER.bmp"
 TOP_NORMAL_WIDER.BMP    BITMAP                  "res\\newui\\TOP_NORMAL_WIDER.bmp"
+AUDIO_BG.BMP			BITMAP                  "res\\newui\\AUDIO_BG.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //

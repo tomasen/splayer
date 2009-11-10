@@ -830,8 +830,9 @@ void CPlayerToolBar::OnRButtonUp(UINT nFlags, CPoint point)
 	if(!pFrame)
 		return;
 
+
 	AppSettings& s = AfxGetAppSettings();
-	if(ID_VOLUME_MUTE == m_nItemToTrackR ){
+	if(ID_VOLUME_MUTE == m_nItemToTrackR ||  m_btnVolBG->m_rcHitest.PtInRect(xpoint)){
 
 		pFrame->SetupSVPAudioMenu();
 		pFrame->OnMenu( &pFrame->m_audios );

@@ -111,6 +111,7 @@ CAudioSwitcherFilter::CAudioSwitcherFilter(LPUNKNOWN lpunk, HRESULT* phr)
 	, m_fEQControlOn(0)
 	, m_tPlayedtime(0)
 	, m_dRate(1.0)
+	, m_fUpSampleTo(0)
 {
 	//memset(m_pSpeakerToChannelMap, 0, sizeof(m_pSpeakerToChannelMap));
 	memset(m_pChannelNormalize2, 0, sizeof(m_pChannelNormalize2));
@@ -511,7 +512,7 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 		//SVP_LogMsg5(L"No channel maping");
 		HRESULT hr;
 		if(S_OK != (hr = __super::Transform(pIn, pOut))){
-			TRACE(L"FAUK");
+			SVP_LogMsg5(L"FAUK");
 			return hr;
 		}
 	}
@@ -541,14 +542,43 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 */
 	BOOL bChangeRate = (m_dRate != 1.0 && m_dRate > 0);
 
-	if(m_fNormalize || m_boost > 1 || m_fEQControlOn || bChangeRate)
+	if(m_fNormalize || m_boost > 1 || m_fEQControlOn || bChangeRate || m_fUpSampleTo)
 	{
 		int samples = lenout*wfeout->nChannels;
 		
 		if(double* buff = new double[samples])
 		{
 			
-			{
+			if( m_fUpSampleTo ){
+				double reSampleRate = (double)wfe->nSamplesPerSec/wfeout->nSamplesPerSec;
+				switch(iWePCMType){
+						case WETYPE_PCM8:
+							for(int i = 0; i < samples; i++)
+								buff[i] = (((double)((BYTE*)pDataOut)[(int)((double)i*reSampleRate)]) - 0x7f) / 0x80;//UCHAR_MAX;
+							break;
+						case WETYPE_PCM16:
+							for(int i = 0; i < samples; i++)
+								buff[i] = (double)((short*)pDataOut)[(int)((double)i*reSampleRate)] / SHRT_MAX;
+							break;
+						case WETYPE_PCM24:
+							for(int i = 0; i < samples; i++)
+							{int tmp; memcpy(((BYTE*)&tmp)+1, &pDataOut[(int)((double)i*reSampleRate)*3], 3); buff[i] = (float)(tmp >> 8) / ((1<<23)-1);}
+							break;
+						case WETYPE_PCM32:
+							for(int i = 0; i < samples; i++)
+								buff[i] = (double)((int*)pDataOut)[(int)((double)i*reSampleRate)] / INT_MAX;
+							break;
+						case WETYPE_FPCM32:
+							for(int i = 0; i < samples; i++)
+								buff[i] = (double)((float*)pDataOut)[(int)((double)i*reSampleRate)];
+							break;
+						case WETYPE_FPCM64:
+							for(int i = 0; i < samples; i++)
+								buff[i] = ((double*)pDataOut)[(int)((double)i*reSampleRate)];
+							break;
+				}
+			}
+			else{
 				switch(iWePCMType){
 						case WETYPE_PCM8:
 							for(int i = 0; i < samples; i++)
@@ -871,6 +901,19 @@ CMediaType CAudioSwitcherFilter::CreateNewOutputMediaType(CMediaType mt, long& c
 		}
 	}
 
+	m_fUpSampleTo = 0;
+	if(1){
+		if(wfeout->nSamplesPerSec < 44100 ){
+			wfeout->nSamplesPerSec = 44100 ;
+			m_fUpSampleTo = 44;
+		}else if(wfeout->nSamplesPerSec > 44100 && wfeout->nSamplesPerSec < 48000 ){
+			wfeout->nSamplesPerSec = 48000 ;
+			m_fUpSampleTo = 48;
+		}
+		if(m_fUpSampleTo){
+			wfeout->nAvgBytesPerSec = wfeout->nBlockAlign*wfeout->nSamplesPerSec;
+		}
+	}
 	int bps = wfe->wBitsPerSample>>3;
 	int len = cbBuffer / (bps*wfe->nChannels);
 	int lenout = len * wfeout->nSamplesPerSec / wfe->nSamplesPerSec;
@@ -1037,6 +1080,7 @@ STDMETHODIMP_(bool) CAudioSwitcherFilter::IsDownSamplingTo441Enabled()
 
 STDMETHODIMP CAudioSwitcherFilter::EnableDownSamplingTo441(bool fEnable)
 {
+	return S_OK;
 	if(m_fDownSampleTo441 != fEnable)
 	{
 		PauseGraph;

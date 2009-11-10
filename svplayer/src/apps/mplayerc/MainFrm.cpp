@@ -586,7 +586,8 @@ CMainFrame::CMainFrame() :
 	m_bHasDrawShadowText(false),
 	m_notshowtoolbarforawhile(0),
 	m_lTransparentToolbarPosOffset(0),
-	m_lTransparentToolbarPosStat(0)
+	m_lTransparentToolbarPosStat(0),
+	m_fAudioOnly(0)
 {
 }
 

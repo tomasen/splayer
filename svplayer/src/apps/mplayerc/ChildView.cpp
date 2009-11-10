@@ -370,9 +370,9 @@ void CChildView::OnPaint()
 			int oldmode = hdc.SetStretchBltMode(STRETCH_HALFTONE);
 			m_logo.StretchBlt(hdc, m_logo_r, CRect(0,0,bm.bmWidth,abs(bm.bmHeight)));
 		}
-		if(!pFrame->m_fAudioOnly)
+		if(!pFrame->IsSomethingLoaded() || !pFrame->m_fAudioOnly)
 			m_btnList.PaintAll( &hdc, rcWnd );
-		else{
+		else if(pFrame->IsSomethingLoaded() && pFrame->m_fAudioOnly){
 			m_cover->OnPaint(&hdc, rcWnd );
 
 			if(!m_strAudioInfo.IsEmpty()){

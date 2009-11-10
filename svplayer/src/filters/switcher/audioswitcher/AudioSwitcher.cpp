@@ -38,7 +38,7 @@
 #include "..\..\..\apps\mplayerc\mplayerc.h"
 
 //#define TRACE SVP_LogMsg5
-#define SVP_LogMsg5 __noop
+//#define SVP_LogMsg5 __noop
 
 #ifdef REGISTER_FILTER
 
@@ -551,32 +551,42 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 			
 			if( m_fUpSampleTo ){
 				double reSampleRate = (double)wfe->nSamplesPerSec/wfeout->nSamplesPerSec;
-				switch(iWePCMType){
-						case WETYPE_PCM8:
-							for(int i = 0; i < samples; i++)
-								buff[i] = (((double)((BYTE*)pDataOut)[(int)((double)i*reSampleRate)]) - 0x7f) / 0x80;//UCHAR_MAX;
-							break;
-						case WETYPE_PCM16:
-							for(int i = 0; i < samples; i++)
-								buff[i] = (double)((short*)pDataOut)[(int)((double)i*reSampleRate)] / SHRT_MAX;
-							break;
-						case WETYPE_PCM24:
-							for(int i = 0; i < samples; i++)
-							{int tmp; memcpy(((BYTE*)&tmp)+1, &pDataOut[(int)((double)i*reSampleRate)*3], 3); buff[i] = (float)(tmp >> 8) / ((1<<23)-1);}
-							break;
-						case WETYPE_PCM32:
-							for(int i = 0; i < samples; i++)
-								buff[i] = (double)((int*)pDataOut)[(int)((double)i*reSampleRate)] / INT_MAX;
-							break;
-						case WETYPE_FPCM32:
-							for(int i = 0; i < samples; i++)
-								buff[i] = (double)((float*)pDataOut)[(int)((double)i*reSampleRate)];
-							break;
-						case WETYPE_FPCM64:
-							for(int i = 0; i < samples; i++)
-								buff[i] = ((double*)pDataOut)[(int)((double)i*reSampleRate)];
-							break;
+				int iStepForEach = wfeout->nChannels;
+				//int iCount = 0;
+				for(int i = 0; i < lenout; i++){
+					for(int j = 0; j < iStepForEach; j++){
+						int iDst = i * iStepForEach + j;
+						int iSrc = ((int)((double)i*reSampleRate))*iStepForEach + j;
+					
+						switch(iWePCMType){
+							case WETYPE_PCM8:
+									buff[iDst] = (((double)((BYTE*)pDataOut)[iSrc]) - 0x7f) / 0x80;//UCHAR_MAX;
+								break;
+							case WETYPE_PCM16:
+								//SVP_LogMsg5(L"hh %d %d %d %d %d" , iDst , iSrc, i, j , iStepForEach);
+									buff[iDst] = (double)((short*)pDataOut)[iSrc] / SHRT_MAX;
+								break;
+							case WETYPE_PCM24:
+								
+								{int tmp; memcpy(((BYTE*)&tmp)+1, &pDataOut[iSrc*3], 3); buff[iDst] = (float)(tmp >> 8) / ((1<<23)-1);}
+								break;
+							case WETYPE_PCM32:
+								
+									buff[iDst] = (double)((int*)pDataOut)[iSrc] / INT_MAX;
+								break;
+							case WETYPE_FPCM32:
+								
+									buff[iDst] = (double)((float*)pDataOut)[iSrc];
+								break;
+							case WETYPE_FPCM64:
+								
+									buff[iDst] = ((double*)pDataOut)[iSrc];
+								break;
+						}
+						//iCount++;
+					}
 				}
+				//SVP_LogMsg5(L"hh %d %d %f" , iCount , samples, reSampleRate);
 			}
 			else{
 				switch(iWePCMType){
@@ -737,7 +747,7 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 				m_EQualizer.EqzFilter(buff, buff, samplesPerChannel , wfeout->nChannels );
 			}
 	
-			if(m_fEQControlOn || sample_mul > 1 || bChangeRate ){
+			if(m_fEQControlOn || sample_mul > 1 || bChangeRate || m_fUpSampleTo ){
 				//SVP_LogMsg5(L"maul %f %f %f %f" ,m_boost , log10(m_boost) , sample_mul, sample_mul * (1+log10(m_boost)) );
 
 				switch(iWePCMType){

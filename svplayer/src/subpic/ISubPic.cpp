@@ -898,8 +898,17 @@ void ISubPicAllocatorPresenterImpl::AlphaBltSubPic(CSize size, SubPicDesc* pTarg
 					
 					 //moving up
 				}
-				if(i_targetY >= 0 && i_targetY < 1000000)
+				if(i_targetY >= 0 && i_targetY < 1000000){
 					rcDest2.MoveToY(i_targetY);
+					if(pSubPic ){
+						if(m_last_2sub_relative == 1)
+						{
+							rcDest1.MoveToY(max(0, i_targetY - rcDest1.Height()));
+						}else{
+							rcDest1.MoveToY(i_targetY + rcDest2.Height());
+						}
+					}
+				}
 			}else{
 				//rcDest2 is outer(fixed) , move rcDest1
 				if(cent1.y > cent2.y && pSubPic2 || (!pSubPic2 && m_last_2sub_relative == 3)){ //sub1 is under sub2 and there are on top area of sreen
@@ -917,8 +926,17 @@ void ISubPicAllocatorPresenterImpl::AlphaBltSubPic(CSize size, SubPicDesc* pTarg
 					i_targetY = m_last_2ndSubBaseLineDown2  - rcDest1.Height() ; //moving up
 					
 				}
-				if(i_targetY >= 0 && i_targetY < 1000000)
+				if(i_targetY >= 0 && i_targetY < 1000000){
 					rcDest1.MoveToY(i_targetY);
+					if(pSubPic2){
+						if(m_last_2sub_relative == 3)
+						{
+							rcDest2.MoveToY(max(0, i_targetY - rcDest2.Height()));
+						}else{
+							rcDest2.MoveToY(i_targetY + rcDest1.Height());
+						}
+					}
+				}
 			}
 
 			m_last_pSubPic = pSubPic;

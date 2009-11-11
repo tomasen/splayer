@@ -2658,6 +2658,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 		if(m_fAudioOnly && IsSomethingLoaded()){
 			m_lTransparentToolbarStat = max(4, m_lTransparentToolbarStat);
 		}
+		
 		if(m_lTransparentToolbarStat ){
 			m_wndFloatToolBar.SetLayeredWindowAttributes(0, abs(m_lTransparentToolbarStat) * TRANS_OPTICAL_STEP, LWA_ALPHA);
 			m_lTransparentToolbarStat++;
@@ -10032,8 +10033,12 @@ void CMainFrame::rePosOSD(){
 					m_wndFloatToolBar.MoveWindow(rcCur);
 				
 			}
+			if(!m_wndFloatToolBar.IsWindowVisible()){
+				m_wndFloatToolBar.ShowWindow(SW_SHOWNOACTIVATE);
+				KillTimer(TIMER_TRANSPARENTTOOLBARSTAT);
+				SetTimer(TIMER_TRANSPARENTTOOLBARSTAT, 50, NULL);
+			}
 			
-			m_wndFloatToolBar.ShowWindow(SW_SHOWNOACTIVATE);
 		}
 	}
 	return;

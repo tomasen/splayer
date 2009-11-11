@@ -33,7 +33,8 @@ class CPPageAudioSwitcher : public CPPageBase
 
 private:
 	CComQIPtr<IAudioSwitcherFilter> m_pASF;
-	DWORD m_pSpeakerToChannelMap[18][18];
+	//DWORD m_pSpeakerToChannelMap[18][18];
+	float m_pSpeakerToChannelMap2[MAX_INPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_NORMALIZE_CHANNELS]; 
 	DWORD m_dwChannelMask;
 
 public:
@@ -54,6 +55,7 @@ public:
 	CButton m_fCustomChannelMappingCtrl;
 	CEdit m_nChannelsCtrl;
 	int m_nChannels;
+	int m_nSpeakers;
 	CSpinButtonCtrl m_nChannelsSpinCtrl;
 	CListCtrl m_list;
 	int m_tAudioTimeShift;

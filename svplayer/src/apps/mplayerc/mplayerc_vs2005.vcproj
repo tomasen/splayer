@@ -1392,6 +1392,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\newui\audio_bg.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\icon\Audio_File.ico"
 				>
 			</File>
@@ -2233,11 +2237,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 		<File

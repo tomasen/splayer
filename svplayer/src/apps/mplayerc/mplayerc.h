@@ -647,6 +647,7 @@ public:
 		bool fCustomSpeakers;
 		
 		float pSpeakerToChannelMap2[MAX_INPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_NORMALIZE_CHANNELS]; //Meaning [Total Channel Number] [Speaker] = 1 << Channel
+		float pSpeakerToChannelMap2Custom[MAX_INPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_NORMALIZE_CHANNELS];
 		float pSpeakerToChannelMapOffset[MAX_INPUT_CHANNELS][MAX_NORMALIZE_CHANNELS];
 		float pEQBandControlCustom[MAX_EQ_BAND+1];
 		
@@ -731,7 +732,7 @@ public:
 		CString GetSVPSubStorePath();
 		void InitChannelMap();
 		void InitEQPerset();
-		void ChangeChannelMapByOffset();
+		void ChangeChannelMapByCustomSetting();
 		BOOL bUserAeroTitle();
 		BOOL bShouldUseEVR();
 		int  FindWmcmdsIDXofCmdid(UINT cmdid, POSITION pos);

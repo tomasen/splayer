@@ -2781,7 +2781,7 @@ void CMPlayerCApp::Settings::InitChannelMap()
 					if( iInputChannelCount > 2 && iChannelID < 2){	 // 前置左右声道
 						fTmpVal = 1.0;
 					}else if( iInputChannelCount > 4 && iChannelID == 2){ //中置声道
-						fTmpVal = LEVEL_PLUS6DB;
+						fTmpVal = 2.0;
 					}else if( iInputChannelCount > 5 && iChannelID == (iInputChannelCount - 1) ){ //重低音 降低
 						fTmpVal = 0.9;
 					}else if(iInputChannelCount > 2 && iChannelID >= 2){ //除中置 重低音外的声道
@@ -2996,11 +2996,33 @@ void CMPlayerCApp::Settings::InitChannelMap()
 	//INITDBARR( pSpeakerToChannelMap2[5][1][0] , LEVEL_3DB,0,LEVEL_PLUS3DB,LEVEL_45DB,0,LEVEL_6DB );
 	//INITDBARR( pSpeakerToChannelMap2[5][1][1] , 0,LEVEL_3DB,LEVEL_PLUS3DB,0,LEVEL_45DB,LEVEL_6DB );
 }
-void CMPlayerCApp::Settings::ChangeChannelMapByOffset()
+void CMPlayerCApp::Settings::ChangeChannelMapByCustomSetting()
 {
-	return;
-	
-	
+	for(int iInputChannelCount = 1; iInputChannelCount <= MAX_INPUT_CHANNELS; iInputChannelCount++){
+		for(int iOutputChannelCount = 1; iOutputChannelCount <= MAX_OUTPUT_CHANNELS; iOutputChannelCount++){
+			bool bHasCustomSetting = false;
+			for(int iSpeakerID = 0; iSpeakerID < iOutputChannelCount; iSpeakerID++){
+				for(int iChannelID = 0; iChannelID < iInputChannelCount; iChannelID++){
+					if(pSpeakerToChannelMap2Custom[iInputChannelCount-1][iOutputChannelCount-1][iSpeakerID][iChannelID] != 0){
+						bHasCustomSetting = true;
+						break;
+					}
+				}
+				if(bHasCustomSetting)
+					break;
+			}
+			if(bHasCustomSetting){
+				for(int iSpeakerID = 0; iSpeakerID < iOutputChannelCount; iSpeakerID++){
+					for(int iChannelID = 0; iChannelID < iInputChannelCount; iChannelID++){
+						pSpeakerToChannelMap2[iInputChannelCount-1][iOutputChannelCount-1][iSpeakerID][iChannelID] =
+							pSpeakerToChannelMap2Custom[iInputChannelCount-1][iOutputChannelCount-1][iSpeakerID][iChannelID] ;
+							
+					}
+				}
+			}
+		}
+	}
+	return;	
 }
 CString CMPlayerCApp::Settings::GetSVPSubStorePath(){
 	CString StoreDir = SVPSubStoreDir;
@@ -3358,6 +3380,8 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DOWNSAMPLETO441), fDownSampleTo441);
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_CUSTOMCHANNELMAPPING), fCustomChannelMapping);
 		pApp->WriteProfileBinary(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPEAKERTOCHANNELMAPPING)+_T("Offset"), (BYTE*)pSpeakerToChannelMapOffset, sizeof(pSpeakerToChannelMapOffset));
+		pApp->WriteProfileBinary(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPEAKERTOCHANNELMAPPING)+_T("Custom"), (BYTE*)pSpeakerToChannelMap2Custom, sizeof(pSpeakerToChannelMap2Custom));
+		
 		pApp->WriteProfileBinary(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_EQCONTROL), (BYTE*)pEQBandControlCustom, sizeof(pEQBandControlCustom));
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_EQCONTROLPERSET), pEQBandControlPerset);
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUDIONORMALIZE), fAudioNormalize);
@@ -3918,14 +3942,22 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 
 		InitChannelMap();
 
+		
+
+		memset(pSpeakerToChannelMap2Custom, 0 , sizeof(pSpeakerToChannelMap2Custom));
+		if( pApp->GetProfileBinary(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPEAKERTOCHANNELMAPPING)+_T("Custom"), &ptr, &len)  )
+		{
+			memcpy(pSpeakerToChannelMap2Custom, ptr, sizeof(pSpeakerToChannelMap2Custom));
+			delete [] ptr;
+			ChangeChannelMapByCustomSetting();
+
+		}
 		memset(pSpeakerToChannelMapOffset, 0 , sizeof(pSpeakerToChannelMapOffset));
 		if( pApp->GetProfileBinary(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPEAKERTOCHANNELMAPPING)+_T("Offset"), &ptr, &len)  )
 		{
 			memcpy(pSpeakerToChannelMapOffset, ptr, sizeof(pSpeakerToChannelMapOffset));
 			delete [] ptr;
 
-			ChangeChannelMapByOffset();
-			
 		}
 		pEQBandControlPerset = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_EQCONTROLPERSET), 0);
 

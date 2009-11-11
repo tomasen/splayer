@@ -113,42 +113,30 @@ BOOL CPPageAudioSwitcher::OnInitDialog()
 	m_tAudioTimeShift = s.tAudioTimeShift;
 	m_tAudioTimeShiftSpin.SetRange32(-1000*60*60*24, 1000*60*60*24);
 	m_fCustomChannelMapping = s.fCustomChannelMapping;
-	//memcpy(m_pSpeakerToChannelMap, s.pSpeakerToChannelMap2, sizeof(s.pSpeakerToChannelMap2));
+	memcpy(m_pSpeakerToChannelMap2, s.pSpeakerToChannelMap2, sizeof(s.pSpeakerToChannelMap2));
 
 	if(m_pASF)
 		m_pASF->GetInputSpeakerConfig(&m_dwChannelMask);
 
-	m_nChannels = 1;
+	m_nChannels = 6;
 	m_nChannelsSpinCtrl.SetRange(1, 18);
 
 	if(m_pASF)
 		m_nChannels = m_pASF->GetNumberOfInputChannels();		
 
+	//m_nSpeakers = AfxGetMyApp()->GetNumberOfSpeakers();
+
 	m_list.InsertColumn(0, _T(""), LVCFMT_LEFT, 100);
 	m_list.InsertItem(0, _T(""));
-	m_list.InsertItem(1, _T("Front Left"));
-	m_list.InsertItem(2, _T("Front Right"));
-	m_list.InsertItem(3, _T("Front Center"));
-	m_list.InsertItem(4, _T("Low Frequency"));
-	m_list.InsertItem(5, _T("Back Left"));
-	m_list.InsertItem(6, _T("Back Right"));
-	m_list.InsertItem(7, _T("Front Left of Center"));
-	m_list.InsertItem(8, _T("Front Right of Center"));
-	m_list.InsertItem(9, _T("Back Center"));
-	m_list.InsertItem(10, _T("Side Left"));
-	m_list.InsertItem(11, _T("Side Right"));
-	m_list.InsertItem(12, _T("Top Center"));
-	m_list.InsertItem(13, _T("Top Front Left"));
-	m_list.InsertItem(14, _T("Top Front Center"));
-	m_list.InsertItem(15, _T("Top Front Right"));
-	m_list.InsertItem(16, _T("Top Back Left"));
-	m_list.InsertItem(17, _T("Top Back Center"));
-	m_list.InsertItem(18, _T("Top Back Right"));
+	for(int i = 0; i < min(18, m_nSpeakers); i++ ){
+		m_list.InsertItem(i+1, ResStr(IDS_CHANNAPMAP_TABLE_LABEL_FRONT_LEFT+i));
+	}
+	
 	m_list.SetColumnWidth(0, LVSCW_AUTOSIZE);
 
 	for(int i = 1; i <= 18; i++)
 	{
-		m_list.InsertColumn(i, _T(""), LVCFMT_CENTER, 16);
+		m_list.InsertColumn(i, _T(""), LVCFMT_CENTER, 37);
 		CString n;
 		n.Format(_T("%d"), i);
 		m_list.SetItemText(0, i, n);
@@ -175,13 +163,42 @@ BOOL CPPageAudioSwitcher::OnApply()
 	s.fDownSampleTo441 = false; //!!m_fDownSampleTo441; alaways disable
 	s.fAudioTimeShift = !!m_fAudioTimeShift;
 	s.tAudioTimeShift = m_tAudioTimeShift;
-	s.fCustomChannelMapping = !!m_fCustomChannelMapping;
+	//s.fCustomChannelMapping = !!m_fCustomChannelMapping;
 	//memcpy(s.pSpeakerToChannelMap, m_pSpeakerToChannelMap, sizeof(m_pSpeakerToChannelMap));
+
+	{
+		int iInputChannelCount = m_nChannels; 
+		int iOutputChannelCount = m_nSpeakers;
+				bool bHasCustomSetting = false;
+				for(int iSpeakerID = 0; iSpeakerID < iOutputChannelCount; iSpeakerID++){
+					for(int iChannelID = 0; iChannelID < iInputChannelCount; iChannelID++){
+						if(s.pSpeakerToChannelMap2 [iInputChannelCount-1][iOutputChannelCount-1][iSpeakerID][iChannelID] != 
+							m_pSpeakerToChannelMap2 [iInputChannelCount-1][iOutputChannelCount-1][iSpeakerID][iChannelID]){
+							bHasCustomSetting = true;
+							break;
+						}
+					}
+					if(bHasCustomSetting)
+						break;
+				}
+				if(bHasCustomSetting){
+					for(int iSpeakerID = 0; iSpeakerID < iOutputChannelCount; iSpeakerID++){
+						for(int iChannelID = 0; iChannelID < iInputChannelCount; iChannelID++){
+							s.pSpeakerToChannelMap2Custom[iInputChannelCount-1][iOutputChannelCount-1][iSpeakerID][iChannelID] =
+								m_pSpeakerToChannelMap2[iInputChannelCount-1][iOutputChannelCount-1][iSpeakerID][iChannelID] ;
+
+						}
+					}
+					s.InitChannelMap();
+					s.ChangeChannelMapByCustomSetting();
+				}
+		
+	}
 
 	if(m_pASF)
 	{
 	//	m_pASF->SetSpeakerConfig(s.fCustomChannelMapping, s.pSpeakerToChannelMap);
-		m_pASF->SetSpeakerChannelConfig(AfxGetMyApp()->GetNumberOfSpeakers(), s.pSpeakerToChannelMap2, s.pSpeakerToChannelMapOffset,0);
+		m_pASF->SetSpeakerChannelConfig(m_nSpeakers, s.pSpeakerToChannelMap2, s.pSpeakerToChannelMapOffset,0);
 		m_pASF->EnableDownSamplingTo441(s.fDownSampleTo441);
 		m_pASF->SetAudioTimeShift(s.fAudioTimeShift ? 10000i64*s.tAudioTimeShift : 0);
 		m_pASF->SetNormalizeBoost(s.fAudioNormalize, s.fAudioNormalizeRecover, s.AudioBoost);
@@ -193,12 +210,32 @@ BOOL CPPageAudioSwitcher::OnApply()
 
 void CPPageAudioSwitcher::OnNMClickList1(NMHDR* pNMHDR, LRESULT* pResult)
 {
+
 	LPNMLISTVIEW lpnmlv = (LPNMLISTVIEW)pNMHDR;
 
 	if(lpnmlv->iItem > 0 && lpnmlv->iSubItem > 0 && lpnmlv->iSubItem <= m_nChannels)
 	{
 		UpdateData();
-		m_pSpeakerToChannelMap[m_nChannels-1][lpnmlv->iItem-1] ^= 1<<(lpnmlv->iSubItem-1);
+		//m_pSpeakerToChannelMap[m_nChannels-1][lpnmlv->iItem-1] ^= 1<<(lpnmlv->iSubItem-1);
+		int iInputChannelCount = m_nChannels;
+		int iChannelID = lpnmlv->iSubItem-1;
+		float fTmpVal = 1.0;
+		if( iInputChannelCount > 2 && iChannelID < 2){	 // 前置左右声道
+			fTmpVal = 1.0;
+		}else if( iInputChannelCount > 4 && iChannelID == 2){ //中置声道
+			fTmpVal = 2.0;
+		}else if( iInputChannelCount > 5 && iChannelID == (iInputChannelCount - 1) ){ //重低音 降低
+			fTmpVal = 0.9;
+		}else if(iInputChannelCount > 2 && iChannelID >= 2){ //除中置 重低音外的声道
+			fTmpVal = 0.9;
+		}
+		if(m_pSpeakerToChannelMap2[m_nChannels-1][m_nSpeakers-1][lpnmlv->iItem-1][lpnmlv->iSubItem-1] > 0)
+		{
+			m_pSpeakerToChannelMap2[m_nChannels-1][m_nSpeakers-1][lpnmlv->iItem-1][lpnmlv->iSubItem-1] = 0;
+		}else{
+			m_pSpeakerToChannelMap2[m_nChannels-1][m_nSpeakers-1][lpnmlv->iItem-1][lpnmlv->iSubItem-1] = fTmpVal;
+		}
+		
 		m_list.RedrawItems(lpnmlv->iItem, lpnmlv->iItem);
 		SetModified();
 
@@ -231,6 +268,7 @@ void CPPageAudioSwitcher::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStru
 
 	CDC* pDC = CDC::FromHandle(lpDrawItemStruct->hDC);
 
+	
 	pDC->SetBkMode(TRANSPARENT);
 
 	CPen p(PS_INSIDEFRAME, 1, 0xe0e0e0);
@@ -303,14 +341,26 @@ void CPPageAudioSwitcher::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStru
 					}
 				}
 
-				if(m_pSpeakerToChannelMap[m_nChannels-1][lpDrawItemStruct->itemID-1] & (1<<(i-1)))
+				if(m_pSpeakerToChannelMap2[m_nChannels-1][m_nSpeakers-1][lpDrawItemStruct->itemID-1][i-1] > 0)
 				{
-					CFont f;
-					f.CreatePointFont(MulDiv(100, 96, pDC->GetDeviceCaps(LOGPIXELSX)), _T("Marlett"));
-					CFont* old = pDC->SelectObject(&f);
-					s = pDC->GetTextExtent(_T("a"));
-					pDC->TextOut((r.left+r.right-s.cx)/2, (r.top+r.bottom-s.cy)/2, _T("a"));
-					pDC->SelectObject(old);
+					if(0){
+						CFont f;
+						f.CreatePointFont(MulDiv(70, 96, pDC->GetDeviceCaps(LOGPIXELSX)), _T("MS Sans Serif"));
+						CFont* old = pDC->SelectObject(&f);
+						CString szVal;
+						szVal.Format(L"%0.2f", m_pSpeakerToChannelMap2[m_nChannels-1][m_nSpeakers-1][lpDrawItemStruct->itemID-1][i-1]);
+						s = pDC->GetTextExtent(szVal);
+						pDC->TextOut((r.left+r.right-s.cx)/2, (r.top+r.bottom-s.cy)/2, szVal);
+						pDC->SelectObject(old);
+					}else{
+						CFont f;
+						f.CreatePointFont(MulDiv(100, 96, pDC->GetDeviceCaps(LOGPIXELSX)), _T("Marlett"));
+						CFont* old = pDC->SelectObject(&f);
+						s = pDC->GetTextExtent(_T("a"));
+						pDC->TextOut((r.left+r.right-s.cx)/2, (r.top+r.bottom-s.cy)/2, _T("a"));
+						pDC->SelectObject(old);
+					}
+					
 				}
 			}
 		}

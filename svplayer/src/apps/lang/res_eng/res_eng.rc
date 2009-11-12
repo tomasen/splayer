@@ -1,6 +1,6 @@
 // Microsoft Visual C++ generated resource script.
 //
-#include "resource.h"
+#include "resource."
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -178,9 +178,9 @@ CAPTION "About"
 FONT 8, "MS Shell Dlg", 400, 0, 0xB1
 BEGIN
     ICON            128,IDC_STATIC,11,17,21,20
-    LTEXT           "SPlayer (Based on MPC)",IDC_STATIC1,40,12,126,8,SS_NOPREFIX
+    LTEXT           "SPlayer (Shooter Player)",IDC_STATIC1,40,12,126,8,SS_NOPREFIX
     LTEXT           "Copyright (C) 2008-2009 Tomasen \n  Thanks for Gabest, casimir666, ffmpeg and\n    everyone with them",IDC_STATIC,40,26,170,29
-    LTEXT           "Version: 3.0",IDC_VERSION,40,57,170,8
+    LTEXT           "Version: 3.2",IDC_VERSION,40,57,170,8
     PUSHBUTTON      "Close",IDOK,160,8,50,14,WS_GROUP
     LTEXT           "This program is freeware and released under the GNU General Public License.",IDC_STATIC,40,69,170,25
 END
@@ -1036,23 +1036,13 @@ BEGIN
         MENUITEM "Close(&C)",                   ID_FILE_CLOSEPLAYLIST
         MENUITEM SEPARATOR
         MENUITEM "Audio",                       ID__32777
-        MENUITEM "Subtitles",                   ID__32860
         POPUP "Display"
         BEGIN
-            MENUITEM "StandardFull\tC",             ID_VIEW_VF_FROMINSIDE
+            MENUITEM "Stretch(&S)",                 ID_VIEW_VF_STRETCH
+            MENUITEM "Standard\tC",                 ID_VIEW_VF_FROMINSIDE
             MENUITEM "Full Screen(&l)",             ID_VIEW_FULLSCREEN
             MENUITEM "Remove Black Bar(&O)",        ID_VIEW_VF_FROMOUTSIDE
-            MENUITEM "Stretch(&S)",                 ID_VIEW_VF_STRETCH
             MENUITEM SEPARATOR
-            POPUP "Aspect Ratio"
-            BEGIN
-                MENUITEM "Automatic",                   ID_ASPECTRATIO_SOURCE
-                MENUITEM "4:3",                         ID_ASPECTRATIO_4_3
-                MENUITEM "5:4",                         ID_ASPECTRATIO_5_4
-                MENUITEM "16:9",                        ID_ASPECTRATIO_16_9
-                MENUITEM "2.35:1",                      ID_ASPECTRATIO_235_1
-                MENUITEM "PC-TV Correction",            ID_VIEW_VF_COMPMONDESKARDIFF
-            END
             POPUP "Flip"
             BEGIN
                 MENUITEM "Flip(H)",                     ID_ROTATE_H
@@ -1064,9 +1054,6 @@ BEGIN
                 MENUITEM SEPARATOR
                 MENUITEM "Enable Rotate",               ID_ENABLE_ROTATE
             END
-            MENUITEM "Transparent Control",         ID_SHOWTRANSPRANTBAR
-            MENUITEM "Effect Control",              ID__SHADERS
-            MENUITEM "Enable Smart Drag",           ID_SMART_DRAG_ENABLE
             POPUP "Pan Scan"
             BEGIN
                 MENUITEM "Inc Size\tNumpad 9",          ID_VIEW_INCSIZE
@@ -1084,18 +1071,22 @@ BEGIN
                 MENUITEM SEPARATOR
                 MENUITEM "Reset\tNumpad 5",             ID_VIEW_RESET
             END
+            POPUP "Aspect Ratio"
+            BEGIN
+                MENUITEM "Automatic",                   ID_ASPECTRATIO_SOURCE
+                MENUITEM "4:3",                         ID_ASPECTRATIO_4_3
+                MENUITEM "5:4",                         ID_ASPECTRATIO_5_4
+                MENUITEM "16:9",                        ID_ASPECTRATIO_16_9
+                MENUITEM "2.35:1",                      ID_ASPECTRATIO_235_1
+                MENUITEM "PC-TV Correction",            ID_VIEW_VF_COMPMONDESKARDIFF
+            END
+            MENUITEM "Effect Control",              ID__SHADERS
+            MENUITEM "Enable Smart Drag",           ID_SMART_DRAG_ENABLE
+            MENUITEM "Transparent Control",         ID_SHOWTRANSPRANTBAR
         END
+        MENUITEM "Subtitles",                   ID__32860
         MENUITEM "Playback",                    ID__32864
         MENUITEM SEPARATOR
-        POPUP "Capture"
-        BEGIN
-            MENUITEM "Image...\tCtrl+I",            ID_FILE_SAVE_IMAGE
-            MENUITEM "Thumbnails...",               ID_FILE_SAVE_THUMBNAILS
-            MENUITEM "To Clipboard\tCtrl+C",        ID_FILE_COPYTOCLIPBOARD
-            MENUITEM "Save w/o Prompt\tF5",         ID_FILE_SAVE_IMAGE_AUTO
-            MENUITEM SEPARATOR
-            MENUITEM "Set Default Folder",          ID_SETSNAPSHOTPATH
-        END
         POPUP "GUI"
         BEGIN
             MENUITEM "Minimal",                     ID_VIEW_PRESETS_MINIMAL
@@ -1105,7 +1096,11 @@ BEGIN
             MENUITEM "Use Aero Glass Effect (Req. Restart of Player)", ID_THEME_AEROGLASS
             MENUITEM SEPARATOR
             MENUITEM "Playlist",                    ID_VIEW_PLAYLIST
-            MENUITEM "Transparent Control",         ID_SHOWTRANSPRANTBAR
+            POPUP "Language"
+            BEGIN
+                MENUITEM "English",                     ID_LANGUAGE_ENGLISH
+                MENUITEM "中文",                          ID_LANGUAGE_CHINESE_SIMPLIFIED
+            END
             POPUP "More Panel(&e)"
             BEGIN
                 MENUITEM "Caption(&M)\tCtrl+0",         ID_VIEW_CAPTIONMENU
@@ -1120,11 +1115,16 @@ BEGIN
                 MENUITEM "DSM Convert(&n)...",          ID_FILE_CONVERT
                 MENUITEM "Render Stat",                 ID_SHOWDRAWSTAT
             END
-            POPUP "Language"
-            BEGIN
-                MENUITEM "English",                     ID_LANGUAGE_ENGLISH
-                MENUITEM "中文",                          ID_LANGUAGE_CHINESE_SIMPLIFIED
-            END
+            MENUITEM "Transparent Control",         ID_SHOWTRANSPRANTBAR
+        END
+        POPUP "Capture"
+        BEGIN
+            MENUITEM "Image...\tCtrl+I",            ID_FILE_SAVE_IMAGE
+            MENUITEM "Thumbnails...",               ID_FILE_SAVE_THUMBNAILS
+            MENUITEM "To Clipboard\tCtrl+C",        ID_FILE_COPYTOCLIPBOARD
+            MENUITEM "Save w/o Prompt\tF5",         ID_FILE_SAVE_IMAGE_AUTO
+            MENUITEM SEPARATOR
+            MENUITEM "Set Default Folder",          ID_SETSNAPSHOTPATH
         END
         MENUITEM "Options(&O)...",              ID_VIEW_OPTIONS
         MENUITEM SEPARATOR
@@ -1137,9 +1137,9 @@ BEGIN
         END
         POPUP "More..."
         BEGIN
+            MENUITEM "Help",                        ID_HELP_DOCUMENTATION
             MENUITEM "Donate!",                     ID_DONATE
             MENUITEM "About(&A)...",                ID_HELP_ABOUT
-            MENUITEM "Help",                        ID_HELP_DOCUMENTATION
             MENUITEM "Feedback",                    ID_VISITCONTACTINFO
             MENUITEM SEPARATOR
             MENUITEM "Check for Update...",         ID_MANUALCHECKUPDATE
@@ -1256,10 +1256,14 @@ BEGIN
     "resource.\0"
 END
 
-
 3 TEXTINCLUDE 
 BEGIN
     "\r\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\0"
 END
 
 #endif    // APSTUDIO_INVOKED
@@ -2680,8 +2684,7 @@ END
 //
 // Generated from the TEXTINCLUDE 3 resource.
 //
-
-
+
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
 

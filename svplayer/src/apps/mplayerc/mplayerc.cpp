@@ -520,9 +520,9 @@ public:
 	virtual BOOL OnInitDialog()
 	{
 		UpdateData();
-#ifdef UNICODE
-		m_appname += _T(" (unicode build)");
-#endif
+//#ifdef UNICODE
+	//	m_appname += _T(" (unicode build)");
+//#endif
 		cs_version.GetWindowText(m_strRevision);
 		m_strRevision += CString(_T("(Build ")) + SVP_REV_STR + _T(")");
 		UpdateData(FALSE);

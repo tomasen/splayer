@@ -2522,6 +2522,23 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 	if(s.bIsIVM){
 		szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("IVMSource.ax")) );
 	}
+	if(1){
+// 		szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("csfcodec\\mpc_mdssockc.dll")) );
+// 		szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("csfcodec\\mpc_mxaudio.dll")) );
+// 		szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("csfcodec\\mpc_mxvideo.dll")) );
+// 		szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("csfcodec\\mpc_mxscreen.dll")) );
+// 		szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("csfcodec\\mpc_mxshbasu.dll")) );
+// 		szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("csfcodec\\mpc_mxshmaiu.dll")) );
+// 		szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("csfcodec\\mpc_mxshsour.dll")) );
+// 		szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("csfcodec\\mpc_mcucltu.dll")) );
+// 		szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("csfcodec\\mpc_mcufilecu.dll")) );
+// 		szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("csfcodec\\mpc_mtcontrol.dll")) );
+// 		szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("csfcodec\\mpc_mtcontain.dll")) );
+ 		szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("csfcodec\\mpc_mxsource.dll")) );
+// 		szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("csfcodec\\mpc_mxrender.dll")) );
+// 		szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("csfcodec\\mpc_wtlvcl.dll")) );
+	}
+	
 
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("scmpack.dll")) );
 	
@@ -2558,7 +2575,11 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 				szLog.Format(_T("Loading Filter %s %s %s "), CStringFromGUID(fo->clsid) ,fo->path, CStringW(fo->name) );
 				SVP_LogMsg(szLog);
 				if(pFGF){
-					if( szFPath.Find(_T("haalis.ax")) > 0 || szFPath.Find(_T("ts.dll")) > 0 || szFPath.Find(_T("ogm.dll")) > 0){ //useless
+
+					if(szFPath.Find(_T("mpc_mxsource.dll")) > 0){
+						pFGF->m_extensions.AddTail(_T(".csf"));
+						m_source.AddTail(pFGF);
+					}else if( szFPath.Find(_T("haalis.ax")) > 0 || szFPath.Find(_T("ts.dll")) > 0 || szFPath.Find(_T("ogm.dll")) > 0){ //useless
 					/*	pFGF->m_extensions.AddTail(_T(".ts"));
 						pFGF->m_extensions.AddTail(_T(".m2ts"));
 						pFGF->m_extensions.AddTail(_T(".tp"));

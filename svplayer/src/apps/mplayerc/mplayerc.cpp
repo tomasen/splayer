@@ -1338,6 +1338,67 @@ for(int i = 0; i <= 30; i++){
 			RegSvr32( _T("ts.dll"));
 		}
 
+
+		
+		if(1 || RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{AD92C6E6-997A-4E9E-9D7D-EDED6DE933FB}") , &fKey ) != ERROR_SUCCESS ){
+			SVP_LogMsg5(L"1.dll");
+			RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mdssockc.dll")) );
+		}
+		if(1 || RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{86708513-5A2E-424f-AB46-F4BE3F82954F}") , &fKey ) != ERROR_SUCCESS ){
+			SVP_LogMsg5(L"2.dll");
+			RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mxaudio.dll")) );
+		}
+		if(1 || RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{5BC26A00-5101-47d7-A5DB-AB6AAC44F51B}") , &fKey ) != ERROR_SUCCESS ){
+			SVP_LogMsg5(L"3.dll");
+			RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mxvideo.dll")) );
+		}
+		if(1 || RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{87BBB4ED-1767-4b7e-821C-7C4657E439D4}") , &fKey ) != ERROR_SUCCESS ){
+			SVP_LogMsg5(L"4.dll");
+			RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mxscreen.dll")) );
+		}
+		if(1 || RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{32E2BDD6-8812-42c3-A907-B9587C148EE3}") , &fKey ) != ERROR_SUCCESS ){
+			SVP_LogMsg5(L"5.dll");
+			RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mxshbasu.dll")) );
+		}
+		//if(RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{D48D1EB2-BF95-4EE1-BD69-9AD0515F050D}") , &fKey ) != ERROR_SUCCESS ){
+			SVP_LogMsg5(L"6.dll");
+			RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mxshmaiu.dll")) );
+		//}
+		if(1 || RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{083863F1-70DE-11D0-BD40-00A0C911CE86}\Instance\{E4C3B74F-0C02-4D4E-B932-F7A1889B3ABB}") , &fKey ) != ERROR_SUCCESS ){
+			SVP_LogMsg5(L"7.dll");
+			RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mxshsour.dll")) );
+		}
+		if(1 || RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{D48D1EB2-BF95-4EE1-BD69-9AD0515F050D}") , &fKey ) != ERROR_SUCCESS ){
+			SVP_LogMsg5(L"8.dll");
+			RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mcucltu.dll")) );
+		}
+		if(1 || RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{D48D1EB2-BF95-4EE1-BD69-9AD0515F050D}") , &fKey ) != ERROR_SUCCESS ){
+			SVP_LogMsg5(L"9.dll");
+			RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mcufilecu.dll")) );
+		}
+		if(1 || RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{D48D1EB2-BF95-4EE1-BD69-9AD0515F050D}") , &fKey ) != ERROR_SUCCESS ){
+			SVP_LogMsg5(L"a.dll");
+			RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mtcontrol.dll")) );
+		}
+		if(1 || RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{D48D1EB2-BF95-4EE1-BD69-9AD0515F050D}") , &fKey ) != ERROR_SUCCESS ){
+			SVP_LogMsg5(L"s.dll");
+			RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mtcontain.dll")) );
+		}
+		if(1 || RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{D48D1EB2-BF95-4EE1-BD69-9AD0515F050D}") , &fKey ) != ERROR_SUCCESS ){
+			//SVP_LogMsg5(L"d.dll");
+			//RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mxsource.dll")) );
+		}
+		if(1 || RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{D48D1EB2-BF95-4EE1-BD69-9AD0515F050D}") , &fKey ) != ERROR_SUCCESS ){
+			SVP_LogMsg5(L"f.dll");
+			RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mxrender.dll")) );
+		}
+		if(1 || RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{D48D1EB2-BF95-4EE1-BD69-9AD0515F050D}") , &fKey ) != ERROR_SUCCESS ){
+			SVP_LogMsg5(L"g.dll");
+			RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_wtlvcl.dll")) );
+			SVP_LogMsg5(L"h.dll");
+		}
+		
+
 		SVP_LogMsg5(L"Reg End");
 	}
 

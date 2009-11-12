@@ -741,6 +741,7 @@ HRESULT CDX9AllocatorPresenter::CreateDevice( )
 		}
 		else
 		{
+			s.m_RenderSettings.bSynchronizeNearest = s.fVMRGothSyncFix;
 			if(s.fVMRGothSyncFix || s.fVMRSyncFix)
 				pp.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
 			else
@@ -1488,7 +1489,7 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 	CMPlayerCApp * pApp = AfxGetMyApp();
 	CAutoLock cRenderLock(&m_RenderLock);
 	
-	if(m_pRefClock && s.fVMRGothSyncFix){
+	if(m_pRefClock && s.fVMRGothSyncFix && s.m_RenderSettings.bSynchronizeNearest){
 		m_pD3DDev->GetRasterStatus(0, &rasterStatus);	
 		m_uScanLineEnteringPaint = rasterStatus.ScanLine;
 		if(m_pRefClock) m_pRefClock->GetTime(&rtCurRefTime);
@@ -1723,7 +1724,7 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 	else
 		rtCurRefTime = 0;
 	
-	if(s.fVMRGothSyncFix){
+	if(s.fVMRGothSyncFix && s.m_RenderSettings.bSynchronizeNearest){
 		SyncStats(max(m_rtEstVSyncTime, rtCurRefTime)); // Max of estimate and real. Sometimes Present may actually return immediately so we need the estimate as a lower bound
 		SyncOffsetStats(-rtSyncOffset); // Minus because we want time to flow downward in the graph in DrawStats
 	
@@ -3077,16 +3078,22 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 
 		m_nTearingPos = (m_nTearingPos + 7) % m_NativeVideoSize.cx;
 	}
-	
+
 	
 	while(s.fVMRGothSyncFix && s.m_RenderSettings.bSynchronizeNearest ){//
 
+		
 		REFERENCE_TIME rtRefClockTimeNow; if (m_pRefClock) m_pRefClock->GetTime(&rtRefClockTimeNow); // Reference clock time now
 		LONG lLastVsyncTime = (LONG)((m_rtEstVSyncTime - rtRefClockTimeNow) / 10000); // Time of previous vsync relative to now
 
 		LONGLONG llNextSampleWait = (LONGLONG)(((double)lLastVsyncTime + GetDisplayCycle() * (2.0 - s.m_RenderSettings.fTargetSyncOffset)) * 10000); // Next safe time to Paint()
 		
-		LONGLONG llEachStep = (GetDisplayCycle() * 10000); // While the proposed time is in the past of sample presentation time
+		LONGLONG llEachStep = GetDisplayCycle();
+		if(m_dFrameCycle > 0 && llEachStep > m_dFrameCycle*8/10)
+			s.m_RenderSettings.bSynchronizeNearest = 0;
+
+		llEachStep *= 10000; // While the proposed time is in the past of sample presentation time
+		
 		if(llEachStep > 0){
 			if(llNextSampleWait < 0){
 				LONGLONG llStepWeNeed = (-llNextSampleWait) / llEachStep;
@@ -3103,9 +3110,14 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 		//	m_lNextSampleWait = 0;
 		}else{
 			if(hEventGoth){
-				if(WAIT_TIMEOUT != WaitForSingleObject(hEventGoth, m_lNextSampleWait) ){
-					m_lOverWaitCounter = 3;
+				{
+					if(WAIT_TIMEOUT != WaitForSingleObject(hEventGoth, m_lNextSampleWait) ){
+						m_lOverWaitCounter = 3;
+					}
+					s.m_RenderSettings.bSynchronizeNearest = 1;
+					m_lOverWaitCounter = 0;
 				}
+				
 			}else
 				m_lOverWaitCounter = 2;
 			

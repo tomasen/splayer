@@ -1089,8 +1089,9 @@ BEGIN
             MENUITEM "Enable Smart Drag",           ID_SMART_DRAG_ENABLE
             MENUITEM "Transparent Control",         ID_SHOWTRANSPRANTBAR
         END
-        MENUITEM "Subtitles",                   ID__32860
         MENUITEM "Playback",                    ID__32864
+		MENUITEM "Subtitles",                   ID__32860
+        MENUITEM "Navigation",                          ID_MENU_DVDNAV
         MENUITEM SEPARATOR
         POPUP "GUI"
         BEGIN
@@ -1458,6 +1459,7 @@ BEGIN
     IDS_RS_POPSTARTUPEXTCHECK "PouStartupExtCheck"
     IDD_PPAGESUBSTYLE2      "Subtitles::Secondary Subtitle"
     IDS_RS_CHECKUPDATERINTERLEAVE "CheckUpdaterInterleave"
+	IDS_MENU_ITEM_DVDNAV	"Navigation"
 END
 
 STRINGTABLE 

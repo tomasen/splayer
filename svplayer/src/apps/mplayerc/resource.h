@@ -1695,7 +1695,8 @@
 #define IDS_PPSDB_PROTOCOLERR           33199
 #define IDS_PPSDB_BADURL                33200
 #define IDS_VDF_AR_MODE                 33211
-
+#define ID_MENU_DVDNAV					33212
+#define	IDS_MENU_ITEM_DVDNAV			33213
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED

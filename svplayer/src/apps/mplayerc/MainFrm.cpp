@@ -4335,6 +4335,19 @@ void CMainFrame::OnInitMenuPopup(CMenu * pPopupMenu, UINT nIndex, BOOL bSysMenu)
 				: (MF_DISABLED|MF_GRAYED);
 
 			pPopupMenu->EnableMenuItem(i, MF_BYPOSITION|fState);
+		}else if(str == ResStr(IDS_MENU_ITEM_DVDNAV))
+		{
+			if(m_iPlaybackMode == PM_DVD)
+				pSubMenu = m_playback_resmenu.GetSubMenu(0);
+			else{
+				pPopupMenu->RemoveMenu(i, MF_BYPOSITION);
+				j = pPopupMenu->GetMenuItemCount();
+				i--;
+				continue;
+			}
+				
+				//if(!(!s.bAeroGlassAvalibility && s.iSVPRenderType)){
+		
 		}else if(str == ResStr(IDS_MENU_ITEM_PLAYBACK_CONTROL))
 		{
 			while(m_playbackmenu.RemoveMenu(0, MF_BYPOSITION));
@@ -4354,8 +4367,23 @@ void CMainFrame::OnInitMenuPopup(CMenu * pPopupMenu, UINT nIndex, BOOL bSysMenu)
 
 			MenuMerge( &m_playbackmenu , m_playback_resmenu.GetSubMenu(1) );
 			
-			if(m_iPlaybackMode == PM_DVD)
-				MenuMerge( &m_playbackmenu , m_playback_resmenu.GetSubMenu(0) );
+			if(m_iPlaybackMode == PM_DVD){
+				BOOL bAlreadyHave = false;
+				for(UINT xi = 0, xj = pPopupMenu->GetMenuItemCount(); xi < xj; xi++)
+				{
+					CString xstr;
+					pPopupMenu->GetMenuString(xi, xstr, MF_BYPOSITION);
+					if(xstr.Compare( ResStr(IDS_MENU_ITEM_DVDNAV)) == 0){
+						bAlreadyHave = true;
+						break;
+					}
+				}
+				if(!bAlreadyHave){
+					pPopupMenu->InsertMenu(i+1, MF_BYPOSITION, ID_MENU_DVDNAV, ResStr(IDS_MENU_ITEM_DVDNAV));
+					j = pPopupMenu->GetMenuItemCount();
+				}
+			}
+			//	MenuMerge( &m_playbackmenu , m_playback_resmenu.GetSubMenu(0) );
 				
 
 			MenuMerge( &m_playbackmenu ,m_playback_resmenu.GetSubMenu(2));
@@ -8879,9 +8907,9 @@ void CMainFrame::OnUpdateRenderModeChange(CCmdUI* pCmdUI)
 			
 			break;
 		case 	ID_VIEW_MODE_GOTHSYNC_MODE	:
-			pCmdUI->SetCheck( s.fVMRGothSyncFix);
+			pCmdUI->SetCheck( s.fVMRGothSyncFix );//|| !s.iSVPRenderType
 			pCmdUI->Enable(!s.bAeroGlassAvalibility && s.iSVPRenderType);
-			if(!(!s.bAeroGlassAvalibility && s.iSVPRenderType)){
+			if(s.bAeroGlassAvalibility ){
 				if( pCmdUI->m_pMenu){
 					pCmdUI->m_pMenu->RemoveMenu(pCmdUI->m_nID, MF_BYCOMMAND);
 				}

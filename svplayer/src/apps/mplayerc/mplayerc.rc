@@ -1777,6 +1777,7 @@ BEGIN
             END
         END
         MENUITEM "播放",                          ID__32864
+		MENUITEM "DVD导航",                          ID_MENU_DVDNAV
         MENUITEM SEPARATOR
         POPUP "截图"
         BEGIN
@@ -2193,6 +2194,7 @@ BEGIN
     IDD_PPAGETWEAKS         "高级调整"
     IDD_PPAGEAUDIOSWITCHER  "音频设置"
     IDD_PPAGEEXTERNALFILTERS "外部滤镜"
+	IDS_MENU_ITEM_DVDNAV	"DVD导航"
 END
 
 STRINGTABLE 

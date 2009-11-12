@@ -859,6 +859,7 @@ public:
 	afx_msg void OnUpdateSvpsubMenuenable(CCmdUI *pCmdUI);
 	afx_msg void OnSmartDragEnable();
 	afx_msg void OnUpdateSmartDragEnable(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateMenuDVDNav(CCmdUI *pCmdUI);
 	UINT m_iAudioChannelMaping;
 	afx_msg void OnAudioChannalMapMenu(UINT nID);
 	afx_msg void OnUpdateChannalMapMenu(CCmdUI *pCmdUI);

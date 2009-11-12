@@ -812,6 +812,9 @@ public:
 	afx_msg void OnSubtitleMove(UINT nID);
 	afx_msg void OnSubtitleFontChange(UINT nID);
 	
+	afx_msg void OnRenderModeChange(UINT nID);
+	afx_msg void OnUpdateRenderModeChange(CCmdUI* pCmdUI);
+
 	afx_msg void OnNavigateSkip(UINT nID);
 	afx_msg void OnUpdateNavigateSkip(CCmdUI* pCmdUI);
 	afx_msg void OnNavigateSkipPlaylistItem(UINT nID);

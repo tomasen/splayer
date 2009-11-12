@@ -359,6 +359,9 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND_RANGE(ID_SUB_DELAY_DOWN, ID_SUB_DELAY_UP, OnSubtitleDelay)
 	ON_COMMAND_RANGE(ID_SUB_DELAY_DOWN2, ID_SUB_DELAY_UP2, OnSubtitleDelay2)
 
+	ON_COMMAND_RANGE(ID_VIEW_MODE_QUALITY_MODE , ID_VIEW_MODE_GOTHSYNC_MODE, OnRenderModeChange)
+	ON_UPDATE_COMMAND_UI_RANGE(ID_VIEW_MODE_QUALITY_MODE , ID_VIEW_MODE_GOTHSYNC_MODE, OnUpdateRenderModeChange)
+
 	ON_COMMAND_RANGE(ID_SUBMOVEUP, ID_SUB2MOVERIGHT, OnSubtitleMove)
 	ON_COMMAND_RANGE(ID_SUBFONTUPBOTH, ID_SUB2FONTDOWN, OnSubtitleFontChange)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_SUBFONTUPBOTH, ID_SUB2FONTDOWN, OnUpdateSubtitleFontChange)
@@ -8822,6 +8825,71 @@ void CMainFrame::OnUpdateAfterplayback(CCmdUI* pCmdUI)
 	pCmdUI->SetRadio(fChecked);
 }
 
+void CMainFrame::OnRenderModeChange(UINT nID)
+{
+	AppSettings& s = AfxGetAppSettings();
+	switch(nID){
+		case     ID_VIEW_MODE_QUALITY_MODE	 :
+				s.iSVPRenderType = 1;
+				s.iDSVideoRendererType = 6;
+				s.iRMVideoRendererType = 2;
+				s.iQTVideoRendererType = 2;
+				s.iAPSurfaceUsage = VIDRNDT_AP_TEXTURE3D;
+			break;
+		case     ID_VIEW_MODE_PERMORMANCE_MODE :
+				s.iSVPRenderType = 0;
+				s.iDSVideoRendererType = 5;
+				s.iRMVideoRendererType = 1;
+				s.iQTVideoRendererType = 1;
+			break;
+		case 	ID_VIEW_MODE_DXVA_MODE	:
+				s.useGPUAcel = !s.useGPUAcel;
+			break;
+		case 	ID_VIEW_MODE_GOTHSYNC_MODE	:
+			if(s.fVMRGothSyncFix){
+				s.fVMRGothSyncFix = 1;
+				s.fVMRSyncFix = 1;
+				s.m_RenderSettings.bSynchronizeNearest = 1;
+			}else{
+				s.fVMRGothSyncFix = 0;
+				s.fVMRSyncFix = 0;
+				s.m_RenderSettings.bSynchronizeNearest = 0;
+			}
+		break;
+	}
+	if( m_iMediaLoadState != MLS_CLOSED){
+		ReRenderOrLoadMedia();
+	}
+}
+void CMainFrame::OnUpdateRenderModeChange(CCmdUI* pCmdUI)
+{
+	AppSettings& s = AfxGetAppSettings();
+	switch(pCmdUI->m_nID){
+		case     ID_VIEW_MODE_QUALITY_MODE	 :
+			
+			pCmdUI->SetRadio( s.iSVPRenderType == 1);
+			
+			break;
+		case     ID_VIEW_MODE_PERMORMANCE_MODE :
+			pCmdUI->SetRadio( s.iSVPRenderType == 0);
+			break;
+		case 	ID_VIEW_MODE_DXVA_MODE	:
+			pCmdUI->Enable(s.iSVPRenderType);
+			pCmdUI->SetCheck( s.useGPUAcel);
+			
+			break;
+		case 	ID_VIEW_MODE_GOTHSYNC_MODE	:
+			pCmdUI->SetCheck( s.fVMRGothSyncFix);
+			pCmdUI->Enable(!s.bAeroGlassAvalibility && s.iSVPRenderType);
+			if(!(!s.bAeroGlassAvalibility && s.iSVPRenderType)){
+				if( pCmdUI->m_pMenu){
+					pCmdUI->m_pMenu->RemoveMenu(pCmdUI->m_nID, MF_BYCOMMAND);
+				}
+			}
+			break;
+	}
+	
+}
 // navigate
 
 void CMainFrame::OnNavigateSkip(UINT nID)

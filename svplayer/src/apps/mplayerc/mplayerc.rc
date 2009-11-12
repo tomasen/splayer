@@ -1730,6 +1730,11 @@ BEGIN
             MENUITEM "智能去黑边(&O)",                   ID_VIEW_VF_FROMOUTSIDE
             MENUITEM "铺满播放窗口(&S)",                  ID_VIEW_VF_STRETCH
             MENUITEM SEPARATOR
+			MENUITEM "画质优先模式",                  ID_VIEW_MODE_QUALITY_MODE
+			MENUITEM "性能优先模式",                  ID_VIEW_MODE_PERMORMANCE_MODE
+			MENUITEM "启用硬件加速",						ID_VIEW_MODE_DXVA_MODE
+			MENUITEM "启用智能防撕裂",						ID_VIEW_MODE_GOTHSYNC_MODE
+			MENUITEM SEPARATOR
             POPUP "宽高比"
             BEGIN
                 MENUITEM "默认",                          ID_ASPECTRATIO_SOURCE

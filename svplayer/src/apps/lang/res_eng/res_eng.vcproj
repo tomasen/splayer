@@ -200,11 +200,11 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\resource.h"
+				RelativePath="..\..\mplayerc\Resource.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\mplayerc\Resource.h"
+				RelativePath=".\resource.h"
 				>
 			</File>
 		</Filter>
@@ -242,6 +242,10 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\resource"
+			>
+		</File>
 		<File
 			RelativePath=".\res.en\UESettingPanel.html"
 			>

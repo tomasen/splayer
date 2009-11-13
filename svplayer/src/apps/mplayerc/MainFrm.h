@@ -227,7 +227,7 @@ class CMainFrame : public CFrameWnd, public CDropTarget  , protected ISkinMenuRe
 	void SetupNavStreamSelectSubMenu(CMenu* pSub, UINT id, DWORD dwSelGroup);
 	void OnNavStreamSelectSubMenu(UINT id, DWORD dwSelGroup);
 
-	CMenu m_popupmain, m_popup;
+	CMenu m_popupmain;
 	CMenu m_opencds, m_openmore, m_playback_resmenu, m_playbackmenu;
 	CMenu m_filters, m_subtitles, m_subtitles2,  m_audiodevices , m_subtoolmenu;
 	CStringArray m_AudioDevice;
@@ -310,7 +310,7 @@ private:
 	int m_iRedrawAfterCloseCounter;
 public:
 	void SetupSVPAudioMenu();
-	CMenu m_audios;
+	CMenu m_audios, m_popup;
 	void SetupEQPersetMenu();
 	CMenu m_eqperset_menu;
 	void MenuMerge(CMenu* Org, CMenu* New);

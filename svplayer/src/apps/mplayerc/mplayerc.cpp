@@ -4381,6 +4381,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 
 		if(bUserAeroUI()){
 			m_lTransparentToolbarPosOffset = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_TRANSPARENTTOOLBARPOSOFFSET)+_T("2"), 0);
+			m_lTransparentToolbarPosSavedOffset = m_lTransparentToolbarPosOffset;
 		}
 
 		fInitialized = true;

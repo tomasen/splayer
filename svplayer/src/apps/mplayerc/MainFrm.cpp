@@ -10135,7 +10135,7 @@ void CMainFrame::rePosOSD(){
 
 		AppSettings& s = AfxGetAppSettings();
 
-		if( (m_lTransparentToolbarStat || m_fAudioOnly ) && s.bUserAeroUI() && ::IsWindow(m_wndFloatToolBar.m_hWnd) ){
+		if( (m_lTransparentToolbarStat || (IsSomethingLoaded() && m_fAudioOnly) ) && s.bUserAeroUI() && ::IsWindow(m_wndFloatToolBar.m_hWnd) ){
 
 			
 			CRect rcCur = GetWhereTheTansparentToolBarShouldBe(rcToolBar);

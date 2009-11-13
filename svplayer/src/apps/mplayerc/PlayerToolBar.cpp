@@ -861,6 +861,11 @@ void CPlayerToolBar::OnRButtonUp(UINT nFlags, CPoint point)
 		
 	}else if(!m_nItemToTrackR && s.bUserAeroUI()){
 
+		if( s.m_lTransparentToolbarPosOffset == 0 || s.m_lTransparentToolbarPosSavedOffset == s.m_lTransparentToolbarPosOffset ){
+
+			pFrame->OnMenu(pFrame->m_popup.GetSubMenu(0));
+			return;
+		}
 
 		enum 
 		{
@@ -887,9 +892,12 @@ void CPlayerToolBar::OnRButtonUp(UINT nFlags, CPoint point)
 				return;
 				break;
 		}
-		pFrame->rePosOSD();
-		pFrame->RedrawNonClientArea();
 		AfxGetMyApp()->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_TRANSPARENTTOOLBARPOSOFFSET)+_T("2"), s.m_lTransparentToolbarPosOffset);		
+		s.m_lTransparentToolbarPosSavedOffset = s.m_lTransparentToolbarPosOffset;
+		//::SetForegroundWindow(pFrame->m_hWnd);
+		pFrame->rePosOSD();
+		//pFrame->RedrawNonClientArea();
+		
 	}
 
 	

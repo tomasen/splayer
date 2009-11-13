@@ -716,6 +716,7 @@ public:
 		CAtlList<Shader> m_shaders;
 		CString m_shadercombine;
 		int m_lTransparentToolbarPosOffset;
+		int m_lTransparentToolbarPosSavedOffset;
 		
 		CString	strShaderList;
 		CString szFGMLog;

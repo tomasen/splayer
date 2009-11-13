@@ -57,7 +57,9 @@ extern "C"
 
 #include "../../../svplib/svplib.h"
 
-#define LOGDEBUG 1
+#define LOGDEBUG 0
+#define TRACE5 __noop
+//SVP_LogMsg5
 /////
 #define MAX_SUPPORTED_MODE			5
 #define MPCVD_CAPTION				_T("MPC Video decoder")
@@ -906,7 +908,7 @@ void CMPCVideoDecFilter::LogLibAVCodec(void* par,int level,const char *fmt,va_li
 	vsnprintf_s (Msg, sizeof(Msg), _TRUNCATE, fmt, valist);
 //	TRACE("AVLIB : %s", Msg);
 #endif
-	SVP_LogMsg3(fmt, valist);
+	SVP_LogMsg6(fmt, valist);
 }
 
 void CMPCVideoDecFilter::OnGetBuffer(AVFrame *pic)
@@ -990,11 +992,44 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 				}else if( m_pAVCodec->id == CODEC_ID_TSCC ){
 					m_bUSERGB = true;
 					m_pAVCtx->bits_per_coded_sample = vih->bmiHeader.biBitCount;
+
+					
 				}else if( m_pAVCodec->id == CODEC_ID_SMC ){ 
 					m_bUSERGB = true; //TODO: how to get platte?
 					m_pAVCtx->bits_per_coded_sample = 2;
 					//SVP_LogMsg3( " CODEC_ID_SMC %d" , vih->bmiHeader.biBitCount);
 					m_pAVCtx->color_table_id = 0;
+				}
+
+				{
+					if(m_pAVCtx->bits_per_coded_sample > 0 && m_pAVCtx->bits_per_coded_sample <= 8){
+						int extra_data_len = pmt->FormatLength() - sizeof(VIDEOINFOHEADER) ;
+						if( extra_data_len > 0 )
+						{
+							//const uint8_t *p_pal = (BYTE*)&vih->bmiHeader +  sizeof(BITMAPINFOHEADER);//+ sizeof(VIDEOINFOHEADER)
+							const uint8_t *p_pal = pmt->Format() + sizeof(VIDEOINFOHEADER) ;
+
+							m_pAVCtx->palctrl = (AVPaletteControl *)calloc( 1, sizeof(AVPaletteControl) );
+							m_pAVCtx->palctrl->palette_changed = 1;
+							memcpy(m_pAVCtx->palctrl->palette,p_pal, min(extra_data_len,AVPALETTE_SIZE ) );
+							/*int i_entries = min(extra_data_len/4, 256);
+
+							for( int i = 0; i < i_entries; i++ )
+							{
+								//SVP_LogMsg5(L"Got pall5 %d %d: %d %d %d %d",i_entries , i , p_pal[4*i],  p_pal[4*i+1],  p_pal[4*i+2],  p_pal[4*i+3]);
+								m_pAVCtx->palctrl->palette[i] = ((DWORD)(p_pal[4*i])&0xff)  | 
+									((DWORD)(p_pal[4*i+1])&0xff) << 8 |
+									((DWORD)(p_pal[4*i+2])&0xff)   << 16 |
+									((DWORD)(p_pal[4*i+3])&0xff)  << 24  ;
+
+								//SVP_LogMsg5(L"Got i_entries %x" , m_pAVCtx->palctrl->palette[i]);
+								//m_pAVCtx->palctrl->palette[i] = 0;
+							}
+							*/
+						}
+						
+					}
+
 				}
 				
 			}
@@ -1489,6 +1524,7 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 	int				got_picture;
 	int				used_bytes;
 
+	TRACE5(L"SoftwareDecode");
 /*	if (m_pAVCtx->has_b_frames)
 	{
 		m_BFrames[m_nPosB].rtStart	= rtStart;
@@ -1503,7 +1539,7 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 			m_nFFBufferSize = nSize+FF_INPUT_BUFFER_PADDING_SIZE;
 			m_pFFBuffer		= (BYTE*)realloc(m_pFFBuffer, m_nFFBufferSize);
 		}
-
+		
 		// Required number of additionally allocated bytes at the end of the input bitstream for decoding.
 		// This is mainly needed because some optimized bitstream readers read
 		// 32 or 64 bit at once and could read over the end.<br>
@@ -1513,13 +1549,16 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 		memset(m_pFFBuffer+nSize,0,FF_INPUT_BUFFER_PADDING_SIZE);
 		m_perf_timer[1] = GetPerfCounter();
 
+		
 		used_bytes = avcodec_decode_video (m_pAVCtx, m_pFrame, &got_picture, m_pFFBuffer, nSize);
+		
+		
 		m_perf_timer[2] = GetPerfCounter();
-		if(used_bytes < 0 ) { /*SVP_LogMsg3("used_bytes < 0 ");*/ return S_OK; } // Why MPC-HC removed this lineis un clear to me, add it back see if it solve sunpack problem
-		if (!got_picture || !m_pFrame->data[0]) {/* SVP_LogMsg3("!got_picture || !m_pFrame->data[0] %d " , got_picture);*/  return S_OK; }
-		if(pIn->IsPreroll() == S_OK || rtStart < 0) {/* SVP_LogMsg3("pIn->IsPreroll()  %d  %d " , pIn->IsPreroll() , rtStart);*/ return S_OK;}
+		if(used_bytes < 0 ) { TRACE5(L"used_bytes < 0 "); return S_OK; } // Why MPC-HC removed this lineis un clear to me, add it back see if it solve sunpack problem
+		if (!got_picture || !m_pFrame->data[0]) { TRACE5(L"!got_picture || !m_pFrame->data[0] %d " , got_picture);  return S_OK; }
+		if(pIn->IsPreroll() == S_OK || rtStart < 0) { TRACE5(L"pIn->IsPreroll()  %d  %d " , pIn->IsPreroll() , rtStart); return S_OK;}
 
-//		SVP_LogMsg3("GetDeliveryBuffer");
+		TRACE5(L"GetDeliveryBuffer");
 		CComPtr<IMediaSample>	pOut;
 		BYTE*					pDataOut = NULL;
 
@@ -1597,7 +1636,7 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 #if LOGDEBUG
 		m_perf_timer[5] = GetPerfCounter();
 		LONGLONG totalPerfTime = m_perf_timer[5] - m_perf_timer[0];
-		SVP_LogMsg3(("Timer Decoder %.3f%% CopyBuff Delivery %.3f%% Other Decoder %.3f%%") , ((double)((m_perf_timer[2] - m_perf_timer[1]) * 10000 / totalPerfTime)) / 100,
+		SVP_LogMsg6(("Timer Decoder %.3f%% CopyBuff Delivery %.3f%% Other Decoder %.3f%%") , ((double)((m_perf_timer[2] - m_perf_timer[1]) * 10000 / totalPerfTime)) / 100,
 			((double)((m_perf_timer[4] - m_perf_timer[3]) * 10000 / totalPerfTime)) / 100,((double)((m_perf_timer[5] - m_perf_timer[4]) * 10000 / totalPerfTime)) / 100,
 			((double)((m_perf_timer[1] - m_perf_timer[0]) * 10000 / totalPerfTime)) / 100);
 		m_perf_timer[0] = m_perf_timer[5];

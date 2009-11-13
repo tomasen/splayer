@@ -25,6 +25,10 @@
 #include "stdafx.h"
 #include "vd.h"
 
+#include "..\svplib\svplib.h"
+
+#define SVP_LogMsg5 __noop
+
 #pragma warning(disable : 4799) // no emms... blahblahblah
 
 #ifdef _WIN64 // _WIN64
@@ -1065,8 +1069,9 @@ bool BitBltFromI420ToYUY2(int w, int h, BYTE* dst, int dstpitch, BYTE* srcy, BYT
 bool BitBltFromRGBToYUY2(int w, int h, BYTE* dst, int dstpitch,  BYTE* src, int srcpitch, int sbpp){
 	return true;
 }
-bool BitBltFromRGBToRGB(int w, int h, BYTE* dst, int dstpitch, int dbpp, BYTE* src, int srcpitch, int sbpp)
+bool BitBltFromRGBToRGB(int w, int h, BYTE* dst, int dstpitch, int dbpp, BYTE* src, int srcpitch, int sbpp, DWORD* palette)
 {
+	SVP_LogMsg5(L" rgb to rgb %d %d",dbpp , sbpp);
 	if(dbpp == sbpp)
 	{
 		int rowbytes = w*dbpp>>3;
@@ -1088,11 +1093,23 @@ bool BitBltFromRGBToRGB(int w, int h, BYTE* dst, int dstpitch, int dbpp, BYTE* s
 	|| dbpp != 16 && dbpp != 24 && dbpp != 32)
 		return(false);
 
+	
 	if(dbpp == 16)
 	{
 		for(int y = 0; y < h; y++, src += srcpitch, dst += dstpitch)
 		{
-			if(sbpp == 15)
+			if(sbpp == 8)
+			{
+				BYTE* s = (BYTE*)src;
+				WORD* d = (WORD*)dst;
+				if(palette){
+					for(int x = 0; x < w; x++, s++, d++)
+						*d =  (WORD)(((*((DWORD*)(palette[*s]))>>8)&0xf00)|((*((DWORD*)(palette[*s]))>>5)&0x03e0)|((*((DWORD*)(palette[*s]))>>3)&0x1f));
+				}else{
+					for(int x = 0; x < w; x++, s++, d++)
+						*d = ((*s&0xe0)<<16)|((*s&0x1c)<<11)|((*s&0x03)<<6);
+				}
+			}else if(sbpp == 15)
 			{
 				BYTE* s = (BYTE*)src;
 				WORD* d = (WORD*)dst;
@@ -1123,11 +1140,19 @@ bool BitBltFromRGBToRGB(int w, int h, BYTE* dst, int dstpitch, int dbpp, BYTE* s
 			{
 				BYTE* s = (BYTE*)src;
 				BYTE* d = (BYTE*)dst;
-				for(int x = 0; x < w; x++, s++, d+=3)
-				{	// not tested, r-g-b might be in reverse
-					d[0] = (*s&0x03)<<6;
-					d[1] = (*s&0x1c)<<11;
-					d[2] = (*s&0xe0)<<16;
+				if(palette){
+					for(int x = 0; x < w; x++, s++, d+=3){
+						d[0] = (palette[*s]&0xff0000) >> 16;
+						d[1] = (palette[*s]&0xff00) >> 8;
+						d[2] = palette[*s]&0xff;
+					}
+				}else{
+					for(int x = 0; x < w; x++, s++, d+=3)
+					{	// not tested, r-g-b might be in reverse
+						d[0] = (*s&0x03)<<6;
+						d[1] = (*s&0x1c)<<11;
+						d[2] = (*s&0xe0)<<16;
+					}
 				}
 				
 			}else if(sbpp == 15)
@@ -1169,8 +1194,13 @@ bool BitBltFromRGBToRGB(int w, int h, BYTE* dst, int dstpitch, int dbpp, BYTE* s
 			{
 				BYTE* s = (BYTE*)src;
 				DWORD* d = (DWORD*)dst;
-				for(int x = 0; x < w; x++, s++, d++)
-					*d = ((*s&0xe0)<<16)|((*s&0x1c)<<11)|((*s&0x03)<<6);
+				if(palette){
+					for(int x = 0; x < w; x++, s++, d++)
+						*d = palette[*s];
+				}else{
+					for(int x = 0; x < w; x++, s++, d++)
+						*d = ((*s&0xe0)<<16)|((*s&0x1c)<<11)|((*s&0x03)<<6);
+				}
 			}else if(sbpp == 15)
 			{
 				WORD* s = (WORD*)src;
@@ -1192,7 +1222,10 @@ bool BitBltFromRGBToRGB(int w, int h, BYTE* dst, int dstpitch, int dbpp, BYTE* s
 					*d = *((DWORD*)s)&0xffffff;
 			}
 		}
+	}else{
+		//SVP_LogMsg5(L"None rgb to rgb");
 	}
+
 
 	return(true);
 }

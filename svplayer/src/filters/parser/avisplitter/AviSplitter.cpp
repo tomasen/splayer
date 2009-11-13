@@ -26,7 +26,7 @@
 #include "AviSplitter.h"
 #include "../../../svplib/svplib.h"
 
-//#define TRACE SVP_LogMsg5
+#define TRACE SVP_LogMsg5
 #define SVP_LogMsg5 __noop
 #ifdef REGISTER_FILTER
 
@@ -200,6 +200,7 @@ HRESULT CAviSplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 			mt.subtype = FOURCCMap(pbmi->biCompression);
 			mt.formattype = FORMAT_VideoInfo;
 			VIDEOINFOHEADER* pvih = (VIDEOINFOHEADER*)mt.AllocFormatBuffer(sizeof(VIDEOINFOHEADER) + s->strf.GetCount() - sizeof(BITMAPINFOHEADER));
+			SVP_LogMsg5(L"avi len %d %d %d" ,  s->strf.GetCount() ,  mt.FormatLength() , sizeof(VIDEOINFOHEADER) + s->strf.GetCount() - sizeof(BITMAPINFOHEADER));
 			memset(mt.Format(), 0, mt.FormatLength());
 			memcpy(&pvih->bmiHeader, s->strf.GetData(), s->strf.GetCount());
 			if(s->strh.dwRate > 0) pvih->AvgTimePerFrame = 10000000i64 * s->strh.dwScale / s->strh.dwRate;
@@ -218,6 +219,29 @@ HRESULT CAviSplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 //			case BI_RLE4: mt.subtype = MEDIASUBTYPE_RGB4; break;
 			}
 
+			/* Extract palette from extradata if bpp <= 8
+			* (assumes that extradata contains only palette but appears
+			*  to be true for all palettized codecs we support) */
+			if( pbmi->biBitCount > 0 && pbmi->biBitCount <= 8 )
+			{
+				/* The palette is not always included in biSize */
+			/*
+				fmt.i_extra = p_vids->i_chunk_size - sizeof(BITMAPINFOHEADER);
+				if( fmt.i_extra > 0 )
+				{
+					const uint8_t *p_pal = fmt.p_extra;
+
+					fmt.video.p_palette = calloc( 1, sizeof(video_palette_t) );
+					fmt.video.p_palette->i_entries = __MIN(fmt.i_extra/4, 256);
+
+					for( int i = 0; i < fmt.video.p_palette->i_entries; i++ )
+					{
+						for( int j = 0; j < 4; j++ )
+							fmt.video.p_palette->palette[i][j] = p_pal[4*i+j];
+					}
+				}
+				*/
+			}
 			if(s->cs.GetCount() && pvih->AvgTimePerFrame > 0)
 			{
 				__int64 size = 0;
@@ -519,7 +543,7 @@ bool CAviSplitterFilter::DemuxLoop()
 			if(fUrgent) break;
 		}
 
-		//SVP_LogMsg5(L"%d %d",minTrack , nTracks);
+		SVP_LogMsg5(L"%d %d",minTrack , nTracks);
 		if(minTrack == nTracks)
 			break;
 
@@ -535,11 +559,13 @@ bool CAviSplitterFilter::DemuxLoop()
 
 			if(s->cs[f].fChunkHdr)
 			{
+				SVP_LogMsg5(L"fChunkHdr");
 				DWORD id = 0;
 				if(S_OK != m_pFile->Read(id) || id == 0 || minTrack != TRACKNUM(id)
 				|| S_OK != m_pFile->Read(size))
 				{
 					fDiscontinuity[minTrack] = true;
+					SVP_LogMsg5(L"fDiscontinuity %d %x %d" , minTrack , id , TRACKNUM(id) );
 					break;
 				}
 
@@ -551,6 +577,7 @@ bool CAviSplitterFilter::DemuxLoop()
 				if(expectedsize != s->GetChunkSize(size))
 				{
 					fDiscontinuity[minTrack] = true;
+					SVP_LogMsg5(L"fDiscontinuity2 %d" , minTrack);
 					// ASSERT(0);
 					break;
 				}
@@ -569,15 +596,17 @@ bool CAviSplitterFilter::DemuxLoop()
 			p->rtStop = s->GetRefTime(f+1, f+1 < (DWORD)s->cs.GetCount() ? s->cs[f+1].size : s->totalsize);
 			
 			p->SetCount(size);
-			if(S_OK != (hr = m_pFile->ByteRead(p->GetData(), p->GetCount()))) 
+			if(S_OK != (hr = m_pFile->ByteRead(p->GetData(), p->GetCount()))) {
+				SVP_LogMsg5(L"read %x" , hr);
 				return(true); // break;
-/*
-			DbgLog((LOG_TRACE, 0, _T("%d (%d): %I64d - %I64d, %I64d - %I64d (size = %d)"), 
+			}
+
+			SVP_LogMsg5( _T("AVI Demux %d (%d): %I64d - %I64d, %I64d - %I64d (size = %d)"), 
 				minTrack, (int)p->bSyncPoint,
 				(p->rtStart)/10000, (p->rtStop)/10000, 
 				(p->rtStart-m_rtStart)/10000, (p->rtStop-m_rtStart)/10000,
-				size));
-*/
+				size);
+
 			hr = DeliverPacket(p);
 
 			fDiscontinuity[minTrack] = false;

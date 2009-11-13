@@ -391,7 +391,7 @@ static bool BitBltFromYUVToRGB(int w, int h, BYTE* dst, int dstpitch, int dbpp, 
 
 	return true;
 }
-HRESULT CBaseVideoFilter::CopyBuffer(BYTE* pOut, BYTE** ppIn, int w, int h, int pitchIn, const GUID& subtype, bool fInterlaced, BITMAPINFOHEADER* pForeOutputBIH )
+HRESULT CBaseVideoFilter::CopyBuffer(BYTE* pOut, BYTE** ppIn, int w, int h, int pitchIn, const GUID& subtype, bool fInterlaced, BITMAPINFOHEADER* pForeOutputBIH)
 {
 	BITMAPINFOHEADER bihOut;
 	ExtractBIH(&m_pOutput->CurrentMediaType(), &bihOut);
@@ -401,7 +401,8 @@ HRESULT CBaseVideoFilter::CopyBuffer(BYTE* pOut, BYTE** ppIn, int w, int h, int 
 		memcpy(&bihOut, pForeOutputBIH, sizeof(BITMAPINFOHEADER));
 	}
 	BOOL b_input_is_rgb = (subtype == MEDIASUBTYPE_ARGB32 || subtype == MEDIASUBTYPE_RGB32 || subtype == MEDIASUBTYPE_RGB24
-		|| subtype == MEDIASUBTYPE_RGB565 || subtype == MEDIASUBTYPE_RGB555);
+		|| subtype == MEDIASUBTYPE_RGB565 || subtype == MEDIASUBTYPE_RGB555
+		|| subtype == MEDIASUBTYPE_RGB8);
 	//SVP_LogMsg5(L"bihOut.biBitCount = %d %d %d", bihOut.biBitCount , bihOut.biHeight, bihOut.biWidth);
 	if(bihOut.biCompression == 'BGRA' || bihOut.biCompression == BI_RGB || bihOut.biCompression == BI_BITFIELDS)
 	{
@@ -446,16 +447,22 @@ SVP_LogMsg5(L"x2 %d y %d  ", w, h);
 
 		if(bihOut.biCompression == '2YUY')
 		{
-			BitBltFromI420ToYUY2(w, h, pOut, bihOut.biWidth*2, pIn, pInU, pInV, pitchIn, fInterlaced);
+			if(!BitBltFromI420ToYUY2(w, h, pOut, bihOut.biWidth*2, pIn, pInU, pInV, pitchIn, fInterlaced)){
+				SVP_LogMsg5(L"BitBltFromI420ToYUY2 fail");
+			}
+			
 		}
 		else if(bihOut.biCompression == '024I' || bihOut.biCompression == 'VUYI' || bihOut.biCompression == '21VY')
 		{
-			BitBltFromI420ToI420(w, h, pOut, pOutU, pOutV, bihOut.biWidth, pIn, pInU, pInV, pitchIn);
+			if(!BitBltFromI420ToI420(w, h, pOut, pOutU, pOutV, bihOut.biWidth, pIn, pInU, pInV, pitchIn)){
+				SVP_LogMsg5(L"BitBltFromI420ToI420 fail");
+			}
 		}
 		else if(bihOut.biCompression == 'BGRA' || bihOut.biCompression == BI_RGB || bihOut.biCompression == BI_BITFIELDS)
 		{
 			if(!BitBltFromI420ToRGB(w, h, pOut, pitchOut, bihOut.biBitCount, pIn, pInU, pInV, pitchIn))
 			{
+				SVP_LogMsg5(L"BitBltFromI420ToRGB fail");
 				for(DWORD y = 0; y < h; y++, pOut += pitchOut)
 					memset(pOut, 0, pitchOut);
 			}
@@ -504,7 +511,8 @@ SVP_LogMsg5(L"x2 %d y %d  ", w, h);
 			subtype == MEDIASUBTYPE_ARGB32 || subtype == MEDIASUBTYPE_RGB32 ? 32 :
 			subtype == MEDIASUBTYPE_RGB24 ? 24 :
 			subtype == MEDIASUBTYPE_RGB565 ? 16 : 
-			subtype == MEDIASUBTYPE_RGB555 ? 15 :0;
+			subtype == MEDIASUBTYPE_RGB555 ? 15 :
+			subtype == MEDIASUBTYPE_RGB8 ? 8 :0;
 
 		if(bihOut.biCompression == '2YUY')
 		{
@@ -513,8 +521,9 @@ SVP_LogMsg5(L"x2 %d y %d  ", w, h);
 		}
 		else if(bihOut.biCompression == 'BGRA' || bihOut.biCompression == BI_RGB || bihOut.biCompression == BI_BITFIELDS)
 		{
-			if(!BitBltFromRGBToRGB(w, h, pOut, pitchOut, bihOut.biBitCount, ppIn[0], pitchIn, sbpp))
+			if(!BitBltFromRGBToRGB(w, h, pOut, pitchOut, bihOut.biBitCount, ppIn[0], pitchIn, sbpp, (DWORD*)ppIn[1]))
 			{
+				SVP_LogMsg5(L"RGB to RGB fail");
 				for(DWORD y = 0; y < h; y++, pOut += pitchOut)
 					memset(pOut, 0, pitchOut);
 			}

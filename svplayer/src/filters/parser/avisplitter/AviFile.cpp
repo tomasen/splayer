@@ -1,9 +1,12 @@
 #include "StdAfx.h"
 #include "AviFile.h"
 
+#include "../../../svplib/svplib.h"
 //
 // CAviFile
 //
+#define  TRACE __noop
+#define  SVP_LogMsg5  __noop
 
 CAviFile::CAviFile(IAsyncReader* pAsyncReader, HRESULT& hr)
 	: CBaseSplitterFile(pAsyncReader, hr)
@@ -89,7 +92,7 @@ HRESULT CAviFile::BuildAMVIndex()
 		Seek(GetPos() + ulSize);			
 	}
 
-	TRACE ("Video packet : %d   Audio packet :%d\n", m_strms[0]->cs.GetCount(), m_strms[1]->cs.GetCount());
+	TRACE (L"Video packet : %d   Audio packet :%d\n", m_strms[0]->cs.GetCount(), m_strms[1]->cs.GetCount());
 	return S_OK;
 }
 
@@ -174,6 +177,7 @@ HRESULT CAviFile::Parse(DWORD parentid, __int64 end)
 						CStringA str;
 						if(S_OK != ByteRead((BYTE*)str.GetBufferSetLength(size), size)) return E_FAIL;
 						m_info[id] = str;
+						SVP_LogMsg5(L"avi got info %x size %d %d", id , size, str[0]);
 						break;
 					}
 				}

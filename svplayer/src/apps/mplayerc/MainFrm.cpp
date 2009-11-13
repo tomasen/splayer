@@ -11912,6 +11912,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 	AppSettings& s = AfxGetAppSettings();
 
 	s.bIsIVM = false;
+	s.szCurrentExtension.Empty();
 
 	if(m_iMediaLoadState != MLS_CLOSED && m_iMediaLoadState != MLS_LOADING)
 	{
@@ -11946,7 +11947,8 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 
 			CString fn = pOFD->fns.GetHead();
 
-			if(fn.Right(4).MakeLower() == _T(".ivm"))
+			s.szCurrentExtension = fn.Right(4).MakeLower();
+			if(s.szCurrentExtension == _T(".ivm"))
 				s.bIsIVM = true;
 
 			int i = fn.Find(_T(":\\"));
@@ -15193,6 +15195,7 @@ void CMainFrame::CloseMedia()
 {
 	
 	AfxGetAppSettings().bIsIVM = false;
+	AfxGetAppSettings().szCurrentExtension.Empty();
 
 	PostMessage(WM_COMMAND, ID_PLAY_PAUSE);
 

@@ -2522,7 +2522,7 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 	if(s.bIsIVM){
 		szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("IVMSource.ax")) );
 	}
-	if(1){
+	if(s.szCurrentExtension == _T(".csf")){
 // 		szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("csfcodec\\mpc_mdssockc.dll")) );
 // 		szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("csfcodec\\mpc_mxaudio.dll")) );
 // 		szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("csfcodec\\mpc_mxvideo.dll")) );

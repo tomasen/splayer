@@ -57,7 +57,7 @@ extern "C"
 
 #include "../../../svplib/svplib.h"
 
-#define LOGDEBUG 0
+#define LOGDEBUG 1
 /////
 #define MAX_SUPPORTED_MODE			5
 #define MPCVD_CAPTION				_T("MPC Video decoder")

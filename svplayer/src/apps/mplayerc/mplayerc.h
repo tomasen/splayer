@@ -639,6 +639,7 @@ public:
 		float			dSaturation;
 
 		bool bIsIVM;
+		CString szCurrentExtension;
 		bool fEnableAudioSwitcher;
 		bool fDownSampleTo441;
 		bool fAudioTimeShift;

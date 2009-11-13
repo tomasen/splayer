@@ -590,7 +590,9 @@ CMainFrame::CMainFrame() :
 	m_notshowtoolbarforawhile(0),
 	m_lTransparentToolbarPosOffset(0),
 	m_lTransparentToolbarPosStat(0),
-	m_fAudioOnly(0)
+	m_fAudioOnly(0),
+	m_bAllowVolumeSuggestForThisPlaylist(true),
+	m_fLastIsAudioOnly(false)
 {
 }
 
@@ -4823,8 +4825,8 @@ void CMainFrame::OnFilePostOpenmedia()
 	if(m_iPlaybackMode == PM_CAPTURE)
 	{
 		ShowControlBar(&m_wndSubresyncBar, FALSE, TRUE);
-//		ShowControlBar(&m_wndPlaylistBar, FALSE, TRUE);
-//		ShowControlBar(&m_wndCaptureBar, TRUE, TRUE);
+		ShowControlBar(&m_wndPlaylistBar, FALSE, TRUE);
+		ShowControlBar(&m_wndCaptureBar, TRUE, TRUE);
 	}
 
 	//if(m_pCAP) m_pCAP->SetSubtitleDelay(0); remove since we need set the delay while setSubTitle
@@ -4844,7 +4846,16 @@ void CMainFrame::OnFilePostOpenmedia()
 		if(IsWindowVisible() && AfxGetAppSettings().fRememberZoomLevel
 		&& !(m_fFullScreen || wp.showCmd == SW_SHOWMAXIMIZED || wp.showCmd == SW_SHOWMINIMIZED))
 		{
-			ZoomVideoWindow();
+			if(m_fAudioOnly && m_fLastIsAudioOnly){
+
+				
+
+			}else{
+				ZoomVideoWindow();
+				
+			}
+			m_fLastIsAudioOnly = m_fAudioOnly;
+
 		}
 	}
 
@@ -8727,6 +8738,10 @@ void CMainFrame::OnUpdatePlaySubtitles(CCmdUI* pCmdUI)
 LRESULT CMainFrame::OnSuggestVolume(  WPARAM wParam, LPARAM lParam){
 	//TODO
 
+	if(!m_bAllowVolumeSuggestForThisPlaylist){
+		return S_OK;
+	}
+
 	AppSettings& s = AfxGetAppSettings();
 	double f_suggest_vol = *(double*)wParam;
 	int iVol = 90;
@@ -8742,6 +8757,8 @@ LRESULT CMainFrame::OnSuggestVolume(  WPARAM wParam, LPARAM lParam){
 	SendStatusMessage(szStat , 2000);
 
 	OnPlayVolume(113);
+
+	m_bAllowVolumeSuggestForThisPlaylist = false;
 
 	return S_OK;
 }
@@ -10150,8 +10167,13 @@ CRect CMainFrame::GetWhereTheTansparentToolBarShouldBe(CRect rcView)
 	CRect rcBaseView(rcToolBar);
 	
 	CSize view_size (  rcToolBar.Width() , rcToolBar.Height() );
-	rcToolBar.left += view_size.cx * 0.06;
-	rcToolBar.right -= view_size.cx * 0.06;
+	if(view_size.cx*0.88 > 320){
+		rcToolBar.left += view_size.cx * 0.06;
+		rcToolBar.right -= view_size.cx * 0.06;
+	}else if(view_size.cx > 320){
+		rcToolBar.left += (view_size.cx - 320)/2;
+		rcToolBar.right -= (view_size.cx - 320)/2;
+	}
 	int uiHeight = m_wndFloatToolBar.GetUIHeight();
 	if(uiHeight > view_size.cy * 0.9){
 		rcToolBar.top += view_size.cy * ( 5 + s.m_lTransparentToolbarPosOffset ) /100;
@@ -10162,6 +10184,8 @@ CRect CMainFrame::GetWhereTheTansparentToolBarShouldBe(CRect rcView)
 	}
 
 	if(!m_lTransparentToolbarPosStat){
+
+		rcToolBar.right = max(rcToolBar.right, rcToolBar.left + 310);
 		return rcToolBar;
 	}else{
 		CRect rcCur;
@@ -10184,6 +10208,7 @@ CRect CMainFrame::GetWhereTheTansparentToolBarShouldBe(CRect rcView)
 
 		s.m_lTransparentToolbarPosOffset = ( rcBaseView.bottom - rcCur.bottom ) * 100 / rcBaseView.Height() - 5;
 		//if(bChanged)
+		rcCur.right = max(rcCur.right, rcCur.left + 310);
 		return rcCur;
 	}
 
@@ -12257,6 +12282,10 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 			m_wndPlaylistBar.MoveWindow(rcView);
 			*/
 			m_wndView.m_strAudioInfo.Empty();
+			//This is silly
+			if(!m_fLastIsAudioOnly)
+				ShowControlBar(&m_wndPlaylistBar, FALSE, TRUE);
+
 			KillTimer(TIMER_TRANSPARENTTOOLBARSTAT);
 			SetTimer(TIMER_TRANSPARENTTOOLBARSTAT, 50,NULL);
 			rePosOSD();

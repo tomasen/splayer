@@ -692,6 +692,12 @@ void CPlayerPlaylistBar::Empty()
 	m_list.DeleteAllItems();
 	m_pl.szPlayListSub.Empty();
 	SavePlaylist();
+
+	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
+	if(pFrame){
+		pFrame->m_bAllowVolumeSuggestForThisPlaylist = true;
+		//pFrame->m_fLastIsAudioOnly = false;
+	}
 }
 void CPlayerPlaylistBar::RealFindMoreFileFromOneFileAndPutIntoPlaylist(CString szMediaFile , CAtlList<CString>& szaIn ){
 	

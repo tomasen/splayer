@@ -100,9 +100,14 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 	m_btnList.AddTail( btnFFBack );
 
 	CSUIButton* btnPrev = new CSUIButton(L"BTN_PREV.BMP" , ALIGN_TOPLEFT, CRect(-48 , 10, 3,3)  , 0, ID_NAVIGATE_SKIPBACK, FALSE, ALIGN_RIGHT, btnFFBack , CRect(10 , 10 , 10, 10) ) ;
+	btnPrev->addAlignRelButton(ALIGN_RIGHT, btnPlay , CRect(5 , 10 , 5, 10) );
+	btnPrev->addAlignRelButton(ALIGN_RIGHT, btnPause , CRect(5 , 10 , 5, 10) );
 	m_btnList.AddTail( btnPrev );
 
-	m_btnList.AddTail( new CSUIButton(L"BTN_NEXT.BMP" , ALIGN_TOPLEFT, CRect(-48 ,10, 3,3)  , 0, ID_NAVIGATE_SKIPFORWARD, FALSE, ALIGN_LEFT, btnFFwd , CRect(10 , 10 , 10, 10) ) );
+	CSUIButton* btnNext = new CSUIButton(L"BTN_NEXT.BMP" , ALIGN_TOPLEFT, CRect(-48 ,10, 3,3)  , 0, ID_NAVIGATE_SKIPFORWARD, FALSE, ALIGN_LEFT, btnFFwd , CRect(10 , 10 , 10, 10) );
+	btnNext->addAlignRelButton(  ALIGN_LEFT, btnPlay , CRect(5 , 10 , 5, 10) );
+	btnNext->addAlignRelButton(ALIGN_LEFT, btnPause , CRect(5 , 10 , 5, 10) );
+	m_btnList.AddTail( btnNext);
 	
 	CSUIButton* btnLogo =  new CSUIButton(L"SPLAYER.BMP" , ALIGN_TOPLEFT, CRect(14 , 7, 3,3)  , TRUE, 0, FALSE   ) ;
 	m_btnList.AddTail(btnLogo);
@@ -222,9 +227,20 @@ void CPlayerToolBar::OnSize(UINT nType, int cx, int cy)
 		hideT4 = false;
 	}
 
-	m_btnList.SetHideStat(ID_NAVIGATE_SKIPBACK , hideT1);
-	m_btnList.SetHideStat(ID_NAVIGATE_SKIPFORWARD , hideT1);
+	CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
+	if(pFrame && pFrame->IsSomethingLoaded() && pFrame->m_fAudioOnly){
 
+		m_btnList.SetHideStat(ID_PLAY_FWD , hideT1);
+		m_btnList.SetHideStat(ID_PLAY_BWD , hideT1);
+		m_btnList.SetHideStat(ID_NAVIGATE_SKIPBACK , 0);
+		m_btnList.SetHideStat(ID_NAVIGATE_SKIPFORWARD , 0);
+	}else{
+		m_btnList.SetHideStat(ID_PLAY_FWD , 0);
+		m_btnList.SetHideStat(ID_PLAY_BWD , 0);
+		m_btnList.SetHideStat(ID_NAVIGATE_SKIPBACK , hideT1);
+		m_btnList.SetHideStat(ID_NAVIGATE_SKIPFORWARD , hideT1);
+	}
+	
 	m_btnList.SetHideStat(ID_VOLUME_MUTE , hideT2);
 	
 	m_btnList.SetHideStat(ID_SUBTOOLBARBUTTON , hideT2);

@@ -400,6 +400,7 @@ public:
 	bool IsInteractiveVideo() {return(AfxGetAppSettings().fIntRealMedia && m_fRealMediaGraph || m_fShockwaveGraph);}
 
 	bool m_fAudioOnly;
+	bool m_fLastIsAudioOnly;
 
 	CControlBar* m_pLastBar;
 
@@ -898,6 +899,7 @@ public:
 	LRESULT OnNcCalcSizeNewUI(  WPARAM wParam, LPARAM lParam);
 	LRESULT OnStatusMessage(  WPARAM wParam, LPARAM lParam);
 	LRESULT OnSuggestVolume(  WPARAM wParam, LPARAM lParam);
+	bool m_bAllowVolumeSuggestForThisPlaylist;
 	LRESULT OnImeSetContext(  WPARAM wParam, LPARAM lParam);
 	
 

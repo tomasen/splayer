@@ -234,14 +234,20 @@ void CPlayerToolBar::OnSize(UINT nType, int cx, int cy)
 		m_btnList.SetHideStat(ID_PLAY_BWD , hideT1);
 		m_btnList.SetHideStat(ID_NAVIGATE_SKIPBACK , 0);
 		m_btnList.SetHideStat(ID_NAVIGATE_SKIPFORWARD , 0);
+
+		m_btnList.SetHideStat(ID_VOLUME_MUTE , 0);
+		m_btnList.SetHideStat(ID_VIEW_PLAYLIST , hideT2);
 	}else{
 		m_btnList.SetHideStat(ID_PLAY_FWD , 0);
 		m_btnList.SetHideStat(ID_PLAY_BWD , 0);
 		m_btnList.SetHideStat(ID_NAVIGATE_SKIPBACK , hideT1);
 		m_btnList.SetHideStat(ID_NAVIGATE_SKIPFORWARD , hideT1);
+
+		m_btnList.SetHideStat(ID_VIEW_PLAYLIST , 0);
+		m_btnList.SetHideStat(ID_VOLUME_MUTE , hideT2);
 	}
 	
-	m_btnList.SetHideStat(ID_VOLUME_MUTE , hideT2);
+	
 	
 	m_btnList.SetHideStat(ID_SUBTOOLBARBUTTON , hideT2);
 	m_btnList.SetHideStat(ID_SUBDELAYDEC , hideT2);

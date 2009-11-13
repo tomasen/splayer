@@ -1383,7 +1383,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 			DWORD dnCS = s.nCS;
 			CPoint ptop(point);
 			MapWindowPoints(&m_wndView, &ptop, 1);
-			if(ptop.y < 20){
+			if(ptop.y < 20 && ( (IsSomethingLoaded() && !m_fAudioOnly) || !IsSomethingLoaded()) ){
 				if(!m_wndToolTopBar.IsWindowVisible()){
 					m_wndToolTopBar.ShowWindow(SW_SHOWNOACTIVATE);
 					bSomethingChanged = true;

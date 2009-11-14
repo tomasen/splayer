@@ -106,6 +106,8 @@ CAudioSwitcherFilter::CAudioSwitcherFilter(LPUNKNOWN lpunk, HRESULT* phr)
 	, m_lTotalOutputChannel(2)
 	, m_lastInputChannelCount(-1)
 	, m_lastOutputChannelCount(-1)
+	, m_lastInputChannelCount2(-1)
+	, m_lastOutputChannelCount2(-1)
 	, m_iSimpleSwitch(-1)
 	, m_fVolSuggested(0)
 	, m_fEQControlOn(0)
@@ -314,9 +316,17 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 	int lTotalInputChannels = wfe->nChannels;
 	int lTotalOutputChannels =  wfeout->nChannels;
 	
+	SVP_LogMsg5(L"Chan %d %d",lTotalInputChannels ,lTotalOutputChannels );
+	if(m_lastInputChannelCount2 != lTotalInputChannels || m_lastOutputChannelCount2 != lTotalOutputChannels )
+	{
+		m_lastInputChannelCount2 = lTotalInputChannels;
+		m_lastOutputChannelCount2 = lTotalOutputChannels;
+
+		m_fCustomChannelMapping2 = -1;
+	}
 	if(m_fCustomChannelMapping2 < 0 ){
 		CAutoLock dataLock(&m_csDataLock);
-			//SVP_LogMsg5(L"ChanTest %d %d",lTotalInputChannels ,lTotalOutputChannels );
+			SVP_LogMsg5(L"ChanTest %d %d",lTotalInputChannels ,lTotalOutputChannels );
 		m_fCustomChannelMapping2 = 0;
 
 		if( (m_iSimpleSwitch > 2 && lTotalInputChannels > 2) || (m_iSimpleSwitch > 0 && m_iSimpleSwitch <= 2 && lTotalInputChannels > 1) ){
@@ -326,6 +336,7 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 			m_iSimpleSwitch = 0;
 		}
 		if(!m_fCustomChannelMapping2){
+			SVP_LogMsg5(L"None SimpleSwitch");
 			for (int i = 0; i < lTotalInputChannels; i++)
 			{
 				if( m_pSpeakerToChannelMapOffset[lTotalInputChannels-1][i]  != 0){
@@ -335,6 +346,7 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 			}
 		}
 			if(!m_fCustomChannelMapping2){
+				SVP_LogMsg5(L"None Chann Offset");
 				for (int j = 0; j < lTotalOutputChannels; j++){
 					for (int i = 0; i < lTotalInputChannels; i++)
 					{
@@ -350,7 +362,7 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 			}
 			
 			if( !m_fCustomChannelMapping2 && lTotalInputChannels > lTotalOutputChannels){
-
+				SVP_LogMsg5(L"None Chann Mapping");
 				
 				for (int i = 0; i < lTotalOutputChannels; i++)
 				{
@@ -363,7 +375,8 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 				}
 				m_fCustomChannelMapping2 = 1;
 			}
-
+			if( !m_fCustomChannelMapping2)
+				SVP_LogMsg5(L"None Chann Mapping At all");
 	}
 
 	if( m_fCustomChannelMapping2 )
@@ -1012,9 +1025,9 @@ STDMETHODIMP CAudioSwitcherFilter::SetSpeakerChannelConfig (int lTotalOutputChan
 															float pChannelNormalize[MAX_INPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_NORMALIZE_CHANNELS]
 															,float pSpeakerToChannelMapOffset[MAX_INPUT_CHANNELS][MAX_NORMALIZE_CHANNELS], int iSimpleSwitch )
 {
-	if(m_State == State_Stopped || m_pChannelNormalize2 != pChannelNormalize
-		|| memcmp(m_pChannelNormalize2, pChannelNormalize, sizeof(m_pChannelNormalize2)) ||
-		memcmp(m_pSpeakerToChannelMapOffset, pSpeakerToChannelMapOffset, sizeof(m_pSpeakerToChannelMapOffset)) )
+	//if(m_State == State_Stopped || m_pChannelNormalize2 != pChannelNormalize
+	//	|| memcmp(m_pChannelNormalize2, pChannelNormalize, sizeof(m_pChannelNormalize2)) ||
+	//	memcmp(m_pSpeakerToChannelMapOffset, pSpeakerToChannelMapOffset, sizeof(m_pSpeakerToChannelMapOffset)) )
 	{
 		//PauseGraph;
 
@@ -1023,7 +1036,7 @@ STDMETHODIMP CAudioSwitcherFilter::SetSpeakerChannelConfig (int lTotalOutputChan
 		//SelectInput(NULL);
 		CAutoLock dataLock(&m_csDataLock);
 
-		//SVP_LogMsg5(L"Set channel maping");
+		SVP_LogMsg5(L"Set channel maping");
 		memcpy(m_pChannelNormalize2, pChannelNormalize, sizeof(m_pChannelNormalize2));
 		memcpy(m_pSpeakerToChannelMapOffset, pSpeakerToChannelMapOffset, sizeof(m_pSpeakerToChannelMapOffset));
 		if(lTotalOutputChannel > 0)
@@ -1099,6 +1112,7 @@ STDMETHODIMP_(bool) CAudioSwitcherFilter::IsDownSamplingTo441Enabled()
 
 STDMETHODIMP CAudioSwitcherFilter::EnableDownSamplingTo441(bool fEnable)
 {
+	m_fDownSampleTo441 = false;
 	return S_OK;
 	if(m_fDownSampleTo441 != fEnable)
 	{

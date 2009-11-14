@@ -58,6 +58,8 @@ class __declspec(uuid("18C16B08-6497-420e-AD14-22D21C2CEAB7")) CAudioSwitcherFil
 	int m_fCustomChannelMapping2;
 	int m_lastInputChannelCount;
 	int m_lastOutputChannelCount;
+	int m_lastInputChannelCount2;
+	int m_lastOutputChannelCount2;
 	time_t m_tPlayedtime;
 
 	float m_pCurrentChannelNormalize2[MAX_OUTPUT_CHANNELS][MAX_NORMALIZE_CHANNELS];

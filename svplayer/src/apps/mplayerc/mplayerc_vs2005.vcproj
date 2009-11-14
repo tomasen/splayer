@@ -822,10 +822,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\SVPCombo.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\SVPDialog.cpp"
 				>
 			</File>
@@ -1320,10 +1316,6 @@
 			</File>
 			<File
 				RelativePath=".\SVPButton.h"
-				>
-			</File>
-			<File
-				RelativePath=".\SVPCombo.h"
 				>
 			</File>
 			<File
@@ -2237,11 +2229,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 		<File

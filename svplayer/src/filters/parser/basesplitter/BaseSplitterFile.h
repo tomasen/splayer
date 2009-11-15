@@ -53,6 +53,7 @@ public:
 	__int64 GetLength(bool fUpdate = false);
 	__int64 GetRemaining() {return max(0, GetLength() - GetPos());}
 	virtual void Seek(__int64 pos);
+	virtual void Skip(__int64 pos);
 
 	UINT64 UExpGolombRead();
 	INT64 SExpGolombRead();

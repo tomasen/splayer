@@ -7,8 +7,7 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#include "afxres.h"
-
+#include "afxres.h"
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
@@ -1043,11 +1042,11 @@ BEGIN
             MENUITEM "Full Screen(&l)",             ID_VIEW_FULLSCREEN
             MENUITEM "Remove Black Bar(&O)",        ID_VIEW_VF_FROMOUTSIDE
             MENUITEM SEPARATOR
-			MENUITEM "Quality Mode",                  ID_VIEW_MODE_QUALITY_MODE
-			MENUITEM "Performance Mode",                  ID_VIEW_MODE_PERMORMANCE_MODE
-			MENUITEM "Enable Anti-Tearing",						ID_VIEW_MODE_GOTHSYNC_MODE
-			MENUITEM "Enable GPU Acceleration",						ID_VIEW_MODE_DXVA_MODE
-			MENUITEM SEPARATOR
+            MENUITEM "Quality Mode",                ID_VIEW_MODE_QUALITY_MODE
+            MENUITEM "Performance Mode",            ID_VIEW_MODE_PERMORMANCE_MODE
+            MENUITEM "Enable Anti-Tearing",         ID_VIEW_MODE_GOTHSYNC_MODE
+            MENUITEM "Enable GPU Acceleration",     ID_VIEW_MODE_DXVA_MODE
+            MENUITEM SEPARATOR
             POPUP "Flip"
             BEGIN
                 MENUITEM "Flip(H)",                     ID_ROTATE_H
@@ -1090,8 +1089,8 @@ BEGIN
             MENUITEM "Transparent Control",         ID_SHOWTRANSPRANTBAR
         END
         MENUITEM "Playback",                    ID__32864
-		MENUITEM "Subtitles",                   ID__32860
-        MENUITEM "Navigation",                          ID_MENU_DVDNAV
+        MENUITEM "Subtitles",                   ID__32860
+        MENUITEM "Navigation",                  ID_MENU_DVDNAV
         MENUITEM SEPARATOR
         POPUP "GUI"
         BEGIN
@@ -1109,9 +1108,6 @@ BEGIN
             END
             POPUP "More Panel(&e)"
             BEGIN
-                MENUITEM "Caption(&M)\tCtrl+0",         ID_VIEW_CAPTIONMENU
-                MENUITEM "Seeker(&S)\tCtrl+1",          ID_VIEW_SEEKER
-                MENUITEM "Controls(&r)\tCtrl+2",        ID_VIEW_CONTROLS
                 MENUITEM "Information(&I)\tCtrl+3",     ID_VIEW_INFORMATION
                 MENUITEM "Statistics(&t)\tCtrl+4",      ID_VIEW_STATISTICS
                 MENUITEM "Subresync\tCtrl+6",           ID_VIEW_SUBRESYNC
@@ -1459,7 +1455,13 @@ BEGIN
     IDS_RS_POPSTARTUPEXTCHECK "PouStartupExtCheck"
     IDD_PPAGESUBSTYLE2      "Subtitles::Secondary Subtitle"
     IDS_RS_CHECKUPDATERINTERLEAVE "CheckUpdaterInterleave"
-	IDS_MENU_ITEM_DVDNAV	"Navigation"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PPSDB_BADURL        "Bad URL, could not locate subtitle database there!"
+    IDS_VDF_AR_MODE         "Read AR from stream"
+    IDS_MENU_ITEM_DVDNAV    "Navigation"
 END
 
 STRINGTABLE 
@@ -1880,12 +1882,6 @@ BEGIN
     IDS_VDF_IDCT_ALGO       "IDCT Algorithm"
     IDS_VDF_IDCT_AUTO       "Auto"
     IDS_VDF_IDCT_LIBMPG2    "Lib Mpeg2 MMX"
-END
-
-STRINGTABLE 
-BEGIN
-    IDS_PPSDB_BADURL        "Bad URL, could not locate subtitle database there!"
-    IDS_VDF_AR_MODE         "Read AR from stream"
 END
 
 STRINGTABLE 

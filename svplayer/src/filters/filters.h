@@ -54,3 +54,4 @@
 #include ".\parser\SSFSplitter\SSFSplitter.h"
 //#include ".\transform\vsfilter\DirectVobSubFilter.h"
 #include ".\renderer\MpcAudioRenderer\MpcAudioRenderer.h"
+#include ".\parser\EASplitter\EASpliter.h"

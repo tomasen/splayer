@@ -57,8 +57,13 @@ HRESULT CAviFile::Init()
 		}
 	}
 
-	if (!m_isamv && (FAILED(BuildIndex())))
-		EmptyIndex();
+	if (!m_isamv){
+		HRESULT hrb = BuildIndex();
+		if( (FAILED(hrb)))
+			EmptyIndex();
+		if(hrb == E_ABORT)
+			return E_FAIL;
+	}
 
 	return S_OK;
 }
@@ -416,8 +421,12 @@ HRESULT CAviFile::BuildIndex()
 						Read(id);
 						if(id != idx->aIndex[j].dwChunkId)
 						{
-							TRACE(_T("WARNING: CAviFile::Init() detected absolute chunk addressing in \'idx1\'"));
+							TRACE(_T("WARNING: CAviFile::Init() detected absolute chunk addressing in \'idx1\' %x %x %d %d %d ")
+								,id ,  idx->aIndex[j].dwChunkId , offset + idx->aIndex[j].dwOffset , j , len);
 							offset = 0;
+							EmptyIndex();
+							return E_ABORT;
+							//continue;
 						}
 					}
 

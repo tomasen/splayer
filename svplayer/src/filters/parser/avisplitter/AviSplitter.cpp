@@ -26,7 +26,7 @@
 #include "AviSplitter.h"
 #include "../../../svplib/svplib.h"
 
-#define TRACE SVP_LogMsg5
+#define TRACE __noop
 #define SVP_LogMsg5 __noop
 #ifdef REGISTER_FILTER
 
@@ -139,7 +139,7 @@ HRESULT CAviSplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 	CheckPointer(pAsyncReader, E_POINTER);
 
 	HRESULT hr = E_FAIL;
-
+	BOOL bHasVideo = FALSE;
 	m_pFile.Free();
 	m_tFrame.Free();
 
@@ -253,6 +253,7 @@ HRESULT CAviSplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 			mt.SetSampleSize(s->strh.dwSuggestedBufferSize > 0 
 				? s->strh.dwSuggestedBufferSize*3/2
 				: (pvih->bmiHeader.biWidth*pvih->bmiHeader.biHeight*4));
+			bHasVideo = TRUE;
 			mts.Add(mt);
 		}
 		else if(s->strh.fccType == FCC('auds') || s->strh.fccType == FCC('amva'))
@@ -319,6 +320,7 @@ HRESULT CAviSplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 			mt.SetSampleSize(s->strh.dwSuggestedBufferSize > 0 
 				? s->strh.dwSuggestedBufferSize*3/2
 				: (1024*1024));
+			bHasVideo = TRUE;
 			mts.Add(mt);
 		}else{
 			SVP_LogMsg5(L"CAviSourceFilter: Unsupported fcc %x" , s->strh.fccType);
@@ -356,6 +358,10 @@ HRESULT CAviSplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 	}
 
 	m_tFrame.Attach(new DWORD[m_pFile->m_avih.dwStreams]);
+	if(!bHasVideo){
+		SVP_LogMsg5(L"Got No Video");
+		return E_FAIL;
+	}
 
 	return m_pOutputs.GetCount() > 0 ? S_OK : E_FAIL;
 }

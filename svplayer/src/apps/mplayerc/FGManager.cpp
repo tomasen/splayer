@@ -1498,6 +1498,16 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		m_source.AddTail(pFGF);
 	}
 
+	{
+		pFGF = new CFGFilterInternal<CEASourceFilter>(_T("CEASourceFilter"), MERIT64_ABOVE_DSHOW);
+		pFGF->m_chkbytes.AddTail(_T("0,4,,4D566864"));
+		//.vp6 file
+		//TODO there are more chkbytes in this kind of file
+		pFGF->m_extensions.AddTail(_T(".vp6"));
+		m_source.AddTail(pFGF);
+
+	}
+	
 	__if_exists(CNutSourceFilter)
 	{
 	if(src & SRC_NUT)

@@ -100,6 +100,10 @@ __int64 CBaseSplitterFile::GetLength(bool fUpdate)
 	return m_len;
 }
 
+void CBaseSplitterFile::Skip(__int64 pos)
+{
+	Seek(m_pos+pos);
+}
 void CBaseSplitterFile::Seek(__int64 pos)
 {
 	__int64 len = GetLength();

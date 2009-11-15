@@ -7579,11 +7579,11 @@ void CMainFrame::OnPlayPlaypause()
 }
 void CMainFrame::OnPlayStopDummy(){
 
-	if(AfxGetAppSettings().iSVPRenderType == 0){
-		SendMessage(WM_COMMAND, ID_FILE_CLOSEPLAYLIST);
-	}else{
+	//if(AfxGetAppSettings().iSVPRenderType == 0){
+	//	SendMessage(WM_COMMAND, ID_FILE_CLOSEPLAYLIST);
+	//}else{
 		OnPlayStop();
-	}
+	//}
 	
 }
 void CMainFrame::OnPlayStop()

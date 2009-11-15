@@ -171,6 +171,7 @@ namespace DSObjects
 
 	class CDX9AllocatorPresenter: public ISubPicAllocatorPresenterImpl
 	{
+		
 	public:
 		CCritSec m_VMR9AlphaBitmapLock;
 		void UpdateAlphaBitmap();
@@ -237,6 +238,7 @@ namespace DSObjects
 			CStringA m_SourceTarget;
 			HRESULT Compile(CPixelShaderCompiler *pCompiler)
 			{
+			//	SVP_LogMsg5(L"complie shader ");
 				HRESULT hr = pCompiler->CompileShader(m_SourceData, "main", m_SourceTarget, 0, &m_pPixelShader);
 				if(FAILED(hr)) return hr;
 				return S_OK;
@@ -377,6 +379,10 @@ namespace DSObjects
 		UINT m_pcFramesDropped;
 		UINT m_pcFramesDrawn;
 
+		REFERENCE_TIME m_lastFrameArrivedTime;
+		BOOL m_lastFramePainted;
+
+
 		LONGLONG m_pllJitter [NB_JITTER]; // Vertical sync time stats
 		LONGLONG m_pllSyncOffset [NB_JITTER]; // Sync offset time stats
 		int m_nNextJitter;
@@ -475,6 +481,7 @@ namespace DSObjects
 
 	class CVMR9AllocatorPresenter: public CDX9AllocatorPresenter, public IVMRSurfaceAllocator9, public IVMRImagePresenter9, public IVMRWindowlessControl9
 	{
+		
 	protected:
 		CComPtr<IVMRSurfaceAllocatorNotify9> m_pIVMRSurfAllocNotify;
 		CInterfaceArray<IDirect3DSurface9> m_pSurfaces;
@@ -483,7 +490,7 @@ namespace DSObjects
 		void DeleteSurfaces();
 
 		bool m_bUseInternalTimer;
-
+		
 	public:
 		CVMR9AllocatorPresenter(HWND hWnd, HRESULT& hr );
 

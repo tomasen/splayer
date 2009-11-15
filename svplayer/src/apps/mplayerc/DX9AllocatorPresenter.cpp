@@ -729,6 +729,8 @@ HRESULT CDX9AllocatorPresenter::CreateDevice( )
 			m_BackbufferType = D3DFMT_A2R10G10B10;
 			pp.BackBufferFormat = D3DFMT_A2R10G10B10;
 		}
+		SVP_LogMsg5(L"Set D3DPRESENT_INTERVAL %d %d",bCompositionEnabled, ((s.fVMRGothSyncFix || s.fVMRSyncFix)));
+
 		if (bCompositionEnabled)
 		{
 			// Desktop composition takes care of the VSYNC
@@ -1017,6 +1019,7 @@ HRESULT CDX9AllocatorPresenter::InitResizers(float bicubicA, bool bNeedScreenSiz
 	}
 	while (0);
 
+	//SVP_LogMsg5(L"Compiler Resize Shader");
 	m_bicubicA = bicubicA;
 	m_pScreenSizeTemporaryTexture[0] = NULL;
 	m_pScreenSizeTemporaryTexture[1] = NULL;
@@ -1492,7 +1495,9 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 	if(m_pRefClock && s.fVMRGothSyncFix && s.m_RenderSettings.bSynchronizeNearest){
 		m_pD3DDev->GetRasterStatus(0, &rasterStatus);	
 		m_uScanLineEnteringPaint = rasterStatus.ScanLine;
-		if(m_pRefClock) m_pRefClock->GetTime(&rtCurRefTime);
+		if(m_pRefClock){
+			m_pRefClock->GetTime(&rtCurRefTime);
+		}
 		msSyncOffset = (m_ScreenSizeCurrent.cy - m_uScanLineEnteringPaint) * m_dDetectedScanlineTime;
 		rtSyncOffset = REFERENCE_TIME(10000.0 * msSyncOffset);
 		m_rtEstVSyncTime = rtCurRefTime + rtSyncOffset;
@@ -3013,6 +3018,26 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 	if(!lpPresInfo || !lpPresInfo->lpSurf)
 		return E_POINTER;
 
+
+	AppSettings& s = AfxGetAppSettings();
+	if(m_rtFrameCycle > 0 && s.fVMRGothSyncFix && m_rtFrameCycle < 300000){
+		REFERENCE_TIME rtCurTime, rtInterleave;
+		if (m_pRefClock) {
+			m_pRefClock->GetTime(&rtCurTime);
+			rtInterleave = rtCurTime - m_lastFrameArrivedTime;
+			m_lastFrameArrivedTime = rtCurTime;
+			if(rtInterleave > m_rtFrameCycle*6/5 && rtInterleave < m_rtFrameCycle * 3 && m_lastFramePainted){
+				//m_pcFramesDropped++;
+				m_lastFrameArrivedTime = rtCurTime;
+				m_lastFramePainted = false;
+				//SVP_LogMsg5(L"droped %f %f %d", double(m_rtFrameCycle) , double(rtInterleave) , m_pcFramesDropped);
+				return S_OK;
+			}
+			//SVP_LogMsg5(L"Paint");
+		}
+	}
+	m_lastFramePainted = true;
+
 	CAutoLock cAutoLock(this);
 	CAutoLock cRenderLock(&m_RenderLock);
 
@@ -3030,7 +3055,6 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 		hr = m_pD3DDev->StretchRect(lpPresInfo->lpSurf, NULL, m_pVideoSurface[m_nCurSurface], NULL, D3DTEXF_NONE);
 	}
 	
-	AppSettings& s = AfxGetAppSettings();
 
 	if( lpPresInfo->rtEnd > lpPresInfo->rtStart)
 	{

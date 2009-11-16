@@ -211,6 +211,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				WholeProgramOptimization="true"
+				AdditionalIncludeDirectories="..\filters\BaseClasses"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="0"
 				EnableEnhancedInstructionSet="0"

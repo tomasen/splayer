@@ -113,6 +113,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				WholeProgramOptimization="true"
+				AdditionalIncludeDirectories="..\..\BaseClasses"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"

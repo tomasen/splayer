@@ -211,7 +211,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="./libdirac"
+				AdditionalIncludeDirectories="./libdirac;..\..\BaseClasses"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				EnableEnhancedInstructionSet="0"
 			/>

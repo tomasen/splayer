@@ -496,6 +496,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Qopenmp-link:static"
+				AdditionalIncludeDirectories="..\..\BaseClasses"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				EnableEnhancedInstructionSet="0"
 				OpenMP="false"

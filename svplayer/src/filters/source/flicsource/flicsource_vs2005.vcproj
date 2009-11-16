@@ -482,6 +482,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="..\..\BaseClasses"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				EnableEnhancedInstructionSet="0"
 			/>

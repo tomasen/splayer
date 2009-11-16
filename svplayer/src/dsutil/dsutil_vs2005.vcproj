@@ -212,7 +212,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="../../include/"
+				AdditionalIncludeDirectories="../../include/;..\filters\BaseClasses"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				EnableEnhancedInstructionSet="0"
 			/>

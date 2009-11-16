@@ -1498,6 +1498,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		m_source.AddTail(pFGF);
 	}
 
+	__if_exists(CEASourceFilter)
 	{
 		pFGF = new CFGFilterInternal<CEASourceFilter>(_T("CEASourceFilter"), MERIT64_ABOVE_DSHOW);
 		pFGF->m_chkbytes.AddTail(_T("0,4,,4D566864"));
@@ -1508,7 +1509,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 
 	}
 	
-	__if_exists(CNutSourceFilter)
+	//__if_exists(CNutSourceFilter)
 	{
 	if(src & SRC_NUT)
 	{
@@ -1518,7 +1519,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	}
 	}
 
-	__if_exists(CDiracSourceFilter)
+	//__if_exists(CDiracSourceFilter)
 	{
 	if(src & SRC_DIRAC)
 	{

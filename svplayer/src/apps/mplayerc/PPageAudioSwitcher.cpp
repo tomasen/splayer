@@ -372,14 +372,15 @@ void CPPageAudioSwitcher::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStru
 void CPPageAudioSwitcher::OnUpdateAudioSwitcher(CCmdUI* pCmdUI)
 {
 //	UpdateData();
-	pCmdUI->Enable(IsDlgButtonChecked(IDC_CHECK2)/*m_fEnableAudioSwitcher*/);
+	pCmdUI->Enable(1/*m_fEnableAudioSwitcher*/);//IsDlgButtonChecked(IDC_CHECK2)
 }
 
 void CPPageAudioSwitcher::OnUpdateChannelMapping(CCmdUI* pCmdUI)
 {
 //	UpdateData();
-	pCmdUI->Enable(IsDlgButtonChecked(IDC_CHECK2)/*m_fEnableAudioSwitcher*/ 
-		&& IsDlgButtonChecked(IDC_CHECK1)/*m_fCustomChannelMapping*/);
+	pCmdUI->Enable(1);
+	//IsDlgButtonChecked(IDC_CHECK2)/*m_fEnableAudioSwitcher*/ 
+	//&& IsDlgButtonChecked(IDC_CHECK1)/*m_fCustomChannelMapping*/
 }
 
 void CPPageAudioSwitcher::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)

@@ -84,12 +84,19 @@ static LONG WINAPI  DebugMiniDumpFilter( struct _EXCEPTION_POINTERS *pExceptionI
 			TCHAR szDumpPath[_MAX_PATH];
 			TCHAR szScratch [_MAX_PATH];
 
+
+			int itimestamp = time(NULL);
+			TCHAR szTimestamp[_MAX_PATH];
+			_itow_s(itimestamp, szTimestamp,_MAX_PATH, 36);
+
 			// work out a good place for the dump file
 			_tgetcwd(szDumpPath,_MAX_PATH);
 			_tcscat( szDumpPath, _T("\\"));
 
 			_tcscat( szDumpPath, _T("splayer_") );
 			_tcscat( szDumpPath, SVP_REV_STR );
+			_tcscat( szDumpPath, _T("_"));
+			_tcscat( szDumpPath, szTimestamp );
 			_tcscat( szDumpPath, _T(".dmp"));
 
 			// ask the user if they want to save a dump file
@@ -122,12 +129,10 @@ static LONG WINAPI  DebugMiniDumpFilter( struct _EXCEPTION_POINTERS *pExceptionI
 								GetModuleFileName( NULL, sUpdaterPath, _MAX_PATH );
 
 								wcscpy( PathFindFileName(sUpdaterPath), _T("Updater.exe"));
-								_stprintf( sUpPerm, _T(" /dmp splayer_%s.dmp "), SVP_REV_STR );
+								_stprintf( sUpPerm, _T(" /dmp splayer_%s_%s.dmp "), SVP_REV_STR ,szTimestamp);
 								(int)::ShellExecute(NULL, _T("open"), sUpdaterPath, sUpPerm, NULL, SW_HIDE);
 
 								(int)::ShellExecute(NULL, _T("open"), sExePath, L" /fromdmp", NULL, SW_SHOW);
-
-
 								
 								SVP_LogMsg5(L"crash dumped %s %s %s", sUpdaterPath , sUpPerm , sExePath);
 

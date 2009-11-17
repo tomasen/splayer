@@ -2675,6 +2675,8 @@ BEGIN
     IDS_CHANNAPMAP_TABLE_LABEL_TOP_BACK_LEFT "Top Back Left"
     IDS_CHANNAPMAP_TABLE_LABEL_TOP_BACK_CENTER "Top Back Center"
     IDS_CHANNAPMAP_TABLE_LABEL_TOP_BACK_RIGHT "Top Back Right"
+
+	IDS_OSD_MSG_JUST_RECOVER_FROM_CRASH "SPlayer just recovered from crash..."
 END
 
 #endif    // Chinese (Singapore) resources

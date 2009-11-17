@@ -4899,6 +4899,7 @@ void CMainFrame::OnFilePostOpenmedia()
 			SendStatusMessage( ResStr(IDS_OSD_MSG_DEVICE_NOT_SUPPORT_VIDEO_QMODE), 2000);
 		}
 	}
+
 }
 
 void CMainFrame::OnUpdateFilePostOpenmedia(CCmdUI* pCmdUI)

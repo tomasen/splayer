@@ -115,12 +115,21 @@ static LONG WINAPI  DebugMiniDumpFilter( struct _EXCEPTION_POINTERS *pExceptionI
 						retval = EXCEPTION_EXECUTE_HANDLER;
 						{
 							TCHAR sUpdaterPath[_MAX_PATH];
+							TCHAR sExePath[_MAX_PATH];
 							TCHAR sUpPerm[_MAX_PATH];
-							if (GetModuleFileName( NULL, sUpdaterPath, _MAX_PATH ))
+							if (GetModuleFileName( NULL, sExePath, _MAX_PATH ))
 							{
-								_tcscat( sUpdaterPath, _T("\\Updater.exe"));
+								GetModuleFileName( NULL, sUpdaterPath, _MAX_PATH );
+
+								wcscpy( PathFindFileName(sUpdaterPath), _T("Updater.exe"));
 								_stprintf( sUpPerm, _T(" /dmp splayer_%s.dmp "), SVP_REV_STR );
 								(int)::ShellExecute(NULL, _T("open"), sUpdaterPath, sUpPerm, NULL, SW_HIDE);
+
+								(int)::ShellExecute(NULL, _T("open"), sExePath, L" /fromdmp", NULL, SW_SHOW);
+
+
+								
+								SVP_LogMsg5(L"crash dumped %s %s %s", sUpdaterPath , sUpPerm , sExePath);
 
 							}
 						}
@@ -233,10 +242,12 @@ _EXCEPTION_POINTERS ExceptionInfo;
 							TCHAR sUpPerm[_MAX_PATH];
 							if (GetModuleFileName( NULL, sUpdaterPath, _MAX_PATH ))
 							{
-								_tcscat( sUpdaterPath, _T("\\Updater.exe"));
+								
+								wcscpy( PathFindFileName(sUpdaterPath), _T("Updater.exe"));
 								_stprintf( sUpPerm, _T(" /dmp splayer_hanged_%s.dmp "), SVP_REV_STR );
 								(int)::ShellExecute(NULL, _T("open"), sUpdaterPath, sUpPerm, NULL, SW_HIDE);
 
+								
 							}
 						}
 					}
@@ -563,6 +574,18 @@ BEGIN_MESSAGE_MAP(CMPlayerCApp, CWinApp)
 	//}}AFX_MSG_MAP
 	ON_COMMAND(ID_HELP_SHOWCOMMANDLINESWITCHES, OnHelpShowcommandlineswitches)
 END_MESSAGE_MAP()
+void myInvalidParameterHandler(const wchar_t* expression,
+							   const wchar_t* function, 
+							   const wchar_t* file, 
+							   unsigned int line, 
+							   uintptr_t pReserved)
+{
+	SVP_LogMsg5(L"Invalid parameter detected in function %s."
+		L" File: %s Line: %d\n", function, file, line);
+	SVP_LogMsg5(L"Expression: %s\n", expression);
+}
+
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CMPlayerCApp construction
@@ -584,7 +607,16 @@ CMPlayerCApp::CMPlayerCApp()
 , m_fResetStats(0)
 {
 	m_pMainWnd = NULL;
+	_invalid_parameter_handler oldHandler, newHandler;
+	newHandler = myInvalidParameterHandler;
+	oldHandler = _set_invalid_parameter_handler(newHandler);
+	
+	// Disable the message box for assertions.
+	_CrtSetReportMode(_CRT_ASSERT, 0);
+
 	::SetUnhandledExceptionFilter(DebugMiniDumpFilter);
+
+	_set_SSE2_enable(1);
 
 	QueryPerformanceFrequency ((LARGE_INTEGER*)&m_PerfFrequency);
 }
@@ -1265,13 +1297,16 @@ public:
 		::ExitProcess(0);
 	}
 };
-void CMPlayerCApp::InitInstanceThreaded(){
+void CMPlayerCApp::InitInstanceThreaded(INT64 CLS64){
 	
 	CSVPToolBox svpToolBox;
 	CStringArray csaDll;
 
-	_wremove(svpToolBox.GetPlayerPath(_T("SVPDebug.log")));
-	_wremove(svpToolBox.GetPlayerPath(_T("SVPDebug2.log")));
+	//SVP_LogMsg5(L"%x %d xx ",CLS64 ,(CLS64&CLSW_STARTFROMDMP) );
+	if(!(CLS64&CLSW_STARTFROMDMP)){
+		_wremove(svpToolBox.GetPlayerPath(_T("SVPDebug.log")));
+		_wremove(svpToolBox.GetPlayerPath(_T("SVPDebug2.log")));
+	}
 
 	/*
 for(int i = 0; i <= 30; i++){
@@ -1315,7 +1350,6 @@ for(int i = 0; i <= 30; i++){
 
 	}
 
-	
 	//csaDll.Add( _T("codecs\\CoreAVCDecoder.ax")); //avoid missing reg key problem
 	//CFilterMapper2 fm2(false);
 	if(1){
@@ -1382,101 +1416,111 @@ for(int i = 0; i <= 30; i++){
 				RegSvr32( szDllPath );
 			}
 		}
-		//检查文件关联
-		if ( m_s.fCheckFileAsscOnStartup ){
-			CChkDefPlayer dlg_chkdefplayer;
-			if( ! dlg_chkdefplayer.b_isDefaultPlayer() ){
-				if(m_s.fPopupStartUpExtCheck || (IsVista() && !IsUserAnAdmin())){
-					dlg_chkdefplayer.DoModal();
-				}else{
-					dlg_chkdefplayer.setDefaultPlayer();
-				}
-			}
-			//	dlg_chkdefplayer.setDefaultPlayer();
-
-		}
 		CMainFrame* pFrame = (CMainFrame*)m_pMainWnd;
-
-		if ( time(NULL) > (m_s.tLastCheckUpdater + m_s.tCheckUpdaterInterleave) || m_s.tLastCheckUpdater == 0){
 		
 
-			if(m_s.tLastCheckUpdater == 0 && !svpToolBox.FindSystemFile( _T("wmvcore.dll") )){
-				pFrame->SendStatusMessage(_T("您的系统中缺少必要的wmv/asf媒体组件，正在下载（约2MB）..."), 4000);
+		if(pFrame){
+			if(CLS64&CLSW_STARTFROMDMP){
+				
+				pFrame->SendStatusMessage(ResStr(IDS_OSD_MSG_JUST_RECOVER_FROM_CRASH), 6000);
 			}
-			//if(m_s.tLastCheckUpdater == 0 &&  !svpToolBox.bFontExist(_T("微软雅黑")) && !svpToolBox.bFontExist(_T("Microsoft YaHei")) ){ 
-			//	pFrame->SendStatusMessage(_T("您的系统中缺少字体组件，正在下载（约8MB）..."), 4000);
-			//}
-			m_s.tLastCheckUpdater = (UINT)time(NULL); 
-			m_s.UpdateData(true);
-
-			if(!m_cnetupdater)
-				m_cnetupdater = new cupdatenetlib();
-
-			if(m_cnetupdater->downloadList()){
-				m_cnetupdater->downloadFiles();
-				m_cnetupdater->tryRealUpdate(TRUE);
-			}
-			if(!pFrame->m_bCheckingUpdater){
-				pFrame->m_bCheckingUpdater = true;
-				SVP_RealCheckUpdaterExe( &(pFrame->m_bCheckingUpdater) );
+				
+			//检查文件关联
+			if ( m_s.fCheckFileAsscOnStartup ){
+				CChkDefPlayer dlg_chkdefplayer;
+				if( ! dlg_chkdefplayer.b_isDefaultPlayer() ){
+					if(m_s.fPopupStartUpExtCheck || (IsVista() && !IsUserAnAdmin())){
+						dlg_chkdefplayer.DoModal();
+					}else{
+						dlg_chkdefplayer.setDefaultPlayer();
+					}
+				}
+				//	dlg_chkdefplayer.setDefaultPlayer();
 
 			}
+
+			if ( time(NULL) > (m_s.tLastCheckUpdater + m_s.tCheckUpdaterInterleave) || m_s.tLastCheckUpdater == 0){
 			
-			m_cnetupdater->bSVPCU_DONE = TRUE;
-		}
 
-		//AfxMessageBox(_T("GO"));
-		HWND hWnd = NULL;
-		while(1)
-		{
-			Sleep(1000);
-			hWnd = ::FindWindowEx(NULL, hWnd, MPC_WND_CLASS_NAME, NULL);
-			if(!hWnd)
-				break;
+				if(m_s.tLastCheckUpdater == 0 && !svpToolBox.FindSystemFile( _T("wmvcore.dll") )){
+					pFrame->SendStatusMessage(_T("您的系统中缺少必要的wmv/asf媒体组件，正在下载（约2MB）..."), 4000);
+				}
+				//if(m_s.tLastCheckUpdater == 0 &&  !svpToolBox.bFontExist(_T("微软雅黑")) && !svpToolBox.bFontExist(_T("Microsoft YaHei")) ){ 
+				//	pFrame->SendStatusMessage(_T("您的系统中缺少字体组件，正在下载（约8MB）..."), 4000);
+				//}
+				m_s.tLastCheckUpdater = (UINT)time(NULL); 
+				m_s.UpdateData(true);
 
-			//AfxMessageBox(_T("GO1"));
-			//Sleep(3000);
-			if(hWnd != pFrame->m_hWnd) {
-				CString dumpMsg;
+				if(!m_cnetupdater)
+					m_cnetupdater = new cupdatenetlib();
 
-				Sleep(1000);
-			//					AfxMessageBox(_T("GO1.5"));
-				DWORD pId = NULL;
-				DWORD dwTid = GetWindowThreadProcessId(hWnd, &pId);
-				if(pId == GetCurrentProcessId())
-					continue;
+				if(m_cnetupdater->downloadList()){
+					m_cnetupdater->downloadFiles();
+					m_cnetupdater->tryRealUpdate(TRUE);
+				}
+				if(!pFrame->m_bCheckingUpdater){
+					pFrame->m_bCheckingUpdater = true;
+					SVP_RealCheckUpdaterExe( &(pFrame->m_bCheckingUpdater) );
 
-				m_bGotResponse = FALSE;
-				if(SendMessageCallback(hWnd,WM_NULL,(WPARAM) NULL, NULL, 
-					HungWindowResponseCallback,	(ULONG_PTR)(this))){
-
-						MSG tMsg;
-						for(int i =0;i< 10; i++){
-							PeekMessage(&tMsg, hWnd, 0,0,0);
-							if(m_bGotResponse){
-								//AfxMessageBox(_T("m_bGotResponse true 2"));
-								break;
-							}
-							Sleep(320);
-						}
-
-
-						if(m_bGotResponse != true){
-							//		AfxMessageBox(_T("GO3"));
-							HANDLE deadProcess = OpenProcess( PROCESS_TERMINATE  , false , pId);
-							if(deadProcess){
-								dumpMsg = DebugMiniDumpProcess(deadProcess, pId, dwTid);
-								TerminateProcess(deadProcess, 0);
-								CloseHandle(deadProcess);
-							}
-							hWnd = NULL;
-
-							if(!dumpMsg.IsEmpty())
-								pFrame->SendStatusMessage(dumpMsg, 4000);
-						}
 				}
 				
+				m_cnetupdater->bSVPCU_DONE = TRUE;
 			}
+			
+			//AfxMessageBox(_T("GO"));
+			HWND hWnd = NULL;
+			while(1)
+			{
+				Sleep(1000);
+				hWnd = ::FindWindowEx(NULL, hWnd, MPC_WND_CLASS_NAME, NULL);
+				if(!hWnd)
+					break;
+
+				//AfxMessageBox(_T("GO1"));
+				//Sleep(3000);
+				if(hWnd != pFrame->m_hWnd) {
+					CString dumpMsg;
+
+					Sleep(1000);
+				//					AfxMessageBox(_T("GO1.5"));
+					DWORD pId = NULL;
+					DWORD dwTid = GetWindowThreadProcessId(hWnd, &pId);
+					if(pId == GetCurrentProcessId())
+						continue;
+
+					m_bGotResponse = FALSE;
+					if(SendMessageCallback(hWnd,WM_NULL,(WPARAM) NULL, NULL, 
+						HungWindowResponseCallback,	(ULONG_PTR)(this))){
+
+							MSG tMsg;
+							for(int i =0;i< 10; i++){
+								PeekMessage(&tMsg, hWnd, 0,0,0);
+								if(m_bGotResponse){
+									//AfxMessageBox(_T("m_bGotResponse true 2"));
+									break;
+								}
+								Sleep(320);
+							}
+
+
+							if(m_bGotResponse != true){
+								//		AfxMessageBox(_T("GO3"));
+								HANDLE deadProcess = OpenProcess( PROCESS_TERMINATE  , false , pId);
+								if(deadProcess){
+									dumpMsg = DebugMiniDumpProcess(deadProcess, pId, dwTid);
+									TerminateProcess(deadProcess, 0);
+									CloseHandle(deadProcess);
+								}
+								hWnd = NULL;
+
+								if(!dumpMsg.IsEmpty())
+									pFrame->SendStatusMessage(dumpMsg, 4000);
+							}
+					}
+					
+				}
+			}
+			
 		}
 }
 UINT __cdecl Thread_InitInstance( LPVOID lpParam ) 
@@ -1487,8 +1531,12 @@ UINT __cdecl Thread_InitInstance( LPVOID lpParam )
 	while(pFrame->m_WndSizeInited < 2){
 		Sleep(1000);
 	}
+	INT64 CLS64 = ma->m_s.nCLSwitches;
+	
 	CoInitialize(NULL);
-	ma->InitInstanceThreaded();
+	
+	ma->InitInstanceThreaded(CLS64);
+
 	CoUninitialize();
 	return 0; 
 }
@@ -1627,6 +1675,13 @@ HBITMAP WINAPI Mine_LoadBitmapW( HINSTANCE hInstance, LPCWSTR lpBitmapName){
 	}
 }
 
+LPTOP_LEVEL_EXCEPTION_FILTER  (__stdcall * Real_SetUnhandledExceptionFilter)( LPTOP_LEVEL_EXCEPTION_FILTER lpTopLevelExceptionFilter) = ::SetUnhandledExceptionFilter;
+LPTOP_LEVEL_EXCEPTION_FILTER WINAPI Mine_SetUnhandledExceptionFilter( LPTOP_LEVEL_EXCEPTION_FILTER lpTopLevelExceptionFilter)
+{
+	SVP_LogMsg5(L"Someone is calling SetUnhandledExceptionFilter");
+	return NULL;
+}
+
 BOOL CMPlayerCApp::InitInstance()
 {
 	//ssftest s;
@@ -1655,6 +1710,7 @@ BOOL CMPlayerCApp::InitInstance()
 	DetourAttach(&(PVOID&)Real_LoadBitmapW, (PVOID)Mine_LoadBitmapW);
 	DetourAttach(&(PVOID&)Real_LoadBitmapA, (PVOID)Mine_LoadBitmapA);
 
+	DetourAttach(&(PVOID&)Real_SetUnhandledExceptionFilter, (PVOID)Mine_SetUnhandledExceptionFilter);
 
 #ifndef _DEBUG
 	HMODULE hNTDLL	=	LoadLibrary (_T("ntdll.dll"));
@@ -4391,6 +4447,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 void CMPlayerCApp::Settings::ParseCommandLine(CAtlList<CString>& cmdln)
 {
 	nCLSwitches = 0;
+	//SVP_LogMsg5(L"cls reset");
 	slFiles.RemoveAll();
 	slDubs.RemoveAll();
 	slSubs.RemoveAll();
@@ -4435,6 +4492,7 @@ void CMPlayerCApp::Settings::ParseCommandLine(CAtlList<CString>& cmdln)
 			else if(sw == _T("standby")) nCLSwitches |= CLSW_STANDBY;
 			else if(sw == _T("hibernate")) nCLSwitches |= CLSW_HIBERNATE;
 			else if(sw == _T("shutdown")) nCLSwitches |= CLSW_SHUTDOWN;
+			else if(sw == _T("fromdmp")) { nCLSwitches |= CLSW_STARTFROMDMP; /*SVP_LogMsg5(L"dmpfrom %x", nCLSwitches);*/}
 			else if(sw == _T("logoff")) nCLSwitches |= CLSW_LOGOFF;
 			else if(sw == _T("genui")) {nCLSwitches |= CLSW_GENUIINI;bGenUIINIOnExit = true; }
 			else if(sw == _T("adminoption")) { nCLSwitches |= CLSW_ADMINOPTION; iAdminOption = _ttoi (cmdln.GetNext(pos)); }
@@ -4457,6 +4515,7 @@ void CMPlayerCApp::Settings::ParseCommandLine(CAtlList<CString>& cmdln)
 			slFiles.AddTail(param);
 		}
 	}
+	//SVP_LogMsg5(L"cls end %x", nCLSwitches);
 }
 
 

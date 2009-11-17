@@ -1468,6 +1468,7 @@
 #define IDS_CHANNAPMAP_TABLE_LABEL_TOP_BACK_LEFT             14822                             
 #define IDS_CHANNAPMAP_TABLE_LABEL_TOP_BACK_CENTER           14823                               
 #define IDS_CHANNAPMAP_TABLE_LABEL_TOP_BACK_RIGHT            14824
+#define IDS_OSD_MSG_JUST_RECOVER_FROM_CRASH  14825
 #define IDD_DHTML_SETTING               20000
 #define IDR_DEFAULT1                    20006
 #define IDD_DEFAULT_PLAYER              20007

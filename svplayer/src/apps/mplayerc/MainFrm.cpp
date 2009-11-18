@@ -8390,16 +8390,30 @@ void CMainFrame::OnPlayLanguage(UINT nID)
 {
 
 	nID -= ID_FILTERSTREAMS_SUBITEM_START;
+	if(nID >= m_ssarray.GetCount()){
+		return;
+	}
 	CComPtr<IAMStreamSelect> pAMSS = m_ssarray[nID];
 	UINT i = nID;
 	CString strMsg;
-	strMsg.Format(L"Lang %d" , nID);
-	SendStatusMessage(strMsg, 4000);
+	
 
 	while(i > 0 && pAMSS == m_ssarray[i-1]) i--;
-	if(FAILED(pAMSS->Enable(nID-i, AMSTREAMSELECTENABLE_ENABLE)))
-		MessageBeep(-1);
 
+
+	DWORD nStreams = 0, flags, group, prevgroup = -1;
+	LCID lcid;
+	WCHAR* wname = NULL;
+	CComPtr<IUnknown> pObj, pUnk;
+	pAMSS->Info(nID-i, NULL, &flags, &lcid, &group, &wname, &pObj, &pUnk);
+
+	strMsg.Format(L"Lang %s" , wname);
+
+
+	if(FAILED(pAMSS->Enable(nID-i, AMSTREAMSELECTENABLE_ENABLE)))
+		strMsg = _T("Lang Failed");
+
+	SendStatusMessage(strMsg, 4000);
 	OpenSetupStatusBar();
 }
 
@@ -8407,7 +8421,7 @@ void CMainFrame::OnUpdatePlayLanguage(CCmdUI* pCmdUI)
 {
 
 	UINT nID = pCmdUI->m_nID;
-	nID -= ID_FILTERSTREAMS_SUBITEM_START-1;
+	nID -= ID_FILTERSTREAMS_SUBITEM_START;
 	if(nID >= m_ssarray.GetCount()){
 		return;
 	}

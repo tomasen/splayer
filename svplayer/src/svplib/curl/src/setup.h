@@ -7,7 +7,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2008, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -20,7 +20,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: setup.h,v 1.57 2008-08-07 00:29:08 yangtse Exp $
+ * $Id: setup.h,v 1.62 2009-10-27 16:56:20 yangtse Exp $
  ***************************************************************************/
 
 #define CURL_NO_OLDIES
@@ -39,15 +39,15 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#include "curl_config.h"
 #else
 
 #ifdef WIN32
 #include "config-win32.h"
 #endif
 
-#ifdef macintosh
-#include "config-mac.h"
+#if defined(macintosh) && defined(__MRC__)
+#  include "config-mac.h"
 #endif
 
 #ifdef __riscos__
@@ -64,10 +64,6 @@
 
 #ifdef TPF
 #include "config-tpf.h"
-/* change which select is used for the curl command line tool */
-#define select(a,b,c,d,e) tpf_select_bsd(a,b,c,d,e)
-/* and turn off the progress meter */
-#define CONF_DEFAULT (0|CONF_NOPROGRESS)
 #endif
 
 #endif /* HAVE_CONFIG_H */
@@ -88,7 +84,7 @@
  * Include header files for windows builds before redefining anything.
  * Use this preproessor block only to include or exclude windows.h, 
  * winsock2.h, ws2tcpip.h or winsock.h. Any other windows thing belongs 
- * to any other further and independant block.  Under Cygwin things work
+ * to any other further and independent block.  Under Cygwin things work
  * just as under linux (e.g. <sys/socket.h>) and the winsock headers should
  * never be included when __CYGWIN__ is defined.  configure script takes
  * care of this, not defining HAVE_WINDOWS_H, HAVE_WINSOCK_H, HAVE_WINSOCK2_H,
@@ -128,6 +124,13 @@
 #  endif
 #endif
 
+#ifdef TPF
+#  include <sys/socket.h>
+   /* change which select is used for the curl command line tool */
+#  define select(a,b,c,d,e) tpf_select_bsd(a,b,c,d,e)
+   /* and turn off the progress meter */
+#  define CONF_DEFAULT (0|CONF_NOPROGRESS)
+#endif
 
 #include <stdio.h>
 
@@ -160,9 +163,6 @@ int fileno( FILE *stream);
 #include <tcp.h>
 #ifdef word
 #undef word
-#endif
-#ifndef HAVE_LIMITS_H
-#define HAVE_LIMITS_H /* we have limits.h */
 #endif
 #define DIR_CHAR      "/"
 #define DOT_CHAR      "_"

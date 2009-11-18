@@ -20,7 +20,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: config-amigaos.h,v 1.8 2007-02-28 14:45:49 yangtse Exp $
+ * $Id: config-amigaos.h,v 1.9 2009-06-19 00:41:04 yangtse Exp $
  ***************************************************************************/
 
 #ifdef __AMIGA__ /* Any AmigaOS flavour */
@@ -30,6 +30,7 @@
 
 #define OS "AmigaOS"
 
+#define HAVE_CLOSESOCKET_CAMEL  1
 #define HAVE_UNISTD_H           1
 #define HAVE_STRDUP             1
 #define HAVE_UTIME              1

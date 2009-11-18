@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2008, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -18,7 +18,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: formdata.c,v 1.107 2008-08-16 01:34:00 yangtse Exp $
+ * $Id: formdata.c,v 1.122 2009-10-18 03:37:39 yangtse Exp $
  ***************************************************************************/
 
 /*
@@ -56,14 +56,14 @@ Content-Type: application/octet-stream
 vlue for PTRCONTENTS + CONTENTSLENGTH + CONTENTTYPE
 (or you might see v^@lue at the start)
 
-Content-Disposition: form-data; name="FILE1_+_CONTENTTYPE"; filename="inet_ntoa_r.h"
+Content-Disposition: form-data; name="FILE1_+_CONTENTTYPE"; filename="formdata.h"
 Content-Type: text/html
 ...
 
 Content-Disposition: form-data; name="FILE1_+_FILE2"
 Content-Type: multipart/mixed, boundary=curlz1s0dkticx49MV1KGcYP5cvfSsz
 ...
-Content-Disposition: attachment; filename="inet_ntoa_r.h"
+Content-Disposition: attachment; filename="formdata.h"
 Content-Type: application/octet-stream
 ...
 Content-Disposition: attachment; filename="Makefile.b32"
@@ -73,13 +73,13 @@ Content-Type: application/octet-stream
 Content-Disposition: form-data; name="FILE1_+_FILE2_+_FILE3"
 Content-Type: multipart/mixed, boundary=curlirkYPmPwu6FrJ1vJ1u1BmtIufh1
 ...
-Content-Disposition: attachment; filename="inet_ntoa_r.h"
+Content-Disposition: attachment; filename="formdata.h"
 Content-Type: application/octet-stream
 ...
 Content-Disposition: attachment; filename="Makefile.b32"
 Content-Type: application/octet-stream
 ...
-Content-Disposition: attachment; filename="inet_ntoa_r.h"
+Content-Disposition: attachment; filename="formdata.h"
 Content-Type: application/octet-stream
 ...
 
@@ -87,13 +87,13 @@ Content-Type: application/octet-stream
 Content-Disposition: form-data; name="ARRAY: FILE1_+_FILE2_+_FILE3"
 Content-Type: multipart/mixed, boundary=curlirkYPmPwu6FrJ1vJ1u1BmtIufh1
 ...
-Content-Disposition: attachment; filename="inet_ntoa_r.h"
+Content-Disposition: attachment; filename="formdata.h"
 Content-Type: application/octet-stream
 ...
 Content-Disposition: attachment; filename="Makefile.b32"
 Content-Type: application/octet-stream
 ...
-Content-Disposition: attachment; filename="inet_ntoa_r.h"
+Content-Disposition: attachment; filename="formdata.h"
 Content-Type: application/octet-stream
 ...
 
@@ -121,8 +121,9 @@ Content-Disposition: form-data; name="FILECONTENT"
 #include "urldata.h" /* for struct SessionHandle */
 #include "easyif.h" /* for Curl_convert_... prototypes */
 #include "formdata.h"
+#include "curl_rand.h"
 #include "strequal.h"
-#include "memory.h"
+#include "curl_memory.h"
 
 #define _MPRINTF_REPLACE /* use our functions only */
 #include <curl/mprintf.h>
@@ -134,9 +135,9 @@ Content-Disposition: form-data; name="FILECONTENT"
 
 #ifndef CURL_DISABLE_HTTP
 
-#if defined(HAVE_BASENAME) && defined(NEED_BASENAME_PROTO)
-/* This system has a basename() but no prototype for it! */
-char *basename(char *path);
+#ifndef HAVE_BASENAME
+static char *Curl_basename(char *path);
+#define basename(x)  Curl_basename((x))
 #endif
 
 static size_t readfromfile(struct Form *form, char *buffer, size_t size);
@@ -171,7 +172,7 @@ AddHttpPost(char *name, size_t namelength,
             struct curl_httppost **last_post)
 {
   struct curl_httppost *post;
-  post = (struct curl_httppost *)calloc(sizeof(struct curl_httppost), 1);
+  post = calloc(sizeof(struct curl_httppost), 1);
   if(post) {
     post->name = name;
     post->namelength = (long)(name?(namelength?namelength:strlen(name)):0);
@@ -222,9 +223,8 @@ static FormInfo * AddFormInfo(char *value,
                               FormInfo *parent_form_info)
 {
   FormInfo *form_info;
-  form_info = (FormInfo *)malloc(sizeof(FormInfo));
+  form_info = calloc(sizeof(FormInfo), 1);
   if(form_info) {
-    memset(form_info, 0, sizeof(FormInfo));
     if(value)
       form_info->value = value;
     if(contenttype)
@@ -267,7 +267,7 @@ static const char * ContentTypeForFilename (const char *filename,
    * extensions and pick the first we match!
    */
   struct ContentType {
-    const char *extension;
+    char extension[6];
     const char *type;
   };
   static const struct ContentType ctts[]={
@@ -275,7 +275,8 @@ static const char * ContentTypeForFilename (const char *filename,
     {".jpg",  "image/jpeg"},
     {".jpeg", "image/jpeg"},
     {".txt",  "text/plain"},
-    {".html", "text/html"}
+    {".html", "text/html"},
+    {".xml", "application/xml"}
   };
 
   if(prevtype)
@@ -325,9 +326,9 @@ static char *memdup(const char *src, size_t buffer_length)
   }
   else
     /* no length and a NULL src pointer! */
-    return strdup((char *)"");
+    return strdup("");
 
-  buffer = (char*)malloc(length+add);
+  buffer = malloc(length+add);
   if(!buffer)
     return NULL; /* fail */
 
@@ -410,7 +411,7 @@ CURLFORMcode FormAdd(struct curl_httppost **httppost,
   /*
    * We need to allocate the first struct to fill in.
    */
-  first_form = (FormInfo *)calloc(sizeof(struct FormInfo), 1);
+  first_form = calloc(sizeof(struct FormInfo), 1);
   if(!first_form)
     return CURL_FORMADD_MEMORY;
 
@@ -422,7 +423,7 @@ CURLFORMcode FormAdd(struct curl_httppost **httppost,
   while(return_value == CURL_FORMADD_OK) {
 
     /* first see if we have more parts of the array param */
-    if( array_state ) {
+    if( array_state && forms ) {
       /* get the upcoming option from the given array */
       option = forms->option;
       array_value = (char *)forms->value;
@@ -743,8 +744,11 @@ CURLFORMcode FormAdd(struct curl_httppost **httppost,
         }
         if( !(form->flags & HTTPPOST_PTRNAME) &&
              (form == first_form) ) {
-          /* copy name (without strdup; possibly contains null characters) */
-          form->name = memdup(form->name, form->namelength);
+          /* Note that there's small risk that form->name is NULL here if the
+             app passed in a bad combo, so we better check for that first. */
+          if(form->name)
+            /* copy name (without strdup; possibly contains null characters) */
+            form->name = memdup(form->name, form->namelength);
           if(!form->name) {
             return_value = CURL_FORMADD_MEMORY;
             break;
@@ -838,8 +842,7 @@ static CURLcode AddFormData(struct FormData **formp,
                             size_t length,
                             curl_off_t *size)
 {
-  struct FormData *newform = (struct FormData *)
-    malloc(sizeof(struct FormData));
+  struct FormData *newform = malloc(sizeof(struct FormData));
   if(!newform)
     return CURLE_OUT_OF_MEMORY;
   newform->next = NULL;
@@ -849,7 +852,7 @@ static CURLcode AddFormData(struct FormData **formp,
     if(!length)
       length = strlen((char *)line);
 
-    newform->line = (char *)malloc(length+1);
+    newform->line = malloc(length+1);
     if(!newform->line) {
       free(newform);
       return CURLE_OUT_OF_MEMORY;
@@ -1064,7 +1067,7 @@ void curl_formfree(struct curl_httppost *form)
   required to be reentrant is not required to be thread-safe.
 
 */
-static char *basename(char *path)
+static char *Curl_basename(char *path)
 {
   /* Ignore all the details above for now and make a quick and simple
      implementaion here */
@@ -1098,7 +1101,7 @@ static char *strippath(const char *fullfile)
 
   free(filename); /* free temporary buffer */
 
-  return base; /* returns an allocated string! */
+  return base; /* returns an allocated string or NULL ! */
 }
 
 /*
@@ -1205,8 +1208,15 @@ CURLcode Curl_getFormData(struct FormData **finalform,
 
       if(post->more) {
         /* if multiple-file */
-        char *filebasename=
-          (!file->showfilename)?strippath(file->contents):NULL;
+        char *filebasename= NULL;
+        if(!file->showfilename) {
+          filebasename = strippath(file->contents);
+          if(!filebasename) {
+            Curl_formclean(&firstform);
+            free(boundary);
+            return CURLE_OUT_OF_MEMORY;
+          }
+        }
 
         result = AddFormDataf(&form, &size,
                               "\r\n--%s\r\nContent-Disposition: "
@@ -1416,6 +1426,7 @@ int Curl_FormInit(struct Form *form, struct FormData *formdata )
   form->data = formdata;
   form->sent = 0;
   form->fp = NULL;
+  form->fread_func = ZERO_NULL;
 
   return 0;
 }
@@ -1563,7 +1574,7 @@ int main(int argc, argv_item_t argv[])
   char value4[] = "value for simple PTRCONTENTS";
   char value5[] = "value for PTRCONTENTS + CONTENTSLENGTH";
   char value6[] = "value for PTRCONTENTS + CONTENTSLENGTH + CONTENTTYPE";
-  char value7[] = "inet_ntoa_r.h";
+  char value7[] = "formdata.h";
   char value8[] = "Makefile.b32";
   char type2[] = "image/gif";
   char type6[] = "text/plain";
@@ -1586,6 +1597,8 @@ int main(int argc, argv_item_t argv[])
 
   (void) argc;
   (void) argv;
+
+  Curl_srand();         /* Because we do not call curl_global_init() here. */
 
   if(FormAddTest("simple COPYCONTENTS test", &httppost, &last_post,
                   CURLFORM_COPYNAME, name1, CURLFORM_COPYCONTENTS, value1,
@@ -1723,23 +1736,19 @@ void curl_formfree(struct curl_httppost *form)
 char *Curl_FormBoundary(void)
 {
   char *retstring;
-  static int randomizer;   /* this is just so that two boundaries within
-                              the same form won't be identical */
   size_t i;
 
-  static const char table16[]="abcdef0123456789";
+  static const char table16[]="0123456789abcdef";
 
-  retstring = (char *)malloc(BOUNDARY_LENGTH+1);
+  retstring = malloc(BOUNDARY_LENGTH+1);
 
   if(!retstring)
     return NULL; /* failed */
 
-  srand((unsigned int)time(NULL)+randomizer++); /* seed */
-
   strcpy(retstring, "----------------------------");
 
   for(i=strlen(retstring); i<BOUNDARY_LENGTH; i++)
-    retstring[i] = table16[rand()%16];
+    retstring[i] = table16[Curl_rand()%16];
 
   /* 28 dashes and 12 hexadecimal digits makes 12^16 (184884258895036416)
      combinations */

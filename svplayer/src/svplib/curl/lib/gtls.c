@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2008, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -18,7 +18,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: gtls.c,v 1.48 2008-06-10 21:53:59 bagder Exp $
+ * $Id: gtls.c,v 1.63 2009-10-19 18:10:47 gknauf Exp $
  ***************************************************************************/
 
 /*
@@ -33,6 +33,7 @@
 #ifdef USE_GNUTLS
 #include <gnutls/gnutls.h>
 #include <gnutls/x509.h>
+#include <gcrypt.h>
 
 #include <string.h>
 #include <stdlib.h>
@@ -49,11 +50,24 @@
 #include "parsedate.h"
 #include "connect.h" /* for the connect timeout */
 #include "select.h"
+#include "rawstr.h"
+
 #define _MPRINTF_REPLACE /* use our functions only */
 #include <curl/mprintf.h>
-#include "memory.h"
+#include "curl_memory.h"
 /* The last #include file should be: */
 #include "memdebug.h"
+
+/*
+ Some hackish cast macros based on:
+ http://library.gnome.org/devel/glib/unstable/glib-Type-Conversion-Macros.html
+*/
+#ifndef GNUTLS_POINTER_TO_INT_CAST
+#define GNUTLS_POINTER_TO_INT_CAST(p) ((int) (long) (p))
+#endif
+#ifndef GNUTLS_INT_TO_POINTER_CAST
+#define GNUTLS_INT_TO_POINTER_CAST(i) ((void*) (long) (i))
+#endif
 
 /* Enable GnuTLS debugging by defining GTLSDEBUG */
 /*#define GTLSDEBUG */
@@ -75,27 +89,22 @@ static bool gtls_inited = FALSE;
  */
 static ssize_t Curl_gtls_push(void *s, const void *buf, size_t len)
 {
-  return swrite(s, buf, len);
+  return swrite(GNUTLS_POINTER_TO_INT_CAST(s), buf, len);
 }
 
 static ssize_t Curl_gtls_pull(void *s, void *buf, size_t len)
 {
-  return sread(s, buf, len);
+  return sread(GNUTLS_POINTER_TO_INT_CAST(s), buf, len);
 }
 
-/* Global GnuTLS init, called from Curl_ssl_init() */
-int Curl_gtls_init(void)
-{
-/* Unfortunately we can not init here, things like curl --version will
- * fail to work if there is no egd socket available because libgcrypt
- * will EXIT the application!!
- * By doing the actual init later (before actually trying to use GnuTLS),
- * we can at least provide basic info etc.
+/* Curl_gtls_init()
+ *
+ * Global GnuTLS init, called from Curl_ssl_init(). This calls functions that
+ * are not thread-safe and thus this function itself is not thread-safe and
+ * must only be called from within curl_global_init() to keep the thread
+ * situation under control!
  */
-  return 1;
-}
-
-static int _Curl_gtls_init(void)
+int Curl_gtls_init(void)
 {
   int ret = 1;
   if(!gtls_inited) {
@@ -150,17 +159,22 @@ static gnutls_datum load_file (const char *file)
   long filelen;
   void *ptr;
 
-  if (!(f = fopen(file, "r"))
-      || fseek(f, 0, SEEK_END) != 0
+  if (!(f = fopen(file, "r")))
+    return loaded_file;
+  if (fseek(f, 0, SEEK_END) != 0
       || (filelen = ftell(f)) < 0
       || fseek(f, 0, SEEK_SET) != 0
-      || !(ptr = malloc((size_t)filelen))
-      || fread(ptr, 1, (size_t)filelen, f) < (size_t)filelen) {
-    return loaded_file;
+      || !(ptr = malloc((size_t)filelen)))
+    goto out;
+  if (fread(ptr, 1, (size_t)filelen, f) < (size_t)filelen) {
+    free(ptr);
+    goto out;
   }
 
   loaded_file.data = ptr;
   loaded_file.size = (unsigned int)filelen;
+out:
+  fclose(f);
   return loaded_file;
 }
 
@@ -178,7 +192,7 @@ static CURLcode handshake(struct connectdata *conn,
   struct SessionHandle *data = conn->data;
   int rc;
   if(!gtls_inited)
-    _Curl_gtls_init();
+    Curl_gtls_init();
   do {
     rc = gnutls_handshake(session);
 
@@ -223,9 +237,9 @@ static gnutls_x509_crt_fmt do_file_type(const char *type)
 {
   if(!type || !type[0])
     return GNUTLS_X509_FMT_PEM;
-  if(curl_strequal(type, "PEM"))
+  if(Curl_raw_equal(type, "PEM"))
     return GNUTLS_X509_FMT_PEM;
-  if(curl_strequal(type, "DER"))
+  if(Curl_raw_equal(type, "DER"))
     return GNUTLS_X509_FMT_DER;
   return -1;
 }
@@ -257,24 +271,32 @@ Curl_gtls_connect(struct connectdata *conn,
   const char *ptr;
   void *ssl_sessionid;
   size_t ssl_idsize;
+  bool sni = TRUE; /* default is SNI enabled */
 #ifdef ENABLE_IPV6
   struct in6_addr addr;
 #else
   struct in_addr addr;
 #endif
 
+  if(conn->ssl[sockindex].state == ssl_connection_complete)
+    /* to make us tolerant against being called more than once for the
+       same connection */
+    return CURLE_OK;
+
   if(!gtls_inited)
-    _Curl_gtls_init();
+    Curl_gtls_init();
 
   /* GnuTLS only supports SSLv3 and TLSv1 */
   if(data->set.ssl.version == CURL_SSLVERSION_SSLv2) {
     failf(data, "GnuTLS does not support SSLv2");
     return CURLE_SSL_CONNECT_ERROR;
   }
+  else if(data->set.ssl.version == CURL_SSLVERSION_SSLv3)
+    sni = FALSE; /* SSLv3 has no SNI */
 
   /* allocate a cred struct */
   rc = gnutls_certificate_allocate_credentials(&conn->ssl[sockindex].cred);
-  if(rc < 0) {
+  if(rc != GNUTLS_E_SUCCESS) {
     failf(data, "gnutls_cert_all_cred() failed: %s", gnutls_strerror(rc));
     return CURLE_SSL_CONNECT_ERROR;
   }
@@ -301,8 +323,8 @@ Curl_gtls_connect(struct connectdata *conn,
   if(data->set.ssl.CRLfile) {
     /* set the CRL list file */
     rc = gnutls_certificate_set_x509_crl_file(conn->ssl[sockindex].cred,
-					      data->set.ssl.CRLfile,
-					      GNUTLS_X509_FMT_PEM);
+                                              data->set.ssl.CRLfile,
+                                              GNUTLS_X509_FMT_PEM);
     if(rc < 0) {
       failf(data, "error reading crl file %s (%s)\n",
             data->set.ssl.CRLfile, gnutls_strerror(rc));
@@ -315,7 +337,7 @@ Curl_gtls_connect(struct connectdata *conn,
 
   /* Initialize TLS session as a client */
   rc = gnutls_init(&conn->ssl[sockindex].session, GNUTLS_CLIENT);
-  if(rc) {
+  if(rc != GNUTLS_E_SUCCESS) {
     failf(data, "gnutls_init() failed: %d", rc);
     return CURLE_SSL_CONNECT_ERROR;
   }
@@ -327,6 +349,7 @@ Curl_gtls_connect(struct connectdata *conn,
 #ifdef ENABLE_IPV6
       (0 == Curl_inet_pton(AF_INET6, conn->host.name, &addr)) &&
 #endif
+      sni &&
       (gnutls_server_name_set(session, GNUTLS_NAME_DNS, conn->host.name,
                               strlen(conn->host.name)) < 0))
     infof(data, "WARNING: failed to configure server name indication (SNI) "
@@ -334,13 +357,13 @@ Curl_gtls_connect(struct connectdata *conn,
 
   /* Use default priorities */
   rc = gnutls_set_default_priority(session);
-  if(rc < 0)
+  if(rc != GNUTLS_E_SUCCESS)
     return CURLE_SSL_CONNECT_ERROR;
 
   if(data->set.ssl.version == CURL_SSLVERSION_SSLv3) {
-    int protocol_priority[] = { GNUTLS_SSL3, 0 };
+    static const int protocol_priority[] = { GNUTLS_SSL3, 0 };
     gnutls_protocol_set_priority(session, protocol_priority);
-    if(rc < 0)
+    if(rc != GNUTLS_E_SUCCESS)
       return CURLE_SSL_CONNECT_ERROR;
   }
 
@@ -348,7 +371,7 @@ Curl_gtls_connect(struct connectdata *conn,
      is higher for types specified before others. After specifying the types
      you want, you must append a 0. */
   rc = gnutls_certificate_type_set_priority(session, cert_type_priority);
-  if(rc < 0)
+  if(rc != GNUTLS_E_SUCCESS)
     return CURLE_SSL_CONNECT_ERROR;
 
   if(data->set.str[STRING_CERT]) {
@@ -357,7 +380,7 @@ Curl_gtls_connect(struct connectdata *conn,
           data->set.str[STRING_CERT],
           data->set.str[STRING_KEY] ?
           data->set.str[STRING_KEY] : data->set.str[STRING_CERT],
-          do_file_type(data->set.str[STRING_CERT_TYPE]) ) ) {
+          do_file_type(data->set.str[STRING_CERT_TYPE]) ) != GNUTLS_E_SUCCESS) {
       failf(data, "error reading X.509 key or certificate file");
       return CURLE_SSL_CONNECT_ERROR;
     }
@@ -369,7 +392,7 @@ Curl_gtls_connect(struct connectdata *conn,
 
   /* set the connection handle (file descriptor for the socket) */
   gnutls_transport_set_ptr(session,
-                           (gnutls_transport_ptr)conn->sock[sockindex]);
+                           GNUTLS_INT_TO_POINTER_CAST(conn->sock[sockindex]));
 
   /* register callback functions to send and receive data. */
   gnutls_transport_set_push_function(session, Curl_gtls_push);
@@ -429,8 +452,8 @@ Curl_gtls_connect(struct connectdata *conn,
     if(verify_status & GNUTLS_CERT_INVALID) {
       if(data->set.ssl.verifypeer) {
         failf(data, "server certificate verification failed. CAfile: %s "
-	      "CRLfile: %s", data->set.ssl.CAfile?data->set.ssl.CAfile:"none",
-	      data->set.ssl.CRLfile?data->set.ssl.CRLfile:"none");
+              "CRLfile: %s", data->set.ssl.CAfile?data->set.ssl.CAfile:"none",
+              data->set.ssl.CRLfile?data->set.ssl.CRLfile:"none");
         return CURLE_SSL_CACERT;
       }
       else
@@ -457,11 +480,11 @@ Curl_gtls_connect(struct connectdata *conn,
     unload_file(issuerp);
     if (rc <= 0) {
       failf(data, "server certificate issuer check failed (IssuerCert: %s)",
-	    data->set.ssl.issuercert?data->set.ssl.issuercert:"none");
+            data->set.ssl.issuercert?data->set.ssl.issuercert:"none");
       return CURLE_SSL_ISSUER_ERROR;
     }
     infof(data,"\t server certificate issuer check OK (Issuer Cert: %s)\n",
-	  data->set.ssl.issuercert?data->set.ssl.issuercert:"none");
+          data->set.ssl.issuercert?data->set.ssl.issuercert:"none");
   }
 
   size=sizeof(certbuf);
@@ -585,20 +608,31 @@ Curl_gtls_connect(struct connectdata *conn,
 
   conn->ssl[sockindex].state = ssl_connection_complete;
 
-  if(!ssl_sessionid) {
-    /* this session was not previously in the cache, add it now */
+  {
+    /* we always unconditionally get the session id here, as even if we
+       already got it from the cache and asked to use it in the connection, it
+       might've been rejected and then a new one is in use now and we need to
+       detect that. */
+    void *connect_sessionid;
+    size_t connect_idsize;
 
     /* get the session ID data size */
-    gnutls_session_get_data(session, NULL, &ssl_idsize);
-    ssl_sessionid = malloc(ssl_idsize); /* get a buffer for it */
+    gnutls_session_get_data(session, NULL, &connect_idsize);
+    connect_sessionid = malloc(connect_idsize); /* get a buffer for it */
 
-    if(ssl_sessionid) {
+    if(connect_sessionid) {
       /* extract session ID to the allocated buffer */
-      gnutls_session_get_data(session, ssl_sessionid, &ssl_idsize);
+      gnutls_session_get_data(session, connect_sessionid, &connect_idsize);
+
+      if(ssl_sessionid)
+        /* there was one before in the cache, so instead of risking that the
+           previous one was rejected, we just kill that and store the new */
+        Curl_ssl_delsessionid(conn, ssl_sessionid);
 
       /* store this session id */
-      return Curl_ssl_addsessionid(conn, ssl_sessionid, ssl_idsize);
+      return Curl_ssl_addsessionid(conn, connect_sessionid, connect_idsize);
     }
+
   }
 
   return CURLE_OK;
@@ -653,7 +687,7 @@ void Curl_gtls_close(struct connectdata *conn, int sockindex)
  */
 int Curl_gtls_shutdown(struct connectdata *conn, int sockindex)
 {
-  int result;
+  ssize_t result;
   int retval = 0;
   struct SessionHandle *data = conn->data;
   int done = 0;
@@ -753,7 +787,7 @@ ssize_t Curl_gtls_recv(struct connectdata *conn, /* connection data */
 
   if(ret < 0) {
     failf(conn->data, "GnuTLS recv error (%d): %s",
-          (int)ret, gnutls_strerror(ret));
+          (int)ret, gnutls_strerror((int)ret));
     return -1;
   }
 
@@ -768,6 +802,28 @@ void Curl_gtls_session_free(void *ptr)
 size_t Curl_gtls_version(char *buffer, size_t size)
 {
   return snprintf(buffer, size, "GnuTLS/%s", gnutls_check_version(NULL));
+}
+
+int Curl_gtls_seed(struct SessionHandle *data)
+{
+  /* we have the "SSL is seeded" boolean static to prevent multiple
+     time-consuming seedings in vain */
+  static bool ssl_seeded = FALSE;
+
+  /* Quickly add a bit of entropy */
+  gcry_fast_random_poll();
+
+  if(!ssl_seeded || data->set.str[STRING_SSL_RANDOM_FILE] ||
+     data->set.str[STRING_SSL_EGDSOCKET]) {
+
+    /* TODO: to a good job seeding the RNG
+       This may involve the gcry_control function and these options:
+       GCRYCTL_SET_RANDOM_SEED_FILE
+       GCRYCTL_SET_RNDEGD_SOCKET
+    */
+    ssl_seeded = TRUE;
+  }
+  return 0;
 }
 
 #endif /* USE_GNUTLS */

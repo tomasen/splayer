@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2008, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -18,7 +18,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: qssl.c,v 1.13 2008-05-20 10:21:50 patrickm Exp $
+ * $Id: qssl.c,v 1.17 2009-04-21 11:46:17 yangtse Exp $
  ***************************************************************************/
 
 #include "setup.h"
@@ -27,6 +27,9 @@
 #include <qsossl.h>
 #include <errno.h>
 #include <string.h>
+#ifdef HAVE_LIMITS_H
+#  include <limits.h>
+#endif
 
 #include <curl/curl.h>
 #include "urldata.h"
@@ -35,7 +38,7 @@
 #include "sslgen.h"
 #include "connect.h" /* for the connect timeout */
 #include "select.h"
-#include "memory.h"
+#include "curl_memory.h"
 /* The last #include file should be: */
 #include "memdebug.h"
 
@@ -419,9 +422,11 @@ ssize_t Curl_qsossl_recv(struct connectdata * conn, int num, char * buf,
   char error_buffer[120]; /* OpenSSL documents that this must be at
                              least 120 bytes long. */
   unsigned long sslerror;
+  int buffsize;
   int nread;
 
-  nread = SSL_Read(conn->ssl[num].handle, buf, (int) buffersize);
+  buffsize = (buffersize > (size_t)INT_MAX) ? INT_MAX : (int)buffersize;
+  nread = SSL_Read(conn->ssl[num].handle, buf, buffsize);
   *wouldblock = FALSE;
 
   if(nread < 0) {

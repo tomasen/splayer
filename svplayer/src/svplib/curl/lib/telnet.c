@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2007, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -18,7 +18,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: telnet.c,v 1.99 2008-06-03 18:03:11 danf Exp $
+ * $Id: telnet.c,v 1.114 2009-04-21 11:46:17 yangtse Exp $
  ***************************************************************************/
 
 #include "setup.h"
@@ -52,8 +52,9 @@
 #ifdef HAVE_NET_IF_H
 #include <net/if.h>
 #endif
+#ifdef HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>
-#include <signal.h>
+#endif
 
 #ifdef HAVE_SYS_PARAM_H
 #include <sys/param.h>
@@ -75,8 +76,10 @@
 #define  TELCMDS
 
 #include "arpa_telnet.h"
-#include "memory.h"
+#include "curl_memory.h"
 #include "select.h"
+#include "strequal.h"
+#include "rawstr.h"
 
 /* The last #include file should be: */
 #include "memdebug.h"
@@ -105,9 +108,9 @@ static CURLcode check_wsock2 ( struct SessionHandle *data );
 #endif
 
 static
-void telrcv(struct connectdata *,
-            const unsigned char *inbuf, /* Data received from socket */
-            ssize_t count);             /* Number of bytes received */
+CURLcode telrcv(struct connectdata *,
+                const unsigned char *inbuf, /* Data received from socket */
+                ssize_t count);             /* Number of bytes received */
 
 #ifndef CURL_DISABLE_VERBOSE_STRINGS
 static void printoption(struct SessionHandle *data,
@@ -190,6 +193,7 @@ const struct Curl_handler Curl_handler_telnet = {
   ZERO_NULL,                            /* doing */
   ZERO_NULL,                            /* proto_getsock */
   ZERO_NULL,                            /* doing_getsock */
+  ZERO_NULL,                            /* perform_getsock */
   ZERO_NULL,                            /* disconnect */
   PORT_TELNET,                          /* defport */
   PROT_TELNET                           /* protocol */
@@ -241,7 +245,7 @@ CURLcode init_telnet(struct connectdata *conn)
 {
   struct TELNET *tn;
 
-  tn = (struct TELNET *)calloc(1, sizeof(struct TELNET));
+  tn = calloc(1, sizeof(struct TELNET));
   if(!tn)
     return CURLE_OUT_OF_MEMORY;
 
@@ -834,7 +838,7 @@ static CURLcode check_telnet_options(struct connectdata *conn)
               option_keyword, option_arg) == 2) {
 
       /* Terminal type */
-      if(curl_strequal(option_keyword, "TTYPE")) {
+      if(Curl_raw_equal(option_keyword, "TTYPE")) {
         strncpy(tn->subopt_ttype, option_arg, 31);
         tn->subopt_ttype[31] = 0; /* String termination */
         tn->us_preferred[CURL_TELOPT_TTYPE] = CURL_YES;
@@ -842,7 +846,7 @@ static CURLcode check_telnet_options(struct connectdata *conn)
       }
 
       /* Display variable */
-      if(curl_strequal(option_keyword, "XDISPLOC")) {
+      if(Curl_raw_equal(option_keyword, "XDISPLOC")) {
         strncpy(tn->subopt_xdisploc, option_arg, 127);
         tn->subopt_xdisploc[127] = 0; /* String termination */
         tn->us_preferred[CURL_TELOPT_XDISPLOC] = CURL_YES;
@@ -850,7 +854,7 @@ static CURLcode check_telnet_options(struct connectdata *conn)
       }
 
       /* Environment variable */
-      if(curl_strequal(option_keyword, "NEW_ENV")) {
+      if(Curl_raw_equal(option_keyword, "NEW_ENV")) {
         buf = strdup(option_arg);
         if(!buf)
           return CURLE_OUT_OF_MEMORY;
@@ -948,19 +952,26 @@ static void suboption(struct connectdata *conn)
 }
 
 static
-void telrcv(struct connectdata *conn,
-            const unsigned char *inbuf, /* Data received from socket */
-            ssize_t count)              /* Number of bytes received */
+CURLcode telrcv(struct connectdata *conn,
+                const unsigned char *inbuf, /* Data received from socket */
+                ssize_t count)              /* Number of bytes received */
 {
   unsigned char c;
+  CURLcode result;
   int in = 0;
   int startwrite=-1;
   struct SessionHandle *data = conn->data;
   struct TELNET *tn = (struct TELNET *)data->state.proto.telnet;
 
 #define startskipping() \
-    if(startwrite >= 0) \
-       Curl_client_write(conn, CLIENTWRITE_BODY, (char *)&inbuf[startwrite], in-startwrite); \
+    if(startwrite >= 0) { \
+       result = Curl_client_write(conn, \
+                                  CLIENTWRITE_BODY, \
+                                  (char *)&inbuf[startwrite], \
+                                  in-startwrite); \
+      if(result != CURLE_OK) \
+        return result; \
+    } \
     startwrite = -1
 
 #define writebyte() \
@@ -1115,12 +1126,13 @@ void telrcv(struct connectdata *conn,
     ++in;
   }
   bufferflush();
+  return CURLE_OK;
 }
 
 /* Escape and send a telnet data block */
 /* TODO: write large chunks of data instead of one byte at a time */
 static CURLcode send_telnet_data(struct connectdata *conn,
-				 char *buffer, ssize_t nread)
+                                 char *buffer, ssize_t nread)
 {
   unsigned char outbuf[2];
   ssize_t bytes_written, total_written;
@@ -1140,16 +1152,16 @@ static CURLcode send_telnet_data(struct connectdata *conn,
       pfd[0].fd = conn->sock[FIRSTSOCKET];
       pfd[0].events = POLLOUT;
       switch (Curl_poll(pfd, 1, -1)) {
-	case -1:                    /* error, abort writing */
-	case 0:                     /* timeout (will never happen) */
-	  rc = CURLE_SEND_ERROR;
-	  break;
-	default:                    /* write! */
-	  bytes_written = 0;
-	  rc = Curl_write(conn, conn->sock[FIRSTSOCKET], outbuf+total_written,
-			  out_count-total_written, &bytes_written);
-	  total_written += bytes_written;
-	  break;
+        case -1:                    /* error, abort writing */
+        case 0:                     /* timeout (will never happen) */
+          rc = CURLE_SEND_ERROR;
+          break;
+        default:                    /* write! */
+          bytes_written = 0;
+          rc = Curl_write(conn, conn->sock[FIRSTSOCKET], outbuf+total_written,
+                          out_count-total_written, &bytes_written);
+          total_written += bytes_written;
+          break;
       }
     /* handle partial write */
     } while (rc == CURLE_OK && total_written < out_count);
@@ -1191,11 +1203,14 @@ static CURLcode telnet_do(struct connectdata *conn, bool *done)
   DWORD  wait_timeout;
   DWORD waitret;
   DWORD readfile_read;
+  int err;
 #else
   int interval_ms;
   struct pollfd pfd[2];
 #endif
+  int ret;
   ssize_t nread;
+  struct timeval now;
   bool keepon = TRUE;
   char *buf = data->state.buffer;
   struct TELNET *tn;
@@ -1289,7 +1304,7 @@ static CURLcode telnet_do(struct connectdata *conn, bool *done)
   if(event_select_func(sockfd, event_handle, FD_READ|FD_CLOSE) == SOCKET_ERROR) {
     close_event_func(event_handle);
     FreeLibrary(wsock2);
-    return 0;
+    return CURLE_OK;
   }
 
   /* If stdin_handle is a pipe, use PeekNamedPipe() method to check it,
@@ -1301,7 +1316,7 @@ static CURLcode telnet_do(struct connectdata *conn, bool *done)
     wait_timeout = 100;
   } else {
     obj_count = 2;
-    wait_timeout = INFINITE;
+    wait_timeout = 1000;
   }
 
   /* Keep on listening and act on events */
@@ -1313,7 +1328,7 @@ static CURLcode telnet_do(struct connectdata *conn, bool *done)
       while(1) {
         if(!PeekNamedPipe(stdin_handle, NULL, 0, NULL, &readfile_read, NULL)) {
           keepon = FALSE;
-	  code = CURLE_READ_ERROR;
+          code = CURLE_READ_ERROR;
           break;
         }
 
@@ -1323,15 +1338,15 @@ static CURLcode telnet_do(struct connectdata *conn, bool *done)
         if(!ReadFile(stdin_handle, buf, sizeof(data->state.buffer),
                      &readfile_read, NULL)) {
           keepon = FALSE;
-	  code = CURLE_READ_ERROR;
+          code = CURLE_READ_ERROR;
           break;
         }
 
         code = send_telnet_data(conn, buf, readfile_read);
-	if(code) {
+        if(code) {
           keepon = FALSE;
-	  break;
-	}
+          break;
+        }
       }
     }
     break;
@@ -1341,43 +1356,77 @@ static CURLcode telnet_do(struct connectdata *conn, bool *done)
       if(!ReadFile(stdin_handle, buf, sizeof(data->state.buffer),
                    &readfile_read, NULL)) {
         keepon = FALSE;
-	code = CURLE_READ_ERROR;
+        code = CURLE_READ_ERROR;
         break;
       }
 
       code = send_telnet_data(conn, buf, readfile_read);
       if(code) {
-	keepon = FALSE;
-	break;
+        keepon = FALSE;
+        break;
       }
     }
     break;
 
     case WAIT_OBJECT_0:
-      if(enum_netevents_func(sockfd, event_handle, &events)
-         != SOCKET_ERROR) {
-        if(events.lNetworkEvents & FD_READ) {
-          /* This reallu OUGHT to check its return code. */
-          (void)Curl_read(conn, sockfd, buf, BUFSIZE - 1, &nread);
 
-          telrcv(conn, (unsigned char *)buf, nread);
-
-          fflush(stdout);
-
-          /* Negotiate if the peer has started negotiating,
-             otherwise don't. We don't want to speak telnet with
-             non-telnet servers, like POP or SMTP. */
-          if(tn->please_negotiate && !tn->already_negotiated) {
-            negotiate(conn);
-            tn->already_negotiated = 1;
-          }
+      if(SOCKET_ERROR == enum_netevents_func(sockfd, event_handle, &events)) {
+        if((err = SOCKERRNO) != EINPROGRESS) {
+          infof(data,"WSAEnumNetworkEvents failed (%d)", err);
+          keepon = FALSE;
+          code = CURLE_READ_ERROR;
+        }
+        break;
+      }
+      if(events.lNetworkEvents & FD_READ) {
+        /* read data from network */
+        ret = Curl_read(conn, sockfd, buf, BUFSIZE - 1, &nread);
+        /* returned sub-zero, this would've blocked. Loop again */
+        if(ret < 0)
+          break;
+        /* returned not-zero, this an error */
+        else if(ret) {
+          keepon = FALSE;
+          code = (CURLcode)ret;
+          break;
+        }
+        /* returned zero but actually received 0 or less here,
+           the server closed the connection and we bail out */
+        else if(nread <= 0) {
+          keepon = FALSE;
+          break;
         }
 
-        if(events.lNetworkEvents & FD_CLOSE) {
+        code = telrcv(conn, (unsigned char *)buf, nread);
+        if(code) {
           keepon = FALSE;
+          break;
+        }
+
+        fflush(stdout);
+
+        /* Negotiate if the peer has started negotiating,
+           otherwise don't. We don't want to speak telnet with
+           non-telnet servers, like POP or SMTP. */
+        if(tn->please_negotiate && !tn->already_negotiated) {
+          negotiate(conn);
+          tn->already_negotiated = 1;
         }
       }
+      if(events.lNetworkEvents & FD_CLOSE) {
+        keepon = FALSE;
+      }
       break;
+
+    }
+
+    if(data->set.timeout) {
+      now = Curl_tvnow();
+      if(Curl_tvdiff(now, conn->created) >= data->set.timeout) {
+        failf(data, "Time-out");
+        code = CURLE_OPERATION_TIMEDOUT;
+        keepon = FALSE;
+      }
     }
   }
 
@@ -1413,24 +1462,36 @@ static CURLcode telnet_do(struct connectdata *conn, bool *done)
       if(pfd[1].revents & POLLIN) { /* read from stdin */
         nread = read(0, buf, 255);
         code = send_telnet_data(conn, buf, nread);
-	if(code) {
+        if(code) {
           keepon = FALSE;
-	  break;
-	}
+          break;
+        }
       }
 
       if(pfd[0].revents & POLLIN) {
-        /* This OUGHT to check the return code... */
-        (void)Curl_read(conn, sockfd, buf, BUFSIZE - 1, &nread);
-
-        /* if we receive 0 or less here, the server closed the connection and
-           we bail out from this! */
-        if(nread <= 0) {
+        /* read data from network */
+        ret = Curl_read(conn, sockfd, buf, BUFSIZE - 1, &nread);
+        /* returned sub-zero, this would've blocked. Loop again */
+        if(ret < 0)
+          break;
+        /* returned not-zero, this an error */
+        else if(ret) {
+          keepon = FALSE;
+          code = (CURLcode)ret;
+          break;
+        }
+        /* returned zero but actually received 0 or less here,
+           the server closed the connection and we bail out */
+        else if(nread <= 0) {
           keepon = FALSE;
           break;
         }
 
-        telrcv(conn, (unsigned char *)buf, nread);
+        code = telrcv(conn, (unsigned char *)buf, nread);
+        if(code) {
+          keepon = FALSE;
+          break;
+        }
 
         /* Negotiate if the peer has started negotiating,
            otherwise don't. We don't want to speak telnet with
@@ -1442,7 +1503,6 @@ static CURLcode telnet_do(struct connectdata *conn, bool *done)
       }
     }
     if(data->set.timeout) {
-      struct timeval now;           /* current time */
       now = Curl_tvnow();
       if(Curl_tvdiff(now, conn->created) >= data->set.timeout) {
         failf(data, "Time-out");

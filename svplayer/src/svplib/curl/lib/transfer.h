@@ -7,7 +7,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2008, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -20,7 +20,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: transfer.h,v 1.32 2008-04-30 21:20:09 bagder Exp $
+ * $Id: transfer.h,v 1.34 2009-08-21 12:01:36 bagder Exp $
  ***************************************************************************/
 CURLcode Curl_perform(struct SessionHandle *data);
 CURLcode Curl_pretransfer(struct SessionHandle *data);
@@ -46,7 +46,8 @@ int Curl_single_getsock(const struct connectdata *conn,
                         int numsocks);
 CURLcode Curl_readrewind(struct connectdata *conn);
 CURLcode Curl_fillreadbuffer(struct connectdata *conn, int bytes, int *nreadp);
-bool Curl_retry_request(struct connectdata *conn, char **url);
+CURLcode Curl_reconnect_request(struct connectdata **connp);
+CURLcode Curl_retry_request(struct connectdata *conn, char **url);
 
 /* This sets up a forthcoming transfer */
 CURLcode

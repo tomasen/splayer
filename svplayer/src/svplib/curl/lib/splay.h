@@ -7,7 +7,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1997 - 2008, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1997 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -20,7 +20,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: splay.h,v 1.5 2008-05-07 15:41:41 yangtse Exp $
+ * $Id: splay.h,v 1.6 2009-06-10 02:49:43 yangtse Exp $
  ***************************************************************************/
 
 struct Curl_tree {
@@ -57,7 +57,7 @@ int Curl_splayremovebyaddr(struct Curl_tree *t,
                                    ( ((i.tv_usec) < (j.tv_usec)) ? -1 : \
                                    ( ((i.tv_usec) > (j.tv_usec)) ?  1 : 0 ))))
 
-#ifdef CURLDEBUG
+#ifdef DEBUGBUILD
 void Curl_splayprint(struct Curl_tree * t, int d, char output);
 #else
 #define Curl_splayprint(x,y,z)

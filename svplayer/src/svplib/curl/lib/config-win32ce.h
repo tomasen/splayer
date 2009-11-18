@@ -30,6 +30,9 @@
 /* Define if you have the <io.h> header file.  */
 #define HAVE_IO_H 1
 
+/* Define if you have the <limits.h> header file.  */
+#define HAVE_LIMITS_H 1
+
 /* Define if you need the malloc.h header header file even with stdlib.h  */
 #define NEED_MALLOC_H 1
 
@@ -145,11 +148,11 @@
 /* Define if you have the inet_addr function.  */
 #define HAVE_INET_ADDR 1
 
-/* Define if you have the inet_ntoa function.  */
-#define HAVE_INET_NTOA 1
-
-/* Define if you have the ioctlsocket function.  */
+/* Define if you have the ioctlsocket function. */
 #define HAVE_IOCTLSOCKET 1
+
+/* Define if you have a working ioctlsocket FIONBIO function. */
+#define HAVE_IOCTLSOCKET_FIONBIO 1
 
 /* Define if you have the perror function.  */
 #define HAVE_PERROR 1
@@ -172,14 +175,20 @@
 /* Define if you have the strcasecmp function.  */
 /* #define HAVE_STRCASECMP 1 */
 
-/* Define if you have the stricmp function.  */
-/* #define HAVE_STRICMP 1 */
-
 /* Define if you have the strdup function.  */
 /* #define HAVE_STRDUP 1 */
 
 /* Define if you have the strftime function.  */
 /* #define HAVE_STRFTIME 1 */
+
+/* Define if you have the stricmp function. */
+/* #define HAVE_STRICMP 1 */
+
+/* Define if you have the strncasecmp function. */
+/* #define HAVE_STRNCASECMP 1 */
+
+/* Define if you have the strnicmp function. */
+/* #define HAVE_STRNICMP 1 */
 
 /* Define if you have the strstr function.  */
 #define HAVE_STRSTR 1
@@ -316,6 +325,9 @@
 
 /* Define this if you have struct timeval */
 #define HAVE_STRUCT_TIMEVAL 1
+
+/* Define this if struct sockaddr_in6 has the sin6_scope_id member */
+#define HAVE_SOCKADDR_IN6_SIN6_SCOPE_ID 1
 
 /* ---------------------------------------------------------------- */
 /*                        COMPILER SPECIFIC                         */

@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2008, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -18,7 +18,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: nwlib.c,v 1.11 2008-01-23 02:12:13 gknauf Exp $
+ * $Id: nwlib.c,v 1.13 2009-10-27 16:38:42 yangtse Exp $
  ***************************************************************************/
 
 #ifdef NETWARE /* Novell NetWare */
@@ -185,7 +185,7 @@ int GetOrSetUpData(int id, libdata_t **appData,
     NXLock(gLibLock);
 
     if(!(app_data = (libdata_t *) get_app_data(id))) {
-      app_data = (libdata_t *) malloc(sizeof(libdata_t));
+      app_data = malloc(sizeof(libdata_t));
 
       if(app_data) {
         memset(app_data, 0, sizeof(libdata_t));
@@ -246,7 +246,7 @@ int GetOrSetUpData(int id, libdata_t **appData,
 ** important, this just helps to demonstrate that we can have arbitrarily
 ** complex per-thread data.
 */
-      thread_data = (libthreaddata_t *) malloc(sizeof(libthreaddata_t));
+      thread_data = malloc(sizeof(libthreaddata_t));
 
       if(thread_data) {
         thread_data->_errno      = 0;
@@ -318,5 +318,11 @@ int main ( void )
 }
 
 #endif /* __NOVELL_LIBC__ */
+
+#else /* NETWARE */
+
+#ifdef __POCC__
+#  pragma warn(disable:2024)  /* Disable warning #2024: Empty input file */
+#endif
 
 #endif /* NETWARE */

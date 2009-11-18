@@ -7,7 +7,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2008, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -20,7 +20,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: setup.h,v 1.158 2008-08-28 22:41:35 yangtse Exp $
+ * $Id: setup.h,v 1.171 2009-10-27 16:38:42 yangtse Exp $
  ***************************************************************************/
 
 /*
@@ -37,27 +37,29 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
-#else
+
+#include "curl_config.h"
+
+#else /* HAVE_CONFIG_H */
 
 #ifdef _WIN32_WCE
-#include "config-win32ce.h"
+#  include "config-win32ce.h"
 #else
-#ifdef WIN32
-#include "config-win32.h"
-#endif
+#  ifdef WIN32
+#    include "config-win32.h"
+#  endif
 #endif
 
-#ifdef macintosh
-#include "config-mac.h"
+#if defined(macintosh) && defined(__MRC__)
+#  include "config-mac.h"
 #endif
 
 #ifdef __AMIGA__
-#include "amigaos.h"
+#  include "amigaos.h"
 #endif
 
 #ifdef __SYMBIAN32__
-#include "config-symbian.h"
+#  include "config-symbian.h"
 #endif
 
 #ifdef __OS400__
@@ -65,16 +67,18 @@
 #endif
 
 #ifdef TPF
-#include "config-tpf.h" /* hand-modified TPF config.h */
-/* change which select is used for libcurl */
-#define select(a,b,c,d,e) tpf_select_libcurl(a,b,c,d,e)
+#  include "config-tpf.h"
+#endif
+
+#ifdef __VXWORKS__
+#  include "config-vxworks.h"
 #endif
 
 #endif /* HAVE_CONFIG_H */
 
 /* ================================================================ */
 /* Definition of preprocessor macros/symbols which modify compiler  */
-/* behaviour or generated code characteristics must be done here,   */
+/* behavior or generated code characteristics must be done here,   */
 /* as appropriate, before any system header file is included. It is */
 /* also possible to have them defined in the config file included   */
 /* before this point. As a result of all this we frown inclusion of */
@@ -171,9 +175,9 @@
 
 /*
  * Include header files for windows builds before redefining anything.
- * Use this preproessor block only to include or exclude windows.h,
+ * Use this preprocessor block only to include or exclude windows.h,
  * winsock2.h, ws2tcpip.h or winsock.h. Any other windows thing belongs
- * to any other further and independant block.  Under Cygwin things work
+ * to any other further and independent block.  Under Cygwin things work
  * just as under linux (e.g. <sys/socket.h>) and the winsock headers should
  * never be included when __CYGWIN__ is defined.  configure script takes
  * care of this, not defining HAVE_WINDOWS_H, HAVE_WINSOCK_H, HAVE_WINSOCK2_H,
@@ -228,6 +232,13 @@
 #  include <sys/socket.h> /* for select and ioctl*/
 #  include <netdb.h>      /* for in_addr_t definition */
 #  include <tpf/sysapi.h> /* for tpf_process_signals */
+   /* change which select is used for libcurl */
+#  define select(a,b,c,d,e) tpf_select_libcurl(a,b,c,d,e)
+#endif
+
+#ifdef __VXWORKS__
+#  include <sockLib.h>    /* for generic BSD socket functions */
+#  include <ioLib.h>      /* for basic I/O interface functions */
 #endif
 
 #include <stdio.h>
@@ -244,19 +255,10 @@
 #include <curl/stdcheaders.h>
 #endif
 
-/*
- * PellesC kludge section (yikes);
- *  - It has 'ssize_t', but it is in <unistd.h>. The way the headers
- *    on Win32 are included, forces me to include this header here.
- *  - sys_nerr, EINTR is missing in v4.0 or older.
- */
 #ifdef __POCC__
-  #include <sys/types.h>
-  #include <unistd.h>
-  #if (__POCC__ <= 400)
-  #define sys_nerr EILSEQ  /* for strerror.c */
-  #define EINTR    -1      /* for select.c */
-  #endif
+#  include <sys/types.h>
+#  include <unistd.h>
+#  define sys_nerr EILSEQ
 #endif
 
 /*
@@ -282,6 +284,7 @@
 #  define fstat(fdes,stp)            _fstati64(fdes, stp)
 #  define stat(fname,stp)            _stati64(fname, stp)
 #  define struct_stat                struct _stati64
+#  define LSEEK_ERROR                (__int64)-1
 #endif
 
 /*
@@ -296,10 +299,15 @@
 #  define fstat(fdes,stp)            _fstat(fdes, stp)
 #  define stat(fname,stp)            _stat(fname, stp)
 #  define struct_stat                struct _stat
+#  define LSEEK_ERROR                (long)-1
 #endif
 
 #ifndef struct_stat
 #  define struct_stat struct stat
+#endif
+
+#ifndef LSEEK_ERROR
+#  define LSEEK_ERROR (off_t)-1
 #endif
 
 /*
@@ -330,7 +338,6 @@
 #endif
 
 /* Below we define some functions. They should
-   1. close a socket
 
    4. set the SIGALRM signal timeout
    5. set dir/file naming defines
@@ -338,76 +345,45 @@
 
 #ifdef WIN32
 
-#if !defined(__CYGWIN__)
-#define sclose(x) closesocket(x)
-
-#undef HAVE_ALARM
-#else
-     /* gcc-for-win is still good :) */
-#define sclose(x) close(x)
-#define HAVE_ALARM
-#endif /* !GNU or mingw */
-
-#define DIR_CHAR      "\\"
-#define DOT_CHAR      "_"
+#  define DIR_CHAR      "\\"
+#  define DOT_CHAR      "_"
 
 #else /* WIN32 */
 
-#ifdef MSDOS  /* Watt-32 */
-#include <sys/ioctl.h>
-#define sclose(x)         close_s(x)
-#define select(n,r,w,x,t) select_s(n,r,w,x,t)
-#define ioctl(x,y,z) ioctlsocket(x,y,(char *)(z))
-#define IOCTL_3_ARGS
-#include <tcp.h>
-#ifdef word
-#undef word
-#endif
-#ifdef byte
-#undef byte
-#endif
+#  ifdef MSDOS  /* Watt-32 */
 
-#else /* MSDOS */
+#    include <sys/ioctl.h>
+#    define select(n,r,w,x,t) select_s(n,r,w,x,t)
+#    define ioctl(x,y,z) ioctlsocket(x,y,(char *)(z))
+#    include <tcp.h>
+#    ifdef word
+#      undef word
+#    endif
+#    ifdef byte
+#      undef byte
+#    endif
 
-#ifdef __BEOS__
-#define sclose(x) closesocket(x)
-#else /* __BEOS__ */
-#define sclose(x) close(x)
-#endif /* __BEOS__ */
+#  endif /* MSDOS */
 
-#define HAVE_ALARM
+#  ifdef __minix
+     /* Minix 3 versions up to at least 3.1.3 are missing these prototypes */
+     extern char * strtok_r(char *s, const char *delim, char **last);
+     extern struct tm * gmtime_r(const time_t * const timep, struct tm *tmp);
+#  endif
 
-#endif /* MSDOS */
+#  define DIR_CHAR      "/"
+#  ifndef DOT_CHAR
+#    define DOT_CHAR      "."
+#  endif
 
-#ifdef _AMIGASF
-#undef HAVE_ALARM
-#undef sclose
-#define sclose(x) CloseSocket(x)
-#endif
+#  ifdef MSDOS
+#    undef DOT_CHAR
+#    define DOT_CHAR      "_"
+#  endif
 
-#ifdef __minix
-/* Minix 3 versions up to at least 3.1.3 are missing these prototypes */
-extern char * strtok_r(char *s, const char *delim, char **last);
-extern struct tm * gmtime_r(const time_t * const timep, struct tm *tmp);
-#endif
-
-#ifdef __SYMBIAN32__
-#undef HAVE_ALARM
-#endif
-
-#define DIR_CHAR      "/"
-#ifndef DOT_CHAR
-#define DOT_CHAR      "."
-#endif
-
-#ifdef MSDOS
-#undef DOT_CHAR
-#define DOT_CHAR      "_"
-#endif
-
-#ifndef fileno /* sunos 4 have this as a macro! */
-int fileno( FILE *stream);
-#endif
+#  ifndef fileno /* sunos 4 have this as a macro! */
+     int fileno( FILE *stream);
+#  endif
 
 #endif /* WIN32 */
 
@@ -429,19 +405,53 @@ int fileno( FILE *stream);
 #endif
 
 /*
+ * When using WINSOCK, TELNET protocol requires WINSOCK2 API.
+ */
+
+#if defined(USE_WINSOCK) && (USE_WINSOCK != 2)
+#  define CURL_DISABLE_TELNET 1
+#endif
+
+/*
  * msvc 6.0 does not have struct sockaddr_storage and
  * does not define IPPROTO_ESP in winsock2.h. But both
  * are available if PSDK is properly installed.
  */
 
-#ifdef _MSC_VER
-#if !defined(HAVE_WINSOCK2_H) || ((_MSC_VER < 1300) && !defined(IPPROTO_ESP))
-#undef HAVE_STRUCT_SOCKADDR_STORAGE
-#endif
+#if defined(_MSC_VER) && !defined(__POCC__)
+#  if !defined(HAVE_WINSOCK2_H) || ((_MSC_VER < 1300) && !defined(IPPROTO_ESP))
+#    undef HAVE_STRUCT_SOCKADDR_STORAGE
+#  endif
 #endif
 
-#ifdef mpeix
-#define IOCTL_3_ARGS
+/*
+ * msvc 6.0 requires PSDK in order to have INET6_ADDRSTRLEN
+ * defined in ws2tcpip.h as well as to provide IPv6 support.
+ */
+
+#if defined(_MSC_VER) && !defined(__POCC__)
+#  if !defined(HAVE_WS2TCPIP_H) || ((_MSC_VER < 1300) && !defined(INET6_ADDRSTRLEN))
+#    undef HAVE_FREEADDRINFO
+#    undef HAVE_GETADDRINFO
+#    undef HAVE_GETNAMEINFO
+#    undef ENABLE_IPV6
+#  endif
+#endif
+
+/*
+ * Intentionally fail to build when using msvc 6.0 without PSDK installed.
+ * The brave of heart can circumvent this, defining ALLOW_MSVC6_WITHOUT_PSDK
+ * in lib/config-win32.h although absolutely discouraged and unsupported.
+ */
+
+#if defined(_MSC_VER) && !defined(__POCC__)
+#  if !defined(HAVE_WINDOWS_H) || ((_MSC_VER < 1300) && !defined(_FILETIME_))
+#    if !defined(ALLOW_MSVC6_WITHOUT_PSDK)
+#      error MSVC 6.0 requires 'February 2003 Platform SDK' a.k.a. 'Windows Server 2003 PSDK'
+#    else
+#      define CURL_DISABLE_LDAP 1
+#    endif
+#  endif
 #endif
 
 #ifdef NETWARE
@@ -450,7 +460,6 @@ int netware_init(void);
 #include <sys/bsdskt.h>
 #include <sys/timeval.h>
 #endif
-#undef HAVE_ALARM
 #endif
 
 #if defined(HAVE_LIBIDN) && defined(HAVE_TLD_H)
@@ -466,16 +475,12 @@ int netware_init(void);
 
 #define LIBIDN_REQUIRED_VERSION "0.4.1"
 
-#ifdef __UCLIBC__
-#define HAVE_INET_NTOA_R_2_ARGS 1
-#endif
-
 #if defined(USE_GNUTLS) || defined(USE_SSLEAY) || defined(USE_NSS) || defined(USE_QSOSSL)
 #define USE_SSL    /* SSL support has been enabled */
 #endif
 
 #if !defined(CURL_DISABLE_HTTP) && !defined(CURL_DISABLE_NTLM)
-#if defined(USE_SSLEAY) || defined(USE_WINDOWS_SSPI)
+#if defined(USE_SSLEAY) || defined(USE_WINDOWS_SSPI) || defined(USE_GNUTLS)
 #define USE_NTLM
 #endif
 #endif

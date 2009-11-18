@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2008, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -18,7 +18,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: http_ntlm.c,v 1.71 2008-08-17 01:57:10 yangtse Exp $
+ * $Id: http_ntlm.c,v 1.81 2009-04-21 11:46:17 yangtse Exp $
  ***************************************************************************/
 #include "setup.h"
 
@@ -55,12 +55,11 @@
 #include "urldata.h"
 #include "easyif.h"  /* for Curl_convert_... prototypes */
 #include "sendf.h"
-#include "strequal.h"
+#include "rawstr.h"
 #include "curl_base64.h"
 #include "http_ntlm.h"
 #include "url.h"
-#include "memory.h"
-#include "ssluse.h"
+#include "curl_memory.h"
 
 #define _MPRINTF_REPLACE /* use our functions only */
 #include <curl/mprintf.h>
@@ -68,9 +67,8 @@
 /* "NTLMSSP" signature is always in ASCII regardless of the platform */
 #define NTLMSSP_SIGNATURE "\x4e\x54\x4c\x4d\x53\x53\x50"
 
-#ifndef USE_WINDOWS_SSPI
-
-#  ifdef USE_SSLEAY
+#ifdef USE_SSLEAY
+#include "ssluse.h"
 #    ifdef USE_OPENSSL
 #      include <openssl/des.h>
 #      include <openssl/md4.h>
@@ -84,9 +82,6 @@
 #      include <ssl.h>
 #      include <rand.h>
 #    endif
-#  else
-#    error "Can't compile NTLM support without OpenSSL."
-#  endif
 
 #if OPENSSL_VERSION_NUMBER < 0x00907001L
 #define DES_key_schedule des_key_schedule
@@ -104,15 +99,20 @@
 #define DESKEY(x) &x
 #endif
 
+#elif defined(USE_GNUTLS)
+
+#include "gtls.h"
+#include <gcrypt.h>
+
+#define MD5_DIGEST_LENGTH 16
+#define MD4_DIGEST_LENGTH 16
+
+#elif defined(USE_WINDOWS_SSPI)
+
+#include "curl_sspi.h"
+
 #else
-
-#include <rpc.h>
-
-/* Handle of security.dll or secur32.dll, depending on Windows version */
-static HMODULE s_hSecDll = NULL;
-/* Pointer to SSPI dispatch table */
-static PSecurityFunctionTable s_pSecFn = NULL;
-
+#    error "Can't compile NTLM support without a crypto library."
 #endif
 
 /* The last #include file should be: */
@@ -303,9 +303,8 @@ CURLntlm Curl_input_ntlm(struct connectdata *conn,
         fprintf(stderr, "\n****\n");
         fprintf(stderr, "**** Header %s\n ", header);
       });
-
-      free(buffer);
 #endif
+      free(buffer);
     }
     else {
       if(ntlm->state >= NTLMSTATE_TYPE1)
@@ -319,11 +318,12 @@ CURLntlm Curl_input_ntlm(struct connectdata *conn,
 
 #ifndef USE_WINDOWS_SSPI
 
+#ifdef USE_SSLEAY
 /*
  * Turns a 56 bit key into the 64 bit, odd parity key and sets the key.  The
  * key schedule ks is also set.
  */
-static void setup_des_key(unsigned char *key_56,
+static void setup_des_key(const unsigned char *key_56,
                           DES_key_schedule DESKEYARG(ks))
 {
   DES_cblock key;
@@ -340,16 +340,39 @@ static void setup_des_key(unsigned char *key_56,
   DES_set_odd_parity(&key);
   DES_set_key(&key, ks);
 }
+#elif defined(USE_GNUTLS)
+
+/*
+ * Turns a 56 bit key into the 64 bit, odd parity key and sets the key.
+ */
+static void setup_des_key(const unsigned char *key_56,
+                          gcry_cipher_hd_t *des)
+{
+  char key[8];
+
+  key[0] = key_56[0];
+  key[1] = (unsigned char)(((key_56[0] << 7) & 0xFF) | (key_56[1] >> 1));
+  key[2] = (unsigned char)(((key_56[1] << 6) & 0xFF) | (key_56[2] >> 2));
+  key[3] = (unsigned char)(((key_56[2] << 5) & 0xFF) | (key_56[3] >> 3));
+  key[4] = (unsigned char)(((key_56[3] << 4) & 0xFF) | (key_56[4] >> 4));
+  key[5] = (unsigned char)(((key_56[4] << 3) & 0xFF) | (key_56[5] >> 5));
+  key[6] = (unsigned char)(((key_56[5] << 2) & 0xFF) | (key_56[6] >> 6));
+  key[7] = (unsigned char) ((key_56[6] << 1) & 0xFF);
+
+  gcry_cipher_setkey(*des, key, 8);
+}
+#endif
 
  /*
   * takes a 21 byte array and treats it as 3 56-bit DES keys. The
   * 8 byte plaintext is encrypted with each key and the resulting 24
   * bytes are stored in the results array.
   */
-static void lm_resp(unsigned char *keys,
-                      unsigned char *plaintext,
-                      unsigned char *results)
+static void lm_resp(const unsigned char *keys,
+                    const unsigned char *plaintext,
+                    unsigned char *results)
 {
+#ifdef USE_SSLEAY
   DES_key_schedule ks;
 
   setup_des_key(keys, DESKEY(ks));
@@ -363,6 +386,24 @@ static void lm_resp(unsigned char *keys,
   setup_des_key(keys+14, DESKEY(ks));
   DES_ecb_encrypt((DES_cblock*) plaintext, (DES_cblock*) (results+16),
                   DESKEY(ks), DES_ENCRYPT);
+#elif USE_GNUTLS
+  gcry_cipher_hd_t des;
+
+  gcry_cipher_open(&des, GCRY_CIPHER_DES, GCRY_CIPHER_MODE_ECB, 0);
+  setup_des_key(keys, &des);
+  gcry_cipher_encrypt(des, results, 8, plaintext, 8);
+  gcry_cipher_close(des);
+
+  gcry_cipher_open(&des, GCRY_CIPHER_DES, GCRY_CIPHER_MODE_ECB, 0);
+  setup_des_key(keys+7, &des);
+  gcry_cipher_encrypt(des, results+8, 8, plaintext, 8);
+  gcry_cipher_close(des);
+
+  gcry_cipher_open(&des, GCRY_CIPHER_DES, GCRY_CIPHER_MODE_ECB, 0);
+  setup_des_key(keys+14, &des);
+  gcry_cipher_encrypt(des, results+16, 8, plaintext, 8);
+  gcry_cipher_close(des);
+#endif
 }
 
 
@@ -370,24 +411,17 @@ static void lm_resp(unsigned char *keys,
  * Set up lanmanager hashed password
  */
 static void mk_lm_hash(struct SessionHandle *data,
-                       char *password,
+                       const char *password,
                        unsigned char *lmbuffer /* 21 bytes */)
 {
   unsigned char pw[14];
   static const unsigned char magic[] = {
     0x4B, 0x47, 0x53, 0x21, 0x40, 0x23, 0x24, 0x25 /* i.e. KGS!@#$% */
   };
-  unsigned int i;
-  size_t len = strlen(password);
+  size_t len = CURLMIN(strlen(password), 14);
 
-  if(len > 14)
-    len = 14;
-
-  for (i=0; i<len; i++)
-    pw[i] = (unsigned char)toupper(password[i]);
-
-  for (; i<14; i++)
-    pw[i] = 0;
+  Curl_strntoupper((char *)pw, password, len);
+  memset(&pw[len], 0, 14-len);
 
 #ifdef CURL_DOES_CONVERSIONS
   /*
@@ -403,6 +437,7 @@ static void mk_lm_hash(struct SessionHandle *data,
   {
     /* Create LanManager hashed password. */
 
+#ifdef USE_SSLEAY
     DES_key_schedule ks;
 
     setup_des_key(pw, DESKEY(ks));
@@ -412,13 +447,26 @@ static void mk_lm_hash(struct SessionHandle *data,
     setup_des_key(pw+7, DESKEY(ks));
     DES_ecb_encrypt((DES_cblock *)magic, (DES_cblock *)(lmbuffer+8),
                     DESKEY(ks), DES_ENCRYPT);
+#elif USE_GNUTLS
+    gcry_cipher_hd_t des;
+
+    gcry_cipher_open(&des, GCRY_CIPHER_DES, GCRY_CIPHER_MODE_ECB, 0);
+    setup_des_key(pw, &des);
+    gcry_cipher_encrypt(des, lmbuffer, 8, magic, 8);
+    gcry_cipher_close(des);
+
+    gcry_cipher_open(&des, GCRY_CIPHER_DES, GCRY_CIPHER_MODE_ECB, 0);
+    setup_des_key(pw+7, &des);
+    gcry_cipher_encrypt(des, lmbuffer+8, 8, magic, 8);
+    gcry_cipher_close(des);
+#endif
 
     memset(lmbuffer + 16, 0, 21 - 16);
   }
   }
 
 #if USE_NTRESPONSES
-static void utf8_to_unicode_le(unsigned char *dest, const char *src,
+static void ascii_to_unicode_le(unsigned char *dest, const char *src,
                                size_t srclen)
 {
   size_t i;
@@ -432,7 +480,7 @@ static void utf8_to_unicode_le(unsigned char *dest, const char *src,
  * Set up nt hashed passwords
  */
 static CURLcode mk_nt_hash(struct SessionHandle *data,
-                           char *password,
+                           const char *password,
                            unsigned char *ntbuffer /* 21 bytes */)
 {
   size_t len = strlen(password);
@@ -440,7 +488,7 @@ static CURLcode mk_nt_hash(struct SessionHandle *data,
   if(!pw)
     return CURLE_OUT_OF_MEMORY;
 
-  utf8_to_unicode_le(pw, password, len);
+  ascii_to_unicode_le(pw, password, len);
 
 #ifdef CURL_DOES_CONVERSIONS
   /*
@@ -455,11 +503,18 @@ static CURLcode mk_nt_hash(struct SessionHandle *data,
 
   {
     /* Create NT hashed password. */
+#ifdef USE_SSLEAY
     MD4_CTX MD4pw;
-
     MD4_Init(&MD4pw);
     MD4_Update(&MD4pw, pw, 2*len);
     MD4_Final(ntbuffer, &MD4pw);
+#elif USE_GNUTLS
+    gcry_md_hd_t MD4pw;
+    gcry_md_open(&MD4pw, GCRY_MD_MD4, 0);
+    gcry_md_write(MD4pw, pw, 2*len);
+    memcpy (ntbuffer, gcry_md_read (MD4pw, 0), MD4_DIGEST_LENGTH);
+    gcry_md_close(MD4pw);
+#endif
 
     memset(ntbuffer + 16, 0, 21 - 16);
   }
@@ -524,8 +579,8 @@ CURLcode Curl_output_ntlm(struct connectdata *conn,
   char **allocuserpwd;
 
   /* point to the name and password for this */
-  char *userp;
-  char *passwdp;
+  const char *userp;
+  const char *passwdp;
   /* point to the correct struct with this */
   struct ntlmdata *ntlm;
   struct auth *authp;
@@ -551,15 +606,15 @@ CURLcode Curl_output_ntlm(struct connectdata *conn,
 
   /* not set means empty */
   if(!userp)
-    userp=(char *)"";
+    userp="";
 
   if(!passwdp)
-    passwdp=(char *)"";
+    passwdp="";
 
 #ifdef USE_WINDOWS_SSPI
   if (s_hSecDll == NULL) {
     /* not thread safe and leaks - use curl_global_init() to avoid */
-    CURLcode err = Curl_ntlm_global_init();
+    CURLcode err = Curl_sspi_global_init();
     if (s_hSecDll == NULL)
       return err;
   }
@@ -618,7 +673,7 @@ CURLcode Curl_output_ntlm(struct connectdata *conn,
       ntlm->p_identity = NULL;
     }
 
-    if(s_pSecFn->AcquireCredentialsHandle(
+    if(s_pSecFn->AcquireCredentialsHandleA(
           NULL, (char *)"NTLM", SECPKG_CRED_OUTBOUND, NULL, ntlm->p_identity,
           NULL, NULL, &ntlm->handle, &tsDummy
           ) != SEC_E_OK) {
@@ -632,7 +687,7 @@ CURLcode Curl_output_ntlm(struct connectdata *conn,
     buf.BufferType = SECBUFFER_TOKEN;
     buf.pvBuffer   = ntlmbuf;
 
-    status = s_pSecFn->InitializeSecurityContext(&ntlm->handle, NULL,
+    status = s_pSecFn->InitializeSecurityContextA(&ntlm->handle, NULL,
                                                  (char *) host,
                                                  ISC_REQ_CONFIDENTIALITY |
                                                  ISC_REQ_REPLAY_DETECT |
@@ -788,7 +843,7 @@ CURLcode Curl_output_ntlm(struct connectdata *conn,
     type_3.pvBuffer   = ntlmbuf;
     type_3.cbBuffer   = sizeof(ntlmbuf);
 
-    status = s_pSecFn->InitializeSecurityContext(&ntlm->handle, &ntlm->c_handle,
+    status = s_pSecFn->InitializeSecurityContextA(&ntlm->handle, &ntlm->c_handle,
                                        (char *) host,
                                        ISC_REQ_CONFIDENTIALITY |
                                        ISC_REQ_REPLAY_DETECT |
@@ -849,12 +904,18 @@ CURLcode Curl_output_ntlm(struct connectdata *conn,
       unsigned char ntbuffer[0x18];
       unsigned char tmp[0x18];
       unsigned char md5sum[MD5_DIGEST_LENGTH];
-      MD5_CTX MD5pw;
       unsigned char entropy[8];
 
       /* Need to create 8 bytes random data */
+#ifdef USE_SSLEAY
+      MD5_CTX MD5pw;
       Curl_ossl_seed(conn->data); /* Initiate the seed if not already done */
       RAND_bytes(entropy,8);
+#elif USE_GNUTLS
+      gcry_md_hd_t MD5pw;
+      Curl_gtls_seed(conn->data); /* Initiate the seed if not already done */
+      gcry_randomize(entropy, 8, GCRY_STRONG_RANDOM);
+#endif
 
       /* 8 bytes random data as challenge in lmresp */
       memcpy(lmresp,entropy,8);
@@ -865,9 +926,17 @@ CURLcode Curl_output_ntlm(struct connectdata *conn,
       memcpy(tmp,&ntlm->nonce[0],8);
       memcpy(tmp+8,entropy,8);
 
+#ifdef USE_SSLEAY
       MD5_Init(&MD5pw);
       MD5_Update(&MD5pw, tmp, 16);
       MD5_Final(md5sum, &MD5pw);
+#elif USE_GNUTLS
+      gcry_md_open(&MD5pw, GCRY_MD_MD5, 0);
+      gcry_md_write(MD5pw, tmp, MD5_DIGEST_LENGTH);
+      memcpy(md5sum, gcry_md_read (MD5pw, 0), MD5_DIGEST_LENGTH);
+      gcry_md_close(MD5pw);
+#endif
+
       /* We shall only use the first 8 bytes of md5sum,
          but the des code in lm_resp only encrypt the first 8 bytes */
       if(mk_nt_hash(conn->data, passwdp, ntbuffer) == CURLE_OUT_OF_MEMORY)
@@ -1110,48 +1179,6 @@ Curl_ntlm_cleanup(struct connectdata *conn)
 #endif
 }
 
-#ifdef USE_WINDOWS_SSPI
-CURLcode Curl_ntlm_global_init()
-{
-  /* If security interface is not yet initialized try to do this */
-  if(s_hSecDll == NULL) {
-    /* Determine Windows version. Security functions are located in
-     * security.dll on WinNT 4.0 and in secur32.dll on Win9x. Win2K and XP
-     * contain both these DLLs (security.dll just forwards calls to
-     * secur32.dll)
-     */
-    OSVERSIONINFO osver;
-    osver.dwOSVersionInfoSize = sizeof(osver);
-    GetVersionEx(&osver);
-    if(osver.dwPlatformId == VER_PLATFORM_WIN32_NT
-      && osver.dwMajorVersion == 4)
-      s_hSecDll = LoadLibrary("security.dll");
-    else
-      s_hSecDll = LoadLibrary("secur32.dll");
-    if(s_hSecDll != NULL) {
-      INIT_SECURITY_INTERFACE pInitSecurityInterface;
-      pInitSecurityInterface =
-        (INIT_SECURITY_INTERFACE)GetProcAddress(s_hSecDll,
-                                                "InitSecurityInterfaceA");
-      if(pInitSecurityInterface != NULL)
-        s_pSecFn = pInitSecurityInterface();
-    }
-  }
-  if(s_pSecFn == NULL)
-    return CURLE_RECV_ERROR;
-
-  return CURLE_OK;
-}
-
-void Curl_ntlm_global_cleanup()
-{
-  if(s_hSecDll != NULL) {
-    FreeLibrary(s_hSecDll);
-    s_hSecDll = NULL;
-    s_pSecFn = NULL;
-  }
-}
-#endif
 
 #endif /* USE_NTLM */
 #endif /* !CURL_DISABLE_HTTP */

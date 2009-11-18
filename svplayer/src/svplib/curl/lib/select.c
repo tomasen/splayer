@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2008, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -18,7 +18,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: select.c,v 1.52 2008-05-26 15:09:28 bagder Exp $
+ * $Id: select.c,v 1.54 2009-10-27 16:56:20 yangtse Exp $
  ***************************************************************************/
 
 #include "setup.h"
@@ -82,7 +82,7 @@
  * Waiting indefinitely with this function is not allowed, a
  * zero or negative timeout value will return immediately.
  * Timeout resolution, accuracy, as well as maximum supported
- * value is system dependant, neither factor is a citical issue
+ * value is system dependent, neither factor is a citical issue
  * for the intended use of this function in the library.
  * On non-DOS and non-Winsock platforms, when compiled with
  * CURL_ACKNOWLEDGE_EINTR defined, EINTR condition is honored
@@ -397,6 +397,20 @@ int Curl_poll(struct pollfd ufds[], unsigned int nfds, int timeout_ms)
         break;
     }
   } while(r == -1);
+
+  if(r < 0)
+    return -1;
+  if(r == 0)
+    return 0;
+
+  for (i = 0; i < nfds; i++) {
+    if(ufds[i].fd == CURL_SOCKET_BAD)
+      continue;
+    if(ufds[i].revents & POLLHUP)
+      ufds[i].revents |= POLLIN;
+    if(ufds[i].revents & POLLERR)
+      ufds[i].revents |= (POLLIN|POLLOUT);
+  }
 
 #else  /* HAVE_POLL_FINE */
 

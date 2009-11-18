@@ -203,6 +203,22 @@
 				>
 			</File>
 			<File
+				RelativePath=".\curl_addrinfo.c"
+				>
+			</File>
+			<File
+				RelativePath=".\curl_memrchr.c"
+				>
+			</File>
+			<File
+				RelativePath=".\curl_rand.c"
+				>
+			</File>
+			<File
+				RelativePath=".\curl_sspi.c"
+				>
+			</File>
+			<File
 				RelativePath="dict.c"
 				>
 			</File>
@@ -339,6 +355,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\nonblock.c"
+				>
+			</File>
+			<File
 				RelativePath="nss.c"
 				>
 			</File>
@@ -352,6 +372,10 @@
 			</File>
 			<File
 				RelativePath="qssl.c"
+				>
+			</File>
+			<File
+				RelativePath=".\rawstr.c"
 				>
 			</File>
 			<File
@@ -371,7 +395,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\slist.c"
+				>
+			</File>
+			<File
 				RelativePath="socks.c"
+				>
+			</File>
+			<File
+				RelativePath=".\socks_gssapi.c"
+				>
+			</File>
+			<File
+				RelativePath=".\socks_sspi.c"
 				>
 			</File>
 			<File
@@ -447,6 +483,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\config-vxworks.h"
+				>
+			</File>
+			<File
 				RelativePath="config-win32.h"
 				>
 			</File>
@@ -463,6 +503,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\curl_addrinfo.h"
+				>
+			</File>
+			<File
 				RelativePath="curl_base64.h"
 				>
 			</File>
@@ -472,6 +516,22 @@
 			</File>
 			<File
 				RelativePath="curl_md5.h"
+				>
+			</File>
+			<File
+				RelativePath=".\curl_memory.h"
+				>
+			</File>
+			<File
+				RelativePath=".\curl_memrchr.h"
+				>
+			</File>
+			<File
+				RelativePath=".\curl_rand.h"
+				>
+			</File>
+			<File
+				RelativePath=".\curl_sspi.h"
 				>
 			</File>
 			<File
@@ -579,6 +639,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\nonblock.h"
+				>
+			</File>
+			<File
 				RelativePath="nssg.h"
 				>
 			</File>
@@ -592,6 +656,10 @@
 			</File>
 			<File
 				RelativePath="qssl.h"
+				>
+			</File>
+			<File
+				RelativePath=".\rawstr.h"
 				>
 			</File>
 			<File
@@ -612,6 +680,10 @@
 			</File>
 			<File
 				RelativePath="share.h"
+				>
+			</File>
+			<File
+				RelativePath=".\slist.h"
 				>
 			</File>
 			<File

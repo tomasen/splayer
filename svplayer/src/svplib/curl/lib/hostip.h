@@ -20,11 +20,16 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: hostip.h,v 1.62 2008-07-09 18:39:49 bagder Exp $
+ * $Id: hostip.h,v 1.69 2008-11-06 17:19:57 yangtse Exp $
  ***************************************************************************/
 
 #include "setup.h"
 #include "hash.h"
+#include "curl_addrinfo.h"
+
+#ifdef HAVE_SETJMP_H
+#include <setjmp.h>
+#endif
 
 #ifdef NETWARE
 #undef in_addr_t
@@ -99,31 +104,6 @@
 #define ares_destroy(x) do {} while(0)
 #endif
 
-/*
- * Curl_addrinfo MUST be used for all name resolved info.
- */
-#ifdef CURLRES_IPV6
-typedef struct addrinfo Curl_addrinfo;
-#ifdef CURLRES_ARES
-Curl_addrinfo *Curl_ip2addr6(struct in6_addr *in,
-			     const char *hostname, int port);
-#endif
-#else
-/* OK, so some ipv4-only include tree probably have the addrinfo struct, but
-   to work even on those that don't, we provide our own look-alike! */
-struct Curl_addrinfo {
-  int                   ai_flags;
-  int                   ai_family;
-  int                   ai_socktype;
-  int                   ai_protocol;
-  socklen_t             ai_addrlen;   /* Follow rfc3493 struct addrinfo */
-  char                 *ai_canonname;
-  struct sockaddr      *ai_addr;
-  struct Curl_addrinfo *ai_next;
-};
-typedef struct Curl_addrinfo Curl_addrinfo;
-#endif
-
 struct addrinfo;
 struct hostent;
 struct SessionHandle;
@@ -154,11 +134,15 @@ struct Curl_dns_entry {
  * use, or we'll leak memory!
  */
 /* return codes */
+#define CURLRESOLV_TIMEDOUT -2
 #define CURLRESOLV_ERROR    -1
 #define CURLRESOLV_RESOLVED  0
 #define CURLRESOLV_PENDING   1
 int Curl_resolv(struct connectdata *conn, const char *hostname,
                 int port, struct Curl_dns_entry **dnsentry);
+int Curl_resolv_timeout(struct connectdata *conn, const char *hostname,
+                        int port, struct Curl_dns_entry **dnsentry,
+                        long timeoutms);
 
 /*
  * Curl_ipvalid() checks what CURL_IPRESOLVE_* requirements that might've
@@ -199,9 +183,6 @@ void Curl_resolv_unlock(struct SessionHandle *data,
 /* for debugging purposes only: */
 void Curl_scan_cache_used(void *user, void *ptr);
 
-/* free name info */
-void Curl_freeaddrinfo(Curl_addrinfo *freeaddr);
-
 /* make a new dns cache and return the handle */
 struct curl_hash *Curl_mk_dnscache(void);
 
@@ -211,21 +192,13 @@ void Curl_hostcache_prune(struct SessionHandle *data);
 /* Return # of adresses in a Curl_addrinfo struct */
 int Curl_num_addresses (const Curl_addrinfo *addr);
 
-#ifdef CURLDEBUG
-void curl_dofreeaddrinfo(struct addrinfo *freethis,
-                         int line, const char *source);
-int curl_dogetaddrinfo(const char *hostname, const char *service,
-                       struct addrinfo *hints,
-                       struct addrinfo **result,
-                       int line, const char *source);
-#ifdef HAVE_GETNAMEINFO
+#if defined(CURLDEBUG) && defined(HAVE_GETNAMEINFO)
 int curl_dogetnameinfo(GETNAMEINFO_QUAL_ARG1 GETNAMEINFO_TYPE_ARG1 sa,
                        GETNAMEINFO_TYPE_ARG2 salen,
                        char *host, GETNAMEINFO_TYPE_ARG46 hostlen,
                        char *serv, GETNAMEINFO_TYPE_ARG46 servlen,
                        GETNAMEINFO_TYPE_ARG7 flags,
                        int line, const char *source);
-#endif
 #endif
 
 /* This is the callback function that is used when we build with asynch
@@ -243,16 +216,8 @@ CURLcode Curl_addrinfo6_callback(void *arg,
 #ifdef HAVE_CARES_CALLBACK_TIMEOUTS
                                  int timeouts,
 #endif
-                                 struct addrinfo *ai);
+                                 Curl_addrinfo *ai);
 
-
-/* [ipv4/ares only] Creates a Curl_addrinfo struct from a numerical-only IP
-   address */
-Curl_addrinfo *Curl_ip2addr(in_addr_t num, const char *hostname, int port);
-
-/* [ipv4/ares only] Curl_he2ai() converts a struct hostent to a Curl_addrinfo chain
-   and returns it */
-Curl_addrinfo *Curl_he2ai(const struct hostent *, int port);
 
 /* Clone a Curl_addrinfo struct, works protocol independently */
 Curl_addrinfo *Curl_addrinfo_copy(const void *orig, int port);
@@ -287,7 +252,13 @@ void Curl_destroy_thread_data(struct Curl_async *async);
 #define CURL_INADDR_NONE INADDR_NONE
 #endif
 
-
-
+#ifdef HAVE_SIGSETJMP
+/* Forward-declaration of variable defined in hostip.c. Beware this
+ * is a global and unique instance. This is used to store the return
+ * address that we can jump back to from inside a signal handler.
+ * This is not thread-safe stuff.
+ */
+extern sigjmp_buf curl_jmpenv;
+#endif
 
 #endif

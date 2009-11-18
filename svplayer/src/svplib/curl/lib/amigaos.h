@@ -20,7 +20,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: amigaos.h,v 1.8 2007-02-28 14:45:49 yangtse Exp $
+ * $Id: amigaos.h,v 1.9 2008-09-24 12:22:16 yangtse Exp $
  ***************************************************************************/
 
 #ifdef __AMIGA__ /* Any AmigaOS flavour */
@@ -39,9 +39,6 @@
 
 #ifndef select
 # define select(args...) WaitSelect( args, NULL)
-#endif
-#ifndef inet_ntoa
-# define inet_ntoa(x)    Inet_NtoA( x ## .s_addr)
 #endif
 #ifndef ioctl
 # define ioctl(a,b,c,d)  IoctlSocket( (LONG)a, (ULONG)b, (char*)c)

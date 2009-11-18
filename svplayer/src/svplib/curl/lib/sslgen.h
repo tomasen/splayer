@@ -20,7 +20,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: sslgen.h,v 1.14 2008-07-05 03:31:41 yangtse Exp $
+ * $Id: sslgen.h,v 1.18 2009-05-04 21:57:14 bagder Exp $
  ***************************************************************************/
 
 bool Curl_ssl_config_matches(struct ssl_config_data* data,
@@ -59,13 +59,28 @@ size_t Curl_ssl_version(char *buffer, size_t size);
 bool Curl_ssl_data_pending(const struct connectdata *conn,
                            int connindex);
 int Curl_ssl_check_cxn(struct connectdata *conn);
+void Curl_ssl_free_certinfo(struct SessionHandle *data);
+
+/* Functions to be used by SSL library adaptation functions */
+
+/* extract a session ID */
+int Curl_ssl_getsessionid(struct connectdata *conn,
+                          void **ssl_sessionid,
+                          size_t *idsize) /* set 0 if unknown */;
+/* add a new session ID */
+CURLcode Curl_ssl_addsessionid(struct connectdata *conn,
+                               void *ssl_sessionid,
+                               size_t idsize);
+/* delete a session from the cache */
+void Curl_ssl_delsessionid(struct connectdata *conn, void *ssl_sessionid);
+
+#define SSL_SHUTDOWN_TIMEOUT 10000 /* ms */
 
 #else
 /* When SSL support is not present, just define away these function calls */
 #define Curl_ssl_init() 1
 #define Curl_ssl_cleanup() do { } while (0)
 #define Curl_ssl_connect(x,y) CURLE_FAILED_INIT
-#define Curl_ssl_connect_nonblocking(x,y,z) (z=z, CURLE_FAILED_INIT)
 #define Curl_ssl_close_all(x)
 #define Curl_ssl_close(x,y)
 #define Curl_ssl_shutdown(x,y) CURLE_FAILED_INIT
@@ -78,23 +93,8 @@ int Curl_ssl_check_cxn(struct connectdata *conn);
 #define Curl_ssl_version(x,y) 0
 #define Curl_ssl_data_pending(x,y) 0
 #define Curl_ssl_check_cxn(x) 0
+#define Curl_ssl_free_certinfo(x)
 
 #endif
 
-/* extract a session ID */
-int Curl_ssl_getsessionid(struct connectdata *conn,
-                          void **ssl_sessionid,
-                          size_t *idsize) /* set 0 if unknown */;
-/* add a new session ID */
-CURLcode Curl_ssl_addsessionid(struct connectdata *conn,
-                               void *ssl_sessionid,
-                               size_t idsize);
-
-#if !defined(USE_SSL) && !defined(SSLGEN_C)
-/* set up blank macros for none-SSL builds */
-#define Curl_ssl_close_all(x)
-#endif
-
-#define SSL_SHUTDOWN_TIMEOUT 10000 /* ms */
-
-#endif
+#endif /* USE_SSL */

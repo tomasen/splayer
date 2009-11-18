@@ -66,6 +66,9 @@
 /* Define if you want to enable IPv6 support */
 #define ENABLE_IPV6 1
 
+/* Define if struct sockaddr_in6 has the sin6_scope_id member */
+#define HAVE_SOCKADDR_IN6_SIN6_SCOPE_ID 1
+
 /* Define to the type qualifier of arg 1 for getnameinfo. */
 #define GETNAMEINFO_QUAL_ARG1 const
 
@@ -111,9 +114,6 @@
 /* Define to 1 if you have the <des.h> header file. */
 /* #undef HAVE_DES_H */
 
-/* disabled non-blocking sockets */
-/* #undef HAVE_DISABLED_NONBLOCKING */
-
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #define HAVE_DLFCN_H 1
 
@@ -129,8 +129,11 @@
 /* Define to 1 if you have the <fcntl.h> header file. */
 #define HAVE_FCNTL_H 1
 
-/* use FIONBIO for non-blocking sockets */
-#define HAVE_FIONBIO 1
+/* Define to 1 if you have the fcntl function. */
+#define HAVE_FCNTL 1
+
+/* Define to 1 if you have a working fcntl O_NONBLOCK function. */
+#define HAVE_FCNTL_O_NONBLOCK 1
 
 /* Define to 1 if you have the `fork' function. */
 /*#define HAVE_FORK 1*/
@@ -222,26 +225,32 @@
 /* Define to 1 if you have the `inet_addr' function. */
 /*#define HAVE_INET_ADDR 1*/
 
-/* Define to 1 if you have the `inet_ntoa' function. */
-/*#define HAVE_INET_NTOA 1*/
+/* Define to 1 if you have a IPv6 capable working inet_ntop function. */
+/*#define HAVE_INET_NTOP 1*/
 
-/* Define to 1 if you have the `inet_ntoa_r' function. */
-/* #undef HAVE_INET_NTOA_R */
-
-/* inet_ntoa_r() is declared */
-/* #undef HAVE_INET_NTOA_R_DECL */
-
-/* Define to 1 if you have the `inet_pton' function. */
-#define HAVE_INET_PTON 1
+/* Define to 1 if you have a IPv6 capable working inet_pton function. */
+/*#define HAVE_INET_PTON 1*/
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
 
-/* use ioctlsocket() for non-blocking sockets */
+/* Define to 1 if you have the ioctl function. */
+#define HAVE_IOCTL 1
+
+/* Define to 1 if you have a working ioctl FIONBIO function. */
+#define HAVE_IOCTL_FIONBIO 1
+
+/* Define to 1 if you have the ioctlsocket function. */
 /* #undef HAVE_IOCTLSOCKET */
 
-/* use Ioctlsocket() for non-blocking sockets */
-/* #undef HAVE_IOCTLSOCKET_CASE */
+/* Define to 1 if you have a working ioctlsocket FIONBIO function. */
+/* #undef HAVE_IOCTLSOCKET_FIONBIO */
+
+/* Define to 1 if you have the IoctlSocket camel case function. */
+/* #undef HAVE_IOCTLSOCKET_CAMEL */
+
+/* Define to 1 if you have a working IoctlSocket camel case FIONBIO function. */
+/* #undef HAVE_IOCTLSOCKET_CAMEL_FIONBIO */
 
 /* Define to 1 if you have the <io.h> header file. */
 /* #undef HAVE_IO_H */
@@ -297,9 +306,6 @@
 /* Define to 1 if you have the `ssl' library (-lssl). */
 /*#define HAVE_LIBSSL 1*/
 
-/* if zlib is available */
-/*#define HAVE_LIBZ 1*/
-
 /* Define to 1 if you have the <limits.h> header file. */
 #define HAVE_LIMITS_H 1
 
@@ -339,9 +345,6 @@
 /* Define to 1 if NI_WITHSCOPEID exists and works. */
 /*#define HAVE_NI_WITHSCOPEID 1*/
 
-/* Defined if no inet_pton() prototype available */
-/* #undef HAVE_NO_INET_PTON_PROTO */
-
 /* we have no strerror_r() proto */
 /* #undef HAVE_NO_STRERROR_R_DECL */
 
@@ -372,9 +375,6 @@
 
 /* Define to 1 if you have the <openssl/x509.h> header file. */
 /*#define HAVE_OPENSSL_X509_H 1*/
-
-/* use O_NONBLOCK for non-blocking sockets */
-#define HAVE_O_NONBLOCK 1
 
 /* Define to 1 if you have the <pem.h> header file. */
 /* #undef HAVE_PEM_H */
@@ -439,6 +439,12 @@
 /* Define to 1 if you have the `setrlimit' function. */
 /*#define HAVE_SETRLIMIT 1*/
 
+/* Define to 1 if you have the setsockopt function. */
+/* #undef HAVE_SETSOCKOPT */
+
+/* Define to 1 if you have a working setsockopt SO_NONBLOCK function. */
+/* #undef HAVE_SETSOCKOPT_SO_NONBLOCK */
+
 /* Define to 1 if you have the <sgtty.h> header file. */
 /*#define HAVE_SGTTY_H 1*/
 
@@ -465,9 +471,6 @@
 
 /* Define to 1 if you have the `socket' function. */
 #define HAVE_SOCKET 1
-
-/* use SO_NONBLOCK for non-blocking sockets */
-/* #undef HAVE_SO_NONBLOCK */
 
 /* Define this if you have the SPNEGO library fbopenssl */
 /* #undef HAVE_SPNEGO */
@@ -628,14 +631,8 @@
 /* Define to 1 if you have the <x509.h> header file. */
 /* #undef HAVE_X509_H */
 
-/* if you have the zlib.h header file */
-/*#define HAVE_ZLIB_H 1*/
-
 /* Define to 1 if you are building a native Windows target. */
 /* #undef NATIVE_WINDOWS */
-
-/* If you lack a fine basename() prototype */
-/* #undef NEED_BASENAME_PROTO */
 
 /* Define to 1 if you need the lber.h header file even with ldap.h */
 /* #undef NEED_LBER_H */
@@ -730,6 +727,9 @@
 /* Define if you want to enable c-ares support */
 /* #undef USE_ARES */
 
+/* Define to disable non-blocking sockets */
+/* #undef USE_BLOCKING_SOCKETS */
+
 /* if GnuTLS is enabled */
 /* #undef USE_GNUTLS */
 
@@ -741,12 +741,6 @@
 
 /* if NSS is enabled */
 /* #undef USE_NSS */
-
-/* if OpenSSL is in use */
-/*#define USE_OPENSSL 1*/
-
-/* if SSL is enabled */
-/*#define USE_SSLEAY 1*/
 
 /* to enable SSPI support */
 /* #undef USE_WINDOWS_SSPI */
@@ -791,9 +785,6 @@
 /* Define to `unsigned int' if <sys/types.h> does not define. */
 /* #undef size_t */
 
-/* Type to use in place of socklen_t when system does not provide it. */
-/* #undef socklen_t */
-
 /* the signed version of size_t */
 /* #undef ssize_t */
 
@@ -803,7 +794,18 @@
 /* #define CURLDEBUG */
 #endif
 
-/* sys/cdefs.h fails to define this for WINSCW */
+/* sys/cdefs.h fails to define this for WINSCW prior to Symbian OS ver. 9.4 */
 #ifndef __LONG_LONG_SUPPORTED
 #define __LONG_LONG_SUPPORTED
+#endif
+
+/* Enable appropriate header only when zlib support is enabled */
+#ifdef HAVE_LIBZ
+#define HAVE_ZLIB_H 1
+#endif
+
+/* Enable appropriate definitions only when OpenSSL support is enabled */
+#ifdef USE_SSLEAY
+/* if OpenSSL is in use */
+#define USE_OPENSSL
 #endif

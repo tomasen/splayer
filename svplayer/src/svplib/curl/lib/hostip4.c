@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2008, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -18,7 +18,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: hostip4.c,v 1.43 2008-07-09 18:39:49 bagder Exp $
+ * $Id: hostip4.c,v 1.49 2009-04-21 11:46:16 yangtse Exp $
  ***************************************************************************/
 
 #include "setup.h"
@@ -26,9 +26,6 @@
 #include <string.h>
 #include <errno.h>
 
-#ifdef NEED_MALLOC_H
-#include <malloc.h>
-#endif
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
 #endif
@@ -53,10 +50,6 @@
 #include <stdlib.h>
 #endif
 
-#ifdef HAVE_SETJMP_H
-#include <setjmp.h>
-#endif
-
 #ifdef HAVE_PROCESS_H
 #include <process.h>
 #endif
@@ -73,11 +66,7 @@
 #define _MPRINTF_REPLACE /* use our functions only */
 #include <curl/mprintf.h>
 
-#if defined(HAVE_INET_NTOA_R) && !defined(HAVE_INET_NTOA_R_DECL)
-#include "inet_ntoa_r.h"
-#endif
-
-#include "memory.h"
+#include "curl_memory.h"
 /* The last #include file should be: */
 #include "memdebug.h"
 
@@ -126,20 +115,18 @@ Curl_addrinfo *Curl_getaddrinfo(struct connectdata *conn,
 #endif
   Curl_addrinfo *ai = NULL;
   struct hostent *h = NULL;
-  in_addr_t in;
+  struct in_addr in;
   struct hostent *buf = NULL;
 
 #ifdef CURL_DISABLE_VERBOSE_STRINGS
   (void)conn;
 #endif
 
-  (void)port; /* unused in IPv4 code */
-
   *waitp = 0; /* don't wait, we act synchronously */
 
-  if(1 == Curl_inet_pton(AF_INET, hostname, &in))
+  if(Curl_inet_pton(AF_INET, hostname, &in) > 0)
     /* This is a dotted IP address 123.123.123.123-style */
-    return Curl_ip2addr(in, hostname, port);
+    return Curl_ip2addr(AF_INET, &in, hostname, port);
 
 #if defined(HAVE_GETHOSTBYNAME_R)
   /*
@@ -150,7 +137,7 @@ Curl_addrinfo *Curl_getaddrinfo(struct connectdata *conn,
   else {
     int h_errnop;
 
-    buf = (struct hostent *)calloc(CURL_HOSTENT_SIZE, 1);
+    buf = calloc(CURL_HOSTENT_SIZE, 1);
     if(!buf)
       return NULL; /* major failure */
     /*

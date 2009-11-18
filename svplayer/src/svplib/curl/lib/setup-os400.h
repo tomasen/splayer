@@ -7,7 +7,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2008, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -20,7 +20,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: setup-os400.h,v 1.3 2008-07-22 00:12:06 yangtse Exp $
+ * $Id: setup-os400.h,v 1.6 2009-05-02 02:37:34 yangtse Exp $
  ***************************************************************************/
 
 
@@ -29,9 +29,6 @@
 
 /* OS/400 netdb.h does not define NI_MAXSERV. */
 #define NI_MAXSERV      32
-
-/* OS/400 does not define the ifr_dstaddr union member. */
-#define ifr_dstaddr     ifr_addr
 
 /* No OS/400 header file defines u_int32_t. */
 typedef unsigned long   u_int32_t;
@@ -50,20 +47,15 @@ extern int      Curl_getaddrinfo_a(const char * nodename, const char * servname,
 #define getaddrinfo             Curl_getaddrinfo_a
 
 
-extern int      Curl_getnameinfo_a(const struct sockaddr * sa, socklen_t salen,
-                                   char * nodename, socklen_t nodenamelen,
-                                   char * servname, socklen_t servnamelen,
+extern int      Curl_getnameinfo_a(const struct sockaddr * sa,
+                                   curl_socklen_t salen,
+                                   char * nodename, curl_socklen_t nodenamelen,
+                                   char * servname, curl_socklen_t servnamelen,
                                    int flags);
 #define getnameinfo             Curl_getnameinfo_a
 
 
 /* SSL wrappers. */
-
-extern int      Curl_inet_ntoa_r_a(struct in_addr internet_address,
-                                   char * output_buffer,
-                                   int output_buffer_length);
-#define inet_ntoa_r             Curl_inet_ntoa_r_a
-
 
 extern int      Curl_SSL_Init_Application_a(SSLInitApp * init_app);
 #define SSL_Init_Application    Curl_SSL_Init_Application_a

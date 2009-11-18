@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2008, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -18,7 +18,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: llist.c,v 1.20 2008-01-16 12:24:00 bagder Exp $
+ * $Id: llist.c,v 1.24 2009-04-21 11:46:17 yangtse Exp $
  ***************************************************************************/
 
 #include "setup.h"
@@ -27,7 +27,7 @@
 #include <stdlib.h>
 
 #include "llist.h"
-#include "memory.h"
+#include "curl_memory.h"
 
 /* this must be the last include file */
 #include "memdebug.h"
@@ -46,7 +46,7 @@ Curl_llist_alloc(curl_llist_dtor dtor)
 {
   struct curl_llist *list;
 
-  list = (struct curl_llist *)malloc(sizeof(struct curl_llist));
+  list = malloc(sizeof(struct curl_llist));
   if(NULL == list)
     return NULL;
 
@@ -62,8 +62,7 @@ int
 Curl_llist_insert_next(struct curl_llist *list, struct curl_llist_element *e,
                        const void *p)
 {
-  struct curl_llist_element *ne =
-    (struct curl_llist_element *) malloc(sizeof(struct curl_llist_element));
+  struct curl_llist_element *ne = malloc(sizeof(struct curl_llist_element));
   if(!ne)
     return 0;
 
@@ -114,6 +113,7 @@ Curl_llist_remove(struct curl_llist *list, struct curl_llist_element *e,
   }
 
   list->dtor(user, e->ptr);
+
   free(e);
   --list->size;
 

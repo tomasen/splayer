@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2008, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -18,7 +18,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: getinfo.c,v 1.63 2008-07-03 06:56:03 bagder Exp $
+ * $Id: getinfo.c,v 1.68 2009-04-21 11:46:16 yangtse Exp $
  ***************************************************************************/
 
 #include "setup.h"
@@ -32,9 +32,10 @@
 #include <string.h>
 #include <stdarg.h>
 #include <stdlib.h>
-#include "memory.h"
+#include "curl_memory.h"
 #include "sslgen.h"
 #include "connect.h" /* Curl_getconnectinfo() */
+#include "progress.h"
 
 /* Make this the last #include */
 #include "memdebug.h"
@@ -77,6 +78,11 @@ CURLcode Curl_getinfo(struct SessionHandle *data, CURLINFO info, ...)
   char **param_charp=NULL;
   struct curl_slist **param_slistp=NULL;
   int type;
+
+  union {
+    struct curl_certinfo * to_certinfo;
+    struct curl_slist    * to_slist;
+  } ptr;
 
   if(!data)
     return CURLE_BAD_FUNCTION_ARGUMENT;
@@ -162,10 +168,12 @@ CURLcode Curl_getinfo(struct SessionHandle *data, CURLINFO info, ...)
     *param_longp = data->set.ssl.certverifyresult;
     break;
   case CURLINFO_CONTENT_LENGTH_DOWNLOAD:
-    *param_doublep = (double)data->progress.size_dl;
+    *param_doublep = (data->progress.flags & PGRS_DL_SIZE_KNOWN)?
+      (double)data->progress.size_dl:-1;
     break;
   case CURLINFO_CONTENT_LENGTH_UPLOAD:
-    *param_doublep = (double)data->progress.size_ul;
+    *param_doublep = (data->progress.flags & PGRS_UL_SIZE_KNOWN)?
+      (double)data->progress.size_ul:-1;
     break;
   case CURLINFO_REDIRECT_TIME:
     *param_doublep =  data->progress.t_redirect;
@@ -216,6 +224,16 @@ CURLcode Curl_getinfo(struct SessionHandle *data, CURLINFO info, ...)
   case CURLINFO_PRIMARY_IP:
     /* Return the ip address of the most recent (primary) connection */
     *param_charp = data->info.ip;
+    break;
+  case CURLINFO_CERTINFO:
+    /* Return the a pointer to the certinfo struct. Not really an slist
+       pointer but we can pretend it is here */
+    ptr.to_certinfo = &data->info.certs;
+    *param_slistp = ptr.to_slist;
+    break;
+  case CURLINFO_CONDITION_UNMET:
+    /* return if the condition prevented the document to get transfered */
+    *param_longp = data->info.timecond;
     break;
   default:
     return CURLE_BAD_FUNCTION_ARGUMENT;

@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2008, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -18,7 +18,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: writeout.c,v 1.34 2008-07-30 21:24:19 bagder Exp $
+ * $Id: writeout.c,v 1.36 2009-09-16 16:49:02 yangtse Exp $
  ***************************************************************************/
 
 #include "setup.h"
@@ -108,7 +108,7 @@ void ourWriteOut(CURL *curl, const char *writeinfo)
   long longinfo;
   double doubleinfo;
 
-  while(*ptr) {
+  while(ptr && *ptr) {
     if('%' == *ptr) {
       if('%' == ptr[1]) {
         /* an escaped %-letter */
@@ -120,7 +120,7 @@ void ourWriteOut(CURL *curl, const char *writeinfo)
         char *end;
         char keepit;
         int i;
-        if(('{' == ptr[1]) && (end=strchr(ptr, '}'))) {
+        if(('{' == ptr[1]) && ((end = strchr(ptr, '}')) != NULL)) {
           bool match = FALSE;
           ptr+=2; /* pass the % and the { */
           keepit=*end;
@@ -254,7 +254,7 @@ void ourWriteOut(CURL *curl, const char *writeinfo)
               break;
             }
           }
-          if(!match) {
+          if(FALSE == match) {
             fprintf(stderr, "curl: unknown --write-out variable: '%s'\n", ptr);
           }
           ptr=end+1; /* pass the end */

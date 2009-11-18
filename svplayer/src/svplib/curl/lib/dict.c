@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2007, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -18,7 +18,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: dict.c,v 1.55 2007-12-08 22:50:55 bagder Exp $
+ * $Id: dict.c,v 1.63 2009-10-08 00:02:32 yangtse Exp $
  ***************************************************************************/
 
 #include "setup.h"
@@ -53,8 +53,9 @@
 #ifdef HAVE_NET_IF_H
 #include <net/if.h>
 #endif
+#ifdef HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>
-#include <signal.h>
+#endif
 
 #ifdef HAVE_SYS_PARAM_H
 #include <sys/param.h>
@@ -75,6 +76,7 @@
 #include "progress.h"
 #include "strequal.h"
 #include "dict.h"
+#include "rawstr.h"
 
 #define _MPRINTF_REPLACE /* use our functions only */
 #include <curl/mprintf.h>
@@ -104,12 +106,13 @@ const struct Curl_handler Curl_handler_dict = {
   ZERO_NULL,                            /* doing */
   ZERO_NULL,                            /* proto_getsock */
   ZERO_NULL,                            /* doing_getsock */
+  ZERO_NULL,                            /* perform_getsock */
   ZERO_NULL,                            /* disconnect */
   PORT_DICT,                            /* defport */
   PROT_DICT                             /* protocol */
 };
 
-static char *unescape_word(struct SessionHandle *data, const char *inp)
+static char *unescape_word(struct SessionHandle *data, const char *inputbuff)
 {
   char *newp;
   char *dictp;
@@ -118,11 +121,11 @@ static char *unescape_word(struct SessionHandle *data, const char *inp)
   char byte;
   int olen=0;
 
-  newp = curl_easy_unescape(data, inp, 0, &len);
+  newp = curl_easy_unescape(data, inputbuff, 0, &len);
   if(!newp)
     return NULL;
 
-  dictp = malloc(len*2 + 1); /* add one for terminating zero */
+  dictp = malloc(((size_t)len)*2 + 1); /* add one for terminating zero */
   if(dictp) {
     /* According to RFC2229 section 2.2, these letters need to be escaped with
        \[letter] */
@@ -164,9 +167,9 @@ static CURLcode dict_do(struct connectdata *conn, bool *done)
     /* AUTH is missing */
   }
 
-  if(strnequal(path, DICT_MATCH, sizeof(DICT_MATCH)-1) ||
-      strnequal(path, DICT_MATCH2, sizeof(DICT_MATCH2)-1) ||
-      strnequal(path, DICT_MATCH3, sizeof(DICT_MATCH3)-1)) {
+  if(Curl_raw_nequal(path, DICT_MATCH, sizeof(DICT_MATCH)-1) ||
+      Curl_raw_nequal(path, DICT_MATCH2, sizeof(DICT_MATCH2)-1) ||
+      Curl_raw_nequal(path, DICT_MATCH3, sizeof(DICT_MATCH3)-1)) {
 
     word = strchr(path, ':');
     if(word) {
@@ -179,7 +182,7 @@ static CURLcode dict_do(struct connectdata *conn, bool *done)
           *strategy++ = (char)0;
           nthdef = strchr(strategy, ':');
           if(nthdef) {
-            *nthdef++ = (char)0;
+            *nthdef = (char)0;
           }
         }
       }
@@ -223,9 +226,9 @@ static CURLcode dict_do(struct connectdata *conn, bool *done)
     if(result)
       return result;
   }
-  else if(strnequal(path, DICT_DEFINE, sizeof(DICT_DEFINE)-1) ||
-           strnequal(path, DICT_DEFINE2, sizeof(DICT_DEFINE2)-1) ||
-           strnequal(path, DICT_DEFINE3, sizeof(DICT_DEFINE3)-1)) {
+  else if(Curl_raw_nequal(path, DICT_DEFINE, sizeof(DICT_DEFINE)-1) ||
+           Curl_raw_nequal(path, DICT_DEFINE2, sizeof(DICT_DEFINE2)-1) ||
+           Curl_raw_nequal(path, DICT_DEFINE3, sizeof(DICT_DEFINE3)-1)) {
 
     word = strchr(path, ':');
     if(word) {
@@ -235,7 +238,7 @@ static CURLcode dict_do(struct connectdata *conn, bool *done)
         *database++ = (char)0;
         nthdef = strchr(database, ':');
         if(nthdef) {
-          *nthdef++ = (char)0;
+          *nthdef = (char)0;
         }
       }
     }

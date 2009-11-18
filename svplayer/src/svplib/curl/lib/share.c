@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2007, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -18,7 +18,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: share.c,v 1.24 2008-03-18 08:14:37 mmarek Exp $
+ * $Id: share.c,v 1.28 2009-04-21 11:46:17 yangtse Exp $
  ***************************************************************************/
 
 #include "setup.h"
@@ -28,7 +28,7 @@
 #include <curl/curl.h>
 #include "urldata.h"
 #include "share.h"
-#include "memory.h"
+#include "curl_memory.h"
 
 /* The last #include file should be: */
 #include "memdebug.h"
@@ -36,12 +36,9 @@
 CURLSH *
 curl_share_init(void)
 {
-  struct Curl_share *share =
-    (struct Curl_share *)malloc(sizeof(struct Curl_share));
-  if(share) {
-    memset (share, 0, sizeof(struct Curl_share));
+  struct Curl_share *share = calloc(sizeof(struct Curl_share), 1);
+  if(share)
     share->specifier |= (1<<CURL_LOCK_DATA_SHARE);
-  }
 
   return share;
 }
@@ -169,8 +166,10 @@ curl_share_cleanup(CURLSH *sh)
     return CURLSHE_IN_USE;
   }
 
-  if(share->hostcache)
+  if(share->hostcache) {
     Curl_hash_destroy(share->hostcache);
+    share->hostcache = NULL;
+  }
 
 #if !defined(CURL_DISABLE_HTTP) && !defined(CURL_DISABLE_COOKIES)
   if(share->cookies)

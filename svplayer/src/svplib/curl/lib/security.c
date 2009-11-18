@@ -10,7 +10,7 @@
  * Copyright (c) 1998, 1999 Kungliga Tekniska Högskolan
  * (Royal Institute of Technology, Stockholm, Sweden).
  *
- * Copyright (C) 2001 - 2008, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 2001 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * All rights reserved.
  *
@@ -65,7 +65,8 @@
 #include "curl_base64.h"
 #include "sendf.h"
 #include "ftp.h"
-#include "memory.h"
+#include "curl_memory.h"
+#include "rawstr.h"
 
 /* The last #include file should be: */
 #include "memdebug.h"
@@ -85,7 +86,7 @@ name_to_level(const char *name)
 {
   int i;
   for(i = 0; i < (int)sizeof(level_names)/(int)sizeof(level_names[0]); i++)
-    if(curl_strnequal(level_names[i].name, name, strlen(name)))
+    if(checkprefix(name, level_names[i].name))
       return level_names[i].level;
   return (enum protection_level)-1;
 }
@@ -100,6 +101,7 @@ static const struct Curl_sec_client_mech * const mechs[] = {
   NULL
 };
 
+/* TODO: This function isn't actually used anywhere and should be removed */
 int
 Curl_sec_getc(struct connectdata *conn, FILE *F)
 {
@@ -123,6 +125,7 @@ block_read(int fd, void *buf, size_t len)
     if(b == 0)
       return 0;
     else if(b < 0 && (errno == EINTR || errno == EAGAIN))
+      /* TODO: this will busy loop in the EAGAIN case */
       continue;
     else if(b < 0)
       return -1;
@@ -162,6 +165,8 @@ sec_get_data(struct connectdata *conn,
   else if(b < 0)
     return -1;
   len = ntohl(len);
+  /* TODO: This realloc will cause a memory leak in an out of memory
+   * condition */
   buf->data = realloc(buf->data, len);
   b = buf->data ? block_read(fd, buf->data, len) : -1;
   if(b == 0)
@@ -326,7 +331,7 @@ Curl_sec_send(struct connectdata *conn, int num, const char *buffer, int length)
 int
 Curl_sec_putc(struct connectdata *conn, int c, FILE *F)
 {
-  char ch = c;
+  char ch = (char)c;
   if(conn->data_prot == prot_clear)
     return putc(c, F);
 

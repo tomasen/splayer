@@ -18,7 +18,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: md5.c,v 1.14 2008-08-17 01:57:10 yangtse Exp $
+ * $Id: md5.c,v 1.15 2009-02-12 20:48:44 danf Exp $
  ***************************************************************************/
 
 #include "setup.h"
@@ -26,6 +26,24 @@
 #ifndef CURL_DISABLE_CRYPTO_AUTH
 
 #include <string.h>
+
+#include "curl_md5.h"
+
+#ifdef USE_GNUTLS
+
+#include <gcrypt.h>
+
+void Curl_md5it(unsigned char *outbuffer, /* 16 bytes */
+                const unsigned char *input)
+{
+  gcry_md_hd_t ctx;
+  gcry_md_open(&ctx, GCRY_MD_MD5, 0);
+  gcry_md_write(ctx, input, (unsigned int)strlen((char *)input));
+  memcpy (outbuffer, gcry_md_read (ctx, 0), 16);
+  gcry_md_close(ctx);
+}
+
+#else
 
 #ifdef USE_SSLEAY
 /* When OpenSSL is available we use the MD5-function from OpenSSL */
@@ -341,8 +359,6 @@ static void Decode (UINT4 *output,
 
 #endif /* USE_SSLEAY */
 
-#include "curl_md5.h"
-
 void Curl_md5it(unsigned char *outbuffer, /* 16 bytes */
                 const unsigned char *input)
 {
@@ -352,4 +368,6 @@ void Curl_md5it(unsigned char *outbuffer, /* 16 bytes */
   MD5_Final(outbuffer, &ctx);
 }
 
-#endif
+#endif /* USE_GNUTLS */
+
+#endif /* CURL_DISABLE_CRYPTO_AUTH */

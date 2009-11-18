@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2008, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -18,7 +18,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: sendf.c,v 1.143 2008-06-20 10:43:32 bagder Exp $
+ * $Id: sendf.c,v 1.159 2009-06-10 21:26:11 bagder Exp $
  ***************************************************************************/
 
 #include "setup.h"
@@ -47,7 +47,8 @@
 #define _MPRINTF_REPLACE /* use the internal *printf() functions */
 #include <curl/mprintf.h>
 
-#if defined(HAVE_KRB4) || defined(HAVE_GSSAPI)
+/* the krb4 functions only exists for FTP and if krb4 or gssapi is defined */
+#if !defined(CURL_DISABLE_FTP) && (defined(HAVE_KRB4) || defined(HAVE_GSSAPI))
 #include "krb4.h"
 #else
 #define Curl_sec_send(a,b,c,d) -1
@@ -55,87 +56,11 @@
 #endif
 
 #include <string.h>
-#include "memory.h"
+#include "curl_memory.h"
 #include "strerror.h"
 #include "easyif.h" /* for the Curl_convert_from_network prototype */
 /* The last #include file should be: */
 #include "memdebug.h"
-
-/* returns last node in linked list */
-static struct curl_slist *slist_get_last(struct curl_slist *list)
-{
-  struct curl_slist     *item;
-
-  /* if caller passed us a NULL, return now */
-  if(!list)
-    return NULL;
-
-  /* loop through to find the last item */
-  item = list;
-  while(item->next) {
-    item = item->next;
-  }
-  return item;
-}
-
-/*
- * curl_slist_append() appends a string to the linked list. It always returns
- * the address of the first record, so that you can use this function as an
- * initialization function as well as an append function. If you find this
- * bothersome, then simply create a separate _init function and call it
- * appropriately from within the program.
- */
-struct curl_slist *curl_slist_append(struct curl_slist *list,
-                                     const char *data)
-{
-  struct curl_slist     *last;
-  struct curl_slist     *new_item;
-
-  new_item = (struct curl_slist *) malloc(sizeof(struct curl_slist));
-  if(new_item) {
-    char *dupdata = strdup(data);
-    if(dupdata) {
-      new_item->next = NULL;
-      new_item->data = dupdata;
-    }
-    else {
-      free(new_item);
-      return NULL;
-    }
-  }
-  else
-    return NULL;
-
-  if(list) {
-    last = slist_get_last(list);
-    last->next = new_item;
-    return list;
-  }
-
-  /* if this is the first item, then new_item *is* the list */
-  return new_item;
-}
-
-/* be nice and clean up resources */
-void curl_slist_free_all(struct curl_slist *list)
-{
-  struct curl_slist     *next;
-  struct curl_slist     *item;
-
-  if(!list)
-    return;
-
-  item = list;
-  do {
-    next = item->next;
-
-    if(item->data) {
-      free(item->data);
-    }
-    free(item);
-    item = next;
-  } while(next);
-}
 
 #ifdef CURL_DO_LINEEND_CONV
 /*
@@ -208,12 +133,11 @@ static size_t convert_lineends(struct SessionHandle *data,
         *outPtr = *inPtr;
       }
       outPtr++;
-      inPtr++;
     }
-    if(outPtr < startPtr+size) {
+    if(outPtr < startPtr+size)
       /* tidy up by null terminating the now shorter data */
       *outPtr = '\0';
-    }
+
     return(outPtr - startPtr);
   }
   return(size);
@@ -227,9 +151,9 @@ void Curl_infof(struct SessionHandle *data, const char *fmt, ...)
   if(data && data->set.verbose) {
     va_list ap;
     size_t len;
-    char print_buffer[1024 + 1];
+    char print_buffer[2048 + 1];
     va_start(ap, fmt);
-    vsnprintf(print_buffer, 1024, fmt, ap);
+    vsnprintf(print_buffer, sizeof(print_buffer), fmt, ap);
     va_end(ap);
     len = strlen(print_buffer);
     Curl_debug(data, CURLINFO_TEXT, print_buffer, len, NULL);
@@ -397,7 +321,7 @@ CURLcode Curl_write_plain(struct connectdata *conn,
 
 static CURLcode pausewrite(struct SessionHandle *data,
                            int type, /* what type of data */
-                           char *ptr,
+                           const char *ptr,
                            size_t len)
 {
   /* signalled to pause sending on this connection, but since we have data
@@ -416,7 +340,7 @@ static CURLcode pausewrite(struct SessionHandle *data,
   data->state.tempwritetype = type;
 
   /* mark the connection as RECV paused */
-  k->keepon |= KEEP_READ_PAUSE;
+  k->keepon |= KEEP_RECV_PAUSE;
 
   DEBUGF(infof(data, "Pausing with %d bytes in buffer for type %02x\n",
                (int)len, type));
@@ -425,10 +349,14 @@ static CURLcode pausewrite(struct SessionHandle *data,
 }
 
 
-/* client_write() sends data to the write callback(s)
+/* Curl_client_write() sends data to the write callback(s)
 
    The bit pattern defines to what "streams" to write to. Body and/or header.
    The defines are in sendf.h of course.
+
+   If CURL_DO_LINEEND_CONV is enabled, data is converted IN PLACE to the
+   local character encoding.  This is a problem and should be changed in
+   the future to leave the original data alone.
  */
 CURLcode Curl_client_write(struct connectdata *conn,
                            int type,
@@ -438,37 +366,35 @@ CURLcode Curl_client_write(struct connectdata *conn,
   struct SessionHandle *data = conn->data;
   size_t wrote;
 
+  if(0 == len)
+    len = strlen(ptr);
+
   /* If reading is actually paused, we're forced to append this chunk of data
      to the already held data, but only if it is the same type as otherwise it
      can't work and it'll return error instead. */
-  if(data->req.keepon & KEEP_READ_PAUSE) {
+  if(data->req.keepon & KEEP_RECV_PAUSE) {
     size_t newlen;
     char *newptr;
     if(type != data->state.tempwritetype)
       /* major internal confusion */
       return CURLE_RECV_ERROR;
 
+    DEBUGASSERT(data->state.tempwrite);
+
     /* figure out the new size of the data to save */
     newlen = len + data->state.tempwritesize;
     /* allocate the new memory area */
-    newptr = malloc(newlen);
+    newptr = realloc(data->state.tempwrite, newlen);
     if(!newptr)
       return CURLE_OUT_OF_MEMORY;
-    /* copy the previously held data to the new area */
-    memcpy(newptr, data->state.tempwrite, data->state.tempwritesize);
     /* copy the new data to the end of the new area */
     memcpy(newptr + data->state.tempwritesize, ptr, len);
-    /* free the old data */
-    free(data->state.tempwrite);
     /* update the pointer and the size */
     data->state.tempwrite = newptr;
     data->state.tempwritesize = newlen;
 
     return CURLE_OK;
   }
-
-  if(0 == len)
-    len = strlen(ptr);
 
   if(type & CLIENTWRITE_BODY) {
     if((conn->protocol&PROT_FTP) && conn->proto.ftpc.transfertype == 'A') {
@@ -532,9 +458,29 @@ CURLcode Curl_client_write(struct connectdata *conn,
   return CURLE_OK;
 }
 
-#ifndef MIN
-#define MIN(a,b) ((a) < (b) ? (a) : (b))
+int Curl_read_plain(curl_socket_t sockfd,
+                         char *buf,
+                         size_t bytesfromsocket,
+                         ssize_t *n)
+{
+  ssize_t nread = sread(sockfd, buf, bytesfromsocket);
+
+  if(-1 == nread) {
+    int err = SOCKERRNO;
+#ifdef USE_WINSOCK
+    if(WSAEWOULDBLOCK == err)
+#else
+    if((EWOULDBLOCK == err) || (EAGAIN == err) || (EINTR == err))
 #endif
+      return -1;
+    else
+      return CURLE_RECV_ERROR;
+  }
+
+  /* we only return number of bytes read when we return OK */
+  *n = nread;
+  return CURLE_OK;
+}
 
 /*
  * Internal read-from-socket function. This is meant to deal with plain
@@ -564,7 +510,7 @@ int Curl_read(struct connectdata *conn, /* connection data */
 
   /* If session can pipeline, check connection buffer  */
   if(pipelining) {
-    size_t bytestocopy = MIN(conn->buf_len - conn->read_pos, sizerequested);
+    size_t bytestocopy = CURLMIN(conn->buf_len - conn->read_pos, sizerequested);
 
     /* Copy from our master buffer first if we have some unread data there*/
     if(bytestocopy > 0) {
@@ -577,11 +523,11 @@ int Curl_read(struct connectdata *conn, /* connection data */
     }
     /* If we come here, it means that there is no data to read from the buffer,
      * so we read from the socket */
-    bytesfromsocket = MIN(sizerequested, BUFSIZE * sizeof (char));
+    bytesfromsocket = CURLMIN(sizerequested, BUFSIZE * sizeof (char));
     buffertofill = conn->master_buffer;
   }
   else {
-    bytesfromsocket = MIN((long)sizerequested, conn->data->set.buffer_size ?
+    bytesfromsocket = CURLMIN((long)sizerequested, conn->data->set.buffer_size ?
                           conn->data->set.buffer_size : BUFSIZE);
     buffertofill = buf;
   }
@@ -604,27 +550,23 @@ int Curl_read(struct connectdata *conn, /* connection data */
       return -1;
 #endif
     if(nread < 0)
-      /* since it is negative and not EGAIN, it was a protocol-layer error */
+      /* since it is negative and not EAGAIN, it was a protocol-layer error */
       return CURLE_RECV_ERROR;
   }
   else {
     if(conn->sec_complete)
       nread = Curl_sec_read(conn, sockfd, buffertofill,
                             bytesfromsocket);
-    else
-      nread = sread(sockfd, buffertofill, bytesfromsocket);
-
-    if(-1 == nread) {
-      int err = SOCKERRNO;
-#ifdef USE_WINSOCK
-      if(WSAEWOULDBLOCK == err)
-#else
-      if((EWOULDBLOCK == err) || (EAGAIN == err) || (EINTR == err))
-#endif
-        return -1;
+    /* TODO: Need to handle EAGAIN here somehow, similar to how it
+     * is done in Curl_read_plain, either right here or in Curl_sec_read
+     * itself. */
+    else {
+      int ret = Curl_read_plain(sockfd, buffertofill, bytesfromsocket,
+                                     &nread);
+      if(ret)
+        return ret;
     }
   }
-
   if(nread >= 0) {
     if(pipelining) {
       memcpy(buf, conn->master_buffer, nread);
@@ -642,7 +584,7 @@ int Curl_read(struct connectdata *conn, /* connection data */
 static int showit(struct SessionHandle *data, curl_infotype type,
                   char *ptr, size_t size)
 {
-  static const char * const s_infotype[CURLINFO_END] = {
+  static const char s_infotype[CURLINFO_END][3] = {
     "* ", "< ", "> ", "{ ", "} ", "{ ", "} " };
 
 #ifdef CURL_DOES_CONVERSIONS

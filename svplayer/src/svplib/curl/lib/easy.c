@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2008, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -18,7 +18,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: easy.c,v 1.123 2008-08-31 12:12:35 yangtse Exp $
+ * $Id: easy.c,v 1.145 2009-10-27 16:38:42 yangtse Exp $
  ***************************************************************************/
 
 #include "setup.h"
@@ -61,7 +61,6 @@
 #ifdef HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>
 #endif
-#include <signal.h>
 
 #ifdef HAVE_SYS_PARAM_H
 #include <sys/param.h>
@@ -78,13 +77,15 @@
 #include "hostip.h"
 #include "share.h"
 #include "strdup.h"
-#include "memory.h"
+#include "curl_memory.h"
 #include "progress.h"
 #include "easyif.h"
 #include "select.h"
 #include "sendf.h" /* for failf function prototype */
 #include "http_ntlm.h"
 #include "connect.h" /* for Curl_getconnectinfo */
+#include "slist.h"
+#include "curl_rand.h"
 
 #define _MPRINTF_REPLACE /* use our functions only */
 #include <curl/mprintf.h>
@@ -112,7 +113,7 @@ static void win32_cleanup(void)
   WSACleanup();
 #endif
 #ifdef USE_WINDOWS_SSPI
-  Curl_ntlm_global_cleanup();
+  Curl_sspi_global_cleanup();
 #endif
 }
 
@@ -123,7 +124,7 @@ static CURLcode win32_init(void)
 #ifdef USE_WINSOCK
   WORD wVersionRequested;
   WSADATA wsaData;
-  int err;
+  int res;
 
 #if defined(ENABLE_IPV6) && (USE_WINSOCK < 2)
   Error IPV6_requires_winsock2
@@ -131,9 +132,9 @@ static CURLcode win32_init(void)
 
   wVersionRequested = MAKEWORD(USE_WINSOCK, USE_WINSOCK);
 
-  err = WSAStartup(wVersionRequested, &wsaData);
+  res = WSAStartup(wVersionRequested, &wsaData);
 
-  if(err != 0)
+  if(res != 0)
     /* Tell the user that we couldn't find a useable */
     /* winsock.dll.     */
     return CURLE_FAILED_INIT;
@@ -157,7 +158,7 @@ static CURLcode win32_init(void)
 
 #ifdef USE_WINDOWS_SSPI
   {
-    CURLcode err = Curl_ntlm_global_init();
+    CURLcode err = Curl_sspi_global_init();
     if (err != CURLE_OK)
       return err;
   }
@@ -205,7 +206,7 @@ static long          init_flags;
 #define system_strdup strdup
 #endif
 
-#if defined(_MSC_VER) && defined(_DLL)
+#if defined(_MSC_VER) && defined(_DLL) && !defined(__POCC__)
 #  pragma warning(disable:4232) /* MSVC extension, dllimport identity */
 #endif
 
@@ -231,7 +232,7 @@ curl_strdup_callback Curl_cstrdup;
 curl_calloc_callback Curl_ccalloc;
 #endif
 
-#if defined(_MSC_VER) && defined(_DLL)
+#if defined(_MSC_VER) && defined(_DLL) && !defined(__POCC__)
 #  pragma warning(default:4232) /* MSVC extension, dllimport identity */
 #endif
 
@@ -280,7 +281,18 @@ CURLcode curl_global_init(long flags)
   idna_init();
 #endif
 
+#ifdef CARES_HAVE_ARES_LIBRARY_INIT
+  if(ares_library_init(ARES_LIB_INIT_ALL)) {
+    DEBUGF(fprintf(stderr, "Error: ares_library_init failed\n"));
+    return CURLE_FAILED_INIT;
+  }
+#endif
+
   init_flags  = flags;
+
+  /* Preset pseudo-random number sequence. */
+
+  Curl_srand();
 
   return CURLE_OK;
 }
@@ -332,6 +344,10 @@ void curl_global_cleanup(void)
 
   if(init_flags & CURL_GLOBAL_SSL)
     Curl_ssl_cleanup();
+
+#ifdef CARES_HAVE_ARES_LIBRARY_CLEANUP
+  ares_library_cleanup();
+#endif
 
   if(init_flags & CURL_GLOBAL_WIN32)
     win32_cleanup();
@@ -503,9 +519,12 @@ CURLcode curl_easy_perform(CURL *curl)
       /* global dns cache was requested but still isn't */
       struct curl_hash *ptr;
 
-      if(data->dns.hostcachetype == HCACHE_PRIVATE)
+      if(data->dns.hostcachetype == HCACHE_PRIVATE) {
         /* if the current cache is private, kill it first */
         Curl_hash_destroy(data->dns.hostcache);
+        data->dns.hostcachetype = HCACHE_NONE;
+        data->dns.hostcache = NULL;
+      }
 
       ptr = Curl_global_host_cache_init();
       if(ptr) {
@@ -530,7 +549,7 @@ CURLcode curl_easy_perform(CURL *curl)
 
   if(!data->state.connc) {
     /* oops, no connection cache, make one up */
-    data->state.connc = Curl_mk_connc(CONNCACHE_PRIVATE, -1);
+    data->state.connc = Curl_mk_connc(CONNCACHE_PRIVATE, -1L);
     if(!data->state.connc)
       return CURLE_OUT_OF_MEMORY;
   }
@@ -600,8 +619,7 @@ CURL *curl_easy_duphandle(CURL *incurl)
   bool fail = TRUE;
   struct SessionHandle *data=(struct SessionHandle *)incurl;
 
-  struct SessionHandle *outcurl = (struct SessionHandle *)
-    calloc(sizeof(struct SessionHandle), 1);
+  struct SessionHandle *outcurl = calloc(sizeof(struct SessionHandle), 1);
 
   if(NULL == outcurl)
     return NULL; /* failure */
@@ -613,7 +631,7 @@ CURL *curl_easy_duphandle(CURL *incurl)
      * get setup on-demand in the code, as that would probably decrease
      * the likeliness of us forgetting to init a buffer here in the future.
      */
-    outcurl->state.headerbuff=(char*)malloc(HEADERSIZE);
+    outcurl->state.headerbuff = malloc(HEADERSIZE);
     if(!outcurl->state.headerbuff) {
       break;
     }
@@ -623,13 +641,8 @@ CURL *curl_easy_duphandle(CURL *incurl)
     if(Curl_dupset(outcurl, data) != CURLE_OK)
       break;
 
-    if(data->state.used_interface == Curl_if_multi)
-      outcurl->state.connc = data->state.connc;
-    else
-      outcurl->state.connc = Curl_mk_connc(CONNCACHE_PRIVATE, -1);
-
-    if(!outcurl->state.connc)
-      break;
+    /* the connection cache is setup on demand */
+    outcurl->state.connc = NULL;
 
     outcurl->state.lastconnect = -1;
 
@@ -651,6 +664,16 @@ CURL *curl_easy_duphandle(CURL *incurl)
 #endif   /* CURL_DISABLE_HTTP */
 
     /* duplicate all values in 'change' */
+
+#if !defined(CURL_DISABLE_HTTP) && !defined(CURL_DISABLE_COOKIES)
+    if(data->change.cookielist) {
+      outcurl->change.cookielist =
+        Curl_slist_duplicate(data->change.cookielist);
+
+      if (!outcurl->change.cookielist)
+        break;
+    }
+#endif   /* CURL_DISABLE_HTTP */
 
     if(data->change.url) {
       outcurl->change.url = strdup(data->change.url);
@@ -696,6 +719,10 @@ CURL *curl_easy_duphandle(CURL *incurl)
         Curl_rm_connc(outcurl->state.connc);
       if(outcurl->state.headerbuff)
         free(outcurl->state.headerbuff);
+#if !defined(CURL_DISABLE_HTTP) && !defined(CURL_DISABLE_COOKIES)
+      if(outcurl->change.cookielist)
+        curl_slist_free_all(outcurl->change.cookielist);
+#endif
       if(outcurl->change.url)
         free(outcurl->change.url);
       if(outcurl->change.referer)
@@ -726,6 +753,7 @@ void curl_easy_reset(CURL *curl)
   /* zero out UserDefined data: */
   Curl_freeset(data);
   memset(&data->set, 0, sizeof(struct UserDefined));
+  (void)Curl_init_userdefined(&data->set);
 
   /* zero out Progress data: */
   memset(&data->progress, 0, sizeof(struct Progress));
@@ -733,58 +761,8 @@ void curl_easy_reset(CURL *curl)
   /* init Handle data */
   Curl_easy_initHandleData(data);
 
-  /* The remainder of these calls have been taken from Curl_open() */
-
-  data->set.out = stdout; /* default output to stdout */
-  data->set.in  = stdin;  /* default input from stdin */
-  data->set.err  = stderr;  /* default stderr to stderr */
-
-  /* use fwrite as default function to store output */
-  data->set.fwrite_func = (curl_write_callback)fwrite;
-
-  /* use fread as default function to read input */
-  data->set.fread_func = (curl_read_callback)fread;
-
-  data->set.infilesize = -1;      /* we don't know any size */
-  data->set.postfieldsize = -1;   /* unknown size */
-  data->set.maxredirs = -1;       /* allow any amount by default */
-  data->state.current_speed = -1; /* init to negative == impossible */
-
-  data->set.httpreq = HTTPREQ_GET; /* Default HTTP request */
-  data->set.ftp_use_epsv = TRUE;   /* FTP defaults to EPSV operations */
-  data->set.ftp_use_eprt = TRUE;   /* FTP defaults to EPRT operations */
-
-  data->set.dns_cache_timeout = 60; /* Timeout every 60 seconds by default */
-
-  /* make libcurl quiet by default: */
-  data->set.hide_progress = TRUE;  /* CURLOPT_NOPROGRESS changes these */
   data->progress.flags |= PGRS_HIDE;
-
-  /* Set the default size of the SSL session ID cache */
-  data->set.ssl.numsessions = 5;
-
-  data->set.proxyport = CURL_DEFAULT_PROXY_PORT; /* from url.h */
-  data->set.proxytype = CURLPROXY_HTTP; /* defaults to HTTP proxy */
-  data->set.httpauth = CURLAUTH_BASIC;  /* defaults to basic */
-  data->set.proxyauth = CURLAUTH_BASIC; /* defaults to basic */
-
-  /*
-   * libcurl 7.10 introduced SSL verification *by default*! This needs to be
-   * switched off unless wanted.
-   */
-  data->set.ssl.verifypeer = TRUE;
-  data->set.ssl.verifyhost = 2;
-  /* This is our prefered CA cert bundle/path since install time */
-#if defined(CURL_CA_BUNDLE)
-  (void) curl_easy_setopt(curl, CURLOPT_CAINFO, (char *) CURL_CA_BUNDLE);
-#elif defined(CURL_CA_PATH)
-  (void) curl_easy_setopt(curl, CURLOPT_CAPATH, (char *) CURL_CA_PATH);
-#endif
-
-  data->set.ssh_auth_types = CURLSSH_AUTH_DEFAULT; /* defaults to any auth
-                                                      type */
-  data->set.new_file_perms = 0644;    /* Default permissions */
-  data->set.new_directory_perms = 0755; /* Default permissions */
+  data->state.current_speed = -1; /* init to negative == impossible */
 }
 
 /*
@@ -804,23 +782,24 @@ CURLcode curl_easy_pause(CURL *curl, int action)
   CURLcode result = CURLE_OK;
 
   /* first switch off both pause bits */
-  int newstate = k->keepon &~ (KEEP_READ_PAUSE| KEEP_WRITE_PAUSE);
+  int newstate = k->keepon &~ (KEEP_RECV_PAUSE| KEEP_SEND_PAUSE);
 
   /* set the new desired pause bits */
-  newstate |= ((action & CURLPAUSE_RECV)?KEEP_READ_PAUSE:0) |
-    ((action & CURLPAUSE_SEND)?KEEP_WRITE_PAUSE:0);
+  newstate |= ((action & CURLPAUSE_RECV)?KEEP_RECV_PAUSE:0) |
+    ((action & CURLPAUSE_SEND)?KEEP_SEND_PAUSE:0);
 
   /* put it back in the keepon */
   k->keepon = newstate;
 
-  if(!(newstate & KEEP_READ_PAUSE) && data->state.tempwrite) {
-    /* we have a buffer for writing that we now seem to be able to deliver since
+  if(!(newstate & KEEP_RECV_PAUSE) && data->state.tempwrite) {
+    /* we have a buffer for sending that we now seem to be able to deliver since
        the receive pausing is lifted! */
 
     /* get the pointer, type and length in local copies since the function may
        return PAUSE again and then we'll get a new copy allocted and stored in
        the tempwrite variables */
     char *tempwrite = data->state.tempwrite;
+    char *freewrite = tempwrite; /* store this pointer to free it later */
     size_t tempsize = data->state.tempwritesize;
     int temptype = data->state.tempwritetype;
     size_t chunklen;
@@ -845,26 +824,26 @@ CURLcode curl_easy_pause(CURL *curl, int action)
 
       result = Curl_client_write(data->state.current_conn,
                                  temptype, tempwrite, chunklen);
-      if(!result)
+      if(result)
         /* failures abort the loop at once */
         break;
 
       if(data->state.tempwrite && (tempsize - chunklen)) {
         /* Ouch, the reading is again paused and the block we send is now
            "cached". If this is the final chunk we can leave it like this, but
-           if we have more chunks that is cached after this, we need to free
+           if we have more chunks that are cached after this, we need to free
            the newly cached one and put back a version that is truly the entire
            contents that is saved for later
         */
         char *newptr;
 
-        free(data->state.tempwrite); /* free the one just cached as it isn't
-                                        enough */
-
         /* note that tempsize is still the size as before the callback was
            used, and thus the whole piece of data to keep */
-        newptr = malloc(tempsize);
+        newptr = realloc(data->state.tempwrite, tempsize);
+
         if(!newptr) {
+          free(data->state.tempwrite); /* free old area */
+          data->state.tempwrite = NULL;
           result = CURLE_OUT_OF_MEMORY;
           /* tempwrite will be freed further down */
           break;
@@ -882,7 +861,7 @@ CURLcode curl_easy_pause(CURL *curl, int action)
 
     } while((result == CURLE_OK) && tempsize);
 
-    free(tempwrite); /* this is unconditionally no longer used */
+    free(freewrite); /* this is unconditionally no longer used */
   }
 
   return result;
@@ -1132,8 +1111,8 @@ CURLcode curl_easy_recv(CURL *curl, void *buffer, size_t buflen, size_t *n)
   if(ret1 == -1)
     return CURLE_AGAIN;
 
-  if(n1 == -1)
-    return CURLE_RECV_ERROR;
+  if(ret1 != CURLE_OK)
+    return (CURLcode)ret1;
 
   *n = (size_t)n1;
 

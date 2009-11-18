@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2008, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -18,7 +18,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: file.c,v 1.111 2008-08-16 01:34:00 yangtse Exp $
+ * $Id: file.c,v 1.121 2009-06-04 19:11:11 yangtse Exp $
  ***************************************************************************/
 
 #include "setup.h"
@@ -57,8 +57,9 @@
 #ifdef HAVE_NET_IF_H
 #include <net/if.h>
 #endif
+#ifdef HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>
-#include <signal.h>
+#endif
 
 #ifdef HAVE_SYS_PARAM_H
 #include <sys/param.h>
@@ -81,7 +82,7 @@
 #include "getinfo.h"
 #include "transfer.h"
 #include "url.h"
-#include "memory.h"
+#include "curl_memory.h"
 #include "parsedate.h" /* for the week day and month names */
 
 #define _MPRINTF_REPLACE /* use our functions only */
@@ -92,6 +93,12 @@
 
 #if defined(WIN32) || defined(MSDOS) || defined(__EMX__) || defined(__SYMBIAN32__)
 #define DOS_FILESYSTEM 1
+#endif
+
+#ifdef OPEN_NEEDS_ARG3
+#  define open_readonly(p,f) open((p),(f),(0))
+#else
+#  define open_readonly(p,f) open((p),(f))
 #endif
 
 /*
@@ -118,6 +125,7 @@ const struct Curl_handler Curl_handler_file = {
   ZERO_NULL,                            /* doing */
   ZERO_NULL,                            /* proto_getsock */
   ZERO_NULL,                            /* doing_getsock */
+  ZERO_NULL,                            /* perform_getsock */
   ZERO_NULL,                            /* disconnect */
   0,                                    /* defport */
   PROT_FILE                             /* protocol */
@@ -202,7 +210,7 @@ static CURLcode file_connect(struct connectdata *conn, bool *done)
   Curl_reset_reqproto(conn);
 
   if(!data->state.proto.file) {
-    file = (struct FILEPROTO *)calloc(sizeof(struct FILEPROTO), 1);
+    file = calloc(sizeof(struct FILEPROTO), 1);
     if(!file) {
       free(real_path);
       return CURLE_OUT_OF_MEMORY;
@@ -249,10 +257,10 @@ static CURLcode file_connect(struct connectdata *conn, bool *done)
     if(actual_path[i] == '/')
       actual_path[i] = '\\';
 
-  fd = open(actual_path, O_RDONLY | O_BINARY);  /* no CR/LF translation! */
+  fd = open_readonly(actual_path, O_RDONLY|O_BINARY); /* no CR/LF translation */
   file->path = actual_path;
 #else
-  fd = open(real_path, O_RDONLY);
+  fd = open_readonly(real_path, O_RDONLY);
   file->path = real_path;
 #endif
   file->freepath = real_path; /* free this when done */
@@ -333,7 +341,8 @@ static CURLcode file_upload(struct connectdata *conn)
       failf(data, "Can't open %s for writing", file->path);
       return CURLE_WRITE_ERROR;
     }
-    fp = fdopen(fd, "wb");
+    close(fd);
+    fp = fopen(file->path, "wb");
   }
 
   if(!fp) {
@@ -347,7 +356,7 @@ static CURLcode file_upload(struct connectdata *conn)
 
   /* treat the negative resume offset value as the case of "-" */
   if(data->state.resume_from < 0) {
-    if(stat(file->path, &file_stat)) {
+    if(fstat(fileno(fp), &file_stat)) {
       fclose(fp);
       failf(data, "Can't get the size of %s", file->path);
       return CURLE_WRITE_ERROR;
@@ -451,6 +460,8 @@ static CURLcode file_do(struct connectdata *conn, bool *done)
   if( -1 != fstat(fd, &statbuf)) {
     /* we could stat it, then read out the size */
     expected_size = statbuf.st_size;
+    /* and store the modification time */
+    data->info.filetime = (long)statbuf.st_mtime;
     fstated = TRUE;
   }
 
@@ -491,6 +502,10 @@ static CURLcode file_do(struct connectdata *conn, bool *done)
                tm->tm_sec);
       result = Curl_client_write(conn, CLIENTWRITE_BOTH, buf, 0);
     }
+    /* if we fstat()ed the file, set the file size to make it available post-
+       transfer */
+    if(fstated)
+      Curl_pgrsSetDownloadSize(data, expected_size);
     return result;
   }
 

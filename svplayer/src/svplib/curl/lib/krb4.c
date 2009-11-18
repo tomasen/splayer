@@ -7,7 +7,7 @@
  *
  * Copyright (c) 1995, 1996, 1997, 1998, 1999 Kungliga Tekniska Högskolan
  * (Royal Institute of Technology, Stockholm, Sweden).
- * Copyright (c) 2004 - 2008 Daniel Stenberg
+ * Copyright (c) 2004 - 2009 Daniel Stenberg
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: krb4.c,v 1.49 2008-08-17 00:25:38 yangtse Exp $
+ * $Id: krb4.c,v 1.52 2009-04-21 11:46:17 yangtse Exp $
  */
 
 #include "setup.h"
@@ -62,11 +62,8 @@
 #include "ftp.h"
 #include "sendf.h"
 #include "krb4.h"
-#include "memory.h"
-
-#if defined(HAVE_INET_NTOA_R) && !defined(HAVE_INET_NTOA_R_DECL)
-#include "inet_ntoa_r.h"
-#endif
+#include "inet_ntop.h"
+#include "curl_memory.h"
 
 /* The last #include file should be: */
 #include "memdebug.h"
@@ -156,6 +153,8 @@ krb4_encode(void *app_data, const void *from, int length, int level, void **to,
 {
   struct krb4_data *d = app_data;
   *to = malloc(length + 31);
+  if(!*to)
+    return -1;
   if(level == prot_safe)
     /* NOTE that the void* cast is safe, krb_mk_safe/priv don't modify the
      * input buffer
@@ -242,13 +241,9 @@ krb4_auth(void *app_data, struct connectdata *conn)
                  krb_realmofhost(host));
     else {
       if(natAddr.s_addr != localaddr->sin_addr.s_addr) {
-#ifdef HAVE_INET_NTOA_R
-        char ntoa_buf[64];
-        char *ip = (char *)inet_ntoa_r(natAddr, ntoa_buf, sizeof(ntoa_buf));
-#else
-        char *ip = (char *)inet_ntoa(natAddr);
-#endif
-        infof(data, "Using NAT IP address (%s) for kerberos 4\n", ip);
+        char addr_buf[128];
+        if(Curl_inet_ntop(AF_INET, natAddr, addr_buf, sizeof(addr_buf)))
+          infof(data, "Using NAT IP address (%s) for kerberos 4\n", addr_buf);
         localaddr->sin_addr = natAddr;
       }
     }

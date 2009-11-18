@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2007, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -18,7 +18,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: netrc.c,v 1.39 2008-08-01 00:49:29 danf Exp $
+ * $Id: netrc.c,v 1.46 2009-06-10 02:49:43 yangtse Exp $
  ***************************************************************************/
 
 #include "setup.h"
@@ -42,7 +42,8 @@
 
 #include "strequal.h"
 #include "strtok.h"
-#include "memory.h"
+#include "curl_memory.h"
+#include "rawstr.h"
 
 #define _MPRINTF_REPLACE /* use our functions only */
 #include <curl/mprintf.h>
@@ -91,7 +92,7 @@ int Curl_parsenetrc(const char *host,
 
 #define NETRC DOT_CHAR "netrc"
 
-#ifdef CURLDEBUG
+#ifdef DEBUGBUILD
   {
     /* This is a hack to allow testing.
      * If compiled with --enable-debug and CURL_DEBUG_NETRC is defined,
@@ -105,7 +106,7 @@ int Curl_parsenetrc(const char *host,
       netrc_alloc = TRUE;
     }
   }
-#endif /* CURLDEBUG */
+#endif /* DEBUGBUILD */
   if(!netrcfile) {
     home = curl_getenv("HOME"); /* portable environment reader */
     if(home) {
@@ -117,7 +118,7 @@ int Curl_parsenetrc(const char *host,
       pw= getpwuid(geteuid());
       if(pw) {
 #ifdef  VMS
-        home = decc$translate_vms(pw->pw_dir);
+        home = decc_translate_vms(pw->pw_dir);
 #else
         home = pw->pw_dir;
 #endif
@@ -143,8 +144,9 @@ int Curl_parsenetrc(const char *host,
     char *tok_buf;
     bool done=FALSE;
     char netrcbuffer[256];
-
-    while(!done && fgets(netrcbuffer, sizeof(netrcbuffer), file)) {
+    int  netrcbuffsize = (int)sizeof(netrcbuffer);
+    
+    while(!done && fgets(netrcbuffer, netrcbuffsize, file)) {
       tok=strtok_r(netrcbuffer, " \t\n", &tok_buf);
       while(!done && tok) {
 
@@ -155,7 +157,7 @@ int Curl_parsenetrc(const char *host,
 
         switch(state) {
         case NOTHING:
-          if(strequal("machine", tok)) {
+          if(Curl_raw_equal("machine", tok)) {
             /* the next tok is the machine name, this is in itself the
                delimiter that starts the stuff entered for this machine,
                after this we need to search for 'login' and
@@ -164,7 +166,7 @@ int Curl_parsenetrc(const char *host,
           }
           break;
         case HOSTFOUND:
-          if(strequal(host, tok)) {
+          if(Curl_raw_equal(host, tok)) {
             /* and yes, this is our host! */
             state=HOSTVALID;
 #ifdef _NETRC_DEBUG
@@ -180,7 +182,7 @@ int Curl_parsenetrc(const char *host,
           /* we are now parsing sub-keywords concerning "our" host */
           if(state_login) {
             if(specific_login) {
-              state_our_login = strequal(login, tok);
+              state_our_login = Curl_raw_equal(login, tok);
             }
             else {
               strncpy(login, tok, LOGINSIZE-1);
@@ -199,11 +201,11 @@ int Curl_parsenetrc(const char *host,
             }
             state_password=0;
           }
-          else if(strequal("login", tok))
+          else if(Curl_raw_equal("login", tok))
             state_login=1;
-          else if(strequal("password", tok))
+          else if(Curl_raw_equal("password", tok))
             state_password=1;
-          else if(strequal("machine", tok)) {
+          else if(Curl_raw_equal("machine", tok)) {
             /* ok, there's machine here go => */
             state = HOSTFOUND;
             state_our_login = FALSE;

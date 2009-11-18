@@ -20,7 +20,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: cookie.h,v 1.27 2008-01-31 12:21:57 bagder Exp $
+ * $Id: cookie.h,v 1.28 2009-02-27 08:53:10 bagder Exp $
  ***************************************************************************/
 
 #include <stdio.h>
@@ -91,7 +91,7 @@ struct Cookie *Curl_cookie_add(struct SessionHandle *data,
 struct CookieInfo *Curl_cookie_init(struct SessionHandle *data,
                                     const char *, struct CookieInfo *, bool);
 struct Cookie *Curl_cookie_getlist(struct CookieInfo *, const char *,
-		                   const char *, bool);
+                                   const char *, bool);
 void Curl_cookie_freelist(struct Cookie *cookies, bool cookiestoo);
 void Curl_cookie_clearall(struct CookieInfo *cookies);
 void Curl_cookie_clearsess(struct CookieInfo *cookies);

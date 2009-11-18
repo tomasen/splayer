@@ -1,3 +1,12 @@
+#ifndef __LIB_CONFIG_MAC_H
+#define __LIB_CONFIG_MAC_H
+
+/* =================================================================== */
+/*   lib/config-mac.h - Hand crafted config file for Mac OS 9          */
+/* =================================================================== */
+/*  On Mac OS X you must run configure to generate curl_config.h file  */
+/* =================================================================== */
+
 #define OS "mac"
 
 #define HAVE_NETINET_IN_H       1
@@ -19,9 +28,9 @@
 
 #define TIME_WITH_SYS_TIME      1
 
+#define HAVE_ALARM              1
 #define HAVE_STRDUP             1
 #define HAVE_UTIME              1
-#define HAVE_INET_NTOA          1
 #define HAVE_SETVBUF            1
 #define HAVE_STRFTIME           1
 #define HAVE_INET_ADDR          1
@@ -45,7 +54,8 @@
 #define HAVE_RAND_STATUS        1
 #define HAVE_RAND_EGD           1
 
-#define HAVE_FIONBIO            1
+#define HAVE_IOCTL              1
+#define HAVE_IOCTL_FIONBIO      1
 
 #define RETSIGTYPE void
 
@@ -83,3 +93,5 @@
 
 #define HAVE_EXTRA_STRICMP_H 1
 #define HAVE_EXTRA_STRDUP_H  1
+
+#endif /* __LIB_CONFIG_MAC_H */

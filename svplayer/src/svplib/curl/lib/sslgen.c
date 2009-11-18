@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2008, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -18,12 +18,12 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: sslgen.c,v 1.39 2008-07-03 06:56:03 bagder Exp $
+ * $Id: sslgen.c,v 1.48 2009-05-04 21:57:14 bagder Exp $
  ***************************************************************************/
 
-/* This file is for "generic" SSL functions that all libcurl internals should
-   use. It is responsible for calling the proper 'ossl' function in ssluse.c
-   (OpenSSL based) or the 'gtls' function in gtls.c (GnuTLS based).
+/* This file is for implementing all "generic" SSL functions that all libcurl
+   internals should use. It is then responsible for calling the proper
+   "backend" function.
 
    SSL-functions in libcurl should call functions in this source file, and not
    to any specific SSL-layer.
@@ -57,20 +57,18 @@
 #include "nssg.h"   /* NSS versions */
 #include "qssl.h"   /* QSOSSL versions */
 #include "sendf.h"
-#include "strequal.h"
+#include "rawstr.h"
 #include "url.h"
-#include "memory.h"
+#include "curl_memory.h"
 #include "progress.h"
 /* The last #include file should be: */
 #include "memdebug.h"
-
-static bool safe_strequal(char* str1, char* str2);
 
 static bool safe_strequal(char* str1, char* str2)
 {
   if(str1 && str2)
     /* both pointers point to something then compare them */
-    return (bool)(0 != strequal(str1, str2));
+    return (bool)(0 != Curl_raw_equal(str1, str2));
   else
     /* if both pointers are NULL then treat them as equal */
     return (bool)(!str1 && !str2);
@@ -197,9 +195,13 @@ Curl_ssl_connect_nonblocking(struct connectdata *conn, int sockindex,
                              bool *done)
 {
 #ifdef curlssl_connect_nonblocking
+  CURLcode res;
   /* mark this is being ssl requested from here on. */
   conn->ssl[sockindex].use = TRUE;
-  return curlssl_connect_nonblocking(conn, sockindex, done);
+  res = curlssl_connect_nonblocking(conn, sockindex, done);
+  if(!res && *done == TRUE)
+    Curl_pgrsTime(conn->data, TIMER_APPCONNECT); /* SSL is connected */
+  return res;
 #else
   *done = TRUE; /* fallback to BLOCKING */
   conn->ssl[sockindex].use = TRUE;
@@ -228,7 +230,7 @@ int Curl_ssl_getsessionid(struct connectdata *conn,
     if(!check->sessionid)
       /* not session ID means blank entry */
       continue;
-    if(curl_strequal(conn->host.name, check->name) &&
+    if(Curl_raw_equal(conn->host.name, check->name) &&
        (conn->remote_port == check->remote_port) &&
        Curl_ssl_config_matches(&conn->ssl_config, &check->ssl_config)) {
       /* yes, we have a session ID! */
@@ -267,6 +269,22 @@ static int kill_session(struct curl_ssl_session *session)
   }
   else
     return 1;
+}
+
+/*
+ * Delete the given session ID from the cache.
+ */
+void Curl_ssl_delsessionid(struct connectdata *conn, void *ssl_sessionid)
+{
+  int i;
+  for(i=0; i< conn->data->set.ssl.numsessions; i++) {
+    struct curl_ssl_session *check = &conn->data->state.session[i];
+
+    if (check->sessionid == ssl_sessionid) {
+      kill_session(check);
+      break;
+    }
+  }
 }
 
 /*
@@ -428,8 +446,7 @@ CURLcode Curl_ssl_initsessions(struct SessionHandle *data, long amount)
     /* this is just a precaution to prevent multiple inits */
     return CURLE_OK;
 
-  session = (struct curl_ssl_session *)
-    calloc(sizeof(struct curl_ssl_session), amount);
+  session = calloc(sizeof(struct curl_ssl_session), amount);
   if(!session)
     return CURLE_OUT_OF_MEMORY;
 
@@ -463,5 +480,17 @@ bool Curl_ssl_data_pending(const struct connectdata *conn,
 {
   return curlssl_data_pending(conn, connindex);
 }
-#endif /* USE_SSL */
 
+void Curl_ssl_free_certinfo(struct SessionHandle *data)
+{
+  int i;
+  struct curl_certinfo *ci = &data->info.certs;
+  if(ci->num_of_certs) {
+    /* free all individual lists used */
+    for(i=0; i<ci->num_of_certs; i++)
+      curl_slist_free_all(ci->certinfo[i]);
+    free(ci->certinfo); /* free the actual array too */
+    ci->num_of_certs = 0;
+  }
+}
+#endif /* USE_SSL */

@@ -20,7 +20,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: ssluse.h,v 1.31 2008-06-11 17:01:59 bagder Exp $
+ * $Id: ssluse.h,v 1.32 2008-09-05 14:29:21 bagder Exp $
  ***************************************************************************/
 
 #ifdef USE_SSLEAY
@@ -94,4 +94,4 @@ bool Curl_ossl_data_pending(const struct connectdata *conn,
 #define curlssl_data_pending(x,y) Curl_ossl_data_pending(x,y)
 
 #endif /* USE_SSLEAY */
-#endif
+#endif /* __SSLUSE_H */

@@ -20,11 +20,11 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: if2ip.h,v 1.20 2006-03-04 22:39:32 bagder Exp $
+ * $Id: if2ip.h,v 1.22 2008-11-17 19:08:35 yangtse Exp $
  ***************************************************************************/
 #include "setup.h"
 
-extern char *Curl_if2ip(const char *interf, char *buf, int buf_size);
+extern char *Curl_if2ip(int af, const char *interf, char *buf, int buf_size);
 
 #ifdef __INTERIX
 #include <sys/socket.h>
@@ -50,7 +50,6 @@ struct ifreq {
 
 /* This define was added by Daniel to avoid an extra #ifdef INTERIX in the
    C code. */
-#define ifr_dstaddr ifr_addr
 
 #define ifr_name ifr_ifrn.ifrn_name /* interface name */
 #define ifr_addr ifr_ifru.ifru_addr /* address */

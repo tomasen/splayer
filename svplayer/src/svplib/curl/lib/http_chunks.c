@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2008, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -18,7 +18,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: http_chunks.c,v 1.43 2008-01-31 12:04:33 bagder Exp $
+ * $Id: http_chunks.c,v 1.49 2009-06-10 21:26:11 bagder Exp $
  ***************************************************************************/
 #include "setup.h"
 
@@ -35,7 +35,7 @@
 
 #include "content_encoding.h"
 #include "http.h"
-#include "memory.h"
+#include "curl_memory.h"
 #include "easyif.h" /* for Curl_convert_to_network prototype */
 
 #define _MPRINTF_REPLACE /* use our functions only */
@@ -81,6 +81,14 @@
 
  */
 
+/* Check for an ASCII hex digit.
+ We avoid the use of isxdigit to accommodate non-ASCII hosts. */
+static bool Curl_isxdigit(char digit)
+{
+  return (bool)( (digit >= 0x30 && digit <= 0x39)    /* 0-9 */
+              || (digit >= 0x41 && digit <= 0x46)    /* A-F */
+              || (digit >= 0x61 && digit <= 0x66) ); /* a-f */
+}
 
 void Curl_httpchunk_init(struct connectdata *conn)
 {
@@ -127,11 +135,7 @@ CHUNKcode Curl_httpchunk_read(struct connectdata *conn,
   while(length) {
     switch(ch->state) {
     case CHUNK_HEX:
-      /* Check for an ASCII hex digit.
-         We avoid the use of isxdigit to accommodate non-ASCII hosts. */
-      if((*datap >= 0x30 && *datap <= 0x39)    /* 0-9 */
-         || (*datap >= 0x41 && *datap <= 0x46)    /* A-F */
-         || (*datap >= 0x61 && *datap <= 0x66)) { /* a-f */
+      if(Curl_isxdigit(*datap)) {
         if(ch->hexindex < MAXNUM_SIZE) {
           ch->hexbuffer[ch->hexindex] = *datap;
           datap++;
@@ -305,11 +309,11 @@ CHUNKcode Curl_httpchunk_read(struct connectdata *conn,
         char *ptr;
         if(conn->trlMax) {
           conn->trlMax *= 2;
-          ptr = (char*)realloc(conn->trailer,conn->trlMax);
+          ptr = realloc(conn->trailer,conn->trlMax);
         }
         else {
           conn->trlMax=128;
-          ptr = (char*)malloc(conn->trlMax);
+          ptr = malloc(conn->trlMax);
         }
         if(!ptr)
           return CHUNKE_OUT_OF_MEMORY;
@@ -341,7 +345,6 @@ CHUNKcode Curl_httpchunk_read(struct connectdata *conn,
         conn->trailer[conn->trlPos]=0;
         if(conn->trlPos==2) {
           ch->state = CHUNK_STOP;
-          datap++;
           length--;
 
           /*
@@ -396,7 +399,6 @@ CHUNKcode Curl_httpchunk_read(struct connectdata *conn,
 
     case CHUNK_STOP:
       if(*datap == 0x0a) {
-        datap++;
         length--;
 
         /* Record the length of any data left in the end of the buffer

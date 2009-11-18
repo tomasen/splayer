@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2007, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -18,7 +18,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: version.c,v 1.59 2008-08-26 01:40:19 yangtse Exp $
+ * $Id: version.c,v 1.61 2009-06-10 02:49:43 yangtse Exp $
  ***************************************************************************/
 
 #include "setup.h"
@@ -49,6 +49,13 @@
 #include <libssh2.h>
 #endif
 
+#ifdef HAVE_LIBSSH2_VERSION
+/* get it run-time if possible */
+#define CURL_LIBSSH2_VERSION libssh2_version(0)
+#else
+/* use build-time if run-time not possible */
+#define CURL_LIBSSH2_VERSION LIBSSH2_VERSION
+#endif
 
 char *curl_version(void)
 {
@@ -101,7 +108,7 @@ char *curl_version(void)
   ptr += len;
 #endif
 #ifdef USE_LIBSSH2
-  len = snprintf(ptr, left, " libssh2/%s", LIBSSH2_VERSION);
+  len = snprintf(ptr, left, " libssh2/%s", CURL_LIBSSH2_VERSION);
   left -= len;
   ptr += len;
 #endif
@@ -181,8 +188,11 @@ static curl_version_info_data version_info = {
 #ifdef HAVE_GSSAPI
   | CURL_VERSION_GSSNEGOTIATE
 #endif
-#ifdef CURLDEBUG
+#ifdef DEBUGBUILD
   | CURL_VERSION_DEBUG
+#endif
+#ifdef CURLDEBUG
+  | CURL_VERSION_CURLDEBUG
 #endif
 #ifdef USE_ARES
   | CURL_VERSION_ASYNCHDNS

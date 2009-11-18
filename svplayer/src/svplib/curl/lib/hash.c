@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2007, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -18,7 +18,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: hash.c,v 1.32 2007-11-07 09:21:35 bagder Exp $
+ * $Id: hash.c,v 1.41 2009-06-10 02:49:43 yangtse Exp $
  ***************************************************************************/
 
 #include "setup.h"
@@ -28,9 +28,12 @@
 
 #include "hash.h"
 #include "llist.h"
-#include "memory.h"
 
-/* this must be the last include file */
+#define _MPRINTF_REPLACE /* use our functions only */
+#include <curl/mprintf.h>
+
+#include "curl_memory.h"
+/* The last #include file should be: */
 #include "memdebug.h"
 
 static void
@@ -42,7 +45,8 @@ hash_element_dtor(void *user, void *element)
   if(e->key)
     free(e->key);
 
-  h->dtor(e->ptr);
+  if(e->ptr)
+    h->dtor(e->ptr);
 
   free(e);
 }
@@ -67,7 +71,7 @@ Curl_hash_init(struct curl_hash *h,
   h->size = 0;
   h->slots = slots;
 
-  h->table = (struct curl_llist **) malloc(slots * sizeof(struct curl_llist *));
+  h->table = malloc(slots * sizeof(struct curl_llist *));
   if(h->table) {
     for (i = 0; i < slots; ++i) {
       h->table[i] = Curl_llist_alloc((curl_llist_dtor) hash_element_dtor);
@@ -96,7 +100,7 @@ Curl_hash_alloc(int slots,
     return NULL; /* failure */
   }
 
-  h = (struct curl_hash *) malloc(sizeof(struct curl_hash));
+  h = malloc(sizeof(struct curl_hash));
   if(h) {
     if(Curl_hash_init(h, slots, hfunc, comparator, dtor)) {
       /* failure */
@@ -113,8 +117,7 @@ Curl_hash_alloc(int slots,
 static struct curl_hash_element *
 mk_hash_element(const void *key, size_t key_len, const void *p)
 {
-  struct curl_hash_element *he =
-    (struct curl_hash_element *) malloc(sizeof(struct curl_hash_element));
+  struct curl_hash_element *he = malloc(sizeof(struct curl_hash_element));
 
   if(he) {
     void *dupkey = malloc(key_len);
@@ -207,7 +210,7 @@ Curl_hash_pick(struct curl_hash *h, void *key, size_t key_len)
   return NULL;
 }
 
-#if defined(CURLDEBUG) && defined(AGGRESIVE_TEST)
+#if defined(DEBUGBUILD) && defined(AGGRESIVE_TEST)
 void
 Curl_hash_apply(curl_hash *h, void *user,
                 void (*cb)(void *user, void *ptr))
@@ -233,6 +236,7 @@ Curl_hash_clean(struct curl_hash *h)
 
   for (i = 0; i < h->slots; ++i) {
     Curl_llist_destroy(h->table[i], (void *) h);
+    h->table[i] = NULL;
   }
 
   free(h->table);
@@ -270,6 +274,7 @@ Curl_hash_destroy(struct curl_hash *h)
     return;
 
   Curl_hash_clean(h);
+
   free(h);
 }
 

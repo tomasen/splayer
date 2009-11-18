@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2008, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -18,15 +18,15 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: hostares.c,v 1.39 2008-08-20 23:32:50 yangtse Exp $
+ * $Id: hostares.c,v 1.52 2009-09-15 00:07:25 yangtse Exp $
  ***************************************************************************/
 
 #include "setup.h"
 
 #include <string.h>
 
-#ifdef NEED_MALLOC_H
-#include <malloc.h>
+#ifdef HAVE_LIMITS_H
+#include <limits.h>
 #endif
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
@@ -50,10 +50,6 @@
 #include <in.h>
 #include <inet.h>
 #include <stdlib.h>
-#endif
-
-#ifdef HAVE_SETJMP_H
-#include <setjmp.h>
 #endif
 
 #ifdef HAVE_PROCESS_H
@@ -80,12 +76,7 @@
 #define _MPRINTF_REPLACE /* use our functions only */
 #include <curl/mprintf.h>
 
-#if defined(HAVE_INET_NTOA_R) && !defined(HAVE_INET_NTOA_R_DECL)
-#include "inet_ntoa_r.h"
-#endif
-
-#include "memory.h"
-
+#include "curl_memory.h"
 /* The last #include file should be: */
 #include "memdebug.h"
 
@@ -298,69 +289,6 @@ CURLcode Curl_wait_for_resolv(struct connectdata *conn,
   return rc;
 }
 
-#ifdef ENABLE_IPV6 /* CURLRES_IPV6 */
-/*
- * Curl_ip2addr6() takes an ipv6 internet address as input parameter
- * together with a pointer to the string version of the address, and it
- * returns a Curl_addrinfo chain filled in correctly with information for this
- * address/host.
- *
- * The input parameters ARE NOT checked for validity but they are expected
- * to have been checked already when this is called.
- */
-Curl_addrinfo *Curl_ip2addr6(struct in6_addr *in,
-			     const char *hostname, int port)
-{
-  Curl_addrinfo *ai;
-
-#if defined(VMS) &&  defined(__INITIAL_POINTER_SIZE) && \
-  (__INITIAL_POINTER_SIZE == 64)
-#pragma pointer_size save
-#pragma pointer_size short
-#pragma message disable PTRMISMATCH
-#endif
-
-  struct hostent *h;
-  struct in6_addr *addrentry;
-  struct namebuf6 {
-    struct hostent hostentry;
-    char *h_addr_list[2];
-    struct in6_addr addrentry;
-    char hostname[1];
-  };
-  struct namebuf6 *buf = malloc(sizeof (struct namebuf6) + strlen(hostname));
-
-  if(!buf)
-    return NULL;
-
-  h = &buf->hostentry;
-  h->h_addr_list = &buf->h_addr_list[0];
-  addrentry = &buf->addrentry;
-  memcpy(addrentry, in, sizeof (*in));
-  h->h_addr_list[0] = (char*)addrentry;
-  h->h_addr_list[1] = NULL; /* terminate list of entries */
-  h->h_name = &buf->hostname[0];
-  h->h_aliases = NULL;
-  h->h_addrtype = AF_INET6;
-
-  /* Now store the dotted version of the address */
-  strcpy (h->h_name, hostname);
-
-#if defined(VMS) && defined(__INITIAL_POINTER_SIZE) && \
-  (__INITIAL_POINTER_SIZE == 64)
-#pragma pointer_size restore
-#pragma message enable PTRMISMATCH
-#endif
-
-  ai = Curl_he2ai(h, port);
-
-  free(buf);
-
-  return ai;
-}
-#endif /* CURLRES_IPV6 */
-
-
 
 /*
  * Curl_getaddrinfo() - when using ares
@@ -377,29 +305,37 @@ Curl_addrinfo *Curl_getaddrinfo(struct connectdata *conn,
 {
   char *bufp;
   struct SessionHandle *data = conn->data;
-  in_addr_t in = inet_addr(hostname);
+  struct in_addr in;
   int family = PF_INET;
 #ifdef ENABLE_IPV6 /* CURLRES_IPV6 */
   struct in6_addr in6;
 #endif /* CURLRES_IPV6 */
   *waitp = FALSE;
 
-  if(in != CURL_INADDR_NONE) {
+  /* First check if this is an IPv4 address string */
+  if(Curl_inet_pton(AF_INET, hostname, &in) > 0) {
     /* This is a dotted IP address 123.123.123.123-style */
-    return Curl_ip2addr(in, hostname, port);
+    return Curl_ip2addr(AF_INET, &in, hostname, port);
   }
 
 #ifdef ENABLE_IPV6 /* CURLRES_IPV6 */
+  /* Otherwise, check if this is an IPv6 address string */
   if (Curl_inet_pton (AF_INET6, hostname, &in6) > 0) {
     /* This must be an IPv6 address literal.  */
-    return Curl_ip2addr6(&in6, hostname, port);
+    return Curl_ip2addr(AF_INET6, &in6, hostname, port);
   }
 
   switch(data->set.ip_version) {
+  default:
+#if ARES_VERSION >= 0x010601
+    family = PF_UNSPEC; /* supported by c-ares since 1.6.1, so for older
+                           c-ares versions this just falls through and defaults
+                           to PF_INET */
+    break;
+#endif
   case CURL_IPRESOLVE_V4:
     family = PF_INET;
     break;
-  default: /* by default we try ipv6, as PF_UNSPEC isn't supported by (c-)ares */
   case CURL_IPRESOLVE_V6:
     family = PF_INET6;
     break;

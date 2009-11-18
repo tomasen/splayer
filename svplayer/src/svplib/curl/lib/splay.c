@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1997 - 2008, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1997 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -18,7 +18,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: splay.c,v 1.10 2008-05-08 05:45:01 yangtse Exp $
+ * $Id: splay.c,v 1.13 2009-06-10 02:49:43 yangtse Exp $
  ***************************************************************************/
 
 #include "setup.h"
@@ -332,7 +332,7 @@ int Curl_splayremovebyaddr(struct Curl_tree *t,
   return 0;
 }
 
-#ifdef CURLDEBUG
+#ifdef DEBUGBUILD
 
 void Curl_splayprint(struct Curl_tree * t, int d, char output)
 {
@@ -345,13 +345,13 @@ void Curl_splayprint(struct Curl_tree * t, int d, char output)
   Curl_splayprint(t->larger, d+1, output);
   for (i=0; i<d; i++)
     if(output)
-      printf("  ");
+      fprintf(stderr, "  ");
 
   if(output) {
 #ifdef TEST_SPLAY
-    printf("%ld[%d]", (long)t->key.tv_usec, i);
+    fprintf(stderr, "%ld[%d]", (long)t->key.tv_usec, i);
 #else
-    printf("%ld.%ld[%d]", (long)t->key.tv_sec, (long)t->key.tv_usec, i);
+    fprintf(stderr, "%ld.%ld[%d]", (long)t->key.tv_sec, (long)t->key.tv_usec, i);
 #endif
   }
 
@@ -360,9 +360,9 @@ void Curl_splayprint(struct Curl_tree * t, int d, char output)
 
   if(output) {
     if(count)
-      printf(" [%d more]\n", count);
+      fprintf(stderr, " [%d more]\n", count);
     else
-      printf("\n");
+      fprintf(stderr, "\n");
   }
 
   Curl_splayprint(t->smaller, d+1, output);
@@ -394,7 +394,7 @@ int main(int argc, argv_item_t argv[])
 
   for (i = 0; i < MAX; i++) {
     struct timeval key;
-    ptrs[i] = t = (struct Curl_tree *)malloc(sizeof(struct Curl_tree));
+    ptrs[i] = t = malloc(sizeof(struct Curl_tree));
 
     key.tv_sec = 0;
 #ifdef TEST2

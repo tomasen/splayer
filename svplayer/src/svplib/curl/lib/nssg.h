@@ -20,7 +20,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: nssg.h,v 1.5 2008-06-21 21:19:42 bagder Exp $
+ * $Id: nssg.h,v 1.7 2008-10-17 22:33:08 danf Exp $
  ***************************************************************************/
 
 #ifdef USE_NSS
@@ -70,7 +70,7 @@ int Curl_nss_seed(struct SessionHandle *data);
 #define curlssl_shutdown(x,y) (x=x, y=y, 1)
 #define curlssl_set_engine(x,y) (x=x, y=y, CURLE_FAILED_INIT)
 #define curlssl_set_engine_default(x) (x=x, CURLE_FAILED_INIT)
-#define curlssl_engines_list(x) (x=x, NULL)
+#define curlssl_engines_list(x) (x=x, (struct curl_slist *)NULL)
 #define curlssl_send Curl_nss_send
 #define curlssl_recv Curl_nss_recv
 #define curlssl_version Curl_nss_version

@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2007, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -18,7 +18,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: nwos.c,v 1.4 2007-11-07 09:21:35 bagder Exp $
+ * $Id: nwos.c,v 1.5 2009-10-27 16:38:42 yangtse Exp $
  ***************************************************************************/
 
 #ifdef NETWARE /* Novell NetWare */
@@ -87,6 +87,10 @@ int __deinit_environment ( void )
 
 #endif /* __NOVELL_LIBC__ */
 
+#else /* NETWARE */
+
+#ifdef __POCC__
+#  pragma warn(disable:2024)  /* Disable warning #2024: Empty input file */
+#endif
+
 #endif /* NETWARE */
-
-

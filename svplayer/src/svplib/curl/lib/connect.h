@@ -7,7 +7,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2008, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -20,11 +20,10 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: connect.h,v 1.25 2008-05-12 21:43:28 bagder Exp $
+ * $Id: connect.h,v 1.28 2009-07-09 21:47:24 bagder Exp $
  ***************************************************************************/
 
-int Curl_nonblock(curl_socket_t sockfd,    /* operate on this */
-                  int nonblock   /* TRUE or FALSE */);
+#include "nonblock.h" /* for curlx_nonblock(), formerly Curl_nonblock() */
 
 CURLcode Curl_is_connected(struct connectdata *conn,
                            int sockindex,
@@ -36,8 +35,6 @@ CURLcode Curl_connecthost(struct connectdata *conn,
                           curl_socket_t *sockconn, /* not set if error */
                           Curl_addrinfo **addr, /* the one we used */
                           bool *connected); /* truly connected? */
-
-CURLcode Curl_store_ip_addr(struct connectdata *conn);
 
 /* generic function that returns how much time there's left to run, according
    to the timeouts set */
@@ -56,4 +53,20 @@ long Curl_timeleft(struct connectdata *conn,
 CURLcode Curl_getconnectinfo(struct SessionHandle *data,
                              long *param_longp,
                              struct connectdata **connp);
+
+#ifdef WIN32
+/* When you run a program that uses the Windows Sockets API, you may
+   experience slow performance when you copy data to a TCP server.
+
+   http://support.microsoft.com/kb/823764
+
+   Work-around: Make the Socket Send Buffer Size Larger Than the Program Send
+   Buffer Size
+
+*/
+void Curl_sndbufset(curl_socket_t sockfd);
+#else
+#define Curl_sndbufset(y)
+#endif
+
 #endif

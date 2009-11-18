@@ -3364,6 +3364,9 @@ BEGIN
     IDS_CHANNAPMAP_TABLE_LABEL_TOP_BACK_RIGHT "顶部右后"
 
 	IDS_OSD_MSG_JUST_RECOVER_FROM_CRASH "射手播放器检测到异常并已重置..."
+
+	IDS_OSD_MSG_CHANGE_STREAM_AUDIO_FAILED  "切换音轨失败"
+	IDS_OSD_MSG_CHANGING_STREAM		"正在切换音轨 %s"
 END
 
 #endif    // Chinese (P.R.C.) resources

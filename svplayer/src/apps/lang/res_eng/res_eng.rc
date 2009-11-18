@@ -2677,6 +2677,9 @@ BEGIN
     IDS_CHANNAPMAP_TABLE_LABEL_TOP_BACK_RIGHT "Top Back Right"
 
 	IDS_OSD_MSG_JUST_RECOVER_FROM_CRASH "SPlayer just recovered from crash..."
+
+	IDS_OSD_MSG_CHANGE_STREAM_AUDIO_FAILED  "Audio stream switch failed"
+	IDS_OSD_MSG_CHANGING_STREAM		"Switch audio stream to %s"
 END
 
 #endif    // Chinese (Singapore) resources

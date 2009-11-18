@@ -8407,11 +8407,11 @@ void CMainFrame::OnPlayLanguage(UINT nID)
 	CComPtr<IUnknown> pObj, pUnk;
 	pAMSS->Info(nID-i, NULL, &flags, &lcid, &group, &wname, &pObj, &pUnk);
 
-	strMsg.Format(L"Lang %s" , wname);
+	strMsg.Format(ResStr(IDS_OSD_MSG_CHANGING_STREAM) , wname);
 
 
 	if(FAILED(pAMSS->Enable(nID-i, AMSTREAMSELECTENABLE_ENABLE)))
-		strMsg = _T("Lang Failed");
+		strMsg = ResStr(IDS_OSD_MSG_CHANGE_STREAM_AUDIO_FAILED);
 
 	SendStatusMessage(strMsg, 4000);
 	OpenSetupStatusBar();

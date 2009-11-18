@@ -10675,6 +10675,8 @@ void CMainFrame::OpenCreateGraphObject(OpenMediaData* pOMD)
 			engine = QuickTime;
 		}
 
+		SVP_LogMsg6("got content type %s %d", ct, engine );
+
 		HRESULT hr;
 		CComPtr<IUnknown> pUnk;
 

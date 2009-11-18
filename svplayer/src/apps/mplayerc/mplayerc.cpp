@@ -4923,6 +4923,9 @@ CString GetContentType(CString fn, CAtlList<CString>* redir)
 
 		if(_tcsicmp(url.GetSchemeName(), _T("mms")) == 0)
 			return "video/x-ms-asf";
+		
+		if(_tcsicmp(url.GetSchemeName(), _T("rtsp")) == 0)
+			return "application/vnd.rn-realvideo";
 
 		if(_tcsicmp(url.GetSchemeName(), _T("http")) != 0)
 			return "";
@@ -5120,6 +5123,8 @@ CString GetContentType(CString fn, CAtlList<CString>* redir)
 			else FindRedir(fn, ct, *redir, res);
 		}
 	}
+
+
 
 	return ct;
 }

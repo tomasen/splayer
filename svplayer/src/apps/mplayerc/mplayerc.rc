@@ -2706,7 +2706,7 @@ BEGIN
     IDS_LOG_MSG_SVPSUB_GOT_N_SUB_FILE_DOWNLOADED 
                             "通过射手影音字幕智能匹配系统成功下载到 %d 个字幕文件 "
     IDS_LOG_MSG_SVPSUB_UPLOAD_FINISHED "字幕上传完毕"
-    IDS_LOG_MSG_SVPSUB_NETWORK_FAIL "网络通讯故障，字幕下载失败"
+    IDS_LOG_MSG_SVPSUB_NETWORK_FAIL "网络通讯故障(%s)，字幕下载失败"
     IDS_LOG_MSG_SVPSUB_NONE_MATCH_SUB "没有找到字幕"
     IDS_LOG_MSG_SVPSUB_DOWNLOAD_FAIL "数据错误，字幕下载失败"
     IDS_LOG_MSG_SVPSUB_GOTMATCHED_AND_DOWNLOADING "字幕已经找到，正在下载"

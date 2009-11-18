@@ -43,6 +43,7 @@
 #define EAC3_FRAME_TYPE_RESERVED	3
 #define AC3_HEADER_SIZE				7
 
+#define  SVP_LogMsg5  __noop
 
 typedef unsigned char uint8;
 typedef signed char int8;
@@ -709,7 +710,7 @@ HRESULT CMpaDecFilter::ProcessLPCM()
 
 HRESULT CMpaDecFilter::ProcessHdmvLPCM(bool bAlignOldBuffer) // Blu ray LPCM
 {
-	//SVP_LogMsg5(L"ProcessHdmvLPCM");
+	SVP_LogMsg5(L"ProcessHdmvLPCM");
 	WAVEFORMATEX_HDMV_LPCM* wfein = (WAVEFORMATEX_HDMV_LPCM*)m_pInput->CurrentMediaType().Format();
 
 	BYTE*			pDataIn	= m_buff.GetData();
@@ -967,6 +968,7 @@ HRESULT CMpaDecFilter::ProcessAC3()
 
 HRESULT CMpaDecFilter::ProcessAC3()
 {
+	SVP_LogMsg5(L"ProcessAC3");
 	HRESULT hr;
 	BYTE* p = m_buff.GetData();
 	BYTE* base = p;

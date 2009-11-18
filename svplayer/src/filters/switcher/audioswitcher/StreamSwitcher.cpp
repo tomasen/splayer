@@ -1232,6 +1232,7 @@ HRESULT CStreamSwitcherFilter::DeliverEndFlush()
 
 HRESULT CStreamSwitcherFilter::DeliverNewSegment(REFERENCE_TIME tStart, REFERENCE_TIME tStop, double dRate)
 {
+	
 	return m_pOutput ? m_pOutput->DeliverNewSegment(tStart, tStop, dRate) : E_FAIL;
 }
 

@@ -43,6 +43,7 @@
 #define EAC3_FRAME_TYPE_RESERVED	3
 #define AC3_HEADER_SIZE				7
 
+//#define TRACE SVP_LogMsg5
 #define  SVP_LogMsg5  __noop
 
 typedef unsigned char uint8;
@@ -1682,7 +1683,7 @@ HRESULT CMpaDecFilter::Deliver(CAtlArray<float>& pBuff, DWORD nSamplesPerSec, WO
 
 	REFERENCE_TIME rtDur = 10000000i64*nSamples/wfe->nSamplesPerSec;
 	REFERENCE_TIME rtStart = m_rtStart, rtStop = m_rtStart + rtDur;
-	//SVP_LogMsg5(_T("CMpaDecFilter: %I64d - %I64d =  %I64d \n"), rtStart/10000, rtStop/10000 , rtDur/10000);
+	SVP_LogMsg5(_T("CMpaDecFilter: %f - %f =  %f %d %d\n"), (double)rtStart/10000, (double)rtStop/10000 , (double)rtDur/10000, nSamples, wfe->nSamplesPerSec);
 	m_rtStart += rtDur;
 	if(rtStart < 0 /*200000*/ /* < 0, FIXME: 0 makes strange noises */)
 		return S_OK;
@@ -2573,6 +2574,7 @@ HRESULT CMpaDecFilter::DeliverFfmpeg(int nCodecId, BYTE* p, int buffsize, int& s
 		if (!InitFfmpeg (nCodecId))
 		{
 			size = 0;
+			SVP_LogMsg5(L"InitFfmpeg Failed");
 			return E_FAIL;
 		}
 
@@ -2655,7 +2657,7 @@ bool CMpaDecFilter::InitFfmpeg(int nCodecId)
 	avcodec_init();
 	avcodec_register_all();
 //#ifdef _DEBUG
-	av_log_set_callback(LogLibAVCodec);
+	//av_log_set_callback(LogLibAVCodec);
 //#endif
 
 	if (m_pAVCodec) ffmpeg_stream_finish();
@@ -2684,8 +2686,7 @@ bool CMpaDecFilter::InitFfmpeg(int nCodecId)
 			wfein->nChannels = 1;
 			m_pAVCtx->channels = wfein->nChannels; /* really needed */
 			
-			
-	
+		
 		}else{
 			if (nCodecId==CODEC_ID_COOK )
 			{
@@ -2758,7 +2759,7 @@ void CMpaDecFilter::LogLibAVCodec(void* par,int level,const char *fmt,va_list va
 	char		Msg [500];
 	vsnprintf_s (Msg, sizeof(Msg), _TRUNCATE, fmt, valist);
 	//TRACE("AVLIB : %s", Msg);
-	SVP_LogMsg3(Msg);
+	//SVP_LogMsg6(Msg);
 }
 
 void CMpaDecFilter::ffmpeg_stream_finish()

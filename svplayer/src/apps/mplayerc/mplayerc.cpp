@@ -5194,7 +5194,7 @@ int  CMPlayerCApp::GetNumberOfSpeakers(LPCGUID lpcGUID, HWND hWnd){
 	}
 	
 
-	if(SUCCEEDED(DirectSoundCreate(lpcGUID, &pDS, NULL)))
+	if(SUCCEEDED(DirectSoundCreate(lpcGUID, &pDS, NULL)))// && SUCCEEDED(pDS->SetCooperativeLevel(AfxGetMainWnd()->m_hWnd, DSSCL_NORMAL) )
 	{
 		//AfxMessageBox( CStringFromGUID(m_clsid ));
 		if(SUCCEEDED(pDS->GetSpeakerConfig(&spc)))

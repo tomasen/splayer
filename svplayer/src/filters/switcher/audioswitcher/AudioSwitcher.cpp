@@ -269,11 +269,11 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 
 		m_rtNextStart = rtStart;
 		m_rtNextStop = rtStop;
-		//SVP_LogMsg5(L"pIn->GetTime");
+		SVP_LogMsg5(L"pIn->GetTime");
 	}
 	else
 	{
-		//SVP_LogMsg5(L"Just guessing time");
+		SVP_LogMsg5(L"Just guessing time");
 		pOut->SetTime(&m_rtNextStart, &m_rtNextStop);
 	}
 
@@ -284,6 +284,8 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 
 	if(pIn->IsDiscontinuity() == S_OK)
 	{
+		
+		SVP_LogMsg5(L"pIn->IsDiscontinuity");
 		m_sample_max = 0.1f;
 	}
 	SVP_LogMsg5(L"Conn %d %d %f %f %f",  pInPin->IsConnected() , pOutPin->IsConnected() , (double) rtStart ,  (double) rtStop, (double) rtDur);
@@ -297,10 +299,11 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 	BYTE* pDataOut = NULL;
 
 	HRESULT hr;
-	if(FAILED(hr = pIn->GetPointer(&pDataIn))) return hr;
-	if(FAILED(hr = pOut->GetPointer(&pDataOut))) return hr;
+	if(FAILED(hr = pIn->GetPointer(&pDataIn))) { SVP_LogMsg5(L"F1"); return hr;}
+	if(FAILED(hr = pOut->GetPointer(&pDataOut))){  SVP_LogMsg5(L"F2");  return hr;}
 
-	if(!pDataIn || !pDataOut || len <= 0 || lenout <= 0) return S_FALSE;
+	if(!pDataIn || !pDataOut || len < 0 || lenout < 0) {  SVP_LogMsg5(L"F3 %x %x %d %d", pDataIn ,pDataOut , len , lenout);  return S_FALSE; }
+	if(len == 0) {pOut->SetActualDataLength(0); return S_OK;}
 
 	memset(pDataOut, 0, pOut->GetSize());
 	
@@ -316,7 +319,8 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 	int lTotalInputChannels = wfe->nChannels;
 	int lTotalOutputChannels =  wfeout->nChannels;
 	
-	SVP_LogMsg5(L"Chan %d %d",lTotalInputChannels ,lTotalOutputChannels );
+	SVP_LogMsg5(L"Chan %d %d %d %d %d %d %d %d %d",lTotalInputChannels ,lTotalOutputChannels , wfe->nSamplesPerSec , wfeout->nSamplesPerSec, wfe->wBitsPerSample, wfeout->wBitsPerSample
+		,wfe->nBlockAlign , wfeout->nBlockAlign, pIn->GetActualDataLength());
 	if(m_lastInputChannelCount2 != lTotalInputChannels || m_lastOutputChannelCount2 != lTotalOutputChannels )
 	{
 		m_lastInputChannelCount2 = lTotalInputChannels;
@@ -578,7 +582,7 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 */
 	BOOL bChangeRate = (m_dRate != 1.0 && m_dRate > 0);
 
-	if(m_fNormalize || m_boost > 1 || m_fEQControlOn || bChangeRate || m_fUpSampleTo)
+	if( (m_fNormalize || m_boost > 1 || m_fEQControlOn || bChangeRate || m_fUpSampleTo))
 	{
 		int samples = lenout*wfeout->nChannels;
 		
@@ -824,10 +828,10 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 
 	
 	SVP_LogMsg5(L"Buffer Size %d, ActualLength %d", pOut->GetSize(), lenout*bps*wfeout->nChannels);
-	//SVP_LogMsg5(L"Out %d %d %d %d %d %d %d" , ((short*)pDataOut)[1], ((short*)pDataOut)[11], ((short*)pDataOut)[21], ((short*)pDataOut)[61], ((short*)pDataOut)[91], ((short*)pDataOut)[111], ((short*)pDataOut)[121]);
+	SVP_LogMsg5(L"Out %d %d %d %d %d %d %d" , ((short*)pDataOut)[1], ((short*)pDataOut)[11], ((short*)pDataOut)[21], ((short*)pDataOut)[61], ((short*)pDataOut)[91], ((short*)pDataOut)[111], ((short*)pDataOut)[121]);
 
 	pOut->SetActualDataLength(lenout*bps*wfeout->nChannels);
-
+	
 	return S_OK;
 }
 
@@ -985,13 +989,15 @@ void CAudioSwitcherFilter::OnNewOutputMediaType(const CMediaType& mtIn, const CM
 	const WAVEFORMATEX* wfe = (WAVEFORMATEX*)mtIn.pbFormat;
 	const WAVEFORMATEX* wfeout = (WAVEFORMATEX*)mtOut.pbFormat;
 
+	/*
 	m_pResamplers.RemoveAll();
-	for(int i = 0; i < wfeout->nChannels; i++)
-	{
-		CAutoPtr<AudioStreamResampler> pResampler;
-		pResampler.Attach(new AudioStreamResampler(wfeout->wBitsPerSample>>3, wfe->nSamplesPerSec, wfeout->nSamplesPerSec, true));
-		m_pResamplers.Add(pResampler);
-	}
+		for(int i = 0; i < wfeout->nChannels; i++)
+		{
+			CAutoPtr<AudioStreamResampler> pResampler;
+			pResampler.Attach(new AudioStreamResampler(wfeout->wBitsPerSample>>3, wfe->nSamplesPerSec, wfeout->nSamplesPerSec, true));
+			m_pResamplers.Add(pResampler);
+		}*/
+	
 
 	TRACE(_T("CAudioSwitcherFilter::OnNewOutputMediaType\n"));
 	m_sample_max = 0.1f;
@@ -1001,6 +1007,7 @@ HRESULT CAudioSwitcherFilter::DeliverEndFlush()
 {
 	TRACE(_T("CAudioSwitcherFilter::DeliverEndFlush\n"));
 	m_sample_max = 0.1f;
+	
 	return __super::DeliverEndFlush();
 }
 
@@ -1010,6 +1017,7 @@ HRESULT CAudioSwitcherFilter::DeliverNewSegment(REFERENCE_TIME tStart, REFERENCE
 	SVP_LogMsg5(L"CAudioSwitcherFilter::DeliverNewSegment %f %f %f", (double)tStart, (double)tStop ,dRate );
 	
 	m_sample_max = 0.1f;
+	
 	return __super::DeliverNewSegment(tStart, tStop, dRate);
 }
 

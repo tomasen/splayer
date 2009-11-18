@@ -324,12 +324,13 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 
 		m_fCustomChannelMapping2 = -1;
 	}
+	BOOL bSimpleSwitch = (m_iSimpleSwitch > 2 && lTotalInputChannels > 2) || (m_iSimpleSwitch > 0 && m_iSimpleSwitch <= 2 && lTotalInputChannels > 1);
 	if(m_fCustomChannelMapping2 < 0 ){
 		CAutoLock dataLock(&m_csDataLock);
 			SVP_LogMsg5(L"ChanTest %d %d",lTotalInputChannels ,lTotalOutputChannels );
 		m_fCustomChannelMapping2 = 0;
 
-		if( (m_iSimpleSwitch > 2 && lTotalInputChannels > 2) || (m_iSimpleSwitch > 0 && m_iSimpleSwitch <= 2 && lTotalInputChannels > 1) ){
+		if( bSimpleSwitch ){
 
 			m_fCustomChannelMapping2 = 1;
 		}else{
@@ -420,7 +421,25 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 					
 				}
 			}
-			if( (m_iSimpleSwitch > 2 && lTotalInputChannels > 2) || (m_iSimpleSwitch > 0 && m_iSimpleSwitch <= 2 && lTotalInputChannels > 1) ){
+			BOOL bHasSomthingThere = FALSE;
+			for(int iChannelID = 0; iChannelID < lTotalInputChannels; iChannelID++){
+				for(int iSpeakerID = 0; iSpeakerID < lTotalOutputChannels; iSpeakerID++){
+					if( m_pCurrentChannelNormalize2[iSpeakerID][iChannelID] > 0 ){
+						bHasSomthingThere = true;
+						break;
+					}
+				}
+				if(bHasSomthingThere) break;
+			}
+
+			if(!bHasSomthingThere){
+				SVP_LogMsg5(L"Set Default Mapping");
+				for(int i = 0; i < min(lTotalInputChannels, lTotalOutputChannels); i++){
+					 m_pCurrentChannelNormalize2[i][i] = 1;
+				}
+			}
+
+			if( bSimpleSwitch){
 
 				for(int iSpeakerID = 0; iSpeakerID < lTotalOutputChannels; iSpeakerID++)
 				{
@@ -451,7 +470,7 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 								
 								break;
 							}
-						}
+				}
 						
 					
 				

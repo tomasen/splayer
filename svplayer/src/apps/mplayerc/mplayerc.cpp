@@ -211,9 +211,14 @@ static LPCTSTR DebugMiniDumpProcess( HANDLE pProcess, DWORD pId ,DWORD dwTid)
 			// work out a good place for the dump file
 			_tgetcwd(szDumpPath,_MAX_PATH);
 			_tcscat( szDumpPath, _T("\\"));
+			int itimestamp = time(NULL);
+			TCHAR szTimestamp[_MAX_PATH];
+			_itow_s(itimestamp, szTimestamp,_MAX_PATH, 36);
 
 			_tcscat( szDumpPath, _T("splayer_hanged_") );
 			_tcscat( szDumpPath, SVP_REV_STR );
+			_tcscat( szDumpPath, _T("_"));
+			_tcscat( szDumpPath, szTimestamp);
 			_tcscat( szDumpPath, _T(".dmp"));
 
 			// ask the user if they want to save a dump file
@@ -249,7 +254,7 @@ _EXCEPTION_POINTERS ExceptionInfo;
 							{
 								
 								wcscpy( PathFindFileName(sUpdaterPath), _T("Updater.exe"));
-								_stprintf( sUpPerm, _T(" /dmp splayer_hanged_%s.dmp "), SVP_REV_STR );
+								_stprintf( sUpPerm, _T(" /dmp splayer_hanged_%s_%s.dmp "), SVP_REV_STR ,szTimestamp);
 								(int)::ShellExecute(NULL, _T("open"), sUpdaterPath, sUpPerm, NULL, SW_HIDE);
 
 								
@@ -1683,7 +1688,7 @@ HBITMAP WINAPI Mine_LoadBitmapW( HINSTANCE hInstance, LPCWSTR lpBitmapName){
 LPTOP_LEVEL_EXCEPTION_FILTER  (__stdcall * Real_SetUnhandledExceptionFilter)( LPTOP_LEVEL_EXCEPTION_FILTER lpTopLevelExceptionFilter) = ::SetUnhandledExceptionFilter;
 LPTOP_LEVEL_EXCEPTION_FILTER WINAPI Mine_SetUnhandledExceptionFilter( LPTOP_LEVEL_EXCEPTION_FILTER lpTopLevelExceptionFilter)
 {
-	SVP_LogMsg5(L"Someone is calling SetUnhandledExceptionFilter");
+	//SVP_LogMsg5(L"Someone is calling SetUnhandledExceptionFilter");
 	return NULL;
 }
 

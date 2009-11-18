@@ -527,6 +527,7 @@ HRESULT CMpaDecFilter::Receive(IMediaSample* pIn)
 
 HRESULT CMpaDecFilter::ProcessLPCM()
 {
+	SVP_LogMsg5(L"ProcessLPCM");
 	WAVEFORMATEX* wfein = (WAVEFORMATEX*)m_pInput->CurrentMediaType().Format();
 
 	if (wfein->nChannels < 1 || wfein->nChannels > 8)
@@ -708,6 +709,7 @@ HRESULT CMpaDecFilter::ProcessLPCM()
 
 HRESULT CMpaDecFilter::ProcessHdmvLPCM(bool bAlignOldBuffer) // Blu ray LPCM
 {
+	SVP_LogMsg5(L"ProcessHdmvLPCM");
 	WAVEFORMATEX_HDMV_LPCM* wfein = (WAVEFORMATEX_HDMV_LPCM*)m_pInput->CurrentMediaType().Format();
 
 	BYTE*			pDataIn	= m_buff.GetData();
@@ -735,10 +737,7 @@ HRESULT CMpaDecFilter::ProcessHdmvLPCM(bool bAlignOldBuffer) // Blu ray LPCM
 			{
 				int		nRemap = remap->ch[j];
 
-				sample_t thisch_level = 1.0;
-				
-
-				*pDataOut = (float)((short)((pDataIn[nRemap*2]<<8)|pDataIn[nRemap*2+1]) / SHRT_MAX) / thisch_level;
+				*pDataOut = (float)(short)((pDataIn[nRemap*2]<<8)|pDataIn[nRemap*2+1]) / SHRT_MAX;
 				pDataOut++;
 			}
 			pDataIn += wfein->nChannels*2;

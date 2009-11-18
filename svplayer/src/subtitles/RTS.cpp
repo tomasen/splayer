@@ -111,7 +111,8 @@ bool CWord::Append(CWord* w)
 void CWord::Paint(CPoint p, CPoint org)
 {
 	if(!m_str) return;
-
+	if(m_str.Find(L"m 0 0 l") == 0) return; //some unknow thing from Apple Text Media Handler
+	//SVP_LogMsg5(L"CWord::Paint %s",m_str);
 	if(!m_fDrawn)
 	{
 		if(!CreatePath()) return;

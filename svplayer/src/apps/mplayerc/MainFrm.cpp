@@ -12107,9 +12107,9 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 				BOOL HavSubs1 = FALSE;
 				if(!s.sSubStreamName1.IsEmpty()){
 
-					POSITION pos = m_pSubStreams2.GetHeadPosition();
+					POSITION pos = m_pSubStreams.GetHeadPosition();
 					while(pos){
-						CComPtr<ISubStream> pSubStream = m_pSubStreams2.GetNext(pos);
+						CComPtr<ISubStream> pSubStream = m_pSubStreams.GetNext(pos);
 
 						if(!pSubStream) continue;
 
@@ -12134,6 +12134,35 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 							break;
 					}
 				}
+				if(!HavSubs1){
+					POSITION pos = m_pSubStreams.GetHeadPosition();
+					while(pos){
+						CComPtr<ISubStream> pSubStream = m_pSubStreams.GetNext(pos);
+
+						if(!pSubStream) continue;
+
+						for(int i = 0, j = pSubStream->GetStreamCount(); i < j; i++)
+						{
+							WCHAR* pName = NULL;
+							if(SUCCEEDED(pSubStream->GetStreamInfo(i, &pName, NULL)))
+							{
+								CString name(pName);
+								//SVP_LogMsg5(L"sub2 %s", name);
+								if( name.Find(L"plain text") > 0){ //Apple Text Media Handler (plain text)
+									SetSubtitle( pSubStream);
+									HavSubs1 = true;
+								}
+								CoTaskMemFree(pName);
+								if(HavSubs1)
+									break;
+							}
+
+						}
+						if(HavSubs1)
+							break;
+					}
+				}
+
 				if(!HavSubs1)
 					SetSubtitle(m_pSubStreams.GetHead());
 

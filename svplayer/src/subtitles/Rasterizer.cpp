@@ -729,7 +729,13 @@ bool Rasterizer::Rasterize(int xsub, int ysub, int fBlur, double fGaussianBlur)
 	mOverlayWidth = ((width+7)>>3) + 1;
 	mOverlayHeight = ((height+7)>>3) + 1;
 
+	//SVP_LogMsg5(L"mpOverlayBuffer %d %d %d %d",  mOverlayWidth , mOverlayHeight , mWidth, mHeight);
+	if(mOverlayWidth > 3300 || mOverlayHeight > 3300) //avoid overflow
+		return false;
+
 	mpOverlayBuffer = new byte[2 * mOverlayWidth * mOverlayHeight];
+	if(!mpOverlayBuffer)
+		return false;
 	memset(mpOverlayBuffer, 0, 2 * mOverlayWidth * mOverlayHeight);
 
 	// Are we doing a border?

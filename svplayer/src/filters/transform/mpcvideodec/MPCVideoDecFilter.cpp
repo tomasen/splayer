@@ -508,6 +508,7 @@ BOOL CALLBACK EnumFindProcessWnd (HWND hwnd, LPARAM lParam)
 }
 CMPCVideoDecFilter::CMPCVideoDecFilter(LPUNKNOWN lpunk, HRESULT* phr) 
 	: CBaseVideoFilter(NAME("MPC - Video decoder"), lpunk, phr, __uuidof(this))
+	, m_nGoFaster(0)
 {
 	HWND		hWnd = NULL;
 	for (int i=0; i<countof(ffCodecs); i++)
@@ -1550,6 +1551,20 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 		memset(m_pFFBuffer+nSize,0,FF_INPUT_BUFFER_PADDING_SIZE);
 		m_perf_timer[1] = GetPerfCounter();
 
+		if(m_nGoFaster ){
+
+			if(m_pAVCtx->codec_id == CODEC_ID_H264)
+				m_pAVCtx->flags2 |= CODEC_FLAG2_FAST|CODEC_FLAG2_FASTPSKIP;
+			//m_pAVCtx->skip_loop_filter = AVDISCARD_ALL;
+			//m_pAVCtx->skip_frame = AVDISCARD_BIDIR;
+			//m_pAVCtx->skip_idct = AVDISCARD_ALL;
+			m_nGoFaster = 0;
+		}else{
+			m_pAVCtx->flags2 = 0;
+			m_pAVCtx->skip_loop_filter = AVDISCARD_DEFAULT;
+			m_pAVCtx->skip_frame = AVDISCARD_DEFAULT;
+			m_pAVCtx->skip_idct = AVDISCARD_DEFAULT;
+		}
 		
 		used_bytes = avcodec_decode_video (m_pAVCtx, m_pFrame, &got_picture, m_pFFBuffer, nSize);
 		

@@ -99,6 +99,7 @@ protected:
 	int										m_nPosB;
 	BYTE*									m_pFFBuffer;
 	int										m_nFFBufferSize;
+	int										m_nGoFaster;
 	int										m_nWidth;				// Frame width give to input pin
 	int										m_nHeight;				// Frame height give to input pin
 

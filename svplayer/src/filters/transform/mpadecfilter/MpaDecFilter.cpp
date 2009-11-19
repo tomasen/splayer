@@ -43,8 +43,9 @@
 #define EAC3_FRAME_TYPE_RESERVED	3
 #define AC3_HEADER_SIZE				7
 
-//#define TRACE SVP_LogMsg5
 #define  SVP_LogMsg5  __noop
+//#define TRACE SVP_LogMsg5
+//#define LOGDEBUG 1
 
 typedef unsigned char uint8;
 typedef signed char int8;
@@ -2656,9 +2657,9 @@ bool CMpaDecFilter::InitFfmpeg(int nCodecId)
 
 	avcodec_init();
 	avcodec_register_all();
-//#ifdef _DEBUG
-	//av_log_set_callback(LogLibAVCodec);
-//#endif
+#if LOGDEBUG
+	av_log_set_callback(LogLibAVCodec);
+#endif
 
 	if (m_pAVCodec) ffmpeg_stream_finish();
 
@@ -2756,10 +2757,11 @@ bool CMpaDecFilter::InitFfmpeg(int nCodecId)
 
 void CMpaDecFilter::LogLibAVCodec(void* par,int level,const char *fmt,va_list valist)
 {
-	char		Msg [500];
-	vsnprintf_s (Msg, sizeof(Msg), _TRUNCATE, fmt, valist);
+	//char		Msg [500];
+	//vsnprintf_s (Msg, sizeof(Msg), _TRUNCATE, fmt, valist);
 	//TRACE("AVLIB : %s", Msg);
 	//SVP_LogMsg6(Msg);
+	SVP_LogMsg6(fmt, valist);
 }
 
 void CMpaDecFilter::ffmpeg_stream_finish()

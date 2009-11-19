@@ -436,10 +436,13 @@ SVP_LogMsg5(L"x2 %d y %d  ", w, h);
 		BYTE* pInU = ppIn[1];
 		BYTE* pInV = ppIn[2];
 
+		int srch = h;
+		if(h&1){srch--;}
+
 		if(subtype == MEDIASUBTYPE_YV12) {BYTE* tmp = pInU; pInU = pInV; pInV = tmp;}
 
-		BYTE* pOutU = pOut + bihOut.biWidth*h;
-		BYTE* pOutV = pOut + bihOut.biWidth*h*5/4;
+		BYTE* pOutU = pOut + bihOut.biWidth*srch;
+		BYTE* pOutV = pOut + bihOut.biWidth*srch*5/4;
 
 		if(bihOut.biCompression == '21VY') {BYTE* tmp = pOutU; pOutU = pOutV; pOutV = tmp;}
 
@@ -454,6 +457,7 @@ SVP_LogMsg5(L"x2 %d y %d  ", w, h);
 		}
 		else if(bihOut.biCompression == '024I' || bihOut.biCompression == 'VUYI' || bihOut.biCompression == '21VY')
 		{
+			SVP_LogMsg5(L"BitBltFromI420ToI420 %d %d",w , h);
 			if(!BitBltFromI420ToI420(w, h, pOut, pOutU, pOutV, bihOut.biWidth, pIn, pInU, pInV, pitchIn)){
 				SVP_LogMsg5(L"BitBltFromI420ToI420 fail");
 			}
@@ -463,8 +467,14 @@ SVP_LogMsg5(L"x2 %d y %d  ", w, h);
 			if(!BitBltFromI420ToRGB(w, h, pOut, pitchOut, bihOut.biBitCount, pIn, pInU, pInV, pitchIn))
 			{
 				SVP_LogMsg5(L"BitBltFromI420ToRGB fail");
-				for(DWORD y = 0; y < h; y++, pOut += pitchOut)
-					memset(pOut, 0, pitchOut);
+				DWORD y ;
+				__try{
+					for(y = 0; y < h; y++, pOut += pitchOut){
+						memset(pOut, 0, pitchOut);
+					}
+				}__except(EXCEPTION_EXECUTE_HANDLER){
+					SVP_LogMsg5(L"BitBltFromI420ToRGB fail %d %d", y, h);
+				}
 			}
 		}
 	}

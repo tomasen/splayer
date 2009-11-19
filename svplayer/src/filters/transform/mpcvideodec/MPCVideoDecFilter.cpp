@@ -58,8 +58,8 @@ extern "C"
 #include "../../../svplib/svplib.h"
 
 #define LOGDEBUG 0
-#define TRACE5 __noop
-//SVP_LogMsg5
+#define SVP_LogMsg5 __noop
+#define TRACE5 SVP_LogMsg5
 /////
 #define MAX_SUPPORTED_MODE			5
 #define MPCVD_CAPTION				_T("MPC Video decoder")
@@ -547,7 +547,7 @@ CMPCVideoDecFilter::CMPCVideoDecFilter(LPUNKNOWN lpunk, HRESULT* phr)
 	}
 	m_nDiscardMode			= AVDISCARD_DEFAULT;
 	m_nErrorRecognition		= FF_ER_CAREFUL;
-	m_nIDCTAlgo				= FF_IDCT_XVIDMMX;  //FF_IDCT_AUTO //FF_IDCT_LIBMPEG2MMX //FF_IDCT_VP3
+	m_nIDCTAlgo				= FF_IDCT_XVIDMMX;//FF_IDCT_XVIDMMX;  //FF_IDCT_AUTO //FF_IDCT_LIBMPEG2MMX //FF_IDCT_VP3
 	m_bDXVACompatible		= true;
 	m_nCompatibilityMode	= 0; //6 too allow too much ref count
 	m_pFFBuffer				= NULL;
@@ -1073,6 +1073,7 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 			m_pAVCtx->workaround_bugs		= m_nWorkaroundBug;
 			m_pAVCtx->error_concealment		= m_nErrorConcealment;
 			m_pAVCtx->error_recognition		= m_nErrorRecognition;
+			m_pAVCtx->mb_decision = FF_MB_DECISION_SIMPLE;
 			switch( m_pAVCodec->id ){
 				case CODEC_ID_VP3:
 				case CODEC_ID_VP5:

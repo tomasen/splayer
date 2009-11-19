@@ -489,11 +489,13 @@ bool BitBltFromI420ToI420(int w, int h, BYTE* dsty, BYTE* dstu, BYTE* dstv, int 
 {
 	if((w&1)) return(false);
 
+	//if(h&1){h--;}
+
 	if(w > 0 && w == srcpitch && w == dstpitch)
 	{
 		memcpy_accel(dsty, srcy, h*srcpitch);
-		memcpy_accel(dstu, srcu, h/2*srcpitch/2);
-		memcpy_accel(dstv, srcv, h/2*srcpitch/2);
+		memcpy_accel(dstu, srcu, h*srcpitch/4);
+		memcpy_accel(dstv, srcv, h*srcpitch/4);
 	}
 	else
 	{
@@ -547,6 +549,7 @@ extern "C" void asm_YUVtoRGB16_row_ISSE(void* ARGB1, void* ARGB2, BYTE* Y1, BYTE
 
 bool BitBltFromI420ToRGB(int w, int h, BYTE* dst, int dstpitch, int dbpp, BYTE* srcy, BYTE* srcu, BYTE* srcv, int srcpitch)
 {
+	if(h&1){h--;}
 	if(w<=0 || h<=0 || (w&1) || (h&1))
 		return(false);
 
@@ -1007,6 +1010,7 @@ last4:
 
 bool BitBltFromI420ToYUY2(int w, int h, BYTE* dst, int dstpitch, BYTE* srcy, BYTE* srcu, BYTE* srcv, int srcpitch, bool fInterlaced)
 {
+	if(h&1){h--;}
 	if(w<=0 || h<=0 || (w&1) || (h&1))
 		return(false);
 

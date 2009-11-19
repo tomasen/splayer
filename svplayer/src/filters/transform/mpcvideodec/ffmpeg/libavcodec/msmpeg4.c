@@ -1519,7 +1519,7 @@ static int msmpeg4v12_decode_mb(MpegEncContext *s, DCTELEM block[6][64])
 
 static int msmpeg4v34_decode_mb(MpegEncContext *s, DCTELEM block[6][64])
 {
-    int cbp, code, i;
+	 int cbp, code, i;
     uint8_t *coded_val;
     uint32_t * const mb_type_ptr= &s->current_picture.mb_type[ s->mb_x + s->mb_y*s->mb_stride ];
 
@@ -1823,7 +1823,7 @@ int ff_msmpeg4_decode_block(MpegEncContext * s, DCTELEM * block,
         if (i > 62){
             i-= 192;
             if(i&(~63)){
-                const int left= s->gb.size_in_bits - get_bits_count(&s->gb);
+                const int left= get_bits_left(&s->gb);
                 if(((i+192 == 64 && level/qmul==-1) || s->error_recognition<=1) && left>=0){
                     av_log(s->avctx, AV_LOG_ERROR, "ignoring overflow at %d %d\n", s->mb_x, s->mb_y);
                     break;

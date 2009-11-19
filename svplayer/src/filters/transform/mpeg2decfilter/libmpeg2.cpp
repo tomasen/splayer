@@ -21,7 +21,6 @@
  */
 
 #include "stdafx.h"
-
 #include <stdlib.h>
 #include <string.h>
 #include <malloc.h>
@@ -200,9 +199,7 @@ static void __inline idct_col(int16_t* block)
 static void mpeg2_idct_copy_c(int16_t* block, uint8_t* dest, const int stride)
 {
 	for(int i = 0; i < 8; i++) idct_row(block + 8 * i);
-
 	for(int i = 0; i < 8; i++) idct_col(block + i);
-
     for(int i = 0; i < 8; i++)
 	{
 		dest[0] = CLIP(block[0]);
@@ -1959,9 +1956,6 @@ CMpeg2Decoder::CMpeg2Decoder()
 
 	m_mpeg1 = 0;
 
-//	//
-
-#ifndef _WIN64
 	if(g_cpuid.m_flags&CCpuID::sse2)
 	{
 		m_idct_init = mpeg2_idct_init_sse2;
@@ -1969,6 +1963,7 @@ CMpeg2Decoder::CMpeg2Decoder()
 		m_idct_add = mpeg2_idct_add_sse2;
 		m_mc = &mpeg2_mc_sse2;
 	}
+#ifndef _WIN64
 	else if(g_cpuid.m_flags&CCpuID::mmx)
 	{
 		m_idct_init = mpeg2_idct_init_mmx;
@@ -3532,7 +3527,7 @@ void CMpeg2Decoder::mpeg2_slice(int code, const uint8_t* buffer)
 			slice_intra_DCT(0, dest_y + DCT_offset, DCT_stride);
 			slice_intra_DCT(0, dest_y + DCT_offset + 8, DCT_stride);
 			slice_intra_DCT(1, m_dest[1] + (offset >> 1), m_uv_stride);
-			slice_intra_DCT(2, m_dest[2] + (offset >> 1), m_uv_stride);
+			slice_intra_DCT (2, m_dest[2] + (offset >> 1), m_uv_stride);
 
 			if(m_coding_type == D_TYPE)
 			{

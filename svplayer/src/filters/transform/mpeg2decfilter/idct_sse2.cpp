@@ -1,217 +1,342 @@
+/* 
+ *    Copyright (C) 2003-2006 Gabest
+ *    http://www.gabest.org
+ *
+ *  This Program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2, or (at your option)
+ *  any later version.
+ *
+ *  This Program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with GNU Make; see the file COPYING.  If not, write to
+ *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+ *  http://www.gnu.org/copyleft/gpl.html
+ *
+ *  Based on Intel's AP-942
+ *
+ */
+
 #include "stdafx.h"
+#include <inttypes.h>
 #include "libmpeg2.h"
+#include "attributes.h"
+#include "..\..\..\DSUtil\simd.h"
 
 // Intel's SSE2 implementation of iDCT
 // AP-945
 // http://cache-www.intel.com/cd/00/00/01/76/17680_w_idct.pdf
 
-#define BITS_INV_ACC 4 // 4 or 5 for IEEE
-#define SHIFT_INV_ROW 16 - BITS_INV_ACC
-#define SHIFT_INV_COL 1 + BITS_INV_ACC
-const short RND_INV_ROW = 1024 * (6 - BITS_INV_ACC); //1 << (SHIFT_INV_ROW-1)
-const short RND_INV_COL = 16 * (BITS_INV_ACC - 3); // 1 << (SHIFT_INV_COL-1)
-const short RND_INV_CORR = RND_INV_COL - 1; // correction -1.0 and round
+static const int BITS_INV_ACC=4;
+static const int SHIFT_INV_ROW=16-BITS_INV_ACC;
+static const int SHIFT_INV_COL=1+BITS_INV_ACC;
+static const int RND_INV_ROW  =1024*(6-BITS_INV_ACC);
+static const int RND_INV_COL  =16*(BITS_INV_ACC-3);
+static const int RND_INV_CORR =RND_INV_COL-1;
 
-__declspec(align(16)) short M128_one_corr[8] = {1,1,1,1,1,1,1,1};
-__declspec(align(16)) short M128_round_inv_row[8] = {RND_INV_ROW, 0, RND_INV_ROW, 0, RND_INV_ROW, 0, RND_INV_ROW, 0};
-__declspec(align(16)) short M128_round_inv_col[8] = {RND_INV_COL, RND_INV_COL, RND_INV_COL, RND_INV_COL, RND_INV_COL, RND_INV_COL, RND_INV_COL, RND_INV_COL};
-__declspec(align(16)) short M128_round_inv_corr[8]= {RND_INV_CORR, RND_INV_CORR, RND_INV_CORR, RND_INV_CORR, RND_INV_CORR, RND_INV_CORR, RND_INV_CORR, RND_INV_CORR};
-__declspec(align(16)) short M128_tg_1_16[8] = {13036, 13036, 13036, 13036, 13036, 13036, 13036, 13036}; // tg * (2<<16) + 0.5
-__declspec(align(16)) short M128_tg_2_16[8] = {27146, 27146, 27146, 27146, 27146, 27146, 27146, 27146}; // tg * (2<<16) + 0.5
-__declspec(align(16)) short M128_tg_3_16[8] = {-21746, -21746, -21746, -21746, -21746, -21746, -21746, -21746}; // tg * (2<<16) + 0.5
-__declspec(align(16)) short M128_cos_4_16[8] = {-19195, -19195, -19195, -19195, -19195, -19195, -19195, -19195};// cos * (2<<16) + 0.5
+static __align16(const short,M128_round_inv_row[8]) = {RND_INV_ROW, 0, RND_INV_ROW, 0, RND_INV_ROW, 0, RND_INV_ROW, 0};
+static __align16(const short,M128_one_corr[8]) = {1,1,1,1,1,1,1,1};
+static __align16(const short,M128_round_inv_col[8]) = {RND_INV_COL, RND_INV_COL, RND_INV_COL, RND_INV_COL, RND_INV_COL, RND_INV_COL, RND_INV_COL, RND_INV_COL};
+static __align16(const short,M128_round_inv_corr[8])= {RND_INV_CORR, RND_INV_CORR, RND_INV_CORR, RND_INV_CORR, RND_INV_CORR, RND_INV_CORR, RND_INV_CORR, RND_INV_CORR};
+static __align16(const short,M128_tg_1_16[8]) = {13036, 13036, 13036, 13036, 13036, 13036, 13036, 13036}; // tg * (2<<16) + 0.5
+static __align16(const short,M128_tg_2_16[8]) = {27146, 27146, 27146, 27146, 27146, 27146, 27146, 27146}; // tg * (2<<16) + 0.5
+static __align16(const short,M128_tg_3_16[8]) = {-21746, -21746, -21746, -21746, -21746, -21746, -21746, -21746}; // tg * (2<<16) + 0.5
+static __align16(const short,M128_cos_4_16[8]) = {-19195, -19195, -19195, -19195, -19195, -19195, -19195, -19195};// cos * (2<<16) + 0.5
 
-//-----------------------------------------------------------------------------
-// Table for rows 0,4 - constants are multiplied on cos_4_16
-//movq -> w13 w12 w09 w08 w05 w04 w01 w00
-// w15 w14 w11 w10 w07 w06 w03 w02
-// w29 w28 w25 w24 w21 w20 w17 w16
-// w31 w30 w27 w26 w23 w22 w19 w18
+static __align16(const int16_t,M128_tab_i_04[])={16384, 21407, 16384,  8867, 16384,  -8867, 16384, -21407, 16384,  8867, -16384, -21407, -16384, 21407, 16384,  -8867, 22725, 19266, 19266, -4520, 12873, -22725, 4520, -12873, 12873, 4520, -22725, -12873, 4520, 19266, 19266, -22725};
+static __align16(const int16_t,M128_tab_i_17[])={22725, 29692, 22725, 12299, 22725, -12299, 22725, -29692, 22725, 12299, -22725, -29692, -22725, 29692, 22725, -12299, 31521, 26722, 26722, -6270, 17855, -31521, 6270, -17855, 17855, 6270, -31521, -17855, 6270, 26722, 26722, -31521};
+static __align16(const int16_t,M128_tab_i_26[])={21407, 27969, 21407, 11585, 21407, -11585, 21407, -27969, 21407, 11585, -21407, -27969, -21407, 27969, 21407, -11585, 29692, 25172, 25172, -5906, 16819, -29692, 5906, -16819, 16819, 5906, -29692, -16819, 5906, 25172, 25172, -29692};
+static __align16(const int16_t,M128_tab_i_35[])={19266, 25172, 19266, 10426, 19266, -10426, 19266, -25172, 19266, 10426, -19266, -25172, -19266, 25172, 19266, -10426, 26722, 22654, 22654, -5315, 15137, -26722, 5315, -15137, 15137, 5315, -26722, -15137, 5315, 22654, 22654, -26722};
 
-__declspec(align(16)) short M128_tab_i_04[] = 
+//#ifdef _WIN64		// Temporary patch : full intrinsic version didn't works in Win32 (to be fixed later...) 
+#if 1				// (Spec-Chum: Works now, will keep intel code in place though...)
+
+static __forceinline void DCT_8_INV_ROW(const uint8_t * const ecx,const uint8_t * const esi,__m128i &xmm0,__m128i &xmm1,__m128i &xmm2,__m128i &xmm3,__m128i &xmm4,__m128i &xmm5,__m128i &xmm6,__m128i &xmm7)
 {
-	16384, 21407, 16384, 8867, //movq -> w05 w04 w01 w00
-	16384, -8867, 16384, -21407, // w13 w12 w09 w08
-	16384, 8867, -16384, -21407, // w07 w06 w03 w02
-	-16384, 21407, 16384, -8867, // w15 w14 w11 w10
-	22725, 19266, 19266, -4520, // w21 w20 w17 w16
-	12873, -22725, 4520, -12873, // w29 w28 w25 w24
-	12873, 4520, -22725, -12873, // w23 w22 w19 w18
-	4520, 19266, 19266, -22725  // w31 w30 w27 w26
-};
-
-// Table for rows 1,7 - constants are multiplied on cos_1_16
-
-__declspec(align(16)) short M128_tab_i_17[] =
+     xmm0=_mm_shufflelo_epi16(xmm0, 0xD8 );
+     xmm1=_mm_shuffle_epi32( xmm0, 0 );
+     pmaddwd (xmm1, esi);
+     xmm3=_mm_shuffle_epi32( xmm0, 0x55);
+     xmm0=_mm_shufflehi_epi16( xmm0, 0xD8 );
+     pmaddwd( xmm3, esi+32 );
+     xmm2=_mm_shuffle_epi32( xmm0, 0xAA );
+     xmm0=_mm_shuffle_epi32( xmm0, 0xFF );
+     pmaddwd( xmm2, esi+16 );
+     xmm4=_mm_shufflehi_epi16( xmm4, 0xD8 );
+     paddd (xmm1, M128_round_inv_row);
+     xmm4=_mm_shufflelo_epi16 (xmm4, 0xD8 );
+     pmaddwd (xmm0, esi+48 );
+     xmm5=_mm_shuffle_epi32( xmm4, 0 );
+     xmm6=_mm_shuffle_epi32( xmm4, 0xAA );
+     pmaddwd (xmm5, ecx );
+     paddd (xmm1, xmm2 );
+     movdqa (xmm2, xmm1 );
+     xmm7=_mm_shuffle_epi32( xmm4, 0x55 );
+     pmaddwd (xmm6, ecx+16 );
+     paddd (xmm0, xmm3 );
+     xmm4=_mm_shuffle_epi32( xmm4, 0xFF );
+     psubd (xmm2, xmm0 );
+     pmaddwd (xmm7, ecx+32 );
+     paddd (xmm0, xmm1 );
+     psrad (xmm2, 12 );
+     paddd (xmm5, M128_round_inv_row);
+     pmaddwd (xmm4, ecx+48 );
+     paddd (xmm5, xmm6 );
+     movdqa (xmm6, xmm5 );
+     psrad (xmm0, 12 );
+     xmm2=_mm_shuffle_epi32( xmm2, 0x1B );
+     packssdw (xmm0, xmm2 );
+     paddd (xmm4, xmm7 );
+     psubd (xmm6, xmm4 );
+     paddd (xmm4, xmm5 );
+     psrad (xmm6, 12 );
+     psrad (xmm4, 12 );
+     xmm6=_mm_shuffle_epi32( xmm6, 0x1B );
+     packssdw (xmm4, xmm6 );
+}
+static __forceinline void DCT_8_INV_COL_8(__m128i &src0,__m128i &src1,__m128i &src2,__m128i &src3,__m128i &src4,__m128i &src5,__m128i &src6,__m128i &src7,
+                                          __m128i &xmm0,__m128i &xmm1,__m128i &xmm2,__m128i &xmm3,__m128i &xmm4,__m128i &xmm5,__m128i &xmm6,__m128i &xmm7)
 {
-	22725, 29692, 22725, 12299, //movq -> w05 w04 w01 w00
-	22725, -12299, 22725, -29692, // w13 w12 w09 w08
-	22725, 12299, -22725, -29692, // w07 w06 w03 w02
-	-22725, 29692, 22725, -12299, // w15 w14 w11 w10
-	31521, 26722, 26722, -6270, // w21 w20 w17 w16
-	17855, -31521, 6270, -17855, // w29 w28 w25 w24
-	17855, 6270, -31521, -17855, // w23 w22 w19 w18
-	6270, 26722, 26722, -31521 // w31 w30 w27 w26
-};
+    movdqa( xmm1,  M128_tg_3_16  );
+    movdqa( xmm2, xmm0           );
+    movdqa( xmm3,  src3      );
+    pmulhw( xmm0, xmm1           );
+    pmulhw( xmm1, xmm3           );
+    movdqa( xmm5,  M128_tg_1_16  );
+    movdqa( xmm6, xmm4           );
+    pmulhw( xmm4, xmm5           );
+    paddsw( xmm0, xmm2           );
+    pmulhw( xmm5, src1       );
+    paddsw( xmm1, xmm3           );
+    movdqa( xmm7,  src6      );
+    paddsw( xmm0, xmm3           );
+    movdqa( xmm3,  M128_tg_2_16  );
+    psubsw( xmm2, xmm1           );
+    pmulhw( xmm7, xmm3           );
+    movdqa( xmm1, xmm0           );
+    pmulhw( xmm3, src2       );
+    psubsw( xmm5, xmm6           );
+    paddsw( xmm4, src1       );
+    paddsw( xmm0, xmm4           );
+    paddsw( xmm0,  M128_one_corr );
+    psubsw( xmm4, xmm1           );
+    movdqa( xmm6, xmm5           );
+    psubsw( xmm5, xmm2           );
+    paddsw( xmm5,  M128_one_corr );
+    paddsw( xmm6, xmm2           );
+    movdqa( src7, xmm0       );
+    movdqa( xmm1, xmm4           );
+    movdqa( xmm0,  M128_cos_4_16 );
+    paddsw( xmm4, xmm5           );
+    movdqa( xmm2,  M128_cos_4_16 );
+    pmulhw( xmm2, xmm4           );
+    movdqa( src3, xmm6       );
+    psubsw( xmm1, xmm5           );
+    paddsw( xmm7, src2       );
+    psubsw( xmm3, src6       );
+    movdqa( xmm6, src0           );
+    pmulhw( xmm0, xmm1           );
+    movdqa( xmm5, src4       );
+    paddsw( xmm5, xmm6          );
+    psubsw( xmm6, src4       );
+    paddsw( xmm4, xmm2           );
+    por   (  xmm4,  M128_one_corr     );
+    paddsw(  xmm0, xmm1                 );
+    por   (  xmm0,  M128_one_corr     );
+    movdqa( xmm2, xmm5                  );
+    paddsw( xmm5, xmm7                  );
+    movdqa( xmm1, xmm6                  );
+    paddsw( xmm5,  M128_round_inv_col );
+    psubsw( xmm2, xmm7                  );
+    movdqa( xmm7, src7            );
+    paddsw( xmm6, xmm3                  );
+    paddsw( xmm6,  M128_round_inv_col );
+    paddsw( xmm7, xmm5                  );
+    psraw ( xmm7, SHIFT_INV_COL           );
+    psubsw( xmm1, xmm3                   );
+    paddsw( xmm1,  M128_round_inv_corr );
+    movdqa( xmm3, xmm6                   );
+    paddsw( xmm2,  M128_round_inv_corr );
+    paddsw( xmm6, xmm4                   );
+    movdqa( src0,xmm7                  );
+    psraw (xmm6, SHIFT_INV_COL           );
+    movdqa( xmm7, xmm1                   );
+    paddsw( xmm1, xmm0                   );
+    movdqa( src1, xmm6             );
+    psraw (xmm1, SHIFT_INV_COL           );
+    movdqa( xmm6, src3             );
+    psubsw( xmm7, xmm0                   );
+    psraw (xmm7, SHIFT_INV_COL           );
+    movdqa( src2, xmm1             );
+    psubsw( xmm5, src7             );
+    psraw (xmm5, SHIFT_INV_COL           );
+    movdqa( src7, xmm5             );
+    psubsw( xmm3, xmm4                   );
+    paddsw( xmm6, xmm2                   );
+    psubsw( xmm2, src3             );
+    psraw (xmm6, SHIFT_INV_COL           );
+    psraw (xmm2, SHIFT_INV_COL           );
+    movdqa( src3, xmm6             );
+    psraw (xmm3, SHIFT_INV_COL           );
+    movdqa( src4, xmm2             );
+    movdqa( src5, xmm7             );
+    movdqa( src6, xmm3             );
+}
 
-// Table for rows 2,6 - constants are multiplied on cos_2_16
-
-__declspec(align(16)) short M128_tab_i_26[] =
+static __forceinline void idct_M128ASM(__m128i &src0,__m128i &src1,__m128i &src2,__m128i &src3,__m128i &src4,__m128i &src5,__m128i &src6,__m128i &src7)
 {
-	21407, 27969, 21407, 11585, //movq -> w05 w04 w01 w00
-	21407, -11585, 21407, -27969, // w13 w12 w09 w08
-	21407, 11585, -21407, -27969, // w07 w06 w03 w02
-	-21407, 27969, 21407, -11585, // w15 w14 w11 w10
-	29692, 25172, 25172, -5906, // w21 w20 w17 w16
-	16819, -29692, 5906, -16819, // w29 w28 w25 w24
-	16819, 5906, -29692, -16819, // w23 w22 w19 w18
-	5906, 25172, 25172, -29692 // w31 w30 w27 w26
-};
+     /*src0=_mm_srai_epi16(src0,4);
+     src1=_mm_srai_epi16(src1,4);
+     src2=_mm_srai_epi16(src2,4);
+     src3=_mm_srai_epi16(src3,4);
+     src4=_mm_srai_epi16(src4,4);
+     src5=_mm_srai_epi16(src5,4);
+     src6=_mm_srai_epi16(src6,4);
+     src7=_mm_srai_epi16(src7,4); // No idea why they needed to be shifted?  ...and it makes the picture all green...*/
 
-// Table for rows 3,5 - constants are multiplied on cos_3_16
+__m128i xmm0,xmm1,xmm2,xmm3,xmm4,xmm5,xmm6,xmm7;
+     movdqa (xmm0, src0);
+     uint8_t *esi=(uint8_t*)M128_tab_i_04;
+     movdqa (xmm4, src2);
+     uint8_t *ecx=(uint8_t*)M128_tab_i_26;
+    DCT_8_INV_ROW(ecx,esi,xmm0,xmm1,xmm2,xmm3,xmm4,xmm5,xmm6,xmm7);
+     movdqa (src0, xmm0);
+     movdqa (src2, xmm4);
 
-__declspec(align(16)) short M128_tab_i_35[] = 
+     movdqa (xmm0, src4);
+     movdqa (xmm4, src6);
+    DCT_8_INV_ROW(ecx,esi,xmm0,xmm1,xmm2,xmm3,xmm4,xmm5,xmm6,xmm7);
+     movdqa (src4, xmm0);
+     movdqa (src6, xmm4);
+
+     movdqa (xmm0, src3);
+     esi=(uint8_t*)M128_tab_i_35;
+     movdqa (xmm4, src1);
+     ecx=(uint8_t*)M128_tab_i_17;
+    DCT_8_INV_ROW(ecx,esi,xmm0,xmm1,xmm2,xmm3,xmm4,xmm5,xmm6,xmm7);
+     movdqa (src3, xmm0);
+     movdqa (src1, xmm4);
+
+     movdqa (xmm0, src5);
+     movdqa (xmm4, src7);
+    DCT_8_INV_ROW(ecx,esi,xmm0,xmm1,xmm2,xmm3,xmm4,xmm5,xmm6,xmm7);
+    DCT_8_INV_COL_8(src0,src1,src2,src3,src4,src5,src6,src7,
+                    xmm0,xmm1,xmm2,xmm3,xmm4,xmm5,xmm6,xmm7);
+}
+
+void mpeg2_idct_copy_sse2(int16_t* block, uint8_t* dest, const int stride)
 {
-	19266, 25172, 19266, 10426, //movq -> w05 w04 w01 w00
-	19266, -10426, 19266, -25172, // w13 w12 w09 w08
-	19266, 10426, -19266, -25172, // w07 w06 w03 w02
-	-19266, 25172, 19266, -10426, // w15 w14 w11 w10
-	26722, 22654, 22654, -5315, // w21 w20 w17 w16
-	15137, -26722, 5315, -15137, // w29 w28 w25 w24
-	15137, 5315, -26722, -15137, // w23 w22 w19 w18
-	5315, 22654, 22654, -26722 // w31 w30 w27 w26
-};
+ __m128i &src0=*(__m128i*)(block+0*16/2);
+ __m128i &src1=*(__m128i*)(block+1*16/2);
+ __m128i &src2=*(__m128i*)(block+2*16/2);
+ __m128i &src3=*(__m128i*)(block+3*16/2);
+ __m128i &src4=*(__m128i*)(block+4*16/2);
+ __m128i &src5=*(__m128i*)(block+5*16/2);
+ __m128i &src6=*(__m128i*)(block+6*16/2);
+ __m128i &src7=*(__m128i*)(block+7*16/2);
+            idct_M128ASM (src0,src1,src2,src3,src4,src5,src6,src7);
 
-//-----------------------------------------------------------------------------
-/*
-;=============================================================================
-;=============================================================================
-;=============================================================================
-;
-; Inverse DCT
-;
-;-----------------------------------------------------------------------------
-;
-; This implementation calculates iDCT-2D by a row-column method.
-; On the first stage the iDCT-1D is calculated for each row with use
-; direct algorithm, on the second stage the calculation is executed
-; at once for four columns with use of scaled iDCT-1D algorithm.
-; Base R&Y algorithm for iDCT-1D is modified for second stage.
-;
-;=============================================================================
-;-----------------------------------------------------------------------------
-;
-; The first stage - inverse DCTs of rows
-;
-;-----------------------------------------------------------------------------
-; The 8-point inverse DCT direct algorithm
-;-----------------------------------------------------------------------------
-;
-; static const short w[32] = {
-; FIX(cos_4_16), FIX(cos_2_16), FIX(cos_4_16), FIX(cos_6_16),
-; FIX(cos_4_16), FIX(cos_6_16), -FIX(cos_4_16), -FIX(cos_2_16),
-; FIX(cos_4_16), -FIX(cos_6_16), -FIX(cos_4_16), FIX(cos_2_16),
-; FIX(cos_4_16), -FIX(cos_2_16), FIX(cos_4_16), -FIX(cos_6_16),
-; FIX(cos_1_16), FIX(cos_3_16), FIX(cos_5_16), FIX(cos_7_16),
-; FIX(cos_3_16), -FIX(cos_7_16), -FIX(cos_1_16), -FIX(cos_5_16),
-; FIX(cos_5_16), -FIX(cos_1_16), FIX(cos_7_16), FIX(cos_3_16),
-; FIX(cos_7_16), -FIX(cos_5_16), FIX(cos_3_16), -FIX(cos_1_16) };
-;
-; #define DCT_8_INV_ROW(x, y)
-; {
-; int a0, a1, a2, a3, b0, b1, b2, b3;
-;
-; a0 = x[0] * w[ 0] + x[2] * w[ 1] + x[4] * w[ 2] + x[6] * w[ 3];
-; a1 = x[0] * w[ 4] + x[2] * w[ 5] + x[4] * w[ 6] + x[6] * w[ 7];
-; a2 = x[0] * w[ 8] + x[2] * w[ 9] + x[4] * w[10] + x[6] * w[11];
-; a3 = x[0] * w[12] + x[2] * w[13] + x[4] * w[14] + x[6] * w[15];
-; b0 = x[1] * w[16] + x[3] * w[17] + x[5] * w[18] + x[7] * w[19];
-; b1 = x[1] * w[20] + x[3] * w[21] + x[5] * w[22] + x[7] * w[23];
-; b2 = x[1] * w[24] + x[3] * w[25] + x[5] * w[26] + x[7] * w[27];
-; b3 = x[1] * w[28] + x[3] * w[29] + x[5] * w[30] + x[7] * w[31];
-;
-; y[0] = SHIFT_ROUND ( a0 + b0 );
-; y[1] = SHIFT_ROUND ( a1 + b1 );
-; y[2] = SHIFT_ROUND ( a2 + b2 );
-; y[3] = SHIFT_ROUND ( a3 + b3 );
-; y[4] = SHIFT_ROUND ( a3 - b3 );
-; y[5] = SHIFT_ROUND ( a2 - b2 );
-; y[6] = SHIFT_ROUND ( a1 - b1 );
-; y[7] = SHIFT_ROUND ( a0 - b0 );
-; }
-;
-;-----------------------------------------------------------------------------
-;
-; In this implementation the outputs of the iDCT-1D are multiplied
-; for rows 0,4 - on cos_4_16,
-; for rows 1,7 - on cos_1_16,
-; for rows 2,6 - on cos_2_16,
-; for rows 3,5 - on cos_3_16
-; and are shifted to the left for rise of accuracy
-;
-; For used constants
-; FIX(float_const) = (short) (float_const * (1<<15) + 0.5)
-;
-;-----------------------------------------------------------------------------
-;-----------------------------------------------------------------------------
-;
-; The second stage - inverse DCTs of columns
-;
-; The inputs are multiplied
-; for rows 0,4 - on cos_4_16,
-; for rows 1,7 - on cos_1_16,
-; for rows 2,6 - on cos_2_16,
-; for rows 3,5 - on cos_3_16
-; and are shifted to the left for rise of accuracy
-;
-;-----------------------------------------------------------------------------
-;
-; The 8-point scaled inverse DCT algorithm (26a8m)
-;
-;-----------------------------------------------------------------------------
-;
-; #define DCT_8_INV_COL(x, y)
-; {
-; short t0, t1, t2, t3, t4, t5, t6, t7;
-; short tp03, tm03, tp12, tm12, tp65, tm65;
-; short tp465, tm465, tp765, tm765;
-;
-; tp765 = x[1] + x[7] * tg_1_16;
-; tp465 = x[1] * tg_1_16 - x[7];
-; tm765 = x[5] * tg_3_16 + x[3];
-; tm465 = x[5] - x[3] * tg_3_16;
-;
-; t7 = tp765 + tm765;
-; tp65 = tp765 - tm765;
-; t4 = tp465 + tm465;
-; tm65 = tp465 - tm465;
-;
-; t6 = ( tp65 + tm65 ) * cos_4_16;
-; t5 = ( tp65 - tm65 ) * cos_4_16;
-;
-; tp03 = x[0] + x[4];
-; tp12 = x[0] - x[4];
-;
-; tm03 = x[2] + x[6] * tg_2_16;
-; tm12 = x[2] * tg_2_16 - x[6];
-;
-; t0 = tp03 + tm03;
-; t3 = tp03 - tm03;
-; t1 = tp12 + tm12;
-; t2 = tp12 - tm12;
-;
-; y[0] = SHIFT_ROUND ( t0 + t7 );
-; y[7] = SHIFT_ROUND ( t0 - t7 );
-; y[1] = SHIFT_ROUND ( t1 + t6 );
-; y[6] = SHIFT_ROUND ( t1 - t6 );
-; y[2] = SHIFT_ROUND ( t2 + t5 );
-; y[5] = SHIFT_ROUND ( t2 - t5 );
-; y[3] = SHIFT_ROUND ( t3 + t4 );
-; y[4] = SHIFT_ROUND ( t3 - t4 );
-; }
-;
-;-----------------------------------------------------------------------------
-*/
+    __m128i zero = _mm_setzero_si128();
+
+    __m128i r0 = _mm_packus_epi16(_mm_load_si128(&src0), _mm_load_si128(&src1));
+    __m128i r1 = _mm_packus_epi16(_mm_load_si128(&src2), _mm_load_si128(&src3));
+    __m128i r2 = _mm_packus_epi16(_mm_load_si128(&src4), _mm_load_si128(&src5));
+    __m128i r3 = _mm_packus_epi16(_mm_load_si128(&src6), _mm_load_si128(&src7));
+
+    _mm_storel_pi((__m64*)&dest[0*stride], *(__m128*)&r0);
+    _mm_storeh_pi((__m64*)&dest[1*stride], *(__m128*)&r0);
+    _mm_storel_pi((__m64*)&dest[2*stride], *(__m128*)&r1);
+    _mm_storeh_pi((__m64*)&dest[3*stride], *(__m128*)&r1);
+    _mm_storel_pi((__m64*)&dest[4*stride], *(__m128*)&r2);
+    _mm_storeh_pi((__m64*)&dest[5*stride], *(__m128*)&r2);
+    _mm_storel_pi((__m64*)&dest[6*stride], *(__m128*)&r3);
+    _mm_storeh_pi((__m64*)&dest[7*stride], *(__m128*)&r3);
+
+    _mm_store_si128(&src0, zero);
+    _mm_store_si128(&src1, zero);
+    _mm_store_si128(&src2, zero);
+    _mm_store_si128(&src3, zero);
+    _mm_store_si128(&src4, zero);
+    _mm_store_si128(&src5, zero);
+    _mm_store_si128(&src6, zero);
+    _mm_store_si128(&src7, zero);
+}
+
+void mpeg2_idct_add_sse2(int,int16_t* block, uint8_t* dest, const int stride)
+{
+ __m128i &src0=*(__m128i*)(block+0*16/2);
+ __m128i &src1=*(__m128i*)(block+1*16/2);
+ __m128i &src2=*(__m128i*)(block+2*16/2);
+ __m128i &src3=*(__m128i*)(block+3*16/2);
+ __m128i &src4=*(__m128i*)(block+4*16/2);
+ __m128i &src5=*(__m128i*)(block+5*16/2);
+ __m128i &src6=*(__m128i*)(block+6*16/2);
+ __m128i &src7=*(__m128i*)(block+7*16/2);
+            idct_M128ASM (src0,src1,src2,src3,src4,src5,src6,src7);
+
+    __m128i zero = _mm_setzero_si128();
+
+    __m128i r0 = _mm_load_si128(&src0);
+    __m128i r1 = _mm_load_si128(&src1);
+    __m128i r2 = _mm_load_si128(&src2);
+    __m128i r3 = _mm_load_si128(&src3);
+    __m128i r4 = _mm_load_si128(&src4);
+    __m128i r5 = _mm_load_si128(&src5);
+    __m128i r6 = _mm_load_si128(&src6);
+    __m128i r7 = _mm_load_si128(&src7);
+
+    __m128 q0 = _mm_loadl_pi(*(__m128*)&zero, (__m64*)&dest[0*stride]);
+    __m128 q1 = _mm_loadl_pi(*(__m128*)&zero, (__m64*)&dest[1*stride]);
+    __m128 q2 = _mm_loadl_pi(*(__m128*)&zero, (__m64*)&dest[2*stride]);
+    __m128 q3 = _mm_loadl_pi(*(__m128*)&zero, (__m64*)&dest[3*stride]);
+    __m128 q4 = _mm_loadl_pi(*(__m128*)&zero, (__m64*)&dest[4*stride]);
+    __m128 q5 = _mm_loadl_pi(*(__m128*)&zero, (__m64*)&dest[5*stride]);
+    __m128 q6 = _mm_loadl_pi(*(__m128*)&zero, (__m64*)&dest[6*stride]);
+    __m128 q7 = _mm_loadl_pi(*(__m128*)&zero, (__m64*)&dest[7*stride]);
+
+    r0 = _mm_adds_epi16(r0, _mm_unpacklo_epi8(*(__m128i*)&q0, zero));
+    r1 = _mm_adds_epi16(r1, _mm_unpacklo_epi8(*(__m128i*)&q1, zero));
+    r2 = _mm_adds_epi16(r2, _mm_unpacklo_epi8(*(__m128i*)&q2, zero));
+    r3 = _mm_adds_epi16(r3, _mm_unpacklo_epi8(*(__m128i*)&q3, zero));
+    r4 = _mm_adds_epi16(r4, _mm_unpacklo_epi8(*(__m128i*)&q4, zero));
+    r5 = _mm_adds_epi16(r5, _mm_unpacklo_epi8(*(__m128i*)&q5, zero));
+    r6 = _mm_adds_epi16(r6, _mm_unpacklo_epi8(*(__m128i*)&q6, zero));
+    r7 = _mm_adds_epi16(r7, _mm_unpacklo_epi8(*(__m128i*)&q7, zero));
+
+    r0 = _mm_packus_epi16(r0, r1);
+    r1 = _mm_packus_epi16(r2, r3);
+    r2 = _mm_packus_epi16(r4, r5);
+    r3 = _mm_packus_epi16(r6, r7);
+
+    _mm_storel_pi((__m64*)&dest[0*stride], *(__m128*)&r0);
+    _mm_storeh_pi((__m64*)&dest[1*stride], *(__m128*)&r0);
+    _mm_storel_pi((__m64*)&dest[2*stride], *(__m128*)&r1);
+    _mm_storeh_pi((__m64*)&dest[3*stride], *(__m128*)&r1);
+    _mm_storel_pi((__m64*)&dest[4*stride], *(__m128*)&r2);
+    _mm_storeh_pi((__m64*)&dest[5*stride], *(__m128*)&r2);
+    _mm_storel_pi((__m64*)&dest[6*stride], *(__m128*)&r3);
+    _mm_storeh_pi((__m64*)&dest[7*stride], *(__m128*)&r3);
+
+    _mm_store_si128(&src0, zero);
+    _mm_store_si128(&src1, zero);
+    _mm_store_si128(&src2, zero);
+    _mm_store_si128(&src3, zero);
+    _mm_store_si128(&src4, zero);
+    _mm_store_si128(&src5, zero);
+    _mm_store_si128(&src6, zero);
+    _mm_store_si128(&src7, zero);
+}
+
+void mpeg2_idct_init_sse2()
+{
+}
+
+#else	// Temporary patch : full intrinsic version didn't works in Win32 (to be fixed later...)
+
 //xmm7 = round_inv_row
 #define DCT_8_INV_ROW __asm{ \
 	__asm pshuflw xmm0, xmm0, 0xD8 \
@@ -522,3 +647,5 @@ void mpeg2_idct_add_sse2(const int last, int16_t* block, uint8_t* dest, const in
 void mpeg2_idct_init_sse2()
 {
 }
+
+#endif

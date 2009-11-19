@@ -508,7 +508,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\simd.h"
+				>
+			</File>
+			<File
 				RelativePath=".\simd_common.h"
+				>
+			</File>
+			<File
+				RelativePath=".\simd_instructions.h"
 				>
 			</File>
 			<File

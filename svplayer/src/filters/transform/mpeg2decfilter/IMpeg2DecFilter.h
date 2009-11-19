@@ -23,8 +23,8 @@
 
 typedef enum {DIAuto, DIWeave, DIBlend, DIBob, DIFieldShift} ditype;
 
-
-interface __declspec(uuid("0ABEAA65-0317-47B9-AE1D-D9EA905AFD25")) IMpeg2DecFilter : public IUnknown
+[uuid("0ABEAA65-0317-47B9-AE1D-D9EA905AFD25")]
+interface IMpeg2DecFilter : public IUnknown
 {
 	STDMETHOD(SetDeinterlaceMethod(ditype di)) = 0;
 	STDMETHOD_(ditype, GetDeinterlaceMethod()) = 0;

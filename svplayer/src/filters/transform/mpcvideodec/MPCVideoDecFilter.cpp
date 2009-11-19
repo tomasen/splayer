@@ -59,7 +59,7 @@ extern "C"
 
 #define LOGDEBUG 0
 #define SVP_LogMsg5 __noop
-#define TRACE5 SVP_LogMsg5
+#define TRACE5 __noop
 /////
 #define MAX_SUPPORTED_MODE			5
 #define MPCVD_CAPTION				_T("MPC Video decoder")

@@ -496,7 +496,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Qopenmp-link:static"
-				AdditionalIncludeDirectories="..\..\BaseClasses"
+				AdditionalIncludeDirectories="..\..\BaseClasses;..\..\..\..\include"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				EnableEnhancedInstructionSet="0"
 				OpenMP="false"
@@ -665,6 +665,10 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc"
 			>
+			<File
+				RelativePath="..\..\..\..\..\mpc-hc\trunk\src\filters\transform\mpeg2decfilter\attributes.h"
+				>
+			</File>
 			<File
 				RelativePath=".\IMpeg2DecFilter.h"
 				>

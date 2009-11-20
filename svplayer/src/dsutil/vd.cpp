@@ -489,31 +489,58 @@ bool BitBltFromI420ToI420(int w, int h, BYTE* dsty, BYTE* dstu, BYTE* dstv, int 
 {
 	if((w&1)) return(false);
 
+	int orgh = h;
 	if(h&1){h--;}
+	
 
 	if(w > 0 && w == srcpitch && w == dstpitch)
 	{
-		memcpy_accel(dsty, srcy, h*srcpitch);
+		memcpy_accel(dsty, srcy, orgh*srcpitch);
 		memcpy_accel(dstu, srcu, h*srcpitch/4);
 		memcpy_accel(dstv, srcv, h*srcpitch/4);
 	}
 	else
 	{
+		//return true;
 		int pitch = min(abs(srcpitch), abs(dstpitch));
-
-		for(int y = 0; y < h; y++, srcy += srcpitch, dsty += dstpitch)
+		SVP_LogMsg5(L"pitch %d %d %d",abs(srcpitch), abs(dstpitch),pitch);
+		//int fill = abs(dstpitch) - abs(srcpitch);
+		//if(fill <= 0) {fill = 0;}
+		if(0){
+			memset(dsty, 0x7f, orgh*dstpitch);
+			memset(dstu, 0xff,  h*dstpitch/4);
+			memset(dstv, 0xff,  h*dstpitch/4);
+			//return true;
+		}
+		for(int y = 0; y < orgh; y++, srcy += srcpitch, dsty += dstpitch){
 			memcpy_accel(dsty, srcy, pitch);
+			//memset(dsty, 0xff, abs(dstpitch));
+			//memcpy(dsty, srcy, pitch);
+		}
 
 		srcpitch >>= 1;
 		dstpitch >>= 1;
 
 		pitch = min(abs(srcpitch), abs(dstpitch));
 
-		for(int y = 0; y < h; y+=2, srcu += srcpitch, dstu += dstpitch)
+		//dstu-= dstpitch/2;
+		//dstv+= dstpitch/2;
+		//srcv-=srcpitch/2;
+		//srcu-=srcpitch/2;
+		for(int y = 0; y < h; y+=2, srcu += srcpitch, dstu += dstpitch){
 			memcpy_accel(dstu, srcu, pitch);
+			//memset(dstu, 0xff, abs(dstpitch));
+			//memcpy(dstu, srcu, pitch);
+		}
+		
 
 		for(int y = 0; y < h; y+=2, srcv += srcpitch, dstv += dstpitch)
+		{
+			//memset(dstv, 0xff, abs(dstpitch));
+			//memcpy(dstv, srcv, pitch);
 			memcpy_accel(dstv, srcv, pitch);
+			
+		}
 	}
 
 	return true;

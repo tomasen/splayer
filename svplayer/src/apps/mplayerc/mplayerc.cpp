@@ -3144,6 +3144,7 @@ BOOL CMPlayerCApp::Settings::bUserAeroUI(){
 	return  (bAeroGlassAvalibility && bAeroGlass) || bTransControl;
 }
 BOOL CMPlayerCApp::Settings::bShouldUseEVR(){
+	//return 1;
 	//Vista下使用EVR
 	//XP下 不用GPU加速时使用EVR
 	//XP下 用CoreAVC+CUDA时使用EVR

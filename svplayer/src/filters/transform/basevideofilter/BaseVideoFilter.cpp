@@ -164,16 +164,16 @@ HRESULT CBaseVideoFilter::ReconnectOutput(int w, int h, bool bSendSample, int re
 {
 	CMediaType& mt = m_pOutput->CurrentMediaType();
 
-  bool m_update_aspect = false;
+	if(h&1){if(h>0){h--;}else{h++;}}
+	bool m_update_aspect = false;
 	if(f_need_set_aspect)
 	{
 		int wout = 0, hout = 0, arxout = 0, aryout = 0;
 		ExtractDim(&mt, wout, hout, arxout, aryout);
 		if(arxout != m_arx || aryout != m_ary)
 		{
-			CString debug_s;
-			debug_s.Format(_T("\nCBaseVideoFilter::ReconnectOutput; wout = %d, hout = %d, current = %dx%d, set = %dx%d\n"), wout, hout, arxout, aryout, m_arx, m_ary);
-			TRACE(debug_s);
+			SVP_LogMsg5(_T("\nCBaseVideoFilter::ReconnectOutput; wout = %d, hout = %d, current = %dx%d, set = %dx%d\n"), wout, hout, arxout, aryout, m_arx, m_ary);
+			//TRACE(debug_s);
 			m_update_aspect = true;
 		}
 	}
@@ -237,6 +237,7 @@ HRESULT CBaseVideoFilter::ReconnectOutput(int w, int h, bool bSendSample, int re
 
 		bmi->biWidth = m_w;
 		bmi->biHeight = m_h;
+		SVP_LogMsg5(L"biHeight Reconnect %d", m_h);
 		bmi->biSizeImage = m_w*m_h*bmi->biBitCount>>3;
 
 		hr = m_pOutput->GetConnected()->QueryAccept(&mt);
@@ -288,6 +289,8 @@ HRESULT hr1 = 0, hr2 = 0;
 HRESULT CBaseVideoFilter::CopyBuffer(BYTE* pOut, BYTE* pIn, int w, int h, int pitchIn, const GUID& subtype, bool fInterlaced, BITMAPINFOHEADER* pForeOutputBIH)
 {
 	int abs_h = abs(h);
+	//if(abs_h&1){abs_h++;}
+	SVP_LogMsg5( L"CopyBuffer1");
 	BYTE* pInYUV[3] = {pIn, pIn + pitchIn*abs_h, pIn + pitchIn*abs_h + (pitchIn>>1)*(abs_h>>1)};
 	return CopyBuffer(pOut, pInYUV, w, h, pitchIn, subtype, fInterlaced, pForeOutputBIH);
 }
@@ -396,6 +399,7 @@ HRESULT CBaseVideoFilter::CopyBuffer(BYTE* pOut, BYTE** ppIn, int w, int h, int 
 	BITMAPINFOHEADER bihOut;
 	ExtractBIH(&m_pOutput->CurrentMediaType(), &bihOut);
 
+	SVP_LogMsg5( L"CopyBuffer2");
 	int pitchOut = 0;
 	if(pForeOutputBIH){
 		memcpy(&bihOut, pForeOutputBIH, sizeof(BITMAPINFOHEADER));
@@ -408,7 +412,7 @@ HRESULT CBaseVideoFilter::CopyBuffer(BYTE* pOut, BYTE** ppIn, int w, int h, int 
 	{
 		
 		pitchOut = bihOut.biWidth*bihOut.biBitCount>>3;
-		SVP_LogMsg5(L"x0 %d y %d %d %d ", w, h, pitchOut, bihOut.biHeight);
+		//SVP_LogMsg5(L"x0 %d y %d %d %d ", w, h, pitchOut, bihOut.biBitCount);
 		
 		if(bihOut.biHeight > 0 )
 		{
@@ -418,7 +422,7 @@ HRESULT CBaseVideoFilter::CopyBuffer(BYTE* pOut, BYTE** ppIn, int w, int h, int 
 		}
 		
 	}
-	SVP_LogMsg5(L"x1 %d y %d  ", w, h);
+	//SVP_LogMsg5(L"x1 %d y %d  ", w, h);
 	if(	h < 0) //flip?
 	{
 		h = -h;
@@ -429,7 +433,7 @@ HRESULT CBaseVideoFilter::CopyBuffer(BYTE* pOut, BYTE** ppIn, int w, int h, int 
 			ppIn[2] += (pitchIn>>1)*((h>>1)-1);
 		}
 	}
-SVP_LogMsg5(L"x2 %d y %d  ", w, h);
+//SVP_LogMsg5(L"x2 %d y %d  ", w, h);
 	if(subtype == MEDIASUBTYPE_I420 || subtype == MEDIASUBTYPE_IYUV || subtype == MEDIASUBTYPE_YV12)
 	{
 		BYTE* pIn = ppIn[0];
@@ -450,6 +454,7 @@ SVP_LogMsg5(L"x2 %d y %d  ", w, h);
 
 		if(bihOut.biCompression == '2YUY')
 		{
+			//SVP_LogMsg5(L"BitBltFromI420ToYUY2 ");
 			if(!BitBltFromI420ToYUY2(w, h, pOut, bihOut.biWidth*2, pIn, pInU, pInV, pitchIn, fInterlaced)){
 				SVP_LogMsg5(L"BitBltFromI420ToYUY2 fail");
 			}
@@ -457,7 +462,7 @@ SVP_LogMsg5(L"x2 %d y %d  ", w, h);
 		}
 		else if(bihOut.biCompression == '024I' || bihOut.biCompression == 'VUYI' || bihOut.biCompression == '21VY')
 		{
-			SVP_LogMsg5(L"BitBltFromI420ToI420 %d %d",w , h);
+			//SVP_LogMsg5(L"BitBltFromI420ToI420 %d %d",w , h);
 			if(!BitBltFromI420ToI420(w, h, pOut, pOutU, pOutV, bihOut.biWidth, pIn, pInU, pInV, pitchIn)){
 				SVP_LogMsg5(L"BitBltFromI420ToI420 fail");
 			}
@@ -729,6 +734,8 @@ HRESULT CBaseVideoFilter::GetMediaType(int iPosition, CMediaType* pmt)
 	int RealHeight = -1;
 	GetOutputSize(w, h, arx, ary, RealWidth, RealHeight);
 
+	SVP_LogMsg5(L"GetOutputSize %d %d %d %d %d %d",w, h, arx, ary, RealWidth, RealHeight);
+
 	BITMAPINFOHEADER bihOut;
 	memset(&bihOut, 0, sizeof(bihOut));
 	bihOut.biSize = sizeof(bihOut);
@@ -812,6 +819,29 @@ HRESULT CBaseVideoFilter::SetMediaType(PIN_DIRECTION dir, const CMediaType* pmt)
 	{
 		int wout = 0, hout = 0, arxout = 0, aryout = 0;
 		ExtractDim(pmt, wout, hout, arxout, aryout);
+		if(pmt->formattype == FORMAT_VideoInfo || pmt->formattype == FORMAT_MPEGVideo)
+		{
+			VIDEOINFOHEADER* vih = (VIDEOINFOHEADER*)pmt->pbFormat;
+			if(vih->bmiHeader.biHeight&1){
+				if(vih->bmiHeader.biHeight>0)
+					vih->bmiHeader.biHeight--;
+				else
+					vih->bmiHeader.biHeight++;
+			}
+			
+		}
+		else if(pmt->formattype == FORMAT_VideoInfo2 || pmt->formattype == FORMAT_MPEG2_VIDEO || pmt->formattype == FORMAT_DiracVideoInfo)
+		{
+			VIDEOINFOHEADER2* vih = (VIDEOINFOHEADER2*)pmt->pbFormat;
+			if(vih->bmiHeader.biHeight&1){
+				if(vih->bmiHeader.biHeight>0)
+					vih->bmiHeader.biHeight--;
+				else
+					vih->bmiHeader.biHeight++;
+			}
+		}
+
+		if(hout&1){if(hout>0){hout--;}else{hout++;}}
 		if(m_w == wout && m_h == hout && m_arx == arxout && m_ary == aryout)
 		{
 			m_wout = wout;

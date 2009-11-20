@@ -1088,6 +1088,7 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 			m_pAVCtx->idct_algo				= m_nIDCTAlgo;
 			m_pAVCtx->skip_loop_filter		= (AVDiscard)m_nDiscardMode;
 			m_pAVCtx->dsp_mask				= FF_MM_FORCE | m_pCpuId->GetFeatures();
+			//SVP_LogMsg5(L"L CPU %x" , m_pAVCtx->dsp_mask);
 			
 			m_pAVCtx->postgain				= 1.0f;
 			m_pAVCtx->debug_mv				= 0;

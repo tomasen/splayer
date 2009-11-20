@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include <math.h>
 #include <atlbase.h>
-#include "..\svpfilter\SVPSubFilter.h"
+#include "SVPSubFilter.h"
 
 
 #include "..\..\..\DSUtil\DSUtil.h"

@@ -8035,7 +8035,7 @@ void CMainFrame::OnPlayGoto()
 	CGoToDlg dlg((int)(m_wndSeekBar.GetPos()/10000), atpf > 0 ? (float)(1.0/atpf) : 0);
 	if(IDOK != dlg.DoModal() || dlg.m_time < 0) return;
 
-	SeekTo(10000i64 * dlg.m_time);
+	SeekTo(10000i64 * dlg.m_time , 0);
 }
 
 void CMainFrame::OnUpdateGoto(CCmdUI* pCmdUI)

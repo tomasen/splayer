@@ -489,6 +489,7 @@ bool BitBltFromI420ToI420(int w, int h, BYTE* dsty, BYTE* dstu, BYTE* dstv, int 
 {
 	if((w&1)) return(false);
 
+	//SVP_LogMsg5(L"h %d", h);
 	int orgh = h;
 	if(h&1){h--;}
 	

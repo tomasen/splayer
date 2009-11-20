@@ -440,13 +440,14 @@ HRESULT CBaseVideoFilter::CopyBuffer(BYTE* pOut, BYTE** ppIn, int w, int h, int 
 		BYTE* pInU = ppIn[1];
 		BYTE* pInV = ppIn[2];
 
-		int srch = h;
-		if(h&1){srch--;}
+		int hout = abs(bihOut.biHeight);
+		int srch = hout;
+		if(hout&1){srch--;}
 
 		if(subtype == MEDIASUBTYPE_YV12) {BYTE* tmp = pInU; pInU = pInV; pInV = tmp;}
 
-		BYTE* pOutU = pOut + bihOut.biWidth*h;
-		BYTE* pOutV = pOut + bihOut.biWidth*h + bihOut.biWidth*srch/4;
+		BYTE* pOutU = pOut + bihOut.biWidth*hout;
+		BYTE* pOutV = pOut + bihOut.biWidth*hout + bihOut.biWidth*srch/4;
 
 		if(bihOut.biCompression == '21VY') {BYTE* tmp = pOutU; pOutU = pOutV; pOutV = tmp;}
 

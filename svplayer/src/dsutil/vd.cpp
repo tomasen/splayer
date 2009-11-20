@@ -489,7 +489,7 @@ bool BitBltFromI420ToI420(int w, int h, BYTE* dsty, BYTE* dstu, BYTE* dstv, int 
 {
 	if((w&1)) return(false);
 
-	//if(h&1){h--;}
+	if(h&1){h--;}
 
 	if(w > 0 && w == srcpitch && w == dstpitch)
 	{

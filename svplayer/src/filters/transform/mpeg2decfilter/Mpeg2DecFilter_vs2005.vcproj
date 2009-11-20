@@ -499,7 +499,7 @@
 				AdditionalIncludeDirectories="..\..\BaseClasses;..\..\..\..\include"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				EnableEnhancedInstructionSet="0"
-				OpenMP="false"
+				OpenMP="true"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"

@@ -441,8 +441,8 @@ SVP_LogMsg5(L"x2 %d y %d  ", w, h);
 
 		if(subtype == MEDIASUBTYPE_YV12) {BYTE* tmp = pInU; pInU = pInV; pInV = tmp;}
 
-		BYTE* pOutU = pOut + bihOut.biWidth*srch;
-		BYTE* pOutV = pOut + bihOut.biWidth*srch*5/4;
+		BYTE* pOutU = pOut + bihOut.biWidth*h;
+		BYTE* pOutV = pOut + bihOut.biWidth*h + bihOut.biWidth*srch/4;
 
 		if(bihOut.biCompression == '21VY') {BYTE* tmp = pOutU; pOutU = pOutV; pOutV = tmp;}
 

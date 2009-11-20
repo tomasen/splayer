@@ -393,10 +393,10 @@ static void MC_c(uint8_t* dest, const uint8_t* ref, const int stride, int height
 
 extern mpeg2_mc_t mpeg2_mc_c;
 
-//
-
 CMpeg2Dec::CMpeg2Dec()
 {
+
+	
     m_shift = 0;
     m_is_display_initialized = 0;
 	m_action = NULL;
@@ -1911,8 +1911,41 @@ static int non_linear_quantizer_scale [] = {
 
 bool CMpeg2Decoder::m_idct_initialized = false;
 
+
+//
+UINT __cdecl ThreadMpegDCT1( LPVOID lpParam ) 
+{ 
+	CMpeg2Decoder* pMPGDec = (CMpeg2Decoder*)lpParam;
+
+	do{
+		try{
+			if(pMPGDec->m_qdct_jobs.GetCount() > 0){
+				dct_queue_job tjob = pMPGDec->m_qdct_jobs.RemoveHead();
+				pMPGDec->real_slice_DCT(tjob);
+			}else{
+				Sleep(1);
+			}
+		}
+		catch(...){
+			Sleep(1);
+		}
+		
+	}while(1);
+
+	return 0;
+}
+UINT __cdecl ThreadMpegDCT2( LPVOID lpParam ) 
+{ 
+	CMpeg2Decoder* pMPGDec = (CMpeg2Decoder*)lpParam;
+
+	return 0;
+}
+
 CMpeg2Decoder::CMpeg2Decoder()
 {
+	//AfxBeginThread(ThreadMpegDCT1, (LPVOID)this);
+	//AfxBeginThread(ThreadMpegDCT2, (LPVOID)this);
+
 	memset(&m_b_motion, 0, sizeof(m_b_motion));
 	memset(&m_f_motion, 0, sizeof(m_f_motion));
 
@@ -3466,6 +3499,50 @@ int CMpeg2Decoder::slice_init(int code)
 
 	return 0;
 }
+void CMpeg2Decoder::queue_slice_DCT(int DCT_offset, int DCT_stride	, int offset, uint8_t* dest_y,
+					 uint8_t* dest1, uint8_t* dest2, int uv_stride, int block_pattern , bool b_non_intra )
+{
+	dct_queue_job tjob = {DCT_offset,  DCT_stride	,  offset,  dest_y,
+		 dest1,  dest2,  uv_stride,  block_pattern ,  b_non_intra};
+	real_slice_DCT(tjob);
+	//m_qdct_jobs.AddTail(tjob);
+}
+void CMpeg2Decoder::real_slice_DCT(dct_queue_job tjob){
+
+	real_slice_DCT( tjob.DCT_offset, tjob.DCT_stride	,  tjob.offset,  tjob.dest_y,
+		tjob.dest1, tjob.dest2 , tjob.uv_stride, tjob.block_pattern, tjob.b_non_intra);
+}
+void CMpeg2Decoder::real_slice_DCT(int DCT_offset, int DCT_stride	, int offset, uint8_t* dest_y,
+					 uint8_t* dest1, uint8_t* dest2, int uv_stride, int block_pattern , bool b_non_intra )
+{
+
+	if(b_non_intra){
+
+		if(block_pattern & 0x20)
+			slice_non_intra_DCT(dest_y, DCT_stride);
+		if(block_pattern & 0x10)
+			slice_non_intra_DCT(dest_y + 8, DCT_stride);
+		if(block_pattern & 0x08)
+			slice_non_intra_DCT(dest_y + DCT_offset, DCT_stride);
+		if(block_pattern & 0x04)
+			slice_non_intra_DCT(dest_y + DCT_offset + 8, DCT_stride);
+		if(block_pattern & 0x2)
+			slice_non_intra_DCT(dest1, uv_stride);
+		if(block_pattern & 0x1)
+			slice_non_intra_DCT(dest2, uv_stride);
+	}else{
+
+		slice_intra_DCT(0, dest_y, DCT_stride);
+		slice_intra_DCT(0, dest_y + 8, DCT_stride);
+		slice_intra_DCT(0, dest_y + DCT_offset, DCT_stride);
+		slice_intra_DCT(0, dest_y + DCT_offset + 8, DCT_stride);
+		slice_intra_DCT(1, dest1, uv_stride);
+		slice_intra_DCT(2, dest2, uv_stride);
+
+	}
+
+}
+
 
 void CMpeg2Decoder::mpeg2_slice(int code, const uint8_t* buffer)
 {
@@ -3522,12 +3599,10 @@ void CMpeg2Decoder::mpeg2_slice(int code, const uint8_t* buffer)
 
 			offset = m_offset;
 			dest_y = m_dest[0] + offset;
-			slice_intra_DCT(0, dest_y, DCT_stride);
-			slice_intra_DCT(0, dest_y + 8, DCT_stride);
-			slice_intra_DCT(0, dest_y + DCT_offset, DCT_stride);
-			slice_intra_DCT(0, dest_y + DCT_offset + 8, DCT_stride);
-			slice_intra_DCT(1, m_dest[1] + (offset >> 1), m_uv_stride);
-			slice_intra_DCT (2, m_dest[2] + (offset >> 1), m_uv_stride);
+
+			#pragma omp parallel
+			real_slice_DCT( DCT_offset,  DCT_stride	,  offset,  dest_y,
+				m_dest[1] + (offset >> 1), m_dest[2] + (offset >> 1), m_uv_stride);
 
 			if(m_coding_type == D_TYPE)
 			{
@@ -3621,18 +3696,11 @@ void CMpeg2Decoder::mpeg2_slice(int code, const uint8_t* buffer)
 				offset = m_offset;
 				dest_y = m_dest[0] + offset;
 
-				if(coded_block_pattern & 0x20)
-					slice_non_intra_DCT(dest_y, DCT_stride);
-				if(coded_block_pattern & 0x10)
-					slice_non_intra_DCT(dest_y + 8, DCT_stride);
-				if(coded_block_pattern & 0x08)
-					slice_non_intra_DCT(dest_y + DCT_offset, DCT_stride);
-				if(coded_block_pattern & 0x04)
-					slice_non_intra_DCT(dest_y + DCT_offset + 8, DCT_stride);
-				if(coded_block_pattern & 0x2)
-					slice_non_intra_DCT(m_dest[1] + (offset >> 1), m_uv_stride);
-				if(coded_block_pattern & 0x1)
-					slice_non_intra_DCT(m_dest[2] + (offset >> 1), m_uv_stride);
+				#pragma omp parallel
+				real_slice_DCT( DCT_offset,  DCT_stride	,  offset,  dest_y,
+					m_dest[1] + (offset >> 1), m_dest[2] + (offset >> 1), m_uv_stride
+					,coded_block_pattern , 1);
+
 			}
 
 			m_dc_dct_pred[0] = 
@@ -3700,7 +3768,9 @@ void CMpeg2Decoder::mpeg2_slice(int code, const uint8_t* buffer)
 				} while(--mba_inc);
 			}
 		}
+		
 	}
+	
 }
 
 #undef bit_buf

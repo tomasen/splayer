@@ -1242,10 +1242,10 @@ IDR_HTML_UESETTINGPANEL HTML                    "res.en\\UESettingPanel.html"
 // 2110
 //
 
-DONATE.GIF              2110                    "res\\web\\donate.gif"
-BLANK.GIF               2110                    "res\\web\\blank.gif"
-BG-H.GIF                2110                    "res\\web\\bg-h.gif"
-THUMB-N.GIF             2110                    "res\\web\\thumb-n.gif"
+DONATE.GIF              2110                    "..\..\mplayerc\\res\\web\\donate.gif"
+BLANK.GIF               2110                    "..\..\mplayerc\\res\\web\\blank.gif"
+BG-H.GIF                2110                    "..\..\mplayerc\\res\\web\\bg-h.gif"
+THUMB-N.GIF             2110                    "..\..\mplayerc\\res\\web\\thumb-n.gif"
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////

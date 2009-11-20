@@ -3,7 +3,6 @@
 #include "SVPSliderCtrl.h"
 #include "SVPButton.h"
 #include "SVPStatic.h"
-#include "SVPCombo.h"
 #include "SVPDialog.h"
 
 

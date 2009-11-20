@@ -23,7 +23,7 @@
 #pragma once
 
 #include <stdint.h>
-
+#include <atlcoll.h>
 #define MPEG2_VERSION(a,b,c) (((a)<<16)|((b)<<8)|(c))
 #define MPEG2_RELEASE MPEG2_VERSION (0, 3, 2)	/* 0.3.2 */
 
@@ -153,6 +153,17 @@ typedef enum {
 typedef void mpeg2_mc_fct(uint8_t*, const uint8_t*, int, int);
 typedef struct {mpeg2_mc_fct* put[8]; mpeg2_mc_fct* avg[8];} mpeg2_mc_t;
 
+struct dct_queue_job{
+	int DCT_offset;
+	int DCT_stride;
+	int offset;
+	uint8_t* dest_y;
+	uint8_t* dest1;
+	uint8_t* dest2;
+	int uv_stride;
+	int block_pattern ;
+	bool b_non_intra ;
+};
 class CMpeg2Decoder
 {
 public:
@@ -166,6 +177,15 @@ public:
 		int pmv[2][2];
 		int f_code[2];
 	} m_b_motion, m_f_motion;
+
+
+	CAtlList<dct_queue_job> m_qdct_jobs;
+
+	void queue_slice_DCT(int DCT_offset, int DCT_stride	, int offset, uint8_t* dest_y,
+		uint8_t* dest1, uint8_t* dest2, int uv_stride, int block_pattern = 0, bool b_non_intra = 0);
+	void real_slice_DCT(dct_queue_job tjob);
+	void real_slice_DCT(int DCT_offset, int DCT_stride	, int offset, uint8_t* dest_y,
+		uint8_t* dest1, uint8_t* dest2, int uv_stride, int block_pattern = 0, bool b_non_intra = 0);
 
 private:
 	int get_macroblock_modes();
@@ -182,6 +202,7 @@ private:
 	int get_non_intra_block();
 	void get_mpeg1_intra_block();
 	int get_mpeg1_non_intra_block();
+	
 	void slice_intra_DCT(const int cc, uint8_t* dest, int stride);
 	void slice_non_intra_DCT(uint8_t* dest, int stride);
 

@@ -1469,6 +1469,7 @@ int ff_h264_decode_rbsp_trailing(H264Context *h, const uint8_t *src){
  * @param qp quantization parameter
  */
 static void h264_luma_dc_dequant_idct_c(DCTELEM *block, int qp, int qmul){
+	
 #define stride 16
     int i;
     int temp[16]; //FIXME check if this is a good idea
@@ -1508,6 +1509,7 @@ static void h264_luma_dc_dequant_idct_c(DCTELEM *block, int qp, int qmul){
 #undef stride
 
 static void chroma_dc_dequant_idct_c(DCTELEM *block, int qp, int qmul){
+	
     const int stride= 16*2;
     const int xStride= 16;
     int a,b,c,d,e;

@@ -71,7 +71,7 @@ uint detectCPUextensions(void)
 
     if (_dwDisabledISA == 0xffffffff) return 0;
 
-    _asm 
+    __asm
     {
         ; check if 'cpuid' instructions is available by toggling eflags bit 21
         ;

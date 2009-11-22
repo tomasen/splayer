@@ -182,11 +182,11 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/D &quot;WINVER=0x0600&quot;"
+				AdditionalOptions="/D &quot;WINVER=0x0600&quot; /Qopenmp-link:static"
 				AdditionalIncludeDirectories="..\..\..\..\include;ffmpeg;ffmpeg\libavcodec;ffmpeg\libavutil;..\..\BaseClasses"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				EnableEnhancedInstructionSet="0"
-				OpenMP="false"
+				OpenMP="true"
 				CompileAs="2"
 			/>
 			<Tool

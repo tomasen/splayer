@@ -11,7 +11,10 @@
 			Name="Release Unicode|Win32">
 			<Tool
 				Name="CppCmplrTool"
-				EnableEnhancedInstructionSet="1001"/>
+				GlobalOptimizations="true"
+				OptimizeForWindowsApplication="true"
+				EnableEnhancedInstructionSet="1001"
+				Parallelization="true"/>
 		</Configuration>
 	</Configurations>
 	<Files/>

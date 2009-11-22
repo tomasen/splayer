@@ -1552,21 +1552,22 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 		memset(m_pFFBuffer+nSize,0,FF_INPUT_BUFFER_PADDING_SIZE);
 		m_perf_timer[1] = GetPerfCounter();
 
-		if(m_nGoFaster ){
+		if( 1 || m_nGoFaster ){
 
 			if(m_pAVCtx->codec_id == CODEC_ID_H264)
 				m_pAVCtx->flags2 |= CODEC_FLAG2_FAST|CODEC_FLAG2_FASTPSKIP;
-			//m_pAVCtx->skip_loop_filter = AVDISCARD_ALL;
-			//m_pAVCtx->skip_frame = AVDISCARD_BIDIR;
-			//m_pAVCtx->skip_idct = AVDISCARD_ALL;
+			//m_pAVCtx->skip_loop_filter = AVDISCARD_NONREF;
+			//m_pAVCtx->skip_frame = AVDISCARD_NONREF;
+			//m_pAVCtx->skip_idct = AVDISCARD_NONREF;
 			m_nGoFaster = 0;
 		}else{
-			m_pAVCtx->flags2 = 0;
-			m_pAVCtx->skip_loop_filter = AVDISCARD_DEFAULT;
-			m_pAVCtx->skip_frame = AVDISCARD_DEFAULT;
-			m_pAVCtx->skip_idct = AVDISCARD_DEFAULT;
+			//m_pAVCtx->flags2 = 0;
+			//m_pAVCtx->skip_loop_filter = AVDISCARD_DEFAULT;
+			//m_pAVCtx->skip_frame = AVDISCARD_DEFAULT;
+			//m_pAVCtx->skip_idct = AVDISCARD_DEFAULT;
 		}
 		
+		#pragma omp parallel
 		used_bytes = avcodec_decode_video (m_pAVCtx, m_pFrame, &got_picture, m_pFFBuffer, nSize);
 		
 		
@@ -1635,6 +1636,7 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 		}
 
 		m_perf_timer[3] = GetPerfCounter();
+		#pragma omp parallel
 		CopyBuffer(pDataOut, m_pFrame->data, m_pAVCtx->width, m_pAVCtx->height, m_pFrame->linesize[0], subtype,false);//MEDIASUBTYPE_YUY2 for TSCC
 
 		m_perf_timer[4] = GetPerfCounter();

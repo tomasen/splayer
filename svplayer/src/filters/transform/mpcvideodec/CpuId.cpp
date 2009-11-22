@@ -100,11 +100,17 @@ char		szFeatures[256];
 		if(nBuff[3] & 1<<25)	m_nCPUFeatures|=MPC_MM_SSE;
 		if(nBuff[3] & 1<<26)	m_nCPUFeatures|=MPC_MM_SSE2;
 		if(nBuff[2] & 1<<0)		m_nCPUFeatures|=MPC_MM_SSE3;
-
+		if(nBuff[2] & 0x00080000){
+			m_nCPUFeatures|=MPC_MM_SSE4;
+		}
+		if(nBuff[2] & 0x00100000){
+			m_nCPUFeatures|=MPC_MM_SSE42;
+		}
 		// Intel specific:
 		if(m_nType == PROCESSOR_INTEL)
 		{
 			if(nBuff[2] & 1<<9)	m_nCPUFeatures|=MPC_MM_SSSE3;
+			
 		//	if(nBuff[2] & 1<<7) strcat(szFeatures, "EST ");
 		}
 
@@ -123,6 +129,7 @@ char		szFeatures[256];
 			if(nBuff[3] & 1<<31)	m_nCPUFeatures|=MPC_MM_3DNOW;
 		//	if(nBuff[3] & 1<<30)	strcat(szFeatures, "Ex3DNow! ");
 			if(nBuff[3] & 1<<22)	m_nCPUFeatures|=MPC_MM_MMXEXT;
+			if(nBuff[2] & 0x40)	 m_nCPUFeatures|=MPC_MM_SSE4A;
 		}
 
 		// Get level 1 cache size

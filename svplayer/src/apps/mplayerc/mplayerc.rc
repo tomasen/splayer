@@ -1733,6 +1733,7 @@ BEGIN
             MENUITEM "画质优先模式",                      ID_VIEW_MODE_QUALITY_MODE
             MENUITEM "性能优先模式",                      ID_VIEW_MODE_PERMORMANCE_MODE
             MENUITEM "启用硬件加速",                      ID_VIEW_MODE_DXVA_MODE
+			MENUITEM "禁用CoreAVC软解",                      ID_VIEW_MODE_SOFT_COREAVC_MODE
             MENUITEM "启用智能防撕裂",                     ID_VIEW_MODE_GOTHSYNC_MODE
             MENUITEM SEPARATOR
             POPUP "宽高比"
@@ -3367,6 +3368,7 @@ BEGIN
 
 	IDS_OSD_MSG_CHANGE_STREAM_AUDIO_FAILED  "切换音轨失败"
 	IDS_OSD_MSG_CHANGING_STREAM		"正在切换音轨 %s"
+	IDS_MENU_ITEM_DISABLE_SOFT_COREAVC_MODE		 "禁用CoreAVC软解"
 END
 
 #endif    // Chinese (P.R.C.) resources

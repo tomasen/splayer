@@ -982,6 +982,13 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	*/
 	s.bExternalSubtitleTime = false;
 	
+	if( m_CPU.GetFeatures() & (m_CPU.MPC_MM_SSE4|m_CPU.MPC_MM_SSE42| m_CPU.MPC_MM_SSE4A)){
+		s.bDisableSoftCAVC = true;
+		
+	}else{
+		
+	}
+	
 	if(s.bUserAeroUI()){
 
 		if(s.bAeroGlassAvalibility){
@@ -4337,6 +4344,9 @@ void CMainFrame::OnInitMenuPopup(CMenu * pPopupMenu, UINT nIndex, BOOL bSysMenu)
 				: (MF_DISABLED|MF_GRAYED);
 
 			pPopupMenu->EnableMenuItem(i, MF_BYPOSITION|fState);
+		}else if(str == ResStr(IDS_MENU_ITEM_DISABLE_SOFT_COREAVC_MODE))
+		{
+			
 		}else if(str == ResStr(IDS_MENU_ITEM_DVDNAV))
 		{
 			if(m_iPlaybackMode == PM_DVD)
@@ -8905,6 +8915,9 @@ void CMainFrame::OnRenderModeChange(UINT nID)
 		case 	ID_VIEW_MODE_DXVA_MODE	:
 				s.useGPUAcel = !s.useGPUAcel;
 			break;
+		case 	ID_VIEW_MODE_SOFT_COREAVC_MODE	:
+				s.bDisableSoftCAVC = !s.bDisableSoftCAVC ;
+			break;
 		case 	ID_VIEW_MODE_GOTHSYNC_MODE	:
 			if(s.fVMRGothSyncFix){
 				s.fVMRGothSyncFix = 1;
@@ -8936,6 +8949,13 @@ void CMainFrame::OnUpdateRenderModeChange(CCmdUI* pCmdUI)
 		case 	ID_VIEW_MODE_DXVA_MODE	:
 			pCmdUI->Enable(s.iSVPRenderType);
 			pCmdUI->SetCheck( s.useGPUAcel);
+			
+			break;
+		case 	ID_VIEW_MODE_SOFT_COREAVC_MODE	:
+			if( s.useGPUAcel &&  s.bHasCUDAforCoreAVC){
+				pCmdUI->Enable(false);
+			}
+			pCmdUI->SetCheck( s.bDisableSoftCAVC ); 
 			
 			break;
 		case 	ID_VIEW_MODE_GOTHSYNC_MODE	:

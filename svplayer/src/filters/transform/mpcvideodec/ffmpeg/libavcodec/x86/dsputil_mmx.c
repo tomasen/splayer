@@ -34,6 +34,7 @@
 #include "vp6dsp_sse2.h"
 #include "idct_xvid.h"
 
+#include <windows.h>
 //#undef NDEBUG
 //#include <assert.h>
 
@@ -2346,6 +2347,8 @@ static void float_to_int16_sse2(int16_t *dst, const float *src, long len){
     );
 }
 
+
+
 #if HAVE_YASM
 void ff_float_to_int16_interleave6_sse(int16_t *dst, const float **src, int len);
 void ff_float_to_int16_interleave6_3dnow(int16_t *dst, const float **src, int len);
@@ -2885,8 +2888,35 @@ void dsputil_init_mmx(DSPContext* c, AVCodecContext *avctx)
                 c->vp6_filter_diag4 = ff_vp6_filter_diag4_sse2;
             }
         }
+		//av_log(avctx, AV_LOG_ERROR, "going sse3");
 #if HAVE_SSSE3
+		//av_log(avctx, AV_LOG_ERROR, "have sse3");
         if(mm_flags & FF_MM_SSSE3){
+			//av_log(avctx, AV_LOG_ERROR, "Loading sse3");
+			
+#if 0		
+			HMODULE h264SSE3PI = LoadLibrary("h264sse3.dll");
+			if(h264SSE3PI)
+			{
+				// av_log(avctx, AV_LOG_ERROR, "Load sse3");
+				
+				void (*ff_h264_sse3_set_cropTbl)(uint8_t *dst);
+
+				ff_h264_sse3_set_cropTbl = GetProcAddress(h264SSE3PI, "ff_h264_sse3_set_cropTbl");
+				ff_h264_sse3_set_cropTbl(ff_cropTbl);
+				c->h264_idct8_add = GetProcAddress(h264SSE3PI, "ff_h264_sse3_idct8_add_c");
+				c->h264_idct_add = GetProcAddress(h264SSE3PI, "ff_h264_sse3_idct_add_c");
+				c->h264_idct8_dc_add = GetProcAddress(h264SSE3PI, "ff_h264_sse3_idct8_dc_add_c");
+				c->h264_idct_dc_add = GetProcAddress(h264SSE3PI, "ff_h264_sse3_idct_dc_add_c");
+				//c->h264_lowres_idct_add = GetProcAddress(h264SSE3PI, "ff_h264_sse3_lowres_idct_add_c");
+				//c->h264_lowres_idct_put = GetProcAddress(h264SSE3PI, "ff_h264_sse3_lowres_idct_put_c");
+				c->h264_idct_add16 = GetProcAddress(h264SSE3PI, "ff_h264_sse3_idct_add16_c");
+				c->h264_idct_add16intra = GetProcAddress(h264SSE3PI, "ff_h264_sse3_idct_add16intra_c");
+				c->h264_idct8_add4 = GetProcAddress(h264SSE3PI, "ff_h264_sse3_idct8_add4_c");
+				c->h264_idct_add8 = GetProcAddress(h264SSE3PI, "ff_h264_sse3_idct_add8_c");
+				
+			}
+#endif
             H264_QPEL_FUNCS(1, 0, ssse3);
             H264_QPEL_FUNCS(1, 1, ssse3);
             H264_QPEL_FUNCS(1, 2, ssse3);

@@ -3,9 +3,9 @@
 	#define HAVE_INLINE_ASM 1
   #define HAVE_MMX 1
   #define HAVE_SSE 1
-  #define HAVE_SSSE3 0
-  #define HAVE_AMD3DNOW 0
-  #define HAVE_AMD3DNOWEXT 0
+  #define HAVE_SSSE3 1
+  #define HAVE_AMD3DNOW 1
+  #define HAVE_AMD3DNOWEXT 1
   #define ARCH_X86 1  
   #ifdef ARCH_X86_64
     #define HAVE_FAST_64BIT 1
@@ -15,18 +15,20 @@
     #define ARCH_X86_32 1
   #endif
 #else
-	#define HAVE_INLINE_ASM 0
-	#define HAVE_MMX 0
-	#define HAVE_SSE 0
-	#define HAVE_SSSE3 0
-	#define HAVE_AMD3DNOW 0
-	#define HAVE_AMD3DNOWEXT 0
+	#define HAVE_INLINE_ASM 1
+	#define HAVE_MMX 1
+	#define HAVE_SSE 1
+	#define HAVE_SSSE3 1
+	#define HAVE_AMD3DNOW 1
+	#define HAVE_AMD3DNOWEXT 1
 	#define ARCH_X86 0
-	#define ARCH_X86_32 0
-	#define ARCH_X86_64 0
-	#define HAVE_FAST_64BIT 0
-  #define HAVE_CMOV 0
-  #define HAVE_FAST_CMOV 0
+ #ifdef ARCH_X86_64
+    #define HAVE_FAST_64BIT 1
+    #define HAVE_CMOV 1
+    #define HAVE_FAST_CMOV 1
+  #else
+    #define ARCH_X86_32 1
+  #endif
 #endif
 
 #define HAVE_TEN_OPERANDS 1

@@ -546,6 +546,7 @@ CMPCVideoDecFilter::CMPCVideoDecFilter(LPUNKNOWN lpunk, HRESULT* phr)
 	if(m_pCpuId->GetHTEnabled()){
 		m_nThreadNumber = max(1, m_nThreadNumber/2);
 	}
+
 	m_nDiscardMode			= AVDISCARD_DEFAULT;
 	m_nErrorRecognition		= FF_ER_CAREFUL;
 	m_nIDCTAlgo				= FF_IDCT_XVIDMMX;//FF_IDCT_XVIDMMX;  //FF_IDCT_AUTO //FF_IDCT_LIBMPEG2MMX //FF_IDCT_VP3
@@ -1552,7 +1553,7 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 		memset(m_pFFBuffer+nSize,0,FF_INPUT_BUFFER_PADDING_SIZE);
 		m_perf_timer[1] = GetPerfCounter();
 
-		if( 1 || m_nGoFaster ){
+		if( m_nGoFaster ){
 
 			if(m_pAVCtx->codec_id == CODEC_ID_H264)
 				m_pAVCtx->flags2 |= CODEC_FLAG2_FAST|CODEC_FLAG2_FASTPSKIP;
@@ -1567,7 +1568,7 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 			//m_pAVCtx->skip_idct = AVDISCARD_DEFAULT;
 		}
 		
-		#pragma omp parallel
+		//#pragma omp parallel
 		used_bytes = avcodec_decode_video (m_pAVCtx, m_pFrame, &got_picture, m_pFFBuffer, nSize);
 		
 		
@@ -1636,7 +1637,7 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 		}
 
 		m_perf_timer[3] = GetPerfCounter();
-		#pragma omp parallel
+		//#pragma omp parallel
 		CopyBuffer(pDataOut, m_pFrame->data, m_pAVCtx->width, m_pAVCtx->height, m_pFrame->linesize[0], subtype,false);//MEDIASUBTYPE_YUY2 for TSCC
 
 		m_perf_timer[4] = GetPerfCounter();
@@ -1652,7 +1653,8 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 
 		nSize	-= used_bytes;
 		pDataIn += used_bytes;
-#if LOGDEBUG
+#if 0
+		//LOGDEBUG
 		m_perf_timer[5] = GetPerfCounter();
 		LONGLONG totalPerfTime = m_perf_timer[5] - m_perf_timer[0];
 		SVP_LogMsg6(("Timer Decoder %.3f%% CopyBuff Delivery %.3f%% Other Decoder %.3f%%") , ((double)((m_perf_timer[2] - m_perf_timer[1]) * 10000 / totalPerfTime)) / 100,

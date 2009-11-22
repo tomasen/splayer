@@ -43,7 +43,10 @@ public:
 		MPC_MM_SSE2     = 0x0010, /* PIV SSE2 functions */
 		MPC_MM_3DNOWEXT = 0x0020, /* AMD 3DNowExt */
 		MPC_MM_SSE3     = 0x0040, /* AMD64 & PIV SSE3 functions*/
-		MPC_MM_SSSE3    = 0x0080  /* PIV Core 2 SSSE3 functions*/
+		MPC_MM_SSSE3    = 0x0080,  /* PIV Core 2 SSSE3 functions*/
+		MPC_MM_SSE4   =  0x0100, ///< Penryn SSE4.1 functions
+		MPC_MM_SSE42  =  0x0200, ///< Nehalem SSE4.2 functions
+		MPC_MM_SSE4A  =  MPC_MM_SSE42<<1 /// AMD SSE4A
 	};
 
 	CCpuId();

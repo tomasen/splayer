@@ -2501,13 +2501,15 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 		
 	    if( ! s.fVMR9MixerMode  ) 
 		{
-			//cavc
-			CString czvcPath = svptoolbox.GetPlayerPath(_T("codecs\\CoreAVCDecoder.ax"));
-			if(svptoolbox.ifFileExist(czvcPath))
-				szaExtFilterPaths.Add( czvcPath  );  //will crash without why
-			else{
-				czvcPath = svptoolbox.GetPlayerPath(_T("codecs\\cavc.ax"));
-				szaExtFilterPaths.Add( czvcPath  );
+			if( (s.useGPUAcel && s.bHasCUDAforCoreAVC) || (!s.useGPUAcel && !s.bDisableSoftCAVC)){
+				//cavc
+				CString czvcPath = svptoolbox.GetPlayerPath(_T("codecs\\CoreAVCDecoder.ax"));
+				if(svptoolbox.ifFileExist(czvcPath))
+					szaExtFilterPaths.Add( czvcPath  );  //will crash without why
+				else{
+					czvcPath = svptoolbox.GetPlayerPath(_T("codecs\\cavc.ax"));
+					szaExtFilterPaths.Add( czvcPath  );
+				}
 			}
 			////VMR9 seems not work with coreplayer
 	  		

@@ -487,6 +487,7 @@ public:
 		int iSVPRenderType;
 		
 		bool bExternalSubtitleTime;
+		bool bDisableSoftCAVC;
 		bool bDontNeedSVPSubFilter;
 		bool bNoMoreDXVA;
 

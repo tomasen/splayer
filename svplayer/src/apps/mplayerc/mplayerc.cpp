@@ -2851,6 +2851,8 @@ void CMPlayerCApp::Settings::InitEQPerset(){
 void CMPlayerCApp::Settings::InitChannelMap()
 {
 	memset(pSpeakerToChannelMap2, 0 , sizeof(pSpeakerToChannelMap2));
+	///大于等于6声道时 第3、4声源声道分别是中置和重低音 
+	//下面的算法把最后一个声源声道当作重低音了
 	//CString szOut;
 	for(int iInputChannelCount = 1; iInputChannelCount <= MAX_INPUT_CHANNELS; iInputChannelCount++){
 		for(int iOutputChannelCount = 1; iOutputChannelCount <= MAX_OUTPUT_CHANNELS; iOutputChannelCount++){
@@ -3075,7 +3077,24 @@ void CMPlayerCApp::Settings::InitChannelMap()
 
 		}
 	}
+	float tmp;
+	for(int iInputChannelCount = 5; iInputChannelCount <= MAX_INPUT_CHANNELS; iInputChannelCount++){
+		for(int iOutputChannelCount = 2; iOutputChannelCount <= MAX_OUTPUT_CHANNELS; iOutputChannelCount++){
 
+			for(int iSpeakerID = 0; iSpeakerID < iOutputChannelCount; iSpeakerID++){
+				int iLEFChann = max(iInputChannelCount-1, 5);
+				tmp = pSpeakerToChannelMap2[iInputChannelCount-1][iOutputChannelCount-1][iSpeakerID][iLEFChann] ;
+
+				for(int iChannelID = iLEFChann; iChannelID > 3; iChannelID--){
+					pSpeakerToChannelMap2[iInputChannelCount-1][iOutputChannelCount-1][iSpeakerID][iChannelID]
+					= pSpeakerToChannelMap2[iInputChannelCount-1][iOutputChannelCount-1][iSpeakerID][iChannelID-1];
+				}
+				pSpeakerToChannelMap2[iInputChannelCount-1][iOutputChannelCount-1][iSpeakerID][3] = tmp;
+			}
+
+		}
+	}
+	
 	//CSVPToolBox svpTool;
 	//svpTool.filePutContent( svpTool.GetPlayerPath(_T("ChannelSetting.txt")),  szOut);
 		
@@ -3109,6 +3128,8 @@ void CMPlayerCApp::Settings::ChangeChannelMapByCustomSetting()
 			}
 		}
 	}
+	//此处修正之前我的犯下的错误，大于等于第4声源的顺移，并将最后一个声源与第4声源的数据交换 （重低音）
+	
 	return;	
 }
 CString CMPlayerCApp::Settings::GetSVPSubStorePath(){

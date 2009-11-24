@@ -56,6 +56,7 @@ public:
 	CEdit m_nChannelsCtrl;
 	int m_nChannels;
 	int m_nSpeakers;
+	int m_iSS;
 	CSpinButtonCtrl m_nChannelsSpinCtrl;
 	CListCtrl m_list;
 	int m_tAudioTimeShift;

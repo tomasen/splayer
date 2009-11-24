@@ -129,19 +129,17 @@ BOOL CPPageAudioSwitcher::OnInitDialog()
 	m_list.InsertColumn(0, _T(""), LVCFMT_LEFT, 100);
 	m_list.InsertItem(0, _T(""));
 	for(int i = 0; i < min(18, m_nSpeakers); i++ ){
-		if(m_nSpeakers > 5 && i == (m_nSpeakers-1)){
-
-			m_list.InsertItem(i+1, ResStr(IDS_CHANNAPMAP_TABLE_LABEL_LOW_FREQUENCY));
-			continue;
+		//if(m_nSpeakers > 5 && i == (m_nSpeakers-1)){
+//			m_list.InsertItem(i+1, ResStr(IDS_CHANNAPMAP_TABLE_LABEL_LOW_FREQUENCY));
+//			continue;
+//		}
+		if(m_iSS = 220){
+			if(m_nSpeakers > 2 && m_nSpeakers <= 4 && i >= 2){
+				m_list.InsertItem(i+1, ResStr(IDS_CHANNAPMAP_TABLE_LABEL_FRONT_LEFT+i+2));
+				continue;
+			}
 		}
-		if(m_nSpeakers > 2 && m_nSpeakers <= 4 && i >= 2){
-			m_list.InsertItem(i+1, ResStr(IDS_CHANNAPMAP_TABLE_LABEL_FRONT_LEFT+i+2));
-			continue;
-		}
-		if( i >= 3){
-			m_list.InsertItem(i+1, ResStr(IDS_CHANNAPMAP_TABLE_LABEL_FRONT_LEFT+i+1));
-			continue;
-		}
+	
 		m_list.InsertItem(i+1, ResStr(IDS_CHANNAPMAP_TABLE_LABEL_FRONT_LEFT+i));
 	}
 	
@@ -211,7 +209,7 @@ BOOL CPPageAudioSwitcher::OnApply()
 	if(m_pASF)
 	{
 	//	m_pASF->SetSpeakerConfig(s.fCustomChannelMapping, s.pSpeakerToChannelMap);
-		m_pASF->SetSpeakerChannelConfig(m_nSpeakers, s.pSpeakerToChannelMap2, s.pSpeakerToChannelMapOffset,0);
+		m_pASF->SetSpeakerChannelConfig(m_nSpeakers, s.pSpeakerToChannelMap2, s.pSpeakerToChannelMapOffset,0,s.iSS);
 		m_pASF->EnableDownSamplingTo441(s.fDownSampleTo441);
 		m_pASF->SetAudioTimeShift(s.fAudioTimeShift ? 10000i64*s.tAudioTimeShift : 0);
 		m_pASF->SetNormalizeBoost(s.fAudioNormalize, s.fAudioNormalizeRecover, s.AudioBoost);

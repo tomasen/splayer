@@ -629,6 +629,7 @@ void CUESettingPanel::ApplyAllSetting(){
 		{
 			int iSS = _wtoi(m_sgs_speaker);
 
+			s.iSS = iSS;
 			s.bNotAutoCheckSpeaker = (int)(iSS /100)%10 + (int)(iSS/10) %10  + iSS%10; 
 
 			//SVP_LogMsg5(_T("s.bNotAutoCheckSpeaker %d") , s.bNotAutoCheckSpeaker);
@@ -641,7 +642,7 @@ void CUESettingPanel::ApplyAllSetting(){
 	if(m_pASF)
 	{
 		//m_pASF->SetSpeakerConfig(s.fCustomChannelMapping, s.pSpeakerToChannelMap);
-		m_pASF->SetSpeakerChannelConfig(AfxGetMyApp()->GetNumberOfSpeakers(), s.pSpeakerToChannelMap2, s.pSpeakerToChannelMapOffset, 0);
+		m_pASF->SetSpeakerChannelConfig(AfxGetMyApp()->GetNumberOfSpeakers(), s.pSpeakerToChannelMap2, s.pSpeakerToChannelMapOffset, 0, s.iSS);
 	}
 
 	//Sub Setting
@@ -780,6 +781,7 @@ HRESULT CUESettingPanel::OnButtonAudioChannelMapping(IHTMLElement* /*pElement*/)
 	CPPageAudioSwitcher* asPage = new CPPageAudioSwitcher(pFrame->pGB);
 	UpdateData();
 	int iSS = _wtoi(m_sgs_speaker);
+	asPage->m_iSS = iSS;
 	asPage->m_nSpeakers =  (int)(iSS /100)%10 + (int)(iSS/10) %10  + iSS%10; 
 	
 	CAutoPtr<CPPageAudioSwitcher> page(asPage);

@@ -3092,6 +3092,18 @@ void CMPlayerCApp::Settings::InitChannelMap()
 				pSpeakerToChannelMap2[iInputChannelCount-1][iOutputChannelCount-1][iSpeakerID][3] = tmp;
 			}
 
+			if(iOutputChannelCount > 4){
+				for(int iChannelID = 0; iChannelID < iInputChannelCount; iChannelID++){
+					int iLEFChann = max(iOutputChannelCount-1, 5);
+					tmp = pSpeakerToChannelMap2[iInputChannelCount-1][iOutputChannelCount-1][iLEFChann][iChannelID] ;
+					for(int iSpeakerID = iLEFChann; iSpeakerID > 3; iSpeakerID--){
+						pSpeakerToChannelMap2[iInputChannelCount-1][iOutputChannelCount-1][iSpeakerID][iChannelID]
+						= pSpeakerToChannelMap2[iInputChannelCount-1][iOutputChannelCount-1][iSpeakerID-1][iChannelID];
+					}
+					pSpeakerToChannelMap2[iInputChannelCount-1][iOutputChannelCount-1][3][iChannelID] = tmp;
+				}
+			}
+
 		}
 	}
 	
@@ -4033,7 +4045,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		bUseWaveOutDeviceByDefault = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEWAVEOUTDEVICEBYDEFAULT), 0);
 		fCustomChannelMapping = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_CUSTOMCHANNELMAPPING), 1);
 		iDecSpeakers = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DECSPEAKERS), -1);
-		int iSS = abs(iDecSpeakers) % 1000;
+		iSS = abs(iDecSpeakers) % 1000;
 		int iNumberOfSpeakers = -1;
 		if(iDecSpeakers == -1 || (iSS == 200 && iUpgradeReset < 400) ){
 			iDecSpeakers = 200;

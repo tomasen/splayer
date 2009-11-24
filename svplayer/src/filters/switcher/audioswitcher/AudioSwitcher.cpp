@@ -114,6 +114,7 @@ CAudioSwitcherFilter::CAudioSwitcherFilter(LPUNKNOWN lpunk, HRESULT* phr)
 	, m_tPlayedtime(0)
 	, m_dRate(1.0)
 	, m_fUpSampleTo(0)
+	, m_iSS(0)
 {
 	//memset(m_pSpeakerToChannelMap, 0, sizeof(m_pSpeakerToChannelMap));
 	memset(m_pChannelNormalize2, 0, sizeof(m_pChannelNormalize2));
@@ -158,7 +159,7 @@ HRESULT CAudioSwitcherFilter::CheckMediaType(const CMediaType* pmt)
 }
 
 template<class T, class U, int Umin, int Umax> 
-void mix(float mask[MAX_NORMALIZE_CHANNELS], int ch, int bps, BYTE* src, BYTE* dst)
+void mix(float mask[MAX_NORMALIZE_CHANNELS], int ch, int bps, BYTE* src, BYTE* dst, int iSS)
 {
 	double sum = 0;
 	
@@ -171,7 +172,11 @@ void mix(float mask[MAX_NORMALIZE_CHANNELS], int ch, int bps, BYTE* src, BYTE* d
 	}
 	for(int i = 0, j = min(MAX_NORMALIZE_CHANNELS, ch); i < j; i++)
 	{
-		if(mask[i] > 0)
+		int k = i;
+		if(iSS == 220 && i >= 2 ){
+			k = i+2;
+		}
+		if(mask[k] > 0)
 		{
 			U tmpData = *(T*)&src[bps*i];
 			if(setoffsetfor8bits)
@@ -179,7 +184,7 @@ void mix(float mask[MAX_NORMALIZE_CHANNELS], int ch, int bps, BYTE* src, BYTE* d
 				tmpData -= Umax/2;
 			}
 			
-			sum += tmpData * (double)mask[i] ;
+			sum += tmpData * (double)mask[k] ;
 			
 		}
 	}
@@ -195,16 +200,21 @@ void mix(float mask[MAX_NORMALIZE_CHANNELS], int ch, int bps, BYTE* src, BYTE* d
 }
 
 template<> 
-void mix<int, INT64, (-1<<24), (+1<<24)-1>(float mask[MAX_NORMALIZE_CHANNELS], int ch, int bps, BYTE* src, BYTE* dst)
+void mix<int, INT64, (-1<<24), (+1<<24)-1>(float mask[MAX_NORMALIZE_CHANNELS], int ch, int bps, BYTE* src, BYTE* dst, int iSS)
 {
 	INT64 sum = 0;
+	
 	for(int i = 0, j = min(MAX_NORMALIZE_CHANNELS, ch); i < j; i++)
 	{
-		if(mask[i] > 0)
+		int k = i;
+		if(iSS == 220 && i >= 2 ){
+			k = i+2;
+		}
+		if(mask[k] > 0)
 		{
 			int tmp;
 			memcpy((BYTE*)&tmp+1, &src[bps*i], 3);
-			sum += (tmp >> 8) * (double)mask[i];
+			sum += (tmp >> 8) * (double)mask[k];
 		}
 	}
 
@@ -339,6 +349,11 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 			m_fCustomChannelMapping2 = 1;
 		}else{
 			m_iSimpleSwitch = 0;
+		}
+		if(!m_fCustomChannelMapping2){
+			if(m_iSS == 220 && lTotalInputChannels > 2 && lTotalOutputChannels == 6){
+				m_fCustomChannelMapping2 = 1;
+			}
 		}
 		if(!m_fCustomChannelMapping2){
 			SVP_LogMsg5(L"None SimpleSwitch");
@@ -485,10 +500,15 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 		}
 		SVP_LogMsg5(L"m_fCustomChannelMapping2 %d ",m_fCustomChannelMapping2);
 			{
-				for(int i = 0; i < wfeout->nChannels; i++)
+				int iSS = 0;
+				if(m_iSS == 220 && lTotalInputChannels > 2 && lTotalOutputChannels == 6){
+					iSS = 220;
+				}
+				for(int i = 0; i< wfeout->nChannels; i++)
 				{
 					//DWORD mask = m_chs[wfe->nChannels-1][i].Channel;
 
+					
 					BYTE* src = pDataIn;
 					BYTE* dst = &pDataOut[bps*i];
 
@@ -500,21 +520,21 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 							for(int k = 0; k < len; k++, src += srcstep, dst += dststep)
 							{
 								mix<unsigned char, INT64, 0, UCHAR_MAX>(m_pCurrentChannelNormalize2[i]
-									, wfe->nChannels, bps, src, dst);
+									, wfe->nChannels, bps, src, dst, iSS);
 							}
 							break;
 						case WETYPE_PCM16:
 							for(int k = 0; k < len; k++, src += srcstep, dst += dststep)
 							{
 								mix<short, INT64, SHRT_MIN, SHRT_MAX>(m_pCurrentChannelNormalize2[i],
-									wfe->nChannels, bps, src, dst);
+									wfe->nChannels, bps, src, dst, iSS);
 							}
 							break;
 						case WETYPE_PCM24:
 							for(int k = 0; k < len; k++, src += srcstep, dst += dststep)
 							{
 								mix<int, INT64, (-1<<24), (+1<<24)-1>(m_pCurrentChannelNormalize2[i],
-									 wfe->nChannels, bps, src, dst);
+									 wfe->nChannels, bps, src, dst, iSS);
 							}
 							break;
 						case WETYPE_PCM32:
@@ -522,21 +542,21 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 							for(int k = 0; k < len; k++, src += srcstep, dst += dststep)
 							{
 								mix<int, __int64, INT_MIN, INT_MAX>(m_pCurrentChannelNormalize2[i],
-									wfe->nChannels, bps, src, dst);
+									wfe->nChannels, bps, src, dst, iSS);
 							}
 							break;
 						case WETYPE_FPCM32:
 							for(int k = 0; k < len; k++, src += srcstep, dst += dststep)
 							{
 								mix<float, double, -1, 1>(m_pCurrentChannelNormalize2[i],
-									wfe->nChannels, bps, src, dst);
+									wfe->nChannels, bps, src, dst, iSS);
 							}
 							break;
 						case WETYPE_FPCM64:
 							for(int k = 0; k < len; k++, src += srcstep, dst += dststep)
 							{
 								mix<double, double, -1, 1>(m_pCurrentChannelNormalize2[i],
-									wfe->nChannels, bps, src, dst);
+									wfe->nChannels, bps, src, dst, iSS);
 							}
 							break;
 					}
@@ -905,7 +925,7 @@ CMediaType CAudioSwitcherFilter::CreateNewOutputMediaType(CMediaType mt, long& c
 	if(m_lTotalOutputChannel > wfe->nChannels)
 		m_lTotalOutputChannel = wfe->nChannels;
 	
-	if(m_lTotalOutputChannel < wfe->nChannels )
+	if(m_lTotalOutputChannel < wfe->nChannels || (m_iSS == 220 && wfe->nChannels > 2) )
 	{
 		//m_chs[wfe->nChannels-1].RemoveAll();
 		/*
@@ -937,7 +957,11 @@ CMediaType CAudioSwitcherFilter::CreateNewOutputMediaType(CMediaType mt, long& c
 			for(int i = 0; i < m_lTotalOutputChannel; i++)
 				wfex->dwChannelMask |= (1 << i);
 
+			if(m_lTotalOutputChannel == 4 && m_iSS != 1310 ){//&& m_iSS == 1220 && m_lTotalOutputChannel == 6
+				wfex->dwChannelMask = KSAUDIO_SPEAKER_QUAD;
+			}
 			wfex->Format.nChannels = (WORD)m_lTotalOutputChannel;
+			
 			wfex->Format.nBlockAlign = wfex->Format.nChannels*wfex->Format.wBitsPerSample>>3;
 			wfex->Format.nAvgBytesPerSec = wfex->Format.nBlockAlign*wfex->Format.nSamplesPerSec;
 
@@ -1050,7 +1074,7 @@ STDMETHODIMP CAudioSwitcherFilter::GetInputSpeakerConfig(DWORD* pdwChannelMask)
 }
 STDMETHODIMP CAudioSwitcherFilter::SetSpeakerChannelConfig (int lTotalOutputChannel , 
 															float pChannelNormalize[MAX_INPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_NORMALIZE_CHANNELS]
-															,float pSpeakerToChannelMapOffset[MAX_INPUT_CHANNELS][MAX_NORMALIZE_CHANNELS], int iSimpleSwitch )
+															,float pSpeakerToChannelMapOffset[MAX_INPUT_CHANNELS][MAX_NORMALIZE_CHANNELS], int iSimpleSwitch,int iSS )
 {
 	//if(m_State == State_Stopped || m_pChannelNormalize2 != pChannelNormalize
 	//	|| memcmp(m_pChannelNormalize2, pChannelNormalize, sizeof(m_pChannelNormalize2)) ||
@@ -1074,6 +1098,11 @@ STDMETHODIMP CAudioSwitcherFilter::SetSpeakerChannelConfig (int lTotalOutputChan
 		if(iSimpleSwitch >= 0)
 			m_iSimpleSwitch = iSimpleSwitch;
 
+		if(iSS==310)
+			m_iSS = 1310;
+// 		if(m_iSS == 220 && m_lTotalOutputChannel == 4){
+// 			m_lTotalOutputChannel = 6;
+// 		}
 		//SVP_LogMsg5(L"seted %fd %f" ,  m_pChannelNormalize2[5][1][0][1] , pChannelNormalize[5][1][0][1] );
 
 		//SelectInput(pInput);

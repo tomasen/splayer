@@ -13152,7 +13152,7 @@ void CMainFrame::OnAudioChannalMapMenu(UINT nID){
 		if(pSS)
 		{
 			//Normal
-			pSS->SetSpeakerChannelConfig(AfxGetMyApp()->GetNumberOfSpeakers(), s.pSpeakerToChannelMap2, s.pSpeakerToChannelMapOffset , m_iAudioChannelMaping%4);
+			pSS->SetSpeakerChannelConfig(AfxGetMyApp()->GetNumberOfSpeakers(), s.pSpeakerToChannelMap2, s.pSpeakerToChannelMapOffset , m_iAudioChannelMaping%4, s.iSS);
 			
 			SendStatusMessage(ResStr(IDS_OSD_MSG_CHANGING_CHANNAL_MAPING_LEFT_RIGHT_CENTER), 3000);
 		}

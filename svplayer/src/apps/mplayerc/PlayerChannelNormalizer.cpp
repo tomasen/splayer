@@ -231,7 +231,7 @@ void CPlayerChannelNormalizer::OnRButtonUp(UINT nFlags, CPoint point)
 					s.pSpeakerToChannelMapOffset[m_nChannels-1][i] = 0;
 				}
 				if(m_pASF)
-					m_pASF->SetSpeakerChannelConfig( -1, s.pSpeakerToChannelMap2 , s.pSpeakerToChannelMapOffset, -1);
+					m_pASF->SetSpeakerChannelConfig( -1, s.pSpeakerToChannelMap2 , s.pSpeakerToChannelMapOffset, -1, s.iSS);
 
 			}
 			break;
@@ -259,7 +259,7 @@ void CPlayerChannelNormalizer::OnTimer(UINT_PTR nIDEvent)
 		AppSettings& s = AfxGetAppSettings();
 
 		if(m_pASF)
-			m_pASF->SetSpeakerChannelConfig( -1, s.pSpeakerToChannelMap2 , s.pSpeakerToChannelMapOffset, -1);
+			m_pASF->SetSpeakerChannelConfig( -1, s.pSpeakerToChannelMap2 , s.pSpeakerToChannelMapOffset, -1,s.iSS);
 
 	}
 	CSVPDialog::OnTimer(nIDEvent);

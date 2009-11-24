@@ -463,6 +463,7 @@ public:
 		int iDecSpeakers;
 		int bUseWaveOutDeviceByDefault;
 		int bNotAutoCheckSpeaker;
+		int iSS;
 
 		bool bShowControlBar;
 		bool bNotChangeFontToYH;

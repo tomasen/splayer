@@ -7,7 +7,8 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#include "afxres.h"
+#include "afxres.h"
+
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
@@ -1046,6 +1047,7 @@ BEGIN
             MENUITEM "Performance Mode",            ID_VIEW_MODE_PERMORMANCE_MODE
             MENUITEM "Enable Anti-Tearing",         ID_VIEW_MODE_GOTHSYNC_MODE
             MENUITEM "Enable GPU Acceleration",     ID_VIEW_MODE_DXVA_MODE
+            MENUITEM "Disable Soft CoreAVC Mode",                      ID_VIEW_MODE_SOFT_COREAVC_MODE 
             MENUITEM SEPARATOR
             POPUP "Flip"
             BEGIN
@@ -2200,6 +2202,7 @@ BEGIN
     IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_CENTER "Select Center"
     IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_AUDIO "Audio Lang"
     IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_CHINESE "Chinese"
+    IDS_MENU_ITEM_DISABLE_SOFT_COREAVC_MODE          "Disable Soft Coreavc Mode" 
 END
 
 STRINGTABLE 
@@ -2691,7 +2694,8 @@ END
 //
 // Generated from the TEXTINCLUDE 3 resource.
 //
-
+
+
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
 

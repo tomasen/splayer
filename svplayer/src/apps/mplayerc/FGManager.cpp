@@ -2596,11 +2596,13 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 						pFGF->m_extensions.AddTail(_T(".csf"));
 						m_source.AddTail(pFGF);
 					}else if( szFPath.Find(_T("haalis.ax")) > 0 || szFPath.Find(_T("ts.dll")) > 0 || szFPath.Find(_T("ogm.dll")) > 0){ //useless
-					/*	pFGF->m_extensions.AddTail(_T(".ts"));
+						pFGF->m_extensions.AddTail(_T(".ts"));
 						pFGF->m_extensions.AddTail(_T(".m2ts"));
 						pFGF->m_extensions.AddTail(_T(".tp"));
 						pFGF->m_extensions.AddTail(_T(".ogg"));
-						pFGF->m_extensions.AddTail(_T(".ogm"));*/
+						pFGF->m_extensions.AddTail(_T(".ogm"));
+						pFGF->m_extensions.AddTail(_T(".mkv"));
+						pFGF->m_extensions.AddTail(_T(".vob"));
 						pFGF->SetTypes(fo->guids);
 						CString szName(fo->name);
 						if(szName.Find(_T("Media Splitter")) >= 0)

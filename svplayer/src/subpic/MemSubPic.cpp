@@ -345,6 +345,8 @@ STDMETHODIMP CMemSubPic::AlphaBlt(RECT* pSrc, RECT* pDst, SubPicDesc* pTarget)
 		dst.pitch = -dst.pitch;
 	}
 
+	//SVP_LogMsg5(L"Mempic %d %d %d %d %d %d", w, h , rd.Width() , rd.Height(), src.pitch, dst.pitch);
+	__try{
 	for(int j = 0; j < h; j++, s += src.pitch, d += dst.pitch)
 	{
 		if(dst.type == MSP_RGBA)
@@ -501,7 +503,10 @@ STDMETHODIMP CMemSubPic::AlphaBlt(RECT* pSrc, RECT* pDst, SubPicDesc* pTarget)
 			return E_NOTIMPL;
 		}
 	}
-
+	}__except(EXCEPTION_EXECUTE_HANDLER){
+	
+	}
+	__try{
 	dst.pitch = abs(dst.pitch);
 
 	if(dst.type == MSP_YV12 || dst.type == MSP_IYUV)
@@ -564,7 +569,9 @@ STDMETHODIMP CMemSubPic::AlphaBlt(RECT* pSrc, RECT* pDst, SubPicDesc* pTarget)
 			}
 		}
 	}
+}__except(EXCEPTION_EXECUTE_HANDLER){
 
+	}
 
 #ifdef _WIN64
 	ASSERT(FALSE);	// TODOX64

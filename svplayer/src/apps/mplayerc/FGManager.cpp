@@ -738,6 +738,7 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 			if (szFName.Find(_T("RDP DShow Redirection Filter")) >= 0 ) continue;
 			if (szFName.Find(_T("Sonic MP4 Demultiplexer")) >= 0 ) continue;
 			if (szFName.Find(_T("MainConcept")) >= 0 ) continue;
+			if (szFName.Find(_T("UUSEE DeMultiplexer")) >= 0 ) continue;
 			//if (szFName.Find(_T("AVI Decompressor (YV12)")) >= 0 ) continue;
 			//if (szFName.Find(_T("AVI Decompressor (I420)")) >= 0 ) continue;
 			//if (szFName.Find(_T("AVI Decompressor (YUY2)")) >= 0 ) continue;
@@ -752,6 +753,8 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 			CLSID FGID = pFGF->GetCLSID() ;
 
 				if (szFName.Find(_T("DirectVobSub")) >= 0 ) continue;
+				
+				if (FGID == GUIDFromCString(_T("{48CF8992-4161-49D6-9A9B-F1FDB3BAE74D}"))  ) continue; //"UUSEE DeMultiplexer"
 				//if (FGID == GUIDFromCString(_T("{E8D381DD-8C7D-4a6f-96ED-92BBB64064CF}"))  ) continue; SVPSubFilter
 			
 			

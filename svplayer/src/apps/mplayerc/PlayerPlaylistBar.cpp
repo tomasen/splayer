@@ -695,8 +695,10 @@ void CPlayerPlaylistBar::Empty()
 
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	if(pFrame){
-		pFrame->m_bAllowVolumeSuggestForThisPlaylist = true;
-		//pFrame->m_fLastIsAudioOnly = false;
+		__try{
+			pFrame->m_bAllowVolumeSuggestForThisPlaylist = true;
+		}__except(EXCEPTION_EXECUTE_HANDLER){} 
+	//pFrame->m_fLastIsAudioOnly = false;
 	}
 }
 void CPlayerPlaylistBar::RealFindMoreFileFromOneFileAndPutIntoPlaylist(CString szMediaFile , CAtlList<CString>& szaIn ){

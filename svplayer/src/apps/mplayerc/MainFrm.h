@@ -70,7 +70,6 @@
 
 #include "../../filters/transform/svpfilter/ISVPSubFilter.h"
 
-#include "../../filters/transform/mpcvideodec/CpuId.h"
 
 enum {PM_NONE, PM_FILE, PM_DVD, PM_CAPTURE};
 
@@ -311,7 +310,7 @@ private:
 	CPoint m_pDragFuncStartPoint;
 	int m_iRedrawAfterCloseCounter;
 public:
-	CCpuId m_CPU;
+	//CCpuId m_CPU;
 	void SetupSVPAudioMenu();
 	CMenu m_audios, m_popup;
 	void SetupEQPersetMenu();

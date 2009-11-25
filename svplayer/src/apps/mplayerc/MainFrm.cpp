@@ -982,12 +982,6 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	*/
 	s.bExternalSubtitleTime = false;
 	
-	if( m_CPU.GetFeatures() & (m_CPU.MPC_MM_SSE4|m_CPU.MPC_MM_SSE42| m_CPU.MPC_MM_SSE4A)){
-		s.bDisableSoftCAVC = true;
-		
-	}else{
-		
-	}
 	
 	if(s.bUserAeroUI()){
 

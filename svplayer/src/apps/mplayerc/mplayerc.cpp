@@ -38,6 +38,8 @@
 #include "DlgChkUpdater.h"
 #include <dsound.h>
 
+#include "../../filters/transform/mpcvideodec/CpuId.h"
+
 //#define  SPI_GETDESKWALLPAPER 115
 
 #include "..\..\filters\transform\mpadecfilter\MpaDecFilter.h"
@@ -2329,6 +2331,13 @@ void CMPlayerCApp::Settings::ThreadedLoading(){
 		
 	}
 
+
+	CCpuId m_CPU;
+	if( m_CPU.GetFeatures() & (m_CPU.MPC_MM_SSE4|m_CPU.MPC_MM_SSE42| m_CPU.MPC_MM_SSE4A)){
+		bDisableSoftCAVC = true;
+	}else{
+		bDisableSoftCAVC = false;
+	}
 }
 UINT __cdecl Thread_AppSettingLoadding( LPVOID lpParam ) 
 { 
@@ -3748,7 +3757,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		if(bUserAeroUI()){
 			//pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_TRANSPARENTTOOLBARPOSOFFSET)+_T("2"), m_lTransparentToolbarPosOffset);		
 		}
-		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("LastVersion"), 720);		
+		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("LastVersion"), 968);		
 		
 	}
 	else
@@ -4071,6 +4080,39 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		{
 			memcpy(pSpeakerToChannelMap2Custom, ptr, sizeof(pSpeakerToChannelMap2Custom));
 			delete [] ptr;
+
+			if(iUpgradeReset < 968){
+				//FixOffsetSetting
+				float tmp;
+				for(int iInputChannelCount = 5; iInputChannelCount <= MAX_INPUT_CHANNELS; iInputChannelCount++){
+					for(int iOutputChannelCount = 2; iOutputChannelCount <= MAX_OUTPUT_CHANNELS; iOutputChannelCount++){
+
+						for(int iSpeakerID = 0; iSpeakerID < iOutputChannelCount; iSpeakerID++){
+							int iLEFChann = max(iInputChannelCount-1, 5);
+							tmp = pSpeakerToChannelMap2Custom[iInputChannelCount-1][iOutputChannelCount-1][iSpeakerID][iLEFChann] ;
+
+							for(int iChannelID = iLEFChann; iChannelID > 3; iChannelID--){
+								pSpeakerToChannelMap2Custom[iInputChannelCount-1][iOutputChannelCount-1][iSpeakerID][iChannelID]
+								= pSpeakerToChannelMap2Custom[iInputChannelCount-1][iOutputChannelCount-1][iSpeakerID][iChannelID-1];
+							}
+							pSpeakerToChannelMap2Custom[iInputChannelCount-1][iOutputChannelCount-1][iSpeakerID][3] = tmp;
+						}
+
+						if(iOutputChannelCount > 4){
+							for(int iChannelID = 0; iChannelID < iInputChannelCount; iChannelID++){
+								int iLEFChann = max(iOutputChannelCount-1, 5);
+								tmp = pSpeakerToChannelMap2Custom[iInputChannelCount-1][iOutputChannelCount-1][iLEFChann][iChannelID] ;
+								for(int iSpeakerID = iLEFChann; iSpeakerID > 3; iSpeakerID--){
+									pSpeakerToChannelMap2Custom[iInputChannelCount-1][iOutputChannelCount-1][iSpeakerID][iChannelID]
+									= pSpeakerToChannelMap2Custom[iInputChannelCount-1][iOutputChannelCount-1][iSpeakerID-1][iChannelID];
+								}
+								pSpeakerToChannelMap2Custom[iInputChannelCount-1][iOutputChannelCount-1][3][iChannelID] = tmp;
+							}
+						}
+
+					}
+				}
+			}
 			ChangeChannelMapByCustomSetting();
 
 		}

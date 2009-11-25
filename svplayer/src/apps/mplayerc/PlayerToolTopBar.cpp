@@ -171,7 +171,7 @@ int CPlayerToolTopBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	m_nLogDPIY = pFrame->m_nLogDPIY;
 
-	CSUIButton* btnClose = new CSUIButton(L"TOP_CLOSE.BMP" , ALIGN_TOPRIGHT, CRect(1 , 1, 1,1)  , 0, ID_FILE_EXIT, TRUE, 0, 0 ) ;//ID_FILE_BTN_EXIT
+	btnClose = new CSUIButton(L"TOP_CLOSE.BMP" , ALIGN_TOPRIGHT, CRect(1 , 1, 1,1)  , 0, ID_FILE_EXIT, TRUE, 0, 0 ) ;//ID_FILE_BTN_EXIT
 	m_btnList.AddTail( btnClose );
 
 	CSUIButton* btnRestore = new CSUIButton(L"TOP_RESTORE.BMP" , ALIGN_TOPRIGHT, CRect(1 , 1, 1,1)  , 0, ID_VIEW_FULLSCREEN, TRUE,  ALIGN_RIGHT,  btnClose, CRect(1,1,1,1)) ;
@@ -336,7 +336,7 @@ void CPlayerToolTopBar::OnPaint()
 
 	CRect rc;
 	GetWindowRect(&rc);
-
+	CRect rcLeft(rcClient);
 	CRect rcBottomSqu = rcClient;
 	rcBottomSqu.top = rcBottomSqu.bottom - 1;
 	//hdc.FillSolidRect(rcBottomSqu, NEWUI_COLOR_BG);
@@ -348,6 +348,19 @@ void CPlayerToolTopBar::OnPaint()
 
 	hdc.FillSolidRect(rcBottomSqu,s.GetColorFromTheme(_T("TopToolBarBorder"), RGB(89,89,89)));
 
+	if(iLeftBorderPos >= 0)
+	{
+		//m_rgn.
+		//SVP_LogMsg5(L"hah2a %d %d", rcClient.left , iLeftBorderPos);
+		rcLeft.left = iLeftBorderPos;
+		rcLeft.right = rcLeft.left+1;
+		hdc.FillSolidRect(rcLeft,s.GetColorFromTheme(_T("TopToolBarBorder"), RGB(89,89,89)));
+		/*CBrush brush;
+		brush.CreateSolidBrush(s.GetColorFromTheme(_T("TopToolBarBorder"), RGB(89,89,89)));
+		HBRUSH holdbrush = (HBRUSH)hdc.SelectObject(brush);
+		hdc.FrameRgn(&m_rgn ,&brush , -1,-1);
+		hdc.SelectObject(holdbrush);*/
+	}
 	//rcBottomSqu = rcClient;
 	//rcBottomSqu.left = rcBottomSqu.right - 1;
 	//hdc.FillSolidRect(rcBottomSqu, RGB(89,89,89));
@@ -355,13 +368,55 @@ void CPlayerToolTopBar::OnPaint()
 	m_btnList.PaintAll(&hdc, rc);
 	
 }
+void CPlayerToolTopBar::OnResizeRgn(){
+	CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
 
+
+	 if(pFrame && ((pFrame->IsSomethingLoaded() && !pFrame->m_fAudioOnly) || !pFrame->IsSomethingLoaded() || !pFrame->IsCaptionMenuHidden()))
+	 {
+		 iLeftBorderPos = -9990;
+		SetWindowRgn(NULL,TRUE);  
+	 }
+	else{
+		CRect rc;
+		WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
+		GetWindowPlacement(&wp);
+		GetWindowRect(&rc);
+		CRect rc2(rc);
+		rc-=rc.TopLeft();
+		if((HRGN)m_rgn)
+		{
+			m_rgn.DeleteObject();
+		}
+		// create rounded rect region based on new window size
+		{
+			//rc.InflateRect(GetSystemMetrics(SM_CXBORDER), GetSystemMetrics(SM_CYBORDER));
+			//int l_size_of_corner = s.GetColorFromTheme(_T("WinFrameSizeOfCorner"), 3);
+			//m_rgn.CreateRoundRectRgn(0,0,rc.Width()-1,rc.Height()-1, 3,3);                 // rounded rect w/50 pixel corners
+
+			//btnClose->m_rcHitest.left
+			
+			//
+			//SVP_LogMsg5(L"haha %d %d", rc.Width()-20 , );
+			iLeftBorderPos =  btnClose->m_rcHitest.left-rc2.left-2 ;
+			//CRgn rgn_round, rgn_rect;
+			//m_rgn.CreateRectRgn(iLeftBorderPos,0, rc.Width(), rc.Height() );
+			m_rgn.CreateRoundRectRgn(iLeftBorderPos,0, rc.Width()+3, rc.Height()+1 ,3,3);
+			//rgn_round.CreateRoundRectRgn(iLeftBorderPos,0,rc.Width(),rc.Height()-1, 3,3); 
+
+			//m_rgn.CombineRgn( &rgn_rect, &rgn_round, RGN_AND);
+			// set window region to make rounded window
+		}
+		SetWindowRgn(m_rgn,TRUE); 
+	}
+}
 void CPlayerToolTopBar::OnSize(UINT nType, int cx, int cy)
 {
 	
 	__super::OnSize(nType, cx, cy);
 
 	ReCalcBtnPos();
+	OnResizeRgn();
 	Invalidate();
 }
 

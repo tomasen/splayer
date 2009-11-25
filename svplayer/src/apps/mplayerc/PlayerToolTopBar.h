@@ -7,6 +7,8 @@ class CPlayerToolTopBar : public CWnd
 {
 	DECLARE_DYNAMIC(CPlayerToolTopBar)
 	CRgn m_rgn;
+	int iLeftBorderPos;
+	CSUIButton* btnClose;
 	enum {IDT_CLOSE, IDT_TIPS};
 public:
 	CPlayerToolTopBar();
@@ -30,7 +32,6 @@ protected:
 
 
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-	void ReCalcBtnPos();
 	CSUIBtnList m_btnList;
 	CSUIBtnList* const m_pbtnList;
 	afx_msg void OnMove(int x, int y);
@@ -49,6 +50,8 @@ protected:
 	virtual BOOL Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID, CCreateContext* pContext = NULL);
 public:
 	void UpdateButtonStat();
+	void ReCalcBtnPos();
+	void OnResizeRgn();
 
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg LRESULT OnNcHitTest(CPoint point);

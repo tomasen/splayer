@@ -1390,9 +1390,14 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 			DWORD dnCS = s.nCS;
 			CPoint ptop(point);
 			MapWindowPoints(&m_wndView, &ptop, 1);
-			if(ptop.y < 20 && ( (IsSomethingLoaded() && !m_fAudioOnly) || !IsSomethingLoaded()) ){
+			if(ptop.y < 20 && ( ( (IsSomethingLoaded() && !m_fAudioOnly) || !IsSomethingLoaded()) || IsCaptionMenuHidden() ) ){//
 				if(!m_wndToolTopBar.IsWindowVisible()){
 					m_wndToolTopBar.ShowWindow(SW_SHOWNOACTIVATE);
+					if(( (IsSomethingLoaded() && !m_fAudioOnly) || !IsSomethingLoaded())){
+						//m_wndToolTopBar.ReCalcBtnPos();
+						//m_wndToolTopBar.OnResizeRgn();
+						//m_wndToolTopBar.Invalidate();
+					}
 					bSomethingChanged = true;
 				}
 			}else{

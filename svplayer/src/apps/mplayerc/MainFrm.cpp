@@ -12289,11 +12289,19 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 			PostMessage(WM_COMMAND, ID_FILE_POST_OPENMEDIA);
 		}
 
+		time_t tOpening = time(NULL);
 		while(m_iMediaLoadState != MLS_LOADED 
 			&& m_iMediaLoadState != MLS_CLOSING // FIXME
 			)
 		{
+			if( (time(NULL) - tOpening) > 10)
+			{
+
+				throw aborted;
+
+			}
 			Sleep(50);
+			
 		}
 
 		// PostMessage instead of SendMessage because the user might call CloseMedia and then we would deadlock

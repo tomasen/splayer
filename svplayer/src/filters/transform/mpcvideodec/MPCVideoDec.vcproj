@@ -186,7 +186,7 @@
 				AdditionalIncludeDirectories="..\..\..\..\include;ffmpeg;ffmpeg\libavcodec;ffmpeg\libavutil;..\..\BaseClasses"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				EnableEnhancedInstructionSet="0"
-				OpenMP="true"
+				OpenMP="false"
 				CompileAs="2"
 			/>
 			<Tool

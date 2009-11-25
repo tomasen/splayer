@@ -148,7 +148,7 @@ int FFH264CheckCompatibility(int nWidth, int nHeight, struct AVCodecContext* pAV
 	if (cur_sps != NULL)
 	{
 		
-		if (nPCIVendor == 4318) {
+		if (nPCIVendor == 4318) { //NV
 			// nVidia cards support level 5.1 since drivers v6.14.11.7800 for XP and drivers v7.15.11.7800 for Vista
 			// vA.B.C.D
 			int A, B, C, D;
@@ -174,7 +174,8 @@ int FFH264CheckCompatibility(int nWidth, int nHeight, struct AVCodecContext* pAV
 				}
 			}
 		}
-
+		else if (nPCIVendor == 0x5333)//PCIV_S3_Graphics
+			supportLevel51 = 1;
 		// Check max num reference frame according to the level
 		#define MAX_DPB_41 12288 // DPB value for level 4.1
 

@@ -840,8 +840,10 @@ Requires high performance graphic card on Windows XP">Enable transparency</label
 <input type="checkbox" id="chkplayrepeat" /><label for="chkplayrepeat">Repeat</label><br />
 <input type="checkbox" id="chktrayicon" /><label for="chktrayicon">Minimize to tray</label><br />
 <input type="checkbox" id="chkautoresumeplay" /><label for="chkautoresumeplay" title="Start playback from the last scene">Resume playback</label><br />
+<div style="display:none;">
+<input type="checkbox" id="chkautozoom" /><label for="chkautozoom">Zoom to fit window size</label><br />
 <input type="checkbox" id="launchfullscreen" /><label for="launchfullscreen">Start playback in fullscreen mode</label><br />
-<div style="display:none;"><input type="checkbox" id="chkremwinpos" /><label for="chkremwinpos">Remember window size and position</label><br />
+<input type="checkbox" id="chkremwinpos" /><label for="chkremwinpos">Remember window size and position</label><br />
 <input type="checkbox" id="chkuseini" /><label for="chkuseini" title="Don't write into registry">Save settings to ini file</label><br /></div>
 <input type="checkbox" id="chkusesmartdrag" /><label title="SmartDrag allows you to
 1. Resize the playback screen by dragging from the top right corner.
@@ -853,8 +855,6 @@ Requires high performance graphic card on Windows XP">Enable transparency</label
 </div>
 <!--<input type="checkbox" id="chkabnormal" /><label for="chkabnormal" title="Allowing SPlayer to use extra CPU resources
 This may affect other programs on a low performance PC">Increase process priority</label><br />-->
-<input type="checkbox" id="chkautozoom" /><label for="chkautozoom">Zoom to fit window size</label><br />
-<input type="checkbox" id="UseWaveOutDeviceByDefault" /><label for="UseWaveOutDeviceByDefault" title="Use WaveOut instead of DirectSound by default">Fast playback faster than 2X</label><br />
 <input type="checkbox" id="chkautoupdate" /><label for="chkautoupdate">Auto upgrade through Internet </label>to the latest　<select id="updateversion"><option value="">Default</option><option value="stable">Stable version</option><option value="beta">Beta version</option></select>　<br />
 <div style="display:none;"><input type="checkbox" id="chkremhistory" /><label for="chkremhistory"  style="display:none;">Remember playback history</label><br />
 <input type="checkbox" id="chkcdromenu" /><label for="chkcdromenu" title="Display CD-ROM drives under the 'File' menu.
@@ -923,6 +923,9 @@ Some 3D games can not be running simultaneously
 <input type="checkbox" id="usespdif" /><label for="usespdif" title="Output digital signals through optical or coaxial to external amplifier for decoding">SPDIF Output</label><br />
 <br /><input type="checkbox" id="normalize" /><label for="normalize" title="Boost sound volume level when it is too low in a video">Intelligent Normalizer (testing)</label><br />
 <br />
+<input type="checkbox" id="UseWaveOutDeviceByDefault" /><label for="UseWaveOutDeviceByDefault" title="Use WaveOut instead of DirectSound by default">Use Tradition WaveOut Device</label><br />
+<br />
+
 <i>Tips:<br />
  From the context menu "Audio" you can enable left or right channel only.<br />
  From "Audio" then "Output device" you can quickly switch audio output devices.<br />

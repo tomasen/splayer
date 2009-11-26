@@ -8068,7 +8068,10 @@ void CMainFrame::OnUpdateGoto(CCmdUI* pCmdUI)
 void CMainFrame::OnPlayChangeRate(UINT nID)
 {
 	if(m_iMediaLoadState != MLS_LOADED)
+	{
+		//SVP_LogMsg5(L"OnPlayChangeRate w/o playing");
 		return;
+	}
 
 	/* //need no more since tool bar dont have this anymore
 	if(m_wndToolBar.iFastFFWCount == 0){
@@ -8137,6 +8140,10 @@ void CMainFrame::OnPlayChangeRate(UINT nID)
 				iNewSpeedLevel = m_iSpeedLevel-5;
 			}
 			
+		}else if(iNewSpeedLevel != m_iSpeedLevel){
+			iNewSpeedLevel = m_iSpeedLevel;
+		}else{
+			return;
 		}
 		//else return;
 		

@@ -827,8 +827,9 @@ border:1px solid #efefef ;
 <input type="checkbox" id="chkplayrepeat" /><label for="chkplayrepeat">循环播放视频</label><br />
 <input type="checkbox" id="chktrayicon" /><label for="chktrayicon">最小化到系统托盘</label><br />
 <input type="checkbox" id="chkautoresumeplay" /><label for="chkautoresumeplay" title="从上次关闭的位置打开文件">启用断点续播功能</label><br />
-<input type="checkbox" id="launchfullscreen" /><label for="launchfullscreen">开始播放时自动全屏</label><br />
-<div style="display:none;"><input type="checkbox" id="chkremwinpos" /><label for="chkremwinpos">记忆窗口位置和尺寸</label><br />
+<div style="display:none;"><input type="checkbox" id="launchfullscreen" /><label for="launchfullscreen">开始播放时自动全屏</label><br />
+<input type="checkbox" id="chkautozoom" /><label for="chkautozoom">根据视频画面尺寸改变窗口大小</label><br />
+<input type="checkbox" id="chkremwinpos" /><label for="chkremwinpos">记忆窗口位置和尺寸</label><br />
 <input type="checkbox" id="chkuseini" /><label for="chkuseini" title="不将配置文件写入注册表">将设置保存至ini</label><br /></div>
 <input type="checkbox" id="chkusesmartdrag" /><label title="启用智能拖拽功能后，
 鼠标在画面右上角拖拽可以缩放画面，
@@ -839,8 +840,6 @@ border:1px solid #efefef ;
 </div>
 <!--<input type="checkbox" id="chkabnormal" /><label for="chkabnormal" title="允许播放器使用更多的CPU运算资源
 但播放时也有可能影响其他软件运行效率，特别是在低配置的电脑上。">提高进程优先级</label><br />-->
-<input type="checkbox" id="chkautozoom" /><label for="chkautozoom">根据视频画面尺寸改变窗口大小</label><br />
-<input type="checkbox" id="UseWaveOutDeviceByDefault" /><label for="UseWaveOutDeviceByDefault" title="优先使用WaveOut而非DirectSound音频设备">使变速播放支持2倍以上速度快进</label><br />
 <input type="checkbox" id="chkautoupdate" /><label for="chkautoupdate">通过网络自动升级</label>到最新的　<select id="updateversion"><option value="">默认</option><option value="stable">稳定版</option><option value="beta">预览版</option></select>　<br />
 <div style="display:none;"><input type="checkbox" id="chkremhistory" /><label for="chkremhistory"  style="display:none;">保存播放记录</label><br />
 <input type="checkbox" id="chkcdromenu" /><label for="chkcdromenu" title="在“文件”菜单下显示光盘驱动器列表菜单
@@ -909,6 +908,9 @@ border:1px solid #efefef ;
 <input type="checkbox" id="usespdif" /><label for="usespdif" title="通过光纤或同轴发送数字信号至外部功放进行音频解码">优先使用SPDIF输出</label><br />
 <br /><input type="checkbox" id="normalize" /><label for="normalize" title="当视频声音较轻时自动提高音量">智能音量放大 (试验阶段)</label><br />
 <br />
+<input type="checkbox" id="UseWaveOutDeviceByDefault" /><label for="UseWaveOutDeviceByDefault" title="优先使用WaveOut而非DirectSound音频设备">使用旧的音频输出模式（WaveOut）</label><br />
+<br />
+
 <i>小窍门：<br />
  播放时通过鼠标右键菜单 → “音频” 中 可以选择仅播放左声道或右声道<br />
  鼠标右键菜单 → “音频” → “输出设备”中 可以快速切换音频输出设备<br />

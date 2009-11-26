@@ -836,11 +836,11 @@ Requires high performance graphic card on Windows XP">Enable transparency</label
 <input type="checkbox" id="chkDisableCenterBigOpenBmp" /><label for="chkDisableCenterBigOpenBmp">Disable the center Open File button (Use double click instead)</label>
 <br />Notice: Most of the settings on this page requires a restart.
 </div>
-<div id="generalseting" class="hiddenarea">
-<input type="checkbox" id="chkplayrepeat" /><label for="chkplayrepeat">Repeat</label><br />
-<input type="checkbox" id="chktrayicon" /><label for="chktrayicon">Minimize to tray</label><br />
-<input type="checkbox" id="chkautoresumeplay" /><label for="chkautoresumeplay" title="Start playback from the last scene">Resume playback</label><br />
-<div style="display:none;">
+<div id="generalseting" class="hiddenarea"><br />
+<input type="checkbox" id="chkplayrepeat" /><label for="chkplayrepeat">Repeat</label><br /><br />
+<input type="checkbox" id="chktrayicon" /><label for="chktrayicon">Minimize to tray</label><br /><br />
+
+<div style="display:none;"><input type="checkbox" id="chkautoresumeplay" /><label for="chkautoresumeplay" title="Start playback from the last scene">Resume playback</label><br />
 <input type="checkbox" id="chkautozoom" /><label for="chkautozoom">Zoom to fit window size</label><br />
 <input type="checkbox" id="launchfullscreen" /><label for="launchfullscreen">Start playback in fullscreen mode</label><br />
 <input type="checkbox" id="chkremwinpos" /><label for="chkremwinpos">Remember window size and position</label><br />
@@ -848,11 +848,11 @@ Requires high performance graphic card on Windows XP">Enable transparency</label
 <input type="checkbox" id="chkusesmartdrag" /><label title="SmartDrag allows you to
 1. Resize the playback screen by dragging from the top right corner.
 2. Move the playback screen by dragging from the center.
-" for="chkusesmartdrag">Enable SmartDrag [<a href="?http://blog.splayer.org/?page_id=796" ><b>?</b></a>]</label><br />
+" for="chkusesmartdrag">Enable SmartDrag [<a href="?http://blog.splayer.org/?page_id=796" ><b>?</b></a>]</label><br /><br />
 <input type="checkbox" id="chkfileass" /><label for="chkfileass">Check for file associations on startup</label> <input type="button" value="*" style="font-size:7px;margin-left:5px;width:12px;" onclick="ueAPI.toggelblock('startupcheckextsdiv');" /><br />
 <div id='startupcheckextsdiv' style="display:none;margin:auto;">
     <textarea rows="3" id="startupcheckexts" style="margin-left:20px;margin-right:auto;" wrap="hard"></textarea>
-</div>
+</div><br />
 <!--<input type="checkbox" id="chkabnormal" /><label for="chkabnormal" title="Allowing SPlayer to use extra CPU resources
 This may affect other programs on a low performance PC">Increase process priority</label><br />-->
 <input type="checkbox" id="chkautoupdate" /><label for="chkautoupdate">Auto upgrade through Internet </label>to the latest　<select id="updateversion"><option value="">Default</option><option value="stable">Stable version</option><option value="beta">Beta version</option></select>　<br />
@@ -860,7 +860,7 @@ This may affect other programs on a low performance PC">Increase process priorit
 <input type="checkbox" id="chkcdromenu" /><label for="chkcdromenu" title="Display CD-ROM drives under the 'File' menu.
 May slow down menu openning">Hide CD-ROM drives list</label><br />
 <input type="checkbox" id="chkexitfullscreen" /><label for="chkexitfullscreen">Exit fullscreen on playback stop</label><br />
-</div>
+</div><br />
 Fast forward step: <div id="stepsliderbg" title="Tips: Press and hold the fast forward/rewind buttons to enlarge steps">
 	    <div id="stepsliderthumb"><img src="thumb-n.gif"></div>
 	</div> <br/>

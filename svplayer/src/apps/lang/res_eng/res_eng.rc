@@ -180,7 +180,7 @@ BEGIN
     ICON            128,IDC_STATIC,11,17,20,20
     LTEXT           "SPlayer (Shooter Player)",IDC_STATIC1,40,12,126,8,SS_NOPREFIX
     LTEXT           "Copyright (C) 2008-2009 Tomasen \n  Thanks to Gabest, casimir666, ffmpeg and\n    everyone with them",IDC_STATIC,40,26,170,29
-    LTEXT           "Version: 3.2",IDC_VERSION,40,57,170,8
+    LTEXT           "Version: 3.3",IDC_VERSION,40,57,170,8
     PUSHBUTTON      "Close",IDOK,160,8,50,14,WS_GROUP
     LTEXT           "This program is freeware and released under the GNU General Public License.",IDC_STATIC,40,69,170,25
 END

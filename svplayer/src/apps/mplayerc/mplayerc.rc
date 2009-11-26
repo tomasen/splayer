@@ -1668,8 +1668,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 3,2,0,0
- PRODUCTVERSION 3,2,0,0
+ FILEVERSION 3,3,0,0
+ PRODUCTVERSION 3,3,0,0
  FILEFLAGSMASK 0x1fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -1686,12 +1686,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "SPlayer"
             VALUE "FileDescription", "射手播放器"
-            VALUE "FileVersion", "3.2"
+            VALUE "FileVersion", "3.3"
             VALUE "InternalName", "射手播放器"
             VALUE "LegalCopyright", "Copyright (C) 2008-2009 Tomasen, Gabest, casimir666, ffmpeg"
             VALUE "OriginalFilename", "splayer.exe"
             VALUE "ProductName", "射手播放器"
-            VALUE "ProductVersion", "3, 2, 0, 0"
+            VALUE "ProductVersion", "3, 3, 0, 0"
         END
     END
     BLOCK "VarFileInfo"

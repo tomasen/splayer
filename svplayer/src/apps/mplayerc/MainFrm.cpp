@@ -9349,7 +9349,7 @@ void CMainFrame::OnFavoritesAddReal( BOOL bRecent , BOOL bForceDel )
 	REFERENCE_TIME rtCurPos; 
 	REFERENCE_TIME rtDurT; 
 	BOOL bDelFav = bForceDel;
-	if(bRecent){
+	if(bRecent && !bForceDel){
 		rtCurPos = GetPos();
 		rtDurT = GetDur();
 		if( rtCurPos > (rtDurT * 0.93) || rtCurPos < (rtDurT * 0.07)){

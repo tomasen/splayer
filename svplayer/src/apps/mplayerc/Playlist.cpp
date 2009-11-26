@@ -216,7 +216,15 @@ static int compare_left(const TCHAR *a, const TCHAR *b)
 	return 0;
 }
 
-
+bool _is_meaningless_char(TCHAR ax){
+	if(isdigit(ax) || isalpha(ax)){
+		return false;
+	}
+	if(ax >= 0x0080){
+		return false;
+	}
+	return true;
+}
 int strnatcmp(const TCHAR *a, const TCHAR *b)
 {
 	int ai, bi;
@@ -229,10 +237,10 @@ int strnatcmp(const TCHAR *a, const TCHAR *b)
 		cb = b[bi];
 
 		/* skip over leading spaces or zeros */
-		while (isspace(ca))
+		while (_is_meaningless_char(ca))
 			ca = a[++ai];
 
-		while (isspace(cb))
+		while (_is_meaningless_char(cb))
 			cb = b[++bi];
 
 		/* process run of digits */

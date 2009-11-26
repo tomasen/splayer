@@ -4731,10 +4731,15 @@ void CMPlayerCApp::Settings::SetFav(favtype ft, CAtlList<CString>& sl, BOOL bRec
 void CMPlayerCApp::Settings::DelFavByFn(favtype ft, BOOL bRecent, CString szMatch){
 	CAtlList<CString> sl;
 	GetFav(ft, sl, bRecent);
+	//SVP_LogMsg5(L" DelFavByFn  ");
 	if(bRecent){
+		CMD5Checksum cmd5;
+		CStringA szMD5data(szMatch);
+		CString szMatchmd5 = cmd5.GetMD5((BYTE*)szMD5data.GetBuffer() , szMD5data.GetLength() );
 		POSITION pos = sl.GetHeadPosition();
 		while(pos){
-			if( sl.GetAt(pos).Find(szMatch) >= 0 ){
+			if( sl.GetAt(pos).Find(szMatchmd5) >= 0 ){
+	//			SVP_LogMsg5(L" DelFavByFn RemoveAt ");
 				sl.RemoveAt(pos);
 				break;
 			}

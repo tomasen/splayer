@@ -3400,6 +3400,7 @@ bool CMainFrame::DoAfterPlaybackEvent()
 {
 	AppSettings& s = AfxGetAppSettings();
 
+	OnFavoritesAddReal(TRUE, TRUE);
 	bool fExit = false;
 
 	if(s.nCLSwitches&CLSW_CLOSE)
@@ -3759,13 +3760,24 @@ LRESULT CMainFrame::OnResumeFromState(WPARAM wParam, LPARAM lParam)
 	if(iPlaybackMode == PM_FILE)
 	{
 	//	SVP_LogMsg5(L"OnResumeFromState SeekTo %f", double(lParam) );
-		SeekTo(10000i64*int(lParam));
+		__int64 rtPos = 10000i64*int(lParam);
+		if(pMS){
+			__int64 rtDur = 0;
+			pMS->GetDuration(&rtDur);
+			if(rtPos > rtDur * 0.93){
+				return TRUE;
+			}
+		}
+
+		SeekTo(rtPos);
 	}
 	else if(iPlaybackMode == PM_DVD)
 	{
 		CComPtr<IDvdState> pDvdState;
 		pDvdState.Attach((IDvdState*)lParam);
-		if(pDVDC) pDVDC->SetState(pDvdState, DVD_CMD_FLAG_Block, NULL);
+		if(pDVDC){
+			pDVDC->SetState(pDvdState, DVD_CMD_FLAG_Block, NULL);
+		}
 	}
 	else if(iPlaybackMode == PM_CAPTURE)
 	{
@@ -8124,7 +8136,7 @@ void CMainFrame::OnPlayChangeRate(UINT nID)
 	}
 	else
 	{
-		int iNewSpeedLevel;
+		int iNewSpeedLevel ;
 
 		if(nID == ID_PLAY_INCRATE) {
 			if(m_iSpeedLevel < 10 && m_iSpeedLevel > -30){
@@ -8140,10 +8152,8 @@ void CMainFrame::OnPlayChangeRate(UINT nID)
 				iNewSpeedLevel = m_iSpeedLevel-5;
 			}
 			
-		}else if(iNewSpeedLevel != m_iSpeedLevel){
-			iNewSpeedLevel = m_iSpeedLevel;
 		}else{
-			return;
+			iNewSpeedLevel = m_iSpeedLevel;
 		}
 		//else return;
 		
@@ -9331,13 +9341,14 @@ public:
 void CMainFrame::OnFavoritesAdd(){
 	OnFavoritesAddReal();
 }
-void CMainFrame::OnFavoritesAddReal( BOOL bRecent)
+void CMainFrame::OnFavoritesAddReal( BOOL bRecent , BOOL bForceDel )
 {
 	AppSettings& s = AfxGetAppSettings();
 
+	//SVP_LogMsg5(L"OnFavoritesAddReal %d %d",bRecent, bForceDel);
 	REFERENCE_TIME rtCurPos; 
 	REFERENCE_TIME rtDurT; 
-	BOOL bDelFav = FALSE;
+	BOOL bDelFav = bForceDel;
 	if(bRecent){
 		rtCurPos = GetPos();
 		rtDurT = GetDur();
@@ -9384,7 +9395,7 @@ void CMainFrame::OnFavoritesAddReal( BOOL bRecent)
 				while(pos) str += _T(";") + pli.m_fns.GetNext(pos);
 			}
 		}
-
+//SVP_LogMsg5(L"OnFavoritesAddReal %d %d %s",bRecent, bDelFav, fn);
 		if(bDelFav)
 			s.DelFavByFn(FAV_FILE, bRecent,fn);
 		else

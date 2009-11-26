@@ -173,21 +173,22 @@ int CPlayerToolTopBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	btnClose = new CSUIButton(L"TOP_CLOSE.BMP" , ALIGN_TOPRIGHT, CRect(1 , 1, 1,1)  , 0, ID_FILE_EXIT, TRUE, 0, 0 ) ;//ID_FILE_BTN_EXIT
 	m_btnList.AddTail( btnClose );
+	
+		CSUIButton* btnRestore = new CSUIButton(L"TOP_RESTORE.BMP" , ALIGN_TOPRIGHT, CRect(1 , 1, 1,1)  , 0, ID_VIEW_FULLSCREEN, TRUE,  ALIGN_RIGHT,  btnClose, CRect(1,1,1,1)) ;
+		//btnRestore->addAlignRelButton( ALIGN_RIGHT,  btnPin1, CRect(1,1,1,1));
+		m_btnList.AddTail( btnRestore );
 
-	CSUIButton* btnRestore = new CSUIButton(L"TOP_RESTORE.BMP" , ALIGN_TOPRIGHT, CRect(1 , 1, 1,1)  , 0, ID_VIEW_FULLSCREEN, TRUE,  ALIGN_RIGHT,  btnClose, CRect(1,1,1,1)) ;
-	//btnRestore->addAlignRelButton( ALIGN_RIGHT,  btnPin1, CRect(1,1,1,1));
-	m_btnList.AddTail( btnRestore );
+		CSUIButton* btnPin1 = new CSUIButton(L"PINAIL.BMP" , ALIGN_TOPRIGHT, CRect(1 , 1, 1,1)  , 0, ID_ONTOP_ALWAYS, FALSE,ALIGN_RIGHT,  btnClose, CRect(1,1,1,1)) ;
+		btnPin1->addAlignRelButton( ALIGN_RIGHT,  btnRestore, CRect(1,1,1,1));
+		m_btnList.AddTail( btnPin1 );
+		CSUIButton* btnPin2 = new CSUIButton(L"PINAIL2.BMP" , ALIGN_TOPRIGHT, CRect(1 , 1, 1,1)  , 0, ID_ONTOP_NEVER, TRUE, ALIGN_RIGHT,  btnClose, CRect(1,1,1,1) ) ;
+		btnPin2->addAlignRelButton( ALIGN_RIGHT,  btnRestore, CRect(1,1,1,1));
+		m_btnList.AddTail( btnPin2 );
 
-	CSUIButton* btnPin1 = new CSUIButton(L"PINAIL.BMP" , ALIGN_TOPRIGHT, CRect(1 , 1, 1,1)  , 0, ID_ONTOP_ALWAYS, FALSE,ALIGN_RIGHT,  btnClose, CRect(1,1,1,1)) ;
-	btnPin1->addAlignRelButton( ALIGN_RIGHT,  btnRestore, CRect(1,1,1,1));
-	m_btnList.AddTail( btnPin1 );
-	CSUIButton* btnPin2 = new CSUIButton(L"PINAIL2.BMP" , ALIGN_TOPRIGHT, CRect(1 , 1, 1,1)  , 0, ID_ONTOP_NEVER, TRUE, ALIGN_RIGHT,  btnClose, CRect(1,1,1,1) ) ;
-	btnPin2->addAlignRelButton( ALIGN_RIGHT,  btnRestore, CRect(1,1,1,1));
-	m_btnList.AddTail( btnPin2 );
+		CSUIButton* btnFull =  new CSUIButton(L"TOP_FULLSCREEN.BMP" , ALIGN_TOPRIGHT, CRect(1 , 1, 1,1)  , 0, ID_VIEW_FULLSCREEN, FALSE, ALIGN_RIGHT,  btnPin1, CRect(1,1,1,1) ) ;
+		btnFull->addAlignRelButton(  ALIGN_RIGHT,  btnPin2, CRect(1,1,1,1));
+		m_btnList.AddTail(btnFull);
 
-	CSUIButton* btnFull =  new CSUIButton(L"TOP_FULLSCREEN.BMP" , ALIGN_TOPRIGHT, CRect(1 , 1, 1,1)  , 0, ID_VIEW_FULLSCREEN, FALSE, ALIGN_RIGHT,  btnPin1, CRect(1,1,1,1) ) ;
-	btnFull->addAlignRelButton(  ALIGN_RIGHT,  btnPin2, CRect(1,1,1,1));
-	m_btnList.AddTail(btnFull);
 
 	AppSettings& s = AfxGetAppSettings();
 	CSUIButton* btnFlip = NULL;
@@ -314,7 +315,12 @@ void CPlayerToolTopBar::UpdateButtonStat(){
 	m_btnList.SetHideStat( L"TOP_NORMAL.BMP" , !pFrame->m_fScreenHigherThanVideo || !bViewFROMOUTSIDE);
 
 	*/
-
+	if(s.htpcmode){
+		m_btnList.SetHideStat(L"TOP_RESTORE.BMP", 1);
+		//m_btnList.SetHideStat( L"PINAIL.BMP" ,1 );
+		//m_btnList.SetHideStat( L"PINAIL2.BMP" , 1);
+		m_btnList.SetHideStat( L"TOP_FULLSCREEN.BMP" , 1);
+	}
 }
 void CPlayerToolTopBar::OnMove(int x, int y)
 {

@@ -1087,6 +1087,10 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	else
 		m_nLoopSetting = ID_PLAYBACK_LOOP_NORMAL;
 
+	//if(s.htpcmode)
+	//	SendMessage(WM_COMMAND, ID_VIEW_FULLSCREEN);
+	
+
 	m_WndSizeInited++;
 	return 0;
 }
@@ -9903,6 +9907,9 @@ void CMainFrame::ToggleFullscreen(bool fToNearest, bool fSwitchScreenResWhenHasT
 	}
 	else
 	{
+		if( AfxGetAppSettings().htpcmode){
+			return;
+		}
 		if( m_fPlaylistBeforeToggleFullScreen )		
 			ShowControlBar(&m_wndPlaylistBar, TRUE, TRUE);
 
@@ -12473,7 +12480,7 @@ void CMainFrame::CloseMediaPrivate()
 
 	m_closingmsg = ResStr(IDS_CONTROLS_CLOSED);
 
-	AfxGetAppSettings().nCLSwitches &= CLSW_OPEN|CLSW_PLAY|CLSW_AFTERPLAYBACK_MASK|CLSW_NOFOCUS;
+	AfxGetAppSettings().nCLSwitches &= CLSW_OPEN|CLSW_PLAY|CLSW_AFTERPLAYBACK_MASK|CLSW_NOFOCUS|CLSW_HTPCMODE;
 
 	m_iMediaLoadState = MLS_CLOSED;
 }
@@ -16257,7 +16264,9 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 
 LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 {
+	AppSettings& s = AfxGetAppSettings();
 
+	
 
 	CString szWindowText ;
 	if(m_bDxvaInUse){
@@ -16271,8 +16280,10 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 	}
 	szWindowText.Append(m_szTitle);
 
-
-	AppSettings& s = AfxGetAppSettings();
+	if(s.htpcmode){
+		ToggleFullscreen(true,false);
+		return DefWindowProc(WM_NCPAINT, wParam, lParam);
+	}
 	if(s.bUserAeroTitle()){
 		SetWindowText(szWindowText);
 		return DefWindowProc(WM_NCPAINT, wParam, lParam);

@@ -2206,6 +2206,7 @@ CMPlayerCApp::Settings::Settings()
 	, MRUUrl(0, _T("Recent Url List"), _T("Url%d"), 20)
 	, hAccel(NULL)
 	, bSetTempChannelMaping(0)
+	, htpcmode(0)
 {
 
 }
@@ -4526,6 +4527,15 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 			m_lTransparentToolbarPosSavedOffset = m_lTransparentToolbarPosOffset;
 		}
 
+		if(nCLSwitches & CLSW_HTPCMODE){
+			launchfullscreen = 1;
+			htpcmode = 1;
+		
+		}else{
+			launchfullscreen = 0;
+			htpcmode = 0;
+		}
+
 		fInitialized = true;
 	}
 }
@@ -4579,6 +4589,7 @@ void CMPlayerCApp::Settings::ParseCommandLine(CAtlList<CString>& cmdln)
 			else if(sw == _T("hibernate")) nCLSwitches |= CLSW_HIBERNATE;
 			else if(sw == _T("shutdown")) nCLSwitches |= CLSW_SHUTDOWN;
 			else if(sw == _T("fromdmp")) { nCLSwitches |= CLSW_STARTFROMDMP; /*SVP_LogMsg5(L"dmpfrom %x", nCLSwitches);*/}
+			else if(sw == _T("htpc")) { nCLSwitches |= CLSW_HTPCMODE|CLSW_FULLSCREEN; }
 			else if(sw == _T("logoff")) nCLSwitches |= CLSW_LOGOFF;
 			else if(sw == _T("genui")) {nCLSwitches |= CLSW_GENUIINI;bGenUIINIOnExit = true; }
 			else if(sw == _T("adminoption")) { nCLSwitches |= CLSW_ADMINOPTION; iAdminOption = _ttoi (cmdln.GetNext(pos)); }

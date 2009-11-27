@@ -31,6 +31,7 @@
 #include <initguid.h>
 #include "..\..\..\..\include\moreuuids.h"
 #include "..\..\..\svplib\svplib.h"
+#define SVP_LogMsg5 __noop
 //#define TRACE SVP_LogMsg5
 #define BLOCKSTREAM
 
@@ -875,26 +876,49 @@ HRESULT CStreamSwitcherOutputPin::QueryAcceptUpstream(const AM_MEDIA_TYPE* pmt)
 HRESULT CStreamSwitcherOutputPin::DecideBufferSize(IMemAllocator* pAllocator, ALLOCATOR_PROPERTIES* pProperties)
 {
 	CStreamSwitcherInputPin* pIn = ((CStreamSwitcherFilter*)m_pFilter)->GetInputPin();
-	if(!pIn || !pIn->IsConnected()) return E_UNEXPECTED;
+	if(!pIn || !pIn->IsConnected()) {
+		SVP_LogMsg5(L"DecideBufferSize	if(!pIn || !pIn->IsConnected()) {");
+		return E_UNEXPECTED;
+	}
 
 	CComPtr<IMemAllocator> pAllocatorIn;
 	pIn->GetAllocator(&pAllocatorIn);
-	if(!pAllocatorIn) return E_UNEXPECTED;
+	if(!pAllocatorIn){
+		SVP_LogMsg5(L"DecideBufferSize pIn->GetAllocator(&pAllocatorIn);");
+		return E_UNEXPECTED;
+	}
 
 	HRESULT hr;
-    if(FAILED(hr = pAllocatorIn->GetProperties(pProperties))) 
+	if(FAILED(hr = pAllocatorIn->GetProperties(pProperties))) {
+		SVP_LogMsg5(L"DecideBufferSize	if(FAILED(hr = pAllocatorIn->GetProperties(pProperties))) {");
 		return hr;
+	}
 
-	if(pProperties->cBuffers < 8 && pIn->CurrentMediaType().majortype == MEDIATYPE_Audio)
-		pProperties->cBuffers = 8;
+	if( pIn->CurrentMediaType().majortype == MEDIATYPE_Audio){
+		if(pProperties->cBuffers < 8)
+			pProperties->cBuffers = 8;
+
+		WAVEFORMATEX* wfe = (WAVEFORMATEX*)pIn->CurrentMediaType().pbFormat;
+		pProperties->cbBuffer = (long) ((__int64) pProperties->cbBuffer * 8 / min( wfe->nChannels ,8 ) * 
+			96000 / min( wfe->nSamplesPerSec, 96000));
+
+	}
+
+	
+	
+	
 
 	ALLOCATOR_PROPERTIES Actual;
-    if(FAILED(hr = pAllocator->SetProperties(pProperties, &Actual))) 
+	if(FAILED(hr = pAllocator->SetProperties(pProperties, &Actual))) {
+		SVP_LogMsg5(L"DecideBufferSize 	if(FAILED(hr = pAllocator->SetProperties(pProperties, &Actual))) {");
 		return hr;
+	}
 
-	return(pProperties->cBuffers > Actual.cBuffers || pProperties->cbBuffer > Actual.cbBuffer
+	hr = (pProperties->cBuffers > Actual.cBuffers || pProperties->cbBuffer > Actual.cbBuffer
 		? E_FAIL
 		: NOERROR);
+	SVP_LogMsg5(L"DecideBufferSize  %d %d %d %d %x",pProperties->cBuffers  ,Actual.cBuffers  , pProperties->cbBuffer , Actual.cbBuffer , hr );
+	return hr;
 }
 
 // virtual

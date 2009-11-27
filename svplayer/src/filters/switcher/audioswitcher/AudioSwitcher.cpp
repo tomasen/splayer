@@ -812,29 +812,37 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 	
 			if(m_fEQControlOn || sample_mul > 1 || bChangeRate || m_fUpSampleTo ){
 				//SVP_LogMsg5(L"maul %f %f %f %f" ,m_boost , log10(m_boost) , sample_mul, sample_mul * (1+log10(m_boost)) );
-
+SVP_LogMsg5(L"Buffer Size %d, ActualLength %d", pOut->GetSize(), samples);
+				
+				
 				switch(iWePCMType){
 								case WETYPE_PCM8:
+									samples = min (  pOut->GetSize() ,samples);
 									for(int i = 0; i < samples; i++)
 										((BYTE*)pDataOut)[i] = clamp<BYTE>( buff[i] , 0, UCHAR_MAX );
 									break;
 								case WETYPE_PCM16:
+									samples = min (  pOut->GetSize()/2 ,samples);
 									for(int i = 0; i < samples; i++)
 										((short*)pDataOut)[i] = clamp<short>( buff[i] , SHRT_MIN, SHRT_MAX );
 									break;
 								case WETYPE_PCM24:
+									samples = min (  pOut->GetSize()/3 ,samples);
 									for(int i = 0; i < samples; i++)
 									{int tmp = clamp<int>( buff[i] , -1<<23, (1<<23)-1 ); memcpy(&pDataOut[i*3], &tmp, 3);}
 									break;
 								case WETYPE_PCM32:
+									samples = min (  pOut->GetSize()/4 ,samples);
 									for(int i = 0; i < samples; i++)
 										((int*)pDataOut)[i] = clamp<int>( buff[i] , INT_MIN, INT_MAX );
 									break;
 								case WETYPE_FPCM32:
+									samples = min (  pOut->GetSize()/4 ,samples);
 									for(int i = 0; i < samples; i++)
 										((float*)pDataOut)[i] = clamp<float>( buff[i] , -1, +1 );
 									break;
 								case WETYPE_FPCM64:
+									samples = min (  pOut->GetSize()/8 ,samples);
 									for(int i = 0; i < samples; i++)
 										((double*)pDataOut)[i] = clamp<double>( buff[i] , -1, +1 );
 									break;

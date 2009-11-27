@@ -93,6 +93,7 @@ class __declspec(uuid("18C16B08-6497-420e-AD14-22D21C2CEAB7")) CAudioSwitcherFil
 	int m_l_number_of_channels;
 
 	CSVPEqualizer m_EQualizer;
+
 public:
 	CAudioSwitcherFilter(LPUNKNOWN lpunk, HRESULT* phr);
 

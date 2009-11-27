@@ -370,6 +370,7 @@ bool CAviSplitterFilter::DemuxInit()
 {
 	if(!m_pFile) return(false);
 
+	
 	// reindex if needed
 
 	bool fReIndex = false;
@@ -393,6 +394,7 @@ bool CAviSplitterFilter::DemuxInit()
 		pSize.Allocate(m_pFile->m_avih.dwStreams);
 		memset((UINT64*)pSize, 0, sizeof(UINT64)*m_pFile->m_avih.dwStreams);
 		m_pFile->Seek(0);
+		m_llLastPos = 0;
         ReIndex(m_pFile->GetLength(), pSize);
 
 		if(m_fAbort) m_pFile->EmptyIndex();
@@ -479,6 +481,7 @@ void CAviSplitterFilter::DemuxSeek(REFERENCE_TIME rt)
 {
 	memset((DWORD*)m_tFrame, 0, sizeof(DWORD)*m_pFile->m_avih.dwStreams);
 	m_pFile->Seek(0);
+	m_llLastPos = 0;
 
 	DbgLog((LOG_TRACE, 0, _T("Seek: %I64d"), rt/10000));
 
@@ -559,26 +562,68 @@ bool CAviSplitterFilter::DemuxLoop()
 		{
 			CAviFile::strm_t* s = m_pFile->m_strms[minTrack];
 
+			m_llLastPos = m_pFile->GetPos();
 			m_pFile->Seek(s->cs[f].filepos);
 
 			DWORD size = 0;
 
 			if(s->cs[f].fChunkHdr)
 			{
-				SVP_LogMsg5(L"fChunkHdr");
-				DWORD id = 0;
-				if(S_OK != m_pFile->Read(id) || id == 0 || minTrack != TRACKNUM(id)
-				|| S_OK != m_pFile->Read(size))
-				{
-					fDiscontinuity[minTrack] = true;
-					SVP_LogMsg5(L"fDiscontinuity %d %x %d" , minTrack , id , TRACKNUM(id) );
-					break;
-				}
-
+				//SVP_LogMsg5(L"fChunkHdr");
 				UINT64 expectedsize = -1;
 				expectedsize = f < (DWORD)s->cs.GetCount()-1
 					? s->cs[f+1].size - s->cs[f].size
 					: s->totalsize - s->cs[f].size;
+
+				DWORD id = 0;
+				if(S_OK != m_pFile->Read(id) || id == 0 || minTrack != TRACKNUM(id)
+				|| S_OK != m_pFile->Read(size))
+				{
+					int itry = 1;
+					__int64 llGuessPos = m_llLastPos;
+					if(m_llLastPos < s->cs[f].filepos){
+						SVP_LogMsg5(L"fChunkHdr %f %f" , (double) m_llLastPos , (double) s->cs[f].filepos );
+						llGuessPos = m_llLastPos;
+					}else{
+							SVP_LogMsg5(L"fChunkHdr2"  );
+						llGuessPos = s->cs[f].filepos;
+					}
+					
+					while(1){
+						if(itry % 2){
+							m_pFile->Seek(llGuessPos+(itry>>1));
+						}else{
+							m_pFile->Seek(llGuessPos-(itry>>1));
+						}
+						
+						S_OK == m_pFile->Read(id);
+						if(id != 0 && minTrack == TRACKNUM(id)){
+							if(S_OK == m_pFile->Read(size) && size > 0 && s->GetChunkSize(size) == expectedsize){
+								SVP_LogMsg5(L"fChunkHdr2 tried %d"  , itry);
+								break;
+							}
+						}
+						itry++;
+						if(itry%3000 == 0){
+							Sleep(40);
+						}
+						if(itry > 40962){
+							id=0;
+							break;
+						}
+					}
+					if(id == 0 || minTrack != TRACKNUM(id) ){
+						fDiscontinuity[minTrack] = true;
+						SVP_LogMsg5(L"fDiscontinuity %d %f %x %d", minTrack ,(double)s->cs[f].filepos , id , TRACKNUM(id) );
+						break;
+					}else{
+						 //m_pFile->Read(size);
+						 SVP_LogMsg5(L"fContinuity %f %f %d %d",(double) s->cs[f].filepos , (double) m_pFile->GetPos(), itry ,size  );
+
+					}
+				}
+
+			
 
 				if(expectedsize != s->GetChunkSize(size))
 				{
@@ -587,6 +632,7 @@ bool CAviSplitterFilter::DemuxLoop()
 					// ASSERT(0);
 					break;
 				}
+				 m_llLastPos = m_pFile->GetPos();
 			}
 			else
 			{

@@ -268,10 +268,12 @@ HRESULT CAviFile::Parse(DWORD parentid, __int64 end)
 //				if(S_OK != Read(m_vprp)) return E_FAIL;
 				break;
 			case FCC('idx1'):
+				
 				ASSERT(m_idx1 == NULL);
 				m_idx1.Attach((AVIOLDINDEX*)new BYTE[size + 8]);
 				m_idx1->fcc = FCC('idx1');
 				m_idx1->cb = size;
+				SVP_LogMsg5(L"Got idx1 %d", m_idx1->cb );;
 				if(S_OK != ByteRead((BYTE*)(AVIOLDINDEX*)m_idx1 + 8, size)) return E_FAIL;
 				break;
 			default :
@@ -418,15 +420,31 @@ HRESULT CAviFile::BuildIndex()
 					{
 						DWORD id;
 						Seek(offset + idx->aIndex[j].dwOffset);
+						SVP_LogMsg5(L"m_idx1 %x %x %d %d %d %x" ,id ,  idx->aIndex[j].dwChunkId , offset + idx->aIndex[j].dwOffset , j , len ,TrackNumber);
 						Read(id);
 						if(id != idx->aIndex[j].dwChunkId)
 						{
-							TRACE(_T("WARNING: CAviFile::Init() detected absolute chunk addressing in \'idx1\' %x %x %d %d %d ")
+							SVP_LogMsg5(_T("WARNING: CAviFile::Init() detected absolute chunk addressing in \'idx1\' %x %x %d %d %d ")
 								,id ,  idx->aIndex[j].dwChunkId , offset + idx->aIndex[j].dwOffset , j , len);
 							offset = 0;
+							/*
+							offset = -8;
+							
+							Seek( idx->aIndex[j].dwOffset);
+							do{
+								offset+=8;
+								if(offset > 10240){
+										SVP_LogMsg5(L"m_idx1 nofound %x", id);
+									offset = 0;
+								}
+								Read(id);
+							}while(id != idx->aIndex[j].dwChunkId)	;
+							SVP_LogMsg5(L"m_idx1 %d"  , offset);
+							*/
 							//EmptyIndex();
 							//return E_ABORT;
 							//continue;
+							
 						}
 					}
 
@@ -438,6 +456,7 @@ HRESULT CAviFile::BuildIndex()
 					s->cs[frame].fChunkHdr = j == len-1 || idx->aIndex[j].dwOffset != idx->aIndex[j+1].dwOffset;
 					s->cs[frame].orgsize = idx->aIndex[j].dwSize;
 
+					//SVP_LogMsg5(L"m_idx1 TrackNumber %d %d %d %d %d %d " , TrackNumber ,s->cs[frame].fKeyFrame, s->cs[frame].size , s->cs[frame].filepos, s->cs[frame].fChunkHdr,	s->cs[frame].orgsize);
 					frame++;
 					size += s->GetChunkSize(idx->aIndex[j].dwSize);
 				}

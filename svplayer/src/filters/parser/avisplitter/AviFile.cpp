@@ -424,8 +424,8 @@ HRESULT CAviFile::BuildIndex()
 							TRACE(_T("WARNING: CAviFile::Init() detected absolute chunk addressing in \'idx1\' %x %x %d %d %d ")
 								,id ,  idx->aIndex[j].dwChunkId , offset + idx->aIndex[j].dwOffset , j , len);
 							offset = 0;
-							EmptyIndex();
-							return E_ABORT;
+							//EmptyIndex();
+							//return E_ABORT;
 							//continue;
 						}
 					}

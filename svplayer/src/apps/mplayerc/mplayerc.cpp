@@ -546,8 +546,41 @@ public:
 //#ifdef UNICODE
 	//	m_appname += _T(" (unicode build)");
 //#endif
-		cs_version.GetWindowText(m_strRevision);
-		m_strRevision += CString(_T("(Build ")) + SVP_REV_STR + _T(")");
+		//cs_version.GetWindowText(m_strRevision);
+		CString path;
+		GetModuleFileName(NULL, path.GetBuffer(MAX_PATH), MAX_PATH);
+		path.ReleaseBuffer();
+		
+			DWORD             dwHandle;
+			UINT              dwLen;
+			UINT              uLen;
+			UINT              cbTranslate = sizeof(VS_FIXEDFILEINFO);
+			LPVOID            lpBuffer;
+
+			dwLen  = GetFileVersionInfoSize(path, &dwHandle);
+
+			TCHAR * lpData = (TCHAR*) malloc(dwLen);
+			if(!lpData)
+				return TRUE;
+			memset((char*)lpData, 0 , dwLen);
+			VS_FIXEDFILEINFO* lpVerinfo;
+
+			/* GetFileVersionInfo() requires a char *, but the api doesn't
+			* indicate that it will modify it */
+			if(GetFileVersionInfo(path, dwHandle, dwLen, lpData) != 0)
+			{
+				VerQueryValue(lpData, 
+					TEXT("\\"),
+					(LPVOID*)&lpVerinfo,
+					&cbTranslate);
+
+				// Read the file description for each language and code page.
+
+				
+			}
+		
+			m_strRevision.Format(L"%s: %d.%d (Build %s)",ResStr( IDS_ABOUT_DIALOG_VERSION_LABEL ) , HIWORD(lpVerinfo->dwProductVersionMS),
+				LOWORD(lpVerinfo->dwProductVersionMS) ,  SVP_REV_STR );
 		UpdateData(FALSE);
 		return TRUE;
 	}

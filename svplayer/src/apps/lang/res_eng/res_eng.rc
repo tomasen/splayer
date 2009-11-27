@@ -2682,6 +2682,8 @@ BEGIN
 
 	IDS_OSD_MSG_CHANGE_STREAM_AUDIO_FAILED  "Audio stream switch failed"
 	IDS_OSD_MSG_CHANGING_STREAM		"Switch audio stream to %s"
+
+	IDS_ABOUT_DIALOG_VERSION_LABEL		"Version"
 END
 
 #endif    // Chinese (Singapore) resources

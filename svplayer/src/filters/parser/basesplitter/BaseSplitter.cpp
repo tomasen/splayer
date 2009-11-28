@@ -413,66 +413,70 @@ bool CBaseSplitterOutputPin::IsActive()
 
 DWORD CBaseSplitterOutputPin::ThreadProc()
 {
-	m_hrDeliver = S_OK;
-	m_fFlushing = m_fFlushed = false;
-	m_eEndFlush.Set();
-	__time32_t wStart =  _time32(NULL);
-	while(1)
-	{
-		Sleep(1);
-
-		DWORD cmd;
-		if(CheckRequest(&cmd))
+	try{
+		m_hrDeliver = S_OK;
+		m_fFlushing = m_fFlushed = false;
+		m_eEndFlush.Set();
+		__time32_t wStart =  _time32(NULL);
+		while(1)
 		{
-			m_hThread = NULL;
-			cmd = GetRequest();
-			Reply(S_OK);
-			ASSERT(cmd == CMD_EXIT);
-			return 0;
-		}
+			Sleep(1);
 
-		UINT waitEd = _time32(NULL) - wStart;
-		if(waitEd > 5){ //not wait more than 1 sec
-			//SVP_LogMsg3("CBaseSplitterOutputPin::ThreadProc %u", waitEd);
-			//break;
-			//m_hThread = NULL;
-			//Reply(S_FALSE);
-			//return 0;
-		}
-		int cnt = 0;
-		do
-		{
-			CAutoPtr<Packet> p;
-
+			DWORD cmd;
+			if(CheckRequest(&cmd))
 			{
-				CAutoLock cAutoLock(&m_queue);
-				if((cnt = m_queue.GetCount()) > 0)
-					p = m_queue.Remove();
+				m_hThread = NULL;
+				cmd = GetRequest();
+				Reply(S_OK);
+				ASSERT(cmd == CMD_EXIT);
+				return 0;
 			}
 
-			if(S_OK == m_hrDeliver && cnt > 0)
+			UINT waitEd = _time32(NULL) - wStart;
+			if(waitEd > 5){ //not wait more than 1 sec
+				//SVP_LogMsg3("CBaseSplitterOutputPin::ThreadProc %u", waitEd);
+				//break;
+				//m_hThread = NULL;
+				//Reply(S_FALSE);
+				//return 0;
+			}
+			int cnt = 0;
+			do
 			{
-				ASSERT(!m_fFlushing);
+				CAutoPtr<Packet> p;
 
-				m_fFlushed = false;
-
-				// flushing can still start here, to release a blocked deliver call
-
-				HRESULT hr = p 
-					? DeliverPacket(p) 
-					: DeliverEndOfStream();
-
-				m_eEndFlush.Wait(); // .. so we have to wait until it is done
-
-				if(hr != S_OK && !m_fFlushed) // and only report the error in m_hrDeliver if we didn't flush the stream
 				{
-					// CAutoLock cAutoLock(&m_csQueueLock);
-					m_hrDeliver = hr;
-					break;
+					CAutoLock cAutoLock(&m_queue);
+					if((cnt = m_queue.GetCount()) > 0)
+						p = m_queue.Remove();
+				}
+
+				if(S_OK == m_hrDeliver && cnt > 0)
+				{
+					ASSERT(!m_fFlushing);
+
+					m_fFlushed = false;
+
+					// flushing can still start here, to release a blocked deliver call
+
+					HRESULT hr = p 
+						? DeliverPacket(p) 
+						: DeliverEndOfStream();
+
+					m_eEndFlush.Wait(); // .. so we have to wait until it is done
+
+					if(hr != S_OK && !m_fFlushed) // and only report the error in m_hrDeliver if we didn't flush the stream
+					{
+						// CAutoLock cAutoLock(&m_csQueueLock);
+						m_hrDeliver = hr;
+						break;
+					}
 				}
 			}
+			while(--cnt > 0);
 		}
-		while(--cnt > 0);
+	}
+	catch (...) {
 	}
 }
 

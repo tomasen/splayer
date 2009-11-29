@@ -89,7 +89,7 @@ BEGIN
     PUSHBUTTON      "取消",IDC_BUTTON1,118,123,50,14,WS_DISABLED
     CONTROL         "<a href=""http://blog.splayer.org"">查看更新内容...</a>",IDC_SYSLINK1,
                     "SysLink",LWS_USEVISUALSTYLE | WS_TABSTOP,223,125,57,12
-    EDITTEXT        IDC_STATIC_DONE,30,71,175,19,ES_MULTILINE | ES_READONLY | ES_WANTRETURN | NOT WS_BORDER | NOT WS_TABSTOP,WS_EX_TRANSPARENT
+    EDITTEXT        IDC_STATIC_DONE,30,71,175,26,ES_MULTILINE | ES_READONLY | ES_WANTRETURN | NOT WS_BORDER | NOT WS_TABSTOP,WS_EX_TRANSPARENT
     LTEXT           "速度： ...",IDC_STATIC_SPEED,179,53,99,10
     LTEXT           "文件大小：",STATIC_CURRENT2,179,22,99,10
 END
@@ -101,8 +101,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,22
- PRODUCTVERSION 1,0,0,22
+ FILEVERSION 1,0,0,23
+ PRODUCTVERSION 1,0,0,23
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -117,14 +117,14 @@ BEGIN
     BEGIN
         BLOCK "080004b0"
         BEGIN
-            VALUE "CompanyName", "Shooter.cn"
+            VALUE "CompanyName", "SPlayer.org"
             VALUE "FileDescription", "射手影音播放器自动升级程序"
-            VALUE "FileVersion", "1.0.0.22"
+            VALUE "FileVersion", "1.0.0.23"
             VALUE "InternalName", "Updater.exe"
-            VALUE "LegalCopyright", "(c) Shooter.cn.  All rights reserved."
+            VALUE "LegalCopyright", "(c) SPlayer.org.  All rights reserved."
             VALUE "OriginalFilename", "Updater.exe"
             VALUE "ProductName", "射手影音播放器自动升级程序"
-            VALUE "ProductVersion", "1.0.0.22"
+            VALUE "ProductVersion", "1.0.0.23"
         END
     END
     BLOCK "VarFileInfo"

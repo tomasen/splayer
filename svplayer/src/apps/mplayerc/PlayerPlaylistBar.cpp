@@ -161,49 +161,53 @@ void CPlayerPlaylistBar::AddItem(CAtlList<CString>& fns, CAtlList<CString>* subs
 
 	if(pli.m_fns.IsEmpty()) return;
 
-	CString fn = pli.m_fns.GetHead();
+	try{
+		CString fn = pli.m_fns.GetHead();
 
-	if(s.fAutoloadAudio && fn.Find(_T("://")) < 0)
-	{
-		int i = fn.ReverseFind('.');
-		if(i > 0)
+		if(s.fAutoloadAudio && fn.Find(_T("://")) < 0)
 		{
-			//CMediaFormats& mf = AfxGetAppSettings().Formats;
-
-			CString ext = fn.Mid(i+1).MakeLower();
-
-			if(!mf.FindExt(ext, true))
+			int i = fn.ReverseFind('.');
+			if(i > 0)
 			{
-				
+				//CMediaFormats& mf = AfxGetAppSettings().Formats;
 
-				CString path = fn;
-				path.Replace('/', '\\');
-				path = path.Left(path.ReverseFind('\\')+1);
+				CString ext = fn.Mid(i+1).MakeLower();
 
-				WIN32_FIND_DATA fd = {0};
-				HANDLE hFind = FindFirstFile(fn.Left(i) + _T("*.*"), &fd);
-				if(hFind != INVALID_HANDLE_VALUE)
+				if(!mf.FindExt(ext, true))
 				{
-					do
-					{
-						if(fd.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY) continue;
-
-						CString fullpath = path + fd.cFileName;
-						CString ext2 = fullpath.Mid(fullpath.ReverseFind('.')+1).MakeLower();
-						if(!FindFileInList(pli.m_fns, fullpath) && ext != ext2 
-						&& mf.FindExt(ext2, true) && mf.IsUsingEngine(fullpath, DirectShow))
-						{
-							pli.m_fns.AddTail(fullpath);
-						}
-					}
-					while(FindNextFile(hFind, &fd));
 					
-					FindClose(hFind);
+
+					CString path = fn;
+					path.Replace('/', '\\');
+					path = path.Left(path.ReverseFind('\\')+1);
+
+					WIN32_FIND_DATA fd = {0};
+					HANDLE hFind = FindFirstFile(fn.Left(i) + _T("*.*"), &fd);
+					if(hFind != INVALID_HANDLE_VALUE)
+					{
+						do
+						{
+							if(fd.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY) continue;
+
+							CString fullpath = path + fd.cFileName;
+							CString ext2 = fullpath.Mid(fullpath.ReverseFind('.')+1).MakeLower();
+							if(!FindFileInList(pli.m_fns, fullpath) && ext != ext2 
+							&& mf.FindExt(ext2, true) && mf.IsUsingEngine(fullpath, DirectShow))
+							{
+								pli.m_fns.AddTail(fullpath);
+							}
+						}
+						while(FindNextFile(hFind, &fd));
+						
+						FindClose(hFind);
+					}
 				}
 			}
 		}
 	}
-
+	catch(...){
+		
+	}
 	//if(AfxGetAppSettings().fAutoloadSubtitles) //always autoload subtitles
 	/*
 {

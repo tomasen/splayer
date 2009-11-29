@@ -5415,7 +5415,7 @@ void CMPlayerCApp::SetLanguage (int nLanguage)
 						nLanguage = 1;
 						break;
 				}
-			
+				strSatellite = GetSatelliteDll(nLanguage) ;
 		}
 	}else{
 		strSatellite = GetSatelliteDll(nLanguage) ;

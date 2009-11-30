@@ -11992,7 +11992,8 @@ void CMainFrame::OnEnableDX9(){
 		ReRenderOrLoadMedia();
 	}
 }
-
+#include <MediaInfoDLL.h>
+using namespace MediaInfoDLL;
 bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 {
 	AppSettings& s = AfxGetAppSettings();
@@ -12036,6 +12037,27 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 			s.szCurrentExtension = fn.Right(4).MakeLower();
 			if(s.szCurrentExtension == _T(".ivm"))
 				s.bIsIVM = true;
+
+			s.bDisableSoftCAVCForce = false;
+			if( !(s.useGPUAcel && s.bHasCUDAforCoreAVC) ){
+				if(!s.bDisableSoftCAVC){
+					if(s.szCurrentExtension == _T(".mkv") ){
+
+						MediaInfoDLL::String f_name = fn;
+						MediaInfo MI;
+						MI.Open(f_name);
+						MI.Option(_T("Complete"));
+						CString MI_Text = MI.Inform().c_str();
+						MI.Close();
+
+						if(MI_Text.Find(_T("Unable to load")) < 0){
+							if(MI_Text.Find(_T("wpredp=2")) >= 0) s.bDisableSoftCAVCForce = true;
+						}
+						//
+					}
+				}
+			}
+			
 
 			int i = fn.Find(_T(":\\"));
 			if(i > 0)

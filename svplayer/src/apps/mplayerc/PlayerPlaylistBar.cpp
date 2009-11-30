@@ -161,7 +161,7 @@ void CPlayerPlaylistBar::AddItem(CAtlList<CString>& fns, CAtlList<CString>* subs
 
 	if(pli.m_fns.IsEmpty()) return;
 
-	try{
+	
 		CString fn = pli.m_fns.GetHead();
 
 		if(s.fAutoloadAudio && fn.Find(_T("://")) < 0)
@@ -204,10 +204,7 @@ void CPlayerPlaylistBar::AddItem(CAtlList<CString>& fns, CAtlList<CString>* subs
 				}
 			}
 		}
-	}
-	catch(...){
-		
-	}
+	
 	//if(AfxGetAppSettings().fAutoloadSubtitles) //always autoload subtitles
 	/*
 {

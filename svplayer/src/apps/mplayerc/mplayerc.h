@@ -490,6 +490,7 @@ public:
 		
 		bool bExternalSubtitleTime;
 		bool bDisableSoftCAVC;
+		bool bDisableSoftCAVCForce;
 		bool bDontNeedSVPSubFilter;
 		bool bNoMoreDXVA;
 

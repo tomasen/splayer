@@ -2504,7 +2504,7 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 		
 	    if( ! s.fVMR9MixerMode  ) 
 		{
-			if( (s.useGPUAcel && s.bHasCUDAforCoreAVC) || (!s.useGPUAcel && !s.bDisableSoftCAVC)){
+			if( (s.useGPUAcel && s.bHasCUDAforCoreAVC) || (!s.useGPUAcel && !s.bDisableSoftCAVC && !s.bDisableSoftCAVCForce)){
 				//cavc
 				CString czvcPath = svptoolbox.GetPlayerPath(_T("codecs\\CoreAVCDecoder.ax"));
 				if(svptoolbox.ifFileExist(czvcPath))

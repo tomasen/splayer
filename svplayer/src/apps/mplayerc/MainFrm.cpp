@@ -11992,8 +11992,32 @@ void CMainFrame::OnEnableDX9(){
 		ReRenderOrLoadMedia();
 	}
 }
-#include <MediaInfoDLL.h>
-using namespace MediaInfoDLL;
+
+long find_string_in_buf ( char *buf, size_t len,
+						 const char *s)
+{
+	long i, j;
+	int slen = strlen(s);
+	long imax = len - slen - 1;
+	long ret = -1;
+	int match;
+
+	for (i=0; i<imax; i++) {
+		match = 1;
+		for (j=0; j<slen; j++) {
+			if (buf[i+j] != s[j]) {
+				match = 0;
+				break;
+			}
+		}
+		if (match) {
+			ret = i;
+			break;
+		}
+	}
+
+	return ret;
+}
 bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 {
 	AppSettings& s = AfxGetAppSettings();
@@ -12043,16 +12067,20 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 				if(!s.bDisableSoftCAVC){
 					if(s.szCurrentExtension == _T(".mkv") ){
 
-						MediaInfoDLL::String f_name = fn;
-						MediaInfo MI;
-						MI.Open(f_name);
-						MI.Option(_T("Complete"));
-						CString MI_Text = MI.Inform().c_str();
-						MI.Close();
-
-						if(MI_Text.Find(_T("Unable to load")) < 0){
-							if(MI_Text.Find(_T("wpredp=2")) >= 0) s.bDisableSoftCAVCForce = true;
+						FILE* fp;
+						if ( _wfopen_s( &fp, fn, _T("rb") ) != 0){
+							
+						}else{
+							 char matchbuf[0x4000];
+							fread(matchbuf, sizeof( char ), 0x4000 ,fp);
+							if( find_string_in_buf(matchbuf, 0x4000, "wpredp=2") > 0 ){
+								s.bDisableSoftCAVCForce = true;
+								//AfxMessageBox(L"1");
+							}
+							fclose(fp);
 						}
+						//if(MI_Text.Find(_T("wpredp=2")) >= 0) s.bDisableSoftCAVCForce = true;
+						
 						//
 					}
 				}

@@ -2529,6 +2529,12 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 	  		
 		}
 	//}
+		if (!s.useGPUAcel && s.bDisableSoftCAVCForce){
+			CString cclPath = svptoolbox.GetPlayerPath(_T("codecs\\cl08.ax"));
+			if(svptoolbox.ifFileExist(cclPath))
+				szaExtFilterPaths.Add( cclPath  );  //will crash without why
+			
+		}
 
 
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("PMPSplitter.ax")) );

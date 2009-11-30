@@ -2367,7 +2367,7 @@ void CMPlayerCApp::Settings::ThreadedLoading(){
 
 
 	CCpuId m_CPU;
-	if( m_CPU.GetFeatures() & (m_CPU.MPC_MM_SSE4|m_CPU.MPC_MM_SSE42| m_CPU.MPC_MM_SSE4A)){
+	if(0 && m_CPU.GetFeatures() & (m_CPU.MPC_MM_SSE4|m_CPU.MPC_MM_SSE42| m_CPU.MPC_MM_SSE4A)){
 		bDisableSoftCAVC = true;
 	}else{
 		bDisableSoftCAVC = false;

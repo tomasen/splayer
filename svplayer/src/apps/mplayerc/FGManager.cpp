@@ -2477,7 +2477,7 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 	m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{AA59CBFA-F731-49E9-BE78-08665F339EFC}")), MERIT64_DO_NOT_USE)); //Bicubic Video Resizer
 	m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{9D2935C7-3D8B-4EF6-B0D1-C14064698794}")), MERIT64_DO_NOT_USE)); //DivXG400 ??
 
-	SVP_ForbidenCoreAVCTrayIcon();
+	
 
 	CSVPToolBox svptoolbox;
 	CStringArray szaExtFilterPaths;
@@ -2505,6 +2505,10 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 	    if( ! s.fVMR9MixerMode  ) 
 		{
 			if( (s.useGPUAcel && s.bHasCUDAforCoreAVC) || (!s.useGPUAcel && !s.bDisableSoftCAVC && !s.bDisableSoftCAVCForce)){
+				//if((s.useGPUAcel)){
+					//SVP_ForbidenCoreAVCTrayIcon();
+					SVP_SetCoreAvcCUDA(true);
+				//}
 				//cavc
 				CString czvcPath = svptoolbox.GetPlayerPath(_T("codecs\\CoreAVCDecoder.ax"));
 				if(svptoolbox.ifFileExist(czvcPath))

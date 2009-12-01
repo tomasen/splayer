@@ -29,6 +29,7 @@ LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SINGAPORE
 TOP_AUDIO.BMP           BITMAP                  "res.en\\TOP_AUDIO.bmp"
 TOP_VIDEO.BMP           BITMAP                  "res.en\\TOP_VIDEO.bmp"
 BTN_SUB.BMP             BITMAP                  "res.en\\BTN_SUB.bmp"
+BTN_BIGOPEN.BMP         BITMAP                  "res.en\\BTN_BIGOPEN.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //

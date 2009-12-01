@@ -3942,9 +3942,11 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		if(!IsVista()){
 			BOOL noDX93D = false;
 			for(int i = 0; i < szaGPUStrings.GetCount();i++){
-				if(szaGPUStrings.GetAt(i).Find(_T("(0x8086::0x2a42)")) >= 0){
+				if(szaGPUStrings.GetAt(i).Find(_T("(0x8086::0x2a42)")) >= 0
+					|| szaGPUStrings.GetAt(i).Find(_T("(0x1039::0x6351)")) >= 0){ // SiS Mirage 3 Graphics
 					noDX93D = true;
 				}
+				
 			}
 			if( noDX93D ){
 				iDefaultSVPRenderType = 0;

@@ -9352,7 +9352,7 @@ void CMainFrame::OnFavoritesAddReal( BOOL bRecent , BOOL bForceDel )
 	if(bRecent && !bForceDel){
 		rtCurPos = GetPos();
 		rtDurT = GetDur();
-		if( rtCurPos > (rtDurT * 0.93) || rtCurPos < (rtDurT * 0.07)){
+		if( rtCurPos > (rtDurT * 0.93) || rtCurPos < (rtDurT * 0.07) || rtDurT < 600000i64*15){
 			bDelFav = TRUE;
 		}
 	}
@@ -12071,9 +12071,9 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 						if ( _wfopen_s( &fp, fn, _T("rb") ) != 0){
 							
 						}else{
-							 char matchbuf[0x4000];
-							fread(matchbuf, sizeof( char ), 0x4000 ,fp);
-							if( find_string_in_buf(matchbuf, 0x4000, "wpredp=2") > 0 ){
+							char matchbuf[0x4000];
+							size_t iRead = fread(matchbuf, sizeof( char ), 0x4000 ,fp);
+							if( iRead > 200 && find_string_in_buf(matchbuf, iRead-100, "wpredp=2") > 0 ){
 								s.bDisableSoftCAVCForce = true;
 								//AfxMessageBox(L"1");
 							}

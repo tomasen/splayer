@@ -829,7 +829,7 @@ bool CMPlayerCApp::IsIniValid()
 //
 //*************************************************************
 
-BOOL RegDelnodeRecurse (HKEY hKeyRoot, LPTSTR lpSubKey)
+BOOL CMPlayerCApp::RegDelnodeRecurse (HKEY hKeyRoot, LPTSTR lpSubKey)
 {
 	LPTSTR lpEnd;
 	LONG lResult;
@@ -924,7 +924,7 @@ BOOL RegDelnodeRecurse (HKEY hKeyRoot, LPTSTR lpSubKey)
 //
 //*************************************************************
 
-BOOL RegDelnode (HKEY hKeyRoot, LPTSTR lpSubKey)
+BOOL CMPlayerCApp::RegDelnode (HKEY hKeyRoot, LPTSTR lpSubKey)
 {
 	TCHAR szDelKey[2 * MAX_PATH];
 

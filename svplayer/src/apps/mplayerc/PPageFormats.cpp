@@ -431,6 +431,16 @@ bool CPPageFormats::RegisterExt(CString ext, bool fRegister)
 	CString strProgID = _T("SPlayer") + ext;
 	CString strLabel = _T("");
 	
+	if(fRegister){
+		//为保证成功注册清理垃圾
+		AfxGetMyApp()->DelRegTree(HKEY_CLASSES_ROOT,  ext);
+		AfxGetMyApp()->DelRegTree(HKEY_CLASSES_ROOT,  _T("KMPlayer") + ext);
+		AfxGetMyApp()->DelRegTree(HKEY_CLASSES_ROOT,  _T("QQPlayer") + ext);
+		AfxGetMyApp()->DelRegTree(HKEY_CLASSES_ROOT,  _T("stormplayer") + ext);
+		AfxGetMyApp()->DelRegTree(HKEY_CLASSES_ROOT,  _T("RealPlayer") + ext+L".6");
+		AfxGetMyApp()->DelRegTree(HKEY_CLASSES_ROOT,  _T("RealPlayer") + ext+L".10");
+		AfxGetMyApp()->DelRegTree(HKEY_CLASSES_ROOT,  _T("Xmp") + ext);
+	}
 
 	CString path, fn, cmd;
 	if(!MakeRegParams(ext, path, fn, strLabel, cmd))
@@ -449,6 +459,7 @@ bool CPPageFormats::RegisterExt(CString ext, bool fRegister)
 	{
 		strLabel = buff;
 	}
+	key.SetStringValue(NULL, strProgID);
 
 	BOOL bIsRAR = ( ext.Right(3).MakeLower() == _T("rar") );
 	if(bIsRAR) {
@@ -484,6 +495,7 @@ bool CPPageFormats::RegisterExt(CString ext, bool fRegister)
 
 	// Create ProgID for this file type
 	if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, strProgID)) return(false);
+	
 	if(ERROR_SUCCESS != key.SetStringValue(NULL, strLabel)) return(false);
 
 	// Add to playlist option

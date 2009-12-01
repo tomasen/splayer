@@ -378,6 +378,9 @@ public:
 	bool IsIniValid();
 	void RemoveAllSetting();
 
+	BOOL RegDelnode (HKEY hKeyRoot, LPTSTR lpSubKey);
+	BOOL RegDelnodeRecurse (HKEY hKeyRoot, LPTSTR lpSubKey);
+
 	bool GetAppDataPath(CString& path);
 	
 	bool m_bGotResponse;

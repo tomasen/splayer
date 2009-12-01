@@ -9346,13 +9346,14 @@ void CMainFrame::OnFavoritesAddReal( BOOL bRecent , BOOL bForceDel )
 	AppSettings& s = AfxGetAppSettings();
 
 	//SVP_LogMsg5(L"OnFavoritesAddReal %d %d",bRecent, bForceDel);
-	REFERENCE_TIME rtCurPos; 
+	REFERENCE_TIME rtCurPos = GetPos() ; 
 	REFERENCE_TIME rtDurT; 
 	BOOL bDelFav = bForceDel;
 	if(bRecent && !bForceDel){
-		rtCurPos = GetPos();
+		rtCurPos -=  100000000i64;
+		
 		rtDurT = GetDur();
-		if( rtCurPos > (rtDurT * 0.93) || rtCurPos < (rtDurT * 0.07) || rtDurT < 600000i64*15){
+		if(rtCurPos < 0 || rtCurPos > (rtDurT * 0.93) || rtCurPos < (rtDurT * 0.07) || rtDurT < 600000000i64*15){
 			bDelFav = TRUE;
 		}
 	}
@@ -9379,10 +9380,11 @@ void CMainFrame::OnFavoritesAddReal( BOOL bRecent , BOOL bForceDel )
 			str = dlg.m_name;
 			str.Remove(';');
 			bRememberPos = dlg.m_fRememberPos;
+			
 		}
 		CString pos(_T("0"));
 		if(bRememberPos)
-			pos.Format(_T("%I64d"), GetPos());
+			pos.Format(_T("%I64d"), rtCurPos);
 		
 		str += ';';
 		str += pos;

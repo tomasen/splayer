@@ -416,9 +416,11 @@ HRESULT CBaseVideoFilter::CopyBuffer(BYTE* pOut, BYTE** ppIn, int w, int h, int 
 		
 		if(bihOut.biHeight > 0 )
 		{
-			pOut += pitchOut*(abs(h)-1);
+			int tarh = abs(h);
+			if(tarh&1){tarh--;}
+			pOut += pitchOut*(tarh-1);
 			pitchOut = -pitchOut;
-			if(h < 0) h = -h;
+			h = tarh; 
 		}
 		
 	}

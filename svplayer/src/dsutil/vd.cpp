@@ -1103,19 +1103,26 @@ bool BitBltFromRGBToYUY2(int w, int h, BYTE* dst, int dstpitch,  BYTE* src, int 
 }
 bool BitBltFromRGBToRGB(int w, int h, BYTE* dst, int dstpitch, int dbpp, BYTE* src, int srcpitch, int sbpp, DWORD* palette)
 {
-	SVP_LogMsg5(L" rgb to rgb %d %d",dbpp , sbpp);
+	//SVP_LogMsg5(L" rgb to rgb %d %d",dbpp , sbpp);
+//	SVP_LogMsg5(L" rgb to rgb a %d %d %d %d %d %d",w , h,dstpitch,srcpitch,dbpp,sbpp );
 	if(dbpp == sbpp)
 	{
 		int rowbytes = w*dbpp>>3;
+		int y = 0;
+		__try{
+			if(h&1){h--;}
+			if(rowbytes > 0 && rowbytes == srcpitch && rowbytes == dstpitch)
+			{
+				memcpy_accel(dst, src, h*rowbytes);
+			}
+			else
+			{
+				for(y = 0; y < h; y++, src += srcpitch, dst += dstpitch)
+					memcpy_accel(dst, src,  rowbytes);
+			}
+		}__except(EXCEPTION_EXECUTE_HANDLER){
+			SVP_LogMsg5(L" rgb to rgb %d %d %d %d %d %d %d %d",w , h,dstpitch,srcpitch,dbpp,sbpp ,rowbytes, y);
 
-		if(rowbytes > 0 && rowbytes == srcpitch && rowbytes == dstpitch)
-		{
-			memcpy_accel(dst, src, h*rowbytes);
-		}
-		else
-		{
-			for(int y = 0; y < h; y++, src += srcpitch, dst += dstpitch)
-				memcpy_accel(dst, src, rowbytes);
 		}
 
 		return(true);

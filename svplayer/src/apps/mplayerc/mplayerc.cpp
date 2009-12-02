@@ -3948,6 +3948,9 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 				}
 				
 			}
+			if(AfxGetMyApp()->GetD3X9Dll()==NULL){
+				noDX93D = true;
+			}
 			if( noDX93D ){
 				iDefaultSVPRenderType = 0;
 				useGPUAcel = 0;

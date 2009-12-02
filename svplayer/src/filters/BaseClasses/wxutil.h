@@ -94,11 +94,19 @@ public:
     CAutoLock(CCritSec * plock)
     {
         m_pLock = plock;
-        m_pLock->Lock();
+		if(m_pLock){
+			__try{
+				m_pLock->Lock();
+			}__except (EXCEPTION_EXECUTE_HANDLER ) {}
+		}
     };
 
     ~CAutoLock() {
-        m_pLock->Unlock();
+		if(m_pLock){
+			__try{
+				m_pLock->Unlock();
+			}__except (EXCEPTION_EXECUTE_HANDLER ) {}
+		}
     };
 };
 

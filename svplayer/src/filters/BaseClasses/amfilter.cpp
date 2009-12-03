@@ -2651,7 +2651,13 @@ CBaseOutputPin::GetDeliveryBuffer(__deref_out IMediaSample ** ppSample,
                                   DWORD dwFlags)
 {
     if (m_pAllocator != NULL) {
-        return m_pAllocator->GetBuffer(ppSample,pStartTime,pEndTime,dwFlags);
+		__try
+		{
+			return m_pAllocator->GetBuffer(ppSample,pStartTime,pEndTime,dwFlags);
+		}__except (EXCEPTION_EXECUTE_HANDLER ) 
+		{
+			return E_NOINTERFACE;
+		}
     } else {
         return E_NOINTERFACE;
     }
@@ -2692,7 +2698,12 @@ CBaseOutputPin::Deliver(IMediaSample * pSample)
     PERFLOG_DELIVER( m_pName ? m_pName : L"CBaseOutputPin", (IPin *) this, (IPin  *) m_pInputPin, pSample, &m_mt );
 #endif // DXMPERF
 
-    return m_pInputPin->Receive(pSample);
+	__try{
+		return m_pInputPin->Receive(pSample);
+	}__except (EXCEPTION_EXECUTE_HANDLER ) 
+	{
+		return VFW_E_NOT_CONNECTED;
+	}
 }
 
 

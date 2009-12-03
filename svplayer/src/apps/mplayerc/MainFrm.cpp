@@ -9943,8 +9943,8 @@ void CMainFrame::ToggleFullscreen(bool fToNearest, bool fSwitchScreenResWhenHasT
 
 	m_lastMouseMove.x = m_lastMouseMove.y = -1;
 
-	bool fAudioOnly = m_fAudioOnly;
-	m_fAudioOnly = true;
+	//bool fAudioOnly = m_fAudioOnly;
+	//m_fAudioOnly = true;
 
 	m_fFullScreen = !m_fFullScreen;
 
@@ -9970,10 +9970,9 @@ void CMainFrame::ToggleFullscreen(bool fToNearest, bool fSwitchScreenResWhenHasT
 	}
 
 	m_wndView.SetWindowPos(NULL, 0, 0, 0, 0, SWP_FRAMECHANGED|SWP_NOSIZE|SWP_NOMOVE|SWP_NOZORDER);
+	//m_fAudioOnly = fAudioOnly;
+	
 	rePosOSD();
-
-
-	m_fAudioOnly = fAudioOnly;
 
 	MoveVideoWindow();
 }
@@ -12022,6 +12021,8 @@ long find_string_in_buf ( char *buf, size_t len,
 }
 bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 {
+	CAutoLock mOpenCloseLock(&m_csOpenClose);
+
 	AppSettings& s = AfxGetAppSettings();
 
 	s.bIsIVM = false;
@@ -12488,6 +12489,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 
 void CMainFrame::CloseMediaPrivate()
 {
+	CAutoLock mOpenCloseLock(&m_csOpenClose);
 	m_iMediaLoadState = MLS_CLOSING;
 
     OnPlayStop(); // SendMessage(WM_COMMAND, ID_PLAY_STOP);
@@ -12528,10 +12530,12 @@ void CMainFrame::CloseMediaPrivate()
 	m_pRefClock = NULL;
 	m_pSyncClock = NULL;
 
-	if(pGB) pGB->RemoveFromROT();
-	pGB.Release();
+	try{
+		if(pGB) pGB->RemoveFromROT();
+		pGB.Release();
 
-	m_fRealMediaGraph = m_fShockwaveGraph = m_fQuicktimeGraph = false;
+		m_fRealMediaGraph = m_fShockwaveGraph = m_fQuicktimeGraph = false;
+	}catch(...){}
 
 	m_pSubClock = NULL;
 

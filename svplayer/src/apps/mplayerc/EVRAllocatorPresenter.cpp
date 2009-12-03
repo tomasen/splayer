@@ -2034,7 +2034,7 @@ HRESULT CEVRAllocatorPresenter::BeginStreaming()
 	pEVR->GetSyncSource(&m_pRefClock);
 	if (filterInfo.pGraph) filterInfo.pGraph->Release();
 	//SVP_LogMsg5(L"CEVRAllocatorPresenter::BeginStreaming2");
-	AfxBeginThread(ThreadEVRAllocatorPresenterStartPresenting, (LPVOID)this, THREAD_PRIORITY_BELOW_NORMAL);
+	m_VSyncDetectThread = AfxBeginThread(ThreadEVRAllocatorPresenterStartPresenting, (LPVOID)this, THREAD_PRIORITY_BELOW_NORMAL);
 		
 	
 

@@ -209,6 +209,7 @@
 				AdditionalOptions="/Qopenmp-link:static"
 				AdditionalIncludeDirectories="..\..\BaseClasses"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
+				ExceptionHandling="1"
 				EnableEnhancedInstructionSet="0"
 			/>
 			<Tool

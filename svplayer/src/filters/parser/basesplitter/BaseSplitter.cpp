@@ -324,9 +324,15 @@ HRESULT CBaseSplitterOutputPin::DeliverBeginFlush()
 	m_fFlushed = false;
 	m_fFlushing = true;
 	m_hrDeliver = S_FALSE;
-	m_queue.RemoveAll();
-	HRESULT hr = IsConnected() ? GetConnected()->BeginFlush() : S_OK;
-	if(S_OK != hr) m_eEndFlush.Set();
+	m_queue.RemoveAll(); 
+	HRESULT hr = S_OK;
+	__try{
+		hr = IsConnected() ? GetConnected()->BeginFlush() : S_OK;
+	}__except(EXCEPTION_EXECUTE_HANDLER) {  } //hr = S_FALSE;
+	__try{
+		if(S_OK != hr) m_eEndFlush.Set();
+	}__except(EXCEPTION_EXECUTE_HANDLER) {  }
+
 	return(hr);
 }
 
@@ -410,10 +416,43 @@ bool CBaseSplitterOutputPin::IsActive()
 
 	return(true);
 }
+int CBaseSplitterOutputPin::ThreadProcDelivery(int cnt)
+{
 
+	CAutoPtr<Packet> p;
+
+	{
+		CAutoLock cAutoLock(&m_queue);
+		if((cnt = m_queue.GetCount()) > 0)
+			p = m_queue.Remove();
+	}
+
+	if(S_OK == m_hrDeliver && cnt > 0)
+	{
+		ASSERT(!m_fFlushing);
+
+		m_fFlushed = false;
+
+		// flushing can still start here, to release a blocked deliver call
+
+		HRESULT hr = p 
+			? DeliverPacket(p) 
+			: DeliverEndOfStream();
+
+		m_eEndFlush.Wait(); // .. so we have to wait until it is done
+
+		if(hr != S_OK && !m_fFlushed) // and only report the error in m_hrDeliver if we didn't flush the stream
+		{
+			// CAutoLock cAutoLock(&m_csQueueLock);
+			m_hrDeliver = hr;
+			cnt = 0;
+		}
+	}
+	return cnt;
+}
 DWORD CBaseSplitterOutputPin::ThreadProc()
 {
-	try{
+	__try{
 		m_hrDeliver = S_OK;
 		m_fFlushing = m_fFlushed = false;
 		m_eEndFlush.Set();
@@ -443,41 +482,13 @@ DWORD CBaseSplitterOutputPin::ThreadProc()
 			int cnt = 0;
 			do
 			{
-				CAutoPtr<Packet> p;
-
-				{
-					CAutoLock cAutoLock(&m_queue);
-					if((cnt = m_queue.GetCount()) > 0)
-						p = m_queue.Remove();
-				}
-
-				if(S_OK == m_hrDeliver && cnt > 0)
-				{
-					ASSERT(!m_fFlushing);
-
-					m_fFlushed = false;
-
-					// flushing can still start here, to release a blocked deliver call
-
-					HRESULT hr = p 
-						? DeliverPacket(p) 
-						: DeliverEndOfStream();
-
-					m_eEndFlush.Wait(); // .. so we have to wait until it is done
-
-					if(hr != S_OK && !m_fFlushed) // and only report the error in m_hrDeliver if we didn't flush the stream
-					{
-						// CAutoLock cAutoLock(&m_csQueueLock);
-						m_hrDeliver = hr;
-						break;
-					}
-				}
+				__try{
+					cnt = ThreadProcDelivery(cnt);
+				}__except(EXCEPTION_EXECUTE_HANDLER) {  }
 			}
 			while(--cnt > 0);
 		}
-	}
-	catch (...) {
-	}
+	}__except(EXCEPTION_EXECUTE_HANDLER) {  }
 }
 
 HRESULT CBaseSplitterOutputPin::DeliverPacket(CAutoPtr<Packet> p)

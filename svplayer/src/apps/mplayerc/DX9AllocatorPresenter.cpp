@@ -387,7 +387,8 @@ CDX9AllocatorPresenter::CDX9AllocatorPresenter(HWND hWnd, HRESULT& hr, bool bIsE
 	m_rtFrameCycle(0.0),
 	m_dFrameCycle(0.0),
 	m_dOptimumDisplayCycle(0.0),
-	m_dCycleDifference(1.0)
+	m_dCycleDifference(1.0),
+	m_VSyncDetectThread(NULL)
 {
 	if(FAILED(hr)) 
 	{
@@ -446,6 +447,10 @@ CDX9AllocatorPresenter::CDX9AllocatorPresenter(HWND hWnd, HRESULT& hr, bool bIsE
 CDX9AllocatorPresenter::~CDX9AllocatorPresenter() 
 {
 	CAutoLock threadLock(&m_csTread);
+	if(m_VSyncDetectThread){
+		WaitForSingleObject(m_VSyncDetectThread->m_hThread, 1000);
+		TerminateThread(m_VSyncDetectThread->m_hThread, 0);
+	}
 	if (m_bDesktopCompositionDisabled)
 	{
 		m_bDesktopCompositionDisabled = false;
@@ -2920,7 +2925,7 @@ STDMETHODIMP CVMR9AllocatorPresenter::StartPresenting(DWORD_PTR dwUserID)
 		if (filterInfo.pGraph) filterInfo.pGraph->Release();
 	}
 	
-	AfxBeginThread(ThreadVMR9AllocatorPresenterStartPresenting, (LPVOID)this, THREAD_PRIORITY_BELOW_NORMAL);
+	m_VSyncDetectThread = AfxBeginThread(ThreadVMR9AllocatorPresenterStartPresenting, (LPVOID)this, THREAD_PRIORITY_BELOW_NORMAL);
 
 	return S_OK;
 }

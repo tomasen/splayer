@@ -171,8 +171,9 @@ CAMThread::CallWorker(DWORD dwParam)
     // signal the worker thread
     m_EventSend.Set();
 
-    //m_EventComplete.Wait();
+   // m_EventComplete.Wait();
 	// wait for the completion to be signalled
+	
 	if( m_EventComplete.Wait(10000) == FALSE) {
 		m_dwParam = 0; 
 		m_EventComplete.Reset();

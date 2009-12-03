@@ -358,6 +358,7 @@ public:
 
 	CCritSec m_csSubLock;
 	CCritSec m_csSubLock2;
+	CCritSec m_csOpenClose;
 	CInterfaceList<ISubStream> m_pSubStreams;
 	CInterfaceList<ISubStream> m_pSubStreams2;
 	int m_iSubtitleSel; // if(m_iSubtitleSel&(1<<31)): disabled

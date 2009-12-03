@@ -108,6 +108,7 @@ private:
 
 	enum {CMD_EXIT};
     DWORD ThreadProc();
+	int ThreadProcDelivery(int cnt);
 
 	void MakeISCRHappy();
 

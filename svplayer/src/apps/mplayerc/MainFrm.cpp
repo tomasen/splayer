@@ -12490,6 +12490,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 void CMainFrame::CloseMediaPrivate()
 {
 	CAutoLock mOpenCloseLock(&m_csOpenClose);
+	SVP_LogMsg5(L"CloseMediaPrivate");
 	m_iMediaLoadState = MLS_CLOSING;
 
     OnPlayStop(); // SendMessage(WM_COMMAND, ID_PLAY_STOP);

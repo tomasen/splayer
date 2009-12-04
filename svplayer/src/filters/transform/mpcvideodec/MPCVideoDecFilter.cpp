@@ -58,6 +58,7 @@ extern "C"
 #include "../../../svplib/svplib.h"
 
 #define LOGDEBUG 0
+#define MUST_LOG  SVP_LogMsg5
 #define SVP_LogMsg5 __noop
 #define TRACE5 __noop
 /////
@@ -1116,9 +1117,9 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 			CString osd_msg;
 			if (ffCodecs[m_nCodecNb].nFFCodec == CODEC_ID_H264)
 			{
-				int		nCompat;
-				nCompat = FFH264CheckCompatibility (PictWidthRounded(), PictHeightRounded(), m_pAVCtx, (BYTE*)m_pAVCtx->extradata, m_pAVCtx->extradata_size, m_nPCIVendor, m_VideoDriverVersion);
-				
+				int		nCompat, refFrames = 0;
+				nCompat = FFH264CheckCompatibility (PictWidthRounded(), PictHeightRounded(), m_pAVCtx, (BYTE*)m_pAVCtx->extradata, m_pAVCtx->extradata_size, m_nPCIVendor, m_VideoDriverVersion, &refFrames);
+				SVP_LogMsg6("Got Ref Frame Count %d", refFrames);
 				switch (nCompat)
 				{
 				case 1 :	// SAR not supported

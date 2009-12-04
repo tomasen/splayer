@@ -2004,8 +2004,12 @@ void CEVRAllocatorPresenter::ThreadBeginStreaming(){
 
 UINT __cdecl ThreadEVRAllocatorPresenterStartPresenting( LPVOID lpParam ) 
 { 
-	CEVRAllocatorPresenter* pEVRA = (CEVRAllocatorPresenter*)lpParam;
-	pEVRA->ThreadBeginStreaming();
+	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
+	if(pFrame){
+		CAutoLock mOpenCloseLock(&pFrame->m_csOpenClose);
+		CEVRAllocatorPresenter* pEVRA = (CEVRAllocatorPresenter*)lpParam;
+		pEVRA->ThreadBeginStreaming();
+	}
 	return 0; 
 }
 // Called when streaming begins.

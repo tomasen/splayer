@@ -40,7 +40,6 @@
 #include "vc1.h"
 
 
-
 int av_h264_decode_frame(struct AVCodecContext* avctx, uint8_t *buf, int buf_size);
 int av_vc1_decode_frame(AVCodecContext *avctx, uint8_t *buf, int buf_size);
 
@@ -131,7 +130,7 @@ void FFH264DecodeBuffer (struct AVCodecContext* pAVCtx, BYTE* pBuffer, UINT nSiz
 }
 
 
-int FFH264CheckCompatibility(int nWidth, int nHeight, struct AVCodecContext* pAVCtx, BYTE* pBuffer, UINT nSize, int nPCIVendor, LARGE_INTEGER VideoDriverVersion)
+int FFH264CheckCompatibility(int nWidth, int nHeight, struct AVCodecContext* pAVCtx, BYTE* pBuffer, UINT nSize, int nPCIVendor, LARGE_INTEGER VideoDriverVersion, int* refFrameCount)
 {
 	H264Context*	pContext	= (H264Context*) pAVCtx->priv_data;
 	SPS*			cur_sps;
@@ -147,7 +146,7 @@ int FFH264CheckCompatibility(int nWidth, int nHeight, struct AVCodecContext* pAV
 
 	if (cur_sps != NULL)
 	{
-		
+		*refFrameCount = cur_sps->ref_frame_count; 
 		if (nPCIVendor == 4318) { //NV
 			// nVidia cards support level 5.1 since drivers v6.14.11.7800 for XP and drivers v7.15.11.7800 for Vista
 			// vA.B.C.D
@@ -178,6 +177,10 @@ int FFH264CheckCompatibility(int nWidth, int nHeight, struct AVCodecContext* pAV
 			supportLevel51 = 1;
 		// Check max num reference frame according to the level
 		#define MAX_DPB_41 12288 // DPB value for level 4.1
+		if (nPCIVendor == 4318 && cur_sps->ref_frame_count == 1) //not ATI
+		{
+			return 2;
+		}
 
 		if (supportLevel51 == 1) {
 			// 11 refs as absolute max, but for Nvidia(Vista, HD) - 16

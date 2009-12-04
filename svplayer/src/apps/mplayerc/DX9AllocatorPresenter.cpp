@@ -2871,8 +2871,7 @@ void CVMR9AllocatorPresenter::ThreadStartPresenting(){
 	CAutoLock threadLock(&m_csTread);
 
 	//ResetGothSyncVars();
-	hEventGoth = CreateEvent(NULL, TRUE, FALSE, NULL);
-
+	
 	AppSettings& s = AfxGetAppSettings();
 	
 	m_pGenlock->SetMonitor(GetAdapter(m_pD3D));
@@ -2890,8 +2889,12 @@ void CVMR9AllocatorPresenter::ThreadStartPresenting(){
 }
 UINT __cdecl ThreadVMR9AllocatorPresenterStartPresenting( LPVOID lpParam ) 
 { 
-	CVMR9AllocatorPresenter* pVMRA = (CVMR9AllocatorPresenter*)lpParam;
-	pVMRA->ThreadStartPresenting();
+	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
+	if(pFrame){
+		CAutoLock mOpenCloseLock(&pFrame->m_csOpenClose);
+		CVMR9AllocatorPresenter* pVMRA = (CVMR9AllocatorPresenter*)lpParam;
+		pVMRA->ThreadStartPresenting();
+	}
 	return 0; 
 }
 // IVMRImagePresenter9
@@ -2925,7 +2928,8 @@ STDMETHODIMP CVMR9AllocatorPresenter::StartPresenting(DWORD_PTR dwUserID)
 		pVMR9->GetSyncSource(&m_pRefClock);
 		if (filterInfo.pGraph) filterInfo.pGraph->Release();
 	}
-	
+	hEventGoth = CreateEvent(NULL, TRUE, FALSE, NULL);
+
 	m_VSyncDetectThread = AfxBeginThread(ThreadVMR9AllocatorPresenterStartPresenting, (LPVOID)this, THREAD_PRIORITY_BELOW_NORMAL);
 
 	return S_OK;
@@ -2935,8 +2939,10 @@ STDMETHODIMP CVMR9AllocatorPresenter::StopPresenting(DWORD_PTR dwUserID)
 {
 	m_pGenlock->ResetTiming();
 	m_pRefClock = NULL;
-	if(hEventGoth)
+	if(hEventGoth){
 		CloseHandle(hEventGoth);
+		hEventGoth = NULL;
+	}
 	return S_OK;
 }
 

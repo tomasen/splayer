@@ -497,6 +497,12 @@ void CDX9AllocatorPresenter::ResetStats()
 	m_uSyncGlitches = 0;
 }
 
+void CDX9AllocatorPresenter::ThreadBeginDetectVSync(){
+	CAutoLock threadLock(&m_csTread);
+	ResetStats();
+	EstimateRefreshTimings();
+}
+
 bool CDX9AllocatorPresenter::SettingsNeedResetDevice()
 {
 	AppSettings& s = AfxGetAppSettings();
@@ -629,11 +635,13 @@ HRESULT CDX9AllocatorPresenter::CreateDevice( )
 	D3DDISPLAYMODE d3ddm;
 	HRESULT hr;
 	ZeroMemory(&d3ddm, sizeof(d3ddm));
-	if(FAILED(m_pD3D->GetAdapterDisplayMode(GetAdapter(m_pD3D), &d3ddm)))
+	UINT CurrentMonitor = GetAdapter(m_pD3D);
+	if(FAILED(m_pD3D->GetAdapterDisplayMode(CurrentMonitor, &d3ddm)))
 	{
 		//_Error += L"GetAdapterDisplayMode failed\n";
 		return E_UNEXPECTED;
 	}
+	m_lastMonitor = m_pD3D->GetAdapterMonitor(CurrentMonitor);
 
 	m_uD3DRefreshRate = d3ddm.RefreshRate;
 	DOUBLE dTargetSyncOffset = 500.0/m_uD3DRefreshRate ;
@@ -1485,7 +1493,16 @@ void CDX9AllocatorPresenter::UpdateAlphaBitmap()
 		}
 	}
 }
-
+UINT __cdecl ThreadDX9AllocatorRedetectVSync( LPVOID lpParam ) 
+{ 
+	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
+	if(pFrame){
+		CAutoLock mOpenCloseLock(&pFrame->m_csOpenClose);
+		CDX9AllocatorPresenter* pDX9 = (CDX9AllocatorPresenter*)lpParam;
+		pDX9->ThreadBeginDetectVSync();
+	}
+	return 0; 
+}
 // Present a sample (frame) using DirectX.
 STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 {
@@ -1783,42 +1800,55 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 	{
 		D3DDEVICE_CREATION_PARAMETERS Parameters;
 		UINT CurrentMonitor = GetAdapter(m_pD3D);
-		if(SUCCEEDED(m_pD3DDev->GetCreationParameters(&Parameters)) && m_pD3D->GetAdapterMonitor(Parameters.AdapterOrdinal) != m_pD3D->GetAdapterMonitor(CurrentMonitor))
-		{
-			if(!AfxGetAppSettings().fbSmoothMutilMonitor/*s.fResetDevice*/)
-			{
-				SVP_LogMsg5(_T("SUCCEEDED(m_pD3DDev->GetCreationParameters(&Parameters)) && m_pD3D->GetAdapterMonitor(Parameters.AdapterOrdinal) != m_pD3D->GetAdapterMonitor(GetAdapter(m_pD3D)))") );
-				fResetDevice = true;
-			}else{
-				D3DDISPLAYMODE d3ddm;
-				HRESULT hr;
-				ZeroMemory(&d3ddm, sizeof(d3ddm));
-				if(FAILED(m_pD3D->GetAdapterDisplayMode(CurrentMonitor, &d3ddm)))
-				{
-					//_Error += L"GetAdapterDisplayMode failed\n";
-					
-				}else{
-					//int l_OldSizeY = m_ScreenSizeCurrent.cy;
-					m_ScreenSizeCurrent.SetSize(d3ddm.Width, d3ddm.Height);
-					if(s.m_RenderSettings.bSynchronizeNearest)
-						EstimateRefreshTimings();
+		if(SUCCEEDED(m_pD3DDev->GetCreationParameters(&Parameters))){
+			HMONITOR hOrgMonitor = m_pD3D->GetAdapterMonitor(Parameters.AdapterOrdinal);
+			HMONITOR hCurMonitor = m_pD3D->GetAdapterMonitor(CurrentMonitor);
 
-					m_uD3DRefreshRate = d3ddm.RefreshRate;
-					DOUBLE dTargetSyncOffset = 500.0/m_uD3DRefreshRate ;
-					if(s.m_RenderSettings.fTargetSyncOffset != 1.0 ){
-						dTargetSyncOffset *= s.m_RenderSettings.fTargetSyncOffset;
+				if( m_lastMonitor != hCurMonitor)
+				{
+					if(!AfxGetAppSettings().fbSmoothMutilMonitor/*s.fResetDevice*/)
+					{
+						SVP_LogMsg5(_T("SUCCEEDED(m_pD3DDev->GetCreationParameters(&Parameters)) && m_pD3D->GetAdapterMonitor(Parameters.AdapterOrdinal) != m_pD3D->GetAdapterMonitor(GetAdapter(m_pD3D)))") );
+						fResetDevice = true;
+					}else{
+						D3DDISPLAYMODE d3ddm;
+						HRESULT hr;
+						ZeroMemory(&d3ddm, sizeof(d3ddm));
+						if(FAILED(m_pD3D->GetAdapterDisplayMode(CurrentMonitor, &d3ddm)))
+						{
+							//_Error += L"GetAdapterDisplayMode failed\n";
+
+						}else{
+							//int l_OldSizeY = m_ScreenSizeCurrent.cy;
+							m_ScreenSizeCurrent.SetSize(d3ddm.Width, d3ddm.Height);
+							if(s.m_RenderSettings.bSynchronizeNearest)
+								m_VSyncDetectThread = AfxBeginThread(ThreadDX9AllocatorRedetectVSync, (LPVOID)this, THREAD_PRIORITY_BELOW_NORMAL);
+
+
+							//	EstimateRefreshTimings();
+
+							m_uD3DRefreshRate = d3ddm.RefreshRate;
+							DOUBLE dTargetSyncOffset = 500.0/m_uD3DRefreshRate ;
+							if(s.m_RenderSettings.fTargetSyncOffset != 1.0 ){
+								dTargetSyncOffset *= s.m_RenderSettings.fTargetSyncOffset;
+							}
+
+							m_pGenlock->SetTargetSyncOffset(dTargetSyncOffset);
+
+						}
+
+
+						m_pGenlock->SetMonitor(CurrentMonitor);
+						m_pGenlock->GetTiming();
+
+
 					}
 
-					m_pGenlock->SetTargetSyncOffset(dTargetSyncOffset);
-
 				}
-
-				
-				m_pGenlock->SetMonitor(CurrentMonitor);
-				m_pGenlock->GetTiming();
-			}
-
+				m_lastMonitor = hCurMonitor;
 		}
+
+		
 	}
 
 	if(fResetDevice)

@@ -934,8 +934,15 @@ DWORD CBaseSplitterFilter::ThreadProc()
 			}
 		}
 
-		do {m_bDiscontinuitySent.RemoveAll();}
-		while(!DemuxLoop());
+		do {
+			m_bDiscontinuitySent.RemoveAll();
+			__try{
+				if(DemuxLoop()){break;}
+			}__except(EXCEPTION_EXECUTE_HANDLER) { break; } 
+		}
+		while(1);
+			
+		
 
 		pos = m_pActivePins.GetHeadPosition();
 		while(pos && !CheckRequest(&cmd))

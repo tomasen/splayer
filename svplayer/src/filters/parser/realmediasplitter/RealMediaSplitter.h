@@ -182,6 +182,13 @@ public:
 
 class __declspec(uuid("E21BE468-5C18-43EB-B0CC-DB93A847D769")) CRealMediaSplitterFilter : public CBaseSplitterFilter
 {
+
+
+	HRESULT DemuxLoopDeliverPacket2(RMFF::MediaPacketHeader& mph);
+	HRESULT DemuxLoopDeliverPacket2Safe(RMFF::MediaPacketHeader& mph);
+	HRESULT DemuxLoopDeliverPacket1(DWORD stream , CRMFile::subtitle& s);
+	HRESULT DemuxLoopDeliverPacket1Safe(DWORD stream , CRMFile::subtitle& s);
+	
 protected:
 	CAutoPtr<CRMFile> m_pFile;
 	HRESULT CreateOutputs(IAsyncReader* pAsyncReader);

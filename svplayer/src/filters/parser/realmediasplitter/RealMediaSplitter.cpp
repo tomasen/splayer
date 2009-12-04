@@ -647,7 +647,58 @@ void CRealMediaSplitterFilter::DemuxSeek(REFERENCE_TIME rt)
 		}
 	}
 }
+HRESULT CRealMediaSplitterFilter::DemuxLoopDeliverPacket1( DWORD stream , CRMFile::subtitle& s)
+{
 
+	__try{
+		return DemuxLoopDeliverPacket1Safe(stream,s);
+	}__except(EXCEPTION_EXECUTE_HANDLER) {  }
+
+	return S_FALSE;
+}
+HRESULT CRealMediaSplitterFilter::DemuxLoopDeliverPacket1Safe( DWORD stream , CRMFile::subtitle& s)
+{
+
+	CAutoPtr<Packet> p(new Packet);
+
+	p->TrackNumber = ~stream;
+	p->bSyncPoint = TRUE;
+	p->rtStart = 0;
+	p->rtStop = 1;
+
+	p->SetCount((4+1) + (2+4+(s.name.GetLength()+1)*2) + (2+4+s.data.GetLength()));
+	BYTE* ptr = p->GetData();
+
+	strcpy((char*)ptr, "GAB2"); ptr += 4+1;
+
+	*(WORD*)ptr = 2; ptr += 2;
+	*(DWORD*)ptr = (s.name.GetLength()+1)*2; ptr += 4;
+	wcscpy((WCHAR*)ptr, CStringW(s.name)); ptr += (s.name.GetLength()+1)*2;
+
+	*(WORD*)ptr = 4; ptr += 2;
+	*(DWORD*)ptr = s.data.GetLength(); ptr += 4;
+	memcpy((char*)ptr, s.data, s.data.GetLength()); ptr += s.name.GetLength();
+
+	return DeliverPacket(p);
+}
+HRESULT CRealMediaSplitterFilter::DemuxLoopDeliverPacket2Safe(RMFF::MediaPacketHeader& mph)
+{
+	CAutoPtr<Packet> p(new Packet);
+	p->TrackNumber = mph.stream;
+	p->bSyncPoint = !!(mph.flags&MediaPacketHeader::PN_KEYFRAME_FLAG);
+	p->rtStart = 10000i64*(mph.tStart);
+	p->rtStop = p->rtStart+1;
+	p->Copy(mph.pData);
+	return DeliverPacket(p);
+}
+HRESULT CRealMediaSplitterFilter::DemuxLoopDeliverPacket2(RMFF::MediaPacketHeader& mph)
+{
+	__try{
+		return DemuxLoopDeliverPacket2Safe(mph);
+	}__except(EXCEPTION_EXECUTE_HANDLER) {  }
+	
+	return S_FALSE;
+}
 bool CRealMediaSplitterFilter::DemuxLoop()
 {
 	HRESULT hr = S_OK;
@@ -656,29 +707,9 @@ bool CRealMediaSplitterFilter::DemuxLoop()
 	pos = m_pFile->m_subs.GetHeadPosition();
 	for(DWORD stream = 0; pos && SUCCEEDED(hr) && !CheckRequest(NULL); stream++)
 	{
-		CRMFile::subtitle& s = m_pFile->m_subs.GetNext(pos);
-
-		CAutoPtr<Packet> p(new Packet);
-
-		p->TrackNumber = ~stream;
-		p->bSyncPoint = TRUE;
-		p->rtStart = 0;
-		p->rtStop = 1;
-
-		p->SetCount((4+1) + (2+4+(s.name.GetLength()+1)*2) + (2+4+s.data.GetLength()));
-		BYTE* ptr = p->GetData();
-
-		strcpy((char*)ptr, "GAB2"); ptr += 4+1;
-
-		*(WORD*)ptr = 2; ptr += 2;
-		*(DWORD*)ptr = (s.name.GetLength()+1)*2; ptr += 4;
-		wcscpy((WCHAR*)ptr, CStringW(s.name)); ptr += (s.name.GetLength()+1)*2;
-
-		*(WORD*)ptr = 4; ptr += 2;
-		*(DWORD*)ptr = s.data.GetLength(); ptr += 4;
-		memcpy((char*)ptr, s.data, s.data.GetLength()); ptr += s.name.GetLength();
-
-		hr = DeliverPacket(p);
+		//__try{
+		hr = DemuxLoopDeliverPacket1(stream , m_pFile->m_subs.GetNext(pos) ); 
+		//}__except(EXCEPTION_EXECUTE_HANDLER) {  }
 	}
 
 	pos = m_seekpos; 
@@ -693,14 +724,9 @@ bool CRealMediaSplitterFilter::DemuxLoop()
 			MediaPacketHeader mph;
 			if(S_OK != (hr = m_pFile->Read(mph)))
 				break;
-
-			CAutoPtr<Packet> p(new Packet);
-			p->TrackNumber = mph.stream;
-			p->bSyncPoint = !!(mph.flags&MediaPacketHeader::PN_KEYFRAME_FLAG);
-			p->rtStart = 10000i64*(mph.tStart);
-			p->rtStop = p->rtStart+1;
-			p->Copy(mph.pData);
-			hr = DeliverPacket(p);
+			//__try{
+			hr = DemuxLoopDeliverPacket2(mph);
+			//}__except(EXCEPTION_EXECUTE_HANDLER) {  }
 		}
 
 		m_seekpacket = 0;

@@ -3,7 +3,7 @@
 #include "curl/include/curl/curl.h"
 #include "SVPToolBox.h"
 
-
+#define UNIQU_HASH_SIZE 512
 class CSVPNet
 {
 public:
@@ -17,6 +17,8 @@ public:
 private:
 	int SetCURLopt(CURL *curl );
 	char errorBuffer[CURL_ERROR_SIZE];;
+	char uniqueIDHash[UNIQU_HASH_SIZE];
+	
 public:
 	int WetherNeedUploadSub(CString fnVideoFilePath, CString szFileHash,CString fnSubHash, int iDelayMS);
 	int UploadPinRenderDeadEndReport(CString szPinName, CString szReport);

@@ -364,6 +364,7 @@ namespace DSObjects
 
 		CSize m_ScreenSize;
 		CSize m_ScreenSizeCurrent;
+		HMONITOR m_lastMonitor;
 
 		// Display and frame rates and cycles
 		double m_dDetectedScanlineTime; // Time for one (horizontal) scan line. Extracted at stream start and used to calculate vsync time
@@ -471,7 +472,7 @@ namespace DSObjects
 		CCritSec m_csTread; //avoid destroy class before thread end
 		CWinThread* m_VSyncDetectThread;
 		void ResetStats(); // Reset all tracing stats
-
+		void ThreadBeginDetectVSync();
 		// ISubPicAllocatorPresenter
 		STDMETHODIMP CreateRenderer(IUnknown** ppRenderer);
 		STDMETHODIMP_(bool) Paint(bool fAll);

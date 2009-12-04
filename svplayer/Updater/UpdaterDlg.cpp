@@ -417,11 +417,11 @@ void CUpdaterDlg::OnTimer(UINT_PTR nIDEvent)
 					cs_stat.SetWindowText(szTmp);
 
 
-					if(m_firstDown == 8){
+					if(m_firstDown == 80){
 						ShowWindow(SW_MINIMIZE);
 						ShowWindow(SW_HIDE);
 					}
-					m_firstDown++;
+					m_firstDown+=10;
 
 				}
 				wcscpy_s(tnid.szTip, szTmp);
@@ -468,6 +468,11 @@ void CUpdaterDlg::OnTimer(UINT_PTR nIDEvent)
 					}
 					cs_stat.SetWindowText(szTmp);
 
+					if(m_firstDown%10 == 8){
+						ShowWindow(SW_MINIMIZE);
+						ShowWindow(SW_HIDE);
+					}
+					m_firstDown++;
 					KillTimer(IDT_SHOW_INTRO);
 
 					//cb_backgd.SetWindowText(_T("¹Ø±Õ"));

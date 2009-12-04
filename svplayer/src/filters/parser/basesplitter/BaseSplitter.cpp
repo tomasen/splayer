@@ -324,7 +324,9 @@ HRESULT CBaseSplitterOutputPin::DeliverBeginFlush()
 	m_fFlushed = false;
 	m_fFlushing = true;
 	m_hrDeliver = S_FALSE;
-	m_queue.RemoveAll(); 
+	__try{
+		m_queue.RemoveAll(); 
+	}__except(EXCEPTION_EXECUTE_HANDLER) {  } //hr = S_FALSE;
 	HRESULT hr = S_OK;
 	__try{
 		hr = IsConnected() ? GetConnected()->BeginFlush() : S_OK;

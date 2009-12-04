@@ -15390,13 +15390,13 @@ void CMainFrame::CloseMedia()
 		TRACE(_T("WARNING: CMainFrame::CloseMedia() called twice or more\n"));
 		return;
 	}
-	if( m_iMediaLoadState == MLS_LOADED){
-			//save time for next play
-			OnFavoritesAddReal(TRUE);
-	}
-
-	int nTimeWaited = 0;
 	
+
+	if( m_iMediaLoadState == MLS_LOADED){
+		//save time for next play
+		OnFavoritesAddReal(TRUE);
+	}
+	int nTimeWaited = 0;
 
 	while(m_iMediaLoadState == MLS_LOADING)
 	{
@@ -15404,16 +15404,18 @@ void CMainFrame::CloseMedia()
 
 		m_fOpeningAborted = true;
 
-		if(pGB) pGB->Abort(); // TODO: lock on graph objects somehow, this is not thread safe
-
+		
 		if(nTimeWaited > 3*1000 && m_pGraphThread)
 		{
-			MessageBeep(MB_ICONEXCLAMATION);
-			TRACE(_T("CRITICAL ERROR: !!! Must kill opener thread !!!"));
-			TerminateThread(m_pGraphThread->m_hThread, -1);
-			m_pGraphThread = (CGraphThread*)AfxBeginThread(RUNTIME_CLASS(CGraphThread));
-			s_fOpenedThruThread = false;
+			if(pGB) pGB->Abort(); // TODO: lock on graph objects somehow, this is not thread safe
+			SVP_LogMsg5(L"OpenAbort");
 			break;
+			//MessageBeep(MB_ICONEXCLAMATION);
+			//TRACE(_T("CRITICAL ERROR: !!! Must kill opener thread !!!"));
+			//TerminateThread(m_pGraphThread->m_hThread, -1);
+			//m_pGraphThread = (CGraphThread*)AfxBeginThread(RUNTIME_CLASS(CGraphThread));
+			//s_fOpenedThruThread = false;
+			//break;
 		}
 
 		Sleep(50);

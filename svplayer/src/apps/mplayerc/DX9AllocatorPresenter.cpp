@@ -448,8 +448,8 @@ CDX9AllocatorPresenter::~CDX9AllocatorPresenter()
 {
 	CAutoLock threadLock(&m_csTread);
 	if(m_VSyncDetectThread){
-		WaitForSingleObject(m_VSyncDetectThread->m_hThread, 1000);
-		TerminateThread(m_VSyncDetectThread->m_hThread, 0);
+		//WaitForSingleObject(m_VSyncDetectThread->m_hThread, 1000);
+		//TerminateThread(m_VSyncDetectThread->m_hThread, 0);
 		m_VSyncDetectThread = NULL;
 	}
 	if (m_bDesktopCompositionDisabled)

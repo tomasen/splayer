@@ -602,7 +602,11 @@ LONG WINAPI Mine_RegQueryValueExA(HKEY a0, LPCSTR a1, LPDWORD a2, LPDWORD a3, LP
 	if(a1 && a0 == (FAKEHKEY+2)){
 		TRACE_SVP( "Mine_RegQueryValueExA %s %u %u %s",  a1, a3,  a4, a4);
 	}
-	
+	if(a1 && _strcmpi(a1, "UIUseHVA") == 0){
+		TRACE_SVP( "Mine_RegQueryValueExA %s %u %u ",  a1, a3,  a4);
+		*(DWORD*)a4 = 0;
+		return ERROR_SUCCESS;
+	}
 	return ret;
 }
 LONG WINAPI Mine_RegQueryValueExW(HKEY a0, LPCWSTR a1, LPDWORD a2, LPDWORD a3, LPBYTE a4, LPDWORD a5)

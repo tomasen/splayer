@@ -33,9 +33,9 @@
 #include <detours\detours.h>
 #include "..\..\svplib\svplib.h"
 
-#define TRACE_SVP  __noop
+#define TRACE_SVP   __noop
 // SVP_LogMsg6
-#define TRACE_SVP5     __noop
+#define TRACE_SVP5       __noop
 //SVP_LogMsg5
 
 HRESULT (__stdcall * Real_CoCreateInstance)(CONST IID& a0,

@@ -2539,6 +2539,8 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("PMPSplitter.ax")) );
 
+	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("ir41_32.ax")) );
+
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("wmadmod.dll")) );
 	
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("rms.ax")) );
@@ -2629,6 +2631,12 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 					}else if(szFPath.Find(_T("rlapedec.ax")) > 0){
 						pFGF->m_extensions.AddTail(_T(".ape"));
 						m_source.AddTail(pFGF);
+/*
+					}else if(szFPath.Find(_T("ir41_32.ax")) > 0){
+						pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_IV41);
+						pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_iv41);
+						m_transform.AddTail(pFGF);
+					}
 /*
 					}else if(szFPath.Find(_T("wmadmod.dll")) > 0){
 						pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_WMA1);

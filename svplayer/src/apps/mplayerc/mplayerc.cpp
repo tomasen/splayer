@@ -1406,6 +1406,16 @@ for(int i = 0; i <= 30; i++){
 			RegSvr32( _T("haalis.ax"));
 			
 		}
+		if(RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{31345649-0000-0010-8000-00AA00389B71}") , &fKey ) != ERROR_SUCCESS ){
+			SVP_LogMsg5(L"reg iv41.ax");
+			RegSvr32( _T("ir41_32.ax"));
+		}
+
+		if(RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{30355649-0000-0010-8000-00AA00389B71}") , &fKey ) != ERROR_SUCCESS ){
+			SVP_LogMsg5(L"reg ir50_32.dll");
+			RegSvr32( _T("ir50_32.dll"));
+		}
+		
 
 		if(RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{DB43B405-43AA-4f01-82D8-D84D47E6019C}") , &fKey ) != ERROR_SUCCESS ){
 			SVP_LogMsg5(L"Reg ogm.dll");

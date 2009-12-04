@@ -1417,7 +1417,11 @@ for(int i = 0; i <= 30; i++){
 			RegSvr32( _T("ts.dll"));
 		}
 
-
+		if( RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\{ACD23F8C-B37E-4B2D-BA08-86CB6E621D6A}") , &fKey) != ERROR_SUCCESS){
+			SVP_LogMsg5(L"mpc_mtcontain go");
+			RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mtcontain.dll")) );
+			
+		}
 		if( RegOpenKey(HKEY_CLASSES_ROOT , _T("Mpcwtlvcl.VideoFrame") , &fKey ) != ERROR_SUCCESS){
 			
 				RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mdssockc.dll")) );
@@ -1430,7 +1434,6 @@ for(int i = 0; i <= 30; i++){
 				RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mcucltu.dll")) );
 				RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mcufilecu.dll")) );
 				RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mtcontrol.dll")) );
-				RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mtcontain.dll")) );
 				RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mxrender.dll")) );
 		
 				RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_wtlvcl.dll")) );

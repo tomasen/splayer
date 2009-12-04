@@ -35,7 +35,7 @@
 
 #define TRACE_SVP  __noop
 // SVP_LogMsg6
-#define TRACE_SVP5    __noop
+#define TRACE_SVP5     __noop
 //SVP_LogMsg5
 
 HRESULT (__stdcall * Real_CoCreateInstance)(CONST IID& a0,
@@ -387,7 +387,8 @@ LONG WINAPI Mine_RegCreateKeyExA(HKEY a0, LPCSTR a1, DWORD a2, LPSTR a3, DWORD a
 LONG WINAPI Mine_RegCreateKeyExW(HKEY a0, LPCWSTR a1, DWORD a2, LPWSTR a3, DWORD a4, REGSAM a5, LPSECURITY_ATTRIBUTES a6, PHKEY a7, LPDWORD a8)
 {
 	TRACE_SVP5(L"Mine_RegCreateKeyExW %s" , a1);
-	if(a1 && (  wcsstr(a1, L"Media Type\\Extensions\\.mk") ||
+	if(a1 && ( wcsstr(a1, L"MtContain.CMtContainer")	||
+		wcsstr(a1, L"Media Type\\Extensions\\.mk") ||
 		 _wcsicmp(a1, L"Media Type\\{E436EB83-524F-11CE-9F53-0020AF0BA770}\\{49952F4C-3EDC-4A9B-8906-1DE02A3D4BC2}") == 0
 		 || _wcsicmp(a1, L"Media Type\\Extensions\\.csf") == 0
 		 ||  wcsstr(a1, L"SOFTWARE\\Microsoft\\MediaPlayer\\Player\\Extensions\\")

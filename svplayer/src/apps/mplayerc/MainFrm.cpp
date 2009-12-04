@@ -13443,7 +13443,8 @@ void CMainFrame::SetupSubtitlesSubMenu(int subid)
 	if(bHasSub){
 		pSub->AppendMenu(MF_SEPARATOR);
 		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, bHasSub++, ResStr(IDS_SUBTITLES_OPTIONS));
-		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, bHasSub++, ResStr(IDS_SUBTITLES_STYLES));
+		//pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, bHasSub++, ResStr(IDS_SUBTITLES_STYLES));
+		bHasSub++;
 		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, bHasSub++, ResStr(IDS_SUBTITLES_RELOAD));
 	
 	}

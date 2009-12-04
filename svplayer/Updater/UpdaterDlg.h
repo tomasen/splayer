@@ -20,6 +20,7 @@ public:
 	CStringArray szaIntro;
 	double m_scale;
 	int m_nLanguage;
+	int m_firstDown;
 
 // Dialog Data
 	enum { IDD = IDD_UPDATER_DIALOG };

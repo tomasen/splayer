@@ -46,6 +46,7 @@ CUpdaterDlg::CUpdaterDlg(CWnd* pParent /*=NULL*/)
 ,m_bGoodToGo(0)
 ,verbose(0)
 , notYetShow(1)
+, m_firstDown(0)
 , m_nLanguage(0)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
@@ -407,13 +408,21 @@ void CUpdaterDlg::OnTimer(UINT_PTR nIDEvent)
 
 				if(cup.bWaiting){
 					if(m_nLanguage){
-						szTmp = _T("Exit SPlayer or reboot to finish update.");
+						szTmp = _T("To be polite, we don't KILL any running program. Pleas exit SPlayer or reboot to finish update.");
 						csCurTask.SetWindowText(_T("Current: Trying to overwrite..."));
 					}else{
-						szTmp = _T("关闭播放器或重新启动后将自动更新到最新版本");
+						szTmp = _T("出于礼貌，升级程序不会强行关闭正在运行中的程序。请您关闭播放器或重新启动后将自动更新到最新版本");
 						csCurTask.SetWindowText(_T("当前任务：正在覆盖..."));
 					}
 					cs_stat.SetWindowText(szTmp);
+
+
+					if(m_firstDown == 8){
+						ShowWindow(SW_MINIMIZE);
+						ShowWindow(SW_HIDE);
+					}
+					m_firstDown++;
+
 				}
 				wcscpy_s(tnid.szTip, szTmp);
 
@@ -460,6 +469,7 @@ void CUpdaterDlg::OnTimer(UINT_PTR nIDEvent)
 					cs_stat.SetWindowText(szTmp);
 
 					KillTimer(IDT_SHOW_INTRO);
+
 					//cb_backgd.SetWindowText(_T("关闭"));
 					SetTimer(IDT_CLOSE_DLG, 15000, NULL);
 				}

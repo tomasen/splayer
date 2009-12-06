@@ -1090,35 +1090,51 @@ void CPlayerPlaylistBar::SetRandom(){
 void CPlayerPlaylistBar::SetNext()
 {
 	POSITION pos = m_pl.GetPos(), org = pos;
-	while(m_pl.GetNextWrap(pos).m_fInvalid && pos != org);
-//UpdateList();
-	m_pl.SetPos(pos);
-	EnsureVisible(pos);
+	if(pos){
+		__try{
+			while(m_pl.GetNextWrap(pos).m_fInvalid && pos != org);
+		//UpdateList();
+			m_pl.SetPos(pos);
+			EnsureVisible(pos);
+		}__except(EXCEPTION_EXECUTE_HANDLER) {  }
+	}
 }
 
 void CPlayerPlaylistBar::SetPrev()
 {
 	POSITION pos = m_pl.GetPos(), org = pos;
-	while(m_pl.GetPrevWrap(pos).m_fInvalid && pos != org);
-	m_pl.SetPos(pos);
-	EnsureVisible(pos);
+	if(pos){
+		__try{
+			while(m_pl.GetPrevWrap(pos).m_fInvalid && pos != org);
+			m_pl.SetPos(pos);
+			EnsureVisible(pos);
+		}__except(EXCEPTION_EXECUTE_HANDLER) {  }
+	}
 }
 
 void CPlayerPlaylistBar::SetFirst()
 {
 	POSITION pos = m_pl.GetTailPosition(), org = pos;
-	while(m_pl.GetNextWrap(pos).m_fInvalid && pos != org);
-//UpdateList();
-	m_pl.SetPos(pos);
-	EnsureVisible(pos);
+	if(pos){
+		__try{
+			while(m_pl.GetNextWrap(pos).m_fInvalid && pos != org);
+		//UpdateList();
+			m_pl.SetPos(pos);
+			EnsureVisible(pos);
+		}__except(EXCEPTION_EXECUTE_HANDLER) {  }
+	}
 }
 
 void CPlayerPlaylistBar::SetLast()
 {
 	POSITION pos = m_pl.GetHeadPosition(), org = pos;
-	while(m_pl.GetPrevWrap(pos).m_fInvalid && pos != org);
-	m_pl.SetPos(pos);
-	EnsureVisible(pos);
+	if(pos){
+		__try{
+			while(m_pl.GetPrevWrap(pos).m_fInvalid && pos != org);
+			m_pl.SetPos(pos);
+			EnsureVisible(pos);
+		}__except(EXCEPTION_EXECUTE_HANDLER) {  }
+	}
 }
 
 void CPlayerPlaylistBar::SetCurValid(bool fValid)

@@ -157,7 +157,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386  /LTCG"
-				AdditionalDependencies="curllib.lib svplibRU.lib zlibR.lib Version.lib libunrarR.lib"
+				AdditionalDependencies="libeay32.lib ssleay32.lib curllib.lib svplibRU.lib zlibR.lib Version.lib libunrarR.lib"
 				OutputFile="..\..\$(ProjectName).exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="../lib"

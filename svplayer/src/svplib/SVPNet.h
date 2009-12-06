@@ -13,7 +13,7 @@ public:
 	size_t mainBufferSize ;
 	CSVPToolBox svpToolBox;	
 	BOOL CheckUpdaterExe(CString szFileVerHash, CString szPath);
-	
+	int iTryID;
 private:
 	int SetCURLopt(CURL *curl );
 	char errorBuffer[CURL_ERROR_SIZE];;

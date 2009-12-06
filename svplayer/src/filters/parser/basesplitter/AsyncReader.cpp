@@ -319,8 +319,10 @@ STDMETHODIMP_(HANDLE) CAsyncFileReader::GetFileHandle()
 }
 CAsyncFileReader::~CAsyncFileReader(){
 	if(m_bIsRAR && m_hRar){
-		RARExtractChunkClose(m_hRar);
-		RARCloseArchive(m_hRar);
+		try{
+			RARExtractChunkClose(m_hRar);
+			RARCloseArchive(m_hRar);
+		}catch(...){  }
 	}
 }
 //

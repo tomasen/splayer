@@ -231,45 +231,49 @@ int strnatcmp(const TCHAR *a, const TCHAR *b)
 	TCHAR ca, cb;
 	int fractional, result;
 
-	ai = bi = 0;
-	while (1) {
-		ca = a[ai];
-		cb = b[bi];
+	__try{
+		ai = bi = 0;
+		while (1) {
+			ca = a[ai];
+			cb = b[bi];
 
-		/* skip over leading spaces or zeros */
-		while (_is_meaningless_char(ca))
-			ca = a[++ai];
+			/* skip over leading spaces or zeros */
+			while (_is_meaningless_char(ca))
+				ca = a[++ai];
 
-		while (_is_meaningless_char(cb))
-			cb = b[++bi];
+			while (_is_meaningless_char(cb))
+				cb = b[++bi];
 
-		/* process run of digits */
-		if (isdigit(ca) && isdigit(cb)) {
-			fractional = (ca == '0' || cb == '0');
+			/* process run of digits */
+			if (isdigit(ca) && isdigit(cb)) {
+				fractional = (ca == '0' || cb == '0');
 
-			if (fractional) {
-				if ((result = compare_left(a + ai, b + bi)) != 0)
-					return result;
-			} else {
-				if ((result = compare_right(a + ai, b + bi)) != 0)
-					return result;
+				if (fractional) {
+					if ((result = compare_left(a + ai, b + bi)) != 0)
+						return result;
+				} else {
+					if ((result = compare_right(a + ai, b + bi)) != 0)
+						return result;
+				}
 			}
+
+			if (!ca && !cb) {
+				/* The strings compare the same.  Perhaps the caller
+				will want to call strcmp to break the tie. */
+				return 0;
+			}
+
+			if (ca < cb)
+				return -1;
+			else if (ca > cb)
+				return +1;
+
+			++ai;
+			++bi;
 		}
+	}__except(EXCEPTION_EXECUTE_HANDLER){} 
 
-		if (!ca && !cb) {
-			/* The strings compare the same.  Perhaps the caller
-			will want to call strcmp to break the tie. */
-			return 0;
-		}
-
-		if (ca < cb)
-			return -1;
-		else if (ca > cb)
-			return +1;
-
-		++ai;
-		++bi;
-	}
+	return 0;
 }
 
 

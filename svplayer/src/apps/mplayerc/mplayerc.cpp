@@ -3237,7 +3237,7 @@ BOOL CMPlayerCApp::Settings::bShouldUseEVR(){
 	//Vista下使用EVR
 	//XP下 不用GPU加速时使用EVR
 	//XP下 用CoreAVC+CUDA时使用EVR
-	return ( IsVista() )  && !bDisableEVR;//|| ( !IsVista() && fVMRGothSyncFix &&  ( !useGPUAcel || useGPUCUDA ) && HasEVRSupport()) 
+	return ( ( IsVista() )  && !bDisableEVR ) || ( !IsVista() && bDisableEVR);//|| ( !IsVista() && fVMRGothSyncFix &&  ( !useGPUAcel || useGPUCUDA ) && HasEVRSupport()) 
 }
 BOOL CMPlayerCApp::Settings::bUserAeroTitle(){
 	return  bAeroGlassAvalibility && bAeroGlass;

@@ -1140,7 +1140,7 @@ BEGIN
             MENUITEM "Delete File",                 ID_DELETECURFILE
             MENUITEM "Delete Folder",               ID_DELCURFOLDER
         END
-        POPUP "More..."
+        POPUP "Help..."
         BEGIN
             MENUITEM "Help",                        ID_HELP_DOCUMENTATION
             MENUITEM "Donate!",                     ID_DONATE

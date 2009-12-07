@@ -502,7 +502,7 @@ void CUESettingPanel::ApplyAllSetting(){
 		s.MRUUrl.WriteList();
 	}
 
-	//s.autoResumePlay = !!m_sgi_chkautoresumeplay;
+	s.autoResumePlay = !!m_sgi_chkautoresumeplay;
 	if(!s.autoResumePlay ){
 		CAtlList<CString> sl;
 		s.SetFav(FAV_FILE, sl, 1);

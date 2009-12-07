@@ -1825,7 +1825,7 @@ BEGIN
             MENUITEM "删除当前文件",                      ID_DELETECURFILE
             MENUITEM "删除当前文件夹",                     ID_DELCURFOLDER
         END
-        POPUP "更多..."
+        POPUP "帮助..."
         BEGIN
             MENUITEM "捐助！",                         ID_DONATE
             MENUITEM "关于(&A)...",                   ID_HELP_ABOUT

@@ -755,10 +755,19 @@ STDMETHODIMP CFilterMapper2::NonDelegatingQueryInterface(REFIID riid, void** ppv
 		SUCCEEDED(hr) ? hr :
 		__super::NonDelegatingQueryInterface(riid, ppv);
 }
-
 void CFilterMapper2::Register(CString path)
 {
-	if(HMODULE h = LoadLibrary(path))
+	RegisterReal(path.GetBuffer());
+	path.ReleaseBuffer();
+
+}
+void CFilterMapper2::RegisterReal(LPCTSTR path)
+{
+	HMODULE h = NULL;
+	__try{
+		h =  LoadLibrary(path);
+	}__except(EXCEPTION_EXECUTE_HANDLER) {  }
+	if( h )
 	{
 		typedef HRESULT (__stdcall * PDllRegisterServer)();
 		if(PDllRegisterServer p = (PDllRegisterServer)GetProcAddress(h, "DllRegisterServer"))
@@ -767,12 +776,15 @@ void CFilterMapper2::Register(CString path)
 
 			CFilterMapper2::m_pFilterMapper2 = this;
 			m_path = path;
-			p();
+			__try{
+				p();
+			}__except(EXCEPTION_EXECUTE_HANDLER) {  }
 			m_path.Empty();
 			CFilterMapper2::m_pFilterMapper2 = NULL;
 		}
-
-		FreeLibrary(h);
+		__try{
+			FreeLibrary(h);
+		}__except(EXCEPTION_EXECUTE_HANDLER) {  }
 	}
 }
 

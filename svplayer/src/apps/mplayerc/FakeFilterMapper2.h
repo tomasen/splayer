@@ -124,4 +124,5 @@ public:
 	static IFilterMapper2* m_pFilterMapper2;
 	CList<FilterOverride*> m_filters;
 	void Register(CString path);
+	void RegisterReal(LPCTSTR path);
 };

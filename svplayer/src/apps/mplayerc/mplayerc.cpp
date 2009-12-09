@@ -1361,6 +1361,11 @@ for(int i = 0; i <= 30; i++){
 	SVP_LogMsg5(_T("COLOR_GRAYTEXT %x"), GetSysColor(COLOR_GRAYTEXT));
 */
 
+	//avoid crash by lame acm
+	RegDelnode(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\MediaResources\\msacm\\msacm.lameacm");
+	RegDeleteKeyValue( HKEY_LOCAL_MACHINE , L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\drivers.desc",L"LameACM.acm");
+	RegDeleteKeyValue( HKEY_LOCAL_MACHINE , L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\drivers32",L"msacm.lameacm");
+
 
 	m_bSystemParametersInfo[0] = FALSE;
 	if(!IsVista()){

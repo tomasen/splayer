@@ -5,19 +5,19 @@
     <Fragment>
         <DirectoryRef Id="APPLICATIONFOLDER">
                 <Component Id="cmp7B4BABB8F2DAEC791BA0755D253B1D4F" Guid="{770B3F5F-61B6-4410-AEDF-5742D751ACC8}">
-                    <File Id="filC2243D7C95AAF6248CD5BD1D9F000E17" KeyPath="yes" Source="refbuild\atrc.dll" />
+                    <File Id="filC2243D7C95AAF6248CD5BD1D9F000E17" KeyPath="yes" Source="..\..\..\..\atrc.dll" />
                 </Component>
                 <Component Id="cmp6D95C988D9AD3AA6A6A23DFFB36C85E3" Guid="{9FC08D61-66EC-4ACD-BA1F-A04644996C9E}">
-                    <File Id="fil7F6EE1E83F8464C51E58D1561517DE2D" KeyPath="yes" Source="refbuild\binkw32.dll" />
+                    <File Id="fil7F6EE1E83F8464C51E58D1561517DE2D" KeyPath="yes" Source="..\..\..\..\binkw32.dll" />
                 </Component>
                 <Component Id="cmp5BAA60273B8E4D6BE6DC92BBC4177957" Guid="{E2A94094-277F-4C6D-8BB1-A4135495C39F}">
-                    <File Id="fil2186AAD5C8DDD427C379285B837CA693" KeyPath="yes" Source="refbuild\cook.dll" />
+                    <File Id="fil2186AAD5C8DDD427C379285B837CA693" KeyPath="yes" Source="..\..\..\..\cook.dll" />
                 </Component>
                 <Component Id="cmpE1EFB4869DDE1B34CF1CB2C4AF43B46E" Guid="{88B723E1-920F-4C85-9DFF-BD90156C62DA}">
-                    <File Id="fil26B86C9109F6E9885F54E320599CE999" KeyPath="yes" Source="refbuild\drvc.dll" />
+                    <File Id="fil26B86C9109F6E9885F54E320599CE999" KeyPath="yes" Source="..\..\..\..\drvc.dll" />
                 </Component>
                 <Component Id="cmp88AD85C0E020D2349E85C49DD908C57D" Guid="{3CC543E1-7DA2-4CAC-A4E4-66A21D4CB149}">
-                    <File Id="fil2EACF6D2543508B2BFF13D2059FD6B8C" KeyPath="yes" Source="refbuild\haalis.ax">
+                    <File Id="fil2EACF6D2543508B2BFF13D2059FD6B8C" KeyPath="yes" Source="..\..\..\..\haalis.ax">
                         <Class Id="{55DA30FC-F16B-49FC-BAA5-AE59FC65F82D}" Context="InprocServer32" Description="Haali Media Splitter" ThreadingModel="both" />
                         <Class Id="{564FD788-86C9-4444-971E-CC4A243DA150}" Context="InprocServer32" Description="Haali Media Splitter (AR)" ThreadingModel="both" />
                         <Class Id="{7B63A013-DC2C-462E-9292-CAF8C867100F}" Context="InprocServer32" Description="Haali Media Splitter about page" ThreadingModel="both" />
@@ -45,10 +45,10 @@
                     <RegistryValue Root="HKLM" Key="Software\Microsoft\Cryptography\RNG" Value="" Type="string" Action="write" />
                 </Component>
                 <Component Id="cmp93A2AF6463D41C266797411602AC1FEE" Guid="{17752A6A-048B-4A87-9CC7-37E7BC8FFF72}">
-                    <File Id="fil73015CB68F48BD391ECFB87734B6BBBA" KeyPath="yes" Source="refbuild\ivm.dll" />
+                    <File Id="fil73015CB68F48BD391ECFB87734B6BBBA" KeyPath="yes" Source="..\..\..\..\ivm.dll" />
                 </Component>
                 <Component Id="cmp68B18D94CC97409ADE044D757A5955D9" Guid="{78A201F0-4D33-4A42-BB0D-9D7EC34249A5}">
-                    <File Id="filBB7B198B9F6051999FC3AAC6CFB6DFE0" KeyPath="yes" Source="refbuild\IVMSource.ax">
+                    <File Id="filBB7B198B9F6051999FC3AAC6CFB6DFE0" KeyPath="yes" Source="..\..\..\..\IVMSource.ax">
                         <Class Id="{6B8CF995-434B-49D3-856A-2AC9B16539A8}" Context="InprocServer32" Description="IVM File Source" ThreadingModel="both" />
                     </File>
                     <RegistryValue Root="HKCR" Key="CLSID\{083863F1-70DE-11D0-BD40-00A0C911CE86}\Instance\{6B8CF995-434B-49D3-856A-2AC9B16539A8}" Name="FriendlyName" Value="IVM File Source" Type="string" Action="write" />
@@ -66,31 +66,31 @@
                 -->
                 
                 <Component Id="cmpEA7D6F81F510417699AD158E58C84F05" Guid="{54386DE0-907A-433E-9D0E-5DC2C7F78229}">
-                    <File Id="fil36872533C6FF0E86334350812E56CD56" KeyPath="yes" Source="refbuild\mc.dll" />
+                    <File Id="fil36872533C6FF0E86334350812E56CD56" KeyPath="yes" Source="..\..\..\..\mc.dll" />
                 </Component>
           <!--  <Component Id="cmpDEF761BCEE3501202BFF3C9A293CFCD4" Guid="{FF0DF312-6DE0-42EC-8854-C544F45EE81F}">
-                    <File Id="fil8BA4BE2EBA07F1CCD238A29613F68297" KeyPath="yes" Source="refbuild\MediaInfo.dll" />
+                    <File Id="fil8BA4BE2EBA07F1CCD238A29613F68297" KeyPath="yes" Source="..\..\..\..\MediaInfo.dll" />
                 </Component> -->
                 <Component Id="cmp608B5B167019DC155B519F37DE36D97E" Guid="{2E1799D7-AA03-4180-8515-515A07C88071}">
-                    <File Id="fil24B229CF2656B3CE98E8DC1BE5FEB990" KeyPath="yes" Source="refbuild\mkunicode.dll" />
+                    <File Id="fil24B229CF2656B3CE98E8DC1BE5FEB990" KeyPath="yes" Source="..\..\..\..\mkunicode.dll" />
                 </Component>
                 <Component Id="cmpEB46B1F2117C6B5842D8D2FCFC0FACCA" Guid="{2666BC22-589D-46E8-9DC9-0F53B0AC0D99}">
-                    <File Id="filC7AAF384A7C95A379C14018EA8DE6B73" KeyPath="yes" Source="refbuild\mkzlib.dll" />
+                    <File Id="filC7AAF384A7C95A379C14018EA8DE6B73" KeyPath="yes" Source="..\..\..\..\mkzlib.dll" />
                 </Component>
           <Component Id="cmpir41" Guid="{B7D3D501-6765-4ff4-B508-E0230CE85C5D}">
-            <File Id="ir41file" KeyPath="yes" Source="refbuild\ir41_32.ax" />
+            <File Id="ir41file" KeyPath="yes" Source="..\..\..\..\ir41_32.ax" />
           </Component>
           <Component Id="cmpir5" Guid="{A03F94F7-5FF1-406e-9553-C61F1DF6E7A6}">
-            <File Id="ir5file" KeyPath="yes" Source="refbuild\ir50_32.dll" />
+            <File Id="ir5file" KeyPath="yes" Source="..\..\..\..\ir50_32.dll" />
           </Component>
         <Component Id="cmpE631AD13D32B22523CEEF2FB617D755C" Guid="{E1ED86D9-C79B-49C2-9408-12EEA39228CE}">
-                    <File Id="fil5C1376C17D55B28E92FB35FE151A50D2" KeyPath="yes" Source="refbuild\ogm.dll">
+                    <File Id="fil5C1376C17D55B28E92FB35FE151A50D2" KeyPath="yes" Source="..\..\..\..\ogm.dll">
                         <Class Id="{DB43B405-43AA-4F01-82D8-D84D47E6019C}" Context="InprocServer32" Description="Haali OGM Parser" ThreadingModel="both" Programmable="yes" />
                     </File>
                     <RegistryValue Root="HKLM" Key="Software\HaaliMkx\Input" Name="ogm.1" Value="ffffffff,4f676753,{DB43B405-43AA-4f01-82D8-D84D47E6019C}" Type="string" Action="write" />
                 </Component>
                 <Component Id="cmpE766A7B7CDD3AAD1B508DA5C7305120B" Guid="{34DFDDA9-A79E-4C49-8B6D-D787726A1DB2}">
-                    <File Id="fil08E2B2FCF9A5801559C054E1667DA963" KeyPath="yes" Source="refbuild\PmpSplitter.ax">
+                    <File Id="fil08E2B2FCF9A5801559C054E1667DA963" KeyPath="yes" Source="..\..\..\..\PmpSplitter.ax">
                         <Class Id="{412C98D0-B46E-4FFA-92E1-4016782EE0AB}" Context="InprocServer32" Description="Pmp Splitter" ThreadingModel="both" />
                         <Class Id="{E117D42B-839C-498A-95DA-647BC90E2B8F}" Context="InprocServer32" Description="Pmp Source" ThreadingModel="both" />
                     </File>
@@ -105,10 +105,10 @@
                     <RegistryValue Root="HKCR" Key="Media Type\{E436EB83-524F-11CE-9F53-0020AF0BA770}\{706D706D-0000-0000-0000-000000000000}" Name="Source Filter" Value="{E117D42B-839C-498A-95DA-647BC90E2B8F}" Type="string" Action="write" />
                 </Component>
                 <Component Id="cmp1C8AB088FBF88E0EF4EA2D2E560AB5C8" Guid="{00C5FB57-5952-432F-B36F-2D6D57F64286}">
-                    <File Id="fil860E07B03D0FD0057D718466AC67AC8C" KeyPath="yes" Source="refbuild\pncrt.dll" />
+                    <File Id="fil860E07B03D0FD0057D718466AC67AC8C" KeyPath="yes" Source="..\..\..\..\pncrt.dll" />
                 </Component>
                 <Component Id="cmpD3B90D15F4B951FA2BE269AB3A9299D9" Guid="{52C89F1E-09C6-4596-9A46-02F5A38E9D57}">
-                    <File Id="filE73C5026BB21987AD6FF775275D6AE7A" KeyPath="yes" Source="refbuild\RadGtSplitter.ax">
+                    <File Id="filE73C5026BB21987AD6FF775275D6AE7A" KeyPath="yes" Source="..\..\..\..\RadGtSplitter.ax">
                         <Class Id="{48B51CD7-D8FA-4452-B00C-5BBFDE92B9AB}" Context="InprocServer32" Description="RadGt Splitter" ThreadingModel="both" />
                         <Class Id="{6B97CB13-A992-4970-8864-4F32E845B7B4}" Context="InprocServer32" Description="RadGt Source" ThreadingModel="both" />
                     </File>
@@ -126,7 +126,7 @@
                     <RegistryValue Root="HKCR" Key="Media Type\{E436EB83-524F-11CE-9F53-0020AF0BA770}\{DAD425C4-CD7E-4A13-98C2-DE435B0834A1}" Name="1" Value="0,2,,4d5a" Type="string" Action="write" />
                 </Component>
                 <Component Id="cmpA55CE2BA3BA203C2DDD466D7AE12ED89" Guid="{6B41AF5C-ED74-4CE1-A65A-510C389B78E3}">
-                    <File Id="filB1ED35D013101B219BA7D525050984D8" KeyPath="yes" Source="refbuild\rlapedec.ax">
+                    <File Id="filB1ED35D013101B219BA7D525050984D8" KeyPath="yes" Source="..\..\..\..\rlapedec.ax">
                         <Class Id="{41FAF0F4-DCEC-4F6A-82D2-56E100F2A8E5}" Context="InprocServer32" Description="RadLight APE DirectShow Filter" ThreadingModel="both" />
                     </File>
                     <RegistryValue Root="HKCR" Key="CLSID\{083863F1-70DE-11D0-BD40-00A0C911CE86}\Instance\{41FAF0F4-DCEC-4F6A-82D2-56E100F2A8E5}" Name="FriendlyName" Value="RadLight APE DirectShow Filter" Type="string" Action="write" />
@@ -135,23 +135,23 @@
                     <RegistryValue Root="HKCR" Key="Media Type\Extensions\.ape" Name="Source Filter" Value="{41FAF0F4-DCEC-4F6A-82D2-56E100F2A8E5}" Type="string" Action="write" />
                 </Component>
                 <Component Id="cmpAFD3C94DAE18CD7D6B56F0EDE29B73A3" Guid="{5AEEBB09-486D-456B-AADD-06F8AE233D7A}">
-                    <File Id="fil3CF0A9F1C611ACD478582579259EA876" KeyPath="yes" Source="refbuild\sipr.dll" />
+                    <File Id="fil3CF0A9F1C611ACD478582579259EA876" KeyPath="yes" Source="..\..\..\..\sipr.dll" />
                 </Component>
                 <Component Id="cmp5DDF4CDA1D1409C4889C49B8B9F10EB0" Guid="{1CEF170F-2D20-4C42-A26E-22044BF05213}">
-                    <File Id="fil8B6132A2B6DB64BE9D1E091FEA95F098" KeyPath="yes" Source="refbuild\smackw32.dll" />
+                    <File Id="fil8B6132A2B6DB64BE9D1E091FEA95F098" KeyPath="yes" Source="..\..\..\..\smackw32.dll" />
                 </Component>
                 <Component Id="cmpA2AB1D2F8BB967049F772424C5803755" Guid="{43C2CF31-1055-4707-8240-F5EA980043B5}">
-                    <File Id="fil505C8F5F1872AFE35655FF5B07ECBDF8" KeyPath="yes" Source="refbuild\splayer.exe" />
+                    <File Id="fil505C8F5F1872AFE35655FF5B07ECBDF8" KeyPath="yes" Source="..\..\..\..\splayer.exe" />
                 </Component>
                 <Component Id="cmp78DAE6C6E49A2E76BB2E584548054058" Guid="{571B88B2-752A-4DD2-8643-993240D34046}">
-                    <File Id="filCB4113CEA6D1CD54C5CDC5D3A7C14039" KeyPath="yes" Source="refbuild\ts.dll">
+                    <File Id="filCB4113CEA6D1CD54C5CDC5D3A7C14039" KeyPath="yes" Source="..\..\..\..\ts.dll">
                         <Class Id="{B841F346-4835-4DE8-AA5E-2E7CD2D4C435}" Context="InprocServer32" Description="Haali TS Parser" ThreadingModel="both" Programmable="yes" />
                     </File>
                     <RegistryValue Root="HKLM" Key="Software\HaaliMkx\Input" Name="ts.1" Value="ff,47,{B841F346-4835-4de8-AA5E-2E7CD2D4C435}" Type="string" Action="write" />
                 </Component>
                 <Component Id="cmp885C82A8C1013D16F718669751A9DE3C" Guid="{F70FC7B4-BE22-4B20-9429-1470ADDD01BE}">
                     <!--Class Id="{083863F1-70DE-11D0-BD40-00A0C911CE86}" /-->
-                    <File Id="fil2F5F825E26F1DA93308671B5DEF1C268" KeyPath="yes" Source="refbuild\vp6dec.ax">
+                    <File Id="fil2F5F825E26F1DA93308671B5DEF1C268" KeyPath="yes" Source="..\..\..\..\vp6dec.ax">
                         <Class Id="{01CFC007-C263-420A-80DC-2988DA4C6105}" Context="InprocServer32" Description="T" ThreadingModel="both" />
                         <Class Id="{D9C9D526-5F0E-45FC-BAEC-CD94ABE2FEBC}" Context="InprocServer32" Description="Duck Properties" ThreadingModel="both" />
                     </File>
@@ -161,22 +161,22 @@
                 </Component>
                 <Directory Id="dir4E39CFE192A34CF7008AF748A6D84F2D" Name="codecs">
                   <!--  <Component Id="cmp14B7F19805F6CC5958243A25C49131F8" Guid="{4EBC9E73-6160-4399-99C7-5E5E580C61B2}">
-                        <File Id="filE80E4EF7587708CDAC5800E1A18CBD78" KeyPath="yes" Source="refbuild\codecs\264be.dll" />
+                        <File Id="filE80E4EF7587708CDAC5800E1A18CBD78" KeyPath="yes" Source="..\..\..\..\codecs\264be.dll" />
                     </Component>
                     <Component Id="cmpA7577E394798432F7942973715395029" Guid="{C73886CE-BF96-4603-A7A9-6D859E781950}">
-                        <File Id="fil679C0008B319440B045CEA15494869CF" KeyPath="yes" Source="refbuild\codecs\264dmmx.dll" />
+                        <File Id="fil679C0008B319440B045CEA15494869CF" KeyPath="yes" Source="..\..\..\..\codecs\264dmmx.dll" />
                     </Component>
                     <Component Id="cmp192169A92BBECCF03A253BBD675E3EF7" Guid="{8C53CAB0-3204-4292-9677-28F478F242FA}">
-                        <File Id="filC329042BBB187E726927FA3230335E26" KeyPath="yes" Source="refbuild\codecs\264dsse.dll" />
+                        <File Id="filC329042BBB187E726927FA3230335E26" KeyPath="yes" Source="..\..\..\..\codecs\264dsse.dll" />
                     </Component>
                     <Component Id="cmpC7DF026063B159F14F5F79BE61ABBE8C" Guid="{3AAC952B-2520-4F10-ADAD-6077849BD90C}">
-                        <File Id="fil4A1B5E4D567F9607171B53AA191354EC" KeyPath="yes" Source="refbuild\codecs\264dsse2.dll" />
+                        <File Id="fil4A1B5E4D567F9607171B53AA191354EC" KeyPath="yes" Source="..\..\..\..\codecs\264dsse2.dll" />
                     </Component>
                     <Component Id="cmp1E655D07F2B6CCBFE21CACD70A0A3C53" Guid="{5E3F28C8-5E24-4FE0-8010-EC4248EC0CF4}">
-                        <File Id="fil7CAD152003CE68CD202727529101D764" KeyPath="yes" Source="refbuild\codecs\264dsse3.dll" />
+                        <File Id="fil7CAD152003CE68CD202727529101D764" KeyPath="yes" Source="..\..\..\..\codecs\264dsse3.dll" />
                     </Component>-->
                     <Component Id="cmpF29B84A5BA39F967DC583188FD67984B" Guid="{A9CBD145-E646-4758-9F4B-586CAAC9ADD3}">
-                        <File Id="fil9D8394E87E61A7BC5AC144A072351649" KeyPath="yes" Source="refbuild\codecs\cavc.ax">
+                        <File Id="fil9D8394E87E61A7BC5AC144A072351649" KeyPath="yes" Source="..\..\..\..\codecs\cavc.ax">
                             <Class Id="{09571A4B-F1FE-4C60-9760-DE6D310C7C31}" Context="InprocServer32" Description="CoreAVC Video Decoder" ThreadingModel="both" />
                             <Class Id="{3FD76A83-DAA1-403B-B388-26EFFF652725}" Context="InprocServer32" Description="CoreAVC Video Decoder Help Property Page" ThreadingModel="both" />
                             <Class Id="{BBA35D2A-A374-4CDF-9C5D-BF31DE970B54}" Context="InprocServer32" Description="CoreAVC Video Decoder Levels Property Page" ThreadingModel="both" />
@@ -188,7 +188,7 @@
                         <RegistryValue Root="HKCR" Key="CLSID\{083863F1-70DE-11D0-BD40-00A0C911CE86}\Instance\{09571A4B-F1FE-4C60-9760-DE6D310C7C31}" Name="FilterData" Value="02000000000280000200000000000000307069330000000000000000090000000000000000000000307479330000000060010000700100003174793300000000600100008001000032747933000000006001000090010000337479330000000060010000A0010000347479330000000060010000B0010000357479330000000060010000C0010000367479330000000060010000D0010000377479330000000060010000E0010000387479330000000060010000F00100003170693308000000000000000900000000000000000000003074793300000000600100000002000031747933000000006001000010020000327479330000000060010000200200003374793300000000600100003002000034747933000000006001000040020000357479330000000060010000500200003674793300000000600100006002000037747933000000006001000070020000387479330000000060010000800200007669647300001000800000AA00389B716176633100001000800000AA00389B714156433100001000800000AA00389B716832363400001000800000AA00389B714832363400001000800000AA00389B717832363400001000800000AA00389B715832363400001000800000AA00389B715653534800001000800000AA00389B71CB712D8D3F24E345B2D85FD7967EC09BADD2296F30E1AA45B42FF623AD354A905956313200001000800000AA00389B714934323000001000800000AA00389B714E56313200001000800000AA00389B715955593200001000800000AA00389B715559565900001000800000AA00389B717EEB36E44F52CE119F530020AF0BA7707DEB36E44F52CE119F530020AF0BA7707BEB36E44F52CE119F530020AF0BA7707CEB36E44F52CE119F530020AF0BA770" Type="binary" Action="write" />
                     </Component>
                   <!-- <Component Id="cmpBF399B8857EE832886ACC57B9B7BE513" Guid="{29367B50-42D7-4318-AB7D-2D0CE111A310}">
-                        <File Id="filF823C73BB905FCC9E16997F224E6FFC1" KeyPath="yes" Source="refbuild\codecs\cl08.ax">
+                        <File Id="filF823C73BB905FCC9E16997F224E6FFC1" KeyPath="yes" Source="..\..\..\..\codecs\cl08.ax">
                             <Class Id="{87CD9330-15B7-440F-9DD1-41546B7B88EE}" Context="InprocServer32" Description="CyberLink H.264/AVC Video Property (PDVD8)" ThreadingModel="both" />
                             <Class Id="{C16541FF-49ED-4DEA-9126-862F57722E31}" Context="InprocServer32" Description="CyberLink H.264/AVC Decoder (PDVD8)" ThreadingModel="both" />
                         </File>
@@ -197,15 +197,15 @@
                         <RegistryValue Root="HKCR" Key="CLSID\{083863F1-70DE-11D0-BD40-00A0C911CE86}\Instance\{C16541FF-49ED-4DEA-9126-862F57722E31}" Name="FilterData" Value="020000000004600003000000000000003070693300000000000000000D00000000000000000000003074793300000000A8010000B80100003174793300000000C8010000B80100003274793300000000D8010000B80100003374793300000000E8010000B80100003474793300000000F8010000B8010000357479330000000008020000B8010000367479330000000018020000B8010000377479330000000028020000B801000038747933000000002802000038020000397479330000000028020000480200003A7479330000000028020000580200003B7479330000000028020000680200003C7479330000000028020000780200003170693308000000000000000700000000000000000000003074793300000000280200008802000031747933000000002802000098020000327479330000000028020000A8020000337479330000000028020000B8020000347479330000000028020000C8020000357479330000000028020000D8020000367479330000000028020000E80200003270693308000000000000000100000000000000000000003074793300000000F802000008030000FD69F8A676E12842A9CD11B0041FC391CB712D8D3F24E345B2D85FD7967EC09BFD69F8A676E12842A9CD11B0041FC392B7ED240F9E5DAC49B8EF374A5D450BF6B7ED240F9E5DAC49B8EF374A5D450BF7797ADC43B460B540A3E7963F9B35DC11797ADC43B460B540A3E7963F9B35DC12572452E283EBB145B45EB298786D0E707669647300001000800000AA00389B714441564300001000800000AA00389B714156433100001000800000AA00389B715653534800001000800000AA00389B714832363400001000800000AA00389B717832363400001000800000AA00389B715956313200001000800000AA00389B715955593200001000800000AA00389B715956595500001000800000AA00389B717BEB36E44F52CE119F530020AF0BA7707CEB36E44F52CE119F530020AF0BA7707DEB36E44F52CE119F530020AF0BA7707EEB36E44F52CE119F530020AF0BA77080EA0A67823AD011B79B00AA003767A7234A8D6E0C31D011B79A00AA003767A7" Type="binary" Action="write" />
                     </Component>
                     <Component Id="cmpBDF376DCEC0B1D0880719C16DA0EF971" Guid="{642764DF-E4D1-4592-9FDF-A2F8912911FA}">
-                        <File Id="filC511ECF7A03E0E6AA9A86C86B4F48BD4" KeyPath="yes" Source="refbuild\codecs\pthreadVC2.dll" />
+                        <File Id="filC511ECF7A03E0E6AA9A86C86B4F48BD4" KeyPath="yes" Source="..\..\..\..\codecs\pthreadVC2.dll" />
                     </Component>-->
                 </Directory>
                 <Directory Id="dirAD2100895851A7C801E130E580348552" Name="csfcodec">
                     <Component Id="cmpA01B29C5A0778615C5F5312BB4A5F518" Guid="{73BDF442-8BED-4E90-BDDC-28427A6CA643}">
-                        <File Id="filA7D5F2CEC6B98E17956CA6C698265DC1" KeyPath="yes" Source="refbuild\csfcodec\ijl15.dll" />
+                        <File Id="filA7D5F2CEC6B98E17956CA6C698265DC1" KeyPath="yes" Source="..\..\..\..\csfcodec\ijl15.dll" />
                     </Component>
                     <Component Id="cmp8662090246BDEFC5CA51C220C45ADCEF" Guid="{21425248-8735-46D0-A013-52182DB0377B}">
-                        <File Id="filA3C0857B32903AE6185D2D718BCA5CAD" KeyPath="yes" Source="refbuild\csfcodec\mpc_mcucltu.dll">
+                        <File Id="filA3C0857B32903AE6185D2D718BCA5CAD" KeyPath="yes" Source="..\..\..\..\csfcodec\mpc_mcucltu.dll">
                             <Class Id="{B5A7D70F-AE96-4F83-B811-572CA3529323}" Context="InprocServer32" Description="Collegesoft McuClient" ThreadingModel="both">
                                 <ProgId Id="Collegesoft.McuClient" Description="Collegesoft McuClient">
                                     <ProgId Id="Collegesoft.McuClient.1" Description="Collegesoft McuClient" />
@@ -215,7 +215,7 @@
                         <RegistryValue Root="HKCR" Key="CLSID\{B5A7D70F-AE96-4F83-B811-572CA3529323}\TypeLib" Value="{00000000-0000-0000-0000-000000000000}" Type="string" Action="write" />
                     </Component>
                     <Component Id="cmpE472761CD583B66ABA58B2A9172A20C9" Guid="{EDD2D82D-800A-44A1-B22A-F25E5B229F39}">
-                        <File Id="fil655E9DA1FBBB432C99C32EE8A67BDF3E" KeyPath="yes" Source="refbuild\csfcodec\mpc_mcufilecu.dll">
+                        <File Id="fil655E9DA1FBBB432C99C32EE8A67BDF3E" KeyPath="yes" Source="..\..\..\..\csfcodec\mpc_mcufilecu.dll">
                             <Class Id="{0C56B154-43F7-48A0-87B2-E9ACC8E1E471}" Context="InprocServer32" Description="Collegesoft McuDownloadClient" ThreadingModel="both">
                                 <ProgId Id="Collegesoft.McuDownloadClient" Description="Collegesoft McuDownloadClient">
                                     <ProgId Id="Collegesoft.McuDownloadClient.1" Description="Collegesoft McuDownloadClient" />
@@ -237,7 +237,7 @@
                         <RegistryValue Root="HKCR" Key="CLSID\{BAC04407-3588-42AA-93BE-6D3720E9FB28}\TypeLib" Value="{BAC04407-3588-42AA-93BE-6D3720E9FB28}" Type="string" Action="write" />
                     </Component>
                     <Component Id="cmp259A45029BE19C0EE2E55AD097AA663D" Guid="{1BCAEE43-A646-43C8-9207-14024D7E5A4B}">
-                        <File Id="filD575D3F2236E0F5014CEB3440C947FD2" KeyPath="yes" Source="refbuild\csfcodec\mpc_mdssockc.dll">
+                        <File Id="filD575D3F2236E0F5014CEB3440C947FD2" KeyPath="yes" Source="..\..\..\..\csfcodec\mpc_mdssockc.dll">
                             <Class Id="{7E493C9A-2E54-4F25-9B9A-D3C4DEBFCB62}" Context="InprocServer32" Description="Collegesoft Network Helper" ThreadingModel="both">
                                 <ProgId Id="Collegesoft.NetworkHelper.1" Description="Collegesoft Network Helper">
                                     <ProgId Id="Collegesoft.NetworkHelper" Description="Collegesoft Network Helper" />
@@ -259,7 +259,7 @@
                         <RegistryValue Root="HKCR" Key="CLSID\{D48D1EB2-BF95-4EE1-BD69-9AD0515F050D}\TypeLib" Value="{00000000-0000-0000-0000-000000000000}" Type="string" Action="write" />
                     </Component>
                     <Component Id="cmp5EBDF78E6946A3D8784CADAFB9772825" Guid="{4D4D5C6B-FD2A-4649-8DFC-8AE658D9D544}">
-                        <File Id="fil7F05A66F1E2C3C1D0E812816DAED678C" KeyPath="yes" Source="refbuild\csfcodec\mpc_mtcontain.dll">
+                        <File Id="fil7F05A66F1E2C3C1D0E812816DAED678C" KeyPath="yes" Source="..\..\..\..\csfcodec\mpc_mtcontain.dll">
                             <Class Id="{ACD23F8C-B37E-4B2D-BA08-86CB6E621D6A}" Context="InprocServer32" Description="Multimedia Terminator Container" ThreadingModel="both">
                                 <ProgId Id="MtContain.CMtContainer.1" Description="Multimedia Terminator Container">
                                     <ProgId Id="MtContain.CMtContainer" Description="Multimedia Terminator Container" />
@@ -269,7 +269,7 @@
                         <RegistryValue Root="HKCR" Key="CLSID\{ACD23F8C-B37E-4B2D-BA08-86CB6E621D6A}\TypeLib" Value="{00000000-0000-0000-0000-000000000000}" Type="string" Action="write" />
                     </Component>
                     <Component Id="cmpFFB975F638ADA932C3780879102629CE" Guid="{F3F3E3B2-AF98-4D3E-8326-C13225168052}">
-                        <File Id="fil299FE31145E273ED06C818C06177A909" KeyPath="yes" Source="refbuild\csfcodec\mpc_mtcontrol.dll">
+                        <File Id="fil299FE31145E273ED06C818C06177A909" KeyPath="yes" Source="..\..\..\..\csfcodec\mpc_mtcontrol.dll">
                             <Class Id="{164A68B6-3F90-47C2-85A7-1E4D8952EF0A}" Context="InprocServer32" Description="Multimedia File Transmit Manager" ThreadingModel="both">
                                 <ProgId Id="MtControl.MtFileManager.1" Description="Multimedia File Transmit Manager">
                                     <ProgId Id="MtControl.MtFileManager" Description="Multimedia File Transmit Manager" />
@@ -297,7 +297,7 @@
                         <RegistryValue Root="HKCR" Key="CLSID\{B4DAEDB7-7F0E-434F-9AA3-B82B549A3680}\TypeLib" Value="{00000000-0000-0000-0000-000000000000}" Type="string" Action="write" />
                     </Component>
                     <Component Id="cmp2694C6E3CAE38AA61DEC433EA0FDE1F9" Guid="{6056E42E-04A5-49A0-BD4D-49D76A53E53B}">
-                        <File Id="fil214C8F3F6A69782626662542BBDD7DA0" KeyPath="yes" Source="refbuild\csfcodec\mpc_mxaudio.dll">
+                        <File Id="fil214C8F3F6A69782626662542BBDD7DA0" KeyPath="yes" Source="..\..\..\..\csfcodec\mpc_mxaudio.dll">
                             <TypeLib Id="{E3DEC0EB-13E4-45EE-8F2E-577A3ECAFCBD}" Description="mxaudio 1.0 Type Library" HelpDirectory="dirAD2100895851A7C801E130E580348552" Language="0" MajorVersion="1" MinorVersion="0">
                                 <AppId Description="mxaudio" Id="{DAB348FE-2354-47AD-B320-A625893FFFDA}">
                                     <Class Id="{86708513-5A2E-424F-AB46-F4BE3F82954F}" Context="InprocServer32" Description="Mpc mp3decoder Class" ThreadingModel="both">
@@ -311,7 +311,7 @@
                         <RegistryValue Root="HKCR" Key="AppID\mxaudio.DLL" Name="AppID" Value="{DAB348FE-2354-47AD-B320-A625893FFFDA}" Type="string" Action="write" />
                     </Component>
                     <Component Id="cmp9697E7FF8671C24476A2C987A60B4F48" Guid="{CD92290F-3ABA-4CEB-9474-74B56B478FF3}">
-                        <File Id="filF1848A65691508A99E52C26B3367E215" KeyPath="yes" Source="refbuild\csfcodec\mpc_mxrender.dll">
+                        <File Id="filF1848A65691508A99E52C26B3367E215" KeyPath="yes" Source="..\..\..\..\csfcodec\mpc_mxrender.dll">
                             <Class Id="{FF5DCC7A-7147-41E1-86E8-DD05ABD588BF}" Context="InprocServer32" Description="CSF Render Filter (MPC)" ThreadingModel="both" />
                         </File>
                         <RegistryValue Root="HKCR" Key="CLSID\{083863F1-70DE-11D0-BD40-00A0C911CE86}\Instance\{FF5DCC7A-7147-41E1-86E8-DD05ABD588BF}" Name="FriendlyName" Value="CSF Render Filter (MPC)" Type="string" Action="write" />
@@ -319,7 +319,7 @@
                         <RegistryValue Root="HKCR" Key="CLSID\{083863F1-70DE-11D0-BD40-00A0C911CE86}\Instance\{FF5DCC7A-7147-41E1-86E8-DD05ABD588BF}" Name="FilterData" Value="020000000000600001000000000000003070693302000000000000000100000000000000000000003074793300000000380000004800000083EB36E44F52CE119F530020AF0BA770C9D28AFE05CE6948947D00852601A22D" Type="binary" Action="write" />
                     </Component>
                     <Component Id="cmp7816D2CD64B8FD660524A18D7F077EA1" Guid="{C79DC4DE-95E9-4C8C-8721-2D965A7878B4}">
-                        <File Id="fil9BFEED9E9E056A7B8EACD5240076961E" KeyPath="yes" Source="refbuild\csfcodec\mpc_mxscreen.dll">
+                        <File Id="fil9BFEED9E9E056A7B8EACD5240076961E" KeyPath="yes" Source="..\..\..\..\csfcodec\mpc_mxscreen.dll">
                             <Class Id="{F9D06915-85A0-442A-A465-5F3AAAFE059B}" Context="InprocServer32" Description="PSFactoryBuffer" ThreadingModel="both" />
                             <TypeLib Id="{20E9DE6B-87D5-4E85-8BB0-038284A6C44D}" Description="mxscreen 1.0 Type Library" HelpDirectory="dirAD2100895851A7C801E130E580348552" Language="0" MajorVersion="1" MinorVersion="0">
                                 <AppId Description="mxscreen" Id="{3891F286-F50D-47E0-8C1A-0860B64C434E}">
@@ -341,14 +341,14 @@
                         <RegistryValue Root="HKCR" Key="AppID\mxscreen.DLL" Name="AppID" Value="{3891F286-F50D-47E0-8C1A-0860B64C434E}" Type="string" Action="write" />
                     </Component>
                     <Component Id="cmpE02DEE06FFC5966C67A5AD8E0EACB607" Guid="{FA554A6B-07C0-47AC-9B79-47944711931B}">
-                        <File Id="fil7905B74495E36474B04B3915513DEEA5" KeyPath="yes" Source="refbuild\csfcodec\mpc_mxshbasu.dll">
+                        <File Id="fil7905B74495E36474B04B3915513DEEA5" KeyPath="yes" Source="..\..\..\..\csfcodec\mpc_mxshbasu.dll">
                             <Class Id="{2627A1B6-F8FF-4E9C-9422-4908E8D1DFE9}" Context="InprocServer32" Description="Mxshow.MxFileSource" ThreadingModel="both" />
                             <Class Id="{3FD0479E-D6B9-4629-9496-509D3D070918}" Context="InprocServer32" Description="Mxshow.MxUrlSource" ThreadingModel="both" />
                             <Class Id="{99AA8908-FC7F-4815-B023-3BC2F5F8D372}" Context="InprocServer32" Description="Mxshow.MxCSFFile" ThreadingModel="both" />
                         </File>
                     </Component>
                     <Component Id="cmpBED5D2D84D1F2F06D10086C0EF1C7F88" Guid="{F890B3CE-EAF9-4134-A66C-8FA48562F121}">
-                        <File Id="filB6E1CB7D0C021704FEE61CF2474F77D1" KeyPath="yes" Source="refbuild\csfcodec\mpc_mxshmaiu.dll">
+                        <File Id="filB6E1CB7D0C021704FEE61CF2474F77D1" KeyPath="yes" Source="..\..\..\..\csfcodec\mpc_mxshmaiu.dll">
                             <Class Id="{03D82D06-49E2-4E37-9670-BCAB4DBC642D}" Context="InprocServer32" Description="MxShow.MessageRender" ThreadingModel="both" />
                             <Class Id="{2F09858D-D67F-4F8B-8DE8-666666CB9FAD}" Context="InprocServer32" Description="MxShow.ScreenRender" ThreadingModel="both" />
                             <Class Id="{5905A0A9-A82C-4A7B-8418-FC1F6D1AD5DB}" Context="InprocServer32" Description="MxShow.NetworkReader2" ThreadingModel="both" />
@@ -360,7 +360,7 @@
                         </File>
                     </Component>
                     <Component Id="cmp9B3BB7F35199FF1FC9C25EAB208B9337" Guid="{26E91759-2CD7-40FC-A541-460CD79FC5F9}">
-                        <File Id="fil09855DC546FB5A7BF71FCEBFF22600D0" KeyPath="yes" Source="refbuild\csfcodec\mpc_mxshsour.dll">
+                        <File Id="fil09855DC546FB5A7BF71FCEBFF22600D0" KeyPath="yes" Source="..\..\..\..\csfcodec\mpc_mxshsour.dll">
                             <Class Id="{96CE7B0D-06B3-42E2-8DB7-CFC6CF0121F6}" Context="InprocServer32" Description="Mxshow Oms Source" ThreadingModel="both" />
                             <Class Id="{E4C3B74F-0C02-4D4E-B932-F7A1889B3ABB}" Context="InprocServer32" Description="Dxshow Oms Source" ThreadingModel="both" />
                         </File>
@@ -370,7 +370,7 @@
                         <RegistryValue Root="HKCR" Key="OMSP" Name="Source Filter" Value="{E4C3B74F-0C02-4D4E-B932-F7A1889B3ABB}" Type="string" Action="write" />
                     </Component>
                     <Component Id="cmp0C6F17A19A301B6750C92DEFADA1B11E" Guid="{D4677CC8-D378-48DE-BED8-F5C68FAD8296}">
-                        <File Id="filE4CCFB734F9063720AE716F92C9CD98D" KeyPath="yes" Source="refbuild\csfcodec\mpc_mxsource.dll">
+                        <File Id="filE4CCFB734F9063720AE716F92C9CD98D" KeyPath="yes" Source="..\..\..\..\csfcodec\mpc_mxsource.dll">
                             <Class Id="{C8B9C208-9E5C-4F09-AED5-B21A273C4CCA}" Context="InprocServer32" Description="CSF Source Filter (MPC)" ThreadingModel="both" />
                         </File>
                         <RegistryValue Root="HKCR" Key="CLSID\{083863F1-70DE-11D0-BD40-00A0C911CE86}\Instance\{C8B9C208-9E5C-4F09-AED5-B21A273C4CCA}" Name="FriendlyName" Value="CSF Source Filter (MPC)" Type="string" Action="write" />
@@ -386,7 +386,7 @@
                     </Component>
                     
                     <Component Id="cmp33C235646276080124995A74A59833D7" Guid="{2ADA5F16-F63D-4808-B082-91A7A7ECD461}">
-                        <File Id="fil52113ED3E4F6B9FDEF49E459B9FE5E5A" KeyPath="yes" Source="refbuild\csfcodec\mpc_mxvideo.dll">
+                        <File Id="fil52113ED3E4F6B9FDEF49E459B9FE5E5A" KeyPath="yes" Source="..\..\..\..\csfcodec\mpc_mxvideo.dll">
                             <TypeLib Id="{D6065CEC-BDEE-4C6D-BE53-DD27DFED2E75}" Description="mxvideo 1.0 Type Library" HelpDirectory="dirAD2100895851A7C801E130E580348552" Language="0" MajorVersion="1" MinorVersion="0">
                                 <AppId Description="mxvideo" Id="{BCE1862D-0192-4214-BFE0-108C710AE631}">
                                     <Class Id="{5BC26A00-5101-47D7-A5DB-AB6AAC44F51B}" Context="InprocServer32" Description="Mpc Mpeg4V2Decoder Class" ThreadingModel="both">
@@ -405,7 +405,7 @@
                         <RegistryValue Root="HKCR" Key="AppID\mxvideo.DLL" Name="AppID" Value="{BCE1862D-0192-4214-BFE0-108C710AE631}" Type="string" Action="write" />
                     </Component>
                     <Component Id="cmp4EF5771EF4627372A709756FBA7F2D5D" Guid="{120F78FF-C9BF-4D70-A134-A09853A740CA}">
-                        <File Id="fil7F8DD3632665820BD51B60AE0DDCD207" KeyPath="yes" Source="refbuild\csfcodec\mpc_wtlvcl.dll">
+                        <File Id="fil7F8DD3632665820BD51B60AE0DDCD207" KeyPath="yes" Source="..\..\..\..\csfcodec\mpc_wtlvcl.dll">
                             <Class Id="{212CA6D1-E9BB-41CF-BF77-06E000F403A8}" Context="InprocServer32" Description="MPC WindowFrame Class" ThreadingModel="both">
                                 <ProgId Id="Mpcwtlvcl.WindowFrame.1" Description="MPC WindowFrame Class">
                                     <ProgId Id="Mpcwtlvcl.WindowFrame" Description="MPC WindowFrame Class" />
@@ -456,7 +456,7 @@
                 </Directory>
                 <Directory Id="dir125FD3904CABE2287EBBA937793EB068" Name="lang">
                     <Component Id="cmpEA768ECD1C1D5F6742232B0C451C1984" Guid="{1D47ECEB-F071-4636-AE04-52A7528C2937}">
-                        <File Id="filA3F15BB7F1EF32FC2FD3F205F5C87E18" KeyPath="yes" Source="refbuild\lang\splayer.en.dll" />
+                        <File Id="filA3F15BB7F1EF32FC2FD3F205F5C87E18" KeyPath="yes" Source="..\..\..\..\lang\splayer.en.dll" />
                     </Component>
                 </Directory>
         </DirectoryRef>

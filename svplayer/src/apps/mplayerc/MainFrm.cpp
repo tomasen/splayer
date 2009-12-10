@@ -2474,7 +2474,11 @@ LRESULT CMainFrame::OnAppCommand(WPARAM wParam, LPARAM lParam)
 	UINT uDevice = GET_DEVICE_LPARAM(lParam);
 	UINT dwKeys = GET_KEYSTATE_LPARAM(lParam);
 
-	if(uDevice != FAPPCOMMAND_OEM)
+	//CString appkey;
+	//appkey.Format(L"AppKey %x %x %x",cmd,uDevice, dwKeys);
+	//SendStatusMessage( appkey , 3000);
+	SVP_LogMsg5( L"AppKey %x %x %x",cmd,uDevice, dwKeys );
+	//if(uDevice != FAPPCOMMAND_OEM) for mce remote key
 	{
 		AppSettings& s = AfxGetAppSettings();
 

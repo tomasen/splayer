@@ -214,7 +214,7 @@ CString CPPageFormats::GetFileIcon(CString strExt){
 		for(size_t i = 0; i < mf.GetCount(); i++)
 		{
 			if ( mf[i].FindExt(strExt) ){
-				if(mf[i].IsAudioOnly()){
+				if(mf[i].IsAudioOnly() == 1){
 					iconId = IDI_AUDIO_FILE;
 				}else{
 					iconId = IDI_VIDEO;
@@ -975,8 +975,11 @@ void CPPageFormats::OnEndlabeleditList(NMHDR* pNMHDR, LRESULT* pResult)
 
 void CPPageFormats::OnBnClickedButton1()
 {
+
+	CMediaFormats& mf = AfxGetAppSettings().Formats;
 	for(int i = 0, j = m_list.GetItemCount(); i < j; i++)
 	{
+		if(mf[(int)m_list.GetItemData(i)].IsAudioOnly() < 0) continue;
 		SetChecked(i, 1);
 	}
 
@@ -994,7 +997,7 @@ void CPPageFormats::OnBnClickedButton14()
 
 	for(int i = 0, j = m_list.GetItemCount(); i < j; i++)
 	{
-		SetChecked(i, mf[(int)m_list.GetItemData(i)].IsAudioOnly()?0:1);
+		SetChecked(i, (mf[(int)m_list.GetItemData(i)].IsAudioOnly() != 0)?0:1);
 	}
 
 	m_apvideo.SetCheck(1);
@@ -1011,7 +1014,7 @@ void CPPageFormats::OnBnClickedButton13()
 
 	for(int i = 0, j = m_list.GetItemCount(); i < j; i++)
 	{
-		SetChecked(i, mf[(int)m_list.GetItemData(i)].IsAudioOnly()?1:0);
+		SetChecked(i, (mf[(int)m_list.GetItemData(i)].IsAudioOnly()==1)?1:0);
 	}
 
 	m_apvideo.SetCheck(0);

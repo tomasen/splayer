@@ -29,16 +29,16 @@ class CMediaFormatCategory
 protected:
 	CString m_label, m_specreqnote;
 	CAtlList<CString> m_exts, m_backupexts;
-	bool m_fAudioOnly;
+	int m_fAudioOnly;
 	engine_t m_engine;
 
 public:
 	CMediaFormatCategory();
 	CMediaFormatCategory(
-		CString label, CAtlList<CString>& exts, bool fAudioOnly = false,
+		CString label, CAtlList<CString>& exts, int fAudioOnly = false,
 		CString specreqnote =  _T(""), engine_t e = DirectShow);
 	CMediaFormatCategory(
-		CString label, CString exts, bool fAudioOnly = false,
+		CString label, CString exts, int fAudioOnly = false,
 		CString specreqnote =  _T(""), engine_t e = DirectShow);
 	virtual ~CMediaFormatCategory();
 
@@ -60,7 +60,7 @@ public:
 	CString GetExtsWithPeriod(bool fAppendEngine = false);
 	CString GetBackupExtsWithPeriod(bool fAppendEngine = false);
 	CString GetSpecReqNote() {return m_specreqnote;}
-	bool IsAudioOnly() {return m_fAudioOnly;}
+	int IsAudioOnly() {return m_fAudioOnly ;}
 	engine_t GetEngineType() {return m_engine;}
 	void SetEngineType(engine_t e) {m_engine = e;}
 };

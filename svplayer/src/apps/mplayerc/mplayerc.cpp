@@ -1959,15 +1959,16 @@ BOOL CMPlayerCApp::InitInstance()
 		{
 			if(!mf[i].GetLabel().CompareNoCase(_T("Image file"))) continue;
 			if(!mf[i].GetLabel().CompareNoCase(_T("Subtitle file"))) continue;
-			if(!mf[i].GetLabel().CompareNoCase(_T("Playlist file"))) continue;
+			if(!mf[i].GetLabel().Find(_T("Playlist file")) >= 0) continue;
+			if(mf[i].IsAudioOnly() < 0) continue;
 				
-			bool fAudioOnly = mf[i].IsAudioOnly();
+			int fAudioOnly = mf[i].IsAudioOnly();
 
 			int j = 0;
 			CString str = mf[i].GetExtsWithPeriod();
 			for(CString ext = str.Tokenize(_T(" "), j); !ext.IsEmpty(); ext = str.Tokenize(_T(" "), j))
 			{
-				if(((m_s.nCLSwitches&CLSW_REGEXTVID) && !fAudioOnly) || ((m_s.nCLSwitches&CLSW_REGEXTAUD) && fAudioOnly)) {
+				if(((m_s.nCLSwitches&CLSW_REGEXTVID) && fAudioOnly != 1) || ((m_s.nCLSwitches&CLSW_REGEXTAUD) && fAudioOnly == 0 )) {
 					CPPageFormats::RegisterExt(ext, true);
 				}
 			}

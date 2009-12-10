@@ -33,7 +33,7 @@ CMediaFormatCategory::CMediaFormatCategory()
 }
 
 CMediaFormatCategory::CMediaFormatCategory(
-	CString label, CAtlList<CString>& exts, bool fAudioOnly,
+	CString label, CAtlList<CString>& exts, int fAudioOnly,
 	CString specreqnote, engine_t engine)
 {
 	m_label = label;
@@ -45,7 +45,7 @@ CMediaFormatCategory::CMediaFormatCategory(
 }
 
 CMediaFormatCategory::CMediaFormatCategory(
-	CString label, CString exts, bool fAudioOnly,
+	CString label, CString exts, int fAudioOnly,
 	CString specreqnote, engine_t engine)
 {
 	m_label = label;
@@ -191,7 +191,7 @@ void CMediaFormats::UpdateData(bool fSave)
 		ADDFMT((_T("Video file"), _T("avi")));
 		ADDFMT((_T("Audio file"), _T("wav"), true));
 		ADDFMT((_T("MPEG Media file"), _T("mpg mpeg mpe m1v m2v mpv2 mp2v")));
-		//ADDFMT((_T("VCD MPEG Data file"), _T("dat")));
+		ADDFMT((_T("VCD MPEG Data file"), _T("dat"),-1));
 		ADDFMT((_T("Collegesoft Media file"), _T("csf")));
 		ADDFMT((_T("MPEG Transport-Stream file"), _T("ts tp tpr pva pss m2ts m2t mts evo m2p mpls")));
 		ADDFMT((_T("MPEG Audio file"), _T("mpa mp2 m1a m2a"), true));
@@ -230,9 +230,10 @@ void CMediaFormats::UpdateData(bool fSave)
 		ADDFMT((_T("Shockwave Audio file"), _T("swa"), true, _T("ShockWave ActiveX control"), ShockWave));
 		ADDFMT((_T("Quicktime file"), _T("mov qt amr 3g2 3gp2"), false, _T("QuickTime or codec pack")));//QuickTime
 		ADDFMT((_T("IVM file"), _T("ivm"), false));
-		ADDFMT((_T("Image file"), _T("jpeg jpg bmp gif pic dib tiff tif") )); //png not supported
-		ADDFMT((_T("Playlist file"), _T("asx m3u pls wvx wax wmx mpcpl rar cue")));
-		ADDFMT((_T("Subtitle file"), _T("srt idx sub ssa ass xss usf")));
+		ADDFMT((_T("Image file"), _T("jpeg jpg bmp gif pic dib tiff tif") , -2)); //png not supported
+		ADDFMT((_T("Playlist file"), _T("asx m3u pls wvx wax wmx mpcpl cue")));
+		ADDFMT((_T("Rar Playlist file"), _T("rar"), -1));
+		ADDFMT((_T("Subtitle file"), _T("srt idx sub ssa ass xss usf"), -2));
 		ADDFMT((_T("Other"), _T("divx vp6 rmvb amv")));
 #undef ADDFMT
 
@@ -303,7 +304,7 @@ bool CMediaFormats::FindExt(CString ext, bool fAudioOnly)
 		for(int i = 0; i < GetCount(); i++)
 		{
 			CMediaFormatCategory& mfc = GetAt(i);
-			if((!fAudioOnly || mfc.IsAudioOnly()) && mfc.FindExt(ext)) 
+			if((!fAudioOnly || mfc.IsAudioOnly() == 1) && mfc.FindExt(ext)) 
 				return(true);
 		}
 	}
@@ -315,11 +316,12 @@ void CMediaFormats::GetExtsArray(CAtlArray<CString>& mask, bool noAudio){
 	for(int i = 0; i < GetCount(); i++) 
 	{
 		CMediaFormatCategory& mfc = GetAt(i);
-		if( noAudio && mfc.IsAudioOnly() ) continue;
+		if( noAudio && mfc.IsAudioOnly() == 1 ) continue;
 		if( mfc.GetEngineType() != DirectShow) continue;
 		CString szLabel = mfc.GetLabel();
-		if( szLabel.Find(_T("Subtitle")) >= 0 || szLabel.Find(_T("字幕")) >= 0  )  continue;
+		if( szLabel.Find(_T("Subtitle")) >= 0 || szLabel.Find(_T("字幕")) >= 0 )  continue;
 		if( szLabel.Find(_T("Image File")) >= 0 || szLabel.Find(_T("图片")) >= 0  )  continue;
+		if( mfc.IsAudioOnly() <= -2 ) continue;
 		mfc.GetExtArray(mask);
 	}
 
@@ -387,7 +389,7 @@ BOOL CMediaFormats::IsAudioFile(CString szFilename){
 	for(int i = 0; i < GetCount(); i++)
 	{
 		CMediaFormatCategory& mfc = GetAt(i);
-		if(!mfc.IsAudioOnly() || mfc.GetEngineType() != DirectShow) continue;
+		if(mfc.IsAudioOnly() != 1 || mfc.GetEngineType() != DirectShow) continue;
 		if( mfc.FindExt(szThisExtention) ){
 			return TRUE;
 		}
@@ -403,7 +405,7 @@ void CMediaFormats::GetAudioFilter(CString& filter, CAtlArray<CString>& mask)
 	for(int i = 0; i < GetCount(); i++)
 	{
 		CMediaFormatCategory& mfc = GetAt(i);
-		if(!mfc.IsAudioOnly() || mfc.GetEngineType() != DirectShow) continue;
+		if(mfc.IsAudioOnly() != 1 || mfc.GetEngineType() != DirectShow) continue;
 		strTemp  = GetAt(i).GetFilter() + _T(";");
 		mask[0] += strTemp;
 		filter  += strTemp;
@@ -416,7 +418,7 @@ void CMediaFormats::GetAudioFilter(CString& filter, CAtlArray<CString>& mask)
 	for(int i = 0; i < GetCount(); i++)
 	{
 		CMediaFormatCategory& mfc = GetAt(i);
-		if(!mfc.IsAudioOnly() || mfc.GetEngineType() != DirectShow) continue;
+		if(mfc.IsAudioOnly() != 1 || mfc.GetEngineType() != DirectShow) continue;
 		filter += mfc.GetLabel() + _T("|") + GetAt(i).GetFilter() + _T("|");
 		mask.Add(mfc.GetFilter());
 	}

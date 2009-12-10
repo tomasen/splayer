@@ -110,9 +110,9 @@ void CChkDefPlayer::setDefaultPlayer(int ilimitime )
 			__super::OnCancel();
 		//}
 	}else{
-		for(int i = 0; i < szaNotExt.GetCount();i++){
-			CPPageFormats::RegisterExt(szaNotExt.GetAt(i), TRUE);
-		}
+		//for(int i = 0; i < szaNotExt.GetCount();i++){
+		//	CPPageFormats::RegisterExt(szaNotExt.GetAt(i), TRUE);
+		//}
 		setKeyboardNativeMediaPlayers();
 		cpf.AddAutoPlayToRegistry(cpf.AP_VIDEO, true);
 		cpf.AddAutoPlayToRegistry(cpf.AP_DVDMOVIE, true);
@@ -124,6 +124,24 @@ void CChkDefPlayer::setDefaultPlayer(int ilimitime )
 		cpf.AddAutoPlayToRegistry(cpf.AP_DVDAUDIO, true);
 		cpf.AddAutoPlayToRegistry(cpf.AP_CAPTURECAMERA, true);
 		setKeyboardNativeMediaPlayers2();
+
+		CMediaFormats& mf = AfxGetAppSettings().Formats;
+
+		for(size_t i = 0; i < mf.GetCount(); i++)
+		{
+			int fAudioOnly = mf[i].IsAudioOnly();
+			
+			if(fAudioOnly != 0) continue; //only reg video file
+
+			int j = 0;
+			CString str = mf[i].GetExtsWithPeriod();
+			for(CString ext = str.Tokenize(_T(" "), j); !ext.IsEmpty(); ext = str.Tokenize(_T(" "), j))
+			{
+				CPPageFormats::RegisterExt(ext, true);
+			
+			}
+		}
+
 	}
 /*
 	AddAutoPlayToRegistry(AP_MUSIC, !!m_apmusic.GetCheck());

@@ -1060,6 +1060,33 @@ BOOL CMPlayerCApp::SendCommandLine(HWND hWnd, BOOL bPostMessage )
 	SendMessage(hWnd, WM_COPYDATA, (WPARAM)NULL, (LPARAM)&cds);
 	return true;
 }
+HRESULT SVPRegDeleteValueEx(HKEY hKeyRoot,
+					  LPCTSTR lpKey,LPCTSTR lpValue)
+{
+	HRESULT bErrRet = S_OK;
+
+	HKEY hKey;
+
+	if (ERROR_SUCCESS == RegOpenKeyEx(hKeyRoot,
+		lpKey,
+		0,
+		KEY_SET_VALUE,
+		&hKey))
+	{
+
+		if (ERROR_SUCCESS != RegDeleteValue(hKey,lpValue))
+			bErrRet = E_FAIL;
+
+		RegCloseKey(hKey);
+
+	}
+
+	else
+		bErrRet = E_FAIL;
+
+	return bErrRet;
+}
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CMPlayerCApp initialization
@@ -1376,8 +1403,8 @@ for(int i = 0; i <= 30; i++){
 
 	//avoid crash by lame acm
 	RegDelnode(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\MediaResources\\msacm\\msacm.lameacm");
-	RegDeleteKeyValue( HKEY_LOCAL_MACHINE , L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\drivers.desc",L"LameACM.acm");
-	RegDeleteKeyValue( HKEY_LOCAL_MACHINE , L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\drivers32",L"msacm.lameacm");
+	SVPRegDeleteValueEx( HKEY_LOCAL_MACHINE , L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\drivers.desc",L"LameACM.acm");
+	SVPRegDeleteValueEx( HKEY_LOCAL_MACHINE , L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\drivers32",L"msacm.lameacm");
 
 
 	m_bSystemParametersInfo[0] = FALSE;

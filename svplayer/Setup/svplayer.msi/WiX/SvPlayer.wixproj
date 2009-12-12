@@ -35,6 +35,15 @@
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseCHT|x86' ">
+    <DefineConstants>locale=1028;codepage=950</DefineConstants>
+    <Cultures>zh-TW</Cultures>
+    <WixVariables>
+    </WixVariables>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Include="Product.wxs" />
     <Compile Include="SvPlayer_comp.wxs" />
@@ -49,6 +58,7 @@
     <EmbeddedResource Include="en-us.wxl" />
     <EmbeddedResource Include="ja-jp.wxl" />
     <EmbeddedResource Include="zh-cn.wxl" />
+    <EmbeddedResource Include="zh-tw.wxl" />
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
 </Project>

@@ -1,8 +1,4 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<!--
-    Copyright (c) Phoenix Technologies.  All rights reserved.
--->
-
 <WixLocalization Culture="zh-cn" Codepage="936" xmlns="http://schemas.microsoft.com/wix/2006/localization">
   <String Id="WixUIBack" Overridable="yes">上一步(&amp;B)</String>
   <String Id="WixUINext" Overridable="yes">下一步(&amp;N)</String>

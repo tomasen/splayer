@@ -58,7 +58,11 @@ jp_JP: 1041, 932
       <?else?>
           <WixVariable Id="WixUILicenseRtf" Value="license.en.rtf" />
       <?endif?>
-    
+
+      <!-- the banner and the dialog bitmap-->
+      <WixVariable Id="WixUIBannerBmp" Value="bitmaps\bannrbmp.bmp" />
+      <WixVariable Id="WixUIDialogBmp" Value="bitmaps\dlgbmp.bmp" />
+          
       <!-- Directories -->
       <Directory Id="TARGETDIR" Name="SourceDir">
             <Directory Id="ProgramFilesFolder" >

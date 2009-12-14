@@ -1201,7 +1201,7 @@ void CMainFrame::HideFloatTransparentBar(){
 
 }
 /*NEW UI*/
-static bool bNoMoreHideMouse = false;
+static int bNoMoreHideMouse = 0;
 static int m_nomoretopbarforawhile = 0;
 static int m_nomorefloatbarforawhile = 0;
 void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
@@ -1819,7 +1819,7 @@ void CMainFrame::OnClose()
 }
 
 void CMainFrame::OnEnterMenuLoop( BOOL bIsTrackPopupMenu ){
-	bNoMoreHideMouse = true;
+	bNoMoreHideMouse = 5;
 	//SendStatusMessage(_T("Menu Enter"), 2000);
 }
 void CMainFrame::OnExitMenuLoop( BOOL bIsTrackPopupMenu ){
@@ -2876,7 +2876,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 	}
 	else if(nIDEvent == TIMER_FULLSCREENMOUSEHIDER)
 	{
-		if(!bNoMoreHideMouse){
+		if(bNoMoreHideMouse <= 0){
 			CPoint p;
 			GetCursorPos(&p);
 
@@ -2896,6 +2896,8 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 
 			if(AfxGetAppSettings().bUserAeroUI())
 				HideFloatTransparentBar();
+		}else{
+			bNoMoreHideMouse--;
 		}
 		/*
 		if(m_wndTransparentControlBar.IsWindowVisible()){
@@ -9960,15 +9962,16 @@ void CMainFrame::ToggleFullscreen(bool fToNearest, bool fSwitchScreenResWhenHasT
 	SetWindowPos(NULL, r.left, r.top, r.Width(), r.Height(), SWP_NOZORDER|SWP_NOSENDCHANGING /*SWP_FRAMECHANGED*/);
 	RedrawNonClientArea();
 
+	KillTimer(TIMER_FULLSCREENCONTROLBARHIDER);
+	KillTimer(TIMER_FULLSCREENMOUSEHIDER);
 	if(m_fFullScreen)
 	{
 		m_fHideCursor = true;
+		SetTimer(TIMER_FULLSCREENMOUSEHIDER, 5000, NULL);
         ShowControls(CS_NONE, false);
 	}
 	else
 	{
-		KillTimer(TIMER_FULLSCREENCONTROLBARHIDER);
-		KillTimer(TIMER_FULLSCREENMOUSEHIDER);
 		m_fHideCursor = false;
         ShowControls(AfxGetAppSettings().nCS);
 	}
@@ -12352,7 +12355,9 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 				}
 			}
 
-			
+			//make sure the subtitle displayed
+			UpdateSubtitle(true);
+			UpdateSubtitle2(true);
 		}
 
 	
@@ -13455,7 +13460,7 @@ void CMainFrame::SetupSubtitlesSubMenu(int subid)
 	
 	pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, loadID, ResStr(IDS_MENU_ITEM_LOAD_SUBTITLE));
 
-	if (subid == 2 && bHasSub){
+	if (subid == 2 ){
 		if(pSub->GetMenuItemCount() > 0)
 			pSub->AppendMenu(MF_SEPARATOR);
 

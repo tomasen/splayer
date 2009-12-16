@@ -8794,21 +8794,31 @@ LRESULT CMainFrame::OnSuggestVolume(  WPARAM wParam, LPARAM lParam){
 	}
 
 	AppSettings& s = AfxGetAppSettings();
+	int lInputChannels = (int)lParam;
 	double f_suggest_vol = *(double*)wParam;
 	int iVol = 90;
-	if(f_suggest_vol <= 3){
+	if(lInputChannels >= 4){
+		iVol = 105;
+		
+	}else if(f_suggest_vol <= 3){
 		iVol = 70;
 	}
-	m_wndToolBar.m_volctrl.SetPos(iVol);
+	int iPlayerVol =  m_wndToolBar.m_volctrl.GetPos();
+	if(iPlayerVol < iVol){
+		m_wndToolBar.m_volctrl.SetPos(iVol);
 
-	s.AudioBoost = 1;
+		s.AudioBoost = 1;
+
+		CString szStat;
+		if(iVol > 100){
+			iVol = 100 +  ( iVol - 100) * 900/ 20;
+		}
+		szStat.Format(ResStr(IDS_OSD_MSG_SUGGEST_VOLUME_CHANGED) , iVol  );// + L" %f"
+		SendStatusMessage(szStat , 2000);
+
+		OnPlayVolume(113);
+	}
 	
-	CString szStat;
-	szStat.Format(ResStr(IDS_OSD_MSG_SUGGEST_VOLUME_CHANGED) , iVol  );// + L" %f"
-	SendStatusMessage(szStat , 2000);
-
-	OnPlayVolume(113);
-
 	m_bAllowVolumeSuggestForThisPlaylist = false;
 
 	return S_OK;

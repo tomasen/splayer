@@ -773,7 +773,7 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 								
 								if(!m_fVolSuggested){
 									
-									::SendMessage(AfxGetApp()->m_pMainWnd->m_hWnd, WM_USER+32, (WPARAM)&f_suggest_sample_mul,0);
+									::SendMessage(AfxGetApp()->m_pMainWnd->m_hWnd, WM_USER+32, (WPARAM)&f_suggest_sample_mul,(LPARAM)lTotalInputChannels);
 									sample_mul = 1;
 								}
 

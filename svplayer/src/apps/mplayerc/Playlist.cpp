@@ -225,13 +225,21 @@ bool _is_meaningless_char(TCHAR ax){
 	}
 	return true;
 }
-int strnatcmp(const TCHAR *a, const TCHAR *b)
+int strnatcmp(const TCHAR *psz1, const TCHAR *psz2)
 {
 	int ai, bi;
 	TCHAR ca, cb;
 	int fractional, result;
 
 	__try{
+		TCHAR a [MAX_PATH];
+		TCHAR b [MAX_PATH];
+		memset(a, 0, MAX_PATH);
+		memset(b, 0, MAX_PATH);
+		_tcscpy_s(a, MAX_PATH, psz1);
+		_tcscpy_s(b, MAX_PATH, psz2);
+		_tcslwr_s(a, MAX_PATH);
+		_tcslwr_s(b, MAX_PATH);
 		ai = bi = 0;
 		while (1) {
 			ca = a[ai];

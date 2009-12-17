@@ -927,11 +927,11 @@ STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSM
 CAPTION "Default player"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "Set as default player",IDOK,21,63,74,14
-    PUSHBUTTON      "Ignore",IDCANCEL,102,63,50,14
+    DEFPUSHBUTTON   "Yes",IDOK,40,63,50,14
+    //PUSHBUTTON      "Ignore",IDCANCEL,102,63,50,14
     CONTROL         "Dont't prompt this question",IDC_CHK_NOMOREQUES,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,72,44,81,16
     LTEXT           "SPlayer currently is not your default video player, set as default player?",IDC_STATIC,17,17,189,22
-    PUSHBUTTON      "Advanced settings",IDC_BUTTON2,159,63,45,14
+    PUSHBUTTON      "Manual Settings",IDC_BUTTON2,140,63,50,14
 END
 
 IDD_SVPSUBUPLOAD DIALOGEX 0, 0, 377, 227

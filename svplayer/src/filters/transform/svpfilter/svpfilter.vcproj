@@ -114,7 +114,7 @@
 				EnableIntrinsicFunctions="true"
 				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="..\..\BaseClasses"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;USE_SVPFILTERLIB;"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="3"

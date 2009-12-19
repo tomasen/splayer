@@ -393,12 +393,22 @@ int CSVPNet::UploadPinRenderDeadEndReport(CString szPinName, CString szReport){
 }
 #include "MD5Checksum.h"
 
+	// client key is issued by splayer.org to avoid abuse of  service
+	// to acquire a client key require a "proper client"
+	// "proper client" means a client must have ability to upload subtitle match data to contribute to the match rank system correctly
+	// comment out following line if don't have a client key
+	// without a client key the service is still available but maybe limited in some way to avoid abuse of service
+	#include "shooterclient.key"
+
 CString genVHash(char* szTerm2, char* szTerm3, char* uniqueIDHash){
 	CString szVHash;
 	char buffx[4096];
 	memset(buffx, 0, 4096);
-	
-	sprintf_s( buffx, 4096, "%d %s %s%s", SVP_REV_NUMBER, szTerm2, szTerm3, uniqueIDHash);
+#ifdef CLIENTKEY	
+	sprintf_s( buffx, 4096, CLIENTKEY , SVP_REV_NUMBER, szTerm2, szTerm3, uniqueIDHash);
+#else
+	sprintf_s( buffx, 4096, "un authiority client %d %s %s %s", SVP_REV_NUMBER, szTerm2, szTerm3, uniqueIDHash);
+#endif
 	CMD5Checksum cmd5;
 	szVHash = cmd5.GetMD5((BYTE*)buffx, strlen(buffx));
 	return szVHash;

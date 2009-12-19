@@ -67,11 +67,11 @@ void CMediaFormatCategory::UpdateData(bool fSave)
 {
 	if(fSave)
 	{
-		AfxGetApp()->WriteProfileString(_T("FileFormats"), m_label, GetExts(true));
+		AfxGetMyApp()->WriteProfileString(_T("FileFormats"), m_label, GetExts(true));
 	}
 	else
 	{
-		SetExts(AfxGetApp()->GetProfileString(_T("FileFormats"), m_label, GetExts(true)));
+		SetExts(AfxGetMyApp()->GetProfileString(_T("FileFormats"), m_label, GetExts(true)));
 	}
 }
 
@@ -177,10 +177,10 @@ void CMediaFormats::UpdateData(bool fSave)
 {
 	if(fSave)
 	{
-		AfxGetApp()->WriteProfileString(_T("FileFormats"), NULL, NULL);
+		AfxGetMyApp()->WriteProfileString(_T("FileFormats"), NULL, NULL);
 
-		AfxGetApp()->WriteProfileInt(_T("FileFormats"), _T("RtspHandler"), m_iRtspHandler);
-		AfxGetApp()->WriteProfileInt(_T("FileFormats"), _T("RtspFileExtFirst"), m_fRtspFileExtFirst);
+		AfxGetMyApp()->WriteProfileInt(_T("FileFormats"), _T("RtspHandler"), m_iRtspHandler);
+		AfxGetMyApp()->WriteProfileInt(_T("FileFormats"), _T("RtspFileExtFirst"), m_fRtspFileExtFirst);
 	}
 	else
 	{
@@ -237,8 +237,8 @@ void CMediaFormats::UpdateData(bool fSave)
 		ADDFMT((_T("Other"), _T("divx vp6 rmvb amv")));
 #undef ADDFMT
 
-		m_iRtspHandler = (engine_t)AfxGetApp()->GetProfileInt(_T("FileFormats"), _T("RtspHandler"), (int)DirectShow); //RealMedia
-		m_fRtspFileExtFirst = !!AfxGetApp()->GetProfileInt(_T("FileFormats"), _T("RtspFileExtFirst"), 1);
+		m_iRtspHandler = (engine_t)AfxGetMyApp()->GetProfileInt(_T("FileFormats"), _T("RtspHandler"), (int)DirectShow); //RealMedia
+		m_fRtspFileExtFirst = !!AfxGetMyApp()->GetProfileInt(_T("FileFormats"), _T("RtspFileExtFirst"), 1);
 	}
 
 	//for(int i = 0; i < GetCount(); i++)

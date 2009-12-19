@@ -1148,7 +1148,7 @@ void CSizingControlBar::LoadState(LPCTSTR lpszProfileName)
     }
 #endif //_SCB_REPLACE_MINIFRAME && !_SCB_MINIFRAME_CAPTION
 
-    CWinApp* pApp = AfxGetApp();
+    CWinApp* pApp = AfxGetMyApp();
 
     TCHAR szSection[256];
     wsprintf(szSection, _T("%s-SCBar-%d"), lpszProfileName,
@@ -1177,7 +1177,7 @@ void CSizingControlBar::SaveState(LPCTSTR lpszProfileName)
     ASSERT_VALID(this);
     ASSERT(GetSafeHwnd());
 
-    CWinApp* pApp = AfxGetApp();
+    CWinApp* pApp = AfxGetMyApp();
 
     TCHAR szSection[256];
     wsprintf(szSection, _T("%s-SCBar-%d"), lpszProfileName,

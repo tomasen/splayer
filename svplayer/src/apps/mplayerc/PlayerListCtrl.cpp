@@ -659,7 +659,7 @@ END_MESSAGE_MAP()
 
 // CPlayerListCtrl message handlers
 void CPlayerListCtrl::OnSetFocus(CWnd* pOldWnd){
-	AfxGetApp()->GetMainWnd()->SetFocus();
+	AfxGetMyApp()->GetMainWnd()->SetFocus();
 }
 void CPlayerListCtrl::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {

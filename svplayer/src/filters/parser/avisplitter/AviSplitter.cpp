@@ -25,6 +25,8 @@
 #include "AviReportWnd.h"
 #include "AviSplitter.h"
 #include "../../../svplib/svplib.h"
+#include <afxtempl.h>
+#include "..\..\..\apps\mplayerc\mplayerc.h"
 
 #define TRACE __noop
 #define SVP_LogMsg5 __noop
@@ -154,13 +156,13 @@ HRESULT CAviSplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 #ifdef REGISTER_FILTER
 		AFX_MANAGE_STATE(AfxGetStaticModuleState());
 #endif
-		bool fHideWarning = !!AfxGetApp()->GetProfileInt(_T("Settings"), _T("HideAviSplitterWarning"), TRUE);
+		bool fHideWarning = !!AfxGetMyApp()->GetProfileInt(_T("Settings"), _T("HideAviSplitterWarning"), TRUE);
 
 		if(!fHideWarning && !dynamic_cast<CAviSourceFilter*>(this) || fShiftDown)
 		{
 			CAviReportWnd wnd;
 			fHideWarning = wnd.DoModal(m_pFile, fHideWarning, fShowWarningText);
-			AfxGetApp()->WriteProfileInt(_T("Settings"), _T("HideAviSplitterWarning"), fHideWarning);
+			AfxGetMyApp()->WriteProfileInt(_T("Settings"), _T("HideAviSplitterWarning"), fHideWarning);
 		}
 
 		//if(fShowWarningText) hr = E_FAIL;

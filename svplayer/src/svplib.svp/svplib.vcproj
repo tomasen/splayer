@@ -211,6 +211,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\shooterclient.key"
+				>
+			</File>
+			<File
 				RelativePath="..\svplib\SVPEqualizer.h"
 				>
 			</File>

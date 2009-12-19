@@ -663,6 +663,7 @@ CMPlayerCApp::CMPlayerCApp()
 , m_fDisplayStats(FALSE)
 , m_fTearingTest(0)
 , m_fResetStats(0)
+, sqlite_setting(NULL)
 {
 	m_pMainWnd = NULL;
 	_invalid_parameter_handler oldHandler, newHandler;
@@ -771,6 +772,25 @@ HWND g_hWnd = NULL;
 
 bool CMPlayerCApp::StoreSettingsToIni()
 {
+
+	CString ini = GetIniPath();
+	if(0 && !sqlite_setting){ // TODO: create table etc
+		
+		CSVPToolBox svpTool;
+		int iDescLen;
+		char * buff = svpTool.CStringToUTF8(ini,&iDescLen) ;
+		sqlite_setting = new SQLITE3( buff );
+		free(buff);
+		if(!sqlite_setting->db_open){
+			delete sqlite_setting;
+			sqlite_setting = NULL;
+		}
+	}
+	if(sqlite_setting){
+		sqlite_setting->exec_sql("create table settingint (skey TEXT  PRIMARY KEY,data INTEGER) IF NOT EXIST; ");
+		return(true);
+	}
+
 	return StoreSettingsToRegistry();
 /*
 	
@@ -813,18 +833,20 @@ bool CMPlayerCApp::StoreSettingsToRegistry()
 
 CString CMPlayerCApp::GetIniPath()
 {
-	CString path;
-	GetModuleFileName(AfxGetInstanceHandle(), path.GetBuffer(MAX_PATH), MAX_PATH);
-	path.ReleaseBuffer();
-	path = path.Left(path.ReverseFind('.')+1) + _T("ini");
-	return(path);
+	//CString path;
+	//GetModuleFileName(AfxGetInstanceHandle(), path.GetBuffer(MAX_PATH), MAX_PATH);
+	//path.ReleaseBuffer();
+	//path = path.Left(path.ReverseFind('.')+1) + _T("ini");
+	CSVPToolBox svpTool;
+	
+	return(svpTool.GetPlayerPath(L"settings.db"));
 }
 
 bool CMPlayerCApp::IsIniValid()
 {
-	return FALSE;
-	//CFileStatus fs;
-	//return CFileGetStatus(GetIniPath(), fs) && fs.m_size > 0;
+	//return FALSE;
+	CFileStatus fs;
+	return CFileGetStatus(GetIniPath(), fs) && fs.m_size > 0;
 }
 #include <strsafe.h>
 #pragma comment(lib , "strsafe.lib")
@@ -2298,6 +2320,7 @@ CMPlayerCApp::Settings::Settings()
 	, hAccel(NULL)
 	, bSetTempChannelMaping(0)
 	, htpcmode(0)
+	
 {
 
 }
@@ -3289,7 +3312,7 @@ BOOL CMPlayerCApp::Settings::bUserAeroTitle(){
 }
 void CMPlayerCApp::Settings::UpdateData(bool fSave)
 {
-	CWinApp* pApp = AfxGetApp();
+	CWinApp* pApp = AfxGetMyApp();
 	ASSERT(pApp);
 
 	UINT len;
@@ -3836,7 +3859,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 				srcdata.Replace(_T("\r"), _T(""));
 				srcdata.Replace(_T("\n"), _T("\\n"));
 				srcdata.Replace(_T("\t"), _T("\\t"));
-				AfxGetApp()->WriteProfileString(_T("Shaders"), index, s.label + _T("|") + s.target + _T("|") + srcdata);
+				AfxGetMyApp()->WriteProfileString(_T("Shaders"), index, s.label + _T("|") + s.target + _T("|") + srcdata);
 			}
 		}
 
@@ -4711,6 +4734,77 @@ void CMPlayerCApp::Settings::ParseCommandLine(CAtlList<CString>& cmdln)
 	//SVP_LogMsg5(L"cls end %x", nCLSwitches);
 }
 
+// Retrieve an integer value from INI file or registry.
+UINT  CMPlayerCApp::GetProfileInt(LPCTSTR lpszSection, LPCTSTR lpszEntry, int nDefault)
+{
+	if(sqlite_setting){
+		return sqlite_setting->GetProfileInt( lpszSection,  lpszEntry,  nDefault);
+	}else{
+		return __super::GetProfileInt( lpszSection,  lpszEntry,  nDefault);
+	}
+}
+
+// Sets an integer value to INI file or registry.
+BOOL  CMPlayerCApp::WriteProfileInt(LPCTSTR lpszSection, LPCTSTR lpszEntry, int nValue)
+{
+	if(sqlite_setting){
+		return sqlite_setting->WriteProfileInt( lpszSection,  lpszEntry,  nValue);
+	}else{
+		return __super::WriteProfileInt( lpszSection,  lpszEntry,  nValue);
+	}
+}
+
+// Retrieve a string value from INI file or registry.
+CString  CMPlayerCApp::GetProfileString(LPCTSTR lpszSection, LPCTSTR lpszEntry,
+						 LPCTSTR lpszDefault )
+{
+	if(sqlite_setting){
+		return sqlite_setting->GetProfileString( lpszSection,  lpszEntry,
+		 lpszDefault );
+	}else{
+		return __super::GetProfileString( lpszSection,  lpszEntry,
+			lpszDefault );
+	}
+}
+
+// Sets a string value to INI file or registry.
+BOOL  CMPlayerCApp::WriteProfileString(LPCTSTR lpszSection, LPCTSTR lpszEntry,
+						LPCTSTR lpszValue)
+{
+	if(sqlite_setting){
+	return sqlite_setting->WriteProfileString( lpszSection,  lpszEntry,
+		 lpszValue);
+	}else{
+		return __super::WriteProfileString( lpszSection,  lpszEntry,
+			lpszValue);
+	}
+}
+
+// Retrieve an arbitrary binary value from INI file or registry.
+BOOL  CMPlayerCApp::GetProfileBinary(LPCTSTR lpszSection, LPCTSTR lpszEntry,
+					  LPBYTE* ppData, UINT* pBytes)
+{
+	if(sqlite_setting){
+	return sqlite_setting->GetProfileBinary( lpszSection,  lpszEntry,
+		 ppData,  pBytes);
+	}else{
+		return __super::GetProfileBinary( lpszSection,  lpszEntry,
+			ppData,  pBytes);
+	}
+}
+
+// Sets an arbitrary binary value to INI file or registry.
+BOOL  CMPlayerCApp::WriteProfileBinary(LPCTSTR lpszSection, LPCTSTR lpszEntry,
+						LPBYTE pData, UINT nBytes)
+{
+	if(sqlite_setting){
+		return sqlite_setting->WriteProfileBinary( lpszSection,  lpszEntry,
+		 pData,  nBytes);
+	}else{
+		return __super::WriteProfileBinary( lpszSection,  lpszEntry,
+			pData,  nBytes);
+	}
+}
 
 COLORREF CMPlayerCApp::Settings::GetColorFromTheme(CString clrName, COLORREF clrDefault){
 	if( colorsTheme.IsEmpty() ){
@@ -4794,7 +4888,7 @@ void CMPlayerCApp::Settings::GetFav(favtype ft, CAtlList<CString>& sl, BOOL bRec
 	{
 		CString s;
 		s.Format(_T("Name%d"), i);
-		s = AfxGetApp()->GetProfileString(root, s, NULL);
+		s = AfxGetMyApp()->GetProfileString(root, s, NULL);
 		if(s.IsEmpty()) break;
 		sl.AddTail(s);
 	}
@@ -4813,7 +4907,7 @@ void CMPlayerCApp::Settings::SetFav(favtype ft, CAtlList<CString>& sl, BOOL bRec
 	}
 
 	if (bRecent){ root += _T("_Recent"); }
-	AfxGetApp()->WriteProfileString(root, NULL, NULL);
+	AfxGetMyApp()->WriteProfileString(root, NULL, NULL);
 
 	int i = 0;
 	POSITION pos = sl.GetHeadPosition();
@@ -4821,7 +4915,7 @@ void CMPlayerCApp::Settings::SetFav(favtype ft, CAtlList<CString>& sl, BOOL bRec
 	{
 		CString s;
 		s.Format(_T("Name%d"), i++);
-		AfxGetApp()->WriteProfileString(root, s, sl.GetNext(pos));
+		AfxGetMyApp()->WriteProfileString(root, s, sl.GetNext(pos));
 	}
 }
 void CMPlayerCApp::Settings::DelFavByFn(favtype ft, BOOL bRecent, CString szMatch){

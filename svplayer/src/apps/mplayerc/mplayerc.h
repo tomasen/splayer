@@ -34,6 +34,7 @@
 #include "..\..\subtitles\STS.h"
 #include "MediaFormats.h"
 #include "fakefiltermapper2.h"
+#include "..\..\..\lib\splite\libsqlite\libsqlite.h"
 
 #include "..\..\..\Updater\cupdatenetlib.h"
 #include "..\..\filters\switcher\AudioSwitcher\AudioSwitcher.h"
@@ -729,7 +730,6 @@ public:
 		
 		CString	strShaderList;
 		CString szFGMLog;
-
 		CAtlMap<CString, COLORREF , CStringElementTraits<CString>> colorsTheme;
 		
 	public:
@@ -754,9 +754,13 @@ public:
 		void DelFavByFn(favtype ft, BOOL bRecent, CString szMatch);
 		void AddFav(favtype ft, CString s, BOOL bRecent = FALSE, CString szMatch = _T(""));
 		COLORREF GetColorFromTheme(CString clrName, COLORREF clrDefault);
+
 	} m_s;
 
 public:
+
+	SQLITE3* sqlite_setting; 
+
 	cupdatenetlib* m_cnetupdater;
 	DECLARE_MESSAGE_MAP()
 	afx_msg void OnAppAbout();
@@ -767,7 +771,29 @@ public:
 	bool m_bGenerateMouseInOutMessages;
 	virtual BOOL PumpMessage();
 
+public:
 
+	// Retrieve an integer value from INI file or registry.
+	UINT GetProfileInt(LPCTSTR lpszSection, LPCTSTR lpszEntry, int nDefault);
+
+	// Sets an integer value to INI file or registry.
+	BOOL WriteProfileInt(LPCTSTR lpszSection, LPCTSTR lpszEntry, int nValue);
+
+	// Retrieve a string value from INI file or registry.
+	CString GetProfileString(LPCTSTR lpszSection, LPCTSTR lpszEntry,
+		LPCTSTR lpszDefault = NULL);
+
+	// Sets a string value to INI file or registry.
+	BOOL WriteProfileString(LPCTSTR lpszSection, LPCTSTR lpszEntry,
+		LPCTSTR lpszValue);
+
+	// Retrieve an arbitrary binary value from INI file or registry.
+	BOOL GetProfileBinary(LPCTSTR lpszSection, LPCTSTR lpszEntry,
+		LPBYTE* ppData, UINT* pBytes);
+
+	// Sets an arbitrary binary value to INI file or registry.
+	BOOL WriteProfileBinary(LPCTSTR lpszSection, LPCTSTR lpszEntry,
+		LPBYTE pData, UINT nBytes);
 	
 };
 extern const UINT WM_MOUSEMOVEIN;

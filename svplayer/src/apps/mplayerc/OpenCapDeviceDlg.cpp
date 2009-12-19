@@ -320,9 +320,9 @@ BOOL COpenCapDeviceDlg::OnInitDialog()
 	SetMaxTrackSize(s);
 
 	CString dummy = _T("dummy");
-	CString vidstr = AfxGetApp()->GetProfileString(_T("Capture"), _T("VidDispName"), dummy);
-	CString audstr = AfxGetApp()->GetProfileString(_T("Capture"), _T("AudDispName"), dummy);
-	long country = AfxGetApp()->GetProfileInt(_T("Capture"), _T("Country"), 1);
+	CString vidstr = AfxGetMyApp()->GetProfileString(_T("Capture"), _T("VidDispName"), dummy);
+	CString audstr = AfxGetMyApp()->GetProfileString(_T("Capture"), _T("AudDispName"), dummy);
+	long country = AfxGetMyApp()->GetProfileInt(_T("Capture"), _T("Country"), 1);
 
 	int iSel = vidstr == dummy ? 0 : -1;
 
@@ -429,19 +429,19 @@ void COpenCapDeviceDlg::OnBnClickedOk()
 	if(m_vidctrl.GetCurSel() >= 0) 
 	{
 		m_vidstr = m_vidnames[m_vidctrl.GetCurSel()];
-		AfxGetApp()->WriteProfileString(_T("Capture"), _T("VidDispName"), m_vidstr);
+		AfxGetMyApp()->WriteProfileString(_T("Capture"), _T("VidDispName"), m_vidstr);
 	}
 
 	if(m_audctrl.GetCurSel() >= 0)
 	{
 		m_audstr = m_audnames[m_audctrl.GetCurSel()];
-		AfxGetApp()->WriteProfileString(_T("Capture"), _T("AudDispName"), m_audstr);
+		AfxGetMyApp()->WriteProfileString(_T("Capture"), _T("AudDispName"), m_audstr);
 	}
 
 	if(m_countryctrl.GetCurSel() >= 0)
 	{
 		m_country = ((cc_t*)m_countryctrl.GetItemDataPtr(m_countryctrl.GetCurSel()))->code;
-		AfxGetApp()->WriteProfileInt(_T("Capture"), _T("Country"), m_country);
+		AfxGetMyApp()->WriteProfileInt(_T("Capture"), _T("Country"), m_country);
 	}
 
 	OnOK();

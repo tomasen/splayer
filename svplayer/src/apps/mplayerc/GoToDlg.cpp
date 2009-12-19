@@ -41,7 +41,7 @@ CGoToDlg::CGoToDlg(int time, float fps, CWnd* pParent /*=NULL*/)
 {
 	if(m_fps == 0)
 	{
-		CString str = AfxGetApp()->GetProfileString(ResStr(IDS_R_SETTINGS), _T("fps"), _T("0"));
+		CString str = AfxGetMyApp()->GetProfileString(ResStr(IDS_R_SETTINGS), _T("fps"), _T("0"));
 		if(_stscanf(str, _T("%f"), &m_fps) != 1) m_fps = 0;
 	}
 }
@@ -75,7 +75,7 @@ BOOL CGoToDlg::OnInitDialog()
 
 		UpdateData(FALSE);
 
-		switch(AfxGetApp()->GetProfileInt(ResStr(IDS_R_SETTINGS), _T("gotoluf"), 0))
+		switch(AfxGetMyApp()->GetProfileInt(ResStr(IDS_R_SETTINGS), _T("gotoluf"), 0))
 		{
 		default:
 		case 0: m_timeedit.SetFocus(); m_timeedit.SetSel(0, 0); break;
@@ -136,7 +136,7 @@ void CGoToDlg::OnBnClickedOk1()
 
 		m_time = ((hh*60+mm)*60+ss)*1000+ms;
 
-		AfxGetApp()->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("gotoluf"), 0);
+		AfxGetMyApp()->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("gotoluf"), 0);
 
 		OnOK();
 	}
@@ -168,7 +168,7 @@ void CGoToDlg::OnBnClickedOk2()
 
 			mc.GetMatch(1, &szStart, &szEnd);
 			if(_stscanf(szStart, _T("%f"), &fps) != 1) fps = 0;
-			else AfxGetApp()->WriteProfileString(ResStr(IDS_R_SETTINGS), _T("fps"), szStart);
+			else AfxGetMyApp()->WriteProfileString(ResStr(IDS_R_SETTINGS), _T("fps"), szStart);
 		}
 		else
 		{
@@ -184,7 +184,7 @@ void CGoToDlg::OnBnClickedOk2()
 
 		m_time = (int)(1000.0*frame/fps) + 1;
 
-		AfxGetApp()->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("gotoluf"), 1);
+		AfxGetMyApp()->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("gotoluf"), 1);
 
 		OnOK();
 	}

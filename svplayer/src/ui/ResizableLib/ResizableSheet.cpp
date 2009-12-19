@@ -17,6 +17,9 @@
 #include "stdafx.h"
 #include "ResizableSheet.h"
 
+#include <afxtempl.h>
+#include "..\..\apps\mplayerc\mplayerc.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -334,13 +337,13 @@ void CResizableSheet::SavePage()
 	if (page < 0)
 		page = 0;
 
-	AfxGetApp()->WriteProfileInt(m_sSection, ACTIVEPAGE, page);
+	AfxGetMyApp()->WriteProfileInt(m_sSection, ACTIVEPAGE, page);
 }
 
 void CResizableSheet::LoadPage()
 {
 	// restore active page, zero (the first) if not found
-	int page = AfxGetApp()->GetProfileInt(m_sSection, ACTIVEPAGE, 0);
+	int page = AfxGetMyApp()->GetProfileInt(m_sSection, ACTIVEPAGE, 0);
 	
 	if (m_bSavePage)
 	{

@@ -72,7 +72,7 @@ BOOL CAuthDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	CWinApp* pApp = AfxGetApp();
+	CWinApp* pApp = AfxGetMyApp();
 
 	if(pApp->m_pszRegistryKey)
 	{
@@ -135,7 +135,7 @@ void CAuthDlg::OnBnClickedOk()
 
 	if(!m_username.IsEmpty())
 	{
-		CWinApp* pApp = AfxGetApp();
+		CWinApp* pApp = AfxGetMyApp();
 		pApp->WriteProfileString(ResStr(IDS_R_LOGINS), m_username, m_remember ? DEncrypt(m_password) : _T(""));
 	}
 

@@ -1896,7 +1896,7 @@ void CMainFrame::LoadControlBar(CControlBar* pBar, UINT defDockBarID)
 	if(str.IsEmpty()) return;
 	CString section = _T("ToolBars\\") + str;
 
-	CWinApp* pApp = AfxGetApp();
+	CWinApp* pApp = AfxGetMyApp();
 
 	UINT nID = pApp->GetProfileInt(section, _T("DockState"), defDockBarID);
 
@@ -1922,7 +1922,7 @@ void CMainFrame::LoadControlBar(CControlBar* pBar, UINT defDockBarID)
 
 void CMainFrame::RestoreFloatingControlBars()
 {
-	CWinApp* pApp = AfxGetApp();
+	CWinApp* pApp = AfxGetMyApp();
 
 	CRect r;
 	GetWindowRect(r);
@@ -1953,7 +1953,7 @@ void CMainFrame::RestoreFloatingControlBars()
 
 void CMainFrame::SaveControlBars()
 {
-	CWinApp* pApp = AfxGetApp();
+	CWinApp* pApp = AfxGetMyApp();
 
 	POSITION pos = m_dockingbars.GetHeadPosition();
 	while(pos)
@@ -11470,10 +11470,10 @@ void CMainFrame::OpenCapture(OpenDeviceData* pODD)
 
 		if(pAMTuner) // load saved channel
 		{
-			pAMTuner->put_CountryCode(AfxGetApp()->GetProfileInt(_T("Capture"), _T("Country"), 1));
+			pAMTuner->put_CountryCode(AfxGetMyApp()->GetProfileInt(_T("Capture"), _T("Country"), 1));
 
 			int vchannel = pODD->vchannel;
-			if(vchannel < 0) vchannel = AfxGetApp()->GetProfileInt(_T("Capture\\") + CString(m_VidDispName), _T("Channel"), -1);
+			if(vchannel < 0) vchannel = AfxGetMyApp()->GetProfileInt(_T("Capture\\") + CString(m_VidDispName), _T("Channel"), -1);
 			if(vchannel >= 0)
 			{
 				OAFilterState fs = State_Stopped;
@@ -14060,7 +14060,7 @@ void CMainFrame::SetupShadersSubMenu()
 	if(!IsMenu(pSub->m_hMenu)) pSub->CreatePopupMenu();
 	else while(pSub->RemoveMenu(0, MF_BYPOSITION));
 
-	CWinApp* pApp = AfxGetApp();
+	CWinApp* pApp = AfxGetMyApp();
 	AppSettings& s = AfxGetAppSettings();
 	
 	if( s.iSVPRenderType == 0 || (this->IsSomethingLoaded() && !m_pCAPR)  ){//s.iDSVideoRendererType != 6 || s.iRMVideoRendererType != 2 || s.iQTVideoRendererType != 2 || s.iAPSurfaceUsage != VIDRNDT_AP_TEXTURE3D

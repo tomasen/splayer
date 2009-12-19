@@ -57,7 +57,7 @@ CPPageSheet::CPPageSheet(LPCTSTR pszCaption, IFilterGraph* pFG, CWnd* pParentWnd
 
 	SetTreeViewMode(TRUE, TRUE, FALSE);
 
-	if(idPage || (idPage = AfxGetApp()->GetProfileInt(ResStr(IDS_R_SETTINGS), _T("LastUsedPage"), 0)))
+	if(idPage || (idPage = AfxGetMyApp()->GetProfileInt(ResStr(IDS_R_SETTINGS), _T("LastUsedPage"), 0)))
 	{
 		for(int i = 0; i < GetPageCount(); i++)
 		{

@@ -1212,7 +1212,7 @@ void CPlayerPlaylistBar::LoadPlaylist()
 		CPath p;
 		p.Combine(base, _T("default.mpcpl"));
 
-		if(!AfxGetApp()->GetProfileInt(ResStr(IDS_R_SETTINGS), _T("RememberPlaylistItems"), TRUE))
+		if(!AfxGetMyApp()->GetProfileInt(ResStr(IDS_R_SETTINGS), _T("RememberPlaylistItems"), TRUE))
 		{
 			DeleteFile(p);
 		}
@@ -1232,7 +1232,7 @@ void CPlayerPlaylistBar::SavePlaylist(BOOL bDeletePlayList)
 		CPath p;
 		p.Combine(base, _T("default.mpcpl"));
 
-		if(!AfxGetApp()->GetProfileInt(ResStr(IDS_R_SETTINGS), _T("RememberPlaylistItems"), TRUE) || bDeletePlayList)
+		if(!AfxGetMyApp()->GetProfileInt(ResStr(IDS_R_SETTINGS), _T("RememberPlaylistItems"), TRUE) || bDeletePlayList)
 		{
 			DeleteFile(p);
 		}
@@ -1832,8 +1832,8 @@ void CPlayerPlaylistBar::OnContextMenu(CWnd* /*pWnd*/, CPoint p)
 	m.AppendMenu(MF_STRING|(!m_pl.GetCount()?(MF_DISABLED|MF_GRAYED):MF_ENABLED), M_RANDOMIZE, ResStr(IDS_PLAYLIST_RANDOMIZE));
 	m.AppendMenu(MF_STRING|(!m_pl.GetCount()?(MF_DISABLED|MF_GRAYED):MF_ENABLED), M_SORTBYID, ResStr(IDS_PLAYLIST_RESTORE));
 	m.AppendMenu(MF_SEPARATOR);
-	m.AppendMenu(MF_STRING|MF_ENABLED|(AfxGetApp()->GetProfileInt(ResStr(IDS_R_SETTINGS), _T("ShufflePlaylistItems"), FALSE)?MF_CHECKED:0), M_SHUFFLE, ResStr(IDS_PLAYLIST_SHUFFLE));
-	m.AppendMenu(MF_STRING|MF_ENABLED|(AfxGetApp()->GetProfileInt(ResStr(IDS_R_SETTINGS), _T("RememberPlaylistItems"), TRUE)?MF_CHECKED:0), M_REMEMBERPLAYLIST, ResStr(IDS_PLAYLIST_REMEBERITEMS));
+	m.AppendMenu(MF_STRING|MF_ENABLED|(AfxGetMyApp()->GetProfileInt(ResStr(IDS_R_SETTINGS), _T("ShufflePlaylistItems"), FALSE)?MF_CHECKED:0), M_SHUFFLE, ResStr(IDS_PLAYLIST_SHUFFLE));
+	m.AppendMenu(MF_STRING|MF_ENABLED|(AfxGetMyApp()->GetProfileInt(ResStr(IDS_R_SETTINGS), _T("RememberPlaylistItems"), TRUE)?MF_CHECKED:0), M_REMEMBERPLAYLIST, ResStr(IDS_PLAYLIST_REMEBERITEMS));
 
 	CMainFrame* pMainFrm = (CMainFrame*)AfxGetMainWnd();
 	CAutoLock dataLock(m_csDataLock);
@@ -2068,12 +2068,12 @@ void CPlayerPlaylistBar::OnContextMenu(CWnd* /*pWnd*/, CPoint p)
 			}
 			break;
 		case M_REMEMBERPLAYLIST:
-			AfxGetApp()->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("RememberPlaylistItems"), 
-				!AfxGetApp()->GetProfileInt(ResStr(IDS_R_SETTINGS), _T("RememberPlaylistItems"), TRUE));
+			AfxGetMyApp()->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("RememberPlaylistItems"), 
+				!AfxGetMyApp()->GetProfileInt(ResStr(IDS_R_SETTINGS), _T("RememberPlaylistItems"), TRUE));
 			break;
 		case M_SHUFFLE:
-			AfxGetApp()->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("ShufflePlaylistItems"), 
-				!AfxGetApp()->GetProfileInt(ResStr(IDS_R_SETTINGS), _T("ShufflePlaylistItems"), FALSE));
+			AfxGetMyApp()->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("ShufflePlaylistItems"), 
+				!AfxGetMyApp()->GetProfileInt(ResStr(IDS_R_SETTINGS), _T("ShufflePlaylistItems"), FALSE));
 			break;
 		default:
 			break;

@@ -17,6 +17,9 @@
 #include "stdafx.h"
 #include "ResizableState.h"
 
+#include <afxtempl.h>
+#include "..\..\apps\mplayerc\mplayerc.h"
+
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
@@ -72,7 +75,7 @@ BOOL CResizableState::SaveWindowRect(LPCTSTR pszSection, BOOL bRectOnly)
 			rc.right, rc.bottom, wp.showCmd, wp.flags);
 	}
 
-	return AfxGetApp()->WriteProfileString(pszSection, PLACEMENT_ENT, data);
+	return AfxGetMyApp()->WriteProfileString(pszSection, PLACEMENT_ENT, data);
 }
 
 BOOL CResizableState::LoadWindowRect(LPCTSTR pszSection, BOOL bRectOnly)
@@ -80,7 +83,7 @@ BOOL CResizableState::LoadWindowRect(LPCTSTR pszSection, BOOL bRectOnly)
 	CString data;
 	WINDOWPLACEMENT wp;
 
-	data = AfxGetApp()->GetProfileString(pszSection, PLACEMENT_ENT);
+	data = AfxGetMyApp()->GetProfileString(pszSection, PLACEMENT_ENT);
 	
 	if (data.IsEmpty())	// never saved before
 		return FALSE;

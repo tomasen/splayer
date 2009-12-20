@@ -132,9 +132,9 @@ static LONG WINAPI  DebugMiniDumpFilter( struct _EXCEPTION_POINTERS *pExceptionI
 
 								wcscpy( PathFindFileName(sUpdaterPath), _T("Updater.exe"));
 								_stprintf( sUpPerm, _T(" /dmp splayer_%s_%s.dmp "), SVP_REV_STR ,szTimestamp);
-								(int)::ShellExecute(NULL, _T("open"), sUpdaterPath, sUpPerm, NULL, SW_HIDE);
+								//(int)::ShellExecute(NULL, _T("open"), sUpdaterPath, sUpPerm, NULL, SW_HIDE);
 
-								(int)::ShellExecute(NULL, _T("open"), sExePath, L" /fromdmp", NULL, SW_SHOW);
+								//(int)::ShellExecute(NULL, _T("open"), sExePath, L" /fromdmp", NULL, SW_SHOW);
 								
 								SVP_LogMsg5(L"crash dumped %s %s %s", sUpdaterPath , sUpPerm , sExePath);
 
@@ -774,7 +774,7 @@ bool CMPlayerCApp::StoreSettingsToIni()
 {
 
 	CString ini = GetIniPath();
-	if(0 && !sqlite_setting){ // TODO: create table etc
+	if( !sqlite_setting){ // TODO: create table etc
 		
 		CSVPToolBox svpTool;
 		int iDescLen;
@@ -787,7 +787,13 @@ bool CMPlayerCApp::StoreSettingsToIni()
 		}
 	}
 	if(sqlite_setting){
-		sqlite_setting->exec_sql("create table settingint (skey TEXT  PRIMARY KEY,data INTEGER) IF NOT EXIST; ");
+		sqlite_setting->exec_sql("CREATE TABLE IF NOT EXISTS \"settingint\" ( \"hkey\" TEXT,  \"sect\" TEXT,  \"sval\" INTEGER)");
+		sqlite_setting->exec_sql("CREATE TABLE IF NOT EXISTS \"settingstring\" (  \"hkey\" TEXT,   \"sect\" TEXT,   \"vstring\" TEXT)");
+		sqlite_setting->exec_sql("CREATE TABLE IF NOT EXISTS \"settingbin\" (   \"skey\" TEXT,   \"sect\" TEXT,   \"vdata\" BLOB)");
+		sqlite_setting->exec_sql("CREATE UNIQUE INDEX IF NOT EXISTS \"pkey\" on settingint (hkey ASC, sect ASC)");
+		sqlite_setting->exec_sql("CREATE UNIQUE INDEX IF NOT EXISTS \"pkeystring\" on settingstring (hkey ASC, sect ASC)");
+		sqlite_setting->exec_sql("CREATE INDEX IF NOT EXISTS \"pkeybin\" on settingbin (skey ASC, sect ASC)");
+		sqlite_setting->exec_sql("PRAGMA synchronous=OFF");
 		return(true);
 	}
 
@@ -812,7 +818,7 @@ bool CMPlayerCApp::StoreSettingsToIni()
 
 bool CMPlayerCApp::StoreSettingsToRegistry()
 {
-	_tremove(GetIniPath());
+	//_tremove(GetIniPath());
 
 	if(m_pszRegistryKey) free((void*)m_pszRegistryKey);
 	m_pszRegistryKey = NULL;
@@ -1887,8 +1893,10 @@ BOOL CMPlayerCApp::InitInstance()
 
 	PreProcessCommandLine();
 
-	if(IsIniValid()) StoreSettingsToIni();
-	else StoreSettingsToRegistry();
+	//if(IsIniValid()) 
+	StoreSettingsToRegistry();
+	StoreSettingsToIni();
+	// else StoreSettingsToRegistry();
 
 	CString AppDataPath;
 	if(GetAppDataPath(AppDataPath))
@@ -1908,6 +1916,15 @@ BOOL CMPlayerCApp::InitInstance()
 	{
 		return FALSE;
 	}
+	m_pDwmIsCompositionEnabled = NULL;
+	m_pDwmEnableComposition = NULL;
+	m_pDwmExtendFrameIntoClientArea  = NULL;
+	m_pDwmDefWindowProc = NULL;
+	m_pOpenThemeData = NULL;
+	m_pGetLayeredWindowAttributes = NULL;
+	m_pGetThemeSysFont = NULL;
+	m_pDrawThemeTextEx = NULL;
+	m_pCloseThemeData = NULL;
 
 	HMODULE hDWMAPI = LoadLibrary(L"dwmapi.dll");
 	if (hDWMAPI)
@@ -1925,6 +1942,11 @@ BOOL CMPlayerCApp::InitInstance()
 
 	}else
 		m_s.bAeroGlassAvalibility = false;
+
+	HMODULE hUSER32 = LoadLibrary(L"user32.dll");
+	if(hUSER32){
+		(FARPROC &)m_pGetLayeredWindowAttributes =  GetProcAddress(hUSER32, "GetLayeredWindowAttributes");
+	}
 
 	HMODULE hUXAPI = LoadLibrary(L"uxtheme.dll");
 	if (hUXAPI)
@@ -3312,7 +3334,7 @@ BOOL CMPlayerCApp::Settings::bUserAeroTitle(){
 }
 void CMPlayerCApp::Settings::UpdateData(bool fSave)
 {
-	CWinApp* pApp = AfxGetMyApp();
+	CMPlayerCApp* pApp = AfxGetMyApp();
 	ASSERT(pApp);
 
 	UINT len;
@@ -4750,6 +4772,7 @@ BOOL  CMPlayerCApp::WriteProfileInt(LPCTSTR lpszSection, LPCTSTR lpszEntry, int 
 	if(sqlite_setting){
 		return sqlite_setting->WriteProfileInt( lpszSection,  lpszEntry,  nValue);
 	}else{
+		SVP_LogMsg6("dwqdwq");
 		return __super::WriteProfileInt( lpszSection,  lpszEntry,  nValue);
 	}
 }

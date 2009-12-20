@@ -353,6 +353,7 @@ public:
 	UINT GetBottomSubOffset();
 
 
+	BOOL (__stdcall * m_pGetLayeredWindowAttributes)(__in HWND hwnd,__out_opt COLORREF* pcrKey,	__out_opt BYTE* pbAlpha,__out_opt DWORD* pdwFlags);
 	HRESULT (__stdcall * m_pDwmIsCompositionEnabled)(__out BOOL* pfEnabled);
 	HRESULT (__stdcall * m_pDwmEnableComposition)(UINT uCompositionAction);
 	HRESULT (__stdcall * m_pDwmExtendFrameIntoClientArea)( HWND hWnd,const MARGINS *pMarInset);

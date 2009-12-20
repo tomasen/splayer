@@ -5,10 +5,13 @@
 #include "../sqlite3.h"
 #include <stdlib.h>
 #include <vector>
+#include "../../../src/svplib/svplib.h"
+#include "../../../src/svplib/SVPToolBox.h"
 
 class SQLITE3 {
 private:
 	sqlite3 *db;
+	CSVPToolBox svpTool;
 
 public:
 	char *zErrMsg;

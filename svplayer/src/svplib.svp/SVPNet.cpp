@@ -395,7 +395,8 @@ int CSVPNet::UploadPinRenderDeadEndReport(CString szPinName, CString szReport){
 
 	// client key is issued by splayer.org to avoid abuse of  service
 	// to acquire a client key require a "proper client"
-	// "proper client" means a client must have ability to upload subtitle match data to contribute to the match rank system correctly
+	// "proper client" means a client must have ability to upload subtitle matching data 
+	// to contribute to the match rank system correctly
 	// comment out following line if don't have a client key
 	// without a client key the service is still available but maybe limited in some way to avoid abuse of service
 	#include "shooterclient.key"

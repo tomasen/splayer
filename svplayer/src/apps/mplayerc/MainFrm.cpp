@@ -1896,7 +1896,7 @@ void CMainFrame::LoadControlBar(CControlBar* pBar, UINT defDockBarID)
 	if(str.IsEmpty()) return;
 	CString section = _T("ToolBars\\") + str;
 
-	CWinApp* pApp = AfxGetMyApp();
+	CMPlayerCApp* pApp = AfxGetMyApp();
 
 	UINT nID = pApp->GetProfileInt(section, _T("DockState"), defDockBarID);
 
@@ -1922,7 +1922,7 @@ void CMainFrame::LoadControlBar(CControlBar* pBar, UINT defDockBarID)
 
 void CMainFrame::RestoreFloatingControlBars()
 {
-	CWinApp* pApp = AfxGetMyApp();
+	CMPlayerCApp* pApp = AfxGetMyApp();
 
 	CRect r;
 	GetWindowRect(r);
@@ -1953,7 +1953,7 @@ void CMainFrame::RestoreFloatingControlBars()
 
 void CMainFrame::SaveControlBars()
 {
-	CWinApp* pApp = AfxGetMyApp();
+	CMPlayerCApp* pApp = AfxGetMyApp();
 
 	POSITION pos = m_dockingbars.GetHeadPosition();
 	while(pos)
@@ -3343,9 +3343,11 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 			if( GetExStyle() & WS_EX_LAYERED){
 				BYTE dAlpha = 0 ;
 				DWORD dwFlag = 0;
-				GetLayeredWindowAttributes(NULL, &dAlpha , &dwFlag);
-				if(dAlpha == 255 ){
-					ModifyStyleEx( WS_EX_LAYERED , 0);
+				if(AfxGetMyApp()->m_pGetLayeredWindowAttributes){
+					AfxGetMyApp()->m_pGetLayeredWindowAttributes(m_hWnd, NULL, &dAlpha , &dwFlag);
+					if(dAlpha == 255 ){
+						ModifyStyleEx( WS_EX_LAYERED , 0);
+					}
 				}
 			}
 			
@@ -14060,7 +14062,7 @@ void CMainFrame::SetupShadersSubMenu()
 	if(!IsMenu(pSub->m_hMenu)) pSub->CreatePopupMenu();
 	else while(pSub->RemoveMenu(0, MF_BYPOSITION));
 
-	CWinApp* pApp = AfxGetMyApp();
+	CMPlayerCApp* pApp = AfxGetMyApp();
 	AppSettings& s = AfxGetAppSettings();
 	
 	if( s.iSVPRenderType == 0 || (this->IsSomethingLoaded() && !m_pCAPR)  ){//s.iDSVideoRendererType != 6 || s.iRMVideoRendererType != 2 || s.iQTVideoRendererType != 2 || s.iAPSurfaceUsage != VIDRNDT_AP_TEXTURE3D

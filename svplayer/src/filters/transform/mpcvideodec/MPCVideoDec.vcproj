@@ -315,7 +315,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\..\..\include,ffmpeg,ffmpeg\libavcodec,ffmpeg\libavutil"
+				AdditionalIncludeDirectories="..\..\..\..\include,ffmpeg,ffmpeg\libavcodec,ffmpeg\libavutil;..\..\BaseClasses"
 				PreprocessorDefinitions="WIN32;_DEBUG"
 			/>
 			<Tool
@@ -329,7 +329,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="libavcodecD.lib"
+				AdditionalDependencies="libavcodec_gcc.lib libgcc.a libmingwex.a"
 				OutputFile="..\..\..\..\lib\$(ProjectName)DU.lib"
 				AdditionalLibraryDirectories="..\..\..\..\lib"
 			/>

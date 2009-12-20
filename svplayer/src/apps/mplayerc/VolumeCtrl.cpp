@@ -25,6 +25,7 @@
 #include "stdafx.h"
 #include "mplayerc.h"
 #include "VolumeCtrl.h"
+#include "math.h"
 
 
 // CVolumeCtrl

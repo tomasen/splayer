@@ -27,6 +27,7 @@
 #include "PlayerStatusBar.h"
 #include "MainFrm.h"
 #include "..\..\DSUtil\DSUtil.h"
+#include <math.h>
 
 // CPlayerStatusBar
 

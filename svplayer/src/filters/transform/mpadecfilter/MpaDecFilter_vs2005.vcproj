@@ -377,7 +377,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\..\..\src\filters\BaseClasses"
+				AdditionalIncludeDirectories="libflac/include;../mpcvideodec\ffmpeg\libavcodec;../mpcvideodec/ffmpeg;../../../../include;..\..\BaseClasses"
 				PreprocessorDefinitions="WIN32;_DEBUG"
 			/>
 			<Tool

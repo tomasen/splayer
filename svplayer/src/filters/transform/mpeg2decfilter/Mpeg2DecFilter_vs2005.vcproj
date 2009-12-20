@@ -380,7 +380,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\..\..\src\filters\BaseClasses"
+				AdditionalIncludeDirectories="..\..\BaseClasses;..\..\..\..\include"
 				PreprocessorDefinitions="WIN32;_DEBUG"
 			/>
 			<Tool

@@ -150,6 +150,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="..\..\Filters\BaseClasses"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;"
 			/>
 			<Tool

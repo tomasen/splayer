@@ -153,7 +153,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\src\filters\BaseClasses"
+				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="..\..\src\filters\BaseClasses;../../include/;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;"
 			/>
 			<Tool
@@ -406,18 +407,6 @@
 			<File
 				RelativePath="MediaTypes.cpp"
 				>
-			</File>
-			<File
-				RelativePath=".\mmintrin64.c"
-				>
-				<FileConfiguration
-					Name="Release Unicode|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\NullRenderers.cpp"

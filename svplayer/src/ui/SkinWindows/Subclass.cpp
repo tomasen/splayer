@@ -184,7 +184,7 @@ LRESULT CALLBACK CSubclassWnd::HookWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARA
 	if (msg == WM_NCDESTROY) 
 	{
 #ifdef _DEBUG
-		char szClass[30];
+		TCHAR szClass[30];
 		GetClassName(hwnd, szClass, 30);
 		TRACE ("CSubclassWnd::HookWndProc(%s, WM_NCDESTROY)\n", szClass);
 #endif

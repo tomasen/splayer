@@ -104,6 +104,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions=""
+				AdditionalIncludeDirectories="../include/"
 				PreprocessorDefinitions="_DEBUG;WIN32;_LIB"
 				PrecompiledHeaderFile=".\Debug/libfaad.pch"
 			/>

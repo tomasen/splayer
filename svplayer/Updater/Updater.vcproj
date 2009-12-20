@@ -44,6 +44,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/D &quot;CURL_STATICLIB&quot; /D &quot;WINVER=0x0600&quot; /D &quot;_WIN32_WINNT=0x0600&quot; /D &quot;NTDDI_VERSION=NTDDI_VISTA&quot;"
 				Optimization="0"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG"
 				MinimalRebuild="true"
@@ -67,10 +68,15 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalOptions="/MACHINE:I386"
+				AdditionalDependencies="libeay32.lib ssleay32.lib curllibd.lib svplibDU.lib zlibD.lib Version.lib libunrarD.lib"
+				ShowProgress="2"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories="../lib"
+				IgnoreDefaultLibraryNames="nafxcw.lib;MSVCRT"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				TargetMachine="1"
+				TargetMachine="0"
 			/>
 			<Tool
 				Name="VCALinkTool"

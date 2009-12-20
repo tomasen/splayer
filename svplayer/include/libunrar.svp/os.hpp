@@ -12,6 +12,10 @@
 #define ENABLE_BAD_ALLOC
 #endif
 
+#if defined(_WIN_32)
+#define __func__ __FUNCTION__
+#endif
+
 
 #if defined(_WIN_32) || defined(_EMX)
 

@@ -381,8 +381,10 @@
                         <RegistryValue Root="HKLM" Key="Software\Microsoft\MediaPlayer\Player\Extensions\Types" Name="15" Value="*.csf" Type="string" Action="write" />
                     </Component>
                     <Component Id="cmp0C6F17A19A301B6750C92DEFADA1B11E_hkcu" Guid="{BEC8AA45-B4F0-49E4-9D4D-B873E6C8AF12}">
-                        <RegistryValue Root="HKCU" Key="Software\Microsoft\MediaPlayer\Player\Extensions\.csf" Name="Permissions" Value="1" Type="integer" Action="write" />
-                        <RegistryValue Root="HKCU" Key="Software\Microsoft\MediaPlayer\Player\Extensions\.csf" Name="Runtime" Value="1" Type="integer" Action="write" />
+               	        <RegistryKey Root="HKCU" Key="Software\Microsoft\MediaPlayer\Player\Extensions\.csf" Action="createAndRemoveOnUninstall">
+                            <RegistryValue Name="Permissions" Value="1" Type="integer" Action="write" />
+                            <RegistryValue Name="Runtime" Value="1" Type="integer" Action="write" />
+                        </RegistryKey>
                     </Component>
                     
                     <Component Id="cmp33C235646276080124995A74A59833D7" Guid="{2ADA5F16-F63D-4808-B082-91A7A7ECD461}">

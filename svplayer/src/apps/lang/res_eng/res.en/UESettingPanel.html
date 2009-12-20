@@ -352,7 +352,7 @@ UESAPI.prototype = {
 	        }else{
 	            var oOption = document.createElement("OPTION");
                 oSelect.options.add(oOption);
-                oOption.innerText = "CoreAVC";
+                oOption.innerText = "Divx H.264解码器";
                 oOption.value = "CoreAVCdec";
 
              oOption = document.createElement("OPTION");
@@ -422,7 +422,7 @@ UESAPI.prototype = {
 	        remark = "ffmpeg: ShooterPlayer's built-in decoder. No aspect ratio issues.";
 	        break;
 	        case "CoreAVCdec":
-	        remark = "CoreAVC: Best H.264 software decoder. Incompatible with SPlayer's built-in brightness adjustment. May cause aspect ratio issues.";
+	        remark = "Divx H.264 software decoder. Works better on low-end hardware and computers";
 	        noMixer = 1;
 	        break;
 

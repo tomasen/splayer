@@ -2502,21 +2502,27 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 					
 				}	else*/
 		
+	
+	bool cavcexist = 0;
+	CString czvcPath = svptoolbox.GetPlayerPath(_T("codecs\\CoreAVCDecoder.ax"));
+	if(svptoolbox.ifFileExist(czvcPath))
+		cavcexist = 1;
+	else{
+		czvcPath = svptoolbox.GetPlayerPath(_T("codecs\\cavc.ax"));
+		if(svptoolbox.ifFileExist(czvcPath)){
+			cavcexist = 1;
+		}
+	}
+
 	    if( ! s.fVMR9MixerMode  ) 
 		{
 			if( (s.useGPUAcel && s.bHasCUDAforCoreAVC) || (!s.useGPUAcel && !s.bDisableSoftCAVC && !s.bDisableSoftCAVCForce)){
 				//if((s.useGPUAcel)){
 					//SVP_ForbidenCoreAVCTrayIcon();
-					SVP_SetCoreAvcCUDA(true);
+					SVP_SetCoreAvcCUDA(true); 
 				//}
 				//cavc
-				CString czvcPath = svptoolbox.GetPlayerPath(_T("codecs\\CoreAVCDecoder.ax"));
-				if(svptoolbox.ifFileExist(czvcPath))
-					szaExtFilterPaths.Add( czvcPath  );  //will crash without why
-				else{
-					czvcPath = svptoolbox.GetPlayerPath(_T("codecs\\cavc.ax"));
-					szaExtFilterPaths.Add( czvcPath  );
-				}
+				szaExtFilterPaths.Add( czvcPath  );  //will crash without why
 			}
 			////VMR9 seems not work with coreplayer
 	  		
@@ -2529,8 +2535,10 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 	  		
 		}
 	//}
-		if (!s.useGPUAcel && s.bDisableSoftCAVCForce){
-			CString cclPath = svptoolbox.GetPlayerPath(_T("codecs\\cl08.ax"));
+		//szaExtFilterPaths.Add(  svptoolbox.GetPlayerPath(_T("codecs\\DivXDecH264.ax")) );
+
+		if (!s.useGPUAcel && ( s.bDisableSoftCAVCForce || !cavcexist) ){
+			CString cclPath = svptoolbox.GetPlayerPath(_T("dh264.ax"));
 			if(svptoolbox.ifFileExist(cclPath))
 				szaExtFilterPaths.Add( cclPath  );  //will crash without why
 			

@@ -12085,7 +12085,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 				s.bIsIVM = true;
 
 			s.bDisableSoftCAVCForce = false;
-			if( !(s.useGPUAcel && s.bHasCUDAforCoreAVC) ){
+			if(  !(s.useGPUAcel && s.bHasCUDAforCoreAVC) ){
 				if(!s.bDisableSoftCAVC){
 					if(s.szCurrentExtension == _T(".mkv") ){
 

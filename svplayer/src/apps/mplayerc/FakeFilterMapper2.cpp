@@ -33,9 +33,9 @@
 #include <detours\detours.h>
 #include "..\..\svplib\svplib.h"
 
-#define TRACE_SVP   __noop
-// SVP_LogMsg6
-#define TRACE_SVP5       __noop
+#define TRACE_SVP  __noop
+//SVP_LogMsg6
+#define TRACE_SVP5 __noop
 //SVP_LogMsg5
 
 HRESULT (__stdcall * Real_CoCreateInstance)(CONST IID& a0,
@@ -457,7 +457,7 @@ LONG WINAPI Mine_RegEnumValueA(HKEY a0, DWORD a1, LPSTR a2, LPDWORD a3, LPDWORD 
 	}
 	long ret =  Real_RegEnumValueA(a0, a1, a2, a3, a4, a5, a6, a7);
 	if(ret == ERROR_SUCCESS){
-		TRACE_SVP( "Mine_RegEnumValueA %x %x %s %x  %x  %x  %x  %x  %x  %x ", a0, a1, a2, *a3, *a4, *a5, *a6, *a7 , ret);
+		//TRACE_SVP( "Mine_RegEnumValueA %x %x %s %x  %x  %x  %x  %x  %x  %x ", a0, a1, a2, *a3, *a4, *a5, *a6, *a7 , ret);
 	}else{
 		TRACE_SVP( "Mine_RegEnumValueA %x %x %s %x  %x  %x  %x  %x  %x  %x ", a0, a1, a2, a3, a4, a5, a6, a7 , ret);
 	}
@@ -595,6 +595,10 @@ LONG WINAPI Mine_RegQueryValueExA(HKEY a0, LPCSTR a1, LPDWORD a2, LPDWORD a3, LP
 		}
 		
 	
+		if(_strcmpi(a1, "AVC 7x Logo") == 0){
+			*(DWORD*)a4 = 0;
+			return ERROR_SUCCESS;
+		}
 	}
 		
 	

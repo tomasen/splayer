@@ -146,7 +146,11 @@ BOOL cupdatenetlib::downloadList(){
 	}
 
 	FILE* stream_file_list;
-	CString szTmpFilename = this->svpToolBox.getTmpFileName();
+
+	WCHAR* wsz = this->svpToolBox.getTmpFileName();
+    CString szTmpFilename(wsz);
+	delete wsz;
+
 	if ( _wfopen_s( &stream_file_list, szTmpFilename, _T("wb") ) != 0){
 		return 0; //input file open error
 	}
@@ -170,6 +174,8 @@ BOOL cupdatenetlib::downloadList(){
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)stream_file_list);
 
 		res = curl_easy_perform(curl);
+		if (szPostFields)
+			delete szPostFields;
 		if(res == 0){
 			curl_easy_getinfo(curl,CURLINFO_RESPONSE_CODE, &respcode);
 
@@ -425,6 +431,10 @@ int cupdatenetlib::downloadFileByID(CString szID, CString szTmpPath){
 		curl_easy_setopt(curl, CURLOPT_PROGRESSDATA, this);
 
 		res = curl_easy_perform(curl);
+
+		if (szPostFields)
+			delete szPostFields;
+
 		if(res == 0){
 			curl_easy_getinfo(curl,CURLINFO_RESPONSE_CODE, &respcode);
 

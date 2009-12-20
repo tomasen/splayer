@@ -378,7 +378,7 @@ void CUpdaterDlg::OnTimer(UINT_PTR nIDEvent)
 			{
 				
 				KillTimer(IDT_REAL_START_CHECK);
-				cb_backgd.EnableWindow(true);
+				//cb_backgd.EnableWindow(true);
 				AfxBeginThread(ThreadCheckUpdate , (LPVOID)&cup);
 				if(m_nLanguage){
 					csCurTask.SetWindowText(_T("Current Task: Downloading..."));

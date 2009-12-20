@@ -432,9 +432,6 @@ int cupdatenetlib::downloadFileByID(CString szID, CString szTmpPath){
 
 		res = curl_easy_perform(curl);
 
-		if (szPostFields)
-			delete szPostFields;
-
 		if(res == 0){
 			curl_easy_getinfo(curl,CURLINFO_RESPONSE_CODE, &respcode);
 

@@ -794,6 +794,18 @@ bool CMPlayerCApp::StoreSettingsToIni()
 		sqlite_setting->exec_sql("CREATE UNIQUE INDEX IF NOT EXISTS \"pkeystring\" on settingstring (hkey ASC, sect ASC)");
 		sqlite_setting->exec_sql("CREATE INDEX IF NOT EXISTS \"pkeybin\" on settingbin (skey ASC, sect ASC)");
 		sqlite_setting->exec_sql("PRAGMA synchronous=OFF");
+
+		/*
+		int iwriteorg = sqlite_setting->GetProfileInt(ResStr(IDS_R_SETTINGS), L"writedetect", 0, false);
+		sqlite_setting->WriteProfileInt(ResStr(IDS_R_SETTINGS), L"writedetect", iwriteorg+1,false);
+		int iwritenew = sqlite_setting->GetProfileInt(ResStr(IDS_R_SETTINGS), L"writedetect", 0,false);
+
+		if(iwritenew != (iwriteorg+1)){
+			delete sqlite_setting;
+			sqlite_setting = NULL;
+			return false;
+		}
+		*/
 		return(true);
 	}
 

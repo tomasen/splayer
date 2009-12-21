@@ -11096,11 +11096,12 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 			}else
 				GetSubFileNames(fn, subSearchPaths, ret);
 
+			//AfxMessageBox(fn);
 			for(int i = 0; i < ret.GetCount(); i++){
 				SubFile szBuf = ret.GetAt(i);
-				if ( pOFD->subs.Find( szBuf.fn ) == NULL){
+				if ( pOFD->subs.Find( szBuf.fn ) == NULL && svpTool.ifFileExist(szBuf.fn)){
 					pOFD->subs.AddTail(szBuf.fn);
-					//AfxMessageBox(szBuf.fn);
+			//		AfxMessageBox(szBuf.fn);
 				}
 			}
 			//AfxMessageBox(_T("1"));

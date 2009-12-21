@@ -31,10 +31,10 @@ public:
 
 
 	// Retrieve an integer value from INI file or registry.
-	UINT GetProfileInt(LPCTSTR lpszSection, LPCTSTR lpszEntry, int nDefault);
+	UINT GetProfileInt(LPCTSTR lpszSection, LPCTSTR lpszEntry, int nDefault, bool fallofftoreg = true);
 
 	// Sets an integer value to INI file or registry.
-	BOOL WriteProfileInt(LPCTSTR lpszSection, LPCTSTR lpszEntry, int nValue);
+	BOOL WriteProfileInt(LPCTSTR lpszSection, LPCTSTR lpszEntry, int nValue, bool fallofftoreg = true);
 
 	// Retrieve a string value from INI file or registry.
 	CString GetProfileString(LPCTSTR lpszSection, LPCTSTR lpszEntry,

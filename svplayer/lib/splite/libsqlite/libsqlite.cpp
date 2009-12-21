@@ -46,7 +46,7 @@
 
 
 	// Retrieve an integer value from INI file or registry.
-	UINT  SQLITE3::GetProfileInt(LPCTSTR lpszSection, LPCTSTR lpszEntry, int nDefault)
+	UINT  SQLITE3::GetProfileInt(LPCTSTR lpszSection, LPCTSTR lpszEntry, int nDefault, bool fallofftoreg )
 	{
 		CString szSQL;
 		szSQL.Format(_T("SELECT sval FROM settingint WHERE hkey = \"%s\" AND sect = \"%s\" "), lpszSection, lpszEntry );
@@ -60,16 +60,18 @@
 			UINT iret = atoi(vdata.at(0).c_str());
 			//SVP_LogMsg6("Get int %s %x %s",CStringA(lpszEntry), iret,vdata.at(0).c_str());
 			return iret;
-		}else{
+		}else if(fallofftoreg){
 		//	SVP_LogMsg6("lalala");
 			return AfxGetApp()->GetProfileInt(lpszSection,lpszEntry,nDefault);
+		}else{
+			return 0;
 		}
 
 		return nDefault;
 	}
 
 	// Sets an integer value to INI file or registry.
-	BOOL  SQLITE3::WriteProfileInt(LPCTSTR lpszSection, LPCTSTR lpszEntry, int nValue)
+	BOOL  SQLITE3::WriteProfileInt(LPCTSTR lpszSection, LPCTSTR lpszEntry, int nValue, bool fallofftoreg )
 	{
 		CString szSQL;
 		szSQL.Format(_T("REPLACE INTO settingint  ( hkey, sect, sval ) VALUES (\"%s\" , \"%s\" ,\"%d\" )"), lpszSection, lpszEntry ,nValue);
@@ -79,7 +81,11 @@
 		free(buff);
 		if(zErrMsg){
 		//	SVP_LogMsg6("lalala2");
-			return AfxGetApp()->WriteProfileInt(lpszSection,lpszEntry,nValue);
+			if(fallofftoreg){
+				return AfxGetApp()->WriteProfileInt(lpszSection,lpszEntry,nValue);
+			}else{
+				return false;
+			}
 		}
 
 		return true;

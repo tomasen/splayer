@@ -11074,6 +11074,7 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 			CAtlArray<CString> subSearchPaths;
 			subSearchPaths.Add(_T("."));
 			subSearchPaths.Add(s.GetSVPSubStorePath());
+			//AfxMessageBox(s.GetSVPSubStorePath());
 			subSearchPaths.Add(_T(".\\subtitles"));
 			subSearchPaths.Add(_T(".\\Subs"));
 			subSearchPaths.Add(_T("c:\\subtitles"));
@@ -11093,15 +11094,16 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 				CAtlArray<SubFile> ret2;
 				GetSubFileNames(svpRar.m_fnInsideRar, subSearchPaths, ret2);
 				ret.Append(ret2);
-			}else
+			}else{
 				GetSubFileNames(fn, subSearchPaths, ret);
-
-			//AfxMessageBox(fn);
+				//AfxMessageBox(fn);
+			}
 			for(int i = 0; i < ret.GetCount(); i++){
 				SubFile szBuf = ret.GetAt(i);
+				//AfxMessageBox(szBuf.fn);
 				if ( pOFD->subs.Find( szBuf.fn ) == NULL && svpTool.ifFileExist(szBuf.fn)){
 					pOFD->subs.AddTail(szBuf.fn);
-			//		AfxMessageBox(szBuf.fn);
+					//AfxMessageBox(szBuf.fn);
 				}
 			}
 			//AfxMessageBox(_T("1"));

@@ -102,10 +102,13 @@
 		exec_sql(buff);
 		free(buff);
 		//SVP_LogMsg6("sql gotx %d %d",nrow,ncol);
-		if(nrow == 1 && ncol == 1){
+		if(nrow == 1 && ncol == 1 ){
 			//	SVP_LogMsg6("sql got %s",vdata.at(0).c_str());
-			return  svpTool.UTF8ToCString((char*)vdata.at(0).c_str(), vdata.at(0).length());
-			
+			if(vdata.at(0).length() > 1){
+				return  svpTool.UTF8ToCString((char*)vdata.at(0).c_str(), vdata.at(0).length()-1);
+			}else{
+				return _T("");
+			}
 
 		}else{
 			//	SVP_LogMsg6("lalala");

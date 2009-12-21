@@ -774,7 +774,7 @@ bool CMPlayerCApp::StoreSettingsToIni()
 {
 
 	CString ini = GetIniPath();
-	if( !sqlite_setting){ // TODO: create table etc
+	if( !sqlite_setting){ 
 		
 		CSVPToolBox svpTool;
 		int iDescLen;

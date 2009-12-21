@@ -23,6 +23,7 @@
 #include <io.h>
 #include "TextFile.h"
 #include "GFN.h"
+#include "../../svplib/svplib.h"
 
 TCHAR* exttypestr[] = 
 {
@@ -139,7 +140,9 @@ void GetSubFileNames(CString fn, CAtlArray<CString>& paths, CAtlArray<SubFile>& 
 			{
 				for(int i = 0; i < extsubnum; i++)
 				{
+					
 					CString szBuf = path + title + ext[j][i];
+					//SVP_LogMsg5(L"get sub1 %s %s %s %s",szBuf, path,title ,ext[j][i]);
 					if(byDir){szBuf = path + _T("*") + ext[j][i];}
 					if((hFile = FindFirstFile(szBuf, &wfd)) != INVALID_HANDLE_VALUE)
 					{
@@ -152,6 +155,7 @@ void GetSubFileNames(CString fn, CAtlArray<CString>& paths, CAtlArray<SubFile>& 
 							if(j == 0 || (hFile2 = FindFirstFile(fn.Left(fn.ReverseFind('.')) + _T(".avi"), &wfd2)) == INVALID_HANDLE_VALUE)
 							{
 								SubFile f;
+								//SVP_LogMsg5(L"get sub %s %s",szBuf, fn);
 								f.fn = fn;
 								ret.Add(f);
 							}

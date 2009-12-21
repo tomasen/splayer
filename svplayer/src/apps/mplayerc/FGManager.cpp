@@ -2537,7 +2537,7 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 	//}
 		//szaExtFilterPaths.Add(  svptoolbox.GetPlayerPath(_T("codecs\\DivXDecH264.ax")) );
 
-		if (!s.useGPUAcel && ( s.bDisableSoftCAVCForce || !cavcexist) ){
+		if (!s.useGPUAcel && !s.bDisableSoftCAVC && ( s.bDisableSoftCAVCForce || !cavcexist) ){
 			CString cclPath = svptoolbox.GetPlayerPath(_T("dh264.ax"));
 			if(svptoolbox.ifFileExist(cclPath))
 				szaExtFilterPaths.Add( cclPath  );  //will crash without why

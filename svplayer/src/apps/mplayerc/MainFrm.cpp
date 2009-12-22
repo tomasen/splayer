@@ -3879,11 +3879,14 @@ void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	CRgn rcStop ;
 	GetNoResponseRect(rcStop);
-	//SVP_LogMsg5(L"%d %d", point.x, point.y);
-	if(rcStop.PtInRegion(point)){
-		//AfxMessageBox(_T("1"));
-		__super::OnLButtonDown(nFlags, point);
-		return;
+	if (rcStop.m_hObject)
+	{
+		//SVP_LogMsg5(L"%d %d", point.x, point.y);
+		if(rcStop.PtInRegion(point)){
+			//AfxMessageBox(_T("1"));
+			__super::OnLButtonDown(nFlags, point);
+			return;
+		}
 	}
 
 	if( m_iMediaLoadState == MLS_CLOSED )
@@ -3965,9 +3968,12 @@ void CMainFrame::OnLButtonUp(UINT nFlags, CPoint point)
 	//ReleaseCapture();
 	CRgn rcStop ;
 	GetNoResponseRect(rcStop);
-	if(rcStop.PtInRegion(point)){
-		__super::OnLButtonUp(nFlags, point);
-		return;
+	if (rcStop.m_hObject)
+	{
+		if(rcStop.PtInRegion(point)){
+			__super::OnLButtonUp(nFlags, point);
+			return;
+		}
 	}
 
 //	SVP_LogMsg5(L"MUP");
@@ -16264,8 +16270,9 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 {
 
 	AppSettings& s = AfxGetAppSettings();
-    
-	m_tip.ClearStat();
+    //the SeekBarTip may not have been created.
+	if (::IsWindow(m_tip.m_hWnd))
+		m_tip.ClearStat();
 	__super::OnSize(nType, cx, cy);
 
 	//SVP_LogMsg3("Winsizing @ %I64d", AfxGetMyApp()->GetPerfCounter());

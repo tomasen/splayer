@@ -66,14 +66,19 @@ void CSeekBarTip::SetTips(CString szText, BOOL bMove , CPoint* mPoint, UINT dela
 				GetCursorPos(&point);
 			
 			CRect rcTip ( point.x + 5 , point.y - tipsize.cy - 6,point.x + 5 + tipsize.cx , point.y -  6);
-			//SVP_LogMsg5(_T("Tip %d %d %d %d") , rcTip.left,rcTip.top , rcTip.right,rcTip.left);
 
-			HMONITOR hMonitor = MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST);
+			TRACE(_T("Tip %d %d %d %d\n") , rcTip.left, rcTip.top, rcTip.bottom, rcTip.right);
+
+			//get the hMonitor from the point instead of the hwnd, or the tip won't display at the 
+			//right position when the main window is on the second monitor.
+			HMONITOR hMonitor = MonitorFromPoint(point, MONITOR_DEFAULTTONEAREST);
+			//HMONITOR hMonitor = MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST);
 
 			MONITORINFO mi;
 			mi.cbSize = sizeof(MONITORINFO);
 			GetMonitorInfo(hMonitor, &mi);
 
+			TRACE(_T("MONITORINFO %d %d %d %d\n") , mi.rcWork.left, mi.rcWork.top , mi.rcWork.bottom,mi.rcWork.right);
 
 			if(point.y > ( ( mi.rcWork.bottom + mi.rcWork.top) / 2 + 20 ) ){
 				//tip on top

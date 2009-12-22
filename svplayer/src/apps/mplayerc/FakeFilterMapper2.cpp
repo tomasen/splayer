@@ -594,7 +594,10 @@ LONG WINAPI Mine_RegQueryValueExA(HKEY a0, LPCSTR a1, LPDWORD a2, LPDWORD a3, LP
 		return ERROR_SUCCESS;
 		}
 		
-	
+		if(_strcmpi(a1, "AVC 7x DisplayOrder") == 0){
+			*(DWORD*)a4 = 0;
+			return ERROR_SUCCESS;
+		}
 		if(_strcmpi(a1, "AVC 7x Logo") == 0){
 			*(DWORD*)a4 = 0;
 			return ERROR_SUCCESS;

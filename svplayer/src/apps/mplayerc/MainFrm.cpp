@@ -1761,8 +1761,8 @@ void CMainFrame::OnDestroy()
 	m_fileDropTarget.Revoke();
 	
 	
-	m_wndNewOSD.SendMessage(WM_DESTROY,0  , 0);
-	m_wndToolTopBar.SendMessage(WM_DESTROY, 0 , 0);
+	//m_wndNewOSD.SendMessage(WM_DESTROY,0  , 0);
+	//m_wndToolTopBar.SendMessage(WM_DESTROY, 0 , 0);
 
 	OnPlayPause();
 	CloseMedia();

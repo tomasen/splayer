@@ -2960,7 +2960,11 @@ STDMETHODIMP CVMR9AllocatorPresenter::StartPresenting(DWORD_PTR dwUserID)
 	}
 	hEventGoth = CreateEvent(NULL, TRUE, FALSE, NULL);
 
-	m_VSyncDetectThread = AfxBeginThread(ThreadVMR9AllocatorPresenterStartPresenting, (LPVOID)this, THREAD_PRIORITY_BELOW_NORMAL);
+	m_VSyncDetectThread = AfxBeginThread(ThreadVMR9AllocatorPresenterStartPresenting, (LPVOID)this, THREAD_PRIORITY_BELOW_NORMAL, 0, CREATE_SUSPENDED);
+	// a workaround: when you call AfxGetMainWnd in a work thread, you get the windows associated with the thread, not the MainWindow. 
+	// set the m_pMainWnd of the thread object to the MainWindow in the main thread can work around the issue.
+    m_VSyncDetectThread->m_pMainWnd = AfxGetMainWnd();
+    m_VSyncDetectThread->ResumeThread();
 
 	return S_OK;
 }
@@ -3149,7 +3153,7 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 	while(s.fVMRGothSyncFix && s.m_RenderSettings.bSynchronizeNearest ){//
 
 		
-		REFERENCE_TIME rtRefClockTimeNow; if (m_pRefClock) m_pRefClock->GetTime(&rtRefClockTimeNow); // Reference clock time now
+		REFERENCE_TIME rtRefClockTimeNow = 0; if (m_pRefClock) m_pRefClock->GetTime(&rtRefClockTimeNow); // Reference clock time now
 		LONG lLastVsyncTime = (LONG)((m_rtEstVSyncTime - rtRefClockTimeNow) / 10000); // Time of previous vsync relative to now
 
 		LONGLONG llNextSampleWait = (LONGLONG)(((double)lLastVsyncTime + GetDisplayCycle() * (2.0 - s.m_RenderSettings.fTargetSyncOffset)) * 10000); // Next safe time to Paint()

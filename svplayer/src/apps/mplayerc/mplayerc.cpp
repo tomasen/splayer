@@ -1512,7 +1512,7 @@ for(int i = 0; i <= 30; i++){
 			RegSvr32( _T("ts.dll"));
 		}
 
-		if( RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\{ACD23F8C-B37E-4B2D-BA08-86CB6E621D6A}") , &fKey) != ERROR_SUCCESS){
+		if( RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{ACD23F8C-B37E-4B2D-BA08-86CB6E621D6A}") , &fKey) != ERROR_SUCCESS){
 			SVP_LogMsg5(L"mpc_mtcontain go");
 			RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mtcontain.dll")) );
 		}
@@ -1827,6 +1827,7 @@ LPTOP_LEVEL_EXCEPTION_FILTER WINAPI Mine_SetUnhandledExceptionFilter( LPTOP_LEVE
 BOOL CMPlayerCApp::InitInstance()
 {
 	//ssftest s;
+
 	
 	long		lError;
 	DetourRestoreAfterWith();

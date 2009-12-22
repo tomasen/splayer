@@ -20,11 +20,16 @@ colorBackGround(0)
 {
 	AppSettings& s = AfxGetAppSettings();
 	colorBackGround = s.GetColorFromTheme(_T("FloatDialogBG"), 0x00);
-
+	m_btnVolTm = NULL;
+	m_btnVolBG = NULL;
 }
 
 CSVPSliderCtrl::~CSVPSliderCtrl()
 {
+	if (m_btnVolTm)
+		delete m_btnVolTm;
+	if (m_btnVolBG)
+		delete m_btnVolBG;
 }
 
 

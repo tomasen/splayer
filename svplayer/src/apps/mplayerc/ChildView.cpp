@@ -63,6 +63,15 @@ m_vrect(0,0,0,0)
 
 CChildView::~CChildView()
 {
+	if (m_cover)
+		delete m_cover;
+
+	POSITION pos = m_btnList.GetHeadPosition();
+	while(pos){
+		CSUIButton* cBtn =  m_btnList.GetNext(pos);
+		if (cBtn)
+			delete cBtn;
+	}
 }
 
 BOOL CChildView::PreCreateWindow(CREATESTRUCT& cs) 

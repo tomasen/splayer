@@ -27,6 +27,8 @@ public:
 	SQLITE3(std::string tablename);
 	~SQLITE3();
 
+	void begin_transaction() ;
+	void end_transaction() ;
 	int exec_sql(std::string s_exe) ;
 
 

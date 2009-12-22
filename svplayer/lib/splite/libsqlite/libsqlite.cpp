@@ -13,7 +13,15 @@
 		}
 		db_open=1;
 	}
+	void SQLITE3::begin_transaction() 
+	{
+		sqlite3_exec(db, "BEGIN;",0,0,0);
+	}
+	void SQLITE3::end_transaction() 
+	{
+		sqlite3_exec(db, "END;",0,0,0);
 
+	}
 	int SQLITE3::exec_sql(std::string s_exe) {
 		rc = sqlite3_get_table(
 			db,              /* An open database */

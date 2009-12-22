@@ -3557,6 +3557,10 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 			svpTool.filePutContent(svpTool.GetPlayerPath(_T("uisample.ini")), szCDATA);
 		}
 
+		if(pApp->sqlite_setting){
+			pApp->sqlite_setting->begin_transaction();
+		}
+
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_CHECKFILEASSCONSTARTUP), fCheckFileAsscOnStartup);
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_POPSTARTUPEXTCHECK), fPopupStartUpExtCheck);
 		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_CHECKFILEEXTSASSCONSTARTUP), szStartUPCheckExts);
@@ -3907,7 +3911,10 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 			//pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_TRANSPARENTTOOLBARPOSOFFSET)+_T("2"), m_lTransparentToolbarPosOffset);		
 		}
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("LastVersion"), 968);		
-		
+		if(pApp->sqlite_setting){
+			pApp->sqlite_setting->end_transaction();
+		}
+
 	}
 	else
 	{

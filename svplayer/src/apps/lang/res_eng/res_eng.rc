@@ -931,7 +931,7 @@ BEGIN
     //PUSHBUTTON      "Ignore",IDCANCEL,102,63,50,14
     CONTROL         "Dont't prompt this question",IDC_CHK_NOMOREQUES,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,72,44,81,16
     LTEXT           "SPlayer currently is not your default video player, set as default player?",IDC_STATIC,17,17,189,22
-    PUSHBUTTON      "Manual Settings",IDC_BUTTON2,140,63,50,14
+    PUSHBUTTON      "Manual Settings",IDC_BUTTON2,130,63,70,14
 END
 
 IDD_SVPSUBUPLOAD DIALOGEX 0, 0, 377, 227

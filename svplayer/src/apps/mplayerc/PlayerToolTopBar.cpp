@@ -297,7 +297,7 @@ void CPlayerToolTopBar::UpdateButtonStat(){
 	m_btnList.SetHideStat( ID_ONTOP_ALWAYS , ontop );
 
 	m_btnList.SetHideStat( ID_FILE_EXIT , !fullscreen && !bCaptionHidden );
-	//m_btnList.SetHideStat( L"TOP_FULLSCREEN.BMP" , fullscreen || ( !bCaptionHidden && !s.bUserAeroTitle() ) );
+	//
 	m_btnList.SetHideStat( L"TOP_RESTORE.BMP" , !fullscreen );
 
 	BOOL bViewFROMOUTSIDE = (s.iDefaultVideoSize == 5);
@@ -320,6 +320,8 @@ void CPlayerToolTopBar::UpdateButtonStat(){
 		//m_btnList.SetHideStat( L"PINAIL.BMP" ,1 );
 		//m_btnList.SetHideStat( L"PINAIL2.BMP" , 1);
 		m_btnList.SetHideStat( L"TOP_FULLSCREEN.BMP" , 1);
+	}else{
+		m_btnList.SetHideStat( L"TOP_FULLSCREEN.BMP" , fullscreen  );
 	}
 }
 void CPlayerToolTopBar::OnMove(int x, int y)

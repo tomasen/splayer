@@ -2038,9 +2038,10 @@ HRESULT CEVRAllocatorPresenter::BeginStreaming()
 	pEVR->GetSyncSource(&m_pRefClock);
 	if (filterInfo.pGraph) filterInfo.pGraph->Release();
 	//SVP_LogMsg5(L"CEVRAllocatorPresenter::BeginStreaming2");
-	m_VSyncDetectThread = AfxBeginThread(ThreadEVRAllocatorPresenterStartPresenting, (LPVOID)this, THREAD_PRIORITY_BELOW_NORMAL);
+	m_VSyncDetectThread = AfxBeginThread(ThreadEVRAllocatorPresenterStartPresenting, (LPVOID)this, THREAD_PRIORITY_BELOW_NORMAL,0, CREATE_SUSPENDED);
 		
-	
+	m_VSyncDetectThread->m_pMainWnd = AfxGetMainWnd();
+	m_VSyncDetectThread->ResumeThread();
 
 	return S_OK;
 }

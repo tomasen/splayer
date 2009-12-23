@@ -887,9 +887,9 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	CString szBuild;
 	if(!s.szOEMTitle.IsEmpty()){
-		szBuild.Format(_T(" (%s Build %s)"), s.szOEMTitle , SVP_REV_STR);
+		szBuild.Format(_T(" (%s)"), s.szOEMTitle );// Build %s SVP_REV_STR
 	}else{
-		szBuild.Format( _T(" (Build %s)"),SVP_REV_STR);
+		szBuild.Empty();//Format( _T(" (Build %s)"),SVP_REV_STR);
 	}
 	//SetWindowText(CString(ResStr(IDR_MAINFRAME)) + szBuild);
 	m_szTitle = CString(ResStr(IDR_MAINFRAME)) + szBuild;
@@ -4988,9 +4988,9 @@ void CMainFrame::OnFilePostClosemedia()
 	RecalcLayout();
 	CString szBuild;
 	if(!s.szOEMTitle.IsEmpty()){
-		szBuild.Format(_T(" (%s Build %s)"), s.szOEMTitle , SVP_REV_STR);
+		szBuild.Format(_T(" (%s)"), s.szOEMTitle );// Build %s SVP_REV_STR
 	}else{
-		szBuild.Format( _T(" (Build %s)"),SVP_REV_STR);
+		szBuild.Empty();//Format( _T(" (Build %s)"),SVP_REV_STR);
 	}
 	
 	//SetWindowText(CString(ResStr(IDR_MAINFRAME)) + szBuild);

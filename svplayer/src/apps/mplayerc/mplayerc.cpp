@@ -498,6 +498,33 @@ bool LoadResource(UINT resid, CStringA& str, LPCTSTR restype)
 	return(true);
 }
 
+bool UnRegSvr32Real(LPCTSTR szDllPath){
+	//LoadLibrary(path))
+	HMODULE h = NULL;
+	__try{
+		h = LoadLibraryEx(  szDllPath , 0, LOAD_WITH_ALTERED_SEARCH_PATH);
+	}__except(EXCEPTION_EXECUTE_HANDLER) {  }
+	if(h)
+	{
+
+		typedef HRESULT (__stdcall * PDllRegisterServer)();
+		if(PDllRegisterServer p = (PDllRegisterServer)GetProcAddress(h, "DllUnRegisterServer"))
+		{
+			__try{
+				p();
+			}__except(EXCEPTION_EXECUTE_HANDLER) {  }
+		}
+		__try{
+			FreeLibrary(h);
+		}__except(EXCEPTION_EXECUTE_HANDLER) {  }
+	}
+	return true;
+}
+bool UnRegSvr32(CString szDllPath){
+	bool ret = UnRegSvr32Real(szDllPath.GetBuffer());
+	szDllPath.ReleaseBuffer();
+	return ret;
+}
 bool RegSvr32Real(LPCTSTR szDllPath){
 	//LoadLibrary(path))
 	HMODULE h = NULL;
@@ -1515,6 +1542,7 @@ for(int i = 0; i <= 30; i++){
 		if( RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{ACD23F8C-B37E-4B2D-BA08-86CB6E621D6A}") , &fKey) != ERROR_SUCCESS){
 			SVP_LogMsg5(L"mpc_mtcontain go");
 			RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mtcontain.dll")) );
+			SVP_LogMsg5(L"mpc_mtcontain done");
 		}
 		if( RegOpenKey(HKEY_CLASSES_ROOT , _T("Mpcwtlvcl.VideoFrame") , &fKey ) != ERROR_SUCCESS){
 			
@@ -2156,6 +2184,9 @@ int CMPlayerCApp::ExitInstance()
 			
 		
 	}
+
+	CSVPToolBox svpToolBox;
+	UnRegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mtcontain.dll")) );
 
 	OleUninitialize();
 

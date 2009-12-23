@@ -1821,8 +1821,11 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 						}else{
 							//int l_OldSizeY = m_ScreenSizeCurrent.cy;
 							m_ScreenSizeCurrent.SetSize(d3ddm.Width, d3ddm.Height);
-							if(s.m_RenderSettings.bSynchronizeNearest)
-								m_VSyncDetectThread = AfxBeginThread(ThreadDX9AllocatorRedetectVSync, (LPVOID)this, THREAD_PRIORITY_BELOW_NORMAL);
+							if(s.m_RenderSettings.bSynchronizeNearest){
+								m_VSyncDetectThread = AfxBeginThread(ThreadDX9AllocatorRedetectVSync, (LPVOID)this, THREAD_PRIORITY_BELOW_NORMAL, 0, CREATE_SUSPENDED);
+								m_VSyncDetectThread->m_pMainWnd = AfxGetMainWnd();
+								m_VSyncDetectThread->ResumeThread();
+							}
 
 
 							//	EstimateRefreshTimings();

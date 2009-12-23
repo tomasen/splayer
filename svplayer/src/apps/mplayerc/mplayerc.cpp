@@ -2153,8 +2153,9 @@ BOOL CMPlayerCApp::InitInstance()
 	pFrame->UpdateWindow();
 	pFrame->m_hAccelTable = m_s.hAccel;
 
-	AfxBeginThread(Thread_InitInstance , this,  THREAD_PRIORITY_LOWEST);
-
+	CWinThread* th_InitInstance = AfxBeginThread(Thread_InitInstance , this,  THREAD_PRIORITY_LOWEST, 0, CREATE_SUSPENDED);
+	th_InitInstance->m_pMainWnd = AfxGetMainWnd();
+	th_InitInstance->ResumeThread();
 
 	m_s.WinLircClient.SetHWND(m_pMainWnd->m_hWnd);
 	if(m_s.fWinLirc) m_s.WinLircClient.Connect(m_s.WinLircAddr);
@@ -4337,7 +4338,9 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		bHasCUDAforCoreAVC = svptoolbox.CanUseCUDAforCoreAVC();
 		//bSupportFFGPU = svptoolbox.SupportFFGP
 
-		AfxBeginThread( Thread_AppSettingLoadding, this, THREAD_PRIORITY_LOWEST );
+		CWinThread* th_InitSettingInstance = AfxBeginThread( Thread_AppSettingLoadding, this, THREAD_PRIORITY_LOWEST , 0, CREATE_SUSPENDED);
+		th_InitSettingInstance->m_pMainWnd = AfxGetMainWnd();
+		th_InitSettingInstance->ResumeThread();
 		
 		fOverridePlacement = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPOVERRIDEPLACEMENT), 0);
 		fOverridePlacement2 = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPOVERRIDEPLACEMENT)+_T("2"), TRUE);

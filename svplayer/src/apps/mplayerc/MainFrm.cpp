@@ -15480,6 +15480,8 @@ void CMainFrame::CloseMedia()
 			TRACE(_T("ERROR: Must call TerminateThread() on CMainFrame::m_pGraphThread->m_hThread\n")); 
 			TerminateThread(m_pGraphThread->m_hThread, -1);
 			m_pGraphThread = (CGraphThread*)AfxBeginThread(RUNTIME_CLASS(CGraphThread));
+			if(m_pGraphThread)
+				m_pGraphThread->SetMainFrame(this);
 			s_fOpenedThruThread = false;
 		}
 	}

@@ -180,9 +180,9 @@ static int compare_right(const TCHAR *a, const TCHAR *b)
 	both numbers to know that they have the same magnitude, so we
 	remember it in BIAS. */
 	for (;; a++, b++) {
-		if (!isdigit(*a))
-			return isdigit(*b) ? -1 : bias;
-		else if (!isdigit(*b))
+		if (!_istdigit(*a))
+			return _istdigit(*b) ? -1 : bias;
+		else if (!_istdigit(*b))
 			return +1;
 		else if (*a < *b) {
 			if (!bias)
@@ -203,9 +203,9 @@ static int compare_left(const TCHAR *a, const TCHAR *b)
 	/* Compare two left-aligned numbers: the first to have a
 	different value wins. */
 	for (;; a++, b++) {
-		if (!isdigit(*a))
-			return !isdigit(*b) - 1;
-		else if (!isdigit(*b))
+		if (!_istdigit(*a))
+			return !_istdigit(*b) - 1;
+		else if (!_istdigit(*b))
 			return +1;
 		else if (*a < *b)
 			return -1;
@@ -217,7 +217,7 @@ static int compare_left(const TCHAR *a, const TCHAR *b)
 }
 
 bool _is_meaningless_char(TCHAR ax){
-	if(isdigit(ax) || isalpha(ax)){
+	if(_istdigit(ax) || _istalpha(ax)){
 		return false;
 	}
 	if(ax >= 0x0080){
@@ -253,7 +253,7 @@ int strnatcmp(const TCHAR *psz1, const TCHAR *psz2)
 				cb = b[++bi];
 
 			/* process run of digits */
-			if (isdigit(ca) && isdigit(cb)) {
+			if (_istdigit(ca) && _istdigit(cb)) {
 				fractional = (ca == '0' || cb == '0');
 
 				if (fractional) {

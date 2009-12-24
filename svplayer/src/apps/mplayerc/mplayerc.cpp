@@ -1522,7 +1522,7 @@ for(int i = 0; i <= 30; i++){
 		}
 			
 	}
-	if(regReal){
+	if(regReal && svpToolBox.ifFileExist(svpToolBox.GetPlayerPath(L"Real\\Common\\pnen3260.dll"))){
 		CString szLPath;
 		szLPath = CString(svpToolBox.GetPlayerPath(L"\\"));
 		SVPRegWriteStr(HKEY_CLASSES_ROOT,L"Software\\RealNetworks\\Preferences\\DT_Codecs",0,szLPath.GetBuffer());

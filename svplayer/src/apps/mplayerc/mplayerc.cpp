@@ -1544,6 +1544,29 @@ for(int i = 0; i <= 30; i++){
 			RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mtcontain.dll")) );
 			SVP_LogMsg5(L"mpc_mtcontain done");
 		}
+		if( RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{B4DAEDB7-7F0E-434F-9AA3-B82B549A3680}") , &fKey) != ERROR_SUCCESS){
+			RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mtcontrol.dll")) );
+			SVP_LogMsg5(L"mpc_mtcontrol done");
+		}
+
+		/*[267851681.982100] SET RegW (null)
+		[267851685.151100] SET RegW (null)
+		[267851702.360300] SET Mine_RegSetValueExW ThreadingModel
+		[267851706.226100] Mine_CoCreateInstance {CDA42200-BD88-11D0-BD4E-00A0C911CE86} 0
+		[267851706.454700] Mine_RegOpenKeyExW  CLSID\{083863F1-70DE-11D0-BD40-00A0C911CE86}\Instance 0 
+		[267851706.604200] Mine_RegOpenKeyExW 80000000 CLSID\{083863F1-70DE-11D0-BD40-00A0C911CE86}\Instance 0
+		[267851706.816000] Mine_RegOpenKeyExW  {FF5DCC7A-7147-41E1-86E8-DD05ABD588BF} 0 
+		[267851707.029300] Mine_RegOpenKeyExW 2ea {FF5DCC7A-7147-41E1-86E8-DD05ABD588BF} 2
+		[267851725.508600] Mine_CoCreateInstance {4315D437-5B8C-11D0-BD3B-00A0C911CE86} 0
+		[267851725.720400] Mine_RegCreateKeyExW CLSID\{083863F1-70DE-11D0-BD40-00A0C911CE86}\Instance\{FF5DCC7A-7147-41E1-86E8-DD05ABD588BF}
+		[267851730.858000] SET Mine_RegSetValueExW FriendlyName
+		[267851733.711300] Mine_RegCreateKeyExW CLSID\{083863F1-70DE-11D0-BD40-00A0C911CE86}\Instance\{FF5DCC7A-7147-41E1-86E8-DD05ABD588BF}
+		[267851733.959600] SET Mine_RegSetValueExW CLSID
+		[267851743.117000] Mine_RegCreateKeyExW CLSID\{083863F1-70DE-11D0-BD40-00A0C911CE86}\Instance\{FF5DCC7A-7147-41E1-86E8-DD05ABD588BF}
+		[267851743.406500] SET Mine_RegSetValueExW FilterData*/
+		//RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mxrender.dll")) );
+		//SVP_LogMsg5(L"mpc_mxrender done");
+
 		if( RegOpenKey(HKEY_CLASSES_ROOT , _T("Mpcwtlvcl.VideoFrame") , &fKey ) != ERROR_SUCCESS){
 			
 				RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mdssockc.dll")) );
@@ -1555,8 +1578,6 @@ for(int i = 0; i <= 30; i++){
 				RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mxshsour.dll")) );
 				RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mcucltu.dll")) );
 				RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mcufilecu.dll")) );
-				RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mtcontrol.dll")) );
-				RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mxrender.dll")) );
 		
 				RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_wtlvcl.dll")) );
 				SVP_LogMsg5(L"reg csf dlls");
@@ -2188,7 +2209,7 @@ int CMPlayerCApp::ExitInstance()
 
 	CSVPToolBox svpToolBox;
 	UnRegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mtcontain.dll")) );
-
+	UnRegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mxrender.dll")) );
 	OleUninitialize();
 
 	int ret = CWinApp::ExitInstance();

@@ -84,6 +84,7 @@ static LONG WINAPI  DebugMiniDumpFilter( struct _EXCEPTION_POINTERS *pExceptionI
 		if (pDump)
 		{
 			TCHAR szDumpPath[_MAX_PATH];
+			TCHAR szDumpName[_MAX_PATH] = {0};
 			TCHAR szScratch [_MAX_PATH];
 
 
@@ -92,14 +93,17 @@ static LONG WINAPI  DebugMiniDumpFilter( struct _EXCEPTION_POINTERS *pExceptionI
 			_itow_s(itimestamp, szTimestamp,_MAX_PATH, 36);
 
 			// work out a good place for the dump file
-			_tgetcwd(szDumpPath,_MAX_PATH);
-			_tcscat( szDumpPath, _T("\\"));
+			//_tgetcwd(szDumpPath,_MAX_PATH);
+			//_tcscat( szDumpPath, _T("\\"));
 
-			_tcscat( szDumpPath, _T("splayer_") );
-			_tcscat( szDumpPath, SVP_REV_STR );
-			_tcscat( szDumpPath, _T("_"));
-			_tcscat( szDumpPath, szTimestamp );
-			_tcscat( szDumpPath, _T(".dmp"));
+			_tcscat( szDumpName, _T("splayer_") );
+			_tcscat( szDumpName, SVP_REV_STR );
+			_tcscat( szDumpName, _T("_"));
+			_tcscat( szDumpName, szTimestamp );
+			_tcscat( szDumpName, _T(".dmp"));
+
+			GetModuleFileName( NULL, szDumpPath, _MAX_PATH );
+			wcscpy( PathFindFileName(szDumpPath), szDumpName);
 
 			// ask the user if they want to save a dump file
 			//if (::MessageBox(NULL,_T("程序发生意外,是否保存一个文件用于诊断?"), ResStr(IDR_MAINFRAME) ,MB_YESNO)==IDYES)
@@ -1449,6 +1453,24 @@ public:
 		::ExitProcess(0);
 	}
 };
+void SVPRegWriteDWORD(HKEY key_root, CString szKey, TCHAR* valKey, DWORD val){
+	HKEY reg;
+	DWORD s;
+	if(!RegCreateKeyEx(key_root,szKey,0,NULL,0,KEY_ALL_ACCESS,NULL,&reg,&s)) {
+		RegSetValueEx(reg,valKey,0,REG_DWORD, (BYTE*)&val, 4) ;
+		RegCloseKey(reg);
+	}
+
+}
+void SVPRegWriteStr(HKEY key_root, CString szKey, TCHAR* valKey, TCHAR* val){
+	HKEY reg;
+	DWORD s;
+	if(!RegCreateKeyEx(key_root,szKey,0,NULL,0,KEY_ALL_ACCESS,NULL,&reg,&s)) {
+		RegSetValueEx(reg,valKey,0,REG_SZ, (BYTE*)val, (DWORD) (lstrlen(val)+1)*sizeof(TCHAR)) ;
+		RegCloseKey(reg);
+	}
+
+}
 void CMPlayerCApp::InitInstanceThreaded(INT64 CLS64){
 	
 	CSVPToolBox svpToolBox;
@@ -1468,11 +1490,64 @@ for(int i = 0; i <= 30; i++){
 	SVP_LogMsg5(_T("COLOR_GRAYTEXT %x"), GetSysColor(COLOR_GRAYTEXT));
 */
 
+
+
 	//avoid crash by lame acm
 	RegDelnode(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\MediaResources\\msacm\\msacm.lameacm");
 	SVPRegDeleteValueEx( HKEY_LOCAL_MACHINE , L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\drivers.desc",L"LameACM.acm");
 	SVPRegDeleteValueEx( HKEY_LOCAL_MACHINE , L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\drivers32",L"msacm.lameacm");
 
+
+	bool regReal = false;
+	{
+		CString prefs(_T("Software\\RealNetworks\\Preferences"));
+
+		CRegKey key;
+
+		if(ERROR_SUCCESS != key.Open(HKEY_CLASSES_ROOT, prefs + _T("\\DT_Common"), KEY_READ)){
+			regReal = true;
+		}else{
+			TCHAR buff[MAX_PATH];
+			ULONG len = sizeof(buff);
+			if(ERROR_SUCCESS != key.QueryStringValue(NULL, buff, &len))
+			{
+				regReal = true;
+			}else{
+				key.Close();
+
+				if(!svpToolBox.ifFileExist(CString(buff) + _T("pnen3260.dll"))) {
+					regReal = true;
+				}
+			}
+		}
+			
+	}
+	if(regReal){
+		CString szLPath;
+		szLPath = CString(svpToolBox.GetPlayerPath(L"\\"));
+		SVPRegWriteStr(HKEY_CLASSES_ROOT,L"Software\\RealNetworks\\Preferences\\DT_Codecs",0,szLPath.GetBuffer());
+		szLPath.ReleaseBuffer();
+
+		szLPath = CString(svpToolBox.GetPlayerPath(L"Real\\Common\\"));
+		SVPRegWriteStr(HKEY_CLASSES_ROOT,L"Software\\RealNetworks\\Preferences\\DT_Common",0,szLPath.GetBuffer());
+		SVPRegWriteStr(HKEY_CLASSES_ROOT,L"Software\\RealNetworks\\Preferences\\DT_Objbrokr",0,szLPath.GetBuffer());
+		szLPath.ReleaseBuffer();
+
+		szLPath = CString(svpToolBox.GetPlayerPath(L"Real\\Plugins\\"));
+		SVPRegWriteStr(HKEY_CLASSES_ROOT,L"Software\\RealNetworks\\Preferences\\DT_Plugins",0,szLPath.GetBuffer());
+		szLPath.ReleaseBuffer();
+
+		SVPRegWriteDWORD(HKEY_CURRENT_USER,L"Software\\RealNetworks\\RealMediaSDK\\6.0\\Preferences\\UseOverlay",0, 0);
+
+		/*
+
+		WriteRegStr HKCR "Software\RealNetworks\Preferences\DT_Codecs" "" "$INSTDIR"
+		WriteRegStr HKCR "Software\RealNetworks\Preferences\DT_Common" "" "$INSTDIR\Real\Common\"
+		WriteRegStr HKCR "Software\RealNetworks\Preferences\DT_Objbrokr" "" "$INSTDIR\Real\Common\"
+		WriteRegStr HKCR "Software\RealNetworks\Preferences\DT_Plugins" "" "$INSTDIR\Real\\"
+		WriteRegDWORD HKCR "Software\RealNetworks\RealMediaSDK\6.0\Preferences\UseOverlay"  "" 0
+		*/
+	}
 
 	m_bSystemParametersInfo[0] = FALSE;
 	if(!IsVista()){

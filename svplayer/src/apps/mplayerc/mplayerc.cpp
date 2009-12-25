@@ -695,6 +695,7 @@ CMPlayerCApp::CMPlayerCApp()
 , m_fTearingTest(0)
 , m_fResetStats(0)
 , sqlite_setting(NULL)
+,sqlite_local_record(NULL)
 {
 	m_pMainWnd = NULL;
 	_invalid_parameter_handler oldHandler, newHandler;
@@ -805,9 +806,10 @@ bool CMPlayerCApp::StoreSettingsToIni()
 {
 
 	CString ini = GetIniPath();
+	CSVPToolBox svpTool;
+
 	if( !sqlite_setting){ 
 		
-		CSVPToolBox svpTool;
 		int iDescLen;
 		char * buff = svpTool.CStringToUTF8(ini,&iDescLen) ;
 		sqlite_setting = new SQLITE3( buff );
@@ -815,6 +817,29 @@ bool CMPlayerCApp::StoreSettingsToIni()
 		if(!sqlite_setting->db_open){
 			delete sqlite_setting;
 			sqlite_setting = NULL;
+		}
+	}
+	if(0 && !sqlite_local_record){ // TODO: save play record to local sql db
+		int iDescLen;
+		CString recordPath;
+		svpTool.GetAppDataPath(recordPath);
+		CPath tmPath(recordPath);
+		tmPath.RemoveBackslash();
+		tmPath.AddBackslash();
+		tmPath.Append( _T("local.db"));
+
+		char * buff = svpTool.CStringToUTF8(CString(tmPath),&iDescLen) ;
+		sqlite_local_record = new SQLITE3( buff );
+		free(buff);
+		if(!sqlite_local_record->db_open){
+			delete sqlite_local_record;
+			sqlite_local_record = NULL;
+		}
+		if(sqlite_local_record){
+			sqlite_local_record->exec_sql("CREATE TABLE  IF NOT EXISTS favrec (\"favtype\" INTEGER, \"favpath\" TEXT, \"favtime\" TEXT, \"addtime\" INTEGER, \"favrecent\" INTEGER )");
+			sqlite_local_record->exec_sql("CREATE UNIQUE INDEX  IF NOT EXISTS \"favpk\" on favrec (favtype ASC, favpath ASC, favrecent ASC)");
+			sqlite_local_record->exec_sql("CREATE INDEX  IF NOT EXISTS \"favord\" on favrec (addtime ASC)");
+			sqlite_local_record->exec_sql("PRAGMA synchronous=OFF");
 		}
 	}
 	if(sqlite_setting){
@@ -5123,6 +5148,10 @@ void CMPlayerCApp::Settings::DelFavByFn(favtype ft, BOOL bRecent, CString szMatc
 void CMPlayerCApp::Settings::AddFav(favtype ft, CString s, BOOL bRecent, CString szMatch)
 {
 	SVP_LogMsg5(L"bRecent Start %s", s);
+	//if(AfxGetMyApp()->sqlite_local_record){
+		//CString szSQL;
+		//szSQL.Format(_T("REPLACE INTO favrec  ( favtype, favpath, favtime, addtime, favrecent ) VALUES (\"%d\" , \"%s\" ,\"%d\",\"%d\" )"), ft, s ,time(NULL),bRecent);
+	//}
 	CAtlList<CString> sl;
 	GetFav(ft, sl, bRecent);
 	if(bRecent){

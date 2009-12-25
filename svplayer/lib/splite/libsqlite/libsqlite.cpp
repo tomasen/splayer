@@ -77,7 +77,13 @@
 
 		return nDefault;
 	}
-
+	int  SQLITE3::exec_sql_u(CString szSQL){
+		int iDestLen;
+		char* buff = svpTool.CStringToUTF8(szSQL, &iDestLen);
+		int ret = exec_sql(buff);
+		free(buff);
+		return ret;
+	}
 	// Sets an integer value to INI file or registry.
 	BOOL  SQLITE3::WriteProfileInt(LPCTSTR lpszSection, LPCTSTR lpszEntry, int nValue, bool fallofftoreg )
 	{

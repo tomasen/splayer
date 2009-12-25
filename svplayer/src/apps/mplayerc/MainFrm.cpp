@@ -11971,9 +11971,9 @@ void CMainFrame::OpenSetupWindowTitle(CString fn)
 
 		title = fn + _T(" - ") + title;
 	}
-	CString szBuild;
-	szBuild.Format(_T(" (Build %s)"),SVP_REV_STR);
-	title += szBuild;
+	//CString szBuild;
+	//szBuild.Format(_T(" (Build %s)"),SVP_REV_STR);
+	//title += szBuild;
 	//SetWindowText(title);
 	m_szTitle = title;
 	RedrawNonClientArea();

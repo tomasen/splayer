@@ -31,6 +31,7 @@ public:
 	void end_transaction() ;
 	int exec_sql(std::string s_exe) ;
 
+	int exec_sql_u(CString szSQL);
 
 	// Retrieve an integer value from INI file or registry.
 	UINT GetProfileInt(LPCTSTR lpszSection, LPCTSTR lpszEntry, int nDefault, bool fallofftoreg = true);

@@ -761,6 +761,7 @@ public:
 public:
 
 	SQLITE3* sqlite_setting; 
+	SQLITE3* sqlite_local_record; 
 
 	cupdatenetlib* m_cnetupdater;
 	DECLARE_MESSAGE_MAP()

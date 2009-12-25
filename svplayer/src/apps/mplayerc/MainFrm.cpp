@@ -592,7 +592,8 @@ CMainFrame::CMainFrame() :
 	m_lTransparentToolbarPosStat(0),
 	m_fAudioOnly(0),
 	m_bAllowVolumeSuggestForThisPlaylist(true),
-	m_fLastIsAudioOnly(false)
+	m_fLastIsAudioOnly(false),
+	m_bMustUseExternalTimer(false)
 {
 }
 
@@ -2764,7 +2765,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 */
 		}
 
-		if(m_pCAP && m_iPlaybackMode != PM_FILE)
+		if(m_pCAP && (m_iPlaybackMode != PM_FILE || m_bMustUseExternalTimer))
 		{
 			g_bExternalSubtitleTime = true;
 			AfxGetAppSettings().bExternalSubtitleTime = true;
@@ -3766,7 +3767,7 @@ LRESULT CMainFrame::OnResumeFromState(WPARAM wParam, LPARAM lParam)
 {
 	int iPlaybackMode = (int)wParam;
 
-	//SVP_LogMsg5(L"OnResumeFromState %f", double(lParam) );
+	SVP_LogMsg5(L"OnResumeFromState %f", double(lParam) );
 	if(iPlaybackMode == PM_FILE)
 	{
 	//	SVP_LogMsg5(L"OnResumeFromState SeekTo %f", double(lParam) );
@@ -4907,6 +4908,7 @@ void CMainFrame::OnFilePostOpenmedia()
 	}
 
 	m_bDxvaInUse = false;
+	m_bMustUseExternalTimer = false;
 	m_DXVAMode = _T("");
 	CComQIPtr<IMPCVideoDecFilter> pMDF  = FindFilter(__uuidof(CMPCVideoDecFilter), pGB);
 	if(pMDF){
@@ -4926,10 +4928,14 @@ void CMainFrame::OnFilePostOpenmedia()
 		}
 
 	}
-	
 	if(FindFilter(L"{FA10746C-9B63-4B6C-BC49-FC300EA5F256}", pGB)){
 		m_bEVRInUse = true;
 	}
+	if(m_bEVRInUse && FindFilter(L"{6F513D27-97C3-453C-87FE-B24AE50B1601}", pGB)){//
+		SVP_LogMsg5(L"Has Divx H264 Dec and EVR so use External Timer");
+		m_bMustUseExternalTimer = true;
+	}
+
 	RedrawNonClientArea();
 	SendNowPlayingToMSN();
 	SendNowPlayingTomIRC();
@@ -15302,7 +15308,7 @@ void CMainFrame::OpenCurPlaylistItem(REFERENCE_TIME rtStart)
 			CStringA szMD5data(fn);
 			CString szMatchmd5 = cmd5.GetMD5((BYTE*)szMD5data.GetBuffer() , szMD5data.GetLength() );
 			szMD5data.ReleaseBuffer();
-//SVP_LogMsg5(L"GetFav Start %s", szMatchmd5);
+SVP_LogMsg5(L"GetFav Start %s", szMatchmd5);
 			CAtlList<CString> sl;
 			s.GetFav(ft, sl, TRUE);
 			CString PosStr ;
@@ -15322,7 +15328,7 @@ void CMainFrame::OpenCurPlaylistItem(REFERENCE_TIME rtStart)
 					CString s2 = PosStr.Right( PosStr.GetLength() - iPos - 1 );
 					_stscanf(s2, _T("%I64d"), &rtStart); // pos
 				}
-				//SVP_LogMsg5(L"Got %f", double(rtStart) );
+				SVP_LogMsg5(L"Got %f", double(rtStart) );
 			}
 				//SVP_LogMsg5(L"GetFav Done");
 		}

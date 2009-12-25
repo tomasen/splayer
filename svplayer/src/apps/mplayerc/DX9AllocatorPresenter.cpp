@@ -3120,7 +3120,7 @@ STDMETHODIMP CVMR9AllocatorPresenter::PresentImage(DWORD_PTR dwUserID, VMR9Prese
 
 		if( !s.bExternalSubtitleTime && (m_pSubPicQueue || m_pSubPicQueue2))
 		{
-			//SVP_LogMsg5(L"SetTime %f", (double)g_tSegmentStart + g_tSampleStart);
+			//SVP_LogMsg5(L"SetTime %f %f",m_fps, (double)g_tSegmentStart + g_tSampleStart);
 			__super::SetTime(g_tSegmentStart + g_tSampleStart);
 			
 		}

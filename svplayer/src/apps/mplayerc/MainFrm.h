@@ -381,7 +381,7 @@ public:
 // Attributes
 public:
 	int m_iPlaybackMode;
-
+	bool  m_bMustUseExternalTimer;
 	int m_lTransparentToolbarStat;
 	int  m_lTransparentToolbarPosStat;
 	CPoint m_lTransparentToolbarPosOffset;

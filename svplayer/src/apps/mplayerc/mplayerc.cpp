@@ -2271,6 +2271,9 @@ BOOL CMPlayerCApp::InitInstance()
 int CMPlayerCApp::ExitInstance()
 {
 
+	if(sqlite_setting)
+		sqlite_setting->exec_sql("PRAGMA synchronous=ON");
+
 	m_s.UpdateData(true);
 
 
@@ -5119,7 +5122,7 @@ void CMPlayerCApp::Settings::DelFavByFn(favtype ft, BOOL bRecent, CString szMatc
 }
 void CMPlayerCApp::Settings::AddFav(favtype ft, CString s, BOOL bRecent, CString szMatch)
 {
-	//SVP_LogMsg5(L"bRecent Start %s", s);
+	SVP_LogMsg5(L"bRecent Start %s", s);
 	CAtlList<CString> sl;
 	GetFav(ft, sl, bRecent);
 	if(bRecent){
@@ -5145,7 +5148,7 @@ void CMPlayerCApp::Settings::AddFav(favtype ft, CString s, BOOL bRecent, CString
 	sl.AddTail(s);
 	SetFav(ft, sl , bRecent);
 
-	//SVP_LogMsg5(L"bRecent Done %s " , s);
+	SVP_LogMsg5(L"bRecent Add Fav Done %s " , s);
 }
 
 // CMPlayerCApp::Settings::CRecentFileAndURLList

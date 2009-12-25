@@ -594,9 +594,22 @@ LONG WINAPI Mine_RegQueryValueExA(HKEY a0, LPCSTR a1, LPDWORD a2, LPDWORD a3, LP
 		strcpy_s((char *)a4, *a5, "03JUN-10K9Y-CORE-0CLQV-JOTFL");
 		return ERROR_SUCCESS;
 		}
+		if(_strcmpi(a1, "AVC 7x Deblock") == 0){
+			*(DWORD*)a4 = 0;
+			return ERROR_SUCCESS;
+		}
+		
+		if(_strcmpi(a1, "AVC 7x Deinterlace") == 0){
+			*(DWORD*)a4 = 1;
+			return ERROR_SUCCESS;
+		}
+		if(_strcmpi(a1, "AVC 7x HwDeinterlace") == 0){
+			*(DWORD*)a4 = 0;
+			return ERROR_SUCCESS;
+		}
 		
 		if(_strcmpi(a1, "AVC 7x DisplayOrder") == 0){
-			*(DWORD*)a4 = 0;
+			*(DWORD*)a4 = 1;
 			return ERROR_SUCCESS;
 		}
 		if(_strcmpi(a1, "AVC 7x Logo") == 0){

@@ -736,7 +736,7 @@ BOOL CMPlayerCApp::PumpMessage() {
 							&& pMsgWnd != &(pFrame->m_wndToolTopBar) ) {
 
 								if(m_s.bUserAeroUI() ){
-									if( pMsgWnd == &(pFrame->m_wndFloatToolBar) || pFrame->m_wndFloatToolBar.IsChild(pMsgWnd) )
+									if( pMsgWnd == (pFrame->m_wndFloatToolBar) || pFrame->m_wndFloatToolBar->IsChild(pMsgWnd) )
 										break;
 								}
 							if( (m_bMouseIn || m_bMouseInOutUnknown) ){
@@ -1977,7 +1977,8 @@ BOOL CMPlayerCApp::InitInstance()
 {
 	//ssftest s;
 
-	
+	//_CrtSetBreakAlloc(12143);
+
 	long		lError;
 	DetourRestoreAfterWith();
 	DetourTransactionBegin();

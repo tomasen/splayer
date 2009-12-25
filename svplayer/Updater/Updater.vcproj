@@ -69,8 +69,8 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="libeay32.lib ssleay32.lib curllibd.lib svplibDU.lib zlibD.lib Version.lib libunrarD.lib"
-				ShowProgress="2"
+				AdditionalDependencies="libeay32.lib ssleay32.lib curllibd.lib svplibDU.lib zlibD.lib Version.lib libunrarD.lib D3D9.lib "
+				ShowProgress="0"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="../lib"
 				IgnoreDefaultLibraryNames="nafxcw.lib;MSVCRT"

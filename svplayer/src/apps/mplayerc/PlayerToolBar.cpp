@@ -744,7 +744,7 @@ void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point){
 		if(s.bUserAeroUI() && bMouseMoved && m_bMouseDown && pFrame ){
 			pFrame->m_lTransparentToolbarPosStat = 1;
 			
-			pFrame->m_wndFloatToolBar.PostMessage(WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM(point.x, point.y));
+			pFrame->m_wndFloatToolBar->PostMessage(WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM(point.x, point.y));
 		}
 	}
 	

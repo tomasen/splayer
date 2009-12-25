@@ -247,7 +247,7 @@ void CChildView::LoadLogo()
 	}
 	if(!m_logo.IsNull()){
 		if(m_logo.IsDIBSection()){
-
+			m_logo_bitmap.Detach();
 			m_logo_bitmap.Attach((HBITMAP)m_logo);
 			SVPPreMultiplyBitmap(m_logo_bitmap);
 			m_logo.Detach();

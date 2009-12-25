@@ -12,11 +12,12 @@ IMPLEMENT_DYNAMIC(CPlayerFloatToolBar, CFrameWnd)
 
 CPlayerFloatToolBar::CPlayerFloatToolBar()
 {
-
+	TRACE(_T("CPlayerFloatToolBar::CPlayerFloatToolBar\n"));
 }
 
 CPlayerFloatToolBar::~CPlayerFloatToolBar()
 {
+	TRACE(_T("CPlayerFloatToolBar::~CPlayerFloatToolBar\n"));
 }
 
 

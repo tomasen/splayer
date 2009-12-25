@@ -563,7 +563,8 @@ void CPlayerSeekBar::CloseToolTips(){
 	KillTimer(IDT_OPENTIPS);
 	KillTimer(IDT_CLOSETIPS);
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
-	pFrame->m_tip.ClearStat();
+	if (::IsWindow(pFrame->m_tip.m_hWnd))
+		pFrame->m_tip.ClearStat();
 }
 void CPlayerSeekBar::SetTimecodeTip(){
 	CString toolTip;

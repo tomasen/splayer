@@ -43,7 +43,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories=".\curl\include;../svplib/;..\filters\BaseClasses"
-				PreprocessorDefinitions="USE_SVPLIB;WIN32;_DEBUG;"
+				PreprocessorDefinitions="USE_SVPLIB;WIN32;_DEBUG;BUILDING_LIBCURL;CURL_STATICLIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -61,7 +61,6 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="curllibd.lib Kernel32.lib D3D9.lib ssleay32.lib"
 				OutputFile="../../lib/svplibDU.lib"
 				AdditionalLibraryDirectories="../../lib"
 			/>

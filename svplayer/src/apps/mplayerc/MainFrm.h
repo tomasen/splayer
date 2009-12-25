@@ -564,7 +564,7 @@ public:
 	CPlayerSeekBar m_wndSeekBar;
 	CPlayerToolBar m_wndToolBar;
 
-	CPlayerFloatToolBar m_wndFloatToolBar;
+	CPlayerFloatToolBar* m_wndFloatToolBar;
 	CNEWOSDWnd m_wndNewOSD;
 	CPlayerColorControlBar m_wndColorControlBar;
 

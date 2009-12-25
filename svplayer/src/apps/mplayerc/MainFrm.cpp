@@ -4931,7 +4931,7 @@ void CMainFrame::OnFilePostOpenmedia()
 	if(FindFilter(L"{FA10746C-9B63-4B6C-BC49-FC300EA5F256}", pGB)){
 		m_bEVRInUse = true;
 	}
-	if(m_bEVRInUse && FindFilter(L"{6F513D27-97C3-453C-87FE-B24AE50B1601}", pGB)){//
+	if( FindFilter(L"{6F513D27-97C3-453C-87FE-B24AE50B1601}", pGB)){//m_bEVRInUse
 		SVP_LogMsg5(L"Has Divx H264 Dec and EVR so use External Timer");
 		m_bMustUseExternalTimer = true;
 	}

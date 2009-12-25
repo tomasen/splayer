@@ -368,7 +368,7 @@ public:
 
 	void StartWebServer(int nPort);
 	void StopWebServer();
-
+	void OnShowCurrentPlayingFileInOSD();
 	CString GetStatusMessage();
 	bool IsMuted() {return m_wndToolBar.GetVolume() == -10000;}
 	int GetVolume() {return m_wndToolBar.m_volctrl.GetPos();}

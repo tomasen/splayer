@@ -1285,8 +1285,10 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 				
 				m_lTransparentToolbarStat = 0 - min(4, abs(m_lTransparentToolbarStat));
 				bSomethingChanged = true;
+				
 			}else if( !m_lTransparentToolbarStat && r.PtInRect(point) ){
 
+				OnShowCurrentPlayingFileInOSD();
 				m_lTransparentToolbarStat = max(1,abs(m_lTransparentToolbarStat) );
 				bSomethingChanged = true;
 			}
@@ -14135,7 +14137,15 @@ void CMainFrame::OnChangeResizer(UINT nID){
 
 }
 /////////////
+void CMainFrame::OnShowCurrentPlayingFileInOSD(){
+	if(!m_fnCurPlayingFile.IsEmpty() && !m_fAudioOnly){
+		CPath fuPath(m_fnCurPlayingFile);
+		CSVPToolBox svpTool;
+		fuPath.StripPath();
 
+		SendStatusMessage(CString(ResStr(IDS_OSD_MSG_CURRENT_PLAYING)) + CString(fuPath) + ResStr(IDS_OSD_MSD_CURRENT_PLAYING_AT_LOCATION) + svpTool.GetDirFromPath(m_fnCurPlayingFile), 2000);
+	}
+}
 void CMainFrame::ShowControls(int nCS, bool fSave)
 {
 	AppSettings& s = AfxGetAppSettings();
@@ -14175,11 +14185,9 @@ void CMainFrame::ShowControls(int nCS, bool fSave)
 		}
 
 		if( (nCSR&i) == CS_TOOLBAR && !pNext->IsVisible() && !m_fnCurPlayingFile.IsEmpty() && !m_fAudioOnly){
-			CPath fuPath(m_fnCurPlayingFile);
-			CSVPToolBox svpTool;
-			fuPath.StripPath();
 
-			SendStatusMessage(CString(ResStr(IDS_OSD_MSG_CURRENT_PLAYING)) + CString(fuPath) + ResStr(IDS_OSD_MSD_CURRENT_PLAYING_AT_LOCATION) + svpTool.GetDirFromPath(m_fnCurPlayingFile), 2000);
+			OnShowCurrentPlayingFileInOSD();
+			
 		}
 
 		if(s.bUserAeroUI() && (i& ( CS_TOOLBAR | CS_SEEKBAR)))

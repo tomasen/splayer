@@ -142,10 +142,18 @@
 		int iDestLen;
 		char* buff1 = svpTool.CStringToUTF8(lpszSection, &iDestLen);
 		char* buff2 = svpTool.CStringToUTF8(lpszEntry, &iDestLen);
-		char* buff3 = svpTool.CStringToUTF8(lpszValue, &iDestLen);
-
-		char* buff = sqlite3_mprintf("REPLACE INTO settingstring  ( hkey, sect, vstring ) VALUES (\"%q\" , \"%q\" , %Q )",
-			buff1,buff2,buff3);
+		
+		char* buff ;
+		if(lpszValue){
+			char* buff3 = svpTool.CStringToUTF8(lpszValue, &iDestLen);
+			buff = sqlite3_mprintf("REPLACE INTO settingstring  ( hkey, sect, vstring ) VALUES (\"%q\" , \"%q\" , %Q )",
+				buff1,buff2,buff3);
+			free(buff3);
+		}else{
+			AfxGetApp()->WriteProfileString(lpszSection,lpszEntry,lpszValue);
+			buff = sqlite3_mprintf("DELETE FROM settingstring WHERE hkey = \"%q\" AND sect = \"%q\"",
+				buff1,buff2);
+		}
 		
 		exec_sql(buff);
 		if (buff) {
@@ -154,7 +162,7 @@
 
 		free(buff1);
 		free(buff2);
-		free(buff3);
+		
 		if(zErrMsg){
 			//	SVP_LogMsg6("lalala2");
 			return AfxGetApp()->WriteProfileString(lpszSection,lpszEntry,lpszValue);

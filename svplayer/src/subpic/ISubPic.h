@@ -374,6 +374,8 @@ interface __declspec(uuid("CF75B1F0-535C-4074-8869-B15F177F944E")) ISubPicAlloca
 	STDMETHOD_(int, GetSubtitleDelay2) () PURE;
 	STDMETHOD_(double, GetFPS) () PURE;
 
+	STDMETHOD (GetSubStats) (int& nSubPics, REFERENCE_TIME& rtNow, REFERENCE_TIME& rtStart, REFERENCE_TIME& rtStop /*[out]*/) PURE;
+
 	STDMETHOD_(void, SetSubPicProvider) (ISubPicProvider* pSubPicProvider) PURE;
 	STDMETHOD_(void, SetSubPicProvider2) (ISubPicProvider* pSubPicProvider) PURE;
 	STDMETHOD_(void, Invalidate) (REFERENCE_TIME rtInvalidate = -1) PURE;
@@ -449,6 +451,7 @@ public:
 	STDMETHODIMP_(bool) Paint(bool fAll) = 0;
 
 	STDMETHODIMP_(void) SetTime(REFERENCE_TIME rtNow);
+	STDMETHODIMP GetSubStats(int& nSubPics, REFERENCE_TIME& rtNow, REFERENCE_TIME& rtStart, REFERENCE_TIME& rtStop);
 	STDMETHODIMP_(void) SetSubtitleDelay(int delay_ms);
 	STDMETHODIMP_(int) GetSubtitleDelay();
 	STDMETHODIMP_(void) SetSubtitleDelay2(int delay_ms);

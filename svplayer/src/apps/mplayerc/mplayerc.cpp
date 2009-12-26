@@ -5119,6 +5119,13 @@ void CMPlayerCApp::Settings::SetFav(favtype ft, CAtlList<CString>& sl, BOOL bRec
 		s.Format(_T("Name%d"), i++);
 		AfxGetMyApp()->WriteProfileString(root, s, sl.GetNext(pos));
 	}
+	for(int j = 0 ; j < 10;j++){
+		CString s;
+		s.Format(_T("Name%d"), i++);
+		if( AfxGetMyApp()->WriteProfileString(root, s, NULL) == 0){
+			break;
+		}
+	}
 }
 void CMPlayerCApp::Settings::DelFavByFn(favtype ft, BOOL bRecent, CString szMatch){
 	CAtlList<CString> sl;

@@ -926,7 +926,15 @@ STDMETHODIMP_(void) ISubPicAllocatorPresenterImpl::SetPosition(RECT w, RECT v)
 
 	m_sublib2.ResSetForcePos();
 }
-
+STDMETHODIMP ISubPicAllocatorPresenterImpl::GetSubStats(int& nSubPics, REFERENCE_TIME& rtNow, REFERENCE_TIME& rtStart, REFERENCE_TIME& rtStop)
+{
+	if(m_pSubPicQueue)
+	{
+		//SVP_LogMsg5(L" SetTime1 %f " ,(double) rtNow- m_SubtitleDelay);
+		m_pSubPicQueue->GetStats(nSubPics, rtNow, rtStart ,rtStop);
+	}
+	return S_OK;
+}
 STDMETHODIMP_(void) ISubPicAllocatorPresenterImpl::SetTime(REFERENCE_TIME rtNow)
 {
 /*

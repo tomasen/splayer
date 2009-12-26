@@ -131,6 +131,15 @@ STDMETHODIMP CSVPSubFilter::NonDelegatingQueryInterface(REFIID riid, void** ppv)
 double CSVPSubFilter::GetFPS()  {
 	return m_fps;
 }
+STDMETHODIMP CSVPSubFilter::GetSubStats(int& nSubPics, REFERENCE_TIME& rtNow, REFERENCE_TIME& rtStart, REFERENCE_TIME& rtStop)
+{
+	if(m_pSubPicQueue)
+	{
+		//SVP_LogMsg5(L" SetTime1 %f " ,(double) rtNow- m_SubtitleDelay);
+		m_pSubPicQueue->GetStats(nSubPics, rtNow, rtStart ,rtStop);
+	}
+	return S_OK;
+}
 void  CSVPSubFilter::SetTime (REFERENCE_TIME rtNow)
 {
 	CAutoLock cAutoLock(&m_csQueueLock);

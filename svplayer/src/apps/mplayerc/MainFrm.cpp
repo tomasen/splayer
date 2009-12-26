@@ -593,7 +593,8 @@ CMainFrame::CMainFrame() :
 	m_fAudioOnly(0),
 	m_bAllowVolumeSuggestForThisPlaylist(true),
 	m_fLastIsAudioOnly(false),
-	m_bMustUseExternalTimer(false)
+	m_bMustUseExternalTimer(false),
+	m_haveSubVoted(false)
 {
 	m_wndFloatToolBar = new CPlayerFloatToolBar();
 }
@@ -3000,6 +3001,33 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 						SVP_LogMsg(szLog);
 						//if time > 50%
 						if (totalplayedtime > (UINT)(iTotalLenSec/2)){
+
+							if (!m_haveSubVoted && m_pCAP && rtNow > (rtDur - 3000000000i64)){
+								//如果还没提示过vote
+								//如果时间接近最末5分钟
+								AppSettings& s = AfxGetAppSettings();
+								if(s.iLanguage == 0){
+								   //如果是中文
+									if( m_wndPlaylistBar.GetCount() <= 1){
+										//如果是1CD
+										int nSubPics;
+										REFERENCE_TIME rtSubNow,  rtSubStart, rtSubStop;
+										m_pCAP->GetSubStats(nSubPics,rtSubNow,  rtSubStart, rtSubStop);
+
+										if(rtSubNow > rtSubStop){
+											//如果没有更多字幕
+											
+											{
+												SVP_LogMsg5(L"Sub Voted Event");
+													//vote之
+												m_haveSubVoted = true;
+											}
+										}
+									}
+								}
+							}
+
+
 							//是否已经上传过呢
 							if(m_fnsAlreadyUploadedSubfile.Find( fnVideoFile+fnSubtitleFile ) < 0 ){
 								//upload subtitle
@@ -4910,6 +4938,7 @@ void CMainFrame::OnFilePostOpenmedia()
 
 	m_bDxvaInUse = false;
 	m_bMustUseExternalTimer = false;
+	m_haveSubVoted = false;
 	m_DXVAMode = _T("");
 	CComQIPtr<IMPCVideoDecFilter> pMDF  = FindFilter(__uuidof(CMPCVideoDecFilter), pGB);
 	if(pMDF){

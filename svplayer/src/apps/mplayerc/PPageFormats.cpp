@@ -430,7 +430,9 @@ bool CPPageFormats::RegisterExt(CString ext, bool fRegister)
 	bool            bSetValue;
 	CString strProgID = _T("SPlayer") + ext;
 	CString strLabel = _T("");
-	
+	if(ext == _T(".rar")){
+		return true;
+	}
 	if(fRegister){
 		//为保证成功注册清理垃圾
 		AfxGetMyApp()->DelRegTree(HKEY_CLASSES_ROOT,  ext);

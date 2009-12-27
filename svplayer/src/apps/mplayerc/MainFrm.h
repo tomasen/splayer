@@ -384,6 +384,7 @@ public:
 	bool  m_bMustUseExternalTimer;
 	bool m_haveSubVoted;
 	UINT lastShowCurrentPlayingFileTime;
+	ITaskbarList3* pTBL  ;
 	int m_lTransparentToolbarStat;
 	int  m_lTransparentToolbarPosStat;
 	CPoint m_lTransparentToolbarPosOffset;

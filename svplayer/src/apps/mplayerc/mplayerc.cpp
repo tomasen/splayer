@@ -5814,7 +5814,11 @@ void CMPlayerCApp::SetLanguage (int nLanguage)
 	svpTool.filePutContent(szLangDefault,szLangSeting );
 	AfxSetResourceHandle(hMod);
 }
-
+bool CMPlayerCApp::IsWin7(){
+	if(m_isVista < 0 )
+		IsVista();
+	return (m_isVista >= 2);
+}
 bool CMPlayerCApp::IsVista()
 {
 	if(m_isVista < 0 ){
@@ -5824,9 +5828,17 @@ bool CMPlayerCApp::IsVista()
 		osver.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
 
 		if (	::GetVersionEx( &osver ) && 
-			osver.dwPlatformId == VER_PLATFORM_WIN32_NT && 
-			(osver.dwMajorVersion >= 6 ) )
-			m_isVista = 1;
+			osver.dwPlatformId == VER_PLATFORM_WIN32_NT ){
+			//SVP_LogMsg5(L"OS %d %d", osver.dwMajorVersion, osver.dwMinorVersion);
+			if(osver.dwMajorVersion >= 6 ) {
+				m_isVista = 1;
+				if(osver.dwMinorVersion >= 1){
+					m_isVista = 2;
+				}
+			}
+			if(osver.dwMajorVersion >= 7 ) 
+				m_isVista = 2;
+		}
 
 	}
 	

@@ -391,6 +391,7 @@ public:
 	static void					SetLanguage (int nLanguage);
 	static LPCTSTR				GetSatelliteDll(int nLang);
 	static bool	IsVista();
+	static bool	IsWin7();
 	static int	m_bCanUseCUDA;
 	static bool	CanUseCUDA();
 	static int	m_bHasEVRSupport;

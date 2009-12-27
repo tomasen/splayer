@@ -595,7 +595,8 @@ CMainFrame::CMainFrame() :
 	m_fLastIsAudioOnly(false),
 	m_bMustUseExternalTimer(false),
 	m_haveSubVoted(false),
-	lastShowCurrentPlayingFileTime(0)
+	lastShowCurrentPlayingFileTime(0),
+	pTBL(NULL)
 {
 	m_wndFloatToolBar = new CPlayerFloatToolBar();
 }
@@ -1094,7 +1095,16 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	//if(s.htpcmode)
 	//	SendMessage(WM_COMMAND, ID_VIEW_FULLSCREEN);
 	
+	{
+	
+		HRESULT hr = ::CoCreateInstance(CLSID_TaskbarList, NULL, CLSCTX_INPROC_SERVER,
+			IID_ITaskbarList, reinterpret_cast<void**>(&pTBL) );
 
+		if (!SUCCEEDED(hr))
+		{
+			pTBL = NULL;	
+		}
+	}
 	m_WndSizeInited++;
 	return 0;
 }
@@ -1812,6 +1822,11 @@ void CMainFrame::OnClose()
 	SaveControlBars();
  
 	ShowWindow(SW_HIDE);
+
+	if( pTBL )
+	{
+		pTBL->Release();
+	}
 
 	m_wndNewOSD.OnRealClose();
 	m_wndToolTopBar.OnRealClose();
@@ -2926,6 +2941,41 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 	}
 	else if(nIDEvent == TIMER_STATS)
 	{
+		if(AfxGetMyApp()->IsWin7() && pTBL ){
+			try{
+				BOOL bHasValue = 0;
+				if(IsSomethingLoaded()){
+					//TBPF_PAUSED
+					//TBPF_NORMAL
+					//TBPF_INDETERMINATE
+					switch(GetMediaState()){
+						case State_Paused:
+							//not using TBPF_PAUSED since it hide progress
+							pTBL->SetProgressState(m_hWnd,TBPF_NORMAL);
+							bHasValue = true;
+							break;
+						case State_Running:
+							pTBL->SetProgressState(m_hWnd,TBPF_NORMAL);
+							bHasValue = true;
+							break;
+						case State_Stopped:
+							pTBL->SetProgressState(m_hWnd,TBPF_NOPROGRESS);
+							break;
+					}
+				}else{
+					pTBL->SetProgressState(m_hWnd,TBPF_NOPROGRESS);
+				}
+				if(bHasValue){
+					__int64 iSeekStart, iSeekStop;
+					m_wndSeekBar.GetRange(iSeekStart, iSeekStop);
+					__int64 iSeekPos = m_wndSeekBar.GetPosReal();
+					pTBL->SetProgressValue(m_hWnd, iSeekPos ,(iSeekStop - iSeekStart));
+				}
+			}catch(...){
+				pTBL->Release();
+				pTBL = NULL;
+			}
+		}
 		if(IsSomethingLoaded() && m_fAudioOnly ){
 
 			m_wndView.m_AudioInfoCounter++;

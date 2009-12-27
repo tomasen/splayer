@@ -594,7 +594,8 @@ CMainFrame::CMainFrame() :
 	m_bAllowVolumeSuggestForThisPlaylist(true),
 	m_fLastIsAudioOnly(false),
 	m_bMustUseExternalTimer(false),
-	m_haveSubVoted(false)
+	m_haveSubVoted(false),
+	lastShowCurrentPlayingFileTime(0)
 {
 	m_wndFloatToolBar = new CPlayerFloatToolBar();
 }
@@ -14174,7 +14175,8 @@ void CMainFrame::OnChangeResizer(UINT nID){
 }
 /////////////
 void CMainFrame::OnShowCurrentPlayingFileInOSD(){
-	if(!m_fnCurPlayingFile.IsEmpty() && !m_fAudioOnly){
+	if(!m_fnCurPlayingFile.IsEmpty() && !m_fAudioOnly && (time(NULL) - lastShowCurrentPlayingFileTime) > 10){
+		lastShowCurrentPlayingFileTime = time(NULL);
 		CPath fuPath(m_fnCurPlayingFile);
 		CSVPToolBox svpTool;
 		fuPath.StripPath();

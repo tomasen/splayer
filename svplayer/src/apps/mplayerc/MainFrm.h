@@ -383,6 +383,7 @@ public:
 	int m_iPlaybackMode;
 	bool  m_bMustUseExternalTimer;
 	bool m_haveSubVoted;
+	UINT lastShowCurrentPlayingFileTime;
 	int m_lTransparentToolbarStat;
 	int  m_lTransparentToolbarPosStat;
 	CPoint m_lTransparentToolbarPosOffset;

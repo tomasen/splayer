@@ -2944,6 +2944,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 		if(AfxGetMyApp()->IsWin7() && pTBL ){
 			try{
 				BOOL bHasValue = 0;
+				BOOL bSetPaused = 0;
 				if(IsSomethingLoaded()){
 					//TBPF_PAUSED
 					//TBPF_NORMAL
@@ -2952,6 +2953,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 						case State_Paused:
 							//not using TBPF_PAUSED since it hide progress
 							pTBL->SetProgressState(m_hWnd,TBPF_NORMAL);
+							bSetPaused = true;
 							bHasValue = true;
 							break;
 						case State_Running:
@@ -2970,6 +2972,9 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 					m_wndSeekBar.GetRange(iSeekStart, iSeekStop);
 					__int64 iSeekPos = m_wndSeekBar.GetPosReal();
 					pTBL->SetProgressValue(m_hWnd, iSeekPos ,(iSeekStop - iSeekStart));
+				}
+				if(bSetPaused){
+					pTBL->SetProgressState(m_hWnd,TBPF_PAUSED);
 				}
 			}catch(...){
 				pTBL->Release();

@@ -44,6 +44,16 @@
     <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseRU|x86' ">
+    <DefineConstants>locale=1049;codepage=1251</DefineConstants>
+    <Cultures>ru-RU</Cultures>
+    <WixVariables>
+    </WixVariables>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+
+  
   <ItemGroup>
     <Compile Include="Product.wxs" />
     <Compile Include="SvPlayer_comp.wxs" />

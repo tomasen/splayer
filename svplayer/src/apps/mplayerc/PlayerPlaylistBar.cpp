@@ -2070,7 +2070,7 @@ void CPlayerPlaylistBar::OnLvnEndlabeleditList(NMHDR* pNMHDR, LRESULT* pResult)
 BOOL CPlayerPlaylistBar::OnPlaylistDeleteItem( UINT nID )
 {
 	
-    if (m_list.GetSelectedCount() > 0 && AfxMessageBox(_T("确定要移除播放列表中被选中的项？"), MB_OKCANCEL) == IDOK)
+    if ( IsWindowVisible() && m_list.GetSelectedCount() > 0 && AfxMessageBox(ResStr(IDS_CONFIRM_AREYOUSURETODELETEPLAYLISTITEM), MB_OKCANCEL) == IDOK)
     {
         CAutoLock dataLock(m_csDataLock);
 

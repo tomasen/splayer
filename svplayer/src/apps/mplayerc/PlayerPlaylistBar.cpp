@@ -64,7 +64,7 @@ BOOL CPlayerPlaylistBar::Create(CWnd* pParentWnd)
 			|LVS_OWNERDRAWFIXED
 			|LVS_NOCOLUMNHEADER
 			|LVS_EDITLABELS
-			|LVS_REPORT|LVS_SINGLESEL|LVS_AUTOARRANGE|LVS_NOSORTHEADER, // TODO: remove LVS_SINGLESEL and implement multiple item repositioning (dragging is ready)
+			|LVS_REPORT|LVS_AUTOARRANGE|LVS_NOSORTHEADER, // TODO: remove LVS_SINGLESEL and implement multiple item repositioning (dragging is ready)
 		CRect(0,0,100,80), this, IDC_PLAYLIST);
 
 	m_list.SetExtendedStyle(m_list.GetExtendedStyle()|LVS_EX_FULLROWSELECT|LVS_EX_DOUBLEBUFFER);
@@ -1246,12 +1246,12 @@ void CPlayerPlaylistBar::SavePlaylist(BOOL bDeletePlayList)
 
 BEGIN_MESSAGE_MAP(CPlayerPlaylistBar, CSizingControlBarG)
 	ON_WM_SIZE()
-	ON_NOTIFY(LVN_KEYDOWN, IDC_PLAYLIST, OnLvnKeyDown)
 	ON_NOTIFY(NM_DBLCLK, IDC_PLAYLIST, OnNMDblclkList)
 //	ON_NOTIFY(NM_CUSTOMDRAW, IDC_PLAYLIST, OnCustomdrawList)
 	ON_WM_DRAWITEM()
 	ON_COMMAND_EX(ID_FILE_CLOSEPLAYLIST, OnFileClosePlaylist)
 	ON_COMMAND_EX(ID_PLAY_PLAY, OnPlayPlay)
+    ON_COMMAND_EX(ID_PLAYLIST_DELETEITEM, OnPlaylistDeleteItem)
 	ON_WM_DROPFILES()
 	ON_NOTIFY(LVN_BEGINDRAG, IDC_PLAYLIST, OnBeginDrag)
 	ON_WM_MOUSEMOVE()
@@ -1304,49 +1304,6 @@ void CPlayerPlaylistBar::OnSize(UINT nType, int cx, int cy)
 	CSizingControlBarG::OnSize(nType, cx, cy);
 
 	ResizeListColumn();
-}
-
-void CPlayerPlaylistBar::OnLvnKeyDown(NMHDR* pNMHDR, LRESULT* pResult) 
-{
-	LPNMLVKEYDOWN pLVKeyDown = reinterpret_cast<LPNMLVKEYDOWN>(pNMHDR);
-
-	*pResult = FALSE;
-	CAutoLock dataLock(m_csDataLock);
-
-	CList<int> items;
-	POSITION pos = m_list.GetFirstSelectedItemPosition();
-	while(pos) items.AddHead(m_list.GetNextSelectedItem(pos));
-
-	{
-		
-		if(pLVKeyDown->wVKey == VK_DELETE && items.GetCount() > 0) 
-		{
-			pos = items.GetHeadPosition();
-			while(pos) 
-			{
-				int i = items.GetNext(pos);
-				if(m_pl.RemoveAt(FindPos(i))) ((CMainFrame*)AfxGetMainWnd())->CloseMedia();
-				m_list.DeleteItem(i);
-			}
-
-			m_list.SetItemState(-1, 0, LVIS_SELECTED);
-			m_list.SetItemState(
-				max(min(items.GetTail(), m_list.GetItemCount()-1), 0), 
-				LVIS_SELECTED, LVIS_SELECTED);
-
-			ResizeListColumn();
-
-			*pResult = TRUE;
-		}
-		else if(pLVKeyDown->wVKey == VK_SPACE && items.GetCount() == 1) 
-		{
-			m_pl.SetPos(FindPos(items.GetHead()));
-
-			((CMainFrame*)AfxGetMainWnd())->OpenCurPlaylistItem(); //should we use recent rStart time?
-
-			*pResult = TRUE;
-		}
-	}
 }
 
 void CPlayerPlaylistBar::OnNMDblclkList(NMHDR* pNMHDR, LRESULT* pResult)
@@ -2108,4 +2065,36 @@ void CPlayerPlaylistBar::OnLvnEndlabeleditList(NMHDR* pNMHDR, LRESULT* pResult)
 	}
 
 	*pResult = 0;
+}
+
+BOOL CPlayerPlaylistBar::OnPlaylistDeleteItem( UINT nID )
+{
+	
+    if (m_list.GetSelectedCount() > 0 && AfxMessageBox(_T("确定要移除播放列表中被选中的项？"), MB_OKCANCEL) == IDOK)
+    {
+        CAutoLock dataLock(m_csDataLock);
+
+        CList<int> items;
+        POSITION pos = m_list.GetFirstSelectedItemPosition();
+        while(pos) items.AddHead(m_list.GetNextSelectedItem(pos));
+
+        pos = items.GetHeadPosition();
+        while(pos) 
+        {
+            int i = items.GetNext(pos);
+            if(m_pl.RemoveAt(FindPos(i))) ((CMainFrame*)AfxGetMainWnd())->CloseMedia();
+            m_list.DeleteItem(i);
+        }
+
+        m_list.SetItemState(-1, 0, LVIS_SELECTED);
+        m_list.SetItemState(
+            max(min(items.GetTail(), m_list.GetItemCount()-1), 0), 
+            LVIS_SELECTED, LVIS_SELECTED);
+
+        ResizeListColumn();
+        SavePlaylist();
+        return TRUE;
+    }
+    else
+        return FALSE;
 }

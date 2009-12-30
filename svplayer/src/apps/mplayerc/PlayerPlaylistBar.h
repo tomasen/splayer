@@ -118,7 +118,6 @@ public:
 	afx_msg void OnSetFocus( CWnd* pOldWnd );
 
 	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg void OnLvnKeyDown(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnNMDblclkList(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnLvnKeydownList(NMHDR* pNMHDR, LRESULT* pResult);
 //	afx_msg void OnCustomdrawList(NMHDR* pNMHDR, LRESULT* pResult);
@@ -133,4 +132,5 @@ public:
 	afx_msg void OnTimer(UINT nIDEvent);
 	afx_msg void OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/);
 	afx_msg void OnLvnEndlabeleditList(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg BOOL OnPlaylistDeleteItem(UINT nID);
 };

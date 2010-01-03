@@ -248,7 +248,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND_RANGE(ID_DVD_SUB_NEXT, ID_DVD_SUB_PREV, OnDvdSub)
 	ON_COMMAND(ID_DVD_SUB_ONOFF, OnDvdSubOnOff)
 
-	
+	ON_COMMAND(ID_SHOWSUBVOTEUI, OnShowSUBVoteControlBar)
 	ON_COMMAND(ID_FILE_OPENQUICK, OnFileOpenQuick)
 	ON_UPDATE_COMMAND_UI(ID_FILE_OPENMEDIA, OnUpdateFileOpen)
 	ON_COMMAND(ID_FILE_OPENMEDIA, OnFileOpenmedia)
@@ -823,6 +823,9 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if(m_wndPlayerEQControlBar.CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, _T("SVPLayered"), _T("EQCONTROL"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0))//WS_EX_NOACTIVATE
 		m_wndPlayerEQControlBar.ShowWindow( SW_HIDE);
 
+	if(m_wndSubVoteControlBar.CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, _T("SVPLayered"), _T("SUBVOTE"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0))//WS_EX_NOACTIVATE
+		m_wndSubVoteControlBar.ShowWindow( SW_HIDE);
+
 	if(m_wndStatusBar.Create(this)){
 		//m_wndStatusBar.EnableDocking(0);
 		//FloatControlBar(&m_wndStatusBar, CPoint(10,10), CBRS_ALIGN_BOTTOM );
@@ -1022,6 +1025,9 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 			m_wndChannelNormalizerBar.ModifyStyleEx(  0, WS_EX_LAYERED);
 			m_wndChannelNormalizerBar.SetLayeredWindowAttributes( 0, s.lAeroTransparent/2+0x7f , LWA_ALPHA);
+
+			m_wndSubVoteControlBar.ModifyStyleEx(  0, WS_EX_LAYERED);
+			m_wndSubVoteControlBar.SetLayeredWindowAttributes( 0, s.lAeroTransparent/2+0x7f , LWA_ALPHA);
 
 			m_wndPlayerEQControlBar.ModifyStyleEx(  0, WS_EX_LAYERED);
 			m_wndPlayerEQControlBar.SetLayeredWindowAttributes( 0, s.lAeroTransparent/2+0x7f , LWA_ALPHA);
@@ -1572,7 +1578,7 @@ LRESULT CMainFrame::OnNcHitTestNewUI(WPARAM wParam, LPARAM lParam )
 	else if (m_nBoxStatus[2]!=0) return HTMINBUTTON;
 	else if (m_nBoxStatus[3]!=0) return HTMENU;*/
 
-	UINT ret = m_btnList.OnHitTest(pt,rc);
+	UINT ret = m_btnList.OnHitTest(pt,rc,false);
 	if( m_btnList.HTRedrawRequired ){
 		RedrawNonClientArea();
 	}
@@ -4142,11 +4148,24 @@ void CMainFrame::OnShowTranparentControlBar(){
 		rePosOSD();
 	}
 }
+void CMainFrame::OnShowSUBVoteControlBar(){
+	if(m_wndSubVoteControlBar.IsWindowVisible()){
+		m_wndSubVoteControlBar.ShowWindow(SW_HIDE);
+	}else{
+		m_wndPlayerEQControlBar.ShowWindow(SW_HIDE);
+		m_wndChannelNormalizerBar.ShowWindow(SW_HIDE);
+		m_wndSubVoteControlBar.InitSettings();
+		m_wndSubVoteControlBar.ShowWindow(SW_SHOWNOACTIVATE);
+		rePosOSD();
+	}
+}
+
 void CMainFrame::OnShowEQControlBar(){
 	if(m_wndPlayerEQControlBar.IsWindowVisible()){
 		m_wndPlayerEQControlBar.ShowWindow(SW_HIDE);
 	}else{
 		m_wndChannelNormalizerBar.ShowWindow(SW_HIDE);
+		m_wndSubVoteControlBar.ShowWindow(SW_HIDE);
 		m_wndPlayerEQControlBar.InitSettings();
 		m_wndPlayerEQControlBar.ShowWindow(SW_SHOWNOACTIVATE);
 		rePosOSD();
@@ -4157,6 +4176,7 @@ void CMainFrame::OnShowChannelNormalizerBar(){
 		m_wndChannelNormalizerBar.ShowWindow(SW_HIDE);
 	}else{
 		m_wndPlayerEQControlBar.ShowWindow(SW_HIDE);
+		m_wndSubVoteControlBar.ShowWindow(SW_HIDE);
 		m_wndChannelNormalizerBar.ShowWindow(SW_SHOWNOACTIVATE);
 		rePosOSD();
 	}
@@ -10310,6 +10330,12 @@ void CMainFrame::rePosOSD(){
 			rcRightBottomWnd.top = rcRightBottomWnd.bottom -  sizeOfCNWnd.cy;
 			rcRightBottomWnd.left = rcRightBottomWnd.right - sizeOfCNWnd.cx;
 			m_wndPlayerEQControlBar.MoveWindow(rcRightBottomWnd);
+		} else if(m_wndSubVoteControlBar.IsWindowVisible() ){
+			rcRightBottomWnd.bottom -= 5;
+			CSize sizeOfCNWnd = m_wndPlayerEQControlBar.getSizeOfWnd();
+			rcRightBottomWnd.top = rcRightBottomWnd.bottom -  sizeOfCNWnd.cy;
+			rcRightBottomWnd.left = rcRightBottomWnd.right - sizeOfCNWnd.cx;
+			m_wndSubVoteControlBar.MoveWindow(rcRightBottomWnd);
 		} 
 
 		AppSettings& s = AfxGetAppSettings();

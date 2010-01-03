@@ -74,6 +74,8 @@ public:
 
 static int nLogDPIX = 0,  nLogDPIY = 0;
 
+
+
 class CSUIButton {
 
 public:
@@ -86,8 +88,12 @@ public:
 	int m_stat; //0 normal ; 1 hove ; 2 clicked ; 3 disabled
 	UINT m_htMsgID;
 	BOOL m_hide;
-	
-	
+
+	BOOL m_NotButton;
+
+	static HBITMAP SUILoadImage(LPCTSTR szBmpName);
+	static void PreMultiplyBitmap( CBitmap& bmp , CSize& sizeBmp, BOOL NotButton);
+
 	CString m_szBmpName;
 
 	CList<CBtnAlign*> btnAlignList;
@@ -113,10 +119,7 @@ public:
 	
 	int OnHitTest(CPoint pt , BOOL bLBtnDown);
 
-	BOOL m_NotButton;
-
-	void CountDPI();
-	void PreMultiplyBitmap( CBitmap& bmp );
+	void CountDPI();	
 
 private:
 	LONG CalcRealMargin(LONG Mlen, LONG bW, LONG wW);
@@ -138,7 +141,7 @@ public:
 	
 	void OnSize(CRect WndRect);
 
-	UINT OnHitTest(CPoint pt , CRect rc);
+	UINT OnHitTest(CPoint pt , CRect rc, BOOL bLBtnDown);
 
 	void SetDisableStat(UINT iMsgID, BOOL bDisable);
 	void SetClickedStat(UINT iMsgID, BOOL bClicked);

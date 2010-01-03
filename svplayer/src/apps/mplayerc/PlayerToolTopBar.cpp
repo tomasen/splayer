@@ -447,7 +447,7 @@ void CPlayerToolTopBar::OnLButtonUp(UINT nFlags, CPoint point)
 	GetWindowRect(&rc);
 
 	CPoint xpoint = point + rc.TopLeft() ;
-	UINT ret = m_btnList.OnHitTest(xpoint,rc);
+	UINT ret = m_btnList.OnHitTest(xpoint,rc,false);
 	if( m_btnList.HTRedrawRequired ){
 		if(ret)
 			pFrame->PostMessage( WM_COMMAND, ret);
@@ -475,7 +475,7 @@ void CPlayerToolTopBar::OnLButtonDown(UINT nFlags, CPoint point)
 	GetWindowRect(&rc);
 
 	point += rc.TopLeft() ;
-	UINT ret = m_btnList.OnHitTest(point,rc);
+	UINT ret = m_btnList.OnHitTest(point,rc,true);
 	if( m_btnList.HTRedrawRequired ){
 		//if(ret)
 		//	SetCapture();
@@ -547,7 +547,7 @@ void CPlayerToolTopBar::OnMouseMove(UINT nFlags, CPoint point)
 
 	if( bMouseMoved){
 
-		UINT ret = m_btnList.OnHitTest(point,rc);
+		UINT ret = m_btnList.OnHitTest(point,rc,false);
 		m_nItemToTrack = ret;
 		if(ret){
 			if( GetCursor() == NULL )

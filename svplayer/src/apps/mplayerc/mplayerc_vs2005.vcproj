@@ -822,6 +822,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SUIVoteStar.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\SVPButton.cpp"
 				>
 			</File>
@@ -843,6 +847,10 @@
 			</File>
 			<File
 				RelativePath=".\SVPSubUploadDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SVPSubVoteControlBar.cpp"
 				>
 			</File>
 			<File
@@ -1319,6 +1327,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SUIVoteStar.h"
+				>
+			</File>
+			<File
 				RelativePath=".\SVPButton.h"
 				>
 			</File>
@@ -1340,6 +1352,10 @@
 			</File>
 			<File
 				RelativePath=".\SVPSubUploadDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SVPSubVoteControlBar.h"
 				>
 			</File>
 			<File

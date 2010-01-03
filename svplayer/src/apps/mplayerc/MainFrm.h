@@ -41,6 +41,7 @@
 #include "PlayerFloatToolBar.h"
 #include "PlayerChannelNormalizer.h"
 #include "PlayerEQControlBar.h"
+#include "SVPSubVoteControlBar.h"
 #include "FileDropTarget.h"
 
 #include "KeyProvider.h"
@@ -534,6 +535,7 @@ protected:  // control bar embedded members
 	CTransparentControlBar m_wndTransparentControlBar;
 	CPlayerChannelNormalizer m_wndChannelNormalizerBar;
 	CPlayerEQControlBar	 m_wndPlayerEQControlBar;
+	CSVPSubVoteControlBar	m_wndSubVoteControlBar;
 	CList<CControlBar*> m_bars;
 
 	CPlayerSubresyncBar m_wndSubresyncBar;
@@ -886,6 +888,7 @@ public:
 	afx_msg void OnLanguage(UINT nID);
 	afx_msg void OnColorControl(UINT nID);
 
+	afx_msg void OnShowSUBVoteControlBar();
 	afx_msg void OnShowEQControlBar();
 	afx_msg void OnShowChannelNormalizerBar();
 	afx_msg void OnShowColorControlBar();

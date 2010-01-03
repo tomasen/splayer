@@ -314,6 +314,7 @@
 #define ID_ABCONTROL_ON                 1203
 #define ID_ABCONTROL_OFF                1204
 #define ID_ABCONTROL_TOGGLE             1205
+#define ID_SHOWSUBVOTEUI				1206
 #define ID_STATUS_MESSAGE               1324
 #define ID_SHOWDRAWSTAT                 1325
 #define ID_VSYNC_OFFSET_MORE            1326
@@ -322,6 +323,8 @@
 #define ID_SWITCH_AUDIO_DEVICE          1329
 #define IDC_BUTTONRESETEQCONTROL		1330
 #define IDC_BUTTONEQCONTROLPERSET		1331
+
+
 #define ID_FILTERS_SUBITEM_START        2000
 #define ID_FILTERS_SUBITEM_END          2099
 #define ID_FILTERSTREAMS_SUBITEM_START  2100

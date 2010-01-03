@@ -205,8 +205,7 @@ void CSUIButton::OnPaint(CMemoryDC *hDC, CRect rc){
 	//SVP_LogMsg5(_T("%d %d %d %d %d %d %d %d %d Paint %s"),ret , rc.left, rc.top, rc.Width(), rc.Height(),
 		//0, m_btnSize.cy * m_stat, m_btnSize.cx, m_btnSize.cy, m_szBmpName);
 }
-void CSUIButton::LoadImage(LPCTSTR szBmpName){
-
+HBITMAP CSUIButton::SUILoadImage(LPCTSTR szBmpName){
 	HBITMAP hGTmp = NULL;
 	if(CMPlayerCApp::m_hResDll){
 		hGTmp = (HBITMAP)::LoadImage(CMPlayerCApp::m_hResDll, szBmpName, IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION);
@@ -217,23 +216,28 @@ void CSUIButton::LoadImage(LPCTSTR szBmpName){
 		hGTmp = (HBITMAP)::LoadImage(GetModuleHandle(NULL), szBmpName, IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_CREATEDIBSECTION);
 	}
 
-	this->Attach(hGTmp);
+	return hGTmp;
+}
+void CSUIButton::LoadImage(LPCTSTR szBmpName){
+
+	
+	this->Attach(SUILoadImage(szBmpName));
 }
 
 void CSUIButton::Attach(HBITMAP bmp){
 	m_bitmap.Attach(bmp);
 	
-	PreMultiplyBitmap(m_bitmap);
+	PreMultiplyBitmap(m_bitmap,m_btnSize,m_NotButton);
 }
-void CSUIButton::PreMultiplyBitmap( CBitmap& bmp )
+void CSUIButton::PreMultiplyBitmap( CBitmap& bmp , CSize& sizeBmp, BOOL NotButton)
 {
 
 	BITMAP bm;
 	bmp.GetBitmap(&bm);
-	m_btnSize.cx = bm.bmWidth;
-	m_btnSize.cy = bm.bmHeight;
-	if(!m_NotButton){
-		m_btnSize.cy = m_btnSize.cy /4;
+	sizeBmp.cx = bm.bmWidth;
+	sizeBmp.cy = bm.bmHeight;
+	if(!NotButton){
+		sizeBmp.cy = sizeBmp.cy /4;
 	}
 	if(bm.bmBitsPixel != 32){
 		return;
@@ -328,8 +332,7 @@ void CSUIBtnList::SetHideStat(LPCTSTR szBmpName, BOOL bHide){
 	}
 }
 
-UINT CSUIBtnList::OnHitTest(CPoint pt , CRect rc){
-	SHORT bLBtnDown = GetAsyncKeyState(VK_LBUTTON);  
+UINT CSUIBtnList::OnHitTest(CPoint pt , CRect rc, BOOL bLBtnDown){
 	POSITION pos = GetHeadPosition();
 	UINT iMsg = 0;
 	HTRedrawRequired = FALSE;

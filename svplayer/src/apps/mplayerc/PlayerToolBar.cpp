@@ -726,7 +726,7 @@ void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point){
 		}
 	}else if(bMouseMoved){
 		
-		UINT ret = m_btnList.OnHitTest(point,rc,false);
+		UINT ret = m_btnList.OnHitTest(point,rc,-1);
 		m_nItemToTrack = ret;
 		if(ret){
 			

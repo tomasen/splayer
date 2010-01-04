@@ -117,14 +117,14 @@ public:
 
 	void OnPaint(CMemoryDC *hDC, CRect rc);
 	
-	int OnHitTest(CPoint pt , BOOL bLBtnDown);
+	int OnHitTest(CPoint pt , int bLBtnDown);
 
 	void CountDPI();	
 
 private:
 	LONG CalcRealMargin(LONG Mlen, LONG bW, LONG wW);
 	
-	
+	int m_lastBtnDownStat;
 };
 
 
@@ -141,7 +141,7 @@ public:
 	
 	void OnSize(CRect WndRect);
 
-	UINT OnHitTest(CPoint pt , CRect rc, BOOL bLBtnDown);
+	UINT OnHitTest(CPoint pt , CRect rc, int bLBtnDown = -1);
 
 	void SetDisableStat(UINT iMsgID, BOOL bDisable);
 	void SetClickedStat(UINT iMsgID, BOOL bClicked);

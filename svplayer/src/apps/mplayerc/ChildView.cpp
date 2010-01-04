@@ -548,7 +548,7 @@ void CChildView::OnMouseMove(UINT nFlags, CPoint point)
 
 	if(bMouseMoved){
 
-		UINT ret = m_btnList.OnHitTest(point,rc,false);
+		UINT ret = m_btnList.OnHitTest(point,rc,-1);
 		m_nItemToTrack = ret;
 		
 			

@@ -6,7 +6,8 @@
 CSUIButton::CSUIButton(LPCTSTR szBmpName, int iAlign, CRect marginTownd 
 					   , BOOL bNotButton, UINT htMsgID, BOOL bHide 
 					   ,UINT alignToButton  , CSUIButton * relativeToButton , CRect marginToBtn ) : 
-m_stat(0)
+m_stat(0) ,
+m_lastBtnDownStat(0)
 {
 	m_NotButton = bNotButton;
 	m_marginTownd  = marginTownd;
@@ -87,11 +88,16 @@ LONG CSUIButton::CalcRealMargin(LONG Mlen, LONG bW, LONG wW)
 		return ( wW * Mlen / 100) - bW / 2;
 	}
 }
-int CSUIButton::OnHitTest(CPoint pt , BOOL bLBtnDown){
+int CSUIButton::OnHitTest(CPoint pt , int bLBtnDown){
 	if(m_hide || m_NotButton || m_stat == 3){
 		return 0;
 	}
 	int old_stat = m_stat;
+	if(bLBtnDown < 0){
+		bLBtnDown = m_lastBtnDownStat;
+	}else{
+		m_lastBtnDownStat = bLBtnDown;
+	}
 	if (m_rcHitest.PtInRect(pt) && bLBtnDown)  m_stat = 2; else if (m_rcHitest.PtInRect(pt)) m_stat = 1; else m_stat = 0;
 	
 	if(m_stat == old_stat){
@@ -332,7 +338,7 @@ void CSUIBtnList::SetHideStat(LPCTSTR szBmpName, BOOL bHide){
 	}
 }
 
-UINT CSUIBtnList::OnHitTest(CPoint pt , CRect rc, BOOL bLBtnDown){
+UINT CSUIBtnList::OnHitTest(CPoint pt , CRect rc, int bLBtnDown){
 	POSITION pos = GetHeadPosition();
 	UINT iMsg = 0;
 	HTRedrawRequired = FALSE;

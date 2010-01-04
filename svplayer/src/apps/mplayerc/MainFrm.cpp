@@ -1578,7 +1578,7 @@ LRESULT CMainFrame::OnNcHitTestNewUI(WPARAM wParam, LPARAM lParam )
 	else if (m_nBoxStatus[2]!=0) return HTMINBUTTON;
 	else if (m_nBoxStatus[3]!=0) return HTMENU;*/
 
-	UINT ret = m_btnList.OnHitTest(pt,rc,false);
+	UINT ret = m_btnList.OnHitTest(pt,rc,-1);
 	if( m_btnList.HTRedrawRequired ){
 		RedrawNonClientArea();
 	}

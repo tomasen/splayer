@@ -131,7 +131,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				LinkLibraryDependencies="false"
-				AdditionalDependencies="curllib.lib Kernel32.lib D3D9.lib ssleay32.lib"
+				AdditionalDependencies="curllib.lib Kernel32.lib D3D9.lib ssleay32.lib ole32.lib"
 				OutputFile="../../lib/svplibRU.lib"
 				AdditionalLibraryDirectories="..\..\lib"
 			/>

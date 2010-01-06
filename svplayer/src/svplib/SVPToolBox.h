@@ -38,6 +38,7 @@ public:
 	BOOL ifDirWritable(CString szDir);
 	BOOL CanUseCUDAforCoreAVC();
 	int GetGPUString(CStringArray * szaGPUString);
+	int GetWMIGPURam();
 	CString GetTempDir();
 	int DetectFileCharset(CString fn);
 	CString DetectSubFileLanguage(CString fn);

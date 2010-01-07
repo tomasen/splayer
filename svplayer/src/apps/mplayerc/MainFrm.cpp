@@ -4555,7 +4555,7 @@ void CMainFrame::OnInitMenuPopup(CMenu * pPopupMenu, UINT nIndex, BOOL bSysMenu)
 		{
 			SetupSVPAudioMenu();
 			
-			pSubMenu = &m_audios;
+			pSubMenu = &m_navaudio;
 		}
 		else if(str == ResStr(IDS_MENU_ITEM_SUBTITLE_EVERYTHING)) //ResStr(IDS_SUBTITLES_POPUP)
 		{
@@ -4720,15 +4720,14 @@ void CMainFrame::SetupSVPAudioMenu(){
 	SetupAudioSwitcherSubMenu();
 	SetupNavAudioSubMenu();
 	MenuMerge( &m_navaudio ,  &m_audios );
-	m_audios.DestroyMenu();
-	m_audios.Attach(m_navaudio.m_hMenu );
+	
 	
 	SetupAudioDeviceSubMenu();
 	CMenu* pSubMenuAD = &m_audiodevices;
 	if(pSubMenuAD ){
 
-		if(m_audios.GetMenuItemCount())
-			m_audios.AppendMenu(MF_SEPARATOR);
+		if(m_navaudio.GetMenuItemCount())
+			m_navaudio.AppendMenu(MF_SEPARATOR);
 		AppSettings& s = AfxGetAppSettings();
 
 		CString szAudioChannel;
@@ -4741,9 +4740,9 @@ void CMainFrame::SetupSVPAudioMenu(){
 		}
 
 
-		m_audios.AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_USINGSPDIF, ResStr(IDS_MENU_ITEM_DIGTAL_OUTPUT));
-		m_audios.AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_SET_AUDIO_NUMBER_SPEAKER, szAudioChannel);
-		m_audios.AppendMenu(MF_POPUP, (UINT_PTR) pSubMenuAD->m_hMenu, ResStr(IDS_MENU_ITEM_AUDIO_OUTPUT_TO));
+		m_navaudio.AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_USINGSPDIF, ResStr(IDS_MENU_ITEM_DIGTAL_OUTPUT));
+		m_navaudio.AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_SET_AUDIO_NUMBER_SPEAKER, szAudioChannel);
+		m_navaudio.AppendMenu(MF_POPUP, (UINT_PTR) pSubMenuAD->m_hMenu, ResStr(IDS_MENU_ITEM_AUDIO_OUTPUT_TO));
 	}
 
 }
@@ -13787,7 +13786,7 @@ void CMainFrame::SetupNavAudioSubMenu()
 
 				if(!format.IsEmpty())
 				{
-					str.Format(_T("%s, %s %dHz %dbits %d channel(s)"), 
+					str.Format(ResStr(IDS_MENU_ITEM_AUDIO_SPEC), 
 						CString(str),
 						format,
 						ATR.dwFrequency,
@@ -16192,7 +16191,7 @@ void CMainFrame::OnUpdateSetAutoLoadSubtitle(CCmdUI *pCmdUI){
 void CMainFrame::OnMenuAudio(){
 	
 	SetupSVPAudioMenu();
-	OnMenu( &m_audios );
+	OnMenu( &m_navaudio );
 }
 void CMainFrame::OnMenuVideo(){
 	SetupShadersSubMenu();

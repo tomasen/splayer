@@ -234,7 +234,7 @@ class CMainFrame : public CFrameWnd, public CDropTarget  , protected ISkinMenuRe
 	CMenu m_filters, m_subtitles, m_subtitles2,  m_audiodevices , m_subtoolmenu;
 	CStringArray m_AudioDevice;
 	CAutoPtrArray<CMenu> m_filterpopups;
-	CMenu m_navaudio, m_navsubtitle, m_navangle;
+	CMenu m_navsubtitle, m_navangle;
 	CMenu m_navchapters, m_navtitles;
 	CMenu m_favorites, m_recentfiles;
 	CMenu m_shaders;
@@ -313,7 +313,7 @@ private:
 public:
 	//CCpuId m_CPU;
 	void SetupSVPAudioMenu();
-	CMenu m_audios, m_popup;
+	CMenu m_navaudio, m_audios, m_popup;
 	void SetupEQPersetMenu();
 	CMenu m_eqperset_menu;
 	void MenuMerge(CMenu* Org, CMenu* New);

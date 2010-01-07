@@ -857,7 +857,7 @@ void CPlayerToolBar::OnRButtonUp(UINT nFlags, CPoint point)
 	if(ID_VOLUME_MUTE == m_nItemToTrackR ||  m_btnVolBG->m_rcHitest.PtInRect(xpoint)){
 
 		pFrame->SetupSVPAudioMenu();
-		pFrame->OnMenu( &pFrame->m_audios );
+		pFrame->OnMenu( &pFrame->m_navaudio );
 		
 	}else if(!m_nItemToTrackR && s.bUserAeroUI()){
 

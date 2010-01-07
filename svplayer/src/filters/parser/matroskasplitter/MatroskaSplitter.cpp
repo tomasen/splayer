@@ -124,6 +124,7 @@ HRESULT CMatroskaSplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 	m_rtNewStop = m_rtStop = m_rtDuration = 0;
 
 	int iVideo = 1, iAudio = 1, iSubtitle = 1;
+	bool bHasVideo = 0;
 
 	POSITION pos = m_pFile->m_segment.Tracks.GetHeadPosition();
 	while(pos)
@@ -176,6 +177,7 @@ HRESULT CMatroskaSplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 //					case BI_RLE4: mt.subtype = MEDIASUBTYPE_RGB4; break;
 					}
 					mts.Add(mt);
+					bHasVideo = true;
 				}
 				else if(CodecID == "V_UNCOMPRESSED")
 				{
@@ -247,6 +249,7 @@ avcsuccess:
 					memcpy(pSequenceHeader, data.GetData(), data.GetCount());
 					pm2vi->cbSequenceHeader = data.GetCount();
 					mts.Add(mt);
+					bHasVideo = true;
 				}
 				else if(CodecID.Find("V_MPEG4/") == 0)
 				{
@@ -264,6 +267,7 @@ avcsuccess:
 					memcpy(pSequenceHeader, pTE->CodecPrivate.GetData(), pTE->CodecPrivate.GetCount());
 					pm2vi->cbSequenceHeader = pTE->CodecPrivate.GetCount();
 					mts.Add(mt);
+					bHasVideo = true;
 				}
 				else if(CodecID.Find("V_REAL/RV") == 0)
 				{
@@ -277,6 +281,7 @@ avcsuccess:
 					pvih->bmiHeader.biHeight = (LONG)pTE->v.PixelHeight;
 					pvih->bmiHeader.biCompression = mt.subtype.Data1;
 					mts.Add(mt);
+					bHasVideo = true;
 				}
 				else if(CodecID == "V_DIRAC")
 				{
@@ -295,6 +300,7 @@ avcsuccess:
 					dvih->cbSequenceHeader = pTE->CodecPrivate.GetCount();
 
 					mts.Add(mt);
+					bHasVideo = true;
 				}
 				else if(CodecID == "V_MPEG2")
 				{
@@ -303,8 +309,10 @@ avcsuccess:
 					int w = pTE->v.PixelWidth;
 					int h = pTE->v.PixelHeight;
 
-					if(MakeMPEG2MediaType(mt, seqhdr, len, w, h))
+					if(MakeMPEG2MediaType(mt, seqhdr, len, w, h)){
 						mts.Add(mt);
+						bHasVideo = true;
+					}
 				}else if(CodecID == "V_THEORA")
 				{
 					BYTE* thdr = pTE->CodecPrivate.GetData() + 3;
@@ -331,6 +339,7 @@ avcsuccess:
 					memcpy (&vih->dwSequenceHeader, pTE->CodecPrivate.GetData(), vih->cbSequenceHeader);
 
 					mts.Add(mt);
+					bHasVideo = true;
 				}
 /*
 				else if(CodecID == "V_DSHOW/MPEG1VIDEO") // V_MPEG1
@@ -663,6 +672,10 @@ avcsuccess:
 		SetupChapters(ChapLanguage, caroot);
 	}
 
+	SVP_LogMsg5( L"iVideo %d",bHasVideo);
+	if(!bHasVideo){
+		return E_FAIL;
+	}
 	return m_pOutputs.GetCount() > 0 ? S_OK : E_FAIL;
 }
 

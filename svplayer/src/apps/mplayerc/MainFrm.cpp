@@ -13270,9 +13270,9 @@ CString CMainFrame::GetAnEasyToUnderstoodAudioStreamName(CString szName)
 		
 		break;
 	default:
-		szName.Replace(_T("Chinese"), ResStr(IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_CHINESE));
-		szName.Replace(_T("Japanese"), ResStr(IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_JAPANESE));
-		szName.Replace(_T("English"), ResStr(IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_ENGLISH));
+		//szName.Replace(_T("Chinese"), ResStr(IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_CHINESE));
+		//szName.Replace(_T("Japanese"), ResStr(IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_JAPANESE));
+		//szName.Replace(_T("English"), ResStr(IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_ENGLISH));
 
 		break;
 	}

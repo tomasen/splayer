@@ -8893,17 +8893,17 @@ void CMainFrame::OnUpdatePlaySubtitles(CCmdUI* pCmdUI)
 	else if(i == -1)
 	{
 		if(secondSub){
-			pCmdUI->SetCheck(m_iSubtitleSel2 >= 0);
+			pCmdUI->SetRadio(m_iSubtitleSel2 >= 0);
 		}else{
-			pCmdUI->SetCheck(m_iSubtitleSel >= 0);
+			pCmdUI->SetRadio(m_iSubtitleSel >= 0);
 		}
 	}
 	else if(i >= 0)
 	{
 		if(secondSub){
-			pCmdUI->SetRadio(i == abs(m_iSubtitleSel2));
+			pCmdUI->SetCheck(i == abs(m_iSubtitleSel2));
 		}else{
-			pCmdUI->SetRadio(i == abs(m_iSubtitleSel));
+			pCmdUI->SetCheck(i == abs(m_iSubtitleSel));
 		}
 	}
 }
@@ -13501,8 +13501,8 @@ void CMainFrame::SetupSubMenuToolbar(){
 	//}
 	m_subtitles.DestroyMenu();
 	m_subtitles.LoadMenu(IDR_SUBMENU);
-	MenuMerge( &m_subtoolmenu,  &m_subtitles );
-	
+	//MenuMerge( &m_subtoolmenu,  &m_subtitles );
+	m_subtoolmenu.AppendMenu(MF_POPUP, (UINT)m_subtitles.m_hMenu,ResStr(IDS_MENU_ITEM_SUBTITLE_SMART_MATCHING));
 	//m_subtoolmenu.AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_FILE_LOAD_SUBTITLE, ResStr(IDS_MENU_ITEM_LOAD_SUBTITLE));
 
 
@@ -13511,6 +13511,35 @@ void CMainFrame::OnSubMenuToolbar(){
 	SetupSubMenuToolbar();
 	
 	OnMenu(&m_subtoolmenu);
+}
+CString CMainFrame::GetAnEasyToUnderstoodSubtitleName(CString szName)
+{
+	CString szRet, szTransdName;
+	switch(AfxGetAppSettings().iLanguage)
+	{
+		case 0:
+			if(szName.Find(L"gb") >= 0 || szName.Find(L"chs") >= 0){
+				szTransdName = L"简体中文";
+			}else if(szName.Find(L"cht") >= 0 || szName.Find(L"big5") >= 0)
+			{
+				szTransdName = L"繁体中文";
+			}else if(szName.Find(L"cn") >= 0 || szName.Find(L"chn") >= 0)
+			{
+				szTransdName = L"中文";
+			}else if(szName.Find(L"en") >= 0 ){
+				szTransdName = L"英文";
+			}
+			break;
+		default:
+			
+			break;
+	}
+	if(!szTransdName.IsEmpty()){
+		szRet.Format(L"%s<%s>",szTransdName,szName);
+	}else{
+		szRet = szName;;
+	}
+	return szRet;
 }
 void CMainFrame::SetupSubtitlesSubMenu(int subid)
 {
@@ -13549,6 +13578,7 @@ void CMainFrame::SetupSubtitlesSubMenu(int subid)
 		pSub->AppendMenu(MF_SEPARATOR);
 	}
 	BOOL HavSubs = FALSE;
+	int subcount = 0;
 
 	while(pos)
 	{
@@ -13558,19 +13588,22 @@ void CMainFrame::SetupSubtitlesSubMenu(int subid)
 
 		for(int i = 0, j = pSubStream->GetStreamCount(); i < j; i++)
 		{
+			CString szBuf;
 			WCHAR* pName = NULL;
 			if(SUCCEEDED(pSubStream->GetStreamInfo(i, &pName, NULL)))
 			{
 				CString name(pName);
 				name.Replace(_T("&"), _T("&&"));
 
-				pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, id++, name);
+				szBuf.Format(ResStr(IDS_MENU_ITEM_SUBTITLE_STREAM_NAME), ++subcount, GetAnEasyToUnderstoodSubtitleName(name));
+				pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, id++, szBuf);
 				HavSubs = true;
 				CoTaskMemFree(pName);
 			}
 			else
 			{
-				pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, id++, _T("<Unknown>"));
+				szBuf.Format(ResStr(IDS_MENU_ITEM_SUBTITLE_STREAM_NAME), ++subcount, ResStr(IDS_MEDIATYPE_INFOLABEL_UNKNOWN));
+				pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, id++, szBuf);
 				HavSubs = true;
 			}
 		}
@@ -13592,10 +13625,12 @@ void CMainFrame::SetupSubtitlesSubMenu(int subid)
 
 	if(bHasSub){
 		pSub->AppendMenu(MF_SEPARATOR);
-		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, bHasSub++, ResStr(IDS_SUBTITLES_OPTIONS));
+		//pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, bHasSub++, ResStr(IDS_SUBTITLES_OPTIONS));
+		bHasSub++;
 		//pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, bHasSub++, ResStr(IDS_SUBTITLES_STYLES));
 		bHasSub++;
-		pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, bHasSub++, ResStr(IDS_SUBTITLES_RELOAD));
+		//pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, bHasSub++, ResStr(IDS_SUBTITLES_RELOAD));
+		bHasSub++;
 	
 	}
 	

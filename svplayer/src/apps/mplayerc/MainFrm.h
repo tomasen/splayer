@@ -933,6 +933,8 @@ private:
 	/*NEW UI END*/
 	CString fnDelPending;
 public:
+	CString GetAnEasyToUnderstoodSubtitleName(CString szName);
+
 	afx_msg void OnKillFocus(CWnd* pNewWnd);
 	afx_msg void OnChangebackground();
 	afx_msg void OnSubsetfontboth();

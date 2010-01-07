@@ -4719,7 +4719,10 @@ void CMainFrame::SetupEQPersetMenu(){
 void CMainFrame::SetupSVPAudioMenu(){
 	SetupAudioSwitcherSubMenu();
 	SetupNavAudioSubMenu();
-	MenuMerge( &m_audios ,  &m_navaudio );
+	MenuMerge( &m_navaudio ,  &m_audios );
+	m_audios.DestroyMenu();
+	m_audios.Attach(m_navaudio.m_hMenu );
+	
 	SetupAudioDeviceSubMenu();
 	CMenu* pSubMenuAD = &m_audiodevices;
 	if(pSubMenuAD ){
@@ -8699,7 +8702,7 @@ void CMainFrame::OnUpdatePlayAudio(CCmdUI* pCmdUI)
 
 		if(SUCCEEDED(pSS->Info(i, NULL, &flags, NULL, NULL, NULL, NULL, NULL)))
 		{
-			if(flags&AMSTREAMSELECTINFO_EXCLUSIVE) pCmdUI->SetRadio(TRUE);
+			if(flags&AMSTREAMSELECTINFO_EXCLUSIVE) pCmdUI->SetCheck(TRUE);
 			else if(flags&AMSTREAMSELECTINFO_ENABLED) pCmdUI->SetCheck(TRUE);	
 			else pCmdUI->SetCheck(FALSE);
 		}
@@ -13159,7 +13162,7 @@ void CMainFrame::SetupFiltersSubMenu()
 			}
 			EndEnumPins
 
-				CComQIPtr<IAMStreamSelect> pSS = pBF;
+			CComQIPtr<IAMStreamSelect> pSS = pBF;
 			if(pSS)
 			{
 				DWORD nStreams = 0, flags, group, prevgroup = -1;
@@ -13238,6 +13241,48 @@ void CMainFrame::SetupFiltersSubMenu()
 		EndEnumFilters
 	}
 }
+CString CMainFrame::GetAnEasyToUnderstoodAudioStreamName(CString szName)
+{
+	CString szRet, szTransdName;
+	szName.Replace(_T("Audio"), ResStr(IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_AUDIO));
+
+	switch(AfxGetAppSettings().iLanguage)
+	{
+	case 0:
+		if(szName.Find(L"Chinese") >= 0 ){
+			szTransdName = L"中文";
+		}else if(szName.Find(L"English") >= 0 ){
+			szTransdName = L"英文";
+		}else if(szName.Find(L"Japanese") >= 0 ){
+			szTransdName = L"日文";
+		}else if(szName.Find(L"French") >= 0 ){
+			szTransdName = L"法语";
+		}
+		else if(szName.Find(L"Spanish") >= 0 ){
+			szTransdName = L"西班牙语";
+		}
+		else if(szName.Find(L"German") >= 0 ){
+			szTransdName = L"德语";
+		}
+		else if(szName.Find(L"Russian") >= 0 ){
+			szTransdName = L"俄语";
+		}
+		
+		break;
+	default:
+		szName.Replace(_T("Chinese"), ResStr(IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_CHINESE));
+		szName.Replace(_T("Japanese"), ResStr(IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_JAPANESE));
+		szName.Replace(_T("English"), ResStr(IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_ENGLISH));
+
+		break;
+	}
+	if(!szTransdName.IsEmpty()){
+		szRet.Format(L"%s<%s>",szTransdName,szName);
+	}else{
+		szRet = szName;;
+	}
+	return szRet;
+}
 void CMainFrame::SetupAudioSwitcherSubMenu()
 {
 	CMenu* pSub = &m_audios;
@@ -13245,7 +13290,8 @@ void CMainFrame::SetupAudioSwitcherSubMenu()
 	if(!IsMenu(pSub->m_hMenu)) pSub->CreatePopupMenu();
 	else while(pSub->RemoveMenu(0, MF_BYPOSITION));
 
-	
+	int iAudioStreamCount = 0;
+	CString szAudioStreamNameBuff ;
 	m_ssarray.RemoveAll();
 	
 	if(m_iMediaLoadState == MLS_LOADED)
@@ -13260,18 +13306,13 @@ void CMainFrame::SetupAudioSwitcherSubMenu()
 			//if(pSubMenu )
 			//	pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED);
 
-			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPNORMAL, ResStr(IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_DEAULT));
-			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPLEFT,  ResStr(IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_LEFT));
-			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPRIGHT,  ResStr(IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_RIGHT));
-			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPCENTER,  ResStr(IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_CENTER));
-			pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED);
+			CStringArray szaAudioStreamArray;
 
 			DWORD cStreams = 0;
 			if(SUCCEEDED(pSS->Count(&cStreams)) && cStreams > 0)
 			{
-				pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, id++, ResStr(IDS_MENU_ITEM_AUDIO_SETTING));
-				pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED);
-
+				
+				id++;
 				for(int i = 0; i < (int)cStreams; i++)
 				{
 					WCHAR* pName = NULL;
@@ -13280,14 +13321,28 @@ void CMainFrame::SetupAudioSwitcherSubMenu()
 
 					CString name(pName);
 					name.Replace(_T("&"), _T("&&"));
-
-					pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, id++, name);
+					
+					
+					szaAudioStreamArray.Add( name );
 
 					CoTaskMemFree(pName);
 				}
-			}
-			pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED);
 
+				if(szaAudioStreamArray.GetCount() > 1){
+					for(int i = 0; i < szaAudioStreamArray.GetCount() ; i++){
+						szAudioStreamNameBuff.Format(ResStr(IDS_MENU_ITEM_AUDIO_STREAM_NAME), ++iAudioStreamCount, GetAnEasyToUnderstoodAudioStreamName(szaAudioStreamArray.GetAt(i)) );
+
+						pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, id++, szAudioStreamNameBuff);
+					}
+					pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED);
+				}else if(szaAudioStreamArray.GetCount() == 1){
+					id++;
+				}
+		
+			}
+
+			szaAudioStreamArray.RemoveAll();
+			CUIntArray sziAudioStreamArray;
 			BeginEnumFilters(pGB, pEF, pBF)
 			{
 				
@@ -13348,15 +13403,15 @@ void CMainFrame::SetupAudioSwitcherSubMenu()
 
 						CString name(wname);
 						name.Replace(_T("&"), _T("&&"));
-						if(name.Find(_T("Audio")) == 0 || name.Find(_T("声")) == 0 || name.Find(_T("音")) == 0 ){
-							name.Replace(_T("Audio"), ResStr(IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_AUDIO));
-							name.Replace(_T("Chinese"), ResStr(IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_CHINESE));
-							name.Replace(_T("Japanese"), ResStr(IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_JAPANESE));
-							name.Replace(_T("English"), ResStr(IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_ENGLISH));
-							CString szLog;
-							szLog.Format(L" Audio Menu %d %s", idl, name);
+						if( name.Find(_T("A")) == 0  || name.Find(_T("声")) == 0 || name.Find(_T("音")) == 0 ){
+							
+							//CString szLog;
+							//szLog.Format(L" Audio Menu %d %s", idl, name);
 							//SVP_LogMsg(szLog);
-							pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, idl, name) ;
+							szaAudioStreamArray.Add( name );
+							sziAudioStreamArray.Add( idl );
+							//szAudioStreamNameBuff.Format(ResStr(IDS_MENU_ITEM_AUDIO_STREAM_NAME), ++iAudioStreamCount, GetAnEasyToUnderstoodAudioStreamName(name) );
+							//pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, idl,szAudioStreamNameBuff) ;
 							
 						}
 						idl++;
@@ -13371,6 +13426,21 @@ void CMainFrame::SetupAudioSwitcherSubMenu()
 
 			}
 			EndEnumFilters
+
+			if(szaAudioStreamArray.GetCount() > 1){
+				for(int i = 0; i < szaAudioStreamArray.GetCount(); i++){
+					szAudioStreamNameBuff.Format(ResStr(IDS_MENU_ITEM_AUDIO_STREAM_NAME), ++iAudioStreamCount, GetAnEasyToUnderstoodAudioStreamName(szaAudioStreamArray.GetAt(i)) );
+					pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, sziAudioStreamArray.GetAt(i),szAudioStreamNameBuff) ;
+				}
+				pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED); 
+			}
+			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPNORMAL, ResStr(IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_DEAULT));
+			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPLEFT,  ResStr(IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_LEFT));
+			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPRIGHT,  ResStr(IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_RIGHT));
+			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPCENTER,  ResStr(IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_CENTER));
+			pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED);
+			pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_AUDIO_SUBITEM_START, ResStr(IDS_MENU_ITEM_AUDIO_SETTING));
+
 		}
 	}
 
@@ -13433,9 +13503,9 @@ void CMainFrame::OnUpdateChannalMapMenu(CCmdUI *pCmdUI){
 	//pCmdUI->m_nID
 	int iAudioChannelMaping  = (pCmdUI->m_nID - IDS_AUDIOCHANNALMAPNORMAL);
 	if( m_iAudioChannelMaping == iAudioChannelMaping ){
-		pCmdUI->SetCheck(TRUE);
+		pCmdUI->SetRadio(TRUE);
 	}else{
-		pCmdUI->SetCheck(FALSE);
+		pCmdUI->SetRadio(FALSE);
 	}
 	if (iAudioChannelMaping > 1){
 		CComQIPtr<IAudioSwitcherFilter>  pSS = FindFilter(__uuidof(CAudioSwitcherFilter), pGB);
@@ -13728,7 +13798,7 @@ void CMainFrame::SetupNavAudioSubMenu()
 
 			str.Replace(_T("&"), _T("&&"));
 
-			pSub->AppendMenu(flags, id++, str);
+			pSub->AppendMenu(flags, id++, GetAnEasyToUnderstoodAudioStreamName(str));
 		}
 	}
 }

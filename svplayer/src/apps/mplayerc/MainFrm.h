@@ -934,6 +934,7 @@ private:
 	CString fnDelPending;
 public:
 	CString GetAnEasyToUnderstoodSubtitleName(CString szName);
+	CString GetAnEasyToUnderstoodAudioStreamName(CString szName);
 
 	afx_msg void OnKillFocus(CWnd* pNewWnd);
 	afx_msg void OnChangebackground();

@@ -72,7 +72,7 @@
 		//	SVP_LogMsg6("lalala");
 			return AfxGetApp()->GetProfileInt(lpszSection,lpszEntry,nDefault);
 		}else{
-			return 0;
+			return nDefault;
 		}
 
 		return nDefault;
@@ -121,7 +121,7 @@
 			if(vdata.at(0).length() > 1){
 				return  svpTool.UTF8ToCString((char*)vdata.at(0).c_str(), vdata.at(0).length()-1);
 			}else{
-				return _T("");
+				return CString(lpszDefault);
 			}
 
 		}else{

@@ -156,13 +156,13 @@ HRESULT CAviSplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 #ifdef REGISTER_FILTER
 		AFX_MANAGE_STATE(AfxGetStaticModuleState());
 #endif
-		bool fHideWarning = !!AfxGetMyApp()->GetProfileInt(_T("Settings"), _T("HideAviSplitterWarning"), TRUE);
+		bool fHideWarning = TRUE;//!!AfxGetMyApp()->GetProfileInt(_T("Settings"), _T("HideAviSplitterWarning"), TRUE);
 
 		if(!fHideWarning && !dynamic_cast<CAviSourceFilter*>(this) || fShiftDown)
 		{
 			CAviReportWnd wnd;
 			fHideWarning = wnd.DoModal(m_pFile, fHideWarning, fShowWarningText);
-			AfxGetMyApp()->WriteProfileInt(_T("Settings"), _T("HideAviSplitterWarning"), fHideWarning);
+			//AfxGetMyApp()->WriteProfileInt(_T("Settings"), _T("HideAviSplitterWarning"), fHideWarning);
 		}
 
 		//if(fShowWarningText) hr = E_FAIL;

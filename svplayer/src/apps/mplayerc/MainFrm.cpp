@@ -14761,7 +14761,7 @@ void CMainFrame::SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle)
 			CoTaskMemFree(pName);
 		}
 
-		szBuf.Format(ResStr(IDS_OSD_MSG_CURRENT_2NDSUB_INFO), subName, pSubStream->sub_delay_ms, s.nVerPos2);
+		szBuf.Format(ResStr(IDS_OSD_MSG_CURRENT_2NDSUB_INFO), GetAnEasyToUnderstoodSubtitleName(subName), pSubStream->sub_delay_ms, s.nVerPos2);
 		SVP_LogMsg(szBuf);
 		SendStatusMessage(szBuf , 4000 );
 		m_pCAP->SetSubPicProvider2(CComQIPtr<ISubPicProvider>(pSubStream));
@@ -14887,7 +14887,7 @@ void CMainFrame::SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle)
 		}
 		
 		
-		szBuf.Format(ResStr(IDS_OSD_MSG_CURRENT_MAINSUB_INFO), subName,  pSubStream->sub_delay_ms,s.nVerPos);
+		szBuf.Format(ResStr(IDS_OSD_MSG_CURRENT_MAINSUB_INFO), GetAnEasyToUnderstoodSubtitleName( subName),  pSubStream->sub_delay_ms,s.nVerPos);
 		SVP_LogMsg(szBuf);
 		SendStatusMessage(szBuf , 4000 );
 		m_pCAP->SetSubPicProvider(CComQIPtr<ISubPicProvider>(pSubStream));

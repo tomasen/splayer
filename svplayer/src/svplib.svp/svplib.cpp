@@ -5,6 +5,7 @@
 #include <shlobj.h>
 #include <streams.h>
 #include <afxtempl.h>
+#include <errno.h>
 #include "..\apps\mplayerc\mplayerc.h"
 
 static CAtlList<CString> * szGStatMsg = NULL;
@@ -278,7 +279,7 @@ void SVP_LogMsg(CString logmsg, int level){
 	CStdioFile f;
 	CSVPToolBox svpToolBox;
 	CString szLogPath = svpToolBox.GetPlayerPath(_T("SVPDebug.log"));
-	if(f.Open(szLogPath, CFile::modeCreate | CFile::modeWrite | CFile::modeNoTruncate | CFile::typeBinary))
+	if(f.Open(szLogPath, CFile::modeCreate | CFile::modeWrite | CFile::modeNoTruncate | CFile::typeText /*typeBinary*/))
 	{
 		f.SeekToEnd();
 		CString szLog;
@@ -377,8 +378,9 @@ BOOL SVP_ForbidenCoreAVCTrayIcon(){
 	PathAddBackslash(szPath); 
 	PathAppend(szPath, _T("coreavc.ini"));
 
-	FILE*   fileHandle = _wfopen(  szPath , _T("r+") );
-	if(fileHandle){
+	FILE* fileHandle;
+	errno_t reterrno = _wfopen_s( &fileHandle, szPath , _T("r+") );
+	if(reterrno == 0){
 		char szStr[28093];
 		int iRead = fread_s(szStr, 28093, sizeof( char ), 28093, fileHandle);
 		CStringA szBuf(szStr , iRead) ;

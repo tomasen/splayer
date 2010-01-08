@@ -84,7 +84,8 @@ CString CSVPhash::ComputerFileHash(CString szFilePath)
 		
 		ArchiveDataEx.ArcNameW = (LPTSTR)(LPCTSTR)svpRar.m_fnRAR;
 		char fnA[MAX_PATH];
-		if(wcstombs(fnA, svpRar.m_fnRAR, svpRar.m_fnRAR.GetLength()+1) == -1) fnA[0] = 0;
+		size_t ConvertedChars;
+		if(wcstombs_s(&ConvertedChars, fnA, MAX_PATH, svpRar.m_fnRAR, svpRar.m_fnRAR.GetLength()+1) == -1) fnA[0] = 0;
 		ArchiveDataEx.ArcName = fnA;
 
 		ArchiveDataEx.OpenMode = RAR_OM_EXTRACT;

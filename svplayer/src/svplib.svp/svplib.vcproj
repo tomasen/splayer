@@ -238,6 +238,10 @@
 				RelativePath="..\svplib\SVPToolBox.h"
 				>
 			</File>
+			<File
+				RelativePath="..\svplib\targetver.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"

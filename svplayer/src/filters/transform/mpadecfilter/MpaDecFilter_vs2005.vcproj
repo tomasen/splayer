@@ -378,7 +378,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="libflac/include;../mpcvideodec\ffmpeg\libavcodec;../mpcvideodec/ffmpeg;../../../../include;..\..\BaseClasses"
-				PreprocessorDefinitions="WIN32;_DEBUG"
+				PreprocessorDefinitions="WIN32;_DEBUG;FLAC__NO_DLL;FLAC__NO_DLL"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"

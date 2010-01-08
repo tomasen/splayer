@@ -99,10 +99,10 @@ static inline float EqzConvertdB( float db )
 	**/
 
 	if( db < -20.0 )
-		db = -20.0;
+		db = -20.0f;
 	else if(  db > 20.0 )
-		db = 20.0;
-	return EQZ_IN_FACTOR * ( pow( 10, db / 20.0 ) - 1.0 );
+		db = 20.0f;
+	return EQZ_IN_FACTOR * ( pow( 10, db / 20.0f ) - 1.0f );
 }
 int CSVPEqualizer::EqzInitBoth(float pEQBandControlCurrent[MAX_EQ_BAND])
 {

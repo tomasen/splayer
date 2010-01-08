@@ -35,7 +35,8 @@
 #endif
 #endif
 
-#define DNew new
+//#define DNew new
+#include "SharedInclude.h"
 
 #include "NullRenderers.h"
 #include "HdmvClipInfo.h"

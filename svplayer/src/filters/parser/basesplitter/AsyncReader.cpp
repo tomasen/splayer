@@ -193,7 +193,7 @@ UINT CAsyncFileReader::Read( void* lpBuf,	UINT nCount ){
 			}
 			catch(...)
 			{
-
+				return 0;
 			}
 		
 	}else{

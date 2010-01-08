@@ -598,7 +598,7 @@ bool CAviSplitterFilter::DemuxLoop()
 							m_pFile->Seek(llGuessPos-(itry>>1));
 						}
 						
-						S_OK == m_pFile->Read(id);
+						/*S_OK ==*/ m_pFile->Read(id);
 						if(id != 0 && minTrack == TRACKNUM(id)){
 							if(S_OK == m_pFile->Read(size) && size > 0 && s->GetChunkSize(size) == expectedsize){
 								SVP_LogMsg5(L"fChunkHdr2 tried %d"  , itry);

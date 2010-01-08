@@ -388,11 +388,6 @@
                                             <ProgId Id="MpcMxVideo.Mpeg4V2Decoder" Description="Mpc Mpeg4V2Decoder Class" />
                                         </ProgId>
                                     </Class>
-                                    <Class Id="{E5960BC4-A76B-4211-BEEC-9AEE2AF8AAE6}" Context="InprocServer32" Description="Mpc XvidDecoder Class" ThreadingModel="both">
-                                        <ProgId Id="MpcMxVideo.XvidDecoder.1" Description="Mpc XvidDecoder Class">
-                                            <ProgId Id="MpcMxVideo.XvidDecoder" Description="Mpc XvidDecoder Class" />
-                                        </ProgId>
-                                    </Class>
                                 </AppId>
                             </TypeLib>
                         </File>

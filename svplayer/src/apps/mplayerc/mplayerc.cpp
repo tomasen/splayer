@@ -1667,11 +1667,15 @@ for(int i = 0; i <= 30; i++){
 		//RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mxrender.dll")) );
 		//SVP_LogMsg5(L"mpc_mxrender done");
 
+		if( RegOpenKey(HKEY_CLASSES_ROOT , _T("MpcMxVideo.XvidDecoder.1") , &fKey ) != ERROR_SUCCESS){
+			RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mxvideo.dll")) );
+		}
+
 		if( RegOpenKey(HKEY_CLASSES_ROOT , _T("Mpcwtlvcl.VideoFrame") , &fKey ) != ERROR_SUCCESS){
 			
 				RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mdssockc.dll")) );
 				RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mxaudio.dll")) );
-				RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mxvideo.dll")) );
+				
 				RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mxscreen.dll")) );
 				RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mxshbasu.dll")) );
 				RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mxshmaiu.dll")) );
@@ -2314,6 +2318,7 @@ int CMPlayerCApp::ExitInstance()
 	CSVPToolBox svpToolBox;
 	UnRegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mtcontain.dll")) );
 	UnRegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mxrender.dll")) );
+	UnRegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mxvideo.dll")) );
 	OleUninitialize();
 
 	int ret = CWinApp::ExitInstance();

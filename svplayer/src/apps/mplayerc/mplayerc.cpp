@@ -88,7 +88,7 @@ static LONG WINAPI  DebugMiniDumpFilter( struct _EXCEPTION_POINTERS *pExceptionI
 			TCHAR szScratch [_MAX_PATH];
 
 
-			int itimestamp = time(NULL);
+			int itimestamp = (int)time(NULL);
 			TCHAR szTimestamp[_MAX_PATH];
 			_itow_s(itimestamp, szTimestamp,_MAX_PATH, 36);
 
@@ -217,7 +217,7 @@ static LPCTSTR DebugMiniDumpProcess( HANDLE pProcess, DWORD pId ,DWORD dwTid)
 			// work out a good place for the dump file
 			_tgetcwd(szDumpPath,_MAX_PATH);
 			_tcscat( szDumpPath, _T("\\"));
-			int itimestamp = time(NULL);
+			int itimestamp = (int)time(NULL);
 			TCHAR szTimestamp[_MAX_PATH];
 			_itow_s(itimestamp, szTimestamp,_MAX_PATH, 36);
 
@@ -597,9 +597,9 @@ public:
 		
 			DWORD             dwHandle;
 			UINT              dwLen;
-			UINT              uLen;
+//			UINT              uLen;
 			UINT              cbTranslate = sizeof(VS_FIXEDFILEINFO);
-			LPVOID            lpBuffer;
+//			LPVOID            lpBuffer;
 
 			dwLen  = GetFileVersionInfoSize(path, &dwHandle);
 
@@ -2166,7 +2166,7 @@ BOOL CMPlayerCApp::InitInstance()
 		{
 			if(!mf[i].GetLabel().CompareNoCase(_T("Image file"))) continue;
 			if(!mf[i].GetLabel().CompareNoCase(_T("Subtitle file"))) continue;
-			if(!mf[i].GetLabel().Find(_T("Playlist file")) >= 0) continue;
+			if(mf[i].GetLabel().Find(_T("Playlist file")) == -1) continue;
 			if(mf[i].IsAudioOnly() < 0) continue;
 				
 			int fAudioOnly = mf[i].IsAudioOnly();
@@ -3099,55 +3099,55 @@ void CMPlayerCApp::Settings::InitEQPerset(){
 	//init eq perset
 
 	INITEQPERSET(eqPerset[1] , ResStr(IDS_EQ_PERSET_NAME_CLASSICAL), 10, 12.0,
-		-1.11022e-15, -1.11022e-15, -1.11022e-15, -1.11022e-15, -1.11022e-15, -1.11022e-15, -7.2, -7.2, -7.2, -9.6  );
+		-1.11022e-15f, -1.11022e-15f, -1.11022e-15f, -1.11022e-15f, -1.11022e-15f, -1.11022e-15f, -7.2f, -7.2f, -7.2f, -9.6f  );
 
 	INITEQPERSET(eqPerset[2] , ResStr(IDS_EQ_PERSET_NAME_CLUB), 10, 6.0,
-		-1.11022e-15, -1.11022e-15, 8, 5.6, 5.6, 5.6, 3.2, -1.11022e-15, -1.11022e-15, -1.11022e-15  );
+		-1.11022e-15f, -1.11022e-15f, 8.0f, 5.6f, 5.6f, 5.6f, 3.2f, -1.11022e-15f, -1.11022e-15f, -1.11022e-15f  );
 
 	INITEQPERSET(eqPerset[3] , ResStr(IDS_EQ_PERSET_NAME_DANCE), 10, 5.0,
-		9.6, 7.2, 2.4, -1.11022e-15, -1.11022e-15, -5.6, -7.2, -7.2, -1.11022e-15, -1.11022e-15  );
+		9.6f, 7.2f, 2.4f, -1.11022e-15f, -1.11022e-15f, -5.6f, -7.2f, -7.2f, -1.11022e-15f, -1.11022e-15f  );
 
 	INITEQPERSET(eqPerset[4] , ResStr(IDS_EQ_PERSET_NAME_FULLBASS), 10, 5.0,
-		-8, 9.6, 9.6, 5.6, 1.6, -4, -8, -10.4, -11.2, -11.2   );
+		-8.0f, 9.6f, 9.6f, 5.6f, 1.6f, -4.0f, -8.0f, -10.4f, -11.2f, -11.2f   );
 
 	INITEQPERSET(eqPerset[5] , ResStr(IDS_EQ_PERSET_NAME_FULLBASSTREBLE), 10, 4.0,
-		7.2, 5.6, -1.11022e-15, -7.2, -4.8, 1.6, 8, 11.2, 12, 12  );
+		7.2f, 5.6f, -1.11022e-15f, -7.2f, -4.8f, 1.6f, 8.0f, 11.2f, 12.0f, 12.0f  );
 
 	INITEQPERSET(eqPerset[6] , ResStr(IDS_EQ_PERSET_NAME_FULLTREBLE), 10, 3.0,
-		-9.6, -9.6, -9.6, -4, 2.4, 11.2, 16, 16, 16, 16.8  );
+		-9.6f, -9.6f, -9.6f, -4.0f, 2.4f, 11.2f, 16.0f, 16.0f, 16.0f, 16.8f  );
 
 	INITEQPERSET(eqPerset[7] , ResStr(IDS_EQ_PERSET_NAME_HEADPHONES), 10, 4.0,
-		4.8, 11.2, 5.6, -3.2, -2.4, 1.6, 4.8, 9.6, 12.8, 14.4  );
+		4.8f, 11.2f, 5.6f, -3.2f, -2.4f, 1.6f, 4.8f, 9.6f, 12.8f, 14.4f  );
 
 	INITEQPERSET(eqPerset[8] , ResStr(IDS_EQ_PERSET_NAME_LARGEHALL), 10, 5.0,
-		10.4, 10.4, 5.6, 5.6, -1.11022e-15, -4.8, -4.8, -4.8, -1.11022e-15, -1.11022e-15  );
+		10.4f, 10.4f, 5.6f, 5.6f, -1.11022e-15f, -4.8f, -4.8f, -4.8f, -1.11022e-15f, -1.11022e-15f  );
 
 	INITEQPERSET(eqPerset[9] , ResStr(IDS_EQ_PERSET_NAME_LIVE), 10, 7.0,
-		-4.8, -1.11022e-15, 4, 5.6, 5.6, 5.6, 4, 2.4, 2.4, 2.4  );
+		-4.8f, -1.11022e-15f, 4.0f, 5.6f, 5.6f, 5.6f, 4.0f, 2.4f, 2.4f, 2.4f  );
 
 	INITEQPERSET(eqPerset[10] , ResStr(IDS_EQ_PERSET_NAME_PARTY), 10, 6.0,
-		7.2, 7.2, -1.11022e-15, -1.11022e-15, -1.11022e-15, -1.11022e-15, -1.11022e-15, -1.11022e-15, 7.2, 7.2  );
+		7.2f, 7.2f, -1.11022e-15f, -1.11022e-15f, -1.11022e-15f, -1.11022e-15f, -1.11022e-15f, -1.11022e-15f, 7.2f, 7.2f  );
 
 	INITEQPERSET(eqPerset[11] , ResStr(IDS_EQ_PERSET_NAME_POP), 10, 6.0,
-		-1.6, 4.8, 7.2, 8, 5.6, -1.11022e-15, -2.4, -2.4, -1.6, -1.6  );
+		-1.6f, 4.8f, 7.2f, 8.0f, 5.6f, -1.11022e-15f, -2.4f, -2.4f, -1.6f, -1.6f  );
 
 	INITEQPERSET(eqPerset[12] , ResStr(IDS_EQ_PERSET_NAME_REGGAE), 10, 8.0,
-		-1.11022e-15, -1.11022e-15, -1.11022e-15, -5.6, -1.11022e-15, 6.4, 6.4, -1.11022e-15, -1.11022e-15, -1.11022e-15  );
+		-1.11022e-15f, -1.11022e-15f, -1.11022e-15f, -5.6f, -1.11022e-15f, 6.4f, 6.4f, -1.11022e-15f, -1.11022e-15f, -1.11022e-15f  );
 
 	INITEQPERSET(eqPerset[13] , ResStr(IDS_EQ_PERSET_NAME_ROCK), 10, 5.0,
-		8, 4.8, -5.6, -8, -3.2, 4, 8.8, 11.2, 11.2, 11.2  );
+		8.0f, 4.8f, -5.6f, -8.0f, -3.2f, 4.0f, 8.8f, 11.2f, 11.2f, 11.2f  );
 
 	INITEQPERSET(eqPerset[14] , ResStr(IDS_EQ_PERSET_NAME_SKA), 10, 6.0,
-		-2.4, -4.8, -4, -1.11022e-15, 4, 5.6, 8.8, 9.6, 11.2, 9.6  );
+		-2.4f, -4.8f, -4.0f, -1.11022e-15f, 4.0f, 5.6f, 8.8f, 9.6f, 11.2f, 9.6f  );
 
 	INITEQPERSET(eqPerset[15] , ResStr(IDS_EQ_PERSET_NAME_SOFT), 10, 5.0,
-		4.8, 1.6, -1.11022e-15, -2.4, -1.11022e-15, 4, 8, 9.6, 11.2, 12  );
+		4.8f, 1.6f, -1.11022e-15f, -2.4f, -1.11022e-15f, 4.0f, 8.0f, 9.6f, 11.2f, 12.0f  );
 
 	INITEQPERSET(eqPerset[16] , ResStr(IDS_EQ_PERSET_NAME_SOFTROCK), 10, 7.0,
-		4, 4, 2.4, -1.11022e-15, -4, -5.6, -3.2, -1.11022e-15, 2.4, 8.8  );
+		4.0f, 4.0f, 2.4f, -1.11022e-15f, -4.0f, -5.6f, -3.2f, -1.11022e-15f, 2.4f, 8.8f  );
 
 	INITEQPERSET(eqPerset[17] , ResStr(IDS_EQ_PERSET_NAME_TECHNO), 10, 5.0,
-		8, 5.6, -1.11022e-15, -5.6, -4.8, -1.11022e-15, 8, 9.6, 9.6, 8.8  );
+		8.0f, 5.6f, -1.11022e-15f, -5.6f, -4.8f, -1.11022e-15f, 8.0f, 9.6f, 9.6f, 8.8f  );
 
 	POSITION pos = eqPerset.GetStartPosition();
 	while(pos)
@@ -3188,9 +3188,9 @@ void CMPlayerCApp::Settings::InitChannelMap()
 					}else if( iInputChannelCount > 4 && iChannelID == 2){ //中置声道
 						fTmpVal = 2.0;
 					}else if( iInputChannelCount > 5 && iChannelID == (iInputChannelCount - 1) ){ //重低音 降低
-						fTmpVal = 0.9;
+						fTmpVal = 0.9f;
 					}else if(iInputChannelCount > 2 && iChannelID >= 2){ //除中置 重低音外的声道
-						fTmpVal = 0.9;
+						fTmpVal = 0.9f;
 					}
 					if(iOutputChannelCount == 1){  //输出至单声道
 						fTmpVal = fTmpVal;
@@ -4171,7 +4171,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 
 		lHardwareDecoderFailCount = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_HARDWAREDECODERFAILCOUNT), 0);
 
-		bDisableCenterBigOpenBmp = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DISABLECENTERBIGOPENBMP), 0);
+		bDisableCenterBigOpenBmp = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DISABLECENTERBIGOPENBMP), 0) > 0;
 
 		CSVPToolBox svptoolbox;
 		fForceRGBrender = 0;
@@ -4186,8 +4186,8 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		}
 
 
-		BOOL bDefaultVSync = false;
-		BOOL bDefaultGothSync = false;
+		bool bDefaultVSync = false;
+		bool bDefaultGothSync = false;
 		if(!bAeroGlassAvalibility ){//&& !useGPUAcel
 			//HINSTANCE hEVR = LoadLibrary(_T("evr.dll"));
 			//if(hEVR){
@@ -4270,12 +4270,12 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		useGPUCUDA = SVP_SetCoreAvcCUDA(useGPUCUDA);
 
 		bNotAutoCheckSpeaker = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_NOTAUTOCHECKSPEAKER), 0);
-		fCustomSpeakers = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_FCUSTOMSPEAKERS), 0);
+		fCustomSpeakers = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_FCUSTOMSPEAKERS), 0) >0;
 		
 		
 		SVPSubStoreDir = pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SVPSUBSTOREDIR), _T(""));
 
-		bDontNeedSVPSubFilter = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DONTNEEDSVPSUBFILTER), 0);
+		bDontNeedSVPSubFilter = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DONTNEEDSVPSUBFILTER), 0) >0;
 
 		fBUltraFastMode = 0;// !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_ULTRAFAST), 1);
 		autoDownloadSVPSub = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUTODOWNLAODSVPSUB), 1);
@@ -4302,7 +4302,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		fShowBarsWhenFullScreen = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_FULLSCREENCTRLS), 1);
 		nShowBarsWhenFullScreenTimeOut = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_FULLSCREENCTRLSTIMEOUT), 0);
 
-		fFasterSeeking = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_FASTERSEEKING), 1);
+		fFasterSeeking = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_FASTERSEEKING), 1) >0;
 		
 		if(pApp->GetProfileBinary(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_FULLSCREENRES), &ptr, &len))
 		{
@@ -4355,8 +4355,8 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		subdefstyle2 <<= pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SPLOGFONT2), ResStr(IDS_SETTING_DEFAULT_2ND_SUBTITLE_FONT_STYLE));
 
 		CheckSVPSubExts = _T(" .ts; .avi; .mkv;");
-		fbSmoothMutilMonitor = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SMOOTHMUTILMONITOR), 1);
-		bShowControlBar = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SHOWCONTROLBAR), 0);
+		fbSmoothMutilMonitor = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SMOOTHMUTILMONITOR), 1) >0;
+		bShowControlBar = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SHOWCONTROLBAR), 0) >0;
 
 		m_RenderSettings.fTargetSyncOffset = (float)_tstof(pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VSYNC_TARGETOFFSET), _T("1.85")));
 
@@ -4372,7 +4372,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		dGSubFontRatio		= (float)_tstof(pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_GLOBAL_SUBFONTRATIO),	_T("1.0")));
 
 		
-		bNotChangeFontToYH = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_NOTCHANGEFONTTOYH), 0);
+		bNotChangeFontToYH = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_NOTCHANGEFONTTOYH), 0) >0;
 //		disableSmartDrag = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DISABLESMARTDRAG),  -1 );
 		bDisableEVR = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DISABLE_EVR), 0);
 		bUseWaveOutDeviceByDefault = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEWAVEOUTDEVICEBYDEFAULT), 0);
@@ -4465,7 +4465,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		fUseInternalTSSpliter = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEINTERNALTSSPLITER), 0);
 
 
-		bHasCUDAforCoreAVC = svptoolbox.CanUseCUDAforCoreAVC();
+		bHasCUDAforCoreAVC = (svptoolbox.CanUseCUDAforCoreAVC() == TRUE);
 		//bSupportFFGPU = svptoolbox.SupportFFGP
 
 		CWinThread* th_InitSettingInstance = AfxBeginThread( Thread_AppSettingLoadding, this, THREAD_PRIORITY_LOWEST , 0, CREATE_SUSPENDED);
@@ -5729,14 +5729,14 @@ bool CMPlayerCApp::HasEVRSupport(){
 	if(m_bHasEVRSupport < 0 ){
 		m_bHasEVRSupport = (bool)( LoadLibrary (L"dxva2.dll") &&  LoadLibrary (L"evr.dll") );
 	}
-	return m_bHasEVRSupport;
+	return m_bHasEVRSupport > 0;
 }
 bool CMPlayerCApp::CanUseCUDA(){
 	if(m_bCanUseCUDA < 0 ){
 		CSVPToolBox svpTool;
 		m_bCanUseCUDA = svpTool.CanUseCUDAforCoreAVC() && svpTool.ifFileExist( svpTool.GetPlayerPath(_T("codecs\\CoreAVCDecoder.ax")) );
 	}
-	return m_bCanUseCUDA;
+	return m_bCanUseCUDA > 0;
 }
 
 LPCTSTR CMPlayerCApp::GetSatelliteDll(int nLanguage)
@@ -5852,7 +5852,7 @@ bool CMPlayerCApp::IsVista()
 
 	}
 	
-	return m_isVista;
+	return m_isVista>0;
 }
 
 bool CMPlayerCApp::IsVSFilterInstalled()

@@ -5939,7 +5939,7 @@ void CMainFrame::OnDropFiles(HDROP hDropInfo)
 	if(!bHasForlder){
 		if(sl.IsEmpty() ){
 
-			if(bHasSubAdded && m_pSubStreams.GetCount() > 0);
+			if(bHasSubAdded && m_pSubStreams.GetCount() > 0)
 			{
 				SetSubtitle(m_pSubStreams.GetTail());
 				CPath p(lastSubFile);
@@ -10427,7 +10427,7 @@ UINT CMainFrame::GetBottomSubOffset(){
 		m_wndView.GetWindowRect(vr);
 		GetWindowRect(mr);
 		int offset = mr.bottom - vr.bottom;
-		if(offset > 0 && offset < vr.Height());
+		if(offset > 0 && offset < vr.Height())
 			return offset;
 	}
 

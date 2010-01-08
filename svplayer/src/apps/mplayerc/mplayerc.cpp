@@ -3469,15 +3469,15 @@ CString CMPlayerCApp::Settings::GetSVPSubStorePath(){
 	CString StoreDir = SVPSubStoreDir;
 	CSVPToolBox svpTool;
 	if(StoreDir.IsEmpty() || !svpTool.ifDirExist(StoreDir) || !svpTool.ifDirWritable(StoreDir)){
-		StoreDir =  svpTool.GetPlayerPath(_T("SVPSub"));
+		svpTool.GetAppDataPath(StoreDir);
+		CPath tmPath(StoreDir);
+		tmPath.RemoveBackslash();
+		tmPath.AddBackslash();
+		tmPath.Append( _T("SVPSub"));
+		StoreDir = (CString)tmPath;
 		_wmkdir(StoreDir);
 		if(StoreDir.IsEmpty() || !svpTool.ifDirExist(StoreDir) || !svpTool.ifDirWritable(StoreDir)){
-			svpTool.GetAppDataPath(StoreDir);
-			CPath tmPath(StoreDir);
-			tmPath.RemoveBackslash();
-			tmPath.AddBackslash();
-			tmPath.Append( _T("SVPSub"));
-			StoreDir = (CString)tmPath;
+			StoreDir =  svpTool.GetPlayerPath(_T("SVPSub"));
 			_wmkdir(StoreDir);
 			if(StoreDir.IsEmpty() || !svpTool.ifDirExist(StoreDir) || !svpTool.ifDirWritable(StoreDir)){
 

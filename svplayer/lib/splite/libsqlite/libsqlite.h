@@ -41,7 +41,7 @@ public:
 
 	// Retrieve a string value from INI file or registry.
 	CString GetProfileString(LPCTSTR lpszSection, LPCTSTR lpszEntry,
-		LPCTSTR lpszDefault = NULL);
+		LPCTSTR lpszDefault = NULL, bool fallofftoreg = true);
 
 	// Sets a string value to INI file or registry.
 	BOOL WriteProfileString(LPCTSTR lpszSection, LPCTSTR lpszEntry,
@@ -49,7 +49,7 @@ public:
 
 	// Retrieve an arbitrary binary value from INI file or registry.
 	BOOL GetProfileBinary(LPCTSTR lpszSection, LPCTSTR lpszEntry,
-		LPBYTE* ppData, UINT* pBytes);
+		LPBYTE* ppData, UINT* pBytes, bool fallofftoreg = true);
 
 	// Sets an arbitrary binary value to INI file or registry.
 	BOOL WriteProfileBinary(LPCTSTR lpszSection, LPCTSTR lpszEntry,

@@ -2899,7 +2899,7 @@ STDMETHODIMP CVMR9AllocatorPresenter::AdviseNotify(IVMRSurfaceAllocatorNotify9* 
     return S_OK;
 }
 void CVMR9AllocatorPresenter::ThreadStartPresenting(){
-	//SVP_LogMsg3("StartPresenting Start ");
+	//SVP_LogMsg5(L"StartPresenting Start ");
 
 	CAutoLock threadLock(&m_csTread);
 
@@ -2918,7 +2918,7 @@ void CVMR9AllocatorPresenter::ThreadStartPresenting(){
 
 	//if (m_pRefClock) m_pRefClock->GetTime(&rtEndEst);
 
-	//SVP_LogMsg3("StartPresenting End ");
+	//SVP_LogMsg5(L"StartPresenting End ");
 }
 UINT __cdecl ThreadVMR9AllocatorPresenterStartPresenting( LPVOID lpParam ) 
 { 
@@ -2963,11 +2963,13 @@ STDMETHODIMP CVMR9AllocatorPresenter::StartPresenting(DWORD_PTR dwUserID)
 	}
 	hEventGoth = CreateEvent(NULL, TRUE, FALSE, NULL);
 
-	m_VSyncDetectThread = AfxBeginThread(ThreadVMR9AllocatorPresenterStartPresenting, (LPVOID)this, THREAD_PRIORITY_BELOW_NORMAL, 0, CREATE_SUSPENDED);
-	// a workaround: when you call AfxGetMainWnd in a work thread, you get the windows associated with the thread, not the MainWindow. 
-	// set the m_pMainWnd of the thread object to the MainWindow in the main thread can work around the issue.
-    m_VSyncDetectThread->m_pMainWnd = AfxGetMainWnd();
-    m_VSyncDetectThread->ResumeThread();
+	if(m_dDetectedScanlineTime <= 0.0){
+		m_VSyncDetectThread = AfxBeginThread(ThreadVMR9AllocatorPresenterStartPresenting, (LPVOID)this, THREAD_PRIORITY_BELOW_NORMAL, 0, CREATE_SUSPENDED);
+		// a workaround: when you call AfxGetMainWnd in a work thread, you get the windows associated with the thread, not the MainWindow. 
+		// set the m_pMainWnd of the thread object to the MainWindow in the main thread can work around the issue.
+		m_VSyncDetectThread->m_pMainWnd = AfxGetMainWnd();
+		m_VSyncDetectThread->ResumeThread();
+	}
 
 	return S_OK;
 }

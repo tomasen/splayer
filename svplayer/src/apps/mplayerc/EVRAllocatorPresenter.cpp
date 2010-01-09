@@ -1048,15 +1048,26 @@ HRESULT CEVRAllocatorPresenter::CreateProposedOutputType(IMFMediaType* pMixerTyp
 		m_pMediaType->SetBlob(MF_MT_GEOMETRIC_APERTURE, (UINT8*)&Area, sizeof(MFVideoArea));
 	}
 
+	//SVP_LogMsg6("CreateProposedOutputType %d %d %d %d ", m_AspectRatio.cx , m_AspectRatio.cy, VideoFormat->videoInfo.dwWidth, VideoFormat->videoInfo.dwHeight );
+	if(min(m_AspectRatio.cx, m_AspectRatio.cy) <= 0){
+		m_AspectRatio.cx = m_AspectRatio.cy = 1;
+	}
 	m_AspectRatio.cx *= VideoFormat->videoInfo.dwWidth;
 	m_AspectRatio.cy *= VideoFormat->videoInfo.dwHeight;
 
 	bool bDoneSomething = true;
 
-	while (bDoneSomething)
+	//如果 m_AspectRatio.cx 为 0 会无限循环
+	for(int k = 0; k < 100; k++)
 	{
+		if(!bDoneSomething){
+			break;
+		}
 		bDoneSomething = false;
 		INT MinNum = min(m_AspectRatio.cx, m_AspectRatio.cy);
+		if(MinNum < 2){
+			break;
+		}
 		INT i;
 		for (i = 2; i < MinNum+1; ++i)
 		{
@@ -1071,6 +1082,7 @@ HRESULT CEVRAllocatorPresenter::CreateProposedOutputType(IMFMediaType* pMixerTyp
 		}
 	}
 
+	
 	pMixerType->FreeRepresentation(FORMAT_MFVideoFormat, (void*)pAMMedia);
 	m_pMediaType->QueryInterface(__uuidof(IMFMediaType), (void**) pType);
 

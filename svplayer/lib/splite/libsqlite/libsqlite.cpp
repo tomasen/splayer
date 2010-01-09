@@ -182,7 +182,7 @@ BOOL  SQLITE3::GetProfileBinary(LPCTSTR lpszSection, LPCTSTR lpszEntry,
                                 LPBYTE* ppData, UINT* pBytes, bool fallofftoreg)
 {
     CString szSQL;
-    szSQL.Format(_T("SELECT vdata FROM settingbin WHERE skey = \"%s\" AND sect = \"%s\" ") , lpszSection, lpszEntry);
+    szSQL.Format(_T("SELECT vdata FROM settingbin2 WHERE skey = \"%s\" AND sect = \"%s\" ") , lpszSection, lpszEntry);
     int iDestLen;
     char* buff = svpTool.CStringToUTF8(szSQL, &iDestLen);
     char *tail;
@@ -224,20 +224,25 @@ BOOL  SQLITE3::WriteProfileBinary(LPCTSTR lpszSection, LPCTSTR lpszEntry,
                                   LPBYTE pData, UINT nBytes)
 {
     CString szSQL;
-    szSQL.Format(_T("REPLACE INTO settingbin  ( skey, sect, vdata ) VALUES (\"%s\" , \"%s\" ,? )"), lpszSection, lpszEntry );
+    szSQL.Format(_T("REPLACE INTO settingbin2  ( skey, sect, vdata ) VALUES (\"%s\" , \"%s\" , ?)"), lpszSection, lpszEntry );
     char *tail;
     sqlite3_stmt *stmt=0;
+	SVP_LogMsg5(L" sqlite bind: %s %d\n", szSQL, nBytes);
 
     int iDestLen, err = 0;
     char* buff = svpTool.CStringToUTF8(szSQL, &iDestLen);
     //exec_sql(buff);
-		sqlite3_prepare_v2(db, buff,strlen(buff)+1, &stmt, (const char**)&tail);
-		sqlite3_bind_blob(stmt, 0, pData,nBytes, SQLITE_TRANSIENT);
-    if(sqlite3_step(stmt)!=SQLITE_DONE) {
-        SVP_LogMsg6("Error message: %s\n", sqlite3_errmsg(db));
-        err = 1;
-    }
-    sqlite3_finalize(stmt); 
+	if( sqlite3_prepare_v2(db, buff,strlen(buff)+1, &stmt, NULL) == SQLITE_OK &&
+		sqlite3_reset(stmt) == SQLITE_OK && sqlite3_bind_blob(stmt, 1, pData,nBytes, NULL) == SQLITE_OK){
+			if(sqlite3_step(stmt)!=SQLITE_DONE) {
+				SVP_LogMsg6("Error message: %s\n", sqlite3_errmsg(db));
+				err = 1;
+			}
+			sqlite3_finalize(stmt); 
+	}else{
+			SVP_LogMsg6("Error message sqlite bind: %s\n", sqlite3_errmsg(db));
+			err = 1;
+	}
 
     free(buff);
     if(err){

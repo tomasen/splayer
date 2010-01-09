@@ -5049,7 +5049,7 @@ void CMainFrame::OnFilePostOpenmedia()
 	SendNowPlayingTomIRC();
 
 	if(m_iPlaybackMode == PM_FILE){
-		if(!s.bDontNeedSVPSubFilter && !m_pCAP && s.iSVPRenderType ){
+		if(!s.bDontNeedSVPSubFilter && !m_pCAP && s.iSVPRenderType && !m_fAudioOnly ){
 			s.iSVPRenderType = 0;
 			SendStatusMessage( ResStr(IDS_OSD_MSG_DEVICE_NOT_SUPPORT_VIDEO_QMODE), 2000);
 		}

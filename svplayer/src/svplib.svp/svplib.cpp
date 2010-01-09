@@ -279,7 +279,8 @@ void SVP_LogMsg(CString logmsg, int level){
 	CStdioFile f;
 	CSVPToolBox svpToolBox;
 	CString szLogPath = svpToolBox.GetPlayerPath(_T("SVPDebug.log"));
-	if(f.Open(szLogPath, CFile::modeCreate | CFile::modeWrite | CFile::modeNoTruncate | CFile::typeText /*typeBinary*/))
+	 /* must use Binary mode because its saved in unicode */
+	if(f.Open(szLogPath, CFile::modeCreate | CFile::modeWrite | CFile::modeNoTruncate | CFile::typeBinary))
 	{
 		f.SeekToEnd();
 		CString szLog;

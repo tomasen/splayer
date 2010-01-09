@@ -227,7 +227,7 @@ BOOL  SQLITE3::WriteProfileBinary(LPCTSTR lpszSection, LPCTSTR lpszEntry,
     szSQL.Format(_T("REPLACE INTO settingbin2  ( skey, sect, vdata ) VALUES (\"%s\" , \"%s\" , ?)"), lpszSection, lpszEntry );
     char *tail;
     sqlite3_stmt *stmt=0;
-	SVP_LogMsg5(L" sqlite bind: %s %d\n", szSQL, nBytes);
+//	SVP_LogMsg5(L" sqlite bind: %s %d\n", szSQL, nBytes);
 
     int iDestLen, err = 0;
     char* buff = svpTool.CStringToUTF8(szSQL, &iDestLen);

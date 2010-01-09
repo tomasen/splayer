@@ -126,6 +126,7 @@ const AMOVIESETUP_MEDIATYPE sudPinTypesIn[] =
 	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_PCM_TWOS},
 	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_WMA2},
 	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_WMA1},
+	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_PCM_ULAW},
 };
 
 #ifdef REGISTER_FILTER
@@ -431,7 +432,8 @@ HRESULT CMpaDecFilter::Receive(IMediaSample* pIn)
 	if(FAILED(hr = pIn->GetPointer(&pDataIn))) return hr;
 
 	long len = pIn->GetActualDataLength();
-
+//SVP_LogMsg6("pIn->GetActualDataLength %d %d %d", len, pDataIn[0], pDataIn[1]);
+	
 	((CDeCSSInputPin*)m_pInput)->StripPacket(pDataIn, len);
 
 	REFERENCE_TIME rtStart = _I64_MIN, rtStop = _I64_MIN;
@@ -511,6 +513,14 @@ HRESULT CMpaDecFilter::Receive(IMediaSample* pIn)
 		hr = ProcessFfmpeg(CODEC_ID_WMAV1);
 	else if(subtype == MEDIASUBTYPE_WMA2)
 		hr = ProcessFfmpeg(CODEC_ID_WMAV2);
+	else if(MEDIASUBTYPE_PCM_ULAW == subtype ){
+		//SVP_LogMsg6("MEDIASUBTYPE_PCM_ULAW");
+		//SVP_LogMsg6("pIn->GetActualDataLength %d %d %d %d", len, pDataIn[0], pDataIn[1], m_buff.GetCount());
+		if(m_buff.GetCount() < 4096){
+			return S_OK;
+		}
+		hr = ProcessFfmpeg(CODEC_ID_PCM_MULAW);
+	}
 	else if(MEDIASUBTYPE_PCM_RAW == subtype ){
 		hr = ProcessPCMU8();
 	}else if(MEDIASUBTYPE_PCM_SOWT == subtype){

@@ -151,8 +151,8 @@ void avcodec_register_all(void)
 
 		REGISTER_DECODER (SMC, smc);
     /* pcm codecs */
-    //REGISTER_DECODER (PCM_ALAW, pcm_alaw);
-    //REGISTER_DECODER (PCM_MULAW,pcm_mulaw);
+    REGISTER_DECODER (PCM_ALAW, pcm_alaw);
+    REGISTER_DECODER (PCM_MULAW,pcm_mulaw);
 
     /* ADPCM codecs */
     REGISTER_DECODER (ADPCM_4XM, adpcm_4xm);

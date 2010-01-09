@@ -13,6 +13,7 @@ CFLAGS+= -I. -I.. -I$(LAVC_DIR) -I$(LAVU_DIR) -I$(LAVF_DIR) -I../codecs -I../img
 CC=gcc
 
 SRCS_C=\
+		$(LAVC_DIR)/pcm.c \
 		$(LAVC_DIR)/atrac.c \
 		$(LAVC_DIR)/smc.c \
 		$(LAVC_DIR)/wma.c \
@@ -175,7 +176,6 @@ SRCS_C=\
 #		$(LAVC_DIR)/mpegaudiodecheader.c \
 #		$(LAVC_DIR)/msvideo1.c \
 #		$(LAVC_DIR)/opt.c \
-#		$(LAVC_DIR)/pcm.c \
 #		$(LAVC_DIR)/png.c \
 #		$(LAVC_DIR)/pngdec.c \
 #		$(LAVC_DIR)/qdm2.c \

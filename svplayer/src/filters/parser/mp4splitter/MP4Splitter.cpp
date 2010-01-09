@@ -543,9 +543,10 @@ HRESULT CMP4SplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 						wfe->cbSize = db.GetDataSize();
 						memcpy(wfe+1, db.GetData(), db.GetDataSize());
 						mts.Add(mt);
+						//SVP_LogMsg6("Audio MP4 Steam %x size %d" , type ,wfe->cbSize);
 						break;
 					}else{
-						//SVP_LogMsg3("Unknow MP4 Steam %x" , type);
+						//SVP_LogMsg6("Unknow MP4 Steam %x" , type);
 					}
 				}
 			}

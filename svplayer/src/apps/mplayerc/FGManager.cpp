@@ -1762,7 +1762,7 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_PCM_RAW);
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_PCM_SOWT);
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_PCM_TWOS);
-	
+	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_PCM_ULAW);
 	m_transform.AddTail(pFGF);
 
 	

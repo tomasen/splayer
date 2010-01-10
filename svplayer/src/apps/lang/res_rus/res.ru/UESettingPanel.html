@@ -408,7 +408,7 @@ UESAPI.prototype = {
 	    this.hideobj("divdxvacompat");
 	    switch (vDecoder){
 	        case "internalGPUdec":
-	        remark = "ffmpeg: ShooterPlayer's built-in hardware acceleration HD decoder. No aspect ratio issues.";
+	        remark = "ffmpeg: встроенный в ShooterPlayer декодер с аппаратным ускорением. Не имеет проблем с соотношением сторон.";
 	        this.showblock("divdxvacompat");
 	        break;
 	        case "PDVDGPUdec":
@@ -824,24 +824,24 @@ a.bigsettingbutton{
 <input type="radio" name="bgpic"  id="custompic" /> <input type="text" id="custompicfile" style="width:200px" /> <input type='button' id="IDBROWERPIC" value="Выбрать" /><br />
 <br />
 <input type="checkbox" id="bgstrech" onclick="ueAPI.OnBgstrechChange(this); "/><label for="bgstrech">Изменить размер окна</label>&nbsp;  &nbsp; &nbsp;
-<span id='keepbgarline' style="display:none"><input type="checkbox" id="keepbgar" /><label for="keepbgar">Сохранить соотношение сторон</label> </span>
+<span id='keepbgarline' style="display:none"><input type="checkbox" id="keepbgar" /><label for="keepbgar">Запоминать соотношение сторон</label> </span>
 <br />
 </fieldset>
 <br />
 <input type="checkbox" id="usenewmenu" /><label for="usenewmenu">Использовать дополнительное меню</label><br />
 <div id='TranscontrolLine'><input type="checkbox" id="usetranscontrol" /><label for="usetranscontrol" title="Enabled by default on Windows 7/Vista
 Requires high performance graphic card on Windows XP">Включить прозрачность</label><br /></div>
-<div id="vistaaeroglass" style="display:none;"><input type="checkbox" id="useaeroglass"  onclick="ueAPI.OnUseAeroGlass(this);" /><label for="useaeroglass">Включить эффект Aero glass</label><br /></div>
-<input type="checkbox" id="chkDisableCenterBigOpenBmp" /><label for="chkDisableCenterBigOpenBmp">Отключить центральную кнопку Открыть файл (использовать двойной клик)</label>
+<div id="vistaaeroglass" style="display:none;"><input type="checkbox" id="useaeroglass"  onclick="ueAPI.OnUseAeroGlass(this);" /><label for="useaeroglass">Включить эффект Aero Glass</label><br /></div>
+<input type="checkbox" id="chkDisableCenterBigOpenBmp" /><label for="chkDisableCenterBigOpenBmp">Отключить кнопку "Открыть файл" (использовать двойной клик)</label>
 <br />Внимание: Большинство настроек на этой странице требует перезапуск.
 </div>
 <div id="generalseting" class="hiddenarea"><br />
-<input type="checkbox" id="chkplayrepeat" /><label for="chkplayrepeat">Повторить</label><br />
-<input type="checkbox" id="chktrayicon" /><label for="chktrayicon">Минимизировать в системную панель</label><br />
+<input type="checkbox" id="chkplayrepeat" /><label for="chkplayrepeat">Повторять</label><br />
+<input type="checkbox" id="chktrayicon" /><label for="chktrayicon">Сворачивать в системную панель</label><br />
 <div style="display:none;"><br />
 <input type="checkbox" id="launchfullscreen" /><label for="launchfullscreen">Начать воспроизведение в полноэкранном режиме</label><br />
-<input type="checkbox" id="chkremwinpos" /><label for="chkremwinpos">Запомнить размер окна и положение</label><br />
-<input type="checkbox" id="chkuseini" /><label for="chkuseini" title="Don't write into registry">Сохранить настройки в INI-файле</label><br /></div>
+<input type="checkbox" id="chkremwinpos" /><label for="chkremwinpos">Запомнить размер и положение окна</label><br />
+<input type="checkbox" id="chkuseini" /><label for="chkuseini" title="Don't write into registry">Хранить настройки в INI-файле</label><br /></div>
 <input type="checkbox" id="chkusesmartdrag" /><label title="SmartDrag allows you to
 1. Resize the playback screen by dragging from the top right corner.
 2. Move the playback screen by dragging from the center.
@@ -867,7 +867,7 @@ May slow down menu openning">Спрятать список приводов CD-R
  Средний: <input type="text" id="stepmed" class='smallstepipt' size="2"/>с
  Большой: <input type="text" id="stepbig" class='smallstepipt' size="2"/>с<br/>
  <input type="checkbox" id="NotUseFasterSeeking" /><label for="NotUseFasterSeeking" title="ShooterPlay uses optimized algorithms by default to reduce image response time during fast forward/rewind
- and fast forward/rewind steppings are also optimzed to apply high speed image response.">Более точная быстрая перемотка(Может увеличить время отклика)</label><br />
+ and fast forward/rewind steppings are also optimzed to apply high speed image response.">Более точная быстрая перемотка (Может увеличить время отклика)</label><br />
 
 </div>
 <div id="videosetting" class="hiddenarea">
@@ -879,7 +879,7 @@ May slow down menu openning">Спрятать список приводов CD-R
  <span id="remarkfordecoder" style="display:none;" ></span><br />
 <div id='GPUAcelLine'><input type="checkbox" id="gpuacelbase" onclick="ueAPI.useGPUAcel(this.checked);" /><label for="gpuacelbase" title="Quality Mode only
 Some 3D games can not be running simultaneously
-">Аппаратное ускорение GPU [<a title='Compatible graphic cards' href='?http://www.shooter.cn/wiki/%E5%B0%84%E6%89%8B%E6%92%AD%E6%94%BE%E5%99%A8_%E9%AB%98%E6%B8%85%E7%A1%AC%E4%BB%B6%E8%A7%A3%E7%A0%81%E7%9A%84%E6%94%AF%E6%8C%81%E5%88%97%E8%A1%A8'><b>?</b></a>]</label> <br />
+">Аппаратное ускорение GPU [<a title='Совместимые видеокарты' href='?http://www.shooter.cn/wiki/%E5%B0%84%E6%89%8B%E6%92%AD%E6%94%BE%E5%99%A8_%E9%AB%98%E6%B8%85%E7%A1%AC%E4%BB%B6%E8%A7%A3%E7%A0%81%E7%9A%84%E6%94%AF%E6%8C%81%E5%88%97%E8%A1%A8'><b>?</b></a>]</label> <br />
 </div>
 <br />
 <div style="display:none;"><input type="checkbox" id="vmr9mixer" onclick="ueAPI.useDX9(this.checked);"  /><label for="vmr9mixer" title="Enable built-in brightness adjustment">Включить встроенные средства регулировки яркости (требуется DX9, не может быть использовано с декодером CoreAVC)</label><br /></div>
@@ -890,7 +890,7 @@ Some 3D games can not be running simultaneously
 ">Исправить горизонтальное разделение экрана ([<a href='?http://blog.splayer.org/?p=1756'><b>?</b></a>])</label><br />
 <i>&nbsp; &nbsp;&nbsp; &nbsp; Внимание: Производитльный режим может исправить горизонтальное разделение экрана</i>
 </div>
-<div id='divdxvacompat' ><input type="checkbox" id="dxvacompat" /><label for="dxvacompat">Увеличить совместимость аппаратного ускорения（Не рекомендуется! Может работать некорректной с медленными видеокартами)</label> <br /></div>
+<div id='divdxvacompat' ><input type="checkbox" id="dxvacompat" /><label for="dxvacompat">Увеличить совместимость аппаратного ускорения（Не рекомендуется! Может работать некорректно с медленными видеокартами)</label> <br /></div>
 <input type="checkbox" id="useffmpegwmv" /><label for="useffmpegwmv">Использовать существующий декодер WMV</label>
 <br />
 <div id='tipforperformancemode' style="display:none;">

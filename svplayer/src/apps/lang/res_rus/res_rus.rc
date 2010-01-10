@@ -488,7 +488,7 @@ END
 
 IDD_PNSPRESET_DLG DIALOGEX 0, 0, 203, 121
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Предстановки Pan&Scan"
+CAPTION "Предустановки Pan&Scan"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     LISTBOX         IDC_LIST1,7,7,123,50,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
@@ -2040,31 +2040,31 @@ BEGIN
     IDS_DVD_INFO_LANG_DIRCTORCOMMENT_NOTMAL " (Director Comment)"
     IDS_DVD_INFO_LANG_DIRECTORCOMMENT_BIG " (Director Comment, Big)"
     IDS_DVD_INFO_LANG_DIRECTORCOMMENT_CHILDREN " (Director Comment, Children)"
-    IDS_MENU_ITEM_DVD_CONTROL "DVD Control"
-    IDS_MENU_ITEM_OPENCDROM "Open CDROM"
+    IDS_MENU_ITEM_DVD_CONTROL "Навигация"
+    IDS_MENU_ITEM_OPENCDROM "Открыть CDROM"
     IDS_MENU_ITEM_FILTERS   "Фильтры"
     IDS_MENU_ITEM_AUDIO     "Звук"
-    IDS_MENU_ITEM_SUBTITLE  "Subtitle"
+    IDS_MENU_ITEM_SUBTITLE  "Субтитры"
 END
 
 STRINGTABLE 
 BEGIN
-    IDS_MENU_ITEM_AUDIOLANGUAGE "Audio Language"
-    IDS_MENU_ITEM_DVDSUBTITLE "Subtitle Language"
-    IDS_MENU_ITEM_DVD_VIDEOANGLE "VideoAngle Switch"
-    IDS_MENU_ITEM_JUMPTO    "Jump To..."
+    IDS_MENU_ITEM_AUDIOLANGUAGE "Язык аудио"
+    IDS_MENU_ITEM_DVDSUBTITLE "Язык субтитров"
+    IDS_MENU_ITEM_DVD_VIDEOANGLE "Переключение угла видео"
+    IDS_MENU_ITEM_JUMPTO    "Перейти..."
     IDS_MENU_ITEM_FAVORITES "Избранное"
-    IDS_MENU_ITEM_SHADER    "Visualizations"
-    IDS_MENU_ITEM_VIDEOFRAME "Video Frame"
-    IDS_MENU_ITEM_PANSCAN   "Adjust Frame"
-    IDS_MENU_ITEM_ASPECTRATIO "Enforce Aspect Ratio"
-    IDS_MENU_ITEM_ZOOM      "Zoom"
-    IDS_MENU_ITEM_PLAYBACK_CONTROL "Playback"
+    IDS_MENU_ITEM_SHADER    "Визуализация"
+    IDS_MENU_ITEM_VIDEOFRAME "Видео кадр"
+    IDS_MENU_ITEM_PANSCAN   "Настроить Pan&Scan"
+    IDS_MENU_ITEM_ASPECTRATIO "Форсировать соотношение сторон"
+    IDS_MENU_ITEM_ZOOM      "Увеличение"
+    IDS_MENU_ITEM_PLAYBACK_CONTROL "Воспроизведение"
     IDS_MENU_ITEM_PLAYLOOP_NORMAL "PlayLoop_Normal"
-    IDS_MENU_ITEM_PLAYLOOP_PLAYLIST "Loop Playlist"
-    IDS_MENU_ITEM_PLAYLOOP_CURRENT "Loop Current Item"
-    IDS_MENU_ITEM_PLAYLOOP_RANDOM_PLAYLIST "Randomly Play from Playlist"
-    IDS_MENU_ITEM_OPEN      "Open"
+    IDS_MENU_ITEM_PLAYLOOP_PLAYLIST "Повторять плейлист"
+    IDS_MENU_ITEM_PLAYLOOP_CURRENT "Повторять текущий"
+    IDS_MENU_ITEM_PLAYLOOP_RANDOM_PLAYLIST "Произвольное воспроизведение из плейлиста"
+    IDS_MENU_ITEM_OPEN      "Открыть"
 END
 
 STRINGTABLE 
@@ -2087,20 +2087,20 @@ BEGIN
     IDS_LOG_MSG_SVPSUB_DOWNLOAD_FAIL "Data errorЈ¬Subtitle download falled"
     IDS_LOG_MSG_SVPSUB_GOTMATCHED_AND_DOWNLOADING 
                             "Subtitle matched, downloading"
-    IDS_MENU_ITEM_PLAYLOOP_NOLOOP "Play All of Playlist"
+    IDS_MENU_ITEM_PLAYLOOP_NOLOOP "Проиграть все из плейлиста"
     IDS_FORMAT_FILE_SIZE    "File Size: %I64d%s (%I64d bytes)\\N"
-    IDS_MENU_ITEM_SETTING   "Setting..."
+    IDS_MENU_ITEM_SETTING   "Настройки..."
 END
 
 STRINGTABLE 
 BEGIN
-    IDS_MENU_ITEM_SUBTITLE_EVERYTHING "Subtitles"
+    IDS_MENU_ITEM_SUBTITLE_EVERYTHING "Субтитры"
     IDS_MENU_ITEM_RECENT_PALYED "Последние проигранные"
-    IDS_MENU_ITEM_NUMOF_SPEAKER "Exist %d Speaker"
-    IDS_MENU_ITEM_NUMOF_SPEAKER_AUTODETECTED "(AutoDetected)"
-    IDS_MENU_ITEM_NUMOF_SPEAKER_MANUAL "(Manual)"
-    IDS_MENU_ITEM_DIGTAL_OUTPUT "DigtalOutput(Fiber/SPDIF/HDMI)"
-    IDS_MENU_ITEM_AUDIO_OUTPUT_TO "Audio Output To..."
+    IDS_MENU_ITEM_NUMOF_SPEAKER "Существующие %d колонки"
+    IDS_MENU_ITEM_NUMOF_SPEAKER_AUTODETECTED "(Автоматически определено)"
+    IDS_MENU_ITEM_NUMOF_SPEAKER_MANUAL "(Вручную)"
+    IDS_MENU_ITEM_DIGTAL_OUTPUT "Цифровой выход(Оптика/SPDIF/HDMI)"
+    IDS_MENU_ITEM_AUDIO_OUTPUT_TO "Выводить звук на..."
     IDS_OSD_MSG_DEVICE_NOT_SUPPORT_VIDEO_QMODE 
                             "You video driver don't support Quality Mode, Please switch to Performance Mode and reopen the file"
     IDS_DIALOG_OPEN_FOLDER_TITLE "Open Folder"
@@ -2123,25 +2123,25 @@ BEGIN
     IDS_UESETTING_PANEL_GPU_ACCEL_MAYBE_NOT_AVALIBLE 
                             "Аппаратное ускорение может не поддерживаться, пожалуйста не проверяйте режим совместимости в настройках..."
     IDS_OSD_MSG_VOLUME_CHANGING_UNSUPPORTED_SINCE_ITS_SPDIF 
-                            " digtal output is not support volume control"
-    IDS_HOTKEY_SWITCH_AUDIO_DEVICE "Quick Switch Audio Device"
-    IDS_MSG_AUDIO_DEVICE_TO_SWITCH_FAILED "No audio device to switch"
-    IDS_MSG_AUDIO_DEVICE_SWITCHED "audio device switch to %s"
-    IDS_MENU_ITEM_AUDIO_SETTING "Audio settings..."
-    IDS_MENU_ITEM_AUDIO_EQ_CONTROL "Equalizer Controller"
-    IDS_MENU_ITEM_AUDIO_CHANNEL_CONTROL "Channel Controller"
+                            " цифровой выход не поддерживает управление громкостью"
+    IDS_HOTKEY_SWITCH_AUDIO_DEVICE "Быстрое переключение аудио устройства"
+    IDS_MSG_AUDIO_DEVICE_TO_SWITCH_FAILED "Отсутствует звуковое устройство для переключения"
+    IDS_MSG_AUDIO_DEVICE_SWITCHED "задействовано аудио устройство %s"
+    IDS_MENU_ITEM_AUDIO_SETTING "Настройки звука..."
+    IDS_MENU_ITEM_AUDIO_EQ_CONTROL "Управление эквалайзером"
+    IDS_MENU_ITEM_AUDIO_CHANNEL_CONTROL "Управление каналами"
     IDS_OSD_MSG_ONLY_WORK_WHEN_AUDIO_LOADED 
-                            "This function only works when audio is loaded"
+                            "Эта функция работает при наличии звука"
 END
 
 STRINGTABLE 
 BEGIN
-    IDS_OSD_MSG_UPLOAD_SUB_MSG "Upload SubtitleЈє \r\n %s \r\n%s\r\nContinueЈї"
-    IDS_MSG_SUB_ALREADY_MANUAL_UPLOADED "subtitle uploaded"
+    IDS_OSD_MSG_UPLOAD_SUB_MSG "Загрузить субтитрыЈє \r\n %s \r\n%s\r\nContinueЈї"
+    IDS_MSG_SUB_ALREADY_MANUAL_UPLOADED "субтитры загружены"
     IDS_MSG_WARN_NOOD_ADMIN_PRIV_TO_START_UPDATER 
                             "Require Admin privalige to proceed\r\nContinueЈї"
     IDS_MSG_HOW_MANY_SUB_HAVE_BEEN_DOWNLOADED 
-                            "%d Subtitle have been DownLoaded"
+                            "%d Субтитры были скачаны"
     IDS_MSG_HAVNT_GOT_ANY_MATCHED_SUBTITLE 
                             "Couldn't found match subtitle, continue to website?"
     IDS_OSD_MSG_SET_NEW_VSYNC_OFFSET "New VSync TargetSyncOffset %0.2f "
@@ -2193,37 +2193,37 @@ BEGIN
     IDS_MSG_THROW_FILE_NOT_EXIST "File Don't Exist"
     IDS_OSD_MSG_IMAGE_OPEN_FAILED "Image Open Falled "
     IDS_MENU_ITEM_LABEL_CDROM_UNKNOWN "CDROM "
-    IDS_MENU_ITEM_LABEL_CDROM_AUDIOCD "AudioCD "
-    IDS_MENU_ITEM_AEROGLASS_UNSUPPORT "Aero Glass (Unsupported)"
-    IDS_MENU_ITEM_AUDIODEVICE_SYSTEM_DEFAULT "System Default"
-    IDS_MENU_ITEM_AUDIODEVICE_NAMETRANSLATE_DEFAULT "Default"
-    IDS_MENU_ITEM_AUDIODEVICE_NAMETRANSLATE_DEVICE "Device"
-    IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_DEAULT "System Default"
-    IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_LEFT "Select Left"
-    IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_RIGHT "Select Right"
-    IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_CENTER "Select Center"
-    IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_AUDIO "Audio Lang"
-    IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_CHINESE "Chinese"
-    IDS_MENU_ITEM_DISABLE_SOFT_COREAVC_MODE          "Disable Soft Coreavc Mode" 
+    IDS_MENU_ITEM_LABEL_CDROM_AUDIOCD "Audio CD "
+    IDS_MENU_ITEM_AEROGLASS_UNSUPPORT "Aero Glass (Не поддерживается)"
+    IDS_MENU_ITEM_AUDIODEVICE_SYSTEM_DEFAULT "Системный по умолчанию"
+    IDS_MENU_ITEM_AUDIODEVICE_NAMETRANSLATE_DEFAULT "По умолчанию"
+    IDS_MENU_ITEM_AUDIODEVICE_NAMETRANSLATE_DEVICE "Устройство"
+    IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_DEAULT "Системный по умолчанию"
+    IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_LEFT "Выбрать левый"
+    IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_RIGHT "Выбрать правый"
+    IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_CENTER "Выбрать центральный"
+    IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_AUDIO "Язык дорожки"
+    IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_CHINESE "Китайский"
+    IDS_MENU_ITEM_DISABLE_SOFT_COREAVC_MODE          "Отключить программный режим Coreavc" 
 END
 
 STRINGTABLE 
 BEGIN
-    IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_JAPANESE "Japannese"
-    IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_ENGLISH "English"
+    IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_JAPANESE "Японский"
+    IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_ENGLISH "Английский"
     IDS_MENU_ITEM_SUBTITLE_NOT_SUPPORT_VIDEO 
-                            "Current video has no support for subtitles"
+                            "Текущее видео не имеет поддержки субтитров"
     IDS_MENU_ITEM_2ND_SUBTITLE "Вторые субтитры"
-    IDS_MENU_ITEM_INTERNET_SUBTITLE "Internet Subtitle"
+    IDS_MENU_ITEM_INTERNET_SUBTITLE "Интернет субтитры"
     IDS_MENU_ITEM_LOAD_SUBTITLE "Загрузить субтитры..."
     IDS_MENU_ITEM_AUTO_LOAD_2ND_SUBTITLE "Автоматически загрузить субтитры"
-    IDS_MENU_ITEM_ENABLE_SUBTITLE "Enable"
+    IDS_MENU_ITEM_ENABLE_SUBTITLE "Включить"
     IDS_MENU_ITEM_CLEAN_PLAY_HISTORY "Удалить историю просмотра"
     IDS_MENU_ITEM_DISABLE_PLAY_HISTORY "Отключить историю просмотра"
-    IDS_MENU_ITEM_ENABLE_PLAY_HISTORY "Enable Play History"
-    IDS_MENU_ITEM_ENABLE_QMODE_RENDER "Enable Quality Mode..."
-    IDS_MENU_ITEM_STANDARD_RESIZER "Standard Resizer"
-    IDS_MENU_ITEM_HIGH_Q_RESIZER "Smart HQ. Resizer"
+    IDS_MENU_ITEM_ENABLE_PLAY_HISTORY "Включить историю просмотра"
+    IDS_MENU_ITEM_ENABLE_QMODE_RENDER "Включить качественный режим..."
+    IDS_MENU_ITEM_STANDARD_RESIZER "Стандартное масштабирование"
+    IDS_MENU_ITEM_HIGH_Q_RESIZER "Умное масштабирование"
     IDS_OSD_MSG_CURRENT_PLAYING "Current Playing: "
     IDS_OSD_MSG_CURRENT_2NDSUB_INFO 
                             "Second Subtitle %s Delay %d ms HeightЈє%d%%"
@@ -2252,7 +2252,7 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_MENU_ITEM_DELETE_CURRENT_FOLDER_WITH_PATH "Delete Current Folder(%s)"
+    IDS_MENU_ITEM_DELETE_CURRENT_FOLDER_WITH_PATH "Удалить текущую папку(%s)"
     IDS_LOG_MSG_DXVALINE    "GPU Accel : %d %s  ОЮПЮјжИЭЈє %d"
     IDS_MAINFRAME_TITLE_DXVA_TAG "[GPU Accel%s] "
     IDS_OSD_MSD_CURRENT_PLAYING_AT_LOCATION " О»УЪ: "
@@ -2503,7 +2503,7 @@ BEGIN
     IDS_TOOLTIP_TOPTOOLBAR_BUTTON_VIDEO "Видео"
     IDS_TOOLTIP_TOPTOOLBAR_BUTTON_PIN_ONTOP "Поверх всех окон"
     IDS_TOOLTIP_TOPTOOLBAR_BUTTON_RESTORE_WINDOW "Восстановить окно"
-    IDS_TOOLTIP_TOPTOOLBAR_BUTTON_ROTATE_90 "Повернуть на 90Ўж"
+    IDS_TOOLTIP_TOPTOOLBAR_BUTTON_ROTATE_90 "Повернуть на 90"
     IDS_TOOLTIP_TOPTOOLBAR_BUTTON_FLIP_V "Вертикальный переворот"
     IDS_TOOLTIP_TOPTOOLBAR_BUTTON_IMAGE_CAPTURE "Захват картинки"
     IDS_TOOLTIP_TOPTOOLBAR_BUTTON_TRANSPARENT_CONTROL_BAR 

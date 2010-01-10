@@ -1225,11 +1225,11 @@ BEGIN
         MENUITEM "Начать повтор A-B",              ID_ABCONTROL_ON
         MENUITEM "Остановить повтор A-B",               ID_ABCONTROL_OFF
         MENUITEM SEPARATOR
-        MENUITEM "Закрыть после воспроизведения",        ID_AFTERPLAYBACK_CLOSE
-        MENUITEM "Приостановка после воспроизведения",      ID_AFTERPLAYBACK_STANDBY
-        MENUITEM "Сон после воспроизведения",        ID_AFTERPLAYBACK_HIBERNATE
-        MENUITEM "Выключение после воспроизведения",     ID_AFTERPLAYBACK_SHUTDOWN
-        MENUITEM "Завершение сеанса после воспроизведения",       ID_AFTERPLAYBACK_LOGOFF
+        MENUITEM "Закрыть",        ID_AFTERPLAYBACK_CLOSE
+        MENUITEM "Приостановка",      ID_AFTERPLAYBACK_STANDBY
+        MENUITEM "Гибернация",        ID_AFTERPLAYBACK_HIBERNATE
+        MENUITEM "Выключение",     ID_AFTERPLAYBACK_SHUTDOWN
+        MENUITEM "Завершение сеанса",       ID_AFTERPLAYBACK_LOGOFF
     END
 END
 

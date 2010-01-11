@@ -404,7 +404,7 @@ void CConvertDlg::ShowPinPopup(HTREEITEM hTI, CPoint p)
 	if(mts.GetCount() > 1)
 	{
 		m.AppendMenu(MF_SEPARATOR);
-		for(int i = 0; i < mts.GetCount(); i++)
+		for(size_t i = 0; i < mts.GetCount(); i++)
 			m.AppendMenu(MF_STRING | (mts[i] == mt ? MF_CHECKED : 0), mti++, CMediaTypeEx(mts[i]).ToString());
 	}
 

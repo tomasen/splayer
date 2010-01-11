@@ -281,7 +281,7 @@ engine_t CMediaFormats::GetEngine(CString path)
 				return QuickTime;
 		}
 
-		for(int i = 0; i < GetCount(); i++)
+		for(size_t i = 0; i < GetCount(); i++)
 		{
 			CMediaFormatCategory& mfc = GetAt(i);
 			if(mfc.FindExt(ext))
@@ -301,7 +301,7 @@ bool CMediaFormats::FindExt(CString ext, bool fAudioOnly)
 
 	if(!ext.IsEmpty())
 	{
-		for(int i = 0; i < GetCount(); i++)
+		for(size_t i = 0; i < GetCount(); i++)
 		{
 			CMediaFormatCategory& mfc = GetAt(i);
 			if((!fAudioOnly || mfc.IsAudioOnly() == 1) && mfc.FindExt(ext)) 
@@ -313,7 +313,7 @@ bool CMediaFormats::FindExt(CString ext, bool fAudioOnly)
 }
 void CMediaFormats::GetExtsArray(CAtlArray<CString>& mask, bool noAudio){
 
-	for(int i = 0; i < GetCount(); i++) 
+	for(size_t i = 0; i < GetCount(); i++) 
 	{
 		CMediaFormatCategory& mfc = GetAt(i);
 		if( noAudio && mfc.IsAudioOnly() == 1 ) continue;
@@ -333,7 +333,7 @@ void CMediaFormats::GetFilter(CString& filter, CAtlArray<CString>& mask)
 	filter += _T("Media files (all types)|");
 	mask.Add(_T(""));
 
-	for(int i = 0; i < GetCount(); i++) 
+	for(size_t i = 0; i < GetCount(); i++) 
 	{
 		strTemp  = GetAt(i).GetFilter() + _T(";");;
 		mask[0] += strTemp;
@@ -343,7 +343,7 @@ void CMediaFormats::GetFilter(CString& filter, CAtlArray<CString>& mask)
 	filter.TrimRight(_T(";"));
 	filter += _T("|");
 
-	for(int i = 0; i < GetCount(); i++)
+	for(size_t i = 0; i < GetCount(); i++)
 	{
 		CMediaFormatCategory& mfc = GetAt(i);
 		filter += mfc.GetLabel() + _T("|" + GetAt(i).GetFilter() + _T("|"));
@@ -362,7 +362,7 @@ BOOL CMediaFormats::IsUnPlayableFile(CString szFilename, bool bRestrict){
 	if(bRestrict)
 		bDefaultRet = true;
 
-	for(int i = 0; i < GetCount(); i++)
+	for(size_t i = 0; i < GetCount(); i++)
 	{
 		CMediaFormatCategory& mfc = GetAt(i);
 		if( mfc.FindExt(szThisExtention) ){
@@ -386,7 +386,7 @@ BOOL CMediaFormats::IsAudioFile(CString szFilename){
 	CPath fPath(szFilename);
 	CString szThisExtention = fPath.GetExtension();
 
-	for(int i = 0; i < GetCount(); i++)
+	for(size_t i = 0; i < GetCount(); i++)
 	{
 		CMediaFormatCategory& mfc = GetAt(i);
 		if(mfc.IsAudioOnly() != 1 || mfc.GetEngineType() != DirectShow) continue;
@@ -402,7 +402,7 @@ void CMediaFormats::GetAudioFilter(CString& filter, CAtlArray<CString>& mask)
 	filter += _T("Audio files (all types)|");
 	mask.Add(_T(""));
 
-	for(int i = 0; i < GetCount(); i++)
+	for(size_t i = 0; i < GetCount(); i++)
 	{
 		CMediaFormatCategory& mfc = GetAt(i);
 		if(mfc.IsAudioOnly() != 1 || mfc.GetEngineType() != DirectShow) continue;
@@ -415,7 +415,7 @@ void CMediaFormats::GetAudioFilter(CString& filter, CAtlArray<CString>& mask)
 	filter.TrimRight(_T(";"));
 	filter += _T("|");
 
-	for(int i = 0; i < GetCount(); i++)
+	for(size_t i = 0; i < GetCount(); i++)
 	{
 		CMediaFormatCategory& mfc = GetAt(i);
 		if(mfc.IsAudioOnly() != 1 || mfc.GetEngineType() != DirectShow) continue;

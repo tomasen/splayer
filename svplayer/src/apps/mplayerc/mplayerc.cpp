@@ -2518,6 +2518,7 @@ CMPlayerCApp::Settings::Settings()
 	, hAccel(NULL)
 	, bSetTempChannelMaping(0)
 	, htpcmode(0)
+	, bNoMoreDXVAForThisFile(0)
 	
 {
 
@@ -3494,6 +3495,9 @@ CString CMPlayerCApp::Settings::GetSVPSubStorePath(){
 	}
 
 	return StoreDir;
+}
+BOOL CMPlayerCApp::Settings::bShouldUseGPUAcel(){
+	return  useGPUAcel && !bNoMoreDXVAForThisFile ;
 }
 BOOL CMPlayerCApp::Settings::bUserAeroUI(){
 	return  (bAeroGlassAvalibility && bAeroGlass) || bTransControl;

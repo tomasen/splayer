@@ -87,7 +87,7 @@ void CDXVADecoderH264::Init()
 		AllocExecuteParams (3);
 		break;
 	default :
-		ASSERT(FALSE);
+		ASSERT(FALSE);	SVPASSERT(FALSE);
 	}
 }
 
@@ -228,12 +228,16 @@ HRESULT CDXVADecoderH264::DecodeFrame (BYTE* pDataIn, UINT nSize, REFERENCE_TIME
 	m_nMaxWaiting	= min (max (m_DXVAPicParams.num_ref_frames, 3), 8);
 
 	// If parsing fail (probably no PPS/SPS), continue anyway it may arrived later (happen on truncated streams)
-	if (FAILED (FFH264BuildPicParams (&m_DXVAPicParams, &m_DXVAScalingMatrix, &nFieldType, &nSliceType, m_pFilter->GetAVCtx(), m_pFilter->GetPCIVendor())))
+	if (FAILED (FFH264BuildPicParams (&m_DXVAPicParams, &m_DXVAScalingMatrix, &nFieldType, &nSliceType, m_pFilter->GetAVCtx(), m_pFilter->GetPCIVendor()))){
+		SVPASSERT(FALSE);
 		return S_FALSE;
+	}
 
 	// Wait I frame after a flush
-	if (m_bFlushed && !m_DXVAPicParams.IntraPicFlag)
+	if (m_bFlushed && !m_DXVAPicParams.IntraPicFlag){
+		SVPASSERT(S_FALSE);
 		return S_FALSE;
+	}
 
 	
 	CHECK_HR (GetFreeSurfaceIndex (nSurfaceIndex, &pSampleToDeliver, rtStart, rtStop));
@@ -290,6 +294,7 @@ HRESULT CDXVADecoderH264::DecodeFrame (BYTE* pDataIn, UINT nSize, REFERENCE_TIME
 		}
 	}
 	m_bFlushed		= false;
+	SVPASSERTHR(hr);
 	return hr;
 }
 

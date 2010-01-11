@@ -499,6 +499,7 @@ public:
 		bool bDisableSoftCAVCForce;
 		bool bDontNeedSVPSubFilter;
 		bool bNoMoreDXVA;
+		bool bNoMoreDXVAForThisFile;
 
 		int iAPSurfaceUsage;
 		bool fVMRSyncFix;
@@ -742,6 +743,7 @@ public:
 		void RegGlobalAccelKey(HWND hWnd = NULL);
 		void UpdateData(bool fSave);
 		BOOL bUserAeroUI();
+		BOOL bShouldUseGPUAcel();
 		CString GetSVPSubStorePath();
 		void InitChannelMap();
 		void InitEQPerset();

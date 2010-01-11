@@ -1330,7 +1330,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 {
 	AppSettings& s = AfxGetAppSettings();
 	s.bNoMoreDXVA = false;
-	if(!s.useGPUAcel ){// || s.iDSVideoRendererType == VIDRNDT_DS_VMR7RENDERLESS
+	if(!s.bShouldUseGPUAcel() ){// || s.iDSVideoRendererType == VIDRNDT_DS_VMR7RENDERLESS
 		s.DXVAFilters = 0;
 	}else{
 		s.DXVAFilters = ~0;
@@ -1991,7 +1991,7 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 	//pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_MPEG1Payload);
 	//m_transform.AddTail(pFGF);
 
-	if ( s.useGPUAcel && !s.bIsIVM)
+	if ( s.bShouldUseGPUAcel() && !s.bIsIVM)
 	{
 		UINT64 gMerit =  MERIT64_ABOVE_DSHOW+100;
 		if(s.useGPUCUDA){gMerit =  MERIT64_ABOVE_DSHOW+5;}
@@ -2038,7 +2038,7 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 #endif
 
 	UINT64 merit = MERIT64_ABOVE_DSHOW;
-	if(s.optionDecoder == _T("internaldec") && !s.useGPUAcel){
+	if(s.optionDecoder == _T("internaldec") && !s.bShouldUseGPUAcel()){
 		merit += 100;
 	}
 	pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(_T("MPC Video Decoder"),  merit);
@@ -2517,7 +2517,7 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 
 	    if( ! s.fVMR9MixerMode  ) 
 		{
-			if( (s.useGPUAcel && s.bHasCUDAforCoreAVC) || (!s.useGPUAcel && !s.bDisableSoftCAVC && !s.bDisableSoftCAVCForce)){
+			if( (s.bShouldUseGPUAcel() && s.bHasCUDAforCoreAVC) || (!s.bShouldUseGPUAcel() && !s.bDisableSoftCAVC && !s.bDisableSoftCAVCForce)){
 				//if((s.useGPUAcel)){
 					//SVP_ForbidenCoreAVCTrayIcon();
 					SVP_SetCoreAvcCUDA(true); 
@@ -2538,7 +2538,7 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 	//}
 		//szaExtFilterPaths.Add(  svptoolbox.GetPlayerPath(_T("codecs\\DivXDecH264.ax")) );
 
-		if (!s.useGPUAcel && !s.bDisableSoftCAVC && ( s.bDisableSoftCAVCForce || !cavcexist) ){
+		if (!s.bShouldUseGPUAcel() && !s.bDisableSoftCAVC && ( s.bDisableSoftCAVCForce || !cavcexist) ){
 			CString cclPath = svptoolbox.GetPlayerPath(_T("dh264.ax"));
 			if(svptoolbox.ifFileExist(cclPath))
 				szaExtFilterPaths.Add( cclPath  );  //will crash without why

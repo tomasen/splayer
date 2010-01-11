@@ -187,6 +187,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 
 	ON_MESSAGE(WM_USER+31, OnStatusMessage)
 	ON_MESSAGE(WM_USER+32, OnSuggestVolume)
+	ON_MESSAGE(WM_USER+33, OnFailedInDXVA )
 
 	ON_MESSAGE(WM_IME_SETCONTEXT, OnImeSetContext)
 
@@ -5065,6 +5066,7 @@ void CMainFrame::OnUpdateFilePostOpenmedia(CCmdUI* pCmdUI)
 void CMainFrame::OnFilePostClosemedia()
 {
 	AppSettings& s = AfxGetAppSettings();
+	s.bNoMoreDXVAForThisFile  = false;
 	m_bDxvaInUse = false;
 	m_bEVRInUse = false;
 	m_wndView.SetVideoRect();
@@ -8910,7 +8912,15 @@ void CMainFrame::OnUpdatePlaySubtitles(CCmdUI* pCmdUI)
 		}
 	}
 }
+LRESULT CMainFrame::OnFailedInDXVA(  WPARAM wParam, LPARAM lParam)
+{
+	AppSettings& s = AfxGetAppSettings();
+	SendStatusMessage(ResStr(IDS_OSD_MSG_DXVA_FAILED_AND_REOPENING_FILE),4000);
+	ReRenderOrLoadMedia(true);
 
+	SVP_LogMsg6("OnFailedInDXVA");
+	return S_OK;
+}
 LRESULT CMainFrame::OnSuggestVolume(  WPARAM wParam, LPARAM lParam){
 	//TODO
 
@@ -12116,10 +12126,14 @@ void CMainFrame::OnColorControl(UINT nID){
 		SendStatusMessage(ResStr(IDS_OSD_MSG_NEED_ENABLE_COLOR_CONTROL_IN_SETTING_PANNEL) , 5000);
 	}
 }
-void CMainFrame::ReRenderOrLoadMedia(){
+void CMainFrame::ReRenderOrLoadMedia(BOOL bNoMoreDXVAForThisMedia){
 	int iPlaybackMode = m_iPlaybackMode;
 	int iSpeed = m_iSpeedLevel;
 	CloseMedia();
+	AppSettings& s = AfxGetAppSettings();
+	if(bNoMoreDXVAForThisMedia)
+		s.bNoMoreDXVAForThisFile = bNoMoreDXVAForThisMedia;
+
 	m_wndColorControlBar.CheckAbility();
 	if(iPlaybackMode == PM_FILE)
 	{

@@ -51,7 +51,15 @@
 	inline void LOG(LPCTSTR fmt, ...) {}
 #endif
 
-#define CHECK_HR(x)			hr = ##x; if (FAILED (hr)) { TRACE("Error : 0x%08x\n", hr); ASSERT (hr==VFW_E_NOT_COMMITTED); return hr; }
 
 #define SAFE_DELETE(x)				delete x;   x=NULL;
 #define SAFE_DELETE_ARRAY(x)		delete[] x; x=NULL;
+
+
+#include "../../../svplib/svplib.h"
+
+//#define  SVPASSERT(ret,remark) SVP_LogMsg6("DXVA ASSERT %x (%s) at %s : %d", ret, remark, __FUNCTION__ , __LINE__ );
+#define  SVPASSERT(ret) SVP_LogMsg6("DXVA ASSERT %x (at %s : %d", ret, __FUNCTION__ , __LINE__ );
+#define  SVPASSERTHR(hr) if(!SUCCEEDED(hr)) SVPASSERT(hr);
+
+#define CHECK_HR(x)			hr = ##x; if (FAILED (hr)) { TRACE("Error : 0x%08x\n", hr); SVPASSERT(hr) ; ASSERT (hr==VFW_E_NOT_COMMITTED); return hr; }

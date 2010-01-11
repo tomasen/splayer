@@ -104,6 +104,7 @@ HRESULT CDXVADecoderVC1::DecodeFrame (BYTE* pDataIn, UINT nSize, REFERENCE_TIME 
 	if (FAILED (hr))
 	{
 		ASSERT (hr == VFW_E_NOT_COMMITTED);		// Normal when stop playing
+		SVPASSERT(hr);
 		return hr;
 	}
 

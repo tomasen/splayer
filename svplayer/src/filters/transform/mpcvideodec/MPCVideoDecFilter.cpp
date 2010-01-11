@@ -510,6 +510,8 @@ BOOL CALLBACK EnumFindProcessWnd (HWND hwnd, LPARAM lParam)
 CMPCVideoDecFilter::CMPCVideoDecFilter(LPUNKNOWN lpunk, HRESULT* phr) 
 	: CBaseVideoFilter(NAME("MPC - Video decoder"), lpunk, phr, __uuidof(this))
 	, m_nGoFaster(0)
+	, m_hMainFrameWnd(0)
+	, m_llDXVAFailCount(0)
 {
 	HWND		hWnd = NULL;
 	for (int i=0; i<countof(ffCodecs); i++)
@@ -597,7 +599,12 @@ CMPCVideoDecFilter::CMPCVideoDecFilter(LPUNKNOWN lpunk, HRESULT* phr)
 	QueryPerformanceFrequency ((LARGE_INTEGER*)&m_PerfFrequency);
 #endif
 
-	EnumWindows(EnumFindProcessWnd, (LPARAM)&hWnd);
+	if(AfxGetMainWnd()){
+		hWnd = m_hMainFrameWnd = AfxGetMainWnd()->m_hWnd;
+	}else{
+		EnumWindows(EnumFindProcessWnd, (LPARAM)&hWnd);
+		m_hMainFrameWnd = hWnd;
+	}
 	DetectVideoCard(hWnd);
 
 #ifdef _DEBUG
@@ -1135,7 +1142,7 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 				}
 
 				if(osd_msg.IsEmpty()){
-					AfxGetMainWnd()->SendMessage(WM_USER+31, (UINT_PTR)osd_msg.GetBuffer(), 3000); 
+					::SendMessage(m_hMainFrameWnd, WM_USER+31, (UINT_PTR)osd_msg.GetBuffer(), 3000); 
 					osd_msg.ReleaseBuffer();
 				}
 				
@@ -1169,7 +1176,7 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 			}
 
 			if(osd_msg.IsEmpty()){
-				AfxGetMainWnd()->SendMessage(WM_USER+31, (UINT_PTR)osd_msg.GetBuffer(), 3000); 
+				::SendMessage(m_hMainFrameWnd, WM_USER+31, (UINT_PTR)osd_msg.GetBuffer(), 3000); 
 				osd_msg.ReleaseBuffer();
 			}
 
@@ -1842,6 +1849,17 @@ HRESULT CMPCVideoDecFilter::Transform(IMediaSample* pIn)
 			m_pDXVADecoder->ConfigureDXVA1();
 		}
 		hr = m_pDXVADecoder->DecodeFrame (pDataIn, nSize, rtStart, rtStop);
+		if(!SUCCEEDED(hr)){
+			m_llDXVAFailCount-=8;
+			
+			if(m_llDXVAFailCount < 0){
+				//硬件解码失败
+				m_nDXVAMode = MODE_SOFTWARE;
+				::PostMessage(m_hMainFrameWnd,WM_USER+33, 0,0); 
+			}
+		}else{
+			m_llDXVAFailCount++;
+		}
 		break;
 	default :
 		ASSERT (FALSE);

@@ -177,10 +177,10 @@ int FFH264CheckCompatibility(int nWidth, int nHeight, struct AVCodecContext* pAV
 			supportLevel51 = 1;
 		// Check max num reference frame according to the level
 		#define MAX_DPB_41 12288 // DPB value for level 4.1
-		if (nPCIVendor == 4318 && cur_sps->ref_frame_count == 1) //not ATI
-		{
-			return 2;
-		}
+		//if (nPCIVendor == 4318 && cur_sps->ref_frame_count == 1) //not ATI
+		//{
+		//	return 2;
+		//}
 
 		if (supportLevel51 == 1) {
 			// 11 refs as absolute max, but for Nvidia(Vista, HD) - 16

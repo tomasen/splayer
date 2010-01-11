@@ -643,7 +643,7 @@ public:
 	//afx_msg void OnColorControlButtonReset();
 	//afx_msg void OnColorControlButtonEnable();
 	afx_msg void OnEnableDX9();
-	void ReRenderOrLoadMedia();
+	void ReRenderOrLoadMedia(BOOL bNoMoreDXVAForThisMedia = FALSE);
 	//afx_msg void OnColorControlUpdateButtonReset(CCmdUI* pCmdUI);
 	//afx_msg void OnColorControlUpdateButtonEnable(CCmdUI* pCmdUI);
 
@@ -908,6 +908,7 @@ public:
 	LRESULT OnNcCalcSizeNewUI(  WPARAM wParam, LPARAM lParam);
 	LRESULT OnStatusMessage(  WPARAM wParam, LPARAM lParam);
 	LRESULT OnSuggestVolume(  WPARAM wParam, LPARAM lParam);
+	LRESULT OnFailedInDXVA(  WPARAM wParam, LPARAM lParam);
 	bool m_bAllowVolumeSuggestForThisPlaylist;
 	LRESULT OnImeSetContext(  WPARAM wParam, LPARAM lParam);
 	

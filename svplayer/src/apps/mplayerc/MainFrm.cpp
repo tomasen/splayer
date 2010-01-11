@@ -5145,8 +5145,9 @@ LRESULT CMainFrame::OnHotKey(WPARAM wParam, LPARAM lParam){
 void CMainFrame::OnBossKey()
 {
 	SendMessage(WM_COMMAND, ID_PLAY_PAUSE);
-	if(m_fFullScreen) SendMessage(WM_COMMAND, ID_VIEW_FULLSCREEN);
-	SendMessage(WM_SYSCOMMAND, SC_MINIMIZE, -1);
+	//if(m_fFullScreen) SendMessage(WM_COMMAND, ID_VIEW_FULLSCREEN);
+	//SendMessage(WM_SYSCOMMAND, SC_MINIMIZE, -1);
+	SendMessage(WM_NCLBUTTONUP, MYHTMINTOTRAY,0);
 }
 
 void CMainFrame::OnUpdateABControl(CCmdUI* pCmdUI)

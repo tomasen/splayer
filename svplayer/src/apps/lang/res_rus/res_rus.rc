@@ -361,16 +361,16 @@ BEGIN
     CONTROL         "RealMedia",IDC_RADIO1,"Button",BS_AUTORADIOBUTTON | WS_GROUP,14,153,49,10
     CONTROL         "QuickTime",IDC_RADIO2,"Button",BS_AUTORADIOBUTTON,66,153,48,10
     CONTROL         "DirectShow",IDC_RADIO3,"Button",BS_AUTORADIOBUTTON,117,153,52,10
-    CONTROL         "Смотреть на расширение файла",IDC_CHECK5,"Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,191,153,90,10
+    CONTROL         "По расширению файла",IDC_CHECK5,"Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,191,153,90,10
     CONTROL         "Видео",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,183,31,10
     CONTROL         "Музыка",IDC_CHECK2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,45,183,31,10
     CONTROL         "DVD",IDC_CHECK4,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,78,183,29,10
     CONTROL         "Audio CD",IDC_CHECK3,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,108,183,43,10
-    PUSHBUTTON      "Ассоциировать все &видео файлы",IDC_BUTTON4,13,101,81,14
-    PUSHBUTTON      "Ассоциировать все а&удио файлы",IDC_BUTTON3,107,101,81,14
-    PUSHBUTTON      "Ассоциировать все фай&лы",IDC_BUTTON1,200,101,81,14
-    GROUPBOX        "Autoplay",IDC_STATIC1,6,170,151,28
-    CONTROL         "Проверить ассоциации при старте",IDC_CHECK_DEFAULTPLAYER,
+    PUSHBUTTON      "Все &видео файлы",IDC_BUTTON4,13,101,81,14
+    PUSHBUTTON      "Все а&удио файлы",IDC_BUTTON3,107,101,81,14
+    PUSHBUTTON      "Все фай&лы",IDC_BUTTON1,200,101,81,14
+    GROUPBOX        "Автоматическое воспроизведение",IDC_STATIC1,6,170,151,28
+    CONTROL         "Проверять при старте",IDC_CHECK_DEFAULTPLAYER,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,168,177,105,16
 END
 
@@ -400,18 +400,18 @@ STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     LISTBOX         IDC_LIST1,6,5,208,102,LBS_OWNERDRAWFIXED | LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Добавить фильтр...",IDC_BUTTON1,220,5,69,13
+    PUSHBUTTON      "Добавить...",IDC_BUTTON1,220,5,69,13
     PUSHBUTTON      "Удалить",IDC_BUTTON2,220,20,69,13
-    CONTROL         "Предпочитать",IDC_RADIO1,"Button",BS_AUTORADIOBUTTON | WS_GROUP,220,39,53,10
+    CONTROL         "Использовать",IDC_RADIO1,"Button",BS_AUTORADIOBUTTON | WS_GROUP,220,39,53,10
     CONTROL         "Блокировать",IDC_RADIO2,"Button",BS_AUTORADIOBUTTON,220,50,53,10
-    CONTROL         "Set merit:",IDC_RADIO3,"Button",BS_AUTORADIOBUTTON,220,61,47,10
+    CONTROL         "Задать набор:",IDC_RADIO3,"Button",BS_AUTORADIOBUTTON,220,61,47,10
     EDITTEXT        IDC_EDIT1,220,73,69,12,ES_RIGHT | ES_AUTOHSCROLL | WS_GROUP
     PUSHBUTTON      "Вверх",IDC_BUTTON3,220,95,33,13
     PUSHBUTTON      "Вниз",IDC_BUTTON4,256,95,33,13
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,6,112,283,1
     CONTROL         "",IDC_TREE2,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT | TVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,6,117,208,81
-    PUSHBUTTON      "Добавить тип носителя...",IDC_BUTTON5,220,117,69,13
-    PUSHBUTTON      "Добавить тип субтитров...",IDC_BUTTON6,220,132,69,13
+    PUSHBUTTON      "Тип носителя...",IDC_BUTTON5,220,117,69,13
+    PUSHBUTTON      "Тип субтитров...",IDC_BUTTON6,220,132,69,13
     PUSHBUTTON      "Удалить",IDC_BUTTON7,220,147,69,13
     PUSHBUTTON      "Сбросить список",IDC_BUTTON8,220,185,69,13
 END
@@ -1034,21 +1034,21 @@ BEGIN
         MENUITEM "Открыть",                        ID__32861
         MENUITEM "Последние проигранные",             ID__RECENTPLAYED
         MENUITEM "Избранное",                   ID_FAVORITES
-        MENUITEM "Закрыть(&C)",                   ID_FILE_CLOSEPLAYLIST
+        MENUITEM "Закрыть",                   ID_FILE_CLOSEPLAYLIST
         MENUITEM SEPARATOR
         MENUITEM "Звук",                       ID__32777
         POPUP "Дисплей"
         BEGIN
             MENUITEM "Растянуть\tS",                 ID_VIEW_VF_STRETCH
             MENUITEM "Стандарт\tC",                 ID_VIEW_VF_FROMINSIDE
-            MENUITEM "Полный экран(&l)",             ID_VIEW_FULLSCREEN
-            MENUITEM "Удвлить черные полосы(&O)",        ID_VIEW_VF_FROMOUTSIDE
+            MENUITEM "Полный экран",             ID_VIEW_FULLSCREEN
+            MENUITEM "Удалить черные полосы",        ID_VIEW_VF_FROMOUTSIDE
             MENUITEM SEPARATOR
             MENUITEM "Качественный режим",                ID_VIEW_MODE_QUALITY_MODE
             MENUITEM "Производительный режим",            ID_VIEW_MODE_PERMORMANCE_MODE
             MENUITEM "Включить Anti-Tearing",         ID_VIEW_MODE_GOTHSYNC_MODE
             MENUITEM "Включить аппаратное ускорение GPU",     ID_VIEW_MODE_DXVA_MODE
-            MENUITEM "Отключить программный режим с CoreAVC",                      ID_VIEW_MODE_SOFT_COREAVC_MODE 
+            MENUITEM "Отключить программный режим CoreAVC",                      ID_VIEW_MODE_SOFT_COREAVC_MODE 
             MENUITEM SEPARATOR
             POPUP "Переворот"
             BEGIN
@@ -1093,7 +1093,7 @@ BEGIN
         END
         MENUITEM "Воспроизведение",                    ID__32864
         MENUITEM "Субтитры",                   ID__32860
-        MENUITEM "Навигация",                  ID_MENU_DVDNAV
+        MENUITEM "DVD-навигация",                  ID_MENU_DVDNAV
         MENUITEM SEPARATOR
         POPUP "Оболочка"
         BEGIN
@@ -1110,15 +1110,15 @@ BEGIN
                 MENUITEM "中文",                          ID_LANGUAGE_CHINESE_SIMPLIFIED
 				MENUITEM "Русский",                          ID_LANGUAGE_RUSSIAN
             END
-            POPUP "Дополнительно(&e)"
+            POPUP "Дополнительно"
             BEGIN
-                MENUITEM "Информация(&I)\tCtrl+3",     ID_VIEW_INFORMATION
-                MENUITEM "Статистика(&t)\tCtrl+4",      ID_VIEW_STATISTICS
+                MENUITEM "Информация\tCtrl+3",     ID_VIEW_INFORMATION
+                MENUITEM "Статистика\tCtrl+4",      ID_VIEW_STATISTICS
                 MENUITEM "Ресинхронизация субтитров\tCtrl+6",           ID_VIEW_SUBRESYNC
                 MENUITEM "Плейлист\tCtrl+7",            ID_VIEW_PLAYLIST
                 MENUITEM "Захват видео\tCtrl+8",       ID_VIEW_CAPTURE
                 MENUITEM "Редактор шейдеров\tCtrl+9",       ID_VIEW_SHADEREDITOR
-                MENUITEM "DSM-конвертирование(&n)...",          ID_FILE_CONVERT
+                MENUITEM "DSM-конвертирование...",          ID_FILE_CONVERT
                 MENUITEM "Статистика прорисовки",                 ID_SHOWDRAWSTAT
             END
             MENUITEM "Управление прозрачностью",         ID_SHOWTRANSPRANTBAR
@@ -1132,7 +1132,7 @@ BEGIN
             MENUITEM SEPARATOR
             MENUITEM "Задать папку по умолчанию",          ID_SETSNAPSHOTPATH
         END
-        MENUITEM "Опции(&O)...",              ID_VIEW_OPTIONS
+        MENUITEM "Опции...",              ID_VIEW_OPTIONS
         MENUITEM SEPARATOR
         POPUP "Файл"
         BEGIN
@@ -1145,7 +1145,7 @@ BEGIN
         BEGIN
             MENUITEM "Помощь",                        ID_HELP_DOCUMENTATION
             MENUITEM "Поддержать материально!",                     ID_DONATE
-            MENUITEM "О программе(&A)...",                ID_HELP_ABOUT
+            MENUITEM "О программе...",                ID_HELP_ABOUT
             MENUITEM "Отзывы",                    ID_VISITCONTACTINFO
             MENUITEM SEPARATOR
             MENUITEM "Проверить обновления...",         ID_MANUALCHECKUPDATE
@@ -1161,18 +1161,18 @@ BEGIN
             MENUITEM "Всегда",                      ID_ONTOP_ALWAYS
             MENUITEM "Во время воспроизведения",               ID_ONTOP_WHILEPLAYING
         END
-        MENUITEM "Выход(&X)",                    ID_FILE_EXIT
+        MENUITEM "Выход",                    ID_FILE_EXIT
     END
 END
 
 IDR_OPENMORE MENU 
 BEGIN
-    MENUITEM "DVD(&D)...\tCtrl+D",          ID_FILE_OPENDVD
-    MENUITEM "Blu-Ray(&B)...\tCtrl+B",           ID_FILE_OPENBDVD
-    MENUITEM "Ссылка(&U)...\tCtrl+U",          ID_FILE_OPENURLSTREAM
-    MENUITEM "Папка(&F)...\tCtrl+F",       ID_FILE_OPENFOLDER
-    MENUITEM "Захват видео(&V)...\tCtrl+V", ID_FILE_OPENDEVICE
-    MENUITEM "Со звуковой дорожкой(&O)...\tCtrl+O", ID_FILE_OPENMEDIA
+    MENUITEM "DVD...\tCtrl+D",          ID_FILE_OPENDVD
+    MENUITEM "Blu-Ray...\tCtrl+B",           ID_FILE_OPENBDVD
+    MENUITEM "Ссылка...\tCtrl+U",          ID_FILE_OPENURLSTREAM
+    MENUITEM "Папка...\tCtrl+F",       ID_FILE_OPENFOLDER
+    MENUITEM "Захват видео...\tCtrl+V", ID_FILE_OPENDEVICE
+    MENUITEM "Со звуковой дорожкой...\tCtrl+O", ID_FILE_OPENMEDIA
 END
 
 IDR_SUBMENU MENU 
@@ -1198,20 +1198,20 @@ IDR_PLAYBACK_MENU MENU
 BEGIN
     POPUP "Управление DVD"
     BEGIN
-        MENUITEM "Предыдущая глава(&P)\tPrev Chapter", ID_NAVIGATE_SKIPBACK
-        MENUITEM "Следующая глава(&N)\tNext Chapter", ID_NAVIGATE_SKIPFORWARD
-        MENUITEM "Перейти к(&J)...",              ID_DVD32789
+        MENUITEM "Предыдущая глава\tPrev Chapter", ID_NAVIGATE_SKIPBACK
+        MENUITEM "Следующая глава\tNext Chapter", ID_NAVIGATE_SKIPFORWARD
+        MENUITEM "Перейти к...",              ID_DVD32789
         MENUITEM SEPARATOR
         MENUITEM "Звук",                       ID_DVD32790
         MENUITEM "Субтитры",                    ID_DVD32791
         MENUITEM "Угол",                       ID_DVD32792
         MENUITEM SEPARATOR
-        MENUITEM "Меню титров(&T)",              ID_NAVIGATE_TITLEMENU
-        MENUITEM "Корневое меню(&R)",               ID_NAVIGATE_ROOTMENU
-        MENUITEM "Меню субтитров(&S)",           ID_NAVIGATE_SUBPICTUREMENU
-        MENUITEM "Меню звука(&A)",              ID_NAVIGATE_AUDIOMENU
-        MENUITEM "Меню угла(&g)",              ID_NAVIGATE_ANGLEMENU
-        MENUITEM "Меню глав(&C)",            ID_NAVIGATE_CHAPTERMENU
+        MENUITEM "Меню титров",              ID_NAVIGATE_TITLEMENU
+        MENUITEM "Корневое меню",               ID_NAVIGATE_ROOTMENU
+        MENUITEM "Меню субтитров",           ID_NAVIGATE_SUBPICTUREMENU
+        MENUITEM "Меню звука",              ID_NAVIGATE_AUDIOMENU
+        MENUITEM "Меню угла",              ID_NAVIGATE_ANGLEMENU
+        MENUITEM "Меню глав",            ID_NAVIGATE_CHAPTERMENU
     END
     POPUP "Скорость воспроизведения"
     BEGIN
@@ -1465,7 +1465,7 @@ STRINGTABLE
 BEGIN
     IDS_PPSDB_BADURL        "Bad URL, could not locate subtitle database there!"
     IDS_VDF_AR_MODE         "Read AR from stream"
-    IDS_MENU_ITEM_DVDNAV    "Навигация"
+    IDS_MENU_ITEM_DVDNAV    "DVD-навигация"
 END
 
 STRINGTABLE 
@@ -1509,14 +1509,14 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDD_PPAGEPLAYBACK       "Plabyback"
-    IDD_PPAGEPLAYER         "Player"
-    IDD_PPAGEDVD            "Play::DVD/OGM"
-    IDD_PPAGESUBTITLES      "Subtitles"
-    IDD_PPAGEFORMATS        "Player::Formats"
-    IDD_PPAGETWEAKS         "Tweaks"
-    IDD_PPAGEAUDIOSWITCHER  "Audio Switcher"
-    IDD_PPAGEEXTERNALFILTERS "External Filters"
+    IDD_PPAGEPLAYBACK       "Воспроизведение"
+    IDD_PPAGEPLAYER         "Проигрыватель"
+    IDD_PPAGEDVD            "Воспроизвести::DVD/OGM"
+    IDD_PPAGESUBTITLES      "Субтитры"
+    IDD_PPAGEFORMATS        "Форматы плеера"
+    IDD_PPAGETWEAKS         "Хитрости"
+    IDD_PPAGEAUDIOSWITCHER  "Переключение звука"
+    IDD_PPAGEEXTERNALFILTERS "Внешние фильтры"
 END
 
 STRINGTABLE 
@@ -1535,7 +1535,7 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDD_PPAGEACCELTBL       "Player::Keys"
+    IDD_PPAGEACCELTBL       "Горячие клавиши"
     IDD_PPAGESUBSTYLE       "Subtitles::Primary Subtitle"
     IDD_PPAGEINTERNALFILTERS "Internal Filters"
     IDD_PPAGELOGO           "Player::Background Logo"
@@ -2097,9 +2097,9 @@ BEGIN
     IDS_MENU_ITEM_SUBTITLE_EVERYTHING "Субтитры"
     IDS_MENU_ITEM_RECENT_PALYED "Последние проигранные"
     IDS_MENU_ITEM_NUMOF_SPEAKER "Существующие %d колонки"
-    IDS_MENU_ITEM_NUMOF_SPEAKER_AUTODETECTED "(Автоматически определено)"
+    IDS_MENU_ITEM_NUMOF_SPEAKER_AUTODETECTED "(Автоматически)"
     IDS_MENU_ITEM_NUMOF_SPEAKER_MANUAL "(Вручную)"
-    IDS_MENU_ITEM_DIGTAL_OUTPUT "Цифровой выход(Оптика/SPDIF/HDMI)"
+    IDS_MENU_ITEM_DIGTAL_OUTPUT "Цифровой выход (Оптика/SPDIF/HDMI)"
     IDS_MENU_ITEM_AUDIO_OUTPUT_TO "Выводить звук на..."
     IDS_OSD_MSG_DEVICE_NOT_SUPPORT_VIDEO_QMODE 
                             "You video driver don't support Quality Mode, Please switch to Performance Mode and reopen the file"
@@ -2204,7 +2204,7 @@ BEGIN
     IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_CENTER "Выбрать центральный"
     IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_AUDIO "Язык дорожки"
     IDS_MENU_ITEM_AUDIOLANG_NAMETRANSLATE_CHINESE "Китайский"
-    IDS_MENU_ITEM_DISABLE_SOFT_COREAVC_MODE          "Отключить программный режим Coreavc" 
+    IDS_MENU_ITEM_DISABLE_SOFT_COREAVC_MODE          "Отключить программный режим CoreAVC" 
 END
 
 STRINGTABLE 
@@ -2269,68 +2269,68 @@ BEGIN
     IDS_MSG_HANG_DUMP_SAVE_FAILED "Save dump file to '%s'fall,(Error: %d)"
     IDS_MSG_HANG_DUMP_CREATE_FAILED "In'%s'creat dump file fall,(Error: %d)"
     IDS_HOTKEY_STEAM_SUBTITLE_TOGGLE "Hide or Show Subtitle"
-    IDS_HOTKEY_BOSS_KEY     "Boss key"
-    IDS_HOTKEY_PLAY_PAUSE   "Play/Pause"
+    IDS_HOTKEY_BOSS_KEY     "Босс-клавиша"
+    IDS_HOTKEY_PLAY_PAUSE   "Воспроизведение/Пауза"
 END
 
 STRINGTABLE 
 BEGIN
-    IDS_HOTKEY_SEEKFORWARDMED "Seek Forward"
-    IDS_HOTKEY_SEEKBACKFORD "Seek Back"
-    IDS_HOTKEY_FILEOPEN_QUICK "FileOpen Quick"
-    IDS_HOTKEY_FILEOPEN_URL "FileOpen URL"
-    IDS_HOTKEY_FILEOPEN_NORMAL "Open File"
-    IDS_HOTKEY_FILEOPEN_FOLDER "Open Folder"
-    IDS_HOTKEY_SUBTITLE_MOVE_UP "Main Subtitle Move UP"
-    IDS_HOTKEY_SUBTITLE_MOVE_DOWN "Main Subtitle Move Down"
-    IDS_HOTKEY_SUBTITLE_2ND_MOVE_UP "Second Subtitle Move UP"
-    IDS_HOTKEY_SUBTITLE_2ND_MOVE_DOWN "Second Subtitle Move Down"
-    IDS_HOTKEY_SUBTITLE_FONT_SHRINK "Shrink Subtitle Font"
-    IDS_HOTKEY_SUBTITLE_FONT_ENLARGE "Enlarge Subtitle Font"
-    IDS_HOTKEY_SUBTITLE_1ST_FONT_SHRINK "Shrink Main Subtitle Font"
-    IDS_HOTKEY_SUBTITLE_1ST_FONT_ENLARGE "Enlarge Main Subtitle Font"
-    IDS_HOTKEY_SUBTITLE_2ND_FONT_SHRINK "Shrink Second Subtitle Font"
-    IDS_HOTKEY_SUBTITLE_2ND_FONT_ENLARGE "Enlarge Second Subtitle Font"
+    IDS_HOTKEY_SEEKFORWARDMED "Перемотка вперед"
+    IDS_HOTKEY_SEEKBACKFORD "Перемотка назад"
+    IDS_HOTKEY_FILEOPEN_QUICK "Быстрое открытие"
+    IDS_HOTKEY_FILEOPEN_URL "Открытие ссылки"
+    IDS_HOTKEY_FILEOPEN_NORMAL "Открыть файл"
+    IDS_HOTKEY_FILEOPEN_FOLDER "Открыть папку"
+    IDS_HOTKEY_SUBTITLE_MOVE_UP "Основные субтитры вверх"
+    IDS_HOTKEY_SUBTITLE_MOVE_DOWN "Основные субтитры вниз"
+    IDS_HOTKEY_SUBTITLE_2ND_MOVE_UP "Дополнительные субтитры вверх"
+    IDS_HOTKEY_SUBTITLE_2ND_MOVE_DOWN "Дополнительные субтитры вниз"
+    IDS_HOTKEY_SUBTITLE_FONT_SHRINK "Уменьшить шрифт субтитров"
+    IDS_HOTKEY_SUBTITLE_FONT_ENLARGE "Увеличить шрифт субтитров"
+    IDS_HOTKEY_SUBTITLE_1ST_FONT_SHRINK "Уменьшить основной шрифт субтитров"
+    IDS_HOTKEY_SUBTITLE_1ST_FONT_ENLARGE "Увеличить основной шрифт субтитров"
+    IDS_HOTKEY_SUBTITLE_2ND_FONT_SHRINK "Уменьшить дополнительный шрифт субтитров"
+    IDS_HOTKEY_SUBTITLE_2ND_FONT_ENLARGE "Увеличить дополнительный шрифт субтитров"
 END
 
 STRINGTABLE 
 BEGIN
-    IDS_HOTKEY_SUBTITLE_1ST_DELAY_REDUCE "Reduce Main Subtitle delay"
-    IDS_HOTKEY_SUBTITLE_1ST_DELAY_PLUS "Plus Main Subtitle delay"
-    IDS_HOTKEY_SUBTITLE_2ND_DELAY_REDUCE "Reduce second Subtitle delay"
-    IDS_HOTKEY_SUBTITLE_2ND_DELAY_PLUS "Plus second Subtitle delay"
-    IDS_HOTKEY_BRIGHT_MORE  "Plus Bright"
-    IDS_HOTKEY_BRIGHT_LESS  "Reduce Bright"
+    IDS_HOTKEY_SUBTITLE_1ST_DELAY_REDUCE "Уменьшить задержку основных сутбитров"
+    IDS_HOTKEY_SUBTITLE_1ST_DELAY_PLUS "Увеличить задержку основных сутбитров"
+    IDS_HOTKEY_SUBTITLE_2ND_DELAY_REDUCE "Уменьшить задержку дополнительных сутбитров"
+    IDS_HOTKEY_SUBTITLE_2ND_DELAY_PLUS "Увеличить задержку дополнительных сутбитров"
+    IDS_HOTKEY_BRIGHT_MORE  "Увеличить яркость"
+    IDS_HOTKEY_BRIGHT_LESS  "Уменьшить яркость"
     IDS_HOTKEY_ABCONTROL_TOGGEL "Switch AB control"
     IDS_HOTKEY_ABCONTROL_SETA "ABcontrol setA"
     IDS_HOTKEY_ABCONTROL_SETB "ABcontrol setB"
-    IDS_HOTKEY_FILEOPEN_DVD "OpenDVD"
-    IDS_HOTKEY_FILEOPEN_BD  "Open BD"
+    IDS_HOTKEY_FILEOPEN_DVD "Открыть DVD"
+    IDS_HOTKEY_FILEOPEN_BD  "Открыть Blu-ray"
     IDS_HOTKEY_FILE_SAVEAS  "File save as"
     IDS_HOTKEY_IMAGE_SAVEAS "Image save as"
     IDS_HOTKEY_IMAGE_SAVE_AUTO "Auto save image"
-    IDS_HOTKEY_LOAD_SUBTITLE "Load Subtitle"
-    IDS_HOTKEY_SAVE_SUBTITLE "Save Subtitle"
+    IDS_HOTKEY_LOAD_SUBTITLE "Загрузить субтитры"
+    IDS_HOTKEY_SAVE_SUBTITLE "Сохранить субтитры"
 END
 
 STRINGTABLE 
 BEGIN
-    IDS_HOTKEY_COPY_IMAGE_TO_CLIPBOARD "Copy image to clipboard"
-    IDS_HOTKEY_FILE_PROPERTIES "Propertites"
-    IDS_HOTKEY_FILE_EXIT    "Exit"
-    IDS_HOTKEY_SUBTITLE_TOGGLE "Hide/Show Subtitle"
-    IDS_HOTKEY_PANSCAN_RESET "Panscan Reset"
-    IDS_HOTKEY_PLAY_PLAY    "Play"
-    IDS_HOTKEY_PLAY_STOP    "Stop"
-    IDS_HOTKEY_PLAY_FRAMESTEP "FrameStep"
-    IDS_HOTKEY_PLAY_FRAMESTEP_BACK "FrameStepback"
-    IDS_HOTKEY_PLAY_INCREASE_RATE "Increase Rate"
-    IDS_HOTKEY_PLAY_DECREASE_RATE "Decrease Rate"
-    IDS_HOTKEY_TOGGLE_FULLSCREEN "FullScreen"
-    IDS_HOTKEY_AUDIO_DELAY_PLUS "Audio Delay +50ms"
-    IDS_HOTKEY_AUDIO_DELAY_REDUCE "Audio Delay -50ms"
-    IDS_HOTKEY_TOGGLE_FULLSCREEN_SECONDARY "FullScreen"
-    IDS_HOTKEY_TOGGLE_PLAYLIST "Open playlist"
+    IDS_HOTKEY_COPY_IMAGE_TO_CLIPBOARD "Скопировать картинку в буфер"
+    IDS_HOTKEY_FILE_PROPERTIES "Параметры"
+    IDS_HOTKEY_FILE_EXIT    "Выход"
+    IDS_HOTKEY_SUBTITLE_TOGGLE "Показать/Скрыть субтитры"
+    IDS_HOTKEY_PANSCAN_RESET "Сброс Pan&Scan"
+    IDS_HOTKEY_PLAY_PLAY    "Воспроизвести"
+    IDS_HOTKEY_PLAY_STOP    "Остановить"
+    IDS_HOTKEY_PLAY_FRAMESTEP "Пропуск кадра"
+    IDS_HOTKEY_PLAY_FRAMESTEP_BACK "Возврат кадров"
+    IDS_HOTKEY_PLAY_INCREASE_RATE "Увеличить скорость"
+    IDS_HOTKEY_PLAY_DECREASE_RATE "Уменьшить скорость"
+    IDS_HOTKEY_TOGGLE_FULLSCREEN "Полный экран"
+    IDS_HOTKEY_AUDIO_DELAY_PLUS "Задержка звука +50мс"
+    IDS_HOTKEY_AUDIO_DELAY_REDUCE "Задержка звука -50мс"
+    IDS_HOTKEY_TOGGLE_FULLSCREEN_SECONDARY "Полный экран"
+    IDS_HOTKEY_TOGGLE_PLAYLIST "Открыть плейлист"
 END
 
 STRINGTABLE 

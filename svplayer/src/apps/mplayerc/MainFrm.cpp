@@ -1251,7 +1251,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 		m_lastMouseMove = point;
 		m_fHideCursor = false;
 		KillTimer(TIMER_FULLSCREENMOUSEHIDER);
-		if(!bNoMoreHideMouse && m_iMediaLoadState == MLS_LOADED){
+		if(!bNoMoreHideMouse && IsSomethingLoaded()){
 			if(s.bUserAeroUI())
 				SetTimer(TIMER_FULLSCREENMOUSEHIDER, 5000, NULL);
 			else

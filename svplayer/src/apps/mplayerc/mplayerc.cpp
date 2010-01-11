@@ -710,6 +710,7 @@ CMPlayerCApp::CMPlayerCApp()
 	_set_SSE2_enable(1);
 
 	QueryPerformanceFrequency ((LARGE_INTEGER*)&m_PerfFrequency);
+
 }
 
 BOOL CMPlayerCApp::PumpMessage() {
@@ -2334,6 +2335,12 @@ int CMPlayerCApp::ExitInstance()
 
 	if(m_hResDll)
 		FreeLibrary(m_hResDll);
+	
+	if (sqlite_setting)
+		delete sqlite_setting;
+	if (sqlite_local_record)
+		delete sqlite_local_record;
+
 	return ret;
 }
 

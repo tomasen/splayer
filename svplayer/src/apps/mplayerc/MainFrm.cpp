@@ -1837,12 +1837,12 @@ void CMainFrame::OnClose()
 
 	m_wndNewOSD.OnRealClose();
 	m_wndToolTopBar.OnRealClose();
-	m_wndFloatToolBar->OnRealClose();
 	
 	//while(1){Sleep(333);}
 	OnPlayPause();
 	CloseMedia();
 
+	m_wndFloatToolBar->OnRealClose();
 	__super::OnClose();
 }
 

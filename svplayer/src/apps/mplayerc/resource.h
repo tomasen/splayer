@@ -398,6 +398,7 @@
 #define MYHTMINBUTTON                   7008
 #define MYHTMINTOTRAY                   7009
 #define TIMER_CLOSETOOLBAR              7010
+#define TIMER_CLEAR_LAST_SEEK_ACTION	7011
 #define IDD_OPEN_DLG                    10000
 #define IDD_OPENCAPDEVICE_DLG           10001
 #define IDD_MEDIATYPES_DLG              10002

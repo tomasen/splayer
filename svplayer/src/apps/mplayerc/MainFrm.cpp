@@ -597,7 +597,8 @@ CMainFrame::CMainFrame() :
 	m_bMustUseExternalTimer(false),
 	m_haveSubVoted(false),
 	lastShowCurrentPlayingFileTime(0),
-	pTBL(NULL)
+	pTBL(NULL),
+	m_lastSeekAction(0)
 {
 	m_wndFloatToolBar = new CPlayerFloatToolBar();
 }
@@ -2694,7 +2695,9 @@ CString CMainFrame::getCurPlayingSubfile(int * iSubDelayMS,int subid ){
 
 void CMainFrame::OnTimer(UINT nIDEvent)
 {
-	if( TIMER_REDRAW_WINDOW == nIDEvent){
+	if(TIMER_CLEAR_LAST_SEEK_ACTION == nIDEvent){
+		m_lastSeekAction = 0;
+	}else if( TIMER_REDRAW_WINDOW == nIDEvent){
 		if(!IsSomethingLoaded() || m_iRedrawAfterCloseCounter++ > 4){
 			KillTimer(nIDEvent);
 			RedrawNonClientArea();
@@ -7954,6 +7957,12 @@ void CMainFrame::OnSmartSeek(UINT nID){
 }
 void CMainFrame::OnPlaySeek(UINT nID)
 {
+	if(m_lastSeekAction && m_lastSeekAction == nID){
+		return;
+	}
+	m_lastSeekAction = nID;
+	KillTimer(TIMER_CLEAR_LAST_SEEK_ACTION);
+	SetTimer(TIMER_CLEAR_LAST_SEEK_ACTION,1000,NULL);
 	AppSettings& s = AfxGetAppSettings();
 	int iDirect = 1;
 	REFERENCE_TIME dt = 

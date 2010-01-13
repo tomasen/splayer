@@ -101,8 +101,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,25
- PRODUCTVERSION 1,0,0,25
+ FILEVERSION 1,0,0,26
+ PRODUCTVERSION 1,0,0,26
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -119,12 +119,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "SPlayer.org"
             VALUE "FileDescription", "射手影音播放器自动升级程序"
-            VALUE "FileVersion", "1.0.0.25"
+            VALUE "FileVersion", "1.0.0.26"
             VALUE "InternalName", "Updater.exe"
             VALUE "LegalCopyright", "(c) SPlayer.org.  All rights reserved."
             VALUE "OriginalFilename", "Updater.exe"
             VALUE "ProductName", "射手影音播放器自动升级程序"
-            VALUE "ProductVersion", "1.0.0.25"
+            VALUE "ProductVersion", "1.0.0.26"
         END
     END
     BLOCK "VarFileInfo"

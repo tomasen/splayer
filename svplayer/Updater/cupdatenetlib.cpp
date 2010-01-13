@@ -475,12 +475,18 @@ int cupdatenetlib::downloadFiles(){
 		}
 
 		bool bDownloadThis = FALSE, bSkipThis = FALSE;
-		if ( szaLists.GetAt(i+LFILEACTION) == "codec" ){
+		if ( szaLists.GetAt(i+LFILEACTION) ==  L"codec" ){
 			if(!svpToolBox.ifFileExist(szBasePath + szaLists.GetAt(i + LFILESETUPPATH))){
 				//skip this file
 				bSkipThis = TRUE;
 			}
 		}
+		if ( szSetupPath.Find( L"csfcodec") == 0 ){
+			if(!svpToolBox.ifDirExist(szBasePath + L"csfcodec")){
+				bSkipThis = TRUE;
+			}
+		}
+		//SVP_LogMsg5(szaLists.GetAt(i+LFILEACTION));
 		if(!bSkipThis){
 			//check file hash
 			CMD5Checksum cmd5;

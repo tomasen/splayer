@@ -2582,74 +2582,75 @@ void CMPlayerCApp::Settings::ThreadedLoading(){
 				pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("HasYaheiDownloaded"), 0 );	
 		}
 	}
+	if( iLanguage == 0 ){
+		if(!svptoolbox.bFontExist(_T("微软雅黑")) && svptoolbox.bFontExist(_T("文泉驿微米黑"))){ 
+			if(subdefstyle.fontName.CompareNoCase(_T("黑体") ) == 0 )
+				subdefstyle.fontName = _T("文泉驿微米黑");
+			if(subdefstyle2.fontName.CompareNoCase(_T("黑体") ) == 0 )
+				subdefstyle2.fontName = _T("文泉驿微米黑");
+			if(subdefstyle.fontName.CompareNoCase(_T("微软雅黑") ) == 0 )
+				subdefstyle.fontName = _T("文泉驿微米黑");
+			if(subdefstyle2.fontName.CompareNoCase(_T("微软雅黑") ) == 0 )
+				subdefstyle2.fontName = _T("文泉驿微米黑");
+		}
+		if(!svptoolbox.bFontExist(_T("Microsoft YaHei")) && svptoolbox.bFontExist(_T("WenQuanYi Micro Hei"))){ 
+			if(subdefstyle.fontName.CompareNoCase(_T("SimHei") ) == 0 )
+				subdefstyle.fontName = _T("WenQuanYi Micro Hei");
+			if(subdefstyle2.fontName.CompareNoCase(_T("SimHei") ) == 0 )
+				subdefstyle2.fontName = _T("WenQuanYi Micro Hei");
 
-	if(!svptoolbox.bFontExist(_T("微软雅黑")) && svptoolbox.bFontExist(_T("文泉驿微米黑"))){ 
-		if(subdefstyle.fontName.CompareNoCase(_T("黑体") ) == 0 )
-			subdefstyle.fontName = _T("文泉驿微米黑");
-		if(subdefstyle2.fontName.CompareNoCase(_T("黑体") ) == 0 )
-			subdefstyle2.fontName = _T("文泉驿微米黑");
-		if(subdefstyle.fontName.CompareNoCase(_T("微软雅黑") ) == 0 )
-			subdefstyle.fontName = _T("文泉驿微米黑");
-		if(subdefstyle2.fontName.CompareNoCase(_T("微软雅黑") ) == 0 )
-			subdefstyle2.fontName = _T("文泉驿微米黑");
-	}
-	if(!svptoolbox.bFontExist(_T("Microsoft YaHei")) && svptoolbox.bFontExist(_T("WenQuanYi Micro Hei"))){ 
-		if(subdefstyle.fontName.CompareNoCase(_T("SimHei") ) == 0 )
-			subdefstyle.fontName = _T("WenQuanYi Micro Hei");
-		if(subdefstyle2.fontName.CompareNoCase(_T("SimHei") ) == 0 )
-			subdefstyle2.fontName = _T("WenQuanYi Micro Hei");
+			if(subdefstyle.fontName.CompareNoCase(_T("Microsoft YaHei") ) == 0 )
+				subdefstyle.fontName = _T("WenQuanYi Micro Hei");
+			if(subdefstyle2.fontName.CompareNoCase(_T("Microsoft YaHei") ) == 0 )
+				subdefstyle2.fontName = _T("WenQuanYi Micro Hei");
+		}
+		if(!bNotChangeFontToYH){
+			if(!svptoolbox.bFontExist(_T("文泉驿微米黑")) && !svptoolbox.bFontExist(_T("Microsoft YaHei")) 
+				 && !svptoolbox.bFontExist(_T("Microsoft YaHei"))  && !svptoolbox.bFontExist(_T("WenQuanYi Micro Hei"))){ 
+				
+			}
+			if(!bHadYaheiDownloaded ){
+				if(svptoolbox.bFontExist(_T("微软雅黑"))){ //
+					if(subdefstyle.fontName.CompareNoCase(_T("黑体") ) == 0 )
+						subdefstyle.fontName = _T("微软雅黑");
+					if(subdefstyle2.fontName.CompareNoCase(_T("黑体") ) == 0 )
+						subdefstyle2.fontName = _T("微软雅黑");
 
-		if(subdefstyle.fontName.CompareNoCase(_T("Microsoft YaHei") ) == 0 )
-			subdefstyle.fontName = _T("WenQuanYi Micro Hei");
-		if(subdefstyle2.fontName.CompareNoCase(_T("Microsoft YaHei") ) == 0 )
-			subdefstyle2.fontName = _T("WenQuanYi Micro Hei");
-	}
-	if(!bNotChangeFontToYH){
-		if(!svptoolbox.bFontExist(_T("文泉驿微米黑")) && !svptoolbox.bFontExist(_T("Microsoft YaHei")) 
-			 && !svptoolbox.bFontExist(_T("Microsoft YaHei"))  && !svptoolbox.bFontExist(_T("WenQuanYi Micro Hei"))){ 
+				}else if(svptoolbox.bFontExist(_T("文泉驿微米黑"))){ //
+					if(subdefstyle.fontName.CompareNoCase(_T("黑体") ) == 0 )
+						subdefstyle.fontName = _T("文泉驿微米黑");
+					if(subdefstyle2.fontName.CompareNoCase(_T("黑体") ) == 0 )
+						subdefstyle2.fontName = _T("文泉驿微米黑");
+					if(subdefstyle.fontName.CompareNoCase(_T("微软雅黑") ) == 0 )
+						subdefstyle.fontName = _T("文泉驿微米黑");
+					if(subdefstyle2.fontName.CompareNoCase(_T("微软雅黑") ) == 0 )
+						subdefstyle2.fontName = _T("文泉驿微米黑");
+
+				}else if( !svptoolbox.bFontExist(_T("黑体")) ){
+					if(subdefstyle.fontName.CompareNoCase(_T("黑体") ) == 0 )
+						subdefstyle.fontName = _T("SimHei");
+					if(subdefstyle2.fontName.CompareNoCase(_T("黑体") ) == 0 )
+						subdefstyle2.fontName = _T("SimHei");
+				}
+				if(svptoolbox.bFontExist(_T("Microsoft YaHei"))){ //Microsoft YaHei
+					if(subdefstyle.fontName.CompareNoCase(_T("SimHei") ) == 0 )
+						subdefstyle.fontName = _T("Microsoft YaHei");
+					if(subdefstyle2.fontName.CompareNoCase(_T("SimHei") ) == 0 )
+						subdefstyle2.fontName = _T("Microsoft YaHei");
+				}else if(svptoolbox.bFontExist(_T("WenQuanYi Micro Hei"))){ //WenQuanYi Micro Hei
+					if(subdefstyle.fontName.CompareNoCase(_T("SimHei") ) == 0 )
+						subdefstyle.fontName = _T("WenQuanYi Micro Hei");
+					if(subdefstyle2.fontName.CompareNoCase(_T("SimHei") ) == 0 )
+						subdefstyle2.fontName = _T("WenQuanYi Micro Hei");
+
+					if(subdefstyle.fontName.CompareNoCase(_T("Microsoft YaHei") ) == 0 )
+						subdefstyle.fontName = _T("WenQuanYi Micro Hei");
+					if(subdefstyle2.fontName.CompareNoCase(_T("Microsoft YaHei") ) == 0 )
+						subdefstyle2.fontName = _T("WenQuanYi Micro Hei");
+				}
+			}
 			
 		}
-		if(!bHadYaheiDownloaded ){
-			if(svptoolbox.bFontExist(_T("微软雅黑"))){ //
-				if(subdefstyle.fontName.CompareNoCase(_T("黑体") ) == 0 )
-					subdefstyle.fontName = _T("微软雅黑");
-				if(subdefstyle2.fontName.CompareNoCase(_T("黑体") ) == 0 )
-					subdefstyle2.fontName = _T("微软雅黑");
-
-			}else if(svptoolbox.bFontExist(_T("文泉驿微米黑"))){ //
-				if(subdefstyle.fontName.CompareNoCase(_T("黑体") ) == 0 )
-					subdefstyle.fontName = _T("文泉驿微米黑");
-				if(subdefstyle2.fontName.CompareNoCase(_T("黑体") ) == 0 )
-					subdefstyle2.fontName = _T("文泉驿微米黑");
-				if(subdefstyle.fontName.CompareNoCase(_T("微软雅黑") ) == 0 )
-					subdefstyle.fontName = _T("文泉驿微米黑");
-				if(subdefstyle2.fontName.CompareNoCase(_T("微软雅黑") ) == 0 )
-					subdefstyle2.fontName = _T("文泉驿微米黑");
-
-			}else if( !svptoolbox.bFontExist(_T("黑体")) ){
-				if(subdefstyle.fontName.CompareNoCase(_T("黑体") ) == 0 )
-					subdefstyle.fontName = _T("SimHei");
-				if(subdefstyle2.fontName.CompareNoCase(_T("黑体") ) == 0 )
-					subdefstyle2.fontName = _T("SimHei");
-			}
-			if(svptoolbox.bFontExist(_T("Microsoft YaHei"))){ //Microsoft YaHei
-				if(subdefstyle.fontName.CompareNoCase(_T("SimHei") ) == 0 )
-					subdefstyle.fontName = _T("Microsoft YaHei");
-				if(subdefstyle2.fontName.CompareNoCase(_T("SimHei") ) == 0 )
-					subdefstyle2.fontName = _T("Microsoft YaHei");
-			}else if(svptoolbox.bFontExist(_T("WenQuanYi Micro Hei"))){ //WenQuanYi Micro Hei
-				if(subdefstyle.fontName.CompareNoCase(_T("SimHei") ) == 0 )
-					subdefstyle.fontName = _T("WenQuanYi Micro Hei");
-				if(subdefstyle2.fontName.CompareNoCase(_T("SimHei") ) == 0 )
-					subdefstyle2.fontName = _T("WenQuanYi Micro Hei");
-
-				if(subdefstyle.fontName.CompareNoCase(_T("Microsoft YaHei") ) == 0 )
-					subdefstyle.fontName = _T("WenQuanYi Micro Hei");
-				if(subdefstyle2.fontName.CompareNoCase(_T("Microsoft YaHei") ) == 0 )
-					subdefstyle2.fontName = _T("WenQuanYi Micro Hei");
-			}
-		}
-		
 	}
 
 

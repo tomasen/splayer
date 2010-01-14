@@ -31,6 +31,9 @@
 #include "..\..\..\subtitles\SubtitleInputPin.h"
 #include "..\..\..\svplib\SVPToolBox.h"
 
+#include "PODtypes.h"
+#include "avcodec.h"
+
 #define SVP_LogMsg3  __noop
 
 #include <initguid.h>
@@ -1482,11 +1485,24 @@ int CRMFile::GetMasterStream()
 // CRealVideoDecoder
 //
 
+//#define RV_FFMPEG
+
+#ifdef RV_FFMPEG
+#include "CpuId.h"
+
+#endif
+
 CRealVideoDecoder::CRealVideoDecoder(LPUNKNOWN lpunk, HRESULT* phr)
 : CBaseVideoFilter(NAME("CRealVideoDecoder"), lpunk, phr, __uuidof(this))
 , m_hDrvDll(NULL)
 , m_dwCookie(0)
 {
+
+#ifdef RV_FFMPEG
+	avcodec_init();
+	avcodec_register_all();
+#endif
+
 }
 
 CRealVideoDecoder::~CRealVideoDecoder()
@@ -1524,8 +1540,10 @@ HRESULT CRealVideoDecoder::InitRV(const CMediaType* pmt)
 	{11, rvi.w, rvi.h, 0, 0, rvi.type1, 1, rvi.type2};
 #pragma pack(pop)
 
+#ifndef RV_FFMPEG
 	if(FAILED(hr = RVInit(&i, &m_dwCookie)))
 		return hr;
+#endif
 
 	if(rvi.fcc2 <= '03VR' && rvi.type2 >= 0x20200002)
 	{
@@ -1538,10 +1556,75 @@ HRESULT CRealVideoDecoder::InitRV(const CMediaType* pmt)
 		struct {UINT32 data1; UINT32 data2; UINT32* dimensions;} cmsg_data = 
 		{0x24, nWidthHeight, pWH};
 #pragma pack(pop)
+#ifndef RV_FFMPEG
 		hr = RVCustomMessage(&cmsg_data, m_dwCookie);
+#endif
 		delete [] pWH;
 	}
+#ifdef RV_FFMPEG
+	int FourCC = 0;
+	if(pmt->subtype ==MEDIASUBTYPE_RV40){
+		m_nCodecID = CODEC_ID_RV40; 
+		FourCC = MAKEFOURCC('R','V','4','0');
+	}else if(pmt->subtype ==MEDIASUBTYPE_RV30){
+		m_nCodecID = CODEC_ID_RV30;
+		FourCC = MAKEFOURCC('R','V','3','0');
+	}
+	else if(pmt->subtype ==MEDIASUBTYPE_RV20){
+		m_nCodecID = CODEC_ID_RV20;
+		FourCC = MAKEFOURCC('R','V','2','0');
+	}
+	else if(pmt->subtype ==MEDIASUBTYPE_RV10){
+		m_nCodecID = CODEC_ID_RV10;
+		FourCC = MAKEFOURCC('R','V','1','0');
+	}
+	else 
+		return VFW_E_TYPE_NOT_ACCEPTED;
 
+
+	m_pAVCodec			= avcodec_find_decoder(m_nCodecID);
+	CheckPointer (m_pAVCodec, VFW_E_UNSUPPORTED_VIDEO);
+
+	m_pAVCtx	= avcodec_alloc_context();
+	CheckPointer (m_pAVCtx,	  E_POINTER);
+
+	m_pFrame = avcodec_alloc_frame();
+	CheckPointer (m_pFrame,	  E_POINTER);
+
+	 m_pAVCodec->id  = m_nCodecID;
+	 m_pAVCtx->intra_matrix			= (uint16_t*)calloc(sizeof(uint16_t),64);
+	 m_pAVCtx->inter_matrix			= (uint16_t*)calloc(sizeof(uint16_t),64);
+	 m_pAVCtx->codec_tag				= FourCC;
+	 m_pAVCtx->workaround_bugs		= FF_BUG_AUTODETECT;
+	 m_pAVCtx->error_concealment		=  FF_EC_DEBLOCK | FF_EC_GUESS_MVS;
+	 m_pAVCtx->error_recognition		= FF_ER_CAREFUL;
+	 m_pAVCtx->mb_decision = FF_MB_DECISION_SIMPLE;
+	
+	 m_pAVCtx->idct_algo				= FF_IDCT_XVIDMMX;
+	 m_pAVCtx->skip_loop_filter		= (AVDiscard)AVDISCARD_DEFAULT;
+	 CCpuId m_pCpuId;
+	 m_pAVCtx->dsp_mask				= FF_MM_FORCE | m_pCpuId.GetFeatures();
+	 //SVP_LogMsg5(L"L CPU %x" , m_pAVCtx->dsp_mask);
+
+	 m_pAVCtx->postgain				= 1.0f;
+	 m_pAVCtx->debug_mv				= 0;
+
+	 m_pAVCtx->opaque					= this;
+	 m_pAVCtx->get_buffer			= get_buffer;
+
+	 //TODO: MORE!! 
+	 //AllocExtradata (m_pAVCtx, pmt);
+	 ConnectTo (m_pAVCtx);
+	 //CalcAvgTimePerFrame();
+
+	 
+	 int avcRet = avcodec_open(m_pAVCtx, m_pAVCodec);
+	 if (avcRet<0){
+		 //SVP_LogMsg5(_T("AVCOPEN FAIL %d") , avcRet);
+		 return VFW_E_INVALIDMEDIATYPE;
+	 }
+
+#endif
 	return hr;
 }
 
@@ -1549,9 +1632,42 @@ void CRealVideoDecoder::FreeRV()
 {
 	if(m_dwCookie)
 	{
+#ifndef RV_FFMPEG		
 		RVFree(m_dwCookie);
+#endif
 		m_dwCookie = 0;
 	}
+#ifdef RV_FFMPEG
+	// Release FFMpeg
+	if (m_pAVCtx)
+	{
+		if (m_pAVCtx->intra_matrix)			free(m_pAVCtx->intra_matrix);
+		if (m_pAVCtx->inter_matrix)			free(m_pAVCtx->inter_matrix);
+		if (m_pAVCtx->extradata)			free((unsigned char*)m_pAVCtx->extradata);
+		if (m_pFFBuffer)					free(m_pFFBuffer);
+
+		if (m_pAVCtx->slice_offset)			av_free(m_pAVCtx->slice_offset);
+		if (m_pAVCtx->codec)				avcodec_close(m_pAVCtx);
+
+		av_free(m_pAVCtx);
+	}
+	if (m_pFrame)	av_free(m_pFrame);
+
+	m_pAVCodec		= NULL;
+	m_pAVCtx		= NULL;
+	m_pFrame		= NULL;
+	m_pFFBuffer		= NULL;
+	m_nFFBufferSize	= 0;
+	m_nCodecID		= CODEC_ID_UNSUPPORTED;
+#endif
+}
+HRESULT CRealVideoDecoder::Real_RVTransform(BYTE* pDataIn, BYTE* pI420, void* transform_in, void* transform_out, DWORD dwCookie)
+{
+	HRESULT hr = E_FAIL;
+	__try{
+		hr = RVTransform( pDataIn, pI420, transform_in, transform_out, dwCookie);
+	}__except(EXCEPTION_EXECUTE_HANDLER){}
+	return hr;
 }
 
 HRESULT CRealVideoDecoder::Transform(IMediaSample* pIn)
@@ -1565,6 +1681,7 @@ HRESULT CRealVideoDecoder::Transform(IMediaSample* pIn)
 		return hr;
 
 	long len = pIn->GetActualDataLength();
+	int nSize = len;
 	if(len <= 0) return S_OK; // nothing to do
 
 	REFERENCE_TIME rtStart, rtStop;
@@ -1635,12 +1752,31 @@ HRESULT CRealVideoDecoder::Transform(IMediaSample* pIn)
 	}
 	
 	SVP_LogMsg3("before RVTransform %d %d %d %d %d %d", transform_in.len , transform_in.unk1, transform_in.unk2, transform_in.chunks, transform_in.timestamp , m_dwCookie);
+#ifdef RV_FFMPEG
+	int				got_picture;
+	int				used_bytes;
 
-	try{
-		hr = RVTransform(pDataIn, (BYTE*)m_pI420, &transform_in, &transform_out, m_dwCookie);
-	}catch(...){
+	m_pAVCtx->width = m_w;
+	m_pAVCtx->width = m_h;
+	while (nSize > 0)
+	{
+		if (nSize+FF_INPUT_BUFFER_PADDING_SIZE > m_nFFBufferSize)
+		{
+			m_nFFBufferSize = nSize+FF_INPUT_BUFFER_PADDING_SIZE;
+			m_pFFBuffer		= (BYTE*)realloc(m_pFFBuffer, m_nFFBufferSize);
+		}
+
+		memcpy(m_pFFBuffer, pDataIn, nSize);
+		memset(m_pFFBuffer+nSize,0,FF_INPUT_BUFFER_PADDING_SIZE);
+		used_bytes = avcodec_decode_video (m_pAVCtx, m_pFrame, &got_picture, m_pFFBuffer, nSize);
+
 
 	}
+
+#else
+	hr = Real_RVTransform(pDataIn, (BYTE*)m_pI420, &transform_in, &transform_out, m_dwCookie);
+	
+#endif
 	
 	SVP_LogMsg3("after RVTransform %u %d %d %d %d" , hr , transform_out.w , transform_out.h, m_w, m_h);
 
@@ -1841,6 +1977,7 @@ HRESULT CRealVideoDecoder::CheckInputType(const CMediaType* mtIn)
 		if(!oldpath.IsEmpty()) paths.AddTail(oldpath + olddll);
 		paths.AddTail(olddll); // default dll paths
 
+#ifndef  RV_FFMPEG
 		POSITION pos = paths.GetHeadPosition();
 		while(pos ){
 			CString szDllPath = paths.GetNext(pos);
@@ -1863,11 +2000,12 @@ HRESULT CRealVideoDecoder::CheckInputType(const CMediaType* mtIn)
 			if(!RVTransform) RVTransform = (PRVTransform)GetProcAddress(m_hDrvDll, "RV40toYUV420Transform");
 		}
 
+
 		if(!m_hDrvDll || !RVCustomMessage 
 			|| !RVFree || !RVHiveMessage
 			|| !RVInit || !RVTransform)
 			return VFW_E_TYPE_NOT_ACCEPTED;
-
+#endif
 		if(FAILED(InitRV(mtIn)))
 			return VFW_E_TYPE_NOT_ACCEPTED;
 	}
@@ -1924,7 +2062,9 @@ HRESULT CRealVideoDecoder::NewSegment(REFERENCE_TIME tStart, REFERENCE_TIME tSto
 	m_fDropFrames = false;
 
 	DWORD tmp[2] = {20, 0};
+#ifndef RV_FFMPEG
 	RVHiveMessage(tmp, m_dwCookie);
+#endif
 
 	m_tStart = tStart;
 	return __super::NewSegment(tStart, tStop, dRate);

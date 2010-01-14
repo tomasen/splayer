@@ -219,9 +219,14 @@ public:
 };
 
 ////////////
+#include <TlibavcodecExt.h>
 
+struct AVCodec;
+struct AVCodecContext;
+struct AVFrame;
 
 class __declspec(uuid("238D0F23-5DC9-45A6-9BE2-666160C324DD")) CRealVideoDecoder : public CBaseVideoFilter
+	, public TlibavcodecExt
 {
 	typedef HRESULT (WINAPI *PRVCustomMessage)(void*, DWORD);
 	typedef HRESULT (WINAPI *PRVFree)(DWORD);
@@ -250,6 +255,16 @@ class __declspec(uuid("238D0F23-5DC9-45A6-9BE2-666160C324DD")) CRealVideoDecoder
 	void ResizeRow(BYTE* pIn, DWORD wi, DWORD dpi, BYTE* pOut, DWORD wo, DWORD dpo);
 
 	CAutoVectorPtr<BYTE> m_pI420, m_pI420Tmp;
+	
+	HRESULT Real_RVTransform(BYTE* pDataIn, BYTE* pI420, void* transform_in, void* transform_out, DWORD dwCookie);
+protected:
+	// === FFMpeg variables
+	AVCodec*								m_pAVCodec;
+	AVCodecContext*							m_pAVCtx;
+	AVFrame*								m_pFrame;
+	enum CodecID							m_nCodecID;
+	BYTE*									m_pFFBuffer;
+	int										m_nFFBufferSize;
 
 public:
 	CRealVideoDecoder(LPUNKNOWN lpunk, HRESULT* phr);

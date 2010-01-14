@@ -212,7 +212,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\BaseClasses"
+				AdditionalIncludeDirectories="..\..\..\..\include;..\..\BaseClasses;..\..\transform\mpcvideodec\ffmpeg;..\..\transform\mpcvideodec\ffmpeg\libavcodec;..\..\transform\mpcvideodec\ffmpeg\libavutil;..\..\transform\mpcvideodec"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				EnableEnhancedInstructionSet="0"
 			/>
@@ -227,7 +227,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="basesplitterRU.lib basevideofilterRU.lib"
+				AdditionalDependencies="basesplitterRU.lib basevideofilterRU.lib libavcodec_gcc.lib libgcc.a libmingwex.a"
 				OutputFile="../../../../lib/$(ProjectName)RU.lib"
 				AdditionalLibraryDirectories="../../../../lib"
 			/>

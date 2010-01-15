@@ -457,7 +457,7 @@ HRESULT CBaseVideoFilter::CopyBuffer(BYTE* pOut, BYTE** ppIn, int w, int h, int 
 
 		if(bihOut.biCompression == '2YUY')
 		{
-			//SVP_LogMsg5(L"BitBltFromI420ToYUY2 ");
+			SVP_LogMsg5(L"BitBltFromI420ToYUY2 ");
 			if(!BitBltFromI420ToYUY2(w, h, pOut, bihOut.biWidth*2, pIn, pInU, pInV, pitchIn, fInterlaced)){
 				SVP_LogMsg5(L"BitBltFromI420ToYUY2 fail");
 			}
@@ -465,7 +465,7 @@ HRESULT CBaseVideoFilter::CopyBuffer(BYTE* pOut, BYTE** ppIn, int w, int h, int 
 		}
 		else if(bihOut.biCompression == '024I' || bihOut.biCompression == 'VUYI' || bihOut.biCompression == '21VY')
 		{
-			//SVP_LogMsg5(L"BitBltFromI420ToI420 %d %d",w , h);
+			SVP_LogMsg5(L"BitBltFromI420ToI420 %d %d",w , h);
 			if(!BitBltFromI420ToI420(w, h, pOut, pOutU, pOutV, bihOut.biWidth, pIn, pInU, pInV, pitchIn)){
 				SVP_LogMsg5(L"BitBltFromI420ToI420 fail");
 			}

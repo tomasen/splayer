@@ -58,9 +58,13 @@ extern "C"
 #include "../../../svplib/svplib.h"
 
 #define LOGDEBUG 0
-#define MUST_LOG  SVP_LogMsg5
+#define MUST_LOG   __noop
+//SVP_LogMsg5
 #define SVP_LogMsg5 __noop
-#define TRACE5 __noop
+#define SVP_LogMsg6 __noop
+#define TRACE5  __noop
+
+#define CheckPointer2(p,ret) {if((p)==NULL) { SVP_LogMsg6("CheckPointer Failed %s : %d" , __FUNCTION__ , __LINE__); return (ret);}}
 /////
 #define MAX_SUPPORTED_MODE			5
 #define MPCVD_CAPTION				_T("MPC Video decoder")
@@ -302,6 +306,8 @@ FFMPEG_CODECS		ffCodecs[] =
 
 	{ &MEDIASUBTYPE_QTSmc, CODEC_ID_SMC,  MAKEFOURCC('s', 'm', 'c', ' '),	NULL },
 	
+	{ &MEDIASUBTYPE_HUFFYUV, CODEC_ID_HUFFYUV,  MAKEFOURCC('H', 'F', 'Y', 'U'),	NULL },
+	
 };
 
 /* Important: the order should be exactly the same as in ffCodecs[] */
@@ -473,8 +479,8 @@ const AMOVIESETUP_MEDIATYPE CMPCVideoDecFilter::sudPinTypesIn[] =
 	{ &MEDIATYPE_Video, &MEDIASUBTYPE_RV40   },
 	
 	{ &MEDIATYPE_Video, &MEDIASUBTYPE_MMES   },
-	{ &MEDIATYPE_Video, &MEDIASUBTYPE_QTSmc   } 
-	
+	{ &MEDIATYPE_Video, &MEDIASUBTYPE_QTSmc   } ,
+	{ &MEDIATYPE_Video, &MEDIASUBTYPE_HUFFYUV   } 
 };
 
 // Workaround : graphedit crash when filter expose more than 115 input MediaTypes !
@@ -913,12 +919,13 @@ void CMPCVideoDecFilter::CalcAvgTimePerFrame()
 
 void CMPCVideoDecFilter::LogLibAVCodec(void* par,int level,const char *fmt,va_list valist)
 {
-#ifdef _DEBUG
+#if LOGDEBUG
 	char		Msg [500];
 	vsnprintf_s (Msg, sizeof(Msg), _TRUNCATE, fmt, valist);
+	SVP_LogMsg6("AVLIB : %s", Msg);
 //	TRACE("AVLIB : %s", Msg);
 #endif
-	SVP_LogMsg6(fmt, valist);
+	
 }
 
 void CMPCVideoDecFilter::OnGetBuffer(AVFrame *pic)
@@ -941,7 +948,6 @@ STDMETHODIMP CMPCVideoDecFilter::NonDelegatingQueryInterface(REFIID riid, void**
 
 HRESULT CMPCVideoDecFilter::CheckInputType(const CMediaType* mtIn)
 {
-	//SVP_LogMsg5(L"CMPCVideoDecFilter::CheckInputType %s" , m_pName);
 	for (int i=0; i<sizeof(sudPinTypesIn)/sizeof(AMOVIESETUP_MEDIATYPE); i++)
 	{
 		if ((mtIn->majortype == *sudPinTypesIn[i].clsMajorType) && 
@@ -949,6 +955,7 @@ HRESULT CMPCVideoDecFilter::CheckInputType(const CMediaType* mtIn)
 			return S_OK;
 	}
 
+	
 	return VFW_E_TYPE_NOT_ACCEPTED;
 }
 
@@ -964,15 +971,18 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 	int		nNewCodec;
 
 	CString szName(this->m_pName);
-	//SVP_LogMsg5(L"CMPCVideoDecFilter::SetMediaType %s" , szName);
-		m_bUseDXVA = (szName.Find(_T("DXVA")) >= 0);
+	SVP_LogMsg5(L"CMPCVideoDecFilter::SetMediaType %s" , szName);
+	m_bUseDXVA = (szName.Find(_T("DXVA")) >= 0);
 	if(m_bUseDXVA) {DXVAFilters = ~0;}else{DXVAFilters = 0; }
 
  
 	if (direction == PINDIR_INPUT)
 	{
 		nNewCodec = FindCodec(pmt);
-		if (nNewCodec == -1) return VFW_E_TYPE_NOT_ACCEPTED;
+		if (nNewCodec == -1) {
+			SVP_LogMsg5(L"CMPCVideoDecFilter::SetMediaType failed %d" , nNewCodec);
+			return VFW_E_TYPE_NOT_ACCEPTED;
+		}
 
 		if (nNewCodec != m_nCodecNb)
 		{
@@ -980,15 +990,15 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 
 			m_bReorderBFrame	= true;
 			m_pAVCodec			= avcodec_find_decoder(ffCodecs[nNewCodec].nFFCodec);
-			CheckPointer (m_pAVCodec, VFW_E_UNSUPPORTED_VIDEO);
+			CheckPointer2 (m_pAVCodec, VFW_E_UNSUPPORTED_VIDEO);
 
 			m_pAVCtx	= avcodec_alloc_context();
-			CheckPointer (m_pAVCtx,	  E_POINTER);
+			CheckPointer2 (m_pAVCtx,	  E_POINTER);
 
 			if ((m_nThreadNumber > 1) && IsMultiThreadSupported (ffCodecs[m_nCodecNb].nFFCodec))
 				avcodec_thread_init(m_pAVCtx, m_nThreadNumber);
 			m_pFrame = avcodec_alloc_frame();
-			CheckPointer (m_pFrame,	  E_POINTER);
+			CheckPointer2 (m_pFrame,	  E_POINTER);
 
 			if(pmt->formattype == FORMAT_VideoInfo)
 			{
@@ -999,6 +1009,10 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 
 				if( m_pAVCodec->id == CODEC_ID_MJPEG ){
 					m_bUSERGB = true;
+				}else if( m_pAVCodec->id == CODEC_ID_HUFFYUV ){
+					m_pAVCtx->bits_per_coded_sample = vih->bmiHeader.biBitCount;
+					m_bUSERGB = true;
+					SVP_LogMsg5(L" bits_per_coded_sample %d ", m_pAVCtx->bits_per_coded_sample);
 				}else if( m_pAVCodec->id == CODEC_ID_TSCC ){
 					m_bUSERGB = true;
 					m_pAVCtx->bits_per_coded_sample = vih->bmiHeader.biBitCount;
@@ -1011,11 +1025,26 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 					m_pAVCtx->color_table_id = 0;
 				}
 
-				{
-					if(m_pAVCtx->bits_per_coded_sample > 0 && m_pAVCtx->bits_per_coded_sample <= 8){
+				{ 
+					if( m_pAVCtx->bits_per_coded_sample > 0 && m_pAVCodec->id == CODEC_ID_HUFFYUV  )
+					{
+						int extra_data_len = pmt->FormatLength() - sizeof(VIDEOINFOHEADER) ;
+						SVP_LogMsg5(L" CODEC_ID_HUFFYUV extra_data_len %d ", extra_data_len);
+						if( extra_data_len > 0 )
+						{
+							m_pAVCtx->extradata = (uint8_t *)calloc( 1, extra_data_len);
+							if(m_pAVCtx->extradata){
+								m_pAVCtx->extradata_size = extra_data_len;
+								const uint8_t *p_pal = pmt->Format() + sizeof(VIDEOINFOHEADER) ;
+								memcpy((void*)(m_pAVCtx->extradata),p_pal, extra_data_len);
+							}
+						}
+					}
+					else if(m_pAVCtx->bits_per_coded_sample > 0 && m_pAVCtx->bits_per_coded_sample <= 8){
 						int extra_data_len = pmt->FormatLength() - sizeof(VIDEOINFOHEADER) ;
 						if( extra_data_len > 0 )
 						{
+							SVP_LogMsg5(L" extra_data_len %d ", extra_data_len);
 							//const uint8_t *p_pal = (BYTE*)&vih->bmiHeader +  sizeof(BITMAPINFOHEADER);//+ sizeof(VIDEOINFOHEADER)
 							const uint8_t *p_pal = pmt->Format() + sizeof(VIDEOINFOHEADER) ;
 
@@ -1118,7 +1147,7 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 
 			int avcRet = avcodec_open(m_pAVCtx, m_pAVCodec);
 			if (avcRet<0){
-				//SVP_LogMsg2(_T("AVCOPEN FAIL %d") , avcRet);
+				SVP_LogMsg2(_T("AVCOPEN FAIL %d") , avcRet);
 				return VFW_E_INVALIDMEDIATYPE;
 			}
 			CString osd_msg;
@@ -1186,7 +1215,9 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 		}
 	}
 
-	return __super::SetMediaType(direction, pmt);
+	HRESULT hr4 = __super::SetMediaType(direction, pmt);
+	SVP_LogMsg5(L"__super::SetMediaType(direction, pmt); %x", hr4);
+	return hr4;
 }
 
 
@@ -1342,17 +1373,18 @@ HRESULT	CMPCVideoDecFilter::CheckConnect(PIN_DIRECTION dir, IPin* pPin){
 	if (IsDXVASupported() )
 	{
 		if(!m_dxvaAvalibility){
-			//SVP_LogMsg5( L"CMPCVideoDecFilter::CheckConnect Failed");
+			SVP_LogMsg5( L"CMPCVideoDecFilter::CheckConnect Failed");
 			return VFW_E_INVALID_DIRECTION;
 		}
 	}
-	return __super::CheckConnect (dir, pPin);
+	HRESULT hr = __super::CheckConnect (dir, pPin);
+	SVP_LogMsg5( L"CMPCVideoDecFilter::CheckConnect %x", hr);
+	return hr;
 }
 
 HRESULT CMPCVideoDecFilter::CompleteConnect(PIN_DIRECTION direction, IPin* pReceivePin)
 {
-	LOG(_T("CMPCVideoDecFilter::CompleteConnect"));
-
+	SVP_LogMsg5(_T("CMPCVideoDecFilter::CompleteConnect"));
 	if (direction==PINDIR_INPUT )
 	{
 		if(m_pOutput->IsConnected())
@@ -1365,7 +1397,7 @@ HRESULT CMPCVideoDecFilter::CompleteConnect(PIN_DIRECTION direction, IPin* pRece
 	else if (direction==PINDIR_OUTPUT)		 
 	{
 		
-		//	SVP_LogMsg5(_T("MPCV CompleteConnect %s") ,CStringFromGUID( GetCLSID(m_pInput->GetConnected())) );
+			SVP_LogMsg5(_T("MPCV CompleteConnect %s") ,CStringFromGUID( GetCLSID(m_pInput->GetConnected())) );
 			//ReconnectOutput (m_nWidth, m_nHeight, true, -1, -1, true);
 
 	//	Sleep(100);
@@ -1415,7 +1447,7 @@ HRESULT CMPCVideoDecFilter::CompleteConnect(PIN_DIRECTION direction, IPin* pRece
 		if((ClsidSourceFilter == __uuidof(CMpegSourceFilter)) || (ClsidSourceFilter == __uuidof(CMpegSplitterFilter)))
 			m_bReorderBFrame = false;
 
-		//SVP_LogMsg5(_T("MPCV CompleteConnect DONE"));
+		SVP_LogMsg5(_T("MPCV CompleteConnect DONE"));
 	}
 
 	// Cannot use YUY2 if horizontal or vertical resolution is not even
@@ -1423,7 +1455,9 @@ HRESULT CMPCVideoDecFilter::CompleteConnect(PIN_DIRECTION direction, IPin* pRece
 		 ((m_pOutput->CurrentMediaType().subtype == MEDIASUBTYPE_YUY2) && (m_pAVCtx->width&1 || m_pAVCtx->height&1)) )
 		return VFW_E_INVALIDMEDIATYPE;
 
-	return __super::CompleteConnect (direction, pReceivePin);
+	HRESULT hr3 = __super::CompleteConnect (direction, pReceivePin);
+	SVP_LogMsg5(_T("MPCV CompleteConnect %x") , hr3);
+	return hr3;
 }
 
 
@@ -1536,7 +1570,7 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 	int				got_picture;
 	int				used_bytes;
 
-	TRACE5(L"SoftwareDecode");
+	//TRACE5(L"SoftwareDecode");
 /*	if (m_pAVCtx->has_b_frames)
 	{
 		m_BFrames[m_nPosB].rtStart	= rtStart;
@@ -1585,7 +1619,7 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 		if (!got_picture || !m_pFrame->data[0]) { TRACE5(L"!got_picture || !m_pFrame->data[0] %d " , got_picture);  return S_OK; }
 		if(pIn->IsPreroll() == S_OK || rtStart < 0) { TRACE5(L"pIn->IsPreroll()  %d  %d " , pIn->IsPreroll() , rtStart); return S_OK;}
 
-		TRACE5(L"GetDeliveryBuffer");
+		//TRACE5(L"GetDeliveryBuffer");
 		CComPtr<IMediaSample>	pOut;
 		BYTE*					pDataOut = NULL;
 
@@ -1839,7 +1873,7 @@ HRESULT CMPCVideoDecFilter::Transform(IMediaSample* pIn)
 		break;
 	case MODE_DXVA1 :
 	case MODE_DXVA2 :
-		CheckPointer (m_pDXVADecoder, E_UNEXPECTED);
+		CheckPointer2 (m_pDXVADecoder, E_UNEXPECTED);
 		UpdateAspectRatio();
 
 		// Change aspect ratio for DXVA1
@@ -2267,7 +2301,7 @@ HRESULT CMPCVideoDecFilter::CreateDXVA1Decoder(IAMVideoAccelerator*  pAMVideoAcc
 
 STDMETHODIMP CMPCVideoDecFilter::GetPages(CAUUID* pPages)
 {
-	CheckPointer(pPages, E_POINTER);
+	CheckPointer2(pPages, E_POINTER);
 
 #ifdef REGISTER_FILTER
 	pPages->cElems		= 2;
@@ -2284,7 +2318,7 @@ STDMETHODIMP CMPCVideoDecFilter::GetPages(CAUUID* pPages)
 
 STDMETHODIMP CMPCVideoDecFilter::CreatePage(const GUID& guid, IPropertyPage** ppPage)
 {
-	CheckPointer(ppPage, E_POINTER);
+	CheckPointer2(ppPage, E_POINTER);
 
 	if(*ppPage != NULL) return E_INVALIDARG;
 

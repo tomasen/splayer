@@ -68,6 +68,7 @@ void avcodec_register_all(void)
     //REGISTER_DECODER (H263I, h263i);
     //REGISTER_ENCODER (H263P, h263p);
     REGISTER_DECODER (H264, h264);
+	REGISTER_DECODER (HUFFYUV, huffyuv);
     //REGISTER_ENCDEC  (HUFFYUV, huffyuv);
     //REGISTER_DECODER (INDEO2, indeo2);
     //REGISTER_DECODER (INDEO3, indeo3);

@@ -5,12 +5,15 @@
 	Name="libavcodec"
 	ProjectGUID="{5CAF881C-9349-4EE2-9697-982C10795033}"
 	RootNamespace="libavcodec"
-	TargetFrameworkVersion="0">
+	TargetFrameworkVersion="0"
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 		<Platform
-			Name="x64"/>
+			Name="x64"
+		/>
 	</Platforms>
 	<ToolFiles>
 	</ToolFiles>
@@ -22,22 +25,28 @@
 			ConfigurationType="4"
 			UseOfMFC="1"
 			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="1">
+			CharacterSet="1"
+			>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG"
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/libavcodec.tlb"/>
+				TypeLibraryName=".\Debug/libavcodec.tlb"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
@@ -56,28 +65,38 @@
 				SuppressStartupBanner="true"
 				DebugInformationFormat="4"
 				CompileAs="0"
-				DisableSpecificWarnings="4996"/>
+				DisableSpecificWarnings="4996"
+			/>
 			<Tool
-				Name="VCManagedResourceCompilerTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG"
-				Culture="1051"/>
+				Culture="1051"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\..\..\..\..\lib\libavcodecD.lib"/>
+				OutputFile="..\..\..\..\..\lib\libavcodecD.lib"
+			/>
 			<Tool
-				Name="VCALinkTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCXDCMakeTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCBscMakeTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCFxCopTool"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Debug|x64"
@@ -86,22 +105,28 @@
 			ConfigurationType="4"
 			UseOfMFC="1"
 			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="1">
+			CharacterSet="1"
+			>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG"
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="3"
-				TypeLibraryName=".\Debug/libavcodec.tlb"/>
+				TypeLibraryName=".\Debug/libavcodec.tlb"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
@@ -119,28 +144,38 @@
 				SuppressStartupBanner="true"
 				DebugInformationFormat="3"
 				CompileAs="0"
-				DisableSpecificWarnings="4996"/>
+				DisableSpecificWarnings="4996"
+			/>
 			<Tool
-				Name="VCManagedResourceCompilerTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG"
-				Culture="1051"/>
+				Culture="1051"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\..\..\..\..\lib64\libavcodecD.lib"/>
+				OutputFile="..\..\..\..\..\lib64\libavcodecD.lib"
+			/>
 			<Tool
-				Name="VCALinkTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCXDCMakeTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCBscMakeTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCFxCopTool"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
@@ -150,22 +185,28 @@
 			UseOfMFC="1"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="1"
-			WholeProgramOptimization="1">
+			WholeProgramOptimization="1"
+			>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="NDEBUG"
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Release/libavcodec.tlb"/>
+				TypeLibraryName=".\Release/libavcodec.tlb"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Qopenmp-link:static"
@@ -193,28 +234,38 @@
 				WarningLevel="1"
 				SuppressStartupBanner="true"
 				CompileAs="0"
-				DisableSpecificWarnings="4996,4005,4002,4244"/>
+				DisableSpecificWarnings="4996,4005,4002,4244"
+			/>
 			<Tool
-				Name="VCManagedResourceCompilerTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG"
-				Culture="1051"/>
+				Culture="1051"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\..\..\..\..\lib\libavcodecR.lib"/>
+				OutputFile="..\..\..\..\..\lib\libavcodecR.lib"
+			/>
 			<Tool
-				Name="VCALinkTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCXDCMakeTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCBscMakeTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCFxCopTool"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Release|x64"
@@ -223,22 +274,28 @@
 			ConfigurationType="4"
 			UseOfMFC="1"
 			ATLMinimizesCRunTimeLibraryUsage="false"
-			WholeProgramOptimization="0">
+			WholeProgramOptimization="0"
+			>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="NDEBUG"
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="3"
-				TypeLibraryName=".\Release/libavcodec.tlb"/>
+				TypeLibraryName=".\Release/libavcodec.tlb"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="3"
@@ -262,28 +319,38 @@
 				WarningLevel="1"
 				SuppressStartupBanner="true"
 				CompileAs="1"
-				DisableSpecificWarnings="4996,4005,4002,4244"/>
+				DisableSpecificWarnings="4996,4005,4002,4244"
+			/>
 			<Tool
-				Name="VCManagedResourceCompilerTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG"
-				Culture="1051"/>
+				Culture="1051"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\..\..\..\..\lib64\libavcodecR.lib"/>
+				OutputFile="..\..\..\..\..\lib64\libavcodecR.lib"
+			/>
 			<Tool
-				Name="VCALinkTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCXDCMakeTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCBscMakeTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCFxCopTool"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -291,842 +358,1125 @@
 	<Files>
 		<Filter
 			Name="Source Files"
-			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
+			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
+			>
 			<File
-				RelativePath=".\libavcodec\aac_ac3_parser.c">
+				RelativePath=".\libavcodec\aac_ac3_parser.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\ac3.c">
+				RelativePath=".\libavcodec\ac3.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\ac3_parser.c">
+				RelativePath=".\libavcodec\ac3_parser.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\ac3dec.c">
+				RelativePath=".\libavcodec\ac3dec.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\ac3dec_data.c">
+				RelativePath=".\libavcodec\ac3dec_data.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\ac3tab.c">
+				RelativePath=".\libavcodec\ac3tab.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavutil\aclib_template.c">
+				RelativePath=".\libavutil\aclib_template.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\allcodecs.c">
+				RelativePath=".\libavcodec\allcodecs.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\bitstream.c">
+				RelativePath=".\libavcodec\bitstream.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\cabac.c">
+				RelativePath=".\libavcodec\cabac.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\CompilatorVersion.c">
+				RelativePath=".\libavcodec\CompilatorVersion.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\dsputil.c">
+				RelativePath=".\libavcodec\dsputil.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\eac3dec.c">
+				RelativePath=".\libavcodec\eac3dec.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\error_resilience.c">
+				RelativePath=".\libavcodec\error_resilience.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\eval.c">
+				RelativePath=".\libavcodec\eval.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\faandct.c">
+				RelativePath=".\libavcodec\faandct.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\faandct.h">
+				RelativePath=".\libavcodec\faandct.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\faanidct.c">
+				RelativePath=".\libavcodec\faanidct.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\fft.c">
+				RelativePath=".\libavcodec\fft.c"
+				>
 			</File>
 			<File
-				RelativePath="libavcodec\golomb.c">
+				RelativePath="libavcodec\golomb.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\h261.c">
+				RelativePath=".\libavcodec\h261.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\h261_parser.c">
+				RelativePath=".\libavcodec\h261_parser.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\h261dec.c">
+				RelativePath=".\libavcodec\h261dec.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\h263.c">
+				RelativePath=".\libavcodec\h263.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\h263_parser.c">
+				RelativePath=".\libavcodec\h263_parser.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\h263dec.c">
+				RelativePath=".\libavcodec\h263dec.c"
+				>
 			</File>
 			<File
-				RelativePath="libavcodec\h264.c">
+				RelativePath="libavcodec\h264.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\h264_dxva.c">
+				RelativePath=".\libavcodec\h264_dxva.c"
+				>
 				<FileConfiguration
 					Name="Debug|Win32"
-					ExcludedFromBuild="true">
+					ExcludedFromBuild="true"
+					>
 					<Tool
-						Name="VCCLCompilerTool"/>
+						Name="VCCLCompilerTool"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|x64"
-					ExcludedFromBuild="true">
+					ExcludedFromBuild="true"
+					>
 					<Tool
-						Name="VCCLCompilerTool"/>
+						Name="VCCLCompilerTool"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
-					ExcludedFromBuild="true">
+					ExcludedFromBuild="true"
+					>
 					<Tool
-						Name="VCCLCompilerTool"/>
+						Name="VCCLCompilerTool"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|x64"
-					ExcludedFromBuild="true">
+					ExcludedFromBuild="true"
+					>
 					<Tool
-						Name="VCCLCompilerTool"/>
+						Name="VCCLCompilerTool"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\libavcodec\h264_parser.c">
+				RelativePath=".\libavcodec\h264_parser.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\h264idct.c">
+				RelativePath=".\libavcodec\h264idct.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\h264pred.c">
+				RelativePath=".\libavcodec\h264pred.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\huffman.c">
+				RelativePath=".\libavcodec\huffman.c"
+				>
 			</File>
 			<File
-				RelativePath="libavcodec\imgconvert.c">
+				RelativePath=".\libavcodec\huffyuv.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\intrax8.c">
+				RelativePath="libavcodec\imgconvert.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\intrax8dsp.c">
+				RelativePath=".\libavcodec\intrax8.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\jfdctfst.c">
+				RelativePath=".\libavcodec\intrax8dsp.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\jfdctint.c">
+				RelativePath=".\libavcodec\jfdctfst.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\jpegls.c">
+				RelativePath=".\libavcodec\jfdctint.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\jpeglsdec.c">
+				RelativePath=".\libavcodec\jpegls.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\jrevdct.c">
+				RelativePath=".\libavcodec\jpeglsdec.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\libamr.c">
+				RelativePath=".\libavcodec\jrevdct.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\mdct.c">
+				RelativePath=".\libavcodec\libamr.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\mjpeg.c">
+				RelativePath=".\libavcodec\mdct.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\mjpegdec.c">
+				RelativePath=".\libavcodec\mjpeg.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\mlp.c">
+				RelativePath=".\libavcodec\mjpegdec.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\mlp_parser.c">
+				RelativePath=".\libavcodec\mlp.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\mlpdec.c">
+				RelativePath=".\libavcodec\mlp_parser.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\mpc_helper.c">
+				RelativePath=".\libavcodec\mlpdec.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\mpeg12.c">
+				RelativePath=".\libavcodec\mpc_helper.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\mpeg12data.c">
+				RelativePath=".\libavcodec\mpeg12.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\mpeg4video_parser.c">
+				RelativePath=".\libavcodec\mpeg12data.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\mpegaudio_parser.c">
+				RelativePath=".\libavcodec\mpeg4video_parser.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\mpegaudiodata.c">
+				RelativePath=".\libavcodec\mpegaudio_parser.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\mpegaudiodec.c">
+				RelativePath=".\libavcodec\mpegaudiodata.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\mpegaudiodecheader.c">
+				RelativePath=".\libavcodec\mpegaudiodec.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\mpegvideo.c">
+				RelativePath=".\libavcodec\mpegaudiodecheader.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\mpegvideo_parser.c">
+				RelativePath=".\libavcodec\mpegvideo.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\msmpeg4.c">
+				RelativePath=".\libavcodec\mpegvideo_parser.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\msmpeg4data.c">
+				RelativePath=".\libavcodec\msmpeg4.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\msrle.c">
+				RelativePath=".\libavcodec\msmpeg4data.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\msrledec.c">
+				RelativePath=".\libavcodec\msrle.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\nellymoser.c">
+				RelativePath=".\libavcodec\msrledec.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\nellymoserdec.c">
+				RelativePath=".\libavcodec\nellymoser.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\parser.c">
+				RelativePath=".\libavcodec\nellymoserdec.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\ratecontrol.c">
+				RelativePath=".\libavcodec\parser.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\rv10.c">
+				RelativePath=".\libavcodec\ratecontrol.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\rv30.c">
+				RelativePath=".\libavcodec\rv10.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\rv30dsp.c">
+				RelativePath=".\libavcodec\rv30.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\rv34.c">
+				RelativePath=".\libavcodec\rv30dsp.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\rv40.c">
+				RelativePath=".\libavcodec\rv34.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\simple_idct.c">
+				RelativePath=".\libavcodec\rv40.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\sp5xdec.c">
+				RelativePath=".\libavcodec\simple_idct.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\svq1.c">
+				RelativePath=".\libavcodec\sp5xdec.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\svq1dec.c">
+				RelativePath=".\libavcodec\svq1.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\svq3.c">
+				RelativePath=".\libavcodec\svq1dec.c"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\svq3.c"
+				>
 				<FileConfiguration
 					Name="Debug|Win32"
-					ExcludedFromBuild="true">
+					ExcludedFromBuild="true"
+					>
 					<Tool
-						Name="VCCLCompilerTool"/>
+						Name="VCCLCompilerTool"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|x64"
-					ExcludedFromBuild="true">
+					ExcludedFromBuild="true"
+					>
 					<Tool
-						Name="VCCLCompilerTool"/>
+						Name="VCCLCompilerTool"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
-					ExcludedFromBuild="true">
+					ExcludedFromBuild="true"
+					>
 					<Tool
-						Name="VCCLCompilerTool"/>
+						Name="VCCLCompilerTool"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|x64"
-					ExcludedFromBuild="true">
+					ExcludedFromBuild="true"
+					>
 					<Tool
-						Name="VCCLCompilerTool"/>
+						Name="VCCLCompilerTool"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\libavcodec\tscc.c">
+				RelativePath=".\libavcodec\tscc.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\utils.c">
+				RelativePath=".\libavcodec\utils.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\vc1.c">
+				RelativePath=".\libavcodec\vc1.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\vc1_dxva.c">
+				RelativePath=".\libavcodec\vc1_dxva.c"
+				>
 				<FileConfiguration
 					Name="Debug|Win32"
-					ExcludedFromBuild="true">
+					ExcludedFromBuild="true"
+					>
 					<Tool
-						Name="VCCLCompilerTool"/>
+						Name="VCCLCompilerTool"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|x64"
-					ExcludedFromBuild="true">
+					ExcludedFromBuild="true"
+					>
 					<Tool
-						Name="VCCLCompilerTool"/>
+						Name="VCCLCompilerTool"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
-					ExcludedFromBuild="true">
+					ExcludedFromBuild="true"
+					>
 					<Tool
-						Name="VCCLCompilerTool"/>
+						Name="VCCLCompilerTool"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|x64"
-					ExcludedFromBuild="true">
+					ExcludedFromBuild="true"
+					>
 					<Tool
-						Name="VCCLCompilerTool"/>
+						Name="VCCLCompilerTool"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\libavcodec\vc1_parser.c">
+				RelativePath=".\libavcodec\vc1_parser.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\vc1data.c">
+				RelativePath=".\libavcodec\vc1data.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\vc1dsp.c">
+				RelativePath=".\libavcodec\vc1dsp.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\vp3.c">
+				RelativePath=".\libavcodec\vp3.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\vp3dsp.c">
+				RelativePath=".\libavcodec\vp3dsp.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\vp5.c">
+				RelativePath=".\libavcodec\vp5.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\vp56.c">
+				RelativePath=".\libavcodec\vp56.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\vp56data.c">
+				RelativePath=".\libavcodec\vp56data.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\vp6.c">
+				RelativePath=".\libavcodec\vp6.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\w32thread.c">
+				RelativePath=".\libavcodec\w32thread.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\wmv2.c">
+				RelativePath=".\libavcodec\wmv2.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\wmv2dec.c">
+				RelativePath=".\libavcodec\wmv2dec.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\xiph.c">
+				RelativePath=".\libavcodec\xiph.c"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl">
+			Filter="h;hpp;hxx;hm;inl"
+			>
 			<File
-				RelativePath=".\libavcodec\aac_ac3_parser.h">
+				RelativePath=".\libavcodec\aac_ac3_parser.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\ac3.h">
+				RelativePath=".\libavcodec\ac3.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\ac3_parser.h">
+				RelativePath=".\libavcodec\ac3_parser.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\ac3dec.h">
+				RelativePath=".\libavcodec\ac3dec.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\ac3dec_data.h">
+				RelativePath=".\libavcodec\ac3dec_data.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\ac3tab.h">
+				RelativePath=".\libavcodec\ac3tab.h"
+				>
 			</File>
 			<File
-				RelativePath=".\array_allocator.h">
+				RelativePath=".\array_allocator.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\avcodec.h">
+				RelativePath=".\libavcodec\avcodec.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\bitstream.h">
+				RelativePath=".\libavcodec\bitstream.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\bytestream.h">
+				RelativePath=".\libavcodec\bytestream.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\cabac.h">
+				RelativePath=".\libavcodec\cabac.h"
+				>
 			</File>
 			<File
-				RelativePath=".\char_t.h">
+				RelativePath=".\char_t.h"
+				>
 			</File>
 			<File
-				RelativePath=".\compiler.h">
+				RelativePath=".\compiler.h"
+				>
 			</File>
 			<File
-				RelativePath=".\config.h">
+				RelativePath=".\config.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\dsputil.h">
+				RelativePath=".\libavcodec\dsputil.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\eval.h">
+				RelativePath=".\libavcodec\eval.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\faanidct.h">
+				RelativePath=".\libavcodec\faanidct.h"
+				>
 			</File>
 			<File
-				RelativePath=".\ffcodecs.h">
+				RelativePath=".\ffcodecs.h"
+				>
 			</File>
 			<File
-				RelativePath=".\ffImgfmt.h">
+				RelativePath=".\ffImgfmt.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\golomb.h">
+				RelativePath=".\libavcodec\golomb.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\h261.h">
+				RelativePath=".\libavcodec\h261.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\h261data.h">
+				RelativePath=".\libavcodec\h261data.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\h263_parser.h">
+				RelativePath=".\libavcodec\h263_parser.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\h263data.h">
+				RelativePath=".\libavcodec\h263data.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\h264.h">
+				RelativePath=".\libavcodec\h264.h"
+				>
 			</File>
 			<File
-				RelativePath="libavcodec\h264_parser.h">
+				RelativePath="libavcodec\h264_parser.h"
+				>
 			</File>
 			<File
-				RelativePath="libavcodec\h264data.h">
+				RelativePath="libavcodec\h264data.h"
+				>
 			</File>
 			<File
-				RelativePath="libavcodec\h264pred.h">
+				RelativePath="libavcodec\h264pred.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\huffman.h">
+				RelativePath=".\libavcodec\huffman.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\intrax8.h">
+				RelativePath=".\libavcodec\intrax8.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\intrax8huf.h">
+				RelativePath=".\libavcodec\intrax8huf.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\mathops.h">
+				RelativePath=".\libavcodec\mathops.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\mjpeg.h">
+				RelativePath=".\libavcodec\mjpeg.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\mjpegdec.h">
+				RelativePath=".\libavcodec\mjpegdec.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\mlp.h">
+				RelativePath=".\libavcodec\mlp.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\mlp_parser.h">
+				RelativePath=".\libavcodec\mlp_parser.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\mpeg12.h">
+				RelativePath=".\libavcodec\mpeg12.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\mpeg12data.h">
+				RelativePath=".\libavcodec\mpeg12data.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\mpeg12decdata.h">
+				RelativePath=".\libavcodec\mpeg12decdata.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\mpeg4data.h">
+				RelativePath=".\libavcodec\mpeg4data.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\mpeg4video_parser.h">
+				RelativePath=".\libavcodec\mpeg4video_parser.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\mpegvideo.h">
+				RelativePath=".\libavcodec\mpegvideo.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\mpegvideo_common.h">
+				RelativePath=".\libavcodec\mpegvideo_common.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\msmpeg4.h">
+				RelativePath=".\libavcodec\msmpeg4.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\msmpeg4data.h">
+				RelativePath=".\libavcodec\msmpeg4data.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\msrledec.h">
+				RelativePath=".\libavcodec\msrledec.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\nellymoser.h">
+				RelativePath=".\libavcodec\nellymoser.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\parser.h">
+				RelativePath=".\libavcodec\parser.h"
+				>
 			</File>
 			<File
-				RelativePath=".\PODtypes.h">
+				RelativePath=".\PODtypes.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\ratecontrol.h">
+				RelativePath=".\libavcodec\ratecontrol.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\rectangle.h">
+				RelativePath=".\libavcodec\rectangle.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\rl.h">
+				RelativePath=".\libavcodec\rl.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\rv30data.h">
+				RelativePath=".\libavcodec\rv30data.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\rv34.h">
+				RelativePath=".\libavcodec\rv34.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\rv34data.h">
+				RelativePath=".\libavcodec\rv34data.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\rv34vlc.h">
+				RelativePath=".\libavcodec\rv34vlc.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\simple_idct.h">
+				RelativePath=".\libavcodec\simple_idct.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\sp5x.h">
+				RelativePath=".\libavcodec\sp5x.h"
+				>
 			</File>
 			<File
-				RelativePath="libavcodec\svq1.h">
+				RelativePath="libavcodec\svq1.h"
+				>
 			</File>
 			<File
-				RelativePath="libavcodec\svq1_cb.h">
+				RelativePath="libavcodec\svq1_cb.h"
+				>
 			</File>
 			<File
-				RelativePath="libavcodec\svq1_vlc.h">
+				RelativePath="libavcodec\svq1_vlc.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\swscale.h">
+				RelativePath=".\libavcodec\swscale.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\unary.h">
+				RelativePath=".\libavcodec\unary.h"
+				>
 			</File>
 			<File
-				RelativePath=".\unistd.h">
+				RelativePath=".\unistd.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\vc1.h">
+				RelativePath=".\libavcodec\vc1.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\vc1acdata.h">
+				RelativePath=".\libavcodec\vc1acdata.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\vc1data.h">
+				RelativePath=".\libavcodec\vc1data.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\vp3data.h">
+				RelativePath=".\libavcodec\vp3data.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\vp56.h">
+				RelativePath=".\libavcodec\vp56.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\vp56data.h">
+				RelativePath=".\libavcodec\vp56data.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\vp5data.h">
+				RelativePath=".\libavcodec\vp5data.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\vp6data.h">
+				RelativePath=".\libavcodec\vp6data.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\wmv2.h">
+				RelativePath=".\libavcodec\wmv2.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\xiph.h">
+				RelativePath=".\libavcodec\xiph.h"
+				>
 			</File>
 		</Filter>
 		<Filter
-			Name="amrnb">
+			Name="amrnb"
+			>
 			<File
-				RelativePath=".\libavcodec\amrnb\decoder.c">
+				RelativePath=".\libavcodec\amrnb\decoder.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrnb\encoder.c">
+				RelativePath=".\libavcodec\amrnb\encoder.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrnb\interf_dec.c">
+				RelativePath=".\libavcodec\amrnb\interf_dec.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrnb\interf_dec.h">
+				RelativePath=".\libavcodec\amrnb\interf_dec.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrnb\interf_enc.c">
+				RelativePath=".\libavcodec\amrnb\interf_enc.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrnb\interf_enc.h">
+				RelativePath=".\libavcodec\amrnb\interf_enc.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrnb\interf_rom.h">
+				RelativePath=".\libavcodec\amrnb\interf_rom.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrnb\rom_dec.h">
+				RelativePath=".\libavcodec\amrnb\rom_dec.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrnb\rom_enc.h">
+				RelativePath=".\libavcodec\amrnb\rom_enc.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrnb\sp_dec.c">
+				RelativePath=".\libavcodec\amrnb\sp_dec.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrnb\sp_dec.h">
+				RelativePath=".\libavcodec\amrnb\sp_dec.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrnb\sp_enc.c">
+				RelativePath=".\libavcodec\amrnb\sp_enc.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrnb\sp_enc.h">
+				RelativePath=".\libavcodec\amrnb\sp_enc.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrnb\typedef.h">
-			</File>
-		</Filter>
-		<Filter
-			Name="libavutil">
-			<File
-				RelativePath=".\libavutil\avstring.h">
-			</File>
-			<File
-				RelativePath=".\libavutil\avutil.h">
-			</File>
-			<File
-				RelativePath=".\libavutil\bswap.h">
-			</File>
-			<File
-				RelativePath=".\libavcodec\colorspace.h">
-			</File>
-			<File
-				RelativePath=".\libavutil\common.h">
-			</File>
-			<File
-				RelativePath=".\libavutil\crc.c">
-			</File>
-			<File
-				RelativePath=".\libavutil\crc.h">
-			</File>
-			<File
-				RelativePath=".\libavutil\crc_data.h">
-			</File>
-			<File
-				RelativePath=".\libavutil\integer.c">
-			</File>
-			<File
-				RelativePath=".\libavutil\integer.h">
-			</File>
-			<File
-				RelativePath=".\libavutil\internal.h">
-			</File>
-			<File
-				RelativePath=".\libavutil\intfloat_readwrite.c">
-			</File>
-			<File
-				RelativePath=".\libavutil\intfloat_readwrite.h">
-			</File>
-			<File
-				RelativePath=".\libavutil\intreadwrite.h">
-			</File>
-			<File
-				RelativePath=".\libavutil\lfg.c">
-			</File>
-			<File
-				RelativePath=".\libavutil\lfg.h">
-			</File>
-			<File
-				RelativePath=".\libavutil\log.c">
-			</File>
-			<File
-				RelativePath=".\libavutil\log.h">
-			</File>
-			<File
-				RelativePath=".\libavutil\lzo.c">
-			</File>
-			<File
-				RelativePath=".\libavutil\lzo.h">
-			</File>
-			<File
-				RelativePath=".\libavutil\mathematics.c">
-			</File>
-			<File
-				RelativePath=".\libavutil\mathematics.h">
-			</File>
-			<File
-				RelativePath=".\libavutil\md5.c">
-			</File>
-			<File
-				RelativePath=".\libavutil\md5.h">
-			</File>
-			<File
-				RelativePath=".\libavutil\mem.c">
-			</File>
-			<File
-				RelativePath=".\libavutil\mem.h">
-			</File>
-			<File
-				RelativePath=".\libavutil\random.c">
-			</File>
-			<File
-				RelativePath=".\libavutil\random.h">
-			</File>
-			<File
-				RelativePath=".\libavutil\rational.c">
-			</File>
-			<File
-				RelativePath=".\libavutil\rational.h">
-			</File>
-			<File
-				RelativePath=".\libavutil\string.c">
-			</File>
-			<File
-				RelativePath=".\libavutil\x86_cpu.h">
+				RelativePath=".\libavcodec\amrnb\typedef.h"
+				>
 			</File>
 		</Filter>
 		<Filter
-			Name="amrwb">
+			Name="libavutil"
+			>
 			<File
-				RelativePath=".\libavcodec\amrwb\dec.h">
+				RelativePath=".\libavutil\avstring.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrwb\dec_acelp.c">
+				RelativePath=".\libavutil\avutil.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrwb\dec_acelp.h">
+				RelativePath=".\libavutil\bswap.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrwb\dec_dtx.c">
+				RelativePath=".\libavcodec\colorspace.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrwb\dec_dtx.h">
+				RelativePath=".\libavutil\common.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrwb\dec_gain.c">
+				RelativePath=".\libavutil\crc.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrwb\dec_gain.h">
+				RelativePath=".\libavutil\crc.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrwb\dec_if.c">
+				RelativePath=".\libavutil\crc_data.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrwb\dec_if.h">
+				RelativePath=".\libavutil\integer.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrwb\dec_lpc.c">
+				RelativePath=".\libavutil\integer.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrwb\dec_lpc.h">
+				RelativePath=".\libavutil\internal.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrwb\dec_main.c">
+				RelativePath=".\libavutil\intfloat_readwrite.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrwb\dec_main.h">
+				RelativePath=".\libavutil\intfloat_readwrite.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrwb\dec_rom.c">
+				RelativePath=".\libavutil\intreadwrite.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrwb\dec_util.c">
+				RelativePath=".\libavutil\lfg.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrwb\dec_util.h">
+				RelativePath=".\libavutil\lfg.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrwb\decoder.c">
+				RelativePath=".\libavutil\log.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrwb\enc.h">
+				RelativePath=".\libavutil\log.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrwb\enc_acelp.c">
+				RelativePath=".\libavutil\lzo.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrwb\enc_acelp.h">
+				RelativePath=".\libavutil\lzo.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrwb\enc_dtx.c">
+				RelativePath=".\libavutil\mathematics.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrwb\enc_dtx.h">
+				RelativePath=".\libavutil\mathematics.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrwb\enc_gain.c">
+				RelativePath=".\libavutil\md5.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrwb\enc_gain.h">
+				RelativePath=".\libavutil\md5.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrwb\enc_if.c">
+				RelativePath=".\libavutil\mem.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrwb\enc_if.h">
+				RelativePath=".\libavutil\mem.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrwb\enc_lpc.c">
+				RelativePath=".\libavutil\random.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrwb\enc_lpc.h">
+				RelativePath=".\libavutil\random.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrwb\enc_main.c">
+				RelativePath=".\libavutil\rational.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrwb\enc_main.h">
+				RelativePath=".\libavutil\rational.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrwb\enc_rom.c">
+				RelativePath=".\libavutil\string.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrwb\enc_util.c">
+				RelativePath=".\libavutil\x86_cpu.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="amrwb"
+			>
+			<File
+				RelativePath=".\libavcodec\amrwb\dec.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrwb\enc_util.h">
+				RelativePath=".\libavcodec\amrwb\dec_acelp.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrwb\encoder.c">
+				RelativePath=".\libavcodec\amrwb\dec_acelp.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrwb\if_rom.c">
+				RelativePath=".\libavcodec\amrwb\dec_dtx.c"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrwb\if_rom.h">
+				RelativePath=".\libavcodec\amrwb\dec_dtx.h"
+				>
 			</File>
 			<File
-				RelativePath=".\libavcodec\amrwb\typedef.h">
+				RelativePath=".\libavcodec\amrwb\dec_gain.c"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\amrwb\dec_gain.h"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\amrwb\dec_if.c"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\amrwb\dec_if.h"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\amrwb\dec_lpc.c"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\amrwb\dec_lpc.h"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\amrwb\dec_main.c"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\amrwb\dec_main.h"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\amrwb\dec_rom.c"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\amrwb\dec_util.c"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\amrwb\dec_util.h"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\amrwb\decoder.c"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\amrwb\enc.h"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\amrwb\enc_acelp.c"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\amrwb\enc_acelp.h"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\amrwb\enc_dtx.c"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\amrwb\enc_dtx.h"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\amrwb\enc_gain.c"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\amrwb\enc_gain.h"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\amrwb\enc_if.c"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\amrwb\enc_if.h"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\amrwb\enc_lpc.c"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\amrwb\enc_lpc.h"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\amrwb\enc_main.c"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\amrwb\enc_main.h"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\amrwb\enc_rom.c"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\amrwb\enc_util.c"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\amrwb\enc_util.h"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\amrwb\encoder.c"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\amrwb\if_rom.c"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\amrwb\if_rom.h"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\amrwb\typedef.h"
+				>
 			</File>
 		</Filter>
 		<File
-			RelativePath=".\libavcodec_dec.def">
+			RelativePath=".\libavcodec_dec.def"
+			>
 		</File>
 	</Files>
 	<Globals>

@@ -480,7 +480,7 @@ static av_cold int decode_init(AVCodecContext *avctx)
 
 s->bgr32=1;
 //if(avctx->extradata)
-//  printf("extradata:%X, extradata_size:%d\n", *(uint32_t*)avctx->extradata, avctx->extradata_size);
+  av_log(NULL, AV_LOG_DEBUG, "extradata:%X, extradata_size:%d\n", *(uint32_t*)avctx->extradata, avctx->extradata_size);
     if(avctx->extradata_size){
         if((avctx->bits_per_coded_sample&7) && avctx->bits_per_coded_sample != 12)
             s->version=1; // do such files exist at all?
@@ -559,7 +559,7 @@ s->bgr32=1;
 
     alloc_temp(s);
 
-//    av_log(NULL, AV_LOG_DEBUG, "pred:%d bpp:%d hbpp:%d il:%d\n", s->predictor, s->bitstream_bpp, avctx->bits_per_coded_sample, s->interlaced);
+	av_log(NULL, AV_LOG_DEBUG, "pred:%d bpp:%d hbpp:%d il:%d version: %d\n", s->predictor, s->bitstream_bpp, avctx->bits_per_coded_sample, s->interlaced, s->version);
 
     return 0;
 }

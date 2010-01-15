@@ -13,6 +13,7 @@ CFLAGS+= -I. -I.. -I$(LAVC_DIR) -I$(LAVU_DIR) -I$(LAVF_DIR) -I../codecs -I../img
 CC=gcc
 
 SRCS_C=\
+		$(LAVC_DIR)/huffyuv.c \
 		$(LAVC_DIR)/pcm.c \
 		$(LAVC_DIR)/atrac.c \
 		$(LAVC_DIR)/smc.c \
@@ -156,7 +157,6 @@ SRCS_C=\
 #		$(LAVC_DIR)/h261.c \
 #		$(LAVC_DIR)/h261_parser.c \
 #		$(LAVC_DIR)/h261dec.c \
-#		$(LAVC_DIR)/huffyuv.c \
 #		$(LAVC_DIR)/imc.c \
 #		$(LAVC_DIR)/indeo2.c \
 #		$(LAVC_DIR)/indeo3.c \

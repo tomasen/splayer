@@ -28,6 +28,8 @@
 #define CINTERFACE
 #include <shobjidl.h>
 #include "../../svplib/SVPToolBox.h"
+//CString			g_strRegisteredAppName = _T("SPlayer") ;//cant use ResStr(IDS_FILEASSOC_REG_APPNAME);
+//CString			g_strRegisteredKey	= _T("Software\\Clients\\Media\\SPlayer\\Capabilities");
 
 CString			g_strRegisteredAppName = _T("射手影音播放器") ;//cant use ResStr(IDS_FILEASSOC_REG_APPNAME);
 CString			g_strOldAssoc		  = _T("PreviousRegistration");
@@ -54,6 +56,13 @@ CPPageFormats::CPPageFormats()
 	}
 
 	//TODO: detetc language setting and change  g_strRegisteredAppName  g_strRegisteredKey
+	AppSettings& s = AfxGetAppSettings();
+	if(s.iLanguage!=0){
+		g_strRegisteredAppName = _T("SPlayer") ;
+		g_strRegisteredKey	= _T("Software\\Clients\\Media\\SPlayer\\Capabilities");
+	
+	}
+	
 }
 
 CPPageFormats::~CPPageFormats()

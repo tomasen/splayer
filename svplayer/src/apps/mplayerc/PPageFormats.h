@@ -39,7 +39,7 @@ private:
 	
 	void SetListItemState(int nItem);
 	static CString GetEnqueueCommand();
-	static CString GetOpenCommand();
+	static CString GetOpenCommand(bool open_in_new_windows = false);
 	static CComPtr<IApplicationAssociationRegistration>	m_pAAR;
 	static BOOL SetFileAssociation(CString strExt, CString strProgID, bool fRegister);
 	static CString GetFileIcon(CString strExt);

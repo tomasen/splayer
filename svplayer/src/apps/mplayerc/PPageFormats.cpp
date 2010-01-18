@@ -468,6 +468,7 @@ bool CPPageFormats::RegisterExt(CString ext, bool fRegister)
 
 		return true;
 		// Create ProgID for this file type
+		/*
 		if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, strProgID)) return(false);
 		if(ERROR_SUCCESS != key.SetStringValue(NULL, _T("SPlayer.RARFile"))) return(false);
 
@@ -482,6 +483,7 @@ bool CPPageFormats::RegisterExt(CString ext, bool fRegister)
 		if(bSetValue && (ERROR_SUCCESS != key.SetStringValue(NULL, GetOpenCommand()))) return(false);
 
 		return true;
+		*/
 	}
 	
 	if(!fRegister && !bIsRAR)
@@ -528,6 +530,23 @@ bool CPPageFormats::RegisterExt(CString ext, bool fRegister)
 
 	if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, strProgID + _T("\\shell\\open\\command"))) return(false);
 	if(bSetValue && (ERROR_SUCCESS != key.SetStringValue(NULL, GetOpenCommand()))) return(false);
+
+
+	// Play option
+	if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, strProgID + _T("\\shell\\openewnd"))) return(false);
+	if(f_setContextFiles || bIsRAR)
+	{
+		if(ERROR_SUCCESS != key.SetStringValue(NULL, ResStr(IDS_OPEN_WITH_MPC_IN_NEW_WND))) return(false);
+	}
+	else
+	{
+		if(ERROR_SUCCESS != key.SetStringValue(NULL, _T(""))) return(false);
+	}
+
+	if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, strProgID + _T("\\shell\\openewnd\\command"))) return(false);
+	if(bSetValue && (ERROR_SUCCESS != key.SetStringValue(NULL, GetOpenCommand(true)))) return(false);
+
+
 
 	if(ERROR_SUCCESS != key.Create(HKEY_LOCAL_MACHINE, g_strRegisteredKey + _T("\\FileAssociations"))) return(false);
 	if(ERROR_SUCCESS != key.SetStringValue(ext, strProgID)) return(false);
@@ -587,7 +606,7 @@ CString CPPageFormats::GetEnqueueCommand()
 	return _T("\"") + path + _T("\" /add \"%1\"");
 }
 
-CString CPPageFormats::GetOpenCommand()
+CString CPPageFormats::GetOpenCommand(bool open_in_new_windows)
 {
 	CString          path;
 	TCHAR buff[MAX_PATH];
@@ -596,7 +615,10 @@ CString CPPageFormats::GetOpenCommand()
 		return _T("");
 
 	path = buff;
-	return _T("\"") + path + _T("\" \"%1\"");
+	if(open_in_new_windows)
+		return _T("\"") + path + _T("\"  /new  \"%1\"");
+	else
+		return _T("\"") + path + _T("\" \"%1\"");
 }
 
 static struct {LPCSTR verb, cmd; UINT action;} handlers[] =

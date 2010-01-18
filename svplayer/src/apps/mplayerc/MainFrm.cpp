@@ -83,6 +83,8 @@
 #include "DlgChkUpdater.h"
 #include "InfoReport.h"
 
+#include "..\..\..\Updater\cupdatenetlib.h"
+
 #define DEFCLIENTW 480
 #define DEFCLIENTH 360
 

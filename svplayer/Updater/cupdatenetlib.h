@@ -1,8 +1,8 @@
 #pragma once	
 
-#include "../src/svplib/curl/include/curl/curl.h"
-#include "../src/svplib/SVPToolBox.h"
-#include "../src/svplib/MD5Checksum.h"
+#include "curl/include/curl/curl.h"
+#include "SVPToolBox.h"
+#include "MD5Checksum.h"
 
  
 
@@ -50,3 +50,4 @@ private:
 	void SetCURLopt(CURL *curl );
 	char errorBuffer[CURL_ERROR_SIZE];
 };
+

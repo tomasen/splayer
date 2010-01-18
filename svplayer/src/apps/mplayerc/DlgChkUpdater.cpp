@@ -6,6 +6,8 @@
 #include "DlgChkUpdater.h"
 #include "../../svplib/svplib.h"
 #include "MainFrm.h"
+#include "..\..\..\Updater\cupdatenetlib.h"
+
 // CDlgChkUpdater dialog
 
 IMPLEMENT_DYNAMIC(CDlgChkUpdater, CDialog)

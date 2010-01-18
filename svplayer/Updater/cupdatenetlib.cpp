@@ -1,4 +1,9 @@
-#include "StdAfx.h"
+//#include "StdAfx.h"
+
+#include "targetver.h"
+#include <afxwin.h>         // MFC core and standard components
+#include <afxext.h>         // MFC extensions
+
 #include "cupdatenetlib.h"
 #include <atlpath.h>
 
@@ -536,3 +541,4 @@ int cupdatenetlib::downloadFiles(){
 
 	return iTotalDown;
 }
+

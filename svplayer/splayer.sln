@@ -398,6 +398,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "res_rus", "src\apps\lang\res_rus\res_rus.vcproj", "{9A281831-B717-47B0-8427-7A938E65A3B3}"
 EndProject
 Global
+	GlobalSection(DPCodeReviewSolutionGUID) = preSolution
+		DPCodeReviewSolutionGUID = {00000000-0000-0000-0000-000000000000}
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug Unicode|Win32 = Debug Unicode|Win32
 		Debug|Win32 = Debug|Win32
@@ -425,7 +428,8 @@ Global
 		{4D3B4FF4-535A-4201-AB7D-9AEC1E737A95}.Debug Unicode|Win32.Build.0 = Debug Unicode lib|Win32
 		{4D3B4FF4-535A-4201-AB7D-9AEC1E737A95}.Debug|Win32.ActiveCfg = Debug|Win32
 		{4D3B4FF4-535A-4201-AB7D-9AEC1E737A95}.Debug|Win32.Build.0 = Debug|Win32
-		{4D3B4FF4-535A-4201-AB7D-9AEC1E737A95}.Release Unicode|Win32.ActiveCfg = Release Unicode|Win32
+		{4D3B4FF4-535A-4201-AB7D-9AEC1E737A95}.Release Unicode|Win32.ActiveCfg = Release Unicode lib|Win32
+		{4D3B4FF4-535A-4201-AB7D-9AEC1E737A95}.Release Unicode|Win32.Build.0 = Release Unicode lib|Win32
 		{4D3B4FF4-535A-4201-AB7D-9AEC1E737A95}.Release|Win32.ActiveCfg = Release|Win32
 		{4D3B4FF4-535A-4201-AB7D-9AEC1E737A95}.Release|Win32.Build.0 = Release|Win32
 		{83CC6B88-A112-4192-BD5A-F2A249AF2277}.Debug Unicode|Win32.ActiveCfg = Debug Unicode lib|Win32
@@ -1091,8 +1095,5 @@ Global
 		{D0620EF4-1313-40D5-9069-A82F6FE26994} = {343641FF-9E40-4CB0-828B-90BE08DC0048}
 		{DF63D514-3DE6-4B17-AFC8-E99D418E6013} = {65A6D6C0-5E11-4F28-BE20-7C744CF919F2}
 		{9A281831-B717-47B0-8427-7A938E65A3B3} = {65A6D6C0-5E11-4F28-BE20-7C744CF919F2}
-	EndGlobalSection
-	GlobalSection(DPCodeReviewSolutionGUID) = preSolution
-		DPCodeReviewSolutionGUID = {00000000-0000-0000-0000-000000000000}
 	EndGlobalSection
 EndGlobal

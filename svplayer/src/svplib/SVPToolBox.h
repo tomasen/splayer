@@ -11,6 +11,7 @@ public:
 	CString getSameTmpExt(CString fnin );
 	int packGZfile(CString fnin , CString fnout );
 	int unpackGZfile(CString fnin , CString fnout );
+    bool IsFileGziped(CString fnin);
 	CString extractRarFile(CString rarfn);
 	CString PackageSubFiles(CStringArray* szaSubFiles);
 	int FindAllSubfile(CString szSubPath , CStringArray* szaSubFiles);
@@ -74,3 +75,6 @@ public:
 private:
 	CStringArray szaTmpFileNames;
 };
+
+bool ReadFileToBuffer(CString path, BYTE*& contents, DWORD* pdwsize) ;
+bool WriteBufferToFile(CString path, const BYTE* contents, DWORD dwsize);

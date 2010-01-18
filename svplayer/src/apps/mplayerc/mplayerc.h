@@ -36,8 +36,10 @@
 #include "fakefiltermapper2.h"
 #include "..\..\..\lib\splite\libsqlite\libsqlite.h"
 
-#include "..\..\..\Updater\cupdatenetlib.h"
+//#include "..\..\..\Updater\cupdatenetlib.h"
 #include "..\..\filters\switcher\AudioSwitcher\AudioSwitcher.h"
+
+class cupdatenetlib;
 
 #ifdef UNICODE
 #define MPC_WND_CLASS_NAME L"MediaPlayerClassicW"

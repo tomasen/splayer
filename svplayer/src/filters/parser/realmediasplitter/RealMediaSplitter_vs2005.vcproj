@@ -154,7 +154,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\..\..\src\filters\BaseClasses"
+				AdditionalIncludeDirectories="..\..\..\..\include;..\..\BaseClasses;..\..\transform\mpcvideodec\ffmpeg;..\..\transform\mpcvideodec\ffmpeg\libavcodec;..\..\transform\mpcvideodec\ffmpeg\libavutil;..\..\transform\mpcvideodec"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 			/>
 			<Tool

@@ -38,6 +38,9 @@
 #include "DlgChkUpdater.h"
 #include <dsound.h>
 
+#include "..\..\..\Updater\cupdatenetlib.h"
+
+
 #include "../../filters/transform/mpcvideodec/CpuId.h"
 
 //#define  SPI_GETDESKWALLPAPER 115

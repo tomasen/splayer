@@ -7,10 +7,15 @@
 		<svn_root>svn://svn.splayer.org:3690/svplayer</svn_root>
 		<SubWCRev>"c:\Program Files\TortoiseSVN\bin\SubWCRev.exe"</SubWCRev>
 		<outfolder>.\nightlybuild</outfolder>
+		<CodecFolder>..\..\codecfolder</CodecFolder>
 	</PropertyGroup>
 	<ItemGroup>
 		<ProjectsToBuild Include=".\$(project_path)\splayer.sln"/>
 	</ItemGroup>
+    <ItemGroup>
+        <CodecFiles Include="$(CodecFolder)\**\*.*"/>
+    </ItemGroup>
+
 	<Target Name="Init">
 		<Time Format="yyyyMMdd">
 			<Output TaskParameter="FormattedTime" PropertyName="buildDate" />
@@ -36,14 +41,27 @@
 			WorkingDirectory=".\$(project_path)"
 		ZipFileName="$(outfolder)\$(project_name)-$(Revision)-$(buildDate)-src.zip" />
 	</Target>
-	<Target Name="compile" DependsOnTargets="zipsrc">
+	<!--Target Name="compile" DependsOnTargets="zipsrc"-->
+	<Target Name="compile" DependsOnTargets="Init">
         <Copy SourceFiles=".\shooterclient.key"  DestinationFolder=".\$(project_path)\src\svplib.svp\"/>
     	<MSBuild Projects="@(ProjectsToBuild)"  Properties="Configuration=Release Unicode"/>
+	</Target>
+
+	<Target Name="CopyDecode">
+        <Copy
+            SourceFiles="@(CodecFiles)"
+            DestinationFiles="@(CodecFiles->'.\%(RecursiveDir)%(Filename)%(Extension)')"
+        >
+            <Output TaskParameter="CopiedFiles" ItemName="CopiedCodecFiles" />
+		</Copy>
+	</Target>
+
+	<Target Name="BuildSetups" DependsOnTargets="compile;CopyDecode">
 		<!-- Setup-->
 		<!--MSI-->
     	<MSBuild Projects=".\$(project_path)\Setup\svplayer.msi\setupmsi.proj"  />
 	</Target>
-	<Target Name="zipbin" DependsOnTargets="compile">
+	<Target Name="zipbin" DependsOnTargets="BuildSetups">
 		<CreateItem Include=".\splayer.exe" >
 			<Output TaskParameter="Include" ItemName="BinFiles" />
 		</CreateItem>
@@ -51,6 +69,9 @@
 			<Output TaskParameter="Include" ItemName="BinFiles" />
 		</CreateItem>
 		<CreateItem Include=".\Updater.*" >
+			<Output TaskParameter="Include" ItemName="BinFiles" />
+		</CreateItem>
+		<CreateItem Include="@(CopiedCodecFiles)" >
 			<Output TaskParameter="Include" ItemName="BinFiles" />
 		</CreateItem>
 		<Zip Files="@(BinFiles)"

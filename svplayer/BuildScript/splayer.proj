@@ -8,6 +8,7 @@
 		<SubWCRev>"c:\Program Files\TortoiseSVN\bin\SubWCRev.exe"</SubWCRev>
 		<outfolder>.\nightlybuild</outfolder>
 		<CodecFolder>..\..\codecfolder</CodecFolder>
+		<NSISCompiler>"C:\Program Files\NSIS\Unicode\makensis.exe"</NSISCompiler>
 	</PropertyGroup>
 	<ItemGroup>
 		<ProjectsToBuild Include=".\$(project_path)\splayer.sln"/>
@@ -32,6 +33,7 @@
 	<Target Name="CreateVersion" DependsOnTargets="GetCode">
 		<Exec Command="$(SubWCRev) ..\..\.. .\SvPlayerver.wxi.template .\SvPlayerver.wxi" WorkingDirectory=".\$(project_path)\Setup\svplayer.msi\WiX\"/>
 		<Exec Command="$(SubWCRev) ..\..\..\ .\SubWCRev.conf .\revision.h" WorkingDirectory=".\$(project_path)\src\apps\mplayerc\"/>
+		<Exec Command="$(SubWCRev) .. .\nsisversion.conf .\nsisversion.nsi" WorkingDirectory=".\$(project_path)\Setup\"/>
 	</Target>
 	<Target Name="zipsrc" DependsOnTargets="CreateVersion">
 		<CreateItem Include=".\$(project_path)\**\*.*" Exclude=".\$(project_path)\**\.svn\**" >
@@ -41,8 +43,7 @@
 			WorkingDirectory=".\$(project_path)"
 		ZipFileName="$(outfolder)\$(project_name)-$(Revision)-$(buildDate)-src.zip" />
 	</Target>
-	<!--Target Name="compile" DependsOnTargets="zipsrc"-->
-	<Target Name="compile" DependsOnTargets="Init">
+	<Target Name="compile" DependsOnTargets="zipsrc">
         <Copy SourceFiles=".\shooterclient.key"  DestinationFolder=".\$(project_path)\src\svplib.svp\"/>
     	<MSBuild Projects="@(ProjectsToBuild)"  Properties="Configuration=Release Unicode"/>
 	</Target>
@@ -58,6 +59,7 @@
 
 	<Target Name="BuildSetups" DependsOnTargets="compile;CopyDecode">
 		<!-- Setup-->
+		<Exec Command="$(NSISCompiler) netsetup.nsi" WorkingDirectory=".\$(project_path)\Setup"/>
 		<!--MSI-->
     	<MSBuild Projects=".\$(project_path)\Setup\svplayer.msi\setupmsi.proj"  />
 	</Target>
@@ -86,7 +88,7 @@
 			WorkingDirectory=".\$(project_path)"
 		ZipFileName="$(outfolder)\$(project_name)-$(Revision)-$(buildDate)-msi.zip" />
 		
-		<CreateItem Include=".\setup.exe" >
+		<CreateItem Include=".\SPlayerSetup.exe" >
 			<Output TaskParameter="Include" ItemName="Setupfiles" />
 		</CreateItem>
 		<Zip Files="@(Setupfiles)"

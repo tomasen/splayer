@@ -17191,5 +17191,6 @@ void CMainFrame::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 	// TODO: Add your message handler code here and/or call default
 	m_lastSeekAction = NULL;
 	KillTimer(TIMER_CLEAR_LAST_SEEK_ACTION);
+	
 	__super::OnKeyUp(nChar, nRepCnt, nFlags);
 }

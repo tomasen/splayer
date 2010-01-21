@@ -287,6 +287,7 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()
 	ON_WM_NCHITTEST()
+	ON_WM_KEYUP()
 END_MESSAGE_MAP()
 
 
@@ -610,4 +611,16 @@ LRESULT CChildView::OnNcHitTest(CPoint point)
 	// TODO: Add your message handler code here and/or call default
 
 	return CWnd::OnNcHitTest(point);
+}
+
+void CChildView::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
+{
+	// TODO: Add your message handler code here and/or call default
+	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
+	if(pFrame)
+	{
+		pFrame->m_lastSeekAction = 0;
+		pFrame->KillTimer(TIMER_CLEAR_LAST_SEEK_ACTION);
+	}
+	CWnd::OnKeyUp(nChar, nRepCnt, nFlags);
 }

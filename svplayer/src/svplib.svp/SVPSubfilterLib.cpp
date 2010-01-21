@@ -445,38 +445,26 @@ CSVPSubfilterLib::CSVPSubfilterLib(void)
 		* indicate that it will modify it */
 		if(GetFileVersionInfo(path, dwHandle, dwLen, lpData) != 0)
 		{
-			VerQueryValue(lpData, 
-				TEXT("\\VarFileInfo\\Translation"),
-				(LPVOID*)&lpTranslateT,
-				&cbTranslate);
-
-			// Read the file description for each language and code page.
-
-			for(UINT i=0; i < (cbTranslate/sizeof(struct LANGANDCODEPAGE)); i++ )
-			{
-				CString szParm;
-				szParm.Format( _T("\\StringFileInfo\\%04x%04x\\FileDescription"),
-					lpTranslateT[i].wLanguage,
-					lpTranslateT[i].wCodePage);
+			
+				CString szParm( _T("\\StringFileInfo\\000004b0\\FileDescription"));
 
 				if(VerQueryValue(lpData, szParm, &lpBuffer, &uLen) != 0)
 				{
+		
 
 					CString szProductName((TCHAR*)lpBuffer);
-					//SVP_LogMsg3("szProductName %s", szProductName);
+					//SVP_LogMsg5(L"szProductName %s", szProductName);
 					szProductName.MakeLower();
 
 					if(szProductName.Find(_T("ÉäÊÖ")) >= 0 || szProductName.Find(_T("splayer")) >= 0  ){
 						Ret = 25;
-						break;
+					
 					}
 				}
-
-			}
 		}
 	}
 	if(Ret == 25){
-		//SVP_LogMsg5(L"Not splayer" );
+		//SVP_LogMsg5(L" splayer" );
 		b_fake_player = 0;
 	}
 

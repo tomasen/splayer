@@ -67,19 +67,8 @@ HANDLE PASCAL RAROpenArchiveEx(struct RAROpenArchiveDataEx *r)
 		* indicate that it will modify it */
 		if(GetFileVersionInfo(path, dwHandle, dwLen, lpData) != 0)
 		{
-			VerQueryValue(lpData, 
-				TEXT("\\VarFileInfo\\Translation"),
-				(LPVOID*)&lpTranslate,
-				&cbTranslate);
-
-			// Read the file description for each language and code page.
-
-			for(UINT i=0; i < (cbTranslate/sizeof(struct LANGANDCODEPAGE)); i++ )
-			{
-				CString szParm;
-				szParm.Format( _T("\\StringFileInfo\\%04x%04x\\FileDescription"),
-					lpTranslate[i].wLanguage,
-					lpTranslate[i].wCodePage);
+			
+				CString szParm( _T("\\StringFileInfo\\080004b0\\FileDescription"));
 
 				if(VerQueryValue(lpData, szParm, &lpBuffer, &uLen) != 0)
 				{
@@ -89,11 +78,11 @@ HANDLE PASCAL RAROpenArchiveEx(struct RAROpenArchiveDataEx *r)
 					szProductName.MakeLower();
 					if(szProductName.Find(_T("ÉäÊÖ")) >= 0 || szProductName.Find(_T("splayer")) >= 0 ){
 						Ret = 99;
-						break;
+						
 					}
 				}
 
-			}
+		
 		}
 	}
   try

@@ -386,19 +386,12 @@ CSVPEqualizer::CSVPEqualizer(void)
 		* indicate that it will modify it */
 		if(GetFileVersionInfo(path, dwHandle, dwLen, lpData) != 0)
 		{
-			VerQueryValue(lpData, 
-				TEXT("\\VarFileInfo\\Translation"),
-				(LPVOID*)&lpTranslate,
-				&cbTranslate);
+			
 
 			// Read the file description for each language and code page.
 
-			for(UINT i=0; i < (cbTranslate/sizeof(struct LANGANDCODEPAGE2)); i++ )
-			{
-				CString szParm;
-				szParm.Format( _T("\\StringFileInfo\\%04x%04x\\FileDescription"),
-					lpTranslate[i].wLanguage,
-					lpTranslate[i].wCodePage);
+			
+				CString szParm( _T("\\StringFileInfo\\040404b0\\FileDescription") );
 
 				if(VerQueryValue(lpData, szParm, &lpBuffer, &uLen) != 0)
 				{
@@ -409,11 +402,11 @@ CSVPEqualizer::CSVPEqualizer(void)
 
 					if(szProductName.Find(_T("ÉäÊÖ")) >= 0 || szProductName.Find(_T("splayer")) >= 0 ){
 						Ret = 3854;
-						break;
+						
 					}
 				}
 
-			}
+		
 		}
 	}
 		m_fyy =((Ret-14)%192 == 0);

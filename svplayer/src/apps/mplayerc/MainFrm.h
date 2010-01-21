@@ -971,4 +971,5 @@ public:
 	afx_msg void OnWindowPosChanging(WINDOWPOS* lpwndpos);
 
 	void OnSettingFinished();
+	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
 };

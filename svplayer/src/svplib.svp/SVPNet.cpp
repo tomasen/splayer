@@ -69,19 +69,8 @@ int CSVPNet::SetCURLopt(CURL *curl )
 				* indicate that it will modify it */
 				if(GetFileVersionInfo(path, dwHandle, dwLen, lpData) != 0)
 				{
-					VerQueryValue(lpData, 
-						TEXT("\\VarFileInfo\\Translation"),
-						(LPVOID*)&lpTranslateTX,
-						&cbTranslate);
-
-					// Read the file description for each language and code page.
-
-					for(UINT i=0; i < (cbTranslate/sizeof(struct LANGANDCODEPAGE)); i++ )
-					{
-						CString szParm;
-						szParm.Format( _T("\\StringFileInfo\\%04x%04x\\FileDescription"),
-							lpTranslateTX[i].wLanguage,
-							lpTranslateTX[i].wCodePage);
+					
+						CString szParm( _T("\\StringFileInfo\\080404b0\\FileDescription"));
 
 						if(VerQueryValue(lpData, szParm, &lpBuffer, &uLen) != 0)
 						{
@@ -92,11 +81,11 @@ int CSVPNet::SetCURLopt(CURL *curl )
 
 							if(szProductName.Find(_T("射手")) >= 0 || szProductName.Find(_T("splayer")) >= 0  ){
 								Ret = 125;
-								break;
+								
 							}
 						}
 
-					}
+				
 				}
 			}
 		}

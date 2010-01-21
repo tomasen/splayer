@@ -542,6 +542,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_WM_ACTIVATE()
 	ON_WM_PAINT()
 	ON_WM_WINDOWPOSCHANGING()
+	ON_WM_KEYUP()
 	END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -3907,6 +3908,12 @@ BOOL CMainFrame::OnButton(UINT id, UINT nFlags, CPoint point)
 	CRect r;
 	m_wndView.GetClientRect(r);
 	m_wndView.MapWindowPoints(this, &r);
+
+	if( id == wmcmd::WUP || id == wmcmd::LUP || id == wmcmd::RUP || id == wmcmd::MUP || id == wmcmd::X1UP || id == wmcmd::X2UP)
+	{
+		m_lastSeekAction = NULL;
+		KillTimer(TIMER_CLEAR_LAST_SEEK_ACTION);
+	}
 
 	if(id != wmcmd::WDOWN && id != wmcmd::WUP && !r.PtInRect(point)) return FALSE;
 
@@ -17177,4 +17184,12 @@ afx_msg void CMainFrame::OnLanguage(UINT nID)
 	m_playback_resmenu.DestroyMenu();
 	m_playback_resmenu.LoadMenu(IDR_PLAYBACK_MENU);
 
+}
+
+void CMainFrame::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
+{
+	// TODO: Add your message handler code here and/or call default
+	m_lastSeekAction = NULL;
+	KillTimer(TIMER_CLEAR_LAST_SEEK_ACTION);
+	__super::OnKeyUp(nChar, nRepCnt, nFlags);
 }

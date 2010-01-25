@@ -310,6 +310,8 @@ private:
 	CPoint m_pLastClickPoint;
 	CPoint m_pDragFuncStartPoint;
 	int m_iRedrawAfterCloseCounter;
+	CSize m_original_size_of_current_video;
+	CSize m_last_size_of_current_kind_of_video;
 public:
 	//CCpuId m_CPU;
 	void SetupSVPAudioMenu();

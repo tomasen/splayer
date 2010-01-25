@@ -2698,7 +2698,27 @@ CString CMainFrame::getCurPlayingSubfile(int * iSubDelayMS,int subid ){
 
 void CMainFrame::OnTimer(UINT nIDEvent)
 {
-	if(TIMER_CLEAR_LAST_SEEK_ACTION == nIDEvent){
+	if(TIMER_SAVE_WINDOWS_POS_FOR_THIS_VIDEO_POS == nIDEvent){
+		KillTimer(TIMER_SAVE_WINDOWS_POS_FOR_THIS_VIDEO_POS);
+		AppSettings& s = AfxGetAppSettings();
+		if(m_last_size_of_current_kind_of_video.cx == s.rcLastWindowPos.Width() && m_last_size_of_current_kind_of_video.cy == s.rcLastWindowPos.Height())
+		{
+			return;
+		}
+		if(IsSomethingLoaded() && !m_fAudioOnly)
+		{
+			//TODO: Save window size for this kind of video
+			CString string_remember_windows_size_for_this_video_size_parm;
+			string_remember_windows_size_for_this_video_size_parm.Format(L"ORGSIZE%dx%d", m_original_size_of_current_video.cx, m_original_size_of_current_video.cy );
+			m_last_size_of_current_kind_of_video.cx = s.rcLastWindowPos.Width() ;
+			m_last_size_of_current_kind_of_video.cy = s.rcLastWindowPos.Height();
+			AfxGetMyApp()->WriteProfileInt(ResStr(IDS_R_SETTINGS)+L"REMENBERWNDSIZE", string_remember_windows_size_for_this_video_size_parm+L"W", m_last_size_of_current_kind_of_video.cx);
+			AfxGetMyApp()->WriteProfileInt(ResStr(IDS_R_SETTINGS)+L"REMENBERWNDSIZE", string_remember_windows_size_for_this_video_size_parm+L"H", m_last_size_of_current_kind_of_video.cy);
+			
+			
+		}
+
+	}else if(TIMER_CLEAR_LAST_SEEK_ACTION == nIDEvent){
 		m_lastSeekAction = 0;
 	}else if( TIMER_REDRAW_WINDOW == nIDEvent){
 		if(!IsSomethingLoaded() || m_iRedrawAfterCloseCounter++ > 4){
@@ -10485,6 +10505,9 @@ void CMainFrame::ZoomVideoWindow(double scale)
 			s.iZoomLevel == 2 ? 2.0 : 
 			s.iZoomLevel == 3 ? GetZoomAutoFitScale() : 
 			1.0;
+
+		m_last_size_of_current_kind_of_video.cx = -1;
+		m_last_size_of_current_kind_of_video.cy = -1;
 	}
 
 	if(m_fFullScreen)
@@ -10500,10 +10523,18 @@ void CMainFrame::ZoomVideoWindow(double scale)
 
 	if(!m_fAudioOnly)
 	{
-		CSize arxy = GetVideoSize();
+		CSize arxy = m_original_size_of_current_video = GetVideoSize();
 
 		long lWidth = int(arxy.cx * scale + 0.5);
 		long lHeight = int(arxy.cy * scale + 0.5);
+
+		CString string_remember_windows_size_for_this_video_size_parm;
+		string_remember_windows_size_for_this_video_size_parm.Format(L"ORGSIZE%dx%d", m_original_size_of_current_video.cx, m_original_size_of_current_video.cy );
+
+		AppSettings& s = AfxGetAppSettings();
+		long lPerfWidth = m_last_size_of_current_kind_of_video.cx = AfxGetMyApp()->GetProfileInt(ResStr(IDS_R_SETTINGS)+L"REMENBERWNDSIZE", string_remember_windows_size_for_this_video_size_parm+L"W", -1);
+		long lPerfHeight = m_last_size_of_current_kind_of_video.cy = AfxGetMyApp()->GetProfileInt(ResStr(IDS_R_SETTINGS)+L"REMENBERWNDSIZE", string_remember_windows_size_for_this_video_size_parm+L"H", -1);
+
 
 		DWORD style = GetStyle();
 
@@ -10546,6 +10577,13 @@ MENUBARINFO mbi;
 			double mratio = (double)lHeight/lWidth;
 			//SVP_LogMsg5(L"%d %d %f %d %d %f",h , w, w * mratio + (h - lHeight), lHeight, lWidth, mratio);
 			h = max(h , w * mratio + (h - lHeight));
+		}
+
+		if(bThisIsAutoZoom && lPerfWidth > 240 && lPerfHeight > 120)
+		{
+			//Only do this if its auto zoom
+			w = lPerfWidth;
+			h = lPerfHeight;
 		}
 	}
 	else
@@ -16588,11 +16626,16 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 	rePosOSD();
 
 	//::SetWindowPos(m_wndStatusBar.m_hWnd, m_wndView.m_hWnd, 20, 20, 100, 30,0);
+	KillTimer(TIMER_SAVE_WINDOWS_POS_FOR_THIS_VIDEO_POS);
 
 	if(!m_fFullScreen)
 	{
-		if(nType != SIZE_MAXIMIZED && nType != SIZE_MINIMIZED && m_WndSizeInited >= 2)
+		if(nType != SIZE_MAXIMIZED && nType != SIZE_MINIMIZED && m_WndSizeInited >= 2){
 			GetWindowRect(s.rcLastWindowPos);
+			//Going to save window pos for this video
+			SetTimer(TIMER_SAVE_WINDOWS_POS_FOR_THIS_VIDEO_POS, 1000, NULL);
+			
+		}
 		s.lastWindowType = nType;
 
 		//if we dont use aero, set the round corner region

@@ -601,7 +601,8 @@ CMainFrame::CMainFrame() :
 	m_haveSubVoted(false),
 	lastShowCurrentPlayingFileTime(0),
 	pTBL(NULL),
-	m_lastSeekAction(0)
+	m_lastSeekAction(0),
+	m_wndLycShowBox(NULL)
 {
 	m_wndFloatToolBar = new CPlayerFloatToolBar();
 }
@@ -3060,6 +3061,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 
 			}
 
+			
 		}
 		
 		if(m_iPlaybackMode == PM_FILE){
@@ -3067,9 +3069,18 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 			pMS->GetCurrentPosition(&rtNow);
 			pMS->GetDuration(&rtDur);
 
+			if(m_fAudioOnly && m_Lyric.m_has_lyric && m_wndLycShowBox)
+			{
+				int iLastingTime;
+				CString szLyricLine = m_Lyric.GetCurrentLyricLineByTime( rtNow, &iLastingTime ) ;
+				if(!szLyricLine.IsEmpty()){
+					m_wndLycShowBox->ShowLycLine( szLyricLine , iLastingTime );
+				}
+			}
+
 			UINT iTotalLenSec = (UINT)( (INT64) rtDur / 20000000 );
 			//如果视频长度大于1分钟， 而且是文件模式，而且正在播放中
-			if ( iTotalLenSec >  180 && m_iPlaybackMode == PM_FILE && GetMediaState() == State_Running) {
+			if ( !m_fAudioOnly && iTotalLenSec >  180 && m_iPlaybackMode == PM_FILE && GetMediaState() == State_Running) {
 
 				time_t time_now = time(NULL);
 
@@ -5081,13 +5092,35 @@ void CMainFrame::OnFilePostOpenmedia()
 	SendNowPlayingToMSN();
 	SendNowPlayingTomIRC();
 
+	m_Lyric.Empty();
+
 	if(m_iPlaybackMode == PM_FILE){
 		if(!s.bDontNeedSVPSubFilter && !m_pCAP && s.iSVPRenderType && !m_fAudioOnly ){
 			s.iSVPRenderType = 0;
 			SendStatusMessage( ResStr(IDS_OSD_MSG_DEVICE_NOT_SUPPORT_VIDEO_QMODE), 2000);
 		}
-	}
 
+		if(m_fAudioOnly){
+
+			//find lyric file
+			m_LyricFilePaths.RemoveAll();
+				
+			if( m_Lyric.FindLyricFileForAudio( GetCurPlayingFileName() , & m_LyricFilePaths )  > 0){
+				//load lyric file
+				if( m_Lyric.LoadLyricFile( m_LyricFilePaths.GetAt(0)) >= 0) 
+				{
+
+					//maybe we should do something here?
+					
+				}
+				
+			}
+
+		}
+
+	}
+	
+	
 }
 
 void CMainFrame::OnUpdateFilePostOpenmedia(CCmdUI* pCmdUI)
@@ -5116,6 +5149,7 @@ void CMainFrame::OnFilePostClosemedia()
 	m_bRefTime = 0;
 	ABControlOn = FALSE;
 
+	m_Lyric.Empty();
 
 	if(IsWindow(m_wndSubresyncBar.m_hWnd))
 	{

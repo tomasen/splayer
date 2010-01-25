@@ -71,6 +71,8 @@
 
 #include "../../filters/transform/svpfilter/ISVPSubFilter.h"
 
+#include "..\..\..\lib\lyriclib\lyriclib.h"
+#include "SVPLycShowBox.h"
 
 enum {PM_NONE, PM_FILE, PM_DVD, PM_CAPTURE};
 
@@ -927,6 +929,11 @@ public:
 	BOOL m_bDxvaInUse;
 	CString m_DXVAMode;
 	BOOL m_bEVRInUse;
+
+	//Lyric Thing
+	CLyricLib m_Lyric;
+	CStringArray m_LyricFilePaths;
+	SVPLycShowBox* m_wndLycShowBox;
 private:
 	CBitmap m_bmpCaption,m_bmpBCorner;//, m_bmpClose, m_bmpMaximize, m_bmpMinimize, m_bmpRestore, m_bmpMenu;
 	CSUIBtnList m_btnList;

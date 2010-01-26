@@ -60,9 +60,12 @@ extern "C"
 #define LOGDEBUG 0
 #define MUST_LOG   __noop
 //SVP_LogMsg5
+//#define TRACE SVP_LogMsg6
 #define SVP_LogMsg5 __noop
 #define SVP_LogMsg6 __noop
+#define TRACE __noop
 #define TRACE5  __noop
+
 
 #define CheckPointer2(p,ret) {if((p)==NULL) { SVP_LogMsg6("CheckPointer Failed %s : %d" , __FUNCTION__ , __LINE__); return (ret);}}
 /////
@@ -1633,11 +1636,18 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 		if(FAILED(hr = GetDeliveryBuffer(m_pAVCtx->width, m_pAVCtx->height, &pOut)) || FAILED(hr = pOut->GetPointer(&pDataOut)))
 			return hr;
 	
-		rtStart = m_pFrame->reordered_opaque;
-		rtStop  = m_pFrame->reordered_opaque + m_rtAvrTimePerFrame;
+		TRACE ("Deliver1 : %10I64d - %10I64d   (%10I64d)  \n", rtStart, rtStop, rtStop - rtStart);
+		if(m_pAVCtx->codec_id != CODEC_ID_CINEPAK)
+		{
+			rtStart = m_pFrame->reordered_opaque;
+			rtStop  = m_pFrame->reordered_opaque + m_rtAvrTimePerFrame;
+			TRACE ("Deliver2 : %10I64d - %10I64d   (%10I64d)  \n", rtStart, rtStop, rtStop - rtStart);
+		}
+		
 		ReorderBFrames(rtStart, rtStop);
 
 		pOut->SetTime(&rtStart, &rtStop);
+		TRACE ("Deliver3 : %10I64d - %10I64d   (%10I64d)  \n", rtStart, rtStop, rtStop - rtStart);
 		pOut->SetMediaTime(NULL, NULL);
 
 		GUID subtype = MEDIASUBTYPE_I420;
@@ -1691,8 +1701,8 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 		m_perf_timer[4] = GetPerfCounter();
 #if 0
 		static REFERENCE_TIME	rtLast = 0;
-		//TRACE ("Deliver : %10I64d - %10I64d   (%10I64d)  {%10I64d}\n", rtStart, rtStop, 
-		//			rtStop - rtStart, rtStart - rtLast);
+		TRACE ("Deliver : %10I64d - %10I64d   (%10I64d)  {%10I64d}\n", rtStart, rtStop, 
+					rtStop - rtStart, rtStart - rtLast);
 		rtLast = rtStart;
 #endif
 
@@ -1861,10 +1871,11 @@ HRESULT CMPCVideoDecFilter::Transform(IMediaSample* pIn)
 	}
 
 	//m_rtStart	= rtStart;
-	
+	//SVP_LogMsg5(L"rtStart" , )
 
+	//m_rtAvrTimePerFrame =  rtStop - rtStart;
 //	DumpBuffer (pDataIn, nSize);
-//	TRACE ("Receive : %10I64d - %10I64d   (%10I64d)  Size=%d\n", rtStart, rtStop, rtStop - rtStart, nSize);
+	TRACE ("Receive : %10I64d - %10I64d   (%10I64d) : (%10I64d)  Size=%d\n", rtStart, rtStop, rtStop - rtStart, m_rtAvrTimePerFrame, nSize);
 
 	//char		strMsg[300];
 	//FILE* hFile = fopen ("d:\\receive.txt", "at");

@@ -739,6 +739,9 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 			if (szFName.Find(_T("Sonic MP4 Demultiplexer")) >= 0 ) continue;
 			if (szFName.Find(_T("MainConcept")) >= 0 ) continue;
 			if (szFName.Find(_T("UUSEE DeMultiplexer")) >= 0 ) continue;
+			if (szFName.Find(_T("VideoTune")) >= 0 ) continue;
+			if (szFName.Find(_T("Sonic HD Demuxer")) >= 0 ) continue;
+			
 			//if (szFName.Find(_T("SHN to Wave Filter")) >= 0 ) continue;
 			//if (szFName.Find(_T("AVI Decompressor (YV12)")) >= 0 ) continue;
 			//if (szFName.Find(_T("AVI Decompressor (I420)")) >= 0 ) continue;
@@ -2045,6 +2048,7 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_tscc);
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_HUFFYUV);
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_MJPG);
+	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_CVID);
 	//pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_QTSmc);
 	
 #if INTERNAL_DECODER_FLV

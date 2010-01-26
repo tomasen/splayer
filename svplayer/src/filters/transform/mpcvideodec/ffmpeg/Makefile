@@ -13,6 +13,7 @@ CFLAGS+= -I. -I.. -I$(LAVC_DIR) -I$(LAVU_DIR) -I$(LAVF_DIR) -I../codecs -I../img
 CC=gcc
 
 SRCS_C=\
+		$(LAVC_DIR)/cinepak.c \
 		$(LAVC_DIR)/huffyuv.c \
 		$(LAVC_DIR)/pcm.c \
 		$(LAVC_DIR)/atrac.c \
@@ -143,7 +144,6 @@ SRCS_C=\
 #		$(LAVC_DIR)/cavs.c \
 #		$(LAVC_DIR)/cavsdec.c \
 #		$(LAVC_DIR)/cavsdsp.c \
-#		$(LAVC_DIR)/cinepak.c \
 #		$(LAVC_DIR)/corepng.c \
 #		$(LAVC_DIR)/cscd.c \
 #		$(LAVC_DIR)/cyuv.c \

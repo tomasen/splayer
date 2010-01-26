@@ -1,5 +1,5 @@
 //#include "StdAfx.h"
-
+#include <afx.h>
 #include "targetver.h"
 #include <afxwin.h>         // MFC core and standard components
 #include <afxext.h>         // MFC extensions

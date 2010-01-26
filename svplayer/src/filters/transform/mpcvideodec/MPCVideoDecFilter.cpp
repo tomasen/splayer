@@ -308,6 +308,7 @@ FFMPEG_CODECS		ffCodecs[] =
 	
 	{ &MEDIASUBTYPE_HUFFYUV, CODEC_ID_HUFFYUV,  MAKEFOURCC('H', 'F', 'Y', 'U'),	NULL },
 	
+	{ &MEDIASUBTYPE_MJPG, CODEC_ID_MJPEG,  MAKEFOURCC('M', 'J', 'P', 'G'),	NULL },
 };
 
 /* Important: the order should be exactly the same as in ffCodecs[] */
@@ -480,7 +481,8 @@ const AMOVIESETUP_MEDIATYPE CMPCVideoDecFilter::sudPinTypesIn[] =
 	
 	{ &MEDIATYPE_Video, &MEDIASUBTYPE_MMES   },
 	{ &MEDIATYPE_Video, &MEDIASUBTYPE_QTSmc   } ,
-	{ &MEDIATYPE_Video, &MEDIASUBTYPE_HUFFYUV   } 
+	{ &MEDIATYPE_Video, &MEDIASUBTYPE_HUFFYUV   } ,
+	{ &MEDIATYPE_Video, &MEDIASUBTYPE_MJPG   } 
 };
 
 // Workaround : graphedit crash when filter expose more than 115 input MediaTypes !
@@ -922,7 +924,7 @@ void CMPCVideoDecFilter::LogLibAVCodec(void* par,int level,const char *fmt,va_li
 #if LOGDEBUG
 	char		Msg [500];
 	vsnprintf_s (Msg, sizeof(Msg), _TRUNCATE, fmt, valist);
-	SVP_LogMsg6("AVLIB : %s", Msg);
+	SVP_LogMsg6("AVLIB : %s %s", Msg, fmt);
 //	TRACE("AVLIB : %s", Msg);
 #endif
 	
@@ -1009,7 +1011,7 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 
 				if( m_pAVCodec->id == CODEC_ID_MJPEG ){
 					m_bUSERGB = true;
-				}else if( m_pAVCodec->id == CODEC_ID_HUFFYUV ){
+				}else if( m_pAVCodec->id == CODEC_ID_HUFFYUV ){//|| m_pAVCodec->id == CODEC_ID_MJPEG
 					m_pAVCtx->bits_per_coded_sample = vih->bmiHeader.biBitCount;
 					m_bUSERGB = true;
 					SVP_LogMsg5(L" bits_per_coded_sample %d ", m_pAVCtx->bits_per_coded_sample);
@@ -1026,7 +1028,7 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 				}
 
 				{ 
-					if( m_pAVCtx->bits_per_coded_sample > 0 && m_pAVCodec->id == CODEC_ID_HUFFYUV  )
+					if( m_pAVCtx->bits_per_coded_sample > 0 && (m_pAVCodec->id == CODEC_ID_HUFFYUV ) )//|| m_pAVCodec->id == CODEC_ID_MJPEG
 					{
 						int extra_data_len = pmt->FormatLength() - sizeof(VIDEOINFOHEADER) ;
 						SVP_LogMsg5(L" CODEC_ID_HUFFYUV extra_data_len %d ", extra_data_len);

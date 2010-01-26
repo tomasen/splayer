@@ -626,13 +626,13 @@ bool CAviSplitterFilter::DemuxLoop()
 				}
 
 			
-
-				if(expectedsize != s->GetChunkSize(size))
+				DWORD realChunkSize = s->GetChunkSize(size);
+				if(expectedsize != realChunkSize)
 				{
 					fDiscontinuity[minTrack] = true;
-					SVP_LogMsg5(L"fDiscontinuity2 %d" , minTrack);
+					SVP_LogMsg5(L"fDiscontinuity2 %d %d %d" , minTrack, expectedsize, realChunkSize);
 					// ASSERT(0);
-					break;
+					//break;
 				}
 				 m_llLastPos = m_pFile->GetPos();
 			}

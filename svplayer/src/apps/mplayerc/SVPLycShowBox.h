@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "mplayerc.h"
-
+#include "SUIButton.h"
 
 
 //歌词显示面板
@@ -10,7 +10,7 @@
 //关闭后改为在主窗口界面内显示
 
 class SVPLycShowBox :
-	public CWnd
+	public CFrameWnd
 {
 private:
 
@@ -38,4 +38,27 @@ public:
 
 	int ShowLycLine(CString szLycLine, int iLastingTime);
 
+//Standard Message Loop Shits
+	DECLARE_MESSAGE_MAP()
+	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+	afx_msg void OnDestroy();
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+	afx_msg void OnMove(int x, int y);
+
+	void DoUpdateWindow();
+
+	CBitmap m_bmpWnd;
+	SIZE m_sizeBmpWnd;
+	int m_nBmpWndPadding;
+	CFont m_f;
+
+	long m_nCurrentMouseAction;
+	BOOL m_bMouseInAction;
+	POINT m_ptMouse;
+
+	//测试 POPUP 的 Layered Window
+	HWND m_wndNewOSD;
 };

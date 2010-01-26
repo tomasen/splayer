@@ -1117,6 +1117,11 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 			pTBL = NULL;	
 		}
 	}
+	/*/ for test only
+	m_wndLycShowBox = new SVPLycShowBox();
+	m_wndLycShowBox->CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, _T("#32770"), _T("FLOATLYCWND"), WS_POPUP, CRect( 20,20,521,1221 ) , this,  0);
+	m_wndLycShowBox->ShowWindow(SW_SHOW);
+	// */
 	m_WndSizeInited++;
 	return 0;
 }

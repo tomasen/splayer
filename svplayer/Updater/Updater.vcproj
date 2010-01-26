@@ -46,12 +46,12 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/D &quot;CURL_STATICLIB&quot; /D &quot;WINVER=0x0600&quot; /D &quot;_WIN32_WINNT=0x0600&quot; /D &quot;NTDDI_VERSION=NTDDI_VISTA&quot;"
 				Optimization="0"
-				AdditionalIncludeDirectories="../src/svplib/"
+				AdditionalIncludeDirectories="../src/svplib/;..\Thirdparty\"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
-				UsePrecompiledHeader="2"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 			/>
@@ -70,10 +70,10 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="libeay32.lib ssleay32.lib curllibd.lib svplibDU.lib zlibD.lib Version.lib libunrarD.lib D3D9.lib Wbemuuid.lib"
+				AdditionalDependencies="libeay32.lib ssleay32.lib curllibd.lib svplibDU.lib zlibD.lib Version.lib libunrarD.lib D3D9.lib Wbemuuid.lib base.lib courgette_lib.lib lzma_sdk.lib modp_b64.lib"
 				ShowProgress="0"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="../lib"
+				AdditionalLibraryDirectories="../lib;..\Thirdparty\courgette\debug"
 				IgnoreDefaultLibraryNames="nafxcw.lib;MSVCRT"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -138,7 +138,7 @@
 				OmitFramePointers="true"
 				EnableFiberSafeOptimizations="false"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="../src/svplib/"
+				AdditionalIncludeDirectories="../src/svplib/;..\Thirdparty\"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG"
 				StringPooling="true"
 				MinimalRebuild="false"
@@ -165,10 +165,10 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386  /LTCG"
-				AdditionalDependencies="Wbemuuid.lib libeay32.lib ssleay32.lib curllib.lib svplibRU.lib zlibR.lib Version.lib libunrarR.lib"
+				AdditionalDependencies="Wbemuuid.lib libeay32.lib ssleay32.lib curllib.lib svplibRU.lib zlibR.lib Version.lib libunrarR.lib base.lib courgette_lib.lib lzma_sdk.lib modp_b64.lib Dbghelp.lib"
 				OutputFile="..\..\$(ProjectName).exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="../lib"
+				AdditionalLibraryDirectories="../lib;..\Thirdparty\courgette\Release\"
 				UACExecutionLevel="0"
 				IgnoreDefaultLibraryNames="nafxcw.lib;MSVCRT"
 				GenerateDebugInformation="true"
@@ -241,6 +241,10 @@
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
+			<File
+				RelativePath=".\conrgette_interface.cpp"
+				>
+			</File>
 			<File
 				RelativePath=".\cupdatenetlib.cpp"
 				>

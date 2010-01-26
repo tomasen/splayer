@@ -47,6 +47,9 @@
 
 #include "..\..\filters\transform\mpadecfilter\MpaDecFilter.h"
 
+//Update URL
+char* szUrl = "http://svplayer.shooter.cn/api/updater.php";
+
 /////////
 typedef BOOL (WINAPI* MINIDUMPWRITEDUMP)(HANDLE hProcess, DWORD dwPid, HANDLE hFile, MINIDUMP_TYPE DumpType,
 										 CONST PMINIDUMP_EXCEPTION_INFORMATION ExceptionParam,

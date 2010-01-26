@@ -43,7 +43,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\Thirdparty\;..\..\Thirdparty\gtest;..\..\src\svplib\;..\..\Thirdparty\loglib;..\..\lib\splite\libsqlite\;..\..\Updater"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_LOGFILE_;_UNITTEST_;GOOGLE_GLOG_DLL_DECL="
+				PreprocessorDefinitions="NEW_UPDATE;WIN32;_DEBUG;_CONSOLE;_LOGFILE_;_UNITTEST_;GOOGLE_GLOG_DLL_DECL="
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -124,7 +124,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="..\..\Thirdparty\;..\..\Thirdparty\gtest;..\..\src\svplib\;..\..\Thirdparty\loglib;..\..\lib\splite\libsqlite\;..\..\Updater"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_LOGFILE_"
+				PreprocessorDefinitions="NEW_UPDATE;WIN32;NDEBUG;_CONSOLE;_LOGFILE_"
 				RuntimeLibrary="0"
 				TreatWChar_tAsBuiltInType="true"
 				UsePrecompiledHeader="0"

@@ -5,12 +5,11 @@
 #include "Updater.h"
 #include "UpdaterDlg.h"
 
-
-
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
+char* szUrl = "http://svplayer.shooter.cn/api/updater.php";
 
 BOOL CFileGetStatus(LPCTSTR lpszFileName, CFileStatus& status)
 {

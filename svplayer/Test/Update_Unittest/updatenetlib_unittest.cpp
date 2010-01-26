@@ -3,6 +3,10 @@
 #include "gtest/gtest.h"
 #include "cupdatenetlib.h"
 #include "conrgette_interface.h"
+#include "svptoolbox.h"
+
+char* szUrl = "http://127.0.0.1:8080/Update";
+//char* szUrl = "http://svplayer.shooter.cn/api/updater.php";
 
 
 namespace 
@@ -39,5 +43,105 @@ namespace
         CString strPatch(_T("..\\..\\Update_Unittest\\Data\\1056to1058.patch"));
         CString strNew(_T("..\\..\\Update_Unittest\\Data\\mergeresult1.exe"));
         MergeAndCompare(strOld, strMatch, strPatch, strNew);
+    }
+
+
+    class UpdateTest : public ::testing::Test {
+    protected:
+        virtual void SetUp() {
+            memset(&sei, 0, sizeof(sei));
+            sei.cbSize =  sizeof(sei) ;
+            sei.fMask = SEE_MASK_NOCLOSEPROCESS;
+            sei.nShow = SW_SHOWNORMAL; 
+            sei.lpVerb = _T("open");
+            sei.lpFile = _T("python.exe");
+            sei.lpParameters = _T("code.py");
+        }
+
+        virtual void TearDown() { 
+            if (sei.hProcess)
+            {
+                TerminateProcess(sei.hProcess, 0);
+                WaitForSingleObject( sei.hProcess, INFINITE );
+            }
+        }
+
+        SHELLEXECUTEINFO sei ;
+    };
+
+    TEST_F(UpdateTest, basic)
+    {
+        sei.lpDirectory =_T("..\\..\\Update_Unittest\\web\\basic");
+        ASSERT_TRUE(ShellExecuteEx(&sei));
+        Sleep(3000); 
+        cupdatenetlib upl;
+        CSVPToolBox svpToolBox;
+        upl.downloadList();
+        ASSERT_EQ(1, upl.iSVPCU_TOTAL_FILE);
+        int i = upl.downloadFiles() ;
+        ASSERT_EQ(i, 1);
+    }
+
+    TEST_F(UpdateTest, basicGz)
+    {
+        DeleteFile(_T(".\\splayer.exe"));
+        DeleteFile(_T(".\\UPD\\063288abed7d083fd0d502fee3bca74b"));
+        sei.lpDirectory =_T("..\\..\\Update_Unittest\\web\\splayer");
+        ASSERT_TRUE(ShellExecuteEx(&sei));
+        Sleep(3000); 
+        cupdatenetlib upl;
+        CSVPToolBox svpToolBox;
+        upl.downloadList();
+        ASSERT_EQ(1, upl.iSVPCU_TOTAL_FILE);
+        int i = upl.downloadFiles() ;
+        ASSERT_EQ(i, 1);
+
+        CMD5Checksum md5checksum;
+        CString strMerged = md5checksum.GetMD5(_T(".\\UPD\\063288abed7d083fd0d502fee3bca74b"));
+        CString strTarget = md5checksum.GetMD5(_T("..\\..\\Update_Unittest\\Data\\1058\\splayer\\splayer.exe"));
+        ASSERT_TRUE(strMerged.CompareNoCase(strTarget) == 0);
+    }
+
+
+    TEST_F(UpdateTest, ExistingMd5Match)
+    {
+        //setup the environment
+        CopyFile(_T("..\\..\\Update_Unittest\\Data\\1058\\splayer\\splayer.exe"), _T(".\\splayer.exe"), FALSE);
+        sei.lpDirectory =_T("..\\..\\Update_Unittest\\web\\splayer");
+        ShellExecuteEx(&sei);
+        Sleep(3000); 
+        cupdatenetlib upl;
+        CSVPToolBox svpToolBox;
+        upl.downloadList();
+        ASSERT_EQ(1, upl.iSVPCU_TOTAL_FILE);
+        int i = upl.downloadFiles() ;
+        ASSERT_EQ(i, 0);
+    }
+
+    TEST_F(UpdateTest, BasicPatch)
+    {
+        //1058 to 1048
+        //
+        DeleteFile(_T(".\\splayer.exe"));
+        DeleteFile(_T(".\\UPD\\063288abed7d083fd0d502fee3bca74b"));
+        CopyFile(_T("..\\..\\Update_Unittest\\Data\\1056\\splayer\\splayer.exe"), _T(".\\splayer.exe"), FALSE);
+        sei.lpDirectory =_T("..\\..\\Update_Unittest\\web\\patch");
+        ShellExecuteEx(&sei);
+        Sleep(3000); 
+
+        //get the MD5
+        CMD5Checksum md5checksum;
+        CString strOldMd5 = md5checksum.GetMD5(_T(".\\splayer.exe"));
+
+        cupdatenetlib upl;
+        CSVPToolBox svpToolBox;
+        upl.downloadList();
+        ASSERT_EQ(1, upl.iSVPCU_TOTAL_FILE);
+        int i = upl.downloadFiles() ;
+        ASSERT_EQ(i, 1);
+
+        CString strMerged = md5checksum.GetMD5(_T(".\\UPD\\063288abed7d083fd0d502fee3bca74b"));
+        CString strTarget = md5checksum.GetMD5(_T("..\\..\\Update_Unittest\\Data\\1058\\splayer\\splayer.exe"));
+        ASSERT_TRUE(strMerged.CompareNoCase(strTarget) == 0);
     }
 }

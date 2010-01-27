@@ -32,6 +32,7 @@ typedef struct _UpdateInfo
     DWORD dwDowloadedLength;
     BOOL bDownload;
     CString strCurrentMD5;
+    BOOL bReadyToCopy;
 } UpdateInfo;
 
 class cupdatenetlib
@@ -46,14 +47,18 @@ public:
     BOOL downloadList();
     HINSTANCE GetD3X9Dll();
     int downloadFiles();
-    int downloadFileByID(CString szID, CString strOrgName, CString szTmpPath);
-    int downloadFileByIDAndMD5(CString szID, CString strOrgName, CString strMD5, CString szTmpPath);
+    int downloadFileByID(UpdateInfo* p, bool bUsingMd5 = false);
+    //int downloadFileByIDAndMD5(UpdateInfo* p, CString szID, CString strOrgName, CString strMD5, CString szTmpPath);
     void tryRealUpdate(BOOL bNoWaiting = FALSE);
     double getProgressBytes();
+public:
+    //for test only
+    int GetReadyToCopyCount();
 private:
     void SetCURLopt(CURL *curl );
     bool SkipThisFile(CString strName, CString strAction);
     bool PostUsingCurl(CString strFields, CString strReturnFile, curl_progress_callback pCallback = NULL);
+    bool IsMd5Match(CString strFileName, CString strMd5);
 public:
     BOOL bSVPCU_DONE ;
     int iSVPCU_CURRETN_FILE ;

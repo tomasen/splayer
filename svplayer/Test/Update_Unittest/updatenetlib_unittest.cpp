@@ -80,6 +80,7 @@ namespace
         ASSERT_EQ(1, upl.iSVPCU_TOTAL_FILE);
         int i = upl.downloadFiles() ;
         ASSERT_EQ(i, 1);
+        ASSERT_EQ(upl.GetReadyToCopyCount(), 0);
     }
 
     TEST_F(UpdateTest, basicGz)
@@ -100,6 +101,7 @@ namespace
         CString strMerged = md5checksum.GetMD5(_T(".\\UPD\\063288abed7d083fd0d502fee3bca74b"));
         CString strTarget = md5checksum.GetMD5(_T("..\\..\\Update_Unittest\\Data\\1058\\splayer\\splayer.exe"));
         ASSERT_TRUE(strMerged.CompareNoCase(strTarget) == 0);
+        ASSERT_EQ(upl.GetReadyToCopyCount(), 1);
     }
 
 
@@ -116,6 +118,7 @@ namespace
         ASSERT_EQ(1, upl.iSVPCU_TOTAL_FILE);
         int i = upl.downloadFiles() ;
         ASSERT_EQ(i, 0);
+        ASSERT_EQ(upl.GetReadyToCopyCount(), 0);
     }
 
     TEST_F(UpdateTest, BasicPatch)
@@ -143,5 +146,10 @@ namespace
         CString strMerged = md5checksum.GetMD5(_T(".\\UPD\\063288abed7d083fd0d502fee3bca74b"));
         CString strTarget = md5checksum.GetMD5(_T("..\\..\\Update_Unittest\\Data\\1058\\splayer\\splayer.exe"));
         ASSERT_TRUE(strMerged.CompareNoCase(strTarget) == 0);
+        ASSERT_EQ(upl.GetReadyToCopyCount(), 1);
     }
+
+    //new client - new server
+    //new client - old server  MD5 is ignored, safe
+    //old client - new server  No MD5 sent to server. safe
 }

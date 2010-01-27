@@ -76,12 +76,14 @@ void cupdatenetlib::procUpdate(){
 		if ( m_UpdateFileArray.GetCount() >0 ){
 //			SVP_LogMsg( _T("GOT UPDATE LIST: "));
 //			SVP_LogMsg( svpToolBox.Implode(_T("\t") , &szaLists) );
-			int i = 0;
-			while(  downloadFiles() != 0 ){
-				i++;
-				SVP_LogMsg( _T("DOWNLOAD UPDATE "));
-				if(i > 3) break;
-			}
+            SVP_LogMsg( _T("DOWNLOAD UPDATE "));
+            downloadFiles();
+			//int i = 0;
+			//while(  downloadFiles() != 0 ){
+			//	i++;
+			//	SVP_LogMsg( _T("DOWNLOAD UPDATE "));
+			//	if(i > 3) break;
+			//}
 			SVP_LogMsg( _T("REAL UPDATE") );
 			tryRealUpdate();
 		}
@@ -101,6 +103,7 @@ bool cupdatenetlib::PostUsingCurl(CString strFields, CString strReturnFile, curl
     CURLcode res;
     CString szPostPerm = strFields;
     bool rret = false;
+    SVP_LogMsg(strFields);
     curl = curl_easy_init();
     if(curl) {
         long respcode;
@@ -309,6 +312,7 @@ BOOL cupdatenetlib::downloadList(){
             puinfo->strPath = szaTmp.GetAt(LFILESETUPPATH);
             puinfo->strTempName = szaTmp.GetAt(LFILETMPATH);
             puinfo->strCurrentMD5 = currentHash;
+            puinfo->bReadyToCopy = false;
 
             m_UpdateFileArray.Add(puinfo);
 
@@ -321,7 +325,20 @@ BOOL cupdatenetlib::downloadList(){
 		szLog.Format(_T("Total Files: %d ; Total Len %d"), iSVPCU_TOTAL_FILE, iSVPCU_TOTAL_FILEBYTE);
 		SVP_LogMsg(szLog);
 	}
+    DeleteFile(szTmpFilename);
 	return rret;
+}
+
+int cupdatenetlib::GetReadyToCopyCount()
+{
+    int iret = 0;
+    for(int i = 0; i < m_UpdateFileArray.GetCount(); i++)
+    {
+        UpdateInfo* pInfo = (UpdateInfo*) m_UpdateFileArray.GetAt(i);
+        if (pInfo->bReadyToCopy)
+            iret++;
+    }
+    return iret;
 }
 
 void cupdatenetlib::tryRealUpdate(BOOL bNoWaiting){
@@ -346,24 +363,24 @@ void cupdatenetlib::tryRealUpdate(BOOL bNoWaiting){
 			}
 		}
 
-		bool bUpdateThis = FALSE;
+		bool bUpdateThis = pInfo->bReadyToCopy;
 	
-		//check file hash
-		CMD5Checksum cmd5;
-		CString updTmpHash ;
-		CString currentHash ;
-		if( svpToolBox.ifFileExist(szUpdfilesPath + pInfo->strTempName ) ){
-			updTmpHash = cmd5.GetMD5(szUpdfilesPath + pInfo->strTempName ); //Get Hash for current Temp File
-		}
-		
-		if( svpToolBox.ifFileExist(szBasePath + szSetupPath ) ){
-			currentHash = cmd5.GetMD5(szBasePath + szSetupPath); //Get Hash for bin file
-		}
+		////check file hash
+		//CMD5Checksum cmd5;
+		//CString updTmpHash ;
+		//CString currentHash ;
+		//if( svpToolBox.ifFileExist(szUpdfilesPath + pInfo->strTempName ) ){
+		//	updTmpHash = cmd5.GetMD5(szUpdfilesPath + pInfo->strTempName ); //Get Hash for current Temp File
+		//}
+		//
+		//if( svpToolBox.ifFileExist(szBasePath + szSetupPath ) ){
+		//	currentHash = cmd5.GetMD5(szBasePath + szSetupPath); //Get Hash for bin file
+		//}
 
 
-		if (currentHash.CompareNoCase( pInfo->strFileMd5 ) != 0 && updTmpHash.CompareNoCase( pInfo->strFileMd5 ) == 0 ){
-			bUpdateThis = TRUE;
-		}
+		//if (currentHash.CompareNoCase( pInfo->strFileMd5 ) != 0 && updTmpHash.CompareNoCase( pInfo->strFileMd5 ) == 0 ){
+		//	bUpdateThis = TRUE;
+		//}
 
 		if(bUpdateThis){
 			//if not match download
@@ -445,35 +462,69 @@ double cupdatenetlib::getProgressBytes(){
 	return progress;
 }
 
-int cupdatenetlib::downloadFileByIDAndMD5(CString szID, CString strOrgName, CString strMD5, CString szTmpPath)
+bool cupdatenetlib::IsMd5Match(CString strFileName, CString strMd5)
 {
-    CString szTmpFilename = this->svpToolBox.getTmpFileName();
-    CString szPostPerm;
-    szPostPerm.Format(_T("setupfileid=%s&MD5=%s"), szID, strMD5);
-    int rret = 0;
-
-    if (PostUsingCurl(szPostPerm, szTmpFilename, my_progress_func)){
-        rret = 1;
-        if (IsFileGziped(szTmpFilename))
-            svpToolBox.unpackGZfile( szTmpFilename, szTmpPath );
-        else
-        {
-            bool b = ApplyEnsemblePatch(szBasePath + strOrgName, szTmpFilename, szTmpPath);
-        }
+    CMD5Checksum cmd5;
+    CString strMd5Cal;
+    if( svpToolBox.ifFileExist(strFileName ) ){
+        strMd5Cal = cmd5.GetMD5(strFileName); 
+        return (strMd5Cal.CompareNoCase( strMd5 ) == 0 );
     }
-    return rret;
+    else
+        return false;
 }
 
-int cupdatenetlib::downloadFileByID(CString szID, CString strOrgName, CString szTmpPath){
+//, pInfo->strId, pInfo->strPath, pInfo->strCurrentMD5,szUpdfilesPath + pInfo->strTempName
+
+//int cupdatenetlib::downloadFileByIDAndMD5(UpdateInfo* p, CString szID, CString strOrgName, CString strMD5, CString szTmpPath)
+//{
+//    CString szTmpFilename = this->svpToolBox.getTmpFileName();
+//    CString szPostPerm;
+//    szPostPerm.Format(_T("setupfileid=%s&MD5=%s"), szID, strMD5);
+//    int rret = 0;
+//
+//    if (PostUsingCurl(szPostPerm, szTmpFilename, my_progress_func)){
+//        rret = 1;
+//        if (IsFileGziped(szTmpFilename))
+//            svpToolBox.unpackGZfile( szTmpFilename, szTmpPath );
+//        else
+//        {
+//            bool b = ApplyEnsemblePatch(szBasePath + strOrgName, szTmpFilename, szTmpPath);
+//        }
+//    }
+//    return rret;
+//}
+
+//, pInfo->strId, pInfo->strPath, szUpdfilesPath + pInfo->strTempName
+int cupdatenetlib::downloadFileByID(UpdateInfo* pInfo, bool UsingMd5){
 	CString szTmpFilename = this->svpToolBox.getTmpFileName();
 	CString szPostPerm;
-	szPostPerm.Format(_T("setupfileid=%s"), szID);
+    CString szTmpPath = szUpdfilesPath + pInfo->strTempName;
+    if (UsingMd5)
+        szPostPerm.Format(_T("setupfileid=%s&MD5=%s"), pInfo->strId, pInfo->strCurrentMD5);
+    else
+        szPostPerm.Format(_T("setupfileid=%s"), pInfo->strId);
+
 	int rret = 0;
 
 	if (PostUsingCurl(szPostPerm, szTmpFilename, my_progress_func)){
-        rret = 1;
-        svpToolBox.unpackGZfile( szTmpFilename, szTmpPath );
+        ////check MD5 of the downloaded file...
+        //we should do the check here, but now fro one given file we can have 2 kind of downloads, 
+        //thus the MD5 is not determined. SO we just check the result file.
+        //if (IsMd5Match(szTmpFilename, pInfo->strDownloadfileMD5))
+        //{
+            if (IsFileGziped(szTmpFilename))
+                svpToolBox.unpackGZfile( szTmpFilename, szTmpPath );
+            else
+                bool b = ApplyEnsemblePatch(szBasePath + pInfo->strPath, szTmpFilename, szTmpPath);
+
+            //check the MD5 of the result file...
+            rret = IsMd5Match(szTmpPath, pInfo->strFileMd5);
+            pInfo->bReadyToCopy = rret;
+
+        //}
 	}
+    DeleteFile(szTmpFilename);
 	return rret;
 }
 
@@ -503,17 +554,12 @@ int cupdatenetlib::downloadFiles(){
 #ifdef NEW_UPDATE
         if( svpToolBox.ifFileExist(szBasePath + szSetupPath ) )
         {
-            downloadFileByIDAndMD5( pInfo->strId, 
-                pInfo->strPath, 
-                pInfo->strCurrentMD5,
-                szUpdfilesPath + pInfo->strTempName);
+            downloadFileByID/*AndMD5*/( pInfo, true);
         }
         else
-            downloadFileByID( pInfo->strId, pInfo->strPath, 
-            szUpdfilesPath + pInfo->strTempName);
+            downloadFileByID( pInfo);
 #else
-        downloadFileByID( pInfo->strId, pInfo->strPath, 
-            szUpdfilesPath + pInfo->strTempName);
+        downloadFileByID( pInfo);
 #endif
         iTotalDown++;
         iSVPCU_CURRETN_FILE++;

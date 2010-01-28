@@ -35,7 +35,7 @@ namespace
                 _T("..\\..\\Update_Unittest\\Data\\1048to1058.patch"),
                 FALSE);
             CopyFile(_T("..\\..\\Update_Unittest\\web\\patch\\1056.patch"),
-                _T("..\\..\\Update_Unittest\\Data\\1048to1058.patch"),
+                _T("..\\..\\Update_Unittest\\Data\\1056to1058.patch"),
                 FALSE);
         }
 

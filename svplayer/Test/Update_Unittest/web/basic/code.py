@@ -39,7 +39,7 @@ class Update:
         user_data = web.input(setupfileid = 'Noitem')
         if (user_data.setupfileid == "100"):
             web.header('Content-Type', 'application/octet-stream')
-            a = open('.\\patches\\1056to1058.patch','rb')
+            a = open('..\\patch\\1056.patch','rb')
             s = a.read()        
             a.close()
         elif (user_data.setupfileid == "Noitem"):

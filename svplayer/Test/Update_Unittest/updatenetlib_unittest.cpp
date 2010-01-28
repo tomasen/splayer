@@ -27,16 +27,34 @@ namespace
         delete pb2;
     }
 
-    TEST(ConrgetteTest, applypatch) 
+    class ConrgetteTest : public ::testing::Test {
+    protected:
+        virtual void SetUp() {
+            CSVPToolBox tb;
+            CopyFile(_T("..\\..\\Update_Unittest\\web\\patch\\1048.patch"),
+                _T("..\\..\\Update_Unittest\\Data\\1048to1058.patch"),
+                FALSE);
+            CopyFile(_T("..\\..\\Update_Unittest\\web\\patch\\1056.patch"),
+                _T("..\\..\\Update_Unittest\\Data\\1048to1058.patch"),
+                FALSE);
+        }
+
+        //virtual void TearDown() { 
+        //}
+
+    };
+
+
+    TEST_F(ConrgetteTest, applypatch) 
     {
         CString strOld(_T("..\\..\\Update_Unittest\\Data\\1048\\splayer\\splayer.exe"));
-        CString strMatch(_T("..\\..\\Update_Unittest\\Data\\1056\\splayer\\splayer.exe"));
-        CString strPatch(_T("..\\..\\Update_Unittest\\Data\\1048to1056.patch"));
+        CString strMatch(_T("..\\..\\Update_Unittest\\Data\\1058\\splayer\\splayer.exe"));
+        CString strPatch(_T("..\\..\\Update_Unittest\\Data\\1048to1058.patch"));
         CString strNew(_T("..\\..\\Update_Unittest\\Data\\mergeresult.exe"));
         MergeAndCompare(strOld, strMatch, strPatch, strNew);
     }
 
-    TEST(ConrgetteTest, applypatch2) 
+    TEST_F(ConrgetteTest, applypatch2) 
     {
         CString strOld(_T("..\\..\\Update_Unittest\\Data\\1056\\splayer\\splayer.exe"));
         CString strMatch(_T("..\\..\\Update_Unittest\\Data\\1058\\splayer\\splayer.exe"));

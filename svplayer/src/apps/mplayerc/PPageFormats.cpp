@@ -57,7 +57,7 @@ CPPageFormats::CPPageFormats()
 
 	//TODO: detetc language setting and change  g_strRegisteredAppName  g_strRegisteredKey
 	AppSettings& s = AfxGetAppSettings();
-	if(s.iLanguage!=0){
+	if(!s.bIsChineseUIUser()){
 		g_strRegisteredAppName = _T("SPlayer") ;
 		g_strRegisteredKey	= _T("Software\\Clients\\Media\\SPlayer\\Capabilities");
 	

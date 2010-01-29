@@ -3111,7 +3111,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 								//如果还没提示过vote
 								//如果时间接近最末5分钟
 								AppSettings& s = AfxGetAppSettings();
-								if(s.iLanguage == 0){
+								if(s.bIsChineseUIUser()){
 								   //如果是中文
 									if( m_wndPlaylistBar.GetCount() <= 1){
 										//如果是1CD
@@ -3654,6 +3654,9 @@ LRESULT CMainFrame::OnGraphNotify(WPARAM wParam, LPARAM lParam)
 	
 					if(m_fFullScreen && s.fExitFullScreenAtTheEnd) 
 						OnViewFullscreen();
+                    else
+                        PostMessage(WM_COMMAND, ID_FILE_CLOSEPLAYLIST);
+
 				}
 			}
 			else if(m_wndPlaylistBar.GetCount() > 1)
@@ -3695,6 +3698,8 @@ LRESULT CMainFrame::OnGraphNotify(WPARAM wParam, LPARAM lParam)
 					{
 						if(m_fFullScreen && s.fExitFullScreenAtTheEnd) 
 							OnViewFullscreen();
+                        
+                        
 
 						if(s.fRewind)
 						{
@@ -3705,6 +3710,7 @@ LRESULT CMainFrame::OnGraphNotify(WPARAM wParam, LPARAM lParam)
 						{
 							m_fEndOfStream = false;
 							PostMessage(WM_COMMAND, ID_PLAY_STOP);
+                            PostMessage(WM_COMMAND, ID_FILE_CLOSEPLAYLIST);
 						}
 					}
 				}
@@ -13358,6 +13364,7 @@ CString CMainFrame::GetAnEasyToUnderstoodAudioStreamName(CString szName)
 	switch(AfxGetAppSettings().iLanguage)
 	{
 	case 0:
+    case 2:
 		if(szName.Find(L"Chinese") >= 0 ){
 			szTransdName = L"中文";
 		}else if(szName.Find(L"English") >= 0 ){
@@ -13697,6 +13704,7 @@ CString CMainFrame::GetAnEasyToUnderstoodSubtitleName(CString szName)
 	switch(AfxGetAppSettings().iLanguage)
 	{
 		case 0:
+        case 2:
 			if(szName.Find(L"gb") >= 0 || szName.Find(L"chs") >= 0){
 				szTransdName = L"简体中文";
 			}else if(szName.Find(L"cht") >= 0 || szName.Find(L"big5") >= 0)
@@ -16105,7 +16113,7 @@ void CMainFrame::OnVisitcontactinfo()
 {
 	AppSettings& s = AfxGetAppSettings();
 	CString szUrl = _T("http://shooter.cn/splayer/feedback.html");
-	if(s.iLanguage > 0){
+	if(!s.bIsChineseUIUser()){
 		szUrl.Append(_T("#googtrans(zh-CN|en)"));
 	}
 	ShellExecute(m_hWnd, _T("open"),szUrl , NULL, NULL, SW_SHOWDEFAULT);
@@ -16115,7 +16123,7 @@ void CMainFrame::OnDonate()
 {
 	AppSettings& s = AfxGetAppSettings();
 	CString szUrl = _T("http://shooter.cn/donate/");
-	if(s.iLanguage > 0){
+	if(!s.bIsChineseUIUser()){
 		szUrl.Append(_T("#googtrans(zh-CN|en)"));
 	}
 	ShellExecute(m_hWnd, _T("open"),szUrl, NULL, NULL, SW_SHOWDEFAULT);
@@ -16125,7 +16133,7 @@ void CMainFrame::OnJointeam()
 {
 	AppSettings& s = AfxGetAppSettings();
 	CString szUrl = _T("http://shooter.cn/splayer/join.html");
-	if(s.iLanguage > 0){
+	if(!s.bIsChineseUIUser()){
 		szUrl.Append(_T("#googtrans(zh-CN|en)"));
 	}
 	ShellExecute(m_hWnd, _T("open"), szUrl, NULL, NULL, SW_SHOWDEFAULT);

@@ -198,7 +198,7 @@ void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath, CStringArray* szSu
 		
 	szGStatMsg = szStatMsg;
 	AppSettings& s = AfxGetAppSettings();
-	if(szLang.IsEmpty() && s.iLanguage > 0){
+	if(szLang.IsEmpty() && !(s.iLanguage == 0 || s.iLanguage == 2)){
 		szLang = _T("eng");
 	}
 

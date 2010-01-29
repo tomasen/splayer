@@ -2588,7 +2588,7 @@ void CMPlayerCApp::Settings::ThreadedLoading(){
 				pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("HasYaheiDownloaded"), 0 );	
 		}
 	}
-	if( iLanguage == 0 ){
+	if( bIsChineseUIUser() ){
 		if(!svptoolbox.bFontExist(_T("微软雅黑")) && svptoolbox.bFontExist(_T("文泉驿微米黑"))){ 
 			if(subdefstyle.fontName.CompareNoCase(_T("黑体") ) == 0 )
 				subdefstyle.fontName = _T("文泉驿微米黑");
@@ -3513,6 +3513,10 @@ CString CMPlayerCApp::Settings::GetSVPSubStorePath(){
 BOOL CMPlayerCApp::Settings::bShouldUseGPUAcel(){
 	return  useGPUAcel && !bNoMoreDXVAForThisFile ;
 }
+BOOL CMPlayerCApp::Settings::bIsChineseUIUser()
+{
+    return  (iLanguage == 0 || iLanguage == 2);
+}
 BOOL CMPlayerCApp::Settings::bUserAeroUI(){
 	return  (bAeroGlassAvalibility && bAeroGlass) || bTransControl;
 }
@@ -4337,10 +4341,10 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		{
 			dmFullscreenRes.fValid = false;
 		}
-		fExitFullScreenAtTheEnd = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_EXITFULLSCREENATTHEEND), 1);
-		if(iUpgradeReset < 720){
-			fExitFullScreenAtTheEnd = 1;
-		}
+		fExitFullScreenAtTheEnd = 0;//!!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_EXITFULLSCREENATTHEEND), 1);
+		//if(iUpgradeReset < 720){
+		//	fExitFullScreenAtTheEnd = 1;
+		//}
 		fRememberWindowPos = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_REMEMBERWINDOWPOS), 1);
 		fRememberWindowSize = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_REMEMBERWINDOWSIZE), 0);
 		fSnapToDesktopEdges = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SNAPTODESKTOPEDGES), 1);

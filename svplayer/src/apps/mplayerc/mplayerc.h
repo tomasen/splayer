@@ -745,6 +745,7 @@ public:
 		void RegGlobalAccelKey(HWND hWnd = NULL);
 		void UpdateData(bool fSave);
 		BOOL bUserAeroUI();
+        BOOL bIsChineseUIUser();
 		BOOL bShouldUseGPUAcel();
 		CString GetSVPSubStorePath();
 		void InitChannelMap();

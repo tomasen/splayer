@@ -5769,7 +5769,9 @@ LPCTSTR CMPlayerCApp::GetSatelliteDll(int nLanguage)
 	{
 	case 1:		// English
 		return _T("lang\\splayer.en.dll");
-	case 3:		// Russian
+    case 2:		// English
+        return _T("lang\\splayer.cht.dll");
+    case 3:		// Russian
 		return _T("lang\\splayer.ru.dll");
 	}
 	return NULL;
@@ -5807,11 +5809,13 @@ void CMPlayerCApp::SetLanguage (int nLanguage)
 				switch(GetSystemDefaultLangID()){ //http://www.science.co.il/Language/Locale-Codes.asp?s=codepage
 					case 0x0804:
 					case 0x1004:
-					case 0x1404:
-					case 0x0c04:
-					case 0x0404: //Chinese 
 						nLanguage = 0;
 						break;
+                    case 0x1404:
+                    case 0x0c04:
+                    case 0x0404: //Chinese 
+                        nLanguage = 2;
+                        break;
 					case 0x0419:
 						nLanguage = 3;
 						break;

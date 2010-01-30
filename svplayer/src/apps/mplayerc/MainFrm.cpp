@@ -3652,10 +3652,12 @@ LRESULT CMainFrame::OnGraphNotify(WPARAM wParam, LPARAM lParam)
 					m_fEndOfStream = false;
 					PostMessage(WM_COMMAND, ID_PLAY_STOP);
 	
-					if(m_fFullScreen && s.fExitFullScreenAtTheEnd) 
-						OnViewFullscreen();
-                    else
-                        PostMessage(WM_COMMAND, ID_FILE_CLOSEPLAYLIST);
+                    if(m_fFullScreen){
+                        if(s.fExitFullScreenAtTheEnd) 
+						    OnViewFullscreen();
+                        else
+                            PostMessage(WM_COMMAND, ID_FILE_CLOSEPLAYLIST);
+                    }
 
 				}
 			}
@@ -3710,7 +3712,8 @@ LRESULT CMainFrame::OnGraphNotify(WPARAM wParam, LPARAM lParam)
 						{
 							m_fEndOfStream = false;
 							PostMessage(WM_COMMAND, ID_PLAY_STOP);
-                            PostMessage(WM_COMMAND, ID_FILE_CLOSEPLAYLIST);
+                            if(m_fFullScreen)
+                                PostMessage(WM_COMMAND, ID_FILE_CLOSEPLAYLIST);
 						}
 					}
 				}

@@ -2,7 +2,7 @@
 
 #pragma once
 #include "stdafx.h"
-
+#include "parse_lyrics.h"
 
 class CLyricLib {
 	typedef struct { LONGLONG rtStart, rtStop; CString szLyricLine; } LyricLine;
@@ -11,6 +11,7 @@ private:
 
 	CAtlList<LyricLine> m_lyrics;
 
+    parse_lyrics lyrics_parser;
 public:
 	CLyricLib(void);
 	~CLyricLib(void);

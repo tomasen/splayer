@@ -155,6 +155,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\parse_lyrics.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Stdafx.cpp"
 				>
 				<FileConfiguration
@@ -174,6 +178,10 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath=".\utils.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -185,7 +193,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\parse_lyrics.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Stdafx.h"
+				>
+			</File>
+			<File
+				RelativePath=".\utils.h"
 				>
 			</File>
 		</Filter>

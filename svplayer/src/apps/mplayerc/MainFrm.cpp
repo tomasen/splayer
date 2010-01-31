@@ -1122,7 +1122,8 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_wndLycShowBox->CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, _T("#32770"), _T("FLOATLYCWND"), WS_POPUP, CRect( 20,20,521,1221 ) , this,  0);
 	m_wndLycShowBox->ShowWindow(SW_SHOW);
 	// */
-	m_WndSizeInited++;
+
+   m_WndSizeInited++;
 	return 0;
 }
 
@@ -5510,6 +5511,8 @@ void CMainFrame::OnDvdSubOnOff()
 
 void CMainFrame::OnFileOpenQuick()
 {
+    //m_Lyric.LoadLyricFile(L"D:\\-=SVN=-\\test.lrc");
+
 	if(m_iMediaLoadState == MLS_LOADING || !IsWindow(m_wndPlaylistBar)) return;
 
 	CRecentFileList& MRU = AfxGetAppSettings().MRU;

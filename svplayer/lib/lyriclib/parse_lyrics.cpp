@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include "parse_lyrics.h"
 //#include "string_conv.h"
+#include "..\..\src\svplib\svplib.h"
 
 const size_t ATTRIB_NAME_LENGTH = 2;
 
@@ -369,7 +370,7 @@ bool parse_lyrics::read_lyrics(const tchar * in)
         double d;
         const tchar * p = line.c_str();
         uint len = 0;
-
+       
         while ((len = ts2t(p, d)) > 0)
         {
           if (m_is_panel_format && m_convert_format_start)
@@ -410,7 +411,8 @@ bool parse_lyrics::read_lyrics(const tchar * in)
               item->Lyric = _T(" ");
             else
               item->Lyric = p;
-
+            
+            //SVP_LogMsg5(L"lyric %s", item->Lyric.c_str());
             data.push_back(item);
           }
 
@@ -444,6 +446,7 @@ bool parse_lyrics::read_lyrics(const tchar * in)
   {
     std::sort(data.begin(), data.end());
   }
+
 
   return true;
 }

@@ -795,6 +795,17 @@ border:1px none ;
 #maintable tr td{
 border:1px solid #efefef ;
 }
+a.bigsettingbutton:hover {
+color:#63aed6;
+font-size:30pt;
+}
+a.bigsettingbutton{
+ display:block;width:250px;height:95px;
+ text-align:center;font-size:27pt;color:#63aed6;
+ border:1px solid #63aed6;
+ padding-top:16pt;
+
+}
 </style>
 </head>
 <body id="CUESettingPanel" onload="myInit();" >
@@ -965,11 +976,13 @@ border:1px solid #efefef ;
 <div id="morepanel" class="hiddenarea">
 <center>
 <br/>
-<a href="#" id='fillassoc_font'  onfocus="this.blur()" ><img id='fillassoc_img'  src='fillassoc.jpg' onmouseout="this.src='fillassoc.jpg';"  
- onmouseover="this.src='fillassoc_hover.jpg';"  border="0"/></a>
+<a href="#" id='fillassoc_img'  onfocus="this.blur()" class="bigsettingbutton">
+文件關聯
+</a>
 <br/><br/>
-<a href="#" id='hotkeysetting_font'  onfocus="this.blur()" ><img id='hotkeysetting_img'   src='hotkey.jpg' onmouseout="this.src='hotkey.jpg';"  
-onmouseover="this.src='hotkey_hover.jpg';"   border="0"/></a>
+<a href="#" id='hotkeysetting_img'  onfocus="this.blur()" class="bigsettingbutton"  >
+熱鍵設置
+</a>
 </center>
 <a href="?http://www.shooter.cn/donate/" title="捐助射手播放器" style="display:block;position:absolute;right:0px;bottom:0px;width:40px;height:40px;">
 <img src="donate.gif" border="0"/></a>
@@ -998,14 +1011,10 @@ onmouseover="this.src='hotkey_hover.jpg';"   border="0"/></a>
 </td></tr>
 <tr><td colspan="3" align="right" height="25px">
 <div class="paneltip" id='paneltip'></div>
-<a href="#" onfocus="this.blur()" ><img id="ButtonReset"   src='reset.jpg' onmouseout="this.src='reset.jpg';"  
-onmouseover="this.src='reset_hover.jpg';"   border="0"/></a>&nbsp; &nbsp; &nbsp; 
-<a href="#" onfocus="this.blur()" ><img id="ButtonOK"   src='ok.jpg' onmouseout="this.src='ok.jpg';"  
-onmouseover="this.src='ok_hover.jpg';"   border="0"/></a>
-<a href="#" onfocus="this.blur()" ><img id="ButtonCancel"   src='cancel.jpg' onmouseout="this.src='cancel.jpg';"  
-onmouseover="this.src='cancel_hover.jpg';"   border="0"/></a>
-<a href="#" onfocus="this.blur()" ><img id="ButtonApply"   src='apply.jpg' onmouseout="this.src='apply.jpg';"  
-onmouseover="this.src='apply_hover.jpg';"   border="0"/></a>
+<input type="button" id="ButtonReset" value=" 重置 " />&nbsp; &nbsp; &nbsp;
+<input type="button" id="ButtonOK"  value=" 確定 " /></a>
+<input type="button" id="ButtonCancel"  value=" 取消 "  /></a>
+<input type="button" id="ButtonApply"  value=" 應用 " /></a>
 </table>
 
 <div id='isvista' style="display:none"></div><div id='lastpanelid' style="display:none"></div>

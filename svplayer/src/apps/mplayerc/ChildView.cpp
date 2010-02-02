@@ -288,6 +288,7 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_WM_LBUTTONUP()
 	ON_WM_NCHITTEST()
 	ON_WM_KEYUP()
+    ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -398,6 +399,13 @@ void CChildView::OnPaint()
 		}
 	}
 	// Do not call CWnd::OnPaint() for painting messages
+}
+void CChildView::SetLyricLasting(int time_sec)
+{
+
+    KillTimer(TIMER_CLEAR_LYRIC_CHILDVIEW);
+    SetTimer(TIMER_CLEAR_LYRIC_CHILDVIEW, time_sec*1000, NULL);
+
 }
 void CChildView::ReCalcBtn(){
 	CRect rcWnd;
@@ -623,4 +631,15 @@ void CChildView::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 		pFrame->KillTimer(TIMER_CLEAR_LAST_SEEK_ACTION);
 	}
 	CWnd::OnKeyUp(nChar, nRepCnt, nFlags);
+}
+
+void CChildView::OnTimer(UINT_PTR nIDEvent)
+{
+    // TODO: Add your message handler code here and/or call default
+    if( TIMER_CLEAR_LYRIC_CHILDVIEW == nIDEvent)
+    {
+        m_strAudioInfo.Empty(); 
+
+    }
+    CWnd::OnTimer(nIDEvent);
 }

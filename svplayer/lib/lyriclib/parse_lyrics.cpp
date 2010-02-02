@@ -334,6 +334,8 @@ bool parse_lyrics::read_lyrics(const tchar * in)
     return false;
   }
 
+  //SVP_LogMsg5(L"lyric %s" , in);
+
   reset();
   tstring line;
   buffer = in;
@@ -351,6 +353,7 @@ bool parse_lyrics::read_lyrics(const tchar * in)
       attrib_item_type p_attrib;
       int ret = scan_attrib(line, p_attrib.get());
 
+      //SVP_LogMsg5(L"lyric line %s" , line.c_str());
       if (LT_OFFSET == ret)
         offset_d = ((double) util::xtoi(p_attrib->c_str()) + 0.0001) / 1000;
 
@@ -370,7 +373,7 @@ bool parse_lyrics::read_lyrics(const tchar * in)
         double d;
         const tchar * p = line.c_str();
         uint len = 0;
-       
+        
         while ((len = ts2t(p, d)) > 0)
         {
           if (m_is_panel_format && m_convert_format_start)
@@ -409,11 +412,12 @@ bool parse_lyrics::read_lyrics(const tchar * in)
 
             if (0 == *p)
               item->Lyric = _T(" ");
-            else
+            else{
               item->Lyric = p;
-            
-            //SVP_LogMsg5(L"lyric %s", item->Lyric.c_str());
+              //SVP_LogMsg5(L"lyric %f %s", double(item->Time), item->Lyric.c_str());
+            }
             data.push_back(item);
+           
           }
 
           ++ts;
@@ -446,7 +450,7 @@ bool parse_lyrics::read_lyrics(const tchar * in)
   {
     std::sort(data.begin(), data.end());
   }
-
+//SVP_LogMsg5(L"lyric xx %d", data.size());
 
   return true;
 }
@@ -589,6 +593,7 @@ const tchar * parse_lyrics::remake_lyric(bool b_include_tag)
   return buffer.c_str();
 }
 
+
 parse_lyrics::iterator parse_lyrics::find_lyric(double position)
 {
   ASSERT(has_timestamp());
@@ -628,4 +633,11 @@ parse_lyrics::iterator parse_lyrics::find_lyric(double position)
 }
 
 
+CString parse_lyrics::find_lyric_line(double position)
+{
+    if(data.size() <= 0)
+        return L"";
 
+    //item_type
+    return CString(find_lyric(position)->get() ->Lyric.c_str());
+}

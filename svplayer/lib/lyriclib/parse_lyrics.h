@@ -86,6 +86,7 @@ class parse_lyrics
     int scan_attrib(const tstring & str, tstring * pout);
 
     inline tstring & currentline() { return m_currentline; }
+    CString find_lyric_line(double position);
 };
 
 

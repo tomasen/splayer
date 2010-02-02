@@ -3021,7 +3021,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 				pTBL = NULL;
 			}
 		}
-		if(IsSomethingLoaded() && m_fAudioOnly ){
+		if(IsSomethingLoaded() && m_fAudioOnly && (!m_Lyric.m_has_lyric || m_wndView.m_strAudioInfo.IsEmpty())){
 
 			m_wndView.m_AudioInfoCounter++;
 			BOOL bHaveInfo = false;
@@ -3075,12 +3075,25 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 			pMS->GetCurrentPosition(&rtNow);
 			pMS->GetDuration(&rtDur);
 
-			if(m_fAudioOnly && m_Lyric.m_has_lyric && m_wndLycShowBox)
+            //if(!m_Lyric.m_has_lyric)
+            //    m_Lyric.LoadLyricFile(L"D:\\-=SVN=-\\test.lrc");
+
+			if(m_fAudioOnly && m_Lyric.m_has_lyric)// && m_wndLycShowBox
 			{
 				int iLastingTime;
 				CString szLyricLine = m_Lyric.GetCurrentLyricLineByTime( rtNow, &iLastingTime ) ;
 				if(!szLyricLine.IsEmpty()){
-					m_wndLycShowBox->ShowLycLine( szLyricLine , iLastingTime );
+					//m_wndLycShowBox->ShowLycLine( szLyricLine , iLastingTime );
+                    //SendStatusMessage(szLyricLine , 3000 );
+                    if(m_wndView.m_strAudioInfo != szLyricLine){
+                        m_wndView.m_strAudioInfo = szLyricLine;
+                        if(iLastingTime > 0)
+                            m_wndView.SetLyricLasting(iLastingTime);
+                        else
+                            m_wndView.SetLyricLasting(15);
+                        
+                        m_wndView.Invalidate();
+                    }
 				}
 			}
 
@@ -5119,17 +5132,24 @@ void CMainFrame::OnFilePostOpenmedia()
 
 			//find lyric file
 			m_LyricFilePaths.RemoveAll();
-				
-			if( m_Lyric.FindLyricFileForAudio( GetCurPlayingFileName() , & m_LyricFilePaths )  > 0){
-				//load lyric file
-				if( m_Lyric.LoadLyricFile( m_LyricFilePaths.GetAt(0)) >= 0) 
-				{
-
-					//maybe we should do something here?
-					
-				}
-				
-			}
+            CAtlArray<CString> lrcSearchPaths;
+            lrcSearchPaths.Add(_T("."));
+            lrcSearchPaths.Add(s.GetSVPSubStorePath());
+            
+            CAtlArray<LrcFile> ret;
+            m_Lyric.GetLrcFileNames( m_fnCurPlayingFile , lrcSearchPaths, ret);
+            if( ret.GetCount() ){
+                LrcFile oLrcFile = ret.GetAt(0);
+                if( m_Lyric.LoadLyricFile( oLrcFile.fn) >= 0) 
+                {
+                    //maybe we should do something here?
+                }
+                
+            }else{
+                //debug
+                //m_Lyric.LoadLyricFile(L"D:\\-=SVN=-\\test.lrc");
+            }
+            
 
 		}
 
@@ -5511,7 +5531,7 @@ void CMainFrame::OnDvdSubOnOff()
 
 void CMainFrame::OnFileOpenQuick()
 {
-    //m_Lyric.LoadLyricFile(L"D:\\-=SVN=-\\test.lrc");
+    
 
 	if(m_iMediaLoadState == MLS_LOADING || !IsWindow(m_wndPlaylistBar)) return;
 
@@ -12682,7 +12702,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 			m_wndCaptureBar.m_capdlg.SetAudioInput(p->ainput);
 		}
 
-		if(!m_pCAP && m_fAudioOnly){
+		if(!m_pCAP && m_fAudioOnly){ //this is where we first detect this is audio only file
 			
 			//if there is jpg/png in music dir display it
 			/*

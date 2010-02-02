@@ -54,6 +54,7 @@ public:
 	void ReCalcBtn();
 	DECLARE_DYNAMIC(CChildView)
 
+    void SetLyricLasting(int time_sec);
 public:
 	void SetVideoRect(CRect r = CRect(0,0,0,0));
 	CRect GetVideoRect() {return(m_vrect);}
@@ -85,4 +86,5 @@ public:
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg LRESULT OnNcHitTest(CPoint point);
 	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
+    afx_msg void OnTimer(UINT_PTR nIDEvent);
 };

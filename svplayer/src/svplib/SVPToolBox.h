@@ -14,6 +14,7 @@ public:
 	CString extractRarFile(CString rarfn);
 	CString PackageSubFiles(CStringArray* szaSubFiles);
 	int FindAllSubfile(CString szSubPath , CStringArray* szaSubFiles);
+    CString AnsiToCString(UINT codepag, char* szIn, int iLength);
 	char* CStringToUTF8(CString szIn, int* iDescLen, UINT codePage = CP_UTF8);
 	CString UTF8ToCString(char* szIn, int iLength);
 	FILE* getTmpFileSteam();

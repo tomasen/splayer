@@ -579,7 +579,7 @@ inline T & rmake_before(T & io, const E & elem)
 template<typename T, typename E>
 inline T rget_after(const T & in, const E & elem)
 {
-	return in.substr(equal_alter(util::min(in.length(), in.rfind(elem) + length(elem)),
+	return in.substr(equal_alter(min(in.length(), in.rfind(elem) + length(elem)),
 		T::npos, 0U));
 }
 

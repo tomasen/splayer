@@ -638,6 +638,29 @@ CString parse_lyrics::find_lyric_line(double position)
     if(data.size() <= 0)
         return L"";
 
+    if(!has_timestamp())
+        return L"";
+
+    xm_pos = 0;
+
+    double pos = position + offset_d;
+
+    if (pos > data[ xm_pos ] ->Time)
+    {
+        for (uint i = xm_pos; i < data.size(); ++i)
+        {
+            if (pos < data[ i ] ->Time)
+            {
+                xm_pos = i - !(0 == i);
+                try{
+                    return CString(data[xm_pos].get() ->Lyric.c_str());
+                }catch(...){}
+                break;
+            }
+        }
+    }
+    
+   
     //item_type
-    return CString(find_lyric(position)->get() ->Lyric.c_str());
+    return L"";
 }

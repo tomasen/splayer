@@ -19,7 +19,13 @@ public:
 	~CLyricLib(void);
 
 	CString m_sz_current_lyric_file;
+    CString m_sz_current_music_file;
 	BOOL m_has_lyric;
+
+     tstring title;
+     tstring artist;
+     tstring album;
+    void fetch_lyric_from_internet();
 
     void GetLrcFileNames(CString fn, CAtlArray<CString>& paths, CAtlArray<LrcFile>& ret, BOOL byDir = 0);
 	int LoadLyricFile(CString sz_lyric_file_path);

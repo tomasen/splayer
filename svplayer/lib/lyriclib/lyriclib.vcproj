@@ -106,7 +106,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="WIN32;NDEBUG"
+				AdditionalIncludeDirectories="..\id3lib\include;..\..\src\filters\BaseClasses"
+				PreprocessorDefinitions="WIN32;NDEBUG;"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
@@ -123,7 +124,9 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				AdditionalDependencies="id3lib.lib"
 				OutputFile="..\$(ProjectName).lib"
+				AdditionalLibraryDirectories="..\"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -151,7 +154,43 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\db_ailrc.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\db_leos.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\db_lrcdb.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\db_lyrdb.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\db_lyricsfly.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\db_viewlyrics.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\lyriclib.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\lyrics_db.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\main.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MarkupSTL.cpp"
 				>
 			</File>
 			<File
@@ -179,6 +218,14 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\URLEncode.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\utf8.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\utils.cpp"
 				>
 			</File>
@@ -189,7 +236,43 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\db_ailrc.h"
+				>
+			</File>
+			<File
+				RelativePath=".\db_leos.h"
+				>
+			</File>
+			<File
+				RelativePath=".\db_lrcdb.h"
+				>
+			</File>
+			<File
+				RelativePath=".\db_lyrdb.h"
+				>
+			</File>
+			<File
+				RelativePath=".\db_lyricsfly.h"
+				>
+			</File>
+			<File
+				RelativePath=".\db_viewlyrics.h"
+				>
+			</File>
+			<File
 				RelativePath=".\lyriclib.h"
+				>
+			</File>
+			<File
+				RelativePath=".\lyrics_db.h"
+				>
+			</File>
+			<File
+				RelativePath=".\main.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MarkupSTL.h"
 				>
 			</File>
 			<File
@@ -198,6 +281,14 @@
 			</File>
 			<File
 				RelativePath=".\Stdafx.h"
+				>
+			</File>
+			<File
+				RelativePath=".\URLEncode.h"
+				>
+			</File>
+			<File
+				RelativePath=".\utf8.h"
 				>
 			</File>
 			<File

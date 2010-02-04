@@ -5012,6 +5012,26 @@ void CMainFrame::OnUpdatePlayerStatus(CCmdUI* pCmdUI)
 	}
 }
 
+UINT __cdecl lyric_fetch_Proc(void* pClass)
+{
+    CLyricLib * myClass = NULL;
+
+    try
+    {
+        if (pClass == NULL)
+            return 0;
+
+        myClass = (CLyricLib*) pClass;
+
+        myClass->fetch_lyric_from_internet();
+
+    }
+    catch (...)
+    {}
+
+
+    return 0;
+}
 void CMainFrame::OnFilePostOpenmedia()
 {
 
@@ -5148,6 +5168,24 @@ void CMainFrame::OnFilePostOpenmedia()
             }else{
                 //debug
                 //m_Lyric.LoadLyricFile(L"D:\\-=SVN=-\\test.lrc");
+
+                //download it by thead
+                CString szInfo;
+                m_wndInfoBar.GetLine(ResStr(IDS_INFOBAR_TITLE), szInfo);
+                m_Lyric.title = szInfo;
+
+                m_wndInfoBar.GetLine(ResStr(IDS_INFOBAR_AUTHOR), szInfo);
+                m_Lyric.artist = szInfo;
+
+                m_wndInfoBar.GetLine(ResStr(IDS_INFOBAR_DESCRIPTION), szInfo);
+                m_Lyric.album = szInfo;
+
+                m_Lyric.m_sz_current_music_file = m_fnCurPlayingFile;
+              
+                CWinThread* lyricDownloadThread = AfxBeginThread(lyric_fetch_Proc, &m_Lyric, THREAD_PRIORITY_LOWEST, 0, CREATE_SUSPENDED);
+                lyricDownloadThread->m_pMainWnd = AfxGetMainWnd();
+                lyricDownloadThread->ResumeThread();
+                
             }
             
 
@@ -5157,6 +5195,7 @@ void CMainFrame::OnFilePostOpenmedia()
 	
 	
 }
+
 
 void CMainFrame::OnUpdateFilePostOpenmedia(CCmdUI* pCmdUI)
 {

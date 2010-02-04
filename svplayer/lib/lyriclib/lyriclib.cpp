@@ -7,6 +7,34 @@
 #include "..\..\src\svplib\SVPToolBox.h"
 #include "..\..\src\subtitles\TextFile.h"
 
+#include <streams.h>
+#include <afxtempl.h>
+#include <atlpath.h>
+#include "..\..\src\apps\mplayerc\mplayerc.h"
+
+#include "db_viewlyrics.h"
+#include "db_lrcdb.h"
+#include "db_lyrdb.h"
+#include "db_leos.h"
+#include "db_ailrc.h"
+#include "db_lyricsfly.h"
+
+//LINKOPTION_STATIC
+#define ID3LIB_LINKOPTION LINKOPTION_STATIC
+#include "..\id3lib\include\id3\tag.h"
+#include "..\id3lib\include\id3\id3lib_frame.h"
+#include <id3/misc_support.h>
+
+
+
+db_lrcdb static_lrcdb;
+db_lyrdb static_lyrdb;
+db_viewlyrics static_viewlyrics;
+db_leos static_leos;
+db_ailrc static_ailrc;
+db_lyricsfly static_lyricsfly;
+
+
 static TCHAR* ext_lrc[2][1] = 
 {
     {
@@ -19,6 +47,94 @@ static TCHAR* ext_lrc[2][1] =
 static int LrcFileCompare(const void* elem1, const void* elem2)
 {
     return(((LrcFile*)elem1)->fn.CompareNoCase(((LrcFile*)elem2)->fn));
+}
+void CLyricLib::fetch_lyric_from_internet()
+{
+
+    try{
+        ID3_Tag myTag;
+
+        myTag.Link(CStringA(m_sz_current_music_file), ID3TT_ALL);
+        
+        ID3_Frame* myFrame = myTag.Find(ID3FID_TITLE);
+        if(myFrame)
+        {
+             char *sText = ID3_GetString(myFrame, ID3FN_TEXT);
+             if(sText){
+                title = CString( CStringA(sText) );
+             }
+        }
+       
+        myFrame = myTag.Find(ID3FID_ALBUM);
+        if(myFrame)
+        {
+            char *sText = ID3_GetString(myFrame, ID3FN_TEXT);
+            if(sText){
+                album = CString( CStringA(sText) );
+            }
+        }
+
+        myFrame = myTag.Find(ID3FID_ORIGARTIST);
+        if(myFrame)
+        {
+            char *sText = ID3_GetString(myFrame, ID3FN_TEXT);
+            if(sText){
+                artist = CString( CStringA(sText) );
+            }
+        }
+    }catch(...){}
+    SVP_LogMsg5(L"Look for Lyric Result %s | %s | %s | %s", m_sz_current_music_file, this->title.c_str(), this->artist.c_str(), this->album.c_str());
+    
+    std::vector<lyric_data> availableLyrics;
+        window_config wcfg;
+    
+        static_viewlyrics.GetResults(&wcfg, &availableLyrics, this->title, this->artist, this->album);
+    
+        if(availableLyrics.size() <= 0){
+            static_lrcdb.GetResults(&wcfg, &availableLyrics, this->title, this->artist, this->album);
+        }
+        if(availableLyrics.size() <= 0)
+            static_lyrdb.GetResults(&wcfg, &availableLyrics, this->title, this->artist, this->album);
+        if(availableLyrics.size() <= 0)
+            static_leos.GetResults(&wcfg, &availableLyrics, this->title, this->artist, this->album);
+        if(availableLyrics.size() <= 0)
+            static_ailrc.GetResults(&wcfg, &availableLyrics, this->title, this->artist, this->album);
+        if(availableLyrics.size() <= 0)
+            static_lyricsfly.GetResults(&wcfg, &availableLyrics, this->title, this->artist, this->album);
+    
+        
+        if(availableLyrics.size() > 0)
+        {
+
+            for(uint curIndex = 0; curIndex < availableLyrics.size() ; curIndex++){
+                if (availableLyrics[ curIndex ].SourceType != ST_INTERNET)
+                    continue ;
+                
+                if(!availableLyrics[ curIndex ].IsTimestamped)
+                    continue ;
+
+                availableLyrics[ curIndex ].db->DownloadLyrics(&wcfg, &availableLyrics[ curIndex ]);
+
+                CSVPToolBox svpTool;
+                AppSettings& s = AfxGetAppSettings();
+                CPath szStorePath( s.GetSVPSubStorePath() );
+                szStorePath.RemoveBackslash();
+                szStorePath.AddBackslash();
+
+                CStringArray szaFilename ;
+                svpTool.getVideoFileBasename(m_sz_current_music_file, &szaFilename);
+                szStorePath.Append(szaFilename.GetAt(3));
+                szStorePath.AddExtension(L".lrc");
+
+                svpTool.filePutContent(szStorePath, CString(availableLyrics[curIndex].Text.c_str()) );
+                //AfxMessageBox( availableLyrics[curIndex].Text.c_str() );
+                SVP_LogMsg5(L"Get %d Lyric Result %s", availableLyrics.size(),szStorePath);
+                LoadLyricFile(szStorePath);
+                break;
+            }
+        }
+    
+
 }
 void CLyricLib::GetLrcFileNames(CString fn, CAtlArray<CString>& paths, CAtlArray<LrcFile>& ret, BOOL byDir)
 {

@@ -126,9 +126,19 @@ void CLyricLib::fetch_lyric_from_internet()
                 szStorePath.Append(szaFilename.GetAt(3));
                 szStorePath.AddExtension(L".lrc");
 
-                svpTool.filePutContent(szStorePath, CString(availableLyrics[curIndex].Text.c_str()) );
+                //svpTool.filePutContent(szStorePath, CString(availableLyrics[curIndex].Text.c_str()) );
+                CStdioFile f;
+
+                if(f.Open(szStorePath, CFile::modeCreate | CFile::modeWrite | CFile::typeBinary ))
+                {
+                    char uft16mark[3] = {0xff, 0xfe, 0x00};
+                    f.Write(uft16mark , 2);
+                    f.Write( availableLyrics[curIndex].Text.c_str(), availableLyrics[curIndex].Text.length() );
+
+                    f.Close();
+                }
                 //AfxMessageBox( availableLyrics[curIndex].Text.c_str() );
-                SVP_LogMsg5(L"Get %d Lyric Result %s", availableLyrics.size(),szStorePath);
+                SVP_LogMsg5(L"Get %d Lyric Result %s size %d", availableLyrics.size(),szStorePath , availableLyrics[curIndex].Text.length());
                 LoadLyricFile(szStorePath);
                 break;
             }

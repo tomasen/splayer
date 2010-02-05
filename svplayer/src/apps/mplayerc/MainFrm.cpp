@@ -5157,15 +5157,19 @@ void CMainFrame::OnFilePostOpenmedia()
             lrcSearchPaths.Add(s.GetSVPSubStorePath());
             
             CAtlArray<LrcFile> ret;
+            int bGotLrc = 0 ; 
             m_Lyric.GetLrcFileNames( m_fnCurPlayingFile , lrcSearchPaths, ret);
             if( ret.GetCount() ){
                 LrcFile oLrcFile = ret.GetAt(0);
                 if( m_Lyric.LoadLyricFile( oLrcFile.fn) >= 0) 
                 {
                     //maybe we should do something here?
+                    if(m_Lyric.m_has_lyric)
+                        bGotLrc = 1;
                 }
                 
-            }else{
+            }
+            if( !bGotLrc) {
                 //debug
                 //m_Lyric.LoadLyricFile(L"D:\\-=SVN=-\\test.lrc");
 

@@ -140,6 +140,15 @@ void CLyricLib::fetch_lyric_from_internet()
                 //AfxMessageBox( availableLyrics[curIndex].Text.c_str() );
                 SVP_LogMsg5(L"Get %d Lyric Result %s size %d", availableLyrics.size(),szStorePath , availableLyrics[curIndex].Text.length());
                 LoadLyricFile(szStorePath);
+
+                CWnd* pFrame = AfxGetMainWnd();
+                if(pFrame){
+                    CString osd_msg;
+                    //
+                    osd_msg.Format(ResStr(IDS_GOT_LYRIC_OSD_MSG), availableLyrics[ curIndex ].db->GetName() );
+                    ::SendMessage(pFrame->m_hWnd, WM_USER+31, (UINT_PTR)osd_msg.GetBuffer(), 3000); 
+                    osd_msg.ReleaseBuffer();
+                }
                 break;
             }
         }
@@ -323,9 +332,12 @@ int CLyricLib::LoadLyricFile(CString sz_lyric_file_path)
 
     if(!szContent.IsEmpty()){
         //SVP_LogMsg5(L"lyric read %s %d",szContent,  szContent.GetLength());
-        lyrics_parser.read_lyrics(szContent.GetBuffer());
+        if(lyrics_parser.read_lyrics(szContent.GetBuffer()))
+            m_has_lyric = true;
+        
         szContent.ReleaseBuffer();
-        m_has_lyric = true;
+        if(m_has_lyric)
+            return lyrics_parser.get_count();
     }
 
 	return -1;

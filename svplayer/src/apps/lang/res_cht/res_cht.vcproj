@@ -19,7 +19,7 @@
 			Name="Debug|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
+			ConfigurationType="2"
 			CharacterSet="2"
 			>
 			<Tool
@@ -58,6 +58,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				GenerateDebugInformation="true"
+				ResourceOnlyDLL="true"
 				TargetMachine="1"
 			/>
 			<Tool

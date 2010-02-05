@@ -43,6 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="..\id3lib\include;..\..\src\filters\BaseClasses"
 				PreprocessorDefinitions="WIN32;_DEBUG"
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="2"

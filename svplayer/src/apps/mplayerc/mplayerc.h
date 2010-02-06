@@ -63,7 +63,7 @@ extern HICON LoadIcon(CString fn, bool fSmall);
 extern bool LoadType(CString fn, CString& type);
 extern bool LoadResource(UINT resid, CStringA& str, LPCTSTR restype);
 extern CString GetContentType(CString fn, CAtlList<CString>* redir = NULL);
-extern void GetSystemFontWithScale(CFont* pFont, double dDefaultSize = 14.0, int iWeight = FW_NORMAL);
+extern void GetSystemFontWithScale(CFont* pFont, double dDefaultSize = 14.0, int iWeight = FW_NORMAL, CString szTryFontName = _T(""));
 
 struct eq_perset_setting
 {

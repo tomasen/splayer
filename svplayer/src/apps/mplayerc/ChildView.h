@@ -41,6 +41,8 @@ class CChildView : public CWnd
 	int iBottonClicked;
 	CRect m_logo_r;
 	CFont m_font;
+    CFont m_font_lyric;
+    DWORD m_lastLyricColor;
 public:
 	CChildView();
 	virtual ~CChildView();

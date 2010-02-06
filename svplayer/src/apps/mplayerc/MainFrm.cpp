@@ -3031,13 +3031,16 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 				
 				if( (m_wndView.m_AudioInfoCounter%4) == 0 || m_wndView.m_strAudioInfo.IsEmpty()){
 
-					CString szInfo;
+					CString szInfo , szMusicTitle, szMusicAuthor;
+                    m_wndInfoBar.GetLine(ResStr(IDS_INFOBAR_TITLE), szMusicTitle);
+                    m_wndInfoBar.GetLine(ResStr(IDS_INFOBAR_AUTHOR), szMusicAuthor);
+
 					switch(m_wndView.m_AudioInfoCounter/4 %4){
 						case 0:
-							m_wndInfoBar.GetLine(ResStr(IDS_INFOBAR_TITLE), szInfo);
+							szInfo = szMusicTitle;
 							break;
 						case 1:
-							m_wndInfoBar.GetLine(ResStr(IDS_INFOBAR_AUTHOR), szInfo);
+							szInfo = szMusicAuthor;
 							break;
 						case 2:
 							m_wndInfoBar.GetLine(ResStr(IDS_INFOBAR_DESCRIPTION),szInfo);
@@ -3053,6 +3056,11 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 						continue;
 					}else{
 						m_wndView.m_strAudioInfo = szInfo;
+                        CString szTitleItShouleBe = szMusicTitle + _T(" - ") + szMusicAuthor;
+                        if(szTitleItShouleBe != m_szTitle){
+                            m_szTitle = szTitleItShouleBe;
+                            RedrawNonClientArea();
+                        }
 						m_wndView.Invalidate();
 						bHaveInfo = true;
 					}
@@ -3085,6 +3093,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 				if(!szLyricLine.IsEmpty()){
 					//m_wndLycShowBox->ShowLycLine( szLyricLine , iLastingTime );
                     //SendStatusMessage(szLyricLine , 3000 );
+                    szLyricLine = CString(L"♪ ") + szLyricLine;
                     if(m_wndView.m_strAudioInfo != szLyricLine){
                         m_wndView.m_strAudioInfo = szLyricLine;
                         if(iLastingTime > 0)
@@ -6074,6 +6083,20 @@ void CMainFrame::OnDropFiles(HDROP hDropInfo)
             if(m_Lyric.LoadLyricFile(fn) > 0){
                 //Lyric Loaded
                 //Maybe upload to server?
+                if(IsSomethingLoaded() && m_fAudioOnly){
+                    CSVPToolBox svpTool;
+                    AppSettings& s = AfxGetAppSettings();
+                    CPath szStorePath( s.GetSVPSubStorePath() );
+                    szStorePath.RemoveBackslash();
+                    szStorePath.AddBackslash();
+                    CStringArray szaFilename ;
+                    svpTool.getVideoFileBasename( m_fnCurPlayingFile , &szaFilename);
+                    szStorePath.Append(szaFilename.GetAt(3));
+                    szStorePath.AddExtension(L".lrc");
+
+                    CopyFile(fn, szStorePath, true);
+                }
+
                 SendStatusMessage(ResStr(IDS_OSD_MSG_LYRIC_DROP_OR_LOADED), 3000 );
             }else{
                 bHasLrcAdded = FALSE;

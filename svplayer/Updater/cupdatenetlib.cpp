@@ -312,7 +312,7 @@ BOOL cupdatenetlib::downloadList(){
             puinfo->strPath = szaTmp.GetAt(LFILESETUPPATH);
             puinfo->strTempName = szaTmp.GetAt(LFILETMPATH);
             puinfo->strCurrentMD5 = currentHash;
-            puinfo->bReadyToCopy = false;
+            puinfo->bReadyToCopy = !bDownloadThis;
 
             m_UpdateFileArray.Add(puinfo);
 
@@ -354,12 +354,15 @@ void cupdatenetlib::tryRealUpdate(BOOL bNoWaiting){
 		//if(szaLists.GetCount() < (i+LFILETOTALPARMS)){ break; }
         UpdateInfo* pInfo = (UpdateInfo*) m_UpdateFileArray.GetAt(i);
 		CString szSetupPath = pInfo->strPath;
+        //SVP_LogMsg5(L"Move %s %d",szSetupPath ,pInfo->bReadyToCopy );
 		if (szSetupPath.CompareNoCase( _T("splayer.exe")) == 0){
 			if(!svpToolBox.ifFileExist(szBasePath + szSetupPath) ){
 				if (svpToolBox.ifFileExist(szBasePath + _T("mplayerc.exe")))
 					szSetupPath = _T("mplayerc.exe");
-				if (svpToolBox.ifFileExist(szBasePath + _T("svplayer.exe")))
+				else if (svpToolBox.ifFileExist(szBasePath + _T("svplayer.exe")))
 					szSetupPath = _T("svplayer.exe");
+                else
+                    szSetupPath = _T("splayer.exe");
 			}
 		}
 
@@ -409,6 +412,7 @@ void cupdatenetlib::tryRealUpdate(BOOL bNoWaiting){
 			}
 			svpToolBox.CreatDirForFile(mFiles.szMoveDestFile);
 			SetFileAttributes(mFiles.szMoveDestFile , FILE_ATTRIBUTE_NORMAL);
+            //SVP_LogMsg5(L"Move %s %s", mFiles.szMoveSrcFile , mFiles.szMoveDestFile );
 			if( MoveFileEx( mFiles.szMoveSrcFile , mFiles.szMoveDestFile , MOVEFILE_COPY_ALLOWED|MOVEFILE_REPLACE_EXISTING|MOVEFILE_WRITE_THROUGH) == 0 && bFirstRound){
 				// only use MOVEFILE_DELAY_UNTIL_REBOOT on FirstRound
 				MoveFileEx( mFiles.szMoveSrcFile , mFiles.szMoveDestFile , /*MOVEFILE_COPY_ALLOWED|*/MOVEFILE_REPLACE_EXISTING|MOVEFILE_DELAY_UNTIL_REBOOT) ;
@@ -520,6 +524,7 @@ int cupdatenetlib::downloadFileByID(UpdateInfo* pInfo, bool UsingMd5){
 
             //check the MD5 of the result file...
             rret = IsMd5Match(szTmpPath, pInfo->strFileMd5);
+            SVP_LogMsg5(L"Md5 %d %s %s", rret, szTmpPath, pInfo->strFileMd5);
             pInfo->bReadyToCopy = rret;
 
         //}

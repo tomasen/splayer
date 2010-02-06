@@ -282,7 +282,10 @@ void SVP_LogMsg(CString logmsg, int level){
 	 /* must use Binary mode because its saved in unicode */
 	if(f.Open(szLogPath, CFile::modeCreate | CFile::modeWrite | CFile::modeNoTruncate | CFile::typeBinary))
 	{
-		f.SeekToEnd();
+        if (0 == f.SeekToEnd() ){
+            char uft16mark[2] = {0xff, 0xfe};
+            f.Write(uft16mark , 2);
+        }
 		CString szLog;
 		szLog.Format(_T("[%f] %s") , (double)logTick2/10000, logmsg);
 		f.WriteString(szLog + _T("\r\n"));

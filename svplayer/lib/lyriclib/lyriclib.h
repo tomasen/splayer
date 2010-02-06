@@ -3,6 +3,7 @@
 #pragma once
 #include "stdafx.h"
 #include "parse_lyrics.h"
+#include "lyrics_db.h"
 
 typedef struct {CString fn; /*exttype ext;*/} LrcFile;
 
@@ -25,8 +26,10 @@ public:
      tstring title;
      tstring artist;
      tstring album;
-    void fetch_lyric_from_internet();
 
+    void fetch_lyric_from_internet();
+    bool try_download_lyric();
+    
     BOOL isLyricFile(CString szFn);
     void GetLrcFileNames(CString fn, CAtlArray<CString>& paths, CAtlArray<LrcFile>& ret, BOOL byDir = 0);
 	int LoadLyricFile(CString sz_lyric_file_path);

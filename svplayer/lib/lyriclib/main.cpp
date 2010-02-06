@@ -107,8 +107,8 @@ bool ReadInternetTextFromUrl(tstring& output, tstring userAgent, tstring url, DW
 
         if (_tcsicmp(szTemp, _T("OK")) != 0)
         {
-            TRACK(L"HttpQueryInfo(STATUS_TEXT) failed: not OK.");
-            OUTPUT_STR_FUNC("HttpQueryInfo(STATUS_TEXT) failed: not OK.");
+            TRACK(L"HttpQueryInfo(STATUS_TEXT) failed: not OK.%s" , szTemp);
+            //OUTPUT_STR_FUNC("HttpQueryInfo(STATUS_TEXT) failed: not OK.");
             break;
         }
 
@@ -316,7 +316,8 @@ bool ReadInternetText(tstring& output, tstring userAgent, tstring host, INTERNET
 
         if (_tcsicmp(szTemp, _T("OK")) != 0)
         {
-            TRACK(L"HttpQueryInfo(STATUS_TEXT) failed: not OK.");
+            //TRACK(L"HttpQueryInfo(STATUS_TEXT) failed: not OK2 %s %s %s %s", szTemp, host.c_str(), request.c_str(), postdata.c_str());
+            //Need client key for this
             OUTPUT_STR_FUNC("HttpQueryInfo(STATUS_TEXT) failed: not OK.");
             break;
         }

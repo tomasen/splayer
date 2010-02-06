@@ -26,14 +26,8 @@
 #include <id3/misc_support.h>
 
 
-
-db_lrcdb static_lrcdb;
-db_lyrdb static_lyrdb;
-db_viewlyrics static_viewlyrics;
-db_leos static_leos;
-db_ailrc static_ailrc;
-db_lyricsfly static_lyricsfly;
-
+static window_config wcfg;
+static std::vector<lyric_data> availableLyrics;
 
 static TCHAR* ext_lrc[2][1] = 
 {
@@ -99,62 +93,75 @@ void CLyricLib::fetch_lyric_from_internet()
     }catch(...){}
     SVP_LogMsg5(L"Look for Lyric Result %s | %s | %s | %s", m_sz_current_music_file, this->title.c_str(), this->artist.c_str(), this->album.c_str());
     
-    std::vector<lyric_data> availableLyrics;
-        window_config wcfg;
-    
+
+    db_lrcdb static_lrcdb;
+    db_lyrdb static_lyrdb;
+    db_viewlyrics static_viewlyrics;
+    db_leos static_leos;
+    db_ailrc static_ailrc;
+    db_lyricsfly static_lyricsfly;
+
+
+        
         static_viewlyrics.GetResults(&wcfg, &availableLyrics, this->title, this->artist, this->album);
     
-        if(availableLyrics.size() <= 0){
+        if(!try_download_lyric()){
             static_lrcdb.GetResults(&wcfg, &availableLyrics, this->title, this->artist, this->album);
         }
-        if(availableLyrics.size() <= 0)
+        if(!try_download_lyric())
             static_lyrdb.GetResults(&wcfg, &availableLyrics, this->title, this->artist, this->album);
-        if(availableLyrics.size() <= 0)
+        if(!try_download_lyric())
             static_leos.GetResults(&wcfg, &availableLyrics, this->title, this->artist, this->album);
-        if(availableLyrics.size() <= 0)
+        if(!try_download_lyric())
             static_ailrc.GetResults(&wcfg, &availableLyrics, this->title, this->artist, this->album);
-        if(availableLyrics.size() <= 0)
+        if(!try_download_lyric())
             static_lyricsfly.GetResults(&wcfg, &availableLyrics, this->title, this->artist, this->album);
     
+        try_download_lyric();
         
-        if(availableLyrics.size() > 0)
-        {
 
-            for(uint curIndex = 0; curIndex < availableLyrics.size() ; curIndex++){
-                if (availableLyrics[ curIndex ].SourceType != ST_INTERNET)
-                    continue ;
-                
-                if(!availableLyrics[ curIndex ].IsTimestamped)
-                    continue ;
+}
+bool  CLyricLib::try_download_lyric()
+{
+    bool ret = false;
+    if(availableLyrics.size() > 0)
+    {
 
-                availableLyrics[ curIndex ].db->DownloadLyrics(&wcfg, &availableLyrics[ curIndex ]);
+        for(uint curIndex = 0; curIndex < availableLyrics.size() ; curIndex++){
+            if (availableLyrics[ curIndex ].SourceType != ST_INTERNET)
+                continue ;
 
-                CSVPToolBox svpTool;
-                AppSettings& s = AfxGetAppSettings();
-                CPath szStorePath( s.GetSVPSubStorePath() );
-                szStorePath.RemoveBackslash();
-                szStorePath.AddBackslash();
+            if(!availableLyrics[ curIndex ].IsTimestamped)
+                continue ;
 
-                CStringArray szaFilename ;
-                svpTool.getVideoFileBasename(m_sz_current_music_file, &szaFilename);
-                szStorePath.Append(szaFilename.GetAt(3));
-                szStorePath.AddExtension(L".lrc");
+            availableLyrics[ curIndex ].db->DownloadLyrics(&wcfg, &availableLyrics[ curIndex ]);
 
-                //svpTool.filePutContent(szStorePath, CString(availableLyrics[curIndex].Text.c_str()) );
-                CStdioFile f;
+            CSVPToolBox svpTool;
+            AppSettings& s = AfxGetAppSettings();
+            CPath szStorePath( s.GetSVPSubStorePath() );
+            szStorePath.RemoveBackslash();
+            szStorePath.AddBackslash();
 
-                if(f.Open(szStorePath, CFile::modeCreate | CFile::modeWrite | CFile::typeBinary ))
-                {
-                    char uft16mark[3] = {0xff, 0xfe, 0x00};
-                    f.Write(uft16mark , 2);
-                    f.Write( availableLyrics[curIndex].Text.c_str(), availableLyrics[curIndex].Text.length() );
+            CStringArray szaFilename ;
+            svpTool.getVideoFileBasename(m_sz_current_music_file, &szaFilename);
+            szStorePath.Append(szaFilename.GetAt(3));
+            szStorePath.AddExtension(L".lrc");
 
-                    f.Close();
-                }
-                //AfxMessageBox( availableLyrics[curIndex].Text.c_str() );
-                SVP_LogMsg5(L"Get %d Lyric Result %s size %d", availableLyrics.size(),szStorePath , availableLyrics[curIndex].Text.length());
-                LoadLyricFile(szStorePath);
+            //svpTool.filePutContent(szStorePath, CString(availableLyrics[curIndex].Text.c_str()) );
+            CStdioFile f;
 
+            if(f.Open(szStorePath, CFile::modeCreate | CFile::modeWrite | CFile::typeBinary ))
+            {
+                char uft16mark[3] = {0xff, 0xfe, 0x00};
+                f.Write(uft16mark , 2);
+                f.Write( availableLyrics[curIndex].Text.c_str(), availableLyrics[curIndex].Text.length() );
+
+                f.Close();
+            }
+            //AfxMessageBox( availableLyrics[curIndex].Text.c_str() );
+            SVP_LogMsg5(L"Get %d Lyric Result %s size %d", availableLyrics.size(),szStorePath , availableLyrics[curIndex].Text.length());
+            if(LoadLyricFile(szStorePath) > 0){
+                ret = true;
                 CWnd* pFrame = AfxGetMainWnd();
                 if(pFrame){
                     CString osd_msg;
@@ -165,10 +172,13 @@ void CLyricLib::fetch_lyric_from_internet()
                 }
                 break;
             }
-        }
-    
 
+            
+        }
+    }
+    return ret;
 }
+
 void CLyricLib::GetLrcFileNames(CString fn, CAtlArray<CString>& paths, CAtlArray<LrcFile>& ret, BOOL byDir)
 {
     ret.RemoveAll();

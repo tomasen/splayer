@@ -27,6 +27,7 @@ public:
      tstring album;
     void fetch_lyric_from_internet();
 
+    BOOL isLyricFile(CString szFn);
     void GetLrcFileNames(CString fn, CAtlArray<CString>& paths, CAtlArray<LrcFile>& ret, BOOL byDir = 0);
 	int LoadLyricFile(CString sz_lyric_file_path);
 	CString GetCurrentLyricLineByTime(LONGLONG rt_now, int* lasting_time_in_ms);

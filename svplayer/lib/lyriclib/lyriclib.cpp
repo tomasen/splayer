@@ -44,10 +44,24 @@ static TCHAR* ext_lrc[2][1] =
         _T("*.lrc")
     }
 };
+
 static int LrcFileCompare(const void* elem1, const void* elem2)
 {
     return(((LrcFile*)elem1)->fn.CompareNoCase(((LrcFile*)elem2)->fn));
 }
+
+BOOL  CLyricLib::isLyricFile(CString szFn){
+    int extsubnum = countof(ext_lrc[0]);
+    szFn.MakeLower();
+    for(int i = 0; i < extsubnum; i++){
+        int iPos = szFn.Find( ext_lrc[0][i] );
+        if( iPos >= 0 && ( iPos + CString(ext_lrc[0][i]).GetLength() ) == szFn.GetLength() ){
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
 void CLyricLib::fetch_lyric_from_internet()
 {
 

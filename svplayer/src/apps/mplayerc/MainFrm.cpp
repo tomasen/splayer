@@ -5140,8 +5140,7 @@ void CMainFrame::OnFilePostOpenmedia()
 	SendNowPlayingToMSN();
 	SendNowPlayingTomIRC();
 
-	m_Lyric.Empty();
-
+	
 	if(m_iPlaybackMode == PM_FILE){
 		if(!s.bDontNeedSVPSubFilter && !m_pCAP && s.iSVPRenderType && !m_fAudioOnly ){
 			s.iSVPRenderType = 0;
@@ -6051,6 +6050,7 @@ void CMainFrame::OnDropFiles(HDROP hDropInfo)
 
 	CAtlList<CString> sl;
 	BOOL bHasSubAdded = false;
+    BOOL bHasLrcAdded = false;
 	CString lastSubFile;
 	UINT nFiles = ::DragQueryFile(hDropInfo, (UINT)-1, NULL, 0);
 	CSVPToolBox svpTool;
@@ -6068,8 +6068,20 @@ void CMainFrame::OnDropFiles(HDROP hDropInfo)
 				bHasSubAdded = FALSE;
 			}
 		}
+        bHasLrcAdded = m_Lyric.isLyricFile(fn);
+        if(bHasLrcAdded)
+        {
+            if(m_Lyric.LoadLyricFile(fn) > 0){
+                //Lyric Loaded
+                //Maybe upload to server?
+                SendStatusMessage(ResStr(IDS_OSD_MSG_LYRIC_DROP_OR_LOADED), 3000 );
+            }else{
+                bHasLrcAdded = FALSE;
+            }
 
-		if(!bHasSubAdded){
+        }
+
+		if(!bHasSubAdded && !bHasLrcAdded){
 			if(PathIsDirectory(fn) && svpTool.ifDirExist(fn)){
 				m_wndPlaylistBar.AddFolder(fn, true);
 				bHasForlder = true;

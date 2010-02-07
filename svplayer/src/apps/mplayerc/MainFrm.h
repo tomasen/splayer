@@ -860,6 +860,8 @@ public:
 	afx_msg void OnFavoritesDevice(UINT nID);
 	afx_msg void OnUpdateFavoritesDevice(CCmdUI* pCmdUI);
 
+    afx_msg void OnSeekToSpecialPos(UINT nID);
+
 	afx_msg void OnHelpHomepage();
 	afx_msg void OnHelpDocumentation();
 

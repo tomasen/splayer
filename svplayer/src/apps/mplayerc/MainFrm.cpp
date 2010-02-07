@@ -457,6 +457,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND_RANGE(ID_FAVORITES_DEVICE_START, ID_FAVORITES_DEVICE_END, OnFavoritesDevice)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_FAVORITES_DEVICE_START, ID_FAVORITES_DEVICE_END, OnUpdateFavoritesDevice)
 
+    ON_COMMAND_RANGE(ID_SEEK_TO_BEGINNING, ID_SEEK_TO_END, OnSeekToSpecialPos)
+    
 	ON_COMMAND(ID_HELP_HOMEPAGE, OnHelpHomepage)
 	ON_COMMAND(ID_HELP_DOCUMENTATION, OnHelpDocumentation)
 
@@ -9927,6 +9929,28 @@ void CMainFrame::OnUpdateFavoritesDVD(CCmdUI* pCmdUI)
 	UINT nID = pCmdUI->m_nID - ID_FAVORITES_DVD_START;
 }
 
+void CMainFrame::OnSeekToSpecialPos(UINT nID)
+{
+    if(!IsSomethingLoaded())
+        return;
+
+    switch(nID)
+    {
+    case ID_SEEK_TO_BEGINNING:
+        SeekTo(0);
+    	break;
+    case ID_SEEK_TO_MIDDLE:
+        SeekTo( GetDur()/2);
+    	break;
+    case ID_SEEK_TO_END:
+        SendMessage(WM_COMMAND, ID_PLAY_PAUSE);
+        SeekTo( GetDur());
+        break;
+    default:
+        return;
+        break;
+    }
+}
 void CMainFrame::OnFavoritesDevice(UINT nID)
 {
 	nID -= ID_FAVORITES_DEVICE_START;

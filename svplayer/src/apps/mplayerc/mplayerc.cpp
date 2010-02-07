@@ -2532,7 +2532,7 @@ CMPlayerCApp::Settings::Settings()
 	, bSetTempChannelMaping(0)
 	, htpcmode(0)
 	, bNoMoreDXVAForThisFile(0)
-	
+	, bDisableSoftCAVC(false)
 {
 
 }
@@ -2658,7 +2658,7 @@ void CMPlayerCApp::Settings::ThreadedLoading(){
 			
 		}
 	}
-
+/*
 
 	CCpuId m_CPU;
 	if( m_CPU.GetFeatures() & (m_CPU.MPC_MM_SSE4|m_CPU.MPC_MM_SSE42| m_CPU.MPC_MM_SSE4A)){
@@ -2666,6 +2666,7 @@ void CMPlayerCApp::Settings::ThreadedLoading(){
 	}else{
 		bDisableSoftCAVC = false;
 	}
+    */
 }
 UINT __cdecl Thread_AppSettingLoadding( LPVOID lpParam ) 
 { 

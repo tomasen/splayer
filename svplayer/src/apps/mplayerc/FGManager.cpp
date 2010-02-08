@@ -2601,6 +2601,7 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("haalis.ax")) ); 
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("ts.dll")) ); 
+    szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("mp4.dll")) ); 
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("ogm.dll")) ); 
 
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("vp6dec.ax")) ); 
@@ -2630,7 +2631,7 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 					if(szFPath.Find(_T("mpc_mxsource.dll")) > 0){
 						pFGF->m_extensions.AddTail(_T(".csf"));
 						m_source.AddTail(pFGF);
-					}else if( szFPath.Find(_T("haalis.ax")) > 0 || szFPath.Find(_T("ts.dll")) > 0 || szFPath.Find(_T("ogm.dll")) > 0){ //useless
+					}else if( szFPath.Find(_T("haalis.ax")) > 0 || szFPath.Find(_T("ts.dll")) > 0 || szFPath.Find(_T("ogm.dll")) > 0|| szFPath.Find(_T("mp4.dll")) > 0){ //useless
 						pFGF->m_extensions.AddTail(_T(".ts"));
 						pFGF->m_extensions.AddTail(_T(".m2ts"));
 						pFGF->m_extensions.AddTail(_T(".tp"));
@@ -2638,8 +2639,10 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 						pFGF->m_extensions.AddTail(_T(".ogm"));
 						pFGF->m_extensions.AddTail(_T(".mkv"));
 						pFGF->m_extensions.AddTail(_T(".vob"));
+                        pFGF->m_extensions.AddTail(_T(".mp4"));
 						pFGF->SetTypes(fo->guids);
 						CString szName(fo->name);
+                        
 						if(szName.Find(_T("Media Splitter")) >= 0)
 							m_source.AddTail(pFGF);
 						//else

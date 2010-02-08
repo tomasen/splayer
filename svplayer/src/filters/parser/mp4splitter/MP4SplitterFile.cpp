@@ -1,14 +1,16 @@
 #include "StdAfx.h"
 #include "MP4SplitterFile.h"
 #include "Ap4AsyncReaderStream.cpp" // FIXME
+#include "..\..\..\svplib\svplib.h"
 
 CMP4SplitterFile::CMP4SplitterFile(IAsyncReader* pReader, HRESULT& hr) 
 	: CBaseSplitterFileEx(pReader, hr, DEFAULT_CACHE_LENGTH, false)
 	, m_pAp4File(NULL)
 {
-	if(FAILED(hr)) return;
-
-	hr = Init();
+    if(FAILED(hr)) return;
+    
+    hr = Init();
+    
 }
 
 CMP4SplitterFile::~CMP4SplitterFile()

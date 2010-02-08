@@ -43,8 +43,8 @@
 typedef int            AP4_Result;
 typedef unsigned long  AP4_Flags;
 typedef unsigned long  AP4_Mask;
-typedef unsigned long  AP4_Size;
-typedef unsigned long  AP4_Offset;
+typedef unsigned long long AP4_Size;
+typedef unsigned long long AP4_Offset;
 typedef unsigned long  AP4_Range;
 typedef unsigned long  AP4_Cardinal;
 typedef unsigned long  AP4_Ordinal;

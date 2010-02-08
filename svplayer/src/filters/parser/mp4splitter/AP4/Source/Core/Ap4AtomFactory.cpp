@@ -69,7 +69,7 @@
 #include "Ap4DataAtom.h"
 #include "Ap4DcomAtom.h"
 #include "Ap4CmvdAtom.h"
-
+#include "..\..\..\..\..\..\svplib\svplib.h"
 /*----------------------------------------------------------------------
 |       class variables
 +---------------------------------------------------------------------*/
@@ -105,6 +105,7 @@ AP4_AtomFactory::CreateAtomFromStream(AP4_ByteStream& stream,
         bytes_available == 0) {
         bytes_available = (AP4_Size)((unsigned long)(-1));
     }
+    SVP_LogMsg5(L"bytes_available %d" , bytes_available);
     return CreateAtomFromStream(stream, bytes_available, atom, NULL);
 }
 
@@ -118,6 +119,7 @@ AP4_AtomFactory::CreateAtomFromStream(AP4_ByteStream& stream,
 									  AP4_Atom*	      parent)
 {
     AP4_Result result;
+
 
     // NULL by default
     atom = NULL;
@@ -165,16 +167,21 @@ AP4_AtomFactory::CreateAtomFromStream(AP4_ByteStream& stream,
 		AP4_UI32 size_high;
 
 		result = stream.ReadUI32(size_high);
-		if (AP4_FAILED(result) || size_high) {
-			stream.Seek(start);
+		if (AP4_FAILED(result) ) {
+            stream.Seek(start);
 			return AP4_ERROR_INVALID_FORMAT;
 		}
 
 		result = stream.ReadUI32(size);
 		if (AP4_FAILED(result)) {
-			stream.Seek(start);
+            stream.Seek(start);
 			return result;
 		}
+        if(size_high > 0)
+        {
+            SVP_LogMsg5(L"CreateAtomFromStream 64 bits long %x %x" ,UINT(size_high),  UINT(size));
+            size = (((ULONGLONG)size_high) << 32) | size;
+        }
 	}
 
     // create the atom

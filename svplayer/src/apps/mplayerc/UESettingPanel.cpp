@@ -79,6 +79,7 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_DHtml_ElementInnerText(pDX, _T("initvarblock") , m_sgs_initblock);
 	DDX_DHtml_ElementInnerText(pDX, _T("isvista") , m_sgs_isvista);
 	DDX_DHtml_ElementInnerText(pDX, _T("haveCUDAforCoreAVC") , m_sgs_CUDAVC);
+    DDX_DHtml_ElementInnerText(pDX, _T("havePOWERDVD") , m_sgs_havePDVD);
 	DDX_DHtml_ElementInnerText(pDX, _T("canUseFFMPEGGPU") , m_sgs_FFGPU);
 	DDX_DHtml_CheckBox(pDX, _T("chkremwinpos"), m_sgi_chkremwinpos);
 	DDX_DHtml_CheckBox(pDX, _T("chkcdromenu"), m_sgi_chkcdromenu);
@@ -262,6 +263,27 @@ BOOL CUESettingPanel::OnInitDialog()
 	if(s.bHasCUDAforCoreAVC){
 		m_sgs_CUDAVC = _T("true");
 	}
+    /*
+    CString szFilterList;
+    BeginEnumSysDev(CLSID_LegacyAmFilterCategory, pMoniker)
+    {
+        CComPtr<IPropertyBag> pPB;
+        if(SUCCEEDED(pMoniker->BindToStorage(0, 0, IID_IPropertyBag, (void**)&pPB)))
+        {
+            CComVariant var;
+            if(SUCCEEDED(pPB->Read(CComBSTR(_T("FriendlyName")), &var, NULL)))
+            {
+                CString szName(var.bstrVal);
+                if(szName.Find(L"CyberLink H.264/AVC Decoder (PDVD8)")>=0){
+                    m_sgs_havePDVD = _T("true");
+                }
+            }
+        }
+              
+    }
+    EndEnumSysDev
+   */
+    
 	if(s.bSupportFFGPU){
 		m_sgs_FFGPU = _T("true");
 	}

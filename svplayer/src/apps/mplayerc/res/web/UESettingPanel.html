@@ -73,6 +73,7 @@ function UESAPI(){
 	this.blockCur = "";
 	this.canUseCoreAVCCUDA = false;
     this.canUseFFMPEGGPU = true;
+    this.canUsePOWERDVD = false;
     this.isvista = false;
     this.isvistaaero = false;
     this.changeBlockI = null;
@@ -345,6 +346,12 @@ UESAPI.prototype = {
                     oOption.innerText = "CoreAVC";
                     oOption.value = "CoreAVCGPUdec";
                 }
+                if(this.canUsePOWERDVD){
+                	oOption = document.createElement("OPTION");
+                    oSelect.options.add(oOption);
+                    oOption.innerText = "PowerDVD";
+                    oOption.value = "PDVDGPUdec";
+                }
                 if(!oSelect.value){
                     oSelect.value = "internalGPUdec";
                 }
@@ -511,6 +518,12 @@ function myInit(){
     if(to){
         if(to.innerHTML != ""){
              ueAPI.canUseCoreAVCCUDA = true;
+        }
+    }
+    to = ueAPI.fobj('havePOWERDVD');
+    if(to){
+        if(to.innerHTML != ""){
+             ueAPI.canUsePOWERDVD = true;
         }
     }
     to = ueAPI.fobj('canFFGPU');
@@ -1010,6 +1023,7 @@ onmouseover="this.src='apply_hover.jpg';"   border="0"/></a>
 
 <div id='isvista' style="display:none"></div><div id='lastpanelid' style="display:none"></div>
 <div id='initvarblock' style="display:none"></div><div id='haveCUDAforCoreAVC' style="display:none"></div>
+<div id='havePOWERDVD' style="display:none"></div>
 <div id='canFFGPU' style="display:none"></div><div id='decodervalue' style="display:none"></div>
 <table width="100%" style="height:100%;display:none;" >
 <tr >

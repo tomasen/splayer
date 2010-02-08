@@ -2533,6 +2533,7 @@ CMPlayerCApp::Settings::Settings()
 	, htpcmode(0)
 	, bNoMoreDXVAForThisFile(0)
 	, bDisableSoftCAVC(false)
+    , bUsePowerDVD()
 {
 
 }

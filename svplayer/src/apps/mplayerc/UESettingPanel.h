@@ -77,6 +77,7 @@ class CUESettingPanel : public CDHtmlDialog
 	CString m_sgs_initblock;
 	CString m_sgs_isvista;
 	CString m_sgs_CUDAVC;
+    CString m_sgs_havePDVD;
 	CString m_sgs_FFGPU;
 	CString m_sgi_startupcheckexts;
 	CString m_sgs_decoderinitvalue;

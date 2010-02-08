@@ -5133,7 +5133,7 @@ void CMainFrame::OnFilePostOpenmedia()
 		}
 		
 	}else if(FindFilter(L"{09571A4B-F1FE-4C60-9760-DE6D310C7C31}", pGB)) {
-		if(s.useGPUCUDA){
+		if(s.bHasCUDAforCoreAVC){
 			m_bDxvaInUse = true;
 			m_DXVAMode = _T("CoreAVC");
 		}
@@ -15846,7 +15846,7 @@ void CMainFrame::OpenMedia(CAutoPtr<OpenMediaData> pOMD)
 	AppSettings& s = AfxGetAppSettings();
 
 	bool fUseThread = true;
-	s.bUsePowerDVD = false;
+	
 	if(OpenFileData* p = dynamic_cast<OpenFileData*>(pOMD.m_p))
 	{
 		if(p->fns.GetCount() > 0)
@@ -15854,17 +15854,12 @@ void CMainFrame::OpenMedia(CAutoPtr<OpenMediaData> pOMD)
 			engine_t e = s.Formats.GetEngine(p->fns.GetHead());
 			fUseThread = e == DirectShow /*|| e == RealMedia || e == QuickTime*/;
 
-			CString szVPathExt = p->fns.GetHead();
-			szVPathExt = szVPathExt.Right(3).MakeLower();
-			if( szVPathExt == _T("mkv") ||  szVPathExt == _T("avi") ||  szVPathExt == _T(".ts") ){
-				s.bUsePowerDVD = true;
-			}
 		}
 	}
 	else if(OpenDeviceData* p = dynamic_cast<OpenDeviceData*>(pOMD.m_p))
 	{
 		fUseThread = false;
-		s.bUsePowerDVD = true;
+		
 	}
 
 	if(m_pGraphThread && fUseThread

@@ -2490,6 +2490,15 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 	
 	szaExtFilterPaths.RemoveAll();
 	
+    HKEY fKey;
+    if(RegOpenKey(HKEY_LOCAL_MACHINE , _T("SOFTWARE\\CoreCodec\\CoreAVC Pro 2.x") , &fKey ) == ERROR_SUCCESS ){
+        SVP_SetCoreAvcCUDA(true);
+        m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{09571A4B-F1FE-4C60-9760-DE6D310C7C31}")), MERIT64_ABOVE_DSHOW+651));
+    }
+   
+    if(s.bUsePowerDVD)
+        m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{C16541FF-49ED-4DEA-9126-862F57722E31}")), MERIT64_ABOVE_DSHOW+651));
+
 	//if(!s.onlyUseInternalDec){
 		/*
 		if ( s.bUsePowerDVD && ( s.optionDecoder == _T("PDVDGPUdec") || s.optionDecoder.IsEmpty() ) && s.useGPUAcel && !s.useGPUCUDA && !IsVista() ) {

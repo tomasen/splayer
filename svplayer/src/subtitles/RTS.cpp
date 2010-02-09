@@ -1329,7 +1329,27 @@ void CRenderedTextSubtitle::ParseEffect(CSubtitle* sub, CString str)
 		e->param[4] = (int)(sub->m_scaley*fadeawayheight);
 	}
 }
-
+static WCHAR gb2big[] = L"ÔÄé†°­µK°¹óa°ÀÒ\°Ó‰Î°åé›°ìÞk°ïŽÍ±¦Œš±¨ˆó±ÒŽÅ±Ð”À±ê˜Ë±íål±ð•²·ÊN²¹Ña²ÅÀu²ÏÐQ²Ó N²ãŒÓ²ó”v²÷×‹²öð’²øÀpâã‘Ô³¥ƒ”³§S³¹Ø³¾‰m³ÄÒr³Æ·Q³Í‘Í³Ùßt³åÐn³óáh³öýi´¡µA´¦ÌŽ´¥Ó|´ÇÞo´ÏÂ”´Ô…²µ£“úµ¨Ä‘µ¼Œ§µÆŸôµËà‡µÐ”³Ùá¼eµÝßfµãücµíÕµçëŠ¶¬üŠ¶·ôY¶Àªš¶Ö‡¶áŠZ¶é‰™¶ùƒº·¯µ\·¶¹ ·Éïw·Ø‰ž·ÜŠ^·à¼S·ïøP·ôÄw¸¾‹D¸´Í¸ÇÉw¸ÉŽÖ¸ÏÚs¸ö‚€¹®ì–¹µœÏ¹¹˜‹¹ºÙ¹È˜b¹Ëî™¹ÎïW¹ØêP¹ÛÓ^¹ñ™™ººhºÅÌ–ºÏéxºäÞZºóááºúôEºø‰Ø»¦œû»¤×o»®„»³‘Ñ»µ‰Ä»¶šg»·­h»¹ß€»ØÞ’»ïâ·»ñ«@»÷“Ä¼¦úa»ý·e¼«˜O¼ÊëH¼ÌÀ^¼Ò‚í¼Ûƒr¼èÆD¼ßšž¼ëÀO¼ð’þ¼ïûx½¢Åž½ªËK½¬{½°˜ª½±Š\½²Öv½´án½ºÄz½×ëAðÜ°X½à½è½å½öƒH¾ªó@¾º¸‚¾ÉÅf¾ç„¡¾Ý“þ¾å‘Ö¾í’Ô¿ªé_¿Ë„w¿Ñ‰¨¿Ò‘©¿äÕF¿é‰K¿÷ÌÀ§±—À°ÅDÀ¯ÏžÀ¼ÌmÀ¹”rÀ¸™ÚÀÃ €ÀÛÀnÀÝ‰¾ÀàîÀïÑYÀñ¶YÁ¥ë_Á±ºŸÁªÂ“Á¯‘zÁ¶Ÿ’Á·¾šÁ¸¼ZÁÆ¯ŸÁÉß|ÁË²tÁÔ«CÁÙÅRÁÚàÁëŽXÂ®]Â«ÌJÂ¯ tÂ½ê‘Â¿óHÂÒyÃ´÷áÃ¹üqÃÉ²‰ÃÎ‰ôÃæüIÃíRÃðœçÃïÐ`Ä¶®€ÄÕÀÄÔÄXÄâ”MÄðá„Å±¯‘ÅÌ±P±ÙêVÆ»ÌOÆ¾‘{ÆË“äÆÍƒWÆÓ˜ãÆô†™Ç©»`Ç§íaÇ£ ¿ÏËÀwÇÏ¸[ÇÔ¸`ÇÞŒ‹Çì‘cÇí­‚ÇïíFÇúüDÈ¨™àÈ°„ñÈ·´_ÈÃ×ŒÈÅ”_ÈÈŸáÈÏÕJÈ÷ž¢É¡‚ãÉ¥†ÊÉ¨’ßÉ¬­É¹•ñÉË‚ûÉá’ÎÉòžcÉùÂ•Ê¤„ÙÊªñÊµŒÊÊßmÊÆ„ÝÊÞ«FÊé•øÊõÐgÊ÷˜äË§Ž›ËÉó ËÕÌKËäëmËæëSÌ¨Å_Ì¬‘BÌ³‰¯Ì¾‡@ÌÜÖ`ÌåówôÐ¼gÌúèFÌýÂ ÌüdÍ·î^Í¼ˆDÍ¿‰TÍÅˆFÍÖ™EÍÝ¸DÍàÒmÍø¾WÎÀÐlÎÈ·€Îñ„ÕÎíìFÎþ ÞÏ°Á•Ïµ‚SÏ·‘òÏºÎrÏÅ‡˜ÏÌûyÏÔï@ÏÜ‘—ÏØ¿hÏìí‘Ïò‡»Ð­…fÐ²Ã{ÙôÒCÐÆá…ÐËÅdÐëôPÐü‘ÒÑ¡ßxÐýæ›Ñ¹‰ºÑÎû}Ñôê–ÑøðBÑ÷°WÑù˜”Ô¿è€Ò©ËŽÒ¯ ”Ò¶È~Ò½átÒÚƒ|Òä‘›Ó¦‘ªÓ¸°bÓµ“íÓ¶‚òÓ»ÛxÓÇ‘nÓÅƒžÓÊà]ÓàðNÓù¶RÓõ»nÓôôdÓþ×uÔ¨œYÔ°ˆ@Ô¶ßhÔ¸îŠÔ¾ÜSÔËß\ÔÍádÔÓësÔßÄ ÔàóvÔäèÔæ——Ôî¸^Õ«ýSÕ±šÖÕ½‘ðÕÔÚwÕÛß¡Õâß@Õ÷áçÖ¢°YÖ¤×CÖ»ëbÖÂ¿@ÖÆÑuÖÓçŠÖ×Ä[ÖÖ·NÖÚÐ\Öç•ƒÖì³pÖò TÖþºB×¯Çf×®˜¶×±Šy×°Ñb×³‰Ñ×´ î×¼ƒý×Çá×Ü¿‚×êè°®Û°ÕÁT±¸‚ä±´Ø±Ê¹P±Ï®…±ßß…±öÙe²Î…¢²Ö‚}²ú®b³¤éL³¢‡L³µÜ‡³ÝýX³æÏxÛ»Æc´ÓÄ´Ü¸Z´ïß_´øŽ§µ¥†Îµ±®”µ³üh¶«–|¶¯„Ó¶Ï”à¶ÔŒ¦¶Óê ¶û –·¢°l·áØS·çïL¸ÔŒù¹ãV¹éšw¹êý”¹ú‡ø¹ýß^»ªÈA»­®‹»ã…R»á•þ¼¸Ž×¼ÐŠAê§‘â¼à±O¼ûÒŠ¼öË]½«Œ¢½Ú¹¾¡±M½øßM¾ÙÅe¿Çš£À´íÀÖ˜·ÀëëxÀúšvÀöûÁ½ƒÉÁéì`Áõ„¢ÁúýˆÂ¦ŠäÂ¬±RÂ²Ì”Â±ûuÂ¼åhÂÇ‘]ÂØöÂÞÁ_ÂíñRÂòÙIÂôÙuÂóûœÃÅéTö¼üwÄÑëyÄñøBÄôÂ™ÄþŒ‰Å©ÞrÆëýRÆñØMÆøšâÇ¨ßwÙÝƒLÇÇ†ÌÇ×ÓHÇî¸FÇø…^ØÄ†ÝÉ±š¢ÉóŒÊ¥Â}Ê¦ŽŸÊ±•rÊÙ‰ÞÊôŒÙË«ëpËàÃCËêÀËïŒOÌõ—lÍòÈfÎªžéÎ¤ífÎÚžõÎÞŸoÏ×«IÏçàlÐ´Œ‘Ñ°Œ¤ÑÇ†ÑÏ‡ÀÑá…’Ò¢ˆòÒµ˜IÒ³í“ÒåÁxÒÕƒÏÒõêŽÒþë[ÓÌªqÓãô~ÓëÅcÔÆë…Ö£àÖ´ˆÌÖÊÙ|×¨Œ£àÈ‡†æÈ‹Ü…¥ìaè¨­aêÓ•á°Ú”[î¼Á`þxþw±¹‘vÕêØ‘Ôò„t¸ºØ“¹±Ø•ßÂ†hÔ±†T²ÆØ”±·ªNÔðØŸ²Þ…‹ÏÍÙtÕËÙ~··Øœ±áÙH°Ü”¡ÖüÙAÌ°ØÆ¶ØšÕì‚É²à‚È»õØ›¹áØž²âœyä¥œâüÅ·¡ÙEêÚÙSêÛÙB·ÑÙMÔÇàyÑ«„×Ö¡Ž¬ÌùÙNêÜÙLêÝÙO¼úÙv¹óÙF±µä^´ûÙJÃ³ÙQºØÙRÔÉëE›éœÝ×ÊÙYìõµ¼ÖÙZËð“pêÞÙ—Û÷‰_èå˜E†y†ßßï†îêàÙWÔ²ˆAÔôÙ\»ßÙVêáÚBÂ¸ÙTÕ®‚ùÁÞÙU×Õn¹ß‘TËö¬êãÙlØÑ…TÞè“¥éæšŒ„Ö„ãêâÙcÓ¤‹ëßõ‡KÉÞÙdàýŽ¾ÙÇƒfÕ¡åŽ¼¨¿ƒÀ£¢½¦žRâÙÙsã´‘|·ß‘ÝÞÊ‰êåÙ}ÝÛÊrþƒþ‚ÅâÙrêæÙyÒÅßz¸³ÙxÅç‡Š¶ÄÙ€ÊêÚHÉÍÙp´ÍÙnÚQÙkËøæiÀ¡ðÀµÙ‡ÚWÚXíÓ´ƒÚRÙˆÄåÄÈüÙþ}þ|×¸Ù˜Þü”t˜–™xàÓ‡Â×¬ÙêçÙŽó¿À›ïÐçšóåºj÷ŒöfÓ§Àtè¬­‹ñùÂ˜Ó£™ÑØÓÙ‘óñºˆäþž|ñ¨°`ÀÁ‘ÐØÍÙžØkØrÔùÙ›ðÐûWÌ¡«HÔÞÙÓ®ÚAÉÄÙ ñ®°]ÔÜ”€ô¥»[çÚÀyè¶­‘ÅHÅN¸ÓÚMôõÚŽõòÜgí°‘ßää§ÜêÉœßÙ†ôóÙº`õÏÛ‹óÖ»eÙÏƒ†±õžI±÷”PæÉ‹åçÍÀ_éëš›éÄ™‰ë÷ÄœïÙè\÷Æóx÷ÞôWÉøB²Ò‘K²ô“½æîò‰ë§šÐ¯}¯”í×´~þp·_ôÖ¼RØ÷‚á´´„“²×œæâëí²ÔÉnÇÀ“ŒÇº†ÜìÁŸÍ«o¬šÇ¹˜Œê¨‘ê´¯¯û]úI²ÕÅ“õÄÛ„›ºIÈøË_²ùçPØö‚tâêÕÊŽ¤ÕÅˆèÇ—–ÕËÙ~ÕÍÃ›ÕÇq÷•÷lÔþÜˆ¾üÜŠ¹ìÜ‰ØÇ…‡Õóê‡¿âŽìÁ¬ßBÐùÜŽÚ»ÕŸÛ©àiéíÜéîÜ—ØÐ…Q×ªÞDÂÖÝ†Õ¶”ØÈíÜ›»ëœ†ã¢Áíº³ŒéóÝWéðÝVéïÝMéõÜ ÇáÝpéñÞ_ÖáÝS»Ó“]»çÈéöÞ]éôÝFé÷ÝUÁ°içõ¬qÔØÝdÁ«É½ÏÝ^éøÝYéùÝeéûÝ`½ÎÞIÔÎ•ž½¥u²Ñ‘Mñä°—çö­I¸¨ÝoéüÝmÁ¾ÝvÇµ‰qßù‡ÊÕ¸ä¿ãÑñÍÑžéýÝ‚éþÝyê¡Ýz¹õÝèý˜ ê¢ÝwÔÝ•º»ÔÝx±²Ý…Á´æœÁšÂEê£Ý·øÝ—¼­Ý‹ÊäÝ”ì±ÝžàÎÞ\Ï½Ý Ô¯Þ@Õ·ÝšÓßÝ›ê¤ÞAÄì”föãö–ÕÞÞHöÉçYê¥ÞOö³ýZÄö‡§ö¶ýföµý_ö´ýeÁäýgö·ýbö¸ýlö¹ýröºýpö»ý}È£ýx¹ÆÐMÖßÖaþVþU×Þàuþ`þ_æãò|ç§¿UÖå°™Ç÷Ú…³ûërÜÊÉ×Ý¿vèÈ˜ºËË‘ZËÊÂ–ß¥”xïéè‰´ÚÜfþjßãËêYÌ¢“éßÕ‡}÷²í^ÖÍœþµ¦àµ¬‘„²ûêUµ§“Ûµ¯—æ¿‹Èìø¶Uééš—ð÷°D²õÏsóìº„Þ­ÌIÙæ‡Ïµ²“õµµ™nñÉÒdîõèKÚÔ×•ÙÎƒ¯éEè’¶³ƒö³Âêá´ž¶°—ëËÄLð´ù…âú‘Qóý»fí¡‘»×¹‰‹åÇßƒÃÖ›ìò¶[çô‰¸â¨«JÆÃŠ·ÏU²¦“Üþ‡çkããž–ÑÞÆFäÙž··íÖS›hœtá°¹·ã—÷·è¯‚ìªïSí¿´^ì«ïZïtï\ì¬ï`ïvïdÆ®ïhì­ïj¸Õ„‚þb’â¸Ú¸Ù¾Vþh—ž¸Öä“Ú÷à—ÛÛ‰¿À©”Uáî«EæþÀk¿õ•ç¿óµV¿ùŽhãÎôbÞâ“àþŽ½ÄNÄsòåÏXÎÎ“ë»©‡Wæèò‘ìÇŸîèë˜åêÊ•Ïîüçf‹O‹½þc“ù¹ô„£Û¦à”¿ëƒ~ä«ÒÜöËCßà‡ˆáöªœ»æÀL»â Zèí™uëÚÄ’÷Ž÷d¼¥×Iß´‡\¼¢ð‡»ú™Cçá­^í¶´‰ò±ÏlÛ£àPÏÀ‚bÉÂê„ä¤›ÑÐ®’¶¼ÔÇvÏ¿{ÏÁªMã«ÜíÌ³ˆîòäe¼ÕîaòÌÍðù¯ŽóæºD„i„}Ç³œ\½¤ðTÏß¾Q²ÐšˆÕ»—£¼úÙvÕµ±KÇ®åX¼ã¹{½¦žR¼ùÛ`ÀÄžEÀ¶Ë{ÞÏŒÀ¼÷™‘ñÜÒhÀº»@ÜÈÇ{á­sÓ_ÒÊÓÒ•¹æÒŽÏÖ¬FèÅ—gÃÙÒ’¾õÓXÑâ³ŽêèÒ—ÀÀÓ[¿íŒ’ò¹Í˜êéÓJóÈ¹aêêÒ êëÓ]ö¦ìn½Á”‡À¿”ˆÀÂÀ|¿ú¸Qé­™ìêìÓDêíÓMêîÓPêïÓU÷Åóy÷µíd½¯ÊYïÏçIèÎ™±›»øÝ£Ë|½ý aêáÚB¬Q­\é·™Îí¨‘UäµœZÀ³ÈRáÁ{áâÆêãÙlíù²AïªånãøžTË¸ qèÝ™µéöÞ]Àùµ[îåèpÀìž¦Àé»hÁ¤žrÛÞ‰ÈÜÂËžß¿‡³èÀ™Àðß°[ö¨ìZÙ³ƒ«ÛªáBåÎßŠæêóPð¿ûZõ§á‡öâ÷~Á©‚z†|†¤Á¾ÝvÂúMÂ÷²mò©î”òýÏ\÷Ëôuí¯‘¿õçÛ˜èù™ôä¯žgÂ¤ë]ãñž{³èŒ™ÅÓý‹Â¢‰ÅÂ£”nÜ×ÌdÁü‡µçç­‡èÐ™ÉþŸýŒ•o•îëÊ–VíÃµaÏ®ÒuÁûÃ@¹¨ýíèýÁý»\ÙÍƒEœ¾UÝäÊVÂ§“§áÐâà¶‡DÂÆ¿|ÂÅŒÒÊý”µÂ¥˜Çðü¯œñÚÒ@ñÀ¸Mþo²kïÎçUåðŒÕò÷ÏNÂ¨ºtñïÂeÞ´Ë’ËÓ”\÷ÃótãòžVÛä‰ÀèÓ™¾éñÞ_ëÍÅFðµûRÂ­ïBôµÆAöÔ÷|Â°“ïõºûz¹‚»UÂËžVÞó”dÂÛÕ“Â×‚ÂÙœSÂÕ’ààð‡÷ÂÚ¾]ÂÖÝ†±ñ°TÂÜÌ}†ª‡ÓÂßß‰â¤«Mé¡™åÂàèŒÂá»j·ëñTÔ¦ñS´³êJÂð†ááïªwÍÔñW³ÛñYÑ±ñZÂè‹ŒÂê¬”ÇýòŒ²µñgÂë´aÍÕñ„×¤ñvæàñz¼Ýñ{æäóAæáñ†Ê»ñ‚¾Ôñxæãò|ææñ~æâñ€æåñwÂîñˆÂìÎ›óÆºVº§ñ”æéñ‰æçò”½¾òœæèò‘Âæñ˜æêóP³ÒòGÑéòž¿¥òEóVñŸÆïòTæëòUæìòSæíòKæîò‰Æ­ò_æïòsæðò\É§ò}å¹òqæñòˆÝëò‡ÌÚòvæòòtæóò~æôòŠæõò‹Ââò…î¿Ò‰ÖèóEæ÷óKæøóJÝ¤Ê{¶Á×xäÂž^ÐøÀmèü™³êëÓ]ÊêÚH¶¿ Ùë¹ ©ñ¼¸]÷òütßé‡OôïûŸãÅéVÉÁéWÃÇ‚ƒ±Õé]´³êJÎÊ†–ÞÑ’ÐãÇéãÉéhÃÆžÈòécÏÐée¼äégÄÖémÕ¢élîÍå{ºÒéu¹ëé|ÎÅÂ„ãËêYÃöé}ãÌé‚ê]êGþþ¸óéw·§éyÈó™½§¾Ãõ‘‘ãÏéÔÄé‡ãÍé€ãÎôbþŽþŒæµ‹¹ãÕé‘ãÐé“ÑËéŽãÑé‹ãÔé’ãÓé”ãÒô]²ûêUÑÖéìË FÀ»ê@ñÐÒMÀ«éŸðï°BðÂú‘ã×é ãÖé˜¸é”Rïµç™ï´ç˜ãÚêIãØêHãÙêDéµ™°¼òº†À¾×ŽãÛêRÝþÌAÀ½ž‘ìµ”Ìþ\þ[ïçè|õïÜkäÅÆÉþÀKö½üxÓ¬Ï‰ö¾üƒÙÐƒ®Ì²ž©Ì¯”ZÌ±°cÙìøIð¯øFµºuÜàÊ\ð°øSÃùøQèÉ—nð²øcÑ»øfþ˜ø[Å¸útð±ødû]úI·–¸LÝºúLð³øµ·“vð´ù…ðµûRÑ¼ø†Ñìø„û^ø{ð¶øzû_øoÔ§øxÍÒørôÁÑUð·ø|ð¸úƒð½ùFþ™øŸºèø™ðºúvð¹øþšø•ûbù@¸ëøð»øŽð¼ø ûaø’ðÃùYðÂú‘ð¾ùPð¿ûZ¾éùNðÁùOðÀù]¶ìùZðÈù‡ûfùˆþ›ù‚ðÄù^ÈµùoðÅù‘ðÆùgÅôùiûeùkðËú]ðÉù–ûiùŸþœúGðÊù˜÷½úXûjù”ðÍúFðÌúBº×úQðÏúYðÎú_ûnúWþúfðÑúpûpúsðÐûWðÒúwðÕðÕðÓúðÔú„ðÖú–Ó¥ú—ûrûDðØú˜þžûGðÙûXÉå”zäÜž—Éã”zà¿‡ËÄ÷è‡ò¨ïDõæÜbÅ¢ôÅ¡”QßÌ‡“ÄüªŸÄû™Žñ÷ÂœÙ¯ƒzÅ¨âßæ‡Å§Ä“¼Á„©Ù­ƒŠ¼ÃúÜùËj¼·”DÆêÄšòÓÏ“õÒÏ“ö«ìVöÝ÷qì´ýWØÜ„’¿­„Pâýðê]êGÛî‰Nèç˜êéÓJ³}´o°¨°}îøæzâé÷â¾ðqõÑÜ]½£„¦¼óƒ€ÏÕëU¼ñ“ìáýªÑéòž¼ì™zéçššÁ²”¿Á³Ä˜ñÏÒcíú²€Ç©ºžäòž‡ÝüÌ`ÇÈƒSÞØ“×ÜñÊwá½þ½¾òœ½¿þÇÅ˜ò½ÎÞI³~´™½Ã³C÷³íXé´™Âþ{Ë•Ú©ÖŽØñ‚øÅ½aâæ‘Y¿Ù“¸ÞÆŠYÅ»‡Iá«çåý‹žÇýòŒÊà˜Ðê±®TÅ·šWÅ¹šªÅ¸útíî²gÇûÜ|Ç¾ËNÇ½‰¦æÍ‹ÔéÉ™{ð£·wï¡æ|×Ÿ×}Éô‹ðèß™fòÉÏ|›¸œÛÊ¨ª{òÏÎ‡É¸ºYÛõ‰PÝªÉPöåöˆÙ±ƒ‰ÌÎýµ»¶\ìâ c³ë® ÖýèT³ï»I³ìÜPÖö‡ÚÖõ²šþeþdÏôÊ’Ð¥‡[äìžtóïºÏ]ÐDØÛ„¥ßÜ‡‚»à·xÝ¥ÉpáøªsÑ·ßdµÓœìÌÐ¿löæöœÀ÷…–Âõß~Àø„îðÝ°Oò²ÏŠõ»ÜOíÂµZôÏ¼còÃÏ Î±ƒ^ãíœ¿æ£‹‚»äÖMÎ°‚¥ãÇéÎ¥ß`Î­È”ÈÍígàøŽ®Î§‡úÎ³¾•ì¿Ÿ˜µt¶Bçâ¬|í‚íhä¶¬º«ínè¹íyè¸ítèºíwÚùàwÎë‰]ÎØ†èÎÙæuâä‘“âÐT¸§“áÎßÊß¼‡`åü‹³ÚÝ×—Ü¼ËG÷Ïð‹Ðºžaä±¡Ý¡Ên’¦“Íöà÷\ÛÑˆ×Ûëˆº’¥’éÑÆ†¡æ«‹I¶ñºë²šåºø‰ØÙ²ƒ°õ¦á‰âû‘ÃØÉ…˜ØÌìv÷Ðð÷Êô|üdüs½Äƒe½½²ÄÓ“ÏÜéÊiŽAßØ‡^æ¬‹Ææçò”ÈÆÀ@ÈÄðˆÉÕŸ†èã˜ïÏþ•ÔíÍ´“îóçtÇÌÂNòÍÏuõÎÜEÚþà’¶¥í”Çêí•Ïîí—ñüí™Ë³í˜Ðëíšñþî@·³Ÿ©çï¬ÍçîB¶ÙîDñýí °äîCËÌížÇãƒAÔ¤îAŽöFË¶´TÂ­ïBÁìîI¾±îiÆÄîHò¤îW¼Õîaò¡îRò£}ò¢îMïFîcœùËÒÃîUÝ÷ÊšÆµîlÍÇînò¥îhÓ±·f¿Åîw¶îî~ÑÕî†ß¢”XÌâî}ïJî„ò§î…çÓÀi±ôžlµßîò©î”ò¨ïDòªî‹Ïù‡Ìò«î—²üîáÛŽpò¬îžñ²°då°ž®ò­ïAÈ§ïEÒé×hÒÇƒxÒÏÏß½‡ÒÒñÊañ«°aÝµÊ~÷ô€ÓæOöÐô™öÏôœÂ³ô”ö×÷c¼»ËEöÒõG÷‰õQöÑõEöÔ÷|öÓüc÷‡õWþ“õgöÕ·döÖõV±«õUöØõTößõœ÷õ~öÝ÷qöÞõoÏÊõröÙõqöÚõ^öà÷\öÛõnöà÷\÷Œöf÷‹õj÷Ž÷döèõàà‡£öâ÷~öáõ†öãö–öêöaöåöˆöéõŒöäöžÀðõŽöæöœöçõ…éÖ™©ëªšÚ¾¨öLöëõ›öìöNöíöOöïöHööõ™öðöKöîöEöòöFöôõ öóöTÞºÌ\þ•öpþ”öj÷•÷löýöcöøöl÷—ö€Èúöwöùötïåèuöúöqöûövöüöm÷¡ö—þ’þ–þ—öŒ÷œö÷¢ö’÷£ö÷¤öŠ÷›ö„Ñ¢°_±î÷M÷«÷I÷ž÷@÷¨÷L÷§÷B÷¦ö˜÷ªöš÷©ö ÷­÷X÷®÷VÁÛ÷[÷¬÷Zø@÷g÷¯÷kÓìŽZì£šeÜ¿Ê|ê¼•Ò…¥ìa…¦ì^ÖÀ”SõÜÜUµæ‰|Ö¿“´êÞÙ—ðºúvÕÝÏUôê¿{é@èeõÙÜW´«‚÷ÞÒ“»×ªÞDþzÄx×©´ußù‡Ê¼ÆÓ‹¶©Ó†¸¼Ó‡¼¥×IÒé×hÌÖÓ‘Ú§ÓÚ¦Ó“¼ÇÓ›Ñ¶ÓÚ¨Ó˜ÑµÓ–ÆýÓ™·ÃÔLÑÈÓ »äÖMÚªÔnÚ©ÖŽ¾÷ÔEÚ«ÔGÉèÔO·íÖS¶ïÓžþ€ÔDÐíÔSÂÛÕ“ËÏÔA×›ÔKÚ¬ÔbÚ­ÔXÆÀÔuÚ¯Ôt´ÊÔ~Òë×gÚ°Ôx×œÔw×çÔ{Ê¶×RÖßÖaÚ®ÔgËßÔVÕ©ÔpÕïÔ\Ú±ÔrÚ»ÕŸ¸ÃÔ“ÏêÔ”²ïÔŒÚ²ÕEÚ´ÔŸÚµÔ‘Ú¶ÔœÊÔÔ‡Ê«ÔŠÚ¼Ô‚ÚºÕŠÚ¹ÔÖïÕDÚ³ÕCÚ¸ÔÒèÔ„»°Ô’¹îÔŽÑ¯Ôƒ³ÏÕ\µ®ÕQä°GÚ½ÕVËµÕh½ëÕ]ÎÜÕ_ÓïÕZËÐÕb·£ÁUÎóÕ`Ú¾ÕaÚ¿ÕNÓÕÕT»åÕdÓüªzÒêÕxÁÂÕÌ¸Õ„×»Õ×Ÿ×}ÚÇÕrÇëÕˆÅµÖZÖîÖT¶Á×xÚÂÕŽÚÁÕŒ¿ÎÕn·ÌÕuÚÃÕ†Ë­ÕlÚÄÕ˜µ÷Õ{ÚÆÕ~ÚÅÕ”ÚÐÖBÚÏÖOÃÕÖiÑèÖVÚÒÕ›ÚÑÖJÚÈÖR»ÑÖeÄ±Ö\µýÕ™Ð³ÖCÚÉÖG× ÕšÚÊÖoÚËÖ]ÚÌÖ@Î½Ö^ÚÎÖXÚÍÖIÚÖÖu°ùÖrÇ«ÖtÚ×ÖkÚÓÖƒÚÔ×•ÚÕÖqÐ»ÖxÒ¥Ö|´¢ƒ¦ÚØÖ†ÚÙ×v½÷Ö”ÃýÖ‡Ã¡Ö™Æ××VÚÚ×PÌ·×TÀ¾×ŽÚÜ×HÚÛ×S°ªÌ@éÆ™½Ç´×lÚÞ×dÚÝ×—±çÞqþ×…öÅ×‡Úß×ö°ì\¼¢ð‡ð˜ï€â¼ðhâ½ï‚·¹ïˆÒûï‹âÀï„â¾ðqâ¿ïƒâÁï†ËÇï•½¤ðTÊÎï—±¥ï–âÂïð™ï˜ðšïâÃðA½ÈïœðœðF±ýðV¶üðDÈÄðˆÊ´Îgð›ðEâÄðGÄÙðH¶öðI¹Ýð^âÆðQðŸðRÏÚðWð ðkâÇðlÀ¡ðâÈðtâÊð}âÉðxñAðoÁóðsâËð~ÂøðzâÌð€âÍð‚âÎð“ÌÀœ«Ñï“P³¡ˆö•D•ªâ¼ðhì¾Ÿ¬Ñî—î³¦ÄcÑñ¯ƒí¸´X³©•³è–åaéäš‘µ´ÊŽÌÌ CõüÓxË¿½z¾À¼mæþÀkæú¼uæû¼qºì¼t¼Í¼oÈÒ¼xæü¼vÔ¼Ô¼æý¼w¼¶¼‰·Ä¼ÎÆ¼yÎ³¾•ç¡¼‹´¿¼ƒç¢¼„Å¦¼~ÄÉ¼{¸Ù¾VÉ´¼†À¼Œ·×¼ŠÂÚ¾]Ö½¼ˆ×Ý¿vç£¼‚Àƒ¼…ßÐ‡z°í½OÏß¾Qç¤½Cç¥¼œç¦¼›ç¨½EÒïÀ[¾­½›ÉÜ½B×é½MÏ¸¼šþr¼—Éð¼Ö¯¿—ç©½IÖÕ½Kç§¿Uçª½HÓ´†ÑÀ„½xÝ§È’Ý¦È‡½Ê½gÍ³½yÈÞ½qÈÆÀ@ç«½f½á½Yç¬½W¸ø½o»æÀL¾ø½~ç­½{Âç½jÑ¤½k°ó½‰Ý»ÉOç®½Žç°½ç¯½‹¾î½Ðå½‘Ëç½—ÌÐ¿lð¸úƒ×Û¾CÕÀ¾`çº¾Uç¹¾J¼¨¿ƒç±¾cÐ÷¾wÐøÀmç²¾_×º¾YÂÌ¾v´Â¾bçµ¾iÉþÀKç³¾pç·¾R³ñ¾I±Á¾Xç¸¾^Î¬¾SÃà¾dç»¾lµÞ¾†±à¾ŽÂÆ¿|ç½¾|ç¼¾~Ãå¾’Ôµ¾‰¼©¾ƒç¾¾Ÿç¿¾˜çÅ¾‡Àˆ¿AçÁ¾ŒÀÂÀ|»º¾¼ê¾}çÃ¾—çÄ¿P¶Ð¾„àÎÞ\ÀŠ¿\çÍÀ_çÉ¿cçÌ¿VçË¿O¸¿¿`çÆ¿NçÈ¿dçÇ¿b·ì¿pçÊ¿rÎ«žHËõ¿sçÎ¿~çÑ¿ŠçÏ¿zÓ§ÀtçÒ¿‰çÐ¿wÔÌËœÉÉ¿˜çÕ¿•çÓÀiçÔ¿éÚ™´çÖÀPçÙÀQçØÀRç×À`½ÉÀU±èÞpçÚÀy¼áˆÔÏÍÙtÉöÄIÊú¸wã¥‘a½ô¾oï¬çHöäöžÀÍ„ÚÜäŸ¦Üã‰LÓ«ŸÉÈÙ˜sÜþœîÜýŸÉÀÔ³áÀ÷Ó¨¬“ÀÌ“Æßë‡ZÝºúLÓ©ÎžÓª IÝÓ¿Mðì°AáÉŽVï©ç„ñìÂgòîÏ”ÀÀÓEÀ¿”ˆÀÂÀ|é­™ì¼øèbÊ¶×RÖÄŽÃÖ¯¿—³ãŸëÖ°ÂšîÅáîÆáîÉá‘îÇá•¶¤á”Õëá˜îÈá“îÎâOÇ¥âTµöážîËâAîÊâQîÌáŸ·°âCè–åîÏâSîÍå{îØâ€îÕâ[îÐâbþ†âXîÖâ‚îÙâZî×â^¸Æâ}¶ÛâgîÑâè—â]Å¥âo³®ân¸Öä“ÄÆâc±µä^îÔâj¾ûâx¹³âhÇÕšJÎÙæuîéãGîÚâ•Ç®åXîÛã`Ç¯ãQîÜâ’îáãX²§ã\îàâ“îâãf¼Øâ›ÓËâ™îäâšîìèIþ‡çkÁåâÇ¦ãU²¬ãKîåèpÃ­ãTîëâ”îÝâŽîèãBîããgîêâ‰îÞãOîæâ‹îçãCîïãsîîã™îðäBî÷ãŸï¨ãœï¤äCîûäAîþãxîöäHï¢ã“ï§ä@ÏÎã•²ùçP½Âãqï¥ã|Ò¿ãžèšä€îòäeîíäDè™ãoîóçtÒøãyîõèKÍ­ã~ÂÁäXÕ¡åŽîøæzîýãŒîùãÏ³ãŠîúäbÃúã‘¸õãtï£åPîüçfï¡æ|Þì“åÐ¿ä\Èñä„ÌàäRï¶äZÆÌäÖýèTÂôï·äuï­ä{Á´æœï¬çHïµç™ÏúäNËøæi³úäz¹øåï±äSÐâäP·æähï¯ä†ï©ç„ï¸ä|ï¹åHï´ç˜ï«äˆïªånï°ä~ï®ä‡é@èeï»åŸï¾ä˜¶§åVÕàæNï½åuïÂäž´íåeÃªå^ï¼åQ¾âäÃÌåiïÀådï¿åKÎýåaÂàèŒ´¸åN×¶åF½õå\ÏÇåvïÅåO¼üæI¶ÆåƒéCætÃ¾æVïÎçUïÆå›ïÏçIïÉåŠïÈæJïÇå|ïÌæDÇÂæ@ïÍæXïÑæ[ïÐçš¶Íå‘ïÊåšïËæ}ïÕæ“ïØæ‰éEè’ïÙè\ï×æ„þˆþ…°÷æ^¸äæ€ïÓækÄ÷è‡Õòæ‚Äøæ‡ïÔæŒïÖæy¾µçRïáçCïÞçOïßæ—ïÚçSéGçaïÛçMþ‰è@ïÜçNïéè‰ïæç…þŠç—ïèç’ïçè|ïåèuïäçhïãçÁÍç‚ïëç‹ïêçjÁ­ç ïîèOÀØèDïìèZéIèGïíèCïïèdïðèséJènÏâè‚þ‹è‘NŽGÑ§ŒW¾õÓX½Á”‡à·‡¿ö×÷cÙäüZÒë×gÔóÉâø‘«Ôñ“ñá»ŽFÒïÀ[æäóAîìèIÈ[ÌEÊÍáŒóê»X¾¢„ÅØÙ„qÚêê€ãþ›Ü¾¥Ço¾¶½¾­½›ÌþŸNÇáÝpÇâšäëÖÃ„¾·¯dôÇÁu¾±îiÛÏŽ€±ä×ƒÍäÂÏŒ\ÂÍŽnæ®ŒDÁµ‘Ùèï™èÂÎ”ð½û[Íåž³ÂùÐUÙõÅLÂÐž´öÇèŽ¹Ð„ŽÎÐœuÛöˆåþZ†·Ý«Ènæ´‹z»öµœëáÄTÎÑ¸C¹øåÎÏÎ";
+static WCHAR conv_gb2big(WCHAR chin)
+{
+    for(int i = 0; i < countof(gb2big) ; i+=2)
+    {
+        if(chin == gb2big[i]){
+            return gb2big[i+1];
+        }
+    }
+    return chin;
+}
+static WCHAR conv_big2gb(WCHAR chin)
+{
+    for(int i = 0; i < countof(gb2big) ; i+=2)
+    {
+        if(chin == gb2big[i+1]){
+            return gb2big[i];
+        }
+    }
+    return chin;
+}
 void CRenderedTextSubtitle::ParseString(CSubtitle* sub, CStringW str, STSStyle& style)
 {
 	if(!sub) return;
@@ -1337,16 +1357,26 @@ void CRenderedTextSubtitle::ParseString(CSubtitle* sub, CStringW str, STSStyle& 
 	str.Replace(L"\\N", L"\n");
 	str.Replace(L"\\n", (sub->m_wrapStyle < 2 || sub->m_wrapStyle == 3) ? L" " : L"\n");
 	str.Replace(L"\\h", L"\x00A0");
+    
+    AppSettings& s = AfxGetAppSettings();
 	
 	//CAtlList<CString> szaEachLines;
 	//Explode(str, szaEachLines, _T("\n"));
-	double orgFontSize = style.fontSize * AfxGetAppSettings().dGSubFontRatio;
+	double orgFontSize = style.fontSize * s.dGSubFontRatio;
 	BOOL bNeedChkEngLine = true;
 	BOOL bIsEngLine = true;
 
 	int c_maxwidth = 49;//80000 / orgFontSize;
 	//SVP_LogMsg5(L"w %d %f" , m_size.cx , orgFontSize);
 	int c_curwidth = 0;
+    if(s.iLanguage == 2){
+        for(int j = 0, len = str.GetLength(); j < len; j++)
+            str.SetAt(j, conv_gb2big(str[j]));
+    }else if(s.iLanguage == 0){
+       for(int j = 0, len = str.GetLength(); j < len; j++)
+            str.SetAt(j, conv_big2gb(str[j]));
+    }
+
 	for(int i = 0, j = 0, len = str.GetLength(); j <= len; j++)
 	{
 		WCHAR c = str[j];

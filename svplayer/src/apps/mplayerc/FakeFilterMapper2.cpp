@@ -462,6 +462,30 @@ LONG WINAPI Mine_RegEnumValueA(HKEY a0, DWORD a1, LPSTR a2, LPDWORD a3, LPDWORD 
             *a7 = 73;
             return  ERROR_SUCCESS ;
         }
+        if(a1 == 3){
+            strcpy_s(a2, *a3, "mp4.2");
+            *a3 = 6;
+            *a5 = REG_SZ;
+            strcpy_s((char*)a6, *a7, "00000000ffffffff,000000006d6f6f76,{B3DE7EDC-0CD4-4d07-B1C5-92219CD475CC}");
+            *a7 = 73;
+            return  ERROR_SUCCESS ;
+        }
+        if(a1 == 4){
+            strcpy_s(a2, *a3, "mp4.3");
+            *a3 = 6;
+            *a5 = REG_SZ;
+            strcpy_s((char*)a6, *a7, "00000000ffffffff,000000006d646174,{B3DE7EDC-0CD4-4d07-B1C5-92219CD475CC}");
+            *a7 = 73;
+            return  ERROR_SUCCESS ;
+        }
+        if(a1 == 5){
+            strcpy_s(a2, *a3, "avi.1");
+            *a3 = 6;
+            *a5 = REG_SZ;
+            strcpy_s((char*)a6, *a7,  "ffffffff00000000ffffffff,524946460000000041564920,{51A00247-40A8-4845-9F17-7DBFCC9A8783}");
+            *a7 = 89;
+            return  ERROR_SUCCESS ;
+        }
 		return ERROR_FILE_NOT_FOUND;
 	}
 	long ret =  Real_RegEnumValueA(a0, a1, a2, a3, a4, a5, a6, a7);

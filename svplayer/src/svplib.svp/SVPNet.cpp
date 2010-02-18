@@ -168,7 +168,6 @@ size_t CSVPNet::handleSubQuery( void *ptr, size_t size, size_t nmemb, void *stre
 CStringA GetUrlByType(DWORD req_type , int iTryID){
 	
     CStringA apiurl("https://www.shooter.cn/");
-    iTryID = 2;
     if(iTryID > 1 && iTryID <= 11){
         apiurl.Format("https://splayer%d.shooter.cn/", iTryID-1);//"http://svplayer.shooter.cn
     }else if(iTryID > 11) {
@@ -186,7 +185,7 @@ CStringA GetUrlByType(DWORD req_type , int iTryID){
             apiurl.Append( "api/subapi.php" );
             break;
 	}
-    SVP_LogMsg6("using api %s", apiurl );
+    //SVP_LogMsg6("using api %s", apiurl );
     return apiurl;
 
 }

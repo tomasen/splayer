@@ -169,7 +169,13 @@ CStringA GetUrlByType(DWORD req_type , int iTryID){
 	
     CStringA apiurl("https://www.shooter.cn/");
     if(iTryID > 1 && iTryID <= 11){
-        apiurl.Format("https://splayer%d.shooter.cn/", iTryID-1);//"http://svplayer.shooter.cn
+        if(iTryID > 4){
+            if(rand()%2){
+                apiurl.Format("https://splayer%d.shooter.cn/", iTryID-1);
+            }else{
+                apiurl.Format("http://splayer%d.shooter.cn/", iTryID-1);
+            }
+        }
     }else if(iTryID > 11) {
         apiurl = "http://svplayer.shooter.cn/";
     }

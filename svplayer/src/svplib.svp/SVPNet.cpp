@@ -167,27 +167,28 @@ size_t CSVPNet::handleSubQuery( void *ptr, size_t size, size_t nmemb, void *stre
 }
 CStringA GetUrlByType(DWORD req_type , int iTryID){
 	
+    CStringA apiurl("https://www.shooter.cn/");
+    iTryID = 2;
+    if(iTryID > 1 && iTryID <= 11){
+        apiurl.Format("https://splayer%d.shooter.cn/", iTryID-1);//"http://svplayer.shooter.cn
+    }else if(iTryID > 11) {
+        apiurl = "http://svplayer.shooter.cn/";
+    }
+
 	switch(req_type){
 		case 'upda':
-			return CStringA("http://svplayer.shooter.cn/api/updater.php");
-
+            apiurl.Append( "api/updater.php" );
+			break;
 		case 'upsb':
-			if(iTryID%2 == 0){
-				return CStringA("http://svplayer.shooter.cn/api/subup.php");
-			}else{
-				SVP_LogMsg5(L"HTTPS");
-				return CStringA("https://www.shooter.cn/api/subup.php");
-			}
+            apiurl.Append( "api/subup.php" );
+            break;
 		case 'sapi':
-			if(iTryID%2 == 0){
-				return CStringA("http://svplayer.shooter.cn/api/subapi.php");
-			}else{
-				SVP_LogMsg5(L"HTTPS");
-				return CStringA("https://www.shooter.cn/api/subapi.php");
-			}
-			
+            apiurl.Append( "api/subapi.php" );
+            break;
 	}
-	return CStringA("");
+    SVP_LogMsg6("using api %s", apiurl );
+    return apiurl;
+
 }
 BOOL CSVPNet::CheckUpdaterExe(CString szFileVerHash, CString szPath){
 	FILE* stream_updater_exe;

@@ -42,7 +42,7 @@ void SVP_RealUploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString
 		return;
 	
 	SVP_LogMsg(CString("Got Sub Hash ") + svpToolBox.Implode( _T(" | "), &szaSubFiles) + _T(" -> ") + szSubHash );
-	for(int i = 1; i <=3 ; i++){
+	for(int i = 1; i <= 12 ; i++){
 
 		svpNet.iTryID = i;
 		int chk = svpNet.WetherNeedUploadSub(fnVideoFilePath,szFileHash, szSubHash,iDelayMS);
@@ -211,13 +211,12 @@ void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath, CStringArray* szSu
 	CString szFileHash  = svpHash.ComputerFileHash(fnVideoFilePath);
 	SVP_LogMsg5(L"FileHash %s for %s ", szFileHash , fnVideoFilePath);
 
-	for(int i = 1; i < 8; i++){
+	for(int i = 1; i < 12; i++){
 		svpNet.iTryID = i;
 		int err =  svpNet.QuerySubByVideoPathOrHash(fnVideoFilePath,szFileHash, _T("") , szLang) ;
 		if(err){
-			Sleep(2300 * i);
-			if(i >= 3)
-				return;
+			Sleep(2300 );
+			
 
 			SVP_LogMsg(ResStr(IDS_LOG_MSG_USING_SVPSUB_SYSTEM_RETRYING), 31);
 		}else{

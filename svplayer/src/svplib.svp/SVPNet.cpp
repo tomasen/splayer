@@ -103,8 +103,8 @@ int CSVPNet::SetCURLopt(CURL *curl )
 	curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1);
 	curl_easy_setopt(curl, CURLOPT_USERAGENT, buff);
 
-	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 30);
-	curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 30);
+	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 40);
+	curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);
 	curl_easy_setopt(curl,CURLOPT_HTTP_VERSION,CURL_HTTP_VERSION_1_0); //must use 1.0 for proxy
 
 	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);

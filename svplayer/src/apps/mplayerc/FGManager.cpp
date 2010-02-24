@@ -2491,9 +2491,9 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 	szaExtFilterPaths.RemoveAll();
 	
     HKEY fKey;
-    if(RegOpenKey(HKEY_LOCAL_MACHINE , _T("SOFTWARE\\CoreCodec\\CoreAVC Pro 2.x") , &fKey ) == ERROR_SUCCESS ){
-        SVP_SetCoreAvcCUDA(true);
-        m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{09571A4B-F1FE-4C60-9760-DE6D310C7C31}")), MERIT64_ABOVE_DSHOW+651));
+    if(RegOpenKey(HKEY_LOCAL_MACHINE , _T("SOFTWARE\\CoreCodec\\CoreAVC Pro 2.x") , &fKey ) == ERROR_SUCCESS && s.bShouldUseGPUAcel()){
+        //SVP_SetCoreAvcCUDA(true);
+        //m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{09571A4B-F1FE-4C60-9760-DE6D310C7C31}")), MERIT64_ABOVE_DSHOW+651));
     }
    
     if(s.bUsePowerDVD)
@@ -2534,10 +2534,10 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 			if( (s.bShouldUseGPUAcel() && s.bHasCUDAforCoreAVC) || (!s.bShouldUseGPUAcel() && !s.bDisableSoftCAVC && !s.bDisableSoftCAVCForce)){
 				//if((s.useGPUAcel)){
 					//SVP_ForbidenCoreAVCTrayIcon();
-					SVP_SetCoreAvcCUDA(true); 
+					//SVP_SetCoreAvcCUDA(true); 
 				//}
 				//cavc
-				szaExtFilterPaths.Add( czvcPath  );  //will crash without why
+				//szaExtFilterPaths.Add( czvcPath  );  //will crash without why
 			}
 			////VMR9 seems not work with coreplayer
 	  		

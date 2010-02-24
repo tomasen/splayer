@@ -18,7 +18,7 @@ private:
 	int SetCURLopt(CURL *curl );
 	char errorBuffer[CURL_ERROR_SIZE];;
 	char uniqueIDHash[UNIQU_HASH_SIZE];
-	
+	FILE* fp_curl_verbose;
 public:
 	int WetherNeedUploadSub(CString fnVideoFilePath, CString szFileHash,CString fnSubHash, int iDelayMS);
 	int UploadPinRenderDeadEndReport(CString szPinName, CString szReport);

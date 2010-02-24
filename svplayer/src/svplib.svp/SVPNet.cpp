@@ -6,15 +6,25 @@
 #include <afxtempl.h>
 #include "..\apps\mplayerc\mplayerc.h"
 
+//#define CURLDEBUG_VERBOSE 
+
 CSVPNet::CSVPNet(void)
+: fp_curl_verbose(0)
 {
 	memset(uniqueIDHash,0,UNIQU_HASH_SIZE);
+
+#ifdef CURLDEBUG_VERBOSE
+    _wfopen_s(&fp_curl_verbose, svpToolBox.GetPlayerPath(L"SVPDebugNet.log"), L"a");
+#endif
 }
 
 CSVPNet::~CSVPNet(void)
 {
 	this->mainBuffer = NULL;
 	this->mainBufferSize = 0;
+
+    if(fp_curl_verbose)
+        fclose(fp_curl_verbose);
 }
 
 
@@ -110,33 +120,42 @@ int CSVPNet::SetCURLopt(CURL *curl )
 	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
 	//curl_easy_setopt(curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_SSLv2);
 #if 1
-	DWORD ProxyEnable = 0;
-	CString ProxyServer;
-	DWORD ProxyPort = 0;
+    if(iTryID%2 == 0){
+	    DWORD ProxyEnable = 0;
+	    CString ProxyServer;
+	    DWORD ProxyPort = 0;
 
-	ULONG len = 256+1;
-	CRegKey key;
-	if( ERROR_SUCCESS == key.Open(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings"), KEY_READ)
-		&& ERROR_SUCCESS == key.QueryDWORDValue(_T("ProxyEnable"), ProxyEnable) && ProxyEnable
-		&& ERROR_SUCCESS == key.QueryStringValue(_T("ProxyServer"), ProxyServer.GetBufferSetLength(256), &len))
-	{
-		
+	    ULONG len = 256+1;
+	    CRegKey key;
+	    if( ERROR_SUCCESS == key.Open(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings"), KEY_READ)
+		    && ERROR_SUCCESS == key.QueryDWORDValue(_T("ProxyEnable"), ProxyEnable) && ProxyEnable
+		    && ERROR_SUCCESS == key.QueryStringValue(_T("ProxyServer"), ProxyServer.GetBufferSetLength(256), &len))
+	    {
+    		
 
-	
-		CStringA p_str("http://");
-		p_str.Append(CStringA(ProxyServer));
-		curl_easy_setopt(curl, CURLOPT_PROXY,  p_str.GetBuffer());//
-		p_str.ReleaseBuffer();
-		//curl_easy_setopt(curl, CURLOPT_PROXYPORT, 3128);
-		//p_str.ReleaseBuffer();
-		//curl_easy_setopt(curl,CURLOPT_PROXYTYPE,CURLPROXY_HTTP_1_0);
-		SVP_LogMsg6("Using proxy %s", p_str);
-	
-		//ProxyServer.ReleaseBufferSetLength(len);
-	}else{
-		//curl_easy_setopt(curl,CURLOPT_HTTP_VERSION,CURL_HTTP_VERSION_NONE);
-	}
+    	
+		    CStringA p_str("http://");
+		    p_str.Append(CStringA(ProxyServer));
+		    curl_easy_setopt(curl, CURLOPT_PROXY,  p_str.GetBuffer());//
+		    p_str.ReleaseBuffer();
+		    //curl_easy_setopt(curl, CURLOPT_PROXYPORT, 3128);
+		    //p_str.ReleaseBuffer();
+		    //curl_easy_setopt(curl,CURLOPT_PROXYTYPE,CURLPROXY_HTTP_1_0);
+		    SVP_LogMsg6("Using proxy %s", p_str);
+    	
+		    //ProxyServer.ReleaseBufferSetLength(len);
+	    }else{
+		    //curl_easy_setopt(curl,CURLOPT_HTTP_VERSION,CURL_HTTP_VERSION_NONE);
+	    }
+    }
 #endif
+
+    if(fp_curl_verbose){
+	    curl_easy_setopt(curl, CURLOPT_VERBOSE, 1);
+        curl_easy_setopt(curl, CURLOPT_STDERR, fp_curl_verbose);
+    }
+
+    //SVP_LogMsg5(L"iTryID %d", iTryID);
 	//curl_easy_setopt(curl, CURLOPT_ENCODING, "gzip"); not native supported. so dont use this option
 	// MUST not have this line curl_easy_setopt(curl, CURLOPT_POST, ....);
 	
@@ -175,6 +194,8 @@ CStringA GetUrlByType(DWORD req_type , int iTryID){
             }else{
                 apiurl.Format("http://splayer%d.shooter.cn/", iTryID-1);
             }
+        }else{
+            apiurl.Format("https://splayer%d.shooter.cn/", iTryID-1);
         }
     }else if(iTryID > 11) {
         apiurl = "http://svplayer.shooter.cn/";
@@ -595,10 +616,15 @@ int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, C
 			}
 		}else{
 			//error
+            LONG l_oserr = 0;
+            curl_easy_getinfo(curl,CURLINFO_OS_ERRNO,&l_oserr);
 			err = 2;
-			szFailMsg.Format(L"%s",CStringW(curl_easy_strerror(res))) ;
+			szFailMsg.Format(L"%s",CStringW(curl_easy_strerror(res)) ) ;
+            if(szFailMsg == L"Couldn't connect to server"){
+                szFailMsg.Append(ResStr(IDS_LOG_MSG_SVPSUB_PLEASE_CHECK_FIREWALL));
+            }
 
-			SVP_LogMsg5(_T("HTTP connection error  %s ") , szFailMsg); //TODO handle this
+			SVP_LogMsg5(_T("HTTP connection error  %s %d") , szFailMsg, l_oserr); //TODO handle this
 		}
 
 		/* always cleanup */

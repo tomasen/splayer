@@ -127,15 +127,18 @@ void CSVPSubDownUpDialog::OnBnClickedButton1()
 void CSVPSubDownUpDialog::OnBnClickedCancel()
 {
 	//  Ìø³ö
-	if(!pFrame->m_bSubDownloading){
+	if(pFrame->m_bSubDownloading && pFrame->m_ThreadSVPSub){
+        TerminateThread(pFrame->m_ThreadSVPSub->m_hThread, 0);
+    }
 		__super::OnCancel();
-	}
+	//}
 }
 
 void CSVPSubDownUpDialog::OnClose()
 {
-	// TODO: Add your message handler code here and/or call default
-	if(!pFrame->m_bSubDownloading){
+    if(pFrame->m_bSubDownloading && pFrame->m_ThreadSVPSub){
+        TerminateThread(pFrame->m_ThreadSVPSub->m_hThread, 0);
+    }
 		__super::OnClose();
-	}
+	//}
 }

@@ -604,7 +604,8 @@ CMainFrame::CMainFrame() :
 	lastShowCurrentPlayingFileTime(0),
 	pTBL(NULL),
 	m_lastSeekAction(0),
-	m_wndLycShowBox(NULL)
+	m_wndLycShowBox(NULL),
+    m_ThreadSVPSub(NULL)
 {
 	m_wndFloatToolBar = new CPlayerFloatToolBar();
 }
@@ -11300,7 +11301,8 @@ void CMainFrame::SVPSubDownloadByVPath(CString szVPath, CAtlList<CString>* szaSt
 	}else{
 		pData->statusmsgs = szaStatMsgs;
 	}
-	AfxBeginThread(SVPThreadLoadThread, pData); 
+	m_ThreadSVPSub = AfxBeginThread(SVPThreadLoadThread, pData); 
+    
 }
 class CSVPSubUploadThreadData{
 public:

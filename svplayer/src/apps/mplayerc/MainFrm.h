@@ -352,6 +352,7 @@ public:
 	CComPtr<IMFVideoDisplayControl>	m_pMFVDC;
 	void		SetVMR9ColorControl(float Brightness, float Contrast, float Hue, float Saturation, BOOL silent = false);
 
+    CWinThread* m_ThreadSVPSub;
 	void SVPSubDownloadByVPath(CString szVPath, CAtlList<CString>* szaStatMsgs = NULL);
 	void SVP_UploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString szSubPath, int iDelayMS = 0, CAtlList<CString>* szaStatMsgs = NULL, CStringArray* szaPostTerms = NULL);
 	CAtlList<CString> m_statusmsgs;

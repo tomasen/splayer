@@ -12337,8 +12337,9 @@ void CMainFrame::OpenSetupWindowTitle(CString fn)
 
 void CMainFrame::OnColorControl(UINT nID){
 	int act = nID - ID_BRIGHTINC;
+    AppSettings& s = AfxGetAppSettings();
+
 	if(m_pMC){
-		AppSettings& s = AfxGetAppSettings();
 		VMR9ProcAmpControlRange ClrRange;
 		ClrRange.dwProperty = ProcAmpControl9_Brightness;
 		ClrRange.dwSize = sizeof(VMR9ProcAmpControlRange);
@@ -12354,7 +12355,17 @@ void CMainFrame::OnColorControl(UINT nID){
 		s.dBrightness = min( max(s.dBrightness, ClrRange.MinValue) , ClrRange.MaxValue);
 		SetVMR9ColorControl(s.dBrightness,s.dContrast,s.dHue,s.dSaturation);
 	}else{
-		SendStatusMessage(ResStr(IDS_OSD_MSG_NEED_ENABLE_COLOR_CONTROL_IN_SETTING_PANNEL) , 5000);
+		//SendStatusMessage(ResStr(IDS_OSD_MSG_NEED_ENABLE_COLOR_CONTROL_IN_SETTING_PANNEL) , 5000);
+
+        if(act == 2){
+            s.dBrightness = 100;
+        }else if(act == 1){
+            s.dBrightness -= 1; 
+        }else{
+            s.dBrightness += 1; 
+        }
+        SetVMR9ColorControl(s.dBrightness,s.dContrast,s.dHue,s.dSaturation);
+        
 	}
 }
 void CMainFrame::ReRenderOrLoadMedia(BOOL bNoMoreDXVAForThisMedia){

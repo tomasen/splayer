@@ -12354,9 +12354,8 @@ void CMainFrame::OnColorControl(UINT nID){
 		}
 		s.dBrightness = min( max(s.dBrightness, ClrRange.MinValue) , ClrRange.MaxValue);
 		SetVMR9ColorControl(s.dBrightness,s.dContrast,s.dHue,s.dSaturation);
-	}else{
-		//SendStatusMessage(ResStr(IDS_OSD_MSG_NEED_ENABLE_COLOR_CONTROL_IN_SETTING_PANNEL) , 5000);
-
+	}else if(m_pCAPR) {
+		
         if(act == 2){
             s.dBrightness = 100;
         }else if(act == 1){
@@ -12366,7 +12365,9 @@ void CMainFrame::OnColorControl(UINT nID){
         }
         SetVMR9ColorControl(s.dBrightness,s.dContrast,s.dHue,s.dSaturation);
         
-	}
+    }else{
+        SendStatusMessage(ResStr(IDS_OSD_MSG_NEED_ENABLE_COLOR_CONTROL_IN_SETTING_PANNEL) , 5000);
+    }
 }
 void CMainFrame::ReRenderOrLoadMedia(BOOL bNoMoreDXVAForThisMedia){
 	int iPlaybackMode = m_iPlaybackMode;

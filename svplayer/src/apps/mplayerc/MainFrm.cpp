@@ -511,6 +511,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_RESET_SETTING,  OnResetSetting)
 	ON_COMMAND(ID_VIEW_SETHOTKEY, OnSetHotkey)
 
+    ON_COMMAND(ID_SHOW_VIDEO_STAT_OSD, OnShowCurrentPlayingFileInOSD)
+
 	ON_WM_KILLFOCUS()
 	ON_COMMAND(ID_CHANGEBACKGROUND, &CMainFrame::OnChangebackground)
 	ON_COMMAND(ID_SUBSETFONTBOTH, &CMainFrame::OnSubsetfontboth)
@@ -1325,7 +1327,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 				
 			}else if( !m_lTransparentToolbarStat && r.PtInRect(point) ){
 
-				OnShowCurrentPlayingFileInOSD();
+				//OnShowCurrentPlayingFileInOSD();
 				m_lTransparentToolbarStat = max(1,abs(m_lTransparentToolbarStat) );
 				bSomethingChanged = true;
 			}
@@ -14639,13 +14641,13 @@ void CMainFrame::OnChangeResizer(UINT nID){
 }
 /////////////
 void CMainFrame::OnShowCurrentPlayingFileInOSD(){
-	if(!m_fnCurPlayingFile.IsEmpty() && !m_fAudioOnly && (time(NULL) - lastShowCurrentPlayingFileTime) > 10){
+	if(!m_fnCurPlayingFile.IsEmpty() && !m_fAudioOnly){// && (time(NULL) - lastShowCurrentPlayingFileTime) > 10
 		lastShowCurrentPlayingFileTime = time(NULL);
 		CPath fuPath(m_fnCurPlayingFile);
 		CSVPToolBox svpTool;
 		fuPath.StripPath();
-
-		SendStatusMessage(CString(ResStr(IDS_OSD_MSG_CURRENT_PLAYING)) + CString(fuPath) + ResStr(IDS_OSD_MSD_CURRENT_PLAYING_AT_LOCATION) + svpTool.GetDirFromPath(m_fnCurPlayingFile), 2000);
+        //TODO: Replace with ShowOSDMessage for mutil-line information
+		SendStatusMessage(CString(ResStr(IDS_OSD_MSG_CURRENT_PLAYING)) + CString(fuPath) + _T("\n") +  ResStr(IDS_OSD_MSD_CURRENT_PLAYING_AT_LOCATION) + svpTool.GetDirFromPath(m_fnCurPlayingFile), 2000);
 	}
 }
 void CMainFrame::ShowControls(int nCS, bool fSave)
@@ -14686,11 +14688,9 @@ void CMainFrame::ShowControls(int nCS, bool fSave)
 			}
 		}
 
-		if( (nCSR&i) == CS_TOOLBAR && !pNext->IsVisible() && !m_fnCurPlayingFile.IsEmpty() && !m_fAudioOnly){
-
-			OnShowCurrentPlayingFileInOSD();
-			
-		}
+// 		if( (nCSR&i) == CS_TOOLBAR && !pNext->IsVisible() && !m_fnCurPlayingFile.IsEmpty() && !m_fAudioOnly){
+// 			OnShowCurrentPlayingFileInOSD();
+// 		}
 
 		if(s.bUserAeroUI() && (i& ( CS_TOOLBAR | CS_SEEKBAR)))
 		{

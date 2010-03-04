@@ -610,6 +610,7 @@ public:
 
 	afx_msg LRESULT OnGraphNotify(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnRepaintRenderLess(WPARAM wParam, LPARAM lParam);
+    BOOL m_is_resume_from_last_exit_point;
 	afx_msg LRESULT OnResumeFromState(WPARAM wParam, LPARAM lParam);
 
 	BOOL OnButton(UINT id, UINT nFlags, CPoint point);
@@ -848,6 +849,7 @@ public:
 
 	afx_msg void OnFavoritesAdd();
 	afx_msg void OnTopBtnFileExit();
+    UINT m_l_been_playing_sec;
 	void OnFavoritesAddReal( BOOL bRecent = FALSE , BOOL bForceDel = FALSE );
 	afx_msg void OnUpdateFavoritesAdd(CCmdUI* pCmdUI);
 	afx_msg void OnFavoritesOrganize();

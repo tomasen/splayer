@@ -605,7 +605,9 @@ CMainFrame::CMainFrame() :
 	pTBL(NULL),
 	m_lastSeekAction(0),
 	m_wndLycShowBox(NULL),
-    m_ThreadSVPSub(NULL)
+    m_ThreadSVPSub(NULL),
+    m_l_been_playing_sec(0),
+    m_is_resume_from_last_exit_point(false)
 {
 	m_wndFloatToolBar = new CPlayerFloatToolBar();
 }
@@ -2984,6 +2986,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 	}
 	else if(nIDEvent == TIMER_STATS)
 	{
+        m_l_been_playing_sec++;
 		if(AfxGetMyApp()->IsWin7() && pTBL ){
 			try{
 				BOOL bHasValue = 0;
@@ -3937,8 +3940,9 @@ LRESULT CMainFrame::OnResumeFromState(WPARAM wParam, LPARAM lParam)
 	int iPlaybackMode = (int)wParam;
 
 	SVP_LogMsg5(L"OnResumeFromState %f", double(lParam) );
-	if(iPlaybackMode == PM_FILE)
+    if(iPlaybackMode == PM_FILE)
 	{
+        
 	//	SVP_LogMsg5(L"OnResumeFromState SeekTo %f", double(lParam) );
 		__int64 rtPos = 10000i64*int(lParam);
 		if(pMS){
@@ -3948,14 +3952,21 @@ LRESULT CMainFrame::OnResumeFromState(WPARAM wParam, LPARAM lParam)
 				return TRUE;
 			}
 		}
-
-		SeekTo(rtPos);
+        if(m_is_resume_from_last_exit_point)
+            SendStatusMessage(ResStr(IDS_OSD_MSG_RESUMEFROMSTATE), 3000);
+		
+        SeekTo(rtPos);
 	}
 	else if(iPlaybackMode == PM_DVD)
 	{
+        
 		CComPtr<IDvdState> pDvdState;
 		pDvdState.Attach((IDvdState*)lParam);
 		if(pDVDC){
+
+            if(m_is_resume_from_last_exit_point)
+                SendStatusMessage(ResStr(IDS_OSD_MSG_RESUMEFROMSTATE), 3000);
+
 			pDVDC->SetState(pDvdState, DVD_CMD_FLAG_Block, NULL);
 		}
 	}
@@ -3969,6 +3980,7 @@ LRESULT CMainFrame::OnResumeFromState(WPARAM wParam, LPARAM lParam)
 		return FALSE;
 	}
 
+    
 	return TRUE;
 }
 
@@ -7931,6 +7943,7 @@ void CMainFrame::OnPlayStopDummy(){
 }
 void CMainFrame::OnPlayStop()
 {
+    m_l_been_playing_sec = 0;
 	if(m_iMediaLoadState == MLS_LOADED)
 	{
 		
@@ -8260,7 +8273,7 @@ void CMainFrame::OnPlaySeekKey(UINT nID)
 
 void CMainFrame::SeekTo(REFERENCE_TIME rtPos, int fSeekToKeyFrame, REFERENCE_TIME maxStep)
 {
-
+    m_l_been_playing_sec = 0;
 	AppSettings& s = AfxGetAppSettings();
 	if(fSeekToKeyFrame == -99){
 		if(s.fFasterSeeking){
@@ -9691,6 +9704,10 @@ void CMainFrame::OnFavoritesAddReal( BOOL bRecent , BOOL bForceDel )
 	REFERENCE_TIME rtDurT; 
 	BOOL bDelFav = bForceDel;
 	if(bRecent && !bForceDel){
+        if(m_l_been_playing_sec < 30){
+            SVP_LogMsg5(L"OnFavoritesAddReal Skiped Because Just Finish Seeking");
+            return;
+        }
 		rtCurPos -=  100000000i64;
 		
 		rtDurT = GetDur();
@@ -12918,6 +12935,8 @@ void CMainFrame::CloseMediaPrivate()
 
 	m_pCB = NULL;
 
+    m_is_resume_from_last_exit_point = false;
+
 //	if(pVW) pVW->put_Visible(OAFALSE);
 //	if(pVW) pVW->put_MessageDrain((OAHWND)NULL), pVW->put_Owner((OAHWND)NULL);
 
@@ -15807,6 +15826,7 @@ SVP_LogMsg5(L"GetFav Start %s", szMatchmd5);
 				}
 				SVP_LogMsg5(L"Got %f", double(rtStart) );
 			}
+            m_is_resume_from_last_exit_point = TRUE;
 				//SVP_LogMsg5(L"GetFav Done");
 		}
 	}else if(rtStart == -1){

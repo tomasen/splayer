@@ -2219,9 +2219,17 @@ void CMainFrame::RecalcLayout(BOOL bNotify)
 	//int xMod = r.Width();
 	//int yMod = r.Height();
 
+    //SVP_LogMsg5(L"RecalcLayout %d %d %d", r.Width() , r.Height() , mmi.ptMinTrackSize.y );
+    if(r.Width() > 1900){
+        return;
+    }
+
+
 	r |= CRect(r.TopLeft(), CSize(r.Width(), mmi.ptMinTrackSize.y));
 
 	//r.MoveToXY( r.left + ( r.Width() - xMod) / 2 , r.top + ( r.Height() - yMod) / 2  );
+
+    
 	MoveWindow(&r);
 
 	rePosOSD();
@@ -3615,7 +3623,7 @@ bool CMainFrame::DoAfterPlaybackEvent()
 
 	return true;
 }
-
+//#define TRACE SVP_LogMsg5
 void CMainFrame::OnTopBtnFileExit(){
 	if(m_fFullScreen){
 		SendMessage(WM_COMMAND, ID_VIEW_FULLSCREEN);
@@ -3645,10 +3653,10 @@ LRESULT CMainFrame::OnGraphNotify(WPARAM wParam, LPARAM lParam)
 		}
 
 		hr = pME->FreeEventParams(evCode, evParam1, evParam2);
-
+        TRACE(_T("evCode:D %d\n"), evCode);
         if(EC_COMPLETE == evCode)
         {
-			AppSettings& s = AfxGetAppSettings();
+            AppSettings& s = AfxGetAppSettings();
 
 			if(DoAfterPlaybackEvent()) return hr;
 
@@ -4205,13 +4213,13 @@ void CMainFrame::OnLButtonUp(UINT nFlags, CPoint point)
 		__super::OnLButtonUp(nFlags, point);
 }
 LRESULT CMainFrame::OnMouseMoveIn(WPARAM /*wparam*/, LPARAM /*lparam*/) {
-	TRACE("OnMouseMoveIn\n");
+	TRACE(L"OnMouseMoveIn\n");
 
 	return 0;
 }
 
 LRESULT CMainFrame::OnMouseMoveOut(WPARAM /*wparam*/, LPARAM /*lparam*/) {
-	TRACE("OnMouseMoveOut\n");
+	TRACE(L"OnMouseMoveOut\n");
 	m_btnList.ClearStat();
 	m_wndView.m_bMouseDown = false;
 	m_wndToolBar.m_bMouseDown = false;
@@ -10135,8 +10143,10 @@ void CMainFrame::RestoreDefaultWindowRect()
 		m_wndView.GetClientRect(&r2);
 
 		CSize logosize = m_wndView.GetLogoSize();
-		int _DEFCLIENTW = max(logosize.cx, DEFCLIENTW);
-		int _DEFCLIENTH = max(logosize.cy, DEFCLIENTH);
+		int _DEFCLIENTW = DEFCLIENTW;//min( max(logosize.cx, DEFCLIENTW) , DEFCLIENTW*2 );
+		int _DEFCLIENTH = DEFCLIENTH;//min( max(logosize.cy, DEFCLIENTH) , DEFCLIENTH*2 );
+        
+        //SVP_LogMsg5(L"RestoreDefaultWindowRect %d %d", logosize.cx , logosize.cy );
 
 		DWORD style = GetStyle();
 
@@ -10144,7 +10154,7 @@ void CMainFrame::RestoreDefaultWindowRect()
 		memset(&mbi, 0, sizeof(mbi));
 		mbi.cbSize = sizeof(mbi);
 		::GetMenuBarInfo(m_hWnd, OBJID_MENU, 0, &mbi);
-
+  
 		int w = _DEFCLIENTW + GetSystemMetrics((style&WS_CAPTION)?SM_CXSIZEFRAME:SM_CXFIXEDFRAME)*2
 			+ r1.Width() - r2.Width();
 		int h = _DEFCLIENTH + GetSystemMetrics((style&WS_CAPTION)?SM_CYSIZEFRAME:SM_CYFIXEDFRAME)*2
@@ -10152,6 +10162,8 @@ void CMainFrame::RestoreDefaultWindowRect()
 			+ r1.Height() - r2.Height()
 			+ 1; // ???
 //			+ 2; // ???
+
+      
 		if(style&WS_CAPTION) h += GetSystemMetrics(SM_CYCAPTION);
 
 		MONITORINFO mi;
@@ -10679,6 +10691,7 @@ void CMainFrame::ZoomVideoWindow(double scale)
 {
 	if(m_iMediaLoadState != MLS_LOADED)
 		return;
+   
 
 	AppSettings& s = AfxGetAppSettings();
 
@@ -15967,9 +15980,9 @@ void CMainFrame::CloseMedia()
 
 	m_iMediaLoadState = MLS_CLOSING;
 
-	OnFilePostClosemedia();
+    OnFilePostClosemedia();
 
-
+   
 /*	if(m_wndView.m_cover && !m_wndView.m_cover->IsNull()){
 		m_wndView.m_cover->Destroy();
 		m_wndView.m_cover = NULL;
@@ -15978,6 +15991,8 @@ void CMainFrame::CloseMedia()
 */
 	if(m_pGraphThread && s_fOpenedThruThread)
 	{
+       
+
 		CAMEvent e;
 		m_pGraphThread->PostThreadMessage(CGraphThread::TM_CLOSE, 0, (LPARAM)&e);
 		// either opening or closing has to be blocked to prevent reentering them, closing is the better choice
@@ -15995,14 +16010,18 @@ void CMainFrame::CloseMedia()
 	{
 		CloseMediaPrivate();
 	}
+   
 	if(m_pMC){
 		m_pMC = NULL;
 	}
 
 	UnloadExternalObjects();
 
+
 	m_iRedrawAfterCloseCounter = 0;
 	SetTimer(TIMER_REDRAW_WINDOW,120,NULL);
+
+
 }
 
 //
@@ -16053,10 +16072,11 @@ void CGraphThread::OnOpen(WPARAM wParam, LPARAM lParam)
 void CGraphThread::OnClose(WPARAM wParam, LPARAM lParam)
 {
 	if(m_pMainFrame){
-		m_pMainFrame->OnPlayPause();
-		m_pMainFrame->CloseMediaPrivate();
+        m_pMainFrame->OnPlayPause();
+       	m_pMainFrame->CloseMediaPrivate();
 	}
 	if(CAMEvent* e = (CAMEvent*)lParam) e->Set();
+    
 }
 
 afx_msg void CMainFrame::OnSubtitleDelay(UINT nID)

@@ -91,6 +91,7 @@ public:
 					ASSERT(FALSE);
 				}else{
 					this->Attach(hBitmap);
+                    return true;
 				}
 
 

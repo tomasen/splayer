@@ -172,7 +172,7 @@
 #define HAVE_PERROR 1
 
 /* Define if you have the RAND_screen function when using SSL  */
-#define HAVE_RAND_SCREEN 1
+#define HAVE_RAND_SCREEN 0
 
 /* Define if you have the `RAND_status' function when using SSL. */
 #define HAVE_RAND_STATUS 1

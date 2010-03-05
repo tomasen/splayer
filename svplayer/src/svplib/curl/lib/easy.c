@@ -253,10 +253,12 @@ CURLcode curl_global_init(long flags)
   Curl_ccalloc = (curl_calloc_callback)calloc;
 
   if(flags & CURL_GLOBAL_SSL)
-    if(!Curl_ssl_init()) {
-      DEBUGF(fprintf(stderr, "Error: Curl_ssl_init failed\n"));
-      return CURLE_FAILED_INIT;
-    }
+    __try{
+        if(!Curl_ssl_init()) {
+          DEBUGF(fprintf(stderr, "Error: Curl_ssl_init failed\n"));
+          return CURLE_FAILED_INIT;
+        }
+    }__except(EXCEPTION_EXECUTE_HANDLER) {  return CURLE_FAILED_INIT; }
 
   if(flags & CURL_GLOBAL_WIN32)
     if(win32_init() != CURLE_OK) {

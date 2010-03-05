@@ -213,7 +213,7 @@ CStringA GetUrlByType(DWORD req_type , int iTryID){
             apiurl.Append( "api/subapi.php" );
             break;
 	}
-    //SVP_LogMsg6("using api %s", apiurl );
+    SVP_LogMsg6("using api %s", apiurl );
     return apiurl;
 
 }

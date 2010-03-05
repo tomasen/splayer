@@ -4321,7 +4321,11 @@ void CMainFrame::OnUpdateShowColorControlBar(CCmdUI *pCmdUI)
 void CMainFrame::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
 	if(!IsSomethingLoaded()){
-		SendMessage(WM_COMMAND, ID_FILE_OPENQUICK);
+		if( !AfxGetAppSettings().htpcmode)
+            SendMessage(WM_COMMAND, ID_VIEW_FULLSCREEN);
+        else
+            SendMessage(WM_COMMAND, ID_FILE_OPENQUICK);
+        
 		return;
 	}
 	if(s_fLDown)

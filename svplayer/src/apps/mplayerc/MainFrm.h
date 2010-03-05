@@ -485,8 +485,8 @@ public:
 	bool LoadSubtitle(CString fn, int sub_delay_ms = 0, BOOL bIsForPlayList = false);
 	void UpdateSubtitle(bool fApplyDefStyle = true);
 	void UpdateSubtitle2(bool fApplyDefStyle = true);
-	void SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle = true);
-	void SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle = true);
+	void SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle = true, bool bShowOSD = true);
+	void SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle = true, bool bShowOSD = true);
 	void ReplaceSubtitle(ISubStream* pSubStreamOld, ISubStream* pSubStreamNew, int secondSub = 0);
 	void InvalidateSubtitle(DWORD_PTR nSubtitleId = -1, REFERENCE_TIME rtInvalidate = -1);
 	void ReloadSubtitle();

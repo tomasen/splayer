@@ -11305,7 +11305,7 @@ UINT __cdecl SVPThreadLoadThread( LPVOID lpParam )
 		BOOL bSubSelected = false;
 		for(INT i = 0 ;i < szSubArray.GetCount(); i++){
 			if(pData->pFrame->LoadSubtitle(szSubArray[i]) && !bSubSelected){
-				pData->pFrame->SetSubtitle( pData->pFrame->m_pSubStreams.GetTail()  ); //Enable Subtitle
+				pData->pFrame->SetSubtitle( pData->pFrame->m_pSubStreams.GetTail()  ,true ,false ); //Enable Subtitle
 				//TODO: select correct language for idx+sub
 				bSubSelected = true;
 			}
@@ -11317,7 +11317,7 @@ UINT __cdecl SVPThreadLoadThread( LPVOID lpParam )
 		BOOL bSubSelected = false;
 		for(INT i = 0 ;i < szSubArray2.GetCount(); i++){
 			if(pData->pFrame->LoadSubtitle(szSubArray2[i]) && !bSubSelected){
-				pData->pFrame->SetSubtitle2( pData->pFrame->m_pSubStreams2.GetTail()  ); //Enable Subtitle
+				pData->pFrame->SetSubtitle2( pData->pFrame->m_pSubStreams2.GetTail()  ,true, false ); //Enable Subtitle
 				//TODO: select correct language for idx+sub
 				bSubSelected = true;
 			}
@@ -14944,7 +14944,7 @@ void CMainFrame::UpdateSubtitle(bool fApplyDefStyle)
 	//SendStatusMessage(_T("主字幕已关闭") , 4000 );
 	m_pCAP->SetSubPicProvider(NULL);
 }
-void CMainFrame::SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle)
+void CMainFrame::SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle, bool bShowOSD)
 {
 	AppSettings& s = AfxGetAppSettings();
 
@@ -15057,9 +15057,11 @@ void CMainFrame::SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle)
 			CoTaskMemFree(pName);
 		}
 
-		szBuf.Format(ResStr(IDS_OSD_MSG_CURRENT_2NDSUB_INFO), GetAnEasyToUnderstoodSubtitleName(subName), pSubStream->sub_delay_ms, s.nVerPos2);
-		SVP_LogMsg(szBuf);
-		SendStatusMessage(szBuf , 4000 );
+        if(bShowOSD){
+		    szBuf.Format(ResStr(IDS_OSD_MSG_CURRENT_2NDSUB_INFO), GetAnEasyToUnderstoodSubtitleName(subName), pSubStream->sub_delay_ms, s.nVerPos2);
+		    SVP_LogMsg(szBuf);
+		    SendStatusMessage(szBuf , 4000 );
+        }
 		m_pCAP->SetSubPicProvider2(CComQIPtr<ISubPicProvider>(pSubStream));
 		SetSubtitleDelay2(pSubStream->sub_delay_ms); 
 
@@ -15067,7 +15069,7 @@ void CMainFrame::SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle)
 		//SendStatusMessage(_T("第二字幕已关闭") , 4000 );
 	}
 }
-void CMainFrame::SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle)
+void CMainFrame::SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle, bool bShowOSD )
 {
 	AppSettings& s = AfxGetAppSettings();
 
@@ -15182,10 +15184,11 @@ void CMainFrame::SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle)
 			CoTaskMemFree(pName);
 		}
 		
-		
-		szBuf.Format(ResStr(IDS_OSD_MSG_CURRENT_MAINSUB_INFO), GetAnEasyToUnderstoodSubtitleName( subName),  pSubStream->sub_delay_ms,s.nVerPos);
-		SVP_LogMsg(szBuf);
-		SendStatusMessage(szBuf , 4000 );
+        if(bShowOSD){
+		    szBuf.Format(ResStr(IDS_OSD_MSG_CURRENT_MAINSUB_INFO), GetAnEasyToUnderstoodSubtitleName( subName),  pSubStream->sub_delay_ms,s.nVerPos);
+		    SVP_LogMsg(szBuf);
+		    SendStatusMessage(szBuf , 4000 );
+        }
 		m_pCAP->SetSubPicProvider(CComQIPtr<ISubPicProvider>(pSubStream));
 		SetSubtitleDelay(pSubStream->sub_delay_ms); 
 		

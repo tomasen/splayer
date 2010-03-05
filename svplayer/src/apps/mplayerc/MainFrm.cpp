@@ -1130,6 +1130,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_wndLycShowBox->ShowWindow(SW_SHOW);
 	// */
 
+    SetTimer(TIMER_IDLE_TASK, 30000, NULL);
    m_WndSizeInited++;
 	return 0;
 }
@@ -2720,7 +2721,16 @@ CString CMainFrame::getCurPlayingSubfile(int * iSubDelayMS,int subid ){
 
 void CMainFrame::OnTimer(UINT nIDEvent)
 {
-	if(TIMER_SAVE_WINDOWS_POS_FOR_THIS_VIDEO_POS == nIDEvent){
+    if(TIMER_IDLE_TASK == nIDEvent){
+        KillTimer(TIMER_IDLE_TASK);
+        if(!IsSomethingLoaded() || GetMediaState() != State_Running ){
+            CSVPToolBox svpTool;
+            //clean stored sub file which havn't been used for 30 days
+            svpTool.CleanUpOldFiles(AfxGetAppSettings().SVPSubStoreDir, 30, 5);
+            SetTimer(TIMER_IDLE_TASK, 30000, NULL);
+        }
+
+    }else if(TIMER_SAVE_WINDOWS_POS_FOR_THIS_VIDEO_POS == nIDEvent){
 		KillTimer(TIMER_SAVE_WINDOWS_POS_FOR_THIS_VIDEO_POS);
 		AppSettings& s = AfxGetAppSettings();
 		if(m_last_size_of_current_kind_of_video.cx == s.rcLastWindowPos.Width() && m_last_size_of_current_kind_of_video.cy == s.rcLastWindowPos.Height())
@@ -5234,7 +5244,7 @@ void CMainFrame::OnFilePostOpenmedia()
 
 	}
 	
-	
+	KillTimer(TIMER_IDLE_TASK);
 }
 
 
@@ -5312,7 +5322,8 @@ void CMainFrame::OnFilePostClosemedia()
 
 	SendNowPlayingToMSN();
 
-	
+	KillTimer(TIMER_IDLE_TASK);
+    SetTimer(TIMER_IDLE_TASK, 30000, NULL);
 }
 
 void CMainFrame::OnUpdateFilePostClosemedia(CCmdUI* pCmdUI)
@@ -7918,8 +7929,11 @@ void CMainFrame::OnPlayPauseI()
 		SetTimer(TIMER_STREAMPOSPOLLER, 40, NULL);
 		SetTimer(TIMER_STREAMPOSPOLLER2, 500, NULL);
 		SetTimer(TIMER_STATS, 1000, NULL);
-
-		SetAlwaysOnTop(AfxGetAppSettings().iOnTop);
+        
+        KillTimer(TIMER_IDLE_TASK);
+        SetTimer(TIMER_IDLE_TASK, 30000, NULL);
+		
+        SetAlwaysOnTop(AfxGetAppSettings().iOnTop);
 
 	}
 

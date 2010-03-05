@@ -21,6 +21,15 @@ public:
 	WCHAR* getTmpFileName();
 	int ClearTmpFiles();
 	int Char4ToInt(char* szBuf);
+    //************************************
+    // Method:    CleanUpOldFiles
+    // FullName:  CSVPToolBox::CleanUpOldFiles
+    // Access:    public 
+    // Returns:   int
+    // Qualifier:
+    // byNumber not supported yet
+    //************************************
+    int CleanUpOldFiles(CString szDir, int parm, int ilimit, int byNumber = 0);
 	int HandleSubPackage(FILE* fp);
 	CStringArray szaSubDescs; //save raw desc data order by id
 	CStringArray szaSubTmpFileList; //save tmp file names order by id, format: ".srt;C:\tmp\blahblah;.idx;C:\tmp\blah2;.sub;C:\tmp\blah3"...

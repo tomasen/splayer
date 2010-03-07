@@ -79,6 +79,12 @@ BOOL CPlayerToolTopBar::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 	BOOL bRet = FALSE;
 
 	if(m_nItemToTrack){
+        if(iLeftBorderPos != -9990){
+            if(m_nItemToTrack != ID_FILE_EXIT){
+                *pResult = 0;
+                return bRet;
+            }
+        }
 		// idFrom is actually the HWND of the tool
 		CString toolTip;
 		m_lastTipItem = m_nItemToTrack;
@@ -619,7 +625,19 @@ BOOL CPlayerToolTopBar::Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DW
 BOOL CPlayerToolTopBar::PreTranslateMessage(MSG* pMsg)
 {
 	// TODO: Add your specialized code here and/or call the base class
-
+    if( iLeftBorderPos != -9990 && pMsg->message >= WM_MOUSEFIRST && pMsg->message <= WM_MYMOUSELAST && pMsg->hwnd == this->m_hWnd)
+    {
+//         CWnd* pParent = GetParent();
+         CPoint p(pMsg->lParam);
+//         CRect rc2;
+//         GetWindowRect(&rc2);
+//         SVP_LogMsg5(L"p %d %d %d",p.x , rc2.left, iLeftBorderPos);
+        if(p.x < iLeftBorderPos){
+//            ::MapWindowPoints(pMsg->hwnd, pParent->m_hWnd, &p, 1);
+            //pParent->PostMessage(pMsg->message, pMsg->wParam, MAKELPARAM(p.x, p.y));
+            return TRUE;
+        }
+    }
 	
 	return CWnd::PreTranslateMessage(pMsg);
 }

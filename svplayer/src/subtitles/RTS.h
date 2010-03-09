@@ -223,6 +223,7 @@ class __declspec(uuid("537DCACA-2812-4a4f-B2C6-1A34C17ADEB0")) CRenderedTextSubt
 	int m_polygonBaselineOffset;
     int m_bIsSimpChinese;
     int m_bIsTradChinese;
+    bool m_bHavnShowIConvOSD;
 
 	void ParseEffect(CSubtitle* sub, CString str);
 	void ParseString(CSubtitle* sub, CStringW str, STSStyle& style);

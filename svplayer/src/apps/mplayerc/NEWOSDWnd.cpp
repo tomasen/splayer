@@ -275,7 +275,12 @@ int CNEWOSDWnd::SendOSDMsg(CString szMsg, int lTime ){
 		CountSize();
 		Invalidate();
 		m_szaOsd.Add(szMsg);
-		m_sziOsd.Add(time(NULL)+lTime/1000);
+        time_t lastTime = time(NULL);
+//         if(m_sziOsd.GetCount() > 0){
+//             lastTime = max(lastTime , m_sziOsd[m_sziOsd.GetCount()-1]);
+//         }
+
+		m_sziOsd.Add(lastTime+lTime/1000);
 	}
 	
 	return 0;

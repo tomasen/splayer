@@ -93,6 +93,7 @@ static UINT WM_NOTIFYICON = RegisterWindowMessage(TEXT("MYWM_NOTIFYICON"));
 
 //#include "..\..\filters\transform\vsfilter\IDirectVobSub.h"
 
+#include "..\..\svplib\SVPHash.h"
 #include "..\..\svplib\SVPToolBox.h"
 #include "../../svplib/SVPRarLib.h"
 
@@ -8914,6 +8915,20 @@ void CMainFrame::OnPlayAudio(UINT nID)
 	else if(i >= 0 && pSS)
 	{
 		pSS->Enable(i, AMSTREAMSELECTENABLE_ENABLE);
+        //TODO： Save Audio Channel Selection
+
+        CSVPhash svpHash;
+        CString FPath = svpHash.ComputerFileHash(m_fnCurPlayingFile);
+        CString szSQLUpdate, szSQLInsert;
+
+        int tNow = time(NULL);
+        //TODO Save Subselection
+        szSQLInsert.Format(L"INSERT INTO histories  ( fpath, audioid, modtime ) VALUES ( \"%s\", '%d', '%d') ", FPath, i, tNow);
+        szSQLUpdate.Format(L"UPDATE histories SET audioid = '%d' , modtime = '%d'  WHERE fpath = \"%s\" ", i, tNow, FPath);
+        
+        if(AfxGetMyApp()->sqlite_local_record)
+            AfxGetMyApp()->sqlite_local_record->exec_insert_update_sql_u(szSQLInsert, szSQLUpdate);
+
 	}
 }
 
@@ -9064,15 +9079,27 @@ void CMainFrame::OnPlaySubtitles(UINT nID)
 	}
 	else if(i >= 0) //选择字幕
 	{
+        CSVPhash svpHash;
+        CString FPath = svpHash.ComputerFileHash(m_fnCurPlayingFile);
+        CString szSQLUpdate, szSQLInsert;
+
+        int tNow = time(NULL);
+
+        //TODO Save Subselection
 		if(secondSub){
 			m_iSubtitleSel2 = i;
 			UpdateSubtitle2();
- 			
+            szSQLInsert.Format(L"INSERT INTO histories  ( fpath, subid2, modtime ) VALUES ( \"%s\", '%d', '%d') ", FPath, m_iSubtitleSel2, tNow);
+            szSQLUpdate.Format(L"UPDATE histories SET subid2 = '%d' , modtime = '%d' WHERE fpath = \"%s\" ", m_iSubtitleSel2, tNow, FPath);
 		}else{
  			m_iSubtitleSel = i;
 			UpdateSubtitle();	
- 			
+            szSQLInsert.Format(L"INSERT INTO histories  ( fpath, subid, modtime ) VALUES ( \"%s\", '%d', '%d') ", FPath, m_iSubtitleSel, tNow);
+            szSQLUpdate.Format(L"UPDATE histories SET subid = '%d' , modtime = '%d' WHERE fpath = \"%s\" ", m_iSubtitleSel, tNow, FPath);
 		}
+        if(AfxGetMyApp()->sqlite_local_record )
+            AfxGetMyApp()->sqlite_local_record->exec_insert_update_sql_u(szSQLInsert, szSQLUpdate);
+
 
 	}
 	if(secondSub){
@@ -12661,7 +12688,9 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 
 		if(m_fOpeningAborted) throw aborted;
 
-		
+        CSVPhash svpHash;
+        CString FPath = svpHash.ComputerFileHash(m_fnCurPlayingFile);
+
 		if(m_pCAP && (!m_fAudioOnly || m_fRealMediaGraph))
 		{
 			POSITION pos = pOMD->subs.GetHeadPosition();
@@ -12676,7 +12705,39 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 
 			if(s.fEnableSubtitles && m_pSubStreams.GetCount() > 0){
 				BOOL HavSubs1 = FALSE;
-				if(!s.sSubStreamName1.IsEmpty()){
+               
+                if(AfxGetMyApp()->sqlite_local_record ){
+                    CString szSQL;
+                    szSQL.Format(L"SELECT subid FROM histories WHERE fpath = \"%s\" ", FPath);
+                    int subid = AfxGetMyApp()->sqlite_local_record->get_single_int_from_sql(szSQL, -1);
+                    if(subid >= 0){
+                        //SVP_LogMsg5(L"subid %d %d", subid, m_pSubStreams.GetCount());
+
+                        int i = subid;
+
+                        POSITION pos = m_pSubStreams.GetHeadPosition();
+                        while(pos && i >= 0)
+                        {
+                            CComPtr<ISubStream> pSubStream = m_pSubStreams.GetNext(pos);
+
+                            if(i < pSubStream->GetStreamCount()) 
+                            {
+                                SendStatusMessage(ResStr(IDS_OSD_MSG_RESTORE_TO_LAST_REMEMBER_SUBTITLE_TRACK),3000);
+                                CAutoLock cAutoLock(&m_csSubLock);
+                                pSubStream->SetStream(i);
+                                SetSubtitle(pSubStream);
+                                HavSubs1 = true;
+                                break;
+                            }
+
+                            i -= pSubStream->GetStreamCount();
+                        }
+                        
+                    }
+                }
+
+
+				if(!HavSubs1 && !s.sSubStreamName1.IsEmpty()){
 
 					POSITION pos = m_pSubStreams.GetHeadPosition();
 					while(pos){
@@ -12739,7 +12800,39 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 
 				if(s.fAutoloadSubtitles2 && m_pSubStreams2.GetCount() > 1 ){
 					BOOL HavSubs = false;
-					if(!s.sSubStreamName2.IsEmpty()){
+
+                    if(AfxGetMyApp()->sqlite_local_record ){
+                        CString szSQL;
+                        szSQL.Format(L"SELECT subid2 FROM histories WHERE fpath = \"%s\" ", FPath);
+                        int subid = AfxGetMyApp()->sqlite_local_record->get_single_int_from_sql(szSQL, -1);
+                        if(subid >= 0){
+                            //SVP_LogMsg5(L"subid %d %d", subid, m_pSubStreams.GetCount());
+
+                            int i = subid;
+
+                            POSITION pos = m_pSubStreams2.GetHeadPosition();
+                            while(pos && i >= 0)
+                            {
+                                CComPtr<ISubStream> pSubStream = m_pSubStreams2.GetNext(pos);
+
+                                if(i < pSubStream->GetStreamCount()) 
+                                {
+                                    CAutoLock cAutoLock(&m_csSubLock);
+                                    pSubStream->SetStream(i);
+                                    SetSubtitle2(pSubStream);
+                                    //SendStatusMessage(ResStr(IDS_OSD_MSG_RESTORE_TO_LAST_REMEMBER_SUBTITLE2_TRACK),3000);
+                                    HavSubs = true;
+                                    break;
+                                }
+
+                                i -= pSubStream->GetStreamCount();
+                            }
+
+                        }
+                    }
+
+
+					if(!HavSubs && !s.sSubStreamName2.IsEmpty()){
 						POSITION pos = m_pSubStreams2.GetHeadPosition();
 						while(pos){
 							CComPtr<ISubStream> pSubStream = m_pSubStreams2.GetNext(pos);
@@ -12811,7 +12904,23 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 			UpdateSubtitle2(true);
 		}
 
-	
+        if(AfxGetMyApp()->sqlite_local_record ){
+            CString szSQL;
+            szSQL.Format(L"SELECT audioid FROM histories WHERE fpath = \"%s\" ", FPath);
+            //SVP_LogMsg5(szSQL);
+            int audid = AfxGetMyApp()->sqlite_local_record->get_single_int_from_sql(szSQL, -1);
+            if(audid >= 0){
+                //SVP_LogMsg5(L"subid %d %d", audid, m_pSubStreams.GetCount());
+                CComQIPtr<IAMStreamSelect> pSS = FindFilter(__uuidof(CAudioSwitcherFilter), pGB);
+                if(!pSS) pSS = FindFilter(L"{D3CD7858-971A-4838-ACEC-40CA5D529DC8}", pGB);
+                if( pSS)
+                {
+                    pSS->Enable(audid, AMSTREAMSELECTENABLE_ENABLE);
+                    SendStatusMessage(ResStr(IDS_OSD_MSG_RESTORE_TO_LAST_REMEMBER_AUDIO_TRACK),3000);
+                }
+            }
+        }
+
 
 		if(m_fOpeningAborted) throw aborted;
 

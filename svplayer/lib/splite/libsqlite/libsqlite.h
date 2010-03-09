@@ -32,6 +32,9 @@ public:
 	int exec_sql(std::string s_exe) ;
 
 	int exec_sql_u(CString szSQL);
+    int exec_insert_update_sql_u(CString szSQL, CString szUpdate);
+
+    int get_single_int_from_sql(CString szSQL, int nDefault);
 
 	// Retrieve an integer value from INI file or registry.
 	UINT GetProfileInt(LPCTSTR lpszSection, LPCTSTR lpszEntry, int nDefault, bool fallofftoreg = true);

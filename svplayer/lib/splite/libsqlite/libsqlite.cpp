@@ -41,8 +41,15 @@ int SQLITE3::exec_sql(std::string s_exe) {
     if( rc == SQLITE_OK ){
         for(int i=0; i < ncol; ++i)
             vcol_head.push_back((result[i]));   /* First row heading */
-        for(int i=0; i < ncol*nrow; ++i)
-            vdata.push_back(result[ncol+i]);
+        for(int i=0; i < ncol*nrow; ++i){
+             //SVP_LogMsg6("sqlite %x", result[ncol+i] );
+            if(result[ncol+i]){
+                vdata.push_back(result[ncol+i]);
+            }else{
+                //{null}
+                vdata.push_back("{null}");
+            }
+        }
     }
     sqlite3_free_table(result);
     return rc;
@@ -51,7 +58,20 @@ int SQLITE3::exec_sql(std::string s_exe) {
 SQLITE3::~SQLITE3(){
     sqlite3_close(db);
 }
-
+int SQLITE3::get_single_int_from_sql(CString szSQL, int nDefault)
+{
+    int iDestLen;
+    char* buff = svpTool.CStringToUTF8(szSQL, &iDestLen);
+    exec_sql(buff);
+    free(buff);
+    if(nrow == 1 && ncol == 1 && vdata.at(0).c_str() != "{null}"){
+        UINT iret = atoi(vdata.at(0).c_str());
+        return iret;
+    }else{
+        return nDefault;
+    }
+    return nDefault;
+}
 
 // Retrieve an integer value from INI file or registry.
 UINT  SQLITE3::GetProfileInt(LPCTSTR lpszSection, LPCTSTR lpszEntry, int nDefault, bool fallofftoreg )
@@ -84,7 +104,22 @@ int  SQLITE3::exec_sql_u(CString szSQL){
     free(buff);
     return ret;
 }
-
+int  SQLITE3::exec_insert_update_sql_u(CString szSQL, CString szUpdate)
+{
+    //SVP_LogMsg5( szSQL );
+    //SVP_LogMsg5( szUpdate );
+    int iDestLen;
+    char* buff = svpTool.CStringToUTF8(szSQL, &iDestLen);
+    int ret = exec_sql(buff);
+    free(buff);
+    if(ret != SQLITE_OK)
+    {
+        char* buff2 = svpTool.CStringToUTF8(szUpdate, &iDestLen);
+        ret = exec_sql(buff2);
+        free(buff2);
+    }
+    return ret;
+}
 // Sets an integer value to INI file or registry.
 BOOL  SQLITE3::WriteProfileInt(LPCTSTR lpszSection, LPCTSTR lpszEntry, int nValue, bool fallofftoreg )
 {

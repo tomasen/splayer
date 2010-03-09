@@ -826,7 +826,7 @@ bool CMPlayerCApp::StoreSettingsToIni()
 			sqlite_setting = NULL;
 		}
 	}
-	if(0 && !sqlite_local_record){ // TODO: save play record to local sql db
+	if( !sqlite_local_record){ // TODO: save play record to local sql db
 		int iDescLen;
 		CString recordPath;
 		svpTool.GetAppDataPath(recordPath);
@@ -843,10 +843,14 @@ bool CMPlayerCApp::StoreSettingsToIni()
 			sqlite_local_record = NULL;
 		}
 		if(sqlite_local_record){
-			sqlite_local_record->exec_sql("CREATE TABLE  IF NOT EXISTS favrec (\"favtype\" INTEGER, \"favpath\" TEXT, \"favtime\" TEXT, \"addtime\" INTEGER, \"favrecent\" INTEGER )");
-			sqlite_local_record->exec_sql("CREATE UNIQUE INDEX  IF NOT EXISTS \"favpk\" on favrec (favtype ASC, favpath ASC, favrecent ASC)");
-			sqlite_local_record->exec_sql("CREATE INDEX  IF NOT EXISTS \"favord\" on favrec (addtime ASC)");
+// 			sqlite_local_record->exec_sql("CREATE TABLE  IF NOT EXISTS favrec (\"favtype\" INTEGER, \"favpath\" TEXT, \"favtime\" TEXT, \"addtime\" INTEGER, \"favrecent\" INTEGER )");
+// 			sqlite_local_record->exec_sql("CREATE UNIQUE INDEX  IF NOT EXISTS \"favpk\" on favrec (favtype ASC, favpath ASC, favrecent ASC)");
+// 			sqlite_local_record->exec_sql("CREATE INDEX  IF NOT EXISTS \"favord\" on favrec (addtime ASC)");
+            sqlite_local_record->exec_sql("CREATE TABLE  IF NOT EXISTS histories (\"fpath\" TEXT, \"subid\" INTEGER, \"subid2\" INTEGER, \"audioid\" INTEGER, \"stoptime\" INTEGER, \"modtime\" INTEGER )");
+            sqlite_local_record->exec_sql("CREATE UNIQUE INDEX  IF NOT EXISTS \"hispk\" on histories (fpath ASC)");
+            sqlite_local_record->exec_sql("CREATE INDEX  IF NOT EXISTS \"modtime\" on histories (modtime ASC)");
 			sqlite_local_record->exec_sql("PRAGMA synchronous=OFF");
+
 		}
 	}
 	if(sqlite_setting){
@@ -2344,8 +2348,13 @@ int CMPlayerCApp::ExitInstance()
 	
 	if (sqlite_setting)
 		delete sqlite_setting;
-	if (sqlite_local_record)
+    if (sqlite_local_record){
+        CString szSQL;
+        szSQL.Format(L"DELETE FROM histories WHERE modtime < '%d' ", time(NULL)-3600*24*30);
+       // SVP_LogMsg5(szSQL);
+        sqlite_local_record->exec_sql_u(szSQL);
 		delete sqlite_local_record;
+    }
 
 	return ret;
 }

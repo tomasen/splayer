@@ -512,6 +512,8 @@ public:
 		int useGPUCUDA;
 		int useFFMPEGWMV;
 		int autoDownloadSVPSub;
+        int autoIconvSubBig2GB;
+        int autoIconvSubGB2BIG;
 		int iDX9Resizer;
 		bool fVMR9MixerMode;
 		bool fVMR9MixerYUV;

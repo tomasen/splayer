@@ -97,6 +97,7 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_DHtml_CheckBox(pDX, _T("usetranscontrol"), m_sgi_usetranscontrol);
 	DDX_DHtml_CheckBox(pDX, _T("savesvpsubwithvideo"), m_sgi_savesvpsubwithvideo);	
 	DDX_DHtml_CheckBox(pDX, _T("savesvpstore"), m_sgi_savesvpstore);	
+    DDX_DHtml_CheckBox(pDX, _T("chkautoiconv"), m_sgi_chkautoiconv);
 
 	DDX_DHtml_CheckBox(pDX, _T("nobgpic"), m_sgi_nobgpic);
 	DDX_DHtml_CheckBox(pDX, _T("custompic"), m_sgi_custompic);
@@ -404,6 +405,11 @@ BOOL CUESettingPanel::OnInitDialog()
 
 	m_sgi_launchfullscreen = s.launchfullscreen ;
 
+    if(s.iLanguage == 2){
+        m_sgi_chkautoiconv = s.autoIconvSubGB2BIG;
+    }else if(s.iLanguage == 0){
+        m_sgi_chkautoiconv = s.autoIconvSubBig2GB;
+    }
 
 	if(CMPlayerCApp::IsVista()){
 		DisplayNodeByID(_T("disableevrline"), FALSE);
@@ -705,6 +711,12 @@ void CUESettingPanel::ApplyAllSetting(){
 	s.useGPUCUDA = SVP_SetCoreAvcCUDA(s.useGPUCUDA);
 
 	s.bDisableCenterBigOpenBmp = m_sgi_bDisableCenterBigOpenBmp;
+
+    if(s.iLanguage == 2){
+        s.autoIconvSubGB2BIG = m_sgi_chkautoiconv ;
+    }else if(s.iLanguage == 0){
+        s.autoIconvSubBig2GB = m_sgi_chkautoiconv ;
+    }
 
 	CSVPToolBox svpTool;
 	CPath updPath( svpTool.GetPlayerPath(_T("UPD")));

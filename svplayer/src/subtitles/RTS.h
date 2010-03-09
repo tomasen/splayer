@@ -221,6 +221,8 @@ class __declspec(uuid("537DCACA-2812-4a4f-B2C6-1A34C17ADEB0")) CRenderedTextSubt
 	int m_ktype, m_kstart, m_kend;
 	int m_nPolygon;
 	int m_polygonBaselineOffset;
+    int m_bIsSimpChinese;
+    int m_bIsTradChinese;
 
 	void ParseEffect(CSubtitle* sub, CString str);
 	void ParseString(CSubtitle* sub, CStringW str, STSStyle& style);

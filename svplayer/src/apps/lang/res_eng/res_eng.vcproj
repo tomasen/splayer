@@ -201,11 +201,11 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\resource.h"
+				RelativePath="..\..\mplayerc\Resource.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\mplayerc\Resource.h"
+				RelativePath=".\resource.h"
 				>
 			</File>
 		</Filter>
@@ -220,6 +220,10 @@
 			</File>
 			<File
 				RelativePath=".\res\web\blank.gif"
+				>
+			</File>
+			<File
+				RelativePath=".\res.en\BTN_BIGOPEN.bmp"
 				>
 			</File>
 			<File

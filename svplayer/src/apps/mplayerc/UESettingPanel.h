@@ -53,6 +53,7 @@ class CUESettingPanel : public CDHtmlDialog
 	int m_sgi_launchfullscreen;
 	int m_sgi_savesvpsubwithvideo;
 	int m_sgi_savesvpstore;
+    int m_sgi_chkautoiconv;
 
 	int m_sgi_nobgpic;
 	int m_sgi_custompic;

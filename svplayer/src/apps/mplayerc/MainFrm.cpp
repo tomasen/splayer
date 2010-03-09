@@ -5216,7 +5216,7 @@ void CMainFrame::OnFilePostOpenmedia()
                 }
                 
             }
-            if( !bGotLrc) {
+            if( !bGotLrc && s.autoDownloadSVPSub) {
                 //debug
                 //m_Lyric.LoadLyricFile(L"D:\\-=SVN=-\\test.lrc");
 

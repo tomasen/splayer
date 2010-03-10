@@ -116,9 +116,9 @@ void CLyricLib::fetch_lyric_from_internet()
             static_ailrc.GetResults(&wcfg, &availableLyrics, this->title, this->artist, this->album);
         if(!try_download_lyric())
             static_lyricsfly.GetResults(&wcfg, &availableLyrics, this->title, this->artist, this->album);
-    
-        try_download_lyric();
-        
+        try{
+            try_download_lyric();
+        }catch(...){}
 
 }
 bool  CLyricLib::try_download_lyric()
@@ -134,6 +134,9 @@ bool  CLyricLib::try_download_lyric()
             if(!availableLyrics[ curIndex ].IsTimestamped)
                 continue ;
 
+            if(!availableLyrics[ curIndex ].db)
+                continue ;
+        
             availableLyrics[ curIndex ].db->DownloadLyrics(&wcfg, &availableLyrics[ curIndex ]);
 
             CSVPToolBox svpTool;

@@ -308,7 +308,9 @@ void CPlayerPlaylistBar::ParsePlayList(CString fn, CAtlList<CString>* subs)
 {
 	CAtlList<CString> sl;
 	sl.AddTail(fn);
+    
 	ParsePlayList(sl, subs);
+    
 }
 
 void CPlayerPlaylistBar::ParsePlayList(CAtlList<CString>& fns, CAtlList<CString>* subs)
@@ -349,6 +351,7 @@ void CPlayerPlaylistBar::ParsePlayList(CAtlList<CString>& fns, CAtlList<CString>
 			
 		}
 	}
+    
 	if(fns.GetCount() <= 0){
      return;
 	}
@@ -391,7 +394,7 @@ void CPlayerPlaylistBar::ParsePlayList(CAtlList<CString>& fns, CAtlList<CString>
 		while(pos) ParsePlayList(sl.GetNext(pos), subs);
 		return;
 	}
-	
+
 	if(ct == "application/x-cue-playlist")
 	{
 		ParseCUEPlayList(fns.GetHead());
@@ -704,6 +707,8 @@ void CPlayerPlaylistBar::Empty()
 }
 void CPlayerPlaylistBar::RealFindMoreFileFromOneFileAndPutIntoPlaylist(CString szMediaFile , CAtlList<CString>& szaIn ){
 	
+    SVP_LogMsg5(L"RealFindMoreFileFromOneFileAndPutIntoPlaylist");
+
 	//check if dir has more files
 	CAtlList<CString> szaRet;
 	CAtlArray<CString> mask;
@@ -736,19 +741,41 @@ void CPlayerPlaylistBar::RealFindMoreFileFromOneFileAndPutIntoPlaylist(CString s
 					szaRet.RemoveAt(cur);
 				}
 			}
-			if(szaRet.GetCount() > 0)
-				Append(szaRet, (szaRet.GetCount() > 1));
+            
+            if(szaRet.GetCount() > 0){
+                m_pl.szPlayListSub.Empty();
+
+                
+                if(szaRet.GetCount() > 1)
+                {
+                    POSITION pos = szaRet.GetHeadPosition();
+                
+                    while(pos){
+                        CString szFPath = szaRet.GetNext(pos);
+                        if(!FindPosByFilename(szFPath))
+                            ParsePlayList(szFPath, NULL);
+                
+                    }
+                }
+                else
+                {
+                    ParsePlayList(szaRet, NULL);
+                }
+
+            }
 
 			  //add them all
 			//POSITION posx = szaRet.GetHeadPosition();
 			//while(posx) ParsePlayList(szaRet.GetNext(posx), NULL); 
 
 		}
+        
 		POSITION pos = FindPosByFilename(szMediaFile);
 		m_pl.SetPos(pos);
 		m_pl.SortByName();
 		Refresh();
 		SavePlaylist();
+        
 	}
 }
 
@@ -894,13 +921,20 @@ void CPlayerPlaylistBar::AddFolder(CString szFPath, BOOL bWithSubDirByDefault ){
 
 void CPlayerPlaylistBar::Append(CAtlList<CString>& fns, bool fMulti, CAtlList<CString>* subs)
 {
+    
 	m_pl.szPlayListSub.Empty();
 
+    
 	if(fMulti)
 	{
 		ASSERT(subs == NULL || subs->GetCount() == 0);
 		POSITION pos = fns.GetHeadPosition();
-		while(pos) ParsePlayList(fns.GetNext(pos), NULL);
+        
+        while(pos){
+            
+            ParsePlayList(fns.GetNext(pos), NULL);
+            
+        }
 	}
 	else
 	{
@@ -1004,7 +1038,8 @@ POSITION CPlayerPlaylistBar::FindPosByFilename(CString fn, BOOL movePos){
 		POSITION pos1 = pi.m_fns.GetHeadPosition();
 		while(pos1){
 			CString szBuf = pi.m_fns.GetNext(pos1);
-			if(szBuf.CompareNoCase( fn ) == 0){
+            if(szBuf.CompareNoCase( fn ) == 0){
+                SVP_LogMsg5(L"%s %s",szBuf,fn );
 				if(movePos){
 					m_pl.SetPos(ret);
 					EnsureVisible(ret);

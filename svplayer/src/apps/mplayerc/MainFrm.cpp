@@ -610,7 +610,8 @@ CMainFrame::CMainFrame() :
 	m_wndLycShowBox(NULL),
     m_ThreadSVPSub(NULL),
     m_l_been_playing_sec(0),
-    m_is_resume_from_last_exit_point(false)
+    m_is_resume_from_last_exit_point(false),
+    m_lyricDownloadThread(NULL)
 {
 	m_wndFloatToolBar = new CPlayerFloatToolBar();
 }
@@ -5221,6 +5222,7 @@ void CMainFrame::OnFilePostOpenmedia()
                 //debug
                 //m_Lyric.LoadLyricFile(L"D:\\-=SVN=-\\test.lrc");
 
+                m_Lyric.Empty();
                 //download it by thead
                 CString szInfo;
                 m_wndInfoBar.GetLine(ResStr(IDS_INFOBAR_TITLE), szInfo);
@@ -5234,9 +5236,11 @@ void CMainFrame::OnFilePostOpenmedia()
 
                 m_Lyric.m_sz_current_music_file = m_fnCurPlayingFile;
               
-                CWinThread* lyricDownloadThread = AfxBeginThread(lyric_fetch_Proc, &m_Lyric, THREAD_PRIORITY_LOWEST, 0, CREATE_SUSPENDED);
-                lyricDownloadThread->m_pMainWnd = AfxGetMainWnd();
-                lyricDownloadThread->ResumeThread();
+                //m_Lyric.m_stop_downloading = 1;
+                //TerminateThread(m_lyricDownloadThread , 0);
+                m_lyricDownloadThread = AfxBeginThread(lyric_fetch_Proc, &m_Lyric, THREAD_PRIORITY_LOWEST, 0, CREATE_SUSPENDED);
+                m_lyricDownloadThread->m_pMainWnd = AfxGetMainWnd();
+                m_lyricDownloadThread->ResumeThread();
                 
             }
             

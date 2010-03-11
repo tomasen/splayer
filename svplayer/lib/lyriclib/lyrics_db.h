@@ -4,7 +4,7 @@
 //#include "global.h"
 #include "stdafx.h"
 #include "main.h"
-#include "lyriclib.h"
+//#include "lyriclib.h"
 #include "URLEncode.h"
 //#include "window_config.h"
 class lyrics_db;

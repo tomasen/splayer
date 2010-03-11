@@ -937,6 +937,7 @@ public:
 	BOOL m_bEVRInUse;
 
 	//Lyric Thing
+    CWinThread* m_lyricDownloadThread;
 	CLyricLib m_Lyric;
 	CStringArray m_LyricFilePaths;
 	SVPLycShowBox* m_wndLycShowBox;

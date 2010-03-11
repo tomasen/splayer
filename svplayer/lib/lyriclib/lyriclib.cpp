@@ -26,8 +26,7 @@
 #include <id3/misc_support.h>
 
 
-static window_config wcfg;
-static std::vector<lyric_data> availableLyrics;
+
 
 static TCHAR* ext_lrc[2][1] = 
 {
@@ -58,11 +57,14 @@ BOOL  CLyricLib::isLyricFile(CString szFn){
 
 void CLyricLib::fetch_lyric_from_internet()
 {
-
+    CAutoLock lck(&m_fetch_lock);
+    m_stop_downloading = 0;
+    Empty();
+    CString szDownloadingForFile = m_sz_current_music_file;
     try{
         ID3_Tag myTag;
 
-        myTag.Link(CStringA(m_sz_current_music_file), ID3TT_ALL);
+        myTag.Link(CStringA(szDownloadingForFile), ID3TT_ALL);
         
         ID3_Frame* myFrame = myTag.Find(ID3FID_TITLE);
         if(myFrame)
@@ -91,7 +93,7 @@ void CLyricLib::fetch_lyric_from_internet()
             }
         }
     }catch(...){}
-    SVP_LogMsg5(L"Look for Lyric Result %s | %s | %s | %s", m_sz_current_music_file, this->title.c_str(), this->artist.c_str(), this->album.c_str());
+    SVP_LogMsg5(L"Look for Lyric Result %s | %s | %s | %s", szDownloadingForFile, this->title.c_str(), this->artist.c_str(), this->album.c_str());
     
 
     db_lrcdb static_lrcdb;
@@ -101,27 +103,54 @@ void CLyricLib::fetch_lyric_from_internet()
     db_ailrc static_ailrc;
     db_lyricsfly static_lyricsfly;
 
-
-        
+      try{
+        availableLyrics.clear();
         static_viewlyrics.GetResults(&wcfg, &availableLyrics, this->title, this->artist, this->album);
-    
-        if(!try_download_lyric()){
+  
+
+        if(try_download_lyric(szDownloadingForFile))
+            return;
+        else{
+            availableLyrics.clear();
             static_lrcdb.GetResults(&wcfg, &availableLyrics, this->title, this->artist, this->album);
         }
-        if(!try_download_lyric())
+        
+   
+        if(try_download_lyric(szDownloadingForFile))
+            return;
+        else{
+            availableLyrics.clear();
             static_lyrdb.GetResults(&wcfg, &availableLyrics, this->title, this->artist, this->album);
-        if(!try_download_lyric())
+        }
+
+    
+        if(try_download_lyric(szDownloadingForFile))
+            return;
+        else{
+            availableLyrics.clear();
             static_leos.GetResults(&wcfg, &availableLyrics, this->title, this->artist, this->album);
-        if(!try_download_lyric())
+        }
+    
+        if(try_download_lyric(szDownloadingForFile))
+            return;
+        else{
+            availableLyrics.clear();
             static_ailrc.GetResults(&wcfg, &availableLyrics, this->title, this->artist, this->album);
-        if(!try_download_lyric())
+        }
+  
+        if(try_download_lyric(szDownloadingForFile))
+            return;
+        else{
+            availableLyrics.clear();
             static_lyricsfly.GetResults(&wcfg, &availableLyrics, this->title, this->artist, this->album);
-        try{
-            try_download_lyric();
-        }catch(...){}
+        }
+
+         try_download_lyric(szDownloadingForFile);
+
+     }catch(...){}
 
 }
-bool  CLyricLib::try_download_lyric()
+bool  CLyricLib::try_download_lyric(CString szDownloadingForFile)
 {
     bool ret = false;
     if(availableLyrics.size() > 0)
@@ -136,7 +165,8 @@ bool  CLyricLib::try_download_lyric()
 
             if(!availableLyrics[ curIndex ].db)
                 continue ;
-        
+            //SVP_LogMsg5(L"Get %d Lyric Result %d", availableLyrics.size(), curIndex);
+
             availableLyrics[ curIndex ].db->DownloadLyrics(&wcfg, &availableLyrics[ curIndex ]);
 
             CSVPToolBox svpTool;
@@ -146,7 +176,7 @@ bool  CLyricLib::try_download_lyric()
             szStorePath.AddBackslash();
 
             CStringArray szaFilename ;
-            svpTool.getVideoFileBasename(m_sz_current_music_file, &szaFilename);
+            svpTool.getVideoFileBasename(szDownloadingForFile, &szaFilename);
             szStorePath.Append(szaFilename.GetAt(3));
             szStorePath.AddExtension(L".lrc");
 
@@ -163,15 +193,17 @@ bool  CLyricLib::try_download_lyric()
             }
             //AfxMessageBox( availableLyrics[curIndex].Text.c_str() );
             SVP_LogMsg5(L"Get %d Lyric Result %s size %d", availableLyrics.size(),szStorePath , availableLyrics[curIndex].Text.length());
-            if(LoadLyricFile(szStorePath) > 0){
-                ret = true;
-                CWnd* pFrame = AfxGetMainWnd();
-                if(pFrame){
-                    CString osd_msg;
-                    //
-                    osd_msg.Format(ResStr(IDS_GOT_LYRIC_OSD_MSG), availableLyrics[ curIndex ].db->GetName() );
-                    ::SendMessage(pFrame->m_hWnd, WM_USER+31, (UINT_PTR)osd_msg.GetBuffer(), 3000); 
-                    osd_msg.ReleaseBuffer();
+            if(szDownloadingForFile == m_sz_current_music_file){
+                if(LoadLyricFile(szStorePath) > 0){
+                    ret = true;
+                    CWnd* pFrame = AfxGetMainWnd();
+                    if(pFrame){
+                        CString osd_msg;
+                        //
+                        osd_msg.Format(ResStr(IDS_GOT_LYRIC_OSD_MSG), availableLyrics[ curIndex ].db->GetName() );
+                        ::SendMessage(pFrame->m_hWnd, WM_USER+31, (UINT_PTR)osd_msg.GetBuffer(), 3000); 
+                        osd_msg.ReleaseBuffer();
+                    }
                 }
                 break;
             }
@@ -300,6 +332,7 @@ void CLyricLib::GetLrcFileNames(CString fn, CAtlArray<CString>& paths, CAtlArray
 
 
 CLyricLib::CLyricLib(void)
+: m_stop_downloading(0)
 {
 }
 

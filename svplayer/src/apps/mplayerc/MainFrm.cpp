@@ -1132,6 +1132,8 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_wndLycShowBox->ShowWindow(SW_SHOW);
 	// */
 
+    m_lMinFrameWidth = s.GetColorFromTheme(_T("WinFrameMinWidth"), 310);
+
     SetTimer(TIMER_IDLE_TASK, 30000, NULL);
    m_WndSizeInited++;
 	return 0;
@@ -1721,6 +1723,8 @@ void CMainFrame::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
 	::GetMenuBarInfo(m_hWnd, OBJID_MENU, 0, &mbi);
 	*/
 
+    AppSettings& s = AfxGetAppSettings();
+
 	lpMMI->ptMinTrackSize.x = 100;
 	if(!IsCaptionMenuHidden())
 	{
@@ -1728,7 +1732,7 @@ void CMainFrame::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
 		CRect r;
 		//for(int i = 0; ::GetMenuItemRect(m_hWnd, mbi.hMenu, i, &r); i++)
 		//lpMMI->ptMinTrackSize.x += r.Width();
-		lpMMI->ptMinTrackSize.x = max(310, lpMMI->ptMinTrackSize.x);
+		lpMMI->ptMinTrackSize.x = max(m_lMinFrameWidth, lpMMI->ptMinTrackSize.x); //min width
 	}
 	if(style&WS_THICKFRAME) lpMMI->ptMinTrackSize.x += GetSystemMetrics((style&WS_CAPTION)?SM_CXSIZEFRAME:SM_CXFIXEDFRAME)*2;
 
@@ -1742,7 +1746,7 @@ void CMainFrame::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
 	if(style&WS_CAPTION) lpMMI->ptMinTrackSize.y += GetSystemMetrics(SM_CYCAPTION);
 	if(style&WS_THICKFRAME) lpMMI->ptMinTrackSize.y += GetSystemMetrics((style&WS_CAPTION)?SM_CYSIZEFRAME:SM_CYFIXEDFRAME)*2;
 	//lpMMI->ptMinTrackSize.y += (mbi.rcBar.bottom - mbi.rcBar.top);
-	AppSettings& s = AfxGetAppSettings();
+	
 	if(!s.fHideCaptionMenu) lpMMI->ptMinTrackSize.y += 3;
 	
 	POSITION pos = m_bars.GetHeadPosition();

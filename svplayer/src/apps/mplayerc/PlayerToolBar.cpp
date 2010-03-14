@@ -218,23 +218,25 @@ void CPlayerToolBar::OnSize(UINT nType, int cx, int cy)
 	BOOL hideT2 = TRUE;
 	BOOL hideT3 = TRUE;
 	BOOL hideT4 = TRUE;
-	if( iWidth > (382 * m_nLogDPIY / 96) ){
+    CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
+    double skinsRate = (double)pFrame->m_lMinFrameWidth / 310;
+	if( iWidth > (382 * skinsRate * m_nLogDPIY / 96) ){
 			hideT1 = false;
 	}
-	if( iWidth > (400 * m_nLogDPIY / 96) ){
+	if( iWidth > (400 * skinsRate * m_nLogDPIY / 96) ){
 		hideT15 = false;
 	}
-	if( iWidth > (425 * m_nLogDPIY / 96) ){
+	if( iWidth > (425 * skinsRate * m_nLogDPIY / 96) ){
 		hideT2 = false;
 	}
-	if( iWidth > (490 * m_nLogDPIY / 96) ){
+	if( iWidth > (490 * skinsRate * m_nLogDPIY / 96) ){
 		hideT3 = false;
 	}
-	if( iWidth > (570 * m_nLogDPIY / 96) ){
+	if( iWidth > (570 * skinsRate * m_nLogDPIY / 96) ){
 		hideT4 = false;
 	}
 
-	CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
+	
 	if(pFrame && pFrame->IsSomethingLoaded() && pFrame->m_fAudioOnly){
 
 		m_btnList.SetHideStat(ID_PLAY_FWD , hideT1);

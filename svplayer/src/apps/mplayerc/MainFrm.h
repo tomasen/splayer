@@ -597,6 +597,7 @@ public:
 
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
 	afx_msg void OnGetMinMaxInfo(MINMAXINFO* lpMMI);
+    int m_lMinFrameWidth;
 	afx_msg void OnMove(int x, int y);
 	afx_msg void OnMoving(UINT fwSide, LPRECT pRect);
 	afx_msg void OnSize(UINT nType, int cx, int cy);

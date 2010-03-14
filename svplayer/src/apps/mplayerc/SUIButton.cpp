@@ -270,7 +270,15 @@ CSUIBtnList::CSUIBtnList()
 CSUIBtnList::~CSUIBtnList()
 {
 }
-
+int CSUIBtnList::GetMaxHeight(){
+    int nHeight = 0;
+    POSITION pos = GetHeadPosition();
+    while(pos){
+        CSUIButton* cBtn =  GetNext(pos);
+        nHeight = max(nHeight, cBtn->m_orgbtnSize.cy);
+    }
+    return nHeight;
+}
 void CSUIBtnList::SetDisableStat(UINT iMsgID, BOOL bDisable){
 	POSITION pos = GetHeadPosition();
 	while(pos){

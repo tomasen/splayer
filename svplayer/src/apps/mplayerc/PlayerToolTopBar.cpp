@@ -15,7 +15,8 @@ IMPLEMENT_DYNAMIC(CPlayerToolTopBar, CWnd)
 
 CPlayerToolTopBar::CPlayerToolTopBar():
 m_hovering(0),
-m_pbtnList(&m_btnList)
+m_pbtnList(&m_btnList),
+m_nHeight(20)
 {
 
 }
@@ -279,6 +280,12 @@ int CPlayerToolTopBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	m_toolTip.SendMessage(TTM_ADDTOOL, 0, (LPARAM)&m_ti);
 
+    m_nHeight = max(20, m_btnList.GetMaxHeight());
+    if(m_nHeight > 20){
+        m_nHeight += 4;
+    }
+
+  
 	return 0;
 }
 void CPlayerToolTopBar::ReCalcBtnPos(){

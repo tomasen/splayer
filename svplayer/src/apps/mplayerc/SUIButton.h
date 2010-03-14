@@ -141,6 +141,7 @@ public:
 	
 	void OnSize(CRect WndRect);
 
+    int GetMaxHeight();
 	UINT OnHitTest(CPoint pt , CRect rc, int bLBtnDown = -1);
 
 	void SetDisableStat(UINT iMsgID, BOOL bDisable);

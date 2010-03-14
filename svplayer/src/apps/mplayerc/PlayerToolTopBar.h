@@ -14,6 +14,7 @@ public:
 	CPlayerToolTopBar();
 	virtual ~CPlayerToolTopBar();
 	int m_nLogDPIY;
+    int m_nHeight;
 	
 	CToolTipCtrl m_toolTip;
 	TOOLINFO	m_ti;

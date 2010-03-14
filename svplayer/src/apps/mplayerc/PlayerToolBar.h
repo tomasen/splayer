@@ -25,7 +25,6 @@
 
 #include "VolumeCtrl.h"
 
-#define TOOLBAR_HEIGHT 33
 // CPlayerToolBar
 
 class CPlayerToolBar : public CToolBar
@@ -63,6 +62,7 @@ public:
 	CPlayerToolBar();
 	virtual ~CPlayerToolBar();
 	BOOL m_bMouseDown ;
+    int m_nHeight;
 
 	UINT iBottonClicked;
 	UINT iFastFFWCount;

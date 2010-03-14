@@ -10603,7 +10603,7 @@ void CMainFrame::rePosOSD(){
 		}
 		
 		if(m_wndToolTopBar.IsWindowVisible()){
-			rcTopToolBar.bottom = rcTopToolBar.top + 20 * m_nLogDPIY / 96 ;
+			rcTopToolBar.bottom = rcTopToolBar.top + m_wndToolTopBar.m_nHeight * m_nLogDPIY / 96 ;
 			
 	//		rcTopToolBar.right = min( rcTopToolBar.left + 100 , rcTopToolBar.right);
 			

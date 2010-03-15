@@ -83,7 +83,7 @@ static int rv30_decode_intra_types(RV34DecContext *r, GetBitContext *gb, int8_t 
                 int B = dst[-1] + 1;
                 *dst++ = rv30_itype_from_context[A * 90 + B * 9 + rv30_itype_code[code + k]];
                 if(dst[-1] == 9){
-                    av_log(r->s.avctx, AV_LOG_ERROR, "Incorrect intra prediction mode\n");
+                    av_log(r->s.avctx, AV_LOG_ERROR, "Incorrect intra prediction mode %d %d %d %d\n", i, j , k , code);
                     return -1;
                 }
             }
@@ -244,7 +244,7 @@ static void rv30_loop_filter(RV34DecContext *r, int row)
 static av_cold int rv30_decode_init(AVCodecContext *avctx)
 {
     RV34DecContext *r = avctx->priv_data;
-
+		
     r->rv30 = 1;
     ff_rv34_decode_init(avctx);
     if(avctx->extradata_size < 2){
@@ -257,6 +257,12 @@ static av_cold int rv30_decode_init(AVCodecContext *avctx)
         av_log(avctx, AV_LOG_ERROR, "Insufficient extradata - need at least %d bytes, got %d\n",
                6 + r->rpr * 2, avctx->extradata_size);
     }
+    /* av_log(avctx, AV_LOG_ERROR, "Extradata %d %d %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x.\n",r->rpr, avctx->extradata_size
+    , avctx->extradata[0] , avctx->extradata[1] , avctx->extradata[2], avctx->extradata[3]
+    , avctx->extradata[4] , avctx->extradata[5] , avctx->extradata[6], avctx->extradata[7]
+    , avctx->extradata[8] , avctx->extradata[9] , avctx->extradata[10], avctx->extradata[11]
+    , avctx->extradata[12] , avctx->extradata[13] , avctx->extradata[14], avctx->extradata[15]);
+    */
     r->parse_slice_header = rv30_parse_slice_header;
     r->decode_intra_types = rv30_decode_intra_types;
     r->decode_mb_info     = rv30_decode_mb_info;

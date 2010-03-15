@@ -154,6 +154,10 @@ protected:
 
 	LONGLONG GetPerfCounter();
 	LONGLONG m_PerfFrequency;
+
+    //REALVIDEO 
+    REFERENCE_TIME m_tStart;
+
 public:
 
 	const static AMOVIESETUP_MEDIATYPE		sudPinTypesIn[];
@@ -251,4 +255,8 @@ virtual void			GetOutputSize(int& w, int& h, int& arx, int& ary, int &RealWidth,
 												  DXVA2_ConfigPictureDecode *pSelectedConfig,
 											      BOOL *pbFoundDXVA2Configuration);
 	HRESULT						CreateDXVA2Decoder(UINT nNumRenderTargets, IDirect3DSurface9** pDecoderRenderTargets);
+
+    CAutoVectorPtr<BYTE> m_pI420Y, m_pI420U, m_pI420V;
+    int m_lastBuffSizeDim;
+    HRESULT AlterQuality(Quality q);
 };

@@ -777,6 +777,7 @@ public:
 	afx_msg void OnPlayPauseI();
 	afx_msg void OnPlayPlaypause();
 	afx_msg void OnPlayStop();
+    afx_msg void OnPlayStopManual();
 	afx_msg void OnPlayStopDummy();
 	afx_msg void OnUpdatePlayPauseStop(CCmdUI* pCmdUI);
 	

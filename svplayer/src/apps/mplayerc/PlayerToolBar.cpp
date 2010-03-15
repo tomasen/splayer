@@ -80,7 +80,7 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 	CSUIButton* btnPause = new CSUIButton(L"BTN_PAUSE.BMP" , ALIGN_TOPLEFT, CRect(-50 , -50, 3,3)  , 0, ID_PLAY_PAUSE, TRUE, 0, 0 );
 	m_btnList.AddTail( btnPause );
 
-	CSUIButton* btnStop = new CSUIButton(L"BTN_STOP.BMP" , ALIGN_TOPLEFT, CRect(-50 , -50, 3,3)  , 0, ID_PLAY_STOP, FALSE, ALIGN_RIGHT , btnPause  , CRect(10 , 10 , 10, 10));
+	CSUIButton* btnStop = new CSUIButton(L"BTN_STOP.BMP" , ALIGN_TOPLEFT, CRect(-50 , -50, 3,3)  , 0, ID_PLAY_MANUAL_STOP, FALSE, ALIGN_RIGHT , btnPause  , CRect(10 , 10 , 10, 10));
 	btnStop->addAlignRelButton(ALIGN_RIGHT, btnPlay , CRect(10 , 10 , 10, 10) );
 	m_btnList.AddTail( btnStop );
 
@@ -273,7 +273,7 @@ void CPlayerToolBar::OnSize(UINT nType, int cx, int cy)
 	m_btnList.SetHideStat(ID_FILE_OPENQUICK , hideT4);
 
 	m_btnList.SetHideStat(ID_PLAY_FRAMESTEP , hideT4);
-	m_btnList.SetHideStat(ID_PLAY_STOP , hideT4);
+	m_btnList.SetHideStat(ID_PLAY_MANUAL_STOP , hideT4);
 	
 
 	m_btnList.OnSize( rc);
@@ -506,9 +506,9 @@ void CPlayerToolBar::OnPaint()
 }
 void CPlayerToolBar::UpdateButtonStat(){
 	CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
-	BOOL fShow = pFrame->GetUIStat( ID_PLAY_STOP );
+	BOOL fShow = pFrame->GetUIStat( ID_PLAY_MANUAL_STOP );
 	m_btnList.SetHideStat( ID_PLAY_PLAY , fShow );
-	//m_btnList.SetHideStat( ID_PLAY_STOP , !fShow );
+	//m_btnList.SetHideStat( ID_PLAY_MANUAL_STOP , !fShow );
 	//m_btnList.SetHideStat( ID_PLAY_FRAMESTEP , !fShow );
 	m_btnList.SetHideStat( ID_PLAY_PAUSE , !fShow );
 	BOOL bLogo = pFrame->IsSomethingLoaded() ;

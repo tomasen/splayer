@@ -13,6 +13,12 @@ CFLAGS+= -I. -I.. -I$(LAVC_DIR) -I$(LAVU_DIR) -I$(LAVF_DIR) -I../codecs -I../img
 CC=gcc
 
 SRCS_C=\
+		$(LAVC_DIR)/rv30dsp.c \
+		$(LAVC_DIR)/rv30.c \
+		$(LAVC_DIR)/rv10.c \
+		$(LAVC_DIR)/rv34.c \
+		$(LAVC_DIR)/rv40dsp.c \
+		$(LAVC_DIR)/rv40.c \
 		$(LAVC_DIR)/cinepak.c \
 		$(LAVC_DIR)/huffyuv.c \
 		$(LAVC_DIR)/pcm.c \
@@ -20,12 +26,6 @@ SRCS_C=\
 		$(LAVC_DIR)/smc.c \
 		$(LAVC_DIR)/wma.c \
 		$(LAVC_DIR)/wmadec.c \
-		$(LAVC_DIR)/rv30dsp.c \
-		$(LAVC_DIR)/rv30.c \
-		$(LAVC_DIR)/rv10.c \
-		$(LAVC_DIR)/rv34.c \
-		$(LAVC_DIR)/rv40dsp.c \
-		$(LAVC_DIR)/rv40.c \
 		$(LAVC_DIR)/qtrle.c \
 		$(LAVC_DIR)/mpegvideo.c \
 		$(LAVC_DIR)/allcodecs.c \

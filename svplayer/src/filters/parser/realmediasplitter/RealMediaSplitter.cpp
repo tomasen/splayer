@@ -35,9 +35,13 @@
 #include "avcodec.h"
 
 #define SVP_LogMsg3  __noop
-
 #include <initguid.h>
 #include "..\..\..\..\include\moreuuids.h"
+
+#ifdef RV_FFMPEG
+#undef  CheckPointer
+#define CheckPointer(p,ret) {if((p)==NULL) { SVP_LogMsg5(L"CheckPointer %s @ %d", __FUNCTION__, __LINE__ ); return (ret); }}
+#endif
 
 template<typename T>
 static void bswap(T& var)
@@ -1485,7 +1489,7 @@ int CRMFile::GetMasterStream()
 // CRealVideoDecoder
 //
 
-//#define RV_FFMPEG
+
 
 #ifdef RV_FFMPEG
 #include "CpuId.h"
@@ -1496,11 +1500,17 @@ CRealVideoDecoder::CRealVideoDecoder(LPUNKNOWN lpunk, HRESULT* phr)
 : CBaseVideoFilter(NAME("CRealVideoDecoder"), lpunk, phr, __uuidof(this))
 , m_hDrvDll(NULL)
 , m_dwCookie(0)
+, m_pAVCtx(NULL)
+, m_pFrame(NULL)
 {
 
 #ifdef RV_FFMPEG
 	avcodec_init();
 	avcodec_register_all();
+
+    ff_avcodec_default_get_buffer		= avcodec_default_get_buffer;
+    ff_avcodec_default_release_buffer	= avcodec_default_release_buffer;
+    ff_avcodec_default_reget_buffer		= avcodec_default_reget_buffer;
 #endif
 
 }
@@ -1612,6 +1622,9 @@ HRESULT CRealVideoDecoder::InitRV(const CMediaType* pmt)
 	 m_pAVCtx->opaque					= this;
 	 m_pAVCtx->get_buffer			= get_buffer;
 
+
+     av_log_set_callback(LogLibAVCodec);
+     
 	 //TODO: MORE!! 
 	 //AllocExtradata (m_pAVCtx, pmt);
 	 ConnectTo (m_pAVCtx);
@@ -1620,12 +1633,29 @@ HRESULT CRealVideoDecoder::InitRV(const CMediaType* pmt)
 	 
 	 int avcRet = avcodec_open(m_pAVCtx, m_pAVCodec);
 	 if (avcRet<0){
-		 //SVP_LogMsg5(_T("AVCOPEN FAIL %d") , avcRet);
+		 SVP_LogMsg5(_T("AVCOPEN FAIL %d") , avcRet);
 		 return VFW_E_INVALIDMEDIATYPE;
-	 }
+     }else{
+         return S_OK;
+     }
 
 #endif
 	return hr;
+}
+void CRealVideoDecoder::OnGetBuffer(AVFrame *pic)
+{
+    // Callback from FFMpeg to store Ref Time in frame (needed to have correct rtStart after avcodec_decode_video calls)
+    //	pic->rtStart	= m_rtStart;
+}
+void CRealVideoDecoder::LogLibAVCodec(void* par,int level,const char *fmt,va_list valist)
+{
+
+    char		Msg [500];
+    vsnprintf_s (Msg, sizeof(Msg), _TRUNCATE, fmt, valist);
+    SVP_LogMsg6("AVLIB : %s ", Msg);
+    //	TRACE("AVLIB : %s", Msg);
+
+
 }
 
 void CRealVideoDecoder::FreeRV()
@@ -1673,112 +1703,201 @@ HRESULT CRealVideoDecoder::Real_RVTransform(BYTE* pDataIn, BYTE* pI420, void* tr
 HRESULT CRealVideoDecoder::Transform(IMediaSample* pIn)
 {
 	CAutoLock cAutoLock(&m_csReceive);
-
+    
 	HRESULT hr;
 
 	BYTE* pDataIn = NULL;
+    //SVP_LogMsg5(L" CRealVideoDecoder::Transform" );
+
 	if(FAILED(hr = pIn->GetPointer(&pDataIn)))
 		return hr;
 
+    //SVP_LogMsg5(L" CRealVideoDecoder::Transform2" );
 	long len = pIn->GetActualDataLength();
 	int nSize = len;
 	if(len <= 0) return S_OK; // nothing to do
 
+    //SVP_LogMsg5(L" CRealVideoDecoder::Transform3" );
 	REFERENCE_TIME rtStart, rtStop;
 	pIn->GetTime(&rtStart, &rtStop);
 
 	rtStart += m_tStart;
 
-	int offset = 1+((*pDataIn)+1)*8;
-
-#pragma pack(push, 1)
-	struct {DWORD len, unk1, chunks; DWORD* extra; DWORD unk2, timestamp;} transform_in = 
-	{len - offset, 0, *pDataIn, (DWORD*)(pDataIn+1), 0, (DWORD)(rtStart/10000)};
-	struct {DWORD unk1, unk2, timestamp, w, h;} transform_out = 
-	{0,0,0,0,0};
-#pragma pack(pop)
-
-	pDataIn += offset;
-
-	if(m_fDropFrames && m_timestamp+1 == transform_in.timestamp)
-	{
-		m_timestamp = transform_in.timestamp;
-		return S_OK;
-	}
-
-
-	SVP_LogMsg3("before GetDimensions_X10 ");
-	unsigned int tmp1, tmp2;
-	bool interlaced = false, tmp3, tmp4;
-	::GetDimensions_X10(pDataIn, &tmp1, &tmp2, &interlaced, &tmp3, &tmp4);
-
-
-	SVP_LogMsg3("after GetDimensions_X10 %u  %u %d %d  %d %d  %d %d  " ,  tmp1, tmp2, interlaced, tmp3, tmp4 , m_w, m_h , m_lastBuffSizeDim);
-	{
-		int size =  tmp1*tmp2;
-		if( m_lastBuffSizeDim < size  ){
-			//resize out buff
-
-			m_pI420.Free();
-			m_pI420Tmp.Free();
-
-
-			m_lastBuffSizeDim = size;
-			SVP_LogMsg3("resize out put buff %d" ,size);
-			if ( m_pI420.Allocate(size*3/2) ){
-
-				SVP_LogMsg3(" m_pI420.Allocated 1" );
-				memset(m_pI420, 0, size);
-				SVP_LogMsg3(" m_pI420.Allocated 2" );
-				memset(m_pI420 + size, 0x80, size/2);
-				SVP_LogMsg3(" m_pI420.Allocated 3" );
-			}else{
-				SVP_LogMsg3(" m_pI420.Allocate fail %d" ,size*3/2);
-				return S_OK;
-			}
-			if( m_pI420Tmp.Allocate(size*3/2) ){
-				SVP_LogMsg3(" m_pI420Tmp.Allocated 1" );
-				memset(m_pI420Tmp, 0, size);
-				SVP_LogMsg3(" m_pI420Tmp.Allocated 2" );
-				memset(m_pI420Tmp + size, 0x80, size/2);
-				SVP_LogMsg3(" m_pI420Tmp.Allocated 3" );
-			}else{
-				SVP_LogMsg3(" m_pI420Tmp.Allocate fail %d" ,size*3/2);
-				return S_OK;
-			}
-
-		}
-
-	}
-	
-	SVP_LogMsg3("before RVTransform %d %d %d %d %d %d", transform_in.len , transform_in.unk1, transform_in.unk2, transform_in.chunks, transform_in.timestamp , m_dwCookie);
 #ifdef RV_FFMPEG
+
+#define TRACE5 SVP_LogMsg5
+    
 	int				got_picture;
 	int				used_bytes;
 
 	m_pAVCtx->width = m_w;
-	m_pAVCtx->width = m_h;
+	m_pAVCtx->height = m_h;
 	while (nSize > 0)
 	{
 		if (nSize+FF_INPUT_BUFFER_PADDING_SIZE > m_nFFBufferSize)
 		{
 			m_nFFBufferSize = nSize+FF_INPUT_BUFFER_PADDING_SIZE;
+             SVP_LogMsg5(L" CRealVideoDecoder::TransformX0 Calloc m_nFFBufferSize %d" , m_nFFBufferSize );
 			m_pFFBuffer		= (BYTE*)realloc(m_pFFBuffer, m_nFFBufferSize);
 		}
 
 		memcpy(m_pFFBuffer, pDataIn, nSize);
 		memset(m_pFFBuffer+nSize,0,FF_INPUT_BUFFER_PADDING_SIZE);
+        SVP_LogMsg5(L" CRealVideoDecoder::TransformX1" );
 		used_bytes = avcodec_decode_video (m_pAVCtx, m_pFrame, &got_picture, m_pFFBuffer, nSize);
 
+        SVP_LogMsg5(L" CRealVideoDecoder::Transform used_bytes %d", used_bytes );
+        if(used_bytes < 0 ) { TRACE5(L"used_bytes < 0 "); return S_OK; } // Why MPC-HC removed this lineis un clear to me, add it back see if it solve sunpack problem
+        if (!got_picture || !m_pFrame->data[0]) { TRACE5(L"!got_picture || !m_pFrame->data[0] %d " , got_picture);  return S_OK; }
+        if(pIn->IsPreroll() == S_OK || rtStart < 0) { TRACE5(L"pIn->IsPreroll()  %d  %d " , pIn->IsPreroll() , rtStart); return S_OK;}
 
-	}
+        TRACE5(L"GetDeliveryBuffer %d %d",m_pAVCtx->width, m_pAVCtx->height);
+        CComPtr<IMediaSample>	pOut;
+        BYTE*					pDataOut = NULL;
 
+//        UpdateAspectRatio();
+        if(FAILED(hr = GetDeliveryBuffer(m_pAVCtx->width, m_pAVCtx->height, &pOut)) || FAILED(hr = pOut->GetPointer(&pDataOut)))
+            return hr;
+
+        SVP_LogMsg5 (L"Deliver1 : %10I64d - %10I64d   (%10I64d)  \n", rtStart, rtStop, rtStop - rtStart);
+
+       // ReorderBFrames(rtStart, rtStop);
+
+        pOut->SetTime(&rtStart, &rtStop);
+        TRACE ("Deliver3 : %10I64d - %10I64d   (%10I64d)  \n", rtStart, rtStop, rtStop - rtStart);
+        pOut->SetMediaTime(NULL, NULL);
+
+        SVP_LogMsg5(L"PIX_FMT %u ", m_pAVCtx->pix_fmt);
+        GUID subtype = MEDIASUBTYPE_I420;
+        switch ( m_pAVCtx->pix_fmt ){
+    case  PIX_FMT_PAL8:
+        subtype = MEDIASUBTYPE_RGB8;
+        break;
+    case  PIX_FMT_RGB555:
+        subtype = MEDIASUBTYPE_RGB555;
+        break;
+    case  PIX_FMT_RGB24:
+        subtype = MEDIASUBTYPE_RGB24;
+        break;
+    case  PIX_FMT_RGB32:
+        subtype = MEDIASUBTYPE_RGB32;
+        break;
+    case  PIX_FMT_GRAY8:
+        //subtype = MEDIASUBTYPE_GRAY8;
+        break;
+    case  PIX_FMT_GRAY16:
+        //subtype = MEDIASUBTYPE_GRAY16;
+        break;	
+    case  PIX_FMT_YUVJ422P:
+        subtype = MEDIASUBTYPE_YUVJ422P;
+        break;
+    case  PIX_FMT_YUVJ444P:
+        subtype = MEDIASUBTYPE_YUVJ444P;
+        break;
+    case  PIX_FMT_YUVJ420P:
+        //subtype = MEDIASUBTYPE_YUVJ420P;
+        break;
+    case  PIX_FMT_YUV422P:
+        subtype = MEDIASUBTYPE_YUV422P;
+        break;
+    case  PIX_FMT_YUV444P:
+        subtype = MEDIASUBTYPE_YUV444P;
+        break;
+    case  PIX_FMT_YUV420P:
+        //subtype = MEDIASUBTYPE_YUV420P;
+        break;
+
+    default:
+        //SVP_LogMsg3("PIX_FMT %u ", m_pAVCtx->pix_fmt);
+        break;
+        }
+
+        //#pragma omp parallel
+        CopyBuffer(pDataOut, m_pFrame->data, m_pAVCtx->width, m_pAVCtx->height, m_pFrame->linesize[0], subtype,false);//MEDIASUBTYPE_YUY2 for TSCC
+
+
+        SetTypeSpecificFlags (pOut);
+        hr = m_pOutput->Deliver(pOut);
+
+        nSize	-= used_bytes;
+        pDataIn += used_bytes;
+
+    }
+ SVP_LogMsg5(L" CRealVideoDecoder::TransformX2" );
+    return hr;
+   
 #else
+
+    int offset = 1+((*pDataIn)+1)*8;
+
+    #pragma pack(push, 1)
+    struct {DWORD len, unk1, chunks; DWORD* extra; DWORD unk2, timestamp;} transform_in = 
+    {len - offset, 0, *pDataIn, (DWORD*)(pDataIn+1), 0, (DWORD)(rtStart/10000)};
+    struct {DWORD unk1, unk2, timestamp, w, h;} transform_out = 
+    {0,0,0,0,0};
+    #pragma pack(pop)
+
+    pDataIn += offset;
+
+    if(m_fDropFrames && m_timestamp+1 == transform_in.timestamp)
+    {
+        //SVP_LogMsg5(L" CRealVideoDecoder::Transform4 Drop" );
+        m_timestamp = transform_in.timestamp;
+        return S_OK;
+    }
+
+//    SVP_LogMsg5(L" CRealVideoDecoder::Transform4 transform_in.timestamp %d", transform_in.timestamp );
+
+  //  SVP_LogMsg3("before GetDimensions_X10 ");
+    unsigned int tmp1, tmp2;
+    bool interlaced = false, tmp3, tmp4;
+    ::GetDimensions_X10(pDataIn, &tmp1, &tmp2, &interlaced, &tmp3, &tmp4);
+
+
+    //SVP_LogMsg3("after GetDimensions_X10 %u  %u %d %d  %d %d  %d %d  " ,  tmp1, tmp2, interlaced, tmp3, tmp4 , m_w, m_h , m_lastBuffSizeDim);
+    {
+        int size =  tmp1*tmp2;
+        if( m_lastBuffSizeDim < size  ){
+            //resize out buff
+
+            m_pI420.Free();
+            m_pI420Tmp.Free();
+
+
+            m_lastBuffSizeDim = size;
+            SVP_LogMsg3("resize out put buff %d" ,size);
+            if ( m_pI420.Allocate(size*3/2) ){
+
+                SVP_LogMsg3(" m_pI420.Allocated 1" );
+                memset(m_pI420, 0, size);
+                SVP_LogMsg3(" m_pI420.Allocated 2" );
+                memset(m_pI420 + size, 0x80, size/2);
+                SVP_LogMsg3(" m_pI420.Allocated 3" );
+            }else{
+                SVP_LogMsg3(" m_pI420.Allocate fail %d" ,size*3/2);
+                return S_OK;
+            }
+            if( m_pI420Tmp.Allocate(size*3/2) ){
+                SVP_LogMsg3(" m_pI420Tmp.Allocated 1" );
+                memset(m_pI420Tmp, 0, size);
+                SVP_LogMsg3(" m_pI420Tmp.Allocated 2" );
+                memset(m_pI420Tmp + size, 0x80, size/2);
+                SVP_LogMsg3(" m_pI420Tmp.Allocated 3" );
+            }else{
+                SVP_LogMsg3(" m_pI420Tmp.Allocate fail %d" ,size*3/2);
+                return S_OK;
+            }
+
+        }
+
+    }
+
+    //SVP_LogMsg3("before RVTransform %d %d %d %d %d %d", transform_in.len , transform_in.unk1, transform_in.unk2, transform_in.chunks, transform_in.timestamp , m_dwCookie);
+
 	hr = Real_RVTransform(pDataIn, (BYTE*)m_pI420, &transform_in, &transform_out, m_dwCookie);
 	
-#endif
 	
-	SVP_LogMsg3("after RVTransform %u %d %d %d %d" , hr , transform_out.w , transform_out.h, m_w, m_h);
+	//SVP_LogMsg3("after RVTransform %u %d %d %d %d" , hr , transform_out.w , transform_out.h, m_w, m_h);
 
 	
 	
@@ -1797,11 +1916,12 @@ HRESULT CRealVideoDecoder::Transform(IMediaSample* pIn)
 	//m_h = transform_out.h ;
 	CComPtr<IMediaSample> pOut;
 	BYTE* pDataOut = NULL;
+    //SVP_LogMsg5(L" CRealVideoDecoder::Transform Dec1" );
 	if(FAILED(hr = GetDeliveryBuffer(transform_out.w, transform_out.h, &pOut)) // TODO
 	   /*&&  FAILED(hr = GetDeliveryBuffer(m_w, m_h, &pOut))*/
 	   || FAILED(hr = pOut->GetPointer(&pDataOut)))
 	   return hr;
-
+    //SVP_LogMsg5(L" CRealVideoDecoder::Transform Dec2 %d", interlaced );
 	BYTE* pI420[3] = {m_pI420, m_pI420Tmp, NULL};
 
 	if(interlaced)
@@ -1812,7 +1932,7 @@ HRESULT CRealVideoDecoder::Transform(IMediaSample* pIn)
 		DeinterlaceBlend(pI420[1]+size*5/4, pI420[0]+size*5/4, m_w/2, m_h/2, m_w/2, m_w/2);
 		pI420[2] = pI420[1], pI420[1] = pI420[0], pI420[0] = pI420[2];
 	}
-
+    //SVP_LogMsg5(L" CRealVideoDecoder::Transform Dec4" );
 	if(transform_out.w != m_w || transform_out.h != m_h)
 	{
 		Resize(pI420[0], transform_out.w, transform_out.h, pI420[1], m_w, m_h);
@@ -1823,6 +1943,8 @@ HRESULT CRealVideoDecoder::Transform(IMediaSample* pIn)
 
 	rtStart = 10000i64*transform_out.timestamp - m_tStart;
 	rtStop = rtStart + 1;
+
+    SVP_LogMsg5 (L"Deliver3 : %d %d %10I64d - %10I64d   (%10I64d)  \n", transform_out.timestamp, transform_in.timestamp, rtStart, rtStop, rtStop - rtStart);
 	pOut->SetTime(&rtStart, /*NULL*/&rtStop);
 
 	pOut->SetDiscontinuity(pIn->IsDiscontinuity() == S_OK);
@@ -1834,8 +1956,45 @@ HRESULT CRealVideoDecoder::Transform(IMediaSample* pIn)
 		rtStart, rtStop, pOut->IsDiscontinuity() == S_OK, pOut->IsSyncPoint() == S_OK));
 
 	return m_pOutput->Deliver(pOut);
-}
 
+#endif
+}
+void CRealVideoDecoder::SetTypeSpecificFlags(IMediaSample* pMS)
+{
+    if(CComQIPtr<IMediaSample2> pMS2 = pMS)
+    {
+        AM_SAMPLE2_PROPERTIES props;
+        if(SUCCEEDED(pMS2->GetProperties(sizeof(props), (BYTE*)&props)))
+        {
+            props.dwTypeSpecificFlags &= ~0x7f;
+
+            if(!m_pFrame->interlaced_frame)
+                props.dwTypeSpecificFlags |= AM_VIDEO_FLAG_WEAVE;
+            else
+            {
+                if(m_pFrame->top_field_first)
+                    props.dwTypeSpecificFlags |= AM_VIDEO_FLAG_FIELD1FIRST;
+            }
+
+            switch (m_pFrame->pict_type)
+            {
+            case FF_I_TYPE :
+            case FF_SI_TYPE :
+                props.dwTypeSpecificFlags |= AM_VIDEO_FLAG_I_SAMPLE;
+                break;
+            case FF_P_TYPE :
+            case FF_SP_TYPE :
+                props.dwTypeSpecificFlags |= AM_VIDEO_FLAG_P_SAMPLE;
+                break;
+            default :
+                props.dwTypeSpecificFlags |= AM_VIDEO_FLAG_B_SAMPLE;
+                break;
+            }
+
+            pMS2->SetProperties(sizeof(props), (BYTE*)&props);
+        }
+    }
+}
 void CRealVideoDecoder::Resize(BYTE* pIn, DWORD wi, DWORD hi, BYTE* pOut, DWORD wo, DWORD ho)
 {
 	int si = wi*hi, so = wo*ho;
@@ -1918,6 +2077,7 @@ void CRealVideoDecoder::ResizeRow(BYTE* pIn, DWORD wi, DWORD dpi, BYTE* pOut, DW
 
 HRESULT CRealVideoDecoder::CheckInputType(const CMediaType* mtIn)
 {
+    //SVP_LogMsg5(L" CRealVideoDecoder::CheckInputType");
 	if(mtIn->majortype != MEDIATYPE_Video 
 		|| mtIn->subtype != MEDIASUBTYPE_RV20
 		&& mtIn->subtype != MEDIASUBTYPE_RV30 
@@ -1932,7 +2092,7 @@ HRESULT CRealVideoDecoder::CheckInputType(const CMediaType* mtIn)
 			|| vih2->dwPictAspectRatioY < vih2->bmiHeader.biHeight)
 			return VFW_E_TYPE_NOT_ACCEPTED;
 	}
-
+    //SVP_LogMsg5(L" CRealVideoDecoder::CheckInputType2");
 	if(!m_pInput->IsConnected())
 	{
 		if(m_hDrvDll) {FreeLibrary(m_hDrvDll); m_hDrvDll = NULL;}
@@ -1976,7 +2136,7 @@ HRESULT CRealVideoDecoder::CheckInputType(const CMediaType* mtIn)
 		if(!newpath.IsEmpty()) paths.AddTail(newpath + olddll);
 		if(!oldpath.IsEmpty()) paths.AddTail(oldpath + olddll);
 		paths.AddTail(olddll); // default dll paths
-
+        //SVP_LogMsg5(L" CRealVideoDecoder::CheckInputType3");
 #ifndef  RV_FFMPEG
 		POSITION pos = paths.GetHeadPosition();
 		while(pos ){
@@ -2010,6 +2170,7 @@ HRESULT CRealVideoDecoder::CheckInputType(const CMediaType* mtIn)
 			return VFW_E_TYPE_NOT_ACCEPTED;
 	}
 
+    //SVP_LogMsg5(L" CRealVideoDecoder::CheckInputType S_OK");
 	return S_OK;
 }
 

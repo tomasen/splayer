@@ -1039,7 +1039,7 @@ POSITION CPlayerPlaylistBar::FindPosByFilename(CString fn, BOOL movePos){
 		while(pos1){
 			CString szBuf = pi.m_fns.GetNext(pos1);
             if(szBuf.CompareNoCase( fn ) == 0){
-                SVP_LogMsg5(L"%s %s",szBuf,fn );
+                //SVP_LogMsg5(L"%s %s",szBuf,fn );
 				if(movePos){
 					m_pl.SetPos(ret);
 					EnsureVisible(ret);

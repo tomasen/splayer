@@ -111,7 +111,7 @@ typedef struct RV34DecContext{
     int      *deblock_coefs; ///< deblock coefficients for each macroblock
 
     /** 8x8 block available flags (for MV prediction) */
-    DECLARE_ALIGNED_8(uint32_t, avail_cache[3*4]);
+    DECLARE_ALIGNED(8, uint32_t, avail_cache)[3*4];
 
     int (*parse_slice_header)(struct RV34DecContext *r, GetBitContext *gb, SliceInfo *si);
     int (*decode_mb_info)(struct RV34DecContext *r);
@@ -124,7 +124,7 @@ typedef struct RV34DecContext{
  */
 int ff_rv34_get_start_offset(GetBitContext *gb, int blocks);
 int ff_rv34_decode_init(AVCodecContext *avctx);
-int ff_rv34_decode_frame(AVCodecContext *avctx, void *data, int *data_size,const uint8_t *buf  , int buf_size);
+int ff_rv34_decode_frame(AVCodecContext *avctx, void *data, int *data_size, const uint8_t *buf, int buf_size);
 int ff_rv34_decode_end(AVCodecContext *avctx);
 
 #endif /* AVCODEC_RV34_H */

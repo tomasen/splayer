@@ -374,6 +374,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_PLAY_PAUSE, OnPlayPause)
 	ON_COMMAND(ID_PLAY_PLAYPAUSE, OnPlayPlaypause)
 	ON_COMMAND(ID_PLAY_STOP, OnPlayStopDummy)
+    ON_COMMAND(ID_PLAY_MANUAL_STOP, OnPlayStopManual)
 	ON_UPDATE_COMMAND_UI(ID_PLAY_PLAY, OnUpdatePlayPauseStop)
 	ON_UPDATE_COMMAND_UI(ID_PLAY_PAUSE, OnUpdatePlayPauseStop)
 	ON_UPDATE_COMMAND_UI(ID_PLAY_PLAYPAUSE, OnUpdatePlayPauseStop)
@@ -7968,6 +7969,10 @@ void CMainFrame::OnPlayPlaypause()
 	OAFilterState fs = GetMediaState();
 	if(fs == State_Running) SendMessage(WM_COMMAND, ID_PLAY_PAUSE);
 	else  SendMessage(WM_COMMAND, ID_PLAY_PLAY); //if(fs == State_Stopped || fs == State_Paused)
+}
+void CMainFrame::OnPlayStopManual(){
+    OnFavoritesAddReal(TRUE, TRUE);
+    SendMessage(WM_COMMAND, ID_PLAY_STOP);
 }
 void CMainFrame::OnPlayStopDummy(){
 

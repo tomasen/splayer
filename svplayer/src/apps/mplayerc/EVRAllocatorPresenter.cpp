@@ -423,6 +423,8 @@ private:
 	UINT m_nResetToken;
 	int m_nStepCount;
 
+    HRESULT ProcessOutputSafe( DWORD dwFlags, DWORD cOutputBufferCount, MFT_OUTPUT_DATA_BUFFER *pOutputSamples, DWORD *pdwStatus) ;
+
 	bool GetSampleFromMixer();
 	void MixerThread();
 	static DWORD WINAPI MixerThreadStatic(LPVOID lpParam);
@@ -1248,7 +1250,14 @@ HRESULT CEVRAllocatorPresenter::RenegotiateMediaType()
     pType = NULL;
     return hr;
 }
-
+HRESULT CEVRAllocatorPresenter::ProcessOutputSafe( DWORD dwFlags, DWORD cOutputBufferCount, MFT_OUTPUT_DATA_BUFFER *pOutputSamples, DWORD *pdwStatus) 
+{
+    __try{
+        return m_pMixer->ProcessOutput(0 , 1, pOutputSamples, pdwStatus);
+    }__except(EXCEPTION_EXECUTE_HANDLER){
+        return E_FAIL;
+    }
+}
 bool CEVRAllocatorPresenter::GetSampleFromMixer()
 {
 	MFT_OUTPUT_DATA_BUFFER Buffer;
@@ -1270,7 +1279,12 @@ bool CEVRAllocatorPresenter::GetSampleFromMixer()
 			memset(&Buffer, 0, sizeof(Buffer));
 			Buffer.pSample = pSample;
 			pSample->GetUINT32(GUID_SURFACE_INDEX, &dwSurface);
-			hr = m_pMixer->ProcessOutput(0 , 1, &Buffer, &dwStatus);
+            //__try{
+			    hr = ProcessOutputSafe(0 , 1, &Buffer, &dwStatus);
+            /*}__except(EXCEPTION_EXECUTE_HANDLER){
+                hr = E_FAIL;
+                break;
+            }*/
 
 			if (hr == MF_E_TRANSFORM_NEED_MORE_INPUT) // There are no samples left in the mixer
 			{

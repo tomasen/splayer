@@ -74,6 +74,8 @@ extern "C"
 
 #define ROUND_FRAMERATE(var,FrameRate)	if (labs ((long)(var - FrameRate)) < FrameRate*1/100) var = FrameRate;
 
+#define IS_REALVIDEO(x) (x == CODEC_ID_RV10 || x == CODEC_ID_RV20 || x == CODEC_ID_RV30 || x == CODEC_ID_RV40)
+
 typedef struct
 {
 	const int			PicEntryNumber;
@@ -527,6 +529,7 @@ CMPCVideoDecFilter::CMPCVideoDecFilter(LPUNKNOWN lpunk, HRESULT* phr)
 	, m_nGoFaster(0)
 	, m_hMainFrameWnd(0)
 	, m_llDXVAFailCount(0)
+    , m_lastBuffSizeDim(0)
 {
 	HWND		hWnd = NULL;
 	for (int i=0; i<countof(ffCodecs); i++)
@@ -931,7 +934,7 @@ void CMPCVideoDecFilter::LogLibAVCodec(void* par,int level,const char *fmt,va_li
 #if LOGDEBUG
 	char		Msg [500];
 	vsnprintf_s (Msg, sizeof(Msg), _TRUNCATE, fmt, valist);
-	SVP_LogMsg6("AVLIB : %s %s", Msg, fmt);
+	SVP_LogMsg6("AVLIB : %s ", Msg);
 //	TRACE("AVLIB : %s", Msg);
 #endif
 	
@@ -1035,7 +1038,22 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 				}
 
 				{ 
-					if( m_pAVCtx->bits_per_coded_sample > 0 && (m_pAVCodec->id == CODEC_ID_HUFFYUV ) )//|| m_pAVCodec->id == CODEC_ID_MJPEG
+                    if(IS_REALVIDEO(m_pAVCodec->id)){
+                        int extra_data_len = pmt->FormatLength() - sizeof(VIDEOINFOHEADER) ;
+                       if( extra_data_len > 0 )
+                        {
+                            if(extra_data_len > 26)
+                                extra_data_len -= 26;
+
+                            SVP_LogMsg5(L" CODEC_ID_RV30 extra_data_len %d ", extra_data_len);
+                            m_pAVCtx->extradata = (uint8_t *)calloc( 1, extra_data_len);
+                            if(m_pAVCtx->extradata){
+                                m_pAVCtx->extradata_size = extra_data_len;
+                                const uint8_t *p_pal = pmt->Format() + sizeof(VIDEOINFOHEADER) + 26;
+                                memcpy((void*)(m_pAVCtx->extradata),p_pal, extra_data_len);
+                            }
+                        }
+                    }else if( m_pAVCtx->bits_per_coded_sample > 0 && (m_pAVCodec->id == CODEC_ID_HUFFYUV ) )//|| m_pAVCodec->id == CODEC_ID_MJPEG
 					{
 						int extra_data_len = pmt->FormatLength() - sizeof(VIDEOINFOHEADER) ;
 						SVP_LogMsg5(L" CODEC_ID_HUFFYUV extra_data_len %d ", extra_data_len);
@@ -1146,7 +1164,9 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 			m_pAVCtx->opaque					= this;
 			m_pAVCtx->get_buffer			= get_buffer;
 
-			AllocExtradata (m_pAVCtx, pmt);
+            if(!IS_REALVIDEO(m_pAVCodec->id)){
+			    AllocExtradata (m_pAVCtx, pmt);
+            }
 			ConnectTo (m_pAVCtx);
 			CalcAvgTimePerFrame();
 
@@ -1496,6 +1516,9 @@ HRESULT CMPCVideoDecFilter::DecideBufferSize(IMemAllocator* pAllocator, ALLOCATO
 HRESULT CMPCVideoDecFilter::NewSegment(REFERENCE_TIME rtStart, REFERENCE_TIME rtStop, double dRate)
 {
 	CAutoLock cAutoLock(&m_csReceive);
+    
+    m_tStart = 0;
+    SVP_LogMsg5(L"NewSegment m_tStart = 0;" );
 	m_nPosB = 1;
 	memset (&m_BFrames, 0, sizeof(m_BFrames));
 	m_rtLastStart		= 0;
@@ -1518,6 +1541,14 @@ HRESULT CMPCVideoDecFilter::BreakConnect(PIN_DIRECTION dir)
 	}
 
 	return __super::BreakConnect (dir);
+}
+
+HRESULT CMPCVideoDecFilter::AlterQuality(Quality q)
+{
+    //if(q.Late > 500*10000i64) m_fDropFrames = true;
+    //if(q.Late <= 0) m_fDropFrames = false;
+    //	TRACE(_T("CRealVideoDecoder::AlterQuality: Type=%d, Proportion=%d, Late=%I64d, TimeStamp=%I64d\n"), q.Type, q.Proportion, q.Late, q.TimeStamp);
+    return E_NOTIMPL;
 }
 
 void CMPCVideoDecFilter::SetTypeSpecificFlags(IMediaSample* pMS)
@@ -1573,6 +1604,7 @@ LONGLONG CMPCVideoDecFilter::GetPerfCounter()
 	return 0;
 }
 
+
 HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int nSize, REFERENCE_TIME& rtStart, REFERENCE_TIME& rtStop)
 {
 	HRESULT			hr;
@@ -1586,7 +1618,7 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 		m_BFrames[m_nPosB].rtStop	= rtStop;
 		m_nPosB						= 1-m_nPosB;
 	} */
-
+   
 	while (nSize > 0)
 	{
 		if (nSize+FF_INPUT_BUFFER_PADDING_SIZE > m_nFFBufferSize)
@@ -1620,8 +1652,9 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 		}
 		
 		//#pragma omp parallel
+       // SVP_LogMsg5(L"Dec1");
 		used_bytes = avcodec_decode_video (m_pAVCtx, m_pFrame, &got_picture, m_pFFBuffer, nSize);
-		
+		//SVP_LogMsg5(L"Dec2");
 		
 		m_perf_timer[2] = GetPerfCounter();
 		if(used_bytes < 0 ) { TRACE5(L"used_bytes < 0 "); return S_OK; } // Why MPC-HC removed this lineis un clear to me, add it back see if it solve sunpack problem
@@ -1629,25 +1662,78 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 		if(pIn->IsPreroll() == S_OK || rtStart < 0) { TRACE5(L"pIn->IsPreroll()  %d  %d " , pIn->IsPreroll() , rtStart); return S_OK;}
 
 		//TRACE5(L"GetDeliveryBuffer");
+        
 		CComPtr<IMediaSample>	pOut;
 		BYTE*					pDataOut = NULL;
 
+        //SVP_LogMsg5(L"Dec3");
 		UpdateAspectRatio();
-		if(FAILED(hr = GetDeliveryBuffer(m_pAVCtx->width, m_pAVCtx->height, &pOut)) || FAILED(hr = pOut->GetPointer(&pDataOut)))
-			return hr;
-	
-		TRACE ("Deliver1 : %10I64d - %10I64d   (%10I64d)  \n", rtStart, rtStop, rtStop - rtStart);
-		if(m_pAVCtx->codec_id != CODEC_ID_CINEPAK)
-		{
-			rtStart = m_pFrame->reordered_opaque;
-			rtStop  = m_pFrame->reordered_opaque + m_rtAvrTimePerFrame;
-			TRACE ("Deliver2 : %10I64d - %10I64d   (%10I64d)  \n", rtStart, rtStop, rtStop - rtStart);
-		}
-		
-		ReorderBFrames(rtStart, rtStop);
+        //SVP_LogMsg5(L"Dec4 %d %d %d %d",m_pAVCtx->width, m_pAVCtx->height, m_w, m_h);
+        if(FAILED(hr = GetDeliveryBuffer(m_pAVCtx->width, m_pAVCtx->height, &pOut)) || FAILED(hr = pOut->GetPointer(&pDataOut)))
+            return hr;
+        //SVP_LogMsg5(L"Dec5");
+        //TRACE ("Deliver1 : %10I64d - %10I64d   (%10I64d)  \n", rtStart, rtStop, rtStop - rtStart);
+        
+        //SVP_LogMsg5(L"Dec6");
 
+        if( IS_REALVIDEO(m_pAVCtx->codec_id) ){
+            
+            m_tStart+=m_rtAvrTimePerFrame;
+            rtStart = m_tStart;
+            rtStop = rtStart+1;//m_rtAvrTimePerFrame;
+        }else{
+            if(m_pAVCtx->codec_id != CODEC_ID_CINEPAK)
+            {
+                rtStart = m_pFrame->reordered_opaque;
+                rtStop  = m_pFrame->reordered_opaque + m_rtAvrTimePerFrame;
+                TRACE ("Deliver2 : %10I64d - %10I64d   (%10I64d)  \n", rtStart, rtStop, rtStop - rtStart);
+            }
+
+            ReorderBFrames(rtStart, rtStop);
+        }
+        /*
+        BYTE* pI420[4] = {m_pFrame->data[0], m_pFrame->data[1], m_pFrame->data[2], m_pFrame->data[3]};
+
+        if(IS_REALVIDEO(m_pAVCtx->codec_id)){
+
+            //rtStart = 10000i64* m_pFrame->reordered_opaque - m_tStart;
+            // rtStop = rtStart + m_rtAvrTimePerFrame;
+            //pOut->SetDiscontinuity(pIn->IsDiscontinuity() == S_OK);
+            int size = m_pAVCtx->width *  m_pAVCtx->height;
+            if( m_lastBuffSizeDim < size){
+                m_pI420Y.Allocate( size );
+                m_pI420U.Allocate( size );
+                m_pI420V.Allocate( size );
+                m_lastBuffSizeDim = size;
+            }
+
+
+
+            if( 1)//interlaced  
+            {
+
+                DeinterlaceBlend(m_pI420Y, m_pFrame->data[0], m_w, m_h, m_w, m_w);
+                DeinterlaceBlend(m_pI420U, m_pFrame->data[1], m_w/2, m_h/2, m_w/2, m_w/2);
+                DeinterlaceBlend(m_pI420V, m_pFrame->data[2], m_w/2, m_h/2, m_w/2, m_w/2);
+
+                pI420[0] = m_pI420Y;
+                pI420[1] = m_pI420U;
+                pI420[2] = m_pI420V;
+            }
+
+            /*
+            if(m_pAVCtx->width != m_w || m_pAVCtx->height != m_h)
+            {
+            Resize(pI420[0], m_pAVCtx->width, m_pAVCtx->height, pI420[1], m_w, m_h);
+            // only one of these can be true, and when it happens the result image must be in the tmp buffer
+            if(m_pAVCtx->width == m_w || m_pAVCtx->height == m_h)
+            pI420[2] = pI420[1], pI420[1] = pI420[0], pI420[0] = pI420[2];
+            }
+        }
+*/
+        TRACE ("Deliver3 : %10I64d   %10I64d - %10I64d   (%10I64d)  \n", m_pFrame->pts ,  rtStart, rtStop, rtStop - rtStart);
 		pOut->SetTime(&rtStart, &rtStop);
-		TRACE ("Deliver3 : %10I64d - %10I64d   (%10I64d)  \n", rtStart, rtStop, rtStop - rtStart);
+		
 		pOut->SetMediaTime(NULL, NULL);
 
 		GUID subtype = MEDIASUBTYPE_I420;
@@ -1695,9 +1781,9 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 		}
 
 		m_perf_timer[3] = GetPerfCounter();
-		//#pragma omp parallel
-		CopyBuffer(pDataOut, m_pFrame->data, m_pAVCtx->width, m_pAVCtx->height, m_pFrame->linesize[0], subtype,false);//MEDIASUBTYPE_YUY2 for TSCC
-
+       
+        CopyBuffer(pDataOut,m_pFrame->data /*pI420*/ , m_pAVCtx->width, m_pAVCtx->height, m_pFrame->linesize[0], subtype,false);//MEDIASUBTYPE_YUY2 for TSCC
+       
 		m_perf_timer[4] = GetPerfCounter();
 #if 0
 		static REFERENCE_TIME	rtLast = 0;
@@ -1706,7 +1792,8 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 		rtLast = rtStart;
 #endif
 
-		SetTypeSpecificFlags (pOut);
+        SetTypeSpecificFlags (pOut);
+        
 		hr = m_pOutput->Deliver(pOut);
 
 		nSize	-= used_bytes;
@@ -1875,7 +1962,7 @@ HRESULT CMPCVideoDecFilter::Transform(IMediaSample* pIn)
 
 	//m_rtAvrTimePerFrame =  rtStop - rtStart;
 //	DumpBuffer (pDataIn, nSize);
-	TRACE ("Receive : %10I64d - %10I64d   (%10I64d) : (%10I64d)  Size=%d\n", rtStart, rtStop, rtStop - rtStart, m_rtAvrTimePerFrame, nSize);
+	//TRACE ("Receive : %10I64d - %10I64d   (%10I64d) : (%10I64d)  Size=%d\n", rtStart, rtStop, rtStop - rtStart, m_rtAvrTimePerFrame, nSize);
 
 	//char		strMsg[300];
 	//FILE* hFile = fopen ("d:\\receive.txt", "at");

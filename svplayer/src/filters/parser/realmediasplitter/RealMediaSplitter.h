@@ -25,6 +25,7 @@
 #include <atlcoll.h>
 #include "..\BaseSplitter\BaseSplitter.h"
 #include "..\..\transform\BaseVideoFilter\BaseVideoFilter.h"
+//#define RV_FFMPEG
 
 #pragma pack(push, 1)
 
@@ -246,6 +247,10 @@ class __declspec(uuid("238D0F23-5DC9-45A6-9BE2-666160C324DD")) CRealVideoDecoder
 	int m_lastBuffSizeDim;
 	HRESULT InitRV(const CMediaType* pmt);
 	void FreeRV();
+
+    static void		LogLibAVCodec(void* par,int level,const char *fmt,va_list valist);
+    virtual void	OnGetBuffer(AVFrame *pic);
+    void				SetTypeSpecificFlags(IMediaSample* pMS);
 
 	REFERENCE_TIME m_tStart;
 

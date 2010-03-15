@@ -326,7 +326,7 @@
 #define ID_SEEK_TO_BEGINNING		    1332
 #define ID_SEEK_TO_MIDDLE		    1333
 #define ID_SEEK_TO_END		    1334
-
+#define ID_PLAY_MANUAL_STOP                    1335
 #define ID_FILTERS_SUBITEM_START        2000
 #define ID_FILTERS_SUBITEM_END          2099
 #define ID_FILTERSTREAMS_SUBITEM_START  2100

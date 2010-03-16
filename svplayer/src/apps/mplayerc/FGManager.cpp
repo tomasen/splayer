@@ -1886,6 +1886,7 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 		  L"SVP Real Audio Decoder 2.0" ,
 		 MERIT64_ABOVE_DSHOW+10);
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_COOK);
+    pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_SIPR);
 	m_transform.AddTail(pFGF);
 #endif
 

@@ -35,6 +35,7 @@
 #include "avcodec.h"
 
 #define SVP_LogMsg3  __noop
+#define SVP_LogMsg5 __noop
 #include <initguid.h>
 #include "..\..\..\..\include\moreuuids.h"
 
@@ -2359,7 +2360,7 @@ void CRealAudioDecoder::FreeRA()
 		m_dwCookie = 0;
 	}
 }
-#define SVP_LogMsg5 __noop
+
 HRESULT CRealAudioDecoder::Receive(IMediaSample* pIn)
 {
 	CAutoLock cAutoLock(&m_csReceive);
@@ -2377,6 +2378,7 @@ HRESULT CRealAudioDecoder::Receive(IMediaSample* pIn)
 	long len = pIn->GetActualDataLength();
 	if(len <= 0) return S_OK;
 
+    SVP_LogMsg5(L"CRealAudioDecoder::Receive %d", len);
 	REFERENCE_TIME rtStart, rtStop;
 	pIn->GetTime(&rtStart, &rtStop);
 	/*
@@ -2508,8 +2510,8 @@ HRESULT CRealAudioDecoder::Receive(IMediaSample* pIn)
 
 		pOut->SetActualDataLength(len);
 
-		SVP_LogMsg5( _T("A: rtStart=%I64d, rtStop=%I64d, disc=%d, sync=%d"), 
-			rtStart, rtStop, pOut->IsDiscontinuity() == S_OK, pOut->IsSyncPoint() == S_OK);
+		SVP_LogMsg5( _T("A: rtStart=%I64d, rtStop=%I64d, rtDur=%I64d, disc=%d, sync=%d"), 
+			rtStart, rtStop,rtStop - rtStart, pOut->IsDiscontinuity() == S_OK, pOut->IsSyncPoint() == S_OK);
 
 		if(rtStart >= 0 && S_OK != (hr = m_pOutput->Deliver(pOut)))
 			return hr;
@@ -2524,6 +2526,7 @@ HRESULT CRealAudioDecoder::Receive(IMediaSample* pIn)
 
 HRESULT CRealAudioDecoder::CheckInputType(const CMediaType* mtIn)
 {
+     SVP_LogMsg5(L"CRealAudioDecoder::CheckInputType");
 	if(mtIn->majortype != MEDIATYPE_Audio 
 		|| mtIn->subtype != MEDIASUBTYPE_14_4
 		&& mtIn->subtype != MEDIASUBTYPE_28_8
@@ -2557,6 +2560,7 @@ HRESULT CRealAudioDecoder::CheckInputType(const CMediaType* mtIn)
 
 		olddll.Format(_T("%s3260.dll"), fourcc);
 		newdll.Format(_T("%s.dll"), fourcc);
+        //AfxMessageBox(newdll);
 		CSVPToolBox svpTool;
 		m_hDrvDll = LoadLibrary(svpTool.GetPlayerPath(newdll));
         //AfxMessageBox(newdll);

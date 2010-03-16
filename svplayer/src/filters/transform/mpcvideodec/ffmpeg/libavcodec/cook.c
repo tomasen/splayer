@@ -52,7 +52,7 @@
 #include "get_bits.h"
 #include "dsputil.h"
 #include "bytestream.h"
-//#include "fft.h"
+#include "fft.h"
 
 #include "cookdata.h"
 
@@ -1004,7 +1004,11 @@ static int cook_decode_frame(AVCodecContext *avctx,
 
     if (buf_size < avctx->block_align)
         return buf_size;
-
+av_log(avctx, AV_LOG_ERROR, " cook_decode_frame  in  %d %d %x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x.\n", buf_size , avctx->block_align
+    , ((int32_t*)buf)[0] , ((int32_t*)buf)[1] , ((int32_t*)buf)[2], ((int32_t*)buf)[3]
+    , ((int32_t*)buf)[4] , ((int32_t*)buf)[5] , ((int32_t*)buf)[6], ((int32_t*)buf)[7]
+    , ((int32_t*)buf)[8] , ((int32_t*)buf)[9] , ((int32_t*)buf)[10], ((int32_t*)buf)[11]
+    , ((int32_t*)buf)[12] , ((int32_t*)buf)[13] , ((int32_t*)buf)[14], ((int32_t*)buf)[15]);
     /* estimate subpacket sizes */
     q->subpacket[0].size = avctx->block_align;
 
@@ -1033,6 +1037,12 @@ static int cook_decode_frame(AVCodecContext *avctx,
     /* Discard the first two frames: no valid audio. */
     if (avctx->frame_number < 2) *data_size = 0;
 
+av_log(avctx, AV_LOG_ERROR, " cook_decode_frame out  %d %x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x.\n", *data_size
+    , ((int32_t*)data)[0] , ((int32_t*)data)[1] , ((int32_t*)data)[2], ((int32_t*)data)[3]
+    , ((int32_t*)data)[4] , ((int32_t*)data)[5] , ((int32_t*)data)[6], ((int32_t*)data)[7]
+    , ((int32_t*)data)[8] , ((int32_t*)data)[9] , ((int32_t*)data)[10], ((int32_t*)data)[11]
+    , ((int32_t*)data)[12] , ((int32_t*)data)[13] , ((int32_t*)data)[14], ((int32_t*)data)[15]);
+    
     return avctx->block_align;
 }
 

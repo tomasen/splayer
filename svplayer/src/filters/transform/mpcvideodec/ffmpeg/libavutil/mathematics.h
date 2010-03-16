@@ -37,6 +37,9 @@
 #ifndef M_LN10
 #define M_LN10         2.30258509299404568402  /* log_e 10 */
 #endif
+#ifndef M_LOG2_10
+#define M_LOG2_10      3.32192809488736234787  /* log_2 10 */
+#endif
 #ifndef M_PI
 #define M_PI           3.14159265358979323846  /* pi */
 #endif
@@ -61,7 +64,11 @@ enum AVRounding {
     AV_ROUND_UP       = 3, ///< Round toward +infinity.
     AV_ROUND_NEAR_INF = 5, ///< Round to nearest and halfway cases away from zero.
 };
-
+/**
+ * Returns the greatest common divisor of a and b.
+ * If both a and b are 0 or either or both are <0 then behavior is
+ * undefined.
+ */
 int64_t av_const av_gcd(int64_t a, int64_t b);
 
 /**

@@ -55,6 +55,7 @@ void avcodec_register_all(void)
     //REGISTER_DECODER (CAVS, cavs);
     REGISTER_DECODER (CINEPAK, cinepak);
     //REGISTER_DECODER (COREPNG, corepng);
+    REGISTER_DECODER (SIPR, sipr);
     //REGISTER_DECODER (CSCD, cscd);
     //REGISTER_DECODER (CYUV, cyuv);
     //REGISTER_ENCDEC  (DVVIDEO, dvvideo);

@@ -26,23 +26,29 @@
  * FFT/IFFT transforms.
  */
 
-#include "dsputil.h"
+#include <stdlib.h>
+#include <string.h>
+#include "libavutil/mathematics.h"
+#include "fft.h"
 
 /* cos(2*pi*x/n) for 0<=x<=n/4, followed by its reverse */
-DECLARE_ALIGNED_16(FFTSample, ff_cos_16[8]);
-DECLARE_ALIGNED_16(FFTSample, ff_cos_32[16]);
-DECLARE_ALIGNED_16(FFTSample, ff_cos_64[32]);
-DECLARE_ALIGNED_16(FFTSample, ff_cos_128[64]);
-DECLARE_ALIGNED_16(FFTSample, ff_cos_256[128]);
-DECLARE_ALIGNED_16(FFTSample, ff_cos_512[256]);
-DECLARE_ALIGNED_16(FFTSample, ff_cos_1024[512]);
-DECLARE_ALIGNED_16(FFTSample, ff_cos_2048[1024]);
-DECLARE_ALIGNED_16(FFTSample, ff_cos_4096[2048]);
-DECLARE_ALIGNED_16(FFTSample, ff_cos_8192[4096]);
-DECLARE_ALIGNED_16(FFTSample, ff_cos_16384[8192]);
-DECLARE_ALIGNED_16(FFTSample, ff_cos_32768[16384]);
-DECLARE_ALIGNED_16(FFTSample, ff_cos_65536[32768]);
-FFTSample * const ff_cos_tabs[] = {
+#if !CONFIG_HARDCODED_TABLES
+COSTABLE(16);
+COSTABLE(32);
+COSTABLE(64);
+COSTABLE(128);
+COSTABLE(256);
+COSTABLE(512);
+COSTABLE(1024);
+COSTABLE(2048);
+COSTABLE(4096);
+COSTABLE(8192);
+COSTABLE(16384);
+COSTABLE(32768);
+COSTABLE(65536);
+#endif
+COSTABLE_CONST FFTSample * const ff_cos_tabs[] = {
+    NULL, NULL, NULL, NULL,
     ff_cos_16, ff_cos_32, ff_cos_64, ff_cos_128, ff_cos_256, ff_cos_512, ff_cos_1024,
     ff_cos_2048, ff_cos_4096, ff_cos_8192, ff_cos_16384, ff_cos_32768, ff_cos_65536,
 };
@@ -56,6 +62,20 @@ static int split_radix_permutation(int i, int n, int inverse)
     m >>= 1;
     if(inverse == !(i&m)) return split_radix_permutation(i, m, inverse)*4 + 1;
     else                  return split_radix_permutation(i, m, inverse)*4 - 1;
+}
+
+av_cold void ff_init_ff_cos_tabs(int index)
+{
+#if !CONFIG_HARDCODED_TABLES
+    int i;
+    int m = 1<<index;
+    double freq = 2*M_PI/m;
+    FFTSample *tab = ff_cos_tabs[index];
+    for(i=0; i<=m/4; i++)
+        tab[i] = cos(i*freq);
+    for(i=1; i<m/4; i++)
+        tab[m/2-i] = tab[i];
+#endif
 }
 
 av_cold int ff_fft_init(FFTContext *s, int nbits, int inverse)
@@ -82,21 +102,19 @@ av_cold int ff_fft_init(FFTContext *s, int nbits, int inverse)
 
     s->fft_permute = ff_fft_permute_c;
     s->fft_calc    = ff_fft_calc_c;
+#if CONFIG_MDCT
     s->imdct_calc  = ff_imdct_calc_c;
     s->imdct_half  = ff_imdct_half_c;
     s->mdct_calc   = ff_mdct_calc_c;
+#endif
     s->exptab1     = NULL;
     s->split_radix = 1;
 
+    ff_fft_init_mmx(s);
+
     if (s->split_radix) {
         for(j=4; j<=nbits; j++) {
-            int m = 1<<j;
-            double freq = 2*M_PI/m;
-            FFTSample *tab = ff_cos_tabs[j-4];
-            for(i=0; i<=m/4; i++)
-                tab[i] = cos(i*freq);
-            for(i=1; i<m/4; i++)
-                tab[m/2-i] = tab[i];
+            ff_init_ff_cos_tabs(j);
         }
         for(i=0; i<n; i++)
             s->revtab[-split_radix_permutation(i, n, s->inverse) & (n-1)] = i;
@@ -336,7 +354,7 @@ DECL_FFT(16384,8192,4096)
 DECL_FFT(32768,16384,8192)
 DECL_FFT(65536,32768,16384)
 
-static void (*fft_dispatch[])(FFTComplex*) = {
+static void (* const fft_dispatch[])(FFTComplex*) = {
     fft4, fft8, fft16, fft32, fft64, fft128, fft256, fft512, fft1024,
     fft2048, fft4096, fft8192, fft16384, fft32768, fft65536,
 };
@@ -345,4 +363,3 @@ void ff_fft_calc_c(FFTContext *s, FFTComplex *z)
 {
     fft_dispatch[s->nbits-2](z);
 }
-

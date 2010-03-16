@@ -13,6 +13,12 @@ CFLAGS+= -I. -I.. -I$(LAVC_DIR) -I$(LAVU_DIR) -I$(LAVF_DIR) -I../codecs -I../img
 CC=gcc
 
 SRCS_C=\
+		$(LAVC_DIR)/sipr16k.c \
+		$(LAVC_DIR)/acelp_vectors.c \
+		$(LAVC_DIR)/acelp_pitch_delay.c \
+		$(LAVC_DIR)/acelp_filters.c \
+		$(LAVC_DIR)/sipr.c \
+		$(LAVC_DIR)/lsp.c \
 		$(LAVC_DIR)/cook.c \
 		$(LAVC_DIR)/fft.c \
 		$(LAVC_DIR)/rv30dsp.c \
@@ -196,6 +202,7 @@ SRCS_C=\
 #		$(LAVC_DIR)/zmbv.c
 
 SRCS_C+=\
+		$(LAVU_DIR)/lfg.c \
 		$(LAVU_DIR)/crc.c \
 		$(LAVU_DIR)/integer.c \
 		$(LAVU_DIR)/intfloat_readwrite.c \
@@ -205,7 +212,6 @@ SRCS_C+=\
 		$(LAVU_DIR)/random_seed.c \
 		$(LAVU_DIR)/rational.c \
 		$(LAVU_DIR)/random.c \
-		$(LAVU_DIR)/lfg.c \
 		$(LAVU_DIR)/md5.c
 
 #SRCS_C+=\

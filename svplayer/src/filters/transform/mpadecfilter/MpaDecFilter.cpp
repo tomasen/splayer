@@ -44,7 +44,7 @@
 #define AC3_HEADER_SIZE				7
 
 #define SVP_LogMsg5  __noop
-#define TRACE SVP_LogMsg5
+//#define TRACE SVP_LogMsg5
 #define LOGDEBUG 0
 
 typedef unsigned char uint8;
@@ -127,6 +127,8 @@ const AMOVIESETUP_MEDIATYPE sudPinTypesIn[] =
 	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_WMA2},
 	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_WMA1},
 	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_PCM_ULAW},
+    {&MEDIATYPE_Audio,				&MEDIASUBTYPE_SIPR},
+    
 };
 
 #ifdef REGISTER_FILTER
@@ -505,6 +507,9 @@ HRESULT CMpaDecFilter::Receive(IMediaSample* pIn)
 		hr = ProcessFfmpeg(CODEC_ID_ADPCM_IMA_QT);
     else if(subtype ==MEDIASUBTYPE_COOK){
         hr = ProcessFfmpeg(CODEC_ID_COOK);
+    }
+    else if(subtype ==MEDIASUBTYPE_SIPR){
+        hr = ProcessFfmpeg(CODEC_ID_SIPR);
     }
 	else if(subtype ==MEDIASUBTYPE_14_4)
 		hr = ProcessFfmpeg(CODEC_ID_RA_144);
@@ -1694,8 +1699,8 @@ HRESULT CMpaDecFilter::Deliver(CAtlArray<float>& pBuff, DWORD nSamplesPerSec, WO
 		return E_FAIL;
 
 	REFERENCE_TIME rtDur = 10000000i64*nSamples/wfe->nSamplesPerSec;
-	REFERENCE_TIME rtStart = m_rtStart, rtStop = m_rtStart + rtDur;
-	SVP_LogMsg5(_T("CMpaDecFilter: %f - %f =  %f %d %d\n"), (double)rtStart/10000, (double)rtStop/10000 , (double)rtDur/10000, nSamples, wfe->nSamplesPerSec);
+    REFERENCE_TIME rtStart = m_rtStart, rtStop = m_rtStart + rtDur;
+	//SVP_LogMsg5(_T("CMpaDecFilterDeliver: %d %f - %f =  %f %d %d\n"), pBuff.GetCount(), (double)rtStart/10000, (double)rtStop/10000 , (double)rtDur/10000, nSamples, wfe->nSamplesPerSec);
 	m_rtStart += rtDur;
 	if(rtStart < 0 /*200000*/ /* < 0, FIXME: 0 makes strange noises */)
 		return S_OK;
@@ -2598,8 +2603,11 @@ HRESULT CMpaDecFilter::DeliverFfmpeg(int nCodecId, BYTE* p, int buffsize, int& s
 			return E_FAIL;
 		}
 
+
 	size = avcodec_decode_audio2(m_pAVCtx, (int16_t*)m_pPCMData, &nPCMLength, (const uint8_t*)p, buffsize);
 	size = min (size, buffsize);
+
+    SVP_LogMsg5(L"nPCMLength %d size %d" , nPCMLength, size);
 
 	if (size>0 && nPCMLength>0)
 	{
@@ -2746,7 +2754,7 @@ bool CMpaDecFilter::InitFfmpeg(int nCodecId)
 				m_pPCMData	= (BYTE*)FF_aligned_malloc (AVCODEC_MAX_AUDIO_FRAME_SIZE+FF_INPUT_BUFFER_PADDING_SIZE, 64);
 				bRet		= true;
 
-				if (nCodecId!=CODEC_ID_COOK && nCodecId != CODEC_ID_AMR_NB && nCodecId != CODEC_ID_AMR_WB && nCodecId != CODEC_ID_WMAV2 && nCodecId != CODEC_ID_WMAV1){
+				if (nCodecId!=CODEC_ID_SIPR && nCodecId!=CODEC_ID_COOK && nCodecId != CODEC_ID_AMR_NB && nCodecId != CODEC_ID_AMR_WB && nCodecId != CODEC_ID_WMAV2 && nCodecId != CODEC_ID_WMAV1){
 					int iSpeakerConfig = GetSpeakerConfig(ac3);
 					if (iSpeakerConfig >= 0)
 					{
@@ -2770,7 +2778,9 @@ bool CMpaDecFilter::InitFfmpeg(int nCodecId)
 				}
 			}
 		}
-	}
+    }else{
+        SVP_LogMsg5(L"cant find ffmpeg codec");
+    }
 
 	if (!bRet) ffmpeg_stream_finish();
 

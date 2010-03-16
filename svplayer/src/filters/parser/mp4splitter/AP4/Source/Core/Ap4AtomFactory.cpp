@@ -105,7 +105,7 @@ AP4_AtomFactory::CreateAtomFromStream(AP4_ByteStream& stream,
         bytes_available == 0) {
         bytes_available = (AP4_Size)((unsigned long)(-1));
     }
-    SVP_LogMsg5(L"bytes_available %d" , bytes_available);
+    //SVP_LogMsg5(L"bytes_available %d" , bytes_available);
     return CreateAtomFromStream(stream, bytes_available, atom, NULL);
 }
 
@@ -184,6 +184,7 @@ AP4_AtomFactory::CreateAtomFromStream(AP4_ByteStream& stream,
         }
 	}
 
+    
     // create the atom
     switch (type) {
       case AP4_ATOM_TYPE_MOOV:
@@ -396,6 +397,7 @@ AP4_AtomFactory::CreateAtomFromStream(AP4_ByteStream& stream,
 	  case AP4_ATOM_TYPE_H263:
       case AP4_ATOM_TYPE_S263:
 	  case AP4_ATOM_TYPE_JPEG:
+      case AP4_ATOM_TYPE_RLE:
         atom = DNew AP4_VisualSampleEntry(type, size, stream, *this);
         break;
 
@@ -451,6 +453,7 @@ AP4_AtomFactory::CreateAtomFromStream(AP4_ByteStream& stream,
             }
             if (atom == NULL) {
                 // no custom handlers, create a generic atom
+                 //SVP_LogMsg5(L"MP4 XXX type %x", type);
                 atom = DNew AP4_UnknownAtom(type, size, false, stream);
             }
         }

@@ -498,6 +498,7 @@ HRESULT CMP4SplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 						vih->bmiHeader.biWidth = (LONG)vse->GetWidth();
 						vih->bmiHeader.biHeight = (LONG)vse->GetHeight();
 						vih->bmiHeader.biCompression = type;
+                        vih->bmiHeader.biBitCount = (LONG)vse->GetDepth();
 						memcpy(vih+1, db.GetData(), db.GetDataSize());
 						mts.Add(mt);
 

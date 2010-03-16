@@ -35,7 +35,7 @@
 #include "Ap4TimsAtom.h"
 #include "Ap4SampleDescription.h"
 #include "Ap4FtabAtom.h"
-
+#include "..\..\..\..\..\..\svplib\svplib.h"
 /*----------------------------------------------------------------------
 |       AP4_SampleEntry::AP4_SampleEntry
 +---------------------------------------------------------------------*/
@@ -642,6 +642,7 @@ AP4_VisualSampleEntry::ReadFields(AP4_ByteStream& stream)
     }
 
     stream.ReadUI16(m_Depth);
+    //SVP_LogMsg5(L"m_Depth %d",m_Depth);
     stream.ReadUI16(m_Predefined3);
 
     return AP4_SUCCESS;

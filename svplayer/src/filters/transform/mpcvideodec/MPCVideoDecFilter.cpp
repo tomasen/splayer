@@ -63,8 +63,8 @@ extern "C"
 //#define TRACE SVP_LogMsg6
 #define SVP_LogMsg5 __noop
 #define SVP_LogMsg6 __noop
-#define TRACE __noop
-#define TRACE5  __noop
+#define TRACE SVP_LogMsg6
+#define TRACE5  SVP_LogMsg5
 
 
 #define CheckPointer2(p,ret) {if((p)==NULL) { SVP_LogMsg6("CheckPointer Failed %s : %d" , __FUNCTION__ , __LINE__); return (ret);}}
@@ -316,6 +316,9 @@ FFMPEG_CODECS		ffCodecs[] =
 	{ &MEDIASUBTYPE_MJPG, CODEC_ID_MJPEG,  MAKEFOURCC('M', 'J', 'P', 'G'),	NULL },
 
 	{ &MEDIASUBTYPE_CVID, CODEC_ID_CINEPAK,  MAKEFOURCC('c', 'v', 'i', 'd'),	NULL },
+
+    { &MEDIASUBTYPE_QTRle, CODEC_ID_QTRLE,  MAKEFOURCC('r', 'l', 'e', ' '),	NULL },
+    
 	
 };
 
@@ -491,7 +494,8 @@ const AMOVIESETUP_MEDIATYPE CMPCVideoDecFilter::sudPinTypesIn[] =
 	{ &MEDIATYPE_Video, &MEDIASUBTYPE_QTSmc   } ,
 	{ &MEDIATYPE_Video, &MEDIASUBTYPE_HUFFYUV   } ,
 	{ &MEDIATYPE_Video, &MEDIASUBTYPE_MJPG   } ,
-	{ &MEDIATYPE_Video, &MEDIASUBTYPE_CVID }
+	{ &MEDIATYPE_Video, &MEDIASUBTYPE_CVID },
+    { &MEDIATYPE_Video, &MEDIASUBTYPE_QTRle }
 };
 
 // Workaround : graphedit crash when filter expose more than 115 input MediaTypes !
@@ -1021,8 +1025,8 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 
 				if( m_pAVCodec->id == CODEC_ID_MJPEG ){
 					m_bUSERGB = true;
-				}else if( m_pAVCodec->id == CODEC_ID_HUFFYUV ){//|| m_pAVCodec->id == CODEC_ID_MJPEG
-					m_pAVCtx->bits_per_coded_sample = vih->bmiHeader.biBitCount;
+				}else if( m_pAVCodec->id == CODEC_ID_HUFFYUV ||  m_pAVCodec->id == CODEC_ID_QTRLE){//|| m_pAVCodec->id == CODEC_ID_MJPEG
+					m_pAVCtx->bits_per_coded_sample = vih->bmiHeader.biBitCount ;
 					m_bUSERGB = true;
 					SVP_LogMsg5(L" bits_per_coded_sample %d ", m_pAVCtx->bits_per_coded_sample);
 				}else if( m_pAVCodec->id == CODEC_ID_TSCC ){
@@ -1682,7 +1686,7 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
             rtStart = m_tStart;
             rtStop = rtStart+1;//m_rtAvrTimePerFrame;
         }else{
-            if(m_pAVCtx->codec_id != CODEC_ID_CINEPAK)
+            if(m_pAVCtx->codec_id != CODEC_ID_CINEPAK && m_pAVCtx->codec_id != CODEC_ID_QTRLE)
             {
                 rtStart = m_pFrame->reordered_opaque;
                 rtStop  = m_pFrame->reordered_opaque + m_rtAvrTimePerFrame;

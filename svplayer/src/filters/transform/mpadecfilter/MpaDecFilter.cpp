@@ -1805,12 +1805,16 @@ HRESULT CMpaDecFilter::Deliver(BYTE* pBuff, int size, int bit_rate, BYTE type, B
 
 	//	REFERENCE_TIME rtDur = 10000000i64 * size*8 / bit_rate;
 	REFERENCE_TIME rtDur;
-	if(b_is_dts){
-		size_t blocks = (size + length - 1) / length;
-		rtDur = 10000000i64 * blocks * length*8 / bit_rate;
-	}else{
+	/*
+	if(b_is_dts && 0){
+			size_t blocks = (size + length - 1) / length;
+			rtDur = 10000000i64 * blocks * length*8 / bit_rate;
+	
+	       // SVP_LogMsg6("CMpaDecFilter %d %d %d %d %d %f %f", blocks , m_buff.GetCount(), size , length , bit_rate, double(rtDur), double( 10000000i64 * size*8 / bit_rate ) );
+		}else{*/
+	
 		rtDur = 10000000i64 * size*8 / bit_rate; 
-	}
+	//}
 
 	REFERENCE_TIME rtStart = m_rtStart, rtStop = m_rtStart + rtDur;
 	//SVP_LogMsg5(_T("CMpaDecFilter Deliver2: %I64d - %I64d =  %I64d \n"), rtStart/10000, rtStop/10000 , rtDur/10000);
@@ -1838,9 +1842,13 @@ HRESULT CMpaDecFilter::Deliver(BYTE* pBuff, int size, int bit_rate, BYTE type, B
 	pDataOutW[0] = 0xf872;
 	pDataOutW[1] = 0x4e1f;
 	pDataOutW[2] = type;
-	if(b_is_dts){
-		pDataOutW[3] = length*8;	
-		_swab((char*)pBuff, (char*)&pDataOutW[4], length);
+	if(b_is_dts ){
+        if(size%2) //size must not be odd
+            size++;
+		pDataOutW[3] = size*8;	
+		_swab((char*)pBuff, (char*)&pDataOutW[4], size);
+        //memcpy((char*)&pDataOutW[4] , (char*)pBuff, size);
+        //memset(((char*)&pDataOutW[4])+size ,0, length-size);
 	}else{
 		pDataOutW[3] = size*8;	
 		_swab((char*)pBuff, (char*)&pDataOutW[4], size);

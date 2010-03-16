@@ -10620,14 +10620,14 @@ void CMainFrame::rePosOSD(){
 		}
 
 		if(m_wndTransparentControlBar.IsWindowVisible()){
-			rcRightVertWnd.top += 20 * m_nLogDPIY / 96 + 4;
+			rcRightVertWnd.top += m_wndToolTopBar.m_nHeight * m_nLogDPIY / 96 + 4;
 			rcRightVertWnd.left = rcRightVertWnd.right - 30  * m_nLogDPIY / 96;
 			rcRightVertWnd.bottom = rcRightVertWnd.top + 120  * m_nLogDPIY / 96;
 			m_wndTransparentControlBar.MoveWindow(rcRightVertWnd);
 			rcRightTopWnd.right = rcRightVertWnd.left - 5;
 		}
 		if(m_wndColorControlBar.IsWindowVisible()){
-			rcRightTopWnd.top += 20 * m_nLogDPIY / 96 + 4;
+			rcRightTopWnd.top += m_wndToolTopBar.m_nHeight * m_nLogDPIY / 96 + 4;
 			rcRightTopWnd.left = rcRightTopWnd.right - 220  * m_nLogDPIY / 96;
 			rcRightTopWnd.bottom = rcRightTopWnd.top + 80  * m_nLogDPIY / 96;
 			m_wndColorControlBar.MoveWindow(rcRightTopWnd);

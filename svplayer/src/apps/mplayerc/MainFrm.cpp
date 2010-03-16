@@ -10905,6 +10905,9 @@ MENUBARINFO mbi;
 DWORD CMainFrame::GetUIStat(UINT n_CmdID)
 { //New UI
 	DWORD fShow = false;
+    if(ID_PLAY_MANUAL_STOP == n_CmdID)
+        n_CmdID = ID_PLAY_STOP;
+
 	if(n_CmdID >= ID_PLAY_PLAY && n_CmdID <= ID_PLAY_STOP ){
 		OAFilterState fs = m_fFrameSteppingActive ? State_Paused : GetMediaState();
 		if(fs >= 0){

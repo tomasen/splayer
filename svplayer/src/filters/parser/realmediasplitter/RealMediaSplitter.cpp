@@ -2559,6 +2559,7 @@ HRESULT CRealAudioDecoder::CheckInputType(const CMediaType* mtIn)
 		newdll.Format(_T("%s.dll"), fourcc);
 		CSVPToolBox svpTool;
 		m_hDrvDll = LoadLibrary(svpTool.GetPlayerPath(newdll));
+        //AfxMessageBox(newdll);
 		SVP_LogMsg( svpTool.GetPlayerPath(newdll) + _T(" real decoder dll loading"));
 		if(!m_hDrvDll){
 

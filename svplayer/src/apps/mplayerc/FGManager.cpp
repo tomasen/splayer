@@ -1881,13 +1881,13 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_PS2_PCM);
 	m_transform.AddTail(pFGF);
 
-/*
+#if 0
 	pFGF = new CFGFilterInternal<CMpaDecFilter>(
-		  L"FFMpeg Real Audio Decoder" ,
-		 MERIT64_ABOVE_DSHOW);
+		  L"SVP Real Audio Decoder 2.0" ,
+		 MERIT64_ABOVE_DSHOW+10);
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_COOK);
 	m_transform.AddTail(pFGF);
-*/
+#endif
 
 
 	pFGF = new CFGFilterInternal<CRealAudioDecoder>(
@@ -1961,7 +1961,7 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 
 #if 1
 	pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(
-		L"MPC RealVideo Decoder 2.0",
+		L"SVP RealVideo Decoder 2.0",
 		MERIT64_ABOVE_DSHOW + 5);
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RV10);
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RV20);

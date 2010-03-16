@@ -13,6 +13,8 @@ CFLAGS+= -I. -I.. -I$(LAVC_DIR) -I$(LAVU_DIR) -I$(LAVF_DIR) -I../codecs -I../img
 CC=gcc
 
 SRCS_C=\
+		$(LAVC_DIR)/cook.c \
+		$(LAVC_DIR)/fft.c \
 		$(LAVC_DIR)/rv30dsp.c \
 		$(LAVC_DIR)/rv30.c \
 		$(LAVC_DIR)/rv10.c \
@@ -39,7 +41,6 @@ SRCS_C=\
 		$(LAVC_DIR)/error_resilience.c \
 		$(LAVC_DIR)/faandct.c \
 		$(LAVC_DIR)/faanidct.c \
-		$(LAVC_DIR)/fft.c \
 		$(LAVC_DIR)/golomb.c \
 		$(LAVC_DIR)/h263.c \
 		$(LAVC_DIR)/h263_parser.c \
@@ -118,7 +119,6 @@ SRCS_C=\
 		$(LAVC_DIR)/options.c \
 		$(LAVC_DIR)/ratecontrol.c \
 		$(LAVC_DIR)/adpcm.c \
-		$(LAVC_DIR)/cook.c \
 		$(LAVC_DIR)/ratecontrol.c \
 		$(LAVC_DIR)/mpegaudio_parser.c \
 		$(LAVC_DIR)/mpegaudio.c \

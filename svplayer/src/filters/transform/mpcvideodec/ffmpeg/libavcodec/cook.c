@@ -52,6 +52,7 @@
 #include "get_bits.h"
 #include "dsputil.h"
 #include "bytestream.h"
+//#include "fft.h"
 
 #include "cookdata.h"
 
@@ -63,6 +64,7 @@
 
 #define SUBBAND_SIZE    20
 #define MAX_SUBPACKETS   5
+#define COOKDEBUG
 
 typedef struct {
     int *now;
@@ -149,7 +151,7 @@ typedef struct cook {
     /* data buffers */
 
     uint8_t*            decoded_bytes_buffer;
-    DECLARE_ALIGNED_16(float,mono_mdct_output[2048]);
+    DECLARE_ALIGNED(16, float,mono_mdct_output)[2048];
     float               decode_buffer_1[1024];
     float               decode_buffer_2[1024];
     float               decode_buffer_0[1060]; /* static allocation for joint decode */
@@ -161,6 +163,38 @@ typedef struct cook {
 
 static float     pow2tab[127];
 static float rootpow2tab[127];
+
+/* debug functions */
+
+#ifdef COOKDEBUG
+static void dump_float_table(float* table, int size, int delimiter) {
+    int i=0;
+    av_log(NULL,AV_LOG_ERROR,"\n[%d]: ",i);
+    for (i=0 ; i<size ; i++) {
+        av_log(NULL, AV_LOG_ERROR, "%5.1f, ", table[i]);
+        if ((i+1)%delimiter == 0) av_log(NULL,AV_LOG_ERROR,"\n[%d]: ",i+1);
+    }
+}
+
+static void dump_int_table(int* table, int size, int delimiter) {
+    int i=0;
+    av_log(NULL,AV_LOG_ERROR,"\n[%d]: ",i);
+    for (i=0 ; i<size ; i++) {
+        av_log(NULL, AV_LOG_ERROR, "%d, ", table[i]);
+        if ((i+1)%delimiter == 0) av_log(NULL,AV_LOG_ERROR,"\n[%d]: ",i+1);
+    }
+}
+
+static void dump_short_table(short* table, int size, int delimiter) {
+    int i=0;
+    av_log(NULL,AV_LOG_ERROR,"\n[%d]: ",i);
+    for (i=0 ; i<size ; i++) {
+        av_log(NULL, AV_LOG_ERROR, "%d, ", table[i]);
+        if ((i+1)%delimiter == 0) av_log(NULL,AV_LOG_ERROR,"\n[%d]: ",i+1);
+    }
+}
+
+#endif
 
 /*************** init functions ***************/
 
@@ -962,6 +996,7 @@ static void decode_subpacket(COOKContext *q, COOKSubpacket* p, const uint8_t *in
 static int cook_decode_frame(AVCodecContext *avctx,
             void *data, int *data_size,
             const uint8_t *buf, int buf_size) {
+   
     COOKContext *q = avctx->priv_data;
     int i;
     int offset = 0;
@@ -1001,6 +1036,32 @@ static int cook_decode_frame(AVCodecContext *avctx,
     return avctx->block_align;
 }
 
+#ifdef COOKDEBUG
+static void dump_cook_context(COOKContext *q)
+{
+    //int i=0;
+#define PRINT(a,b) av_log(q->avctx,AV_LOG_ERROR," %s = %d\n", a, b);
+    av_log(q->avctx,AV_LOG_ERROR,"COOKextradata\n");
+    av_log(q->avctx,AV_LOG_ERROR,"cookversion=%x\n",q->subpacket[0].cookversion);
+    if (q->subpacket[0].cookversion > STEREO) {
+        PRINT("js_subband_start",q->subpacket[0].js_subband_start);
+        PRINT("js_vlc_bits",q->subpacket[0].js_vlc_bits);
+    }
+    av_log(q->avctx,AV_LOG_ERROR,"COOKContext\n");
+    PRINT("nb_channels",q->nb_channels);
+    PRINT("bit_rate",q->bit_rate);
+    PRINT("sample_rate",q->sample_rate);
+    PRINT("samples_per_channel",q->subpacket[0].samples_per_channel);
+    PRINT("samples_per_frame",q->subpacket[0].samples_per_frame);
+    PRINT("subbands",q->subpacket[0].subbands);
+    PRINT("random_state",q->random_state);
+    PRINT("js_subband_start",q->subpacket[0].js_subband_start);
+    PRINT("log2_numvector_size",q->subpacket[0].log2_numvector_size);
+    PRINT("numvector_size",q->subpacket[0].numvector_size);
+    PRINT("total_subbands",q->subpacket[0].total_subbands);
+}
+#endif
+
 static av_cold int cook_count_channels(unsigned int mask){
     int i;
     int channels = 0;
@@ -1027,6 +1088,12 @@ static av_cold int cook_decode_init(AVCodecContext *avctx)
     unsigned int channel_mask = 0;
     q->avctx = avctx;
 
+av_log(avctx, AV_LOG_ERROR, " cook_decode_init Extradata %d %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x.\n",avctx->extradata_size
+    , avctx->extradata[0] , avctx->extradata[1] , avctx->extradata[2], avctx->extradata[3]
+    , avctx->extradata[4] , avctx->extradata[5] , avctx->extradata[6], avctx->extradata[7]
+    , avctx->extradata[8] , avctx->extradata[9] , avctx->extradata[10], avctx->extradata[11]
+    , avctx->extradata[12] , avctx->extradata[13] , avctx->extradata[14], avctx->extradata[15]);
+    
     /* Take care of the codec specific extradata. */
     if (extradata_size <= 0) {
         av_log(avctx,AV_LOG_ERROR,"Necessary extradata missing!\n");
@@ -1040,7 +1107,7 @@ static av_cold int cook_decode_init(AVCodecContext *avctx)
     q->bit_rate = avctx->bit_rate;
 
     /* Initialize RNG. */
-    av_lfg_init(&q->random_state, ff_random_get_seed());
+    av_lfg_init(&q->random_state, 0);
 
     while(edata_ptr < edata_ptr_end){
         /* 8 for mono, 16 for stereo, ? for multichannel
@@ -1050,12 +1117,16 @@ static av_cold int cook_decode_init(AVCodecContext *avctx)
             q->subpacket[s].samples_per_frame =  bytestream_get_be16(&edata_ptr);
             q->subpacket[s].subbands = bytestream_get_be16(&edata_ptr);
             extradata_size -= 8;
+            av_log(avctx, AV_LOG_ERROR, " cook_decode_init v1 %x %x %x" ,  q->subpacket[s].cookversion , q->subpacket[s].samples_per_frame , q->subpacket[s].subbands );
         }
-        if (avctx->extradata_size >= 8){
+        if (extradata_size >= 8){
             bytestream_get_be32(&edata_ptr);    //Unknown unused
             q->subpacket[s].js_subband_start = bytestream_get_be16(&edata_ptr);
             q->subpacket[s].js_vlc_bits = bytestream_get_be16(&edata_ptr);
+            av_log(avctx, AV_LOG_ERROR, " cook_decode_init v1 %x %x " ,  q->subpacket[s].js_subband_start , q->subpacket[s].js_vlc_bits );
             extradata_size -= 8;
+        }else{
+        	 q->subpacket[s].js_subband_start = q->subpacket[s].js_vlc_bits  = 0;
         }
 
         /* Initialize extradata related variables. */
@@ -1216,24 +1287,21 @@ static av_cold int cook_decode_init(AVCodecContext *avctx)
     else
         avctx->channel_layout = (avctx->channels==2) ? CH_LAYOUT_STEREO : CH_LAYOUT_MONO;
 
+#ifdef COOKDEBUG
+    dump_cook_context(q);
+#endif
     return 0;
 }
 
 
 AVCodec cook_decoder =
 {
-    /*.name = */"cook",
-    /*.type = */CODEC_TYPE_AUDIO,
-    /*.id = */CODEC_ID_COOK,
-    /*.priv_data_size = */sizeof(COOKContext),
-    /*.init =*/ cook_decode_init,
-    /*.encode = */ NULL,
-    /*.close = */cook_decode_close,
-    /*.decode = */cook_decode_frame,
-    /*.capabilities = */0,
-    /*.next = */NULL,
-    /*.flush = */NULL,
-    /*.supported_framerates = */NULL,
-    /*.pix_fmts = */NULL,
-    /*.long_name = */NULL_IF_CONFIG_SMALL("COOK"),
+    .name = "cook",
+    .type = CODEC_TYPE_AUDIO,
+    .id = CODEC_ID_COOK,
+    .priv_data_size = sizeof(COOKContext),
+    .init = cook_decode_init,
+    .close = cook_decode_close,
+    .decode = cook_decode_frame,
+    .long_name = NULL_IF_CONFIG_SMALL("COOK"),
 };

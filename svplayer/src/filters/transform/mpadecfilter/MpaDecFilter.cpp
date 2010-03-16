@@ -43,9 +43,9 @@
 #define EAC3_FRAME_TYPE_RESERVED	3
 #define AC3_HEADER_SIZE				7
 
-#define  SVP_LogMsg5  __noop
-//#define TRACE SVP_LogMsg5
-//#define LOGDEBUG 1
+#define SVP_LogMsg5  __noop
+#define TRACE SVP_LogMsg5
+#define LOGDEBUG 0
 
 typedef unsigned char uint8;
 typedef signed char int8;
@@ -452,7 +452,7 @@ HRESULT CMpaDecFilter::Receive(IMediaSample* pIn)
 
 	const GUID& subtype = m_pInput->CurrentMediaType().subtype;
 	BOOL bNoJitterControl = false;
-	if(subtype == MEDIASUBTYPE_AMR || subtype == MEDIASUBTYPE_SAMR || subtype == MEDIASUBTYPE_SAWB   ){//  || subtype == MEDIASUBTYPE_WMA1   || subtype == MEDIASUBTYPE_WMA2 || subtype == MEDIASUBTYPE_PCM_SOWT || subtype == MEDIASUBTYPE_PCM_TWOS
+	if(subtype == MEDIASUBTYPE_AMR || subtype == MEDIASUBTYPE_SAMR || subtype == MEDIASUBTYPE_SAWB ){//  ||  subtype == MEDIASUBTYPE_COOK  || subtype == MEDIASUBTYPE_WMA1   || subtype == MEDIASUBTYPE_WMA2 || subtype == MEDIASUBTYPE_PCM_SOWT || subtype == MEDIASUBTYPE_PCM_TWOS
 		bNoJitterControl = true;
 	}
 
@@ -503,8 +503,9 @@ HRESULT CMpaDecFilter::Receive(IMediaSample* pIn)
 		hr = ProcessFfmpeg(CODEC_ID_NELLYMOSER);
 	else if(subtype == MEDIASUBTYPE_IMA4)
 		hr = ProcessFfmpeg(CODEC_ID_ADPCM_IMA_QT);
-	else if(subtype ==MEDIASUBTYPE_COOK)
-		hr = ProcessFfmpeg(CODEC_ID_COOK);
+    else if(subtype ==MEDIASUBTYPE_COOK){
+        hr = ProcessFfmpeg(CODEC_ID_COOK);
+    }
 	else if(subtype ==MEDIASUBTYPE_14_4)
 		hr = ProcessFfmpeg(CODEC_ID_RA_144);
 	else if(subtype ==MEDIASUBTYPE_28_8)
@@ -2713,15 +2714,18 @@ bool CMpaDecFilter::InitFfmpeg(int nCodecId)
 						break;
 					}
 				}
+               // wfein->nAvgBytesPerSec  = 32041 / 8;
+               // wfein->nBlockAlign = 93;
+
 			}
 			m_pAVCtx->sample_rate			= wfein->nSamplesPerSec;
 			m_pAVCtx->channels				= wfein->nChannels;
 
 
 			m_pAVCtx->bit_rate				= wfein->nAvgBytesPerSec*8;
-			m_pAVCtx->bits_per_coded_sample	= wfein->wBitsPerSample;
+            m_pAVCtx->bits_per_coded_sample	= wfein->wBitsPerSample;
 			m_pAVCtx->block_align			= wfein->nBlockAlign;
-			m_pAVCtx->flags				   |= CODEC_FLAG_TRUNCATED;
+            m_pAVCtx->flags				   |= CODEC_FLAG_TRUNCATED;
 		}
 		for( int ii = 0; ii <= 1; ii++){
 			
@@ -2753,7 +2757,7 @@ bool CMpaDecFilter::InitFfmpeg(int nCodecId)
 						wfein->nChannels = 1;
 						//wfein->nSamplesPerSec=4000;
 					}
-				}else{
+                }else{
 					break;
 				}
 			}
@@ -2767,11 +2771,11 @@ bool CMpaDecFilter::InitFfmpeg(int nCodecId)
 
 void CMpaDecFilter::LogLibAVCodec(void* par,int level,const char *fmt,va_list valist)
 {
-	//char		Msg [500];
-	//vsnprintf_s (Msg, sizeof(Msg), _TRUNCATE, fmt, valist);
+	char		Msg [500];
+	vsnprintf_s (Msg, sizeof(Msg), _TRUNCATE, fmt, valist);
 	//TRACE("AVLIB : %s", Msg);
-	//SVP_LogMsg6(Msg);
-	SVP_LogMsg6(fmt, valist);
+	SVP_LogMsg6("AVLIB : %s",Msg);
+	//SVP_LogMsg6(fmt, valist);
 }
 
 void CMpaDecFilter::ffmpeg_stream_finish()

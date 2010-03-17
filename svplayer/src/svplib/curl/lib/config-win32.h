@@ -545,8 +545,8 @@
 /* Name of package */
 #define PACKAGE "curl"
 
-#if defined(__POCC__)
+//#if defined(__POCC__)
 #  define ENABLE_IPV6 1
-#endif
+//#endif
 
 #endif /* __LIB_CONFIG_WIN32_H */

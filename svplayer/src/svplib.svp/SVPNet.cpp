@@ -643,7 +643,8 @@ int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, C
 		}else{
 			CString szMsg;
 			szMsg.Format(ResStr(IDS_LOG_MSG_SVPSUB_NETWORK_FAIL), szFailMsg);
-			SVP_LogMsg(szMsg, 31);
+			SVP_LogMsg(szMsg);//,31
+            m_lastFailedMsg = szMsg;
 			err = 4;
 		}
 		/*
@@ -686,7 +687,7 @@ int  CSVPNet::ExtractDataFromAiSubRecvBuffer(CString szFilePath, FILE* sAiSubRec
 			ret = -2;
 		}else{
 			//TODO error handle
-			SVP_LogMsg(ResStr(IDS_LOG_MSG_SVPSUB_DOWNLOAD_FAIL), 31);
+			SVP_LogMsg(ResStr(IDS_LOG_MSG_SVPSUB_DOWNLOAD_FAIL));//, 31
 			ret = -1;
 			//SVP_LogMsg(_T("First Stat Code TODO: 显示有错误发生"));
 		}

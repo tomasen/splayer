@@ -218,7 +218,7 @@ void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath, CStringArray* szSu
 			Sleep(2300 );
 			
 
-			SVP_LogMsg(ResStr(IDS_LOG_MSG_USING_SVPSUB_SYSTEM_RETRYING), 31);
+			SVP_LogMsg(ResStr(IDS_LOG_MSG_USING_SVPSUB_SYSTEM_RETRYING));//, 31
 		}else{
 			break;
 		}
@@ -238,6 +238,7 @@ void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath, CStringArray* szSu
 				SVP_LogMsg(CString(ResStr(IDS_LOG_MSG_SVPSUB_SUCCESS_DOWNLOAD_SUB)) + (CString)fnPath , 31 ); //TODO: if its vobsub, load perfered language
 				iSubTotal++;
 			}else{
+                SVP_LogMsg( svpNet.m_lastFailedMsg, 31);
 				SVP_LogMsg(_T("Fail to get sub file name"));
 			}
 		}

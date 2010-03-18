@@ -184,7 +184,7 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 	
 	EnableToolTips(TRUE);
 
-	SetMute(IsMuted()); 
+	
 
 
     m_nHeight = max(33, m_btnList.GetMaxHeight());
@@ -276,6 +276,8 @@ void CPlayerToolBar::OnSize(UINT nType, int cx, int cy)
 	m_btnList.SetHideStat(ID_PLAY_MANUAL_STOP , hideT4);
 	
 
+    SetMute(IsMuted()); 
+
 	m_btnList.OnSize( rc);
 }
 
@@ -337,6 +339,7 @@ CToolBarCtrl& tb = GetToolBarCtrl();
 		m_btnList.SetHideStat(L"MUTED.BMP", TRUE);
 	}
 	AfxGetAppSettings().fMute = fMute;
+   
 }
 
 bool CPlayerToolBar::IsMuted()

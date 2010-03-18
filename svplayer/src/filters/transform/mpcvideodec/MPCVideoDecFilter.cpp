@@ -1705,7 +1705,11 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
         if( IS_REALVIDEO(m_pAVCtx->codec_id) ){
             
             m_rtRVStart+=m_rtAvrTimePerFrame;
-            rtStart = m_rtRVStart = max(m_rtRVStart , 10000i64* in_timestamp - m_rtAvrTimePerFrame - m_tStart);
+            rtStart = 10000i64* in_timestamp - m_rtAvrTimePerFrame - m_tStart;
+            if(_abs64( m_rtRVStart - rtStart) > m_rtAvrTimePerFrame * 5 )
+               m_rtRVStart =  rtStart;
+            else 
+               rtStart = m_rtRVStart;
             //rtStart = 10000i64* in_timestamp - m_rtAvrTimePerFrame - m_tStart;
             rtStop = rtStart+1;//m_rtAvrTimePerFrame;
         }else{
@@ -1953,7 +1957,7 @@ HRESULT CMPCVideoDecFilter::Transform(IMediaSample* pIn)
 	nSize		= pIn->GetActualDataLength();
 	hr			= pIn->GetTime(&rtStart, &rtStop);
 
-     //TRACE ("Receive :   %10I64d - %10I64d   (%10I64d)  ", rtStart, rtStop, rtStop - rtStart);
+     TRACE ("Receive :   %10I64d - %10I64d   (%10I64d)  ", rtStart, rtStop, rtStop - rtStart);
 /*
 	if (rtStart != _I64_MIN)
 	{

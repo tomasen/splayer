@@ -258,5 +258,9 @@ virtual void			GetOutputSize(int& w, int& h, int& arx, int& ary, int &RealWidth,
 
     CAutoVectorPtr<BYTE> m_pI420Y, m_pI420U, m_pI420V;
     int m_lastBuffSizeDim;
+
+    DWORD m_timestamp;
+    bool m_fDropFrames;
+    REFERENCE_TIME  m_rtRVStart;
     HRESULT AlterQuality(Quality q);
 };

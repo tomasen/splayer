@@ -1960,19 +1960,19 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 	}	
 
 
-#if 1
+
 	pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(
 		L"SVP RealVideo Decoder 2.0",
-		MERIT64_ABOVE_DSHOW + 5);
+		MERIT64_ABOVE_DSHOW );
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RV10);
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RV20);
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RV30);
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RV40);
 	m_transform.AddTail(pFGF);
-#else
+#if 1
     pFGF = new CFGFilterInternal<CRealVideoDecoder>(
         L"MPC RealVideo Decoder",
-        MERIT64_ABOVE_DSHOW );
+        MERIT64_ABOVE_DSHOW + 5);
     pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RV10);
     pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RV20);
     pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RV30);

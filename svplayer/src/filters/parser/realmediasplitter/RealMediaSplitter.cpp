@@ -36,6 +36,7 @@
 
 #define SVP_LogMsg3  __noop
 #define SVP_LogMsg5 __noop
+#define SVP_LogMsg6 __noop
 #include <initguid.h>
 #include "..\..\..\..\include\moreuuids.h"
 
@@ -1152,6 +1153,7 @@ HRESULT CRMFile::Init()
 					if(S_OK != (hr = Read(mp->tStart))) return hr;
 					if(S_OK != (hr = Read(mp->tPreroll))) return hr;
 					if(S_OK != (hr = Read(mp->tDuration))) return hr;
+                    //SVP_LogMsg5(L"RM File %d %d",mp->tStart, mp->tDuration);
 					UINT8 slen;
 					if(S_OK != (hr = Read(slen))) return hr;
 					if(slen > 0 && S_OK != (hr = ByteRead((BYTE*)mp->name.GetBufferSetLength(slen), slen))) return hr;
@@ -1893,12 +1895,13 @@ HRESULT CRealVideoDecoder::Transform(IMediaSample* pIn)
 
     }
 
-    //SVP_LogMsg3("before RVTransform %d %d %d %d %d %d", transform_in.len , transform_in.unk1, transform_in.unk2, transform_in.chunks, transform_in.timestamp , m_dwCookie);
+    SVP_LogMsg6("before RVTransform %d ", transform_in.timestamp );
+   
 
 	hr = Real_RVTransform(pDataIn, (BYTE*)m_pI420, &transform_in, &transform_out, m_dwCookie);
 	
 	
-	//SVP_LogMsg3("after RVTransform %u %d %d %d %d" , hr , transform_out.w , transform_out.h, m_w, m_h);
+	SVP_LogMsg6("after RVTransform  %d %d " , transform_in.timestamp ,transform_out.timestamp );
 
 	
 	
@@ -1942,11 +1945,11 @@ HRESULT CRealVideoDecoder::Transform(IMediaSample* pIn)
 			pI420[2] = pI420[1], pI420[1] = pI420[0], pI420[0] = pI420[2];
 	}
 
-	rtStart = 10000i64*transform_out.timestamp - m_tStart;
+    SVP_LogMsg5 (L"Deliver3 : %d %d %10I64d - %10I64d   (%10I64d)  \n", transform_out.timestamp, transform_in.timestamp, rtStart, rtStop, rtStop - rtStart);
+    rtStart = 10000i64*transform_out.timestamp - m_tStart;
 	rtStop = rtStart + 1;
 
-    SVP_LogMsg5 (L"Deliver3 : %d %d %10I64d - %10I64d   (%10I64d)  \n", transform_out.timestamp, transform_in.timestamp, rtStart, rtStop, rtStop - rtStart);
-	pOut->SetTime(&rtStart, /*NULL*/&rtStop);
+    pOut->SetTime(&rtStart, /*NULL*/&rtStop);
 
 	pOut->SetDiscontinuity(pIn->IsDiscontinuity() == S_OK);
 

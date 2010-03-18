@@ -1522,6 +1522,10 @@ HRESULT CMPCVideoDecFilter::NewSegment(REFERENCE_TIME rtStart, REFERENCE_TIME rt
 	CAutoLock cAutoLock(&m_csReceive);
     
     m_tStart = 0;
+    m_timestamp = ~0;
+    m_fDropFrames = false;
+    m_rtRVStart = 0;
+
     SVP_LogMsg5(L"NewSegment m_tStart = 0;" );
 	m_nPosB = 1;
 	memset (&m_BFrames, 0, sizeof(m_BFrames));
@@ -1549,8 +1553,10 @@ HRESULT CMPCVideoDecFilter::BreakConnect(PIN_DIRECTION dir)
 
 HRESULT CMPCVideoDecFilter::AlterQuality(Quality q)
 {
-    //if(q.Late > 500*10000i64) m_fDropFrames = true;
-    //if(q.Late <= 0) m_fDropFrames = false;
+    if( IS_REALVIDEO(m_pAVCtx->codec_id) ){
+        if(q.Late > 500*10000i64) m_fDropFrames = true;
+        if(q.Late <= 0) m_fDropFrames = false;
+    }
     //	TRACE(_T("CRealVideoDecoder::AlterQuality: Type=%d, Proportion=%d, Late=%I64d, TimeStamp=%I64d\n"), q.Type, q.Proportion, q.Late, q.TimeStamp);
     return E_NOTIMPL;
 }
@@ -1615,6 +1621,20 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 	int				got_picture;
 	int				used_bytes;
 
+    DWORD in_timestamp;
+    if( IS_REALVIDEO(m_pAVCtx->codec_id) ){
+        in_timestamp = rtStart/10000;
+        if( m_timestamp+1 == in_timestamp)
+        {
+            if(m_fDropFrames){
+            //SVP_LogMsg5(L" CRealVideoDecoder::Transform4 Drop" );
+                m_timestamp = in_timestamp;
+                return S_OK;
+            }else{
+                in_timestamp = m_timestamp + m_rtAvrTimePerFrame/10000;
+            }
+        }
+    }
 	//TRACE5(L"SoftwareDecode");
 /*	if (m_pAVCtx->has_b_frames)
 	{
@@ -1659,6 +1679,8 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
        // SVP_LogMsg5(L"Dec1");
 		used_bytes = avcodec_decode_video (m_pAVCtx, m_pFrame, &got_picture, m_pFFBuffer, nSize);
 		//SVP_LogMsg5(L"Dec2");
+
+        m_timestamp = in_timestamp;
 		
 		m_perf_timer[2] = GetPerfCounter();
 		if(used_bytes < 0 ) { TRACE5(L"used_bytes < 0 "); return S_OK; } // Why MPC-HC removed this lineis un clear to me, add it back see if it solve sunpack problem
@@ -1682,8 +1704,9 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 
         if( IS_REALVIDEO(m_pAVCtx->codec_id) ){
             
-            m_tStart+=m_rtAvrTimePerFrame;
-            rtStart = m_tStart;
+            m_rtRVStart+=m_rtAvrTimePerFrame;
+            rtStart = m_rtRVStart = max(m_rtRVStart , 10000i64* in_timestamp - m_rtAvrTimePerFrame - m_tStart);
+            //rtStart = 10000i64* in_timestamp - m_rtAvrTimePerFrame - m_tStart;
             rtStop = rtStart+1;//m_rtAvrTimePerFrame;
         }else{
             if(m_pAVCtx->codec_id != CODEC_ID_CINEPAK && m_pAVCtx->codec_id != CODEC_ID_QTRLE)
@@ -1735,7 +1758,7 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
             }
         }
 */
-        TRACE ("Deliver3 : %10I64d   %10I64d - %10I64d   (%10I64d)  \n", m_pFrame->pts ,  rtStart, rtStop, rtStop - rtStart);
+        TRACE ("Deliver3 : %10I64d   %10I64d - %10I64d   (%10I64d) ", m_rtRVStart ,  rtStart, rtStop, rtStop - rtStart);
 		pOut->SetTime(&rtStart, &rtStop);
 		
 		pOut->SetMediaTime(NULL, NULL);
@@ -1929,6 +1952,8 @@ HRESULT CMPCVideoDecFilter::Transform(IMediaSample* pIn)
 
 	nSize		= pIn->GetActualDataLength();
 	hr			= pIn->GetTime(&rtStart, &rtStop);
+
+     //TRACE ("Receive :   %10I64d - %10I64d   (%10I64d)  ", rtStart, rtStop, rtStop - rtStart);
 /*
 	if (rtStart != _I64_MIN)
 	{

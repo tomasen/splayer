@@ -1114,7 +1114,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	else
 		m_nLoopSetting = ID_PLAYBACK_LOOP_NORMAL;
 
-	//if(s.htpcmode)
+	//if(s.startAsFullscreen)
 	//	SendMessage(WM_COMMAND, ID_VIEW_FULLSCREEN);
 	
 	{
@@ -17068,9 +17068,10 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 	}
 	szWindowText.Append(m_szTitle);
 
-	if(s.htpcmode){
+	if(s.htpcmode || s.startAsFullscreen){
+        s.startAsFullscreen = 0;
 		ToggleFullscreen(true,false);
-		return DefWindowProc(WM_NCPAINT, wParam, lParam);
+		return 0;DefWindowProc(WM_NCPAINT, wParam, lParam);
 	}
 	if(s.bUserAeroTitle()){
 		SetWindowText(szWindowText);

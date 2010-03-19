@@ -124,7 +124,8 @@ enum
 	CLSW_GENUIINI=CLSW_ADMINOPTION<<1,
 	CLSW_STARTFROMDMP=CLSW_GENUIINI<<1,
 	CLSW_HTPCMODE=CLSW_STARTFROMDMP<<1,
-	CLSW_UNRECOGNIZEDSWITCH=CLSW_HTPCMODE<<1
+    CLSW_STARTFULL=CLSW_HTPCMODE<<1,
+	CLSW_UNRECOGNIZEDSWITCH=CLSW_STARTFULL<<1
 };
 
 enum
@@ -712,6 +713,7 @@ public:
 		DWORD priority;
 		bool launchfullscreen;
 		bool htpcmode;
+        bool startAsFullscreen;
 
 		BOOL fEnableWebServer;
 		int nWebServerPort;

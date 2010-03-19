@@ -4922,6 +4922,12 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 			htpcmode = 0;
 		}
 
+        if(nCLSwitches & CLSW_STARTFULL){
+            startAsFullscreen = 1;
+        }else{
+            startAsFullscreen = 0;
+        }
+
 		fInitialized = true;
 	}
 }
@@ -4952,6 +4958,7 @@ void CMPlayerCApp::Settings::ParseCommandLine(CAtlList<CString>& cmdln)
 			if(sw == _T("open")) nCLSwitches |= CLSW_OPEN;
 			else if(sw == _T("play")) nCLSwitches |= CLSW_PLAY;
 			else if(sw == _T("fullscreen")) nCLSwitches |= CLSW_FULLSCREEN;
+            else if(sw == _T("startfull")) nCLSwitches |= CLSW_STARTFULL;
 			else if(sw == _T("minimized")) nCLSwitches |= CLSW_MINIMIZED;
 			else if(sw == _T("new")) nCLSwitches |= CLSW_NEW;
 			else if(sw == _T("help") || sw == _T("h") || sw == _T("?")) nCLSwitches |= CLSW_HELP;

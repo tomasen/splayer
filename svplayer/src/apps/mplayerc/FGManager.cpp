@@ -193,6 +193,7 @@ HRESULT CFGManager::EnumSourceFilters(LPCWSTR lpcwstrFileName, CFGFilterList& fl
 		}
 	}
 
+    //AfxMessageBox(fn);
 	// exceptions first
 
 	if(ext == _T(".dvr-ms")) // doh, this is stupid 

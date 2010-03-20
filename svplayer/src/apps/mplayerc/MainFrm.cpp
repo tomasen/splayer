@@ -11189,7 +11189,8 @@ void CMainFrame::OpenCreateGraphObject(OpenMediaData* pOMD)
 		|| ct.Find("realaudio") >= 0
 		|| ct.Find("realvideo") >= 0)
 		{
-			engine = RealMedia;
+			//TODO: go fuck this!!!
+            engine = RealMedia;
 		}
 		else if(ct == "application/x-shockwave-flash")
 		{

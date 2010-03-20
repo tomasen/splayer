@@ -26,6 +26,7 @@
 #include "..\BaseSplitter\BaseSplitter.h"
 #include "..\..\transform\BaseVideoFilter\BaseVideoFilter.h"
 //#define RV_FFMPEG
+#define RA_FFMPEG
 
 #pragma pack(push, 1)
 
@@ -292,6 +293,7 @@ public:
 
 class __declspec(uuid("941A4793-A705-4312-8DFC-C11CA05F397E")) CRealAudioDecoder : public CTransformFilter
 {
+#ifndef RA_FFMPEG
 	typedef HRESULT (WINAPI *PCloseCodec)(DWORD);
 	typedef HRESULT (WINAPI *PDecode)(DWORD,BYTE*,long,BYTE*,long*,long);
 	typedef HRESULT (WINAPI *PFlush)(DWORD,DWORD,DWORD);
@@ -316,10 +318,19 @@ class __declspec(uuid("941A4793-A705-4312-8DFC-C11CA05F397E")) CRealAudioDecoder
 	PSetDLLAccessPath RASetDLLAccessPath;
 	PSetPwd RASetPwd;
 
-	CStringA m_dllpath;
-	HMODULE m_hDrvDll;
-	DWORD m_dwCookie;
-
+    CStringA m_dllpath;
+    HMODULE m_hDrvDll;
+    DWORD m_dwCookie;
+#else
+    // === FFMpeg variables
+    AVCodec*				m_pAVCodec;
+    AVCodecContext*			m_pAVCtx;
+    BYTE*					m_pPCMData;
+    bool InitFfmpeg(int nCodecId);
+    void ffmpeg_stream_finish();
+    static void LogLibAVCodec(void* par,int level,const char *fmt,va_list valist);
+#endif
+   
 	HRESULT InitRA(const CMediaType* pmt);
 	void FreeRA();
 

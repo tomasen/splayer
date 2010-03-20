@@ -143,7 +143,8 @@ protected:
 	void	ffmpeg_stream_finish();
 	HRESULT DeliverFfmpeg(int nCodecId, BYTE* p, int buffsize, int& size);
 	static void		LogLibAVCodec(void* par,int level,const char *fmt,va_list valist);
-
+    BYTE*									m_pFFBuffer;
+    int										m_nFFBufferSize;
 protected:
 	CCritSec m_csProps;
 	MPCSampleFormat m_iSampleFormat;

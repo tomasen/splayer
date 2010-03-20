@@ -13,6 +13,7 @@ CFLAGS+= -I. -I.. -I$(LAVC_DIR) -I$(LAVU_DIR) -I$(LAVF_DIR) -I../codecs -I../img
 CC=gcc
 
 SRCS_C=\
+		$(LAVC_DIR)/dsputil.c \
 		$(LAVC_DIR)/sipr16k.c \
 		$(LAVC_DIR)/acelp_vectors.c \
 		$(LAVC_DIR)/acelp_pitch_delay.c \
@@ -41,7 +42,6 @@ SRCS_C=\
 		$(LAVC_DIR)/atrac3.c \
 		$(LAVC_DIR)/cabac.c \
 		$(LAVC_DIR)/CompilatorVersion.c\
-		$(LAVC_DIR)/dsputil.c \
 		$(LAVC_DIR)/eac3dec.c \
 		$(LAVC_DIR)/eac3dec_data.c \
 		$(LAVC_DIR)/error_resilience.c \

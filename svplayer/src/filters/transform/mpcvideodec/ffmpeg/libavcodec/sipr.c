@@ -525,6 +525,7 @@ static av_cold int sipr_decoder_init(AVCodecContext * avctx)
 
     dsputil_init(&ctx->dsp, avctx);
 
+av_log(avctx, AV_LOG_DEBUG, "sipr_decoder_init end\n" );
     return 0;
 }
 
@@ -538,7 +539,12 @@ static int sipr_decode_frame(AVCodecContext *avctx, void *datap,
     float *data = datap;
     int subframe_size = ctx->mode == MODE_16k ? L_SUBFR_16k : SUBFR_SIZE;
     int i;
-
+/*
+av_log(avctx, AV_LOG_ERROR, " sipr_decode_frame  in  %d %d %x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x.\n", buf_size , avctx->block_align
+    , ((int32_t*)buf)[0] , ((int32_t*)buf)[1] , ((int32_t*)buf)[2], ((int32_t*)buf)[3]
+    , ((int32_t*)buf)[4] , ((int32_t*)buf)[5] , ((int32_t*)buf)[6], ((int32_t*)buf)[7]
+    , ((int32_t*)buf)[8] , ((int32_t*)buf)[9] , ((int32_t*)buf)[10], ((int32_t*)buf)[11]
+    , ((int32_t*)buf)[12] , ((int32_t*)buf)[13] , ((int32_t*)buf)[14], ((int32_t*)buf)[15]);*/
     ctx->avctx = avctx;
     if (buf_size < (mode_par->bits_per_frame >> 3)) {
         av_log(avctx, AV_LOG_ERROR,
@@ -572,7 +578,14 @@ static int sipr_decode_frame(AVCodecContext *avctx, void *datap,
 
     *data_size = mode_par->frames_per_packet * subframe_size *
         mode_par->subframe_count * sizeof(float);
-
+/*
+	data = datap;
+av_log(avctx, AV_LOG_ERROR, " sipr_decode_frame out  %d %x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x.\n", *data_size
+    , ((int32_t*)data)[0] , ((int32_t*)data)[1] , ((int32_t*)data)[2], ((int32_t*)data)[3]
+    , ((int32_t*)data)[4] , ((int32_t*)data)[5] , ((int32_t*)data)[6], ((int32_t*)data)[7]
+    , ((int32_t*)data)[8] , ((int32_t*)data)[9] , ((int32_t*)data)[10], ((int32_t*)data)[11]
+    , ((int32_t*)data)[12] , ((int32_t*)data)[13] , ((int32_t*)data)[14], ((int32_t*)data)[15]);
+    */
     return mode_par->bits_per_frame >> 3;
 };
 

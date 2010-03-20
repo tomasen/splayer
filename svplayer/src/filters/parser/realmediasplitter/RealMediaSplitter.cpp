@@ -37,6 +37,7 @@
 #define SVP_LogMsg3  __noop
 #define SVP_LogMsg5 __noop
 #define SVP_LogMsg6 __noop
+#define LOGDEBUG 0
 #include <initguid.h>
 #include "..\..\..\..\include\moreuuids.h"
 
@@ -308,7 +309,7 @@ HRESULT CRealMediaSplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 			rai.bswap();
 
 			BYTE* extra = NULL;
-
+           
 			if(rai.version2 == 4)
 			{
 				rainfo4 rai4 = *(rainfo4*)fmt;
@@ -317,6 +318,7 @@ HRESULT CRealMediaSplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 				pwfe->wBitsPerSample = rai4.sample_size;
 				pwfe->nSamplesPerSec = rai4.sample_rate;
 				pwfe->nBlockAlign = rai4.frame_size;
+               
 				BYTE* p = (BYTE*)((rainfo4*)fmt+1);
 				int len = *p++; p += len; len = *p++; ASSERT(len == 4);
 				if(len == 4)
@@ -331,6 +333,8 @@ HRESULT CRealMediaSplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 				pwfe->wBitsPerSample = rai5.sample_size;
 				pwfe->nSamplesPerSec = rai5.sample_rate;
 				pwfe->nBlockAlign = rai5.frame_size;
+                
+               
 				fcc = rai5.fourcc3;
 				extra = fmt + sizeof(rainfo5) + 4;
 			}
@@ -338,6 +342,7 @@ HRESULT CRealMediaSplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 			{
 				continue;
 			}
+            pwfe->nAvgBytesPerSec = pwfe->nSamplesPerSec *  pwfe->wBitsPerSample / 8;
 
 			_strupr(fccstr);
 
@@ -345,15 +350,46 @@ HRESULT CRealMediaSplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 
 			bswap(fcc);
 
+            switch(fcc)
+            {
+         
+            case 'SIPR': 
+                {
+                    switch(rai.flavor){
+                        case 0:
+                             pwfe->nBlockAlign = 29;
+                          break;
+                        case 1:
+                            pwfe->nBlockAlign = 19;
+                            break;
+                        case 2:
+                            pwfe->nBlockAlign = 37;
+                            break;
+                        case 3:
+                            pwfe->nBlockAlign = 20;
+                            break;
+                    }
+                }
+               
+                break;
+            case '28_8':
+                pwfe->nBlockAlign =rai.coded_frame_size;
+                break;
+            case 'COOK':
+            case 'ATRC': 
+
+                pwfe->nBlockAlign =  rai.sub_packet_size;;
+                break;
+            }
 			switch(fcc)
 			{
 			case '14_4': pwfe->wFormatTag = WAVE_FORMAT_14_4; break;
 			case '28_8': pwfe->wFormatTag = WAVE_FORMAT_28_8; break;
 			case 'ATRC': pwfe->wFormatTag = WAVE_FORMAT_ATRC; break;
 			case 'COOK': pwfe->wFormatTag = WAVE_FORMAT_COOK; break;
-			case 'DNET': pwfe->wFormatTag = WAVE_FORMAT_DNET; break;
 			case 'SIPR': pwfe->wFormatTag = WAVE_FORMAT_SIPR; break;
-			case 'RAAC': pwfe->wFormatTag = WAVE_FORMAT_RAAC; break;
+            case 'DNET': pwfe->wFormatTag = WAVE_FORMAT_DNET; break;
+            case 'RAAC': pwfe->wFormatTag = WAVE_FORMAT_RAAC; break;
 			case 'RACP': pwfe->wFormatTag = WAVE_FORMAT_RACP; break;
 			}
 
@@ -2251,16 +2287,25 @@ HRESULT CRealVideoDecoder::AlterQuality(Quality q)
 
 CRealAudioDecoder::CRealAudioDecoder(LPUNKNOWN lpunk, HRESULT* phr)
 : CTransformFilter(NAME("CRealAudioDecoder"), lpunk, __uuidof(this))
+#ifndef RA_FFMPEG
 , m_hDrvDll(NULL)
 , m_dwCookie(0)
+#endif
 {
 	if(phr) *phr = S_OK;
+#ifdef RA_FFMPEG
+    m_pAVCodec					= NULL;
+    m_pAVCtx					= NULL;
+    m_pPCMData					= NULL;
+#endif
 }
 
 CRealAudioDecoder::~CRealAudioDecoder()
 {
 	//	FreeRA();
-	if(m_hDrvDll) FreeLibrary(m_hDrvDll);
+#ifndef RA_FFMPEG
+    if(m_hDrvDll) FreeLibrary(m_hDrvDll);
+#endif
 }
 
 HRESULT CRealAudioDecoder::InitRA(const CMediaType* pmt)
@@ -2268,10 +2313,12 @@ HRESULT CRealAudioDecoder::InitRA(const CMediaType* pmt)
 	FreeRA();
 
 	HRESULT hr;
+#ifndef RA_FFMPEG
 
 	if(RAOpenCodec2 && FAILED(hr = RAOpenCodec2(&m_dwCookie, m_dllpath))
 		|| RAOpenCodec && FAILED(hr = RAOpenCodec(&m_dwCookie)))
 		return VFW_E_TYPE_NOT_ACCEPTED;
+#endif
 
 	WAVEFORMATEX* pwfe = (WAVEFORMATEX*)pmt->Format();
 
@@ -2341,7 +2388,7 @@ HRESULT CRealAudioDecoder::InitRA(const CMediaType* pmt)
 		initdata.extralen = min((pmt->Format() + pmt->FormatLength()) - (p + 4), *(DWORD*)p);
 		initdata.extra = p + 4;
 	}
-
+#ifndef RA_FFMPEG
 	if(FAILED(hr = RAInitDecoder(m_dwCookie, &initdata)))
 		return VFW_E_TYPE_NOT_ACCEPTED;
 
@@ -2350,18 +2397,20 @@ HRESULT CRealAudioDecoder::InitRA(const CMediaType* pmt)
 
 	if(RASetFlavor && FAILED(hr = RASetFlavor(m_dwCookie, m_rai.flavor)))
 		return VFW_E_TYPE_NOT_ACCEPTED;
-
+#endif
 	return S_OK;
 }
 
 void CRealAudioDecoder::FreeRA()
 {
+#ifndef RA_FFMPEG
 	if(m_dwCookie)
 	{
 		RAFreeDecoder(m_dwCookie);
 		RACloseCodec(m_dwCookie);
 		m_dwCookie = 0;
 	}
+#endif
 }
 
 HRESULT CRealAudioDecoder::Receive(IMediaSample* pIn)
@@ -2459,15 +2508,30 @@ HRESULT CRealAudioDecoder::Receive(IMediaSample* pIn)
 						int i=bs*sipr_swaps[n][0];
 						int o=bs*sipr_swaps[n][1];
 						// swap nibbles of block 'i' with 'o'      TODO: optimize
-						for(int j=0;j<bs;j++){
-							int x=(i&1) ? (src[(i>>1)]>>4) : (src[(i>>1)]&15);
-							int y=(o&1) ? (src[(o>>1)]>>4) : (src[(o>>1)]&15);
-							if(o&1) src[(o>>1)]=(src[(o>>1)]&0x0F)|(x<<4);
-							else  src[(o>>1)]=(src[(o>>1)]&0xF0)|x;
-							if(i&1) src[(i>>1)]=(src[(i>>1)]&0x0F)|(y<<4);
-							else  src[(i>>1)]=(src[(i>>1)]&0xF0)|y;
-							++i;++o;
-						}
+#ifdef RA_FFMPEG
+                        /* swap 4bit-nibbles of block 'i' with 'o' */
+                        for (int j = 0; j < bs; j++, i++, o++) {
+                            int x = (src[i >> 1] >> (4 * (i & 1))) & 0xF,
+                                y = (src[o >> 1] >> (4 * (o & 1))) & 0xF;
+
+                            src[o >> 1] = (x << (4 * (o & 1))) |
+                                (src[o >> 1] & (0xF << (4 * !(o & 1))));
+                            src[i >> 1] = (y << (4 * (i & 1))) |
+                                (src[i >> 1] & (0xF << (4 * !(i & 1))));
+                        }
+#else
+
+                        for(int j=0;j<bs;j++){
+                            int x=(i&1) ? (src[(i>>1)]>>4) : (src[(i>>1)]&15);
+                            int y=(o&1) ? (src[(o>>1)]>>4) : (src[(o>>1)]&15);
+                            if(o&1) src[(o>>1)]=(src[(o>>1)]&0x0F)|(x<<4);
+                            else  src[(o>>1)]=(src[(o>>1)]&0xF0)|x;
+                            if(i&1) src[(i>>1)]=(src[(i>>1)]&0x0F)|(y<<4);
+                            else  src[(i>>1)]=(src[(i>>1)]&0xF0)|y;
+                            ++i;++o;
+                        }
+#endif
+
 					}
 			}
 
@@ -2476,7 +2540,7 @@ HRESULT CRealAudioDecoder::Receive(IMediaSample* pIn)
 	}
 
 	rtStart = m_rtBuffStart;
-
+ SVP_LogMsg5( L"InitFfmpeg ing31");
 	for(; src < dst; src += w)
 	{
 		CComPtr<IMediaSample> pOut;
@@ -2484,7 +2548,7 @@ HRESULT CRealAudioDecoder::Receive(IMediaSample* pIn)
 		if(FAILED(hr = m_pOutput->GetDeliveryBuffer(&pOut, NULL, NULL, 0))
 			|| FAILED(hr = pOut->GetPointer(&pDataOut)))
 			return hr;
-
+ SVP_LogMsg5( L"InitFfmpeg ing32");
 		AM_MEDIA_TYPE* pmt;
 		if(SUCCEEDED(pOut->GetMediaType(&pmt)) && pmt)
 		{
@@ -2492,8 +2556,84 @@ HRESULT CRealAudioDecoder::Receive(IMediaSample* pIn)
 			m_pOutput->SetMediaType(&mt);
 			DeleteMediaType(pmt);
 		}
-
+         SVP_LogMsg5( L"InitFfmpeg ing33");
+#ifndef RA_FFMPEG
 		hr = RADecode(m_dwCookie, src, w, pDataOut, &len, -1);
+#else
+        //FFDecode()
+        int nCodecId = -1;
+        if( m_pInput->CurrentMediaType().subtype == MEDIASUBTYPE_COOK ){
+            nCodecId = CODEC_ID_COOK;
+        }else if( m_pInput->CurrentMediaType().subtype == MEDIASUBTYPE_SIPR ){
+            nCodecId = CODEC_ID_SIPR;
+        }else if( m_pInput->CurrentMediaType().subtype == MEDIASUBTYPE_ATRC ){
+            nCodecId = CODEC_ID_ATRAC3;
+        }else if( m_pInput->CurrentMediaType().subtype == MEDIASUBTYPE_14_4 ){
+            nCodecId = CODEC_ID_RA_144;
+        }else if( m_pInput->CurrentMediaType().subtype == MEDIASUBTYPE_28_8 ){
+            nCodecId = CODEC_ID_RA_288;
+        }else if( m_pInput->CurrentMediaType().subtype == MEDIASUBTYPE_DNET ){
+           // nCodecId = CODEC_ID_;
+        }else if( m_pInput->CurrentMediaType().subtype == MEDIASUBTYPE_RAAC ){
+            nCodecId = CODEC_ID_AAC;
+        }
+
+        if (!m_pAVCtx || nCodecId != m_pAVCtx->codec_id)
+            if (!InitFfmpeg (nCodecId)){
+                SVP_LogMsg5( L"InitFfmpeg Failed");
+                return E_FAIL;
+            }
+
+        int nSize = w;
+        SVP_LogMsg5( L"InitFfmpeg ing4 %d %d",nSize , m_pAVCtx->bit_rate);
+        int user_bytes = 0;
+        len = 0;
+        BYTE* pFFIn = src;
+        BYTE* pFFOut = pDataOut;
+        while(nSize > 0){
+            int			nPCMLength	= AVCODEC_MAX_AUDIO_FRAME_SIZE;
+            SVP_LogMsg5( L"InitFfmpeg ing3");
+            user_bytes = avcodec_decode_audio2(m_pAVCtx, (int16_t*)pFFOut, &nPCMLength, (const uint8_t*)pFFIn, min(nSize, m_pAVCtx->block_align));
+            if(user_bytes <= 0){
+                
+                pFFIn += m_pAVCtx->block_align;
+                nSize -= m_pAVCtx->block_align;
+            }else{
+                pFFIn += user_bytes;
+                nSize -= user_bytes;
+                pFFOut += nPCMLength;
+                len +=  nPCMLength;
+            }
+             SVP_LogMsg5(L"avcodec_decode_audio2 %d %d %d %d %d", len, w, m_pAVCtx->sample_fmt, user_bytes , nSize);
+        } 
+        
+        switch (m_pAVCtx->sample_fmt)
+        {
+            case SAMPLE_FMT_FLT :
+                {
+                    #define round(x) ((x) > 0 ? (x) + 0.5 : (x) - 0.5)
+                    
+                    CAtlArray<float>	pBuff;
+                    pBuff.SetCount (len/4);
+                    float* pDataFIn = (float*)pBuff.GetData();
+                    memcpy( (void*) pDataFIn , pDataOut, len);
+                    BYTE* pDataFOut = pDataOut;
+                    len /= 2;
+                    for(int i = 0, flen = pBuff.GetCount(); i < flen; i++)
+                    {
+                        float f = *pDataFIn++;
+                        *(short*)pDataFOut = (short)round(f * SHRT_MAX);
+                        pDataFOut += sizeof(short);
+                    }
+                }
+                break;
+            case SAMPLE_FMT_S16 :
+            default:
+                break;
+        }
+
+
+#endif
 
 		if(FAILED(hr))
 		{
@@ -2527,6 +2667,101 @@ HRESULT CRealAudioDecoder::Receive(IMediaSample* pIn)
 	return S_OK;
 }
 
+bool CRealAudioDecoder::InitFfmpeg(int nCodecId)
+{
+    WAVEFORMATEX*	wfein	= (WAVEFORMATEX*)m_pInput->CurrentMediaType().Format();
+    bool			bRet	= false;
+
+    avcodec_init();
+    avcodec_register_all();
+#if LOGDEBUG
+    av_log_set_callback(LogLibAVCodec);
+#endif
+
+    if (m_pAVCodec) ffmpeg_stream_finish();
+
+    m_pAVCodec						= avcodec_find_decoder((CodecID)nCodecId);
+    if (m_pAVCodec)
+    {
+        m_pAVCtx						= avcodec_alloc_context();
+        
+{
+            if (nCodecId==CODEC_ID_COOK )
+            {
+                /* this code needs fixing */
+
+                m_pAVCtx->extradata=m_pInput->CurrentMediaType().Format()+sizeof(WAVEFORMATEX); 
+                m_pAVCtx->extradata_size=m_pInput->CurrentMediaType().FormatLength()-sizeof(WAVEFORMATEX);
+                for (;m_pAVCtx->extradata_size;m_pAVCtx->extradata=(uint8_t*)m_pAVCtx->extradata+1,m_pAVCtx->extradata_size--){
+                    if (memcmp(m_pAVCtx->extradata,"cook",4)==0)
+                    {
+                        m_pAVCtx->extradata=(uint8_t*)m_pAVCtx->extradata+12;
+                        m_pAVCtx->extradata_size-=12;
+                        break;
+                    }
+                }
+                // wfein->nAvgBytesPerSec  = 32041 / 8;
+                // wfein->nBlockAlign = 93;
+
+            }
+            m_pAVCtx->sample_rate			= wfein->nSamplesPerSec;
+            m_pAVCtx->channels				= wfein->nChannels;
+
+          
+            m_pAVCtx->bit_rate				= wfein->nAvgBytesPerSec*8;
+            m_pAVCtx->bits_per_coded_sample	= wfein->wBitsPerSample;
+            m_pAVCtx->block_align			= wfein->nBlockAlign;
+            m_pAVCtx->flags				   |= CODEC_FLAG_TRUNCATED;
+        }
+       
+            m_pAVCtx->codec_id		= (CodecID)nCodecId;
+
+            if (avcodec_open(m_pAVCtx,m_pAVCodec)>=0)
+            {
+                m_pPCMData	= (BYTE*)FF_aligned_malloc (AVCODEC_MAX_AUDIO_FRAME_SIZE+FF_INPUT_BUFFER_PADDING_SIZE, 64);
+                bRet		= true;
+
+           
+            }
+       
+    }else{
+        SVP_LogMsg5(L"cant find ffmpeg codec");
+    }
+
+    if (!bRet) ffmpeg_stream_finish();
+
+    return bRet;
+}
+
+void CRealAudioDecoder::LogLibAVCodec(void* par,int level,const char *fmt,va_list valist)
+{
+    char		Msg [500];
+    vsnprintf_s (Msg, sizeof(Msg), _TRUNCATE, fmt, valist);
+    //TRACE("AVLIB : %s", Msg);
+    SVP_LogMsg6("AVLIB : %s",Msg);
+    //SVP_LogMsg6(fmt, valist);
+}
+
+void CRealAudioDecoder::ffmpeg_stream_finish()
+{
+    m_pAVCodec	= NULL;
+    if (m_pAVCtx)
+    {
+        __try {
+            avcodec_close (m_pAVCtx);
+            av_free (m_pAVCtx);
+        }__except (EXCEPTION_EXECUTE_HANDLER ) {}
+        m_pAVCtx	= NULL;
+    }
+
+
+    if (m_pPCMData) {
+        __try {
+            FF_aligned_free (m_pPCMData); //some time this will crash
+        }__except (EXCEPTION_EXECUTE_HANDLER) {}
+    }
+}
+
 HRESULT CRealAudioDecoder::CheckInputType(const CMediaType* mtIn)
 {
      SVP_LogMsg5(L"CRealAudioDecoder::CheckInputType");
@@ -2544,7 +2779,9 @@ HRESULT CRealAudioDecoder::CheckInputType(const CMediaType* mtIn)
 
 	if(!m_pInput->IsConnected())
 	{
-		if(m_hDrvDll) {FreeLibrary(m_hDrvDll); m_hDrvDll = NULL;}
+#ifndef RA_FFMPEG
+        if(m_hDrvDll) {FreeLibrary(m_hDrvDll); m_hDrvDll = NULL;}
+
 
 		CAtlList<CString> paths;
 		CString olddll, newdll, oldpath, newpath;
@@ -2633,7 +2870,7 @@ HRESULT CRealAudioDecoder::CheckInputType(const CMediaType* mtIn)
 			if(RASetDLLAccessPath)
 				RASetDLLAccessPath("DT_Codecs=" + m_dllpath);
 		}
-
+#endif
 		if(FAILED(InitRA(mtIn)))
 			return VFW_E_TYPE_NOT_ACCEPTED;
 	}
@@ -2672,7 +2909,7 @@ HRESULT CRealAudioDecoder::DecideBufferSize(IMemAllocator* pAllocator, ALLOCATOR
 
 	// ok, maybe this is too much...
 	pProperties->cBuffers = 8;
-	pProperties->cbBuffer = pwfe->nChannels*pwfe->nSamplesPerSec*wBitsPerSample>>3; // nAvgBytesPerSec;
+	pProperties->cbBuffer = max( pwfe->nChannels*pwfe->nSamplesPerSec*wBitsPerSample>>3, AVCODEC_MAX_AUDIO_FRAME_SIZE ); // nAvgBytesPerSec;
 	pProperties->cbAlign = 1;
 	pProperties->cbPrefix = 0;
 
@@ -2747,7 +2984,9 @@ HRESULT CRealAudioDecoder::StopStreaming()
 {
 	m_buff.Free();
 	m_bufflen = 0;
-
+#ifdef RA_FFMPEG
+    ffmpeg_stream_finish();
+#endif
 	return __super::StopStreaming();
 }
 

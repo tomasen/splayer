@@ -1892,7 +1892,11 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 
 
 	pFGF = new CFGFilterInternal<CRealAudioDecoder>(
-		 L"MPC RealAudio Decoder" ,
+#ifndef RA_FFMPEG
+        L"MPC RealAudio Decoder" ,
+#else
+        L"SVP Real Audio Decoder 2.0",
+#endif		 
 		MERIT64_ABOVE_DSHOW );
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_ATRC);
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_14_4);

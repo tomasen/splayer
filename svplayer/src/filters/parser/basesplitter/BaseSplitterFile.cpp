@@ -45,19 +45,19 @@ CBaseSplitterFile::CBaseSplitterFile(IAsyncReader* pAsyncReader, HRESULT& hr, in
 	m_fStreaming = total == 0 && available > 0;
 	m_fRandomAccess = total > 0 && total == available;
 	m_len = total;
-
+SVP_LogMsg5(L"CBaseSplitterFile::CBaseSplitterFile %d %d %d %d ",FAILED(hr) , fRandomAccess && !m_fRandomAccess  , !fStreaming && m_fStreaming , m_len < 0);
 	if(FAILED(hr) || fRandomAccess && !m_fRandomAccess  || !fStreaming && m_fStreaming || m_len < 0)
 	{
 		hr = E_FAIL;
 		return;
 	}
-
+SVP_LogMsg5(L"CBaseSplitterFile::CBaseSplitterFile2");
 	if(!SetCacheSize(cachelen))
 	{
 		hr = E_OUTOFMEMORY; 
 		return;
 	}
-
+SVP_LogMsg5(L"CBaseSplitterFile::CBaseSplitterFile4");
 	hr = S_OK;
 }
 

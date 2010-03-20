@@ -37,6 +37,7 @@
 #define SVP_LogMsg3  __noop
 #define SVP_LogMsg5 __noop
 #define SVP_LogMsg6 __noop
+#define REALSTREAM
 #define LOGDEBUG 0
 #include <initguid.h>
 #include "..\..\..\..\include\moreuuids.h"
@@ -193,6 +194,7 @@ CFilterApp theApp;
 CRealMediaSplitterFilter::CRealMediaSplitterFilter(LPUNKNOWN pUnk, HRESULT* phr)
 : CBaseSplitterFilter(NAME("CRealMediaSplitterFilter"), pUnk, phr, __uuidof(this))
 {
+    SVP_LogMsg5(L"CRealMediaSplitterFilter::CRealMediaSplitterFilter");
 }
 
 CRealMediaSplitterFilter::~CRealMediaSplitterFilter()
@@ -201,6 +203,8 @@ CRealMediaSplitterFilter::~CRealMediaSplitterFilter()
 
 HRESULT CRealMediaSplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 {
+    SVP_LogMsg5(L"CRealMediaSplitterFilter::CreateOutputs");
+
 	CheckPointer(pAsyncReader, E_POINTER);
 
 	{
@@ -208,15 +212,16 @@ HRESULT CRealMediaSplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 		if(FAILED(pAsyncReader->SyncRead(0, 4, (BYTE*)&dw)) || dw != 'FMR.')
 			return E_FAIL;
 	}
-
+SVP_LogMsg5(L"CRealMediaSplitterFilter::CreateOutputs2");
 	HRESULT hr = E_FAIL;
 
 	m_pFile.Free();
-
+SVP_LogMsg5(L"CRealMediaSplitterFilter::CreateOutputs3");
 	m_pFile.Attach(new CRMFile(pAsyncReader, hr));
 	if(!m_pFile) return E_OUTOFMEMORY;
+    SVP_LogMsg5(L"CRealMediaSplitterFilter::CreateOutputs4");
 	if(FAILED(hr)) {m_pFile.Free(); return hr;}
-
+SVP_LogMsg5(L"CRealMediaSplitterFilter::CreateOutputs5");
 	m_rtNewStart = m_rtCurrent = 0;
 	m_rtNewStop = m_rtStop = 0;
 
@@ -538,12 +543,14 @@ HRESULT CRealMediaSplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 
 bool CRealMediaSplitterFilter::DemuxInit()
 {
+    SVP_LogMsg5(L"CRealMediaSplitterFilter::DemuxInit");
 	if(!m_pFile) return(false);
 
 	// reindex if needed
-
+SVP_LogMsg5(L"CRealMediaSplitterFilter::DemuxInit2");
 	if(m_pFile->m_irs.GetCount() == 0)
 	{
+        SVP_LogMsg5(L"CRealMediaSplitterFilter::DemuxInit 3");
 		m_nOpenProgress = 0;
 		m_rtDuration = 0;
 
@@ -555,14 +562,16 @@ bool CRealMediaSplitterFilter::DemuxInit()
 		POSITION pos = m_pFile->m_dcs.GetHeadPosition(); 
 		while(pos && !m_fAbort)
 		{
-			DataChunk* pdc = m_pFile->m_dcs.GetNext(pos);
+            DataChunk* pdc = m_pFile->m_dcs.GetNext(pos);
 
-			m_pFile->Seek(pdc->pos);
+            m_pFile->Seek(pdc->pos);
 
 			for(UINT32 i = 0; i < pdc->nPackets && !m_fAbort; i++, nPacket++)
 			{
 				UINT64 filepos = m_pFile->GetPos();
 
+                
+                SVP_LogMsg5(L"CRealMediaSplitterFilter::DemuxInitX %f %f", (double) filepos, (double)m_nOpenProgress);
 				HRESULT hr;
 
 				MediaPacketHeader mph;
@@ -590,7 +599,13 @@ bool CRealMediaSplitterFilter::DemuxInit()
 					if(cmd == CMD_EXIT) m_fAbort = true;
 					else Reply(S_OK);
 				}
+                if(!m_pFile->IsRandomAccess())
+                    break;
+
 			}
+            if(!m_pFile->IsRandomAccess())
+                break;
+
 		}
 
 		m_nOpenProgress = 100;
@@ -599,7 +614,7 @@ bool CRealMediaSplitterFilter::DemuxInit()
 
 		m_fAbort = false;
 	}
-
+SVP_LogMsg5(L"CRealMediaSplitterFilter::DemuxInit End");
 	m_seekpos = NULL;
 	m_seekpacket = 0;
 	m_seekfilepos = 0;
@@ -1052,10 +1067,13 @@ CRealMediaSourceFilter::CRealMediaSourceFilter(LPUNKNOWN pUnk, HRESULT* phr)
 //
 
 CRMFile::CRMFile(IAsyncReader* pAsyncReader, HRESULT& hr)
-: CBaseSplitterFile(pAsyncReader, hr)
+: CBaseSplitterFile(pAsyncReader, hr, DEFAULT_CACHE_LENGTH, false, true)
 {
+    SVP_LogMsg5(L"CRMFile::CRMFile");
 	if(FAILED(hr)) return;
+    SVP_LogMsg5(L"CRMFile::CRMFile 1");
 	hr = Init();
+    SVP_LogMsg5(L"CRMFile::CRMFile 2");
 }
 
 template<typename T> 
@@ -1267,8 +1285,16 @@ HRESULT CRMFile::Init()
 			|| GetPos() == pos + sizeof(hdr));
 
 		pos += hdr.size;
+
+#ifdef REALSTREAM
+
+        if( !IsRandomAccess() && pos > 10241024 )
+            break;
+#endif
 		if(pos > GetPos()) 
 			Seek(pos);
+
+        SVP_LogMsg5(L"RMFile Seek %f %4c", double(pos), hdr.object_id);
 	}
 
 	return S_OK;

@@ -25,6 +25,8 @@
 #include <atlcoll.h>
 #include "..\BaseSplitter\BaseSplitter.h"
 #include "..\..\transform\BaseVideoFilter\BaseVideoFilter.h"
+
+
 //#define RV_FFMPEG
 #define RA_FFMPEG
 

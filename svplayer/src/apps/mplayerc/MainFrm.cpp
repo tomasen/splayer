@@ -7145,7 +7145,9 @@ void CMainFrame::OnFileISDBDownload()
 		//CString szUploadMsg;
 		//szUploadMsg.Format(_T("本操作将尝试为您正在播放中的视频下载字幕： \r\n %s \r\n\r\n是否继续？"), fnVideoFile);
 
-		CSVPSubDownUpDialog csdu;
+        SVPSubDownloadByVPath( fnVideoFile );
+
+		/*CSVPSubDownUpDialog csdu;
 		csdu.szVidFilePath = fnVideoFile;
 		csdu.pFrame = this;
 

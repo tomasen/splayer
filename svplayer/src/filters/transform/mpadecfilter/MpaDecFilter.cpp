@@ -44,6 +44,7 @@
 #define AC3_HEADER_SIZE				7
 
 #define SVP_LogMsg5  __noop
+#define SVP_LogMsg6  __noop
 //#define TRACE SVP_LogMsg5
 #define LOGDEBUG 0
 
@@ -409,7 +410,7 @@ HRESULT CMpaDecFilter::NewSegment(REFERENCE_TIME tStart, REFERENCE_TIME tStop, d
 HRESULT CMpaDecFilter::Receive(IMediaSample* pIn)
 {
 	CAutoLock cAutoLock(&m_csReceive);
-
+    SVP_LogMsg6("CMpaDecFilter::Receive");
 	HRESULT hr;
 
     AM_SAMPLE2_PROPERTIES* const pProps = m_pInput->SampleProps();
@@ -454,14 +455,14 @@ HRESULT CMpaDecFilter::Receive(IMediaSample* pIn)
 
 	const GUID& subtype = m_pInput->CurrentMediaType().subtype;
 	BOOL bNoJitterControl = false;
-	if(subtype == MEDIASUBTYPE_AMR || subtype == MEDIASUBTYPE_SAMR || subtype == MEDIASUBTYPE_SAWB ){//  ||  subtype == MEDIASUBTYPE_COOK  || subtype == MEDIASUBTYPE_WMA1   || subtype == MEDIASUBTYPE_WMA2 || subtype == MEDIASUBTYPE_PCM_SOWT || subtype == MEDIASUBTYPE_PCM_TWOS
+	if(subtype == MEDIASUBTYPE_AMR || subtype == MEDIASUBTYPE_SAMR || subtype == MEDIASUBTYPE_SAWB || subtype == MEDIASUBTYPE_PCM_ULAW){//  ||  subtype == MEDIASUBTYPE_COOK  || subtype == MEDIASUBTYPE_WMA1   || subtype == MEDIASUBTYPE_WMA2 || subtype == MEDIASUBTYPE_PCM_SOWT || subtype == MEDIASUBTYPE_PCM_TWOS
 		bNoJitterControl = true;
 	}
 
-	if(SUCCEEDED(hr) && abs((int)(m_rtStart - rtStart)) > 1000000  && !bNoJitterControl) // +-100ms jitter is allowed for now
+	if(SUCCEEDED(hr) && _abs64((m_rtStart - rtStart)) > 1000000i64  && !bNoJitterControl) // +-100ms jitter is allowed for now
 	{
 		m_buff.RemoveAll();
-		//SVP_LogMsg5(_T("mpa: disc. jitter is not allowed %I64d\n") ,rtStart );
+		SVP_LogMsg6(("mpa: disc. jitter is not allowed %I64d\n") ,rtStart );
 
 		m_rtStart = rtStart;
 	}
@@ -525,6 +526,7 @@ HRESULT CMpaDecFilter::Receive(IMediaSample* pIn)
 		if(m_buff.GetCount() < 4096){
 			return S_OK;
 		}
+        SVP_LogMsg6("MEDIASUBTYPE_PCM_ULAW %f  %f %f", double(rtStart), double(rtStop),  double(m_rtStart));
 		hr = ProcessFfmpeg(CODEC_ID_PCM_MULAW);
 	}
 	else if(MEDIASUBTYPE_PCM_RAW == subtype ){
@@ -540,7 +542,7 @@ HRESULT CMpaDecFilter::Receive(IMediaSample* pIn)
 		hr = ProcessMPA();
 		//hr = ProcessFfmpeg(CODEC_ID_MP3);
 	}
-
+    SVP_LogMsg6("Receive end");
 	return hr;
 }
 
@@ -1700,7 +1702,7 @@ HRESULT CMpaDecFilter::Deliver(CAtlArray<float>& pBuff, DWORD nSamplesPerSec, WO
 
 	REFERENCE_TIME rtDur = 10000000i64*nSamples/wfe->nSamplesPerSec;
     REFERENCE_TIME rtStart = m_rtStart, rtStop = m_rtStart + rtDur;
-	//SVP_LogMsg5(_T("CMpaDecFilterDeliver: %d %f - %f =  %f %d %d\n"), pBuff.GetCount(), (double)rtStart/10000, (double)rtStop/10000 , (double)rtDur/10000, nSamples, wfe->nSamplesPerSec);
+	SVP_LogMsg6(("CMpaDecFilterDeliver: %d %f - %f =  %f %d %d\n"), pBuff.GetCount(), (double)rtStart/10000, (double)rtStop/10000 , (double)rtDur/10000, nSamples, wfe->nSamplesPerSec);
 	m_rtStart += rtDur;
 	if(rtStart < 0 /*200000*/ /* < 0, FIXME: 0 makes strange noises */)
 		return S_OK;
@@ -2589,7 +2591,7 @@ HRESULT CMpaDecFilter::DeliverFfmpeg(int nCodecId, BYTE* p, int buffsize, int& s
 }
 
 #else
-
+ 
 HRESULT CMpaDecFilter::DeliverFfmpeg(int nCodecId, BYTE* p, int buffsize, int& size)
 {
 	HRESULT		hr			= S_OK;
@@ -2603,11 +2605,12 @@ HRESULT CMpaDecFilter::DeliverFfmpeg(int nCodecId, BYTE* p, int buffsize, int& s
 			return E_FAIL;
 		}
 
-
+   
+    SVP_LogMsg5(L"nPCMLength1 %d size %d buffsize %d srate %d" , nPCMLength, size , buffsize);
 	size = avcodec_decode_audio2(m_pAVCtx, (int16_t*)m_pPCMData, &nPCMLength, (const uint8_t*)p, buffsize);
-	size = min (size, buffsize);
-
-    SVP_LogMsg5(L"nPCMLength %d size %d" , nPCMLength, size);
+	
+    SVP_LogMsg5(L"nPCMLength2 %d size %d buffsize %d %d" , nPCMLength, size , buffsize, m_pAVCtx->sample_fmt);
+    size = min (size, buffsize);
 
 	if (size>0 && nPCMLength>0)
 	{
@@ -2734,7 +2737,7 @@ bool CMpaDecFilter::InitFfmpeg(int nCodecId)
                // wfein->nBlockAlign = 93;
 
 			}
-			m_pAVCtx->sample_rate			= wfein->nSamplesPerSec;
+            m_pAVCtx->sample_rate			= wfein->nSamplesPerSec;
 			m_pAVCtx->channels				= wfein->nChannels;
 
 

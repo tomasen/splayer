@@ -1086,7 +1086,7 @@ bool CMP4SplitterFilter::DemuxLoop()
 				}
 
 				p->rtStop = p->rtStart;
-
+                //SVP_LogMsg6("track->GetSampleCount() %d %d ", track->GetSampleCount(),pPairNext->m_value.index);
 				int fFirst = true;
 
 				while(AP4_SUCCEEDED(track->ReadSample(pPairNext->m_value.index, sample, data)))

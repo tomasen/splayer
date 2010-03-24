@@ -33,7 +33,7 @@
 #include "Ap4StszAtom.h"
 #include "Ap4AtomFactory.h"
 #include "Ap4Utils.h"
-
+#include "..\..\..\..\..\..\svplib\svplib.h"
 /*----------------------------------------------------------------------
 |       AP4_StszAtom::AP4_StszAtom
 +---------------------------------------------------------------------*/
@@ -52,6 +52,7 @@ AP4_StszAtom::AP4_StszAtom(AP4_Size size, AP4_ByteStream& stream) :
 {
     stream.ReadUI32(m_SampleSize);
     stream.ReadUI32(m_SampleCount);
+
     unsigned long sample_count = m_SampleCount;
     if (m_SampleSize == 0) { // means that the samples have different sizes
         while (sample_count--) {

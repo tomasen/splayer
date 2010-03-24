@@ -260,7 +260,10 @@ virtual void			GetOutputSize(int& w, int& h, int& arx, int& ary, int &RealWidth,
     int m_lastBuffSizeDim;
 
     DWORD m_timestamp;
+    DWORD m_last_shown_timestamp;
     bool m_fDropFrames;
+    int m_rv_leap_frames ;
+    int m_rv_time_for_each_leap;
     REFERENCE_TIME  m_rtRVStart;
     HRESULT AlterQuality(Quality q);
 };

@@ -1525,6 +1525,9 @@ HRESULT CMPCVideoDecFilter::NewSegment(REFERENCE_TIME rtStart, REFERENCE_TIME rt
     m_timestamp = ~0;
     m_fDropFrames = false;
     m_rtRVStart = 0;
+    m_last_shown_timestamp = 0;
+    m_rv_leap_frames = 0;
+    m_rv_time_for_each_leap = 0;
 
     SVP_LogMsg5(L"NewSegment m_tStart = 0;" );
 	m_nPosB = 1;
@@ -1623,17 +1626,31 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 
     DWORD in_timestamp;
     if( IS_REALVIDEO(m_pAVCtx->codec_id) ){
+        if(m_rv_time_for_each_leap == 0){
+            m_rv_time_for_each_leap = m_rtAvrTimePerFrame/10000;
+        }
         in_timestamp = rtStart/10000;
         if( m_timestamp+1 == in_timestamp)
         {
-            if(m_fDropFrames){
-            //SVP_LogMsg5(L" CRealVideoDecoder::Transform4 Drop" );
-                m_timestamp = in_timestamp;
+           if(m_fDropFrames){
+                SVP_LogMsg5(L" CRealVideoDecoder::Transform4 Drop" );
                 return S_OK;
             }else{
-                in_timestamp = m_timestamp + m_rtAvrTimePerFrame/10000;
+                m_rv_leap_frames++;
+                m_timestamp = in_timestamp;
+                in_timestamp = m_last_shown_timestamp + m_rv_time_for_each_leap;
+                m_last_shown_timestamp = in_timestamp;
             }
+        }else{
+            if(m_rv_leap_frames){
+                SVP_LogMsg6("m_rv_time_for_each_leap %d %d %d", m_rv_time_for_each_leap , (in_timestamp - m_timestamp ), m_rv_leap_frames );
+                m_rv_time_for_each_leap = (in_timestamp - m_timestamp + m_rv_leap_frames)/(m_rv_leap_frames+1);
+            }
+            m_last_shown_timestamp = in_timestamp;
+            m_timestamp = in_timestamp;
+            m_rv_leap_frames = 0;
         }
+        
     }
 	//TRACE5(L"SoftwareDecode");
 /*	if (m_pAVCtx->has_b_frames)
@@ -1680,7 +1697,7 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 		used_bytes = avcodec_decode_video (m_pAVCtx, m_pFrame, &got_picture, m_pFFBuffer, nSize);
 		//SVP_LogMsg5(L"Dec2");
 
-        m_timestamp = in_timestamp;
+        
 		
 		m_perf_timer[2] = GetPerfCounter();
 		if(used_bytes < 0 ) { TRACE5(L"used_bytes < 0 "); return S_OK; } // Why MPC-HC removed this lineis un clear to me, add it back see if it solve sunpack problem
@@ -1704,12 +1721,14 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 
         if( IS_REALVIDEO(m_pAVCtx->codec_id) ){
             
+            //m_rtAvrTimePerFrame = 2000000i64/3;
             m_rtRVStart+=m_rtAvrTimePerFrame;
-            rtStart = 10000i64* in_timestamp - m_rtAvrTimePerFrame - m_tStart;
-            if(_abs64( m_rtRVStart - rtStart) > m_rtAvrTimePerFrame * 5 )
-               m_rtRVStart =  rtStart;
-            else 
-               rtStart = m_rtRVStart;
+            rtStart = 10000i64* (in_timestamp ) - m_tStart;
+            //if(_abs64( m_rtRVStart - rtStart) > m_rtAvrTimePerFrame * 5){
+            //    TRACE ("Deliver1 : %10I64d - %10I64d   (%10I64d)  \n", rtStart, rtStop, rtStop - rtStart);
+            //   m_rtRVStart =  rtStart;
+            //}else 
+             //    rtStart = m_rtRVStart;
             //rtStart = 10000i64* in_timestamp - m_rtAvrTimePerFrame - m_tStart;
             rtStop = rtStart+1;//m_rtAvrTimePerFrame;
         }else{
@@ -1762,7 +1781,7 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
             }
         }
 */
-        TRACE ("Deliver3 : %10I64d   %10I64d - %10I64d   (%10I64d) ", m_rtRVStart ,  rtStart, rtStop, rtStop - rtStart);
+        TRACE ("Deliver3 : %10I64d   %10I64d - %10I64d   (%10I64d)  (%10I64d) ", m_rtRVStart ,  rtStart, rtStop, rtStop - rtStart, m_rtAvrTimePerFrame);
 		pOut->SetTime(&rtStart, &rtStop);
 		
 		pOut->SetMediaTime(NULL, NULL);

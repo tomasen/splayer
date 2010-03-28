@@ -1503,7 +1503,9 @@ HRESULT CMPCVideoDecFilter::DecideBufferSize(IMemAllocator* pAllocator, ALLOCATO
 
 		if(m_pInput->IsConnected() == FALSE) return E_UNEXPECTED;
 
-		pProperties->cBuffers = GetPicEntryNumber();
+        //__super::DecideBufferSize (pAllocator, pProperties);
+
+		pProperties->cBuffers = GetPicEntryNumber() ;
 
 		if(FAILED(hr = pAllocator->SetProperties(pProperties, &Actual))) 
 			return hr;
@@ -1573,13 +1575,18 @@ void CMPCVideoDecFilter::SetTypeSpecificFlags(IMediaSample* pMS)
 		{
 			props.dwTypeSpecificFlags &= ~0x7f;
 
-			if(!m_pFrame->interlaced_frame)
+			if(!(m_pFrame->interlaced_frame || m_real_interlaced))
 				props.dwTypeSpecificFlags |= AM_VIDEO_FLAG_WEAVE;
 			else
 			{
-				if(m_pFrame->top_field_first)
+				if(m_pFrame->top_field_first || m_real_top_field_first)
 					props.dwTypeSpecificFlags |= AM_VIDEO_FLAG_FIELD1FIRST;
+
+                
 			}
+            
+            if(m_real_repeat_field)
+                props.dwTypeSpecificFlags |= AM_VIDEO_FLAG_REPEAT_FIELD;
 
 			switch (m_pFrame->pict_type)
 			{
@@ -1616,6 +1623,65 @@ LONGLONG CMPCVideoDecFilter::GetPerfCounter()
 #endif
 	return 0;
 }
+template<typename T>
+static void bswap(T& var)
+{
+    BYTE* s = (BYTE*)&var;
+    for(BYTE* d = s + sizeof(var)-1; s < d; s++, d--)
+        *s ^= *d, *d ^= *s, *s ^= *d;
+}
+
+
+#define GetBits(n) GetBitsMPC2(n, p, bit_offset, bit_buffer)
+
+unsigned int GetBitsMPC2(int n, unsigned char*& p, unsigned int& bit_offset, unsigned int& bit_buffer)
+{
+    unsigned int ret = ((unsigned int)bit_buffer >> (32-(n)));
+
+    bit_offset += n;
+    bit_buffer <<= n;
+    if(bit_offset > (32-16))
+    {
+        p += bit_offset >> 3;
+        bit_offset &= 7;
+        bit_buffer = (unsigned int)p[0] << 24;
+        bit_buffer |= (unsigned int)p[1] << 16;
+        bit_buffer |= (unsigned int)p[2] << 8;
+        bit_buffer |= (unsigned int)p[3];
+        bit_buffer <<= bit_offset;
+    }
+
+    return ret;
+}
+void GetRealFlags(unsigned char* p,
+                       bool *interlaced, bool *top_field_first, bool *repeat_field)
+{
+    unsigned int bit_offset = 0;
+    unsigned int bit_buffer = *(unsigned int*)p;
+    bswap(bit_buffer);
+
+    GetBits(9);
+
+    *interlaced = false;
+    *top_field_first = false;
+    *repeat_field = false;
+    unsigned int c = GetBits(1);
+    if (c)
+    {
+        c = GetBits(1);
+        if (c)
+            *interlaced = true;
+        c = GetBits(1);
+        if (c)
+            *top_field_first = true;
+        c = GetBits(1); 
+        if (c)
+            *repeat_field = true; 
+
+        
+    }
+
+}
 
 
 HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int nSize, REFERENCE_TIME& rtStart, REFERENCE_TIME& rtStop)
@@ -1625,7 +1691,10 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 	int				used_bytes;
 
     DWORD in_timestamp;
+    m_real_interlaced = false; m_real_top_field_first = false; m_real_repeat_field = false;
     if( IS_REALVIDEO(m_pAVCtx->codec_id) ){
+        GetRealFlags(pDataIn, &m_real_interlaced, &m_real_top_field_first, &m_real_repeat_field);
+
         if(m_rv_time_for_each_leap == 0){
             m_rv_time_for_each_leap = m_rtAvrTimePerFrame/10000;
         }
@@ -1731,6 +1800,27 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
              //    rtStart = m_rtRVStart;
             //rtStart = 10000i64* in_timestamp - m_rtAvrTimePerFrame - m_tStart;
             rtStop = rtStart+1;//m_rtAvrTimePerFrame;
+
+            m_pFrame->interlaced_frame = true;
+/*
+            
+                int pitchIn =  m_pFrame->linesize[0];
+                int abs_h = abs( m_pAVCtx->height);
+                BYTE** pI420 = m_pFrame->data;
+                int tm_w = m_pAVCtx->width;
+                int tm_h = m_pAVCtx->height;
+                int size = tm_w*tm_h;
+
+                BITMAPINFOHEADER bihOut;
+                ExtractBIH(&m_pOutput->CurrentMediaType(), &bihOut);
+
+                BYTE* y = pDataOut;
+                BYTE* u = y + bihOut.biWidth*abs_h;
+                BYTE* v = y + bihOut.biWidth*abs_h*5/4;
+                DeinterlaceBlend(y, pI420[0], tm_w, tm_h,tm_w, tm_w);
+                DeinterlaceBlend(v, pI420[1], tm_w/2, tm_h/2, tm_w/2, tm_w/2);
+                DeinterlaceBlend(u, pI420[2], tm_w/2, tm_h/2, tm_w/2, tm_w/2);
+ */              
         }else{
             if(m_pAVCtx->codec_id != CODEC_ID_CINEPAK && m_pAVCtx->codec_id != CODEC_ID_QTRLE)
             {

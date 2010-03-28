@@ -145,6 +145,7 @@ protected:
 	int					m_dxvaAvalibility;
 	HWND				m_hMainFrameWnd;
 	LONGLONG			m_llDXVAFailCount;
+    bool m_real_interlaced , m_real_top_field_first , m_real_repeat_field ;
 
 	void				SetTypeSpecificFlags(IMediaSample* pMS);
 	HRESULT				SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int nSize, REFERENCE_TIME& rtStart, REFERENCE_TIME& rtStop);

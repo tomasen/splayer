@@ -434,7 +434,19 @@ HRESULT CSVPSubFilter::Transform(IMediaSample* pIn)
 		}
 
 	}
-//
+    /*
+    if( 0 )//interlaced
+    {
+        int pitchIn =  spd.pitch;
+        int abs_h = abs(spd.h);
+        BYTE* pInBuff =  (BYTE*)m_spd.bits;
+        BYTE* pI420[3] = {pInBuff, pInBuff + pitchIn*abs_h, pInBuff + pitchIn*abs_h + (pitchIn>>1)*(abs_h>>1)};
+        int size = m_w*m_h;
+        DeinterlaceBlend(pI420[1], pI420[0], m_w, m_h, m_w, m_w);
+        DeinterlaceBlend(pI420[1]+size, pI420[0]+size, m_w/2, m_h/2, m_w/2, m_w/2);
+        DeinterlaceBlend(pI420[1]+size*5/4, pI420[0]+size*5/4, m_w/2, m_h/2, m_w/2, m_w/2);
+        pI420[2] = pI420[1], pI420[1] = pI420[0], pI420[0] = pI420[2];
+    }*/
 	//SVP_LogMsg5(_T("flip t %d ") , m_fFlip);
 	CopyBuffer(pDataOut, (BYTE*)m_spd.bits, spd.w, abs(spd.h)*(m_fFlip?-1:1), spd.pitch, mt.subtype);
 

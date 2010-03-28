@@ -2023,10 +2023,18 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_AVC1);
 			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_avc1);
 			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_H264_bis);
+/*
+            pFGF->AddType(MEDIATYPE_DVD_ENCRYPTED_PACK, MEDIASUBTYPE_MPEG2_VIDEO);
+            pFGF->AddType(MEDIATYPE_MPEG2_PACK, MEDIASUBTYPE_MPEG2_VIDEO);
+            pFGF->AddType(MEDIATYPE_MPEG2_PES, MEDIASUBTYPE_MPEG2_VIDEO);
+            pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_MPEG2_VIDEO);
+            */
 		}
 		if(dxva_filters & MPCDXVA_VC1){
 			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_WVC1);
 			pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_wvc1);
+
+           
 		}
 		m_transform.AddTail(pFGF);
 	}

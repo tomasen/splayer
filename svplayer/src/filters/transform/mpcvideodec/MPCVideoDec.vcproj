@@ -551,6 +551,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DXVADecoderMpeg2.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\DXVADecoderVC1.cpp"
 				>
 			</File>
@@ -673,6 +677,10 @@
 			</File>
 			<File
 				RelativePath=".\DXVADecoderH264.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DXVADecoderMpeg2.h"
 				>
 			</File>
 			<File

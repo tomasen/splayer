@@ -451,6 +451,39 @@ static void LogDXVA_PicParams_H264 (DXVA_PicParams_H264* pPic)
 
 	LOG_TOFILE (_T("picture.log"), strRes);
 }
+static void LogSliceInfo (DXVA_SliceInfo* pSlice, int nCount)
+{
+    CString		strRes;
+    static bool	bFirstSlice = true;
+
+    if (bFirstSlice)
+    {
+        strRes = _T("nCnt, wHorizontalPosition, wVerticalPosition, dwSliceBitsInBuffer,dwSliceDataLocation, bStartCodeBitOffset, bReservedBits, wMBbitOffset, wNumberMBsInSlice, wQuantizerScaleCode, wBadSliceChopping");
+
+        LOG_TOFILE (_T("sliceshort.log"), strRes);
+        strRes = "";
+        bFirstSlice = false;
+    }
+
+    for (int i=0; i<nCount; i++)
+    {
+        strRes.AppendFormat(_T("%d,"), i);
+        strRes.AppendFormat(_T("%d,"), pSlice[i].wHorizontalPosition);
+        strRes.AppendFormat(_T("%d,"), pSlice[i].wVerticalPosition);
+        strRes.AppendFormat(_T("%d,"), pSlice[i].dwSliceBitsInBuffer);
+        strRes.AppendFormat(_T("%d,"), pSlice[i].dwSliceDataLocation);
+        strRes.AppendFormat(_T("%d,"), pSlice[i].bStartCodeBitOffset);
+        strRes.AppendFormat(_T("%d,"), pSlice[i].bReservedBits);
+        strRes.AppendFormat(_T("%d,"), pSlice[i].wMBbitOffset);
+        strRes.AppendFormat(_T("%d,"), pSlice[i].wNumberMBsInSlice);
+        strRes.AppendFormat(_T("%d,"), pSlice[i].wQuantizerScaleCode);
+        strRes.AppendFormat(_T("%d"),  pSlice[i].wBadSliceChopping);
+
+        LOG_TOFILE (_T("sliceshort.log"), strRes);
+        strRes = "";
+    }
+}
+
 static void LogH264SliceLong (DXVA_Slice_H264_Long* pSlice, int nCount)
 {
 	static bool	bFirstSlice = true;
@@ -889,7 +922,7 @@ static HRESULT STDMETHODCALLTYPE ExecuteMine(IAMVideoAcceleratorC* This, DWORD d
 		{
 			if (g_guidDXVADecoder == DXVA2_ModeH264_E || g_guidDXVADecoder == DXVA_Intel_H264_ClearVideo)
 				LogDXVA_PicParams_H264 ((DXVA_PicParams_H264*)g_ppBuffer[pamvaBufferInfo[i].dwTypeIndex]);
-			else if (g_guidDXVADecoder == DXVA2_ModeVC1_D)
+			else if (g_guidDXVADecoder == DXVA2_ModeVC1_D || g_guidDXVADecoder == DXVA2_ModeMPEG2_VLD)
 				LogDXVA_PictureParameters((DXVA_PictureParameters*)g_ppBuffer[pamvaBufferInfo[i].dwTypeIndex]);
 		}
 		else if (pamvaBufferInfo[i].dwTypeIndex == DXVA_BITSTREAM_DATA_BUFFER)
@@ -1110,7 +1143,7 @@ public :
 			{
 				if (g_guidDXVADecoder == DXVA2_ModeH264_E || g_guidDXVADecoder == DXVA_Intel_H264_ClearVideo)
 					LogDXVA_PicParams_H264 ((DXVA_PicParams_H264*)m_ppBuffer[pExecuteParams->pCompressedBuffers[i].CompressedBufferType]);
-				else if (g_guidDXVADecoder == DXVA2_ModeVC1_D)
+				else if (g_guidDXVADecoder == DXVA2_ModeVC1_D || g_guidDXVADecoder == DXVA2_ModeMPEG2_VLD )
 					LogDXVA_PictureParameters((DXVA_PictureParameters*)m_ppBuffer[pExecuteParams->pCompressedBuffers[i].CompressedBufferType]);
 			}
 #if defined(_DEBUG)
@@ -1131,7 +1164,15 @@ public :
 							LOG(_T("	- wBadSliceChopping      %d"), pSlice->wBadSliceChopping);
 						}
 					}
-				}
+                }
+                else if (g_guidDXVADecoder == DXVA2_ModeMPEG2_VLD)
+                {
+                    if (pExecuteParams->pCompressedBuffers[i].CompressedBufferType == DXVA2_SliceControlBufferType)
+                    {
+                        DXVA_SliceInfo*	pSlice = (DXVA_SliceInfo*)m_ppBuffer[pExecuteParams->pCompressedBuffers[i].CompressedBufferType];
+                        LogSliceInfo (pSlice, pExecuteParams->pCompressedBuffers[i].DataSize / sizeof(DXVA_SliceInfo));
+                    }
+                }
 #endif
 				
 

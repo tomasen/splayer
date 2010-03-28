@@ -41,7 +41,7 @@ struct AVFrame;
 class CCpuId;
 
 
-
+#define MAX_BUFF_TIME			20
 
 typedef enum
 {
@@ -57,6 +57,12 @@ typedef struct
 	REFERENCE_TIME	rtStop;
 } B_FRAME;
 
+typedef struct
+{
+    REFERENCE_TIME	rtStart;
+    REFERENCE_TIME	rtStop;
+    int				nBuffPos;
+} BUFFER_TIME;
 
 class __declspec(uuid("008BAC12-FBAF-497b-9670-BC6F6FBAE2C4")) CMPCVideoDecFilter 
 	: public CBaseVideoFilter
@@ -103,6 +109,12 @@ protected:
 	int										m_nWidth;				// Frame width give to input pin
 	int										m_nHeight;				// Frame height give to input pin
 
+    // Buffer management for truncated stream (store stream chunks & reference time sent by splitter)
+    int										m_nFFBufferPos;
+    int										m_nFFPicEnd;
+    BUFFER_TIME								m_FFBufferTime[MAX_BUFF_TIME];
+
+    
 	REFERENCE_TIME							m_rtLastStart;			// Last rtStart given by parser
 	int										m_nCountEstimated;		// Number of rtStart estimated since last rtStart received
 	
@@ -159,6 +171,13 @@ protected:
     //REALVIDEO 
     REFERENCE_TIME m_tStart;
 
+    bool				AppendBuffer (BYTE* pDataIn, int nSize, REFERENCE_TIME rtStart, REFERENCE_TIME rtStop);
+    bool				FindPicture(int nIndex, int nStartCode);
+    void				ShrinkBuffer();
+    void				ResetBuffer();
+    void				PushBufferTime(int nPos, REFERENCE_TIME& rtStart, REFERENCE_TIME& rtStop);
+    void				PopBufferTime(int nPos);
+
 public:
 
 	const static AMOVIESETUP_MEDIATYPE		sudPinTypesIn[];
@@ -179,8 +198,9 @@ public:
 	DECLARE_IUNKNOWN
     STDMETHODIMP			NonDelegatingQueryInterface(REFIID riid, void** ppv);
 	virtual bool			IsVideoInterlaced();
-virtual void			GetOutputSize(int& w, int& h, int& arx, int& ary, int &RealWidth, int &RealHeight);
+    virtual void			GetOutputSize(int& w, int& h, int& arx, int& ary, int &RealWidth, int &RealHeight);
 	CTransformOutputPin*	GetOutputPin() { return m_pOutput; }
+    void					UpdateFrameTime (REFERENCE_TIME& rtStart, REFERENCE_TIME& rtStop);
 
 	// === Overriden DirectShow functions
 	HRESULT			SetMediaType(PIN_DIRECTION direction,const CMediaType *pmt);
@@ -230,6 +250,7 @@ virtual void			GetOutputSize(int& w, int& h, int& arx, int& ary, int &RealWidth,
 	inline bool			UseDXVA2()	{ return (m_nDXVAMode == MODE_DXVA2); };
 	void			FlushDXVADecoder()	 { if (m_pDXVADecoder) m_pDXVADecoder->Flush(); }
 	inline AVCodecContext*	GetAVCtx()		 { return m_pAVCtx; };
+    inline AVFrame*			GetFrame()			{ return m_pFrame; }
 	bool			IsDXVASupported();
 	inline bool					IsReorderBFrame() { return m_bReorderBFrame; };
 	inline int					GetPCIVendor()  { return m_nPCIVendor; };

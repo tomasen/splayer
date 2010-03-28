@@ -208,6 +208,13 @@ void CSVPSubFilter::Invalidate (REFERENCE_TIME rtInvalidate )
 	return ;
 }
 
+bool CSVPSubFilter::IsVideoInterlaced()
+{
+    // NOT A BUG : always tell DirectShow it's interlaced (progressive flags set in 
+    // SetTypeSpecificFlags function)
+    return true;
+};
+
 //End of sub control func
 
 
@@ -432,7 +439,24 @@ HRESULT CSVPSubFilter::Transform(IMediaSample* pIn)
 	CopyBuffer(pDataOut, (BYTE*)m_spd.bits, spd.w, abs(spd.h)*(m_fFlip?-1:1), spd.pitch, mt.subtype);
 
 	//	PrintMessages(pDataOut);
+    if(CComQIPtr<IMediaSample2> pMSIn = pIn)
+    {
+        if( CComQIPtr<IMediaSample2> pMS2 = pOut ){
+            AM_SAMPLE2_PROPERTIES props;
+            AM_SAMPLE2_PROPERTIES props_in;
+            if(SUCCEEDED(pMSIn->GetProperties(sizeof(props_in), (BYTE*)&props_in)) && SUCCEEDED(pMS2->GetProperties(sizeof(props), (BYTE*)&props)))
+            {
+                
+                props.dwTypeSpecificFlags &= ~0x7f;
 
+                props.dwTypeSpecificFlags |= props_in.dwTypeSpecificFlags;
+               
+
+                SVP_LogMsg5(_T("pMS2 %x %x") , props.dwTypeSpecificFlags , props_in.dwTypeSpecificFlags);
+                pMS2->SetProperties(sizeof(props), (BYTE*)&props);
+            }
+        }
+    }
 
 	hr = m_pOutput->Deliver(pOut);
 

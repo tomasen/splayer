@@ -2595,7 +2595,7 @@ HRESULT CMpaDecFilter::DeliverFfmpeg(int nCodecId, BYTE* p, int buffsize, int& s
 HRESULT CMpaDecFilter::DeliverFfmpeg(int nCodecId, BYTE* p, int buffsize, int& size)
 {
 	HRESULT		hr			= S_OK;
-	int			nPCMLength	= AVCODEC_MAX_AUDIO_FRAME_SIZE;
+	int			nPCMLength	= 0;
 	
 	if (!m_pAVCtx || nCodecId != m_pAVCtx->codec_id)
 		if (!InitFfmpeg (nCodecId))
@@ -2604,78 +2604,110 @@ HRESULT CMpaDecFilter::DeliverFfmpeg(int nCodecId, BYTE* p, int buffsize, int& s
 			SVP_LogMsg5(L"InitFfmpeg Failed");
 			return E_FAIL;
 		}
+    BYTE* pDataInBuff = p;
+    CAtlArray<float>	pBuffOut;
+    scmap_t* scmap = NULL; 
+    while (buffsize > 0)
+    {
+        nPCMLength	= AVCODEC_MAX_AUDIO_FRAME_SIZE;
+        if (buffsize+FF_INPUT_BUFFER_PADDING_SIZE > m_nFFBufferSize)
+        {
+            m_nFFBufferSize = buffsize+FF_INPUT_BUFFER_PADDING_SIZE;
+            m_pFFBuffer		= (BYTE*)realloc(m_pFFBuffer, m_nFFBufferSize);
+        }
 
-   
-    SVP_LogMsg5(L"nPCMLength1 %d size %d buffsize %d srate %d" , nPCMLength, size , buffsize);
-	size = avcodec_decode_audio2(m_pAVCtx, (int16_t*)m_pPCMData, &nPCMLength, (const uint8_t*)p, buffsize);
-	
-    SVP_LogMsg5(L"nPCMLength2 %d size %d buffsize %d %d" , nPCMLength, size , buffsize, m_pAVCtx->sample_fmt);
-    size = min (size, buffsize);
+        // Required number of additionally allocated bytes at the end of the input bitstream for decoding.
+        // This is mainly needed because some optimized bitstream readers read
+        // 32 or 64 bit at once and could read over the end.<br>
+        // Note: If the first 23 bits of the additional bytes are not 0, then damaged
+        // MPEG bitstreams could cause overread and segfault.
+        memcpy(m_pFFBuffer, pDataInBuff, buffsize);
+        memset(m_pFFBuffer+buffsize,0,FF_INPUT_BUFFER_PADDING_SIZE);
 
-	if (size>0 && nPCMLength>0)
-	{
-		WAVEFORMATEX*		wfein = (WAVEFORMATEX*)m_pInput->CurrentMediaType().Format();
-		CAtlArray<float>	pBuff;
-		int					iSpeakerConfig;
-		int					nRemap;
-		float*				pDataOut;
-                
-		nRemap = FFGetChannelMap (m_pAVCtx);
-		//iSpeakerConfig  = GetSpeakerConfig(ac3);
-		//nRemap = min (nRemap, iSpeakerConfig);		// <== TODO : correct ??
+        SVP_LogMsg5(L"nPCMLength1 %d size %d buffsize %d srate %d" , nPCMLength, size , buffsize);
+	    int used_byte = avcodec_decode_audio2(m_pAVCtx, (int16_t*)m_pPCMData, &nPCMLength, (const uint8_t*)m_pFFBuffer, buffsize);
+	    SVP_LogMsg5(L"nPCM %x %x %x %x %x %x %x %x %x %x", m_pPCMData[0], m_pPCMData[1], m_pPCMData[2], m_pPCMData[3], m_pPCMData[4], m_pPCMData[5], m_pPCMData[6], m_pPCMData[7], m_pPCMData[8], m_pPCMData[9]);
+        SVP_LogMsg5(L"nPCMLength2 %d size %d buffsize %d %d" , nPCMLength, used_byte , buffsize, m_pAVCtx->sample_fmt);
+        if(used_byte < 0 ) { return S_OK; }
+        size += used_byte;//min (used_byte, buffsize);
 
-		if (nRemap >=0)
-		{
-					scmap_t* scmap;
-		
-		switch (nCodecId)
-		{
-		case CODEC_ID_EAC3 :
-			scmap = &m_ffmpeg_ac3[FFGetChannelMap(m_pAVCtx)];
-			break;
-		default :
-			scmap = &m_scmap_default[m_pAVCtx->channels-1];
-			break;
-		}
+	    if (size>0 && used_byte > 0 && nPCMLength>0)
+	    {
+		    WAVEFORMATEX*		wfein = (WAVEFORMATEX*)m_pInput->CurrentMediaType().Format();
+		    CAtlArray<float>	pBuff;
+		    int					iSpeakerConfig;
+		    int					nRemap;
+		    float*				pDataOut;
+                    
+		    nRemap = FFGetChannelMap (m_pAVCtx);
+		    //iSpeakerConfig  = GetSpeakerConfig(ac3);
+		    //nRemap = min (nRemap, iSpeakerConfig);		// <== TODO : correct ??
 
-			switch (m_pAVCtx->sample_fmt)
-			{
-			case SAMPLE_FMT_S16 :
-				pBuff.SetCount (nPCMLength / 2);
-				pDataOut = pBuff.GetData();
+		    if (nRemap >=0)
+		    {
+					   
+    		
+		        switch (nCodecId)
+		        {
+		            case CODEC_ID_EAC3 :
+			            scmap = &m_ffmpeg_ac3[FFGetChannelMap(m_pAVCtx)];
+			            break;
+		            default :
+			            scmap = &m_scmap_default[m_pAVCtx->channels-1];
+			            break;
+		        }
 
-				for (size_t i=0; i<pBuff.GetCount()/m_pAVCtx->channels; i++)
-				{
-					for(int ch=0; ch<m_pAVCtx->channels; ch++)
-					{
-						*pDataOut = (float)((int16_t*)m_pPCMData) [scmap->ch[ch]+i*m_pAVCtx->channels] / SHRT_MAX;
-						pDataOut++;
-					}
-				}
-				break;
+			    switch (m_pAVCtx->sample_fmt)
+			    {
+			    case SAMPLE_FMT_S16 :
+				    pBuff.SetCount (nPCMLength / 2);
+				    pDataOut = pBuff.GetData();
 
-			case SAMPLE_FMT_S32 :
-				pBuff.SetCount (nPCMLength / 4);
-				pDataOut = pBuff.GetData();
+				    for (size_t i=0; i<pBuff.GetCount()/m_pAVCtx->channels; i++)
+				    {
+					    for(int ch=0; ch<m_pAVCtx->channels; ch++)
+					    {
+						    *pDataOut = (float)((int16_t*)m_pPCMData) [scmap->ch[ch]+i*m_pAVCtx->channels] / SHRT_MAX;
+						    pDataOut++;
+					    }
+				    }
+				    break;
 
-				for (size_t i=0; i<pBuff.GetCount()/m_pAVCtx->channels; i++)
-				{
-					for(int ch=0; ch<m_pAVCtx->channels; ch++)
-					{
-					*pDataOut = (float)((int32_t*)m_pPCMData) [scmap->ch[ch]+i*m_pAVCtx->channels] / INT_MAX;
-//						*pDataOut = (float)((int32_t*)m_pPCMData) [ch+i*m_pAVCtx->channels] / INT_MAX;
-						pDataOut++;
-					}
-				}
-				break;
-			default :
-				ASSERT(FALSE);
-				break;
-			}
-		hr = Deliver(pBuff, m_pAVCtx->sample_rate, scmap->nChannels, scmap->dwChannelMask);
-		}
-	}
+			    case SAMPLE_FMT_S32 :
+				    pBuff.SetCount (nPCMLength / 4);
+				    pDataOut = pBuff.GetData();
 
+				    for (size_t i=0; i<pBuff.GetCount()/m_pAVCtx->channels; i++)
+				    {
+					    for(int ch=0; ch<m_pAVCtx->channels; ch++)
+					    {
+					    *pDataOut = (float)((int32_t*)m_pPCMData) [scmap->ch[ch]+i*m_pAVCtx->channels] / INT_MAX;
+    //						*pDataOut = (float)((int32_t*)m_pPCMData) [ch+i*m_pAVCtx->channels] / INT_MAX;
+						    pDataOut++;
+					    }
+				    }
+				    break;
+			    default :
+				    ASSERT(FALSE);
+				    break;
+			    }
+
+                if(pBuff.GetCount() > 0){
+                    int idx_start = pBuffOut.GetCount();
+                    pBuffOut.SetCount( idx_start + pBuff.GetCount()  );
+                    for(int i = 0; i< pBuff.GetCount(); i++){
+                        pBuffOut[idx_start+i] = pBuff[i];
+                    }
+                }
+		   
+		    }
+        }
+
+        buffsize	-= used_byte;
+        pDataInBuff += used_byte;
+    }
+    if(pBuffOut.GetCount() > 0 && scmap)
+        hr = Deliver(pBuffOut, m_pAVCtx->sample_rate, scmap->nChannels, scmap->dwChannelMask);
 	return hr;
 }
 #endif

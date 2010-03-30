@@ -352,6 +352,9 @@ CMpaDecFilter::CMpaDecFilter(LPUNKNOWN lpunk, HRESULT* phr)
 
 CMpaDecFilter::~CMpaDecFilter()
 {
+    if (m_pFFBuffer)					free(m_pFFBuffer);
+    m_nFFBufferSize	= 0;
+
 	CRegKey key;
 	if(ERROR_SUCCESS == key.Create(HKEY_CURRENT_USER, _T("Software\\SPlayer\\Filters\\MPEG Audio Decoder")))
 	{
@@ -2617,6 +2620,7 @@ HRESULT CMpaDecFilter::DeliverFfmpeg(int nCodecId, BYTE* p, int buffsize, int& s
         {
             m_nFFBufferSize = buffsize+FF_INPUT_BUFFER_PADDING_SIZE;
             m_pFFBuffer		= (BYTE*)realloc(m_pFFBuffer, m_nFFBufferSize);
+            
         }
 
         // Required number of additionally allocated bytes at the end of the input bitstream for decoding.
@@ -2857,8 +2861,7 @@ void CMpaDecFilter::ffmpeg_stream_finish()
 			FF_aligned_free (m_pPCMData); //some time this will crash
 		}__except (EXCEPTION_EXECUTE_HANDLER) {}
 	}
-    if (m_pFFBuffer)					free(m_pFFBuffer);
-    m_nFFBufferSize	= 0;
+    
 }
 
 #pragma endregion

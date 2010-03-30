@@ -7756,7 +7756,7 @@ static int decode_nal_units(H264Context *h, const uint8_t *buf, int buf_size){
             next_avc= buf_index + nalsize;
         } else {
             // start code prefix search
-            for(; buf_index + 3 < buf_size; buf_index++){
+            for(; buf_index + 3 < next_avc; buf_index++){
                 // This should always succeed in the first iteration.
                 if(buf[buf_index] == 0 && buf[buf_index+1] == 0 && buf[buf_index+2] == 1)
                     break;
@@ -7765,6 +7765,7 @@ static int decode_nal_units(H264Context *h, const uint8_t *buf, int buf_size){
             if(buf_index+3 >= buf_size) break;
 
             buf_index+=3;
+            if(buf_index >= next_avc) continue;
         }
 
         hx = h->thread_context[context_count];
@@ -7773,8 +7774,15 @@ static int decode_nal_units(H264Context *h, const uint8_t *buf, int buf_size){
         if (ptr==NULL || dst_length < 0){
             return -1;
         }
-        while(ptr[dst_length - 1] == 0 && dst_length > 0)
-            dst_length--;
+        i = buf_index + consumed;
+        if((s->workaround_bugs & FF_BUG_AUTODETECT) && i+3<next_avc &&
+           buf[i]==0x00 && buf[i+1]==0x00 && buf[i+2]==0x01 && buf[i+3]==0xE0)
+            s->workaround_bugs |= FF_BUG_TRUNCATED;
+
+        if(!(s->workaround_bugs & FF_BUG_TRUNCATED)){
+	        while(ptr[dst_length - 1] == 0 && dst_length > 0)
+	            dst_length--;
+        }
         bit_length= !dst_length ? 0 : (8*dst_length - ff_h264_decode_rbsp_trailing(h, ptr + dst_length - 1));
 
         if(s->avctx->debug&FF_DEBUG_STARTCODE){
@@ -7964,7 +7972,7 @@ static int decode_frame(AVCodecContext *avctx,
 
         for (i = 0; i < cnt; i++) {
             nalsize = AV_RB16(p) + 2;
-            if(decode_nal_units(h, p, nalsize)  != nalsize) {
+            if(decode_nal_units(h, p, nalsize)  < 0) {
                 av_log(avctx, AV_LOG_ERROR, "Decoding sps %d from avcC failed\n", i);
                 return -1;
             }

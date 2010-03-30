@@ -1810,9 +1810,9 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 		}
 		
 		//#pragma omp parallel
-       // SVP_LogMsg5(L"Dec1");
+        SVP_LogMsg5(L"Dec1 %d", nSize);
 		used_bytes = avcodec_decode_video (m_pAVCtx, m_pFrame, &got_picture, m_pFFBuffer, nSize);
-		//SVP_LogMsg5(L"Dec2");
+		SVP_LogMsg5(L"Dec2");
 
         
 		

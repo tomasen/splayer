@@ -329,6 +329,8 @@ CMpaDecFilter::CMpaDecFilter(LPUNKNOWN lpunk, HRESULT* phr)
 	m_pAVCtx					= NULL;
 	m_pParser					= NULL;
 	m_pPCMData					= NULL;
+    m_pFFBuffer				= NULL;
+    m_nFFBufferSize			= 0;
 	memset (&m_flac, 0, sizeof(m_flac));
 
 	CRegKey key;
@@ -472,7 +474,7 @@ HRESULT CMpaDecFilter::Receive(IMediaSample* pIn)
 	memcpy(m_buff.GetData() + bufflen, pDataIn, len);
 	len += bufflen;
 
-	
+	SVP_LogMsg6("CMpaDecFilter::Receive2");
 
 	if(subtype == MEDIASUBTYPE_AMR || subtype == MEDIASUBTYPE_SAMR)
 		hr = ProcessFfmpeg(CODEC_ID_AMR_NB);
@@ -2596,7 +2598,7 @@ HRESULT CMpaDecFilter::DeliverFfmpeg(int nCodecId, BYTE* p, int buffsize, int& s
 {
 	HRESULT		hr			= S_OK;
 	int			nPCMLength	= 0;
-	
+	 SVP_LogMsg5(L"DeliverFfmpeg %d", buffsize);
 	if (!m_pAVCtx || nCodecId != m_pAVCtx->codec_id)
 		if (!InitFfmpeg (nCodecId))
 		{
@@ -2607,6 +2609,7 @@ HRESULT CMpaDecFilter::DeliverFfmpeg(int nCodecId, BYTE* p, int buffsize, int& s
     BYTE* pDataInBuff = p;
     CAtlArray<float>	pBuffOut;
     scmap_t* scmap = NULL; 
+    SVP_LogMsg5(L"DeliverFfmpeg2 %d", buffsize);
     while (buffsize > 0)
     {
         nPCMLength	= AVCODEC_MAX_AUDIO_FRAME_SIZE;
@@ -2628,7 +2631,7 @@ HRESULT CMpaDecFilter::DeliverFfmpeg(int nCodecId, BYTE* p, int buffsize, int& s
 	    int used_byte = avcodec_decode_audio2(m_pAVCtx, (int16_t*)m_pPCMData, &nPCMLength, (const uint8_t*)m_pFFBuffer, buffsize);
 	    SVP_LogMsg5(L"nPCM %x %x %x %x %x %x %x %x %x %x", m_pPCMData[0], m_pPCMData[1], m_pPCMData[2], m_pPCMData[3], m_pPCMData[4], m_pPCMData[5], m_pPCMData[6], m_pPCMData[7], m_pPCMData[8], m_pPCMData[9]);
         SVP_LogMsg5(L"nPCMLength2 %d size %d buffsize %d %d" , nPCMLength, used_byte , buffsize, m_pAVCtx->sample_fmt);
-        if(used_byte < 0 ) { return S_OK; }
+        if(used_byte <= 0 ) { return S_OK; }
         size += used_byte;//min (used_byte, buffsize);
 
 	    if (size>0 && used_byte > 0 && nPCMLength>0)
@@ -2854,6 +2857,8 @@ void CMpaDecFilter::ffmpeg_stream_finish()
 			FF_aligned_free (m_pPCMData); //some time this will crash
 		}__except (EXCEPTION_EXECUTE_HANDLER) {}
 	}
+    if (m_pFFBuffer)					free(m_pFFBuffer);
+    m_nFFBufferSize	= 0;
 }
 
 #pragma endregion

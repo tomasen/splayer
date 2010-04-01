@@ -749,6 +749,7 @@ HRESULT CRealMediaSplitterFilter::DemuxLoopDeliverPacket2Safe(RMFF::MediaPacketH
 	p->rtStart = 10000i64*(mph.tStart);
 	p->rtStop = p->rtStart+1;
 	p->Copy(mph.pData);
+    SVP_LogMsg6("rv %d",mph.tStart);
 	return DeliverPacket(p);
 }
 HRESULT CRealMediaSplitterFilter::DemuxLoopDeliverPacket2(RMFF::MediaPacketHeader& mph)
@@ -778,13 +779,63 @@ bool CRealMediaSplitterFilter::DemuxLoop()
 		DataChunk* pdc = m_pFile->m_dcs.GetNext(pos);
 
 		m_pFile->Seek(m_seekfilepos > 0 ? m_seekfilepos : pdc->pos);
-
+        UINT32 m_follow_frame_time_stamp = 0xffffffff;
 		for(UINT32 i = m_seekpacket; i < pdc->nPackets && SUCCEEDED(hr) && !CheckRequest(NULL); i++)
 		{
 			MediaPacketHeader mph;
 			if(S_OK != (hr = m_pFile->Read(mph)))
 				break;
 			//__try{
+            UINT32 in_timestamp = mph.tStart;
+            //SVP_LogMsg6("rvgot  %d", in_timestamp);
+
+            if(in_timestamp == m_timestamp+1 || m_follow_frame_time_stamp == in_timestamp ){
+                m_rv_leap_frames = in_timestamp - m_last_shown_timestamp;
+                if(m_rv_time_for_each_leap < 0){
+                    //if we dont know correct step
+                    //seek
+                    __int64 currentPos = m_pFile->GetPos();
+                    UINT32 start_time_stamp = m_timestamp;
+                    UINT32 frames = 1;
+                    m_rv_time_for_each_leap = m_AvgTimePerFrame;
+                    for(UINT32 j = i; j < pdc->nPackets;j++){
+                        MediaPacketHeader mph2;
+                        if(S_OK != (hr = m_pFile->Read(mph2, false)))
+                            break;
+                        if(mph2.tStart == start_time_stamp+1)
+                            frames++;
+                        if(mph2.tStart != start_time_stamp+1 && start_time_stamp != mph2.tStart){
+                            //got it
+                            m_rv_time_for_each_leap = (mph2.tStart - m_last_shown_timestamp)/frames;
+                            //SVP_LogMsg6("rvgot now we know correct step %d %d %d %d", m_rv_time_for_each_leap, frames, mph2.tStart , m_timestamp);
+                            break;
+                        }
+                        start_time_stamp = mph2.tStart;
+                    }
+                    m_pFile->Seek(currentPos);
+                    
+                }
+                
+                //if already know correct step
+                mph.tStart = m_last_shown_timestamp + m_rv_leap_frames * m_rv_time_for_each_leap;
+                //SVP_LogMsg6("rvgot already know correct step %d %d %d %d",mph.tStart, m_rv_time_for_each_leap, m_rv_leap_frames, m_last_shown_timestamp);
+
+                 m_timestamp = in_timestamp;
+                 m_follow_frame_time_stamp = in_timestamp;
+            }else if( m_timestamp != in_timestamp){
+                //reset counter
+                //we dont know correct step any more
+                m_rv_time_for_each_leap = -1;
+                m_follow_frame_time_stamp = 0xffffffff;
+                m_last_shown_timestamp = in_timestamp;
+                m_rv_leap_frames = 0;
+                // SVP_LogMsg6("rvgot just pass %d", in_timestamp);
+                m_timestamp = in_timestamp;
+            }
+
+           
+            
+           
 			hr = DemuxLoopDeliverPacket2(mph);
 			//}__except(EXCEPTION_EXECUTE_HANDLER) {  }
 		}
@@ -1957,13 +2008,13 @@ HRESULT CRealVideoDecoder::Transform(IMediaSample* pIn)
 
     }
 
-    SVP_LogMsg6("before RVTransform %d ", transform_in.timestamp );
+    //SVP_LogMsg6("before RVTransform %d ", transform_in.timestamp );
    
 
 	hr = Real_RVTransform(pDataIn, (BYTE*)m_pI420, &transform_in, &transform_out, m_dwCookie);
+	SVP_LogMsg6("rvout %d %d %d", transform_out.timestamp , transform_in.timestamp, transform_in.len);
 	
-	
-	SVP_LogMsg6("after RVTransform  %d %d " , transform_in.timestamp ,transform_out.timestamp );
+	//SVP_LogMsg6("after RVTransform  %d %d " , transform_in.timestamp ,transform_out.timestamp );
 
 	
 	

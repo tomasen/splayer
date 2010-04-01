@@ -192,7 +192,13 @@ class __declspec(uuid("E21BE468-5C18-43EB-B0CC-DB93A847D769")) CRealMediaSplitte
 	HRESULT DemuxLoopDeliverPacket2Safe(RMFF::MediaPacketHeader& mph);
 	HRESULT DemuxLoopDeliverPacket1(DWORD stream , CRMFile::subtitle& s);
 	HRESULT DemuxLoopDeliverPacket1Safe(DWORD stream , CRMFile::subtitle& s);
-	
+private:
+    UINT32 m_last_shown_timestamp;
+    UINT32 m_timestamp;
+    UINT32 m_rv_leap_frames;
+    int m_rv_time_for_each_leap;
+    CAtlList<RMFF::MediaPacketHeader*> m_packet_cache;
+    UINT32 m_AvgTimePerFrame;
 protected:
 	CAutoPtr<CRMFile> m_pFile;
 	HRESULT CreateOutputs(IAsyncReader* pAsyncReader);

@@ -1756,17 +1756,21 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
                 m_rv_leap_frames++;
                 m_timestamp = in_timestamp;
                 in_timestamp = m_last_shown_timestamp + m_rv_time_for_each_leap;
-                m_last_shown_timestamp = in_timestamp;
+                
             }
         }else{
             if(m_rv_leap_frames){
                 SVP_LogMsg6("m_rv_time_for_each_leap %d %d %d", m_rv_time_for_each_leap , (in_timestamp - m_timestamp ), m_rv_leap_frames );
                 m_rv_time_for_each_leap = (in_timestamp - m_timestamp + m_rv_leap_frames)/(m_rv_leap_frames+1);
             }
-            m_last_shown_timestamp = in_timestamp;
+           
             m_timestamp = in_timestamp;
             m_rv_leap_frames = 0;
         }
+        while(in_timestamp <= m_last_shown_timestamp){
+            in_timestamp += m_rv_time_for_each_leap/2;
+        }
+        m_last_shown_timestamp = in_timestamp;
         
     }
 	//TRACE5(L"SoftwareDecode");
@@ -1839,8 +1843,15 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
         if( IS_REALVIDEO(m_pAVCtx->codec_id) ){
             
             //m_rtAvrTimePerFrame = 2000000i64/3;
-            m_rtRVStart+=m_rtAvrTimePerFrame;
+            
             rtStart = 10000i64* (in_timestamp ) - m_tStart;
+            m_rtRVStart += m_rtAvrTimePerFrame;
+            if(rtStart > m_rtRVStart){
+                rtStart = m_rtRVStart + ( rtStart - m_rtRVStart ) /20;
+            }else{
+                rtStart = m_rtRVStart -  ( m_rtRVStart - rtStart  ) /20;
+            }
+            m_rtRVStart = rtStart;
             //if(_abs64( m_rtRVStart - rtStart) > m_rtAvrTimePerFrame * 5){
             //    TRACE ("Deliver1 : %10I64d - %10I64d   (%10I64d)  \n", rtStart, rtStop, rtStop - rtStart);
             //   m_rtRVStart =  rtStart;
@@ -1848,6 +1859,7 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
              //    rtStart = m_rtRVStart;
             //rtStart = 10000i64* in_timestamp - m_rtAvrTimePerFrame - m_tStart;
             rtStop = rtStart+1;//m_rtAvrTimePerFrame;
+            
 
 /*
             

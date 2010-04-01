@@ -2628,6 +2628,8 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("vp6dec.ax")) ); 
 
+    szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("rtsp.ax")) ); 
+
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("svplayer.bin\\real\\rmoc3260.dll")) );
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("svplayer.bin\\real\\Codecs\\rv40.dll")) );
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("svplayer.bin\\real\\Codecs\\drvc.dll")) );
@@ -2649,8 +2651,9 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 				szLog.Format(_T("Loading Filter %s %s %s "), CStringFromGUID(fo->clsid) ,fo->path, CStringW(fo->name) );
 				SVP_LogMsg(szLog);
 				if(pFGF){
-
-					if(szFPath.Find(_T("mpc_mxsource.dll")) > 0){
+                    if(szFPath.Find(_T("rtsp.ax")) > 0){
+                        pFGF->m_protocols.AddTail(_T("rtsp"));
+                    }else if(szFPath.Find(_T("mpc_mxsource.dll")) > 0){
 						pFGF->m_extensions.AddTail(_T(".csf"));
 						m_source.AddTail(pFGF);
 					}else if( szFPath.Find(_T("haalis.ax")) > 0 || szFPath.Find(_T("ts.dll")) > 0 || szFPath.Find(_T("ogm.dll")) > 0|| szFPath.Find(_T("mp4.dll")) > 0){ //useless

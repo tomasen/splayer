@@ -1767,9 +1767,9 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
             m_timestamp = in_timestamp;
             m_rv_leap_frames = 0;
         }
-        while(in_timestamp <= m_last_shown_timestamp){
-            in_timestamp += m_rv_time_for_each_leap/2;
-        }
+        //while(in_timestamp <= m_last_shown_timestamp){
+        //    in_timestamp += m_rv_time_for_each_leap/2;
+        //}
         m_last_shown_timestamp = in_timestamp;
         
     }

@@ -342,7 +342,8 @@ public:
 		TIMER_DELETE_CUR_FOLDER,
 		TIMER_TRANSPARENTTOOLBARSTAT,
 		TIMER_REDRAW_WINDOW,
-        TIMER_IDLE_TASK
+        TIMER_IDLE_TASK,
+        TIMER_LOADING
 	};
 
 
@@ -408,6 +409,7 @@ public:
 	bool IsFrameLessWindow() {return(m_fFullScreen || AfxGetAppSettings().fHideCaptionMenu);}
 	bool IsCaptionMenuHidden() {return(!m_fFullScreen && AfxGetAppSettings().fHideCaptionMenu);}
 	bool IsSomethingLoaded() {return(m_iMediaLoadState != MLS_CLOSED);}
+    bool IsSomethingLoading() {return(m_iMediaLoadState == MLS_LOADING);}
 	bool IsSubLoaded();
 	bool IsPlaylistEmpty() {return(m_wndPlaylistBar.GetCount() == 0);}
 	bool IsInteractiveVideo() {return(AfxGetAppSettings().fIntRealMedia && m_fRealMediaGraph || m_fShockwaveGraph);}

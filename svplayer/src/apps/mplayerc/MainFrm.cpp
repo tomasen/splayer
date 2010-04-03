@@ -2728,7 +2728,45 @@ CString CMainFrame::getCurPlayingSubfile(int * iSubDelayMS,int subid ){
 
 void CMainFrame::OnTimer(UINT nIDEvent)
 {
-    if(TIMER_IDLE_TASK == nIDEvent){
+    if(TIMER_LOADING == nIDEvent){
+        KillTimer(TIMER_LOADING);
+        if(!IsSomethingLoading()){
+           // SendStatusMessage(L"", 1000);
+        }else{
+            SetTimer( TIMER_LOADING , 1000, NULL);
+            CString msg;
+            if(m_fBuffering)
+            {
+                BeginEnumFilters(pGB, pEF, pBF)
+                {
+                    if(CComQIPtr<IAMNetworkStatus, &IID_IAMNetworkStatus> pAMNS = pBF)
+                    {
+                        long BufferingProgress = 0;
+                        if(SUCCEEDED(pAMNS->get_BufferingProgress(&BufferingProgress)) && BufferingProgress > 0 && BufferingProgress < 99)
+                        {
+                            msg.Format(ResStr(IDS_CONTROLS_BUFFERING), BufferingProgress);
+                            SendStatusMessage(msg,1000);
+                            SVP_LogMsg5(msg);
+
+                        }
+                        break;
+                    }
+                }
+                EndEnumFilters
+            }
+            else if(pAMOP)
+            {
+                __int64 t = 0, c = 0;
+                if(SUCCEEDED(pAMOP->QueryProgress(&t, &c)) && t > 0 && c < t){
+                    msg.Format(ResStr(IDS_CONTROLS_BUFFERING), c*100/t);
+                    SendStatusMessage(msg,1000);
+                    SVP_LogMsg5(msg);
+                }
+            }else
+                SendStatusMessage(ResStr(IDS_CONTROLS_OPENING), 1000);
+        }
+    }
+    else if(TIMER_IDLE_TASK == nIDEvent){
         KillTimer(TIMER_IDLE_TASK);
         if(!IsSomethingLoaded() || GetMediaState() != State_Running ){
             CSVPToolBox svpTool;
@@ -3221,8 +3259,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 			}
 		}
 
-	if(m_wndStatsBar.IsWindowVisible()){
-
+	
 		
 		{
 			CString msg;
@@ -3236,8 +3273,8 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 						if(SUCCEEDED(pAMNS->get_BufferingProgress(&BufferingProgress)) && BufferingProgress > 0 && BufferingProgress < 99)
 						{
 							msg.Format(ResStr(IDS_CONTROLS_BUFFERING), BufferingProgress);
-							//SendStatusMessage(msg,1000);
-							
+							SendStatusMessage(msg,1000);
+							SVP_LogMsg5(msg);
 
 						}
 						break;
@@ -3250,14 +3287,15 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 				__int64 t = 0, c = 0;
 				if(SUCCEEDED(pAMOP->QueryProgress(&t, &c)) && t > 0 && c < t){
 					msg.Format(ResStr(IDS_CONTROLS_BUFFERING), c*100/t);
-					//SendStatusMessage(msg,1000);
-					
+					SendStatusMessage(msg,1000);
+					SVP_LogMsg5(msg);
 				}
 			}
 			m_wndToolBar.m_buffering  = msg;
 
 		}
-		if(pQP)
+     if(m_wndStatsBar.IsWindowVisible() ){
+    	if(pQP)
 		{
 			CString rate;
 			rate.Format(_T("(%0.1fx)"), 1.0 + (m_iSpeedLevel * 0.1) );
@@ -12548,7 +12586,9 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 
 	m_iMediaLoadState = MLS_LOADING;
 
-	// FIXME: Don't show "Closed" initially
+    SetTimer(TIMER_LOADING, 2500, NULL);
+
+    // FIXME: Don't show "Closed" initially
 	PostMessage(WM_KICKIDLE);
 
 	CString err, aborted(_T("Aborted"));

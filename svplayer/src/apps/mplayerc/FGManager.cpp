@@ -2653,6 +2653,7 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 				if(pFGF){
                     if(szFPath.Find(_T("rtsp.ax")) > 0){
                         pFGF->m_protocols.AddTail(_T("rtsp"));
+                        m_source.AddTail(pFGF);
                     }else if(szFPath.Find(_T("mpc_mxsource.dll")) > 0){
 						pFGF->m_extensions.AddTail(_T(".csf"));
 						m_source.AddTail(pFGF);

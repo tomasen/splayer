@@ -5240,7 +5240,7 @@ void CMainFrame::OnFilePostOpenmedia()
 			SendStatusMessage( ResStr(IDS_OSD_MSG_DEVICE_NOT_SUPPORT_VIDEO_QMODE), 2000);
 		}
 
-		if(m_fAudioOnly){
+		if(m_fAudioOnly && m_fnCurPlayingFile.Find(L"://") < 0){
 
 			//find lyric file
 			m_LyricFilePaths.RemoveAll();
@@ -5261,7 +5261,7 @@ void CMainFrame::OnFilePostOpenmedia()
                 }
                 
             }
-            if( !bGotLrc && s.autoDownloadSVPSub) {
+            if( !bGotLrc && s.autoDownloadSVPSub  ) {
                 //debug
                 //m_Lyric.LoadLyricFile(L"D:\\-=SVN=-\\test.lrc");
 

@@ -279,7 +279,9 @@ engine_t CMediaFormats::GetEngine(CString path)
 				return RealMedia;
 			if(ext == _T(".qt") || ext == _T(".mov"))
 				return QuickTime;
-		}
+        }else if(ext == _T(".ram")){
+            return RealMedia;
+        }
 
 		for(size_t i = 0; i < GetCount(); i++)
 		{

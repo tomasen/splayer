@@ -25,6 +25,7 @@
 //
 
 #pragma once
+#include "../DSUtil/SharedInclude.h"
 
 #define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
 #define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS	// some CString constructors will be explicit
@@ -40,4 +41,4 @@
 // TODO: reference additional headers your program requires here
 
 #include <streams.h>
-#include "..\DSUtil\DSUtil.h"
+#include "../DSUtil/DSUtil.h"

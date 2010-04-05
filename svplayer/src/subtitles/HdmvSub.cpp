@@ -1,7 +1,7 @@
 /* 
- * $Id: HdmvSub.cpp 939 2008-12-22 21:31:24Z casimir666 $
+ * $Id: HdmvSub.cpp 1686 2010-02-20 21:26:33Z povaddict $
  *
- * (C) 2006-2007 see AUTHORS
+ * (C) 2006-2010 see AUTHORS
  *
  * This file is part of mplayerc.
  *
@@ -20,11 +20,9 @@
  *
  */
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "HdmvSub.h"
-#include "..\DSUtil\GolombBuffer.h"
-
-#define INDEX_TRANSPARENT	0xFF
+#include "../DSUtil/GolombBuffer.h"
 
 #if (0)		// Set to 1 to activate HDMV subtitles traces
 	#define TRACE_HDMVSUB		TRACE
@@ -34,23 +32,29 @@
 
 
 CHdmvSub::CHdmvSub(void)
+	    : CBaseSub(ST_HDMV)
 {
-	m_nColorNumber		= 0;
+	m_nColorNumber				= 0;
 
-	m_nCurSegment		= NO_SEGMENT;
-	m_pSegBuffer		= NULL;
-	m_nTotalSegBuffer	= 0;
-	m_nSegBufferPos		= 0;
-	m_nSegSize			= 0;
-	m_pCurrentObject	= NULL;
+	m_nCurSegment				= NO_SEGMENT;
+	m_pSegBuffer				= NULL;
+	m_nTotalSegBuffer			= 0;
+	m_nSegBufferPos				= 0;
+	m_nSegSize					= 0;
+	m_pCurrentObject			= NULL;
+	m_pDefaultPalette			= NULL;
+	m_nDefaultPaletteNbEntry	= 0;
 
 	memset (&m_VideoDescriptor, 0, sizeof(VIDEO_DESCRIPTOR));
 }
 
 CHdmvSub::~CHdmvSub()
 {
-	m_pObjects.RemoveAll();
+	Reset();
+
 	delete[] m_pSegBuffer;
+	delete[] m_pDefaultPalette;
+	delete m_pCurrentObject;
 }
 
 
@@ -59,7 +63,7 @@ void CHdmvSub::AllocSegment(int nSize)
 	if (nSize > m_nTotalSegBuffer)
 	{
 		delete[] m_pSegBuffer;
-		m_pSegBuffer		= new BYTE[nSize];
+		m_pSegBuffer		= DNew BYTE[nSize];
 		m_nTotalSegBuffer	= nSize;
 	}
 	m_nSegBufferPos	 = 0;
@@ -199,7 +203,7 @@ int CHdmvSub::ParsePresentationSegment(CGolombBuffer* pGBuffer)
 	if (nObjectNumber > 0)
 	{
 		delete m_pCurrentObject;
-		m_pCurrentObject = new CompositionObject();
+		m_pCurrentObject = DNew CompositionObject();
 		ParseCompositionObject (pGBuffer, m_pCurrentObject);
 	}
 
@@ -216,6 +220,14 @@ void CHdmvSub::ParsePalette(CGolombBuffer* pGBuffer, USHORT nSize)		// #497
 	nNbEntry = (nSize-2) / sizeof(HDMV_PALETTE);
 	HDMV_PALETTE*	pPalette = (HDMV_PALETTE*)pGBuffer->GetBufferPos();
 
+	if (m_pDefaultPalette == NULL || m_nDefaultPaletteNbEntry != nNbEntry)
+	{
+		delete[] m_pDefaultPalette;
+		m_pDefaultPalette		 = new HDMV_PALETTE[nNbEntry];
+		m_nDefaultPaletteNbEntry = nNbEntry;
+	}
+	memcpy (m_pDefaultPalette, pPalette, nNbEntry*sizeof(HDMV_PALETTE));
+
 	if (m_pCurrentObject)
 		m_pCurrentObject->SetPalette (nNbEntry, pPalette, m_VideoDescriptor.nVideoWidth>720);
 }
@@ -226,7 +238,7 @@ void CHdmvSub::ParseObject(CGolombBuffer* pGBuffer, USHORT nUnitSize)	// #498
 	BYTE	m_sequence_desc;
 
 	ASSERT (m_pCurrentObject != NULL);
-	if (m_pCurrentObject && m_pCurrentObject->m_object_id_ref == object_id)
+	if (m_pCurrentObject)// && m_pCurrentObject->m_object_id_ref == object_id)
 	{
 		m_pCurrentObject->m_version_number	= pGBuffer->ReadByte();
 		m_sequence_desc						= pGBuffer->ReadByte();
@@ -289,9 +301,12 @@ void CHdmvSub::Render(SubPicDesc& spd, REFERENCE_TIME rt, RECT& bbox)
 
 	if (pObject && spd.w >= pObject->m_width && spd.h >= pObject->m_height)
 	{
+		if (!pObject->HavePalette())
+			pObject->SetPalette (m_nDefaultPaletteNbEntry, m_pDefaultPalette, m_VideoDescriptor.nVideoWidth>720);
+
 		TRACE_HDMVSUB ("CHdmvSub:Render	    size=%ld,  ObjRes=%dx%d,  SPDRes=%dx%d\n", pObject->GetRLEDataSize(), 
 					   pObject->m_width, pObject->m_height, spd.w, spd.h);
-		pObject->Render(spd);
+		pObject->RenderHdmv(spd);
 
 		bbox.left	= 0;
 		bbox.top	= 0;
@@ -334,7 +349,7 @@ void CHdmvSub::Reset()
 	}
 }
 
-CHdmvSub::CompositionObject*	CHdmvSub::FindObject(REFERENCE_TIME rt)
+CompositionObject*	CHdmvSub::FindObject(REFERENCE_TIME rt)
 {
 	POSITION	pos = m_pObjects.GetHeadPosition();
 
@@ -352,125 +367,3 @@ CHdmvSub::CompositionObject*	CHdmvSub::FindObject(REFERENCE_TIME rt)
 }
 
 
-// ===== CHdmvSub::CompositionObject
-
-CHdmvSub::CompositionObject::CompositionObject()
-{
-	m_rtStart		= 0;
-	m_rtStop		= 0;
-	m_pRLEData		= NULL;
-	m_nRLEDataSize	= 0;
-	m_nRLEPos		= 0;
-	m_nColorNumber	= 0;
-	memset (m_Colors, 0, sizeof(m_Colors));
-}
-
-CHdmvSub::CompositionObject::~CompositionObject()
-{
-	delete[] m_pRLEData;
-}
-
-void CHdmvSub::CompositionObject::SetPalette (int nNbEntry, HDMV_PALETTE* pPalette, bool bIsHD)
-{
-	m_nColorNumber	= nNbEntry;
-
-	for (int i=0; i<m_nColorNumber; i++)
-	{
-		if (bIsHD)
-			m_Colors[pPalette[i].entry_id] = pPalette[i].T<<24| 
-					YCrCbToRGB_Rec709 (pPalette[i].Y, pPalette[i].Cr, pPalette[i].Cb);
-		else
-			m_Colors[pPalette[i].entry_id] = pPalette[i].T<<24| 
-					YCrCbToRGB_Rec601 (pPalette[i].Y, pPalette[i].Cr, pPalette[i].Cb);
-//		TRACE_HDMVSUB ("%03d : %08x\n", pPalette[i].entry_id, m_Colors[pPalette[i].entry_id]);
-	}
-}
-
-
-void CHdmvSub::CompositionObject::SetRLEData(BYTE* pBuffer, int nSize, int nTotalSize)
-{
-	delete[] m_pRLEData;
-	m_pRLEData		= new BYTE[nTotalSize];
-	m_nRLEDataSize	= nTotalSize;
-	m_nRLEPos		= nSize;
-
-	memcpy (m_pRLEData, pBuffer, nSize);
-}
-
-void CHdmvSub::CompositionObject::AppendRLEData(BYTE* pBuffer, int nSize)
-{
-	ASSERT (m_nRLEPos+nSize <= m_nRLEDataSize);
-	if (m_nRLEPos+nSize <= m_nRLEDataSize)
-	{
-		memcpy (m_pRLEData+m_nRLEPos, pBuffer, nSize);
-		m_nRLEPos += nSize;
-	}
-}
-
-void CHdmvSub::CompositionObject::Render(SubPicDesc& spd)
-{
-	if (m_pRLEData)
-	{
-		CGolombBuffer	GBuffer (m_pRLEData, m_nRLEDataSize);
-		BYTE			bTemp;
-		BYTE			bSwitch;
-		bool			bEndOfLine = false;
-
-		BYTE			nPaletteIndex;
-		SHORT			nCount;
-		SHORT			nX	= 0;
-		SHORT			nY	= 0;
-
-		while ((nY < m_height) && !GBuffer.IsEOF())
-		{
-			bTemp = GBuffer.ReadByte();
-			if (bTemp != 0)
-			{
-				nPaletteIndex = bTemp;
-				nCount		  = 1;
-			}
-			else
-			{
-				bSwitch = GBuffer.ReadByte();
-				if (!(bSwitch & 0x80))
-				{
-					if (!(bSwitch & 0x40))
-					{
-						nCount		= bSwitch & 0x3F;
-						if (nCount > 0)
-							nPaletteIndex	= INDEX_TRANSPARENT;
-					}
-					else
-					{
-						nCount			= (bSwitch&0x3F) <<8 | (SHORT)GBuffer.ReadByte();
-						nPaletteIndex	= INDEX_TRANSPARENT;
-					}
-				}
-				else
-				{
-					if (!(bSwitch & 0x40))
-					{
-						nCount			= bSwitch & 0x3F;
-						nPaletteIndex	= GBuffer.ReadByte();
-					}
-					else
-					{
-						nCount			= (bSwitch&0x3F) <<8 | (SHORT)GBuffer.ReadByte();
-						nPaletteIndex	= GBuffer.ReadByte();
-					}
-				}
-			}
-
-			if (nCount>0)
-			{
-				FillSolidRect (spd, nX, nY, nCount, 1, m_Colors[nPaletteIndex], 0xFFFFFFFF);
-				nX += nCount;
-			}
-			else
-			{
-				nY++;
-				nX = 0;
-			}
-		}
-	}
-}

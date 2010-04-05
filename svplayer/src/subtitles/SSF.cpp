@@ -27,7 +27,7 @@
 #include <xmmintrin.h>
 #include <emmintrin.h>
 #include "SSF.h"
-#include "..\subpic\MemSubPic.h"
+#include "../SubPic/MemSubPic.h"
 
 namespace ssf
 {
@@ -84,9 +84,9 @@ namespace ssf
 
 		try
 		{
-			m_file.Attach(new SubtitleFile());
+			m_file.Attach(DNew SubtitleFile());
 			m_file->Parse(s);
-			m_renderer.Attach(new Renderer());
+			m_renderer.Attach(DNew Renderer());
 			m_name = name;
 			return true;
 		}

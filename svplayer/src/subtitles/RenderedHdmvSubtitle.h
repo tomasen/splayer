@@ -1,7 +1,7 @@
 /* 
- * $Id: RenderedHdmvSubtitle.h 939 2008-12-22 21:31:24Z casimir666 $
+ * $Id: RenderedHdmvSubtitle.h 1647 2010-02-09 20:12:31Z xhmikosr $
  *
- * (C) 2006-2007 see AUTHORS
+ * (C) 2006-2010 see AUTHORS
  *
  * This file is part of mplayerc.
  *
@@ -24,14 +24,16 @@
 #pragma once
 
 #include "Rasterizer.h"
-#include "..\SubPic\ISubPic.h"
+#include "../SubPic/ISubPic.h"
 #include "HdmvSub.h"
+#include "BaseSub.h"
+
 
 [uuid("FCA68599-C83E-4ea5-94A3-C2E1B0E326B9")]
 class CRenderedHdmvSubtitle : public ISubPicProviderImpl, public ISubStream
 {
 public:
-	CRenderedHdmvSubtitle(CCritSec* pLock);
+	CRenderedHdmvSubtitle(CCritSec* pLock, SUBTITLE_TYPE nType);
 	~CRenderedHdmvSubtitle(void);
 
 	DECLARE_IUNKNOWN
@@ -64,6 +66,6 @@ private :
 	LCID			m_lcid;
 	REFERENCE_TIME	m_rtStart;
 
-	CHdmvSub		m_HdmvSub;
+	CBaseSub*		m_pSub;
 	CCritSec		m_csCritSec;
 };

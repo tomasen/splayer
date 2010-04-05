@@ -228,4 +228,6 @@ static BOOL CALLBACK MonitorEnumProcDxDetect(HMONITOR hMonitor, HDC hdcMonitor, 
 	return TRUE;
 }
 
-
+#define SAFE_DELETE(p)       { if(p) { delete (p);     (p)=NULL; } }
+#define SAFE_DELETE_ARRAY(p) { if(p) { delete[] (p);   (p)=NULL; } }
+#define SAFE_RELEASE(p)      { if(p) { (p)->Release(); (p)=NULL; } }

@@ -28,6 +28,7 @@
 #include "DXVADecoderMpeg2.h"
 #include "MPCVideoDecFilter.h"
 #include "VideoDecDXVAAllocator.h"
+#include "../../DSUtil/DSUtil.h"
 
 extern "C"
 {

@@ -23,7 +23,6 @@
 #include "Subtitle.h"
 #include "Split.h"
 #include <math.h>
-#include "../../svplib/svplib.h"
 
 namespace ssf
 {
@@ -146,7 +145,7 @@ namespace ssf
 		catch(Exception& e)
 		{
 			UNREFERENCED_PARAMETER(e);
-			SVP_LogMsg5(_T("%s"), e.ToString());
+			TRACE(_T("%s"), e.ToString());
 			return false;
 		}
 

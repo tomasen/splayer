@@ -24,8 +24,6 @@
 #include <afxinet.h>
 #include "TextFile.h"
 
-#include "../svplib/SVPToolBox.h"
-
 CTextFile::CTextFile(enc e)
 {
 	m_encoding = m_defaultencoding = e;
@@ -34,7 +32,7 @@ CTextFile::CTextFile(enc e)
 
 bool CTextFile::Open(LPCTSTR lpszFileName)
 {
-	if(!__super::Open(lpszFileName, modeRead|typeBinary|shareDenyWrite))
+	if(!__super::Open(lpszFileName, modeRead|typeBinary|shareDenyNone))
 		return(false);
 
 	m_encoding = m_defaultencoding;
@@ -70,26 +68,10 @@ bool CTextFile::Open(LPCTSTR lpszFileName)
 		}
 	}
 
-/*
-		if(m_encoding == m_defaultencoding)
-		{
-			CSVPToolBox svpTool;
-			switch( svpTool.DetectFileCharset(lpszFileName ) ){
-				case GB2312_CHARSET:
-					break;
-				case CHINESEBIG5_CHARSET:
-					break;
-				default:
-					m_encoding = UTF8;
-					break;
-			}
-			
-		}*/
-	
 	if(m_encoding == m_defaultencoding)
 	{
 		__super::Close(); // CWebTextFile::Close() would delete the temp file if we called it...
-		if(!__super::Open(lpszFileName, modeRead|typeText|shareDenyWrite))
+		if(!__super::Open(lpszFileName, modeRead|typeText|shareDenyNone))
 			return(false);
 	}
 
@@ -221,7 +203,7 @@ void CTextFile::WriteString(LPCWSTR lpsz/*CStringW str*/)
 	else if(m_encoding == UTF8)
 	{
 		str.Replace(L"\n", L"\r\n");
-		for(int i = 0; i < str.GetLength(); i++)
+		for(size_t i = 0; i < str.GetLength(); i++)
 		{
 			DWORD c = (WORD)str[i];
 
@@ -257,7 +239,7 @@ void CTextFile::WriteString(LPCWSTR lpsz/*CStringW str*/)
 	else if(m_encoding == BE16)
 	{
 		str.Replace(L"\n", L"\r\n");
-		for(int i = 0; i < str.GetLength(); i++)
+		for(size_t i = 0; i < str.GetLength(); i++)
 			str.SetAt(i, ((str[i]>>8)&0x00ff)|((str[i]<<8)&0xff00));
 		Write((LPCWSTR)str, str.GetLength()*2);
 	}
@@ -446,7 +428,7 @@ bool CWebTextFile::Open(LPCTSTR lpszFileName)
 		CAutoPtr<CStdioFile> f(is.OpenURL(fn, 1, INTERNET_FLAG_TRANSFER_BINARY|INTERNET_FLAG_EXISTING_CONNECT));
 		if(!f) return(false);
 
-		TCHAR path[MAX_PATH];
+		TCHAR path[_MAX_PATH];
 		GetTempPath(MAX_PATH, path);
 
 		fn = path + fn.Mid(fn.ReverseFind('/')+1);
@@ -501,7 +483,7 @@ void CWebTextFile::Close()
 CStringW AToW(CStringA str)
 {
 	CStringW ret;
-	for(int i = 0, j = str.GetLength(); i < j; i++)
+	for(size_t i = 0, j = str.GetLength(); i < j; i++)
 		ret += (WCHAR)(BYTE)str[i];
 	return(ret);
 }
@@ -509,7 +491,7 @@ CStringW AToW(CStringA str)
 CStringA WToA(CStringW str)
 {
 	CStringA ret;
-	for(int i = 0, j = str.GetLength(); i < j; i++)
+	for(size_t i = 0, j = str.GetLength(); i < j; i++)
 		ret += (CHAR)(WORD)str[i];
 	return(ret);
 }
@@ -517,7 +499,7 @@ CStringA WToA(CStringW str)
 CString AToT(CStringA str)
 {
 	CString ret;
-	for(int i = 0, j = str.GetLength(); i < j; i++)
+	for(size_t i = 0, j = str.GetLength(); i < j; i++)
 		ret += (TCHAR)(BYTE)str[i];
 	return(ret);
 }
@@ -525,7 +507,7 @@ CString AToT(CStringA str)
 CString WToT(CStringW str)
 {
 	CString ret;
-	for(int i = 0, j = str.GetLength(); i < j; i++)
+	for(size_t i = 0, j = str.GetLength(); i < j; i++)
 		ret += (TCHAR)(WORD)str[i];
 	return(ret);
 }
@@ -534,7 +516,7 @@ CStringA TToA(CString str)
 {
 	CStringA ret;
 #ifdef UNICODE
-	for(int i = 0, j = str.GetLength(); i < j; i++)
+	for(size_t i = 0, j = str.GetLength(); i < j; i++)
 		ret += (CHAR)(BYTE)str[i];
 #else
 	ret = str;
@@ -548,7 +530,7 @@ CStringW TToW(CString str)
 #ifdef UNICODE
 	ret = str;
 #else
-	for(int i = 0, j = str.GetLength(); i < j; i++)
+	for(size_t i = 0, j = str.GetLength(); i < j; i++)
 		ret += (WCHAR)(BYTE)str[i];
 #endif
 	return(ret);

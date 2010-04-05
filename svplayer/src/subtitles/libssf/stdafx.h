@@ -58,8 +58,8 @@
 // TODO: reference additional headers your program requires here
 
 #include <streams.h>
-#include "..\..\DSUtil\DSUtil.h"
-#include "..\..\dsutil\vd.h"
+#include "../../DSUtil/DSUtil.h"
+#include "../../dsutil/vd.h"
 
 #include <xmmintrin.h>
 #include <emmintrin.h>

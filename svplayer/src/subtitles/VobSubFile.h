@@ -23,7 +23,7 @@
 
 #include <atlcoll.h>
 #include "VobSubImage.h"
-#include "..\SubPic\ISubPic.h"
+#include "../SubPic/ISubPic.h"
 
 #define VOBSUBIDXVER 7
 
@@ -64,7 +64,6 @@ public:
 	void SetAlignment(bool fAlign, int x, int y, int hor, int ver);
 };
 
-
 class __declspec(uuid("998D4C9A-460F-4de6-BDCD-35AB24F94ADF")) CVobSubFile : public CVobSubSettings, public ISubStream, public ISubPicProviderImpl
 {
 protected:
@@ -86,8 +85,8 @@ protected:
 	bool SaveMaestro(CString fn);
 
 public:
-	CString m_title;
-	typedef struct
+    CString m_title;
+    typedef struct
 	{
 		__int64 filepos;
 		__int64 start, stop;
@@ -142,7 +141,6 @@ public:
 	STDMETHODIMP SetStream(int iStream);
 	STDMETHODIMP Reload();
 };
-
 
 class __declspec(uuid("D7FBFB45-2D13-494F-9B3D-FFC9557D5C45")) CVobSubStream : public CVobSubSettings, public ISubStream, public ISubPicProviderImpl
 {

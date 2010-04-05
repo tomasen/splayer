@@ -52,10 +52,6 @@
 #endif
 
 
-#define SAFE_DELETE(x)				delete x;   x=NULL;
-#define SAFE_DELETE_ARRAY(x)		delete[] x; x=NULL;
-
-
 #include "../../../svplib/svplib.h"
 
 //#define  SVPASSERT(ret,remark) SVP_LogMsg6("DXVA ASSERT %x (%s) at %s : %d", ret, remark, __FUNCTION__ , __LINE__ );

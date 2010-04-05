@@ -19,7 +19,7 @@
  *
  */
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "usfsubtitles.h"
 #include <msxml.h>
 
@@ -62,7 +62,7 @@ static CStringW GetXML(CComPtr<IXMLDOMNode> pNode)
 	CStringW str(bstr);
 	str.Remove('\r');
 	str.Replace('\n', ' ');
-	for(int i = 0; (i = str.Find(L" ", i)) >= 0; )
+	for(size_t i = 0; (i = str.Find(L" ", i)) >= 0; )
 	{
 		for(++i; i < str.GetLength() && (str[i] == '\n' || str[i] == ' ');)
 			str.Delete(i);
@@ -271,7 +271,7 @@ bool CUSFSubtitles::ConvertToSTS(CSimpleTextSubtitle& sts)
 				1;
 		}
 
-		STSStyle* stss = new STSStyle;
+		STSStyle* stss = DNew STSStyle;
 		if(!stss) continue;
 
 		if(!s->pal.horizontal_margin.IsEmpty())
@@ -290,7 +290,7 @@ bool CUSFSubtitles::ConvertToSTS(CSimpleTextSubtitle& sts)
 		if(!s->fontstyle.outline.IsEmpty()) stss->outlineWidthX = stss->outlineWidthY = wcstol(s->fontstyle.outline, NULL, 10);
 		if(!s->fontstyle.shadow.IsEmpty()) stss->shadowDepthX = stss->shadowDepthY = wcstol(s->fontstyle.shadow, NULL, 10);
 
-		for(int i = 0; i < 4; i++)
+		for(ptrdiff_t i = 0; i < 4; i++)
 		{
 			DWORD color = ColorToDWORD(s->fontstyle.color[i]);
 			int alpha = (BYTE)wcstol(s->fontstyle.alpha, NULL, 10);
@@ -342,7 +342,7 @@ bool CUSFSubtitles::ConvertToSTS(CSimpleTextSubtitle& sts)
 			marginRect.top = marginRect.bottom = TranslateMargin(t->pal.vertical_margin, sts.m_dstScreenSize.cy);
 
 		WCHAR rtags[3][8] = {L"{\\rz%d}", L"{\\rx%d}", L"{\\ry%d}"};
-		for(int i = 0; i < 3; i++)
+		for(ptrdiff_t i = 0; i < 3; i++)
 		{
 			if(int angle = wcstol(t->pal.rotate[i], NULL, 10))
 			{
@@ -418,7 +418,7 @@ bool CUSFSubtitles::ParseUSFSubtitles(CComPtr<IXMLDOMNode> pNode)
 
 					if(name == L"style")
 					{
-						CAutoPtr<style_t> s(new style_t);
+						CAutoPtr<style_t> s(DNew style_t);
 						if(s)
 						{
 							ParseStyle(pGrandChild, s);
@@ -445,7 +445,7 @@ bool CUSFSubtitles::ParseUSFSubtitles(CComPtr<IXMLDOMNode> pNode)
 
 					if(name == L"effect")
 					{
-						CAutoPtr<effect_t> e(new effect_t);
+						CAutoPtr<effect_t> e(DNew effect_t);
 						if(e)
 						{
 							ParseEffect(pGrandChild, e);
@@ -625,7 +625,7 @@ void CUSFSubtitles::ParseEffect(CComPtr<IXMLDOMNode> pNode, effect_t* e)
 
 			if(name == L"keyframe")
 			{
-				CAutoPtr<keyframe_t> k(new keyframe_t);
+				CAutoPtr<keyframe_t> k(DNew keyframe_t);
 				if(k)
 				{
 					ParseKeyframe(pChild, k);
@@ -671,7 +671,7 @@ void CUSFSubtitles::ParseSubtitle(CComPtr<IXMLDOMNode> pNode, int start, int sto
 
 	if(name == L"text" || name == L"karaoke")
 	{
-		CAutoPtr<text_t> t(new text_t);
+		CAutoPtr<text_t> t(DNew text_t);
 		if(t)
 		{
 			t->start = start;
@@ -725,7 +725,7 @@ void CUSFSubtitles::ParseText(CComPtr<IXMLDOMNode> pNode, CStringW& str)
 		if(!fs.outline.IsEmpty()) {prefix += L"{\\bord" + fs.outline + L"}"; postfix += L"{\\bord}";}
 		if(!fs.shadow.IsEmpty()) {prefix += L"{\\shad" + fs.shadow + L"}"; postfix += L"{\\shad}";}
 
-		for(int i = 0; i < 4; i++)
+		for(ptrdiff_t i = 0; i < 4; i++)
 		{
 			if(!fs.color[i].IsEmpty())
 			{

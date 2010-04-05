@@ -70,12 +70,18 @@ interface __declspec(uuid("449E11F3-52D1-4a27-AA61-E2733AC92CC0")) ISubPic : pub
 	STDMETHOD (AlphaBlt) (RECT* pSrc, RECT* pDst, SubPicDesc* pTarget = NULL /*[in]*/) PURE;
 	STDMETHOD (GetSourceAndDest) (SIZE* pSize /*[in]*/, RECT* pRcSource /*[out]*/, RECT* pRcDest /*[out]*/) PURE;
 	STDMETHOD (SetVirtualTextureSize) (const SIZE pSize, const POINT pTopLeft) PURE;
+
+    STDMETHOD_(REFERENCE_TIME, GetSegmentStart) () PURE;
+    STDMETHOD_(REFERENCE_TIME, GetSegmentStop) () PURE;
+    STDMETHOD_(void, SetSegmentStart) (REFERENCE_TIME rtStart) PURE;
+    STDMETHOD_(void, SetSegmentStop) (REFERENCE_TIME rtStop) PURE;
 };
 
 class ISubPicImpl : public CUnknown, public ISubPic
 {
 protected:
 	REFERENCE_TIME m_rtStart, m_rtStop;
+    REFERENCE_TIME m_rtSegmentStart, m_rtSegmentStop;
 	CRect	m_rcDirty;
 	CSize	m_maxsize;
 	CSize	m_size;
@@ -143,6 +149,12 @@ public:
 
 	STDMETHODIMP SetVirtualTextureSize (const SIZE pSize, const POINT pTopLeft);
 	STDMETHODIMP GetSourceAndDest(SIZE* pSize, RECT* pRcSource, RECT* pRcDest);
+
+
+    STDMETHODIMP_(REFERENCE_TIME) GetSegmentStart();
+    STDMETHODIMP_(REFERENCE_TIME) GetSegmentStop();
+    STDMETHODIMP_(void) SetSegmentStart(REFERENCE_TIME rtStart);
+    STDMETHODIMP_(void) SetSegmentStop(REFERENCE_TIME rtStop);
 };
 
 //
@@ -264,7 +276,7 @@ interface __declspec(uuid("C8334466-CD1E-4ad1-9D2D-8EE8519BD180")) ISubPicQueue 
 	STDMETHOD (SetTime) (REFERENCE_TIME rtNow /*[in]*/) PURE;
 
 	STDMETHOD (Invalidate) (REFERENCE_TIME rtInvalidate = -1) PURE;
-	STDMETHOD_(bool, LookupSubPic) (REFERENCE_TIME rtNow /*[in]*/, ISubPic** ppSubPic /*[out]*/) PURE;
+	STDMETHOD_(bool, LookupSubPic) (REFERENCE_TIME rtNow /*[in]*/, CComPtr<ISubPic> &pSubPic /*[out]*/) PURE;
 
 	STDMETHOD (GetStats) (int& nSubPics, REFERENCE_TIME& rtNow, REFERENCE_TIME& rtStart, REFERENCE_TIME& rtStop /*[out]*/) PURE;
 	STDMETHOD (GetStats) (int nSubPic /*[in]*/, REFERENCE_TIME& rtStart, REFERENCE_TIME& rtStop /*[out]*/) PURE;
@@ -278,10 +290,11 @@ class ISubPicQueueImpl : public CUnknown, public ISubPicQueue
 protected:
 	double m_fps;
 	REFERENCE_TIME m_rtNow;
+    REFERENCE_TIME m_rtNowLast;
 
 	CComPtr<ISubPicAllocator> m_pAllocator;
 	
-	HRESULT RenderTo(ISubPic* pSubPic, REFERENCE_TIME rtStart, REFERENCE_TIME rtStop, double fps);
+	HRESULT RenderTo(ISubPic* pSubPic, REFERENCE_TIME rtStart, REFERENCE_TIME rtStop, double fps, BOOL bIsAnimated);
 
 public:
 	ISubPicQueueImpl(ISubPicAllocator* pAllocator, HRESULT* phr);
@@ -306,55 +319,61 @@ public:
 */
 };
 
-class CSubPicQueue : public ISubPicQueueImpl, private CInterfaceList<ISubPic>, private CAMThread
+class CSubPicQueue : public ISubPicQueueImpl, private CAMThread
 {
-	int m_nMaxSubPic;
+    int m_nMaxSubPic;
+    BOOL m_bDisableAnim;
 
-	CCritSec m_csQueueLock; // for protecting CInterfaceList<ISubPic>
-	REFERENCE_TIME UpdateQueue();
-	void AppendQueue(ISubPic* pSubPic);
+    CInterfaceList<ISubPic> m_Queue;
 
-	REFERENCE_TIME m_rtQueueStart, m_rtInvalidate;
+    CCritSec m_csQueueLock; // for protecting CInterfaceList<ISubPic>
+    REFERENCE_TIME UpdateQueue();
+    void AppendQueue(ISubPic* pSubPic);
+    int GetQueueCount();
 
-	// CAMThread
+    REFERENCE_TIME m_rtQueueMin;
+    REFERENCE_TIME m_rtQueueMax;
+    REFERENCE_TIME m_rtInvalidate;
 
-	bool m_fBreakBuffering;
-	enum {EVENT_EXIT, EVENT_TIME, EVENT_COUNT}; // IMPORTANT: _EXIT must come before _TIME if we want to exit fast from the destructor
-	HANDLE m_ThreadEvents[EVENT_COUNT];
+    // CAMThread
+
+    bool m_fBreakBuffering;
+    enum {EVENT_EXIT, EVENT_TIME, EVENT_COUNT}; // IMPORTANT: _EXIT must come before _TIME if we want to exit fast from the destructor
+    HANDLE m_ThreadEvents[EVENT_COUNT];
     DWORD ThreadProc();
 
 public:
-	CSubPicQueue(int nMaxSubPic, ISubPicAllocator* pAllocator, HRESULT* phr);
-	virtual ~CSubPicQueue();
+    CSubPicQueue(int nMaxSubPic, ISubPicAllocator* pAllocator, HRESULT* phr, BOOL bDisableAnim = 0);
+    virtual ~CSubPicQueue();
 
-	// ISubPicQueue
+    // ISubPicQueue
 
-	STDMETHODIMP SetFPS(double fps);
-	STDMETHODIMP SetTime(REFERENCE_TIME rtNow);
+    STDMETHODIMP SetFPS(double fps);
+    STDMETHODIMP SetTime(REFERENCE_TIME rtNow);
 
-	STDMETHODIMP Invalidate(REFERENCE_TIME rtInvalidate = -1);
-	STDMETHODIMP_(bool) LookupSubPic(REFERENCE_TIME rtNow, ISubPic** ppSubPic);
+    STDMETHODIMP Invalidate(REFERENCE_TIME rtInvalidate = -1);
+    STDMETHODIMP_(bool) LookupSubPic(REFERENCE_TIME rtNow, CComPtr<ISubPic> &pSubPic);
 
-	STDMETHODIMP GetStats(int& nSubPics, REFERENCE_TIME& rtNow, REFERENCE_TIME& rtStart, REFERENCE_TIME& rtStop);
-	STDMETHODIMP GetStats(int nSubPic, REFERENCE_TIME& rtStart, REFERENCE_TIME& rtStop);
+    STDMETHODIMP GetStats(int& nSubPics, REFERENCE_TIME& rtNow, REFERENCE_TIME& rtStart, REFERENCE_TIME& rtStop);
+    STDMETHODIMP GetStats(int nSubPic, REFERENCE_TIME& rtStart, REFERENCE_TIME& rtStop);
 };
 
 class CSubPicQueueNoThread : public ISubPicQueueImpl
 {
-	CCritSec m_csLock;
-	CComPtr<ISubPic> m_pSubPic;
+    CCritSec m_csLock;
+    CComPtr<ISubPic> m_pSubPic;
 
 public:
-	CSubPicQueueNoThread(ISubPicAllocator* pAllocator, HRESULT* phr);
-	virtual ~CSubPicQueueNoThread();
+    CSubPicQueueNoThread(ISubPicAllocator* pAllocator, HRESULT* phr);
+    virtual ~CSubPicQueueNoThread();
 
-	// ISubPicQueue
+    // ISubPicQueue
 
-	STDMETHODIMP Invalidate(REFERENCE_TIME rtInvalidate = -1);
-	STDMETHODIMP_(bool) LookupSubPic(REFERENCE_TIME rtNow, ISubPic** ppSubPic);
+    STDMETHODIMP Invalidate(REFERENCE_TIME rtInvalidate = -1);
+    STDMETHODIMP_(bool) LookupSubPic(REFERENCE_TIME rtNow, CComPtr<ISubPic> &pSubPic);
 
-	STDMETHODIMP GetStats(int& nSubPics, REFERENCE_TIME& rtNow, REFERENCE_TIME& rtStart, REFERENCE_TIME& rtStop);
-	STDMETHODIMP GetStats(int nSubPic, REFERENCE_TIME& rtStart, REFERENCE_TIME& rtStop);
+    STDMETHODIMP GetStats(int& nSubPics, REFERENCE_TIME& rtNow, REFERENCE_TIME& rtStart, REFERENCE_TIME& rtStop);
+    STDMETHODIMP GetStats(int nSubPic, REFERENCE_TIME& rtStart, REFERENCE_TIME& rtStop);
 };
 
 //

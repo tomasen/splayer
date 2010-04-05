@@ -22,6 +22,7 @@
 #include "..\..\..\apps\mplayerc\mplayerc.h"
 
 #define  SVP_LogMsg5  __noop
+#define  SVP_LogMsg6    __noop
 
 CSVPSubFilter::CSVPSubFilter(LPUNKNOWN lpunk, HRESULT* phr)
 : CBaseVideoFilter(NAME("SPlayer ×ÖÄ»ÂË¾µ"), lpunk, phr, __uuidof(this), 1) ,
@@ -235,6 +236,7 @@ HRESULT CSVPSubFilter::Transform(IMediaSample* pIn)
 //SVP_LogMsg5(L"CSVPSubFilter::Transform");
 
 	REFERENCE_TIME rtStart, rtStop;
+    double fps_that_we_using = m_fps;
 	if(SUCCEEDED(pIn->GetTime(&rtStart, &rtStop)))
 	{
 		double dRate = m_pInput->CurrentRate();
@@ -252,11 +254,14 @@ HRESULT CSVPSubFilter::Transform(IMediaSample* pIn)
 		}
 		*/
 
-
-		m_fps = 10000000.0/rtAvgTimePerFrame / dRate;
+        double accu_fps = 10000000.0/rtAvgTimePerFrame;
+        m_fps = max(m_fps , accu_fps);
+		fps_that_we_using = m_fps / dRate;
 	}
 
 	//
+    REFERENCE_TIME rt_sub1 = CalcCurrentTime();
+    REFERENCE_TIME rt_sub2 = CalcCurrentTime2();
 
 	{
 		CAutoLock cAutoLock(&m_csQueueLock);
@@ -264,13 +269,13 @@ HRESULT CSVPSubFilter::Transform(IMediaSample* pIn)
 		if(m_pSubPicQueue)
 		{
 			
-			m_pSubPicQueue->SetFPS(m_fps);
+			m_pSubPicQueue->SetFPS(fps_that_we_using);
 		}
 
 		if(m_pSubPicQueue2)
 		{
 			
-			m_pSubPicQueue2->SetFPS(m_fps);
+			m_pSubPicQueue2->SetFPS(fps_that_we_using);
 		}
 	
 		SVP_LogMsg5(L" SetFPS fps %f " , m_fps);
@@ -279,15 +284,15 @@ HRESULT CSVPSubFilter::Transform(IMediaSample* pIn)
 			
 			if(m_pSubPicQueue)
 			{
-				SVP_LogMsg5(L" SetTime CalcCurrentTime1 %f " ,(double) CalcCurrentTime());
-				m_pSubPicQueue->SetTime(CalcCurrentTime());
+				SVP_LogMsg6(" SetTime CalcCurrentTime1 %f " ,(double) rt_sub1);
+				m_pSubPicQueue->SetTime( rt_sub1);
 				
 			}
 
 			if(m_pSubPicQueue2)
 			{
-				SVP_LogMsg5(L" SetTime CalcCurrentTime2 %f " ,(double) CalcCurrentTime());
-				m_pSubPicQueue2->SetTime(CalcCurrentTime2());
+				SVP_LogMsg6(" SetTime CalcCurrentTime2 %f " ,(double) rt_sub2);
+				m_pSubPicQueue2->SetTime(rt_sub2);
 				
 			}
 		}
@@ -386,10 +391,10 @@ HRESULT CSVPSubFilter::Transform(IMediaSample* pIn)
 		BOOL bltSub1 = false, bltSub2 = false;
 		CRect rcSource1, rcSource2, rcDest1, rcDest2;
 		CSize size(spd.w, spd.h);
-
+       
 		if(m_pSubPicQueue)
 		{
-			if(SUCCEEDED(m_pSubPicQueue->LookupSubPic(CalcCurrentTime(), &pSubPic)) && pSubPic)
+			if(SUCCEEDED(m_pSubPicQueue->LookupSubPic(rt_sub1, pSubPic)) && pSubPic)
 			{
 				pSubPic->GetDirtyRect(rcSource1);
 
@@ -410,7 +415,7 @@ HRESULT CSVPSubFilter::Transform(IMediaSample* pIn)
 
 		if(m_pSubPicQueue2)
 		{
-			if(SUCCEEDED(m_pSubPicQueue2->LookupSubPic(CalcCurrentTime2(), &pSubPic2)) && pSubPic2)
+			if(SUCCEEDED(m_pSubPicQueue2->LookupSubPic(rt_sub2, pSubPic2)) && pSubPic2)
 			{
 				pSubPic2->GetDirtyRect(rcSource2);
 
@@ -424,7 +429,7 @@ HRESULT CSVPSubFilter::Transform(IMediaSample* pIn)
 
 			}
 		}
-
+         SVP_LogMsg6("hh %f %f %f %d %d",m_fps , double(rt_sub1), double(rt_sub2) ,bltSub1 , bltSub2 );
 		m_sublib.CalcDualSubPosisiton(bltSub1 , bltSub2 , rcDest1 , rcDest2 , size ,!!pSubPic, !!pSubPic2);
 		
 		if(bltSub1)

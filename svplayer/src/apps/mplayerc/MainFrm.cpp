@@ -9209,9 +9209,18 @@ void CMainFrame::OnUpdatePlaySubtitles(CCmdUI* pCmdUI)
 	else if(i == -1)
 	{
 		if(secondSub){
-			pCmdUI->SetRadio(m_iSubtitleSel2 >= 0);
+			//pCmdUI->SetRadio(m_iSubtitleSel2 >= 0);
+            if(m_iSubtitleSel2 >= 0)
+                pCmdUI->SetText( ResStr(IDS_SUBTITLES_MENUITEN_DISABLE_IT) );
+            else
+                pCmdUI->SetText( ResStr(IDS_SUBTITLES_ENABLE) );
 		}else{
-			pCmdUI->SetRadio(m_iSubtitleSel >= 0);
+			//pCmdUI->SetRadio(m_iSubtitleSel >= 0);
+
+            if(m_iSubtitleSel >= 0)
+                pCmdUI->SetText( ResStr(IDS_SUBTITLES_MENUITEN_DISABLE_IT) );
+            else
+                 pCmdUI->SetText( ResStr(IDS_SUBTITLES_ENABLE) );
 		}
 	}
 	else if(i >= 0)

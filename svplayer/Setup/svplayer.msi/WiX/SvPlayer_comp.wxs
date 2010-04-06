@@ -10,12 +10,6 @@
                 <Component Id="cmp6D95C988D9AD3AA6A6A23DFFB36C85E3" Guid="{9FC08D61-66EC-4ACD-BA1F-A04644996C9E}">
                     <File Id="fil7F6EE1E83F8464C51E58D1561517DE2D" KeyPath="yes" Source="..\..\..\..\binkw32.dll" />
                 </Component>
-                <Component Id="cmp5BAA60273B8E4D6BE6DC92BBC4177957" Guid="{E2A94094-277F-4C6D-8BB1-A4135495C39F}">
-                    <File Id="fil2186AAD5C8DDD427C379285B837CA693" KeyPath="yes" Source="..\..\..\..\cook.dll" />
-                </Component>
-                <Component Id="cmpE1EFB4869DDE1B34CF1CB2C4AF43B46E" Guid="{88B723E1-920F-4C85-9DFF-BD90156C62DA}">
-                    <File Id="fil26B86C9109F6E9885F54E320599CE999" KeyPath="yes" Source="..\..\..\..\drvc.dll" />
-                </Component>
                 <Component Id="cmp88AD85C0E020D2349E85C49DD908C57D" Guid="{3CC543E1-7DA2-4CAC-A4E4-66A21D4CB149}">
                     <File Id="fil2EACF6D2543508B2BFF13D2059FD6B8C" KeyPath="yes" Source="..\..\..\..\haalis.ax">
                         <Class Id="{55DA30FC-F16B-49FC-BAA5-AE59FC65F82D}" Context="InprocServer32" Description="Haali Media Splitter" ThreadingModel="both" />
@@ -104,9 +98,6 @@
                     <RegistryValue Root="HKCR" Key="Media Type\{E436EB83-524F-11CE-9F53-0020AF0BA770}\{706D706D-0000-0000-0000-000000000000}" Name="0" Value="0,4,,706d706d" Type="string" Action="write" />
                     <RegistryValue Root="HKCR" Key="Media Type\{E436EB83-524F-11CE-9F53-0020AF0BA770}\{706D706D-0000-0000-0000-000000000000}" Name="Source Filter" Value="{E117D42B-839C-498A-95DA-647BC90E2B8F}" Type="string" Action="write" />
                 </Component>
-                <Component Id="cmp1C8AB088FBF88E0EF4EA2D2E560AB5C8" Guid="{00C5FB57-5952-432F-B36F-2D6D57F64286}">
-                    <File Id="fil860E07B03D0FD0057D718466AC67AC8C" KeyPath="yes" Source="..\..\..\..\pncrt.dll" />
-                </Component>
                 <Component Id="cmpD3B90D15F4B951FA2BE269AB3A9299D9" Guid="{52C89F1E-09C6-4596-9A46-02F5A38E9D57}">
                     <File Id="filE73C5026BB21987AD6FF775275D6AE7A" KeyPath="yes" Source="..\..\..\..\RadGtSplitter.ax">
                         <Class Id="{48B51CD7-D8FA-4452-B00C-5BBFDE92B9AB}" Context="InprocServer32" Description="RadGt Splitter" ThreadingModel="both" />
@@ -133,9 +124,6 @@
                     <RegistryValue Root="HKCR" Key="CLSID\{083863F1-70DE-11D0-BD40-00A0C911CE86}\Instance\{41FAF0F4-DCEC-4F6A-82D2-56E100F2A8E5}" Name="CLSID" Value="{41FAF0F4-DCEC-4F6A-82D2-56E100F2A8E5}" Type="string" Action="write" />
                     <RegistryValue Root="HKCR" Key="CLSID\{083863F1-70DE-11D0-BD40-00A0C911CE86}\Instance\{41FAF0F4-DCEC-4F6A-82D2-56E100F2A8E5}" Name="FilterData" Value="02000000000060000100000000000000307069330800000000000000010000000000000000000000307479330000000038000000480000006175647300001000800000AA00389B710100000000001000800000AA00389B71" Type="binary" Action="write" />
                     <RegistryValue Root="HKCR" Key="Media Type\Extensions\.ape" Name="Source Filter" Value="{41FAF0F4-DCEC-4F6A-82D2-56E100F2A8E5}" Type="string" Action="write" />
-                </Component>
-                <Component Id="cmpAFD3C94DAE18CD7D6B56F0EDE29B73A3" Guid="{5AEEBB09-486D-456B-AADD-06F8AE233D7A}">
-                    <File Id="fil3CF0A9F1C611ACD478582579259EA876" KeyPath="yes" Source="..\..\..\..\sipr.dll" />
                 </Component>
                 <Component Id="cmp5DDF4CDA1D1409C4889C49B8B9F10EB0" Guid="{1CEF170F-2D20-4C42-A26E-22044BF05213}">
                     <File Id="fil8B6132A2B6DB64BE9D1E091FEA95F098" KeyPath="yes" Source="..\..\..\..\smackw32.dll" />

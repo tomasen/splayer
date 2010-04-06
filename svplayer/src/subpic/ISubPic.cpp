@@ -716,7 +716,7 @@ DWORD CSubPicQueue::ThreadProc()
         else if ((Ret - WAIT_OBJECT_0) != EVENT_TIME)
             break;
         double fps = m_fps;
-        REFERENCE_TIME rtTimePerFrame = 10000000.0/fps*1.5; //1.5 to reduce flick
+        REFERENCE_TIME rtTimePerFrame = max(10000000.0/fps*1.5, 1000000); //1.5 to reduce flick
         REFERENCE_TIME rtNow = UpdateQueue();
 
         int nMaxSubPic = m_nMaxSubPic;

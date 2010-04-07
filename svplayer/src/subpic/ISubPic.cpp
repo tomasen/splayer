@@ -761,8 +761,8 @@ DWORD CSubPicQueue::ThreadProc()
                         HRESULT hr;
                         if (bIsAnimated)
                         {
-                            if (rtCurrent < m_rtNow + rtTimePerFrame)
-                                rtCurrent = min(m_rtNow + rtTimePerFrame, rtStop-1);
+                            //if (rtCurrent < m_rtNow + rtTimePerFrame)
+                             //   rtCurrent = min(m_rtNow + rtTimePerFrame, rtStop-1);
 
                             REFERENCE_TIME rtEndThis = min(rtCurrent + rtTimePerFrame, rtStop);
                             hr = RenderTo(pStatic, rtCurrent, rtEndThis, fps, bIsAnimated);

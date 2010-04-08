@@ -2631,7 +2631,7 @@ HRESULT CMpaDecFilter::DeliverFfmpeg(int nCodecId, BYTE* p, int buffsize, int& s
         memcpy(m_pFFBuffer, pDataInBuff, buffsize);
         memset(m_pFFBuffer+buffsize,0,FF_INPUT_BUFFER_PADDING_SIZE);
 
-        SVP_LogMsg5(L"nPCMLength1 %d size %d buffsize %d srate %d" , nPCMLength, size , buffsize);
+        SVP_LogMsg5(L"nPCMLength1 %d %d size %d buffsize %d srate %d" ,m_pAVCtx->codec_id ,  nPCMLength, size , buffsize);
 	    int used_byte = avcodec_decode_audio2(m_pAVCtx, (int16_t*)m_pPCMData, &nPCMLength, (const uint8_t*)m_pFFBuffer, buffsize);
 	    SVP_LogMsg5(L"nPCM %x %x %x %x %x %x %x %x %x %x", m_pPCMData[0], m_pPCMData[1], m_pPCMData[2], m_pPCMData[3], m_pPCMData[4], m_pPCMData[5], m_pPCMData[6], m_pPCMData[7], m_pPCMData[8], m_pPCMData[9]);
         SVP_LogMsg5(L"nPCMLength2 %d size %d buffsize %d %d" , nPCMLength, used_byte , buffsize, m_pAVCtx->sample_fmt);

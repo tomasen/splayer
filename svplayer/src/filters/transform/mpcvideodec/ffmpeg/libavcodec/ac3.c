@@ -112,9 +112,10 @@ void ff_ac3_bit_alloc_calc_psd(int8_t *exp, int start, int end, int16_t *psd,
         int v = psd[bin++];
         int band_end = FFMIN(band_start_tab[band+1], end);
         for (; bin < band_end; bin++) {
+            int max = FFMAX(v, psd[bin]);
             /* logadd */
-            int adr = FFMIN(FFABS(v - psd[bin]) >> 1, 255);
-            v = FFMAX(v, psd[bin]) + ff_ac3_log_add_tab[adr];
+            int adr = FFMIN(max - ((v + psd[bin] + 1) >> 1), 255);
+            v = max + ff_ac3_log_add_tab[adr];
         }
         band_psd[band++] = v;
     } while (end > band_start_tab[band]);
@@ -228,7 +229,7 @@ void ff_ac3_bit_alloc_calc_bap(int16_t *mask, int16_t *psd, int start, int end,
     band = bin_to_band_tab[start];
     do {
         int m = (FFMAX(mask[band] - snr_offset - floor, 0) & 0x1FE0) + floor;
-        int band_end = FFMIN(bin + ff_ac3_critical_band_size_tab[band], end);
+        int band_end = FFMIN(band_start_tab[band+1], end);
         for (; bin < band_end; bin++) {
             int address = av_clip((psd[bin] - m) >> 5, 0, 63);
             bap[bin] = bap_tab[address];

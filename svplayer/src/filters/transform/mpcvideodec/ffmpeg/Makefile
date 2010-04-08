@@ -13,6 +13,14 @@ CFLAGS+= -I. -I.. -I$(LAVC_DIR) -I$(LAVU_DIR) -I$(LAVF_DIR) -I../codecs -I../img
 CC=gcc
 
 SRCS_C=\
+		$(LAVC_DIR)/aac_ac3_parser.c \
+		$(LAVC_DIR)/ac3.c \
+		$(LAVC_DIR)/ac3_parser.c \
+		$(LAVC_DIR)/ac3dec.c \
+		$(LAVC_DIR)/ac3dec_data.c \
+		$(LAVC_DIR)/ac3tab.c \
+		$(LAVC_DIR)/eac3dec.c \
+		$(LAVC_DIR)/eac3dec_data.c \
 		$(LAVC_DIR)/dsputil.c \
 		$(LAVC_DIR)/sipr16k.c \
 		$(LAVC_DIR)/acelp_vectors.c \
@@ -42,8 +50,6 @@ SRCS_C=\
 		$(LAVC_DIR)/atrac3.c \
 		$(LAVC_DIR)/cabac.c \
 		$(LAVC_DIR)/CompilatorVersion.c\
-		$(LAVC_DIR)/eac3dec.c \
-		$(LAVC_DIR)/eac3dec_data.c \
 		$(LAVC_DIR)/error_resilience.c \
 		$(LAVC_DIR)/faandct.c \
 		$(LAVC_DIR)/faanidct.c \
@@ -104,13 +110,6 @@ SRCS_C=\
 		$(LAVC_DIR)/wmv2.c \
 		$(LAVC_DIR)/wmv2dec.c \
 		$(LAVC_DIR)/xiph.c	\
-		$(LAVC_DIR)/aac_ac3_parser.c \
-		$(LAVC_DIR)/ac3.c \
-		$(LAVC_DIR)/ac3_parser.c \
-		$(LAVC_DIR)/ac3dec.c \
-		$(LAVC_DIR)/ac3dec_data.c \
-		$(LAVC_DIR)/ac3tab.c \
-		$(LAVC_DIR)/eac3dec.c \
 		$(LAVC_DIR)/faandct.c \
 		$(LAVC_DIR)/faanidct.c \
 		$(LAVC_DIR)/fft.c \

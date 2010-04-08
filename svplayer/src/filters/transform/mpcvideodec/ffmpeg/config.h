@@ -31,6 +31,7 @@
   #endif
 #endif
 
+#define CONFIG_MDCT 1
 #define HAVE_TEN_OPERANDS 1
 #define HAVE_EBP_AVAILABLE 1
 #define HAVE_EBX_AVAILABLE 1

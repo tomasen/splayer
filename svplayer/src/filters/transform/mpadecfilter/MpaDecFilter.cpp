@@ -129,7 +129,7 @@ const AMOVIESETUP_MEDIATYPE sudPinTypesIn[] =
 	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_WMA1},
 	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_PCM_ULAW},
     {&MEDIATYPE_Audio,				&MEDIASUBTYPE_SIPR},
-    
+    {&MEDIATYPE_Audio,				&MEDIASUBTYPE_QDM2},
 };
 
 #ifdef REGISTER_FILTER
@@ -460,7 +460,8 @@ HRESULT CMpaDecFilter::Receive(IMediaSample* pIn)
 
 	const GUID& subtype = m_pInput->CurrentMediaType().subtype;
 	BOOL bNoJitterControl = false;
-	if(subtype == MEDIASUBTYPE_AMR || subtype == MEDIASUBTYPE_SAMR || subtype == MEDIASUBTYPE_SAWB || subtype == MEDIASUBTYPE_PCM_ULAW){//  ||  subtype == MEDIASUBTYPE_COOK  || subtype == MEDIASUBTYPE_WMA1   || subtype == MEDIASUBTYPE_WMA2 || subtype == MEDIASUBTYPE_PCM_SOWT || subtype == MEDIASUBTYPE_PCM_TWOS
+	if(subtype == MEDIASUBTYPE_AMR || subtype == MEDIASUBTYPE_SAMR || subtype == MEDIASUBTYPE_SAWB || subtype == MEDIASUBTYPE_PCM_ULAW
+         || subtype == MEDIASUBTYPE_QDM2){//  ||  subtype == MEDIASUBTYPE_COOK  || subtype == MEDIASUBTYPE_WMA1   || subtype == MEDIASUBTYPE_WMA2 || subtype == MEDIASUBTYPE_PCM_SOWT || subtype == MEDIASUBTYPE_PCM_TWOS
 		bNoJitterControl = true;
 	}
 
@@ -516,6 +517,10 @@ HRESULT CMpaDecFilter::Receive(IMediaSample* pIn)
     }
     else if(subtype ==MEDIASUBTYPE_SIPR){
         hr = ProcessFfmpeg(CODEC_ID_SIPR);
+    }
+    else if(subtype ==MEDIASUBTYPE_QDM2){
+       
+        hr = ProcessFfmpeg(CODEC_ID_QDM2);
     }
 	else if(subtype ==MEDIASUBTYPE_14_4)
 		hr = ProcessFfmpeg(CODEC_ID_RA_144);
@@ -2635,10 +2640,10 @@ HRESULT CMpaDecFilter::DeliverFfmpeg(int nCodecId, BYTE* p, int buffsize, int& s
 	    int used_byte = avcodec_decode_audio2(m_pAVCtx, (int16_t*)m_pPCMData, &nPCMLength, (const uint8_t*)m_pFFBuffer, buffsize);
 	    SVP_LogMsg5(L"nPCM %x %x %x %x %x %x %x %x %x %x", m_pPCMData[0], m_pPCMData[1], m_pPCMData[2], m_pPCMData[3], m_pPCMData[4], m_pPCMData[5], m_pPCMData[6], m_pPCMData[7], m_pPCMData[8], m_pPCMData[9]);
         SVP_LogMsg5(L"nPCMLength2 %d size %d buffsize %d %d" , nPCMLength, used_byte , buffsize, m_pAVCtx->sample_fmt);
-        if(used_byte <= 0 ) { return S_OK; }
+        if(used_byte < 0 ) { return S_OK; }
         size += used_byte;//min (used_byte, buffsize);
 
-	    if (size>0 && used_byte > 0 && nPCMLength>0)
+	    if ( nPCMLength>0)
 	    {
 		    WAVEFORMATEX*		wfein = (WAVEFORMATEX*)m_pInput->CurrentMediaType().Format();
 		    CAtlArray<float>	pBuff;
@@ -2775,7 +2780,12 @@ bool CMpaDecFilter::InitFfmpeg(int nCodecId)
                // wfein->nAvgBytesPerSec  = 32041 / 8;
                // wfein->nBlockAlign = 93;
 
-			}
+			}else if (nCodecId==CODEC_ID_QDM2)
+            {
+                m_pAVCtx->extradata=m_pInput->CurrentMediaType().Format()+sizeof(WAVEFORMATEX); 
+                m_pAVCtx->extradata_size=m_pInput->CurrentMediaType().FormatLength()-sizeof(WAVEFORMATEX);
+
+            }
             m_pAVCtx->sample_rate			= wfein->nSamplesPerSec;
 			m_pAVCtx->channels				= wfein->nChannels;
 

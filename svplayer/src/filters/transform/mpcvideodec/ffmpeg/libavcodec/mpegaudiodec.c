@@ -49,26 +49,6 @@
 
 #define HEADER_SIZE 4
 
-/* layer 3 "granule" */
-typedef struct GranuleDef {
-    uint8_t scfsi;
-    int part2_3_length;
-    int big_values;
-    int global_gain;
-    int scalefac_compress;
-    uint8_t block_type;
-    uint8_t switch_point;
-    int table_select[3];
-    int subblock_gain[3];
-    uint8_t scalefac_scale;
-    uint8_t count1table_select;
-    int region_size[3]; /* number of huffman codes in each region */
-    int preflag;
-    int short_start, long_end; /* long/short band indexes */
-    uint8_t scale_factors[40];
-    int32_t sb_hybrid[SBLIMIT * 18]; /* 576 samples */
-} GranuleDef;
-
 #include "mpegaudiodata.h"
 #include "mpegaudiodectab.h"
 
@@ -92,12 +72,7 @@ static const int huff_quad_vlc_tables_sizes[2] = {
 };
 /* computed from band_size_long */
 static uint16_t band_index_long[9][23];
-/* XXX: free when all decoders are closed */
-#define TABLE_4_3_SIZE (8191 + 16)*4
-static int8_t  table_4_3_exp[TABLE_4_3_SIZE];
-static uint32_t table_4_3_value[TABLE_4_3_SIZE];
-static uint32_t exp_table[512];
-static uint32_t expval_table[512][16];
+#include "mpegaudio_tablegen.h"
 /* intensity stereo coef table */
 static int32_t is_table[2][16];
 static int32_t is_table_lsf[2][2][16];
@@ -120,13 +95,13 @@ static const int32_t scale_factor_mult2[3][3] = {
     SCALE_GEN(4.0 / 9.0), /* 9 steps */
 };
 
-static DECLARE_ALIGNED_16(MPA_INT, window[512]);
+DECLARE_ALIGNED(16, MPA_INT, ff_mpa_synth_window)[512];
 
 /**
  * Convert region offsets to region sizes and truncate
  * size to big_values.
  */
-void ff_region_offset2size(GranuleDef *g){
+static void ff_region_offset2size(GranuleDef *g){
     int i, k, j=0;
     g->region_size[2] = (576 / 2);
     for(i=0;i<3;i++) {
@@ -136,7 +111,7 @@ void ff_region_offset2size(GranuleDef *g){
     }
 }
 
-void ff_init_short_region(MPADecodeContext *s, GranuleDef *g){
+static void ff_init_short_region(MPADecodeContext *s, GranuleDef *g){
     if (g->block_type == 2)
         g->region_size[0] = (36 / 2);
     else {
@@ -150,7 +125,7 @@ void ff_init_short_region(MPADecodeContext *s, GranuleDef *g){
     g->region_size[1] = (576 / 2);
 }
 
-void ff_init_long_region(MPADecodeContext *s, GranuleDef *g, int ra1, int ra2){
+static void ff_init_long_region(MPADecodeContext *s, GranuleDef *g, int ra1, int ra2){
     int l;
     g->region_size[0] =
         band_index_long[s->sample_rate_index][ra1 + 1] >> 1;
@@ -160,7 +135,7 @@ void ff_init_long_region(MPADecodeContext *s, GranuleDef *g, int ra1, int ra2){
         band_index_long[s->sample_rate_index][l] >> 1;
 }
 
-void ff_compute_band_indexes(MPADecodeContext *s, GranuleDef *g){
+static void ff_compute_band_indexes(MPADecodeContext *s, GranuleDef *g){
     if (g->block_type == 2) {
         if (g->switch_point) {
             /* if switched mode, we handle the 36 first samples as
@@ -242,6 +217,14 @@ static inline int l3_unscale(int value, int exponent)
 
 static int dev_4_3_coefs[DEV_ORDER];
 
+#if 0 /* unused */
+static int pow_mult3[3] = {
+    POW_FIX(1.0),
+    POW_FIX(1.25992104989487316476),
+    POW_FIX(1.58740105196819947474),
+};
+#endif
+
 static av_cold void int_pow_init(void)
 {
     int i, a;
@@ -252,6 +235,53 @@ static av_cold void int_pow_init(void)
         dev_4_3_coefs[i] = a;
     }
 }
+
+#if 0 /* unused, remove? */
+/* return the mantissa and the binary exponent */
+static int int_pow(int i, int *exp_ptr)
+{
+    int e, er, eq, j;
+    int a, a1;
+
+    /* renormalize */
+    a = i;
+    e = POW_FRAC_BITS;
+    while (a < (1 << (POW_FRAC_BITS - 1))) {
+        a = a << 1;
+        e--;
+    }
+    a -= (1 << POW_FRAC_BITS);
+    a1 = 0;
+    for(j = DEV_ORDER - 1; j >= 0; j--)
+        a1 = POW_MULL(a, dev_4_3_coefs[j] + a1);
+    a = (1 << POW_FRAC_BITS) + a1;
+    /* exponent compute (exact) */
+    e = e * 4;
+    er = e % 3;
+    eq = e / 3;
+    a = POW_MULL(a, pow_mult3[er]);
+    while (a >= 2 * POW_FRAC_ONE) {
+        a = a >> 1;
+        eq++;
+    }
+    /* convert to float */
+    while (a < POW_FRAC_ONE) {
+        a = a << 1;
+        eq--;
+    }
+    /* now POW_FRAC_ONE <= a < 2 * POW_FRAC_ONE */
+#if POW_FRAC_BITS > FRAC_BITS
+    a = (a + (1 << (POW_FRAC_BITS - FRAC_BITS - 1))) >> (POW_FRAC_BITS - FRAC_BITS);
+    /* correct overflow */
+    if (a >= 2 * (1 << FRAC_BITS)) {
+        a = a >> 1;
+        eq++;
+    }
+#endif
+    *exp_ptr = eq;
+    return a;
+}
+#endif
 
 static av_cold int decode_init(AVCodecContext * avctx)
 {
@@ -296,7 +326,7 @@ static av_cold int decode_init(AVCodecContext * avctx)
                     scale_factor_mult[i][2]);
         }
 
-        ff_mpa_synth_init(window);
+        ff_mpa_synth_init(ff_mpa_synth_window);
 
         /* huffman decode tables */
         offset = 0;
@@ -352,25 +382,7 @@ static av_cold int decode_init(AVCodecContext * avctx)
         /* compute n ^ (4/3) and store it in mantissa/exp format */
 
         int_pow_init();
-        for(i=1;i<TABLE_4_3_SIZE;i++) {
-            double f, fm;
-            int e, m;
-            f = pow((double)(i/4), 4.0 / 3.0) * pow(2, (i&3)*0.25);
-            fm = frexp(f, &e);
-            m = (uint32_t)(fm*(1LL<<31) + 0.5);
-            e+= FRAC_BITS - 31 + 5 - 100;
-
-            /* normalized to FRAC_BITS */
-            table_4_3_value[i] = m;
-            table_4_3_exp[i] = -e;
-        }
-        for(i=0; i<512*16; i++){
-            int exponent= (i>>4);
-            double f= pow(i&15, 4.0 / 3.0) * pow(2, (exponent-400)*0.25 + FRAC_BITS + 5);
-            expval_table[exponent][i&15]= llrint(f);
-            if((i&15)==1)
-                exp_table[exponent]= llrint(f);
-        }
+        mpegaudio_tableinit();
 
         for(i=0;i<7;i++) {
             float f;
@@ -1880,7 +1892,7 @@ static int mp_decode_layer3(MPADecodeContext *s)
 {
     int nb_granules, main_data_begin, private_bits;
     int gr, ch, blocksplit_flag, i, j, k, n, bits_pos;
-    GranuleDef granules[2][2], *g;
+    GranuleDef *g;
     int16_t exponents[576];
 
     /* read side info */
@@ -1896,15 +1908,15 @@ static int mp_decode_layer3(MPADecodeContext *s)
             private_bits = get_bits(&s->gb, 5);
         nb_granules = 2;
         for(ch=0;ch<s->nb_channels;ch++) {
-            granules[ch][0].scfsi = 0; /* all scale factors are transmitted */
-            granules[ch][1].scfsi = get_bits(&s->gb, 4);
+            s->granules[ch][0].scfsi = 0;/* all scale factors are transmitted */
+            s->granules[ch][1].scfsi = get_bits(&s->gb, 4);
         }
     }
 
     for(gr=0;gr<nb_granules;gr++) {
         for(ch=0;ch<s->nb_channels;ch++) {
             dprintf(s->avctx, "gr=%d ch=%d: side_info\n", gr, ch);
-            g = &granules[ch][gr];
+            g = &s->granules[ch][gr];
             g->part2_3_length = get_bits(&s->gb, 12);
             g->big_values = get_bits(&s->gb, 9);
             if(g->big_values > 288){
@@ -1976,9 +1988,9 @@ static int mp_decode_layer3(MPADecodeContext *s)
 
     for(gr=0;gr<nb_granules;gr++) {
         for(ch=0;ch<s->nb_channels;ch++) {
-            g = &granules[ch][gr];
+            g = &s->granules[ch][gr];
             if(get_bits_count(&s->gb)<0){
-                av_log(s->avctx, AV_LOG_ERROR, "mdb:%d, lastbuf:%d skipping granule %d\n",
+                av_log(s->avctx, AV_LOG_DEBUG, "mdb:%d, lastbuf:%d skipping granule %d\n",
                                             main_data_begin, s->last_buf_size, gr);
                 skip_bits_long(&s->gb, g->part2_3_length);
                 memset(g->sb_hybrid, 0, sizeof(g->sb_hybrid));
@@ -2020,7 +2032,7 @@ static int mp_decode_layer3(MPADecodeContext *s)
                             g->scale_factors[j++] = 0;
                     }
                 } else {
-                    sc = granules[ch][0].scale_factors;
+                    sc = s->granules[ch][0].scale_factors;
                     j = 0;
                     for(k=0;k<4;k++) {
                         n = (k == 0 ? 6 : 5);
@@ -2105,10 +2117,10 @@ static int mp_decode_layer3(MPADecodeContext *s)
         } /* ch */
 
         if (s->nb_channels == 2)
-            compute_stereo(s, &granules[0][gr], &granules[1][gr]);
+            compute_stereo(s, &s->granules[0][gr], &s->granules[1][gr]);
 
         for(ch=0;ch<s->nb_channels;ch++) {
-            g = &granules[ch][gr];
+            g = &s->granules[ch][gr];
 
             reorder_block(s, g);
             s->compute_antialias(s, g);
@@ -2150,7 +2162,7 @@ static int mp_decode_frame(MPADecodeContext *s,
         s->last_buf_size=0;
         if(s->in_gb.buffer){
             align_get_bits(&s->gb);
-            i= (s->gb.size_in_bits - get_bits_count(&s->gb))>>3;
+            i= get_bits_left(&s->gb)>>3;
             if(i >= 0 && i <= BACKSTEP_SIZE){
                 memmove(s->last_buf, s->gb.buffer + (get_bits_count(&s->gb)>>3), i);
                 s->last_buf_size=i;
@@ -2162,7 +2174,7 @@ static int mp_decode_frame(MPADecodeContext *s,
 
         align_get_bits(&s->gb);
         assert((get_bits_count(&s->gb) & 7) == 0);
-        i= (s->gb.size_in_bits - get_bits_count(&s->gb))>>3;
+        i= get_bits_left(&s->gb)>>3;
 
         if(i<0 || i > BACKSTEP_SIZE || nb_frames<0){
             if(i<0)
@@ -2181,7 +2193,7 @@ static int mp_decode_frame(MPADecodeContext *s,
         samples_ptr = samples + ch;
         for(i=0;i<nb_frames;i++) {
             ff_mpa_synth_filter(s->synth_buf[ch], &(s->synth_buf_offset[ch]),
-                         window, &s->dither_state,
+                         ff_mpa_synth_window, &s->dither_state,
                          samples_ptr, s->nb_channels,
                          s->sb_samples[ch][i]);
             samples_ptr += 32 * s->nb_channels;
@@ -2193,25 +2205,20 @@ static int mp_decode_frame(MPADecodeContext *s,
 
 static int decode_frame(AVCodecContext * avctx,
                         void *data, int *data_size,
-                        const uint8_t * buf, int buf_size)
+                        const uint8_t *buf, int buf_size  )
 {
     MPADecodeContext *s = avctx->priv_data;
     uint32_t header;
     int out_size;
-    int skipped = 0;
     OUT_INT *out_samples = data;
 
-retry:
     if(buf_size < HEADER_SIZE)
         return -1;
 
     header = AV_RB32(buf);
     if(ff_mpa_check_header(header) < 0){
-        buf++;
-        buf_size--;
-        skipped++;
-        av_log(avctx, AV_LOG_ERROR, "Header missing skipping one byte.\n");
-        goto retry;
+        av_log(avctx, AV_LOG_ERROR, "Header missing\n");
+        return -1;
     }
 
     if (ff_mpegaudio_decode_header((MPADecodeHeader *)s, header) == 1) {
@@ -2223,6 +2230,10 @@ retry:
     avctx->channels = s->nb_channels;
     avctx->bit_rate = s->bit_rate;
     avctx->sub_id = s->layer;
+
+    if(*data_size < 1152*avctx->channels*sizeof(OUT_INT))
+        return -1;
+    *data_size = 0;
 
     if(s->frame_size<=0 || s->frame_size > buf_size){
         av_log(avctx, AV_LOG_ERROR, "incomplete frame\n");
@@ -2240,7 +2251,7 @@ retry:
     }else
         av_log(avctx, AV_LOG_DEBUG, "Error while decoding MPEG audio frame.\n"); //FIXME return -1 / but also return the number of bytes consumed
     s->frame_size = 0;
-    return buf_size + skipped;
+    return buf_size;
 }
 
 static void flush(AVCodecContext *avctx){
@@ -2249,6 +2260,225 @@ static void flush(AVCodecContext *avctx){
     s->last_buf_size= 0;
 }
 
+#if CONFIG_MP3ADU_DECODER
+static int decode_frame_adu(AVCodecContext * avctx,
+                        void *data, int *data_size,
+                        AVPacket *avpkt)
+{
+    const uint8_t *buf = avpkt->data;
+    int buf_size = avpkt->size;
+    MPADecodeContext *s = avctx->priv_data;
+    uint32_t header;
+    int len, out_size;
+    OUT_INT *out_samples = data;
+
+    len = buf_size;
+
+    // Discard too short frames
+    if (buf_size < HEADER_SIZE) {
+        *data_size = 0;
+        return buf_size;
+    }
+
+
+    if (len > MPA_MAX_CODED_FRAME_SIZE)
+        len = MPA_MAX_CODED_FRAME_SIZE;
+
+    // Get header and restore sync word
+    header = AV_RB32(buf) | 0xffe00000;
+
+    if (ff_mpa_check_header(header) < 0) { // Bad header, discard frame
+        *data_size = 0;
+        return buf_size;
+    }
+
+    ff_mpegaudio_decode_header((MPADecodeHeader *)s, header);
+    /* update codec info */
+    avctx->sample_rate = s->sample_rate;
+    avctx->channels = s->nb_channels;
+    avctx->bit_rate = s->bit_rate;
+    avctx->sub_id = s->layer;
+
+    s->frame_size = len;
+
+    if (avctx->parse_only) {
+        out_size = buf_size;
+    } else {
+        out_size = mp_decode_frame(s, out_samples, buf, buf_size);
+    }
+
+    *data_size = out_size;
+    return buf_size;
+}
+#endif /* CONFIG_MP3ADU_DECODER */
+
+#if CONFIG_MP3ON4_DECODER
+
+/**
+ * Context for MP3On4 decoder
+ */
+typedef struct MP3On4DecodeContext {
+    int frames;   ///< number of mp3 frames per block (number of mp3 decoder instances)
+    int syncword; ///< syncword patch
+    const uint8_t *coff; ///< channels offsets in output buffer
+    MPADecodeContext *mp3decctx[5]; ///< MPADecodeContext for every decoder instance
+} MP3On4DecodeContext;
+
+#include "mpeg4audio.h"
+
+/* Next 3 arrays are indexed by channel config number (passed via codecdata) */
+static const uint8_t mp3Frames[8] = {0,1,1,2,3,3,4,5};   /* number of mp3 decoder instances */
+/* offsets into output buffer, assume output order is FL FR BL BR C LFE */
+static const uint8_t chan_offset[8][5] = {
+    {0},
+    {0},            // C
+    {0},            // FLR
+    {2,0},          // C FLR
+    {2,0,3},        // C FLR BS
+    {4,0,2},        // C FLR BLRS
+    {4,0,2,5},      // C FLR BLRS LFE
+    {4,0,2,6,5},    // C FLR BLRS BLR LFE
+};
+
+
+static int decode_init_mp3on4(AVCodecContext * avctx)
+{
+    MP3On4DecodeContext *s = avctx->priv_data;
+    MPEG4AudioConfig cfg;
+    int i;
+
+    if ((avctx->extradata_size < 2) || (avctx->extradata == NULL)) {
+        av_log(avctx, AV_LOG_ERROR, "Codec extradata missing or too short.\n");
+        return -1;
+    }
+
+    ff_mpeg4audio_get_config(&cfg, avctx->extradata, avctx->extradata_size);
+    if (!cfg.chan_config || cfg.chan_config > 7) {
+        av_log(avctx, AV_LOG_ERROR, "Invalid channel config number.\n");
+        return -1;
+    }
+    s->frames = mp3Frames[cfg.chan_config];
+    s->coff = chan_offset[cfg.chan_config];
+    avctx->channels = ff_mpeg4audio_channels[cfg.chan_config];
+
+    if (cfg.sample_rate < 16000)
+        s->syncword = 0xffe00000;
+    else
+        s->syncword = 0xfff00000;
+
+    /* Init the first mp3 decoder in standard way, so that all tables get builded
+     * We replace avctx->priv_data with the context of the first decoder so that
+     * decode_init() does not have to be changed.
+     * Other decoders will be initialized here copying data from the first context
+     */
+    // Allocate zeroed memory for the first decoder context
+    s->mp3decctx[0] = av_mallocz(sizeof(MPADecodeContext));
+    // Put decoder context in place to make init_decode() happy
+    avctx->priv_data = s->mp3decctx[0];
+    decode_init(avctx);
+    // Restore mp3on4 context pointer
+    avctx->priv_data = s;
+    s->mp3decctx[0]->adu_mode = 1; // Set adu mode
+
+    /* Create a separate codec/context for each frame (first is already ok).
+     * Each frame is 1 or 2 channels - up to 5 frames allowed
+     */
+    for (i = 1; i < s->frames; i++) {
+        s->mp3decctx[i] = av_mallocz(sizeof(MPADecodeContext));
+        s->mp3decctx[i]->compute_antialias = s->mp3decctx[0]->compute_antialias;
+        s->mp3decctx[i]->adu_mode = 1;
+        s->mp3decctx[i]->avctx = avctx;
+    }
+
+    return 0;
+}
+
+
+static av_cold int decode_close_mp3on4(AVCodecContext * avctx)
+{
+    MP3On4DecodeContext *s = avctx->priv_data;
+    int i;
+
+    for (i = 0; i < s->frames; i++)
+        if (s->mp3decctx[i])
+            av_free(s->mp3decctx[i]);
+
+    return 0;
+}
+
+
+static int decode_frame_mp3on4(AVCodecContext * avctx,
+                        void *data, int *data_size,
+                        AVPacket *avpkt)
+{
+    const uint8_t *buf = avpkt->data;
+    int buf_size = avpkt->size;
+    MP3On4DecodeContext *s = avctx->priv_data;
+    MPADecodeContext *m;
+    int fsize, len = buf_size, out_size = 0;
+    uint32_t header;
+    OUT_INT *out_samples = data;
+    OUT_INT decoded_buf[MPA_FRAME_SIZE * MPA_MAX_CHANNELS];
+    OUT_INT *outptr, *bp;
+    int fr, j, n;
+
+    if(*data_size < MPA_FRAME_SIZE * MPA_MAX_CHANNELS * s->frames * sizeof(OUT_INT))
+        return -1;
+
+    *data_size = 0;
+    // Discard too short frames
+    if (buf_size < HEADER_SIZE)
+        return -1;
+
+    // If only one decoder interleave is not needed
+    outptr = s->frames == 1 ? out_samples : decoded_buf;
+
+    avctx->bit_rate = 0;
+
+    for (fr = 0; fr < s->frames; fr++) {
+        fsize = AV_RB16(buf) >> 4;
+        fsize = FFMIN3(fsize, len, MPA_MAX_CODED_FRAME_SIZE);
+        m = s->mp3decctx[fr];
+        assert (m != NULL);
+
+        header = (AV_RB32(buf) & 0x000fffff) | s->syncword; // patch header
+
+        if (ff_mpa_check_header(header) < 0) // Bad header, discard block
+            break;
+
+        ff_mpegaudio_decode_header((MPADecodeHeader *)m, header);
+        out_size += mp_decode_frame(m, outptr, buf, fsize);
+        buf += fsize;
+        len -= fsize;
+
+        if(s->frames > 1) {
+            n = m->avctx->frame_size*m->nb_channels;
+            /* interleave output data */
+            bp = out_samples + s->coff[fr];
+            if(m->nb_channels == 1) {
+                for(j = 0; j < n; j++) {
+                    *bp = decoded_buf[j];
+                    bp += avctx->channels;
+                }
+            } else {
+                for(j = 0; j < n; j++) {
+                    bp[0] = decoded_buf[j++];
+                    bp[1] = decoded_buf[j];
+                    bp += avctx->channels;
+                }
+            }
+        }
+        avctx->bit_rate += m->bit_rate;
+    }
+
+    /* update codec info */
+    avctx->sample_rate = s->mp3decctx[0]->sample_rate;
+
+    *data_size = out_size;
+    return buf_size;
+}
+#endif /* CONFIG_MP3ON4_DECODER */
+
 #if CONFIG_MP1_DECODER
 AVCodec mp1_decoder =
 {
@@ -2256,16 +2486,13 @@ AVCodec mp1_decoder =
     CODEC_TYPE_AUDIO,
     CODEC_ID_MP1,
     sizeof(MPADecodeContext),
-    /*.init = */decode_init,
-    /*.encode = */NULL,
-    /*.close = */NULL,
-    /*.decode = */decode_frame,
-    /*.capabilities = */CODEC_CAP_PARSE_ONLY,
-    /*.next = */NULL,
-    /*.flush = */flush,
-    /*.supported_framerates = */NULL,
-    /*.pix_fmts = */NULL,
-    /*.long_name = */NULL_IF_CONFIG_SMALL("MP2 (MPEG audio layer 1)"),
+    decode_init,
+    NULL,
+    NULL,
+    decode_frame,
+    CODEC_CAP_PARSE_ONLY,
+    .flush= flush,
+    .long_name= NULL_IF_CONFIG_SMALL("MP1 (MPEG audio layer 1)"),
 };
 #endif
 #if CONFIG_MP2_DECODER
@@ -2275,16 +2502,13 @@ AVCodec mp2_decoder =
     CODEC_TYPE_AUDIO,
     CODEC_ID_MP2,
     sizeof(MPADecodeContext),
-    /*.init = */decode_init,
-    /*.encode = */NULL,
-    /*.close = */NULL,
-    /*.decode = */decode_frame,
-    /*.capabilities = */CODEC_CAP_PARSE_ONLY,
-    /*.next = */NULL,
-    /*.flush = */flush,
-    /*.supported_framerates = */NULL,
-    /*.pix_fmts = */NULL,
-    /*.long_name = */NULL_IF_CONFIG_SMALL("MP2 (MPEG audio layer 2)"),
+    decode_init,
+    NULL,
+    NULL,
+    decode_frame,
+    CODEC_CAP_PARSE_ONLY,
+    .flush= flush,
+    .long_name= NULL_IF_CONFIG_SMALL("MP2 (MPEG audio layer 2)"),
 };
 #endif
 #if CONFIG_MP3_DECODER
@@ -2294,15 +2518,43 @@ AVCodec mp3_decoder =
     CODEC_TYPE_AUDIO,
     CODEC_ID_MP3,
     sizeof(MPADecodeContext),
-    /*.init = */decode_init,
-    /*.encode = */NULL,
-    /*.close = */NULL,
-    /*.decode = */decode_frame,
-    /*.capabilities = */CODEC_CAP_PARSE_ONLY,
-    /*.next = */NULL,
-    /*.flush = */flush,
-    /*.supported_framerates = */NULL,
-    /*.pix_fmts = */NULL,
-    /*.long_name = */NULL_IF_CONFIG_SMALL("MP3 (MPEG audio layer 3)"),
+    decode_init,
+    NULL,
+    NULL,
+    decode_frame,
+    CODEC_CAP_PARSE_ONLY,
+    .flush= flush,
+    .long_name= NULL_IF_CONFIG_SMALL("MP3 (MPEG audio layer 3)"),
+};
+#endif
+#if CONFIG_MP3ADU_DECODER
+AVCodec mp3adu_decoder =
+{
+    "mp3adu",
+    CODEC_TYPE_AUDIO,
+    CODEC_ID_MP3ADU,
+    sizeof(MPADecodeContext),
+    decode_init,
+    NULL,
+    NULL,
+    decode_frame_adu,
+    CODEC_CAP_PARSE_ONLY,
+    .flush= flush,
+    .long_name= NULL_IF_CONFIG_SMALL("ADU (Application Data Unit) MP3 (MPEG audio layer 3)"),
+};
+#endif
+#if CONFIG_MP3ON4_DECODER
+AVCodec mp3on4_decoder =
+{
+    "mp3on4",
+    CODEC_TYPE_AUDIO,
+    CODEC_ID_MP3ON4,
+    sizeof(MP3On4DecodeContext),
+    decode_init_mp3on4,
+    NULL,
+    decode_close_mp3on4,
+    decode_frame_mp3on4,
+    .flush= flush,
+    .long_name= NULL_IF_CONFIG_SMALL("MP3onMP4"),
 };
 #endif

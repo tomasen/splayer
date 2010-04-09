@@ -12,7 +12,16 @@ CFLAGS+= -I. -I.. -I$(LAVC_DIR) -I$(LAVU_DIR) -I$(LAVF_DIR) -I../codecs -I../img
 		-DHAVE_AV_CONFIG_H -D_ISOC99_SOURCE -D_POSIX_C_SOURCE=200112 -std=gnu99 -fopenmp 
 CC=gcc
 
+		
+		#$(LAVC_DIR)/mpegaudio_tablegen.c \
+		
 SRCS_C=\
+		$(LAVC_DIR)/rdft.c \
+		$(LAVC_DIR)/mpegaudioenc.c \
+		$(LAVC_DIR)/mpegaudiodec.c \
+		$(LAVC_DIR)/qdm2_tablegen.c \
+		$(LAVC_DIR)/tableprint.c \
+		$(LAVC_DIR)/qdm2.c \
 		$(LAVC_DIR)/aac_ac3_parser.c \
 		$(LAVC_DIR)/ac3.c \
 		$(LAVC_DIR)/ac3_parser.c \
@@ -177,13 +186,11 @@ SRCS_C=\
 #		$(LAVC_DIR)/mpegvideo_parser.c \
 #		$(LAVC_DIR)/mpegaudio_parser.c \
 #		$(LAVC_DIR)/mpegaudiodata.c \
-#		$(LAVC_DIR)/mpegaudiodec.c \
 #		$(LAVC_DIR)/mpegaudiodecheader.c \
 #		$(LAVC_DIR)/msvideo1.c \
 #		$(LAVC_DIR)/opt.c \
 #		$(LAVC_DIR)/png.c \
 #		$(LAVC_DIR)/pngdec.c \
-#		$(LAVC_DIR)/qdm2.c \
 #		$(LAVC_DIR)/qpeg.c \
 #		$(LAVC_DIR)/rpza.c \
 #		$(LAVC_DIR)/rtjpeg.c \

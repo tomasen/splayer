@@ -141,7 +141,7 @@ void avcodec_register_all(void)
     REGISTER_DECODER (MP3, mp3);
     //REGISTER_DECODER (MSGSM, msgsm);
     REGISTER_DECODER (NELLYMOSER, nellymoser);
-    //REGISTER_DECODER (QDM2, qdm2);
+    REGISTER_DECODER (QDM2, qdm2);
     REGISTER_DECODER (RA_144, ra_144);
     REGISTER_DECODER (RA_288, ra_288);
     REGISTER_DECODER (TRUEHD, truehd);

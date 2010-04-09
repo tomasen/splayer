@@ -415,7 +415,7 @@ avcsuccess:
 			{
 				Name.Format(L"Audio %d", iAudio++);
 
-				mt.majortype = MEDIATYPE_Audio;
+                mt.majortype = MEDIATYPE_Audio;
 				mt.formattype = FORMAT_WaveFormatEx;
 				WAVEFORMATEX* wfe = (WAVEFORMATEX*)mt.AllocFormatBuffer(sizeof(WAVEFORMATEX));
 				memset(wfe, 0, mt.FormatLength());
@@ -427,6 +427,7 @@ avcsuccess:
 				mt.SetSampleSize(256000);
 
 				static CAtlMap<CStringA, int, CStringElementTraits<CStringA> > id2ft;
+                SVP_LogMsg6("mkv %s", CodecID);
 
 				if(id2ft.IsEmpty())
 				{
@@ -550,6 +551,43 @@ avcsuccess:
 					wfe = (WAVEFORMATEX*)mt.ReallocFormatBuffer(sizeof(WAVEFORMATEX) + pTE->CodecPrivate.GetCount());
 					memcpy(wfe + 1, pTE->CodecPrivate.GetData(), pTE->CodecPrivate.GetCount());
 					wfe->cbSize = 0; // IMPORTANT: this is screwed, but cbSize has to be 0 and the extra data from codec priv must be after WAVEFORMATEX
+                    /*
+                    url_fskip(&b, 22);
+                    flavor                       = get_be16(&b); 22,23
+                    track->audio.coded_framesize = get_be32(&b); 24-28
+                    url_fskip(&b, 12);
+                    track->audio.sub_packet_h    = get_be16(&b); 40,41
+                    track->audio.frame_size      = get_be16(&b); 42,43
+                    track->audio.sub_packet_size = get_be16(&b); 44,45
+                    av_log(matroska->ctx, AV_LOG_ERROR,
+                    "MKV CodecID %d %d %d %d.\n", track->audio.coded_framesize, track->audio.sub_packet_h, track->audio.frame_size , track->audio.sub_packet_size );
+                    track->audio.buf = av_malloc(track->audio.frame_size * track->audio.sub_packet_h);
+                    if (codec_id == CODEC_ID_RA_288) {
+                    st->codec->block_align = track->audio.coded_framesize;
+                    track->codec_priv.size = 0;
+                    } else {
+                    if (codec_id == CODEC_ID_SIPR && flavor < 4) {
+                    const int sipr_bit_rate[4] = { 6504, 8496, 5000, 16000 };
+                    track->audio.sub_packet_size = ff_sipr_subpk_size[flavor];
+                    st->codec->bit_rate = sipr_bit_rate[flavor];
+                    }
+
+                    st->codec->block_align = track->audio.sub_packet_size;
+                    extradata_offset = 78;
+                    }
+                    */
+                    if(CodecID == "A_REAL/COOK"){
+                        if( pTE->CodecPrivate.GetCount() > 46){
+                            wfe->nBlockAlign =  ((DWORD) pTE->CodecPrivate[44]) << 8 |  pTE->CodecPrivate[45] ;
+                        }
+                        /*CString szLog;
+                        for(int i = 0; i < pTE->CodecPrivate.GetCount(); i++)
+                        {
+                            szLog.AppendFormat(L" %d:%x",i, pTE->CodecPrivate[i] );
+                        }
+                        SVP_LogMsg5(szLog);
+                        */
+                    }
 					mts.Add(mt);
 				}
 			}

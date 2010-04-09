@@ -2620,6 +2620,7 @@ HRESULT CRealAudioDecoder::Receive(IMediaSample* pIn)
  SVP_LogMsg5( L"InitFfmpeg ing31");
 	for(; src < dst; src += w)
 	{
+        SVP_LogMsg5( L"InitFfmpeg ing301");
 		CComPtr<IMediaSample> pOut;
 		BYTE* pDataOut = NULL;
 		if(FAILED(hr = m_pOutput->GetDeliveryBuffer(&pOut, NULL, NULL, 0))
@@ -2671,6 +2672,7 @@ HRESULT CRealAudioDecoder::Receive(IMediaSample* pIn)
             int			nPCMLength	= AVCODEC_MAX_AUDIO_FRAME_SIZE;
             SVP_LogMsg5( L"InitFfmpeg ing3");
             user_bytes = avcodec_decode_audio2(m_pAVCtx, (int16_t*)pFFOut, &nPCMLength, (const uint8_t*)pFFIn, min(nSize, m_pAVCtx->block_align));
+            SVP_LogMsg5( L"InitFfmpeg ing9 %d %d %d", user_bytes, nPCMLength, nSize);
             if(user_bytes <= 0){
                 
                 pFFIn += m_pAVCtx->block_align;
@@ -2683,7 +2685,7 @@ HRESULT CRealAudioDecoder::Receive(IMediaSample* pIn)
             }
              SVP_LogMsg5(L"avcodec_decode_audio2 %d %d %d %d %d", len, w, m_pAVCtx->sample_fmt, user_bytes , nSize);
         } 
-        
+          SVP_LogMsg5(L"avcod over");
         switch (m_pAVCtx->sample_fmt)
         {
             case SAMPLE_FMT_FLT :
@@ -2769,9 +2771,18 @@ bool CRealAudioDecoder::InitFfmpeg(int nCodecId)
 
                 m_pAVCtx->extradata=m_pInput->CurrentMediaType().Format()+sizeof(WAVEFORMATEX); 
                 m_pAVCtx->extradata_size=m_pInput->CurrentMediaType().FormatLength()-sizeof(WAVEFORMATEX);
+                /*CString szLog;
+                for(int i = 0; i < m_pAVCtx->extradata_size; i++)
+                {
+                    szLog.AppendFormat(L" %d:%x",i, m_pAVCtx->extradata[i] );
+                }
+                SVP_LogMsg5(szLog);
+                int ix = 0;*/
                 for (;m_pAVCtx->extradata_size;m_pAVCtx->extradata=(uint8_t*)m_pAVCtx->extradata+1,m_pAVCtx->extradata_size--){
+                    //ix++;
                     if (memcmp(m_pAVCtx->extradata,"cook",4)==0)
                     {
+                        //SVP_LogMsg5(L"xxxx %d", ix);
                         m_pAVCtx->extradata=(uint8_t*)m_pAVCtx->extradata+12;
                         m_pAVCtx->extradata_size-=12;
                         break;
@@ -2788,6 +2799,7 @@ bool CRealAudioDecoder::InitFfmpeg(int nCodecId)
             m_pAVCtx->bit_rate				= wfein->nAvgBytesPerSec*8;
             m_pAVCtx->bits_per_coded_sample	= wfein->wBitsPerSample;
             m_pAVCtx->block_align			= wfein->nBlockAlign;
+           
             m_pAVCtx->flags				   |= CODEC_FLAG_TRUNCATED;
         }
        
@@ -2986,7 +2998,7 @@ HRESULT CRealAudioDecoder::DecideBufferSize(IMemAllocator* pAllocator, ALLOCATOR
 
 	// ok, maybe this is too much...
 	pProperties->cBuffers = 8;
-	pProperties->cbBuffer = max( pwfe->nChannels*pwfe->nSamplesPerSec*wBitsPerSample>>3, AVCODEC_MAX_AUDIO_FRAME_SIZE ); // nAvgBytesPerSec;
+	pProperties->cbBuffer = max( pwfe->nChannels*pwfe->nSamplesPerSec*wBitsPerSample>>3, AVCODEC_MAX_AUDIO_FRAME_SIZE*8 ); // nAvgBytesPerSec;
 	pProperties->cbAlign = 1;
 	pProperties->cbPrefix = 0;
 

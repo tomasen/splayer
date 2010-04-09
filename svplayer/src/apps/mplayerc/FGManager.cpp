@@ -1760,9 +1760,7 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_WMA2);
 	m_transform.AddTail(pFGF);
 */
-    pFGF = new CFGFilterInternal<CMpaDecFilter>( L"SVP QDM2 Audio Decoder", MERIT64_ABOVE_DSHOW);
-    pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_QDM2);
-    m_transform.AddTail(pFGF);
+
 		
 	pFGF = new CFGFilterInternal<CMpaDecFilter>( L"PCM RAW Audio Decoder", MERIT64_ABOVE_DSHOW);
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_PCM_RAW);

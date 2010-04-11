@@ -26,6 +26,7 @@
 #include "..\..\..\DSUtil\GolombBuffer.h"
 #include <initguid.h>
 #include "../../../../include/moreuuids.h"
+#include "../../../svplib/svplib.h"
 
 //#include "../../../svplib/svplib.h"
 #define MAX_SPS			256			// Max size for a SPS packet

@@ -158,8 +158,8 @@ HRESULT CMpegSplitterFile::Init()
 	else ; // TODO: in this case disable seeking, or try doing something less drastical...
 
 //#ifndef DEBUG
-	if(m_streams[audio].GetCount() <= 1 && m_type == ts){
-		SVP_LogMsg5(_T("ts and no audio"));
+	if(m_streams[audio].GetCount() < 1 && m_type == ts){
+		SVP_LogMsg5(_T("ts and no audio %d %d"), m_streams[audio].GetCount(), m_streams[unknown].GetCount());
 		return E_FAIL;
 	}
 	if(m_streams[video].GetCount())

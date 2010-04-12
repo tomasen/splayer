@@ -25,6 +25,7 @@
 
 #include <initguid.h>
 #include "..\..\..\..\include\moreuuids.h"
+#include "..\..\..\svplib\svplib.h"
 
 //
 
@@ -284,6 +285,7 @@ bool CMpaSplitterFile::Sync(int limit)
 
 bool CMpaSplitterFile::Sync(int& FrameSize, REFERENCE_TIME& rtDuration, int limit)
 {
+    //SVP_LogMsg6("m_endpos %f %f %f", (double) GetPos() , (double)m_endpos ,  double(m_rtDuration));
 	__int64 endpos = min(m_endpos, GetPos() + limit);
 
 	if(m_mode == mpa)
@@ -295,11 +297,11 @@ bool CMpaSplitterFile::Sync(int& FrameSize, REFERENCE_TIME& rtDuration, int limi
 			if(Read(h, endpos - GetPos(), true)
 			&& m_mpahdr.version == h.version
 			&& m_mpahdr.layer == h.layer
-			&& m_mpahdr.channels == h.channels)
+			)//&& m_mpahdr.channels == h.channels  TODO: make sure this doesn't matter at all
 			{
 				Seek(GetPos() - 4);
 				AdjustDuration(h.nBytesPerSec);
-
+                //SVP_LogMsg6("rtDur %f", double(m_rtDuration));
 				FrameSize = h.FrameSize;
 				rtDuration = h.rtDuration;
 
@@ -316,7 +318,7 @@ bool CMpaSplitterFile::Sync(int& FrameSize, REFERENCE_TIME& rtDuration, int limi
 			if(Read(h, endpos - GetPos())
 			&& m_aachdr.version == h.version
 			&& m_aachdr.layer == h.layer
-			&& m_aachdr.channels == h.channels)
+			) //&& m_aachdr.channels == h.channels
 			{
 				Seek(GetPos() - (h.fcrc?7:9));
 				AdjustDuration(h.nBytesPerSec);

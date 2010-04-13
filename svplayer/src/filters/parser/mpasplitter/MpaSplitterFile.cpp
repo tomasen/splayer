@@ -318,7 +318,7 @@ bool CMpaSplitterFile::Sync(int& FrameSize, REFERENCE_TIME& rtDuration, int limi
 			if(Read(h, endpos - GetPos())
 			&& m_aachdr.version == h.version
 			&& m_aachdr.layer == h.layer
-			) //&& m_aachdr.channels == h.channels
+			&& m_aachdr.channels == h.channels ) 
 			{
 				Seek(GetPos() - (h.fcrc?7:9));
 				AdjustDuration(h.nBytesPerSec);

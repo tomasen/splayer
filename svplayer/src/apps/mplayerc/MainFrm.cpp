@@ -2550,8 +2550,15 @@ LRESULT CMainFrame::OnAppCommand(WPARAM wParam, LPARAM lParam)
 		while(pos)
 		{
 			wmcmd& wc = s.wmcmds.GetNext(pos);
-			if(wc.appcmd == cmd && TRUE == SendMessage(WM_COMMAND, wc.cmd)) 
-				fRet = TRUE;
+            if(wc.appcmd == cmd){
+                //if its volume control, dont go beyond 100% unless system volume are over 90%
+                if(APPCOMMAND_VOLUME_UP == cmd || APPCOMMAND_VOLUME_DOWN == cmd){
+                    Default();
+                   
+                }
+                if( TRUE == SendMessage(WM_COMMAND, wc.cmd)) 
+				    fRet = TRUE;
+            }
 		}
 
 		if(fRet) return TRUE;

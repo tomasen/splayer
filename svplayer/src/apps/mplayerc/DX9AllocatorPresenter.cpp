@@ -119,7 +119,7 @@ HRESULT CreateAP9(const CLSID& clsid, HWND hWnd, ISubPicAllocatorPresenterRender
 	CheckPointer(ppAP, E_POINTER);
 
 	*ppAP = NULL;
-
+    SVP_LogMsg5(L"CreateAP9");
 	HRESULT hr = E_FAIL;
 	CString Error; 
 	if(clsid == CLSID_VMR9AllocatorPresenter && !(*ppAP = DNew CVMR9AllocatorPresenter(hWnd, hr))
@@ -140,12 +140,14 @@ HRESULT CreateAP9(const CLSID& clsid, HWND hWnd, ISubPicAllocatorPresenterRender
 		Error += GetWindowsErrorMessage(hr, NULL);
 		
 		//MessageBox(hWnd, Error, L"Error creating DX9 presenter object", MB_OK|MB_ICONERROR);
+        SVP_LogMsg5(  L"Error creating DX9 presenter object %s", Error );
 		(*ppAP)->Release();
 		*ppAP = NULL;
 	}
 	else if (!Error.IsEmpty())
 	{
 		//MessageBox(hWnd, Error, L"Warning creating DX9 presenter object", MB_OK|MB_ICONWARNING);
+        SVP_LogMsg5(  L"Warning creating DX9 presenter object %s", Error );
 	}
 	return hr;
 }
@@ -392,7 +394,7 @@ CDX9AllocatorPresenter::CDX9AllocatorPresenter(HWND hWnd, HRESULT& hr, bool bIsE
 {
 	if(FAILED(hr)) 
 	{
-		//_Error += L"ISubPicAllocatorPresenterImpl failed\n";
+		SVP_LogMsg5( L"ISubPicAllocatorPresenterImpl failed"); 
 		return;
 	}
 
@@ -407,7 +409,7 @@ CDX9AllocatorPresenter::CDX9AllocatorPresenter(HWND hWnd, HRESULT& hr, bool bIsE
 	}
 	else
 	{
-		//_Error += L"No D3DX9 dll found. To enable stats, shaders and complex resizers, please install the latest DirectX End-User Runtime.\n";
+		SVP_LogMsg5( L"No D3DX9 dll found. To enable stats, shaders and complex resizers, please install the latest DirectX End-User Runtime.");
 	}
 
 	m_pDwmIsCompositionEnabled = NULL;
@@ -600,7 +602,7 @@ HRESULT CDX9AllocatorPresenter::CreateDevice( )
 		CExternalPixelShader &Shader = m_pPixelShaders.GetNext(pos);
 		Shader.m_pPixelShader = NULL;
 	}
-//SVP_LogMsg5(L"CDX9AllocatorPresenter::CreateDevice start");
+    //SVP_LogMsg5(L"CDX9AllocatorPresenter::CreateDevice start");
 	m_pD3DEx = NULL;
 	m_pD3D = NULL;
 
@@ -621,7 +623,7 @@ HRESULT CDX9AllocatorPresenter::CreateDevice( )
 		}
 		if(!m_pD3D) 
 		{
-			//_Error += L"Failed to create D3D9\n";
+			SVP_LogMsg5( L"Failed to create D3D9\n");
 			return E_UNEXPECTED;
 		}
 	}
@@ -638,7 +640,7 @@ HRESULT CDX9AllocatorPresenter::CreateDevice( )
 	UINT CurrentMonitor = GetAdapter(m_pD3D);
 	if(FAILED(m_pD3D->GetAdapterDisplayMode(CurrentMonitor, &d3ddm)))
 	{
-		//_Error += L"GetAdapterDisplayMode failed\n";
+		SVP_LogMsg5( L"GetAdapterDisplayMode failed\n");
 		return E_UNEXPECTED;
 	}
 	m_lastMonitor = m_pD3D->GetAdapterMonitor(CurrentMonitor);
@@ -788,7 +790,7 @@ HRESULT CDX9AllocatorPresenter::CreateDevice( )
 
 	if(FAILED(hr))
 	{
-		//_Error += L"CreateDevice failed\n";
+		SVP_LogMsg5( L"CreateDevice failed %x\n", hr);
 		return hr;
 	}
 
@@ -833,8 +835,10 @@ HRESULT CDX9AllocatorPresenter::CreateDevice( )
 	else
 	{
 		m_pAllocator = new CDX9SubPicAllocator(m_pD3DDev, size, AfxGetAppSettings().fSPCPow2Tex);
-		if(!m_pAllocator)
+        if(!m_pAllocator){
+            SVP_LogMsg5(L"Create SubPicAllocator Failed");
 			return E_FAIL;
+        }
 	}
 
 	hr = S_OK;
@@ -874,8 +878,10 @@ HRESULT CDX9AllocatorPresenter::CreateDevice( )
 		? (ISubPicQueue*)new CSubPicQueue(AfxGetAppSettings().nSPCSize, m_pAllocator, &hr2)
 		: (ISubPicQueue*)new CSubPicQueueNoThread(m_pAllocator, &hr2);
 
-	if( ( !m_pSubPicQueue && !m_pSubPicQueue2 ) || ( FAILED(hr) && FAILED(hr2) ))
-		return E_FAIL;
+    if( ( !m_pSubPicQueue && !m_pSubPicQueue2 ) || ( FAILED(hr) && FAILED(hr2) )){
+        SVP_LogMsg5(L"m_pSubPicQueue2 Fail");	
+        return E_FAIL;
+    }
 
 	if(m_pSubPicQueue && pSubPicProvider) m_pSubPicQueue->SetSubPicProvider(pSubPicProvider);
 

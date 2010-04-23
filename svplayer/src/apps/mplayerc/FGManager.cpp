@@ -2628,7 +2628,7 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("vp6dec.ax")) ); 
 
-    szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("rtsp.ax")) ); 
+    //szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("rtsp.ax")) ); 
 
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("svplayer.bin\\real\\rmoc3260.dll")) );
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("svplayer.bin\\real\\Codecs\\rv40.dll")) );
@@ -2662,6 +2662,7 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 						pFGF->m_extensions.AddTail(_T(".m2ts"));
 						pFGF->m_extensions.AddTail(_T(".tp"));
 						pFGF->m_extensions.AddTail(_T(".ogg"));
+                        pFGF->m_extensions.AddTail(_T(".ogv"));
 						pFGF->m_extensions.AddTail(_T(".ogm"));
 						pFGF->m_extensions.AddTail(_T(".mkv"));
 						pFGF->m_extensions.AddTail(_T(".vob"));

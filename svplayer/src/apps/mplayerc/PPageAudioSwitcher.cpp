@@ -351,29 +351,31 @@ void CPPageAudioSwitcher::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStru
 						pDC->SetTextColor(tmp);
 					}
 				}
-
-				if(m_pSpeakerToChannelMap2[m_nChannels-1][m_nSpeakers-1][lpDrawItemStruct->itemID-1][i-1] > 0)
-				{
-					if(0){
-						CFont f;
-						f.CreatePointFont(MulDiv(70, 96, pDC->GetDeviceCaps(LOGPIXELSX)), _T("MS Sans Serif"));
-						CFont* old = pDC->SelectObject(&f);
-						CString szVal;
-						szVal.Format(L"%0.2f", m_pSpeakerToChannelMap2[m_nChannels-1][m_nSpeakers-1][lpDrawItemStruct->itemID-1][i-1]);
-						s = pDC->GetTextExtent(szVal);
-						pDC->TextOut((r.left+r.right-s.cx)/2, (r.top+r.bottom-s.cy)/2, szVal);
-						pDC->SelectObject(old);
-					}else{
-						CFont f;
-						f.CreatePointFont(MulDiv(100, 96, pDC->GetDeviceCaps(LOGPIXELSX)), _T("Marlett"));
-						CFont* old = pDC->SelectObject(&f);
-						s = pDC->GetTextExtent(_T("a"));
-						pDC->TextOut((r.left+r.right-s.cx)/2, (r.top+r.bottom-s.cy)/2, _T("a"));
-						pDC->SelectObject(old);
-					}
-					
-				}
+                try{
+				    if(m_pSpeakerToChannelMap2[m_nChannels-1][m_nSpeakers-1][lpDrawItemStruct->itemID-1][i-1] > 0)
+				    {
+					    if(0){
+						    CFont f;
+						    f.CreatePointFont(MulDiv(70, 96, pDC->GetDeviceCaps(LOGPIXELSX)), _T("MS Sans Serif"));
+						    CFont* old = pDC->SelectObject(&f);
+						    CString szVal;
+						    szVal.Format(L"%0.2f", m_pSpeakerToChannelMap2[m_nChannels-1][m_nSpeakers-1][lpDrawItemStruct->itemID-1][i-1]);
+						    s = pDC->GetTextExtent(szVal);
+						    pDC->TextOut((r.left+r.right-s.cx)/2, (r.top+r.bottom-s.cy)/2, szVal);
+						    pDC->SelectObject(old);
+					    }else{
+						    CFont f;
+						    f.CreatePointFont(MulDiv(100, 96, pDC->GetDeviceCaps(LOGPIXELSX)), _T("Marlett"));
+						    CFont* old = pDC->SelectObject(&f);
+						    s = pDC->GetTextExtent(_T("a"));
+						    pDC->TextOut((r.left+r.right-s.cx)/2, (r.top+r.bottom-s.cy)/2, _T("a"));
+						    pDC->SelectObject(old);
+					    }
+    					
+				    }
+                 }catch(...) {  }
 			}
+            
 		}
 	}
 

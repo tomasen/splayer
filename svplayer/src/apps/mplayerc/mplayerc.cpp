@@ -40,6 +40,7 @@
 
 #include "..\..\..\Updater\cupdatenetlib.h"
 
+#include "DisplaySettingDetector.h"
 
 #include "../../filters/transform/mpcvideodec/CpuId.h"
 
@@ -1835,9 +1836,19 @@ for(int i = 0; i <= 30; i++){
 					
 				}
 			}
-			
+			CDisplaySettingDetector cdsd;
+            cdsd.init();
+            int valevel = cdsd.GetVideoAccelLevel();
+            SVP_LogMsg6("Video %s valevel %d", cdsd.Video0Name, valevel);
+            if(valevel != 0)
+            {
+                pFrame->SendStatusMessage(ResStr(IDS_OSD_MSG_VIDEO_CARD_ACCELERATION_LEVEL_TOO_LOW), 6000);
+                cdsd.SetVideoAccelLevel(0);
+            }
+            
 		}
 }
+
 UINT __cdecl Thread_InitInstance( LPVOID lpParam ) 
 { 
 	

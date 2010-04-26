@@ -434,6 +434,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DisplaySettingDetector.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\DlgChkUpdater.cpp"
 				>
 			</File>
@@ -948,6 +952,10 @@
 			</File>
 			<File
 				RelativePath=".\DeinterlacerFilter.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DisplaySettingDetector.h"
 				>
 			</File>
 			<File
@@ -2261,11 +2269,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 		<File

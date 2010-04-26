@@ -9499,7 +9499,7 @@ void CMainFrame::OnNavigateSkip(UINT nID)
 
 			if(i >= 0 && i < nChapters)
 			{
-				SeekTo(rt);
+				SeekTo(rt, 0);
 				SendStatusMessage(_T("Chapter: ") + CString(name), 3000);
 				return;
 			}
@@ -9690,7 +9690,7 @@ void CMainFrame::OnNavigateChapters(UINT nID)
 			CComBSTR name;
 			if(SUCCEEDED(m_pCB->ChapGet(nID, &rt, &name)))
 			{
-				SeekTo(rt);
+				SeekTo(rt, 0);
 				SendStatusMessage(_T("Chapter: ") + CString(name), 3000);
 			}
 			return;

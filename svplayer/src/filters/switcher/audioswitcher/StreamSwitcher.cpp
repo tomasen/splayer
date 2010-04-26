@@ -639,9 +639,12 @@ STDMETHODIMP CStreamSwitcherInputPin::EndOfStream()
 }
 
 // IMemInputPin
-
+//#include <Psapi.h>
 STDMETHODIMP CStreamSwitcherInputPin::Receive(IMediaSample* pSample)
 {
+     //PROCESS_MEMORY_COUNTERS pmc;
+//     GetProcessMemoryInfo( GetCurrentProcess(), &pmc, sizeof(pmc)) ;
+//     SVP_LogMsg5(L"CStreamSwitcherInputPin::MemoryX  %d",   pmc.WorkingSetSize/1024/1024);
 	AM_MEDIA_TYPE* pmt = NULL;
 	if(SUCCEEDED(pSample->GetMediaType(&pmt)) && pmt)
 	{
@@ -685,7 +688,9 @@ STDMETHODIMP CStreamSwitcherInputPin::Receive(IMediaSample* pSample)
 		return pOut->Deliver(pSample);
 	}
 
-	//
+    // 
+//     GetProcessMemoryInfo( GetCurrentProcess(), &pmc, sizeof(pmc)) ;
+//     SVP_LogMsg5(L"CStreamSwitcherInputPin::Memory1  %d",   pmc.WorkingSetSize/1024/1024);
 
 	ALLOCATOR_PROPERTIES props, actual;
 	hr = m_pAllocator->GetProperties(&props);
@@ -744,7 +749,8 @@ STDMETHODIMP CStreamSwitcherInputPin::Receive(IMediaSample* pSample)
 	CComPtr<IMediaSample> pOutSample;
 	if(FAILED(InitializeOutputSample(pSample, &pOutSample)))
 		return E_FAIL;
-
+//     GetProcessMemoryInfo( GetCurrentProcess(), &pmc, sizeof(pmc)) ;
+//     SVP_LogMsg5(L"CStreamSwitcherInputPin::Memory3  %d",   pmc.WorkingSetSize/1024/1024);
 	pmt = NULL;
 	if(SUCCEEDED(pOutSample->GetMediaType(&pmt)) && pmt)
 	{
@@ -766,6 +772,8 @@ STDMETHODIMP CStreamSwitcherInputPin::Receive(IMediaSample* pSample)
 	hr = ((CStreamSwitcherFilter*)m_pFilter)->Transform(pSample, pOutSample);
 
 	//
+//     GetProcessMemoryInfo( GetCurrentProcess(), &pmc, sizeof(pmc)) ;
+//     SVP_LogMsg5(L"CStreamSwitcherInputPin::Memory5  %d",   pmc.WorkingSetSize/1024/1024);
 
     if(S_OK == hr)
 	{
@@ -790,6 +798,8 @@ STDMETHODIMP CStreamSwitcherInputPin::Receive(IMediaSample* pSample)
 			m_bQualityChanged = TRUE;
 		}
 	}
+//     GetProcessMemoryInfo( GetCurrentProcess(), &pmc, sizeof(pmc)) ;
+//     SVP_LogMsg5(L"CStreamSwitcherInputPin::MemoryZ  %d",   pmc.WorkingSetSize/1024/1024);
 
 	return hr;
 }

@@ -2489,11 +2489,16 @@ void CRealAudioDecoder::FreeRA()
 	}
 #endif
 }
-
+//#include <Psapi.h>
 HRESULT CRealAudioDecoder::Receive(IMediaSample* pIn)
 {
 	CAutoLock cAutoLock(&m_csReceive);
-    SVP_LogMsg5(L"CRealAudioDecoder::Receive");
+
+//    PROCESS_MEMORY_COUNTERS pmc;
+  //  DWORD tid = rand();
+//     GetProcessMemoryInfo( GetCurrentProcess(), &pmc, sizeof(pmc)) ;
+//     SVP_LogMsg5(L"CRealAudioDecoder::MemoryX  %x %d", tid,   pmc.WorkingSetSize/1024/1024);
+//     //SVP_LogMsg5(L"CRealAudioDecoder::Receive");
 	HRESULT hr;
 
 	AM_SAMPLE2_PROPERTIES* const pProps = m_pInput->SampleProps();
@@ -2505,9 +2510,13 @@ HRESULT CRealAudioDecoder::Receive(IMediaSample* pIn)
 	BYTE* pDataInOrg = pDataIn;
 
 	long len = pIn->GetActualDataLength();
+    //long len_total = 0;
 	if(len <= 0) return S_OK;
 
-    SVP_LogMsg5(L"CRealAudioDecoder::Receive %d", len);
+//     GetProcessMemoryInfo( GetCurrentProcess(), &pmc, sizeof(pmc)) ;
+//     SVP_LogMsg5(L"CRealAudioDecoder::MemoryY  %x %d", tid,   pmc.WorkingSetSize/1024/1024);
+//    SVP_LogMsg5(L"CRealAudioDecoder::Receive %x %d", tid,  len);
+    
 	REFERENCE_TIME rtStart, rtStop;
 	pIn->GetTime(&rtStart, &rtStop);
 	/*
@@ -2617,62 +2626,74 @@ HRESULT CRealAudioDecoder::Receive(IMediaSample* pIn)
 	}
 
 	rtStart = m_rtBuffStart;
+
+     SVP_LogMsg5( L"InitFfmpeg ing301");
+    CComPtr<IMediaSample> pOut;
+    BYTE* pDataOut = NULL;
+    if(FAILED(hr = m_pOutput->GetDeliveryBuffer(&pOut, NULL, NULL, 0))
+        || FAILED(hr = pOut->GetPointer(&pDataOut)))
+        return hr;
+    //SVP_LogMsg5( L"InitFfmpeg ing32");
+    AM_MEDIA_TYPE* pmt;
+    if(SUCCEEDED(pOut->GetMediaType(&pmt)) && pmt)
+    {
+        CMediaType mt(*pmt);
+        m_pOutput->SetMediaType(&mt);
+        DeleteMediaType(pmt);
+    }
+
+    //CAtlArray<float> pOutBuffAll;
+
+    int nCodecId = -1;
+    if( m_pInput->CurrentMediaType().subtype == MEDIASUBTYPE_COOK ){
+        nCodecId = CODEC_ID_COOK;
+    }else if( m_pInput->CurrentMediaType().subtype == MEDIASUBTYPE_SIPR ){
+        nCodecId = CODEC_ID_SIPR;
+    }else if( m_pInput->CurrentMediaType().subtype == MEDIASUBTYPE_ATRC ){
+        nCodecId = CODEC_ID_ATRAC3;
+    }else if( m_pInput->CurrentMediaType().subtype == MEDIASUBTYPE_14_4 ){
+        nCodecId = CODEC_ID_RA_144;
+    }else if( m_pInput->CurrentMediaType().subtype == MEDIASUBTYPE_28_8 ){
+        nCodecId = CODEC_ID_RA_288;
+    }else if( m_pInput->CurrentMediaType().subtype == MEDIASUBTYPE_DNET ){
+        //nCodecId = CODEC_ID_DNET;
+    }else if( m_pInput->CurrentMediaType().subtype == MEDIASUBTYPE_RAAC ){
+        nCodecId = CODEC_ID_AAC;
+    }
+
+     len = 0;
+     BYTE* pFFOut = pDataOut;
  SVP_LogMsg5( L"InitFfmpeg ing31");
 	for(; src < dst; src += w)
 	{
-        SVP_LogMsg5( L"InitFfmpeg ing301");
-		CComPtr<IMediaSample> pOut;
-		BYTE* pDataOut = NULL;
-		if(FAILED(hr = m_pOutput->GetDeliveryBuffer(&pOut, NULL, NULL, 0))
-			|| FAILED(hr = pOut->GetPointer(&pDataOut)))
-			return hr;
- SVP_LogMsg5( L"InitFfmpeg ing32");
-		AM_MEDIA_TYPE* pmt;
-		if(SUCCEEDED(pOut->GetMediaType(&pmt)) && pmt)
-		{
-			CMediaType mt(*pmt);
-			m_pOutput->SetMediaType(&mt);
-			DeleteMediaType(pmt);
-		}
-         SVP_LogMsg5( L"InitFfmpeg ing33");
+//         GetProcessMemoryInfo( GetCurrentProcess(), &pmc, sizeof(pmc)) ;
+//         SVP_LogMsg5(L"CRealAudioDecoder::Memory0  %x %d", tid,   pmc.WorkingSetSize/1024/1024);
+      
+   //      SVP_LogMsg5( L"InitFfmpeg ing33");
 #ifndef RA_FFMPEG
 		hr = RADecode(m_dwCookie, src, w, pDataOut, &len, -1);
 #else
         //FFDecode()
-        int nCodecId = -1;
-        if( m_pInput->CurrentMediaType().subtype == MEDIASUBTYPE_COOK ){
-            nCodecId = CODEC_ID_COOK;
-        }else if( m_pInput->CurrentMediaType().subtype == MEDIASUBTYPE_SIPR ){
-            nCodecId = CODEC_ID_SIPR;
-        }else if( m_pInput->CurrentMediaType().subtype == MEDIASUBTYPE_ATRC ){
-            nCodecId = CODEC_ID_ATRAC3;
-        }else if( m_pInput->CurrentMediaType().subtype == MEDIASUBTYPE_14_4 ){
-            nCodecId = CODEC_ID_RA_144;
-        }else if( m_pInput->CurrentMediaType().subtype == MEDIASUBTYPE_28_8 ){
-            nCodecId = CODEC_ID_RA_288;
-        }else if( m_pInput->CurrentMediaType().subtype == MEDIASUBTYPE_DNET ){
-           // nCodecId = CODEC_ID_;
-        }else if( m_pInput->CurrentMediaType().subtype == MEDIASUBTYPE_RAAC ){
-            nCodecId = CODEC_ID_AAC;
-        }
-
+        
         if (!m_pAVCtx || nCodecId != m_pAVCtx->codec_id)
             if (!InitFfmpeg (nCodecId)){
-                SVP_LogMsg5( L"InitFfmpeg Failed");
+         //       SVP_LogMsg5( L"InitFfmpeg Failed");
                 return E_FAIL;
             }
 
         int nSize = w;
-        SVP_LogMsg5( L"InitFfmpeg ing4 %d %d",nSize , m_pAVCtx->bit_rate);
+       // SVP_LogMsg5( L"InitFfmpeg ing4 %d %d",nSize , m_pAVCtx->bit_rate);
         int user_bytes = 0;
-        len = 0;
+       
         BYTE* pFFIn = src;
-        BYTE* pFFOut = pDataOut;
+        
+//         GetProcessMemoryInfo( GetCurrentProcess(), &pmc, sizeof(pmc)) ;
+//         SVP_LogMsg5(L"CRealAudioDecoder::Memory1  %x %d", tid,   pmc.WorkingSetSize/1024/1024);
         while(nSize > 0){
             int			nPCMLength	= AVCODEC_MAX_AUDIO_FRAME_SIZE;
-            SVP_LogMsg5( L"InitFfmpeg ing3");
+        //    SVP_LogMsg5( L"InitFfmpeg ing3");
             user_bytes = avcodec_decode_audio2(m_pAVCtx, (int16_t*)pFFOut, &nPCMLength, (const uint8_t*)pFFIn, min(nSize, m_pAVCtx->block_align));
-            SVP_LogMsg5( L"InitFfmpeg ing9 %d %d %d", user_bytes, nPCMLength, nSize);
+          //  SVP_LogMsg5( L"InitFfmpeg ing9 %d %d %d", user_bytes, nPCMLength, nSize);
             if(user_bytes <= 0){
                 
                 pFFIn += m_pAVCtx->block_align;
@@ -2683,35 +2704,16 @@ HRESULT CRealAudioDecoder::Receive(IMediaSample* pIn)
                 pFFOut += nPCMLength;
                 len +=  nPCMLength;
             }
-             SVP_LogMsg5(L"avcodec_decode_audio2 %d %d %d %d %d", len, w, m_pAVCtx->sample_fmt, user_bytes , nSize);
+            // SVP_LogMsg5(L"avcodec_decode_audio2 %d %d %d %d %d", len, w, m_pAVCtx->sample_fmt, user_bytes , nSize);
         } 
-          SVP_LogMsg5(L"avcod over");
-        switch (m_pAVCtx->sample_fmt)
-        {
-            case SAMPLE_FMT_FLT :
-                {
-                    #define round(x) ((x) > 0 ? (x) + 0.5 : (x) - 0.5)
-                    
-                    CAtlArray<float>	pBuff;
-                    pBuff.SetCount (len/4);
-                    float* pDataFIn = (float*)pBuff.GetData();
-                    memcpy( (void*) pDataFIn , pDataOut, len);
-                    BYTE* pDataFOut = pDataOut;
-                    len /= 2;
-                    for(int i = 0, flen = pBuff.GetCount(); i < flen; i++)
-                    {
-                        float f = *pDataFIn++;
-                        *(short*)pDataFOut = (short)round(f * SHRT_MAX);
-                        pDataFOut += sizeof(short);
-                    }
-                }
-                break;
-            case SAMPLE_FMT_S16 :
-            default:
-                break;
-        }
+          //SVP_LogMsg5(L"avcod over");
 
-
+//           GetProcessMemoryInfo( GetCurrentProcess(), &pmc, sizeof(pmc)) ;
+//           SVP_LogMsg5(L"CRealAudioDecoder::Memory2  %x %d %d", tid,   pmc.WorkingSetSize/1024/1024, m_pAVCtx->sample_fmt);
+        
+       
+//         GetProcessMemoryInfo( GetCurrentProcess(), &pmc, sizeof(pmc)) ;
+//         SVP_LogMsg5(L"CRealAudioDecoder::Memory3  %x %d", tid,   pmc.WorkingSetSize/1024/1024);
 #endif
 
 		if(FAILED(hr))
@@ -2721,26 +2723,70 @@ HRESULT CRealAudioDecoder::Receive(IMediaSample* pIn)
 			//			return hr;
 		}
 
-		WAVEFORMATEX* pwfe = (WAVEFORMATEX*)m_pOutput->CurrentMediaType().Format();
 
-		rtStop = rtStart + 1000i64*len/pwfe->nAvgBytesPerSec*10000;
-		pOut->SetTime(&rtStart, &rtStop);
-		pOut->SetMediaTime(NULL, NULL);
-
-		pOut->SetDiscontinuity(m_fBuffDiscontinuity); m_fBuffDiscontinuity = false;
-		pOut->SetSyncPoint(TRUE);
-
-		pOut->SetActualDataLength(len);
-
-		SVP_LogMsg5( _T("A: rtStart=%I64d, rtStop=%I64d, rtDur=%I64d, disc=%d, sync=%d"), 
-			rtStart, rtStop,rtStop - rtStart, pOut->IsDiscontinuity() == S_OK, pOut->IsSyncPoint() == S_OK);
-
-		if(rtStart >= 0 && S_OK != (hr = m_pOutput->Deliver(pOut)))
-			return hr;
-
-		rtStart = rtStop;
+//         GetProcessMemoryInfo( GetCurrentProcess(), &pmc, sizeof(pmc)) ;
+//         SVP_LogMsg5(L"CRealAudioDecoder::Memory5  %x %d", tid,   pmc.WorkingSetSize/1024/1024);
 	}
+    if(!m_pAVCtx)
+        return S_OK;
+     SVP_LogMsg5( L"InitFfmpeg ing32");
+    BYTE* pDataFOut = pDataOut;
+    switch (m_pAVCtx->sample_fmt)
+    {
+        case SAMPLE_FMT_FLT :
+        {
+            #define round(x) ((x) > 0 ? (x) + 0.5 : (x) - 0.5)
+            CAtlArray<float>	pBuff;
+            pBuff.SetCount (len/4);
+            float* pDataFIn = (float*)pBuff.GetData();
+            memcpy( (void*) pDataFIn , pDataOut, len);
+            len  /= 2;
+            for(int i = 0, flen = pBuff.GetCount(); i < flen; i++)
+            {
 
+
+                float f = *pDataFIn++;
+                *(short*)pDataFOut = (short)round(f * SHRT_MAX);
+                pDataFOut += sizeof(short);
+            }
+
+//            SVP_LogMsg5(L"CRealAudioDecoder::pOutBuffAll %d %d", pBuff.GetCount(), pOutBuffAll.GetCount());
+        }
+        break;
+        case SAMPLE_FMT_S16 :
+        default:
+            break;
+    }
+
+
+   
+   
+
+    WAVEFORMATEX* pwfe = (WAVEFORMATEX*)m_pOutput->CurrentMediaType().Format();
+
+    rtStop = rtStart + 1000i64*len/pwfe->nAvgBytesPerSec*10000;
+    pOut->SetTime(&rtStart, &rtStop);
+    pOut->SetMediaTime(NULL, NULL);
+
+    pOut->SetDiscontinuity(m_fBuffDiscontinuity); m_fBuffDiscontinuity = false;
+    pOut->SetSyncPoint(TRUE);
+
+    pOut->SetActualDataLength(len);
+    //SVP_LogMsg5( _T("A: rtStart=%I64d, rtStop=%I64d, rtDur=%I64d, disc=%d, sync=%d"), 
+    //	rtStart, rtStop,rtStop - rtStart, pOut->IsDiscontinuity() == S_OK, pOut->IsSyncPoint() == S_OK);
+
+    if(rtStart >= 0)
+    {
+//         GetProcessMemoryInfo( GetCurrentProcess(), &pmc, sizeof(pmc)) ;
+//         SVP_LogMsg5(L"CRealAudioDecoder::Memory4  %x %d", tid,   pmc.WorkingSetSize/1024/1024);
+        if( S_OK != (hr = m_pOutput->Deliver(pOut)))
+            return hr;
+    }
+
+    rtStart = rtStop;
+
+//     GetProcessMemoryInfo( GetCurrentProcess(), &pmc, sizeof(pmc)) ;
+//     SVP_LogMsg5(L"CRealAudioDecoder::Memory6 %x %d", tid,   pmc.WorkingSetSize/1024/1024);
 	m_rtBuffStart = rtStart;
 
 	return S_OK;
@@ -2999,6 +3045,7 @@ HRESULT CRealAudioDecoder::DecideBufferSize(IMemAllocator* pAllocator, ALLOCATOR
 	// ok, maybe this is too much...
 	pProperties->cBuffers = 8;
 	pProperties->cbBuffer = max( pwfe->nChannels*pwfe->nSamplesPerSec*wBitsPerSample>>3, AVCODEC_MAX_AUDIO_FRAME_SIZE*8 ); // nAvgBytesPerSec;
+    SVP_LogMsg5(L"pProperties->cbBuffer %d %d", pwfe->nChannels*pwfe->nSamplesPerSec*wBitsPerSample>>3, AVCODEC_MAX_AUDIO_FRAME_SIZE*8);
 	pProperties->cbAlign = 1;
 	pProperties->cbPrefix = 0;
 
@@ -3062,6 +3109,7 @@ HRESULT CRealAudioDecoder::StartStreaming()
 
 	int len = w*h;
 
+    SVP_LogMsg5(L"m_buff.Allocate %d", len*2);
 	m_buff.Allocate(len*2);
 	m_bufflen = 0;
 	m_rtBuffStart = 0;

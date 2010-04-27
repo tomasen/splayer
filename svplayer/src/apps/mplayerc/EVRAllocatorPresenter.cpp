@@ -415,9 +415,9 @@ private:
 	HANDLE m_hMixerThread;
 	RENDER_STATE m_nRenderState;
 	
-	//CCritSec m_SampleQueueLock;
-    CCritSec m_FreeSampleQueueLock;
-    CCritSec m_ScheduleSampleQueueLock;
+	CCritSec m_SampleQueueLock;
+   // CCritSec m_FreeSampleQueueLock;
+   // CCritSec m_ScheduleSampleQueueLock;
 	CCritSec m_ImageProcessingLock;
 
 	CInterfaceList<IMFSample, &IID_IMFSample> m_FreeSamples;
@@ -1781,37 +1781,74 @@ void CEVRAllocatorPresenter::RenderThread()
 
 		if (m_nRenderState == Started || !m_bPrerolled) // If either streaming or the pre-roll sample
 		{
-			while (SUCCEEDED(GetScheduledSample(&pNewSample, samplesLeft))) // Get the next sample
+            
+			while (1)//SUCCEEDED(GetScheduledSample(&pNewSample, samplesLeft))
 			{
-				m_llLastSampleTime = m_llSampleTime;
-				if (!m_bPrerolled)
-				{
-					m_bPrerolled = true; // m_bPrerolled is a ticket to show one (1) frame and no more until streaming
-					m_lNextSampleWait = 0; // Present immediately
-				}
-				else if (SUCCEEDED(pNewSample->GetSampleTime(&m_llSampleTime))) // Get zero-based sample due time
-				{
-					m_pClock->GetCorrelatedTime(0, &llRefClockTime, &systemTime); // Get zero-based reference clock time. systemTime is not used for anything here
-
-                    LONGLONG llDur;
-                    pNewSample->GetSampleDuration(&llDur);
-                    SVP_LogMsg5(L"GetSampleTime %f %f %d %d %x", double(m_llSampleTime), double(llRefClockTime), (LONG)(llDur/10000), (LONG)((m_llSampleTime - llRefClockTime) / 10000), m_pClock);
-                    if( m_llSampleTime < llRefClockTime - 1000000)
-                    {
+                BOOL bGetInTimeProc = false;
+                BOOL bBreakTheSampleQueueLoop = false;
+                int lJustDroped = 0;
+                {
+                    CAutoLock lock(&m_SampleQueueLock);
+                
+                    while (1){
+                        // Get the next sample
                         
-                        MoveToFreeList(pNewSample, true);
+                        
+                        samplesLeft = m_ScheduledSamples.GetCount();
+                        if (samplesLeft > 0)
+                        {
+                            pNewSample = m_ScheduledSamples.RemoveHead().Detach();
+                            --samplesLeft;
+                        }
+                        else{
+                            bBreakTheSampleQueueLoop = true;
+                            break;
+                        }
 
-                       // InterlockedDecrement(&m_nUsedBuffer);
-                       // m_FreeSamples.AddTail(pNewSample);
-                        pNewSample = NULL;
-                        m_lNextSampleWait = 1;
-                        samplesLeft = 0;
-                        m_pcFramesDropped++;
-                        m_nStepCount = 0;
-                        SVP_LogMsg5(L"MoveToFreeList Done");
-                        continue;
-                       
+                        m_llLastSampleTime = m_llSampleTime;
+                        if (!m_bPrerolled)
+                        {
+                            m_bPrerolled = true; // m_bPrerolled is a ticket to show one (1) frame and no more until streaming
+                            m_lNextSampleWait = 0; // Present immediately
+                        }
+                        else if (SUCCEEDED(pNewSample->GetSampleTime(&m_llSampleTime)))
+                        {
+
+                            m_pClock->GetCorrelatedTime(0, &llRefClockTime, &systemTime); // Get zero-based reference clock time. systemTime is not used for anything here
+
+                            //LONGLONG llDur;
+                            //pNewSample->GetSampleDuration(&llDur);
+                            //SVP_LogMsg5(L"GetSampleTime %f %f %d %d %x", double(m_llSampleTime), double(llRefClockTime), (LONG)(llDur/10000), (LONG)((m_llSampleTime - llRefClockTime) / 10000), m_pClock);
+                            //
+                            if( samplesLeft > 0 && lJustDroped < 10 && m_llSampleTime < llRefClockTime - 1000000)
+                            {
+
+                                //MoveToFreeList(pNewSample, true);
+
+                                 InterlockedDecrement(&m_nUsedBuffer);
+                                 m_FreeSamples.AddTail(pNewSample);
+                                pNewSample = NULL;
+                                m_lNextSampleWait = 1;
+                                samplesLeft = 0;
+                                m_pcFramesDropped++;
+                                m_nStepCount = 0;
+                                lJustDroped++;
+                                SVP_LogMsg5(L"MoveToFreeList Done");
+                                continue;
+
+                            }
+
+                            bGetInTimeProc = true;
+                        }
+                        break;
                     }
+                }
+                if(bBreakTheSampleQueueLoop){
+                    break;
+                }
+				 // Get zero-based sample due time
+				if(bGetInTimeProc){
+					
                     {
 					    m_lNextSampleWait = (LONG)((m_llSampleTime - llRefClockTime) / 10000); // Time left until sample is due, in ms
 					    if (m_lNextSampleWait < 0)
@@ -1999,7 +2036,7 @@ void CEVRAllocatorPresenter::RemoveAllSamples()
 
 HRESULT CEVRAllocatorPresenter::GetFreeSample(IMFSample** ppSample)
 {
-	CAutoLock lock(&m_FreeSampleQueueLock);
+	CAutoLock lock(&m_SampleQueueLock);
 	HRESULT		hr = S_OK;
 
 	if (m_FreeSamples.GetCount() > 1)	// Cannot use first free buffer (can be currently displayed)
@@ -2015,7 +2052,7 @@ HRESULT CEVRAllocatorPresenter::GetFreeSample(IMFSample** ppSample)
 
 HRESULT CEVRAllocatorPresenter::GetScheduledSample(IMFSample** ppSample, int &_Count)
 {
-	CAutoLock lock(&m_ScheduleSampleQueueLock);
+	CAutoLock lock(&m_SampleQueueLock);
 	HRESULT		hr = S_OK;
 
 	_Count = m_ScheduledSamples.GetCount();
@@ -2032,7 +2069,7 @@ HRESULT CEVRAllocatorPresenter::GetScheduledSample(IMFSample** ppSample, int &_C
 
 void CEVRAllocatorPresenter::MoveToFreeList(IMFSample* pSample, bool bTail)
 {
-	CAutoLock lock(&m_FreeSampleQueueLock);
+	CAutoLock lock(&m_SampleQueueLock);
 	InterlockedDecrement(&m_nUsedBuffer);
 	if (m_bPendingMediaFinished && m_nUsedBuffer == 0)
 	{
@@ -2049,12 +2086,12 @@ void CEVRAllocatorPresenter::MoveToScheduledList(IMFSample* pSample, bool _bSort
 {
 	if (_bSorted)
 	{
-		CAutoLock lock(&m_ScheduleSampleQueueLock);
+		CAutoLock lock(&m_SampleQueueLock);
 		m_ScheduledSamples.AddHead(pSample);
 	}
 	else
 	{
-		CAutoLock lock(&m_ScheduleSampleQueueLock);
+		CAutoLock lock(&m_SampleQueueLock);
 		m_ScheduledSamples.AddTail(pSample);
 	}
 }
@@ -2062,8 +2099,8 @@ void CEVRAllocatorPresenter::MoveToScheduledList(IMFSample* pSample, bool _bSort
 void CEVRAllocatorPresenter::FlushSamples()
 {
 	CAutoLock lock(this);
-	CAutoLock lock2(&m_FreeSampleQueueLock);
-    CAutoLock lock3(&m_ScheduleSampleQueueLock);
+	CAutoLock lock2(&m_SampleQueueLock);
+   
     
 	
 	FlushSamplesInternal();

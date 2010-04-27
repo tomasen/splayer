@@ -44,7 +44,7 @@
 #include "AllocatorCommon.h"
 #include "EVRAllocatorPresenter.h"
 
-//#define  SVP_LogMsg5 __noop
+#define  SVP_LogMsg5 __noop
 typedef enum 
 {
 	MSG_MIXERIN,

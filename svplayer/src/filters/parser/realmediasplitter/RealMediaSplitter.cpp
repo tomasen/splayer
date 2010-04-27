@@ -2085,9 +2085,9 @@ void CRealVideoDecoder::SetTypeSpecificFlags(IMediaSample* pMS)
         {
             props.dwTypeSpecificFlags &= ~0x7f;
 
-            if(!m_pFrame->interlaced_frame)
-                props.dwTypeSpecificFlags |= AM_VIDEO_FLAG_WEAVE;
-            else
+            if(!m_pFrame->interlaced_frame){
+             //   props.dwTypeSpecificFlags |= AM_VIDEO_FLAG_WEAVE;
+            }else
             {
                 if(m_pFrame->top_field_first)
                     props.dwTypeSpecificFlags |= AM_VIDEO_FLAG_FIELD1FIRST;

@@ -425,8 +425,9 @@ void CMpeg2DecFilter::SetTypeSpecificFlags(IMediaSample* pMS)
 			{
 				// props.dwTypeSpecificFlags |= AM_VIDEO_FLAG_WEAVE;
 
-				if(m_dec->m_info.m_sequence->flags & SEQ_FLAG_PROGRESSIVE_SEQUENCE)
-					props.dwTypeSpecificFlags |= AM_VIDEO_FLAG_WEAVE;
+                if(m_dec->m_info.m_sequence->flags & SEQ_FLAG_PROGRESSIVE_SEQUENCE){
+				//	props.dwTypeSpecificFlags |= AM_VIDEO_FLAG_WEAVE;
+                }
 
 				if(m_fb.flags & PIC_FLAG_TOP_FIELD_FIRST)
 					props.dwTypeSpecificFlags |= AM_VIDEO_FLAG_FIELD1FIRST;

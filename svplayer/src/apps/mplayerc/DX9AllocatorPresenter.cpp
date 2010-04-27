@@ -750,7 +750,7 @@ HRESULT CDX9AllocatorPresenter::CreateDevice( )
 		if (bCompositionEnabled)
 		{
 			// Desktop composition takes care of the VSYNC
-			pp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
+			pp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;//D3DPRESENT_INTERVAL_IMMEDIATE;
 			s.fVMRGothSyncFix = 0;
 			s.fVMRSyncFix = 0;
 			s.m_RenderSettings.bSynchronizeVideo = 0;
@@ -1737,6 +1737,7 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 	if (pApp->m_fDisplayStats) DrawStats();
 	if (0 && m_pOSDTexture) AlphaBlt(rSrcPri, rDstPri, m_pOSDTexture);
 	m_pD3DDev->EndScene();
+    //SVP_LogMsg5(L"Before Present %x",m_pD3DDevEx);
 	if (m_pD3DDevEx)
 	{
 		if (m_bIsFullscreen)
@@ -1751,7 +1752,7 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 		else
 			hr = m_pD3DDev->Present(rSrcPri, rDstPri, NULL, NULL);
 	}
-
+    //SVP_LogMsg5(L"After Present %x",hr);
 	// Calculate timing statistics
 	if (m_pRefClock) 
 		m_pRefClock->GetTime(&rtCurRefTime); // To check if we called Present too late to hit the right vsync

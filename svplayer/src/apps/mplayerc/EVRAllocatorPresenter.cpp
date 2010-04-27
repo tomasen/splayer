@@ -44,8 +44,7 @@
 #include "AllocatorCommon.h"
 #include "EVRAllocatorPresenter.h"
 
-#define SVP_LogMsg5 __noop
-
+#define  SVP_LogMsg5 __noop
 typedef enum 
 {
 	MSG_MIXERIN,
@@ -441,7 +440,7 @@ private:
 	void RemoveAllSamples();
 	HRESULT BeginStreaming();
 	HRESULT GetFreeSample(IMFSample** ppSample);
-	HRESULT GetScheduledSample(IMFSample** ppSample, int &_Count, LONGLONG rt_CurrentTime = 0);
+	HRESULT GetScheduledSample(IMFSample** ppSample, int &_Count);
 	void MoveToFreeList(IMFSample* pSample, bool bTail);
 	void MoveToScheduledList(IMFSample* pSample, bool _bSorted);
 	void FlushSamples();
@@ -614,6 +613,7 @@ CEVRAllocatorPresenter::CEVRAllocatorPresenter(HWND hWnd, HRESULT& hr )
 		m_nDXSurface	= max (min (s.iEvrBuffers, MAX_PICTURE_SLOTS-2), 4);
 	else
 		m_nDXSurface = 1;
+
 
 	m_nRenderState = Shutdown;
 	m_bUseInternalTimer = false;
@@ -1010,6 +1010,8 @@ HRESULT CEVRAllocatorPresenter::IsMediaTypeSupported(IMFMediaType* pMixerType)
 	CheckHR (pMixerType->GetRepresentation(FORMAT_VideoInfo2, (void**)&pAMMedia));
 	CheckHR (pMixerType->GetUINT32 (MF_MT_INTERLACE_MODE, &nInterlaceMode));
 
+    SVP_LogMsg5(L"MF_MT_INTERLACE_MODE %d",nInterlaceMode);
+
 	if ( (pAMMedia->majortype != MEDIATYPE_Video)) hr = MF_E_INVALIDMEDIATYPE;
 	pMixerType->FreeRepresentation(FORMAT_VideoInfo2, (void*)pAMMedia);
 	return hr;
@@ -1281,6 +1283,7 @@ bool CEVRAllocatorPresenter::GetSampleFromMixer()
 			memset(&Buffer, 0, sizeof(Buffer));
 			Buffer.pSample = pSample;
 			pSample->GetUINT32(GUID_SURFACE_INDEX, &dwSurface);
+            
             //__try{
 			    hr = ProcessOutputSafe(0 , 1, &Buffer, &dwStatus);
             /*}__except(EXCEPTION_EXECUTE_HANDLER){
@@ -1290,10 +1293,21 @@ bool CEVRAllocatorPresenter::GetSampleFromMixer()
 
 			if (hr == MF_E_TRANSFORM_NEED_MORE_INPUT) // There are no samples left in the mixer
 			{
+                //SVP_LogMsg5(L"MF_E_TRANSFORM_NEED_MORE_INPUT");
 				MoveToFreeList(pSample, false);
 				break;
-			}
-			else
+            }else if (hr == MF_E_TRANSFORM_TYPE_NOT_SET){
+                MoveToFreeList(pSample, true);
+                //newSample = false;
+                //FlushSamples();
+                //hr = RenegotiateMediaType();
+
+
+                SVP_LogMsg5(L"MF_E_TRANSFORM_TYPE_NOT_SET %x", hr);
+
+                break;
+            }
+			else if(SUCCEEDED(hr))
 			{
 				newSample = true;
 				if (AfxGetMyApp()->m_fTearingTest)
@@ -1311,8 +1325,11 @@ bool CEVRAllocatorPresenter::GetSampleFromMixer()
 					m_pD3DDev->ColorFill(m_pVideoSurface[dwSurface], &rcTearing, D3DCOLOR_ARGB (255,255,0,0));
 					m_nTearingPos = (m_nTearingPos + 7) % m_NativeVideoSize.cx;
 				}	
+                
 				MoveToScheduledList(pSample, false); // Schedule, then go back to see if there is more where that came from
-			}
+            }else{
+                SVP_LogMsg5(L"ProcessOutputSafe Failed %x", hr);
+            }
 		}
 	}
 
@@ -1343,6 +1360,7 @@ STDMETHODIMP CEVRAllocatorPresenter::InitServicePointers(/* [in] */ __in  IMFTop
 	hr = pLookup->LookupService(MF_SERVICE_LOOKUP_GLOBAL, 0, MR_VIDEO_MIXER_SERVICE, __uuidof (IMFTransform), (void**)&m_pMixer, &dwObjects);
 	hr = pLookup->LookupService(MF_SERVICE_LOOKUP_GLOBAL, 0, MR_VIDEO_RENDER_SERVICE, __uuidof (IMediaEventSink ), (void**)&m_pSink, &dwObjects);
 	hr = pLookup->LookupService(MF_SERVICE_LOOKUP_GLOBAL, 0, MR_VIDEO_RENDER_SERVICE, __uuidof (IMFClock ), (void**)&m_pClock, &dwObjects);
+    SVP_LogMsg5(L"CEVRAllocatorPresenter::InitServicePointers");
 	StartWorkerThreads();
 	return S_OK;
 }
@@ -1696,6 +1714,8 @@ void CEVRAllocatorPresenter::MixerThread()
 								m_bSnapToVSync = false;
 						}
 						m_bInterlaced = ExtractInterlaced(&mt);
+
+                        SVP_LogMsg5(L"m_bInterlaced %d",m_bInterlaced);
 					}
 					// Update internal subtitle clock
 					if(m_bUseInternalTimer && m_pSubPicQueue)
@@ -1759,9 +1779,7 @@ void CEVRAllocatorPresenter::RenderThread()
 
 		if (m_nRenderState == Started || !m_bPrerolled) // If either streaming or the pre-roll sample
 		{
-            if(m_pClock)
-                m_pClock->GetCorrelatedTime(0, &llRefClockTime, &systemTime); // Get zero-based reference clock time. systemTime is not used for anything here
-			if (SUCCEEDED(GetScheduledSample(&pNewSample, samplesLeft,llRefClockTime))) // Get the next sample
+			while (SUCCEEDED(GetScheduledSample(&pNewSample, samplesLeft))) // Get the next sample
 			{
 				m_llLastSampleTime = m_llSampleTime;
 				if (!m_bPrerolled)
@@ -1771,90 +1789,111 @@ void CEVRAllocatorPresenter::RenderThread()
 				}
 				else if (SUCCEEDED(pNewSample->GetSampleTime(&m_llSampleTime))) // Get zero-based sample due time
 				{
-					
-					m_lNextSampleWait = (LONG)((m_llSampleTime - llRefClockTime) / 10000); // Time left until sample is due, in ms
-					if (m_lNextSampleWait < 0)
-						m_lNextSampleWait = 0; // We came too late. Race through, discard the sample and get a new one
-					else if (s.fVMRGothSyncFix && s.m_RenderSettings.bSynchronizeNearest ) // Present at the closest "safe" occasion at tergetSyncOffset ms before vsync to avoid tearing
-					{
-						LONG lOldNextSampleWait = m_lNextSampleWait;
-						while(m_lOverWaitCounter < 20){
-							if (m_rtFrameCycle > 0.0){
-								if(targetSyncOffset*15000 > m_rtFrameCycle){
-									targetSyncOffset = (double)m_rtFrameCycle /15000;
-									m_pGenlock->SetTargetSyncOffset(targetSyncOffset);
-									m_lOverWaitCounter = 99;
-									break;
-								}
-							}
+					m_pClock->GetCorrelatedTime(0, &llRefClockTime, &systemTime); // Get zero-based reference clock time. systemTime is not used for anything here
 
-							REFERENCE_TIME rtRefClockTimeNow; if (m_pRefClock) m_pRefClock->GetTime(&rtRefClockTimeNow); // Reference clock time now
-							//SVP_LogMsg3(" EVR %f %f %f %f ", double(m_llLastSampleTime ) , double(rtRefClockTimeNow),  double(m_llSampleTime) , double(llRefClockTime));
+                    LONGLONG llDur;
+                    pNewSample->GetSampleDuration(&llDur);
+                    SVP_LogMsg5(L"GetSampleTime %f %f %d %d %x", double(m_llSampleTime), double(llRefClockTime), (LONG)(llDur/10000), (LONG)((m_llSampleTime - llRefClockTime) / 10000), m_pClock);
+                    if( m_llSampleTime < llRefClockTime - 1000000)
+                    {
+                        
+                        MoveToFreeList(pNewSample, true);
+                        pNewSample = NULL;
+                        m_lNextSampleWait = 1;
+                        samplesLeft = 0;
+                        m_pcFramesDropped++;
+                        m_nStepCount = 0;
+                       
+                        continue;
+                       
+                    }
+                    {
+					    m_lNextSampleWait = (LONG)((m_llSampleTime - llRefClockTime) / 10000); // Time left until sample is due, in ms
+					    if (m_lNextSampleWait < 0)
+						    m_lNextSampleWait = 0; // We came too late. Race through, discard the sample and get a new one
+					    else if (s.fVMRGothSyncFix && s.m_RenderSettings.bSynchronizeNearest ) // Present at the closest "safe" occasion at tergetSyncOffset ms before vsync to avoid tearing
+					    {
+						    LONG lOldNextSampleWait = m_lNextSampleWait;
+						    while(m_lOverWaitCounter < 20){
+							    if (m_rtFrameCycle > 0.0){
+								    if(targetSyncOffset*15000 > m_rtFrameCycle){
+									    targetSyncOffset = (double)m_rtFrameCycle /15000;
+									    m_pGenlock->SetTargetSyncOffset(targetSyncOffset);
+									    m_lOverWaitCounter = 99;
+									    break;
+								    }
+							    }
 
-							LONG lLastVsyncTime = (LONG)((m_rtEstVSyncTime - rtRefClockTimeNow) / 10000); // Time of previous vsync relative to now
+							    REFERENCE_TIME rtRefClockTimeNow; if (m_pRefClock) m_pRefClock->GetTime(&rtRefClockTimeNow); // Reference clock time now
+							    //SVP_LogMsg3(" EVR %f %f %f %f ", double(m_llLastSampleTime ) , double(rtRefClockTimeNow),  double(m_llSampleTime) , double(llRefClockTime));
 
-							LONGLONG llNextSampleWait = (LONGLONG)(((double)lLastVsyncTime + GetDisplayCycle() - targetSyncOffset) * 10000); // Next safe time to Paint()
-							// 						while ((llRefClockTime + llNextSampleWait) < (m_llSampleTime + m_llHysteresis)) // While the proposed time is in the past of sample presentation time
-							// 						{
-							// 							llNextSampleWait = llNextSampleWait + (LONGLONG)(GetDisplayCycle() * 10000); // Try the next possible time, one display cycle ahead
-							// 						}
-							//By Tomasen: The while loop seems un-nesssery
-							LONGLONG llEachStep = (GetDisplayCycle() * 10000); // While the proposed time is in the past of sample presentation time
-							if(llEachStep){
-								LONGLONG llHowManyStepWeNeed = ((m_llSampleTime + m_llHysteresis) - (llRefClockTime + llNextSampleWait)) / llEachStep;   // Try the next possible time, one display cycle ahead
-								llNextSampleWait += llEachStep * llHowManyStepWeNeed;
-							}else
-								llNextSampleWait = 10000;
-							m_lNextSampleWait = (LONG)(llNextSampleWait / 10000);
-							m_lShiftToNearestPrev = m_lShiftToNearest;
-							m_lShiftToNearest = (LONG)((llRefClockTime + llNextSampleWait - m_llSampleTime) / 10000); // The adjustment made to get to the sweet point in time, in ms
+							    LONG lLastVsyncTime = (LONG)((m_rtEstVSyncTime - rtRefClockTimeNow) / 10000); // Time of previous vsync relative to now
 
-							if (m_bSnapToVSync)
-							{
-								LONG lDisplayCycle2 = (LONG)(GetDisplayCycle() / 2.0); // These are a couple of empirically determined constants used the control the "snap" function
-								LONG lDisplayCycle3 = (LONG)(GetDisplayCycle() / 3.0);
-								if ((m_lShiftToNearestPrev - m_lShiftToNearest) > lDisplayCycle2) // If a step down in the m_lShiftToNearest function. Display slower than video. 
-								{
-									m_bVideoSlowerThanDisplay = false;
-									m_llHysteresis = -(LONGLONG)(10000 * lDisplayCycle3);
-								}
-								else if ((m_lShiftToNearest - m_lShiftToNearestPrev) > lDisplayCycle2) // If a step up
-								{
-									m_bVideoSlowerThanDisplay = true;
-									m_llHysteresis = (LONGLONG)(10000 * lDisplayCycle3);
-								}
-								else if ((m_lShiftToNearest < (2 * lDisplayCycle3)) && (m_lShiftToNearest > lDisplayCycle3))
-									m_llHysteresis = 0; // Reset when between 1/3 and 2/3 of the way either way
-							}
-							break;
-						}
-						//if( (m_lNextSampleWait - lOldNextSampleWait) > llEachStep) {
-						//	m_lNextSampleWait = lOldNextSampleWait + llEachStep;
-						//}
-					}
-					if(m_lNextSampleWait > 200){
-						m_lNextSampleWait = 200;
-						m_lOverWaitCounter++;
-					}else if(m_lOverWaitCounter != 99)
-						m_lOverWaitCounter = 0;
-					
-					if (m_lNextSampleWait < 0)
-						m_lNextSampleWait = 0;
-				}
-				
+							    LONGLONG llNextSampleWait = (LONGLONG)(((double)lLastVsyncTime + GetDisplayCycle() - targetSyncOffset) * 10000); // Next safe time to Paint()
+							    // 						while ((llRefClockTime + llNextSampleWait) < (m_llSampleTime + m_llHysteresis)) // While the proposed time is in the past of sample presentation time
+							    // 						{
+							    // 							llNextSampleWait = llNextSampleWait + (LONGLONG)(GetDisplayCycle() * 10000); // Try the next possible time, one display cycle ahead
+							    // 						}
+							    //By Tomasen: The while loop seems un-nesssery
+							    LONGLONG llEachStep = (GetDisplayCycle() * 10000); // While the proposed time is in the past of sample presentation time
+							    if(llEachStep){
+								    LONGLONG llHowManyStepWeNeed = ((m_llSampleTime + m_llHysteresis) - (llRefClockTime + llNextSampleWait)) / llEachStep;   // Try the next possible time, one display cycle ahead
+								    llNextSampleWait += llEachStep * llHowManyStepWeNeed;
+							    }else
+								    llNextSampleWait = 10000;
+							    m_lNextSampleWait = (LONG)(llNextSampleWait / 10000);
+							    m_lShiftToNearestPrev = m_lShiftToNearest;
+							    m_lShiftToNearest = (LONG)((llRefClockTime + llNextSampleWait - m_llSampleTime) / 10000); // The adjustment made to get to the sweet point in time, in ms
+
+							    if (m_bSnapToVSync)
+							    {
+								    LONG lDisplayCycle2 = (LONG)(GetDisplayCycle() / 2.0); // These are a couple of empirically determined constants used the control the "snap" function
+								    LONG lDisplayCycle3 = (LONG)(GetDisplayCycle() / 3.0);
+								    if ((m_lShiftToNearestPrev - m_lShiftToNearest) > lDisplayCycle2) // If a step down in the m_lShiftToNearest function. Display slower than video. 
+								    {
+									    m_bVideoSlowerThanDisplay = false;
+									    m_llHysteresis = -(LONGLONG)(10000 * lDisplayCycle3);
+								    }
+								    else if ((m_lShiftToNearest - m_lShiftToNearestPrev) > lDisplayCycle2) // If a step up
+								    {
+									    m_bVideoSlowerThanDisplay = true;
+									    m_llHysteresis = (LONGLONG)(10000 * lDisplayCycle3);
+								    }
+								    else if ((m_lShiftToNearest < (2 * lDisplayCycle3)) && (m_lShiftToNearest > lDisplayCycle3))
+									    m_llHysteresis = 0; // Reset when between 1/3 and 2/3 of the way either way
+							    }
+							    break;
+						    }
+						    //if( (m_lNextSampleWait - lOldNextSampleWait) > llEachStep) {
+						    //	m_lNextSampleWait = lOldNextSampleWait + llEachStep;
+						    //}
+					    }
+					    if(m_lNextSampleWait > 200){
+						    m_lNextSampleWait = 200;
+						    m_lOverWaitCounter++;
+					    }else if(m_lOverWaitCounter != 99)
+						    m_lOverWaitCounter = 0;
+    					
+					    if (m_lNextSampleWait < 0)
+						    m_lNextSampleWait = 0;
+				    }
+                }
+				break;
 			}
 			
 		}
+       // SVP_LogMsg5(L"WaitForMultipleObjects %d", m_lNextSampleWait);
 		// Wait for the next presentation time or a quit or flush event
 		dwObject = WaitForMultipleObjects(countof(hEvts), hEvts, FALSE, (DWORD)m_lNextSampleWait); 
 		switch (dwObject)
 		{
 		case WAIT_OBJECT_0: // Quit event
+            SVP_LogMsg5(L"WaitForMultipleObjects Quit event");
 			bQuit = true;
 			break;
 
 		case WAIT_OBJECT_0 + 1: // Flush event
-            SVP_LogMsg5(L"CEVRAllocatorPresenter::Flush event");
+            SVP_LogMsg5(L"WaitForMultipleObjects Flush event");
 			FlushSamples();
 			m_bEvtFlush = false;
 			ResetEvent(m_hEvtFlush);
@@ -1862,23 +1901,24 @@ void CEVRAllocatorPresenter::RenderThread()
 			break;
 
 		case WAIT_TIMEOUT: // Time to show the sample or something
+             //SVP_LogMsg5(L"WaitForMultipleObjects Render event");
 			if (m_LastSetOutputRange != -1 && m_LastSetOutputRange != s.m_RenderSettings.iEVROutputRange || m_bPendingRenegotiate)
 			{
 				FlushSamples();
-                SVP_LogMsg5(L"CEVRAllocatorPresenter::RenegotiateMediaType");
 				RenegotiateMediaType();
 				m_bPendingRenegotiate = false;
+                SVP_LogMsg5(L"WaitForMultipleObjects FlushSamples end");
 			}
 
 			if (m_bPendingResetDevice)
 			{
+                 SVP_LogMsg5(L"WaitForMultipleObjects m_bPendingResetDevice");
 				m_bPendingResetDevice = false;
 				CAutoLock lock(this);
 				CAutoLock lock2(&m_ImageProcessingLock);
 				CAutoLock cRenderLock(&m_RenderLock);
 				if (pNewSample) MoveToFreeList(pNewSample, true);
 				pNewSample = NULL;
-                SVP_LogMsg5(L"CEVRAllocatorPresenter::RemoveAllSamples m_bPendingResetDevice");
 				RemoveAllSamples();
 				CDX9AllocatorPresenter::ResetDevice();
 
@@ -1893,33 +1933,45 @@ void CEVRAllocatorPresenter::RenderThread()
 					}
 					ASSERT(SUCCEEDED (hr));
 				}
+                SVP_LogMsg5(L"WaitForMultipleObjects m_bPendingResetDevice end");
 			}
 			else if (m_nStepCount < 0)
 			{
 				m_nStepCount = 0;
 				m_pcFramesDropped++;
+                SVP_LogMsg5(L"WaitForMultipleObjects m_pcFramesDropped++ end");
 			}
 			else if ((m_nStepCount > 0) && pNewSample)
 			{
+                
 				pNewSample->GetUINT32(GUID_SURFACE_INDEX, (UINT32 *)&m_nCurSurface);
+                SVP_LogMsg5(L"WaitForMultipleObjects Paint %d", m_nCurSurface);
 				if (!g_bExternalSubtitleTime) __super::SetTime (g_tSegmentStart + m_llSampleTime);
 				Paint(true);
 				CompleteFrameStep(false);
+
+                SVP_LogMsg5(L"WaitForMultipleObjects Paint end");
 			}
 			else if (pNewSample)
 			{
-				pNewSample->GetUINT32(GUID_SURFACE_INDEX, (UINT32*)&m_nCurSurface);
+                pNewSample->GetUINT32(GUID_SURFACE_INDEX, (UINT32*)&m_nCurSurface);
 				if (!g_bExternalSubtitleTime) __super::SetTime (g_tSegmentStart + m_llSampleTime);
-				Paint(true);
-				m_pcFramesDrawn++;
+                SVP_LogMsg5(L"WaitForMultipleObjects Paint2 %d ",m_nCurSurface );
+                Paint(true);
+				 SVP_LogMsg5(L"WaitForMultipleObjects Paint2 end");
+                 m_pcFramesDrawn++;
+                
 			}
 			break;
 		} // switch
 		if (pNewSample) MoveToFreeList(pNewSample, true);
 		pNewSample = NULL;
+        //SVP_LogMsg5(L"WaitForMultipleObjects while event");
 	} // while
 	timeEndPeriod (dwResolution);
 	if (pfAvRevertMmThreadCharacteristics) pfAvRevertMmThreadCharacteristics(hAvrt);
+
+     SVP_LogMsg5(L"Render Loop Out");
 }
 
 void CEVRAllocatorPresenter::OnResetDevice()
@@ -1956,30 +2008,21 @@ HRESULT CEVRAllocatorPresenter::GetFreeSample(IMFSample** ppSample)
 	return hr;
 }
 
-HRESULT CEVRAllocatorPresenter::GetScheduledSample(IMFSample** ppSample, int &_Count, LONGLONG rt_CurrentTime)
+HRESULT CEVRAllocatorPresenter::GetScheduledSample(IMFSample** ppSample, int &_Count)
 {
 	CAutoLock lock(&m_SampleQueueLock);
 	HRESULT		hr = S_OK;
-    LONGLONG rt_SampleTime ;
+
 	_Count = m_ScheduledSamples.GetCount();
-	while (_Count > 0)
+	if (_Count > 0)
 	{
-        
 		*ppSample = m_ScheduledSamples.RemoveHead().Detach();
 		--_Count;
-        if(!rt_CurrentTime)
-            return S_OK;
-
-        (*ppSample)->GetSampleTime(&rt_SampleTime);
-        if(rt_CurrentTime < rt_SampleTime){
-            return S_OK;
-            break;
-        }else{
-            //this is a frame that we droped , maybe should do something?
-        }
 	}
+	else
+		hr = MF_E_SAMPLEALLOCATOR_EMPTY;
 
-	return MF_E_SAMPLEALLOCATOR_EMPTY;
+	return hr;
 }
 
 void CEVRAllocatorPresenter::MoveToFreeList(IMFSample* pSample, bool bTail)
@@ -2021,7 +2064,6 @@ void CEVRAllocatorPresenter::FlushSamples()
 
 void CEVRAllocatorPresenter::FlushSamplesInternal()
 {
-    SVP_LogMsg5(L"CEVRAllocatorPresenter::FlushSamplesInternal %d", m_ScheduledSamples.GetCount());
 	m_bPrerolled = false;
 	while (m_ScheduledSamples.GetCount() > 0)
 	{
@@ -2030,10 +2072,9 @@ void CEVRAllocatorPresenter::FlushSamplesInternal()
 		MoveToFreeList(pMFSample, true);
 		TRACE(_T("--- m_ScheduledSamples.GetCount: %d\n"), m_ScheduledSamples.GetCount());
 	}
-    SVP_LogMsg5(L"CEVRAllocatorPresenter::FlushSamplesInternal End");
 }
 void CEVRAllocatorPresenter::ThreadBeginStreaming(){
-	SVP_LogMsg5(L"CEVRAllocatorPresenter::BeginStreamingThread");
+	//SVP_LogMsg5(L"CEVRAllocatorPresenter::BeginStreamingThread");
 	CAutoLock threadLock(&m_csTread);
 	AppSettings& s = AfxGetAppSettings();	
 	
@@ -2045,8 +2086,6 @@ void CEVRAllocatorPresenter::ThreadBeginStreaming(){
 		EstimateRefreshTimings();
 	}
 	if (m_rtFrameCycle > 0.0) m_dCycleDifference = GetCycleDifference(); // Might have moved to another display
-
-    SVP_LogMsg5(L"CEVRAllocatorPresenter::BeginStreamingThread Ended");
 }
 
 UINT __cdecl ThreadEVRAllocatorPresenterStartPresenting( LPVOID lpParam ) 
@@ -2065,9 +2104,10 @@ HRESULT CEVRAllocatorPresenter::BeginStreaming()
 	m_pcFramesDropped = 0;
 	m_pcFramesDrawn = 0;
 
+    SVP_LogMsg5(L"CEVRAllocatorPresenter::BeginStreaming1");
 	
 	AppSettings& s = AfxGetAppSettings();
-	SVP_LogMsg5(L"CEVRAllocatorPresenter::BeginStreaming1");
+	
 	if (s.m_RenderSettings.bSynchronizeVideo)
 		m_pGenlock->AdviseSyncClock(((CMainFrame*)(AfxGetApp()->m_pMainWnd))->m_pSyncClock);
 	CComPtr<IBaseFilter> pEVR;
@@ -2084,7 +2124,7 @@ HRESULT CEVRAllocatorPresenter::BeginStreaming()
 	EndEnumFilters
 	pEVR->GetSyncSource(&m_pRefClock);
 	if (filterInfo.pGraph) filterInfo.pGraph->Release();
-	SVP_LogMsg5(L"CEVRAllocatorPresenter::BeginStreaming2");
+	//SVP_LogMsg5(L"CEVRAllocatorPresenter::BeginStreaming2");
 	if(m_dDetectedScanlineTime <= 0.0){
 		m_VSyncDetectThread = AfxBeginThread(ThreadEVRAllocatorPresenterStartPresenting, (LPVOID)this, THREAD_PRIORITY_BELOW_NORMAL,0, CREATE_SUSPENDED);
 			

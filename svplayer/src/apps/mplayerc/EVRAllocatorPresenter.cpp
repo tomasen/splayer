@@ -44,7 +44,7 @@
 #include "AllocatorCommon.h"
 #include "EVRAllocatorPresenter.h"
 
-#define  SVP_LogMsg5 __noop
+//#define  SVP_LogMsg5 __noop
 typedef enum 
 {
 	MSG_MIXERIN,
@@ -415,7 +415,9 @@ private:
 	HANDLE m_hMixerThread;
 	RENDER_STATE m_nRenderState;
 	
-	CCritSec m_SampleQueueLock;
+	//CCritSec m_SampleQueueLock;
+    CCritSec m_FreeSampleQueueLock;
+    CCritSec m_ScheduleSampleQueueLock;
 	CCritSec m_ImageProcessingLock;
 
 	CInterfaceList<IMFSample, &IID_IMFSample> m_FreeSamples;
@@ -1798,12 +1800,15 @@ void CEVRAllocatorPresenter::RenderThread()
                     {
                         
                         MoveToFreeList(pNewSample, true);
+
+                       // InterlockedDecrement(&m_nUsedBuffer);
+                       // m_FreeSamples.AddTail(pNewSample);
                         pNewSample = NULL;
                         m_lNextSampleWait = 1;
                         samplesLeft = 0;
                         m_pcFramesDropped++;
                         m_nStepCount = 0;
-                       
+                        SVP_LogMsg5(L"MoveToFreeList Done");
                         continue;
                        
                     }
@@ -1956,9 +1961,9 @@ void CEVRAllocatorPresenter::RenderThread()
 			{
                 pNewSample->GetUINT32(GUID_SURFACE_INDEX, (UINT32*)&m_nCurSurface);
 				if (!g_bExternalSubtitleTime) __super::SetTime (g_tSegmentStart + m_llSampleTime);
-                SVP_LogMsg5(L"WaitForMultipleObjects Paint2 %d ",m_nCurSurface );
+                //SVP_LogMsg5(L"WaitForMultipleObjects Paint2 %d ",m_nCurSurface );
                 Paint(true);
-				 SVP_LogMsg5(L"WaitForMultipleObjects Paint2 end");
+				//SVP_LogMsg5(L"WaitForMultipleObjects Paint2 end");
                  m_pcFramesDrawn++;
                 
 			}
@@ -1994,7 +1999,7 @@ void CEVRAllocatorPresenter::RemoveAllSamples()
 
 HRESULT CEVRAllocatorPresenter::GetFreeSample(IMFSample** ppSample)
 {
-	CAutoLock lock(&m_SampleQueueLock);
+	CAutoLock lock(&m_FreeSampleQueueLock);
 	HRESULT		hr = S_OK;
 
 	if (m_FreeSamples.GetCount() > 1)	// Cannot use first free buffer (can be currently displayed)
@@ -2010,7 +2015,7 @@ HRESULT CEVRAllocatorPresenter::GetFreeSample(IMFSample** ppSample)
 
 HRESULT CEVRAllocatorPresenter::GetScheduledSample(IMFSample** ppSample, int &_Count)
 {
-	CAutoLock lock(&m_SampleQueueLock);
+	CAutoLock lock(&m_ScheduleSampleQueueLock);
 	HRESULT		hr = S_OK;
 
 	_Count = m_ScheduledSamples.GetCount();
@@ -2027,7 +2032,7 @@ HRESULT CEVRAllocatorPresenter::GetScheduledSample(IMFSample** ppSample, int &_C
 
 void CEVRAllocatorPresenter::MoveToFreeList(IMFSample* pSample, bool bTail)
 {
-	CAutoLock lock(&m_SampleQueueLock);
+	CAutoLock lock(&m_FreeSampleQueueLock);
 	InterlockedDecrement(&m_nUsedBuffer);
 	if (m_bPendingMediaFinished && m_nUsedBuffer == 0)
 	{
@@ -2044,12 +2049,12 @@ void CEVRAllocatorPresenter::MoveToScheduledList(IMFSample* pSample, bool _bSort
 {
 	if (_bSorted)
 	{
-		CAutoLock lock(&m_SampleQueueLock);
+		CAutoLock lock(&m_ScheduleSampleQueueLock);
 		m_ScheduledSamples.AddHead(pSample);
 	}
 	else
 	{
-		CAutoLock lock(&m_SampleQueueLock);
+		CAutoLock lock(&m_ScheduleSampleQueueLock);
 		m_ScheduledSamples.AddTail(pSample);
 	}
 }
@@ -2057,7 +2062,9 @@ void CEVRAllocatorPresenter::MoveToScheduledList(IMFSample* pSample, bool _bSort
 void CEVRAllocatorPresenter::FlushSamples()
 {
 	CAutoLock lock(this);
-	CAutoLock lock2(&m_SampleQueueLock);
+	CAutoLock lock2(&m_FreeSampleQueueLock);
+    CAutoLock lock3(&m_ScheduleSampleQueueLock);
+    
 	
 	FlushSamplesInternal();
 }

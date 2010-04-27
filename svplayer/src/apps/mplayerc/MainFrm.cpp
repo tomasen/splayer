@@ -8362,6 +8362,7 @@ void CMainFrame::OnPlaySeekKey(UINT nID)
 
 void CMainFrame::SeekTo(REFERENCE_TIME rtPos, int fSeekToKeyFrame, REFERENCE_TIME maxStep)
 {
+    SVP_LogMsg5(L"SeekTo %f ",double(rtPos));
     m_l_been_playing_sec = 0;
 	AppSettings& s = AfxGetAppSettings();
 	if(fSeekToKeyFrame == -99){

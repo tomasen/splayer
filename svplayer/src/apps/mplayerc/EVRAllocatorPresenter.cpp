@@ -44,6 +44,8 @@
 #include "AllocatorCommon.h"
 #include "EVRAllocatorPresenter.h"
 
+#define SVP_LogMsg5 __noop
+
 typedef enum 
 {
 	MSG_MIXERIN,
@@ -439,7 +441,7 @@ private:
 	void RemoveAllSamples();
 	HRESULT BeginStreaming();
 	HRESULT GetFreeSample(IMFSample** ppSample);
-	HRESULT GetScheduledSample(IMFSample** ppSample, int &_Count);
+	HRESULT GetScheduledSample(IMFSample** ppSample, int &_Count, LONGLONG rt_CurrentTime = 0);
 	void MoveToFreeList(IMFSample* pSample, bool bTail);
 	void MoveToScheduledList(IMFSample* pSample, bool _bSorted);
 	void FlushSamples();
@@ -1757,7 +1759,9 @@ void CEVRAllocatorPresenter::RenderThread()
 
 		if (m_nRenderState == Started || !m_bPrerolled) // If either streaming or the pre-roll sample
 		{
-			if (SUCCEEDED(GetScheduledSample(&pNewSample, samplesLeft))) // Get the next sample
+            if(m_pClock)
+                m_pClock->GetCorrelatedTime(0, &llRefClockTime, &systemTime); // Get zero-based reference clock time. systemTime is not used for anything here
+			if (SUCCEEDED(GetScheduledSample(&pNewSample, samplesLeft,llRefClockTime))) // Get the next sample
 			{
 				m_llLastSampleTime = m_llSampleTime;
 				if (!m_bPrerolled)
@@ -1767,7 +1771,7 @@ void CEVRAllocatorPresenter::RenderThread()
 				}
 				else if (SUCCEEDED(pNewSample->GetSampleTime(&m_llSampleTime))) // Get zero-based sample due time
 				{
-					m_pClock->GetCorrelatedTime(0, &llRefClockTime, &systemTime); // Get zero-based reference clock time. systemTime is not used for anything here
+					
 					m_lNextSampleWait = (LONG)((m_llSampleTime - llRefClockTime) / 10000); // Time left until sample is due, in ms
 					if (m_lNextSampleWait < 0)
 						m_lNextSampleWait = 0; // We came too late. Race through, discard the sample and get a new one
@@ -1850,6 +1854,7 @@ void CEVRAllocatorPresenter::RenderThread()
 			break;
 
 		case WAIT_OBJECT_0 + 1: // Flush event
+            SVP_LogMsg5(L"CEVRAllocatorPresenter::Flush event");
 			FlushSamples();
 			m_bEvtFlush = false;
 			ResetEvent(m_hEvtFlush);
@@ -1860,6 +1865,7 @@ void CEVRAllocatorPresenter::RenderThread()
 			if (m_LastSetOutputRange != -1 && m_LastSetOutputRange != s.m_RenderSettings.iEVROutputRange || m_bPendingRenegotiate)
 			{
 				FlushSamples();
+                SVP_LogMsg5(L"CEVRAllocatorPresenter::RenegotiateMediaType");
 				RenegotiateMediaType();
 				m_bPendingRenegotiate = false;
 			}
@@ -1872,6 +1878,7 @@ void CEVRAllocatorPresenter::RenderThread()
 				CAutoLock cRenderLock(&m_RenderLock);
 				if (pNewSample) MoveToFreeList(pNewSample, true);
 				pNewSample = NULL;
+                SVP_LogMsg5(L"CEVRAllocatorPresenter::RemoveAllSamples m_bPendingResetDevice");
 				RemoveAllSamples();
 				CDX9AllocatorPresenter::ResetDevice();
 
@@ -1949,21 +1956,30 @@ HRESULT CEVRAllocatorPresenter::GetFreeSample(IMFSample** ppSample)
 	return hr;
 }
 
-HRESULT CEVRAllocatorPresenter::GetScheduledSample(IMFSample** ppSample, int &_Count)
+HRESULT CEVRAllocatorPresenter::GetScheduledSample(IMFSample** ppSample, int &_Count, LONGLONG rt_CurrentTime)
 {
 	CAutoLock lock(&m_SampleQueueLock);
 	HRESULT		hr = S_OK;
-
+    LONGLONG rt_SampleTime ;
 	_Count = m_ScheduledSamples.GetCount();
-	if (_Count > 0)
+	while (_Count > 0)
 	{
+        
 		*ppSample = m_ScheduledSamples.RemoveHead().Detach();
 		--_Count;
-	}
-	else
-		hr = MF_E_SAMPLEALLOCATOR_EMPTY;
+        if(!rt_CurrentTime)
+            return S_OK;
 
-	return hr;
+        (*ppSample)->GetSampleTime(&rt_SampleTime);
+        if(rt_CurrentTime < rt_SampleTime){
+            return S_OK;
+            break;
+        }else{
+            //this is a frame that we droped , maybe should do something?
+        }
+	}
+
+	return MF_E_SAMPLEALLOCATOR_EMPTY;
 }
 
 void CEVRAllocatorPresenter::MoveToFreeList(IMFSample* pSample, bool bTail)
@@ -2005,6 +2021,7 @@ void CEVRAllocatorPresenter::FlushSamples()
 
 void CEVRAllocatorPresenter::FlushSamplesInternal()
 {
+    SVP_LogMsg5(L"CEVRAllocatorPresenter::FlushSamplesInternal %d", m_ScheduledSamples.GetCount());
 	m_bPrerolled = false;
 	while (m_ScheduledSamples.GetCount() > 0)
 	{
@@ -2013,9 +2030,10 @@ void CEVRAllocatorPresenter::FlushSamplesInternal()
 		MoveToFreeList(pMFSample, true);
 		TRACE(_T("--- m_ScheduledSamples.GetCount: %d\n"), m_ScheduledSamples.GetCount());
 	}
+    SVP_LogMsg5(L"CEVRAllocatorPresenter::FlushSamplesInternal End");
 }
 void CEVRAllocatorPresenter::ThreadBeginStreaming(){
-	//SVP_LogMsg5(L"CEVRAllocatorPresenter::BeginStreamingThread");
+	SVP_LogMsg5(L"CEVRAllocatorPresenter::BeginStreamingThread");
 	CAutoLock threadLock(&m_csTread);
 	AppSettings& s = AfxGetAppSettings();	
 	
@@ -2027,6 +2045,8 @@ void CEVRAllocatorPresenter::ThreadBeginStreaming(){
 		EstimateRefreshTimings();
 	}
 	if (m_rtFrameCycle > 0.0) m_dCycleDifference = GetCycleDifference(); // Might have moved to another display
+
+    SVP_LogMsg5(L"CEVRAllocatorPresenter::BeginStreamingThread Ended");
 }
 
 UINT __cdecl ThreadEVRAllocatorPresenterStartPresenting( LPVOID lpParam ) 
@@ -2047,7 +2067,7 @@ HRESULT CEVRAllocatorPresenter::BeginStreaming()
 
 	
 	AppSettings& s = AfxGetAppSettings();
-	//SVP_LogMsg5(L"CEVRAllocatorPresenter::BeginStreaming1");
+	SVP_LogMsg5(L"CEVRAllocatorPresenter::BeginStreaming1");
 	if (s.m_RenderSettings.bSynchronizeVideo)
 		m_pGenlock->AdviseSyncClock(((CMainFrame*)(AfxGetApp()->m_pMainWnd))->m_pSyncClock);
 	CComPtr<IBaseFilter> pEVR;
@@ -2064,7 +2084,7 @@ HRESULT CEVRAllocatorPresenter::BeginStreaming()
 	EndEnumFilters
 	pEVR->GetSyncSource(&m_pRefClock);
 	if (filterInfo.pGraph) filterInfo.pGraph->Release();
-	//SVP_LogMsg5(L"CEVRAllocatorPresenter::BeginStreaming2");
+	SVP_LogMsg5(L"CEVRAllocatorPresenter::BeginStreaming2");
 	if(m_dDetectedScanlineTime <= 0.0){
 		m_VSyncDetectThread = AfxBeginThread(ThreadEVRAllocatorPresenterStartPresenting, (LPVOID)this, THREAD_PRIORITY_BELOW_NORMAL,0, CREATE_SUSPENDED);
 			

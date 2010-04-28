@@ -3203,8 +3203,8 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 					if (!fnSubtitleFile.IsEmpty()){ //如果有字幕
 						CString szLog;
 
-						szLog.Format(_T(" %s ( with sub %s delay %d ) %d sec of %d sec ( 1/2 length video = %d ) ") , fnVideoFile, fnSubtitleFile,subDelayMS, totalplayedtime , iTotalLenSec, (UINT)(iTotalLenSec/2)  );
-						SVP_LogMsg(szLog);
+						//szLog.Format(_T(" %s ( with sub %s delay %d ) %d sec of %d sec ( 1/2 length video = %d ) ") , fnVideoFile, fnSubtitleFile,subDelayMS, totalplayedtime , iTotalLenSec, (UINT)(iTotalLenSec/2)  );
+						//SVP_LogMsg(szLog);
 						//if time > 50%
 						if (totalplayedtime > (UINT)(iTotalLenSec/2)){
 
@@ -3237,8 +3237,8 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 							//是否已经上传过呢
 							if(m_fnsAlreadyUploadedSubfile.Find( fnVideoFile+fnSubtitleFile ) < 0 ){
 								//upload subtitle
-								szLog.Format(_T("Uploading sub %s of %s width delay %d ms since user played %d sec of %d sec ( more than 1/2 length video ) ") , fnSubtitleFile, fnVideoFile ,subDelayMS, totalplayedtime , iTotalLenSec  );
-								SVP_LogMsg(szLog);
+								//szLog.Format(_T("Uploading sub %s of %s width delay %d ms since user played %d sec of %d sec ( more than 1/2 length video ) ") , fnSubtitleFile, fnVideoFile ,subDelayMS, totalplayedtime , iTotalLenSec  );
+								//SVP_LogMsg(szLog);
 								SVP_UploadSubFileByVideoAndSubFilePath(fnVideoFile , fnSubtitleFile, subDelayMS) ;
 								m_fnsAlreadyUploadedSubfile.Append( fnVideoFile+fnSubtitleFile+_T(";") );
 							}

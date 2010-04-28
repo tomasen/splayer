@@ -1623,9 +1623,9 @@ void CMPCVideoDecFilter::SetTypeSpecificFlags(IMediaSample* pMS)
 		{
 			props.dwTypeSpecificFlags &= ~0x7f;
 
-			if(!(m_pFrame->interlaced_frame || m_real_interlaced))
+			if(!(m_pFrame->interlaced_frame || m_real_interlaced == 1))
             {
-                if(!m_real_interlaced)
+                if(m_real_interlaced == 0)
 				    props.dwTypeSpecificFlags |= AM_VIDEO_FLAG_WEAVE;
             }
 			else
@@ -1742,9 +1742,14 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 	int				used_bytes;
 
     DWORD in_timestamp;
-    m_real_interlaced = false; m_real_top_field_first = false; m_real_repeat_field = false;
+    m_real_interlaced = -1; m_real_top_field_first = false; m_real_repeat_field = false;
     if( IS_REALVIDEO(m_pAVCtx->codec_id) ){
-        GetRealFlags(pDataIn, &m_real_interlaced, &m_real_top_field_first, &m_real_repeat_field);
+        bool real_interlaced = false;
+        GetRealFlags(pDataIn, &real_interlaced, &m_real_top_field_first, &m_real_repeat_field);
+        if (real_interlaced)
+            m_real_interlaced = 1;
+        else
+            m_real_interlaced = 0;
 
         if(m_rv_time_for_each_leap == 0){
             m_rv_time_for_each_leap = m_rtAvrTimePerFrame/10000;

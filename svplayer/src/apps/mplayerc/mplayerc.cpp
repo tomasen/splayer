@@ -1836,14 +1836,16 @@ for(int i = 0; i <= 30; i++){
 					
 				}
 			}
-			CDisplaySettingDetector cdsd;
-            cdsd.init();
-            int valevel = cdsd.GetVideoAccelLevel();
-            SVP_LogMsg6("Video %s valevel %d", cdsd.Video0Name, valevel);
-            if(valevel != 0)
-            {
-                pFrame->SendStatusMessage(ResStr(IDS_OSD_MSG_VIDEO_CARD_ACCELERATION_LEVEL_TOO_LOW), 6000);
-                cdsd.SetVideoAccelLevel(0);
+            if(!IsVista()){
+			    CDisplaySettingDetector cdsd;
+                cdsd.init();
+                int valevel = cdsd.GetVideoAccelLevel();
+                //SVP_LogMsg6("Video %s valevel %d", cdsd.Video0Name, valevel);
+                if(valevel != 0)
+                {
+                    pFrame->SendStatusMessage(ResStr(IDS_OSD_MSG_VIDEO_CARD_ACCELERATION_LEVEL_TOO_LOW), 6000);
+                    cdsd.SetVideoAccelLevel(0);
+                }
             }
             
 		}

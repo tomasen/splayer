@@ -403,6 +403,7 @@ private:
 
 	HANDLE m_hEvtQuit; // Stop rendering thread event
     HANDLE m_hEvtSampleNotify; // Stop rendering thread event
+    bool m_SampleNotified;
 	bool m_bEvtQuit;
 	HANDLE m_hEvtFlush; // Discard all buffers
 	bool m_bEvtFlush;
@@ -549,6 +550,7 @@ CEVRAllocatorPresenter::CEVRAllocatorPresenter(HWND hWnd, HRESULT& hr )
 	m_hEvtQuit = INVALID_HANDLE_VALUE;
     m_hEvtSampleNotify = INVALID_HANDLE_VALUE;
 	m_bEvtQuit = 0;
+    m_SampleNotified = 0;
 	m_bEvtFlush = 0;
 
 	m_bNeedPendingResetDevice = true;
@@ -986,6 +988,7 @@ STDMETHODIMP CEVRAllocatorPresenter::ProcessMessage(MFVP_MESSAGE_TYPE eMessage, 
 	case MFVP_MESSAGE_FLUSH :
 		SetEvent(m_hEvtFlush);
         ResetEvent(m_hEvtSampleNotify);
+        m_SampleNotified = 0;
 		m_bEvtFlush = true;
 		while (WaitForSingleObject(m_hEvtFlush, 1) == WAIT_OBJECT_0);
 		break;
@@ -997,6 +1000,7 @@ STDMETHODIMP CEVRAllocatorPresenter::ProcessMessage(MFVP_MESSAGE_TYPE eMessage, 
 
 	case MFVP_MESSAGE_PROCESSINPUTNOTIFY:
         SetEvent(m_hEvtSampleNotify);
+        m_SampleNotified = true;
         SVP_LogMsg6("MFVP_MESSAGE_PROCESSINPUTNOTIFY");
 		break;
 
@@ -1702,9 +1706,10 @@ void CEVRAllocatorPresenter::MixerThread()
 			bQuit = true;
 			break;
         case WAIT_OBJECT_0 + 1:
-		case WAIT_TIMEOUT :
+            ResetEvent(m_hEvtSampleNotify);
+        case WAIT_TIMEOUT :
         //    SVP_LogMsg6(" (m_hEvtSampleNotify);");
-            
+            if(m_SampleNotified)
 			{
 				bool bNewSample = false;
 				{
@@ -1746,6 +1751,7 @@ void CEVRAllocatorPresenter::MixerThread()
 					}
 				}
 			}
+           
 			break;
 		}
 	}

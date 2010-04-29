@@ -45,6 +45,7 @@
 #include "EVRAllocatorPresenter.h"
 
 #define  SVP_LogMsg5 __noop
+#define  SVP_LogMsg6 __noop
 typedef enum 
 {
 	MSG_MIXERIN,
@@ -401,6 +402,7 @@ private:
 	COLORREF m_BorderColor;
 
 	HANDLE m_hEvtQuit; // Stop rendering thread event
+    HANDLE m_hEvtSampleNotify; // Stop rendering thread event
 	bool m_bEvtQuit;
 	HANDLE m_hEvtFlush; // Discard all buffers
 	bool m_bEvtFlush;
@@ -545,6 +547,7 @@ CEVRAllocatorPresenter::CEVRAllocatorPresenter(HWND hWnd, HRESULT& hr )
 	m_hMixerThread= INVALID_HANDLE_VALUE;
 	m_hEvtFlush = INVALID_HANDLE_VALUE;
 	m_hEvtQuit = INVALID_HANDLE_VALUE;
+    m_hEvtSampleNotify = INVALID_HANDLE_VALUE;
 	m_bEvtQuit = 0;
 	m_bEvtFlush = 0;
 
@@ -652,6 +655,7 @@ void CEVRAllocatorPresenter::StartWorkerThreads()
 	{
 		m_hEvtQuit = CreateEvent(NULL, TRUE, FALSE, NULL);
 		m_hEvtFlush = CreateEvent(NULL, TRUE, FALSE, NULL);
+        m_hEvtSampleNotify = CreateEvent(NULL, TRUE, FALSE, NULL);
 		m_hMixerThread = ::CreateThread(NULL, 0, MixerThreadStatic, (LPVOID)this, 0, &dwThreadId);
 		SetThreadPriority(m_hMixerThread, THREAD_PRIORITY_HIGHEST);
 		m_hRenderThread = ::CreateThread(NULL, 0, RenderThreadStatic, (LPVOID)this, 0, &dwThreadId);
@@ -681,9 +685,12 @@ void CEVRAllocatorPresenter::StopWorkerThreads()
 		}
 		if (m_hMixerThread != INVALID_HANDLE_VALUE) CloseHandle (m_hMixerThread);
 
+        if (m_hEvtSampleNotify != INVALID_HANDLE_VALUE) CloseHandle (m_hEvtSampleNotify);
+
 		if (m_hEvtFlush != INVALID_HANDLE_VALUE) CloseHandle (m_hEvtFlush);
 		if (m_hEvtQuit != INVALID_HANDLE_VALUE) CloseHandle (m_hEvtQuit);
-
+        
+        
 		m_bEvtFlush = false;
 		m_bEvtQuit = false;
 	}
@@ -954,7 +961,7 @@ STDMETHODIMP CEVRAllocatorPresenter::ProcessMessage(MFVP_MESSAGE_TYPE eMessage, 
 {
 	HRESULT hr = S_OK;
 	AppSettings& s = AfxGetAppSettings();
-
+    SVP_LogMsg6("ProcessMessage %x", eMessage);
 	switch (eMessage)
 	{
 	case MFVP_MESSAGE_BEGINSTREAMING : // The EVR switched from stopped to paused. The presenter should allocate resources
@@ -988,6 +995,7 @@ STDMETHODIMP CEVRAllocatorPresenter::ProcessMessage(MFVP_MESSAGE_TYPE eMessage, 
 		break;
 
 	case MFVP_MESSAGE_PROCESSINPUTNOTIFY:
+        SetEvent(m_hEvtSampleNotify);
 		break;
 
 	case MFVP_MESSAGE_STEP:
@@ -1046,6 +1054,8 @@ HRESULT CEVRAllocatorPresenter::CreateProposedOutputType(IMFMediaType* pMixerTyp
 			m_pMediaType->SetUINT32(MF_MT_VIDEO_NOMINAL_RANGE, MFNominalRange_16_235);
 		else
 			m_pMediaType->SetUINT32(MF_MT_VIDEO_NOMINAL_RANGE, MFNominalRange_0_255);
+
+        //m_pMediaType->SetUINT32(MF_MT_INTERLACE_MODE, MFVideoInterlace_Progressive );
 
 		m_LastSetOutputRange = s.m_RenderSettings.iEVROutputRange;
 		i64Size.HighPart = m_AspectRatio.cx;
@@ -1670,7 +1680,7 @@ DWORD WINAPI CEVRAllocatorPresenter::MixerThreadStatic(LPVOID lpParam)
 void CEVRAllocatorPresenter::MixerThread()
 {
 	HANDLE hAvrt;
-	HANDLE hEvts[] = {m_hEvtQuit};
+	HANDLE hEvts[] = {m_hEvtQuit,m_hEvtSampleNotify};
 	bool bQuit = false;
     TIMECAPS tc;
 	DWORD dwResolution;
@@ -1683,12 +1693,13 @@ void CEVRAllocatorPresenter::MixerThread()
 
 	while (!bQuit)
 	{
-		DWORD dwObject = WaitForMultipleObjects (countof(hEvts), hEvts, FALSE, 1);
+		DWORD dwObject = WaitForMultipleObjects (countof(hEvts), hEvts, FALSE, 1000);
 		switch (dwObject)
 		{
 		case WAIT_OBJECT_0 :
 			bQuit = true;
 			break;
+        case WAIT_OBJECT_0 + 1:
 		case WAIT_TIMEOUT :
 			{
 				bool bNewSample = false;
@@ -1939,7 +1950,8 @@ void CEVRAllocatorPresenter::RenderThread()
 			FlushSamples();
 			m_bEvtFlush = false;
 			ResetEvent(m_hEvtFlush);
-			m_bPrerolled = false;
+			m_bPrerolled = false;;
+            
 			break;
 
 		case WAIT_TIMEOUT: // Time to show the sample or something

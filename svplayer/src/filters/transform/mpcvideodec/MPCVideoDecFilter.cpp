@@ -63,7 +63,7 @@ extern "C"
 //#define TRACE SVP_LogMsg6
 #define SVP_LogMsg5 __noop
 #define SVP_LogMsg6 __noop
-#define TRACE SVP_LogMsg6
+#define TRACE __noop
 #define TRACE5  SVP_LogMsg5
 
 
@@ -1635,32 +1635,40 @@ void CMPCVideoDecFilter::SetTypeSpecificFlags(IMediaSample* pMS)
 
 			if(!(m_pFrame->interlaced_frame || m_real_interlaced == 1))
             {
-                if(m_real_interlaced == 0 || !bIsConnectedToEVR )
+                //if(m_real_interlaced == 0 || !bIsConnectedToEVR )
 				    props.dwTypeSpecificFlags |= AM_VIDEO_FLAG_WEAVE;
+                    SVP_LogMsg6("AM_VIDEO_FLAG_WEAVE");
             }
 			else
 			{
-				if(m_pFrame->top_field_first || m_real_top_field_first)
+                if(m_pFrame->top_field_first || m_real_top_field_first){
 					props.dwTypeSpecificFlags |= AM_VIDEO_FLAG_FIELD1FIRST;
+                    SVP_LogMsg6("AM_VIDEO_FLAG_WEAVE");
+                }
 
                 
 			}
             
-            if(m_real_repeat_field)
+            if(m_real_repeat_field){
                 props.dwTypeSpecificFlags |= AM_VIDEO_FLAG_REPEAT_FIELD;
+                SVP_LogMsg6("AM_VIDEO_FLAG_REPEAT_FIELD");
+            }
 
 			switch (m_pFrame->pict_type)
 			{
 			case FF_I_TYPE :
 			case FF_SI_TYPE :
 				props.dwTypeSpecificFlags |= AM_VIDEO_FLAG_I_SAMPLE;
+                SVP_LogMsg6("AM_VIDEO_FLAG_I_SAMPLE");
 				break;
 			case FF_P_TYPE :
 			case FF_SP_TYPE :
 				props.dwTypeSpecificFlags |= AM_VIDEO_FLAG_P_SAMPLE;
+                SVP_LogMsg6("AM_VIDEO_FLAG_P_SAMPLE");
 				break;
 			default :
 				props.dwTypeSpecificFlags |= AM_VIDEO_FLAG_B_SAMPLE;
+                SVP_LogMsg6("AM_VIDEO_FLAG_B_SAMPLE");
 				break;
 			}
 

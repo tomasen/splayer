@@ -542,6 +542,7 @@ CMPCVideoDecFilter::CMPCVideoDecFilter(LPUNKNOWN lpunk, HRESULT* phr)
 	, m_hMainFrameWnd(0)
 	, m_llDXVAFailCount(0)
     , m_lastBuffSizeDim(0)
+    , bIsConnectedToEVR(0)
 {
 	HWND		hWnd = NULL;
 	for (int i=0; i<countof(ffCodecs); i++)
@@ -1449,6 +1450,15 @@ HRESULT	CMPCVideoDecFilter::CheckConnect(PIN_DIRECTION dir, IPin* pPin){
 			return VFW_E_INVALID_DIRECTION;
 		}
 	}
+    if(dir == PINDIR_OUTPUT)
+    {
+        
+            CLSID clsid = GetCLSID(pPin);
+
+
+            bIsConnectedToEVR = ( clsid == GUIDFromCString(_T("{FA10746C-9B63-4b6c-BC49-FC300EA5F256}")));
+        
+    }
 	HRESULT hr = __super::CheckConnect (dir, pPin);
 	SVP_LogMsg5( L"CMPCVideoDecFilter::CheckConnect %x", hr);
 	return hr;
@@ -1625,7 +1635,7 @@ void CMPCVideoDecFilter::SetTypeSpecificFlags(IMediaSample* pMS)
 
 			if(!(m_pFrame->interlaced_frame || m_real_interlaced == 1))
             {
-                if(m_real_interlaced == 0)
+                if(m_real_interlaced == 0 || !bIsConnectedToEVR )
 				    props.dwTypeSpecificFlags |= AM_VIDEO_FLAG_WEAVE;
             }
 			else

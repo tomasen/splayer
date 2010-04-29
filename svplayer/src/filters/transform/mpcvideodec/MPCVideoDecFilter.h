@@ -160,6 +160,7 @@ protected:
     int                 m_real_interlaced;
     bool                m_real_top_field_first , m_real_repeat_field ;
 
+    bool                bIsConnectedToEVR;
 	void				SetTypeSpecificFlags(IMediaSample* pMS);
 	HRESULT				SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int nSize, REFERENCE_TIME& rtStart, REFERENCE_TIME& rtStop);
 	//void				FindStartCodeVC1  (BYTE** pDataIn, int& nSize);

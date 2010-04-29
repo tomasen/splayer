@@ -985,6 +985,7 @@ STDMETHODIMP CEVRAllocatorPresenter::ProcessMessage(MFVP_MESSAGE_TYPE eMessage, 
 
 	case MFVP_MESSAGE_FLUSH :
 		SetEvent(m_hEvtFlush);
+        ResetEvent(m_hEvtSampleNotify);
 		m_bEvtFlush = true;
 		while (WaitForSingleObject(m_hEvtFlush, 1) == WAIT_OBJECT_0);
 		break;
@@ -996,6 +997,7 @@ STDMETHODIMP CEVRAllocatorPresenter::ProcessMessage(MFVP_MESSAGE_TYPE eMessage, 
 
 	case MFVP_MESSAGE_PROCESSINPUTNOTIFY:
         SetEvent(m_hEvtSampleNotify);
+        SVP_LogMsg6("MFVP_MESSAGE_PROCESSINPUTNOTIFY");
 		break;
 
 	case MFVP_MESSAGE_STEP:
@@ -1693,7 +1695,7 @@ void CEVRAllocatorPresenter::MixerThread()
 
 	while (!bQuit)
 	{
-		DWORD dwObject = WaitForMultipleObjects (countof(hEvts), hEvts, FALSE, 1000);
+		DWORD dwObject = WaitForMultipleObjects (countof(hEvts), hEvts, FALSE, 1);
 		switch (dwObject)
 		{
 		case WAIT_OBJECT_0 :
@@ -1701,6 +1703,8 @@ void CEVRAllocatorPresenter::MixerThread()
 			break;
         case WAIT_OBJECT_0 + 1:
 		case WAIT_TIMEOUT :
+        //    SVP_LogMsg6(" (m_hEvtSampleNotify);");
+            
 			{
 				bool bNewSample = false;
 				{

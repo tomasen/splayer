@@ -1715,6 +1715,7 @@ void CEVRAllocatorPresenter::MixerThread()
 			break;
         case WAIT_OBJECT_0 + 1:
             ResetEvent(m_hEvtSampleNotify);
+            break;
         case WAIT_TIMEOUT :
             bool bNewSample = false;
         //   
@@ -1725,45 +1726,47 @@ void CEVRAllocatorPresenter::MixerThread()
 					CAutoLock lock(&m_ImageProcessingLock);
 					bNewSample = GetSampleFromMixer();
 				}
+
+                if (m_rtFrameCycle == 0 && bNewSample) // Get frame time and type from the input pin				
+                {
+                    CComPtr<IPin> pPin;
+                    CMediaType mt;
+                    if (
+                        SUCCEEDED(m_pOuterEVR->FindPin(L"EVR Input0", &pPin)) &&
+                        SUCCEEDED(pPin->ConnectionMediaType(&mt)))
+                    {
+                        ExtractAvgTimePerFrame(&mt, m_rtFrameCycle);
+                        m_dFrameCycle = m_rtFrameCycle / 10000.0;
+                        if (m_rtFrameCycle > 0.0)
+                        {
+                            m_fps = 10000000.0 / m_rtFrameCycle;
+                            m_dCycleDifference = GetCycleDifference();
+                            if (abs(m_dCycleDifference) < 0.05) // If less than 5%
+                                m_bSnapToVSync = true;
+                            else
+                                m_bSnapToVSync = false;
+                        }
+                        m_bInterlaced = ExtractInterlaced(&mt);
+
+                        SVP_LogMsg5(L"m_bInterlaced %d",m_bInterlaced);
+                    }
+                    // Update internal subtitle clock
+                    if(m_bUseInternalTimer && m_pSubPicQueue)
+                    {
+                        m_pSubPicQueue->SetFPS(m_fps);
+                    }
+
+                    if(m_bUseInternalTimer && m_pSubPicQueue2)
+                    {
+                        m_pSubPicQueue2->SetFPS(m_fps);
+                    }
+
+                }
+
             }else{
                 // SVP_LogMsg6(" (m_hEvtSampleNotify Skip);");
             }
-				if (m_rtFrameCycle == 0 && bNewSample) // Get frame time and type from the input pin				
-				{
-					CComPtr<IPin> pPin;
-					CMediaType mt;
-					if (
-						SUCCEEDED(m_pOuterEVR->FindPin(L"EVR Input0", &pPin)) &&
-						SUCCEEDED(pPin->ConnectionMediaType(&mt)))
-					{
-						ExtractAvgTimePerFrame(&mt, m_rtFrameCycle);
-						m_dFrameCycle = m_rtFrameCycle / 10000.0;
-						if (m_rtFrameCycle > 0.0)
-						{
-							m_fps = 10000000.0 / m_rtFrameCycle;
-							m_dCycleDifference = GetCycleDifference();
-							if (abs(m_dCycleDifference) < 0.05) // If less than 5%
-								m_bSnapToVSync = true;
-							else
-								m_bSnapToVSync = false;
-						}
-						m_bInterlaced = ExtractInterlaced(&mt);
-
-                        SVP_LogMsg5(L"m_bInterlaced %d",m_bInterlaced);
-					}
-					// Update internal subtitle clock
-					if(m_bUseInternalTimer && m_pSubPicQueue)
-					{
-						m_pSubPicQueue->SetFPS(m_fps);
-					}
-
-					if(m_bUseInternalTimer && m_pSubPicQueue2)
-					{
-						m_pSubPicQueue2->SetFPS(m_fps);
-					}
-			
-			}
-           
+				
 			break;
 		}
 	}

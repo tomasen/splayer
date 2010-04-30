@@ -404,6 +404,7 @@ private:
 	HANDLE m_hEvtQuit; // Stop rendering thread event
     HANDLE m_hEvtSampleNotify; // Stop rendering thread event
     bool m_SampleNotified;
+    bool m_HasSampleNotified;
 	bool m_bEvtQuit;
 	HANDLE m_hEvtFlush; // Discard all buffers
 	bool m_bEvtFlush;
@@ -550,7 +551,8 @@ CEVRAllocatorPresenter::CEVRAllocatorPresenter(HWND hWnd, HRESULT& hr )
 	m_hEvtQuit = INVALID_HANDLE_VALUE;
     m_hEvtSampleNotify = INVALID_HANDLE_VALUE;
 	m_bEvtQuit = 0;
-    m_SampleNotified = 0;
+    m_SampleNotified = true;
+    m_HasSampleNotified = 0;
 	m_bEvtFlush = 0;
 
 	m_bNeedPendingResetDevice = true;
@@ -988,7 +990,8 @@ STDMETHODIMP CEVRAllocatorPresenter::ProcessMessage(MFVP_MESSAGE_TYPE eMessage, 
 	case MFVP_MESSAGE_FLUSH :
 		SetEvent(m_hEvtFlush);
         ResetEvent(m_hEvtSampleNotify);
-        m_SampleNotified = 0;
+        if(m_HasSampleNotified)
+            m_SampleNotified = 0;
 		m_bEvtFlush = true;
 		while (WaitForSingleObject(m_hEvtFlush, 1) == WAIT_OBJECT_0);
 		break;
@@ -1000,6 +1003,7 @@ STDMETHODIMP CEVRAllocatorPresenter::ProcessMessage(MFVP_MESSAGE_TYPE eMessage, 
 
 	case MFVP_MESSAGE_PROCESSINPUTNOTIFY:
         SetEvent(m_hEvtSampleNotify);
+        m_HasSampleNotified = true;
         m_SampleNotified = true;
         SVP_LogMsg6("MFVP_MESSAGE_PROCESSINPUTNOTIFY");
 		break;

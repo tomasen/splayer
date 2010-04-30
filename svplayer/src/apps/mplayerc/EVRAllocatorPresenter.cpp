@@ -676,6 +676,7 @@ void CEVRAllocatorPresenter::StopWorkerThreads()
 		m_bEvtFlush = true;
 		SetEvent (m_hEvtQuit);
 		m_bEvtQuit = true;
+        m_SampleNotified = true;
 		if ((m_hRenderThread != INVALID_HANDLE_VALUE) && (WaitForSingleObject (m_hRenderThread, 1000) == WAIT_TIMEOUT))
 		{
 			ASSERT (FALSE);
@@ -694,7 +695,8 @@ void CEVRAllocatorPresenter::StopWorkerThreads()
 		if (m_hEvtFlush != INVALID_HANDLE_VALUE) CloseHandle (m_hEvtFlush);
 		if (m_hEvtQuit != INVALID_HANDLE_VALUE) CloseHandle (m_hEvtQuit);
         
-        
+        m_SampleNotified = true;
+        m_HasSampleNotified = 0;
 		m_bEvtFlush = false;
 		m_bEvtQuit = false;
 	}

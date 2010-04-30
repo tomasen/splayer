@@ -45,7 +45,7 @@
 #include "EVRAllocatorPresenter.h"
 
 #define  SVP_LogMsg5 __noop
-#define  SVP_LogMsg6 __noop
+//#define  SVP_LogMsg6 __noop
 typedef enum 
 {
 	MSG_MIXERIN,
@@ -672,12 +672,13 @@ void CEVRAllocatorPresenter::StopWorkerThreads()
 {
 	if (m_nRenderState != Shutdown)
 	{
-		SetEvent (m_hEvtFlush);
+        m_SampleNotified = true;
+        SetEvent(m_hEvtSampleNotify);
+        SetEvent (m_hEvtFlush);
 		m_bEvtFlush = true;
 		SetEvent (m_hEvtQuit);
 		m_bEvtQuit = true;
-        m_SampleNotified = true;
-		if ((m_hRenderThread != INVALID_HANDLE_VALUE) && (WaitForSingleObject (m_hRenderThread, 1000) == WAIT_TIMEOUT))
+        if ((m_hRenderThread != INVALID_HANDLE_VALUE) && (WaitForSingleObject (m_hRenderThread, 1000) == WAIT_TIMEOUT))
 		{
 			ASSERT (FALSE);
 			TerminateThread (m_hRenderThread, 0xDEAD);
@@ -967,7 +968,7 @@ STDMETHODIMP CEVRAllocatorPresenter::ProcessMessage(MFVP_MESSAGE_TYPE eMessage, 
 {
 	HRESULT hr = S_OK;
 	AppSettings& s = AfxGetAppSettings();
-    SVP_LogMsg6("ProcessMessage %x", eMessage);
+    //SVP_LogMsg6("ProcessMessage %x", eMessage);
 	switch (eMessage)
 	{
 	case MFVP_MESSAGE_BEGINSTREAMING : // The EVR switched from stopped to paused. The presenter should allocate resources
@@ -1007,7 +1008,8 @@ STDMETHODIMP CEVRAllocatorPresenter::ProcessMessage(MFVP_MESSAGE_TYPE eMessage, 
         SetEvent(m_hEvtSampleNotify);
         m_HasSampleNotified = true;
         m_SampleNotified = true;
-        SVP_LogMsg6("MFVP_MESSAGE_PROCESSINPUTNOTIFY");
+        //SVP_LogMsg6("MFVP_MESSAGE_PROCESSINPUTNOTIFY");
+        //while (WaitForSingleObject(m_hEvtSampleNotify, 1) == WAIT_OBJECT_0);
 		break;
 
 	case MFVP_MESSAGE_STEP:
@@ -1714,14 +1716,18 @@ void CEVRAllocatorPresenter::MixerThread()
         case WAIT_OBJECT_0 + 1:
             ResetEvent(m_hEvtSampleNotify);
         case WAIT_TIMEOUT :
-        //    SVP_LogMsg6(" (m_hEvtSampleNotify);");
-            if(m_SampleNotified)
+            bool bNewSample = false;
+        //   
+            if(m_SampleNotified )
 			{
-				bool bNewSample = false;
+				
 				{
 					CAutoLock lock(&m_ImageProcessingLock);
 					bNewSample = GetSampleFromMixer();
 				}
+            }else{
+                // SVP_LogMsg6(" (m_hEvtSampleNotify Skip);");
+            }
 				if (m_rtFrameCycle == 0 && bNewSample) // Get frame time and type from the input pin				
 				{
 					CComPtr<IPin> pPin;
@@ -1755,7 +1761,7 @@ void CEVRAllocatorPresenter::MixerThread()
 					{
 						m_pSubPicQueue2->SetFPS(m_fps);
 					}
-				}
+			
 			}
            
 			break;

@@ -1712,13 +1712,14 @@ void CEVRAllocatorPresenter::MixerThread()
 		{
 		case WAIT_OBJECT_0 :
 			bQuit = true;
-			break;
+            m_SampleNotified = true;
+//			break;
         case WAIT_OBJECT_0 + 1:
             ResetEvent(m_hEvtSampleNotify);
         case WAIT_TIMEOUT :
             bool bNewSample = false;
         //   
-            if(m_SampleNotified || 1)
+            if(m_SampleNotified )
 			{
 				
 				{

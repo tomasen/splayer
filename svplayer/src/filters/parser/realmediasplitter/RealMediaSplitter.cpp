@@ -193,6 +193,7 @@ CFilterApp theApp;
 
 CRealMediaSplitterFilter::CRealMediaSplitterFilter(LPUNKNOWN pUnk, HRESULT* phr)
 : CBaseSplitterFilter(NAME("CRealMediaSplitterFilter"), pUnk, phr, __uuidof(this))
+, m_AvgTimePerFrame(36)
 {
     SVP_LogMsg5(L"CRealMediaSplitterFilter::CRealMediaSplitterFilter");
 }
@@ -787,7 +788,7 @@ bool CRealMediaSplitterFilter::DemuxLoop()
 				break;
 			//__try{
             UINT32 in_timestamp = mph.tStart;
-            //SVP_LogMsg6("rvgot  %d", in_timestamp);
+            SVP_LogMsg6("rvgot  %d", in_timestamp);
 
             if(in_timestamp == m_timestamp+1 || m_follow_frame_time_stamp == in_timestamp ){
                 m_rv_leap_frames = in_timestamp - m_last_shown_timestamp;
@@ -798,16 +799,23 @@ bool CRealMediaSplitterFilter::DemuxLoop()
                     UINT32 start_time_stamp = m_timestamp;
                     UINT32 frames = 1;
                     m_rv_time_for_each_leap = m_AvgTimePerFrame;
+                     SVP_LogMsg6("rv m_rv_time_for_each_leap %d" , m_rv_time_for_each_leap);
                     for(UINT32 j = i; j < pdc->nPackets;j++){
                         MediaPacketHeader mph2;
                         if(S_OK != (hr = m_pFile->Read(mph2, false)))
                             break;
-                        if(mph2.tStart == start_time_stamp+1)
+                         SVP_LogMsg6("rvgot  mph2.tStart %d", mph2.tStart);
+                         if(mph2.tStart == start_time_stamp+1){
                             frames++;
-                        if(mph2.tStart != start_time_stamp+1 && start_time_stamp != mph2.tStart){
+                            
+                         }
+                        if(mph2.tStart > start_time_stamp+1){
                             //got it
                             m_rv_time_for_each_leap = (mph2.tStart - m_last_shown_timestamp)/frames;
-                            //SVP_LogMsg6("rvgot now we know correct step %d %d %d %d", m_rv_time_for_each_leap, frames, mph2.tStart , m_timestamp);
+                            m_AvgTimePerFrame = m_rv_time_for_each_leap;
+                            SVP_LogMsg6("rvgot now we know correct step %d %d %d %d", m_rv_time_for_each_leap, frames, mph2.tStart , m_timestamp);
+                            break;
+                        }else if(mph2.tStart < start_time_stamp){
                             break;
                         }
                         start_time_stamp = mph2.tStart;
@@ -817,6 +825,7 @@ bool CRealMediaSplitterFilter::DemuxLoop()
                 }
                 
                 //if already know correct step
+                SVP_LogMsg6("rvgot now we know %d + %d * %d",m_last_shown_timestamp , m_rv_leap_frames , m_rv_time_for_each_leap);
                 mph.tStart = m_last_shown_timestamp + m_rv_leap_frames * m_rv_time_for_each_leap;
                 //SVP_LogMsg6("rvgot already know correct step %d %d %d %d",mph.tStart, m_rv_time_for_each_leap, m_rv_leap_frames, m_last_shown_timestamp);
 

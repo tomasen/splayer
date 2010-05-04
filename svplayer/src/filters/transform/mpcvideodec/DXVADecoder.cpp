@@ -320,6 +320,7 @@ HRESULT CDXVADecoder::GetDeliveryBuffer(REFERENCE_TIME rtStart, REFERENCE_TIME r
 		pNewSample->SetMediaTime(NULL, NULL);
 		*ppSampleToDeliver = pNewSample.Detach();
 	}else{
+        //TODO; not fit for DXVA if failed here
 		SVPASSERT(hr);
 	}
 	return hr;

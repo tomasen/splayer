@@ -1974,6 +1974,7 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RV30);
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RV40);
 	m_transform.AddTail(pFGF);
+    
 #if 0
     pFGF = new CFGFilterInternal<CRealVideoDecoder>(
         L"MPC RealVideo Decoder",

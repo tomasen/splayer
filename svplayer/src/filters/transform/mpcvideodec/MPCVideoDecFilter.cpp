@@ -1637,13 +1637,13 @@ void CMPCVideoDecFilter::SetTypeSpecificFlags(IMediaSample* pMS)
             {
                 //if(m_real_interlaced == 0 || !bIsConnectedToEVR )
 				    props.dwTypeSpecificFlags |= AM_VIDEO_FLAG_WEAVE;
-                    SVP_LogMsg6("AM_VIDEO_FLAG_WEAVE");
+                    //SVP_LogMsg6("AM_VIDEO_FLAG_WEAVE");
             }
 			else
 			{
                 if(m_pFrame->top_field_first || m_real_top_field_first){
 					props.dwTypeSpecificFlags |= AM_VIDEO_FLAG_FIELD1FIRST;
-                    SVP_LogMsg6("AM_VIDEO_FLAG_WEAVE");
+                    //SVP_LogMsg6("AM_VIDEO_FLAG_WEAVE");
                 }
 
                 
@@ -1651,7 +1651,7 @@ void CMPCVideoDecFilter::SetTypeSpecificFlags(IMediaSample* pMS)
             
             if(m_real_repeat_field){
                 props.dwTypeSpecificFlags |= AM_VIDEO_FLAG_REPEAT_FIELD;
-                SVP_LogMsg6("AM_VIDEO_FLAG_REPEAT_FIELD");
+                //SVP_LogMsg6("AM_VIDEO_FLAG_REPEAT_FIELD");
             }
 
 			switch (m_pFrame->pict_type)
@@ -1659,16 +1659,16 @@ void CMPCVideoDecFilter::SetTypeSpecificFlags(IMediaSample* pMS)
 			case FF_I_TYPE :
 			case FF_SI_TYPE :
 				props.dwTypeSpecificFlags |= AM_VIDEO_FLAG_I_SAMPLE;
-                SVP_LogMsg6("AM_VIDEO_FLAG_I_SAMPLE");
+               // SVP_LogMsg6("AM_VIDEO_FLAG_I_SAMPLE");
 				break;
 			case FF_P_TYPE :
 			case FF_SP_TYPE :
 				props.dwTypeSpecificFlags |= AM_VIDEO_FLAG_P_SAMPLE;
-                SVP_LogMsg6("AM_VIDEO_FLAG_P_SAMPLE");
+                //SVP_LogMsg6("AM_VIDEO_FLAG_P_SAMPLE");
 				break;
 			default :
 				props.dwTypeSpecificFlags |= AM_VIDEO_FLAG_B_SAMPLE;
-                SVP_LogMsg6("AM_VIDEO_FLAG_B_SAMPLE");
+                //SVP_LogMsg6("AM_VIDEO_FLAG_B_SAMPLE");
 				break;
 			}
 
@@ -1786,7 +1786,7 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
             }
         }else{
             if(m_rv_leap_frames){
-                SVP_LogMsg6("m_rv_time_for_each_leap %d %d %d", m_rv_time_for_each_leap , (in_timestamp - m_timestamp ), m_rv_leap_frames );
+                //SVP_LogMsg6("m_rv_time_for_each_leap %d %d %d", m_rv_time_for_each_leap , (in_timestamp - m_timestamp ), m_rv_leap_frames );
                 m_rv_time_for_each_leap = (in_timestamp - m_timestamp + m_rv_leap_frames)/(m_rv_leap_frames+1);
             }
            
@@ -1956,7 +1956,7 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
             }
         }
 */
-        TRACE ("Deliver3 : %10I64d   %10I64d - %10I64d   (%10I64d)  (%10I64d) ", m_rtRVStart ,  rtStart, rtStop, rtStop - rtStart, m_rtAvrTimePerFrame);
+        SVP_LogMsg6("Deliver3 : %10I64d   %10I64d - %10I64d   (%10I64d)  (%10I64d) ", m_rtRVStart ,  rtStart, rtStop, rtStop - rtStart, m_rtAvrTimePerFrame);
 		pOut->SetTime(&rtStart, &rtStop);
 		
 		pOut->SetMediaTime(NULL, NULL);
@@ -2032,7 +2032,10 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 			((double)((m_perf_timer[1] - m_perf_timer[0]) * 10000 / totalPerfTime)) / 100);
 		m_perf_timer[0] = m_perf_timer[5];
 #endif
+        //SVP_LogMsg6("nSize %d", nSize);
 	}
+
+    //SVP_LogMsg6("nSize over");
 
 	return hr;
 }
@@ -2271,7 +2274,7 @@ HRESULT CMPCVideoDecFilter::Transform(IMediaSample* pIn)
 	nSize		= pIn->GetActualDataLength();
 	hr			= pIn->GetTime(&rtStart, &rtStop);
 
-     TRACE ("Receive :   %10I64d - %10I64d   (%10I64d)  ", rtStart, rtStop, rtStop - rtStart);
+     SVP_LogMsg6 ("Receive :   %10I64d - %10I64d   (%10I64d)  ", rtStart, rtStop, rtStop - rtStart);
 /*
 	if (rtStart != _I64_MIN)
 	{

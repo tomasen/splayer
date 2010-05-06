@@ -38,6 +38,8 @@
 
 #include "..\..\..\svplib\svplib.h"
 #define  SVP_LogMsg5  __noop
+#define SVP_LogMsg6 __noop
+//#define  TRACE SVP_LogMsg5
 
 #define EPSILON 1e-4
 
@@ -470,7 +472,7 @@ HRESULT CMpeg2DecFilter::Transform(IMediaSample* pIn)
 
 	while(len >= 0)
 	{
-		mpeg2_state_t state = m_dec->mpeg2_parse();
+		mpeg2_state_t state = m_dec->mpeg2_parse(m_allow_unbound_mpeg2_in_ts);
 #ifndef _WIN64
 		__asm emms; // this one is missing somewhere in the precompiled mmx obj files
 #endif
@@ -480,9 +482,7 @@ HRESULT CMpeg2DecFilter::Transform(IMediaSample* pIn)
 			if(len > 0) {m_dec->mpeg2_buffer(pDataIn, pDataIn + len); len = 0;}
 			else len = -1;
 			break;
-		case STATE_INVALID:
-			TRACE(_T("*** STATE_INVALID\n"));
-			break;
+		
 		case STATE_GOP:
 			m_pClosedCaptionOutput->Deliver(m_dec->m_info.m_user_data, m_dec->m_info.m_user_data_len);
 			break;
@@ -496,9 +496,12 @@ HRESULT CMpeg2DecFilter::Transform(IMediaSample* pIn)
 			m_dec->m_picture->fDelivered = false;
 			m_dec->mpeg2_skip(m_fDropFrames && (m_dec->m_picture->flags&PIC_MASK_CODING_TYPE) == PIC_FLAG_CODING_TYPE_B);
 			break;
-		case STATE_SLICE:
+        case STATE_INVALID:
+            TRACE(_T("*** STATE_INVALID\n"));
+        //    break;
+        case STATE_SLICE:
 		case STATE_END:
-			{
+            {
 				mpeg2_picture_t* picture = m_dec->m_info.m_display_picture;
 				mpeg2_fbuf_t* fbuf = m_dec->m_info.m_display_fbuf;
 
@@ -861,6 +864,7 @@ HRESULT CMpeg2DecFilter::CheckInputType(const CMediaType* mtIn)
 		if(vih->cbSequenceHeader > 0 && (vih->dwSequenceHeader[0] & 0x00ffffff) != 0x00010000)
 			return VFW_E_TYPE_NOT_ACCEPTED;
 	}
+    m_allow_unbound_mpeg2_in_ts = (mtIn->majortype == MEDIATYPE_MPEG2_PES && mtIn->subtype == MEDIASUBTYPE_MPEG2_VIDEO);
 
 	return (mtIn->majortype == MEDIATYPE_DVD_ENCRYPTED_PACK && mtIn->subtype == MEDIASUBTYPE_MPEG2_VIDEO
 			|| mtIn->majortype == MEDIATYPE_MPEG2_PACK && mtIn->subtype == MEDIASUBTYPE_MPEG2_VIDEO

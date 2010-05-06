@@ -113,6 +113,7 @@ public:
 	HRESULT EndFlush();
     HRESULT NewSegment(REFERENCE_TIME tStart, REFERENCE_TIME tStop, double dRate);
 
+    bool m_allow_unbound_mpeg2_in_ts;
 	HRESULT CheckConnect(PIN_DIRECTION dir, IPin* pPin);
     HRESULT CheckInputType(const CMediaType* mtIn);
 	HRESULT CheckTransform(const CMediaType* mtIn, const CMediaType* mtOut);

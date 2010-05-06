@@ -104,6 +104,7 @@ protected :
 	CMPCVideoDecFilter*				m_pFilter;
 	bool							m_bFlushed;
 	int								m_nMaxWaiting;
+    int								m_nFailingCount;
 
 	PICTURE_STORE*					m_pPictureStore;		// Store reference picture, and delayed B-frames
 	int								m_nPicEntryNumber;		// Total number of picture in store

@@ -342,7 +342,7 @@ public:
 
 	void mpeg2_buffer(uint8_t* start, uint8_t* end);
 	int mpeg2_getpos();
-	mpeg2_state_t mpeg2_parse();
+	mpeg2_state_t mpeg2_parse(bool allow_unbound_mpeg2_in_ts);
 
 	void mpeg2_skip(int skip);
 	void mpeg2_slice_region(int start, int end);

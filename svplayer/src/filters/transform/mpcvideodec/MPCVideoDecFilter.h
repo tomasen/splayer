@@ -155,7 +155,7 @@ protected:
 	void				DetectVideoCard(HWND hWnd);
 	UINT				GetAdapter(IDirect3D9* pD3D, HWND hWnd);
 	int					m_dxvaAvalibility;
-	HWND				m_hMainFrameWnd;
+	
 	LONGLONG			m_llDXVAFailCount;
     int                 m_real_interlaced;
     bool                m_real_top_field_first , m_real_repeat_field ;
@@ -181,6 +181,8 @@ protected:
     void				PopBufferTime(int nPos);
 
 public:
+
+    HWND				m_hMainFrameWnd;
 
 	const static AMOVIESETUP_MEDIATYPE		sudPinTypesIn[];
 	const static int						sudPinTypesInCount;

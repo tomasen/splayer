@@ -27,6 +27,10 @@
 #include "libmpeg2.h"
 #include "..\..\..\DSUtil\vd.h"
 
+#include "../../../svplib/svplib.h"
+#define SVP_LogMsg6 __noop
+#define  SVP_LogMsg5  __noop
+
 // decode
 
 #define SEQ_EXT 2
@@ -612,7 +616,7 @@ int CMpeg2Dec::mpeg2_getpos()
 
 //
 
-mpeg2_state_t CMpeg2Dec::mpeg2_parse()
+mpeg2_state_t CMpeg2Dec::mpeg2_parse(bool allow_unbound_mpeg2_in_ts)
 {
 	if(m_action)
 	{
@@ -642,6 +646,7 @@ mpeg2_state_t CMpeg2Dec::mpeg2_parse()
 			else
 			{
 				copied = copy_chunk(size_chunk);
+                SVP_LogMsg6("copy_chunk %d %d", copied, size_chunk);
 				if(!copied)
 				{
 					/* filled the chunk buffer without finding a start code */
@@ -663,7 +668,7 @@ mpeg2_state_t CMpeg2Dec::mpeg2_parse()
 		if(seek_chunk() == STATE_BUFFER)
 			return STATE_BUFFER;
 	}
-
+SVP_LogMsg6("m_code %d",m_code);
 	switch(m_code)
 	{
 	case 0x00:
@@ -680,6 +685,7 @@ mpeg2_state_t CMpeg2Dec::mpeg2_parse()
 		m_action = &CMpeg2Dec::seek_chunk;
 		return STATE_PADDING;
 	default:
+        
 		m_action = &CMpeg2Dec::seek_chunk;
 		return STATE_INVALID;
 	}

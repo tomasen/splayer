@@ -59,3 +59,4 @@
 #define  SVPASSERTHR(hr) if(!SUCCEEDED(hr)) SVPASSERT(hr);
 
 #define CHECK_HR(x)			hr = ##x; if (FAILED (hr)) { TRACE("Error : 0x%08x\n", hr); SVPASSERT(hr) ; ASSERT (hr==VFW_E_NOT_COMMITTED); return hr; }
+#define CHECK_HR_NORETURN(x)			hr = ##x; if (FAILED (hr)) { TRACE("Error : 0x%08x\n", hr); SVPASSERT(hr) ; ASSERT (hr==VFW_E_NOT_COMMITTED); }

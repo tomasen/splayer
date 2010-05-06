@@ -173,44 +173,59 @@ int FFH264CheckCompatibility(int nWidth, int nHeight, struct AVCodecContext* pAV
 	PPS*			cur_pps;
 
 	int supportLevel51 = 0;
+    int A = 0;
+    int B, C, D;
+    int isATI = 0;
 
 	if (pBuffer != NULL)
         av_h264_decode_frame (pAVCtx, pBuffer, nSize, FALSE);
 
+    
 	cur_sps		= pContext->sps_buffers[0];
 	cur_pps		= pContext->pps_buffers[0];
 
 	if (cur_sps != NULL)
 	{
-		*refFrameCount = cur_sps->ref_frame_count; 
+		*refFrameCount = cur_sps->ref_frame_count;
+        
+        
 		if (nPCIVendor == 4318) { //NV
 			// nVidia cards support level 5.1 since drivers v6.14.11.7800 for XP and drivers v7.15.11.7800 for Vista
 			// vA.B.C.D
-			int A, B, C, D;
+			
 			if (IsVista()) {
 				A = 7; B = 15; C = 11; D = 7800;
 			} else {
 				A = 6; B = 14; C = 11; D = 7800;
 			}
 
-			if (HIWORD(VideoDriverVersion.HighPart) > A) {
-				supportLevel51 = 1;
-			} else if (HIWORD(VideoDriverVersion.HighPart) == A) {
-				if (LOWORD(VideoDriverVersion.HighPart) > B) {
-					supportLevel51 = 1;
-				} else if (LOWORD(VideoDriverVersion.HighPart) == B) {
-					if (HIWORD(VideoDriverVersion.LowPart) > C) {
-						supportLevel51 = 1;
-					} else if (HIWORD(VideoDriverVersion.LowPart) == C) {
-						if (LOWORD(VideoDriverVersion.LowPart) >= D) {
-							supportLevel51 = 1;
-						}
-					}
-				}
-			}
+			
 		}
-		else if (nPCIVendor == 0x5333)//PCIV_S3_Graphics
+        else if (nPCIVendor == 0x5333){//PCIV_S3_Graphics
 			supportLevel51 = 1;
+        }else if (nPCIVendor == 0x1002){//ATI
+           A = 8; B = 14; C = 1; D = 6105;
+           
+           isATI = 1;
+           
+        }
+        if(A > 0){
+            if (HIWORD(VideoDriverVersion.HighPart) > A) {
+                supportLevel51 = 1;
+            } else if (HIWORD(VideoDriverVersion.HighPart) == A) {
+                if (LOWORD(VideoDriverVersion.HighPart) > B) {
+                    supportLevel51 = 1;
+                } else if (LOWORD(VideoDriverVersion.HighPart) == B) {
+                    if (HIWORD(VideoDriverVersion.LowPart) > C) {
+                        supportLevel51 = 1;
+                    } else if (HIWORD(VideoDriverVersion.LowPart) == C) {
+                        if (LOWORD(VideoDriverVersion.LowPart) >= D) {
+                            supportLevel51 = 1;
+                        }
+                    }
+                }
+            }
+        }
 		// Check max num reference frame according to the level
 		#define MAX_DPB_41 12288 // DPB value for level 4.1
 		//if (nPCIVendor == 4318 && cur_sps->ref_frame_count == 1) //not ATI
@@ -237,6 +252,11 @@ int FFH264CheckCompatibility(int nWidth, int nHeight, struct AVCodecContext* pAV
 			if (cur_sps->ref_frame_count > min(11, (1024*MAX_DPB_41/(nWidth*nHeight*1.5))))
 				return 2;	// Too much ref frames
 		}
+
+        if(isATI){
+            if (cur_sps->ref_frame_count >= min(11, (1024*MAX_DPB_41/(nWidth*nHeight*1.5))))
+                return 2;
+        }
 	
 	}
 		

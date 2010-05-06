@@ -31,6 +31,7 @@
 #define SVP_LogMsg6 __noop
 #define  SVP_LogMsg5  __noop
 
+#if LIBMPEG2C
 // decode
 
 #define SEQ_EXT 2
@@ -3782,6 +3783,81 @@ void CMpeg2Decoder::mpeg2_slice(int code, const uint8_t* buffer)
 #undef bit_buf
 #undef bits
 #undef bit_ptr
+
+#else
+
+
+CMpeg2Dec::CMpeg2Dec()
+{
+
+
+    
+    
+   
+
+    this->mpeg2_init();
+}
+
+CMpeg2Dec::~CMpeg2Dec()
+{
+    this->mpeg2_close();
+}
+
+void CMpeg2Dec::mpeg2_init()
+{
+    memset(&m_pictures, 0, sizeof(m_pictures));
+    m_picture = NULL;
+    m_mpeg2dec = ::mpeg2_init();
+    m_mpeg2info = mpeg2_info (m_mpeg2dec);
+
+    CopyInfo();
+}
+
+void CMpeg2Dec::mpeg2_close()
+{
+     ::mpeg2_close(m_mpeg2dec);
+}
+
+void CMpeg2Dec::mpeg2_skip(int skip)
+{
+     ::mpeg2_skip(m_mpeg2dec, skip);
+     CopyInfo();
+}
+
+
+void CMpeg2Dec::mpeg2_buffer(uint8_t* start, uint8_t* end)
+{
+    ::mpeg2_buffer (m_mpeg2dec, start, end);
+    CopyInfo();
+}
+
+void CMpeg2Dec::CopyInfo()
+{
+    m_info.m_sequence = m_mpeg2info->sequence;          
+    m_info.m_gop = m_mpeg2info->gop;                    
+    m_info.m_current_picture = m_mpeg2info->current_picture;    
+    m_info.m_current_picture_2nd = m_mpeg2info->current_picture_2nd;
+    m_info.m_current_fbuf = m_mpeg2info->current_fbuf;          
+    m_info.m_display_picture = m_mpeg2info->display_picture;    
+    m_info.m_display_picture_2nd = m_mpeg2info->display_picture_2nd;
+    m_info.m_display_fbuf = m_mpeg2info->display_fbuf;          
+    m_info.m_discard_fbuf = m_mpeg2info->discard_fbuf;          
+    m_info.m_user_data = m_mpeg2info->user_data;                  
+    m_info.m_user_data_len = m_mpeg2info->user_data_len;
+
+    m_pictures = ::mpeg2_get_pictures(m_mpeg2dec);
+    m_picture =  ::mpeg2_get_picture(m_mpeg2dec);
+}
+
+mpeg2_state_t CMpeg2Dec::mpeg2_parse(bool allow_unbound_mpeg2_in_ts)
+{
+    mpeg2_state_t ret =  ::mpeg2_parse (m_mpeg2dec);
+    CopyInfo();
+    return ret;
+}
+
+#endif
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////

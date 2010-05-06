@@ -512,9 +512,9 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="basevideofilterRU.lib idct_mmx.obj motion_comp_mmx.obj"
+				AdditionalDependencies="libmpeg2R.lib basevideofilterRU.lib "
 				OutputFile="../../../../lib/$(ProjectName)RU.lib"
-				AdditionalLibraryDirectories="../../../../lib"
+				AdditionalLibraryDirectories="../../../../lib;&quot;./libmpeg2/vc++&quot;"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -543,29 +543,9 @@
 			<File
 				RelativePath=".\idct_sse2.cpp"
 				>
-				<FileConfiguration
-					Name="Release Unicode|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AssemblerOutput="4"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\libmpeg2.cpp"
-				>
-				<FileConfiguration
-					Name="Release Unicode|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AssemblerOutput="4"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\mc_sse2.cpp"
 				>
 				<FileConfiguration
 					Name="Release Unicode|Win32"

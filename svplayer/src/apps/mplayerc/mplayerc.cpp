@@ -1489,7 +1489,7 @@ void CMPlayerCApp::InitInstanceThreaded(INT64 CLS64){
 	CSVPToolBox svpToolBox;
 	CStringArray csaDll;
 
-    
+    SVP_LogMsg5(L"Settings::InitInstanceThreaded");
 	//SVP_LogMsg5(L"%x %d xx ",CLS64 ,(CLS64&CLSW_STARTFROMDMP) );
 	if(!(CLS64&CLSW_STARTFROMDMP)){
 		_wremove(svpToolBox.GetPlayerPath(_T("SVPDebug.log")));
@@ -1504,14 +1504,14 @@ for(int i = 0; i <= 30; i++){
 	SVP_LogMsg5(_T("COLOR_GRAYTEXT %x"), GetSysColor(COLOR_GRAYTEXT));
 */
 
-
+    SVP_LogMsg5(L"Settings::InitInstanceThreaded 1");
 
 	//avoid crash by lame acm
 	RegDelnode(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\MediaResources\\msacm\\msacm.lameacm");
 	SVPRegDeleteValueEx( HKEY_LOCAL_MACHINE , L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\drivers.desc",L"LameACM.acm");
 	SVPRegDeleteValueEx( HKEY_LOCAL_MACHINE , L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\drivers32",L"msacm.lameacm");
 
-
+    SVP_LogMsg5(L"Settings::InitInstanceThreaded 2");
 	bool regReal = false;
 	{
 		CString prefs(_T("Software\\RealNetworks\\Preferences"));
@@ -1536,6 +1536,7 @@ for(int i = 0; i <= 30; i++){
 		}
 			
 	}
+    SVP_LogMsg5(L"Settings::InitInstanceThreaded 3");
 	if(regReal && svpToolBox.ifFileExist(svpToolBox.GetPlayerPath(L"Real\\Common\\pnen3260.dll"))){
 		CString szLPath;
 		szLPath = CString(svpToolBox.GetPlayerPath(L"\\"));
@@ -1562,7 +1563,7 @@ for(int i = 0; i <= 30; i++){
 		WriteRegDWORD HKCR "Software\RealNetworks\RealMediaSDK\6.0\Preferences\UseOverlay"  "" 0
 		*/
 	}
-
+    SVP_LogMsg5(L"Settings::InitInstanceThreaded 4");
 	m_bSystemParametersInfo[0] = FALSE;
 	if(!IsVista()){
 		BOOL bDropShadow = FALSE;
@@ -1595,7 +1596,7 @@ for(int i = 0; i <= 30; i++){
 
 
 	}
-
+    SVP_LogMsg5(L"Settings::InitInstanceThreaded 5");
 	//csaDll.Add( _T("codecs\\CoreAVCDecoder.ax")); //avoid missing reg key problem
 	//CFilterMapper2 fm2(false);
 	if(1){
@@ -1627,7 +1628,7 @@ for(int i = 0; i <= 30; i++){
 			SVP_LogMsg5(L"Reg ts.dll");
 			RegSvr32( _T("ts.dll"));
 		}
-
+        SVP_LogMsg5(L"Settings::InitInstanceThreaded 6");
 		if( RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{ACD23F8C-B37E-4B2D-BA08-86CB6E621D6A}") , &fKey) != ERROR_SUCCESS){
 			SVP_LogMsg5(L"mpc_mtcontain go");
 			RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mtcontain.dll")) );
@@ -1655,11 +1656,11 @@ for(int i = 0; i <= 30; i++){
 		[267851743.406500] SET Mine_RegSetValueExW FilterData*/
 		//RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mxrender.dll")) );
 		//SVP_LogMsg5(L"mpc_mxrender done");
-
+SVP_LogMsg5(L"Settings::InitInstanceThreaded 7");
 		if( RegOpenKey(HKEY_CLASSES_ROOT , _T("MpcMxVideo.XvidDecoder.1") , &fKey ) != ERROR_SUCCESS){
 			RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mxvideo.dll")) );
 		}
-
+SVP_LogMsg5(L"Settings::InitInstanceThreaded 8");
 		if( RegOpenKey(HKEY_CLASSES_ROOT , _T("Mpcwtlvcl.VideoFrame") , &fKey ) != ERROR_SUCCESS){
 			
 				RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mdssockc.dll")) );
@@ -1692,6 +1693,7 @@ for(int i = 0; i <= 30; i++){
 			//RegCloseKey(fKey);
 		}
 	}
+    SVP_LogMsg5(L"Settings::InitInstanceThreaded 10");
 		
 		for(int i = 0; i < csaDll.GetCount(); i++){
 			CString szDllPath = svpToolBox.GetPlayerPath( csaDll.GetAt(i) );
@@ -1700,7 +1702,7 @@ for(int i = 0; i <= 30; i++){
 				RegSvr32( szDllPath );
 			}
 		}
-
+SVP_LogMsg5(L"Settings::InitInstanceThreaded 11");
         if(!sqlite_local_record){ // TODO: save play record to local sql db
             //AfxMessageBox(L"0");
             int iDescLen;
@@ -1731,7 +1733,7 @@ for(int i = 0; i <= 30; i++){
             }
             //AfxMessageBox(L"2");
         }
-
+SVP_LogMsg5(L"Settings::InitInstanceThreaded 12");
 		CMainFrame* pFrame = (CMainFrame*)m_pMainWnd;
 		
 
@@ -1741,6 +1743,7 @@ for(int i = 0; i <= 30; i++){
 				pFrame->SendStatusMessage(ResStr(IDS_OSD_MSG_JUST_RECOVER_FROM_CRASH), 6000);
 			}
 				
+            SVP_LogMsg5(L"Settings::InitInstanceThreaded 15");
 			//检查文件关联
 			if ( m_s.fCheckFileAsscOnStartup ){
 				CChkDefPlayer dlg_chkdefplayer;
@@ -1754,7 +1757,7 @@ for(int i = 0; i <= 30; i++){
 				//	dlg_chkdefplayer.setDefaultPlayer();
 
 			}
-
+SVP_LogMsg5(L"Settings::InitInstanceThreaded 16");
 			if ( time(NULL) > (m_s.tLastCheckUpdater + m_s.tCheckUpdaterInterleave) || m_s.tLastCheckUpdater == 0){
 			
 
@@ -1779,7 +1782,7 @@ for(int i = 0; i <= 30; i++){
 					SVP_RealCheckUpdaterExe( &(pFrame->m_bCheckingUpdater) );
 
 				}
-				
+				SVP_LogMsg5(L"Settings::InitInstanceThreaded 17");
 				m_cnetupdater->bSVPCU_DONE = TRUE;
 			}
 			
@@ -1836,19 +1839,23 @@ for(int i = 0; i <= 30; i++){
 					
 				}
 			}
+            SVP_LogMsg5(L"Settings::InitInstanceThreaded 18");
             if(!IsVista()){
 			    CDisplaySettingDetector cdsd;
                 cdsd.init();
                 int valevel = cdsd.GetVideoAccelLevel();
-                //SVP_LogMsg6("Video %s valevel %d", cdsd.Video0Name, valevel);
+                SVP_LogMsg6("Video %s valevel %d", cdsd.Video0Name, valevel);
+                
                 if(valevel != 0)
                 {
                     pFrame->SendStatusMessage(ResStr(IDS_OSD_MSG_VIDEO_CARD_ACCELERATION_LEVEL_TOO_LOW), 6000);
                     cdsd.SetVideoAccelLevel(0);
+                    SVP_LogMsg5(L"Settings::InitInstanceThreaded 19");
                 }
             }
             
 		}
+        SVP_LogMsg5(L"Settings::InitInstanceThreaded 22");
 }
 
 UINT __cdecl Thread_InitInstance( LPVOID lpParam ) 
@@ -2601,14 +2608,14 @@ void CMPlayerCApp::Settings::RegGlobalAccelKey(HWND hWnd){
 void CMPlayerCApp::Settings::ThreadedLoading(){
 	
 	CMPlayerCApp * pApp  = AfxGetMyApp();
-	
+	SVP_LogMsg5(L"Settings::ThreadedLoading");
 	CMainFrame* pFrame = (CMainFrame*)pApp->m_pMainWnd;
 	while(!pFrame || pFrame->m_WndSizeInited < 2){
 		Sleep(1000);
 		pFrame = (CMainFrame*)pApp->m_pMainWnd;
 	}
 	CSVPToolBox svptoolbox;
-	
+	SVP_LogMsg5(L"Settings::ThreadedLoading 1");
 	BOOL bHadYaheiDownloaded = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS),  _T("HasYaheiDownloaded"), 0); //默认检查是否使用旧字体
 
 	CString szTTFPath = svptoolbox.GetPlayerPath( _T("msyh.ttf") );
@@ -2622,6 +2629,7 @@ void CMPlayerCApp::Settings::ThreadedLoading(){
 				pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("HasYaheiDownloaded"), 0 );	
 		}
 	}
+    SVP_LogMsg5(L"Settings::ThreadedLoading 2");
 	if( bIsChineseUIUser() ){
 		if(!svptoolbox.bFontExist(_T("微软雅黑")) && svptoolbox.bFontExist(_T("文泉驿微米黑"))){ 
 			if(subdefstyle.fontName.CompareNoCase(_T("黑体") ) == 0 )
@@ -2692,6 +2700,7 @@ void CMPlayerCApp::Settings::ThreadedLoading(){
 			
 		}
 	}
+    SVP_LogMsg5(L"Settings::ThreadedLoading 3");
 /*
 
 	CCpuId m_CPU;

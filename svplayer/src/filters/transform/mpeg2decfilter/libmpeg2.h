@@ -24,6 +24,11 @@
 
 #include <stdint.h>
 #include <atlcoll.h>
+
+#define LIBMPEG2C 0
+
+#if LIBMPEG2C
+
 #define MPEG2_VERSION(a,b,c) (((a)<<16)|((b)<<8)|(c))
 #define MPEG2_RELEASE MPEG2_VERSION (0, 3, 2)	/* 0.3.2 */
 
@@ -416,3 +421,56 @@ public:
     uint8_t m_intra_quantizer_matrix[64];
     uint8_t m_non_intra_quantizer_matrix[64];
 };
+#else
+extern "C" {
+
+#include "./libmpeg2/include/mpeg2.h"
+}
+
+class CMpeg2Info
+{
+public:
+    CMpeg2Info();
+    virtual ~CMpeg2Info();
+
+    void Reset();
+
+    mpeg2_sequence_t* m_sequence;
+    mpeg2_gop_t* m_gop;
+    mpeg2_picture_t* m_current_picture;
+    mpeg2_picture_t* m_current_picture_2nd;
+    mpeg2_fbuf_t* m_current_fbuf;
+    mpeg2_picture_t* m_display_picture;
+    mpeg2_picture_t* m_display_picture_2nd;
+    mpeg2_fbuf_t* m_display_fbuf;
+    mpeg2_fbuf_t* m_discard_fbuf;
+    const uint8_t* m_user_data;
+    int m_user_data_len;
+};
+class CMpeg2Dec
+{
+
+    mpeg2dec_t * m_mpeg2dec;
+    const mpeg2_info_t * m_mpeg2info;
+    void CopyInfo();
+public:
+    CMpeg2Dec();
+    virtual ~CMpeg2Dec();
+
+    mpeg2_picture_t* m_pictures;
+    mpeg2_picture_t* m_picture;
+
+
+    void mpeg2_init();
+    void mpeg2_close();
+
+    void mpeg2_skip(int skip);
+
+    void mpeg2_buffer(uint8_t* start, uint8_t* end);
+
+    mpeg2_state_t mpeg2_parse(bool allow_unbound_mpeg2_in_ts);
+
+    CMpeg2Info m_info;
+
+};
+#endif

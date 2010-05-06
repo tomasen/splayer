@@ -101,6 +101,13 @@ public:
 	DECLARE_IUNKNOWN
     STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void** ppv);
 
+    int GetColorSpace();
+    BYTE* buf_y;
+    BYTE* buf_u;
+    BYTE* buf_v;
+    CAtlArray<BYTE> m_buff_u;
+    CAtlArray<BYTE> m_buff_v;
+    CAtlArray<BYTE> m_buff_y;
 	HRESULT DeliverFast();
 	HRESULT DeliverNormal();
 	HRESULT Deliver(bool fRepeatLast);

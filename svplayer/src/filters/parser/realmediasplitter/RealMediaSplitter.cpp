@@ -750,7 +750,7 @@ HRESULT CRealMediaSplitterFilter::DemuxLoopDeliverPacket2Safe(RMFF::MediaPacketH
 	p->rtStart = 10000i64*(mph.tStart);
 	p->rtStop = p->rtStart+1;
 	p->Copy(mph.pData);
-    SVP_LogMsg6("rv %d",mph.tStart);
+    //SVP_LogMsg6("rv %d",mph.tStart);
 	return DeliverPacket(p);
 }
 HRESULT CRealMediaSplitterFilter::DemuxLoopDeliverPacket2(RMFF::MediaPacketHeader& mph)
@@ -788,8 +788,8 @@ bool CRealMediaSplitterFilter::DemuxLoop()
 				break;
 			//__try{
             UINT32 in_timestamp = mph.tStart;
-            SVP_LogMsg6("rvgot  %d", in_timestamp);
-
+            //SVP_LogMsg6("rvgot  %d", in_timestamp);
+#if 1
             if(in_timestamp == m_timestamp+1 || m_follow_frame_time_stamp == in_timestamp ){
                 m_rv_leap_frames = in_timestamp - m_last_shown_timestamp;
                 if(m_rv_time_for_each_leap < 0){
@@ -799,12 +799,12 @@ bool CRealMediaSplitterFilter::DemuxLoop()
                     UINT32 start_time_stamp = m_timestamp;
                     UINT32 frames = 1;
                     m_rv_time_for_each_leap = m_AvgTimePerFrame;
-                     SVP_LogMsg6("rv m_rv_time_for_each_leap %d" , m_rv_time_for_each_leap);
+                    // SVP_LogMsg6("rv m_rv_time_for_each_leap %d" , m_rv_time_for_each_leap);
                     for(UINT32 j = i; j < pdc->nPackets;j++){
                         MediaPacketHeader mph2;
                         if(S_OK != (hr = m_pFile->Read(mph2, false)))
                             break;
-                         SVP_LogMsg6("rvgot  mph2.tStart %d", mph2.tStart);
+                         //SVP_LogMsg6("rvgot  mph2.tStart %d", mph2.tStart);
                          if(mph2.tStart == start_time_stamp+1){
                             frames++;
                             
@@ -813,7 +813,7 @@ bool CRealMediaSplitterFilter::DemuxLoop()
                             //got it
                             m_rv_time_for_each_leap = (mph2.tStart - m_last_shown_timestamp)/frames;
                             m_AvgTimePerFrame = m_rv_time_for_each_leap;
-                            SVP_LogMsg6("rvgot now we know correct step %d %d %d %d", m_rv_time_for_each_leap, frames, mph2.tStart , m_timestamp);
+                           // SVP_LogMsg6("rvgot now we know correct step %d %d %d %d", m_rv_time_for_each_leap, frames, mph2.tStart , m_timestamp);
                             break;
                         }else if(mph2.tStart < start_time_stamp){
                             break;
@@ -825,7 +825,7 @@ bool CRealMediaSplitterFilter::DemuxLoop()
                 }
                 
                 //if already know correct step
-                SVP_LogMsg6("rvgot now we know %d + %d * %d",m_last_shown_timestamp , m_rv_leap_frames , m_rv_time_for_each_leap);
+               // SVP_LogMsg6("rvgot now we know %d + %d * %d",m_last_shown_timestamp , m_rv_leap_frames , m_rv_time_for_each_leap);
                 mph.tStart = m_last_shown_timestamp + m_rv_leap_frames * m_rv_time_for_each_leap;
                 //SVP_LogMsg6("rvgot already know correct step %d %d %d %d",mph.tStart, m_rv_time_for_each_leap, m_rv_leap_frames, m_last_shown_timestamp);
 
@@ -841,7 +841,7 @@ bool CRealMediaSplitterFilter::DemuxLoop()
                 // SVP_LogMsg6("rvgot just pass %d", in_timestamp);
                 m_timestamp = in_timestamp;
             }
-
+#endif
            
             
            
@@ -2686,7 +2686,7 @@ HRESULT CRealAudioDecoder::Receive(IMediaSample* pIn)
         
         if (!m_pAVCtx || nCodecId != m_pAVCtx->codec_id)
             if (!InitFfmpeg (nCodecId)){
-         //       SVP_LogMsg5( L"InitFfmpeg Failed");
+                SVP_LogMsg5( L"InitFfmpeg Failed");
                 return E_FAIL;
             }
 
@@ -2820,7 +2820,7 @@ bool CRealAudioDecoder::InitFfmpeg(int nCodecId)
         m_pAVCtx						= avcodec_alloc_context();
         
 {
-            if (nCodecId==CODEC_ID_COOK )
+            if (nCodecId==CODEC_ID_COOK  || nCodecId == CODEC_ID_ATRAC3)
             {
                 /* this code needs fixing */
 
@@ -2831,15 +2831,16 @@ bool CRealAudioDecoder::InitFfmpeg(int nCodecId)
                 {
                     szLog.AppendFormat(L" %d:%x",i, m_pAVCtx->extradata[i] );
                 }
-                SVP_LogMsg5(szLog);
-                int ix = 0;*/
+                SVP_LogMsg5(szLog);*/
+                int ix = 0;
                 for (;m_pAVCtx->extradata_size;m_pAVCtx->extradata=(uint8_t*)m_pAVCtx->extradata+1,m_pAVCtx->extradata_size--){
                     //ix++;
-                    if (memcmp(m_pAVCtx->extradata,"cook",4)==0)
+                    if (memcmp(m_pAVCtx->extradata,"cook",4)==0 || memcmp(m_pAVCtx->extradata,"atrc",4)==0)
                     {
-                        //SVP_LogMsg5(L"xxxx %d", ix);
+                        
                         m_pAVCtx->extradata=(uint8_t*)m_pAVCtx->extradata+12;
                         m_pAVCtx->extradata_size-=12;
+                        SVP_LogMsg5(L"extradata %d" , m_pAVCtx->extradata_size);
                         break;
                     }
                 }

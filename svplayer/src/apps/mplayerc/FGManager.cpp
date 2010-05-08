@@ -1912,6 +1912,7 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 		(tra & TRA_FLAC) ? L"Flac Audio Decoder" : L"Flac Audio Decoder (low merit)",		// TODO : put in resource !
 		(tra & TRA_FLAC) ? MERIT64_ABOVE_DSHOW : MERIT64_DO_USE);
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_FLAC_FRAMED);
+    pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_F1AC_FLAC);
 	m_transform.AddTail(pFGF);
 
 	pFGF = new CFGFilterInternal<CMpaDecFilter>(

@@ -360,6 +360,18 @@ typedef struct RcOverride{
  * Codec supports frame-based multithreading.
  */
 #define CODEC_CAP_FRAME_THREADS    0x0100
+/**
+ * Codec can output multiple frames per AVPacket
+ * Normally demuxers return one frame at a time, demuxers which do not do
+ * are connected to a parser to split what they return into proper frames.
+ * This flag is reserved to the very rare category of codecs which have a
+ * bitstream that cannot be split into frames without timeconsuming
+ * operations like full decoding. Demuxers carring such bitstreams thus
+ * may return multiple frames in a packet. This has many disadvantages like
+ * prohibiting stream copy in many cases thus it should only be considered
+ * as a last resort.
+ */
+#define CODEC_CAP_SUBFRAMES        0x0100
 
 //The following defines may change, don't expect compatibility if you use them.
 #define MB_TYPE_INTRA4x4   0x0001

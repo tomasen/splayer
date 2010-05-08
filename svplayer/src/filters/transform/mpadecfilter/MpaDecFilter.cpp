@@ -130,6 +130,7 @@ const AMOVIESETUP_MEDIATYPE sudPinTypesIn[] =
 	{&MEDIATYPE_Audio,				&MEDIASUBTYPE_PCM_ULAW},
     {&MEDIATYPE_Audio,				&MEDIASUBTYPE_SIPR},
     {&MEDIATYPE_Audio,				&MEDIASUBTYPE_QDM2},
+    {&MEDIATYPE_Audio,				&MEDIASUBTYPE_F1AC_FLAC},
 };
 
 #ifdef REGISTER_FILTER
@@ -461,7 +462,7 @@ HRESULT CMpaDecFilter::Receive(IMediaSample* pIn)
 	const GUID& subtype = m_pInput->CurrentMediaType().subtype;
 	BOOL bNoJitterControl = false;
 	if(subtype == MEDIASUBTYPE_AMR || subtype == MEDIASUBTYPE_SAMR || subtype == MEDIASUBTYPE_SAWB || subtype == MEDIASUBTYPE_PCM_ULAW
-         || subtype == MEDIASUBTYPE_QDM2){//  ||  subtype == MEDIASUBTYPE_COOK  || subtype == MEDIASUBTYPE_WMA1   || subtype == MEDIASUBTYPE_WMA2 || subtype == MEDIASUBTYPE_PCM_SOWT || subtype == MEDIASUBTYPE_PCM_TWOS
+         || subtype == MEDIASUBTYPE_QDM2 ||  MEDIASUBTYPE_F1AC_FLAC ==  subtype ){//  ||  subtype == MEDIASUBTYPE_COOK  || subtype == MEDIASUBTYPE_WMA1   || subtype == MEDIASUBTYPE_WMA2 || subtype == MEDIASUBTYPE_PCM_SOWT || subtype == MEDIASUBTYPE_PCM_TWOS
 		bNoJitterControl = true;
 	}
 
@@ -506,9 +507,11 @@ HRESULT CMpaDecFilter::Receive(IMediaSample* pIn)
 		hr = ProcessPS2ADPCM();
 	else if(subtype == MEDIASUBTYPE_Vorbis2)
 		hr = ProcessVorbis();
-	else if(subtype == MEDIASUBTYPE_FLAC_FRAMED)
+	else if(subtype == MEDIASUBTYPE_FLAC_FRAMED )
 		hr = ProcessFlac();
-	else if(subtype == MEDIASUBTYPE_NELLYMOSER)
+    else if( MEDIASUBTYPE_F1AC_FLAC ==  subtype ){
+        hr = ProcessFfmpeg(CODEC_ID_FLAC);
+    }else if(subtype == MEDIASUBTYPE_NELLYMOSER)
 		hr = ProcessFfmpeg(CODEC_ID_NELLYMOSER);
 	else if(subtype == MEDIASUBTYPE_IMA4)
 		hr = ProcessFfmpeg(CODEC_ID_ADPCM_IMA_QT);
@@ -2018,7 +2021,7 @@ HRESULT CMpaDecFilter::CheckInputType(const CMediaType* mtIn)
 		if(!m_vorbis.init(*mtIn))
 			return VFW_E_TYPE_NOT_ACCEPTED;
 	}
-	else if(mtIn->subtype == MEDIASUBTYPE_FLAC_FRAMED)
+	else if(mtIn->subtype == MEDIASUBTYPE_FLAC_FRAMED ||  mtIn->subtype == MEDIASUBTYPE_F1AC_FLAC)
 	{		
 		return S_OK;
 	}
@@ -2797,7 +2800,7 @@ bool CMpaDecFilter::InitFfmpeg(int nCodecId)
                // wfein->nAvgBytesPerSec  = 32041 / 8;
                // wfein->nBlockAlign = 93;
 
-			}else if (nCodecId==CODEC_ID_QDM2)
+			}else if (nCodecId==CODEC_ID_QDM2 || nCodecId==CODEC_ID_FLAC)
             {
                 m_pAVCtx->extradata=m_pInput->CurrentMediaType().Format()+sizeof(WAVEFORMATEX); 
                 m_pAVCtx->extradata_size=m_pInput->CurrentMediaType().FormatLength()-sizeof(WAVEFORMATEX);
@@ -2805,6 +2808,8 @@ bool CMpaDecFilter::InitFfmpeg(int nCodecId)
             }
             m_pAVCtx->sample_rate			= wfein->nSamplesPerSec;
 			m_pAVCtx->channels				= wfein->nChannels;
+
+            SVP_LogMsg5(L"channels %d", m_pAVCtx->channels);
 
 
 			m_pAVCtx->bit_rate				= wfein->nAvgBytesPerSec*8;

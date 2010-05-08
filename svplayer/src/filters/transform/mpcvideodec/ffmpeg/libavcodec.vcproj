@@ -437,6 +437,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\libavcodec\flac.c"
+				>
+			</File>
+			<File
 				RelativePath="libavcodec\golomb.c"
 				>
 			</File>
@@ -907,6 +911,10 @@
 			</File>
 			<File
 				RelativePath=".\ffImgfmt.h"
+				>
+			</File>
+			<File
+				RelativePath=".\libavcodec\flac.h"
 				>
 			</File>
 			<File

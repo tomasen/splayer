@@ -591,29 +591,31 @@ bool CAviSplitterFilter::DemuxLoop()
 						llGuessPos = s->cs[f].filepos;
 					}
 					
-					while(1){
-						if(itry % 2){
-							m_pFile->Seek(llGuessPos+(itry>>1));
-						}else{
-							m_pFile->Seek(llGuessPos-(itry>>1));
-						}
-						
-						/*S_OK ==*/ m_pFile->Read(id);
-						if(id != 0 && minTrack == TRACKNUM(id)){
-							if(S_OK == m_pFile->Read(size) && size > 0 && s->GetChunkSize(size) == expectedsize){
-								SVP_LogMsg5(L"fChunkHdr2 tried %d"  , itry);
-								break;
-							}
-						}
-						itry++;
-						if(itry%3000 == 0){
-							Sleep(40);
-						}
-						if(itry > 40962){
-							id=0;
-							break;
-						}
-					}
+                    if(!fDiscontinuity[minTrack]){
+					    while(1){
+						    if(itry % 2){
+							    m_pFile->Seek(llGuessPos+(itry>>1));
+						    }else{
+							    m_pFile->Seek(llGuessPos-(itry>>1));
+						    }
+    						
+						    /*S_OK ==*/ m_pFile->Read(id);
+						    if(id != 0 && minTrack == TRACKNUM(id)){
+							    if(S_OK == m_pFile->Read(size) && size > 0 && s->GetChunkSize(size) == expectedsize){
+								    SVP_LogMsg5(L"fChunkHdr3 tried %d"  , itry);
+								    break;
+							    }
+						    }
+						    itry++;
+						    if(itry%3000 == 0){
+							    Sleep(1);
+						    }
+						    if(itry > 40962){
+							    id=0;
+							    break;
+						    }
+					    }
+                    }
 					if(id == 0 || minTrack != TRACKNUM(id) ){
 						fDiscontinuity[minTrack] = true;
 						SVP_LogMsg5(L"fDiscontinuity %d %f %x %d", minTrack ,(double)s->cs[f].filepos , id , TRACKNUM(id) );

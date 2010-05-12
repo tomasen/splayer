@@ -464,6 +464,7 @@ HRESULT CMpaDecFilter::Receive(IMediaSample* pIn)
 	if(subtype == MEDIASUBTYPE_AMR || subtype == MEDIASUBTYPE_SAMR || subtype == MEDIASUBTYPE_SAWB || subtype == MEDIASUBTYPE_PCM_ULAW
          || subtype == MEDIASUBTYPE_QDM2 ||  MEDIASUBTYPE_F1AC_FLAC ==  subtype ){//  ||  subtype == MEDIASUBTYPE_COOK  || subtype == MEDIASUBTYPE_WMA1   || subtype == MEDIASUBTYPE_WMA2 || subtype == MEDIASUBTYPE_PCM_SOWT || subtype == MEDIASUBTYPE_PCM_TWOS
 		bNoJitterControl = true;
+        //TODO: we still need jitter control, but how we do it is a bit of ticky  -- by tomasen
 	}
 
 	if(SUCCEEDED(hr) && _abs64((m_rtStart - rtStart)) > 1000000i64  && !bNoJitterControl) // +-100ms jitter is allowed for now
@@ -510,6 +511,7 @@ HRESULT CMpaDecFilter::Receive(IMediaSample* pIn)
 	else if(subtype == MEDIASUBTYPE_FLAC_FRAMED )
 		hr = ProcessFlac();
     else if( MEDIASUBTYPE_F1AC_FLAC ==  subtype ){
+        //TODO : give up ProcessFlac or  ProcessFfmpeg(CODEC_ID_FLAC), let's chose one
         hr = ProcessFfmpeg(CODEC_ID_FLAC);
     }else if(subtype == MEDIASUBTYPE_NELLYMOSER)
 		hr = ProcessFfmpeg(CODEC_ID_NELLYMOSER);

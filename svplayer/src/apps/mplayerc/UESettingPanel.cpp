@@ -103,7 +103,7 @@ void CUESettingPanel::DoDataExchange(CDataExchange* pDX)
 	DDX_DHtml_CheckBox(pDX, _T("custompic"), m_sgi_custompic);
 	DDX_DHtml_CheckBox(pDX, _T("keepbgar"), m_sgi_keepbgar);
 	DDX_DHtml_CheckBox(pDX, _T("bgstrech"), m_sgi_bgstrech);
-	DDX_DHtml_CheckBox(pDX, _T("usenewmenu"), m_sgi_usenewmenu);
+	//DDX_DHtml_CheckBox(pDX, _T("usenewmenu"), m_sgi_usenewmenu);
 	DDX_DHtml_CheckBox(pDX, _T("useaeroglass"), m_sgi_useaeroglass);
 	DDX_DHtml_CheckBox(pDX, _T("smothmutilmonitor"), m_sgi_smothmutilmonitor);
 	DDX_DHtml_CheckBox(pDX, _T("GothSync"), m_sgi_GothSync);
@@ -400,7 +400,6 @@ BOOL CUESettingPanel::OnInitDialog()
 	m_sgi_bgstrech = !!(s.logostretch & 2);
 	m_sgi_usetranscontrol = s.bTransControl;
 	m_sgi_bDisableCenterBigOpenBmp = s.bDisableCenterBigOpenBmp;
-	m_sgi_usenewmenu = s.bNewMenu;
 	m_sgi_useaeroglass = s.bAeroGlass;
 
 	m_sgi_launchfullscreen = s.launchfullscreen ;
@@ -510,7 +509,6 @@ void CUESettingPanel::ApplyAllSetting(){
 	if(m_sgi_bgstrech)
 		s.logostretch |= 2;
 
-	s.bNewMenu = m_sgi_usenewmenu ;
 	s.bAeroGlass = m_sgi_useaeroglass;
 	s.bTransControl = m_sgi_usetranscontrol;
 	s.launchfullscreen = m_sgi_launchfullscreen;

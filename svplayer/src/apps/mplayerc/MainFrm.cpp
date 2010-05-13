@@ -982,19 +982,6 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	EnableToolTips(TRUE);
 
-	if(s.bNewMenu){
-		CSkinMenuMgr::Initialize(SKMS_SIDEBAR |SKMS_FLAT , 8);
-		CSkinMenu::SetRenderer(this);
-
-		CSkinMenuMgr::SetColor(COLOR_MENU, 0xfff0e1);//RGB(200, 235, 255)
-		CSkinMenuMgr::SetColor(COLOR_WINDOWTEXT,  0x211400);//RGB(0, 70, 100)
-		CSkinMenuMgr::SetColor(COLOR_HIGHLIGHTTEXT,RGB(255, 255, 255));//
-		CSkinMenuMgr::SetColor(COLOR_3DSHADOW, 0xbda684);//RGB(70, 100, 130)
-		CSkinMenuMgr::SetColor(COLOR_GRAYTEXT, 0x808080);
-		
-		//CSkinMenuMgr::SetColor(COLOR_3DHILIGHT, 0x00);
-		m_bGradient = TRUE;
-	}
 
 	m_ABMenu.LoadMenu(IDR_POPUPAB);
 	
@@ -1140,100 +1127,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	return 0;
 }
 
-BOOL CMainFrame::DrawMenuNonClientBkgnd(CDC* pDC, LPRECT pRect)
-{
-	if (m_bGradient)
-	{
-		DrawGradientBkgnd(pDC, pRect, NULL);
-		return TRUE;
-	}
-	else
-		return FALSE;
-}
 
-BOOL CMainFrame::DrawMenuClientBkgnd(CDC* pDC, LPRECT pRect, LPRECT pClip)
-{
-	if (m_bGradient)
-	{
-		DrawGradientBkgnd(pDC, pRect, pClip);
-		return TRUE;
-	}
-	else
-		return FALSE;
-}
-
-void CMainFrame::DrawGradientBkgnd(CDC* pDC, LPRECT pRect, LPRECT pClip)
-{
-	COLORREF crFrom = CSkinMenuMgr::GetColor(COLOR_MENU);
-	COLORREF crTo = 0xfff6ec;
-
-	
-//	AfxMessageBox(_T("x"));
-	if (pClip)
-	{
-		
-		// ensure that pClip is at least 100 pixels high else the 
-		// gradient has artifacts
-		CRect rClip(pClip), rRect(pRect);
-
-		if (rClip.Height() < 100 && rRect.Height() > 100)
-		{
-			rClip.InflateRect(0, (min(rRect.Height(), 100) - rClip.Height()) / 2);
-
-			if (rClip.top < rRect.top)
-				rClip.OffsetRect(0, rRect.top - rClip.top);
-
-			else if (rClip.bottom > rRect.bottom)
-				rClip.OffsetRect(0, rRect.bottom - rClip.bottom);
-		}
-
-		float fHeight = (float)rRect.Height();
-
-		float fFromFactor = (pRect->bottom - rClip.top) / fHeight;
-		float fToFactor = (pRect->bottom - rClip.bottom) / fHeight;
-
-		crFrom = CSkinBase::BlendColors(crFrom, crTo, fFromFactor);
-		crTo = CSkinBase::BlendColors(crFrom, crTo, fToFactor);
-
-		//SVP_LogMsg3("DrawGradientBkgnd1 %d %d %d %d / %d %d %d %d" , pRect->left , pRect->top,  pRect->right, pRect->bottom , pClip->left , pClip->top,  pClip->right,  pClip->bottom );
-		//rClip.left += 20;
-		CSkinBase::GradientFill(pDC, rClip, crFrom, crTo, FALSE);
-		
-	}
-	else{
-		//SVP_LogMsg3("DrawGradientBkgnd2 %d %d %d %d / %d %d %d %d" , pRect->left , pRect->top,  pRect->right, pRect->bottom , pClip->left , pClip->top,  pClip->right,  pClip->bottom );
-		CSkinBase::GradientFill(pDC, pRect, crFrom, crTo, FALSE);
-	}
-}
-
-BOOL CMainFrame::DrawMenuSidebar(CDC* pDC, LPRECT pRect, LPCTSTR szTitle)
-{
-	if (m_bGradient)
-	{
-		COLORREF crColor = CSkinMenuMgr::GetColor(COLOR_3DSHADOW);
-
-		COLORREF crFrom = crColor;
-		COLORREF crTo = 0xded3c6;//CSkinBase::VaryColor(crFrom, 2.0f);
-		
-		CSkinBase::GradientFill(pDC, pRect, crFrom, crTo, FALSE);
-		return TRUE;
-	}
-	else 
-	{
-		COLORREF crColor = CSkinMenuMgr::GetColor(COLOR_3DSHADOW);
-
-		pDC->FillSolidRect(pRect, crColor);
-		return TRUE;
-	}
-
-	return FALSE;
-}
-
-BOOL CMainFrame::DrawMenuBorder(CDC* pDC, LPRECT pRect)
-{
-	//pDC->FillSolidRect(pRect, 0);
-	return FALSE;
-}
 void CMainFrame::HideFloatTransparentBar(){
 	if( m_lTransparentToolbarStat ){
 
@@ -13369,9 +13263,7 @@ void CMainFrame::OnThemeChangeMenu(UINT nID){
 		case ID_THEME_AEROGLASS:
 			s.bAeroGlass = !s.bAeroGlass && s.bAeroGlassAvalibility;
 			break;
-		case ID_THEME_COLORMENU:
-			s.bNewMenu = !s.bNewMenu;
-			break;
+		
 	}
 }
 
@@ -13387,9 +13279,7 @@ void CMainFrame::OnUpdateThemeChangeMenu(CCmdUI *pCmdUI){
 				pCmdUI->SetText(ResStr(IDS_MENU_ITEM_AEROGLASS_UNSUPPORT));
 			}
 			break;
-		case ID_THEME_COLORMENU:
-			pCmdUI->SetCheck(s.bNewMenu);
-			break;
+		
 	}
 }
 void CMainFrame::OnUpdateAudioDeviceChange(CCmdUI *pCmdUI){

@@ -487,7 +487,6 @@ public:
 		CString CheckSVPSubExts;
 
 		BOOL bSetTempChannelMaping;
-		BOOL bNewMenu;
 		BOOL bSaveSVPSubWithVideo;
 		BOOL bAeroGlass;
 		BOOL bAeroGlassAvalibility;

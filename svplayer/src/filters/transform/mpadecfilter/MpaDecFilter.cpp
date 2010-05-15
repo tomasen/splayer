@@ -2665,10 +2665,10 @@ HRESULT CMpaDecFilter::DeliverFfmpeg(int nCodecId, BYTE* p, int buffsize, int& s
 	    int used_byte = avcodec_decode_audio2(m_pAVCtx, (int16_t*)m_pPCMData, &nPCMLength, (const uint8_t*)m_pFFBuffer, buffsize);
 	    SVP_LogMsg5(L"nPCM %x %x %x %x %x %x %x %x %x %x", m_pPCMData[0], m_pPCMData[1], m_pPCMData[2], m_pPCMData[3], m_pPCMData[4], m_pPCMData[5], m_pPCMData[6], m_pPCMData[7], m_pPCMData[8], m_pPCMData[9]);
         SVP_LogMsg5(L"nPCMLength2 %d size %d buffsize %d %d" , nPCMLength, used_byte , buffsize, m_pAVCtx->sample_fmt);
-        size = used_byte;
-        if(used_byte < 0 ) {  return S_OK; }
-        if(used_byte == 0 && nPCMLength <= 0 ) {return S_OK; }
-        //size += used_byte;//
+        
+        if(used_byte < 0 ) { size = used_byte;  return S_OK; }
+        if(used_byte == 0 && nPCMLength <= 0 ) {size = used_byte; return S_OK; }
+        size += used_byte;//
 
 	    if ( nPCMLength>0)
 	    {

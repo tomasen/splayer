@@ -21,9 +21,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{D9A0529B-9EC4-4D30-9E05-A5D533739D95}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UI", "UI", "{2913B7E4-7A8B-43D5-A60B-345A0782816A}"
-	ProjectSection(SolutionItems) = preProject
-		src\apps\mplayerc\FileDropTarget.cpp = src\apps\mplayerc\FileDropTarget.cpp
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "asyncreader", "src\filters\reader\asyncreader\asyncreader_vs2005.vcproj", "{9F31D122-E84D-485A-A58D-09DAD01A56CE}"
 EndProject

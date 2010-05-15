@@ -45,7 +45,7 @@
 
 #define SVP_LogMsg5  __noop
 #define SVP_LogMsg6  __noop
-//#define TRACE SVP_LogMsg5
+#define TRACE SVP_LogMsg5
 #define LOGDEBUG 0
 
 typedef unsigned char uint8;
@@ -1003,8 +1003,9 @@ HRESULT CMpaDecFilter::ProcessAC3()
 
 HRESULT CMpaDecFilter::ProcessAC3()
 {
-	SVP_LogMsg5(L"ProcessAC3");
-	HRESULT hr;
+	SVP_LogMsg5(L"ProcessAC3 %d", m_DolbyDigitalMode);
+    
+    HRESULT hr;
 	BYTE* p = m_buff.GetData();
 	BYTE* base = p;
 	BYTE* end = p + m_buff.GetCount();
@@ -1014,7 +1015,7 @@ HRESULT CMpaDecFilter::ProcessAC3()
 		int		size = 0;
 		bool	fEnoughData = true;
 
-		if (m_DolbyDigitalMode != DD_TRUEHD && m_DolbyDigitalMode != DD_MLP && (*((__int16*)p) == 0x770b))	/* AC3-EAC3 syncword */
+        if (m_DolbyDigitalMode != DD_TRUEHD && m_DolbyDigitalMode != DD_MLP && (*((__int16*)p) == 0x770b))	/* AC3-EAC3 syncword */
 		{
 			BYTE	bsid = p[5] >> 3;
 			if ((m_DolbyDigitalMode != DD_EAC3) && bsid <= 12)
@@ -2001,7 +2002,7 @@ CMediaType CMpaDecFilter::CreateMediaTypeSPDIF()
 
 HRESULT CMpaDecFilter::CheckInputType(const CMediaType* mtIn)
 {
-	if(mtIn->subtype == MEDIASUBTYPE_DVD_LPCM_AUDIO)
+    if(mtIn->subtype == MEDIASUBTYPE_DVD_LPCM_AUDIO)
 	{
 		WAVEFORMATEX* wfe = (WAVEFORMATEX*)mtIn->Format();
 		if(wfe->nChannels < 1 || wfe->nChannels > 8 || (wfe->wBitsPerSample != 16 && wfe->wBitsPerSample != 20 && wfe->wBitsPerSample != 24))
@@ -2623,8 +2624,11 @@ HRESULT CMpaDecFilter::DeliverFfmpeg(int nCodecId, BYTE* p, int buffsize, int& s
 
 #else
  
+#define  NEWDELIVER 1
 HRESULT CMpaDecFilter::DeliverFfmpeg(int nCodecId, BYTE* p, int buffsize, int& size)
 {
+
+#if NEWDELIVER
 	HRESULT		hr			= S_OK;
 	int			nPCMLength	= 0;
 	 SVP_LogMsg5(L"DeliverFfmpeg %d", buffsize);
@@ -2661,9 +2665,10 @@ HRESULT CMpaDecFilter::DeliverFfmpeg(int nCodecId, BYTE* p, int buffsize, int& s
 	    int used_byte = avcodec_decode_audio2(m_pAVCtx, (int16_t*)m_pPCMData, &nPCMLength, (const uint8_t*)m_pFFBuffer, buffsize);
 	    SVP_LogMsg5(L"nPCM %x %x %x %x %x %x %x %x %x %x", m_pPCMData[0], m_pPCMData[1], m_pPCMData[2], m_pPCMData[3], m_pPCMData[4], m_pPCMData[5], m_pPCMData[6], m_pPCMData[7], m_pPCMData[8], m_pPCMData[9]);
         SVP_LogMsg5(L"nPCMLength2 %d size %d buffsize %d %d" , nPCMLength, used_byte , buffsize, m_pAVCtx->sample_fmt);
-        if(used_byte < 0 ) { return S_OK; }
-        if(used_byte == 0 && nPCMLength <= 0 ) { return S_OK; }
-        size += used_byte;//min (used_byte, buffsize);
+        size = used_byte;
+        if(used_byte < 0 ) {  return S_OK; }
+        if(used_byte == 0 && nPCMLength <= 0 ) {return S_OK; }
+        //size += used_byte;//
 
 	    if ( nPCMLength>0)
 	    {
@@ -2743,6 +2748,93 @@ HRESULT CMpaDecFilter::DeliverFfmpeg(int nCodecId, BYTE* p, int buffsize, int& s
     if(pBuffOut.GetCount() > 0 && scmap)
         hr = Deliver(pBuffOut, m_pAVCtx->sample_rate, scmap->nChannels, scmap->dwChannelMask);
 	return hr;
+
+#else
+    HRESULT		hr			= S_OK;
+    int			nPCMLength	= AVCODEC_MAX_AUDIO_FRAME_SIZE;
+
+    if (!m_pAVCtx || nCodecId != m_pAVCtx->codec_id)
+    if (!InitFfmpeg (nCodecId))
+    {
+        size = 0;
+        SVP_LogMsg5(L"InitFfmpeg Failed");
+        return E_FAIL;
+    }
+
+
+    SVP_LogMsg5(L"nPCMLength1 %d %d size %d buffsize %d srate %d" ,m_pAVCtx->codec_id ,  nPCMLength, size , buffsize);
+    size = avcodec_decode_audio2(m_pAVCtx, (int16_t*)m_pPCMData, &nPCMLength, (const uint8_t*)p, buffsize);
+    SVP_LogMsg5(L"nPCM %x %x %x %x %x %x %x %x %x %x", m_pPCMData[0], m_pPCMData[1], m_pPCMData[2], m_pPCMData[3], m_pPCMData[4], m_pPCMData[5], m_pPCMData[6], m_pPCMData[7], m_pPCMData[8], m_pPCMData[9]);
+    SVP_LogMsg5(L"nPCMLength2 %d size %d buffsize %d %d" , nPCMLength, size , buffsize, m_pAVCtx->sample_fmt);
+
+    size = min (size, buffsize);
+
+    if (size>0 && nPCMLength>0)
+    {
+        WAVEFORMATEX*		wfein = (WAVEFORMATEX*)m_pInput->CurrentMediaType().Format();
+        CAtlArray<float>	pBuff;
+        int					iSpeakerConfig;
+        int					nRemap;
+        float*				pDataOut;
+
+        nRemap = FFGetChannelMap (m_pAVCtx);
+        //iSpeakerConfig  = GetSpeakerConfig(ac3);
+        //nRemap = min (nRemap, iSpeakerConfig);		// <== TODO : correct ??
+
+        if (nRemap >=0)
+        {
+            scmap_t* scmap;
+
+            switch (nCodecId)
+            {
+            case CODEC_ID_EAC3 :
+                scmap = &m_ffmpeg_ac3[FFGetChannelMap(m_pAVCtx)];
+                break;
+            default :
+                scmap = &m_scmap_default[m_pAVCtx->channels-1];
+                break;
+            }
+
+            switch (m_pAVCtx->sample_fmt)
+            {
+            case SAMPLE_FMT_S16 :
+                pBuff.SetCount (nPCMLength / 2);
+                pDataOut = pBuff.GetData();
+
+                for (size_t i=0; i<pBuff.GetCount()/m_pAVCtx->channels; i++)
+                {
+                    for(int ch=0; ch<m_pAVCtx->channels; ch++)
+                    {
+                        *pDataOut = (float)((int16_t*)m_pPCMData) [scmap->ch[ch]+i*m_pAVCtx->channels] / SHRT_MAX;
+                        pDataOut++;
+                    }
+                }
+                break;
+
+            case SAMPLE_FMT_S32 :
+                pBuff.SetCount (nPCMLength / 4);
+                pDataOut = pBuff.GetData();
+
+                for (size_t i=0; i<pBuff.GetCount()/m_pAVCtx->channels; i++)
+                {
+                    for(int ch=0; ch<m_pAVCtx->channels; ch++)
+                    {
+                        *pDataOut = (float)((int32_t*)m_pPCMData) [scmap->ch[ch]+i*m_pAVCtx->channels] / INT_MAX;
+                        //						*pDataOut = (float)((int32_t*)m_pPCMData) [ch+i*m_pAVCtx->channels] / INT_MAX;
+                        pDataOut++;
+                    }
+                }
+                break;
+            default :
+                ASSERT(FALSE);
+                break;
+            }
+            hr = Deliver(pBuff, m_pAVCtx->sample_rate, scmap->nChannels, scmap->dwChannelMask);
+        }
+    }
+
+    return hr;
+#endif
 }
 #endif
 

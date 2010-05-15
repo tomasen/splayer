@@ -52,6 +52,7 @@ HRESULT CMpegSplitterFile::Init()
 {
 	HRESULT hr;
 
+    SVP_LogMsg5(L"HRESULT CMpegSplitterFile::Init()");
 	// get the type first
 
 	m_type = us;
@@ -185,6 +186,7 @@ HRESULT CMpegSplitterFile::Init()
 
 	Seek(0);
 
+    SVP_LogMsg5(_T("ts %d %d %d"),  m_streams[video].GetCount() , m_streams[audio].GetCount(), m_bIsHdmv);
 	return S_OK;
 }
 

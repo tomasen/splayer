@@ -93,6 +93,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
+				CommandLine="IF NOT EXIST &quot;shooterclient.key&quot; copy &quot;shooterclient_dummy.key&quot; &quot;shooterclient.key&quot;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"

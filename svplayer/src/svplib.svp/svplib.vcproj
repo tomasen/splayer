@@ -93,7 +93,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="IF NOT EXIST &quot;shooterclient.key&quot; copy &quot;shooterclient_dummy.key&quot; &quot;shooterclient.key&quot;"
+				CommandLine="IF NOT EXIST &quot;shooterclient.key&quot; copy &quot;shooterclient_dummy.key&quot; &quot;shooterclient.key&quot;&#x0D;&#x0A;IF NOT EXIST &quot;..\apps\mplayerc\revision.h&quot; copy &quot;..\apps\mplayerc\revision_dummy.h&quot; &quot;..\apps\mplayerc\revision.h&quot;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"

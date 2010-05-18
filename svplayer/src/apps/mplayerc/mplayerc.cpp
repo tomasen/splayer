@@ -2245,6 +2245,18 @@ BOOL CMPlayerCApp::InitInstance()
 			}
 		}
 
+        CPPageFormats cpf;
+        cpf.AddAutoPlayToRegistry(cpf.AP_VIDEO, false);
+        cpf.AddAutoPlayToRegistry(cpf.AP_DVDMOVIE, false);
+        cpf.AddAutoPlayToRegistry(cpf.AP_AUDIOCD, false);
+        cpf.AddAutoPlayToRegistry(cpf.AP_MUSIC, false);
+        cpf.AddAutoPlayToRegistry(cpf.AP_SVCDMOVIE, false);
+        cpf.AddAutoPlayToRegistry(cpf.AP_VCDMOVIE, false);
+        cpf.AddAutoPlayToRegistry(cpf.AP_BDMOVIE, false);
+        cpf.AddAutoPlayToRegistry(cpf.AP_DVDAUDIO, false);
+        cpf.AddAutoPlayToRegistry(cpf.AP_CAPTURECAMERA, false);
+
+
 		return FALSE;
 	}
 

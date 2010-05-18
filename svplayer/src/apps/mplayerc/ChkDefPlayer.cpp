@@ -137,7 +137,7 @@ void CChkDefPlayer::setDefaultPlayer(int ilimitime )
 			CString str = mf[i].GetExtsWithPeriod();
 			for(CString ext = str.Tokenize(_T(" "), j); !ext.IsEmpty(); ext = str.Tokenize(_T(" "), j))
 			{
-				CPPageFormats::RegisterExt(ext, true);
+				CPPageFormats::RegisterExt(ext, true, L"video");
 			
 			}
 		}

@@ -2217,10 +2217,12 @@ BOOL CMPlayerCApp::InitInstance()
 
 			int j = 0;
 			CString str = mf[i].GetExtsWithPeriod();
+            CString szPerceivedType = mf[i].getPerceivedType();
 			for(CString ext = str.Tokenize(_T(" "), j); !ext.IsEmpty(); ext = str.Tokenize(_T(" "), j))
 			{
 				if(((m_s.nCLSwitches&CLSW_REGEXTVID) && fAudioOnly != 1) || ((m_s.nCLSwitches&CLSW_REGEXTAUD) && fAudioOnly == 0 )) {
-					CPPageFormats::RegisterExt(ext, true);
+                    
+					CPPageFormats::RegisterExt(ext, true, szPerceivedType);
 				}
 			}
 		}
@@ -2236,9 +2238,10 @@ BOOL CMPlayerCApp::InitInstance()
 		{
 			int j = 0;
 			CString str = mf[i].GetExtsWithPeriod();
+            CString pType = mf[i].getPerceivedType();
 			for(CString ext = str.Tokenize(_T(" "), j); !ext.IsEmpty(); ext = str.Tokenize(_T(" "), j))
 			{
-				CPPageFormats::RegisterExt(ext, false);
+				CPPageFormats::RegisterExt(ext, false , pType);
 			}
 		}
 

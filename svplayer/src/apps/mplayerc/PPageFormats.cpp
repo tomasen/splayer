@@ -317,7 +317,8 @@ BOOL CPPageFormats::SetFileAssociation(CString strExt, CString strProgID, bool f
 		{
 			// Create non existing file type
 			if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, strExt)) return(false);
-
+           
+            
 			WCHAR*          pszCurrentAssociation;
 			// Save current application associated
 			if (SUCCEEDED (m_pAAR->QueryCurrentDefault (strExt, AT_FILEEXTENSION, AL_EFFECTIVE, &pszCurrentAssociation)))
@@ -326,6 +327,8 @@ BOOL CPPageFormats::SetFileAssociation(CString strExt, CString strProgID, bool f
 					return(false);
 
 				key.SetStringValue( NULL , pszCurrentAssociation);
+                //
+
 				//key.SetStringValue(g_strOldAssoc, pszCurrentAssociation);
 
 				// Get current icon for file type
@@ -341,6 +344,10 @@ BOOL CPPageFormats::SetFileAssociation(CString strExt, CString strProgID, bool f
 				
 				if (ERROR_SUCCESS == key.Create(HKEY_CLASSES_ROOT, strProgID + _T("\\DefaultIcon")))
 					key.SetStringValue (NULL, FileIcon);
+
+                
+                    
+
 
 				CoTaskMemFree (pszCurrentAssociation);
 			}
@@ -358,6 +365,7 @@ BOOL CPPageFormats::SetFileAssociation(CString strExt, CString strProgID, bool f
 		}
 
 		hr = m_pAAR->SetAppAsDefault(strNewApp, strExt, AT_FILEEXTENSION);
+        
 		if(hr != S_OK){
 			return false;
 		}
@@ -433,7 +441,7 @@ BOOL CPPageFormats::SetFileAssociation(CString strExt, CString strProgID, bool f
 	return SUCCEEDED (hr);
 }
 
-bool CPPageFormats::RegisterExt(CString ext, bool fRegister)
+bool CPPageFormats::RegisterExt(CString ext, bool fRegister, CString PerceivedType)
 {
 	CRegKey         key;
 	bool            bSetValue;
@@ -471,6 +479,9 @@ bool CPPageFormats::RegisterExt(CString ext, bool fRegister)
 		strLabel = buff;
 	}
 	key.SetStringValue(NULL, strProgID);
+   
+    if(!PerceivedType.IsEmpty())
+        key.SetStringValue (L"PerceivedType", PerceivedType);
 
 	BOOL bIsRAR = ( ext.Right(3).MakeLower() == _T("rar") );
 	if(bIsRAR) {
@@ -866,8 +877,10 @@ BOOL CPPageFormats::OnApply()
 		CAtlList<CString> exts;
 		Explode(mf[(int)m_list.GetItemData(i)].GetExtsWithPeriod(), exts, ' ');
 
-		POSITION pos = exts.GetHeadPosition();
-		while(pos) RegisterExt(exts.GetNext(pos), !!iChecked);
+        CString pType( mf[(int)m_list.GetItemData(i)].getPerceivedType() );
+        
+        POSITION pos = exts.GetHeadPosition();
+		while(pos) RegisterExt(exts.GetNext(pos), !!iChecked, pType);
 	}
 
 	{

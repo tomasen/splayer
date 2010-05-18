@@ -53,7 +53,7 @@ public:
 	virtual ~CPPageFormats();
 
 	static bool IsRegistered(CString ext);
-	static bool RegisterExt(CString ext, bool fRegister);
+	static bool RegisterExt(CString ext, bool fRegister, CString PerceivedType);
 	
 	enum {COL_CATEGORY, COL_ENGINE};
 	CPlayerListCtrl m_list;

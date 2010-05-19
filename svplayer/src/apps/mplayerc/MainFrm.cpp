@@ -2683,7 +2683,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 		{
 			return;
 		}
-		if(IsSomethingLoaded() && !m_fAudioOnly)
+		if(IsSomethingLoaded() )//&& !m_fAudioOnly
 		{
 			//TODO: Save window size for this kind of video
 			CString string_remember_windows_size_for_this_video_size_parm;
@@ -10812,6 +10812,14 @@ MENUBARINFO mbi;
 			w /= 0.9;
 		}
 		h = 110;
+
+        AppSettings& s = AfxGetAppSettings();
+        long lPerfWidth = m_last_size_of_current_kind_of_video.cx = AfxGetMyApp()->GetProfileInt(ResStr(IDS_R_SETTINGS)+L"REMENBERWNDSIZE", L"ORGSIZE0x0W", -1);
+        long lPerfHeight = m_last_size_of_current_kind_of_video.cy = AfxGetMyApp()->GetProfileInt(ResStr(IDS_R_SETTINGS)+L"REMENBERWNDSIZE", L"ORGSIZE0x0H", -1);
+
+        w = max(w, lPerfWidth);
+        h = max(h, lPerfHeight);
+
 	}
 
 	// center window

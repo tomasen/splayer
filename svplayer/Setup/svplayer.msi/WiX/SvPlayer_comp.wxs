@@ -77,6 +77,9 @@
           <Component Id="cmpir5" Guid="{A03F94F7-5FF1-406e-9553-C61F1DF6E7A6}">
             <File Id="ir5file" KeyPath="yes" Source="..\..\..\..\ir50_32.dll" />
           </Component>
+          <Component Id="vp8" Guid="{ED3110F3-5211-11DF-94AF-0026B977EEAA}">
+            <File Id="vp8" KeyPath="yes" Source="..\..\..\..\vp8decoder.ax" />
+          </Component>
         <Component Id="cmpE631AD13D32B22523CEEF2FB617D755C" Guid="{E1ED86D9-C79B-49C2-9408-12EEA39228CE}">
                     <File Id="fil5C1376C17D55B28E92FB35FE151A50D2" KeyPath="yes" Source="..\..\..\..\ogm.dll">
                         <Class Id="{DB43B405-43AA-4F01-82D8-D84D47E6019C}" Context="InprocServer32" Description="Haali OGM Parser" ThreadingModel="both" Programmable="yes" />
@@ -503,6 +506,7 @@
             <ComponentRef Id="cmp93A2AF6463D41C266797411602AC1FEE" />
           <ComponentRef Id="cmpir41" />
           <ComponentRef Id="cmpir5" />
+          <ComponentRef Id="vp8" />
           <!-- <ComponentRef Id="cmp68B18D94CC97409ADE044D757A5955D9_hkcu" />   -->
             <ComponentRef Id="cmp0C6F17A19A301B6750C92DEFADA1B11E_hkcu" />  
         </ComponentGroup>

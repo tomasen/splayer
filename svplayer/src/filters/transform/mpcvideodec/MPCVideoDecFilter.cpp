@@ -322,6 +322,9 @@ FFMPEG_CODECS		ffCodecs[] =
 	{ &MEDIASUBTYPE_CVID, CODEC_ID_CINEPAK,  MAKEFOURCC('c', 'v', 'i', 'd'),	NULL },
 
     { &MEDIASUBTYPE_QTRle, CODEC_ID_QTRLE,  MAKEFOURCC('r', 'l', 'e', ' '),	NULL },
+
+    //{ &MEDIASUBTYPE_VP80, CODEC_ID_VP8,  MAKEFOURCC('V', 'P', '8', '0'),	NULL },
+    
     
 	
 };
@@ -503,7 +506,8 @@ const AMOVIESETUP_MEDIATYPE CMPCVideoDecFilter::sudPinTypesIn[] =
 	{ &MEDIATYPE_Video, &MEDIASUBTYPE_HUFFYUV   } ,
 	{ &MEDIATYPE_Video, &MEDIASUBTYPE_MJPG   } ,
 	{ &MEDIATYPE_Video, &MEDIASUBTYPE_CVID },
-    { &MEDIATYPE_Video, &MEDIASUBTYPE_QTRle }
+    { &MEDIATYPE_Video, &MEDIASUBTYPE_QTRle },
+    { &MEDIATYPE_Video, &MEDIASUBTYPE_VP80 }
 };
 
 // Workaround : graphedit crash when filter expose more than 115 input MediaTypes !

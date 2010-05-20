@@ -1986,6 +1986,13 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
     pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RV40);
     m_transform.AddTail(pFGF);
 #endif
+
+#ifdef INTERNALVP8
+    pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(_T("SVP VP8 Video Decoder"), MERIT64_UNLIKELY);
+    pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_VP80);
+    m_transform.AddTail(pFGF);
+#endif
+
 	pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(_T("MJPEG Video Decoder"), MERIT64_UNLIKELY);
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_QTJpeg);
 	m_transform.AddTail(pFGF);
@@ -2584,7 +2591,7 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("ir41_32.ax")) );
 
-    //szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("vp8decoder.dll")) );
+    szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("vp8decoder.dll")) );
 
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("wmadmod.dll")) );
 	

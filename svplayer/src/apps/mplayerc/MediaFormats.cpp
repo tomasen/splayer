@@ -197,6 +197,7 @@ void CMediaFormats::UpdateData(bool fSave)
 		ADDFMT((_T("Collegesoft Media file"), _T("csf"), _T("video")));
 		ADDFMT((_T("MPEG Transport-Stream file"), _T("ts tp tpr pva pss m2ts m2t mts evo m2p mpls"), _T("video")));
 		ADDFMT((_T("MPEG Audio file"), _T("mpa mp2 m1a m2a"), _T("audio"), true));
+        ADDFMT((_T("VP8 Webm file"), _T("webm"), _T("video")));
 		ADDFMT((_T("DVD file"), _T("vob ifo"), _T("video")));
 		ADDFMT((_T("DVD Audio file"), _T("ac3 dts"), _T("audio"), true));
 		ADDFMT((_T("MP3 Format Sound"), _T("mp3"), _T("audio"), true));

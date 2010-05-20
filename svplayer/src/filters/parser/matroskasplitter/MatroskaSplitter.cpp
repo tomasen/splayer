@@ -129,6 +129,7 @@ HRESULT CMatroskaSplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 	POSITION pos = m_pFile->m_segment.Tracks.GetHeadPosition();
 	while(pos)
 	{
+
 		Track* pT = m_pFile->m_segment.Tracks.GetNext(pos);
 
 		POSITION pos2 = pT->TrackEntries.GetHeadPosition();
@@ -140,6 +141,8 @@ HRESULT CMatroskaSplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 				continue;
 
 			CStringA CodecID = pTE->CodecID.ToString();
+
+            //SVP_LogMsg6("CodecID %s", CodecID);
 
 			CStringW Name;
 			Name.Format(L"Output %I64d", (UINT64)pTE->TrackNumber);
@@ -283,6 +286,20 @@ avcsuccess:
 					mts.Add(mt);
 					bHasVideo = true;
 				}
+                else if(CodecID.Find("V_VP8") == 0)
+                {
+                    mt.subtype = FOURCCMap('08PV');
+                    mt.formattype = FORMAT_VideoInfo;
+                    VIDEOINFOHEADER* pvih = (VIDEOINFOHEADER*)mt.AllocFormatBuffer(sizeof(VIDEOINFOHEADER) + pTE->CodecPrivate.GetCount());
+                    memset(mt.Format(), 0, mt.FormatLength());
+                    memcpy(mt.Format() + sizeof(VIDEOINFOHEADER), pTE->CodecPrivate.GetData(), pTE->CodecPrivate.GetCount());
+                    pvih->bmiHeader.biSize = sizeof(pvih->bmiHeader);
+                    pvih->bmiHeader.biWidth = (LONG)pTE->v.PixelWidth;
+                    pvih->bmiHeader.biHeight = (LONG)pTE->v.PixelHeight;
+                    pvih->bmiHeader.biCompression = mt.subtype.Data1;
+                    mts.Add(mt);
+                    bHasVideo = true;
+                }
 				else if(CodecID == "V_DIRAC")
 				{
 					mt.subtype = MEDIASUBTYPE_DiracVideo;

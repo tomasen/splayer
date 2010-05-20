@@ -24,7 +24,10 @@
 #include "..\..\..\DSUtil\DSUtil.h"
 #include "..\..\..\zlib\zlib.h"
 
+#include "..\..\..\svplib\svplib.h"
+
 #define DOCTYPE _T("matroska")
+#define DOCTYPE_WEBM _T("webm")
 #define DOCTYPEVERSION 2
 
 static void LOG(LPCTSTR fmt, ...)
@@ -80,9 +83,11 @@ CMatroskaFile::CMatroskaFile(IAsyncReader* pAsyncReader, HRESULT& hr)
 
 HRESULT CMatroskaFile::Init()
 {
+    
 	DWORD dw;
 	if(FAILED(Read(dw)) || dw != 0x1A45DFA3)
 		return E_FAIL;
+    
 
 	CMatroskaNode Root(this);
 	if(FAILED(Parse(&Root)))
@@ -113,7 +118,7 @@ HRESULT CMatroskaFile::Parse(CMatroskaNode* pMN0)
 	BeginChunk
 	case 0x1A45DFA3: 
 		m_ebml.Parse(pMN);
-		if(m_ebml.DocType != DOCTYPE || m_ebml.DocTypeReadVersion > DOCTYPEVERSION)
+		if( ( m_ebml.DocType != DOCTYPE || m_ebml.DocTypeReadVersion > DOCTYPEVERSION) &&  m_ebml.DocType != DOCTYPE_WEBM)
 			return E_FAIL;
 		break;
 	case 0x18538067: if(m_segment.SegmentInfo.SegmentUID.IsEmpty()) m_segment.ParseMinimal(pMN); break;

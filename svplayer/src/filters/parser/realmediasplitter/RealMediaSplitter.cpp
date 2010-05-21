@@ -205,7 +205,7 @@ CRealMediaSplitterFilter::~CRealMediaSplitterFilter()
 HRESULT CRealMediaSplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 {
     SVP_LogMsg5(L"CRealMediaSplitterFilter::CreateOutputs");
-
+//return E_FAIL;
 	CheckPointer(pAsyncReader, E_POINTER);
 
 	{
@@ -213,16 +213,16 @@ HRESULT CRealMediaSplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 		if(FAILED(pAsyncReader->SyncRead(0, 4, (BYTE*)&dw)) || dw != 'FMR.')
 			return E_FAIL;
 	}
-SVP_LogMsg5(L"CRealMediaSplitterFilter::CreateOutputs2");
+
 	HRESULT hr = E_FAIL;
 
 	m_pFile.Free();
-SVP_LogMsg5(L"CRealMediaSplitterFilter::CreateOutputs3");
+
 	m_pFile.Attach(new CRMFile(pAsyncReader, hr));
 	if(!m_pFile) return E_OUTOFMEMORY;
-    SVP_LogMsg5(L"CRealMediaSplitterFilter::CreateOutputs4");
+    
 	if(FAILED(hr)) {m_pFile.Free(); return hr;}
-SVP_LogMsg5(L"CRealMediaSplitterFilter::CreateOutputs5");
+
 	m_rtNewStart = m_rtCurrent = 0;
 	m_rtNewStop = m_rtStop = 0;
 
@@ -827,7 +827,7 @@ bool CRealMediaSplitterFilter::DemuxLoop()
                 //if already know correct step
                // SVP_LogMsg6("rvgot now we know %d + %d * %d",m_last_shown_timestamp , m_rv_leap_frames , m_rv_time_for_each_leap);
                 mph.tStart = m_last_shown_timestamp + m_rv_leap_frames * m_rv_time_for_each_leap;
-                //SVP_LogMsg6("rvgot already know correct step %d %d %d %d",mph.tStart, m_rv_time_for_each_leap, m_rv_leap_frames, m_last_shown_timestamp);
+                SVP_LogMsg6("rvgot already know correct step %d %d %d %d",mph.tStart, m_rv_time_for_each_leap, m_rv_leap_frames, m_last_shown_timestamp);
 
                  m_timestamp = in_timestamp;
                  m_follow_frame_time_stamp = in_timestamp;
@@ -838,7 +838,7 @@ bool CRealMediaSplitterFilter::DemuxLoop()
                 m_follow_frame_time_stamp = 0xffffffff;
                 m_last_shown_timestamp = in_timestamp;
                 m_rv_leap_frames = 0;
-                // SVP_LogMsg6("rvgot just pass %d", in_timestamp);
+                 SVP_LogMsg6("rvgot just pass %d", in_timestamp);
                 m_timestamp = in_timestamp;
             }
 #endif
@@ -2636,7 +2636,7 @@ HRESULT CRealAudioDecoder::Receive(IMediaSample* pIn)
 
 	rtStart = m_rtBuffStart;
 
-     SVP_LogMsg5( L"InitFfmpeg ing301");
+     //SVP_LogMsg5( L"InitFfmpeg ing301");
     CComPtr<IMediaSample> pOut;
     BYTE* pDataOut = NULL;
     if(FAILED(hr = m_pOutput->GetDeliveryBuffer(&pOut, NULL, NULL, 0))
@@ -2672,7 +2672,7 @@ HRESULT CRealAudioDecoder::Receive(IMediaSample* pIn)
 
      len = 0;
      BYTE* pFFOut = pDataOut;
- SVP_LogMsg5( L"InitFfmpeg ing31");
+ //SVP_LogMsg5( L"InitFfmpeg ing31");
 	for(; src < dst; src += w)
 	{
 //         GetProcessMemoryInfo( GetCurrentProcess(), &pmc, sizeof(pmc)) ;
@@ -2738,7 +2738,7 @@ HRESULT CRealAudioDecoder::Receive(IMediaSample* pIn)
 	}
     if(!m_pAVCtx)
         return S_OK;
-     SVP_LogMsg5( L"InitFfmpeg ing32");
+     //SVP_LogMsg5( L"InitFfmpeg ing32");
     BYTE* pDataFOut = pDataOut;
     switch (m_pAVCtx->sample_fmt)
     {

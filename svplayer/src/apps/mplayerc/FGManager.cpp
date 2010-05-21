@@ -1891,23 +1891,6 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 	m_transform.AddTail(pFGF);
 #endif
 
-
-	pFGF = new CFGFilterInternal<CRealAudioDecoder>(
-#ifndef RA_FFMPEG
-        L"MPC RealAudio Decoder" ,
-#else
-        L"SVP Real Audio Decoder 2.0",
-#endif		 
-		MERIT64_ABOVE_DSHOW );
-	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_ATRC);
-	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_14_4);
-	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_28_8);
-	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_COOK);
-	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_DNET);
-	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_SIPR);
-	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_RAAC);
-	m_transform.AddTail(pFGF);
-	
 	pFGF = new CFGFilterInternal<CMpaDecFilter>(
 		(tra & TRA_FLAC) ? L"Flac Audio Decoder" : L"Flac Audio Decoder (low merit)",		// TODO : put in resource !
 		(tra & TRA_FLAC) ? MERIT64_ABOVE_DSHOW : MERIT64_DO_USE);
@@ -1966,7 +1949,25 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 	}	
 
 
+#if 1
+    pFGF = new CFGFilterInternal<CRealAudioDecoder>(
+#ifndef RA_FFMPEG
+        L"MPC RealAudio Decoder" ,
+#else
+        L"SVP Real Audio Decoder 2.0",
+#endif		 
+        MERIT64_ABOVE_DSHOW );
+    pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_ATRC);
+    pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_14_4);
+    pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_28_8);
+    pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_COOK);
+    pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_DNET);
+    pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_SIPR);
+    pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_RAAC);
+    m_transform.AddTail(pFGF);
+#endif	
 
+#if 1
 	pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(
 		L"SVP RealVideo Decoder 2.0",
 		MERIT64_ABOVE_DSHOW );
@@ -1975,7 +1976,9 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RV30);
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RV40);
 	m_transform.AddTail(pFGF);
-    
+
+#endif
+
 #if 0
     pFGF = new CFGFilterInternal<CRealVideoDecoder>(
         L"MPC RealVideo Decoder",

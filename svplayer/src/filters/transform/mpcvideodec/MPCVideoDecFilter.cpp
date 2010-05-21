@@ -1853,7 +1853,7 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 		m_perf_timer[2] = GetPerfCounter();
 		if(used_bytes < 0 ) { TRACE5(L"used_bytes < 0 "); return S_OK; } // Why MPC-HC removed this lineis un clear to me, add it back see if it solve sunpack problem
 		if (!got_picture || !m_pFrame->data[0]) { TRACE5(L"!got_picture || !m_pFrame->data[0] %d " , got_picture);  return S_OK; }
-		if(pIn->IsPreroll() == S_OK || rtStart < 0) { TRACE5(L"pIn->IsPreroll()  %d  %d " , pIn->IsPreroll() , rtStart); return S_OK;}
+		if(pIn->IsPreroll() == S_OK || rtStart < 0) {TRACE5(L"pIn->IsPreroll()  %d  %d " , pIn->IsPreroll() , rtStart); return S_OK;}
 
 		//TRACE5(L"GetDeliveryBuffer");
         
@@ -1868,7 +1868,7 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
         //SVP_LogMsg5(L"Dec5");
         //TRACE ("Deliver1 : %10I64d - %10I64d   (%10I64d)  \n", rtStart, rtStop, rtStop - rtStart);
         
-        //SVP_LogMsg5(L"Dec6");
+        SVP_LogMsg5(L"Dec6  (%10I64d) %d (%10I64d)  (%10I64d)  ", rtStart , in_timestamp, m_tStart , m_rtRVStart);
 
         if( IS_REALVIDEO(m_pAVCtx->codec_id) ){
             
@@ -1877,9 +1877,9 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
             rtStart = 10000i64* (in_timestamp ) - m_tStart;
             m_rtRVStart += m_rtAvrTimePerFrame;
             if(rtStart > m_rtRVStart){
-                rtStart = m_rtRVStart + ( rtStart - m_rtRVStart ) /20;
+                rtStart = m_rtRVStart + ( rtStart - m_rtRVStart ) /8;
             }else{
-                rtStart = m_rtRVStart -  ( m_rtRVStart - rtStart  ) /20;
+                rtStart = m_rtRVStart -  ( m_rtRVStart - rtStart  ) /10;
             }
             m_rtRVStart = rtStart;
             //if(_abs64( m_rtRVStart - rtStart) > m_rtAvrTimePerFrame * 5){
@@ -1915,7 +1915,7 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
             {
                 rtStart = m_pFrame->reordered_opaque;
                 rtStop  = m_pFrame->reordered_opaque + m_rtAvrTimePerFrame;
-                TRACE ("Deliver2 : %10I64d - %10I64d   (%10I64d)  \n", rtStart, rtStop, rtStop - rtStart);
+                TRACE ("Deliver2 : %10I64d - %10I64d   (%10I64d) m_rtAvrTimePerFrame (%10I64d) \n", rtStart, rtStop, rtStop - rtStart , m_rtAvrTimePerFrame);
             }
 
             ReorderBFrames(rtStart, rtStop);

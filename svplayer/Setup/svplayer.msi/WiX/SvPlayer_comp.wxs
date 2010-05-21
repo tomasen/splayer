@@ -78,7 +78,7 @@
             <File Id="ir5file" KeyPath="yes" Source="..\..\..\..\ir50_32.dll" />
           </Component>
           <Component Id="vp8" Guid="{ED3110F3-5211-11DF-94AF-0026B977EEAA}">
-            <File Id="vp8" KeyPath="yes" Source="..\..\..\..\vp8decoder.ax" />
+            <File Id="vp8" KeyPath="yes" Source="..\..\..\..\vp8decoder.dll" />
           </Component>
         <Component Id="cmpE631AD13D32B22523CEEF2FB617D755C" Guid="{E1ED86D9-C79B-49C2-9408-12EEA39228CE}">
                     <File Id="fil5C1376C17D55B28E92FB35FE151A50D2" KeyPath="yes" Source="..\..\..\..\ogm.dll">

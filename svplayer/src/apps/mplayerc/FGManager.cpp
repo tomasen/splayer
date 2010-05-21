@@ -2591,8 +2591,9 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("ir41_32.ax")) );
 
-    szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("vp8decoder.dll")) );
-
+    if(s.szCurrentExtension == _T("webm")){
+        szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("vp8decoder.dll")) );
+    }
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("wmadmod.dll")) );
 	
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("rms.ax")) );
@@ -2718,7 +2719,11 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 						m_source.AddTail(pFGF);
 					}else{
 						pFGF->SetTypes(fo->guids);
-						m_transform.AddTail(pFGF);
+                         if(szFPath.Find(_T("dh264.ax")) > 0){
+                             pFGF->SetMerit( MERIT64_ABOVE_DSHOW+ 3);
+                         }
+
+                        m_transform.AddTail(pFGF);
 					}
 				}
 			}

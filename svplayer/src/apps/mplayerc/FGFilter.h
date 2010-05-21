@@ -46,6 +46,7 @@ public:
 	CLSID GetCLSID() {return m_clsid;}
 	CStringW GetName() {return m_name;}
 	UINT64 GetMerit() {return m_merit.val;}
+    void SetMerit( UINT64 merit )  { m_merit.val = merit;}
 	DWORD GetMeritForDirectShow() {return m_merit.mid;}
 	const CAtlList<GUID>& GetTypes() const;
 	void SetTypes(const CAtlList<GUID>& types);

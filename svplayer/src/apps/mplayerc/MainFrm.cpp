@@ -697,6 +697,7 @@ LRESULT CALLBACK SVPLayeredWndProc(HWND hwnd,         // Window handle
 		if(pFrame){
 			pFrame->KillTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER);
 			::KillTimer(hwnd, TIMER_CLOSETOOLBAR);
+            //SVP_LogMsg5(L" IsSomethingLoaded %d ", pFrame->IsSomethingLoaded());
 			if( pFrame->IsSomethingLoaded()){
 				AppSettings& s = AfxGetAppSettings();
 				if(s.bUserAeroUI())
@@ -1161,7 +1162,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 	CSize diff = m_lastMouseMove - point;
 	BOOL bMouseMoved =  diff.cx || diff.cy ;
 	AppSettings& s = AfxGetAppSettings();
-	if(bMouseMoved || m_wndToolBar.m_bMouseDown){
+	if(bMouseMoved || m_wndToolBar.m_bMouseDown ){//
 		//SVP_LogMsg3("M %d %d %d %d",m_lastMouseMove.x, m_lastMouseMove.y, point.x, point.y);
 		if(m_notshowtoolbarforawhile>0)
 			m_notshowtoolbarforawhile--;
@@ -1169,6 +1170,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 		m_lastMouseMove = point;
 		m_fHideCursor = false;
 		KillTimer(TIMER_FULLSCREENMOUSEHIDER);
+        // SVP_LogMsg5(L" IsSomethingLoaded %d %d  %d %d %d %d", IsSomethingLoaded(), __LINE__, bMouseMoved,  m_wndToolBar.m_bMouseDown ,  diff.cx , diff.cy );
 		if( IsSomethingLoaded()){
 			if(s.bUserAeroUI())
 				SetTimer(TIMER_FULLSCREENMOUSEHIDER, 5000, NULL);
@@ -2907,7 +2909,8 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 	}
 	else if(nIDEvent == TIMER_FULLSCREENMOUSEHIDER)
 	{
-		if(!IsMenuUp()){
+       // SVP_LogMsg5(L"TIMER_FULLSCREENMOUSEHIDER %d", IsMenuUp());
+        if(!IsMenuUp()){
 			CPoint p;
 			GetCursorPos(&p);
 
@@ -2918,9 +2921,12 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 			CWnd* pWnd = WindowFromPoint(p);
 			if(pWnd && (m_wndView == *pWnd || m_wndView.IsChild(pWnd) || fCursorOutside))
 			{
+                SVP_LogMsg5(L"SetCursor null");
 				m_fHideCursor = true;
 				SetCursor(NULL);
-			}
+            }else{
+                SVP_LogMsg5(L"Wrong Wnd");
+            }
 			m_nomoretopbarforawhile = 2;
 			m_nomorefloatbarforawhile = 2;
 			m_wndToolTopBar.SetTimer(m_wndToolTopBar.IDT_CLOSE,800,NULL);
@@ -4817,7 +4823,7 @@ BOOL CMainFrame::OnMenu(CMenu* pMenu)
 
 	m_tip.ClearStat();
 
-	KillTimer(TIMER_FULLSCREENMOUSEHIDER);
+	//KillTimer(TIMER_FULLSCREENMOUSEHIDER);
 	m_fHideCursor = false;
 
 	CPoint point;
@@ -10360,7 +10366,7 @@ void CMainFrame::ToggleFullscreen(bool fToNearest, bool fSwitchScreenResWhenHasT
 	RedrawNonClientArea();
 
 	KillTimer(TIMER_FULLSCREENCONTROLBARHIDER);
-	KillTimer(TIMER_FULLSCREENMOUSEHIDER);
+    KillTimer(TIMER_FULLSCREENMOUSEHIDER);
 	if(m_fFullScreen)
 	{
 		m_fHideCursor = true;

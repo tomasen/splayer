@@ -1107,7 +1107,7 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
 				
 					
 							pFrame->KillTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER);
-								
+							//	SVP_LogMsg5(L" IsSomethingLoaded %d %d ", pFrame->IsSomethingLoaded(), __LINE__);
 								if( pFrame->IsSomethingLoaded()){
 									AppSettings& s = AfxGetAppSettings();
 									if(s.bUserAeroUI())
@@ -1126,13 +1126,16 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
 			break;
 		case TIMER_CLOSETOOLBAR:
 			{
+                m_bMouseDown = FALSE;
 				KillTimer(TIMER_CLOSETOOLBAR);
 				CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
 				if(pFrame->m_fFullScreen && pFrame->IsSomethingLoaded()){
 					AppSettings& s = AfxGetAppSettings();
 					if(s.bUserAeroUI()){
 						pFrame->KillTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER);
-						SetTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER,100, NULL);
+                        //SVP_LogMsg5(L" IsSomethingLoaded %d %d ", pFrame->IsSomethingLoaded(), __LINE__);
+                        if(pFrame->IsSomethingLoaded())
+						    pFrame->SetTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER,3000, NULL);
 					}else{
 						pFrame->m_notshowtoolbarforawhile = 3;
 						pFrame->ShowControls(0, FALSE);
@@ -1161,6 +1164,7 @@ BOOL CPlayerToolBar::PreTranslateMessage(MSG* pMsg)
 		CMainFrame* pFrame = (CMainFrame*) AfxGetMainWnd();
 		if(pFrame){
 			pFrame->KillTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER);
+           // SVP_LogMsg5(L" IsSomethingLoaded %d %d ", pFrame->IsSomethingLoaded(), __LINE__);
 			KillTimer( TIMER_CLOSETOOLBAR);
 			if( pFrame->IsSomethingLoaded()){
 				AppSettings& s = AfxGetAppSettings();

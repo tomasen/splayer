@@ -177,7 +177,7 @@ void CPlayerFloatToolBar::OnMouseMove(UINT nFlags, CPoint point)
 	BOOL bMouseMoved =  diff.cx || diff.cy ;
 	if(bMouseMoved){
 		pFrame->KillTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER);
-
+        //SVP_LogMsg5(L" IsSomethingLoaded %d %d ", pFrame->IsSomethingLoaded(), __LINE__);
 		if(pFrame->IsSomethingLoaded()){
 			pFrame->SetTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER, 8000, NULL); 
 		}

@@ -543,7 +543,7 @@ void CPlayerToolTopBar::OnMouseMove(UINT nFlags, CPoint point)
 	if(bMouseMoved){
 		KillTimer(IDT_CLOSE);
 		pFrame->KillTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER);
-
+       // SVP_LogMsg5(L" IsSomethingLoaded %d %d ", pFrame->IsSomethingLoaded(), __LINE__);
 		if(pFrame->IsSomethingLoaded()){
 			pFrame->SetTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER, 5000, NULL); 
 		}

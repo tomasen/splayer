@@ -658,7 +658,7 @@ BOOL CPlayerSeekBar::PreTranslateMessage(MSG* pMsg)
 		CMainFrame* pFrame = (CMainFrame*) AfxGetMainWnd();
 		if(pFrame){
 			pFrame->KillTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER);
-			
+			//SVP_LogMsg5(L" IsSomethingLoaded %d %d ", pFrame->IsSomethingLoaded(), __LINE__);
 			if( pFrame->IsSomethingLoaded()){
 				AppSettings& s = AfxGetAppSettings();
 				if(s.bUserAeroUI())

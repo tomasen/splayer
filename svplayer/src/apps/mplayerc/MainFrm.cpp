@@ -2910,6 +2910,8 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 	else if(nIDEvent == TIMER_FULLSCREENMOUSEHIDER)
 	{
        // SVP_LogMsg5(L"TIMER_FULLSCREENMOUSEHIDER %d", IsMenuUp());
+        KillTimer(TIMER_FULLSCREENMOUSEHIDER);
+        SetTimer(TIMER_FULLSCREENMOUSEHIDER, 5000, NULL);
         if(!IsMenuUp()){
 			CPoint p;
 			GetCursorPos(&p);
@@ -10370,7 +10372,7 @@ void CMainFrame::ToggleFullscreen(bool fToNearest, bool fSwitchScreenResWhenHasT
 	if(m_fFullScreen)
 	{
 		m_fHideCursor = true;
-		SetTimer(TIMER_FULLSCREENMOUSEHIDER, 5000, NULL);
+		SetTimer(TIMER_FULLSCREENMOUSEHIDER, 800, NULL);
         ShowControls(CS_NONE, false);
 	}
 	else

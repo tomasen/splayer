@@ -1158,16 +1158,17 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 		CPoint vp = point - CVideoRect.TopLeft();
 		pDVDC->SelectAtPosition(vp);
 	}
-
-	CSize diff = m_lastMouseMove - point;
+    CPoint point_on_screen = point;
+    MapWindowPoints(NULL, &point_on_screen, 1);
+	CSize diff = m_lastMouseMove - point_on_screen;
 	BOOL bMouseMoved =  diff.cx || diff.cy ;
 	AppSettings& s = AfxGetAppSettings();
 	if(bMouseMoved || m_wndToolBar.m_bMouseDown ){//
-		//SVP_LogMsg3("M %d %d %d %d",m_lastMouseMove.x, m_lastMouseMove.y, point.x, point.y);
+		//SVP_LogMsg6("M %d %d %d %d",m_lastMouseMove.x, m_lastMouseMove.y, point_on_screen.x, point_on_screen.y);
 		if(m_notshowtoolbarforawhile>0)
 			m_notshowtoolbarforawhile--;
 
-		m_lastMouseMove = point;
+		m_lastMouseMove = point_on_screen;
 		m_fHideCursor = false;
 		KillTimer(TIMER_FULLSCREENMOUSEHIDER);
         // SVP_LogMsg5(L" IsSomethingLoaded %d %d  %d %d %d %d", IsSomethingLoaded(), __LINE__, bMouseMoved,  m_wndToolBar.m_bMouseDown ,  diff.cx , diff.cy );
@@ -2923,11 +2924,11 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 			CWnd* pWnd = WindowFromPoint(p);
 			if(pWnd && (m_wndView == *pWnd || m_wndView.IsChild(pWnd) || fCursorOutside))
 			{
-                SVP_LogMsg5(L"SetCursor null");
+                //SVP_LogMsg5(L"SetCursor null");
 				m_fHideCursor = true;
 				SetCursor(NULL);
             }else{
-                SVP_LogMsg5(L"Wrong Wnd");
+                //SVP_LogMsg5(L"Wrong Wnd");
             }
 			m_nomoretopbarforawhile = 2;
 			m_nomorefloatbarforawhile = 2;
@@ -10352,7 +10353,7 @@ void CMainFrame::ToggleFullscreen(bool fToNearest, bool fSwitchScreenResWhenHasT
 		hMenu = NULL;//AfxGetAppSettings().fHideCaptionMenu ? NULL : m_hMenuDefault;
 	}
 
-	m_lastMouseMove.x = m_lastMouseMove.y = -1;
+	
 
 	//bool fAudioOnly = m_fAudioOnly;
 	//m_fAudioOnly = true;
@@ -10371,12 +10372,14 @@ void CMainFrame::ToggleFullscreen(bool fToNearest, bool fSwitchScreenResWhenHasT
     KillTimer(TIMER_FULLSCREENMOUSEHIDER);
 	if(m_fFullScreen)
 	{
+       // SVP_LogMsg5(L"Fullscreen");
 		m_fHideCursor = true;
 		SetTimer(TIMER_FULLSCREENMOUSEHIDER, 800, NULL);
         ShowControls(CS_NONE, false);
 	}
 	else
 	{
+        m_lastMouseMove.x = m_lastMouseMove.y = -1;
 		m_fHideCursor = false;
         ShowControls(AfxGetAppSettings().nCS);
 	}

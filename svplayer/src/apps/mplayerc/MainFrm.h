@@ -405,6 +405,8 @@ public:
 
 	CComPtr<IBaseFilter> m_pRefClock; // Adjustable reference clock. GothSync
 	CComPtr<ISyncClock> m_pSyncClock;
+    
+    bool IsMenuUp();
 
 	bool IsFrameLessWindow() {return(m_fFullScreen || AfxGetAppSettings().fHideCaptionMenu);}
 	bool IsCaptionMenuHidden() {return(!m_fFullScreen && AfxGetAppSettings().fHideCaptionMenu);}

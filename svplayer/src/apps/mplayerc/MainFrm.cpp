@@ -1140,7 +1140,6 @@ void CMainFrame::HideFloatTransparentBar(){
 
 }
 /*NEW UI*/
-static int bNoMoreHideMouse = 0;
 static int m_nomoretopbarforawhile = 0;
 static int m_nomorefloatbarforawhile = 0;
 void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
@@ -1170,7 +1169,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 		m_lastMouseMove = point;
 		m_fHideCursor = false;
 		KillTimer(TIMER_FULLSCREENMOUSEHIDER);
-		if(!bNoMoreHideMouse && IsSomethingLoaded()){
+		if( IsSomethingLoaded()){
 			if(s.bUserAeroUI())
 				SetTimer(TIMER_FULLSCREENMOUSEHIDER, 5000, NULL);
 			else
@@ -1767,11 +1766,9 @@ void CMainFrame::OnClose()
 }
 
 void CMainFrame::OnEnterMenuLoop( BOOL bIsTrackPopupMenu ){
-	bNoMoreHideMouse = 5;
 	//SendStatusMessage(_T("Menu Enter"), 2000);
 }
 void CMainFrame::OnExitMenuLoop( BOOL bIsTrackPopupMenu ){
-	bNoMoreHideMouse = false;
 	//SendStatusMessage(_T("Menu Exit"), 2000);
 }
 
@@ -2087,8 +2084,7 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
 	
 	if( (pMsg->message >= WM_MOUSEFIRST && pMsg->message <= WM_MYMOUSELAST) )
 	{
-		
-		if(m_wndToolTopBar.IsWindowVisible() && pMsg->hwnd != m_wndToolTopBar.m_hWnd){
+        if(m_wndToolTopBar.IsWindowVisible() && pMsg->hwnd != m_wndToolTopBar.m_hWnd){
 		
 
 			CPoint p(pMsg->lParam);
@@ -2532,6 +2528,9 @@ bool CMainFrame::IsSubLoaded(){
 
 	return false;
 }
+bool CMainFrame::IsMenuUp(){
+    return (bool)(::FindWindow(_T("#32768"), NULL));
+}
 void CMainFrame::OnUpdatePlaySubDelay(CCmdUI* pCmdUI)
 {
 	bool fEnable = false;
@@ -2908,7 +2907,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 	}
 	else if(nIDEvent == TIMER_FULLSCREENMOUSEHIDER)
 	{
-		if(bNoMoreHideMouse <= 0){
+		if(!IsMenuUp()){
 			CPoint p;
 			GetCursorPos(&p);
 
@@ -2928,8 +2927,6 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 
 			if(AfxGetAppSettings().bUserAeroUI())
 				HideFloatTransparentBar();
-		}else{
-			bNoMoreHideMouse--;
 		}
 		/*
 		if(m_wndTransparentControlBar.IsWindowVisible()){
@@ -4033,6 +4030,8 @@ bool CMainFrame::GetNoResponseRect(CRgn& pRgn){
 }
 void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 {
+    //SVP_LogMsg5(L"IsMenuUp %d", IsMenuUp());
+
 	CRgn rcStop ;
 	GetNoResponseRect(rcStop);
 	if (rcStop.m_hObject)
@@ -7906,6 +7905,7 @@ void CMainFrame::OnPlayPause()
 
 void CMainFrame::OnPlayPlaypause()
 {
+   
 	//AfxMessageBox(L"1");
 	OAFilterState fs = GetMediaState();
 	if(fs == State_Running) SendMessage(WM_COMMAND, ID_PLAY_PAUSE);

@@ -45,8 +45,9 @@ CAsyncFileReader::CAsyncFileReader(CString fn, HRESULT& hr)
 {
 	
 	m_bIsRAR =  ( fn.Left(6).MakeLower() == _T("rar://") ) ;
-	//SVP_LogMsg5(L"CAsyncFileReader File %s" , fn);
-	if(m_bIsRAR){
+	SVP_LogMsg5(L"CAsyncFileReader File %s %d" , fn, m_bIsRAR);
+    
+	if(m_bIsRAR ){
 		SVP_LogMsg5(L"This is RAR File %s" , fn);
 		
 		{
@@ -219,7 +220,7 @@ STDMETHODIMP CAsyncFileReader::SyncRead(LONGLONG llPosition, LONG lLength, BYTE*
 				}
 
 				int iSeekRet = RARExtractChunkSeek(m_hRar, llPosition, SEEK_SET) ;
-SVP_LogMsg3("CAsyncFileReader::SyncRead RARExtractChunkSeek %0.1f  ", double(llPosition*10) );
+                SVP_LogMsg3("CAsyncFileReader::SyncRead RARExtractChunkSeek %0.1f  ", double(llPosition*10) );
 				if ( iSeekRet != 0 ) {
 					SVP_LogMsg5(L"CAsyncFileReader::SyncRead FAILSeek RARExtractChunkSeek %d ", iSeekRet);
 					return E_FAIL; 

@@ -13120,6 +13120,13 @@ void CMainFrame::CloseMediaPrivate()
 	AfxGetAppSettings().nCLSwitches &= CLSW_OPEN|CLSW_PLAY|CLSW_AFTERPLAYBACK_MASK|CLSW_NOFOCUS|CLSW_HTPCMODE;
 
 	m_iMediaLoadState = MLS_CLOSED;
+
+    {
+    
+
+        SetThreadExecutionState(0); //this is the right way, only this work under vista . no ES_CONTINUOUS  so it can goes to sleep when not playing
+    }
+
 }
 
 // msn

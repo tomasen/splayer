@@ -11171,6 +11171,8 @@ void CMainFrame::OpenCreateGraphObject(OpenMediaData* pOMD)
 		{
 			engine = QuickTime;
 		}
+        if(engine == RealMedia)
+            engine = DirectShow;
 
 		SVP_LogMsg6("got content type %s %d", ct, engine );
 

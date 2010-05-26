@@ -193,6 +193,7 @@
 #    include <winsock2.h>
 #    ifdef HAVE_WS2TCPIP_H
 #       include <ws2tcpip.h>
+ #       include <Wspiapi.h>
 #    endif
 #  else
 #    ifdef HAVE_WINSOCK_H

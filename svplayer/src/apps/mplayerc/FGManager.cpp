@@ -2589,6 +2589,7 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 			
 		}
 
+    szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("codecs\\cavc2.ax")) );
 
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("PMPSplitter.ax")) );
 

@@ -706,7 +706,7 @@ void CUESettingPanel::ApplyAllSetting(){
 	}else{
 	 s.tLastCheckUpdater = 2000000000;
 	}
-	s.useGPUCUDA = SVP_SetCoreAvcCUDA(s.useGPUCUDA);
+	s.useGPUCUDA = SVP_CanUseCoreAvcCUDA(s.useGPUCUDA);
 
 	s.bDisableCenterBigOpenBmp = m_sgi_bDisableCenterBigOpenBmp;
 

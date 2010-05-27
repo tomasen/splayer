@@ -540,6 +540,11 @@ LONG WINAPI Mine_RegOpenKeyExA(HKEY a0, LPCSTR a1, DWORD a2, REGSAM a3, PHKEY a4
 			*a4 = FAKEHKEY+1;
 			 return ERROR_SUCCESS;
 		}
+        if( _strcmpi(a1, "Software\\CoreCodec\\CoreAVC Pro 2.x") == 0){
+            TRACE_SVP( "CoreAVC 2");
+            *a4 = FAKEHKEY+3;
+            return ERROR_SUCCESS;
+        }
 		
 		else if( _strcmpi(a1, "CLSID\\{083863F1-70DE-11D0-BD40-00A0C911CE86}\\Instance\\{09571A4B-F1FE-4C60-9760-DE6D310C7C31}") == 0) {
 					*a4 = FAKEHKEY+2;
@@ -616,14 +621,25 @@ LONG WINAPI Mine_RegQueryValueExA(HKEY a0, LPCSTR a1, LPDWORD a2, LPDWORD a3, LP
 {
 	TRACE_SVP("Mine_RegQueryValueExA %s" , a1);
 	if(a1){
-		if ( a0 == (FAKEHKEY+1) &&  _strcmpi(a1, "Serial") == 0){
+        if ( (a0 == (FAKEHKEY+1) || a0 == (FAKEHKEY+3) )){
 		//*a3 = REG_SZ;
 		TRACE_SVP( "Mine_RegQueryValueExA Serial %s %u %u",  a1, *a5, a4);
-		if(*a5 < 30){
-			a4 = (LPBYTE)new char[30];
-			*a5 = 30;
+		if(*a5 < 40){
+			a4 = (LPBYTE)new char[40];
+			*a5 = 40;
 		}
-		strcpy_s((char *)a4, *a5, "03JUN-10K9Y-CORE-0CLQV-JOTFL");
+        if( _strcmpi(a1, "Serial") == 0){
+            if( a0 == (FAKEHKEY+3))
+                strcpy_s((char *)a4, *a5, "AFGD2R-3VRY6U-RBY69G-34NQAX-RUGX00");
+            else
+                strcpy_s((char *)a4, *a5, "03JUN-10K9Y-CORE-0CLQV-JOTFL");
+        }
+        if( _strcmpi(a1, "User") == 0){
+            if( a0 == (FAKEHKEY+3))
+                strcpy_s((char *)a4, *a5, "HERiTAGE");
+            else
+		        strcpy_s((char *)a4, *a5, "HERiTAGE");
+        }
 		return ERROR_SUCCESS;
 		}
 		if(_strcmpi(a1, "AVC 7x Deblock") == 0){

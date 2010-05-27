@@ -1331,7 +1331,10 @@ HANDLE WINAPI Mine_CreateFileA(LPCSTR p1, DWORD p2, DWORD p3, LPSECURITY_ATTRIBU
 	//int i = fn.Find(".part");
 	//if(i > 0 && i == fn.GetLength() - 5)
 	p3 |= FILE_SHARE_WRITE;
-	//if(strstr(p1, ("SVPDebug")) == 0)  SVP_LogMsg3(("Mine_CreateFileW %s") , p1);
+	//if(strstr(p1, ("SVPDebug")) == 0)  SVP_LogMsg6(("Mine_CreateFileA %s") , p1);
+    //if( strcmp (p1 + nLen-4, ".ini") == 0)
+        //SVP_LogMsg5(L"Mine_CreateFileW %s", p1);
+
 	return Real_CreateFileA(p1, p2, p3, p4, p5, p6, p7);
 }
 #include "Ifo.h"
@@ -1358,13 +1361,81 @@ BOOL CreateFakeVideoTS(LPCWSTR strIFOPath, LPWSTR strFakeFile, size_t nFakeFileS
 	return bRet;
 }
 
+DWORD (__stdcall * Real_GetPrivateProfileStringA)(LPCSTR lpAppName,
+                                                  LPCSTR lpKeyName,
+                                                  LPCSTR lpDefault,
+                                                  LPSTR lpReturnedString,
+                                                  DWORD nSize,
+                                                  LPCSTR lpFileName)
+                                      = GetPrivateProfileStringA;
+
+
+DWORD WINAPI Mine_GetPrivateProfileStringA(
+                          LPCSTR lpAppName,
+                          LPCSTR lpKeyName,
+                          LPCSTR lpDefault,
+                          LPSTR lpReturnedString,
+                          DWORD nSize,
+                          LPCSTR lpFileName
+                         )
+{
+
+     
+    if(strcmp(lpAppName, "CoreAVC") == 0 && strcmp(lpKeyName, "Settings") == 0 )
+    {
+        char defaultsettings[] = "use_cuda=1 use_tray=0";
+        char defaultsettings_nocuda[] = "use_cuda=0 use_tray=0";
+        AppSettings& s = AfxGetAppSettings();
+        if( s.useGPUCUDA )
+            strcpy_s( lpReturnedString ,  nSize , defaultsettings );
+        else
+            strcpy_s( lpReturnedString ,  nSize , defaultsettings_nocuda );
+        return sizeof(defaultsettings);
+    }
+     
+
+     //SVP_LogMsg6(("Mine_GetPrivateProfileStringA %s %s %s  %s") , lpAppName, lpKeyName, lpDefault, lpReturnedString);
+     return  Real_GetPrivateProfileStringA(lpAppName, lpKeyName, lpDefault, lpReturnedString, nSize, lpFileName);
+}
+
+BOOL (__stdcall * Real_WritePrivateProfileStringA)( LPCSTR lpAppName,
+                                                    LPCSTR lpKeyName,
+                                                    LPCSTR lpString,
+                                                    LPCSTR lpFileName)
+                                                  = WritePrivateProfileStringA;
+
+BOOL WINAPI Mine_WritePrivateProfileStringA(
+                            LPCSTR lpAppName,
+                            LPCSTR lpKeyName,
+                            LPCSTR lpString,
+                            LPCSTR lpFileName
+                            )
+{
+
+
+    if(strcmp(lpAppName, "CoreAVC") == 0 && strcmp(lpKeyName, "Settings") == 0 )
+    {
+        return true;
+    }
+    //SVP_LogMsg6(("Mine_WritePrivateProfileStringA %s %s %s  %s") , lpAppName, lpKeyName, lpString, lpFileName);
+    return Real_WritePrivateProfileStringA( lpAppName,
+                                     lpKeyName,
+                                     lpString,
+                                     lpFileName);
+}
+
+
+
+
 HANDLE WINAPI Mine_CreateFileW(LPCWSTR p1, DWORD p2, DWORD p3, LPSECURITY_ATTRIBUTES p4, DWORD p5, DWORD p6, HANDLE p7)
 {
 	HANDLE	hFile = INVALID_HANDLE_VALUE;
 	WCHAR	strFakeFile[MAX_PATH];
 	int		nLen  = wcslen(p1);
 
-	
+    //if(CString(p1).Find( L"SVPDebug") < 0)
+	 //   SVP_LogMsg5(L"Mine_CreateFileW %s", p1);
+
 	p3 |= FILE_SHARE_WRITE;
 
 	if (nLen>=4 && _wcsicmp (p1 + nLen-4, L".ifo") == 0)
@@ -2037,6 +2108,10 @@ BOOL CMPlayerCApp::InitInstance()
 	DetourAttach(&(PVOID&)Real_DeviceIoControl, (PVOID)Mine_DeviceIoControl);
 	DetourAttach(&(PVOID&)Real_GetModuleFileNameA, (PVOID)Mine_GetModuleFileNameA);
 
+    
+    DetourAttach(&(PVOID&)Real_WritePrivateProfileStringA, (PVOID)Mine_WritePrivateProfileStringA);
+    DetourAttach(&(PVOID&)Real_GetPrivateProfileStringA, (PVOID)Mine_GetPrivateProfileStringA);
+    
 	DetourAttach(&(PVOID&)Real_LoadResource, (PVOID)Mine_LoadResource);
 	DetourAttach(&(PVOID&)Real_LoadImageW, (PVOID)Mine_LoadImageW);
 	DetourAttach(&(PVOID&)Real_LoadImageA, (PVOID)Mine_LoadImageA);
@@ -4361,7 +4436,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		iAPSurfaceUsage = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_APSURACEFUSAGE), VIDRNDT_AP_TEXTURE3D);
 		iAPSurfaceUsage = VIDRNDT_AP_TEXTURE3D;
 		useGPUCUDA = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEGPUCUDA), 0);
-		useGPUCUDA = SVP_SetCoreAvcCUDA(useGPUCUDA);
+		useGPUCUDA = SVP_CanUseCoreAvcCUDA(useGPUCUDA);
 
 		bNotAutoCheckSpeaker = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_NOTAUTOCHECKSPEAKER), 0);
 		fCustomSpeakers = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_FCUSTOMSPEAKERS), 0) >0;

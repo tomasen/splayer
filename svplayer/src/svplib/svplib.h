@@ -30,9 +30,10 @@ extern void SVP_RealUploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, 
 extern void SVP_LogMsg(CString logmsg, int level = 15);
 extern void SVP_RealCheckUpdaterExe(BOOL* bCheckingUpdater, UINT verbose = 0);
 extern void SVP_CheckUpdaterExe(BOOL* bCheckingUpdater, UINT verbose = 0);
+extern BOOL SVP_CanUseCoreAvcCUDA(BOOL useCUDA);
 //extern void SVP_RealCheckUpdaterExe(BOOL* bCheckingUpdater);
-extern BOOL SVP_SetCoreAvcCUDA(BOOL useCUDA);
-extern BOOL SVP_ForbidenCoreAVCTrayIcon();
+//extern BOOL SVP_SetCoreAvcCUDA(BOOL useCUDA);
+//extern BOOL SVP_ForbidenCoreAVCTrayIcon();
 extern void SVP_UploadPinRenderDeadEnd(CString szPinName, CString szReport);
 extern void SVP_UploadCrashDmp(CString szDmppath, CString szLogPath);
 extern void SVP_LogMsg2(LPCTSTR fmt, ...);

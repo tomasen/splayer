@@ -370,7 +370,11 @@ void SVP_LogMsg4(BYTE* buff, __int64 iLen)
 	
 	
 }
+/*
 BOOL SVP_ForbidenCoreAVCTrayIcon(){
+    return false;
+    //作废
+
 	HRESULT hr;
 	LPITEMIDLIST pidl;
 	hr = SHGetSpecialFolderLocation( NULL, CSIDL_APPDATA, &pidl);
@@ -409,7 +413,10 @@ BOOL SVP_ForbidenCoreAVCTrayIcon(){
 
 	return true;
 }
-BOOL SVP_SetCoreAvcCUDA(BOOL useCUDA){
+
+BOOL SVP_CanUseCoreAvcCUDA(BOOL useCUDA){
+    return false;
+    //作废
 	HRESULT hr;
 	LPITEMIDLIST pidl;
 	hr = SHGetSpecialFolderLocation( NULL, CSIDL_APPDATA, &pidl);
@@ -473,4 +480,15 @@ BOOL SVP_SetCoreAvcCUDA(BOOL useCUDA){
 	
 	return useCUDA;
 }
+*/
 
+BOOL SVP_CanUseCoreAvcCUDA(BOOL useCUDA)
+{
+    CSVPToolBox svpTool;
+    if(useCUDA){
+        useCUDA = svpTool.CanUseCUDAforCoreAVC();
+    }
+
+    return useCUDA;
+
+}

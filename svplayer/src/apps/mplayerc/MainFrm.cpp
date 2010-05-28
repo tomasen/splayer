@@ -5130,6 +5130,12 @@ void CMainFrame::OnFilePostOpenmedia()
 		}
 
 	}
+    /*
+    CComQIPtr<IWMReaderAdvanced2> pWMR  = FindFilter(__uuidof(IWMReaderAdvanced2), pGB);
+    if(pWMR){
+        pWMR->SetPlayMode(WMT_PLAY_MODE_STREAMING);
+        AfxMessageBox(L"1");
+    }*/
 	if(FindFilter(L"{FA10746C-9B63-4B6C-BC49-FC300EA5F256}", pGB)){
 		m_bEVRInUse = true;
 	}

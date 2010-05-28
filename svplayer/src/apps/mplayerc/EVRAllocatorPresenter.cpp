@@ -1887,6 +1887,8 @@ void CEVRAllocatorPresenter::RenderThread()
 					
                     {
 					    m_lNextSampleWait = (LONG)((m_llSampleTime - llRefClockTime) / 10000); // Time left until sample is due, in ms
+                        LONG orgNextSampleWait = m_lNextSampleWait;
+                        //SVP_LogMsg6("m_lNextSampleWait %d %f %f", m_lNextSampleWait, double(m_llSampleTime), double(llRefClockTime) );
 					    if (m_lNextSampleWait < 0)
 						    m_lNextSampleWait = 0; // We came too late. Race through, discard the sample and get a new one
 					    else if (s.fVMRGothSyncFix && s.m_RenderSettings.bSynchronizeNearest ) // Present at the closest "safe" occasion at tergetSyncOffset ms before vsync to avoid tearing
@@ -1946,8 +1948,9 @@ void CEVRAllocatorPresenter::RenderThread()
 						    //	m_lNextSampleWait = lOldNextSampleWait + llEachStep;
 						    //}
 					    }
-					    if(m_lNextSampleWait > 200){
-						    m_lNextSampleWait = 200;
+                         //SVP_LogMsg6("m_lNextSampleWait %d Hhhhhhhhhhhh", m_lNextSampleWait);
+					    if((m_lNextSampleWait-orgNextSampleWait) > 200){
+						    m_lNextSampleWait = orgNextSampleWait + 200;
 						    m_lOverWaitCounter++;
 					    }else if(m_lOverWaitCounter != 99)
 						    m_lOverWaitCounter = 0;

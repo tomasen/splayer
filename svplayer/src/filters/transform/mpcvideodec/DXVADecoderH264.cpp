@@ -295,7 +295,8 @@ HRESULT CDXVADecoderH264::DecodeFrame (BYTE* pDataIn, UINT nSize, REFERENCE_TIME
 	}
 	m_bFlushed		= false;
 	SVPASSERTHR(hr);
-	return hr;
+
+    return hr;
 }
 
 void CDXVADecoderH264::RemoveUndisplayedFrame(int nPOC)

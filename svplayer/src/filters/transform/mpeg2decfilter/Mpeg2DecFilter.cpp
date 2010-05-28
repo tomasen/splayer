@@ -679,7 +679,7 @@ int CMpeg2DecFilter::GetColorSpace(){
     int v_h = m_dec->m_info.m_sequence->height;
     int l_color_space =  ( c_w == v_w )
         + ( c_h == v_h );
-
+    
     mpeg2_fbuf_t* fbuf = m_dec->m_info.m_display_fbuf;
     if(!fbuf)
         return 0;
@@ -904,6 +904,7 @@ HRESULT CMpeg2DecFilter::CheckConnect(PIN_DIRECTION dir, IPin* pPin)
 {
 	if(dir == PINDIR_OUTPUT)
 	{
+        SVP_LogMsg6("CheckConnect");
 		if(GetCLSID(m_pInput->GetConnected()) == CLSID_DVDNavigator)
 		{
 			// one of these needed for dynamic format changes

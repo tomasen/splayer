@@ -1582,6 +1582,7 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		m_source.AddTail(pFGF);
 	}
 
+   
 	// Transform filters
 
 	/* this is useless
@@ -1733,6 +1734,29 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	pFGF->AddType(MEDIATYPE_Stream, MEDIASUBTYPE_FLV);
 	pFGF->AddType(MEDIATYPE_Stream, GUID_NULL);
 	m_transform.AddTail(pFGF);
+
+/*
+
+    pFGF = new CFGFilterInternal<CMpeg2DecFilter>(
+        (tra & TRA_MPEG2) ? L"MPEG-2 Video Decoder 422" : L"MPEG-2 Video Decoder (low merit)", 
+        (tra & TRA_MPEG2) ? MERIT64_ABOVE_DSHOW + 10 : MERIT64_UNLIKELY);
+    pFGF->AddType(MEDIATYPE_DVD_ENCRYPTED_PACK, MEDIASUBTYPE_MPEG2_VIDEO);
+    pFGF->AddType(MEDIATYPE_MPEG2_PACK, MEDIASUBTYPE_MPEG2_VIDEO);
+    pFGF->AddType(MEDIATYPE_MPEG2_PES, MEDIASUBTYPE_MPEG2_VIDEO);
+    pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_MPEG2_VIDEO);
+    //pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_MMES);
+    m_transform.AddTail(pFGF);
+
+
+
+    //Microsoft MPEG-2 Video Decoder support DXVA but not 422 :(
+    pFGF = new CFGFilterRegistry(CLSID_CMPEG2VidDecoderDS, MERIT64_ABOVE_DSHOW+5);
+    pFGF->AddType(MEDIATYPE_DVD_ENCRYPTED_PACK, MEDIASUBTYPE_MPEG2_VIDEO);
+    pFGF->AddType(MEDIATYPE_MPEG2_PACK, MEDIASUBTYPE_MPEG2_VIDEO);
+    pFGF->AddType(MEDIATYPE_MPEG2_PES, MEDIASUBTYPE_MPEG2_VIDEO);
+    pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_MPEG2_VIDEO);
+    m_transform.AddTail(pFGF);	
+*/
 
 	pFGF = new CFGFilterInternal<CMpeg2DecFilter>(
 		(s.fVMDetected) ? L"MPEG-1 Video Decoder" : L"MPEG-1 Video Decoder (low merit)", 

@@ -3341,7 +3341,7 @@ void CMPlayerCApp::Settings::InitChannelMap()
 					if( iInputChannelCount > 2 && iChannelID < 2){	 // 前置左右声道
 						fTmpVal = 1.0;
 					}else if( iInputChannelCount > 4 && iChannelID == 2){ //中置声道
-						fTmpVal = 2.0;
+						fTmpVal = 2.4;
 					}else if( iInputChannelCount > 5 && iChannelID == (iInputChannelCount - 1) ){ //重低音 降低
 						fTmpVal = 0.9f;
 					}else if(iInputChannelCount > 2 && iChannelID >= 2){ //除中置 重低音外的声道
@@ -3659,6 +3659,7 @@ BOOL CMPlayerCApp::Settings::bShouldUseEVR(){
 	//Vista下使用EVR
 	//XP下 不用GPU加速时使用EVR
 	//XP下 用CoreAVC+CUDA时使用EVR
+
 	return ( ( IsVista() )  && !bDisableEVR ) || ( !IsVista() && bDisableEVR);//|| ( !IsVista() && fVMRGothSyncFix &&  ( !useGPUAcel || useGPUCUDA ) && HasEVRSupport()) 
 }
 BOOL CMPlayerCApp::Settings::bUserAeroTitle(){

@@ -1228,8 +1228,8 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 			if (ffCodecs[m_nCodecNb].nFFCodec == CODEC_ID_H264)
 			{
 				int		nCompat, refFrames = 0;
-				nCompat = FFH264CheckCompatibility (PictWidthRounded(), PictHeightRounded(), m_pAVCtx, (BYTE*)m_pAVCtx->extradata, m_pAVCtx->extradata_size, m_nPCIVendor, m_VideoDriverVersion, &refFrames);
-				SVP_LogMsg6("Got Ref Frame Count %d Driver %d %d %d %d Vendor %x", refFrames, HIWORD(m_VideoDriverVersion.HighPart), LOWORD(m_VideoDriverVersion.HighPart),HIWORD(m_VideoDriverVersion.LowPart),LOWORD(m_VideoDriverVersion.LowPart), m_nPCIVendor);
+				nCompat = FFH264CheckCompatibility (PictWidthRounded(), PictHeightRounded(), m_pAVCtx, (BYTE*)m_pAVCtx->extradata, m_pAVCtx->extradata_size, m_nPCIVendor, m_nPCIDevice, m_VideoDriverVersion, &refFrames);
+				SVP_LogMsg6("Got Ref Frame Count %d %d Driver %d %d %d %d Vendor %x",nCompat, refFrames, HIWORD(m_VideoDriverVersion.HighPart), LOWORD(m_VideoDriverVersion.HighPart),HIWORD(m_VideoDriverVersion.LowPart),LOWORD(m_VideoDriverVersion.LowPart), m_nPCIVendor);
                 switch (nCompat)
 				{
 				case 1 :	// SAR not supported

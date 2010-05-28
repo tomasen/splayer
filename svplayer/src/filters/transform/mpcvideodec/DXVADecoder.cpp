@@ -762,7 +762,7 @@ HRESULT CDXVADecoder::GetFreeSurfaceIndex(int& nSurfaceIndex, IMediaSample** ppS
 
 void CDXVADecoder::FreePictureSlot (int nSurfaceIndex)
 {
-//	TRACE ("Free    : %d\n", nSurfaceIndex);
+	SVP_LogMsg6 ("Free    : %d\n", nSurfaceIndex);
 	m_pPictureStore[nSurfaceIndex].dwDisplayCount = m_dwDisplayCount++;
 	m_pPictureStore[nSurfaceIndex].bInUse		= false;
 	m_pPictureStore[nSurfaceIndex].bDisplayed	= false;

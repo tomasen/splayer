@@ -3802,12 +3802,24 @@ CMpeg2Dec::~CMpeg2Dec()
 {
     this->mpeg2_close();
 }
+#include "../../../DSUtil/vd.h"
 
 void CMpeg2Dec::mpeg2_init()
 {
     memset(&m_pictures, 0, sizeof(m_pictures));
     m_picture = NULL;
-    m_mpeg2dec = ::mpeg2_init();
+    uint32_t cpuflag = 0;
+    
+    if(g_cpuid.m_flags&(CCpuID::mmx| CCpuID::_3dnow))
+       cpuflag |= MPEG2_ACCEL_X86_MMX;
+
+    if(g_cpuid.m_flags&CCpuID::sse2)
+        cpuflag |= MPEG2_ACCEL_X86_MMXEXT;
+
+    //if(g_cpuid.m_flags&CCpuID::sse2)
+    //    cpuflag |= MPEG2_ACCEL_X86_SSE2;
+
+    m_mpeg2dec = ::mpeg2_init(cpuflag);
     m_mpeg2info = mpeg2_info (m_mpeg2dec);
 
     CopyInfo();

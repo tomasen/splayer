@@ -1221,7 +1221,7 @@ static inline void block_add_DC (int16_t * const block, uint8_t * dest,
     psubusb_r2r (mm1, mm3);
     movq_r2m (mm3, *(dest + 2*stride));
 }
-
+#if 0
 void mpeg2_idct_copy_sse2 (int16_t * const block, uint8_t * const dest,
 			   const int stride)
 {
@@ -1240,7 +1240,9 @@ void mpeg2_idct_add_sse2 (const int last, int16_t * const block,
     } else
 	block_add_DC (block, dest, stride, CPU_MMXEXT);
 }
+#else
 
+#endif
 
 declare_idct (mmxext_idct, mmxext_table,
 	      mmxext_row_head, mmxext_row, mmxext_row_tail, mmxext_row_mid)

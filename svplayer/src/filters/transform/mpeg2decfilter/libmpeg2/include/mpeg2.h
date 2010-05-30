@@ -170,7 +170,7 @@ void mpeg2_custom_fbuf (mpeg2dec_t * mpeg2dec, int custom_fbuf);
 #define MPEG2_ACCEL_DETECT 0x80000000
 
 uint32_t mpeg2_accel (uint32_t accel);
-mpeg2dec_t * mpeg2_init (void);
+mpeg2dec_t * mpeg2_init (uint32_t cpuflag);
 mpeg2_info_t * mpeg2_info (mpeg2dec_t * mpeg2dec);
 
 /* mod for filter */

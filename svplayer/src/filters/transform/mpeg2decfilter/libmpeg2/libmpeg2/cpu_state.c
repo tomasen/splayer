@@ -39,7 +39,7 @@ void (* mpeg2_cpu_state_restore) (cpu_state_t * state) = NULL;
 #if defined(ARCH_X86) || defined(ARCH_X86_64)
 static void state_restore_mmx (cpu_state_t * state)
 {
-    emms ();
+    __asm emms;
 }
 #endif
 

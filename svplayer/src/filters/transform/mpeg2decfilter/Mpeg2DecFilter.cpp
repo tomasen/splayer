@@ -474,12 +474,12 @@ HRESULT CMpeg2DecFilter::Transform(IMediaSample* pIn)
 
 	while(len >= 0)
 	{
-      //  SVP_LogMsg6("mpeg2_parse");
+        SVP_LogMsg6("mpeg2_parse");
 		mpeg2_state_t state = m_dec->mpeg2_parse(m_allow_unbound_mpeg2_in_ts);
 #ifndef _WIN64
 		__asm emms; // this one is missing somewhere in the precompiled mmx obj files
 #endif
-//        SVP_LogMsg6("state %d",state);
+        SVP_LogMsg6("state %d",state);
 		switch(state)
 		{
 		case STATE_BUFFER:
@@ -549,7 +549,7 @@ HRESULT CMpeg2DecFilter::Transform(IMediaSample* pIn)
 		    break;
 		}
     }
-//SVP_LogMsg6("Return");
+    SVP_LogMsg6("Return");
 	return S_OK;
 }
 
@@ -560,6 +560,9 @@ bool CMpeg2DecFilter::IsVideoInterlaced()
 
 HRESULT CMpeg2DecFilter::DeliverFast()
 {
+    return S_FALSE;
+    //TODO: the sse2 deinterlace is broken under core2?? fix it plz
+#if 0
 	HRESULT hr;
     SVP_LogMsg6("DeliverFast");
 
@@ -575,29 +578,39 @@ HRESULT CMpeg2DecFilter::DeliverFast()
 	if(GetCLSID(m_pInput->GetConnected()) == CLSID_DVDNavigator
 	|| m_pSubpicInput->HasAnythingToRender(m_fb.rtStart)
 	|| fabs(m_bright) > EPSILON || fabs(m_cont-1.0) > EPSILON
-	|| fabs(m_hue) > EPSILON || fabs(m_sat-1.0) > EPSILON)
+    || fabs(m_hue) > EPSILON || fabs(m_sat-1.0) > EPSILON){
+        SVP_LogMsg6("DeliverFast1");
 		return S_FALSE;
+        }
 	}
 
 	if((m_fb.flags & PIC_MASK_CODING_TYPE) == PIC_FLAG_CODING_TYPE_I)
 		m_fWaitForKeyFrame = false;
 
 	if(m_fb.rtStart < 0 || m_fWaitForKeyFrame)
-		return S_OK;
-
+    {
+        SVP_LogMsg6("DeliverFast2");
+        return S_OK;
+    }
 	const CMediaType& mt = m_pOutput->CurrentMediaType();
 	
-	if(mt.subtype != MEDIASUBTYPE_I420 && mt.subtype != MEDIASUBTYPE_IYUV && mt.subtype != MEDIASUBTYPE_YV12)
-		return S_FALSE;
+    if(mt.subtype != MEDIASUBTYPE_I420 && mt.subtype != MEDIASUBTYPE_IYUV && mt.subtype != MEDIASUBTYPE_YV12){
+        SVP_LogMsg5(L"DeliverFast3 %s", CStringFromGUID( mt.subtype));	
+        return S_FALSE;
+    }
 
 	CComPtr<IMediaSample> pOut;
 	BYTE* pDataOut = NULL;
 	if(FAILED(hr = GetDeliveryBuffer(m_fb.w, m_fb.h, &pOut))
-	|| FAILED(hr = pOut->GetPointer(&pDataOut)))
+        || FAILED(hr = pOut->GetPointer(&pDataOut))) {
+            SVP_LogMsg6("DeliverFast4");	
 		return hr;
+    }
 
-	if(mt.subtype != MEDIASUBTYPE_I420 && mt.subtype != MEDIASUBTYPE_IYUV && mt.subtype != MEDIASUBTYPE_YV12)
+    if(mt.subtype != MEDIASUBTYPE_I420 && mt.subtype != MEDIASUBTYPE_IYUV && mt.subtype != MEDIASUBTYPE_YV12){
+        SVP_LogMsg6("DeliverFast5");	
 		return S_FALSE;
+    }
 
 	BITMAPINFOHEADER bihOut;
 	ExtractBIH(&mt, &bihOut);
@@ -625,13 +638,15 @@ HRESULT CMpeg2DecFilter::DeliverFast()
 	{
         SVP_LogMsg6("DIBlend Fast");
 		DeinterlaceBlend(y, buf_y, w, h, dstpitch, srcpitch);
-                DeinterlaceBlend(u, buf_u, w/2, h, dstpitch/2, srcpitch/2);
-                DeinterlaceBlend(v, buf_v, w/2, h, dstpitch/2, srcpitch/2);
-        
+        DeinterlaceBlend(u, buf_u, w/2, h, dstpitch/2, srcpitch/2);
+        DeinterlaceBlend(v, buf_v, w/2, h, dstpitch/2, srcpitch/2);
+        SVP_LogMsg6("DIBlend Fast End");
 		
 	}
 	else // TODO
 	{
+        SVP_LogMsg6("DeliverFast6");	
+
 		return S_FALSE;
 	}
 
@@ -667,8 +682,10 @@ HRESULT CMpeg2DecFilter::DeliverFast()
 	SetTypeSpecificFlags(pOut);
 
 	//
+    SVP_LogMsg6("DeliverFast Delivered");	
 
 	return m_pOutput->Deliver(pOut);
+#endif
 }
 int CMpeg2DecFilter::GetColorSpace(){
     CAutoLock cAutoLock(&m_csReceive);
@@ -1099,9 +1116,10 @@ void CMpeg2DecFilter::ApplyBrContHueSat(BYTE* srcy, BYTE* srcu, BYTE* srcv, int 
 	if(fabs(m_bright) > EPSILON || fabs(m_cont-1.0) > EPSILON)
 	{
 		int size = pitch*h;
-
+        SVP_LogMsg5(L"CMpeg2DecFilter::ApplyBrContHueSat BC %f %f", m_bright , m_cont);
 		if((g_cpuid.m_flags&CCpuID::sse2) && ((DWORD_PTR)srcy & 15) == 0)
 		{
+            SVP_LogMsg5(L"CMpeg2DecFilter::ApplyBrContHueSat SSE2");
 			short Cont = (short)(min(max(m_cont, 0) * 512, (1<<16)-1));
 			short Bright = (short)(m_bright + 16);
 
@@ -1160,6 +1178,7 @@ void CMpeg2DecFilter::ApplyBrContHueSat(BYTE* srcy, BYTE* srcu, BYTE* srcv, int 
 
 	if(fabs(m_hue) > EPSILON || fabs(m_sat-1.0) > EPSILON)
 	{
+         SVP_LogMsg5(L"CMpeg2DecFilter::ApplyBrContHueSat BC %f %f", m_hue , m_sat);
 		for(int size = pitch*h; size > 0; size--)
 		{
 			WORD uv = (*srcv<<8)|*srcu;

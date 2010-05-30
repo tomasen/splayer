@@ -209,13 +209,14 @@ void CSVPSubFilter::Invalidate (REFERENCE_TIME rtInvalidate )
 	return ;
 }
 
+/*
 bool CSVPSubFilter::IsVideoInterlaced()
 {
     // NOT A BUG : always tell DirectShow it's interlaced (progressive flags set in 
     // SetTypeSpecificFlags function)
     return true;
 };
-
+*/
 //End of sub control func
 
 
@@ -455,6 +456,7 @@ HRESULT CSVPSubFilter::Transform(IMediaSample* pIn)
 	//SVP_LogMsg5(_T("flip t %d ") , m_fFlip);
 	CopyBuffer(pDataOut, (BYTE*)m_spd.bits, spd.w, abs(spd.h)*(m_fFlip?-1:1), spd.pitch, mt.subtype);
 
+    /*
 	//	PrintMessages(pDataOut);
     if(CComQIPtr<IMediaSample2> pMSIn = pIn)
     {
@@ -474,6 +476,7 @@ HRESULT CSVPSubFilter::Transform(IMediaSample* pIn)
             }
         }
     }
+    */
 
 	hr = m_pOutput->Deliver(pOut);
 

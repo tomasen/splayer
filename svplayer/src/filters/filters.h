@@ -51,6 +51,7 @@
 #include ".\parser\DSMSplitter\DSMSplitter.h"
 #include ".\parser\MP4Splitter\MP4Splitter.h"
 #include ".\parser\FLVSplitter\FLVSplitter.h"
+#include ".\parser\WMVSpliter\WMVSpliter.h"
 #include ".\parser\SSFSplitter\SSFSplitter.h"
 //#include ".\transform\vsfilter\DirectVobSubFilter.h"
 #include ".\renderer\MpcAudioRenderer\MpcAudioRenderer.h"

@@ -38,8 +38,8 @@ static inline uint32_t arch_accel (uint32_t accel)
     if (accel & (MPEG2_ACCEL_X86_SSE2 | MPEG2_ACCEL_X86_SSE3))
 	accel |= MPEG2_ACCEL_X86_MMXEXT;
 	
-    if (accel & (MPEG2_ACCEL_X86_SSE3))
-	accel |= MPEG2_ACCEL_X86_SSE2;
+    //if (accel & (MPEG2_ACCEL_X86_SSE3))
+	//accel |= MPEG2_ACCEL_X86_SSE2;
 
 #ifdef ACCEL_DETECT
     if (accel & MPEG2_ACCEL_DETECT) {
@@ -103,11 +103,11 @@ static inline uint32_t arch_accel (uint32_t accel)
 	if (edx & 0x02000000)		/* SSE - identical to AMD MMX ext. */
 	    accel |= MPEG2_ACCEL_X86_MMXEXT;
 
-	if (edx & 0x04000000)		/* SSE2 */
-	    accel |= MPEG2_ACCEL_X86_SSE2;
+	//if (edx & 0x04000000)		/* SSE2 */
+	//    accel |= MPEG2_ACCEL_X86_SSE2;
 
-	if (ecx & 0x00000001)		/* SSE3 */
-	    accel |= MPEG2_ACCEL_X86_SSE3;
+	//if (ecx & 0x00000001)		/* SSE3 */
+	//    accel |= MPEG2_ACCEL_X86_SSE3;
 
 	cpuid (0x80000000, eax, ebx, ecx, edx);
 	if (eax < 0x80000001)		/* no extended capabilities */

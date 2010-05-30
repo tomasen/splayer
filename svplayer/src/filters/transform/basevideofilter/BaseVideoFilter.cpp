@@ -87,6 +87,7 @@ CBasePin* CBaseVideoFilter::GetPin(int n)
 
 HRESULT CBaseVideoFilter::Receive(IMediaSample* pIn)
 {
+    //SVP_LogMsg6("CBaseVideoFilter::Receive");
 #ifndef _WIN64
 	// TODOX64 : fixme!
 	_mm_empty(); // just for safety
@@ -97,8 +98,10 @@ HRESULT CBaseVideoFilter::Receive(IMediaSample* pIn)
 	HRESULT hr;
 
     AM_SAMPLE2_PROPERTIES* const pProps = m_pInput->SampleProps();
-    if(pProps->dwStreamId != AM_STREAM_MEDIA)
+    if(pProps->dwStreamId != AM_STREAM_MEDIA){
+      //  SVP_LogMsg6("CBaseVideoFilter::Receive2 %d", pProps->dwStreamId);
 		return m_pOutput->Deliver(pIn);
+    }
 
 	AM_MEDIA_TYPE* pmt;
 	if(SUCCEEDED(pIn->GetMediaType(&pmt)) && pmt)
@@ -107,7 +110,7 @@ HRESULT CBaseVideoFilter::Receive(IMediaSample* pIn)
 		m_pInput->SetMediaType(&mt);
 		DeleteMediaType(pmt);
 	}
-
+    //SVP_LogMsg6("CBaseVideoFilter::Receive3");
 	if(FAILED(hr = Transform(pIn)))
 		return hr;
 

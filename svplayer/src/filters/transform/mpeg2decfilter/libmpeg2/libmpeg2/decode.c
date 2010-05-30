@@ -421,7 +421,7 @@ mpeg2dec_t * mpeg2_init (void)
 {
     mpeg2dec_t * mpeg2dec;
 
-    mpeg2_accel (MPEG2_ACCEL_X86_MMX);//MPEG2_ACCEL_DETECT
+    mpeg2_accel (MPEG2_ACCEL_DETECT);//MPEG2_ACCEL_X86_MMX MPEG2_ACCEL_X86_MMXEXT MPEG2_ACCEL_DETECT MPEG2_ACCEL_X86_SSE2
 
     mpeg2dec = (mpeg2dec_t *) mpeg2_malloc (sizeof (mpeg2dec_t),
 					    MPEG2_ALLOC_MPEG2DEC);

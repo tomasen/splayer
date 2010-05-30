@@ -184,7 +184,7 @@ UINT CAsyncFileReader::Read( void* lpBuf,	UINT nCount ){
 				SVP_LogMsg3(" CAsyncFileReader::Rea RARExtractChunk %0.1f  ", double(nCount) );
 				if ( iExtractRet <= 0 ) {
 					SVP_LogMsg3(" CAsyncFileReader::Read  RARExtractChunk %d ", iExtractRet);
-					return E_FAIL; 
+					return 0; 
 				}
 				//
 				//if(llPosition != Seek(llPosition, begin)) return E_FAIL;
@@ -198,7 +198,7 @@ UINT CAsyncFileReader::Read( void* lpBuf,	UINT nCount ){
 			}
 		
 	}else{
-		__super::Read(lpBuf, nCount);
+		return __super::Read(lpBuf, nCount);
 	}
 }
 

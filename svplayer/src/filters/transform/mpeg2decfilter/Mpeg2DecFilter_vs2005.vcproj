@@ -541,10 +541,6 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm"
 			>
 			<File
-				RelativePath=".\idct_sse2.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\libmpeg2.cpp"
 				>
 				<FileConfiguration

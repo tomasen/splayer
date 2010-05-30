@@ -1574,6 +1574,12 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		m_source.AddTail(pFGF);
 	}
 
+#if 0
+    pFGF = new CFGFilterInternal<CWMVSourceFilter>(_T("CWMVSourceFilter"), MERIT64_ABOVE_DSHOW+100);
+    pFGF->m_chkbytes.AddTail(_T("0,4,,3026B275"));
+    pFGF->m_chkbytes.AddTail(_T("0,4,,D129E2D6"));		
+    m_source.AddTail(pFGF);
+#endif
 	//if(AfxGetAppSettings().fUseWMASFReader)
 	{
 		pFGF = new CFGFilterRegistry(CLSID_WMAsfReader, MERIT64_ABOVE_DSHOW);

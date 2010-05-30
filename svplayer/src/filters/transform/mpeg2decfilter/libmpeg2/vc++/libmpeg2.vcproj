@@ -194,6 +194,18 @@
 				>
 			</File>
 			<File
+				RelativePath="..\libmpeg2\cpu_state.c"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="cpu_state.obj"
 				>
 			</File>
@@ -264,6 +276,18 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\libmpeg2\idct_mmx.c"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="idct_mmx.obj"
 				>
 			</File>
@@ -286,6 +310,18 @@
 						Name="VCCLCompilerTool"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\libmpeg2\motion_comp_mmx.c"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
 					/>
 				</FileConfiguration>
 			</File>

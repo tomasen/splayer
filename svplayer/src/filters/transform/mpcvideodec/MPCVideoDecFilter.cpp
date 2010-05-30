@@ -60,7 +60,7 @@ extern "C"
 #define LOGDEBUG 0
 #define MUST_LOG   __noop
 //SVP_LogMsg5
-//#define TRACE SVP_LogMsg6
+#define TRACE SVP_LogMsg6
 #define SVP_LogMsg5 __noop
 #define SVP_LogMsg6 __noop
 #define TRACE __noop
@@ -1915,6 +1915,7 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
             {
                 rtStart = m_pFrame->reordered_opaque;
                 rtStop  = m_pFrame->reordered_opaque + m_rtAvrTimePerFrame;
+
                 TRACE ("Deliver2 : %10I64d - %10I64d   (%10I64d) m_rtAvrTimePerFrame (%10I64d) \n", rtStart, rtStop, rtStop - rtStart , m_rtAvrTimePerFrame);
             }
 
@@ -1960,6 +1961,7 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
             }
         }
 */
+       
         SVP_LogMsg6("Deliver3 : %10I64d   %10I64d - %10I64d   (%10I64d)  (%10I64d) ", m_rtRVStart ,  rtStart, rtStop, rtStop - rtStart, m_rtAvrTimePerFrame);
 		pOut->SetTime(&rtStart, &rtStop);
 		
@@ -2039,7 +2041,7 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
         //SVP_LogMsg6("nSize %d", nSize);
 	}
 
-    //SVP_LogMsg6("nSize over");
+    SVP_LogMsg6("Softdecode over");
 
 	return hr;
 }
@@ -2265,6 +2267,7 @@ void CMPCVideoDecFilter::ShrinkBuffer()
 
 HRESULT CMPCVideoDecFilter::Transform(IMediaSample* pIn)
 {
+    SVP_LogMsg6 ("CMPCVideoDecFilter::Transform"); 
 	CAutoLock cAutoLock(&m_csReceive);
 	HRESULT			hr;
 	BYTE*			pDataIn;

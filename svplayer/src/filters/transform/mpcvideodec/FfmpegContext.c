@@ -261,8 +261,15 @@ int FFH264CheckCompatibility(int nWidth, int nHeight, struct AVCodecContext* pAV
                 {
                     no_level51_support = 0;
                     max_ref_frames = 16;
+
+                    if( nHeight < 720 ){
+                        //Dont use DXVA for ATI driver 10.4 10.5 for sd resolution
+                        return 2;
+                    }
                 }
             }
+
+            
         }
 
         // Check maximum allowed number reference frames

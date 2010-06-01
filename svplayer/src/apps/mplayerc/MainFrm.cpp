@@ -8533,7 +8533,11 @@ void CMainFrame::OnPlayChangeRate(UINT nID)
 					SendStatusMessage(szMsg, 3000);
 					ReRenderOrLoadMedia();
 				}else{
-					szMsg.Format( ResStr(IDS_OSD_MSG_SUGGEST_USE_WAVEOUT), dRate);
+                    if( dRate >= 2.0) {
+					    szMsg.Format( ResStr(IDS_OSD_MSG_SUGGEST_USE_WAVEOUT), dRate);
+                    }else{
+                        szMsg.Format( ResStr(IDS_OSD_PLAYRATE_NOT_SUPPORTED) );
+                    }
 				}
 			}else{
 				if(CComQIPtr<IAudioSwitcherFilter> pASF = FindFilter(__uuidof(CAudioSwitcherFilter), pGB))

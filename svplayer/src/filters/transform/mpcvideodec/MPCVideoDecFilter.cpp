@@ -1232,7 +1232,7 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 				SVP_LogMsg6("Got Ref Frame Count %d %d Driver %d %d %d %d Vendor %x",nCompat, refFrames, HIWORD(m_VideoDriverVersion.HighPart), LOWORD(m_VideoDriverVersion.HighPart),HIWORD(m_VideoDriverVersion.LowPart),LOWORD(m_VideoDriverVersion.LowPart), m_nPCIVendor);
                 switch (nCompat)
 				{
-				case 1 :	// SAR not supported
+				case 1 :	// LEVEL not supported
 					 m_bDXVACompatible = false;
 					 { osd_msg = ResStr(IDS_OSD_MSG_HARDWARE_NOT_SUPPORT_DXVA_SAR) ;  }
 					 if (m_nCompatibilityMode & 2) { m_bDXVACompatible = true; }

@@ -2532,7 +2532,10 @@ bool CMainFrame::IsSubLoaded(){
 	return false;
 }
 bool CMainFrame::IsMenuUp(){
-    return (bool)(::FindWindow(_T("#32768"), NULL));
+    HWND hMenu = ::FindWindow(_T("#32768"), NULL);
+    //SVP_LogMsg6( "IsMenuUp %d" , (bool)(hMenu && ::IsWindowVisible(hMenu)));
+    return (bool)(hMenu && ::IsWindowVisible(hMenu));
+   
 }
 void CMainFrame::OnUpdatePlaySubDelay(CCmdUI* pCmdUI)
 {

@@ -148,8 +148,10 @@ void CSVPDialog::OnTimer(UINT_PTR nIDEvent)
 	switch(nIDEvent){
 		case IDT_CLOSE:
 			{
-                //SVP_LogMsg5(L" ::FindWindow(_T(#32768, NULL) %x ", ::FindWindow(_T("#32768"), NULL));
-                if(! ::FindWindow(_T("#32768"), NULL)) //detect if a popup menu is up
+                HWND hMenu = ::FindWindow(_T("#32768"), NULL);
+                //SVP_LogMsg6( "IsMenuUp %d" , (bool)(hMenu && ::IsWindowVisible(hMenu)));
+                
+                if(! (bool)(hMenu && ::IsWindowVisible(hMenu))) //detect if a popup menu is up
                 {
 				    KillTimer(IDT_CLOSE);
 				    OnClose();

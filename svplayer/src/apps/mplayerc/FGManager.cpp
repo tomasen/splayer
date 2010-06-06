@@ -1574,21 +1574,46 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		m_source.AddTail(pFGF);
 	}
 
-#if 0
-    pFGF = new CFGFilterInternal<CWMVSourceFilter>(_T("CWMVSourceFilter"), MERIT64_ABOVE_DSHOW+100);
-    pFGF->m_chkbytes.AddTail(_T("0,4,,3026B275"));
-    pFGF->m_chkbytes.AddTail(_T("0,4,,D129E2D6"));		
-    m_source.AddTail(pFGF);
+
+#if GDCLWMVFILTER
+    /*
+    pFGF = new CFGFilterInternal<WMFDemuxFilter>(_T("CWMVSourceFilter"), MERIT64_ABOVE_DSHOW+100);
+    //pFGF->m_chkbytes.AddTail(_T("0,4,,3026B275"));
+    //pFGF->m_chkbytes.AddTail(_T("0,4,,D129E2D6"));		
+    //m_source.AddTail(pFGF);
+    pFGF->AddType(MEDIATYPE_Stream, MEDIASUBTYPE_ASF);
+    pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_NULL);
+    pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_NULL);
+    m_transform.AddTail(pFGF);
+
+
+    if(1){
+        pFGF = new CFGFilterRegistry(CLSID_AsyncReader, MERIT64_ABOVE_DSHOW+1);//MERIT64_ABOVE_DSHOW
+        pFGF->m_chkbytes.AddTail(_T("0,4,,3026B275"));
+        pFGF->m_chkbytes.AddTail(_T("0,4,,D129E2D6"));		
+        m_source.AddTail(pFGF);
+    }
+    */
+#else
+   
+   if(0) {
+        pFGF = new CFGFilterInternal<CWMVSourceFilter>(_T("CWMVSourceFilter"), MERIT64_ABOVE_DSHOW+100);
+        pFGF->m_chkbytes.AddTail(_T("0,4,,3026B275"));
+        pFGF->m_chkbytes.AddTail(_T("0,4,,D129E2D6"));		
+        m_source.AddTail(pFGF);
+    }
+    
 #endif
+
+ 
 	//if(AfxGetAppSettings().fUseWMASFReader)
 	{
-		pFGF = new CFGFilterRegistry(CLSID_WMAsfReader, MERIT64_ABOVE_DSHOW);
+		pFGF = new CFGFilterRegistry(CLSID_WMAsfReader, MERIT64_ABOVE_DSHOW);//MERIT64_ABOVE_DSHOW
 		pFGF->m_chkbytes.AddTail(_T("0,4,,3026B275"));
 		pFGF->m_chkbytes.AddTail(_T("0,4,,D129E2D6"));		
 		m_source.AddTail(pFGF);
 	}
 
-   
 	// Transform filters
 
 	/* this is useless
@@ -2000,7 +2025,7 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 #if 1
 	pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(
 		L"SVP RealVideo Decoder 2.0",
-		MERIT64_ABOVE_DSHOW );
+		MERIT64_NORMAL -1 );//MERIT64_ABOVE_DSHOW
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RV10);
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RV20);
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_RV30);
@@ -2661,6 +2686,9 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 
     szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("scmpack.dll")) );
 	
+    //szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("WMFDemux.dll")) );
+    
+
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("rlapedec.ax")) ); 
 
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("RadGtSplitter.ax")) ); 
@@ -2697,7 +2725,17 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 				szLog.Format(_T("Loading Filter %s %s %s "), CStringFromGUID(fo->clsid) ,fo->path, CStringW(fo->name) );
 				SVP_LogMsg(szLog);
 				if(pFGF){
-                    if(szFPath.Find(_T("rtsp.ax")) > 0){
+                    
+                    if(szFPath.Find(_T("WMFDemux.dll")) > 0){
+                        pFGF->AddType(MEDIATYPE_Stream, MEDIASUBTYPE_ASF);
+                        pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_NULL);
+                        pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_NULL);
+                        m_transform.AddTail(pFGF);
+                        /*pFGF->m_chkbytes.AddTail(_T("0,4,,3026B275"));
+                        pFGF->m_chkbytes.AddTail(_T("0,4,,D129E2D6"));		
+                        m_source.AddTail(pFGF);
+                        */
+                    }else if(szFPath.Find(_T("rtsp.ax")) > 0){
                         pFGF->m_protocols.AddTail(_T("rtsp"));
                         m_source.AddTail(pFGF);
                     }else if(szFPath.Find(_T("mpc_mxsource.dll")) > 0){

@@ -45,7 +45,7 @@
 #include "EVRAllocatorPresenter.h"
 
 #define  SVP_LogMsg5 __noop
-//#define  SVP_LogMsg6 __noop
+#define  SVP_LogMsg6 __noop
 typedef enum 
 {
 	MSG_MIXERIN,
@@ -753,7 +753,7 @@ STDMETHODIMP_(bool) CEVRAllocatorPresenter::Paint(bool fAll)
 
 STDMETHODIMP CEVRAllocatorPresenter::NonDelegatingQueryInterface(REFIID riid, void** ppv)
 {
-	//SVP_LogMsg5(CStringFromGUID(riid));
+	////SVP_LogMsg5(CStringFromGUID(riid));
 
 	HRESULT		hr;
 	if(riid == __uuidof(IMFClockStateSink))
@@ -787,30 +787,35 @@ STDMETHODIMP CEVRAllocatorPresenter::NonDelegatingQueryInterface(REFIID riid, vo
 // IMFClockStateSink
 STDMETHODIMP CEVRAllocatorPresenter::OnClockStart(MFTIME hnsSystemTime,  LONGLONG llClockStartOffset)
 {
+    SVP_LogMsg5( L"CEVRAllocatorPresenter::OnClockStart");
 	m_nRenderState = Started;
 	return S_OK;
 }
 
 STDMETHODIMP CEVRAllocatorPresenter::OnClockStop(MFTIME hnsSystemTime)
 {
+    SVP_LogMsg5( L"CEVRAllocatorPresenter::OnClockStop");
 	m_nRenderState = Stopped;
 	return S_OK;
 }
 
 STDMETHODIMP CEVRAllocatorPresenter::OnClockPause(MFTIME hnsSystemTime)
 {
+    SVP_LogMsg5( L"CEVRAllocatorPresenter::OnClockPause");
 	m_nRenderState = Paused;
 	return S_OK;
 }
 
 STDMETHODIMP CEVRAllocatorPresenter::OnClockRestart(MFTIME hnsSystemTime)
 {
+    SVP_LogMsg5( L"CEVRAllocatorPresenter::OnClockRestart");
 	m_nRenderState	= Started;
 	return S_OK;
 }
 
 STDMETHODIMP CEVRAllocatorPresenter::OnClockSetRate(MFTIME hnsSystemTime, float flRate)
 {
+    SVP_LogMsg5( L"CEVRAllocatorPresenter::OnClockSetRate");
 	return E_NOTIMPL;
 }
 
@@ -996,7 +1001,9 @@ STDMETHODIMP CEVRAllocatorPresenter::ProcessMessage(MFVP_MESSAGE_TYPE eMessage, 
         if(m_HasSampleNotified)
             m_SampleNotified = 0;
 		m_bEvtFlush = true;
+        //SVP_LogMsg6("MFVP_MESSAGE_FLUSH");
 		while (WaitForSingleObject(m_hEvtFlush, 1) == WAIT_OBJECT_0);
+        //SVP_LogMsg6("MFVP_MESSAGE_FLUSH OUT");
 		break;
 
 	case MFVP_MESSAGE_INVALIDATEMEDIATYPE:
@@ -1018,6 +1025,7 @@ STDMETHODIMP CEVRAllocatorPresenter::ProcessMessage(MFVP_MESSAGE_TYPE eMessage, 
 		break;
 
 	default :
+        //SVP_LogMsg6("MFVP_MESSAGE_ UNKNOW MESSAGE %x", eMessage);
 		ASSERT(FALSE);
 		break;
 	}
@@ -1034,7 +1042,7 @@ HRESULT CEVRAllocatorPresenter::IsMediaTypeSupported(IMFMediaType* pMixerType)
 	CheckHR (pMixerType->GetRepresentation(FORMAT_VideoInfo2, (void**)&pAMMedia));
 	CheckHR (pMixerType->GetUINT32 (MF_MT_INTERLACE_MODE, &nInterlaceMode));
 
-    SVP_LogMsg5(L"MF_MT_INTERLACE_MODE %d",nInterlaceMode);
+    //SVP_LogMsg5(L"MF_MT_INTERLACE_MODE %d",nInterlaceMode);
 
 	if ( (pAMMedia->majortype != MEDIATYPE_Video)) hr = MF_E_INVALIDMEDIATYPE;
 	pMixerType->FreeRepresentation(FORMAT_VideoInfo2, (void*)pAMMedia);
@@ -1080,7 +1088,7 @@ HRESULT CEVRAllocatorPresenter::CreateProposedOutputType(IMFMediaType* pMixerTyp
 		m_pMediaType->SetBlob(MF_MT_GEOMETRIC_APERTURE, (UINT8*)&Area, sizeof(MFVideoArea));
 	}
 
-	//SVP_LogMsg6("CreateProposedOutputType %d %d %d %d ", m_AspectRatio.cx , m_AspectRatio.cy, VideoFormat->videoInfo.dwWidth, VideoFormat->videoInfo.dwHeight );
+	////SVP_LogMsg6("CreateProposedOutputType %d %d %d %d ", m_AspectRatio.cx , m_AspectRatio.cy, VideoFormat->videoInfo.dwWidth, VideoFormat->videoInfo.dwHeight );
 	if(min(m_AspectRatio.cx, m_AspectRatio.cy) <= 0){
 		m_AspectRatio.cx = m_AspectRatio.cy = 1;
 	}
@@ -1285,6 +1293,7 @@ HRESULT CEVRAllocatorPresenter::ProcessOutputSafe( DWORD dwFlags, DWORD cOutputB
     __try{
         return m_pMixer->ProcessOutput(0 , 1, pOutputSamples, pdwStatus);
     }__except(EXCEPTION_EXECUTE_HANDLER){
+        //SVP_LogMsg6( "ProcessOutputSafe Crash ");
         return E_FAIL;
     }
 }
@@ -1298,9 +1307,11 @@ bool CEVRAllocatorPresenter::GetSampleFromMixer()
 
 	while (hr == S_OK) // Get as many frames as there are and that we have samples for
     {
+        //SVP_LogMsg6( "GetFreeSample Free Samples Before %d ",  m_FreeSamples.GetCount());
 		CComPtr<IMFSample> pSample;
 		if (FAILED(GetFreeSample(&pSample))) // All samples are taken for the moment. Better luck next time
 		{
+            SVP_LogMsg6( "GetFreeSample Failed %d %x", m_FreeSamples.GetCount(), hr);
 			hr = E_FAIL;
 			break;
 		}
@@ -1329,7 +1340,7 @@ bool CEVRAllocatorPresenter::GetSampleFromMixer()
                 //hr = RenegotiateMediaType();
 
 
-                SVP_LogMsg5(L"MF_E_TRANSFORM_TYPE_NOT_SET %x", hr);
+                //SVP_LogMsg5(L"MF_E_TRANSFORM_TYPE_NOT_SET %x", hr);
 
                 break;
             }
@@ -1354,7 +1365,7 @@ bool CEVRAllocatorPresenter::GetSampleFromMixer()
                 
 				MoveToScheduledList(pSample, false); // Schedule, then go back to see if there is more where that came from
             }else{
-                SVP_LogMsg5(L"ProcessOutputSafe Failed %x", hr);
+                //SVP_LogMsg5(L"ProcessOutputSafe Failed %x", hr);
             }
 		}
 	}
@@ -1383,10 +1394,12 @@ STDMETHODIMP CEVRAllocatorPresenter::InitServicePointers(/* [in] */ __in  IMFTop
 {
 	HRESULT						hr;
 	DWORD						dwObjects = 1;
+    m_llSystemJitter = 0;
+    m_systemTime = 0;
 	hr = pLookup->LookupService(MF_SERVICE_LOOKUP_GLOBAL, 0, MR_VIDEO_MIXER_SERVICE, __uuidof (IMFTransform), (void**)&m_pMixer, &dwObjects);
 	hr = pLookup->LookupService(MF_SERVICE_LOOKUP_GLOBAL, 0, MR_VIDEO_RENDER_SERVICE, __uuidof (IMediaEventSink ), (void**)&m_pSink, &dwObjects);
 	hr = pLookup->LookupService(MF_SERVICE_LOOKUP_GLOBAL, 0, MR_VIDEO_RENDER_SERVICE, __uuidof (IMFClock ), (void**)&m_pClock, &dwObjects);
-    SVP_LogMsg5(L"CEVRAllocatorPresenter::InitServicePointers");
+    //SVP_LogMsg5(L"CEVRAllocatorPresenter::InitServicePointers");
 	StartWorkerThreads();
 	return S_OK;
 }
@@ -1716,6 +1729,7 @@ void CEVRAllocatorPresenter::MixerThread()
 //			break;
         case WAIT_OBJECT_0 + 1:
             ResetEvent(m_hEvtSampleNotify);
+             //SVP_LogMsg6(" MixerThread ResetEvent(m_hEvtSampleNotify); %d",m_SampleNotified);
         case WAIT_TIMEOUT :
             bool bNewSample = false;
         //   
@@ -1724,7 +1738,10 @@ void CEVRAllocatorPresenter::MixerThread()
 				
 				{
 					CAutoLock lock(&m_ImageProcessingLock);
+                    CAutoLock lock2(&m_SampleQueueLock);
 					bNewSample = GetSampleFromMixer();
+
+                     //SVP_LogMsg6(" MixerThread GetSampleFromMixer %x %d", bNewSample, m_FreeSamples.GetCount());
 				}
 
                 if (m_rtFrameCycle == 0 && bNewSample) // Get frame time and type from the input pin				
@@ -1748,7 +1765,7 @@ void CEVRAllocatorPresenter::MixerThread()
                         }
                         m_bInterlaced = ExtractInterlaced(&mt);
 
-                        SVP_LogMsg5(L"m_bInterlaced %d",m_bInterlaced);
+                        //SVP_LogMsg5(L"m_bInterlaced %d",m_bInterlaced);
                     }
                     // Update internal subtitle clock
                     if(m_bUseInternalTimer && m_pSubPicQueue)
@@ -1764,7 +1781,7 @@ void CEVRAllocatorPresenter::MixerThread()
                 }
 
             }else{
-                // SVP_LogMsg6(" (m_hEvtSampleNotify Skip);");
+                 //SVP_LogMsg6(" (m_hEvtSampleNotify Skip);");
             }
 				
 			break;
@@ -1793,6 +1810,7 @@ void CEVRAllocatorPresenter::RenderThread()
 	double targetSyncOffset;
 	MFTIME systemTime;
 	DWORD dwUser = 0;
+    LONG orgNextSampleWait = 0;
 	DWORD dwObject;
 	int samplesLeft = 0;
 	CComPtr<IMFSample>pNewSample = NULL; // The sample next in line to be presented
@@ -1849,31 +1867,56 @@ void CEVRAllocatorPresenter::RenderThread()
                         }
                         else if (SUCCEEDED(pNewSample->GetSampleTime(&m_llSampleTime)))
                         {
+                            llRefClockTime = 0;
+                            systemTime = 0;
 
-                            m_pClock->GetCorrelatedTime(0, &llRefClockTime, &systemTime); // Get zero-based reference clock time. systemTime is not used for anything here
+                            HRESULT hrc =  m_pClock->GetCorrelatedTime(0, &llRefClockTime, &systemTime); // Get zero-based reference clock time. systemTime is not used for anything here
 
+                            SVP_LogMsg5(L"ORG   (LONG)((m_llSampleTime - llRefClockTime) / 10000) %d %d %f %f %d %d %x" ,  (LONG)(m_llSampleTime/10000), (llRefClockTime < 0), double(llRefClockTime), double(systemTime), (LONG)(llRefClockTime/10000), (LONG)((m_llSampleTime - llRefClockTime) / 10000), hrc);
+                           /* if(m_systemTime != 0 && _abs64(m_systemTime - systemTime) > 100000000 ){ //FAILED(hrc) ||  sometime GetCorrelatedTime just fail :( ?
+                               //retry will not help
+                               //m_systemTime maybe changed
+                                m_llSystemJitter = (m_systemTime - systemTime);
+                            }
+                            llRefClockTime += m_llSystemJitter;
+                           */
+                            if(llRefClockTime < 0){
+                                m_bPendingResetDevice = true;
+                                llRefClockTime = m_llSampleTime;
+                                SVP_LogMsg5(L"Pending reset");
+                            }
+                            
                             //LONGLONG llDur;
                             //pNewSample->GetSampleDuration(&llDur);
-                            //SVP_LogMsg5(L"GetSampleTime %f %f %d %d %x", double(m_llSampleTime), double(llRefClockTime), (LONG)(llDur/10000), (LONG)((m_llSampleTime - llRefClockTime) / 10000), m_pClock);
-                            //
+                            //Drop if sample is pasted
                             if( samplesLeft > 0 && lJustDroped < 10 && m_llSampleTime < llRefClockTime - 1000000)
                             {
+                                //SVP_LogMsg5(L"GetSampleTime and Drop %f %f %d %x", double(m_llSampleTime), double(llRefClockTime), (LONG)((m_llSampleTime - llRefClockTime) / 10000), m_pClock);
 
-                                //MoveToFreeList(pNewSample, true);
-
-                                 InterlockedDecrement(&m_nUsedBuffer);
-                                 m_FreeSamples.AddTail(pNewSample);
-                                pNewSample = NULL;
-                                m_lNextSampleWait = 1;
-                                samplesLeft = 0;
-                                m_pcFramesDropped++;
-                                m_nStepCount = 0;
-                                lJustDroped++;
-                                SVP_LogMsg5(L"MoveToFreeList Done");
+                                //MoveToFreeList(pNewSample, true)
+                                {
+                                    //CAutoLock lock(&m_SampleQueueLock);
+                                     InterlockedDecrement(&m_nUsedBuffer);
+                                     m_FreeSamples.AddTail(pNewSample);
+                                    pNewSample = NULL;
+                                    m_lNextSampleWait = 1;
+                                    samplesLeft = 0;
+                                    m_pcFramesDropped++;
+                                    m_nStepCount = 0;
+                                    lJustDroped++;
+                                }
+                                //SVP_LogMsg5(L"MoveToFreeList Done");
                                 continue;
 
                             }
+                            if(m_llSampleTime > llRefClockTime)
+                                m_lNextSampleWait = (LONG)((m_llSampleTime - llRefClockTime) / 10000); // Time left until sample is due, in ms
+                            else 
+                                m_lNextSampleWait = 0;
+                            //if(m_lNextSampleWait > 100000)
+                            //    m_lNextSampleWait = 0;
 
+                            orgNextSampleWait = m_lNextSampleWait;
                             bGetInTimeProc = true;
                         }
                         break;
@@ -1886,9 +1929,8 @@ void CEVRAllocatorPresenter::RenderThread()
 				if(bGetInTimeProc){
 					
                     {
-					    m_lNextSampleWait = (LONG)((m_llSampleTime - llRefClockTime) / 10000); // Time left until sample is due, in ms
-                        LONG orgNextSampleWait = m_lNextSampleWait;
-                        //SVP_LogMsg6("m_lNextSampleWait %d %f %f", m_lNextSampleWait, double(m_llSampleTime), double(llRefClockTime) );
+					    
+                        ////SVP_LogMsg6("m_lNextSampleWait %d %f %f", m_lNextSampleWait, double(m_llSampleTime), double(llRefClockTime) );
 					    if (m_lNextSampleWait < 0)
 						    m_lNextSampleWait = 0; // We came too late. Race through, discard the sample and get a new one
 					    else if (s.fVMRGothSyncFix && s.m_RenderSettings.bSynchronizeNearest ) // Present at the closest "safe" occasion at tergetSyncOffset ms before vsync to avoid tearing
@@ -1905,7 +1947,7 @@ void CEVRAllocatorPresenter::RenderThread()
 							    }
 
 							    REFERENCE_TIME rtRefClockTimeNow; if (m_pRefClock) m_pRefClock->GetTime(&rtRefClockTimeNow); // Reference clock time now
-							    //SVP_LogMsg3(" EVR %f %f %f %f ", double(m_llLastSampleTime ) , double(rtRefClockTimeNow),  double(m_llSampleTime) , double(llRefClockTime));
+							    ////SVP_LogMsg3(" EVR %f %f %f %f ", double(m_llLastSampleTime ) , double(rtRefClockTimeNow),  double(m_llSampleTime) , double(llRefClockTime));
 
 							    LONG lLastVsyncTime = (LONG)((m_rtEstVSyncTime - rtRefClockTimeNow) / 10000); // Time of previous vsync relative to now
 
@@ -1948,7 +1990,7 @@ void CEVRAllocatorPresenter::RenderThread()
 						    //	m_lNextSampleWait = lOldNextSampleWait + llEachStep;
 						    //}
 					    }
-                         //SVP_LogMsg6("m_lNextSampleWait %d Hhhhhhhhhhhh", m_lNextSampleWait);
+                         ////SVP_LogMsg6("m_lNextSampleWait %d Hhhhhhhhhhhh", m_lNextSampleWait);
 					    if((m_lNextSampleWait-orgNextSampleWait) > 200){
 						    m_lNextSampleWait = orgNextSampleWait + 200;
 						    m_lOverWaitCounter++;
@@ -1963,18 +2005,18 @@ void CEVRAllocatorPresenter::RenderThread()
 			}
 			
 		}
-       // SVP_LogMsg5(L"WaitForMultipleObjects %d", m_lNextSampleWait);
+       
 		// Wait for the next presentation time or a quit or flush event
 		dwObject = WaitForMultipleObjects(countof(hEvts), hEvts, FALSE, (DWORD)m_lNextSampleWait); 
 		switch (dwObject)
 		{
 		case WAIT_OBJECT_0: // Quit event
-            SVP_LogMsg5(L"WaitForMultipleObjects Quit event");
+            //SVP_LogMsg5(L"WaitForMultipleObjects Quit event");
 			bQuit = true;
 			break;
 
 		case WAIT_OBJECT_0 + 1: // Flush event
-            SVP_LogMsg5(L"WaitForMultipleObjects Flush event");
+            //SVP_LogMsg5(L"WaitForMultipleObjects Flush event");
 			FlushSamples();
 			m_bEvtFlush = false;
 			ResetEvent(m_hEvtFlush);
@@ -1989,12 +2031,12 @@ void CEVRAllocatorPresenter::RenderThread()
 				FlushSamples();
 				RenegotiateMediaType();
 				m_bPendingRenegotiate = false;
-                SVP_LogMsg5(L"WaitForMultipleObjects FlushSamples end");
+                //SVP_LogMsg5(L"WaitForMultipleObjects FlushSamples end");
 			}
 
 			if (m_bPendingResetDevice)
 			{
-                 SVP_LogMsg5(L"WaitForMultipleObjects m_bPendingResetDevice");
+                 //SVP_LogMsg5(L"WaitForMultipleObjects m_bPendingResetDevice");
 				m_bPendingResetDevice = false;
 				CAutoLock lock(this);
 				CAutoLock lock2(&m_ImageProcessingLock);
@@ -2015,24 +2057,24 @@ void CEVRAllocatorPresenter::RenderThread()
 					}
 					ASSERT(SUCCEEDED (hr));
 				}
-                SVP_LogMsg5(L"WaitForMultipleObjects m_bPendingResetDevice end");
+                //SVP_LogMsg5(L"WaitForMultipleObjects m_bPendingResetDevice end");
 			}
 			else if (m_nStepCount < 0)
 			{
 				m_nStepCount = 0;
 				m_pcFramesDropped++;
-                SVP_LogMsg5(L"WaitForMultipleObjects m_pcFramesDropped++ end");
+                //SVP_LogMsg5(L"WaitForMultipleObjects m_pcFramesDropped++ end");
 			}
 			else if ((m_nStepCount > 0) && pNewSample)
 			{
                 
 				pNewSample->GetUINT32(GUID_SURFACE_INDEX, (UINT32 *)&m_nCurSurface);
-                SVP_LogMsg5(L"WaitForMultipleObjects Paint %d", m_nCurSurface);
+                //SVP_LogMsg5(L"WaitForMultipleObjects Paint %d", m_nCurSurface);
 				if (!g_bExternalSubtitleTime) __super::SetTime (g_tSegmentStart + m_llSampleTime);
 				Paint(true);
 				CompleteFrameStep(false);
 
-                SVP_LogMsg5(L"WaitForMultipleObjects Paint end");
+                //SVP_LogMsg5(L"WaitForMultipleObjects Paint end");
 			}
 			else if (pNewSample)
 			{
@@ -2044,16 +2086,20 @@ void CEVRAllocatorPresenter::RenderThread()
                  m_pcFramesDrawn++;
                 
 			}
+            //SVP_LogMsg5(L"WaitForMultipleObjects Reander end");
 			break;
 		} // switch
-		if (pNewSample) MoveToFreeList(pNewSample, true);
+        if (pNewSample) {
+            MoveToFreeList(pNewSample, true);
+            //SVP_LogMsg6("Sample Freed %d", m_FreeSamples.GetCount());
+        }
 		pNewSample = NULL;
-        //SVP_LogMsg5(L"WaitForMultipleObjects while event");
+        ////SVP_LogMsg5(L"WaitForMultipleObjects while event");
 	} // while
 	timeEndPeriod (dwResolution);
 	if (pfAvRevertMmThreadCharacteristics) pfAvRevertMmThreadCharacteristics(hAvrt);
 
-     SVP_LogMsg5(L"Render Loop Out");
+     //SVP_LogMsg5(L"Render Loop Out");
 }
 
 void CEVRAllocatorPresenter::OnResetDevice()
@@ -2154,11 +2200,11 @@ void CEVRAllocatorPresenter::FlushSamplesInternal()
 		CComPtr<IMFSample> pMFSample;
 		pMFSample = m_ScheduledSamples.RemoveHead();
 		MoveToFreeList(pMFSample, true);
-		TRACE(_T("--- m_ScheduledSamples.GetCount: %d\n"), m_ScheduledSamples.GetCount());
+		//SVP_LogMsg5(_T("--- m_ScheduledSamples.GetCount: %d\n"), m_ScheduledSamples.GetCount());
 	}
 }
 void CEVRAllocatorPresenter::ThreadBeginStreaming(){
-	//SVP_LogMsg5(L"CEVRAllocatorPresenter::BeginStreamingThread");
+	////SVP_LogMsg5(L"CEVRAllocatorPresenter::BeginStreamingThread");
 	CAutoLock threadLock(&m_csTread);
 	AppSettings& s = AfxGetAppSettings();	
 	
@@ -2188,7 +2234,7 @@ HRESULT CEVRAllocatorPresenter::BeginStreaming()
 	m_pcFramesDropped = 0;
 	m_pcFramesDrawn = 0;
 
-    SVP_LogMsg5(L"CEVRAllocatorPresenter::BeginStreaming1");
+    //SVP_LogMsg5(L"CEVRAllocatorPresenter::BeginStreaming1");
 	
 	AppSettings& s = AfxGetAppSettings();
 	
@@ -2208,7 +2254,7 @@ HRESULT CEVRAllocatorPresenter::BeginStreaming()
 	EndEnumFilters
 	pEVR->GetSyncSource(&m_pRefClock);
 	if (filterInfo.pGraph) filterInfo.pGraph->Release();
-	//SVP_LogMsg5(L"CEVRAllocatorPresenter::BeginStreaming2");
+	////SVP_LogMsg5(L"CEVRAllocatorPresenter::BeginStreaming2");
 	if(m_dDetectedScanlineTime <= 0.0){
 		m_VSyncDetectThread = AfxBeginThread(ThreadEVRAllocatorPresenterStartPresenting, (LPVOID)this, THREAD_PRIORITY_BELOW_NORMAL,0, CREATE_SUSPENDED);
 			

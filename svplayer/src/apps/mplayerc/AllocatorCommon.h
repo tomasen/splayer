@@ -397,6 +397,8 @@ namespace DSObjects
 		LONGLONG m_MaxSyncOffset;
 		LONGLONG m_MinSyncOffset;
 
+        LONGLONG m_llSystemJitter, m_systemTime;
+
 		LONGLONG m_llSampleTime, m_llLastSampleTime; // Present time for the current sample
 		LONGLONG m_llHysteresis; // If != 0 then a "snap to vsync" is active, see EVR
 

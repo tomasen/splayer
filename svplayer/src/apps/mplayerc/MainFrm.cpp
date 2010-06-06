@@ -58,7 +58,7 @@
 #include <dsound.h>
 
 #include <initguid.h>
-#include <uuids.h>
+//#include <uuids.h>
 #include "..\..\..\include\moreuuids.h"
 #include <Qnetwork.h>
 //#include <qedit.h>

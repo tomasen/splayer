@@ -44,8 +44,8 @@
 #include "AllocatorCommon.h"
 #include "EVRAllocatorPresenter.h"
 
-#define  SVP_LogMsg5 __noop
-#define  SVP_LogMsg6 __noop
+//#define  SVP_LogMsg5 __noop
+//#define  SVP_LogMsg6 __noop
 typedef enum 
 {
 	MSG_MIXERIN,
@@ -787,7 +787,7 @@ STDMETHODIMP CEVRAllocatorPresenter::NonDelegatingQueryInterface(REFIID riid, vo
 // IMFClockStateSink
 STDMETHODIMP CEVRAllocatorPresenter::OnClockStart(MFTIME hnsSystemTime,  LONGLONG llClockStartOffset)
 {
-    SVP_LogMsg5( L"CEVRAllocatorPresenter::OnClockStart");
+    //SVP_LogMsg5( L"CEVRAllocatorPresenter::OnClockStart");
 	m_nRenderState = Started;
 	return S_OK;
 }
@@ -1311,7 +1311,7 @@ bool CEVRAllocatorPresenter::GetSampleFromMixer()
 		CComPtr<IMFSample> pSample;
 		if (FAILED(GetFreeSample(&pSample))) // All samples are taken for the moment. Better luck next time
 		{
-            SVP_LogMsg6( "GetFreeSample Failed %d %x", m_FreeSamples.GetCount(), hr);
+            //SVP_LogMsg6( "GetFreeSample Failed %d %x", m_FreeSamples.GetCount(), hr);
 			hr = E_FAIL;
 			break;
 		}
@@ -1872,7 +1872,7 @@ void CEVRAllocatorPresenter::RenderThread()
 
                             HRESULT hrc =  m_pClock->GetCorrelatedTime(0, &llRefClockTime, &systemTime); // Get zero-based reference clock time. systemTime is not used for anything here
 
-                            SVP_LogMsg5(L"ORG   (LONG)((m_llSampleTime - llRefClockTime) / 10000) %d %d %f %f %d %d %x" ,  (LONG)(m_llSampleTime/10000), (llRefClockTime < 0), double(llRefClockTime), double(systemTime), (LONG)(llRefClockTime/10000), (LONG)((m_llSampleTime - llRefClockTime) / 10000), hrc);
+                           // SVP_LogMsg5(L"ORG   (LONG)((m_llSampleTime - llRefClockTime) / 10000) %d %d %f %f %d %d %x" ,  (LONG)(m_llSampleTime/10000), (llRefClockTime < 0), double(llRefClockTime), double(systemTime), (LONG)(llRefClockTime/10000), (LONG)((m_llSampleTime - llRefClockTime) / 10000), hrc);
                            /* if(m_systemTime != 0 && _abs64(m_systemTime - systemTime) > 100000000 ){ //FAILED(hrc) ||  sometime GetCorrelatedTime just fail :( ?
                                //retry will not help
                                //m_systemTime maybe changed
@@ -1881,6 +1881,7 @@ void CEVRAllocatorPresenter::RenderThread()
                             llRefClockTime += m_llSystemJitter;
                            */
                             if(llRefClockTime < 0){
+                                SVP_LogMsg5(L"ORG   (LONG)((m_llSampleTime - llRefClockTime) / 10000) %d %d %f %f %d %d %x" ,  (LONG)(m_llSampleTime/10000), (llRefClockTime < 0), double(llRefClockTime), double(systemTime), (LONG)(llRefClockTime/10000), (LONG)((m_llSampleTime - llRefClockTime) / 10000), hrc);
                                 m_bPendingResetDevice = true;
                                 llRefClockTime = m_llSampleTime;
                                 SVP_LogMsg5(L"Pending reset");
@@ -1889,7 +1890,7 @@ void CEVRAllocatorPresenter::RenderThread()
                             //LONGLONG llDur;
                             //pNewSample->GetSampleDuration(&llDur);
                             //Drop if sample is pasted
-                            if( samplesLeft > 0 && lJustDroped < 10 && m_llSampleTime < llRefClockTime - 1000000)
+                            if( samplesLeft > 0 && lJustDroped < 10 && m_llSampleTime < llRefClockTime - 2000000)
                             {
                                 //SVP_LogMsg5(L"GetSampleTime and Drop %f %f %d %x", double(m_llSampleTime), double(llRefClockTime), (LONG)((m_llSampleTime - llRefClockTime) / 10000), m_pClock);
 

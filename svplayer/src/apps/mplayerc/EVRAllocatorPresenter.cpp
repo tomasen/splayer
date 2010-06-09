@@ -1880,7 +1880,7 @@ void CEVRAllocatorPresenter::RenderThread()
                             }
                             llRefClockTime += m_llSystemJitter;
                            */
-                            if(llRefClockTime < 0){
+                            if(llRefClockTime < 10000000i64){
                                 SVP_LogMsg5(L"ORG   (LONG)((m_llSampleTime - llRefClockTime) / 10000) %d %d %f %f %d %d %x" ,  (LONG)(m_llSampleTime/10000), (llRefClockTime < 0), double(llRefClockTime), double(systemTime), (LONG)(llRefClockTime/10000), (LONG)((m_llSampleTime - llRefClockTime) / 10000), hrc);
                                 m_bPendingResetDevice = true;
                                 llRefClockTime = m_llSampleTime;

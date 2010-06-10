@@ -792,10 +792,14 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 			CComPtr<IBaseFilter> pBF;
 			CInterfaceList<IUnknown, &IID_IUnknown> pUnks;
 			if(FAILED(pFGF->Create(&pBF, pUnks)))
+            {
+                SVP_LogMsg5(L"Create Filter Failed");
 				continue;
-
-			if(FAILED(hr = AddFilter(pBF, pFGF->GetName())))
-				continue;
+            }
+            if(FAILED(hr = AddFilter(pBF, pFGF->GetName()))){
+			     SVP_LogMsg5(L"Add Filter Failed");
+                 continue;
+            }
 
 			hr = E_FAIL;
 
@@ -1985,7 +1989,14 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_DiracVideo);
 	m_transform.AddTail(pFGF);
 	}
-
+    __if_exists(VP8DecoderLib::Filter)
+    {
+        pFGF = new CFGFilterInternal<VP8DecoderLib::Filter>(
+            L"VP8 Video Decoder" , MERIT64_ABOVE_DSHOW );
+        pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_VP80);
+        m_transform.AddTail(pFGF);
+    }
+    
 	pFGF = new CFGFilterInternal<CNullTextRenderer>(L"NullTextRenderer", MERIT64_UNLIKELY);
 	pFGF->AddType(MEDIATYPE_Text, MEDIASUBTYPE_NULL);
 	pFGF->AddType(MEDIATYPE_ScriptCommand, MEDIASUBTYPE_NULL);
@@ -2650,9 +2661,9 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
 
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("ir41_32.ax")) );
 
-    if(s.szCurrentExtension == _T("webm")){
+    //if(s.szCurrentExtension == _T("webm")){
         szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("vp8decoder.dll")) );
-    }
+    //}
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("wmadmod.dll")) );
 	
 	//szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("rms.ax")) );

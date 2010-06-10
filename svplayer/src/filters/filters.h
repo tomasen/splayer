@@ -34,6 +34,7 @@
 #include ".\transform\Mpeg2DecFilter\Mpeg2DecFilter.h"
 #include ".\transform\MpaDecFilter\MpaDecFilter.h"
 #include ".\transform\mpcvideodec\MPCVideoDecFilter.h"
+//#include ".\transform\webm\vp8decoder\vp8decoderfilter.hpp"
 #include ".\muxer\wavdest\wavdest.h"
 #include ".\muxer\DSMMuxer\DSMMuxer.h"
 #include ".\muxer\MatroskaMuxer\MatroskaMuxer.h"

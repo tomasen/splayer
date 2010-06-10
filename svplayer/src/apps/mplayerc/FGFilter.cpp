@@ -559,7 +559,7 @@ HRESULT CFGFilterVideoRenderer::Create(IBaseFilter** ppBF, CInterfaceList<IUnkno
 
 	
 	//m_lastpBFF = *ppBF;
-	SVP_LogMsg5(L"CFGFilterVideoRenderer::Create Done");
+	SVP_LogMsg5(L"CFGFilterVideoRenderer::Create Done %x",hr);
 	//m_lastCreateHr = hr;
 	return hr;
 }

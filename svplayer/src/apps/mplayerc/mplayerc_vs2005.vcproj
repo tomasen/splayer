@@ -50,7 +50,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/D &quot;CURL_STATICLIB&quot; /D &quot;WINVER=0x0600&quot; /D &quot;_WIN32_WINNT=0x0600&quot; /D &quot;NTDDI_VERSION=NTDDI_VISTA&quot; /MP"
 				Optimization="2"
-				AdditionalIncludeDirectories="..\..\ZenLib\Source;..\..\..\include;..\..\mediainfo\Source\;..\..\mediainfo\Source\MediaInfo\;..\..\filters\BaseClasses;..\..\filters\transform\mpcvideodec;..\..\svplib;..\..\..\thirdparty;..\..\..\include\dx"
+				AdditionalIncludeDirectories="..\..\ZenLib\Source;..\..\..\include;..\..\mediainfo\Source\;..\..\mediainfo\Source\MediaInfo\;..\..\filters\BaseClasses;..\..\filters\transform\webm\vp8_sdk\include;..\..\filters\transform\webm\IDL;..\..\filters\transform\webm\common;..\..\filters\transform\mpcvideodec;..\..\svplib;..\..\..\thirdparty;..\..\..\include\dx"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;WINVER=0x501"
 				EnableEnhancedInstructionSet="0"
 				OpenMP="false"
@@ -2269,11 +2269,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 		<File

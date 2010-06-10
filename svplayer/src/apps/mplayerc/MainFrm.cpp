@@ -646,7 +646,7 @@ BOOL CMainFrame::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 	UINT_PTR nID = pNMHDR->idFrom;
 	BOOL bRet = FALSE;
 
-	if(IDD_PPAGEACCELTBL != nID && nID != 706){	 //no idea why there is 706
+	if(IDD_PPAGEACCELTBL != nID && nID != 706 && ID_SUBDELAYDEC != nID){	 //no idea why there is 706
 
 		// idFrom is actually the HWND of the tool
 		CString toolTip = ResStr(nID);

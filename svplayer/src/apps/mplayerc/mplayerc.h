@@ -603,6 +603,8 @@ public:
 		CSize AspectRatio;
 		bool fKeepHistory;
 
+        bool bDontDeleteOldSubFileAutomaticly;
+
 		CString szUELastPanel;
 		
 		bool bHasCUDAforCoreAVC;

@@ -2674,12 +2674,15 @@ void CMainFrame::OnTimer(UINT nIDEvent)
     }
     else if(TIMER_IDLE_TASK == nIDEvent){
         KillTimer(TIMER_IDLE_TASK);
-        if(!IsSomethingLoaded() || GetMediaState() != State_Running ){
+        AppSettings& s = AfxGetAppSettings();
+        //TODO: We need better system to make sure we delete only the right file
+        if(!s.bDontDeleteOldSubFileAutomaticly && (!IsSomethingLoaded() || GetMediaState() != State_Running) ){
             CSVPToolBox svpTool;
             //clean stored sub file which havn't been used for 30 days
             svpTool.CleanUpOldFiles(AfxGetAppSettings().SVPSubStoreDir, 30, 5);
             SetTimer(TIMER_IDLE_TASK, 30000, NULL);
         }
+        
 
     }else if(TIMER_SAVE_WINDOWS_POS_FOR_THIS_VIDEO_POS == nIDEvent){
 		KillTimer(TIMER_SAVE_WINDOWS_POS_FOR_THIS_VIDEO_POS);

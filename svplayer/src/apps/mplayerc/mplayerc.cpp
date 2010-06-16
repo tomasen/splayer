@@ -3934,6 +3934,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEGPUACEL), useGPUAcel);
 		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_OPTIONDECODER), optionDecoder);
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_USEGPUCUDA), useGPUCUDA);
+
 		
         pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUTOCONVSUB)+L"BIG2GB", autoIconvSubBig2GB);
         pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUTOCONVSUB)+L"GB2BIG", autoIconvSubGB2BIG);
@@ -4204,6 +4205,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		
 		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SVPSUBSTOREDIR), SVPSubStoreDir);
 
+        pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS),  ResStr(IDS_RS_SVPSUBSTOREDIR) + L"_DONT_DEL", bDontDeleteOldSubFileAutomaticly );
 
 		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SVPPERFSUB), szSVPSubPerf);
 
@@ -4444,6 +4446,8 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		
 		
 		SVPSubStoreDir = pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SVPSUBSTOREDIR), _T(""));
+
+        bDontDeleteOldSubFileAutomaticly =pApp->GetProfileInt(ResStr(IDS_R_SETTINGS) , ResStr(IDS_RS_SVPSUBSTOREDIR) + L"_DONT_DEL", 0 );
 
 		bDontNeedSVPSubFilter = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DONTNEEDSVPSUBFILTER), 0) >0;
 

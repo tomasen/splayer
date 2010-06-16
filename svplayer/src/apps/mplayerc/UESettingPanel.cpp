@@ -674,9 +674,11 @@ void CUESettingPanel::ApplyAllSetting(){
 	//Sub Setting
 	s.autoDownloadSVPSub = m_sgi_chkautodownloadsvpsub ;
 	s.bSaveSVPSubWithVideo = !!m_sgi_savesvpsubwithvideo ;
-	if(!s.bSaveSVPSubWithVideo)
-		s.SVPSubStoreDir = m_sgs_savesvpstorepath;
-
+    if(!s.bSaveSVPSubWithVideo){
+        if(s.SVPSubStoreDir != m_sgs_savesvpstorepath)
+            s.bDontDeleteOldSubFileAutomaticly = true;
+        s.SVPSubStoreDir = m_sgs_savesvpstorepath;
+    }
 	s.fOverridePlacement = !!m_sgi_suboveride1  ;
 	s.fOverridePlacement2 = !!m_sgi_suboveride2  ;
 	

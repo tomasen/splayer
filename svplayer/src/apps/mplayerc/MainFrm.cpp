@@ -9233,17 +9233,19 @@ void CMainFrame::OnPlayVolume(UINT nID)
 	}
 	if(m_iMediaLoadState == MLS_LOADED) 
 	{
+        CComQIPtr<IAudioSwitcherFilter> pASF = FindFilter(__uuidof(CAudioSwitcherFilter), pGB);
+
+
 		HRESULT hr = pBA->put_Volume(m_wndToolBar.Volume);
 		if(S_OK != hr){
 			SVP_LogMsg5(ResStr(IDS_LOG_MSG_VOLUME_CHANGED_FAIL) , hr,  m_wndToolBar.Volume);
-			if(!s.fbUseSPDIF)
-				SendStatusMessage(ResStr(IDS_OSD_MSG_VOLUME_CHANGING_FAILED_OR_UNSUPPORTED),4000);
-			else
+			if(s.fbUseSPDIF)
 				SendStatusMessage(ResStr(IDS_OSD_MSG_VOLUME_CHANGING_UNSUPPORTED_SINCE_ITS_SPDIF),4000);
+			else if(pASF)
+				SendStatusMessage(ResStr(IDS_OSD_MSG_VOLUME_CHANGING_FAILED_OR_UNSUPPORTED),4000);
 		}
 		
 	
-		CComQIPtr<IAudioSwitcherFilter> pASF = FindFilter(__uuidof(CAudioSwitcherFilter), pGB);
 		if(pASF)
 			pASF->SetNormalizeBoost(s.fAudioNormalize, s.fAudioNormalizeRecover, s.AudioBoost);
 

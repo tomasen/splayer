@@ -515,8 +515,12 @@ HRESULT CMpaDecFilter::Receive(IMediaSample* pIn)
         hr = ProcessFfmpeg(CODEC_ID_FLAC);
     }else if(subtype == MEDIASUBTYPE_NELLYMOSER)
 		hr = ProcessFfmpeg(CODEC_ID_NELLYMOSER);
-	else if(subtype == MEDIASUBTYPE_IMA4)
+    else if(subtype == MEDIASUBTYPE_IMA4){
+        if(m_buff.GetCount() < 4096){
+            return S_OK;
+        }
 		hr = ProcessFfmpeg(CODEC_ID_ADPCM_IMA_QT);
+    }
     else if(subtype ==MEDIASUBTYPE_COOK){
         hr = ProcessFfmpeg(CODEC_ID_COOK);
     }

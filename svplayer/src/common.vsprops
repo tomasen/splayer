@@ -8,7 +8,7 @@
 	>
 	<Tool
 		Name="VCCLCompilerTool"
-		PreprocessorDefinitions="_WIN32_WINNT=0x0501;NTDDI_VERSION=NTDDI_WINXPSP2"
+		PreprocessorDefinitions="WINVER=0x0601;_WIN32_WINNT=0x0601;NTDDI_VERSION=NTDDI_WIN7;PSAPI_VERSION=1"
 		EnableFunctionLevelLinking="true"
 		WarningLevel="3"
 		DisableSpecificWarnings="4995;4996"

@@ -22,6 +22,7 @@
 // MainFrm.cpp : implementation of the CMainFrame class
 //
 
+
 #include "stdafx.h"
 #include "mplayerc.h"
 
@@ -62,6 +63,8 @@
 #include "..\..\..\include\moreuuids.h"
 #include <Qnetwork.h>
 //#include <qedit.h>
+#include <Shobjidl.h>
+
 
 #include "..\..\DSUtil\DSUtil.h"
 #include "FGManager.h"
@@ -84,6 +87,7 @@
 #include "InfoReport.h"
 
 #include "..\..\..\Updater\cupdatenetlib.h"
+
 
 #define DEFCLIENTW 480
 #define DEFCLIENTH 360
@@ -1114,6 +1118,11 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		{
 			pTBL = NULL;	
 		}
+
+        if(!s.fKeepHistory)
+        {
+            AfxGetMyApp()->ClearRecentFileListForWin7();
+        }
 	}
 	/*/ for test only
 	m_wndLycShowBox = new SVPLycShowBox();
@@ -14559,6 +14568,9 @@ void CMainFrame::OnRecentFileClear(){
 	MRU.ReadList();
 	for(int i=0;i < MRU.m_nSize;i++) MRU.Remove(0);
 	MRU.WriteList();
+
+    AfxGetMyApp()->ClearRecentFileListForWin7();
+
 }
 void CMainFrame::OnRecentFileEnable(){
 	AppSettings& s = AfxGetAppSettings();

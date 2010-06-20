@@ -6096,6 +6096,22 @@ break;
 }
 
 */
+
+void  CMPlayerCApp::ClearRecentFileListForWin7()
+{
+
+
+    IApplicationDestinations* pIAD;
+    HRESULT hr  = ::CoCreateInstance(CLSID_ApplicationDestinations, NULL, CLSCTX_INPROC_SERVER,
+        IID_IApplicationDestinations, reinterpret_cast<void**>(&pIAD) );
+
+    if (SUCCEEDED(hr))
+    {
+        pIAD->RemoveAllDestinations();
+    }
+
+}
+
 #define D3D_MAX_SDKVERSION 45
 HINSTANCE CMPlayerCApp::GetD3X9Dll()
 {

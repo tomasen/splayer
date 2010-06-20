@@ -48,10 +48,10 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/D &quot;CURL_STATICLIB&quot; /D &quot;WINVER=0x0600&quot; /D &quot;_WIN32_WINNT=0x0600&quot; /D &quot;NTDDI_VERSION=NTDDI_VISTA&quot; /MP"
+				AdditionalOptions="/D &quot;CURL_STATICLIB&quot;  /MP"
 				Optimization="2"
 				AdditionalIncludeDirectories="..\..\ZenLib\Source;..\..\..\include;..\..\mediainfo\Source\;..\..\mediainfo\Source\MediaInfo\;..\..\filters\BaseClasses;..\..\filters\transform\webm\vp8_sdk\include;..\..\filters\transform\webm\IDL;..\..\filters\transform\webm\common;..\..\filters\transform\mpcvideodec;..\..\svplib;..\..\..\thirdparty;..\..\..\include\dx"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;WINVER=0x501"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				EnableEnhancedInstructionSet="0"
 				OpenMP="false"
 				PrecompiledHeaderThrough="stdafx.h"
@@ -72,7 +72,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
-				AdditionalOptions="/MACHINE:I386  /LTCG"
+				AdditionalOptions="/MACHINE:I386  /LTCG "
 				AdditionalDependencies="Wmvcore.lib WMVSplitterRU.lib libmpeg2R.lib id3lib.lib lyriclib.lib Wbemuuid.lib libsqlite.lib libeay32.lib ssleay32.lib SVPFilterRU.lib libunrarR.lib curllib.lib svplibRU.lib Delayimp.lib psapi.lib detours.lib qtmlClient.lib wmstub.lib dxguid.lib Dsound.lib strmbaseRU.lib dsutilRU.lib subpicRU.lib subtitlesRU.lib libssfRU.lib asyncreaderRU.lib audioswitcherRU.lib avi2ac3filterRU.lib bufferfilterRU.lib cddareaderRU.lib cdxareaderRU.lib d2vsourceRU.lib decssfilterRU.lib flicsourceRU.lib dtsac3sourceRU.lib basesourceRU.lib wavdestRU.lib shoutcastsourceRU.lib streamdrivethruRU.lib vtsreaderRU.lib basesplitterRU.lib MatroskaSplitterRU.lib MatroskaMuxerRU.lib RealMediaSplitterRU.lib AviSplitterRU.lib Mpeg2DecFilterRU.lib MpaDecFilterRU.lib RoQSplitterRU.lib OggSplitterRU.lib NutSplitterRU.lib MpegSplitterRU.lib DiracSplitterRU.lib MpaSplitterRU.lib DSMSplitterRU.lib MP4SplitterRU.lib BaseMuxerRU.lib DSMMuxerRU.lib UDPReaderRU.lib FLVSplitterRU.lib zlibR.lib subtitlesourceRU.lib filtersRU.lib libvorbisidecR.lib SSFSplitterRU.lib libpngR.lib comsuppw.lib Winmm.lib MPCVideoDecRU.lib &quot;..\..\..\lib\libdtsr.lib&quot; &quot;..\..\..\lib\basevideofilterru.lib&quot; &quot;..\..\..\lib\libfaad2r.lib&quot; &quot;..\..\..\lib\flacsourceru.lib&quot; &quot;..\..\..\lib\libdiracr.lib&quot; &quot;..\..\..\lib\liba52r.lib&quot; &quot;..\..\..\lib\resizablelibru.lib&quot; &quot;..\..\..\lib\libflac.lib&quot; &quot;..\..\..\lib\libmadr.lib&quot; &quot;..\..\..\lib\sizecbarru.lib&quot; &quot;..\..\..\lib\treepropsheetru.lib&quot; &quot;..\..\..\lib\cmduiru.lib&quot; &quot;..\..\..\lib\decssru.lib&quot; Imm32.lib SyncClockRU.lib base.lib courgette_lib.lib lzma_sdk.lib modp_b64.lib Dbghelp.lib"
 				OutputFile="..\..\..\..\splayer.exe"
 				AdditionalLibraryDirectories="../../../lib;../../../lib/wm7;../../../lib/qt6;../../../lib/detours;../../../thirdparty/courgette\Release\"
@@ -80,6 +80,7 @@
 				UACExecutionLevel="0"
 				IgnoreDefaultLibraryNames="MSVCRT;nafxcw.lib"
 				DelayLoadDLLs="d3d9.dll;gdiplus.dll;psapi.dll"
+				MidlCommandFile=""
 				GenerateMapFile="true"
 				MapFileName="$(TargetDir)$(TargetName).map"
 				SubSystem="2"

@@ -407,6 +407,8 @@ public:
 	int							GetDXSdkRelease() { return m_nDXSdkRelease; };
 
 
+    void ClearRecentFileListForWin7();
+
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CMPlayerCApp)
@@ -760,6 +762,7 @@ public:
 		BOOL bShouldUseEVR();
 		int  FindWmcmdsIDXofCmdid(UINT cmdid, POSITION pos);
 		POSITION  FindWmcmdsPosofCmdidByIdx(INT cmdid, int idx);
+
 
 		void GetFav(favtype ft, CAtlList<CString>& sl, BOOL bRecent = FALSE);
 		void SetFav(favtype ft, CAtlList<CString>& sl, BOOL bRecent = FALSE);

@@ -743,6 +743,7 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 			if (szFName.Find(_T("VideoTune")) >= 0 ) continue;
 			if (szFName.Find(_T("Sonic HD Demuxer")) >= 0 ) continue;
             if (szFName.Find(_T("Thunder RM Video Decoder")) >= 0 ) continue;
+            if (szFName.Find(_T("Roxio Mp3 Encoder")) >= 0 ) continue;
 			
 			//if (szFName.Find(_T("SHN to Wave Filter")) >= 0 ) continue;
 			//if (szFName.Find(_T("AVI Decompressor (YV12)")) >= 0 ) continue;

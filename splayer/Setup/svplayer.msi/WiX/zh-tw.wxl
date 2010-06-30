@@ -1,0 +1,569 @@
+﻿<?xml version='1.0' encoding='UTF-8'?>
+<!--
+    Copyright (c) Microsoft Corporation.  All rights reserved.
+
+    The use and distribution terms for this software are covered by the
+    Common Public License 1.0 (http://opensource.org/licenses/cpl.php)
+    which can be found in the file CPL.TXT at the root of this distribution.
+    By using this software in any fashion, you are agreeing to be bound by
+    the terms of this license.
+
+    You must not remove this notice, or any other, from this software.
+-->
+<WixLocalization Culture="zh-tw" Codepage="950" xmlns="http://schemas.microsoft.com/wix/2006/localization">
+  <String Id="WixUIBack" Overridable="yes">上一步(&amp;B)</String>
+  <String Id="WixUINext" Overridable="yes">下一步(&amp;N)</String>
+  <String Id="WixUICancel" Overridable="yes">取消</String>
+  <String Id="WixUIFinish" Overridable="yes">完成(&amp;F)</String>
+  <String Id="WixUIRetry" Overridable="yes">重試(&amp;R)</String>
+  <String Id="WixUIIgnore" Overridable="yes">忽略(&amp;I)</String>
+  <String Id="WixUIYes" Overridable="yes">是(&amp;Y)</String>
+  <String Id="WixUINo" Overridable="yes">否(&amp;N)</String>
+  <String Id="WixUIOK" Overridable="yes">確定</String>
+  <String Id="WixUIPrint" Overridable="yes">列印(&amp;P)</String>
+  <String Id="AdvancedWelcomeEulaDlg_Title" Overridable="yes">安裝 [ProductName]</String>
+  <String Id="AdvancedWelcomeEulaDlgBannerBitmap" Overridable="yes">WixUI_Bmp_Banner</String>
+  <String Id="AdvancedWelcomeEulaDlgTitle" Overridable="yes">{\WixUI_Font_Title}請詳閱關於 [ProductName] 的《授權合約》</String>
+  <String Id="AdvancedWelcomeEulaDlgLicenseAcceptedCheckBox" Overridable="yes">我同意此份《授權合約》(&amp;A)</String>
+  <String Id="AdvancedWelcomeEulaDlgDescriptionPerMachine" Overridable="yes">點選安裝即可以使用預設設定來執行安裝程式給所有使用者使用. 若要更改安裝設定請點選進階.</String>
+  <String Id="AdvancedWelcomeEulaDlgDescriptionPerUser" Overridable="yes">點選安裝即可以使用預設設定來執行安裝程式給您專屬使用. 若要更改安裝設定請點選進階.</String>
+  <String Id="AdvancedWelcomeEulaDlgInstall" Overridable="yes">(&amp;I)安裝</String>
+  <String Id="AdvancedWelcomeEulaDlgAdvanced" Overridable="yes">(&amp;D)進階</String>
+  <String Id="Advanced_Font_Normal_Size" Overridable="yes">8</String>
+  <String Id="Advanced_Font_Bigger_Size" Overridable="yes">12</String>
+  <String Id="Advanced_Font_Title_Size" Overridable="yes">9</String>
+  <String Id="Advanced_Font_Emphasized_Size" Overridable="yes">8</String>
+  <String Id="Advanced_Font_FaceName" Overridable="yes">Tahoma</String>
+  <String Id="BrowseDlg_Title" Overridable="yes">[ProductName] 安裝</String>
+  <String Id="BrowseDlgComboLabel" Overridable="yes">尋找(&amp;L):</String>
+  <String Id="BrowseDlgWixUI_Bmp_Up" Overridable="yes">WixUI_Bmp_Up</String>
+  <String Id="BrowseDlgWixUI_Bmp_UpTooltip" Overridable="yes">上一級</String>
+  <String Id="BrowseDlgNewFolder" Overridable="yes">WixUI_Bmp_New</String>
+  <String Id="BrowseDlgNewFolderTooltip" Overridable="yes">建立新資料夾</String>
+  <String Id="BrowseDlgPathLabel" Overridable="yes">資料夾名稱(&amp;F):</String>
+  <String Id="BrowseDlgBannerBitmap" Overridable="yes">WixUI_Bmp_Banner</String>
+  <String Id="BrowseDlgDescription" Overridable="yes">瀏覽目的檔案夾</String>
+  <String Id="BrowseDlgTitle" Overridable="yes">{\WixUI_Font_Title}更改目的檔案夾</String>
+  <String Id="CancelDlg_Title" Overridable="yes">[ProductName] 安裝</String>
+  <String Id="CancelDlgText" Overridable="yes">您確定要退出 [ProductName] 的安裝嗎?</String>
+  <String Id="CancelDlgIcon" Overridable="yes">WixUI_Ico_Info</String>
+  <String Id="CancelDlgIconTooltip" Overridable="yes">資訊圖示</String>
+  <String Id="CustomizeDlg_Title" Overridable="yes">[ProductName] 安裝</String>
+  <String Id="CustomizeDlgTree" Overridable="yes">安裝選項</String>
+  <String Id="CustomizeDlgBrowse" Overridable="yes">瀏覽(&amp;R)...</String>
+  <String Id="CustomizeDlgReset" Overridable="yes">重置(&amp;S)</String>
+  <String Id="CustomizeDlgDiskCost" Overridable="yes">磁碟空間(&amp;U)</String>
+  <String Id="CustomizeDlgBannerBitmap" Overridable="yes">WixUI_Bmp_Banner</String>
+  <String Id="CustomizeDlgText" Overridable="yes">點擊圖示改變安裝選項。</String>
+  <String Id="CustomizeDlgDescription" Overridable="yes">請選擇安裝選項。</String>
+  <String Id="CustomizeDlgTitle" Overridable="yes">{\WixUI_Font_Title}自訂安裝</String>
+  <String Id="CustomizeDlgItemDescription" Overridable="yes">CustomizeDlgItemDescription-CustomizeDlgItemDescription</String>
+  <String Id="CustomizeDlgItemSize" Overridable="yes">CustomizeDlgItemSize-CustomizeDlgItemSize</String>
+  <String Id="CustomizeDlgLocation" Overridable="yes">CustomizeDlgLocation-CustomizeDlgLocation</String>
+  <String Id="CustomizeDlgLocationLabel" Overridable="yes">安裝位置:</String>
+  <String Id="DiskCostDlg_Title" Overridable="yes">[ProductName] 安裝</String>
+  <String Id="DiskCostDlgBannerBitmap" Overridable="yes">WixUI_Bmp_Banner</String>
+  <String Id="DiskCostDlgText" Overridable="yes">所選的目錄沒有足夠空間用於安裝當前選擇的功能。您可以在所選目錄中刪去一些檔，或者安裝少一點功能，又或者選擇另外一個安裝目錄。</String>
+  <String Id="DiskCostDlgDescription" Overridable="yes">安裝當前選擇功能的所需空間。</String>
+  <String Id="DiskCostDlgTitle" Overridable="yes">{\WixUI_Font_Title}硬碟空間需求</String>
+  <String Id="DiskCostDlgVolumeList" Overridable="yes">{120}{70}{70}{70}{70}</String>
+  <String Id="ErrorDlg_Title" Overridable="yes">[ProductName] 安裝</String>
+  <String Id="ErrorDlgErrorText" Overridable="yes">資訊本文</String>
+  <String Id="ErrorDlgErrorIcon" Overridable="yes">WixUI_Ico_Info</String>
+  <String Id="ErrorDlgErrorIconTooltip" Overridable="yes">資訊圖示</String>
+  <String Id="ExitDialog_Title" Overridable="yes">[ProductName] 安裝</String>
+  <String Id="ExitDialogBitmap" Overridable="yes">WixUI_Bmp_Dialog</String>
+  <String Id="ExitDialogDescription" Overridable="yes">請點擊完成按鈕退出安裝程式。</String>
+  <String Id="ExitDialogTitle" Overridable="yes">{\WixUI_Font_Bigger}[ProductName] 安裝程式已完成</String>
+  <String Id="FatalError_Title" Overridable="yes">[ProductName] 安裝</String>
+  <String Id="FatalErrorBitmap" Overridable="yes">WixUI_Bmp_Dialog</String>
+  <String Id="FatalErrorTitle" Overridable="yes">{\WixUI_Font_Bigger}[ProductName] 安裝程式提前結束</String>
+  <String Id="FatalErrorDescription1" Overridable="yes">[ProductName] 安裝程式因錯誤提前結束，您的系統沒有被修改。若要以後重新安裝，請再次執行安裝程式。</String>
+  <String Id="FatalErrorDescription2" Overridable="yes">請點擊完成按鈕退出安裝程式。</String>
+  <String Id="FeaturesDlg_Title" Overridable="yes">安裝 [ProductName]</String>
+  <String Id="FeaturesDlgTree" Overridable="yes">安裝選項</String>
+  <String Id="FeaturesDlgBannerBitmap" Overridable="yes">WixUI_Bmp_Banner</String>
+  <String Id="FeaturesDlgDescription" Overridable="yes">勾選您所想要進行安裝的選項</String>
+  <String Id="FeaturesDlgTitle" Overridable="yes">{\WixUI_Font_Title}安裝選項</String>
+  <String Id="FeaturesDlgItemDescription" Overridable="yes">FeaturesDlgItemDescription</String>
+  <String Id="FeaturesDlgItemSize" Overridable="yes">FeaturesDlgItemSize</String>
+  <String Id="FeaturesDlgInstall" Overridable="yes">(&amp;I)安裝</String>
+  <String Id="FeaturesDlgChange" Overridable="yes">(&amp;C)變更</String>
+  <String Id="FilesInUse_Title" Overridable="yes">[ProductName] 安裝</String>
+  <String Id="FilesInUseExit" Overridable="yes">退出(&amp;X)</String>
+  <String Id="FilesInUseBannerBitmap" Overridable="yes">WixUI_Bmp_Banner</String>
+  <String Id="FilesInUseText" Overridable="yes">下列應用程式正在使用本安裝程式需要更新的檔。請關閉這些應用程式然後點擊重試(&amp;R)按鈕繼續安裝，或者點擊取消按鈕退出安裝。</String>
+  <String Id="FilesInUseDescription" Overridable="yes">一些需要被更新的檔正在被其它程式使用。</String>
+  <String Id="FilesInUseTitle" Overridable="yes">{\WixUI_Font_Title}檔正被使用</String>
+  <String Id="InstallDirDlg_Title" Overridable="yes">[ProductName] 安裝</String>
+  <String Id="InstallDirDlgChange" Overridable="yes">更改(&amp;C)...</String>
+  <String Id="InstallDirDlgTitle" Overridable="yes">{\WixUI_Font_Title}目的檔案夾</String>
+  <String Id="InstallDirDlgDescription" Overridable="yes">請點擊下一步按鈕安裝到預設資料夾，或者點擊更改按鈕選擇其他資料夾。</String>
+  <String Id="InstallDirDlgBannerBitmap" Overridable="yes">WixUI_Bmp_Banner</String>
+  <String Id="InstallDirDlgFolderLabel" Overridable="yes">安裝 [ProductName] 到:</String>
+  <String Id="InstallScopeDlg_Title" Overridable="yes">安裝 [ProductName]</String>
+  <String Id="InstallScopeDlgBannerBitmap" Overridable="yes">WixUI_Bmp_Banner</String>
+  <String Id="InstallScopeDlgDescription" Overridable="yes">請選擇安裝的目錄</String>
+  <String Id="InstallScopeDlgTitle" Overridable="yes">{\WixUI_Font_Title}安裝程式執行範圍</String>
+  <String Id="InstallScopeDlgPerUser" Overridable="yes">{\WixUI_Font_Emphasized}安裝程式僅供您([USERNAME])使用(&amp;J)</String>
+  <String Id="InstallScopeDlgPerUserDescription" Overridable="yes">[ProductName] 將會被安裝在使用者目錄當中並且僅供您使用, 您並不需要管理者的權限.</String>
+  <String Id="InstallScopeDlgNoPerUserDescription" Overridable="yes">[ProductName] 並不支援使用者獨立安裝.</String>
+  <String Id="InstallScopeDlgPerMachine" Overridable="yes">{\WixUI_Font_Emphasized}為此系統上的所有使用者執行安裝(&amp;M)</String>
+  <String Id="InstallScopeDlgPerMachineDescription" Overridable="yes">[ProductName] 將會被安裝在系統程式目錄當中, 供該系統所有使用者使用, 您必須擁有管理者的權限.</String>
+  <String Id="InstallScopeDlgFolderLabel" Overridable="yes">安裝目錄(&amp;F):</String>
+  <String Id="InstallScopeDlgChange" Overridable="yes">變更(&amp;C)...</String>
+  <String Id="InvalidDirDlg_Title" Overridable="yes">安裝 [ProductName]</String>
+  <String Id="InvalidDirDlgText" Overridable="yes">安裝目錄必須位於本地的磁碟機上</String>
+  <String Id="InvalidDirDlgIcon" Overridable="yes">WixUI_Ico_Info</String>
+  <String Id="InvalidDirDlgIconTooltip" Overridable="yes">資訊圖示</String>
+  <String Id="LicenseAgreementDlg_Title" Overridable="yes">[ProductName] 安裝</String>
+  <String Id="LicenseAgreementDlgLicenseAcceptedCheckBox" Overridable="yes">我接受《授權合約》中的條款(&amp;A)</String>
+  <String Id="LicenseAgreementDlgBannerBitmap" Overridable="yes">WixUI_Bmp_Banner</String>
+  <String Id="LicenseAgreementDlgDescription" Overridable="yes">請仔細閱讀《使用者授權合約》</String>
+  <String Id="LicenseAgreementDlgTitle" Overridable="yes">{\WixUI_Font_Title}使用者授權合約</String>
+  <String Id="MaintenanceTypeDlg_Title" Overridable="yes">[ProductName] 安裝</String>
+  <String Id="MaintenanceTypeDlgChangeButton" Overridable="yes">更改(&amp;C)</String>
+  <String Id="MaintenanceTypeDlgChangeButtonTooltip" Overridable="yes">更改安裝</String>
+  <String Id="MaintenanceTypeDlgRepairButton" Overridable="yes">修復(&amp;P)</String>
+  <String Id="MaintenanceTypeDlgRepairButtonTooltip" Overridable="yes">修復安裝</String>
+  <String Id="MaintenanceTypeDlgRemoveButton" Overridable="yes">移除(&amp;R)</String>
+  <String Id="MaintenanceTypeDlgRemoveButtonTooltip" Overridable="yes">刪除安裝</String>
+  <String Id="MaintenanceTypeDlgBannerBitmap" Overridable="yes">WixUI_Bmp_Banner</String>
+  <String Id="MaintenanceTypeDlgDescription" Overridable="yes">請選擇您想執行的操作。</String>
+  <String Id="MaintenanceTypeDlgTitle" Overridable="yes">{\WixUI_Font_Title}更改，修復或刪除安裝</String>
+  <String Id="MaintenanceTypeDlgChangeText" Overridable="yes">請選擇更新選項。</String>
+  <String Id="MaintenanceTypeDlgChangeDisabledText" Overridable="yes">[ProductName] 沒有獨立的可選功能。</String>
+  <String Id="MaintenanceTypeDlgRemoveText" Overridable="yes">從本機上刪除 [ProductName] 。</String>
+  <String Id="MaintenanceTypeDlgRemoveDisabledText" Overridable="yes">無法移除 [ProductName] </String>
+  <String Id="MaintenanceTypeDlgRepairText" Overridable="yes">還原遺失或損壞的檔、快捷方式和註冊表值，修復上次安裝中的錯誤。</String>
+  <String Id="MaintenanceTypeDlgRepairDisabledText" Overridable="yes">無法修復 [ProductName] </String>
+  <String Id="MaintenanceWelcomeDlg_Title" Overridable="yes">[ProductName] 安裝</String>
+  <String Id="MaintenanceWelcomeDlgBitmap" Overridable="yes">WixUI_Bmp_Dialog</String>
+  <String Id="MaintenanceWelcomeDlgDescription" Overridable="yes">安裝程式讓你更改本機 [ProductName] 的安裝選項或者移除本軟體。請點擊下一步按鈕繼續，或者點擊取消按鈕退出配置。</String>
+  <String Id="MaintenanceWelcomeDlgTitle" Overridable="yes">{\WixUI_Font_Bigger}歡迎使用 [ProductName] 安裝程式</String>
+  <String Id="MsiRMFilesInUse_Title" Overridable="yes">[ProductName] 安裝</String>
+  <String Id="MsiRMFilesInUseBannerBitmap" Overridable="yes">WixUI_Bmp_Banner</String>
+  <String Id="MsiRMFilesInUseText" Overridable="yes">下列應用程式正在使用本安裝程式需要更新的檔。您可以讓安裝程式關閉這些應用程式然後嘗試重新執行它們，也可以選擇稍後重新啟動機器。</String>
+  <String Id="MsiRMFilesInUseDescription" Overridable="yes">一些需要被更新的檔正在被其它程式使用。</String>
+  <String Id="MsiRMFilesInUseTitle" Overridable="yes">{\WixUI_Font_Title}檔正被使用</String>
+  <String Id="MsiRMFilesInUseUseRM" Overridable="yes">關閉應用程式然後嘗試重新執行它們。(&amp;C)</String>
+  <String Id="MsiRMFilesInUseDontUseRM" Overridable="yes">不要關閉應用程式，稍後我會重啟機器。(&amp;D)</String>
+  <String Id="OutOfDiskDlg_Title" Overridable="yes">[ProductName] 安裝</String>
+  <String Id="OutOfDiskDlgBannerBitmap" Overridable="yes">WixUI_Bmp_Banner</String>
+  <String Id="OutOfDiskDlgText" Overridable="yes">所選的目錄沒有足夠空間用於安裝當前選擇的功能。您可以在所選目錄中刪去一些檔，或者安裝少一點功能，又或者選擇另外一個安裝目錄。</String>
+  <String Id="OutOfDiskDlgDescription" Overridable="yes">安裝當前選擇功能的所需空間超過了可用硬碟空間。</String>
+  <String Id="OutOfDiskDlgTitle" Overridable="yes">{\WixUI_Font_Title}硬碟空間不足</String>
+  <String Id="OutOfDiskDlgVolumeList" Overridable="yes">{120}{70}{70}{70}{70}</String>
+  <String Id="OutOfRbDiskDlg_Title" Overridable="yes">[ProductName] 安裝</String>
+  <String Id="OutOfRbDiskDlgBannerBitmap" Overridable="yes">WixUI_Bmp_Banner</String>
+  <String Id="OutOfRbDiskDlgText" Overridable="yes">所選的目錄沒有足夠空間用於安裝當前選擇的功能。您可以在所選目錄中刪去一些檔，或者安裝少一點功能，又或者選擇另外一個目標目錄。</String>
+  <String Id="OutOfRbDiskDlgDescription" Overridable="yes">安裝當前選擇功能的所需空間超過了可用硬碟空間。</String>
+  <String Id="OutOfRbDiskDlgTitle" Overridable="yes">{\WixUI_Font_Title}硬碟空間不足</String>
+  <String Id="OutOfRbDiskDlgVolumeList" Overridable="yes">{120}{70}{70}{70}{70}</String>
+  <String Id="OutOfRbDiskDlgText2" Overridable="yes">另外您可以選擇取消安裝程式的自動恢復功能。取消自動恢復後，一旦安裝過程被中斷，安裝程式將無法還原到機器的原始狀態。如果您願意承受取消自動恢復的風險，請點擊是按鈕。</String>
+  <String Id="PrepareDlg_Title" Overridable="yes">[ProductName] 安裝</String>
+  <String Id="PrepareDlgBitmap" Overridable="yes">WixUI_Bmp_Dialog</String>
+  <String Id="PrepareDlgDescription" Overridable="yes">請稍候，安裝程式正在準備指引您進行安裝。</String>
+  <String Id="PrepareDlgTitle" Overridable="yes">{\WixUI_Font_Bigger}歡迎使用 [ProductName] 安裝程式</String>
+  <String Id="ProgressDlg_Title" Overridable="yes">[ProductName] 安裝</String>
+  <String Id="ProgressDlgBannerBitmap" Overridable="yes">WixUI_Bmp_Banner</String>
+  <String Id="ProgressDlgTextInstalling" Overridable="yes">請稍候，安裝程式正在安裝 [ProductName] 。</String>
+  <String Id="ProgressDlgTitleInstalling" Overridable="yes">{\WixUI_Font_Title}正在安裝 [ProductName]</String>
+  <String Id="ProgressDlgTextChanging" Overridable="yes">請稍候，安裝程式正在更改 [ProductName] 。</String>
+  <String Id="ProgressDlgTitleChanging" Overridable="yes">{\WixUI_Font_Title}正在更改 [ProductName]</String>
+  <String Id="ProgressDlgTextRepairing" Overridable="yes">請稍候，安裝程式正在修復 [ProductName] 。</String>
+  <String Id="ProgressDlgTitleRepairing" Overridable="yes">{\WixUI_Font_Title}正在修復 [ProductName]</String>
+  <String Id="ProgressDlgTextRemoving" Overridable="yes">請稍候，安裝程式正在刪除 [ProductName] 。</String>
+  <String Id="ProgressDlgTitleRemoving" Overridable="yes">{\WixUI_Font_Title}正在刪除 [ProductName]</String>
+  <String Id="ProgressDlgProgressBar" Overridable="yes">完成進度</String>
+  <String Id="ProgressDlgStatusLabel" Overridable="yes">狀態:</String>
+  <String Id="ResumeDlg_Title" Overridable="yes">[ProductName] 安裝</String>
+  <String Id="ResumeDlgInstall" Overridable="yes">安裝(&amp;I)</String>
+  <String Id="ResumeDlgBitmap" Overridable="yes">WixUI_Bmp_Dialog</String>
+  <String Id="ResumeDlgDescription" Overridable="yes">安裝程式將繼續完成 [ProductName] 在本機上的安裝。請點擊安裝按鈕繼續，或者點擊取消按鈕退出安裝程式。</String>
+  <String Id="ResumeDlgTitle" Overridable="yes">{\WixUI_Font_Bigger}繼續 [ProductName] 安裝程式</String>
+  <String Id="SetupTypeDlg_Title" Overridable="yes">[ProductName] 安裝</String>
+  <String Id="SetupTypeDlgTypicalButton" Overridable="yes">典型(&amp;T)</String>
+  <String Id="SetupTypeDlgTypicalButtonTooltip" Overridable="yes">典型安裝</String>
+  <String Id="SetupTypeDlgCustomButton" Overridable="yes">自訂(&amp;U)</String>
+  <String Id="SetupTypeDlgCustomButtonTooltip" Overridable="yes">自訂安裝</String>
+  <String Id="SetupTypeDlgCompleteButton" Overridable="yes">完全(&amp;O)</String>
+  <String Id="SetupTypeDlgCompleteButtonTooltip" Overridable="yes">完整安裝</String>
+  <String Id="SetupTypeDlgBannerBitmap" Overridable="yes">WixUI_Bmp_Banner</String>
+  <String Id="SetupTypeDlgTitle" Overridable="yes">{\WixUI_Font_Title}選擇安裝類型</String>
+  <String Id="SetupTypeDlgDescription" Overridable="yes">請選擇最符合您需要的安裝類型</String>
+  <String Id="SetupTypeDlgTypicalText" Overridable="yes">安裝最常用的功能，建議大多數用戶使用。</String>
+  <String Id="SetupTypeDlgCustomText" Overridable="yes">允許用戶選擇安裝功能以及安裝位置，建議進階用戶使用。</String>
+  <String Id="SetupTypeDlgCompleteText" Overridable="yes">安裝全部功能，需要最多的磁碟空間。</String>
+  <String Id="UserExit_Title" Overridable="yes">[ProductName] 安裝</String>
+  <String Id="UserExitBitmap" Overridable="yes">WixUI_Bmp_Dialog</String>
+  <String Id="UserExitTitle" Overridable="yes">{\WixUI_Font_Bigger}[ProductName] 安裝程式被中斷</String>
+  <String Id="UserExitDescription1" Overridable="yes">[ProductName] 安裝被中斷，您的系統沒有被修改。若要以後重新安裝，請再次執行安裝程式。</String>
+  <String Id="UserExitDescription2" Overridable="yes">請點擊完成按鈕退出安裝程式。</String>
+  <String Id="VerifyReadyDlg_Title" Overridable="yes">[ProductName] 安裝</String>
+  <String Id="VerifyReadyDlgBannerBitmap" Overridable="yes">WixUI_Bmp_Banner</String>
+  <String Id="VerifyReadyDlgInstall" Overridable="yes">安裝(&amp;I)</String>
+  <String Id="VerifyReadyDlgInstallText" Overridable="yes">點擊安裝按鈕將開始安裝，需要檢查或更改安裝選項可點擊上一步按鈕，又或者點擊取消按鈕退出安裝程式。</String>
+  <String Id="VerifyReadyDlgInstallTitle" Overridable="yes">{\WixUI_Font_Title}準備安裝 [ProductName]</String>
+  <String Id="VerifyReadyDlgChange" Overridable="yes">更改(&amp;C)</String>
+  <String Id="VerifyReadyDlgChangeText" Overridable="yes">點擊更改按鈕將開始安裝，需要檢查或更改安裝選項可點擊上一步按鈕，又或者點擊取消按鈕退出安裝程式。</String>
+  <String Id="VerifyReadyDlgChangeTitle" Overridable="yes">{\WixUI_Font_Title}準備更改 [ProductName]</String>
+  <String Id="VerifyReadyDlgRepair" Overridable="yes">修復(&amp;P)</String>
+  <String Id="VerifyReadyDlgRepairText" Overridable="yes">點擊修復按鈕將開始修復安裝，需要檢查或更改安裝選項可點擊上一步按鈕，又或者點擊取消按鈕退出安裝程式。</String>
+  <String Id="VerifyReadyDlgRepairTitle" Overridable="yes">{\WixUI_Font_Title}準備修復 [ProductName]</String>
+  <String Id="VerifyReadyDlgRemove" Overridable="yes">移除(&amp;R)</String>
+  <String Id="VerifyReadyDlgRemoveText" Overridable="yes">點擊移除按鈕將在本機上刪除 [ProductName] ，需要檢查或更改安裝選項可點擊上一步按鈕，又或者點擊取消按鈕退出安裝程式。</String>
+  <String Id="VerifyReadyDlgRemoveTitle" Overridable="yes">{\WixUI_Font_Title}準備刪除 [ProductName]</String>
+  <String Id="WaitForCostingDlg_Title" Overridable="yes">[ProductName] 安裝</String>
+  <String Id="WaitForCostingDlgReturn" Overridable="yes">返回(&amp;R)</String>
+  <String Id="WaitForCostingDlgText" Overridable="yes">請稍候，安裝程式正在估算所需磁碟空間。</String>
+  <String Id="WaitForCostingDlgIcon" Overridable="yes">WixUI_Ico_Exclam</String>
+  <String Id="WaitForCostingDlgIconTooltip" Overridable="yes">驚嘆號圖示</String>
+  <String Id="WelcomeDlg_Title" Overridable="yes">[ProductName] 安裝</String>
+  <String Id="WelcomeDlgBitmap" Overridable="yes">WixUI_Bmp_Dialog</String>
+  <String Id="WelcomeDlgDescription" Overridable="yes">安裝程式將在本機安裝 [ProductName] 。請點擊下一步按鈕繼續，或者點擊取消按鈕退出安裝程式。</String>
+  <String Id="WelcomeDlgTitle" Overridable="yes">{\WixUI_Font_Bigger}歡迎使用 [ProductName] 安裝程式</String>
+  <String Id="WelcomeEulaDlg_Title" Overridable="yes">[ProductName] 安裝</String>
+  <String Id="WelcomeEulaDlgBitmap" Overridable="yes">WixUI_Bmp_Dialog</String>
+  <String Id="WelcomeEulaDlgLicenseAcceptedCheckBox" Overridable="yes">我接受《授權合約》中的條款(&amp;A)</String>
+  <String Id="WelcomeEulaDlgInstall" Overridable="yes">安裝(&amp;I)</String>
+  <String Id="WelcomeEulaDlgTitle" Overridable="yes">{\WixUI_Font_Title}請閱讀 [ProductName] 的《授權合約》</String>
+  <String Id="ProgressTextInstallValidate" Overridable="yes">正在驗證安裝</String>
+  <String Id="ProgressTextInstallFiles" Overridable="yes">正在複製新檔</String>
+  <String Id="ProgressTextInstallFilesTemplate" Overridable="yes">文件: [1]，目錄: [9]，大小: [6]</String>
+  <String Id="ProgressTextInstallAdminPackage" Overridable="yes">正在複製網路安裝檔</String>
+  <String Id="ProgressTextInstallAdminPackageTemplate" Overridable="yes">文件: [1]，目錄: [9]，大小: [6]</String>
+  <String Id="ProgressTextFileCost" Overridable="yes">正在計算空間需求</String>
+  <String Id="ProgressTextCostInitialize" Overridable="yes">正在計算空間需求</String>
+  <String Id="ProgressTextCostFinalize" Overridable="yes">正在計算空間需求</String>
+  <String Id="ProgressTextCreateShortcuts" Overridable="yes">正在建立快捷方式</String>
+  <String Id="ProgressTextCreateShortcutsTemplate" Overridable="yes">快捷方式: [1]</String>
+  <String Id="ProgressTextPublishComponents" Overridable="yes">正在發佈合格的組件</String>
+  <String Id="ProgressTextPublishComponentsTemplate" Overridable="yes">組件 ID: [1]，資格認證者: [2]</String>
+  <String Id="ProgressTextPublishFeatures" Overridable="yes">正在發佈產品功能</String>
+  <String Id="ProgressTextPublishFeaturesTemplate" Overridable="yes">功能: [1]</String>
+  <String Id="ProgressTextPublishProduct" Overridable="yes">正在發佈產品資訊</String>
+  <String Id="ProgressTextRegisterClassInfo" Overridable="yes">正在註冊類伺服器</String>
+  <String Id="ProgressTextRegisterClassInfoTemplate" Overridable="yes">Class Id: [1]</String>
+  <String Id="ProgressTextRegisterExtensionInfo" Overridable="yes">正在註冊擴展伺服器</String>
+  <String Id="ProgressTextRegisterExtensionInfoTemplate" Overridable="yes">擴展: [1]</String>
+  <String Id="ProgressTextRegisterMIMEInfo" Overridable="yes">正在註冊 MIME 資訊</String>
+  <String Id="ProgressTextRegisterMIMEInfoTemplate" Overridable="yes">MIME 內容類別型: [1]，擴展: [2]</String>
+  <String Id="ProgressTextRegisterProgIdInfo" Overridable="yes">正在註冊程式識別字</String>
+  <String Id="ProgressTextRegisterProgIdInfoTemplate" Overridable="yes">ProgId: [1]</String>
+  <String Id="ProgressTextAllocateRegistrySpace" Overridable="yes">正在分配註冊表空間</String>
+  <String Id="ProgressTextAllocateRegistrySpaceTemplate" Overridable="yes">自由空間: [1]</String>
+  <String Id="ProgressTextAppSearch" Overridable="yes">正在搜索已安裝的應用程式</String>
+  <String Id="ProgressTextAppSearchTemplate" Overridable="yes">屬性: [1]，簽名: [2]</String>
+  <String Id="ProgressTextBindImage" Overridable="yes">綁定可執行檔</String>
+  <String Id="ProgressTextBindImageTemplate" Overridable="yes">文件: [1]</String>
+  <String Id="ProgressTextCCPSearch" Overridable="yes">正在搜索符合資格的產品</String>
+  <String Id="ProgressTextCreateFolders" Overridable="yes">正在建立資料夾</String>
+  <String Id="ProgressTextCreateFoldersTemplate" Overridable="yes">資料夾: [1]</String>
+  <String Id="ProgressTextDeleteServices" Overridable="yes">正在刪除服務</String>
+  <String Id="ProgressTextDeleteServicesTemplate" Overridable="yes">服務: [1]</String>
+  <String Id="ProgressTextDuplicateFiles" Overridable="yes">正在建立重複文件</String>
+  <String Id="ProgressTextDuplicateFilesTemplate" Overridable="yes">文件: [1]，目錄: [9]，大小: [6]</String>
+  <String Id="ProgressTextFindRelatedProducts" Overridable="yes">正在搜索相關產品</String>
+  <String Id="ProgressTextFindRelatedProductsTemplate" Overridable="yes">找到應用程式: [1]</String>
+  <String Id="ProgressTextInstallODBC" Overridable="yes">正在安裝 ODBC 組件</String>
+  <String Id="ProgressTextInstallServices" Overridable="yes">正在安裝新服務</String>
+  <String Id="ProgressTextInstallServicesTemplate" Overridable="yes">服務: [2]</String>
+  <String Id="ProgressTextLaunchConditions" Overridable="yes">正在評估啟動條件</String>
+  <String Id="ProgressTextMigrateFeatureStates" Overridable="yes">正在從相關應用程式遷移功能</String>
+  <String Id="ProgressTextMigrateFeatureStatesTemplate" Overridable="yes">應用程式: [1]</String>
+  <String Id="ProgressTextMoveFiles" Overridable="yes">正在移動文件</String>
+  <String Id="ProgressTextMoveFilesTemplate" Overridable="yes">文件: [1]，目錄: [9]，大小: [6]</String>
+  <String Id="ProgressTextPatchFiles" Overridable="yes">正在修補文件</String>
+  <String Id="ProgressTextPatchFilesTemplate" Overridable="yes">文件: [1]，目錄: [2]，大小: [3]</String>
+  <String Id="ProgressTextProcessComponents" Overridable="yes">正在更新組件註冊表</String>
+  <String Id="ProgressTextRegisterComPlus" Overridable="yes">正在註冊 COM+ 應用程式和元件</String>
+  <String Id="ProgressTextRegisterComPlusTemplate" Overridable="yes">AppId: [1]{{, AppType: [2], Users: [3], RSN: [4]}}</String>
+  <String Id="ProgressTextRegisterFonts" Overridable="yes">正在註冊字體</String>
+  <String Id="ProgressTextRegisterFontsTemplate" Overridable="yes">字體: [1]</String>
+  <String Id="ProgressTextRegisterProduct" Overridable="yes">正在註冊產品</String>
+  <String Id="ProgressTextRegisterProductTemplate" Overridable="yes">[1]</String>
+  <String Id="ProgressTextRegisterTypeLibraries" Overridable="yes">正在註冊型別程式庫</String>
+  <String Id="ProgressTextRegisterTypeLibrariesTemplate" Overridable="yes">LibID: [1]</String>
+  <String Id="ProgressTextRegisterUser" Overridable="yes">正在註冊用戶</String>
+  <String Id="ProgressTextRegisterUserTemplate" Overridable="yes">[1]</String>
+  <String Id="ProgressTextRemoveDuplicateFiles" Overridable="yes">正在刪除重複的檔</String>
+  <String Id="ProgressTextRemoveDuplicateFilesTemplate" Overridable="yes">文件: [1]，目錄: [9]</String>
+  <String Id="ProgressTextRemoveEnvironmentStrings" Overridable="yes">正在更新環境字串</String>
+  <String Id="ProgressTextRemoveEnvironmentStringsTemplate" Overridable="yes">名稱: [1]，數值: [2]，動作 [3]</String>
+  <String Id="ProgressTextRemoveExistingProducts" Overridable="yes">正在刪除應用程式</String>
+  <String Id="ProgressTextRemoveExistingProductsTemplate" Overridable="yes">應用程式: [1]，命令列: [2]</String>
+  <String Id="ProgressTextRemoveFiles" Overridable="yes">正在刪除檔案</String>
+  <String Id="ProgressTextRemoveFilesTemplate" Overridable="yes">文件: [1]，目錄: [9]</String>
+  <String Id="ProgressTextRemoveFolders" Overridable="yes">正在刪除資料夾</String>
+  <String Id="ProgressTextRemoveFoldersTemplate" Overridable="yes">資料夾: [1]</String>
+  <String Id="ProgressTextRemoveIniValues" Overridable="yes">正在刪除 INI 檔條目</String>
+  <String Id="ProgressTextRemoveIniValuesTemplate" Overridable="yes">文件: [1]，節: [2]，鍵: [3]，數值: [4]</String>
+  <String Id="ProgressTextRemoveODBC" Overridable="yes">正在刪除 ODBC 組件</String>
+  <String Id="ProgressTextRemoveRegistryValues" Overridable="yes">正在刪除系統登錄值</String>
+  <String Id="ProgressTextRemoveRegistryValuesTemplate" Overridable="yes">鍵值: [1]，名稱: [2]</String>
+  <String Id="ProgressTextRemoveShortcuts" Overridable="yes">正在刪除快捷方式</String>
+  <String Id="ProgressTextRemoveShortcutsTemplate" Overridable="yes">快捷方式: [1]</String>
+  <String Id="ProgressTextRMCCPSearch" Overridable="yes">正在搜索符合資格的產品</String>
+  <String Id="ProgressTextSelfRegModules" Overridable="yes">正在註冊模組</String>
+  <String Id="ProgressTextSelfRegModulesTemplate" Overridable="yes">文件: [1]，資料夾: [2]</String>
+  <String Id="ProgressTextSelfUnregModules" Overridable="yes">正在撤銷模組的註冊</String>
+  <String Id="ProgressTextSelfUnregModulesTemplate" Overridable="yes">文件: [1]，資料夾: [2]</String>
+  <String Id="ProgressTextSetODBCFolders" Overridable="yes">正在初始化 ODBC 目錄</String>
+  <String Id="ProgressTextStartServices" Overridable="yes">正在啟動服務</String>
+  <String Id="ProgressTextStartServicesTemplate" Overridable="yes">服務: [1]</String>
+  <String Id="ProgressTextStopServices" Overridable="yes">正在停止服務</String>
+  <String Id="ProgressTextStopServicesTemplate" Overridable="yes">服務: [1]</String>
+  <String Id="ProgressTextUnpublishComponents" Overridable="yes">正在取消合格組件的發佈</String>
+  <String Id="ProgressTextUnpublishComponentsTemplate" Overridable="yes">組件 ID: [1]，資格認證者: [2]</String>
+  <String Id="ProgressTextUnpublishFeatures" Overridable="yes">正在取消產品功能的發佈</String>
+  <String Id="ProgressTextUnpublishFeaturesTemplate" Overridable="yes">功能: [1]</String>
+  <String Id="ProgressTextUnregisterClassInfo" Overridable="yes">正在撤銷類伺服器的註冊</String>
+  <String Id="ProgressTextUnregisterClassInfoTemplate" Overridable="yes">Class Id: [1]</String>
+  <String Id="ProgressTextUnregisterComPlus" Overridable="yes">正在撤銷 COM+ 應用程式和元件的註冊</String>
+  <String Id="ProgressTextUnregisterComPlusTemplate" Overridable="yes">AppId: [1]{{, AppType: [2]}}</String>
+  <String Id="ProgressTextUnregisterExtensionInfo" Overridable="yes">正在撤銷擴展伺服器的註冊</String>
+  <String Id="ProgressTextUnregisterExtensionInfoTemplate" Overridable="yes">擴展: [1]</String>
+  <String Id="ProgressTextUnregisterFonts" Overridable="yes">正在撤銷字體的註冊</String>
+  <String Id="ProgressTextUnregisterFontsTemplate" Overridable="yes">字體: [1]</String>
+  <String Id="ProgressTextUnregisterMIMEInfo" Overridable="yes">正在撤銷 MIME 資訊的註冊</String>
+  <String Id="ProgressTextUnregisterMIMEInfoTemplate" Overridable="yes">MIME 內容類別型: [1]，擴展: [2]</String>
+  <String Id="ProgressTextUnregisterProgIdInfo" Overridable="yes">正在撤銷程式識別字的註冊</String>
+  <String Id="ProgressTextUnregisterProgIdInfoTemplate" Overridable="yes">ProgId: [1]</String>
+  <String Id="ProgressTextUnregisterTypeLibraries" Overridable="yes">正在撤銷型別程式庫的註冊</String>
+  <String Id="ProgressTextUnregisterTypeLibrariesTemplate" Overridable="yes">LibID: [1]</String>
+  <String Id="ProgressTextWriteEnvironmentStrings" Overridable="yes">正在更新環境字串</String>
+  <String Id="ProgressTextWriteEnvironmentStringsTemplate" Overridable="yes">名稱: [1]，數值: [2]，動作 [3]</String>
+  <String Id="ProgressTextWriteIniValues" Overridable="yes">正在寫入 INI 文件數值</String>
+  <String Id="ProgressTextWriteIniValuesTemplate" Overridable="yes">文件: [1]，節: [2]，鍵: [3]，數值: [4]</String>
+  <String Id="ProgressTextWriteRegistryValues" Overridable="yes">正在寫入系統登錄值</String>
+  <String Id="ProgressTextWriteRegistryValuesTemplate" Overridable="yes">鍵: [1]，名稱: [2]，數值: [3]</String>
+  <String Id="ProgressTextAdvertise" Overridable="yes">正在宣傳應用程式</String>
+  <String Id="ProgressTextGenerateScript" Overridable="yes">正在生成腳本操作，用於: </String>
+  <String Id="ProgressTextGenerateScriptTemplate" Overridable="yes">[1]</String>
+  <String Id="ProgressTextInstallSFPCatalogFile" Overridable="yes">正在安裝系統目錄</String>
+  <String Id="ProgressTextInstallSFPCatalogFileTemplate" Overridable="yes">文件: [1]， 依存關係: [2]</String>
+  <String Id="ProgressTextMsiPublishAssemblies" Overridable="yes">發行彙編資訊</String>
+  <String Id="ProgressTextMsiPublishAssembliesTemplate" Overridable="yes">應用程式環境:[1], 彙編名:[2]</String>
+  <String Id="ProgressTextMsiUnpublishAssemblies" Overridable="yes">停止發行彙編資訊</String>
+  <String Id="ProgressTextMsiUnpublishAssembliesTemplate" Overridable="yes">應用程式環境:[1], 彙編名:[2]</String>
+  <String Id="ProgressTextRollback" Overridable="yes">復原操作: </String>
+  <String Id="ProgressTextRollbackTemplate" Overridable="yes">[1]</String>
+  <String Id="ProgressTextRollbackCleanup" Overridable="yes">正在刪除備份檔案</String>
+  <String Id="ProgressTextRollbackCleanupTemplate" Overridable="yes">文件: [1]</String>
+  <String Id="ProgressTextUnmoveFiles" Overridable="yes">正在刪除移動過的檔</String>
+  <String Id="ProgressTextUnmoveFilesTemplate" Overridable="yes">文件: [1]，目錄: [9]</String>
+  <String Id="ProgressTextUnpublishProduct" Overridable="yes">正在取消產品資訊的發佈</String>
+  <String Id="Error0" Overridable="yes">{{致命錯誤: }}</String>
+  <String Id="Error1" Overridable="yes">{{錯誤 [1]。}}</String>
+  <String Id="Error2" Overridable="yes">警告 [1]。</String>
+  <String Id="Error4" Overridable="yes">訊息 [1]。</String>
+  <String Id="Error5" Overridable="yes">安裝程式在安裝此套裝軟體時遇到一個錯誤。這可能表示此套裝軟體有錯。錯誤碼是 [1]。{{參數是: [2], [3], [4]}}</String>
+  <String Id="Error7" Overridable="yes">{{磁片已滿: }}</String>
+  <String Id="Error8" Overridable="yes">操作 [Time]: [1]. [2]</String>
+  <String Id="Error9" Overridable="yes">[ProductName]</String>
+  <String Id="Error10" Overridable="yes">{[2]}{, [3]}{, [4]}</String>
+  <String Id="Error11" Overridable="yes">消息類型: [1]， 參數: [2]</String>
+  <String Id="Error12" Overridable="yes">=== 記錄開始: [Date]  [Time] ===</String>
+  <String Id="Error13" Overridable="yes">=== 記錄停止: [Date]  [Time] ===</String>
+  <String Id="Error14" Overridable="yes">操作開始 [Time]: [1]。</String>
+  <String Id="Error15" Overridable="yes">操作結束 [Time]: [1]。返回值 [2]。</String>
+  <String Id="Error16" Overridable="yes">剩餘時間: {[1] 分 }{[2] 秒}</String>
+  <String Id="Error17" Overridable="yes">記憶體不足。請先關閉其他應用程式，然後再重試。</String>
+  <String Id="Error18" Overridable="yes">安裝程式已不再回應。</String>
+  <String Id="Error19" Overridable="yes">安裝程式過早停止。</String>
+  <String Id="Error20" Overridable="yes">Windows 正在配置 [ProductName]，請稍候。</String>
+  <String Id="Error21" Overridable="yes">正在收集所需資訊...</String>
+  <String Id="Error22" Overridable="yes">正在刪除此應用程式舊的版本...</String>
+  <String Id="Error23" Overridable="yes">正在準備刪除此應用程式舊的版本...</String>
+  <String Id="Error32" Overridable="yes">{[ProductName] }安裝已成功完成。</String>
+  <String Id="Error33" Overridable="yes">{[ProductName] }安裝失敗。</String>
+  <String Id="Error1101" Overridable="yes">讀取文件 [2] 時出錯。{{ 系統錯誤 [3]。}}  請確認該檔的確存在並且您可以對其進行訪問。</String>
+  <String Id="Error1301" Overridable="yes">無法建立文件 '[2]'。同名目錄已存在。請取消此次安裝，然後安裝到其他位置。</String>
+  <String Id="Error1302" Overridable="yes">請插入磁片: [2]</String>
+  <String Id="Error1303" Overridable="yes">安裝程式沒有訪問目錄 [2] 的許可權，安裝無法繼續進行。請以管理員身份登錄，或與您的系統管理員聯繫。</String>
+  <String Id="Error1304" Overridable="yes">寫至文件 [2] 時出錯。請確認您有訪問該目錄的許可權。</String>
+  <String Id="Error1305" Overridable="yes">讀取文件 [2] 時出錯。{{ 系統錯誤 [3]。}}請確認檔存在，並且您能夠訪問該檔。</String>
+  <String Id="Error1306" Overridable="yes">另一應用程式已經以獨佔模式訪問了檔 [2]。請關閉所有其他的應用程式，然後再按一下“重試”按鈕。</String>
+  <String Id="Error1307" Overridable="yes">沒有足夠的磁碟空間來安裝檔 [2]。請釋放一些磁碟空間後按一下“重試”，或者按一下“取消”退出。</String>
+  <String Id="Error1308" Overridable="yes">沒有找到原始檔案 [2]。請確認檔存在，並且您能夠訪問該檔。</String>
+  <String Id="Error1309" Overridable="yes">讀取文件 [3] 時出錯。{{ 系統錯誤 [2]。}} 請確認檔存在，並且您能夠訪問該檔。</String>
+  <String Id="Error1310" Overridable="yes">寫至文件 [3] 時出錯。{{ 系統錯誤 [2]。}} 請確認您有權訪問該目錄。</String>
+  <String Id="Error1311" Overridable="yes">沒有找到原始檔案{{(包)}}: [2]。請確認檔存在，並且您能夠訪問該檔。</String>
+  <String Id="Error1312" Overridable="yes">無法建立目錄 [2]。同名檔已經存在。請重命名或刪除檔，然後按一下“重試”按鈕，或者按一下“取消”按鈕退出。</String>
+  <String Id="Error1313" Overridable="yes">目前無法使用目錄 [2]，請另選其他目錄。</String>
+  <String Id="Error1314" Overridable="yes">無法使用指定的路徑 [2]。</String>
+  <String Id="Error1315" Overridable="yes">無法寫入指定的資料夾 [2]。</String>
+  <String Id="Error1316" Overridable="yes">試圖讀取檔 [2] 時發生網路錯誤。 </String>
+  <String Id="Error1317" Overridable="yes">試圖建立目錄 [2] 時發生錯誤。</String>
+  <String Id="Error1318" Overridable="yes">試圖建立目錄 [2] 時發生網路錯誤。</String>
+  <String Id="Error1319" Overridable="yes">試圖打開原始檔案包 [2] 時發生網路錯誤。</String>
+  <String Id="Error1320" Overridable="yes">指定的路徑過長: [2]</String>
+  <String Id="Error1321" Overridable="yes">安裝程式沒有修改檔 [2] 的許可權。</String>
+  <String Id="Error1322" Overridable="yes">資料夾路徑 [2] 的一部分無效。或者為空，或者超出了系統允許的長度。</String>
+  <String Id="Error1323" Overridable="yes">資料夾路徑 [2] 中含有無效單詞。</String>
+  <String Id="Error1324" Overridable="yes">資料夾路徑 [2] 中含有無效的字元。</String>
+  <String Id="Error1325" Overridable="yes">[2] 不是一個有效的短檔案名。</String>
+  <String Id="Error1326" Overridable="yes">獲取檔 [3] 安全許可權時發生錯誤 GetLastError: [2]</String>
+  <String Id="Error1327" Overridable="yes">無效驅動器: [2]</String>
+  <String Id="Error1328" Overridable="yes">對文件 [2] 應用修補程式時出錯。該檔可能被更新過，所以本修補程式不能修改它。詳細資訊，請與您的修補程式供應商聯繫。 {{系統錯誤: [3]}}</String>
+  <String Id="Error1329" Overridable="yes">需要的檔不能安裝，因為 CAB 檔 [2] 沒有數位簽章。這可能表示 CAB 檔已損壞。</String>
+  <String Id="Error1330" Overridable="yes">需要的檔不能安裝，因為 CAB 檔 [2] 的數位簽章無效。這可能表示 CAB 檔已損壞。{{WinVerifyTrust 返回了錯誤 [3] 。}}</String>
+  <String Id="Error1331" Overridable="yes">複製 [2] 檔失敗: CRC 錯誤。</String>
+  <String Id="Error1332" Overridable="yes">移動 [2] 檔失敗: CRC 錯誤。</String>
+  <String Id="Error1333" Overridable="yes">修補 [2] 檔失敗: CRC 錯誤。</String>
+  <String Id="Error1334" Overridable="yes">不能安裝檔 '[2]'，因為在 CAB 檔 '[3]' 中找不到此檔。這可能表示網路錯誤、讀光碟錯誤或此套裝軟體錯誤。</String>
+  <String Id="Error1335" Overridable="yes">安裝所需的 CAB 檔 '[2]' 已損壞，不能使用。這可能表示網路錯誤、讀光碟錯誤或此套裝軟體錯誤。</String>
+  <String Id="Error1336" Overridable="yes">建立完成此安裝需要的暫存檔案出錯。{{資料夾: [3]。系統錯誤碼: [2]}}</String>
+  <String Id="Error1401" Overridable="yes">無法建立鍵: [2]。{{ 系統錯誤 [3]。}} 請驗證您對該鍵擁有足夠的存取權限，或者與您的技術支援人員聯繫。</String>
+  <String Id="Error1402" Overridable="yes">無法打開鍵: [2]。{{ 系統錯誤 [3]。}}  請驗證您對該鍵擁有足夠的存取權限，或者與您的技術支援人員聯繫。 </String>
+  <String Id="Error1403" Overridable="yes">無法刪除值 [2]（從鍵 [3] 中）。{{ 系統錯誤 [4]。}}  請驗證您對該鍵擁有足夠的存取權限，或者與您的技術支援人員聯繫。</String>
+  <String Id="Error1404" Overridable="yes">無法刪除鍵 [2]。{{ 系統錯誤 [3]。}}  請驗證您對該鍵擁有足夠的存取權限，或者與您的技術支援人員聯繫。</String>
+  <String Id="Error1405" Overridable="yes">無法讀取值 [2]（從鍵 [3] 中）。{{ 系統錯誤 [4]。}}  請驗證您對該鍵擁有足夠的存取權限，或者與您的技術支援人員聯繫。</String>
+  <String Id="Error1406" Overridable="yes">無法將數值 [2] 寫入鍵 [3]。{{ 系統錯誤 [4]。}} 請驗證您對該鍵擁有足夠的存取權限，或者與您的技術支援人員聯繫。</String>
+  <String Id="Error1407" Overridable="yes">無法獲取鍵 [2] 的數值名稱。{{ 系統錯誤 [3]。}} 請驗證您對該鍵擁有足夠的存取權限，或者與您的技術支援人員聯繫。</String>
+  <String Id="Error1408" Overridable="yes">無法獲取鍵 [2] 的子鍵。{{ 系統錯誤 [3]。}} 請驗證您對該鍵擁有足夠的存取權限，或者與您的技術支援人員聯繫。</String>
+  <String Id="Error1409" Overridable="yes">無法讀取鍵 [2] 的安全資訊。{{ 系統錯誤 [3]。}} 請驗證您對該鍵擁有足夠的存取權限，或者與您的技術支援人員聯繫。</String>
+  <String Id="Error1410" Overridable="yes">無法增加可用的註冊表空間。安裝本應用程式需要 [2] 千位元組的空閒註冊表空間。</String>
+  <String Id="Error1500" Overridable="yes">另一安裝過程正在進行。您必須先完成那次過程，然後才能繼續本次過程。</String>
+  <String Id="Error1501" Overridable="yes">訪問受保護的資料時出錯。請確認 Windows Installer 配置是否正確，然後重新安裝。</String>
+  <String Id="Error1502" Overridable="yes">用戶 [2] 以前啟動過產品 [3] 的安裝程式。若要使用該產品，需要請此使用者再次執行安裝程式。現在將繼續進行您的安裝。</String>
+  <String Id="Error1503" Overridable="yes">用戶 [2] 以前啟動過產品 [3] 的安裝程式。若要使用該產品，需要請此使用者再次執行安裝程式。</String>
+  <String Id="Error1601" Overridable="yes">磁碟空間不足 -- 目錄: [2]；所需空間: [3] KB；可用空間: [4] KB。請在釋放磁碟空間後再試。</String>
+  <String Id="Error1602" Overridable="yes">是否確認要取消操作？</String>
+  <String Id="Error1603" Overridable="yes">檔 [2][3] 正被使用 {使用者: 名稱: [4]，Id: [5]，視窗標題: “[6]”}。請關閉那個應用程式後再重試。</String>
+  <String Id="Error1604" Overridable="yes">產品 [2] 已經安裝，現在無法安裝本產品。這兩種產品不相容。</String>
+  <String Id="Error1605" Overridable="yes">柱面'[2]' 上沒有足夠的磁碟空間來作具有啟用恢復的安裝。需要 [3] KB，但只有 [4] KB。按一下“忽略”來繼續安裝，而不保存恢復資訊；按一下“重試”來再次檢查可用空間；按一下“取消”來退出安裝。</String>
+  <String Id="Error1606" Overridable="yes">無法訪問網路位置 [2]。</String>
+  <String Id="Error1607" Overridable="yes">在繼續安裝之前，請關閉以下應用程式: </String>
+  <String Id="Error1608" Overridable="yes">無法在電腦上找到安裝本產品所需的任何以前安裝的相應產品。</String>
+  <String Id="Error1609" Overridable="yes">應用安全設置時出錯。[2] 不是有效的用戶或組。這可能是套裝軟體的錯誤，或者是連接到網路上的網域控制站的錯誤。檢查你的網路連接，然後按一下“重試”，或者按一下“取消”來結束安裝。{{不能找到由使用者的 SID，系統錯誤 [3]}}</String>
+  <String Id="Error1701" Overridable="yes">鍵 [2] 無效。請確認您輸入的鍵是否正確。</String>
+  <String Id="Error1702" Overridable="yes">安裝程式必須先重新開機您的系統，然後才能繼續配置 [2]。按一下“是”按鈕可立即重新開機；按一下“否”按鈕則可在以後以人工方式啟動。</String>
+  <String Id="Error1703" Overridable="yes">您必須先重新開機系統，然後才能使對 [2] 做出的配置修改生效。按一下“是”按鈕可立即重新開機；按一下“否”按鈕則可在以後以人工方式啟動。</String>
+  <String Id="Error1704" Overridable="yes">[2] 的一次安裝過程正處於暫停狀態，您必須先撤銷該安裝過程做出的修改，然後才能繼續操作。是否撤銷那些修改？</String>
+  <String Id="Error1705" Overridable="yes">本產品的前一次安裝正在進行，您必須先撤銷該過程做出的修改，然後才能繼續。是否撤銷那些修改？</String>
+  <String Id="Error1706" Overridable="yes">無法找到產品 [2] 的安裝套裝程式。請使用安裝套裝程式 [3] 的有效副本重新進行安裝。</String>
+  <String Id="Error1707" Overridable="yes">安裝已成功完成。</String>
+  <String Id="Error1708" Overridable="yes">安裝失敗。</String>
+  <String Id="Error1709" Overridable="yes">產品: [2] -- [3]</String>
+  <String Id="Error1710" Overridable="yes">您可以將電腦還原至其原始狀態，也可在以後繼續安裝。是否要進行還原？</String>
+  <String Id="Error1711" Overridable="yes">向硬碟寫入安裝資訊時發生錯誤。請確認是否有足夠的硬碟空間可供使用，然後按一下“重試”按鈕，或者按一下“取消”按鈕結束安裝。</String>
+  <String Id="Error1712" Overridable="yes">無法找到將您的電腦恢復至原始狀態所需的一個或多個檔。不能進行恢復操作。</String>
+  <String Id="Error1713" Overridable="yes">[2] 不能安裝某一所需產品。請與您的技術支援人員聯繫。 {{系統錯誤: [3]。}}</String>
+  <String Id="Error1714" Overridable="yes">不能刪除舊版本的 [2]。請與您的技術支援人員聯繫。 {{系統錯誤: [3]。}}</String>
+  <String Id="Error1715" Overridable="yes">安裝了 [2]</String>
+  <String Id="Error1716" Overridable="yes">配置了 [2]</String>
+  <String Id="Error1717" Overridable="yes">刪除了 [2]</String>
+  <String Id="Error1718" Overridable="yes">檔 [2] 被數位簽章策略拒絕。</String>
+  <String Id="Error1719" Overridable="yes">不能訪問 Windows Installer 服務。可能是你在安全模式下執行 Windows，或者 Windows Installer 沒有正確地安裝。請和你的支持人員聯繫以獲得幫助。</String>
+  <String Id="Error1720" Overridable="yes">此 Windows Installer 套裝軟體有一個問題。完成此安裝需要的腳本不能執行。請和你的支援人員或代理商聯繫。{{自訂操作 [2] 腳本錯 [3], [4]: [5] 行 [6], 列 [7], [8] }}</String>
+  <String Id="Error1721" Overridable="yes">此 Windows Installer 套裝軟體有一個問題。完成此安裝需要的程式不能執行。請和你的支援人員或代理商聯繫。{{操作: [2], 位置: [3], 命令: [4] }}</String>
+  <String Id="Error1722" Overridable="yes">此 Windows Installer 套裝軟體有一個問題。作為安裝的一部分的程式不正常結束。請和你的支援人員或代理商聯繫。{{操作: [2], 位置: [3], 命令: [4] }}</String>
+  <String Id="Error1723" Overridable="yes">此 Windows Installer 套裝軟體有一個問題。完成此安裝需要的 DLL 不能執行。請和你的支援人員或代理商聯繫。{{操作: [2], 入口: [3], 庫: [4] }}</String>
+  <String Id="Error1724" Overridable="yes">成功地完成刪除。</String>
+  <String Id="Error1725" Overridable="yes">刪除失敗。</String>
+  <String Id="Error1726" Overridable="yes">成功地完成公佈。</String>
+  <String Id="Error1727" Overridable="yes">公佈失敗。</String>
+  <String Id="Error1728" Overridable="yes">成功地完成配置。</String>
+  <String Id="Error1729" Overridable="yes">配置失敗。</String>
+  <String Id="Error1730" Overridable="yes">你必須是系統管理員才能刪除此應用程式。你可以作為系統管理員登錄，或與你的支持小組聯繫以獲得幫助。</String>
+  <String Id="Error1731" Overridable="yes">The source installation package for the product [2] is out of sync with the client package. Try the installation again using a valid copy of the installation package '[3]'.</String>
+  <String Id="Error1732" Overridable="yes">In order to complete the installation of [2], you must restart the computer. Other users are currently logged on to this computer, and restarting may cause them to lose their work. Do you want to restart now?</String>
+  <String Id="Error1801" Overridable="yes">路徑 [2] 無效，請指定有效路徑。</String>
+  <String Id="Error1802" Overridable="yes">記憶體不足。請先關閉其他應用程式，然後再重試。</String>
+  <String Id="Error1803" Overridable="yes">驅動器 [2] 中沒有磁片。請先插入磁片，然後按一下“重試”按鈕；或者按一下“取消”按鈕，返回前面選擇的目錄。</String>
+  <String Id="Error1804" Overridable="yes">驅動器 [2] 中沒有磁片。請先插入磁片，然後按一下“重試”按鈕；或者按一下“取消”按鈕，返回“瀏覽”對話方塊並選擇其他目錄。</String>
+  <String Id="Error1805" Overridable="yes">資料夾 [2] 不存在。請輸入某個原有資料夾的路徑。</String>
+  <String Id="Error1806" Overridable="yes">您讀取此資料夾的許可權不夠。</String>
+  <String Id="Error1807" Overridable="yes">無法確定安裝所需的有效路徑。</String>
+  <String Id="Error1901" Overridable="yes">試圖讀取源安裝資料庫 [2] 時出錯。</String>
+  <String Id="Error1902" Overridable="yes">正在安排重新啟動操作: 將檔 [2] 重命名為 [3]。只有重新啟動後操作才能完成。</String>
+  <String Id="Error1903" Overridable="yes">正在安排重新啟動操作: 刪除檔 [2]。只有重新啟動後操作才能完成。</String>
+  <String Id="Error1904" Overridable="yes">無法註冊模組 [2]。HRESULT [3]。請與您的技術支援人員聯繫。</String>
+  <String Id="Error1905" Overridable="yes">無法撤銷註冊模組 [2]。HRESULT [3]。請與您的技術支援人員聯繫。</String>
+  <String Id="Error1906" Overridable="yes">無法緩存包 [2]。錯誤: [3]。請與您的技術支援人員聯繫。</String>
+  <String Id="Error1907" Overridable="yes">無法註冊字體 [2]。請檢查您是否有足夠的許可權安裝字體，以及系統是否能夠支援該字體。</String>
+  <String Id="Error1908" Overridable="yes">無法撤銷對字體 [2] 的註冊。請檢查您是否有足夠的許可權刪除字體。</String>
+  <String Id="Error1909" Overridable="yes">無法建立快捷方式 [2]。請檢查目的檔案夾是否存在，以及您是否可以訪問該資料夾。</String>
+  <String Id="Error1910" Overridable="yes">無法刪除快捷方式 [2]。請確認該快捷方式檔存在，並且您可以訪問該檔。</String>
+  <String Id="Error1911" Overridable="yes">無法將檔 [2] 註冊到型別程式庫中。請與您的技術支援人員聯繫。</String>
+  <String Id="Error1912" Overridable="yes">無法撤銷檔 [2] 在型別程式庫中的註冊。請與您的技術支援人員聯繫。</String>
+  <String Id="Error1913" Overridable="yes">無法更新 INI 檔 [2][3]。請確認該檔存在並且您可以訪問它。</String>
+  <String Id="Error1914" Overridable="yes">無法安排在重新啟動時用檔 [2] 替換文件 [3]。請確認您擁有對文件 [3] 的寫許可權。</String>
+  <String Id="Error1915" Overridable="yes">刪除 ODBC 驅動程式管理器時發生錯誤，ODBC 錯誤 [2]: [3]。請與您的技術支援人員聯繫。</String>
+  <String Id="Error1916" Overridable="yes">安裝 ODBC 驅動程式管理器時發生錯誤，ODBC 錯誤 [2]: [3]。請與您的技術支援人員聯繫。</String>
+  <String Id="Error1917" Overridable="yes">刪除 ODBC 驅動程式 [4] 時發生錯誤，ODBC 錯誤 [2]: [3]。請確認您有足夠的許可權刪除 ODBC 驅動程式。</String>
+  <String Id="Error1918" Overridable="yes">安裝 ODBC 驅動程式 [4] 時發生錯誤，ODBC 錯誤 [2]: [3]。請確認檔 [4] 存在，並且您可以訪問該檔。</String>
+  <String Id="Error1919" Overridable="yes">配置 ODBC 資料來源 [4] 時發生錯誤，ODBC 錯誤 [2]: [3]。請確認檔 [4] 存在，並且您可以訪問該檔。</String>
+  <String Id="Error1920" Overridable="yes">服務 [2]（[3]）的啟動失敗。請確認您有足夠的許可權啟動系統服務。</String>
+  <String Id="Error1921" Overridable="yes">無法終止服務 [2]（[3]）。請確認您有足夠的許可權終止系統服務。</String>
+  <String Id="Error1922" Overridable="yes">無法刪除服務 [2]（[3]）。請確認您有足夠的許可權刪除系統服務。</String>
+  <String Id="Error1923" Overridable="yes">無法安裝服務 [2]（[3]）。請確認您有足夠的許可權安裝系統服務。</String>
+  <String Id="Error1924" Overridable="yes">無法更新環境變數 [2]。請確認您有足夠的許可權修改環境變數。</String>
+  <String Id="Error1925" Overridable="yes">您沒有足夠的許可權為該電腦所有使用者完成此安裝。請以管理員的身份登錄，然後重新嘗試進行此安裝。</String>
+  <String Id="Error1926" Overridable="yes">無法對檔 [3] 的安全許可權進行設置。錯誤: [2]。請確認您有足夠的許可權修改此檔的安全許可權。</String>
+  <String Id="Error1927" Overridable="yes">此電腦上未安裝 Component Services (COM+ 1.0)。要成功完成安裝需要 Component Services。Component Services 在 Windows 2000 上有效。</String>
+  <String Id="Error1928" Overridable="yes">註冊 COM+ 應用程式時出錯。詳細資訊，請與您的技術支援人員聯繫。</String>
+  <String Id="Error1929" Overridable="yes">撤銷註冊 COM+ 應用程式時出錯。詳細資訊，請與您的技術支援人員聯繫。</String>
+  <String Id="Error1930" Overridable="yes">不能更改服務 '[2]' ([3]) 的描述。</String>
+  <String Id="Error1931" Overridable="yes">Windows Installer 服務不能更新系統檔 [2]，因為該檔被 Windows 保護。為使該程式正確工作，您可能需要更新作業系統。{{套裝程式版本: [3]，作業系統保護版本: [4]}}</String>
+  <String Id="Error1932" Overridable="yes">Windows Installer 服務不能更新被保護的 Windows 檔 [2]。{{套裝程式版本: [3]，作業系統保護版本: [4]，SFP 錯誤: [5]}}</String>
+  <String Id="Error1933" Overridable="yes">Windows Installer 服務不能更新一個或多個受保護的 Windows 檔。{{SFP 錯誤: [2]。受保護的檔列表:\r\n[3]}}</String>
+  <String Id="Error1934" Overridable="yes">本機上的策略禁止用戶安裝。</String>
+  <!--String Id="Error1935" Overridable="yes">安裝彙編組件 [2] 時出錯。詳細資訊請參照説明檔。HRESULT: [3]。{{彙編介面: [4], 函數: [5], 彙編名: [6]}}</String-->
+  <String Id="Error1935" Overridable="yes">安裝彙編組件 [2] 時出錯。HRESULT: [3]。{{彙編介面: [4], 函數: [5], 彙編名: [6]}}</String>
+  <String Id="Error1936" Overridable="yes">安裝彙編組件 [2] 時出錯。組合語言程式集不是強命名或者簽名金鑰長度不足。HRESULT: [3]。{{彙編介面: [4], 函數: [5], 彙編名: [6]}}</String>
+  <String Id="Error1937" Overridable="yes">安裝彙編組件 [2] 時出錯。無法驗證簽名或系統目錄。HRESULT: [3]。{{彙編介面: [4], 函數: [5], 彙編名: [6]}}</String>
+  <String Id="Error1938" Overridable="yes">安裝彙編組件 [2] 時出錯。找不到一個或數個彙編模組。HRESULT: [3]。{{彙編介面: [4], 函數: [5], 彙編名: [6]}}</String>
+  <String Id="UITextbytes" Overridable="yes">bytes</String>
+  <String Id="UITextGB" Overridable="yes">GB</String>
+  <String Id="UITextKB" Overridable="yes">KB</String>
+  <String Id="UITextMB" Overridable="yes">MB</String>
+  <String Id="UITextMenuAbsent" Overridable="yes">整個功能將不被安裝</String>
+  <String Id="UITextMenuAdvertise" Overridable="yes">需要時功能方被安裝</String>
+  <String Id="UITextMenuAllCD" Overridable="yes">整個功能將被安裝為從 CD 執行</String>
+  <String Id="UITextMenuAllLocal" Overridable="yes">整個功能將被安裝到本地硬碟</String>
+  <String Id="UITextMenuAllNetwork" Overridable="yes">整個功能將被安裝為從網路執行</String>
+  <String Id="UITextMenuCD" Overridable="yes">將被安裝為從 CD 執行</String>
+  <String Id="UITextMenuLocal" Overridable="yes">將被安裝到本地硬碟</String>
+  <String Id="UITextMenuNetwork" Overridable="yes">將被安裝為從網路執行</String>
+  <String Id="UITextNewFolder" Overridable="yes">新增目錄</String>
+  <String Id="UITextScriptInProgress" Overridable="yes">正在收集所需資訊...</String>
+  <String Id="UITextSelAbsentAbsent" Overridable="yes">本功能將不被安裝</String>
+  <String Id="UITextSelAbsentAdvertise" Overridable="yes">本功能將被設定為需要時方安裝</String>
+  <String Id="UITextSelAbsentCD" Overridable="yes">本功能將被安裝為從 CD 執行</String>
+  <String Id="UITextSelAbsentLocal" Overridable="yes">本功能將被安裝到本地硬碟</String>
+  <String Id="UITextSelAbsentNetwork" Overridable="yes">本功能將被安裝為從網路執行</String>
+  <String Id="UITextSelAdvertiseAbsent" Overridable="yes">本功能將變為無法使用</String>
+  <String Id="UITextSelAdvertiseAdvertise" Overridable="yes">需要時方安裝</String>
+  <String Id="UITextSelAdvertiseCD" Overridable="yes">本功能將被提供為從 CD 執行</String>
+  <String Id="UITextSelAdvertiseLocal" Overridable="yes">本功能將被安裝到本地硬碟</String>
+  <String Id="UITextSelAdvertiseNetwork" Overridable="yes">本功能將被提供為從網路執行</String>
+  <String Id="UITextSelCDAbsent" Overridable="yes">本功能將被完全移除，您將無法從 CD 執行它</String>
+  <String Id="UITextSelCDAdvertise" Overridable="yes">本功能將不再從 CD 執行，需要時方被安裝</String>
+  <String Id="UITextSelCDCD" Overridable="yes">本功能將保留為從 CD 執行</String>
+  <String Id="UITextSelCDLocal" Overridable="yes">本功能將被安裝到本地硬碟，不再從 CD 執行</String>
+  <String Id="UITextSelChildCostNeg" Overridable="yes">本功能為您的硬碟清出 [1] 的空間。</String>
+  <String Id="UITextSelChildCostPos" Overridable="yes">本功能需要您的硬碟提供 [1] 的空間。</String>
+  <String Id="UITextSelCostPending" Overridable="yes">正在監測本功能所需空間...</String>
+  <String Id="UITextSelLocalAbsent" Overridable="yes">本功能將被完全移除</String>
+  <String Id="UITextSelLocalAdvertise" Overridable="yes">本功能將被從您的硬碟移除，需要時方被安裝</String>
+  <String Id="UITextSelLocalCD" Overridable="yes">本功能將被從您的硬碟移除，改為從 CD 執行</String>
+  <String Id="UITextSelLocalLocal" Overridable="yes">本功能將被保留在您的硬碟</String>
+  <String Id="UITextSelLocalNetwork" Overridable="yes">本功能將被從您的硬碟移除，改為從網路執行</String>
+  <String Id="UITextSelNetworkAbsent" Overridable="yes">本功能將被完全移除，您將無法從網路執行它</String>
+  <String Id="UITextSelNetworkAdvertise" Overridable="yes">本功能將不再從網路執行，需要時方被安裝</String>
+  <String Id="UITextSelNetworkLocal" Overridable="yes">本功能將被安裝到本地硬碟，不再從網路執行</String>
+  <String Id="UITextSelNetworkNetwork" Overridable="yes">本功能將保留為從網路執行</String>
+  <String Id="UITextSelParentCostNegNeg" Overridable="yes">本功能將為您的硬碟清出 [1] 的空間。您選擇了 [3] 個子功能中的 [2] 個，這些子功能將為您的硬碟清出 [4] 的空間。</String>
+  <String Id="UITextSelParentCostNegPos" Overridable="yes">本功能將為您的硬碟清出 [1] 的空間。您選擇了 [3] 個子功能中的 [2] 個，這些子功能將需要您的硬碟提供 [4] 的空間。</String>
+  <String Id="UITextSelParentCostPosNeg" Overridable="yes">本功能將需要您的硬碟提供 [1] 的空間。您選擇了 [3] 個子功能中的 [2] 個，這些子功能將為您的硬碟清出 [4] 的空間。</String>
+  <String Id="UITextSelParentCostPosPos" Overridable="yes">本功能將需要您的硬碟提供 [1] 的空間。您選擇了 [3] 個子功能中的 [2] 個，這些子功能將需要您的硬碟提供 [4] 的空間。</String>
+  <String Id="UITextTimeRemaining" Overridable="yes">剩餘時間: {[1] 分 }{[2] 秒}</String>
+  <String Id="UITextVolumeCostAvailable" Overridable="yes">可用</String>
+  <String Id="UITextVolumeCostDifference" Overridable="yes">差異</String>
+  <String Id="UITextVolumeCostRequired" Overridable="yes">所需</String>
+  <String Id="UITextVolumeCostSize" Overridable="yes">磁碟空間</String>
+  <String Id="UITextVolumeCostVolume" Overridable="yes">目錄</String>
+</WixLocalization>

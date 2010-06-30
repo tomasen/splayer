@@ -1,0 +1,218 @@
+<?xml version="1.0"?>
+<!-- ATL Server generated Web Service Description -->
+<definitions 
+	xmlns:s="http://www.w3.org/2001/XMLSchema" 
+	xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" 
+	xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" 
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+	xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" 
+	xmlns:s0="{{GetNamespace}}" 
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:atls="http://tempuri.org/vc/atl/server/"
+	targetNamespace="{{GetNamespace}}" 
+	xmlns="http://schemas.xmlsoap.org/wsdl/"
+>
+	<types>
+		<s:schema targetNamespace="{{GetNamespace}}" attributeFormDefault="qualified" elementFormDefault="qualified">
+{{if IsRpcEncoded}}
+{{while GetNextFunction}}
+{{while GetNextParameter}}
+{{if IsArrayParameter}}
+			<s:complexType name="{{GetFunctionName}}_{{GetParameterName}}_Array">
+				<s:complexContent>
+					<s:restriction base="soapenc:Array">
+						<s:attribute ref="soapenc:arrayType" wsdl:arrayType="{{if IsParameterUDT}}s0:{{else}}s:{{endif}}{{GetParameterSoapType}}{{if IsParameterDynamicArray}}[]{{else}}{{GetParameterArraySoapDims}}{{endif}}"/>
+					</s:restriction>
+				</s:complexContent>
+			</s:complexType>
+{{endif}}
+{{endwhile}}
+{{endwhile}}
+{{endif}}
+{{while GetNextHeader}}
+{{if IsHeaderUDT}}
+{{else}}
+{{if IsArrayHeader}}
+{{else}}
+			<s:simpleType name="{{GetHeaderName}}_wrapper">
+				<s:restriction base="s:{{GetHeaderSoapType}}"/>
+			</s:simpleType>
+{{endif}}
+{{endif}}
+{{if IsRpcEncoded}}
+{{if IsArrayHeader}}
+			<s:complexType name="{{GetHeaderName}}_Array">
+				<s:complexContent>
+					<s:restriction base="soapenc:Array">
+						<s:attribute ref="soapenc:arrayType" wsdl:arrayType="{{if IsHeaderUDT}}s0:{{else}}s:{{endif}}{{GetHeaderSoapType}}{{GetHeaderArraySoapDims}}"/>
+					</s:restriction>
+				</s:complexContent>
+			</s:complexType>
+{{endif}}
+{{endif}}
+{{endwhile}}
+{{if IsDocumentLiteral}}
+{{while GetNextFunction}}
+			<s:element name="{{GetFunctionName}}">
+				<s:complexType>
+					<s:sequence>
+{{while GetNextParameter}}
+{{if IsInParameter}}
+						<s:element name="{{GetParameterName}}" {{if NotIsArrayParameter}}type="{{if IsParameterUDT}}s0:{{else}}s:{{endif}}{{GetParameterSoapType}}"/{{else}}nillable="{{if IsParameterDynamicArray}}true{{else}}false{{endif}}"{{endif}}>
+{{if IsArrayParameter}}
+							<s:complexType>
+								<s:sequence>
+									<s:element name="{{GetParameterSoapType}}" type="{{if IsParameterUDT}}s0:{{else}}s:{{endif}}{{GetParameterSoapType}}" {{if IsParameterDynamicArray}}minOccurs="0" maxOccurs="unbounded"{{else}}minOccurs="{{GetParameterArraySize}}" maxOccurs="{{GetParameterArraySize}}"{{endif}}/>
+								</s:sequence>
+							</s:complexType>
+						</s:element>
+{{endif}}
+{{endif}}
+{{endwhile}}
+					</s:sequence>
+				</s:complexType>
+			</s:element>
+			<s:element name="{{GetFunctionName}}Response">
+				<s:complexType>
+					<s:sequence>
+{{while GetNextParameter}}
+{{if IsOutParameter}}
+						<s:element name="{{GetParameterName}}" {{if NotIsArrayParameter}}type="{{if IsParameterUDT}}s0:{{else}}s:{{endif}}{{GetParameterSoapType}}"/{{else}}nillable="{{if IsParameterDynamicArray}}true{{else}}false{{endif}}"{{endif}}>
+{{if IsArrayParameter}}
+							<s:complexType>
+								<s:sequence>
+									<s:element name="{{GetParameterSoapType}}" type="{{if IsParameterUDT}}s0:{{else}}s:{{endif}}{{GetParameterSoapType}}" {{if IsParameterDynamicArray}}minOccurs="0" maxOccurs="unbounded"{{else}}minOccurs="{{GetParameterArraySize}}" maxOccurs="{{GetParameterArraySize}}"{{endif}}/>
+								</s:sequence>
+							</s:complexType>
+						</s:element>
+{{endif}}
+{{endif}}
+{{endwhile}}
+					</s:sequence>
+				</s:complexType>
+			</s:element>
+{{endwhile}}
+{{endif}}
+{{while GetNextEnum}}
+			<s:simpleType name="{{GetEnumName}}">
+				<s:restriction base="s:string">
+{{while GetNextEnumElement}}
+					<s:enumeration value="{{GetEnumElementName}}"/>
+{{endwhile}}
+				</s:restriction>
+			</s:simpleType>
+{{endwhile}}
+{{while GetNextStruct}}
+			<s:complexType name="{{GetStructName}}">
+				<s:sequence>
+{{while GetNextStructField}}
+					<s:element name="{{GetStructFieldName}}" {{if IsFieldDynamicArray}}atls:SizeIs="{{GetFieldSizeIsName}}" {{endif}}{{if NotIsArrayField}}type="{{if IsFieldUDT}}s0:{{else}}s:{{endif}}{{GetStructFieldSoapType}}"/{{else}}nillable="{{if IsFieldDynamicArray}}true{{else}}false{{endif}}"{{endif}}>
+{{if IsArrayField}}
+						<s:complexType>
+{{if IsRpcEncoded}}
+							<s:complexContent>
+								<s:restriction base="soapenc:Array">
+									<s:attribute ref="soapenc:arrayType" wsdl:arrayType="{{if IsFieldUDT}}s0:{{else}}s:{{endif}}{{GetStructFieldSoapType}}{{if IsFieldDynamicArray}}[]{{else}}{{GetFieldArraySoapDims}}{{endif}}"/>
+								</s:restriction>
+							</s:complexContent>
+{{else}}
+							<s:sequence>
+								<s:element name="{{GetStructFieldSoapType}}" type="{{if IsFieldUDT}}s0:{{else}}s:{{endif}}{{GetStructFieldSoapType}}" {{if IsFieldDynamicArray}}minOccurs="0" maxOccurs="unbounded"{{else}}minOccurs="{{GetFieldArraySize}}" maxOccurs="{{GetFieldArraySize}}"{{endif}}/>
+							</s:sequence>
+{{endif}}
+						</s:complexType>
+					</s:element>
+{{endif}}
+{{endwhile}}
+				</s:sequence>
+			</s:complexType>
+{{endwhile}}
+{{if IsDocumentLiteral}}
+{{while GetNextHeader}}
+			<s:element name="{{GetHeaderName}}" {{if NotIsArrayHeader}}type="s0:{{if IsHeaderUDT}}{{GetHeaderSoapType}}{{else}}{{GetHeaderName}}_wrapper{{endif}}"/{{else}}nillable="false"{{endif}}>
+{{if IsArrayHeader}}
+				<s:complexType>
+					<s:sequence>
+						<s:element name="{{GetHeaderSoapType}}" type="{{if IsHeaderUDT}}s0:{{GetHeaderSoapType}}{{else}}s:{{endif}}{{GetHeaderSoapType}}" minOccurs="{{GetHeaderArraySize}}" maxOccurs="{{GetHeaderArraySize}}"/>
+					</s:sequence>
+				</s:complexType>
+			</s:element>
+{{endif}}
+{{endwhile}}
+{{endif}}
+		</s:schema>
+	</types>
+{{while GetNextFunction}}
+	<message name="{{GetFunctionName}}In">
+{{if IsDocumentLiteral}}
+		<part name="parameters" element="s0:{{GetFunctionName}}"/>
+{{endif}}
+{{if IsRpcEncoded}}
+{{while GetNextParameter}}
+{{if IsInParameter}}
+		<part name="{{GetParameterName}}" type="{{if NotIsArrayParameter}}{{if IsParameterUDT}}s0:{{else}}s:{{endif}}{{GetParameterSoapType}}{{else}}s0:{{GetFunctionName}}_{{GetParameterName}}_Array{{endif}}"/>
+{{endif}}
+{{endwhile}}
+{{endif}}
+	</message>
+	<message name="{{GetFunctionName}}Out">
+{{if IsDocumentLiteral}}
+		<part name="parameters" element="s0:{{GetFunctionName}}Response"/>
+{{endif}}
+{{if IsRpcEncoded}}
+{{while GetNextParameter}}
+{{if IsOutParameter}}
+		<part name="{{GetParameterName}}" type="{{if NotIsArrayParameter}}{{if IsParameterUDT}}s0:{{else}}s:{{endif}}{{GetParameterSoapType}}{{else}}s0:{{GetFunctionName}}_{{GetParameterName}}_Array{{endif}}"/>
+{{endif}}
+{{endwhile}}
+{{endif}}
+	</message>
+{{endwhile}}
+{{while GetNextHeader}}
+	<message name="{{GetHeaderName}}">
+{{if IsDocumentLiteral}}
+		<part name="{{GetHeaderName}}" element="s0:{{GetHeaderName}}"/>
+{{endif}}
+{{if IsRpcEncoded}}
+		<part name="{{GetHeaderName}}" type="{{if NotIsArrayHeader}}s0:{{if IsHeaderUDT}}{{GetHeaderSoapType}}{{else}}{{GetHeaderName}}_wrapper{{endif}}{{else}}s0:{{GetHeaderName}}_Array{{endif}}"/>
+{{endif}}
+	</message>
+{{endwhile}}
+	<portType name="{{GetServiceName}}Soap">
+{{while GetNextFunction}}
+		<operation name="{{GetFunctionName}}">
+			<input message="s0:{{GetFunctionName}}In"/>
+			<output message="s0:{{GetFunctionName}}Out"/>
+		</operation>
+{{endwhile}}
+	</portType>
+	<binding name="{{GetServiceName}}Soap" type="s0:{{GetServiceName}}Soap">
+		<soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="{{if IsDocumentLiteral}}document{{endif}}{{if IsRpcEncoded}}rpc{{endif}}"/>
+{{while GetNextFunction}}
+		<operation name="{{GetFunctionName}}">
+			<soap:operation soapAction="#{{GetFunctionName}}" style="{{if IsDocumentLiteral}}document{{endif}}{{if IsRpcEncoded}}rpc{{endif}}"/>
+			<input>
+				<soap:body {{if IsDocumentLiteral}}use="literal"{{endif}}{{if IsRpcEncoded}}use="encoded" namespace="{{GetNamespace}}" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"{{endif}}/>
+{{while GetNextFunctionHeader}}
+{{if IsInHeader}}
+				<soap:header message="s0:{{GetFunctionHeaderName}}" part="{{GetFunctionHeaderName}}"{{if IsRequiredHeader}} wsdl:required="true"{{endif}} {{if IsDocumentLiteral}}use="literal"{{endif}}{{if IsRpcEncoded}}use="encoded" namespace="{{GetNamespace}}" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"{{endif}}/>
+{{endif}}
+{{endwhile}}
+			</input>
+			<output>
+				<soap:body {{if IsDocumentLiteral}}use="literal"{{endif}}{{if IsRpcEncoded}}use="encoded" namespace="{{GetNamespace}}" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"{{endif}}/>
+{{while GetNextFunctionHeader}}
+{{if IsOutHeader}}
+				<soap:header message="s0:{{GetFunctionHeaderName}}" part="{{GetFunctionHeaderName}}"{{if IsRequiredHeader}} wsdl:required="true"{{endif}}  {{if IsDocumentLiteral}}use="literal"{{endif}}{{if IsRpcEncoded}}use="encoded" namespace="{{GetNamespace}}" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"{{endif}}/>
+{{endif}}
+{{endwhile}}
+			</output>
+		</operation>
+{{endwhile}}
+	</binding>
+	<service name="{{GetServiceName}}">
+		<port name="{{GetServiceName}}Soap" binding="s0:{{GetServiceName}}Soap">
+			<soap:address location="{{GetURL}}"/>
+		</port>
+	</service>
+</definitions>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Product.wxs - WiX source for the SvPlayer MSI.
+-->
+
+<!--
+http://msdn.microsoft.com/en-us/library/ms776260.aspx , locale and codepage
+en-US: 1033, 1252
+zh-CN: 2052, 936
+jp_JP: 1041, 932
+-->
+<?include SvPlayerver.wxi ?>
+<?define ProductDirectoryName = "SPlayer" ?>
+<?if $(var.locale) = "2052" or $(var.locale) = "1028" or $(var.locale) = "3076" or $(var.locale) = "4100" or $(var.locale) = "5124"?>
+  <?define ProductName = "射手播放器" ?>
+<?else?>
+  <?define ProductName = "SPlayer" ?>
+<?endif?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+
+ <Product Id="*" Name="$(var.ProductName)" Language="$(var.locale)" Manufacturer="http://splayer.org" 
+        Version="$(var.SvPlayerVersion)" UpgradeCode="29ADF609-5167-4E23-B9F0-CC45BAD852CC">
+        <Package Platform="$(var.Platform)" 
+            Manufacturer="http://splayer.org" 
+            Description="$(var.ProductName)" 
+            Comments="$(var.ProductName)" 
+            Compressed="yes" InstallerVersion="300" Languages="$(var.locale)" 
+            Keywords="Database, Installer" ShortNames="no" SummaryCodepage="$(var.codepage)" /> 
+        <!-- Major upgrade -->
+        <Upgrade Id="29ADF609-5167-4E23-B9F0-CC45BAD852CC">
+            <UpgradeVersion Minimum="$(var.SvPlayerVersion)" OnlyDetect="yes" Property="NEWERVERSIONDETECTED" />
+            <UpgradeVersion Minimum="1.0.0.0" IncludeMinimum="yes" Maximum="$(var.SvPlayerVersion)" 
+                IncludeMaximum="no" Property="OLDERVERSIONBEINGUPGRADED" />
+        </Upgrade>
+
+        <Condition Message="An administrator must approve or install [ProductName].">
+            Privileged
+        </Condition>
+        <Condition Message="A later version of [ProductName] is already installed.">
+            NOT NEWERVERSIONDETECTED
+        </Condition>
+      <!-- Media -->
+      <Media Id="1" Cabinet="SvPlayer.cab" EmbedCab="yes" />
+
+
+   <!-- Icons BUGBUG need to update to the RES folder when check in to the SVN-->
+      <Icon Id="SvPlayerIcon" SourceFile="icon.ico" />
+
+      <!-- Properties -->
+      <Property Id="ARPHELPLINK" Value="http://splayer.org" />
+      <Property Id="ARPPRODUCTICON" Value="SvPlayerIcon" />
+      <Property Id="ARPURLINFOABOUT" Value="http://splayer.org" />
+      <Property Id="ARPURLUPDATEINFO" Value="http://splayer.org" />
+      
+      <?if $(var.locale) = "2052" or $(var.locale) = "1028" or $(var.locale) = "3076" or $(var.locale) = "4100" or $(var.locale) = "5124"?>
+          <WixVariable Id="WixUILicenseRtf" Value="license.chs.rtf" />
+      <?else?>
+          <WixVariable Id="WixUILicenseRtf" Value="license.en.rtf" />
+      <?endif?>
+
+      <!-- the banner and the dialog bitmap-->
+      <WixVariable Id="WixUIBannerBmp" Value="bitmaps\bannrbmp.bmp" />
+      <WixVariable Id="WixUIDialogBmp" Value="bitmaps\dlgbmp.bmp" />
+          
+      <!-- Directories -->
+      <Directory Id="TARGETDIR" Name="SourceDir">
+            <Directory Id="ProgramFilesFolder" >
+                <Directory Id="APPLICATIONFOLDER" Name="$(var.ProductDirectoryName)" />
+            </Directory>
+
+            <Directory Id="ProgramMenuFolder" Name="ProgMenu">
+                <Directory Id="SvPlayerShortcutFolder" Name="$(var.ProductDirectoryName)" />
+            </Directory>
+        </Directory>
+
+        <!-- Features -->
+        <Feature Id="Feature_SvPlayer" Title="$(var.ProductName)" 
+            Description="$(var.ProductName)" 
+            AllowAdvertise="no" Display="expand" 
+            InstallDefault="local" Level="1" Absent="disallow">
+            <ComponentGroupRef Id="comp_SvPlayer" />
+        </Feature>
+
+        <!-- Install Sequences -->
+        <InstallExecuteSequence>
+            <FindRelatedProducts Before="LaunchConditions" />
+            <RemoveExistingProducts After="InstallValidate" />
+        </InstallExecuteSequence>
+
+        <InstallUISequence>
+            <FindRelatedProducts Before="LaunchConditions" />
+        </InstallUISequence>
+        
+        <Property Id="ApplicationFolderName" Value="$(var.ProductDirectoryName)" />
+        <Property Id="ALLUSERS" Value="1" />
+        <Property Id="WixAppFolder" Value="WixPerMachineFolder" />
+
+        <WixVariable Id="WixUISupportPerMachine" Value="1" />
+        <WixVariable Id="WixUISupportPerUser" Value="0" />
+  
+    
+        <UI>
+           <UIRef Id="WixUI_Advanced" />
+           <UIRef Id="WixUI_ErrorProgressText" />
+        </UI>
+    </Product>
+
+</Wix>

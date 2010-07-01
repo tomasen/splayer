@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="windows-1250"?>
+<VisualStudioProject
+	ProjectType="Intel C++ Project"
+	Version="11.1"
+	Name="MP4Splitter"
+	ProjectGUID="{71D15B6E-5312-48A1-8B73-FC3724EB79FE}"
+	VCNestedProjectGUID="{9ED4B036-7399-4128-868D-6E71188E0277}"
+	VCNestedProjectFileName="MP4Splitter_vs2005.vcproj">
+	<Configurations>
+		<Configuration
+			Name="Release Unicode lib|Win32">
+			<Tool
+				Name="CppCmplrTool"
+				EnableEnhancedInstructionSet="1001"/>
+		</Configuration>
+	</Configurations>
+	<Files/>
+</VisualStudioProject>

@@ -132,22 +132,22 @@ void CStaticLink::OnLButtonDown(UINT nFlags, CPoint point)
 // 
 BOOL CStaticLink::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message) 
 { 
-    if (g_hCursorLink == NULL) { 
-        static BOOL bTriedOnce = FALSE; 
-        if (!bTriedOnce) { 
-         CString windir; 
-         GetWindowsDirectory(windir.GetBuffer(MAX_PATH), MAX_PATH); 
-         windir.ReleaseBuffer(); 
-         windir += _T("\\winhlp32.exe"); 
-         HMODULE hModule = LoadLibrary(windir); 
-            if (hModule) { 
-                g_hCursorLink = 
-                    CopyCursor(::LoadCursor(hModule, MAKEINTRESOURCE(106))); 
-            } 
-            FreeLibrary(hModule); 
-            bTriedOnce = TRUE; 
-        } 
-    } 
+//     if (g_hCursorLink == NULL) { 
+//         static BOOL bTriedOnce = FALSE; 
+//         if (!bTriedOnce) { 
+//          CString windir; 
+//          GetWindowsDirectory(windir.GetBuffer(MAX_PATH), MAX_PATH); 
+//          windir.ReleaseBuffer(); 
+//          windir += _T("\\winhlp32.exe"); 
+//          HMODULE hModule = LoadLibrary(windir); 
+//             if (hModule) { 
+//                 g_hCursorLink = 
+//                     CopyCursor(::LoadCursor(hModule, MAKEINTRESOURCE(106))); 
+//             } 
+//             FreeLibrary(hModule); 
+//             bTriedOnce = TRUE; 
+//         } 
+//     } 
     if (g_hCursorLink) { 
         ::SetCursor(g_hCursorLink); 
         return TRUE; 

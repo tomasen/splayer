@@ -18,8 +18,10 @@
 	<Configurations>
 		<Configuration
 			Name="Release Unicode|Win32"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
-			InheritedPropertySheets="..\..\common.vsprops;..\..\release.vsprops"
+			InheritedPropertySheets="..\..\common.vsprops;..\..\release.vsprops;.\wtl_integration.vsprops"
 			UseOfMFC="1"
 			UseOfATL="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -54,6 +56,7 @@
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				EnableEnhancedInstructionSet="0"
 				OpenMP="false"
+				UsePrecompiledHeader="2"
 				PrecompiledHeaderThrough="stdafx.h"
 				PrecompiledHeaderFile="$(OutDir)\$(ProjectName).pch"
 			/>
@@ -117,7 +120,7 @@
 		<Configuration
 			Name="Debug Unicode|Win32"
 			ConfigurationType="1"
-			InheritedPropertySheets="..\..\common.vsprops;..\..\debug.vsprops"
+			InheritedPropertySheets="..\..\common.vsprops;..\..\debug.vsprops;.\wtl_integration.vsprops"
 			UseOfMFC="1"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="1"
@@ -202,7 +205,7 @@
 		<Configuration
 			Name="Release|Win32"
 			ConfigurationType="1"
-			InheritedPropertySheets="..\..\common.vsprops;..\..\release.vsprops"
+			InheritedPropertySheets="..\..\common.vsprops;..\..\release.vsprops;.\wtl_integration.vsprops"
 			UseOfMFC="1"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="2"
@@ -290,7 +293,7 @@
 		<Configuration
 			Name="Debug|Win32"
 			ConfigurationType="1"
-			InheritedPropertySheets="..\..\common.vsprops;..\..\debug.vsprops"
+			InheritedPropertySheets="..\..\common.vsprops;..\..\debug.vsprops;.\wtl_integration.vsprops"
 			UseOfMFC="1"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="2"
@@ -403,10 +406,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Updater\conrgette_interface.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\ConvertChapDlg.cpp"
 				>
 			</File>
@@ -427,16 +426,20 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Updater\cupdatenetlib.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\DeinterlacerFilter.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\DisplaySettingDetector.cpp"
 				>
+				<FileConfiguration
+					Name="Release Unicode|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\DlgChkUpdater.cpp"
@@ -513,6 +516,14 @@
 			<File
 				RelativePath=".\libpng.c"
 				>
+				<FileConfiguration
+					Name="Release Unicode|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\LineNumberEdit.cpp"
@@ -829,10 +840,26 @@
 			<File
 				RelativePath=".\SUIButton.cpp"
 				>
+				<FileConfiguration
+					Name="Release Unicode|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\SUIVoteStar.cpp"
 				>
+				<FileConfiguration
+					Name="Release Unicode|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\SVPButton.cpp"
@@ -845,6 +872,14 @@
 			<File
 				RelativePath=".\SVPLycShowBox.cpp"
 				>
+				<FileConfiguration
+					Name="Release Unicode|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\SVPSliderCtrl.cpp"
@@ -889,6 +924,14 @@
 			<File
 				RelativePath=".\WebServer.cpp"
 				>
+				<FileConfiguration
+					Name="Release Unicode|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\WebServerSocket.cpp"
@@ -1725,6 +1768,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\LYCBACKG.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\icon\Midi_File.ico"
 				>
 			</File>
@@ -2212,6 +2259,90 @@
 					>
 				</File>
 			</Filter>
+		</Filter>
+		<Filter
+			Name="UserInterface"
+			>
+			<Filter
+				Name="Dialogs"
+				>
+				<File
+					RelativePath=".\UserInterface\Dialogs\OptionAdvancedPage_Win.cc"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Dialogs\OptionAdvancedPage_Win.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Dialogs\OptionAssociationPage_Win.cc"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Dialogs\OptionAssociationPage_Win.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Dialogs\OptionBasicPage_Win.cc"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Dialogs\OptionBasicPage_Win.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Dialogs\OptionDlg_Win.cc"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Dialogs\OptionDlg_Win.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Dialogs\OptionHotkeyPage_Win.cc"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Dialogs\OptionHotkeyPage_Win.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Dialogs\OptionSubtitlePage_Win.cc"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Dialogs\OptionSubtitlePage_Win.h"
+					>
+				</File>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="Updater"
+			>
+			<File
+				RelativePath="..\..\..\Updater\conrgette_interface.cpp"
+				>
+				<FileConfiguration
+					Name="Release Unicode|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\Updater\cupdatenetlib.cpp"
+				>
+				<FileConfiguration
+					Name="Release Unicode|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
 		</Filter>
 		<File
 			RelativePath=".\res\shaders\BT601BT709.psh"

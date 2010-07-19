@@ -195,7 +195,7 @@ void CMediaFormats::UpdateData(bool fSave)
 		ADDFMT((_T("MPEG Media file"), _T("mpg mpeg mpe m1v m2v mpv2 mp2v"), _T("video")));
 		ADDFMT((_T("VCD MPEG Data file"), _T("dat"), _T("video"),-1));
 		ADDFMT((_T("Collegesoft Media file"), _T("csf"), _T("video")));
-		ADDFMT((_T("MPEG Transport-Stream file"), _T("ts tp tpr pva pss m2ts m2t mts evo m2p mpls"), _T("video")));
+		ADDFMT((_T("MPEG Transport-Stream file"), _T("ts tp tpr pva pss m2ts m2t mts evo m2p"), _T("video")));
 		ADDFMT((_T("MPEG Audio file"), _T("mpa mp2 m1a m2a"), _T("audio"), true));
         ADDFMT((_T("VP8 Webm file"), _T("webm"), _T("video")));
 		ADDFMT((_T("DVD file"), _T("vob ifo"), _T("video")));
@@ -234,7 +234,7 @@ void CMediaFormats::UpdateData(bool fSave)
 		ADDFMT((_T("Quicktime file"), _T("mov qt amr 3g2 3gp2"), _T("video"), false, _T("QuickTime or codec pack")));//QuickTime
 		ADDFMT((_T("IVM file"), _T("ivm"), _T("video"), false));
 		ADDFMT((_T("Image file"), _T("jpeg jpg bmp gif pic dib tiff tif"), _T("image") , -2)); //png not supported
-		ADDFMT((_T("Playlist file"), _T("asx m3u pls wvx wax wmx mpcpl cue"), _T("Application")));
+		ADDFMT((_T("Playlist file"), _T("asx m3u pls wvx wax wmx mpcpl cue mpls bdmv"), _T("Application")));
 		ADDFMT((_T("Rar Playlist file"), _T("Application"), _T("rar"), -1));
 		ADDFMT((_T("Subtitle file"), _T("srt idx sub ssa ass xss usf"), _T("text"), -2));
 		ADDFMT((_T("Other"), _T("divx vp6 rmvb amv"), _T("video")));

@@ -5747,6 +5747,7 @@ CString GetContentType(CString fn, CAtlList<CString>* redir)
 		else if(ext == _T(".qtl")) ct = _T("application/x-quicktimeplayer");
 		else if(ext == _T(".mpcpl")) ct = _T("application/x-mpc-playlist");
 		else if(ext == _T(".cue")) ct = _T("application/x-cue-playlist");
+        else if(ext == _T(".bdmv")) ct = _T("application/x-bdmv-playlist");
 
 		if(FILE* f = _tfopen(fn, _T("rb")))
 		{

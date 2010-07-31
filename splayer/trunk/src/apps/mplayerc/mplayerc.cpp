@@ -446,7 +446,7 @@ HICON LoadIcon(CString fn, bool fSmall)
 	}
 	while(0);
 
-	return((HICON)LoadImage(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_UNKNOWN), IMAGE_ICON, size.cx, size.cy, 0));
+	return((HICON)LoadImage(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDR_MAINFRAME), IMAGE_ICON, size.cx, size.cy, 0));
 }
 
 bool LoadType(CString fn, CString& type)
@@ -1575,7 +1575,7 @@ for(int i = 0; i <= 30; i++){
 	SVP_LogMsg5(_T("COLOR_GRAYTEXT %x"), GetSysColor(COLOR_GRAYTEXT));
 */
 
-    SVP_LogMsg5(L"Settings::InitInstanceThreaded 1");
+  SVP_LogMsg5(L"Settings::InitInstanceThreaded 1 %d", SVP_REV_NUMBER);
 
 	//avoid crash by lame acm
 	RegDelnode(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\MediaResources\\msacm\\msacm.lameacm");
@@ -2254,8 +2254,10 @@ BOOL CMPlayerCApp::InitInstance()
 		{
 		case 1:
 			{
-				CPPageSheet options(ResStr(IDS_OPTIONS_CAPTION), NULL, NULL, CPPageFormats::IDD );
-				options.DoModal();
+        CAutoPtr<CPPageFormats> page(new CPPageFormats());
+        CPropertySheet dlg(ResStr(IDS_DIALOG_FILEASSOC_TITLE), AfxGetMainWnd());
+        dlg.AddPage(page);
+        dlg.DoModal() ;
 				return FALSE;
 			}
 			break;

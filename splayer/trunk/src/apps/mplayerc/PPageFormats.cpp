@@ -207,7 +207,7 @@ CString CPPageFormats::GetFileIcon(CString strExt){
 	ULONG           len = sizeof(buff);
 	memset(buff, 0, len);
 	CString FileIcon;
-	int iconId = IDI_UNKNOWN;
+	UINT iconId = 0;
 
 	CString szExtIconfile(strExt);
 	szExtIconfile.Trim('.');
@@ -216,58 +216,55 @@ CString CPPageFormats::GetFileIcon(CString strExt){
 	if(svpTool.ifFileExist(szExtIconfile)){
 		return szExtIconfile;
 	}
-	if(isSubtitleFile(strExt)){
-		iconId = IDI_SUBTITLE_FILE;
-	}else{
+	//if(isSubtitleFile(strExt)){
+	//	iconId = IDI_SUBTITLE_FILE;
+	//}else
+  {
 		CMediaFormats& mf = AfxGetAppSettings().Formats;
 		for(size_t i = 0; i < mf.GetCount(); i++)
 		{
 			if ( mf[i].FindExt(strExt) ){
-				if(mf[i].IsAudioOnly() == 1){
-					iconId = IDI_AUDIO_FILE;
-				}else{
-					iconId = IDI_VIDEO;
-				}
+				
 					CString szType = mf[i].GetLabel();
+
 					szExtIconfile = szType;
 					szExtIconfile = svpTool.GetPlayerPath(CString(_T("skins\\icons\\"))+szExtIconfile.Trim() + _T(".ico") );
-					if(svpTool.ifFileExist(szExtIconfile)){
+					if(svpTool.ifFileExist(szExtIconfile))
 						return szExtIconfile;
-					}
 
-					if(szType.Find(_T("Real")) >= 0){
-						iconId = IDI_REAL_FILE;
-					}else if(szType.Find(_T("Quicktime")) >= 0){
-						iconId = IDI_QUICKTIME_FILE;
-					}else if(szType.Find(_T("MIDI")) >= 0){
-						iconId = IDI_MIDI_FILE;
-					}else if(szType.Find(_T("MPEG4")) >= 0){
-						iconId = IDI_MOBILE_VIDEO;
-					}else if(szType.Find(_T("MP3")) >= 0){
-						iconId = IDI_MP3_FILE;
-					}else if(szType.Find(_T("CD")) >= 0){
-						iconId = IDI_NORMAL_CD;
-					}else if(szType.Find(_T("Flash")) >= 0){
-						iconId = IDI_FLASH;
-					}else if(szType.Find(_T("DVD")) >= 0){
-						iconId = IDI_DVD;
-					}else if(szType.Find(_T("Matroska")) >= 0){
-						iconId = IDI_MKV;
-					}else if(szType.Find(_T("Video File")) >= 0){
-						iconId = IDI_AVI;
-					}else if(szType.Find(_T("Transport-Stream")) >= 0){
-						iconId = IDI_TS;
-					}
-				
+          iconId = mf[i].GetIconType();
+
 				break;
 			}
 			
 		}
 	}
 
-	::GetModuleFileName(AfxGetInstanceHandle(), buff, MAX_PATH);
-	FileIcon.Format(_T("\"%s\",%d"), buff, iconId - IDI_SINGLE + 1); 
-	return FileIcon;
+    if (iconId > 0)
+    {
+      ::GetModuleFileName(AfxGetInstanceHandle(), buff, MAX_PATH);
+      FileIcon.Format(_T("\"%s\",%d"), buff, iconId + 2 - IDI_AUDIOCD); 
+      
+      return FileIcon;
+    }
+    else
+    {
+      return _T("");
+    }
+}
+CString CPPageFormats::GetFileTypeName(CString strExt)
+{
+  CMediaFormats& mf = AfxGetAppSettings().Formats;
+  for(size_t i = 0; i < mf.GetCount(); i++)
+  {
+    if ( mf[i].FindExt(strExt) ){
+
+      return mf[i].GetLabel();
+      break;
+    }
+  }
+
+  return _T("SPlayer") + strExt;
 }
 BOOL CPPageFormats::SetFileAssociation(CString strExt, CString strProgID, bool fRegister)
 {
@@ -342,7 +339,7 @@ BOOL CPPageFormats::SetFileAssociation(CString strExt, CString strProgID, bool f
 					}
 				}
 				
-				if (ERROR_SUCCESS == key.Create(HKEY_CLASSES_ROOT, strProgID + _T("\\DefaultIcon")))
+				if (!FileIcon.IsEmpty() && ERROR_SUCCESS == key.Create(HKEY_CLASSES_ROOT, strProgID + _T("\\DefaultIcon")))
 					key.SetStringValue (NULL, FileIcon);
 
                 
@@ -406,7 +403,7 @@ BOOL CPPageFormats::SetFileAssociation(CString strExt, CString strProgID, bool f
 
 			key.SetStringValue(g_strOldAssoc, extoldreg);
 
-			if (ERROR_SUCCESS == key.Create(HKEY_CLASSES_ROOT, strProgID + _T("\\DefaultIcon")))
+			if (!FileIcon.IsEmpty() && ERROR_SUCCESS == key.Create(HKEY_CLASSES_ROOT, strProgID + _T("\\DefaultIcon")))
 				key.SetStringValue (NULL, FileIcon);
 /*
 			if (ERROR_SUCCESS == key.Open(HKEY_CLASSES_ROOT, strProgID + _T("\\DefaultIcon")))
@@ -445,8 +442,9 @@ bool CPPageFormats::RegisterExt(CString ext, bool fRegister, CString PerceivedTy
 {
 	CRegKey         key;
 	bool            bSetValue;
-	CString strProgID = _T("SPlayer") + ext;
-	CString strLabel = _T("");
+	CString strProgID =  _T("SPlayer") + ext;
+  
+  CString strLabel = _T("");
 	if(ext == _T(".rar")){
 		return true;
 	}
@@ -465,7 +463,7 @@ bool CPPageFormats::RegisterExt(CString ext, bool fRegister, CString PerceivedTy
 	if(!MakeRegParams(ext, path, fn, strLabel, cmd))
 		return(false);
 
-
+  
 	if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, ext))
 		return(false);
 	TCHAR buff[256];
@@ -479,9 +477,11 @@ bool CPPageFormats::RegisterExt(CString ext, bool fRegister, CString PerceivedTy
 		strLabel = buff;
 	}
 	key.SetStringValue(NULL, strProgID);
-   
-    if(!PerceivedType.IsEmpty())
-        key.SetStringValue (L"PerceivedType", PerceivedType);
+  
+  strLabel = GetFileTypeName(ext);
+
+  if(!PerceivedType.IsEmpty())
+    key.SetStringValue (L"PerceivedType", PerceivedType);
 
 	BOOL bIsRAR = ( ext.Right(3).MakeLower() == _T("rar") );
 	if(bIsRAR) {

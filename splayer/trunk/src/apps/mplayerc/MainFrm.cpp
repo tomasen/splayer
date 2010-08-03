@@ -16046,6 +16046,7 @@ void CMainFrame::OpenMedia(CAutoPtr<OpenMediaData> pOMD)
 		CloseMedia();
 
 	m_iMediaLoadState = MLS_LOADING; // HACK: hides the logo
+  m_wndView.Invalidate();
 
 	AppSettings& s = AfxGetAppSettings();
 

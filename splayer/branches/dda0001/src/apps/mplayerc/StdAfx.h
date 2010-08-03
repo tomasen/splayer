@@ -101,6 +101,7 @@ class CAtlStringMap : public CAtlMap<S, T, CStringElementTraits<S> > {};
 #undef __ATLSTR_H__
 #undef __IStream_INTERFACE_DEFINED__
 
+#define _WTL_NEW_PAGE_NOTIFY_HANDLERS
 #define _ATL_NO_AUTOMATIC_NAMESPACE
 #define _WTL_NO_AUTOMATIC_NAMESPACE
 
@@ -117,9 +118,14 @@ class CAtlStringMap : public CAtlMap<S, T, CStringElementTraits<S> > {};
 #include <atldlgs.h>
 #include <atltheme.h>
 #include <atlcrack.h>
+#include <atlddx.h>
 
-#include <string>   // we also would like to use STL strings
+// we'll need the following stl stuff
+#include <string>
 #include <memory>
-
+#include <vector>
+#include <map>
+#include <queue>
+#include <list>
 
 #endif // !defined(AFX_STDAFX_H__C76533D6_6242_4BEB_8FD3_C6BE58F07224__INCLUDED_)

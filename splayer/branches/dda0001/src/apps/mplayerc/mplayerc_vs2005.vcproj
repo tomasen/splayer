@@ -2315,6 +2315,18 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Support"
+				>
+				<File
+					RelativePath=".\UserInterface\Support\BtnEditCtrl.cc"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Support\BtnEditCtrl.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Updater"
@@ -2342,6 +2354,18 @@
 						UsePrecompiledHeader="0"
 					/>
 				</FileConfiguration>
+			</File>
+		</Filter>
+		<Filter
+			Name="Utils"
+			>
+			<File
+				RelativePath=".\Utils\Strings.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Utils\Strings.h"
+				>
 			</File>
 		</Filter>
 		<File
@@ -2401,11 +2425,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 		<File

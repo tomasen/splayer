@@ -153,10 +153,8 @@ public:
 */
 interface ISubClock;
 
-
 class CMainFrame : public CFrameWnd, public CDropTarget 
 {
-
 	friend class CPPageFileInfoSheet;
 	friend class CPPageLogo;
 

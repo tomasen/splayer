@@ -1,7 +1,6 @@
 // libsqlite.h
 
 #pragma once
-#include "stdafx.h"
 #include "../sqlite3.h"
 #include <stdlib.h>
 #include <vector>

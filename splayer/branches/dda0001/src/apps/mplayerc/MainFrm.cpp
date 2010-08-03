@@ -51,6 +51,8 @@
 #include "ShaderCombineDlg.h"
 #include "UESettingPanel.h"
 
+#include "UserInterface/Dialogs/OptionDlg_Win.h"
+
 #include <mtype.h>
 #include <Mpconfig.h>
 #include <ks.h>
@@ -15864,44 +15866,35 @@ void CMainFrame::OnSettingFinished(){
 }
 void CMainFrame::ShowOptions(int idPage)
 {
-	
-	if(HWND hWnd = ::FindWindow(NULL, ResStr(IDS_DIALOG_UESETTING_PANNEL_TITLE)))
-	{
-		
-		::SetForegroundWindow(hWnd);
-		
-	}else{
-		CUESettingPanel* ueOption = new CUESettingPanel(pGB, this, idPage);
-		ueOption->Create(IDD_DHTML_SETTING, this);
-		ueOption->ShowWindow(SW_SHOW);
-	}
+  // Option Dialog is a modal dialog.
+  OptionDlg dlg;
+  if (dlg.DoModal() == IDOK)
+  {
+    if(!m_fFullScreen)
+      SetAlwaysOnTop(AfxGetAppSettings().iOnTop);
 
-	
-	/*
-	
-		if(ueOption.DoModal() == IDOK)
-		{
-			
-	
-		
-			
-		}else if(ueOption.bOpenAdvancePanel){
-			CPPageSheet options(ResStr(IDS_OPTIONS_CAPTION), pGB, this, idPage);
-	
-			if(options.DoModal() == IDOK)
-			{
-				if(!m_fFullScreen)
-					SetAlwaysOnTop(s.iOnTop);
-	
-				m_wndView.LoadLogo();
-	
-				s.UpdateData(true);
-	
-				UpdateSubtitle(true);
-				UpdateSubtitle2(true);
-			}		
-		}*/
-	
+    m_wndView.LoadLogo();
+
+    AfxGetAppSettings().UpdateData(true);
+
+    UpdateSubtitle(true);
+    UpdateSubtitle2(true);
+  }
+  //dlg.DoModal();
+//  dlg.Create(NULL);
+// 	
+// 	if(HWND hWnd = ::FindWindow(NULL, ResStr(IDS_DIALOG_UESETTING_PANNEL_TITLE)))
+// 	{
+// 		
+// 		::SetForegroundWindow(hWnd);
+// 		
+// 	}else{
+// 		CUESettingPanel* ueOption = new CUESettingPanel(pGB, this, idPage);
+// 		ueOption->Create(IDD_DHTML_SETTING, this);
+// 		ueOption->ShowWindow(SW_SHOW);
+// 	}
+
+
 
 }
 

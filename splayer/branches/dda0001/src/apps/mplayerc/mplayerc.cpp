@@ -2088,6 +2088,12 @@ LPTOP_LEVEL_EXCEPTION_FILTER WINAPI Mine_SetUnhandledExceptionFilter( LPTOP_LEVE
 	return NULL;
 }
 
+//////////////////////////////////////////////////////////////////////////
+// WTL/ATL supporting logic
+WTL::CAppModule _Module;
+//////////////////////////////////////////////////////////////////////////
+
+
 BOOL CMPlayerCApp::InitInstance()
 {
 	//ssftest s;
@@ -2146,6 +2152,14 @@ BOOL CMPlayerCApp::InitInstance()
         AfxMessageBox(_T("OleInitialize failed!"));
 		return FALSE;
 	}
+
+  //////////////////////////////////////////////////////////////////////////
+  // WTL/ATL supporting logic
+  ::CoInitialize(NULL);
+  ::DefWindowProc(NULL, 0, 0, 0L);
+  WTL::AtlInitCommonControls(ICC_BAR_CLASSES);
+  _Module.Init(NULL, AfxGetInstanceHandle());
+  //////////////////////////////////////////////////////////////////////////
 	
 	SetLanguage(-1);
 
@@ -2457,6 +2471,12 @@ int CMPlayerCApp::ExitInstance()
 	UnRegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mxrender.dll")) );
 	UnRegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mxvideo.dll")) );
 	OleUninitialize();
+
+  //////////////////////////////////////////////////////////////////////////
+  // WTL/ATL supporting logic
+  _Module.Term();
+  ::CoUninitialize();
+  //////////////////////////////////////////////////////////////////////////
 
 	int ret = CWinApp::ExitInstance();
 

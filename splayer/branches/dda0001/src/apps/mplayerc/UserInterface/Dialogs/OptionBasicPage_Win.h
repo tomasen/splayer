@@ -58,7 +58,7 @@ private:
 
   // controls
   CBtnEditCtrl  m_userbkgnd_edit;
-  CComboBox     m_upgradestrategy_combo;
+  WTL::CComboBox     m_upgradestrategy_combo;
 
 };
 

@@ -2,6 +2,7 @@
 #include "OptionBasicPage_Win.h"
 #include "../../Utils/Strings.h"
 #include "../../mplayerc.h"
+#include "../../svplib/svplib.h"
 
 BOOL OptionBasicPage::OnInitDialog(HWND hwnd, LPARAM lParam)
 {
@@ -40,10 +41,37 @@ void OptionBasicPage::OnBkgndPicker(UINT uNotifyCode, int nID, CWindow wndCtl)
 
 int OptionBasicPage::OnSetActive()
 {
+  AppSettings& s = AfxGetAppSettings();
+
   // retrieve variables from preference
-  m_bkgnd = AfxGetAppSettings().logoext?1:0;  // logoext is "use external logo"
+  m_bkgnd = s.logoext?1:0;  // logoext is "use external logo"
   // feed variables onto screen
-  m_userbkgnd_edit.SetWindowText(AfxGetAppSettings().logofn);
+  m_userbkgnd_edit.SetWindowText(s.logofn);
+
+  // s.logostretch 
+  // 1 keep aspect ratio
+  // 2 stretch to full screen
+  m_autoscalebkgnd = !!(s.logostretch & 1);
+  m_useaero = s.bAeroGlass;
+  m_repeat = s.fLoopForever;
+  m_mintotray = s.fTrayIcon;
+  m_autoresume =  s.autoResumePlay;
+  m_autofullscreen = s.launchfullscreen;
+  m_autoupgrade = (s.tLastCheckUpdater < 2000000000);
+
+  //This might need revise
+  CSVPToolBox svpTool;
+  CPath updPath( svpTool.GetPlayerPath(_T("UPD")));
+  updPath.AddBackslash();
+  CString szUpdfilesPath(updPath);
+  CString szBranch = svpTool.fileGetContent(szUpdfilesPath + _T("branch") );
+  if (szBranch == L"stable")
+    m_upgradestrategy_combo.SetCurSel(1);
+  else if (szBranch == L"beta")
+    m_upgradestrategy_combo.SetCurSel(2);
+  else
+    m_upgradestrategy_combo.SetCurSel(0);
+
   DoDataExchange();
   return 0;
 }
@@ -52,8 +80,40 @@ int OptionBasicPage::OnApply()
 {
   // retrieve variables from screen
   DoDataExchange(TRUE);
+  AppSettings& s = AfxGetAppSettings();
   // feed variables into preference
-  AfxGetAppSettings().logoext = m_bkgnd==1?true:false;
-  m_userbkgnd_edit.GetWindowText(AfxGetAppSettings().logofn);
+  s.logoext = m_bkgnd==1?true:false;
+  m_userbkgnd_edit.GetWindowText(s.logofn);
+
+  s.logostretch = m_autoscalebkgnd?3:0;
+  s.bAeroGlass = m_useaero;
+  s.fLoopForever = m_repeat;
+  s.fTrayIcon = m_mintotray;
+  s.autoResumePlay = m_autoresume;
+  s.launchfullscreen = m_autofullscreen;
+
+  if (m_autoupgrade)
+    s.tLastCheckUpdater = (UINT)time(NULL) - 100000;
+  else
+    s.tLastCheckUpdater = 2000000000;
+
+  //This might need revise
+  CSVPToolBox svpTool;
+  CPath updPath( svpTool.GetPlayerPath(_T("UPD")));
+  updPath.AddBackslash();
+  CString szUpdfilesPath(updPath);
+  switch (m_upgradestrategy_combo.GetCurSel())
+  {
+    case 1:
+      svpTool.filePutContent( szUpdfilesPath + _T("branch") , L"stable");
+      break;
+    case 2:
+      svpTool.filePutContent( szUpdfilesPath + _T("branch") , L"beta");
+      break;
+    default:
+      ::DeleteFile(szUpdfilesPath + _T("branch"));
+      break;
+  }
+
   return PSNRET_NOERROR;
 }

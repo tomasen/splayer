@@ -4,14 +4,19 @@
 
 BOOL OptionAdvancedPage::OnInitDialog(HWND hwnd, LPARAM lParam)
 {
-
+  m_gpuaccelcheckbox.Attach(GetDlgItem(IDC_CHECK_ENABLEGPUACCEL));
 
   return TRUE;
 }
 
+void OptionAdvancedPage::OnVideomodeUpdated(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+  m_gpuaccelcheckbox.EnableWindow(nID == IDC_RADIO_PICTUREQUALITY);
+}
+
 void OptionAdvancedPage::OnDestroy()
 {
-
+  m_gpuaccelcheckbox.Detach();
 }
 
 int OptionAdvancedPage::OnSetActive()
@@ -19,6 +24,7 @@ int OptionAdvancedPage::OnSetActive()
   AppSettings& s = AfxGetAppSettings();
 
   m_videoqualitymode = s.iSVPRenderType;
+  m_gpuaccelcheckbox.EnableWindow(!s.iSVPRenderType);
   m_videoperformancemode = !s.iSVPRenderType;
   m_enablegpuaccel = s.useGPUAcel;
 

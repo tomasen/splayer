@@ -18,12 +18,25 @@ BOOL OptionBasicPage::OnInitDialog(HWND hwnd, LPARAM lParam)
   for (std::vector<std::wstring>::iterator it = text_ar.begin();
     it != text_ar.end(); it++)
     m_upgradestrategy_combo.AddString(it->c_str());
+
+  m_autoscalecheckbox.Attach(GetDlgItem(IDC_CHECK_BKGNDAUTOSCALE));
+  m_aeroglasscheckbox.Attach(GetDlgItem(IDC_CHECK_AERO));
   return TRUE;
 }
 
 void OptionBasicPage::OnDestroy()
 {
   m_upgradestrategy_combo.Detach();
+  m_autoscalecheckbox.Detach();
+  m_aeroglasscheckbox.Detach();
+}
+
+// event when setting is updated
+void OptionBasicPage::OnBkgndUpdated(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+  // update scale checkbox and exit box
+  m_autoscalecheckbox.EnableWindow(nID == IDC_RADIO_USERBKGND);
+  m_userbkgnd_edit.EnableWindow(nID == IDC_RADIO_USERBKGND);
 }
 
 void OptionBasicPage::OnBkgndPicker(UINT uNotifyCode, int nID, CWindow wndCtl)
@@ -45,8 +58,12 @@ int OptionBasicPage::OnSetActive()
 
   // retrieve variables from preference
   m_bkgnd = s.logoext?1:0;  // logoext is "use external logo"
+  m_autoscalecheckbox.EnableWindow(s.logoext);
+  m_userbkgnd_edit.EnableWindow(s.logoext);
   // feed variables onto screen
   m_userbkgnd_edit.SetWindowText(s.logofn);
+
+  m_aeroglasscheckbox.EnableWindow(s.bAeroGlassAvalibility);
 
   // s.logostretch 
   // 1 keep aspect ratio

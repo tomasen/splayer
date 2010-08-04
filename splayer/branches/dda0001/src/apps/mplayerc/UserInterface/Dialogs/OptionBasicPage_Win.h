@@ -16,6 +16,8 @@ public:
     MSG_WM_INITDIALOG(OnInitDialog)
     MSG_WM_DESTROY(OnDestroy)
     COMMAND_HANDLER_EX(ID_BKGND_PICKER, BN_CLICKED, OnBkgndPicker)
+    COMMAND_HANDLER_EX(IDC_RADIO_NOBKGND, BN_CLICKED, OnBkgndUpdated)
+    COMMAND_HANDLER_EX(IDC_RADIO_USERBKGND, BN_CLICKED, OnBkgndUpdated)
     CHAIN_MSG_MAP(WTL::CPropertyPageImpl<OptionBasicPage>)
   END_MSG_MAP()
 
@@ -34,6 +36,7 @@ public:
   BOOL OnInitDialog(HWND hwnd, LPARAM lParam);
   void OnDestroy();
   void OnBkgndPicker(UINT uNotifyCode, int nID, CWindow wndCtl);
+  void OnBkgndUpdated(UINT uNotifyCode, int nID, CWindow wndCtl);
 
   // activate/apply handler
   int OnSetActive();
@@ -57,9 +60,10 @@ private:
   std::wstring  m_userbkgnd_location;
 
   // controls
-  CBtnEditCtrl  m_userbkgnd_edit;
-  WTL::CComboBox     m_upgradestrategy_combo;
-
+  CBtnEditCtrl   m_userbkgnd_edit;
+  WTL::CComboBox m_upgradestrategy_combo;
+  WTL::CButton   m_autoscalecheckbox;
+  WTL::CButton   m_aeroglasscheckbox;
 };
 
 #endif // OPTIONBASICPAGE_WIN_H

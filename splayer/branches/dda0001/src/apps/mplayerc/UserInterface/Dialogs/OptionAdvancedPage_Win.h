@@ -13,6 +13,8 @@ public:
   BEGIN_MSG_MAP(OptionAdvancedPage)
     MSG_WM_INITDIALOG(OnInitDialog)
     MSG_WM_DESTROY(OnDestroy)
+    COMMAND_HANDLER_EX(IDC_RADIO_PICTUREQUALITY, BN_CLICKED, OnVideomodeUpdated)
+    COMMAND_HANDLER_EX(IDC_RADIO_PERFORMANCE, BN_CLICKED, OnVideomodeUpdated)
     CHAIN_MSG_MAP(WTL::CPropertyPageImpl<OptionAdvancedPage>)
   END_MSG_MAP()
 
@@ -28,7 +30,7 @@ public:
   // message handlers
   BOOL OnInitDialog(HWND hwnd, LPARAM lParam);
   void OnDestroy();
-  void OnBkgndPicker(UINT uNotifyCode, int nID, CWindow wndCtl);
+  void OnVideomodeUpdated(UINT uNotifyCode, int nID, CWindow wndCtl);
 
   // activate/apply handler
   int OnSetActive();
@@ -42,6 +44,9 @@ private:
   int m_usecustomspeakersetting;
   int m_usespdifprority;
   int m_usenormalize;
+
+  // control
+  WTL::CButton   m_gpuaccelcheckbox;
 };
 
 #endif // OPTIONADVANCEDPAGE_WIN_H

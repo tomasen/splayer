@@ -2326,6 +2326,14 @@
 					RelativePath=".\UserInterface\Support\BtnEditCtrl.h"
 					>
 				</File>
+				<File
+					RelativePath=".\UserInterface\Support\SubtitleStyle.cc"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Support\SubtitleStyle.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
@@ -2425,11 +2433,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 		<File

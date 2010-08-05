@@ -9,6 +9,7 @@ class OptionSubtitlePage:
 {
 public:
   enum { IDD = IDD_OPTION_SUBTITLE};
+  OptionSubtitlePage(void);
 
   BEGIN_MSG_MAP(OptionSubtitlePage)
     MSG_WM_INITDIALOG(OnInitDialog)
@@ -29,8 +30,11 @@ public:
   int OnApply();
 
 private:
-  CComboBox m_subtitletype;
-  CListBox  m_subtitlestyle;
+  WTL::CComboBox  m_subtitletype;
+  WTL::CListBox   m_subtitlestyle;
+
+  int m_styleentry_height;
+  int m_styleentry_width;
 };
 
 #endif // OPTIONSUBTITLEPAGE_WIN_H

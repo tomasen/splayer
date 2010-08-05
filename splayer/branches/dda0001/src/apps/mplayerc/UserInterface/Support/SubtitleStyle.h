@@ -13,19 +13,19 @@ class SubtitleStyle
 public:
   typedef struct _STYLEPARAM{
     wchar_t fontname[128];
-    int     fontsize;
-    int     fontcolor;      // color is 0x00bbggrr
-    int     strokesize;
-    int     strokecolor;    // color is 0x00bbggrr
-    int     shadowoffset;
-    int     shadowcolor;    // color is 0x00bbggrr
-    int     pos_vert;
-    int     pos_horz;
+    int fontsize;
+    int fontcolor;      // color is 0x00bbggrr
+    int strokesize;
+    int strokecolor;    // color is 0x00bbggrr
+    int shadowoffset;
+    int shadowcolor;    // color is 0x00bbggrr
+    int pos_vert;
+    int pos_horz;
   }STYLEPARAM;
   static bool GetStyleParams(int index, STYLEPARAM** param_refout);
   static int GetStyleCount();
 #ifdef _WINDOWS_
-  static void Paint(HDC dc, RECT* rc, int index, bool secondary = false);
+  static void Paint(HDC dc, RECT* rc, int index, bool selected = false, bool secondary = false);
 #endif
 };
 

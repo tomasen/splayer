@@ -36,7 +36,12 @@ void OptionBasicPage::OnBkgndUpdated(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
   // update scale checkbox and exit box
   m_autoscalecheckbox.EnableWindow(nID == IDC_RADIO_USERBKGND);
-  m_userbkgnd_edit.EnableWindow(nID == IDC_RADIO_USERBKGND);
+}
+
+void OptionBasicPage::OnBkgndPickerSetFocused(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+  m_bkgnd = 1;
+  DoDataExchange();
 }
 
 void OptionBasicPage::OnBkgndPicker(UINT uNotifyCode, int nID, CWindow wndCtl)
@@ -50,6 +55,10 @@ void OptionBasicPage::OnBkgndPicker(UINT uNotifyCode, int nID, CWindow wndCtl)
 
   // set window text of edit control only
   m_userbkgnd_edit.SetWindowText(fd.m_szFileName);
+
+  // we are using external bkng pic now
+  m_bkgnd = 1;
+  DoDataExchange();
 }
 
 int OptionBasicPage::OnSetActive()
@@ -59,7 +68,7 @@ int OptionBasicPage::OnSetActive()
   // retrieve variables from preference
   m_bkgnd = s.logoext?1:0;  // logoext is "use external logo"
   m_autoscalecheckbox.EnableWindow(s.logoext);
-  m_userbkgnd_edit.EnableWindow(s.logoext);
+
   // feed variables onto screen
   m_userbkgnd_edit.SetWindowText(s.logofn);
 

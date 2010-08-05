@@ -16,6 +16,7 @@ public:
     MSG_WM_INITDIALOG(OnInitDialog)
     MSG_WM_DESTROY(OnDestroy)
     COMMAND_HANDLER_EX(ID_BKGND_PICKER, BN_CLICKED, OnBkgndPicker)
+    COMMAND_HANDLER_EX(IDC_EDIT_BKGNDFILE, EN_SETFOCUS, OnBkgndpickerSetfocused)
     COMMAND_HANDLER_EX(IDC_RADIO_NOBKGND, BN_CLICKED, OnBkgndUpdated)
     COMMAND_HANDLER_EX(IDC_RADIO_USERBKGND, BN_CLICKED, OnBkgndUpdated)
     CHAIN_MSG_MAP(WTL::CPropertyPageImpl<OptionBasicPage>)
@@ -36,6 +37,7 @@ public:
   BOOL OnInitDialog(HWND hwnd, LPARAM lParam);
   void OnDestroy();
   void OnBkgndPicker(UINT uNotifyCode, int nID, CWindow wndCtl);
+  void OnBkgndPickerSetFocused(UINT uNotifyCode, int nID, CWindow wndCtl);
   void OnBkgndUpdated(UINT uNotifyCode, int nID, CWindow wndCtl);
 
   // activate/apply handler

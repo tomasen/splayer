@@ -104,7 +104,6 @@ bool SubtitleStyle::GetStyleParams(int index, STYLEPARAM** param_refout)
         if (font_count > 0)
         {
           wcscpy_s(g_styleparams[i].fontname, 128, ep.realname);
-          ::MessageBox(GetActiveWindow(), g_styleparams[i].fontname, g_styleparams[i].fontname, MB_OK);
           break;
         }
       }

@@ -11,8 +11,12 @@
 class SubtitleStyle
 {
 public:
+  typedef enum _FontName {
+    SimHei, SimSun, KaiTi
+  }FontName;
   typedef struct _STYLEPARAM{
-    wchar_t fontname[128];
+    FontName  _fontname;
+    wchar_t   fontname[128];
     int fontsize;
     int fontcolor;      // color is 0x00bbggrr
     int strokesize;

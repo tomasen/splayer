@@ -6,7 +6,7 @@
 OptionSubtitlePage::OptionSubtitlePage(void)
 {
   // init style entry height
-  m_styleentry_height = ::GetSystemMetrics(SM_CYICON)*2;
+  m_styleentry_height = ::GetSystemMetrics(SM_CYICON)*9/5;
 }
 
 BOOL OptionSubtitlePage::OnInitDialog(HWND hwnd, LPARAM lParam)

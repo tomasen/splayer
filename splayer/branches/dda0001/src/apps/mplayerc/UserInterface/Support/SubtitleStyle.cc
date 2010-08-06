@@ -7,64 +7,110 @@
 // built-in definition for main subtitle styles
 static SubtitleStyle::STYLEPARAM g_styleparams[] = 
 {
-  {L"", 20, 0x00FFFFFF, 1, 0x00333333, 0, 0, 90, 50},
-  {L"", 20, 0x00FFFFFF, 2, 0x00333333, 3, 0x00333333, 90, 50},
-  {L"", 20, 0x00FFFFFF, 2, 0x00996633, 3, 0x00333333, 90, 50},
+  {SubtitleStyle::SimHei, L"SimHei", 20, 0x00FFFFFF, 1, 0x00333333, 0, 0, 90, 50},
+  {SubtitleStyle::SimHei, L"SimHei", 20, 0x00FFFFFF, 2, 0x00333333, 3, 0x00333333, 90, 50},
+  {SubtitleStyle::SimHei, L"SimHei", 20, 0x00FFFFFF, 2, 0x00996633, 3, 0x00333333, 90, 50},
 #ifdef _WINDOWS_
-  {L"SimSun", 20, 0x00FFFFFF, 2, 0x00996633, 3, 0x00333333, 90, 50},
-  {L"Kaiti", 20, 0x0086E1FF, 2, 0x0006374A, 3, 0x00333333, 90, 50}
+  {SubtitleStyle::SimSun, L"SimSun", 20, 0x00FFFFFF, 2, 0x00996633, 3, 0x00333333, 90, 50},
+  {SubtitleStyle::KaiTi, L"KaiTi", 20, 0x0086E1FF, 2, 0x0006374A, 3, 0x00333333, 90, 50}
 #endif
+};
+
+static bool g_styleparams_inited = false;
+
+const static wchar_t* fontlist_simhei[] = {
+  L"Microsoft YaHei",
+  L"WenQuanYi Micro Hei",
+  L"SimHei",
+  L"\x5FAE\x8F6F\x96C5\x9ED1",              // Chinese for "Microsoft YaHei"
+  L"\x6587\x6CC9\x9A7F\x5FAE\x737C\x9ED1",  // Chinese for "WenQuanYi Micro Hei"
+  L"\x9ED1\x4F53"                           // Chinese for "SimHei"
+};
+
+const static wchar_t* fontlist_simsun[] = {
+  L"SimSun",
+  L"\x5B8B\x4F53"                           // Chinese for "SimSun"
+};
+
+const static wchar_t* fontlist_kaiti[] = {
+  L"KaiTi",
+  L"\x6977\x4F53",                          // Chinese for "KaiTi"
+  L"\x6977\x4F53_GB2312"                    // Chinese for "KaiTi_GB2312"
 };
 
 std::vector<std::wstring> g_sampletexts;  // text pieces to paint samples in SubtitleStyle::Paint
 
-int CALLBACK EnumFontProc(ENUMLOGFONTEX *lpelfe, NEWTEXTMETRICEX *lpntme, DWORD FontType, LPARAM lParam)
+// defined for use with EnumFontProc
+typedef struct _ENUMPARAMS {
+  int*    fontcount;
+  wchar_t realname[32];
+}ENUMPARAMS;
+
+int CALLBACK EnumFontProc(ENUMLOGFONTEX* lpelfe, NEWTEXTMETRICEX* lpntme, DWORD FontType, LPARAM lParam)
 {
   // EnumFontProc is called only when a font is enumerated, so we knew
   // this font is available.
-  int* font_count = (int*)lParam;
-  (*font_count)++;
+  ENUMPARAMS* ep = (ENUMPARAMS*)lParam;
+  (*ep->fontcount)++;
+  wcscpy_s(ep->realname, 32, lpelfe->elfFullName);
   return 0; // stop enum
 }
 
 bool SubtitleStyle::GetStyleParams(int index, STYLEPARAM** param_refout)
 {
   // initialize fonts first time this method is called
-  if (lstrlen(g_styleparams[0].fontname) == 0)
+  if (!g_styleparams_inited)
   {
     // this process determines if our preferred fonts are available in system
     // if so, we choose to copy the preferred font name to STYLEPARAM.fontname
 #ifdef _WINDOWS_
     WTL::CDC      dc;
     WTL::CLogFont lf;
-    int font_count;
     dc.CreateCompatibleDC();
 
     lf.lfCharSet        = DEFAULT_CHARSET;
     lf.lfPitchAndFamily = 0;
 
-    std::wstring preferred_font = L"SimHei";
-
-    // try "Microsoft YaHei" first
-    font_count = 0;
-    wcscpy_s(lf.lfFaceName, 32, L"Microsoft YaHei");
-    ::EnumFontFamiliesEx(dc, &lf, (FONTENUMPROC)EnumFontProc, (LPARAM)&font_count, 0);
-    if (font_count > 0)
-      preferred_font = L"Microsoft YaHei";
-
-    // if not found, try "WenQuanYi Micro Hei"
-    else
+    int stylecount = GetStyleCount();
+    for (int i = 0; i < stylecount; i++)
     {
-      wcscpy_s(lf.lfFaceName, 32, L"WenQuanYi Micro Hei");
-      ::EnumFontFamiliesEx(dc, &lf, (FONTENUMPROC)EnumFontProc, (LPARAM)&font_count, 0);
-      if (font_count > 0)
-        preferred_font = L"WenQuanYi Micro Hei";
-    }
+      wchar_t** fontlist = NULL;
+      int fontlist_count = 0;
+      switch (g_styleparams[i]._fontname)
+      {
+      case SimHei:
+        fontlist = (wchar_t**)fontlist_simhei;
+        fontlist_count = sizeof(fontlist_simhei)/sizeof(fontlist_simhei[0]);
+        break;
+      case SimSun:
+        fontlist = (wchar_t**)fontlist_simsun;
+        fontlist_count = sizeof(fontlist_simsun)/sizeof(fontlist_simsun[0]);
+        break;
+      case KaiTi:
+        fontlist = (wchar_t**)fontlist_kaiti;
+        fontlist_count = sizeof(fontlist_kaiti)/sizeof(fontlist_kaiti[0]);
+        break;
+      }
 
-    wcscpy_s(g_styleparams[0].fontname, 128, preferred_font.c_str());
-    wcscpy_s(g_styleparams[1].fontname, 128, preferred_font.c_str());
-    wcscpy_s(g_styleparams[2].fontname, 128, preferred_font.c_str());
+      if (!fontlist)
+        continue;
+
+      for (int j = 0; j < fontlist_count; j++)
+      {
+        int font_count = 0;
+        ENUMPARAMS ep = {&font_count, L""};
+        wcscpy_s(lf.lfFaceName, 32, fontlist[j]);
+        ::EnumFontFamiliesEx(dc, &lf, (FONTENUMPROC)EnumFontProc, (LPARAM)&ep, 0);
+        if (font_count > 0)
+        {
+          wcscpy_s(g_styleparams[i].fontname, 128, ep.realname);
+          ::MessageBox(GetActiveWindow(), g_styleparams[i].fontname, g_styleparams[i].fontname, MB_OK);
+          break;
+        }
+      }
+    }
 #endif
+    g_styleparams_inited = true;
   }
 
   if (index < 0 || index >= sizeof(g_styleparams)/sizeof(g_styleparams[0]))
@@ -133,6 +179,7 @@ void SubtitleStyle::Paint(HDC dc, RECT* rc, int index, bool selected /* = false 
   WTL::CLogFont lf;
   lf.lfHeight   = -sp->fontsize*2;
   lf.lfQuality  = ANTIALIASED_QUALITY;
+  lf.lfCharSet  = DEFAULT_CHARSET;
   wcscpy_s(lf.lfFaceName, 32, sp->fontname);
 
   WTL::CFont font;
@@ -162,7 +209,7 @@ void SubtitleStyle::Paint(HDC dc, RECT* rc, int index, bool selected /* = false 
   mdc.SetBkMode(TRANSPARENT);
   mdc.DrawText(sample_text.c_str(), -1, &rc_textraw, DT_CALCRECT|DT_EDITCONTROL);
   int offset_y = (bmp_height - rc_textraw.Height())/2;
-  int offset_x = offset_y;
+  int offset_x = ::GetSystemMetrics(SM_CXSMICON);
   rc_textraw.OffsetRect(offset_x, offset_y);
   // now we have |rc_textraw| as the center position of sample text
 

@@ -307,6 +307,8 @@ void CChildView::OnPaint()
 	CPaintDC dc(this); // device context for painting
 
 	CMainFrame* pFrame = (CMainFrame*)GetParentFrame();
+  if (pFrame->IsSomethingLoading()) //打开文件过程不Repaint
+    return;
 	pFrame->RepaintVideo();
 
 	

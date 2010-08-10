@@ -2299,14 +2299,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\UserInterface\Dialogs\OptionHotkeyPage_Win.cc"
-					>
-				</File>
-				<File
-					RelativePath=".\UserInterface\Dialogs\OptionHotkeyPage_Win.h"
-					>
-				</File>
-				<File
 					RelativePath=".\UserInterface\Dialogs\OptionSubtitlePage_Win.cc"
 					>
 				</File>

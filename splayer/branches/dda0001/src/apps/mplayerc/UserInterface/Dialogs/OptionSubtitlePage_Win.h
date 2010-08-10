@@ -14,12 +14,15 @@ public:
   BEGIN_MSG_MAP(OptionSubtitlePage)
     MSG_WM_INITDIALOG(OnInitDialog)
     MSG_WM_DESTROY(OnDestroy)
+    COMMAND_HANDLER_EX(IDC_LIST, LBN_SELCHANGE, OnSubtitleStyleChange)
     CHAIN_MSG_MAP(COwnerDraw<OptionSubtitlePage>)
   END_MSG_MAP()
 
   // message handlers
   BOOL OnInitDialog(HWND hwnd, LPARAM lParam);
   void OnDestroy();
+
+  void OnSubtitleStyleChange(UINT uNotifyCode, int nID, CWindow wndCtl);
 
   // owner-draw logic for subtitle styles
   void DrawItem(LPDRAWITEMSTRUCT lpdis);
@@ -29,9 +32,14 @@ public:
   int OnSetActive();
   int OnApply();
 
+  void RefreshStyles();
+
 private:
-  WTL::CComboBox  m_subtitletype;
+  WTL::CComboBox  m_secsubtitlestyle;
   WTL::CListBox   m_subtitlestyle;
+
+  int m_mainstyle;
+  int m_secstyle;
 
   int m_styleentry_height;
   int m_styleentry_width;

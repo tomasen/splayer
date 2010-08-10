@@ -58,12 +58,12 @@ int OptionAdvancedPage::OnApply()
   }
   s.useGPUAcel = m_enablegpuaccel;
 
-  s.fbUseSPDIF = m_usespdifprority;
-  s.fAudioNormalize = m_usenormalize;
-  s.fAudioNormalizeRecover = TRUE;
+  s.fbUseSPDIF = m_usespdifprority?true:false;
+  s.fAudioNormalize = m_usenormalize?true:false;
+  s.fAudioNormalizeRecover = true;
   //TODO: if audio setting is changed and audio clip is running,
   //we should apply it by using CComQIPtr<IAudioSwitcherFilter> m_pASF etc
 
-  s.fCustomSpeakers = m_usecustomspeakersetting;
+  s.fCustomSpeakers = m_usecustomspeakersetting?true:false;
   return PSNRET_NOERROR;
 }

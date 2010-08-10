@@ -16,6 +16,13 @@ static SubtitleStyle::STYLEPARAM g_styleparams[] =
 #endif
 };
 
+// built-in definition for secondary subtitle styles
+static SubtitleStyle::STYLEPARAM g_secstyleparams[] =
+{
+  {SubtitleStyle::None, L"", 0, 0, 0, 0, 0, 0, 10, 50},
+  {SubtitleStyle::None, L"", 0, 0, 0, 0, 0, 0, 91, 50}
+};
+
 static bool g_styleparams_inited = false;
 
 const static wchar_t* fontlist_simhei[] = {
@@ -56,7 +63,7 @@ int CALLBACK EnumFontProc(ENUMLOGFONTEX* lpelfe, NEWTEXTMETRICEX* lpntme, DWORD 
   return 0; // stop enum
 }
 
-bool SubtitleStyle::GetStyleParams(int index, STYLEPARAM** param_refout)
+bool SubtitleStyle::GetStyleParams(int index_main, int index_sec, STYLEPARAM** param_refout)
 {
   // initialize fonts first time this method is called
   if (!g_styleparams_inited)
@@ -112,24 +119,39 @@ bool SubtitleStyle::GetStyleParams(int index, STYLEPARAM** param_refout)
     g_styleparams_inited = true;
   }
 
-  if (index < 0 || index >= sizeof(g_styleparams)/sizeof(g_styleparams[0]))
+  if (index_main < 0 || index_main >= sizeof(g_styleparams)/sizeof(g_styleparams[0]))
     return false;
 
-  *param_refout = (STYLEPARAM*)&g_styleparams[index];
+  *param_refout = (STYLEPARAM*)&g_styleparams[index_main];
+
+  // are we retrieving a secondary entry?
+  if (index_sec >= 0)
+  {
+    if (index_sec < 0 || index_sec >= sizeof(g_secstyleparams)/sizeof(g_secstyleparams[0]))
+      return false;
+
+    *param_refout = (STYLEPARAM*)&g_secstyleparams[index_sec];
+    return true;
+  }
 
   return true;
 }
 
-int SubtitleStyle::GetStyleCount()
+int SubtitleStyle::GetStyleCount(bool secondary /* = false */)
 {
+  if (secondary)
+    return sizeof(g_secstyleparams)/sizeof(g_secstyleparams[0]);
   return sizeof(g_styleparams)/sizeof(g_styleparams[0]);
 }
 
-void SubtitleStyle::Paint(HDC dc, RECT* rc, int index, bool selected /* = false */, bool secondary /* = false */)
+void SubtitleStyle::Paint(HDC dc, RECT* rc, int index_main, int index_sec, bool selected /* = false */)
 {
-  STYLEPARAM* sp = NULL;
-  if (!GetStyleParams(index, &sp))
+  STYLEPARAM* sp_main = NULL;
+  STYLEPARAM* sp_sec = NULL;
+  if (!GetStyleParams(index_main, -1, &sp_main))
     return;
+  if (index_sec >= 0)
+    GetStyleParams(index_main, index_sec, &sp_sec);
 
   // there is a trick in this routine to achieve better appearance with GDI font rendering
   // we create a memory dc that is 4x as large as the target rectangle, paint the large
@@ -176,13 +198,10 @@ void SubtitleStyle::Paint(HDC dc, RECT* rc, int index, bool selected /* = false 
 
   // create font
   WTL::CLogFont lf;
-  lf.lfHeight   = -sp->fontsize*2;
+  lf.lfHeight   = -sp_main->fontsize*2;
   lf.lfQuality  = ANTIALIASED_QUALITY;
   lf.lfCharSet  = DEFAULT_CHARSET;
-  wcscpy_s(lf.lfFaceName, 32, sp->fontname);
-
-  WTL::CFont font;
-  font.CreateFontIndirect(&lf);
+  wcscpy_s(lf.lfFaceName, 32, sp_main->fontname);
 
   // load sample text
   if (g_sampletexts.size() == 0)
@@ -194,11 +213,30 @@ void SubtitleStyle::Paint(HDC dc, RECT* rc, int index, bool selected /* = false 
 
   // determine actual text to paint
   std::wstring sample_text = g_sampletexts[0];
-  if (secondary)
+  // paint secondary subtitle?
+  if (index_sec >= 0)
   {
-    sample_text += L"\r\n";
-    sample_text += g_sampletexts[1];
+    if (sp_sec->pos_vert <= 50)
+      sample_text = g_sampletexts[1];
+    else if (sp_sec->pos_vert > sp_main->pos_vert)
+    {
+      sample_text += L"\r\n";
+      sample_text += g_sampletexts[1];
+      // in secondary subtitle painting, we choose to make the font smaller a bit
+      lf.lfHeight = lf.lfHeight*2/3;
+    }
+    else
+    {
+      sample_text = g_sampletexts[1];
+      sample_text += L"\r\n";
+      sample_text += g_sampletexts[0];
+      // in secondary subtitle painting, we choose to make the font smaller a bit
+      lf.lfHeight = lf.lfHeight*2/3;
+    }
   }
+
+  WTL::CFont font;
+  font.CreateFontIndirect(&lf);
 
   // assign device context font
   HFONT old_font = mdc.SelectFont(font);
@@ -213,11 +251,11 @@ void SubtitleStyle::Paint(HDC dc, RECT* rc, int index, bool selected /* = false 
   // now we have |rc_textraw| as the center position of sample text
 
   // paint logic 1. shadow
-  if (sp->shadowoffset > 0)
+  if (sp_main->shadowoffset > 0)
   {
-    rc_textraw.OffsetRect(sp->shadowoffset*2, sp->shadowoffset*2);
+    rc_textraw.OffsetRect(sp_main->shadowoffset*2, sp_main->shadowoffset*2);
     // blend the shadow lighter a bit
-    int color = (0x00FFFFFF + sp->shadowcolor)/2;
+    int color = (0x00FFFFFF + sp_main->shadowcolor)/2;
     mdc.SetTextColor(color);
     // we choose to apply 1 pixel stroke for the shadow to make it look nicer
     // * + = original text dot position
@@ -233,13 +271,13 @@ void SubtitleStyle::Paint(HDC dc, RECT* rc, int index, bool selected /* = false 
       mdc.DrawText(sample_text.c_str(), -1, &rc_textraw, DT_EDITCONTROL);
     }
     rc_textraw.OffsetRect(-1, 0);
-    rc_textraw.OffsetRect(-sp->shadowoffset, -sp->shadowoffset);
+    rc_textraw.OffsetRect(-sp_main->shadowoffset, -sp_main->shadowoffset);
   }
 
   // paint logic 2. stroke
-  if (sp->strokesize > 0)
+  if (sp_main->strokesize > 0)
   {
-    mdc.SetTextColor(sp->strokecolor);
+    mdc.SetTextColor(sp_main->strokecolor);
     // we only support two kinds of stroke, 1 pixel, and 2 pixels
     // for 1 pixel stroke, simulation strategy is:
     // * + = original text dot position
@@ -247,7 +285,7 @@ void SubtitleStyle::Paint(HDC dc, RECT* rc, int index, bool selected /* = false 
     // [S] [S] [S]          [1] [5] [2]
     // [S] [+] [S]    =>    [7] [+] [8]
     // [S] [S] [S]          [4] [6] [3]
-    if (sp->strokesize == 1)
+    if (sp_main->strokesize == 1)
     {
       int seq_x[] = {-1, 2, 0, -2,  1/*5*/, 0, -1, 2};
       int seq_y[] = {-1, 0, 2,  0, -2/*5*/, 2, -1, 0};
@@ -278,7 +316,7 @@ void SubtitleStyle::Paint(HDC dc, RECT* rc, int index, bool selected /* = false 
   }
 
   // paint logic 3. body
-  mdc.SetTextColor(sp->fontcolor);
+  mdc.SetTextColor(sp_main->fontcolor);
   mdc.DrawText(sample_text.c_str(), -1, &rc_textraw, DT_EDITCONTROL);
 
   // restore context

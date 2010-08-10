@@ -12,8 +12,9 @@ class SubtitleStyle
 {
 public:
   typedef enum _FontName {
-    SimHei, SimSun, KaiTi
+    None, SimHei, SimSun, KaiTi
   }FontName;
+
   typedef struct _STYLEPARAM{
     FontName  _fontname;
     wchar_t   fontname[128];
@@ -26,10 +27,11 @@ public:
     int pos_vert;
     int pos_horz;
   }STYLEPARAM;
-  static bool GetStyleParams(int index, STYLEPARAM** param_refout);
-  static int GetStyleCount();
+
+  static bool GetStyleParams(int index_main, int index_sec, STYLEPARAM** param_refout);
+  static int GetStyleCount(bool secondary = false);
 #ifdef _WINDOWS_
-  static void Paint(HDC dc, RECT* rc, int index, bool selected = false, bool secondary = false);
+  static void Paint(HDC dc, RECT* rc, int index_main, int index_sec, bool selected = false);
 #endif
 };
 

@@ -113,10 +113,10 @@ int OptionBasicPage::OnApply()
 
   s.logostretch = m_autoscalebkgnd?3:0;
   s.bAeroGlass = m_useaero;
-  s.fLoopForever = m_repeat;
-  s.fTrayIcon = m_mintotray;
+  s.fLoopForever = m_repeat?true:false;
+  s.fTrayIcon = m_mintotray?true:false;
   s.autoResumePlay = m_autoresume;
-  s.launchfullscreen = m_autofullscreen;
+  s.launchfullscreen = m_autofullscreen?true:false;
 
   if (m_autoupgrade)
     s.tLastCheckUpdater = (UINT)time(NULL) - 100000;

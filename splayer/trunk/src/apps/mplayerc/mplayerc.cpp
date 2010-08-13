@@ -5324,7 +5324,7 @@ void CMPlayerCApp::Settings::DelFavByFn(favtype ft, BOOL bRecent, CString szMatc
 	if(bRecent){
 		CMD5Checksum cmd5;
 		CStringA szMD5data(szMatch);
-		CString szMatchmd5 = cmd5.GetMD5((BYTE*)szMD5data.GetBuffer() , szMD5data.GetLength() );
+		CString szMatchmd5 = cmd5.GetMD5((BYTE*)szMD5data.GetBuffer() , szMD5data.GetLength()).c_str();
 		POSITION pos = sl.GetHeadPosition();
 		while(pos){
 			if( sl.GetAt(pos).Find(szMatchmd5) >= 0 ){
@@ -5355,7 +5355,7 @@ void CMPlayerCApp::Settings::AddFav(favtype ft, CString s, BOOL bRecent, CString
 	if(bRecent){
 		CMD5Checksum cmd5;
 		CStringA szMD5data(szMatch);
-		CString szMatchmd5 = cmd5.GetMD5((BYTE*)szMD5data.GetBuffer() , szMD5data.GetLength() );
+		CString szMatchmd5 = cmd5.GetMD5((BYTE*)szMD5data.GetBuffer() , szMD5data.GetLength()).c_str();
 		szMD5data.ReleaseBuffer();
 		POSITION pos = sl.GetHeadPosition();
 		while(pos){

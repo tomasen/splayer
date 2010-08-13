@@ -34,7 +34,7 @@ struct LANGANDCODEPAGE {
 } *lpTranslateTX;
 
 
-int CSVPNet::SetCURLopt(CURL *curl )
+int CSVPNet::SetCURLopt(CURL *curl)
 {
 	//struct curl_slist *headerlist=NULL;
 	//static const char buf[] = "Expect:";
@@ -419,8 +419,9 @@ int CSVPNet::UploadPinRenderDeadEndReport(CString szPinName, CString szReport){
 	#include "shooterclient.key"
 
 CString genVHash(char* szTerm2, char* szTerm3, char* uniqueIDHash){
-	CString szVHash;
-	char buffx[4096];
+	CString       szVHash;
+	char          buffx[4096];
+  std::wstring   wbuffx;
 	memset(buffx, 0, 4096);
 #ifdef CLIENTKEY	
 	sprintf_s( buffx, 4096, CLIENTKEY , SVP_REV_NUMBER, szTerm2, szTerm3, uniqueIDHash);
@@ -428,7 +429,7 @@ CString genVHash(char* szTerm2, char* szTerm3, char* uniqueIDHash){
 	sprintf_s( buffx, 4096, "un authiority client %d %s %s %s", SVP_REV_NUMBER, szTerm2, szTerm3, uniqueIDHash);
 #endif
 	CMD5Checksum cmd5;
-	szVHash = cmd5.GetMD5((BYTE*)buffx, strlen(buffx));
+	szVHash = cmd5.GetMD5((BYTE*)buffx, strlen(buffx)).c_str();
 	return szVHash;
 }
 int CSVPNet::UploadSubFileByVideoAndHash(CString fnVideoFilePath, CString szFileHash, CString szSubHash,CStringArray* fnSubPaths, int iDelayMS, CStringArray* szaPostTerms)

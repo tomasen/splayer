@@ -28,7 +28,7 @@ CString CSVPhash::ComputerSubFilesFileHash(CStringArray* szaSubFiles){
 			return _T("");
 			break;
 		}
-		CString szBuf = cmd5.GetMD5(szpath);
+		CString szBuf = cmd5.GetMD5((LPCTSTR)szpath).c_str();
 		if ( !szBuf.IsEmpty() ){
 			//SVP_LogMsg(szBuf);
 			if ( i == 0){
@@ -129,7 +129,7 @@ SVP_LogMsg5(L"Got m_fnInsideRar RAR path %s %s " ,  svpRar.m_fnInsideRar , subfn
 						//hash 4k block
 						int readlen = RARExtractChunk(hrar, (char*)bBuf, 4096);
 						
-						CString szMD5 = mMd5.GetMD5( (BYTE*)bBuf , 4096); //min(readlen, 
+						CString szMD5 = mMd5.GetMD5( (BYTE*)bBuf , 4096).c_str(); //min(readlen, 
 						if(!szRet.IsEmpty()){
 							szRet.Append( _T(";") );
 						}
@@ -169,7 +169,7 @@ SVP_LogMsg5(L"Got m_fnInsideRar RAR path %s %s " ,  svpRar.m_fnInsideRar , subfn
 					_lseeki64(stream, offset[i], 0);
 					//hash 4k block
 					int readlen = _read( stream, bBuf, 4096);
-					CString szMD5 = mMd5.GetMD5( bBuf , readlen); 
+					CString szMD5 = mMd5.GetMD5( bBuf , readlen).c_str(); 
 					if(!szRet.IsEmpty()){
 						szRet.Append( _T(";") );
 					}

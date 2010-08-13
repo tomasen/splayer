@@ -15402,7 +15402,7 @@ void CMainFrame::OpenCurPlaylistItem(REFERENCE_TIME rtStart)
 		if (!fn.IsEmpty() && s.autoResumePlay){
 			CMD5Checksum cmd5;
 			CStringA szMD5data(fn);
-			CString szMatchmd5 = cmd5.GetMD5((BYTE*)szMD5data.GetBuffer() , szMD5data.GetLength() );
+			CString szMatchmd5 = cmd5.GetMD5((BYTE*)szMD5data.GetBuffer() , szMD5data.GetLength()).c_str();
 			szMD5data.ReleaseBuffer();
 SVP_LogMsg5(L"GetFav Start %s", szMatchmd5);
 			CAtlList<CString> sl;

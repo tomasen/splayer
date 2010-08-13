@@ -30,6 +30,7 @@ public:
 
   static bool GetStyleParams(int index_main, int index_sec, STYLEPARAM** param_refout);
   static int GetStyleCount(bool secondary = false);
+  static int DetectFontType(std::wstring fontname);
 #ifdef _WINDOWS_
   static void Paint(HDC dc, RECT* rc, int index_main, int index_sec, bool selected = false);
 #endif

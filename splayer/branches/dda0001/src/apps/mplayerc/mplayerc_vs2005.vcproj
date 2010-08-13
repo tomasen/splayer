@@ -2368,6 +2368,26 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="Controller"
+			>
+			<File
+				RelativePath=".\Controller\HotkeyCmd.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Controller\HotkeyCmd.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Controller\HotkeySchemeParser.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Controller\HotkeySchemeParser.h"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath=".\res\shaders\BT601BT709.psh"
 			>

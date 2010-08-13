@@ -8,11 +8,12 @@
 static SubtitleStyle::STYLEPARAM g_styleparams[] = 
 {
   {SubtitleStyle::SimHei, L"SimHei", 20, 0x00FFFFFF, 1, 0x00333333, 0, 0, 90, 50},
-  {SubtitleStyle::SimHei, L"SimHei", 20, 0x00FFFFFF, 2, 0x00333333, 3, 0x00333333, 90, 50},
-  {SubtitleStyle::SimHei, L"SimHei", 20, 0x00FFFFFF, 2, 0x00996633, 3, 0x00333333, 90, 50},
+  {SubtitleStyle::SimHei, L"SimHei", 20, 0x00FFFFFF, 2, 0x00333333, 1, 0x00333333, 90, 50},
+  {SubtitleStyle::SimHei, L"SimHei", 20, 0x00FFFFFF, 1, 0x00996633, 1, 0x00333333, 90, 50},
 #ifdef _WINDOWS_
-  {SubtitleStyle::SimSun, L"SimSun", 20, 0x00FFFFFF, 2, 0x00996633, 3, 0x00333333, 90, 50},
-  {SubtitleStyle::KaiTi, L"KaiTi", 20, 0x0086E1FF, 2, 0x0006374A, 3, 0x00333333, 90, 50}
+  {SubtitleStyle::SimSun, L"SimSun", 16, 0x00FFFFFF, 2, 0x00996633, 0, 0x00000000, 90, 50},
+  {SubtitleStyle::SimHei, L"SimHei", 20, 0x0000ecec, 2, 0x000f0f0f, 1, 0x00333333, 90, 50},
+  {SubtitleStyle::KaiTi, L"KaiTi", 16, 0x0000ecec, 2, 0x000f0f0f, 1, 0x00333333, 90, 50},
 #endif
 };
 
@@ -144,6 +145,40 @@ int SubtitleStyle::GetStyleCount(bool secondary /* = false */)
   return sizeof(g_styleparams)/sizeof(g_styleparams[0]);
 }
 
+int SubtitleStyle::DetectFontType(std::wstring fontname)
+{
+  for (int fonttype = SimHei; fonttype < KaiTi; fonttype++)
+  {
+    wchar_t** fontlist = NULL;
+    int fontlist_count = 0;
+    switch (fonttype)
+    {
+    case SimHei:
+      fontlist = (wchar_t**)fontlist_simhei;
+      fontlist_count = sizeof(fontlist_simhei)/sizeof(fontlist_simhei[0]);
+      break;
+    case SimSun:
+      fontlist = (wchar_t**)fontlist_simsun;
+      fontlist_count = sizeof(fontlist_simsun)/sizeof(fontlist_simsun[0]);
+      break;
+    case KaiTi:
+      fontlist = (wchar_t**)fontlist_kaiti;
+      fontlist_count = sizeof(fontlist_kaiti)/sizeof(fontlist_kaiti[0]);
+      break;
+    }
+
+    if (!fontlist)
+      continue;
+
+    for (int i = 0; i < fontlist_count; i++)
+    {
+      if (fontname == fontlist[i])
+        return fonttype;
+    }
+  }
+
+  return None;
+}
 void SubtitleStyle::Paint(HDC dc, RECT* rc, int index_main, int index_sec, bool selected /* = false */)
 {
   STYLEPARAM* sp_main = NULL;
@@ -198,7 +233,7 @@ void SubtitleStyle::Paint(HDC dc, RECT* rc, int index_main, int index_sec, bool 
 
   // create font
   WTL::CLogFont lf;
-  lf.lfHeight   = -sp_main->fontsize*2;
+  lf.lfHeight   = sp_main->fontsize*2;
   lf.lfQuality  = ANTIALIASED_QUALITY;
   lf.lfCharSet  = DEFAULT_CHARSET;
   wcscpy_s(lf.lfFaceName, 32, sp_main->fontname);

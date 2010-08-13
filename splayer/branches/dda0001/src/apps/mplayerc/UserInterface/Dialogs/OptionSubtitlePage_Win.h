@@ -5,7 +5,8 @@
 
 class OptionSubtitlePage:
   public WTL::CPropertyPageImpl<OptionSubtitlePage>,
-  public WTL::COwnerDraw<OptionSubtitlePage>
+  public WTL::COwnerDraw<OptionSubtitlePage>,
+  public WTL::CWinDataExchange<OptionSubtitlePage>
 {
 public:
   enum { IDD = IDD_OPTION_SUBTITLE};
@@ -15,8 +16,13 @@ public:
     MSG_WM_INITDIALOG(OnInitDialog)
     MSG_WM_DESTROY(OnDestroy)
     COMMAND_HANDLER_EX(IDC_LIST, LBN_SELCHANGE, OnSubtitleStyleChange)
+    CHAIN_MSG_MAP(WTL::CPropertyPageImpl<OptionSubtitlePage>)
     CHAIN_MSG_MAP(COwnerDraw<OptionSubtitlePage>)
   END_MSG_MAP()
+
+  BEGIN_DDX_MAP(OptionSubtitlePage)
+    DDX_CHECK(IDC_CHECK_AUTOMATCHSUBTITLE, m_fetchsubtitlefromshooter)
+  END_DDX_MAP()
 
   // message handlers
   BOOL OnInitDialog(HWND hwnd, LPARAM lParam);
@@ -43,6 +49,10 @@ private:
 
   int m_styleentry_height;
   int m_styleentry_width;
+
+  int m_fetchsubtitlefromshooter;
+
+  void ApplySubtitleStyle();
 };
 
 #endif // OPTIONSUBTITLEPAGE_WIN_H

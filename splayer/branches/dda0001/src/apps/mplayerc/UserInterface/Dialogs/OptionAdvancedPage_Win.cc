@@ -5,7 +5,17 @@
 BOOL OptionAdvancedPage::OnInitDialog(HWND hwnd, LPARAM lParam)
 {
   m_gpuaccelcheckbox.Attach(GetDlgItem(IDC_CHECK_ENABLEGPUACCEL));
+  AppSettings& s = AfxGetAppSettings();
 
+  m_videoqualitymode = s.iSVPRenderType;
+  m_gpuaccelcheckbox.EnableWindow(!s.iSVPRenderType);
+  m_videoperformancemode = !s.iSVPRenderType;
+  m_enablegpuaccel = s.useGPUAcel;
+
+  m_usecustomspeakersetting = s.fCustomSpeakers;
+  m_usenormalize = s.fAudioNormalize;
+
+  DoDataExchange();
   return TRUE;
 }
 
@@ -21,17 +31,6 @@ void OptionAdvancedPage::OnDestroy()
 
 int OptionAdvancedPage::OnSetActive()
 {
-  AppSettings& s = AfxGetAppSettings();
-
-  m_videoqualitymode = s.iSVPRenderType;
-  m_gpuaccelcheckbox.EnableWindow(!s.iSVPRenderType);
-  m_videoperformancemode = !s.iSVPRenderType;
-  m_enablegpuaccel = s.useGPUAcel;
-
-  m_usecustomspeakersetting = s.fCustomSpeakers;
-  m_usenormalize = s.fAudioNormalize;
-
-  DoDataExchange();
   return 0;
 }
 

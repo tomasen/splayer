@@ -377,8 +377,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "svpfilter", "src\filters\tr
 		{54DDA60F-E528-4D07-A152-960A1E818680} = {54DDA60F-E528-4D07-A152-960A1E818680}
 	EndProjectSection
 EndProject
-Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "SvPlayer", "Setup\svplayer.msi\WiX\SvPlayer.wixproj", "{082DDC1F-06B9-426F-BAD8-047D61F8B5B9}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libsqlite", "lib\splite\libsqlite\libsqlite.vcproj", "{B7D5377E-0D4E-46DA-9B84-7512D4EED047}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "res_rus", "src\apps\lang\res_rus\res_rus.vcproj", "{9A281831-B717-47B0-8427-7A938E65A3B3}"
@@ -1522,18 +1520,6 @@ Global
 		{8D944019-7997-4EFD-8157-4929E6EB2AA8}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{8D944019-7997-4EFD-8157-4929E6EB2AA8}.Release|Win32.ActiveCfg = Release|Win32
 		{8D944019-7997-4EFD-8157-4929E6EB2AA8}.Release|Win32.Build.0 = Release|Win32
-		{082DDC1F-06B9-426F-BAD8-047D61F8B5B9}.Debug Unicode|Mixed Platforms.ActiveCfg = Debug|x86
-		{082DDC1F-06B9-426F-BAD8-047D61F8B5B9}.Debug Unicode|Mixed Platforms.Build.0 = Debug|x86
-		{082DDC1F-06B9-426F-BAD8-047D61F8B5B9}.Debug Unicode|Win32.ActiveCfg = Debug|x86
-		{082DDC1F-06B9-426F-BAD8-047D61F8B5B9}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{082DDC1F-06B9-426F-BAD8-047D61F8B5B9}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{082DDC1F-06B9-426F-BAD8-047D61F8B5B9}.Debug|Win32.ActiveCfg = Debug|x86
-		{082DDC1F-06B9-426F-BAD8-047D61F8B5B9}.Release Unicode|Mixed Platforms.ActiveCfg = ReleaseRU|x86
-		{082DDC1F-06B9-426F-BAD8-047D61F8B5B9}.Release Unicode|Mixed Platforms.Build.0 = ReleaseRU|x86
-		{082DDC1F-06B9-426F-BAD8-047D61F8B5B9}.Release Unicode|Win32.ActiveCfg = ReleaseCHS|x86
-		{082DDC1F-06B9-426F-BAD8-047D61F8B5B9}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{082DDC1F-06B9-426F-BAD8-047D61F8B5B9}.Release|Mixed Platforms.Build.0 = Release|x86
-		{082DDC1F-06B9-426F-BAD8-047D61F8B5B9}.Release|Win32.ActiveCfg = Release|x86
 		{B7D5377E-0D4E-46DA-9B84-7512D4EED047}.Debug Unicode|Mixed Platforms.ActiveCfg = Debug|Win32
 		{B7D5377E-0D4E-46DA-9B84-7512D4EED047}.Debug Unicode|Mixed Platforms.Build.0 = Debug|Win32
 		{B7D5377E-0D4E-46DA-9B84-7512D4EED047}.Debug Unicode|Win32.ActiveCfg = Debug|Win32

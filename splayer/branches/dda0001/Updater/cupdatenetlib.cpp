@@ -230,7 +230,7 @@ BOOL cupdatenetlib::downloadList(){
 		if(svpToolBox.ifFileExist(szPlayerPath) ){
 			CMD5Checksum cmd5;
 			//szBranch.Format( _T("%I64d") , sbuf.st_mtime );
-			szBranch = cmd5.GetMD5(szPlayerPath);
+			szBranch = cmd5.GetMD5((LPCTSTR)szPlayerPath).c_str();
 			//AfxMessageBox(szBranch);
 		}
 		else
@@ -283,17 +283,19 @@ BOOL cupdatenetlib::downloadList(){
 
 			bool bDownloadThis = FALSE;
 
-			//check file hash
-			CMD5Checksum cmd5;
-			CString updTmpHash ;
-			CString currentHash ;
-			if( svpToolBox.ifFileExist(szUpdfilesPath + szaTmp.GetAt(LFILETMPATH) ) ){
-				updTmpHash = cmd5.GetMD5(szUpdfilesPath + szaTmp.GetAt(LFILETMPATH) ); //Get Hash for current Temp File
-			}
+      //check file hash
+      CMD5Checksum cmd5;
+      CString updTmpHash ;
+      CString currentHash ;
+      if( svpToolBox.ifFileExist(szUpdfilesPath + szaTmp.GetAt(LFILETMPATH)))
+      {
+        updTmpHash = cmd5.GetMD5((LPCTSTR)(szUpdfilesPath +
+          szaTmp.GetAt(LFILETMPATH))).c_str(); //Get Hash for current Temp File
+      }
 
-			if( svpToolBox.ifFileExist(szBasePath + szSetupPath ) ){
-				currentHash = cmd5.GetMD5(szBasePath + szSetupPath); //Get Hash for bin file
-			}
+      if( svpToolBox.ifFileExist(szBasePath + szSetupPath ) ){
+        currentHash = cmd5.GetMD5((LPCTSTR)(szBasePath + szSetupPath)).c_str(); //Get Hash for bin file
+      }
 
             if (currentHash.CompareNoCase( szaTmp.GetAt(LFILEHASH) ) == 0 )
                 continue;
@@ -470,9 +472,10 @@ bool cupdatenetlib::IsMd5Match(CString strFileName, CString strMd5)
 {
     CMD5Checksum cmd5;
     CString strMd5Cal;
-    if( svpToolBox.ifFileExist(strFileName ) ){
-        strMd5Cal = cmd5.GetMD5(strFileName); 
-        return (strMd5Cal.CompareNoCase( strMd5 ) == 0 );
+    if(svpToolBox.ifFileExist(strFileName))
+    {
+        strMd5Cal = CString(cmd5.GetMD5((LPCTSTR)strFileName).c_str());
+        return (strMd5Cal.CompareNoCase(strMd5) == 0 );
     }
     else
         return false;

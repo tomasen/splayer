@@ -13,7 +13,7 @@ static SubtitleStyle::STYLEPARAM g_styleparams[] =
 #ifdef _WINDOWS_
   {SubtitleStyle::SimSun, L"SimSun", 16, 0x00FFFFFF, 2, 0x00996633, 0, 0x00000000, 90, 50},
   {SubtitleStyle::SimHei, L"SimHei", 20, 0x0000ecec, 2, 0x000f0f0f, 1, 0x00333333, 90, 50},
-  {SubtitleStyle::KaiTi, L"KaiTi", 16, 0x0000ecec, 2, 0x000f0f0f, 1, 0x00333333, 90, 50},
+  {SubtitleStyle::KaiTi, L"KaiTi", 16, 0x0086E1FF, 2, 0x0006374A, 1, 0x00333333, 90, 50},
 #endif
 };
 
@@ -33,17 +33,21 @@ const static wchar_t* fontlist_simhei[] = {
   L"\x5FAE\x8F6F\x96C5\x9ED1",              // Chinese for "Microsoft YaHei"
   L"\x6587\x6CC9\x9A7F\x5FAE\x737C\x9ED1",  // Chinese for "WenQuanYi Micro Hei"
   L"\x9ED1\x4F53"                           // Chinese for "SimHei"
+  L"Segoe UI",
+  L"Arial"
 };
 
 const static wchar_t* fontlist_simsun[] = {
   L"SimSun",
-  L"\x5B8B\x4F53"                           // Chinese for "SimSun"
+  L"\x5B8B\x4F53",                          // Chinese for "SimSun"
+  L"Trebuchet MS"
 };
 
 const static wchar_t* fontlist_kaiti[] = {
   L"KaiTi",
   L"\x6977\x4F53",                          // Chinese for "KaiTi"
-  L"\x6977\x4F53_GB2312"                    // Chinese for "KaiTi_GB2312"
+  L"\x6977\x4F53_GB2312",                   // Chinese for "KaiTi_GB2312"
+  L"Georgia"
 };
 
 std::vector<std::wstring> g_sampletexts;  // text pieces to paint samples in SubtitleStyle::Paint
@@ -233,7 +237,7 @@ void SubtitleStyle::Paint(HDC dc, RECT* rc, int index_main, int index_sec, bool 
 
   // create font
   WTL::CLogFont lf;
-  lf.lfHeight   = sp_main->fontsize*2;
+  lf.lfHeight   = sp_main->fontsize*5/2;
   lf.lfQuality  = ANTIALIASED_QUALITY;
   lf.lfCharSet  = DEFAULT_CHARSET;
   wcscpy_s(lf.lfFaceName, 32, sp_main->fontname);
@@ -288,7 +292,7 @@ void SubtitleStyle::Paint(HDC dc, RECT* rc, int index_main, int index_sec, bool 
   // paint logic 1. shadow
   if (sp_main->shadowoffset > 0)
   {
-    rc_textraw.OffsetRect(sp_main->shadowoffset*2, sp_main->shadowoffset*2);
+    rc_textraw.OffsetRect(sp_main->shadowoffset*3, sp_main->shadowoffset*3);
     // blend the shadow lighter a bit
     int color = (0x00FFFFFF + sp_main->shadowcolor)/2;
     mdc.SetTextColor(color);
@@ -306,7 +310,7 @@ void SubtitleStyle::Paint(HDC dc, RECT* rc, int index_main, int index_sec, bool 
       mdc.DrawText(sample_text.c_str(), -1, &rc_textraw, DT_EDITCONTROL);
     }
     rc_textraw.OffsetRect(-1, 0);
-    rc_textraw.OffsetRect(-sp_main->shadowoffset, -sp_main->shadowoffset);
+    rc_textraw.OffsetRect(-sp_main->shadowoffset*3, -sp_main->shadowoffset*3);
   }
 
   // paint logic 2. stroke

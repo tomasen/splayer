@@ -1,3 +1,0 @@
-D:\-=SVN=-\svplayer\Setup\svplayer.msi\WiX\bin\ReleaseCHS\zh-CN\SvPlayer.wixpdb
-obj\ReleaseCHS\Product.wixobj
-obj\ReleaseCHS\SvPlayer_comp.wixobj

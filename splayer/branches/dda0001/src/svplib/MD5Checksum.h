@@ -13,12 +13,11 @@
 *****************************************************************************************/
 
 
-#if !defined(AFX_MD5CHECKSUM_H__2BC7928E_4C15_11D3_B2EE_A4A60E20D2C3__INCLUDED_)
-#define AFX_MD5CHECKSUM_H__2BC7928E_4C15_11D3_B2EE_A4A60E20D2C3__INCLUDED_
+#ifndef MD5CHECKSUM_H
+#define MD5CHECKSUM_H
+#include <string>
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+
 
 
 /****************************************************************************************
@@ -112,14 +111,14 @@ Laboratory for Computer Science and RSA Data Security, Inc., April 1992.
 
 
    2. Terminology and Notation
-   In this document a "word" is a 32-bit quantity and a "byte" is an
+   In this document a "word" is a 32-bit quantity and a "unsigned char" is an
    eight-bit quantity. A sequence of bits can be interpreted in a
    natural manner as a sequence of bytes, where each consecutive group
-   of eight bits is interpreted as a byte with the high-order (most
-   significant) bit of each byte listed first. Similarly, a sequence of
+   of eight bits is interpreted as a unsigned char with the high-order (most
+   significant) bit of each unsigned char listed first. Similarly, a sequence of
    bytes can be interpreted as a sequence of 32-bit words, where each
    consecutive group of four bytes is interpreted as a word with the
-   low-order (least significant) byte given first.
+   low-order (least significant) unsigned char given first.
    Let x_i denote "x sub i". If the subscript is an expression, we
    surround it in braces, as in x_{i+1}. Similarly, we use ^ for
    superscripts (exponentiation), so that x^i denotes x to the i-th   power.
@@ -248,7 +247,7 @@ Laboratory for Computer Science and RSA Data Security, Inc., April 1992.
 
    3.5 Step 5. Output
    The message digest produced as output is A, B, C, D. That is, we
-   begin with the low-order byte of A, and end with the high-order byte of D.
+   begin with the low-order unsigned char of A, and end with the high-order unsigned char of D.
    This completes the description of MD5.
    
    Summary
@@ -298,46 +297,48 @@ Laboratory for Computer Science and RSA Data Security, Inc., April 1992.
 
 
 *****************************************************************************************/
-class CMD5Checksum  
+class CMD5Checksum
 {
 public:
-	//interface functions for the RSA MD5 calculation
-	CString GetMD5(BYTE* pBuf, UINT nLength);
-	CString GetMD5(CFile& File);
-	CString GetMD5(const CString& strFilePath);
-	unsigned char lpszMD5[ 16 ];
-	//constructor/destructor
-	CMD5Checksum();
-	virtual ~CMD5Checksum() {};
-	void Clean();
+  //interface functions for the RSA MD5 calculation
+  std::wstring GetMD5(unsigned char* pBuf, unsigned int nLength);
+  std::wstring GetMD5(FILE* File);
+  std::wstring GetMD5(std::wstring strFilePath);
+  unsigned char lpszMD5[ 16 ];
+  //constructor/destructor
+  CMD5Checksum();
+  virtual ~CMD5Checksum() {};
+  void Clean();
 protected:
-	
-	//RSA MD5 implementation
-	void Transform(BYTE Block[64]);
-	void Update(BYTE* Input, ULONG nInputLen);
-	CString Final();
-	inline DWORD RotateLeft(DWORD x, int n);
-	inline void FF( DWORD& A, DWORD B, DWORD C, DWORD D, DWORD X, DWORD S, DWORD T);
-	inline void GG( DWORD& A, DWORD B, DWORD C, DWORD D, DWORD X, DWORD S, DWORD T);
-	inline void HH( DWORD& A, DWORD B, DWORD C, DWORD D, DWORD X, DWORD S, DWORD T);
-	inline void II( DWORD& A, DWORD B, DWORD C, DWORD D, DWORD X, DWORD S, DWORD T);
 
-	//utility functions
-	inline void DWordToByte(BYTE* Output, DWORD* Input, UINT nLength);
-	inline void ByteToDWord(DWORD* Output, BYTE* Input, UINT nLength);
+  //RSA MD5 implementation
+  void Transform(unsigned char Block[64]);
+  void Update(unsigned char* Input, unsigned long nInputLen);
+  std::wstring Final();
+  inline unsigned long RotateLeft(unsigned long x, int n);
+  inline void FF(unsigned long& A, unsigned long B, unsigned long C,
+                 unsigned long D, unsigned long X,
+                 unsigned long S, unsigned long T);
+  inline void GG(unsigned long& A, unsigned long B, unsigned long C,
+                 unsigned long D, unsigned long X,
+                 unsigned long S, unsigned long T);
+  inline void HH(unsigned long& A, unsigned long B, unsigned long C,
+                 unsigned long D, unsigned long X,
+                 unsigned long S, unsigned long T);
+  inline void II(unsigned long& A, unsigned long B, unsigned long C,
+                 unsigned long D, unsigned long X,
+                 unsigned long S, unsigned long T);
+
+  //utility functions
+  inline void DWordToByte(unsigned char* Output, unsigned long* Input,
+                          unsigned int nLength);
+  inline void ByteToDWord(unsigned long* Output, unsigned char* Input,
+                          unsigned int nLength);
 
 private:
-	BYTE  m_lpszBuffer[64];		//input buffer
-	ULONG m_nCount[2];			//number of bits, modulo 2^64 (lsb first)
-	ULONG m_lMD5[4];			//MD5 checksum
+  unsigned char m_lpszBuffer[64];             //input buffer
+  unsigned long m_nCount[2];                  //number of bits, modulo 2^64 (lsb first)
+  unsigned long m_lMD5[4];                    //MD5 checksum
 };
 
-#endif // !defined(AFX_MD5CHECKSUM_H__2BC7928E_4C15_11D3_B2EE_A4A60E20D2C3__INCLUDED_)
-
-
-
-
-
-
-
-
+#endif // #ifndef MD5CHECKSUM_H

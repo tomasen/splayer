@@ -446,7 +446,7 @@ HICON LoadIcon(CString fn, bool fSmall)
 	}
 	while(0);
 
-	return((HICON)LoadImage(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_UNKNOWN), IMAGE_ICON, size.cx, size.cy, 0));
+	return((HICON)LoadImage(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDR_MAINFRAME), IMAGE_ICON, size.cx, size.cy, 0));
 }
 
 bool LoadType(CString fn, CString& type)
@@ -1575,7 +1575,7 @@ for(int i = 0; i <= 30; i++){
 	SVP_LogMsg5(_T("COLOR_GRAYTEXT %x"), GetSysColor(COLOR_GRAYTEXT));
 */
 
-    SVP_LogMsg5(L"Settings::InitInstanceThreaded 1");
+  SVP_LogMsg5(L"Settings::InitInstanceThreaded 1 %d", SVP_REV_NUMBER);
 
 	//avoid crash by lame acm
 	RegDelnode(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\MediaResources\\msacm\\msacm.lameacm");
@@ -2268,8 +2268,10 @@ BOOL CMPlayerCApp::InitInstance()
 		{
 		case 1:
 			{
-				CPPageSheet options(ResStr(IDS_OPTIONS_CAPTION), NULL, NULL, CPPageFormats::IDD );
-				options.DoModal();
+        CAutoPtr<CPPageFormats> page(new CPPageFormats());
+        CPropertySheet dlg(ResStr(IDS_DIALOG_FILEASSOC_TITLE), AfxGetMainWnd());
+        dlg.AddPage(page);
+        dlg.DoModal() ;
 				return FALSE;
 			}
 			break;
@@ -5342,7 +5344,7 @@ void CMPlayerCApp::Settings::DelFavByFn(favtype ft, BOOL bRecent, CString szMatc
 	if(bRecent){
 		CMD5Checksum cmd5;
 		CStringA szMD5data(szMatch);
-		CString szMatchmd5 = cmd5.GetMD5((BYTE*)szMD5data.GetBuffer() , szMD5data.GetLength() );
+		CString szMatchmd5 = cmd5.GetMD5((BYTE*)szMD5data.GetBuffer() , szMD5data.GetLength()).c_str();
 		POSITION pos = sl.GetHeadPosition();
 		while(pos){
 			if( sl.GetAt(pos).Find(szMatchmd5) >= 0 ){
@@ -5373,7 +5375,7 @@ void CMPlayerCApp::Settings::AddFav(favtype ft, CString s, BOOL bRecent, CString
 	if(bRecent){
 		CMD5Checksum cmd5;
 		CStringA szMD5data(szMatch);
-		CString szMatchmd5 = cmd5.GetMD5((BYTE*)szMD5data.GetBuffer() , szMD5data.GetLength() );
+		CString szMatchmd5 = cmd5.GetMD5((BYTE*)szMD5data.GetBuffer() , szMD5data.GetLength()).c_str();
 		szMD5data.ReleaseBuffer();
 		POSITION pos = sl.GetHeadPosition();
 		while(pos){
@@ -5767,6 +5769,7 @@ CString GetContentType(CString fn, CAtlList<CString>* redir)
 		else if(ext == _T(".qtl")) ct = _T("application/x-quicktimeplayer");
 		else if(ext == _T(".mpcpl")) ct = _T("application/x-mpc-playlist");
 		else if(ext == _T(".cue")) ct = _T("application/x-cue-playlist");
+        else if(ext == _T(".bdmv")) ct = _T("application/x-bdmv-playlist");
 
 		if(FILE* f = _tfopen(fn, _T("rb")))
 		{

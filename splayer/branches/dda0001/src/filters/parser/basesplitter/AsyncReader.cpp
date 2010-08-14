@@ -157,6 +157,8 @@ CAsyncFileReader::CAsyncFileReader(CAtlList<CHdmvClipInfo::PlaylistItem>& Items,
 , m_len(-1)
 , m_hBreakEvent(NULL)
 , m_lOsError(0)
+, m_bIsRAR(0)
+, m_hRar(0)
 {
 	hr = OpenFiles(Items, modeRead|shareDenyNone|typeBinary|osSequentialScan) ? S_OK : E_FAIL;
 	if(SUCCEEDED(hr)) m_len = GetLength();

@@ -28,18 +28,19 @@ class CMediaFormatCategory
 {
 protected:
 	CString m_label, m_specreqnote;
-    CString m_PerceivedType;
+  CString m_PerceivedType;
 	CAtlList<CString> m_exts, m_backupexts;
 	int m_fAudioOnly;
 	engine_t m_engine;
+  UINT m_IconType;
 
 public:
 	CMediaFormatCategory();
 	CMediaFormatCategory(
-		CString label, CAtlList<CString>& exts, CString PerceivedType, int fAudioOnly = false,
+		CString label, CAtlList<CString>& exts, CString PerceivedType, UINT IconType, int fAudioOnly = false,
 		CString specreqnote =  _T(""), engine_t e = DirectShow);
 	CMediaFormatCategory(
-		CString label, CString exts, CString PerceivedType, int fAudioOnly = false,
+		CString label, CString exts, CString PerceivedType, UINT IconType, int fAudioOnly = false,
 		CString specreqnote =  _T(""), engine_t e = DirectShow);
 	virtual ~CMediaFormatCategory();
 
@@ -62,7 +63,8 @@ public:
 	CString GetBackupExtsWithPeriod(bool fAppendEngine = false);
 	CString GetSpecReqNote() {return m_specreqnote;}
 	int IsAudioOnly() {return m_fAudioOnly ;}
-    CString getPerceivedType(){return m_PerceivedType;}
+  CString getPerceivedType(){return m_PerceivedType;}
+  UINT GetIconType() {return m_IconType;}
 	engine_t GetEngineType() {return m_engine;}
 	void SetEngineType(engine_t e) {m_engine = e;}
 };

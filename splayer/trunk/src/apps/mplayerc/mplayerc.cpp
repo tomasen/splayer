@@ -1567,74 +1567,12 @@ void CMPlayerCApp::InitInstanceThreaded(INT64 CLS64){
 		_wremove(svpToolBox.GetPlayerPath(_T("SVPDebug2.log")));
 	}
 
-	/*
-for(int i = 0; i <= 30; i++){
-		SVP_LogMsg5(_T("COLOR_GRAYTEXT %x %d"), GetSysColor(i), i);
-
-	}
-	SVP_LogMsg5(_T("COLOR_GRAYTEXT %x"), GetSysColor(COLOR_GRAYTEXT));
-*/
-
-  SVP_LogMsg5(L"Settings::InitInstanceThreaded 1 %d", SVP_REV_NUMBER);
-
 	//avoid crash by lame acm
 	RegDelnode(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\MediaResources\\msacm\\msacm.lameacm");
 	SVPRegDeleteValueEx( HKEY_LOCAL_MACHINE , L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\drivers.desc",L"LameACM.acm");
 	SVPRegDeleteValueEx( HKEY_LOCAL_MACHINE , L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\drivers32",L"msacm.lameacm");
 
-    SVP_LogMsg5(L"Settings::InitInstanceThreaded 2");
-	bool regReal = false;
-	{
-		CString prefs(_T("Software\\RealNetworks\\Preferences"));
-
-		CRegKey key;
-
-		if(ERROR_SUCCESS != key.Open(HKEY_CLASSES_ROOT, prefs + _T("\\DT_Common"), KEY_READ)){
-			regReal = true;
-		}else{
-			TCHAR buff[MAX_PATH];
-			ULONG len = sizeof(buff);
-			if(ERROR_SUCCESS != key.QueryStringValue(NULL, buff, &len))
-			{
-				regReal = true;
-			}else{
-				key.Close();
-
-				if(!svpToolBox.ifFileExist(CString(buff) + _T("pnen3260.dll"))) {
-					regReal = true;
-				}
-			}
-		}
-			
-	}
-    SVP_LogMsg5(L"Settings::InitInstanceThreaded 3");
-	if(regReal && svpToolBox.ifFileExist(svpToolBox.GetPlayerPath(L"Real\\Common\\pnen3260.dll"))){
-		CString szLPath;
-		szLPath = CString(svpToolBox.GetPlayerPath(L"\\"));
-		SVPRegWriteStr(HKEY_CLASSES_ROOT,L"Software\\RealNetworks\\Preferences\\DT_Codecs",0,szLPath.GetBuffer());
-		szLPath.ReleaseBuffer();
-
-		szLPath = CString(svpToolBox.GetPlayerPath(L"Real\\Common\\"));
-		SVPRegWriteStr(HKEY_CLASSES_ROOT,L"Software\\RealNetworks\\Preferences\\DT_Common",0,szLPath.GetBuffer());
-		SVPRegWriteStr(HKEY_CLASSES_ROOT,L"Software\\RealNetworks\\Preferences\\DT_Objbrokr",0,szLPath.GetBuffer());
-		szLPath.ReleaseBuffer();
-
-		szLPath = CString(svpToolBox.GetPlayerPath(L"Real\\Plugins\\"));
-		SVPRegWriteStr(HKEY_CLASSES_ROOT,L"Software\\RealNetworks\\Preferences\\DT_Plugins",0,szLPath.GetBuffer());
-		szLPath.ReleaseBuffer();
-
-		SVPRegWriteDWORD(HKEY_CURRENT_USER,L"Software\\RealNetworks\\RealMediaSDK\\6.0\\Preferences\\UseOverlay",0, 0);
-
-		/*
-
-		WriteRegStr HKCR "Software\RealNetworks\Preferences\DT_Codecs" "" "$INSTDIR"
-		WriteRegStr HKCR "Software\RealNetworks\Preferences\DT_Common" "" "$INSTDIR\Real\Common\"
-		WriteRegStr HKCR "Software\RealNetworks\Preferences\DT_Objbrokr" "" "$INSTDIR\Real\Common\"
-		WriteRegStr HKCR "Software\RealNetworks\Preferences\DT_Plugins" "" "$INSTDIR\Real\\"
-		WriteRegDWORD HKCR "Software\RealNetworks\RealMediaSDK\6.0\Preferences\UseOverlay"  "" 0
-		*/
-	}
-    SVP_LogMsg5(L"Settings::InitInstanceThreaded 4");
+  SVP_LogMsg5(L"Settings::InitInstanceThreaded 4");
 	m_bSystemParametersInfo[0] = FALSE;
 	if(!IsVista()){
 		BOOL bDropShadow = FALSE;
@@ -1646,134 +1584,11 @@ for(int i = 0; i <= 30; i++){
 			}
 		}
 
-/* useless, not effect to tooltip shadow
-
-		if (SystemParametersInfo(SPI_GETTOOLTIPFADE , 0,    &bDropShadow,	0)){
-			if(bDropShadow){
-				if( SystemParametersInfo(SPI_SETTOOLTIPFADE , 0,    FALSE,	0) )
-					m_bSystemParametersInfo[1] = TRUE;
-			}
-		}
-
-
-		if (SystemParametersInfo(SPI_GETTOOLTIPANIMATION , 0,    &bDropShadow,	0)){
-			if(bDropShadow){
-				if( SystemParametersInfo(SPI_SETTOOLTIPANIMATION , 0,    FALSE,	0) )
-					m_bSystemParametersInfo[2] = TRUE;
-			}
-		}
-
-*/
-
-
 	}
     SVP_LogMsg5(L"Settings::InitInstanceThreaded 5");
-	//csaDll.Add( _T("codecs\\CoreAVCDecoder.ax")); //avoid missing reg key problem
-	//CFilterMapper2 fm2(false);
-	if(1){
-		HKEY fKey;
-		CFilterMapper2 fmx(false);
-		if(RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{55DA30FC-F16B-49FC-BAA5-AE59FC65F82D}") , &fKey ) != ERROR_SUCCESS ){
-				
-			SVP_LogMsg5(L"Reg haalis.ax");
-			RegSvr32( _T("haalis.ax"));
-			
-		}
-		if(RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{31345649-0000-0010-8000-00AA00389B71}") , &fKey ) != ERROR_SUCCESS ){
-			SVP_LogMsg5(L"reg iv41.ax");
-			RegSvr32( _T("ir41_32.ax"));
-		}
-
-		if(RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{30355649-0000-0010-8000-00AA00389B71}") , &fKey ) != ERROR_SUCCESS ){
-			SVP_LogMsg5(L"reg ir50_32.dll");
-			RegSvr32( _T("ir50_32.dll"));
-		}
+	
 		
-
-		if(RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{DB43B405-43AA-4f01-82D8-D84D47E6019C}") , &fKey ) != ERROR_SUCCESS ){
-			SVP_LogMsg5(L"Reg ogm.dll");
-			RegSvr32( _T("ogm.dll"));
-		}
-
-		if(RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{B841F346-4835-4de8-AA5E-2E7CD2D4C435}") , &fKey ) != ERROR_SUCCESS ){
-			SVP_LogMsg5(L"Reg ts.dll");
-			RegSvr32( _T("ts.dll"));
-		}
-        SVP_LogMsg5(L"Settings::InitInstanceThreaded 6");
-		if( RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{ACD23F8C-B37E-4B2D-BA08-86CB6E621D6A}") , &fKey) != ERROR_SUCCESS){
-			SVP_LogMsg5(L"mpc_mtcontain go");
-			RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mtcontain.dll")) );
-			SVP_LogMsg5(L"mpc_mtcontain done");
-		}
-		if( RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{B4DAEDB7-7F0E-434F-9AA3-B82B549A3680}") , &fKey) != ERROR_SUCCESS){
-			RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mtcontrol.dll")) );
-			SVP_LogMsg5(L"mpc_mtcontrol done");
-		}
-
-		/*[267851681.982100] SET RegW (null)
-		[267851685.151100] SET RegW (null)
-		[267851702.360300] SET Mine_RegSetValueExW ThreadingModel
-		[267851706.226100] Mine_CoCreateInstance {CDA42200-BD88-11D0-BD4E-00A0C911CE86} 0
-		[267851706.454700] Mine_RegOpenKeyExW  CLSID\{083863F1-70DE-11D0-BD40-00A0C911CE86}\Instance 0 
-		[267851706.604200] Mine_RegOpenKeyExW 80000000 CLSID\{083863F1-70DE-11D0-BD40-00A0C911CE86}\Instance 0
-		[267851706.816000] Mine_RegOpenKeyExW  {FF5DCC7A-7147-41E1-86E8-DD05ABD588BF} 0 
-		[267851707.029300] Mine_RegOpenKeyExW 2ea {FF5DCC7A-7147-41E1-86E8-DD05ABD588BF} 2
-		[267851725.508600] Mine_CoCreateInstance {4315D437-5B8C-11D0-BD3B-00A0C911CE86} 0
-		[267851725.720400] Mine_RegCreateKeyExW CLSID\{083863F1-70DE-11D0-BD40-00A0C911CE86}\Instance\{FF5DCC7A-7147-41E1-86E8-DD05ABD588BF}
-		[267851730.858000] SET Mine_RegSetValueExW FriendlyName
-		[267851733.711300] Mine_RegCreateKeyExW CLSID\{083863F1-70DE-11D0-BD40-00A0C911CE86}\Instance\{FF5DCC7A-7147-41E1-86E8-DD05ABD588BF}
-		[267851733.959600] SET Mine_RegSetValueExW CLSID
-		[267851743.117000] Mine_RegCreateKeyExW CLSID\{083863F1-70DE-11D0-BD40-00A0C911CE86}\Instance\{FF5DCC7A-7147-41E1-86E8-DD05ABD588BF}
-		[267851743.406500] SET Mine_RegSetValueExW FilterData*/
-		//RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mxrender.dll")) );
-		//SVP_LogMsg5(L"mpc_mxrender done");
-SVP_LogMsg5(L"Settings::InitInstanceThreaded 7");
-		if( RegOpenKey(HKEY_CLASSES_ROOT , _T("MpcMxVideo.XvidDecoder.1") , &fKey ) != ERROR_SUCCESS){
-			RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mxvideo.dll")) );
-		}
-SVP_LogMsg5(L"Settings::InitInstanceThreaded 8");
-		if( RegOpenKey(HKEY_CLASSES_ROOT , _T("Mpcwtlvcl.VideoFrame") , &fKey ) != ERROR_SUCCESS){
-			
-				RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mdssockc.dll")) );
-				RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mxaudio.dll")) );
-				
-				RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mxscreen.dll")) );
-				RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mxshbasu.dll")) );
-				RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mxshmaiu.dll")) );
-				RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mxshsour.dll")) );
-				RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mcucltu.dll")) );
-				RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mcufilecu.dll")) );
-		
-				RegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_wtlvcl.dll")) );
-				SVP_LogMsg5(L"reg csf dlls");
-		
-			
-		}
-		SVP_LogMsg5(L"Reg End");
-	}
-
-		//csaDll.Add( _T("tsccvid.dll"));
-		//csaDll.Add( _T("wvc1dmod.dll"));
-		//csaDll.Add( _T("RadGtSplitter.ax"));
-
-	{
-		HKEY fKey;
-		if(RegOpenKey(HKEY_CLASSES_ROOT , _T("CLSID\\{2eeb4adf-4578-4d10-bca7-bb955f56320a}") , &fKey ) != ERROR_SUCCESS ){
-			csaDll.Add( _T("wmadmod.dll"));
-		}else{
-			//RegCloseKey(fKey);
-		}
-	}
-    SVP_LogMsg5(L"Settings::InitInstanceThreaded 10");
-		
-		for(int i = 0; i < csaDll.GetCount(); i++){
-			CString szDllPath = svpToolBox.GetPlayerPath( csaDll.GetAt(i) );
-			if(svpToolBox.ifFileExist(szDllPath)){
-				//fm2.Register(szDllPath);
-				RegSvr32( szDllPath );
-			}
-		}
-SVP_LogMsg5(L"Settings::InitInstanceThreaded 11");
+    SVP_LogMsg5(L"Settings::InitInstanceThreaded 11");
         if(!sqlite_local_record){ // TODO: save play record to local sql db
             //AfxMessageBox(L"0");
             int iDescLen;

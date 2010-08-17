@@ -60,10 +60,9 @@ extern "C"
 #define LOGDEBUG 0
 #define MUST_LOG   __noop
 //SVP_LogMsg5
-#define TRACE SVP_LogMsg6
 #define SVP_LogMsg5 __noop
 #define SVP_LogMsg6 __noop
-#define TRACE __noop
+#define TRACE SVP_LogMsg6
 #define TRACE5  SVP_LogMsg5
 
 
@@ -325,7 +324,8 @@ FFMPEG_CODECS		ffCodecs[] =
 
     //{ &MEDIASUBTYPE_VP80, CODEC_ID_VP8,  MAKEFOURCC('V', 'P', '8', '0'),	NULL },
     
-    
+  {&MEDIASUBTYPE_FRAPS1, CODEC_ID_FRAPS,  MAKEFOURCC('F', 'P', 'S', '1'),	NULL },
+  
 	
 };
 
@@ -507,7 +507,8 @@ const AMOVIESETUP_MEDIATYPE CMPCVideoDecFilter::sudPinTypesIn[] =
 	{ &MEDIATYPE_Video, &MEDIASUBTYPE_MJPG   } ,
 	{ &MEDIATYPE_Video, &MEDIASUBTYPE_CVID },
     { &MEDIATYPE_Video, &MEDIASUBTYPE_QTRle },
-    { &MEDIATYPE_Video, &MEDIASUBTYPE_VP80 }
+    { &MEDIATYPE_Video, &MEDIASUBTYPE_VP80 },
+  { &MEDIATYPE_Video, &MEDIASUBTYPE_FRAPS1 }
 };
 
 // Workaround : graphedit crash when filter expose more than 115 input MediaTypes !
@@ -1064,7 +1065,7 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 				m_pAVCtx->height	= abs(vih->bmiHeader.biHeight);
 				m_pAVCtx->codec_tag	= vih->bmiHeader.biCompression;
 
-				if( m_pAVCodec->id == CODEC_ID_MJPEG ){
+				if( m_pAVCodec->id == CODEC_ID_MJPEG || m_pAVCodec->id == CODEC_ID_FRAPS ){
 					m_bUSERGB = true;
 				}else if( m_pAVCodec->id == CODEC_ID_HUFFYUV ||  m_pAVCodec->id == CODEC_ID_QTRLE){//|| m_pAVCodec->id == CODEC_ID_MJPEG
 					m_pAVCtx->bits_per_coded_sample = vih->bmiHeader.biBitCount ;
@@ -1975,8 +1976,11 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 			case  PIX_FMT_RGB555:
 				subtype = MEDIASUBTYPE_RGB555;
 				break;
-			case  PIX_FMT_RGB24:
-				subtype = MEDIASUBTYPE_RGB24;
+      case  PIX_FMT_BGR24:
+        // TODO: in fact this is a fliped RGB24
+        subtype = MEDIASUBTYPE_RGB24; 
+      case  PIX_FMT_RGB24:
+      	subtype = MEDIASUBTYPE_RGB24;
 				break;
 			case  PIX_FMT_RGB32:
 				subtype = MEDIASUBTYPE_RGB32;
@@ -2007,7 +2011,7 @@ HRESULT CMPCVideoDecFilter::SoftwareDecode(IMediaSample* pIn, BYTE* pDataIn, int
 				break;
 
 			default:
-				//SVP_LogMsg3("PIX_FMT %u ", m_pAVCtx->pix_fmt);
+				SVP_LogMsg6("PIX_FMT %u ", m_pAVCtx->pix_fmt);
 				break;
 		}
 

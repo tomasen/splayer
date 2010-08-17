@@ -16,6 +16,7 @@ CC=gcc
 		#$(LAVC_DIR)/mpegaudio_tablegen.c \
 		
 SRCS_C=\
+		$(LAVC_DIR)/fraps.c \
 		$(LAVC_DIR)/flac.c \
 		$(LAVC_DIR)/flacdata.c \
 		$(LAVC_DIR)/flacdec.c \
@@ -167,7 +168,6 @@ SRCS_C=\
 #		$(LAVC_DIR)/dv.c \
 #		$(LAVC_DIR)/eval.c \
 #		$(LAVC_DIR)/ffv1.c \
-#		$(LAVC_DIR)/fraps.c \
 #		$(LAVC_DIR)/g726.c \
 #		$(LAVC_DIR)/gsm.c \
 #		$(LAVC_DIR)/h261.c \

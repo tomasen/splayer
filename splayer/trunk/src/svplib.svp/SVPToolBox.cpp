@@ -192,6 +192,7 @@ BOOL CSVPToolBox::isAlaphbet(WCHAR wchr)
   CString szAlaphbet = _T("1234567890-=qwertyuiop[]asdfghjkl;'zxcvbnm,./`~!@#$%^&*()_+QWERTYUIOP{}ASDFGHJKL:\"\\ZXCVBNM<>?	 ∫♩♫♬€¶♯$¥∮“”‘’；：，。、《》？！·—");
   return !!( szAlaphbet.Find(wchr) >= 0);
 }
+
 void CSVPToolBox::findMoreFileByFile( CString szFile, CAtlList<CString>& szaRet,  CAtlArray<CString>& szaExt  ){
 	CString szFindPatten;
 	CStringArray szFilePathinfo;

@@ -59,3 +59,48 @@ HotkeyCmd HotkeyController::GetHotkeyCmdByMouse(unsigned int mouse)
   }
   return ret;
 }
+
+void HotkeyController::EnumAvailableSchemes(std::vector<std::wstring>& files_out, 
+                                            std::vector<std::wstring>& names_out)
+{
+  files_out.resize(0);
+  names_out.resize(0);
+  // Retrieve .exe path, and scheme files
+  // For this feature we use Windows API programming because there aren't
+  // real C/C++ way to enumerate files for cross-platform, other than
+  // boost of course.
+  wchar_t exe_path[256];
+  GetModuleFileName(NULL, exe_path, 256);
+  PathRemoveFileSpec(exe_path);
+  
+  wcscat_s(exe_path, 256, L"\\hotkey\\");
+
+  std::wstring basedir = exe_path;
+  wcscat_s(exe_path, 256, L"*.key");
+
+  WIN32_FIND_DATA fd;
+  HANDLE hFind = ::FindFirstFile(exe_path, &fd);
+  if (hFind != INVALID_HANDLE_VALUE) 
+  {
+    std::wstring schemefile;
+    schemefile = basedir;
+    schemefile += fd.cFileName;
+    files_out.push_back(schemefile);
+    while (::FindNextFile(hFind, &fd) != 0)
+    {
+      schemefile = basedir;
+      schemefile += fd.cFileName;
+      files_out.push_back(schemefile);
+    }
+  }
+  ::FindClose(hFind);
+
+  //////////////////////////////////////////////////////////////////////////
+
+  for (std::vector<std::wstring>::iterator it = files_out.begin(); it != files_out.end(); it++)
+  {
+    HotkeySchemeParser parser;
+    parser.ReadFromFile((*it).c_str());
+    names_out.push_back(parser.GetSchemeName());
+  }
+}

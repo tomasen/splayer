@@ -800,30 +800,30 @@ HRESULT CUESettingPanel::OnButtonReset(IHTMLElement* /*pElement*/)
 }
 HRESULT CUESettingPanel::OnButtonUseExtCodec(IHTMLElement* /*pElement*/)
 {
-	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
-	CAutoPtr<CPPageExternalFilters> page(new CPPageExternalFilters());
-	CPropertySheet dlg(ResStr(IDS_DIALOG_EXTERNAL_FILTER_TITLE), this);
-	dlg.AddPage(page);
-	dlg.DoModal() ;
+// 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
+// 	CAutoPtr<CPPageExternalFilters> page(new CPPageExternalFilters());
+// 	CPropertySheet dlg(ResStr(IDS_DIALOG_EXTERNAL_FILTER_TITLE), this);
+// 	dlg.AddPage(page);
+// 	dlg.DoModal() ;
 
 	return S_OK;
 }
 HRESULT CUESettingPanel::OnButtonAudioChannelMapping(IHTMLElement* /*pElement*/)
 {
 	
-	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
-	CPPageAudioSwitcher* asPage = new CPPageAudioSwitcher(pFrame->pGB);
-	UpdateData();
-	int iSS = _wtoi(m_sgs_speaker);
-	asPage->m_iSS = iSS;
-	asPage->m_nSpeakers =  (int)(iSS /100)%10 + (int)(iSS/10) %10  + iSS%10; 
-	
-	CAutoPtr<CPPageAudioSwitcher> page(asPage);
-	CPropertySheet dlg(ResStr(IDS_DIALOG_EXTERNAL_AUDIO_CHANNEL_MAPPING), this);
-	dlg.AddPage(page);
-	dlg.DoModal() ;
-	
-	
+// 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
+// 	CPPageAudioSwitcher* asPage = new CPPageAudioSwitcher(pFrame->pGB);
+// 	UpdateData();
+// 	int iSS = _wtoi(m_sgs_speaker);
+// 	asPage->m_iSS = iSS;
+// 	asPage->m_nSpeakers =  (int)(iSS /100)%10 + (int)(iSS/10) %10  + iSS%10; 
+// 	
+// 	CAutoPtr<CPPageAudioSwitcher> page(asPage);
+// 	CPropertySheet dlg(ResStr(IDS_DIALOG_EXTERNAL_AUDIO_CHANNEL_MAPPING), this);
+// 	dlg.AddPage(page);
+// 	dlg.DoModal() ;
+// 	
+// 	
 	return S_OK;
 }
 HRESULT CUESettingPanel::OnButtonApply(IHTMLElement* /*pElement*/)

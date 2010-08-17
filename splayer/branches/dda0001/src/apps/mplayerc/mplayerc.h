@@ -259,83 +259,9 @@ typedef struct
 	CSize size; 
 	int bpp, freq;
 } dispmode;
-
-class wmcmd : public ACCEL
-{
-	ACCEL backup;
-	UINT appcmdorg;
-	UINT mouseorg;
-public:
-	CString name;
-	UINT appcmd;
-	enum {NONE,LDOWN,LUP,LDBLCLK,MDOWN,MUP,MDBLCLK,RDOWN,RUP,RDBLCLK,X1DOWN,X1UP,X1DBLCLK,X2DOWN,X2UP,X2DBLCLK,WUP,WDOWN,LAST};
-	UINT mouse;
-	CStringA rmcmd;
-	int rmrepcnt;
-	wmcmd(WORD cmd = 0) {this->cmd = cmd;}
-	wmcmd(WORD cmd, WORD key, BYTE fVirt, LPCTSTR name, UINT appcmd = 0, UINT mouse = NONE, LPCSTR rmcmd = "", int rmrepcnt = 5)
-	{
-		this->cmd = cmd;
-		this->key = key;
-		this->fVirt = fVirt;
-		this->appcmd = appcmdorg = appcmd;
-		this->name = name;
-		this->mouse = mouseorg = mouse;
-		this->rmcmd = rmcmd;
-		this->rmrepcnt = rmrepcnt;
-		backup = *this;
-	}
-	bool operator == (const wmcmd& wc) const
-	{
-		return(cmd > 0 && cmd == wc.cmd);
-	}
-	void Restore() {*(ACCEL*)this = backup; appcmd = appcmdorg; mouse = mouseorg; rmcmd.Empty(); rmrepcnt = 5;}
-	bool IsModified() {return(memcmp((const ACCEL*)this, &backup, sizeof(ACCEL)) || appcmd != appcmdorg || mouse != mouseorg || !rmcmd.IsEmpty() || rmrepcnt != 5);}
-};
 #pragma pack(pop)
 
 #include <afxsock.h>
-
-class CRemoteCtrlClient : public CAsyncSocket
-{
-protected:
-	CCritSec m_csLock;
-	CWnd* m_pWnd;
-	enum {DISCONNECTED, CONNECTED, CONNECTING} m_nStatus;
-	CString m_addr;
-
-	virtual void OnConnect(int nErrorCode);
-	virtual void OnClose(int nErrorCode);
-	virtual void OnReceive(int nErrorCode);
-
-	virtual void OnCommand(CStringA str) = 0;
-
-	void ExecuteCommand(CStringA cmd, int repcnt);
-
-public:
-	CRemoteCtrlClient();
-	void SetHWND(HWND hWnd);
-	void Connect(CString addr);
-	int GetStatus() {return(m_nStatus);}
-};
-
-class CWinLircClient : public CRemoteCtrlClient
-{
-protected:
-	virtual void OnCommand(CStringA str);
-
-public:
-	CWinLircClient();
-};
-
-class CUIceClient : public CRemoteCtrlClient
-{
-protected:
-	virtual void OnCommand(CStringA str);
-
-public:
-	CUIceClient();
-};
 
 extern void GetCurDispMode(dispmode& dm);
 extern bool GetDispMode(int i, dispmode& dm);
@@ -687,7 +613,6 @@ public:
 
 		CStringArray m_pnspresets;
 
-		CList<wmcmd> wmcmds;
 		HACCEL hAccel;
 		//int disableSmartDrag;
 
@@ -695,10 +620,10 @@ public:
 
 		bool fWinLirc;
 		CString WinLircAddr;
-		CWinLircClient WinLircClient;
+// 		CWinLircClient WinLircClient;
 		bool fUIce;
 		CString UIceAddr;
-		CUIceClient UIceClient;
+// 		CUIceClient UIceClient;
 
 		CMediaFormats Formats;
 		
@@ -760,9 +685,6 @@ public:
 		void ChangeChannelMapByCustomSetting();
 		BOOL bUserAeroTitle();
 		BOOL bShouldUseEVR();
-		int  FindWmcmdsIDXofCmdid(UINT cmdid, POSITION pos);
-		POSITION  FindWmcmdsPosofCmdidByIdx(INT cmdid, int idx);
-
 
 		void GetFav(favtype ft, CAtlList<CString>& sl, BOOL bRecent = FALSE);
 		void SetFav(favtype ft, CAtlList<CString>& sl, BOOL bRecent = FALSE);

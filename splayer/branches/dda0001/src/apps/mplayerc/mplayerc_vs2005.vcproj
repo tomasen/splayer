@@ -646,7 +646,7 @@
 				>
 			</File>
 			<File
-				RelativePath="PPageAccelTbl.cpp"
+				RelativePath=".\PPageAccelTbl.cpp"
 				>
 			</File>
 			<File
@@ -1211,7 +1211,7 @@
 				>
 			</File>
 			<File
-				RelativePath="PPageAccelTbl.h"
+				RelativePath=".\PPageAccelTbl.h"
 				>
 			</File>
 			<File
@@ -2372,6 +2372,14 @@
 			Name="Controller"
 			>
 			<File
+				RelativePath=".\Controller\Hotkey_Controller.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Controller\Hotkey_Controller.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Controller\HotkeyCmd.cc"
 				>
 			</File>
@@ -2385,6 +2393,10 @@
 			</File>
 			<File
 				RelativePath=".\Controller\HotkeySchemeParser.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Controller\LazyInstance.h"
 				>
 			</File>
 		</Filter>
@@ -2445,11 +2457,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 		<File

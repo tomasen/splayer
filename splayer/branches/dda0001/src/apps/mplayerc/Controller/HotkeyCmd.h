@@ -48,6 +48,8 @@ public:
   void Restore();
   bool IsModified();
 
+  std::wstring MakeTextLabel();
+
 private:
   ACCEL         backup;
   unsigned int  appcmdorg;

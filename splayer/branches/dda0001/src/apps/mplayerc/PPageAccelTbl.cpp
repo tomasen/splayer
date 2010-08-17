@@ -59,34 +59,34 @@ BOOL CPPageAccelTbl::PreTranslateMessage(MSG* pMsg)
 
 void CPPageAccelTbl::SetupList()
 {
-	for(int row = 0; row < m_list.GetItemCount(); row++)
-	{
-		wmcmd& wc = m_wmcmds.GetAt((POSITION)m_list.GetItemData(row));
-
-		CString mod = MakeAccelModLabel(wc.fVirt);
-		m_list.SetItemText(row, COL_MOD, mod);
-
-		CString key = MakeAccelVkeyLabel(wc.key, wc.fVirt&FVIRTKEY);
-		m_list.SetItemText(row, COL_KEY, key);
-
-
-		m_list.SetItemText(row, COL_MOUSE, MakeMouseButtonLabel(wc.mouse));
-		CString type = (wc.fVirt&FVIRTKEY)?ResStr(IDS_ACCEL_HOTKEY_SET_BUTTON_KEY):ResStr(IDS_ACCEL_HOTKEY_SET_BUTTON_LETTERKEY);
-		m_list.SetItemText(row, COL_TYPE, type);
-
-		CString id;
-		id.Format(_T("%d"), wc.cmd);
-		m_list.SetItemText(row, COL_ID, id);
-
-		m_list.SetItemText(row, COL_APPCMD, MakeAppCommandLabel(wc.appcmd));
-
-		m_list.SetItemText(row, COL_RMCMD, CString(wc.rmcmd));
-
-
-		CString repcnt;
-		repcnt.Format(_T("%d"), wc.rmrepcnt);
-		m_list.SetItemText(row, COL_RMREPCNT, repcnt);
-	}
+// 	for(int row = 0; row < m_list.GetItemCount(); row++)
+// 	{
+// 		wmcmd& wc = m_wmcmds.GetAt((POSITION)m_list.GetItemData(row));
+// 
+// 		CString mod = MakeAccelModLabel(wc.fVirt);
+// 		m_list.SetItemText(row, COL_MOD, mod);
+// 
+// 		CString key = MakeAccelVkeyLabel(wc.key, wc.fVirt&FVIRTKEY);
+// 		m_list.SetItemText(row, COL_KEY, key);
+// 
+// 
+// 		m_list.SetItemText(row, COL_MOUSE, MakeMouseButtonLabel(wc.mouse));
+// 		CString type = (wc.fVirt&FVIRTKEY)?ResStr(IDS_ACCEL_HOTKEY_SET_BUTTON_KEY):ResStr(IDS_ACCEL_HOTKEY_SET_BUTTON_LETTERKEY);
+// 		m_list.SetItemText(row, COL_TYPE, type);
+// 
+// 		CString id;
+// 		id.Format(_T("%d"), wc.cmd);
+// 		m_list.SetItemText(row, COL_ID, id);
+// 
+// 		m_list.SetItemText(row, COL_APPCMD, MakeAppCommandLabel(wc.appcmd));
+// 
+// 		m_list.SetItemText(row, COL_RMCMD, CString(wc.rmcmd));
+// 
+// 
+// 		CString repcnt;
+// 		repcnt.Format(_T("%d"), wc.rmrepcnt);
+// 		m_list.SetItemText(row, COL_RMREPCNT, repcnt);
+// 	}
 }
 
 CString CPPageAccelTbl::MakeAccelModLabel(BYTE fVirt)
@@ -283,15 +283,15 @@ CString CPPageAccelTbl::MakeAccelVkeyLabel(WORD key, bool fVirtKey)
 
 CString CPPageAccelTbl::MakeAccelShortcutLabel(UINT id)
 {
-	CList<wmcmd>& wmcmds = AfxGetAppSettings().wmcmds;
-	POSITION pos = wmcmds.GetHeadPosition();
-	while(pos)
-	{
-		ACCEL& a = wmcmds.GetNext(pos);
-		if(a.cmd == id)
-			return(MakeAccelShortcutLabel(a));
-	}
-
+// 	CList<wmcmd>& wmcmds = AfxGetAppSettings().wmcmds;
+// 	POSITION pos = wmcmds.GetHeadPosition();
+// 	while(pos)
+// 	{
+// 		ACCEL& a = wmcmds.GetNext(pos);
+// 		if(a.cmd == id)
+// 			return(MakeAccelShortcutLabel(a));
+// 	}
+// 
 	return(_T(""));
 }
 
@@ -482,27 +482,27 @@ CString CPPageAccelTbl::MakeAccelShortcutLabel(ACCEL& a)
 CString CPPageAccelTbl::MakeMouseButtonLabel(UINT mouse)
 {
 	CString ret;
-	switch(mouse)
-	{
-	case wmcmd::NONE: default: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_NONE); break;
-	case wmcmd::LDOWN: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_LEFT_DOWN); break;
-	case wmcmd::LUP: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_LEFT_UP); break;
-	case wmcmd::LDBLCLK: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_LEFT_DBLCLK); break;
-	case wmcmd::MDOWN: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_MID_DOWN); break;
-	case wmcmd::MUP: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_MID_UP); break;
-	case wmcmd::MDBLCLK: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_MID_DBLCLK); break;
-	case wmcmd::RDOWN: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_RIGHT_DOWN); break;
-	case wmcmd::RUP: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_RIGHT_UP); break;
-	case wmcmd::RDBLCLK: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_RIGHT_DBLCLK); break;
-	case wmcmd::X1DOWN: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_4_DOWN); break;
-	case wmcmd::X1UP: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_4_UP); break;
-	case wmcmd::X1DBLCLK: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_4_DBLCLK); break;
-	case wmcmd::X2DOWN: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_5_DOWN); break;
-	case wmcmd::X2UP: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_5_UP); break;
-	case wmcmd::X2DBLCLK: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_5_DBLCLK); break;
-	case wmcmd::WUP: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MWHEEL_UP); break;
-	case wmcmd::WDOWN: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MWHEEL_DOWN); break;
-	}
+// 	switch(mouse)
+// 	{
+// 	case wmcmd::NONE: default: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_NONE); break;
+// 	case wmcmd::LDOWN: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_LEFT_DOWN); break;
+// 	case wmcmd::LUP: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_LEFT_UP); break;
+// 	case wmcmd::LDBLCLK: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_LEFT_DBLCLK); break;
+// 	case wmcmd::MDOWN: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_MID_DOWN); break;
+// 	case wmcmd::MUP: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_MID_UP); break;
+// 	case wmcmd::MDBLCLK: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_MID_DBLCLK); break;
+// 	case wmcmd::RDOWN: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_RIGHT_DOWN); break;
+// 	case wmcmd::RUP: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_RIGHT_UP); break;
+// 	case wmcmd::RDBLCLK: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_RIGHT_DBLCLK); break;
+// 	case wmcmd::X1DOWN: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_4_DOWN); break;
+// 	case wmcmd::X1UP: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_4_UP); break;
+// 	case wmcmd::X1DBLCLK: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_4_DBLCLK); break;
+// 	case wmcmd::X2DOWN: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_5_DOWN); break;
+// 	case wmcmd::X2UP: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_5_UP); break;
+// 	case wmcmd::X2DBLCLK: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MOUSE_5_DBLCLK); break;
+// 	case wmcmd::WUP: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MWHEEL_UP); break;
+// 	case wmcmd::WDOWN: ret = ResStr(IDS_ACCEL_HOTKEY_KEYNAME_MWHEEL_DOWN); break;
+// 	}
 	return ret;
 }
 
@@ -602,8 +602,8 @@ BOOL CPPageAccelTbl::OnInitDialog()
 
 	AppSettings& s = AfxGetAppSettings();
 
-	m_wmcmds.RemoveAll();
-	m_wmcmds.AddTail(&s.wmcmds);
+// 	m_wmcmds.RemoveAll();
+// 	m_wmcmds.AddTail(&s.wmcmds);
 	m_fWinLirc = s.fWinLirc;
 	m_WinLircAddr = s.WinLircAddr;
 	m_fUIce = s.fUIce;
@@ -633,13 +633,13 @@ BOOL CPPageAccelTbl::OnInitDialog()
 	m_list.InsertColumn(COL_RMCMD, _T("RemoteCmd"), LVCFMT_LEFT, 80);
 	m_list.InsertColumn(COL_RMREPCNT, _T("RepCnt"), LVCFMT_CENTER, 60);
 
-	POSITION pos = m_wmcmds.GetHeadPosition();
-    for(int i = 0; pos; i++)
-	{
-		int row = m_list.InsertItem(m_list.GetItemCount(), m_wmcmds.GetAt(pos).name, COL_CMD);
-		m_list.SetItemData(row, (DWORD_PTR)pos);
-		m_wmcmds.GetNext(pos);
-	}
+// 	POSITION pos = m_wmcmds.GetHeadPosition();
+//     for(int i = 0; pos; i++)
+// 	{
+// 		int row = m_list.InsertItem(m_list.GetItemCount(), m_wmcmds.GetAt(pos).name, COL_CMD);
+// 		m_list.SetItemData(row, (DWORD_PTR)pos);
+// 		m_wmcmds.GetNext(pos);
+// 	}
 
 	SetupList();
 
@@ -659,24 +659,24 @@ BOOL CPPageAccelTbl::OnApply()
 
 	AppSettings& s = AfxGetAppSettings();
 
-	s.wmcmds.RemoveAll();
-	s.wmcmds.AddTail(&m_wmcmds);
-
-	CAtlArray<ACCEL> pAccel;
-	pAccel.SetCount(m_wmcmds.GetCount());
-	POSITION pos = m_wmcmds.GetHeadPosition();
-	for(int i = 0; pos; i++) pAccel[i] = m_wmcmds.GetNext(pos);
-	if(s.hAccel) DestroyAcceleratorTable(s.hAccel);
-	s.hAccel = CreateAcceleratorTable(pAccel.GetData(), pAccel.GetCount());
+// 	s.wmcmds.RemoveAll();
+// 	s.wmcmds.AddTail(&m_wmcmds);
+// 
+// 	CAtlArray<ACCEL> pAccel;
+// 	pAccel.SetCount(m_wmcmds.GetCount());
+// 	POSITION pos = m_wmcmds.GetHeadPosition();
+// 	for(int i = 0; pos; i++) pAccel[i] = m_wmcmds.GetNext(pos);
+// 	if(s.hAccel) DestroyAcceleratorTable(s.hAccel);
+// 	s.hAccel = CreateAcceleratorTable(pAccel.GetData(), pAccel.GetCount());
 
  	GetParentFrame()->m_hAccelTable = s.hAccel;
 
-	s.fWinLirc = !!m_fWinLirc;
-	s.WinLircAddr = m_WinLircAddr;
-	if(s.fWinLirc) s.WinLircClient.Connect(m_WinLircAddr);
-	s.fUIce = !!m_fUIce;
-	s.UIceAddr = m_UIceAddr;
-	if(s.fUIce) s.UIceClient.Connect(m_UIceAddr);
+// 	s.fWinLirc = !!m_fWinLirc;
+// 	s.WinLircAddr = m_WinLircAddr;
+// 	if(s.fWinLirc) s.WinLircClient.Connect(m_WinLircAddr);
+// 	s.fUIce = !!m_fUIce;
+// 	s.UIceAddr = m_UIceAddr;
+// 	if(s.fUIce) s.UIceClient.Connect(m_UIceAddr);
 
 	s.RegGlobalAccelKey(NULL);
 	return __super::OnApply();
@@ -701,11 +701,11 @@ void CPPageAccelTbl::OnBnClickedButton2()
 
 	AppSettings& s = AfxGetAppSettings();
 
-	while(pos)
-	{
-		wmcmd& wc = m_wmcmds.GetAt((POSITION)m_list.GetItemData(m_list.GetNextSelectedItem(pos)));
-		wc.Restore();
-	}
+// 	while(pos)
+// 	{
+// 		wmcmd& wc = m_wmcmds.GetAt((POSITION)m_list.GetItemData(m_list.GetNextSelectedItem(pos)));
+// 		wc.Restore();
+// 	}
 
 	SetupList();
 
@@ -742,83 +742,83 @@ void CPPageAccelTbl::OnDolabeleditList(NMHDR* pNMHDR, LRESULT* pResult)
 	if(pItem->iItem < 0) 
 		return;
 
-	wmcmd& wc = m_wmcmds.GetAt((POSITION)m_list.GetItemData(pItem->iItem));
-	ACCEL& a = wc;
-
-	CAtlList<CString> sl;
-	int nSel = -1;
-
-	if(pItem->iSubItem == COL_MOD)
-	{
-		for(int i = 0; i < countof(s_mods); i++)
-		{
-			sl.AddTail(MakeAccelModLabel(s_mods[i]));
-			if((a.fVirt&~3) == s_mods[i]) nSel = i;
-		}
-
-		m_list.ShowInPlaceComboBox(pItem->iItem, pItem->iSubItem, sl, nSel);
-
-		*pResult = TRUE;
-	}
-	else if(pItem->iSubItem == COL_KEY)
-	{
-		for(int i = 0; i < 256; i++)
-		{
-			sl.AddTail(MakeAccelVkeyLabel(i, a.fVirt&FVIRTKEY));
-			if(a.key == i) nSel = i;
-		}
-
-		m_list.ShowInPlaceComboBox(pItem->iItem, pItem->iSubItem, sl, nSel);
-
-		*pResult = TRUE;
-	}
-	else if(pItem->iSubItem == COL_TYPE)
-	{
-		sl.AddTail(_T("VIRTKEY"));
-		sl.AddTail(_T("ASCII"));
-
-		nSel = !(a.fVirt&FVIRTKEY);
-
-		m_list.ShowInPlaceComboBox(pItem->iItem, pItem->iSubItem, sl, nSel);
-
-		*pResult = TRUE;
-	}
-	else if(pItem->iSubItem == COL_MOUSE)
-	{
-		for(UINT i = 0; i < wmcmd::LAST; i++)
-		{
-			sl.AddTail(MakeMouseButtonLabel(i));
-			if(wc.mouse == i) nSel = i;
-		}
-
-		m_list.ShowInPlaceComboBox(pItem->iItem, pItem->iSubItem, sl, nSel);
-
-		*pResult = TRUE;
-	}
-	else if(pItem->iSubItem == COL_APPCMD)
-	{
-		for(int i = 0; i <= APPCOMMAND_LAST; i++)
-		{
-			sl.AddTail(MakeAppCommandLabel(i));
-			if(wc.appcmd == i) nSel = i;
-		}
-
-		m_list.ShowInPlaceComboBox(pItem->iItem, pItem->iSubItem, sl, nSel);
-
-		*pResult = TRUE;
-	}
-	else if(pItem->iSubItem == COL_RMCMD)
-	{
-		m_list.ShowInPlaceEdit(pItem->iItem, pItem->iSubItem);
-
-		*pResult = TRUE;
-	}
-	else if(pItem->iSubItem == COL_RMREPCNT)
-	{
-		m_list.ShowInPlaceEdit(pItem->iItem, pItem->iSubItem);
-
-		*pResult = TRUE;
-	}
+//   wmcmd& wc = m_wmcmds.GetAt((POSITION)m_list.GetItemData(pItem->iItem));
+// 	ACCEL& a = wc;
+// 
+// 	CAtlList<CString> sl;
+// 	int nSel = -1;
+// 
+// 	if(pItem->iSubItem == COL_MOD)
+// 	{
+// 		for(int i = 0; i < countof(s_mods); i++)
+// 		{
+// 			sl.AddTail(MakeAccelModLabel(s_mods[i]));
+// 			if((a.fVirt&~3) == s_mods[i]) nSel = i;
+// 		}
+// 
+// 		m_list.ShowInPlaceComboBox(pItem->iItem, pItem->iSubItem, sl, nSel);
+// 
+// 		*pResult = TRUE;
+// 	}
+// 	else if(pItem->iSubItem == COL_KEY)
+// 	{
+// 		for(int i = 0; i < 256; i++)
+// 		{
+// 			sl.AddTail(MakeAccelVkeyLabel(i, a.fVirt&FVIRTKEY));
+// 			if(a.key == i) nSel = i;
+// 		}
+// 
+// 		m_list.ShowInPlaceComboBox(pItem->iItem, pItem->iSubItem, sl, nSel);
+// 
+// 		*pResult = TRUE;
+// 	}
+// 	else if(pItem->iSubItem == COL_TYPE)
+// 	{
+// 		sl.AddTail(_T("VIRTKEY"));
+// 		sl.AddTail(_T("ASCII"));
+// 
+// 		nSel = !(a.fVirt&FVIRTKEY);
+// 
+// 		m_list.ShowInPlaceComboBox(pItem->iItem, pItem->iSubItem, sl, nSel);
+// 
+// 		*pResult = TRUE;
+// 	}
+// 	else if(pItem->iSubItem == COL_MOUSE)
+// 	{
+// 		for(UINT i = 0; i < wmcmd::LAST; i++)
+// 		{
+// 			sl.AddTail(MakeMouseButtonLabel(i));
+// 			if(wc.mouse == i) nSel = i;
+// 		}
+// 
+// 		m_list.ShowInPlaceComboBox(pItem->iItem, pItem->iSubItem, sl, nSel);
+// 
+// 		*pResult = TRUE;
+// 	}
+// 	else if(pItem->iSubItem == COL_APPCMD)
+// 	{
+// 		for(int i = 0; i <= APPCOMMAND_LAST; i++)
+// 		{
+// 			sl.AddTail(MakeAppCommandLabel(i));
+// 			if(wc.appcmd == i) nSel = i;
+// 		}
+// 
+// 		m_list.ShowInPlaceComboBox(pItem->iItem, pItem->iSubItem, sl, nSel);
+// 
+// 		*pResult = TRUE;
+// 	}
+// 	else if(pItem->iSubItem == COL_RMCMD)
+// 	{
+// 		m_list.ShowInPlaceEdit(pItem->iItem, pItem->iSubItem);
+// 
+// 		*pResult = TRUE;
+// 	}
+// 	else if(pItem->iSubItem == COL_RMREPCNT)
+// 	{
+// 		m_list.ShowInPlaceEdit(pItem->iItem, pItem->iSubItem);
+// 
+// 		*pResult = TRUE;
+// 	}
 }
 
 void CPPageAccelTbl::OnEndlabeleditList(NMHDR* pNMHDR, LRESULT* pResult) 
@@ -834,68 +834,68 @@ void CPPageAccelTbl::OnEndlabeleditList(NMHDR* pNMHDR, LRESULT* pResult)
 	if(pItem->iItem < 0) 
 		return;
 
-	wmcmd& wc = m_wmcmds.GetAt((POSITION)m_list.GetItemData(pItem->iItem));
-
-	if(pItem->iSubItem == COL_MOD)
-	{
-		if(pItem->lParam >= 0 && pItem->lParam < countof(s_mods))
-		{
-			wc.fVirt = (wc.fVirt&3) | (s_mods[pItem->lParam]&~3);
-			m_list.SetItemText(pItem->iItem, COL_MOD, pItem->pszText);
-			*pResult = TRUE;
-		}
-	}
-	else if(pItem->iSubItem == COL_KEY)
-	{
-		int i = pItem->lParam;
-		if(i >= 0 && i < 256)
-		{
-			wc.key = (WORD)i;
-			m_list.SetItemText(pItem->iItem, COL_KEY, pItem->pszText);
-			*pResult = TRUE;
-		}
-	}
-	else if(pItem->iSubItem == COL_TYPE)
-	{
-		int i = pItem->lParam;
-		if(i >= 0 && i < 2)
-		{
-			wc.fVirt = (wc.fVirt&~FVIRTKEY) | (i == 0 ? FVIRTKEY : 0);
-			m_list.SetItemText(pItem->iItem, COL_KEY, MakeAccelVkeyLabel(wc.key, wc.fVirt&FVIRTKEY));
-			m_list.SetItemText(pItem->iItem, COL_TYPE, (wc.fVirt&FVIRTKEY)?_T("VIRTKEY"):_T("ASCII"));
-			*pResult = TRUE;
-		}
-	}
-	else if(pItem->iSubItem == COL_APPCMD)
-	{
-		int i = pItem->lParam;
-		if(i >= 0 && i <= APPCOMMAND_LAST)
-		{
-			wc.appcmd = (WORD)i;
-			m_list.SetItemText(pItem->iItem, COL_APPCMD, pItem->pszText);
-			*pResult = TRUE;
-		}
-	}
-	else if(pItem->iSubItem == COL_MOUSE)
-	{
-		wc.mouse = pItem->lParam;
-		m_list.SetItemText(pItem->iItem, COL_MOUSE, pItem->pszText);
-	}
-	else if(pItem->iSubItem == COL_RMCMD)
-	{
-		wc.rmcmd = CStringA(CString(pItem->pszText)).Trim();
-		wc.rmcmd.Replace(' ', '_');
-		m_list.SetItemText(pItem->iItem, pItem->iSubItem, CString(wc.rmcmd));
-		*pResult = TRUE;
-	}
-	else if(pItem->iSubItem == COL_RMREPCNT)
-	{
-		CString str = CString(pItem->pszText).Trim();
-		wc.rmrepcnt = _tcstol(str, NULL, 10);
-		str.Format(_T("%d"), wc.rmrepcnt);
-		m_list.SetItemText(pItem->iItem, pItem->iSubItem, str);
-		*pResult = TRUE;
-	}
+// 	wmcmd& wc = m_wmcmds.GetAt((POSITION)m_list.GetItemData(pItem->iItem));
+// 
+// 	if(pItem->iSubItem == COL_MOD)
+// 	{
+// 		if(pItem->lParam >= 0 && pItem->lParam < countof(s_mods))
+// 		{
+// 			wc.fVirt = (wc.fVirt&3) | (s_mods[pItem->lParam]&~3);
+// 			m_list.SetItemText(pItem->iItem, COL_MOD, pItem->pszText);
+// 			*pResult = TRUE;
+// 		}
+// 	}
+// 	else if(pItem->iSubItem == COL_KEY)
+// 	{
+// 		int i = pItem->lParam;
+// 		if(i >= 0 && i < 256)
+// 		{
+// 			wc.key = (WORD)i;
+// 			m_list.SetItemText(pItem->iItem, COL_KEY, pItem->pszText);
+// 			*pResult = TRUE;
+// 		}
+// 	}
+// 	else if(pItem->iSubItem == COL_TYPE)
+// 	{
+// 		int i = pItem->lParam;
+// 		if(i >= 0 && i < 2)
+// 		{
+// 			wc.fVirt = (wc.fVirt&~FVIRTKEY) | (i == 0 ? FVIRTKEY : 0);
+// 			m_list.SetItemText(pItem->iItem, COL_KEY, MakeAccelVkeyLabel(wc.key, wc.fVirt&FVIRTKEY));
+// 			m_list.SetItemText(pItem->iItem, COL_TYPE, (wc.fVirt&FVIRTKEY)?_T("VIRTKEY"):_T("ASCII"));
+// 			*pResult = TRUE;
+// 		}
+// 	}
+// 	else if(pItem->iSubItem == COL_APPCMD)
+// 	{
+// 		int i = pItem->lParam;
+// 		if(i >= 0 && i <= APPCOMMAND_LAST)
+// 		{
+// 			wc.appcmd = (WORD)i;
+// 			m_list.SetItemText(pItem->iItem, COL_APPCMD, pItem->pszText);
+// 			*pResult = TRUE;
+// 		}
+// 	}
+// 	else if(pItem->iSubItem == COL_MOUSE)
+// 	{
+// 		wc.mouse = pItem->lParam;
+// 		m_list.SetItemText(pItem->iItem, COL_MOUSE, pItem->pszText);
+// 	}
+// 	else if(pItem->iSubItem == COL_RMCMD)
+// 	{
+// 		wc.rmcmd = CStringA(CString(pItem->pszText)).Trim();
+// 		wc.rmcmd.Replace(' ', '_');
+// 		m_list.SetItemText(pItem->iItem, pItem->iSubItem, CString(wc.rmcmd));
+// 		*pResult = TRUE;
+// 	}
+// 	else if(pItem->iSubItem == COL_RMREPCNT)
+// 	{
+// 		CString str = CString(pItem->pszText).Trim();
+// 		wc.rmrepcnt = _tcstol(str, NULL, 10);
+// 		str.Format(_T("%d"), wc.rmrepcnt);
+// 		m_list.SetItemText(pItem->iItem, pItem->iSubItem, str);
+// 		*pResult = TRUE;
+// 	}
 
 	if(*pResult)
 		SetModified();
@@ -906,23 +906,23 @@ void CPPageAccelTbl::OnTimer(UINT nIDEvent)
 {
 	UpdateData();
 
-	if(m_fWinLirc)
-	{
-		CString addr;
-		m_WinLircEdit.GetWindowText(addr);
-		AfxGetAppSettings().WinLircClient.Connect(addr);
-	}
-
-	m_WinLircEdit.Invalidate();
-
-	if(m_fUIce)
-	{
-		CString addr;
-		m_UIceEdit.GetWindowText(addr);
-		AfxGetAppSettings().UIceClient.Connect(addr);
-	}
-
-	m_UIceEdit.Invalidate();
+// 	if(m_fWinLirc)
+// 	{
+// 		CString addr;
+// 		m_WinLircEdit.GetWindowText(addr);
+// 		AfxGetAppSettings().WinLircClient.Connect(addr);
+// 	}
+// 
+// 	m_WinLircEdit.Invalidate();
+// 
+// 	if(m_fUIce)
+// 	{
+// 		CString addr;
+// 		m_UIceEdit.GetWindowText(addr);
+// 		AfxGetAppSettings().UIceClient.Connect(addr);
+// 	}
+// 
+// 	m_UIceEdit.Invalidate();
 
 	m_counter++;
 
@@ -935,10 +935,10 @@ HBRUSH CPPageAccelTbl::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 
 	int status = -1;
 
-	if(*pWnd == m_WinLircEdit)
-		status = AfxGetAppSettings().WinLircClient.GetStatus();
-	else if(*pWnd == m_UIceEdit)
-		status = AfxGetAppSettings().UIceClient.GetStatus();
+// 	if(*pWnd == m_WinLircEdit)
+// 		status = AfxGetAppSettings().WinLircClient.GetStatus();
+// 	else if(*pWnd == m_UIceEdit)
+// 		status = AfxGetAppSettings().UIceClient.GetStatus();
 
 	if(status == 0 || status == 2 && (m_counter&1))
 		pDC->SetTextColor(0x0000ff);

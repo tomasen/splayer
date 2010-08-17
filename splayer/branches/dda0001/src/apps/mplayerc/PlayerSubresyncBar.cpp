@@ -989,54 +989,54 @@ void CPlayerSubresyncBar::OnRclickList(NMHDR* pNMHDR, LRESULT* pResult)
 				}
 				else if(id == STYLEEDIT)
 				{
-					CAutoPtrArray<CPPageSubStyle> pages;
-					CAtlArray<STSStyle*> styles;
+// 					CAutoPtrArray<CPPageSubStyle> pages;
+// 					CAtlArray<STSStyle*> styles;
+// 
+// 					STSStyle* stss = m_sts.GetStyle(iItem);
+// 					int iSelPage = 0;
+// 
+// 					POSITION pos = m_sts.m_styles.GetStartPosition();
+// 					for(int i = 0; pos; i++)
+// 					{
+// 						CString key;
+// 						STSStyle* val;
+// 						m_sts.m_styles.GetNextAssoc(pos, key, val);
+// 
+// 						CAutoPtr<CPPageSubStyle> page(new CPPageSubStyle());
+// 						page->InitStyle(key, *val);
+// 						pages.Add(page);
+// 						styles.Add(val);
+// 
+// 						if(stss == val) 
+// 							iSelPage = i;
+// 					}
 
-					STSStyle* stss = m_sts.GetStyle(iItem);
-					int iSelPage = 0;
-
-					POSITION pos = m_sts.m_styles.GetStartPosition();
-					for(int i = 0; pos; i++)
-					{
-						CString key;
-						STSStyle* val;
-						m_sts.m_styles.GetNextAssoc(pos, key, val);
-
-						CAutoPtr<CPPageSubStyle> page(new CPPageSubStyle());
-						page->InitStyle(key, *val);
-						pages.Add(page);
-						styles.Add(val);
-
-						if(stss == val) 
-							iSelPage = i;
-					}
-
-					CPropertySheet dlg(_T("Styles..."), this, iSelPage);
-					for(int i = 0; i < (int)pages.GetCount(); i++) dlg.AddPage(pages[i]);
-
-					if(dlg.DoModal() == IDOK)
-					{
-						for(int j = 0; j < (int)pages.GetCount(); j++)
-						{
-							stss = styles[j];
-							pages[j]->GetStyle(*stss);
-
-							for(int i = 0; i < m_sts.GetCount(); i++)
-							{
-								if(m_sts.GetStyle(i) == stss)
-								{
-									CString str;
-									m_list.SetItemText(i, COL_TEXT, m_sts.GetStr(i, true));
-									m_list.SetItemText(i, COL_FONT, stss->fontName);
-									str.Format(_T("%d"), stss->charSet);
-									m_list.SetItemText(i, COL_CHARSET, str);
-									str.Format(_T("%d"), m_sts[i].layer);
-								}
-							}
-						}
-
-						fNeedsUpdate = true;
-					}
+// 					CPropertySheet dlg(_T("Styles..."), this, iSelPage);
+// 					for(int i = 0; i < (int)pages.GetCount(); i++) dlg.AddPage(pages[i]);
+// 
+// 					if(dlg.DoModal() == IDOK)
+// 					{
+// 						for(int j = 0; j < (int)pages.GetCount(); j++)
+// 						{
+// 							stss = styles[j];
+// 							pages[j]->GetStyle(*stss);
+// 
+// 							for(int i = 0; i < m_sts.GetCount(); i++)
+// 							{
+// 								if(m_sts.GetStyle(i) == stss)
+// 								{
+// 									CString str;
+// 									m_list.SetItemText(i, COL_TEXT, m_sts.GetStr(i, true));
+// 									m_list.SetItemText(i, COL_FONT, stss->fontName);
+// 									str.Format(_T("%d"), stss->charSet);
+// 									m_list.SetItemText(i, COL_CHARSET, str);
+// 									str.Format(_T("%d"), m_sts[i].layer);
+// 								}
+// 							}
+// 						}
+// 
+// 						fNeedsUpdate = true;
+// 					}
 				}
 				else if(id == UNICODEYES || id == UNICODENO)
 				{

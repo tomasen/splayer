@@ -34,7 +34,6 @@
 #include "PlayerShaderEditorBar.h"
 #include "PlayerColorControlBar.h"
 #include "TransparentControlBar.h"
-#include "PPageSheet.h"
 #include "PPageFileInfoSheet.h"
 #include "OpenCapDeviceDlg.h"
 #include "PlayerToolTopBar.h"

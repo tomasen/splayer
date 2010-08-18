@@ -1,5 +1,5 @@
 #include "StdAfx.h"
-#include "HotkeySchemeParser.h"
+#include "../Model/HotkeySchemeParser.h"
 #include "Hotkey_Controller.h"
 
 HotkeyController::HotkeyController(void)

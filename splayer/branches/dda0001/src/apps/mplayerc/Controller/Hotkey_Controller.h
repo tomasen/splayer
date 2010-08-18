@@ -1,7 +1,7 @@
 #ifndef HOTKEY_CONTROLLER_H
 #define HOTKEY_CONTROLLER_H
 
-#include "HotkeyCmd.h"
+#include "../Model/HotkeyCmd.h"
 #include "LazyInstance.h"
 
 //////////////////////////////////////////////////////////////////////////

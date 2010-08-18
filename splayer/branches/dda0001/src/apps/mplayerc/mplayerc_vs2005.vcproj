@@ -1664,11 +1664,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon\DVD.ico"
+				RelativePath=".\res\ecio.icons\dvd.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\ecio.icons\dvd.ico"
+				RelativePath=".\res\icon\DVD.ico"
 				>
 			</File>
 			<File
@@ -2408,23 +2408,27 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Controller\HotkeyCmd.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\Controller\HotkeyCmd.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Controller\HotkeySchemeParser.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\Controller\HotkeySchemeParser.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Controller\LazyInstance.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Model"
+			>
+			<File
+				RelativePath=".\Model\HotkeyCmd.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Model\HotkeyCmd.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Model\HotkeySchemeParser.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Model\HotkeySchemeParser.h"
 				>
 			</File>
 		</Filter>
@@ -2485,11 +2489,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 		<File

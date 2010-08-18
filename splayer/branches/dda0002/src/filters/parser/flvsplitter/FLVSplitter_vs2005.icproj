@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="windows-1250"?>
+<VisualStudioProject
+	ProjectType="Intel C++ Project"
+	Version="11.1"
+	Name="FLVSplitter"
+	ProjectGUID="{5B641CB9-5AF7-478E-A74F-A45EA4B41D5F}"
+	VCNestedProjectGUID="{E62223EF-8263-41EB-8174-CD78BBEEF368}"
+	VCNestedProjectFileName="FLVSplitter_vs2005.vcproj">
+	<Configurations>
+		<Configuration
+			Name="Release Unicode lib|Win32">
+			<Tool
+				Name="CppCmplrTool"
+				EnableEnhancedInstructionSet="1001"/>
+		</Configuration>
+	</Configurations>
+	<Files/>
+</VisualStudioProject>

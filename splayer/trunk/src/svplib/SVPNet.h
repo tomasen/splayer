@@ -1,4 +1,6 @@
-#pragma once
+#ifndef SVPNET_H
+#define SVPNET_H
+
 #include "svplib.h"
 #include "curl/include/curl/curl.h"
 #include "SVPToolBox.h"
@@ -23,10 +25,16 @@ public:
 	int WetherNeedUploadSub(CString fnVideoFilePath, CString szFileHash,CString fnSubHash, int iDelayMS);
 	int UploadPinRenderDeadEndReport(CString szPinName, CString szReport);
 	int UploadCrashDmp(CString szDmppath, CString szLogPath);
-	int UploadSubFileByVideoAndHash(CString fnVideoFilePath, CString szFileHash, CString szSubHash,CStringArray* fnSubPaths, int iDelayMS, CStringArray* szaPostTerms);
-    CString m_lastFailedMsg;
+  int UploadSubFileByVideoAndHash(std::wstring fnVideoFilePath,
+                                  std::wstring szFileHash,
+                                  std::wstring szSubHash,
+                                  std::vector<std::wstring>* fnSubPaths,
+                                  int iDelayMS,
+                                  std::vector<std::wstring>* szaPostTerms);
+  CString m_lastFailedMsg;
 	int  QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, CString szVHash = _T(""), CString szLang = _T(""));
 	static size_t handleSubQuery( void *ptr, size_t size, size_t nmemb, void *stream);
 	int  ExtractDataFromAiSubRecvBuffer(CString szFilePath, FILE* sAiSubRecvBuff);
 };
 
+#endif

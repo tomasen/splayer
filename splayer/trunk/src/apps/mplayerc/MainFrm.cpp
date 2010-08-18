@@ -5497,100 +5497,95 @@ void CMainFrame::OnFileOpenCD(UINT nID)
 
 void CMainFrame::OnDropFiles(HDROP hDropInfo)
 {
-	SetForegroundWindow();
-
+  SetForegroundWindow();
 // 	if(m_wndPlaylistBar.IsWindowVisible())
 // 	{
 // 		m_wndPlaylistBar.OnDropFiles(hDropInfo);
 // 		return;
 // 	}
+  CAtlList<CString> sl;
+  BOOL bHasSubAdded = false;
+  BOOL bHasLrcAdded = false;
+  CString lastSubFile;
+  UINT nFiles = ::DragQueryFile(hDropInfo, (UINT)-1, NULL, 0);
+  CSVPToolBox svpTool;
+  BOOL bHasForlder = false;
 
-	CAtlList<CString> sl;
-	BOOL bHasSubAdded = false;
-    BOOL bHasLrcAdded = false;
-	CString lastSubFile;
-	UINT nFiles = ::DragQueryFile(hDropInfo, (UINT)-1, NULL, 0);
-	CSVPToolBox svpTool;
-	BOOL bHasForlder = false;
-
-	for(UINT iFile = 0; iFile < nFiles; iFile++)
-	{
-		CString fn;
-		fn.ReleaseBuffer(::DragQueryFile(hDropInfo, iFile, fn.GetBuffer(MAX_PATH), MAX_PATH));
-		bHasSubAdded = isSubtitleFile(fn);
-		if(bHasSubAdded){
-			if(LoadSubtitle(fn)){
-				lastSubFile = fn;
-			}else{
-				bHasSubAdded = FALSE;
-			}
-		}
-        bHasLrcAdded = m_Lyric.isLyricFile(fn);
-        if(bHasLrcAdded)
+  for(UINT iFile = 0; iFile < nFiles; iFile++)
+  {
+    CString fn;
+    fn.ReleaseBuffer(::DragQueryFile(hDropInfo, iFile,
+      fn.GetBuffer(MAX_PATH), MAX_PATH));
+    bHasSubAdded = isSubtitleFile(fn);
+    if(bHasSubAdded)
+    {
+      if (LoadSubtitle(fn))
+        lastSubFile = fn;
+      else
+        bHasSubAdded = FALSE;
+    }
+    bHasLrcAdded = m_Lyric.isLyricFile(fn);
+    if (bHasLrcAdded)
+    {
+      if (m_Lyric.LoadLyricFile(fn) > 0)
+      {
+      //Lyric Loaded
+      //Maybe upload to server?
+        if(IsSomethingLoaded() && m_fAudioOnly)
         {
-            if(m_Lyric.LoadLyricFile(fn) > 0){
-                //Lyric Loaded
-                //Maybe upload to server?
-                if(IsSomethingLoaded() && m_fAudioOnly){
-                    CSVPToolBox svpTool;
-                    AppSettings& s = AfxGetAppSettings();
-                    CPath szStorePath( s.GetSVPSubStorePath() );
-                    szStorePath.RemoveBackslash();
-                    szStorePath.AddBackslash();
-                    CStringArray szaFilename ;
-                    svpTool.getVideoFileBasename( m_fnCurPlayingFile , &szaFilename);
-                    szStorePath.Append(szaFilename.GetAt(3));
-                    szStorePath.AddExtension(L".lrc");
-
-                    CopyFile(fn, szStorePath, true);
-                }
-
-                SendStatusMessage(ResStr(IDS_OSD_MSG_LYRIC_DROP_OR_LOADED), 3000 );
-            }else{
-                bHasLrcAdded = FALSE;
-            }
-
+          CSVPToolBox svpTool;
+          AppSettings& s = AfxGetAppSettings();
+          CPath szStorePath( s.GetSVPSubStorePath());
+          szStorePath.RemoveBackslash();
+          szStorePath.AddBackslash();
+          std::vector<std::wstring> szaFilename ;
+          svpTool.getVideoFileBasename(
+            (LPCTSTR)m_fnCurPlayingFile, &szaFilename);
+          szStorePath.Append(szaFilename.at(3).c_str());
+          szStorePath.AddExtension(L".lrc");
+          CopyFile(fn, szStorePath, true);
         }
-
-		if(!bHasSubAdded && !bHasLrcAdded){
-			if(PathIsDirectory(fn) && svpTool.ifDirExist(fn)){
-				m_wndPlaylistBar.AddFolder(fn, true);
-				bHasForlder = true;
-			}else{
-				sl.AddTail(fn);
-			}
-		}
-			
-		
-	}
-
-	::DragFinish(hDropInfo);
-
-	
-
-	if(!bHasForlder){
-		if(sl.IsEmpty() ){
-
-			if(bHasSubAdded && m_pSubStreams.GetCount() > 0)
-			{
-				SetSubtitle(m_pSubStreams.GetTail());
-				CPath p(lastSubFile);
-				p.StripPath();
-				SendStatusMessage(CString((LPCTSTR)p) + _T(" loaded successfully"), 3000);
-
-			}
-			return;
-
-		}
-
-	
-		m_wndPlaylistBar.Open(sl, true);
-	}else{
-		if(!sl.IsEmpty()){
-			m_wndPlaylistBar.Append(sl, true);
-		}
-	}
-	OpenCurPlaylistItem();
+        SendStatusMessage(ResStr(IDS_OSD_MSG_LYRIC_DROP_OR_LOADED), 3000);
+      }
+      else
+        bHasLrcAdded = FALSE;
+    }
+    if (!bHasSubAdded && !bHasLrcAdded)
+    {
+      if (PathIsDirectory(fn) && svpTool.ifDirExist(fn))
+      {
+        m_wndPlaylistBar.AddFolder(fn, true);
+        bHasForlder = true;
+      }
+      else
+        sl.AddTail(fn);
+    }
+  }
+  ::DragFinish(hDropInfo);
+  if (!bHasForlder)
+  {
+    if (sl.IsEmpty())
+    {
+      if (bHasSubAdded && m_pSubStreams.GetCount() > 0)
+      {
+        SetSubtitle(m_pSubStreams.GetTail());
+        CPath p(lastSubFile);
+        p.StripPath();
+        SendStatusMessage(CString((LPCTSTR)p) +
+          _T(" loaded successfully"), 3000);
+      }
+      return;
+    }
+    m_wndPlaylistBar.Open(sl, true);
+  }
+  else
+  {
+    if (!sl.IsEmpty())
+    {
+      m_wndPlaylistBar.Append(sl, true);
+    }
+  }
+  OpenCurPlaylistItem();
 }
 
 void CMainFrame::OnFileSaveAs()
@@ -16078,175 +16073,182 @@ void CMainFrame::OnMenuAudio(){
 }
 void CMainFrame::OnMenuVideo(){
 	SetupShadersSubMenu();
-	OnMenu(  &m_shaders );;
+	OnMenu(  &m_shaders );
 }
 void CMainFrame::OnDebugreport()
 {
-	CStringArray szaReport;
+  CStringArray szaReport;
 
-	if(m_iMediaLoadState == MLS_LOADED)
-	{
-		CSVPToolBox svpTool;
-		svpTool.GetGPUString(&szaReport);
-		AppSettings& s = AfxGetAppSettings();
-		BeginEnumFilters(pGB, pEF, pBF)
-		{
-			CString name(GetFilterName(pBF));
-		
-			CLSID clsid = GetCLSID(pBF);
-			if(clsid == CLSID_AVIDec)
-			{
-				CComPtr<IPin> pPin = GetFirstPin(pBF);
-				AM_MEDIA_TYPE mt;
-				if(pPin && SUCCEEDED(pPin->ConnectionMediaType(&mt)))
-				{
-					DWORD c = ((VIDEOINFOHEADER*)mt.pbFormat)->bmiHeader.biCompression;
-					switch(c)
-					{
-					case BI_RGB: name += _T(" (RGB)"); break;
-					case BI_RLE4: name += _T(" (RLE4)"); break;
-					case BI_RLE8: name += _T(" (RLE8)"); break;
-					case BI_BITFIELDS: name += _T(" (BITF)"); break;
-					default: name.Format(_T("%s (%c%c%c%c)"), 
-								 CString(name), (TCHAR)((c>>0)&0xff), (TCHAR)((c>>8)&0xff), (TCHAR)((c>>16)&0xff), (TCHAR)((c>>24)&0xff)); break;
-					}
-				}
-			}
-			else if(clsid == CLSID_ACMWrapper)
-			{
-				CComPtr<IPin> pPin = GetFirstPin(pBF);
-				AM_MEDIA_TYPE mt;
-				if(pPin && SUCCEEDED(pPin->ConnectionMediaType(&mt)))
-				{
-					WORD c = ((WAVEFORMATEX*)mt.pbFormat)->wFormatTag;
-					name.Format(_T("%s (0x%04x)"), CString(name), (int)c);
-				}
-			}
-			else if(clsid == __uuidof(CTextPassThruFilter) || clsid == __uuidof(CNullTextRenderer)
-				|| clsid == GUIDFromCString(_T("{48025243-2D39-11CE-875D-00608CB78066}"))) // ISCR
-			{
-				// hide these
-				continue;
-			}
-			CMediaTypeEx cmt;
-			szaReport.Add(name + _T(" ") + CStringFromGUID(clsid));
-			CComQIPtr<ISpecifyPropertyPages> pSPP = pBF;
-			BeginEnumPins(pBF, pEP, pPin)
-			{
-				CString name = GetPinName(pPin);
-				name.Replace(_T("&"), _T("&&"));
+  if(m_iMediaLoadState == MLS_LOADED)
+  {
+    CSVPToolBox svpTool;
+    svpTool.GetGPUString(&szaReport);
+    AppSettings& s = AfxGetAppSettings();
+    BeginEnumFilters(pGB, pEF, pBF)
+    {
+      CString name(GetFilterName(pBF));
 
-				if(SUCCEEDED(pPin->ConnectionMediaType(&cmt)))
-				{
-					CAtlList<CString> sl;
-					cmt.Dump(sl);
-					CString szTmp1;
-					POSITION pos = sl.GetHeadPosition();
-					while(pos) {
-						CString szTmp2 = sl.GetNext(pos) ;
-						if(szTmp2.Find(_T("pbFormat")) >= 0){
-							break;
-						}
-						szTmp1.Append(szTmp2+_T("\r\n"));
-					}
-					szaReport.Add(szTmp1);
-				}
+      CLSID clsid = GetCLSID(pBF);
+      if(clsid == CLSID_AVIDec)
+      {
+        CComPtr<IPin> pPin = GetFirstPin(pBF);
+        AM_MEDIA_TYPE mt;
+        if(pPin && SUCCEEDED(pPin->ConnectionMediaType(&mt)))
+        {
+          DWORD c = ((VIDEOINFOHEADER*)mt.pbFormat) -> bmiHeader.biCompression;
+          switch(c)
+          {
+          case BI_RGB:
+            name += _T(" (RGB)");
+            break;
+          case BI_RLE4:
+            name += _T(" (RLE4)");
+            break;
+          case BI_RLE8:
+            name += _T(" (RLE8)");
+            break;
+          case BI_BITFIELDS:
+            name += _T(" (BITF)");
+            break;
+          default:
+            name.Format(_T("%s (%c%c%c%c)"), CString(name),
+              (TCHAR)((c>>0)&0xff), (TCHAR)((c>>8)&0xff),
+              (TCHAR)((c>>16)&0xff), (TCHAR)((c>>24)&0xff));
+            break;
+          }
+        }
+      }
+      else if (clsid == CLSID_ACMWrapper)
+      {
+        CComPtr<IPin> pPin = GetFirstPin(pBF);
+        AM_MEDIA_TYPE mt;
+        if(pPin && SUCCEEDED(pPin->ConnectionMediaType(&mt)))
+        {
+          WORD c = ((WAVEFORMATEX*)mt.pbFormat)->wFormatTag;
+          name.Format(_T("%s (0x%04x)"), CString(name), (int)c);
+        }
+      }
+      else if(clsid == __uuidof(CTextPassThruFilter) ||
+        clsid == __uuidof(CNullTextRenderer) ||
+        clsid == GUIDFromCString(_T("{48025243-2D39-11CE-875D-00608CB78066}"))) // ISCR
+        // hide these
+        continue;
+      CMediaTypeEx cmt;
+      szaReport.Add(name + _T(" ") + CStringFromGUID(clsid));
+      CComQIPtr<ISpecifyPropertyPages> pSPP = pBF;
+      BeginEnumPins(pBF, pEP, pPin)
+      {
+        CString name = GetPinName(pPin);
+        name.Replace(_T("&"), _T("&&"));
 
-				if(pSPP = pPin)
-				{
-					CAUUID caGUID;
-					caGUID.pElems = NULL;
-					if(SUCCEEDED(pSPP->GetPages(&caGUID)) && caGUID.cElems > 0)
-					{
-						m_pparray.Add(pPin);
-						
-						if(caGUID.pElems) CoTaskMemFree(caGUID.pElems);
+        if(SUCCEEDED(pPin->ConnectionMediaType(&cmt)))
+        {
+          CAtlList<CString> sl;
+          cmt.Dump(sl);
+          CString szTmp1;
+          POSITION pos = sl.GetHeadPosition();
+          while(pos) {
+            CString szTmp2 = sl.GetNext(pos) ;
+            if(szTmp2.Find(_T("pbFormat")) >= 0){
+              break;
+            }
+            szTmp1.Append(szTmp2+_T("\r\n"));
+          }
+          szaReport.Add(szTmp1);
+        }
 
-						
-					}
-				}
-				szaReport.Add(CString(_T(">>")) +name);
-			}
-			EndEnumPins
+        if(pSPP = pPin)
+        {
+          CAUUID caGUID;
+          caGUID.pElems = NULL;
+          if(SUCCEEDED(pSPP->GetPages(&caGUID)) && caGUID.cElems > 0)
+          {
+            m_pparray.Add(pPin);
+            if(caGUID.pElems)
+              CoTaskMemFree(caGUID.pElems);
+          }
+        }
+        szaReport.Add(CString(_T(">>")) +name);
+      }
+      EndEnumPins
+      CComQIPtr<IAMStreamSelect> pSS = pBF;
+      if (pSS)
+      {
+        DWORD nStreams = 0, flags, group, prevgroup = -1;
+        LCID lcid;
+        WCHAR* wname = NULL;
+        CComPtr<IUnknown> pObj, pUnk;
+        pSS -> Count(&nStreams);
+        for (DWORD i = 0; i < nStreams; i++, pObj = NULL, pUnk = NULL)
+        {
+          m_ssarray.Add(pSS);
 
-			CComQIPtr<IAMStreamSelect> pSS = pBF;
-			if(pSS)
-			{
-				DWORD nStreams = 0, flags, group, prevgroup = -1;
-				LCID lcid;
-				WCHAR* wname = NULL;
-				CComPtr<IUnknown> pObj, pUnk;
-
-				pSS->Count(&nStreams);
+          flags = group = 0;
+          wname = NULL;
+          pSS->Info(i, NULL, &flags, &lcid, &group, &wname, &pObj, &pUnk);
 
 
+          if(!wname) 
+          {
+            CStringW stream(L"Unknown Stream");
+            wname = (WCHAR*)CoTaskMemAlloc((stream.GetLength()+3+1)*sizeof(WCHAR));
+            swprintf(wname, L"%s %d", stream, min(i+1,999));
+          }
 
-				for(DWORD i = 0; i < nStreams; i++, pObj = NULL, pUnk = NULL)
-				{
-					m_ssarray.Add(pSS);
+          CString name(wname);
+          name.Replace(_T("&"), _T("&&"));
 
-					flags = group = 0;
-					wname = NULL;
-					pSS->Info(i, NULL, &flags, &lcid, &group, &wname, &pObj, &pUnk);
+          szaReport.Add(CString(_T(">>>")) + name);
+
+          CoTaskMemFree(wname);
+        }
+
+        if(nStreams == 0) pSS.Release();
+      }
 
 
-					if(!wname) 
-					{
-						CStringW stream(L"Unknown Stream");
-						wname = (WCHAR*)CoTaskMemAlloc((stream.GetLength()+3+1)*sizeof(WCHAR));
-						swprintf(wname, L"%s %d", stream, min(i+1,999));
-					}
+    }
+    EndEnumFilters
+    CString szBuf;
+    szBuf.Format(_T("SPlayer Build %s ") , SVP_REV_STR);
+    szaReport.Add(szBuf);
 
-					CString name(wname);
-					name.Replace(_T("&"), _T("&&"));
+    OSVERSIONINFO osver;
 
-					szaReport.Add(CString(_T(">>>")) + name);
+    osver.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
 
-					CoTaskMemFree(wname);
-				}
+    ::GetVersionEx( &osver ) ;
+    szBuf.Format(_T("OS Ver %s %d.%d "), osver.szCSDVersion,
+      osver.dwMajorVersion , osver.dwMinorVersion);
+    szaReport.Add(szBuf);
 
-				if(nStreams == 0) pSS.Release();
-			}
+    szBuf.Format(ResStr(IDS_LOG_MSG_DXVALINE)
+      ,m_bDxvaInUse, m_DXVAMode, s.bDVXACompat);
+    szaReport.Add(szBuf);
 
-			
-		}
-		EndEnumFilters
+    szBuf = _T("CPU ");
+    if(g_cpuid.m_flags & CCpuID::mmx)
+      szBuf.Append(_T(" MMX"));
 
-		CString szBuf;
-		szBuf.Format(_T("SPlayer Build %s ") , SVP_REV_STR);
-		szaReport.Add(szBuf);
+    if(g_cpuid.m_flags & CCpuID::sse2)
+      szBuf.Append(_T(" SSE2"));
 
-		OSVERSIONINFO osver;
+    if(g_cpuid.m_flags & CCpuID::ssemmx)
+      szBuf.Append(_T(" SSEMMX"));
 
-		osver.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
+    szaReport.Add(szBuf);
 
-		::GetVersionEx( &osver ) ;
-		szBuf.Format(_T("OS Ver %s %d.%d ")  , osver.szCSDVersion, osver.dwMajorVersion , osver.dwMinorVersion );
-		szaReport.Add(szBuf);
-		
-		szBuf.Format(ResStr(IDS_LOG_MSG_DXVALINE)  ,m_bDxvaInUse , m_DXVAMode  , s.bDVXACompat);
-		szaReport.Add(szBuf);
+    std::vector<std::wstring> szReportSTL;
+    for (int i = 0; i < szaReport.GetCount(); i++)
+      szReportSTL.push_back((LPCTSTR)szaReport.GetAt(i));
+    CString szReport = svpTool.Implode(_T("\r\n-------------\r\n"),
+      &szReportSTL).c_str();
 
-		szBuf = _T("CPU ");
-		if(g_cpuid.m_flags & CCpuID::mmx)
-			szBuf.Append(_T(" MMX"));
-		
-		if(g_cpuid.m_flags & CCpuID::sse2)
-			szBuf.Append(_T(" SSE2"));
-
-		if(g_cpuid.m_flags & CCpuID::ssemmx)
-			szBuf.Append(_T(" SSEMMX"));
-
-		szaReport.Add(szBuf);
-
-		CString szReport = svpTool.Implode(_T("\r\n-------------\r\n"), &szaReport);
-		
-		CInfoReport CIR;
-		CIR.m_rptText2 = szReport;
-		CIR.DoModal();
-
-		//AfxMessageBox(szReport);
-	}
+    CInfoReport CIR;
+    CIR.m_rptText2 = szReport;
+    CIR.DoModal();
+    //AfxMessageBox(szReport);
+  }
 }
 
 void CMainFrame::OnUpdateDebugreport(CCmdUI *pCmdUI)

@@ -73,6 +73,9 @@
 #include "..\..\..\lib\lyriclib\lyriclib.h"
 #include "SVPLycShowBox.h"
 
+#include <string>
+#include <vector>
+
 
 enum {PM_NONE, PM_FILE, PM_DVD, PM_CAPTURE};
 

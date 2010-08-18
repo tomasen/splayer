@@ -1,6 +1,10 @@
-#pragma once
+#ifndef SVPTOOLBOX_H
+#define SVPTOOLBOX_H
+
 #include "svplib.h"
 #include <atlpath.h>
+#include <vector>
+#include <string>
 
 class CSVPToolBox
 {
@@ -13,8 +17,8 @@ public:
 	int unpackGZfile(CString fnin , CString fnout );
 	CString extractRarFile(CString rarfn);
 	CString PackageSubFiles(CStringArray* szaSubFiles);
-	int FindAllSubfile(CString szSubPath , CStringArray* szaSubFiles);
-    CString AnsiToCString(UINT codepag, char* szIn, int iLength);
+  int FindAllSubfile(std::wstring szSubPath, std::vector<std::wstring>* szaSubFiles);
+  CString AnsiToCString(UINT codepag, char* szIn, int iLength);
 	char* CStringToUTF8(CString szIn, int* iDescLen, UINT codePage = CP_UTF8);
 	CString UTF8ToCString(char* szIn, int iLength);
 	FILE* getTmpFileSteam();
@@ -38,12 +42,13 @@ public:
 	int ExtractSubFiles(FILE* fp);
 	int ExtractEachSubFile(FILE* fp, int iSubPosId);
 	char* ReadToPTCharByLength(FILE* fp, size_t length);
-	CString getVideoFileBasename(CString szVidPath, CStringArray* szaPathInfo);
+  std::wstring getVideoFileBasename(std::wstring szVidPath,
+                                    std::vector<std::wstring>* szaPathInfo);
 	BOOL FindSystemFile(CString szFn);
 	CString GetShortFileNameForSearch(CString szFnPath);
 	CString GetShortFileNameForSearch2(CString szFn);
 	int Explode(CString szIn, CString szTok, CStringArray* szaOut);
-	CString Implode(CString szTok, CStringArray* szaOut);
+  std::wstring Implode(std::wstring szTok, std::vector<std::wstring>* szaOut);
 	BOOL ifFileExist(CString szPathname, BOOL evenSlowDriver = true);
 	BOOL ifDirWritable(CString szDir);
 	BOOL CanUseCUDAforCoreAVC();
@@ -72,8 +77,8 @@ public:
 	BOOL bFontExist(CString szFontName, BOOL chkExtFontFile = 1);
 	BOOL delDirRecursive(CString path);
 	void MergeAltList( CAtlList<CString>& szaRet,  CAtlList<CString>& szaIn  );
-	void findMoreFileByFile( CString szFile,CAtlList<CString>& szaRet,  CAtlArray<CString>& szaExt   );
-	void findMoreFileByDir(  CString szDir, CAtlList<CString>&  szaRet,  CAtlArray<CString>& szaExt , BOOL bSubDir = false);
+	void findMoreFileByFile(CString szFile,CAtlList<CString>& szaRet, CAtlArray<CString>& szaExt);
+	void findMoreFileByDir(CString szDir, CAtlList<CString>&  szaRet, CAtlArray<CString>& szaExt, BOOL bSubDir = false);
 	BOOL GetDirectoryLeft(CPath* tPath, int rCount );
 	static BOOL isAlaphbet(WCHAR wchr);
 
@@ -88,3 +93,5 @@ private:
 bool ReadFileToBuffer(CString path, BYTE*& contents, DWORD* pdwsize) ;
 bool WriteBufferToFile(CString path, const BYTE* contents, DWORD dwsize);
 bool IsFileGziped(CString fnin);
+
+#endif

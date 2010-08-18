@@ -16,6 +16,7 @@
 
 #include <d3d9.h>
 #include <d3dx9.h>
+#include <algorithm>
 
 BOOL CALLBACK EnumFamCallBack(LPLOGFONT lplf, LPNEWTEXTMETRIC lpntm, DWORD FontType, LPVOID aFontCount) 
 { 
@@ -132,48 +133,45 @@ BOOL CSVPToolBox::FindSystemFile(CString szFn){
 #define SVPATH_EXTNAME 1  //With Dot
 #define SVPATH_DIRNAME 2 //With Slash
 #define SVPATH_FILENAME 3  //Without Dot
-CString CSVPToolBox::getVideoFileBasename(CString szVidPath, CStringArray* szaPathInfo = NULL){
+std::wstring CSVPToolBox::getVideoFileBasename(std::wstring szVidPath, std::vector<std::wstring>* szaPathInfo = NULL)
+{
+  CSVPRarLib svpRar;
+  BOOL bIsRar = false;
+  if(svpRar.SplitPath(szVidPath.c_str()))
+  {
+    bIsRar = true;
+    szVidPath = (LPCTSTR)svpRar.m_fnRAR;
+  }
+  CPath szTPath(szVidPath.c_str());
+  int posDot    = szVidPath.find_last_of(_T('.'));
+  int posSlash  = szVidPath.find_last_of(_T('\\'));
+  int posSlash2 = szVidPath.find_last_of(_T('/'));
+  if (posSlash2 > posSlash)
+    posSlash = posSlash2;
 
+  if(posDot > posSlash)
+  {
+    if (szaPathInfo != NULL)
+    {
+      std::wstring szBaseName = szVidPath.substr(0, posDot);
+      std::wstring szExtName  = szVidPath.substr(posDot, szVidPath.size() - posDot);
+      std::transform(szExtName.begin(), szExtName.end(), szExtName.begin(), tolower);
+      std::wstring szFileName = szVidPath.substr(posSlash+1, (posDot - posSlash - 1));
+      std::wstring szDirName  = szVidPath.substr(0, posSlash + 1);
+      szaPathInfo -> clear();
+      szaPathInfo -> push_back(szBaseName); // Base Name
+      if (bIsRar)
+        szExtName = (LPCTSTR)CPath(svpRar.m_fnInsideRar).GetExtension();
 
-	CSVPRarLib svpRar;
-	BOOL bIsRar = false;
-	if(svpRar.SplitPath( szVidPath )){
-
-		bIsRar = true;
-		szVidPath = svpRar.m_fnRAR;
-
-	}
-	CPath szTPath(szVidPath);
-
-	int posDot = szVidPath.ReverseFind(_T('.'));
-
-	int posSlash = szVidPath.ReverseFind(_T('\\'));
-	int posSlash2 = szVidPath.ReverseFind(_T('/'));
-	if(posSlash2 > posSlash){posSlash = posSlash2;}
-
-	if(posDot > posSlash ){
-		if (szaPathInfo != NULL){
-			CString szBaseName = szVidPath.Left(posDot);
-			CString szExtName = szVidPath.Right(szVidPath.GetLength() - posDot).MakeLower();
-			CString szFileName = szVidPath.Mid(posSlash+1, (posDot - posSlash - 1));
-			CString szDirName = szVidPath.Left(posSlash + 1) ;
-			szaPathInfo->RemoveAll();
-			szaPathInfo->Add(szBaseName); // Base Name
-			if(bIsRar){
-				szExtName = CPath(svpRar.m_fnInsideRar).GetExtension();
-			}
-			
-			szaPathInfo->Add(szExtName ); //ExtName
-
-			szaPathInfo->Add(szDirName); //Dir Name ()
-			szaPathInfo->Add(szFileName); // file name only
-			SVP_LogMsg(szBaseName);
-			SVP_LogMsg(szaPathInfo->GetAt(0) + _T(" | ") + szaPathInfo->GetAt(1) + _T(" | ") + szaPathInfo->GetAt(2) + _T(" | ") + szaPathInfo->GetAt(3) );
-		}
-		return szVidPath.Left(posDot);
-	}
-
-	return szVidPath;
+      szaPathInfo -> push_back(szExtName ); //ExtName
+      szaPathInfo -> push_back(szDirName); //Dir Name ()
+      szaPathInfo -> push_back(szFileName); // file name only
+      SVP_LogMsg(szBaseName.c_str());
+      SVP_LogMsg((szaPathInfo -> at(0) + _T(" | ") + szaPathInfo -> at(1) + _T(" | ") + szaPathInfo -> at(2) + _T(" | ") + szaPathInfo -> at(3)).c_str());
+    }
+    return szVidPath.substr(posDot);
+  }
+  return szVidPath;
 }
 
 void CSVPToolBox::MergeAltList( CAtlList<CString>& szaRet,  CAtlList<CString>& szaIn  ){
@@ -192,42 +190,49 @@ BOOL CSVPToolBox::isAlaphbet(WCHAR wchr)
   CString szAlaphbet = _T("1234567890-=qwertyuiop[]asdfghjkl;'zxcvbnm,./`~!@#$%^&*()_+QWERTYUIOP{}ASDFGHJKL:\"\\ZXCVBNM<>?	 ∫♩♫♬€¶♯$¥∮“”‘’；：，。、《》？！·—");
   return !!( szAlaphbet.Find(wchr) >= 0);
 }
+void CSVPToolBox::findMoreFileByFile(CString szFile,
+                                     CAtlList<CString>& szaRet,
+                                     CAtlArray<CString>& szaExt)
+{
+  CString szFindPatten;
+  std::vector<std::wstring> szFilePathinfo;
+  getVideoFileBasename((LPCTSTR)szFile, &szFilePathinfo);
+  if (szFilePathinfo.size() >= 4)
+  {
+    szFindPatten = szFilePathinfo.at(SVPATH_FILENAME).c_str();
+    CString szFilterString =
+      _T("1234567890!@#$%^&*()_+[]{}\\/|?.,<>`~ -=;:\'\"");
+    CString szRealPattern = _T("");
+    BOOL lastStar = false;
+    BOOL haveMatchString = false;
+    for (int i = 0 ; i < szFindPatten.GetLength(); i++)
+    {
+      TCHAR xbuf = szFindPatten.GetAt(i);
+      if (szFilterString.Find(xbuf) >= 0)
+      {
+        if (!lastStar
+          ){
+          szRealPattern += _T("*");
+          lastStar = true;
+        }
+        if(i > 4 && haveMatchString)
+          break;
+        continue;
+      }
+      else
+      {
+        lastStar = false;
+        haveMatchString = true;
+        szRealPattern += xbuf;
+      }
 
-void CSVPToolBox::findMoreFileByFile( CString szFile, CAtlList<CString>& szaRet,  CAtlArray<CString>& szaExt  ){
-	CString szFindPatten;
-	CStringArray szFilePathinfo;
-	getVideoFileBasename(szFile, &szFilePathinfo);
-	if( szFilePathinfo.GetCount() >= 4 ){
-		szFindPatten = szFilePathinfo.GetAt(SVPATH_FILENAME);
-		CString szFilterString = _T("1234567890!@#$%^&*()_+[]{}\\/|?.,<>`~ -=;:\'\"");
-		CString szRealPattern = _T("");
-		BOOL lastStar = false;
-		BOOL haveMatchString = false;
-		for(int i = 0 ; i < szFindPatten.GetLength(); i++){
-			
-			TCHAR xbuf = szFindPatten.GetAt(i);
-			if(szFilterString.Find(xbuf) >= 0 ){
-				if(!lastStar){
-					szRealPattern += _T("*");
-					lastStar = true;
-				}
-				if(i > 4 && haveMatchString){
-					break;
-				}
-				continue;
-			}else{
-				lastStar = false;
-				haveMatchString = true;
-				szRealPattern += xbuf;
-			}
-			
-		}
-		if(!lastStar){
-			szRealPattern += _T("*");
-		}
-		szFindPatten = szFilePathinfo.GetAt(SVPATH_DIRNAME) + szRealPattern + _T(".*");
-		findMoreFileByDir( szFindPatten, szaRet, szaExt);
-	}
+    }
+    if (!lastStar)
+      szRealPattern += _T("*");
+    szFindPatten = szFilePathinfo.at(SVPATH_DIRNAME).c_str()
+      + szRealPattern + _T(".*");
+    findMoreFileByDir( szFindPatten, szaRet, szaExt);
+  }
 }
 BOOL CSVPToolBox::GetDirectoryLeft(CPath* tPath, int rCount ){
 	if(!tPath->IsDirectory() && !tPath->IsRoot() && rCount > 0){
@@ -504,27 +509,28 @@ BOOL CSVPToolBox::isWriteAble(CString szPath){
 	}
 	return 1;
 }
-CString CSVPToolBox::getSameTmpName(CString fnin )
+CString CSVPToolBox::getSameTmpName(CString fnin)
 {
-	CStringArray szaPathinfo;
-	this->getVideoFileBasename(fnin, &szaPathinfo);
-	CString fntdir = this->GetTempDir();
-	CString fnout = fntdir + szaPathinfo.GetAt(3) + szaPathinfo.GetAt(1) ;
-	int i = 0;
-	while(this->ifFileExist(fnout)){
-		i++;
-		CString szBuf;
-		szBuf.Format(_T(".svr%d"), i);
-		fnout = fntdir + szaPathinfo.GetAt(3) + szBuf + szaPathinfo.GetAt(1) ;
-	}
-	return fnout;
+  std::vector<std::wstring> szaPathinfo;
+  getVideoFileBasename((LPCTSTR)fnin, &szaPathinfo);
+  CString fntdir = this->GetTempDir();
+  CString fnout  = fntdir + szaPathinfo.at(3).c_str() + szaPathinfo.at(1).c_str();
+  int i = 0;
+  while(ifFileExist(fnout))
+  {
+    i++;
+    CString szBuf;
+    szBuf.Format(_T(".svr%d"), i);
+    fnout = fntdir + szaPathinfo.at(3).c_str() + szBuf + szaPathinfo.at(1).c_str();
+  }
+  return fnout;
 }
-CString CSVPToolBox::getSameTmpExt(CString fnin )
+CString CSVPToolBox::getSameTmpExt(CString fnin)
 {
-	CStringArray szaPathinfo;
-	this->getVideoFileBasename(fnin, &szaPathinfo);
-	CString fnout = this->getTmpFileName();
-	fnout += szaPathinfo.GetAt(1) ;
+	std::vector<std::wstring> szaPathinfo;
+	getVideoFileBasename((LPCTSTR)fnin, &szaPathinfo);
+	CString fnout = getTmpFileName();
+	fnout += szaPathinfo.at(1).c_str();
 	return fnout;
 }
 int CSVPToolBox::packGZfile(CString fnin , CString fnout)
@@ -1151,13 +1157,16 @@ int CSVPToolBox::ExtractEachSubFile(FILE* fp, int iSubPosId){
 	return 0;
 }
 
-CString CSVPToolBox::Implode(CString szTok, CStringArray* szaOut){
-	CString szRet;
-	for(int i = 0; i < szaOut->GetCount(); i++){
-		if(i > 0) { szRet.Append(szTok); }
-		szRet.Append(szaOut->GetAt(i));
-	}
-	return szRet;
+std::wstring CSVPToolBox::Implode(std::wstring szTok, std::vector<std::wstring>* szaOut)
+{
+  std::wstring szRet;
+  for(int i = 0; i < szaOut -> size(); i++)
+  {
+    if(i > 0)
+      szRet.append(szTok);
+    szRet.append(szaOut -> at(i));
+  }
+  return szRet;
 }
 int CSVPToolBox::Explode(CString szIn, CString szTok, CStringArray* szaOut){
 	szaOut->RemoveAll();
@@ -1335,116 +1344,118 @@ int CSVPToolBox::GetWMIGPURam()
 	return iGPUMAXRAM;
 }
 int CSVPToolBox::GetGPUString(CStringArray * szaGPUString){
-	int ret = 0; //no gpu
-	IDirect3D9* pD3D;
-	int m_nPCIVendor = 0;
-	int m_nPCIDevice = 0;
-	LARGE_INTEGER							m_VideoDriverVersion;
-	m_VideoDriverVersion.HighPart = 0;
-	m_VideoDriverVersion.LowPart = 0;
-	CString GPUString;
-	szaGPUString->RemoveAll();
+  int ret = 0; //no gpu
+  IDirect3D9* pD3D;
+  int m_nPCIVendor = 0;
+  int m_nPCIDevice = 0;
+  LARGE_INTEGER							m_VideoDriverVersion;
+  m_VideoDriverVersion.HighPart = 0;
+  m_VideoDriverVersion.LowPart = 0;
+  CString GPUString;
+  szaGPUString->RemoveAll();
 
-	HMODULE m_hD3D9 =  LoadLibrary(L"d3d9.dll");
-	if (m_hD3D9)
-	{
-		if(! GetProcAddress(m_hD3D9, "Direct3DCreate9") ){
-			return 0 ;
-		}
-	}else{	return 0 ;}
+  HMODULE m_hD3D9 =  LoadLibrary(L"d3d9.dll");
+  if (m_hD3D9)
+  {
+    if(! GetProcAddress(m_hD3D9, "Direct3DCreate9") ){
+      return 0 ;
+    }
+  }
+  else
+  return 0;
 
-	
-	if (pD3D = Direct3DCreate9(D3D_SDK_VERSION)) 
-	{
-		
-		//HMONITOR hMonitor = MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST);
-		//if(hMonitor == NULL) return D3DADAPTER_DEFAULT;
 
-		for(UINT adp = 0, num_adp = pD3D->GetAdapterCount(); adp < num_adp; ++adp)
-		{
-			
-			//HMONITOR hAdpMon = pD3D->GetAdapterMonitor(adp);
-			//if(hAdpMon == hMonitor) return adp;
-			CString m_strDeviceDescription;
-			D3DADAPTER_IDENTIFIER9 adapterIdentifier;
-			if (pD3D->GetAdapterIdentifier( adp, 0, &adapterIdentifier) == S_OK)
-			{
-				m_nPCIVendor = adapterIdentifier.VendorId;
-				m_nPCIDevice = adapterIdentifier.DeviceId;
-				m_VideoDriverVersion = adapterIdentifier.DriverVersion;
-				m_strDeviceDescription = adapterIdentifier.Description;
-				m_strDeviceDescription.AppendFormat (_T(" (0x%x::0x%x) 驱动：%d.%d.%d.%d \n"),
-						m_nPCIVendor , m_nPCIDevice,
-						HIWORD(adapterIdentifier.DriverVersion.HighPart),
-						LOWORD(adapterIdentifier.DriverVersion.HighPart),
-						HIWORD(adapterIdentifier.DriverVersion.LowPart),
-						LOWORD(adapterIdentifier.DriverVersion.LowPart)
-						//GET_WHQL_YEAR(adapterIdentifier.WHQLLevel),
-						//GET_WHQL_MONTH(adapterIdentifier.WHQLLevel),
-						//GET_WHQL_DAY(adapterIdentifier.WHQLLevel)
+  if (pD3D = Direct3DCreate9(D3D_SDK_VERSION)) 
+  {
 
-				);
-				szaGPUString->Add( m_strDeviceDescription );
+    //HMONITOR hMonitor = MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST);
+    //if(hMonitor == NULL) return D3DADAPTER_DEFAULT;
 
-				CString szDetect  = CString(adapterIdentifier.Description);
+    for(UINT adp = 0, num_adp = pD3D->GetAdapterCount(); adp < num_adp; ++adp)
+    {
 
-				szDetect.MakeUpper();
-				if(szDetect.Find(_T("ATI")) >= 0 || 0x1002 == m_nPCIVendor){
-					int imodel = _wtoi(szDetect);
-					if(m_nPCIDevice >= 0x9000){
-						ret = 1;
-					}else if(m_nPCIDevice >= 0x6800 && m_nPCIDevice <= 0x68ff){
-						//HD57xx
-						ret = 1;
-					}else if(m_nPCIDevice >= 0x5a00 && m_nPCIDevice <= 0x5aff){
-						ret = 0;
-					}else if(m_nPCIDevice == 0x94c3 ){ //ATI Radeon HD 2400 PRO (0x1002::0x94c3) 驱动：8.14.10.678
-						ret = 0;
-					}else if(imodel > 2000 && imodel < 7000){
-						ret = 1;
-					}
-					
-				}else if(szDetect.Find(_T("NVIDIA")) >= 0  || 0x10DE == m_nPCIVendor){
-					int imodel = _wtoi(szDetect);
-					if (m_VideoDriverVersion.HighPart > 170) {
-						ret = 1;
-					}else if(imodel > 7000 && imodel < 10000){
-						ret = 1;
-					}
-				}else if(szDetect.Find(_T("Intel")) >= 0  || 0x8086 == m_nPCIVendor){
-					if(m_nPCIDevice >= 0x2e00 && m_nPCIDevice <= 0x2eff){
-						ret = 1; // G45
-					}else if(m_nPCIDevice >= 0x2a40 && m_nPCIDevice <= 0x2a4f){
-						ret = 1; // G45 移动版
-					}
-				}
+      //HMONITOR hAdpMon = pD3D->GetAdapterMonitor(adp);
+      //if(hAdpMon == hMonitor) return adp;
+      CString m_strDeviceDescription;
+      D3DADAPTER_IDENTIFIER9 adapterIdentifier;
+      if (pD3D->GetAdapterIdentifier( adp, 0, &adapterIdentifier) == S_OK)
+      {
+        m_nPCIVendor = adapterIdentifier.VendorId;
+        m_nPCIDevice = adapterIdentifier.DeviceId;
+        m_VideoDriverVersion = adapterIdentifier.DriverVersion;
+        m_strDeviceDescription = adapterIdentifier.Description;
+        m_strDeviceDescription.AppendFormat (_T(" (0x%x::0x%x) 驱动：%d.%d.%d.%d \n"),
+          m_nPCIVendor , m_nPCIDevice,
+          HIWORD(adapterIdentifier.DriverVersion.HighPart),
+          LOWORD(adapterIdentifier.DriverVersion.HighPart),
+          HIWORD(adapterIdentifier.DriverVersion.LowPart),
+          LOWORD(adapterIdentifier.DriverVersion.LowPart)
+          //GET_WHQL_YEAR(adapterIdentifier.WHQLLevel),
+          //GET_WHQL_MONTH(adapterIdentifier.WHQLLevel),
+          //GET_WHQL_DAY(adapterIdentifier.WHQLLevel)
 
-				if(ret)
-					break;
-				
-			}
-		}
+          );
+        szaGPUString->Add( m_strDeviceDescription );
 
-		
-		pD3D->Release();
-	}
+        CString szDetect  = CString(adapterIdentifier.Description);
 
-	int iGPURam = GetWMIGPURam();
-	if(iGPURam){
-		CString szBuf;
-		iGPURam = iGPURam /1024/1024;
-		szBuf.Format(L"GPU RAM %dMB" ,iGPURam);
-		szaGPUString->Add(szBuf);
+        szDetect.MakeUpper();
+        if(szDetect.Find(_T("ATI")) >= 0 || 0x1002 == m_nPCIVendor){
+          int imodel = _wtoi(szDetect);
+          if(m_nPCIDevice >= 0x9000){
+            ret = 1;
+          }else if(m_nPCIDevice >= 0x6800 && m_nPCIDevice <= 0x68ff){
+            //HD57xx
+            ret = 1;
+          }else if(m_nPCIDevice >= 0x5a00 && m_nPCIDevice <= 0x5aff){
+            ret = 0;
+          }else if(m_nPCIDevice == 0x94c3 ){ //ATI Radeon HD 2400 PRO (0x1002::0x94c3) 驱动：8.14.10.678
+            ret = 0;
+          }else if(imodel > 2000 && imodel < 7000){
+            ret = 1;
+          }
 
-		if(ret > 0){
-			if(iGPURam < 256)
-				ret = 0;
-		}else if(iGPURam > 256)
-		{
-			ret = 1;
-		}
-	}
-	return ret;
+        }else if(szDetect.Find(_T("NVIDIA")) >= 0  || 0x10DE == m_nPCIVendor){
+          int imodel = _wtoi(szDetect);
+          if (m_VideoDriverVersion.HighPart > 170) {
+            ret = 1;
+          }else if(imodel > 7000 && imodel < 10000){
+            ret = 1;
+          }
+        }else if(szDetect.Find(_T("Intel")) >= 0  || 0x8086 == m_nPCIVendor){
+          if(m_nPCIDevice >= 0x2e00 && m_nPCIDevice <= 0x2eff){
+            ret = 1; // G45
+          }else if(m_nPCIDevice >= 0x2a40 && m_nPCIDevice <= 0x2a4f){
+            ret = 1; // G45 移动版
+          }
+        }
+
+        if(ret)
+          break;
+
+      }
+    }
+
+
+    pD3D->Release();
+  }
+
+  int iGPURam = GetWMIGPURam();
+  if(iGPURam){
+    CString szBuf;
+    iGPURam = iGPURam /1024/1024;
+    szBuf.Format(L"GPU RAM %dMB" ,iGPURam);
+    szaGPUString->Add(szBuf);
+
+    if(ret > 0){
+      if(iGPURam < 256)
+        ret = 0;
+    }else if(iGPURam > 256)
+    {
+      ret = 1;
+    }
+  }
+  return ret;
 }
 BOOL CSVPToolBox::ifDirWritable(CString szDir){
 	
@@ -1533,18 +1544,18 @@ bool CSVPToolBox::GetAppDataPath(CString& path)
 CString CSVPToolBox::getSubFileByTempid(int iTmpID, CString szVidPath)
 {
   //get base path name
-  CStringArray szVidPathInfo ;
+  std::vector<std::wstring> szVidPathInfo;
   CString szTargetBaseName = _T("");
   CString szDefaultSubPath = _T("");
 
   AppSettings& s = AfxGetAppSettings();
   CString StoreDir = s.SVPSubStoreDir;
-  this->getVideoFileBasename(szVidPath, &szVidPathInfo); 
+  getVideoFileBasename((LPCTSTR)szVidPath, &szVidPathInfo); 
 
   if(s.bSaveSVPSubWithVideo && 
-    this->ifDirWritable(szVidPathInfo.GetAt(SVPATH_DIRNAME)))
+    ifDirWritable(szVidPathInfo.at(SVPATH_DIRNAME).c_str()))
   {
-    StoreDir = szVidPathInfo.GetAt(SVPATH_DIRNAME);
+    StoreDir = szVidPathInfo.at(SVPATH_DIRNAME).c_str();
   }
   else
   {
@@ -1580,8 +1591,8 @@ CString CSVPToolBox::getSubFileByTempid(int iTmpID, CString szVidPath)
   tmBasenamePath.RemoveBackslash();
   tmBasenamePath.AddBackslash();
   StoreDir =  (CString) tmBasenamePath;
-  this->getVideoFileBasename(szVidPath, &szVidPathInfo);
-  tmBasenamePath.Append(szVidPathInfo.GetAt(SVPATH_FILENAME));
+  getVideoFileBasename((LPCTSTR)szVidPath, &szVidPathInfo);
+  tmBasenamePath.Append(szVidPathInfo.at(SVPATH_FILENAME).c_str());
 
   CString szBasename =tmBasenamePath;
 
@@ -1691,10 +1702,13 @@ CString CSVPToolBox::getSubFileByTempid(int iTmpID, CString szVidPath)
 
 }
 
-CString CSVPToolBox::PackageSubFiles(CStringArray* szaSubFiles){
+CString CSVPToolBox::PackageSubFiles(CStringArray* szaSubFiles)
+{
 	return _T("");
 }
-CString CSVPToolBox::GetTempDir(){
+
+CString CSVPToolBox::GetTempDir()
+{
 	TCHAR lpPathBuffer[MAX_PATH];
 	GetTempPath(MAX_PATH,  lpPathBuffer); 
 	CString szTmpPath (lpPathBuffer);
@@ -1704,40 +1718,47 @@ CString CSVPToolBox::GetTempDir(){
 		
 	return szTmpPath;
 }
-int CSVPToolBox::FindAllSubfile(CString szSubPath , CStringArray* szaSubFiles){
-	szaSubFiles->RemoveAll();
-	szaSubFiles->Add(szSubPath);
-	CStringArray szaPathInfo ;
-	CString szBaseName = this->getVideoFileBasename( szSubPath, &szaPathInfo );
-	CString szExt = szaPathInfo.GetAt(1);
-	
-	if(szExt == _T(".idx")){
-		szSubPath = szBaseName + _T(".sub");
-		if(this->ifFileExist(szSubPath)){
-			szaSubFiles->Add(szSubPath);
-		}else{
-			szSubPath = szBaseName + _T(".rar");
-			if(this->ifFileExist(szSubPath)){
-				CString szSubFilepath = this->extractRarFile(szSubPath);
-				if(!szSubFilepath.IsEmpty()){
-					SVP_LogMsg(szSubFilepath + _T(" unrar ed"));
-					szaSubFiles->Add(szSubFilepath);
-				}else{
-					SVP_LogMsg(_T("Unrar error"));
-				}
-			}
-		}
-	}
-	
-	//TODO: finding other subfile
-	return 0;
+
+int CSVPToolBox::FindAllSubfile(std::wstring szSubPath , std::vector<std::wstring>* szaSubFiles)
+{
+  szaSubFiles -> clear();
+  szaSubFiles -> push_back(szSubPath);
+  std::vector<std::wstring> szaPathInfo;
+  std::wstring szBaseName = getVideoFileBasename(szSubPath.c_str(), &szaPathInfo);
+  std::wstring szExt = szaPathInfo.at(1);
+
+  if(szExt == _T(".idx"))
+  {
+    szSubPath = szBaseName + _T(".sub");
+    if(this -> ifFileExist(szSubPath.c_str()))
+      szaSubFiles -> push_back(szSubPath);
+    else
+    {
+      szSubPath = szBaseName + _T(".rar");
+      if(this->ifFileExist(szSubPath.c_str()))
+      {
+        std::wstring szSubFilepath = (LPCTSTR)extractRarFile(szSubPath.c_str());
+        if(!szSubFilepath.empty())
+        {
+          SVP_LogMsg(CString(szSubFilepath.c_str()) + _T(" unrar ed"));
+          szaSubFiles -> push_back(szSubFilepath);
+        }
+        else
+          SVP_LogMsg(_T("Unrar error"));
+      }
+    }
+  }
+  //TODO: finding other subfile
+  return 0;
 }
+
 int CSVPToolBox::Char4ToInt(char* szBuf){
 
 	int iData =   ( ((int)szBuf[0] & 0xff) << 24) |  ( ((int)szBuf[1] & 0xff) << 16) | ( ((int)szBuf[2] & 0xff) << 8) |  szBuf[3] & 0xff;;
 	
 	return iData;
 }
+
 char* CSVPToolBox::CStringToUTF8(CString szIn, int* iDescLen, UINT codePage)
 {
 	char* szOut = 0;

@@ -150,68 +150,65 @@ void CLyricLib::fetch_lyric_from_internet()
      }catch(...){}
 
 }
-bool  CLyricLib::try_download_lyric(CString szDownloadingForFile)
+bool CLyricLib::try_download_lyric(CString szDownloadingForFile)
 {
-    bool ret = false;
-    if(availableLyrics.size() > 0)
+  bool ret = false;
+  if (availableLyrics.size() > 0)
+  {
+    for (uint curIndex = 0; curIndex < availableLyrics.size() ; curIndex++)
     {
-
-        for(uint curIndex = 0; curIndex < availableLyrics.size() ; curIndex++){
-            if (availableLyrics[ curIndex ].SourceType != ST_INTERNET)
-                continue ;
-
-            if(!availableLyrics[ curIndex ].IsTimestamped)
-                continue ;
-
-            if(!availableLyrics[ curIndex ].db)
-                continue ;
-            //SVP_LogMsg5(L"Get %d Lyric Result %d", availableLyrics.size(), curIndex);
-
-            availableLyrics[ curIndex ].db->DownloadLyrics(&wcfg, &availableLyrics[ curIndex ]);
-
-            CSVPToolBox svpTool;
-            AppSettings& s = AfxGetAppSettings();
-            CPath szStorePath( s.GetSVPSubStorePath() );
-            szStorePath.RemoveBackslash();
-            szStorePath.AddBackslash();
-
-            CStringArray szaFilename ;
-            svpTool.getVideoFileBasename(szDownloadingForFile, &szaFilename);
-            szStorePath.Append(szaFilename.GetAt(3));
-            szStorePath.AddExtension(L".lrc");
-
-            //svpTool.filePutContent(szStorePath, CString(availableLyrics[curIndex].Text.c_str()) );
-            CStdioFile f;
-
-            if(f.Open(szStorePath, CFile::modeCreate | CFile::modeWrite | CFile::typeBinary ))
-            {
-                char uft16mark[3] = {0xff, 0xfe, 0x00};
-                f.Write(uft16mark , 2);
-                f.Write( availableLyrics[curIndex].Text.c_str(), availableLyrics[curIndex].Text.length() );
-
-                f.Close();
-            }
-            //AfxMessageBox( availableLyrics[curIndex].Text.c_str() );
-            SVP_LogMsg5(L"Get %d Lyric Result %s size %d", availableLyrics.size(),szStorePath , availableLyrics[curIndex].Text.length());
-            if(szDownloadingForFile == m_sz_current_music_file){
-                if(LoadLyricFile(szStorePath) > 0){
-                    ret = true;
-                    CWnd* pFrame = AfxGetMainWnd();
-                    if(pFrame){
-                        CString osd_msg;
-                        //
-                        osd_msg.Format(ResStr(IDS_GOT_LYRIC_OSD_MSG), availableLyrics[ curIndex ].db->GetName() );
-                        ::SendMessage(pFrame->m_hWnd, WM_USER+31, (UINT_PTR)osd_msg.GetBuffer(), 3000); 
-                        osd_msg.ReleaseBuffer();
-                    }
-                }
-                break;
-            }
-
-            
+      if (availableLyrics[curIndex].SourceType != ST_INTERNET)
+        continue;
+      if (!availableLyrics[curIndex].IsTimestamped)
+        continue;
+      if (!availableLyrics[curIndex].db)
+        continue;
+      //SVP_LogMsg5(L"Get %d Lyric Result %d", availableLyrics.size(), curIndex);
+      availableLyrics[curIndex].db ->
+        DownloadLyrics(&wcfg, &availableLyrics[curIndex]);
+      CSVPToolBox svpTool;
+      AppSettings& s = AfxGetAppSettings();
+      CPath szStorePath(s.GetSVPSubStorePath());
+      szStorePath.RemoveBackslash();
+      szStorePath.AddBackslash();
+      std::vector<std::wstring> szaFilename;
+      svpTool.getVideoFileBasename((LPCTSTR)szDownloadingForFile, &szaFilename);
+      szStorePath.Append(szaFilename.at(3).c_str());
+      szStorePath.AddExtension(L".lrc");
+      //svpTool.filePutContent(szStorePath, CString(availableLyrics[curIndex].Text.c_str()) );
+      FILE* f;
+      if (!_wfopen_s(&f, szStorePath.m_strPath, L"wb"))
+      {
+        char uft16mark[3] = {0xff, 0xfe, 0x00};
+        fwrite(uft16mark, sizeof(char), 2, f);
+        fwrite(availableLyrics[curIndex].Text.c_str(), sizeof(wchar_t),
+          availableLyrics[curIndex].Text.length(), f);
+        fclose(f);
+      }
+      //AfxMessageBox( availableLyrics[curIndex].Text.c_str() );
+      SVP_LogMsg5(L"Get %d Lyric Result %s size %d", availableLyrics.size(),
+        szStorePath, availableLyrics[curIndex].Text.length());
+      if (szDownloadingForFile == m_sz_current_music_file)
+      {
+        if(LoadLyricFile(szStorePath) > 0)
+        {
+          ret = true;
+          CWnd* pFrame = AfxGetMainWnd();
+          if (pFrame)
+          {
+            CString osd_msg;
+            osd_msg.Format(ResStr(IDS_GOT_LYRIC_OSD_MSG),
+              availableLyrics[curIndex].db -> GetName());
+            ::SendMessage(pFrame -> m_hWnd, WM_USER+31,
+              (UINT_PTR)osd_msg.GetBuffer(), 3000);
+            osd_msg.ReleaseBuffer();
+          }
         }
+        break;
+      }
     }
-    return ret;
+  }
+  return ret;
 }
 
 void CLyricLib::GetLrcFileNames(CString fn, CAtlArray<CString>& paths, CAtlArray<LrcFile>& ret, BOOL byDir)

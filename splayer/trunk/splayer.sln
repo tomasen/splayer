@@ -330,7 +330,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "subpic", "src\subpic\subpic
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BaseClasses", "src\filters\BaseClasses\baseclasses_vs2005.vcproj", "{E8A3F6FA-AE1C-4C8E-A0B6-9C8480324EAA}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "svplib", "src\svplib.svp\svplib.vcproj", "{FAB25039-6D61-4729-9940-76FC6FDC806E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "svplib", "src\svplib\svplib.vcproj", "{FAB25039-6D61-4729-9940-76FC6FDC806E}"
 	ProjectSection(ProjectDependencies) = postProject
 		{87EE9DA4-DE1E-4448-8324-183C98DCA588} = {87EE9DA4-DE1E-4448-8324-183C98DCA588}
 	EndProjectSection

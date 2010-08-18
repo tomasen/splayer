@@ -19,7 +19,7 @@ BOOL OptionAdvancedPage::OnInitDialog(HWND hwnd, LPARAM lParam)
   return TRUE;
 }
 
-void OptionAdvancedPage::OnVideomodeUpdated(UINT uNotifyCode, int nID, CWindow wndCtl)
+void OptionAdvancedPage::OnVideoModeUpdated(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
   m_gpuaccelcheckbox.EnableWindow(nID == IDC_RADIO_PICTUREQUALITY);
 }

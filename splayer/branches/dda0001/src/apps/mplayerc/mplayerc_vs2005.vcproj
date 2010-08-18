@@ -1664,11 +1664,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\ecio.icons\dvd.ico"
+				RelativePath=".\res\icon\DVD.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon\DVD.ico"
+				RelativePath=".\res\ecio.icons\dvd.ico"
 				>
 			</File>
 			<File
@@ -2388,6 +2388,14 @@
 			Name="Utils"
 			>
 			<File
+				RelativePath=".\Utils\FileAssoc_Win.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Utils\FileAssoc_Win.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Utils\Strings.cc"
 				>
 			</File>
@@ -2489,11 +2497,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 		<File

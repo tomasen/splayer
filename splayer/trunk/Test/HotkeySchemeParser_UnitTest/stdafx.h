@@ -15,5 +15,7 @@
 #include <string>
 #include <vector>
 
-
+#include <atlbase.h>
+#include <atlapp.h>
+#include <atlmisc.h>
 // TODO: reference additional headers your program requires here

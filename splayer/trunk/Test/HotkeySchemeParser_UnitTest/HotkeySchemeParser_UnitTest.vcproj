@@ -166,7 +166,7 @@
 	</References>
 	<Files>
 		<File
-			RelativePath="..\..\src\apps\mplayerc\Controller\HotkeyCmd.cc"
+			RelativePath="..\..\src\apps\mplayerc\Model\HotkeyCmd.cc"
 			>
 		</File>
 		<File

@@ -396,6 +396,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WMVSplitter", "src\filters\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "res_german", "src\apps\lang\res_german\res_german.vcproj", "{9EEA40DD-6AB2-4A71-95E8-68ADDD00DD3A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{DDE963FF-6076-4F3E-9F2E-0FBBC50661C7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HotkeySchemeParser_UnitTest", "Test\HotkeySchemeParser_UnitTest\HotkeySchemeParser_UnitTest.vcproj", "{2383B6FD-2D02-4FF9-A14B-394DA08C21F7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug Unicode|Mixed Platforms = Debug Unicode|Mixed Platforms
@@ -1646,6 +1650,22 @@ Global
 		{9EEA40DD-6AB2-4A71-95E8-68ADDD00DD3A}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{9EEA40DD-6AB2-4A71-95E8-68ADDD00DD3A}.Release|Win32.ActiveCfg = Release|Win32
 		{9EEA40DD-6AB2-4A71-95E8-68ADDD00DD3A}.Release|Win32.Build.0 = Release|Win32
+		{2383B6FD-2D02-4FF9-A14B-394DA08C21F7}.Debug Unicode|Mixed Platforms.ActiveCfg = Debug|Win32
+		{2383B6FD-2D02-4FF9-A14B-394DA08C21F7}.Debug Unicode|Mixed Platforms.Build.0 = Debug|Win32
+		{2383B6FD-2D02-4FF9-A14B-394DA08C21F7}.Debug Unicode|Win32.ActiveCfg = Debug|Win32
+		{2383B6FD-2D02-4FF9-A14B-394DA08C21F7}.Debug Unicode|Win32.Build.0 = Debug|Win32
+		{2383B6FD-2D02-4FF9-A14B-394DA08C21F7}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{2383B6FD-2D02-4FF9-A14B-394DA08C21F7}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{2383B6FD-2D02-4FF9-A14B-394DA08C21F7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2383B6FD-2D02-4FF9-A14B-394DA08C21F7}.Debug|Win32.Build.0 = Debug|Win32
+		{2383B6FD-2D02-4FF9-A14B-394DA08C21F7}.Release Unicode|Mixed Platforms.ActiveCfg = Release|Win32
+		{2383B6FD-2D02-4FF9-A14B-394DA08C21F7}.Release Unicode|Mixed Platforms.Build.0 = Release|Win32
+		{2383B6FD-2D02-4FF9-A14B-394DA08C21F7}.Release Unicode|Win32.ActiveCfg = Release|Win32
+		{2383B6FD-2D02-4FF9-A14B-394DA08C21F7}.Release Unicode|Win32.Build.0 = Release|Win32
+		{2383B6FD-2D02-4FF9-A14B-394DA08C21F7}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{2383B6FD-2D02-4FF9-A14B-394DA08C21F7}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{2383B6FD-2D02-4FF9-A14B-394DA08C21F7}.Release|Win32.ActiveCfg = Release|Win32
+		{2383B6FD-2D02-4FF9-A14B-394DA08C21F7}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1741,6 +1761,7 @@ Global
 		{9A281831-B717-47B0-8427-7A938E65A3B3} = {65A6D6C0-5E11-4F28-BE20-7C744CF919F2}
 		{A9410E00-3C50-4869-BD33-4A94E1A8174B} = {65A6D6C0-5E11-4F28-BE20-7C744CF919F2}
 		{9EEA40DD-6AB2-4A71-95E8-68ADDD00DD3A} = {65A6D6C0-5E11-4F28-BE20-7C744CF919F2}
+		{2383B6FD-2D02-4FF9-A14B-394DA08C21F7} = {DDE963FF-6076-4F3E-9F2E-0FBBC50661C7}
 	EndGlobalSection
 	GlobalSection(DPCodeReviewSolutionGUID) = preSolution
 		DPCodeReviewSolutionGUID = {00000000-0000-0000-0000-000000000000}

@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "../../src/apps/mplayerc/Controller/HotkeySchemeParser.h"
+#include "../../src/apps/mplayerc/Model/HotkeySchemeParser.h"
 
 int _tmain(int argc, _TCHAR* argv[])
 {

@@ -170,7 +170,7 @@
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\apps\mplayerc\Controller\HotkeySchemeParser.cc"
+			RelativePath="..\..\src\apps\mplayerc\Model\HotkeySchemeParser.cc"
 			>
 		</File>
 		<File

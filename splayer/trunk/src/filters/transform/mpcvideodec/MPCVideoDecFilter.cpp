@@ -1243,6 +1243,10 @@ HRESULT CMPCVideoDecFilter::SetMediaType(PIN_DIRECTION direction,const CMediaTyp
 					 { osd_msg = ResStr(IDS_OSD_MSG_HARDWARE_MIGHTNOT_SUPPORT_DXVA) ; }
 					 if (m_nCompatibilityMode & 4) { m_bDXVACompatible = true;  }
 					 break;
+        case 3:
+          //unknown error
+          m_bDXVACompatible = false;
+          break;
 				}
 
 				if(osd_msg.IsEmpty()){

@@ -1666,11 +1666,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\ecio.icons\dvd.ico"
+				RelativePath=".\res\icon\DVD.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon\DVD.ico"
+				RelativePath=".\res\ecio.icons\dvd.ico"
 				>
 			</File>
 			<File
@@ -2421,6 +2421,18 @@
 				RelativePath=".\Controller\LazyInstance.h"
 				>
 			</File>
+			<File
+				RelativePath=".\Controller\PlayerPreference.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Controller\PlayerPreference.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Controller\SPlayerDefs.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Model"
@@ -2499,11 +2511,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 		<File

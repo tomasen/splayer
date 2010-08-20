@@ -93,7 +93,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="IF NOT EXIST &quot;shooterclient.key&quot; copy &quot;shooterclient_dummy.key&quot; &quot;shooterclient.key&quot;&#x0D;&#x0A;IF NOT EXIST &quot;..\apps\mplayerc\revision.h&quot; copy &quot;..\apps\mplayerc\revision_dummy.h&quot; &quot;..\apps\mplayerc\revision.h&quot;"
+				CommandLine="IF NOT EXIST &quot;shooterclient.key&quot; copy &quot;shooterclient_dummy.key&quot; &quot;shooterclient.key&quot;&#x0D;&#x0A;IF NOT EXIST &quot;..\apps\mplayerc\revision.h&quot; copy &quot;..\apps\mplayerc\revision_dummy.h&quot; &quot;..\apps\mplayerc\revision.h&quot;&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -200,11 +200,11 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\svplib\MD5Checksum.h"
+				RelativePath=".\MD5Checksum.h"
 				>
 			</File>
 			<File
-				RelativePath="..\svplib\MD5ChecksumDefines.h"
+				RelativePath=".\MD5ChecksumDefines.h"
 				>
 			</File>
 			<File
@@ -212,35 +212,35 @@
 				>
 			</File>
 			<File
-				RelativePath="..\svplib\SVPEqualizer.h"
+				RelativePath=".\SVPEqualizer.h"
 				>
 			</File>
 			<File
-				RelativePath="..\svplib\SVPhash.h"
+				RelativePath=".\SVPhash.h"
 				>
 			</File>
 			<File
-				RelativePath="..\svplib\svplib.h"
+				RelativePath=".\svplib.h"
 				>
 			</File>
 			<File
-				RelativePath="..\svplib\SVPNet.h"
+				RelativePath=".\SVPNet.h"
 				>
 			</File>
 			<File
-				RelativePath="..\svplib\SVPRarLib.h"
+				RelativePath=".\SVPRarLib.h"
 				>
 			</File>
 			<File
-				RelativePath="..\svplib\SVPSubfilterLib.h"
+				RelativePath=".\SVPSubfilterLib.h"
 				>
 			</File>
 			<File
-				RelativePath="..\svplib\SVPToolBox.h"
+				RelativePath=".\SVPToolBox.h"
 				>
 			</File>
 			<File
-				RelativePath="..\svplib\targetver.h"
+				RelativePath=".\targetver.h"
 				>
 			</File>
 		</Filter>

@@ -221,6 +221,7 @@ int FFH264CheckCompatibility(int nWidth, int nHeight, struct AVCodecContext* pAV
     if (cur_sps != NULL)
     {
         video_is_level51 = cur_sps->level_idc >= 51 ? 1 : 0;
+        *refFrameCount = cur_sps->ref_frame_count;
         max_ref_frames = max_ref_frames_dpb41; // default value is calculate
 
         if (nPCIVendor == PCIV_nVidia)
@@ -278,6 +279,8 @@ int FFH264CheckCompatibility(int nWidth, int nHeight, struct AVCodecContext* pAV
             too_much_ref_frames = 1;
         }
     }
+    else
+      return 3;
 
     return (video_is_level51 * no_level51_support * DXVA_UNSUPPORTED_LEVEL) + (too_much_ref_frames * DXVA_TOO_MUCH_REF_FRAMES);
 }

@@ -432,98 +432,113 @@ CString genVHash(char* szTerm2, char* szTerm3, char* uniqueIDHash){
 	szVHash = cmd5.GetMD5((BYTE*)buffx, strlen(buffx)).c_str();
 	return szVHash;
 }
-int CSVPNet::UploadSubFileByVideoAndHash(CString fnVideoFilePath, CString szFileHash, CString szSubHash,CStringArray* fnSubPaths, int iDelayMS, CStringArray* szaPostTerms)
+int CSVPNet::UploadSubFileByVideoAndHash(std::wstring fnVideoFilePath,
+                                         std::wstring szFileHash,
+                                         std::wstring szSubHash,
+                                         std::vector<std::wstring>* fnSubPaths,
+                                         int iDelayMS,
+                                         std::vector<std::wstring>* szaPostTerms)
 {
-	CURL *curl;
-	CURLcode res;
-	//CString szPostPerm = _T( "pathinfo=" ) + fnVideoFilePath + _T("&filehash=") + szFileHash ;
-	int iTotalFiles = fnSubPaths->GetCount();
-	SVP_LogMsg(_T("Upload Begin"));
-	struct curl_httppost *formpost=NULL;
-	struct curl_httppost *lastptr=NULL;
-	char errorbuf[CURL_ERROR_SIZE];
+  CURL *curl;
+  CURLcode res;
+  //CString szPostPerm = _T( "pathinfo=" ) + fnVideoFilePath + _T("&filehash=") + szFileHash ;
+  int iTotalFiles = fnSubPaths -> size();
+  SVP_LogMsg(_T("Upload Begin"));
+  struct curl_httppost *formpost = NULL;
+  struct curl_httppost *lastptr  = NULL;
+  char errorbuf[CURL_ERROR_SIZE];
 
-	curl_global_init(CURL_GLOBAL_ALL);
-	
-	char* szTerm2;
-	char* szTerm3;
-	int iDescLen = 0;
+  curl_global_init(CURL_GLOBAL_ALL);
 
-	szTerm2 = svpToolBox.CStringToUTF8(fnVideoFilePath, &iDescLen);
-	curl_formadd(&formpost,	&lastptr, CURLFORM_COPYNAME, "pathinfo", CURLFORM_COPYCONTENTS, szTerm2,CURLFORM_END);
-	free(szTerm2);
+  char* szTerm2;
+  char* szTerm3;
+  int iDescLen = 0;
 
-	szTerm2 = svpToolBox.CStringToUTF8(szSubHash, &iDescLen);
-	curl_formadd(&formpost,	&lastptr, CURLFORM_COPYNAME, "subhash", CURLFORM_COPYCONTENTS, szTerm2,CURLFORM_END);
-	free(szTerm2);
+  szTerm2 = svpToolBox.CStringToUTF8(fnVideoFilePath.c_str(), &iDescLen);
+  curl_formadd(&formpost,	&lastptr, CURLFORM_COPYNAME, "pathinfo",
+    CURLFORM_COPYCONTENTS, szTerm2,CURLFORM_END);
+  free(szTerm2);
 
-	szTerm3 = svpToolBox.CStringToUTF8(szFileHash, &iDescLen);
-	curl_formadd(&formpost,	&lastptr, CURLFORM_COPYNAME, "filehash", CURLFORM_COPYCONTENTS, szTerm3,CURLFORM_END);
-	free(szTerm3);
+  szTerm2 = svpToolBox.CStringToUTF8(szSubHash.c_str(), &iDescLen);
+  curl_formadd(&formpost,	&lastptr, CURLFORM_COPYNAME, "subhash",
+    CURLFORM_COPYCONTENTS, szTerm2,CURLFORM_END);
+  free(szTerm2);
 
-	CString szVHash = genVHash(szTerm2, szTerm3, uniqueIDHash);
-	if(!szVHash.IsEmpty()){
-		szTerm2 = svpToolBox.CStringToUTF8(szVHash, &iDescLen);
-		curl_formadd(&formpost,	&lastptr, CURLFORM_COPYNAME, "vhash", CURLFORM_COPYCONTENTS, szTerm2,CURLFORM_END);
-		free(szTerm2);
-	}
+  szTerm3 = svpToolBox.CStringToUTF8(szFileHash.c_str(), &iDescLen);
+  curl_formadd(&formpost,	&lastptr, CURLFORM_COPYNAME, "filehash",
+    CURLFORM_COPYCONTENTS, szTerm3,CURLFORM_END);
+  free(szTerm3);
 
-	szTerm2 = (char*)malloc(64);
-	_itoa_s( iDelayMS , szTerm2, 64, 10);
-	curl_formadd(&formpost,	&lastptr, CURLFORM_COPYNAME, "subdelay", CURLFORM_COPYCONTENTS,szTerm2 ,CURLFORM_END);
-	free(szTerm2);
+  std::wstring szVHash = (LPCTSTR)genVHash(szTerm2, szTerm3, uniqueIDHash);
+  if (!szVHash.empty())
+  {
+    szTerm2 = svpToolBox.CStringToUTF8(szVHash.c_str(), &iDescLen);
+    curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "vhash",
+      CURLFORM_COPYCONTENTS, szTerm2,CURLFORM_END);
+    free(szTerm2);
+  }
 
-	
-	for(int i = 0; i < fnSubPaths->GetCount(); i++){
-		char szFname[22];
-		/* Fill in the file upload field */
-		CString szgzFile = svpToolBox.getSameTmpName(fnSubPaths->GetAt(i)) ;
-		SVP_LogMsg( CString(_T("Gziping ")) +  fnSubPaths->GetAt(i) + _T(" to ") + szgzFile );
-		svpToolBox.packGZfile( fnSubPaths->GetAt(i) , szgzFile);
-		
-		szTerm2 = svpToolBox.CStringToUTF8(szgzFile, &iDescLen, CP_ACP);
-		//SVP_LogMsg(fnSubPaths->GetAt(i));
-		sprintf_s(szFname, 22, "subfile[%d]", i);
-		curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, szFname, CURLFORM_FILE, szTerm2,CURLFORM_END);
-		free(szTerm2);
-		
-	}
-	int retx = -1;
+  szTerm2 = (char*)malloc(64);
+  _itoa_s(iDelayMS , szTerm2, 64, 10);
+  curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "subdelay",
+    CURLFORM_COPYCONTENTS, szTerm2, CURLFORM_END);
+  free(szTerm2);
 
-	curl = curl_easy_init();
-	if(curl) {
-		long respcode;
 
-		this->SetCURLopt(curl);
-		curl_easy_setopt(curl,  CURLOPT_ERRORBUFFER, errorbuf );
-		curl_easy_setopt(curl, CURLOPT_URL,  GetUrlByType('upsb',iTryID));
+  for (int i = 0; i < fnSubPaths -> size(); i++)
+  {
+    char szFname[22];
+    /* Fill in the file upload field */
+    std::wstring szgzFile = svpToolBox.getSameTmpName(fnSubPaths -> at(i).c_str()) ;
+    SVP_LogMsg(_T("Gziping ") +  CString(fnSubPaths -> at(i).c_str()) +
+      _T(" to ") + szgzFile.c_str());
+    svpToolBox.packGZfile(fnSubPaths -> at(i).c_str(), szgzFile.c_str());
 
-		curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
-		
-		res = curl_easy_perform(curl);
-		if(res == 0){
-			curl_easy_getinfo(curl,CURLINFO_RESPONSE_CODE, &respcode);
+    szTerm2 = svpToolBox.CStringToUTF8(szgzFile.c_str(), &iDescLen, CP_ACP);
+    //SVP_LogMsg(fnSubPaths->GetAt(i));
+    sprintf_s(szFname, 22, "subfile[%d]", i);
+    curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, szFname,
+      CURLFORM_FILE, szTerm2,CURLFORM_END);
+    free(szTerm2);
+  }
+  int retx = -1;
 
-			if(respcode == 200){
-				//good to go // continues to upload sub
-				retx = 0;
-				SVP_LogMsg(ResStr(IDS_LOG_MSG_SVPSUB_UPLOAD_FINISHED), 31);
-			}else if(respcode == 404){
-				//error
-				retx = 0;
-				SVP_LogMsg(_T("Already Have same sub in databases"));
-			}
-		}else{
-			//error
-			SVP_LogMsg5(_T("HTTP connection error %d %s ") , res, CStringW(curl_easy_strerror(res))); //TODO handle this
-		}
-		curl_easy_cleanup(curl);
+  curl = curl_easy_init();
+  if (curl)
+  {
+    long respcode;
+    SetCURLopt(curl);
+    curl_easy_setopt(curl,  CURLOPT_ERRORBUFFER, errorbuf );
+    curl_easy_setopt(curl, CURLOPT_URL,  GetUrlByType('upsb',iTryID));
 
-	}
-	/* then cleanup the formpost chain */
-	curl_formfree(formpost);
+    curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
 
-	return retx;
+    res = curl_easy_perform(curl);
+    if (res == 0)
+    {
+      curl_easy_getinfo(curl,CURLINFO_RESPONSE_CODE, &respcode);
+      if (respcode == 200)
+      {
+        //good to go // continues to upload sub
+        retx = 0;
+        SVP_LogMsg(ResStr(IDS_LOG_MSG_SVPSUB_UPLOAD_FINISHED), 31);
+      }
+      else if (respcode == 404)
+      {
+        //error
+        retx = 0;
+        SVP_LogMsg(_T("Already Have same sub in databases"));
+      }
+    }
+    else
+      //error
+      SVP_LogMsg5(_T("HTTP connection error %d %s ") , res,
+        CStringW(curl_easy_strerror(res))); //TODO handle this
+    curl_easy_cleanup(curl);
+  }
+  /* then cleanup the formpost chain */
+  curl_formfree(formpost);
+  return retx;
 }
 
 int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, CString szVHash , CString szLang )

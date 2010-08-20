@@ -15,34 +15,36 @@ CSVPhash::CSVPhash(void)
 CSVPhash::~CSVPhash(void)
 {
 }
-CString CSVPhash::ComputerSubFilesFileHash(CStringArray* szaSubFiles){
-	
-	BYTE md5buf[16];
-	for (int i = 0; i < szaSubFiles->GetCount(); i++)
-	{
-		CMD5Checksum cmd5 ;
-		CString szpath = szaSubFiles->GetAt(i);
-		CSVPToolBox svpTool;
-		if(!svpTool.ifFileExist(szpath)){
-			SVP_LogMsg(_T("sub file not exist for hash"));
-			return _T("");
-			break;
-		}
-		CString szBuf = cmd5.GetMD5((LPCTSTR)szpath).c_str();
-		if ( !szBuf.IsEmpty() ){
-			//SVP_LogMsg(szBuf);
-			if ( i == 0){
-				memcpy_s(md5buf, 16, cmd5.lpszMD5, 16);
-			}else{
-				for(int j = 0; j < 16; j++){
-					md5buf[j] ^= cmd5.lpszMD5[j];
-				}
-			}
-		}else{
-			SVP_LogMsg(_T("md5 error"));
-		}
-	}
-	return this->HexToString(md5buf);
+std::wstring CSVPhash::ComputerSubFilesFileHash(
+  std::vector<std::wstring>* szaSubFiles)
+{
+  unsigned char md5buf[16];
+  for (std::vector<std::wstring>::iterator iter = szaSubFiles -> begin();
+    iter != szaSubFiles -> end(); iter++)
+  {
+    CMD5Checksum cmd5 ;
+    std::wstring szpath = *iter;
+    CSVPToolBox svpTool;
+    if (!svpTool.ifFileExist(szpath.c_str()))
+    {
+      SVP_LogMsg(_T("sub file not exist for hash"));
+      return _T("");
+      break;
+    }
+    std::wstring szBuf = cmd5.GetMD5(szpath);
+    if (!szBuf.empty())
+    {
+      //SVP_LogMsg(szBuf);
+      if (iter == szaSubFiles -> begin())
+        memcpy_s(md5buf, 16, cmd5.lpszMD5, 16);
+      else
+        for(int j = 0; j < 16; j++)
+          md5buf[j] ^= cmd5.lpszMD5[j];
+    }
+    else
+      SVP_LogMsg(_T("md5 error"));
+  }
+  return (LPCTSTR)HexToString(md5buf);
 }
 CString CSVPhash::HexToString(BYTE* lpszMD5){
 	//Convert the hexadecimal checksum to a CString

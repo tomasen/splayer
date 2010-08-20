@@ -2072,6 +2072,11 @@ pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_A
     pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(_T("SVP RLE Video Decoder"), MERIT64_UNLIKELY);
     pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_QTRle);
 	m_transform.AddTail(pFGF);
+
+  pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(_T("SVP FRAPS Video Decoder"), MERIT64_ABOVE_DSHOW);
+  pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_FRAPS1);
+  m_transform.AddTail(pFGF);
+
 	pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(_T("MMES Video Decoder"), MERIT64_UNLIKELY);
 	pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_MMES);
 	m_transform.AddTail(pFGF);

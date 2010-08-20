@@ -33,7 +33,7 @@ class CPPageAccelTbl : public CPPageBase
 
 private:
 	enum {COL_CMD, COL_MOD, COL_KEY,  COL_MOUSE, COL_APPCMD,COL_TYPE, COL_ID, COL_RMCMD, COL_RMREPCNT};
-	CList<wmcmd> m_wmcmds;
+//	CList<wmcmd> m_wmcmds;
 
 	void SetupList();
 

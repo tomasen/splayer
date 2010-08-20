@@ -51,6 +51,8 @@
 #include "ShaderCombineDlg.h"
 #include "UESettingPanel.h"
 
+#include "UserInterface/Dialogs/OptionDlg_Win.h"
+
 #include <mtype.h>
 #include <Mpconfig.h>
 #include <ks.h>
@@ -88,6 +90,12 @@
 
 #include "..\..\..\Updater\cupdatenetlib.h"
 
+#include "Controller/Hotkey_Controller.h"
+
+// begin,
+// the following headers are included because HotkeyController mechanism broke the original inclusion
+#include "PPageSheet.h"
+// end
 
 #define DEFCLIENTW 480
 #define DEFCLIENTH 360
@@ -1695,10 +1703,10 @@ void CMainFrame::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
 
 /*NEW UI END*/
 void CMainFrame::OnSetHotkey(){
-	CAutoPtr<CPPageAccelTbl> page(new CPPageAccelTbl());
-	CPropertySheet dlg(ResStr(IDS_DIALOG_HOTKEYSETTING_TITLE), this);
-	dlg.AddPage(page);
-	dlg.DoModal() ;
+// 	CAutoPtr<CPPageAccelTbl> page(new CPPageAccelTbl());
+// 	CPropertySheet dlg(ResStr(IDS_DIALOG_HOTKEYSETTING_TITLE), this);
+// 	dlg.AddPage(page);
+// 	dlg.DoModal() ;
 }
 void CMainFrame::OnResetSetting(){
 	if(AfxMessageBox(ResStr(IDS_MSG_WARN_RESET_PLAYER_SETTING), MB_YESNO) == IDYES){
@@ -2443,28 +2451,22 @@ LRESULT CMainFrame::OnAppCommand(WPARAM wParam, LPARAM lParam)
 	//SendStatusMessage( appkey , 3000);
 	SVP_LogMsg5( L"AppKey %x %x %x",cmd,uDevice, dwKeys );
 	//if(uDevice != FAPPCOMMAND_OEM) for mce remote key
-	{
-		AppSettings& s = AfxGetAppSettings();
 
-		BOOL fRet = FALSE;
+  AppSettings& s = AfxGetAppSettings();
 
-		POSITION pos = s.wmcmds.GetHeadPosition();
-		while(pos)
-		{
-			wmcmd& wc = s.wmcmds.GetNext(pos);
-            if(wc.appcmd == cmd){
-                //if its volume control, dont go beyond 100% unless system volume are over 90%
-                if(APPCOMMAND_VOLUME_UP == cmd || APPCOMMAND_VOLUME_DOWN == cmd){
-                    Default();
-                   
-                }
-                if( TRUE == SendMessage(WM_COMMAND, wc.cmd)) 
-				    fRet = TRUE;
-            }
-		}
+	BOOL fRet = FALSE;
 
-		if(fRet) return TRUE;
-	}
+  if (APPCOMMAND_VOLUME_UP == cmd || APPCOMMAND_VOLUME_DOWN == cmd)
+    Default();
+  else
+  {
+    HotkeyCmd hotkey = HotkeyController::GetInstance()->GetHotkeyCmdById(cmd);
+    if (hotkey.cmd && SendMessage(WM_COMMAND, hotkey.cmd))
+      fRet = TRUE;
+  }
+
+	if(fRet)
+    return TRUE;
 
 	return Default();
 }
@@ -2790,7 +2792,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 
   case TIMER_MOUSELWOWN:
     if (s_fLDown)
-      OnButton(wmcmd::LDOWN, NULL, NULL);
+      OnButton(HotkeyCmd::LDOWN, NULL, NULL);
     KillTimer(TIMER_MOUSELWOWN);
     break;
 
@@ -3409,29 +3411,32 @@ BOOL CMainFrame::OnButton(UINT id, UINT nFlags, CPoint point)
 	m_wndView.GetClientRect(r);
 	m_wndView.MapWindowPoints(this, &r);
 
-	if( id == wmcmd::WUP || id == wmcmd::LUP || id == wmcmd::RUP || id == wmcmd::MUP || id == wmcmd::X1UP || id == wmcmd::X2UP)
-	{
-		m_lastSeekAction = NULL;
-		KillTimer(TIMER_CLEAR_LAST_SEEK_ACTION);
-	}
+  switch (id)
+  {
+  case HotkeyCmd::WUP:
+  case HotkeyCmd::LUP:
+  case HotkeyCmd::RUP:
+  case HotkeyCmd::MUP:
+  case HotkeyCmd::X1UP:
+  case HotkeyCmd::X2UP:
+    m_lastSeekAction = NULL;
+    KillTimer(TIMER_CLEAR_LAST_SEEK_ACTION);
+    break;
+  }
 
-	if(id != wmcmd::WDOWN && id != wmcmd::WUP && !r.PtInRect(point)) return FALSE;
+	if (id != HotkeyCmd::WDOWN && id != HotkeyCmd::WUP && !r.PtInRect(point))
+    return FALSE;
 
 	BOOL ret = FALSE;
 
-	AppSettings& s = AfxGetAppSettings();
-	POSITION pos = s.wmcmds.GetHeadPosition();
-	while(pos)
-	{
-		wmcmd& wc = s.wmcmds.GetNext(pos);
-		if(wc.mouse == id)
-		{
-			SendMessage(WM_COMMAND, wc.cmd);
-			ret = true;
-		}
-	}
+  HotkeyCmd hotkey = HotkeyController::GetInstance()->GetHotkeyCmdByMouse(id);
+  if (hotkey.cmd)
+  {
+    SendMessage(WM_COMMAND, hotkey.cmd);
+    ret = true;
+  }
 
-	return ret;
+  return ret;
 }
 void CMainFrame::PreFocused(){
 	//bRecentFocused = TRUE;
@@ -3537,10 +3542,9 @@ void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 		bool fLeftMouseBtnUnassigned = true;
 		AppSettings& s = AfxGetAppSettings();
 
-		POSITION pos = s.wmcmds.GetHeadPosition();
-		while(pos && fLeftMouseBtnUnassigned)
-			if(s.wmcmds.GetNext(pos).mouse == wmcmd::LDOWN)
-				fLeftMouseBtnUnassigned = false;
+    HotkeyCmd hotkey = HotkeyController::GetInstance()->GetHotkeyCmdByMouse(HotkeyCmd::LDOWN);
+    if (!hotkey.cmd)
+      fLeftMouseBtnUnassigned = false;
 
 		//if(!bRecentFocused || s.iOnTop != 0);  //&& 
 		s_fLDown = true;
@@ -3560,7 +3564,7 @@ void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 				}
 			
 			
-			//if(OnButton(wmcmd::LDOWN, nFlags, point))
+			//if(OnButton(HotkeyCmd::LDOWN, nFlags, point))
 			//SetTimer(TIMER_MOUSELWOWN, 300, NULL);
 			//return;
 		}
@@ -3605,11 +3609,11 @@ void CMainFrame::OnLButtonUp(UINT nFlags, CPoint point)
 		
 		bool fDBLMouseClickUnassigned = true;
 		AppSettings& s = AfxGetAppSettings();
-		POSITION pos = s.wmcmds.GetHeadPosition();
-		while(pos && fDBLMouseClickUnassigned)
-			if(s.wmcmds.GetNext(pos).mouse == wmcmd::LDBLCLK)
-				fDBLMouseClickUnassigned = false;
-		if(fDBLMouseClickUnassigned){
+    HotkeyCmd hotkey = HotkeyController::GetInstance()->GetHotkeyCmdByMouse(HotkeyCmd::LDBLCLK);
+    if (hotkey.cmd)
+      fDBLMouseClickUnassigned = false;
+
+    if(fDBLMouseClickUnassigned){
 			SetTimer(TIMER_MOUSELWOWN, 1, NULL);
 		}else{
 			SetTimer(TIMER_MOUSELWOWN, SINGLECLICK_INTERLEAVE_MS, NULL);
@@ -3618,7 +3622,7 @@ void CMainFrame::OnLButtonUp(UINT nFlags, CPoint point)
 	s_mDragFuc = 0;
 	s_mDragFucOn = false;
 
-	if(!OnButton(wmcmd::LUP, nFlags, point))
+	if(!OnButton(HotkeyCmd::LUP, nFlags, point))
 		__super::OnLButtonUp(nFlags, point);
 }
 LRESULT CMainFrame::OnMouseMoveIn(WPARAM /*wparam*/, LPARAM /*lparam*/) {
@@ -3745,46 +3749,46 @@ void CMainFrame::OnLButtonDblClk(UINT nFlags, CPoint point)
 	s_mDragFuc = 0;
 	s_mDragFucOn = false;
 
-	if(!OnButton(wmcmd::LDBLCLK, nFlags, point))
+	if(!OnButton(HotkeyCmd::LDBLCLK, nFlags, point))
 		__super::OnLButtonDblClk(nFlags, point);
 }
 
 void CMainFrame::OnMButtonDown(UINT nFlags, CPoint point)
 {
 	SendMessage(WM_CANCELMODE);
-	if(!OnButton(wmcmd::MDOWN, nFlags, point))
+	if(!OnButton(HotkeyCmd::MDOWN, nFlags, point))
 		__super::OnMButtonDown(nFlags, point);
 }
 
 void CMainFrame::OnMButtonUp(UINT nFlags, CPoint point)
 {
-	if(!OnButton(wmcmd::MUP, nFlags, point))
+	if(!OnButton(HotkeyCmd::MUP, nFlags, point))
 		__super::OnMButtonUp(nFlags, point);
 }
 
 void CMainFrame::OnMButtonDblClk(UINT nFlags, CPoint point)
 {
 	SendMessage(WM_MBUTTONDOWN, nFlags, MAKELPARAM(point.x, point.y));
-	if(!OnButton(wmcmd::MDBLCLK, nFlags, point))
+	if(!OnButton(HotkeyCmd::MDBLCLK, nFlags, point))
 		__super::OnMButtonDblClk(nFlags, point);
 }
 
 void CMainFrame::OnRButtonDown(UINT nFlags, CPoint point)
 {
-	if(!OnButton(wmcmd::RDOWN, nFlags, point))
+	if(!OnButton(HotkeyCmd::RDOWN, nFlags, point))
 		__super::OnRButtonDown(nFlags, point);
 }
 
 void CMainFrame::OnRButtonUp(UINT nFlags, CPoint point)
 {
-	if(!OnButton(wmcmd::RUP, nFlags, point))
+	if(!OnButton(HotkeyCmd::RUP, nFlags, point))
 		__super::OnRButtonUp(nFlags, point);
 }
 
 void CMainFrame::OnRButtonDblClk(UINT nFlags, CPoint point)
 {
 	SendMessage(WM_RBUTTONDOWN, nFlags, MAKELPARAM(point.x, point.y));
-	if(!OnButton(wmcmd::RDBLCLK, nFlags, point))
+	if(!OnButton(HotkeyCmd::RDBLCLK, nFlags, point))
 		__super::OnRButtonDblClk(nFlags, point);
 }
 
@@ -3792,14 +3796,14 @@ LRESULT CMainFrame::OnXButtonDown(WPARAM wParam, LPARAM lParam)
 {
 	SendMessage(WM_CANCELMODE);
 	UINT fwButton = GET_XBUTTON_WPARAM(wParam); 
-	return OnButton(fwButton == XBUTTON1 ? wmcmd::X1DOWN : fwButton == XBUTTON2 ? wmcmd::X2DOWN : wmcmd::NONE,
+	return OnButton(fwButton == XBUTTON1 ? HotkeyCmd::X1DOWN : fwButton == XBUTTON2 ? HotkeyCmd::X2DOWN : HotkeyCmd::NONE,
 		GET_KEYSTATE_WPARAM(wParam), CPoint(lParam));
 }
 
 LRESULT CMainFrame::OnXButtonUp(WPARAM wParam, LPARAM lParam)
 {
 	UINT fwButton = GET_XBUTTON_WPARAM(wParam); 
-	return OnButton(fwButton == XBUTTON1 ? wmcmd::X1UP : fwButton == XBUTTON2 ? wmcmd::X2UP : wmcmd::NONE,
+	return OnButton(fwButton == XBUTTON1 ? HotkeyCmd::X1UP : fwButton == XBUTTON2 ? HotkeyCmd::X2UP : HotkeyCmd::NONE,
 		GET_KEYSTATE_WPARAM(wParam), CPoint(lParam));
 }
 
@@ -3807,7 +3811,7 @@ LRESULT CMainFrame::OnXButtonDblClk(WPARAM wParam, LPARAM lParam)
 {
 	SendMessage(WM_XBUTTONDOWN, wParam, lParam);
 	UINT fwButton = GET_XBUTTON_WPARAM(wParam); 
-	return OnButton(fwButton == XBUTTON1 ? wmcmd::X1DBLCLK : fwButton == XBUTTON2 ? wmcmd::X2DBLCLK : wmcmd::NONE,
+	return OnButton(fwButton == XBUTTON1 ? HotkeyCmd::X1DBLCLK : fwButton == XBUTTON2 ? HotkeyCmd::X2DBLCLK : HotkeyCmd::NONE,
 		GET_KEYSTATE_WPARAM(wParam), CPoint(lParam));
 }
 
@@ -3816,8 +3820,8 @@ BOOL CMainFrame::OnMouseWheel(UINT nFlags, short zDelta, CPoint point)
 	ScreenToClient(&point);
 
 	BOOL fRet = 
-		zDelta > 0 ? OnButton(wmcmd::WUP, nFlags, point) :
-		zDelta < 0 ? OnButton(wmcmd::WDOWN, nFlags, point) : 
+		zDelta > 0 ? OnButton(HotkeyCmd::WUP, nFlags, point) :
+		zDelta < 0 ? OnButton(HotkeyCmd::WDOWN, nFlags, point) : 
 		FALSE;
 
 	return fRet;
@@ -4150,10 +4154,16 @@ void CMainFrame::OnInitMenuPopup(CMenu * pPopupMenu, UINT nIndex, BOOL bSysMenu)
 		int k = str.Find('\t');
 		if(k > 0) str = str.Left(k);
 
-		CString key = CPPageAccelTbl::MakeAccelShortcutLabel(nID);
-		if(!key.IsEmpty()) str += _T("\t") + key;
+    HotkeyCmd cmd = HotkeyController::GetInstance()->GetHotkeyCmdById(nID);
+    std::wstring key = cmd.MakeTextLabel();
+    if (!key.empty())
+    {
+      str += L"\t";
+      str += key.c_str();
+    }
 
-		if(key.IsEmpty() && i < 0) continue;
+		if (key.empty() && i < 0)
+      continue;
 
 		// BUG(?): this disables menu item update ui calls for some reason...
 //		pPopupMenu->ModifyMenu(i, MF_BYPOSITION|MF_STRING, nID, str);
@@ -15289,44 +15299,35 @@ void CMainFrame::OnSettingFinished(){
 }
 void CMainFrame::ShowOptions(int idPage)
 {
-	
-	if(HWND hWnd = ::FindWindow(NULL, ResStr(IDS_DIALOG_UESETTING_PANNEL_TITLE)))
-	{
-		
-		::SetForegroundWindow(hWnd);
-		
-	}else{
-		CUESettingPanel* ueOption = new CUESettingPanel(pGB, this, idPage);
-		ueOption->Create(IDD_DHTML_SETTING, this);
-		ueOption->ShowWindow(SW_SHOW);
-	}
+  // Option Dialog is a modal dialog.
+  OptionDlg dlg;
+  if (dlg.DoModal() == IDOK)
+  {
+    if(!m_fFullScreen)
+      SetAlwaysOnTop(AfxGetAppSettings().iOnTop);
 
-	
-	/*
-	
-		if(ueOption.DoModal() == IDOK)
-		{
-			
-	
-		
-			
-		}else if(ueOption.bOpenAdvancePanel){
-			CPPageSheet options(ResStr(IDS_OPTIONS_CAPTION), pGB, this, idPage);
-	
-			if(options.DoModal() == IDOK)
-			{
-				if(!m_fFullScreen)
-					SetAlwaysOnTop(s.iOnTop);
-	
-				m_wndView.LoadLogo();
-	
-				s.UpdateData(true);
-	
-				UpdateSubtitle(true);
-				UpdateSubtitle2(true);
-			}		
-		}*/
-	
+    m_wndView.LoadLogo();
+
+    AfxGetAppSettings().UpdateData(true);
+
+    UpdateSubtitle(true);
+    UpdateSubtitle2(true);
+  }
+  //dlg.DoModal();
+//  dlg.Create(NULL);
+// 	
+// 	if(HWND hWnd = ::FindWindow(NULL, ResStr(IDS_DIALOG_UESETTING_PANNEL_TITLE)))
+// 	{
+// 		
+// 		::SetForegroundWindow(hWnd);
+// 		
+// 	}else{
+// 		CUESettingPanel* ueOption = new CUESettingPanel(pGB, this, idPage);
+// 		ueOption->Create(IDD_DHTML_SETTING, this);
+// 		ueOption->ShowWindow(SW_SHOW);
+// 	}
+
+
 
 }
 

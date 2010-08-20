@@ -646,7 +646,7 @@
 				>
 			</File>
 			<File
-				RelativePath="PPageAccelTbl.cpp"
+				RelativePath=".\PPageAccelTbl.cpp"
 				>
 			</File>
 			<File
@@ -1211,7 +1211,7 @@
 				>
 			</File>
 			<File
-				RelativePath="PPageAccelTbl.h"
+				RelativePath=".\PPageAccelTbl.h"
 				>
 			</File>
 			<File
@@ -1468,6 +1468,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\ecio.icons\audio.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\res\newui\audio_bg.bmp"
 				>
 			</File>
@@ -1636,6 +1640,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\ecio.icons\cd.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\res\default1.bin"
 				>
 			</File>
@@ -1657,6 +1665,10 @@
 			</File>
 			<File
 				RelativePath=".\res\icon\DVD.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\ecio.icons\dvd.ico"
 				>
 			</File>
 			<File
@@ -1693,6 +1705,10 @@
 			</File>
 			<File
 				RelativePath=".\res\web\generalseting_uesetbg_hover.jpg"
+				>
+			</File>
+			<File
+				RelativePath=".\res\ecio.icons\hd.ico"
 				>
 			</File>
 			<File
@@ -1836,6 +1852,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\ecio.icons\playlist.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\res\icon\Quicktime_File.ico"
 				>
 			</File>
@@ -1877,6 +1897,10 @@
 			</File>
 			<File
 				RelativePath=".\res\web\subsetting_uesetbg_hover.jpg"
+				>
+			</File>
+			<File
+				RelativePath=".\res\ecio.icons\subtitle.ico"
 				>
 			</File>
 			<File
@@ -1977,6 +2001,10 @@
 			</File>
 			<File
 				RelativePath=".\res\web\updatesetting_uesetbg_hover.jpg"
+				>
+			</File>
+			<File
+				RelativePath=".\res\ecio.icons\video.ico"
 				>
 			</File>
 			<File
@@ -2299,19 +2327,31 @@
 					>
 				</File>
 				<File
-					RelativePath=".\UserInterface\Dialogs\OptionHotkeyPage_Win.cc"
-					>
-				</File>
-				<File
-					RelativePath=".\UserInterface\Dialogs\OptionHotkeyPage_Win.h"
-					>
-				</File>
-				<File
 					RelativePath=".\UserInterface\Dialogs\OptionSubtitlePage_Win.cc"
 					>
 				</File>
 				<File
 					RelativePath=".\UserInterface\Dialogs\OptionSubtitlePage_Win.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Support"
+				>
+				<File
+					RelativePath=".\UserInterface\Support\BtnEditCtrl.cc"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Support\BtnEditCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Support\SubtitleStyle.cc"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Support\SubtitleStyle.h"
 					>
 				</File>
 			</Filter>
@@ -2342,6 +2382,62 @@
 						UsePrecompiledHeader="0"
 					/>
 				</FileConfiguration>
+			</File>
+		</Filter>
+		<Filter
+			Name="Utils"
+			>
+			<File
+				RelativePath=".\Utils\FileAssoc_Win.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Utils\FileAssoc_Win.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Utils\Strings.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Utils\Strings.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Controller"
+			>
+			<File
+				RelativePath=".\Controller\Hotkey_Controller.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Controller\Hotkey_Controller.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Controller\LazyInstance.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Model"
+			>
+			<File
+				RelativePath=".\Model\HotkeyCmd.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Model\HotkeyCmd.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Model\HotkeySchemeParser.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Model\HotkeySchemeParser.h"
+				>
 			</File>
 		</Filter>
 		<File

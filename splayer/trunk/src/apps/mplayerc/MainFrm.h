@@ -34,7 +34,6 @@
 #include "PlayerShaderEditorBar.h"
 #include "PlayerColorControlBar.h"
 #include "TransparentControlBar.h"
-#include "PPageSheet.h"
 #include "PPageFileInfoSheet.h"
 #include "OpenCapDeviceDlg.h"
 #include "PlayerToolTopBar.h"
@@ -156,10 +155,8 @@ public:
 */
 interface ISubClock;
 
-
 class CMainFrame : public CFrameWnd, public CDropTarget 
 {
-
 	friend class CPPageFileInfoSheet;
 	friend class CPPageLogo;
 

@@ -51,6 +51,10 @@
 //Update URL
 char* szUrl = "http://svplayer.shooter.cn/api/updater.php";
 
+#include "Controller/Hotkey_Controller.h"
+
+DECLARE_LAZYINSTANCE(HotkeyController);
+
 /////////
 typedef BOOL (WINAPI* MINIDUMPWRITEDUMP)(HANDLE hProcess, DWORD dwPid, HANDLE hFile, MINIDUMP_TYPE DumpType,
 										 CONST PMINIDUMP_EXCEPTION_INFORMATION ExceptionParam,
@@ -1903,6 +1907,12 @@ LPTOP_LEVEL_EXCEPTION_FILTER WINAPI Mine_SetUnhandledExceptionFilter( LPTOP_LEVE
 	return NULL;
 }
 
+//////////////////////////////////////////////////////////////////////////
+// WTL/ATL supporting logic
+WTL::CAppModule _Module;
+//////////////////////////////////////////////////////////////////////////
+
+
 BOOL CMPlayerCApp::InitInstance()
 {
 	//ssftest s;
@@ -1961,6 +1971,14 @@ BOOL CMPlayerCApp::InitInstance()
         AfxMessageBox(_T("OleInitialize failed!"));
 		return FALSE;
 	}
+
+  //////////////////////////////////////////////////////////////////////////
+  // WTL/ATL supporting logic
+  ::CoInitialize(NULL);
+  ::DefWindowProc(NULL, 0, 0, 0L);
+  WTL::AtlInitCommonControls(ICC_BAR_CLASSES);
+  _Module.Init(NULL, AfxGetInstanceHandle());
+  //////////////////////////////////////////////////////////////////////////
 	
 	SetLanguage(-1);
 
@@ -2230,10 +2248,10 @@ BOOL CMPlayerCApp::InitInstance()
 	th_InitInstance->m_pMainWnd = AfxGetMainWnd();
 	th_InitInstance->ResumeThread();
 
-	m_s.WinLircClient.SetHWND(m_pMainWnd->m_hWnd);
-	if(m_s.fWinLirc) m_s.WinLircClient.Connect(m_s.WinLircAddr);
-	m_s.UIceClient.SetHWND(m_pMainWnd->m_hWnd);
-	if(m_s.fUIce) m_s.UIceClient.Connect(m_s.UIceAddr);
+// 	m_s.WinLircClient.SetHWND(m_pMainWnd->m_hWnd);
+// 	if(m_s.fWinLirc) m_s.WinLircClient.Connect(m_s.WinLircAddr);
+// 	m_s.UIceClient.SetHWND(m_pMainWnd->m_hWnd);
+// 	if(m_s.fUIce) m_s.UIceClient.Connect(m_s.UIceAddr);
 
 	SendCommandLine(m_pMainWnd->m_hWnd);
 
@@ -2275,6 +2293,12 @@ int CMPlayerCApp::ExitInstance()
 	UnRegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mxvideo.dll")) );
 	OleUninitialize();
 
+  //////////////////////////////////////////////////////////////////////////
+  // WTL/ATL supporting logic
+  _Module.Term();
+  ::CoUninitialize();
+  //////////////////////////////////////////////////////////////////////////
+
 	int ret = CWinApp::ExitInstance();
 
 	/*if ( m_s.fCheckFileAsscOnStartup ){
@@ -2312,162 +2336,6 @@ void CMPlayerCApp::OnFileExit()
 	OnAppExit();
 }
 
-// CRemoteCtrlClient
-
-CRemoteCtrlClient::CRemoteCtrlClient() 
-	: m_pWnd(NULL)
-	, m_nStatus(DISCONNECTED)
-{
-}
-
-void CRemoteCtrlClient::SetHWND(HWND hWnd)
-{
-	CAutoLock cAutoLock(&m_csLock);
-
-	m_pWnd = CWnd::FromHandle(hWnd);
-}
-
-void CRemoteCtrlClient::Connect(CString addr)
-{
-	CAutoLock cAutoLock(&m_csLock);
-
-	if(m_nStatus == CONNECTING && m_addr == addr)
-	{
-		TRACE(_T("CRemoteCtrlClient (Connect): already connecting to %s\n"), addr);
-		return;
-	}
-
-	if(m_nStatus == CONNECTED && m_addr == addr)
-	{
-		TRACE(_T("CRemoteCtrlClient (Connect): already connected to %s\n"), addr);
-		return;
-	}
-
-	m_nStatus = CONNECTING;
-
-	TRACE(_T("CRemoteCtrlClient (Connect): connecting to %s\n"), addr);
-
-	Close();
-
-	Create();
-
-	CString ip = addr.Left(addr.Find(':')+1).TrimRight(':');
-	int port = _tcstol(addr.Mid(addr.Find(':')+1), NULL, 10);
-
-	__super::Connect(ip, port);
-
-	m_addr = addr;
-}
-
-void CRemoteCtrlClient::OnConnect(int nErrorCode)
-{
-	CAutoLock cAutoLock(&m_csLock);
-
-	m_nStatus = (nErrorCode == 0 ? CONNECTED : DISCONNECTED);
-
-	TRACE(_T("CRemoteCtrlClient (OnConnect): %d\n"), nErrorCode);
-}
-
-void CRemoteCtrlClient::OnClose(int nErrorCode)
-{
-	CAutoLock cAutoLock(&m_csLock);
-
-	if(m_hSocket != INVALID_SOCKET && m_nStatus == CONNECTED)
-	{
-		TRACE(_T("CRemoteCtrlClient (OnClose): connection lost\n"));
-	}
-
-	m_nStatus = DISCONNECTED;
-
-	TRACE(_T("CRemoteCtrlClient (OnClose): %d\n"), nErrorCode);
-}
-
-void CRemoteCtrlClient::OnReceive(int nErrorCode)
-{
-	if(nErrorCode != 0 || !m_pWnd) return;
-
-	CStringA str;
-	int ret = Receive(str.GetBuffer(256), 255, 0);
-	if(ret <= 0) return;
-	str.ReleaseBuffer(ret);
-
-	TRACE(_T("CRemoteCtrlClient (OnReceive): %s\n"), CString(str));
-
-	OnCommand(str);
-
-	__super::OnReceive(nErrorCode);
-}
-
-void CRemoteCtrlClient::ExecuteCommand(CStringA cmd, int repcnt)
-{
-	cmd.Trim();
-	if(cmd.IsEmpty()) return;
-	cmd.Replace(' ', '_');
-
-	AppSettings& s = AfxGetAppSettings();
-
-	POSITION pos = s.wmcmds.GetHeadPosition();
-	while(pos)
-	{
-		wmcmd wc = s.wmcmds.GetNext(pos);
-		CStringA name = CString(wc.name);
-		name.Replace(' ', '_');
-		if((repcnt == 0 && wc.rmrepcnt == 0 || wc.rmrepcnt > 0 && (repcnt%wc.rmrepcnt) == 0)
-		&& (!name.CompareNoCase(cmd) || !wc.rmcmd.CompareNoCase(cmd) || wc.cmd == (WORD)strtol(cmd, NULL, 10)))
-		{
-			CAutoLock cAutoLock(&m_csLock);
-			TRACE(_T("CRemoteCtrlClient (calling command): %s\n"), wc.name);
-			m_pWnd->SendMessage(WM_COMMAND, wc.cmd);
-			break;
-		}
-	}
-}
-
-// CWinLircClient
-
-CWinLircClient::CWinLircClient()
-{
-}
-
-void CWinLircClient::OnCommand(CStringA str)
-{
-	TRACE(_T("CWinLircClient (OnCommand): %s\n"), CString(str));
-
-	int i = 0, j = 0, repcnt = 0;
-	for(CStringA token = str.Tokenize(" ", i); 
-		!token.IsEmpty();
-		token = str.Tokenize(" ", i), j++)
-	{
-		if(j == 1)
-			repcnt = strtol(token, NULL, 16);
-		else if(j == 2)
-			ExecuteCommand(token, repcnt);
-	}
-}
-
-// CUIceClient
-
-CUIceClient::CUIceClient()
-{
-}
-
-void CUIceClient::OnCommand(CStringA str)
-{
-	TRACE(_T("CUIceClient (OnCommand): %s\n"), CString(str));
-
-	CStringA cmd;
-	int i = 0, j = 0;
-	for(CStringA token = str.Tokenize("|", i); 
-		!token.IsEmpty(); 
-		token = str.Tokenize("|", i), j++)
-	{
-		if(j == 0)
-			cmd = token;
-		else if(j == 1)
-			ExecuteCommand(cmd, strtol(token, NULL, 16));
-	}
-}
-
 // CMPlayerCApp::Settings
 
 CMPlayerCApp::Settings::Settings() 
@@ -2498,19 +2366,20 @@ void CMPlayerCApp::Settings::RegGlobalAccelKey(HWND hWnd){
 			return;
 	}
 
-
-	POSITION pos = wmcmds.GetHeadPosition();
-	while(pos){
-		wmcmd& wc = wmcmds.GetNext(pos);
-		if(wc.name == ResStr(IDS_HOTKEY_BOSS_KEY)){
-			UINT modKey = 0;
-			if( wc.fVirt & FCONTROL) {modKey |= MOD_CONTROL;}
-			if( wc.fVirt & FALT) {modKey |= MOD_ALT;}
-			if( wc.fVirt & FSHIFT) {modKey |= MOD_SHIFT;}
-			UnregisterHotKey(hWnd, ID_BOSS);
-			RegisterHotKey(hWnd, ID_BOSS, modKey, wc.key); 
-		}
-	}
+  HotkeyController* con = HotkeyController::GetInstance();
+  HotkeyCmd cmd = con->GetHotkeyCmdById(ID_BOSS);
+  if (cmd.cmd)
+  {
+    UINT modKey = 0;
+    if (cmd.fVirt & FCONTROL)
+      modKey |= MOD_CONTROL;
+    if (cmd.fVirt & FALT)
+      modKey |= MOD_ALT;
+    if (cmd.fVirt & FSHIFT)
+      modKey |= MOD_SHIFT;
+    UnregisterHotKey(hWnd, ID_BOSS);
+    RegisterHotKey(hWnd, ID_BOSS, modKey, cmd.key); 
+  }
 }
 void CMPlayerCApp::Settings::ThreadedLoading(){
 	
@@ -2623,31 +2492,6 @@ UINT __cdecl Thread_AppSettingLoadding( LPVOID lpParam )
 	CMPlayerCApp::Settings * ms =(CMPlayerCApp::Settings*) lpParam;
 	ms->ThreadedLoading();
 	return 0; 
-}
-int CMPlayerCApp::Settings::FindWmcmdsIDXofCmdid(UINT cmdid, POSITION pos){
-	int cmdIndex = 0;
-	POSITION posc = 0;
-	while(posc = wmcmds.Find(cmdid, posc)){
-// 		CString szLog;
-// 		szLog.Format(_T("%ul %ul"), posc , pos );
-// 		SVP_LogMsg(szLog);
-		if(posc == pos){
-			return cmdIndex;
-		}
-		cmdIndex++;
-	}
-	return -1;
-}
-POSITION CMPlayerCApp::Settings::FindWmcmdsPosofCmdidByIdx(INT cmdid, int idx){
-	int cmdIndex = 0;
-	POSITION posc = 0;
-	while(posc = wmcmds.Find(cmdid, posc)){
-		if(cmdIndex == idx || idx < 0){
-			return posc;
-		}
-		cmdIndex++;
-	}
-	return 0;
 }
 
 void CMPlayerCApp::Settings::SetNumberOfSpeakers( int iSS , int iNumberOfSpeakers){
@@ -3490,190 +3334,6 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 	UINT len;
 	BYTE* ptr = NULL;
 
-	if(!fSave && wmcmds.IsEmpty()){
-#define ADDCMD(cmd) wmcmds.AddTail(wmcmd##cmd)
-		ADDCMD((ID_BOSS, VK_OEM_3, FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_BOSS_KEY)));
-		ADDCMD((ID_PLAY_PLAYPAUSE, VK_SPACE, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_PLAY_PAUSE), APPCOMMAND_MEDIA_PLAY_PAUSE, wmcmd::LDOWN));
-		ADDCMD((ID_PLAY_SEEKFORWARDMED, VK_RIGHT, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_SEEKFORWARDMED)));//
-		ADDCMD((ID_PLAY_SEEKBACKWARDMED, VK_LEFT, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_SEEKBACKFORD)));//
-
-		ADDCMD((ID_FILE_OPENQUICK, 'Q', FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_FILEOPEN_QUICK)));
-		ADDCMD((ID_FILE_OPENURLSTREAM, 'U', FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_FILEOPEN_URL)));
-		ADDCMD((ID_FILE_OPENMEDIA, 'O', FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_FILEOPEN_NORMAL)));
-		ADDCMD((ID_FILE_OPENFOLDER, 'F', FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_FILEOPEN_FOLDER)));
-
-		ADDCMD((ID_SUBMOVEUP,  VK_OEM_4 /* [ */, FVIRTKEY|FALT|FNOINVERT, ResStr(IDS_HOTKEY_SUBTITLE_MOVE_UP)));
-		ADDCMD((ID_SUBMOVEDOWN,  VK_OEM_6  /* ] */, FVIRTKEY|FALT|FNOINVERT, ResStr(IDS_HOTKEY_SUBTITLE_MOVE_DOWN)));
-		ADDCMD((ID_SUB2MOVEUP,  VK_OEM_4, FVIRTKEY|FALT|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_SUBTITLE_2ND_MOVE_UP)));
-		ADDCMD((ID_SUB2MOVEDOWN,  VK_OEM_6, FVIRTKEY|FALT|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_SUBTITLE_2ND_MOVE_DOWN)));
-		ADDCMD((ID_SUBFONTDOWNBOTH,  VK_F1, FVIRTKEY|FALT|FNOINVERT, ResStr(IDS_HOTKEY_SUBTITLE_FONT_SHRINK)));
-		ADDCMD((ID_SUBFONTUPBOTH,  VK_F2, FVIRTKEY|FALT|FNOINVERT, ResStr(IDS_HOTKEY_SUBTITLE_FONT_ENLARGE)));
-		ADDCMD((ID_SUB1FONTDOWN,  VK_F3, FVIRTKEY|FSHIFT|FNOINVERT, ResStr(IDS_HOTKEY_SUBTITLE_1ST_FONT_SHRINK)));
-		ADDCMD((ID_SUB1FONTUP,  VK_F4, FVIRTKEY|FSHIFT|FNOINVERT, ResStr(IDS_HOTKEY_SUBTITLE_1ST_FONT_ENLARGE)));
-		ADDCMD((ID_SUB2FONTDOWN,  VK_F5, FVIRTKEY|FSHIFT|FNOINVERT, ResStr(IDS_HOTKEY_SUBTITLE_2ND_FONT_SHRINK)));
-		ADDCMD((ID_SUB2FONTUP,  VK_F6, FVIRTKEY|FSHIFT|FNOINVERT, ResStr(IDS_HOTKEY_SUBTITLE_2ND_FONT_ENLARGE)));
-
-		ADDCMD((ID_SUB_DELAY_DOWN, VK_F1, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_SUBTITLE_1ST_DELAY_REDUCE)));
-		ADDCMD((ID_SUB_DELAY_UP, VK_F2,   FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_SUBTITLE_1ST_DELAY_PLUS)));
-		ADDCMD((ID_SUB_DELAY_DOWN2, VK_F1, FVIRTKEY|FSHIFT|FNOINVERT, ResStr(IDS_HOTKEY_SUBTITLE_2ND_DELAY_REDUCE)));
-		ADDCMD((ID_SUB_DELAY_UP2, VK_F2,   FVIRTKEY|FSHIFT|FNOINVERT, ResStr(IDS_HOTKEY_SUBTITLE_2ND_DELAY_PLUS)));
-
-        ADDCMD((ID_SHOW_VIDEO_STAT_OSD,  VK_TAB, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_SHOW_VIDEO_STAT_OSD)));
-
-		ADDCMD((ID_BRIGHTINC, VK_HOME, FVIRTKEY|FALT|FNOINVERT, ResStr(IDS_HOTKEY_BRIGHT_MORE)));
-		ADDCMD((ID_BRIGHTDEC, VK_END, FVIRTKEY|FALT|FNOINVERT, ResStr(IDS_HOTKEY_BRIGHT_LESS)));
-
-		ADDCMD((ID_ABCONTROL_TOGGLE,  VK_F7, FVIRTKEY|FSHIFT|FNOINVERT, ResStr(IDS_HOTKEY_ABCONTROL_TOGGEL)));
-		ADDCMD((ID_ABCONTROL_SETA,  VK_F8, FVIRTKEY|FSHIFT|FNOINVERT, ResStr(IDS_HOTKEY_ABCONTROL_SETA)));
-		ADDCMD((ID_ABCONTROL_SETB,  VK_F9, FVIRTKEY|FSHIFT|FNOINVERT, ResStr(IDS_HOTKEY_ABCONTROL_SETB)));
-        
-		ADDCMD((ID_FILE_OPENDVD, 'D', FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_FILEOPEN_DVD)));
-		ADDCMD((ID_FILE_OPENBDVD, 'B', FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_FILEOPEN_BD)));
-		ADDCMD((ID_FILE_OPENDEVICE, 'V', FVIRTKEY|FCONTROL|FNOINVERT, _T("Open Device")));
-		ADDCMD((ID_FILE_SAVE_COPY, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_FILE_SAVEAS)));
-		ADDCMD((ID_FILE_SAVE_IMAGE, 'I', FVIRTKEY|FALT|FNOINVERT, ResStr(IDS_HOTKEY_IMAGE_SAVEAS)));
-		ADDCMD((ID_FILE_SAVE_IMAGE_AUTO, VK_F5, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_IMAGE_SAVE_AUTO)));
-		ADDCMD((ID_FILE_LOAD_SUBTITLE, 'L', FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_LOAD_SUBTITLE)));
-		ADDCMD((ID_FILE_SAVE_SUBTITLE, 'S', FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_SAVE_SUBTITLE)));
-		//ADDCMD((ID_FILE_CLOSEPLAYLIST, 'C', FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_COPY_IMAGE_TO_CLIPBOARD)));
-		ADDCMD((ID_FILE_COPYTOCLIPBOARD, 'C', FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_COPY_IMAGE_TO_CLIPBOARD)));
-		ADDCMD((ID_FILE_PROPERTIES, VK_F10, FVIRTKEY|FSHIFT|FNOINVERT, ResStr(IDS_HOTKEY_FILE_PROPERTIES)));
-		ADDCMD((ID_FILE_EXIT, 'X', FVIRTKEY|FALT|FNOINVERT, ResStr(IDS_HOTKEY_FILE_EXIT)));
-		ADDCMD((ID_TOGGLE_SUBTITLE, 'H', FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_SUBTITLE_TOGGLE)));
-		ADDCMD((ID_VIEW_VF_FROMINSIDE, 'C', FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_PANSCAN_RESET)));
-		ADDCMD((ID_PLAY_PLAY, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_PLAY_PLAY),APPCOMMAND_MEDIA_PLAY));
-		ADDCMD((ID_PLAY_PAUSE, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_PLAY_PAUSE),APPCOMMAND_MEDIA_PAUSE));
-		ADDCMD((ID_PLAY_MANUAL_STOP, VK_OEM_PERIOD, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_PLAY_STOP), APPCOMMAND_MEDIA_STOP));
-		ADDCMD((ID_PLAY_FRAMESTEP, VK_RIGHT, FVIRTKEY|FCONTROL|FALT|FNOINVERT, ResStr(IDS_HOTKEY_PLAY_FRAMESTEP)));
-		ADDCMD((ID_PLAY_FRAMESTEPCANCEL, VK_LEFT, FVIRTKEY|FCONTROL|FALT|FNOINVERT, ResStr(IDS_HOTKEY_PLAY_FRAMESTEP_BACK)));
-		ADDCMD((ID_PLAY_INCRATE, VK_UP, FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_PLAY_INCREASE_RATE)));
-		ADDCMD((ID_PLAY_DECRATE, VK_DOWN, FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_PLAY_DECREASE_RATE)));
-		ADDCMD((ID_VIEW_FULLSCREEN, VK_RETURN, FVIRTKEY|FALT|FNOINVERT, ResStr(IDS_HOTKEY_TOGGLE_FULLSCREEN), 0, wmcmd::LDBLCLK));
-		ADDCMD((ID_VIEW_FULLSCREEN, VK_RETURN, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_TOGGLE_FULLSCREEN), 0, wmcmd::MUP));
-		ADDCMD((ID_PLAY_INCAUDDELAY, VK_ADD, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_AUDIO_DELAY_PLUS)));
-		ADDCMD((ID_PLAY_DECAUDDELAY, VK_SUBTRACT, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_AUDIO_DELAY_REDUCE)));
-		//ADDCMD((ID_VIEW_FULLSCREEN_SECONDARY, VK_ESCAPE, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_TOGGLE_FULLSCREEN_SECONDARY)));
-		ADDCMD((ID_VIEW_PLAYLIST, 'P', FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_TOGGLE_PLAYLIST)));
-		ADDCMD((ID_VIEW_PLAYLIST, '7', FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_TOGGLE_PLAYLIST)));
-		ADDCMD((ID_PLAY_RESETRATE, 'R', FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_PLAY_RESET_PLAYRATE)));
-		ADDCMD((ID_PLAY_SEEKFORWARDSMALL, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_SEEK_FORWARD_SMALL),APPCOMMAND_MEDIA_FAST_FORWARD));
-		ADDCMD((ID_PLAY_SEEKBACKWARDSMALL, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_SEEK_BACKWARD_SMALL),APPCOMMAND_MEDIA_REWIND));
-		ADDCMD((ID_PLAY_SEEKFORWARDMED, VK_RIGHT, FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_SEEK_FORWARD_MED)));
-		ADDCMD((ID_PLAY_SEEKBACKWARDMED, VK_LEFT, FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_SEEK_BACKWARD_MED)));
-		ADDCMD((ID_PLAY_SEEKFORWARDLARGE, VK_RIGHT, FVIRTKEY|FALT|FNOINVERT, ResStr(IDS_HOTKEY_SEEK_FORWARD_BIG)));
-		ADDCMD((ID_PLAY_SEEKBACKWARDLARGE, VK_LEFT, FVIRTKEY|FALT|FNOINVERT, ResStr(IDS_HOTKEY_SEEK_BACKWARD_BIG)));
-		ADDCMD((ID_PLAY_SEEKKEYFORWARD, VK_RIGHT, FVIRTKEY|FSHIFT|FNOINVERT, ResStr(IDS_HOTKEY_SEEK_FORWARD_KEYFRAME)));
-		ADDCMD((ID_PLAY_SEEKKEYBACKWARD, VK_LEFT, FVIRTKEY|FSHIFT|FNOINVERT, ResStr(IDS_HOTKEY_SEEK_BACKWARD_KEYFRAME)));
-		ADDCMD((ID_NAVIGATE_SKIPFORWARD, VK_NEXT, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_NAV_SKIP_FORWARD), APPCOMMAND_MEDIA_NEXTTRACK, wmcmd::X2DOWN));
-		ADDCMD((ID_NAVIGATE_SKIPBACK, VK_PRIOR, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_NAV_SKIP_BACKWARD), APPCOMMAND_MEDIA_PREVIOUSTRACK, wmcmd::X1DOWN));
-		ADDCMD((ID_NAVIGATE_SKIPFORWARDPLITEM, VK_NEXT, FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_NAV_SKIP_FORWARD_PLITEM)));
-		ADDCMD((ID_NAVIGATE_SKIPBACKPLITEM, VK_PRIOR, FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_NAV_SKIP_BACKWARD_PLITEM)));
-		ADDCMD((ID_VIEW_CAPTIONMENU, '0', FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_TOGGLE_CAPTION_MENU)));
-		ADDCMD((ID_VIEW_SEEKER, '1', FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_TOGGLE_SEEK_BAR)));
-		ADDCMD((ID_VIEW_CONTROLS, '2', FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_TOGGLE_TOOL_BAR)));
-		ADDCMD((ID_VIEW_INFORMATION, '3', FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_TOGGLE_PLAY_INFORMATION)));
-		ADDCMD((ID_VIEW_STATISTICS, '4', FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_TOGGLE_PLAY_STATUS)));
-		//ADDCMD((ID_VIEW_STATUS, '5', FVIRTKEY|FCONTROL|FNOINVERT, _T("Toggle Status")));
-		ADDCMD((ID_SHOWTRANSPRANTBAR, '5', FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_TOGGLE_TRANSPARENT_CONTROL_DIALOG)));
-		ADDCMD((ID_VIEW_SUBRESYNC, '6', FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_TOGGLE_SUBRESYNC)));
-		ADDCMD((ID_VIEW_CAPTURE, '8', FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_TOGGLE_CAPTURE_PANEL)));
-		ADDCMD((ID_VIEW_SHADEREDITOR, '9', FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_TOGGLE_SHADER_EDITOR_PANEL)));
-		ADDCMD((ID_VIEW_PRESETS_MINIMAL, '1', FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_UI_PRESET_MINIMAL)));
-		ADDCMD((ID_VIEW_PRESETS_COMPACT, '2', FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_UI_PRESET_COMPACT)));
-		ADDCMD((ID_VIEW_PRESETS_NORMAL, '3', FVIRTKEY|FNOINVERT, _T("View Normal")));
-		ADDCMD((ID_VIEW_FULLSCREEN_SECONDARY, VK_F11, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_TOGGLE_FULLSCREEN_SECONDARY)));
-		ADDCMD((ID_VIEW_ZOOM_50, '1', FVIRTKEY|FALT|FNOINVERT, ResStr(IDS_HOTKEY_ZOOM_50)));
-		ADDCMD((ID_VIEW_ZOOM_100, '2', FVIRTKEY|FALT|FNOINVERT, ResStr(IDS_HOTKEY_ZOOM_100)));
-		ADDCMD((ID_VIEW_ZOOM_200, '3', FVIRTKEY|FALT|FNOINVERT, ResStr(IDS_HOTKEY_ZOOM_200)));
-		ADDCMD((ID_VIEW_ZOOM_AUTOFIT, '4', FVIRTKEY|FALT|FNOINVERT, ResStr(IDS_HOTKEY_ZOOM_AUTOFIT)));	
-		ADDCMD((ID_ASPECTRATIO_NEXT, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_ASPECT_RATIO_NEXT)));
-		ADDCMD((ID_VIEW_VF_HALF, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_VIDEO_FRAME_50)));
-		ADDCMD((ID_VIEW_VF_NORMAL, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_VIDEO_FRAME_100)));
-		ADDCMD((ID_VIEW_VF_DOUBLE, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_VIDEO_FRAME_200)));
-		ADDCMD((ID_VIEW_VF_STRETCH, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_VIDEO_FRAME_STRETCH)));
-		ADDCMD((ID_VIEW_VF_FROMINSIDE, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_VIDEO_FRAME_REMOVE_BLACK_BAR)));
-		ADDCMD((ID_VIEW_VF_FROMOUTSIDE, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_VIDEO_FRAME_STANDARD)));
-		ADDCMD((ID_SWITCH_AUDIO_DEVICE, 'A', FVIRTKEY|FALT|FNOINVERT, ResStr(IDS_HOTKEY_SWITCH_AUDIO_DEVICE)));
-		ADDCMD((ID_ONTOP_ALWAYS, 'T', FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_PIN_ONTOP_ALWAYS)));
-		ADDCMD((ID_PLAY_GOTO, 'G', FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_PLAY_GOTO)));
-		
-		ADDCMD((ID_VIEW_RESET, VK_NUMPAD5, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_PANSCAN_RESET)));
-		ADDCMD((ID_VIEW_INCSIZE, VK_NUMPAD9, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_PANSCAN_SIZE_PLUS)));
-		ADDCMD((ID_VIEW_INCWIDTH, VK_NUMPAD6, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_PANSCAN_WIDTH_PLUS)));
-		ADDCMD((ID_VIEW_INCHEIGHT, VK_NUMPAD8, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_PANSCAN_HEIGHT_PLUS)));
-		ADDCMD((ID_VIEW_DECSIZE, VK_NUMPAD1, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_PANSCAN_SIZE_REDUCE)));
-		ADDCMD((ID_VIEW_DECWIDTH, VK_NUMPAD4, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_PANSCAN_WIDTH_REDUCE)));
-		ADDCMD((ID_VIEW_DECHEIGHT, VK_NUMPAD2, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_PANSCAN_HEIGHT_REDUCE)));
-		ADDCMD((ID_PANSCAN_CENTER, VK_NUMPAD5, FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_PANSCAN_CENTER)));
-		ADDCMD((ID_PANSCAN_MOVELEFT, VK_NUMPAD4, FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_PANSCAN_MOVE_LEFT)));
-		ADDCMD((ID_PANSCAN_MOVERIGHT, VK_NUMPAD6, FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_PANSCAN_MOVE_RIGHT)));
-		ADDCMD((ID_PANSCAN_MOVEUP, VK_NUMPAD8, FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_PANSCAN_MOVE_UP)));
-		ADDCMD((ID_PANSCAN_MOVEDOWN, VK_NUMPAD2, FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_PANSCAN_MOVE_DOWN)));
-		ADDCMD((ID_PANSCAN_MOVEUPLEFT, VK_NUMPAD7, FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_PANSCAN_MOVE_UPLEFT)));
-		ADDCMD((ID_PANSCAN_MOVEUPRIGHT, VK_NUMPAD9, FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_PANSCAN_MOVE_UPRIGHT)));
-		ADDCMD((ID_PANSCAN_MOVEDOWNLEFT, VK_NUMPAD1, FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_PANSCAN_MOVE_BOTTOMLEFT)));
-		ADDCMD((ID_PANSCAN_MOVEDOWNRIGHT, VK_NUMPAD3, FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_PANSCAN_MOVE_BOTTOMRIGHT)));
-		ADDCMD((ID_PANSCAN_ROTATEXP, VK_NUMPAD8, FVIRTKEY|FALT|FNOINVERT, ResStr(IDS_HOTKEY_PANSCAN_ROTATE_X_PLUS)));
-		ADDCMD((ID_PANSCAN_ROTATEXM, VK_NUMPAD2, FVIRTKEY|FALT|FNOINVERT, ResStr(IDS_HOTKEY_PANSCAN_ROTATE_X_REDUCE)));
-		ADDCMD((ID_PANSCAN_ROTATEYP, VK_NUMPAD4, FVIRTKEY|FALT|FNOINVERT, ResStr(IDS_HOTKEY_PANSCAN_ROTATE_Y_PLUS)));
-		ADDCMD((ID_PANSCAN_ROTATEYM, VK_NUMPAD6, FVIRTKEY|FALT|FNOINVERT, ResStr(IDS_HOTKEY_PANSCAN_ROTATE_Y_REDUCE)));
-		ADDCMD((ID_PANSCAN_ROTATEZP, VK_NUMPAD1, FVIRTKEY|FALT|FNOINVERT, ResStr(IDS_HOTKEY_PANSCAN_ROTATE_Z_PLUS)));
-		ADDCMD((ID_PANSCAN_ROTATEZM, VK_NUMPAD3, FVIRTKEY|FALT|FNOINVERT, ResStr(IDS_HOTKEY_PANSCAN_ROTATE_Z_REDUCE)));
-		ADDCMD((ID_VOLUME_UP, VK_UP, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_VOLUME_UP), APPCOMMAND_VOLUME_UP, wmcmd::WUP));//APPCOMMAND_VOLUME_UP
-		ADDCMD((ID_VOLUME_DOWN, VK_DOWN, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_VOLUME_DOWN), APPCOMMAND_VOLUME_DOWN, wmcmd::WDOWN));//APPCOMMAND_VOLUME_DOWN
-		ADDCMD((ID_VOLUME_MUTE, 'M', FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_VOLUME_MUTE),APPCOMMAND_VOLUME_MUTE));//, APPCOMMAND_VOLUME_MUTE
-		//ADDCMD((ID_VOLUME_BOOST_INC, 0, FVIRTKEY|FNOINVERT, _T("Volume Boost Increase")));
-		//ADDCMD((ID_VOLUME_BOOST_DEC, 0, FVIRTKEY|FNOINVERT, _T("Volume Boost Decrease")));
-		//ADDCMD((ID_VOLUME_BOOST_MIN, 0, FVIRTKEY|FNOINVERT, _T("Volume Boost Min")));
-		//ADDCMD((ID_VOLUME_BOOST_MAX, 0, FVIRTKEY|FNOINVERT, _T("Volume Boost Max")));
-		ADDCMD((ID_NAVIGATE_TITLEMENU, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_DVD_TITLEMENU)));
-		ADDCMD((ID_NAVIGATE_ROOTMENU, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_DVD_ROOTMENU)));
-		ADDCMD((ID_NAVIGATE_SUBPICTUREMENU, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_DVD_SUBTITLE_MENU)));
-		ADDCMD((ID_NAVIGATE_AUDIOMENU, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_DVD_AUDIO_MENU)));
-		ADDCMD((ID_NAVIGATE_ANGLEMENU, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_DVD_ANGLE_MENU)));
-		ADDCMD((ID_NAVIGATE_CHAPTERMENU, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_DVD_CHAP_MENU)));
-		ADDCMD((ID_NAVIGATE_MENU_LEFT, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_DVD_MENU_CONTROL_LEFT)));
-		ADDCMD((ID_NAVIGATE_MENU_RIGHT, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_DVD_MENU_CONTROL_RIGHT)));
-		ADDCMD((ID_NAVIGATE_MENU_UP, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_DVD_MENU_CONTROL_UP)));
-		ADDCMD((ID_NAVIGATE_MENU_DOWN, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_DVD_MENU_CONTROL_DOWN)));
-		ADDCMD((ID_NAVIGATE_MENU_ACTIVATE, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_DVD_MENU_CONTROL_OK)));
-		ADDCMD((ID_NAVIGATE_MENU_BACK, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_DVD_MENU_CONTROL_RETURN)));
-		ADDCMD((ID_NAVIGATE_MENU_LEAVE, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_DVD_MENU_CONTROL_EXIT)));
-		ADDCMD((ID_DVD_SUB_ONOFF, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_DVD_MENU_CONTROL_TOGGLE_SUBTITLE)));
-		ADDCMD((ID_DVD_ANGLE_NEXT, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_DVD_MENU_CONTROL_ANGLE_NEXT)));
-		ADDCMD((ID_DVD_ANGLE_PREV, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_DVD_MENU_CONTROL_ANGLE_PREV)));
-		ADDCMD((ID_DVD_AUDIO_NEXT, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_DVD_MENU_CONTROL_AUDIO_NEXT)));
-		ADDCMD((ID_DVD_AUDIO_PREV, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_DVD_MENU_CONTROL_AUDIO_PREV)));
-		ADDCMD((ID_DVD_SUB_NEXT, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_DVD_MENU_CONTROL_SUBTITLE_NEXT)));
-		ADDCMD((ID_DVD_SUB_PREV, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_DVD_MENU_CONTROL_SUBTITLE_PREV)));
-
-		ADDCMD((ID_MENU_PLAYER_SHORT, 0, FVIRTKEY|FNOINVERT, _T("Player Menu (short)"), 0, wmcmd::RUP));
-		//ADDCMD((ID_MENU_PLAYER_LONG, 0, FVIRTKEY|FNOINVERT, _T("Player Menu (long)")));
-		//ADDCMD((ID_MENU_FILTERS, 0, FVIRTKEY|FNOINVERT, _T("Filters Menu")));
-		ADDCMD((ID_VIEW_OPTIONS, 'O', FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_SETTING_PANEL)));
-		ADDCMD((ID_STREAM_AUDIO_NEXT, 'A', FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_AUDIO_STREAM_NEXT)));
-		ADDCMD((ID_STREAM_AUDIO_PREV, 'A', FVIRTKEY|FSHIFT|FNOINVERT, ResStr(IDS_HOTKEY_AUDIO_STREAM_PREV)));
-		ADDCMD((ID_STREAM_SUB_NEXT, 'S', FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_SUBTITLE_NEXT)));
-		ADDCMD((ID_STREAM_SUB_PREV, 'S', FVIRTKEY|FSHIFT|FNOINVERT, ResStr(IDS_HOTKEY_SUBTITLE_PREV)));
-		ADDCMD((ID_STREAM_SUB_ONOFF, 'W', FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_STEAM_SUBTITLE_TOGGLE)));
-		ADDCMD((ID_SUBTITLES_SUBITEM_START+2, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_SUBTITLE_RELOAD)));
-		ADDCMD((ID_OGM_AUDIO_NEXT, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_OGM_AUDIO_STREAM_NEXT)));
-		ADDCMD((ID_OGM_AUDIO_PREV, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_OGM_AUDIO_STREAM_PREV)));
-		ADDCMD((ID_OGM_SUB_NEXT, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_OGM_SUBTITLE_NEXT)));
-		ADDCMD((ID_OGM_SUB_PREV, 0, FVIRTKEY|FNOINVERT, ResStr(IDS_HOTKEY_OGM_SUBTITLE_PREV)));
-		ADDCMD((ID_VSYNC_OFFSET_MORE, VK_UP, FVIRTKEY|FALT|FCONTROL|FSHIFT|FNOINVERT, ResStr(IDS_HOTKEY_VSYNC_OFFSET_MORE)));
-		ADDCMD((ID_VSYNC_OFFSET_LESS, VK_DOWN, FVIRTKEY|FALT|FCONTROL|FSHIFT|FNOINVERT, ResStr(IDS_HOTKEY_VSYNC_OFFSET_LESS)));
-		ADDCMD((ID_SHOWDRAWSTAT, 'J', FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_TOGGLE_RENDER_STATUS)));
-
-        ADDCMD((ID_PLAYLIST_DELETEITEM, VK_DELETE, FVIRTKEY|FNOINVERT, ResStr(IDS_PLAYLIST_DELETEITEM)));
-
-//		ADDCMD((ID_SHOWSUBVOTEUI, 'V', FVIRTKEY|FCONTROL|FALT|FNOINVERT, L"Testing"));
-
-        ADDCMD((ID_SEEK_TO_BEGINNING,VK_HOME, FVIRTKEY|FCONTROL|FNOINVERT,  ResStr(IDS_HOTKEY_SEEK_TO_BEGINNING)));
-        ADDCMD((ID_SEEK_TO_MIDDLE, VK_DELETE, FVIRTKEY|FCONTROL|FNOINVERT,  ResStr(IDS_HOTKEY_SEEK_TO_MIDDLE)));
-        ADDCMD((ID_SEEK_TO_END, VK_END, FVIRTKEY|FCONTROL|FNOINVERT, ResStr(IDS_HOTKEY_SEEK_TO_END)));
-#undef ADDCMD
-	}
 	if(fSave)
 	{
 		if(!fInitialized) return;
@@ -3904,29 +3564,8 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		}
 
 		pApp->WriteProfileString(ResStr(IDS_R_COMMANDS), NULL, NULL);
-		POSITION pos = wmcmds.GetHeadPosition();
-		
-		for(int i = 0; pos; )
-		{
-			POSITION posc = pos;
-			wmcmd& wc = wmcmds.GetNext(pos);
-			if(wc.IsModified())
-			{
-				CString str;
-				str.Format(_T("CommandMod%d"), i);
-				int cmdidx = FindWmcmdsIDXofCmdid( wc.cmd , posc);
-				CString str2;
-				str2.Format(_T("%d %x %x %s %d %d %d %d"), 
-					wc.cmd, wc.fVirt, wc.key, 
-					_T("\"") + CString(wc.rmcmd) +  _T("\""), wc.rmrepcnt,
-					wc.mouse, wc.appcmd, cmdidx);
-				//SVP_LogMsg(str2);
-				pApp->WriteProfileString(ResStr(IDS_R_COMMANDS), str, str2);
-				i++;
-			}
-			
-		}
-		CString		strTemp;
+
+    CString		strTemp;
 		strTemp.Format (_T("%f"), m_RenderSettings.fTargetSyncOffset);
 		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VSYNC_TARGETOFFSET), strTemp);
 
@@ -3940,7 +3579,6 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		strTemp.Format (_T("%f"), dSaturation);
 		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_COLOR_SATURATION), strTemp);
 
-		
 		strTemp.Format (_T("%f"), dGSubFontRatio);
 		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_GLOBAL_SUBFONTRATIO), strTemp);
 
@@ -4036,7 +3674,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_ULTRAFAST), fBUltraFastMode);
 
 
-		pos = m_shaders.GetHeadPosition();
+		POSITION pos = m_shaders.GetHeadPosition();
 		for(int i = 0; pos; i++)
 		{
 			const Shader& s = m_shaders.GetNext(pos);
@@ -4600,39 +4238,19 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 			m_pnspresets.Add(str);
 		}
 
-		for(int i = 0; i < wmcmds.GetCount(); i++)
-		{
-			CString str;
-			str.Format(_T("CommandMod%d"), i);
-			str = pApp->GetProfileString(ResStr(IDS_R_COMMANDS), str, _T(""));
-			if(str.IsEmpty()) break;
-			int cmd, fVirt, key, repcnt, mouse, appcmd;
-			TCHAR buff[128];
-			int n;
-			int cmdidx = 0;
-			if(5 > (n = _stscanf(str, _T("%d %x %x %s %d %d %d %d"), &cmd, &fVirt, &key, buff, &repcnt, &mouse, &appcmd, &cmdidx)))
-				break;
-			//CString szLog;
-			//szLog.Format(_T("got cmd idx %d while reading "),cmdidx);
-			//SVP_LogMsg(szLog);
-			if(POSITION pos = FindWmcmdsPosofCmdidByIdx(cmd, cmdidx))
-			{
-				wmcmd& wc = wmcmds.GetAt(pos);
-                wc.cmd = cmd;
-				wc.fVirt = fVirt;
-				wc.key = key;
-				if(n >= 6) wc.mouse = (UINT)mouse;
-				if(n >= 7) wc.appcmd = (UINT)appcmd;
-				wc.rmcmd = CStringA(buff).Trim('\"');
-				wc.rmrepcnt = repcnt;
-			}
-		}
+    // create accelerator table according to HotkeyController
+    std::vector<ACCEL> accel;
+    HotkeyController* con = HotkeyController::GetInstance();
+    std::vector<HotkeyCmd> scheme = con->GetScheme();
+    accel.resize(scheme.size());
 
-		CAtlArray<ACCEL> pAccel;
-		pAccel.SetCount(wmcmds.GetCount());
-		POSITION pos = wmcmds.GetHeadPosition();
-		for(int i = 0; pos; i++) pAccel[i] = wmcmds.GetNext(pos);
-		hAccel = CreateAcceleratorTable(pAccel.GetData(), pAccel.GetCount());
+    if (accel.size() > 0)
+    {
+      for (size_t i = 0; i < accel.size(); i++)
+        accel[i] = scheme[i];
+
+      hAccel = CreateAcceleratorTable(&accel[0], accel.size());
+    }
 
 		WinLircAddr = pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_WINLIRCADDR), _T("127.0.0.1:8765"));
 		fWinLirc = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_WINLIRC), 0);
@@ -4770,7 +4388,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		
 
 		CAtlStringMap<UINT> shaders;
-		pos = shader_ids.GetHeadPosition();
+		POSITION pos = shader_ids.GetHeadPosition();
 		while(pos){
 			UINT idf = shader_ids.GetNext(pos);
 			shaders[ResStr(idf)] = idf;

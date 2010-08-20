@@ -346,23 +346,23 @@ bool CWebClientSocket::OnCommand(CStringA& hdr, CStringA& body, CStringA& mime)
 
 bool CWebClientSocket::OnIndex(CStringA& hdr, CStringA& body, CStringA& mime)
 {
-	CStringA wmcoptions;
-
-	// generate page
-
-	AppSettings& s = AfxGetAppSettings();
-	POSITION pos = s.wmcmds.GetHeadPosition();
-	while(pos)
-	{
-		wmcmd& wc = s.wmcmds.GetNext(pos);
-		CStringA str;
-		str.Format("%d", wc.cmd);
-		wmcoptions += "<option value=\"" + str + "\">" 
-			+ CStringA(wc.name) + "\r\n";
-	}
-
-	m_pWebServer->LoadPage(IDR_HTML_INDEX, body, m_path);
-	body.Replace("[wmcoptions]", wmcoptions);
+// 	CStringA wmcoptions;
+// 
+// 	// generate page
+// 
+// 	AppSettings& s = AfxGetAppSettings();
+// 	POSITION pos = s.wmcmds.GetHeadPosition();
+// 	while(pos)
+// 	{
+// 		wmcmd& wc = s.wmcmds.GetNext(pos);
+// 		CStringA str;
+// 		str.Format("%d", wc.cmd);
+// 		wmcoptions += "<option value=\"" + str + "\">" 
+// 			+ CStringA(wc.name) + "\r\n";
+// 	}
+// 
+// 	m_pWebServer->LoadPage(IDR_HTML_INDEX, body, m_path);
+// 	body.Replace("[wmcoptions]", wmcoptions);
 
 	return true;
 }

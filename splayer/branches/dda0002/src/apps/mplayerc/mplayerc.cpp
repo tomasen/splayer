@@ -36,6 +36,9 @@
 #include <d3d9.h>
 #include <d3dx9.h>
 #include "DlgChkUpdater.h"
+#include "Controller/PlayerPreference.h"
+#include "Controller/SplayerDefs.h"
+#include "Controller/Hotkey_Controller.h"
 #include <dsound.h>
 
 #include "..\..\..\Updater\cupdatenetlib.h"
@@ -51,9 +54,8 @@
 //Update URL
 char* szUrl = "http://svplayer.shooter.cn/api/updater.php";
 
-#include "Controller/Hotkey_Controller.h"
-
 DECLARE_LAZYINSTANCE(HotkeyController);
+DECLARE_LAZYINSTANCE(PlayerPreference);
 
 /////////
 typedef BOOL (WINAPI* MINIDUMPWRITEDUMP)(HANDLE hProcess, DWORD dwPid, HANDLE hFile, MINIDUMP_TYPE DumpType,
@@ -773,7 +775,8 @@ void CMPlayerCApp::ShowCmdlnSwitches()
 {
 	CString s;
 
-	if(m_s.nCLSwitches&CLSW_UNRECOGNIZEDSWITCH)
+	if (PlayerPreference::GetInstance()->GetIntVar(INTVAR_CL_SWITCHES)
+    & CLSW_UNRECOGNIZEDSWITCH)
 	{
 		CAtlList<CString> sl;
 		for(int i = 0; i < __argc; i++) sl.AddTail(__targv[i]);
@@ -1941,7 +1944,7 @@ UINT __cdecl Thread_InitInstance( LPVOID lpParam )
 	while(pFrame->m_WndSizeInited < 2){
 		Sleep(1000);
 	}
-	INT64 CLS64 = ma->m_s.nCLSwitches;
+	INT64 CLS64 = PlayerPreference::GetInstance()->GetIntVar(INTVAR_CL_SWITCHES);
 	
 	CoInitialize(NULL);
 	
@@ -2103,6 +2106,7 @@ BOOL CMPlayerCApp::InitInstance()
 	//ssftest s;
 
 	//_CrtSetBreakAlloc(12143);
+  PlayerPreference* pref = PlayerPreference::GetInstance();
 
 	long		lError;
 	DetourRestoreAfterWith();
@@ -2119,8 +2123,8 @@ BOOL CMPlayerCApp::InitInstance()
 	DetourAttach(&(PVOID&)Real_GetModuleFileNameA, (PVOID)Mine_GetModuleFileNameA);
 
     
-    DetourAttach(&(PVOID&)Real_WritePrivateProfileStringA, (PVOID)Mine_WritePrivateProfileStringA);
-    DetourAttach(&(PVOID&)Real_GetPrivateProfileStringA, (PVOID)Mine_GetPrivateProfileStringA);
+  DetourAttach(&(PVOID&)Real_WritePrivateProfileStringA, (PVOID)Mine_WritePrivateProfileStringA);
+  DetourAttach(&(PVOID&)Real_GetPrivateProfileStringA, (PVOID)Mine_GetPrivateProfileStringA);
     
 	DetourAttach(&(PVOID&)Real_LoadResource, (PVOID)Mine_LoadResource);
 	DetourAttach(&(PVOID&)Real_LoadImageW, (PVOID)Mine_LoadImageW);
@@ -2204,15 +2208,17 @@ BOOL CMPlayerCApp::InitInstance()
 
 	m_s.ParseCommandLine(m_cmdln);
 
-	if(m_s.nCLSwitches&(CLSW_HELP|CLSW_UNRECOGNIZEDSWITCH))
+	if (pref->GetIntVar(INTVAR_CL_SWITCHES)
+    & (CLSW_HELP|CLSW_UNRECOGNIZEDSWITCH))
 	{
-		//if(m_s.nCLSwitches&CLSW_HELP)
+		//if(pref->GetIntVar(INTVAR_CL_SWITCHES) & CLSW_HELP)
 			//ShowCmdlnSwitches();
 
 		return FALSE;
 	}
 
-	if((m_s.nCLSwitches&CLSW_CLOSE) && m_s.slFiles.IsEmpty())
+	if ((pref->GetIntVar(INTVAR_CL_SWITCHES) & CLSW_CLOSE)
+    && m_s.slFiles.IsEmpty())
 	{
 		return FALSE;
 	}
@@ -2266,7 +2272,7 @@ BOOL CMPlayerCApp::InitInstance()
 		m_pDirect3DCreate9Ex = NULL;
 
 	m_s.UpdateData(false);
-	if (m_s.nCLSwitches & CLSW_ADMINOPTION)
+	if (pref->GetIntVar(INTVAR_CL_SWITCHES) & CLSW_ADMINOPTION)
 	{
 		switch (m_s.iAdminOption)
 		{
@@ -2297,7 +2303,8 @@ BOOL CMPlayerCApp::InitInstance()
 		
 	}
 
-	if((m_s.nCLSwitches&CLSW_REGEXTVID) || (m_s.nCLSwitches&CLSW_REGEXTAUD))
+	if ((pref->GetIntVar(INTVAR_CL_SWITCHES) & CLSW_REGEXTVID)
+    || (pref->GetIntVar(INTVAR_CL_SWITCHES) & CLSW_REGEXTAUD))
 	{
 		CMediaFormats& mf = m_s.Formats;
 
@@ -2313,19 +2320,21 @@ BOOL CMPlayerCApp::InitInstance()
 			int j = 0;
 			CString str = mf[i].GetExtsWithPeriod();
             CString szPerceivedType = mf[i].getPerceivedType();
-			for(CString ext = str.Tokenize(_T(" "), j); !ext.IsEmpty(); ext = str.Tokenize(_T(" "), j))
+			for(CString ext = str.Tokenize(_T(" "), j);
+        !ext.IsEmpty(); ext = str.Tokenize(_T(" "), j))
 			{
-				if(((m_s.nCLSwitches&CLSW_REGEXTVID) && fAudioOnly != 1) || ((m_s.nCLSwitches&CLSW_REGEXTAUD) && fAudioOnly == 0 )) {
-                    
-					CPPageFormats::RegisterExt(ext, true, szPerceivedType);
-				}
+        if (((pref->GetIntVar(INTVAR_CL_SWITCHES)
+          & CLSW_REGEXTVID) && fAudioOnly != 1)
+          || ((pref->GetIntVar(INTVAR_CL_SWITCHES)
+          & CLSW_REGEXTAUD) && fAudioOnly == 0 ))
+          CPPageFormats::RegisterExt(ext, true, szPerceivedType);
 			}
 		}
 
 		return FALSE;
 	}
 	
-	if((m_s.nCLSwitches&CLSW_UNREGEXT))
+	if ((pref->GetIntVar(INTVAR_CL_SWITCHES) & CLSW_UNREGEXT))
 	{
 		CMediaFormats& mf = m_s.Formats;
 
@@ -2359,8 +2368,9 @@ BOOL CMPlayerCApp::InitInstance()
 
 	CString dumpMsg;
 	if(GetLastError() == ERROR_ALREADY_EXISTS
-	&& (!(m_s.fAllowMultipleInst || (m_s.nCLSwitches&CLSW_NEW) || m_cmdln.IsEmpty())
-		|| (m_s.nCLSwitches&CLSW_ADD)))
+	&& (!(m_s.fAllowMultipleInst || (pref->GetIntVar(INTVAR_CL_SWITCHES)
+  & CLSW_NEW) || m_cmdln.IsEmpty())
+  || (pref->GetIntVar(INTVAR_CL_SWITCHES) & CLSW_ADD)))
 	{
 		if(HWND hWnd = ::FindWindow(MPC_WND_CLASS_NAME, NULL))
 		{
@@ -2369,20 +2379,21 @@ BOOL CMPlayerCApp::InitInstance()
 				SetForegroundWindow(hWnd);
 				//AfxMessageBox(_T("5")); 
 
-				if(!(m_s.nCLSwitches&CLSW_MINIMIZED) && IsIconic(hWnd))
-					ShowWindow(hWnd, SW_RESTORE);
+				if (!(pref->GetIntVar(INTVAR_CL_SWITCHES)&CLSW_MINIMIZED)
+          && IsIconic(hWnd))
+          ShowWindow(hWnd, SW_RESTORE);
 
-				if(SendCommandLine(hWnd, true)){
-
+				if(SendCommandLine(hWnd, true))
 					//AfxMessageBox(_T("6"));
-
 					return FALSE;
-				}else{
+				else
+        {
 					//AfxMessageBox(_T("should create dump for that hwnd"));
 					DWORD pId = NULL;
 					DWORD dwTid = GetWindowThreadProcessId(hWnd, &pId);
 					HANDLE deadProcess = OpenProcess( PROCESS_TERMINATE  , false , pId);
-					if(deadProcess){
+					if(deadProcess)
+          {
 						dumpMsg = DebugMiniDumpProcess(deadProcess, pId, dwTid);
 						TerminateProcess(deadProcess, 0);
 						CloseHandle(deadProcess);
@@ -2395,7 +2406,7 @@ BOOL CMPlayerCApp::InitInstance()
 
 
 	
-	if(!__super::InitInstance())
+	if (!__super::InitInstance())
 	{
 		AfxMessageBox(_T("InitInstance failed!"));
 		return FALSE;
@@ -2409,10 +2420,12 @@ BOOL CMPlayerCApp::InitInstance()
 
 	
 	CRegKey key;
-	if(ERROR_SUCCESS == key.Create(HKEY_LOCAL_MACHINE, CString(L"Software\\SPlayer\\")+ResStr(IDR_MAINFRAME)))
+	if(ERROR_SUCCESS == key.Create(HKEY_LOCAL_MACHINE,
+    CString(L"Software\\SPlayer\\")+ResStr(IDR_MAINFRAME)))
 	{
 		CString path;
-		GetModuleFileName(AfxGetInstanceHandle(), path.GetBuffer(MAX_PATH), MAX_PATH);
+		GetModuleFileName(AfxGetInstanceHandle(),
+      path.GetBuffer(MAX_PATH), MAX_PATH);
 		path.ReleaseBuffer();
 		key.SetStringValue(_T("ExePath"), path);
 	}
@@ -2420,12 +2433,15 @@ BOOL CMPlayerCApp::InitInstance()
 	AfxEnableControlContainer();
 	CMainFrame* pFrame = new CMainFrame;
 	m_pMainWnd = pFrame;
-	pFrame->LoadFrame(IDR_MAINFRAME, WS_OVERLAPPEDWINDOW|FWS_ADDTOTITLE, NULL, NULL);
-	pFrame->SetDefaultWindowRect((m_s.nCLSwitches&CLSW_MONITOR)?m_s.iMonitor:0);
+	pFrame->LoadFrame(IDR_MAINFRAME, WS_OVERLAPPEDWINDOW
+    | FWS_ADDTOTITLE, NULL, NULL);
+	pFrame->SetDefaultWindowRect((pref->GetIntVar(INTVAR_CL_SWITCHES)
+    & CLSW_MONITOR) ? m_s.iMonitor : 0);
 	pFrame->RestoreFloatingControlBars();
 	pFrame->SetIcon(AfxGetApp()->LoadIcon(IDR_MAINFRAME), TRUE);
 	pFrame->DragAcceptFiles();
-	pFrame->ShowWindow((m_s.nCLSwitches&CLSW_MINIMIZED)?SW_SHOWMINIMIZED:SW_SHOW);
+	pFrame->ShowWindow((pref->GetIntVar(INTVAR_CL_SWITCHES)
+    & CLSW_MINIMIZED) ? SW_SHOWMINIMIZED : SW_SHOW);
 	pFrame->UpdateWindow();
 	pFrame->m_hAccelTable = m_s.hAccel;
 
@@ -4633,35 +4649,36 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		}
 
 */
-		CString szDefaultShaders = _T("");
-		if(useGPUAcel){
-			//szDefaultShaders = ResStr(IDF_SHADER_LEVELS);
-		}
-		strShaderList	= pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SHADERLIST), szDefaultShaders);
+    CString szDefaultShaders = _T("");
+    if(useGPUAcel){
+      //szDefaultShaders = ResStr(IDF_SHADER_LEVELS);
+    }
+    strShaderList	= pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SHADERLIST), szDefaultShaders);
 
-		// TODO: sort shaders by label
+    // TODO: sort shaders by label
 
-		m_shadercombine = pApp->GetProfileString(_T("Shaders"), _T("Combine"), _T(""));
+    m_shadercombine = pApp->GetProfileString(_T("Shaders"), _T("Combine"), _T(""));
 
-		if(bUserAeroUI()){
-			m_lTransparentToolbarPosOffset = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_TRANSPARENTTOOLBARPOSOFFSET)+_T("2"), 0);
-			m_lTransparentToolbarPosSavedOffset = m_lTransparentToolbarPosOffset;
-		}
+    if(bUserAeroUI()){
+      m_lTransparentToolbarPosOffset = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_TRANSPARENTTOOLBARPOSOFFSET)+_T("2"), 0);
+      m_lTransparentToolbarPosSavedOffset = m_lTransparentToolbarPosOffset;
+    }
 
-		if(nCLSwitches & CLSW_HTPCMODE){
-			launchfullscreen = 1;
-			htpcmode = 1;
-		
-		}else{
-			//launchfullscreen = 0;
-			htpcmode = 0;
-		}
+    if(PlayerPreference::GetInstance()->GetIntVar(INTVAR_CL_SWITCHES)
+      & CLSW_HTPCMODE)
+    {
+      launchfullscreen = 1;
+      htpcmode = 1;
+    }
+    else
+      //launchfullscreen = 0;
+      htpcmode = 0;
 
-        if(nCLSwitches & CLSW_STARTFULL){
-            startAsFullscreen = 1;
-        }else{
-            startAsFullscreen = 0;
-        }
+    if (PlayerPreference::GetInstance()->GetIntVar(INTVAR_CL_SWITCHES)
+      & CLSW_STARTFULL)
+      startAsFullscreen = 1;
+    else
+      startAsFullscreen = 0;
 
 		fInitialized = true;
 	}
@@ -4669,78 +4686,155 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 
 void CMPlayerCApp::Settings::ParseCommandLine(CAtlList<CString>& cmdln)
 {
-	nCLSwitches = 0;
-	//SVP_LogMsg5(L"cls reset");
-	slFiles.RemoveAll();
-	slDubs.RemoveAll();
-	slSubs.RemoveAll();
-	slFilters.RemoveAll();
-	rtStart = 0;
-	fixedWindowSize.SetSize(0, 0);
-	iMonitor = 0;
-	bGenUIINIOnExit = false;
-	if(launchfullscreen) nCLSwitches |= CLSW_FULLSCREEN;
+  PlayerPreference* pref = PlayerPreference::GetInstance();
+  pref->SetIntVar(INTVAR_CL_SWITCHES, 0);
+  //SVP_LogMsg5(L"cls reset");
+  slFiles.RemoveAll();
+  slDubs.RemoveAll();
+  slSubs.RemoveAll();
+  slFilters.RemoveAll();
+  rtStart = 0;
+  fixedWindowSize.SetSize(0, 0);
+  iMonitor = 0;
+  bGenUIINIOnExit = false;
+  if (launchfullscreen)
+    pref->SetIntVar(INTVAR_CL_SWITCHES,
+      pref->GetIntVar(INTVAR_CL_SWITCHES) | CLSW_FULLSCREEN);
 
-	POSITION pos = cmdln.GetHeadPosition();
-	while(pos)
-	{
-		CString param = cmdln.GetNext(pos);
-		if(param.IsEmpty()) continue;
+  POSITION pos = cmdln.GetHeadPosition();
+  while(pos)
+  {
+    CString param = cmdln.GetNext(pos);
+    if(param.IsEmpty()) continue;
 
-		if((param[0] == '-' || param[0] == '/') && param.GetLength() > 1)
-		{
-			CString sw = param.Mid(1).MakeLower();
-			if(sw == _T("open")) nCLSwitches |= CLSW_OPEN;
-			else if(sw == _T("play")) nCLSwitches |= CLSW_PLAY;
-			else if(sw == _T("fullscreen")) nCLSwitches |= CLSW_FULLSCREEN;
-            else if(sw == _T("startfull")) nCLSwitches |= CLSW_STARTFULL;
-			else if(sw == _T("minimized")) nCLSwitches |= CLSW_MINIMIZED;
-			else if(sw == _T("new")) nCLSwitches |= CLSW_NEW;
-			else if(sw == _T("help") || sw == _T("h") || sw == _T("?")) nCLSwitches |= CLSW_HELP;
-			else if(sw == _T("dub") && pos) slDubs.AddTail(cmdln.GetNext(pos));
-			else if(sw == _T("sub") && pos) slSubs.AddTail(cmdln.GetNext(pos));
-			else if(sw == _T("filter") && pos) slFilters.AddTail(cmdln.GetNext(pos));
-			else if(sw == _T("dvd")) nCLSwitches |= CLSW_DVD;
-			else if(sw == _T("cd")) nCLSwitches |= CLSW_CD;
-			else if(sw == _T("add")) nCLSwitches |= CLSW_ADD;
-			else if(sw == _T("cap")) nCLSwitches |= CLSW_CAP;
-			else if(sw == _T("regvid")) nCLSwitches |= CLSW_REGEXTVID;
-			else if(sw == _T("regaud")) nCLSwitches |= CLSW_REGEXTAUD;
-			else if(sw == _T("unregall")) nCLSwitches |= CLSW_UNREGEXT;
-			else if(sw == _T("unregvid")) nCLSwitches |= CLSW_UNREGEXT; /* keep for compatibility with old versions */
-			else if(sw == _T("unregaud")) nCLSwitches |= CLSW_UNREGEXT; /* keep for compatibility with old versions */
-			else if(sw == _T("start") && pos) {rtStart = 10000i64*_tcstol(cmdln.GetNext(pos), NULL, 10); nCLSwitches |= CLSW_STARTVALID;}
-			else if(sw == _T("startpos") && pos) {/* TODO: mm:ss. */;}
-			else if(sw == _T("nofocus")) nCLSwitches |= CLSW_NOFOCUS;
-			else if(sw == _T("close")) nCLSwitches |= CLSW_CLOSE;
-			else if(sw == _T("standby")) nCLSwitches |= CLSW_STANDBY;
-			else if(sw == _T("hibernate")) nCLSwitches |= CLSW_HIBERNATE;
-			else if(sw == _T("shutdown")) nCLSwitches |= CLSW_SHUTDOWN;
-			else if(sw == _T("fromdmp")) { nCLSwitches |= CLSW_STARTFROMDMP; /*SVP_LogMsg5(L"dmpfrom %x", nCLSwitches);*/}
-			else if(sw == _T("htpc")) { nCLSwitches |= CLSW_HTPCMODE|CLSW_FULLSCREEN; }
-			else if(sw == _T("logoff")) nCLSwitches |= CLSW_LOGOFF;
-			else if(sw == _T("genui")) {nCLSwitches |= CLSW_GENUIINI;bGenUIINIOnExit = true; }
-			else if(sw == _T("adminoption")) { nCLSwitches |= CLSW_ADMINOPTION; iAdminOption = _ttoi (cmdln.GetNext(pos)); }
-			else if(sw == _T("fixedsize") && pos)
-			{
-				CAtlList<CString> sl;
-				Explode(cmdln.GetNext(pos), sl, ',', 2);
-				if(sl.GetCount() == 2)
-				{
-					fixedWindowSize.SetSize(_ttol(sl.GetHead()), _ttol(sl.GetTail()));
-					if(fixedWindowSize.cx > 0 && fixedWindowSize.cy > 0)
-						nCLSwitches |= CLSW_FIXEDSIZE;
-				}
-			}
-			else if(sw == _T("monitor") && pos) {iMonitor = _tcstol(cmdln.GetNext(pos), NULL, 10); nCLSwitches |= CLSW_MONITOR;}
-			else nCLSwitches |= CLSW_HELP|CLSW_UNRECOGNIZEDSWITCH;
-		}
-		else
-		{
-			slFiles.AddTail(param);
-		}
-	}
-	//SVP_LogMsg5(L"cls end %x", nCLSwitches);
+    if((param[0] == '-' || param[0] == '/') && param.GetLength() > 1)
+    {
+      CString sw = param.Mid(1).MakeLower();
+      if (sw == _T("open"))
+        pref->SetIntVar(INTVAR_CL_SWITCHES,
+          pref->GetIntVar(INTVAR_CL_SWITCHES) | CLSW_OPEN);
+      else if (sw == _T("play"))
+        pref->SetIntVar(INTVAR_CL_SWITCHES,
+          pref->GetIntVar(INTVAR_CL_SWITCHES) | CLSW_PLAY);
+      else if (sw == _T("fullscreen"))
+        pref->SetIntVar(INTVAR_CL_SWITCHES,
+          pref->GetIntVar(INTVAR_CL_SWITCHES) | CLSW_FULLSCREEN);
+      else if (sw == _T("startfull"))
+        pref->SetIntVar(INTVAR_CL_SWITCHES,
+          pref->GetIntVar(INTVAR_CL_SWITCHES) | CLSW_STARTFULL);
+      else if (sw == _T("minimized"))
+        pref->SetIntVar(INTVAR_CL_SWITCHES,
+          pref->GetIntVar(INTVAR_CL_SWITCHES) | CLSW_MINIMIZED);
+      else if (sw == _T("new"))
+        pref->SetIntVar(INTVAR_CL_SWITCHES,
+          pref->GetIntVar(INTVAR_CL_SWITCHES) | CLSW_NEW);
+      else if (sw == _T("help") || sw == _T("h") || sw == _T("?"))
+        pref->SetIntVar(INTVAR_CL_SWITCHES,
+          pref->GetIntVar(INTVAR_CL_SWITCHES) | CLSW_HELP);
+      else if (sw == _T("dub") && pos) slDubs.AddTail(cmdln.GetNext(pos));
+      else if (sw == _T("sub") && pos) slSubs.AddTail(cmdln.GetNext(pos));
+      else if (sw == _T("filter") && pos) slFilters.AddTail(cmdln.GetNext(pos));
+      else if (sw == _T("dvd"))
+        pref->SetIntVar(INTVAR_CL_SWITCHES,
+          pref->GetIntVar(INTVAR_CL_SWITCHES) | CLSW_DVD);
+      else if (sw == _T("cd"))
+        pref->SetIntVar(INTVAR_CL_SWITCHES,
+          pref->GetIntVar(INTVAR_CL_SWITCHES) | CLSW_CD);
+      else if (sw == _T("add"))
+        pref->SetIntVar(INTVAR_CL_SWITCHES,
+          pref->GetIntVar(INTVAR_CL_SWITCHES) | CLSW_ADD);
+      else if (sw == _T("cap"))
+        pref->SetIntVar(INTVAR_CL_SWITCHES,
+          pref->GetIntVar(INTVAR_CL_SWITCHES) | CLSW_CAP);
+      else if (sw == _T("regvid"))
+        pref->SetIntVar(INTVAR_CL_SWITCHES,
+          pref->GetIntVar(INTVAR_CL_SWITCHES) | CLSW_REGEXTVID);
+      else if (sw == _T("regaud"))
+        pref->SetIntVar(INTVAR_CL_SWITCHES,
+          pref->GetIntVar(INTVAR_CL_SWITCHES) | CLSW_REGEXTAUD);
+      else if (sw == _T("unregall"))
+        pref->SetIntVar(INTVAR_CL_SWITCHES,
+          pref->GetIntVar(INTVAR_CL_SWITCHES) | CLSW_UNREGEXT);
+      else if (sw == _T("unregvid"))
+        pref->SetIntVar(INTVAR_CL_SWITCHES,
+          pref->GetIntVar(INTVAR_CL_SWITCHES) | CLSW_UNREGEXT);
+          /* keep for compatibility with old versions */
+      else if (sw == _T("unregaud"))
+        pref->SetIntVar(INTVAR_CL_SWITCHES,
+          pref->GetIntVar(INTVAR_CL_SWITCHES) | CLSW_UNREGEXT);
+          /* keep for compatibility with old versions */
+      else if (sw == _T("start") && pos)
+      {
+        rtStart = 10000i64*_tcstol(cmdln.GetNext(pos), NULL, 10);
+        pref->SetIntVar(INTVAR_CL_SWITCHES,
+          pref->GetIntVar(INTVAR_CL_SWITCHES) | CLSW_STARTVALID);
+      }
+      else if (sw == _T("startpos") && pos) {/* TODO: mm:ss. */;}
+      else if (sw == _T("nofocus"))
+        pref->SetIntVar(INTVAR_CL_SWITCHES,
+          pref->GetIntVar(INTVAR_CL_SWITCHES) | CLSW_NOFOCUS);
+      else if (sw == _T("close"))
+        pref->SetIntVar(INTVAR_CL_SWITCHES,
+          pref->GetIntVar(INTVAR_CL_SWITCHES) | CLSW_CLOSE);
+      else if (sw == _T("standby"))
+        pref->SetIntVar(INTVAR_CL_SWITCHES,
+          pref->GetIntVar(INTVAR_CL_SWITCHES) | CLSW_STANDBY);
+      else if (sw == _T("hibernate"))
+        pref->SetIntVar(INTVAR_CL_SWITCHES,
+          pref->GetIntVar(INTVAR_CL_SWITCHES) | CLSW_HIBERNATE);
+      else if (sw == _T("shutdown"))
+        pref->SetIntVar(INTVAR_CL_SWITCHES,
+          pref->GetIntVar(INTVAR_CL_SWITCHES) | CLSW_SHUTDOWN);
+      else if (sw == _T("fromdmp"))
+        pref->SetIntVar(INTVAR_CL_SWITCHES,
+          pref->GetIntVar(INTVAR_CL_SWITCHES) | CLSW_STARTFROMDMP);
+        /*SVP_LogMsg5(L"dmpfrom %x", pref->GetIntVar(INTVAR_CL_SWITCHES));*/
+      else if (sw == _T("htpc"))
+        pref->SetIntVar(INTVAR_CL_SWITCHES,
+          pref->GetIntVar(INTVAR_CL_SWITCHES) | CLSW_HTPCMODE|CLSW_FULLSCREEN);
+      else if (sw == _T("logoff"))
+        pref->SetIntVar(INTVAR_CL_SWITCHES,
+          pref->GetIntVar(INTVAR_CL_SWITCHES) | CLSW_LOGOFF);
+      else if (sw == _T("genui"))
+      {
+        pref->SetIntVar(INTVAR_CL_SWITCHES,
+          pref->GetIntVar(INTVAR_CL_SWITCHES) | CLSW_GENUIINI);
+        bGenUIINIOnExit = true;
+      }
+      else if (sw == _T("adminoption"))
+      {
+        pref->SetIntVar(INTVAR_CL_SWITCHES,
+          pref->GetIntVar(INTVAR_CL_SWITCHES) | CLSW_ADMINOPTION);
+        iAdminOption = _ttoi (cmdln.GetNext(pos));
+      }
+      else if (sw == _T("fixedsize") && pos)
+      {
+        CAtlList<CString> sl;
+        Explode(cmdln.GetNext(pos), sl, ',', 2);
+        if (sl.GetCount() == 2)
+        {
+          fixedWindowSize.SetSize(_ttol(sl.GetHead()), _ttol(sl.GetTail()));
+          if(fixedWindowSize.cx > 0 && fixedWindowSize.cy > 0)
+            pref->SetIntVar(INTVAR_CL_SWITCHES,
+              pref->GetIntVar(INTVAR_CL_SWITCHES) | CLSW_FIXEDSIZE);
+        }
+      }
+      else if (sw == _T("monitor") && pos)
+      {
+        iMonitor = _tcstol(cmdln.GetNext(pos), NULL, 10);
+        pref->SetIntVar(INTVAR_CL_SWITCHES,
+          pref->GetIntVar(INTVAR_CL_SWITCHES) | CLSW_MONITOR);
+      }
+      else
+        pref->SetIntVar(INTVAR_CL_SWITCHES,
+          pref->GetIntVar(INTVAR_CL_SWITCHES) | CLSW_HELP|CLSW_UNRECOGNIZEDSWITCH);
+    }
+    else
+    {
+      slFiles.AddTail(param);
+    }
+  }
+  //SVP_LogMsg5(L"cls end %x", pref->GetIntVar(INTVAR_CL_SWITCHES));
 }
 
 // Retrieve an integer value from INI file or registry.

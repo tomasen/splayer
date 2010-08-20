@@ -367,7 +367,7 @@ public:
 
 	public:
 		// cmdline params
-		int nCLSwitches;
+		//int nCLSwitches;
 		BOOL bGenUIINIOnExit;
 		CAtlList<CString> slFiles, slDubs, slSubs, slFilters;
 		__int64 rtStart;

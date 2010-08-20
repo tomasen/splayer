@@ -2411,6 +2411,18 @@
 				RelativePath=".\Controller\LazyInstance.h"
 				>
 			</File>
+			<File
+				RelativePath=".\Controller\PlayerPreference.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Controller\PlayerPreference.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Controller\SPlayerDefs.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Model"

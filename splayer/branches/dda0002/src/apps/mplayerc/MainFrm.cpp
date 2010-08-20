@@ -36,6 +36,8 @@
 #include "..\..\..\lib\ATL Server\include\atlrx.h"
 #include <atlsync.h>
 
+#include "Controller/PlayerPreference.h"
+#include "Controller/SplayerDefs.h"
 #include "OpenFileDlg.h"
 #include "OpenDlg.h"
 #include "OpenURLDlg.h"
@@ -2991,35 +2993,34 @@ static bool SetShutdownPrivilege()
 
 bool CMainFrame::DoAfterPlaybackEvent()
 {
-	AppSettings& s = AfxGetAppSettings();
-
 	OnFavoritesAddReal(TRUE, TRUE);
 	bool fExit = false;
 
-	if(s.nCLSwitches&CLSW_CLOSE)
+  PlayerPreference* pref = PlayerPreference::GetInstance();
+  if (pref->GetIntVar(INTVAR_CL_SWITCHES) & CLSW_CLOSE)
 	{
 		fExit = true;
 	}
 	
-	if(s.nCLSwitches&CLSW_STANDBY)
+	if(pref->GetIntVar(INTVAR_CL_SWITCHES) & CLSW_STANDBY)
 	{
 		SetShutdownPrivilege();
 		SetSystemPowerState(TRUE, TRUE);
 		fExit = true; // TODO: unless the app closes, it will call standby or hibernate once again forever, how to avoid that?
 	}
-	else if(s.nCLSwitches&CLSW_HIBERNATE)
+	else if(pref->GetIntVar(INTVAR_CL_SWITCHES) & CLSW_HIBERNATE)
 	{
 		SetShutdownPrivilege();
 		SetSystemPowerState(FALSE, TRUE);
 		fExit = true; // TODO: unless the app closes, it will call standby or hibernate once again forever, how to avoid that?
 	}
-	else if(s.nCLSwitches&CLSW_SHUTDOWN)
+	else if(pref->GetIntVar(INTVAR_CL_SWITCHES) & CLSW_SHUTDOWN)
 	{
 		SetShutdownPrivilege();
 		ExitWindowsEx(EWX_SHUTDOWN|EWX_POWEROFF|EWX_FORCEIFHUNG, 0);
 		fExit = true;
 	}
-	else if(s.nCLSwitches&CLSW_LOGOFF)
+	else if(pref->GetIntVar(INTVAR_CL_SWITCHES) & CLSW_LOGOFF)
 	{
 		SetShutdownPrivilege();
 		ExitWindowsEx(EWX_LOGOFF|EWX_FORCEIFHUNG, 0);
@@ -3153,7 +3154,9 @@ LRESULT CMainFrame::OnGraphNotify(WPARAM wParam, LPARAM lParam)
 
 						if(s.fRewind)
 						{
-							AfxGetAppSettings().nCLSwitches |= CLSW_OPEN; // HACK
+              PlayerPreference::GetInstance()->SetIntVar(INTVAR_CL_SWITCHES,
+                PlayerPreference::GetInstance()->GetIntVar(INTVAR_CL_SWITCHES)
+                | CLSW_OPEN);
 							PostMessage(WM_COMMAND, ID_NAVIGATE_SKIPFORWARD);
 						}
 						else
@@ -3302,7 +3305,8 @@ LRESULT CMainFrame::OnGraphNotify(WPARAM wParam, LPARAM lParam)
 			m_fAudioOnly = (size.cx <= 0 || size.cy <= 0);
 
 			if(AfxGetAppSettings().fRememberZoomLevel
-			&& !(m_fFullScreen || wp.showCmd == SW_SHOWMAXIMIZED || wp.showCmd == SW_SHOWMINIMIZED))
+			&& !(m_fFullScreen || wp.showCmd == SW_SHOWMAXIMIZED
+      || wp.showCmd == SW_SHOWMINIMIZED))
 			{
 				ZoomVideoWindow();
 			}
@@ -3312,11 +3316,14 @@ LRESULT CMainFrame::OnGraphNotify(WPARAM wParam, LPARAM lParam)
 			}
 
 			if(m_iMediaLoadState == MLS_LOADED
-			&& !m_fAudioOnly && (AfxGetAppSettings().nCLSwitches&CLSW_FULLSCREEN))
+			&& !m_fAudioOnly && (PlayerPreference::GetInstance()->
+      GetIntVar(INTVAR_CL_SWITCHES) & CLSW_FULLSCREEN))
 			{
 				PostMessage(WM_COMMAND, ID_VIEW_FULLSCREEN);
-				AfxGetAppSettings().nCLSwitches &= ~CLSW_FULLSCREEN;
-			}
+        PlayerPreference::GetInstance()->SetIntVar(INTVAR_CL_SWITCHES,
+          PlayerPreference::GetInstance()->GetIntVar(INTVAR_CL_SWITCHES)
+          & ~CLSW_FULLSCREEN);
+      }
 		}
 		else if(EC_LENGTH_CHANGED == evCode)
 		{
@@ -4511,6 +4518,7 @@ void CMainFrame::OnFilePostOpenmedia()
 	OpenSetupCaptureBar();
 
 	AppSettings& s = AfxGetAppSettings();
+  PlayerPreference* pref = PlayerPreference::GetInstance();
 	m_wndColorControlBar.CheckAbility();
 
 	if(m_wndToolBar.IsVisible())
@@ -4557,10 +4565,12 @@ void CMainFrame::OnFilePostOpenmedia()
 		}
 	}
 
-	if(!m_fAudioOnly && (s.nCLSwitches&CLSW_FULLSCREEN))
+	if(!m_fAudioOnly && (pref->GetIntVar(INTVAR_CL_SWITCHES)
+    & CLSW_FULLSCREEN))
 	{
 		SendMessage(WM_COMMAND, ID_VIEW_FULLSCREEN);
-		s.nCLSwitches &= ~CLSW_FULLSCREEN;
+    pref->SetIntVar(INTVAR_CL_SWITCHES,
+      pref->GetIntVar(INTVAR_CL_SWITCHES) & ~CLSW_FULLSCREEN);
 	}
 
 	m_bDxvaInUse = false;
@@ -5226,6 +5236,7 @@ BOOL CMainFrame::OnCopyData(CWnd* pWnd, COPYDATASTRUCT* pCDS)
 	}
 
 	AppSettings& s = AfxGetAppSettings();
+  PlayerPreference* pref = PlayerPreference::GetInstance();
 
 	s.ParseCommandLine(cmdln);
 
@@ -5284,40 +5295,48 @@ BOOL CMainFrame::OnCopyData(CWnd* pWnd, COPYDATASTRUCT* pCDS)
 
 	bool fSetForegroundWindow = false;
 
-	if(s.nCLSwitches&CLSW_CAP) {
+	if (pref->GetIntVar(INTVAR_CL_SWITCHES) & CLSW_CAP)
+  {
 		SendMessage(WM_COMMAND, ID_FILE_CLOSEMEDIA);
 		fSetForegroundWindow = true;
 		COpenCapDeviceDlg capdlg;
 		if(capdlg.DoModal() == IDOK){
 			
 			CAutoPtr<OpenDeviceData> p(new OpenDeviceData());
-			if(p) {p->DisplayName[0] = capdlg.m_vidstr; p->DisplayName[1] = capdlg.m_audstr;}
+			if (p)
+      {
+        p->DisplayName[0] = capdlg.m_vidstr;
+        p->DisplayName[1] = capdlg.m_audstr;
+      }
 			OpenMedia(p);
 		}
-	}else if((s.nCLSwitches&CLSW_DVD) && !s.slFiles.IsEmpty())
+	}
+  else if (pref->GetIntVar(INTVAR_CL_SWITCHES) && !s.slFiles.IsEmpty())
 	{
 		SendMessage(WM_COMMAND, ID_FILE_CLOSEMEDIA);
 		fSetForegroundWindow = true;
-
 		CAutoPtr<OpenDVDData> p(new OpenDVDData());
-		if(p) {p->path = s.slFiles.GetHead(); p->subs.AddTailList(&s.slSubs);}
+		if (p)
+    {
+      p->path = s.slFiles.GetHead();
+      p->subs.AddTailList(&s.slSubs);
+    }
 		OpenMedia(p);
 	}
-	else if(s.nCLSwitches&CLSW_CD)
+	else if (pref->GetIntVar(INTVAR_CL_SWITCHES) & CLSW_CD)
 	{
 		SendMessage(WM_COMMAND, ID_FILE_CLOSEMEDIA);
 		fSetForegroundWindow = true;
 
 		CAtlList<CString> sl;
 
-		if(!s.slFiles.IsEmpty())
-		{
+		if (!s.slFiles.IsEmpty())
 			GetCDROMType(s.slFiles.GetHead()[0], sl);
-		}
 		else
 		{
 			CString dir;
-			dir.ReleaseBufferSetLength(GetCurrentDirectory(MAX_PATH, dir.GetBuffer(MAX_PATH)));
+			dir.ReleaseBufferSetLength(GetCurrentDirectory(MAX_PATH,
+        dir.GetBuffer(MAX_PATH)));
 
 			GetCDROMType(dir[0], sl);			
 
@@ -5338,11 +5357,12 @@ BOOL CMainFrame::OnCopyData(CWnd* pWnd, COPYDATASTRUCT* pCDS)
 		sl.AddTailList(&s.slFiles);
 		if(!fMulti) sl.AddTailList(&s.slDubs);
 
-		if((s.nCLSwitches&CLSW_ADD) && m_wndPlaylistBar.GetCount() > 0)
+		if ((pref->GetIntVar(INTVAR_CL_SWITCHES) & CLSW_ADD)
+      && m_wndPlaylistBar.GetCount() > 0)
 		{
 			m_wndPlaylistBar.Append(sl, fMulti, &s.slSubs);
 
- 			if(s.nCLSwitches&(CLSW_OPEN|CLSW_PLAY))
+ 			if (pref->GetIntVar(INTVAR_CL_SWITCHES) & (CLSW_OPEN|CLSW_PLAY))
 			{
 				m_wndPlaylistBar.SetLast();
 				OpenCurPlaylistItem();
@@ -5354,22 +5374,24 @@ BOOL CMainFrame::OnCopyData(CWnd* pWnd, COPYDATASTRUCT* pCDS)
 			fSetForegroundWindow = true;
 			
 			m_wndPlaylistBar.Open(sl, fMulti, &s.slSubs);
-			OpenCurPlaylistItem((s.nCLSwitches&CLSW_STARTVALID) ? s.rtStart : 0);
-			
+			OpenCurPlaylistItem((pref->GetIntVar(INTVAR_CL_SWITCHES)
+        & CLSW_STARTVALID) ? s.rtStart : 0);
 
-			s.nCLSwitches &= ~CLSW_STARTVALID;
+      pref->SetIntVar(INTVAR_CL_SWITCHES,
+        pref->GetIntVar(INTVAR_CL_SWITCHES) & ~CLSW_STARTVALID);
 			s.rtStart = 0;
 		}
 	}
 	else
-	{
-		s.nCLSwitches = CLSW_NONE;
-	}
 
-	if(fSetForegroundWindow && !(s.nCLSwitches&CLSW_NOFOCUS))
+		pref->SetIntVar(INTVAR_CL_SWITCHES, CLSW_NONE);
+
+	if(fSetForegroundWindow
+    && !(pref->GetIntVar(INTVAR_CL_SWITCHES) & CLSW_NOFOCUS))
 		SetForegroundWindow();
 
-	s.nCLSwitches &= ~CLSW_NOFOCUS;
+  pref->SetIntVar(INTVAR_CL_SWITCHES,
+    pref->GetIntVar(INTVAR_CL_SWITCHES) & ~CLSW_NOFOCUS);
 
 	return TRUE;
 }
@@ -8734,34 +8756,62 @@ void CMainFrame::OnUpdatePlayVolumeBoost(CCmdUI* pCmdUI)
 
 void CMainFrame::OnAfterplayback(UINT nID)
 {
-	AppSettings& s = AfxGetAppSettings();
+	PlayerPreference* pref = PlayerPreference::GetInstance();
 
-	s.nCLSwitches &= ~CLSW_AFTERPLAYBACK_MASK;
+  pref->SetIntVar(INTVAR_CL_SWITCHES,
+    pref->GetIntVar(INTVAR_CL_SWITCHES) & ~CLSW_AFTERPLAYBACK_MASK);
 
 	switch(nID)
 	{
-	case ID_AFTERPLAYBACK_CLOSE: s.nCLSwitches |= CLSW_CLOSE; break;
-	case ID_AFTERPLAYBACK_STANDBY: s.nCLSwitches |= CLSW_STANDBY; break;
-	case ID_AFTERPLAYBACK_HIBERNATE: s.nCLSwitches |= CLSW_HIBERNATE; break;
-	case ID_AFTERPLAYBACK_SHUTDOWN: s.nCLSwitches |= CLSW_SHUTDOWN; break;
-	case ID_AFTERPLAYBACK_LOGOFF: s.nCLSwitches |= CLSW_LOGOFF; break;
+	case ID_AFTERPLAYBACK_CLOSE:
+    pref->SetIntVar(INTVAR_CL_SWITCHES,
+      pref->GetIntVar(INTVAR_CL_SWITCHES) | CLSW_CLOSE);
+    break;
+	case ID_AFTERPLAYBACK_STANDBY:
+    pref->SetIntVar(INTVAR_CL_SWITCHES,
+      pref->GetIntVar(INTVAR_CL_SWITCHES) | CLSW_STANDBY);
+    break;
+	case ID_AFTERPLAYBACK_HIBERNATE:
+    pref->SetIntVar(INTVAR_CL_SWITCHES,
+      pref->GetIntVar(INTVAR_CL_SWITCHES) | CLSW_HIBERNATE);
+    break;
+	case ID_AFTERPLAYBACK_SHUTDOWN:
+    pref->SetIntVar(INTVAR_CL_SWITCHES,
+      pref->GetIntVar(INTVAR_CL_SWITCHES) | CLSW_SHUTDOWN);
+    break;
+	case ID_AFTERPLAYBACK_LOGOFF:
+    pref->SetIntVar(INTVAR_CL_SWITCHES,
+      pref->GetIntVar(INTVAR_CL_SWITCHES) | CLSW_LOGOFF);
+    break;
 	}	
 }
 
 void CMainFrame::OnUpdateAfterplayback(CCmdUI* pCmdUI)
 {
-	AppSettings& s = AfxGetAppSettings();
+  PlayerPreference* pref = PlayerPreference::GetInstance();
 
 	bool fChecked = false;
 
 	switch(pCmdUI->m_nID)
 	{
-	case ID_AFTERPLAYBACK_CLOSE: fChecked = !!(s.nCLSwitches & CLSW_CLOSE); break;
-	case ID_AFTERPLAYBACK_STANDBY: fChecked = !!(s.nCLSwitches & CLSW_STANDBY); break;
-	case ID_AFTERPLAYBACK_HIBERNATE: fChecked = !!(s.nCLSwitches & CLSW_HIBERNATE); break;
-	case ID_AFTERPLAYBACK_SHUTDOWN: fChecked = !!(s.nCLSwitches & CLSW_SHUTDOWN); break;
-	case ID_AFTERPLAYBACK_LOGOFF: fChecked = !!(s.nCLSwitches & CLSW_LOGOFF); break;
-	case ID_AFTERPLAYBACK_DONOTHING: fChecked = !(s.nCLSwitches & CLSW_AFTERPLAYBACK_MASK); break;
+	case ID_AFTERPLAYBACK_CLOSE:
+    fChecked = !!(pref->GetIntVar(INTVAR_CL_SWITCHES) & CLSW_CLOSE);
+    break;
+	case ID_AFTERPLAYBACK_STANDBY:
+    fChecked = !!(pref->GetIntVar(INTVAR_CL_SWITCHES) & CLSW_STANDBY);
+    break;
+	case ID_AFTERPLAYBACK_HIBERNATE:
+    fChecked = !!(pref->GetIntVar(INTVAR_CL_SWITCHES) & CLSW_HIBERNATE);
+    break;
+	case ID_AFTERPLAYBACK_SHUTDOWN:
+    fChecked = !!(pref->GetIntVar(INTVAR_CL_SWITCHES) & CLSW_SHUTDOWN);
+    break;
+	case ID_AFTERPLAYBACK_LOGOFF:
+    fChecked = !!(pref->GetIntVar(INTVAR_CL_SWITCHES) & CLSW_LOGOFF);
+    break;
+	case ID_AFTERPLAYBACK_DONOTHING:
+    fChecked = !(pref->GetIntVar(INTVAR_CL_SWITCHES) & CLSW_AFTERPLAYBACK_MASK);
+    break;
 	}
 
 	pCmdUI->SetRadio(fChecked);
@@ -12416,10 +12466,13 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 
 		PostMessage(WM_COMMAND, ID_PLAY_PAUSE);
 
-		if(!(AfxGetAppSettings().nCLSwitches&CLSW_OPEN))
+    PlayerPreference* pref = PlayerPreference::GetInstance();
+
+		if(!(pref->GetIntVar(INTVAR_CL_SWITCHES)
+      & CLSW_OPEN))
 			PostMessage(WM_COMMAND, ID_PLAY_PLAY);
 
-		AfxGetAppSettings().nCLSwitches &= ~CLSW_OPEN;
+    pref->SetIntVar(INTVAR_CL_SWITCHES, pref->GetIntVar(INTVAR_CL_SWITCHES) & ~CLSW_OPEN);
 
 		if(OpenFileData* p = dynamic_cast<OpenFileData*>(pOMD.m_p))
 		{
@@ -12587,7 +12640,9 @@ void CMainFrame::CloseMediaPrivate()
 
 	m_closingmsg = ResStr(IDS_CONTROLS_CLOSED);
 
-	AfxGetAppSettings().nCLSwitches &= CLSW_OPEN|CLSW_PLAY|CLSW_AFTERPLAYBACK_MASK|CLSW_NOFOCUS|CLSW_HTPCMODE;
+  PlayerPreference::GetInstance()->SetIntVar(INTVAR_CL_SWITCHES,
+    PlayerPreference::GetInstance()->GetIntVar(INTVAR_CL_SWITCHES)
+    & CLSW_OPEN|CLSW_PLAY|CLSW_AFTERPLAYBACK_MASK|CLSW_NOFOCUS|CLSW_HTPCMODE);
 
 	m_iMediaLoadState = MLS_CLOSED;
 

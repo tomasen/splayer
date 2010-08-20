@@ -4,6 +4,8 @@
 #include "../../mplayerc.h"
 #include "../../svplib/svplib.h"
 #include "../../Controller/Hotkey_Controller.h"
+#include "../../Controller/PlayerPreference.h"
+#include "../../Controller/SPlayerDefs.h"
 
 BOOL OptionBasicPage::OnInitDialog(HWND hwnd, LPARAM lParam)
 {
@@ -26,6 +28,7 @@ BOOL OptionBasicPage::OnInitDialog(HWND hwnd, LPARAM lParam)
   m_aeroglasscheckbox.Attach(GetDlgItem(IDC_CHECK_AERO));
 
   AppSettings& s = AfxGetAppSettings();
+  PlayerPreference* pref = PlayerPreference::GetInstance();
 
   // retrieve variables from preference
   m_bkgnd = s.logoext?1:0;  // logoext is "use external logo"
@@ -39,7 +42,7 @@ BOOL OptionBasicPage::OnInitDialog(HWND hwnd, LPARAM lParam)
   // s.logostretch 
   // 1 keep aspect ratio
   // 2 stretch to full screen
-  m_autoscalebkgnd = !!(s.logostretch & 1);
+  m_autoscalebkgnd = !!(pref->GetIntVar(INTVAR_LOGO_AUTOSTRETCH) & 1);
   m_useaero = s.bAeroGlass;
   m_repeat = s.fLoopForever;
   m_mintotray = s.fTrayIcon;
@@ -136,7 +139,8 @@ int OptionBasicPage::OnApply()
   s.logoext = m_bkgnd==1?true:false;
   m_userbkgnd_edit.GetWindowText(s.logofn);
 
-  s.logostretch = m_autoscalebkgnd?3:0;
+  PlayerPreference* pref = PlayerPreference::GetInstance();
+  pref->SetIntVar(INTVAR_LOGO_AUTOSTRETCH, m_autoscalebkgnd?3:0);
   s.bAeroGlass = m_useaero;
   s.fLoopForever = m_repeat?true:false;
   s.fTrayIcon = m_mintotray?true:false;

@@ -396,8 +396,8 @@ BOOL CUESettingPanel::OnInitDialog()
 	m_sgi_nobgpic = !s.logoext;
 	m_sgs_custompicfile = s.logofn;
 	m_sgi_custompic = !m_sgi_nobgpic;
-	m_sgi_keepbgar = !!(s.logostretch & 1);
-	m_sgi_bgstrech = !!(s.logostretch & 2);
+// 	m_sgi_keepbgar = !!(s.logostretch & 1);
+// 	m_sgi_bgstrech = !!(s.logostretch & 2);
 	m_sgi_usetranscontrol = s.bTransControl;
 	m_sgi_bDisableCenterBigOpenBmp = s.bDisableCenterBigOpenBmp;
 	m_sgi_useaeroglass = s.bAeroGlass;
@@ -503,11 +503,11 @@ void CUESettingPanel::ApplyAllSetting(){
 		s.logoext = 1;
 		s.logofn = m_sgs_custompicfile;
 	}
-	s.logostretch = 0;
-	if(m_sgi_keepbgar)
-		s.logostretch |= 1;
-	if(m_sgi_bgstrech)
-		s.logostretch |= 2;
+// 	s.logostretch = 0;
+// 	if(m_sgi_keepbgar)
+// 		s.logostretch |= 1;
+// 	if(m_sgi_bgstrech)
+// 		s.logostretch |= 2;
 
 	s.bAeroGlass = m_sgi_useaeroglass;
 	s.bTransControl = m_sgi_usetranscontrol;

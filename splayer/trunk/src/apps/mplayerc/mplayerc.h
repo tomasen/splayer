@@ -632,7 +632,7 @@ public:
 
 		CString logofn;
 		UINT logoid;
-		UINT logostretch;
+//		UINT logostretch;
 		bool logoext;
 
 		BOOL fBUltraFastMode;

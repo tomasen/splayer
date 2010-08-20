@@ -82,8 +82,8 @@ BOOL CPPageLogo::OnInitDialog()
 	m_logofn = s.logofn;
 	m_logoidpos = NULL;
 	
-	m_chkLogoStrech.SetCheck(s.logostretch & 2);
-	m_chkKeepLogoAS.SetCheck(s.logostretch & 1);
+//	m_chkLogoStrech.SetCheck(s.logostretch & 2);
+//	m_chkKeepLogoAS.SetCheck(s.logostretch & 1);
 			
 	UpdateData(FALSE);
 
@@ -112,10 +112,10 @@ BOOL CPPageLogo::OnApply()
 
 	AppSettings& s = AfxGetAppSettings();
 	
-	s.logostretch = m_chkKeepLogoAS.GetCheck()  | m_chkLogoStrech.GetCheck() << 1;
-	if(s.logostretch >= 3 ){
-		s.logostretch = 3;
-	}
+// 	s.logostretch = m_chkKeepLogoAS.GetCheck()  | m_chkLogoStrech.GetCheck() << 1;
+// 	if(s.logostretch >= 3 ){
+// 		s.logostretch = 3;
+// 	}
 	s.logoext = !!m_intext;
 	s.logofn = m_logofn;
 	s.logoid = m_logoids.GetAt(m_logoidpos);

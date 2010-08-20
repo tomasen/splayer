@@ -127,5 +127,6 @@ class CAtlStringMap : public CAtlMap<S, T, CStringElementTraits<S> > {};
 #include <map>
 #include <queue>
 #include <list>
+#include <set>
 
 #endif // !defined(AFX_STDAFX_H__C76533D6_6242_4BEB_8FD3_C6BE58F07224__INCLUDED_)

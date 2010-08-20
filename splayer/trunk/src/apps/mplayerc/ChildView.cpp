@@ -28,6 +28,9 @@
 #include "MainFrm.h"
 #include "libpng.h"
 #include "..\..\svplib\SVPToolBox.h"
+#include "Controller\PlayerPreference.h"
+#include "Controller\SPlayerDefs.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -354,6 +357,7 @@ void CChildView::OnPaint()
 
 			CRect r;
 			GetClientRect(r);
+      PlayerPreference* pref = PlayerPreference::GetInstance();
 			/*
 			if( s.logostretch == 1){ // 保持宽高  不缩放
 							int w = min(bm.bmWidth, r.Width());
@@ -362,9 +366,9 @@ void CChildView::OnPaint()
 							int y = (r.Height() - h) / 2;
 							m_logo_r = CRect(CPoint(x, y), CSize(w, h));
 						}else */
-			if( s.logostretch == 2 || isUsingSkinBG){ // 缩放 不保持宽高比
+			if(pref->GetIntVar(INTVAR_LOGO_AUTOSTRETCH) == 2 || isUsingSkinBG){ // 缩放 不保持宽高比
 				m_logo_r = r;
-			}else if(s.logostretch == 3){// 缩放 保持宽高比
+			}else if(pref->GetIntVar(INTVAR_LOGO_AUTOSTRETCH) == 3){// 缩放 保持宽高比
 				if ( bm.bmWidth * 100 / bm.bmHeight > r.Width() * 100 / r.Height() ){
 					//以r.Width()为准
 					int w = r.Width();

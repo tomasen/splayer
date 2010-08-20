@@ -21,6 +21,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
+			InheritedPropertySheets="..\..\src\apps\mplayerc\wtl_integration.vsprops"
 			CharacterSet="1"
 			>
 			<Tool
@@ -92,6 +93,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
+			InheritedPropertySheets="..\..\src\apps\mplayerc\wtl_integration.vsprops"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
 			>

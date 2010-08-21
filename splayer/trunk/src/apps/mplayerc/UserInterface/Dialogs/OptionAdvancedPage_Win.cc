@@ -7,9 +7,8 @@ BOOL OptionAdvancedPage::OnInitDialog(HWND hwnd, LPARAM lParam)
   m_gpuaccelcheckbox.Attach(GetDlgItem(IDC_CHECK_ENABLEGPUACCEL));
   AppSettings& s = AfxGetAppSettings();
 
-  m_videoqualitymode = s.iSVPRenderType;
+  m_videoqualitymode = s.iSVPRenderType?0:1;
   m_gpuaccelcheckbox.EnableWindow(!s.iSVPRenderType);
-  m_videoperformancemode = !s.iSVPRenderType;
   m_enablegpuaccel = s.useGPUAcel;
 
   m_usecustomspeakersetting = s.fCustomSpeakers;
@@ -40,7 +39,7 @@ int OptionAdvancedPage::OnApply()
   DoDataExchange(TRUE);
   AppSettings& s = AfxGetAppSettings();
   // feed variables into preference
-  if (m_videoqualitymode)
+  if (m_videoqualitymode == 0)
   {
     s.iSVPRenderType = 1;
     s.iDSVideoRendererType = 6;

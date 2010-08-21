@@ -20,7 +20,6 @@ public:
 
   BEGIN_DDX_MAP(OptionAdvancedPage)
     DDX_RADIO(IDC_RADIO_PICTUREQUALITY, m_videoqualitymode)
-    DDX_RADIO(IDC_RADIO_PERFORMANCE, m_videoperformancemode)
     DDX_CHECK(IDC_CHECK_ENABLEGPUACCEL, m_enablegpuaccel)
     DDX_CHECK(IDC_CHECK_CUSTOMSPEAKER, m_usecustomspeakersetting)
     DDX_CHECK(IDC_CHECK_SPDIFPRIORITY, m_usespdifprority)
@@ -39,7 +38,6 @@ public:
 private:
   // DDX mapping variables
   int m_videoqualitymode;
-  int m_videoperformancemode;
   int m_enablegpuaccel;
   int m_usecustomspeakersetting;
   int m_usespdifprority;

@@ -210,10 +210,6 @@
 			RelativePath=".\test1.txt"
 			>
 		</File>
-		<File
-			RelativePath=".\test2.txt"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>

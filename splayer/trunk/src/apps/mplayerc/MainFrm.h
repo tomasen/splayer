@@ -986,6 +986,7 @@ public:
 	void OnSettingFinished();
 	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
 
+  afx_msg void OnAudioSettingUpdated();
 private:
   void _HandleTimer_Stats();
   void _HandleTimer_StreamPosPoller();

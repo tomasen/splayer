@@ -15,6 +15,7 @@ public:
     MSG_WM_DESTROY(OnDestroy)
     COMMAND_HANDLER_EX(IDC_RADIO_PICTUREQUALITY, BN_CLICKED, OnVideoModeUpdated)
     COMMAND_HANDLER_EX(IDC_RADIO_PERFORMANCE, BN_CLICKED, OnVideoModeUpdated)
+    COMMAND_HANDLER_EX(IDC_CHECK_CUSTOMSPEAKER, BN_CLICKED, OnCustomSpeakerChanged)
     CHAIN_MSG_MAP(WTL::CPropertyPageImpl<OptionAdvancedPage>)
   END_MSG_MAP()
 
@@ -30,6 +31,7 @@ public:
   BOOL OnInitDialog(HWND hwnd, LPARAM lParam);
   void OnDestroy();
   void OnVideoModeUpdated(UINT uNotifyCode, int nID, CWindow wndCtl);
+  void OnCustomSpeakerChanged(UINT uNotifyCode, int nID, CWindow wndCtl);
 
   // activate/apply handler
   int OnSetActive();
@@ -45,6 +47,7 @@ private:
 
   // control
   WTL::CButton   m_gpuaccelcheckbox;
+  WTL::CComboBox m_speakers_combo;
 };
 
 #endif // OPTIONADVANCEDPAGE_WIN_H

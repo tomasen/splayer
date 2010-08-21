@@ -555,6 +555,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_CONFIG_AUTOLOADSUBTITLE2, OnSetAutoLoadSubtitle)
 	ON_UPDATE_COMMAND_UI(ID_CONFIG_AUTOLOADSUBTITLE2, OnUpdateSetAutoLoadSubtitle)
 	
+  ON_COMMAND(ID_UPDATE_AUDIOSETIING, OnAudioSettingUpdated)
 	ON_NOTIFY_EX(TTN_NEEDTEXT, 0, OnTtnNeedText)
 	ON_WM_NCCREATE()
 	ON_WM_ACTIVATE()
@@ -17653,5 +17654,17 @@ void CMainFrame::_HandleTimer_StreamPosPoller()
   {
     g_bExternalSubtitleTime = false;
     AfxGetAppSettings().bExternalSubtitleTime = false;
+  }
+}
+
+void CMainFrame::OnAudioSettingUpdated()
+{
+  AppSettings& s = AfxGetAppSettings();
+  CComQIPtr<IAudioSwitcherFilter> pASF = FindFilter(__uuidof(CAudioSwitcherFilter), pGB);
+  if (pASF)
+  {
+    pASF->SetNormalizeBoost(s.fAudioNormalize, s.fAudioNormalizeRecover, s.AudioBoost);
+    pASF->SetEQControl(s.pEQBandControlPerset, s.pEQBandControlCustom);
+    pASF->SetSpeakerChannelConfig(AfxGetMyApp()->GetNumberOfSpeakers(), s.pSpeakerToChannelMap2, s.pSpeakerToChannelMapOffset, 0, s.iSS);
   }
 }

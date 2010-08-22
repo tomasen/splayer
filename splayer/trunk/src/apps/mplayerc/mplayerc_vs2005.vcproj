@@ -1666,11 +1666,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\ecio.icons\dvd.ico"
+				RelativePath=".\res\icon\DVD.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon\DVD.ico"
+				RelativePath=".\res\ecio.icons\dvd.ico"
 				>
 			</File>
 			<File
@@ -2357,6 +2357,18 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Renderer"
+				>
+				<File
+					RelativePath=".\UserInterface\Renderer\PlaylistView_Win.cc"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Renderer\PlaylistView_Win.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Updater"
@@ -2430,6 +2442,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Controller\PlaylistController.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Controller\PlaylistController.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Controller\SPlayerDefs.h"
 				>
 			</File>
@@ -2451,6 +2471,14 @@
 			</File>
 			<File
 				RelativePath=".\Model\HotkeySchemeParser.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Model\PlaylistParser.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Model\PlaylistParser.h"
 				>
 			</File>
 		</Filter>
@@ -2511,11 +2539,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\web\uesetbg.png"
+			RelativePath=".\res\uesetbg.png"
 			>
 		</File>
 		<File
-			RelativePath=".\res\uesetbg.png"
+			RelativePath=".\res\web\uesetbg.png"
 			>
 		</File>
 		<File

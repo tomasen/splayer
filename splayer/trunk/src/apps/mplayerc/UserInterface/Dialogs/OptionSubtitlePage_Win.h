@@ -17,7 +17,7 @@ public:
     MSG_WM_DESTROY(OnDestroy)
     COMMAND_HANDLER_EX(IDC_LIST, LBN_SELCHANGE, OnSubtitleStyleChange)
     CHAIN_MSG_MAP(WTL::CPropertyPageImpl<OptionSubtitlePage>)
-    CHAIN_MSG_MAP(COwnerDraw<OptionSubtitlePage>)
+    CHAIN_MSG_MAP(WTL::COwnerDraw<OptionSubtitlePage>)
   END_MSG_MAP()
 
   BEGIN_DDX_MAP(OptionSubtitlePage)

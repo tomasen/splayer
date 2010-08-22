@@ -49,6 +49,7 @@
 //#define  SPI_GETDESKWALLPAPER 115
 
 #include "..\..\filters\transform\mpadecfilter\MpaDecFilter.h"
+#include "Utils/FileAssoc_Win.h"
 
 //Update URL
 char* szUrl = "http://svplayer.shooter.cn/api/updater.php";
@@ -2084,6 +2085,12 @@ BOOL CMPlayerCApp::InitInstance()
 	m_s.UpdateData(false);
 	if (m_s.nCLSwitches & CLSW_ADMINOPTION)
 	{
+    if (m_s.iAdminOption >= (1 << 3))
+    {
+      FileAssoc::RegisterPlayer(m_s.iAdminOption);
+      return FALSE;
+    }
+
 		switch (m_s.iAdminOption)
 		{
 		case 1:

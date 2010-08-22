@@ -24,6 +24,7 @@ public:
   static bool IsExtRegistered(const wchar_t* ext);
   static std::wstring GetFileIcon(const wchar_t* ext);
   static bool IsAutoPlayRegistered(autoplay_t ap);
+  static void RegisterPlayer(int action_id);
 };
 
 #endif // FILEASSOC_WIN_H

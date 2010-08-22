@@ -4,6 +4,8 @@
 #include "../MediaFormats.h"
 #include "../mplayerc.h"
 #include "../resource.h"
+#include "../PPageFormats.h"
+#include "../ChkDefPlayer.h"
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -202,4 +204,57 @@ bool FileAssoc::IsAutoPlayRegistered(autoplay_t ap)
   key.Close();
 
   return(true);
+}
+void FileAssoc::RegisterPlayer(int action_id)
+{
+  if (AfxGetMyApp()->IsVista() && !IsUserAnAdmin())
+  {
+    AfxGetMyApp()->GainAdminPrivileges(action_id);
+    return;
+  }
+
+  CPPageFormats cpf;
+
+  /* m_assoc_video << 3 | m_assoc_audio << 4 | m_ap_video << 5
+   | m_ap_audio << 6 | m_ap_dvd << 7 || m_ap_cd << 8;
+  */
+  cpf.AddAutoPlayToRegistry(cpf.AP_VIDEO, action_id & (1 << 5));
+  cpf.AddAutoPlayToRegistry(cpf.AP_MUSIC, action_id & (1 << 6));
+  cpf.AddAutoPlayToRegistry(cpf.AP_DVDMOVIE, action_id & (1 << 7));
+  cpf.AddAutoPlayToRegistry(cpf.AP_AUDIOCD, action_id & (1 << 8));
+  cpf.AddAutoPlayToRegistry(cpf.AP_SVCDMOVIE, action_id & (1 << 7));
+  cpf.AddAutoPlayToRegistry(cpf.AP_VCDMOVIE, action_id & (1 << 7));
+  cpf.AddAutoPlayToRegistry(cpf.AP_BDMOVIE, action_id & (1 << 7));
+  cpf.AddAutoPlayToRegistry(cpf.AP_DVDAUDIO, action_id & (1 << 8));
+  cpf.AddAutoPlayToRegistry(cpf.AP_CAPTURECAMERA, true);
+
+  // Register/Unregister Assoc
+  if (action_id & (1 << 3)) //video
+  {
+    //TODO: rewrite and move the code into this class
+    CChkDefPlayer chk_defplayer;
+    chk_defplayer.setKeyboardNativeMediaPlayers();
+    chk_defplayer.setKeyboardNativeMediaPlayers2();
+  }
+
+
+  CMediaFormats& mf = AfxGetAppSettings().Formats;
+  for(size_t i = 0; i < mf.GetCount(); i++)
+  {
+    int fAudioOnly = mf[i].IsAudioOnly() ;
+    if (fAudioOnly < 0) //we should never reg this type: rar, image etc
+      continue;
+    CString szPerceivedType = mf[i].getPerceivedType();
+
+    int j = 0;
+    CString str = mf[i].GetExtsWithPeriod();
+    for(CString ext = str.Tokenize(_T(" "), j); !ext.IsEmpty(); ext = str.Tokenize(_T(" "), j))
+    {
+      bool b_regit = (!fAudioOnly && (action_id & (1 << 3)))   // should we reg video?
+                     || (fAudioOnly && (action_id & (1 << 4)));// should we reg audio?
+      //TODO: rewrite and move code into this class
+      CPPageFormats::RegisterExt(ext, b_regit, szPerceivedType);
+    }
+  }
+
 }

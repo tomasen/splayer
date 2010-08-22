@@ -38,6 +38,16 @@ int OptionAssociationPage::OnApply()
 {
   DoDataExchange(TRUE);
 
+  if (m_oassoc_video != m_assoc_video || m_oassoc_audio != m_assoc_audio
+      || m_oap_video != m_ap_video || m_oap_audio != m_ap_audio
+      || m_oap_dvd != m_ap_dvd || m_oap_cd != m_ap_cd)
+  {
+    int action_id = m_assoc_video << 3 | m_assoc_audio << 4 | m_ap_video << 5
+                    | m_ap_audio << 6 | m_ap_dvd << 7 || m_ap_cd << 8;
+    FileAssoc::RegisterPlayer(action_id);
+    
+  }
+  
 
   return PSNRET_NOERROR;
 }

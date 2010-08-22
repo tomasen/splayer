@@ -1,0 +1,52 @@
+  	
+
+Well, since this post failed badly, I had to dig into the matter myself.
+
+So here goes:
+Preprocessor
+
+The following two symbols need to be fed to the preprocessor to enable SSL for libcurl:
+
+USE_SSLEAY
+USE_OPENSSL
+
+(libcurl uses OpenSSL for SSL support)
+
+Alternatively the symbols can be added directly to a file called setup.h in libcurl, but I'm not too happy about modifying code in 3rd party distributions unless I really have to.
+
+Rebuilding the libcurl library, I now got some errors about OpenSSL include files not being found. Naturally, since I haven't set up the OpenSSL distribution properly yet.
+Compiling OpenSSL binaries
+
+I downloaded the OpenSSL 0.9.8 source distribution and unpacked it.
+
+In the root of the source distribution there's a file called INSTALL.W32 which describes how to compile the OpenSSL binaries. The build chain requires perl, so I installed the latest version of ActivePerl.
+
+I had some trouble with the build, which might not be applicable to all systems, but I'll go through it here in case somebody experiences the same.
+
+According to INSTALL.W32:
+
+Run the following commandline tasks with current directory set to the source distribution root:
+
+1> perl Configure VC-WIN32 --prefix=c:/some/openssl/dir
+
+(Where "c:/some/openssl/dir" should be replaced by the dir where OpenSSL should be installed. Don't use spaces in this path. The compilation further ahead will fail in that case)
+
+2> ms\do_ms
+
+(For me this step was unsuccessful at first, since I lacked the environment variables OSVERSION and TARGETCPU. I set these to 5.1.2600 and x86 respectively. You may get complaint about OSVERSION being "insane", but look closer, this error is for WinCE and doesn't affect the Win32 setup.)
+
+3> nmake -f ms\nt.mak (for static library)
+
+or
+
+3> nmake -f ms\ntdll.mak (for DLL)
+
+The source now compiles. Took approx 5 minutes on my laptop.
+
+When compilation is completed, the libs or binaries have been placed in:
+
+distroot/out32 - for static library build
+
+or
+
+distroot/out32dll - for DLL build

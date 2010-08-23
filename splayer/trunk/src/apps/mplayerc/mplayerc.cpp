@@ -2295,10 +2295,6 @@ int CMPlayerCApp::ExitInstance()
 		
 	}
 
-	CSVPToolBox svpToolBox;
-	UnRegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mtcontain.dll")) );
-	UnRegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mxrender.dll")) );
-	UnRegSvr32( svpToolBox.GetPlayerPath(_T("csfcodec\\mpc_mxvideo.dll")) );
 	OleUninitialize();
 
   //////////////////////////////////////////////////////////////////////////

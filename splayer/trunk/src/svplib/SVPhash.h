@@ -8,7 +8,8 @@ class CSVPhash
 public:
 	CSVPhash(void);
 	~CSVPhash(void);
-	CString ComputerFileHash(CString szFilePath);
+  CString ComputerFileHash(CString szFilePath);
+  std::wstring ComputerFileHash_STL(std::wstring szFilePath);
   std::wstring ComputerSubFilesFileHash(std::vector<std::wstring>* szaSubFiles);
 	CString CSVPhash::HexToString(BYTE* lpszMD5);
 };

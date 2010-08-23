@@ -33,86 +33,95 @@ CSVPToolBox::CSVPToolBox(void)
 CSVPToolBox::~CSVPToolBox(void)
 {
 }
-
-CString CSVPToolBox::GetShortFileNameForSearch2(CString szFn){
-	CString szFileName(szFn);
-	int posDot = szFileName.ReverseFind('.');
-	szFileName = szFileName.Left(posDot);
-
-	CStringArray szaStopWords;
-	szaStopWords.Add(_T("blueray"));
-	szaStopWords.Add(_T("bluray"));
-	szaStopWords.Add(_T("dvdrip"));
-	szaStopWords.Add(_T("xvid"));
-	szaStopWords.Add(_T("cd1"));
-	szaStopWords.Add(_T("cd2"));
-	szaStopWords.Add(_T("cd3"));
-	szaStopWords.Add(_T("cd4"));
-	szaStopWords.Add(_T("cd5"));
-	szaStopWords.Add(_T("cd6"));
-	szaStopWords.Add(_T("vc1"));
-	szaStopWords.Add(_T("vc-1"));
-	szaStopWords.Add(_T("hdtv"));
-	szaStopWords.Add(_T("1080p"));
-	szaStopWords.Add(_T("720p"));
-	szaStopWords.Add(_T("1080i"));
-	szaStopWords.Add(_T("x264"));
-	szaStopWords.Add(_T("stv"));
-	szaStopWords.Add(_T("limited"));
-	szaStopWords.Add(_T("ac3"));
-	szaStopWords.Add(_T("xxx"));
-	szaStopWords.Add(_T("hddvd"));
-
-	szFileName.MakeLower();
-
-	for(int i = 0 ; i < szaStopWords.GetCount(); i++){
-		int pos = szFileName.Find(szaStopWords[i]);
-
-		if( pos >= 0){
-			szFileName = szFileName.Left( pos - 1 );
-		}
-	}
-
-	
-	CString szReplace(_T("[].-#_=+<>,"));
-	for(int i = 0; i < szReplace.GetLength(); i++){
-		szFileName.Replace(szReplace[i], ' ');
-	}
-	
-	szFileName.Trim();
-
-	if(szFileName.GetLength() > 1){
-		return szFileName;
-	}
-
-	return _T("");
+CString CSVPToolBox::GetShortFileNameForSearch2(CString szFnPath)
+{
+  return CSVPToolBox::GetShortFileNameForSearch2_STL((LPCTSTR)szFnPath).c_str();
 }
-CString CSVPToolBox::GetShortFileNameForSearch(CString szFnPath){
-	CPath szPath(szFnPath);
-	szPath.StripPath();
-	
-	CString szFileName(szPath);
+std::wstring CSVPToolBox::GetShortFileNameForSearch2_STL(std::wstring szFn)
+{
+  std::wstring szFileName = szFn;
+  int posDot = szFileName.find_last_of('.');
+  szFileName = szFileName.substr(0, posDot);
 
-	szFileName = GetShortFileNameForSearch2(szFileName);
-	
-	if(szFileName.IsEmpty()){
-		CPath szPath2(szFnPath);
-		szPath2.RemoveFileSpec();
-		CString szFileName2(szPath2);
-		szFileName = GetShortFileNameForSearch2(szFileName2);
+  std::vector<std::wstring> szaStopWords;
+  szaStopWords.push_back(L"blueray");
+  szaStopWords.push_back(L"bluray");
+  szaStopWords.push_back(L"dvdrip");
+  szaStopWords.push_back(L"xvid");
+  szaStopWords.push_back(L"cd1");
+  szaStopWords.push_back(L"cd2");
+  szaStopWords.push_back(L"cd3");
+  szaStopWords.push_back(L"cd4");
+  szaStopWords.push_back(L"cd5");
+  szaStopWords.push_back(L"cd6");
+  szaStopWords.push_back(L"vc1");
+  szaStopWords.push_back(L"vc-1");
+  szaStopWords.push_back(L"hdtv");
+  szaStopWords.push_back(L"1080p");
+  szaStopWords.push_back(L"720p");
+  szaStopWords.push_back(L"1080i");
+  szaStopWords.push_back(L"x264");
+  szaStopWords.push_back(L"stv");
+  szaStopWords.push_back(L"limited");
+  szaStopWords.push_back(L"ac3");
+  szaStopWords.push_back(L"xxx");
+  szaStopWords.push_back(L"hddvd");
 
-		if(szFileName.IsEmpty()){
-			
-			szPath2.RemoveFileSpec();
-			CString szFileName3(szPath2);
-			szFileName = GetShortFileNameForSearch2(szFileName3);
+  std::transform(szFileName.begin(), szFileName.end(),
+    szFileName.begin(), tolower);
 
-			if(szFileName.IsEmpty()){
-				return szFnPath;
-			}
-		}
-	}
-	return szFileName;
+  for (int i = 0 ; i < szaStopWords.size(); i++)
+  {
+    int pos = szFileName.find(szaStopWords[i]);
+    if( pos >= 0)
+      szFileName = szFileName.substr(0, pos - 1);
+  }
+
+
+  std::wstring szReplace = L"[].-#_=+<>,";
+  for (int i = 0; i < szReplace.length(); i++)
+    for (int j = 0; j < szFileName.length(); j++)
+      if (szFileName[j] == szReplace[i])
+        szFileName[j] = ' ';
+
+        szFileName.erase(szFileName.find_last_not_of(L' ') + 1);
+  szFileName.erase(0, szFileName.find_first_not_of(L' '));
+
+  if (szFileName.length() > 1)
+    return szFileName;
+
+  return L"";
+}
+CString CSVPToolBox::GetShortFileNameForSearch(CString szFnPath)
+{
+  return GetShortFileNameForSearch_STL((LPCTSTR)szFnPath).c_str();
+}
+std::wstring CSVPToolBox::GetShortFileNameForSearch_STL(std::wstring szFnPath)
+{
+  CPath szPath(szFnPath.c_str());
+  szPath.StripPath();
+
+  std::wstring szFileName = (LPCTSTR)szPath;
+
+  szFileName = GetShortFileNameForSearch2_STL(szFileName);
+
+  if (szFileName.empty())
+  {
+    CPath szPath2(szFnPath.c_str());
+    szPath2.RemoveFileSpec();
+    std::wstring szFileName2 = (LPCTSTR)szPath2;
+    szFileName = GetShortFileNameForSearch2_STL(szFileName2);
+
+    if (szFileName.empty())
+    {
+      szPath2.RemoveFileSpec();
+      std::wstring szFileName3 = (LPCTSTR)szPath2;
+      szFileName = GetShortFileNameForSearch2_STL(szFileName3);
+      if (szFileName.empty())
+        return szFnPath;
+    }
+  }
+  return szFileName;
 }
 BOOL CSVPToolBox::FindSystemFile(CString szFn){
 	TCHAR szBuf[MAX_PATH];
@@ -125,7 +134,7 @@ BOOL CSVPToolBox::FindSystemFile(CString szFn){
 		szPath.RemoveBackslash();
 		szPath.AddBackslash();
 		szPath.Append(szFn);
-		return ifFileExist(szPath);
+		return ifFileExist_STL((LPCTSTR)szPath);
 	}
 	return false;
 }
@@ -137,7 +146,7 @@ std::wstring CSVPToolBox::getVideoFileBasename(std::wstring szVidPath, std::vect
 {
   CSVPRarLib svpRar;
   BOOL bIsRar = false;
-  if(svpRar.SplitPath(szVidPath.c_str()))
+  if(svpRar.SplitPath_STL(szVidPath.c_str()))
   {
     bIsRar = true;
     szVidPath = (LPCTSTR)svpRar.m_fnRAR;
@@ -401,15 +410,18 @@ CString CSVPToolBox::fileGetContent(CString szFilePath){
 	}
 	return szRet.TrimRight();
 }
-void CSVPToolBox::filePutContent(CString szFilePath, CString szData, BOOL bAppend){
-	CStdioFile f;
-	
-	if(f.Open(szFilePath, CFile::modeCreate | CFile::modeWrite | CFile::typeText))
-	{
-		f.WriteString(szData);
-		
-		f.Close();
-	}
+void CSVPToolBox::filePutContent(CString szFilePath, CString szData, BOOL bAppend)
+{
+  filePutContent_STL((LPCTSTR)szFilePath, (LPCTSTR)szData);
+}
+void CSVPToolBox::filePutContent_STL(std::wstring szFilePath, std::wstring szData, BOOL bAppend)
+{
+  FILE* f;
+  if (!_wfopen_s(&f, szFilePath.c_str(), L"w"))
+  {
+    fwrite(szData.c_str(), sizeof(wchar_t), szData.length(), f);
+    fclose(f);
+  }
 }
 DWORD CSVPToolBox::_httoi(const TCHAR *value)
 {
@@ -516,7 +528,7 @@ CString CSVPToolBox::getSameTmpName(CString fnin)
   CString fntdir = this->GetTempDir();
   CString fnout  = fntdir + szaPathinfo.at(3).c_str() + szaPathinfo.at(1).c_str();
   int i = 0;
-  while(ifFileExist(fnout))
+  while(ifFileExist_STL((LPCTSTR)fnout))
   {
     i++;
     CString szBuf;
@@ -748,33 +760,35 @@ CString CSVPToolBox::extractRarFile(CString rarfn){
 	//FreeLibrary(h);
 	return szRet;
 }
-CString CSVPToolBox::DetectSubFileLanguage(CString fn){
-	CString szRet = _T(".chn");
-	FILE *stream ;
-	if ( _wfopen_s( &stream, fn, _T("rb") ) == 0 ){
-		//detect bom?
+CString CSVPToolBox::DetectSubFileLanguage(CString fn)
+{
+  return DetectSubFileLanguage_STL((LPCTSTR)fn).c_str();
+}
+std::wstring CSVPToolBox::DetectSubFileLanguage_STL(std::wstring fn)
+{
+  std::wstring szRet = L".chn";
+  FILE *stream ;
+  if (_wfopen_s(&stream, fn.c_str(), _T("rb") ) == 0)
+  {
+    //detect bom?
+    int totalWideChar = 0;
+    int totalChar     = 0;
+    int ch;
 
-		int totalWideChar = 0;
-		int totalChar = 0;
-		int ch;
-		
-		for( int i=0;  ( feof( stream ) == 0 ); i++ )
-		{
-			ch = 0xff & fgetc( stream );
-			if (ch >= 0x80 ){
-				totalWideChar++;
-			}
-			totalChar++;
-		}
+    for(int i=0; (feof( stream ) == 0 ); i++)
+    {
+      ch = 0xff & fgetc(stream);
+      if (ch >= 0x80 )
+        totalWideChar++;
+      totalChar++;
+    }
 
-		fclose( stream );
-		
-		if(totalWideChar < (totalChar / 10) && totalWideChar < 1700){
-			szRet = _T(".eng");
-		}
-	}
+    fclose( stream );
 
-	return szRet;
+    if(totalWideChar < (totalChar / 10) && totalWideChar < 1700)
+      szRet = L".eng";
+  }
+  return szRet;
 }
 int CSVPToolBox::DetectFileCharset(CString fn){
 // 	;
@@ -894,19 +908,24 @@ BOOL CSVPToolBox::CreatDirRecursive(CString cPath){
 	}
 	return TRUE;
 }
-CString CSVPToolBox::GetPlayerPath(CString progName){
-	CString path;
-	GetModuleFileName(/*AfxGetInstanceHandle()*/NULL, path.GetBuffer(MAX_PATH), MAX_PATH);
-	path.ReleaseBuffer();
-	if (progName.IsEmpty()){
-		return path;
-	}else{
-		CPath cpath(path);
-		cpath.RemoveFileSpec();
-		cpath.AddBackslash();
-		cpath.Append(progName);
-		return cpath;
-	}
+CString CSVPToolBox::GetPlayerPath(CString progName)
+{
+  return GetPlayerPath_STL((LPCTSTR)progName).c_str();
+}
+std::wstring CSVPToolBox::GetPlayerPath_STL(std::wstring progName)
+{
+  wchar_t path[MAX_PATH];
+  GetModuleFileName(/*AfxGetInstanceHandle()*/NULL, path, MAX_PATH);
+  if (progName.empty())
+    return (LPCTSTR)path;
+  else
+  {
+    CPath cpath(path);
+    cpath.RemoveFileSpec();
+    cpath.AddBackslash();
+    cpath.Append(progName.c_str());
+    return (LPCTSTR)cpath;
+  }
 }
 BOOL CSVPToolBox::delDirRecursive(CString path){
 	SHFILEOPSTRUCT sh;
@@ -1168,56 +1187,100 @@ std::wstring CSVPToolBox::Implode(std::wstring szTok, std::vector<std::wstring>*
   }
   return szRet;
 }
-int CSVPToolBox::Explode(CString szIn, CString szTok, CStringArray* szaOut){
-	szaOut->RemoveAll();
-
-	CString resToken;
-	int curPos= 0;
-
-	resToken= szIn.Tokenize(szTok, curPos);
-	while (resToken != _T(""))
-	{
-		szaOut->Add(resToken);
-		resToken= szIn.Tokenize(szTok,curPos);
-	};
-
-	return 0;
+int CSVPToolBox::Explode(CString szIn, CString szTok,
+            CStringArray* szaOut)
+{
+  std::vector<std::wstring> szaOut_STL;
+  for (int i = 0; i < szaOut->GetCount(); i++)
+    szaOut_STL.push_back((LPCTSTR)szaOut->GetAt(i));
+  int result = Explode((LPCTSTR)szIn, (LPCTSTR)szTok, &szaOut_STL);
+  for (int i = 0; i < szaOut_STL.size(); i++)
+    szaOut->Add(szaOut_STL.at(i).c_str());
+  return result;
 }
-BOOL CSVPToolBox::ifDirExist(CString path){
-	CPath cpath(path);
+int CSVPToolBox::Explode(std::wstring szIn,
+                         std::wstring szTok,
+                         std::vector<std::wstring>* szaOut)
+{
+  szaOut->clear();
+
+  std::wstring resToken;
+  int curPos= 0;
+
+  wchar_t* str = new wchar_t[szIn.length() + 1];
+  lstrcpy(str, szIn.c_str());
+  wchar_t* sep = new wchar_t[szTok.length() + 1];
+  lstrcpy(sep, szTok.c_str());
+  wchar_t* token = NULL;
+  wchar_t* next_token = NULL;
+  token = wcstok_s(str, sep, &next_token);
+
+  while (token != NULL)
+  {
+    szaOut->push_back((LPCTSTR)token);
+    token = wcstok_s( NULL, sep, &next_token);
+  }
+  //resToken= szIn.Tokenize(szTok, curPos);
+  //while (resToken != L(""))
+  //{
+  //  szaOut->push_back(resToken);
+  //  resToken= szIn.Tokenize(szTok,curPos);
+  //};
+  delete[] str;
+  delete[] sep;
+  return 0;
+}
+BOOL CSVPToolBox::ifDirExist(CString path)
+{
+  return ifDirExist_STL((LPCTSTR)path);
+}
+BOOL CSVPToolBox::ifDirExist_STL(std::wstring path)
+{
+	CPath cpath(path.c_str());
 	cpath.RemoveBackslash();
 	return !_waccess(cpath, 0);
 
 }
-BOOL CSVPToolBox::ifFileExist(CString szPathname, BOOL evenSlowDriver ){
-	if( szPathname.Left(6).MakeLower() == _T("rar://") ){
-		//RARTODO: 检测rar内的文件是否存在 //Done
-		CSVPRarLib svpRar;
-		if( svpRar.SplitPath(szPathname) )
-			szPathname = svpRar.m_fnRAR;
-		else
-			return false;
-	}
+BOOL CSVPToolBox::ifFileExist(CString szPathname, BOOL evenSlowDriver)
+{
+  return ifFileExist_STL((LPCTSTR)szPathname, evenSlowDriver);
+}
+BOOL CSVPToolBox::ifFileExist_STL(std::wstring szPathname, BOOL evenSlowDriver)
+{
+  std::wstring szPathExt = szPathname.substr(0, 6);
+  std::transform(szPathExt.begin(), szPathExt.end(),
+    szPathExt.begin(), tolower);
+  if (szPathExt ==  L"rar://")
+  {
+    //RARTODO: 检测rar内的文件是否存在 //Done
+    CSVPRarLib svpRar;
+    if(svpRar.SplitPath_STL(szPathname))
+      szPathname = (LPCTSTR)svpRar.m_fnRAR;
+    else
+      return false;
+  }
 
-	if(!evenSlowDriver){
-		CPath Driver(szPathname);
-		Driver.StripToRoot();
-		switch(GetDriveType(Driver)){
-			case DRIVE_REMOVABLE:
-			case DRIVE_FIXED:
-			case DRIVE_RAMDISK:					
-				break;
-			default:
-				return true;
-				break;
-		}
-	}
-	struct _stat sbuf;
+  if (!evenSlowDriver)
+  {
+    CPath Driver(szPathname.c_str());
+    Driver.StripToRoot();
+    switch(GetDriveType(Driver))
+    {
+      case DRIVE_REMOVABLE:
+      case DRIVE_FIXED:
+      case DRIVE_RAMDISK:					
+        break;
+      default:
+        return true;
+        break;
+    }
+  }
+  struct _stat sbuf;
 
-	return ( !_wstat(szPathname, &sbuf) && _S_IFREG & sbuf.st_mode);
+  return (!_wstat(szPathname.c_str(), &sbuf) && _S_IFREG & sbuf.st_mode);
 }
 BOOL CSVPToolBox::CanUseCUDAforCoreAVC(){
-	//if( !ifFileExist( this->GetPlayerPath(L"codecs\\cavc.ax")) &&   !ifFileExist( this->GetPlayerPath(L"codecs\\CoreAVCDecoder.ax")) )
+	//if( !ifFileExist_STL( this->GetPlayerPath_STL(L"codecs\\cavc.ax")) &&   !ifFileExist_STL( this->GetPlayerPath_STL(L"codecs\\CoreAVCDecoder.ax")) )
 	{
 	//	return false;
 	}
@@ -1457,79 +1520,83 @@ int CSVPToolBox::GetGPUString(CStringArray * szaGPUString){
   }
   return ret;
 }
-BOOL CSVPToolBox::ifDirWritable(CString szDir){
-	
-	CPath szPath(szDir);
-	szPath.RemoveBackslash();
-	szPath.AddBackslash();
-	szDir = CString(szPath);
+BOOL CSVPToolBox::ifDirWritable(CString szDir)
+{
+  return ifDirWritable_STL(LPCTSTR(szDir));
+}
+BOOL CSVPToolBox::ifDirWritable_STL(std::wstring szDir)
+{
+  CPath szPath(szDir.c_str());
+  szPath.RemoveBackslash();
+  szPath.AddBackslash();
+  szDir = (LPCTSTR)szPath;
 
-	HANDLE hFile =
-		CreateFile(szDir, FILE_ADD_FILE|FILE_WRITE_ATTRIBUTES|FILE_READ_ATTRIBUTES,
-		FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-		NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL);
+  HANDLE hFile =
+    CreateFile(szDir.c_str(), FILE_ADD_FILE|FILE_WRITE_ATTRIBUTES|FILE_READ_ATTRIBUTES,
+    FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+    NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL);
 
-	if (hFile == INVALID_HANDLE_VALUE){
-		
-		return false;
-	}
+  if (hFile == INVALID_HANDLE_VALUE)
+    return false;
 
 
-	FILETIME ftCreate, ftAccess, ftWrite;
-	if (!GetFileTime(hFile, &ftCreate, &ftAccess, &ftWrite))
-		return FALSE;
+  FILETIME ftCreate, ftAccess, ftWrite;
+  if (!GetFileTime(hFile, &ftCreate, &ftAccess, &ftWrite))
+    return FALSE;
 
-	BOOL ret = false;
-	FILE* fp = NULL;
-	fp = _wfopen( szDir + _T("svpwrtst"), _T("wb") );
-	if( fp != NULL )
-	{
-		fclose( fp );
-		_wremove(szDir + _T("svpwrtst"));
-		ret = true;
-	}
+  BOOL ret = false;
+  FILE* fp = NULL;
+  fp = _wfopen((szDir + L"svpwrtst").c_str(), _T("wb"));
+  if(fp != NULL)
+  {
+    fclose( fp );
+    _wremove((szDir + L"svpwrtst").c_str());
+    ret = true;
+  }
 
-	SetFileTime(hFile, &ftCreate, &ftAccess, &ftWrite);
+  SetFileTime(hFile, &ftCreate, &ftAccess, &ftWrite);
 
-	CloseHandle(hFile);
-	
-	return ret;
-	
-	
-	
-	
-	
-	
+  CloseHandle(hFile);
+
+  return ret;
 }
 bool CSVPToolBox::GetAppDataPath(CString& path)
 {
-	path.Empty();
-	TCHAR szPath[MAX_PATH];
+  std::wstring path_STL = (LPCTSTR)path;
+  bool result = GetAppDataPath(path_STL);
+  path = path_STL.c_str();
+  return result;
+}
+bool CSVPToolBox::GetAppDataPath(std::wstring& path)
+{
+  path.clear();
+  TCHAR szPath[MAX_PATH];
 
-	HRESULT hr;
-	LPITEMIDLIST pidl;
-	hr = SHGetSpecialFolderLocation( NULL, CSIDL_APPDATA, &pidl);
-	if (hr){
-		//Old method
-		CRegKey key;
-		if(ERROR_SUCCESS == key.Open(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders"), KEY_READ))
-		{
-			ULONG len = MAX_PATH;
-			if(ERROR_SUCCESS == key.QueryStringValue(_T("AppData"), szPath, &len))
-				path.ReleaseBufferSetLength(len);
-		}
-	}
+  HRESULT hr;
+  LPITEMIDLIST pidl;
+  hr = SHGetSpecialFolderLocation(NULL, CSIDL_APPDATA, &pidl);
+  if (hr)
+  {
+    //Old method
+    CRegKey key;
+    if(ERROR_SUCCESS == key.Open(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders"), KEY_READ))
+    {
+      ULONG len = MAX_PATH;
+      if(ERROR_SUCCESS == key.QueryStringValue(_T("AppData"), szPath, &len))
+        path.resize(len);
+    }
+  }
 
 
-	BOOL f = SHGetPathFromIDList(pidl, szPath);
-	PathRemoveBackslash(szPath);
-	PathAddBackslash(szPath); 
-	PathAppend(szPath,  _T("SPlayer"));
-	path = szPath;
+  BOOL f = SHGetPathFromIDList(pidl, szPath);
+  PathRemoveBackslash(szPath);
+  PathAddBackslash(szPath); 
+  PathAppend(szPath, _T("SPlayer"));
+  path = szPath;
 
 
-	if(path.IsEmpty())
-		return(false);
+  if(path.empty())
+    return false;
 	/*
 
 	PathCombine(  szPath ,)
@@ -1538,168 +1605,173 @@ bool CSVPToolBox::GetAppDataPath(CString& path)
 	path = (LPCTSTR)p;
 	*/
 
-	return(true);
+	return true;
 }
-
 CString CSVPToolBox::getSubFileByTempid(int iTmpID, CString szVidPath)
+{
+  return getSubFileByTempid_STL(iTmpID, (LPCTSTR)szVidPath).c_str();
+}
+std::wstring CSVPToolBox::getSubFileByTempid_STL(int iTmpID,
+                                             std::wstring szVidPath)
 {
   //get base path name
   std::vector<std::wstring> szVidPathInfo;
-  CString szTargetBaseName = _T("");
-  CString szDefaultSubPath = _T("");
+  std::wstring szTargetBaseName = L"";
+  std::wstring szDefaultSubPath = L"";
 
   AppSettings& s = AfxGetAppSettings();
-  CString StoreDir = s.SVPSubStoreDir;
-  getVideoFileBasename((LPCTSTR)szVidPath, &szVidPathInfo); 
+  std::wstring StoreDir = (LPCTSTR)s.SVPSubStoreDir;
+  getVideoFileBasename(szVidPath, &szVidPathInfo); 
 
   if(s.bSaveSVPSubWithVideo && 
-    ifDirWritable(szVidPathInfo.at(SVPATH_DIRNAME).c_str()))
+    ifDirWritable_STL(szVidPathInfo.at(SVPATH_DIRNAME)))
   {
     StoreDir = szVidPathInfo.at(SVPATH_DIRNAME).c_str();
   }
   else
   {
-    if(StoreDir.IsEmpty() || !ifDirExist(StoreDir) || 
-      !ifDirWritable(StoreDir))
+    if(StoreDir.empty() || !ifDirExist_STL(StoreDir) || 
+      !ifDirWritable_STL(StoreDir))
     {
       GetAppDataPath(StoreDir);
-      CPath tmPath(StoreDir);
+      CPath tmPath(StoreDir.c_str());
       tmPath.RemoveBackslash();
       tmPath.AddBackslash();
       tmPath.Append( _T("SVPSub"));
-      StoreDir = (CString)tmPath;
-      _wmkdir(StoreDir);
-      if(StoreDir.IsEmpty() || !ifDirExist(StoreDir) || 
-        !ifDirWritable(StoreDir))
+      StoreDir = (LPCTSTR)tmPath;
+      _wmkdir(StoreDir.c_str());
+      if(StoreDir.empty() || !ifDirExist_STL(StoreDir) || 
+        !ifDirWritable_STL(StoreDir))
       {
-        StoreDir = GetPlayerPath(_T("SVPSub"));
-        _wmkdir(StoreDir);
-        if(StoreDir.IsEmpty() || !ifDirExist(StoreDir) || 
-          !ifDirWritable(StoreDir))
+        StoreDir = GetPlayerPath_STL(_T("SVPSub"));
+        _wmkdir(StoreDir.c_str());
+        if(StoreDir.empty() || !ifDirExist_STL(StoreDir) || 
+          !ifDirWritable_STL(StoreDir))
         {
           //WTF cant create fordler ?
         }
         else
-          s.SVPSubStoreDir = StoreDir;
+          s.SVPSubStoreDir = StoreDir.c_str();
       }
       else
-        s.SVPSubStoreDir = StoreDir;
+        s.SVPSubStoreDir = StoreDir.c_str();
     }
   }
 
-  CPath tmBasenamePath(StoreDir);
+  CPath tmBasenamePath(StoreDir.c_str());
   tmBasenamePath.RemoveBackslash();
   tmBasenamePath.AddBackslash();
-  StoreDir =  (CString) tmBasenamePath;
-  getVideoFileBasename((LPCTSTR)szVidPath, &szVidPathInfo);
+  StoreDir =  (LPCTSTR)tmBasenamePath;
+  getVideoFileBasename(szVidPath, &szVidPathInfo);
   tmBasenamePath.Append(szVidPathInfo.at(SVPATH_FILENAME).c_str());
 
-  CString szBasename =tmBasenamePath;
+  std::wstring szBasename = (LPCTSTR)tmBasenamePath;
 
-  {
-    //StoreDir = 
-
-  }
+  //StoreDir = 
   //SVP_LogMsg5(L"Save Sub Use %s" , szBasename);
-  //if(!this->ifDirWritable(szBasename) ){
+  //if(!this->ifDirWritable_STL(szBasename) ){
   //	szBasename = this->GetTempDir() + szVidPathInfo.GetAt(SVPATH_FILENAME);
   //}
 
   //set new file name
-  CStringArray szSubfiles;
-  CString szXTmpdata = this->szaSubTmpFileList.GetAt(iTmpID);
-  this->Explode(szXTmpdata, _T(";"), &szSubfiles);
+  std::vector<std::wstring> szSubfiles;
+  std::wstring szXTmpdata = this->szaSubTmpFileList.GetAt(iTmpID);
+  Explode(szXTmpdata, L";", &szSubfiles);
   bool bIsIdxSub = FALSE;
   int ialreadyExist = 0;
-  if ( szXTmpdata.Find(_T("idx|")) >= 0 && szXTmpdata.Find(_T("sub|")) >= 0){
-    if ( !this->ifFileExist( szBasename + _T(".idx") ) && !this->ifFileExist( szBasename + _T(".sub") ) ){
+  if (szXTmpdata.find(L"idx|") >= 0 && szXTmpdata.find(L"sub|") >= 0)
+    if (!ifFileExist_STL(szBasename + L".idx") && !ifFileExist_STL(szBasename + L".sub"))
       bIsIdxSub = TRUE;
-    }
-  }
 
-  if( szSubfiles.GetCount() < 1){
+  if (szSubfiles.size() < 1)
     SVP_LogMsg( _T("Not enough files in tmp array"));
 
-  }
-  for(int i = 0; i < szSubfiles.GetCount(); i++){
-    CStringArray szSubTmpDetail;
-    this->Explode(szSubfiles[i], _T("|"), &szSubTmpDetail);
-    if (szSubTmpDetail.GetCount() < 2){
-      SVP_LogMsg( _T("Not enough detail in sub tmp string") + szSubfiles[i]);
+  for(int i = 0; i < szSubfiles.size(); i++)
+  {
+    std::vector<std::wstring> szSubTmpDetail;
+    Explode(szSubfiles[i], L"|", &szSubTmpDetail);
+    if (szSubTmpDetail.size() < 2)
+    {
+      SVP_LogMsg((L"Not enough detail in sub tmp string" + szSubfiles[i]).c_str());
       continue;
     }
-    CString szSource = szSubTmpDetail[1];
-    CString szLangExt  = _T(".chn"); //TODO: use correct language perm 
-    if(bIsIdxSub){
-      szLangExt  = _T("");
-    }else{
-      szLangExt  = DetectSubFileLanguage(szSource);
-    }
-    if (szSubTmpDetail[0].GetAt(0) != _T('.')){
-      szSubTmpDetail[0] = CString(_T(".")) + szSubTmpDetail[0];
-    }
-    CString szTarget = szBasename + szLangExt + szSubTmpDetail[0];
+    std::wstring szSource = szSubTmpDetail[1];
+    std::wstring szLangExt  = L".chn"; //TODO: use correct language perm 
+    if(bIsIdxSub)
+      szLangExt  = L"";
+    else
+      szLangExt  = DetectSubFileLanguage_STL(szSource);
+    if (szSubTmpDetail[0].at(0) != L'.')
+      szSubTmpDetail[0] = L"." + szSubTmpDetail[0];
+    std::wstring szTarget = szBasename + szLangExt + szSubTmpDetail[0];
     szTargetBaseName = szBasename + szLangExt ;
 
     CMD5Checksum cm5source;
-    CString szSourceMD5 = cm5source.GetMD5((LPCTSTR)szSource).c_str();
-    CString szTargetMD5 ;
+    std::wstring szSourceMD5 = cm5source.GetMD5(szSource);
+    std::wstring szTargetMD5;
     //check if target exist
-    CString szTmp = _T("") ;
+    wchar_t szTmp[128];
+    lstrcpy(szTmp, L"");
     int ilan = 1;
-    while( this->ifFileExist(szTarget) ){ 
+    while(ifFileExist_STL(szTarget))
+    {
       //TODO: compare if its the same file
       cm5source.Clean();
-
-      szTargetMD5 = cm5source.GetMD5((LPCTSTR)szTarget).c_str();
-      if(szTargetMD5 == szSourceMD5){
-        SVP_LogMsg5(_T("同样的字幕文件已经存在了 %s %s") , szSource , szTarget);
+      szTargetMD5 = cm5source.GetMD5(szTarget);
+      if(szTargetMD5 == szSourceMD5)
+      {
+        SVP_LogMsg5(_T("同样的字幕文件已经存在了 %s %s"), szSource, szTarget);
         ialreadyExist++; //TODO: 如果idx+sub里面只有一个文件相同怎么办 ？？~~ 
         break;
       }
 
-      szTmp.Format(_T("%d"), ilan);
-      szTarget = szBasename + szLangExt + szTmp + szSubTmpDetail[0]; 
-      szTargetBaseName = szBasename + szLangExt + szTmp;
+      swprintf_s(szTmp, 128, L"%d", ilan);
+      szTarget = szBasename + szLangExt + (LPCTSTR)szTmp + szSubTmpDetail[0];
+      szTargetBaseName = szBasename + szLangExt + (LPCTSTR)szTmp;
       ilan++;
     }
 
     //SVP_LogMsg5(_T("Copy 字幕文件 %s %s") , szSource , szTarget);
-    if( !CopyFile( szSource, szTarget, false) ){
-      SVP_LogMsg( szSource + _T(" to ") + szTarget + _T(" 复制字幕文件失败"));
-      SVP_LogMsg( CString( _T("字幕文件无法写入 ") ) + szTarget, 31);
+    if (!CopyFile(szSource.c_str(), szTarget.c_str(), false))
+    {
+      SVP_LogMsg((szSource + L" to " + szTarget
+        + L" 复制字幕文件失败").c_str());
+      SVP_LogMsg(CString( _T("字幕文件无法写入 ")) + szTarget.c_str(), 31);
       szDefaultSubPath = szSource;
-    }else if ( ( (bIsIdxSub && szSubTmpDetail[0].CompareNoCase(_T(".idx")) == 0) || !bIsIdxSub )
-      && szDefaultSubPath.IsEmpty()){
-        szDefaultSubPath = szTarget;
     }
-    CStringArray szaDesclines;
-    if(szaSubDescs.GetCount() > iTmpID){
-      this->Explode( szaSubDescs.GetAt(iTmpID) , _T("\x0b\x0b") , &szaDesclines);
-      if(szaDesclines.GetCount() > 0){
+    else if (((bIsIdxSub && szSubTmpDetail[0].compare(L".idx") == 0)
+      || !bIsIdxSub) && szDefaultSubPath.empty())
+        szDefaultSubPath = szTarget;
+
+    std::vector<std::wstring> szaDesclines;
+    if (szaSubDescs.GetCount() > iTmpID)
+    {
+      Explode((LPCTSTR)szaSubDescs.GetAt(iTmpID), L"\x0b\x0b", &szaDesclines);
+      if(szaDesclines.size() > 0)
+      {
         int iDelay = 0;
-        swscanf_s(szaDesclines.GetAt(0), _T("delay=%d"), &iDelay);
-        if(iDelay){
-          CString szBuf;
-          szBuf.Format(_T("%d"), iDelay);
-          filePutContent( szTarget + _T(".delay"), szBuf );
-          SVP_LogMsg(szTarget + _T(" has delay ") + szBuf);
-        }else{
-          _wremove(szTarget + _T(".delay"));
+        swscanf_s(szaDesclines.at(0).c_str(), _T("delay=%d"), &iDelay);
+        if (iDelay)
+        {
+          wchar_t szBuf[128];
+          swprintf_s(szBuf, 128, L"%d", iDelay);
+          filePutContent_STL(szTarget + L".delay", (LPCTSTR)szBuf);
+          SVP_LogMsg((szTarget + L" has delay " + szBuf).c_str());
         }
+        else
+          _wremove((szTarget + L".delay").c_str());
 
       }
-    }else{
-      SVP_LogMsg(_T("Count of szaSubDescs not match with count of subs "));
     }
+    else
+      SVP_LogMsg(_T("Count of szaSubDescs not match with count of subs "));
 
-    _wremove(szSource);
+    _wremove(szSource.c_str());
   }
-  if(ialreadyExist){
+  if(ialreadyExist)
     return _T("EXIST");
-  }else
+  else
     return szDefaultSubPath;
-
 }
 
 CString CSVPToolBox::PackageSubFiles(CStringArray* szaSubFiles)
@@ -1730,12 +1802,12 @@ int CSVPToolBox::FindAllSubfile(std::wstring szSubPath , std::vector<std::wstrin
   if(szExt == _T(".idx"))
   {
     szSubPath = szBaseName + _T(".sub");
-    if(this -> ifFileExist(szSubPath.c_str()))
+    if(this -> ifFileExist_STL(szSubPath.c_str()))
       szaSubFiles -> push_back(szSubPath);
     else
     {
       szSubPath = szBaseName + _T(".rar");
-      if(this->ifFileExist(szSubPath.c_str()))
+      if(this->ifFileExist_STL(szSubPath.c_str()))
       {
         std::wstring szSubFilepath = (LPCTSTR)extractRarFile(szSubPath.c_str());
         if(!szSubFilepath.empty())

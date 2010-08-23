@@ -25,7 +25,7 @@ std::wstring CSVPhash::ComputerSubFilesFileHash(
     CMD5Checksum cmd5 ;
     std::wstring szpath = *iter;
     CSVPToolBox svpTool;
-    if (!svpTool.ifFileExist(szpath.c_str()))
+    if (!svpTool.ifFileExist_STL(szpath.c_str()))
     {
       SVP_LogMsg(_T("sub file not exist for hash"));
       return _T("");
@@ -70,123 +70,131 @@ CString CSVPhash::HexToString(BYTE* lpszMD5){
 }
 CString CSVPhash::ComputerFileHash(CString szFilePath)
 {
+  return ComputerFileHash_STL((LPCTSTR)szFilePath).c_str();
+}
+std::wstring CSVPhash::ComputerFileHash_STL(std::wstring szFilePath)
+{
 
-	CString szRet = _T("");
-	_int64 offset[4];
-
-	
-	CSVPRarLib svpRar;
-	if( svpRar.SplitPath( szFilePath ) ){
-		// this is RAR path
-		SVP_LogMsg5(L" CSVPhash::ComputerFileHash this is RAR path %s " , svpRar.m_fnRAR);
+  std::wstring szRet = L"";
+  __int64 offset[4];
 
 
-		struct RAROpenArchiveDataEx ArchiveDataEx;
-		memset(&ArchiveDataEx, 0, sizeof(ArchiveDataEx));
-		
-		ArchiveDataEx.ArcNameW = (LPTSTR)(LPCTSTR)svpRar.m_fnRAR;
-		char fnA[MAX_PATH];
-		size_t ConvertedChars;
-		if(wcstombs_s(&ConvertedChars, fnA, MAX_PATH, svpRar.m_fnRAR, svpRar.m_fnRAR.GetLength()+1) == -1) fnA[0] = 0;
-		ArchiveDataEx.ArcName = fnA;
+  CSVPRarLib svpRar;
+  if(svpRar.SplitPath_STL(szFilePath))
+  {
+    // this is RAR path
+    SVP_LogMsg5(_T(" CSVPhash::ComputerFileHash_STL this is RAR path %s "),
+      svpRar.m_fnRAR);
 
-		ArchiveDataEx.OpenMode = RAR_OM_EXTRACT;
-		ArchiveDataEx.CmtBuf = 0;
-		HANDLE hrar = RAROpenArchiveEx(&ArchiveDataEx);
-		if(!hrar) 
-			return szRet;
-		
-		struct RARHeaderDataEx HeaderDataEx;
-		HeaderDataEx.CmtBuf = NULL;
-		
-		while(RARReadHeaderEx(hrar, &HeaderDataEx) == 0)
-		{
+    struct RAROpenArchiveDataEx ArchiveDataEx;
+    memset(&ArchiveDataEx, 0, sizeof(ArchiveDataEx));
 
-			CString subfn(HeaderDataEx.FileNameW);
+    ArchiveDataEx.ArcNameW = (LPTSTR)(LPCTSTR)svpRar.m_fnRAR;
+    char fnA[MAX_PATH];
+    size_t ConvertedChars;
+    if(wcstombs_s(&ConvertedChars, fnA, MAX_PATH, svpRar.m_fnRAR,
+      svpRar.m_fnRAR.GetLength()+1) == -1)
+      fnA[0] = 0;
+    ArchiveDataEx.ArcName = fnA;
 
-SVP_LogMsg5(L"Got m_fnInsideRar RAR path %s %s " ,  svpRar.m_fnInsideRar , subfn);
-			if(subfn.CompareNoCase( svpRar.m_fnInsideRar ) == 0 )
-			{
-				
-				int errRar = RARExtractChunkInit(hrar, HeaderDataEx.FileName);
-				if (errRar != 0) {
-					RARCloseArchive(hrar);
-					break;
-				}
+    ArchiveDataEx.OpenMode = RAR_OM_EXTRACT;
+    ArchiveDataEx.CmtBuf = 0;
+    HANDLE hrar = RAROpenArchiveEx(&ArchiveDataEx);
+    if(!hrar) 
+      return szRet;
 
-				__int64 ftotallen = HeaderDataEx.UnpSize;
+    struct RARHeaderDataEx HeaderDataEx;
+    HeaderDataEx.CmtBuf = NULL;
 
-				if (ftotallen < 8192){
-					//a video file less then 8k? impossible!
+    while(RARReadHeaderEx(hrar, &HeaderDataEx) == 0)
+    {
+      std::wstring subfn = HeaderDataEx.FileNameW;
 
-				}else{
-					offset[3] = ftotallen - 8192;
-					offset[2] = ftotallen / 3;
-					offset[1] = ftotallen / 3 * 2;
-					offset[0] = 4096;
-					CMD5Checksum mMd5;
-					char bBuf[4096];
-					for(int i = 0; i < 4;i++){
-						RARExtractChunkSeek( hrar, offset[i], SEEK_SET);
-						//hash 4k block
-						int readlen = RARExtractChunk(hrar, (char*)bBuf, 4096);
-						
-						CString szMD5 = mMd5.GetMD5( (BYTE*)bBuf , 4096).c_str(); //min(readlen, 
-						if(!szRet.IsEmpty()){
-							szRet.Append( _T(";") );
-						}
-						szRet.Append(szMD5);
-					}
-				}
+      SVP_LogMsg5(L"Got m_fnInsideRar RAR path %s %s " , svpRar.m_fnInsideRar,
+        subfn.c_str());
+      if(subfn.compare((LPCTSTR)svpRar.m_fnInsideRar) == 0)
+      {
 
-				
-				RARExtractChunkClose(hrar);
+        int errRar = RARExtractChunkInit(hrar, HeaderDataEx.FileName);
+        if (errRar != 0)
+        {
+          RARCloseArchive(hrar);
+          break;
+        }
+
+        __int64 ftotallen = HeaderDataEx.UnpSize;
+
+        if (ftotallen < 8192)
+        {
+          //a video file less then 8k? impossible!
+        }
+        else
+        {
+          offset[3] = ftotallen - 8192;
+          offset[2] = ftotallen / 3;
+          offset[1] = ftotallen / 3 * 2;
+          offset[0] = 4096;
+          CMD5Checksum mMd5;
+          char bBuf[4096];
+          for(int i = 0; i < 4;i++)
+          {
+            RARExtractChunkSeek(hrar, offset[i], SEEK_SET);
+            //hash 4k block
+            int readlen = RARExtractChunk(hrar, (char*)bBuf, 4096);
+            std::wstring szMD5 = mMd5.GetMD5((unsigned char*)bBuf, 4096);
+            if (!szRet.empty())
+              szRet.append(L";");
+            szRet.append(szMD5);
+          }
+        }
+        RARExtractChunkClose(hrar);
+        break;
+      }
+      RARProcessFile(hrar, RAR_SKIP, NULL, NULL);
+    }
+    RARCloseArchive(hrar);
+  }
+  else
+  {
+    int stream;
+    errno_t err;
+    unsigned long timecost = GetTickCount();
+    err =  _wsopen_s(&stream, szFilePath.c_str(),
+      _O_BINARY|_O_RDONLY , _SH_DENYNO , _S_IREAD);
+    if (!err)
+    {
+      __int64 ftotallen  = _filelengthi64(stream);
+      if (ftotallen < 8192)
+      {
+        //a video file less then 8k? impossible!
+      }
+      else
+      {
+        offset[3] = ftotallen - 8192;
+        offset[2] = ftotallen / 3;
+        offset[1] = ftotallen / 3 * 2;
+        offset[0] = 4096;
+        CMD5Checksum mMd5;
+        unsigned char bBuf[4096];
+        for(int i = 0; i < 4;i++)
+        {
+          _lseeki64(stream, offset[i], 0);
+          //hash 4k block
+          int readlen = _read( stream, bBuf, 4096);
+          std::wstring szMD5 = mMd5.GetMD5(bBuf, readlen); 
+          if(!szRet.empty())
+            szRet.append(L";");
+          szRet.append(szMD5);
+        }
+      }
+      _close(stream);
+    }
+    timecost =  GetTickCount() - timecost;
+  }
 
 
-				break;
-			}
 
-			RARProcessFile(hrar, RAR_SKIP, NULL, NULL);
-		}
-
-		RARCloseArchive(hrar);
-	}else{
-		int stream;
-		errno_t err;
-		DWORD timecost = GetTickCount();
-		err =  _wsopen_s(&stream, szFilePath, _O_BINARY|_O_RDONLY , _SH_DENYNO , _S_IREAD );
-		if(!err){
-			__int64 ftotallen  = _filelengthi64( stream );
-			if (ftotallen < 8192){
-				//a video file less then 8k? impossible!
-
-			}else{
-				offset[3] = ftotallen - 8192;
-				offset[2] = ftotallen / 3;
-				offset[1] = ftotallen / 3 * 2;
-				offset[0] = 4096;
-				CMD5Checksum mMd5;
-				BYTE bBuf[4096];
-				for(int i = 0; i < 4;i++){
-					_lseeki64(stream, offset[i], 0);
-					//hash 4k block
-					int readlen = _read( stream, bBuf, 4096);
-					CString szMD5 = mMd5.GetMD5( bBuf , readlen).c_str(); 
-					if(!szRet.IsEmpty()){
-						szRet.Append( _T(";") );
-					}
-					szRet.Append(szMD5);
-				}
-			}
-			_close(stream);
-		}
-		timecost =  GetTickCount() - timecost;
-
-	}
-
-
-	
-	//szFilePath.Format(_T("Vid Hash Cost %d milliseconds "), timecost);
-	//SVP_LogMsg(szFilePath);
-	return szRet;
+  //szFilePath.Format(_T("Vid Hash Cost %d milliseconds "), timecost);
+  //SVP_LogMsg(szFilePath);
+  return szRet;
 }

@@ -55,7 +55,7 @@ void SVP_RealUploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath,
   //CSVPNet svpNet;
   //CSVPhash svpHash;
   //CSVPToolBox svpToolBox;
-  //CString szFileHash  = svpHash.ComputerFileHash(fnVideoFilePath);
+  //CString szFileHash  = svpHash.ComputerFileHash_STL(fnVideoFilePath);
 
   //CStringArray szaSubFiles;
   //svpToolBox.FindAllSubfile(szSubPath, &szaSubFiles);
@@ -92,8 +92,7 @@ void RealUploadSubFileByVideoAndSubFilePath_STL(std::wstring fnVideoFilePath,
   CSVPNet svpNet;
   CSVPhash svpHash;
   CSVPToolBox svpToolBox;
-  std::wstring szFileHash = (LPCTSTR)svpHash.ComputerFileHash(
-    fnVideoFilePath.c_str());
+  std::wstring szFileHash = svpHash.ComputerFileHash_STL(fnVideoFilePath);
 
   std::vector<std::wstring> szaSubFiles;
   svpToolBox.FindAllSubfile(szSubPath.c_str(), &szaSubFiles);
@@ -129,7 +128,7 @@ void SVP_RealCheckUpdaterExe(BOOL* bCheckingUpdater, UINT verbose )
 	//检查 updater.exe 是否可写
 	CSVPToolBox svpToolBox;
 	CSVPNet svpNet;
-	CString szUpdaterPath = svpToolBox.GetPlayerPath(_T("Updater.exe"));
+	CString szUpdaterPath = svpToolBox.GetPlayerPath_STL(_T("Updater.exe")).c_str();
 	if ( svpToolBox.isWriteAble(szUpdaterPath) ){
 		//如果可写，将文件版本号+文件长度hash 发送给 http://svplayer.shooter.cn/api/updater.php 
 
@@ -299,12 +298,12 @@ void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath,
   //  SVP_LogMsg(ResStr(IDS_LOG_MSG_USING_SVPSUB_SYSTEM_LOOKINGFOR_ENGSUB), 31);
   //CSVPNet svpNet;
   //CSVPhash svpHash;
-  //CString szFileHash  = svpHash.ComputerFileHash(fnVideoFilePath);
+  //CString szFileHash  = svpHash.ComputerFileHash_STL(fnVideoFilePath);
   //SVP_LogMsg5(L"FileHash %s for %s ", szFileHash , fnVideoFilePath);
 
   //for(int i = 1; i <= 7; i++){
   //  svpNet.iTryID = i;
-  //  int err =  svpNet.QuerySubByVideoPathOrHash(fnVideoFilePath,szFileHash, _T("") , szLang) ;
+  //  int err =  svpNet.QuerySubByVideoPathOrHash_STL(fnVideoFilePath,szFileHash, _T("") , szLang) ;
   //  if(err){
   //    Sleep(2300 );
 
@@ -319,7 +318,7 @@ void SVP_FetchSubFileByVideoFilePath(CString fnVideoFilePath,
   //CString szSubFilePath;
   //int iSubTotal = 0;
   //for(int i = 0; i < svpNet.svpToolBox.szaSubTmpFileList.GetCount(); i++){
-  //  szSubFilePath = svpNet.svpToolBox.getSubFileByTempid(i, fnVideoFilePath);
+  //  szSubFilePath = svpNet.svpToolBox.getSubFileByTempid_STL(i, fnVideoFilePath);
   //  if(szSubFilePath == _T("EXIST")){
   //    SVP_LogMsg(ResStr(IDS_LOG_MSG_SVPSUB_SAMEAS_CURRENT), 31);
   //  }else if(szSubFilePath){
@@ -376,16 +375,15 @@ void FetchSubFileByVideoFilePath_STL(std::wstring fnVideoFilePath,
     SVP_LogMsg(ResStr(IDS_LOG_MSG_USING_SVPSUB_SYSTEM_LOOKINGFOR_ENGSUB), 31);
   CSVPNet svpNet;
   CSVPhash svpHash;
-  std::wstring szFileHash  = (LPCTSTR)svpHash.ComputerFileHash(
-    fnVideoFilePath.c_str());
+  std::wstring szFileHash  = svpHash.ComputerFileHash_STL(fnVideoFilePath);
   SVP_LogMsg5(L"FileHash %s for %s ", szFileHash.c_str(),
     fnVideoFilePath.c_str());
 
   for (int i = 1; i <= 7; i++)
   {
     svpNet.iTryID = i;
-    int err =  svpNet.QuerySubByVideoPathOrHash(fnVideoFilePath.c_str(),
-      szFileHash.c_str(), _T("") , szLang.c_str()) ;
+    int err = svpNet.QuerySubByVideoPathOrHash_STL(
+      fnVideoFilePath, szFileHash, L"", szLang);
     if (err)
     {
       Sleep(2300);
@@ -400,9 +398,9 @@ void FetchSubFileByVideoFilePath_STL(std::wstring fnVideoFilePath,
   int iSubTotal = 0;
   for (int i = 0; i < svpNet.svpToolBox.szaSubTmpFileList.GetCount(); i++)
   {
-    szSubFilePath = (LPCTSTR)svpNet.svpToolBox.getSubFileByTempid(i,
-      fnVideoFilePath.c_str());
-    if (szSubFilePath == _T("EXIST"))
+    szSubFilePath = svpNet.svpToolBox.getSubFileByTempid_STL(i,
+      fnVideoFilePath);
+    if (szSubFilePath == L"EXIST")
       SVP_LogMsg(ResStr(IDS_LOG_MSG_SVPSUB_SAMEAS_CURRENT), 31);
     else if (!szSubFilePath.empty())
     {
@@ -423,7 +421,7 @@ void FetchSubFileByVideoFilePath_STL(std::wstring fnVideoFilePath,
   if (iSubTotal)
   {
     wchar_t szLog[128];
-    swprintf_s(szLog, sizeof(szLog),
+    swprintf_s(szLog, 128,
       ResStr(IDS_LOG_MSG_SVPSUB_GOT_N_SUB_FILE_DOWNLOADED), iSubTotal);
     SVP_LogMsg(szLog, 31); 
   }
@@ -468,7 +466,7 @@ void SVP_LogMsg(CString logmsg, int level){
 	ULONGLONG logTick2 = SVPGetPerfCounter();
 	CStdioFile f;
 	CSVPToolBox svpToolBox;
-	CString szLogPath = svpToolBox.GetPlayerPath(_T("SVPDebug.log"));
+	CString szLogPath = svpToolBox.GetPlayerPath_STL(_T("SVPDebug.log")).c_str();
 	 /* must use Binary mode because its saved in unicode */
 	if(f.Open(szLogPath, CFile::modeCreate | CFile::modeWrite | CFile::modeNoTruncate | CFile::typeBinary))
 	{
@@ -490,7 +488,7 @@ void SVP_LogMsg2(LPCTSTR fmt, ...)
 	va_list args;
 	va_start(args, fmt);
 	CSVPToolBox svpToolBox;
-	CString szLogPath = svpToolBox.GetPlayerPath(_T("SVPDebug.log"));
+	CString szLogPath = svpToolBox.GetPlayerPath_STL(_T("SVPDebug.log")).c_str();
 	if(TCHAR* buff = new TCHAR[_vsctprintf(fmt, args) + 1])
 	{
 		_vstprintf(buff, fmt, args);
@@ -510,7 +508,7 @@ void SVP_LogMsg3(LPCSTR fmt, ...)
 	va_list args;
 	va_start(args, fmt);
 	CSVPToolBox svpToolBox;
-	CString szLogPath = svpToolBox.GetPlayerPath(_T("SVPDebug2.log"));
+	CString szLogPath = svpToolBox.GetPlayerPath_STL(_T("SVPDebug2.log")).c_str();
 	if(CHAR* buff = new CHAR[_vscprintf(fmt, args) + 1])
 	{
 		vsprintf(buff, fmt, args);
@@ -530,7 +528,7 @@ void SVP_LogMsg5(LPCTSTR fmt, ...)
 	va_list args;
 	va_start(args, fmt);
 	//CSVPToolBox svpToolBox;
-	//CString szLogPath = svpToolBox.GetPlayerPath(_T("SVPDebug2.log"));
+	//CString szLogPath = svpToolBox.GetPlayerPath_STL(_T("SVPDebug2.log"));
 	vswprintf(buf,fmt,args);
 	SVP_LogMsg(buf);
 	va_end(args);
@@ -548,7 +546,7 @@ void SVP_LogMsg4(BYTE* buff, __int64 iLen)
 {
 	
 	CSVPToolBox svpToolBox;
-	CString szLogPath = svpToolBox.GetPlayerPath(_T("SVPDebug4.log"));
+	CString szLogPath = svpToolBox.GetPlayerPath_STL(_T("SVPDebug4.log")).c_str();
 
 	
 		if(FILE* f = _tfopen(szLogPath, _T("at")))

@@ -14,7 +14,8 @@ public:
 	CSVPRarLib(void);
 	~CSVPRarLib(void);
 
-	BOOL SplitPath(	CString fnSVPRarPath );
+  BOOL SplitPath(CString fnSVPRarPath);
+  BOOL SplitPath_STL(std::wstring fnSVPRarPath);
 
 	int ListRar(CString fnRarPath , CStringArray* szaFiles);
 

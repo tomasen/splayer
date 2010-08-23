@@ -604,9 +604,9 @@ std::wstring CMD5Checksum::Final()
     if (this->lpszMD5[i] == 0)
       wcscpy_s(Str, sizeof(Str), _T("00"));
     else if (this->lpszMD5[i] <= 15)
-      swprintf_s(Str, sizeof(Str), _T("0%x"), this->lpszMD5[i]);
+      swprintf_s(Str, 128, _T("0%x"), this->lpszMD5[i]);
     else
-      swprintf_s(Str, sizeof(Str), _T("%x"), this->lpszMD5[i]);
+      swprintf_s(Str, 128, _T("%x"), this->lpszMD5[i]);
     strMD5 += Str;
   }
   Clean();

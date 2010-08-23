@@ -1,5 +1,6 @@
 #include "SVPRarLib.h"
 #include "..\..\include\libunrar\dll.hpp"
+#include <algorithm>
 
 #define SVP_LogMsg5 __noop
 #define SVP_LogMsg3 __noop
@@ -14,26 +15,33 @@ CSVPRarLib::~CSVPRarLib(void)
 {
 }
 
-BOOL CSVPRarLib::SplitPath(	CString fnSVPRarPath ){
-	m_bIsRAR =  ( fnSVPRarPath.Left(6).MakeLower() == _T("rar://") ) ;
-	//SVP_LogMsg5(L"CAsyncFileReader File %s" , fn);
-	BOOL ret = false;
-	if(m_bIsRAR){
-		//SVP_LogMsg5(L"This is RAR File %s" , fn);
-		{
-			{
-		//		SVP_LogMsg5(_T("rar library loaded"));
-				int iPos = fnSVPRarPath.Find('?');
-				if(iPos >= 0){
-					m_fnRAR = fnSVPRarPath.Mid(6, iPos - 6);
-					m_fnInsideRar = fnSVPRarPath.Right( fnSVPRarPath.GetLength() - iPos - 1 );
-					ret = true;
-				}
-			}
-		}
-	}
+BOOL CSVPRarLib::SplitPath(CString fnSVPRarPath)
+{
+  return SplitPath_STL((LPCTSTR)fnSVPRarPath);
+}
 
-	return ret;
+BOOL CSVPRarLib::SplitPath_STL(std::wstring fnSVPRarPath)
+{
+  std::wstring fnSVPExt = fnSVPRarPath.substr(0, 6);
+  std::transform(fnSVPExt.begin(), fnSVPExt.end(), fnSVPExt.begin(), tolower);
+  m_bIsRAR = (fnSVPExt == L"rar://");
+  //SVP_LogMsg5(L"CAsyncFileReader File %s" , fn);
+  BOOL ret = false;
+  if(m_bIsRAR)
+    //SVP_LogMsg5(L"This is RAR File %s" , fn);
+  {
+    //		SVP_LogMsg5(_T("rar library loaded"));
+    int iPos = fnSVPRarPath.find('?');
+    if(iPos >= 0)
+    {
+      m_fnRAR = fnSVPRarPath.substr(6, iPos - 6).c_str();
+      m_fnInsideRar = fnSVPRarPath.substr(iPos + 1,
+        fnSVPRarPath.size() - iPos - 1).c_str();
+      ret = true;
+    }
+  }
+
+  return ret;
 }
 
 int CSVPRarLib::ListRar(CString fnRarPath , CStringArray* szaFiles)

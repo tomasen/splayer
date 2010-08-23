@@ -14,7 +14,7 @@ CSVPNet::CSVPNet(void)
 	memset(uniqueIDHash,0,UNIQU_HASH_SIZE);
 
 #ifdef CURLDEBUG_VERBOSE
-    _wfopen_s(&fp_curl_verbose, svpToolBox.GetPlayerPath(L"SVPDebugNet.log"), L"a");
+    _wfopen_s(&fp_curl_verbose, svpToolBox.GetPlayerPath_STL(L"SVPDebugNet.log"), L"a");
 #endif
 }
 
@@ -541,194 +541,233 @@ int CSVPNet::UploadSubFileByVideoAndHash(std::wstring fnVideoFilePath,
   return retx;
 }
 
-int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath, CString szFileHash, CString szVHash , CString szLang )
+int CSVPNet::QuerySubByVideoPathOrHash(CString szFilePath,
+                              CString szFileHash,
+                              CString szVHash,
+                              CString szLang)
 {
-	CURL *curl;
-	CURLcode res;
-	int ret = 0;
-	CString szPostPerm = _T( "pathinfo=" ) + szFilePath + _T("&filehash=") + szFileHash 
-		+ _T("&vhash=") + szVHash + _T("&lang=") + szLang + _T("&shortname=") + svpToolBox.GetShortFileNameForSearch(szFilePath);
-	struct curl_httppost *formpost=NULL;
-	struct curl_httppost *lastptr=NULL;
 
-
-	curl_global_init(CURL_GLOBAL_ALL);
-	char* szTerm2;
-	char* szTerm3;
-	int iDescLen = 0;
-	szTerm2 = svpToolBox.CStringToUTF8(szFilePath, &iDescLen);
-	curl_formadd(&formpost,	&lastptr, CURLFORM_COPYNAME, "pathinfo", CURLFORM_COPYCONTENTS, szTerm2,CURLFORM_END);
-	
-	szTerm3 = svpToolBox.CStringToUTF8(szFileHash, &iDescLen);
-	curl_formadd(&formpost,	&lastptr, CURLFORM_COPYNAME, "filehash", CURLFORM_COPYCONTENTS, szTerm3,CURLFORM_END);
-	
-	szVHash = genVHash(szTerm2, szTerm3, uniqueIDHash);
-	
-
-	free(szTerm2);
-	free(szTerm3);
-
-	if(!szVHash.IsEmpty()){
-		szTerm2 = svpToolBox.CStringToUTF8(szVHash, &iDescLen);
-		curl_formadd(&formpost,	&lastptr, CURLFORM_COPYNAME, "vhash", CURLFORM_COPYCONTENTS, szTerm2,CURLFORM_END);
-		free(szTerm2);
-	}
-
-	AppSettings& s = AfxGetAppSettings();
-	CString szSVPSubPerf = s.szSVPSubPerf;
-	if(!szSVPSubPerf.IsEmpty()){
-		szTerm2 = svpToolBox.CStringToUTF8(szSVPSubPerf, &iDescLen);
-		curl_formadd(&formpost,	&lastptr, CURLFORM_COPYNAME, "perf", CURLFORM_COPYCONTENTS, szTerm2,CURLFORM_END);
-		free(szTerm2);
-	}
-
-	if(!szLang.IsEmpty()){
-		szTerm2 = svpToolBox.CStringToUTF8(szLang, &iDescLen);
-		curl_formadd(&formpost,	&lastptr, CURLFORM_COPYNAME, "lang", CURLFORM_COPYCONTENTS, szTerm2,CURLFORM_END);
-		free(szTerm2);
-	}
-
-	szTerm2 = svpToolBox.CStringToUTF8(svpToolBox.GetShortFileNameForSearch(szFilePath), &iDescLen);
-	curl_formadd(&formpost,	&lastptr, CURLFORM_COPYNAME, "shortname", CURLFORM_COPYCONTENTS, szTerm2,CURLFORM_END);
-	free(szTerm2);
-
-	FILE *stream_http_recv_buffer = svpToolBox.getTmpFileSteam();
-	if(!stream_http_recv_buffer){
-		SVP_LogMsg(_T("TmpFile Creation for http recv buff fail")); //// TODO: 1. warning!! OR switch to memfile system
-		return -1;
-	}
-	int err = 0;
-
-
-	curl = curl_easy_init();
-	if(curl) {
-		long respcode;
-		CString szFailMsg;
-
-		this->SetCURLopt(curl);
-
-		curl_easy_setopt(curl, CURLOPT_URL,  GetUrlByType('sapi',iTryID) );
-		//curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION , &(this->handleSubQuery));
-		curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
-
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)stream_http_recv_buffer);
-		//int iDescLen = 0;
-		//char* szPostFields = svpToolBox.CStringToUTF8(szPostPerm, &iDescLen) ;
-		//curl_easy_setopt(curl, CURLOPT_POSTFIELDS, (void *)szPostFields);
-		//curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, iDescLen);
-		res = curl_easy_perform(curl);
-		if(res == 0){
-			curl_easy_getinfo(curl,CURLINFO_RESPONSE_CODE, &respcode);
-			//double contentlength;
-			//curl_easy_getinfo(curl,CURLINFO_SIZE_DOWNLOAD, &contentlength);
-			//SVP_LogMsg5(L" contentlength %f", contentlength);
-			if(respcode == 200){
-				//good to go
-				//SVP_LogMsg(_T("字幕已经找到，正在处理..."), 31);
-				ret = 1;
-			}else{
-				//error
-				SVP_LogMsg5(_T("HTTP return code is not 200 but %d") , respcode);
-				err = 1;
-			}
-		}else{
-			//error
-            LONG l_oserr = 0;
-            curl_easy_getinfo(curl,CURLINFO_OS_ERRNO,&l_oserr);
-			err = 2;
-			szFailMsg.Format(L"%s",CStringW(curl_easy_strerror(res)) ) ;
-            if(szFailMsg == L"Couldn't connect to server"){
-                szFailMsg.Append(ResStr(IDS_LOG_MSG_SVPSUB_PLEASE_CHECK_FIREWALL));
-            }
-
-			SVP_LogMsg5(_T("HTTP connection error  %s %d") , szFailMsg, l_oserr); //TODO handle this
-		}
-
-		/* always cleanup */
-		curl_easy_cleanup(curl);
-
-		//free(szPostFields);
-
-		//if not error, process data
-		if (ret){
-			int extErr  = this->ExtractDataFromAiSubRecvBuffer(szFilePath, stream_http_recv_buffer);
-			if ( extErr && extErr != -2 ){ // -2 if there is none match subtile
-				SVP_LogMsg(_T("Error On Extract DataFromAiSubRecvBuffer ")); //TODO handle this
-				err = 3;
-			}
-		}else{
-			CString szMsg;
-			szMsg.Format(ResStr(IDS_LOG_MSG_SVPSUB_NETWORK_FAIL), szFailMsg);
-			SVP_LogMsg(szMsg);//,31
-            m_lastFailedMsg = szMsg;
-			err = 4;
-		}
-		/*
-		if (this->mainBufferSize > 0){
-			char statCode = this->mainBuffer[0];
-			if(statCode <= 0){
-				//error handle
-			}else{
-				//handSubFiles
-
-			}
-
-		}
-		if (this->mainBuffer){
-			free(this->mainBuffer);
-		}*/
-	}
-	
-	//this->mainBuffer = NULL;
-	//this->mainBufferSize = 0;
-	fclose(stream_http_recv_buffer);
-
-	return err;
+  return QuerySubByVideoPathOrHash_STL((LPCTSTR)szFilePath,
+    (LPCTSTR)szFileHash, (LPCTSTR)szVHash, (LPCTSTR)szLang);
 }
+int CSVPNet::QuerySubByVideoPathOrHash_STL(std::wstring szFilePath,
+                                       std::wstring szFileHash,
+                                       std::wstring szVHash,
+                                       std::wstring szLang)
+{
+  CURL *curl;
+  CURLcode res;
+  int ret = 0;
+  std::wstring szPostPerm = L"pathinfo=" + szFilePath + L"&filehash="
+    + szFileHash + L"&vhash=" + szVHash + L"&lang=" + szLang + L"&shortname="
+    + svpToolBox.GetShortFileNameForSearch_STL(szFilePath);
 
-int  CSVPNet::ExtractDataFromAiSubRecvBuffer(CString szFilePath, FILE* sAiSubRecvBuff){
+  struct curl_httppost *formpost=NULL;
+  struct curl_httppost *lastptr=NULL;
 
-	char szSBuff[2] = {0,0};
-	int ret = 0;
-	fseek(sAiSubRecvBuff,0,SEEK_SET); // move point yo begining of file
-	
-	if ( fread(szSBuff , sizeof(char), 1, sAiSubRecvBuff) < 1){
-		SVP_LogMsg(_T("Fail to retrive First Stat Code"));
-	}
-	
-	int iStatCode = szSBuff[0];
-	if(iStatCode <= 0){
-		if (iStatCode == -1){
-			SVP_LogMsg(ResStr(IDS_LOG_MSG_SVPSUB_NONE_MATCH_SUB), 31);
-			ret = -2;
-		}else{
-			//TODO error handle
-			SVP_LogMsg(ResStr(IDS_LOG_MSG_SVPSUB_DOWNLOAD_FAIL));//, 31
-			ret = -1;
-			//SVP_LogMsg(_T("First Stat Code TODO: 显示有错误发生"));
-		}
-		
-		goto releaseALL;
-	}else{
-		SVP_LogMsg(ResStr(IDS_LOG_MSG_SVPSUB_GOTMATCHED_AND_DOWNLOADING), 31);
-	}
-	
-	//handle SubFiles
-	svpToolBox.szaSubDescs.RemoveAll();
-	svpToolBox.szaSubTmpFileList.RemoveAll();
 
-	for(int j = 0; j < iStatCode; j++){
-		int exterr = svpToolBox.HandleSubPackage(sAiSubRecvBuff);
-		if(exterr){
-			ret = exterr;
-			break;
-		}
-	}
-	
-	
+  curl_global_init(CURL_GLOBAL_ALL);
+  char* szTerm2;
+  char* szTerm3;
+  int iDescLen = 0;
+  szTerm2 = svpToolBox.CStringToUTF8(szFilePath.c_str(), &iDescLen);
+  curl_formadd(&formpost,	&lastptr, CURLFORM_COPYNAME, "pathinfo", CURLFORM_COPYCONTENTS, szTerm2,CURLFORM_END);
+
+  szTerm3 = svpToolBox.CStringToUTF8(szFileHash.c_str(), &iDescLen);
+  curl_formadd(&formpost,	&lastptr, CURLFORM_COPYNAME, "filehash", CURLFORM_COPYCONTENTS, szTerm3,CURLFORM_END);
+
+  szVHash = genVHash(szTerm2, szTerm3, uniqueIDHash);
+
+
+  free(szTerm2);
+  free(szTerm3);
+
+  if (!szVHash.empty())
+  {
+    szTerm2 = svpToolBox.CStringToUTF8(szVHash.c_str(), &iDescLen);
+    curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "vhash", CURLFORM_COPYCONTENTS, szTerm2,CURLFORM_END);
+    free(szTerm2);
+  }
+
+  AppSettings& s = AfxGetAppSettings();
+  std::wstring szSVPSubPerf = (LPCTSTR)s.szSVPSubPerf;
+  if (!szSVPSubPerf.empty())
+  {
+    szTerm2 = svpToolBox.CStringToUTF8(szSVPSubPerf.c_str(), &iDescLen);
+    curl_formadd(&formpost,	&lastptr, CURLFORM_COPYNAME, "perf", CURLFORM_COPYCONTENTS, szTerm2,CURLFORM_END);
+    free(szTerm2);
+  }
+
+  if (!szLang.empty())
+  {
+    szTerm2 = svpToolBox.CStringToUTF8(szLang.c_str(), &iDescLen);
+    curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "lang", CURLFORM_COPYCONTENTS, szTerm2,CURLFORM_END);
+    free(szTerm2);
+  }
+
+  szTerm2 = svpToolBox.CStringToUTF8(svpToolBox.GetShortFileNameForSearch_STL(szFilePath).c_str(), &iDescLen);
+  curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "shortname", CURLFORM_COPYCONTENTS, szTerm2,CURLFORM_END);
+  free(szTerm2);
+
+  FILE *stream_http_recv_buffer = svpToolBox.getTmpFileSteam();
+  if (!stream_http_recv_buffer)
+  {
+    SVP_LogMsg(_T("TmpFile Creation for http recv buff fail")); //// TODO: 1. warning!! OR switch to memfile system
+    return -1;
+  }
+  int err = 0;
+
+
+  curl = curl_easy_init();
+  if (curl)
+  {
+    long respcode;
+    wchar_t szFailMsg[1024];
+
+    SetCURLopt(curl);
+
+    curl_easy_setopt(curl, CURLOPT_URL, GetUrlByType('sapi', iTryID));
+    //curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION , &(this->handleSubQuery));
+    curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
+
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)stream_http_recv_buffer);
+    //int iDescLen = 0;
+    //char* szPostFields = svpToolBox.CStringToUTF8(szPostPerm, &iDescLen) ;
+    //curl_easy_setopt(curl, CURLOPT_POSTFIELDS, (void *)szPostFields);
+    //curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, iDescLen);
+    res = curl_easy_perform(curl);
+    if (res == 0)
+    {
+      curl_easy_getinfo(curl,CURLINFO_RESPONSE_CODE, &respcode);
+      //double contentlength;
+      //curl_easy_getinfo(curl,CURLINFO_SIZE_DOWNLOAD, &contentlength);
+      //SVP_LogMsg5(L" contentlength %f", contentlength);
+      if (respcode == 200)
+      {
+        //good to go
+        //SVP_LogMsg(_T("字幕已经找到，正在处理..."), 31);
+        ret = 1;
+      }
+      else
+      {
+        //error
+        SVP_LogMsg5(_T("HTTP return code is not 200 but %d") , respcode);
+        err = 1;
+      }
+    }
+    else
+    {
+      //error
+      LONG l_oserr = 0;
+      curl_easy_getinfo(curl,CURLINFO_OS_ERRNO,&l_oserr);
+      err = 2;
+      swprintf_s(szFailMsg, 1024, L"%s", CStringW(curl_easy_strerror(res)));
+      //szFailMsg.Format(L"%s",CStringW(curl_easy_strerror(res)));
+      if(!lstrcmp(szFailMsg, L"Couldn't connect to server"));
+        lstrcat(szFailMsg, ResStr(IDS_LOG_MSG_SVPSUB_PLEASE_CHECK_FIREWALL));
+
+      SVP_LogMsg5(_T("HTTP connection error  %s %d"), szFailMsg, l_oserr); //TODO handle this
+    }
+
+    /* always cleanup */
+    curl_easy_cleanup(curl);
+
+    //free(szPostFields);
+
+    //if not error, process data
+    if (ret)
+    {
+      int extErr  = ExtractDataFromAiSubRecvBuffer_STL(szFilePath, stream_http_recv_buffer);
+      if (extErr && extErr != -2)
+      { // -2 if there is none match subtile
+        SVP_LogMsg(_T("Error On Extract DataFromAiSubRecvBuffer ")); //TODO handle this
+        err = 3;
+      }
+    }
+    else
+    {
+      wchar_t szMsg[1024];
+      swprintf_s(szMsg, 1024, ResStr(IDS_LOG_MSG_SVPSUB_NETWORK_FAIL), szFailMsg);
+      SVP_LogMsg(szMsg);//,31
+      m_lastFailedMsg = szMsg;
+      err = 4;
+    }
+    /*
+    if (this->mainBufferSize > 0){
+    char statCode = this->mainBuffer[0];
+    if(statCode <= 0){
+    //error handle
+    }else{
+    //handSubFiles
+
+    }
+
+    }
+    if (this->mainBuffer){
+    free(this->mainBuffer);
+    }*/
+  }
+
+  //this->mainBuffer = NULL;
+  //this->mainBufferSize = 0;
+  fclose(stream_http_recv_buffer);
+
+  return err;
+}
+int CSVPNet::ExtractDataFromAiSubRecvBuffer(CString szFilePath,
+                                            FILE* sAiSubRecvBuff)
+{
+  return ExtractDataFromAiSubRecvBuffer_STL((LPCTSTR)szFilePath,
+    sAiSubRecvBuff);
+}
+int CSVPNet::ExtractDataFromAiSubRecvBuffer_STL(std::wstring szFilePath,
+                                            FILE* sAiSubRecvBuff)
+{
+  char szSBuff[2] = {0,0};
+  int ret = 0;
+  fseek(sAiSubRecvBuff, 0, SEEK_SET); // move point yo begining of file
+
+  if (fread(szSBuff, sizeof(char), 1, sAiSubRecvBuff) < 1)
+    SVP_LogMsg(_T("Fail to retrive First Stat Code"));
+
+  int iStatCode = szSBuff[0];
+  if (iStatCode <= 0)
+  {
+    if (iStatCode == -1)
+    {
+      SVP_LogMsg(ResStr(IDS_LOG_MSG_SVPSUB_NONE_MATCH_SUB), 31);
+      ret = -2;
+    }
+    else
+    {
+      //TODO error handle
+      SVP_LogMsg(ResStr(IDS_LOG_MSG_SVPSUB_DOWNLOAD_FAIL));//, 31
+      ret = -1;
+      //SVP_LogMsg(_T("First Stat Code TODO: 显示有错误发生"));
+    }
+    goto releaseALL;
+  }
+  else
+    SVP_LogMsg(ResStr(IDS_LOG_MSG_SVPSUB_GOTMATCHED_AND_DOWNLOADING), 31);
+
+  //handle SubFiles
+  svpToolBox.szaSubDescs.RemoveAll();
+  svpToolBox.szaSubTmpFileList.RemoveAll();
+
+  for(int j = 0; j < iStatCode; j++)
+  {
+    int exterr = svpToolBox.HandleSubPackage(sAiSubRecvBuff);
+    if(exterr)
+    {
+      ret = exterr;
+      break;
+    }
+  }
+
+
 releaseALL:
-	fclose(sAiSubRecvBuff);
+  fclose(sAiSubRecvBuff);
 
-	svpToolBox.ClearTmpFiles();
-	return ret;
+  svpToolBox.ClearTmpFiles();
+  return ret;
 }

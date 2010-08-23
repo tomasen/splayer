@@ -38,6 +38,7 @@
 #include "DlgChkUpdater.h"
 #include <dsound.h>
 #include "Controller/Hotkey_Controller.h"
+#include "Controller/PlaylistController.h"
 #include "Controller/PlayerPreference.h"
 
 #include "..\..\..\Updater\cupdatenetlib.h"
@@ -56,6 +57,7 @@ char* szUrl = "http://svplayer.shooter.cn/api/updater.php";
 
 DECLARE_LAZYINSTANCE(HotkeyController);
 DECLARE_LAZYINSTANCE(PlayerPreference);
+DECLARE_LAZYINSTANCE(PlaylistController);
 
 /////////
 typedef BOOL (WINAPI* MINIDUMPWRITEDUMP)(HANDLE hProcess, DWORD dwPid, HANDLE hFile, MINIDUMP_TYPE DumpType,

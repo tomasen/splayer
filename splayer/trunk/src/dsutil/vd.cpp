@@ -515,7 +515,7 @@ bool BitBltFromI420ToI420(int w, int h, BYTE* dsty, BYTE* dstu, BYTE* dstv, int 
 		}
 		for(int y = 0; y < orgh; y++, srcy += srcpitch, dsty += dstpitch){
 			memcpy_accel(dsty, srcy, pitch);
-			//memset(dsty, 0xff, abs(dstpitch));
+			memset(dsty+pitch, 0x00, abs(dstpitch)-pitch);
 			//memcpy(dsty, srcy, pitch);
 		}
 
@@ -530,6 +530,7 @@ bool BitBltFromI420ToI420(int w, int h, BYTE* dsty, BYTE* dstu, BYTE* dstv, int 
 		//srcu-=srcpitch/2;
 		for(int y = 0; y < h; y+=2, srcu += srcpitch, dstu += dstpitch){
 			memcpy_accel(dstu, srcu, pitch);
+      memset(dstu+pitch, 0x80, abs(dstpitch)-pitch);
 			//memset(dstu, 0xff, abs(dstpitch));
 			//memcpy(dstu, srcu, pitch);
 		}
@@ -540,6 +541,7 @@ bool BitBltFromI420ToI420(int w, int h, BYTE* dsty, BYTE* dstu, BYTE* dstv, int 
 			//memset(dstv, 0xff, abs(dstpitch));
 			//memcpy(dstv, srcv, pitch);
 			memcpy_accel(dstv, srcv, pitch);
+      memset(dstv+pitch, 0x80, abs(dstpitch)-pitch);
 			
 		}
 	}

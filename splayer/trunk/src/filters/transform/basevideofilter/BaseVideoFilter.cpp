@@ -452,7 +452,7 @@ HRESULT CBaseVideoFilter::CopyBuffer(BYTE* pOut, BYTE** ppIn, int w, int h, int 
 		if(subtype == MEDIASUBTYPE_YV12) {BYTE* tmp = pInU; pInU = pInV; pInV = tmp;}
 
 		BYTE* pOutU = pOut + bihOut.biWidth*hout;
-		BYTE* pOutV = pOut + bihOut.biWidth*hout + bihOut.biWidth*srch/4;
+		BYTE* pOutV = pOut + bihOut.biWidth*hout + (bihOut.biWidth>>1)*(srch>>1);
 
 		if(bihOut.biCompression == '21VY') {BYTE* tmp = pOutU; pOutU = pOutV; pOutV = tmp;}
 

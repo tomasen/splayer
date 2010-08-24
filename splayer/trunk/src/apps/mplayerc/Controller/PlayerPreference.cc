@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SPlayerDefs.h"
 #include "PlayerPreference.h"
+#include "../../../lib/splite/libsqlite/libsqlite.h"
 #include "../resource.h"
 
 #define ResStr(id) CString(MAKEINTRESOURCE(id))
@@ -92,8 +93,39 @@ void PlayerPreference::SetStrArray(int id, std::vector<std::wstring> &value_in)
 void PlayerPreference::Init()
 {
   // default value logic
-  m_map_intvar[INTVAR_CL_SWITCHES]  = 0;
+  m_map_intvar[INTVAR_CL_SWITCHES]      = 0;
+  m_map_intvar[INTVAR_PLAYLIST_CURRENT] = 0;
 
+  m_map_strarray[STRARRAY_PLAYLIST] = std::vector<std::wstring>();
+  std::map<int, std::vector<std::wstring>>::iterator it = m_map_strarray.find(STRARRAY_PLAYLIST);
+  it->second.push_back(L"splayer_1373_48i4r6.dmp");
+  it->second.push_back(L"binkw32.dll");
+  it->second.push_back(L"CSMX.dll");
+  it->second.push_back(L"abc.dmp");
+  it->second.push_back(L"splayer_1373_48i4r6.dmp");
+  it->second.push_back(L"splayer_1373_48i4r6.dmp");
+  it->second.push_back(L"binkw32.dll");
+  it->second.push_back(L"CSMX.dll");
+  it->second.push_back(L"abc.dmp");
+  it->second.push_back(L"splayer_1373_48i4r6.dmp");
+  it->second.push_back(L"splayer_1373_48i4r6.dmp");
+  it->second.push_back(L"binkw32.dll");
+  it->second.push_back(L"CSMX.dll");
+  it->second.push_back(L"abc.dmp");
+  it->second.push_back(L"splayer_1373_48i4r6.dmp");
+  it->second.push_back(L"splayer_1373_48i4r6.dmp");
+  it->second.push_back(L"binkw32.dll");
+  it->second.push_back(L"CSMX.dll");
+  it->second.push_back(L"abc.dmp");
+  it->second.push_back(L"splayer_1373_48i4r6.dmp");
+  it->second.push_back(L"CSMX.dll");
+  it->second.push_back(L"abc.dmp");
+  it->second.push_back(L"splayer_1373_48i4r6.dmp");
+  it->second.push_back(L"CSMX.dll");
+  it->second.push_back(L"abc.dmp");
+  it->second.push_back(L"splayer_1373_48i4r6.dmp");
+
+  //
   if (!sqlite_setting)
   {
     wchar_t path[256];

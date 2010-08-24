@@ -72,9 +72,7 @@
 #include "..\..\..\lib\lyriclib\lyriclib.h"
 #include "SVPLycShowBox.h"
 
-#include <string>
-#include <vector>
-
+#include "UserInterface/Renderer/PlaylistView_MfcProxy.h"
 
 enum {PM_NONE, PM_FILE, PM_DVD, PM_CAPTURE};
 
@@ -554,6 +552,7 @@ protected:  // control bar embedded members
 	CPlayerShaderEditorBar m_wndShaderEditorBar;
 	CList<CSizingControlBar*> m_dockingbars;
 
+  PlaylistViewMfcProxy m_playlist_view;
 	
 	CFileDropTarget m_fileDropTarget;
 	// TODO

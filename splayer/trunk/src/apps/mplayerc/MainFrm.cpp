@@ -822,12 +822,17 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 //	m_wndSubresyncBar.SetHeight(200);
 	LoadControlBar(&m_wndSubresyncBar, AFX_IDW_DOCKBAR_TOP);
 
-	m_wndPlaylistBar.Create(this);
-	m_wndPlaylistBar.SetBarStyle(m_wndPlaylistBar.GetBarStyle() | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC | CBRS_BORDER_3D);
-	m_wndPlaylistBar.EnableDocking(CBRS_ALIGN_ANY);
-	//m_wndPlaylistBar.SetHeight(100);
-	LoadControlBar(&m_wndPlaylistBar, AFX_IDW_DOCKBAR_RIGHT);
-	m_wndPlaylistBar.LoadPlaylist();
+// 	m_wndPlaylistBar.Create(this);
+// 	m_wndPlaylistBar.SetBarStyle(m_wndPlaylistBar.GetBarStyle() | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC | CBRS_BORDER_3D);
+// 	m_wndPlaylistBar.EnableDocking(CBRS_ALIGN_ANY);
+// 	//m_wndPlaylistBar.SetHeight(100);
+// 	LoadControlBar(&m_wndPlaylistBar, AFX_IDW_DOCKBAR_RIGHT);
+// 	m_wndPlaylistBar.LoadPlaylist();
+
+  m_playlist_view.Create(this);
+  m_playlist_view.EnableDocking(CBRS_ALIGN_ANY);
+  m_playlist_view.SetBarStyle(m_playlist_view.GetBarStyle() | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC | CBRS_BORDER_3D);
+  LoadControlBar(&m_playlist_view, AFX_IDW_DOCKBAR_RIGHT);
 
 	m_wndCaptureBar.Create(this);
 	m_wndCaptureBar.SetBarStyle(m_wndCaptureBar.GetBarStyle() | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
@@ -2734,6 +2739,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
       RedrawNonClientArea();
       m_wndToolBar.Invalidate();
       m_wndPlaylistBar.Invalidate();
+      m_playlist_view.Invalidate();
     }
     break;
 
@@ -6797,7 +6803,8 @@ void CMainFrame::OnUpdateViewSubresync(CCmdUI* pCmdUI)
 
 void CMainFrame::OnViewPlaylist()
 {
-	ShowControlBar(&m_wndPlaylistBar, !m_wndPlaylistBar.IsWindowVisible(), TRUE);
+//	ShowControlBar(&m_wndPlaylistBar, !m_wndPlaylistBar.IsWindowVisible(), TRUE);
+  ShowControlBar(&m_playlist_view, !m_playlist_view.IsWindowVisible(), TRUE);
 }
 
 void CMainFrame::OnUpdateViewPlaylist(CCmdUI* pCmdUI)

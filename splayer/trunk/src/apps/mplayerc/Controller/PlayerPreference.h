@@ -2,7 +2,8 @@
 #define PLAYERPREFERENCE_H
 
 #include "LazyInstance.h"
-#include "../../../lib/splite/libsqlite/libsqlite.h"
+
+class SQLITE3;
 
 class PlayerPreference :
   public LazyInstanceImpl<PlayerPreference>

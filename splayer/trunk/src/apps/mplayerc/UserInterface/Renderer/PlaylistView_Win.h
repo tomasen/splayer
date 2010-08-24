@@ -42,16 +42,22 @@ private:
   WTL::CButton  m_btn_save;
   WTL::CButton  m_btn_clear;
 
-  WTL::CFont    m_font_caption;
+  WTL::CFont    m_font_bold;
+  WTL::CFont    m_font_normal;
+  WTL::CFont    m_font_symbol;
   WTL::CBrush   m_br_list;
 
   int m_textcolor;
+  int m_textcolor_hilite;
   int m_basecolor;
   int m_basecolor2;
   int m_basecolor3;
+
   int m_caption_height;
   int m_bottom_height;
   int m_button_height;
+  int m_entry_height;
+  int m_entry_padding;
   int m_padding;
 };
 

@@ -9,4 +9,7 @@
 // string array variables
 #define STRARRAY_PLAYLIST       1000
 
+// custom messages
+#define WM_SPLAYER_OPENCURRENTPLAYLISTITEM  WM_USER+9901
+
 #endif // SPLAYERDEFS_H

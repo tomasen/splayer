@@ -46,7 +46,7 @@ int PlaylistView::OnCreate(LPCREATESTRUCT lpcs)
 {
   m_list.Create(m_hWnd, NULL, NULL, 
     WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VISIBLE | WS_VSCROLL |
-    LBS_NODATA | LBS_OWNERDRAWFIXED);
+    LBS_NODATA | LBS_OWNERDRAWFIXED | LBS_NOTIFY);
   Refresh();
   return 0;
 }
@@ -75,6 +75,13 @@ void PlaylistView::OnSize(UINT nType, CSize size)
 HBRUSH PlaylistView::OnColorListBox(WTL::CDCHandle dc, WTL::CListBox listBox)
 {
   return m_br_list;
+}
+
+LRESULT PlaylistView::OnLbnDblClk(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+  PlayerPreference::GetInstance()->SetIntVar(INTVAR_PLAYLIST_CURRENT, m_list.GetCurSel());
+  GetParent().GetParent().GetParent().SendMessage(WM_SPLAYER_OPENCURRENTPLAYLISTITEM, 0, 0);
+  return 0;
 }
 
 void PlaylistView::DrawItem(LPDRAWITEMSTRUCT lpdis)
@@ -147,16 +154,6 @@ void PlaylistView::_PaintWorker(HDC hdc, RECT rc)
   WTL::CBrush bkgnd;
   bkgnd.CreateSolidBrush(m_basecolor);
   dc.FillRect(&rc, bkgnd);
-
-//   WTL::CPen pen;
-//   pen.CreatePen(PS_SOLID, 1, m_basecolor);
-//   HPEN old_pen = dc.SelectPen(pen);
-//   dc.MoveTo(rc.left, rc.top);
-//   dc.LineTo(rc.right-1, rc.top);
-//   dc.LineTo(rc.right-1, rc.top + m_caption_height - m_padding/2-1);
-//   dc.LineTo(rc.left, rc.top + m_caption_height - m_padding/2-1);
-//   dc.LineTo(rc.left, rc.top);
-//   dc.SelectPen(old_pen);
 
   TRIVERTEX     vert[2] ;
   GRADIENT_RECT gRect;

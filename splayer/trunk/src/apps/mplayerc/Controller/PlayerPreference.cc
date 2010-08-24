@@ -98,32 +98,14 @@ void PlayerPreference::Init()
 
   m_map_strarray[STRARRAY_PLAYLIST] = std::vector<std::wstring>();
   std::map<int, std::vector<std::wstring>>::iterator it = m_map_strarray.find(STRARRAY_PLAYLIST);
-  it->second.push_back(L"splayer_1373_48i4r6.dmp");
-  it->second.push_back(L"binkw32.dll");
-  it->second.push_back(L"CSMX.dll");
-  it->second.push_back(L"abc.dmp");
-  it->second.push_back(L"splayer_1373_48i4r6.dmp");
-  it->second.push_back(L"splayer_1373_48i4r6.dmp");
-  it->second.push_back(L"binkw32.dll");
-  it->second.push_back(L"CSMX.dll");
-  it->second.push_back(L"abc.dmp");
-  it->second.push_back(L"splayer_1373_48i4r6.dmp");
-  it->second.push_back(L"splayer_1373_48i4r6.dmp");
-  it->second.push_back(L"binkw32.dll");
-  it->second.push_back(L"CSMX.dll");
-  it->second.push_back(L"abc.dmp");
-  it->second.push_back(L"splayer_1373_48i4r6.dmp");
-  it->second.push_back(L"splayer_1373_48i4r6.dmp");
-  it->second.push_back(L"binkw32.dll");
-  it->second.push_back(L"CSMX.dll");
-  it->second.push_back(L"abc.dmp");
-  it->second.push_back(L"splayer_1373_48i4r6.dmp");
-  it->second.push_back(L"CSMX.dll");
-  it->second.push_back(L"abc.dmp");
-  it->second.push_back(L"splayer_1373_48i4r6.dmp");
-  it->second.push_back(L"CSMX.dll");
-  it->second.push_back(L"abc.dmp");
-  it->second.push_back(L"splayer_1373_48i4r6.dmp");
+  it->second.push_back(L"D:\\1-4.[VeryCD.com].RM");
+  it->second.push_back(L"D:\\2-1.[VeryCD.com].RM");
+  it->second.push_back(L"D:\\2-2.[VeryCD.com].RM");
+  it->second.push_back(L"D:\\2-3.[VeryCD.com].RM");
+  it->second.push_back(L"D:\\2-4.[VeryCD.com].RM");
+  it->second.push_back(L"D:\\2-5.[VeryCD.com].RM");
+  it->second.push_back(L"D:\\2-6.[VeryCD.com].RM");
+  it->second.push_back(L"D:\\2-7.[VeryCD.com].RM");
 
   //
   if (!sqlite_setting)

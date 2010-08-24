@@ -18,6 +18,7 @@ public:
     MSG_WM_ERASEBKGND(OnEraseBkgnd)
     MSG_WM_SIZE(OnSize)
     MSG_WM_CTLCOLORLISTBOX(OnColorListBox)
+    COMMAND_CODE_HANDLER(LBN_DBLCLK, OnLbnDblClk)
     CHAIN_MSG_MAP(WTL::COwnerDraw<PlaylistView>)
   END_MSG_MAP()
 
@@ -27,6 +28,7 @@ public:
   BOOL OnEraseBkgnd(WTL::CDCHandle dc);
   void OnSize(UINT nType, CSize size);
   HBRUSH OnColorListBox(WTL::CDCHandle dc, WTL::CListBox listBox);
+  LRESULT OnLbnDblClk(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled); 
 
   // owner-draw logic for playlist
   void DrawItem(LPDRAWITEMSTRUCT lpdis);

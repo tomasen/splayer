@@ -99,14 +99,14 @@ void PlaylistView::_PaintWorker(HDC hdc, RECT rc)
 
   TRIVERTEX     vert[2] ;
   GRADIENT_RECT gRect;
-  vert[0].x      = rc.left+1;
-  vert[0].y      = rc.top+1;
+  vert[0].x      = rc.left;
+  vert[0].y      = rc.top;
   vert[0].Red    = GetRValue(m_basecolor3)<<8;
   vert[0].Green  = GetGValue(m_basecolor3)<<8;
   vert[0].Blue   = GetBValue(m_basecolor3)<<8;
   vert[0].Alpha  = 0x0000;
-  vert[1].x      = rc.right-1;
-  vert[1].y      = rc.top + m_caption_height - m_padding/2 -1; 
+  vert[1].x      = rc.right;
+  vert[1].y      = rc.top + m_caption_height - m_padding/2; 
   vert[1].Red    = GetRValue(m_basecolor)<<8;
   vert[1].Green  = GetGValue(m_basecolor)<<8;
   vert[1].Blue   = GetBValue(m_basecolor)<<8;

@@ -15,6 +15,9 @@ public:
   int GetIntVar(int id);
   void SetIntVar(int id, int value_in);
 
+  long long GetInt64Var(int id);
+  void SetInt64Var(int id, long long value_in);
+
   std::wstring GetStringVar(int id);
   void SetStringVar(int id, std::wstring &value_in);
 
@@ -32,8 +35,8 @@ private:
   UINT GetProfileInt(LPCTSTR lpszSection, LPCTSTR lpszEntry, int nDefault);
 
   std::map<int, int>          m_map_intvar;
+  std::map<int, long long>    m_map_int64var;
   std::map<int, std::wstring> m_map_strvar;
-  std::map<int, std::vector<long long>>    m_map_int64array;
   std::map<int, std::vector<int>>          m_map_intarray;
   std::map<int, std::vector<std::wstring>> m_map_strarray;
 

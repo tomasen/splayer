@@ -51,6 +51,19 @@ void PlayerPreference::SetIntVar(int id, int value_in)
   m_map_intvar[id] = value_in;
 }
 
+long long PlayerPreference::GetInt64Var(int id)
+{
+  std::map<int, long long>::iterator it = m_map_int64var.find(id);
+  if (it != m_map_int64var.end())
+    return it->second;
+  return 0;
+}
+
+void PlayerPreference::SetInt64Var(int id, long long value_in)
+{
+  m_map_int64var[id] = value_in;
+}
+
 std::wstring PlayerPreference::GetStringVar(int id)
 {
   std::map<int, std::wstring>::iterator it = m_map_strvar.find(id);
@@ -95,6 +108,8 @@ void PlayerPreference::Init()
   // default value logic
   m_map_intvar[INTVAR_CL_SWITCHES]      = 0;
   m_map_intvar[INTVAR_PLAYLIST_CURRENT] = 0;
+
+  m_map_int64var[INT64VAR_MAINWINDOW]   = 0;
 
   m_map_strarray[STRARRAY_PLAYLIST] = std::vector<std::wstring>();
   std::map<int, std::vector<std::wstring>>::iterator it = m_map_strarray.find(STRARRAY_PLAYLIST);
@@ -167,3 +182,4 @@ UINT PlayerPreference::GetProfileInt(LPCTSTR lpszSection, LPCTSTR lpszEntry, int
     return sqlite_setting->GetProfileInt(lpszSection,  lpszEntry,  nDefault);
   return FALSE;
 }
+

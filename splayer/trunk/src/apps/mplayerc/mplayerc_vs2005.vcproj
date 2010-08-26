@@ -428,6 +428,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CustomDrawBtn.cc"
+				>
+			</File>
+			<File
 				RelativePath=".\DeinterlacerFilter.cpp"
 				>
 			</File>
@@ -994,6 +998,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\Updater\cupdatenetlib.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CustomDrawBtn.h"
 				>
 			</File>
 			<File

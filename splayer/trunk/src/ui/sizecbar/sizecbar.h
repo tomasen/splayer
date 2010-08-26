@@ -163,7 +163,7 @@ protected:
 protected:
     //{{AFX_MSG(CSizingControlBar)
     afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-    afx_msg void OnNcPaint();
+    afx_msg virtual void OnNcPaint();
     afx_msg void OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS FAR* lpncsp);
     afx_msg LRESULT OnNcHitTest(CPoint point);
     afx_msg void OnCaptureChanged(CWnd *pWnd);
@@ -175,7 +175,7 @@ protected:
     afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
     afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
     afx_msg void OnWindowPosChanging(WINDOWPOS FAR* lpwndpos);
-    afx_msg void OnPaint();
+    afx_msg virtual void OnPaint();
     afx_msg void OnClose();
     afx_msg void OnSize(UINT nType, int cx, int cy);
     //}}AFX_MSG

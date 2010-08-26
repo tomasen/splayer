@@ -24,6 +24,8 @@
 #include "PlayerListCtrl.h"
 #include "Playlist.h"
 
+#include "CustomDrawBtn.h"
+
 class OpenMediaData;
 
 class CPlayerPlaylistBar : public CSizingControlBarG
@@ -35,7 +37,7 @@ private:
 
 	CImageList m_fakeImageList;
 	CPlayerListCtrl m_list;
-	CButton m_clearall;
+	CustomDrawBtn m_clearall;
 	CButton m_addsubforplaylist;
 	CWnd* m_pMaindFrame;
 	int m_nTimeColWidth;
@@ -133,4 +135,34 @@ public:
 	afx_msg void OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/);
 	afx_msg void OnLvnEndlabeleditList(NMHDR* pNMHDR, LRESULT* pResult);
     afx_msg BOOL OnPlaylistDeleteItem(UINT nID);
+
+  //////////////////////////////////////////////////////////////////////////
+
+  virtual void OnPaint();
+  virtual void OnNcPaint();
+
+  void _PaintWorker(HDC hdc, RECT rc);
+
+private:
+  int m_textcolor;
+  int m_textcolor_hilite;
+  int m_basecolor;
+  int m_basecolor2;
+  int m_basecolor3;
+  int m_basecolor4;
+
+  int m_caption_height;
+  int m_bottom_height;
+  int m_button_height;
+  int m_entry_height;
+  int m_entry_padding;
+  int m_padding;
+
+  std::vector<std::wstring> m_texts;
+
+  WTL::CFont    m_font_bold;
+  WTL::CFont    m_font_normal;
+  WTL::CFont    m_font_symbol;
+  WTL::CBrush   m_br_list;
+
 };

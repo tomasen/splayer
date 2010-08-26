@@ -33,6 +33,8 @@
 #include "../../svplib/SVPToolBox.h"
 #include "../../svplib/SVPRarLib.h"
 #include "OpenFileDlg.h"
+#include "Utils/Strings.h"
+#include "UserInterface/Renderer/PlaylistView_Win.h"
 
 #include "Utils/ContentType.h"
 #include "Controller\PlayerPreference.h"
@@ -42,17 +44,49 @@ IMPLEMENT_DYNAMIC(CPlayerPlaylistBar, CSizingControlBarG)
 CPlayerPlaylistBar::CPlayerPlaylistBar()
 	: m_list(0)
 	, m_nTimeColWidth(0)
-	, m_csDataLock(0)
+	, m_csDataLock(0),
+  m_caption_height(::GetSystemMetrics(SM_CYICON)*7/8),
+  m_bottom_height(::GetSystemMetrics(SM_CYICON)),
+  m_button_height(::GetSystemMetrics(SM_CYICON)*2/3),
+  m_padding(::GetSystemMetrics(SM_CXICON)/4),
+  m_entry_height(::GetSystemMetrics(SM_CYSMICON)*5/4),
+  m_entry_padding(::GetSystemMetrics(SM_CYSMICON)/8),
+  m_basecolor(RGB(78,78,78)),
+  m_basecolor2(RGB(32,32,32)),
+  m_basecolor3(RGB(128,128,128)),
+  m_basecolor4(RGB(192,192,192)),
+  m_textcolor(RGB(255,255,255)),
+  m_textcolor_hilite(RGB(255,200,20))
 {
 	m_csDataLock = new CCritSec();
 	m_bDragging = FALSE;
+
+  //////////////////////////////////////////////////////////////////////////
+
+  WTL::CLogFont lf;
+  lf.SetMessageBoxFont();
+  m_font_normal.CreateFontIndirect(&lf);
+  lf.SetBold();
+  m_font_bold.CreateFontIndirect(&lf);
+  lf.SetMessageBoxFont();
+  wcscpy_s(lf.lfFaceName, 32, L"Webdings");
+  lf.lfHeight = lf.lfHeight*5/4;
+  m_font_symbol.CreateFontIndirect(&lf);
+
+  WTL::CString text;
+  text.LoadString(IDS_PLAYLIST);
+  Strings::Split(text, L"|", m_texts);
+
+  m_br_list.CreateSolidBrush(m_basecolor);
+
+  //////////////////////////////////////////////////////////////////////////
 }
 
 CPlayerPlaylistBar::~CPlayerPlaylistBar()
 {
 }
 
-#define CBUTTONWIDTH 30
+#define CBUTTONWIDTH 50
 #define CBUTTONHEIGHT 22
 
 BOOL CPlayerPlaylistBar::Create(CWnd* pParentWnd)
@@ -63,7 +97,7 @@ BOOL CPlayerPlaylistBar::Create(CWnd* pParentWnd)
 	AppSettings& s = AfxGetAppSettings();
 
 	m_list.CreateEx(
-		WS_EX_DLGMODALFRAME|WS_EX_CLIENTEDGE, 
+		/*WS_EX_DLGMODALFRAME|WS_EX_CLIENTEDGE*/0, 
 		WS_CHILD|WS_VISIBLE|WS_CLIPSIBLINGS|WS_CLIPCHILDREN|WS_TABSTOP
 			|LVS_OWNERDRAWFIXED
 			|LVS_NOCOLUMNHEADER
@@ -75,7 +109,8 @@ BOOL CPlayerPlaylistBar::Create(CWnd* pParentWnd)
 
 	m_list.InsertColumn(COL_NAME, ResStr(IDS_PLAYLIST_COL_HEADER_FILENAME), LVCFMT_LEFT, 380);
 
-	m_list.SetBkColor(s.GetColorFromTheme(_T("PlayListBG"), 0xdddddd));
+	//m_list.SetBkColor(s.GetColorFromTheme(_T("PlayListBG"), 0xdddddd));
+  m_list.SetBkColor(m_basecolor);
 	CDC* pDC = m_list.GetDC();
 	CFont* old = pDC->SelectObject(GetFont());
 	m_nTimeColWidth = pDC->GetTextExtent(_T("000:00:00")).cx + 5;
@@ -86,12 +121,12 @@ BOOL CPlayerPlaylistBar::Create(CWnd* pParentWnd)
     m_fakeImageList.Create(1, 16, ILC_COLOR4, 10, 10);
 	m_list.SetImageList(&m_fakeImageList, LVSIL_SMALL);
 	this->m_pMaindFrame = pParentWnd;
-	m_clearall.Create( ResStr(IDS_PLAYLIST_BUTTON_CLEAN), WS_VISIBLE|WS_CHILD|BS_FLAT|BS_VCENTER|BS_CENTER , CRect(0,83,40,100), this, IDC_BUTTONCLEARALL );
+	m_clearall.Create( ResStr(IDS_PLAYLIST_BUTTON_CLEAN), WS_VISIBLE|WS_CHILD|BS_FLAT|BS_VCENTER|BS_CENTER , CRect(0,83,60,100), this, IDC_BUTTONCLEARALL );
 	GetSystemFontWithScale(&font);
 	m_clearall.SetFont(&font);
 
-	m_addsubforplaylist.Create( ResStr(IDS_PLAYLIST_BUTTON_LOAD_SUB_FOR_PLAYLIST), WS_VISIBLE|WS_CHILD|BS_FLAT|BS_VCENTER|BS_CENTER , CRect(0,83,40,100), this, IDC_BUTTONADDSUBFORPLAYLIST );
-	m_addsubforplaylist.SetFont(&font);
+// 	m_addsubforplaylist.Create( ResStr(IDS_PLAYLIST_BUTTON_LOAD_SUB_FOR_PLAYLIST), WS_VISIBLE|WS_CHILD|BS_FLAT|BS_VCENTER|BS_CENTER , CRect(0,83,40,100), this, IDC_BUTTONADDSUBFORPLAYLIST );
+// 	m_addsubforplaylist.SetFont(&font);
 	return TRUE;
 }
 
@@ -1326,9 +1361,10 @@ void CPlayerPlaylistBar::ResizeListColumn()
 		GetClientRect(r);
 		r.DeflateRect(2, 2);
 		r.bottom = r.bottom - CBUTTONHEIGHT - 5;
+    r.top += m_caption_height/2;
 		m_list.SetRedraw(FALSE);
 		m_list.MoveWindow(r);
-		m_clearall.MoveWindow(CRect(r.left , r.bottom + 2 , r.left + CBUTTONWIDTH , (r.bottom + 2 + CBUTTONHEIGHT ) ) );
+		m_clearall.MoveWindow(CRect(r.right - CBUTTONWIDTH , r.bottom + 2 , r.right , (r.bottom + 2 + CBUTTONHEIGHT ) ) );
 		m_addsubforplaylist.MoveWindow(CRect( r.left + CBUTTONWIDTH +4 , r.bottom + 2 , r.right - 4 , (r.bottom + 2 + CBUTTONHEIGHT ) ) );
 		
 		m_list.GetClientRect(r);
@@ -1424,20 +1460,32 @@ void CPlayerPlaylistBar::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruc
 	
 	AppSettings& s = AfxGetAppSettings();
 
-	CDC* pDC = CDC::FromHandle(lpDrawItemStruct->hDC);
+// 	CDC* pDC = CDC::FromHandle(lpDrawItemStruct->hDC);
+
+  RECT& rc = lpDrawItemStruct->rcItem;
+  WTL::CDCHandle dc(lpDrawItemStruct->hDC);
 
 	if(!!m_list.GetItemState(nItem, LVIS_SELECTED))
 	{
-		FillRect(pDC->m_hDC, rcItem, CBrush(s.GetColorFromTheme(_T("PlayListItemSelectedBG"), 0xf1dacc)));
-		FrameRect(pDC->m_hDC, rcItem, CBrush(s.GetColorFromTheme(_T("PlayListItemSelectedBorder"), 0xc56a31)));
+    WTL::CPen pen;
+    pen.CreatePen(PS_SOLID, 1, m_basecolor4);
+    HPEN old_pen = dc.SelectPen(pen);
+    PlaylistView::_DrawRectNoCorner(dc, rc, 1);
+    dc.SelectPen(old_pen);
+    rc.left++;
+    rc.top++;
+    rc.bottom--;
+    rc.right--;
+    PlaylistView::_FillGradient(dc, rc, m_basecolor3, m_basecolor);
+// 		FillRect(pDC->m_hDC, rcItem, CBrush(s.GetColorFromTheme(_T("PlayListItemSelectedBG"), 0xf1dacc)));
+// 		FrameRect(pDC->m_hDC, rcItem, CBrush(s.GetColorFromTheme(_T("PlayListItemSelectedBorder"), 0xc56a31)));
 	}
-	else
-	{
-		FillRect(pDC->m_hDC, rcItem, CBrush(s.GetColorFromTheme(_T("PlayListItemNormalBG"), 0xdddddd)));
-	}
+// 	else
+// 	{
+// 		FillRect(pDC->m_hDC, rcItem, CBrush(s.GetColorFromTheme(_T("PlayListItemNormalBG"), 0xdddddd)));
+// 	}
 	CString time = _T("Invalid");
-	COLORREF textcolor = fSelected? s.GetColorFromTheme(_T("PlayListItemSelectedText"),0xd6811c):
-		s.GetColorFromTheme(_T("PlayListItemNormalText"),0);
+	COLORREF textcolor = fSelected?m_textcolor_hilite:m_textcolor;
 	{
 		CAutoLock dataLock(m_csDataLock);
 		try 
@@ -1464,35 +1512,52 @@ void CPlayerPlaylistBar::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruc
 	
 
 	
-	CSize timesize(0, 0);
+  SIZE timesize = {0, 0};
 	CPoint timept(rcItem.right, 0);
 	if(time.GetLength() > 0)
 	{
-		timesize = pDC->GetTextExtent(time);
+    dc.GetTextExtent(time, -1, &timesize);
+/*		timesize = pDC->GetTextExtent(time);*/
 		if((3+timesize.cx+3) < rcItem.Width()/2)
 		{
 			timept = CPoint(rcItem.right-(3+timesize.cx+3), (rcItem.top+rcItem.bottom-timesize.cy)/2);
+      dc.SetTextColor(textcolor);
+      dc.TextOut(timept.x, timept.y, time);
 
-			pDC->SetTextColor(textcolor);
-			pDC->TextOut(timept.x, timept.y, time);
+// 			pDC->SetTextColor(textcolor);
+// 			pDC->TextOut(timept.x, timept.y, time);
 		}
 	}
 
 	CString fmt, file;
 	fmt.Format(_T("%%0%dd. %%s"), (int)log10(0.1+m_pl.GetCount())+1);
 	file.Format(fmt, nItem+1, m_list.GetItemText(nItem, COL_NAME));
-	CSize filesize = pDC->GetTextExtent(file);
+	SIZE filesize;
+  HFONT old_font = dc.SelectFont(fSelected?m_font_bold:m_font_normal);
+  dc.GetTextExtent(file, -1, &filesize);
 	while(3+filesize.cx+6 > timept.x && file.GetLength() > 3)
 	{
 		file = file.Left(file.GetLength()-4) + _T("...");
-		filesize = pDC->GetTextExtent(file);
+    dc.GetTextExtent(file, -1, &filesize);
+// 		filesize = pDC->GetTextExtent(file);
 	}
+  dc.SelectFont(old_font);
 
-	if(file.GetLength() > 3)
+	if (file.GetLength() > 3)
 	{
-		pDC->SetTextColor(textcolor);
-		pDC->TextOut(rcItem.left+3, (rcItem.top+rcItem.bottom-filesize.cy)/2, file);
+    dc.SetTextColor(textcolor);
+    HFONT old_font = dc.SelectFont(fSelected?m_font_bold:m_font_normal);
+    dc.TextOut(rcItem.left + m_entry_padding*7, (rcItem.top+rcItem.bottom-filesize.cy)/2, file);
+// 		pDC->SetTextColor(textcolor);
+// 		pDC->TextOut(rcItem.left+3, (rcItem.top+rcItem.bottom-filesize.cy)/2, file);
+    dc.SelectFont(old_font);
 	}
+  if (fSelected)
+  {
+    HFONT old_font = dc.SelectFont(m_font_symbol);
+    dc.DrawText(L"4", -1, &rcItem, DT_LEFT|DT_SINGLELINE|DT_VCENTER);
+    dc.SelectFont(old_font);
+  }
 }
 
 BOOL CPlayerPlaylistBar::OnFileClosePlaylist(UINT nID)
@@ -2137,4 +2202,69 @@ BOOL CPlayerPlaylistBar::OnPlaylistDeleteItem( UINT nID )
     }
     else
         return FALSE;
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+void CPlayerPlaylistBar::OnPaint()
+{
+  WTL::CPaintDC pdc(m_hWnd);
+
+  RECT rc_wnd, rc_client;
+  ::GetWindowRect(m_hWnd, &rc_wnd);
+  ::GetClientRect(m_hWnd, &rc_client);
+  ClientToScreen(&rc_client);
+
+  pdc.SetViewportOrg(-2*(rc_client.left - rc_wnd.left), -2*(rc_client.top - rc_wnd.top));
+
+  pdc.m_ps.rcPaint.left   += rc_client.left - rc_wnd.left;
+  pdc.m_ps.rcPaint.top    += rc_client.top - rc_wnd.top;
+  pdc.m_ps.rcPaint.right  += 2*(rc_client.left - rc_wnd.left);
+  pdc.m_ps.rcPaint.bottom += 2*(rc_client.top - rc_wnd.top);
+
+  WTL::CMemoryDC mdc(pdc, pdc.m_ps.rcPaint);
+  _PaintWorker(mdc, pdc.m_ps.rcPaint);
+}
+
+void CPlayerPlaylistBar::OnNcPaint()
+{
+  WTL::CWindowDC dc(m_hWnd);
+
+  RECT rc_paint, rc_wnd, rc_client;
+  ::GetWindowRect(m_hWnd, &rc_paint);
+  rc_paint.right  = rc_paint.right - rc_paint.left;
+  rc_paint.bottom = rc_paint.bottom - rc_paint.top;
+  rc_paint.left   = 0;
+  rc_paint.top    = 0;
+  ::GetWindowRect(m_hWnd, &rc_wnd);
+  ::GetClientRect(m_hWnd, &rc_client);
+  ClientToScreen(&rc_client);
+  RECT rc_exclude = {rc_client.left - rc_wnd.left, rc_client.top - rc_wnd.top,
+    rc_client.right - rc_wnd.left, rc_client.bottom - rc_wnd.top};
+
+  dc.ExcludeClipRect(&rc_exclude);
+
+  WTL::CMemoryDC mdc(dc, rc_paint);
+  _PaintWorker(mdc, rc_paint);
+}
+
+void CPlayerPlaylistBar::_PaintWorker(HDC hdc, RECT rc)
+{
+  WTL::CDCHandle dc(hdc);
+  WTL::CBrush bkgnd;
+  bkgnd.CreateSolidBrush(m_basecolor);
+  dc.FillRect(&rc, bkgnd);
+
+  RECT rc_grad1 = {rc.left, rc.top, rc.right, rc.top + m_caption_height - m_padding/2};
+  RECT rc_grad2 = {rc.left, rc.top + m_caption_height - m_padding/2, rc.right,
+    rc.top + m_caption_height};
+  PlaylistView::_FillGradient(dc, rc_grad1, m_basecolor3, m_basecolor);
+  PlaylistView::_FillGradient(dc, rc_grad2, m_basecolor2, m_basecolor);
+
+  HFONT old_font = dc.SelectFont(m_font_normal);
+  RECT rc_text = {rc.left + m_padding, rc.top, rc.right - m_padding, rc.top + m_caption_height - m_padding/2};
+  dc.SetBkMode(TRANSPARENT);
+  dc.SetTextColor(m_textcolor);
+  dc.DrawText(m_texts[0].c_str(), -1, &rc_text, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
+  dc.SelectFont(old_font);
 }

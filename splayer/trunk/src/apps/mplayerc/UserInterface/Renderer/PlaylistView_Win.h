@@ -46,12 +46,13 @@ public:
   // custom-draw logic for buttons
   DWORD OnPrePaint(int idCtrl, LPNMCUSTOMDRAW lpnmcd);
 
-private:
-  void _PaintWorker(HDC hdc, RECT rc);
   // generic gradient filler, |color_tl| = color_topleft, |color_br| = color_bottomright
   // |vert| true = vertical gradient, false = horizontal gradient
   static void _FillGradient(HDC hdc, RECT rc, int color_tl, int color_br, bool vert = true);
   static void _DrawRectNoCorner(WTL::CDCHandle& dc, RECT& rc, int offset);
+
+private:
+  void _PaintWorker(HDC hdc, RECT rc);
 
   std::vector<std::wstring> m_texts;
 

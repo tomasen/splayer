@@ -4,17 +4,24 @@
 //#include "../Playlist.h"
 //#include "../MediaFormats.h"
 // #include "../../../svplib/SVPRarLib.h"
-// #include "../../../subtitles/TextFile.h"
-// #include "../../../svplib/SVPToolBox.h"
+#include "../../../subtitles/TextFile.h"
+#include "../../../svplib/SVPToolBox.h"
 #include <algorithm>
-//#include "../mplayerc.h"
+#include "../mplayerc.h"
 // #include "../../../dsutil/HdmvClipInfo.h"
 
-
-void PlaylistParser::MergeList(std::vector<PlaylistItem>& list,
-                     std::vector<PlaylistItem> listToAdd)
+static CString CombinePath(CPath p, CString fn)
 {
-  for (std::vector<PlaylistItem>::iterator iter = listToAdd.begin();
+  if(fn.Find(':') >= 0 || fn.Find(_T("\\")) == 0) return fn;
+  p.Append(CPath(fn));
+  return (LPCTSTR)p;
+}
+
+
+void PlaylistParser::MergeList(std::vector<CPlaylistItem>& list,
+                     std::vector<CPlaylistItem> listToAdd)
+{
+  for (std::vector<CPlaylistItem>::iterator iter = listToAdd.begin();
     iter != listToAdd.end(); iter++)
     list.push_back(*iter);
 }
@@ -32,18 +39,18 @@ static int s_int_comp(const void* i1, const void* i2)
   return (int)i1 - (int)i2;
 }
 
-PlaylistItem* PlaylistParser::GetPlaylistItem(std::wstring fn,
+CPlaylistItem* PlaylistParser::GetCPlaylistItem(std::wstring fn,
                                                std::vector<std::wstring>* subs)
 {
   std::vector<std::wstring> fns;
   fns.push_back(fn);
-  return GetPlaylistItem(fns, subs);
+  return GetCPlaylistItem(fns, subs);
 }
 
-PlaylistItem* PlaylistParser::GetPlaylistItem(std::vector<std::wstring>& fns,
+CPlaylistItem* PlaylistParser::GetCPlaylistItem(std::vector<std::wstring>& fns,
                                                std::vector<std::wstring>* subs)
 {
-  PlaylistItem pli;
+  CPlaylistItem pli;
 //   AppSettings&   s  = AfxGetAppSettings();
 //   CMediaFormats& mf = s.Formats;
 //   for (std::vector<std::wstring>::iterator iter = fns.begin();
@@ -120,10 +127,10 @@ PlaylistItem* PlaylistParser::GetPlaylistItem(std::vector<std::wstring>& fns,
   return NULL;
 }
 
-std::vector<PlaylistItem> PlaylistParser::GetPlaylistFromRar(std::wstring fn,
+std::vector<CPlaylistItem> PlaylistParser::GetPlaylistFromRar(std::wstring fn,
                                               std::vector<std::wstring>* subs)
 {
-  std::vector<PlaylistItem> playlistsInRar;
+  std::vector<CPlaylistItem> playlistsInRar;
   return playlistsInRar;
 //   AppSettings& s = AfxGetAppSettings();
 //   CMediaFormats& mf = s.Formats;
@@ -142,15 +149,15 @@ std::vector<PlaylistItem> PlaylistParser::GetPlaylistFromRar(std::wstring fn,
 //     std::transform(ext.begin(), ext.end(), ext.begin(), tolower);
 //     if (!mf.IsUnPlayableFile(szThisFn.c_str(), true) && ext != L".rar")
 //     {
-//       PlaylistItem* newPli;
-//       if ((newPli = GetPlaylistItem(L"rar://" + fn + L"?" + szThisFn, subs)) != NULL)
+//       CPlaylistItem* newPli;
+//       if ((newPli = GetCPlaylistItem(L"rar://" + fn + L"?" + szThisFn, subs)) != NULL)
 //         playlistsInRar.push_back(*newPli);
 //     }
 //   }
 //   return playlistsInRar;
 }
 
-std::vector<PlaylistItem> PlaylistParser::Parse(std::wstring fn, std::vector<std::wstring>* subs)
+std::vector<CPlaylistItem> PlaylistParser::Parse(std::wstring fn, std::vector<std::wstring>* subs)
 {
   std::vector<std::wstring> sl;
   sl.push_back(fn);
@@ -158,10 +165,10 @@ std::vector<PlaylistItem> PlaylistParser::Parse(std::wstring fn, std::vector<std
 
 }
 
-std::vector<PlaylistItem> PlaylistParser::Parse(std::vector<std::wstring>& fns,
+std::vector<CPlaylistItem> PlaylistParser::Parse(std::vector<std::wstring>& fns,
                                  std::vector<std::wstring>* subs)
 {
-  std::vector<PlaylistItem> playlists;
+  std::vector<CPlaylistItem> playlists;
   return playlists;
   if (fns.empty())
     return playlists;
@@ -249,18 +256,18 @@ std::vector<PlaylistItem> PlaylistParser::Parse(std::vector<std::wstring>& fns,
     return playlists;
   }
 
-  PlaylistItem* newPli;
-  if ((newPli = GetPlaylistItem(fns, subs)) != NULL)
+  CPlaylistItem* newPli;
+  if ((newPli = GetCPlaylistItem(fns, subs)) != NULL)
     playlists.push_back(*newPli);
   return playlists;
 }
 
-std::vector<PlaylistItem> PlaylistParser::ParseCUEPlayList(std::wstring fn)
+std::vector<CPlaylistItem> PlaylistParser::ParseCUEPlayList(std::wstring fn)
 {
-  std::vector<PlaylistItem> playlist;
+  std::vector<CPlaylistItem> playlist;
   return playlist;
 //   CString str;//Use CString to match the param type of CWebTextFile::ReadString
-//   std::map<int, PlaylistItem> pli;//didn.t use???
+//   std::map<int, CPlaylistItem> pli;//didn.t use???
 //   std::vector<int> idx;//didn't use???
 // 
 //   CWebTextFile f;
@@ -300,7 +307,7 @@ std::vector<PlaylistItem> PlaylistParser::ParseCUEPlayList(std::wstring fn)
 //         if (!svpToolBox.ifFileExist(fn.c_str()))
 //           continue;
 //       }
-//       PlaylistItem pli;
+//       CPlaylistItem pli;
 //       pli.m_fns.AddTail(fn.c_str());
 //       playlist.push_back(pli);
 //     }
@@ -315,99 +322,99 @@ std::vector<PlaylistItem> PlaylistParser::ParseCUEPlayList(std::wstring fn)
 //   return playlist;
 }
 
-std::vector<PlaylistItem> PlaylistParser::ParseMPCPlayList(std::wstring fn)
+std::vector<CPlaylistItem> PlaylistParser::ParseMPCPlayList(std::wstring fn)
 {
-  std::vector<PlaylistItem> playlist;
+  std::vector<CPlaylistItem> playlist;
   return playlist;
 
-//   CString str;
-//   std::map<int, PlaylistItem> pli;
-//   std::vector<int> idx;
-// 
-//   CWebTextFile f;
-//   if(!f.Open(fn.c_str()) || !f.ReadString(str) || str != _T("MPCPLAYLIST"))
-//     return playlist;
-// 
-//   if(f.GetEncoding() == CTextFile::ASCII) 
-//     f.SetEncoding(CTextFile::ANSI);
-// 
-//   CPath base(fn.c_str());
-//   base.RemoveFileSpec();
-// 
-//   int idxCurrent = -1;
-// 
-//   while(f.ReadString(str))
-//   {
-//     //Use CAtlList<CString> to match the param type of Explode
-//     CAtlList<CString> sl;
-//     Explode(str, sl, ',', 3);
-//     if(sl.GetCount() != 3) continue;
-// 
-//     if(int i = _ttoi(sl.RemoveHead()))
-//     {
-//       std::wstring key   = (LPCTSTR)sl.RemoveHead();
-//       std::wstring value = (LPCTSTR)sl.RemoveHead();
-// 
-//       if(key == L"type")
-//       {
-//         pli[i].m_type = (PlaylistItem::type_t)_ttol(value.c_str());
-//         idx.push_back(i);
-//       }
-//       else if (key == L"label")
-//         pli[i].m_label = value.c_str();
-//       else if (key == L"iscurrent")
-//         idxCurrent = i;
-//       else if (key == L"filename")
-//       {
-//         value = CombinePath(base, value);
-//         pli[i].m_fns.AddTail(value.c_str());
-//       }
-//       else if (key == L"subtitle")
-//       {
-//         value = CombinePath(base, value);
-//         pli[i].m_subs.AddTail(value.c_str());
-//       }
-//       else if (key == L"video")
-//       {
-//         while(pli[i].m_fns.GetCount() < 2)
-//           pli[i].m_fns.AddTail(_T(""));
-//         pli[i].m_fns.GetHead() = value.c_str();
-//       }
-//       else if (key == L"audio")
-//       {
-//         while(pli[i].m_fns.GetCount() < 2)
-//           pli[i].m_fns.AddTail(_T(""));
-//         pli[i].m_fns.GetTail() = value.c_str();
-//       }
-//       else if (key == L"vinput")
-//         pli[i].m_vinput = _ttol(value.c_str());
-//       else if (key == L"vchannel")
-//         pli[i].m_vchannel = _ttol(value.c_str());
-//       else if (key == L"ainput")
-//         pli[i].m_ainput = _ttol(value.c_str());
-//       else if (key == L"country")
-//         pli[i].m_country = _ttol(value.c_str());
-//     }
-//   }
-// 
-//   qsort(&idx[0], idx.size(), sizeof(int), s_int_comp);
-//   for(size_t i = 0; i < idx.size(); i++)
-//   {
-//     playlist.push_back(pli[idx[i]]);
-//     //if(idxCurrent > 0 && idxCurrent == idx[i])
-//     //  m_pl.SetPos(m_pl.GetTailPosition());
-//     //???????????
-//   }
-//   return playlist;
+  CString str;
+  std::map<int, CPlaylistItem> pli;
+  std::vector<int> idx;
+
+  CWebTextFile f;
+  if(!f.Open(fn.c_str()) || !f.ReadString(str) || str != _T("MPCPLAYLIST"))
+    return playlist;
+
+  if(f.GetEncoding() == CTextFile::ASCII) 
+    f.SetEncoding(CTextFile::ANSI);
+
+  CPath base(fn.c_str());
+  base.RemoveFileSpec();
+
+  int idxCurrent = -1;
+
+  while(f.ReadString(str))
+  {
+    //Use CAtlList<CString> to match the param type of Explode
+    CAtlList<CString> sl;
+    Explode(str, sl, ',', 3);
+    if(sl.GetCount() != 3) continue;
+
+    if(int i = _ttoi(sl.RemoveHead()))
+    {
+      std::wstring key   = (LPCTSTR)sl.RemoveHead();
+      std::wstring value = (LPCTSTR)sl.RemoveHead();
+
+      if(key == L"type")
+      {
+        pli[i].m_type = (CPlaylistItem::type_t)_ttol(value.c_str());
+        idx.push_back(i);
+      }
+      else if (key == L"label")
+        pli[i].m_label = value.c_str();
+      else if (key == L"iscurrent")
+        idxCurrent = i;
+      else if (key == L"filename")
+      {
+        value = CombinePath(base, value.c_str());
+        pli[i].m_fns.AddTail(value.c_str());
+      }
+      else if (key == L"subtitle")
+      {
+        value = CombinePath(base, value.c_str());
+        pli[i].m_subs.AddTail(value.c_str());
+      }
+      else if (key == L"video")
+      {
+        while(pli[i].m_fns.GetCount() < 2)
+          pli[i].m_fns.AddTail(_T(""));
+        pli[i].m_fns.GetHead() = value.c_str();
+      }
+      else if (key == L"audio")
+      {
+        while(pli[i].m_fns.GetCount() < 2)
+          pli[i].m_fns.AddTail(_T(""));
+        pli[i].m_fns.GetTail() = value.c_str();
+      }
+      else if (key == L"vinput")
+        pli[i].m_vinput = _ttol(value.c_str());
+      else if (key == L"vchannel")
+        pli[i].m_vchannel = _ttol(value.c_str());
+      else if (key == L"ainput")
+        pli[i].m_ainput = _ttol(value.c_str());
+      else if (key == L"country")
+        pli[i].m_country = _ttol(value.c_str());
+    }
+  }
+
+  qsort(&idx[0], idx.size(), sizeof(int), s_int_comp);
+  for(size_t i = 0; i < idx.size(); i++)
+  {
+    playlist.push_back(pli[idx[i]]);
+    //if(idxCurrent > 0 && idxCurrent == idx[i])
+    //  m_pl.SetPos(m_pl.GetTailPosition());
+    //???????????
+  }
+  return playlist;
 }
 
-std::vector<PlaylistItem> PlaylistParser::ParseBDMVPlayList(std::wstring fn)
+std::vector<CPlaylistItem> PlaylistParser::ParseBDMVPlayList(std::wstring fn)
 {
   //didn't change types to match the param type of CHdmvClipInfo::FindMainMovie
-  std::vector<PlaylistItem> playlist;
+  std::vector<CPlaylistItem> playlist;
 //   CHdmvClipInfo ClipInfo;
 //   CString       strPlaylistFile;
-//   CAtlList<CHdmvClipInfo::PlaylistItem> MainPlaylist;
+//   CAtlList<CHdmvClipInfo::CPlaylistItem> MainPlaylist;
 // 
 //   CPath Path(fn.c_str());
 //   Path.RemoveFileSpec();

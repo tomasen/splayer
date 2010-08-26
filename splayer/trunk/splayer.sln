@@ -405,6 +405,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MD5TestConsole", "Test\MD5T
 		{FAB25039-6D61-4729-9940-76FC6FDC806E} = {FAB25039-6D61-4729-9940-76FC6FDC806E}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PlaylistParser_UnitTest", "Test\PlaylistParser_UnitTest\PlaylistParser_UnitTest.vcproj", "{810AF9F8-696B-43CA-8ED1-521C80BA24AF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug Unicode|Mixed Platforms = Debug Unicode|Mixed Platforms
@@ -1687,6 +1689,22 @@ Global
 		{2792BF45-E848-484B-8C9E-E6E7C3C42EEE}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{2792BF45-E848-484B-8C9E-E6E7C3C42EEE}.Release|Win32.ActiveCfg = Release|Win32
 		{2792BF45-E848-484B-8C9E-E6E7C3C42EEE}.Release|Win32.Build.0 = Release|Win32
+		{810AF9F8-696B-43CA-8ED1-521C80BA24AF}.Debug Unicode|Mixed Platforms.ActiveCfg = Debug|Win32
+		{810AF9F8-696B-43CA-8ED1-521C80BA24AF}.Debug Unicode|Mixed Platforms.Build.0 = Debug|Win32
+		{810AF9F8-696B-43CA-8ED1-521C80BA24AF}.Debug Unicode|Win32.ActiveCfg = Debug|Win32
+		{810AF9F8-696B-43CA-8ED1-521C80BA24AF}.Debug Unicode|Win32.Build.0 = Debug|Win32
+		{810AF9F8-696B-43CA-8ED1-521C80BA24AF}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{810AF9F8-696B-43CA-8ED1-521C80BA24AF}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{810AF9F8-696B-43CA-8ED1-521C80BA24AF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{810AF9F8-696B-43CA-8ED1-521C80BA24AF}.Debug|Win32.Build.0 = Debug|Win32
+		{810AF9F8-696B-43CA-8ED1-521C80BA24AF}.Release Unicode|Mixed Platforms.ActiveCfg = Release|Win32
+		{810AF9F8-696B-43CA-8ED1-521C80BA24AF}.Release Unicode|Mixed Platforms.Build.0 = Release|Win32
+		{810AF9F8-696B-43CA-8ED1-521C80BA24AF}.Release Unicode|Win32.ActiveCfg = Release|Win32
+		{810AF9F8-696B-43CA-8ED1-521C80BA24AF}.Release Unicode|Win32.Build.0 = Release|Win32
+		{810AF9F8-696B-43CA-8ED1-521C80BA24AF}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{810AF9F8-696B-43CA-8ED1-521C80BA24AF}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{810AF9F8-696B-43CA-8ED1-521C80BA24AF}.Release|Win32.ActiveCfg = Release|Win32
+		{810AF9F8-696B-43CA-8ED1-521C80BA24AF}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1784,6 +1802,7 @@ Global
 		{9EEA40DD-6AB2-4A71-95E8-68ADDD00DD3A} = {65A6D6C0-5E11-4F28-BE20-7C744CF919F2}
 		{2383B6FD-2D02-4FF9-A14B-394DA08C21F7} = {DDE963FF-6076-4F3E-9F2E-0FBBC50661C7}
 		{2792BF45-E848-484B-8C9E-E6E7C3C42EEE} = {DDE963FF-6076-4F3E-9F2E-0FBBC50661C7}
+		{810AF9F8-696B-43CA-8ED1-521C80BA24AF} = {DDE963FF-6076-4F3E-9F2E-0FBBC50661C7}
 	EndGlobalSection
 	GlobalSection(DPCodeReviewSolutionGUID) = preSolution
 		DPCodeReviewSolutionGUID = {00000000-0000-0000-0000-000000000000}

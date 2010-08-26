@@ -21,7 +21,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
-			InheritedPropertySheets="..\..\common.vsprops;..\..\release.vsprops;.\wtl_integration.vsprops"
+			InheritedPropertySheets="..\..\common.vsprops;..\..\release.vsprops;.\wtl_integration.vsprops;.\atlserver_integration.vsprops"
 			UseOfMFC="1"
 			UseOfATL="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -120,7 +120,7 @@
 		<Configuration
 			Name="Debug Unicode|Win32"
 			ConfigurationType="1"
-			InheritedPropertySheets="..\..\common.vsprops;..\..\debug.vsprops;.\wtl_integration.vsprops"
+			InheritedPropertySheets="..\..\common.vsprops;..\..\debug.vsprops;.\wtl_integration.vsprops;.\atlserver_integration.vsprops"
 			UseOfMFC="1"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="1"
@@ -207,7 +207,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
-			InheritedPropertySheets="..\..\common.vsprops;..\..\release.vsprops;.\wtl_integration.vsprops"
+			InheritedPropertySheets="..\..\common.vsprops;..\..\release.vsprops;.\wtl_integration.vsprops;.\atlserver_integration.vsprops"
 			UseOfMFC="1"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="2"
@@ -295,7 +295,7 @@
 		<Configuration
 			Name="Debug|Win32"
 			ConfigurationType="1"
-			InheritedPropertySheets="..\..\common.vsprops;..\..\debug.vsprops;.\wtl_integration.vsprops"
+			InheritedPropertySheets="..\..\common.vsprops;..\..\debug.vsprops;.\wtl_integration.vsprops;.\atlserver_integration.vsprops"
 			UseOfMFC="1"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="2"
@@ -2410,6 +2410,14 @@
 			Name="Utils"
 			>
 			<File
+				RelativePath=".\Utils\ContentType.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Utils\ContentType.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Utils\FileAssoc_Win.cc"
 				>
 			</File>
@@ -2482,6 +2490,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Model\PlaylistItem.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Model\PlaylistItem.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Model\PlaylistParser.cc"
 				>
 			</File>
@@ -2503,35 +2519,7 @@
 			>
 		</File>
 		<File
-			RelativePath=".\res\logo.0.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\logo.1.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\logo.2.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\logo.3.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\logo.4.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\logo.5.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\logo.6.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\logo.7.png"
+			RelativePath=".\MainFrameSCmd.h"
 			>
 		</File>
 		<File
@@ -2544,18 +2532,6 @@
 		</File>
 		<File
 			RelativePath=".\res\shaders\SharpenComplex2.psh"
-			>
-		</File>
-		<File
-			RelativePath=".\res\web\uesetbg.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\uesetbg.png"
-			>
-		</File>
-		<File
-			RelativePath=".\res\web\uesetbg_hover.png"
 			>
 		</File>
 	</Files>

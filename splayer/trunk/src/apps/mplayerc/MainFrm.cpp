@@ -97,6 +97,8 @@
 #include "PPageSheet.h"
 // end
 
+#include "Utils/ContentType.h"
+
 #define DEFCLIENTW 480
 #define DEFCLIENTH 360
 
@@ -10610,37 +10612,37 @@ void CMainFrame::OpenCreateGraphObject(OpenMediaData* pOMD)
 	{
 		engine_t engine = s.Formats.GetEngine(p->fns.GetHead());
 
-		CStringA ct = GetContentType(p->fns.GetHead());
+    std::wstring ct = ContentType::Get(p->fns.GetHead());
 
-		if(ct == "video/x-ms-asf")
-		{
-			// TODO: put something here to make the windows media source filter load later
-		}
-		else if(ct == "audio/x-pn-realaudio"
-		|| ct == "audio/x-pn-realaudio-plugin"
-		|| ct == "audio/x-realaudio-secure"
-		|| ct == "video/vnd.rn-realvideo-secure"
-		|| ct == "application/vnd.rn-realmedia"
-		|| ct.Find("vnd.rn-") >= 0
-		|| ct.Find("realaudio") >= 0
-		|| ct.Find("realvideo") >= 0)
-		{
-			//TODO: go fuck this!!!
-            engine = RealMedia;
-		}
-		else if(ct == "application/x-shockwave-flash")
-		{
-			engine = ShockWave;
-		}
-		else if(ct == "video/quicktime"
-			|| ct == "application/x-quicktimeplayer")
-		{
-			engine = QuickTime;
-		}
-        if(engine == RealMedia)
-            engine = DirectShow;
+    if(ct == L"video/x-ms-asf")
+    {
+      // TODO: put something here to make the windows media source filter load later
+    }
+    else if (ct == L"audio/x-pn-realaudio"
+             || ct == L"audio/x-pn-realaudio-plugin"
+             || ct == L"audio/x-realaudio-secure"
+             || ct == L"video/vnd.rn-realvideo-secure"
+             || ct == L"application/vnd.rn-realmedia"
+             || ct.find(L"vnd.rn-") != ct.npos
+             || ct.find(L"realaudio") != ct.npos
+             || ct.find(L"realvideo") != ct.npos)
+    {
+      // TODO: go fuck this!!!
+      engine = RealMedia;
+    }
+    else if (ct == L"application/x-shockwave-flash")
+    {
+      engine = ShockWave;
+    }
+    else if (ct == L"video/quicktime"
+      || ct == L"application/x-quicktimeplayer")
+    {
+      engine = QuickTime;
+    }
+    if (engine == RealMedia)
+      engine = DirectShow;
 
-		SVP_LogMsg6("got content type %s %d", ct, engine );
+		SVP_LogMsg5(L"got content type %s %d", ct, engine );
 
 		HRESULT hr;
 		CComPtr<IUnknown> pUnk;

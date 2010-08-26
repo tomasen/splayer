@@ -34,6 +34,8 @@
 #include "../../svplib/SVPRarLib.h"
 #include "OpenFileDlg.h"
 
+#include "Utils/ContentType.h"
+
 IMPLEMENT_DYNAMIC(CPlayerPlaylistBar, CSizingControlBarG)
 CPlayerPlaylistBar::CPlayerPlaylistBar()
 	: m_list(0)
@@ -386,33 +388,33 @@ void CPlayerPlaylistBar::ParsePlayList(CAtlList<CString>& fns, CAtlList<CString>
 		return;
 	}
 	
-	CAtlList<CString> redir;
-	CStringA ct = GetContentType(fns.GetHead(), &redir);
-	if(!redir.IsEmpty())
-	{
-		POSITION pos = redir.GetHeadPosition();
-		while(pos) ParsePlayList(sl.GetNext(pos), subs);
-		return;
-	}
+  std::vector<std::wstring> redir;
+  std::wstring ct = ContentType::Get(fns.GetHead(), &redir);
+  if (!redir.empty())
+  {
+    for (std::vector<std::wstring>::iterator iter = redir.begin();
+      iter != redir.end(); iter++)
+      ParsePlayList(iter->c_str(), subs);
+    return;
+  }
 
-	if(ct == "application/x-cue-playlist")
-	{
-		ParseCUEPlayList(fns.GetHead());
-		return;
+  if(ct == L"application/x-cue-playlist")
+  {
+    ParseCUEPlayList(fns.GetHead());
+    return;
+  }
+  if(ct == L"application/x-mpc-playlist")
+  {
+    ParseMPCPlayList(fns.GetHead());
+    return;
+  }
+  else if(ct == L"application/x-bdmv-playlist")
+  {
+    ParseBDMVPlayList(fns.GetHead());
+    return;
+  }
 
-	}
-	if(ct == "application/x-mpc-playlist")
-	{
-		ParseMPCPlayList(fns.GetHead());
-		return;
-	}
-	else if(ct == "application/x-bdmv-playlist")
-	{
-		ParseBDMVPlayList(fns.GetHead());
-		return;
-	}
-
-	AddItem(fns, subs);
+  AddItem(fns, subs);
 }
 
 static int s_int_comp(const void* i1, const void* i2)

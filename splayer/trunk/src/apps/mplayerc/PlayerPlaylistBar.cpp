@@ -35,6 +35,8 @@
 #include "OpenFileDlg.h"
 
 #include "Utils/ContentType.h"
+#include "Controller\PlayerPreference.h"
+#include "Controller\SPlayerDefs.h"
 
 IMPLEMENT_DYNAMIC(CPlayerPlaylistBar, CSizingControlBarG)
 CPlayerPlaylistBar::CPlayerPlaylistBar()
@@ -1798,6 +1800,8 @@ void CPlayerPlaylistBar::OnContextMenu(CWnd* /*pWnd*/, CPoint p)
 	m_list.ScreenToClient(&lvhti.pt);
 	m_list.SubItemHitTest(&lvhti);
 
+  PlayerPreference* pref = PlayerPreference::GetInstance();
+
 	POSITION pos = FindPos(lvhti.iItem);
 //	bool fSelected = (pos == m_pl.GetPos());
 	bool fOnItem = !!(lvhti.flags&LVHT_ONITEM);
@@ -1826,7 +1830,7 @@ void CPlayerPlaylistBar::OnContextMenu(CWnd* /*pWnd*/, CPoint p)
 	m.AppendMenu(MF_STRING|(!m_pl.GetCount()?(MF_DISABLED|MF_GRAYED):MF_ENABLED), M_RANDOMIZE, ResStr(IDS_PLAYLIST_RANDOMIZE));
 	m.AppendMenu(MF_STRING|(!m_pl.GetCount()?(MF_DISABLED|MF_GRAYED):MF_ENABLED), M_SORTBYID, ResStr(IDS_PLAYLIST_RESTORE));
 	m.AppendMenu(MF_SEPARATOR);
-	m.AppendMenu(MF_STRING|MF_ENABLED|(AfxGetMyApp()->GetProfileInt(ResStr(IDS_R_SETTINGS), _T("ShufflePlaylistItems"), FALSE)?MF_CHECKED:0), M_SHUFFLE, ResStr(IDS_PLAYLIST_SHUFFLE));
+	m.AppendMenu(MF_STRING|MF_ENABLED|(pref->GetIntVar(INTVAR_SHUFFLEPLAYLISTITEMS)?MF_CHECKED:0), M_SHUFFLE, ResStr(IDS_PLAYLIST_SHUFFLE));
 	m.AppendMenu(MF_STRING|MF_ENABLED|(AfxGetMyApp()->GetProfileInt(ResStr(IDS_R_SETTINGS), _T("RememberPlaylistItems"), TRUE)?MF_CHECKED:0), M_REMEMBERPLAYLIST, ResStr(IDS_PLAYLIST_REMEBERITEMS));
 
 	CMainFrame* pMainFrm = (CMainFrame*)AfxGetMainWnd();
@@ -2066,8 +2070,7 @@ void CPlayerPlaylistBar::OnContextMenu(CWnd* /*pWnd*/, CPoint p)
 				!AfxGetMyApp()->GetProfileInt(ResStr(IDS_R_SETTINGS), _T("RememberPlaylistItems"), TRUE));
 			break;
 		case M_SHUFFLE:
-			AfxGetMyApp()->WriteProfileInt(ResStr(IDS_R_SETTINGS), _T("ShufflePlaylistItems"), 
-				!AfxGetMyApp()->GetProfileInt(ResStr(IDS_R_SETTINGS), _T("ShufflePlaylistItems"), FALSE));
+			pref->SetIntVar(INTVAR_SHUFFLEPLAYLISTITEMS, !pref->GetIntVar(INTVAR_SHUFFLEPLAYLISTITEMS));
 			break;
 		default:
 			break;

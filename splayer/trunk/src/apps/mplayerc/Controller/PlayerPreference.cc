@@ -23,6 +23,7 @@ PlayerPreference::PlayerPreference(void):
   // 
   // WARNING !!! WARNING !!! WARNING !!! WARNING !!! WARNING !!! WARNING !!! 
   m_map_intvar[INTVAR_LOGO_AUTOSTRETCH] = GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LOGOSTRETCH), 1);
+  m_map_intvar[INTVAR_SHUFFLEPLAYLISTITEMS] = GetProfileInt(ResStr(IDS_R_SETTINGS), L"ShufflePlaylistItems", FALSE);
 }
 
 PlayerPreference::~PlayerPreference(void)
@@ -36,6 +37,7 @@ PlayerPreference::~PlayerPreference(void)
   // 
   // WARNING !!! WARNING !!! WARNING !!! WARNING !!! WARNING !!! WARNING !!! 
   WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LOGOSTRETCH), m_map_intvar[INTVAR_LOGO_AUTOSTRETCH]);
+  WriteProfileInt(ResStr(IDS_R_SETTINGS), L"ShufflePlaylistItems", m_map_intvar[INTVAR_SHUFFLEPLAYLISTITEMS]);
 }
 
 int PlayerPreference::GetIntVar(int id)

@@ -20,9 +20,11 @@
  */
 
 #include "stdafx.h"
-#include "mplayerc.h"
+//#include "mplayerc.h"
 #include "playlist.h"
-#include "../../svplib/svplib.h"
+//#include "../../svplib/svplib.h"
+#include "Controller\PlayerPreference.h"
+#include "Controller\SPlayerDefs.h"
 //
 // CPlaylistItem
 //
@@ -76,7 +78,7 @@ POSITION CPlaylistItem::FindFile(CString path)
 		szFN.MakeLower();
 		///SVP_LogMsg5(_T("Compart %s %s"), szFN , path);
 		if( szFN.Find(path) >= 0){
-			SVP_LogMsg5(_T("Got"));
+			//SVP_LogMsg5(_T("Got"));
 			return cur;
 		}
 	}
@@ -425,7 +427,7 @@ POSITION CPlaylist::Shuffle()
 
 CPlaylistItem& CPlaylist::GetNextWrap(POSITION& pos)
 {
-	if(AfxGetMyApp()->GetProfileInt(ResStr(IDS_R_SETTINGS), _T("ShufflePlaylistItems"), FALSE) && GetCount() > 2)
+	if(PlayerPreference::GetInstance()->GetIntVar(INTVAR_SHUFFLEPLAYLISTITEMS) && GetCount() > 2)
 	{
 		pos = Shuffle();
 	}

@@ -32,7 +32,7 @@ BOOL CSVPRarLib::SplitPath_STL(std::wstring fnSVPRarPath)
   {
     //		SVP_LogMsg5(_T("rar library loaded"));
     int iPos = fnSVPRarPath.find('?');
-    if(iPos >= 0)
+    if(iPos != fnSVPRarPath.npos)
     {
       m_fnRAR = fnSVPRarPath.substr(6, iPos - 6).c_str();
       m_fnInsideRar = fnSVPRarPath.substr(iPos + 1,

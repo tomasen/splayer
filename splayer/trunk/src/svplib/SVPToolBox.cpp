@@ -73,7 +73,7 @@ std::wstring CSVPToolBox::GetShortFileNameForSearch2_STL(std::wstring szFn)
   for (int i = 0 ; i < szaStopWords.size(); i++)
   {
     int pos = szFileName.find(szaStopWords[i]);
-    if( pos >= 0)
+    if(pos != szFileName.npos)
       szFileName = szFileName.substr(0, pos - 1);
   }
 
@@ -1679,7 +1679,7 @@ std::wstring CSVPToolBox::getSubFileByTempid_STL(int iTmpID,
   Explode(szXTmpdata, L";", &szSubfiles);
   bool bIsIdxSub = FALSE;
   int ialreadyExist = 0;
-  if (szXTmpdata.find(L"idx|") >= 0 && szXTmpdata.find(L"sub|") >= 0)
+  if (szXTmpdata.find(L"idx|") != szXTmpdata.npos && szXTmpdata.find(L"sub|") != szXTmpdata.npos)
     if (!ifFileExist_STL(szBasename + L".idx") && !ifFileExist_STL(szBasename + L".sub"))
       bIsIdxSub = TRUE;
 

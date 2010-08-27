@@ -23,7 +23,7 @@ void PlaylistParser::MergeList(std::vector<CPlaylistItem>& list,
 
 std::wstring PlaylistParser::CombinePath(CPath p, std::wstring fn)
 {
-  if (fn.find(':') >= 0 && fn.find(':') < fn.size() || fn.find(_T("\\")) == 0)
+  if (fn.find(':') != fn.npos || fn.find(_T("\\")) == 0)
     return fn;
   p.Append(CPath(fn.c_str()));
   return (LPCTSTR)p;
@@ -81,7 +81,7 @@ bool PlaylistParser::GetPlaylistItem(std::vector<std::wstring>& fns,
 
   std::wstring fn = (LPCTSTR)newPli->m_fns.GetHead();
 
-  if(pref->GetIntVar(INTVAR_AUTOLOADAUDIO) && (fn.find(L"://") < 0 || fn.find(L"://") >= fn.size()))
+  if(pref->GetIntVar(INTVAR_AUTOLOADAUDIO) && (fn.find(L"://") == fn.npos))
   {
     int i = fn.find_last_of('.');
     if (i > 0)
@@ -444,7 +444,7 @@ bool PlaylistParser::FindFileInList(CAtlList<CString>& sl, std::wstring fn)
 
 bool PlaylistParser::SearchFiles(std::wstring mask, std::vector<std::wstring>& sl)
 {
-  if(mask.find(_T("://")) >= 0)
+  if(mask.find(_T("://")) != mask.npos)
     return false;
   mask.erase(mask.find_last_not_of(L' ') + 1);
   mask.erase(0, mask.find_first_not_of(L' '));
@@ -492,8 +492,8 @@ bool PlaylistParser::SearchFiles(std::wstring mask, std::vector<std::wstring>& s
         sl.push_back((LPCTSTR)sl_ATL.GetNext(pos));
     }
   }
-  bool fIfHasOne = mask.find(L'?') >= 0 && mask.find(L'?') < mask.size()
-    || mask.find(L'*') >= 0 && mask.find(L'*') < mask.size();
+  bool fIfHasOne = mask.find(L'?') != mask.npos
+    || mask.find(L'*') != mask.npos;
   return (sl.size() > 1
     || sl.size() == 1 && sl.at(0).compare(mask)
     || sl.size() == 0 && fIfHasOne);

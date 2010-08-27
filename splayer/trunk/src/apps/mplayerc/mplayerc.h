@@ -456,7 +456,7 @@ public:
 		int iZoomLevel;
 		// int iVideoRendererType; 
 		CStringW AudioRendererDisplayName;
-		bool fAutoloadAudio;
+		//bool fAutoloadAudio;
 		bool fAutoloadSubtitles;
 		bool fAutoloadSubtitles2;
 		bool fBlockVSFilter;

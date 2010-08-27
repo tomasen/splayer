@@ -26,6 +26,8 @@
 #include "mplayerc.h"
 #include "MainFrm.h"
 #include "PPagePlayback.h"
+#include "Controller\PlayerPreference.h"
+#include "Controller\SPlayerDefs.h"
 
 // CPPagePlayback dialog
 
@@ -90,7 +92,8 @@ BOOL CPPagePlayback::OnInitDialog()
 {
 	__super::OnInitDialog();
 
-	AppSettings& s = AfxGetAppSettings();
+  PlayerPreference* pref = PlayerPreference::GetInstance();
+  AppSettings& s = AfxGetAppSettings();
 
 	m_volumectrl.SetRange(1, 100);
 	m_volumectrl.SetTicFreq(10);
@@ -126,7 +129,7 @@ BOOL CPPagePlayback::OnInitDialog()
 	}
 	m_dispmodecombo.SetCurSel(iSel);
 
-	m_fAutoloadAudio = s.fAutoloadAudio;
+  m_fAutoloadAudio = pref->GetIntVar(INTVAR_AUTOLOADAUDIO);
 	m_fAutoloadSubtitles = s.fAutoloadSubtitles;
 	m_fEnableWorkerThreadForOpening = s.fEnableWorkerThreadForOpening;
 	m_fReportFailedPins = s.fReportFailedPins;
@@ -141,6 +144,7 @@ BOOL CPPagePlayback::OnApply()
 {
 	UpdateData();
 
+  PlayerPreference* pref = PlayerPreference::GetInstance();
 	AppSettings& s = AfxGetAppSettings();
 
 	s.nVolume = m_nVolume;
@@ -153,7 +157,7 @@ BOOL CPPagePlayback::OnApply()
 	int iSel = m_dispmodecombo.GetCurSel();
 	if((s.dmFullscreenRes.fValid = !!m_fSetFullscreenRes) && iSel >= 0 && iSel < m_dms.GetCount())
 		s.dmFullscreenRes = m_dms[m_dispmodecombo.GetCurSel()];
-	s.fAutoloadAudio = !!m_fAutoloadAudio;
+  pref->SetIntVar(INTVAR_AUTOLOADAUDIO, m_fAutoloadAudio);
 	s.fAutoloadSubtitles = !!m_fAutoloadSubtitles;
 	s.fEnableWorkerThreadForOpening = !!m_fEnableWorkerThreadForOpening;
 	s.fReportFailedPins = !!m_fReportFailedPins;

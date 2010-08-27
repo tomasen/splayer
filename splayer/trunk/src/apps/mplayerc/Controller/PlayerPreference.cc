@@ -22,8 +22,9 @@ PlayerPreference::PlayerPreference(void):
   // directly from mplayerc.cpp / mplayerc.h .
   // 
   // WARNING !!! WARNING !!! WARNING !!! WARNING !!! WARNING !!! WARNING !!! 
-  m_map_intvar[INTVAR_LOGO_AUTOSTRETCH] = GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LOGOSTRETCH), 1);
+  m_map_intvar[INTVAR_LOGO_AUTOSTRETCH]     = GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LOGOSTRETCH), 1);
   m_map_intvar[INTVAR_SHUFFLEPLAYLISTITEMS] = GetProfileInt(ResStr(IDS_R_SETTINGS), L"ShufflePlaylistItems", FALSE);
+  m_map_intvar[INTVAR_AUTOLOADAUDIO] = GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUTOLOADAUDIO), TRUE);
 }
 
 PlayerPreference::~PlayerPreference(void)
@@ -38,6 +39,7 @@ PlayerPreference::~PlayerPreference(void)
   // WARNING !!! WARNING !!! WARNING !!! WARNING !!! WARNING !!! WARNING !!! 
   WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LOGOSTRETCH), m_map_intvar[INTVAR_LOGO_AUTOSTRETCH]);
   WriteProfileInt(ResStr(IDS_R_SETTINGS), L"ShufflePlaylistItems", m_map_intvar[INTVAR_SHUFFLEPLAYLISTITEMS]);
+  WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUTOLOADAUDIO), m_map_intvar[INTVAR_AUTOLOADAUDIO]);
 }
 
 int PlayerPreference::GetIntVar(int id)

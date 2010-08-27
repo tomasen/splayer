@@ -170,6 +170,7 @@ void CPlayerPlaylistBar::AddItem(CString fn, CAtlList<CString>* subs)
 void CPlayerPlaylistBar::AddItem(CAtlList<CString>& fns, CAtlList<CString>* subs)
 {
 	CPlaylistItem pli;
+  PlayerPreference* pref = PlayerPreference::GetInstance();
 	AppSettings& s = AfxGetAppSettings();
 	CMediaFormats& mf = s.Formats;
 
@@ -203,7 +204,7 @@ void CPlayerPlaylistBar::AddItem(CAtlList<CString>& fns, CAtlList<CString>* subs
 	
 		CString fn = pli.m_fns.GetHead();
 
-		if(s.fAutoloadAudio && fn.Find(_T("://")) < 0)
+		if(pref->GetIntVar(INTVAR_AUTOLOADAUDIO) && fn.Find(_T("://")) < 0)
 		{
 			int i = fn.ReverseFind('.');
 			if(i > 0)

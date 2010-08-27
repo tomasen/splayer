@@ -1674,11 +1674,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon\DVD.ico"
+				RelativePath=".\res\ecio.icons\dvd.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\ecio.icons\dvd.ico"
+				RelativePath=".\res\icon\DVD.ico"
 				>
 			</File>
 			<File

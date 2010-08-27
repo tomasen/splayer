@@ -2,6 +2,7 @@
 #include "SPlayerDefs.h"
 #include "PlayerPreference.h"
 #include "../../../lib/splite/libsqlite/libsqlite.h"
+#include "../Utils/Strings.h"
 #include "../resource.h"
 
 #define ResStr(id) CString(MAKEINTRESOURCE(id))
@@ -40,6 +41,8 @@ PlayerPreference::~PlayerPreference(void)
   WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LOGOSTRETCH), m_map_intvar[INTVAR_LOGO_AUTOSTRETCH]);
   WriteProfileInt(ResStr(IDS_R_SETTINGS), L"ShufflePlaylistItems", m_map_intvar[INTVAR_SHUFFLEPLAYLISTITEMS]);
   WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUTOLOADAUDIO), m_map_intvar[INTVAR_AUTOLOADAUDIO]);
+
+  Uninit();
 }
 
 int PlayerPreference::GetIntVar(int id)
@@ -129,15 +132,14 @@ void PlayerPreference::Init()
   //
   if (!sqlite_setting)
   {
-    wchar_t path[256];
-    char path_utf8[512];
-    ::GetModuleFileName(NULL, path, 256);
+    wchar_t path[MAX_PATH];
+    char path_utf8[MAX_PATH*2];
+    ::GetModuleFileName(NULL, path, MAX_PATH);
     ::PathRemoveFileSpec(path);
 
-    wcscat_s(path, 256, L"\\settings.db");
-    ::WideCharToMultiByte(CP_UTF8, 0, path, lstrlen(path), path_utf8, 512, NULL, NULL);
+    wcscat_s(path, MAX_PATH, L"\\settings.db");
 
-    sqlite_setting = new SQLITE3(path_utf8);
+    sqlite_setting = new SQLITE3(Strings::WStringToUtf8String(std::wstring(path)));
 
     if (!sqlite_setting->db_open)
     {
@@ -164,13 +166,6 @@ void PlayerPreference::Uninit()
   if (sqlite_setting)
     sqlite_setting->exec_sql("PRAGMA synchronous=ON");
 
-  if (sqlite_local_record)
-  {
-    wchar_t sql[256];
-    swprintf_s(sql, 256, L"DELETE FROM histories WHERE modtime < '%d' ", time(NULL)-3600*24*30);
-    sqlite_local_record->exec_sql_u(sql);
-    sqlite_local_record->exec_sql("PRAGMA synchronous=ON");
-  }
 }
 
 BOOL PlayerPreference::WriteProfileInt(LPCTSTR lpszSection, LPCTSTR lpszEntry, int nValue)

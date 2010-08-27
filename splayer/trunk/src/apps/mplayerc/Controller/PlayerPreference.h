@@ -27,6 +27,7 @@ public:
   std::vector<std::wstring> GetStrArray(int id);
   void SetStrArray(int id, std::vector<std::wstring> &value_in);
 
+  SQLITE3* GetSqliteSettingPtr() {return sqlite_setting;}
 private:
   void Init();
   void Uninit();

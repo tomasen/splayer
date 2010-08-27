@@ -823,43 +823,8 @@ bool CMPlayerCApp::StoreSettingsToIni()
 
 	CString ini = GetIniPath();
 	CSVPToolBox svpTool;
-    
-	if( !sqlite_setting){ 
-		
-		int iDescLen;
-		char * buff = svpTool.CStringToUTF8(ini,&iDescLen) ;
-		sqlite_setting = new SQLITE3( buff );
-		free(buff);
-		if(!sqlite_setting->db_open){
-			delete sqlite_setting;
-			sqlite_setting = NULL;
-		}
-        //AfxMessageBox(L"3");
-	}
-	
-	if(sqlite_setting){
-		sqlite_setting->exec_sql("CREATE TABLE IF NOT EXISTS \"settingint\" ( \"hkey\" TEXT,  \"sect\" TEXT,  \"sval\" INTEGER)");
-		sqlite_setting->exec_sql("CREATE TABLE IF NOT EXISTS \"settingstring\" (  \"hkey\" TEXT,   \"sect\" TEXT,   \"vstring\" TEXT)");
-		sqlite_setting->exec_sql("CREATE TABLE IF NOT EXISTS \"settingbin2\" (   \"skey\" TEXT,   \"sect\" TEXT,   \"vdata\" BLOB)");
-		sqlite_setting->exec_sql("CREATE UNIQUE INDEX IF NOT EXISTS \"pkey\" on settingint (hkey ASC, sect ASC)");
-		sqlite_setting->exec_sql("CREATE UNIQUE INDEX IF NOT EXISTS \"pkeystring\" on settingstring (hkey ASC, sect ASC)");
-		sqlite_setting->exec_sql("CREATE UNIQUE INDEX IF NOT EXISTS \"pkeybin\" on settingbin2 (skey ASC, sect ASC)");
-		sqlite_setting->exec_sql("PRAGMA synchronous=OFF");
-		sqlite_setting->exec_sql("DROP TABLE  IF EXISTS  \"settingbin\""); //old wrong one
-        //AfxMessageBox(L"4");
-		/*
-		int iwriteorg = sqlite_setting->GetProfileInt(ResStr(IDS_R_SETTINGS), L"writedetect", 0, false);
-		sqlite_setting->WriteProfileInt(ResStr(IDS_R_SETTINGS), L"writedetect", iwriteorg+1,false);
-		int iwritenew = sqlite_setting->GetProfileInt(ResStr(IDS_R_SETTINGS), L"writedetect", 0,false);
-
-		if(iwritenew != (iwriteorg+1)){
-			delete sqlite_setting;
-			sqlite_setting = NULL;
-			return false;
-		}
-		*/
-		return(true);
-	}
+  
+  sqlite_setting = PlayerPreference::GetInstance()->GetSqliteSettingPtr();
 
 	return StoreSettingsToRegistry();
 /*

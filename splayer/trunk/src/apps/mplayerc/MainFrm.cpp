@@ -10642,7 +10642,7 @@ void CMainFrame::OpenCreateGraphObject(OpenMediaData* pOMD)
     if (engine == RealMedia)
       engine = DirectShow;
 
-		SVP_LogMsg5(L"got content type %s %d", ct, engine );
+		SVP_LogMsg5(L"got content type %s %d", ct.c_str(), engine );
 
 		HRESULT hr;
 		CComPtr<IUnknown> pUnk;

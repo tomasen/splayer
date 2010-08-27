@@ -204,7 +204,7 @@ CStringA GetUrlByType(DWORD req_type , int iTryID){
 
 	switch(req_type){
 		case 'upda':
-            apiurl.Append( "api/updater.php" );
+            apiurl.Append( "api/updater.php?ver=3.6" );
 			break;
 		case 'upsb':
             apiurl.Append( "api/subup.php" );

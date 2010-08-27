@@ -1720,6 +1720,7 @@ std::wstring CSVPToolBox::getSubFileByTempid_STL(int iTmpID,
       szTargetMD5 = cm5source.GetMD5(szTarget);
       if(szTargetMD5 == szSourceMD5)
       {
+        // TODO: if there is a diffrence in delay
         SVP_LogMsg5(_T("同样的字幕文件已经存在了 %s %s"), szSource, szTarget);
         ialreadyExist++; //TODO: 如果idx+sub里面只有一个文件相同怎么办 ？？~~ 
         break;
@@ -1739,7 +1740,7 @@ std::wstring CSVPToolBox::getSubFileByTempid_STL(int iTmpID,
       SVP_LogMsg(CString( _T("字幕文件无法写入 ")) + szTarget.c_str(), 31);
       szDefaultSubPath = szSource;
     }
-    else if (((bIsIdxSub && szSubTmpDetail[0].compare(L".idx") == 0)
+    else if (((bIsIdxSub && szSubTmpDetail[0].compare(L"idx") == 0)
       || !bIsIdxSub) && szDefaultSubPath.empty())
         szDefaultSubPath = szTarget;
 

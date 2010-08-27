@@ -396,12 +396,13 @@ void FetchSubFileByVideoFilePath_STL(std::wstring fnVideoFilePath,
   //load sub file to sublist
   std::wstring szSubFilePath;
   int iSubTotal = 0;
+  SVP_LogMsg5(L"svpNet.svpToolBox.szaSubTmpFileList.GetCount() %d", svpNet.svpToolBox.szaSubTmpFileList.GetCount());
   for (int i = 0; i < svpNet.svpToolBox.szaSubTmpFileList.GetCount(); i++)
   {
     szSubFilePath = svpNet.svpToolBox.getSubFileByTempid_STL(i,
       fnVideoFilePath);
     if (szSubFilePath == L"EXIST")
-      SVP_LogMsg(ResStr(IDS_LOG_MSG_SVPSUB_SAMEAS_CURRENT), 31);
+      SVP_LogMsg(ResStr(IDS_LOG_MSG_SVPSUB_SAMEAS_CURRENT));
     else if (!szSubFilePath.empty())
     {
       szSubArray -> push_back(szSubFilePath);

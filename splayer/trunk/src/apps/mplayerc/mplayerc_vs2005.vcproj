@@ -388,23 +388,11 @@
 				>
 			</File>
 			<File
-				RelativePath="BaseGraph.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\ChildView.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\ChkDefPlayer.cpp"
-				>
-			</File>
-			<File
-				RelativePath="ComPropertyPage.cpp"
-				>
-			</File>
-			<File
-				RelativePath="ComPropertySheet.cpp"
 				>
 			</File>
 			<File
@@ -424,15 +412,7 @@
 				>
 			</File>
 			<File
-				RelativePath="CShockwaveFlash.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\CustomDrawBtn.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\DeinterlacerFilter.cpp"
 				>
 			</File>
 			<File
@@ -452,35 +432,11 @@
 				>
 			</File>
 			<File
-				RelativePath="DX7AllocatorPresenter.cpp"
-				>
-			</File>
-			<File
-				RelativePath="DX9AllocatorPresenter.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\EVRAllocatorPresenter.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\FakeFilterMapper2.cpp"
-				>
-			</File>
-			<File
 				RelativePath="FavoriteAddDlg.cpp"
 				>
 			</File>
 			<File
 				RelativePath="FavoriteOrganizeDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\FGFilter.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\FGManager.cpp"
 				>
 			</File>
 			<File
@@ -496,23 +452,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Ifo.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\InfoReport.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\IPinHook.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ISDb.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\jpeg.cpp"
 				>
 			</File>
 			<File
@@ -520,23 +460,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\libpng.c"
-				>
-				<FileConfiguration
-					Name="Release Unicode|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath=".\LineNumberEdit.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\MacrovisionKicker.cpp"
 				>
 			</File>
 			<File
@@ -608,10 +532,6 @@
 				>
 			</File>
 			<File
-				RelativePath="PlayerInfoBar.cpp"
-				>
-			</File>
-			<File
 				RelativePath="PlayerListCtrl.cpp"
 				>
 			</File>
@@ -628,14 +548,6 @@
 				>
 			</File>
 			<File
-				RelativePath="PlayerStatusBar.cpp"
-				>
-			</File>
-			<File
-				RelativePath="PlayerSubresyncBar.cpp"
-				>
-			</File>
-			<File
 				RelativePath="PlayerToolBar.cpp"
 				>
 			</File>
@@ -649,106 +561,6 @@
 			</File>
 			<File
 				RelativePath="PnSPresetsDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageAccelTbl.cpp"
-				>
-			</File>
-			<File
-				RelativePath="PPageAudioSwitcher.cpp"
-				>
-			</File>
-			<File
-				RelativePath="PPageBase.cpp"
-				>
-			</File>
-			<File
-				RelativePath="PPageDVD.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageExternalFilters.cpp"
-				>
-			</File>
-			<File
-				RelativePath="PPageFileInfoClip.cpp"
-				>
-			</File>
-			<File
-				RelativePath="PPageFileInfoDetails.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageFileInfoRes.cpp"
-				>
-			</File>
-			<File
-				RelativePath="PPageFileInfoSheet.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageFileMediaInfo.cpp"
-				>
-			</File>
-			<File
-				RelativePath="PPageFormats.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageInternalFilters.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageLogo.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageOutput.cpp"
-				>
-			</File>
-			<File
-				RelativePath="PPagePlayback.cpp"
-				>
-			</File>
-			<File
-				RelativePath="PPagePlayer.cpp"
-				>
-			</File>
-			<File
-				RelativePath="PPageSheet.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageSubDB.cpp"
-				>
-			</File>
-			<File
-				RelativePath="PPageSubStyle.cpp"
-				>
-			</File>
-			<File
-				RelativePath="PPageSubtitles.cpp"
-				>
-			</File>
-			<File
-				RelativePath="PPageTweaks.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageWebServer.cpp"
-				>
-			</File>
-			<File
-				RelativePath="QuicktimeGraph.cpp"
-				>
-			</File>
-			<File
-				RelativePath="RealMediaGraph.cpp"
-				>
-			</File>
-			<File
-				RelativePath="RealMediaWindowlessSite.cpp"
 				>
 			</File>
 			<File
@@ -789,18 +601,6 @@
 			</File>
 			<File
 				RelativePath=".\ShaderEditorDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath="ShockwaveGraph.cpp"
-				>
-			</File>
-			<File
-				RelativePath="StaticLink.cpp"
-				>
-			</File>
-			<File
-				RelativePath="StatusLabel.cpp"
 				>
 			</File>
 			<File
@@ -908,39 +708,11 @@
 				>
 			</File>
 			<File
-				RelativePath="TextPassThruFilter.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\TransparentControlBar.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\UESettingPanel.cpp"
-				>
-			</File>
-			<File
 				RelativePath="VolumeCtrl.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\WebClientSocket.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\WebServer.cpp"
-				>
-				<FileConfiguration
-					Name="Release Unicode|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\WebServerSocket.cpp"
 				>
 			</File>
 		</Filter>
@@ -949,15 +721,7 @@
 			Filter="h;hpp;hxx;hm;inl"
 			>
 			<File
-				RelativePath=".\AllocatorCommon.h"
-				>
-			</File>
-			<File
 				RelativePath=".\AuthDlg.h"
-				>
-			</File>
-			<File
-				RelativePath="BaseGraph.h"
 				>
 			</File>
 			<File
@@ -966,14 +730,6 @@
 			</File>
 			<File
 				RelativePath=".\ChkDefPlayer.h"
-				>
-			</File>
-			<File
-				RelativePath="ComPropertyPage.h"
-				>
-			</File>
-			<File
-				RelativePath="ComPropertySheet.h"
 				>
 			</File>
 			<File
@@ -993,19 +749,7 @@
 				>
 			</File>
 			<File
-				RelativePath="CShockwaveFlash.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\Updater\cupdatenetlib.h"
-				>
-			</File>
-			<File
 				RelativePath=".\CustomDrawBtn.h"
-				>
-			</File>
-			<File
-				RelativePath=".\DeinterlacerFilter.h"
 				>
 			</File>
 			<File
@@ -1017,35 +761,11 @@
 				>
 			</File>
 			<File
-				RelativePath="DX7AllocatorPresenter.h"
-				>
-			</File>
-			<File
-				RelativePath="DX9AllocatorPresenter.h"
-				>
-			</File>
-			<File
-				RelativePath=".\EVRAllocatorPresenter.h"
-				>
-			</File>
-			<File
-				RelativePath=".\FakeFilterMapper2.h"
-				>
-			</File>
-			<File
 				RelativePath="FavoriteAddDlg.h"
 				>
 			</File>
 			<File
 				RelativePath="FavoriteOrganizeDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\FGFilter.h"
-				>
-			</File>
-			<File
-				RelativePath=".\FGManager.h"
 				>
 			</File>
 			<File
@@ -1061,39 +781,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\mpc-hc\trunk\src\apps\mplayerc\Ifo.h"
-				>
-			</File>
-			<File
-				RelativePath=".\IGraphBuilder2.h"
-				>
-			</File>
-			<File
 				RelativePath=".\InfoReport.h"
-				>
-			</File>
-			<File
-				RelativePath=".\internal_filter_config.h"
-				>
-			</File>
-			<File
-				RelativePath=".\IPinHook.h"
-				>
-			</File>
-			<File
-				RelativePath="IQTVideoSurface.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ISDb.h"
-				>
-			</File>
-			<File
-				RelativePath=".\jpeg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\jpeg_tables.h"
 				>
 			</File>
 			<File
@@ -1101,15 +789,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\libpng.h"
-				>
-			</File>
-			<File
 				RelativePath=".\LineNumberEdit.h"
-				>
-			</File>
-			<File
-				RelativePath=".\MacrovisionKicker.h"
 				>
 			</File>
 			<File
@@ -1177,10 +857,6 @@
 				>
 			</File>
 			<File
-				RelativePath="PlayerInfoBar.h"
-				>
-			</File>
-			<File
 				RelativePath="PlayerListCtrl.h"
 				>
 			</File>
@@ -1197,14 +873,6 @@
 				>
 			</File>
 			<File
-				RelativePath="PlayerStatusBar.h"
-				>
-			</File>
-			<File
-				RelativePath="PlayerSubresyncBar.h"
-				>
-			</File>
-			<File
 				RelativePath="PlayerToolBar.h"
 				>
 			</File>
@@ -1218,106 +886,6 @@
 			</File>
 			<File
 				RelativePath="PnSPresetsDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageAccelTbl.h"
-				>
-			</File>
-			<File
-				RelativePath="PPageAudioSwitcher.h"
-				>
-			</File>
-			<File
-				RelativePath="PPageBase.h"
-				>
-			</File>
-			<File
-				RelativePath="PPageDVD.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageExternalFilters.h"
-				>
-			</File>
-			<File
-				RelativePath="PPageFileInfoClip.h"
-				>
-			</File>
-			<File
-				RelativePath="PPageFileInfoDetails.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageFileInfoRes.h"
-				>
-			</File>
-			<File
-				RelativePath="PPageFileInfoSheet.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageFileMediaInfo.h"
-				>
-			</File>
-			<File
-				RelativePath="PPageFormats.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageInternalFilters.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageLogo.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageOutput.h"
-				>
-			</File>
-			<File
-				RelativePath="PPagePlayback.h"
-				>
-			</File>
-			<File
-				RelativePath="PPagePlayer.h"
-				>
-			</File>
-			<File
-				RelativePath="PPageSheet.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageSubDB.h"
-				>
-			</File>
-			<File
-				RelativePath="PPageSubStyle.h"
-				>
-			</File>
-			<File
-				RelativePath="PPageSubtitles.h"
-				>
-			</File>
-			<File
-				RelativePath="PPageTweaks.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageWebServer.h"
-				>
-			</File>
-			<File
-				RelativePath="QuicktimeGraph.h"
-				>
-			</File>
-			<File
-				RelativePath="RealMediaGraph.h"
-				>
-			</File>
-			<File
-				RelativePath="RealMediaWindowlessSite.h"
 				>
 			</File>
 			<File
@@ -1366,18 +934,6 @@
 			</File>
 			<File
 				RelativePath=".\ShaderEditorDlg.h"
-				>
-			</File>
-			<File
-				RelativePath="ShockwaveGraph.h"
-				>
-			</File>
-			<File
-				RelativePath="StaticLink.h"
-				>
-			</File>
-			<File
-				RelativePath="StatusLabel.h"
 				>
 			</File>
 			<File
@@ -1433,31 +989,11 @@
 				>
 			</File>
 			<File
-				RelativePath="TextPassThruFilter.h"
-				>
-			</File>
-			<File
 				RelativePath=".\TransparentControlBar.h"
 				>
 			</File>
 			<File
-				RelativePath=".\UESettingPanel.h"
-				>
-			</File>
-			<File
 				RelativePath="VolumeCtrl.h"
-				>
-			</File>
-			<File
-				RelativePath=".\WebClientSocket.h"
-				>
-			</File>
-			<File
-				RelativePath=".\WebServer.h"
-				>
-			</File>
-			<File
-				RelativePath=".\WebServerSocket.h"
 				>
 			</File>
 		</Filter>
@@ -1674,11 +1210,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\ecio.icons\dvd.ico"
+				RelativePath=".\res\icon\DVD.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon\DVD.ico"
+				RelativePath=".\res\ecio.icons\dvd.ico"
 				>
 			</File>
 			<File
@@ -2225,6 +1761,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\res\shaders\BT601BT709.psh"
+					>
+				</File>
+				<File
 					RelativePath=".\res\shaders\contour.psh"
 					>
 				</File>
@@ -2234,6 +1774,10 @@
 				</File>
 				<File
 					RelativePath=".\res\shaders\denoise.psh"
+					>
+				</File>
+				<File
+					RelativePath=".\res\shaders\EdgeSharpen.psh"
 					>
 				</File>
 				<File
@@ -2265,6 +1809,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\res\shaders\levels3.psh"
+					>
+				</File>
+				<File
 					RelativePath=".\res\shaders\nightvision.psh"
 					>
 				</File>
@@ -2278,6 +1826,14 @@
 				</File>
 				<File
 					RelativePath=".\res\shaders\sharpen.psh"
+					>
+				</File>
+				<File
+					RelativePath=".\res\shaders\SharpenComplex.psh"
+					>
+				</File>
+				<File
+					RelativePath=".\res\shaders\SharpenComplex2.psh"
 					>
 				</File>
 				<File
@@ -2387,34 +1943,6 @@
 			</Filter>
 		</Filter>
 		<Filter
-			Name="Updater"
-			>
-			<File
-				RelativePath="..\..\..\Updater\conrgette_interface.cpp"
-				>
-				<FileConfiguration
-					Name="Release Unicode|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\..\Updater\cupdatenetlib.cpp"
-				>
-				<FileConfiguration
-					Name="Release Unicode|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-			</File>
-		</Filter>
-		<Filter
 			Name="Utils"
 			>
 			<File
@@ -2522,32 +2050,512 @@
 				>
 			</File>
 		</Filter>
-		<File
-			RelativePath=".\res\shaders\BT601BT709.psh"
+		<Filter
+			Name="Deprecated"
 			>
-		</File>
-		<File
-			RelativePath=".\res\shaders\EdgeSharpen.psh"
+			<File
+				RelativePath="ComPropertyPage.cpp"
+				>
+			</File>
+			<File
+				RelativePath="ComPropertyPage.h"
+				>
+			</File>
+			<File
+				RelativePath="ComPropertySheet.cpp"
+				>
+			</File>
+			<File
+				RelativePath="ComPropertySheet.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ISDb.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ISDb.h"
+				>
+			</File>
+			<File
+				RelativePath="PlayerInfoBar.cpp"
+				>
+			</File>
+			<File
+				RelativePath="PlayerInfoBar.h"
+				>
+			</File>
+			<File
+				RelativePath="PlayerStatusBar.cpp"
+				>
+			</File>
+			<File
+				RelativePath="PlayerStatusBar.h"
+				>
+			</File>
+			<File
+				RelativePath="PlayerSubresyncBar.cpp"
+				>
+			</File>
+			<File
+				RelativePath="PlayerSubresyncBar.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PPageAccelTbl.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PPageAccelTbl.h"
+				>
+			</File>
+			<File
+				RelativePath="PPageAudioSwitcher.cpp"
+				>
+			</File>
+			<File
+				RelativePath="PPageAudioSwitcher.h"
+				>
+			</File>
+			<File
+				RelativePath="PPageBase.cpp"
+				>
+			</File>
+			<File
+				RelativePath="PPageBase.h"
+				>
+			</File>
+			<File
+				RelativePath="PPageDVD.cpp"
+				>
+			</File>
+			<File
+				RelativePath="PPageDVD.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PPageExternalFilters.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PPageExternalFilters.h"
+				>
+			</File>
+			<File
+				RelativePath="PPageFileInfoClip.cpp"
+				>
+			</File>
+			<File
+				RelativePath="PPageFileInfoClip.h"
+				>
+			</File>
+			<File
+				RelativePath="PPageFileInfoDetails.cpp"
+				>
+			</File>
+			<File
+				RelativePath="PPageFileInfoDetails.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PPageFileInfoRes.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PPageFileInfoRes.h"
+				>
+			</File>
+			<File
+				RelativePath="PPageFileInfoSheet.cpp"
+				>
+			</File>
+			<File
+				RelativePath="PPageFileInfoSheet.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PPageFileMediaInfo.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PPageFileMediaInfo.h"
+				>
+			</File>
+			<File
+				RelativePath="PPageFormats.cpp"
+				>
+			</File>
+			<File
+				RelativePath="PPageFormats.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PPageInternalFilters.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PPageInternalFilters.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PPageLogo.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PPageLogo.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PPageOutput.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PPageOutput.h"
+				>
+			</File>
+			<File
+				RelativePath="PPagePlayback.cpp"
+				>
+			</File>
+			<File
+				RelativePath="PPagePlayback.h"
+				>
+			</File>
+			<File
+				RelativePath="PPagePlayer.cpp"
+				>
+			</File>
+			<File
+				RelativePath="PPagePlayer.h"
+				>
+			</File>
+			<File
+				RelativePath="PPageSheet.cpp"
+				>
+			</File>
+			<File
+				RelativePath="PPageSheet.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PPageSubDB.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PPageSubDB.h"
+				>
+			</File>
+			<File
+				RelativePath="PPageSubStyle.cpp"
+				>
+			</File>
+			<File
+				RelativePath="PPageSubStyle.h"
+				>
+			</File>
+			<File
+				RelativePath="PPageSubtitles.cpp"
+				>
+			</File>
+			<File
+				RelativePath="PPageSubtitles.h"
+				>
+			</File>
+			<File
+				RelativePath="PPageTweaks.cpp"
+				>
+			</File>
+			<File
+				RelativePath="PPageTweaks.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PPageWebServer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PPageWebServer.h"
+				>
+			</File>
+			<File
+				RelativePath="StaticLink.cpp"
+				>
+			</File>
+			<File
+				RelativePath="StaticLink.h"
+				>
+			</File>
+			<File
+				RelativePath="StatusLabel.cpp"
+				>
+			</File>
+			<File
+				RelativePath="StatusLabel.h"
+				>
+			</File>
+			<File
+				RelativePath=".\UESettingPanel.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\UESettingPanel.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WebClientSocket.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\WebClientSocket.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WebServer.cpp"
+				>
+				<FileConfiguration
+					Name="Release Unicode|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\WebServer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WebServerSocket.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\WebServerSocket.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Libraries"
 			>
-		</File>
-		<File
-			RelativePath=".\res\shaders\levels3.psh"
+			<File
+				RelativePath=".\Ifo.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\mpc-hc\trunk\src\apps\mplayerc\Ifo.h"
+				>
+			</File>
+			<File
+				RelativePath=".\jpeg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\jpeg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\jpeg_tables.h"
+				>
+			</File>
+			<File
+				RelativePath=".\libpng.c"
+				>
+				<FileConfiguration
+					Name="Release Unicode|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\libpng.h"
+				>
+			</File>
+			<Filter
+				Name="Updater"
+				>
+				<File
+					RelativePath="..\..\..\Updater\conrgette_interface.cpp"
+					>
+					<FileConfiguration
+						Name="Release Unicode|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\..\Updater\cupdatenetlib.cpp"
+					>
+					<FileConfiguration
+						Name="Release Unicode|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+				</File>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="Graph"
 			>
-		</File>
+			<File
+				RelativePath=".\AllocatorCommon.h"
+				>
+			</File>
+			<File
+				RelativePath="BaseGraph.cpp"
+				>
+			</File>
+			<File
+				RelativePath="BaseGraph.h"
+				>
+			</File>
+			<File
+				RelativePath="CShockwaveFlash.cpp"
+				>
+			</File>
+			<File
+				RelativePath="CShockwaveFlash.h"
+				>
+			</File>
+			<File
+				RelativePath="DX7AllocatorPresenter.cpp"
+				>
+			</File>
+			<File
+				RelativePath="DX7AllocatorPresenter.h"
+				>
+			</File>
+			<File
+				RelativePath="DX9AllocatorPresenter.cpp"
+				>
+			</File>
+			<File
+				RelativePath="DX9AllocatorPresenter.h"
+				>
+			</File>
+			<File
+				RelativePath=".\EVRAllocatorPresenter.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\EVRAllocatorPresenter.h"
+				>
+			</File>
+			<File
+				RelativePath=".\FakeFilterMapper2.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\FakeFilterMapper2.h"
+				>
+			</File>
+			<File
+				RelativePath=".\FGFilter.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\FGFilter.h"
+				>
+			</File>
+			<File
+				RelativePath=".\FGManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\FGManager.h"
+				>
+			</File>
+			<File
+				RelativePath=".\IGraphBuilder2.h"
+				>
+			</File>
+			<File
+				RelativePath=".\internal_filter_config.h"
+				>
+			</File>
+			<File
+				RelativePath=".\IPinHook.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\IPinHook.h"
+				>
+			</File>
+			<File
+				RelativePath="IQTVideoSurface.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MacrovisionKicker.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MacrovisionKicker.h"
+				>
+			</File>
+			<File
+				RelativePath="QuicktimeGraph.cpp"
+				>
+			</File>
+			<File
+				RelativePath="QuicktimeGraph.h"
+				>
+			</File>
+			<File
+				RelativePath="RealMediaGraph.cpp"
+				>
+			</File>
+			<File
+				RelativePath="RealMediaGraph.h"
+				>
+			</File>
+			<File
+				RelativePath="RealMediaWindowlessSite.cpp"
+				>
+			</File>
+			<File
+				RelativePath="RealMediaWindowlessSite.h"
+				>
+			</File>
+			<File
+				RelativePath="ShockwaveGraph.cpp"
+				>
+			</File>
+			<File
+				RelativePath="ShockwaveGraph.h"
+				>
+			</File>
+			<Filter
+				Name="Filters"
+				>
+				<File
+					RelativePath=".\DeinterlacerFilter.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\DeinterlacerFilter.h"
+					>
+				</File>
+				<File
+					RelativePath="TextPassThruFilter.cpp"
+					>
+				</File>
+				<File
+					RelativePath="TextPassThruFilter.h"
+					>
+				</File>
+			</Filter>
+		</Filter>
 		<File
 			RelativePath=".\MainFrameSCmd.h"
-			>
-		</File>
-		<File
-			RelativePath=".\NOTE.txt"
-			>
-		</File>
-		<File
-			RelativePath=".\res\shaders\SharpenComplex.psh"
-			>
-		</File>
-		<File
-			RelativePath=".\res\shaders\SharpenComplex2.psh"
 			>
 		</File>
 	</Files>

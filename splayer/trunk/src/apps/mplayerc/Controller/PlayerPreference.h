@@ -35,6 +35,9 @@ private:
   BOOL WriteProfileInt(LPCTSTR lpszSection, LPCTSTR lpszEntry, int nValue);
   UINT GetProfileInt(LPCTSTR lpszSection, LPCTSTR lpszEntry, int nDefault);
 
+  BOOL WriteProfileString(LPCTSTR lpszSection, LPCTSTR lpszEntry, LPCTSTR lpszValue);
+  CString GetProfileString(LPCTSTR lpszSection, LPCTSTR lpszEntry, LPCTSTR lpszDefault);
+
   std::map<int, int>          m_map_intvar;
   std::map<int, long long>    m_map_int64var;
   std::map<int, std::wstring> m_map_strvar;

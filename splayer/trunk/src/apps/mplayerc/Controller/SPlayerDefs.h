@@ -11,6 +11,9 @@
 // int64 variables
 #define INT64VAR_MAINWINDOW         1000
 
+// string variables
+#define STRVAR_HOTKEYSCHEME         1000
+
 // string array variables
 #define STRARRAY_PLAYLIST           1000
 

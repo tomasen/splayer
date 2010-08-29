@@ -40,6 +40,7 @@
 #include "Controller/Hotkey_Controller.h"
 #include "Controller/PlaylistController.h"
 #include "Controller/PlayerPreference.h"
+#include "Controller/SPlayerDefs.h"
 
 #include "..\..\..\Updater\cupdatenetlib.h"
 
@@ -2241,16 +2242,6 @@ BOOL CMPlayerCApp::InitInstance()
 int CMPlayerCApp::ExitInstance()
 {
 
-	if(sqlite_setting)
-		sqlite_setting->exec_sql("PRAGMA synchronous=ON");
-    if(sqlite_local_record){
-        CString szSQL;
-        szSQL.Format(L"DELETE FROM histories WHERE modtime < '%d' ", time(NULL)-3600*24*30);
-        // SVP_LogMsg5(szSQL);
-        sqlite_local_record->exec_sql_u(szSQL);
-
-        sqlite_local_record->exec_sql("PRAGMA synchronous=ON");
-    }
 	m_s.UpdateData(true);
 
 
@@ -2283,11 +2274,6 @@ int CMPlayerCApp::ExitInstance()
 	if(m_hResDll)
 		FreeLibrary(m_hResDll);
 	
-	if (sqlite_setting)
-		delete sqlite_setting;
-    if (sqlite_local_record)
-        delete sqlite_local_record;
-    
 
 	return ret;
 }
@@ -4210,6 +4196,17 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
     // create accelerator table according to HotkeyController
     std::vector<ACCEL> accel;
     HotkeyController* con = HotkeyController::GetInstance();
+    // load hotkeyscheme
+    PlayerPreference* pref = PlayerPreference::GetInstance();
+    std::wstring hotkey_file = pref->GetStringVar(STRVAR_HOTKEYSCHEME);
+    if (hotkey_file.length() > 0)
+    {
+      wchar_t path[256];
+      GetModuleFileName(NULL, path, 256);
+      PathRemoveFileSpec(path);
+      wcscat_s(path, 256, hotkey_file.c_str());
+      con->UpdateSchemeFromFile(path);
+    }
     std::vector<HotkeyCmd> scheme = con->GetScheme();
     accel.resize(scheme.size());
 

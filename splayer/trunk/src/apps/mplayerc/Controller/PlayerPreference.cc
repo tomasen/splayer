@@ -25,7 +25,9 @@ PlayerPreference::PlayerPreference(void):
   // WARNING !!! WARNING !!! WARNING !!! WARNING !!! WARNING !!! WARNING !!! 
   m_map_intvar[INTVAR_LOGO_AUTOSTRETCH]     = GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LOGOSTRETCH), 1);
   m_map_intvar[INTVAR_SHUFFLEPLAYLISTITEMS] = GetProfileInt(ResStr(IDS_R_SETTINGS), L"ShufflePlaylistItems", FALSE);
-  m_map_intvar[INTVAR_AUTOLOADAUDIO] = GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUTOLOADAUDIO), TRUE);
+  m_map_intvar[INTVAR_AUTOLOADAUDIO]        = GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUTOLOADAUDIO), TRUE);
+
+  m_map_strvar[STRVAR_HOTKEYSCHEME]         = GetProfileString(L"Settings", L"HotkeyScheme", L"");
 }
 
 PlayerPreference::~PlayerPreference(void)
@@ -41,6 +43,8 @@ PlayerPreference::~PlayerPreference(void)
   WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LOGOSTRETCH), m_map_intvar[INTVAR_LOGO_AUTOSTRETCH]);
   WriteProfileInt(ResStr(IDS_R_SETTINGS), L"ShufflePlaylistItems", m_map_intvar[INTVAR_SHUFFLEPLAYLISTITEMS]);
   WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUTOLOADAUDIO), m_map_intvar[INTVAR_AUTOLOADAUDIO]);
+
+  WriteProfileString(L"Settings", L"HotkeyScheme", m_map_strvar[STRVAR_HOTKEYSCHEME].c_str());
 
   Uninit();
 }
@@ -118,6 +122,8 @@ void PlayerPreference::Init()
 
   m_map_int64var[INT64VAR_MAINWINDOW]   = 0;
 
+  m_map_strvar[STRVAR_HOTKEYSCHEME]     = L"";
+
   m_map_strarray[STRARRAY_PLAYLIST] = std::vector<std::wstring>();
   std::map<int, std::vector<std::wstring>>::iterator it = m_map_strarray.find(STRARRAY_PLAYLIST);
   it->second.push_back(L"D:\\1-4.[VeryCD.com].RM");
@@ -133,7 +139,6 @@ void PlayerPreference::Init()
   if (!sqlite_setting)
   {
     wchar_t path[MAX_PATH];
-    char path_utf8[MAX_PATH*2];
     ::GetModuleFileName(NULL, path, MAX_PATH);
     ::PathRemoveFileSpec(path);
 
@@ -163,22 +168,50 @@ void PlayerPreference::Init()
 
 void PlayerPreference::Uninit()
 {
-  if (sqlite_setting)
+  if(sqlite_setting)
     sqlite_setting->exec_sql("PRAGMA synchronous=ON");
+  if(sqlite_local_record){
+    CString szSQL;
+    szSQL.Format(L"DELETE FROM histories WHERE modtime < '%d' ", time(NULL)-3600*24*30);
+    // SVP_LogMsg5(szSQL);
+    sqlite_local_record->exec_sql_u(szSQL);
+
+    sqlite_local_record->exec_sql("PRAGMA synchronous=ON");
+  }
+
+  if (sqlite_setting)
+    delete sqlite_setting;
+  if (sqlite_local_record)
+    delete sqlite_local_record;
 
 }
 
 BOOL PlayerPreference::WriteProfileInt(LPCTSTR lpszSection, LPCTSTR lpszEntry, int nValue)
 {
   if (sqlite_setting)
-    return sqlite_setting->WriteProfileInt(lpszSection,  lpszEntry,  nValue);
+    return sqlite_setting->WriteProfileInt(lpszSection, lpszEntry,  nValue);
   return FALSE;
 }
 
 UINT PlayerPreference::GetProfileInt(LPCTSTR lpszSection, LPCTSTR lpszEntry, int nDefault)
 {
   if (sqlite_setting)
-    return sqlite_setting->GetProfileInt(lpszSection,  lpszEntry,  nDefault);
+    return sqlite_setting->GetProfileInt(lpszSection, lpszEntry,  nDefault);
   return FALSE;
 }
 
+BOOL PlayerPreference::WriteProfileString(LPCTSTR lpszSection, LPCTSTR lpszEntry, LPCTSTR lpszValue)
+{
+  if (sqlite_setting)
+    return sqlite_setting->WriteProfileString(lpszSection, lpszEntry,
+      lpszValue);
+  return FALSE;
+}
+
+CString PlayerPreference::GetProfileString(LPCTSTR lpszSection, LPCTSTR lpszEntry, LPCTSTR lpszDefault)
+{
+  if (sqlite_setting)
+    return sqlite_setting->GetProfileString( lpszSection,  lpszEntry,
+      lpszDefault);
+  return L"";
+}

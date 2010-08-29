@@ -33,7 +33,7 @@ public:
     DDX_CHECK(IDC_CHECK_AUTORESUME, m_autoresume)
     DDX_CHECK(IDC_CHECK_AUTOFULLSCREEN, m_autofullscreen)
     DDX_CHECK(IDC_CHECK_AUTOUPGRADE, m_autoupgrade)
-    DDX_CHECK(IDC_CHECK_HOTKEYSCHEME, m_customhotkey)
+    DDX_CHECK(IDC_CHECK_HOTKEYSCHEME, m_hotkeyscheme)
   END_DDX_MAP()
 
   // message handlers
@@ -67,7 +67,6 @@ private:
   int m_autoresume;
   int m_autofullscreen;
   int m_autoupgrade;
-  int m_customhotkey;
 
   // additional params
   int m_upgradestrategy;

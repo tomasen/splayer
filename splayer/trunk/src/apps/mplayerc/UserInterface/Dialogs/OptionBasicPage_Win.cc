@@ -63,8 +63,6 @@ BOOL OptionBasicPage::OnInitDialog(HWND hwnd, LPARAM lParam)
   else
     m_upgradestrategy_combo.SetCurSel(0);
 
-  // todo: establish hotkeyscheme remembering mechanism
-  m_customhotkey = 0;
   m_hotkeyscheme = 0;
 
   PrepareHotkeySchemes();
@@ -121,7 +119,7 @@ void OptionBasicPage::OnAutoUpgradeChanged(UINT uNotifyCode, int nID, CWindow wn
 
 void OptionBasicPage::OnCustomHotkeyChanged(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
-  m_customhotkey = IsDlgButtonChecked(IDC_CHECK_HOTKEYSCHEME)?1:0;
+  m_hotkeyscheme = IsDlgButtonChecked(IDC_CHECK_HOTKEYSCHEME)?1:0;
   Validate();
 }
 
@@ -170,6 +168,16 @@ int OptionBasicPage::OnApply()
       break;
   }
 
+  // apply hotkeyscheme
+  std::wstring hotkeyscheme;
+  if (m_hotkeyscheme)
+  {
+    int index = m_hotkeyscheme_combo.GetCurSel();
+    if (index >= 0 && index < (int)m_files.size())
+      hotkeyscheme = m_files[index];
+  }
+  pref->SetStringVar(STRVAR_HOTKEYSCHEME, hotkeyscheme);
+
   return PSNRET_NOERROR;
 }
 
@@ -178,7 +186,7 @@ void OptionBasicPage::Validate()
   // update scale checkbox and exit box
   m_autoscalecheckbox.EnableWindow(m_bkgnd == 1);
   m_upgradestrategy_combo.EnableWindow(m_autoupgrade == 1);
-  m_hotkeyscheme_combo.EnableWindow(m_customhotkey == 1);
+  m_hotkeyscheme_combo.EnableWindow(m_hotkeyscheme != 0);
 }
 
 void OptionBasicPage::PrepareHotkeySchemes()
@@ -189,4 +197,21 @@ void OptionBasicPage::PrepareHotkeySchemes()
     it != m_schemenames.end(); it++)
     m_hotkeyscheme_combo.AddString((*it).c_str());
   m_hotkeyscheme_combo.SetCurSel(0);
+
+  PlayerPreference* pref = PlayerPreference::GetInstance();
+  std::wstring scheme = pref->GetStringVar(STRVAR_HOTKEYSCHEME);
+  if (scheme.length() > 0)
+    m_hotkeyscheme = 1;
+  else
+    return;
+
+  for (std::vector<std::wstring>::iterator it = m_files.begin();
+    it != m_files.end(); it++)
+  {
+    if (_wcsicmp(scheme.c_str(), (*it).c_str()) == 0)
+    {
+      m_hotkeyscheme_combo.SetCurSel(distance(m_files.begin(), it));
+      break;
+    }
+  }
 }

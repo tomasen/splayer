@@ -83,12 +83,12 @@ void HotkeyController::EnumAvailableSchemes(std::vector<std::wstring>& files_out
   if (hFind != INVALID_HANDLE_VALUE) 
   {
     std::wstring schemefile;
-    schemefile = basedir;
+    schemefile = L"\\hotkey\\";
     schemefile += fd.cFileName;
     files_out.push_back(schemefile);
     while (::FindNextFile(hFind, &fd) != 0)
     {
-      schemefile = basedir;
+      schemefile = L"\\hotkey\\";
       schemefile += fd.cFileName;
       files_out.push_back(schemefile);
     }
@@ -100,7 +100,11 @@ void HotkeyController::EnumAvailableSchemes(std::vector<std::wstring>& files_out
   for (std::vector<std::wstring>::iterator it = files_out.begin(); it != files_out.end(); it++)
   {
     HotkeySchemeParser parser;
-    parser.ReadFromFile((*it).c_str());
+    wchar_t path[256];
+    GetModuleFileName(NULL, path, 256);
+    PathRemoveFileSpec(path);
+    wcscat_s(path, 256, (*it).c_str());
+    parser.ReadFromFile(path);
     names_out.push_back(parser.GetSchemeName());
   }
 }

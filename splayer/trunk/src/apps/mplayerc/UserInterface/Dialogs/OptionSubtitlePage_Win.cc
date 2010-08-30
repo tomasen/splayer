@@ -65,8 +65,6 @@ void OptionSubtitlePage::OnDestroy()
 void OptionSubtitlePage::OnSubtitleStyleChange(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
   m_mainstyle = m_subtitlestyle.GetCurSel();
-
-  ApplySubtitleStyle();
 }
 
 void OptionSubtitlePage::DrawItem(LPDRAWITEMSTRUCT lpdis)

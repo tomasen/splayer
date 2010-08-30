@@ -15311,7 +15311,9 @@ void CMainFrame::ShowOptions(int idPage)
 
     m_wndView.LoadLogo();
 
-    AfxGetAppSettings().UpdateData(true);
+    AppSettings& s = AfxGetAppSettings();
+    ShowTrayIcon(s.fTrayIcon);
+    s.UpdateData(true);
 
     UpdateSubtitle(true);
     UpdateSubtitle2(true);

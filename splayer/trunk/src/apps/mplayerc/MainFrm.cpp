@@ -91,6 +91,8 @@
 #include "..\..\..\Updater\cupdatenetlib.h"
 
 #include "Controller/Hotkey_Controller.h"
+#include "Controller/PlayerPreference.h"
+#include "Controller/SPlayerDefs.h"
 
 // begin,
 // the following headers are included because HotkeyController mechanism broke the original inclusion
@@ -4554,6 +4556,12 @@ void CMainFrame::OnFilePostOpenmedia()
 			}else{
 				ZoomVideoWindow();
 				
+       PlayerPreference* pref = PlayerPreference::GetInstance();
+       if (pref->GetIntVar(INTVAR_TOGGLEFULLSCRENWHENPLAYBACKSTARTED))
+       {
+        ToggleFullscreen(true, true);
+        SetCursor(NULL);
+       }
 			}
 			m_fLastIsAudioOnly = m_fAudioOnly;
 
@@ -9602,6 +9610,7 @@ MENUBARINFO mbi;
 			else if(lastWindowType == SIZE_MINIMIZED)
 				ShowWindow(SW_MINIMIZE);
 		}
+
 	}
 
 	if(s.fHideCaptionMenu)

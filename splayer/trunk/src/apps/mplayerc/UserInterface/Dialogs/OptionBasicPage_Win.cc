@@ -47,7 +47,7 @@ BOOL OptionBasicPage::OnInitDialog(HWND hwnd, LPARAM lParam)
   m_repeat = s.fLoopForever;
   m_mintotray = s.fTrayIcon;
   m_autoresume =  s.autoResumePlay;
-  m_autofullscreen = s.launchfullscreen;
+  m_autofullscreen = pref->GetIntVar(INTVAR_TOGGLEFULLSCRENWHENPLAYBACKSTARTED);
   m_autoupgrade = (s.tLastCheckUpdater < 2000000000);
 
   //This might need revise
@@ -143,7 +143,7 @@ int OptionBasicPage::OnApply()
   s.fLoopForever = m_repeat?true:false;
   s.fTrayIcon = m_mintotray?true:false;
   s.autoResumePlay = m_autoresume;
-  s.launchfullscreen = m_autofullscreen?true:false;
+  pref->SetIntVar(INTVAR_TOGGLEFULLSCRENWHENPLAYBACKSTARTED, m_autofullscreen?true:false);
 
   if (m_autoupgrade)
     s.tLastCheckUpdater = (UINT)time(NULL) - 100000;

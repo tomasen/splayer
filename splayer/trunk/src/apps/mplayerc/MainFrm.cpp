@@ -4556,11 +4556,14 @@ void CMainFrame::OnFilePostOpenmedia()
 			}else{
 				ZoomVideoWindow();
 				
-       PlayerPreference* pref = PlayerPreference::GetInstance();
-       if (pref->GetIntVar(INTVAR_TOGGLEFULLSCRENWHENPLAYBACKSTARTED))
+       if (!m_fFullScreen)
        {
-        ToggleFullscreen(true, true);
-        SetCursor(NULL);
+         PlayerPreference* pref = PlayerPreference::GetInstance();
+         if (pref->GetIntVar(INTVAR_TOGGLEFULLSCRENWHENPLAYBACKSTARTED))
+         {
+          ToggleFullscreen(true, true);
+          SetCursor(NULL);
+         }
        }
 			}
 			m_fLastIsAudioOnly = m_fAudioOnly;

@@ -8,8 +8,7 @@
 #define ResStr(id) CString(MAKEINTRESOURCE(id))
 
 PlayerPreference::PlayerPreference(void):
-  sqlite_setting(NULL),
-  sqlite_local_record(NULL)
+  sqlite_setting(NULL)
 {
   // init
   Init();
@@ -170,19 +169,10 @@ void PlayerPreference::Uninit()
 {
   if(sqlite_setting)
     sqlite_setting->exec_sql("PRAGMA synchronous=ON");
-  if(sqlite_local_record){
-    CString szSQL;
-    szSQL.Format(L"DELETE FROM histories WHERE modtime < '%d' ", time(NULL)-3600*24*30);
-    // SVP_LogMsg5(szSQL);
-    sqlite_local_record->exec_sql_u(szSQL);
-
-    sqlite_local_record->exec_sql("PRAGMA synchronous=ON");
-  }
 
   if (sqlite_setting)
     delete sqlite_setting;
-  if (sqlite_local_record)
-    delete sqlite_local_record;
+
 
 }
 

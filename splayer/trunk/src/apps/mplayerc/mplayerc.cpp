@@ -1560,40 +1560,39 @@ void CMPlayerCApp::InitInstanceThreaded(INT64 CLS64){
 
 	}
     SVP_LogMsg5(L"Settings::InitInstanceThreaded 5");
-	
-		
-    SVP_LogMsg5(L"Settings::InitInstanceThreaded 11");
-        if(!sqlite_local_record){ // TODO: save play record to local sql db
-            //AfxMessageBox(L"0");
-            int iDescLen;
-            CString recordPath;
-            svpToolBox.GetAppDataPath(recordPath);
-            CPath tmPath(recordPath);
-            tmPath.RemoveBackslash();
-            tmPath.AddBackslash();
-            tmPath.Append( _T("local.db"));
-            //AfxMessageBox(tmPath);
-            char * buff = svpToolBox.CStringToUTF8(CString(tmPath),&iDescLen) ;
-            sqlite_local_record = new SQLITE3( buff );
-            free(buff);
-            if(!sqlite_local_record->db_open){
-                delete sqlite_local_record;
-                sqlite_local_record = NULL;
-            }
-            //AfxMessageBox(L"1");
-            if(sqlite_local_record){
-                // 			sqlite_local_record->exec_sql("CREATE TABLE  IF NOT EXISTS favrec (\"favtype\" INTEGER, \"favpath\" TEXT, \"favtime\" TEXT, \"addtime\" INTEGER, \"favrecent\" INTEGER )");
-                // 			sqlite_local_record->exec_sql("CREATE UNIQUE INDEX  IF NOT EXISTS \"favpk\" on favrec (favtype ASC, favpath ASC, favrecent ASC)");
-                // 			sqlite_local_record->exec_sql("CREATE INDEX  IF NOT EXISTS \"favord\" on favrec (addtime ASC)");
-                sqlite_local_record->exec_sql("CREATE TABLE  IF NOT EXISTS histories (\"fpath\" TEXT, \"subid\" INTEGER, \"subid2\" INTEGER, \"audioid\" INTEGER, \"stoptime\" INTEGER, \"modtime\" INTEGER )");
-                sqlite_local_record->exec_sql("CREATE UNIQUE INDEX  IF NOT EXISTS \"hispk\" on histories (fpath ASC)");
-                sqlite_local_record->exec_sql("CREATE INDEX  IF NOT EXISTS \"modtime\" on histories (modtime ASC)");
-                sqlite_local_record->exec_sql("PRAGMA synchronous=OFF");
-                //sqlite_local_record->end_transaction();
-            }
-            //AfxMessageBox(L"2");
-        }
-SVP_LogMsg5(L"Settings::InitInstanceThreaded 12");
+
+    if(!sqlite_local_record){ // TODO: save play record to local sql db
+      //AfxMessageBox(L"0");
+      int iDescLen;
+      CString recordPath;
+      svpToolBox.GetAppDataPath(recordPath);
+      CPath tmPath(recordPath);
+      tmPath.RemoveBackslash();
+      tmPath.AddBackslash();
+      tmPath.Append( _T("local.db"));
+      //AfxMessageBox(tmPath);
+      char * buff = svpToolBox.CStringToUTF8(CString(tmPath),&iDescLen) ;
+      sqlite_local_record = new SQLITE3( buff );
+      free(buff);
+      if(!sqlite_local_record->db_open){
+        delete sqlite_local_record;
+        sqlite_local_record = NULL;
+      }
+
+      if(sqlite_local_record){
+        // sqlite_local_record->exec_sql("CREATE TABLE  IF NOT EXISTS favrec (\"favtype\" INTEGER, \"favpath\" TEXT, \"favtime\" TEXT, \"addtime\" INTEGER, \"favrecent\" INTEGER )");
+        // sqlite_local_record->exec_sql("CREATE UNIQUE INDEX  IF NOT EXISTS \"favpk\" on favrec (favtype ASC, favpath ASC, favrecent ASC)");
+        // sqlite_local_record->exec_sql("CREATE INDEX  IF NOT EXISTS \"favord\" on favrec (addtime ASC)");
+        sqlite_local_record->exec_sql("CREATE TABLE  IF NOT EXISTS histories (\"fpath\" TEXT, \"subid\" INTEGER, \"subid2\" INTEGER, \"audioid\" INTEGER, \"stoptime\" INTEGER, \"modtime\" INTEGER )");
+        sqlite_local_record->exec_sql("CREATE UNIQUE INDEX  IF NOT EXISTS \"hispk\" on histories (fpath ASC)");
+        sqlite_local_record->exec_sql("CREATE INDEX  IF NOT EXISTS \"modtime\" on histories (modtime ASC)");
+        sqlite_local_record->exec_sql("PRAGMA synchronous=OFF");
+        //sqlite_local_record->end_transaction();
+      }
+      
+    }
+
+    SVP_LogMsg5(L"Settings::InitInstanceThreaded 12");
 		CMainFrame* pFrame = (CMainFrame*)m_pMainWnd;
 		
 
@@ -2242,6 +2241,16 @@ BOOL CMPlayerCApp::InitInstance()
 int CMPlayerCApp::ExitInstance()
 {
 
+
+  if(sqlite_local_record){
+    CString szSQL;
+    szSQL.Format(L"DELETE FROM histories WHERE modtime < '%d' ", time(NULL)-3600*24*30);
+    // SVP_LogMsg5(szSQL);
+    sqlite_local_record->exec_sql_u(szSQL);
+
+    sqlite_local_record->exec_sql("PRAGMA synchronous=ON");
+  }
+  
 	m_s.UpdateData(true);
 
 
@@ -2274,6 +2283,8 @@ int CMPlayerCApp::ExitInstance()
 	if(m_hResDll)
 		FreeLibrary(m_hResDll);
 	
+  if (sqlite_local_record)
+    delete sqlite_local_record;
 
 	return ret;
 }

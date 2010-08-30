@@ -45,7 +45,6 @@ private:
   std::map<int, std::vector<std::wstring>> m_map_strarray;
 
   SQLITE3* sqlite_setting; 
-  SQLITE3* sqlite_local_record; 
 
 };
 

@@ -8732,18 +8732,17 @@ void CMainFrame::OnUpdatePlayVolumeBoost(CCmdUI* pCmdUI)
 
 void CMainFrame::OnAfterplayback(UINT nID)
 {
-	AppSettings& s = AfxGetAppSettings();
+  AppSettings& s = AfxGetAppSettings();
 
-	s.nCLSwitches &= ~CLSW_AFTERPLAYBACK_MASK;
-
-	switch(nID)
-	{
-	case ID_AFTERPLAYBACK_CLOSE: s.nCLSwitches |= CLSW_CLOSE; break;
-	case ID_AFTERPLAYBACK_STANDBY: s.nCLSwitches |= CLSW_STANDBY; break;
-	case ID_AFTERPLAYBACK_HIBERNATE: s.nCLSwitches |= CLSW_HIBERNATE; break;
-	case ID_AFTERPLAYBACK_SHUTDOWN: s.nCLSwitches |= CLSW_SHUTDOWN; break;
-	case ID_AFTERPLAYBACK_LOGOFF: s.nCLSwitches |= CLSW_LOGOFF; break;
-	}	
+  switch(nID)
+  {
+  case ID_AFTERPLAYBACK_CLOSE: (s.nCLSwitches&CLSW_CLOSE) ? s.nCLSwitches &= ~CLSW_CLOSE : s.nCLSwitches |= CLSW_CLOSE; break;
+  case ID_AFTERPLAYBACK_STANDBY: (s.nCLSwitches&CLSW_STANDBY) ? s.nCLSwitches &= ~CLSW_STANDBY : s.nCLSwitches |= CLSW_STANDBY; break;
+  case ID_AFTERPLAYBACK_HIBERNATE: (s.nCLSwitches&CLSW_HIBERNATE) ? s.nCLSwitches &= ~CLSW_HIBERNATE : s.nCLSwitches |= CLSW_HIBERNATE; break;
+  case ID_AFTERPLAYBACK_SHUTDOWN: (s.nCLSwitches&CLSW_SHUTDOWN) ? s.nCLSwitches &= ~CLSW_SHUTDOWN : s.nCLSwitches |= CLSW_SHUTDOWN; break;
+  case ID_AFTERPLAYBACK_LOGOFF: (s.nCLSwitches&CLSW_LOGOFF) ? s.nCLSwitches &= ~CLSW_LOGOFF : s.nCLSwitches |= CLSW_LOGOFF; break;
+  case ID_AFTERPLAYBACK_DONOTHING: s.nCLSwitches &= ~CLSW_AFTERPLAYBACK_MASK; break;
+  }
 }
 
 void CMainFrame::OnUpdateAfterplayback(CCmdUI* pCmdUI)

@@ -83,38 +83,40 @@ bool PlaylistParser::GetPlaylistItem(std::vector<std::wstring>& fns,
 
   if(pref->GetIntVar(INTVAR_AUTOLOADAUDIO) && (fn.find(L"://") == fn.npos))
   {
-    int i = fn.find_last_of('.');
-    if (i > 0)
+    size_t dotposfn = fn.find_last_of('.');
+    if (dotposfn != fn.npos)
     {
       CMediaFormats& mf = AfxGetAppSettings().Formats;
-      std::wstring ext = fn.substr(i + 1, fn.size() - i - 1);
+      std::wstring ext = fn.substr(dotposfn + 1, fn.size() - dotposfn - 1);
       std::transform(ext.begin(), ext.end(), ext.begin(), tolower);
       if(!mf.FindExt(ext.c_str(), true))
       {
         std::wstring path = fn;
-        for (int i = 0; i < path.length(); i++)
+        for (size_t i = 0; i < path.length(); i++)
           if (path[i] == '/')
             path[i] = '\\';
         path = path.substr(0, path.find_last_of('\\') + 1);
         WIN32_FIND_DATA fd = {0};
-        HANDLE hFind = FindFirstFile((fn.substr(0, i) + L"*.*").c_str(), &fd);
-        if(hFind != INVALID_HANDLE_VALUE)
+        HANDLE hFind = FindFirstFile((fn.substr(0, dotposfn) + L"*.*").c_str(), &fd);
+        if (hFind != INVALID_HANDLE_VALUE)
         {
           do
           {
             if(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
               continue;
             std::wstring fullpath = path + (LPCTSTR)fd.cFileName;
-            int dotPos = fullpath.find_last_of('.');
-            std::wstring ext2 = fullpath.substr(dotPos + 1,
-              fullpath.size() - dotPos - 1);
+            size_t dotposfp = fullpath.find_last_of('.');
+            if (dotposfp == fullpath.npos)
+              continue;
+            std::wstring ext2 = fullpath.substr(dotposfp + 1,
+              fullpath.size() - dotposfp - 1);
             std::transform(ext2.begin(), ext2.end(), ext2.begin(), tolower);
             if(!FindFileInList(newPli->m_fns, fullpath)
               && ext != ext2 && mf.FindExt(ext2.c_str(), true)
               && mf.IsUsingEngine(fullpath.c_str(), DirectShow))
               newPli->m_fns.AddTail(fullpath.c_str());
           }
-          while(FindNextFile(hFind, &fd));
+          while (FindNextFile(hFind, &fd));
           FindClose(hFind);
         }
       }

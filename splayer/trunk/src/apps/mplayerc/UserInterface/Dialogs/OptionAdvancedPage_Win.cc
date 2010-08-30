@@ -56,7 +56,7 @@ void OptionAdvancedPage::OnVideoModeUpdated(UINT uNotifyCode, int nID, CWindow w
 
 void OptionAdvancedPage::OnCustomSpeakerChanged(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
-  m_speakers_combo.EnableWindow(nID == IDC_CHECK_CUSTOMSPEAKER);
+  m_speakers_combo.EnableWindow(IsDlgButtonChecked(IDC_CHECK_CUSTOMSPEAKER));
 }
 
 void OptionAdvancedPage::OnDestroy()

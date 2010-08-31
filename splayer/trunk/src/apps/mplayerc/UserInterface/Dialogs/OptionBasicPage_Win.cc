@@ -48,6 +48,7 @@ BOOL OptionBasicPage::OnInitDialog(HWND hwnd, LPARAM lParam)
   m_mintotray = s.fTrayIcon;
   m_autoresume =  s.autoResumePlay;
   m_autofullscreen = pref->GetIntVar(INTVAR_TOGGLEFULLSCRENWHENPLAYBACKSTARTED);
+  m_cancellbuttonplaystop = pref->GetIntVar(INTVAR_CANCELLBUTTON_PLAYSTOP);
   m_autoupgrade = (s.tLastCheckUpdater < 2000000000);
 
   //This might need revise
@@ -144,6 +145,7 @@ int OptionBasicPage::OnApply()
   s.fTrayIcon = m_mintotray?true:false;
   s.autoResumePlay = m_autoresume;
   pref->SetIntVar(INTVAR_TOGGLEFULLSCRENWHENPLAYBACKSTARTED, m_autofullscreen?true:false);
+  pref->SetIntVar(INTVAR_CANCELLBUTTON_PLAYSTOP, m_cancellbuttonplaystop?true:false);
 
   if (m_autoupgrade)
     s.tLastCheckUpdater = (UINT)time(NULL) - 100000;
@@ -191,8 +193,19 @@ void OptionBasicPage::Validate()
 
 void OptionBasicPage::PrepareHotkeySchemes()
 {
+  int cmdshow;
+
   HotkeyController* con = HotkeyController::GetInstance();
   con->EnumAvailableSchemes(m_files, m_schemenames);
+  
+  cmdshow = (!m_schemenames.size())?SW_HIDE:SW_SHOW;
+
+  GetDlgItem(IDC_CHECK_HOTKEYSCHEME).ShowWindow(cmdshow);
+  GetDlgItem(IDC_COMBO_HOTKEYSCHEME).ShowWindow(cmdshow);
+
+  if (cmdshow == SW_HIDE)
+    return;
+
   for (std::vector<std::wstring>::iterator it = m_schemenames.begin();
     it != m_schemenames.end(); it++)
     m_hotkeyscheme_combo.AddString((*it).c_str());

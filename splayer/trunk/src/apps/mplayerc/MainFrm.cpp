@@ -2650,6 +2650,7 @@ CString CMainFrame::getCurPlayingSubfile(int * iSubDelayMS,int subid ){
 
 void CMainFrame::OnTimer(UINT nIDEvent)
 {
+
   switch (nIDEvent)
   {
   case TIMER_LOADING:
@@ -2796,9 +2797,14 @@ void CMainFrame::OnTimer(UINT nIDEvent)
     break;
 
   case TIMER_MOUSELWOWN:
-    if (s_fLDown)
-      OnButton(HotkeyCmd::LDOWN, NULL, NULL);
-    KillTimer(TIMER_MOUSELWOWN);
+    {
+      PlayerPreference* pref = PlayerPreference::GetInstance();
+      
+      if (s_fLDown && !pref->GetIntVar(INTVAR_CANCELLBUTTON_PLAYSTOP))
+        OnButton(HotkeyCmd::LDOWN, NULL, NULL);
+
+      KillTimer(TIMER_MOUSELWOWN);
+    }
     break;
 
   case TIMER_STREAMPOSPOLLER:

@@ -25,6 +25,7 @@ PlayerPreference::PlayerPreference(void):
   m_map_intvar[INTVAR_LOGO_AUTOSTRETCH]     = GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LOGOSTRETCH), 1);
   m_map_intvar[INTVAR_SHUFFLEPLAYLISTITEMS] = GetProfileInt(ResStr(IDS_R_SETTINGS), L"ShufflePlaylistItems", FALSE);
   m_map_intvar[INTVAR_AUTOLOADAUDIO]        = GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUTOLOADAUDIO), TRUE);
+  m_map_intvar[INTVAR_CANCELLBUTTON_PLAYSTOP]  = GetProfileInt(ResStr(IDS_R_SETTINGS), L"CancelLButtonPlayStop", FALSE);
   m_map_intvar[INTVAR_TOGGLEFULLSCRENWHENPLAYBACKSTARTED]        = GetProfileInt(ResStr(IDS_R_SETTINGS), L"ToggleFullScreenWhenPlaybackStarted", TRUE);
 
   m_map_strvar[STRVAR_HOTKEYSCHEME]         = GetProfileString(L"Settings", L"HotkeyScheme", L"");
@@ -44,6 +45,7 @@ PlayerPreference::~PlayerPreference(void)
   WriteProfileInt(ResStr(IDS_R_SETTINGS), L"ShufflePlaylistItems", m_map_intvar[INTVAR_SHUFFLEPLAYLISTITEMS]);
   WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUTOLOADAUDIO), m_map_intvar[INTVAR_AUTOLOADAUDIO]);
   WriteProfileInt(ResStr(IDS_R_SETTINGS), L"ToggleFullScreenWhenPlaybackStarted", m_map_intvar[INTVAR_TOGGLEFULLSCRENWHENPLAYBACKSTARTED]);
+  WriteProfileInt(ResStr(IDS_R_SETTINGS), L"CancelLButtonPlayStop", m_map_intvar[INTVAR_CANCELLBUTTON_PLAYSTOP]);
 
   WriteProfileString(L"Settings", L"HotkeyScheme", m_map_strvar[STRVAR_HOTKEYSCHEME].c_str());
 

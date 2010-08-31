@@ -6130,9 +6130,13 @@ void CMainFrame::SaveThumbnails(LPCTSTR fn)
 		if(fn.GetLength() > 15){
 			szRt = L"   ";
 		}
-    str.Format(L"{\\an7\\1c&H000000&\\fs16\\b0\\bord0\\shad0}%s %s\\N%s%s%dx%d %s%s%s %02d:%02d:%02d", 
-               ResStr(IDS_THUMBNAIL_FILENAME),fn, fs,ResStr(IDS_THUMBNAIL_RESOLUTION), wh.cx, wh.cy, ar,szRt, 
-               ResStr(IDS_THUMBNAIL_LENGTH), hmsf.bHours, hmsf.bMinutes, hmsf.bSeconds);
+
+    // use bigger font size for english language
+    int font_size = (s.iLanguage == 0 || s.iLanguage == 2) ? 18 : 30;
+    str.Format(L"{\\an7\\1c&H000000&\\fs%d\\b0\\bord0\\shad0}%s %s\\N%s%s%dx%d %s%s%s %02d:%02d:%02d", 
+               font_size, ResStr(IDS_THUMBNAIL_FILENAME),fn, fs,ResStr(IDS_THUMBNAIL_RESOLUTION), 
+               wh.cx, wh.cy, ar,szRt, ResStr(IDS_THUMBNAIL_LENGTH), hmsf.bHours,
+               hmsf.bMinutes, hmsf.bSeconds);
 		rts.Add(str, true, 0, 1, _T("thumbs"));
 
 		rts.Render(spd, 0, 25, bbox);

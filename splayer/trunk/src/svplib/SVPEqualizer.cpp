@@ -391,7 +391,7 @@ CSVPEqualizer::CSVPEqualizer(void)
 			// Read the file description for each language and code page.
 
 			
-				CString szParm( _T("\\StringFileInfo\\040404b0\\FileDescription") );
+				CString szParm( _T("\\StringFileInfo\\000004b0\\FileDescription") );
 
 				if(VerQueryValue(lpData, szParm, &lpBuffer, &uLen) != 0)
 				{

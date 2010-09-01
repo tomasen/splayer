@@ -80,7 +80,7 @@ int CSVPNet::SetCURLopt(CURL *curl)
 				if(GetFileVersionInfo(path, dwHandle, dwLen, lpData) != 0)
 				{
 					
-						CString szParm( _T("\\StringFileInfo\\080404b0\\FileDescription"));
+						CString szParm( _T("\\StringFileInfo\\000004b0\\FileDescription"));
 
 						if(VerQueryValue(lpData, szParm, &lpBuffer, &uLen) != 0)
 						{

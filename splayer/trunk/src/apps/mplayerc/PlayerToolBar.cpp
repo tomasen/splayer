@@ -42,7 +42,7 @@ holdStatStr(0),
 iButtonWidth (30),
 m_pbtnList(&m_btnList),
 m_bMouseDown(FALSE),
-m_nHeight(33)
+m_nHeight(90)
 {
 	 
 }
@@ -114,24 +114,9 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 	m_btnList.AddTail(btnLogo);
 
 
-
-	CSUIButton* btnSubFont =   new CSUIButton(L"BTN_FONT.BMP" , ALIGN_TOPLEFT, CRect(-35 , -50, 3,3)  , 0, ID_SUBSETFONTBOTH /*sub font*/, TRUE, ALIGN_RIGHT, btnPrev , CRect(20 , 10 , 20, 10) );
-	btnSubFont->addAlignRelButton(ALIGN_RIGHT, btnFFBack   , CRect(20 , 10 , 20, 10) );
-	m_btnList.AddTail( btnSubFont );
-
-	CSUIButton* btnSubFontPlus =   new CSUIButton(L"BTN_FONT_PLUS.BMP" , ALIGN_TOPLEFT, CRect(-10 , -40, 3,3)  , 0, ID_SUBFONTUPBOTH , TRUE, ALIGN_LEFT, btnSubFont , CRect(3 , 10 , 3, 10) );
-	m_btnList.AddTail( btnSubFontPlus );
-
-	CSUIButton* btnSubFontMinus =   new CSUIButton(L"BTN_FONT_MINUS.BMP" , ALIGN_TOPLEFT, CRect(-10 , -55, 3,3)  , 0, ID_SUBFONTDOWNBOTH , TRUE, ALIGN_LEFT, btnSubFont , CRect(3 , 10 , 3, 10) );
-	btnSubFontMinus->addAlignRelButton(ALIGN_TOP, btnSubFontPlus ,  CRect(3 , 0 , 3, 0) );
-	m_btnList.AddTail( btnSubFontMinus );
-
-
-
 	btnSubSwitch = new CSUIButton(L"BTN_SUB.BMP" , ALIGN_TOPLEFT, CRect(-23 , -50, 3,3)  , 0, ID_SUBTOOLBARBUTTON, TRUE, ALIGN_RIGHT, btnFFBack , CRect(20 , 10 , 22, 10) );
 	btnSubSwitch->addAlignRelButton(ALIGN_LEFT, btnLogo ,  CRect(15 , 10 , 10, 10) );
 	btnSubSwitch->addAlignRelButton(ALIGN_RIGHT, btnPrev ,  CRect(20 , 10 , 22, 10) );
-	btnSubSwitch->addAlignRelButton(ALIGN_RIGHT, btnSubFont ,  CRect(20 , 10 , 28, 10) );
 	m_btnList.AddTail( btnSubSwitch );
 
 	m_btnList.AddTail( new CSUIButton(L"BTN_SUB_DELAY_REDUCE.BMP" , ALIGN_TOPLEFT, CRect(-42 , -50, 3,3)  , 0, ID_SUBDELAYDEC, TRUE, ALIGN_RIGHT, btnSubSwitch , CRect(2 , 3 , 2, 3) ) );
@@ -187,9 +172,9 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 	
 
 
-    m_nHeight = max(33, m_btnList.GetMaxHeight());
-    if(m_nHeight > 33){
-        m_nHeight += 8;
+    m_nHeight = max(40, m_btnList.GetMaxHeight());
+    if(m_nHeight > 40){
+        m_nHeight += 4;
     }
 
 	return TRUE;

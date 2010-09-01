@@ -741,7 +741,7 @@ LRESULT CALLBACK SVPLayeredWndProc(HWND hwnd,         // Window handle
 	return(DefWindowProc(hwnd, uMsg, wParam, lParam));
 }
 
-#define TRANS_OPTICAL_STEP 0x33
+#define TRANS_OPTICAL_STEP 0x1E
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if(__super::OnCreate(lpCreateStruct) == -1)
@@ -1157,7 +1157,7 @@ void CMainFrame::HideFloatTransparentBar(){
 		m_lTransparentToolbarStat = 0 - min(4, abs(m_lTransparentToolbarStat));
 		//show tranparent control bar :)
 		KillTimer(TIMER_TRANSPARENTTOOLBARSTAT);
-		SetTimer(TIMER_TRANSPARENTTOOLBARSTAT, 50,NULL);
+		SetTimer(TIMER_TRANSPARENTTOOLBARSTAT, 20,NULL);
 	}
 		
 
@@ -2744,13 +2744,13 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 
   case TIMER_TRANSPARENTTOOLBARSTAT:
     if (m_fAudioOnly && IsSomethingLoaded())
-      m_lTransparentToolbarStat = max(4, m_lTransparentToolbarStat);
+      m_lTransparentToolbarStat = max(8, m_lTransparentToolbarStat);
 
     if (m_lTransparentToolbarStat)
     {
       m_wndFloatToolBar->SetLayeredWindowAttributes(0, abs(m_lTransparentToolbarStat) * TRANS_OPTICAL_STEP, LWA_ALPHA);
       m_lTransparentToolbarStat++;
-      if (m_lTransparentToolbarStat > 4)
+      if (m_lTransparentToolbarStat > 8)
         KillTimer( TIMER_TRANSPARENTTOOLBARSTAT );
     }
     else
@@ -10120,7 +10120,7 @@ void CMainFrame::rePosOSD(){
 			if(!m_wndFloatToolBar->IsWindowVisible()){
 				m_wndFloatToolBar->ShowWindow(SW_SHOWNOACTIVATE);
 				KillTimer(TIMER_TRANSPARENTTOOLBARSTAT);
-				SetTimer(TIMER_TRANSPARENTTOOLBARSTAT, 50, NULL);
+				SetTimer(TIMER_TRANSPARENTTOOLBARSTAT, 20, NULL);
 			}
 			
 		}
@@ -12488,7 +12488,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 				ShowControlBar(&m_wndPlaylistBar, FALSE, TRUE);
 
 			KillTimer(TIMER_TRANSPARENTTOOLBARSTAT);
-			SetTimer(TIMER_TRANSPARENTTOOLBARSTAT, 50,NULL);
+			SetTimer(TIMER_TRANSPARENTTOOLBARSTAT, 20,NULL);
 			rePosOSD();
 
 		}

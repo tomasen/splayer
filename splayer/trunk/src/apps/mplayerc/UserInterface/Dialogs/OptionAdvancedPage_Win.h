@@ -25,6 +25,7 @@ public:
     DDX_CHECK(IDC_CHECK_CUSTOMSPEAKER, m_usecustomspeakersetting)
     DDX_CHECK(IDC_CHECK_SPDIFPRIORITY, m_usespdifprority)
     DDX_CHECK(IDC_CHECK_NORMALIZE, m_usenormalize)
+    DDX_CHECK(IDC_CHECK_AUDIOCENTERTOLRMAP, m_audiocentertolrmap)
   END_DDX_MAP()
 
   // message handlers
@@ -44,6 +45,7 @@ private:
   int m_usecustomspeakersetting;
   int m_usespdifprority;
   int m_usenormalize;
+  int m_audiocentertolrmap;
 
   // control
   WTL::CButton   m_gpuaccelcheckbox;

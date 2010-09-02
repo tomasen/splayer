@@ -3,6 +3,8 @@
 #include "../../Utils/Strings.h"
 #include "../../mplayerc.h"
 #include "../../MainFrm.h"
+#include "../../Controller/PlayerPreference.h"
+#include "../../Controller/SPlayerDefs.h"
 
 BOOL OptionAdvancedPage::OnInitDialog(HWND hwnd, LPARAM lParam)
 {
@@ -25,6 +27,9 @@ BOOL OptionAdvancedPage::OnInitDialog(HWND hwnd, LPARAM lParam)
   }
 
   AppSettings& s = AfxGetAppSettings();
+  PlayerPreference* pref = PlayerPreference::GetInstance();
+
+  m_audiocentertolrmap = pref->GetIntVar(INTVAR_AUDIOCENTERTOLRMAP);
 
   m_videoqualitymode = s.iSVPRenderType?0:1;
   // TODO: 检测系统是否支持硬件加速
@@ -74,6 +79,10 @@ int OptionAdvancedPage::OnApply()
   // retrieve variables from screen
   DoDataExchange(TRUE);
   AppSettings& s = AfxGetAppSettings();
+  PlayerPreference* pref = PlayerPreference::GetInstance();
+
+  pref->SetIntVar(INTVAR_AUDIOCENTERTOLRMAP, m_audiocentertolrmap?true:false);
+
   // feed variables into preference
   if (m_videoqualitymode == 0)
   {

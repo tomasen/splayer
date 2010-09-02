@@ -8,6 +8,7 @@
 #include "conrgette_interface.h"
 #include <atlpath.h>
 
+#include "../src/apps/mplayerc/revision.h"
 
 //static size_t handleWebQuery( void *ptr, size_t size, size_t nmemb, void *stream)
 //{
@@ -49,7 +50,7 @@ cupdatenetlib::~cupdatenetlib(void)
 void cupdatenetlib::SetCURLopt(CURL *curl )
 {
 	curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1);
-	curl_easy_setopt(curl, CURLOPT_USERAGENT, "SPlayer Updater 19");
+	curl_easy_setopt(curl, CURLOPT_USERAGENT, "SPlayer Updater 36");
 	return ;
 }
 
@@ -242,7 +243,7 @@ BOOL cupdatenetlib::downloadList(){
 	delete wsz;
 
     CString szPostPerm;
-    szPostPerm.Format(_T("branch=%s"), szBranch);
+    szPostPerm.Format(_T("ver=%s&branch=%s"), BRANCHVER, szBranch);
 
 	int rret = 0;
 	CString szLog;

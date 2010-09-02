@@ -101,8 +101,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,27
- PRODUCTVERSION 1,0,0,27
+ FILEVERSION 1,0,0,36
+ PRODUCTVERSION 1,0,0,36
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -117,12 +117,12 @@ BEGIN
     BEGIN
         BLOCK "080004b0"
         BEGIN
-            VALUE "CompanyName", "SPlayer.org"
-            VALUE "FileVersion", "1.0.0.27"
+            VALUE "CompanyName", "Sagittarius Technology Co. Ltd"
+            VALUE "FileVersion", "1.0.0.36"
             VALUE "InternalName", "Updater.exe"
-            VALUE "LegalCopyright", "(c) SPlayer.org.  All rights reserved."
+            VALUE "LegalCopyright", "(c) Sagittarius Technology Co. Ltd.  All rights reserved."
             VALUE "OriginalFilename", "Updater.exe"
-            VALUE "ProductVersion", "1.0.0.27"
+            VALUE "ProductVersion", "1.0.0.36"
         END
     END
     BLOCK "VarFileInfo"

@@ -204,7 +204,7 @@ CStringA GetUrlByType(DWORD req_type , int iTryID){
 
 	switch(req_type){
 		case 'upda':
-            apiurl.Append( "api/updater.php?ver=3.6" );
+            apiurl.Append( "api/updater.php" );
 			break;
 		case 'upsb':
             apiurl.Append( "api/subup.php" );
@@ -225,7 +225,8 @@ BOOL CSVPNet::CheckUpdaterExe(CString szFileVerHash, CString szPath){
 	}
 	CURL *curl;
 	CURLcode res;
-	CString szPostPerm = _T( "current=" ) + szFileVerHash;
+	CString szPostPerm;
+  szPostPerm.Format(_T( "branch=updater%s&current=%s" ), BRANCHVER, szFileVerHash);
 	int rret = 0;
 	curl = curl_easy_init();
 	if(curl) {

@@ -385,7 +385,7 @@ public:
 		int nCS;
 		UINT tLastCheckUpdater;
 		UINT tCheckUpdaterInterleave;
-		bool fCheckFileAsscOnStartup;
+
 		CString szSVPSubPerf;
 		int fVMDetected ;
 		CString szStartUPCheckExts;

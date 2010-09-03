@@ -308,7 +308,7 @@ BOOL CUESettingPanel::OnInitDialog()
 	m_sgi_chkremwinpos = s.fRememberWindowPos;// || s.fRememberWindowSize;
 	m_sgi_chkcdromenu = s.fHideCDROMsSubMenu;
 	m_sgi_chkplayrepeat = s.fLoopForever;
-	m_sgi_chkfileass = s.fCheckFileAsscOnStartup ;
+	//m_sgi_chkfileass = s.fCheckFileAsscOnStartup ;
 	m_sgi_chkabnormal = s.priority != NORMAL_PRIORITY_CLASS;
  	m_sgi_chkuseini = ((CMPlayerCApp*)AfxGetApp())->IsIniValid();
 	m_sgi_startupcheckexts = s.szStartUPCheckExts;
@@ -542,7 +542,7 @@ void CUESettingPanel::ApplyAllSetting(){
 	s.fHideCDROMsSubMenu = !!m_sgi_chkcdromenu;
 	s.fLoopForever = !!m_sgi_chkplayrepeat;
 	s.nLoops = 1;
-	s.fCheckFileAsscOnStartup = !!m_sgi_chkfileass ;
+	//s.fCheckFileAsscOnStartup = !!m_sgi_chkfileass ;
 	//s.priority = !m_sgi_chkabnormal ? NORMAL_PRIORITY_CLASS : GetVersion() < 0 ? HIGH_PRIORITY_CLASS : ABOVE_NORMAL_PRIORITY_CLASS;
 	s.szStartUPCheckExts = m_sgi_startupcheckexts ;
 	m_sgi_chkuseini = ((CMPlayerCApp*)AfxGetApp())->IsIniValid();

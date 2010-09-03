@@ -820,7 +820,7 @@ BOOL CPPageFormats::OnInitDialog()
 	engine_t e = s.Formats.GetRtspHandler(fRtspFileExtFirst);
 	m_iRtspHandler = (e==RealMedia?0:e==QuickTime?1:2);
 	m_fRtspFileExtFirst = fRtspFileExtFirst;
-	m_bCheckDefaultPlayer = s.fCheckFileAsscOnStartup;
+	//m_bCheckDefaultPlayer = s.fCheckFileAsscOnStartup;
 
 	UpdateData(FALSE);
 
@@ -901,7 +901,7 @@ BOOL CPPageFormats::OnApply()
 
 	AppSettings& s = AfxGetAppSettings();
 	s.Formats.SetRtspHandler(m_iRtspHandler==0?RealMedia:m_iRtspHandler==1?QuickTime:DirectShow, !!m_fRtspFileExtFirst);
-	s.fCheckFileAsscOnStartup = !!m_bCheckDefaultPlayer;
+	//s.fCheckFileAsscOnStartup = !!m_bCheckDefaultPlayer;
 	return __super::OnApply();
 }
 

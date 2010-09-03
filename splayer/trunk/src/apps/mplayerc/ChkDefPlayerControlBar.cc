@@ -2,6 +2,8 @@
 #include "mplayerc.h"
 #include "ChkDefPlayerControlBar.h"
 #include "MainFrm.h"
+#include "Controller/SPlayerDefs.h"
+#include "Controller/PlayerPreference.h"
 #include <algorithm>
 
 IMPLEMENT_DYNAMIC(ChkDefPlayerControlBar, CSVPDialog)
@@ -259,7 +261,7 @@ void ChkDefPlayerControlBar::OnButtonOK()
   // TODO: Add your control notification handler code here
   UpdateData(TRUE);
   AppSettings& s = AfxGetAppSettings();
-  s.fCheckFileAsscOnStartup = 1;
+  PlayerPreference::GetInstance()->SetIntVar(INTVAR_CHECKFILEASSOCONSTARTUP ,1);
   s.fPopupStartUpExtCheck = !m_bnomorequestion;
   s.UpdateData(TRUE);
   SetDefaultPlayer();
@@ -308,14 +310,14 @@ afx_msg void ChkDefPlayerControlBar::OnShowWindow(BOOL bShow, UINT nStatus)
   {
     UpdateData(true);
     AppSettings& s = AfxGetAppSettings();
-    s.fCheckFileAsscOnStartup = !m_bnomorequestion;
-    s.fPopupStartUpExtCheck = 1;
+    PlayerPreference::GetInstance()->SetIntVar(INTVAR_CHECKFILEASSOCONSTARTUP ,!m_bnomorequestion);;
+    //s.fPopupStartUpExtCheck = 1;
     s.UpdateData(true);
   }
   else
   {
     AppSettings& s = AfxGetAppSettings();
-    m_bnomorequestion = !s.fCheckFileAsscOnStartup;
+    m_bnomorequestion = !PlayerPreference::GetInstance()->GetIntVar(INTVAR_CHECKFILEASSOCONSTARTUP);
     m_cbnomoreques.SetCheckStatus(m_bnomorequestion);
     UpdateData(true);
   }

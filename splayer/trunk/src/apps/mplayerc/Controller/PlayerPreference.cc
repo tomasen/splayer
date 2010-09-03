@@ -26,8 +26,9 @@ PlayerPreference::PlayerPreference(void):
   m_map_intvar[INTVAR_SHUFFLEPLAYLISTITEMS] = GetProfileInt(ResStr(IDS_R_SETTINGS), L"ShufflePlaylistItems", FALSE);
   m_map_intvar[INTVAR_AUTOLOADAUDIO]        = GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_AUTOLOADAUDIO), TRUE);
   m_map_intvar[INTVAR_CANCELLBUTTON_PLAYSTOP]  = GetProfileInt(ResStr(IDS_R_SETTINGS), L"CancelLButtonPlayStop", FALSE);
-  m_map_intvar[INTVAR_TOGGLEFULLSCRENWHENPLAYBACKSTARTED]        = GetProfileInt(ResStr(IDS_R_SETTINGS), L"ToggleFullScreenWhenPlaybackStarted", FALSE);
-  m_map_intvar[INTVAR_AUDIOCENTERTOLRMAP]   = GetProfileInt(ResStr(IDS_R_SETTINGS), L"audiocentertolrmap", TRUE);
+  m_map_intvar[INTVAR_TOGGLEFULLSCRENWHENPLAYBACKSTARTED]  = GetProfileInt(ResStr(IDS_R_SETTINGS), L"ToggleFullScreenWhenPlaybackStarted", FALSE);
+  m_map_intvar[INTVAR_AUDIOCENTERTOLRMAP]                  = GetProfileInt(ResStr(IDS_R_SETTINGS), L"audiocentertolrmap", TRUE);
+  m_map_intvar[INTVAR_CHECKFILEASSOCONSTARTUP]             = GetProfileInt(ResStr(IDS_R_SETTINGS), L"CheckFileAssocOnStartUp", FALSE);
 
   m_map_strvar[STRVAR_HOTKEYSCHEME]         = GetProfileString(L"Settings", L"HotkeyScheme", L"");
 }
@@ -48,6 +49,7 @@ PlayerPreference::~PlayerPreference(void)
   WriteProfileInt(ResStr(IDS_R_SETTINGS), L"ToggleFullScreenWhenPlaybackStarted", m_map_intvar[INTVAR_TOGGLEFULLSCRENWHENPLAYBACKSTARTED]);
   WriteProfileInt(ResStr(IDS_R_SETTINGS), L"CancelLButtonPlayStop", m_map_intvar[INTVAR_CANCELLBUTTON_PLAYSTOP]);
   WriteProfileInt(ResStr(IDS_R_SETTINGS), L"audiocentertolrmap", m_map_intvar[INTVAR_AUDIOCENTERTOLRMAP]);
+  WriteProfileInt(ResStr(IDS_R_SETTINGS), L"CheckFileAssocOnStartUp", m_map_intvar[INTVAR_CHECKFILEASSOCONSTARTUP]);
 
   WriteProfileString(L"Settings", L"HotkeyScheme", m_map_strvar[STRVAR_HOTKEYSCHEME].c_str());
 

@@ -1153,8 +1153,8 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
     SetTimer(TIMER_IDLE_TASK, 30000, NULL);
    m_WndSizeInited++;
 
-
-   if (s.fCheckFileAsscOnStartup)
+   PlayerPreference* pref = PlayerPreference::GetInstance();
+   if (pref->GetIntVar(INTVAR_CHECKFILEASSOCONSTARTUP))
    {
      if(!m_chkdefplayercontrolbar.IsDefaultPlayer())
      {

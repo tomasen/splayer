@@ -901,6 +901,7 @@ public:
 	afx_msg void OnVisitbbs();
 	afx_msg void OnSendemail();
 	afx_msg void OnCheckDefaultPlayer();
+  afx_msg void OnCheckAndSetDefaultPlayer();
 	afx_msg void OnVisitcontactinfo();
 	afx_msg void OnDonate();
 	afx_msg void OnJointeam();

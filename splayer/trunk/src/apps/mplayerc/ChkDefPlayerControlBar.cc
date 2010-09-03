@@ -5,6 +5,7 @@
 #include "Controller/SPlayerDefs.h"
 #include "Controller/PlayerPreference.h"
 #include "UserInterface/Dialogs/OptionDlg_Win.h"
+#include "Utils/FileAssoc_Win.h"
 #include <algorithm>
 
 IMPLEMENT_DYNAMIC(ChkDefPlayerControlBar, CSVPDialog)
@@ -262,7 +263,7 @@ void ChkDefPlayerControlBar::OnButtonOK()
   // TODO: Add your control notification handler code here
   UpdateData(TRUE);
   AppSettings& s = AfxGetAppSettings();
-  PlayerPreference::GetInstance()->SetIntVar(INTVAR_CHECKFILEASSOCONSTARTUP ,1);
+  PlayerPreference::GetInstance()->SetIntVar(INTVAR_CHECKFILEASSOCONSTARTUP ,168);
   s.fPopupStartUpExtCheck = !m_bnomorequestion;
   s.UpdateData(TRUE);
   SetDefaultPlayer();
@@ -287,20 +288,8 @@ void ChkDefPlayerControlBar::DoDataExchange(CDataExchange* pDX)
 
 bool ChkDefPlayerControlBar::IsDefaultPlayer()
 {
-  szaNotExt.clear();
-  int iNotReged = 0;
-  for(int i = 0; i < szaExt.size();i++)
-  {
-    if (!CPPageFormats::IsRegistered(szaExt.at(i).c_str()))
-    {
-      iNotReged++;
-      szaNotExt.push_back(szaExt.at(i));
-    }
-  }
-  if (iNotReged > 0)
-    return FALSE;
-  else
-    return TRUE;
+  return (FileAssoc::IsExtRegistered(L".avi") &&
+    FileAssoc::IsExtRegistered(L".mkv"))?1:0;
 }
 
 afx_msg void ChkDefPlayerControlBar::OnShowWindow(BOOL bShow, UINT nStatus)
@@ -310,14 +299,13 @@ afx_msg void ChkDefPlayerControlBar::OnShowWindow(BOOL bShow, UINT nStatus)
   {
     UpdateData(true);
     AppSettings& s = AfxGetAppSettings();
-    PlayerPreference::GetInstance()->SetIntVar(INTVAR_CHECKFILEASSOCONSTARTUP ,!m_bnomorequestion);;
-    //s.fPopupStartUpExtCheck = 1;
+    s.fPopupStartUpExtCheck = !m_bnomorequestion;
     s.UpdateData(true);
   }
   else
   {
     AppSettings& s = AfxGetAppSettings();
-    m_bnomorequestion = !PlayerPreference::GetInstance()->GetIntVar(INTVAR_CHECKFILEASSOCONSTARTUP);
+    m_bnomorequestion = !s.fPopupStartUpExtCheck;
     m_cbnomoreques.SetCheckStatus(m_bnomorequestion);
     UpdateData(true);
   }

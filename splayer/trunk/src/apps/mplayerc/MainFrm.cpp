@@ -92,6 +92,7 @@
 #include "Controller/Hotkey_Controller.h"
 #include "Controller/PlayerPreference.h"
 #include "Controller/SPlayerDefs.h"
+#include "Utils/FileAssoc_Win.h"
 
 // begin,
 // the following headers are included because HotkeyController mechanism broke the original inclusion
@@ -488,6 +489,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_VISITBBS, &CMainFrame::OnVisitbbs)
 	ON_COMMAND(ID_SENDEMAIL, &CMainFrame::OnSendemail)
 	ON_COMMAND(ID_CHECK_DEFAULT_PLAYER, OnCheckDefaultPlayer)
+  ON_COMMAND(ID_CHECKANDSET_DEFAULT_PLAYER, OnCheckAndSetDefaultPlayer)
 	ON_COMMAND(ID_VISITCONTACTINFO, &CMainFrame::OnVisitcontactinfo)
 	ON_COMMAND(ID_DONATE, &CMainFrame::OnDonate)
 	ON_COMMAND(ID_JOINTEAM, &CMainFrame::OnJointeam)
@@ -1153,21 +1155,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
     SetTimer(TIMER_IDLE_TASK, 30000, NULL);
    m_WndSizeInited++;
 
-   PlayerPreference* pref = PlayerPreference::GetInstance();
-   if (pref->GetIntVar(INTVAR_CHECKFILEASSOCONSTARTUP))
-   {
-     if(!m_chkdefplayercontrolbar.IsDefaultPlayer())
-     {
-       if(s.fPopupStartUpExtCheck || (CMPlayerCApp::IsVista() && !IsUserAnAdmin()))
-       {
-         m_chkdefplayercontrolbar.ShowWindow(SW_SHOWNOACTIVATE);
-         rePosOSD();
-       }
-       else
-         m_chkdefplayercontrolbar.SetDefaultPlayer();
-     }
-     //	dlg_chkdefplayer.setDefaultPlayer();
-   }
+   PostMessage(WM_COMMAND, ID_CHECKANDSET_DEFAULT_PLAYER);
 
 	return 0;
 }
@@ -15918,10 +15906,29 @@ void CMainFrame::OnFileISDBSearch()
 }
 void CMainFrame::OnCheckDefaultPlayer()
 {
-	m_chkdefplayercontrolbar.IsDefaultPlayer();
-  m_chkdefplayercontrolbar.ShowWindow(SW_SHOWNOACTIVATE);
+	m_chkdefplayercontrolbar.ShowWindow(SW_SHOWNOACTIVATE);
   rePosOSD();
-	
+}
+void CMainFrame::OnCheckAndSetDefaultPlayer()
+{
+
+  PlayerPreference* pref = PlayerPreference::GetInstance();
+  int action_id = pref->GetIntVar(INTVAR_CHECKFILEASSOCONSTARTUP);
+  if (action_id & 1<<3)
+  {
+    if(!m_chkdefplayercontrolbar.IsDefaultPlayer())
+    {
+      if(AfxGetAppSettings().fPopupStartUpExtCheck || (CMPlayerCApp::IsVista() && !IsUserAnAdmin()))
+      {
+        m_chkdefplayercontrolbar.ShowWindow(SW_SHOWNOACTIVATE);
+        rePosOSD();
+      }
+      else
+        FileAssoc::RegisterPlayer(action_id);
+    }
+    //	dlg_chkdefplayer.setDefaultPlayer();
+  }
+
 }
 void CMainFrame::OnSendemail()
 {

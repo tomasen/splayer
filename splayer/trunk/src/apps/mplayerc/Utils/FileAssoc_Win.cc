@@ -6,6 +6,8 @@
 #include "../resource.h"
 #include "../PPageFormats.h"
 #include "../ChkDefPlayerControlBar.h"
+#include "..\Controller\PlayerPreference.h"
+#include "..\Controller\SPlayerDefs.h"
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -236,6 +238,8 @@ void FileAssoc::RegisterPlayer(int action_id)
     chk_defplayer.SetKeyboardNativeMediaPlayers();
     chk_defplayer.SetKeyboardNativeMediaPlayers2();
   }
+  PlayerPreference::GetInstance()->SetIntVar(INTVAR_CHECKFILEASSOCONSTARTUP ,action_id);
+
 
 
   CMediaFormats& mf = AfxGetAppSettings().Formats;
@@ -257,4 +261,5 @@ void FileAssoc::RegisterPlayer(int action_id)
     }
   }
 
+  SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, NULL, NULL);
 }

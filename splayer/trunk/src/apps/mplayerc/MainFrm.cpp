@@ -855,12 +855,6 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if(m_wndSubVoteControlBar.CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, _T("SVPLayered"), _T("SUBVOTE"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0))//WS_EX_NOACTIVATE
 		m_wndSubVoteControlBar.ShowWindow( SW_HIDE);
 
-	if(m_wndStatusBar.Create(this)){
-		//m_wndStatusBar.EnableDocking(0);
-		//FloatControlBar(&m_wndStatusBar, CPoint(10,10), CBRS_ALIGN_BOTTOM );
-
-		m_bars.AddTail(&m_wndStatusBar);
-	}
 
 
 	//m_bars.AddTail(&m_wndColorControlBar);
@@ -2865,8 +2859,6 @@ void CMainFrame::OnTimer(UINT nIDEvent)
     break;
 
   case TIMER_STATUSBARHIDER:
-    if (!( AfxGetAppSettings().nCS & CS_STATUSBAR))
-      ShowControlBar(&m_wndStatusBar, false, false);
     bNotHideColorControlBar = false;
     KillTimer(TIMER_STATUSBARHIDER);
     break;
@@ -2946,8 +2938,6 @@ void CMainFrame::OnTimer(UINT nIDEvent)
     KillTimer(TIMER_STATUSERASER);
     m_playingmsg.Empty();
 
-    if (m_wndStatusBar.IsVisible() && m_fFullScreen)
-      SetTimer(TIMER_FULLSCREENMOUSEHIDER, 2000, NULL); 
     break;
 
   case TIMER_STATUSCHECKER:
@@ -3336,10 +3326,6 @@ LRESULT CMainFrame::OnGraphNotify(WPARAM wParam, LPARAM lParam)
 		else if(EC_BG_AUDIO_CHANGED == evCode)
 		{
 			int nAudioChannels = evParam1;
-
-			m_wndStatusBar.SetStatusBitmap(nAudioChannels == 1 ? IDB_MONO 
-										: nAudioChannels >= 2 ? IDB_STEREO 
-										: IDB_NOAUDIO);
 		}
 		else if(EC_BG_ERROR == evCode)
 		{
@@ -4504,7 +4490,6 @@ void CMainFrame::OnFilePostOpenmedia()
 
 	OpenSetupStatsBar();
 
-	OpenSetupStatusBar();
 
 	// OpenSetupToolBar();
 
@@ -4695,10 +4680,6 @@ void CMainFrame::OnFilePostClosemedia()
 	m_wndSeekBar.SetPos(0);
 	m_wndInfoBar.RemoveAllLines();
 	m_wndStatsBar.RemoveAllLines();		
-	if(IsWindow(m_wndStatusBar.m_hWnd)){
-		m_wndStatusBar.Clear();
-		m_wndStatusBar.ShowTimer(false);
-	}
 
 	//A-B Control
 	m_aRefTime = 0;
@@ -8110,7 +8091,7 @@ void CMainFrame::OnPlayFilters(UINT nID)
 	if(ps.GetPageCount() > 0)
 	{
 		ps.DoModal();
-		OpenSetupStatusBar();
+
 	}
 }
 
@@ -8221,7 +8202,7 @@ void CMainFrame::OnPlayLanguage(UINT nID)
 		strMsg = ResStr(IDS_OSD_MSG_CHANGE_STREAM_AUDIO_FAILED);
 
 	SendStatusMessage(strMsg, 4000);
-	OpenSetupStatusBar();
+
 }
 
 void CMainFrame::OnUpdatePlayLanguage(CCmdUI* pCmdUI)
@@ -11714,80 +11695,6 @@ void CMainFrame::OpenSetupStatsBar()
 	EndEnumFilters
 }
 
-void CMainFrame::OpenSetupStatusBar()
-{
-	m_wndStatusBar.ShowTimer(true);
-
-	//
-
-	if(!m_fCustomGraph)
-	{
-		UINT id = IDB_NOAUDIO;
-
-		BeginEnumFilters(pGB, pEF, pBF)
-		{
-			CComQIPtr<IBasicAudio> pBA = pBF;
-			if(!pBA) continue;
-
-			BeginEnumPins(pBF, pEP, pPin)
-			{
-				if(S_OK == pGB->IsPinDirection(pPin, PINDIR_INPUT) 
-				&& S_OK == pGB->IsPinConnected(pPin))
-				{
-					AM_MEDIA_TYPE mt;
-					memset(&mt, 0, sizeof(mt));
-					pPin->ConnectionMediaType(&mt);
-
-					if(mt.majortype == MEDIATYPE_Audio && mt.formattype == FORMAT_WaveFormatEx)
-					{
-						switch(((WAVEFORMATEX*)mt.pbFormat)->nChannels)
-						{
-						case 1: id = IDB_MONO; break;
-						case 2: default: id = IDB_STEREO; break;
-						}
-						break;
-					}
-					else if(mt.majortype == MEDIATYPE_Midi)
-					{
-						id = NULL;
-						break;
-					}
-				}
-			}
-			EndEnumPins
-
-			if(id != IDB_NOAUDIO)
-			{
-				break;
-			}
-		}
-		EndEnumFilters
-
-		m_wndStatusBar.SetStatusBitmap(id);
-	}
-
-	//
-
-	HICON hIcon = NULL;
-
-	if(m_iPlaybackMode == PM_FILE)
-	{
-		CString fn = m_wndPlaylistBar.GetCur();
-		CString ext = fn.Mid(fn.ReverseFind('.')+1);
-		hIcon = LoadIcon(ext, true);
-	}
-	else if(m_iPlaybackMode == PM_DVD)
-	{
-		hIcon = LoadIcon(_T(".ifo"), true);
-	}
-	else if(m_iPlaybackMode == PM_DVD)
-	{
-		// hIcon = ; // TODO
-	}
-
-	m_wndStatusBar.SetStatusTypeIcon(hIcon);
-}
-
 void CMainFrame::OpenSetupWindowTitle(CString fn)
 {
 	CString title(MAKEINTRESOURCE(IDR_MAINFRAME));
@@ -15185,7 +15092,7 @@ bool CMainFrame::BuildGraphVideoAudio(int fVPreview, bool fVCapture, int fAPrevi
 	OpenSetupVideo();
 	OpenSetupAudio();
 	OpenSetupStatsBar();
-	OpenSetupStatusBar();
+
 
 	RestoreMediaState;
 
@@ -15226,7 +15133,6 @@ bool CMainFrame::StopCapture()
 
 	HRESULT hr;
 
-	m_wndStatusBar.SetStatusMessage(ResStr(IDS_CONTROLS_COMPLETING));
 
 	m_fCapturing = false;
 
@@ -15331,17 +15237,6 @@ void CMainFrame::SendStatusMessage(CString msg, int nTimeOut, int iAlign)
 
 	m_playingmsg = msg;
 	
-	if(!m_wndStatusBar.IsVisible() && 0){
-		KillTimer(TIMER_STATUSBARHIDER);
-
-		if(m_fFullScreen){
-			ShowControls(CS_STATUSBAR, false);
-			SetTimer( TIMER_FULLSCREENCONTROLBARHIDER , 10000, NULL); // auto close it when full screen
-		}else{
-			ShowControlBar(&m_wndStatusBar, true, false);
-			SetTimer( TIMER_STATUSBARHIDER , 10000, NULL); 
-		}
-	}
 	m_iOSDAlign = iAlign;
 	m_wndNewOSD.SendOSDMsg(m_playingmsg , nTimeOut);
 	rePosOSD();
@@ -17481,10 +17376,6 @@ void CMainFrame::_HandleTimer_Stats()
           AATR.bQuantization,
           AATR.bNumberOfChannels);
 
-        m_wndStatusBar.SetStatusBitmap(
-          AATR.bNumberOfChannels == 1 ? IDB_MONO 
-          : AATR.bNumberOfChannels >= 2 ? IDB_STEREO 
-          : IDB_NOAUDIO);
       }
 
       m_wndInfoBar.SetLine(ResStr(IDS_INFOBAR_AUDIO), Audio);

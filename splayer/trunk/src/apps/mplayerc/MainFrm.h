@@ -27,7 +27,7 @@
 #include "PlayerSeekBar.h"
 #include "PlayerToolBar.h"
 #include "PlayerInfoBar.h"
-#include "PlayerStatusBar.h"
+//#include "PlayerStatusBar.h"
 #include "PlayerPlaylistBar.h"
 #include "PlayerCaptureBar.h"
 #include "PlayerShaderEditorBar.h"
@@ -448,8 +448,7 @@ protected:
 	void OpenSetupAudio();
 	void OpenSetupInfoBar();
 	void OpenSetupStatsBar();
-	void OpenSetupStatusBar();
-	// void OpenSetupToolBar();
+
 	void OpenSetupCaptureBar();
 	void OpenSetupWindowTitle(CString fn = _T(""));
 
@@ -536,7 +535,6 @@ protected:  // control bar embedded members
 	
 	CPlayerInfoBar m_wndInfoBar;
 	CPlayerInfoBar m_wndStatsBar;
-	CPlayerStatusBar m_wndStatusBar;
 	CTransparentControlBar m_wndTransparentControlBar;
 	CPlayerChannelNormalizer m_wndChannelNormalizerBar;
   ChkDefPlayerControlBar m_chkdefplayercontrolbar;

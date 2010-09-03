@@ -2093,14 +2093,6 @@
 				>
 			</File>
 			<File
-				RelativePath="PlayerStatusBar.cpp"
-				>
-			</File>
-			<File
-				RelativePath="PlayerStatusBar.h"
-				>
-			</File>
-			<File
 				RelativePath=".\PPageBase.cpp"
 				>
 			</File>

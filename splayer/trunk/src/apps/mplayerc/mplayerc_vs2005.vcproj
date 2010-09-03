@@ -824,14 +824,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\SubtitleDlDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\SubtitleDlDlg.h"
-				>
-			</File>
-			<File
 				RelativePath=".\SUIButton.cpp"
 				>
 				<FileConfiguration
@@ -2066,14 +2058,6 @@
 			</File>
 			<File
 				RelativePath="ComPropertySheet.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ISDb.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ISDb.h"
 				>
 			</File>
 			<File

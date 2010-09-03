@@ -6436,8 +6436,6 @@ void CMainFrame::OnUpdateFileSavesubtitle(CCmdUI* pCmdUI)
 
 ///////////////
 
-#include "SubtitleDlDlg.h"
-#include "ISDb.h"
 
 
 void CMainFrame::OnUpdateFileISDBSearch(CCmdUI *pCmdUI)

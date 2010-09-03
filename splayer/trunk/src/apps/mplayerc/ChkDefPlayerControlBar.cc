@@ -4,6 +4,7 @@
 #include "MainFrm.h"
 #include "Controller/SPlayerDefs.h"
 #include "Controller/PlayerPreference.h"
+#include "UserInterface/Dialogs/OptionDlg_Win.h"
 #include <algorithm>
 
 IMPLEMENT_DYNAMIC(ChkDefPlayerControlBar, CSVPDialog)
@@ -272,8 +273,7 @@ void ChkDefPlayerControlBar::OnButtonOK()
 void ChkDefPlayerControlBar::OnButtonManual()
 {
   // TODO: Add your control notification handler code here
-  CPropertySheet dlg(ResStr(IDS_DISLOG_FILEASSOC_TITLE), this);
-  dlg.AddPage(&pfpage);
+  OptionDlg dlg(OPTIONDLG_ASSOCIATION);
 
   if(dlg.DoModal() == IDOK)
     ShowWindow(SW_HIDE);

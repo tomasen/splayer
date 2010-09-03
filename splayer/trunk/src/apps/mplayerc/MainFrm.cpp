@@ -7287,7 +7287,7 @@ void CMainFrame::OnShowDrawStats(){
 	//}
 }
 void CMainFrame::OnSetAudioNumberOfSpeaker(){
-	ShowOptions(CPPageAudioSwitcher::IDD);
+	ShowOptions(OPTIONDLG_ADVANCED);
 }
 void CMainFrame::OnViewOptions()
 {
@@ -8383,7 +8383,7 @@ void CMainFrame::OnPlayAudio(UINT nID)
 
 	if(i == -1)
 	{
-		ShowOptions(CPPageAudioSwitcher::IDD);
+		ShowOptions(OPTIONDLG_ADVANCED);
 	}
 	else if(i >= 0 && pSS)
 	{
@@ -8454,7 +8454,7 @@ void CMainFrame::OnPlaySubtitles(UINT nID)
 
 	if(i == -4)  //设置
 	{
-		ShowOptions(CPPageSubtitles::IDD); 
+		ShowOptions(OPTIONDLG_SUBTITLE); 
 	}
 	else if(i == -3)
 	{   //字幕风格设置
@@ -8493,9 +8493,7 @@ void CMainFrame::OnPlaySubtitles(UINT nID)
 						styles.Add(val);
 					}
 
-					CPropertySheet dlg(_T("Styles..."), this);
-					for(int i = 0; i < (int)pages.GetCount(); i++) 
-						dlg.AddPage(pages[i]);
+          OptionDlg dlg(OPTIONDLG_SUBTITLE);
 
 					if(dlg.DoModal() == IDOK)
 					{
@@ -15354,10 +15352,10 @@ void CMainFrame::OnSettingFinished(){
 	ShowTrayIcon(s.fTrayIcon);
 	RedrawNonClientArea();
 }
-void CMainFrame::ShowOptions(int idPage)
+void CMainFrame::ShowOptions(int idPage /*=0*/)
 {
   // Option Dialog is a modal dialog.
-  OptionDlg dlg;
+  OptionDlg dlg(idPage);
   if (dlg.DoModal() == IDOK)
   {
     if(!m_fFullScreen)
@@ -15998,9 +15996,8 @@ void CMainFrame::OnKillFocus(CWnd* pNewWnd)
 void CMainFrame::OnChangebackground()
 {
 	// TODO: Add your command handler code here
-	CAutoPtr<CPPageLogo> page(new CPPageLogo());
-	CPropertySheet dlg(ResStr(IDS_DIALOG_THEME_BACKGROUND_SETTING_TITLE), this);
-	dlg.AddPage(page);
+  OptionDlg dlg(OPTIONDLG_BASIC);
+
 	dlg.DoModal() ;
 }
 

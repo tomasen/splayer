@@ -40,6 +40,7 @@
 #include "Controller/PlaylistController.h"
 #include "Controller/PlayerPreference.h"
 #include "Controller/SPlayerDefs.h"
+#include "UserInterface/Dialogs/OptionDlg_Win.h"
 
 #include "..\..\..\Updater\cupdatenetlib.h"
 
@@ -2061,9 +2062,7 @@ BOOL CMPlayerCApp::InitInstance()
 		{
 		case 1:
 			{
-        CAutoPtr<CPPageFormats> page(new CPPageFormats());
-        CPropertySheet dlg(ResStr(IDS_DIALOG_FILEASSOC_TITLE), AfxGetMainWnd());
-        dlg.AddPage(page);
+        OptionDlg dlg(OPTIONDLG_ASSOCIATION);
         dlg.DoModal() ;
 				return FALSE;
 			}

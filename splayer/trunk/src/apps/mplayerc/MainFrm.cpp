@@ -790,9 +790,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 			pParent = m_wndFloatToolBar;
 		}
 	}
-	if(!m_wndStatsBar.Create(this)
-	|| !m_wndInfoBar.Create(this)
-	|| !m_wndToolBar.Create(pParent)
+	if(!m_wndToolBar.Create(pParent)
 	|| !m_wndSeekBar.Create(pParent)
 	)
 	{
@@ -807,8 +805,6 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		m_wndFloatToolBar->EnableDocking(CBRS_ALIGN_ANY);
 		dwTransFlag = WS_EX_TRANSPARENT;
 	}
-	m_bars.AddTail(&m_wndInfoBar);
-	m_bars.AddTail(&m_wndStatsBar);
 	
 	m_wndSeekBar.Enable(false);
 
@@ -3207,13 +3203,14 @@ LRESULT CMainFrame::OnGraphNotify(WPARAM wParam, LPARAM lParam)
 			else if(m_iPlaybackMode == PM_DVD)
 			{
 				m_iDVDTitle = (DWORD)evParam1;
-
+/*
 				if(m_iDVDDomain == DVD_DOMAIN_Title)
 				{
+          // We can use DVD Title as this
 					CString Domain;
 					Domain.Format(_T("Title %d"), m_iDVDTitle);
-					m_wndInfoBar.SetLine(ResStr(IDS_INFOBAR_DOMAIN), Domain);
 				}
+*/
 			}
 		}
 		else if(EC_DVD_DOMAIN_CHANGE == evCode)
@@ -3231,8 +3228,6 @@ LRESULT CMainFrame::OnGraphNotify(WPARAM wParam, LPARAM lParam)
 			case DVD_DOMAIN_Stop: Domain = _T("Stop"); break;
 			default: Domain = _T("-"); break;
 			}
-
-			m_wndInfoBar.SetLine(ResStr(IDS_INFOBAR_DOMAIN), Domain);
 
 			MoveVideoWindow(); // AR might have changed
 		}
@@ -4439,7 +4434,7 @@ void CMainFrame::OnUpdatePlayerStatus(CCmdUI* pCmdUI)
 			}
 
 			if(m_fUpdateInfoBar)
-				OpenSetupInfoBar();
+				OpenSetupClipInfo();
 		}
 
 		OAFilterState fs = GetMediaState();
@@ -4486,12 +4481,7 @@ void CMainFrame::OnFilePostOpenmedia()
 	if(m_iAudioChannelMaping)
 		OnAudioChannalMapMenu(IDS_AUDIOCHANNALMAPNORMAL+m_iAudioChannelMaping);
 
-	OpenSetupInfoBar();
-
-	OpenSetupStatsBar();
-
-
-	// OpenSetupToolBar();
+	OpenSetupClipInfo();
 
 	//A-B Control
 	m_aRefTime = 0;
@@ -4598,9 +4588,7 @@ void CMainFrame::OnFilePostOpenmedia()
 	}
 
 	RedrawNonClientArea();
-	SendNowPlayingToMSN();
-	SendNowPlayingTomIRC();
-
+	
 	
 	if(m_iPlaybackMode == PM_FILE){
 		if(!s.bDontNeedSVPSubFilter && !m_pCAP && s.iSVPRenderType && !m_fAudioOnly ){
@@ -4635,15 +4623,9 @@ void CMainFrame::OnFilePostOpenmedia()
 
                 m_Lyric.Empty();
                 //download it by thead
-                CString szInfo;
-                m_wndInfoBar.GetLine(ResStr(IDS_INFOBAR_TITLE), szInfo);
-                m_Lyric.title = szInfo;
-
-                m_wndInfoBar.GetLine(ResStr(IDS_INFOBAR_AUTHOR), szInfo);
-                m_Lyric.artist = szInfo;
-
-                m_wndInfoBar.GetLine(ResStr(IDS_INFOBAR_DESCRIPTION), szInfo);
-                m_Lyric.album = szInfo;
+                m_Lyric.title = GetClipInfo(IDS_INFOBAR_TITLE).c_str();
+                m_Lyric.artist = GetClipInfo(IDS_INFOBAR_AUTHOR).c_str();
+                m_Lyric.album = GetClipInfo(IDS_INFOBAR_DESCRIPTION).c_str();
 
                 m_Lyric.m_sz_current_music_file = m_fnCurPlayingFile;
               
@@ -4678,8 +4660,6 @@ void CMainFrame::OnFilePostClosemedia()
 	m_wndView.SetVideoRect();
 	m_wndSeekBar.Enable(false);
 	m_wndSeekBar.SetPos(0);
-	m_wndInfoBar.RemoveAllLines();
-	m_wndStatsBar.RemoveAllLines();		
 
 	//A-B Control
 	m_aRefTime = 0;
@@ -4728,8 +4708,6 @@ void CMainFrame::OnFilePostClosemedia()
 	SetupRecentFileSubMenu();
 	SetupNavChaptersSubMenu();
 	SetupFavoritesSubMenu();
-
-	SendNowPlayingToMSN();
 
 	KillTimer(TIMER_IDLE_TASK);
     SetTimer(TIMER_IDLE_TASK, 30000, NULL);
@@ -11632,8 +11610,9 @@ void CMainFrame::OpenSetupCaptureBar()
 		m_wndCaptureBar.m_capdlg.m_fAudPreview, false);
 }
 
-void CMainFrame::OpenSetupInfoBar()
+void CMainFrame::OpenSetupClipInfo()
 {
+  m_clipinfo.clear();
 	if(m_iPlaybackMode == PM_FILE)
 	{
 		bool fEmpty = true;
@@ -11642,11 +11621,11 @@ void CMainFrame::OpenSetupInfoBar()
 			if(CComQIPtr<IAMMediaContent, &IID_IAMMediaContent> pAMMC = pBF)
 			{
 				CComBSTR bstr;
-				if(SUCCEEDED(pAMMC->get_Title(&bstr))) {m_wndInfoBar.SetLine(ResStr(IDS_INFOBAR_TITLE), bstr.m_str); if(bstr.Length()) fEmpty = false;}
-				if(SUCCEEDED(pAMMC->get_AuthorName(&bstr))) {m_wndInfoBar.SetLine(ResStr(IDS_INFOBAR_AUTHOR), bstr.m_str); if(bstr.Length()) fEmpty = false;}
-				if(SUCCEEDED(pAMMC->get_Copyright(&bstr))) {m_wndInfoBar.SetLine(ResStr(IDS_INFOBAR_COPYRIGHT), bstr.m_str); if(bstr.Length()) fEmpty = false;}
-				if(SUCCEEDED(pAMMC->get_Rating(&bstr))) {m_wndInfoBar.SetLine(ResStr(IDS_INFOBAR_RATING), bstr.m_str); if(bstr.Length()) fEmpty = false;}
-				if(SUCCEEDED(pAMMC->get_Description(&bstr))) {m_wndInfoBar.SetLine(ResStr(IDS_INFOBAR_DESCRIPTION), bstr.m_str); if(bstr.Length()) fEmpty = false;}
+        if(SUCCEEDED(pAMMC->get_Title(&bstr))) {SetClipInfo(IDS_INFOBAR_TITLE, (std::wstring)bstr.m_str); if(bstr.Length()) fEmpty = false;}
+				if(SUCCEEDED(pAMMC->get_AuthorName(&bstr))) {SetClipInfo(IDS_INFOBAR_AUTHOR, (std::wstring)bstr.m_str);  if(bstr.Length()) fEmpty = false;}
+				if(SUCCEEDED(pAMMC->get_Copyright(&bstr))) {SetClipInfo(IDS_INFOBAR_COPYRIGHT, (std::wstring)bstr.m_str); if(bstr.Length()) fEmpty = false;}
+				if(SUCCEEDED(pAMMC->get_Rating(&bstr))) {SetClipInfo(IDS_INFOBAR_RATING, (std::wstring)bstr.m_str); if(bstr.Length()) fEmpty = false;}
+				if(SUCCEEDED(pAMMC->get_Description(&bstr))) {SetClipInfo(IDS_INFOBAR_DESCRIPTION, (std::wstring)bstr.m_str); if(bstr.Length()) fEmpty = false;}
 				if(!fEmpty)
 				{
 					RecalcLayout();
@@ -11658,16 +11637,11 @@ void CMainFrame::OpenSetupInfoBar()
 	}
 	else if(m_iPlaybackMode == PM_DVD)
 	{
-		CString info('-');
-		m_wndInfoBar.SetLine(ResStr(IDS_INFOBAR_DOMAIN), info);
-		m_wndInfoBar.SetLine(ResStr(IDS_INFOBAR_LOCATION), info);
-		m_wndInfoBar.SetLine(ResStr(IDS_INFOBAR_VIDEO), info);
-		m_wndInfoBar.SetLine(ResStr(IDS_INFOBAR_AUDIO), info);
-		m_wndInfoBar.SetLine(ResStr(IDS_INFOBAR_SUBTITLES), info);
 		RecalcLayout();
 	}
 }
-
+/*
+// Maybe something we can use later
 void CMainFrame::OpenSetupStatsBar()
 {
 	CString info('-');
@@ -11694,6 +11668,7 @@ void CMainFrame::OpenSetupStatsBar()
 	}
 	EndEnumFilters
 }
+*/
 
 void CMainFrame::OpenSetupWindowTitle(CString fn)
 {
@@ -12476,110 +12451,6 @@ void CMainFrame::CloseMediaPrivate()
         SetThreadExecutionState(0); //this is the right way, only this work under vista . no ES_CONTINUOUS  so it can goes to sleep when not playing
     }
 
-}
-
-// msn
-
-void CMainFrame::SendNowPlayingToMSN()
-{
-	if(!AfxGetAppSettings().fNotifyMSN)
-		return;
-
-	CString title, author;
-
-	if(m_iMediaLoadState == MLS_LOADED)
-	{
-		m_wndInfoBar.GetLine(ResStr(IDS_INFOBAR_TITLE), title);
-		m_wndInfoBar.GetLine(ResStr(IDS_INFOBAR_AUTHOR), author);
-
-		if(title.IsEmpty())
-		{
-			CPlaylistItem pli;
-			m_wndPlaylistBar.GetCur(pli);
-
-			if(!pli.m_fns.IsEmpty())
-			{
-				CString label = !pli.m_label.IsEmpty() ? pli.m_label : pli.m_fns.GetHead();
-
-				if(m_iPlaybackMode == PM_FILE)
-				{
-					CString fn = label;
-					if(fn.Find(_T("://")) >= 0) {int i = fn.Find('?'); if(i >= 0) fn = fn.Left(i);}
-					CPath path(fn);
-					path.StripPath();
-					path.MakePretty();
-					path.RemoveExtension();
-					title = (LPCTSTR)path;
-					author.Empty();
-				}
-				else if(m_iPlaybackMode == PM_CAPTURE)
-				{
-					title = label != pli.m_fns.GetHead() ? label : _T("Live");
-					author.Empty();
-				}
-				else if(m_iPlaybackMode == PM_DVD)
-				{
-					title = _T("DVD");
-					author.Empty();
-				}
-			}
-		}
-	}
-
-	CStringW buff;
-	buff += L"\\0Music\\0";
-	buff += title.IsEmpty() ? L"0" : L"1";
-	buff += L"\\0";
-	buff += author.IsEmpty() ? L"{0}" : L"{0} - {1}";
-	buff += L"\\0";
-	if(!author.IsEmpty()) {buff += CStringW(author) + L"\\0";}
-	buff += CStringW(title) + L"\\0";
-	buff += L"\\0\\0";
-
-	COPYDATASTRUCT data;
-    data.dwData = 0x0547;
-    data.lpData = (PVOID)(LPCWSTR)buff;
-    data.cbData = buff.GetLength() * 2 + 2;
-
-	HWND hWnd = NULL;
-	while(hWnd = ::FindWindowEx(NULL, hWnd, _T("MsnMsgrUIManager"), NULL))
-		::SendMessage(hWnd, WM_COPYDATA, (WPARAM)NULL, (LPARAM)&data);
-}
-
-// mIRC
-
-void CMainFrame::SendNowPlayingTomIRC()
-{
-	if(!AfxGetAppSettings().fNotifyGTSdll)
-		return;
-
-	for(int i = 0; i < 20; i++)
-	{
-		HANDLE hFMap = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, 1024, _T("mIRC"));
-		if(!hFMap) return;
-
-		if(GetLastError() == ERROR_ALREADY_EXISTS)
-		{
-			CloseHandle(hFMap);
-			Sleep(50);
-			continue;
-		}
-
-		if(LPVOID lpMappingAddress = MapViewOfFile(hFMap, FILE_MAP_WRITE, 0, 0, 0))
-		{
-			LPCSTR cmd = m_fAudioOnly ? "/.timerAUDGTS 1 5 mpcaud" : "/.timerVIDGTS 1 5 mpcvid";
-			strcpy((char*)lpMappingAddress, cmd);
-
-			if(HWND hWnd = ::FindWindow(_T("mIRC"), NULL))
-				::SendMessage(hWnd, (WM_USER + 200), (WPARAM)1, (LPARAM)0);
-
-			UnmapViewOfFile(lpMappingAddress);
-		}
-		
-		CloseHandle(hFMap);
-
-		break;
-	}
 }
 
 // dynamic menus
@@ -15091,8 +14962,6 @@ bool CMainFrame::BuildGraphVideoAudio(int fVPreview, bool fVCapture, int fAPrevi
 
 	OpenSetupVideo();
 	OpenSetupAudio();
-	OpenSetupStatsBar();
-
 
 	RestoreMediaState;
 
@@ -15328,8 +15197,6 @@ void CMainFrame::OpenMedia(CAutoPtr<OpenMediaData> pOMD)
 			m_wndCaptureBar.m_capdlg.SetVideoInput(p->vinput);
 			m_wndCaptureBar.m_capdlg.SetVideoChannel(p->vchannel);
 			m_wndCaptureBar.m_capdlg.SetAudioInput(p->ainput);
-			SendNowPlayingToMSN();
-			SendNowPlayingTomIRC();
 			return;
 		}
 	}
@@ -16998,8 +16865,8 @@ void CMainFrame::_HandleTimer_Stats()
       if ((m_wndView.m_AudioInfoCounter%4) == 0 || m_wndView.m_strAudioInfo.IsEmpty())
       {
         CString szInfo , szMusicTitle, szMusicAuthor;
-        m_wndInfoBar.GetLine(ResStr(IDS_INFOBAR_TITLE), szMusicTitle);
-        m_wndInfoBar.GetLine(ResStr(IDS_INFOBAR_AUTHOR), szMusicAuthor);
+        szMusicTitle = GetClipInfo(IDS_INFOBAR_TITLE).c_str();
+        szMusicAuthor = GetClipInfo(IDS_INFOBAR_AUTHOR).c_str();
 
         switch (m_wndView.m_AudioInfoCounter/4 %4)
         {
@@ -17010,10 +16877,10 @@ void CMainFrame::_HandleTimer_Stats()
           szInfo = szMusicAuthor;
           break;
         case 2:
-          m_wndInfoBar.GetLine(ResStr(IDS_INFOBAR_DESCRIPTION),szInfo);
+          szInfo = GetClipInfo(IDS_INFOBAR_DESCRIPTION).c_str();
           break;
         case 3:
-          m_wndInfoBar.GetLine(ResStr(IDS_INFOBAR_COPYRIGHT),szInfo);
+          szInfo = GetClipInfo(IDS_INFOBAR_COPYRIGHT).c_str();
           break;
         }
         if (szInfo.IsEmpty())
@@ -17179,13 +17046,14 @@ void CMainFrame::_HandleTimer_Stats()
   }
   m_wndToolBar.m_buffering  = msg;
 
+  /*
   if (m_wndStatsBar.IsWindowVisible())
   {
     if (pQP)
     {
       CString rate;
       rate.Format(_T("(%0.1fx)"), 1.0 + (m_iSpeedLevel * 0.1) );
-      /*
+      / *
       if(m_iSpeedLevel >= -11 && m_iSpeedLevel <= 3 && m_iSpeedLevel != -4)
       {
         CString speeds[] = {_T("1/8"),_T("1/4"),_T("1/2"),_T("1"),_T("2"),_T("4"),_T("8")};
@@ -17195,7 +17063,7 @@ void CMainFrame::_HandleTimer_Stats()
       if(!rate.IsEmpty())
         rate = _T("(") + rate + _T("X)");
       }
-      */
+      * /
       CString info;
       int val;
       pQP->get_AvgFrameRate(&val);
@@ -17279,8 +17147,11 @@ void CMainFrame::_HandleTimer_Stats()
     }
     EndEnumFilters
   }
+*/
+
   if (m_iPlaybackMode == PM_FILE)
     SetupChapters();
+/*
   if (m_wndInfoBar.IsWindowVisible())
   {
     if (m_iPlaybackMode == PM_DVD) // we also use this timer to update the info panel for dvd playback
@@ -17422,7 +17293,8 @@ void CMainFrame::_HandleTimer_Stats()
 
       m_wndInfoBar.SetLine(ResStr(IDS_INFOBAR_SUBTITLES), Subtitles);
     }
-  }
+  }*/
+
   if (GetMediaState() == State_Running)
   {
     if (m_fAudioOnly)

@@ -26,8 +26,6 @@
 #include "ChildView.h"
 #include "PlayerSeekBar.h"
 #include "PlayerToolBar.h"
-#include "PlayerInfoBar.h"
-//#include "PlayerStatusBar.h"
 #include "PlayerPlaylistBar.h"
 #include "PlayerCaptureBar.h"
 #include "PlayerShaderEditorBar.h"
@@ -435,8 +433,6 @@ protected:
 	bool OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD);
 	void CloseMediaPrivate();
 	
-	void SendNowPlayingToMSN();
-	void SendNowPlayingTomIRC();
 
 	void OpenCreateGraphObject(OpenMediaData* pOMD);
 	HRESULT OpenMMSUrlStream(CString szFn);
@@ -446,8 +442,20 @@ protected:
 	void OpenCustomizeGraph();
 	void OpenSetupVideo();
 	void OpenSetupAudio();
-	void OpenSetupInfoBar();
-	void OpenSetupStatsBar();
+  // TODO: this may should move to Controller?
+  std::map<int, std::wstring> m_clipinfo;
+  void SetClipInfo(int id, std::wstring &value_in)
+  {
+    m_clipinfo[id] = value_in;
+  }
+  std::wstring GetClipInfo(UINT id) 
+  {
+    std::map<int, std::wstring>::iterator it = m_clipinfo.find(id);
+    if(it != m_clipinfo.end())
+      return it->second;
+    return L"";
+  };
+	void OpenSetupClipInfo();
 
 	void OpenSetupCaptureBar();
 	void OpenSetupWindowTitle(CString fn = _T(""));
@@ -532,9 +540,7 @@ public:
 
 protected:  // control bar embedded members
 
-	
-	CPlayerInfoBar m_wndInfoBar;
-	CPlayerInfoBar m_wndStatsBar;
+
 	CTransparentControlBar m_wndTransparentControlBar;
 	CPlayerChannelNormalizer m_wndChannelNormalizerBar;
   ChkDefPlayerControlBar m_chkdefplayercontrolbar;

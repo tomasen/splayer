@@ -2085,14 +2085,6 @@
 				>
 			</File>
 			<File
-				RelativePath="PlayerInfoBar.cpp"
-				>
-			</File>
-			<File
-				RelativePath="PlayerInfoBar.h"
-				>
-			</File>
-			<File
 				RelativePath=".\PPageBase.cpp"
 				>
 			</File>

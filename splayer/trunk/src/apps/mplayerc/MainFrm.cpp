@@ -914,9 +914,6 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	if(m_pGraphThread)
 		m_pGraphThread->SetMainFrame(this);
-
-	if(s.fEnableWebServer)
-		StartWebServer(s.nWebServerPort);
 		
 	// load shaders
 	CString	strList = AfxGetAppSettings().strShaderList;
@@ -15376,17 +15373,6 @@ void CMainFrame::ShowOptions(int idPage /*=0*/)
 
 }
 
-void CMainFrame::StartWebServer(int nPort)
-{
-	if(!m_pWebServer)
-		m_pWebServer.Attach(new CWebServer(this, nPort));
-}
-
-void CMainFrame::StopWebServer()
-{
-	if(m_pWebServer)
-		m_pWebServer.Free();
-}
 
 CString CMainFrame::GetStatusMessage()
 {

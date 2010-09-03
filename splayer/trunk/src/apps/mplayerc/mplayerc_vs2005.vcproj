@@ -1031,6 +1031,10 @@
 				RelativePath="VolumeCtrl.h"
 				>
 			</File>
+			<Filter
+				Name="File"
+				>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"
@@ -1245,11 +1249,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon\DVD.ico"
+				RelativePath=".\res\ecio.icons\dvd.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\ecio.icons\dvd.ico"
+				RelativePath=".\res\icon\DVD.ico"
 				>
 			</File>
 			<File
@@ -2265,14 +2269,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\PPageWebServer.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageWebServer.h"
-				>
-			</File>
-			<File
 				RelativePath="StaticLink.cpp"
 				>
 			</File>
@@ -2294,38 +2290,6 @@
 			</File>
 			<File
 				RelativePath=".\UESettingPanel.h"
-				>
-			</File>
-			<File
-				RelativePath=".\WebClientSocket.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\WebClientSocket.h"
-				>
-			</File>
-			<File
-				RelativePath=".\WebServer.cpp"
-				>
-				<FileConfiguration
-					Name="Release Unicode|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\WebServer.h"
-				>
-			</File>
-			<File
-				RelativePath=".\WebServerSocket.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\WebServerSocket.h"
 				>
 			</File>
 		</Filter>

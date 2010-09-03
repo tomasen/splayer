@@ -642,7 +642,6 @@ public:
 		bool htpcmode;
         bool startAsFullscreen;
 
-		BOOL fEnableWebServer;
 		int nWebServerPort;
 		bool fWebServerPrintDebugInfo;
 		bool fWebServerUseCompression;

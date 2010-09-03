@@ -30,7 +30,7 @@ using namespace TreePropSheet;
 #include "PPagePlayback.h"
 #include "PPageDVD.h"
 #include "PPageOutput.h"
-#include "PPageWebServer.h"
+//#include "PPageWebServer.h"
 #include "PPageInternalFilters.h"
 #include "PPageAudioSwitcher.h"
 #include "PPageExternalFilters.h"
@@ -69,7 +69,7 @@ private:
 	CPPagePlayback m_playback;
 	CPPageDVD m_dvd;
 	CPPageOutput m_output;
-	CPPageWebServer m_webserver;
+//	CPPageWebServer m_webserver;
 	CPPageSubtitles m_subtitles;
 	CPPageSubStyle m_substyle;
 	CPPageSubStyle m_substyle2;

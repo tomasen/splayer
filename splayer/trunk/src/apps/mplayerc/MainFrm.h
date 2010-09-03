@@ -61,7 +61,6 @@
 #include <Vmr9.h>
 #include <evr.h>
 #include <evr9.h>
-#include "WebServer.h"
 #include "NEWOSDWnd.h"
 
 #include "SUIButton.h"
@@ -304,9 +303,7 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 
 	//
 
-	friend class CWebClientSocket;
-	friend class CWebServer;
-	CAutoPtr<CWebServer> m_pWebServer;
+
 private:
 	CString m_szTitle;
 	CString getCurPlayingSubfile(int * iSubDelayMS = NULL,int subid = 0 );
@@ -375,8 +372,6 @@ public:
 	DWORD_PTR m_nSubtitleId;
 	DWORD_PTR m_nSubtitleId2;
 
-	void StartWebServer(int nPort);
-	void StopWebServer();
 	void OnShowCurrentPlayingFileInOSD();
 	CString GetStatusMessage();
 	bool IsMuted() {return m_wndToolBar.GetVolume() == -10000;}

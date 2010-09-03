@@ -563,7 +563,7 @@ void CConvertDlg::ShowResourcePopup(HTREEITEM hTI, CPoint p)
 	int i = 1;
 	m.AppendMenu(MF_STRING, i++, ResStr(IDS_CONVERT_REMOVE));
 	m.AppendMenu(MF_STRING, i++, ResStr(IDS_CONVERT_SAVEAS));
-	if(AfxGetAppSettings().fEnableWebServer) m.AppendMenu(MF_STRING, 1000, ResStr(IDS_CONVERT_LAUNCHINBROWSER));
+//	if(AfxGetAppSettings().fEnableWebServer) m.AppendMenu(MF_STRING, 1000, ResStr(IDS_CONVERT_LAUNCHINBROWSER));
 	m.AppendMenu(MF_SEPARATOR);
 	m.AppendMenu(MF_STRING, i++, ResStr(IDS_CONVERT_RESOURCEPROPERTIES));
 

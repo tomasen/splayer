@@ -28,7 +28,6 @@
 #include "PlayerToolBar.h"
 #include "PlayerInfoBar.h"
 #include "PlayerStatusBar.h"
-#include "PlayerSubresyncBar.h"
 #include "PlayerPlaylistBar.h"
 #include "PlayerCaptureBar.h"
 #include "PlayerShaderEditorBar.h"

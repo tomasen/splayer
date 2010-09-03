@@ -81,33 +81,33 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 	m_btnList.AddTail( btnPause );
 
 	CSUIButton* btnStop = new CSUIButton(L"BTN_STOP.BMP" , ALIGN_TOPLEFT, CRect(-50 , -50, 3,3)  , 0, ID_PLAY_MANUAL_STOP, FALSE, ALIGN_RIGHT , btnPause  , CRect(10 , 10 , 10, 10));
-	btnStop->addAlignRelButton(ALIGN_RIGHT, btnPlay , CRect(10 , 10 , 10, 10) );
+	btnStop->addAlignRelButton(ALIGN_RIGHT, btnPlay , CRect(1 , 1 , 1, 1) );
 	m_btnList.AddTail( btnStop );
 
 	
 	CSUIButton* btnStep = new CSUIButton(L"BTN_STEP.BMP" , ALIGN_TOPLEFT, CRect(-50 , -50, 3,3)  , 0, ID_PLAY_FRAMESTEP, FALSE, ALIGN_LEFT , btnPause  , CRect(10 , 10 , 10, 10));
-	btnStep->addAlignRelButton(ALIGN_LEFT, btnPlay , CRect(10 , 10 , 10, 10) );
+	btnStep->addAlignRelButton(ALIGN_LEFT, btnPlay , CRect(1 , 1 , 1, 1) );
 	m_btnList.AddTail( btnStep );
 
-	CSUIButton* btnFFwd = new CSUIButton(L"FAST_FORWORD.BMP" , ALIGN_TOPLEFT, CRect(-52 , -50, 3,3)  , 0, ID_PLAY_FWD, FALSE, ALIGN_LEFT, btnPause , CRect(5 , 10 , 5, 10));
-	btnFFwd->addAlignRelButton(  ALIGN_LEFT, btnPlay , CRect(5 , 10 , 5, 10) );
-	btnFFwd->addAlignRelButton(ALIGN_LEFT, btnStep , CRect(5 , 10 , 5, 10) );
+	CSUIButton* btnFFwd = new CSUIButton(L"FAST_FORWORD.BMP" , ALIGN_TOPLEFT, CRect(-50 , -50, 3,3)  , 0, ID_PLAY_FWD, FALSE, ALIGN_LEFT, btnPause , CRect(5 , 10 , 5, 10));
+	btnFFwd->addAlignRelButton(  ALIGN_LEFT, btnPlay , CRect(1 , 1 , 1, 1) );
+	btnFFwd->addAlignRelButton(ALIGN_LEFT, btnStep , CRect(1 , 1 , 1, 1) );
 	m_btnList.AddTail( btnFFwd );
 
 	
-	CSUIButton* btnFFBack = new CSUIButton(L"FAST_BACKWORD.BMP" , ALIGN_TOPLEFT, CRect(-48 , -50, 3,3)  , 0, ID_PLAY_BWD, FALSE, ALIGN_RIGHT, btnPause , CRect(5 , 10 , 5, 10) );
-	btnFFBack->addAlignRelButton(ALIGN_RIGHT, btnPlay , CRect(5 , 10 , 5, 10) );
-	btnFFBack->addAlignRelButton(ALIGN_RIGHT, btnStop , CRect(5 , 10 , 5, 10) );
+	CSUIButton* btnFFBack = new CSUIButton(L"FAST_BACKWORD.BMP" , ALIGN_TOPLEFT, CRect(-50 , -50, 3,3)  , 0, ID_PLAY_BWD, FALSE, ALIGN_RIGHT, btnPause , CRect(5 , 10 , 5, 10) );
+	btnFFBack->addAlignRelButton(ALIGN_RIGHT, btnPlay , CRect(1 , 1 , 1, 1) );
+	btnFFBack->addAlignRelButton(ALIGN_RIGHT, btnStop , CRect(1 , 1 , 1, 1) );
 	m_btnList.AddTail( btnFFBack );
 
-	CSUIButton* btnPrev = new CSUIButton(L"BTN_PREV.BMP" , ALIGN_TOPLEFT, CRect(-48 , -50, 3,3)  , 0, ID_NAVIGATE_SKIPBACK, FALSE, ALIGN_RIGHT, btnFFBack , CRect(10 , 10 , 10, 10) ) ;
-	btnPrev->addAlignRelButton(ALIGN_RIGHT, btnPlay , CRect(5 , 10 , 5, 10) );
-	btnPrev->addAlignRelButton(ALIGN_RIGHT, btnPause , CRect(5 , 10 , 5, 10) );
+	CSUIButton* btnPrev = new CSUIButton(L"BTN_PREV.BMP" , ALIGN_TOPLEFT, CRect(-50 , -50, 3,3)  , 0, ID_NAVIGATE_SKIPBACK, FALSE, ALIGN_RIGHT, btnFFBack , CRect(10 , 10 , 10, 10) ) ;
+	btnPrev->addAlignRelButton(ALIGN_RIGHT, btnPlay , CRect(1 , 1 , 1, 1) );
+	btnPrev->addAlignRelButton(ALIGN_RIGHT, btnPause , CRect(1 , 1 , 1, 1) );
 	m_btnList.AddTail( btnPrev );
 
-	CSUIButton* btnNext = new CSUIButton(L"BTN_NEXT.BMP" , ALIGN_TOPLEFT, CRect(-48 ,-50, 3,3)  , 0, ID_NAVIGATE_SKIPFORWARD, FALSE, ALIGN_LEFT, btnFFwd , CRect(10 , 10 , 10, 10) );
-	btnNext->addAlignRelButton(  ALIGN_LEFT, btnPlay , CRect(5 , 10 , 5, 10) );
-	btnNext->addAlignRelButton(ALIGN_LEFT, btnPause , CRect(5 , 10 , 5, 10) );
+	CSUIButton* btnNext = new CSUIButton(L"BTN_NEXT.BMP" , ALIGN_TOPLEFT, CRect(-50 ,-50, 3,3)  , 0, ID_NAVIGATE_SKIPFORWARD, FALSE, ALIGN_LEFT, btnFFwd , CRect(10 , 10 , 10, 10) );
+	btnNext->addAlignRelButton(  ALIGN_LEFT, btnPlay , CRect(1 , 1 , 1, 1) );
+	btnNext->addAlignRelButton(ALIGN_LEFT, btnPause , CRect(1 , 1 , 1, 1) );
 	m_btnList.AddTail( btnNext);
 	
 	CSUIButton* btnLogo =  new CSUIButton(L"SPLAYER.BMP" , ALIGN_TOPLEFT, CRect(14 , -50, 3,3)  , TRUE, 0, FALSE   ) ;
@@ -205,19 +205,19 @@ void CPlayerToolBar::OnSize(UINT nType, int cx, int cy)
 	BOOL hideT4 = TRUE;
     CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
     double skinsRate = (double)pFrame->m_lMinFrameWidth / 310;
-	if( iWidth > (382 * skinsRate * m_nLogDPIY / 96) ){
+	if( iWidth > (440 * skinsRate * m_nLogDPIY / 96) ){
 			hideT1 = false;
 	}
-	if( iWidth > (400 * skinsRate * m_nLogDPIY / 96) ){
+	if( iWidth > (480 * skinsRate * m_nLogDPIY / 96) ){
 		hideT15 = false;
 	}
-	if( iWidth > (425 * skinsRate * m_nLogDPIY / 96) ){
+	if( iWidth > (540 * skinsRate * m_nLogDPIY / 96) ){
 		hideT2 = false;
 	}
-	if( iWidth > (490 * skinsRate * m_nLogDPIY / 96) ){
+	if( iWidth > (600 * skinsRate * m_nLogDPIY / 96) ){
 		hideT3 = false;
 	}
-	if( iWidth > (570 * skinsRate * m_nLogDPIY / 96) ){
+	if( iWidth > (660 * skinsRate * m_nLogDPIY / 96) ){
 		hideT4 = false;
 	}
 

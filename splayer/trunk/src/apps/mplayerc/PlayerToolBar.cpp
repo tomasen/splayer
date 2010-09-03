@@ -195,75 +195,6 @@ void CPlayerToolBar::OnSize(UINT nType, int cx, int cy)
 
 	ArrangeControls();
 
-	CRect rc;
-	GetWindowRect(&rc);
-	long iWidth = rc.Width();
-	BOOL hideT1 = TRUE;
-	BOOL hideT15 = TRUE;
-	BOOL hideT2 = TRUE;
-	BOOL hideT3 = TRUE;
-	BOOL hideT4 = TRUE;
-    CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
-    double skinsRate = (double)pFrame->m_lMinFrameWidth / 310;
-	if( iWidth > (440 * skinsRate * m_nLogDPIY / 96) ){
-			hideT1 = false;
-	}
-	if( iWidth > (480 * skinsRate * m_nLogDPIY / 96) ){
-		hideT15 = false;
-	}
-	if( iWidth > (540 * skinsRate * m_nLogDPIY / 96) ){
-		hideT2 = false;
-	}
-	if( iWidth > (600 * skinsRate * m_nLogDPIY / 96) ){
-		hideT3 = false;
-	}
-	if( iWidth > (660 * skinsRate * m_nLogDPIY / 96) ){
-		hideT4 = false;
-	}
-
-	
-	if(pFrame && pFrame->IsSomethingLoaded() && pFrame->m_fAudioOnly){
-
-		m_btnList.SetHideStat(ID_PLAY_FWD , hideT1);
-		m_btnList.SetHideStat(ID_PLAY_BWD , hideT1);
-		m_btnList.SetHideStat(ID_NAVIGATE_SKIPBACK , 0);
-		m_btnList.SetHideStat(ID_NAVIGATE_SKIPFORWARD , 0);
-
-		m_btnList.SetHideStat(ID_VOLUME_MUTE , 0);
-		m_btnList.SetHideStat(ID_VIEW_PLAYLIST , hideT2);
-	}else{
-		m_btnList.SetHideStat(ID_PLAY_FWD , 0);
-		m_btnList.SetHideStat(ID_PLAY_BWD , 0);
-		m_btnList.SetHideStat(ID_NAVIGATE_SKIPBACK , hideT1);
-		m_btnList.SetHideStat(ID_NAVIGATE_SKIPFORWARD , hideT1);
-
-		m_btnList.SetHideStat(ID_VIEW_PLAYLIST , 0);
-		m_btnList.SetHideStat(ID_VOLUME_MUTE , hideT2);
-	}
-	
-	
-	
-	m_btnList.SetHideStat(ID_SUBTOOLBARBUTTON , hideT2);
-	m_btnList.SetHideStat(ID_SUBDELAYDEC , hideT2);
-	m_btnList.SetHideStat(ID_SUBDELAYINC , hideT2);
-	
-	m_btnList.SetHideStat(ID_FILE_SAVE_IMAGE , hideT4);
-	m_btnList.SetHideStat(ID_VIEW_OPTIONS , hideT3);
-	
-
-	m_btnList.SetHideStat(ID_SUBSETFONTBOTH , hideT4);
-	m_btnList.SetHideStat(ID_SUBFONTUPBOTH , hideT4);
-	m_btnList.SetHideStat(ID_SUBFONTDOWNBOTH , hideT4);
-
-	m_btnList.SetHideStat(ID_FILE_OPENQUICK , hideT4);
-
-	m_btnList.SetHideStat(ID_PLAY_FRAMESTEP , hideT4);
-	m_btnList.SetHideStat(ID_PLAY_MANUAL_STOP , hideT4);
-	
-
-    SetMute(IsMuted()); 
-
-	m_btnList.OnSize( rc);
 }
 
 BOOL CPlayerToolBar::PreCreateWindow(CREATESTRUCT& cs)
@@ -282,6 +213,80 @@ BOOL CPlayerToolBar::PreCreateWindow(CREATESTRUCT& cs)
 
 void CPlayerToolBar::ArrangeControls()
 {
+
+  CRect rc;
+  GetWindowRect(&rc);
+  long iWidth = rc.Width();
+  BOOL hideT1 = TRUE;
+  BOOL hideT15 = TRUE;
+  BOOL hideT2 = TRUE;
+  BOOL hideT3 = TRUE;
+  BOOL hideT4 = TRUE;
+  CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
+  double skinsRate = (double)pFrame->m_lMinFrameWidth / 310;
+  if( iWidth > (440 * skinsRate * m_nLogDPIY / 96) ){
+    hideT1 = false;
+  }
+  if( iWidth > (480 * skinsRate * m_nLogDPIY / 96) ){
+    hideT15 = false;
+  }
+  if( iWidth > (540 * skinsRate * m_nLogDPIY / 96) ){
+    hideT2 = false;
+  }
+  if( iWidth > (600 * skinsRate * m_nLogDPIY / 96) ){
+    hideT3 = false;
+  }
+  if( iWidth > (660 * skinsRate * m_nLogDPIY / 96) ){
+    hideT4 = false;
+  }
+  if(IsMuted()){
+    m_btnList.SetHideStat(L"VOLUME.BMP", TRUE|hideT1);
+    m_btnList.SetHideStat(L"MUTED.BMP", FALSE|hideT1);
+  }else{
+    m_btnList.SetHideStat(L"VOLUME.BMP", FALSE|hideT1);
+    m_btnList.SetHideStat(L"MUTED.BMP", TRUE|hideT1);
+  }
+
+  if(pFrame && pFrame->IsSomethingLoaded() && pFrame->m_fAudioOnly){
+    m_btnList.SetHideStat(ID_PLAY_FWD , hideT1);
+    m_btnList.SetHideStat(ID_PLAY_BWD , hideT1);
+    m_btnList.SetHideStat(ID_NAVIGATE_SKIPBACK , 0);
+    m_btnList.SetHideStat(ID_NAVIGATE_SKIPFORWARD , 0);
+
+    m_btnList.SetHideStat(ID_VIEW_PLAYLIST , hideT2);
+  }else{
+    m_btnList.SetHideStat(ID_PLAY_FWD , 0);
+    m_btnList.SetHideStat(ID_PLAY_BWD , 0);
+    m_btnList.SetHideStat(ID_NAVIGATE_SKIPBACK , hideT1);
+    m_btnList.SetHideStat(ID_NAVIGATE_SKIPFORWARD , hideT1);
+
+    m_btnList.SetHideStat(ID_VIEW_PLAYLIST , hideT2);
+    
+  }
+
+
+
+  m_btnList.SetHideStat(ID_SUBTOOLBARBUTTON , hideT2);
+  m_btnList.SetHideStat(ID_SUBDELAYDEC , hideT2);
+  m_btnList.SetHideStat(ID_SUBDELAYINC , hideT2);
+
+  m_btnList.SetHideStat(ID_FILE_SAVE_IMAGE , hideT4);
+  m_btnList.SetHideStat(ID_VIEW_OPTIONS , hideT3);
+
+
+  m_btnList.SetHideStat(ID_SUBSETFONTBOTH , hideT4);
+  m_btnList.SetHideStat(ID_SUBFONTUPBOTH , hideT4);
+  m_btnList.SetHideStat(ID_SUBFONTDOWNBOTH , hideT4);
+
+  m_btnList.SetHideStat(ID_FILE_OPENQUICK , hideT4);
+
+  m_btnList.SetHideStat(ID_PLAY_FRAMESTEP , hideT4);
+  m_btnList.SetHideStat(ID_PLAY_MANUAL_STOP , hideT4);
+
+
+
+  m_btnList.OnSize( rc);
+
 	if(!::IsWindow(m_volctrl.m_hWnd)) return;
 
 	/*
@@ -316,13 +321,7 @@ CToolBarCtrl& tb = GetToolBarCtrl();
 	bi.iImage = fMute?21:20;
 	tb.SetButtonInfo(ID_VOLUME_MUTE, &bi);
 */
-	if(fMute){
-		m_btnList.SetHideStat(L"VOLUME.BMP", TRUE);
-		m_btnList.SetHideStat(L"MUTED.BMP", FALSE);
-	}else{
-		m_btnList.SetHideStat(L"VOLUME.BMP", FALSE);
-		m_btnList.SetHideStat(L"MUTED.BMP", TRUE);
-	}
+	
 	AfxGetAppSettings().fMute = fMute;
    
 }
@@ -608,7 +607,8 @@ void CPlayerToolBar::SetStatusTimer(REFERENCE_TIME rtNow, REFERENCE_TIME rtDur, 
 }
 BOOL CPlayerToolBar::OnVolumeMute(UINT nID)
 {
-	SetMute(!IsMuted()); 
+	AfxGetAppSettings().fMute = !IsMuted();
+  ArrangeControls();
 	return FALSE;
 }
 

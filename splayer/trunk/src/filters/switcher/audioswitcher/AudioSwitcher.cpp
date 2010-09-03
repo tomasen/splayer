@@ -109,6 +109,7 @@ CAudioSwitcherFilter::CAudioSwitcherFilter(LPUNKNOWN lpunk, HRESULT* phr)
 	, m_lastInputChannelCount2(-1)
 	, m_lastOutputChannelCount2(-1)
 	, m_iSimpleSwitch(-1)
+  , m_bcentertolrmap(true)
 	, m_fVolSuggested(0)
 	, m_fEQControlOn(0)
 	, m_tPlayedtime(0)
@@ -457,6 +458,14 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 					 m_pCurrentChannelNormalize2[i][i] = 1;
 				}
 			}
+
+      if (m_bcentertolrmap == false)
+      {
+        
+        m_pCurrentChannelNormalize2[0][2] = 0.0;
+        m_pCurrentChannelNormalize2[1][2] = 0.0;
+        
+      }
 
 			if( bSimpleSwitch){
 
@@ -1082,7 +1091,7 @@ STDMETHODIMP CAudioSwitcherFilter::GetInputSpeakerConfig(DWORD* pdwChannelMask)
 }
 STDMETHODIMP CAudioSwitcherFilter::SetSpeakerChannelConfig (int lTotalOutputChannel , 
 															float pChannelNormalize[MAX_INPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_NORMALIZE_CHANNELS]
-															,float pSpeakerToChannelMapOffset[MAX_INPUT_CHANNELS][MAX_NORMALIZE_CHANNELS], int iSimpleSwitch,int iSS )
+															,float pSpeakerToChannelMapOffset[MAX_INPUT_CHANNELS][MAX_NORMALIZE_CHANNELS], int iSimpleSwitch,int iSS, bool bcentertolrmap)
 {
 	//if(m_State == State_Stopped || m_pChannelNormalize2 != pChannelNormalize
 	//	|| memcmp(m_pChannelNormalize2, pChannelNormalize, sizeof(m_pChannelNormalize2)) ||
@@ -1102,6 +1111,7 @@ STDMETHODIMP CAudioSwitcherFilter::SetSpeakerChannelConfig (int lTotalOutputChan
 			m_lTotalOutputChannel = lTotalOutputChannel;
 
 		m_fCustomChannelMapping2 = -1;
+    m_bcentertolrmap = bcentertolrmap;
 
 		if(iSimpleSwitch >= 0)
 			m_iSimpleSwitch = iSimpleSwitch;

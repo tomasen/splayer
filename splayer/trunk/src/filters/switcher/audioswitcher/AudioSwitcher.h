@@ -41,7 +41,7 @@ interface __declspec(uuid("CEDB2890-53AE-4231-91A3-B0AAFCD1DBDE")) IAudioSwitche
 	STDMETHOD(SetNormalizeBoost) (bool fNormalize, bool fNormalizeRecover, float boost) = 0;
 	STDMETHOD(GetSpeakerChannelConfig) (int *plTotalOutputChannel , float pChannelNormalize[MAX_INPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_NORMALIZE_CHANNELS]) = 0;
 	STDMETHOD(SetSpeakerChannelConfig) (int lTotalOutputChannel , float pChannelNormalize[MAX_INPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_NORMALIZE_CHANNELS]
-			,float pSpeakerToChannelMapOffset[MAX_INPUT_CHANNELS][MAX_NORMALIZE_CHANNELS], int iSimpleSwitch, int iSS) = 0;
+			,float pSpeakerToChannelMapOffset[MAX_INPUT_CHANNELS][MAX_NORMALIZE_CHANNELS], int iSimpleSwitch, int iSS, bool bcentertolrmap = true) = 0;
 	STDMETHOD(SetEQControl) ( int lEQBandControlPreset, float pEQBandControl[MAX_EQ_BAND]) = 0;
 
 	STDMETHOD (SetRate)(double dRate) = 0;
@@ -73,6 +73,7 @@ class __declspec(uuid("18C16B08-6497-420e-AD14-22D21C2CEAB7")) CAudioSwitcherFil
 	// 0 - 2.0
 	float m_pSpeakerToChannelMapOffset[MAX_INPUT_CHANNELS][MAX_NORMALIZE_CHANNELS];
 	int m_iSimpleSwitch;
+  bool m_bcentertolrmap;
 
 	int m_fEQControlOn;
 	float m_pEQBandControlCurrent[MAX_EQ_BAND];
@@ -138,7 +139,7 @@ public:
 
 	STDMETHODIMP GetSpeakerChannelConfig (int *plTotalOutputChannel , float pChannelNormalize[MAX_INPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_NORMALIZE_CHANNELS]);
 	STDMETHODIMP SetSpeakerChannelConfig (int lTotalOutputChannel , float pChannelNormalize[MAX_INPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_OUTPUT_CHANNELS][MAX_NORMALIZE_CHANNELS]
-			,float pSpeakerToChannelMapOffset[MAX_INPUT_CHANNELS][MAX_NORMALIZE_CHANNELS], int iSimpleSwitch , int iSS );
+			,float pSpeakerToChannelMapOffset[MAX_INPUT_CHANNELS][MAX_NORMALIZE_CHANNELS], int iSimpleSwitch , int iSS, bool bcentertolrmap = true);
 
 	STDMETHODIMP SetEQControl ( int lEQBandControlPreset, float pEQBandControl[MAX_EQ_BAND]);
 	// IAMStreamSelect

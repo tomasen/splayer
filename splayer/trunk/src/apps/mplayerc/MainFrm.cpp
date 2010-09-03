@@ -13363,8 +13363,11 @@ void CMainFrame::OnAudioChannalMapMenu(UINT nID){
 		m_iAudioChannelMaping = nID - IDS_AUDIOCHANNALMAPNORMAL;
 		if(pSS)
 		{
+      PlayerPreference* pref = PlayerPreference::GetInstance();
+      bool baudiocentertolrmap = pref->GetIntVar(INTVAR_AUDIOCENTERTOLRMAP);
+
 			//Normal
-			pSS->SetSpeakerChannelConfig(AfxGetMyApp()->GetNumberOfSpeakers(), s.pSpeakerToChannelMap2, s.pSpeakerToChannelMapOffset , m_iAudioChannelMaping%4, s.iSS);
+			pSS->SetSpeakerChannelConfig(AfxGetMyApp()->GetNumberOfSpeakers(), s.pSpeakerToChannelMap2, s.pSpeakerToChannelMapOffset , m_iAudioChannelMaping%4, s.iSS, baudiocentertolrmap);
 			
 			SendStatusMessage(ResStr(IDS_OSD_MSG_CHANGING_CHANNAL_MAPING_LEFT_RIGHT_CENTER), 3000);
 		}
@@ -17689,8 +17692,11 @@ void CMainFrame::OnAudioSettingUpdated()
   CComQIPtr<IAudioSwitcherFilter> pASF = FindFilter(__uuidof(CAudioSwitcherFilter), pGB);
   if (pASF)
   {
+    PlayerPreference* pref = PlayerPreference::GetInstance();
+    bool baudiocentertolrmap = pref->GetIntVar(INTVAR_AUDIOCENTERTOLRMAP);
+
     pASF->SetNormalizeBoost(s.fAudioNormalize, s.fAudioNormalizeRecover, s.AudioBoost);
     pASF->SetEQControl(s.pEQBandControlPerset, s.pEQBandControlCustom);
-    pASF->SetSpeakerChannelConfig(AfxGetMyApp()->GetNumberOfSpeakers(), s.pSpeakerToChannelMap2, s.pSpeakerToChannelMapOffset, 0, s.iSS);
+    pASF->SetSpeakerChannelConfig(AfxGetMyApp()->GetNumberOfSpeakers(), s.pSpeakerToChannelMap2, s.pSpeakerToChannelMapOffset, 0, s.iSS, baudiocentertolrmap);
   }
 }

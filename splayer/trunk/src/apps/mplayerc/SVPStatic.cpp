@@ -11,7 +11,7 @@
 IMPLEMENT_DYNAMIC(CSVPStatic, CStatic)
 
 CSVPStatic::CSVPStatic()
-: m_dwAlign(DT_LEFT)
+: m_dwAlign(DT_LEFT),m_staticmode(0)
 {
 	AppSettings& s = AfxGetAppSettings();
 	m_textColor = s.GetColorFromTheme(_T("FloatDialogButtonTextColor"), 0xffffff);
@@ -68,8 +68,19 @@ void CSVPStatic::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	// Draw the button text using the text color red.
 	COLORREF crOldColor = ::SetTextColor(lpDrawItemStruct->hDC, m_textColor);
 	::SetBkMode( lpDrawItemStruct->hDC, TRANSPARENT);
-	::DrawText(lpDrawItemStruct->hDC, strText, strText.GetLength(), 
-		&lpDrawItemStruct->rcItem, DT_SINGLELINE|DT_VCENTER|m_dwAlign);
+  switch(m_staticmode)
+  {
+  case 0:
+    ::DrawText(lpDrawItemStruct->hDC, strText, strText.GetLength(), 
+      &lpDrawItemStruct->rcItem, DT_SINGLELINE|DT_VCENTER|m_dwAlign);
+    break;
+  case 1:
+    ::DrawText(lpDrawItemStruct->hDC, strText, strText.GetLength(), 
+      &lpDrawItemStruct->rcItem, DT_VCENTER|m_dwAlign|DT_EDITCONTROL|DT_WORDBREAK);
+    break;
+  default:
+    break;
+  }
 	::SetTextColor(lpDrawItemStruct->hDC, crOldColor);
 
 }
@@ -91,4 +102,9 @@ BOOL CSVPStatic::OnEraseBkgnd(CDC* pDC)
 	GetClientRect(&r);
 	pDC->FillSolidRect(&r, m_bgColor);
 	return TRUE;
+}
+
+void CSVPStatic::SetStaticMode(int staticmode)
+{
+  m_staticmode = staticmode;
 }

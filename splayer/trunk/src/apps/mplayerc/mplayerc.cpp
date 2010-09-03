@@ -31,7 +31,6 @@
 #include "MainFrm.h"
 #include "..\..\DSUtil\DSUtil.h"
 #include "revision.h"
-#include "ChkDefPlayer.h"
 #include <locale.h> 
 #include <d3d9.h>
 #include <d3dx9.h>
@@ -1604,18 +1603,18 @@ void CMPlayerCApp::InitInstanceThreaded(INT64 CLS64){
 				
             SVP_LogMsg5(L"Settings::InitInstanceThreaded 15");
 			//检查文件关联
-			if ( m_s.fCheckFileAsscOnStartup ){
-				CChkDefPlayer dlg_chkdefplayer;
-				if( ! dlg_chkdefplayer.b_isDefaultPlayer() ){
-					if(m_s.fPopupStartUpExtCheck || (IsVista() && !IsUserAnAdmin())){
-						dlg_chkdefplayer.DoModal();
-					}else{
-						dlg_chkdefplayer.setDefaultPlayer();
-					}
-				}
-				//	dlg_chkdefplayer.setDefaultPlayer();
+			//if ( m_s.fCheckFileAsscOnStartup ){
+			//	ChkDefPlayerControlBar dlg_chkdefplayer;
+			//	if( ! dlg_chkdefplayer.IsDefaultPlayer() ){
+			//		if(m_s.fPopupStartUpExtCheck || (IsVista() && !IsUserAnAdmin())){
+			//			dlg_chkdefplayer.ShowWindow(SW_SHOWNOACTIVATE);
+			//		}else{
+			//			dlg_chkdefplayer.SetDefaultPlayer();
+			//		}
+			//	}
+			//	//	dlg_chkdefplayer.setDefaultPlayer();
 
-			}
+			//}
 SVP_LogMsg5(L"Settings::InitInstanceThreaded 16");
 			if ( time(NULL) > (m_s.tLastCheckUpdater + m_s.tCheckUpdaterInterleave) || m_s.tLastCheckUpdater == 0){
 			
@@ -2079,9 +2078,9 @@ BOOL CMPlayerCApp::InitInstance()
 			}
 			break;
 		default :
-			CChkDefPlayer dlg_chkdefplayer;
-			dlg_chkdefplayer.b_isDefaultPlayer();
-			dlg_chkdefplayer.setDefaultPlayer();
+			ChkDefPlayerControlBar dlg_chkdefplayer;
+			dlg_chkdefplayer.IsDefaultPlayer();
+			dlg_chkdefplayer.SetDefaultPlayer();
 			return FALSE;
 		}
 		

@@ -5,7 +5,7 @@
 #include "../mplayerc.h"
 #include "../resource.h"
 #include "../PPageFormats.h"
-#include "../ChkDefPlayer.h"
+#include "../ChkDefPlayerControlBar.h"
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -232,9 +232,9 @@ void FileAssoc::RegisterPlayer(int action_id)
   if (action_id & (1 << 3)) //video
   {
     //TODO: rewrite and move the code into this class
-    CChkDefPlayer chk_defplayer;
-    chk_defplayer.setKeyboardNativeMediaPlayers();
-    chk_defplayer.setKeyboardNativeMediaPlayers2();
+    ChkDefPlayerControlBar chk_defplayer;
+    chk_defplayer.SetKeyboardNativeMediaPlayers();
+    chk_defplayer.SetKeyboardNativeMediaPlayers2();
   }
 
 

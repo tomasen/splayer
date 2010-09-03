@@ -33,6 +33,7 @@
 #include "PlayerCaptureBar.h"
 #include "PlayerShaderEditorBar.h"
 #include "PlayerColorControlBar.h"
+#include "ChkDefPlayerControlBar.h"
 #include "TransparentControlBar.h"
 #include "PPageFileInfoSheet.h"
 #include "OpenCapDeviceDlg.h"
@@ -544,6 +545,7 @@ protected:  // control bar embedded members
 	CPlayerStatusBar m_wndStatusBar;
 	CTransparentControlBar m_wndTransparentControlBar;
 	CPlayerChannelNormalizer m_wndChannelNormalizerBar;
+  ChkDefPlayerControlBar m_chkdefplayercontrolbar;
 	CPlayerEQControlBar	 m_wndPlayerEQControlBar;
 	CSVPSubVoteControlBar	m_wndSubVoteControlBar;
 	CList<CControlBar*> m_bars;

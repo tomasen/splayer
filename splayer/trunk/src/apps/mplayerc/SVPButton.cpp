@@ -12,7 +12,8 @@
 IMPLEMENT_DYNAMIC(CSVPButton, CButton)
 
 CSVPButton::CSVPButton():
- m_btnMode(0)
+  m_btnMode(0),
+  m_fischecked(false)
 {
 	AppSettings& s = AfxGetAppSettings();
 	m_textColor = s.GetColorFromTheme(_T("FloatDialogButtonTextColor"), 0xffffff);
@@ -55,6 +56,21 @@ int CSVPButton::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	return 0;
 }
 
+void CSVPButton::SetCheckStatus(bool checkstatues)
+{
+  m_fischecked = checkstatues;
+}
+
+bool CSVPButton::IsChecked()
+{
+  return m_fischecked;
+}
+
+void CSVPButton::SetButtonMode(int btnmode)
+{
+  m_btnMode = btnmode;
+}
+
 void CSVPButton::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 {
 
@@ -73,28 +89,31 @@ void CSVPButton::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 		textColor = m_textGrayColor;
 	}
 
-	// Draw the button frame.
-	//::DrawFrameControl(lpDrawItemStruct->hDC, &lpDrawItemStruct->rcItem, 
-	//	DFC_BUTTON, uStyle);
+  //Draw the button frame.
+  //  ::DrawFrameControl(lpDrawItemStruct->hDC, &lpDrawItemStruct->rcItem, 
+  //  DFC_BUTTON, uStyle);
 
-	CRgn mRgn;
-	mRgn.CreateRoundRectRgn(lpDrawItemStruct->rcItem.left , lpDrawItemStruct->rcItem.top
-		,lpDrawItemStruct->rcItem.right , lpDrawItemStruct->rcItem.bottom , 3,3);
-	CBrush brush;
-	brush.CreateSolidBrush(buttonBG);
+  if (m_btnMode != 2)
+  {
+    CRgn mRgn;
+    mRgn.CreateRoundRectRgn(lpDrawItemStruct->rcItem.left , lpDrawItemStruct->rcItem.top
+      ,lpDrawItemStruct->rcItem.right , lpDrawItemStruct->rcItem.bottom , 3,3);
+    CBrush brush;
+    brush.CreateSolidBrush(buttonBG);
 
-	CBrush brushBorder;
-	brushBorder.CreateSolidBrush(m_borderColor);
+    CBrush brushBorder;
+    brushBorder.CreateSolidBrush(m_borderColor);
 
-	::FillRgn( lpDrawItemStruct->hDC, mRgn  , brush);
-	::FrameRgn(  lpDrawItemStruct->hDC, mRgn , brushBorder , 1, 1);
-
+    ::FillRgn( lpDrawItemStruct->hDC, mRgn  , brush);
+    ::FrameRgn(  lpDrawItemStruct->hDC, mRgn , brushBorder , 1, 1);
+  }
 
 	// Get the button's text.
 	CString strText;
 	GetWindowText(strText);
 
-	switch(m_btnMode){
+	switch(m_btnMode)
+  {
 		case 1:
 			//x
 			{
@@ -112,16 +131,82 @@ void CSVPButton::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 
 			}
 			break;
+
+    case 2:
+      {
+        WTL::CFont   font;
+        wchar_t boxstr[2];
+        font.CreateFont(12, 0, 0, 0, FW_NORMAL, 0, 0, 0,
+          DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
+          CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
+          DEFAULT_PITCH|FF_SWISS, L"Marlett");
+
+        WTL::CDCHandle dc(lpDrawItemStruct->hDC);
+        HFONT    pOldFont   = dc.SelectFont(font);
+        COLORREF crOldColor = ::SetTextColor(lpDrawItemStruct->hDC, textColor);
+        ::SetBkMode(lpDrawItemStruct->hDC, TRANSPARENT);
+        CRect textRc(lpDrawItemStruct->rcItem);
+        //Draw the small box of a checkbox
+        swprintf_s(boxstr, 2, L"%c", 0x65);
+        ::DrawText(lpDrawItemStruct->hDC, boxstr, 1, 
+          &textRc, DT_SINGLELINE|DT_VCENTER|DT_LEFT);
+        swprintf_s(boxstr, 2, L"%c", 0x66);
+        ::DrawText(lpDrawItemStruct->hDC, boxstr, 1, 
+          &textRc, DT_SINGLELINE|DT_VCENTER|DT_LEFT);
+        if (m_fischecked)
+        {
+          //if is checked, draw the tick inside the box
+          swprintf_s(boxstr, 2, L"%c", 0x61);
+          ::DrawText(lpDrawItemStruct->hDC, boxstr, 1,
+          &textRc, DT_SINGLELINE|DT_VCENTER|DT_LEFT);
+        }
+        dc.SelectFont(pOldFont);
+        DeleteObject(font);
+        textRc.left += 18;
+        textRc.bottom -= 2;
+        //Draw the text
+        ::DrawText(lpDrawItemStruct->hDC, strText, strText.GetLength(),
+          &textRc, DT_SINGLELINE|DT_VCENTER|DT_LEFT);
+        ::SetTextColor(lpDrawItemStruct->hDC, crOldColor);
+        
+        //int boxlength = 12;
+        //int boxtop = (lpDrawItemStruct->rcItem.bottom - lpDrawItemStruct->rcItem.top - boxlength) / 2;
+        //lpDrawItemStruct->rcItem.right += boxlength;
+        //CRgn mRgnBox;
+        //mRgnBox.CreateRoundRectRgn(lpDrawItemStruct->rcItem.left, lpDrawItemStruct->rcItem.top + boxtop
+        //  ,lpDrawItemStruct->rcItem.left + boxlength , lpDrawItemStruct->rcItem.top + boxtop + boxlength , 3, 3);
+        //CBrush brush;
+        //brush.CreateSolidBrush(buttonBG);
+
+        //CBrush brushBorder;
+        //brushBorder.CreateSolidBrush(m_borderColor);
+
+        //::FillRgn(lpDrawItemStruct->hDC, mRgnBox, brush);
+        //::FrameRgn(lpDrawItemStruct->hDC, mRgnBox, brushBorder, 1, 1);
+
+        //if (m_fischecked)
+        //{
+        //  HPEN line = CreatePen(PS_INSIDEFRAME, 2, textColor);
+        //  HPEN old = (HPEN)::SelectObject(lpDrawItemStruct->hDC, (HPEN)line);
+        //  ::MoveToEx(lpDrawItemStruct->hDC, lpDrawItemStruct->rcItem.left, lpDrawItemStruct->rcItem.top + boxtop + 5, NULL);
+        //  ::LineTo(lpDrawItemStruct->hDC, lpDrawItemStruct->rcItem.left + 4 , lpDrawItemStruct->rcItem.top + boxtop + 9);
+        //  ::MoveToEx(lpDrawItemStruct->hDC, lpDrawItemStruct->rcItem.left + 4 , lpDrawItemStruct->rcItem.top + boxtop + 9, NULL);
+        //  ::LineTo(lpDrawItemStruct->hDC, lpDrawItemStruct->rcItem.left + 12, lpDrawItemStruct->rcItem.top + boxtop + 1);
+        //  ::SelectObject(lpDrawItemStruct->hDC, old);
+        //  DeleteObject(line);
+        //}
+      }
+      break;
+
 		default:
 			{
 				COLORREF crOldColor = ::SetTextColor(lpDrawItemStruct->hDC, textColor);
 				::SetBkMode( lpDrawItemStruct->hDC, TRANSPARENT);
 				CRect textRc(lpDrawItemStruct->rcItem);
-				textRc.bottom -=2;
+				textRc.bottom -= 2;
 				::DrawText(lpDrawItemStruct->hDC, strText, strText.GetLength(), 
 					&textRc, DT_SINGLELINE|DT_VCENTER|DT_CENTER);
 				::SetTextColor(lpDrawItemStruct->hDC, crOldColor);
-
 			}
 			break;
 	}

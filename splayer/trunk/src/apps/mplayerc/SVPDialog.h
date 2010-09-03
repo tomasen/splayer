@@ -14,6 +14,7 @@ class CSVPDialog : public CWnd
 	CSVPButton m_btnClose;
 	CRgn m_rgnBorder;
 	DWORD m_bgColor , m_borderColor;
+  int m_lasttime;
 public:
 	CSVPDialog();
 	virtual ~CSVPDialog();
@@ -35,6 +36,7 @@ public:
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
 	afx_msg void OnKillFocus(CWnd* pNewWnd);
 	BOOL m_bFocused;
+  void SetLastTime(int lasttime);
 };
 
 

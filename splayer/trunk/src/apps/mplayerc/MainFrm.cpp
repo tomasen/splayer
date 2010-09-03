@@ -84,7 +84,6 @@
 #include "SVPSubUploadDlg.h"
 
 #include "revision.h"
-#include "ChkDefPlayer.h"
 #include "DlgChkUpdater.h"
 #include "InfoReport.h"
 
@@ -851,6 +850,9 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if(m_wndTransparentControlBar.CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, _T("SVPLayered"), _T("TRANSPARENTCONTROL"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0))//WS_EX_NOACTIVATE
 		m_wndTransparentControlBar.ShowWindow( SW_HIDE);
 
+  if(m_chkdefplayercontrolbar.CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, _T("SVPLayered"), _T("CHKDEFPLAYERCONTROL"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0))//WS_EX_NOACTIVATE
+    m_chkdefplayercontrolbar.ShowWindow(SW_HIDE);
+
 	if(m_wndChannelNormalizerBar.CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, _T("SVPLayered"), _T("CHANNELNORMALIZERCONTROL"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0))//WS_EX_NOACTIVATE
 		m_wndChannelNormalizerBar.ShowWindow( SW_HIDE);
 
@@ -1044,6 +1046,9 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 			m_wndTransparentControlBar.ModifyStyleEx(  0, WS_EX_LAYERED);
 			m_wndTransparentControlBar.SetLayeredWindowAttributes( 0, s.lAeroTransparent/2+0x7f , LWA_ALPHA);
 
+      m_chkdefplayercontrolbar.ModifyStyleEx(  0, WS_EX_LAYERED);
+      m_chkdefplayercontrolbar.SetLayeredWindowAttributes( 0, s.lAeroTransparent/2+0x7f , LWA_ALPHA);
+
 			m_wndChannelNormalizerBar.ModifyStyleEx(  0, WS_EX_LAYERED);
 			m_wndChannelNormalizerBar.SetLayeredWindowAttributes( 0, s.lAeroTransparent/2+0x7f , LWA_ALPHA);
 
@@ -1147,6 +1152,23 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
     SetTimer(TIMER_IDLE_TASK, 30000, NULL);
    m_WndSizeInited++;
+
+
+   if (s.fCheckFileAsscOnStartup)
+   {
+     if(!m_chkdefplayercontrolbar.IsDefaultPlayer())
+     {
+       if(s.fPopupStartUpExtCheck || (CMPlayerCApp::IsVista() && !IsUserAnAdmin()))
+       {
+         m_chkdefplayercontrolbar.ShowWindow(SW_SHOWNOACTIVATE);
+         rePosOSD();
+       }
+       else
+         m_chkdefplayercontrolbar.SetDefaultPlayer();
+     }
+     //	dlg_chkdefplayer.setDefaultPlayer();
+   }
+
 	return 0;
 }
 
@@ -1160,7 +1182,6 @@ void CMainFrame::HideFloatTransparentBar(){
 		SetTimer(TIMER_TRANSPARENTTOOLBARSTAT, 20,NULL);
 	}
 		
-
 }
 /*NEW UI*/
 static int m_nomoretopbarforawhile = 0;
@@ -10028,6 +10049,7 @@ void CMainFrame::MoveVideoWindow(bool fShowStats)
 
 	}
 }
+
 void CMainFrame::rePosOSD(){
 
 	if(!m_wndView || !::IsWindow(m_wndView.m_hWnd) || !m_wndNewOSD || !::IsWindow(m_wndNewOSD.m_hWnd) || !m_wndColorControlBar || !::IsWindow(m_wndColorControlBar.m_hWnd)){
@@ -10078,6 +10100,13 @@ void CMainFrame::rePosOSD(){
 			m_wndTransparentControlBar.MoveWindow(rcRightVertWnd);
 			rcRightTopWnd.right = rcRightVertWnd.left - 5;
 		}
+    if(m_chkdefplayercontrolbar.IsWindowVisible())
+    {
+      rcRightBottomWnd.bottom -= 5;
+      rcRightBottomWnd.top = rcRightBottomWnd.bottom - 130;
+      rcRightBottomWnd.left = rcRightBottomWnd.right - 240;
+      m_chkdefplayercontrolbar.MoveWindow(rcRightBottomWnd);
+    }
 		if(m_wndColorControlBar.IsWindowVisible()){
 			rcRightTopWnd.top += m_wndToolTopBar.m_nHeight * m_nLogDPIY / 96 + 4;
 			rcRightTopWnd.left = rcRightTopWnd.right - 220  * m_nLogDPIY / 96;
@@ -15889,10 +15918,11 @@ void CMainFrame::OnFileISDBSearch()
 	ssub.m_skeywords = svpTool.GetShortFileNameForSearch(m_fnCurPlayingFile);
 	ssub.DoModal();
 }
-void CMainFrame::OnCheckDefaultPlayer(){
-	CChkDefPlayer dlg_chkdefplayer;
-	dlg_chkdefplayer.b_isDefaultPlayer();
-	dlg_chkdefplayer.DoModal();
+void CMainFrame::OnCheckDefaultPlayer()
+{
+	m_chkdefplayercontrolbar.IsDefaultPlayer();
+  m_chkdefplayercontrolbar.ShowWindow(SW_SHOWNOACTIVATE);
+  rePosOSD();
 	
 }
 void CMainFrame::OnSendemail()

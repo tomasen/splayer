@@ -392,7 +392,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ChkDefPlayer.cpp"
+				RelativePath=".\ChkDefPlayerControlBar.cc"
 				>
 			</File>
 			<File
@@ -729,7 +729,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ChkDefPlayer.h"
+				RelativePath=".\ChkDefPlayerControlBar.h"
 				>
 			</File>
 			<File

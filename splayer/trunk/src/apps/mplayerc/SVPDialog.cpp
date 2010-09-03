@@ -11,7 +11,7 @@
 IMPLEMENT_DYNAMIC(CSVPDialog, CWnd)
 
 CSVPDialog::CSVPDialog()
-: m_bFocused(0)
+: m_bFocused(0), m_lasttime(3000)
 {
 	AppSettings& s = AfxGetAppSettings();
 	m_btnClose.m_btnMode = 1; //x
@@ -129,7 +129,7 @@ BOOL CSVPDialog::PreTranslateMessage(MSG* pMsg)
 	if(( pMsg->message == WM_KEYDOWN || (pMsg->message >= WM_MOUSEFIRST && pMsg->message <= WM_MYMOUSELAST))){
 
 		KillTimer(IDT_CLOSE);
-		SetTimer(IDT_CLOSE, 3000, NULL);
+		SetTimer(IDT_CLOSE, m_lasttime, NULL);
 	}
 	
 	return CWnd::PreTranslateMessage(pMsg);
@@ -169,7 +169,7 @@ void CSVPDialog::OnShowWindow(BOOL bShow, UINT nStatus)
 	KillTimer(IDT_CLOSE);
 	
 	if(bShow)
-		SetTimer(IDT_CLOSE, 3000, NULL);
+		SetTimer(IDT_CLOSE, m_lasttime, NULL);
 	// TODO: Add your message handler code here
 }
 
@@ -189,4 +189,9 @@ void CSVPDialog::OnKillFocus(CWnd* pNewWnd)
 	m_bFocused = FALSE;
 
 	
+}
+
+void CSVPDialog::SetLastTime(int lasttime)
+{
+  m_lasttime = lasttime;
 }

@@ -2252,14 +2252,6 @@
 				RelativePath="StatusLabel.h"
 				>
 			</File>
-			<File
-				RelativePath=".\UESettingPanel.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\UESettingPanel.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Libraries"

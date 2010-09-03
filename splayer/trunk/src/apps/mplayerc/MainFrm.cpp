@@ -49,7 +49,6 @@
 #include "FavoriteOrganizeDlg.h"
 #include "ConvertDlg.h"
 #include "ShaderCombineDlg.h"
-#include "UESettingPanel.h"
 
 #include "UserInterface/Dialogs/OptionDlg_Win.h"
 

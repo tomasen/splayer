@@ -2101,14 +2101,6 @@
 				>
 			</File>
 			<File
-				RelativePath="PlayerSubresyncBar.cpp"
-				>
-			</File>
-			<File
-				RelativePath="PlayerSubresyncBar.h"
-				>
-			</File>
-			<File
 				RelativePath=".\PPageBase.cpp"
 				>
 			</File>

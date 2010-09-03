@@ -325,8 +325,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_CAPTIONMENU, OnUpdateViewCaptionmenu)
 	ON_COMMAND_RANGE(ID_VIEW_SEEKER, ID_VIEW_STATUS, OnViewControlBar)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_VIEW_SEEKER, ID_VIEW_STATUS, OnUpdateViewControlBar)
-	ON_COMMAND(ID_VIEW_SUBRESYNC, OnViewSubresync)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_SUBRESYNC, OnUpdateViewSubresync)
 	ON_COMMAND(ID_VIEW_PLAYLIST, OnViewPlaylist)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PLAYLIST, OnUpdateViewPlaylist)
 	ON_COMMAND(ID_VIEW_CAPTURE, OnViewCapture)
@@ -819,12 +817,6 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	EnableDocking(CBRS_ALIGN_ANY);
 
 	m_dockingbars.RemoveAll();
-
-	m_wndSubresyncBar.Create(this, &m_csSubLock);
-	m_wndSubresyncBar.SetBarStyle(m_wndSubresyncBar.GetBarStyle() | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
-	m_wndSubresyncBar.EnableDocking(CBRS_ALIGN_ANY);
-//	m_wndSubresyncBar.SetHeight(200);
-	LoadControlBar(&m_wndSubresyncBar, AFX_IDW_DOCKBAR_TOP);
 
 	m_wndPlaylistBar.Create(this);
 	m_wndPlaylistBar.SetBarStyle(m_wndPlaylistBar.GetBarStyle() | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC | CBRS_BORDER_3D);
@@ -1882,7 +1874,6 @@ void CMainFrame::LoadControlBar(CControlBar* pBar, UINT defDockBarID)
 
 	pBar->ShowWindow(
 		pApp->GetProfileInt(section, _T("Visible"), FALSE) 
-		&& pBar != &m_wndSubresyncBar 
 		&& pBar != &m_wndCaptureBar
 		&& pBar != &m_wndShaderEditorBar
 		? SW_SHOW
@@ -2864,11 +2855,9 @@ void CMainFrame::OnTimer(UINT nIDEvent)
         double pRate;
         if (E_NOTIMPL == pMS->GetRate(&pRate))
           pRate = 0;
-        m_wndToolBar.SetStatusTimer(pos, stop, !!m_wndSubresyncBar.IsWindowVisible(), &tf, pRate);
+        m_wndToolBar.SetStatusTimer(pos, stop, 0, &tf, pRate);
         //m_wndToolBar.SetStatusTimer(str);
       }
-
-      m_wndSubresyncBar.SetTime(pos);
 
       if (m_pCAPR && GetMediaState() == State_Paused)
         m_pCAPR->Paint(true);
@@ -4538,7 +4527,6 @@ void CMainFrame::OnFilePostOpenmedia()
 
 	if(m_iPlaybackMode == PM_CAPTURE)
 	{
-		ShowControlBar(&m_wndSubresyncBar, FALSE, TRUE);
 		ShowControlBar(&m_wndPlaylistBar, FALSE, TRUE);
 		ShowControlBar(&m_wndCaptureBar, TRUE, TRUE);
 	}
@@ -4719,11 +4707,8 @@ void CMainFrame::OnFilePostClosemedia()
 
 	m_Lyric.Empty();
 
-	if(IsWindow(m_wndSubresyncBar.m_hWnd))
-	{
-		ShowControlBar(&m_wndSubresyncBar, FALSE, TRUE); 
-		SetSubtitle(NULL);
-	} 
+	SetSubtitle(NULL);
+ 
 //	AfxGetAppSettings().fEnableSubtitles2 = FALSE;
 	m_iSubtitleSel2 = -1;
 	
@@ -6793,36 +6778,6 @@ void CMainFrame::OnUpdateViewControlBar(CCmdUI* pCmdUI)
 	pCmdUI->SetCheck(!!(AfxGetAppSettings().nCS & (1<<nID)));
 }
 
-void CMainFrame::OnViewSubresync()
-{
-	if(!m_wndSubresyncBar.IsWindowVisible() && m_pCAP){
-		if(m_pSubStreams.GetCount() > 0 && m_iSubtitleSel >= 0 ) {
-			int i = m_iSubtitleSel;
-			CComPtr<ISubStream> pSubStream;
-			POSITION pos = m_pSubStreams.GetHeadPosition();
-			while(pos && i >= 0)
-			{
-				pSubStream = m_pSubStreams.GetNext(pos);
-
-				if(i < pSubStream->GetStreamCount())
-				{
-					break;
-				}
-
-				i -= pSubStream->GetStreamCount();
-			}
-			if (pSubStream)
-				m_wndSubresyncBar.SetSubtitle(pSubStream, m_pCAP->GetFPS());
-		}
-	}
-	ShowControlBar(&m_wndSubresyncBar, !m_wndSubresyncBar.IsWindowVisible(), TRUE);
-}
-
-void CMainFrame::OnUpdateViewSubresync(CCmdUI* pCmdUI)
-{
-	pCmdUI->SetCheck(m_wndSubresyncBar.IsWindowVisible());
-	pCmdUI->Enable(m_pCAP && m_iSubtitleSel >= 0);
-}
 
 void CMainFrame::OnViewPlaylist()
 {
@@ -7493,7 +7448,7 @@ void CMainFrame::OnPlayStop()
 			m_wndSeekBar.GetRange(start, stop);
 			GUID tf;
 			pMS->GetTimeFormat(&tf);
-			m_wndToolBar.SetStatusTimer(m_wndSeekBar.GetPosReal(), stop, !!m_wndSubresyncBar.IsWindowVisible(), &tf);
+			m_wndToolBar.SetStatusTimer(m_wndSeekBar.GetPosReal(), stop, 0, &tf);
 			
 			SetAlwaysOnTop(AfxGetAppSettings().iOnTop);
 		}
@@ -8468,6 +8423,7 @@ void CMainFrame::OnPlaySubtitles(UINT nID)
 
 					if(dlg.DoModal() == IDOK)
 					{
+            // TODO: this maybe removed since OptionDlg also do the same thing
 						if(secondSub){
 							UpdateSubtitle2(true);
 						}else{

@@ -545,7 +545,6 @@ protected:  // control bar embedded members
 	CSVPSubVoteControlBar	m_wndSubVoteControlBar;
 	CList<CControlBar*> m_bars;
 
-	CPlayerSubresyncBar m_wndSubresyncBar;
 	CPlayerPlaylistBar m_wndPlaylistBar;
 	CPlayerCaptureBar m_wndCaptureBar;
 	CPlayerShaderEditorBar m_wndShaderEditorBar;
@@ -728,8 +727,6 @@ public:
 	afx_msg void OnUpdateViewCaptionmenu(CCmdUI* pCmdUI);
 	afx_msg void OnViewControlBar(UINT nID);
 	afx_msg void OnUpdateViewControlBar(CCmdUI* pCmdUI);
-	afx_msg void OnViewSubresync();
-	afx_msg void OnUpdateViewSubresync(CCmdUI* pCmdUI);
 	afx_msg void OnViewPlaylist();
 	afx_msg void OnUpdateViewPlaylist(CCmdUI* pCmdUI);
 	afx_msg void OnViewCapture();

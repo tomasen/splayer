@@ -2109,35 +2109,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\PPageAccelTbl.cpp"
+				RelativePath=".\PPageBase.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\PPageAccelTbl.h"
-				>
-			</File>
-			<File
-				RelativePath="PPageAudioSwitcher.cpp"
-				>
-			</File>
-			<File
-				RelativePath="PPageAudioSwitcher.h"
-				>
-			</File>
-			<File
-				RelativePath="PPageBase.cpp"
-				>
-			</File>
-			<File
-				RelativePath="PPageBase.h"
-				>
-			</File>
-			<File
-				RelativePath="PPageDVD.cpp"
-				>
-			</File>
-			<File
-				RelativePath="PPageDVD.h"
+				RelativePath=".\PPageBase.h"
 				>
 			</File>
 			<File
@@ -2157,83 +2133,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\PPageInternalFilters.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageInternalFilters.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageLogo.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageLogo.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageOutput.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageOutput.h"
-				>
-			</File>
-			<File
-				RelativePath="PPagePlayback.cpp"
-				>
-			</File>
-			<File
-				RelativePath="PPagePlayback.h"
-				>
-			</File>
-			<File
-				RelativePath="PPagePlayer.cpp"
-				>
-			</File>
-			<File
-				RelativePath="PPagePlayer.h"
-				>
-			</File>
-			<File
 				RelativePath="PPageSheet.cpp"
 				>
 			</File>
 			<File
 				RelativePath="PPageSheet.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageSubDB.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageSubDB.h"
-				>
-			</File>
-			<File
-				RelativePath="PPageSubStyle.cpp"
-				>
-			</File>
-			<File
-				RelativePath="PPageSubStyle.h"
-				>
-			</File>
-			<File
-				RelativePath="PPageSubtitles.cpp"
-				>
-			</File>
-			<File
-				RelativePath="PPageSubtitles.h"
-				>
-			</File>
-			<File
-				RelativePath="PPageTweaks.cpp"
-				>
-			</File>
-			<File
-				RelativePath="PPageTweaks.h"
 				>
 			</File>
 			<File

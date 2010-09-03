@@ -8462,27 +8462,12 @@ void CMainFrame::OnPlaySubtitles(UINT nID)
 				{
 					CRenderedTextSubtitle* pRTS = (CRenderedTextSubtitle*)(ISubStream*)pSubStream;
 
-					CAutoPtrArray<CPPageSubStyle> pages;
 					CAtlArray<STSStyle*> styles;
-
-					POSITION pos = pRTS->m_styles.GetStartPosition();
-					for(int i = 0; pos; i++)
-					{
-						CString key;
-						STSStyle* val;
-						pRTS->m_styles.GetNextAssoc(pos, key, val);
-						CAutoPtr<CPPageSubStyle> page(new CPPageSubStyle(secondSub,pRTS->m_sCharSet ) );
-						page->InitStyle(key, *val);
-						pages.Add(page);
-						styles.Add(val);
-					}
 
           OptionDlg dlg(OPTIONDLG_SUBTITLE);
 
 					if(dlg.DoModal() == IDOK)
 					{
-						for(int j = 0; j < (int)pages.GetCount(); j++)
-							pages[j]->GetStyle(*styles[j]);
 						if(secondSub){
 							UpdateSubtitle2(true);
 						}else{
@@ -15310,7 +15295,7 @@ void CMainFrame::OnAdvOptions()
 	
 
 	
-		CPPageSheet options(ResStr(IDS_OPTIONS_CAPTION), pGB, this, NULL);
+		OptionDlg options(OPTIONDLG_ADVANCED);
 
 		if(options.DoModal() == IDOK)
 		{

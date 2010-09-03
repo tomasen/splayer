@@ -23,70 +23,21 @@
 
 using namespace TreePropSheet;
 
-#include "PPagePlayer.h"
+//#include "PPagePlayer.h"
 #include "PPageFormats.h"
-#include "PPageAccelTbl.h"
-#include "PPageLogo.h"
-#include "PPagePlayback.h"
-#include "PPageDVD.h"
-#include "PPageOutput.h"
+//#include "PPageAccelTbl.h"
+//#include "PPageLogo.h"
+//#include "PPagePlayback.h"
+//#include "PPageDVD.h"
+//#include "PPageOutput.h"
 //#include "PPageWebServer.h"
-#include "PPageInternalFilters.h"
-#include "PPageAudioSwitcher.h"
+//#include "PPageInternalFilters.h"
+//#include "PPageAudioSwitcher.h"
 #include "PPageExternalFilters.h"
-#include "PPageSubtitles.h"
-#include "PPageSubStyle.h"
-#include "PPageSubDB.h"
-#include "PPageTweaks.h"
+//#include "PPageSubtitles.h"
+//#include "PPageSubStyle.h"
+//#include "PPageSubDB.h"
+//#include "PPageTweaks.h"
 
 // CTreePropSheetTreeCtrl
 
-
-class CTreePropSheetTreeCtrl : public CTreeCtrl
-{
-	DECLARE_DYNAMIC(CTreePropSheetTreeCtrl)
-
-public:
-	CTreePropSheetTreeCtrl();
-	virtual ~CTreePropSheetTreeCtrl();
-
-protected:
-	DECLARE_MESSAGE_MAP()
-	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-};
-
-// CPPageSheet
-
-class CPPageSheet : public CTreePropSheet
-{
-	DECLARE_DYNAMIC(CPPageSheet)
-
-private:
-	CPPagePlayer m_player;
-	CPPageFormats m_formats;
-	CPPageAccelTbl m_acceltbl;
-	CPPageLogo m_logo;
-	CPPagePlayback m_playback;
-	CPPageDVD m_dvd;
-	CPPageOutput m_output;
-//	CPPageWebServer m_webserver;
-	CPPageSubtitles m_subtitles;
-	CPPageSubStyle m_substyle;
-	CPPageSubStyle m_substyle2;
-	//CPPageSubDB m_subdb;
-	CPPageInternalFilters m_internalfilters;
-	CPPageAudioSwitcher m_audioswitcher;
-	CPPageExternalFilters m_externalfilters;
-	CPPageTweaks m_tweaks;
-
-	CTreeCtrl* CreatePageTreeObject();
-
-public:
-	CPPageSheet(LPCTSTR pszCaption, IFilterGraph* pFG, CWnd* pParentWnd, UINT idPage = 0);
-	virtual ~CPPageSheet();
-
-protected:
-	DECLARE_MESSAGE_MAP()
-public:
-	virtual BOOL OnInitDialog();
-};

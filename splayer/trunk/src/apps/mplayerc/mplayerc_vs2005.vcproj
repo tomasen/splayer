@@ -2116,22 +2116,6 @@
 				RelativePath="PPageSheet.h"
 				>
 			</File>
-			<File
-				RelativePath="StaticLink.cpp"
-				>
-			</File>
-			<File
-				RelativePath="StaticLink.h"
-				>
-			</File>
-			<File
-				RelativePath="StatusLabel.cpp"
-				>
-			</File>
-			<File
-				RelativePath="StatusLabel.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Libraries"

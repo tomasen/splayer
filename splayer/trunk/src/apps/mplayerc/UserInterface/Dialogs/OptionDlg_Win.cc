@@ -5,8 +5,8 @@
 #include "OptionAdvancedPage_Win.h"
 #include "OptionAssociationPage_Win.h"
 
-OptionDlg::OptionDlg(void):
-  WTL::CPropertySheetImpl<OptionDlg>(IDS_OPTIONSTITLE)
+OptionDlg::OptionDlg(int pageindex /*=0*/):
+  WTL::CPropertySheetImpl<OptionDlg>(IDS_OPTIONSTITLE, pageindex)
 {
   m_basicpage       = new OptionBasicPage();
   m_subtitlepage    = new OptionSubtitlePage();

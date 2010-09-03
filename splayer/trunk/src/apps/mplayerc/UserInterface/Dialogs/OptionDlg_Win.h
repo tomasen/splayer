@@ -11,7 +11,7 @@ class OptionDlg:
   public WTL::CPropertySheetImpl<OptionDlg>
 {
 public:
-  OptionDlg(void);
+  OptionDlg(int pageindex = 0);
   ~OptionDlg(void);
 
 private:

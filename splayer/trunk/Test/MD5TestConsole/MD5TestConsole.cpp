@@ -16,7 +16,7 @@ int main()
   wprintf(L"\nTHE RESULT OF OVERLOAD-2\n");
   wprintf(cmd5.GetMD5(L"test1.txt").c_str());
   wprintf(L"\nTHE RESULT OF OVERLOAD-3\n");
-  _wfopen_s(&File, L"test1.txt", L"r");
+  _wfopen_s(&File, L"test1.txt", L"rb");
   wprintf(cmd5.GetMD5(File).c_str());
   wprintf(L"\nEND OF TEST\n\n");
   fclose(File);

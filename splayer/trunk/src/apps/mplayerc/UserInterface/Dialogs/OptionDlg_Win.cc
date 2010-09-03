@@ -28,3 +28,11 @@ OptionDlg::~OptionDlg(void)
   delete m_advancedpage;
   delete m_associationpage;
 }
+
+LRESULT OptionDlg::OnShowWindow(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+{
+  if (wParam == TRUE)
+    CenterWindow();
+  bHandled = FALSE;
+  return 0;
+}

@@ -18,6 +18,13 @@ public:
   OptionDlg(int pageindex = 0);
   ~OptionDlg(void);
 
+  BEGIN_MSG_MAP(OptionDlg)
+    MESSAGE_HANDLER(WM_SHOWWINDOW, OnShowWindow)
+    CHAIN_MSG_MAP(WTL::CPropertySheetImpl<OptionDlg>)
+  END_MSG_MAP()
+
+  LRESULT OnShowWindow(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
+
 private:
   OptionBasicPage*        m_basicpage;
   OptionSubtitlePage*     m_subtitlepage;

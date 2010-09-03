@@ -311,7 +311,7 @@ HRESULT WINAPI Mine_CoCreateInstance(IN REFCLSID rclsid, IN LPUNKNOWN pUnkOuter,
 
     //SVP_LogMsg5(_T("Mine_CoCreateInstance %s"), CStringFromGUID(rclsid) );
 
-		long ret = S_OK;
+		long ret = E_FAIL;
     CSVPToolBox svpTool;
     // TODO: more effective way to do this
     // maybe set a static array/map of GUID and dll files
@@ -374,7 +374,7 @@ HRESULT WINAPI Mine_CoCreateInstance(IN REFCLSID rclsid, IN LPUNKNOWN pUnkOuter,
       // have to do a real CoCreateInstance for this, or it will crash. not sure why
       // TODO: find out why
       //SVP_LogMsg5(_T("Mine_CoCreateInstance %x %x %s"),pUnkOuter, dwClsContext, CStringFromGUID(rclsid) , CStringFromGUID(riid));
-      ret = Real_CoCreateInstance(rclsid, pUnkOuter, dwClsContext, riid, ppv);
+      //ret = Real_CoCreateInstance(rclsid, pUnkOuter, dwClsContext, riid, ppv);
       //ret = LoadExternalObject(  svpTool.GetPlayerPath(L"csfcodec\\mpc_mdssockc.dll"), rclsid, riid, ppv);
       //SVP_LogMsg5(_T("Mine_CoCreateInstance ret %x"), ret );
     }
@@ -440,13 +440,11 @@ HRESULT WINAPI Mine_CoCreateInstance(IN REFCLSID rclsid, IN LPUNKNOWN pUnkOuter,
     {
       ret = LoadExternalObject(  svpTool.GetPlayerPath(L"wmadmod.dll"), rclsid, riid, ppv);
     }
-    else{
-			ret = Real_CoCreateInstance(rclsid, pUnkOuter, dwClsContext, riid, ppv);
-		}
 
-		
-		
-		
+    if (FAILED(ret))
+    {
+      ret = Real_CoCreateInstance(rclsid, pUnkOuter, dwClsContext, riid, ppv);
+    }
 
 		return ret;
 }

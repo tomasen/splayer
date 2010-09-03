@@ -388,7 +388,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\AuthDlg.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ChildView.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ChildView.h"
 				>
 			</File>
 			<File
@@ -396,7 +404,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ChkDefPlayerControlBar.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ConvertChapDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ConvertChapDlg.h"
 				>
 			</File>
 			<File
@@ -404,7 +420,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ConvertDlg.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ConvertPropsDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ConvertPropsDlg.h"
 				>
 			</File>
 			<File
@@ -412,7 +436,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ConvertResDlg.h"
+				>
+			</File>
+			<File
 				RelativePath=".\CustomDrawBtn.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\CustomDrawBtn.h"
 				>
 			</File>
 			<File
@@ -428,7 +460,15 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\DisplaySettingDetector.h"
+				>
+			</File>
+			<File
 				RelativePath=".\DlgChkUpdater.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DlgChkUpdater.h"
 				>
 			</File>
 			<File
@@ -436,7 +476,15 @@
 				>
 			</File>
 			<File
+				RelativePath="FavoriteAddDlg.h"
+				>
+			</File>
+			<File
 				RelativePath="FavoriteOrganizeDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath="FavoriteOrganizeDlg.h"
 				>
 			</File>
 			<File
@@ -444,7 +492,15 @@
 				>
 			</File>
 			<File
+				RelativePath="FileDropTarget.h"
+				>
+			</File>
+			<File
 				RelativePath="FloatEdit.cpp"
+				>
+			</File>
+			<File
+				RelativePath="FloatEdit.h"
 				>
 			</File>
 			<File
@@ -452,7 +508,15 @@
 				>
 			</File>
 			<File
+				RelativePath="GoToDlg.h"
+				>
+			</File>
+			<File
 				RelativePath=".\InfoReport.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\InfoReport.h"
 				>
 			</File>
 			<File
@@ -460,7 +524,15 @@
 				>
 			</File>
 			<File
+				RelativePath="KeyProvider.h"
+				>
+			</File>
+			<File
 				RelativePath=".\LineNumberEdit.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\LineNumberEdit.h"
 				>
 			</File>
 			<File
@@ -468,7 +540,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\MainFrm.h"
+				>
+			</File>
+			<File
 				RelativePath="MediaFormats.cpp"
+				>
+			</File>
+			<File
+				RelativePath="MediaFormats.h"
 				>
 			</File>
 			<File
@@ -476,7 +556,15 @@
 				>
 			</File>
 			<File
+				RelativePath="MediaTypesDlg.h"
+				>
+			</File>
+			<File
 				RelativePath=".\mplayerc.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\mplayerc.h"
 				>
 			</File>
 			<File
@@ -488,7 +576,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\NEWOSDWnd.h"
+				>
+			</File>
+			<File
 				RelativePath="OpenCapDeviceDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath="OpenCapDeviceDlg.h"
 				>
 			</File>
 			<File
@@ -496,7 +592,15 @@
 				>
 			</File>
 			<File
+				RelativePath="OpenDlg.h"
+				>
+			</File>
+			<File
 				RelativePath=".\OpenFileDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OpenFileDlg.h"
 				>
 			</File>
 			<File
@@ -504,7 +608,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\OpenURLDlg.h"
+				>
+			</File>
+			<File
 				RelativePath=".\PixelShaderCompiler.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PixelShaderCompiler.h"
 				>
 			</File>
 			<File
@@ -512,7 +624,15 @@
 				>
 			</File>
 			<File
+				RelativePath="PlayerCaptureBar.h"
+				>
+			</File>
+			<File
 				RelativePath="PlayerCaptureDialog.cpp"
+				>
+			</File>
+			<File
+				RelativePath="PlayerCaptureDialog.h"
 				>
 			</File>
 			<File
@@ -520,7 +640,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\PlayerChannelNormalizer.h"
+				>
+			</File>
+			<File
 				RelativePath=".\PlayerColorControlBar.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PlayerColorControlBar.h"
 				>
 			</File>
 			<File
@@ -528,7 +656,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\PlayerEQControlBar.h"
+				>
+			</File>
+			<File
 				RelativePath=".\PlayerFloatToolBar.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PlayerFloatToolBar.h"
 				>
 			</File>
 			<File
@@ -536,7 +672,15 @@
 				>
 			</File>
 			<File
+				RelativePath="PlayerListCtrl.h"
+				>
+			</File>
+			<File
 				RelativePath="PlayerPlaylistBar.cpp"
+				>
+			</File>
+			<File
+				RelativePath="PlayerPlaylistBar.h"
 				>
 			</File>
 			<File
@@ -544,7 +688,15 @@
 				>
 			</File>
 			<File
+				RelativePath="PlayerSeekBar.h"
+				>
+			</File>
+			<File
 				RelativePath=".\PlayerShaderEditorBar.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PlayerShaderEditorBar.h"
 				>
 			</File>
 			<File
@@ -552,7 +704,15 @@
 				>
 			</File>
 			<File
+				RelativePath="PlayerToolBar.h"
+				>
+			</File>
+			<File
 				RelativePath=".\PlayerToolTopBar.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PlayerToolTopBar.h"
 				>
 			</File>
 			<File
@@ -560,7 +720,55 @@
 				>
 			</File>
 			<File
+				RelativePath="Playlist.h"
+				>
+			</File>
+			<File
 				RelativePath="PnSPresetsDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath="PnSPresetsDlg.h"
+				>
+			</File>
+			<File
+				RelativePath="PPageFileInfoClip.cpp"
+				>
+			</File>
+			<File
+				RelativePath="PPageFileInfoClip.h"
+				>
+			</File>
+			<File
+				RelativePath="PPageFileInfoDetails.cpp"
+				>
+			</File>
+			<File
+				RelativePath="PPageFileInfoDetails.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PPageFileInfoRes.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PPageFileInfoRes.h"
+				>
+			</File>
+			<File
+				RelativePath="PPageFileInfoSheet.cpp"
+				>
+			</File>
+			<File
+				RelativePath="PPageFileInfoSheet.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PPageFileMediaInfo.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PPageFileMediaInfo.h"
 				>
 			</File>
 			<File
@@ -568,7 +776,23 @@
 				>
 			</File>
 			<File
+				RelativePath="RegFilterChooserDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Resource.h"
+				>
+			</File>
+			<File
+				RelativePath=".\revision.h"
+				>
+			</File>
+			<File
 				RelativePath="SaveDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath="SaveDlg.h"
 				>
 			</File>
 			<File
@@ -576,7 +800,15 @@
 				>
 			</File>
 			<File
+				RelativePath="SaveTextFileDialog.h"
+				>
+			</File>
+			<File
 				RelativePath=".\SaveThumbnailsDialog.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SaveThumbnailsDialog.h"
 				>
 			</File>
 			<File
@@ -584,7 +816,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SearchSubDlg.h"
+				>
+			</File>
+			<File
 				RelativePath=".\SeekBarTip.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SeekBarTip.h"
 				>
 			</File>
 			<File
@@ -592,7 +832,15 @@
 				>
 			</File>
 			<File
+				RelativePath="SelectMediaType.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ShaderAutoCompleteDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ShaderAutoCompleteDlg.h"
 				>
 			</File>
 			<File
@@ -600,7 +848,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ShaderCombineDlg.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ShaderEditorDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ShaderEditorDlg.h"
 				>
 			</File>
 			<File
@@ -640,7 +896,19 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\StdAfx.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Struct.h"
+				>
+			</File>
+			<File
 				RelativePath=".\SubtitleDlDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SubtitleDlDlg.h"
 				>
 			</File>
 			<File
@@ -656,6 +924,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\SUIButton.h"
+				>
+			</File>
+			<File
 				RelativePath=".\SUIVoteStar.cpp"
 				>
 				<FileConfiguration
@@ -668,11 +940,23 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\SUIVoteStar.h"
+				>
+			</File>
+			<File
 				RelativePath=".\SVPButton.cpp"
 				>
 			</File>
 			<File
+				RelativePath=".\SVPButton.h"
+				>
+			</File>
+			<File
 				RelativePath=".\SVPDialog.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SVPDialog.h"
 				>
 			</File>
 			<File
@@ -688,284 +972,11 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\SVPSliderCtrl.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\SVPStatic.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\SVPSubDownUpDialog.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\SVPSubUploadDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\SVPSubVoteControlBar.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\TransparentControlBar.cpp"
-				>
-			</File>
-			<File
-				RelativePath="VolumeCtrl.cpp"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl"
-			>
-			<File
-				RelativePath=".\AuthDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ChildView.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ChkDefPlayerControlBar.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ConvertChapDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ConvertDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ConvertPropsDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ConvertResDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\CustomDrawBtn.h"
-				>
-			</File>
-			<File
-				RelativePath=".\DisplaySettingDetector.h"
-				>
-			</File>
-			<File
-				RelativePath=".\DlgChkUpdater.h"
-				>
-			</File>
-			<File
-				RelativePath="FavoriteAddDlg.h"
-				>
-			</File>
-			<File
-				RelativePath="FavoriteOrganizeDlg.h"
-				>
-			</File>
-			<File
-				RelativePath="FileDropTarget.h"
-				>
-			</File>
-			<File
-				RelativePath="FloatEdit.h"
-				>
-			</File>
-			<File
-				RelativePath="GoToDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\InfoReport.h"
-				>
-			</File>
-			<File
-				RelativePath="KeyProvider.h"
-				>
-			</File>
-			<File
-				RelativePath=".\LineNumberEdit.h"
-				>
-			</File>
-			<File
-				RelativePath=".\MainFrm.h"
-				>
-			</File>
-			<File
-				RelativePath="MediaFormats.h"
-				>
-			</File>
-			<File
-				RelativePath="MediaTypesDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\mplayerc.h"
-				>
-			</File>
-			<File
-				RelativePath=".\NEWOSDWnd.h"
-				>
-			</File>
-			<File
-				RelativePath="OpenCapDeviceDlg.h"
-				>
-			</File>
-			<File
-				RelativePath="OpenDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OpenFileDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OpenURLDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PixelShaderCompiler.h"
-				>
-			</File>
-			<File
-				RelativePath="PlayerCaptureBar.h"
-				>
-			</File>
-			<File
-				RelativePath="PlayerCaptureDialog.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PlayerChannelNormalizer.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PlayerColorControlBar.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PlayerEQControlBar.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PlayerFloatToolBar.h"
-				>
-			</File>
-			<File
-				RelativePath="PlayerListCtrl.h"
-				>
-			</File>
-			<File
-				RelativePath="PlayerPlaylistBar.h"
-				>
-			</File>
-			<File
-				RelativePath="PlayerSeekBar.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PlayerShaderEditorBar.h"
-				>
-			</File>
-			<File
-				RelativePath="PlayerToolBar.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PlayerToolTopBar.h"
-				>
-			</File>
-			<File
-				RelativePath="Playlist.h"
-				>
-			</File>
-			<File
-				RelativePath="PnSPresetsDlg.h"
-				>
-			</File>
-			<File
-				RelativePath="RegFilterChooserDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Resource.h"
-				>
-			</File>
-			<File
-				RelativePath=".\revision.h"
-				>
-			</File>
-			<File
-				RelativePath="SaveDlg.h"
-				>
-			</File>
-			<File
-				RelativePath="SaveTextFileDialog.h"
-				>
-			</File>
-			<File
-				RelativePath=".\SaveThumbnailsDialog.h"
-				>
-			</File>
-			<File
-				RelativePath=".\SearchSubDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\SeekBarTip.h"
-				>
-			</File>
-			<File
-				RelativePath="SelectMediaType.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ShaderAutoCompleteDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ShaderCombineDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ShaderEditorDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\StdAfx.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Struct.h"
-				>
-			</File>
-			<File
-				RelativePath=".\SubtitleDlDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\SUIButton.h"
-				>
-			</File>
-			<File
-				RelativePath=".\SUIVoteStar.h"
-				>
-			</File>
-			<File
-				RelativePath=".\SVPButton.h"
-				>
-			</File>
-			<File
-				RelativePath=".\SVPDialog.h"
-				>
-			</File>
-			<File
 				RelativePath=".\SVPLycShowBox.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SVPSliderCtrl.cpp"
 				>
 			</File>
 			<File
@@ -973,7 +984,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SVPStatic.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\SVPStatic.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SVPSubDownUpDialog.cpp"
 				>
 			</File>
 			<File
@@ -981,7 +1000,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SVPSubUploadDlg.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\SVPSubUploadDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SVPSubVoteControlBar.cpp"
 				>
 			</File>
 			<File
@@ -989,13 +1016,26 @@
 				>
 			</File>
 			<File
+				RelativePath=".\TransparentControlBar.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\TransparentControlBar.h"
+				>
+			</File>
+			<File
+				RelativePath="VolumeCtrl.cpp"
 				>
 			</File>
 			<File
 				RelativePath="VolumeCtrl.h"
 				>
 			</File>
+		</Filter>
+		<Filter
+			Name="Header Files"
+			Filter="h;hpp;hxx;hm;inl"
+			>
 		</Filter>
 		<Filter
 			Name="Resource Files"
@@ -1210,11 +1250,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\ecio.icons\dvd.ico"
+				RelativePath=".\res\icon\DVD.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon\DVD.ico"
+				RelativePath=".\res\ecio.icons\dvd.ico"
 				>
 			</File>
 			<File
@@ -2139,46 +2179,6 @@
 			</File>
 			<File
 				RelativePath=".\PPageExternalFilters.h"
-				>
-			</File>
-			<File
-				RelativePath="PPageFileInfoClip.cpp"
-				>
-			</File>
-			<File
-				RelativePath="PPageFileInfoClip.h"
-				>
-			</File>
-			<File
-				RelativePath="PPageFileInfoDetails.cpp"
-				>
-			</File>
-			<File
-				RelativePath="PPageFileInfoDetails.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageFileInfoRes.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageFileInfoRes.h"
-				>
-			</File>
-			<File
-				RelativePath="PPageFileInfoSheet.cpp"
-				>
-			</File>
-			<File
-				RelativePath="PPageFileInfoSheet.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageFileMediaInfo.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageFileMediaInfo.h"
 				>
 			</File>
 			<File

@@ -2,6 +2,7 @@
 #include "mplayerc.h"
 #include "ChkDefPlayerControlBar.h"
 #include "MainFrm.h"
+#include "PPageFormats.h"
 #include "Controller/SPlayerDefs.h"
 #include "Controller/PlayerPreference.h"
 #include "UserInterface/Dialogs/OptionDlg_Win.h"

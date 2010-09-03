@@ -78,6 +78,8 @@
 #include "DX9AllocatorPresenter.h"
 #include "EVRAllocatorPresenter.h"
 
+#include "KeyProvider.h"
+
 #include "..\..\subtitles\SSF.h"
 #include "SVPSubDownUpDialog.h"
 #include "SVPSubUploadDlg.h"
@@ -95,7 +97,7 @@
 
 // begin,
 // the following headers are included because HotkeyController mechanism broke the original inclusion
-#include "PPageSheet.h"
+#include "PPageFormats.h"
 // end
 
 #include "Utils/ContentType.h"

@@ -4,7 +4,7 @@
 #include "SVPButton.h"
 #include "SVPStatic.h"
 #include "SVPDialog.h"
-#include "PPageFormats.h"
+//#include "PPageFormats.h"
 #include "../../svplib/SVPToolBox.h"
 
 class ChkDefPlayerControlBar :
@@ -30,7 +30,7 @@ private:
   CSVPButton m_cbmanual;
   bool       m_bnomorequestion;
   CSVPToolBox  svpTool;
-  CPPageFormats pfpage;
+
   std::vector<std::wstring> szaExt;
   std::vector<std::wstring> szaNotExt;
   void SetDefaultPlayer(int ilimitime = 0);

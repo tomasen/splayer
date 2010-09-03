@@ -41,7 +41,7 @@
 #include "Controller/PlayerPreference.h"
 #include "Controller/SPlayerDefs.h"
 #include "UserInterface/Dialogs/OptionDlg_Win.h"
-
+#include "PPageFormats.h"
 #include "..\..\..\Updater\cupdatenetlib.h"
 
 #include "DisplaySettingDetector.h"

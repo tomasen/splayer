@@ -384,14 +384,6 @@
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
 			<File
-				RelativePath=".\AuthDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\AuthDlg.h"
-				>
-			</File>
-			<File
 				RelativePath=".\ChildView.cpp"
 				>
 			</File>
@@ -493,14 +485,6 @@
 			</File>
 			<File
 				RelativePath="KeyProvider.h"
-				>
-			</File>
-			<File
-				RelativePath=".\LineNumberEdit.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\LineNumberEdit.h"
 				>
 			</File>
 			<File
@@ -660,14 +644,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\PlayerShaderEditorBar.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PlayerShaderEditorBar.h"
-				>
-			</File>
-			<File
 				RelativePath="PlayerToolBar.cpp"
 				>
 			</File>
@@ -689,14 +665,6 @@
 			</File>
 			<File
 				RelativePath="Playlist.h"
-				>
-			</File>
-			<File
-				RelativePath="PnSPresetsDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath="PnSPresetsDlg.h"
 				>
 			</File>
 			<File
@@ -748,38 +716,6 @@
 				>
 			</File>
 			<File
-				RelativePath="SelectMediaType.cpp"
-				>
-			</File>
-			<File
-				RelativePath="SelectMediaType.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ShaderAutoCompleteDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ShaderAutoCompleteDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ShaderCombineDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ShaderCombineDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ShaderEditorDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ShaderEditorDlg.h"
-				>
-			</File>
-			<File
 				RelativePath=".\StdAfx.cpp"
 				>
 				<FileConfiguration
@@ -824,22 +760,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\SUIButton.cpp"
-				>
-				<FileConfiguration
-					Name="Release Unicode|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\SUIButton.h"
-				>
-			</File>
-			<File
 				RelativePath=".\SUIVoteStar.cpp"
 				>
 				<FileConfiguration
@@ -856,22 +776,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\SVPButton.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\SVPButton.h"
-				>
-			</File>
-			<File
-				RelativePath=".\SVPDialog.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\SVPDialog.h"
-				>
-			</File>
-			<File
 				RelativePath=".\SVPLycShowBox.cpp"
 				>
 				<FileConfiguration
@@ -885,22 +789,6 @@
 			</File>
 			<File
 				RelativePath=".\SVPLycShowBox.h"
-				>
-			</File>
-			<File
-				RelativePath=".\SVPSliderCtrl.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\SVPSliderCtrl.h"
-				>
-			</File>
-			<File
-				RelativePath=".\SVPStatic.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\SVPStatic.h"
 				>
 			</File>
 			<File
@@ -947,6 +835,14 @@
 				Name="FileInfoProp"
 				>
 				<File
+					RelativePath=".\PPageBase.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PPageBase.h"
+					>
+				</File>
+				<File
 					RelativePath="PPageFileInfoClip.cpp"
 					>
 				</File>
@@ -984,6 +880,102 @@
 				</File>
 				<File
 					RelativePath=".\PPageFileMediaInfo.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="ExpertDebug"
+				>
+				<File
+					RelativePath=".\LineNumberEdit.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\LineNumberEdit.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PlayerShaderEditorBar.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PlayerShaderEditorBar.h"
+					>
+				</File>
+				<File
+					RelativePath=".\ShaderAutoCompleteDlg.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ShaderAutoCompleteDlg.h"
+					>
+				</File>
+				<File
+					RelativePath=".\ShaderCombineDlg.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ShaderCombineDlg.h"
+					>
+				</File>
+				<File
+					RelativePath=".\ShaderEditorDlg.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ShaderEditorDlg.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="SVPUI"
+				>
+				<File
+					RelativePath=".\SUIButton.cpp"
+					>
+					<FileConfiguration
+						Name="Release Unicode|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\SUIButton.h"
+					>
+				</File>
+				<File
+					RelativePath=".\SVPButton.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\SVPButton.h"
+					>
+				</File>
+				<File
+					RelativePath=".\SVPDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\SVPDialog.h"
+					>
+				</File>
+				<File
+					RelativePath=".\SVPSliderCtrl.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\SVPSliderCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath=".\SVPStatic.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\SVPStatic.h"
 					>
 				</File>
 			</Filter>
@@ -1577,174 +1569,6 @@
 				>
 			</File>
 			<Filter
-				Name="web"
-				>
-				<File
-					RelativePath=".\res\web\1pix.gif"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\404.html"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\bottomside.PNG"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\browser.html"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\controlback.png"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\controlbuttondecrate.png"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\controlbuttonincrate.png"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\controlbuttonpause.png"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\controlbuttonplay.png"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\controlbuttonskipback.png"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\controlbuttonskipforward.png"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\controlbuttonstep.png"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\controlbuttonstop.png"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\controls.html"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\controlvolumebar.png"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\controlvolumegrip.png"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\controlvolumeoff.png"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\controlvolumeon.png"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\default.css"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\headerback.png"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\headerclose.png"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\headericon.png"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\index.html"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\leftbottomside.png"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\leftside.png"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\logo.png"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\player.html"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\rightbottomside.png"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\rightside.png"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\seekbargrip.png"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\seekbarleft.png"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\seekbarmid.png"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\seekbarright.png"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\sliderback.gif"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\sliderbar.gif"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\slidergrip.gif"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\uesetbg.jpg"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\uesetbg_hover.jpg"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\UESettingPanel.html"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\vbg.gif"
-					>
-				</File>
-				<File
-					RelativePath=".\res\web\vbs.GIF"
-					>
-				</File>
-			</Filter>
-			<Filter
 				Name="shaders"
 				>
 				<File
@@ -2045,27 +1869,11 @@
 			Name="Deprecated"
 			>
 			<File
-				RelativePath="ComPropertyPage.cpp"
+				RelativePath="PnSPresetsDlg.cpp"
 				>
 			</File>
 			<File
-				RelativePath="ComPropertyPage.h"
-				>
-			</File>
-			<File
-				RelativePath="ComPropertySheet.cpp"
-				>
-			</File>
-			<File
-				RelativePath="ComPropertySheet.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageBase.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageBase.h"
+				RelativePath="PnSPresetsDlg.h"
 				>
 			</File>
 			<File
@@ -2074,14 +1882,6 @@
 			</File>
 			<File
 				RelativePath="PPageFormats.h"
-				>
-			</File>
-			<File
-				RelativePath="PPageSheet.cpp"
-				>
-			</File>
-			<File
-				RelativePath="PPageSheet.h"
 				>
 			</File>
 		</Filter>
@@ -2158,14 +1958,6 @@
 			>
 			<File
 				RelativePath=".\AllocatorCommon.h"
-				>
-			</File>
-			<File
-				RelativePath="BaseGraph.cpp"
-				>
-			</File>
-			<File
-				RelativePath="BaseGraph.h"
 				>
 			</File>
 			<File
@@ -2253,30 +2045,6 @@
 				>
 			</File>
 			<File
-				RelativePath="QuicktimeGraph.cpp"
-				>
-			</File>
-			<File
-				RelativePath="QuicktimeGraph.h"
-				>
-			</File>
-			<File
-				RelativePath="RealMediaGraph.cpp"
-				>
-			</File>
-			<File
-				RelativePath="RealMediaGraph.h"
-				>
-			</File>
-			<File
-				RelativePath="RealMediaWindowlessSite.cpp"
-				>
-			</File>
-			<File
-				RelativePath="RealMediaWindowlessSite.h"
-				>
-			</File>
-			<File
 				RelativePath="ShockwaveGraph.cpp"
 				>
 			</File>
@@ -2337,6 +2105,70 @@
 				</File>
 				<File
 					RelativePath=".\ConvertResDlg.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="FilterPropPage"
+				>
+				<File
+					RelativePath="ComPropertyPage.cpp"
+					>
+				</File>
+				<File
+					RelativePath="ComPropertyPage.h"
+					>
+				</File>
+				<File
+					RelativePath="ComPropertySheet.cpp"
+					>
+				</File>
+				<File
+					RelativePath="ComPropertySheet.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Deprecated"
+				>
+				<File
+					RelativePath=".\AuthDlg.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\AuthDlg.h"
+					>
+				</File>
+				<File
+					RelativePath="BaseGraph.cpp"
+					>
+				</File>
+				<File
+					RelativePath="BaseGraph.h"
+					>
+				</File>
+				<File
+					RelativePath="QuicktimeGraph.cpp"
+					>
+				</File>
+				<File
+					RelativePath="QuicktimeGraph.h"
+					>
+				</File>
+				<File
+					RelativePath="RealMediaGraph.cpp"
+					>
+				</File>
+				<File
+					RelativePath="RealMediaGraph.h"
+					>
+				</File>
+				<File
+					RelativePath="RealMediaWindowlessSite.cpp"
+					>
+				</File>
+				<File
+					RelativePath="RealMediaWindowlessSite.h"
 					>
 				</File>
 			</Filter>

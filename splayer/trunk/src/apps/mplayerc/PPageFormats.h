@@ -21,22 +21,15 @@
 
 #pragma once
 
-#include "PPageBase.h"
-#include "PlayerListCtrl.h"
-
 // CPPageFormats dialog
 
-class CPPageFormats : public CPPageBase
+class CPPageFormats
 {
-	DECLARE_DYNAMIC(CPPageFormats)
 
 private:
-	CImageList m_onoff;
-	BOOL m_bCheckDefaultPlayer;
-	int GetChecked(int iItem);
-	void SetChecked(int iItem, int fChecked);
 
-	
+	BOOL m_bCheckDefaultPlayer;
+
 	void SetListItemState(int nItem);
 	static CString GetEnqueueCommand();
 	static CString GetOpenCommand(bool open_in_new_windows = false);
@@ -57,7 +50,6 @@ public:
 	static bool RegisterExt(CString ext, bool fRegister, CString PerceivedType);
 	
 	enum {COL_CATEGORY, COL_ENGINE};
-	CPlayerListCtrl m_list;
 	CString m_exts;
 	CStatic m_autoplay;
 	CButton m_apvideo;
@@ -69,29 +61,4 @@ public:
 	BOOL m_bInsufficientPrivileges;
 	
 
-// Dialog Data
-	enum { IDD = IDD_PPAGEFORMATS };
-
-protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	virtual BOOL OnInitDialog();
-	virtual BOOL OnApply();
-
-	DECLARE_MESSAGE_MAP()
-
-public:
-	BOOL bChanged;
-	void SetModified();
-	afx_msg void OnNMClickList1(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
-	afx_msg void OnBeginlabeleditList(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnDolabeleditList(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnEndlabeleditList(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnBnClickedButton1();
-	afx_msg void OnBnClickedButton14();
-	afx_msg void OnBnClickedButton13();
-	afx_msg void OnBnClickedButton12();
-	afx_msg void OnBnClickedButton11();
-	afx_msg void OnUpdateButtonDefault(CCmdUI* pCmdUI);
-	afx_msg void OnUpdateButtonSet(CCmdUI* pCmdUI);
 };

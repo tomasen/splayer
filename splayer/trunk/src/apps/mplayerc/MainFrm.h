@@ -41,8 +41,6 @@
 #include "SVPSubVoteControlBar.h"
 #include "FileDropTarget.h"
 
-#include "KeyProvider.h"
-
 #include "..\..\subpic\ISubPic.h"
 
 #include "IGraphBuilder2.h"

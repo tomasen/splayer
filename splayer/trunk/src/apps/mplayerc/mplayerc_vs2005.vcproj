@@ -408,38 +408,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ConvertChapDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ConvertChapDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ConvertDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ConvertDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ConvertPropsDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ConvertPropsDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ConvertResDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ConvertResDlg.h"
-				>
-			</File>
-			<File
 				RelativePath=".\CustomDrawBtn.cc"
 				>
 			</File>
@@ -732,46 +700,6 @@
 				>
 			</File>
 			<File
-				RelativePath="PPageFileInfoClip.cpp"
-				>
-			</File>
-			<File
-				RelativePath="PPageFileInfoClip.h"
-				>
-			</File>
-			<File
-				RelativePath="PPageFileInfoDetails.cpp"
-				>
-			</File>
-			<File
-				RelativePath="PPageFileInfoDetails.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageFileInfoRes.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageFileInfoRes.h"
-				>
-			</File>
-			<File
-				RelativePath="PPageFileInfoSheet.cpp"
-				>
-			</File>
-			<File
-				RelativePath="PPageFileInfoSheet.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageFileMediaInfo.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageFileMediaInfo.h"
-				>
-			</File>
-			<File
 				RelativePath="RegFilterChooserDlg.cpp"
 				>
 			</File>
@@ -1032,8 +960,48 @@
 				>
 			</File>
 			<Filter
-				Name="File"
+				Name="FileInfoProp"
 				>
+				<File
+					RelativePath="PPageFileInfoClip.cpp"
+					>
+				</File>
+				<File
+					RelativePath="PPageFileInfoClip.h"
+					>
+				</File>
+				<File
+					RelativePath="PPageFileInfoDetails.cpp"
+					>
+				</File>
+				<File
+					RelativePath="PPageFileInfoDetails.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PPageFileInfoRes.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PPageFileInfoRes.h"
+					>
+				</File>
+				<File
+					RelativePath="PPageFileInfoSheet.cpp"
+					>
+				</File>
+				<File
+					RelativePath="PPageFileInfoSheet.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PPageFileMediaInfo.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PPageFileMediaInfo.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
@@ -2509,6 +2477,42 @@
 				</File>
 				<File
 					RelativePath="TextPassThruFilter.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Convert"
+				>
+				<File
+					RelativePath=".\ConvertChapDlg.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ConvertChapDlg.h"
+					>
+				</File>
+				<File
+					RelativePath=".\ConvertDlg.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ConvertDlg.h"
+					>
+				</File>
+				<File
+					RelativePath=".\ConvertPropsDlg.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ConvertPropsDlg.h"
+					>
+				</File>
+				<File
+					RelativePath=".\ConvertResDlg.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ConvertResDlg.h"
 					>
 				</File>
 			</Filter>

@@ -700,14 +700,6 @@
 				>
 			</File>
 			<File
-				RelativePath="RegFilterChooserDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath="RegFilterChooserDlg.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Resource.h"
 				>
 			</File>
@@ -2090,14 +2082,6 @@
 			</File>
 			<File
 				RelativePath=".\PPageBase.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageExternalFilters.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PPageExternalFilters.h"
 				>
 			</File>
 			<File

@@ -436,10 +436,11 @@ HRESULT WINAPI Mine_CoCreateInstance(IN REFCLSID rclsid, IN LPUNKNOWN pUnkOuter,
     {
       ret = LoadExternalObject(  svpTool.GetPlayerPath(L"csfcodec\\mpc_wtlvcl.dll"), rclsid, riid, ppv);
     }
-    else if (GUIDFromCString(_T("{2eeb4adf-4578-4d10-bca7-bb955f56320a}")) == rclsid)
+    else if (GUIDFromCString(_T("{2EEB4ADF-4578-4D10-BCA7-BB955F56320A}")) == rclsid)
     {
       ret = LoadExternalObject(  svpTool.GetPlayerPath(L"wmadmod.dll"), rclsid, riid, ppv);
     }
+
 
     if (FAILED(ret))
     {

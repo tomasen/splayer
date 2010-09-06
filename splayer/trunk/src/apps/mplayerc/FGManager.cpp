@@ -1819,12 +1819,12 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	m_transform.AddTail(pFGF);
 
 	
-	/*
-pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_ABOVE_DSHOW);
-	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_WMA1);
-	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_WMA2);
-	m_transform.AddTail(pFGF);
-*/
+	
+  pFGF = new CFGFilterInternal<CMpaDecFilter>( L"MPC WMA Audio Decoder", MERIT64_UNLIKELY);
+  pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_WMA1);
+  pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_WMA2);
+  m_transform.AddTail(pFGF);
+
 
 		
 	pFGF = new CFGFilterInternal<CMpaDecFilter>( L"PCM RAW Audio Decoder", MERIT64_ABOVE_DSHOW);

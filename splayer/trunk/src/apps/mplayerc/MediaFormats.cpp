@@ -247,7 +247,7 @@ void CMediaFormats::UpdateData(bool fSave)
 		ADDFMT((_T("IVM file"), _T("ivm"), _T("video"), IDI_VIDEO, false));
 		ADDFMT((_T("Image file"), _T("jpeg jpg bmp gif pic dib tiff tif"), _T("image") ,0, -2)); //png not supported
 		ADDFMT((_T("Playlist file"), _T("asx m3u pls wvx wax wmx mpcpl cue mpls bdmv"), _T("Application"), IDI_PLAYLIST));
-		ADDFMT((_T("Rar Playlist file"), _T("Application"), _T("rar"), 0, -1));
+		ADDFMT((_T("Rar Playlist file"), _T("rar"), _T("Application"), 0, -1));
 		ADDFMT((_T("Subtitle file"), _T("srt idx sub ssa ass xss usf"), _T("text"), IDI_SUBTITLE_FILE ));
 		ADDFMT((_T("Other"), _T("divx vp6 amv"), _T("video"), IDI_VIDEO));
 #undef ADDFMT

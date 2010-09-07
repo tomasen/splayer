@@ -1313,15 +1313,12 @@ HRESULT CMpaDecFilter::ProcessPCM16(bool bigendian){
 	SHORT* p = (SHORT*)m_buff.GetData();
 
 	WAVEFORMATEXPS2* wfe = (WAVEFORMATEXPS2*)m_pInput->CurrentMediaType().Format();
+	WAVEFORMATEXPS2* wfo = (WAVEFORMATEXPS2*)m_pOutput->CurrentMediaType().Format();
 	//wfe->nAvgBytesPerSec = wfe->wBitsPerSample * wfe->nSamplesPerSec / 8;
-    int doubleit = 1;
-    if(wfe->wBitsPerSample == 8){
-        doubleit = 2;
-    }
-	CAtlArray<float> pBuff;
-    pBuff.SetCount(inSamples*doubleit);
+  int doubleit = max(1 , wfo->wBitsPerSample / wfe->wBitsPerSample);
     
-		
+  CAtlArray<float> pBuff;
+  pBuff.SetCount(inSamples*doubleit);
 	float* f = pBuff.GetData();
 	
 	if(bigendian){
@@ -1332,8 +1329,8 @@ HRESULT CMpaDecFilter::ProcessPCM16(bool bigendian){
             if(doubleit == 1){
                 f[i] = t;
             }else{
-                f[((int)(i/2)) * 4 +(i%2)] = t;
-                f[((int)(i/2)) * 4 + 2 +(i%2)] = t;
+                f[i*2] = t;
+                f[i*2+1] = t;
             }
 			//SVP_LogMsg3("%f %d", f[i] , p[i]);
 		}
@@ -1344,8 +1341,8 @@ HRESULT CMpaDecFilter::ProcessPCM16(bool bigendian){
             if(doubleit == 1){
                 f[i] = t;
             }else{
-                f[((int)(i/2)) * 4 +(i%2)] = t;
-                f[((int)(i/2)) * 4 + 2 +(i%2)] = t;
+                f[i*2] = t;
+                f[i*2+1] = t;
             }
 
 		}

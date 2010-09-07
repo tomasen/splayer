@@ -76,6 +76,7 @@ AP4_AtomSampleTable::AP4_AtomSampleTable(AP4_ContainerAtom* stbl,
 			{
 				AP4_UI32 SamplesPerPacket = ase->GetSamplesPerPacket();
 				AP4_UI32 BytesPerFrame = ase->GetBytesPerFrame();
+				AP4_UI32 BitsPerSample = ase->GetSampleSize();
 
 				if(SamplesPerPacket > 0 && BytesPerFrame > 0)
 				{
@@ -95,6 +96,9 @@ AP4_AtomSampleTable::AP4_AtomSampleTable(AP4_ContainerAtom* stbl,
 					m_SttsAtom->m_Entries[0].m_SampleCount = m_StszAtom->m_SampleCount;
 					m_SttsAtom->m_Entries[0].m_SampleDuration = SamplesPerPacket;
 				}
+				else if(BitsPerSample > 8)
+					m_StszAtom->m_SampleSize = BitsPerSample / 8;
+				
 			}
 		}
 	}

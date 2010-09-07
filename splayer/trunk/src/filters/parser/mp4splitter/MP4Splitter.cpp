@@ -1040,7 +1040,7 @@ bool CMP4SplitterFilter::DemuxLoop()
 		if(!pPairNext) break;
 
 		AP4_Track* track = movie->GetTrack(pPairNext->m_key);
-
+		
 		CBaseSplitterOutputPin* pPin = GetOutputPin((DWORD)track->GetId());
 
 		AP4_Sample sample;
@@ -1073,7 +1073,7 @@ bool CMP4SplitterFilter::DemuxLoop()
 
 			//
 
-			if(track->GetType() == AP4_Track::TYPE_AUDIO && data.GetDataSize() == 1)
+			if(track->GetType() == AP4_Track::TYPE_AUDIO && data.GetDataSize() > 0 && data.GetDataSize() <= 4)
 			{
 				WAVEFORMATEX* wfe = (WAVEFORMATEX*)mt.Format();
 

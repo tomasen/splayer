@@ -97,6 +97,7 @@ class AP4_Track {
     AP4_TrakAtom* GetTrakAtom() { return m_TrakAtom; }
     AP4_Result    SetMovieTimeScale(AP4_UI32 time_scale);
     AP4_UI32      GetMediaTimeScale();
+    AP4_UI32      GetMovieTimeScale();
 
 	AP4_String    GetTrackName();
 	AP4_String    GetTrackLanguage();

@@ -211,7 +211,7 @@ AP4_Duration
 AP4_Track::GetDurationMs()
 {
     AP4_UI64 duration = m_TrakAtom->GetDuration();
-    return AP4_DurationMsFromUnits(duration, m_MovieTimeScale);
+		return AP4_DurationMsFromUnits(duration, m_MediaTimeScale);
 }
 
 /*----------------------------------------------------------------------
@@ -301,6 +301,16 @@ AP4_UI32
 AP4_Track::GetMediaTimeScale()
 {
     return m_MediaTimeScale;
+}
+
+
+/*----------------------------------------------------------------------
+|       AP4_Track::GetMovieTimeScale
++---------------------------------------------------------------------*/
+AP4_UI32
+AP4_Track::GetMovieTimeScale()
+{
+    return m_MovieTimeScale;
 }
 
 // save the implementation for later

@@ -155,7 +155,7 @@ unsigned long
 AP4_DurationMsFromUnits(AP4_UI64 units, unsigned long units_per_second)
 {
 	if (units_per_second == 0) return 0;
-	return (unsigned long)(((float)units*1000.0f)/(float)units_per_second);
+	return ((units*1000i64)/units_per_second);
 }
 
 /*----------------------------------------------------------------------

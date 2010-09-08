@@ -1192,21 +1192,27 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 	}
 	
 	int iDistance = sqrt( pow( (double)abs(point.x - m_pLastClickPoint.x) , 2)  + pow( (double)abs( point.y - m_pLastClickPoint.y ) , 2) );
+  int idisplacement = sqrt(pow((double)abs(point.x - m_pDragFuncStartPoint.x), 2) + pow((double)abs( point.y - m_pDragFuncStartPoint.y ) , 2));
 	if( ( iDistance > 30 || s_mDragFucOn) && bMouseMoved && s_mDragFuc){
 		if(!s_mDragFucOn){
 			m_pDragFuncStartPoint = point;
 			SetAlwaysOnTop(s.iOnTop , FALSE);
 			s_mDragFucOn = true;
 		}
-		if(s_mDragFuc == 1){ //移动画面
+		if (s_mDragFuc == 1)
+    { //移动画面
 			m_PosX += (double)(point.x - m_pDragFuncStartPoint.x) / CVideoRect.Width() ;
 			m_PosY += (double)(point.y - m_pDragFuncStartPoint.y)/ CVideoRect.Height() ;
 			MoveVideoWindow(true);
-		}else if(s_mDragFuc == 2){//缩放画面
+		}
+    else if (s_mDragFuc == 2 && idisplacement < 20)
+    {//缩放画面
 			m_ZoomX += (double)(point.x - m_pDragFuncStartPoint.x) / CVideoRect.Width() ;
 			m_ZoomY += (double)(m_pDragFuncStartPoint.y - point.y ) / CVideoRect.Height() ;
 			MoveVideoWindow(true);
-		}else if(s_mDragFuc == 3){
+		}
+    else if (s_mDragFuc == 3)
+    {
 			//SVP_LogMsg5(L"WM_NCLBUTTONDOWN Move");
 			PostMessage(WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM(point.x, point.y));
 		}
@@ -3543,6 +3549,7 @@ void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 		}
 		else if( s.useSmartDrag )
 		{
+        /*
 				if(xPercent > 40  && xPercent < 60 && yPercent > 40  && yPercent < 60 ){ //画面中心
 					//移动画面
 					s_mDragFuc = 1;
@@ -3550,8 +3557,10 @@ void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 					//缩放画面
 					s_mDragFuc = 2;
 				}
-			
-			
+			  */
+      if(xPercent > 75 && yPercent < 25)
+        s_mDragFuc = 2;
+
 			//if(OnButton(HotkeyCmd::LDOWN, nFlags, point))
 			//SetTimer(TIMER_MOUSELWOWN, 300, NULL);
 			//return;
@@ -9911,8 +9920,8 @@ void CMainFrame::MoveVideoWindow(bool fShowStats)
 
 		if(fShowStats && vr.Height() > 0)
 		{
-			CString info;
-			info.Format(_T("Pos %.2f %.2f, Zoom %.2f %.2f, AR %.2f"), m_PosX, m_PosY, m_ZoomX, m_ZoomY, (float)vr.Width()/vr.Height());
+			CString info(L"正在使用智能拖拽功能。可在画面右上角进行拖拽");
+			// info.Format(_T("Pos %.2f %.2f, Zoom %.2f %.2f, AR %.2f"), m_PosX, m_PosY, m_ZoomX, m_ZoomY, (float)vr.Width()/vr.Height());
 			SendStatusMessage(info, 3000);
 		}
 	}

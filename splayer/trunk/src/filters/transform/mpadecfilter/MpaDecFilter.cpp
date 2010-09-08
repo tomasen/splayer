@@ -461,12 +461,14 @@ HRESULT CMpaDecFilter::Receive(IMediaSample* pIn)
 
 	const GUID& subtype = m_pInput->CurrentMediaType().subtype;
 	BOOL bNoJitterControl = false;
-	if(subtype == MEDIASUBTYPE_AMR || subtype == MEDIASUBTYPE_SAMR || subtype == MEDIASUBTYPE_SAWB || subtype == MEDIASUBTYPE_PCM_ULAW
-         || subtype == MEDIASUBTYPE_QDM2 ||  MEDIASUBTYPE_F1AC_FLAC ==  subtype ){//  ||  subtype == MEDIASUBTYPE_COOK  || subtype == MEDIASUBTYPE_WMA1   || subtype == MEDIASUBTYPE_WMA2 || subtype == MEDIASUBTYPE_PCM_SOWT || subtype == MEDIASUBTYPE_PCM_TWOS
-		bNoJitterControl = true;
-        //TODO: we still need jitter control, but how we do it is a bit of ticky  -- by tomasen
-	}
-
+  if (subtype == MEDIASUBTYPE_AMR || subtype == MEDIASUBTYPE_SAMR || subtype == MEDIASUBTYPE_SAWB || subtype == MEDIASUBTYPE_PCM_ULAW
+      || subtype == MEDIASUBTYPE_QDM2 ||  MEDIASUBTYPE_F1AC_FLAC ==  subtype 
+      ){
+      //   || subtype == MEDIASUBTYPE_PCM_SOWT || subtype == MEDIASUBTYPE_PCM_TWOS ||  subtype == MEDIASUBTYPE_COOK  || subtype == MEDIASUBTYPE_WMA1   || subtype == MEDIASUBTYPE_WMA2 
+      bNoJitterControl = true;
+    //TODO: we still need jitter control, but not if splitter passed a wrong rtStart  -- by tomasen
+  }
+  
 	if(SUCCEEDED(hr) && _abs64((m_rtStart - rtStart)) > 1000000i64  && !bNoJitterControl) // +-100ms jitter is allowed for now
 	{
 		m_buff.RemoveAll();
@@ -1308,58 +1310,47 @@ HRESULT CMpaDecFilter::ProcessAAC()
 }
 
 HRESULT CMpaDecFilter::ProcessPCM16(bool bigendian){
-	size_t inSamples = m_buff.GetCount()/2;
-	if(inSamples < 480){return S_OK;}
-	SHORT* p = (SHORT*)m_buff.GetData();
+  size_t inSamples = m_buff.GetCount()/2;
+  if(inSamples < 480){return S_OK;}
+  SHORT* p = (SHORT*)m_buff.GetData();
 
-	WAVEFORMATEXPS2* wfe = (WAVEFORMATEXPS2*)m_pInput->CurrentMediaType().Format();
-	WAVEFORMATEXPS2* wfo = (WAVEFORMATEXPS2*)m_pOutput->CurrentMediaType().Format();
-	//wfe->nAvgBytesPerSec = wfe->wBitsPerSample * wfe->nSamplesPerSec / 8;
-  int doubleit = max(1 , wfo->wBitsPerSample / wfe->wBitsPerSample);
-    
+  WAVEFORMATEXPS2* wfe = (WAVEFORMATEXPS2*)m_pInput->CurrentMediaType().Format();
+  int doubleit = (wfe->wBitsPerSample == 8)?2:1;
   CAtlArray<float> pBuff;
   pBuff.SetCount(inSamples*doubleit);
-	float* f = pBuff.GetData();
-	
-	if(bigendian){
+  float* f = pBuff.GetData();
 
-		for(int i = 0; i < inSamples; i++){
-			
-			float t = ((float)((SHORT) (((p[i] & 0xff) << 8 )| ( (p[i] & 0xff00) >> 8)))) / SHORT_MAX;
-            if(doubleit == 1){
-                f[i] = t;
-            }else{
-                f[i*2] = t;
-                f[i*2+1] = t;
-            }
-			//SVP_LogMsg3("%f %d", f[i] , p[i]);
-		}
-	}else{
-		for(int i = 0; i < inSamples; i++){
-			float t = ((float)(p[i])) / SHORT_MAX;
-			//SVP_LogMsg3("%f %d", f[i] , p[i]);
-            if(doubleit == 1){
-                f[i] = t;
-            }else{
-                f[i*2] = t;
-                f[i*2+1] = t;
-            }
+  if(bigendian)
+    for(int i = 0; i < inSamples; i++)
+      p[i] = (SHORT) (((p[i] & 0xff) << 8 )| ( (p[i] & 0xff00) >> 8));
 
-		}
+  if (doubleit == 2)
+  {
+    char* c = (char*)p;
+    for(int i = 0; i < inSamples*doubleit; i++){
+      float t = ((float)(c[i])) / INT8_MAX;
+      f[i] = t;
+    }
+  }
+  else 
+  {
+    for(int i = 0; i < inSamples; i++){
+      float t = ((float)(p[i])) / SHORT_MAX;
+      //SVP_LogMsg3("%f %d", f[i] , p[i]);
+      f[i] = t;
+    }
+  }
 
-	}
+  HRESULT hr;
+  if(S_OK != (hr = Deliver(pBuff, wfe->nSamplesPerSec, wfe->nChannels))){
+    //SVP_LogMsg3("PCM Error %d", wfe->nSamplesPerSec);
+    return hr;
+  }
 
-	
-	HRESULT hr;
-	if(S_OK != (hr = Deliver(pBuff, wfe->nSamplesPerSec, wfe->nChannels))){
-		//SVP_LogMsg3("PCM Error %d", wfe->nSamplesPerSec);
-		return hr;
-	}
+  //SVP_LogMsg3("PCM Done %d",  inSamples);
+  m_buff.RemoveAll();
 
-	//SVP_LogMsg3("PCM Done %d",  inSamples);
-	m_buff.RemoveAll();
-
-	return S_OK;
+  return S_OK;
 }
 HRESULT CMpaDecFilter::ProcessPCMU8(){
 	size_t inSamples = m_buff.GetCount();

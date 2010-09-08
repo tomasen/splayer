@@ -1073,7 +1073,7 @@ bool CMP4SplitterFilter::DemuxLoop()
 
 			//
 
-			if(track->GetType() == AP4_Track::TYPE_AUDIO && data.GetDataSize() > 0 && data.GetDataSize() <= 4)
+			if(track->GetType() == AP4_Track::TYPE_AUDIO && data.GetDataSize() <= 4)
 			{
 				WAVEFORMATEX* wfe = (WAVEFORMATEX*)mt.Format();
 
@@ -1082,27 +1082,37 @@ bool CMP4SplitterFilter::DemuxLoop()
 				if(wfe->nBlockAlign > 1)
 				{
 					nBlockAlign = wfe->nBlockAlign;
-					pPairNext->m_value.index -= pPairNext->m_value.index % wfe->nBlockAlign;
+					//pPairNext->m_value.index -= pPairNext->m_value.index % wfe->nBlockAlign;
 				}
 
 				p->rtStop = p->rtStart;
-                //SVP_LogMsg6("track->GetSampleCount() %d %d ", track->GetSampleCount(),pPairNext->m_value.index);
 				int fFirst = true;
+        int if_readsample_isnt_working = true;
+        //
 
 				while(AP4_SUCCEEDED(track->ReadSample(pPairNext->m_value.index, sample, data)))
 				{
+         
 					AP4_Size size = data.GetDataSize();
 					const AP4_Byte* ptr = data.GetData();
-					for(int i = 0; i < size; i++) p->Add(ptr[i]);
+          
+          if (fFirst) 
+          {
+            p->SetData(ptr, size);
+            p->rtStart = p->rtStop = (REFERENCE_TIME)(10000000.0 / track->GetMediaTimeScale() * sample.GetCts()); fFirst = false;
+          }
+          else
+            for(int i = 0; i < size; i++) p->Add(ptr[i]);
+          
 
-					if(fFirst) {p->rtStart = p->rtStop = (REFERENCE_TIME)(10000000.0 / track->GetMediaTimeScale() * sample.GetCts()); fFirst = false;}
 					p->rtStop += (REFERENCE_TIME)(10000000.0 / track->GetMediaTimeScale() * sample.GetDuration());
 
-					if(pPairNext->m_value.index+1 >= track->GetSampleCount() || p->GetCount() >= nBlockAlign)
+          //SVP_LogMsg5(L"track->GetSampleCount() %d %d | %d %d ", track->GetSampleCount(),pPairNext->m_value.index, p->GetCount() , nBlockAlign);
+          if((pPairNext->m_value.index+1) >= track->GetSampleCount() || p->GetCount() >= nBlockAlign)
 						break;
-
-					pPairNext->m_value.index++;
+          pPairNext->m_value.index++;
 				}
+        //SVP_LogMsg5(L"p3");
 			}
 			else if(track->GetType() == AP4_Track::TYPE_TEXT)
 			{

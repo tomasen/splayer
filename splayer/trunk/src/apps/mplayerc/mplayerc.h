@@ -630,7 +630,7 @@ public:
 		BOOL bDVXACompat;
 
 		CString logofn;
-		UINT logoid;
+
 //		UINT logostretch;
 		bool logoext;
 

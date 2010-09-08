@@ -207,47 +207,44 @@ void CChildView::LoadLogo()
 		LoadLogoFromFile(s.logofn);		
 	}
 
-	//Try Skin BG Logo
-	if(m_logo.IsNull() && IDF_LOGO7 == s.logoid){
-		
-		CSVPToolBox svpTool;
-		CPath skinsBGPath( svpTool.GetPlayerPath(_T("skins")));
-		skinsBGPath.AddBackslash();
-		skinsBGPath.Append(_T("background"));
-		CString realSkinsBGPath;
-		if(svpTool.ifFileExist(skinsBGPath + _T(".jpg"))){
-			 realSkinsBGPath = skinsBGPath + _T(".jpg");
-		}else if(svpTool.ifFileExist(skinsBGPath + _T(".png"))){
-			realSkinsBGPath = skinsBGPath + _T(".png");
-		}
+  //Try Skin BG Logo
+  if (m_logo.IsNull())
+  {
+    CSVPToolBox svpTool;
+    CPath skinsBGPath( svpTool.GetPlayerPath(_T("skins")));
+    skinsBGPath.AddBackslash();
+    skinsBGPath.Append(_T("background"));
+    CString realSkinsBGPath;
+    if(svpTool.ifFileExist(skinsBGPath + _T(".jpg"))){
+      realSkinsBGPath = skinsBGPath + _T(".jpg");
+    }else if(svpTool.ifFileExist(skinsBGPath + _T(".png"))){
+      realSkinsBGPath = skinsBGPath + _T(".png");
+    }
 
-		if(!realSkinsBGPath.IsEmpty()){
-			LoadLogoFromFile(realSkinsBGPath);
+    if(!realSkinsBGPath.IsEmpty()){
+      LoadLogoFromFile(realSkinsBGPath);
 
-			if(!m_logo.IsNull())
-				isUsingSkinBG = TRUE;
-		}
+      if(!m_logo.IsNull())
+        isUsingSkinBG = TRUE;
+    }
+  }
 
-	}
+  if (m_logo.IsNull())
+  {
+    //Try OEM Logo
+    CString OEMBGPath;
+    CSVPToolBox svpTool;
+    OEMBGPath = svpTool.GetPlayerPath(_T("skins\\oembg.png"));
+    if(svpTool.ifFileExist(OEMBGPath)){
+      LoadLogoFromFile(OEMBGPath);
+    }
+  }
 	
-	if(m_logo.IsNull() && IDF_LOGO7 == s.logoid)
-	{
-		//Try OEM Logo
-		CString OEMBGPath;
-		CSVPToolBox svpTool;
-		OEMBGPath = svpTool.GetPlayerPath(_T("skins\\oembg.png"));
-		if(svpTool.ifFileExist(OEMBGPath)){
-			LoadLogoFromFile(OEMBGPath);
-		}
-	}
-	if(m_logo.IsNull())
-	{
-		m_logo.LoadFromResource(s.logoid);
-	}
-
 	if(m_logo.IsNull())
 	{
 		m_logo.LoadFromResource(IDF_LOGO7);
+    if(!m_logo.IsNull())
+      isUsingSkinBG = TRUE;
 	}
 	if(!m_logo.IsNull()){
 		if(m_logo.IsDIBSection()){

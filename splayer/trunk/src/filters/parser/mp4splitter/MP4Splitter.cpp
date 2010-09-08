@@ -133,6 +133,7 @@ HRESULT CMP4SplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 
 	m_rtNewStart = m_rtCurrent = 0;
 	m_rtNewStop = m_rtStop = m_rtDuration = 0;
+  REFERENCE_TIME rtVideoDuration = 0;
 
 	m_framesize.SetSize(640, 480);
 
@@ -555,7 +556,14 @@ HRESULT CMP4SplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 			if(mts.IsEmpty()) continue;
 
 			REFERENCE_TIME rtDuration = 10000i64 * track->GetDurationMs();
-			if(m_rtDuration < rtDuration) m_rtDuration = rtDuration;
+      SVP_LogMsg5(L"Dur %d %f %f %f %f", track->GetType(), (double)track->GetDurationMs()/1000/60,
+                  (double)track->GetDuration(), (double)track->GetMediaTimeScale(),
+                  (double)track->GetMovieTimeScale());
+			if (m_rtDuration < rtDuration)
+        m_rtDuration = rtDuration;
+
+      if (rtVideoDuration < rtDuration && AP4_Track::TYPE_VIDEO == track->GetType())
+        rtVideoDuration = rtDuration;
 
 			DWORD id = track->GetId();
 
@@ -684,6 +692,8 @@ HRESULT CMP4SplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 			if(!desc.IsEmpty()) SetProperty(L"DESC", desc);
 		}
 	}
+  if (rtVideoDuration > 0 && rtVideoDuration < m_rtDuration/2 )
+    m_rtDuration = rtVideoDuration;
 
 	m_rtNewStop = m_rtStop = m_rtDuration;
 

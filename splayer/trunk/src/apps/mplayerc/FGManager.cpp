@@ -1826,6 +1826,9 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
   m_transform.AddTail(pFGF);
 
 
+  pFGF = new CFGFilterInternal<CMpaDecFilter>( L"QDM2 Audio Decoder", MERIT64_UNLIKELY);
+  pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_QDM2);
+  m_transform.AddTail(pFGF);
 		
 	pFGF = new CFGFilterInternal<CMpaDecFilter>( L"PCM RAW Audio Decoder", MERIT64_ABOVE_DSHOW);
 	pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_PCM_RAW);

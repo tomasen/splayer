@@ -10,7 +10,7 @@ public:
   static std::string WStringToString(const std::wstring& s);
   static std::wstring Utf8StringToWString(const std::string& s);
   static std::string WStringToUtf8String(const std::wstring& s);
-
+  static void Trim(std::wstring& s);
 };
 
 #endif // STRINGS_H

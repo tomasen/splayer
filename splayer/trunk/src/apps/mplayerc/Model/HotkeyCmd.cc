@@ -8,11 +8,13 @@ HotkeyCmd::HotkeyCmd(unsigned short cmd /*= 0*/)
 }
 
 HotkeyCmd::HotkeyCmd(unsigned short cmd, unsigned short key, unsigned char fVirt, 
+                     unsigned int ids_cmd_comment,
                      unsigned int appcmd /*= 0*/, unsigned int mouse /*= NONE*/)
 {
   this->cmd = cmd;
   this->key = key;
   this->fVirt = fVirt;
+  this->ids_cmd_comment = ids_cmd_comment;
   this->appcmd = appcmdorg = appcmd;
   this->mouse = mouseorg = mouse;
   backup = *this;

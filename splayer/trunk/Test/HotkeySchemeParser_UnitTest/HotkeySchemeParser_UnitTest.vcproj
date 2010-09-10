@@ -180,6 +180,14 @@
 			>
 		</File>
 		<File
+			RelativePath="..\..\src\apps\mplayerc\mplayerc.rc"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\apps\mplayerc\resource.h"
+			>
+		</File>
+		<File
 			RelativePath=".\stdafx.cpp"
 			>
 			<FileConfiguration
@@ -201,6 +209,14 @@
 		</File>
 		<File
 			RelativePath=".\stdafx.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\apps\mplayerc\Utils\Strings.cc"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\apps\mplayerc\Utils\Strings.h"
 			>
 		</File>
 	</Files>

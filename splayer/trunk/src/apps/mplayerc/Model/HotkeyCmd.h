@@ -16,7 +16,8 @@ class HotkeyCmd :
 {
 public:
   HotkeyCmd(unsigned short cmd = 0);
-  HotkeyCmd(unsigned short cmd, unsigned short key, unsigned char fVirt, 
+  HotkeyCmd(unsigned short cmd, unsigned short key, unsigned char fVirt,
+            unsigned int ids_cmd_comment,
             unsigned int appcmd = 0, unsigned int mouse = NONE);
   bool operator == (const HotkeyCmd& wc) const;
 
@@ -42,6 +43,7 @@ public:
     LAST
   };
 
+  unsigned int  ids_cmd_comment;
   unsigned int  appcmd;
   unsigned int  mouse;
 

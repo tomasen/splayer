@@ -5111,6 +5111,12 @@ void CMPlayerCApp::SetLanguage (int nLanguage)
 	szLangSeting.Format(L"%d" , s.iLanguage );
 	svpTool.filePutContent(szLangDefault,szLangSeting );
 	AfxSetResourceHandle(hMod);
+
+#if (_ATL_VER >= 0x0700)
+  ATL::_AtlBaseModule.SetResourceInstance(hMod);
+#else // !(_ATL_VER >= 0x0700)
+  ATL::_pModule->SetResourceInstance(hMod);
+#endif 
 }
 bool CMPlayerCApp::IsWin7(){
 	if(m_isVista < 0 )

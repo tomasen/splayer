@@ -34,7 +34,7 @@ public:
     DDX_CHECK(IDC_CHECK_AUTOFULLSCREEN, m_autofullscreen)
     DDX_CHECK(IDC_CHECK_AUTOUPGRADE, m_autoupgrade)
     DDX_CHECK(IDC_CHECK_HOTKEYSCHEME, m_hotkeyscheme)
-    DDX_CHECK(IDC_CHECK_CANCELLBTNPLAYSTOP, m_cancellbuttonplaystop)
+    DDX_CHECK(IDC_CHECK_MOUSEBTNCONTROLPLAY, m_mousebuttoncontrolplaystop)
   END_DDX_MAP()
 
   // message handlers
@@ -68,7 +68,7 @@ private:
   int m_autoresume;
   int m_autofullscreen;
   int m_autoupgrade;
-  int m_cancellbuttonplaystop;
+  int m_mousebuttoncontrolplaystop;
 
   // additional params
   int m_upgradestrategy;

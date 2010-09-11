@@ -179,10 +179,6 @@
 				>
 			</File>
 		</Filter>
-		<File
-			RelativePath=".\res.cht\UESettingPanel.html"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>

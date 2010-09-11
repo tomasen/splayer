@@ -233,14 +233,6 @@
 				>
 			</File>
 		</Filter>
-		<File
-			RelativePath=".\resource"
-			>
-		</File>
-		<File
-			RelativePath=".\res.german\UESettingPanel.html"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>

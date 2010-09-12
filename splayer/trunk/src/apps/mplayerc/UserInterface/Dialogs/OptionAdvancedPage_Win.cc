@@ -38,6 +38,7 @@ BOOL OptionAdvancedPage::OnInitDialog(HWND hwnd, LPARAM lParam)
 
   m_usecustomspeakersetting = s.fCustomSpeakers;
   m_speakers_combo.EnableWindow(m_usecustomspeakersetting);
+  m_usespdifprority = s.fbUseSPDIF;
   m_usenormalize = s.fAudioNormalize;
 
   // set speaker settings as s.iDecSpeakers

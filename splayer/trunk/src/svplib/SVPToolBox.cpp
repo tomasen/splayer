@@ -397,6 +397,7 @@ bool ReadFileToBuffer(CString path, BYTE*& contents, DWORD* pdwsize)
 }
 
 CString CSVPToolBox::fileGetContent(CString szFilePath){
+  // Get CString from file even it's ansi encoded
 	CStdioFile f;
 
 	CString szBuf;
@@ -412,16 +413,18 @@ CString CSVPToolBox::fileGetContent(CString szFilePath){
 }
 void CSVPToolBox::filePutContent(CString szFilePath, CString szData, BOOL bAppend)
 {
-  filePutContent_STL((LPCTSTR)szFilePath, (LPCTSTR)szData);
+  // CStdioFile::WriteString save text as ansi
+  CStdioFile f;
+
+  if(f.Open(szFilePath, CFile::modeCreate | CFile::modeWrite | CFile::typeText))
+  {
+    f.WriteString(szData);
+    f.Close();
+  }
 }
 void CSVPToolBox::filePutContent_STL(std::wstring szFilePath, std::wstring szData, BOOL bAppend)
 {
-  FILE* f;
-  if (!_wfopen_s(&f, szFilePath.c_str(), L"w"))
-  {
-    fwrite(szData.c_str(), sizeof(wchar_t), szData.length(), f);
-    fclose(f);
-  }
+  filePutContent(szFilePath.c_str(), szData.c_str(), bAppend);
 }
 DWORD CSVPToolBox::_httoi(const TCHAR *value)
 {

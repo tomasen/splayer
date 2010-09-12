@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project=".\MSBuild\MSBuild.Community.Tasks.Targets" />
+	<PropertyGroup>
+		<project_name>ShooterPlayer</project_name>
+		<project_path>ShooterPlayer</project_path>
+		<svn_root>svn://svn.splayer.org:3690/svplayer</svn_root>
+		<SubWCRev>"c:\Program Files\TortoiseSVN\bin\SubWCRev.exe"</SubWCRev>
+		<outfolder>.\nightlybuild</outfolder>
+		<CodecFolder>..\..\codecfolder</CodecFolder>
+		<NSISCompiler>"C:\Program Files\NSIS\Unicode\makensis.exe"</NSISCompiler>
+	</PropertyGroup>
+	<ItemGroup>
+		<ProjectsToBuild Include=".\$(project_path)\splayer.sln"/>
+	</ItemGroup>
+    <ItemGroup>
+        <CodecFiles Include="$(CodecFolder)\**\*.*"/>
+    </ItemGroup>
+
+	<Target Name="Init">
+		<Time Format="yyyyMMdd">
+			<Output TaskParameter="FormattedTime" PropertyName="buildDate" />
+		</Time>
+		<MakeDir Directories="$(outfolder)"/>
+	</Target>
+	<Target Name="GetCode" DependsOnTargets="Init">
+       <RemoveDir Directories=".\$(project_path)" />
+        <SvnCheckout RepositoryPath="$(svn_root)" LocalPath=".\$(project_path)">
+            <Output TaskParameter="Revision" PropertyName="Revision" />
+        </SvnCheckout>
+        <Message Text="Revision: $(Revision)"/>
+	</Target>
+	<Target Name="CreateVersion" DependsOnTargets="GetCode">
+		<Exec Command="$(SubWCRev) ..\..\.. .\SvPlayerver.wxi.template .\SvPlayerver.wxi" WorkingDirectory=".\$(project_path)\Setup\svplayer.msi\WiX\"/>
+		<Exec Command="$(SubWCRev) ..\..\..\ .\SubWCRev.conf .\revision.h" WorkingDirectory=".\$(project_path)\src\apps\mplayerc\"/>
+		<Exec Command="$(SubWCRev) .. .\nsisversion.conf .\nsisversion.nsi" WorkingDirectory=".\$(project_path)\Setup\"/>
+	</Target>
+	<Target Name="zipsrc" DependsOnTargets="CreateVersion">
+		<CreateItem Include=".\$(project_path)\**\*.*" Exclude=".\$(project_path)\**\.svn\**" >
+			<Output TaskParameter="Include" ItemName="ZipFiles" />
+		</CreateItem>
+		<Zip Files="@(ZipFiles)"
+			WorkingDirectory=".\$(project_path)"
+		ZipFileName="$(outfolder)\$(project_name)-$(Revision)-$(buildDate)-src.zip" />
+	</Target>
+	<Target Name="compile" DependsOnTargets="zipsrc">
+        <Copy SourceFiles=".\shooterclient.key"  DestinationFolder=".\$(project_path)\src\svplib.svp\"/>
+    	<MSBuild Projects="@(ProjectsToBuild)"  Properties="Configuration=Release Unicode"/>
+	</Target>
+
+	<Target Name="CopyDecode">
+        <Copy
+            SourceFiles="@(CodecFiles)"
+            DestinationFiles="@(CodecFiles->'.\%(RecursiveDir)%(Filename)%(Extension)')"
+        >
+            <Output TaskParameter="CopiedFiles" ItemName="CopiedCodecFiles" />
+		</Copy>
+	</Target>
+
+	<Target Name="BuildSetups" DependsOnTargets="compile;CopyDecode">
+		<!-- Setup-->
+		<Exec Command="$(NSISCompiler) netsetup.nsi" WorkingDirectory=".\$(project_path)\Setup"/>
+		<!--MSI-->
+    	<MSBuild Projects=".\$(project_path)\Setup\svplayer.msi\setupmsi.proj"  />
+	</Target>
+	<Target Name="zipbin" DependsOnTargets="BuildSetups">
+		<CreateItem Include=".\splayer.exe" >
+			<Output TaskParameter="Include" ItemName="BinFiles" />
+		</CreateItem>
+		<CreateItem Include=".\splayer.pdb" >
+			<Output TaskParameter="Include" ItemName="BinFiles" />
+		</CreateItem>
+		<CreateItem Include=".\Updater.*" >
+			<Output TaskParameter="Include" ItemName="BinFiles" />
+		</CreateItem>
+		<CreateItem Include="@(CopiedCodecFiles)" >
+			<Output TaskParameter="Include" ItemName="BinFiles" />
+		</CreateItem>
+		<Zip Files="@(BinFiles)"
+			WorkingDirectory=".\$(project_path)"
+		ZipFileName="$(outfolder)\$(project_name)-$(Revision)-$(buildDate)-bin.zip" />
+	</Target>
+	<Target Name="zipmsi" DependsOnTargets="zipbin">
+		<CreateItem Include=".\splayer.msi" >
+			<Output TaskParameter="Include" ItemName="MsiFilesIn" />
+		</CreateItem>
+		<Zip Files="@(MsiFilesIn)"
+			WorkingDirectory=".\$(project_path)"
+		ZipFileName="$(outfolder)\$(project_name)-$(Revision)-$(buildDate)-msi.zip" />
+		
+		<CreateItem Include=".\SPlayerSetup.exe" >
+			<Output TaskParameter="Include" ItemName="Setupfiles" />
+		</CreateItem>
+		<Zip Files="@(Setupfiles)"
+			WorkingDirectory=".\$(project_path)"
+		ZipFileName="$(outfolder)\$(project_name)-$(Revision)-$(buildDate)-setup.zip" />
+	</Target>
+	<Target Name="Build" DependsOnTargets="zipmsi">
+		<Message Text="Build Complete"/>
+	</Target>
+</Project>

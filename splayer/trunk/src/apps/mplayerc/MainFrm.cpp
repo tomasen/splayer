@@ -3560,7 +3560,8 @@ void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 			  */
       if(xPercent > 75 && yPercent < 25)
         s_mDragFuc = 2;
-
+      else
+        s_mDragFuc = 3;
 			//if(OnButton(HotkeyCmd::LDOWN, nFlags, point))
 			//SetTimer(TIMER_MOUSELWOWN, 300, NULL);
 			//return;

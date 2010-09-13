@@ -3,7 +3,6 @@
 #include "../resource.h"
 #include <wchar.h>
 #include "../Utils/Strings.h"
-#define ResStr(id) CString(MAKEINTRESOURCE(id))
 
 void HotkeySchemeParser::PopulateDefaultScheme()
 {
@@ -310,12 +309,12 @@ bool HotkeySchemeParser::WriteToFile(const wchar_t* filename)
   // File format [UTF-16 encoded with BOM, line break is CRLF]
   // --------------------------------------------------------
   // [Hotkey Scheme Name]
-  // 948 = 0, 0x03, 0, 8
-  // 1334 = 0x23, 0x08
+  // ID_BOSS = VK_OEM_3, FVIRTKEY|FNOINVERT|FCONTROL //ÀÏ°å¼ü
+  // ID_PLAY_PLAYPAUSE = VK_SPACE, FVIRTKEY|FNOINVERT, APPCOMMAND_MEDIA_PLAY_PAUSE, LDOWN //²¥·Å/ÔÝÍ£
   // --------------------------------------------------------
   std::vector<std::wstring> linefeeds;
-  wchar_t line[128];
-  swprintf_s(line, 128, L"[%s]\r\n", m_schemename.c_str());
+  wchar_t line[512];
+  swprintf_s(line, 512, L"[%s]\r\n", m_schemename.c_str());
   linefeeds.push_back(line);
   
   unsigned int appcmd;
@@ -330,19 +329,19 @@ bool HotkeySchemeParser::WriteToFile(const wchar_t* filename)
     virt    = it->fVirt;
     key     = it->key;
     if (appcmd != 0 || mouse != HotkeyCmd::NONE)
-      _swprintf_p(line, 128, L"%s = %s, %s, %s, %s //%s\r\n",
+      swprintf_s(line, 512, L"%s = %s, %s, %s, %s //%s\r\n",
         GetCmdNameByCmdCode(it->cmd).c_str(),
         GetKeyNameByKeyCode(key).c_str(),
         GetVirtNameByVirtCode(virt).c_str(),
         GetAppCmdNameByAppCmdCode(appcmd).c_str(),
         GetMouseNameByMouseCode(mouse).c_str(),
-        ResStr(it->ids_cmd_comment));
+        (LPCTSTR)CString(MAKEINTRESOURCE(it->ids_cmd_comment)));
     else
-      _swprintf_p(line, 128, L"%s = %s, %s //%s\r\n",
+      swprintf_s(line, 512, L"%s = %s, %s //%s\r\n",
         GetCmdNameByCmdCode(it->cmd).c_str(),
         GetKeyNameByKeyCode(key).c_str(),
         GetVirtNameByVirtCode(virt).c_str(),
-        ResStr(it->ids_cmd_comment));
+        (LPCTSTR)CString(MAKEINTRESOURCE(it->ids_cmd_comment)));
     linefeeds.push_back(line);
   }
 

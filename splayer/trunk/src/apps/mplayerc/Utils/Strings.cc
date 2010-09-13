@@ -109,7 +109,7 @@ void Strings::Trim(std::wstring& s)
 {
   std::wstring::size_type first = s.find_first_not_of(L" \n\t\r\0xb");
   if (first == std::wstring::npos)
-    return;
+    s = L"";
   else
   {
     std::wstring::size_type last = s.find_last_not_of(L" \n\t\r\0xb");

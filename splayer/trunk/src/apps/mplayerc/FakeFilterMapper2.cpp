@@ -294,9 +294,9 @@ HRESULT WINAPI Mine_CoCreateInstance(IN REFCLSID rclsid, IN LPUNKNOWN pUnkOuter,
 	}
 	*/
 	if(!pUnkOuter)
-		if(rclsid == CLSID_VideoMixingRenderer || rclsid == CLSID_VideoMixingRenderer9
-			|| rclsid == CLSID_VideoRenderer || rclsid == CLSID_VideoRendererDefault
-			|| rclsid == CLSID_OverlayMixer)// || rclsid == CLSID_OverlayMixer2 - where is this declared?)
+		if(rclsid == CLSID_VideoMixingRenderer || rclsid == CLSID_VideoMixingRenderer9 ||
+      rclsid == CLSID_VideoRenderer || rclsid == CLSID_VideoRendererDefault ||
+      rclsid == CLSID_OverlayMixer)// || rclsid == CLSID_OverlayMixer2 - where is this declared?)
 		{
 			CMacrovisionKicker* pMK = new CMacrovisionKicker(NAME("CMacrovisionKicker"), NULL);
 			CComPtr<IUnknown> pUnk = (IUnknown*)(INonDelegatingUnknown*)pMK;
@@ -316,60 +316,40 @@ HRESULT WINAPI Mine_CoCreateInstance(IN REFCLSID rclsid, IN LPUNKNOWN pUnkOuter,
     // TODO: more effective way to do this
     // maybe set a static array/map of GUID and dll files
     if (GUIDFromCString(_T("{083863F1-70DE-11D0-BD40-00A0C911CE86}")) == rclsid)
-    {
       ret = LoadExternalObject(  svpTool.GetPlayerPath(L"haalis.ax"), rclsid, riid, ppv);
-    }
-    else if (GUIDFromCString(_T("{31345649-0000-0010-8000-00AA00389B71}")) == rclsid
-             || GUIDFromCString(_T("{87CA6F02-49E4-11CF-A3FE-00AA003735BE}")) == rclsid
-             || GUIDFromCString(_T("{BD323430-CE94-11CE-82DD-0800095A5B55}")) == rclsid)
-    {
+    else if (GUIDFromCString(_T("{31345649-0000-0010-8000-00AA00389B71}")) == rclsid ||
+             GUIDFromCString(_T("{87CA6F02-49E4-11CF-A3FE-00AA003735BE}")) == rclsid ||
+             GUIDFromCString(_T("{BD323430-CE94-11CE-82DD-0800095A5B55}")) == rclsid)
       ret = LoadExternalObject(  svpTool.GetPlayerPath(L"ir41_32.ax"), rclsid, riid, ppv);
-    }
-    else if (GUIDFromCString(_T("{1F73E9B1-8C3A-11D0-A3BE-00A0C9244436}")) == rclsid
-      || GUIDFromCString(_T("{665A4448-D905-11D0-A30E-444553540000}")) == rclsid
-      || GUIDFromCString(_T("{665A4443-D905-11D0-A30E-444553540000}")) == rclsid)
-    {
+    else if (GUIDFromCString(_T("{1F73E9B1-8C3A-11D0-A3BE-00A0C9244436}")) == rclsid ||
+             GUIDFromCString(_T("{665A4448-D905-11D0-A30E-444553540000}")) == rclsid ||
+             GUIDFromCString(_T("{665A4443-D905-11D0-A30E-444553540000}")) == rclsid)
       ret = LoadExternalObject(  svpTool.GetPlayerPath(L"ir50_32.dll"), rclsid, riid, ppv);
-    }
     else if (GUIDFromCString(_T("{DB43B405-43AA-4f01-82D8-D84D47E6019C}")) == rclsid)
-    {
       ret = LoadExternalObject(  svpTool.GetPlayerPath(L"ogm.dll"), rclsid, riid, ppv);
-    }
     else if (GUIDFromCString(_T("{B841F346-4835-4de8-AA5E-2E7CD2D4C435}")) == rclsid)
-    {
       ret = LoadExternalObject(  svpTool.GetPlayerPath(L"ts.dll"), rclsid, riid, ppv);
-    }
     else if (GUIDFromCString(_T("{B3DE7EDC-0CD4-4d07-B1C5-92219CD475CC}")) == rclsid)
-    {
       ret = LoadExternalObject(  svpTool.GetPlayerPath(L"mp4.dll"), rclsid, riid, ppv);
-    }
-    else if (GUIDFromCString(_T("{53D9DE0B-FC61-4650-9773-74D13CC7E582}")) == rclsid
-      || GUIDFromCString(_T("{64F2005C-6CF5-4652-B94F-600360B15B27}")) == rclsid
-      || GUIDFromCString(_T("{BD4FB4BE-809D-487b-ADD6-F7D164247E52}")) == rclsid)
-    {
+    else if (GUIDFromCString(_T("{53D9DE0B-FC61-4650-9773-74D13CC7E582}")) == rclsid ||
+             GUIDFromCString(_T("{64F2005C-6CF5-4652-B94F-600360B15B27}")) == rclsid ||
+             GUIDFromCString(_T("{BD4FB4BE-809D-487b-ADD6-F7D164247E52}")) == rclsid)
       ret = LoadExternalObject(  svpTool.GetPlayerPath(L"mkx.dll"), rclsid, riid, ppv);
-    }
-    else if (GUIDFromCString(_T("{ACD23F8C-B37E-4B2D-BA08-86CB6E621D6A}")) == rclsid
-      || GUIDFromCString(_T("{ACD23F8C-B37E-4B2D-BA08-86CB6E621D6A}")) == rclsid)
-    {
+    else if (GUIDFromCString(_T("{ACD23F8C-B37E-4B2D-BA08-86CB6E621D6A}")) == rclsid ||
+             GUIDFromCString(_T("{ACD23F8C-B37E-4B2D-BA08-86CB6E621D6A}")) == rclsid)
       ret = LoadExternalObject(  svpTool.GetPlayerPath(L"csfcodec\\mpc_mtcontain.dll"), rclsid, riid, ppv);
-    }
-    else if (GUIDFromCString(_T("{164A68B6-3F90-47C2-85A7-1E4D8952EF0A}")) == rclsid
-      || GUIDFromCString(_T("{3BB3828F-9787-48A7-A894-6ADE46C64737}")) == rclsid
-      || GUIDFromCString(_T("{BD4FB4BE-809D-487b-ADD6-F7D164247E52}")) == rclsid
-      || GUIDFromCString(_T("{B4DAEDB7-7F0E-434F-9AA3-B82B549A3680}")) == rclsid
-      || GUIDFromCString(_T("{164A68B6-3F90-47C2-85A7-1E4D8952EF0A}")) == rclsid)
-    {
+    else if (GUIDFromCString(_T("{164A68B6-3F90-47C2-85A7-1E4D8952EF0A}")) == rclsid ||
+             GUIDFromCString(_T("{3BB3828F-9787-48A7-A894-6ADE46C64737}")) == rclsid ||
+             GUIDFromCString(_T("{BD4FB4BE-809D-487b-ADD6-F7D164247E52}")) == rclsid ||
+             GUIDFromCString(_T("{B4DAEDB7-7F0E-434F-9AA3-B82B549A3680}")) == rclsid ||
+             GUIDFromCString(_T("{164A68B6-3F90-47C2-85A7-1E4D8952EF0A}")) == rclsid)
       ret = LoadExternalObject(  svpTool.GetPlayerPath(L"csfcodec\\mpc_mtcontrol.dll"), rclsid, riid, ppv);
-    }
-    else if (GUIDFromCString(_T("{5BC26A00-5101-47d7-A5DB-AB6AAC44F51B}")) == rclsid
-      || GUIDFromCString(_T("{E5960BC4-A76B-4211-BEEC-9AEE2AF8AAE6}")) == rclsid)
-    {
+    else if (GUIDFromCString(_T("{5BC26A00-5101-47d7-A5DB-AB6AAC44F51B}")) == rclsid ||
+             GUIDFromCString(_T("{E5960BC4-A76B-4211-BEEC-9AEE2AF8AAE6}")) == rclsid)
       ret = LoadExternalObject(  svpTool.GetPlayerPath(L"csfcodec\\mpc_mxvideo.dll"), rclsid, riid, ppv);
-    }
-    else if (GUIDFromCString(_T("{7E493C9A-2E54-4F25-9B9A-D3C4DEBFCB62}")) == rclsid
-      || GUIDFromCString(_T("{AD92C6E6-997A-4E9E-9D7D-EDED6DE933FB}")) == rclsid
-      || GUIDFromCString(_T("{D48D1EB2-BF95-4EE1-BD69-9AD0515F050D}")) == rclsid)
+    else if (GUIDFromCString(_T("{7E493C9A-2E54-4F25-9B9A-D3C4DEBFCB62}")) == rclsid ||
+             GUIDFromCString(_T("{AD92C6E6-997A-4E9E-9D7D-EDED6DE933FB}")) == rclsid ||
+             GUIDFromCString(_T("{D48D1EB2-BF95-4EE1-BD69-9AD0515F050D}")) == rclsid)
     {
       // have to do a real CoCreateInstance for this, or it will crash. not sure why
       // TODO: find out why
@@ -379,73 +359,50 @@ HRESULT WINAPI Mine_CoCreateInstance(IN REFCLSID rclsid, IN LPUNKNOWN pUnkOuter,
       //SVP_LogMsg5(_T("Mine_CoCreateInstance ret %x"), ret );
     }
     else if (GUIDFromCString(_T("{86708513-5A2E-424f-AB46-F4BE3F82954F}")) == rclsid)
-    {
       ret = LoadExternalObject(  svpTool.GetPlayerPath(L"csfcodec\\mpc_mxaudio.dll"), rclsid, riid, ppv);
-    }
-    else if (GUIDFromCString(_T("{32E2BDD6-8812-42c3-A907-B9587C148EE3}")) == rclsid
-      || GUIDFromCString(_T("{87BBB4ED-1767-4b7e-821C-7C4657E439D4}")) == rclsid
-      || GUIDFromCString(_T("{F9D06915-85A0-442A-A465-5F3AAAFE059B}")) == rclsid)
-    {
+    else if (GUIDFromCString(_T("{32E2BDD6-8812-42c3-A907-B9587C148EE3}")) == rclsid ||
+             GUIDFromCString(_T("{87BBB4ED-1767-4b7e-821C-7C4657E439D4}")) == rclsid ||
+             GUIDFromCString(_T("{F9D06915-85A0-442A-A465-5F3AAAFE059B}")) == rclsid)
       ret = LoadExternalObject(  svpTool.GetPlayerPath(L"csfcodec\\mpc_mxscreen.dll"), rclsid, riid, ppv);
-    }
-    else if (GUIDFromCString(_T("{2627A1B6-F8FF-4E9C-9422-4908E8D1DFE9}")) == rclsid
-      || GUIDFromCString(_T("{3FD0479E-D6B9-4629-9496-509D3D070918}")) == rclsid
-      || GUIDFromCString(_T("{99AA8908-FC7F-4815-B023-3BC2F5F8D372}")) == rclsid)
-    {
+    else if (GUIDFromCString(_T("{2627A1B6-F8FF-4E9C-9422-4908E8D1DFE9}")) == rclsid ||
+             GUIDFromCString(_T("{3FD0479E-D6B9-4629-9496-509D3D070918}")) == rclsid ||
+             GUIDFromCString(_T("{99AA8908-FC7F-4815-B023-3BC2F5F8D372}")) == rclsid)
       ret = LoadExternalObject(  svpTool.GetPlayerPath(L"csfcodec\\mpc_mxshbasu.dll"), rclsid, riid, ppv);
-    }
-    else if (GUIDFromCString(_T("{32E2BDD6-8812-42c3-A907-B9587C148EE3}")) == rclsid
-      || GUIDFromCString(_T("{87BBB4ED-1767-4b7e-821C-7C4657E439D4}")) == rclsid
-      || GUIDFromCString(_T("{F9D06915-85A0-442A-A465-5F3AAAFE059B}")) == rclsid)
-    {
+    else if (GUIDFromCString(_T("{32E2BDD6-8812-42c3-A907-B9587C148EE3}")) == rclsid ||
+             GUIDFromCString(_T("{87BBB4ED-1767-4b7e-821C-7C4657E439D4}")) == rclsid ||
+             GUIDFromCString(_T("{F9D06915-85A0-442A-A465-5F3AAAFE059B}")) == rclsid)
       ret = LoadExternalObject(  svpTool.GetPlayerPath(L"csfcodec\\mpc_mxscreen.dll"), rclsid, riid, ppv);
-    }
-    else if (GUIDFromCString(_T("{03D82D06-49E2-4E37-9670-BCAB4DBC642D}")) == rclsid
-      || GUIDFromCString(_T("{03D82D06-49E2-4E37-9670-BCAB4DBC642D}")) == rclsid
-      || GUIDFromCString(_T("{7B6F8B69-0925-48F1-AE78-7506D6C3972C}")) == rclsid
-      || GUIDFromCString(_T("{B7BCE5B0-2112-420A-BDFF-178995FBFCA2}")) == rclsid
-      || GUIDFromCString(_T("{BB9CDE7F-AF28-4205-9B3C-789FA7D0F29F}")) == rclsid
-      || GUIDFromCString(_T("{C1630673-8C58-481C-9F15-83F11D8B89F0}")) == rclsid
-      || GUIDFromCString(_T("{C7E094E1-A326-4E33-824D-6598D399DA13}")) == rclsid)
-    {
+    else if (GUIDFromCString(_T("{03D82D06-49E2-4E37-9670-BCAB4DBC642D}")) == rclsid ||
+             GUIDFromCString(_T("{03D82D06-49E2-4E37-9670-BCAB4DBC642D}")) == rclsid ||
+             GUIDFromCString(_T("{7B6F8B69-0925-48F1-AE78-7506D6C3972C}")) == rclsid ||
+             GUIDFromCString(_T("{B7BCE5B0-2112-420A-BDFF-178995FBFCA2}")) == rclsid ||
+             GUIDFromCString(_T("{BB9CDE7F-AF28-4205-9B3C-789FA7D0F29F}")) == rclsid ||
+             GUIDFromCString(_T("{C1630673-8C58-481C-9F15-83F11D8B89F0}")) == rclsid ||
+             GUIDFromCString(_T("{C7E094E1-A326-4E33-824D-6598D399DA13}")) == rclsid)
       ret = LoadExternalObject(  svpTool.GetPlayerPath(L"csfcodec\\mpc_mxshmaiu.dll"), rclsid, riid, ppv);
-    }
-    else if (GUIDFromCString(_T("{96CE7B0D-06B3-42E2-8DB7-CFC6CF0121F6}")) == rclsid
-      || GUIDFromCString(_T("{E4C3B74F-0C02-4D4E-B932-F7A1889B3ABB}")) == rclsid)
-    {
+    else if (GUIDFromCString(_T("{96CE7B0D-06B3-42E2-8DB7-CFC6CF0121F6}")) == rclsid ||
+             GUIDFromCString(_T("{E4C3B74F-0C02-4D4E-B932-F7A1889B3ABB}")) == rclsid)
       ret = LoadExternalObject(  svpTool.GetPlayerPath(L"csfcodec\\mpc_mxshsour.dll"), rclsid, riid, ppv);
-    }
     else if (GUIDFromCString(_T("{B5A7D70F-AE96-4F83-B811-572CA3529323}")) == rclsid)
-    {
       ret = LoadExternalObject(  svpTool.GetPlayerPath(L"csfcodec\\mpc_mcucltu.dll"), rclsid, riid, ppv);
-    }
-    else if (GUIDFromCString(_T("{0C56B154-43F7-48A0-87B2-E9ACC8E1E471}")) == rclsid
-      || GUIDFromCString(_T("{46E00789-37CA-4278-8907-02088898B6B0}")) == rclsid
-      || GUIDFromCString(_T("{BAC04407-3588-42AA-93BE-6D3720E9FB28}")) == rclsid)
-    {
+    else if (GUIDFromCString(_T("{0C56B154-43F7-48A0-87B2-E9ACC8E1E471}")) == rclsid ||
+             GUIDFromCString(_T("{46E00789-37CA-4278-8907-02088898B6B0}")) == rclsid ||
+             GUIDFromCString(_T("{BAC04407-3588-42AA-93BE-6D3720E9FB28}")) == rclsid)
       ret = LoadExternalObject(  svpTool.GetPlayerPath(L"csfcodec\\mpc_mcufilecu.dll"), rclsid, riid, ppv);
-    }
-    else if (GUIDFromCString(_T("{212CA6D1-E9BB-41cf-BF77-06E000F403A8}")) == rclsid
-      || GUIDFromCString(_T("{57A5353F-2725-440c-BBBC-DB20A1C8A57D}")) == rclsid
-      || GUIDFromCString(_T("{A94662D1-35FD-43d1-BDA3-172CE4D5C236}")) == rclsid
-      || GUIDFromCString(_T("{D0430FE6-1621-41e4-A109-CA5B0C57FE1D}")) == rclsid
-      || GUIDFromCString(_T("{D2598A88-4035-4556-84A2-B0F76A544E92}")) == rclsid
-      || GUIDFromCString(_T("{D6D61C19-8563-4e8e-B755-0589DA6A3077}")) == rclsid
-      || GUIDFromCString(_T("{E9203D3F-6404-40aa-99CC-5267215B81A7}")) == rclsid
-      || GUIDFromCString(_T("{ECCBA771-92F2-497b-98AA-5FAA0BAA2DF6}")) == rclsid)
-    {
+    else if (GUIDFromCString(_T("{212CA6D1-E9BB-41cf-BF77-06E000F403A8}")) == rclsid ||
+             GUIDFromCString(_T("{57A5353F-2725-440c-BBBC-DB20A1C8A57D}")) == rclsid ||
+             GUIDFromCString(_T("{A94662D1-35FD-43d1-BDA3-172CE4D5C236}")) == rclsid ||
+             GUIDFromCString(_T("{D0430FE6-1621-41e4-A109-CA5B0C57FE1D}")) == rclsid ||
+             GUIDFromCString(_T("{D2598A88-4035-4556-84A2-B0F76A544E92}")) == rclsid ||
+             GUIDFromCString(_T("{D6D61C19-8563-4e8e-B755-0589DA6A3077}")) == rclsid ||
+             GUIDFromCString(_T("{E9203D3F-6404-40aa-99CC-5267215B81A7}")) == rclsid ||
+             GUIDFromCString(_T("{ECCBA771-92F2-497b-98AA-5FAA0BAA2DF6}")) == rclsid)
       ret = LoadExternalObject(  svpTool.GetPlayerPath(L"csfcodec\\mpc_wtlvcl.dll"), rclsid, riid, ppv);
-    }
     else if (GUIDFromCString(_T("{2EEB4ADF-4578-4D10-BCA7-BB955F56320A}")) == rclsid)
-    {
       ret = LoadExternalObject(  svpTool.GetPlayerPath(L"wmadmod.dll"), rclsid, riid, ppv);
-    }
-
 
     if (FAILED(ret))
-    {
       ret = Real_CoCreateInstance(rclsid, pUnkOuter, dwClsContext, riid, ppv);
-    }
 
 		return ret;
 }

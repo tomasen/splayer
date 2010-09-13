@@ -448,7 +448,7 @@ HRESULT CMpaDecFilter::Receive(IMediaSample* pIn)
 	REFERENCE_TIME rtStart = _I64_MIN, rtStop = _I64_MIN;
 	hr = pIn->GetTime(&rtStart, &rtStop);
 
-	if(pIn->IsDiscontinuity() == S_OK)
+	if (pIn->IsDiscontinuity() == S_OK)
 	{
 		m_fDiscontinuity = true;
 		m_buff.RemoveAll();
@@ -461,19 +461,17 @@ HRESULT CMpaDecFilter::Receive(IMediaSample* pIn)
 
 	const GUID& subtype = m_pInput->CurrentMediaType().subtype;
 	BOOL bNoJitterControl = false;
-  if (subtype == MEDIASUBTYPE_AMR || subtype == MEDIASUBTYPE_SAMR || subtype == MEDIASUBTYPE_SAWB || subtype == MEDIASUBTYPE_PCM_ULAW
-      || subtype == MEDIASUBTYPE_QDM2 ||  MEDIASUBTYPE_F1AC_FLAC ==  subtype 
-      ){
+  if (subtype == MEDIASUBTYPE_AMR || subtype == MEDIASUBTYPE_SAMR ||
+      subtype == MEDIASUBTYPE_SAWB || subtype == MEDIASUBTYPE_PCM_ULAW ||
+      subtype == MEDIASUBTYPE_QDM2 ||  MEDIASUBTYPE_F1AC_FLAC ==  subtype)
       //   || subtype == MEDIASUBTYPE_PCM_SOWT || subtype == MEDIASUBTYPE_PCM_TWOS ||  subtype == MEDIASUBTYPE_COOK  || subtype == MEDIASUBTYPE_WMA1   || subtype == MEDIASUBTYPE_WMA2 
-      bNoJitterControl = true;
+    bNoJitterControl = true;
     //TODO: we still need jitter control, but not if splitter passed a wrong rtStart  -- by tomasen
-  }
   
-	if(SUCCEEDED(hr) && _abs64((m_rtStart - rtStart)) > 1000000i64  && !bNoJitterControl) // +-100ms jitter is allowed for now
+	if (SUCCEEDED(hr) && _abs64((m_rtStart - rtStart)) > 1000000i64  && !bNoJitterControl) // +-100ms jitter is allowed for now
 	{
 		m_buff.RemoveAll();
 		SVP_LogMsg6(("mpa: disc. jitter is not allowed %I64d\n") ,rtStart );
-
 		m_rtStart = rtStart;
 	}
 

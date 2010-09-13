@@ -195,36 +195,35 @@ void CChildView::LoadLogoFromFile(CString fnLogo)
 }
 void CChildView::LoadLogo()
 {
-	AppSettings& s = AfxGetAppSettings();
+  AppSettings& s = AfxGetAppSettings();
 
-	CAutoLock cAutoLock(&m_csLogo);
+  CAutoLock cAutoLock(&m_csLogo);
 
-	isUsingSkinBG = false;
-	m_logo.Destroy();
-	
-	if(s.logoext)
-	{
-		LoadLogoFromFile(s.logofn);		
-	}
+  isUsingSkinBG = false;
+  m_logo.Destroy();
+
+  if(s.logoext)
+  {
+    LoadLogoFromFile(s.logofn);
+  }
 
   //Try Skin BG Logo
   if (m_logo.IsNull())
   {
     CSVPToolBox svpTool;
-    CPath skinsBGPath( svpTool.GetPlayerPath(_T("skins")));
+    CPath skinsBGPath(svpTool.GetPlayerPath(_T("skins")));
     skinsBGPath.AddBackslash();
     skinsBGPath.Append(_T("background"));
     CString realSkinsBGPath;
-    if(svpTool.ifFileExist(skinsBGPath + _T(".jpg"))){
+    if (svpTool.ifFileExist(skinsBGPath + _T(".jpg")))
       realSkinsBGPath = skinsBGPath + _T(".jpg");
-    }else if(svpTool.ifFileExist(skinsBGPath + _T(".png"))){
+    else if (svpTool.ifFileExist(skinsBGPath + _T(".png")))
       realSkinsBGPath = skinsBGPath + _T(".png");
-    }
 
-    if(!realSkinsBGPath.IsEmpty()){
+    if (!realSkinsBGPath.IsEmpty())
+    {
       LoadLogoFromFile(realSkinsBGPath);
-
-      if(!m_logo.IsNull())
+      if (!m_logo.IsNull())
         isUsingSkinBG = TRUE;
     }
   }
@@ -235,27 +234,29 @@ void CChildView::LoadLogo()
     CString OEMBGPath;
     CSVPToolBox svpTool;
     OEMBGPath = svpTool.GetPlayerPath(_T("skins\\oembg.png"));
-    if(svpTool.ifFileExist(OEMBGPath)){
+    if (svpTool.ifFileExist(OEMBGPath))
       LoadLogoFromFile(OEMBGPath);
+  }
+
+  if (m_logo.IsNull())
+  {
+    m_logo.LoadFromResource(IDF_LOGO7);
+    if (!m_logo.IsNull())
+      isUsingSkinBG = TRUE;
+  }
+  if (!m_logo.IsNull())
+  {
+    if (m_logo.IsDIBSection())
+    {
+      m_logo_bitmap.Detach();
+      m_logo_bitmap.Attach((HBITMAP)m_logo);
+      SVPPreMultiplyBitmap(m_logo_bitmap);
+      m_logo.Detach();
+      m_logo.Attach((HBITMAP)m_logo_bitmap);
     }
   }
-	
-	if(m_logo.IsNull())
-	{
-		m_logo.LoadFromResource(IDF_LOGO7);
-    if(!m_logo.IsNull())
-      isUsingSkinBG = TRUE;
-	}
-	if(!m_logo.IsNull()){
-		if(m_logo.IsDIBSection()){
-			m_logo_bitmap.Detach();
-			m_logo_bitmap.Attach((HBITMAP)m_logo);
-			SVPPreMultiplyBitmap(m_logo_bitmap);
-			m_logo.Detach();
-			m_logo.Attach((HBITMAP)m_logo_bitmap);
-		}
-	}
-	if(m_hWnd) Invalidate();
+  if (m_hWnd)
+    Invalidate();
 }
 
 CSize CChildView::GetLogoSize()

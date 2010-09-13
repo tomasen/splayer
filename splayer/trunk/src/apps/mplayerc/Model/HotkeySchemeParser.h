@@ -20,6 +20,10 @@ public:
   bool WriteToFile(const wchar_t* filename);
   std::wstring GetSchemeName();
   std::vector<HotkeyCmd> GetScheme();
+
+private:
+  std::vector<HotkeyCmd>  m_list;
+  std::wstring            m_schemename;
   std::wstring GetCmdNameByCmdCode(unsigned int cmdcode);
   unsigned int GetCmdCodeByCmdName(std::wstring cmdname);
   std::wstring GetKeyNameByKeyCode(unsigned int keycode);
@@ -30,10 +34,6 @@ public:
   unsigned int GetVirtCodeByVirtName(std::wstring virtname);
   std::wstring GetAppCmdNameByAppCmdCode(unsigned int appcmdcode);
   unsigned int GetAppCmdCodeByAppCmdName(std::wstring appcmdname);
-
-private:
-  std::vector<HotkeyCmd>  m_list;
-  std::wstring            m_schemename;
 };
 
 #endif // HOTKEYSCHEMEPARSER_H

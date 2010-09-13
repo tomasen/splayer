@@ -369,7 +369,7 @@ void cupdatenetlib::tryRealUpdate(BOOL bNoWaiting){
 			}
 		}
 
-		BOOL bUpdateThis = pInfo->bReadyToCopy;
+    bool bUpdateThis = pInfo->bReadyToCopy ? true : false;
 	
 		////check file hash
 		//CMD5Checksum cmd5;

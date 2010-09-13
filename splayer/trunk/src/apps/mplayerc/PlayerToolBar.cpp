@@ -173,9 +173,8 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 
 
     m_nHeight = max(45, m_btnList.GetMaxHeight());
-    if(m_nHeight > 45){
-        m_nHeight += 4;
-    }
+    if (m_nHeight > 45)
+      m_nHeight += 4;
 
 	return TRUE;
 }

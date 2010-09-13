@@ -19,6 +19,7 @@ public:
   std::wstring GetSchemeName();
   std::vector<HotkeyCmd> GetScheme();
   HotkeyCmd GetHotkeyCmdById(unsigned short cmd_id, int* index_out = NULL);
+  HotkeyCmd GetHotkeyCmdByAppCmdId(unsigned short appcmd_id, int* index_out = NULL);
   HotkeyCmd GetHotkeyCmdByMouse(unsigned int mouse);
   void EnumAvailableSchemes(std::vector<std::wstring>& files_out, std::vector<std::wstring>& names_out);
 

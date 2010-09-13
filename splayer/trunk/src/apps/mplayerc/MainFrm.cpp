@@ -2459,7 +2459,7 @@ LRESULT CMainFrame::OnAppCommand(WPARAM wParam, LPARAM lParam)
     Default();
   else
   {
-    HotkeyCmd hotkey = HotkeyController::GetInstance()->GetHotkeyCmdById(cmd);
+    HotkeyCmd hotkey = HotkeyController::GetInstance()->GetHotkeyCmdByAppCmdId(cmd);
     if (hotkey.cmd && SendMessage(WM_COMMAND, hotkey.cmd))
       fRet = TRUE;
   }

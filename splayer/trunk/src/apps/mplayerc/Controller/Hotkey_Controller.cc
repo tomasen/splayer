@@ -37,7 +37,7 @@ HotkeyCmd HotkeyController::GetHotkeyCmdById(unsigned short cmd_id, int* index_o
   HotkeyCmd ret;
   for (std::vector<HotkeyCmd>::iterator it = m_schemes.begin(); it != m_schemes.end(); it++)
   {
-    if (it->cmd == cmd_id)
+   if (it->cmd == cmd_id)
     {
       if (index_out)
         *index_out = std::distance(m_schemes.begin(), it);
@@ -48,7 +48,22 @@ HotkeyCmd HotkeyController::GetHotkeyCmdById(unsigned short cmd_id, int* index_o
     *index_out = -1;
   return ret;
 }
-
+HotkeyCmd HotkeyController::GetHotkeyCmdByAppCmdId(unsigned short appcmd_id, int* index_out)
+{
+  HotkeyCmd ret;
+  for (std::vector<HotkeyCmd>::iterator it = m_schemes.begin(); it != m_schemes.end(); it++)
+  {
+    if (it->appcmd == appcmd_id)
+    {
+      if (index_out)
+        *index_out = std::distance(m_schemes.begin(), it);
+      return *it;
+    }
+  }
+  if (index_out)
+    *index_out = -1;
+  return ret;
+}
 HotkeyCmd HotkeyController::GetHotkeyCmdByMouse(unsigned int mouse)
 {
   HotkeyCmd ret;

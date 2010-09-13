@@ -2794,7 +2794,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
     {
       PlayerPreference* pref = PlayerPreference::GetInstance();
       
-      if (s_fLDown && !pref->GetIntVar(INTVAR_CANCELLBUTTON_PLAYSTOP))
+      if (s_fLDown && !pref->GetIntVar(INTVAR_LEFTCLICK2PAUSE))
         OnButton(HotkeyCmd::LDOWN, NULL, NULL);
 
       KillTimer(TIMER_MOUSELWOWN);
@@ -13104,10 +13104,10 @@ void CMainFrame::OnAudioChannalMapMenu(UINT nID){
 		if(pSS)
 		{
       PlayerPreference* pref = PlayerPreference::GetInstance();
-      bool baudiocentertolrmap = pref->GetIntVar(INTVAR_AUDIOCENTERTOLRMAP);
+      bool map_centerch2lr = pref->GetIntVar(INTVAR_MAP_CENTERCH2LR);
 
 			//Normal
-			pSS->SetSpeakerChannelConfig(AfxGetMyApp()->GetNumberOfSpeakers(), s.pSpeakerToChannelMap2, s.pSpeakerToChannelMapOffset , m_iAudioChannelMaping%4, s.iSS, baudiocentertolrmap);
+			pSS->SetSpeakerChannelConfig(AfxGetMyApp()->GetNumberOfSpeakers(), s.pSpeakerToChannelMap2, s.pSpeakerToChannelMapOffset , m_iAudioChannelMaping%4, s.iSS, map_centerch2lr);
 			
 			SendStatusMessage(ResStr(IDS_OSD_MSG_CHANGING_CHANNAL_MAPING_LEFT_RIGHT_CENTER), 3000);
 		}
@@ -17426,10 +17426,10 @@ void CMainFrame::OnAudioSettingUpdated()
   if (pASF)
   {
     PlayerPreference* pref = PlayerPreference::GetInstance();
-    bool baudiocentertolrmap = pref->GetIntVar(INTVAR_AUDIOCENTERTOLRMAP);
+    bool map_centerch2lr = pref->GetIntVar(INTVAR_MAP_CENTERCH2LR);
 
     pASF->SetNormalizeBoost(s.fAudioNormalize, s.fAudioNormalizeRecover, s.AudioBoost);
     pASF->SetEQControl(s.pEQBandControlPerset, s.pEQBandControlCustom);
-    pASF->SetSpeakerChannelConfig(AfxGetMyApp()->GetNumberOfSpeakers(), s.pSpeakerToChannelMap2, s.pSpeakerToChannelMapOffset, 0, s.iSS, baudiocentertolrmap);
+    pASF->SetSpeakerChannelConfig(AfxGetMyApp()->GetNumberOfSpeakers(), s.pSpeakerToChannelMap2, s.pSpeakerToChannelMapOffset, 0, s.iSS, map_centerch2lr);
   }
 }

@@ -48,7 +48,7 @@ BOOL OptionBasicPage::OnInitDialog(HWND hwnd, LPARAM lParam)
   m_mintotray = s.fTrayIcon;
   m_autoresume =  s.autoResumePlay;
   m_autofullscreen = pref->GetIntVar(INTVAR_TOGGLEFULLSCRENWHENPLAYBACKSTARTED);
-  m_mousebuttoncontrolplaystop = !pref->GetIntVar(INTVAR_CANCELLBUTTON_PLAYSTOP);
+  m_leftclick2pause = !pref->GetIntVar(INTVAR_LEFTCLICK2PAUSE);
   m_autoupgrade = (s.tLastCheckUpdater < 2000000000);
 
   //This might need revise
@@ -145,7 +145,7 @@ int OptionBasicPage::OnApply()
   s.fTrayIcon = m_mintotray?true:false;
   s.autoResumePlay = m_autoresume;
   pref->SetIntVar(INTVAR_TOGGLEFULLSCRENWHENPLAYBACKSTARTED, m_autofullscreen?true:false);
-  pref->SetIntVar(INTVAR_CANCELLBUTTON_PLAYSTOP, m_mousebuttoncontrolplaystop?false:true);
+  pref->SetIntVar(INTVAR_LEFTCLICK2PAUSE, m_leftclick2pause?false:true);
 
   if (m_autoupgrade)
     s.tLastCheckUpdater = (UINT)time(NULL) - 100000;

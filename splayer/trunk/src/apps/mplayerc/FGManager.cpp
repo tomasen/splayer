@@ -2889,12 +2889,12 @@ STDMETHODIMP CFGManagerCustom::AddFilter(IBaseFilter* pBF, LPCWSTR pName)
 	if(CComQIPtr<IAudioSwitcherFilter> pASF = pBF)
 	{
     PlayerPreference* pref = PlayerPreference::GetInstance();
-    bool baudiocentertolrmap = pref->GetIntVar(INTVAR_AUDIOCENTERTOLRMAP);
+    bool map_centerch2lr = pref->GetIntVar(INTVAR_MAP_CENTERCH2LR);
 
 		//SVP_LogMsg5(L"Init Audioswitch");
 		pASF->EnableDownSamplingTo441(s.fDownSampleTo441);
 		//pASF->SetSpeakerConfig(s.fCustomChannelMapping, s.pSpeakerToChannelMap);
-		pASF->SetSpeakerChannelConfig(AfxGetMyApp()->GetNumberOfSpeakers(), s.pSpeakerToChannelMap2 , s.pSpeakerToChannelMapOffset, 0,s.iSS, baudiocentertolrmap);
+		pASF->SetSpeakerChannelConfig(AfxGetMyApp()->GetNumberOfSpeakers(), s.pSpeakerToChannelMap2 , s.pSpeakerToChannelMapOffset, 0,s.iSS, map_centerch2lr);
 		pASF->SetAudioTimeShift(s.fAudioTimeShift ? 10000i64*s.tAudioTimeShift : 0);
 		pASF->SetNormalizeBoost(s.fAudioNormalize, s.fAudioNormalizeRecover, s.AudioBoost);
 		pASF->SetEQControl(s.pEQBandControlPerset, s.pEQBandControlCustom);

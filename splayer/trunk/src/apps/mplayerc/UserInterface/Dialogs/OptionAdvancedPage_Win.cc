@@ -29,7 +29,7 @@ BOOL OptionAdvancedPage::OnInitDialog(HWND hwnd, LPARAM lParam)
   AppSettings& s = AfxGetAppSettings();
   PlayerPreference* pref = PlayerPreference::GetInstance();
 
-  m_audiocentertolrmap = !pref->GetIntVar(INTVAR_AUDIOCENTERTOLRMAP)?false:true;
+  m_mapcenterch2lr = !pref->GetIntVar(INTVAR_MAP_CENTERCH2LR)?false:true;
 
   m_videoqualitymode = s.iSVPRenderType?0:1;
   // TODO: 检测系统是否支持硬件加速
@@ -82,7 +82,7 @@ int OptionAdvancedPage::OnApply()
   AppSettings& s = AfxGetAppSettings();
   PlayerPreference* pref = PlayerPreference::GetInstance();
 
-  pref->SetIntVar(INTVAR_AUDIOCENTERTOLRMAP, m_audiocentertolrmap?true:false);
+  pref->SetIntVar(INTVAR_MAP_CENTERCH2LR, m_mapcenterch2lr?true:false);
 
   // feed variables into preference
   if (m_videoqualitymode == 0)

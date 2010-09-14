@@ -222,8 +222,11 @@ bool HotkeySchemeParser::ReadFromFile(const wchar_t* filename)
     {
       std::wstring line(&(*it_pos), std::distance(it_pos, it));
       it_pos = it;
-
+      Strings::Trim(line);
       if (line.length() == 0)
+        continue;
+      //skip the commentary
+      if (line.find(L'/') == 0)
         continue;
 
       // scan this line for possible input values
@@ -308,11 +311,15 @@ bool HotkeySchemeParser::WriteToFile(const wchar_t* filename)
 {
   // File format [UTF-16 encoded with BOM, line break is CRLF]
   // --------------------------------------------------------
+  // //HERE IS THE COMMENTARY SUCH AS:
+  // //请勿直接编辑本文件，请复制以创建新的快捷键方案
+  // //您可以将您的自定义方案通过EMAIL发送给我们，加入到官方方案库中
   // [Hotkey Scheme Name]
   // ID_BOSS = VK_OEM_3, FVIRTKEY|FNOINVERT|FCONTROL //老板键
   // ID_PLAY_PLAYPAUSE = VK_SPACE, FVIRTKEY|FNOINVERT, APPCOMMAND_MEDIA_PLAY_PAUSE, LDOWN //播放/暂停
   // --------------------------------------------------------
   std::vector<std::wstring> linefeeds;
+  linefeeds.push_back((LPCTSTR)CString(MAKEINTRESOURCE(IDS_HOTKEY_COMMENTARY)));
   wchar_t line[512];
   swprintf_s(line, 512, L"[%s]\r\n", m_schemename.c_str());
   linefeeds.push_back(line);

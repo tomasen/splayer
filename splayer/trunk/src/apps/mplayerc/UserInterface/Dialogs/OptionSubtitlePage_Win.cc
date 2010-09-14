@@ -48,7 +48,7 @@ BOOL OptionSubtitlePage::OnInitDialog(HWND hwnd, LPARAM lParam)
     }
   }
 
-  m_secsubtitlestyle.SetCurSel((s.subdefstyle2.scrAlignment == 2)?0:1);
+  m_secsubtitlestyle.SetCurSel((s.subdefstyle2.scrAlignment == 2)?1:0);
 
   m_fetchsubtitlefromshooter = s.autoDownloadSVPSub;
   DoDataExchange();
@@ -106,7 +106,7 @@ void OptionSubtitlePage::ApplySubtitleStyle()
 
     s.subdefstyle2 = s.subdefstyle;
   }
-  s.subdefstyle2.scrAlignment = ( m_secsubtitlestyle.GetCurSel() == 1)?8:2;
+  s.subdefstyle2.scrAlignment = ( m_secsubtitlestyle.GetCurSel() == 1)?2:8;
 
   s.autoDownloadSVPSub = m_fetchsubtitlefromshooter;
 

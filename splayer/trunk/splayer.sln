@@ -407,6 +407,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MD5TestConsole", "Test\MD5T
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PlaylistParser_UnitTest", "Test\PlaylistParser_UnitTest\PlaylistParser_UnitTest.vcproj", "{810AF9F8-696B-43CA-8ED1-521C80BA24AF}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ChuckTest", "Test\RARChunk_unitest\ChuckTest.vcproj", "{05179F28-3C07-4ADC-ADB1-9EB697CA5A0E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug Unicode|Mixed Platforms = Debug Unicode|Mixed Platforms
@@ -1705,6 +1707,22 @@ Global
 		{810AF9F8-696B-43CA-8ED1-521C80BA24AF}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{810AF9F8-696B-43CA-8ED1-521C80BA24AF}.Release|Win32.ActiveCfg = Release|Win32
 		{810AF9F8-696B-43CA-8ED1-521C80BA24AF}.Release|Win32.Build.0 = Release|Win32
+		{05179F28-3C07-4ADC-ADB1-9EB697CA5A0E}.Debug Unicode|Mixed Platforms.ActiveCfg = Debug|Win32
+		{05179F28-3C07-4ADC-ADB1-9EB697CA5A0E}.Debug Unicode|Mixed Platforms.Build.0 = Debug|Win32
+		{05179F28-3C07-4ADC-ADB1-9EB697CA5A0E}.Debug Unicode|Win32.ActiveCfg = Debug|Win32
+		{05179F28-3C07-4ADC-ADB1-9EB697CA5A0E}.Debug Unicode|Win32.Build.0 = Debug|Win32
+		{05179F28-3C07-4ADC-ADB1-9EB697CA5A0E}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{05179F28-3C07-4ADC-ADB1-9EB697CA5A0E}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{05179F28-3C07-4ADC-ADB1-9EB697CA5A0E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{05179F28-3C07-4ADC-ADB1-9EB697CA5A0E}.Debug|Win32.Build.0 = Debug|Win32
+		{05179F28-3C07-4ADC-ADB1-9EB697CA5A0E}.Release Unicode|Mixed Platforms.ActiveCfg = Release|Win32
+		{05179F28-3C07-4ADC-ADB1-9EB697CA5A0E}.Release Unicode|Mixed Platforms.Build.0 = Release|Win32
+		{05179F28-3C07-4ADC-ADB1-9EB697CA5A0E}.Release Unicode|Win32.ActiveCfg = Release|Win32
+		{05179F28-3C07-4ADC-ADB1-9EB697CA5A0E}.Release Unicode|Win32.Build.0 = Release|Win32
+		{05179F28-3C07-4ADC-ADB1-9EB697CA5A0E}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{05179F28-3C07-4ADC-ADB1-9EB697CA5A0E}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{05179F28-3C07-4ADC-ADB1-9EB697CA5A0E}.Release|Win32.ActiveCfg = Release|Win32
+		{05179F28-3C07-4ADC-ADB1-9EB697CA5A0E}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1803,6 +1821,7 @@ Global
 		{2383B6FD-2D02-4FF9-A14B-394DA08C21F7} = {DDE963FF-6076-4F3E-9F2E-0FBBC50661C7}
 		{2792BF45-E848-484B-8C9E-E6E7C3C42EEE} = {DDE963FF-6076-4F3E-9F2E-0FBBC50661C7}
 		{810AF9F8-696B-43CA-8ED1-521C80BA24AF} = {DDE963FF-6076-4F3E-9F2E-0FBBC50661C7}
+		{05179F28-3C07-4ADC-ADB1-9EB697CA5A0E} = {DDE963FF-6076-4F3E-9F2E-0FBBC50661C7}
 	EndGlobalSection
 	GlobalSection(DPCodeReviewSolutionGUID) = preSolution
 		DPCodeReviewSolutionGUID = {00000000-0000-0000-0000-000000000000}

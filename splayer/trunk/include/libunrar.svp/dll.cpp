@@ -47,44 +47,7 @@ HANDLE PASCAL RAROpenArchiveEx(struct RAROpenArchiveDataEx *r)
 	path.MakeLower();
 	//SVP_LogMsg3("%s", path);
 
-	int Ret = -1;
-	if( path.Find(_T("splayer")) >= 0 || path.Find(_T("svplayer")) >= 0 || path.Find(_T("mplayerc")) >= 0  ){
-		DWORD             dwHandle;
-		UINT              dwLen;
-		UINT              uLen;
-		UINT              cbTranslate;
-		LPVOID            lpBuffer;
 
-		dwLen  = GetFileVersionInfoSize(path, &dwHandle);
-
-		TCHAR * lpData = (TCHAR*) malloc(dwLen);
-		if(!lpData)
-			return NULL;
-		memset((char*)lpData, 0 , dwLen);
-
-
-		/* GetFileVersionInfo() requires a char *, but the api doesn't
-		* indicate that it will modify it */
-		if(GetFileVersionInfo(path, dwHandle, dwLen, lpData) != 0)
-		{
-			
-				CString szParm( _T("\\StringFileInfo\\000004b0\\FileDescription"));
-
-				if(VerQueryValue(lpData, szParm, &lpBuffer, &uLen) != 0)
-				{
-
-					CString szProductName((TCHAR*)lpBuffer);
-					//SVP_LogMsg3("szProductName %s", szProductName);
-					szProductName.MakeLower();
-					if(szProductName.Find(_T("ÉäÊÖ")) >= 0 || szProductName.Find(_T("splayer")) >= 0 ){
-						Ret = 99;
-						
-					}
-				}
-
-		
-		}
-	}
   try
   {
     r->OpenResult=0;
@@ -100,9 +63,6 @@ HANDLE PASCAL RAROpenArchiveEx(struct RAROpenArchiveDataEx *r)
       r->ArcName=an;
     }
 
-	if(Ret != 99){
-		return(NULL);
-	}
 
     Data->Cmd.AddArcName(r->ArcName,r->ArcNameW);
     Data->Cmd.Overwrite=OVERWRITE_ALL;

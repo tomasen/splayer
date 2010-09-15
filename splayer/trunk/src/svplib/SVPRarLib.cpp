@@ -67,19 +67,20 @@ int CSVPRarLib::ListRar(CString fnRarPath , CStringArray* szaFiles)
 			
 			while(RARReadHeaderEx(hrar, &HeaderDataEx) == 0)
 			{
+        if (HeaderDataEx.Method == 0x30)
+        {
+				  CString subfn(HeaderDataEx.FileNameW);
 
-				CString subfn(HeaderDataEx.FileNameW);
-
-				BOOL bAlreadyHaveTheSame = false;
-				for(int i = 0; i < szaFiles->GetCount(); i++){
-					if(szaFiles->GetAt(i) == subfn){
-						bAlreadyHaveTheSame = true;
-						break;
-					}
-				}
-				if(!bAlreadyHaveTheSame)
-					szaFiles->Add(subfn);
-				
+				  BOOL bAlreadyHaveTheSame = false;
+				  for(int i = 0; i < szaFiles->GetCount(); i++){
+					  if(szaFiles->GetAt(i) == subfn){
+						  bAlreadyHaveTheSame = true;
+						  break;
+					  }
+				  }
+				  if(!bAlreadyHaveTheSame)
+					  szaFiles->Add(subfn);
+        }
 
 				RARProcessFile(hrar, RAR_SKIP, NULL, NULL);
 			}

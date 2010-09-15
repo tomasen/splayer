@@ -25,20 +25,25 @@ std::string WStringToString(const std::wstring& s)
   return str;
 }
 
-int compare_filebinary(FILE* filehandle, unsigned long long filepos, char* buff, unsigned long buffsize)
+int compare_filebinary(FILE* filehandle, unsigned long long filepos, char* buff, unsigned long buffsize, int debug)
 {
   char *fbuf = (char *)malloc(buffsize);
   _fseeki64(filehandle, filepos, SEEK_SET);
   fread_s(fbuf, buffsize, sizeof(char), buffsize, filehandle);
   int ret = memcmp(buff, fbuf, buffsize);
   
-  for (int i = 0;i < 100;i++)
-    wprintf(L"%02x", (DWORD)buff[i] & 0xff);
-  wprintf(L"\n");
-  for (int i = 0;i < 100;i++)
-    wprintf(L"%02x", (DWORD)fbuf[i] & 0xff);
-  wprintf(L"\n");
-  
+  if (debug)
+  {
+    for (int i = 0;i < 100;i++)
+      wprintf(L"%02x", (DWORD)buff[i] & 0xff);
+    wprintf(L"\n");
+    for (int i = 0;i < 100;i++)
+      wprintf(L"%02x", (DWORD)fbuf[i] & 0xff);
+    wprintf(L"\n");
+
+
+  }
+
   free(fbuf);
   return ret;
 }
@@ -46,8 +51,12 @@ int compare_filebinary(FILE* filehandle, unsigned long long filepos, char* buff,
 int _tmain(int argc, _TCHAR* argv[])
 {
   HANDLE rar_handle = NULL;
-  std::wstring fn_rar = L"E:\\-=eMule=-\\1140746814_39741.rar";
+  //std::wstring fn_rar = L"E:\\-=eMule=-\\1140746814_39741.rar";
   //std::wstring fn_rar = L"E:\\-=eMule=-\\Bride.Flight.2008.Bluray.720p.AC3.x264-CHD_ÐÂÄïº½°à\\B2_ÐÂÄïº½°à.part1.rar";
+  //std::wstring fn_rar = L"D:\\xxxx.part1.rar";
+  std::wstring fn_rar = L"E:\\-=eMule=-\\Overheard.2009.REPACK.CN.DVDRip.Xvid-XTM\\sample\\xtm-overheard.repack-sample_stored.rar";
+  //std::wstring fn_rar = L"E:\\-=eMule=-\\Overheard.2009.REPACK.CN.DVDRip.Xvid-XTM\\sample\\xtm-overheard.repack-sample_s.part1.rar";
+  
   std::wstring tmp_dir = L"C:\\Temp\\";
   
   struct RAROpenArchiveDataEx ArchiveDataEx;
@@ -75,7 +84,7 @@ int _tmain(int argc, _TCHAR* argv[])
       int err = 0;
       std::wstring unp_tmpfile = tmp_dir + HeaderDataEx.FileNameW;
       err = RARProcessFileW(rar_handle, RAR_EXTRACT, (wchar_t*)tmp_dir.c_str(), HeaderDataEx.FileNameW);
-      wprintf(L"RARProcessFileW to %s return %d size %lld\n", unp_tmpfile.c_str(), err, filesize);
+      wprintf(L"RARProcessFileW to %s return %d size %lld %x %x\n", unp_tmpfile.c_str(), err, filesize, HeaderDataEx.UnpVer, HeaderDataEx.Method);
     }
     RARCloseArchive(rar_handle);
   }
@@ -114,16 +123,15 @@ int _tmain(int argc, _TCHAR* argv[])
       {
         iExtractRet = RARExtractChunk(rar_handle, (char*)testbuff, buffsize);
         // Compare 
-        if (compare_filebinary(unp_filehandle, fpos, testbuff, iExtractRet))
+        if (compare_filebinary(unp_filehandle, fpos, testbuff, iExtractRet, 0))
         {
           wprintf(L"Sequence compare difference found at %lld for %d\n", fpos, buffsize);
           break;
         }
-        else
-          wprintf(L"Sequence compare is same %lld %d\n", fpos, iExtractRet);
+        //else
+        //  wprintf(L"Sequence compare is same %lld %d\n", fpos, iExtractRet);
 
         fpos += iExtractRet;
-
       } while(iExtractRet > 0);
 
       // Ëæ»ú²âÊÔ
@@ -133,13 +141,13 @@ int _tmain(int argc, _TCHAR* argv[])
         RARExtractChunkSeek(rar_handle, ll_pos, SEEK_SET);
         RARExtractChunk(rar_handle, (char*)testbuff, buffsize);
         // Compare 
-        if (compare_filebinary(unp_filehandle, ll_pos, testbuff, iExtractRet))
+        if (compare_filebinary(unp_filehandle, ll_pos, testbuff, iExtractRet, 0))
         {
           wprintf(L"Random compare difference found at %lld\n", ll_pos);
           break;
         }
-        else
-          wprintf(L"Random compare is same %lld\n", ll_pos);
+        //else
+        //  wprintf(L"Random compare is same %lld\n", ll_pos);
       }
       wprintf(L"RARExtractChunk test for %s finished\n", unp_tmpfile.c_str());
     }

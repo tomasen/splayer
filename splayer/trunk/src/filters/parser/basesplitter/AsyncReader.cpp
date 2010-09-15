@@ -93,42 +93,36 @@ CAsyncFileReader::CAsyncFileReader(CString fn, HRESULT& hr)
 
 						while(RARReadHeaderEx(m_hRar, &HeaderDataEx) == 0)
 						{
+
 #ifdef UNICODE
 							CString subfn(HeaderDataEx.FileNameW);
 #else
 							CString subfn(HeaderDataEx.FileName);
 #endif
+              if (HeaderDataEx.Method == 0x30)
+              {
+							  if(subfn.CompareNoCase(m_fnInsideRar) == 0)
+							  {
+								  m_len = HeaderDataEx.UnpSize;
 
-							if(subfn.CompareNoCase(m_fnInsideRar) == 0)
-							{
-								m_len = HeaderDataEx.UnpSize;
-
-								//RARbuff = buff;
-								//RARpos = 0;
-								SVP_LogMsg5(L"Got RAR File");
-
-								
-								//RARbuff = NULL;
-								//RARpos = 0;
-
-								int errRar = RARExtractChunkInit(m_hRar, HeaderDataEx.FileName);
-								if (errRar != 0) {
-									RARCloseArchive(m_hRar);
-									hr = E_FAIL;
-									SVP_LogMsg5(L"RARExtractChunkInit Failed");
-									
-								}else{
-									SVP_LogMsg5(L"RARExtractChunkInit Done %s " , CStringW(HeaderDataEx.FileName));
-									SVP_LogMsg3("RARExtractChunkInit Done %x %s " , m_hRar, (HeaderDataEx.FileName));
-									hr = S_OK;
-									
-								}
+								  int errRar = RARExtractChunkInit(m_hRar, HeaderDataEx.FileName);
+								  if (errRar != 0) {
+									  RARCloseArchive(m_hRar);
+									  hr = E_FAIL;
+									  SVP_LogMsg5(L"RARExtractChunkInit Failed");
+  									
+								  }else{
+									  SVP_LogMsg5(L"RARExtractChunkInit Done %s " , CStringW(HeaderDataEx.FileName));
+									  SVP_LogMsg3("RARExtractChunkInit Done %x %s " , m_hRar, (HeaderDataEx.FileName));
+									  hr = S_OK;
+  									
+								  }
 
 
-								return;
-								break;
-							}
-
+								  return;
+								  break;
+							  }
+              }
 							RARProcessFile(m_hRar, RAR_SKIP, NULL, NULL);
 						}
 						SVP_LogMsg5(L" RAR inside File Not Found");

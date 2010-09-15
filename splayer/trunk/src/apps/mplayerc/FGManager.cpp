@@ -2135,9 +2135,9 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 #if INTERNAL_DECODER_WMV
 	//if (ffmpeg_filters & FFM_WMV )
 	{
-		UINT64 gMerit = MERIT64_NORMAL;
-		if(s.useFFMPEGWMV)
-			 gMerit = MERIT64_ABOVE_DSHOW+100;
+		UINT64 gMerit = MERIT64_NORMAL - 1;
+		//if(s.useFFMPEGWMV)
+		//	 gMerit = MERIT64_ABOVE_DSHOW+100;
 
 		pFGF = new CFGFilterInternal<CMPCVideoDecFilter>(_T("WMV SVP Video Decoder"), gMerit);
 		pFGF->AddType(MEDIATYPE_Video, MEDIASUBTYPE_WMV1);

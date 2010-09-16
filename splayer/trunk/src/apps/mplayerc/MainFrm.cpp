@@ -7558,7 +7558,7 @@ void CMainFrame::OnPlaySeek(UINT nID)
 	}
 	m_lastSeekAction = nID;
 	KillTimer(TIMER_CLEAR_LAST_SEEK_ACTION);
-	SetTimer(TIMER_CLEAR_LAST_SEEK_ACTION,1000,NULL);
+	SetTimer(TIMER_CLEAR_LAST_SEEK_ACTION,100,NULL);
 	AppSettings& s = AfxGetAppSettings();
 	int iDirect = 1;
 	REFERENCE_TIME dt = 

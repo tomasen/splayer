@@ -948,11 +948,11 @@ void CPlayerToolBar::OnLButtonDown(UINT nFlags, CPoint point)
 		//pFrame->PostMessage( WM_COMMAND, ID_PLAY_PAUSE);
 		iBottonClicked = m_nItemToTrack;
 		iFastFFWCount = 0;
-		SetTimer(TIMER_FASTFORWORD, 350, NULL);
+		SetTimer(TIMER_FASTFORWORD, 200, NULL);
 	}else if(m_nItemToTrack == ID_SUBDELAYDEC || m_nItemToTrack == ID_SUBDELAYINC){
 		iBottonClicked = m_nItemToTrack;
 		iFastFFWCount = 0;
-		SetTimer(TIMER_FASTFORWORD, 350, NULL);
+		SetTimer(TIMER_FASTFORWORD, 200, NULL);
 	}else if(!ret){
 		
 		if( m_btnVolBG->m_rcHitest.PtInRect(point) ){

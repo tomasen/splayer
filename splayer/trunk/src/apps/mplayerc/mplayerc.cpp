@@ -125,8 +125,11 @@ static LONG WINAPI  DebugMiniDumpFilter( struct _EXCEPTION_POINTERS *pExceptionI
 			//if (::MessageBox(NULL,_T("程序发生意外,是否保存一个文件用于诊断?"), ResStr(IDR_MAINFRAME) ,MB_YESNO)==IDYES)
 			{
 				// create the file
-                HANDLE hFile = ::CreateFile( szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_NEW,
-					FILE_ATTRIBUTE_NORMAL, NULL );
+        HANDLE hFile = ::CreateFile( szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL );
+        if (hFile==INVALID_HANDLE_VALUE)
+          ::CreateFile( L"%Temp%\\splayer.dmp", GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL );
+        if (hFile==INVALID_HANDLE_VALUE)
+          ::CreateFile( L"C:\\splayer.dmp", GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL );
 
 				if (hFile!=INVALID_HANDLE_VALUE)
 				{

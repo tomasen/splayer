@@ -412,7 +412,7 @@ bool CPPageFormats::RegisterExt(CString ext, bool fRegister, CString PerceivedTy
 	}
 	if(fRegister){
 		//为保证成功注册清理垃圾
-		AfxGetMyApp()->DelRegTree(HKEY_CLASSES_ROOT,  ext);
+		//AfxGetMyApp()->DelRegTree(HKEY_CLASSES_ROOT,  ext);
 		AfxGetMyApp()->DelRegTree(HKEY_CLASSES_ROOT,  _T("KMPlayer") + ext);
 		AfxGetMyApp()->DelRegTree(HKEY_CLASSES_ROOT,  _T("QQPlayer") + ext);
 		AfxGetMyApp()->DelRegTree(HKEY_CLASSES_ROOT,  _T("stormplayer") + ext);
@@ -425,48 +425,19 @@ bool CPPageFormats::RegisterExt(CString ext, bool fRegister, CString PerceivedTy
 	if(!MakeRegParams(ext, path, fn, strLabel, cmd))
 		return(false);
 
-  
-	if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, ext))
-		return(false);
-	TCHAR buff[256];
-	ULONG len = sizeof(buff);
-
-	len = sizeof(buff);
-	memset(buff, 0, len);
-
-	if(ERROR_SUCCESS == key.QueryStringValue(NULL, buff, &len) && !CString(buff).Trim().IsEmpty())
-	{
-		strLabel = buff;
-	}
-	key.SetStringValue(NULL, strProgID);
-  
   strLabel = GetFileTypeName(ext);
+  if (ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, ext))
+    return(false);
 
-  if(!PerceivedType.IsEmpty())
+  if (!PerceivedType.IsEmpty())
+  {
     key.SetStringValue (L"PerceivedType", PerceivedType);
+  }
 
-	BOOL bIsRAR = ( ext.Right(3).MakeLower() == _T("rar") );
-	if(bIsRAR) {
-
+	BOOL bIsRAR = (ext.Right(3).MakeLower() == _T("rar"));
+	if (bIsRAR)
 		return true;
-		// Create ProgID for this file type
-		/*
-		if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, strProgID)) return(false);
-		if(ERROR_SUCCESS != key.SetStringValue(NULL, _T("SPlayer.RARFile"))) return(false);
-
-		if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, strProgID + _T("\\shell\\enqueue"))) return(false);
-		if(ERROR_SUCCESS != key.SetStringValue(NULL, ResStr(IDS_ADD_TO_PLAYLIST))) return(false);
-		if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, strProgID + _T("\\shell\\enqueue\\command"))) return(false);
-		if(bSetValue && (ERROR_SUCCESS != key.SetStringValue(NULL, GetEnqueueCommand()))) return(false);
-
-		if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, strProgID + _T("\\shell\\play"))) return(false);
-		if(ERROR_SUCCESS != key.SetStringValue(NULL, ResStr(IDS_OPEN_WITH_MPC))) return(false);
-		if(ERROR_SUCCESS != key.Create(HKEY_CLASSES_ROOT, strProgID + _T("\\shell\\play\\command"))) return(false);
-		if(bSetValue && (ERROR_SUCCESS != key.SetStringValue(NULL, GetOpenCommand()))) return(false);
-
-		return true;
-		*/
-	}
+	
 	
 	if(!fRegister && !bIsRAR)
 	{
@@ -537,23 +508,7 @@ bool CPPageFormats::RegisterExt(CString ext, bool fRegister, CString PerceivedTy
 	{
  		CString AppIcon = GetFileIcon(ext);
  		TCHAR buff[MAX_PATH];
-// 
-// 		CString mpciconlib = GetProgramDir() + _T("\\mpciconlib.dll");
-// 
-// 		if(FileExists(mpciconlib))
-// 		{
-// 			int icon_index = GetIconIndex(ext);
-// 			CString m_typeicon = mpciconlib;
-// 
-// 			/* icon_index value -1 means no icon was found in the iconlib for the file extension */
-// 			if((icon_index >= 0) && ExtractIcon(AfxGetApp()->m_hInstance,(LPCWSTR)m_typeicon, icon_index))
-// 			{
-// 				m_typeicon = "\""+mpciconlib+"\"";
-// 				AppIcon.Format(_T("%s,%d"), m_typeicon, icon_index);
-// 			}
-// 		}
 
-		/* no icon was found for the file extension, so use MPC's icon */
 		if((AppIcon.IsEmpty()) && (::GetModuleFileName(AfxGetInstanceHandle(), buff, MAX_PATH)))
 		{
 			AppIcon = buff;
@@ -570,9 +525,8 @@ bool CPPageFormats::RegisterExt(CString ext, bool fRegister, CString PerceivedTy
 		key.RecurseDeleteKey(strProgID + _T("\\DefaultIcon"));
 	}
 
-	if(fRegister != IsRegistered(ext) && !bIsRAR)
-		SetFileAssociation (ext, strProgID, fRegister);
-
+  if (fRegister && !bIsRAR)
+    SetFileAssociation(ext, strProgID, fRegister);
 	return(true);
 
 }

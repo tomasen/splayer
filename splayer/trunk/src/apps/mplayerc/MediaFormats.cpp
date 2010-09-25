@@ -241,7 +241,7 @@ void CMediaFormats::UpdateData(bool fSave)
 		ADDFMT((_T("FLAC Audio file"), _T("flac"), _T("audio"), IDI_AUDIO_FILE, true));
 		ADDFMT((_T("ALAC Audio file"), _T("alac"), _T("audio"), IDI_AUDIO_FILE, true));
 		ADDFMT((_T("Flash Video file"), _T("flv iflv f4v"), _T("video"), IDI_VIDEO));
-		ADDFMT((_T("Shockwave Flash file"), _T("swf"), _T("video"), IDI_VIDEO, false, _T("ShockWave ActiveX control"), ShockWave));
+		ADDFMT((_T("Shockwave Flash file"), _T("swf"), _T("video"), IDI_VIDEO, -1, _T("ShockWave ActiveX control"), ShockWave));
 		ADDFMT((_T("Shockwave Audio file"), _T("swa"), _T("audio"), IDI_AUDIO_FILE, true, _T("ShockWave ActiveX control"), ShockWave));
 		ADDFMT((_T("Quicktime file"), _T("mov qt amr 3g2 3gp2"), _T("video"), IDI_VIDEO, false, _T("QuickTime or codec pack")));//QuickTime
 		ADDFMT((_T("IVM file"), _T("ivm"), _T("video"), IDI_VIDEO, false));

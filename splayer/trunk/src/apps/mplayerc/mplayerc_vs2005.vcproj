@@ -21,7 +21,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
-			InheritedPropertySheets="..\..\common.vsprops;..\..\release.vsprops;.\wtl_integration.vsprops;.\atlserver_integration.vsprops"
+			InheritedPropertySheets="..\..\common.vsprops;..\..\release.vsprops;.\wtl_integration.vsprops;.\atlserver_integration.vsprops;..\..\..\Thirdparty\sinet\sinet.vsprops"
 			UseOfMFC="1"
 			UseOfATL="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -120,7 +120,7 @@
 		<Configuration
 			Name="Debug Unicode|Win32"
 			ConfigurationType="1"
-			InheritedPropertySheets="..\..\common.vsprops;..\..\debug.vsprops;.\wtl_integration.vsprops;.\atlserver_integration.vsprops"
+			InheritedPropertySheets="..\..\common.vsprops;..\..\debug.vsprops;.\wtl_integration.vsprops;.\atlserver_integration.vsprops;..\..\..\Thirdparty\sinet\sinet.vsprops"
 			UseOfMFC="1"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="1"
@@ -207,7 +207,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
-			InheritedPropertySheets="..\..\common.vsprops;..\..\release.vsprops;.\wtl_integration.vsprops;.\atlserver_integration.vsprops"
+			InheritedPropertySheets="..\..\common.vsprops;..\..\release.vsprops;.\wtl_integration.vsprops;.\atlserver_integration.vsprops;..\..\..\Thirdparty\sinet\sinet.vsprops"
 			UseOfMFC="1"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="2"
@@ -295,7 +295,7 @@
 		<Configuration
 			Name="Debug|Win32"
 			ConfigurationType="1"
-			InheritedPropertySheets="..\..\common.vsprops;..\..\debug.vsprops;.\wtl_integration.vsprops;.\atlserver_integration.vsprops"
+			InheritedPropertySheets="..\..\common.vsprops;..\..\debug.vsprops;.\wtl_integration.vsprops;.\atlserver_integration.vsprops;..\..\..\Thirdparty\sinet\sinet.vsprops"
 			UseOfMFC="1"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="2"
@@ -1193,11 +1193,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\ecio.icons\dvd.ico"
+				RelativePath=".\res\icon\DVD.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon\DVD.ico"
+				RelativePath=".\res\ecio.icons\dvd.ico"
 				>
 			</File>
 			<File

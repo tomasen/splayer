@@ -1825,7 +1825,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Controller\ScrUploadController.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Controller\ScrUploadController.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Controller\SPlayerDefs.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Controller\SubTransController.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Controller\SubTransController.h"
 				>
 			</File>
 		</Filter>

@@ -1825,11 +1825,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Controller\ScrUploadController.cc"
+				RelativePath=".\Controller\SnapUploadController.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\Controller\ScrUploadController.h"
+				RelativePath=".\Controller\SnapUploadController.h"
 				>
 			</File>
 			<File

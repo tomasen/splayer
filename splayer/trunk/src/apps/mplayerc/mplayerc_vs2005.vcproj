@@ -1801,6 +1801,14 @@
 			Name="Controller"
 			>
 			<File
+				RelativePath=".\Controller\HashController.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Controller\HashController.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Controller\Hotkey_Controller.cc"
 				>
 			</File>

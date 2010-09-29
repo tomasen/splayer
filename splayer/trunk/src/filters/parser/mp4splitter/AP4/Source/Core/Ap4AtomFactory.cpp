@@ -390,14 +390,15 @@ AP4_AtomFactory::CreateAtomFromStream(AP4_ByteStream& stream,
         atom = DNew AP4_FtabAtom(size, stream);
         break;
 
-	  case AP4_ATOM_TYPE_CVID:
-      case AP4_ATOM_TYPE_SVQ1:
-      case AP4_ATOM_TYPE_SVQ2:
-      case AP4_ATOM_TYPE_SVQ3:
-	  case AP4_ATOM_TYPE_H263:
-      case AP4_ATOM_TYPE_S263:
-	  case AP4_ATOM_TYPE_JPEG:
-      case AP4_ATOM_TYPE_RLE:
+    case AP4_ATOM_TYPE_CVID:
+    case AP4_ATOM_TYPE_SVQ1:
+    case AP4_ATOM_TYPE_SVQ2:
+    case AP4_ATOM_TYPE_SVQ3:
+    case AP4_ATOM_TYPE_H263:
+    case AP4_ATOM_TYPE_S263:
+    case AP4_ATOM_TYPE_JPEG:
+    case AP4_ATOM_TYPE_RLE:
+    case AP4_ATOM_TYPE_MJPA:
         atom = DNew AP4_VisualSampleEntry(type, size, stream, *this);
         break;
 

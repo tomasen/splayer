@@ -278,6 +278,7 @@ const AP4_Atom::Type AP4_ATOM_TYPE_RAW = AP4_ATOM_TYPE('r','a','w',' ');
 const AP4_Atom::Type AP4_ATOM_TYPE_JPEG = AP4_ATOM_TYPE('j','p','e','g');
 const AP4_Atom::Type AP4_ATOM_TYPE_ULAW = AP4_ATOM_TYPE('u','l','a','w');
 const AP4_Atom::Type AP4_ATOM_TYPE_RLE = AP4_ATOM_TYPE('r','l','e',' ');
+const AP4_Atom::Type AP4_ATOM_TYPE_MJPA = AP4_ATOM_TYPE('m','j','p','a');
 
 /*----------------------------------------------------------------------
 |       AP4_AtomListInspector

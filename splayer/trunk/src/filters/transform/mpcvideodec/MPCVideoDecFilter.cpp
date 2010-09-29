@@ -309,24 +309,16 @@ FFMPEG_CODECS		ffCodecs[] =
 	{ &MEDIASUBTYPE_RV20, CODEC_ID_RV20,  MAKEFOURCC('R','V','2','0'),	NULL },
 	{ &MEDIASUBTYPE_RV30, CODEC_ID_RV30, MAKEFOURCC('R','V','3','0'),	NULL },
 	{ &MEDIASUBTYPE_RV40, CODEC_ID_RV40, MAKEFOURCC('R','V','4','0'),	NULL },
-	
+
 	{ &MEDIASUBTYPE_MMES, CODEC_ID_MPEG2VIDEO,  MAKEFOURCC('M','M','E','S'),	NULL },
-
 	{ &MEDIASUBTYPE_QTSmc, CODEC_ID_SMC,  MAKEFOURCC('s', 'm', 'c', ' '),	NULL },
-	
 	{ &MEDIASUBTYPE_HUFFYUV, CODEC_ID_HUFFYUV,  MAKEFOURCC('H', 'F', 'Y', 'U'),	NULL },
-	
 	{ &MEDIASUBTYPE_MJPG, CODEC_ID_MJPEG,  MAKEFOURCC('M', 'J', 'P', 'G'),	NULL },
-
 	{ &MEDIASUBTYPE_CVID, CODEC_ID_CINEPAK,  MAKEFOURCC('c', 'v', 'i', 'd'),	NULL },
-
-    { &MEDIASUBTYPE_QTRle, CODEC_ID_QTRLE,  MAKEFOURCC('r', 'l', 'e', ' '),	NULL },
-
-    //{ &MEDIASUBTYPE_VP80, CODEC_ID_VP8,  MAKEFOURCC('V', 'P', '8', '0'),	NULL },
-    
+  { &MEDIASUBTYPE_QTRle, CODEC_ID_QTRLE,  MAKEFOURCC('r', 'l', 'e', ' '),	NULL },
+  //{ &MEDIASUBTYPE_VP80, CODEC_ID_VP8,  MAKEFOURCC('V', 'P', '8', '0'),	NULL },
   {&MEDIASUBTYPE_FRAPS1, CODEC_ID_FRAPS,  MAKEFOURCC('F', 'P', 'S', '1'),	NULL },
-  
-	
+  {&MEDIASUBTYPE_MJPA, CODEC_ID_MJPEG,  MAKEFOURCC('m', 'j', 'p', 'a'),	NULL },
 };
 
 /* Important: the order should be exactly the same as in ffCodecs[] */
@@ -506,9 +498,10 @@ const AMOVIESETUP_MEDIATYPE CMPCVideoDecFilter::sudPinTypesIn[] =
 	{ &MEDIATYPE_Video, &MEDIASUBTYPE_HUFFYUV   } ,
 	{ &MEDIATYPE_Video, &MEDIASUBTYPE_MJPG   } ,
 	{ &MEDIATYPE_Video, &MEDIASUBTYPE_CVID },
-    { &MEDIATYPE_Video, &MEDIASUBTYPE_QTRle },
-    { &MEDIATYPE_Video, &MEDIASUBTYPE_VP80 },
-  { &MEDIATYPE_Video, &MEDIASUBTYPE_FRAPS1 }
+  { &MEDIATYPE_Video, &MEDIASUBTYPE_QTRle },
+  { &MEDIATYPE_Video, &MEDIASUBTYPE_VP80 },
+  { &MEDIATYPE_Video, &MEDIASUBTYPE_FRAPS1 },
+  { &MEDIATYPE_Video, &MEDIASUBTYPE_MJPA }
 };
 
 // Workaround : graphedit crash when filter expose more than 115 input MediaTypes !

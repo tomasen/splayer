@@ -1724,7 +1724,7 @@ std::wstring CSVPToolBox::getSubFileByTempid_STL(int iTmpID,
       if(szTargetMD5 == szSourceMD5)
       {
         // TODO: if there is a diffrence in delay
-        SVP_LogMsg5(_T("同样的字幕文件已经存在了 %s %s"), szSource, szTarget);
+        SVP_LogMsg5(_T("同样的字幕文件已经存在了 %s %s"), szSource.c_str(), szTarget.c_str());
         ialreadyExist++; //TODO: 如果idx+sub里面只有一个文件相同怎么办 ？？~~ 
         break;
       }

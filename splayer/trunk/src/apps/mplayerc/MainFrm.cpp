@@ -7324,7 +7324,12 @@ void CMainFrame::OnPlayPause()
 
 void CMainFrame::OnPlayPlaypause()
 {
-   
+  //////////////////////////////////////////////////////////////////////////
+  // WARNING: BELOW IS JUST FOR DEMONSTRATION PURPOSE, IT HAS TO BE DONE
+  // ACCORDING TO THE DESIGN SPECIFICATION
+  m_snapupload.Start(NULL, 0, 0);
+  //////////////////////////////////////////////////////////////////////////
+
 	//AfxMessageBox(L"1");
 	OAFilterState fs = GetMediaState();
 	if(fs == State_Running) SendMessage(WM_COMMAND, ID_PLAY_PAUSE);
@@ -15198,6 +15203,13 @@ static int s_fOpenedThruThread = false;
 
 void CMainFrame::OpenMedia(CAutoPtr<OpenMediaData> pOMD)
 {
+  //////////////////////////////////////////////////////////////////////////
+  // WARNING: BELOW IS JUST FOR DEMONSTRATION PURPOSE, IT HAS TO BE DONE
+  // IN A SEPARATE TIMER
+  m_snapupload.SetFrame(GetSafeHwnd());
+  m_snapupload.Start(NULL, 0, 0);
+  //////////////////////////////////////////////////////////////////////////
+
 	// shortcut
 	if(OpenDeviceData* p = dynamic_cast<OpenDeviceData*>(pOMD.m_p))
 	{

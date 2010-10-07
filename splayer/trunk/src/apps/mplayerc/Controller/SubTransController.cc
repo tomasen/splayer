@@ -14,7 +14,7 @@ SubTransController::SubTransController(void):
 
 SubTransController::~SubTransController(void)
 {
-  Stop(true);
+  Stop();
 }
 
 void SubTransController::SetFrame(HWND hwnd)
@@ -27,21 +27,25 @@ void SubTransController::Start(const wchar_t* video_filename,
                                StringList files_upload /*= StringList()*/)
 {
   // we should stop running tasks first
-  Stop(true);
+  Stop();
   // record parameters
   m_operation = operation;
   // create thread
   m_thread = (HANDLE)::_beginthread(_thread_dispatch, 0, (void*)this);
 }
 
-void SubTransController::Stop(bool synced /*= false*/)
+void SubTransController::Stop()
 {
-  ::SetEvent(m_stopevent);
-  if (synced && m_thread && m_thread != INVALID_HANDLE_VALUE)
+  unsigned long thread_exitcode;
+  if (m_thread && m_thread != INVALID_HANDLE_VALUE &&
+    GetExitCodeThread(m_thread, &thread_exitcode) &&
+    thread_exitcode == STILL_ACTIVE)
   {
+    ::SetEvent(m_stopevent);
     ::WaitForSingleObject(m_thread, INFINITE);
-    m_thread = NULL;
   }
+  m_thread = NULL;
+  ::ResetEvent(m_stopevent);
 }
 
 void SubTransController::_thread_dispatch(void* param)
@@ -64,6 +68,13 @@ void SubTransController::_thread()
 
 void SubTransController::_thread_download()
 {
+  while (true)
+  {
+    // exiting thread
+    if (::WaitForSingleObject(m_stopevent, 1000) == WAIT_OBJECT_0)
+      return;
+    // check download task finish
+  }
 }
 
 void SubTransController::_thread_upload()

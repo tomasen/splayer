@@ -67,9 +67,7 @@
 #include "..\..\..\lib\lyriclib\lyriclib.h"
 #include "SVPLycShowBox.h"
 
-#include <string>
-#include <vector>
-
+#include "Controller/SnapUploadController.h"
 
 enum {PM_NONE, PM_FILE, PM_DVD, PM_CAPTURE};
 
@@ -986,4 +984,6 @@ public:
 private:
   void _HandleTimer_Stats();
   void _HandleTimer_StreamPosPoller();
+
+  SnapUploadController  m_snapupload;
 };

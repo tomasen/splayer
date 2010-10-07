@@ -15,7 +15,7 @@ public:
   // starting and ending capture & uploading
   void Start(const wchar_t* hash_str, 
              const unsigned int curr_pos_sec, const unsigned int total_sec);
-  void Stop(bool synced = false);
+  void Stop();
 
   // primary thread logics, should not be called directly
   static void _thread_dispatch(void* param);
@@ -24,6 +24,7 @@ public:
 private:
   HANDLE  m_thread;
   HANDLE  m_stopevent;
+  HWND    m_frame;
 };
 
 #endif // SNAPUPLOADCONTROLLER_H

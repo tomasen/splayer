@@ -20,7 +20,7 @@ public:
   // starting and ending main thread for upload / download
   void Start(const wchar_t* video_filename, SubTransOperation operation,
              StringList files_upload = StringList());
-  void Stop(bool synced = false);
+  void Stop();
 
   // primary thread logics, should not be called directly
   static void _thread_dispatch(void* param);

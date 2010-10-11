@@ -35,6 +35,5 @@ std::wstring HashController::GetHash()
     std::string md5str(str);
     m_hash = Strings::StringToWString(md5str);
   }
-  else
-    return m_hash;
+  return m_hash;
 }

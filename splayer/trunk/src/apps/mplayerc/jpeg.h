@@ -23,6 +23,7 @@ protected:
 	virtual bool PutByte(BYTE b) = 0;
 	virtual bool PutBytes(const void* pData, int len) = 0;
 	virtual bool Encode(const BYTE* dib);
+  virtual bool EncodeHalfBase(const BYTE* dib);
 
 public:
 	CJpegEncoder();
@@ -41,6 +42,7 @@ public:
 	CJpegEncoderFile(LPCTSTR fn);
 
 	bool Encode(const BYTE* dib);
+  bool EncodeHalf(const BYTE* dib);
 };
 
 class CJpegEncoderMem : public CJpegEncoder

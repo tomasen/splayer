@@ -293,6 +293,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_FILE_SAVE_COPY, OnFileSaveAs)
 	ON_UPDATE_COMMAND_UI(ID_FILE_SAVE_COPY, OnUpdateFileSaveAs)
 	ON_COMMAND(ID_FILE_SAVE_IMAGE, OnFileSaveImage)
+  ON_COMMAND(ID_CONTROLLER_SAVE_IMAGE, OnControllerSaveImage)
 	ON_COMMAND(ID_FILE_COPYTOCLIPBOARD, OnFileCopyImageToCLipBoard)
 	ON_UPDATE_COMMAND_UI(ID_FILE_SAVE_IMAGE, OnUpdateFileSaveImage)
 	ON_UPDATE_COMMAND_UI(ID_FILE_COPYTOCLIPBOARD, OnUpdateFileSaveImage)
@@ -2647,6 +2648,12 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 
   switch (nIDEvent)
   {
+  case TIMER_SNAP:
+    {
+      KillTimer(TIMER_SNAP);
+      _StartSnap();
+    }
+    break;
   case TIMER_LOADING:
     {
       KillTimer(TIMER_LOADING);
@@ -5790,8 +5797,8 @@ void CMainFrame::SaveDIB(LPCTSTR fn, BYTE* pData, long size)
 	
 	CString szMsg;
 
-	szMsg.Format(ResStr(IDS_OSD_MSG_IMAGE_CAPTURE_TO),(LPCTSTR)p);
-	SendStatusMessage(szMsg, 3000);
+    szMsg.Format(ResStr(IDS_OSD_MSG_IMAGE_CAPTURE_TO),(LPCTSTR)p);
+	  SendStatusMessage(szMsg, 3000);
 }
 void CMainFrame::OnFileCopyImageToCLipBoard(){
 	SaveImage();
@@ -7273,8 +7280,7 @@ void CMainFrame::OnPlayPlay()
 		}
 		
 	}
-
-	
+  SetTimer(TIMER_SNAP, 10000, NULL);
 }
 
 void CMainFrame::OnPlayPauseI()
@@ -7324,12 +7330,7 @@ void CMainFrame::OnPlayPause()
 
 void CMainFrame::OnPlayPlaypause()
 {
-  //////////////////////////////////////////////////////////////////////////
-  // WARNING: BELOW IS JUST FOR DEMONSTRATION PURPOSE, IT HAS TO BE DONE
-  // ACCORDING TO THE DESIGN SPECIFICATION
-  m_snapupload.Start(NULL, 0, 0);
-  //////////////////////////////////////////////////////////////////////////
-
+   
 	//AfxMessageBox(L"1");
 	OAFilterState fs = GetMediaState();
 	if(fs == State_Running) SendMessage(WM_COMMAND, ID_PLAY_PAUSE);
@@ -15203,13 +15204,6 @@ static int s_fOpenedThruThread = false;
 
 void CMainFrame::OpenMedia(CAutoPtr<OpenMediaData> pOMD)
 {
-  //////////////////////////////////////////////////////////////////////////
-  // WARNING: BELOW IS JUST FOR DEMONSTRATION PURPOSE, IT HAS TO BE DONE
-  // IN A SEPARATE TIMER
-  m_snapupload.SetFrame(GetSafeHwnd());
-  m_snapupload.Start(NULL, 0, 0);
-  //////////////////////////////////////////////////////////////////////////
-
 	// shortcut
 	if(OpenDeviceData* p = dynamic_cast<OpenDeviceData*>(pOMD.m_p))
 	{
@@ -17359,6 +17353,17 @@ void CMainFrame::_HandleTimer_Stats()
       }
     }
   }
+
+  //////////////////////////////////////////////////////////////////////////
+  // remembering current playback time for others to use, such as
+  // SnapUploadController
+  __int64 playtime;
+  pMS->GetCurrentPosition(&playtime);
+  PlayerPreference* pref = PlayerPreference::GetInstance();
+  GUID tf;
+  pMS->GetTimeFormat(&tf);
+  pref->SetIntVar(INTVAR_CURPLAYEDTIME,
+    tf == TIME_FORMAT_MEDIA_TIME ? playtime / 10000 : -1);
 }
 
 void CMainFrame::_HandleTimer_StreamPosPoller()
@@ -17443,5 +17448,86 @@ void CMainFrame::OnAudioSettingUpdated()
     pASF->SetNormalizeBoost(s.fAudioNormalize, s.fAudioNormalizeRecover, s.AudioBoost);
     pASF->SetEQControl(s.pEQBandControlPerset, s.pEQBandControlCustom);
     pASF->SetSpeakerChannelConfig(AfxGetMyApp()->GetNumberOfSpeakers(), s.pSpeakerToChannelMap2, s.pSpeakerToChannelMapOffset, 0, s.iSS, map_centerch2lr);
+  }
+}
+
+void CMainFrame::OnControllerSaveImage()
+{
+  AppSettings&      s    = AfxGetAppSettings();
+  PlayerPreference* pref = PlayerPreference::GetInstance();
+
+  /* Check if a compatible renderer is being used */
+  if(!IsRendererCompatibleWithSaveImage())
+    return;
+
+  wchar_t fn[512];
+  int realsnaptime = pref->GetIntVar(INTVAR_CURSNAPTIME);
+  int curtime      = pref->GetIntVar(INTVAR_CURPLAYEDTIME);
+  if (curtime < 0)
+    return;
+  if ((realsnaptime - curtime < 1000) && (realsnaptime - curtime > -1000))
+  {
+    int vwidth, vheight;
+    vwidth  = GetVideoSize().cx;
+    vheight = GetVideoSize().cy;
+    //check if the width bigger than 1280
+    swprintf_s(fn, 512, L"%s_autosnapshot_%s_%d_%d_%d_%d.jpg",
+      m_suc.GetTempDir().c_str(),
+      m_suc.GetHashStr().c_str(),
+      vwidth <= 1280 ? vwidth : vwidth / 2,
+      vwidth <= 1280 ? vheight: vheight / 2,
+      realsnaptime / 1000,
+      m_suc.GetTotalTime());
+    AutoSaveImage(fn, vwidth > 1280);
+    m_suc.SetLastSnapFile((LPCTSTR)fn);
+    m_suc.RemoveShotTime(realsnaptime);
+  }
+}
+
+void CMainFrame::_StartSnap()
+{
+  PlayerPreference* pref = PlayerPreference::GetInstance();
+  CSVPhash svpHash;
+  __int64  totaltime, playtime;
+  m_suc.SetFrame(m_hWnd);
+  pMS->GetDuration(&totaltime);
+  pMS->GetCurrentPosition(&playtime);
+  pref->SetIntVar(INTVAR_CURSNAPTIME, (unsigned int)(playtime / 10000));
+  pref->SetIntVar(INTVAR_CURTOTALPLAYTIME, (unsigned int)(totaltime / 10000));
+  m_suc.Start((LPCTSTR)svpHash.ComputerFileHash(m_fnCurPlayingFile));
+}
+
+void CMainFrame::AutoSaveImage(LPCTSTR fn, bool shrink_inhalf)
+{
+  BYTE* pData = NULL;
+  long size = 0;
+
+  if(GetDIB(&pData, size))
+  {
+    HANDLE hMem = GlobalAlloc(GMEM_DDESHARE | GMEM_MOVEABLE, size);
+    if(hMem){
+      void *pMem = GlobalLock(hMem);
+      CopyMemory(pMem, pData, size);
+
+      OpenClipboard();
+      EmptyClipboard();
+
+      HANDLE hHandle = SetClipboardData(CF_DIB, pMem);
+      if(!hHandle)
+        AfxMessageBox(_T("SetClipboardData Failed"));
+      CloseClipboard();
+      GlobalUnlock(hMem);
+    }
+    if(fn)
+    {
+      size /= 2;
+      BYTE* pHalfData = NULL;
+      pHalfData = new BYTE[size];
+      if (!shrink_inhalf)
+        CJpegEncoderFile(fn).Encode(pData);
+      else
+        CJpegEncoderFile(fn).EncodeHalf(pData);
+    }
+    delete [] pData;
   }
 }

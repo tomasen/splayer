@@ -67,7 +67,8 @@
 #include "..\..\..\lib\lyriclib\lyriclib.h"
 #include "SVPLycShowBox.h"
 
-#include "Controller/SnapUploadController.h"
+#include "Controller\SnapUploadController.h"
+
 
 enum {PM_NONE, PM_FILE, PM_DVD, PM_CAPTURE};
 
@@ -292,6 +293,7 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 	void SaveDIB(LPCTSTR fn, BYTE* pData, long size);
 	BOOL IsRendererCompatibleWithSaveImage();
 	void SaveImage(LPCTSTR fn = NULL);
+  void AutoSaveImage(LPCTSTR fn, bool istoobig = false);
 	void SaveThumbnails(LPCTSTR fn);
 
 	//
@@ -317,24 +319,25 @@ public:
 
 	enum
 	{
-		TIMER_STREAMPOSPOLLER = 1, 
-		TIMER_STREAMPOSPOLLER2, 
-		TIMER_FULLSCREENCONTROLBARHIDER, 
-		TIMER_FULLSCREENMOUSEHIDER, 
-		TIMER_STATS,
-		TIMER_LEFTCLICK,
-		TIMER_STATUSERASER,
-		TIMER_STATUSCHECKER,
-		TIMER_MOUSELWOWN,
-		TIMER_RECENTFOCUSED,
-		TIMER_STATUSBARHIDER,
-		TIMER_START_CHECKUPDATER,
-		TIMER_DELETE_CUR_FILE,
-		TIMER_DELETE_CUR_FOLDER,
-		TIMER_TRANSPARENTTOOLBARSTAT,
-		TIMER_REDRAW_WINDOW,
-        TIMER_IDLE_TASK,
-        TIMER_LOADING
+    TIMER_STREAMPOSPOLLER = 1, 
+    TIMER_STREAMPOSPOLLER2, 
+    TIMER_FULLSCREENCONTROLBARHIDER, 
+    TIMER_FULLSCREENMOUSEHIDER, 
+    TIMER_STATS,
+    TIMER_LEFTCLICK,
+    TIMER_STATUSERASER,
+    TIMER_STATUSCHECKER,
+    TIMER_MOUSELWOWN,
+    TIMER_RECENTFOCUSED,
+    TIMER_STATUSBARHIDER,
+    TIMER_START_CHECKUPDATER,
+    TIMER_DELETE_CUR_FILE,
+    TIMER_DELETE_CUR_FOLDER,
+    TIMER_TRANSPARENTTOOLBARSTAT,
+    TIMER_REDRAW_WINDOW,
+    TIMER_IDLE_TASK,
+    TIMER_LOADING,
+    TIMER_SNAP
 	};
 
 
@@ -696,6 +699,7 @@ public:
 	afx_msg void OnFileSaveAs();
 	afx_msg void OnUpdateFileSaveAs(CCmdUI* pCmdUI);
 	afx_msg void OnFileSaveImage();
+  afx_msg void OnControllerSaveImage();
 	afx_msg void OnFileCopyImageToCLipBoard();
 	afx_msg void OnFileSaveImageAuto();
 	afx_msg void OnUpdateFileSaveImage(CCmdUI* pCmdUI);
@@ -947,6 +951,7 @@ private:
 	CRgn m_rgn;
 	CFont m_hft;
 	BOOL m_bHasDrawShadowText;
+  SnapUploadController m_suc;
 	//long m_nBoxStatus[4];
 	/*NEW UI END*/
 	CString fnDelPending;
@@ -984,6 +989,5 @@ public:
 private:
   void _HandleTimer_Stats();
   void _HandleTimer_StreamPosPoller();
-
-  SnapUploadController  m_snapupload;
+  void _StartSnap();
 };

@@ -348,6 +348,85 @@ bool CJpegEncoder::Encode(const BYTE* dib)
 	return true;
 }
 
+bool CJpegEncoder::EncodeHalfBase(const BYTE* dib)
+{
+  m_bbuff = m_bwidth = 0;
+
+  BITMAPINFO* bi = (BITMAPINFO*)dib;
+
+  int bpp = bi->bmiHeader.biBitCount;
+
+  if(bpp != 16 && bpp != 24 && bpp != 32) // 16 & 24 not tested!!! there may be some alignment problems when the row size is not 4*something in bytes
+    return false;
+
+  m_w = bi->bmiHeader.biWidth;
+  m_h = abs(bi->bmiHeader.biHeight);
+  m_p = new BYTE[m_w*m_h*4];
+
+  const BYTE* src = dib + sizeof(bi->bmiHeader);
+  if(bi->bmiHeader.biBitCount <= 8)
+  {
+    if(bi->bmiHeader.biClrUsed) src += bi->bmiHeader.biClrUsed * sizeof(bi->bmiColors[0]);
+    else src += (1 << bi->bmiHeader.biBitCount) * sizeof(bi->bmiColors[0]);
+  }
+
+  int srcpitch = m_w*(bpp>>3);
+  int dstpitch = m_w*4;
+
+  BitBltFromRGBToRGB(
+    m_w, m_h, 
+    m_p, dstpitch, 32, 
+    (BYTE*)src + srcpitch*(m_h-1), -srcpitch, bpp);
+
+  int halflen = m_w * m_h / 2;
+  int* halfp  = new int[halflen];
+  int* intp   = (int*)m_p;
+  for (int i = 0; i < halflen; i++)
+    halfp[i]     = intp[i * 2];
+  m_w /= 2;
+  dstpitch /= 2;
+
+  intp = new int[halflen / 2];
+  for (int i = 0, j = 0; i < halflen, j < halflen / 2; i++)
+  {
+    if (i / m_w % 2 == 0)
+      continue;
+    intp[j++] = halfp[i];
+  }
+  m_h /= 2;
+  srcpitch /= 2;
+  delete[] halfp;
+  m_p = (BYTE*)intp;
+
+
+  BYTE* p = m_p;
+  for(BYTE* e = p + m_h*dstpitch; p < e; p += 4)
+  {
+    int r = p[2], g = p[1], b = p[0];
+
+    p[0] = (BYTE)min(max(0.2990*r+0.5870*g+0.1140*b, 0), 255) - 128;
+    p[1] = (BYTE)min(max(-0.1687*r-0.3313*g+0.5000*b + 128, 0), 255) - 128;
+    p[2] = (BYTE)min(max(0.5000*r-0.4187*g-0.0813*b + 128, 0), 255) - 128;
+  }
+
+  if(quanttbl[0][0] == 16)
+  {
+    for(int i = 0; i < countof(quanttbl); i++)
+      for(int j = 0; j < countof(quanttbl[0]); j++)
+        quanttbl[i][j] >>= 2; // the default quantization table contains a little too large values
+  }
+
+  WriteSOI();
+  WriteDQT();
+  WriteSOF0();
+  WriteDHT();
+  WriteSOS();
+  WriteEOI();
+
+  delete [] m_p;
+
+  return true;
+}
 //////////
 
 CJpegEncoderFile::CJpegEncoderFile(LPCTSTR fn)
@@ -375,6 +454,14 @@ bool CJpegEncoderFile::Encode(const BYTE* dib)
 	return ret;
 }
 
+bool CJpegEncoderFile::EncodeHalf(const BYTE* dib)
+{
+  if(!(m_file = _tfopen(m_fn, _T("wb")))) return false;
+  bool ret = EncodeHalfBase(dib);
+  fclose(m_file);
+  m_file = NULL;
+  return ret;
+}
 //////////
 
 CJpegEncoderMem::CJpegEncoderMem()

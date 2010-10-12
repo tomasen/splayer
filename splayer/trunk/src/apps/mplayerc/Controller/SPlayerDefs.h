@@ -11,12 +11,16 @@
 #define INTVAR_LEFTCLICK2PAUSE                      1006
 #define INTVAR_MAP_CENTERCH2LR                      1007
 #define INTVAR_CHECKFILEASSOCONSTARTUP              1008
+#define INTVAR_CURSNAPTIME                          1009
+#define INTVAR_CURPLAYEDTIME                        1010
+#define INTVAR_CURTOTALPLAYTIME                     1011
 
 // int64 variables
 #define INT64VAR_MAINWINDOW         1000
 
 // string variables
 #define STRVAR_HOTKEYSCHEME         1000
+#define STRVAR_GETSNAPTIMEURL       1001
 
 // string array variables
 #define STRARRAY_PLAYLIST           1000

@@ -1702,6 +1702,7 @@ SVP_LogMsg5(L"Settings::InitInstanceThreaded 16");
 					}
 					
 				}
+        break;
 			}
             SVP_LogMsg5(L"Settings::InitInstanceThreaded 18");
             if(!IsVista()){

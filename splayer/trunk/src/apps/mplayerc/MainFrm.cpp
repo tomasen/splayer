@@ -294,6 +294,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI(ID_FILE_SAVE_COPY, OnUpdateFileSaveAs)
 	ON_COMMAND(ID_FILE_SAVE_IMAGE, OnFileSaveImage)
   ON_COMMAND(ID_CONTROLLER_SAVE_IMAGE, OnControllerSaveImage)
+  ON_COMMAND(ID_COMPLETE_QUERY_SUBTITLE, OnCompleteQuerySubtitle)
 	ON_COMMAND(ID_FILE_COPYTOCLIPBOARD, OnFileCopyImageToCLipBoard)
 	ON_UPDATE_COMMAND_UI(ID_FILE_SAVE_IMAGE, OnUpdateFileSaveImage)
 	ON_UPDATE_COMMAND_UI(ID_FILE_COPYTOCLIPBOARD, OnUpdateFileSaveImage)
@@ -7280,6 +7281,7 @@ void CMainFrame::OnPlayPlay()
 		}
 		
 	}
+  KillTimer(TIMER_SNAP);
   SetTimer(TIMER_SNAP, 10000, NULL);
 }
 
@@ -10776,16 +10778,18 @@ UINT __cdecl SVPThreadLoadThread( LPVOID lpParam )
 	return 0; 
 } 
 void CMainFrame::SVPSubDownloadByVPath(CString szVPath, CAtlList<CString>* szaStatMsgs){
-	CSVPThreadLoadThreadData* pData = new CSVPThreadLoadThreadData();
-	pData->pFrame = (CMainFrame*)this;
-	pData->szVidPath = szVPath;
-	if( szaStatMsgs == NULL){
-		pData->statusmsgs = &m_statusmsgs;
-	}else{
-		pData->statusmsgs = szaStatMsgs;
-	}
-	m_ThreadSVPSub = AfxBeginThread(SVPThreadLoadThread, pData); 
-    
+	//CSVPThreadLoadThreadData* pData = new CSVPThreadLoadThreadData();
+	//pData->pFrame = (CMainFrame*)this;
+	//pData->szVidPath = szVPath;
+	//if( szaStatMsgs == NULL){
+	//	pData->statusmsgs = &m_statusmsgs;
+	//}else{
+	//	pData->statusmsgs = szaStatMsgs;
+	//}
+	//m_ThreadSVPSub = AfxBeginThread(SVPThreadLoadThread, pData);
+  m_subcontrl.SetMsgs(&m_statusmsgs);
+  m_subcontrl.SetFrame(m_hWnd);
+  m_subcontrl.Start((LPCTSTR)szVPath, SubTransController::DownloadSubtitle);
 }
 class CSVPSubUploadThreadData{
 public:
@@ -10808,18 +10812,23 @@ UINT __cdecl SVPThreadUploadSubFile( LPVOID lpParam )
 	return 0; 
 } 
 void CMainFrame::SVP_UploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString szSubPath, int iDelayMS, CAtlList<CString>* szaStatMsgs, CStringArray* szaPostTerms){
-	CSVPSubUploadThreadData* pData = new CSVPSubUploadThreadData();
-	pData->fnVideoFilePath = fnVideoFilePath;
-	pData->szSubPath = szSubPath;
-	pData->iDelayMS = iDelayMS;
-	if( szaStatMsgs == NULL){
-		pData->statusmsgs = &m_statusmsgs;
-	}else{
-		pData->statusmsgs = szaStatMsgs;
-	}
-	pData->pFrame = (CMainFrame*)this;
-	pData->szaPostTerms = szaPostTerms;
-	AfxBeginThread(SVPThreadUploadSubFile, pData); 
+	//CSVPSubUploadThreadData* pData = new CSVPSubUploadThreadData();
+	//pData->fnVideoFilePath = fnVideoFilePath;
+	//pData->szSubPath = szSubPath;
+	//pData->iDelayMS = iDelayMS;
+	//if( szaStatMsgs == NULL){
+	//	pData->statusmsgs = &m_statusmsgs;
+	//}else{
+	//	pData->statusmsgs = szaStatMsgs;
+	//}
+	//pData->pFrame = (CMainFrame*)this;
+	//pData->szaPostTerms = szaPostTerms;
+	//AfxBeginThread(SVPThreadUploadSubFile, pData);
+  m_subcontrl.SetDelayMs(iDelayMS);
+  m_subcontrl.SetMsgs(&m_statusmsgs);
+  m_subcontrl.SetFrame(m_hWnd);
+  m_subcontrl.SetSubfile((LPCTSTR)szSubPath);
+  m_subcontrl.Start((LPCTSTR)fnVideoFilePath, SubTransController::UploadSubtitle);
 }
 
 void CMainFrame::OpenFile(OpenFileData* pOFD)
@@ -17449,6 +17458,13 @@ void CMainFrame::OnAudioSettingUpdated()
     pASF->SetEQControl(s.pEQBandControlPerset, s.pEQBandControlCustom);
     pASF->SetSpeakerChannelConfig(AfxGetMyApp()->GetNumberOfSpeakers(), s.pSpeakerToChannelMap2, s.pSpeakerToChannelMapOffset, 0, s.iSS, map_centerch2lr);
   }
+}
+
+void CMainFrame::OnCompleteQuerySubtitle()
+{
+  std::wstring subtitle = PlayerPreference::GetInstance()->GetStringVar(STRVAR_QUERYSUBTITLE);
+  LoadSubtitle(subtitle.c_str());
+  SetSubtitle(m_pSubStreams2.GetTail(), true, false);
 }
 
 void CMainFrame::OnControllerSaveImage()

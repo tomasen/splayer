@@ -68,6 +68,7 @@
 #include "SVPLycShowBox.h"
 
 #include "Controller\SnapUploadController.h"
+#include "Controller/SubTransController.h"
 
 
 enum {PM_NONE, PM_FILE, PM_DVD, PM_CAPTURE};
@@ -700,6 +701,7 @@ public:
 	afx_msg void OnUpdateFileSaveAs(CCmdUI* pCmdUI);
 	afx_msg void OnFileSaveImage();
   afx_msg void OnControllerSaveImage();
+  afx_msg void OnCompleteQuerySubtitle();
 	afx_msg void OnFileCopyImageToCLipBoard();
 	afx_msg void OnFileSaveImageAuto();
 	afx_msg void OnUpdateFileSaveImage(CCmdUI* pCmdUI);
@@ -990,4 +992,5 @@ private:
   void _HandleTimer_Stats();
   void _HandleTimer_StreamPosPoller();
   void _StartSnap();
+  SubTransController  m_subcontrl;
 };

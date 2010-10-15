@@ -33,6 +33,7 @@ PlayerPreference::PlayerPreference(void):
   m_map_strvar[STRVAR_HOTKEYSCHEME]         = GetProfileString(L"Settings", L"HotkeyScheme", L"");
   m_map_strvar[STRVAR_GETSNAPTIMEURL]       = 
     L"http://host/snap_controller.php?action=get_snapshot_preferedtimes&videohash=%s&videolength=%d";
+  m_map_strvar[STRVAR_QUERYSUBTITLE]        = L"";
 }
 
 PlayerPreference::~PlayerPreference(void)

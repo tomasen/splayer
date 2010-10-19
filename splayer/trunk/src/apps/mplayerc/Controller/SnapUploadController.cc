@@ -15,7 +15,7 @@
 SnapUploadController::SnapUploadController(void):
   m_stopevent(::CreateEvent(NULL, TRUE, FALSE, NULL)),
   m_thread(NULL),
-  m_lastsavedsanp(L"")
+  m_lastsnapname(L"")
 {
 
 }
@@ -150,10 +150,10 @@ void SnapUploadController::_thread()
         // wait for 5 seconds
         ::Sleep(5000);
         // step 4. read temporary directory to locate this file, if failed, return
-        if (m_lastsavedsanp == L"")
+        if (m_lastsnapname == L"")
           continue;
         struct _stat buf;
-        if (_wstat(m_lastsavedsanp.c_str(), &buf) != 0)
+        if (_wstat(m_lastsnapname.c_str(), &buf) != 0)
           continue;
         // step 5. if successful, use sinet to upload (similar to step 1's loop)
         UploadImage();
@@ -195,7 +195,7 @@ void SnapUploadController::RemoveShotTime(int usedtime)
 
 void SnapUploadController::SetLastSnapFile(std::wstring fn)
 {
-  m_lastsavedsanp = fn;
+  m_lastsnapname = fn;
 }
 
 void SnapUploadController::UploadImage()
@@ -207,7 +207,7 @@ void SnapUploadController::UploadImage()
 
   sinet::refptr<sinet::postdataelem> net_pelem1 = sinet::postdataelem::create_instance();
   net_pelem1->set_name(L"file");
-  net_pelem1->setto_file(m_lastsavedsanp.c_str());
+  net_pelem1->setto_file(m_lastsnapname.c_str());
   net_pd->add_elem(net_pelem1);
 
   sinet::refptr<sinet::postdataelem> net_pelem2 = sinet::postdataelem::create_instance();
@@ -234,5 +234,5 @@ void SnapUploadController::UploadImage()
       return;
   }
 
-  remove(Strings::WStringToUtf8String(m_lastsavedsanp).c_str());
+  remove(Strings::WStringToUtf8String(m_lastsnapname).c_str());
 }

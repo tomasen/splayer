@@ -43,7 +43,7 @@ public:
 private:
   HWND            m_frame;
   std::wstring    m_hash_str;
-  std::wstring    m_lastsavedsanp;
+  std::wstring    m_lastsnapname;
   unsigned int    m_curtime;
   unsigned int    m_totaltime;
   long            m_cursystime;

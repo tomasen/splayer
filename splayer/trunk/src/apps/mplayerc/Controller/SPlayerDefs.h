@@ -22,6 +22,7 @@
 #define STRVAR_HOTKEYSCHEME         1000
 #define STRVAR_GETSNAPTIMEURL       1001
 #define STRVAR_QUERYSUBTITLE        1002
+#define STRVAR_GETSNAPTIMEURL_ACT   1003
 
 // string array variables
 #define STRARRAY_PLAYLIST           1000

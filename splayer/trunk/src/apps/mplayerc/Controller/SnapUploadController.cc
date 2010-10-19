@@ -91,44 +91,35 @@ void SnapUploadController::_thread()
   net_task->use_config(net_cfg);
   wchar_t rqst_url[512];
   swprintf_s(rqst_url, 512,
-    pref->GetStringVar(STRVAR_GETSNAPTIMEURL).c_str(),
+    pref->GetStringVar(STRVAR_GETSNAPTIMEURL_ACT).c_str(),
     GetHashStr().c_str(), GetTotalTime());
-  net_rqst->set_request_url(rqst_url);
-  net_rqst->set_request_method(L"GET");
+  std::wstring urlact(rqst_url);
+  std::wstring url = pref->GetStringVar(STRVAR_GETSNAPTIMEURL) + urlact;
+  net_rqst->set_request_url(url.c_str());
+  net_rqst->set_request_method(REQ_GET);
   net_task->append_request(net_rqst);
   net_pool->execute(net_task);
 
-  while (true)
+  while (net_pool->is_running_or_queued(net_task))
   {
     if (::WaitForSingleObject(m_stopevent, 1000) == WAIT_OBJECT_0)
       return;
-      // check task finish, if it's finished, parse buffer to |time_to_shot|, 
-      // and break while loop
-      // {
-      //   m_shottime.push_back(30000);
-      //   m_shottime.push_back(60000);
-      //   m_shottime.push_back(300000);
-      //   break;
-      // }
+  }
 
-    if (!net_pool->is_running_or_queued(net_task))
-    {
-      std::vector<unsigned char> st_buffer = net_rqst->get_response_buffer();
-      st_buffer.push_back(0);
-      int         temptime;
-      std::string rspstr = (char*)&st_buffer[0];
-      if (rspstr.find(']') - rspstr.find('[') == 1)
-        return;
-      std::stringstream snaptimess(rspstr.c_str());
-      snaptimess.ignore(snaptimess.str().length(), '[');
-      while (!snaptimess.eof())
-      {
-        snaptimess >> temptime;
-        m_shottime.push_back(temptime);
-        snaptimess.ignore(snaptimess.str().length(), ' ');
-      }
-      break;
-    }
+  // parse the HTTP response body
+  std::vector<unsigned char> st_buffer = net_rqst->get_response_buffer();
+  st_buffer.push_back(0);
+  int         temptime;
+  std::string rspstr = (char*)&st_buffer[0];
+  if (rspstr.find(']') - rspstr.find('[') == 1)
+    return;
+  std::stringstream snaptimess(rspstr.c_str());
+  snaptimess.ignore(snaptimess.str().length(), '[');
+  while (!snaptimess.eof())
+  {
+    snaptimess >> temptime;
+    m_shottime.push_back(temptime);
+    snaptimess.ignore(snaptimess.str().length(), ' ');
   }
 
   if (m_shottime.empty())
@@ -148,6 +139,7 @@ void SnapUploadController::_thread()
     if (it != m_shottime.end())
     {
       int wait_time = *it - m_curtime - (::clock() - m_cursystime);
+
       if (wait_time > 0 && wait_time < 5000)
       {
         pref->SetIntVar(INTVAR_CURSNAPTIME, *it);
@@ -215,27 +207,32 @@ void SnapUploadController::UploadImage()
 
   sinet::refptr<sinet::postdataelem> net_pelem1 = sinet::postdataelem::create_instance();
   net_pelem1->set_name(L"file");
-  net_pelem1->setto_text(m_lastsavedsanp.c_str());
+  net_pelem1->setto_file(m_lastsavedsanp.c_str());
   net_pd->add_elem(net_pelem1);
+
   sinet::refptr<sinet::postdataelem> net_pelem2 = sinet::postdataelem::create_instance();
   net_pelem2->set_name(L"videohash");
   net_pelem2->setto_text(GetHashStr().c_str());
   net_pd->add_elem(net_pelem2);
+
   sinet::refptr<sinet::postdataelem> net_pelem3 = sinet::postdataelem::create_instance();
   net_pelem3->set_name(L"action");
   net_pelem3->setto_text(L"upload_snapshot");
   net_pd->add_elem(net_pelem3);
 
-  net_rqst->set_request_method(L"POST");
+  PlayerPreference* pref = PlayerPreference::GetInstance();
+  net_rqst->set_request_url(pref->GetStringVar(STRVAR_GETSNAPTIMEURL).c_str());
+
+  net_rqst->set_request_method(REQ_POST);
   net_rqst->set_postdata(net_pd);
   net_task->append_request(net_rqst);
   net_pool->execute(net_task);
-  while (true)
+
+  while (net_pool->is_running_or_queued(net_task))
   {
     if (::WaitForSingleObject(m_stopevent, 1000) == WAIT_OBJECT_0)
       return;
-    if (!net_pool->is_running_or_queued(net_task))
-      break;
   }
+
   remove(Strings::WStringToUtf8String(m_lastsavedsanp).c_str());
 }

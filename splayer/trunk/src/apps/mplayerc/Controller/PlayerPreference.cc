@@ -31,8 +31,8 @@ PlayerPreference::PlayerPreference(void):
   m_map_intvar[INTVAR_CHECKFILEASSOCONSTARTUP]             = GetProfileInt(ResStr(IDS_R_SETTINGS), L"CheckFileAssocOnStartUp", 0);
 
   m_map_strvar[STRVAR_HOTKEYSCHEME]         = GetProfileString(L"Settings", L"HotkeyScheme", L"");
-  m_map_strvar[STRVAR_GETSNAPTIMEURL]       = 
-    L"http://host/snap_controller.php?action=get_snapshot_preferedtimes&videohash=%s&videolength=%d";
+  m_map_strvar[STRVAR_GETSNAPTIMEURL]       = L"http://webpj:8080/test_snapshot.php";
+  m_map_strvar[STRVAR_GETSNAPTIMEURL_ACT]   = L"?action=get_snapshot_preferedtimes&videohash=%s&videolength=%d";
   m_map_strvar[STRVAR_QUERYSUBTITLE]        = L"";
 }
 

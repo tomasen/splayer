@@ -53,6 +53,7 @@
 
 #include "..\..\filters\transform\mpadecfilter\MpaDecFilter.h"
 #include "Utils/FileAssoc_Win.h"
+#include "Controller/UsrBehaviorController.h"
 
 //Update URL
 char* szUrl = "http://svplayer.shooter.cn/api/updater.php";
@@ -61,6 +62,7 @@ DECLARE_LAZYINSTANCE(HotkeyController);
 DECLARE_LAZYINSTANCE(PlayerPreference);
 DECLARE_LAZYINSTANCE(PlaylistController);
 DECLARE_LAZYINSTANCE(HashController);
+DECLARE_LAZYINSTANCE(UsrBehaviorController);
 
 /////////
 typedef BOOL (WINAPI* MINIDUMPWRITEDUMP)(HANDLE hProcess, DWORD dwPid, HANDLE hFile, MINIDUMP_TYPE DumpType,

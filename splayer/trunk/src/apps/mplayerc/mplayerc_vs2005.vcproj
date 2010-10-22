@@ -1901,6 +1901,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Model\SubTransFormat.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Model\SubTransFormat.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Model\UsrBehaviorData.cc"
 				>
 			</File>

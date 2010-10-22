@@ -21,7 +21,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
-			InheritedPropertySheets="..\..\common.vsprops;..\..\release.vsprops;.\wtl_integration.vsprops;.\atlserver_integration.vsprops;..\..\..\Thirdparty\sinet\sinet.vsprops;..\..\..\Thirdparty\sqlitepp.vsprops"
+			InheritedPropertySheets="..\..\common.vsprops;..\..\release.vsprops;.\wtl_integration.vsprops;.\atlserver_integration.vsprops;..\..\..\Thirdparty\sinet\sinet.vsprops;..\..\..\Thirdparty\sqlitepp.vsprops;..\..\..\Thirdparty\pkg\sphash.vsprops;..\..\..\Thirdparty\pkg\unrar_dll.vsprops"
 			UseOfMFC="1"
 			UseOfATL="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -1193,11 +1193,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon\DVD.ico"
+				RelativePath=".\res\ecio.icons\dvd.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\ecio.icons\dvd.ico"
+				RelativePath=".\res\icon\DVD.ico"
 				>
 			</File>
 			<File

@@ -12,6 +12,6 @@
 	<Tool
 		Name="VCLinkerTool"
 		AdditionalDependencies="sqlitepp-utf16.lib"
-		AdditionalLibraryDirectories="&quot;$(SolutionDir)Thirdparty\lib&quot;"
+		AdditionalLibraryDirectories="&quot;$(SolutionDir)Thirdparty\bin&quot;"
 	/>
 </VisualStudioPropertySheet>

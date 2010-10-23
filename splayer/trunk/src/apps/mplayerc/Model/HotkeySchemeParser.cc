@@ -261,7 +261,6 @@ bool HotkeySchemeParser::ReadFromFile(const wchar_t* filename)
       std::vector<unsigned int> params;
       size_t pos_start = equal_mark + 1;
       int paramindex   = 0;
-      wchar_t* end_ptr;
       while (true)
       {
         std::wstring field;
@@ -705,7 +704,7 @@ std::wstring HotkeySchemeParser::GetCmdNameByCmdCode(unsigned int cmdcode)
     return L"CMD_NONE";
   }
 }
-#undef CHKCMDCODE(x)
+#undef CHKCMDCODE
 
 #define CHKKEYCODE(x) case x: return L#x;
 std::wstring HotkeySchemeParser::GetKeyNameByKeyCode(unsigned int keycode)
@@ -1150,7 +1149,7 @@ std::wstring HotkeySchemeParser::GetVirtNameByVirtCode(unsigned int virtcode)
   while (virtcode > 0)
   {
     bitindex++;
-    bool flag = virtcode % 2;
+    bool flag = (virtcode % 2)?true:false;
     virtcode >>= 1;
     if (flag)
     {

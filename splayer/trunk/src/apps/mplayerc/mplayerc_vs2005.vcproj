@@ -1193,11 +1193,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\ecio.icons\dvd.ico"
+				RelativePath=".\res\icon\DVD.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon\DVD.ico"
+				RelativePath=".\res\ecio.icons\dvd.ico"
 				>
 			</File>
 			<File
@@ -1282,6 +1282,10 @@
 			</File>
 			<File
 				RelativePath=".\res\logo.0.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\logo.0.jpg"
 				>
 			</File>
 			<File
@@ -1533,11 +1537,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\ecio.icons\video.ico"
+				RelativePath=".\res\icon\video.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon\video.ico"
+				RelativePath=".\res\ecio.icons\video.ico"
 				>
 			</File>
 			<File
@@ -1715,6 +1719,14 @@
 					RelativePath=".\UserInterface\Dialogs\OptionSubtitlePage_Win.h"
 					>
 				</File>
+				<File
+					RelativePath=".\UserInterface\Dialogs\OptionThemePage_Win.cc"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Dialogs\OptionThemePage_Win.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Support"
@@ -1739,6 +1751,14 @@
 			<Filter
 				Name="Renderer"
 				>
+				<File
+					RelativePath=".\UserInterface\Renderer\OSDView.cc"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Renderer\OSDView.h"
+					>
+				</File>
 				<File
 					RelativePath=".\UserInterface\Renderer\PlaylistView_MfcProxy.cc"
 					>
@@ -1821,6 +1841,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Controller\OSDController.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Controller\OSDController.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Controller\PlayerPreference.cc"
 				>
 			</File>
@@ -1854,6 +1882,14 @@
 			</File>
 			<File
 				RelativePath=".\Controller\SubTransController.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Controller\ThemePkgController.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Controller\ThemePkgController.h"
 				>
 			</File>
 			<File
@@ -1906,6 +1942,14 @@
 			</File>
 			<File
 				RelativePath=".\Model\SubTransFormat.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Model\ThemePkg.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Model\ThemePkg.h"
 				>
 			</File>
 			<File

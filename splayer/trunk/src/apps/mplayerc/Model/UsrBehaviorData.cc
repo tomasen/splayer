@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "UsrBehaviorData.h"
-#include "sqlitepp\sqlitepp\session.hpp"
+#include "session.hpp"
+#include "sqlitepp.hpp"
+#include "transaction.hpp"
 
 UsrBehaviorData::~UsrBehaviorData()
 {
@@ -14,22 +16,24 @@ UsrBehaviorData::~UsrBehaviorData()
     sqlitepp::session db(dbname);
     // cannot find the db file, means today is in a new week
     SetEnvironmentData();
-    OutputDebugString(dbname);
-    OutputDebugString(L"\n");
     // create a new db file
     db << "create table usrbhv ("
-      << "id integer, data text, time double)";
+       << "id integer, data text, time real)";
     // begin the thread to upload the behavior data of last week
   }
 
   sqlitepp::session db(dbname);
+  db << "PRAGMA synchronous=0";
+  sqlitepp::transaction ts(db);
   for (std::vector<UsrBehaviorEntry>::iterator it = ubhv_entries.begin();
     it != ubhv_entries.end(); it++)
   {
-    db << "insert into usrbhv values(" << (*it).id
-      << ", '" << (*it).data.c_str()
-      << "', " << (*it).time << ")";
+    db << "insert into usrbhv values(:id, :data, :time)",
+      sqlitepp::use((*it).id),
+      sqlitepp::use((*it).data),
+      sqlitepp::use((*it).time);
   }
+  ts.commit();
 }
 
 void UsrBehaviorData::AppendEntry(int id, std::wstring data)

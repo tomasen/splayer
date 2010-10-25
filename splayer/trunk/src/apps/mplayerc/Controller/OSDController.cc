@@ -11,6 +11,11 @@ void OSDController::SendMessage(std::wstring msg)
 
 }
 
+void OSDController::SendMessage(unsigned int res_id, ...)
+{
+
+}
+
 std::wstring OSDController::PopMessage()
 {
   return L"";

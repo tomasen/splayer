@@ -10,6 +10,7 @@ class OSDController:
 public:
   void SetWindow(HWND hwnd);
   void SendMessage(std::wstring msg);
+  void SendMessage(unsigned int res_id, ...);
   std::wstring PopMessage();
 
 private:

@@ -7,14 +7,8 @@ public:
   // utility function for building/unpacking a theme pkg file
   bool ReadThemeFromDir(std::wstring input_dir);
   bool ReadThemeFromPkg(std::wstring pkg_filename);
-  bool WriteThemeToDir(std::wstring output_dir, std::vector<std::wstring>& output_filelist);
+  bool WriteThemeToDir(std::wstring output_dir, std::vector<std::wstring>* output_filelist = NULL);
   bool WriteThemeToPkg(std::wstring pkg_filename);
-
-  // pkg info
-  std::vector<std::wstring> GetFileList();
-  std::wstring GetBaseDir();
-  std::wstring GetPkgFileName();
-  WTL::CBitmap GetThumbnail();
 
 private:
   std::vector<std::wstring> m_file_list;

@@ -1,20 +1,12 @@
 #include "stdafx.h"
 #include "ThemePkgController.h"
 
-void ThemePkgController::DownloadThemePkg()
+void ThemePkgController::ApplyThemePkg(std::wstring input_pkg_filename)
 {
-  if (!m_pool)
-    m_pool = sinet::pool::create_instance();
+
 }
 
-bool ThemePkgController::IsThemePkgDownloadComplete()
+void ThemePkgController::RevertToDefault()
 {
-  // detect download completion
-  // if it's completed, use ThemePkg model to read in all downloaded theme pkgs
-  return false;
-}
 
-std::vector<ThemePkg> ThemePkgController::GetDownloadedPkgs()
-{
-  return std::vector<ThemePkg>();
 }

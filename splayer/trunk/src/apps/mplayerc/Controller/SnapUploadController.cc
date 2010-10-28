@@ -9,7 +9,7 @@
 #include "postdataelem.h"
 #include <string>
 #include <sstream>
-#include "..\Utils\Strings.h"
+#include "../Utils/Strings.h"
 #include <io.h>
 
 SnapUploadController::SnapUploadController(void):

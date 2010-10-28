@@ -2,8 +2,8 @@
 #define USRBEHAVIORCONTROLLER_H
 
 #include "LazyInstance.h"
-#include "..\Utils\CriticalSection.h"
-#include "..\Model\UsrBehaviorData.h"
+#include "../Utils/CriticalSection.h"
+#include "../Model/UsrBehaviorData.h"
 
 class UsrBehaviorController:
   public LazyInstanceImpl<UsrBehaviorController>

@@ -3,7 +3,7 @@
 #include "session.hpp"
 #include "sqlitepp.hpp"
 #include "transaction.hpp"
-#include "..\Utils\SPlayerGUID.h"
+#include "../Utils/SPlayerGUID.h"
 
 UsrBehaviorData::~UsrBehaviorData()
 {

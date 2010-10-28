@@ -1,7 +1,7 @@
 #include "StdAfx.h"
-#include "..\Utils\Strings.h"
-#include "..\Utils\CriticalSection.h"
-#include "..\Model\UsrBehaviorData.h"
+#include "../Utils/Strings.h"
+#include "../Utils/CriticalSection.h"
+#include "../Model/UsrBehaviorData.h"
 #include "pool.h"
 #include "task.h"
 #include "request.h"
@@ -10,7 +10,7 @@
 #include "PlayerPreference.h"
 #include "SPlayerDefs.h"
 #include "UsrBehaviorController.h"
-#include "..\Utils\SPlayerGUID.h"
+#include "../Utils/SPlayerGUID.h"
 
 sinet::refptr<sinet::task> GetPreUploadTask()
 {

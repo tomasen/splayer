@@ -34,6 +34,8 @@ PlayerPreference::PlayerPreference(void):
   m_map_strvar[STRVAR_GETSNAPTIMEURL]       = L"http://webpj:8080/test_snapshot.php";
   m_map_strvar[STRVAR_GETSNAPTIMEURL_ACT]   = L"?action=get_snapshot_preferedtimes&videohash=%s&videolength=%d";
   m_map_strvar[STRVAR_QUERYSUBTITLE]        = L"";
+  m_map_strvar[STRVAR_UPLOADUSRBHVURL]      = L"http://host/usrbhv_controller.php";
+  m_map_strvar[STRVAR_UPLOADUSRBHVURL_ACT]  = L"?action=ensureupload";
 }
 
 PlayerPreference::~PlayerPreference(void)

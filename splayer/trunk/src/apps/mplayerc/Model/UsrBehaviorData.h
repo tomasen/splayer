@@ -11,13 +11,11 @@ class UsrBehaviorData
 public:
   ~UsrBehaviorData();
   void AppendEntry(int id, std::wstring data);
+  static int GetWeekCount();
 
 private:
   // create and fill a new environment data table
   void SetEnvironmentData();
-
-  // get the week count
-  int GetWeekCount();
 
   struct UsrBehaviorEntry
   {

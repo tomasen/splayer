@@ -3,17 +3,23 @@
 #include "session.hpp"
 #include "sqlitepp.hpp"
 #include "transaction.hpp"
+#include "..\Utils\SPlayerGUID.h"
 
 UsrBehaviorData::~UsrBehaviorData()
 {
-  std::wstring uid   = L"MYID";
-  wchar_t dbname[128];
-  swprintf_s(dbname, 128, DATABASE_NAME, uid.c_str(), GetWeekCount());
   struct _stat buf;
+  std::wstring uid;
+  SPlayerGUID::GenerateGUID(uid);
+  wchar_t dbname[128], appdatapath[128], fulldbpath[256], ubdbdirpath[128];
+  swprintf_s(dbname, 128, DATABASE_NAME, uid.c_str(), GetWeekCount());
+  ::GetEnvironmentVariable(L"APPDATA", appdatapath, 128);
+  swprintf_s(ubdbdirpath, 128, L"%s\\SPlayer\\ubdata", appdatapath);
+  ::CreateDirectory(ubdbdirpath, NULL);
+  swprintf_s(fulldbpath, 256, L"%s\\SPlayer\\ubdata\\%s", appdatapath, dbname);
 
-  if (_wstat(dbname, &buf) != 0)
+  if (_wstat(fulldbpath, &buf) != 0)
   {
-    sqlitepp::session db(dbname);
+    sqlitepp::session db(fulldbpath);
     // cannot find the db file, means today is in a new week
     SetEnvironmentData();
     // create a new db file
@@ -22,7 +28,7 @@ UsrBehaviorData::~UsrBehaviorData()
     // begin the thread to upload the behavior data of last week
   }
 
-  sqlitepp::session db(dbname);
+  sqlitepp::session db(fulldbpath);
   db << "PRAGMA synchronous=0";
   sqlitepp::transaction ts(db);
   for (std::vector<UsrBehaviorEntry>::iterator it = ubhv_entries.begin();
@@ -46,12 +52,6 @@ void UsrBehaviorData::AppendEntry(int id, std::wstring data)
   ubhv_entries.push_back(ube);
 }
 
-void UsrBehaviorData::SetEnvironmentData()
-{
-  // create a new db file
-  // insert into environment_table values (uuid, svnrev, ...);
-}
-
 int UsrBehaviorData::GetWeekCount()
 {
   struct tm tnow;
@@ -60,4 +60,10 @@ int UsrBehaviorData::GetWeekCount()
   localtime_s(&tnow, &t);
 
   return tnow.tm_yday / 7 + 1;
+}
+
+void UsrBehaviorData::SetEnvironmentData()
+{
+  // create a new db file
+  // insert into environment_table values (uuid, svnrev, ...);
 }

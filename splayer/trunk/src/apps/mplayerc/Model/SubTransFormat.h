@@ -5,8 +5,7 @@ class SubTransFormat
 {
 public:
   static int ExtractDataFromAiSubRecvBuffer_STL(CAtlList<CString>* m_handlemsgs, std::wstring szFilePath,
-                                                FILE* sAiSubRecvBuff,std::wstring tmpoutfile,
-                                                std::vector<std::wstring> &szaSubDescs,
+                                                std::wstring tmpoutfile, std::vector<std::wstring> &szaSubDescs,
                                                 std::vector<std::wstring> &tmpfiles);
   static int PackGZfile(std::wstring fnin, std::wstring fnout);
   static std::wstring GetTempFileName();
@@ -14,7 +13,7 @@ public:
   static std::wstring ExtractRarFile(std::wstring rarfn);
   static std::wstring GetSameTmpName(std::wstring fnin);
   static std::wstring GetShortFileNameForSearch(std::wstring szFnPath);
-  static std::wstring GetHashSignature(const char* szTerm2, const char* szTerm3, char* uniqueIDHash);
+  static std::wstring GetHashSignature(const char* szTerm2, const char* szTerm3);
   static std::wstring GetVideoFileBasename(std::wstring szVidPath, std::vector<std::wstring>* szaPathInfo = NULL);
   static std::wstring GetSubFileByTempid_STL(size_t iTmpID, std::wstring szVidPath,
                                               std::vector<std::wstring> szaSubDescs,

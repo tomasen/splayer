@@ -13,11 +13,10 @@
 
 using namespace sinet;
 
-#define UNIQU_HASH_SIZE 512
-
-void SubSinetInit(std::wstring &agent, std::wstring &proxy, int sid)
+void SinetConfig(refptr<config> cfg, int sid)
 {
   AppSettings& s = AfxGetAppSettings();
+
   wchar_t agentbuff[MAX_PATH];
   if (s.szOEMTitle.IsEmpty())
     wsprintf(agentbuff, L"SPlayer Build %d", SVP_REV_NUMBER);
@@ -26,9 +25,10 @@ void SubSinetInit(std::wstring &agent, std::wstring &proxy, int sid)
     std::wstring oem(s.szOEMTitle);
     wsprintf(agentbuff, L"SPlayer Build %d OEM%s", SVP_REV_NUMBER ,oem.c_str());
   }
-  agent.assign(agentbuff);
-  std::wstring tmpproxy;
 
+  cfg->set_strvar(CFG_STR_AGENT, agentbuff);
+
+  std::wstring proxy;
   if (sid%2 == 0)
   {
     DWORD ProxyEnable = 0;
@@ -41,12 +41,16 @@ void SubSinetInit(std::wstring &agent, std::wstring &proxy, int sid)
       && ERROR_SUCCESS == key.QueryDWORDValue(_T("ProxyEnable"), ProxyEnable) && ProxyEnable
       && ERROR_SUCCESS == key.QueryStringValue(_T("ProxyServer"), ProxyServer, &len))
     {
-      tmpproxy += L"http://";
+      proxy += L"http://";
       std::wstring proxystr(ProxyServer);
-      tmpproxy += proxystr.c_str();
+      proxy += proxystr.c_str();
     }
   }
-  proxy = tmpproxy.c_str();
+ 
+  if (proxy.empty())
+    cfg->set_strvar(CFG_STR_PROXY, L"");
+  else
+    cfg->set_strvar(CFG_STR_PROXY, proxy);
 }
 
 void StringMap2PostData(refptr<postdata> data ,std::map<std::wstring, std::wstring> &postform)
@@ -146,13 +150,7 @@ void WetherNeedUploadSub(refptr<pool> pool, refptr<task> task, refptr<request> r
   StringMap2PostData(data, postform);
 
   int rret = -1;
-  std::wstring agent;
-  std::wstring proxy;
-
-  SubSinetInit(agent, proxy, sid);
-  cfg->set_strvar(CFG_STR_AGENT, agent);
-  if (!proxy.empty())
-    cfg->set_strvar(CFG_STR_PROXY, proxy);
+  SinetConfig(cfg, sid);
 
   std::wstring url = GetServerUrl('upsb', sid);
   req->set_request_method(REQ_POST);
@@ -182,11 +180,8 @@ void UploadSubFileByVideoAndHash(refptr<pool> pool,refptr<task> task,
   _itow_s(iDelayMS, delay, 32, 10);
   postform[L"subdelay"] = delay;
 
-  char uniqueIDHash[UNIQU_HASH_SIZE];
-  memset(uniqueIDHash,0,UNIQU_HASH_SIZE);
   std::wstring vhash = SubTransFormat::GetHashSignature(Strings::WStringToUtf8String(fnVideoFilePath).c_str(),
-    Strings::WStringToUtf8String(szFileHash).c_str(),
-    uniqueIDHash);
+    Strings::WStringToUtf8String(szFileHash).c_str());
   if (!vhash.empty())
     postform[L"vhash"]  = vhash;
 
@@ -208,13 +203,7 @@ void UploadSubFileByVideoAndHash(refptr<pool> pool,refptr<task> task,
     data->add_elem(elem);
   }
   
-  std::wstring agent;
-  std::wstring proxy;
-
-  SubSinetInit(agent, proxy, sid);
-  cfg->set_strvar(CFG_STR_AGENT, agent);
-  if (!proxy.empty())
-    cfg->set_strvar(CFG_STR_PROXY, proxy);
+  SinetConfig(cfg, sid);
 
   std::wstring url = GetServerUrl('upsb', sid);
   req->set_request_url(url.c_str());
@@ -224,70 +213,6 @@ void UploadSubFileByVideoAndHash(refptr<pool> pool,refptr<task> task,
   task->use_config(cfg);
   task->append_request(req);
   pool->execute(task);
-}
-
-std::wstring down_subfile(refptr<pool> pool, refptr<task> task,
-                 refptr<request> req, std::wstring szFilePath,
-                 std::wstring szFileHash, std::wstring szVHash,
-                 std::wstring szLang, int sid,
-                 std::vector<std::wstring> &szaSubDescs,
-                 std::vector<std::wstring> &tmpfiles)
-{
-  refptr<config> cfg = config::create_instance();
-  std::map<std::wstring, std::wstring> postform;
-
-  postform[L"pathinfo"] = szFilePath;
-  postform[L"filehash"] = szFileHash;
-
-
-  char uniqueIDHash[UNIQU_HASH_SIZE];
-  memset(uniqueIDHash,0,UNIQU_HASH_SIZE);
-  std::wstring vhash = SubTransFormat::GetHashSignature(Strings::WStringToUtf8String(szFilePath).c_str(),
-                                  Strings::WStringToUtf8String(szFileHash).c_str(),
-                                  uniqueIDHash);
-  if (!vhash.empty())
-      postform[L"vhash"]  = vhash;
-
-  AppSettings& s = AfxGetAppSettings();
-  std::wstring szSVPSubPerf = (LPCTSTR)s.szSVPSubPerf;
-  if (!szSVPSubPerf.empty())
-    postform[L"perf"] = szSVPSubPerf;
-
-  if (!szLang.empty())
-    postform[L"lang"] = szLang;
-
-  std::wstring shortname = SubTransFormat::GetShortFileNameForSearch(szFilePath);
-  postform[L"shortname"] = shortname;
-  
-  std::wstring url = GetServerUrl('sapi', sid);
-  req->set_request_url(url.c_str());
-
-  refptr<postdata> data = postdata::create_instance();
-  StringMap2PostData(data, postform);
-
-  std::wstring tmpoutfile = SubTransFormat::GetTempFileName();
-  if (tmpoutfile.empty())
-    return NULL;
-
-  req->set_request_method(REQ_POST);
-  req->set_request_outmode(REQ_OUTFILE);
-  req->set_outfile(tmpoutfile.c_str());
-  req->set_postdata(data);
-
-
-  std::wstring agent;
-  std::wstring proxy;
-  SubSinetInit(agent, proxy, sid);
-
-  cfg->set_strvar(CFG_STR_AGENT, agent);
-  if (!proxy.empty())
-    cfg->set_strvar(CFG_STR_PROXY, proxy);
-
-  task->use_config(cfg);
-  task->append_request(req);
-  pool->execute(task);
-
-  return tmpoutfile;
 }
 
 SubTransController::SubTransController(void):
@@ -366,15 +291,51 @@ void SubTransController::_thread_download()
   
   refptr<pool> pool = pool::create_instance();
   refptr<task> task = task::create_instance();
+  refptr<config> cfg = config::create_instance();
 
   for (int i = 1; i <= 7; i++)
-  { 
-    refptr<request> req1 = request::create_instance();
-    std::wstring tmpoutfile = down_subfile(pool, task, req1, m_videofile,
-                      szFileHash,L"", szLang, i, szaSubDescs, tmpfiles);
+  {
+    std::map<std::wstring, std::wstring> postform;
+    std::wstring vhash, szSVPSubPerf, shortname, url, tmpoutfile;
 
+    tmpoutfile = SubTransFormat::GetTempFileName();
     if (tmpoutfile.empty())
-      break;
+      return;
+
+    AppSettings& s = AfxGetAppSettings();
+    refptr<request> req = request::create_instance();
+    refptr<postdata> data = postdata::create_instance();
+
+    url = GetServerUrl('sapi', i);
+    vhash = SubTransFormat::GetHashSignature(Strings::WStringToUtf8String(m_videofile).c_str(),
+                            Strings::WStringToUtf8String(szFileHash).c_str());
+    shortname = SubTransFormat::GetShortFileNameForSearch(m_videofile);
+    szSVPSubPerf = (LPCTSTR)s.szSVPSubPerf;
+
+    if (!vhash.empty())
+      postform[L"vhash"]  = vhash;
+
+    if (!szSVPSubPerf.empty())
+      postform[L"perf"] = szSVPSubPerf;
+
+    if (!szLang.empty())
+      postform[L"lang"] = szLang;
+
+    postform[L"pathinfo"] = m_videofile;
+    postform[L"filehash"] = szFileHash;
+    postform[L"shortname"] = shortname;
+    StringMap2PostData(data, postform);
+
+    req->set_postdata(data);
+    req->set_request_url(url.c_str());
+    req->set_request_method(REQ_POST);
+    req->set_request_outmode(REQ_OUTFILE);
+    req->set_outfile(tmpoutfile.c_str());
+
+    SinetConfig(cfg, i);
+    task->use_config(cfg);
+    task->append_request(req);
+    pool->execute(task);
 
     while (pool->is_running_or_queued(task))
     {
@@ -382,17 +343,14 @@ void SubTransController::_thread_download()
         return;
     }
 
-    if (req1->get_response_errcode() != 0)
+    if (req->get_response_errcode() != 0)
     {
       m_handlemsgs->AddTail((LPCTSTR)ResStr(IDS_LOG_MSG_SVPSUB_NONE_MATCH_SUB));
       break;
     }
 
-    FILE *stream;
-    _wfopen_s(&stream, tmpoutfile.c_str(), _T("rb"));
-
-    if(0 == SubTransFormat::ExtractDataFromAiSubRecvBuffer_STL(m_handlemsgs, m_videofile, stream,
-                      tmpoutfile, szaSubDescs,tmpfiles))
+    if(0 == SubTransFormat::ExtractDataFromAiSubRecvBuffer_STL(m_handlemsgs, m_videofile,
+                              tmpoutfile, szaSubDescs,tmpfiles))
       break;
 
     if (::WaitForSingleObject(m_stopevent, 2300) == WAIT_OBJECT_0)

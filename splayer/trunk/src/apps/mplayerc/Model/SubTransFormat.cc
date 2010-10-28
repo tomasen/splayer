@@ -21,12 +21,16 @@
 #define SVPATH_FILENAME 3  //Without Dot
 
 #define fansub_search_buf 30000
+#define UNIQU_HASH_SIZE 512
 
 int SubTransFormat::ExtractDataFromAiSubRecvBuffer_STL(CAtlList<CString>* m_handlemsgs, std::wstring szFilePath,
-                                                       FILE* sAiSubRecvBuff,std::wstring tmpoutfile,
-                                                       std::vector<std::wstring> &szaSubDescs,
+                                                       std::wstring tmpoutfile, std::vector<std::wstring> &szaSubDescs,
                                                        std::vector<std::wstring> &tmpfiles)
 {
+  FILE *sAiSubRecvBuff;
+  if (_wfopen_s(&sAiSubRecvBuff, tmpoutfile.c_str(), _T("rb")) != 0)
+    return 1;
+
   char szSBuff[2] = {0,0};
   int ret = 0;
 
@@ -209,8 +213,10 @@ int SubTransFormat::ExtractEachSubFile(FILE* fp, std::vector<std::wstring> &tmpf
 std::wstring SubTransFormat::GetTempFileName()
 {
   wchar_t tmppath[MAX_PATH];
-  ::GetTempFileName(GetTempDir().c_str(), L"svp", NULL, tmppath);
-  return tmppath;
+  if (::GetTempFileName(GetTempDir().c_str(), L"svp", NULL, tmppath) == 0)
+    return L"";
+  else
+    return tmppath;
 }
 
 int SubTransFormat::UnpackGZFile(std::wstring fnin, std::wstring fnout)
@@ -873,10 +879,12 @@ std::wstring SubTransFormat::GetShortFileNameForSearch(std::wstring szFnPath)
   return szFileName;
 }
 
-std::wstring SubTransFormat::GetHashSignature(const char* szTerm2, const char* szTerm3, char* uniqueIDHash)
+std::wstring SubTransFormat::GetHashSignature(const char* szTerm2, const char* szTerm3)
 {
-  char          buffx[4096];
+  char buffx[4096], uniqueIDHash[UNIQU_HASH_SIZE];
   memset(buffx, 0, 4096);
+  memset(uniqueIDHash,0,UNIQU_HASH_SIZE);
+
 #ifdef CLIENTKEY	
   sprintf_s( buffx, 4096, CLIENTKEY , SVP_REV_NUMBER, szTerm2, szTerm3, uniqueIDHash);
 #else

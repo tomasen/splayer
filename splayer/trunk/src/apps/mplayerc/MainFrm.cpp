@@ -1213,7 +1213,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 			m_ZoomY += (double)(m_pDragFuncStartPoint.y - point.y ) / CVideoRect.Height() ;
 			MoveVideoWindow(true);
 		}
-    else if (s_mDragFuc == 3)
+    else if (s_mDragFuc == 3 && !m_fFullScreen)
     {
 			//SVP_LogMsg5(L"WM_NCLBUTTONDOWN Move");
 			PostMessage(WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM(point.x, point.y));

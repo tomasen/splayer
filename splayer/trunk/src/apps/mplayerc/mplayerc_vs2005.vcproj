@@ -1193,11 +1193,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon\DVD.ico"
+				RelativePath=".\res\ecio.icons\dvd.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\ecio.icons\dvd.ico"
+				RelativePath=".\res\icon\DVD.ico"
 				>
 			</File>
 			<File
@@ -1717,14 +1717,6 @@
 				</File>
 				<File
 					RelativePath=".\UserInterface\Dialogs\OptionSubtitlePage_Win.h"
-					>
-				</File>
-				<File
-					RelativePath=".\UserInterface\Dialogs\OptionThemePage_Win.cc"
-					>
-				</File>
-				<File
-					RelativePath=".\UserInterface\Dialogs\OptionThemePage_Win.h"
 					>
 				</File>
 			</Filter>

@@ -3135,6 +3135,8 @@ FLAC__bool seek_to_absolute_sample_(FLAC__StreamDecoder *decoder, FLAC__uint64 s
 		if(decoder->protected_->state != FLAC__SEEKABLE_STREAM_DECODER_SEEKING && decoder->protected_->state != FLAC__STREAM_DECODER_END_OF_STREAM)
 			break;
 #endif
+    if(decoder->protected_->state == FLAC__STREAM_DECODER_END_OF_STREAM)
+      break;
 		if(!decoder->private_->is_seeking)
 			break;
 

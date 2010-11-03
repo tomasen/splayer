@@ -13,4 +13,8 @@
 		WarningLevel="3"
 		DisableSpecificWarnings="4995;4996"
 	/>
+	<Tool
+		Name="VCLibrarianTool"
+		AdditionalLibraryDirectories="$(SolutionDir)\lib\"
+	/>
 </VisualStudioPropertySheet>

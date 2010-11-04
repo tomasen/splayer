@@ -17502,6 +17502,9 @@ void CMainFrame::OnControllerSaveImage()
 
 void CMainFrame::_StartSnap()
 {
+  if (!IsSomethingLoaded())
+    return;
+
   PlayerPreference* pref = PlayerPreference::GetInstance();
   CSVPhash svpHash;
   __int64  totaltime, playtime;

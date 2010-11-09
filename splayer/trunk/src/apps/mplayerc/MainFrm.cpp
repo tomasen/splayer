@@ -94,6 +94,8 @@
 #include "Controller/PlayerPreference.h"
 #include "Controller/SPlayerDefs.h"
 #include "Utils/FileAssoc_Win.h"
+#include "Controller/UbdUploadController.h"
+#include "Controller/UsrBehaviorController.h"
 
 // begin,
 // the following headers are included because HotkeyController mechanism broke the original inclusion

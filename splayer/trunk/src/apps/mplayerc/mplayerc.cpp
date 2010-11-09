@@ -53,6 +53,7 @@
 
 #include "..\..\filters\transform\mpadecfilter\MpaDecFilter.h"
 #include "Utils/FileAssoc_Win.h"
+#include "Controller/UbdUploadController.h"
 #include "Controller/UsrBehaviorController.h"
 
 //Update URL
@@ -62,6 +63,7 @@ DECLARE_LAZYINSTANCE(HotkeyController);
 DECLARE_LAZYINSTANCE(PlayerPreference);
 DECLARE_LAZYINSTANCE(PlaylistController);
 DECLARE_LAZYINSTANCE(HashController);
+DECLARE_LAZYINSTANCE(UbdUploadController);
 DECLARE_LAZYINSTANCE(UsrBehaviorController);
 
 /////////

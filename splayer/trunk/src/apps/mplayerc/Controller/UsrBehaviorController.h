@@ -9,22 +9,12 @@ class UsrBehaviorController:
   public LazyInstanceImpl<UsrBehaviorController>
 {
 public:
-  void AppendEntry(int id, std::wstring data);
-
-  // starting and ending uploading
-  void Start();
-  void Stop();
-
-  // primary thread logics, should not be called directly
-  static void _thread_dispatch(void* param);
-  void _thread();
-
+  void AppendBhvEntry(int id, std::wstring data);
+  void AppendEnvEntry(std::wstring name, std::wstring data);
 private:
 
   UsrBehaviorData m_ubhvdata;
   CriticalSection m_cs;
-  HANDLE          m_thread;
-  HANDLE          m_stopevent;
 };
 
 

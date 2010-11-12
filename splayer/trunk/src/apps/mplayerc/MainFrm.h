@@ -277,7 +277,7 @@ class CMainFrame : public CFrameWnd, public CDropTarget
 	CString m_fnCurPlayingFile;
 	CString m_fnsAlreadyUploadedSubfile;
 	
-	CString m_playingmsg, m_closingmsg;
+  std::wstring m_playingmsg, m_closingmsg;
 	CString m_lastUrl;
 
 	REFERENCE_TIME m_rtDurationOverride;
@@ -352,7 +352,7 @@ public:
     CWinThread* m_ThreadSVPSub;
 	void SVPSubDownloadByVPath(CString szVPath, CAtlList<CString>* szaStatMsgs = NULL);
 	void SVP_UploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString szSubPath, int iDelayMS = 0, CAtlList<CString>* szaStatMsgs = NULL, CStringArray* szaPostTerms = NULL);
-	CAtlList<CString> m_statusmsgs;
+  std::list<std::wstring> m_statusmsgs;
 
 	CSeekBarTip m_tip;
 

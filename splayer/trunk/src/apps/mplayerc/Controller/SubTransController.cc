@@ -345,7 +345,7 @@ void SubTransController::_thread_download()
 
     if (req->get_response_errcode() != 0)
     {
-      m_handlemsgs->AddTail((LPCTSTR)ResStr(IDS_LOG_MSG_SVPSUB_NONE_MATCH_SUB));
+      m_handlemsgs->push_back((LPCTSTR)ResStr(IDS_LOG_MSG_SVPSUB_NONE_MATCH_SUB));
       break;
     }
 
@@ -468,7 +468,7 @@ void SubTransController::_thread_upload()
       }
 
       if (req2->get_response_errcode() == 0)
-        m_handlemsgs->AddTail((LPCTSTR)ResStr(IDS_LOG_MSG_SVPSUB_UPLOAD_FINISHED));
+        m_handlemsgs->push_back((LPCTSTR)ResStr(IDS_LOG_MSG_SVPSUB_UPLOAD_FINISHED));
 
      if(0 == chk)
         break;
@@ -479,7 +479,7 @@ void SubTransController::_thread_upload()
   }
 }
 
-void SubTransController::SetMsgs(CAtlList<CString>* msgs)
+void SubTransController::SetMsgs(std::list<std::wstring>* msgs)
 {
   m_handlemsgs = msgs;
 }

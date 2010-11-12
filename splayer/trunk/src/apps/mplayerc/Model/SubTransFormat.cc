@@ -1,6 +1,7 @@
 #include "stdafx.h"
+#include <sys/stat.h>
 #include "SubTransFormat.h"
-#include "../mplayerc.h"
+
 #include "../Utils/Strings.h"
 #include "../../../svplib/MD5Checksum.h"
 #include "../../../svplib/shooterclient.key"
@@ -9,6 +10,10 @@
 #undef __MACTYPES__
 #include "../../../zlib/zlib.h"
 #include "../../../include/libunrar/dll.hpp"
+
+
+#include "../resource.h"
+#define ResStr(id) CString(MAKEINTRESOURCE(id))
 
 #define CHAR4TOINT(szBuf) \
   ( ((int)szBuf[0] & 0xff) << 24) | ( ((int)szBuf[1] & 0xff) << 16) | ( ((int)szBuf[2] & 0xff) << 8) |  szBuf[3] & 0xff
@@ -23,7 +28,7 @@
 #define fansub_search_buf 30000
 #define UNIQU_HASH_SIZE 512
 
-int SubTransFormat::ExtractDataFromAiSubRecvBuffer_STL(CAtlList<CString>* m_handlemsgs, std::wstring szFilePath,
+int SubTransFormat::ExtractDataFromAiSubRecvBuffer_STL(std::list<std::wstring> *m_tmphandlemsgs, std::wstring szFilePath,
                                                        std::wstring tmpoutfile, std::vector<std::wstring> &szaSubDescs,
                                                        std::vector<std::wstring> &tmpfiles)
 {
@@ -48,7 +53,7 @@ int SubTransFormat::ExtractDataFromAiSubRecvBuffer_STL(CAtlList<CString>* m_hand
     goto releaseALL;
   }
   else
-    m_handlemsgs->AddTail((LPCTSTR)ResStr(IDS_LOG_MSG_SVPSUB_GOTMATCHED_AND_DOWNLOADING));
+    m_tmphandlemsgs->push_back((LPCTSTR)ResStr(IDS_LOG_MSG_SVPSUB_GOTMATCHED_AND_DOWNLOADING));
 
   for(int j = 0; j < iStatCode; j++)
   {
@@ -497,44 +502,32 @@ std::wstring SubTransFormat::GetSubFileByTempid_STL(size_t iTmpID, std::wstring 
   std::wstring szTargetBaseName = L"";
   std::wstring szDefaultSubPath = L"";
 
-  AppSettings& s = AfxGetAppSettings();
-  std::wstring StoreDir = (LPCTSTR)s.SVPSubStoreDir;
+  std::wstring StoreDir;
   GetVideoFileBasename(szVidPath, &szVidPathInfo); 
 
-  if(s.bSaveSVPSubWithVideo && 
-    IfDirWritable_STL(szVidPathInfo.at(SVPATH_DIRNAME)))
+  if(StoreDir.empty() || !IfDirExist_STL(StoreDir) || 
+    !IfDirWritable_STL(StoreDir))
   {
-    StoreDir = szVidPathInfo.at(SVPATH_DIRNAME).c_str();
-  }
-  else
-  {
+    GetAppDataPath(StoreDir);
+    CPath tmPath(StoreDir.c_str());
+    tmPath.RemoveBackslash();
+    tmPath.AddBackslash();
+    tmPath.Append(L"SVPSub");
+    StoreDir = (LPCTSTR)tmPath;
+    _wmkdir(StoreDir.c_str());
     if(StoreDir.empty() || !IfDirExist_STL(StoreDir) || 
       !IfDirWritable_STL(StoreDir))
     {
-      GetAppDataPath(StoreDir);
-      CPath tmPath(StoreDir.c_str());
-      tmPath.RemoveBackslash();
-      tmPath.AddBackslash();
-      tmPath.Append(L"SVPSub");
-      StoreDir = (LPCTSTR)tmPath;
+      StoreDir = GetPlayerPath_STL(L"SVPSub");
       _wmkdir(StoreDir.c_str());
       if(StoreDir.empty() || !IfDirExist_STL(StoreDir) || 
         !IfDirWritable_STL(StoreDir))
-      {
-        StoreDir = GetPlayerPath_STL(L"SVPSub");
-        _wmkdir(StoreDir.c_str());
-        if(StoreDir.empty() || !IfDirExist_STL(StoreDir) || 
-          !IfDirWritable_STL(StoreDir))
-        {   
-          //WTF cant create fordler ?
-        }
-        else
-          s.SVPSubStoreDir = StoreDir.c_str();
+      {   
+        //WTF cant create fordler ?
       }
-      else
-        s.SVPSubStoreDir = StoreDir.c_str();
     }
   }
+
 
   CPath tmBasenamePath(StoreDir.c_str());
   tmBasenamePath.RemoveBackslash();

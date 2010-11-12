@@ -2950,18 +2950,18 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 
   case TIMER_STATUSERASER:
     KillTimer(TIMER_STATUSERASER);
-    m_playingmsg.Empty();
+    m_playingmsg.clear();
 
     break;
 
   case TIMER_STATUSCHECKER:
     KillTimer(TIMER_STATUSCHECKER);
-    if (m_statusmsgs.GetCount() > 0 )
+    if (m_statusmsgs.size() > 0 )
     {
-      if ( m_playingmsg != m_statusmsgs.GetHead())
+      if ( m_playingmsg != *m_statusmsgs.begin())
       {
-        SendStatusMessage( m_statusmsgs.GetHead() , 10000);
-        m_statusmsgs.RemoveHead();
+        SendStatusMessage( m_statusmsgs.begin()->c_str() , 10000);
+        m_statusmsgs.pop_front();
       }
     }
     SetTimer(TIMER_STATUSCHECKER, 1000, NULL);
@@ -4336,9 +4336,9 @@ void CMainFrame::OnUpdatePlayerStatus(CCmdUI* pCmdUI)
 	{
 		CString msg;
 
-		if(!m_playingmsg.IsEmpty())
+		if(!m_playingmsg.empty())
 		{
-			msg = m_playingmsg;
+			msg = m_playingmsg.c_str();
 		}
 		else if(m_fCapturing)
 		{
@@ -4473,7 +4473,7 @@ void CMainFrame::OnUpdatePlayerStatus(CCmdUI* pCmdUI)
 	}
 	else
 	{
-		pCmdUI->SetText(m_closingmsg);
+		pCmdUI->SetText(m_closingmsg.c_str());
 	}
 }
 
@@ -10789,6 +10789,7 @@ void CMainFrame::SVPSubDownloadByVPath(CString szVPath, CAtlList<CString>* szaSt
 	//	pData->statusmsgs = szaStatMsgs;
 	//}
 	//m_ThreadSVPSub = AfxBeginThread(SVPThreadLoadThread, pData);
+
   m_subcontrl.SetMsgs(&m_statusmsgs);
   m_subcontrl.SetFrame(m_hWnd);
   m_subcontrl.Start((LPCTSTR)szVPath, SubTransController::DownloadSubtitle);
@@ -15128,13 +15129,13 @@ void CMainFrame::SendStatusMessage(CString msg, int nTimeOut, int iAlign)
 {
 	KillTimer(TIMER_STATUSERASER);
 
-	m_playingmsg.Empty();
+	m_playingmsg.clear();
 	if(nTimeOut <= 0) return;
 
 	m_playingmsg = msg;
 	
 	m_iOSDAlign = iAlign;
-	m_wndNewOSD.SendOSDMsg(m_playingmsg , nTimeOut);
+	m_wndNewOSD.SendOSDMsg(m_playingmsg.c_str(), nTimeOut);
 	rePosOSD();
 	//m_wndToolBar.SetStatusTimer( m_playingmsg , nTimeOut);
 
@@ -15320,7 +15321,7 @@ void CMainFrame::CloseMedia()
 
 	m_fOpeningAborted = false;
 
-	m_closingmsg.Empty();
+	m_closingmsg.clear();
 
 	m_iMediaLoadState = MLS_CLOSING;
 

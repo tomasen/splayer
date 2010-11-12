@@ -24,7 +24,7 @@ public:
   void SetSubfile(std::wstring subfile);
   void SetDelayMs(int ms);
 
-  void SetMsgs(CAtlList<CString>* msgs);
+  void SetMsgs(std::list<std::wstring>* msgs);
   // starting and ending main thread for upload / download
   void Start(const wchar_t* video_filename, SubTransOperation operation,
              StringList files_upload = StringList());
@@ -48,6 +48,6 @@ private:
   std::wstring m_videofile;
   int m_delayms;
 
-  CAtlList<CString>* m_handlemsgs;
+  std::list<std::wstring>* m_handlemsgs;
 };
 #endif // SUBTRANSCONTROLLER_H

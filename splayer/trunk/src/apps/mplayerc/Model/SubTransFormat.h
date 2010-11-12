@@ -4,7 +4,7 @@
 class SubTransFormat
 {
 public:
-  static int ExtractDataFromAiSubRecvBuffer_STL(CAtlList<CString>* m_handlemsgs, std::wstring szFilePath,
+  static int ExtractDataFromAiSubRecvBuffer_STL(std::list<std::wstring> *m_tmphandlemsgs, std::wstring szFilePath,
                                                 std::wstring tmpoutfile, std::vector<std::wstring> &szaSubDescs,
                                                 std::vector<std::wstring> &tmpfiles);
   static int PackGZfile(std::wstring fnin, std::wstring fnout);

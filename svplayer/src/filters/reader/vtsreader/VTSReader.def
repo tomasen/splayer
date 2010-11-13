@@ -1,7 +1,0 @@
-LIBRARY      "VTSReader.ax"
-
-EXPORTS
-	DllCanUnloadNow			PRIVATE
-	DllGetClassObject		PRIVATE
-	DllRegisterServer		PRIVATE
-	DllUnregisterServer		PRIVATE

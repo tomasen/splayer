@@ -1,5 +1,3 @@
-This is a Subversion repository; use the 'svnadmin' tool to examine
-it.  Do not add, delete, or modify files here unless you know how
-to avoid corrupting the repository.
+This is a Mercurial repository;
 
-Visit http://subversion.tigris.org/ for more information.
+Visit http://hg.splayer.org/splayer for more information.

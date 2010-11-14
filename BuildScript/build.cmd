@@ -62,6 +62,7 @@ goto end
 :buildsplayer
 
 call "pre-build.cmd"
+call "revision.cmd"
 
 call "%VS90COMNTOOLS%vsvars32.bat"
 

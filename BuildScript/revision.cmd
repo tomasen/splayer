@@ -13,3 +13,6 @@ echo #pragma once > %revfile%
 echo #define SVP_REV_STR     L"%revnum%" >> %revfile%
 echo #define SVP_REV_NUMBER  %revnum% >> %revfile%
 echo #define BRANCHVER       L"36" >> %revfile%
+
+REM if anything failed
+IF NOT EXIST %revfile% copy ".\revision_dummy.h" %revfile%

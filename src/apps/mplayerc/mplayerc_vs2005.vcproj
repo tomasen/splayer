@@ -29,7 +29,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="$(SolutionDir)BuildScript/rev.cmd"
+				CommandLine="$(SolutionDir)BuildScript/revision.cmd"
 				ExcludedFromBuild="false"
 			/>
 			<Tool

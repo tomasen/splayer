@@ -1,7 +1,5 @@
 @echo off
 
-goto test
-
 echo Updating SPlayer Mecurial repo
 hg_bin\hg pull --update ../
 if %ERRORLEVEL% NEQ 0 goto error
@@ -33,7 +31,6 @@ echo Building sinet project of sinet ...
 "%DevEnvDir%/devenv.com" ../thirdparty/sinet/trunk/sinet.sln  /build "Release|Win32"
 if %ERRORLEVEL% NEQ 0 goto error
 
-:test
 
 copy "..\thirdparty\pkg\trunk\unrar\unrar.hpp" "..\thirdparty\pkg\"
 copy "..\thirdparty\pkg\trunk\unrar\unrar.lib" "..\thirdparty\pkg\"

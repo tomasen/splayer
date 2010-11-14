@@ -6,7 +6,7 @@ set revfile="..\src\apps\mplayerc\revision.h"
 
 for /f "delims=+ " %%a in ('hg_bin\hg id -n') do @set revnum=%%a 
 for /f "delims=+ " %%a in ('hg_bin\hg id -i') do @set revset=%%a 
-
+set revnum=%revnum:~0,-1%
 echo "%revnum%"  "%revset%"
 
 echo #pragma once > %revfile%

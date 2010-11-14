@@ -577,7 +577,6 @@ Global
 		{2792BF45-E848-484B-8C9E-E6E7C3C42EEE}.Release Unicode|Win32.ActiveCfg = Release|Win32
 		{2792BF45-E848-484B-8C9E-E6E7C3C42EEE}.Release Unicode|Win32.Build.0 = Release|Win32
 		{810AF9F8-696B-43CA-8ED1-521C80BA24AF}.Release Unicode|Win32.ActiveCfg = Release|Win32
-		{810AF9F8-696B-43CA-8ED1-521C80BA24AF}.Release Unicode|Win32.Build.0 = Release|Win32
 		{05179F28-3C07-4ADC-ADB1-9EB697CA5A0E}.Release Unicode|Win32.ActiveCfg = Release|Win32
 		{05179F28-3C07-4ADC-ADB1-9EB697CA5A0E}.Release Unicode|Win32.Build.0 = Release|Win32
 		{E98BEC31-73D6-4A23-9545-1EC7ECB1B926}.Release Unicode|Win32.ActiveCfg = release-utf16|Win32

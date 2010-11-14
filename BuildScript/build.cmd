@@ -61,6 +61,8 @@ goto end
 )
 :buildsplayer
 
+call "pre-build.cmd"
+
 call "%VS90COMNTOOLS%vsvars32.bat"
 
 echo Building SPlayer project ...

@@ -1,0 +1,100 @@
+Checklist for releasing new versions of Dirac
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1.    Compilation
+
+1.1    Compile with gcc under Linux with debug options on and remove all errors
+and warnings (use ./configure --enable-debug)
+
+1.2    Compile with icc under Linux with debug options and remove all errors 
+and warnings (use ./configure CXX=icc --enable-debug)
+
+1.3    Compile with cl under Windows and MSYS with debug options 
+and remove all errors and warnings (use ./configure --enable-debug)
+
+1.4 Compile with VC++ under Windows XP/2000 with debug options and remove all 
+errors and warnings
+
+2.    Execution
+
+2.1    Run make check with gcc and icc and cl makes.
+
+2.2    Check that a) the Linux gcc decoder executable can decode the output of 
+the Windows VC++ encoder executable and the decoder output is the same as the 
+locally decoded encoder output; and b) the Windows VC++ decoder executable can 
+decode the output of the Linux gcc encoder executable and the decoder output 
+is the same as the locally decoded encoder output.
+
+2.3    Check that diagnostics tool works
+
+3    Inspection
+
+3.1    View the test picture results of make check and check that file sizes 
+and picture quality are 'reasonable'.
+
+4.    Code
+
+There is no need to inspect the code in detail as this should have been done as 
+part of the review process prior to being placed on the Sourceforge CVS.
+
+4.1    Run dos2unix on all test files to remove dos line-breaks.
+
+4.2    Ensure that all new source files (.cpp, .c and .h) include the Id and
+       Name RCS tags.
+
+5.    Documentation
+
+5.1 Check that the doxygen API docs build without error. Check that API 
+documents have been generated for any added executables or libraries.
+
+5.2 Place the API docs on the website.
+
+5.3 Update algorithm documentation if necessary and place on the website.
+
+5.4 Produce READMEs for any added utilities or separate programs.
+
+5.5 Update READMEs in the main dirac directory.
+
+5.6 Check that the contributor database is up to date and that any code that is 
+to be released has been appropriately licensed.
+
+5.7 Update NEWS with features added/bugs fixed in the release
+
+Any changes resulting from these checks should be checked into the Sourceforge
+CVS.
+
+6.   Creating and testing the Release
+
+     Once all the above checks have been successful, it is time to create the
+     release.
+
+6.1 Ensure that all files are committed into the Sourceforge CVS.
+
+6.2 Check out the latest code from the Sourceforge CVS repository into 
+a new directory. This is to ensure that all modified/new files have been
+checked in.
+
+6.3 Update the release id in configure.ac and commit the changes. Regenerate
+the configure script (./bootstrap)
+
+6.4 Compile and test the code again in this directory to ensure that all files
+have been checked in.
+
+6.5 Create the distribution using 'make dist'. 
+
+6.6 Unpack the distribution and compile and test it (Steps 1 and 2) to ensure 
+that the release distribution has all the necessary files.
+
+6.7 Ensure that all the documentation (new READMEs) are present in the release.
+
+6.8 Tag all the files with the latest release tag
+
+6.9 Repeat Steps 6.2 thru 6.6
+
+6.10 Upload the distribution to Dirac project page on Sourceforge.
+
+6.11 Announce the new release by sending an email to the Dirac announce mailing 
+    list dirac-announce@lists.sourceforge.net
+
+6.12 Update News on the Dirac project page on Sourceforge.
+
+6.13 Update project page on www.freshmeat.net

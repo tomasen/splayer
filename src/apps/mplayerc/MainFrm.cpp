@@ -2958,7 +2958,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
     KillTimer(TIMER_STATUSCHECKER);
     if (m_statusmsgs.size() > 0 )
     {
-      if ( m_playingmsg != *m_statusmsgs.begin())
+      if ( m_playingmsg.compare(m_statusmsgs.begin()->c_str()) != 0 )
       {
         SendStatusMessage( m_statusmsgs.begin()->c_str() , 10000);
         m_statusmsgs.pop_front();

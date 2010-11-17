@@ -13,7 +13,15 @@
 
 
 #include "../resource.h"
-#define ResStr(id) CString(MAKEINTRESOURCE(id))
+
+#include <vector>
+#include <algorithm>
+#include <functional>
+#include <iostream>
+#include <fstream>
+
+#include <windows.h>
+
 
 #define CHAR4TOINT(szBuf) \
   ( ((int)szBuf[0] & 0xff) << 24) | ( ((int)szBuf[1] & 0xff) << 16) | ( ((int)szBuf[2] & 0xff) << 8) |  szBuf[3] & 0xff
@@ -33,7 +41,7 @@ int SubTransFormat::ExtractDataFromAiSubRecvBuffer_STL(std::list<std::wstring> *
                                                        std::vector<std::wstring> &tmpfiles)
 {
   FILE *sAiSubRecvBuff;
-  if (_wfopen_s(&sAiSubRecvBuff, tmpoutfile.c_str(), _T("rb")) != 0)
+  if (_wfopen_s(&sAiSubRecvBuff, tmpoutfile.c_str(), L"rb") != 0)
     return 1;
 
   char szSBuff[2] = {0,0};
@@ -53,7 +61,10 @@ int SubTransFormat::ExtractDataFromAiSubRecvBuffer_STL(std::list<std::wstring> *
     goto releaseALL;
   }
   else
-    m_tmphandlemsgs->push_back((LPCTSTR)ResStr(IDS_LOG_MSG_SVPSUB_GOTMATCHED_AND_DOWNLOADING));
+  {
+    wchar_t buffer[65];
+    m_tmphandlemsgs->push_back(_itow(IDS_LOG_MSG_SVPSUB_GOTMATCHED_AND_DOWNLOADING,buffer,10));
+  }
 
   for(int j = 0; j < iStatCode; j++)
   {
@@ -172,7 +183,7 @@ int SubTransFormat::ExtractEachSubFile(FILE* fp, std::vector<std::wstring> &tmpf
     return -5;
 
   FILE* fpt;
-  errno_t err = _wfopen_s(&fpt, otmpfilename.c_str(), _T("wb"));
+  errno_t err = _wfopen_s(&fpt, otmpfilename.c_str(), L"wb");
   if(err)
     return -4;
 
@@ -229,7 +240,7 @@ int SubTransFormat::UnpackGZFile(std::wstring fnin, std::wstring fnout)
 
   FILE* fout;
   int ret = 0;
-  if ( _wfopen_s( &fout, fnout.c_str(), _T("wb") ) != 0){
+  if ( _wfopen_s( &fout, fnout.c_str(), L"wb" ) != 0){
     return -1; //output file open error
   }
 
@@ -278,7 +289,7 @@ int SubTransFormat::PackGZfile(std::wstring fnin, std::wstring fnout)
 
   FILE* fp;
   int ret = 0;
-  if ( _wfopen_s( &fp, fnin.c_str(), _T("rb") ) != 0)
+  if ( _wfopen_s( &fp, fnin.c_str(), L"rb" ) != 0)
     return -1; //input file open error
 
   std::string szFnout = Strings::WStringToUtf8String(fnout);
@@ -334,7 +345,9 @@ std::wstring SubTransFormat::ExtractRarFile(std::wstring rarfn)
   HeaderDataEx.CmtBuf = NULL;
   szRet = GetTempFileName();
   szRet +=L".sub";
-  CFile m_sub (szRet.c_str(), CFile::modeCreate|CFile::modeReadWrite|CFile::typeBinary);
+
+  //CFile m_sub (szRet.c_str(), CFile::modeCreate|CFile::modeReadWrite|CFile::typeBinary);
+  std::fstream io(szRet.c_str(), std::ios::binary);
 
   while(RARReadHeaderEx(hrar, &HeaderDataEx) == 0)
   {
@@ -342,8 +355,8 @@ std::wstring SubTransFormat::ExtractRarFile(std::wstring rarfn)
 
     if(subfn.substr(subfn.size()-4, 4) == L".sub")
     {
-      CAutoVectorPtr<char> buff;
-      if(!buff.Allocate(HeaderDataEx.UnpSize))
+      char *buff = new char[HeaderDataEx.UnpSize];
+      if (buff == NULL)
       {
         RARCloseArchive(hrar);
         return szRet;
@@ -357,12 +370,10 @@ std::wstring SubTransFormat::ExtractRarFile(std::wstring rarfn)
 
       RARExtractChunk(hrar, (char*)buff, HeaderDataEx.UnpSize);
 
-      m_sub.SetLength(HeaderDataEx.UnpSize);
-      m_sub.SeekToBegin();
-      m_sub.Write(buff, HeaderDataEx.UnpSize);
-      m_sub.Flush();
-      m_sub.SeekToBegin();
-      m_sub.Close();
+      io.seekp(std::ios::beg);
+      io.write(buff, HeaderDataEx.UnpSize);
+      delete [] buff;
+      io.close();
 
       RARExtractChunkClose(hrar);
       break;
@@ -414,9 +425,7 @@ BOOL SubTransFormat::IfFileExist_STL(std::wstring szPathname, BOOL evenSlowDrive
 
   if (!evenSlowDriver)
   {
-    CPath Driver(szPathname.c_str());
-    Driver.StripToRoot();
-    switch(GetDriveType(Driver))
+    switch(GetDriveType(szPathname.c_str()))
     {
     case DRIVE_REMOVABLE:
     case DRIVE_FIXED:
@@ -441,10 +450,10 @@ std::wstring SubTransFormat::GetVideoFileBasename(std::wstring szVidPath, std::v
     bIsRar = true;
     szVidPath = fnrar.c_str();
   }
-  CPath szTPath(szVidPath.c_str());
-  int posDot    = szVidPath.find_last_of(_T('.'));
-  int posSlash  = szVidPath.find_last_of(_T('\\'));
-  int posSlash2 = szVidPath.find_last_of(_T('/'));
+
+  int posDot    = szVidPath.find_last_of(L'.');
+  int posSlash  = szVidPath.find_last_of(L'\\');
+  int posSlash2 = szVidPath.find_last_of(L'/');
   if (posSlash2 > posSlash)
     posSlash = posSlash2;
 
@@ -460,8 +469,11 @@ std::wstring SubTransFormat::GetVideoFileBasename(std::wstring szVidPath, std::v
       szaPathInfo -> clear();
       szaPathInfo -> push_back(szBaseName); // Base Name
       if (bIsRar)
-        szExtName = (LPCTSTR)CPath(fninrar.c_str()).GetExtension();
-
+      {
+        std::wstring::size_type pos = fninrar.find_last_of('.');
+        if(pos != std::wstring::npos)
+          szExtName = fninrar.substr(pos);//issus
+      }
       szaPathInfo -> push_back(szExtName ); //ExtName
       szaPathInfo -> push_back(szDirName); //Dir Name ()
       szaPathInfo -> push_back(szFileName); // file name only
@@ -509,11 +521,10 @@ std::wstring SubTransFormat::GetSubFileByTempid_STL(size_t iTmpID, std::wstring 
     !IfDirWritable_STL(StoreDir))
   {
     GetAppDataPath(StoreDir);
-    CPath tmPath(StoreDir.c_str());
-    tmPath.RemoveBackslash();
-    tmPath.AddBackslash();
-    tmPath.Append(L"SVPSub");
-    StoreDir = (LPCTSTR)tmPath;
+    if (StoreDir[StoreDir.size()-1] != L'\\')
+      StoreDir.append(L"\\");
+
+    StoreDir.append(L"SVPSub");
     _wmkdir(StoreDir.c_str());
     if(StoreDir.empty() || !IfDirExist_STL(StoreDir) || 
       !IfDirWritable_STL(StoreDir))
@@ -529,14 +540,13 @@ std::wstring SubTransFormat::GetSubFileByTempid_STL(size_t iTmpID, std::wstring 
   }
 
 
-  CPath tmBasenamePath(StoreDir.c_str());
-  tmBasenamePath.RemoveBackslash();
-  tmBasenamePath.AddBackslash();
-  StoreDir =  (LPCTSTR)tmBasenamePath;
-  GetVideoFileBasename(szVidPath, &szVidPathInfo);
-  tmBasenamePath.Append(szVidPathInfo.at(SVPATH_FILENAME).c_str());
+  if (StoreDir[StoreDir.size() - 1] == L'\\')
+    StoreDir.append(L"\\");
 
-  std::wstring szBasename = (LPCTSTR)tmBasenamePath;
+  GetVideoFileBasename(szVidPath, &szVidPathInfo);
+
+  std::wstring szBasename(StoreDir);
+  szBasename.append(szVidPathInfo.at(SVPATH_FILENAME).c_str());
 
   //set new file name
   std::vector<std::wstring> szSubfiles;
@@ -605,7 +615,7 @@ std::wstring SubTransFormat::GetSubFileByTempid_STL(size_t iTmpID, std::wstring 
       if(szaDesclines.size() > 0)
       {
         int iDelay = 0;
-        swscanf_s(szaDesclines.at(0).c_str(), _T("delay=%d"), &iDelay);
+        swscanf_s(szaDesclines.at(0).c_str(), L"delay=%d", &iDelay);
         if (iDelay)
         {
           wchar_t szBuf[128];
@@ -656,19 +666,13 @@ int SubTransFormat::Explode(std::wstring szIn, std::wstring szTok,
 
 BOOL SubTransFormat::IfDirExist_STL(std::wstring path)
 {
-  CPath cpath(path.c_str());
-  cpath.RemoveBackslash();
-  return !_waccess(cpath, 0);
-
+  std::fstream file;
+  file.open(path.c_str(),std::ios::in);
+  return (!!file);
 }
 
 BOOL SubTransFormat::IfDirWritable_STL(std::wstring szDir)
 {
-  CPath szPath(szDir.c_str());
-  szPath.RemoveBackslash();
-  szPath.AddBackslash();
-  szDir = (LPCTSTR)szPath;
-
   HANDLE hFile =
     CreateFile(szDir.c_str(), FILE_ADD_FILE|FILE_WRITE_ATTRIBUTES|FILE_READ_ATTRIBUTES,
     FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
@@ -707,11 +711,12 @@ std::wstring SubTransFormat::GetPlayerPath_STL(std::wstring progName)
     return (LPCTSTR)path;
   else
   {
-    CPath cpath(path);
-    cpath.RemoveFileSpec();
-    cpath.AddBackslash();
-    cpath.Append(progName.c_str());
-    return (LPCTSTR)cpath;
+    std::wstring wpath(path);
+    const wchar_t wlastchar = wpath[wpath.size()-1];
+    if(wlastchar != L'\\' || wlastchar != L'/')      //backslash
+      wpath.append(L"\\");
+    wpath.append(progName.c_str());
+    return wpath;
   }
 }
 
@@ -720,7 +725,7 @@ std::wstring SubTransFormat::DetectSubFileLanguage_STL(std::wstring fn)
 {
   std::wstring szRet = L".chn";
   FILE *stream ;
-  if (_wfopen_s(&stream, fn.c_str(), _T("rb") ) == 0)
+  if (_wfopen_s(&stream, fn.c_str(), L"rb" ) == 0)
   {
     //detect bom?
     int totalWideChar = 0;
@@ -746,12 +751,11 @@ std::wstring SubTransFormat::DetectSubFileLanguage_STL(std::wstring fn)
 void SubTransFormat::FilePutContent(std::wstring szFilePath, std::wstring szData, BOOL bAppend)
 {
   // CStdioFile::WriteString save text as ansi
-  CStdioFile f;
-
-  if(f.Open(szFilePath.c_str(), CFile::modeCreate | CFile::modeWrite | CFile::typeText))
+  std::ofstream fs(szFilePath.c_str(), std::ios::in| std::ios::out| std::ios::app);//ios::trunc
+  if (!fs.bad())
   {
-    f.WriteString(szData.c_str());
-    f.Close();
+    fs << szData.c_str();
+    fs.close();
   }
 }
 
@@ -765,21 +769,21 @@ BOOL SubTransFormat::GetAppDataPath(std::wstring& path)
   hr = SHGetSpecialFolderLocation(NULL, CSIDL_APPDATA, &pidl);
   if (hr)
   {
-    //Old method
-    CRegKey key;
-    if(ERROR_SUCCESS == key.Open(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders"), KEY_READ))
-    {
-      ULONG len = MAX_PATH;
-      if(ERROR_SUCCESS == key.QueryStringValue(_T("AppData"), szPath, &len))
-        path.resize(len);
-    }
+    ////Old method 
+    //CRegKey key;
+    //if(ERROR_SUCCESS == key.Open(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders", KEY_READ))
+    //{
+    //  ULONG len = MAX_PATH;
+    //  if(ERROR_SUCCESS == key.QueryStringValue(L"AppData", szPath, &len))
+    //    path.resize(len);
+    //}
   }
 
 
   BOOL f = SHGetPathFromIDList(pidl, szPath);
   PathRemoveBackslash(szPath);
   PathAddBackslash(szPath); 
-  PathAppend(szPath, _T("SPlayer"));
+  PathAppend(szPath, L"SPlayer");
   path = szPath;
 
 
@@ -846,30 +850,41 @@ std::wstring SubTransFormat::GetShortFileNameForSearch2(std::wstring szFn)
 
 std::wstring SubTransFormat::GetShortFileNameForSearch(std::wstring szFnPath)
 {
-  CPath szPath(szFnPath.c_str());
-  szPath.StripPath();
+  //CPath szPath(szFnPath.c_str());
+  //szPath.StripPath();
 
-  std::wstring szFileName = (LPCTSTR)szPath;
+  //std::wstring szFileName = (LPCTSTR)szPath;
 
-  szFileName = GetShortFileNameForSearch2(szFileName);
+  //szFileName = GetShortFileNameForSearch2(szFileName);
 
-  if (szFileName.empty())
-  {
-    CPath szPath2(szFnPath.c_str());
-    szPath2.RemoveFileSpec();
-    std::wstring szFileName2 = (LPCTSTR)szPath2;
-    szFileName = GetShortFileNameForSearch2(szFileName2);
+  //if (szFileName.empty())
+  //{
+  //  CPath szPath2(szFnPath.c_str());
+  //  szPath2.RemoveFileSpec();
+  //  std::wstring szFileName2 = (LPCTSTR)szPath2;
+  //  szFileName = GetShortFileNameForSearch2(szFileName2);
 
-    if (szFileName.empty())
-    {
-      szPath2.RemoveFileSpec();
-      std::wstring szFileName3 = (LPCTSTR)szPath2;
-      szFileName = GetShortFileNameForSearch2(szFileName3);
-      if (szFileName.empty())
-        return szFnPath;
-    }
-  }
-  return szFileName;
+  //  if (szFileName.empty())
+  //  {
+  //    szPath2.RemoveFileSpec();
+  //    std::wstring szFileName3 = (LPCTSTR)szPath2;
+  //    szFileName = GetShortFileNameForSearch2(szFileName3);
+  //    if (szFileName.empty())
+  //      return szFnPath;
+  //  }
+  //}
+  //return szFileName;
+
+  std::wstring szFileName = szFnPath.substr(szFnPath.find_last_of(L'\\'));
+
+  std::wstring::size_type pos = szFileName.find_last_of(L'.');
+  std::wstring szFileName2 = szFileName.substr(0, pos);
+
+  szFileName = GetShortFileNameForSearch2(szFileName2);
+  if(!szFileName.empty())
+    return szFileName;
+
+  return szFnPath;
 }
 
 std::wstring SubTransFormat::GetHashSignature(const char* szTerm2, const char* szTerm3)
@@ -893,19 +908,17 @@ BOOL SubTransFormat::IsSpecFanSub(std::wstring szPath, std::wstring szOEM)
   transform(szExt.begin(), szExt.end(), szExt.begin(), tolower);
   if(szExt.c_str() == L".srt" || szExt.c_str() == L".ssa" || szExt.c_str() == L".ass")
   {
-    CFile subFile;
-    if(!subFile.Open( szPath.c_str(), CFile::modeRead|CFile::typeText))
-      return FALSE;
-    char qBuff[fansub_search_buf];
-    memset(qBuff, 0, fansub_search_buf);
-
-    subFile.Read( qBuff, fansub_search_buf );
-
     bool ret = false;
-    if(strstr(qBuff, Strings::WStringToString(szOEM).c_str()))
-      ret = true;
-
-    subFile.Close();
+    std::string ss;
+    std::ifstream fs(szPath.c_str());
+    if (fs.is_open())
+    {
+      fs >> ss;
+      std::string::size_type pos = ss.find(Strings::WStringToString(szOEM.c_str())); //check contain string
+      if (pos != std::string::npos)
+        ret = true;
+      fs.close();
+    }
     return ret;
   }
 

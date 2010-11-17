@@ -4,24 +4,15 @@
 
 #include "../Utils/Strings.h"
 #include "../../../svplib/MD5Checksum.h"
-#include "../../../svplib/shooterclient.key"
 #include "../revision.h"
 
 #undef __MACTYPES__
 #include "../../../zlib/zlib.h"
 #include "../../../include/libunrar/dll.hpp"
-
-
 #include "../resource.h"
 
 #include <vector>
-#include <algorithm>
-#include <functional>
-#include <iostream>
 #include <fstream>
-
-#include <windows.h>
-
 
 #define CHAR4TOINT(szBuf) \
   ( ((int)szBuf[0] & 0xff) << 24) | ( ((int)szBuf[1] & 0xff) << 16) | ( ((int)szBuf[2] & 0xff) << 8) |  szBuf[3] & 0xff
@@ -540,7 +531,7 @@ std::wstring SubTransFormat::GetSubFileByTempid_STL(size_t iTmpID, std::wstring 
   }
 
 
-  if (StoreDir[StoreDir.size() - 1] == L'\\')
+  if (StoreDir[StoreDir.size() - 1] != L'\\')
     StoreDir.append(L"\\");
 
   GetVideoFileBasename(szVidPath, &szVidPathInfo);
@@ -781,11 +772,12 @@ BOOL SubTransFormat::GetAppDataPath(std::wstring& path)
 
 
   BOOL f = SHGetPathFromIDList(pidl, szPath);
-  PathRemoveBackslash(szPath);
-  PathAddBackslash(szPath); 
-  PathAppend(szPath, L"SPlayer");
   path = szPath;
 
+  if(path[path.size()-1] != L'\\')
+    path.append(L"\\");
+
+  path.append(L"SPlayer");
 
   if(path.empty())
     return false;
@@ -850,31 +842,6 @@ std::wstring SubTransFormat::GetShortFileNameForSearch2(std::wstring szFn)
 
 std::wstring SubTransFormat::GetShortFileNameForSearch(std::wstring szFnPath)
 {
-  //CPath szPath(szFnPath.c_str());
-  //szPath.StripPath();
-
-  //std::wstring szFileName = (LPCTSTR)szPath;
-
-  //szFileName = GetShortFileNameForSearch2(szFileName);
-
-  //if (szFileName.empty())
-  //{
-  //  CPath szPath2(szFnPath.c_str());
-  //  szPath2.RemoveFileSpec();
-  //  std::wstring szFileName2 = (LPCTSTR)szPath2;
-  //  szFileName = GetShortFileNameForSearch2(szFileName2);
-
-  //  if (szFileName.empty())
-  //  {
-  //    szPath2.RemoveFileSpec();
-  //    std::wstring szFileName3 = (LPCTSTR)szPath2;
-  //    szFileName = GetShortFileNameForSearch2(szFileName3);
-  //    if (szFileName.empty())
-  //      return szFnPath;
-  //  }
-  //}
-  //return szFileName;
-
   std::wstring szFileName = szFnPath.substr(szFnPath.find_last_of(L'\\'));
 
   std::wstring::size_type pos = szFileName.find_last_of(L'.');

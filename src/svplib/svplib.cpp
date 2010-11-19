@@ -1,5 +1,4 @@
 ﻿#include "svplib.h"
-#include "SVPHash.h"
 #include <stdio.h> 
 #include <shlobj.h>
 #include <streams.h>

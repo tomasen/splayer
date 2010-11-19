@@ -162,15 +162,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\MD5Checksum.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\SVPEqualizer.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\SVPhash.cpp"
 				>
 			</File>
 			<File
@@ -196,23 +188,11 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\MD5Checksum.h"
-				>
-			</File>
-			<File
-				RelativePath=".\MD5ChecksumDefines.h"
-				>
-			</File>
-			<File
 				RelativePath=".\shooterclient.key"
 				>
 			</File>
 			<File
 				RelativePath=".\SVPEqualizer.h"
-				>
-			</File>
-			<File
-				RelativePath=".\SVPhash.h"
 				>
 			</File>
 			<File

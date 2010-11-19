@@ -37,8 +37,7 @@ public:
 	int HandleSubPackage(FILE* fp);
 	CStringArray szaSubDescs; //save raw desc data order by id
   CStringArray szaSubTmpFileList; //save tmp file names order by id, format: ".srt;C:\tmp\blahblah;.idx;C:\tmp\blah2;.sub;C:\tmp\blah3"...
-  CString getSubFileByTempid(int iTmpID, CString szVidPath);
-  std::wstring getSubFileByTempid_STL(int iTmpID, std::wstring szVidPath);
+  
   bool GetAppDataPath(CString& path);
 	bool GetAppDataPath(std::wstring& path);
 	int ExtractSubFiles(FILE* fp);

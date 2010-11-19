@@ -3,12 +3,12 @@
 #include "SubTransFormat.h"
 
 #include "../Utils/Strings.h"
-#include "../../../svplib/MD5Checksum.h"
 #include "../revision.h"
 
 #undef __MACTYPES__
 #include "../../../zlib/zlib.h"
 #include "../../../../splayer/Thirdparty/pkg/unrar.hpp"
+#include "../../../../splayer/Thirdparty/pkg/sphash.h"
 #include "../resource.h"
 
 #include <vector>
@@ -567,8 +567,12 @@ std::wstring SubTransFormat::GetSubFileByTempid_STL(size_t iTmpID, std::wstring 
     std::wstring szTarget = szBasename + szLangExt + szSubTmpDetail[0];
     szTargetBaseName = szBasename + szLangExt ;
 
-    CMD5Checksum cm5source;
-    std::wstring szSourceMD5 = cm5source.GetMD5(szSource);
+    char str[300];
+    int len;
+    szSource.push_back(0);
+    szSource.push_back(0);
+    hash_file(HASH_MOD_FILE_STR, HASH_ALGO_MD5, szSource.c_str(), str, &len);
+    std::wstring szSourceMD5 = Strings::StringToWString((std::string)str);
     std::wstring szTargetMD5;
     //check if target exist
     wchar_t szTmp[128];
@@ -577,8 +581,10 @@ std::wstring SubTransFormat::GetSubFileByTempid_STL(size_t iTmpID, std::wstring 
     while(IfFileExist_STL(szTarget))
     {
       //TODO: compare if its the same file
-      cm5source.Clean();
-      szTargetMD5 = cm5source.GetMD5(szTarget);
+      szTarget.push_back(0);
+      szTarget.push_back(0);
+      hash_file(HASH_MOD_FILE_STR, HASH_ALGO_MD5, szTarget.c_str(), str, &len);
+      szTargetMD5 = Strings::StringToWString((std::string)str);
       if(szTargetMD5 == szSourceMD5)
       {
         // TODO: if there is a diffrence in delay
@@ -865,8 +871,10 @@ std::wstring SubTransFormat::GetHashSignature(const char* szTerm2, const char* s
 #else
   sprintf_s( buffx, 4096, "unauthorized client %d %s %s %s", SVP_REV_NUMBER, szTerm2, szTerm3, uniqueIDHash);
 #endif
-  CMD5Checksum cmd5;
-  return cmd5.GetMD5((BYTE*)buffx, strlen(buffx)).c_str();
+  int len = strlen(buffx);
+  hash_data(HASH_MOD_BINARY_STR, HASH_ALGO_MD5, buffx, &len);
+   
+  return Strings::StringToWString((std::string)buffx);
 }
 
 BOOL SubTransFormat::IsSpecFanSub(std::wstring szPath, std::wstring szOEM)

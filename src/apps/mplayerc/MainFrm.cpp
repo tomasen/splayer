@@ -97,6 +97,8 @@
 #include "Controller/UbdUploadController.h"
 #include "Controller/UsrBehaviorController.h"
 
+#include "c:\projects\this\splayer\Thirdparty\pkg\sphash.h"
+
 // begin,
 // the following headers are included because HotkeyController mechanism broke the original inclusion
 #include "PPageFormats.h"
@@ -112,7 +114,6 @@ static UINT WM_NOTIFYICON = RegisterWindowMessage(TEXT("MYWM_NOTIFYICON"));
 
 //#include "..\..\filters\transform\vsfilter\IDirectVobSub.h"
 
-#include "..\..\svplib\SVPHash.h"
 #include "..\..\svplib\SVPToolBox.h"
 #include "../../svplib/SVPRarLib.h"
 
@@ -8308,14 +8309,21 @@ void CMainFrame::OnPlayAudio(UINT nID)
 		pSS->Enable(i, AMSTREAMSELECTENABLE_ENABLE);
         //TODO： Save Audio Channel Selection
 
-        CSVPhash svpHash;
-        CString FPath = svpHash.ComputerFileHash(m_fnCurPlayingFile);
+        //CSVPhash svpHash;
+        //CString FPath = svpHash.ComputerFileHash(m_fnCurPlayingFile);
+        std::wstring szSource = m_fnCurPlayingFile.GetBuffer();
+        char str[300];
+        int len;
+        szSource.push_back(0);
+        szSource.push_back(0);
+        hash_file(HASH_MOD_FILE_STR, HASH_ALGO_MD5, szSource.c_str(), str, &len);
+
         CString szSQLUpdate, szSQLInsert;
 
         int tNow = time(NULL);
         //TODO Save Subselection
-        szSQLInsert.Format(L"INSERT INTO histories  ( fpath, audioid, modtime ) VALUES ( \"%s\", '%d', '%d') ", FPath, i, tNow);
-        szSQLUpdate.Format(L"UPDATE histories SET audioid = '%d' , modtime = '%d'  WHERE fpath = \"%s\" ", i, tNow, FPath);
+        szSQLInsert.Format(L"INSERT INTO histories  ( fpath, audioid, modtime ) VALUES ( \"%s\", '%d', '%d') ", str, i, tNow);
+        szSQLUpdate.Format(L"UPDATE histories SET audioid = '%d' , modtime = '%d'  WHERE fpath = \"%s\" ", i, tNow, str);
         
         if(AfxGetMyApp()->sqlite_local_record)
             AfxGetMyApp()->sqlite_local_record->exec_insert_update_sql_u(szSQLInsert, szSQLUpdate);
@@ -8454,8 +8462,17 @@ void CMainFrame::OnPlaySubtitles(UINT nID)
 	}
 	else if(i >= 0) //选择字幕
 	{
-        CSVPhash svpHash;
-        CString FPath = svpHash.ComputerFileHash(m_fnCurPlayingFile);
+    //CSVPhash svpHash;
+    //CString FPath = svpHash.ComputerFileHash(m_fnCurPlayingFile);
+    std::wstring szSource = m_fnCurPlayingFile.GetBuffer();
+    char str[300];
+    int len;
+    szSource.push_back(0);
+    szSource.push_back(0);
+    hash_file(HASH_MOD_FILE_STR, HASH_ALGO_MD5, szSource.c_str(), str, &len);
+
+    CString FPath = str;
+
         CString szSQLUpdate, szSQLInsert;
 
         int tNow = time(NULL);
@@ -11961,8 +11978,15 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 
 		if(m_fOpeningAborted) throw aborted;
 
-        CSVPhash svpHash;
-        CString FPath = svpHash.ComputerFileHash(m_fnCurPlayingFile);
+        //CSVPhash svpHash;
+        //CString FPath = svpHash.ComputerFileHash(m_fnCurPlayingFile);
+    std::wstring szSource = m_fnCurPlayingFile.GetBuffer();
+    char str[300];
+    int len;
+    szSource.push_back(0);
+    szSource.push_back(0);
+    hash_file(HASH_MOD_FILE_STR, HASH_ALGO_MD5, szSource.c_str(), str, &len);
+    CString FPath = str;
 
 		if(m_pCAP && (!m_fAudioOnly || m_fRealMediaGraph))
 		{
@@ -15089,10 +15113,17 @@ void CMainFrame::OpenCurPlaylistItem(REFERENCE_TIME rtStart)
 		favtype ft ;
 		ft = FAV_FILE;
 		if (!fn.IsEmpty() && s.autoResumePlay){
-			CMD5Checksum cmd5;
-			CStringA szMD5data(fn);
-			CString szMatchmd5 = cmd5.GetMD5((BYTE*)szMD5data.GetBuffer() , szMD5data.GetLength()).c_str();
-			szMD5data.ReleaseBuffer();
+			//CMD5Checksum cmd5;
+			//CStringA szMD5data(fn);
+			//CString szMatchmd5 = cmd5.GetMD5((BYTE*)szMD5data.GetBuffer() , szMD5data.GetLength()).c_str();
+			//szMD5data.ReleaseBuffer();
+
+    char buffx[4096];
+    memset(buffx, 0, 4096);
+    int len = strlen(buffx);
+    hash_data(HASH_MOD_BINARY_STR, HASH_ALGO_MD5, buffx, &len);
+    CString szMatchmd5 = buffx;
+
 SVP_LogMsg5(L"GetFav Start %s", szMatchmd5);
 			CAtlList<CString> sl;
 			s.GetFav(ft, sl, TRUE);
@@ -17439,14 +17470,23 @@ void CMainFrame::_StartSnap()
     return;
 
   PlayerPreference* pref = PlayerPreference::GetInstance();
-  CSVPhash svpHash;
+  //CSVPhash svpHash;
+  std::wstring szSource = m_fnCurPlayingFile;
+  char str[300];
+  int len;
+  szSource.push_back(0);
+  szSource.push_back(0);
+  hash_file(HASH_MOD_FILE_STR, HASH_ALGO_MD5, szSource.c_str(), str, &len);
+
   __int64  totaltime, playtime;
   m_suc.SetFrame(m_hWnd);
   pMS->GetDuration(&totaltime);
   pMS->GetCurrentPosition(&playtime);
   pref->SetIntVar(INTVAR_CURSNAPTIME, (unsigned int)(playtime / 10000));
   pref->SetIntVar(INTVAR_CURTOTALPLAYTIME, (unsigned int)(totaltime / 10000));
-  m_suc.Start((LPCTSTR)svpHash.ComputerFileHash(m_fnCurPlayingFile));
+  //m_suc.Start((LPCTSTR)svpHash.ComputerFileHash(m_fnCurPlayingFile));
+
+  m_suc.Start((LPCTSTR)str);
 }
 
 void CMainFrame::AutoSaveImage(LPCTSTR fn, bool shrink_inhalf)

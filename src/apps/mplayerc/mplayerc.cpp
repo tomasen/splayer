@@ -1647,7 +1647,7 @@ SVP_LogMsg5(L"Settings::InitInstanceThreaded 16");
 				}
 				if(!pFrame->m_bCheckingUpdater){
 					pFrame->m_bCheckingUpdater = true;
-					SVP_RealCheckUpdaterExe( &(pFrame->m_bCheckingUpdater) );
+					// TODO: replace SVP_RealCheckUpdaterExe( &(pFrame->m_bCheckingUpdater) );
 
 				}
 				SVP_LogMsg5(L"Settings::InitInstanceThreaded 17");

@@ -128,7 +128,7 @@ BOOL CUpdaterApp::InitInstance()
 		CString szLogPath;
 		CSVPToolBox svpTool;
 		svpTool.GetPlayerPath(_T("SVPDebug.log"));
-		SVP_UploadCrashDmp(svpTool.GetPlayerPath(szDmpFile), szLogPath);
+		//SVP_UploadCrashDmp(svpTool.GetPlayerPath(szDmpFile), szLogPath);
 		return FALSE;
 	}
 

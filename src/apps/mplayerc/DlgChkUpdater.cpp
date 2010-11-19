@@ -53,9 +53,9 @@ BOOL CDlgChkUpdater::OnInitDialog()
 	if(!pApp->m_cnetupdater){
 		CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
 		if(pFrame){
-			SVP_CheckUpdaterExe(&pFrame->m_bCheckingUpdater, 1);	
+			//SVP_CheckUpdaterExe(&pFrame->m_bCheckingUpdater, 1);	
 		}else{
-			SVP_CheckUpdaterExe(&mChk, 1);
+			//SVP_CheckUpdaterExe(&mChk, 1);
 		}
 			
 	}

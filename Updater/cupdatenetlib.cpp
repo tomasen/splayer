@@ -47,12 +47,6 @@ cupdatenetlib::~cupdatenetlib(void)
 }
 
 
-void cupdatenetlib::SetCURLopt(CURL *curl )
-{
-	curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1);
-	curl_easy_setopt(curl, CURLOPT_USERAGENT, "SPlayer Updater 36");
-	return ;
-}
 
 void  cupdatenetlib::resetCounter(){
 	bSVPCU_DONE = 0;
@@ -94,56 +88,6 @@ void cupdatenetlib::procUpdate(){
 	bSVPCU_DONE = 1;
 }
 
-bool cupdatenetlib::PostUsingCurl(CString strFields, CString strReturnFile, curl_progress_callback pCallback)
-{
-    FILE* stream_file_list;
-    if ( _wfopen_s( &stream_file_list, strReturnFile, _T("wb") ) != 0){
-        return false; //input file open error
-    }
-    CURL *curl;
-    CURLcode res;
-    CString szPostPerm = strFields;
-    bool rret = false;
-    SVP_LogMsg(strFields);
-    curl = curl_easy_init();
-    if(curl) {
-        long respcode;
-        this->SetCURLopt(curl);
-        curl_easy_setopt(curl, CURLOPT_URL, szUrl);
-        //curl_easy_setopt(curl, CURLOPT_URL, "http://svplayer.shooter.cn/api/updater.php");
-        int iDescLen = 0;
-        char* szPostFields = svpToolBox.CStringToUTF8(szPostPerm, &iDescLen) ;
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, (void *)szPostFields);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)stream_file_list);
-
-        if (pCallback)
-        {
-            curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
-            curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, pCallback);
-            curl_easy_setopt(curl, CURLOPT_PROGRESSDATA, this);
-        }
-        res = curl_easy_perform(curl);
-        if (szPostFields)
-            delete szPostFields;
-        if(res == 0){
-            curl_easy_getinfo(curl,CURLINFO_RESPONSE_CODE, &respcode);
-            if(respcode == 200){
-                //good to go
-                rret = true;
-
-            }else{
-                //error
-                SVP_LogMsg(_T("None Update Required "));
-            }
-        }else{
-            //error
-            SVP_LogMsg5(_T("HTTP connection error %d "), res); //TODO handle this
-        }
-        curl_easy_cleanup(curl);
-    }
-    fclose(stream_file_list);
-    return rret;
-}
 
 
 HINSTANCE cupdatenetlib::GetD3X9Dll()
@@ -247,87 +191,7 @@ BOOL cupdatenetlib::downloadList(){
 
 	int rret = 0;
 	CString szLog;
-	if (PostUsingCurl(szPostPerm, szTmpFilename)){
-        rret = 1;
-		GetD3X9Dll();
-		//iSVPCU_TOTAL_FILE = 0;
-		iSVPCU_TOTAL_FILEBYTE  = 0;
-		CString szData = svpToolBox.fileGetContent( szTmpFilename ) ;
-		CStringArray szaLines;
-		svpToolBox.Explode( szData, _T("\n") , &szaLines );
-		for(int i = 0; i < szaLines.GetCount(); i++){
-			if (szaLines.GetAt(i).IsEmpty()){break;}
-			this->iSVPCU_TOTAL_FILE++;
-			
-			//szLog.Format(_T("Total Files need to download: %d"), iSVPCU_TOTAL_FILE);
-			//SVP_LogMsg(szLog);
-			CStringArray szaTmp;
-			svpToolBox.Explode( szaLines.GetAt(i), _T(";") , &szaTmp );
-			if(szaTmp.GetCount() < LFILETOTALPARMS){
-				continue;
-			}
-
-            if (SkipThisFile(szaTmp.GetAt(LFILESETUPPATH), szaTmp.GetAt(LFILEACTION)))
-                continue;
-
-            //检查是否需要下载
-			CString szSetupPath = szaTmp.GetAt(LFILESETUPPATH);
-
-			if (szSetupPath.CompareNoCase( _T("splayer.exe")) == 0){
-				if(!svpToolBox.ifFileExist(szBasePath + szSetupPath) ){
-					if (svpToolBox.ifFileExist(szBasePath + _T("mplayerc.exe")))
-						szSetupPath = _T("mplayerc.exe");
-					if (svpToolBox.ifFileExist(szBasePath + _T("svplayer.exe")))
-						szSetupPath = _T("svplayer.exe");
-				}
-			}
-
-			bool bDownloadThis = FALSE;
-
-      //check file hash
-      CMD5Checksum cmd5;
-      CString updTmpHash ;
-      CString currentHash ;
-      if( svpToolBox.ifFileExist(szUpdfilesPath + szaTmp.GetAt(LFILETMPATH)))
-      {
-        updTmpHash = cmd5.GetMD5((LPCTSTR)(szUpdfilesPath +
-          szaTmp.GetAt(LFILETMPATH))).c_str(); //Get Hash for current Temp File
-      }
-
-      if( svpToolBox.ifFileExist(szBasePath + szSetupPath ) ){
-        currentHash = cmd5.GetMD5((LPCTSTR)(szBasePath + szSetupPath)).c_str(); //Get Hash for bin file
-      }
-
-            if (currentHash.CompareNoCase( szaTmp.GetAt(LFILEHASH) ) == 0 )
-                continue;
-            if ( updTmpHash.CompareNoCase( szaTmp.GetAt(LFILEHASH) ) != 0 ){
-                bDownloadThis = TRUE;
-            }
-
-            UpdateInfo* puinfo = new UpdateInfo;
-            puinfo->bDownload = bDownloadThis;
-            puinfo->dwDowloadedLength = _wtoi(szaTmp.GetAt(LFILEGZLEN));
-            puinfo->dwFileLength = _wtoi(szaTmp.GetAt(LFILELEN));
-            puinfo->strId = (szaTmp.GetAt(LFILEID));
-            puinfo->strAction = szaTmp.GetAt(LFILEACTION);
-            puinfo->strDownloadfileMD5 = szaTmp.GetAt(LFILEGZHASH);
-            puinfo->strFileMd5 = szaTmp.GetAt(LFILEHASH);
-            puinfo->strPath = szaTmp.GetAt(LFILESETUPPATH);
-            puinfo->strTempName = szaTmp.GetAt(LFILETMPATH);
-            puinfo->strCurrentMD5 = currentHash;
-            puinfo->bReadyToCopy = !bDownloadThis;
-
-            m_UpdateFileArray.Add(puinfo);
-
-			if(bDownloadThis){
-				iSVPCU_TOTAL_FILEBYTE += _wtoi(szaTmp.GetAt(LFILEGZLEN));
-				//szaTmp.SetSize(LFILETOTALPARMS);
-				//szaLists.Append( szaTmp );
-			}
-		}
-		szLog.Format(_T("Total Files: %d ; Total Len %d"), iSVPCU_TOTAL_FILE, iSVPCU_TOTAL_FILEBYTE);
-		SVP_LogMsg(szLog);
-	}
+	
     DeleteFile(szTmpFilename);
 	return rret;
 }
@@ -515,24 +379,6 @@ int cupdatenetlib::downloadFileByID(UpdateInfo* pInfo, bool UsingMd5){
 
 	int rret = 0;
 
-	if (PostUsingCurl(szPostPerm, szTmpFilename, my_progress_func)){
-        ////check MD5 of the downloaded file...
-        //we should do the check here, but now fro one given file we can have 2 kind of downloads, 
-        //thus the MD5 is not determined. SO we just check the result file.
-        //if (IsMd5Match(szTmpFilename, pInfo->strDownloadfileMD5))
-        //{
-            if (IsFileGziped(szTmpFilename))
-                svpToolBox.unpackGZfile( szTmpFilename, szTmpPath );
-            else
-                bool b = ApplyEnsemblePatch(szBasePath + pInfo->strPath, szTmpFilename, szTmpPath);
-
-            //check the MD5 of the result file...
-            rret = IsMd5Match(szTmpPath, pInfo->strFileMd5);
-            SVP_LogMsg5(L"Md5 %d %s %s", rret, szTmpPath, pInfo->strFileMd5);
-            pInfo->bReadyToCopy = rret;
-
-        //}
-	}
     DeleteFile(szTmpFilename);
 	return rret;
 }

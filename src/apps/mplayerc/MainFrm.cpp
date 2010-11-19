@@ -10734,61 +10734,7 @@ HRESULT CMainFrame::OpenMMSUrlStream(CString szFn){
 	return ret;
 }
 
-class CSVPThreadLoadThreadData{
-public:
-	CString szVidPath;
-	CMainFrame* pFrame;
-	CAtlList<CString>* statusmsgs;
-};
-
-UINT __cdecl SVPThreadLoadThread( LPVOID lpParam ) 
-{ 
-
-	CSVPThreadLoadThreadData* pData = (CSVPThreadLoadThreadData*)lpParam;
-
-	// Print the parameter values using thread-safe functions.
-	pData->pFrame->m_bSubDownloading = TRUE;
-	
-	{
-		CStringArray szSubArray;
-		//CUIntArray siSubDelayArray;
-		SVP_FetchSubFileByVideoFilePath( pData->szVidPath, &szSubArray , pData->statusmsgs) ;
-		BOOL bSubSelected = false;
-		for(INT i = 0 ;i < szSubArray.GetCount(); i++){
-			if(pData->pFrame->LoadSubtitle(szSubArray[i]) && !bSubSelected){
-				pData->pFrame->SetSubtitle( pData->pFrame->m_pSubStreams.GetTail()  ,true ,false ); //Enable Subtitle
-				//TODO: select correct language for idx+sub
-				bSubSelected = true;
-			}
-		}
-	}
-	if( AfxGetAppSettings().fAutoloadSubtitles2 ){
-		CStringArray szSubArray2;
-		SVP_FetchSubFileByVideoFilePath( pData->szVidPath, &szSubArray2 , pData->statusmsgs, _T("eng")) ;
-		BOOL bSubSelected = false;
-		for(INT i = 0 ;i < szSubArray2.GetCount(); i++){
-			if(pData->pFrame->LoadSubtitle(szSubArray2[i]) && !bSubSelected){
-				pData->pFrame->SetSubtitle2( pData->pFrame->m_pSubStreams2.GetTail()  ,true, false ); //Enable Subtitle
-				//TODO: select correct language for idx+sub
-				bSubSelected = true;
-			}
-		}
-
-	}
-	pData->pFrame->m_bSubDownloading = FALSE;
-	delete pData;
-	return 0; 
-} 
 void CMainFrame::SVPSubDownloadByVPath(CString szVPath, CAtlList<CString>* szaStatMsgs){
-	//CSVPThreadLoadThreadData* pData = new CSVPThreadLoadThreadData();
-	//pData->pFrame = (CMainFrame*)this;
-	//pData->szVidPath = szVPath;
-	//if( szaStatMsgs == NULL){
-	//	pData->statusmsgs = &m_statusmsgs;
-	//}else{
-	//	pData->statusmsgs = szaStatMsgs;
-	//}
-	//m_ThreadSVPSub = AfxBeginThread(SVPThreadLoadThread, pData);
 
   m_subcontrl.SetMsgs(&m_statusmsgs);
   m_subcontrl.SetFrame(m_hWnd);
@@ -10801,39 +10747,9 @@ void CMainFrame::SVPSubDownloadByVPath(CString szVPath, CAtlList<CString>* szaSt
 
   m_subcontrl.Start((LPCTSTR)szVPath, SubTransController::DownloadSubtitle);
 }
-class CSVPSubUploadThreadData{
-public:
-	CString fnVideoFilePath;
-	CString szSubPath;
-	int iDelayMS;
-	CMainFrame* pFrame;
-	CAtlList<CString>* statusmsgs;
-	CStringArray* szaPostTerms;
-};
 
-UINT __cdecl SVPThreadUploadSubFile( LPVOID lpParam ) 
-{ 
-
-	CSVPSubUploadThreadData* pData = (CSVPSubUploadThreadData*)lpParam;
-	pData->pFrame->m_bSubUploading = TRUE;
-	SVP_RealUploadSubFileByVideoAndSubFilePath(pData->fnVideoFilePath,  pData->szSubPath, pData->iDelayMS, pData->szaPostTerms);
-	pData->pFrame->m_bSubUploading = FALSE;
-	delete pData;
-	return 0; 
-} 
 void CMainFrame::SVP_UploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString szSubPath, int iDelayMS, CAtlList<CString>* szaStatMsgs, CStringArray* szaPostTerms){
-	//CSVPSubUploadThreadData* pData = new CSVPSubUploadThreadData();
-	//pData->fnVideoFilePath = fnVideoFilePath;
-	//pData->szSubPath = szSubPath;
-	//pData->iDelayMS = iDelayMS;
-	//if( szaStatMsgs == NULL){
-	//	pData->statusmsgs = &m_statusmsgs;
-	//}else{
-	//	pData->statusmsgs = szaStatMsgs;
-	//}
-	//pData->pFrame = (CMainFrame*)this;
-	//pData->szaPostTerms = szaPostTerms;
-	//AfxBeginThread(SVPThreadUploadSubFile, pData);
+
   m_subcontrl.SetDelayMs(iDelayMS);
   m_subcontrl.SetMsgs(&m_statusmsgs);
   m_subcontrl.SetFrame(m_hWnd);

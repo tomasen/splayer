@@ -112,8 +112,8 @@ BOOL CMediaTypesDlg::OnInitDialog()
 	m_report.GetWindowText(szReport);
 
 	AppSettings & s = AfxGetAppSettings();
-	if(s.fUploadFailedPinsInfo)
-		SVP_UploadPinRenderDeadEnd(szDeadPin, szReport);
+//	if(s.fUploadFailedPinsInfo)
+//		SVP_UploadPinRenderDeadEnd(szDeadPin, szReport);
 
 	
 	if(!s.fReportFailedPins){

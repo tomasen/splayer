@@ -1,6 +1,5 @@
 #pragma once	
 
-#include "curl/include/curl/curl.h"
 #include "SVPToolBox.h"
 #include "MD5Checksum.h"
 
@@ -55,9 +54,9 @@ public:
     //for test only
     int GetReadyToCopyCount();
 private:
-    void SetCURLopt(CURL *curl );
+    //void SetCURLopt(CURL *curl );
     bool SkipThisFile(CString strName, CString strAction);
-    bool PostUsingCurl(CString strFields, CString strReturnFile, curl_progress_callback pCallback = NULL);
+    //bool PostUsingCurl(CString strFields, CString strReturnFile, curl_progress_callback pCallback = NULL);
     bool IsMd5Match(CString strFileName, CString strMd5);
 public:
     BOOL bSVPCU_DONE ;
@@ -75,7 +74,7 @@ public:
     CString szCurFilePath;
     //CStringArray szaLists; 
 protected:
-    char errorBuffer[CURL_ERROR_SIZE];
+//    char errorBuffer[CURL_ERROR_SIZE];
     CPtrArray m_UpdateFileArray;
 };
 

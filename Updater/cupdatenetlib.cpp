@@ -9,8 +9,8 @@
 #include <atlpath.h>
 
 #include "../src/apps/mplayerc/revision.h"
-#include "c:\projects\this\splayer\Thirdparty\pkg\sphash.h"
-#include "c:\projects\this\splayer\src\apps\mplayerc\Utils\Strings.h"
+#include "..\Thirdparty\pkg\sphash.h"
+#include "..\src\apps\mplayerc\Utils\Strings.h"
 
 //static size_t handleWebQuery( void *ptr, size_t size, size_t nmemb, void *stream)
 //{
@@ -175,12 +175,7 @@ BOOL cupdatenetlib::downloadList(){
 			}
 		}
 		if(svpToolBox.ifFileExist(szPlayerPath) ){
-			//CMD5Checksum cmd5;
-			//szBranch.Format( _T("%I64d") , sbuf.st_mtime );
-			//szBranch = cmd5.GetMD5((LPCTSTR)szPlayerPath).c_str();
-			//AfxMessageBox(szBranch);
-
-      std::wstring szSource = szBranch.GetBuffer();
+      std::wstring szSource = szPlayerPath.GetBuffer();
       char str[300];
       int len;
       szSource.push_back(0);
@@ -349,12 +344,12 @@ bool cupdatenetlib::IsMd5Match(CString strFileName, CString strMd5)
     {
       std::wstring szSource = strFileName.GetBuffer();
       char str[300];
-       int len;
-       szSource.push_back(0);
-       szSource.push_back(0);
-       hash_file(HASH_MOD_FILE_STR, HASH_ALGO_MD5, szSource.c_str(), str, &len);
+      int len;
+      szSource.push_back(0);
+      szSource.push_back(0);
+      hash_file(HASH_MOD_FILE_STR, HASH_ALGO_MD5, szSource.c_str(), str, &len);
 
-        return (strMd5.CompareNoCase((CString)str) == 0 );
+      return (strMd5.CompareNoCase((CString)(CStringA)str) == 0 );
     }
     else
         return false;

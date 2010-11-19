@@ -49,7 +49,7 @@
 
 #include "../../filters/transform/mpcvideodec/CpuId.h"
 
-#include "c:\projects\this\splayer\Thirdparty\pkg\sphash.h"
+#include "..\..\..\Thirdparty\pkg\sphash.h"
 
 //#define  SPI_GETDESKWALLPAPER 115
 
@@ -4741,16 +4741,15 @@ void CMPlayerCApp::Settings::DelFavByFn(favtype ft, BOOL bRecent, CString szMatc
 	GetFav(ft, sl, bRecent);
 	//SVP_LogMsg5(L" DelFavByFn  ");
 	if(bRecent){
-		//CMD5Checksum cmd5;
-		//CStringA szMD5data(szMatch);
-		//CString szMatchmd5 = cmd5.GetMD5((BYTE*)szMD5data.GetBuffer() , szMD5data.GetLength()).c_str();
+    CStringA szMD5data(szMatch);
 
-    char buffx[4096];
-    memset(buffx, 0, 4096);
-    int len = strlen(buffx);
-    hash_data(HASH_MOD_BINARY_STR, HASH_ALGO_MD5, buffx, &len);
-
-    CString szMatchmd5 = buffx;
+    int bufflen = max(szMD5data.GetLength()+2,33);
+    char* buff = (char*)calloc(bufflen, sizeof(char));
+    memcpy_s(buff, bufflen, szMD5data.GetBuffer(), szMD5data.GetLength());
+    int len = strlen(buff);
+    hash_data(HASH_MOD_BINARY_STR, HASH_ALGO_MD5, buff, &len);
+    CString szMatchmd5(buff);
+    free(buff);
 
 
 		POSITION pos = sl.GetHeadPosition();
@@ -4781,16 +4780,16 @@ void CMPlayerCApp::Settings::AddFav(favtype ft, CString s, BOOL bRecent, CString
 	CAtlList<CString> sl;
 	GetFav(ft, sl, bRecent);
 	if(bRecent){
-		//CMD5Checksum cmd5;
-		//CStringA szMD5data(szMatch);
-		//CString szMatchmd5 = cmd5.GetMD5((BYTE*)szMD5data.GetBuffer() , szMD5data.GetLength()).c_str();
-		//szMD5data.ReleaseBuffer();
+		CStringA szMD5data(szMatch);
+		
+    int bufflen = max(szMD5data.GetLength()+2,33);
+    char* buff = (char*)calloc(bufflen, sizeof(char));
+    memcpy_s(buff, bufflen, szMD5data.GetBuffer(), szMD5data.GetLength());
+    int len = strlen(buff);
+    hash_data(HASH_MOD_BINARY_STR, HASH_ALGO_MD5, buff, &len);
+    CString szMatchmd5(buff);
+    free(buff);
 
-    char buffx[4096];
-    memset(buffx, 0, 4096);
-    int len = strlen(buffx);
-    hash_data(HASH_MOD_BINARY_STR, HASH_ALGO_MD5, buffx, &len);
-    CString szMatchmd5 = buffx;
 
 		POSITION pos = sl.GetHeadPosition();
 		while(pos){

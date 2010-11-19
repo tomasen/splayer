@@ -97,7 +97,7 @@
 #include "Controller/UbdUploadController.h"
 #include "Controller/UsrBehaviorController.h"
 
-#include "c:\projects\this\splayer\Thirdparty\pkg\sphash.h"
+#include "..\..\..\Thirdparty\pkg\sphash.h"
 
 // begin,
 // the following headers are included because HotkeyController mechanism broke the original inclusion

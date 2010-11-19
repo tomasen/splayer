@@ -13,19 +13,26 @@
 
 using namespace sinet;
 
-void SinetConfig(refptr<config> cfg, int sid)
+void SinetConfig(refptr<config> cfg, int sid, std::wstring oem)
 {
-  AppSettings& s = AfxGetAppSettings();
+  //AppSettings& s = AfxGetAppSettings();
+
+  //wchar_t agentbuff[MAX_PATH];
+  //if (s.szOEMTitle.IsEmpty())
+  //  wsprintf(agentbuff, L"SPlayer Build %d", SVP_REV_NUMBER);
+  //else
+  //{
+  //  std::wstring oem(s.szOEMTitle);
+  //  wsprintf(agentbuff, L"SPlayer Build %d OEM%s", SVP_REV_NUMBER ,oem.c_str());
+  //}
+
+  //cfg->set_strvar(CFG_STR_AGENT, agentbuff);
 
   wchar_t agentbuff[MAX_PATH];
-  if (s.szOEMTitle.IsEmpty())
+  if(oem.empty())
     wsprintf(agentbuff, L"SPlayer Build %d", SVP_REV_NUMBER);
   else
-  {
-    std::wstring oem(s.szOEMTitle);
     wsprintf(agentbuff, L"SPlayer Build %d OEM%s", SVP_REV_NUMBER ,oem.c_str());
-  }
-
   cfg->set_strvar(CFG_STR_AGENT, agentbuff);
 
   std::wstring proxy;
@@ -111,14 +118,14 @@ int FindAllSubfile(std::wstring szSubPath , std::vector<std::wstring>* szaSubFil
   std::wstring szBaseName = SubTransFormat::GetVideoFileBasename(szSubPath.c_str(), &szaPathInfo);
   std::wstring szExt = szaPathInfo.at(1);
 
-  if(szExt == _T(".idx"))
+  if(szExt == L".idx")
   {
-    szSubPath = szBaseName + _T(".sub");
+    szSubPath = szBaseName + L".sub";
     if(SubTransFormat::IfFileExist_STL(szSubPath.c_str()))
       szaSubFiles -> push_back(szSubPath);
     else
     {
-      szSubPath = szBaseName + _T(".rar");
+      szSubPath = szBaseName + L".rar";
       if(SubTransFormat::IfFileExist_STL(szSubPath.c_str()))
       {
         std::wstring szSubFilepath = SubTransFormat::ExtractRarFile(szSubPath);
@@ -133,7 +140,7 @@ int FindAllSubfile(std::wstring szSubPath , std::vector<std::wstring>* szaSubFil
 
 void WetherNeedUploadSub(refptr<pool> pool, refptr<task> task, refptr<request> req,
                         std::wstring fnVideoFilePath, std::wstring szFileHash, 
-                        std::wstring fnSubHash, int iDelayMS, int sid)
+                        std::wstring fnSubHash, int iDelayMS, int sid, std::wstring oem)
 {
   std::map<std::wstring, std::wstring> postform;
   refptr<config> cfg = config::create_instance();
@@ -150,7 +157,7 @@ void WetherNeedUploadSub(refptr<pool> pool, refptr<task> task, refptr<request> r
   StringMap2PostData(data, postform);
 
   int rret = -1;
-  SinetConfig(cfg, sid);
+  SinetConfig(cfg, sid, oem);
 
   std::wstring url = GetServerUrl('upsb', sid);
   req->set_request_method(REQ_POST);
@@ -167,7 +174,7 @@ void UploadSubFileByVideoAndHash(refptr<pool> pool,refptr<task> task,
                                 std::wstring szFileHash,
                                 std::wstring szSubHash,
                                 std::vector<std::wstring>* fnSubPaths,
-                                int iDelayMS, int sid)
+                                int iDelayMS, int sid, std::wstring oem)
 {
   refptr<config> cfg = config::create_instance();
   std::map<std::wstring, std::wstring> postform;
@@ -203,7 +210,7 @@ void UploadSubFileByVideoAndHash(refptr<pool> pool,refptr<task> task,
     data->add_elem(elem);
   }
   
-  SinetConfig(cfg, sid);
+  SinetConfig(cfg, sid, oem);
 
   std::wstring url = GetServerUrl('upsb', sid);
   req->set_request_url(url.c_str());
@@ -230,6 +237,21 @@ SubTransController::~SubTransController(void)
 void SubTransController::SetFrame(HWND hwnd)
 {
   m_frame = hwnd;
+}
+
+void SubTransController::SetOemTitle(std::wstring str)
+{
+  m_oemtitle = str;
+}
+
+void SubTransController::SetLanuage(std::wstring str)
+{
+  m_language = str;
+}
+
+void SubTransController::SetSubperf(std::wstring str)
+{
+  m_subperf = str;
 }
 
 void SubTransController::Start(const wchar_t* video_filename, 
@@ -280,11 +302,11 @@ void SubTransController::_thread()
 void SubTransController::_thread_download()
 {
   std::vector<std::wstring> subtitles;
-  std::wstring szLang;
+  std::wstring szLang = m_language;
 
-  AppSettings& s = AfxGetAppSettings();
-  if (!(s.iLanguage == 0 || s.iLanguage == 2))
-    szLang = L"eng";
+  //AppSettings& s = AfxGetAppSettings();
+  //if (!(s.iLanguage == 0 || s.iLanguage == 2))
+  //  szLang = L"eng";
   
   std::vector<std::wstring> szaSubDescs, tmpfiles;
   std::wstring szFileHash = HashController::GetInstance()->GetHash();
@@ -296,13 +318,12 @@ void SubTransController::_thread_download()
   for (int i = 1; i <= 7; i++)
   {
     std::map<std::wstring, std::wstring> postform;
-    std::wstring vhash, szSVPSubPerf, shortname, url, tmpoutfile;
+    std::wstring vhash, shortname, url, tmpoutfile;
 
     tmpoutfile = SubTransFormat::GetTempFileName();
     if (tmpoutfile.empty())
       return;
 
-    AppSettings& s = AfxGetAppSettings();
     refptr<request> req = request::create_instance();
     refptr<postdata> data = postdata::create_instance();
 
@@ -310,13 +331,15 @@ void SubTransController::_thread_download()
     vhash = SubTransFormat::GetHashSignature(Strings::WStringToUtf8String(m_videofile).c_str(),
                             Strings::WStringToUtf8String(szFileHash).c_str());
     shortname = SubTransFormat::GetShortFileNameForSearch(m_videofile);
-    szSVPSubPerf = (LPCTSTR)s.szSVPSubPerf;
 
+    //AppSettings& s = AfxGetAppSettings();
+    //szSVPSubPerf = (LPCTSTR)s.szSVPSubPerf;
+    
     if (!vhash.empty())
       postform[L"vhash"]  = vhash;
 
-    if (!szSVPSubPerf.empty())
-      postform[L"perf"] = szSVPSubPerf;
+    if (!m_subperf.empty())
+      postform[L"perf"] = m_subperf;
 
     if (!szLang.empty())
       postform[L"lang"] = szLang;
@@ -332,7 +355,7 @@ void SubTransController::_thread_download()
     req->set_request_outmode(REQ_OUTFILE);
     req->set_outfile(tmpoutfile.c_str());
 
-    SinetConfig(cfg, i);
+    SinetConfig(cfg, i, m_oemtitle);
     task->use_config(cfg);
     task->append_request(req);
     pool->execute(task);
@@ -345,7 +368,8 @@ void SubTransController::_thread_download()
 
     if (req->get_response_errcode() != 0)
     {
-      m_handlemsgs->push_back((LPCTSTR)ResStr(IDS_LOG_MSG_SVPSUB_NONE_MATCH_SUB));
+      wchar_t buffer[65];
+      m_handlemsgs->push_back(_itow(IDS_LOG_MSG_SVPSUB_NONE_MATCH_SUB,buffer,10));
       break;
     }
 
@@ -368,20 +392,18 @@ void SubTransController::_thread_download()
     if (!szSubFilePath.empty())
     {
       subtitles.push_back(szSubFilePath);
-      CPath fnPath(szSubFilePath.c_str());
-      fnPath.StripPath();
       iSubTotal++;
     }
   }
 
   if (iSubTotal > 1)
   {
-    std::wstring szSVPSubPerf = (LPCTSTR)s.szSVPSubPerf;
-    if (!szSVPSubPerf.empty())
+    //std::wstring szSVPSubPerf = (LPCTSTR)s.szSVPSubPerf;
+    if (!m_subperf.empty())
     {
       for (std::vector<std::wstring>::iterator iter = subtitles.begin();
         iter != subtitles.end(); iter++)
-        if (SubTransFormat::IsSpecFanSub((*iter), szSVPSubPerf))
+        if (SubTransFormat::IsSpecFanSub((*iter), m_subperf))
         {
           std::wstring szFirst = subtitles.at(0);
           subtitles[0] = szSubFilePath;
@@ -443,7 +465,7 @@ void SubTransController::_thread_upload()
     int chk = 0;
     refptr<request> req1 = request::create_instance();
     WetherNeedUploadSub(pool, task, req1, m_videofile,
-                        szFileHash, szSubHash, m_delayms, i);
+                        szFileHash, szSubHash, m_delayms, i, m_oemtitle);
     while (pool->is_running_or_queued(task))
     {
       if (::WaitForSingleObject(m_stopevent, 1000) == WAIT_OBJECT_0)
@@ -460,7 +482,7 @@ void SubTransController::_thread_upload()
       refptr<request> req2 = request::create_instance();
       UploadSubFileByVideoAndHash(pool, task, req2, 
                                   m_videofile,szFileHash, szSubHash,
-                                  &szaSubFiles, m_delayms, i);
+                                  &szaSubFiles, m_delayms, i, m_oemtitle);
       while (pool->is_running_or_queued(task))
       {
         if (::WaitForSingleObject(m_stopevent, 1000) == WAIT_OBJECT_0)
@@ -468,7 +490,10 @@ void SubTransController::_thread_upload()
       }
 
       if (req2->get_response_errcode() == 0)
-        m_handlemsgs->push_back((LPCTSTR)ResStr(IDS_LOG_MSG_SVPSUB_UPLOAD_FINISHED));
+      {
+        wchar_t buffer[65];
+        m_handlemsgs->push_back(_itow(IDS_LOG_MSG_SVPSUB_UPLOAD_FINISHED,buffer,10));
+      }
 
      if(0 == chk)
         break;

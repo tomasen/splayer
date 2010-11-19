@@ -10792,6 +10792,13 @@ void CMainFrame::SVPSubDownloadByVPath(CString szVPath, CAtlList<CString>* szaSt
 
   m_subcontrl.SetMsgs(&m_statusmsgs);
   m_subcontrl.SetFrame(m_hWnd);
+
+  AppSettings& s = AfxGetAppSettings();
+  m_subcontrl.SetOemTitle(s.szOEMTitle.GetBuffer());
+  if (!(s.iLanguage == 0 || s.iLanguage == 2))
+    m_subcontrl.SetLanuage(L"eng");
+  m_subcontrl.SetSubperf(s.szSVPSubPerf.GetBuffer());
+
   m_subcontrl.Start((LPCTSTR)szVPath, SubTransController::DownloadSubtitle);
 }
 class CSVPSubUploadThreadData{
@@ -10830,6 +10837,13 @@ void CMainFrame::SVP_UploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath,
   m_subcontrl.SetDelayMs(iDelayMS);
   m_subcontrl.SetMsgs(&m_statusmsgs);
   m_subcontrl.SetFrame(m_hWnd);
+
+  AppSettings& s = AfxGetAppSettings();
+  m_subcontrl.SetOemTitle(s.szOEMTitle.GetBuffer());
+  if (!(s.iLanguage == 0 || s.iLanguage == 2))
+    m_subcontrl.SetLanuage(L"eng");
+  m_subcontrl.SetSubperf(s.szSVPSubPerf.GetBuffer());
+
   m_subcontrl.SetSubfile((LPCTSTR)szSubPath);
   m_subcontrl.Start((LPCTSTR)fnVideoFilePath, SubTransController::UploadSubtitle);
 }

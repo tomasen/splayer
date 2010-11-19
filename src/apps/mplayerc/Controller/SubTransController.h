@@ -23,6 +23,9 @@ public:
 
   void SetSubfile(std::wstring subfile);
   void SetDelayMs(int ms);
+  void SetOemTitle(std::wstring str);
+  void SetSubperf(std::wstring str);
+  void SetLanuage(std::wstring str);
 
   void SetMsgs(std::list<std::wstring>* msgs);
   // starting and ending main thread for upload / download
@@ -47,6 +50,10 @@ private:
   std::wstring m_subfile;
   std::wstring m_videofile;
   int m_delayms;
+
+  std::wstring m_oemtitle;
+  std::wstring m_subperf;
+  std::wstring m_language;
 
   std::list<std::wstring>* m_handlemsgs;
 };

@@ -1,13 +1,12 @@
 // MD5TestConsole.cpp : Defines the entry point for the console application.
 //
 #include "stdafx.h"
-#include "..\..\src\svplib\MD5Checksum.h"
+#include "..\..\ThirdParty\pkg\sphash.h"
 #include <string>
 #include <windows.h>
 
 int main()
 {
-  CMD5Checksum cmd5;
   char buff[100];
   FILE* File;
 

@@ -27,7 +27,7 @@
 #include "..\..\..\DSUtil\DSUtil.h"
 #include "..\..\..\svplib\svplib.h"
 
-#include "..\..\..\..\include\libunrar\dll.hpp"
+#include "..\..\..\..\Thirdparty\pkg\unrar.hpp"
 
 #define SVP_LogMsg5 __noop
 #define SVP_LogMsg3 __noop

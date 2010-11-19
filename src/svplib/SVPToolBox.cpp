@@ -12,7 +12,7 @@
 
 #include <Shlobj.h>
 #include "SVPRarLib.h"
-#include "..\..\include\libunrar\dll.hpp"
+#include "..\..\Thirdparty\pkg\unrar.hpp"
 
 #include <d3d9.h>
 #include <d3dx9.h>

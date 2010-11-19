@@ -22,7 +22,7 @@
 #include "stdafx.h"
 #include <winioctl.h>
 #include "TextFile.h"
-#include "..\..\include\libunrar\dll.hpp"
+#include "..\..\..\Thirdparty\pkg\unrar.hpp"
 #include "VobSubFile.h"
 #include "..\..\src\svplib\svplib.h"
 

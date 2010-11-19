@@ -165,7 +165,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386  /LTCG"
-				AdditionalDependencies="uafxcw.lib libcpmt.lib Wbemuuid.lib libeay32.lib ssleay32.lib curllib.lib svplibRU.lib zlibR.lib Version.lib libunrarR.lib base.lib courgette_lib.lib lzma_sdk.lib modp_b64.lib Dbghelp.lib"
+				AdditionalDependencies="uafxcw.lib libcpmt.lib Wbemuuid.lib libeay32.lib ssleay32.lib curllib.lib svplibRU.lib zlibR.lib Version.lib base.lib courgette_lib.lib lzma_sdk.lib modp_b64.lib Dbghelp.lib ../../splayer/Thirdparty/pkg/unrar.lib"
 				OutputFile="..\..\$(ProjectName).exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="../lib;..\Thirdparty\courgette\Release\"

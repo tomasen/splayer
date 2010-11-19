@@ -1,5 +1,5 @@
 #include "SVPRarLib.h"
-#include "..\..\include\libunrar\dll.hpp"
+#include "..\..\Thirdparty\pkg\unrar.hpp"
 #include <algorithm>
 
 #define SVP_LogMsg5 __noop

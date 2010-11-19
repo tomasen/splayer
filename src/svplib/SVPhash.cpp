@@ -1,7 +1,7 @@
 #include "SVPhash.h"
 #include "MD5Checksum.h"
 #include "SVPToolBox.h"
-#include "..\..\include\libunrar\dll.hpp"
+#include "..\..\Thirdparty\pkg\unrar.hpp"
 #include "SVPRarLib.h"
 
 #define SVP_LogMsg5 __noop

@@ -8,7 +8,7 @@
 
 #undef __MACTYPES__
 #include "../../../zlib/zlib.h"
-#include "../../../include/libunrar/dll.hpp"
+#include "../../../../splayer/Thirdparty/pkg/unrar.hpp"
 #include "../resource.h"
 
 #include <vector>

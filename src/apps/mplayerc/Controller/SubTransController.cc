@@ -309,6 +309,7 @@ void SubTransController::_thread_download()
   //  szLang = L"eng";
   
   std::vector<std::wstring> szaSubDescs, tmpfiles;
+  HashController::GetInstance()->SetFileName(m_videofile.c_str());
   std::wstring szFileHash = HashController::GetInstance()->GetHash();
   
   refptr<pool> pool = pool::create_instance();
@@ -427,6 +428,7 @@ void SubTransController::_thread_download()
 
 void SubTransController::_thread_upload()
 {
+  HashController::GetInstance()->SetFileName(m_videofile.c_str());
   std::wstring szFileHash = HashController::GetInstance()->GetHash();
 
   std::vector<std::wstring> szaSubFiles;

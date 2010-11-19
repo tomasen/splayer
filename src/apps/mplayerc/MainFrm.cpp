@@ -96,6 +96,7 @@
 #include "Utils/FileAssoc_Win.h"
 #include "Controller/UbdUploadController.h"
 #include "Controller/UsrBehaviorController.h"
+#include "Controller/HashController.h"
 
 #include "..\..\..\Thirdparty\pkg\sphash.h"
 
@@ -8308,22 +8309,15 @@ void CMainFrame::OnPlayAudio(UINT nID)
 	{
 		pSS->Enable(i, AMSTREAMSELECTENABLE_ENABLE);
         //TODO： Save Audio Channel Selection
-
-        //CSVPhash svpHash;
-        //CString FPath = svpHash.ComputerFileHash(m_fnCurPlayingFile);
-        std::wstring szSource = m_fnCurPlayingFile.GetBuffer();
-        char str[300];
-        int len;
-        szSource.push_back(0);
-        szSource.push_back(0);
-        hash_file(HASH_MOD_FILE_STR, HASH_ALGO_MD5, szSource.c_str(), str, &len);
+    HashController::GetInstance()->SetFileName(m_fnCurPlayingFile);
+    std::wstring szFileHash = HashController::GetInstance()->GetHash();
 
         CString szSQLUpdate, szSQLInsert;
 
         int tNow = time(NULL);
         //TODO Save Subselection
-        szSQLInsert.Format(L"INSERT INTO histories  ( fpath, audioid, modtime ) VALUES ( \"%s\", '%d', '%d') ", str, i, tNow);
-        szSQLUpdate.Format(L"UPDATE histories SET audioid = '%d' , modtime = '%d'  WHERE fpath = \"%s\" ", i, tNow, str);
+        szSQLInsert.Format(L"INSERT INTO histories  ( fpath, audioid, modtime ) VALUES ( \"%s\", '%d', '%d') ", szFileHash, i, tNow);
+        szSQLUpdate.Format(L"UPDATE histories SET audioid = '%d' , modtime = '%d'  WHERE fpath = \"%s\" ", i, tNow, szFileHash);
         
         if(AfxGetMyApp()->sqlite_local_record)
             AfxGetMyApp()->sqlite_local_record->exec_insert_update_sql_u(szSQLInsert, szSQLUpdate);
@@ -8462,16 +8456,10 @@ void CMainFrame::OnPlaySubtitles(UINT nID)
 	}
 	else if(i >= 0) //选择字幕
 	{
-    //CSVPhash svpHash;
-    //CString FPath = svpHash.ComputerFileHash(m_fnCurPlayingFile);
-    std::wstring szSource = m_fnCurPlayingFile.GetBuffer();
-    char str[300];
-    int len;
-    szSource.push_back(0);
-    szSource.push_back(0);
-    hash_file(HASH_MOD_FILE_STR, HASH_ALGO_MD5, szSource.c_str(), str, &len);
+    HashController::GetInstance()->SetFileName(m_fnCurPlayingFile);
+    std::wstring szFileHash = HashController::GetInstance()->GetHash();
 
-    CString FPath = str;
+    CString FPath = szFileHash.c_str();
 
         CString szSQLUpdate, szSQLInsert;
 
@@ -11978,15 +11966,10 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 
 		if(m_fOpeningAborted) throw aborted;
 
-        //CSVPhash svpHash;
-        //CString FPath = svpHash.ComputerFileHash(m_fnCurPlayingFile);
-    std::wstring szSource = m_fnCurPlayingFile.GetBuffer();
-    char str[300];
-    int len;
-    szSource.push_back(0);
-    szSource.push_back(0);
-    hash_file(HASH_MOD_FILE_STR, HASH_ALGO_MD5, szSource.c_str(), str, &len);
-    CString FPath = str;
+    HashController::GetInstance()->SetFileName(m_fnCurPlayingFile);
+    std::wstring szFileHash = HashController::GetInstance()->GetHash();
+
+    CString FPath = szFileHash.c_str();
 
 		if(m_pCAP && (!m_fAudioOnly || m_fRealMediaGraph))
 		{
@@ -17427,8 +17410,8 @@ void CMainFrame::OnAudioSettingUpdated()
 void CMainFrame::OnCompleteQuerySubtitle()
 {
   std::wstring subtitle = PlayerPreference::GetInstance()->GetStringVar(STRVAR_QUERYSUBTITLE);
-  LoadSubtitle(subtitle.c_str());
-  SetSubtitle(m_pSubStreams2.GetTail(), true, false);
+  if(LoadSubtitle(subtitle.c_str()) && m_pSubStreams.GetCount() > 0)
+    SetSubtitle(m_pSubStreams.GetTail(), true, false);
 }
 
 void CMainFrame::OnControllerSaveImage()
@@ -17470,23 +17453,17 @@ void CMainFrame::_StartSnap()
     return;
 
   PlayerPreference* pref = PlayerPreference::GetInstance();
-  //CSVPhash svpHash;
-  std::wstring szSource = m_fnCurPlayingFile;
-  char str[300];
-  int len;
-  szSource.push_back(0);
-  szSource.push_back(0);
-  hash_file(HASH_MOD_FILE_STR, HASH_ALGO_MD5, szSource.c_str(), str, &len);
-
+  
   __int64  totaltime, playtime;
   m_suc.SetFrame(m_hWnd);
   pMS->GetDuration(&totaltime);
   pMS->GetCurrentPosition(&playtime);
   pref->SetIntVar(INTVAR_CURSNAPTIME, (unsigned int)(playtime / 10000));
   pref->SetIntVar(INTVAR_CURTOTALPLAYTIME, (unsigned int)(totaltime / 10000));
-  //m_suc.Start((LPCTSTR)svpHash.ComputerFileHash(m_fnCurPlayingFile));
 
-  m_suc.Start((LPCTSTR)str);
+  HashController::GetInstance()->SetFileName(m_fnCurPlayingFile);
+  std::wstring szFileHash = HashController::GetInstance()->GetHash();
+  m_suc.Start(szFileHash.c_str());
 }
 
 void CMainFrame::AutoSaveImage(LPCTSTR fn, bool shrink_inhalf)

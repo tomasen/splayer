@@ -663,9 +663,9 @@ int SubTransFormat::Explode(std::wstring szIn, std::wstring szTok,
 
 BOOL SubTransFormat::IfDirExist_STL(std::wstring path)
 {
-  std::fstream file;
-  file.open(path.c_str(),std::ios::in);
-  return (!!file);
+  if (path[path.size()-1] != L'\\')
+    path.append(L"\\");
+  return !_waccess(path.c_str(), 0);
 }
 
 BOOL SubTransFormat::IfDirWritable_STL(std::wstring szDir)
@@ -764,17 +764,8 @@ BOOL SubTransFormat::GetAppDataPath(std::wstring& path)
   HRESULT hr;
   LPITEMIDLIST pidl;
   hr = SHGetSpecialFolderLocation(NULL, CSIDL_APPDATA, &pidl);
-  if (hr)
-  {
-    ////Old method 
-    //CRegKey key;
-    //if(ERROR_SUCCESS == key.Open(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders", KEY_READ))
-    //{
-    //  ULONG len = MAX_PATH;
-    //  if(ERROR_SUCCESS == key.QueryStringValue(L"AppData", szPath, &len))
-    //    path.resize(len);
-    //}
-  }
+  if (FAILED(hr))
+    return false;
 
 
   BOOL f = SHGetPathFromIDList(pidl, szPath);

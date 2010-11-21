@@ -15,19 +15,6 @@ using namespace sinet;
 
 void SinetConfig(refptr<config> cfg, int sid, std::wstring oem)
 {
-  //AppSettings& s = AfxGetAppSettings();
-
-  //wchar_t agentbuff[MAX_PATH];
-  //if (s.szOEMTitle.IsEmpty())
-  //  wsprintf(agentbuff, L"SPlayer Build %d", SVP_REV_NUMBER);
-  //else
-  //{
-  //  std::wstring oem(s.szOEMTitle);
-  //  wsprintf(agentbuff, L"SPlayer Build %d OEM%s", SVP_REV_NUMBER ,oem.c_str());
-  //}
-
-  //cfg->set_strvar(CFG_STR_AGENT, agentbuff);
-
   wchar_t agentbuff[MAX_PATH];
   if(oem.empty())
     wsprintf(agentbuff, L"SPlayer Build %d", SVP_REV_NUMBER);
@@ -304,9 +291,6 @@ void SubTransController::_thread_download()
   std::vector<std::wstring> subtitles;
   std::wstring szLang = m_language;
 
-  //AppSettings& s = AfxGetAppSettings();
-  //if (!(s.iLanguage == 0 || s.iLanguage == 2))
-  //  szLang = L"eng";
   
   std::vector<std::wstring> szaSubDescs, tmpfiles;
   HashController::GetInstance()->SetFileName(m_videofile.c_str());
@@ -333,9 +317,6 @@ void SubTransController::_thread_download()
                             Strings::WStringToUtf8String(szFileHash).c_str());
     shortname = SubTransFormat::GetShortFileNameForSearch(m_videofile);
 
-    //AppSettings& s = AfxGetAppSettings();
-    //szSVPSubPerf = (LPCTSTR)s.szSVPSubPerf;
-    
     if (!vhash.empty())
       postform[L"vhash"]  = vhash;
 
@@ -390,7 +371,7 @@ void SubTransController::_thread_download()
     szSubFilePath = SubTransFormat::GetSubFileByTempid_STL(i,
       m_videofile, szaSubDescs, tmpfiles);
 
-    if (!szSubFilePath.empty())
+    if (!szSubFilePath.empty() && szSubFilePath != L"EXIST" )
     {
       subtitles.push_back(szSubFilePath);
       iSubTotal++;
@@ -399,7 +380,6 @@ void SubTransController::_thread_download()
 
   if (iSubTotal > 1)
   {
-    //std::wstring szSVPSubPerf = (LPCTSTR)s.szSVPSubPerf;
     if (!m_subperf.empty())
     {
       for (std::vector<std::wstring>::iterator iter = subtitles.begin();

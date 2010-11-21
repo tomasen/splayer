@@ -17424,7 +17424,7 @@ void CMainFrame::OnCompleteQuerySubtitle()
   }
   CString msg;
   msg.Format(ResStr(IDS_LOG_MSG_SVPSUB_GOT_N_SUB_FILE_DOWNLOADED), subtitles.size());
-  SendStatusMessage(msg, 5000);
+  m_statusmsgs.push_back((wchar_t*)(LPCTSTR)msg);
 }
 
 void CMainFrame::OnControllerSaveImage()

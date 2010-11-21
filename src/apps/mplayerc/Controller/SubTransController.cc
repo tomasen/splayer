@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "../Model/SubTransFormat.h"
 #include "SubTransController.h"
-#include "../mplayerc.h"
+#include "../Resource.h"
 #include "HashController.h"
 #include "../Utils/Strings.h"
 #include <sinet.h>
@@ -13,8 +13,6 @@
 
 using namespace sinet;
 
-#undef ResStr
-#define ResStr(id) MAKEINTRESOURCE(id)
 
 void SinetConfig(refptr<config> cfg, int sid, std::wstring oem)
 {
@@ -302,6 +300,8 @@ void SubTransController::_thread_download()
   refptr<pool> pool = pool::create_instance();
   refptr<task> task = task::create_instance();
   refptr<config> cfg = config::create_instance();
+  if (m_handlemsgs)
+    m_handlemsgs->push_back(Strings::ResourceString(IDS_LOG_MSG_USING_SVPSUB_SYSTEM_LOOKINGFOR_SUB));
 
   for (int i = 1; i <= 7; i++)
   {
@@ -353,7 +353,8 @@ void SubTransController::_thread_download()
 
     if (req->get_response_errcode() != 0)
     {
-      m_handlemsgs->push_back(ResStr(IDS_LOG_MSG_SVPSUB_NONE_MATCH_SUB));
+      if (m_handlemsgs)
+        m_handlemsgs->push_back(ResStr_STL(IDS_LOG_MSG_SVPSUB_NONE_MATCH_SUB));
       break;
     }
 
@@ -396,16 +397,9 @@ void SubTransController::_thread_download()
     }
   }
   
-  BOOL bSubSelected = false;
-  for (size_t i = 0 ;i < subtitles.size(); i++)
-  {
-    if (!bSubSelected)
-    {
-      bSubSelected = true;
-      PlayerPreference::GetInstance()->SetStringVar(STRVAR_QUERYSUBTITLE, subtitles.at(i));
-      ::SendMessage(m_frame, WM_COMMAND, ID_COMPLETE_QUERY_SUBTITLE, NULL);
-    }
-  }
+  PlayerPreference::GetInstance()->SetStrArray(STRARRAY_QUERYSUBTITLE, subtitles);
+  ::SendMessage(m_frame, WM_COMMAND, ID_COMPLETE_QUERY_SUBTITLE, NULL);
+  
 }
 
 void SubTransController::_thread_upload()

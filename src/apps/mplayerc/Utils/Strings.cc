@@ -117,3 +117,10 @@ void Strings::Trim(std::wstring& s)
   }
 }
 
+std::wstring Strings::ResourceString(int id)
+{
+  // if its windows resource
+  WTL::CString str;
+  str.LoadString(id);
+  return std::wstring(str);
+}

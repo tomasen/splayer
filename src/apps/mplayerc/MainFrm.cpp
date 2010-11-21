@@ -17409,9 +17409,22 @@ void CMainFrame::OnAudioSettingUpdated()
 
 void CMainFrame::OnCompleteQuerySubtitle()
 {
-  std::wstring subtitle = PlayerPreference::GetInstance()->GetStringVar(STRVAR_QUERYSUBTITLE);
-  if(LoadSubtitle(subtitle.c_str()) && m_pSubStreams.GetCount() > 0)
-    SetSubtitle(m_pSubStreams.GetTail(), true, false);
+  std::vector<std::wstring> subtitles = PlayerPreference::GetInstance()->GetStrArray(STRARRAY_QUERYSUBTITLE);
+  int subtitle_selected = false;
+  for (std::vector<std::wstring>::iterator iter = subtitles.begin();
+        iter != subtitles.end(); iter++)
+  {
+    bool sub_loaded = LoadSubtitle(iter->c_str());
+    if (sub_loaded && !subtitle_selected && m_pSubStreams.GetCount() > 0
+        && !subtitle_selected)
+    {
+      SetSubtitle(m_pSubStreams.GetTail(), true, false);
+      subtitle_selected = true;
+    }
+  }
+  CString msg;
+  msg.Format(ResStr(IDS_LOG_MSG_SVPSUB_GOT_N_SUB_FILE_DOWNLOADED), subtitles.size());
+  SendStatusMessage(msg, 5000);
 }
 
 void CMainFrame::OnControllerSaveImage()

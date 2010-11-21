@@ -21,13 +21,15 @@
 // string variables
 #define STRVAR_HOTKEYSCHEME         1000
 #define STRVAR_GETSNAPTIMEURL       1001
-#define STRVAR_QUERYSUBTITLE        1002
 #define STRVAR_GETSNAPTIMEURL_ACT   1003
 #define STRVAR_UPLOADUSRBHVURL      1004
 #define STRVAR_UPLOADUSRBHVURL_ACT  1005
 
 // string array variables
 #define STRARRAY_PLAYLIST           1000
+
+// temprary data for globle usage
+#define STRARRAY_QUERYSUBTITLE      1001
 
 // custom messages
 #define WM_SPLAYER_CMD      WM_USER+9901

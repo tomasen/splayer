@@ -53,10 +53,7 @@ int SubTransFormat::ExtractDataFromAiSubRecvBuffer_STL(std::list<std::wstring> *
     goto releaseALL;
   }
   else
-  {
-    wchar_t buffer[65];
-    m_tmphandlemsgs->push_back(_itow(IDS_LOG_MSG_SVPSUB_GOTMATCHED_AND_DOWNLOADING,buffer,10));
-  }
+    m_tmphandlemsgs->push_back(ResStr_STL(IDS_LOG_MSG_SVPSUB_GOTMATCHED_AND_DOWNLOADING));
 
   for(int j = 0; j < iStatCode; j++)
   {

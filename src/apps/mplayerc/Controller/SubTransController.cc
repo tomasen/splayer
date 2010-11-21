@@ -13,6 +13,9 @@
 
 using namespace sinet;
 
+#undef ResStr
+#define ResStr(id) MAKEINTRESOURCE(id)
+
 void SinetConfig(refptr<config> cfg, int sid, std::wstring oem)
 {
   wchar_t agentbuff[MAX_PATH];
@@ -350,8 +353,7 @@ void SubTransController::_thread_download()
 
     if (req->get_response_errcode() != 0)
     {
-      wchar_t buffer[65];
-      m_handlemsgs->push_back(_itow(IDS_LOG_MSG_SVPSUB_NONE_MATCH_SUB,buffer,10));
+      m_handlemsgs->push_back(ResStr(IDS_LOG_MSG_SVPSUB_NONE_MATCH_SUB));
       break;
     }
 
@@ -473,8 +475,7 @@ void SubTransController::_thread_upload()
 
       if (req2->get_response_errcode() == 0)
       {
-        wchar_t buffer[65];
-        m_handlemsgs->push_back(_itow(IDS_LOG_MSG_SVPSUB_UPLOAD_FINISHED,buffer,10));
+        //m_handlemsgs->push_back(ResStr(IDS_LOG_MSG_SVPSUB_UPLOAD_FINISHED));
       }
 
      if(0 == chk)

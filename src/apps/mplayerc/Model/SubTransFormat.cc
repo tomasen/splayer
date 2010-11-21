@@ -10,6 +10,7 @@
 #include "../../../../splayer/Thirdparty/pkg/unrar.hpp"
 #include "../../../../splayer/Thirdparty/pkg/sphash.h"
 #include "../resource.h"
+#include <shooterclient.key>
 
 #include <vector>
 #include <fstream>

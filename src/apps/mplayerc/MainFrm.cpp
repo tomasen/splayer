@@ -7285,8 +7285,8 @@ void CMainFrame::OnPlayPlay()
 		}
 		
 	}
-  KillTimer(TIMER_SNAP);
-  SetTimer(TIMER_SNAP, 10000, NULL);
+  //KillTimer(TIMER_SNAP);
+  //SetTimer(TIMER_SNAP, 10000, NULL);
 }
 
 void CMainFrame::OnPlayPauseI()
@@ -12190,7 +12190,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
             //SVP_LogMsg5(szSQL);
             int audid = AfxGetMyApp()->sqlite_local_record->get_single_int_from_sql(szSQL, -1);
             if(audid >= 0){
-                //SVP_LogMsg5(L"subid %d %d", audid, m_pSubStreams.GetCount());
+                SVP_LogMsg5(L"subid %d %d", audid, m_pSubStreams.GetCount());
                 CComQIPtr<IAMStreamSelect> pSS = FindFilter(__uuidof(CAudioSwitcherFilter), pGB);
                 if(!pSS) pSS = FindFilter(L"{D3CD7858-971A-4838-ACEC-40CA5D529DC8}", pGB);
                 if( pSS)

@@ -49,7 +49,6 @@
 
 #include "../../filters/transform/mpcvideodec/CpuId.h"
 
-#include "..\..\..\Thirdparty\pkg\sphash.h"
 
 //#define  SPI_GETDESKWALLPAPER 115
 

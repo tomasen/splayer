@@ -15,9 +15,6 @@ class HashController:
 public:
   HashController(void);
 
-  // SetFileName should be called by the frame window upon new file openning
-  // or playlist file switch
-  ///void SetFileName(const wchar_t* filename);
   // Returning current file hash, will automatically calculate if it's not done
   std::wstring GetSPHash(const wchar_t* filename);
   

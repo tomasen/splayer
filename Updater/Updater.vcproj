@@ -138,7 +138,7 @@
 				OmitFramePointers="true"
 				EnableFiberSafeOptimizations="false"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="../src/svplib/;..\Thirdparty\"
+				AdditionalIncludeDirectories="../src/svplib/;..\Thirdparty\;./;..\Thirdparty\pkg;..\Thirdparty\wtl\include"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG"
 				StringPooling="true"
 				MinimalRebuild="false"
@@ -335,6 +335,38 @@
 			</File>
 			<File
 				RelativePath=".\res\Updater.rc2"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Controller"
+			>
+			<File
+				RelativePath="..\src\apps\mplayerc\Controller\HashController.cc"
+				>
+			</File>
+			<File
+				RelativePath="..\src\apps\mplayerc\Controller\HashController.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\apps\mplayerc\Controller\LazyInstance.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Utils"
+			>
+			<File
+				RelativePath="..\src\apps\mplayerc\Utils\CriticalSection.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\apps\mplayerc\Utils\Strings.cc"
+				>
+			</File>
+			<File
+				RelativePath="..\src\apps\mplayerc\Utils\Strings.h"
 				>
 			</File>
 		</Filter>

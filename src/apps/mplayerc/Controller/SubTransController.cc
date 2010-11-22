@@ -6,7 +6,6 @@
 #include "../Utils/Strings.h"
 #include <sinet.h>
 #include <sys/stat.h>
-#include <sphash.h>
 #include "PlayerPreference.h"
 #include "SPlayerDefs.h"
 #include "../revision.h"

@@ -4214,14 +4214,15 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
     // load hotkeyscheme
     PlayerPreference* pref = PlayerPreference::GetInstance();
     std::wstring hotkey_file = pref->GetStringVar(STRVAR_HOTKEYSCHEME);
-    if (hotkey_file.length() > 0)
-    {
-      wchar_t path[256];
-      GetModuleFileName(NULL, path, 256);
-      PathRemoveFileSpec(path);
-      wcscat_s(path, 256, hotkey_file.c_str());
-      con->UpdateSchemeFromFile(path);
-    }
+    if (hotkey_file.empty())
+      hotkey_file = L"\\hotkey\\SPlayer.key";
+
+    wchar_t path[256];
+    GetModuleFileName(NULL, path, 256);
+    PathRemoveFileSpec(path);
+    wcscat_s(path, 256, hotkey_file.c_str());
+    con->UpdateSchemeFromFile(path);
+    
     std::vector<HotkeyCmd> scheme = con->GetScheme();
     accel.resize(scheme.size());
 

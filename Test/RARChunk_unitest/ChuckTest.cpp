@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "windows.h"
-#include "..\..\include\libunrar\dll.hpp"
+#include "..\..\Thirdparty\pkg\unrar.hpp"
 
 #include <stdio.h>
 

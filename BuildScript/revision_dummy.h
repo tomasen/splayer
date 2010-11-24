@@ -4,6 +4,6 @@
 
 #pragma once
 
-#define SVP_REV_STR	_T("DummyForFirstBuild")
-#define SVP_REV_NUMBER	99
-
+#define SVP_REV_STR	L"0"
+#define SVP_REV_NUMBER	0
+#define BRANCHVER       L"36" 

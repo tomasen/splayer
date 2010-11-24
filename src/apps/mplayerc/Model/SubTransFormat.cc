@@ -7,7 +7,7 @@
 
 #undef __MACTYPES__
 #include "../../../zlib/zlib.h"
-#include "../../../../splayer/Thirdparty/pkg/unrar.hpp"
+#include "unrar.hpp"
 #include "../resource.h"
 #include <shooterclient.key>
 

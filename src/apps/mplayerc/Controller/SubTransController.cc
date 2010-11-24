@@ -107,7 +107,7 @@ void SubTransController::WetherNeedUploadSub(refptr<pool> pool, refptr<task> tas
   StringMap2PostData(data, postform);
 
   int rret = -1;
-  SinetConfig(cfg, sid, oem);
+  SinetConfig(cfg, sid);
 
   std::wstring url = GetServerUrl('upsb', sid);
   req->set_request_method(REQ_POST);
@@ -160,7 +160,7 @@ void SubTransController::UploadSubFileByVideoAndHash(refptr<pool> pool,refptr<ta
     data->add_elem(elem);
   }
   
-  SinetConfig(cfg, sid, oem);
+  SinetConfig(cfg, sid);
 
   std::wstring url = GetServerUrl('upsb', sid);
   req->set_request_url(url.c_str());
@@ -296,7 +296,7 @@ void SubTransController::_thread_download()
     req->set_request_outmode(REQ_OUTFILE);
     req->set_outfile(tmpoutfile.c_str());
 
-    SinetConfig(cfg, i, m_oemtitle);
+    SinetConfig(cfg, i);
     task->use_config(cfg);
     task->append_request(req);
     pool->execute(task);

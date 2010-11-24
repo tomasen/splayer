@@ -21,6 +21,7 @@ public:
   std::wstring GetMD5Hash(const wchar_t* filename);
   std::wstring GetMD5Hash(const char* data, int len);
 
+  std::wstring GetVersionHash(const wchar_t* filename);
 private:
   CriticalSection m_cs;
 

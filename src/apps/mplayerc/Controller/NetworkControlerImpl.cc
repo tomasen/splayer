@@ -53,17 +53,17 @@ std::wstring NetworkControlerImpl::GetServerUrl(int req_type , int tryid)
   }
   return apiurl;
 }
-void NetworkControlerImpl::SinetConfig(sinet::refptr<sinet::config> cfg, int sid, std::wstring oem)
+void NetworkControlerImpl::SinetConfig(sinet::refptr<sinet::config> cfg, int retryid)
 {
   wchar_t agentbuff[MAX_PATH];
-  if(oem.empty())
+  if(m_oemtitle.empty())
     wsprintf(agentbuff, L"SPlayer Build %d", SVP_REV_NUMBER);
   else
-    wsprintf(agentbuff, L"SPlayer Build %d OEM%s", SVP_REV_NUMBER ,oem.c_str());
+    wsprintf(agentbuff, L"SPlayer Build %d OEM%s", SVP_REV_NUMBER ,m_oemtitle.c_str());
   cfg->set_strvar(CFG_STR_AGENT, agentbuff);
 
   std::wstring proxy;
-  if (sid%2 == 0)
+  if (retryid%2 == 0)
   {
     DWORD ProxyEnable = 0;
     wchar_t ProxyServer[256];
@@ -81,8 +81,6 @@ void NetworkControlerImpl::SinetConfig(sinet::refptr<sinet::config> cfg, int sid
     }
   }
  
-  if (proxy.empty())
-    cfg->set_strvar(CFG_STR_PROXY, L"");
-  else
+  if (!proxy.empty())
     cfg->set_strvar(CFG_STR_PROXY, proxy);
 }

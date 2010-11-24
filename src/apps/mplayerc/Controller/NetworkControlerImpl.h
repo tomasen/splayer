@@ -10,8 +10,8 @@ public:
   NetworkControlerImpl(void);
   ~NetworkControlerImpl(void);
   
-  void SinetConfig(sinet::refptr<sinet::config> cfg, int sid, std::wstring oem);
-  std::wstring GetServerUrl(int req_type , int tryid);
+  void SinetConfig(sinet::refptr<sinet::config> cfg, int retryid);
+  std::wstring GetServerUrl(int req_type , int retryid);
 
   void SetOemTitle(std::wstring str);
   std::wstring m_oemtitle;

@@ -2,7 +2,7 @@
 #define OSDCONTROLLER_H
 
 #include "LazyInstance.h"
-#include "../Utils/CriticalSection.h"
+#include <CriticalSection.h>
 
 class OSDController:
   public LazyInstanceImpl<OSDController>

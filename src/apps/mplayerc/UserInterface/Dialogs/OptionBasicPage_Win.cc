@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "OptionBasicPage_Win.h"
-#include "../../Utils/Strings.h"
+#include <Strings.h>
 #include "../../mplayerc.h"
 #include "../../svplib/svplib.h"
 #include "../../Controller/Hotkey_Controller.h"

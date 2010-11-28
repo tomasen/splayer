@@ -1,7 +1,7 @@
 #include <stdafx.h>
 #include "HashController.h"
 #include <sphash.h>
-#include "../Utils/Strings.h"
+#include <Strings.h>
 #include <io.h> 
 #include <fcntl.h>
 #include <sys/stat.h>

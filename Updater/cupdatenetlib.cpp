@@ -9,7 +9,7 @@
 #include <atlpath.h>
 
 #include "../src/apps/mplayerc/revision.h"
-#include "..\src\apps\mplayerc\Utils\Strings.h"
+#include <Strings.h>
 #include "..\src\apps\mplayerc\Controller\HashController.h"
 
 DECLARE_LAZYINSTANCE(HashController);

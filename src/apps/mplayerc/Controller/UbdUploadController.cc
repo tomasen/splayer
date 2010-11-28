@@ -11,7 +11,7 @@
 
 #include "../Model/UsrBehaviorData.h"
 #include "../Utils/SPlayerGUID.h"
-#include "../Utils/Strings.h"
+#include <Strings.h>
 
 sinet::refptr<sinet::task> UploadForm(std::wstring file, std::wstring uid, std::wstring url)
 {

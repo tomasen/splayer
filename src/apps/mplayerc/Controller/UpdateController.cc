@@ -3,7 +3,7 @@
 
 #include "hashcontroller.h"
 #include "LazyInstance.h"
-#include "../utils/strings.h"
+#include <Strings.h>
 #include "../model/SubTransFormat.h"
 #include "../../mplayerc\revision.h"
 

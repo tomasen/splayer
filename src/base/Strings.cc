@@ -1,5 +1,7 @@
-#include "StdAfx.h"
 #include "Strings.h"
+#include <Windows.h>
+
+HINSTANCE Strings::m_hInstance = NULL;
 
 int Strings::Split(const wchar_t* input, const wchar_t* delimiter,
                    std::vector<std::wstring>& array_out)
@@ -116,11 +118,41 @@ void Strings::Trim(std::wstring& s)
     s = s.substr(first, last - first + 1);
   }
 }
-
+void Strings::SetResourceHandle(HINSTANCE hInstance)
+{
+  m_hInstance = hInstance;
+}
 std::wstring Strings::ResourceString(int id)
 {
-  // if its windows resource
-  WTL::CString str;
-  str.LoadString(id);
-  return std::wstring(str);
+
+  wchar_t* lpstrText = NULL;
+  int nRes = 0;
+  for(int nLen = 256; ; nLen *= 2)
+  {
+    try
+    {
+      lpstrText = new TCHAR[nLen];
+    }
+    catch(...) { }
+
+    if(lpstrText == NULL)
+      break;
+    if (Strings::m_hInstance == NULL)
+      Strings::m_hInstance = GetModuleHandle(NULL);
+
+    nRes = ::LoadString(NULL, id, lpstrText, nLen);
+    if(nRes < nLen - 1)
+      break;
+    delete [] lpstrText;
+    lpstrText = NULL;
+  }
+  std::wstring ret_str;
+  if(lpstrText != NULL)
+  {
+    if(nRes != 0)
+      ret_str = lpstrText;
+    delete [] lpstrText;
+  }
+
+  return std::wstring(ret_str);
 }

@@ -33,7 +33,7 @@
 #include "../../svplib/SVPToolBox.h"
 #include "../../svplib/SVPRarLib.h"
 #include "OpenFileDlg.h"
-#include "Utils/Strings.h"
+#include <Strings.h>
 #include "UserInterface/Renderer/PlaylistView_Win.h"
 
 #include "Utils/ContentType.h"

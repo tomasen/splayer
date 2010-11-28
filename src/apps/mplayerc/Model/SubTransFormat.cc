@@ -2,7 +2,7 @@
 #include <sys/stat.h>
 #include "SubTransFormat.h"
 
-#include "../Utils/Strings.h"
+#include <Strings.h>
 #include "../revision.h"
 
 #undef __MACTYPES__

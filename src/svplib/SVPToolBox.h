@@ -1,8 +1,10 @@
 #ifndef SVPTOOLBOX_H
 #define SVPTOOLBOX_H
 
+
 #include "svplib.h"
 #include <atlpath.h>
+#include <afxcoll.h>
 #include <vector>
 #include <string>
 

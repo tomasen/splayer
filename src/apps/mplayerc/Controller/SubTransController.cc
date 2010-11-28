@@ -3,12 +3,13 @@
 #include "SubTransController.h"
 #include "../Resource.h"
 #include "HashController.h"
-#include "../Utils/Strings.h"
+#include <Strings.h>
 #include <sinet.h>
 #include <sys/stat.h>
 #include "PlayerPreference.h"
 #include "SPlayerDefs.h"
 #include "../revision.h"
+#include <logging.h>
 
 using namespace sinet;
 
@@ -126,6 +127,8 @@ void SubTransController::UploadSubFileByVideoAndHash(refptr<pool> pool,refptr<ta
                                 std::vector<std::wstring>* fnSubPaths,
                                 int iDelayMS, int sid, std::wstring oem)
 {
+  Logging(L"UploadSubFileByVideoAndHash %s %s", fnVideoFilePath.c_str(), szSubHash.c_str());
+
   refptr<config> cfg = config::create_instance();
   std::map<std::wstring, std::wstring> postform;
   
@@ -170,6 +173,16 @@ void SubTransController::UploadSubFileByVideoAndHash(refptr<pool> pool,refptr<ta
   task->use_config(cfg);
   task->append_request(req);
   pool->execute(task);
+
+
+  while (pool->is_running_or_queued(task))
+  {
+    if (::WaitForSingleObject(m_stopevent, 1000) == WAIT_OBJECT_0)
+      return;
+  }
+
+  Logging(L"UploadSubFileByVideoAndHash %d", req->get_response_errcode());
+
 }
 
 SubTransController::SubTransController(void):

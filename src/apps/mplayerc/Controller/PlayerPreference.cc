@@ -2,7 +2,7 @@
 #include "SPlayerDefs.h"
 #include "PlayerPreference.h"
 #include "../../../lib/splite/libsqlite/libsqlite.h"
-#include "../Utils/Strings.h"
+#include <Strings.h>
 #include "../resource.h"
 
 #define ResStr(id) CString(MAKEINTRESOURCE(id))

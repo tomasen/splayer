@@ -74,9 +74,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				LinkLibraryDependencies="false"
 				AdditionalOptions="/MACHINE:I386  /LTCG "
-				AdditionalDependencies="Wbemuuid.lib Rpcrt4.lib Wmvcore.lib WMVSplitterRU.lib libmpeg2R.lib id3lib.lib lyriclib.lib libsqlite.lib SVPFilterRU.lib svplibRU.lib Delayimp.lib psapi.lib detours.lib qtmlClient.lib wmstub.lib dxguid.lib Dsound.lib strmbaseRU.lib dsutilRU.lib subpicRU.lib subtitlesRU.lib libssfRU.lib asyncreaderRU.lib audioswitcherRU.lib avi2ac3filterRU.lib bufferfilterRU.lib cddareaderRU.lib cdxareaderRU.lib d2vsourceRU.lib decssfilterRU.lib flicsourceRU.lib dtsac3sourceRU.lib basesourceRU.lib wavdestRU.lib shoutcastsourceRU.lib streamdrivethruRU.lib vtsreaderRU.lib basesplitterRU.lib MatroskaSplitterRU.lib MatroskaMuxerRU.lib RealMediaSplitterRU.lib AviSplitterRU.lib Mpeg2DecFilterRU.lib MpaDecFilterRU.lib RoQSplitterRU.lib OggSplitterRU.lib NutSplitterRU.lib MpegSplitterRU.lib DiracSplitterRU.lib MpaSplitterRU.lib DSMSplitterRU.lib MP4SplitterRU.lib BaseMuxerRU.lib DSMMuxerRU.lib UDPReaderRU.lib FLVSplitterRU.lib zlibR.lib subtitlesourceRU.lib filtersRU.lib libvorbisidecR.lib SSFSplitterRU.lib libpngR.lib comsuppw.lib Winmm.lib MPCVideoDecRU.lib &quot;..\..\..\lib\libdtsr.lib&quot; &quot;..\..\..\lib\basevideofilterru.lib&quot; &quot;..\..\..\lib\libfaad2r.lib&quot; &quot;..\..\..\lib\flacsourceru.lib&quot; &quot;..\..\..\lib\libdiracr.lib&quot; &quot;..\..\..\lib\liba52r.lib&quot; &quot;..\..\..\lib\resizablelibru.lib&quot; &quot;..\..\..\lib\libflac.lib&quot; &quot;..\..\..\lib\libmadr.lib&quot; &quot;..\..\..\lib\sizecbarru.lib&quot; &quot;..\..\..\lib\treepropsheetru.lib&quot; &quot;..\..\..\lib\cmduiru.lib&quot; &quot;..\..\..\lib\decssru.lib&quot; Imm32.lib SyncClockRU.lib base.lib courgette_lib.lib lzma_sdk.lib modp_b64.lib Dbghelp.lib ../../../Thirdparty/pkg/unrar.lib ../../../Thirdparty/pkg/sphash.lib"
+				AdditionalDependencies="subpicru.lib Rpcrt4.lib lzma_sdk.lib base.lib courgette_lib.lib Winmm.lib Wbemuuid.lib Dsound.lib Imm32.lib Dbghelp.lib Psapi.lib libssfru.lib detours.lib unrar.lib sphash.lib qtmlClient.lib dxguid.lib"
 				OutputFile="$(SolutionDir)..\splayer.exe"
 				AdditionalLibraryDirectories="../../../Thirdparty/sqlitepp/lib;../../../lib;../../../lib/wm7;../../../lib/qt6;../../../lib/detours;../../../thirdparty/courgette\Release\"
 				GenerateManifest="true"
@@ -1193,11 +1192,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon\DVD.ico"
+				RelativePath=".\res\ecio.icons\dvd.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\ecio.icons\dvd.ico"
+				RelativePath=".\res\icon\DVD.ico"
 				>
 			</File>
 			<File

@@ -17,6 +17,11 @@ m_PerfFrequency(0)
   _wremove(log_path.c_str());
 }
 
+LogController::~LogController(void)
+{
+
+}
+
 void LogController::Log(const wchar_t* fmt, ...)
 {
   wchar_t buf[2048];

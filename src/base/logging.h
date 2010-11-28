@@ -10,6 +10,7 @@ class LogController:
 {
 public:
   LogController(void);
+  ~LogController(void);
   void Log(const wchar_t* fmt, ...);
   void Log(const char* fmt, ...);
 private:

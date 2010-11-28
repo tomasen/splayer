@@ -21,16 +21,18 @@ public:
   static BOOL IfFileExist_STL(std::wstring szPathname, BOOL evenSlowDriver = TRUE);
   static BOOL IsSpecFanSub(std::wstring szPath, std::wstring szOEM);
 
+  static int UnpackGZFile(std::wstring fnin, std::wstring fnout);
+  static BOOL IfDirWritable_STL(std::wstring szDir);
+
 private:
   static int HandleSubPackage(FILE* fp, std::vector<std::wstring> &szaSubDescs,
                               std::vector<std::wstring> &tmpfiles);
   static int ExtractSubFiles(FILE* fp, std::vector<std::wstring> &tmpfiles);
   static int ExtractEachSubFile(FILE* fp, std::vector<std::wstring> &tmpfiles);
-  static int UnpackGZFile(std::wstring fnin, std::wstring fnout);
+
   static int Explode(std::wstring szIn, std::wstring szTok, std::vector<std::wstring>* szaOut);
   static BOOL SplitPath_STL(std::wstring fnSVPRarPath, std::wstring &fnrar, std::wstring &fninrar);
   static BOOL IfDirExist_STL(std::wstring path);
-  static BOOL IfDirWritable_STL(std::wstring szDir);
   static BOOL GetAppDataPath(std::wstring& path);
   static std::wstring GetPlayerPath_STL(std::wstring progName);
   static std::wstring DetectSubFileLanguage_STL(std::wstring fn);

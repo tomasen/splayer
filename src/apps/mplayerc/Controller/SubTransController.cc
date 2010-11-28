@@ -3,13 +3,13 @@
 #include "SubTransController.h"
 #include "../Resource.h"
 #include "HashController.h"
-#include "../Utils/Strings.h"
+#include <Strings.h>
 #include <sinet.h>
 #include <sys/stat.h>
-#include <sphash.h>
 #include "PlayerPreference.h"
 #include "SPlayerDefs.h"
 #include "../revision.h"
+#include <logging.h>
 
 using namespace sinet;
 
@@ -60,43 +60,6 @@ void StringMap2PostData(refptr<postdata> data ,std::map<std::wstring, std::wstri
   }
 }
 
-std::wstring GetServerUrl(int req_type , int tryid)
-{
-
-  std::wstring apiurl;
-  wchar_t str[100] = L"https://www.shooter.cn/";
-
-  if (tryid > 1 && tryid <= 11)
-  {
-    if (tryid >= 4)
-    {
-      int iSvrId = 4 + rand()%7;    
-      if (tryid%2)
-        wsprintf(str, L"https://splayer%d.shooter.cn/", iSvrId-1);
-      else
-        wsprintf(str, L"http://splayer%d.shooter.cn/", iSvrId-1);
-    }
-    else
-      wsprintf(str, L"https://splayer%d.shooter.cn/", tryid-1);
-  }
-  else if (tryid > 11)
-    wsprintf(str, L"http://svplayer.shooter.cn/");
-
-  apiurl.assign(str);
-  switch(req_type)
-  {
-    case 'upda':
-      apiurl += L"api/updater.php";
-      break;
-    case 'upsb':
-      apiurl += L"api/subup.php";
-      break;
-    case 'sapi':
-      apiurl += L"api/subapi.php";
-      break;
-  }
-  return apiurl;
-}
 
 int FindAllSubfile(std::wstring szSubPath , std::vector<std::wstring>* szaSubFiles)
 {
@@ -126,7 +89,7 @@ int FindAllSubfile(std::wstring szSubPath , std::vector<std::wstring>* szaSubFil
   return 0;
 }
 
-void WetherNeedUploadSub(refptr<pool> pool, refptr<task> task, refptr<request> req,
+void SubTransController::WetherNeedUploadSub(refptr<pool> pool, refptr<task> task, refptr<request> req,
                         std::wstring fnVideoFilePath, std::wstring szFileHash, 
                         std::wstring fnSubHash, int iDelayMS, int sid, std::wstring oem)
 {
@@ -145,7 +108,7 @@ void WetherNeedUploadSub(refptr<pool> pool, refptr<task> task, refptr<request> r
   StringMap2PostData(data, postform);
 
   int rret = -1;
-  SinetConfig(cfg, sid, oem);
+  SinetConfig(cfg, sid);
 
   std::wstring url = GetServerUrl('upsb', sid);
   req->set_request_method(REQ_POST);
@@ -156,7 +119,7 @@ void WetherNeedUploadSub(refptr<pool> pool, refptr<task> task, refptr<request> r
   pool->execute(task);
 }
 
-void UploadSubFileByVideoAndHash(refptr<pool> pool,refptr<task> task,
+void SubTransController::UploadSubFileByVideoAndHash(refptr<pool> pool,refptr<task> task,
                                 refptr<request> req,
                                 std::wstring fnVideoFilePath,
                                 std::wstring szFileHash,
@@ -164,6 +127,8 @@ void UploadSubFileByVideoAndHash(refptr<pool> pool,refptr<task> task,
                                 std::vector<std::wstring>* fnSubPaths,
                                 int iDelayMS, int sid, std::wstring oem)
 {
+  Logging(L"UploadSubFileByVideoAndHash %s %s", fnVideoFilePath.c_str(), szSubHash.c_str());
+
   refptr<config> cfg = config::create_instance();
   std::map<std::wstring, std::wstring> postform;
   
@@ -198,7 +163,7 @@ void UploadSubFileByVideoAndHash(refptr<pool> pool,refptr<task> task,
     data->add_elem(elem);
   }
   
-  SinetConfig(cfg, sid, oem);
+  SinetConfig(cfg, sid);
 
   std::wstring url = GetServerUrl('upsb', sid);
   req->set_request_url(url.c_str());
@@ -208,6 +173,16 @@ void UploadSubFileByVideoAndHash(refptr<pool> pool,refptr<task> task,
   task->use_config(cfg);
   task->append_request(req);
   pool->execute(task);
+
+
+  while (pool->is_running_or_queued(task))
+  {
+    if (::WaitForSingleObject(m_stopevent, 1000) == WAIT_OBJECT_0)
+      return;
+  }
+
+  Logging(L"UploadSubFileByVideoAndHash %d", req->get_response_errcode());
+
 }
 
 SubTransController::SubTransController(void):
@@ -225,11 +200,6 @@ SubTransController::~SubTransController(void)
 void SubTransController::SetFrame(HWND hwnd)
 {
   m_frame = hwnd;
-}
-
-void SubTransController::SetOemTitle(std::wstring str)
-{
-  m_oemtitle = str;
 }
 
 void SubTransController::SetLanuage(std::wstring str)
@@ -339,7 +309,7 @@ void SubTransController::_thread_download()
     req->set_request_outmode(REQ_OUTFILE);
     req->set_outfile(tmpoutfile.c_str());
 
-    SinetConfig(cfg, i, m_oemtitle);
+    SinetConfig(cfg, i);
     task->use_config(cfg);
     task->append_request(req);
     pool->execute(task);

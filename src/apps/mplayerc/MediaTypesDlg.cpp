@@ -28,6 +28,7 @@
 #include "..\..\DSUtil\DSUtil.h"
 #include "..\..\..\include\moreuuids.h"
 #include "..\..\svplib\svplib.h"
+#include ".\Controller\UpdateController.h"
 
 // CMediaTypesDlg dialog
 
@@ -114,7 +115,8 @@ BOOL CMediaTypesDlg::OnInitDialog()
 	AppSettings & s = AfxGetAppSettings();
 //	if(s.fUploadFailedPinsInfo)
 //		SVP_UploadPinRenderDeadEnd(szDeadPin, szReport);
-
+  //if(s.fUploadFailedPinsInfo)
+  //  UpdateController::UploadPinRenderDeadEnd();
 	
 	if(!s.fReportFailedPins){
 		OnOK();

@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 
 #include "UsrBehaviorController.h"
-#include "../Utils/CriticalSection.h"
+#include <CriticalSection.h>
 
 
 void UsrBehaviorController::AppendBhvEntry(int id, std::wstring data)

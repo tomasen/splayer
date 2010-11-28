@@ -85,7 +85,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
-			InheritedPropertySheets="..\common.vsprops;..\release.vsprops"
+			InheritedPropertySheets="$(SolutionDir)src\common.vsprops;$(SolutionDir)src\release.vsprops"
 			UseOfMFC="1"
 			UseOfATL="1"
 			CharacterSet="1"

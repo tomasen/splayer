@@ -49,7 +49,6 @@
 
 #include "../../filters/transform/mpcvideodec/CpuId.h"
 
-#include "..\..\..\Thirdparty\pkg\sphash.h"
 
 //#define  SPI_GETDESKWALLPAPER 115
 
@@ -57,7 +56,9 @@
 #include "Utils/FileAssoc_Win.h"
 #include "Controller/UbdUploadController.h"
 #include "Controller/UsrBehaviorController.h"
-#include "Utils\Strings.h"
+#include <Strings.h>
+#include "Controller\UpdateController.h"
+#include <logging.h>
 
 //Update URL
 char* szUrl = "http://svplayer.shooter.cn/api/updater.php";
@@ -68,6 +69,7 @@ DECLARE_LAZYINSTANCE(PlaylistController);
 DECLARE_LAZYINSTANCE(HashController);
 DECLARE_LAZYINSTANCE(UbdUploadController);
 DECLARE_LAZYINSTANCE(UsrBehaviorController);
+DECLARE_LAZYINSTANCE(UpdateController);
 
 /////////
 typedef BOOL (WINAPI* MINIDUMPWRITEDUMP)(HANDLE hProcess, DWORD dwPid, HANDLE hFile, MINIDUMP_TYPE DumpType,
@@ -1548,17 +1550,14 @@ void CMPlayerCApp::InitInstanceThreaded(INT64 CLS64){
 
     SVP_LogMsg5(L"Settings::InitInstanceThreaded");
 	//SVP_LogMsg5(L"%x %d xx ",CLS64 ,(CLS64&CLSW_STARTFROMDMP) );
-	if(!(CLS64&CLSW_STARTFROMDMP)){
-		_wremove(svpToolBox.GetPlayerPath(_T("SVPDebug.log")));
-		_wremove(svpToolBox.GetPlayerPath(_T("SVPDebug2.log")));
-	}
+
 
 	//avoid crash by lame acm
 	RegDelnode(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\MediaResources\\msacm\\msacm.lameacm");
 	SVPRegDeleteValueEx( HKEY_LOCAL_MACHINE , L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\drivers.desc",L"LameACM.acm");
 	SVPRegDeleteValueEx( HKEY_LOCAL_MACHINE , L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\drivers32",L"msacm.lameacm");
 
-  SVP_LogMsg5(L"Settings::InitInstanceThreaded 4");
+  Logging(L"Settings::InitInstanceThreaded 4");
 	m_bSystemParametersInfo[0] = FALSE;
 	if(!IsVista()){
 		BOOL bDropShadow = FALSE;
@@ -1650,7 +1649,7 @@ SVP_LogMsg5(L"Settings::InitInstanceThreaded 16");
 				}
 				if(!pFrame->m_bCheckingUpdater){
 					pFrame->m_bCheckingUpdater = true;
-					// TODO: replace SVP_RealCheckUpdaterExe( &(pFrame->m_bCheckingUpdater) );
+          UpdateController::GetInstance()->CheckUpdateEXEUpdate();
 
 				}
 				SVP_LogMsg5(L"Settings::InitInstanceThreaded 17");
@@ -2363,7 +2362,7 @@ void CMPlayerCApp::Settings::RegGlobalAccelKey(HWND hWnd){
 void CMPlayerCApp::Settings::ThreadedLoading(){
 	
 	CMPlayerCApp * pApp  = AfxGetMyApp();
-	SVP_LogMsg5(L"Settings::ThreadedLoading");
+	Logging(L"Logging Settings::ThreadedLoading");
 	CMainFrame* pFrame = (CMainFrame*)pApp->m_pMainWnd;
 	while(!pFrame || pFrame->m_WndSizeInited < 2){
 		Sleep(1000);
@@ -4215,14 +4214,15 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
     // load hotkeyscheme
     PlayerPreference* pref = PlayerPreference::GetInstance();
     std::wstring hotkey_file = pref->GetStringVar(STRVAR_HOTKEYSCHEME);
-    if (hotkey_file.length() > 0)
-    {
-      wchar_t path[256];
-      GetModuleFileName(NULL, path, 256);
-      PathRemoveFileSpec(path);
-      wcscat_s(path, 256, hotkey_file.c_str());
-      con->UpdateSchemeFromFile(path);
-    }
+    if (hotkey_file.empty())
+      hotkey_file = L"\\hotkey\\SPlayer.key";
+
+    wchar_t path[256];
+    GetModuleFileName(NULL, path, 256);
+    PathRemoveFileSpec(path);
+    wcscat_s(path, 256, hotkey_file.c_str());
+    con->UpdateSchemeFromFile(path);
+    
     std::vector<HotkeyCmd> scheme = con->GetScheme();
     accel.resize(scheme.size());
 
@@ -5133,6 +5133,7 @@ void CMPlayerCApp::SetLanguage (int nLanguage)
 	szLangSeting.Format(L"%d" , s.iLanguage );
 	svpTool.filePutContent(szLangDefault,szLangSeting );
 	AfxSetResourceHandle(hMod);
+  Strings::SetResourceHandle(hMod);
 
 #if (_ATL_VER >= 0x0700)
   ATL::_AtlBaseModule.SetResourceInstance(hMod);

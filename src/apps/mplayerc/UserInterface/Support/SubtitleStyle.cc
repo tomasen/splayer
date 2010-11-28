@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "SubtitleStyle.h"
-#include "../../Utils/Strings.h"
+#include <Strings.h>
 #include "../../mplayerc.h"
 #include "../../resource.h"
 

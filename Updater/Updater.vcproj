@@ -106,6 +106,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
+			InheritedPropertySheets="$(SolutionDir)src\common.vsprops;$(SolutionDir)src\release.vsprops"
 			UseOfMFC="1"
 			CharacterSet="1"
 			WholeProgramOptimization="0"
@@ -138,7 +139,7 @@
 				OmitFramePointers="true"
 				EnableFiberSafeOptimizations="false"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="../src/svplib/;..\Thirdparty\"
+				AdditionalIncludeDirectories="../src/svplib/;..\Thirdparty\;./;..\Thirdparty\pkg;..\Thirdparty\wtl\include"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG"
 				StringPooling="true"
 				MinimalRebuild="false"
@@ -165,7 +166,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386  /LTCG"
-				AdditionalDependencies="uafxcw.lib libcpmt.lib Wbemuuid.lib svplibRU.lib zlibR.lib Version.lib base.lib courgette_lib.lib lzma_sdk.lib modp_b64.lib Dbghelp.lib ../../splayer/Thirdparty/pkg/unrar.lib ../../splayer/Thirdparty/pkg/sphash.lib"
+				AdditionalDependencies="uafxcw.lib libcpmt.lib Wbemuuid.lib svplibRU.lib zlibR.lib Version.lib base.lib courgette_lib.lib lzma_sdk.lib modp_b64.lib Dbghelp.lib ../Thirdparty/pkg/unrar.lib ../Thirdparty/pkg/sphash.lib"
 				OutputFile="..\..\$(ProjectName).exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="../lib;..\Thirdparty\courgette\Release\"
@@ -335,6 +336,22 @@
 			</File>
 			<File
 				RelativePath=".\res\Updater.rc2"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Controller"
+			>
+			<File
+				RelativePath="..\src\apps\mplayerc\Controller\HashController.cc"
+				>
+			</File>
+			<File
+				RelativePath="..\src\apps\mplayerc\Controller\HashController.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\apps\mplayerc\Controller\LazyInstance.h"
 				>
 			</File>
 		</Filter>

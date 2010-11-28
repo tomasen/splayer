@@ -9,9 +9,10 @@
 #include <atlpath.h>
 
 #include "../src/apps/mplayerc/revision.h"
-#include "..\Thirdparty\pkg\sphash.h"
-#include "..\src\apps\mplayerc\Utils\Strings.h"
+#include <Strings.h>
 #include "..\src\apps\mplayerc\Controller\HashController.h"
+
+DECLARE_LAZYINSTANCE(HashController);
 
 //static size_t handleWebQuery( void *ptr, size_t size, size_t nmemb, void *stream)
 //{

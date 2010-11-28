@@ -97,7 +97,7 @@
 #include "Controller/UbdUploadController.h"
 #include "Controller/UsrBehaviorController.h"
 #include "Controller/HashController.h"
-#include ".\Utils\Strings.h"
+#include <Strings.h>
 
 
 // begin,

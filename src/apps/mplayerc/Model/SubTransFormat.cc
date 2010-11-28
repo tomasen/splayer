@@ -2,13 +2,12 @@
 #include <sys/stat.h>
 #include "SubTransFormat.h"
 
-#include "../Utils/Strings.h"
+#include <Strings.h>
 #include "../revision.h"
 
 #undef __MACTYPES__
 #include "../../../zlib/zlib.h"
-#include "../../../../splayer/Thirdparty/pkg/unrar.hpp"
-#include "../../../../splayer/Thirdparty/pkg/sphash.h"
+#include "unrar.hpp"
 #include "../resource.h"
 #include <shooterclient.key>
 
@@ -857,9 +856,7 @@ std::wstring SubTransFormat::GetHashSignature(const char* szTerm2, const char* s
   sprintf_s( buffx, 4096, "unauthorized client %d %s %s %s", SVP_REV_NUMBER, szTerm2, szTerm3, uniqueIDHash);
 #endif
   int len = strlen(buffx);
-  hash_data(HASH_MOD_BINARY_STR, HASH_ALGO_MD5, buffx, &len);
-   
-  return Strings::StringToWString((std::string)buffx);
+  return HashController::GetInstance()->GetMD5Hash(buffx, len);
 }
 
 BOOL SubTransFormat::IsSpecFanSub(std::wstring szPath, std::wstring szOEM)

@@ -7,6 +7,7 @@
 #include "../../svplib/svplib.h"
 #include "MainFrm.h"
 #include "..\..\..\Updater\cupdatenetlib.h"
+#include "Controller\UpdateController.h"
 
 // CDlgChkUpdater dialog
 
@@ -50,16 +51,8 @@ BOOL CDlgChkUpdater::OnInitDialog()
 	m_lostPos = 0;
 	moreTick = 0;
 	CMPlayerCApp* pApp = (CMPlayerCApp*) AfxGetMyApp();
-	if(!pApp->m_cnetupdater){
-		CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
-		if(pFrame){
-			//SVP_CheckUpdaterExe(&pFrame->m_bCheckingUpdater, 1);	
-		}else{
-			//SVP_CheckUpdaterExe(&mChk, 1);
-		}
-			
-	}
-	
+	if(!pApp->m_cnetupdater)
+    UpdateController::GetInstance()->CheckUpdateEXEUpdate();
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE

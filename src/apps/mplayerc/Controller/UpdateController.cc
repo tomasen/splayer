@@ -33,7 +33,7 @@ UpdateController::~UpdateController(void)
 void UpdateController::Stop()
 {
   ::SetEvent(m_stopevent);
-  ::WaitForSingleObject(m_thread, 3000);
+  ::WaitForSingleObject(m_thread, 3001);
 
   ::ResetEvent(m_stopevent);
 }

@@ -233,7 +233,7 @@ void SubTransController::Stop()
     thread_exitcode == STILL_ACTIVE)
   {
     ::SetEvent(m_stopevent);
-    ::WaitForSingleObject(m_thread, INFINITE);
+    ::WaitForSingleObject(m_thread, 3001);
   }
   m_thread = NULL;
   ::ResetEvent(m_stopevent);
@@ -246,6 +246,7 @@ void SubTransController::_thread_dispatch(void* param)
 
 void SubTransController::_thread()
 {
+  Logging( L"SubTransController::_thread enter %x", m_operation);
   switch (m_operation)
   {
   case DownloadSubtitle:
@@ -255,6 +256,7 @@ void SubTransController::_thread()
     _thread_upload();
     break;
   }
+  Logging( L"SubTransController::_thread exit %x", m_operation);
 }
 
 void SubTransController::_thread_download()
@@ -426,6 +428,8 @@ void SubTransController::_thread_upload()
       if (req2->get_response_errcode() == 0)
       {
         //m_handlemsgs->push_back(ResStr(IDS_LOG_MSG_SVPSUB_UPLOAD_FINISHED));
+        Logging(L"SUB_UPLOAD_FINISHED %s %s %s", m_videofile.c_str(), 
+                szFileHash.c_str(), szSubHash.c_str() );
       }
 
      if(0 == chk)

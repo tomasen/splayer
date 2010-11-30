@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "../Model/SubTransFormat.h"
 #include "SubTransController.h"
 #include "../Resource.h"
@@ -181,7 +181,7 @@ void SubTransController::UploadSubFileByVideoAndHash(refptr<pool> pool,refptr<ta
       return;
   }
 
-  Logging(L"UploadSubFileByVideoAndHash %d", req->get_response_errcode());
+  Logging(L"UploadSubFileByVideoAndHash %s %d", url.c_str(), req->get_response_errcode());
 
 }
 
@@ -408,12 +408,12 @@ void SubTransController::_thread_upload()
         return;
     }
 
-    if (req1->get_response_errcode() == 0)
-      chk = 1;
-    else
-      chk = 0;
+    // 200  需要上传该字幕	
+    // 404  该字幕服务器上已经存在。不需要再上传	
+    if (req1->get_response_errcode() == 404)
+      return;
 
-    if (chk > 0)
+    if (req1->get_response_errcode() == 0)
     {
       refptr<request> req2 = request::create_instance();
       UploadSubFileByVideoAndHash(pool, task, req2, 
@@ -430,10 +430,9 @@ void SubTransController::_thread_upload()
         //m_handlemsgs->push_back(ResStr(IDS_LOG_MSG_SVPSUB_UPLOAD_FINISHED));
         Logging(L"SUB_UPLOAD_FINISHED %s %s %s", m_videofile.c_str(), 
                 szFileHash.c_str(), szSubHash.c_str() );
+        return;
       }
 
-     if(0 == chk)
-        break;
     }
     //Fail
     if (::WaitForSingleObject(m_stopevent, 2000) == WAIT_OBJECT_0)

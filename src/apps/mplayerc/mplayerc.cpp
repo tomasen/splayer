@@ -2980,7 +2980,7 @@ void CMPlayerCApp::Settings::InitChannelMap()
 					if( iInputChannelCount > 2 && iChannelID < 2){	 // 前置左右声道
 						fTmpVal = 1.0;
 					}else if( iInputChannelCount > 4 && iChannelID == 2){ //中置声道
-						fTmpVal = 2.4;
+						fTmpVal = 1.2;
 					}else if( iInputChannelCount > 5 && iChannelID == (iInputChannelCount - 1) ){ //重低音 降低
 						fTmpVal = 0.9f;
 					}else if(iInputChannelCount > 2 && iChannelID >= 2){ //除中置 重低音外的声道

@@ -2256,7 +2256,7 @@ int CMPlayerCApp::ExitInstance()
     CString szSQL;
     szSQL.Format(L"DELETE FROM histories WHERE modtime < '%d' ", time(NULL)-3600*24*30);
     // SVP_LogMsg5(szSQL);
-    sqlite_local_record->exec_sql_u(szSQL);
+    sqlite_local_record->exec_sql(szSQL.GetBuffer());
 
     sqlite_local_record->exec_sql(L"PRAGMA synchronous=ON");
   }

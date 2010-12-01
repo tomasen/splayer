@@ -3,7 +3,10 @@
 #include <vector>
 #include <string>
 
-#include <..\..\..\Thirdparty\sqlitepp\sqlitepp\sqlitepp.hpp>
+
+#include "..\..\..\Thirdparty\sqlitepp\sqlitepp\sqlitepp.hpp"
+
+using namespace sqlitepp;
 
 class SQLliteapp
 {
@@ -12,11 +15,8 @@ public:
   ~SQLliteapp(void);
 
   int exec_sql(std::wstring s_exe); // just get ONE col
-  int exec_sql_u(CString szSQL);
-
-  int exec_insert_update_u(CString szSQL);
-  int exec_insert_update_sql_u(CString szSQL, CString szUpdate);
-  int get_single_int_from_sql(CString szSQL, int nDefault); //just get ONE col
+  int exec_insert_update_sql_u(std::wstring szSQL, std::wstring szUpdate);
+  int get_single_int_from_sql(std::wstring szSQL, int nDefault); //just get ONE col
 
   void begin_transaction();
   void end_transaction();
@@ -44,8 +44,9 @@ private:
   sqlitepp::session m_db;
   std::wstring m_dbfile;
 
-public:
-  int db_open;
   int nrow;
   std::vector<std::wstring> vdata;
+
+public:
+  int db_open;
 };

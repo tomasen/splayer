@@ -8319,7 +8319,7 @@ void CMainFrame::OnPlayAudio(UINT nID)
         szSQLUpdate.Format(L"UPDATE histories SET audioid = '%d' , modtime = '%d'  WHERE fpath = \"%s\" ", i, tNow, szFileHash);
         
         if(AfxGetMyApp()->sqlite_local_record)
-            AfxGetMyApp()->sqlite_local_record->exec_insert_update_sql_u(szSQLInsert, szSQLUpdate);
+            AfxGetMyApp()->sqlite_local_record->exec_insert_update_sql_u(szSQLInsert.GetBuffer(), szSQLUpdate.GetBuffer());
 
 	}
 }
@@ -8476,7 +8476,7 @@ void CMainFrame::OnPlaySubtitles(UINT nID)
             szSQLUpdate.Format(L"UPDATE histories SET subid = '%d' , modtime = '%d' WHERE fpath = \"%s\" ", m_iSubtitleSel, tNow, FPath);
 		}
         if(AfxGetMyApp()->sqlite_local_record )
-            AfxGetMyApp()->sqlite_local_record->exec_insert_update_sql_u(szSQLInsert, szSQLUpdate);
+            AfxGetMyApp()->sqlite_local_record->exec_insert_update_sql_u(szSQLInsert.GetBuffer(), szSQLUpdate.GetBuffer());
 
 
 	}
@@ -11986,7 +11986,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
                 if(AfxGetMyApp()->sqlite_local_record ){
                     CString szSQL;
                     szSQL.Format(L"SELECT subid FROM histories WHERE fpath = \"%s\" ", FPath);
-                    int subid = AfxGetMyApp()->sqlite_local_record->get_single_int_from_sql(szSQL, -1);
+                    int subid = AfxGetMyApp()->sqlite_local_record->get_single_int_from_sql(szSQL.GetBuffer(), -1);
                     if(subid >= 0){
                         //SVP_LogMsg5(L"subid %d %d", subid, m_pSubStreams.GetCount());
 
@@ -12081,7 +12081,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
                     if(AfxGetMyApp()->sqlite_local_record ){
                         CString szSQL;
                         szSQL.Format(L"SELECT subid2 FROM histories WHERE fpath = \"%s\" ", FPath);
-                        int subid = AfxGetMyApp()->sqlite_local_record->get_single_int_from_sql(szSQL, -1);
+                        int subid = AfxGetMyApp()->sqlite_local_record->get_single_int_from_sql(szSQL.GetBuffer(), -1);
                         if(subid >= 0){
                             //SVP_LogMsg5(L"subid %d %d", subid, m_pSubStreams.GetCount());
 
@@ -12185,7 +12185,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
             CString szSQL;
             szSQL.Format(L"SELECT audioid FROM histories WHERE fpath = \"%s\" ", FPath);
             //SVP_LogMsg5(szSQL);
-            int audid = AfxGetMyApp()->sqlite_local_record->get_single_int_from_sql(szSQL, -1);
+            int audid = AfxGetMyApp()->sqlite_local_record->get_single_int_from_sql(szSQL.GetBuffer(), -1);
             if(audid > 0){
                 SVP_LogMsg5(L"audid %d subs %d", audid, m_pSubStreams.GetCount());
                 CComQIPtr<IAMStreamSelect> pSS = FindFilter(__uuidof(CAudioSwitcherFilter), pGB);

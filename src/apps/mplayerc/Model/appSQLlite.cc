@@ -5,7 +5,7 @@
 #include <string>
 #include <iostream>
 
-#include "..\Utils\Strings.h"
+#include <Strings.h>
 
 
 using namespace sqlitepp;
@@ -80,7 +80,7 @@ int SQLliteapp::get_single_int_from_sql(std::wstring szSQL, int nDefault)
 int SQLliteapp::exec_insert_update_sql_u(std::wstring szSQL, std::wstring szUpdate)
 {
   int ret = exec_sql(szSQL);
-  if(ret != true)
+  if(!ret)
     ret = exec_sql(szUpdate);
 
   return ret;

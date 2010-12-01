@@ -9,7 +9,7 @@
 #include "postdataelem.h"
 #include <string>
 #include <sstream>
-#include "../Utils/Strings.h"
+#include <Strings.h>
 #include <io.h>
 
 SnapUploadController::SnapUploadController(void):
@@ -63,7 +63,7 @@ void SnapUploadController::Stop()
     thread_exitcode == STILL_ACTIVE)
   {
     ::SetEvent(m_stopevent);
-    ::WaitForSingleObject(m_thread, INFINITE);
+    ::WaitForSingleObject(m_thread, 3001);
   }
   m_thread = NULL;
   ::ResetEvent(m_stopevent);

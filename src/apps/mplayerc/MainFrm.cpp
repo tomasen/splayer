@@ -97,7 +97,7 @@
 #include "Controller/UbdUploadController.h"
 #include "Controller/UsrBehaviorController.h"
 #include "Controller/HashController.h"
-#include ".\Utils\Strings.h"
+#include <Strings.h>
 
 
 // begin,
@@ -16950,8 +16950,7 @@ void CMainFrame::_HandleTimer_Stats()
             if (m_fnsAlreadyUploadedSubfile.Find(fnVideoFile+fnSubtitleFile) < 0)
             {
               //upload subtitle
-              //szLog.Format(_T("Uploading sub %s of %s width delay %d ms since user played %d sec of %d sec ( more than 1/2 length video ) ") , fnSubtitleFile, fnVideoFile ,subDelayMS, totalplayedtime , iTotalLenSec  );
-              //SVP_LogMsg(szLog);
+              Logging(L"Uploading sub %s of %s width delay %d ms since user played %d sec of %d sec ( more than 1/2 length video ) " , fnSubtitleFile, fnVideoFile ,subDelayMS, totalplayedtime , iTotalLenSec  );
               SVP_UploadSubFileByVideoAndSubFilePath(fnVideoFile , fnSubtitleFile, subDelayMS);
               m_fnsAlreadyUploadedSubfile.Append( fnVideoFile+fnSubtitleFile+_T(";") );
             }
@@ -16962,8 +16961,7 @@ void CMainFrame::_HandleTimer_Stats()
               if (m_fnsAlreadyUploadedSubfile.Find( fnVideoFile+fnSubtitleFile2 ) < 0)
               {
                 //upload subtitle
-                szLog.Format(_T("Uploading sub2 %s of %s width delay %d ms since user played %d sec of %d sec ( more than 1/2 length video ) ") , fnSubtitleFile2, fnVideoFile ,subDelayMS2, totalplayedtime , iTotalLenSec);
-                SVP_LogMsg(szLog);
+                Logging((L"Uploading sub2 %s of %s width delay %d ms since user played %d sec of %d sec ( more than 1/2 length video ) ") , fnSubtitleFile2, fnVideoFile ,subDelayMS2, totalplayedtime , iTotalLenSec);
                 SVP_UploadSubFileByVideoAndSubFilePath(fnVideoFile , fnSubtitleFile2, subDelayMS2);
                 m_fnsAlreadyUploadedSubfile.Append( fnVideoFile+fnSubtitleFile2+_T(";") );
               }

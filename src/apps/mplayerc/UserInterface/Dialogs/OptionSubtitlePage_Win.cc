@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "OptionSubtitlePage_Win.h"
-#include "../../Utils/Strings.h"
+#include <Strings.h>
 #include "../Support/SubtitleStyle.h"
 #include "../../mplayerc.h"
 #include "../../MainFrm.h"

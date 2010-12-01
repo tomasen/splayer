@@ -3,7 +3,6 @@
 #include "PlayerPreference.h"
 #include "../../../lib/splite/libsqlite/libsqlite.h"
 #include "../Model/appSQLlite.h"
-#include "../Utils/Strings.h"
 #include "../resource.h"
 
 #define ResStr(id) CString(MAKEINTRESOURCE(id))

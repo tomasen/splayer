@@ -56,8 +56,9 @@
 #include "Utils/FileAssoc_Win.h"
 #include "Controller/UbdUploadController.h"
 #include "Controller/UsrBehaviorController.h"
-#include "Utils\Strings.h"
+#include <Strings.h>
 #include "Controller\UpdateController.h"
+#include <logging.h>
 
 //Update URL
 char* szUrl = "http://svplayer.shooter.cn/api/updater.php";
@@ -1549,17 +1550,14 @@ void CMPlayerCApp::InitInstanceThreaded(INT64 CLS64){
 
     SVP_LogMsg5(L"Settings::InitInstanceThreaded");
 	//SVP_LogMsg5(L"%x %d xx ",CLS64 ,(CLS64&CLSW_STARTFROMDMP) );
-	if(!(CLS64&CLSW_STARTFROMDMP)){
-		_wremove(svpToolBox.GetPlayerPath(_T("SVPDebug.log")));
-		_wremove(svpToolBox.GetPlayerPath(_T("SVPDebug2.log")));
-	}
+
 
 	//avoid crash by lame acm
 	RegDelnode(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\MediaResources\\msacm\\msacm.lameacm");
 	SVPRegDeleteValueEx( HKEY_LOCAL_MACHINE , L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\drivers.desc",L"LameACM.acm");
 	SVPRegDeleteValueEx( HKEY_LOCAL_MACHINE , L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\drivers32",L"msacm.lameacm");
 
-  SVP_LogMsg5(L"Settings::InitInstanceThreaded 4");
+  Logging(L"Settings::InitInstanceThreaded 4");
 	m_bSystemParametersInfo[0] = FALSE;
 	if(!IsVista()){
 		BOOL bDropShadow = FALSE;
@@ -2362,7 +2360,7 @@ void CMPlayerCApp::Settings::RegGlobalAccelKey(HWND hWnd){
 void CMPlayerCApp::Settings::ThreadedLoading(){
 	
 	CMPlayerCApp * pApp  = AfxGetMyApp();
-	SVP_LogMsg5(L"Settings::ThreadedLoading");
+	Logging(L"Logging Settings::ThreadedLoading");
 	CMainFrame* pFrame = (CMainFrame*)pApp->m_pMainWnd;
 	while(!pFrame || pFrame->m_WndSizeInited < 2){
 		Sleep(1000);
@@ -2980,7 +2978,7 @@ void CMPlayerCApp::Settings::InitChannelMap()
 					if( iInputChannelCount > 2 && iChannelID < 2){	 // 前置左右声道
 						fTmpVal = 1.0;
 					}else if( iInputChannelCount > 4 && iChannelID == 2){ //中置声道
-						fTmpVal = 2.4;
+						fTmpVal = 1.2;
 					}else if( iInputChannelCount > 5 && iChannelID == (iInputChannelCount - 1) ){ //重低音 降低
 						fTmpVal = 0.9f;
 					}else if(iInputChannelCount > 2 && iChannelID >= 2){ //除中置 重低音外的声道
@@ -5133,6 +5131,7 @@ void CMPlayerCApp::SetLanguage (int nLanguage)
 	szLangSeting.Format(L"%d" , s.iLanguage );
 	svpTool.filePutContent(szLangDefault,szLangSeting );
 	AfxSetResourceHandle(hMod);
+  Strings::SetResourceHandle(hMod);
 
 #if (_ATL_VER >= 0x0700)
   ATL::_AtlBaseModule.SetResourceInstance(hMod);

@@ -3,7 +3,7 @@
 
 #include "hashcontroller.h"
 #include "LazyInstance.h"
-#include "../utils/strings.h"
+#include <Strings.h>
 #include "../model/SubTransFormat.h"
 #include "../../mplayerc\revision.h"
 
@@ -33,7 +33,7 @@ UpdateController::~UpdateController(void)
 void UpdateController::Stop()
 {
   ::SetEvent(m_stopevent);
-  ::WaitForSingleObject(m_thread, 3000);
+  ::WaitForSingleObject(m_thread, 3001);
 
   ::ResetEvent(m_stopevent);
 }

@@ -2,7 +2,7 @@
 #define HASHCONTROLLER_H
 
 #include "LazyInstance.h"
-#include "../Utils/CriticalSection.h"
+#include <CriticalSection.h>
 
 //////////////////////////////////////////////////////////////////////////
 //

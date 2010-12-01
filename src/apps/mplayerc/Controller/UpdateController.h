@@ -2,7 +2,7 @@
 #define UPDATECONTROLLER_H
 
 #include <string>
-#include "../Utils/CriticalSection.h"
+#include <CriticalSection.h>
 #include "LazyInstance.h"
 #include "windows.h"
 #include "NetworkControlerImpl.h"

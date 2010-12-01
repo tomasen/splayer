@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "OptionAdvancedPage_Win.h"
-#include "../../Utils/Strings.h"
+#include <Strings.h>
 #include "../../mplayerc.h"
 #include "../../MainFrm.h"
 #include "../../Controller/PlayerPreference.h"

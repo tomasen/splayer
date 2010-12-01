@@ -2,7 +2,7 @@
 #include "HotkeySchemeParser.h"
 #include "../resource.h"
 #include <wchar.h>
-#include "../Utils/Strings.h"
+#include <Strings.h>
 
 void HotkeySchemeParser::PopulateDefaultScheme()
 {

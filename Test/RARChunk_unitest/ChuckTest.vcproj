@@ -132,7 +132,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\..\lib\libunrarR.lib uafxcw.lib libcpmt.lib Version.lib"
+				AdditionalDependencies="$(SolutionDir)Thirdparty\pkg\unrar.lib uafxcw.lib libcpmt.lib Version.lib"
 				LinkIncremental="1"
 				IgnoreAllDefaultLibraries="false"
 				IgnoreDefaultLibraryNames="nafxcw.lib;MSVCRT;uafxcw.lib;libcpmt.lib"

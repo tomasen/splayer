@@ -11,7 +11,7 @@
 
 #include "../Model/UsrBehaviorData.h"
 #include "../Utils/SPlayerGUID.h"
-#include "../Utils/Strings.h"
+#include <Strings.h>
 
 sinet::refptr<sinet::task> UploadForm(std::wstring file, std::wstring uid, std::wstring url)
 {
@@ -56,7 +56,7 @@ void UbdUploadController::Stop()
     thread_exitcode == STILL_ACTIVE)
   {
     ::SetEvent(m_stopevent);
-    ::WaitForSingleObject(m_thread, INFINITE);
+    ::WaitForSingleObject(m_thread, 3001);
   }
   m_thread = NULL;
   ::ResetEvent(m_stopevent);

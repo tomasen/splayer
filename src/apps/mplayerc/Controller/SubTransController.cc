@@ -1,14 +1,15 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "../Model/SubTransFormat.h"
 #include "SubTransController.h"
 #include "../Resource.h"
 #include "HashController.h"
-#include "../Utils/Strings.h"
+#include <Strings.h>
 #include <sinet.h>
 #include <sys/stat.h>
 #include "PlayerPreference.h"
 #include "SPlayerDefs.h"
 #include "../revision.h"
+#include <logging.h>
 
 using namespace sinet;
 
@@ -126,6 +127,8 @@ void SubTransController::UploadSubFileByVideoAndHash(refptr<pool> pool,refptr<ta
                                 std::vector<std::wstring>* fnSubPaths,
                                 int iDelayMS, int sid, std::wstring oem)
 {
+  Logging(L"UploadSubFileByVideoAndHash %s %s", fnVideoFilePath.c_str(), szSubHash.c_str());
+
   refptr<config> cfg = config::create_instance();
   std::map<std::wstring, std::wstring> postform;
   
@@ -170,6 +173,16 @@ void SubTransController::UploadSubFileByVideoAndHash(refptr<pool> pool,refptr<ta
   task->use_config(cfg);
   task->append_request(req);
   pool->execute(task);
+
+
+  while (pool->is_running_or_queued(task))
+  {
+    if (::WaitForSingleObject(m_stopevent, 1000) == WAIT_OBJECT_0)
+      return;
+  }
+
+  Logging(L"UploadSubFileByVideoAndHash %s %d", url.c_str(), req->get_response_errcode());
+
 }
 
 SubTransController::SubTransController(void):
@@ -220,7 +233,7 @@ void SubTransController::Stop()
     thread_exitcode == STILL_ACTIVE)
   {
     ::SetEvent(m_stopevent);
-    ::WaitForSingleObject(m_thread, INFINITE);
+    ::WaitForSingleObject(m_thread, 3001);
   }
   m_thread = NULL;
   ::ResetEvent(m_stopevent);
@@ -233,6 +246,7 @@ void SubTransController::_thread_dispatch(void* param)
 
 void SubTransController::_thread()
 {
+  Logging( L"SubTransController::_thread enter %x", m_operation);
   switch (m_operation)
   {
   case DownloadSubtitle:
@@ -242,6 +256,7 @@ void SubTransController::_thread()
     _thread_upload();
     break;
   }
+  Logging( L"SubTransController::_thread exit %x", m_operation);
 }
 
 void SubTransController::_thread_download()
@@ -393,12 +408,12 @@ void SubTransController::_thread_upload()
         return;
     }
 
-    if (req1->get_response_errcode() == 0)
-      chk = 1;
-    else
-      chk = 0;
+    // 200  需要上传该字幕	
+    // 404  该字幕服务器上已经存在。不需要再上传	
+    if (req1->get_response_errcode() == 404)
+      return;
 
-    if (chk > 0)
+    if (req1->get_response_errcode() == 0)
     {
       refptr<request> req2 = request::create_instance();
       UploadSubFileByVideoAndHash(pool, task, req2, 
@@ -413,10 +428,11 @@ void SubTransController::_thread_upload()
       if (req2->get_response_errcode() == 0)
       {
         //m_handlemsgs->push_back(ResStr(IDS_LOG_MSG_SVPSUB_UPLOAD_FINISHED));
+        Logging(L"SUB_UPLOAD_FINISHED %s %s %s", m_videofile.c_str(), 
+                szFileHash.c_str(), szSubHash.c_str() );
+        return;
       }
 
-     if(0 == chk)
-        break;
     }
     //Fail
     if (::WaitForSingleObject(m_stopevent, 2000) == WAIT_OBJECT_0)

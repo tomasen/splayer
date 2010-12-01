@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "PlaylistView_Win.h"
 #include "../../resource.h"
-#include "../../Utils/Strings.h"
+#include <Strings.h>
 #include "../../Controller/SPlayerDefs.h"
 #include "../../Controller/PlayerPreference.h"
 #include "../../Controller/PlaylistController.h"

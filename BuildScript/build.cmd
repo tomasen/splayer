@@ -1,14 +1,14 @@
 @echo off
 
 echo Updating SPlayer Mecurial repo
-hg_bin\hg pull --update ../
+hg_bin\hg pull --update -R ../
 
 
 echo Trying to clone splayer-pkg repo
 hg_bin\hg clone https://splayer-pkg.googlecode.com/hg/ ../thirdparty/pkg
 
 echo Updating splayer-pkg project ...
-hg_bin\hg pull -u ../thirdparty/pkg
+hg_bin\hg pull -u  -R ../thirdparty/pkg
 hg_bin\hg update -c -R ../thirdparty/pkg
 if %ERRORLEVEL% NEQ 0 goto error
 
@@ -16,7 +16,7 @@ echo Trying to clone sinet repo
 hg_bin\hg clone https://sinet-lib.googlecode.com/hg/ ../thirdparty/sinet
 
 echo Updating sinet project ...
-hg_bin\hg pull -u ../thirdparty/sinet
+hg_bin\hg pull -u -R ../thirdparty/sinet
 hg_bin\hg update -c -R ../thirdparty/sinet
 if %ERRORLEVEL% NEQ 0 goto error
 

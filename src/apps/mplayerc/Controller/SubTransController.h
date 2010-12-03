@@ -1,10 +1,12 @@
 #ifndef SUBTRANSCONTROLLER_H
 #define SUBTRANSCONTROLLER_H
 #include "NetworkControlerImpl.h"
+#include <threadhelper.h>
 
 #define ID_COMPLETE_QUERY_SUBTITLE 32931
 
 class SubTransController:
+  public ThreadHelperImpl<SubTransController>,
   public NetworkControlerImpl
 {
 public:
@@ -31,11 +33,8 @@ public:
   // starting and ending main thread for upload / download
   void Start(const wchar_t* video_filename, SubTransOperation operation,
              StringList files_upload = StringList());
-  void Stop();
 
-  // primary thread logics, should not be called directly
-  static void _thread_dispatch(void* param);
-  void _thread();
+  void _Thread();
 
 private:
   void _thread_download();
@@ -44,8 +43,6 @@ private:
   SubTransOperation m_operation;
 
   HWND    m_frame;
-  HANDLE  m_thread;
-  HANDLE  m_stopevent;
 
   std::wstring m_subfile;
   std::wstring m_videofile;

@@ -177,7 +177,7 @@ void SubTransController::UploadSubFileByVideoAndHash(refptr<pool> pool,refptr<ta
 
   while (pool->is_running_or_queued(task))
   {
-    if (::WaitForSingleObject(m_stopevent, 1000) == WAIT_OBJECT_0)
+    if (_Exit_state(500))
       return;
   }
 
@@ -186,15 +186,13 @@ void SubTransController::UploadSubFileByVideoAndHash(refptr<pool> pool,refptr<ta
 }
 
 SubTransController::SubTransController(void):
-  m_stopevent(::CreateEvent(NULL, TRUE, FALSE, NULL)),
-  m_thread(NULL),
   m_operation(Unknown)
 {
 }
 
 SubTransController::~SubTransController(void)
 {
-  Stop();
+  _Stop();
 }
 
 void SubTransController::SetFrame(HWND hwnd)
@@ -216,35 +214,14 @@ void SubTransController::Start(const wchar_t* video_filename,
                                SubTransOperation operation, 
                                StringList files_upload /*= StringList()*/)
 {
-  // we should stop running tasks first
-  Stop();
+  _Stop();
   // record parameters
   m_operation = operation;
   m_videofile.assign(video_filename);
-  // create thread
-  m_thread = (HANDLE)::_beginthread(_thread_dispatch, 0, (void*)this);
+  _Start();
 }
 
-void SubTransController::Stop()
-{
-  unsigned long thread_exitcode;
-  if (m_thread && m_thread != INVALID_HANDLE_VALUE &&
-    GetExitCodeThread(m_thread, &thread_exitcode) &&
-    thread_exitcode == STILL_ACTIVE)
-  {
-    ::SetEvent(m_stopevent);
-    ::WaitForSingleObject(m_thread, 3001);
-  }
-  m_thread = NULL;
-  ::ResetEvent(m_stopevent);
-}
-
-void SubTransController::_thread_dispatch(void* param)
-{
-  static_cast<SubTransController*>(param)->_thread();
-}
-
-void SubTransController::_thread()
+void SubTransController::_Thread()
 {
   Logging( L"SubTransController::_thread enter %x", m_operation);
   switch (m_operation)
@@ -318,7 +295,7 @@ void SubTransController::_thread_download()
 
     while (pool->is_running_or_queued(task))
     {
-      if (::WaitForSingleObject(m_stopevent, 1000) == WAIT_OBJECT_0)
+      if (_Exit_state(500))
         return;
     }
 
@@ -333,7 +310,7 @@ void SubTransController::_thread_download()
                               tmpoutfile, szaSubDescs,tmpfiles))
       break;
 
-    if (::WaitForSingleObject(m_stopevent, 2300) == WAIT_OBJECT_0)
+    if (_Exit_state(500))
       return;
   }
 
@@ -404,7 +381,7 @@ void SubTransController::_thread_upload()
                         szFileHash, szSubHash, m_delayms, i, m_oemtitle);
     while (pool->is_running_or_queued(task))
     {
-      if (::WaitForSingleObject(m_stopevent, 1000) == WAIT_OBJECT_0)
+      if (_Exit_state(500))
         return;
     }
 
@@ -421,7 +398,7 @@ void SubTransController::_thread_upload()
                                   &szaSubFiles, m_delayms, i, m_oemtitle);
       while (pool->is_running_or_queued(task))
       {
-        if (::WaitForSingleObject(m_stopevent, 1000) == WAIT_OBJECT_0)
+        if (_Exit_state(500))
           return;
       }
 
@@ -435,7 +412,7 @@ void SubTransController::_thread_upload()
 
     }
     //Fail
-    if (::WaitForSingleObject(m_stopevent, 2000) == WAIT_OBJECT_0)
+    if (_Exit_state(2000))
       return;
   }
 }

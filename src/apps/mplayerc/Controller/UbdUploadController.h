@@ -2,25 +2,19 @@
 #define USRUPLOADCONTROLLER_H
 
 #include "LazyInstance.h"
-
+#include <threadhelper.h>
 
 class UbdUploadController:
+  public ThreadHelperImpl<UbdUploadController>,
   public LazyInstanceImpl<UbdUploadController>
 {
 public:
 
   // starting and ending uploading
   void Start();
-  void Stop();
-
   // primary thread logics, should not be called directly
   static void _thread_dispatch(void* param);
-  void _thread();
-
-private:
-
-  HANDLE          m_thread;
-  HANDLE          m_stopevent;
+  void _Thread();
 };
 
 

@@ -13,8 +13,6 @@
 #include <io.h>
 
 SnapUploadController::SnapUploadController(void):
-  m_stopevent(::CreateEvent(NULL, TRUE, FALSE, NULL)),
-  m_thread(NULL),
   m_lastsnapname(L"")
 {
 
@@ -22,7 +20,7 @@ SnapUploadController::SnapUploadController(void):
 
 SnapUploadController::~SnapUploadController(void)
 {
-  Stop();
+  _Stop();
 }
 
 std::wstring SnapUploadController::GetTempDir()
@@ -40,14 +38,16 @@ void SnapUploadController::SetFrame(HWND hwnd)
 
 void SnapUploadController::Start(const wchar_t* hash_str)
 {
+  // we should stop running tasks first
+  _Stop();
+
   PlayerPreference* pref = PlayerPreference::GetInstance();
   m_hash_str  = hash_str;
   m_totaltime = pref->GetIntVar(INTVAR_CURTOTALPLAYTIME);
-  // we should stop running tasks first
-  Stop();
-  // record values, and current time
+
   // create thread
-  m_thread = (HANDLE)::_beginthread(_thread_dispatch, 0, (void*)this);
+  _Start();
+
   //set current time
   if (pref->GetIntVar(INTVAR_CURPLAYEDTIME) > 0)
     SetCurTime(pref->GetIntVar(INTVAR_CURPLAYEDTIME), ::clock());
@@ -55,30 +55,11 @@ void SnapUploadController::Start(const wchar_t* hash_str)
     return;
 }
 
-void SnapUploadController::Stop()
-{
-  unsigned long thread_exitcode;
-  if (m_thread && m_thread != INVALID_HANDLE_VALUE &&
-    GetExitCodeThread(m_thread, &thread_exitcode) &&
-    thread_exitcode == STILL_ACTIVE)
-  {
-    ::SetEvent(m_stopevent);
-    ::WaitForSingleObject(m_thread, 3001);
-  }
-  m_thread = NULL;
-  ::ResetEvent(m_stopevent);
-}
-
-void SnapUploadController::_thread_dispatch(void* param)
-{
-  static_cast<SnapUploadController*>(param)->_thread();
-}
-
-void SnapUploadController::_thread()
+void SnapUploadController::_Thread()
 {
   PlayerPreference* pref = PlayerPreference::GetInstance();
   // allow immediate cancel, pause execution for 1 sec
-  if (::WaitForSingleObject(m_stopevent, 1000) == WAIT_OBJECT_0)
+  if (_Exit_state(500))
     return;
 
   // step 1. use sinet to retrieve upload requirements
@@ -102,7 +83,7 @@ void SnapUploadController::_thread()
 
   while (net_pool->is_running_or_queued(net_task))
   {
-    if (::WaitForSingleObject(m_stopevent, 1000) == WAIT_OBJECT_0)
+    if (_Exit_state(500))
       return;
   }
 
@@ -134,7 +115,7 @@ void SnapUploadController::_thread()
     while (it != m_shottime.end() && *it < m_curtime)
       it++;
 
-    if (::WaitForSingleObject(m_stopevent, 1000) == WAIT_OBJECT_0)
+    if (_Exit_state(500))
       return;
     if (it != m_shottime.end())
     {
@@ -230,7 +211,7 @@ void SnapUploadController::UploadImage()
 
   while (net_pool->is_running_or_queued(net_task))
   {
-    if (::WaitForSingleObject(m_stopevent, 1000) == WAIT_OBJECT_0)
+    if (_Exit_state(500))
       return;
   }
 

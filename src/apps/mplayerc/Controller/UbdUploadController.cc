@@ -44,30 +44,11 @@ sinet::refptr<sinet::task> UploadForm(std::wstring file, std::wstring uid, std::
 void UbdUploadController::Start()
 {
   // we should stop running tasks first
-  Stop();
-  m_thread = (HANDLE)::_beginthread(_thread_dispatch, 0, (void*)this);
+  _Stop();
+  _Start();
 }
 
-void UbdUploadController::Stop()
-{
-  unsigned long thread_exitcode;
-  if (m_thread && m_thread != INVALID_HANDLE_VALUE &&
-    GetExitCodeThread(m_thread, &thread_exitcode) &&
-    thread_exitcode == STILL_ACTIVE)
-  {
-    ::SetEvent(m_stopevent);
-    ::WaitForSingleObject(m_thread, 3001);
-  }
-  m_thread = NULL;
-  ::ResetEvent(m_stopevent);
-}
-
-void UbdUploadController::_thread_dispatch(void* param)
-{
-  static_cast<UbdUploadController*>(param)->_thread();
-}
-
-void UbdUploadController::_thread()
+void UbdUploadController::_Thread()
 {
   int year, weekcount;
   std::wstring uid, format, path;
@@ -90,7 +71,7 @@ void UbdUploadController::_thread()
  
   while (pool->is_running_or_queued(task))
   {
-    if (::WaitForSingleObject(m_stopevent, 1000) == WAIT_OBJECT_0)
+    if (_Exit_state(500))
       return;
   }
   // no need upload
@@ -143,7 +124,7 @@ void UbdUploadController::_thread()
 
   while (pool->is_running_or_queued(lasttask))
   {
-    if (::WaitForSingleObject(m_stopevent, 1000) == WAIT_OBJECT_0)
+    if (_Exit_state(500))
       return;
   }
 

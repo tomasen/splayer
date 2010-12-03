@@ -33,7 +33,7 @@ public:
 
   // Retrieve an arbitrary binary value from INI file or registry.
   BOOL GetProfileBinary(LPCTSTR lpszSection, LPCTSTR lpszEntry,
-    LPBYTE* ppData, UINT* pBytes, bool fallofftoreg = true);
+    LPBYTE* ppData, UINT* pBytes, bool fallofftoreg = true); // -- donot forget delete[new] buf
   // Sets an arbitrary binary value to INI file or registry.
   BOOL WriteProfileBinary(LPCTSTR lpszSection, LPCTSTR lpszEntry,
     LPBYTE pData, UINT nBytes);

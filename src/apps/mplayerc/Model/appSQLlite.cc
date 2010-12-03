@@ -89,6 +89,9 @@ int SQLliteapp::exec_insert_update_sql_u(std::wstring szSQL, std::wstring szUpda
 
 UINT SQLliteapp::GetProfileInt(LPCTSTR lpszSection, LPCTSTR lpszEntry, int nDefault, bool fallofftoreg)
 {
+  if(!lpszSection || !lpszEntry)
+    return nDefault;
+
   sqlitepp::string_t str;
   sqlitepp::string_t str2 = lpszSection;
   sqlitepp::string_t str3 = lpszEntry;
@@ -99,7 +102,6 @@ UINT SQLliteapp::GetProfileInt(LPCTSTR lpszSection, LPCTSTR lpszEntry, int nDefa
 
     st << "SELECT sval FROM settingint WHERE hkey = :hkey AND sect = :sect", 
              sqlitepp::into(str), sqlitepp::use(str2), sqlitepp::use(str3);
-
     st.exec();
 
     if (str.empty())
@@ -116,6 +118,9 @@ UINT SQLliteapp::GetProfileInt(LPCTSTR lpszSection, LPCTSTR lpszEntry, int nDefa
 
 BOOL SQLliteapp::WriteProfileInt(LPCTSTR lpszSection, LPCTSTR lpszEntry, int nValue,  bool fallofftoreg)
 {
+  if(!lpszSection || !lpszEntry)
+    return false;
+
   sqlitepp::string_t str1 = lpszSection;
   sqlitepp::string_t str2 = lpszEntry;
 
@@ -136,6 +141,9 @@ BOOL SQLliteapp::WriteProfileInt(LPCTSTR lpszSection, LPCTSTR lpszEntry, int nVa
 
 CString SQLliteapp::GetProfileString(LPCTSTR lpszSection, LPCTSTR lpszEntry, LPCTSTR lpszDefault, bool fallofftoreg)
 {
+  if(!lpszSection || !lpszEntry)
+    return lpszDefault;
+
   sqlitepp::string_t str;
   sqlitepp::string_t str2 = lpszSection;
   sqlitepp::string_t str3 = lpszEntry;
@@ -165,18 +173,27 @@ CString SQLliteapp::GetProfileString(LPCTSTR lpszSection, LPCTSTR lpszEntry, LPC
 
 BOOL SQLliteapp::WriteProfileString(LPCTSTR lpszSection, LPCTSTR lpszEntry, LPCTSTR lpszValue)
 {
+  if(!lpszSection || !lpszEntry)
+    return false;
+
   sqlitepp::string_t str = lpszSection;
   sqlitepp::string_t str2 = lpszEntry;
-  sqlitepp::string_t str3 = lpszValue;
 
   try
   {
+    sqlitepp::statement st(m_db);
     if(lpszValue)
-      m_db << "INSERT OR REPLACE INTO settingstring(hkey, sect, vstring) VALUES (:hkey, :sect, :vstring)",
+    {
+      sqlitepp::string_t str3 = lpszValue;
+      st << "INSERT OR REPLACE INTO settingstring(hkey, sect, vstring) VALUES (:hkey, :sect, :vstring)",
                 sqlitepp::use(str), sqlitepp::use(str2),sqlitepp::use(str3);
+    }
     else
-      m_db << "DELETE FROM settingstring WHERE hkey = :hkey AND sect = :sect",
+    {
+      st << "DELETE FROM settingstring WHERE hkey = :hkey AND sect = :sect",
                 sqlitepp::use(str), sqlitepp::use(str2);
+    }
+    st.exec();
     return true;
   }
   catch(...)
@@ -186,19 +203,26 @@ BOOL SQLliteapp::WriteProfileString(LPCTSTR lpszSection, LPCTSTR lpszEntry, LPCT
   return false;
 }
 
+//this function still need test - blob
 BOOL SQLliteapp::GetProfileBinary(LPCTSTR lpszSection, LPCTSTR lpszEntry,
                                   LPBYTE* ppData, UINT* pBytes, bool fallofftoreg)
 {
-  std::vector<char> bin;
-  sqlitepp::string_t str = lpszSection;
-  sqlitepp::string_t str2 = lpszEntry;
+  if(!lpszSection || !lpszEntry || !pBytes || !ppData)
+    return false;
+
   *ppData = NULL;
+  *pBytes = -1;
+
+  std::vector<char> bin;
+  sqlitepp::string_t s1 = lpszSection;
+  sqlitepp::string_t s2 = lpszEntry;
 
   try
   {
     sqlitepp::statement st(m_db);
-    st << "SELECT vdata FROM settingbin2 WHERE skey = :skey AND sect = :sect)",
-            sqlitepp::into(bin), sqlitepp::use(str), sqlitepp::use(str2);
+
+    st << "SELECT vdata FROM settingbin2 where skey = :skey AND sect = :sect", 
+      sqlitepp::into(bin), sqlitepp::use(s1), sqlitepp::use(s2);
     st.exec();
 
     *pBytes = bin.size();
@@ -208,7 +232,7 @@ BOOL SQLliteapp::GetProfileBinary(LPCTSTR lpszSection, LPCTSTR lpszEntry,
 
     char *p= new char[bin.size()];
     *ppData = (LPBYTE)p;
-    memcpy(p, &bin[0], bin.size());
+    memcpy(p,&bin[0],bin.size());
 
     return true;
   }
@@ -222,18 +246,22 @@ BOOL SQLliteapp::GetProfileBinary(LPCTSTR lpszSection, LPCTSTR lpszEntry,
 
 BOOL SQLliteapp::WriteProfileBinary(LPCTSTR lpszSection, LPCTSTR lpszEntry, LPBYTE pData, UINT nBytes)
 {
+  if(!lpszSection || !lpszEntry || !pData)
+    return false;
+
   std::vector<char> bin(nBytes);
-  memcpy(&bin[0],pData,nBytes);
+  memcpy(&bin[0], pData, nBytes);
+
   sqlitepp::string_t s1 = lpszSection;
   sqlitepp::string_t s2 = lpszEntry;
 
   try
   {
-    sqlitepp::statement st(m_db);
-    st << "REPLACE INTO settingbin2 (skey, sect, vdata) VALUES (:skey,:sect,:vdata)",
-            sqlitepp::use(s1), sqlitepp::use(s2); sqlitepp::use(bin);
-    st.exec();
-
+    sqlitepp::statement st4(m_db);
+    
+    st4 << "INSERT OR REPLACE INTO settingbin2(skey, sect, vdata) VALUES (:skey, :sect, :vdata)",
+        sqlitepp::use(s1), sqlitepp::use(s2), sqlitepp::use(bin);
+    st4.exec();
     return true;
   }
   catch(...)

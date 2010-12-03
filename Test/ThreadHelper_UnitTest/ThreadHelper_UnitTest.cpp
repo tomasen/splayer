@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include <Windows.h>
 #include <process.h>
-#include "../src/base/threadhelper.h"
+#include <threadhelper.h>
 
 #define THREAD_NUM 50
 

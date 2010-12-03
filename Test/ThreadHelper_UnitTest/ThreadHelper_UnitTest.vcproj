@@ -92,6 +92,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
+			InheritedPropertySheets="$(SolutionDir)src\common.vsprops;$(SolutionDir)src\release.vsprops"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
 			>

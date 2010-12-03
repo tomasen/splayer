@@ -8,6 +8,7 @@ set tmpfile=".\temp.h"
 for /f "delims=+ " %%a in ('hg_bin\hg id -n') do @set revnum=%%a 
 for /f "delims=+ " %%a in ('hg_bin\hg id -i') do @set revset=%%a 
 set revnum=%revnum:~0,-1%
+set revset=%revset:~0,-1%
 echo "%revnum%"  "%revset%"
 
 echo #pragma once > %tmpfile%

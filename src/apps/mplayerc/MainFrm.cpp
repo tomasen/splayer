@@ -17397,6 +17397,11 @@ void CMainFrame::OnAudioSettingUpdated()
 void CMainFrame::OnCompleteQuerySubtitle()
 {
   std::vector<std::wstring> subtitles = PlayerPreference::GetInstance()->GetStrArray(STRARRAY_QUERYSUBTITLE);
+  if (subtitles.size() <= 0)
+  {
+    m_statusmsgs.push_back((wchar_t*)(LPCTSTR)ResStr(IDS_LOG_MSG_SVPSUB_NONE_MATCH_SUB));
+    return;
+  }
   int subtitle_selected = false;
   for (std::vector<std::wstring>::iterator iter = subtitles.begin();
         iter != subtitles.end(); iter++)

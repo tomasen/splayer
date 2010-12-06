@@ -14,39 +14,6 @@
 using namespace sinet;
 
 
-void SinetConfig(refptr<config> cfg, int sid, std::wstring oem)
-{
-  wchar_t agentbuff[MAX_PATH];
-  if(oem.empty())
-    wsprintf(agentbuff, L"SPlayer Build %d", SVP_REV_NUMBER);
-  else
-    wsprintf(agentbuff, L"SPlayer Build %d OEM%s", SVP_REV_NUMBER ,oem.c_str());
-  cfg->set_strvar(CFG_STR_AGENT, agentbuff);
-
-  std::wstring proxy;
-  if (sid%2 == 0)
-  {
-    DWORD ProxyEnable = 0;
-    wchar_t ProxyServer[256];
-    DWORD ProxyPort = 0;
-
-    ULONG len;
-    CRegKey key;
-    if( ERROR_SUCCESS == key.Open(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings"), KEY_READ)
-      && ERROR_SUCCESS == key.QueryDWORDValue(_T("ProxyEnable"), ProxyEnable) && ProxyEnable
-      && ERROR_SUCCESS == key.QueryStringValue(_T("ProxyServer"), ProxyServer, &len))
-    {
-      proxy += L"http://";
-      std::wstring proxystr(ProxyServer);
-      proxy += proxystr.c_str();
-    }
-  }
- 
-  if (proxy.empty())
-    cfg->set_strvar(CFG_STR_PROXY, L"");
-  else
-    cfg->set_strvar(CFG_STR_PROXY, proxy);
-}
 
 void StringMap2PostData(refptr<postdata> data ,std::map<std::wstring, std::wstring> &postform)
 {

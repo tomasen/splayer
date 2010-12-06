@@ -123,7 +123,7 @@ if(t4)
   p.GetProfileBinary(str2.c_str(), str1.c_str(),(LPBYTE*)&pp,(UINT*)&i,false);
   if( i == 0 )
   {
-    printf("ok--s5\n");
+    printf("ok--5 bin\n");
   }
 
   if(i>0 && pp)
@@ -137,7 +137,7 @@ if(t4)
   p.GetProfileBinary(str1.c_str(), str2.c_str(), (LPBYTE*)&pp, (UINT*)&i, false);
   
   if(memcmp(pp,buf,30) == 0)
-      printf("ok--s6\n");
+      printf("ok--6 bin\n");
 
   if(i>0 && pp)
   {
@@ -147,7 +147,8 @@ if(t4)
 
 }
 
-printf("6 test --> OK\n");
+printf("ALL tests done, ok x 6 ?\n\n");
+system("dir .");
 system("pause");
 return 0;
 }

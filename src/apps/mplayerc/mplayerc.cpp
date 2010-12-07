@@ -4771,18 +4771,9 @@ void CMPlayerCApp::Settings::AddFav(favtype ft, CString s, BOOL bRecent, CString
 	CAtlList<CString> sl;
 	GetFav(ft, sl, bRecent);
 	if(bRecent){
-		CStringA szMD5data(szMatch);
-		
-    //int bufflen = max(szMD5data.GetLength()+2,33);
-    //char* buff = (char*)calloc(bufflen, sizeof(char));
-    //memcpy_s(buff, bufflen, szMD5data.GetBuffer(), szMD5data.GetLength());
-    //int len = strlen(buff);
-    //hash_data(HASH_MOD_BINARY_STR, HASH_ALGO_MD5, buff, &len);
-    //CString szMatchmd5(buff);
-    //free(buff);
+		std::string str = Strings::WStringToString(szMatch.GetBuffer());
 
-    std::wstring str = HashController::GetInstance()->GetMD5Hash((wchar_t *)szMD5data.GetBuffer());
-    CString szMatchmd5 = str.c_str();
+    CString szMatchmd5 = HashController::GetInstance()->GetMD5Hash(str.c_str(), str.length()).c_str();
 
 		POSITION pos = sl.GetHeadPosition();
 		while(pos){

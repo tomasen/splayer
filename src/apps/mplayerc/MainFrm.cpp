@@ -9140,130 +9140,129 @@ void CMainFrame::OnFavoritesAdd(){
 }
 void CMainFrame::OnFavoritesAddReal( BOOL bRecent , BOOL bForceDel )
 {
-	AppSettings& s = AfxGetAppSettings();
+  AppSettings& s = AfxGetAppSettings();
 
-	//SVP_LogMsg5(L"OnFavoritesAddReal %d %d",bRecent, bForceDel);
-	REFERENCE_TIME rtCurPos = GetPos() ; 
-	REFERENCE_TIME rtDurT; 
-	BOOL bDelFav = bForceDel;
-	if(bRecent && !bForceDel){
-        if(m_l_been_playing_sec < 30){
-            SVP_LogMsg5(L"OnFavoritesAddReal Skiped Because Just Finish Seeking");
-            return;
-        }
-		rtCurPos -=  100000000i64;
-		
-		rtDurT = GetDur();
-		if(rtCurPos < 0 || rtCurPos > (rtDurT * 0.93) || rtCurPos < (rtDurT * 0.07) || rtDurT < 600000000i64*15){
-			bDelFav = TRUE;
-		}
-	}
-	if(m_iPlaybackMode == PM_FILE)
-	{
-		CString fn = m_wndPlaylistBar.GetCur();//m_fnCurPlayingFile;// 
-		if(fn.IsEmpty()) {fn = m_fnCurPlayingFile;}
-		if(fn.IsEmpty()) return;
+  //SVP_LogMsg5(L"OnFavoritesAddReal %d %d",bRecent, bForceDel);
+  REFERENCE_TIME rtCurPos = GetPos(); 
+  REFERENCE_TIME rtDurT; 
+  BOOL bDelFav = bForceDel;
+  if(bRecent && !bForceDel)
+  {
+    if(m_l_been_playing_sec < 30){
+      SVP_LogMsg5(L"OnFavoritesAddReal Skiped Because Just Finish Seeking");
+      return;
+    }
+    rtCurPos -=  100000000i64;
 
-		CString desc = fn;
-		desc.Replace('\\', '/');
-		int i = desc.Find(_T("://")), j = desc.Find(_T("?")), k = desc.ReverseFind('/');
-		if(i >= 0) desc = j >= 0 ? desc.Left(j) : desc;
-		else if(k >= 0) desc = desc.Mid(k+1);
+    rtDurT = GetDur();
+    if(rtCurPos < 0 || rtCurPos > (rtDurT * 0.93) || rtCurPos < (rtDurT * 0.07) || rtDurT < 600000000i64*15){
+      bDelFav = TRUE;
+    }
+  }
+  if(m_iPlaybackMode == PM_FILE)
+  {
+    CString fn = m_wndPlaylistBar.GetCur();//m_fnCurPlayingFile;// 
+    if(fn.IsEmpty()) {fn = m_fnCurPlayingFile;}
+    if(fn.IsEmpty()) return;
 
-		CString str;
-		BOOL bRememberPos = TRUE;
-		if(bRecent){
-			str = fn;
-			
-		}else{
-			CFavoriteAddDlg dlg(desc, fn);
-			if(dlg.DoModal() != IDOK) return;
-			str = dlg.m_name;
-			str.Remove(';');
-			bRememberPos = dlg.m_fRememberPos;
-			
-		}
-		CString pos(_T("0"));
-		if(bRememberPos)
-			pos.Format(_T("%I64d"), rtCurPos);
-		
-		str += ';';
-		str += pos;
+    CString desc = fn;
+    desc.Replace('\\', '/');
+    int i = desc.Find(_T("://")), j = desc.Find(_T("?")), k = desc.ReverseFind('/');
+    if(i >= 0) desc = j >= 0 ? desc.Left(j) : desc;
+    else if(k >= 0) desc = desc.Mid(k+1);
 
-		if(!bRecent){
-			CPlaylistItem pli;
-			if(m_wndPlaylistBar.GetCur(pli))
-			{
-				POSITION pos = pli.m_fns.GetHeadPosition();
-				while(pos) str += _T(";") + pli.m_fns.GetNext(pos);
-			}
-		}
-//SVP_LogMsg5(L"OnFavoritesAddReal %d %d %s",bRecent, bDelFav, fn);
-		if(bDelFav)
-			s.DelFavByFn(FAV_FILE, bRecent,fn);
-		else
-			s.AddFav(FAV_FILE, str, bRecent,fn);
-	}
-	else if(m_iPlaybackMode == PM_DVD)
-	{
-		WCHAR path[MAX_PATH];
-		ULONG len = 0;
-		pDVDI->GetDVDDirectory(path, MAX_PATH, &len);
-		CString fn = path;
-		fn.TrimRight(_T("/\\"));
+    CString str;
+    BOOL bRememberPos = TRUE;
+    if(bRecent)
+      str = fn;
+    else
+    {
+      CFavoriteAddDlg dlg(desc, fn);
+      if(dlg.DoModal() != IDOK) return;
+      str = dlg.m_name;
+      str.Remove(';');
+      bRememberPos = dlg.m_fRememberPos;
+    }
+    CString pos(_T("0"));
+    if(bRememberPos)
+      pos.Format(_T("%I64d"), rtCurPos);
 
-		DVD_PLAYBACK_LOCATION2 Location;
-		pDVDI->GetCurrentLocation(&Location);
-		CString desc;
-		desc.Format(_T("%s - T%02d C%02d - %02d:%02d:%02d"), fn, Location.TitleNum, Location.ChapterNum, 
-			Location.TimeCode.bHours, Location.TimeCode.bMinutes, Location.TimeCode.bSeconds);
+    str += ';';
+    str += pos;
 
-		CString str;
-		BOOL bRememberPos = FALSE;
-		if(bRecent){
-			str = fn;
-			bRememberPos = TRUE;
-		}else{
-			CFavoriteAddDlg dlg(fn, desc);
-			if(dlg.DoModal() != IDOK) return;
+    if(!bRecent){
+      CPlaylistItem pli;
+      if(m_wndPlaylistBar.GetCur(pli))
+      {
+        POSITION pos = pli.m_fns.GetHeadPosition();
+        while(pos) str += _T(";") + pli.m_fns.GetNext(pos);
+      }
+    }
+    // Logging(L"OnFavoritesAddReal %d %d %s %s %s",bRecent, bDelFav, m_fnCurPlayingFile, fn, str);
+    if(bDelFav)
+      s.DelFavByFn(FAV_FILE, bRecent,fn);
+    else
+      s.AddFav(FAV_FILE, str, bRecent,fn);
+  }
+  else if(m_iPlaybackMode == PM_DVD)
+  {
+    WCHAR path[MAX_PATH];
+    ULONG len = 0;
+    pDVDI->GetDVDDirectory(path, MAX_PATH, &len);
+    CString fn = path;
+    fn.TrimRight(_T("/\\"));
 
-			str = dlg.m_name;
-			str.Remove(';');
+    DVD_PLAYBACK_LOCATION2 Location;
+    pDVDI->GetCurrentLocation(&Location);
+    CString desc;
+    desc.Format(L"%s - T%02d C%02d - %02d:%02d:%02d", fn, Location.TitleNum, Location.ChapterNum, 
+                Location.TimeCode.bHours, Location.TimeCode.bMinutes, Location.TimeCode.bSeconds);
 
-			bRememberPos = dlg.m_fRememberPos;
-		}
-		CString pos(_T("0"));
-		if(bRememberPos)
-		{
-			CDVDStateStream stream;
-			stream.AddRef();
+    CString str;
+    BOOL bRememberPos = FALSE;
+    if(bRecent)
+    {
+      str = fn;
+      bRememberPos = TRUE;
+    }else{
+      CFavoriteAddDlg dlg(fn, desc);
+      if(dlg.DoModal() != IDOK) return;
 
-			CComPtr<IDvdState> pStateData;
-			CComQIPtr<IPersistStream> pPersistStream;
-			if(SUCCEEDED(pDVDI->GetState(&pStateData))
-			&& (pPersistStream = pStateData)
-			&& SUCCEEDED(OleSaveToStream(pPersistStream, (IStream*)&stream)))
-			{
-				pos = BinToCString(stream.m_data.GetData(), stream.m_data.GetCount());
-			}
-		}
+      str = dlg.m_name;
+      str.Remove(';');
 
-		str += ';';
-		str += pos;
-		if(!bRecent){
-			str += ';';
-			str += fn;
-		}
+      bRememberPos = dlg.m_fRememberPos;
+    }
+    CString pos(_T("0"));
+    if(bRememberPos)
+    {
+      CDVDStateStream stream;
+      stream.AddRef();
 
-		if(bDelFav)
-			s.DelFavByFn(FAV_DVD, bRecent,fn);
-		else
-			s.AddFav(FAV_DVD, str,bRecent,fn);
-	}
-	else if(m_iPlaybackMode == PM_CAPTURE)
-	{
-		// TODO
-	}
+      CComPtr<IDvdState> pStateData;
+      CComQIPtr<IPersistStream> pPersistStream;
+      if(SUCCEEDED(pDVDI->GetState(&pStateData))
+        && (pPersistStream = pStateData)
+        && SUCCEEDED(OleSaveToStream(pPersistStream, (IStream*)&stream)))
+      {
+        pos = BinToCString(stream.m_data.GetData(), stream.m_data.GetCount());
+      }
+    }
+
+    str += ';';
+    str += pos;
+    if(!bRecent)
+    {
+      str += ';';
+      str += fn;
+    }
+
+    if(bDelFav)
+      s.DelFavByFn(FAV_DVD, bRecent,fn);
+    else
+      s.AddFav(FAV_DVD, str,bRecent,fn);
+  }
+
 }
 
 void CMainFrame::OnPlayListRandom(){

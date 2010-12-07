@@ -4,7 +4,7 @@
 #include <string>
 
 
-#include "..\..\..\Thirdparty\sqlitepp\sqlitepp\sqlitepp.hpp"
+#include <sqlitepp/sqlitepp.hpp>
 
 using namespace sqlitepp;
 

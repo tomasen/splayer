@@ -182,11 +182,11 @@ BOOL SQLliteapp::WriteProfileString(LPCTSTR lpszSection, LPCTSTR lpszEntry, LPCT
   try
   {
     sqlitepp::statement st(m_db);
+    sqlitepp::string_t str3 = lpszValue;
     if(lpszValue)
     {
-      sqlitepp::string_t str3 = lpszValue;
-      st << "INSERT OR REPLACE INTO settingstring(hkey, sect, vstring) VALUES (:hkey, :sect, :vstring)",
-                sqlitepp::use(str), sqlitepp::use(str2),sqlitepp::use(str3);
+      st << "INSERT OR REPLACE INTO settingstring (hkey, sect, vstring) VALUES (:hkey, :sect, :vstring)",
+                sqlitepp::use(str), sqlitepp::use(str2), sqlitepp::use(str3);
     }
     else
     {

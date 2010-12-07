@@ -9805,6 +9805,8 @@ void CMainFrame::ToggleFullscreen(bool fToNearest, bool fSwitchScreenResWhenHasT
 	rePosOSD();
 
 	MoveVideoWindow();
+
+  ::SetWindowPos(m_hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOREDRAW|SWP_NOSIZE|SWP_NOMOVE);
 }
 
 void CMainFrame::MoveVideoWindow(bool fShowStats)

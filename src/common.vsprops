@@ -8,7 +8,7 @@
 	>
 	<Tool
 		Name="VCCLCompilerTool"
-		AdditionalIncludeDirectories="$(SolutionDir)include\;$(SolutionDir)src\base"
+		AdditionalIncludeDirectories="$(SolutionDir)include\;$(SolutionDir)src\base;$(SolutionDir)Thirdparty\sqlitepp"
 		PreprocessorDefinitions="WINVER=0x0601;_WIN32_WINNT=0x0601;NTDDI_VERSION=NTDDI_WIN7;PSAPI_VERSION=1"
 		EnableFunctionLevelLinking="true"
 		WarningLevel="3"

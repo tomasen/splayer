@@ -3,6 +3,7 @@
 #include <Strings.h>
 #include "../../mplayerc.h"
 #include "../../svplib/svplib.h"
+#include "../../svplib/SVPToolbox.h"
 #include "../../Controller/Hotkey_Controller.h"
 #include "../../Controller/PlayerPreference.h"
 #include "../../Controller/SPlayerDefs.h"

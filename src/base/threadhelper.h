@@ -37,9 +37,10 @@ public:
   }
 
   // Stop the thread
-  void _Stop()
+  void _Stop(int wait = false)
   {
-    ::SetEvent(m_stopevent);
+    if (!wait)
+      ::SetEvent(m_stopevent);
     while (_Is_alive())
       ::WaitForSingleObject(m_thread, 1000);
 

@@ -19,20 +19,18 @@ public:
     UploadSubtitle
   } SubTransOperation;
 
-  typedef std::vector<std::wstring> StringList;
-
   // set frame window HWND
   void SetFrame(HWND hwnd);
 
   void SetSubfile(std::wstring subfile);
   void SetDelayMs(int ms);
   void SetSubperf(std::wstring str);
-  void SetLanuage(std::wstring str);
 
   void SetMsgs(std::list<std::wstring>* msgs);
   // starting and ending main thread for upload / download
   void Start(const wchar_t* video_filename, SubTransOperation operation,
-             StringList files_upload = StringList());
+             std::wstring lanuage = L"",
+             int subnum = 1);
 
   void _Thread();
 
@@ -41,6 +39,7 @@ private:
   void _thread_upload();
 
   SubTransOperation m_operation;
+  int m_subnum;
 
   HWND    m_frame;
 

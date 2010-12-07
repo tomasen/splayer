@@ -10741,14 +10741,24 @@ void CMainFrame::SVPSubDownloadByVPath(CString szVPath, CAtlList<CString>* szaSt
 
   m_subcontrl.SetMsgs(&m_statusmsgs);
   m_subcontrl.SetFrame(m_hWnd);
-
+  std::wstring language = L"";
   AppSettings& s = AfxGetAppSettings();
   m_subcontrl.SetOemTitle(s.szOEMTitle.GetBuffer());
   if (!(s.iLanguage == 0 || s.iLanguage == 2))
-    m_subcontrl.SetLanuage(L"eng");
+    language = L"eng";
   m_subcontrl.SetSubperf(s.szSVPSubPerf.GetBuffer());
 
-  m_subcontrl.Start((LPCTSTR)szVPath, SubTransController::DownloadSubtitle);
+  m_subcontrl.Start((LPCTSTR)szVPath, SubTransController::DownloadSubtitle,
+                     language, 2);
+  if (AfxGetAppSettings().fAutoloadSubtitles2)
+  {
+    language = L"eng";
+    if (!(s.iLanguage == 0 || s.iLanguage == 2))
+      language = L"";
+    m_subcontrl.Start((LPCTSTR)szVPath, SubTransController::DownloadSubtitle,
+                       language, 2);
+  }
+
 }
 
 void CMainFrame::SVP_UploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString szSubPath, int iDelayMS, CAtlList<CString>* szaStatMsgs, CStringArray* szaPostTerms){
@@ -10756,15 +10766,15 @@ void CMainFrame::SVP_UploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath,
   m_subcontrl.SetDelayMs(iDelayMS);
   m_subcontrl.SetMsgs(&m_statusmsgs);
   m_subcontrl.SetFrame(m_hWnd);
+  std::wstring language = L"";
 
   AppSettings& s = AfxGetAppSettings();
   m_subcontrl.SetOemTitle(s.szOEMTitle.GetBuffer());
-  if (!(s.iLanguage == 0 || s.iLanguage == 2))
-    m_subcontrl.SetLanuage(L"eng");
+  language = L"eng";
   m_subcontrl.SetSubperf(s.szSVPSubPerf.GetBuffer());
 
   m_subcontrl.SetSubfile((LPCTSTR)szSubPath);
-  m_subcontrl.Start((LPCTSTR)fnVideoFilePath, SubTransController::UploadSubtitle);
+  m_subcontrl.Start((LPCTSTR)fnVideoFilePath, SubTransController::UploadSubtitle, language);
 }
 
 void CMainFrame::OpenFile(OpenFileData* pOFD)
@@ -17397,15 +17407,31 @@ void CMainFrame::OnAudioSettingUpdated()
 void CMainFrame::OnCompleteQuerySubtitle()
 {
   std::vector<std::wstring> subtitles = PlayerPreference::GetInstance()->GetStrArray(STRARRAY_QUERYSUBTITLE);
+  if (subtitles.size() <= 2)
+  {
+    m_statusmsgs.push_back((wchar_t*)(LPCTSTR)ResStr(IDS_LOG_MSG_SVPSUB_NONE_MATCH_SUB));
+    return;
+  }
+  if (subtitles[0].compare(m_fnCurPlayingFile) != 0)
+    return;
+
+  int subnum = _wtoi(subtitles[1].c_str());
+  CInterfaceList<ISubStream>* pSubStreams = &m_pSubStreams;
+  if (subnum = 2)
+    pSubStreams = &m_pSubStreams2;
+
   int subtitle_selected = false;
-  for (std::vector<std::wstring>::iterator iter = subtitles.begin();
+  for (std::vector<std::wstring>::iterator iter = subtitles.begin()+2;
         iter != subtitles.end(); iter++)
   {
     bool sub_loaded = LoadSubtitle(iter->c_str());
-    if (sub_loaded && !subtitle_selected && m_pSubStreams.GetCount() > 0
+    if (sub_loaded && !subtitle_selected && pSubStreams->GetCount() > 0
         && !subtitle_selected)
     {
-      SetSubtitle(m_pSubStreams.GetTail(), true, false);
+      if (subnum = 2)
+        SetSubtitle2(pSubStreams->GetTail(), true, false);
+      else
+        SetSubtitle(pSubStreams->GetTail(), true, false);
       subtitle_selected = true;
     }
   }

@@ -149,10 +149,6 @@ void SubTransController::SetFrame(HWND hwnd)
   m_frame = hwnd;
 }
 
-void SubTransController::SetLanuage(std::wstring str)
-{
-  m_language = str;
-}
 
 void SubTransController::SetSubperf(std::wstring str)
 {
@@ -161,12 +157,14 @@ void SubTransController::SetSubperf(std::wstring str)
 
 void SubTransController::Start(const wchar_t* video_filename, 
                                SubTransOperation operation, 
-                               StringList files_upload /*= StringList()*/)
+                               std::wstring lanuage, int subnum)
 {
-  _Stop();
+  _Stop(true);
   // record parameters
+  m_language = lanuage;
   m_operation = operation;
   m_videofile.assign(video_filename);
+  m_subnum = subnum;
   _Start();
 }
 
@@ -190,7 +188,9 @@ void SubTransController::_thread_download()
   std::vector<std::wstring> subtitles;
   std::wstring szLang = m_language;
 
-  
+  subtitles.push_back(m_videofile);
+  subtitles.push_back(Strings::Format(L"%d", m_subnum));
+
   std::vector<std::wstring> szaSubDescs, tmpfiles;
   std::wstring szFileHash = HashController::GetInstance()->GetSPHash(m_videofile.c_str());
   
@@ -293,7 +293,7 @@ void SubTransController::_thread_download()
         }
     }
   }
-  
+
   PlayerPreference::GetInstance()->SetStrArray(STRARRAY_QUERYSUBTITLE, subtitles);
   ::SendMessage(m_frame, WM_COMMAND, ID_COMPLETE_QUERY_SUBTITLE, NULL);
   

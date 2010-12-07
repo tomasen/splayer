@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "SPlayerDefs.h"
 #include "PlayerPreference.h"
-#include "../../../lib/splite/libsqlite/libsqlite.h"
 #include "../Model/appSQLlite.h"
 #include "../resource.h"
 

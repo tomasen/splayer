@@ -34,7 +34,6 @@
 #include "..\..\subtitles\STS.h"
 #include "MediaFormats.h"
 #include "fakefiltermapper2.h"
-#include "..\..\..\lib\splite\libsqlite\libsqlite.h"
 #include "Model\appSQLlite.h"
 
 //#include "..\..\..\Updater\cupdatenetlib.h"

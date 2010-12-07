@@ -159,7 +159,7 @@ void SubTransController::Start(const wchar_t* video_filename,
                                SubTransOperation operation, 
                                std::wstring lanuage, int subnum)
 {
-  _Stop(true);
+  _Stop();
   // record parameters
   m_language = lanuage;
   m_operation = operation;
@@ -282,12 +282,12 @@ void SubTransController::_thread_download()
   {
     if (!m_subperf.empty())
     {
-      for (std::vector<std::wstring>::iterator iter = subtitles.begin();
+      for (std::vector<std::wstring>::iterator iter = subtitles.begin()+2;
         iter != subtitles.end(); iter++)
         if (SubTransFormat::IsSpecFanSub((*iter), m_subperf))
         {
-          std::wstring szFirst = subtitles.at(0);
-          subtitles[0] = szSubFilePath;
+          std::wstring szFirst = subtitles.at(2);
+          subtitles[2] = szSubFilePath;
           *iter = szFirst;
           break;
         }
@@ -295,7 +295,7 @@ void SubTransController::_thread_download()
   }
 
   PlayerPreference::GetInstance()->SetStrArray(STRARRAY_QUERYSUBTITLE, subtitles);
-  ::SendMessage(m_frame, WM_COMMAND, ID_COMPLETE_QUERY_SUBTITLE, NULL);
+  ::PostMessage(m_frame, WM_COMMAND, ID_COMPLETE_QUERY_SUBTITLE, NULL);
   
 }
 

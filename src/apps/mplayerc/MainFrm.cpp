@@ -10749,15 +10749,7 @@ void CMainFrame::SVPSubDownloadByVPath(CString szVPath, CAtlList<CString>* szaSt
   m_subcontrl.SetSubperf(s.szSVPSubPerf.GetBuffer());
 
   m_subcontrl.Start((LPCTSTR)szVPath, SubTransController::DownloadSubtitle,
-                     language, 2);
-  if (AfxGetAppSettings().fAutoloadSubtitles2)
-  {
-    language = L"eng";
-    if (!(s.iLanguage == 0 || s.iLanguage == 2))
-      language = L"";
-    m_subcontrl.Start((LPCTSTR)szVPath, SubTransController::DownloadSubtitle,
-                       language, 2);
-  }
+                     language);
 
 }
 
@@ -17390,7 +17382,7 @@ void CMainFrame::OnCompleteQuerySubtitle()
 
   int subnum = _wtoi(subtitles[1].c_str());
   CInterfaceList<ISubStream>* pSubStreams = &m_pSubStreams;
-  if (subnum = 2)
+  if (subnum == 2)
     pSubStreams = &m_pSubStreams2;
 
   int subtitle_selected = false;
@@ -17401,7 +17393,7 @@ void CMainFrame::OnCompleteQuerySubtitle()
     if (sub_loaded && !subtitle_selected && pSubStreams->GetCount() > 0
         && !subtitle_selected)
     {
-      if (subnum = 2)
+      if (subnum == 2)
         SetSubtitle2(pSubStreams->GetTail(), true, false);
       else
         SetSubtitle(pSubStreams->GetTail(), true, false);
@@ -17411,6 +17403,17 @@ void CMainFrame::OnCompleteQuerySubtitle()
   CString msg;
   msg.Format(ResStr(IDS_LOG_MSG_SVPSUB_GOT_N_SUB_FILE_DOWNLOADED), subtitles.size()-2);
   m_statusmsgs.push_back((wchar_t*)(LPCTSTR)msg);
+
+  AppSettings& s = AfxGetAppSettings();
+  if (subnum != 2 && s.fAutoloadSubtitles2)
+  {
+    std::wstring language = L"eng";
+    if (!(s.iLanguage == 0 || s.iLanguage == 2))
+      language = L"";
+    m_subcontrl.Start((LPCTSTR)m_fnCurPlayingFile, SubTransController::DownloadSubtitle,
+                       language, 2);
+  }
+
 }
 
 void CMainFrame::OnControllerSaveImage()

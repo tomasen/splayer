@@ -156,3 +156,26 @@ std::wstring Strings::ResourceString(int id)
 
   return std::wstring(ret_str);
 }
+
+std::wstring Strings::Format(const wchar_t* format, ...)
+{
+  va_list args;
+  va_start(args, format);
+
+  std::wstring formated;
+  int ret = -1;
+  int bufferlength = wcslen(format)+30;
+
+  while(ret == -1)
+  {
+    wchar_t* buffer = (wchar_t*)calloc(bufferlength,sizeof(wchar_t));
+    const int bufferSize = sizeof(buffer)/sizeof(buffer[0]) - 1;
+    ret = _vsnwprintf_s(buffer, bufferlength, _TRUNCATE, format, args);
+    if (ret >= 0)
+      formated = buffer;
+    free(buffer);
+    bufferlength += 200;
+  }
+  va_end(args);
+  return formated;
+}

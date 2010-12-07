@@ -17,6 +17,7 @@ public:
   static std::string WStringToUtf8String(const std::wstring& s);
   static void Trim(std::wstring& s);
   static std::wstring ResourceString(int id);
+  static std::wstring Format(const wchar_t* format, ...);
   static void SetResourceHandle(HINSTANCE hInstance);
   static HINSTANCE m_hInstance;
 };

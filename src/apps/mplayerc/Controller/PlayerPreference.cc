@@ -2,7 +2,7 @@
 #include "SPlayerDefs.h"
 #include "PlayerPreference.h"
 #include "../../../lib/splite/libsqlite/libsqlite.h"
-#include <Strings.h>
+#include "../Model/appSQLlite.h"
 #include "../resource.h"
 
 #define ResStr(id) CString(MAKEINTRESOURCE(id))
@@ -155,7 +155,7 @@ void PlayerPreference::Init()
 
     wcscat_s(path, MAX_PATH, L"\\settings.db");
 
-    sqlite_setting = new SQLITE3(Strings::WStringToUtf8String(std::wstring(path)));
+    sqlite_setting = new SQLliteapp(path);
 
     if (!sqlite_setting->db_open)
     {
@@ -166,21 +166,21 @@ void PlayerPreference::Init()
 
 	if (sqlite_setting)
   {
-		sqlite_setting->exec_sql("CREATE TABLE IF NOT EXISTS \"settingint\" ( \"hkey\" TEXT,  \"sect\" TEXT,  \"sval\" INTEGER)");
-		sqlite_setting->exec_sql("CREATE TABLE IF NOT EXISTS \"settingstring\" (  \"hkey\" TEXT,   \"sect\" TEXT,   \"vstring\" TEXT)");
-		sqlite_setting->exec_sql("CREATE TABLE IF NOT EXISTS \"settingbin2\" (   \"skey\" TEXT,   \"sect\" TEXT,   \"vdata\" BLOB)");
-		sqlite_setting->exec_sql("CREATE UNIQUE INDEX IF NOT EXISTS \"pkey\" on settingint (hkey ASC, sect ASC)");
-		sqlite_setting->exec_sql("CREATE UNIQUE INDEX IF NOT EXISTS \"pkeystring\" on settingstring (hkey ASC, sect ASC)");
-		sqlite_setting->exec_sql("CREATE UNIQUE INDEX IF NOT EXISTS \"pkeybin\" on settingbin2 (skey ASC, sect ASC)");
-		sqlite_setting->exec_sql("PRAGMA synchronous=OFF");
-		sqlite_setting->exec_sql("DROP TABLE  IF EXISTS  \"settingbin\"");
+		sqlite_setting->exec_sql(L"CREATE TABLE IF NOT EXISTS \"settingint\" ( \"hkey\" TEXT,  \"sect\" TEXT,  \"sval\" INTEGER)");
+		sqlite_setting->exec_sql(L"CREATE TABLE IF NOT EXISTS \"settingstring\" (  \"hkey\" TEXT,   \"sect\" TEXT,   \"vstring\" TEXT)");
+		sqlite_setting->exec_sql(L"CREATE TABLE IF NOT EXISTS \"settingbin2\" (   \"skey\" TEXT,   \"sect\" TEXT,   \"vdata\" BLOB)");
+		sqlite_setting->exec_sql(L"CREATE UNIQUE INDEX IF NOT EXISTS \"pkey\" on settingint (hkey ASC, sect ASC)");
+		sqlite_setting->exec_sql(L"CREATE UNIQUE INDEX IF NOT EXISTS \"pkeystring\" on settingstring (hkey ASC, sect ASC)");
+		sqlite_setting->exec_sql(L"CREATE UNIQUE INDEX IF NOT EXISTS \"pkeybin\" on settingbin2 (skey ASC, sect ASC)");
+		sqlite_setting->exec_sql(L"PRAGMA synchronous=OFF");
+		sqlite_setting->exec_sql(L"DROP TABLE  IF EXISTS  \"settingbin\"");
   }
 }
 
 void PlayerPreference::Uninit()
 {
   if(sqlite_setting)
-    sqlite_setting->exec_sql("PRAGMA synchronous=ON");
+    sqlite_setting->exec_sql(L"PRAGMA synchronous=ON");
 
   if (sqlite_setting)
     delete sqlite_setting;

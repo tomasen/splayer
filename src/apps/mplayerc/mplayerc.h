@@ -35,6 +35,7 @@
 #include "MediaFormats.h"
 #include "fakefiltermapper2.h"
 #include "..\..\..\lib\splite\libsqlite\libsqlite.h"
+#include "Model\appSQLlite.h"
 
 //#include "..\..\..\Updater\cupdatenetlib.h"
 #include "..\..\filters\switcher\AudioSwitcher\AudioSwitcher.h"
@@ -694,8 +695,8 @@ public:
 
 public:
 
-	SQLITE3* sqlite_setting; 
-	SQLITE3* sqlite_local_record; 
+	SQLliteapp* sqlite_setting; 
+	SQLliteapp* sqlite_local_record; 
 
 	cupdatenetlib* m_cnetupdater;
 	DECLARE_MESSAGE_MAP()

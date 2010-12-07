@@ -3,7 +3,7 @@
 
 #include "LazyInstance.h"
 
-class SQLITE3;
+class SQLliteapp;
 
 class PlayerPreference :
   public LazyInstanceImpl<PlayerPreference>
@@ -27,7 +27,7 @@ public:
   std::vector<std::wstring> GetStrArray(int id);
   void SetStrArray(int id, std::vector<std::wstring> &value_in);
 
-  SQLITE3* GetSqliteSettingPtr() {return sqlite_setting;}
+  SQLliteapp* GetSqliteSettingPtr() {return sqlite_setting;}
 private:
   void Init();
   void Uninit();
@@ -44,7 +44,7 @@ private:
   std::map<int, std::vector<int>>          m_map_intarray;
   std::map<int, std::vector<std::wstring>> m_map_strarray;
 
-  SQLITE3* sqlite_setting; 
+  SQLliteapp* sqlite_setting; 
 
 };
 

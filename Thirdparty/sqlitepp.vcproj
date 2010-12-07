@@ -303,6 +303,18 @@
 			>
 		</File>
 		<File
+			RelativePath=".\sqlitepp\sqlite\sqlite3.c"
+			>
+		</File>
+		<File
+			RelativePath=".\sqlitepp\sqlite\sqlite3.h"
+			>
+		</File>
+		<File
+			RelativePath=".\sqlitepp\sqlite\sqlite3ext.h"
+			>
+		</File>
+		<File
 			RelativePath=".\sqlitepp\sqlitepp\sqlitepp.hpp"
 			>
 		</File>

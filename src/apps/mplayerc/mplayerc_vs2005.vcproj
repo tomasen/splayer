@@ -1924,6 +1924,14 @@
 			Name="Model"
 			>
 			<File
+				RelativePath=".\Model\appSQLlite.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Model\appSQLlite.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Model\HotkeyCmd.cc"
 				>
 			</File>

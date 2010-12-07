@@ -13139,10 +13139,6 @@ void CMainFrame::SetupSubMenuToolbar(){
 	if(!IsMenu(pSub->m_hMenu)) pSub->CreatePopupMenu();
 	else while(pSub->RemoveMenu(0, MF_BYPOSITION));
 
-	if(m_iMediaLoadState != MLS_LOADED || m_fAudioOnly || !m_pCAP){
-		pSub->AppendMenu(MF_STRING|MF_GRAYED, 0, ResStr(IDS_MENU_ITEM_SUBTITLE_NOT_SUPPORT_VIDEO));
-		return;
-	}
 
 	SetupSubtitlesSubMenu();
 	SetupNavSubtitleSubMenu();
@@ -13150,33 +13146,13 @@ void CMainFrame::SetupSubMenuToolbar(){
 	MenuMerge( &m_subtoolmenu , &m_subtitles );
 
 	SetupSubtitlesSubMenu(2);
-	//MenuMerge( &m_subtitles2 ,  &m_navsubtitle );
-	//pSubMenu = &m_subtitles2;
 
-	
 	if(m_subtitles2.GetMenuItemCount() ){
 		if(m_subtoolmenu.GetMenuItemCount())
 			m_subtoolmenu.AppendMenu(MF_SEPARATOR);
 		m_subtoolmenu.AppendMenu(MF_POPUP, (UINT)m_subtitles2.m_hMenu,ResStr(IDS_MENU_ITEM_2ND_SUBTITLE));
 	}
-	
-/*
-	CMenu* netSubMenu = NULL;
-	CMenu* popmenuMain = (CMenu*)m_popup.GetSubMenu(0);
-	for(int iPos = 0; iPos < popmenuMain->GetMenuItemCount(); iPos++){
-		CString str;
-		if (popmenuMain->GetMenuString(iPos, str, MF_BYPOSITION)){
-			if(str.Find(ResStr(IDS_MENU_ITEM_INTERNET_SUBTITLE)) >= 0){
-				netSubMenu = (CMenu*) popmenuMain->GetSubMenu(iPos);
-				break;
-			}
-		}
 
-	}
-*/
-	//if(netSubMenu){
-	//	m_subtoolmenu.AppendMenu(MF_POPUP, (UINT)netSubMenu->m_hMenu,_T("网络字幕..."));
-	//}
 	m_subtitles.DestroyMenu();
 	m_subtitles.LoadMenu(IDR_SUBMENU);
 	//MenuMerge( &m_subtoolmenu,  &m_subtitles );
@@ -13231,9 +13207,6 @@ void CMainFrame::SetupSubtitlesSubMenu(int subid)
 
 	if(!IsMenu(pSub->m_hMenu)) pSub->CreatePopupMenu();
 	else while(pSub->RemoveMenu(0, MF_BYPOSITION));
-
-	if(m_iMediaLoadState != MLS_LOADED || m_fAudioOnly || !m_pCAP)
-		return;
 
 	UINT loadID = ID_FILE_LOAD_SUBTITLE;
 

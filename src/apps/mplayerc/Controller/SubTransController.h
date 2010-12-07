@@ -32,7 +32,7 @@ public:
   void SetMsgs(std::list<std::wstring>* msgs);
   // starting and ending main thread for upload / download
   void Start(const wchar_t* video_filename, SubTransOperation operation,
-             StringList files_upload = StringList());
+             StringList files_upload = StringList(), int subnum = 1);
 
   void _Thread();
 
@@ -41,6 +41,7 @@ private:
   void _thread_upload();
 
   SubTransOperation m_operation;
+  int m_subnum;
 
   HWND    m_frame;
 

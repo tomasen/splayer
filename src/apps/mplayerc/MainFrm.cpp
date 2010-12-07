@@ -10744,11 +10744,20 @@ void CMainFrame::SVPSubDownloadByVPath(CString szVPath, CAtlList<CString>* szaSt
 
   AppSettings& s = AfxGetAppSettings();
   m_subcontrl.SetOemTitle(s.szOEMTitle.GetBuffer());
+  m_subcontrl.SetLanuage(L"");
   if (!(s.iLanguage == 0 || s.iLanguage == 2))
     m_subcontrl.SetLanuage(L"eng");
   m_subcontrl.SetSubperf(s.szSVPSubPerf.GetBuffer());
 
   m_subcontrl.Start((LPCTSTR)szVPath, SubTransController::DownloadSubtitle);
+  if (AfxGetAppSettings().fAutoloadSubtitles2)
+  {
+    m_subcontrl.SetLanuage(L"eng");
+    if (!(s.iLanguage == 0 || s.iLanguage == 2))
+      m_subcontrl.SetLanuage(L"");
+    m_subcontrl.Start((LPCTSTR)szVPath, SubTransController::DownloadSubtitle, SubTransController::StringList(), 2);
+  }
+
 }
 
 void CMainFrame::SVP_UploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString szSubPath, int iDelayMS, CAtlList<CString>* szaStatMsgs, CStringArray* szaPostTerms){
@@ -17397,20 +17406,31 @@ void CMainFrame::OnAudioSettingUpdated()
 void CMainFrame::OnCompleteQuerySubtitle()
 {
   std::vector<std::wstring> subtitles = PlayerPreference::GetInstance()->GetStrArray(STRARRAY_QUERYSUBTITLE);
-  if (subtitles.size() <= 0)
+  if (subtitles.size() <= 2)
   {
     m_statusmsgs.push_back((wchar_t*)(LPCTSTR)ResStr(IDS_LOG_MSG_SVPSUB_NONE_MATCH_SUB));
     return;
   }
+  if (subtitles[0].compare(m_fnCurPlayingFile) != 0)
+    return;
+
+  int subnum = _wtoi(subtitles[1].c_str());
+  CInterfaceList<ISubStream>* pSubStreams = &m_pSubStreams;
+  if (subnum = 2)
+    pSubStreams = &m_pSubStreams2;
+
   int subtitle_selected = false;
-  for (std::vector<std::wstring>::iterator iter = subtitles.begin();
+  for (std::vector<std::wstring>::iterator iter = subtitles.begin()+2;
         iter != subtitles.end(); iter++)
   {
     bool sub_loaded = LoadSubtitle(iter->c_str());
-    if (sub_loaded && !subtitle_selected && m_pSubStreams.GetCount() > 0
+    if (sub_loaded && !subtitle_selected && pSubStreams->GetCount() > 0
         && !subtitle_selected)
     {
-      SetSubtitle(m_pSubStreams.GetTail(), true, false);
+      if (subnum = 2)
+        SetSubtitle2(pSubStreams->GetTail(), true, false);
+      else
+        SetSubtitle(pSubStreams->GetTail(), true, false);
       subtitle_selected = true;
     }
   }

@@ -2,6 +2,8 @@
 #include "..\..\Thirdparty\pkg\unrar.hpp"
 #include <algorithm>
 
+#undef  SVP_LogMsg3
+#undef  SVP_LogMsg5
 #define SVP_LogMsg5 __noop
 #define SVP_LogMsg3 __noop
 

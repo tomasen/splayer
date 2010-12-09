@@ -3046,14 +3046,14 @@ CFGManagerPlayer::CFGManagerPlayer(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	else //
 	{
 		if(s.iDSVideoRendererType == VIDRNDT_DS_VMR7RENDERLESS)
-			m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VMR7AllocatorPresenter, L"DX7(VMR)äÖÈ¾Æ÷", m_vrmerit+5));
+			m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VMR7AllocatorPresenter, L"DX7(VMR) Render", m_vrmerit+5));
 
 
 		if ( s.bShouldUseEVR() ) //s.fVMRGothSyncFix )//|| (!CMPlayerCApp::IsVista() && s.useGPUAcel) // No EVR for XP!
-			m_transform.AddTail( new CFGFilterVideoRenderer(m_hWnd, CLSID_EVRAllocatorPresenter, L"EVRäÖÈ¾Æ÷", m_vrmerit+1));
+			m_transform.AddTail( new CFGFilterVideoRenderer(m_hWnd, CLSID_EVRAllocatorPresenter, L"EVR Render", m_vrmerit+1));
 
-		m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VMR9AllocatorPresenter, L"DX9(VMR)äÖÈ¾Æ÷", m_vrmerit));
-		m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VMR7AllocatorPresenter, L"DX7(VMR)äÖÈ¾Æ÷", m_vrmerit-1));
+		m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VMR9AllocatorPresenter, L"DX9(VMR) Render", m_vrmerit));
+		m_transform.AddTail(new CFGFilterVideoRenderer(m_hWnd, CLSID_VMR7AllocatorPresenter, L"DX7(VMR) Render", m_vrmerit-1));
 	}
 
 /*

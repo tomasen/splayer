@@ -38,6 +38,7 @@
 #include "..\..\..\apps\mplayerc\mplayerc.h"
 
 //#define TRACE SVP_LogMsg5
+#undef  SVP_LogMsg5
 #define SVP_LogMsg5 __noop
 
 #ifdef REGISTER_FILTER

@@ -29,6 +29,7 @@
 #include "..\svplib\svplib.h"
 //#define  LOGSUBRECT
 
+#undef  SVP_LogMsg5
 #define SVP_LogMsg5  __noop
 //
 // ISubPicImpl

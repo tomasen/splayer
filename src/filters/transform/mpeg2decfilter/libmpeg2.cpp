@@ -28,6 +28,8 @@
 #include "..\..\..\DSUtil\vd.h"
 
 #include "../../../svplib/svplib.h"
+#undef  SVP_LogMsg5
+#undef  SVP_LogMsg6
 #define SVP_LogMsg6 __noop
 #define  SVP_LogMsg5  __noop
 

@@ -6,6 +6,7 @@
 // CAviFile
 //
 #define  TRACE __noop
+#undef  SVP_LogMsg5
 #define  SVP_LogMsg5  __noop
 
 CAviFile::CAviFile(IAsyncReader* pAsyncReader, HRESULT& hr)

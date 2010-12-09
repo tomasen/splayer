@@ -34,6 +34,9 @@
 #include "PODtypes.h"
 #include "avcodec.h"
 
+#undef  SVP_LogMsg3
+#undef  SVP_LogMsg5
+#undef  SVP_LogMsg6
 #define SVP_LogMsg3  __noop
 #define SVP_LogMsg5 __noop
 #define SVP_LogMsg6 __noop

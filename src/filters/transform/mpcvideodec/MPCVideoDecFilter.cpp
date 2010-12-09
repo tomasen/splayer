@@ -60,6 +60,8 @@ extern "C"
 #define LOGDEBUG 0
 #define MUST_LOG   __noop
 //SVP_LogMsg5
+#undef  SVP_LogMsg5
+#undef  SVP_LogMsg6
 #define SVP_LogMsg5 __noop
 #define SVP_LogMsg6 __noop
 #define TRACE SVP_LogMsg6

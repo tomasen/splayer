@@ -9,6 +9,7 @@
 
 #include "svplib.h"
 static bool m_fyy = 0;
+#undef  SVP_LogMsg5
 #define SVP_LogMsg5 __noop
 /*****************************************************************************
 * Local prototypes

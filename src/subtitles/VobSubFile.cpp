@@ -26,6 +26,8 @@
 #include "VobSubFile.h"
 #include "..\..\src\svplib\svplib.h"
 
+#undef  SVP_LogMsg3
+#undef  SVP_LogMsg5
 #define SVP_LogMsg5 __noop
 #define SVP_LogMsg3 __noop
 

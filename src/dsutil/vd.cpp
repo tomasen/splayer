@@ -27,6 +27,7 @@
 
 #include "..\svplib\svplib.h"
 
+#undef  SVP_LogMsg5
 #define SVP_LogMsg5 __noop
 
 #pragma warning(disable : 4799) // no emms... blahblahblah

@@ -21,6 +21,8 @@
 #include <afxtempl.h>
 #include "..\..\..\apps\mplayerc\mplayerc.h"
 
+#undef  SVP_LogMsg5
+#undef  SVP_LogMsg6
 #define  SVP_LogMsg5  __noop
 #define  SVP_LogMsg6    __noop
 

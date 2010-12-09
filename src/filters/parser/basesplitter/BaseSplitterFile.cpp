@@ -24,6 +24,7 @@
 #include "..\..\..\dsutil\dsutil.h"
 #include "..\..\..\svplib\svplib.h"
 
+#undef  SVP_LogMsg5
 #define SVP_LogMsg5 __noop
 //
 // CBaseSplitterFile

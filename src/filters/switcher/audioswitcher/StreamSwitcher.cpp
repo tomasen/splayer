@@ -31,6 +31,7 @@
 #include <initguid.h>
 #include "..\..\..\..\include\moreuuids.h"
 #include "..\..\..\svplib\svplib.h"
+#undef  SVP_LogMsg5
 #define SVP_LogMsg5 __noop
 //#define TRACE SVP_LogMsg5
 #define BLOCKSTREAM

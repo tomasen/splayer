@@ -30,6 +30,7 @@
 #include <afxtempl.h>
 #include "..\..\..\..\src\apps\mplayerc\mplayerc.h"
 
+#undef   SVP_LogMsg5
 #define  SVP_LogMsg5  __noop
 //
 // CBaseVideoFilter

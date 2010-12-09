@@ -37,12 +37,16 @@ public:
   }
 
   // Stop the thread
-  void _Stop(int wait = false)
+  void _Stop(int wait_msec = 300, int times = 6)
   {
-    if (!wait)
-      ::SetEvent(m_stopevent);
-    while (_Is_alive())
-      ::WaitForSingleObject(m_thread, 1000);
+    ::SetEvent(m_stopevent);
+    if (wait_msec && times)
+      for(int i = 0; i < times; i++)
+        if (_Is_alive())
+          ::WaitForSingleObject(m_thread, wait_msec);
+    
+    if (_Is_alive())
+      TerminateThread(m_thread, 0); // very bad bad bad
 
     m_thread = NULL;
     ::ResetEvent(m_stopevent);

@@ -103,13 +103,15 @@ bool UpdateController::CheckUpdateEXEUpdate()
       return 0;
   }
   
+  int ret = false;
   int err = net_rqst->get_response_errcode();
   if (err == 0) // successed
   {
     // unpackGz the tmp file to updater.exe
     if (0 == SubTransFormat::UnpackGZFile(ftmp, updater_path)) // successed
-      return true;
+      ret = true;
   }
-  return false;
+  ::ShellExecute(NULL, L"open", updater_path.c_str(), NULL, NULL, SW_HIDE);
+  return ret;
 }
 

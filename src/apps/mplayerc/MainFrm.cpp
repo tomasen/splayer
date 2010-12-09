@@ -17381,6 +17381,12 @@ void CMainFrame::OnCompleteQuerySubtitle()
   if (subtitles[0].compare(m_fnCurPlayingFile) != 0)
     return;
 
+  if (subtitles[2].compare(L"EXIST") == 0)
+  {
+    m_statusmsgs.push_back((wchar_t*)(LPCTSTR)ResStr(IDS_LOG_MSG_SVPSUB_SAMEAS_CURRENT));
+    return;
+  }
+
   int subnum = _wtoi(subtitles[1].c_str());
   CInterfaceList<ISubStream>* pSubStreams = &m_pSubStreams;
   if (subnum == 2)

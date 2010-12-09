@@ -266,6 +266,7 @@ void SubTransController::_thread_download()
   //load sub file to sublist
   std::wstring szSubFilePath;
   int iSubTotal = 0;
+  int already_exist = 0;
   for (size_t i = 0; i < tmpfiles.size(); i++)
   {
     szSubFilePath = SubTransFormat::GetSubFileByTempid_STL(i,
@@ -276,6 +277,9 @@ void SubTransController::_thread_download()
       subtitles.push_back(szSubFilePath);
       iSubTotal++;
     }
+
+    if (szSubFilePath == L"EXIST" )
+      already_exist++;
   }
 
   if (iSubTotal > 1)
@@ -293,6 +297,9 @@ void SubTransController::_thread_download()
         }
     }
   }
+  else if (iSubTotal <= 0 && already_exist)
+    subtitles.push_back(L"EXIST");
+
 
   PlayerPreference::GetInstance()->SetStrArray(STRARRAY_QUERYSUBTITLE, subtitles);
   ::PostMessage(m_frame, WM_COMMAND, ID_COMPLETE_QUERY_SUBTITLE, NULL);

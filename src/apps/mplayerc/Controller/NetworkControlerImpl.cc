@@ -3,6 +3,7 @@
 #include "../revision.h"
 
 NetworkControlerImpl::NetworkControlerImpl(void)
+: m_oemtitle(L"")
 {
 }
 

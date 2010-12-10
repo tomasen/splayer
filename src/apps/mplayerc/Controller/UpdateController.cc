@@ -18,24 +18,20 @@ using namespace sinet;
 const std::wstring updatefilename = L"Updater.exe";
 
 
-UpdateController::UpdateController(void):
-  m_stopevent(::CreateEvent(NULL, TRUE, FALSE, NULL))
+UpdateController::UpdateController(void)
 {
   m_localversion = SVP_REV_NUMBER;
 }
 
-UpdateController::~UpdateController(void)
+void UpdateController::Start()
 {
-  Stop();
+  _Stop(300,50);
+  _Start();
 }
 
-
-void UpdateController::Stop()
+void UpdateController::_Thread()
 {
-  ::SetEvent(m_stopevent);
-  ::WaitForSingleObject(m_thread, 3001);
-
-  ::ResetEvent(m_stopevent);
+  CheckUpdateEXEUpdate();
 }
 
 bool UpdateController::CheckUpdateEXEUpdate()
@@ -103,7 +99,7 @@ bool UpdateController::CheckUpdateEXEUpdate()
       return 0;
   }
   
-  int ret = false;
+  bool ret = false;
   int err = net_rqst->get_response_errcode();
   if (err == 0) // successed
   {

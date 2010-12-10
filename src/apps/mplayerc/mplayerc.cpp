@@ -1647,7 +1647,7 @@ SVP_LogMsg5(L"Settings::InitInstanceThreaded 16");
 				}
 				if(!pFrame->m_bCheckingUpdater){
 					pFrame->m_bCheckingUpdater = true;
-          UpdateController::GetInstance()->CheckUpdateEXEUpdate();
+          UpdateController::GetInstance()->Start();
 
 				}
 				SVP_LogMsg5(L"Settings::InitInstanceThreaded 17");

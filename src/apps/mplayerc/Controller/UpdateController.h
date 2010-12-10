@@ -6,15 +6,15 @@
 #include "LazyInstance.h"
 #include "windows.h"
 #include "NetworkControlerImpl.h"
+#include <threadhelper.h>
 
 class UpdateController:
   public NetworkControlerImpl,
+  public ThreadHelperImpl<UpdateController>,
   public LazyInstanceImpl<UpdateController>
 {
 public:
   UpdateController(void);
-  ~UpdateController(void);
-  void Stop();
 
   void SetHashString(std::wstring str);
   bool CheckUpdateEXEUpdate();
@@ -22,6 +22,9 @@ public:
   bool UploadCrashDmp(std::wstring file);
   bool UploadPinRenderDeadEnd(std::wstring file);
   bool UploadText2HttpServer(std::wstring str, std::wstring url);
+
+  void Start();
+  void _Thread();
 
 private:
   

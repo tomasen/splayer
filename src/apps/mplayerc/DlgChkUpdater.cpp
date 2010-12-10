@@ -52,7 +52,7 @@ BOOL CDlgChkUpdater::OnInitDialog()
 	moreTick = 0;
 	CMPlayerCApp* pApp = (CMPlayerCApp*) AfxGetMyApp();
 	if(!pApp->m_cnetupdater)
-    UpdateController::GetInstance()->CheckUpdateEXEUpdate();
+    UpdateController::GetInstance()->Start();
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE

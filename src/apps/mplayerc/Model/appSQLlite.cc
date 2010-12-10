@@ -96,6 +96,9 @@ UINT SQLliteapp::GetProfileInt(LPCTSTR lpszSection, LPCTSTR lpszEntry, int nDefa
   sqlitepp::string_t str2 = lpszSection;
   sqlitepp::string_t str3 = lpszEntry;
 
+  if (str3.empty() || str2.empty())
+    return nDefault;
+
   try
   {
     sqlitepp::statement st(m_db);
@@ -124,6 +127,9 @@ BOOL SQLliteapp::WriteProfileInt(LPCTSTR lpszSection, LPCTSTR lpszEntry, int nVa
   sqlitepp::string_t str1 = lpszSection;
   sqlitepp::string_t str2 = lpszEntry;
 
+  if (str1.empty() || str2.empty())
+    return false;
+
   try
   {
     m_db << "INSERT OR REPLACE INTO settingint (hkey, sect, sval ) VALUES (:hkey, :sect ,:sval)",
@@ -147,6 +153,9 @@ CString SQLliteapp::GetProfileString(LPCTSTR lpszSection, LPCTSTR lpszEntry, LPC
   sqlitepp::string_t str;
   sqlitepp::string_t str2 = lpszSection;
   sqlitepp::string_t str3 = lpszEntry;
+
+  if (str3.empty() || str2.empty())
+    return lpszDefault;
 
   try
   {
@@ -178,6 +187,9 @@ BOOL SQLliteapp::WriteProfileString(LPCTSTR lpszSection, LPCTSTR lpszEntry, LPCT
 
   sqlitepp::string_t str = lpszSection;
   sqlitepp::string_t str2 = lpszEntry;
+
+  if (str.empty() || str2.empty())
+    return false;
 
   try
   {
@@ -218,6 +230,9 @@ BOOL SQLliteapp::GetProfileBinary(LPCTSTR lpszSection, LPCTSTR lpszEntry,
   sqlitepp::string_t s1 = lpszSection;
   sqlitepp::string_t s2 = lpszEntry;
 
+  if (s1.empty() || s2.empty())
+    return false;
+
   try
   {
     sqlitepp::statement st(m_db);
@@ -255,6 +270,9 @@ BOOL SQLliteapp::WriteProfileBinary(LPCTSTR lpszSection, LPCTSTR lpszEntry, LPBY
 
   sqlitepp::string_t s1 = lpszSection;
   sqlitepp::string_t s2 = lpszEntry;
+
+  if (s1.empty() || s2.empty())
+    return false;
 
   try
   {

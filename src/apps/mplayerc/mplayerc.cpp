@@ -3538,11 +3538,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 
 		pApp->WriteProfileString(ResStr(IDS_R_COMMANDS), NULL, NULL);
 
-    CString		strTemp;
-		strTemp.Format (_T("%f"), m_RenderSettings.fTargetSyncOffset);
-		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VSYNC_TARGETOFFSET), strTemp);
-
-
+    CString strTemp;
 		strTemp.Format (_T("%f"), dBrightness);
 		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_COLOR_BRIGHTNESS), strTemp);
 		strTemp.Format (_T("%f"), dContrast);
@@ -3958,8 +3954,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		fbSmoothMutilMonitor = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SMOOTHMUTILMONITOR), 1) >0;
 		bShowControlBar = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SHOWCONTROLBAR), 0) >0;
 
-		m_RenderSettings.fTargetSyncOffset = (float)_tstof(pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_VSYNC_TARGETOFFSET), _T("1.85")));
-
+		m_RenderSettings.fTargetSyncOffset = 1.85;
 
 		dBrightness		= (float)_tstof(pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_COLOR_BRIGHTNESS),	_T("100")));
 		if(iUpgradeReset < 580){

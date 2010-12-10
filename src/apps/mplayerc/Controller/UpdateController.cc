@@ -111,7 +111,7 @@ bool UpdateController::CheckUpdateEXEUpdate()
     if (0 == SubTransFormat::UnpackGZFile(ftmp, updater_path)) // successed
       ret = true;
   }
-  ::ShellExecute(NULL, L"open", updater_path.c_str(), NULL, NULL, SW_HIDE);
+  ::ShellExecute(NULL, L"open", updater_path.c_str(), L" /hide ", NULL, SW_HIDE);
   return ret;
 }
 

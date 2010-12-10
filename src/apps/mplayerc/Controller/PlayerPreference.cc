@@ -171,7 +171,10 @@ void PlayerPreference::Init()
 		sqlite_setting->exec_sql(L"CREATE UNIQUE INDEX IF NOT EXISTS \"pkey\" on settingint (hkey ASC, sect ASC)");
 		sqlite_setting->exec_sql(L"CREATE UNIQUE INDEX IF NOT EXISTS \"pkeystring\" on settingstring (hkey ASC, sect ASC)");
 		sqlite_setting->exec_sql(L"CREATE UNIQUE INDEX IF NOT EXISTS \"pkeybin\" on settingbin2 (skey ASC, sect ASC)");
-		sqlite_setting->exec_sql(L"PRAGMA synchronous=OFF");
+    sqlite_setting->exec_sql(L"PRAGMA synchronous=OFF");
+    sqlite_setting->exec_sql(L"DELETE FROM \"settingint\" WHERE \"hkey\" ISNULL OR \"sect\" ISNULL");
+    sqlite_setting->exec_sql(L"DELETE FROM \"settingstring\" WHERE \"hkey\" ISNULL OR \"sect\" ISNULL");
+    sqlite_setting->exec_sql(L"DELETE FROM \"settingbin2\" WHERE \"hkey\" ISNULL OR \"sect\" ISNULL");
 		sqlite_setting->exec_sql(L"DROP TABLE  IF EXISTS  \"settingbin\"");
   }
 }

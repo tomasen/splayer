@@ -95,7 +95,7 @@ bool UpdateController::CheckUpdateEXEUpdate()
 
   while (net_pool->is_running_or_queued(net_task))
   {
-    if (::WaitForSingleObject(m_stopevent, 1000) == WAIT_OBJECT_0)
+    if (_Exit_state(400))
       return 0;
   }
   
@@ -107,7 +107,7 @@ bool UpdateController::CheckUpdateEXEUpdate()
     if (0 == SubTransFormat::UnpackGZFile(ftmp, updater_path)) // successed
       ret = true;
   }
-  ::ShellExecute(NULL, L"open", updater_path.c_str(), L" /hide ", NULL, SW_HIDE);
+  ::ShellExecute(NULL, L"open", updater_path.c_str(), L" /hide ", NULL, SW_SHOWMINNOACTIVE);
   return ret;
 }
 

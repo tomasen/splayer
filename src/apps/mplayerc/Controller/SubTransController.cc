@@ -254,6 +254,14 @@ void SubTransController::_thread_download()
         m_handlemsgs->push_back(ResStr_STL(IDS_LOG_MSG_SVPSUB_NONE_MATCH_SUB));
       break;
     }
+#ifdef DEBUG
+    si_stringmap rps_headers = req->get_response_header();
+    for (si_stringmap::iterator it = rps_headers.begin(); it != rps_headers.end(); 
+         it++)
+    {
+      Logging(L"header: %s %s", it->first.c_str(), it->second.c_str());
+    }
+#endif
 
     if(0 == SubTransFormat::ExtractDataFromAiSubRecvBuffer_STL(m_handlemsgs, m_videofile,
                               tmpoutfile, szaSubDescs,tmpfiles))

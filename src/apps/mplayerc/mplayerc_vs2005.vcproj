@@ -1747,6 +1747,30 @@
 					>
 				</File>
 				<File
+					RelativePath=".\UserInterface\Renderer\MediaCenterView.cc"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Renderer\MediaCenterView.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Renderer\MediaListView.cc"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Renderer\MediaListView.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Renderer\MediaScrollbar.cc"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Renderer\MediaScrollbar.h"
+					>
+				</File>
+				<File
 					RelativePath=".\UserInterface\Renderer\OSDView_Win.cc"
 					>
 				</File>
@@ -1836,6 +1860,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Controller\MediaCenterController.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Controller\MediaCenterController.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Controller\NetworkControlerImpl.cc"
 				>
 			</File>
@@ -1919,6 +1951,18 @@
 				RelativePath=".\Controller\UsrBehaviorController.h"
 				>
 			</File>
+			<Filter
+				Name="User"
+				>
+				<File
+					RelativePath=".\Controller\ShareController.cc"
+					>
+				</File>
+				<File
+					RelativePath=".\Controller\ShareController.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Model"
@@ -1948,6 +1992,26 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Model\MediaComm.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Model\MediaModel.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Model\MediaModel.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Model\MediaSpiderDisk.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Model\MediaSpiderDisk.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Model\PlaylistItem.cc"
 				>
 			</File>
@@ -1961,6 +2025,10 @@
 			</File>
 			<File
 				RelativePath=".\Model\PlaylistParser.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Model\SourceModel.h"
 				>
 			</File>
 			<File

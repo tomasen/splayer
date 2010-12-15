@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="windows-1250"?>
+<VisualStudioProject
+	ProjectType="Intel C++ Project"
+	Version="11.1"
+	Name="dsutil"
+	ProjectGUID="{34E7D21F-9B5C-473A-B7FF-50C58627E961}"
+	VCNestedProjectGUID="{FC70988B-1AE5-4381-866D-4F405E28AC42}"
+	VCNestedProjectFileName="dsutil_vs2005.vcproj">
+	<Configurations>
+		<Configuration
+			Name="Release Unicode|Win32">
+			<Tool
+				Name="CppCmplrTool"
+				GlobalOptimizations="true"
+				OptimizeForWindowsApplication="true"
+				EnableEnhancedInstructionSet="1001"
+				Parallelization="true"/>
+		</Configuration>
+	</Configurations>
+	<Files/>
+</VisualStudioProject>

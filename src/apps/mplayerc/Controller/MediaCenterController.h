@@ -1,10 +1,10 @@
 #pragma once
 
 #include "LazyInstance.h"
-#include <Model/MediaComm.h>
-#include <Model/MediaModel.h>
-#include <Model/MediaSpiderDisk.h>
-#include <UserInterface/Renderer/MediaCenterView.h>
+#include "../Model/MediaComm.h"
+#include "../Model/MediaModel.h"
+#include "../Model/MediaSpiderDisk.h"
+#include "../UserInterface/Renderer/MediaCenterView.h"
 
 class MediaCenterController:
   public LazyInstanceImpl<MediaCenterController>

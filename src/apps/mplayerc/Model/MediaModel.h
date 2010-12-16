@@ -1,8 +1,7 @@
 #pragma once
 
-
 #include "MediaComm.h"
-#include "SourceModel.h
+#include "SourceModel.h"
 #include <sqlitepp/sqlitepp.hpp>
 
 typedef struct

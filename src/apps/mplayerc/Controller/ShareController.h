@@ -4,17 +4,14 @@
 #include "LazyInstance.h"
 #include <threadhelper.h>
 #include "NetworkControlerImpl.h"
+#include "../UserInterface/Dialogs/MovieComment_Win.h"
 
-typedef enum
-{
-    UNKNOWN = 0,
-    SUCCESS
-} SP_APIRET;
+#define ID_USERSHARE_SUCCESS 32932
 
 class UserShareController:
     public NetworkControlerImpl,
-    public ThreadHelperImpl<UserShareController>,
-    public LazyInstanceImpl<UserShareController>
+    public ThreadHelperImpl<UserShareController>
+    //public LazyInstanceImpl<UserShareController>
 {
 public:
 
@@ -22,10 +19,24 @@ public:
     ~UserShareController();
 
     void _Thread();
-    void Share(std::wstring uuid, std::wstring hash);
+    void SetParentWnd(HWND hwnd);
+    void ShareMovie(std::wstring uuid, std::wstring sphash);
+
+    void ShowCommentGui();
+    void HideCommentGui();
+
+    std::wstring GenerateKey();
+    std::wstring GetResponseData();
+
 
 private:
+    HWND m_parentwnd;
+
     std::wstring m_uuid;
     std::wstring m_sphash;
-    SP_APIRET m_apiret;
+    std::wstring m_retdata;
+
+    std::wstring m_abcdf;
+
+    MovieComment m_commentgui;
 };

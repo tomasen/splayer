@@ -6,6 +6,7 @@
 class MediaSpiderDisk :
     public ThreadHelperImpl<MediaSpiderDisk>
 {
+public:
     MediaSpiderDisk();
     ~MediaSpiderDisk();
 

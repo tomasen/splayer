@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "MediaCenter.h"
+#include "MediaCenterView.h"
 
 // MediaCenterView
 MediaCenterView::MediaCenterView() : MediaScrollbar(),

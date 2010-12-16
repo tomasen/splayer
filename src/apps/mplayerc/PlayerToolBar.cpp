@@ -113,6 +113,8 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 	CSUIButton* btnLogo =  new CSUIButton(L"SPLAYER.BMP" , ALIGN_TOPLEFT, CRect(14 , -50, 3,3)  , TRUE, 0, FALSE   ) ;
 	m_btnList.AddTail(btnLogo);
 
+    CSUIButton* btnShare = new CSUIButton(L"BTN_SHARE.BMP", ALIGN_TOPLEFT, CRect(15 , -50, 3,3), FALSE, ID_MOVIESHARE, TRUE, ALIGN_LEFT, btnLogo, CRect(1,1,1,1));
+    m_btnList.AddTail(btnShare);
 
 	btnSubSwitch = new CSUIButton(L"BTN_SUB.BMP" , ALIGN_TOPLEFT, CRect(-23 , -50, 3,3)  , 0, ID_SUBTOOLBARBUTTON, TRUE, ALIGN_RIGHT, btnFFBack , CRect(20 , 10 , 22, 10) );
 	btnSubSwitch->addAlignRelButton(ALIGN_LEFT, btnLogo ,  CRect(15 , 10 , 10, 10) );
@@ -251,14 +253,14 @@ void CPlayerToolBar::ArrangeControls()
     m_btnList.SetHideStat(ID_PLAY_BWD , hideT1);
     m_btnList.SetHideStat(ID_NAVIGATE_SKIPBACK , 0);
     m_btnList.SetHideStat(ID_NAVIGATE_SKIPFORWARD , 0);
-
+    m_btnList.SetHideStat(ID_MOVIESHARE, 1);
     m_btnList.SetHideStat(ID_VIEW_PLAYLIST , hideT2);
   }else{
     m_btnList.SetHideStat(ID_PLAY_FWD , 0);
     m_btnList.SetHideStat(ID_PLAY_BWD , 0);
     m_btnList.SetHideStat(ID_NAVIGATE_SKIPBACK , hideT1);
     m_btnList.SetHideStat(ID_NAVIGATE_SKIPFORWARD , hideT1);
-
+    m_btnList.SetHideStat(ID_MOVIESHARE, hideT4);
     m_btnList.SetHideStat(ID_VIEW_PLAYLIST , hideT2);
     
   }

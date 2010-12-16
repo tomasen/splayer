@@ -25,7 +25,7 @@ void MediaListView::AddListView(HWND hWnd)
 {
     m_parentwnd = hWnd;
     GetClientRect(m_parentwnd, &m_clientrc);
-    m_defaultboxbmp.LoadBitmap(IDB_BITMAP1);
+    //m_defaultboxbmp.LoadBitmap(IDB_BITMAP1);
     m_memboxbmp.CreateCompatibleDC(WTL::CClientDC(m_parentwnd));
     m_oldboxbmp = m_memboxbmp.SelectBitmap(m_defaultboxbmp);
 }

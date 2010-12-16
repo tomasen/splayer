@@ -1132,6 +1132,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\newui\BTN_SHARE.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\newui\BTN_STEP.bmp"
 				>
 			</File>
@@ -1192,11 +1196,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon\DVD.ico"
+				RelativePath=".\res\ecio.icons\dvd.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\ecio.icons\dvd.ico"
+				RelativePath=".\res\icon\DVD.ico"
 				>
 			</File>
 			<File
@@ -1536,11 +1540,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon\video.ico"
+				RelativePath=".\res\ecio.icons\video.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\ecio.icons\video.ico"
+				RelativePath=".\res\icon\video.ico"
 				>
 			</File>
 			<File
@@ -1678,6 +1682,14 @@
 			<Filter
 				Name="Dialogs"
 				>
+				<File
+					RelativePath=".\UserInterface\Dialogs\MovieComment_Win.cc"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Dialogs\MovieComment_Win.h"
+					>
+				</File>
 				<File
 					RelativePath=".\UserInterface\Dialogs\OptionAdvancedPage_Win.cc"
 					>

@@ -152,7 +152,7 @@ void MediaScrollbar::AddScrollbar(HWND hWnd)
     m_parentwnd = hWnd;
     ::GetClientRect(m_parentwnd, &m_clientrc);
 
-    m_defaultscrollbmp.LoadBitmap(IDB_BITMAP2);
+    //m_defaultscrollbmp.LoadBitmap(IDB_BITMAP2);
     m_defaultscrollbmp.GetBitmap(m_bmp);
 
     m_memscrollbmp.CreateCompatibleDC(WTL::CClientDC(m_parentwnd));

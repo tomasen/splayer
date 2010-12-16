@@ -97,7 +97,9 @@
 #include "Controller/UbdUploadController.h"
 #include "Controller/UsrBehaviorController.h"
 #include "Controller/HashController.h"
+#include "Controller/ShareController.h"
 #include <Strings.h>
+#include "Utils/SPlayerGUID.h"
 
 
 // begin,
@@ -462,7 +464,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_NAVIGATE_MENU_LEFT, ID_NAVIGATE_MENU_LEAVE, OnUpdateNavigateMenuItem)
 
 	ON_COMMAND(ID_FILE_BTN_EXIT, OnTopBtnFileExit)
-
 	
 	ON_COMMAND(ID_NAVIGATE_SKIPRANDOM, OnPlayListRandom)
 	ON_UPDATE_COMMAND_UI(ID_NAVIGATE_SKIPRANDOM, OnUpdatePlayListRandom)
@@ -565,13 +566,15 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_CONFIG_AUTOLOADSUBTITLE2, OnSetAutoLoadSubtitle)
 	ON_UPDATE_COMMAND_UI(ID_CONFIG_AUTOLOADSUBTITLE2, OnUpdateSetAutoLoadSubtitle)
 	
-  ON_COMMAND(ID_UPDATE_AUDIOSETIING, OnAudioSettingUpdated)
+    ON_COMMAND(ID_UPDATE_AUDIOSETIING, OnAudioSettingUpdated)
 	ON_NOTIFY_EX(TTN_NEEDTEXT, 0, OnTtnNeedText)
 	ON_WM_NCCREATE()
 	ON_WM_ACTIVATE()
 	ON_WM_PAINT()
 	ON_WM_WINDOWPOSCHANGING()
 	ON_WM_KEYUP()
+    ON_COMMAND(ID_USERSHARE_SUCCESS, UserShareSuccess)
+    ON_COMMAND(ID_MOVIESHARE, OnMovieShare)
 	END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -17507,4 +17510,19 @@ void CMainFrame::AutoSaveImage(LPCTSTR fn, bool shrink_inhalf)
     }
     delete [] pData;
   }
+}
+
+void CMainFrame::UserShareSuccess()
+{
+    m_sharectrl.ShowCommentGui();
+}
+
+void CMainFrame::OnMovieShare()
+{
+    std::wstring sphash, uuidstr;
+    
+    sphash = HashController::GetInstance()->GetSPHash(m_fnCurPlayingFile);
+    SPlayerGUID::GenerateGUID(uuidstr);
+
+    m_sharectrl.ShareMovie(uuidstr, sphash);
 }

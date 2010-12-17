@@ -690,6 +690,7 @@ BEGIN_MESSAGE_MAP(CMPlayerCApp, CWinApp)
 	//{{AFX_MSG_MAP(CMPlayerCApp)
 	ON_COMMAND(ID_HELP_ABOUT, OnAppAbout)
 	ON_COMMAND(ID_FILE_EXIT, OnFileExit)
+  ON_COMMAND(ID_FILE_RESTART, OnFileRestart)
 	//}}AFX_MSG_MAP
 	ON_COMMAND(ID_HELP_SHOWCOMMANDLINESWITCHES, OnHelpShowcommandlineswitches)
 END_MESSAGE_MAP()
@@ -2312,6 +2313,14 @@ void CMPlayerCApp::OnFileExit()
 	OnAppExit();
 }
 
+void CMPlayerCApp::OnFileRestart()
+{
+  OnAppExit();
+  wchar_t exePath[_MAX_PATH];
+
+  if (GetModuleFileName( NULL, exePath, _MAX_PATH ))
+    ::ShellExecute(NULL, L"open", exePath, NULL, NULL, SW_SHOW);
+}
 // CMPlayerCApp::Settings
 
 CMPlayerCApp::Settings::Settings() 

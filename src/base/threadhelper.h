@@ -33,7 +33,7 @@ public:
   // Create a new thread
   void _Start()
   {
-    m_thread = (HANDLE)::_beginthread(Logic, 0, (void*)this);
+    m_thread = (HANDLE)::_beginthread(Logic, 0, (T*)this);
   }
 
   // Stop the thread

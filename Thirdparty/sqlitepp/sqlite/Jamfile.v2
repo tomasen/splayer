@@ -1,0 +1,9 @@
+import set ;
+
+lib sqlite : sqlite3.c 
+           : <version>3.5.4 <include>. 
+             <threading>single:<define>SQLITE_THREADSAFE=0
+;
+
+install ../lib : sqlite ;
+install ../include : sqlite3.h ;

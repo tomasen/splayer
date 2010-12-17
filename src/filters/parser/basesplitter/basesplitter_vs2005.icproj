@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="windows-1250"?>
+<VisualStudioProject
+	ProjectType="Intel C++ Project"
+	Version="11.1"
+	Name="basesplitter"
+	ProjectGUID="{DAD97143-81AC-459C-B46A-204A64547D43}"
+	VCNestedProjectGUID="{37768B3F-89BC-4C16-B2A8-767C5DA84C3F}"
+	VCNestedProjectFileName="basesplitter_vs2005.vcproj">
+	<Configurations>
+		<Configuration
+			Name="Release Unicode lib|Win32">
+			<Tool
+				Name="CppCmplrTool"
+				GlobalOptimizations="true"
+				InterproceduralOptimization="2"
+				OptimizeForWindowsApplication="true"
+				EnableEnhancedInstructionSet="1001"
+				Parallelization="true"/>
+		</Configuration>
+	</Configurations>
+	<Files/>
+</VisualStudioProject>

@@ -98,6 +98,7 @@
 #include "Controller/UsrBehaviorController.h"
 #include "Controller/HashController.h"
 #include "Controller/ShareController.h"
+#include "Controller/MediaCenterController.h"
 #include <Strings.h>
 #include "Utils/SPlayerGUID.h"
 
@@ -1417,6 +1418,7 @@ void CMainFrame::OnMove(int x, int y)
 	
 	m_wndToolBar.ReCalcBtnPos();
 	m_wndView.ReCalcBtn();
+  m_sharectrl.CalcCommentGuiPos();
 	rePosOSD();
 	//m_wndView.SetMyRgn();
 	
@@ -16121,7 +16123,7 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 
 	CRect r,cr;
 	m_wndView.GetClientRect(r);
-	
+	m_sharectrl.CalcCommentGuiPos();
 	
 	m_wndView.GetWindowRect(cr);
 	//r.top += 20;
@@ -17524,5 +17526,6 @@ void CMainFrame::OnMovieShare()
     sphash = HashController::GetInstance()->GetSPHash(m_fnCurPlayingFile);
     SPlayerGUID::GenerateGUID(uuidstr);
 
+    m_sharectrl.SetFrame(m_hWnd);
     m_sharectrl.ShareMovie(uuidstr, sphash);
 }

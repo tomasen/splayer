@@ -18,9 +18,15 @@ UserShareController::~UserShareController()
     _Stop();
 }
 
-void UserShareController::SetParentWnd(HWND hwnd)
+void UserShareController::SetFrame(HWND hwnd)
 {
+    if (!hwnd)
+      return;
+
     m_parentwnd = hwnd;
+
+    if (!m_commentgui.IsWindow())
+      m_commentgui.Create(m_parentwnd, NULL, L"about:blank", WS_POPUP|WS_CLIPSIBLINGS|WS_CLIPCHILDREN, WS_EX_TOPMOST);
 }
 
 std::wstring UserShareController::GetResponseData()
@@ -43,9 +49,11 @@ std::wstring UserShareController::GenerateKey()
 void UserShareController::ShareMovie(std::wstring uuid, std::wstring sphash)
 {
     _Stop();
+    if (uuid.empty() || sphash.empty())
+      return;
+
     m_uuid = uuid;
     m_sphash = sphash;
-    m_abcdf = L"test.....";
     _Start();
 }
 
@@ -78,7 +86,7 @@ void UserShareController::_Thread()
 
     while (pool->is_running_or_queued(task))
     {
-        if (_Exit_state(500))
+        if (_Exit_state(100))
         {
             return;
         }
@@ -95,8 +103,10 @@ void UserShareController::_Thread()
     std::string results = (char*)&buffer[0];
     m_retdata = Strings::Utf8StringToWString(results);
 
+    m_commentgui.OpenUrl(m_retdata);
+
     // Send messages to the main thread
-    PostMessage(m_parentwnd, ID_USERSHARE_SUCCESS, NULL, NULL);
+    ::PostMessage(m_parentwnd, WM_COMMAND, ID_USERSHARE_SUCCESS, NULL);
 }
 
 void UserShareController::ShowCommentGui()
@@ -104,12 +114,17 @@ void UserShareController::ShowCommentGui()
     if (m_retdata.empty() || m_parentwnd == NULL)
         return;
 
-    m_commentgui.Create(m_parentwnd);
-    m_commentgui.OpenUrl(m_retdata);
-    m_commentgui.ShowWindow(SW_SHOW);
+    m_commentgui.ShowFrame();
 }
 
 void UserShareController::HideCommentGui()
 {
-    m_commentgui.ShowWindow(SW_HIDE);
+    m_commentgui.HideFrame();
+}
+
+void UserShareController::CalcCommentGuiPos()
+{
+  m_commentgui.CalcWndPos();
+  if (m_commentgui.IsShow())
+    m_commentgui.ShowFrame();
 }

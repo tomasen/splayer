@@ -1701,8 +1701,9 @@ SVP_LogMsg5(L"Settings::InitInstanceThreaded 16");
 								}
 								hWnd = NULL;
 
-								if(!dumpMsg.IsEmpty())
-									pFrame->SendStatusMessage(dumpMsg, 4000);
+                // Don't send osd message for this any more
+                // if(!dumpMsg.IsEmpty())
+                // pFrame->SendStatusMessage(dumpMsg, 4000);
 							}
 					}
 					

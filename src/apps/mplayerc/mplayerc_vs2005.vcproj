@@ -1192,11 +1192,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon\DVD.ico"
+				RelativePath=".\res\ecio.icons\dvd.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\ecio.icons\dvd.ico"
+				RelativePath=".\res\icon\DVD.ico"
 				>
 			</File>
 			<File
@@ -2001,6 +2001,10 @@
 			</File>
 			<File
 				RelativePath=".\Model\MediaModel.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Model\MediaSpiderAbstract.h"
 				>
 			</File>
 			<File

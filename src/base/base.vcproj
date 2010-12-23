@@ -168,6 +168,14 @@
 			>
 		</File>
 		<File
+			RelativePath=".\ResLoader.cc"
+			>
+		</File>
+		<File
+			RelativePath=".\ResLoader.h"
+			>
+		</File>
+		<File
 			RelativePath=".\Strings.cc"
 			>
 		</File>

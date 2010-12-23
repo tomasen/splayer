@@ -1,7 +1,7 @@
-
 #include "SUIButton.h"
 #include "../../svplib/svplib.h"
 #include "../../svplib/SVPToolBox.h"
+#include <ResLoader.h>
 
 CSUIButton::CSUIButton(LPCTSTR szBmpName, int iAlign, CRect marginTownd 
 					   , BOOL bNotButton, UINT htMsgID, BOOL bHide 
@@ -13,21 +13,26 @@ m_lastBtnDownStat(0)
 	m_marginTownd  = marginTownd;
 	m_iAlign = iAlign;
 	m_htMsgID = htMsgID;
-	CString szBmpPath(szBmpName);
-	szBmpPath = CString(_T("skins\\")) + szBmpPath.Left(szBmpPath.GetLength()-4) + _T(".png");
-	CSVPToolBox svpToolBox;
-	szBmpPath = svpToolBox.GetPlayerPath(szBmpPath);
-	BOOL bExtLoaded = false;
+
+  ResLoader rlResLoader;
+  HBITMAP hBitmap = rlResLoader.LoadBitmap(szBmpName);
+  this->Attach(hBitmap);
+
+	//CString szBmpPath(szBmpName);
+	//szBmpPath = CString(_T("skins\\")) + szBmpPath.Left(szBmpPath.GetLength()-4) + _T(".png");
+	//CSVPToolBox svpToolBox;
+	//szBmpPath = svpToolBox.GetPlayerPath(szBmpPath);
+	//BOOL bExtLoaded = false;
 	//SVP_LogMsg(szBmpPath);
-	if(svpToolBox.ifFileExist( szBmpPath)){
-		m_png.Load( szBmpPath );
-		if(m_png.IsDIBSection()){
-			this->Attach((HBITMAP)m_png);
-			bExtLoaded = true;
-		}
-	}
-	if(!bExtLoaded)
-		this->LoadImage(szBmpName);
+	//if(svpToolBox.ifFileExist( szBmpPath)){
+		//m_png.Load( szBmpPath );
+		//if(m_png.IsDIBSection()){
+		//	this->Attach((HBITMAP)m_png);
+		//	bExtLoaded = true;
+	//	}
+	//}
+	//if(!bExtLoaded)
+	//	this->LoadImage(szBmpName);
 	
 	m_szBmpName = szBmpName;
 	m_hide = bHide;

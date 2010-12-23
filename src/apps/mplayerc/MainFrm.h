@@ -69,8 +69,6 @@
 
 #include "Controller/SnapUploadController.h"
 #include "Controller/SubTransController.h"
-#include "Controller/ShareController.h"
-
 
 enum {PM_NONE, PM_FILE, PM_DVD, PM_CAPTURE};
 
@@ -916,7 +914,6 @@ public:
 	afx_msg void OnRecentFileDisable();
 	afx_msg void OnUpdateShowColorControlBar(CCmdUI *pCmdUI);
 	afx_msg void OnSetsnapshotpath();
-    afx_msg void UserShareSuccess();
     afx_msg void OnMovieShare();
 
 	/*NEW UI*/
@@ -996,5 +993,4 @@ private:
   void _HandleTimer_StreamPosPoller();
   void _StartSnap();
   SubTransController  m_subcontrl;
-  UserShareController m_sharectrl;
 };

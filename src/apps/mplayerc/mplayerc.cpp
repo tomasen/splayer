@@ -58,6 +58,8 @@
 #include "Controller/UsrBehaviorController.h"
 #include <Strings.h>
 #include "Controller\UpdateController.h"
+#include "Controller\MediaCenterController.h"
+#include "Controller\ShareController.h"
 #include <logging.h>
 
 //Update URL
@@ -70,6 +72,8 @@ DECLARE_LAZYINSTANCE(HashController);
 DECLARE_LAZYINSTANCE(UbdUploadController);
 DECLARE_LAZYINSTANCE(UsrBehaviorController);
 DECLARE_LAZYINSTANCE(UpdateController);
+DECLARE_LAZYINSTANCE(MediaCenterController);
+DECLARE_LAZYINSTANCE(UserShareController);
 
 /////////
 typedef BOOL (WINAPI* MINIDUMPWRITEDUMP)(HANDLE hProcess, DWORD dwPid, HANDLE hFile, MINIDUMP_TYPE DumpType,

@@ -97,8 +97,8 @@
 #include "Controller/UbdUploadController.h"
 #include "Controller/UsrBehaviorController.h"
 #include "Controller/HashController.h"
-#include "Controller/ShareController.h"
 #include "Controller/MediaCenterController.h"
+#include "Controller/ShareController.h"
 #include <Strings.h>
 #include "Utils/SPlayerGUID.h"
 
@@ -574,7 +574,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_WM_PAINT()
 	ON_WM_WINDOWPOSCHANGING()
 	ON_WM_KEYUP()
-    ON_COMMAND(ID_USERSHARE_SUCCESS, UserShareSuccess)
     ON_COMMAND(ID_MOVIESHARE, OnMovieShare)
 	END_MESSAGE_MAP()
 
@@ -776,7 +775,8 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 	}
 
-
+  UserShareController::GetInstance()->CreateCommentPlane();
+  
 	WNDCLASSEX layeredClass;
 	layeredClass.cbSize        = sizeof(WNDCLASSEX);
 	layeredClass.style         = CS_HREDRAW | CS_VREDRAW;
@@ -1418,7 +1418,7 @@ void CMainFrame::OnMove(int x, int y)
 	
 	m_wndToolBar.ReCalcBtnPos();
 	m_wndView.ReCalcBtn();
-  m_sharectrl.CalcCommentGuiPos();
+  UserShareController::GetInstance()->CalcCommentPlanePos();
 	rePosOSD();
 	//m_wndView.SetMyRgn();
 	
@@ -7223,6 +7223,8 @@ void CMainFrame::OnViewOptions()
 
 void CMainFrame::OnPlayPlay()
 {
+//   MediaCenterController::GetInstance()->SetFrame(m_hWnd);
+//   MediaCenterController::GetInstance()->ShowPlane();return;
 	if(m_iMediaLoadState == MLS_LOADED)
 	{
 		if(GetMediaState() == State_Stopped) {  m_iSpeedLevel = 0; time(&m_tPlayStartTime);}
@@ -11976,6 +11978,15 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 
     CString FPath = szFileHash.c_str();
 
+    // send sphash to remote
+    if (m_pCAP && !m_fAudioOnly)
+    {
+      std::wstring uuid, sphash;
+      SPlayerGUID::GenerateGUID(uuid);
+      sphash = szFileHash;
+      UserShareController::GetInstance()->ShareMovie(uuid, sphash);
+    }
+
 		if(m_pCAP && (!m_fAudioOnly || m_fRealMediaGraph))
 		{
 			POSITION pos = pOMD->subs.GetHeadPosition();
@@ -16123,7 +16134,7 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 
 	CRect r,cr;
 	m_wndView.GetClientRect(r);
-	m_sharectrl.CalcCommentGuiPos();
+  UserShareController::GetInstance()->CalcCommentPlanePos();
 	
 	m_wndView.GetWindowRect(cr);
 	//r.top += 20;
@@ -17514,18 +17525,8 @@ void CMainFrame::AutoSaveImage(LPCTSTR fn, bool shrink_inhalf)
   }
 }
 
-void CMainFrame::UserShareSuccess()
-{
-    m_sharectrl.ShowCommentGui();
-}
-
 void CMainFrame::OnMovieShare()
 {
-    std::wstring sphash, uuidstr;
-    
-    sphash = HashController::GetInstance()->GetSPHash(m_fnCurPlayingFile);
-    SPlayerGUID::GenerateGUID(uuidstr);
-
-    m_sharectrl.SetFrame(m_hWnd);
-    m_sharectrl.ShareMovie(uuidstr, sphash);
+    if (!UserShareController::GetInstance()->ShowCommentPlane())
+      SendStatusMessage(L"请稍后再操作", 2000);
 }

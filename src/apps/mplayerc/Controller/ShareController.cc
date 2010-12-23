@@ -7,8 +7,9 @@
 #include <Strings.h>
 #include "PlayerPreference.h"
 #include "SPlayerDefs.h"
+#include "../resource.h"
 
-UserShareController::UserShareController() : m_retdata(L""), m_parentwnd(NULL)
+UserShareController::UserShareController() : m_retdata(L"")
 {
 
 }
@@ -18,15 +19,13 @@ UserShareController::~UserShareController()
     _Stop();
 }
 
-void UserShareController::SetFrame(HWND hwnd)
+void UserShareController::CreateCommentPlane()
 {
-    if (!hwnd)
-      return;
+  if (m_commentplane.m_hWnd)
+    return;
 
-    m_parentwnd = hwnd;
-
-    if (!m_commentgui.IsWindow())
-      m_commentgui.Create(m_parentwnd, NULL, L"about:blank", WS_POPUP|WS_CLIPSIBLINGS|WS_CLIPCHILDREN, WS_EX_TOPMOST);
+  m_commentplane.Create(IDD_SHARE_DLG, NULL);
+  m_commentplane.Navigate(L"about:blank");
 }
 
 std::wstring UserShareController::GetResponseData()
@@ -59,9 +58,6 @@ void UserShareController::ShareMovie(std::wstring uuid, std::wstring sphash)
 
 void UserShareController::_Thread()
 {
-    if (!m_parentwnd)
-        return;
-
     refptr<pool> pool = pool::create_instance();
     refptr<task> task = task::create_instance();
     refptr<request> req = request::create_instance();
@@ -103,28 +99,29 @@ void UserShareController::_Thread()
     std::string results = (char*)&buffer[0];
     m_retdata = Strings::Utf8StringToWString(results);
 
-    m_commentgui.OpenUrl(m_retdata);
+    m_commentplane.Navigate(m_retdata.c_str());
 
     // Send messages to the main thread
-    ::PostMessage(m_parentwnd, WM_COMMAND, ID_USERSHARE_SUCCESS, NULL);
+    //::PostMessage(m_parentwnd, WM_COMMAND, ID_USERSHARE_SUCCESS, NULL);
 }
 
-void UserShareController::ShowCommentGui()
+BOOL UserShareController::ShowCommentPlane()
 {
-    if (m_retdata.empty() || m_parentwnd == NULL)
-        return;
+    if (m_retdata.empty())
+        return FALSE;
 
-    m_commentgui.ShowFrame();
+    m_commentplane.ShowFrame();
+    return TRUE;
 }
 
-void UserShareController::HideCommentGui()
+void UserShareController::HideCommentPlane()
 {
-    m_commentgui.HideFrame();
+    m_commentplane.HideFrame();
 }
 
-void UserShareController::CalcCommentGuiPos()
+void UserShareController::CalcCommentPlanePos()
 {
-  m_commentgui.CalcWndPos();
-  if (m_commentgui.IsShow())
-    m_commentgui.ShowFrame();
+  m_commentplane.CalcWndPos();
+  if (m_commentplane.IsShow())
+    m_commentplane.ShowFrame();
 }

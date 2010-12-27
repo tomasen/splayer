@@ -628,27 +628,34 @@ BOOL CPlayerToolBar::OnVolumeDown(UINT nID)
 	m_volctrl.DecreaseVolume();
 	return FALSE;
 }
-bool  CPlayerToolBar::OnSetVolByMouse(CPoint point, BOOL byClick){
+
+bool  CPlayerToolBar::OnSetVolByMouse(CPoint point, BOOL byClick)
+{
 	CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
 	long nTBPos = point.x - m_btnVolBG->m_rcHitest.left;
-	long TBMax = m_btnVolBG->m_rcHitest.right-m_btnVolBG->m_rcHitest.left ;
+	long TBMax = m_btnVolBG->m_rcHitest.right - m_btnVolBG->m_rcHitest.left;
 	nTBPos = max(0 , min(TBMax , nTBPos) );
-	int Vol = 	nTBPos * m_volctrl.GetRangeMax() / TBMax;
-	if(byClick){
+	int Vol = nTBPos * m_volctrl.GetRangeMax() / TBMax;
+	if(byClick)
+  {
 		int oldVol = m_volctrl.GetPos();
-		if(Vol > 100 ){
+		if(Vol > 100 )
+    {
 			Vol = max(oldVol,100) + 2;
 		}
-	}else{
+	}
+  else
+  {
 		CString szVol;
 		int VolPercent = Vol;
-		if(VolPercent>100){
+		if(VolPercent>100)
+    {
 			VolPercent = 100 + (VolPercent-100) * 900/ (m_volctrl.GetRangeMax() - 100);
 		}
 		szVol.Format(_T("%d%%") , VolPercent);
-		CPoint posTip( m_btnVolBG->m_rcHitest.left + nTBPos, m_btnVolBG->m_rcHitest.top);
-		//ClientToScreen( &posTip );
-		pFrame->m_tip.SetTips(  szVol , 1, &posTip);
+		CPoint posTip(m_btnVolBG->m_rcHitest.left + nTBPos, m_btnVolBG->m_rcHitest.top);
+
+    pFrame->m_tip.SetTips(szVol, 1, &posTip);
 	}
 	m_volctrl.SetPosInternal( Vol );
 
@@ -697,8 +704,8 @@ INT_PTR CPlayerToolBar::OnToolHitTest(	CPoint point,TOOLINFO* pTI 	) const
 	return -1;
 
 };
-void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point){
-
+void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point)
+{
 	int diffx = m_lastMouseMove.x - point.x;
 	int diffy = m_lastMouseMove.y - point.y;
 	CPoint lastMouseMove = m_lastMouseMove;
@@ -717,34 +724,61 @@ void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point){
 	GetWindowRect(&rc);
 	point += rc.TopLeft() ;
 	
-	if( m_nItemToTrack == ID_VOLUME_THUMB && m_bMouseDown ){
-		if( bMouseMoved){
+	if(m_nItemToTrack == ID_VOLUME_THUMB && m_bMouseDown)
+  {
+		if( bMouseMoved)
+    {
 			OnSetVolByMouse(point);
-			
 		}
-	}else if(bMouseMoved){
-		
-		UINT ret = m_btnList.OnHitTest(point,rc,-1);
+	}
+  else if(bMouseMoved)
+  {
+		UINT ret = m_btnList.OnHitTest(point, rc, -1);
 		m_nItemToTrack = ret;
-		if(ret){
-			
-		}else if(!m_tooltip.IsEmpty()){
+		if(ret)
+    {
+		}
+    else if(!m_tooltip.IsEmpty())
+    {
 			m_tooltip.Empty();
 		}
-		if(!m_nItemToTrack){
+
+		if(!m_nItemToTrack)
+    {
 			pFrame->m_tip.SetTips(_T(""));
 		}
-		if( m_btnList.HTRedrawRequired ){
+		if(m_btnList.HTRedrawRequired)
+    {
 			Invalidate();
 		}
 
 		AppSettings& s = AfxGetAppSettings();
-		if(s.bUserAeroUI() && bMouseMoved && m_bMouseDown && pFrame ){
+		if(s.bUserAeroUI() && bMouseMoved && m_bMouseDown && pFrame )
+    {
 			pFrame->m_lTransparentToolbarPosStat = 1;
 			
 			pFrame->m_wndFloatToolBar->PostMessage(WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM(point.x, point.y));
 		}
 	}
+
+  // Add by cjbw1234
+  // 当鼠标拖拽toolbar停止后,Windows并不向toolbar发送WM_LBUTTONUP和WM_MOVE消息,
+  // 这造成了状态不一致,只好手动发送这个消息
+  if (GetAsyncKeyState(VK_LBUTTON) >> 16)
+  {
+    // The left button is still pressed
+  } 
+  else if (m_bMouseDown)
+  {
+    // The left button is released and the Windows don't send the WM_LBUTTONUP
+    // and WM_MOVE
+    PostMessage(WM_LBUTTONUP, 0, MAKELPARAM(point.x, point.y));
+    PostMessage(WM_MOVE, 0, MAKELPARAM(point.x, point.y));
+
+    // The code bellow is not needed, because in WM_LBUTTONUP message handler 
+    // will set it to FALSE
+    //m_bMouseDown = FALSE;
+  }
 	
 	return;
 }
@@ -938,7 +972,9 @@ void CPlayerToolBar::OnLButtonDown(UINT nFlags, CPoint point)
 	UINT ret = m_btnList.OnHitTest(point,rc,true);
 	if( m_btnList.HTRedrawRequired ){
 		if(ret)
+    {
 			SetCapture();
+    }
 		Invalidate();
 	}
 	m_nItemToTrack = ret;

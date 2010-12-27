@@ -6,6 +6,18 @@
 #pragma once
 
 #include <afxdhtml.h>
+#include <threadhelper.h>
+
+class ThreadNewLink :
+  public ThreadHelperImpl<ThreadNewLink>
+{
+public:
+  void _Thread();
+  void SetOpenUrl(std::wstring url);
+
+private:
+  std::wstring m_url;
+};
 
 class MovieComment : public CDHtmlDialog
 {
@@ -17,12 +29,9 @@ public:
   MovieComment();
   ~MovieComment();
 
-  BOOL MovieComment::OnEventBeforeNavigate2(LPDISPATCH pDisp, VARIANT FAR* URL, VARIANT FAR* Flags, 
-    VARIANT FAR* TargetFrameName, VARIANT FAR* PostData,
-    VARIANT FAR* Headers, BOOL FAR* Cancel);
-
-  BOOL OnEventNewWindow(IDispatch **ppDisp, VARIANT_BOOL *Cancel);
-  HRESULT OnOpenNewWindow(IHTMLElement *pElement);
+  BOOL OnEventNewLink(IDispatch **ppDisp, VARIANT_BOOL *Cancel,
+    DWORD dwFlags, BSTR bstrUrlContext, BSTR bstrUrl);
+  HRESULT OpenNewLink(IHTMLElement *pElement);
   HRESULT OnEventClose(IHTMLElement *pElement);
   void CalcWndPos();
   void HideFrame();
@@ -38,6 +47,10 @@ protected:
   DECLARE_DHTML_EVENT_MAP()
   DECLARE_EVENTSINK_MAP()
   DECLARE_DISPATCH_MAP()
+
+public:
+  ThreadNewLink m_newlink;
+
 private:
   BOOL m_showframe;
 };

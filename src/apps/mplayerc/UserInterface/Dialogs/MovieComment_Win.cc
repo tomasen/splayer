@@ -12,19 +12,19 @@ BEGIN_MESSAGE_MAP(MovieComment, CDHtmlDialog)
 END_MESSAGE_MAP()
 
 BEGIN_DHTML_EVENT_MAP(MovieComment)
-  //DHTML_EVENT_ONCLICK(L"win_close_btn", OnEventClose)
-  //DHTML_EVENT_ONCLICK(L"open_newwnd_btn", OnOpenNewWindow)
+  DHTML_EVENT_ONCLICK(L"close_wnd", OnEventClose)
+  //DHTML_EVENT_ONCLICK(L"open_newlink", OpenNewLink)
 END_DHTML_EVENT_MAP()
 
 BEGIN_EVENTSINK_MAP(MovieComment, CDHtmlDialog)
-  //ON_EVENT(MovieComment, AFX_IDC_BROWSER, DISPID_NEWWINDOW2, OnEventNewWindow, VTS_DISPATCH VTS_PBOOL)
+  ON_EVENT(MovieComment, AFX_IDC_BROWSER, DISPID_NEWWINDOW3, OnEventNewLink, VTS_DISPATCH VTS_PBOOL VTS_UI4 VTS_BSTR VTS_BSTR)
   //ON_EVENT(MovieComment, AFX_IDC_BROWSER, DISPID_BEFORENAVIGATE2, OnEventBeforeNavigate2, VTS_DISPATCH VTS_PVARIANT VTS_PVARIANT VTS_PVARIANT VTS_PVARIANT VTS_PVARIANT VTS_PBOOL)
 END_EVENTSINK_MAP()
 
 BEGIN_DISPATCH_MAP(MovieComment, CDHtmlDialog)
-  DISP_FUNCTION(MovieComment, "close_sharewnd", HideFrame, VT_EMPTY, VTS_NONE)
-  DISP_FUNCTION(MovieComment, "open_sharewnd", ShowFrame, VT_EMPTY, VTS_NONE)
-  DISP_FUNCTION(MovieComment, "open_newlink", OpenNewLink, VT_EMPTY, VTS_BSTR)
+//   DISP_FUNCTION(MovieComment, "close_sharewnd", HideFrame, VT_EMPTY, VTS_NONE)
+//   DISP_FUNCTION(MovieComment, "open_sharewnd", ShowFrame, VT_EMPTY, VTS_NONE)
+//   DISP_FUNCTION(MovieComment, "open_newlink", OpenNewLink, VT_EMPTY, VTS_BSTR)
 END_DISPATCH_MAP()
 
 MovieComment::MovieComment():
@@ -71,7 +71,19 @@ BOOL MovieComment::OnInitDialog()
   return TRUE;
 }
 
-HRESULT MovieComment::OnOpenNewWindow(IHTMLElement *pElement)
+BOOL MovieComment::OnEventNewLink(IDispatch **ppDisp, VARIANT_BOOL *Cancel,
+                 DWORD dwFlags, BSTR bstrUrlContext, BSTR bstrUrl)
+{
+  m_newlink._Stop();
+  m_newlink.SetOpenUrl(bstrUrl);
+  m_newlink._Start();
+
+  *Cancel = VARIANT_TRUE;
+
+  return S_OK;  
+}
+
+HRESULT MovieComment::OpenNewLink(IHTMLElement *pElement)
 {
   CComBSTR tagName;
   CComBSTR url;
@@ -121,16 +133,15 @@ BOOL MovieComment::IsShow()
   return m_showframe;
 }
 
-BOOL MovieComment::OnEventNewWindow(IDispatch **ppDisp, VARIANT_BOOL *Cancel)
+void ThreadNewLink::SetOpenUrl(std::wstring url)
 {
-  *Cancel = VARIANT_TRUE;
-  return TRUE;
+  if (url.empty() || url.find(L"http://") == std::string::npos)
+    return;
+
+  m_url = url;
 }
 
-BOOL MovieComment::OnEventBeforeNavigate2(LPDISPATCH pDisp, VARIANT FAR* URL, VARIANT FAR* Flags, 
-                                          VARIANT FAR* TargetFrameName, VARIANT FAR* PostData,
-                                          VARIANT FAR* Headers, BOOL FAR* Cancel)
+void ThreadNewLink::_Thread()
 {
-  //*Cancel = TRUE;
-  return TRUE;
+  ShellExecute(NULL, L"open", m_url.c_str(), L"", L"", SW_SHOW);
 }

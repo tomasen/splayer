@@ -2714,7 +2714,9 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
     szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("scmpack.dll")) );
 	
     //szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("WMFDemux.dll")) );
-    
+
+  // Broadcom VideoDecoder
+  m_transform.AddTail(new CFGFilterRegistry(GUIDFromCString(_T("{2DE1D17E-46B1-42A8-9AEC-E20E80D9B1A9}")), MERIT64_ABOVE_DSHOW+300) ); 
 
 	szaExtFilterPaths.Add( svptoolbox.GetPlayerPath(_T("rlapedec.ax")) ); 
 

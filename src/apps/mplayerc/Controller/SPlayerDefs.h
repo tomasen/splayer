@@ -26,6 +26,7 @@
 #define STRVAR_UPLOADUSRBHVURL_ACT  1005
 
 #define STRVAR_APIURL               1006
+#define STRVAR_LASTSPIDERPATH       1007
 
 // string array variables
 #define STRARRAY_PLAYLIST           1000

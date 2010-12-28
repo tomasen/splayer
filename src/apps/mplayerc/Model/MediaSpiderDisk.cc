@@ -3,6 +3,8 @@
 #include "MediaSpiderDisk.h"
 #include "MediaComm.h"
 #include <algorithm>
+#include "..\Controller\PlayerPreference.h"
+#include "..\..\SPlayer\src\apps\mplayerc\Controller\SPlayerDefs.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Note: All the path must use '\' for their delimiter
@@ -21,6 +23,7 @@ static std::vector<std::wstring> g_vtMediaTypes;
 MediaSpiderDisk::MediaSpiderDisk()
 {
   // Init the last search path from the database
+  m_sLastSearchPath = PlayerPreference::GetInstance()->GetStringVar(STRVAR_LASTSPIDERPATH);
 
   // Init the media type and the exclude folders & files from the database
   // Warning: the case is sensitive !!!
@@ -45,6 +48,7 @@ MediaSpiderDisk::~MediaSpiderDisk()
 {
   // Store the last search path, if the path is NULL, then represent the last
   // search is a complete search
+  PlayerPreference::GetInstance()->SetStringVar(STRVAR_LASTSPIDERPATH, m_sLastSearchPath);
 }
 
 
@@ -87,7 +91,7 @@ void MediaSpiderDisk::_Thread()
   vector<wstring>::const_iterator it = vtDrives.begin();
 
   // Adjust the iterator to avoid searching the old drives
-  // If the last path is not empty, it will do a complete search
+  // If the last path is empty, it will do a complete search
   if (!m_sLastSearchPath.empty())
   {
     TCHAR szDrive[10] = {0};

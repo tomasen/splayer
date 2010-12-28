@@ -171,6 +171,7 @@ void MediaModel::FindOne(MediaData& data, const MediaFindCondition& condition)
   }
 }
 
+// limit_start represent the start number, limit_end represent the nums
 void MediaModel::Find(MediaDatas& data, const MediaFindCondition& condition,
           int limit_start, int limit_end)
 {
@@ -193,21 +194,16 @@ void MediaModel::Find(MediaDatas& data, const MediaFindCondition& condition,
     sqlitepp::statement st(m_db);
     st << L"select uniqueid, path, filename, thumbnailpath, videotime from "
       << L"media_data where uniqueid = " << condition.uniqueid
+      << L" limit " << limit_start << L"," << limit_end
       , sqlitepp::into(mdTemp.uniqueid)
       , sqlitepp::into(mdTemp.path)
       , sqlitepp::into(mdTemp.filename)
       , sqlitepp::into(mdTemp.thumbnailpath)
       , sqlitepp::into(mdTemp.videotime);
 
-    int nRecordNum = 0;
     while (st.exec())
     {
-      ++nRecordNum;
-
-      if ((nRecordNum >= limit_start) && (nRecordNum <= limit_end))
-      {
-        data.push_back(mdTemp);
-      }
+      data.push_back(mdTemp);
     }
 
     return;
@@ -221,21 +217,16 @@ void MediaModel::Find(MediaDatas& data, const MediaFindCondition& condition,
     sqlitepp::statement st(m_db);
     st << L"select uniqueid, path, filename, thumbnailpath, videotime from "
       << L"media_data where filename = '" << condition.filename << L"'"
+      << L" limit " << limit_start << L"," << limit_end
       , sqlitepp::into(mdTemp.uniqueid)
       , sqlitepp::into(mdTemp.path)
       , sqlitepp::into(mdTemp.filename)
       , sqlitepp::into(mdTemp.thumbnailpath)
       , sqlitepp::into(mdTemp.videotime);
 
-    int nRecordNum = 0;
     while (st.exec())
     {
-      ++nRecordNum;
-
-      if ((nRecordNum >= limit_start) && (nRecordNum <= limit_end))
-      {
-        data.push_back(mdTemp);
-      }
+      data.push_back(mdTemp);
     }
 
     return;

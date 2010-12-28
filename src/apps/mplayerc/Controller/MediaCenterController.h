@@ -21,12 +21,24 @@ public:
     void SpiderStart();
     void SpiderStop();
 
-    void ShowGUI();
-    void HideGUI();
     void NewDataNotice(MediaDatas& newdata);
 
+    void SetFrame(HWND hwnd);
+    // Gui
+    HWND GetPlaneWnd();
+    void ShowPlane();
+    void HidePlane();
+
+    BOOL GetPlaneState();
+    void CreatePlane(HWND hwnd, int width, int height, RECT& margin);
+    void ListenMsg(MSG* msg);
+    void PaintPlane(HDC& dc, RECT rect);
+    void CalcOnSize(const RECT& rc);
+
 private:
+    MediaCenterView m_plane;
     MediaSpiderDisk m_spider;
     MediaModel m_model;
-    MediaCenterView m_gui;
+    HWND m_parentwnd;
+    BOOL m_planestate;
 };

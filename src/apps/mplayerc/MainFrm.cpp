@@ -776,7 +776,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	}
 
   UserShareController::GetInstance()->CreateCommentPlane();
-  
+
 	WNDCLASSEX layeredClass;
 	layeredClass.cbSize        = sizeof(WNDCLASSEX);
 	layeredClass.style         = CS_HREDRAW | CS_VREDRAW;
@@ -7223,8 +7223,6 @@ void CMainFrame::OnViewOptions()
 
 void CMainFrame::OnPlayPlay()
 {
-//   MediaCenterController::GetInstance()->SetFrame(m_hWnd);
-//   MediaCenterController::GetInstance()->ShowPlane();return;
 	if(m_iMediaLoadState == MLS_LOADED)
 	{
 		if(GetMediaState() == State_Stopped) {  m_iSpeedLevel = 0; time(&m_tPlayStartTime);}

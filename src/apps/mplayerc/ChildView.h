@@ -23,11 +23,12 @@
 
 #include "libpng.h"
 #include "SUIButton.h"
+#include "Controller\MediaCenterController.h"
 
 class CChildView : public CWnd
 {
 	CRect m_vrect;
-
+  MediaCenterController* m_mediacenter;
 	DWORD m_lastlmdowntime;
 	CPoint m_lastlmdownpoint;
 
@@ -53,6 +54,7 @@ public:
 	CSUIButton* m_cover;
 	CSUIBtnList m_btnList;
 	CSUIBtnList m_btnBBList;
+
 	void ReCalcBtn();
 	DECLARE_DYNAMIC(CChildView)
 

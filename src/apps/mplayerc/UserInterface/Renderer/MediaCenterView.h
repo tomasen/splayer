@@ -2,6 +2,7 @@
 
 #include "MediaScrollbar.h"
 #include "MediaListView.h"
+#include "../../Model/MediaModel.h"
 
 class MediaCenterView :
     public ATL::CWindowImpl<MediaCenterView>,
@@ -36,11 +37,12 @@ public:
 
     void ShowMediaCenter(HWND hwnd, int boxwidth, int boxheight, RECT& margin);
     void HideMediaCenter();
-
-private:
-    void ReSize();
+    void CalcWnd();
 
 private:
     RECT m_clientrc;
     HWND m_parentwnd;
+    int m_width;
+    int m_height;
+    MediaModel m_model;
 };

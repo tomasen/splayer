@@ -49,7 +49,7 @@ HRESULT MediaScrollbar::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 {
     bHandled = FALSE;
 
-    //ResetScrollbarPos();
+    ResetScrollbarPos();
 
     return 0;
 }
@@ -131,8 +131,8 @@ void MediaScrollbar::DrawScrollbar(WTL::CDC& dc)
 
 void MediaScrollbar::ResetScrollbarPos()
 {
-    m_scrollbarpos.x = m_clientrc.right-50;
-    m_scrollbarpos.y = m_clientrc.bottom/3;
+    m_scrollbarpos.x = m_planewidth+10;
+    m_scrollbarpos.y = m_planeheight/3;
     
     m_scrollrc.top = m_scrollbarpos.y;
     m_scrollrc.left = m_scrollbarpos.x;
@@ -147,12 +147,24 @@ void MediaScrollbar::GetBlockRect(RECT& rect)
     rect = m_scrollrc;
 }
 
+void MediaScrollbar::SetClientRect(const RECT& rc)
+{
+  m_clientrc = rc;
+  ResetScrollbarPos();
+}
+
+void MediaScrollbar::SetListPlane(int w, int h)
+{
+  m_planewidth = w;
+  m_planeheight = h;
+}
+
 void MediaScrollbar::AddScrollbar(HWND hWnd)
 {
     m_parentwnd = hWnd;
     ::GetClientRect(m_parentwnd, &m_clientrc);
 
-    //m_defaultscrollbmp.LoadBitmap(IDB_BITMAP2);
+    m_defaultscrollbmp.LoadBitmap(IDB_MONO);
     m_defaultscrollbmp.GetBitmap(m_bmp);
 
     m_memscrollbmp.CreateCompatibleDC(WTL::CClientDC(m_parentwnd));

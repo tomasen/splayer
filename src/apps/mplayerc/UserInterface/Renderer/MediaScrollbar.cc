@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "MediaScrollbar.h"
 #include "../../resource.h"
+#include <ResLoader.h>
 
 MediaScrollbar::MediaScrollbar():m_offsetdistance(0),m_scrollchange(FALSE)
 {
@@ -164,7 +165,8 @@ void MediaScrollbar::AddScrollbar(HWND hWnd)
     m_parentwnd = hWnd;
     ::GetClientRect(m_parentwnd, &m_clientrc);
 
-    m_defaultscrollbmp.LoadBitmap(IDB_MONO);
+    ResLoader resloader;
+    m_defaultscrollbmp = resloader.LoadBitmap(L"\\skin\\scrollbar.bmp");
     m_defaultscrollbmp.GetBitmap(m_bmp);
 
     m_memscrollbmp.CreateCompatibleDC(WTL::CClientDC(m_parentwnd));

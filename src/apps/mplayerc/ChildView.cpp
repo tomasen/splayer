@@ -316,15 +316,17 @@ void CChildView::OnPaint()
     return;
 	pFrame->RepaintVideo();
 
-	CRect rcClient;GetClientRect(&rcClient);
-
-  if (m_mediacenter->GetPlaneState())
-  {
-    m_mediacenter->PaintPlane(dc.m_hDC, rcClient);
-    return;
-  }
+	CRect rcClient;
+  GetClientRect(&rcClient);
   
-	if(!pFrame->IsSomethingLoaded() || (pFrame->IsSomethingLoaded() && (pFrame->m_fAudioOnly || pFrame->IsSomethingLoading())) ){
+	if(!pFrame->IsSomethingLoaded() || (pFrame->IsSomethingLoaded() && (pFrame->m_fAudioOnly || pFrame->IsSomethingLoading())) )
+  {
+    if (m_mediacenter->GetPlaneState())
+    {
+      m_mediacenter->PaintPlane(dc.m_hDC, rcClient);
+      return;
+    }
+
 		AppSettings& s = AfxGetAppSettings();
 
 		CRect rcWnd;
@@ -593,8 +595,9 @@ int CChildView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	GetSystemFontWithScale(&m_font, 14.0);
     GetSystemFontWithScale(&m_font_lyric, 20.0, FW_BOLD, s.subdefstyle.fontName); //
 	// TODO:  Add your specialized creation code here
-  RECT margin = {20, 5, 5, 5};m_mediacenter->ShowPlane();
+  RECT margin = {20, 5, 5, 5};
   m_mediacenter->CreatePlane(m_hWnd, 100, 100, margin);
+  m_mediacenter->ShowPlane();
 	return 0;
 }
 

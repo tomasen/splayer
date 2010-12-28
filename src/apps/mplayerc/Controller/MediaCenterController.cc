@@ -1,7 +1,10 @@
 #include "StdAfx.h"
 #include "MediaCenterController.h"
 
-MediaCenterController::MediaCenterController() : m_parentwnd(NULL), m_planestate(FALSE)
+MediaCenterController::MediaCenterController() : 
+    m_parentwnd(NULL),
+    m_planestate(FALSE),
+    m_createsuccess(FALSE)
 {
 
 }
@@ -53,7 +56,10 @@ BOOL MediaCenterController::GetPlaneState()
 
 void MediaCenterController::ShowPlane()
 {
-  m_planestate = TRUE;
+  if (m_createsuccess)
+    m_planestate = TRUE;
+  else
+    m_planestate = FALSE;
 }
 
 void MediaCenterController::HidePlane()
@@ -92,7 +98,7 @@ void MediaCenterController::CreatePlane(HWND hwnd, int width, int height, RECT& 
   if (!m_parentwnd)
     return;
 
-  m_plane.ShowMediaCenter(m_parentwnd, width, height, margin);
+  m_createsuccess = m_plane.ShowMediaCenter(m_parentwnd, width, height, margin);
   m_plane.AddListView(hwnd);
   m_plane.AddScrollbar(hwnd);
 }

@@ -69,7 +69,7 @@ HRESULT MediaCenterView::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
     return 0;
 }
 
-void MediaCenterView::ShowMediaCenter(HWND hwnd, int boxwidth, int boxheight, RECT& margin)
+BOOL MediaCenterView::ShowMediaCenter(HWND hwnd, int boxwidth, int boxheight, RECT& margin)
 {
   if (!IsWindow())
   {
@@ -82,7 +82,11 @@ void MediaCenterView::ShowMediaCenter(HWND hwnd, int boxwidth, int boxheight, RE
   MediaDatas data;
   MediaFindCondition condition;
   m_model.Find(data, condition, 0, 20);
+  if (data.empty())
+    return FALSE;
+
   AttachData(data);
+  return TRUE;
 }
 
 void MediaCenterView::HideMediaCenter()

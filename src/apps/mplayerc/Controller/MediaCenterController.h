@@ -41,4 +41,5 @@ private:
     MediaModel m_model;
     HWND m_parentwnd;
     BOOL m_planestate;
+    BOOL m_createsuccess;
 };

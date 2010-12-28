@@ -67,9 +67,8 @@
 #include "..\..\..\lib\lyriclib\lyriclib.h"
 #include "SVPLycShowBox.h"
 
-#include "Controller\SnapUploadController.h"
+#include "Controller/SnapUploadController.h"
 #include "Controller/SubTransController.h"
-
 
 enum {PM_NONE, PM_FILE, PM_DVD, PM_CAPTURE};
 
@@ -898,7 +897,7 @@ public:
 	afx_msg void OnVisitbbs();
 	afx_msg void OnSendemail();
 	afx_msg void OnCheckDefaultPlayer();
-  afx_msg void OnCheckAndSetDefaultPlayer();
+    afx_msg void OnCheckAndSetDefaultPlayer();
 	afx_msg void OnVisitcontactinfo();
 	afx_msg void OnDonate();
 	afx_msg void OnJointeam();
@@ -915,6 +914,7 @@ public:
 	afx_msg void OnRecentFileDisable();
 	afx_msg void OnUpdateShowColorControlBar(CCmdUI *pCmdUI);
 	afx_msg void OnSetsnapshotpath();
+    afx_msg void OnMovieShare();
 
 	/*NEW UI*/
 	LRESULT OnNcPaint( WPARAM wParam, LPARAM lParam );
@@ -953,7 +953,7 @@ private:
 	CRgn m_rgn;
 	CFont m_hft;
 	BOOL m_bHasDrawShadowText;
-  SnapUploadController m_suc;
+    SnapUploadController m_suc;
 	//long m_nBoxStatus[4];
 	/*NEW UI END*/
 	CString fnDelPending;

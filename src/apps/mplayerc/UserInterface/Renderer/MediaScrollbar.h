@@ -28,6 +28,8 @@ public:
     void GetBlockRect(RECT& rect);
     BOOL GetScrollState();
 
+    void SetListPlane(int w, int h);
+    void SetClientRect(const RECT& rc);
     int GetOffsetVal();
 
 private:
@@ -41,6 +43,9 @@ private:
     WTL::CDC m_memscrollbmp;
     HBITMAP m_oldscrollbmp;
     
+    int m_planewidth;
+    int m_planeheight;
+
     POINT m_lbdownpos;
     POINT m_scrollbarpos;
     RECT m_scrollrc;

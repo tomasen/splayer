@@ -97,7 +97,10 @@
 #include "Controller/UbdUploadController.h"
 #include "Controller/UsrBehaviorController.h"
 #include "Controller/HashController.h"
+#include "Controller/MediaCenterController.h"
+#include "Controller/ShareController.h"
 #include <Strings.h>
+#include "Utils/SPlayerGUID.h"
 
 
 // begin,
@@ -462,7 +465,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_NAVIGATE_MENU_LEFT, ID_NAVIGATE_MENU_LEAVE, OnUpdateNavigateMenuItem)
 
 	ON_COMMAND(ID_FILE_BTN_EXIT, OnTopBtnFileExit)
-
 	
 	ON_COMMAND(ID_NAVIGATE_SKIPRANDOM, OnPlayListRandom)
 	ON_UPDATE_COMMAND_UI(ID_NAVIGATE_SKIPRANDOM, OnUpdatePlayListRandom)
@@ -565,13 +567,14 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_CONFIG_AUTOLOADSUBTITLE2, OnSetAutoLoadSubtitle)
 	ON_UPDATE_COMMAND_UI(ID_CONFIG_AUTOLOADSUBTITLE2, OnUpdateSetAutoLoadSubtitle)
 	
-  ON_COMMAND(ID_UPDATE_AUDIOSETIING, OnAudioSettingUpdated)
+    ON_COMMAND(ID_UPDATE_AUDIOSETIING, OnAudioSettingUpdated)
 	ON_NOTIFY_EX(TTN_NEEDTEXT, 0, OnTtnNeedText)
 	ON_WM_NCCREATE()
 	ON_WM_ACTIVATE()
 	ON_WM_PAINT()
 	ON_WM_WINDOWPOSCHANGING()
 	ON_WM_KEYUP()
+    ON_COMMAND(ID_MOVIESHARE, OnMovieShare)
 	END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -772,6 +775,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 	}
 
+  UserShareController::GetInstance()->CreateCommentPlane();
 
 	WNDCLASSEX layeredClass;
 	layeredClass.cbSize        = sizeof(WNDCLASSEX);
@@ -1414,6 +1418,7 @@ void CMainFrame::OnMove(int x, int y)
 	
 	m_wndToolBar.ReCalcBtnPos();
 	m_wndView.ReCalcBtn();
+  UserShareController::GetInstance()->CalcCommentPlanePos();
 	rePosOSD();
 	//m_wndView.SetMyRgn();
 	
@@ -11971,6 +11976,15 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 
     CString FPath = szFileHash.c_str();
 
+    // send sphash to remote
+    if (m_pCAP && !m_fAudioOnly)
+    {
+      std::wstring uuid, sphash;
+      SPlayerGUID::GenerateGUID(uuid);
+      sphash = szFileHash;
+      UserShareController::GetInstance()->ShareMovie(uuid, sphash);
+    }
+
 		if(m_pCAP && (!m_fAudioOnly || m_fRealMediaGraph))
 		{
 			POSITION pos = pOMD->subs.GetHeadPosition();
@@ -16118,7 +16132,7 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 
 	CRect r,cr;
 	m_wndView.GetClientRect(r);
-	
+  UserShareController::GetInstance()->CalcCommentPlanePos();
 	
 	m_wndView.GetWindowRect(cr);
 	//r.top += 20;
@@ -17507,4 +17521,10 @@ void CMainFrame::AutoSaveImage(LPCTSTR fn, bool shrink_inhalf)
     }
     delete [] pData;
   }
+}
+
+void CMainFrame::OnMovieShare()
+{
+    if (!UserShareController::GetInstance()->ShowCommentPlane())
+      SendStatusMessage(L"请稍后再操作", 2000);
 }

@@ -1,5 +1,6 @@
 #include "stdafx.h"
-#include "MediaCenter.h"
+#include "MediaCenterView.h"
+#include "../../Model/MediaComm.h"
 
 // MediaCenterView
 MediaCenterView::MediaCenterView() : MediaScrollbar(),
@@ -11,14 +12,10 @@ MediaCenterView::~MediaCenterView()
 {
 }
 
-void MediaCenterView::ReSize()
+void MediaCenterView::CalcWnd()
 {
-    ::GetClientRect(m_parentwnd, &m_clientrc);
-    m_clientrc.top += 20;
-    m_clientrc.bottom -= 20;
-    m_clientrc.left += 20;
-    m_clientrc.right -= 20;
-    SetWindowPos(0, &m_clientrc, SWP_NOACTIVATE|SWP_SHOWWINDOW);
+  ::GetClientRect(m_parentwnd, &m_clientrc);
+  SetWindowPos(0, &m_clientrc, SWP_NOACTIVATE|SWP_SHOWWINDOW);
 }
 
 HRESULT MediaCenterView::OnLBUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -35,15 +32,15 @@ HRESULT MediaCenterView::OnMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 
 HRESULT MediaCenterView::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-    ReSize();
+    CalcWnd();
     return 0;
 }
 
 HRESULT MediaCenterView::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-    ReSize();
-    AddScrollbar(m_hWnd);
+    CalcWnd();
     AddListView(m_hWnd);
+    AddScrollbar(m_hWnd);
 
     return 0;
 }
@@ -64,7 +61,7 @@ HRESULT MediaCenterView::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 
     RECT rc;
     GetBlockRect(rc);
-    mdc.FillRect(&rc, COLOR_WINDOW);
+    mdc.FillRect(&rc, COLOR_BACKGROUND);
 
     DrawListView(mdc, GetOffsetVal());
     DrawScrollbar(mdc);
@@ -74,23 +71,18 @@ HRESULT MediaCenterView::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 
 void MediaCenterView::ShowMediaCenter(HWND hwnd, int boxwidth, int boxheight, RECT& margin)
 {
+  if (!IsWindow())
+  {
     m_parentwnd = hwnd;
-
-    Create(m_parentwnd);
+    //Create(m_parentwnd);//, NULL, NULL, WS_POPUP|WS_CLIPSIBLINGS|WS_CLIPCHILDREN, WS_EX_TOPMOST);
     SetItemBox(boxwidth, boxheight, margin);
-
-    std::vector<MEDIA_ITEMDATA> data;
-    for (int i=0;i<10;i++)
-    {
-        wchar_t filename[80], imgpath[80];
-        wsprintf(filename, L"filename_%d", i);
-        wsprintf(imgpath, L"imgpath_%d", i);
-        MEDIA_ITEMDATA rs = {filename, imgpath};
-
-        data.push_back(rs);
-    }
-
-    AttachData(data);
+    GetPlantWH(m_width, m_height);
+    SetListPlane(m_width, m_height);
+  }
+  MediaDatas data;
+  MediaFindCondition condition;
+  m_model.Find(data, condition, 0, 20);
+  AttachData(data);
 }
 
 void MediaCenterView::HideMediaCenter()

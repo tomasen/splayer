@@ -178,6 +178,8 @@ void MediaModel::Find(MediaDatas& data, const MediaFindCondition& condition,
   if (condition.uniqueid > 0)
   {
     MediaData mdTemp = {0};
+        wsprintf(filename, L"filename_%d", i);
+        wsprintf(imgpath, L"thumbnailpath_%d", i);
 
     sqlitepp::statement st(m_db);
     st << L"select uniqueid, path, filename, thumbnailpath, videotime from "
@@ -254,4 +256,5 @@ void MediaModel::Delete(const MediaFindCondition& condition)
 void MediaModel::DeleteAll()
 {
   m_db << L"delete from media_data";
+}
 }

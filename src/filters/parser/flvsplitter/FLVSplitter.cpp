@@ -611,6 +611,7 @@ void CFLVSplitterFilter::NormalSeek(REFERENCE_TIME rt)
 		m_pFile->Seek(m_pFile->GetPos() + t.DataSize);
 	}
 
+  int loops = 0;
 	while(m_pFile->GetPos() >= m_DataOffset && (fAudio || fVideo) && ReadTag(t))
 	{
 		UINT64 prev = m_pFile->GetPos() - 15 - t.PreviousTagSize - 4;
@@ -626,7 +627,8 @@ void CFLVSplitterFilter::NormalSeek(REFERENCE_TIME rt)
 				fVideo = false;
 			}
 		}
-
+    if (loops++ > 10)
+      return AlternateSeek(rt);
 		m_pFile->Seek(prev);
 	}
 

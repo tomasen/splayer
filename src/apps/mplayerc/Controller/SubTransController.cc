@@ -248,9 +248,11 @@ void SubTransController::_thread_download()
         return;
     }
 
-    if (req->get_response_errcode() != 0)
+    if (req->get_response_errcode() == 0)
     {
-      if (m_handlemsgs)
+      int ret = SubTransFormat::ExtractDataFromAiSubRecvBuffer_STL(m_handlemsgs, m_videofile,
+        tmpoutfile, szaSubDescs,tmpfiles);
+      if (ret == -404 && m_handlemsgs)
         m_handlemsgs->push_back(ResStr_STL(IDS_LOG_MSG_SVPSUB_NONE_MATCH_SUB));
       break;
     }
@@ -263,11 +265,8 @@ void SubTransController::_thread_download()
     }
 #endif
 
-    if(0 == SubTransFormat::ExtractDataFromAiSubRecvBuffer_STL(m_handlemsgs, m_videofile,
-                              tmpoutfile, szaSubDescs,tmpfiles))
-      break;
-
-    if (_Exit_state(500))
+   
+    if (_Exit_state(5000))
       return;
   }
 

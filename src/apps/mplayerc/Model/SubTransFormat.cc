@@ -49,7 +49,7 @@ int SubTransFormat::ExtractDataFromAiSubRecvBuffer_STL(std::list<std::wstring> *
   if (iStatCode <= 0)
   {
     if (iStatCode == -1)
-      ret = -2;
+      ret = -404;
     else
       ret = -1;
     goto releaseALL;

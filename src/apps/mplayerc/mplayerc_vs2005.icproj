@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="windows-1250"?>
+<VisualStudioProject
+	ProjectType="Intel C++ Project"
+	Version="11.1"
+	Name="mplayerc"
+	ProjectGUID="{3F7E2F41-E7EA-4D8A-A468-29DB295AFFE5}"
+	VCNestedProjectGUID="{8CE7E5D0-C821-47AC-A247-28EC95B34670}"
+	VCNestedProjectFileName="mplayerc_vs2005.vcproj">
+	<Configurations>
+		<Configuration
+			Name="Release Unicode|Win32">
+			<Tool
+				Name="CppCmplrTool"
+				GlobalOptimizations="true"
+				InterproceduralOptimization="2"
+				OptimizeForWindowsApplication="true"
+				EnableEnhancedInstructionSet="1001"
+				Parallelization="true"/>
+		</Configuration>
+	</Configurations>
+	<Files/>
+</VisualStudioProject>

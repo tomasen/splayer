@@ -80,30 +80,30 @@ void CSeekBarTip::SetTips(CString szText, BOOL bMove , CPoint* mPoint, UINT dela
 
 			TRACE(_T("MONITORINFO %d %d %d %d\n") , mi.rcWork.left, mi.rcWork.top , mi.rcWork.bottom,mi.rcWork.right);
 
-			if(point.y > ( ( mi.rcWork.bottom + mi.rcWork.top) / 2 + 20 ) ){
-				//tip on top
+			//if(point.y > ( ( mi.rcWork.bottom + mi.rcWork.top) / 2 + 20 ) ){
+			//	//tip on top
 
-			}else{
-				//tip is below
-				rcTip.MoveToY( point.y + 6 );
-			}
+			//}else{
+			//	//tip is below
+			//	rcTip.MoveToY( point.y + 6 );
+			//}
 
-			if(point.y > ( ( mi.rcWork.right + mi.rcWork.left) / 2 + 20 ) ){
-				//tip on left
-				rcTip.MoveToX( point.x - 5 - tipsize.cx );
-			}else{
-				//tip is right
-				
-			}
+			//if(point.y > ( ( mi.rcWork.right + mi.rcWork.left) / 2 + 20 ) ){
+			//	//tip on left
+			//	rcTip.MoveToX( point.x - 5 - tipsize.cx );
+			//}else{
+			//	//tip is right
+			//	
+			//}
 
-			if(rcTip.left < mi.rcWork.left){
-				rcTip.MoveToX(mi.rcWork.left + 3);
-			}else if(rcTip.right > mi.rcWork.right){
-				rcTip.MoveToX(mi.rcWork.right - rcTip.Width() - 3);
-			}
+			//if(rcTip.left < mi.rcWork.left){
+			//	rcTip.MoveToX(mi.rcWork.left + 3);
+			//}else if(rcTip.right > mi.rcWork.right){
+			//	rcTip.MoveToX(mi.rcWork.right - rcTip.Width() - 3);
+			//}
 
 			MoveWindow( rcTip );
-			ShowWindow(SW_SHOWNOACTIVATE);
+			ShowWindow(SW_SHOW | SW_SHOWNOACTIVATE);
 			Invalidate();
 			KillTimer(IDT_CLOSTTIPS);
 			SetTimer(IDT_CLOSTTIPS, 3000, NULL);

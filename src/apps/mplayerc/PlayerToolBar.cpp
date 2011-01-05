@@ -745,6 +745,25 @@ void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point){
 			pFrame->m_wndFloatToolBar->PostMessage(WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM(point.x, point.y));
 		}
 	}
+
+  // Add by cjbw1234
+  // 当鼠标拖拽toolbar停止后,Windows并不向toolbar发送WM_LBUTTONUP和WM_MOVE消息,
+  // 这造成了状态不一致,只好手动发送这个消息
+  if (::GetKeyState(VK_LBUTTON) & 0x8000)
+  {
+    // The left button is still pressed
+  } 
+  else if (m_bMouseDown)
+  {
+    // The left button is released and the Windows don't send the WM_LBUTTONUP
+    // and WM_MOVE
+    PostMessage(WM_LBUTTONUP, 0, MAKELPARAM(point.x, point.y));
+    PostMessage(WM_MOVE, 0, MAKELPARAM(point.x, point.y));
+      
+    // Note: The code bellow is not needed, because in WM_LBUTTONUP message handler 
+    // will set it to FALSE
+    //m_bMouseDown = FALSE;
+  }
 	
 	return;
 }

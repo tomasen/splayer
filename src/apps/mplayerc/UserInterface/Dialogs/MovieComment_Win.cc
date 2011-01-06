@@ -51,22 +51,21 @@ BOOL MovieComment::IsExternalDispatchSafe()
 BOOL MovieComment::OnInitDialog()
 {
   CDHtmlDialog::OnInitDialog();
-  
-  RECT rc;
-  HRGN rgn;
 
   CalcWndPos();
 
-  GetClientRect(&rc);
-  rgn = ::CreateRoundRectRgn(0, 0, rc.right-rc.left, rc.bottom-rc.top, 5, 5);
-  SetWindowRgn(rgn, TRUE);
+//   RECT rc;
+//   HRGN rgn;
+//   GetClientRect(&rc);
+//   rgn = ::CreateRoundRectRgn(0, 0, rc.right-rc.left, rc.bottom-rc.top, 5, 5);
+//   SetWindowRgn(rgn, TRUE);
 
   SetHostFlags(DOCHOSTUIFLAG_THEME | DOCHOSTUIFLAG_SCROLL_NO | DOCHOSTUIFLAG_NO3DBORDER
          | DOCHOSTUIFLAG_DISABLE_HELP_MENU | DOCHOSTUIFLAG_DIALOG | DOCHOSTUIFLAG_DISABLE_SCRIPT_INACTIVE
          | DOCHOSTUIFLAG_OVERRIDEBEHAVIORFACTORY);
 
-  EnableAutomation();
-  SetExternalDispatch(GetIDispatch(TRUE));
+//   EnableAutomation();
+//   SetExternalDispatch(GetIDispatch(TRUE));
 
   return TRUE;
 }
@@ -113,7 +112,7 @@ void MovieComment::CalcWndPos()
 {
   RECT rc;
   GetParent()->GetWindowRect(&rc);
-  SetWindowPos(NULL, rc.left+20, rc.bottom-260, 373, 161, SWP_NOACTIVATE|SWP_HIDEWINDOW);
+  SetWindowPos(NULL, rc.left+20, rc.bottom-420, 240, 320, SWP_NOACTIVATE|SWP_HIDEWINDOW);
 }
 
 void MovieComment::HideFrame()

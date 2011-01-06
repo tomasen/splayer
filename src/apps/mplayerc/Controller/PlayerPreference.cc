@@ -34,7 +34,7 @@ PlayerPreference::PlayerPreference(void):
   m_map_strvar[STRVAR_GETSNAPTIMEURL_ACT]   = L"?action=get_snapshot_preferedtimes&videohash=%s&videolength=%d";
   m_map_strvar[STRVAR_UPLOADUSRBHVURL]      = L"http://webpj:8080/test_logfile.php";
   m_map_strvar[STRVAR_UPLOADUSRBHVURL_ACT]  = L"?action=ensureupload";
-  m_map_strvar[STRVAR_APIURL]               = L"http://webpj:8080/misc";//L"https://www.shooter.cn/api/v2";
+  m_map_strvar[STRVAR_APIURL]               = L"https://www.shooter.cn/api/v2";
 }
 
 PlayerPreference::~PlayerPreference(void)

@@ -2,12 +2,13 @@
 #include "stdafx.h"
 #include "ShareController.h"
 #include <shooterapi.key>
-#include <Version.h>
 #include "HashController.h"
 #include <Strings.h>
 #include "PlayerPreference.h"
 #include "SPlayerDefs.h"
 #include "../resource.h"
+#include "../revision.h"
+#include "NetworkControlerImpl.h"
 
 UserShareController::UserShareController() : m_retdata(L"")
 {
@@ -40,7 +41,7 @@ std::wstring UserShareController::GenerateKey()
     std::string uuidstr = Strings::WStringToUtf8String(m_uuid);
     std::string sphash = Strings::WStringToUtf8String(m_sphash);
 
-    sprintf_s(buf, 4096, APIKEY, VERSION_REV, uuidstr.c_str(), sphash.c_str(), "");
+    sprintf_s(buf, 4096, APIKEY, SVP_REV_NUMBER, uuidstr.c_str(), sphash.c_str(), "");
 
     return HashController::GetInstance()->GetMD5Hash(buf, strlen(buf));
 }
@@ -60,6 +61,7 @@ void UserShareController::_Thread()
 {
     refptr<pool> pool = pool::create_instance();
     refptr<task> task = task::create_instance();
+    refptr<config> cfg = config::create_instance();
     refptr<request> req = request::create_instance();
     refptr<postdata> data = postdata::create_instance();
     std::map<std::wstring, std::wstring> postform;
@@ -71,27 +73,29 @@ void UserShareController::_Thread()
     MapToPostData(data, postform);
 
     std::wstring url = pref->GetStringVar(STRVAR_APIURL);
-    //url += L"/share";
-    url += L"/share.php";
-    req->set_postdata(data);
-    req->set_request_url(url.c_str());
-    req->set_request_method(REQ_POST);
+    url += L"/share";
+    
+    wchar_t getdata[300];
+    wsprintf(getdata, L"?sphash=%s&uuid=%s&spkey=%s", 
+      m_sphash.c_str(), m_uuid.c_str(), (postform[L"spkey"]).c_str());
+    url += getdata;
 
+    SinetConfig(cfg, -1);
+    //req->set_postdata(data);
+    req->set_request_url(url.c_str());
+    //req->set_request_method(REQ_POST);
+    req->set_request_method(REQ_GET);
+
+    task->use_config(cfg);
     task->append_request(req);
     pool->execute(task);
 
     while (pool->is_running_or_queued(task))
-    {
-        if (_Exit_state(100))
-        {
-            return;
-        }
-    }
+      if (_Exit_state(100))
+        return;
 
     if (req->get_response_errcode() != 0)
-    {
-        return;
-    }
+      return;
 
     si_buffer buffer = req->get_response_buffer();
     buffer.push_back(0);

@@ -37,7 +37,6 @@ public:
   void HideFrame();
   void ShowFrame();
   void OpenNewLink(LPCTSTR url);
-  BOOL IsShow();
 
 protected:
   virtual BOOL OnInitDialog();
@@ -50,9 +49,6 @@ protected:
 
 public:
   ThreadNewLink m_newlink;
-
-private:
-  BOOL m_showframe;
 };
 
 

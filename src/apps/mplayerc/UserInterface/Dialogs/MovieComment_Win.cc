@@ -27,8 +27,7 @@ BEGIN_DISPATCH_MAP(MovieComment, CDHtmlDialog)
 //   DISP_FUNCTION(MovieComment, "open_newlink", OpenNewLink, VT_EMPTY, VTS_BSTR)
 END_DISPATCH_MAP()
 
-MovieComment::MovieComment():
-  m_showframe(FALSE)
+MovieComment::MovieComment()
 {
 
 }
@@ -53,7 +52,7 @@ BOOL MovieComment::OnInitDialog()
   CDHtmlDialog::OnInitDialog();
 
   CalcWndPos();
-
+  HideFrame();
 //   RECT rc;
 //   HRGN rgn;
 //   GetClientRect(&rc);
@@ -112,24 +111,17 @@ void MovieComment::CalcWndPos()
 {
   RECT rc;
   GetParent()->GetWindowRect(&rc);
-  SetWindowPos(NULL, rc.left+20, rc.bottom-420, 240, 320, SWP_NOACTIVATE|SWP_HIDEWINDOW);
+  SetWindowPos(NULL, rc.left+20, rc.bottom-420, 240, 320, SWP_NOACTIVATE);
 }
 
 void MovieComment::HideFrame()
 {
   ShowWindow(SW_HIDE);
-  m_showframe = FALSE;
 }
 
 void MovieComment::ShowFrame()
 {
   ShowWindow(SW_SHOW);
-  m_showframe = TRUE;
-}
-
-BOOL MovieComment::IsShow()
-{
-  return m_showframe;
 }
 
 void ThreadNewLink::SetOpenUrl(std::wstring url)

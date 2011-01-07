@@ -1140,7 +1140,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_wndLycShowBox->ShowWindow(SW_SHOW);
 	// */
 
-    m_lMinFrameWidth = s.GetColorFromTheme(_T("WinFrameMinWidth"), 310);
+    m_lMinFrameWidth = s.GetColorFromTheme(_T("WinFrameMinWidth"), 450);
 
     SetTimer(TIMER_IDLE_TASK, 30000, NULL);
    m_WndSizeInited++;

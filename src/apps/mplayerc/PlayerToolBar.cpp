@@ -116,13 +116,13 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
     CSUIButton* btnShare = new CSUIButton(L"BTN_SHARE.BMP", ALIGN_TOPLEFT, CRect(15 , -50, 3,3), FALSE, ID_MOVIESHARE, TRUE, ALIGN_LEFT, btnLogo, CRect(1,1,1,1));
     m_btnList.AddTail(btnShare);
 
-	btnSubSwitch = new CSUIButton(L"BTN_SUB.BMP" , ALIGN_TOPLEFT, CRect(-23 , -50, 3,3)  , 0, ID_SUBTOOLBARBUTTON, TRUE, ALIGN_RIGHT, btnFFBack , CRect(20 , 10 , 22, 10) );
+	btnSubSwitch = new CSUIButton(L"BTN_SUB.BMP" , ALIGN_TOPLEFT, CRect(-30 , -50, 3,3)  , 0, ID_SUBTOOLBARBUTTON, TRUE, ALIGN_RIGHT, btnFFBack , CRect(20 , 10 , 22, 10) );
 	btnSubSwitch->addAlignRelButton(ALIGN_LEFT, btnShare ,  CRect(15 , 10 , 10, 10) );
 	btnSubSwitch->addAlignRelButton(ALIGN_RIGHT, btnPrev ,  CRect(20 , 10 , 22, 10) );
 	m_btnList.AddTail( btnSubSwitch );
 
 	m_btnList.AddTail( new CSUIButton(L"BTN_SUB_DELAY_REDUCE.BMP" , ALIGN_TOPLEFT, CRect(-42 , -50, 3,3)  , 0, ID_SUBDELAYDEC, TRUE, ALIGN_RIGHT, btnSubSwitch , CRect(2 , 3 , 2, 3) ) );
-	m_btnList.AddTail( new CSUIButton(L"BTN_SUB_DELAY_INCREASE.BMP" , ALIGN_TOPLEFT, CRect(-10 , -50, 3,3)  , 0, ID_SUBDELAYINC, TRUE, ALIGN_LEFT, btnSubSwitch , CRect(2 , 3 , 2, 3) ) );
+	m_btnList.AddTail( new CSUIButton(L"BTN_SUB_DELAY_INCREASE.BMP" , ALIGN_TOPLEFT, CRect(-30 , -50, 3,3)  , 0, ID_SUBDELAYINC, TRUE, ALIGN_LEFT, btnSubSwitch , CRect(2 , 3 , 2, 3) ) );
 	
 	m_btnVolBG = new CSUIButton(L"VOLUME_BG.BMP" , ALIGN_TOPRIGHT, CRect(3 , -50, 15,3)  , TRUE, 0, FALSE ) ;
 	m_btnList.AddTail( m_btnVolBG );
@@ -160,7 +160,18 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 
 	cursorHand = ::LoadCursor(NULL, IDC_HAND);
 
-	GetSystemFontWithScale(&m_statft, 14.0);
+	//GetSystemFontWithScale(&m_statft, 14.0);
+  LOGFONT lf;
+  lf.lfWidth = 0;
+  lf.lfHeight = 13;
+  lf.lfEscapement = 0;
+  lf.lfWeight = 0;
+  lf.lfPitchAndFamily = 0;
+  lf.lfStrikeOut = FALSE;
+  lf.lfItalic = FALSE;
+  lf.lfUnderline = FALSE;
+  wsprintf(lf.lfFaceName, L"Comic Sans MS");
+  m_statft.CreateFontIndirect(&lf);
 
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	m_nLogDPIY = pFrame->m_nLogDPIY;
@@ -258,21 +269,15 @@ void CPlayerToolBar::ArrangeControls()
     m_btnList.SetHideStat(ID_VIEW_PLAYLIST , hideT2);
   }
   else if (pFrame && pFrame->IsSomethingLoaded())
-  {
     m_btnList.SetHideStat(ID_MOVIESHARE, 0);
-  }
   else
-  {
-    m_btnList.SetHideStat(ID_PLAY_FWD , 0);
-    m_btnList.SetHideStat(ID_PLAY_BWD , 0);
-    m_btnList.SetHideStat(ID_NAVIGATE_SKIPBACK , hideT1);
-    m_btnList.SetHideStat(ID_NAVIGATE_SKIPFORWARD , hideT1);
-    m_btnList.SetHideStat(ID_MOVIESHARE, 1);
-    m_btnList.SetHideStat(ID_VIEW_PLAYLIST , hideT2);
-    
-  }
+    m_btnList.SetHideStat(ID_MOVIESHARE, 1); 
 
-
+  m_btnList.SetHideStat(ID_PLAY_FWD , 0);
+  m_btnList.SetHideStat(ID_PLAY_BWD , 0);
+  m_btnList.SetHideStat(ID_NAVIGATE_SKIPBACK , hideT1);
+  m_btnList.SetHideStat(ID_NAVIGATE_SKIPFORWARD , hideT1);
+  m_btnList.SetHideStat(ID_VIEW_PLAYLIST , hideT2);
 
   m_btnList.SetHideStat(ID_SUBTOOLBARBUTTON , hideT2);
   m_btnList.SetHideStat(ID_SUBDELAYDEC , hideT2);
@@ -462,12 +467,12 @@ void CPlayerToolBar::OnPaint()
 
 		HFONT holdft = (HFONT)hdc.SelectObject(m_statft);
 
-		hdc.SetTextColor(s.GetColorFromTheme(_T("ToolBarTimeText"), 0xffffff) );
+		hdc.SetTextColor(s.GetColorFromTheme(_T("ToolBarTimeText"), 0xa29da7) );
 		CSize size = hdc.GetTextExtent(m_timerstr);
 		CRect frc ( rcClient );
 		//size.cx = min( rcClient.Width() /3, size.cx);
 		frc.left += min( 15 , max( 7, 7+(rcClient.Width()-300) /100 ));
-		frc.bottom -= 7;
+		//frc.bottom -= 4;
 		frc.right = frc.left +  size.cx;
 		//SVP_LogMsg5(_T("%d %d %d"), frc.right , rcClient.left , btnSubSwitch->m_rcHitest.left - rc.left);
 		int btnPos = btnSubSwitch->m_rcHitest.left - rc.left;
@@ -475,6 +480,9 @@ void CPlayerToolBar::OnPaint()
 			frc.right = rcClient.left + btnPos - 16;
 			frc.left = rcClient.left + 7;
 		}
+    frc.left += 45;
+    frc.right += 45;
+
 		::DrawText(hdc, m_timerstr, m_timerstr.GetLength(), frc,  DT_LEFT|DT_END_ELLIPSIS|DT_SINGLELINE| DT_VCENTER);
 		hdc.SelectObject(holdft);
 

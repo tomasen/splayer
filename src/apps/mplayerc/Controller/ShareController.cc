@@ -126,6 +126,6 @@ void UserShareController::HideCommentPlane()
 void UserShareController::CalcCommentPlanePos()
 {
   m_commentplane.CalcWndPos();
-  if (m_commentplane.IsShow())
+  if (m_commentplane.IsWindowVisible())
     m_commentplane.ShowFrame();
 }

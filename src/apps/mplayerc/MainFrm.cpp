@@ -575,6 +575,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_WM_WINDOWPOSCHANGING()
 	ON_WM_KEYUP()
     ON_COMMAND(ID_MOVIESHARE, OnMovieShare)
+    ON_COMMAND(ID_MOVIESHARE_RESPONSE, OnMovieShareResponse)
 	END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -775,7 +776,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 	}
 
-  UserShareController::GetInstance()->CreateCommentPlane();
+  UserShareController::GetInstance()->CreateCommentPlane(m_hWnd);
 
 	WNDCLASSEX layeredClass;
 	layeredClass.cbSize        = sizeof(WNDCLASSEX);
@@ -2658,6 +2659,15 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 
   switch (nIDEvent)
   {
+  case TIMER_MOVIESHARE:
+    {
+      KillTimer(TIMER_MOVIESHARE);
+      std::wstring uuid, moviehash;
+      SPlayerGUID::GenerateGUID(uuid);
+      moviehash = HashController::GetInstance()->GetSPHash(m_fnCurPlayingFile);
+      UserShareController::GetInstance()->ShareMovie(uuid, moviehash);
+    }
+    break;
   case TIMER_SNAP:
     {
       KillTimer(TIMER_SNAP);
@@ -11978,12 +11988,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 
     // send sphash to remote
     if (m_pCAP && !m_fAudioOnly)
-    {
-      std::wstring uuid, sphash;
-      SPlayerGUID::GenerateGUID(uuid);
-      sphash = szFileHash;
-      UserShareController::GetInstance()->ShareMovie(uuid, sphash);
-    }
+      SetTimer(TIMER_MOVIESHARE, 10000, NULL);
 
 		if(m_pCAP && (!m_fAudioOnly || m_fRealMediaGraph))
 		{
@@ -16602,6 +16607,7 @@ LRESULT CMainFrame::OnNcLButtonUp( WPARAM wParam, LPARAM lParam )
 				m_tip.ClearStat();
 				ShowWindow(SW_HIDE);
 				ShowTrayIcon(true);
+        UserShareController::GetInstance()->HideCommentPlane();
 			}
 		}
 		return FALSE;
@@ -17525,6 +17531,10 @@ void CMainFrame::AutoSaveImage(LPCTSTR fn, bool shrink_inhalf)
 
 void CMainFrame::OnMovieShare()
 {
-    if (!UserShareController::GetInstance()->ShowCommentPlane())
-      SendStatusMessage(L"请稍后再操作", 2000);
+  UserShareController::GetInstance()->ShowCommentPlane();
+}
+
+void CMainFrame::OnMovieShareResponse()
+{
+  m_wndToolBar.HideMovieShareBtn(FALSE);
 }

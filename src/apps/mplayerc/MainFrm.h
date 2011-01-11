@@ -337,7 +337,8 @@ public:
     TIMER_REDRAW_WINDOW,
     TIMER_IDLE_TASK,
     TIMER_LOADING,
-    TIMER_SNAP
+    TIMER_SNAP,
+    TIMER_MOVIESHARE
 	};
 
 
@@ -986,7 +987,7 @@ public:
 
 	void OnSettingFinished();
 	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
-
+  afx_msg void OnMovieShareResponse();
   afx_msg void OnAudioSettingUpdated();
 private:
   void _HandleTimer_Stats();

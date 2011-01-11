@@ -223,6 +223,11 @@ BOOL CPlayerToolBar::PreCreateWindow(CREATESTRUCT& cs)
 	return TRUE;
 }
 
+void CPlayerToolBar::HideMovieShareBtn(BOOL hide)
+{
+  m_btnList.SetHideStat(ID_MOVIESHARE, hide);
+}
+
 void CPlayerToolBar::ArrangeControls()
 {
 
@@ -268,10 +273,6 @@ void CPlayerToolBar::ArrangeControls()
     m_btnList.SetHideStat(ID_MOVIESHARE, 1);
     m_btnList.SetHideStat(ID_VIEW_PLAYLIST , hideT2);
   }
-  else if (pFrame && pFrame->IsSomethingLoaded())
-    m_btnList.SetHideStat(ID_MOVIESHARE, 0);
-  else
-    m_btnList.SetHideStat(ID_MOVIESHARE, 1); 
 
   m_btnList.SetHideStat(ID_PLAY_FWD , 0);
   m_btnList.SetHideStat(ID_PLAY_BWD , 0);

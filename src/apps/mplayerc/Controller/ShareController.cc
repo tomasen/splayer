@@ -9,6 +9,7 @@
 #include "../resource.h"
 #include "../revision.h"
 #include "NetworkControlerImpl.h"
+#include "logging.h"
 
 UserShareController::UserShareController() : m_retdata(L"")
 {
@@ -20,11 +21,12 @@ UserShareController::~UserShareController()
     _Stop();
 }
 
-void UserShareController::CreateCommentPlane()
+void UserShareController::CreateCommentPlane(HWND hwnd)
 {
   if (m_commentplane.m_hWnd)
     return;
 
+  m_parentwnd = hwnd;
   m_commentplane.Create(IDD_SHARE_DLG, NULL);
   m_commentplane.Navigate(L"about:blank");
 }
@@ -79,7 +81,8 @@ void UserShareController::_Thread()
     wsprintf(getdata, L"?sphash=%s&uuid=%s&spkey=%s", 
       m_sphash.c_str(), m_uuid.c_str(), (postform[L"spkey"]).c_str());
     url += getdata;
-
+    Logging(L"Request URL:");
+    Logging(url.c_str());
     SinetConfig(cfg, -1);
     //req->set_postdata(data);
     req->set_request_url(url.c_str());
@@ -104,9 +107,11 @@ void UserShareController::_Thread()
     m_retdata = Strings::Utf8StringToWString(results);
 
     m_commentplane.Navigate(m_retdata.c_str());
+    Logging(L"Response URL:");
+    Logging(m_retdata.c_str());
 
-    // Send messages to the main thread
-    //::PostMessage(m_parentwnd, WM_COMMAND, ID_USERSHARE_SUCCESS, NULL);
+    if (!m_retdata.empty())
+      ::PostMessage(m_parentwnd, WM_COMMAND, ID_MOVIESHARE_RESPONSE, NULL);
 }
 
 BOOL UserShareController::ShowCommentPlane()

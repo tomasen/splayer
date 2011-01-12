@@ -8,6 +8,8 @@
 #include <afxdhtml.h>
 #include <threadhelper.h>
 
+#define ID_MOVIESHARE_RESPONSE 32932
+
 class ThreadNewLink :
   public ThreadHelperImpl<ThreadNewLink>
 {
@@ -24,6 +26,7 @@ class MovieComment : public CDHtmlDialog
   DECLARE_DYNAMIC(MovieComment)
 
   virtual HRESULT STDMETHODCALLTYPE ShowContextMenu(DWORD /*dwID*/, POINT *ppt, IUnknown* /*pcmdtReserved*/, IDispatch* /*pdispReserved*/);
+  virtual void OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl);
 
 public:
   MovieComment();

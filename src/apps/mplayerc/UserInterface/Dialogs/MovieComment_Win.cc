@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "MovieComment_Win.h"
 #include <exdispid.h>
+#include "logging.h"
 
 IMPLEMENT_DYNAMIC(MovieComment, CDHtmlDialog)
 
@@ -18,7 +19,6 @@ END_DHTML_EVENT_MAP()
 
 BEGIN_EVENTSINK_MAP(MovieComment, CDHtmlDialog)
   ON_EVENT(MovieComment, AFX_IDC_BROWSER, DISPID_NEWWINDOW3, OnEventNewLink, VTS_DISPATCH VTS_PBOOL VTS_UI4 VTS_BSTR VTS_BSTR)
-  //ON_EVENT(MovieComment, AFX_IDC_BROWSER, DISPID_BEFORENAVIGATE2, OnEventBeforeNavigate2, VTS_DISPATCH VTS_PVARIANT VTS_PVARIANT VTS_PVARIANT VTS_PVARIANT VTS_PVARIANT VTS_PBOOL)
 END_EVENTSINK_MAP()
 
 BEGIN_DISPATCH_MAP(MovieComment, CDHtmlDialog)
@@ -67,6 +67,13 @@ BOOL MovieComment::OnInitDialog()
 //   SetExternalDispatch(GetIDispatch(TRUE));
 
   return TRUE;
+}
+
+void MovieComment::OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl)
+{
+  std::wstring url(szUrl);
+  if (url.find(L"http:") != std::string::npos)
+    ::PostMessage(GetParent()->m_hWnd, WM_COMMAND, ID_MOVIESHARE_RESPONSE, NULL);
 }
 
 BOOL MovieComment::OnEventNewLink(IDispatch **ppDisp, VARIANT_BOOL *Cancel,

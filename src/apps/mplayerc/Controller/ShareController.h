@@ -7,7 +7,6 @@
 #include "../UserInterface/Dialogs/MovieComment_Win.h"
 #include <comutil.h>
 
-#define ID_MOVIESHARE_RESPONSE 32932
 class UserShareController:
     public NetworkControlerImpl,
     public ThreadHelperImpl<UserShareController>,

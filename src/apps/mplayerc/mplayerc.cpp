@@ -1600,6 +1600,9 @@ void CMPlayerCApp::InitInstanceThreaded(INT64 CLS64){
         sqlite_local_record->exec_sql(L"CREATE UNIQUE INDEX  IF NOT EXISTS \"hispk\" on histories (fpath ASC)");
         sqlite_local_record->exec_sql(L"CREATE INDEX  IF NOT EXISTS \"modtime\" on histories (modtime ASC)");
         sqlite_local_record->exec_sql(L"PRAGMA synchronous=OFF");
+
+        sqlite_local_record->exec_sql(L"CREATE TABLE  IF NOT EXISTS settingstring (\"hkey\" TEXT, \"sect\" TEXT, \"vstring\" TEXT )");
+        sqlite_local_record->exec_sql(L"PRAGMA synchronous=OFF");
         //sqlite_local_record->end_transaction();
       }
       

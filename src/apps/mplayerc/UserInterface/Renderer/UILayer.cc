@@ -2,7 +2,7 @@
 #include "UILayer.h"
 #include <ResLoader.h>
 
-UILayer::UILayer(std::wstring respath, BOOL display)
+UILayer::UILayer(std::wstring respath, BOOL display /* = TRUE */)
 {
   ResLoader rs;
   SetTexture(rs.LoadBitmap(respath));

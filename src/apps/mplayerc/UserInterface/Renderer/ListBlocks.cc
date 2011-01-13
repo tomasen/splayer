@@ -18,7 +18,7 @@ m_candragscrollbar(FALSE)
 
 ListBlocks::~ListBlocks()
 {
-  std::vector<UILayerBlock*>::iterator it;
+  std::list<UILayerBlock*>::iterator it;
   for (it = m_blocks.begin(); it != m_blocks.end(); it++)
   {
     (*it)->DeleteAllLayer();
@@ -30,50 +30,127 @@ ListBlocks::~ListBlocks()
   delete m_scrollbar;
 }
 
-void ListBlocks::AddBlock()
+void ListBlocks::AddBlock(RECT& updaterect)
 {
   UILayerBlock* block = new UILayerBlock;
-  UILayer* mark = new UILayer(L"\\skin\\mark.png");
-  UILayer* def = new UILayer(L"\\skin\\def.png");
-  UILayer* play = new UILayer(L"\\skin\\play.png", FALSE);
 
-  block->AddUILayer(L"mark", mark);
-  block->AddUILayer(L"def", def);
-  block->AddUILayer(L"play", play);
+  block->AddUILayer(L"mark", new UILayer(L"\\skin\\mark.png"));
+  block->AddUILayer(L"def", new UILayer(L"\\skin\\def.png"));
+  block->AddUILayer(L"play", new UILayer(L"\\skin\\play.png", FALSE));
+  block->AddUILayer(L"del", new UILayer(L"\\skin\\del.png", FALSE));
 
-  CalcLayer(m_tailblockpt, mark, def, play);
+  CalcLayer(m_tailblockpt, block);
 
   if (m_headblockpt.x == 0 && m_headblockpt.y == 0)
     m_headblockpt = m_tailblockpt;
 
-  CalcBreakline(m_tailblockpt);
-
   if (m_tailblockpt.y + (m_blockrc.bottom - m_blockrc.top) > m_clientrc.bottom)
     m_showscrollbar = TRUE;
 
+  updaterect.left = m_tailblockpt.x;
+  updaterect.top = m_tailblockpt.y;
+  updaterect.right = updaterect.left + (m_blockrc.right - m_blockrc.left);
+  updaterect.bottom = updaterect.top + (m_blockrc.bottom - m_blockrc.top) + m_margin.bottom;
+
+  CalcBreakline(m_tailblockpt);
   m_blocks.push_back(block);
 }
 
-void ListBlocks::CalcLayer(POINT& markpt, UILayer* mark,
-                          UILayer* def, UILayer* play)
+void ListBlocks::DelBlock(UILayerBlock* block)
 {
+  POINT pt = {0, 0};
+  UILayer* layer = NULL;
+
+  std::list<UILayerBlock*>::iterator it;
+  for (it = m_blocks.begin(); it != m_blocks.end(); it++)
+  {
+    if (*it == block)
+    {
+      if (it == m_blocks.begin())
+      {
+        pt.x = m_margin.left;
+        pt.y = m_margin.top;
+        it++;
+        
+        if (it == m_blocks.end())
+          break;
+
+        CalcLayer(pt, *it);
+        continue;
+      }
+      else
+      {
+        it--;
+        (*it)->GetUILayer(L"mark", &layer);
+        layer->GetTexturePos(pt);
+        it++;
+      }
+      continue;
+    }
+    
+    if (pt.x != 0 && pt.y != 0)
+    {
+      CalcBreakline(pt);
+      CalcLayer(pt, *it);
+    }
+  }
+
+  m_showscrollbar = (pt.y + (m_blockrc.bottom - m_blockrc.top) > m_clientrc.bottom) ?
+                    TRUE : FALSE;
+  m_selectblock = NULL;
+  m_blocks.remove(block);
+  delete block;
+
+  if (m_blocks.empty())
+  {
+    m_tailblockpt.x = m_margin.left;
+    m_tailblockpt.y = m_margin.top;
+  }
+  else
+  {
+    CalcBreakline(pt);
+    m_tailblockpt = pt;
+  }
+}
+
+void ListBlocks::CalcLayer(POINT& layerpt, UILayerBlock* block)
+{
+  UILayer* layer = NULL;
+  UILayer* def = NULL;
+  UILayer* play = NULL;
+  UILayer* del = NULL;
+
+  block->GetUILayer(L"mark", &layer);
+  block->GetUILayer(L"def", &def);
+  block->GetUILayer(L"play", &play);
+  block->GetUILayer(L"del", &del);
+
   POINT play_fixpt = {40, 70};
   POINT def_fixpt = {5, 5};
+  POINT del_fixpt = {95, 8};
 
-  mark->SetTexturePos(markpt);
+  layer->SetTexturePos(layerpt);
 
-  POINT defpt = {def_fixpt.x+markpt.x, def_fixpt.y+markpt.y};
+  POINT defpt = {def_fixpt.x+layerpt.x, def_fixpt.y+layerpt.y};
   def->SetTexturePos(defpt);
 
-  POINT playpt = {play_fixpt.x+markpt.x, play_fixpt.y+markpt.y};
+  POINT playpt = {play_fixpt.x+layerpt.x, play_fixpt.y+layerpt.y};
   play->SetTexturePos(playpt);
+
+  POINT delpt = {del_fixpt.x+layerpt.x, del_fixpt.y+layerpt.y};
+  del->SetTexturePos(delpt);
 }
 
 void ListBlocks::DoPaint(WTL::CDC& dc)
 {
   POINT blockpt;
   UILayer* layer = NULL;
-  std::vector<UILayerBlock*>::iterator it;
+  std::list<UILayerBlock*>::iterator it;
+
+  RECT rc;
+  std::wstring str;
+  
+  dc.SetBkMode(TRANSPARENT);
 
   for (it = m_blocks.begin(); it != m_blocks.end(); it++)
   {
@@ -83,6 +160,16 @@ void ListBlocks::DoPaint(WTL::CDC& dc)
 
     if (blockpt.x == 0 && blockpt.y == 0 || blockpt.y > m_clientrc.bottom)
       break;
+
+    str = L"block_";
+    rc.left = blockpt.x;
+    rc.top = blockpt.y + (m_blockrc.bottom-m_blockrc.top);
+    rc.right = blockpt.x + (m_blockrc.right-m_blockrc.left);
+    rc.bottom = blockpt.y+160;
+    wchar_t addr[10];
+    wsprintf(addr, L"%d\n", *it);
+    str += addr;
+    dc.DrawText(str.c_str(), str.size(), &rc, DT_SINGLELINE|DT_CENTER|DT_VCENTER|DT_END_ELLIPSIS);
 
     (*it)->DoPaint(dc);
   }
@@ -127,20 +214,12 @@ BOOL ListBlocks::CalcBreakline(POINT& blockpt)
 
 void ListBlocks::AutoBreakline()
 {
-  UILayer* layer = NULL;
-  UILayer* def = NULL;
-  UILayer* play = NULL;
-
-  std::vector<UILayerBlock*>::iterator it;
+  std::list<UILayerBlock*>::iterator it;
   POINT blockpt = {m_margin.left, m_margin.top};
 
   for (it = m_blocks.begin(); it != m_blocks.end(); it++)
   {
-    (*it)->GetUILayer(L"mark", &layer);
-    (*it)->GetUILayer(L"def", &def);
-    (*it)->GetUILayer(L"play", &play);
-
-    CalcLayer(blockpt, layer, def, play);
+    CalcLayer(blockpt, *it);
     if (*it == m_blocks.front())
       m_headblockpt = blockpt;
 
@@ -157,6 +236,16 @@ void ListBlocks::AutoBreakline()
   UpdateScrollBar(pos);
 }
 
+BOOL ListBlocks::SelectBlockClick(HWND hwnd)
+{
+  if (m_selectblock && m_selectdellayer)
+    DelBlock(m_selectblock);
+  else if (m_selectblock)
+    MessageBox(hwnd, L"player", L"", MB_OK);
+
+  return TRUE;
+}
+
 BOOL ListBlocks::IsSelectBlock(POINT& curr, POINT& pos, RECT& updaterc)
 {
   RECT hitarea;
@@ -170,20 +259,80 @@ BOOL ListBlocks::IsSelectBlock(POINT& curr, POINT& pos, RECT& updaterc)
   return PtInRect(&hitarea, curr);
 }
 
-BOOL ListBlocks::SelectEffect(POINT& curr, RECT& updaterc)
+BOOL ListBlocks::SelectBlockdel(POINT& curr)
 {
-  POINT selectblock;
-  UILayer* mark = NULL;
-  UILayer* play = NULL;
+  RECT delrc;
+  POINT delpt;
   BOOL ret = FALSE;
+  UILayer* del = NULL;
+  UILayer* play = NULL;
 
-  if (m_selectblock == NULL)
+  m_selectblock->GetUILayer(L"del", &del);
+  del->GetTexturePos(delpt);
+  del->GetTextureRect(delrc);
+  delrc.bottom += delpt.y;
+  delrc.right += delpt.x;
+  delrc.top = delpt.y;
+  delrc.left = delpt.x;
+  if (PtInRect(&delrc, curr))
   {
-    std::vector<UILayerBlock*>::iterator it;
+    m_selectblock->GetUILayer(L"play", &play);
+    play->SetDisplay(FALSE);
+    del->SetDisplay(TRUE);
+    m_selectdellayer = del;
+    ret = TRUE;
+  } // end del select
+  else
+  {
+    ret = FALSE;
+    del->SetDisplay(FALSE);
+    m_selectdellayer = NULL;
+  }
+
+  return ret;
+}
+
+BOOL ListBlocks::SelectBlockEffect(POINT& curr, RECT& updaterc)
+{
+  UILayer* layer = NULL;
+  UILayer* play = NULL;
+
+  POINT selectblock;
+  BOOL ret = FALSE;
+  BOOL selectdel = FALSE;
+
+  if (m_selectblock)
+  {
+    // del select
+    selectdel = SelectBlockdel(curr);
+
+    // block select
+    if (!selectdel)
+    {
+      m_selectblock->GetUILayer(L"mark", &layer);
+      layer->GetTexturePos(selectblock);
+      if (IsSelectBlock(curr, selectblock, updaterc))
+      {
+        m_selectblock->GetUILayer(L"play", &play);
+        play->SetDisplay(TRUE);
+        ret = TRUE;
+      }
+      else
+      {
+        m_selectblock->GetUILayer(L"play", &play);
+        play->SetDisplay(FALSE);
+        m_selectblock = NULL;
+      }
+    }
+  }
+  else
+  { // find block
+    std::list<UILayerBlock*>::iterator it;
     for (it = m_blocks.begin(); it != m_blocks.end(); it++)
     {
-      (*it)->GetUILayer(L"mark", &mark);
-      mark->GetTexturePos(selectblock);
+      (*it)->GetUILayer(L"mark", &layer);
+      layer->GetTexturePos(selectblock);
+
       if (IsSelectBlock(curr, selectblock, updaterc))
       {
         (*it)->GetUILayer(L"play", &play);
@@ -192,19 +341,6 @@ BOOL ListBlocks::SelectEffect(POINT& curr, RECT& updaterc)
         ret = TRUE;
         break;
       }
-    }
-  }
-  else
-  {
-    m_selectblock->GetUILayer(L"mark", &mark);
-    mark->GetTexturePos(selectblock);
-    if (IsSelectBlock(curr, selectblock, updaterc))
-      ret = TRUE;
-    else
-    {
-      m_selectblock->GetUILayer(L"play", &play);
-      play->SetDisplay(FALSE);
-      m_selectblock = NULL;
     }
   }
 
@@ -235,23 +371,16 @@ BOOL ListBlocks::UpdateScrollBar(POINT& pos)
 BOOL ListBlocks::ApplyScrollBarOffset()
 {
   UILayer* layer = NULL;
-  UILayer* play = NULL;
-  UILayer* def = NULL;
   POINT blockpt;
 
-  std::vector<UILayerBlock*>::iterator it;
+  std::list<UILayerBlock*>::iterator it;
   for (it = m_blocks.begin(); it != m_blocks.end(); it++)
   {
-    if ((*it)->GetUILayer(L"mark", &layer) == FALSE)
-      continue;
-
+    (*it)->GetUILayer(L"mark", &layer);
     layer->GetTexturePos(blockpt);
     blockpt.y -= m_scrollbaroffset;
 
-    (*it)->GetUILayer(L"def", &def);
-    (*it)->GetUILayer(L"play", &play);
-
-    CalcLayer(blockpt, layer, def, play);
+    CalcLayer(blockpt, *it);
   }
 
   m_headblockpt.y -= m_scrollbaroffset;
@@ -294,21 +423,28 @@ BOOL ListBlocks::DragScrollBar(POINT& curr)
     return FALSE;
 
   m_scrollbaroffset = curr.y - m_startdrag.y;
+
   // m_scrollbaroffset < 0 滚动条向上滑动， 反之向下滑动
   if (m_scrollbaroffset < 0 && (m_headblockpt.y-m_scrollbaroffset) > m_margin.top
     || m_scrollbaroffset > 0 && (m_tailblockpt.y+(m_blockrc.bottom-m_blockrc.top)-m_scrollbaroffset)
-      < (m_clientrc.bottom - m_margin.top))
+      < (m_clientrc.bottom - m_margin.bottom))
     return FALSE;
 
-  m_startdrag = curr;
-  ApplyScrollBarOffset();
-
   POINT pt;
+  RECT rect;
   UILayer* layer = NULL;
   m_scrollbar->GetUILayer(L"layer", &layer);
   layer->GetTexturePos(pt);
+  layer->GetTextureRect(rect);
+
+  if (m_scrollbaroffset < 0 && pt.y + m_scrollbaroffset < m_clientrc.top
+    || m_scrollbaroffset > 0 && pt.y + m_scrollbaroffset+(rect.bottom-rect.top) > m_clientrc.bottom)
+    return FALSE;
+
+  m_startdrag = curr;
   pt.y += m_scrollbaroffset;
   UpdateScrollBar(pt);
+  ApplyScrollBarOffset();
   return TRUE;
 }
 

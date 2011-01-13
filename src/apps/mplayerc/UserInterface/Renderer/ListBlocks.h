@@ -2,6 +2,7 @@
 
 #include "UILayerBlock.h"
 #include "UILayer.h"
+#include <list>
 
 class ListBlocks
 {
@@ -9,8 +10,8 @@ public:
   ListBlocks();
   ~ListBlocks();
 
-  void AddBlock();
-  //void DelBlock();
+  void AddBlock(RECT& updaterect);
+  void DelBlock(UILayerBlock* block);
 
   void AutoBreakline();
 
@@ -19,11 +20,12 @@ public:
   void SetClientrc(RECT& clientrc);
 
   BOOL CalcBreakline(POINT& blockpt);
-  void CalcLayer(POINT& markpt, UILayer* mark,
-    UILayer* def, UILayer* play);
+
+  void CalcLayer(POINT& layerpt, UILayerBlock* block);
 
   BOOL IsSelectBlock(POINT& curr, POINT& pos, RECT& updaterc);
-  BOOL SelectEffect(POINT& curr, RECT& updaterc);
+  BOOL SelectBlockEffect(POINT& curr, RECT& updaterc);
+  BOOL SelectBlockdel(POINT& curr);
 
   BOOL AddScrollBar();
   BOOL UpdateScrollBar(POINT& pos);
@@ -32,12 +34,15 @@ public:
   BOOL SelectScrollBar(POINT& curr, RECT& updaterc);
   BOOL UnDragScrollBar();
 
+  BOOL SelectBlockClick(HWND hwnd);
+
 private:
-  std::vector<UILayerBlock*> m_blocks;
+  std::list<UILayerBlock*> m_blocks;
   POINT m_tailblockpt;
   POINT m_headblockpt;
 
   UILayerBlock* m_selectblock;
+  UILayer* m_selectdellayer;
   UILayerBlock*  m_scrollbar;
 
   RECT m_margin;

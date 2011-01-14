@@ -8589,7 +8589,7 @@ LRESULT CMainFrame::OnSuggestVolume(  WPARAM wParam, LPARAM lParam){
 		iVol = 70;
 	}
 	int iPlayerVol =  m_wndToolBar.m_volctrl.GetPos();
-	if(iPlayerVol < iVol){
+	if(iPlayerVol > iVol){
 		m_wndToolBar.m_volctrl.SetPos(iVol);
 
 		s.AudioBoost = 1;

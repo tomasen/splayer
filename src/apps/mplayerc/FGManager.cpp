@@ -748,7 +748,7 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
       if (szFName.Find(_T("PPS - RealVideo Decoder")) >= 0 ) continue;
       if (szFName.Find(_T("Thunder RM Video Decoder")) >= 0 ) continue;
       if (szFName.Find(_T("Roxio Mp3 Encoder")) >= 0 ) continue;
-			
+      
 			//if (szFName.Find(_T("SHN to Wave Filter")) >= 0 ) continue;
 			//if (szFName.Find(_T("AVI Decompressor (YV12)")) >= 0 ) continue;
 			//if (szFName.Find(_T("AVI Decompressor (I420)")) >= 0 ) continue;
@@ -763,6 +763,9 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 			
 			CLSID FGID = pFGF->GetCLSID() ;
 
+      if (szFName.Find(_T("MONOGRAM AMR Encoder")) >= 0 
+          || FGID == GUIDFromCString(_T("{99735894-CAF4-488B-8275-B8CB1998216E}"))) continue;// 
+			
 				if (szFName.Find(_T("DirectVobSub")) >= 0 ) continue;
 				
         if (FGID == GUIDFromCString(_T("{238D0F23-5DC9-45A6-9BE2-666160C324DD}"))  ) continue; //"RealVideo Decoder"

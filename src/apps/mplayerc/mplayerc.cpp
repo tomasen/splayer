@@ -5047,6 +5047,8 @@ LPCTSTR CMPlayerCApp::GetSatelliteDll(int nLanguage)
         return _T("lang\\splayer.cht.dll");
     case 3:		// Russian
       return _T("lang\\splayer.ru.dll");
+    case ID_LANGUAGE_FRENCH - ID_LANGUAGE_CHINESE_SIMPLIFIED:
+      return L"lang\\splayer.fr.dll";
     case 14:		// german
       return _T("lang\\splayer.ge.dll");
 	}

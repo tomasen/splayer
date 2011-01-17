@@ -1,0 +1,171 @@
+// Microsoft Visual C++ generated resource script.
+//
+// Copyright (c) Microsoft Corporation.  All rights reserved.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+#else     // !APSTUDIO_INVOKED
+
+#define VER_FILETYPE	VFT_APP
+
+#define VER_FILEDESCRIPTION_STR "Microsoft \256 Visual C++ Web Deployment Tool"
+
+#define VER_INTERNALNAME_STR "VCDEPLOY"
+
+#define VER_ORIGINALFILENAME_STR "VCDEPLOY.EXE"
+
+#define VER_COPYRIGHTSTARTYEAR_STR	"1999"
+
+#include "ver_.rc"
+
+#endif     // APSTUDIO_INVOKED
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_USAGE               "VCDEPLOY.EXE [options] settings_file\nOptions:\n/?\tShow Usage\n/nologo\tSuppress startup banner"
+    IDS_BANNER              "Visual C++ Web Deployment Tool\nCopyright (C) Microsoft Corporation. All rights reserved.\n"
+    IDS_COMINIT_FAILED      "VCD0001: Failed to initialize COM."
+    IDS_UPDATEIRL           "ISAPI extension %s was added to the enabled ISAPIs on the ISAPI Restriction List for this machine.\n"
+    IDS_UNEXPECTED          "VCD0005: An unexpected error occurred."
+    IDS_ERR_FAILEDTOCREATEDOM 
+                            "VCD0006: Failed to load MSXML. Make sure MSXML is installed on this machine."
+    IDS_ERR_FAILEDTOLOAD_SETTINGS_XML 
+                            "VCD0007: MSXML could not load the specified settings file. Check that the XML syntax in the settings file is correct."
+    IDS_ERR_BADROOTNODE     "VCD0008: The deployment settings are corrupt."
+    IDS_ERR_WEBHOSTNAME     "VCD0009: The web server name was not specified. This information is required."
+    IDS_ERR_NOVIRTDIR       "VCD0010: Virtual Directory Name was not specified. This information is required."
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_ERR_BADVIRTDIRNODE  "VCD0011: Virtual Directory Name was empty. This information is required."
+    IDS_ERR_BADREGISTERISAPI 
+                            "VCD0012: Register Output was empty. Must be the string 'true' or 'false'."
+    IDS_ERR_INVALIDREGISTERISAPI 
+                            "VCD0013: Register Output was invalid. Must be the string 'true' or 'false'."
+    IDS_ERR_BADUNLOADBEFORECOPY 
+                            "VCD0014: Unload Before Copy was empty. Must be the string 'true' or 'false'."
+    IDS_ERR_INVALIDUNLOADBEFORECOPY 
+                            "VCD0015: Unload Before Copy was invalid. Must be the string 'true' or 'false'."
+    IDS_ERR_BADAPPISOLATION "VCD0016: Application Protection was empty. Must be 0, 1, or 2."
+    IDS_ERR_INVALIDAPPISOLATION 
+                            "VCD0017: Application Protection was invalid. Must be 0, 1, or 2."
+    IDS_ERR_NOVIRTDIRFSPATH "VCD0018: Virtual Directory Path was not specified. This information is required."
+    IDS_ERR_BADVIRTDIRSFPATHNODE 
+                            "VCD0019: Virtual Directory Path was empty. This information is required."
+    IDS_ERR_CONNECTADSFAILED 
+                            "VCD0020: Failed to connect to the IIS admin objects. Make sure that IIS is on the local and target machines."
+    IDS_ERR_CREATEVROOTFAILED 
+                            "VCD0021: Failed to create new virtual directory in the IIS metabase."
+    IDS_ERR_SETADSPROPERTY  "VCD0022: Failed to set one or more metabase properties for the specified virtual directory."
+    IDS_FILEEXTATTR_NOTFOUND 
+                            "VCD0023: Application Mappings did not include a file extension."
+    IDS_FILEEXTATTR_INVALID "VCD0024: Failed to obtain file extension from Application Mappings."
+    IDS_ERR_TOOMANYVERBS    "VCD0025: Too many verbs listed for Application Mappings."
+    ATLS_ERR_TOOMANYVERBBLOCKS "VCD0026: Too many Application Mappings."
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_ERR_NOSTOPW3SVC     "VCD0028: The W3SVC failed to stop in a timely manner. You may want to run IISRESET.exe on the target machine."
+    IDS_ERR_W3SVCFAILEDTOSTART 
+                            "VCD0029: The W3SVC failed to restart in a timely manner. You may want to run IISRESET.exe on the target machine."
+    IDS_FAILEDOPENSCM       "VCD0030: Failed to open the service control manager. You may not have privileges to control services on the target machine."
+    IDS_FAILEDOPENSVC       "VCD0031: Failed to open the W3SVC. You may not have privileges to control services on the target machine."
+    IDS_FAILEDSTOPCOMMAND   "VCD0032: Failed to send stop command to W3SVC. The service might already be stopped or you might not have privileges to control services on the target machine."
+    IDS_FAILEDQUERYSTATUS   "VCD0033: Failed to query for W3SVC status. The service might not be running or you might not have privileges to query service status on the target machine."
+    IDS_FAILEDSTARTSVC      "VCD0034: Failed to send the W3SVC a start command. The service might already be started, or, you might not have privileges to start services on the target machine."
+    IDS_ERR_CREATING_DIRECTORY 
+                            "VCD0035: Failed to create the file system directory for the virtual directory. "
+    IDS_ERR_CREATING_DIRECTORY_RELATIVE 
+                            "VCD0036: Failed to create the file system directory for a directory relative to the virtual directory."
+    IDS_WARN_COPYING_FILE   "VCD0037: Failed to copy a file to the virtual directory."
+    IDS_ERR_REGISTERING_EXTENSION 
+                            "VCD0038: An error occurred registering the ISAPI extension. Make sure the extension is located at the correct path in the virtual directory."
+    IDS_ERR_REGISTERING_NOVDIRPATH 
+                            "VCD0039: Tried to register an ISAPI extension but no virtual directory path was specified."
+    IDS_ERR_REGISTERING_NOEXTFILE 
+                            "VCD0040: Register Output is only valid for ISAPI extensions. Registration skipped."
+    IDS_ERR_RUNTIME         "VCD0041: IIS must be installed on this machine in order for this program to function correctly."
+    IDS_ERR_OUTOFMEM        "VCD0042: An out of memory exception was thrown."
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_WARN_SOURCE_NOT_EXIST "VCD0043: The source file %s does not exist."
+    IDS_WARN_SOURCE_ACCESS_ERROR 
+                            "VCD0044: Error accessing source file. Error number: %d."
+    IDS_COPYFILE_MESSAGE    "Copied file from %s to %s\n"
+    IDS_FILES_IDENTICAL     "Source and destination files were identical. File not copied (%s)\n"
+    IDS_WARNING_FAILED_METABSESAVE 
+                            "VCD0045: Failed to save IIS metabase data. Error number %d."
+    IDS_WARNING_EMPTY_HOST_TAG "VCD0046: The web server name was empty."
+    IDS_MUSTBEADMIN         "VCD0047: This program requires the caller to be a member of the local Administrators group.\n"
+    IDS_CANTGETSECURITY     "VCD0048: An error occurred trying to determine the security context of the user creating this process. Error number: %d.\n"
+    IDS_ERR_BADDONOTCREATEVIRTDIR 
+                            "VCD0049: DoNotCreateVirtDir was empty. Must be the string 'true' or 'false'."
+    IDS_ERR_INVALIDDONOTCREATEVIRTDIR 
+                            "VCD0050: DoNotCreateVirtDir was invalid. Must be the string 'true' or 'false'."
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

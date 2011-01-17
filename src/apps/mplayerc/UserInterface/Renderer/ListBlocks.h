@@ -30,7 +30,7 @@ public:
   BOOL AddScrollBar();
   BOOL UpdateScrollBar(POINT& pos);
   BOOL DragScrollBar(POINT& curr);
-  BOOL ApplyScrollBarOffset();
+  BOOL ApplyScrollBarOffset(int offset);
   BOOL SelectScrollBar(POINT& curr, RECT& updaterc);
   BOOL UnDragScrollBar();
 

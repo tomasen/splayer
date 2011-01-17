@@ -185,6 +185,7 @@ void ListBlocks::SetOption(RECT& blockrc, RECT& margin, int scrollbar_right)
   m_scrollbarright = scrollbar_right;
   m_tailblockpt.x = m_margin.left;
   m_tailblockpt.y = m_margin.top;
+  m_scrollbaroffset = m_margin.top;
 }
 
 void ListBlocks::SetClientrc(RECT& clientrc)
@@ -215,7 +216,7 @@ BOOL ListBlocks::CalcBreakline(POINT& blockpt)
 void ListBlocks::AutoBreakline()
 {
   std::list<UILayerBlock*>::iterator it;
-  POINT blockpt = {m_margin.left, m_margin.top};
+  POINT blockpt = {m_margin.left, m_scrollbaroffset};
 
   for (it = m_blocks.begin(); it != m_blocks.end(); it++)
   {
@@ -229,6 +230,9 @@ void ListBlocks::AutoBreakline()
       m_tailblockpt = blockpt;
   }
 
+  if (m_scrollbaroffset < 0)
+    m_showscrollbar = TRUE;
+  else
   m_showscrollbar = (m_tailblockpt.y + (m_blockrc.bottom - m_blockrc.top) > m_clientrc.bottom) ?
                         TRUE : FALSE;
 
@@ -368,7 +372,7 @@ BOOL ListBlocks::UpdateScrollBar(POINT& pos)
   return TRUE;
 }
 
-BOOL ListBlocks::ApplyScrollBarOffset()
+BOOL ListBlocks::ApplyScrollBarOffset(int dragoffset)
 {
   UILayer* layer = NULL;
   POINT blockpt;
@@ -378,14 +382,14 @@ BOOL ListBlocks::ApplyScrollBarOffset()
   {
     (*it)->GetUILayer(L"mark", &layer);
     layer->GetTexturePos(blockpt);
-    blockpt.y -= m_scrollbaroffset;
+    blockpt.y -= dragoffset;
 
     CalcLayer(blockpt, *it);
   }
 
-  m_headblockpt.y -= m_scrollbaroffset;
-  m_tailblockpt.y -= m_scrollbaroffset;
-
+  m_headblockpt.y -= dragoffset;
+  m_tailblockpt.y -= dragoffset;
+  m_scrollbaroffset -= dragoffset;
   return TRUE;
 }
 
@@ -422,11 +426,11 @@ BOOL ListBlocks::DragScrollBar(POINT& curr)
   if (m_candragscrollbar == FALSE)
     return FALSE;
 
-  m_scrollbaroffset = curr.y - m_startdrag.y;
+  int dragoffset = curr.y - m_startdrag.y;
 
-  // m_scrollbaroffset < 0 滚动条向上滑动， 反之向下滑动
-  if (m_scrollbaroffset < 0 && (m_headblockpt.y-m_scrollbaroffset) > m_margin.top
-    || m_scrollbaroffset > 0 && (m_tailblockpt.y+(m_blockrc.bottom-m_blockrc.top)-m_scrollbaroffset)
+  // dragoffset < 0 滚动条向上滑动， 反之向下滑动
+  if (dragoffset < 0 && (m_headblockpt.y-dragoffset) > m_margin.top
+    || dragoffset > 0 && (m_tailblockpt.y+(m_blockrc.bottom-m_blockrc.top)-dragoffset)
       < (m_clientrc.bottom - m_margin.bottom))
     return FALSE;
 
@@ -437,14 +441,14 @@ BOOL ListBlocks::DragScrollBar(POINT& curr)
   layer->GetTexturePos(pt);
   layer->GetTextureRect(rect);
 
-  if (m_scrollbaroffset < 0 && pt.y + m_scrollbaroffset < m_clientrc.top
-    || m_scrollbaroffset > 0 && pt.y + m_scrollbaroffset+(rect.bottom-rect.top) > m_clientrc.bottom)
+  if (dragoffset < 0 && pt.y + dragoffset < m_clientrc.top
+    || dragoffset > 0 && pt.y + dragoffset+(rect.bottom-rect.top) > m_clientrc.bottom)
     return FALSE;
 
   m_startdrag = curr;
-  pt.y += m_scrollbaroffset;
+  pt.y += dragoffset;
   UpdateScrollBar(pt);
-  ApplyScrollBarOffset();
+  ApplyScrollBarOffset(dragoffset);
   return TRUE;
 }
 

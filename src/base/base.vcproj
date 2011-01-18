@@ -148,6 +148,14 @@
 	</References>
 	<Files>
 		<File
+			RelativePath=".\base64.cc"
+			>
+		</File>
+		<File
+			RelativePath=".\base64.h"
+			>
+		</File>
+		<File
 			RelativePath=".\CriticalSection.h"
 			>
 		</File>

@@ -9,6 +9,9 @@
 #include "../resource.h"
 #include "../revision.h"
 #include "NetworkControlerImpl.h"
+#undef __MACTYPES__
+#include "../../../zlib/zlib.h"
+#include "base64.h"
 
 UserShareController::UserShareController() : m_retdata(L"")
 {
@@ -47,14 +50,15 @@ std::wstring UserShareController::GenerateKey()
     return HashController::GetInstance()->GetMD5Hash(buf, strlen(buf));
 }
 
-void UserShareController::ShareMovie(std::wstring uuid, std::wstring sphash)
+void UserShareController::ShareMovie(std::wstring uuid, std::wstring sphash, std::wstring film)
 {
     _Stop();
-    if (uuid.empty() || sphash.empty())
+    if (uuid.empty() || sphash.empty() || film.empty())
       return;
 
     m_uuid = uuid;
     m_sphash = sphash;
+    m_film = film;
     _Start();
 }
 
@@ -67,6 +71,9 @@ void UserShareController::_Thread()
     refptr<postdata> data = postdata::create_instance();
     std::map<std::wstring, std::wstring> postform;
     PlayerPreference* pref = PlayerPreference::GetInstance();
+    
+    std::string filmstr =  Strings::WStringToUtf8String(m_film);
+    filmstr = base64_encode((unsigned char*)filmstr.c_str(), filmstr.length());
 
     postform[L"uuid"] = m_uuid;
     postform[L"sphash"] = m_sphash;
@@ -80,6 +87,10 @@ void UserShareController::_Thread()
     wsprintf(getdata, L"?sphash=%s&uuid=%s&spkey=%s", 
       m_sphash.c_str(), m_uuid.c_str(), (postform[L"spkey"]).c_str());
     url += getdata;
+
+    si_stringmap rps_headers;
+    rps_headers[L"Film"] =  Strings::Utf8StringToWString(filmstr);
+    req->set_request_header(rps_headers);
 
     SinetConfig(cfg, -1);
     //req->set_postdata(data);

@@ -2665,7 +2665,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
       std::wstring uuid, moviehash;
       SPlayerGUID::GenerateGUID(uuid);
       moviehash = HashController::GetInstance()->GetSPHash(m_fnCurPlayingFile);
-      UserShareController::GetInstance()->ShareMovie(uuid, moviehash);
+      UserShareController::GetInstance()->ShareMovie(uuid, moviehash, m_fnCurPlayingFile.GetString());
     }
     break;
   case TIMER_SNAP:

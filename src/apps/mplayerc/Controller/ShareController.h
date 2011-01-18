@@ -18,7 +18,7 @@ public:
     ~UserShareController();
 
     void _Thread();
-    void ShareMovie(std::wstring uuid, std::wstring sphash);
+    void ShareMovie(std::wstring uuid, std::wstring sphash, std::wstring film);
 
     void CreateCommentPlane(HWND hwnd);
     void CalcCommentPlanePos();
@@ -32,6 +32,7 @@ private:
 
     std::wstring m_uuid;
     std::wstring m_sphash;
+    std::wstring m_film;
     std::wstring m_retdata;
 
     MovieComment m_commentplane;

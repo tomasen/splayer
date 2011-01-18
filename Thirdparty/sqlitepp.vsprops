@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="gb2312"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="sqlitepp"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		AdditionalIncludeDirectories="&quot;$(SolutionDir)Thirdparty\sqlitepp\sqlitepp&quot;"
+		PreprocessorDefinitions="WIN32;NDEBUG;_LIB;SQLITEPP_UTF16"
+	/>
+	<Tool
+		Name="VCLinkerTool"
+		AdditionalDependencies="sqlitepp-utf16.lib"
+		AdditionalLibraryDirectories="&quot;$(SolutionDir)Thirdparty\bin&quot;"
+	/>
+</VisualStudioPropertySheet>

@@ -99,7 +99,7 @@ AP4_AtomSampleTable::AP4_AtomSampleTable(AP4_ContainerAtom* stbl,
 					m_SttsAtom->m_Entries[0].m_SampleCount = m_StszAtom->m_SampleCount;
 					m_SttsAtom->m_Entries[0].m_SampleDuration = SamplesPerPacket;
 				}
-				else if(BitsPerSample > 8)
+				else if(BitsPerSample > 8 && AtomType != AP4_ATOM_TYPE_ULAW)
         {
 					m_StszAtom->m_SampleSize = BitsPerSample / 8;
           if (ChannelCount > 1 && 

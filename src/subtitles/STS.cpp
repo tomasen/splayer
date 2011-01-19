@@ -2309,7 +2309,7 @@ CRect rotateCRect(CRect r, int iAngle){
 	}
 	return r;
 }
-void CSimpleTextSubtitle::SetAliPos(int iAlign, CRect posRect){
+void CSimpleTextSubtitle::SetAliPos(int iAlign, CRect posRect, CString style_name){
 	POSITION pos =  m_styles.GetStartPosition();
 	while (pos != NULL) 
 	{
@@ -2317,6 +2317,8 @@ void CSimpleTextSubtitle::SetAliPos(int iAlign, CRect posRect){
 		CString key;
 
 		m_styles.GetNextAssoc(pos, key, style);
+    if (!style_name.IsEmpty() && key != style_name)
+      continue;
 		if(style){
 			if(iAlign >= 0){
 				style->scrAlignment = iAlign;

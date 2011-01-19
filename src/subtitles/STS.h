@@ -304,7 +304,7 @@ public:
 	void ChangeUnknownStylesToDefault();
 	void AddStyle(CString name, STSStyle* style); // style will be stored and freed in Empty() later
 	bool CopyStyles(const CSTSStyleMap& styles, bool fAppend = false);
-	void SetAliPos(int iAlign, CRect posRect);
+	void SetAliPos(int iAlign, CRect posRect, CString style_name = L"SVPDefault");
 
 	bool SetDefaultStyle(STSStyle& s, bool overideCharSet = false);
 	bool GetDefaultStyle(STSStyle& s);

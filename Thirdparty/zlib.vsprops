@@ -6,11 +6,10 @@
 	>
 	<Tool
 		Name="VCCLCompilerTool"
-		AdditionalIncludeDirectories="&quot;$(SolutionDir)Thirdparty\zlib\include&quot;"
+		AdditionalIncludeDirectories="&quot;$(SolutionDir)src\zlib&quot;"
 	/>
 	<Tool
 		Name="VCLinkerTool"
-		AdditionalDependencies="zdll.lib"
-		AdditionalLibraryDirectories="&quot;$(SolutionDir)Thirdparty\zlib\lib&quot;"
+		AdditionalLibraryDirectories=""
 	/>
 </VisualStudioPropertySheet>

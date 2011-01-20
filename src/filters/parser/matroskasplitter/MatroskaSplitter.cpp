@@ -669,7 +669,7 @@ avcsuccess:
 		}
 	}
 
-	Info& info = m_pFile->m_segment.SegmentInfo;
+	MatroskaReader::Info& info = m_pFile->m_segment.SegmentInfo;
 
 	if(m_pFile->IsRandomAccess())
 	{
@@ -854,6 +854,33 @@ void CMatroskaSplitterFilter::SendVorbisHeaderSample()
 				TRACE(_T("ERROR: Vorbis initialization failed for stream %I64d\n"), TrackNumber);
 		}
 	}
+}
+
+// IAMStreamSelect
+
+STDMETHODIMP CMatroskaSplitterFilter::Count(DWORD* pcStreams)
+{
+  CheckPointer(pcStreams, E_POINTER);
+
+  *pcStreams = m_pFile->m_segment.Tracks.GetCount();
+
+  return S_OK;
+}
+
+STDMETHODIMP CMatroskaSplitterFilter::Enable(long lIndex, DWORD dwFlags)
+{
+  if(!(dwFlags & AMSTREAMSELECTENABLE_ENABLE))
+    return E_NOTIMPL;
+  // TODO: implement this
+
+  return S_FALSE;
+}
+
+STDMETHODIMP CMatroskaSplitterFilter::Info(long lIndex, AM_MEDIA_TYPE** ppmt, DWORD* pdwFlags, LCID* plcid, DWORD* pdwGroup, WCHAR** ppszName, IUnknown** ppObject, IUnknown** ppUnk)
+{
+  // TODO: implement this
+
+  return S_OK;
 }
 
 bool CMatroskaSplitterFilter::DemuxInit()

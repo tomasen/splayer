@@ -28,14 +28,21 @@
 // CPlayerToolBar
 struct button  
 {
+  CSUIButton*  mybutton;
   std::wstring buttonname;
+  std::wstring      bmpstr;
+  int          align1;
+  CRect        rect1;
+  BOOL         bnotbutton;
   int          id;
-  CSUIButton*  pbutton;
-  int          width;
   BOOL         bhide;
-  int          align;
-  CRect        rect;
+  int          width;
+  int          align2;
+  CRect        rect2;
+  BOOL         baddalign;
+  CSUIButton*  pbutton;
 };
+
 
 class CPlayerToolBar : public CToolBar
 {
@@ -61,11 +68,13 @@ private:
 	CSUIButton* btnSubSwitch;
 
   BOOL breadfromfile;
+  std::map<std::wstring, int> m_classificationname_map;
   std::map<std::wstring, int> m_align1_map;
   std::map<std::wstring, int> m_align2_map;
   std::map<std::wstring, int> m_id_map;
   //std::map<std::wstring, std::pair<CSUIButton*, int> > m_buttoninitlize;
-  struct button m_buttoninitlize[30];
+  std::vector<button* > m_buttoninitlize;
+  //struct button m_buttoninitlize[30];
 public:
 	CString m_timerstr;
 	CString m_timerqueryedstr;
@@ -127,11 +136,18 @@ protected:
 	virtual INT_PTR OnToolHitTest(	CPoint point,TOOLINFO* pTI 	) const;
 
   BOOL ReadFromFile();
+  void LineStringToVector(std::wstring& buttoninformation, button* buttonstruct);
+  void StringToStruct(std::wstring& buttoninformation, button* buttonstruct);
+  void FillStruct(std::wstring& buttoninformation, button* buttonstruct);
+  void SolveAddalign(std::wstring& buttoninformation, button* buttonstruct);
 
   void DefaultInitializeButton();
 
-  void GetCRect(std::wstring rectstr, CRect& rect);
+  CRect GetCRect(std::wstring rectstr);
 
+  void ShowButton(BOOL bl);
+
+  void ShowPlayTime(CDC* dc, AppSettings& s, CRect& rcClient);
   LONG PlayTimeRect(LONG Mlen, LONG wW);
 	
 	//}}AFX_MSG

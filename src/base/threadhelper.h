@@ -32,7 +32,7 @@ public:
   // Create a new thread
   void _Start()
   {
-    if (_GetThreadId() != 0)
+    if (_Is_alive())
       return;
 
     m_thread = (HANDLE)::_beginthread(Logic, 0, (T*)this);
@@ -41,7 +41,7 @@ public:
   // Stop the thread
   void _Stop(int wait_msec = 300, int times = 6)
   {
-    if (_GetThreadId() == 0)
+    if (!_Is_alive())
       return;
 
     ::SetEvent(m_stopevent);
@@ -80,7 +80,7 @@ public:
 
   DWORD _GetThreadId()
   {
-    return ::GetThreadId(m_thread);
+    return ::GetCurrentThreadId();
   }
 
   void _ResetThread()

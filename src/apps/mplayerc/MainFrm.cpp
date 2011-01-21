@@ -11989,7 +11989,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
     // send sphash to remote
     if (m_pCAP && !m_fAudioOnly)
     {
-      UserShareController::GetInstance()->_Stop();
+      UserShareController::GetInstance()->HideCommentPlane();
       m_wndToolBar.HideMovieShareBtn(TRUE);
       SetTimer(TIMER_MOVIESHARE, 10000, NULL);
     }

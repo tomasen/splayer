@@ -12354,7 +12354,7 @@ void CMainFrame::CloseMediaPrivate()
 	SVP_LogMsg5(L"CloseMediaPrivate");
 	m_iMediaLoadState = MLS_CLOSING;
 
-    OnPlayStop(); // SendMessage(WM_COMMAND, ID_PLAY_STOP);
+  OnPlayStop(); // SendMessage(WM_COMMAND, ID_PLAY_STOP);
 
 	m_iPlaybackMode = PM_NONE;
 	m_iSpeedLevel = 0;
@@ -12394,12 +12394,16 @@ void CMainFrame::CloseMediaPrivate()
 	m_pRefClock = NULL;
 	m_pSyncClock = NULL;
 
-	try{
-		if(pGB) pGB->RemoveFromROT();
-		pGB.Release();
+  try{
+    if (AfxGetAppSettings().szCurrentExtension != L".csf")
+    {
+      if(pGB) pGB->RemoveFromROT();
+      //UnloadExternalObjects();
+    }
 
-		m_fRealMediaGraph = m_fShockwaveGraph = m_fQuicktimeGraph = false;
-	}catch(...){}
+    pGB.Release();
+    m_fRealMediaGraph = m_fShockwaveGraph = m_fQuicktimeGraph = false;
+  }catch(...){}
 
 	m_pSubClock = NULL;
 
@@ -12418,15 +12422,14 @@ void CMainFrame::CloseMediaPrivate()
 
 	m_closingmsg = ResStr(IDS_CONTROLS_CLOSED);
 
+
+  AfxGetAppSettings().bIsIVM = false;
+  AfxGetAppSettings().szCurrentExtension.Empty();
 	AfxGetAppSettings().nCLSwitches &= CLSW_OPEN|CLSW_PLAY|CLSW_AFTERPLAYBACK_MASK|CLSW_NOFOCUS|CLSW_HTPCMODE;
 
 	m_iMediaLoadState = MLS_CLOSED;
 
-    {
-    
-
-        SetThreadExecutionState(0); //this is the right way, only this work under vista . no ES_CONTINUOUS  so it can goes to sleep when not playing
-    }
+  SetThreadExecutionState(0); //this is the right way, only this work under vista . no ES_CONTINUOUS  so it can goes to sleep when not playing
 
 }
 
@@ -15179,11 +15182,8 @@ int CMainFrame::SVPMessageBox(LPCTSTR lpszText, UINT nType  ,	UINT   , UINT idWM
 }
 void CMainFrame::CloseMedia()
 {
-	
-	AfxGetAppSettings().bIsIVM = false;
-	AfxGetAppSettings().szCurrentExtension.Empty();
 
-	PostMessage(WM_COMMAND, ID_PLAY_PAUSE);
+	SendMessage(WM_COMMAND, ID_PLAY_PAUSE);
 
 	CString fnx = m_wndPlaylistBar.GetCur();
 
@@ -15266,9 +15266,6 @@ void CMainFrame::CloseMedia()
 	if(m_pMC){
 		m_pMC = NULL;
 	}
-
-	UnloadExternalObjects();
-
 
 	m_iRedrawAfterCloseCounter = 0;
 	SetTimer(TIMER_REDRAW_WINDOW,120,NULL);

@@ -34,7 +34,7 @@
 #include "..\..\svplib\svplib.h"
 #include "..\..\svplib\SVPToolBox.h"
 
-#define TRACE_SVP   __noop
+#define TRACE_SVP  __noop
 //SVP_LogMsg6
 //
 #define TRACE_SVP5 __noop
@@ -276,23 +276,7 @@ HRESULT WINAPI Mine_CoCreateInstance(IN REFCLSID rclsid, IN LPUNKNOWN pUnkOuter,
 
 		TRACE_SVP5(_T("Mine_CoCreateInstance Unknown %s"), CStringFromGUID(rclsid));
 	}
-	/*
-	if( GUIDFromCString(_T("{DB43B405-43AA-4F01-82D8-D84D47E6019C}")) == rclsid){
-			CFilterMapper2::m_pFilterMapper2->AddRef();
-			*ppv = (IUnknown*)CFilterMapper2::m_pFilterMapper2;
-			return S_OK;
-		}*/
-	
-	/*	else
-	{
-	if(rclsid == CLSID_FilterMapper2)
-	{
-	CFilterMapper2* pFM2 = new CFilterMapper2(true, false, pUnkOuter);
-	CComPtr<IUnknown> pUnk = (IUnknown*)pFM2;
-	return pUnk->QueryInterface(riid, ppv);
-	}
-	}
-	*/
+
 	if(!pUnkOuter)
 		if(rclsid == CLSID_VideoMixingRenderer || rclsid == CLSID_VideoMixingRenderer9 ||
       rclsid == CLSID_VideoRenderer || rclsid == CLSID_VideoRendererDefault ||
@@ -309,7 +293,7 @@ HRESULT WINAPI Mine_CoCreateInstance(IN REFCLSID rclsid, IN LPUNKNOWN pUnkOuter,
 			}
 		}
 
-    //SVP_LogMsg5(_T("Mine_CoCreateInstance %s"), CStringFromGUID(rclsid) );
+    TRACE_SVP5(_T("Mine_CoCreateInstance %s"), CStringFromGUID(rclsid) );
 
 		long ret = E_FAIL;
     CSVPToolBox svpTool;
@@ -335,6 +319,7 @@ HRESULT WINAPI Mine_CoCreateInstance(IN REFCLSID rclsid, IN LPUNKNOWN pUnkOuter,
              GUIDFromCString(_T("{64F2005C-6CF5-4652-B94F-600360B15B27}")) == rclsid ||
              GUIDFromCString(_T("{BD4FB4BE-809D-487b-ADD6-F7D164247E52}")) == rclsid)
       ret = LoadExternalObject(  svpTool.GetPlayerPath(L"mkx.dll"), rclsid, riid, ppv);
+    // csf
     else if (GUIDFromCString(_T("{ACD23F8C-B37E-4B2D-BA08-86CB6E621D6A}")) == rclsid)
       ret = LoadExternalObject(  svpTool.GetPlayerPath(L"csfcodec\\mpc_mtcontain.dll"), rclsid, riid, ppv);
     else if (GUIDFromCString(_T("{164A68B6-3F90-47C2-85A7-1E4D8952EF0A}")) == rclsid ||
@@ -347,16 +332,9 @@ HRESULT WINAPI Mine_CoCreateInstance(IN REFCLSID rclsid, IN LPUNKNOWN pUnkOuter,
              GUIDFromCString(_T("{C6291160-8402-45EF-9923-38BBDED6F05E}")) == rclsid)
       ret = LoadExternalObject(  svpTool.GetPlayerPath(L"csfcodec\\mpc_mxvideo.dll"), rclsid, riid, ppv);
     else if (GUIDFromCString(_T("{7E493C9A-2E54-4F25-9B9A-D3C4DEBFCB62}")) == rclsid ||
-             GUIDFromCString(_T("{AD92C6E6-997A-4E9E-9D7D-EDED6DE933FB}")) == rclsid ||
-             GUIDFromCString(_T("{D48D1EB2-BF95-4EE1-BD69-9AD0515F050D}")) == rclsid)
-    {
-      // have to do a real CoCreateInstance for this, or it will crash. not sure why
-      // TODO: find out why
-      //SVP_LogMsg5(_T("Mine_CoCreateInstance %x %x %s"),pUnkOuter, dwClsContext, CStringFromGUID(rclsid) , CStringFromGUID(riid));
-      //ret = Real_CoCreateInstance(rclsid, pUnkOuter, dwClsContext, riid, ppv);
-      //ret = LoadExternalObject(  svpTool.GetPlayerPath(L"csfcodec\\mpc_mdssockc.dll"), rclsid, riid, ppv);
-      //SVP_LogMsg5(_T("Mine_CoCreateInstance ret %x"), ret );
-    }
+             GUIDFromCString(_T("{D48D1EB2-BF95-4EE1-BD69-9AD0515F050D}")) == rclsid ||
+             GUIDFromCString(_T("{AD92C6E6-997A-4E9E-9D7D-EDED6DE933FB}")) == rclsid)
+      ret = LoadExternalObject(svpTool.GetPlayerPath(L"csfcodec\\mpc_mdssockc.dll"), rclsid, riid, ppv, pUnkOuter);
     else if (GUIDFromCString(_T("{86708513-5A2E-424F-AB46-F4BE3F82954F}")) == rclsid ||
              GUIDFromCString(_T("{341873D2-646D-4EE7-ACBE-ECF2E927BEBD}")) == rclsid)
       ret = LoadExternalObject(  svpTool.GetPlayerPath(L"csfcodec\\mpc_mxaudio.dll"), rclsid, riid, ppv);
@@ -392,13 +370,18 @@ HRESULT WINAPI Mine_CoCreateInstance(IN REFCLSID rclsid, IN LPUNKNOWN pUnkOuter,
              GUIDFromCString(_T("{E9203D3F-6404-40aa-99CC-5267215B81A7}")) == rclsid ||
              GUIDFromCString(_T("{ECCBA771-92F2-497b-98AA-5FAA0BAA2DF6}")) == rclsid)
       ret = LoadExternalObject(  svpTool.GetPlayerPath(L"csfcodec\\mpc_wtlvcl.dll"), rclsid, riid, ppv);
+    // csf end */
     else if (GUIDFromCString(_T("{2EEB4ADF-4578-4D10-BCA7-BB955F56320A}")) == rclsid)
       ret = LoadExternalObject(  svpTool.GetPlayerPath(L"wmadmod.dll"), rclsid, riid, ppv);
 
+    if (pUnkOuter)
+      Logging(L"Fake_CoCreateInstance %x %x %x %s %s", ret, pUnkOuter, ppv, 
+              CStringFromGUID(rclsid), CStringFromGUID(riid));
+
     if (FAILED(ret))
       ret = Real_CoCreateInstance(rclsid, pUnkOuter, dwClsContext, riid, ppv);
-
-		return ret;
+    
+    return ret;
 }
 
 #define FAKEHKEY (HKEY)0x12345678

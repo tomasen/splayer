@@ -1795,10 +1795,11 @@ std::wstring CPlayerToolBar::GetWidth(int wid)
 void CPlayerToolBar::WriteToFile()
 {
   std::wofstream outfile;
-  outfile.open(L"skins\\BottomToolBarButton.dat");
-  for (std::vector<std::wstring>::iterator ite = m_string_vec.begin();
-       ite != m_string_vec.end(); ++ite)
-    outfile<<(*ite)<<L"\n";
+  outfile.open(L"skins\\BottomToolBarButton.dat", std::wofstream::out | std::wofstream::trunc);
+  if (outfile)
+    for (std::vector<std::wstring>::iterator ite = m_string_vec.begin();
+         ite != m_string_vec.end(); ++ite)
+      outfile<<(*ite)<<L"\n";
 }
 /*
 BottomToolBarButton.dat

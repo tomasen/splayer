@@ -27,8 +27,9 @@
 
 // CPlayerToolBar
 
-struct AddButton
+class AddButton
 {
+public: 
   AddButton();
   AddButton(int agn, std::wstring pn, CRect rc);
   ~AddButton();
@@ -39,8 +40,9 @@ struct AddButton
 };
 
 
-struct ToolBarButton  
+class ToolBarButton  
 {
+public:
   ToolBarButton();
   ToolBarButton(std::wstring btname, int agn1, CRect rc1);
   ToolBarButton(std::wstring btname, std::wstring bmp, int agn1, CRect rc1, BOOL bnbutton,

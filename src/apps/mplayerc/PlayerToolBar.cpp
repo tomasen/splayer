@@ -46,6 +46,100 @@ typedef HRESULT (__stdcall * SetWindowThemeFunct)(HWND hwnd, LPCWSTR pszSubAppNa
 #define CRECT2 110
 #define ADDALIGN 111
 
+ToolBarButton::ToolBarButton()
+{
+  mybutton = NULL;
+  buttonname = L"";
+  bmpstr = L"";
+  pbuttonname = L"";  
+  align1 = 0;
+  rect1 = CRect(0,0,0,0);
+  bnotbutton = FALSE;
+  id = 0;
+  bhide = FALSE;
+  width = 0;
+  align2 = 0;
+  rect2 = CRect(0,0,0,0);
+  baddalign = FALSE;
+  pbutton = NULL;
+}
+
+ToolBarButton::ToolBarButton(std::wstring btname, int agn1, CRect rc1)
+{
+  mybutton = 0;
+  buttonname = btname;
+  align1 = agn1;
+  rect1 = rc1;
+  bnotbutton = 0;
+  id = 0;
+  bhide = 0;
+  width = 0;
+  align2 = 0;
+  rect2 = CRect(0,0,0,0);
+  baddalign = FALSE;
+  pbutton = 0;
+  pbuttonname = L"";
+}
+
+ToolBarButton::ToolBarButton(std::wstring btname, std::wstring bmp, int agn1, CRect rc1, BOOL bnbutton,
+                 int idi, BOOL bhd, int wdt)
+{
+  mybutton = 0;
+  buttonname = btname;
+  bmpstr = bmp;
+  align1 = agn1;
+  rect1 = rc1;
+  bnotbutton = bnbutton;
+  id = idi;
+  bhide = bhd;
+  width = wdt;
+  align2 = 0;
+  rect2 = CRect(0,0,0,0);
+  baddalign = FALSE;
+  pbutton = 0;
+  pbuttonname = L"";
+}
+
+ToolBarButton::ToolBarButton(std::wstring btname, std::wstring bmp,int agn1, CRect rc1, 
+                 BOOL bnbutton, int idi, BOOL bhd, int wdt, int agn2, 
+                 std::wstring pbtname,CRect rc2, BOOL badd)
+{
+  buttonname = btname;
+  bmpstr = bmp;
+  pbuttonname = pbtname;
+  align1 = agn1;
+  rect1 = rc1;
+  bnotbutton = bnbutton;
+  id =idi;
+  bhide = bhd;
+  width = wdt;
+  align2 = agn2;
+  rect2 = rc2;
+  baddalign = badd;
+  pbutton = 0;
+  mybutton = 0;
+}
+
+ToolBarButton::~ToolBarButton(){}
+
+AddButton::AddButton()
+{
+  align = 0;
+  pbuttonname = L"";
+  pbutton = 0;
+  rect = CRect(0,0,0,0);
+}
+
+AddButton::AddButton(int agn, std::wstring pn, CRect rc)
+{
+  align = agn;
+  pbuttonname = pn;
+  rect = rc;
+  pbutton = 0;
+}
+
+AddButton::~AddButton(){}
+
 // CPlayerToolBar
 
 IMPLEMENT_DYNAMIC(CPlayerToolBar, CToolBar)
@@ -62,8 +156,8 @@ m_nHeight(90)
 
 CPlayerToolBar::~CPlayerToolBar()
 {
-  for (std::vector<button*>::iterator ite = m_buttoninitlize.begin();
-       ite != m_buttoninitlize.end(); ++ite)
+  for (std::vector<ToolBarButton*>::iterator ite = m_struct_vec.begin();
+       ite != m_struct_vec.end(); ++ite)
        delete *ite;
 }
 #define ID_VOLUME_THUMB 126356
@@ -138,7 +232,12 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 	GetToolBarCtrl().SetExtendedStyle(TBSTYLE_EX_DRAWDDARROWS);
 
   breadfromfile = ReadFromFile();
-  if (!breadfromfile)
+  if (breadfromfile)
+  {
+    LineStringToVector();
+    SetButton();
+  }
+  else
     DefaultInitializeButton();
 
 	cursorHand = ::LoadCursor(NULL, IDC_HAND);
@@ -202,26 +301,21 @@ void CPlayerToolBar::ArrangeControls()
   long iWidth = rc.Width();
   CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
   double skinsRate = (double)pFrame->m_lMinFrameWidth / 310;
-  BOOL bvolume, bmuted;
+  BOOL isaudio = (pFrame && pFrame->IsSomethingLoaded() && pFrame->m_fAudioOnly)?TRUE:FALSE;
 
   if (breadfromfile)
   {
-    for (std::vector<button*>::iterator ite = m_buttoninitlize.begin(); ite != m_buttoninitlize.end();
+    for (std::vector<ToolBarButton*>::iterator ite = m_struct_vec.begin(); ite != m_struct_vec.end();
          ++ite)
     {
       if (iWidth > ((*ite)->width * skinsRate * m_nLogDPIY / 96))
         (*ite)->bhide = FALSE;
       else
         (*ite)->bhide = TRUE;
-      if ((*ite)->buttonname == L"VOLUME")
-        bvolume = (*ite)->bhide;
-      if ((*ite)->buttonname == L"MUTED")
-        bmuted = (*ite)->bhide;
+      
+      ShowButton(*ite,isaudio);
     }
-    if(pFrame && pFrame->IsSomethingLoaded() && pFrame->m_fAudioOnly)
-      ShowButton(TRUE);
-    else
-      ShowButton(FALSE);
+
     m_btnList.OnSize(rc);
     return;
   }
@@ -1038,10 +1132,10 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
 			if(!m_timerqueryedstr.IsEmpty()){
 				m_timerstr = m_timerqueryedstr;
 				m_timerqueryedstr.Empty();
-				Invalidate();
-			}
+        Invalidate();
+      }
 
-			holdStatStr = FALSE;
+      holdStatStr = FALSE;
 			break;
 		case TIMER_STOPFASTFORWORD:
 			iFastFFWCount = 0;
@@ -1166,56 +1260,41 @@ BOOL CPlayerToolBar::ReadFromFile()
   {
     if (buttoninformation[0] == ' ' || buttoninformation == L"")
       continue;
-    
-    button* buttonstruct = new button;
 
-    buttonstruct->baddalign = FALSE;
-    buttonstruct->width = 0;
-    buttonstruct->align2 = 0;
-    buttonstruct->pbutton = 0;
-    buttonstruct->rect2 = CRect(0,0,0,0);
-
-    LineStringToVector(buttoninformation, buttonstruct);
-    if (buttonstruct->buttonname != L"PLAYTIME")
-      m_btnList.AddTail(buttonstruct->mybutton);
+    m_string_vec.push_back(buttoninformation);
   }
 
   in_file.close();
   return TRUE;
 }
 
-void CPlayerToolBar::LineStringToVector(std::wstring& buttoninformation, button* buttonstruct)
+void CPlayerToolBar::LineStringToVector()
 {
-  std::wstring buttonname;
-  int pos = buttoninformation.find_first_of(L":");
-  buttonname = buttoninformation.substr(0, pos);
-  buttonstruct->buttonname = buttonname;
-  buttoninformation = buttoninformation.substr(pos + 1);
-  StringToStruct(buttoninformation, buttonstruct);
-  if (buttonname == L"VOLUMEBG")
-    m_btnVolBG = buttonstruct->mybutton;
-  if (buttonname == L"SUBSWITCH")
-    btnSubSwitch = buttonstruct->mybutton;
-  if (buttonname == L"VOLUMETM")
-    m_btnVolTm = buttonstruct->mybutton;
+  for (std::vector<std::wstring>::iterator ite = m_string_vec.begin();
+       ite != m_string_vec.end(); ++ite)
+  {
+    std::wstring buttoninformation = *ite;
+    std::wstring buttonname;
+    ToolBarButton* buttonstruct = new ToolBarButton;
+    int pos = buttoninformation.find_first_of(L":");
+    buttonname = buttoninformation.substr(0, pos);
+    buttonstruct->buttonname = buttonname;
+    buttoninformation = buttoninformation.substr(pos + 1);
+    StringToStruct(buttoninformation, buttonstruct);
+    m_struct_vec.push_back(buttonstruct);
+  }
 }
 
-void CPlayerToolBar::StringToStruct(std::wstring& buttoninformation, button* buttonstruct)
+void CPlayerToolBar::StringToStruct(std::wstring& buttoninformation, ToolBarButton* buttonstruct)
 {
   FillStruct(buttoninformation, buttonstruct);
-  if (buttonstruct->buttonname != L"PLAYTIME")
-    buttonstruct->mybutton = new CSUIButton(buttonstruct->bmpstr.c_str(), buttonstruct->align1, buttonstruct->rect1, 
-      buttonstruct->bnotbutton, buttonstruct->id, buttonstruct->bhide, buttonstruct->align2, 
-      buttonstruct->pbutton, buttonstruct->rect2);
-  m_buttoninitlize.push_back(buttonstruct);
   SolveAddalign(buttoninformation, buttonstruct);
   
 }
 
-void CPlayerToolBar::FillStruct(std::wstring& buttoninformation, button* buttonstruct)
+void CPlayerToolBar::FillStruct(std::wstring& buttoninformation, ToolBarButton* buttonstruct)
 {
   std::wstring s;
-  LPCTSTR bmstr;
   std::wstring classificationname;
   int pos;
 
@@ -1265,9 +1344,7 @@ void CPlayerToolBar::FillStruct(std::wstring& buttoninformation, button* buttons
       buttonstruct->align2 = m_align2_map[s];
       break;
     case BUTTON:
-      for (std::vector<button*>::iterator ite = m_buttoninitlize.begin(); ite != m_buttoninitlize.end(); ++ite)
-        if (s == (*ite)->buttonname)
-          buttonstruct->pbutton = (*ite)->mybutton;
+      buttonstruct->pbuttonname = s;
       break;
     case CRECT2:
       buttonstruct->rect2 = GetCRect(s);
@@ -1278,10 +1355,9 @@ void CPlayerToolBar::FillStruct(std::wstring& buttoninformation, button* buttons
     }
    buttoninformation = buttoninformation.substr(pos + 1);
   }
-  
 }
 
-void CPlayerToolBar::SolveAddalign(std::wstring& buttoninformation, button* buttonstruct)
+void CPlayerToolBar::SolveAddalign(std::wstring& buttoninformation, ToolBarButton* buttonstruct)
 {
   if (!buttonstruct->baddalign)
     return;
@@ -1290,7 +1366,7 @@ void CPlayerToolBar::SolveAddalign(std::wstring& buttoninformation, button* butt
   std::wstring addalignstr;
   int pos;
   int align2 = 0;
-  CSUIButton* pbutton = 0;
+  std::wstring pbuttonname = L"";
   CRect rect2 = CRect(0,0,0,0);
 
   while ((pos = buttoninformation.find_first_of(L",")) != std::wstring::npos)
@@ -1305,103 +1381,67 @@ void CPlayerToolBar::SolveAddalign(std::wstring& buttoninformation, button* butt
       align2 = m_align2_map[addalignstr];
       break;
     case BUTTON:
-      for (std::vector<button*>::iterator ite = m_buttoninitlize.begin(); ite != m_buttoninitlize.end(); ++ite)
-        if (addalignstr == (*ite)->buttonname)
-          pbutton = (*ite)->mybutton;
+      pbuttonname = addalignstr;
       break;
     case CRECT2:
       rect2 = GetCRect(addalignstr);
       break;
     }
     buttoninformation = buttoninformation.substr(pos + 1);
-    if ((align2 != 0) && (pbutton != 0) && (rect2 != CRect(0,0,0,0)))
+    if ((align2 != 0) && (pbuttonname != L"") && (rect2 != CRect(0,0,0,0)))
     {
-      buttonstruct->mybutton->addAlignRelButton(align2, pbutton, rect2);
+      AddButton* addbutton = new AddButton(align2, pbuttonname,rect2);
+      buttonstruct->addbuttonvec.push_back(addbutton);
+
       align2 = 0;
-      pbutton = 0;
+      pbuttonname = L"";
       rect2 = CRect(0,0,0,0);
     }
   }
   
 }
 
+void CPlayerToolBar::SetButton()
+{
+  for (std::vector<ToolBarButton*>::iterator ite = m_struct_vec.begin();
+       ite != m_struct_vec.end(); ++ite)
+  {
+    if ((*ite)->buttonname != L"PLAYTIME")
+    {
+      if (!(*ite)->pbuttonname.empty())
+        (*ite)->pbutton = m_pbutton_map[(*ite)->pbuttonname];
+      (*ite)->mybutton = new CSUIButton((*ite)->bmpstr.c_str(), (*ite)->align1, (*ite)->rect1, 
+        (*ite)->bnotbutton, (*ite)->id, (*ite)->bhide, (*ite)->align2, 
+        (*ite)->pbutton, (*ite)->rect2);
+      m_pbutton_map[(*ite)->buttonname] = (*ite)->mybutton;
+
+      if ((*ite)->baddalign)
+      {
+        for (std::vector<AddButton*>::iterator iter = (*ite)->addbuttonvec.begin();
+             iter != (*ite)->addbuttonvec.end(); ++iter)
+        {
+          (*iter)->pbutton = m_pbutton_map[(*iter)->pbuttonname];
+          (*ite)->mybutton->addAlignRelButton((*iter)->align, (*iter)->pbutton, (*iter)->rect);
+        }
+      }
+
+      m_btnList.AddTail((*ite)->mybutton);
+
+      if ((*ite)->buttonname == L"VOLUMEBG")
+        m_btnVolBG = (*ite)->mybutton;
+      if ((*ite)->buttonname == L"SUBSWITCH")
+        btnSubSwitch = (*ite)->mybutton;
+      if ((*ite)->buttonname == L"VOLUMETM")
+        m_btnVolTm = (*ite)->mybutton;
+    }
+  }
+}
+
 void CPlayerToolBar::DefaultInitializeButton()
 {
-  m_btnVolBG = new CSUIButton(L"VOLUME_BG.BMP" , ALIGN_TOPRIGHT, CRect(3 , -50, 15,3)  , TRUE, 0, FALSE ) ;
-  m_btnList.AddTail( m_btnVolBG );
-  m_btnVolTm = new CSUIButton(L"VOLUME_TM.BMP" , ALIGN_TOPRIGHT, CRect(3 , -50, 65,3)  , FALSE, ID_VOLUME_THUMB, FALSE );
-  m_btnList.AddTail( m_btnVolTm );
-
-  CSUIButton* btnPlay = new CSUIButton(L"BTN_PLAY.BMP" , ALIGN_TOPLEFT, CRect(-50 , -50, 3,3)  , 0, ID_PLAY_PLAY, FALSE, 0, 0 );
-  //btnPlay->m_stat = 3; //disabled
-  m_btnList.AddTail( btnPlay );
-
-  CSUIButton* btnPause = new CSUIButton(L"BTN_PAUSE.BMP" , ALIGN_TOPLEFT, CRect(-50 , -50, 3,3)  , 0, ID_PLAY_PAUSE, TRUE, 0, 0 );
-  m_btnList.AddTail( btnPause );
-
-  CSUIButton* btnStop = new CSUIButton(L"BTN_STOP.BMP" , ALIGN_TOPLEFT, CRect(-50 , -50, 3,3)  , 0, ID_PLAY_MANUAL_STOP, FALSE, ALIGN_RIGHT , btnPause  , CRect(1 , 1 , 1, 1));
-  btnStop->addAlignRelButton(ALIGN_RIGHT, btnPlay , CRect(1 , 1 , 1, 1) );
-  m_btnList.AddTail( btnStop );
-
-  CSUIButton* btnStep = new CSUIButton(L"BTN_STEP.BMP" , ALIGN_TOPLEFT, CRect(-50 , -50, 3,3)  , 0, ID_PLAY_FRAMESTEP, FALSE, ALIGN_LEFT , btnPause  , CRect(1 , 1 , 1, 1));
-  btnStep->addAlignRelButton(ALIGN_LEFT, btnPlay , CRect(1 , 1 , 1, 1) );
-  m_btnList.AddTail( btnStep );
-
-  CSUIButton* btnFFwd = new CSUIButton(L"FAST_FORWORD.BMP" , ALIGN_TOPLEFT, CRect(-50 , -50, 3,3)  , 0, ID_PLAY_FWD, FALSE, ALIGN_LEFT, btnPause , CRect(1 , 1 , 1, 1));
-  btnFFwd->addAlignRelButton(  ALIGN_LEFT, btnPlay , CRect(1 , 1 , 1, 1) );
-  btnFFwd->addAlignRelButton(ALIGN_LEFT, btnStep , CRect(1 , 1 , 1, 1) );
-  m_btnList.AddTail( btnFFwd );
-
-  CSUIButton* btnFFBack = new CSUIButton(L"FAST_BACKWORD.BMP" , ALIGN_TOPLEFT, CRect(-50 , -50, 3,3)  , 0, ID_PLAY_BWD, FALSE, ALIGN_RIGHT, btnPause , CRect(1 , 1 , 1, 1) );
-  btnFFBack->addAlignRelButton(ALIGN_RIGHT, btnPlay , CRect(1 , 1 , 1, 1) );
-  btnFFBack->addAlignRelButton(ALIGN_RIGHT, btnStop , CRect(1 , 1 , 1, 1) );
-  m_btnList.AddTail( btnFFBack );
-
-  CSUIButton* btnPrev = new CSUIButton(L"BTN_PREV.BMP" , ALIGN_TOPLEFT, CRect(-50 , -50, 3,3)  , 0, ID_NAVIGATE_SKIPBACK, FALSE, ALIGN_RIGHT, btnFFBack , CRect(1 , 1 , 1, 1) ) ;
-  btnPrev->addAlignRelButton(ALIGN_RIGHT, btnPlay , CRect(1 , 1 , 1, 1) );
-  btnPrev->addAlignRelButton(ALIGN_RIGHT, btnPause , CRect(1 , 1 , 1, 1) );
-  m_btnList.AddTail( btnPrev );
-
-  CSUIButton* btnNext = new CSUIButton(L"BTN_NEXT.BMP" , ALIGN_TOPLEFT, CRect(-50 ,-50, 3,3)  , 0, ID_NAVIGATE_SKIPFORWARD, FALSE, ALIGN_LEFT, btnFFwd , CRect(1 , 1 , 1, 1) );
-  btnNext->addAlignRelButton(  ALIGN_LEFT, btnPlay , CRect(1 , 1 , 1, 1) );
-  btnNext->addAlignRelButton(ALIGN_LEFT, btnPause , CRect(1 , 1 , 1, 1) );
-  m_btnList.AddTail( btnNext);
-
-  CSUIButton* btnLogo =  new CSUIButton(L"SPLAYER.BMP" , ALIGN_TOPLEFT, CRect(14 , -50, 3,3)  , TRUE, 0, FALSE   ) ;
-  m_btnList.AddTail(btnLogo);
-
-  BOOL bIsMuted = IsMuted();
-  CSUIButton* btnMute = new CSUIButton(L"MUTED.BMP" , ALIGN_TOPRIGHT, CRect(3 , -50, 105,3)  , FALSE, ID_VOLUME_MUTE, !bIsMuted , ALIGN_RIGHT, m_btnVolBG,  CRect(3 , 3 , 3, 3)) ;
-  m_btnList.AddTail( btnMute );
-
-  CSUIButton* btnVol =  new CSUIButton(L"VOLUME.BMP" , ALIGN_TOPRIGHT, CRect(3 , -50, 105,3)  , FALSE, ID_VOLUME_MUTE, bIsMuted  , ALIGN_RIGHT, m_btnVolBG,  CRect(3 , 3 , 3, 3)) ;
-  m_btnList.AddTail(btnVol);
-
-  CSUIButton* btnSetting = new CSUIButton(L"BTN_SETTING.BMP" , ALIGN_TOPRIGHT, CRect(-70 , -50, 105,3)  , FALSE, ID_VIEW_OPTIONS, TRUE , ALIGN_RIGHT, btnMute , CRect(3 , 10 , 3, 10)) ;
-  btnSetting->addAlignRelButton( ALIGN_RIGHT , btnVol , CRect(3 , 10 , 3, 10) );
-  m_btnList.AddTail( btnSetting );
-
-  CSUIButton* btnPlayList = new CSUIButton(L"BTN_PLAYLIST.BMP" , ALIGN_TOPRIGHT, CRect(3 , -50, 33,3)  , FALSE, ID_VIEW_PLAYLIST, FALSE , ALIGN_RIGHT, btnSetting , CRect(3 , 10 , 3, 10)) ;
-  btnPlayList->addAlignRelButton( ALIGN_RIGHT , btnVol , CRect(3 , 10 , 3, 10) );
-  btnPlayList->addAlignRelButton( ALIGN_RIGHT , btnMute , CRect(3 , 10 , 3, 10) );
-  btnPlayList->addAlignRelButton( ALIGN_RIGHT , m_btnVolBG , CRect(3 , 10 , 3, 10) );
-  m_btnList.AddTail( btnPlayList );
-
-
-  CSUIButton* btnCapture = new CSUIButton(L"BTN_CAPTURE.BMP" , ALIGN_TOPRIGHT, CRect(3 , -50, 105,3)  , FALSE, ID_FILE_SAVE_IMAGE_AUTO, TRUE , ALIGN_RIGHT, btnPlayList , CRect(3 , 10 , 3, 10)) ;
-  m_btnList.AddTail( btnCapture );
-
-  CSUIButton* btnOpenFile = new CSUIButton(L"BTN_OPENFILE_SMALL.BMP" , ALIGN_TOPRIGHT, CRect(3 , -50, 105,3)  , FALSE, ID_FILE_OPENQUICK, TRUE , ALIGN_RIGHT, btnCapture , CRect(3 , 10 , 3, 10)) ;
-  btnOpenFile->addAlignRelButton(ALIGN_RIGHT, btnPlayList , CRect(3 , 10 , 3, 10));
-  m_btnList.AddTail( btnOpenFile );
-
-  btnSubSwitch = new CSUIButton(L"BTN_SUB.BMP" , ALIGN_TOPLEFT, CRect(-23 , -50, 3,3)  , 0, ID_SUBTOOLBARBUTTON, TRUE, ALIGN_RIGHT,btnFFBack, CRect(20 , 10 , 22, 10) );
-  btnSubSwitch->addAlignRelButton(ALIGN_LEFT,btnLogo,  CRect(15 , 10 , 10, 10) );
-  btnSubSwitch->addAlignRelButton(ALIGN_RIGHT,btnPrev,  CRect(20 , 10 , 22, 10) );
-  m_btnList.AddTail( btnSubSwitch );
-
-  m_btnList.AddTail( new CSUIButton(L"BTN_SUB_DELAY_REDUCE.BMP" , ALIGN_TOPLEFT, CRect(-42 , -50, 3,3)  , 0, ID_SUBDELAYDEC, TRUE, ALIGN_RIGHT, btnSubSwitch , CRect(2 , 3 , 2, 3) ) );
-  m_btnList.AddTail( new CSUIButton(L"BTN_SUB_DELAY_INCREASE.BMP" , ALIGN_TOPLEFT, CRect(-10 , -50, 3,3)  , 0, ID_SUBDELAYINC, TRUE, ALIGN_LEFT, btnSubSwitch , CRect(2 , 3 , 2, 3) ) );
+  FillStruct();
+  StructToString();
+  WriteToFile();
 }
 
 CRect CPlayerToolBar::GetCRect(std::wstring rectstr)
@@ -1425,24 +1465,22 @@ CRect CPlayerToolBar::GetCRect(std::wstring rectstr)
   return rc;
 }
 
-void CPlayerToolBar::ShowButton(BOOL bl)
+void CPlayerToolBar::ShowButton(ToolBarButton* tbb,BOOL bl)
 {
-  for (std::vector<button*>::iterator ite = m_buttoninitlize.begin(); ite != m_buttoninitlize.end();
-    ++ite)
-  {
-    m_btnList.SetHideStat((*ite)->id, (*ite)->bhide);
+
+    m_btnList.SetHideStat(tbb->id, tbb->bhide);
     
-    switch ((*ite)->id)
+    switch (tbb->id)
     {
     case ID_VOLUME_MUTE:
     
       if(IsMuted())
       {
         m_btnList.SetHideStat(L"VOLUME.BMP", TRUE);
-        m_btnList.SetHideStat(L"MUTED.BMP", FALSE | (*ite)->bhide);
+        m_btnList.SetHideStat(L"MUTED.BMP", FALSE | tbb->bhide);
       }else
       {
-        m_btnList.SetHideStat(L"VOLUME.BMP", FALSE | (*ite)->bhide);
+        m_btnList.SetHideStat(L"VOLUME.BMP", FALSE | tbb->bhide);
         m_btnList.SetHideStat(L"MUTED.BMP", TRUE);
       }
     break;
@@ -1452,19 +1490,19 @@ void CPlayerToolBar::ShowButton(BOOL bl)
     case ID_NAVIGATE_SKIPFORWARD:
      if (bl)
       {
-        m_btnList.SetHideStat((*ite)->id, (*ite)->bhide);
+        m_btnList.SetHideStat(tbb->id, tbb->bhide);
         m_btnList.SetHideStat(ID_NAVIGATE_SKIPBACK , 0);
         m_btnList.SetHideStat(ID_NAVIGATE_SKIPFORWARD , 0);
       }
      else
      {
-       m_btnList.SetHideStat((*ite)->id, (*ite)->bhide);
+       m_btnList.SetHideStat(tbb->id, tbb->bhide);
        m_btnList.SetHideStat(ID_PLAY_FWD , 0);
        m_btnList.SetHideStat(ID_PLAY_BWD , 0);
      }
      break;
    }
-  }
+  
 }
 
 void CPlayerToolBar::ShowPlayTime(CDC* dc, AppSettings& s, CRect& rcClient)
@@ -1476,58 +1514,291 @@ void CPlayerToolBar::ShowPlayTime(CDC* dc, AppSettings& s, CRect& rcClient)
   CRect frc;
   int   textalign;
   size.cx = min( rcClient.Width() /3, size.cx);
-  for (std::vector<button*>::iterator ite = m_buttoninitlize.begin(); ite != m_buttoninitlize.end();
+  for (std::vector<ToolBarButton*>::iterator ite = m_struct_vec.begin(); ite != m_struct_vec.end();
        ++ite)
     if ((*ite)->buttonname == L"PLAYTIME")
     {
       frc = (*ite)->rect1;
       textalign = (*ite)->align1;
     }
-    LONG left = PlayTimeRect(frc.left,rcClient.Width());
-    LONG right = PlayTimeRect(frc.right, rcClient.Width());
-    LONG top = PlayTimeRect(frc.top, rcClient.Height());
-    LONG bottom = PlayTimeRect(frc.bottom, rcClient.Height());
+    PlayTimeRect(frc, rcClient);
+
     switch (textalign)
     {
     case ALIGN_TOPLEFT:
-      frc = CRect ( rcClient.left + left,
-        rcClient.top + top,
-        rcClient.left + size.cx + left,
-        rcClient.top+ top+size.cy);
+      frc = CRect ( rcClient.left + frc.left,
+        rcClient.top + frc.top,
+        rcClient.left + size.cx + frc.left,
+        rcClient.top+ frc.top+size.cy);
       break;
     case ALIGN_TOPRIGHT:
-      frc = CRect ( rcClient.right - size.cx - right,
-        rcClient.top + top,
-        rcClient.right-right,
-        rcClient.top+ top+size.cy);
+      frc = CRect ( rcClient.right - size.cx - frc.right,
+        rcClient.top + frc.top,
+        rcClient.right-frc.right,
+        rcClient.top+ frc.top+size.cy);
       break;
     case ALIGN_BOTTOMLEFT:
-      frc = CRect ( rcClient.left + left,
-        rcClient.bottom - size.cy - bottom,
-        rcClient.left + size.cx + left,
-        rcClient.bottom - bottom);
+      frc = CRect ( rcClient.left + frc.left,
+        rcClient.bottom - size.cy - frc.bottom,
+        rcClient.left + size.cx + frc.left,
+        rcClient.bottom - frc.bottom);
       break;
     case ALIGN_BOTTOMRIGHT:
-      frc = CRect ( rcClient.right - size.cx - right,
-        rcClient.bottom - size.cy - bottom,
-        rcClient.right-right,
-        rcClient.bottom - bottom);
+      frc = CRect ( rcClient.right - size.cx - frc.right,
+        rcClient.bottom - size.cy - frc.bottom,
+        rcClient.right-frc.right,
+        rcClient.bottom - frc.bottom);
       break;
     }
     ::DrawText(*dc, m_timerstr, m_timerstr.GetLength(), frc,  DT_LEFT|DT_END_ELLIPSIS|DT_SINGLELINE| DT_VCENTER);
     dc->SelectObject(holdft);
 }
 
-LONG CPlayerToolBar::PlayTimeRect(LONG Mlen, LONG wW)
+void CPlayerToolBar::PlayTimeRect(CRect& frc, CRect rcClient)
 {
-  if(Mlen >= 0){
-    return Mlen;
-  }
+  if (frc.left < 0)
+    frc.left = (-frc.left)*rcClient.Width()/100;
+  if (frc.right < 0)
+    frc.right = (-frc.right)*rcClient.Width()/100;
+  if (frc.top < 0)
+    frc.top = (-frc.top)*rcClient.Height()/100;
+  if (frc.bottom < 0)
+    frc.bottom = (-frc.top)*rcClient.Height()/100;
+}
+
+void CPlayerToolBar::FillStruct()
+{
+  ToolBarButton* buttonstruct;
+  AddButton* addbutton;
+
+  buttonstruct = new ToolBarButton(L"VOLUMEBG", L"VOLUME_BG.BMP", ALIGN_TOPRIGHT,
+    CRect(3,-50,15,3), TRUE, 0, FALSE,0);
+  m_struct_vec.push_back(buttonstruct);
+
+  buttonstruct = new ToolBarButton(L"VOLUMETM", L"VOLUME_TM.BMP", ALIGN_TOPRIGHT,
+    CRect(3,-50,65,3),FALSE,ID_VOLUME_THUMB,FALSE,0);
+  m_struct_vec.push_back(buttonstruct);
+
+  buttonstruct = new ToolBarButton(L"PLAY", L"BTN_PLAY.BMP", ALIGN_TOPLEFT, CRect(-50,-50,3,3),
+    FALSE,ID_PLAY_PLAY,FALSE,0);
+  m_struct_vec.push_back(buttonstruct);
+
+  buttonstruct = new ToolBarButton(L"PAUSE",L"BTN_PAUSE.BMP",ALIGN_TOPLEFT,CRect(-50,-50,3,3),
+    FALSE,ID_PLAY_PAUSE,TRUE,0);
+  m_struct_vec.push_back(buttonstruct);
+  
+  buttonstruct = new ToolBarButton(L"STOP",L"BTN_STOP.BMP",ALIGN_TOPLEFT,CRect(-50,-50,3,3),
+    FALSE,ID_PLAY_MANUAL_STOP,FALSE,660,ALIGN_RIGHT,L"PAUSE",CRect(1,1,1,1),TRUE);
+  addbutton = new AddButton(ALIGN_RIGHT, L"PLAY", CRect(1,1,1,1));
+  buttonstruct->addbuttonvec.push_back(addbutton);
+  m_struct_vec.push_back(buttonstruct);
+
+  buttonstruct = new ToolBarButton(L"STEP",L"BTN_STEP.BMP",ALIGN_TOPLEFT,CRect(-50,-50,3,3),
+    FALSE,ID_PLAY_FRAMESTEP,FALSE,660,ALIGN_LEFT,L"PAUSE",CRect(1,1,1,1),TRUE);
+  addbutton = new AddButton(ALIGN_LEFT,L"PLAY",CRect(1,1,1,1));
+  buttonstruct->addbuttonvec.push_back(addbutton);
+  m_struct_vec.push_back(buttonstruct);
+
+  buttonstruct = new ToolBarButton(L"FASTFORWORD",L"FAST_FORWORD.BMP",ALIGN_TOPLEFT,CRect(-50,-50,3,3),FALSE,
+    ID_PLAY_FWD,FALSE,440,ALIGN_LEFT,L"PAUSE",CRect(1,1,1,1),TRUE);
+  addbutton = new AddButton(ALIGN_LEFT,L"PLAY",CRect(1,1,1,1));
+  buttonstruct->addbuttonvec.push_back(addbutton);
+  addbutton = new AddButton(ALIGN_LEFT,L"STEP",CRect(1,1,1,1));
+  buttonstruct->addbuttonvec.push_back(addbutton);
+  m_struct_vec.push_back(buttonstruct);
+
+  buttonstruct = new ToolBarButton(L"FASTBACKWORD",L"FAST_BACKWORD.BMP",ALIGN_TOPLEFT,CRect(-50,-50,3,3),FALSE,ID_PLAY_BWD,FALSE,
+    440,ALIGN_RIGHT,L"PAUSE",CRect(1,1,1,1),TRUE);
+  addbutton = new AddButton(ALIGN_RIGHT,L"PLAY",CRect(1,1,1,1));
+  buttonstruct->addbuttonvec.push_back(addbutton);
+  addbutton = new AddButton(ALIGN_RIGHT,L"STOP",CRect(1,1,1,1));
+  buttonstruct->addbuttonvec.push_back(addbutton);
+  m_struct_vec.push_back(buttonstruct);
+
+  buttonstruct = new ToolBarButton(L"PREV",L"BTN_PREV.BMP",ALIGN_TOPLEFT,CRect(-50,-50,3,3),FALSE,ID_NAVIGATE_SKIPBACK,FALSE,
+    440,ALIGN_RIGHT,L"FASTBACKWORD",CRect(1,1,1,1),TRUE);
+  addbutton = new AddButton(ALIGN_RIGHT,L"PLAY",CRect(1,1,1,1));
+  buttonstruct->addbuttonvec.push_back(addbutton);
+  addbutton = new AddButton(ALIGN_RIGHT,L"PAUSE",CRect(1,1,1,1));
+  buttonstruct->addbuttonvec.push_back(addbutton);
+  m_struct_vec.push_back(buttonstruct);
+
+  buttonstruct = new ToolBarButton(L"NEXT",L"BTN_NEXT.BMP",ALIGN_TOPLEFT,CRect(-50,-50,3,3),FALSE,
+    ID_NAVIGATE_SKIPFORWARD,FALSE,440,ALIGN_LEFT,L"FASTFORWORD",CRect(1,1,1,1),TRUE);
+  addbutton = new AddButton(ALIGN_LEFT,L"PLAY",CRect(1,1,1,1));
+  buttonstruct->addbuttonvec.push_back(addbutton);
+  addbutton =new AddButton(ALIGN_LEFT,L"PAUSE",CRect(1,1,1,1));
+  buttonstruct->addbuttonvec.push_back(addbutton);
+  m_struct_vec.push_back(buttonstruct);
+
+  buttonstruct = new ToolBarButton(L"LOGO",L"SPLAYER.BMP",ALIGN_TOPLEFT,CRect(14,-50,3,3),TRUE,0,FALSE,0);
+  m_struct_vec.push_back(buttonstruct);
+
+  buttonstruct = new ToolBarButton(L"VOLUME",L"VOLUME.BMP",ALIGN_TOPRIGHT,CRect(3,-50,105,3),FALSE,
+    ID_VOLUME_MUTE,FALSE,440,ALIGN_RIGHT,L"VOLUMEBG",CRect(3,3,3,3),FALSE);
+  m_struct_vec.push_back(buttonstruct);
+  
+  buttonstruct = new ToolBarButton(L"MUTED",L"MUTED.BMP",ALIGN_TOPRIGHT,CRect(3,-50,105,3),FALSE,
+    ID_VOLUME_MUTE,TRUE,440,ALIGN_RIGHT,L"VOLUMEBG",CRect(3,3,3,3),FALSE);
+  m_struct_vec.push_back(buttonstruct);
+
+  buttonstruct = new ToolBarButton(L"SETTING",L"BTN_SETTING.BMP",ALIGN_TOPRIGHT,CRect(-70,-50,105,3),FALSE,
+    ID_VIEW_OPTIONS,TRUE,600,ALIGN_RIGHT,L"MUTED",CRect(3,10,3,10),TRUE);
+  addbutton = new AddButton(ALIGN_RIGHT,L"VOLUME",CRect(3,10,3,10));
+  buttonstruct->addbuttonvec.push_back(addbutton);
+  m_struct_vec.push_back(buttonstruct);
+
+  buttonstruct = new ToolBarButton(L"PLAYLIST",L"BTN_PLAYLIST.BMP",ALIGN_TOPRIGHT,CRect(3,-50,33,3),FALSE,ID_VIEW_PLAYLIST,
+    FALSE,540,ALIGN_RIGHT,L"SETTING",CRect(3,10,3,10),TRUE);
+  addbutton = new AddButton(ALIGN_RIGHT,L"VOLUME",CRect(3,10,3,10));
+  buttonstruct->addbuttonvec.push_back(addbutton);
+  addbutton = new AddButton(ALIGN_RIGHT,L"MUTED",CRect(3,10,3,10));
+  buttonstruct->addbuttonvec.push_back(addbutton);
+  addbutton = new AddButton(ALIGN_RIGHT,L"VOLUMEBG",CRect(3,10,3,10));
+  buttonstruct->addbuttonvec.push_back(addbutton);
+  m_struct_vec.push_back(buttonstruct);
+
+  buttonstruct = new ToolBarButton(L"CAPTURE",L"BTN_CAPTURE.BMP",ALIGN_TOPRIGHT,CRect(3,-50,105,3),FALSE,
+    ID_FILE_SAVE_IMAGE_AUTO,TRUE,MAXINT,ALIGN_RIGHT,L"PLAYLIST",CRect(3,10,3,10),FALSE);
+  m_struct_vec.push_back(buttonstruct);
+
+  buttonstruct = new ToolBarButton(L"OPENFILE",L"BTN_OPENFILE_SMALL.BMP",ALIGN_TOPRIGHT,CRect(3,-50,105,3),FALSE,
+    ID_FILE_OPENQUICK,TRUE,660,ALIGN_RIGHT,L"CAPTURE",CRect(3,10,3,10),TRUE);
+  addbutton = new AddButton(ALIGN_RIGHT,L"PLAYLIST",CRect(3,10,3,10));
+  buttonstruct->addbuttonvec.push_back(addbutton);
+  m_struct_vec.push_back(buttonstruct);
+
+  buttonstruct = new ToolBarButton(L"SUBSWITCH",L"BTN_SUB.BMP",ALIGN_TOPLEFT,CRect(-23,-50,3,3),FALSE,
+    ID_SUBTOOLBARBUTTON,TRUE,540,ALIGN_RIGHT,L"FASTBACKWORD",CRect(20,10,22,10),TRUE);
+  addbutton = new AddButton(ALIGN_LEFT,L"LOGO",CRect(15,10,10,10));
+  buttonstruct->addbuttonvec.push_back(addbutton);
+  addbutton = new AddButton(ALIGN_RIGHT,L"PREV",CRect(20,10,22,10));
+  buttonstruct->addbuttonvec.push_back(addbutton);
+  m_struct_vec.push_back(buttonstruct);
+
+  buttonstruct = new ToolBarButton(L"SUBDELAYREDUCE",L"BTN_SUB_DELAY_REDUCE.BMP",ALIGN_TOPLEFT,CRect(-42,-50,3,3),FALSE,
+    ID_SUBDELAYDEC,TRUE,540,ALIGN_RIGHT,L"SUBSWITCH",CRect(2,3,2,3),FALSE);
+  m_struct_vec.push_back(buttonstruct);
+
+  buttonstruct = new ToolBarButton(L"SUBDELAYINCREASE",L"BTN_SUB_DELAY_INCREASE.BMP",ALIGN_TOPLEFT,CRect(-10,-50,3,3),FALSE,
+    ID_SUBDELAYINC,TRUE,540,ALIGN_LEFT,L"SUBSWITCH",CRect(2,3,2,3),FALSE);
+  m_struct_vec.push_back(buttonstruct);
+
+  buttonstruct = new ToolBarButton(L"PLAYTIME",ALIGN_TOPLEFT,CRect(10,15,3,3));
+  m_struct_vec.push_back(buttonstruct);
+
+  SetButton();
+}
+
+void CPlayerToolBar::StructToString()
+{
+  for (std::vector<ToolBarButton*>::iterator ite = m_struct_vec.begin();
+    ite != m_struct_vec.end(); ++ite)
+     m_string_vec.push_back(FillString(*ite));
+}
+
+std::wstring CPlayerToolBar::FillString(ToolBarButton* ttb)
+{
+  std::wstring buttoninformation;
+  std::wstring btname,bmp,agn1,rc1,bnbutton,id,bhd,wdt;
+  std::wstring agn2,pbtname,rc2;
+
+  btname = ttb->buttonname + L":";
+  bmp = L"BMP," + ttb->bmpstr + L";";
+  agn1 = L"ALIGN1," + GetAlignorIdString(ttb->align1, m_align1_map) + L";";
+  rc1 = L"CRECT1," + RectToString(ttb->rect1) + L";";
+  bnbutton = L"NOTBUTTON," + BoolString(ttb->bnotbutton) + L";";
+  id = L"ID," + GetAlignorIdString(ttb->id, m_id_map) + L";";
+  bhd = L"HIDE," + BoolString(ttb->bhide) + L";";
+  wdt = L"HIDEWIDTH," + GetWidth(ttb->width) + L";";
+  if (ttb->buttonname == L"PLAYTIME")
+    buttoninformation = btname + agn1 + rc1;
   else
+    buttoninformation = btname + bmp + agn1 + rc1 + bnbutton + id + bhd + wdt;
+  
+  if (ttb->align2 != 0)
   {
-    Mlen = -Mlen;
-    return ( wW * Mlen / 100);
+    agn2 = L"ALIGN2," + GetAlignorIdString(ttb->align2, m_align2_map) + L";";
+    pbtname = L"BUTTON," + ttb->pbuttonname + L";";
+    rc2 = L"CRECT2," + RectToString(ttb->rect2) + L";";
+    buttoninformation += agn2 + pbtname + rc2;
   }
+
+  if (ttb->baddalign)
+  {
+    buttoninformation += L"ADDALIGN,";
+    for (std::vector<AddButton*>::iterator ite = ttb->addbuttonvec.begin();
+         ite != ttb->addbuttonvec.end(); ++ite)
+    {
+      agn2 = L"ALIGN2," + GetAlignorIdString((*ite)->align, m_align2_map) + L";";
+      pbtname = L"BUTTON," + (*ite)->pbuttonname + L";";
+      rc2 = L"CRECT2," + RectToString((*ite)->rect) + L";";
+      buttoninformation += agn2 + pbtname + rc2;
+    }
+  }
+
+  return buttoninformation;
+
+}
+
+std::wstring CPlayerToolBar::GetAlignorIdString(int i,std::map<std::wstring, int> mp)
+{
+  if (i == 0)
+    return L"0";
+  for (std::map<std::wstring, int>::iterator ite = mp.begin();
+       ite != mp.end(); ++ite)
+  {
+    if (ite->second == i)
+      return ite->first;
+  }
+  return L"";
+}
+
+std::wstring CPlayerToolBar::RectToString(CRect& rc)
+{
+  wchar s[10];
+  std::wstring str;
+  int left = rc.left;
+  _itow(left, s, 10);
+  str =str + s + L",";
+  int top  = rc.top;
+  _itow(top, s, 10);
+  str =str + s + L",";
+  int right = rc.right;
+  _itow(right, s, 10);
+  str =str + s + L",";
+  int bottom = rc.bottom;
+  _itow(bottom, s ,10);
+  str += s;
+
+  return str;
+  
+}
+
+std::wstring CPlayerToolBar::BoolString(BOOL bl)
+{
+  if (bl)
+    return L"TRUE";
+  else
+    return L"FALSE";
+}
+
+std::wstring CPlayerToolBar::GetWidth(int wid)
+{
+  if (wid == MAXINT)
+    return L"MAXINT";
+  wchar s[10];
+  _itow(wid, s, 10);
+  return s;
+}
+
+void CPlayerToolBar::WriteToFile()
+{
+  std::wofstream outfile;
+  outfile.open(L"skins\\BottomToolBarButton.dat");
+  for (std::vector<std::wstring>::iterator ite = m_string_vec.begin();
+       ite != m_string_vec.end(); ++ite)
+    outfile<<(*ite)<<L"\n";
 }
 /*
 BottomToolBarButton.dat

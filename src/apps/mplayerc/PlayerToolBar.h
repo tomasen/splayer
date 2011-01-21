@@ -26,11 +26,33 @@
 #include "VolumeCtrl.h"
 
 // CPlayerToolBar
-struct button  
+
+struct AddButton
 {
+  AddButton();
+  AddButton(int agn, std::wstring pn, CRect rc);
+  ~AddButton();
+  int align;
+  std::wstring pbuttonname;
+  CSUIButton* pbutton;
+  CRect rect;
+};
+
+
+struct ToolBarButton  
+{
+  ToolBarButton();
+  ToolBarButton(std::wstring btname, int agn1, CRect rc1);
+  ToolBarButton(std::wstring btname, std::wstring bmp, int agn1, CRect rc1, BOOL bnbutton,
+    int idi, BOOL bhd, int wdt);
+  ToolBarButton(std::wstring btname, std::wstring bmp,int agn1, CRect rc1, 
+    BOOL bnbutton, int idi, BOOL bhd, int wdt, int agn2,
+    std::wstring pbtname,CRect rc2, BOOL badd);
+  ~ToolBarButton();
   CSUIButton*  mybutton;
   std::wstring buttonname;
-  std::wstring      bmpstr;
+  std::wstring bmpstr;
+  std::wstring pbuttonname;  
   int          align1;
   CRect        rect1;
   BOOL         bnotbutton;
@@ -41,6 +63,7 @@ struct button
   CRect        rect2;
   BOOL         baddalign;
   CSUIButton*  pbutton;
+  std::vector<AddButton* > addbuttonvec;
 };
 
 
@@ -72,8 +95,11 @@ private:
   std::map<std::wstring, int> m_align1_map;
   std::map<std::wstring, int> m_align2_map;
   std::map<std::wstring, int> m_id_map;
+  std::map<std::wstring, CSUIButton*> m_pbutton_map;
   //std::map<std::wstring, std::pair<CSUIButton*, int> > m_buttoninitlize;
-  std::vector<button* > m_buttoninitlize;
+  //std::vector<ToolBarButton* > m_buttoninitlize;
+  std::vector<std::wstring> m_string_vec;
+  std::vector<ToolBarButton* > m_struct_vec;
   //struct button m_buttoninitlize[30];
 public:
 	CString m_timerstr;
@@ -136,19 +162,31 @@ protected:
 	virtual INT_PTR OnToolHitTest(	CPoint point,TOOLINFO* pTI 	) const;
 
   BOOL ReadFromFile();
-  void LineStringToVector(std::wstring& buttoninformation, button* buttonstruct);
-  void StringToStruct(std::wstring& buttoninformation, button* buttonstruct);
-  void FillStruct(std::wstring& buttoninformation, button* buttonstruct);
-  void SolveAddalign(std::wstring& buttoninformation, button* buttonstruct);
+
+  void LineStringToVector();
+  void StringToStruct(std::wstring& buttoninformation, ToolBarButton* buttonstruct);
+  void FillStruct(std::wstring& buttoninformation, ToolBarButton* buttonstruct);
+  void SolveAddalign(std::wstring& buttoninformation, ToolBarButton* buttonstruct);
+
+  void SetButton();
 
   void DefaultInitializeButton();
 
+  void FillStruct();
+  void StructToString();
+  std::wstring FillString(ToolBarButton* ttb);
+  std::wstring GetAlignorIdString(int i,std::map<std::wstring, int> mp);
+  std::wstring RectToString(CRect& rc);
+  std::wstring BoolString(BOOL bl);
+  std::wstring GetWidth(int wid);
+  void WriteToFile();
+
   CRect GetCRect(std::wstring rectstr);
 
-  void ShowButton(BOOL bl);
+  void ShowButton(ToolBarButton* tbb,BOOL bl);
 
   void ShowPlayTime(CDC* dc, AppSettings& s, CRect& rcClient);
-  LONG PlayTimeRect(LONG Mlen, LONG wW);
+  void PlayTimeRect(CRect& frc, CRect rcClient);
 	
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()

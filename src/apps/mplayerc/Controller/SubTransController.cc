@@ -105,7 +105,7 @@ void SubTransController::UploadSubFileByVideoAndHash(refptr<pool> pool,refptr<ta
   {
     wchar_t szFname[22];
     // Fill in the file upload field 
-    std::wstring szgzFile = SubTransFormat::GetTempFileName(); //SubTransFormat::GetSameTmpName(fnSubPaths->at(i));
+    std::wstring szgzFile = SubTransFormat::GetSameTmpName(fnSubPaths->at(i));
     int gzerr = SubTransFormat::PackGZfile(fnSubPaths->at(i), szgzFile);
 
     wsprintf(szFname, L"subfile[%d]", i);

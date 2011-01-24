@@ -476,23 +476,11 @@ std::wstring SubTransFormat::GetVideoFileBasename(std::wstring szVidPath, std::v
 
 std::wstring SubTransFormat::GetSameTmpName(std::wstring fnin)
 {
-  std::vector<std::wstring> szaPathinfo;
-  GetVideoFileBasename(fnin, &szaPathinfo);
-  std::wstring fntdir = GetTempDir();
-  std::wstring fnout(fntdir.c_str());
-  fnout += szaPathinfo.at(3).c_str();
-  fnout += szaPathinfo.at(1).c_str();
-  int i = 0;
-  while(IfFileExist_STL(fnout))
-  {
-    i++;
-    wchar_t str[100];
-    wsprintf(str, L".svr%d", i);
-    fnout = fntdir.c_str();
-    fnout += szaPathinfo.at(3).c_str();
-    fnout += str;
-    fnout += szaPathinfo.at(1).c_str();
-  }
+  std::wstring fnout = GetTempDir() + fnin;
+  _wunlink(fnout.c_str());
+  if(IfFileExist_STL(fnout))
+    return GetTempFileName();
+
   return fnout;
 }
 

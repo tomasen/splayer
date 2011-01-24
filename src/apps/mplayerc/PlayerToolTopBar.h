@@ -1,7 +1,10 @@
 #pragma once
 #include "SUIButton.h"
+#include "PlayerToolBar.h"
 
 // CPlayerToolTopBar
+
+
 
 class CPlayerToolTopBar : public CWnd
 {
@@ -10,6 +13,7 @@ class CPlayerToolTopBar : public CWnd
 	int iLeftBorderPos;
 	CSUIButton* btnClose;
 	enum {IDT_CLOSE, IDT_TIPS};
+
 public:
 	CPlayerToolTopBar();
 	virtual ~CPlayerToolTopBar();
@@ -35,6 +39,7 @@ protected:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	CSUIBtnList m_btnList;
 	CSUIBtnList* const m_pbtnList;
+  CToolBarButtonPositon m_toptoolbar;
 	afx_msg void OnMove(int x, int y);
 	afx_msg void OnPaint();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
@@ -49,6 +54,11 @@ protected:
 	afx_msg void OnEnable(BOOL bEnable);
 	afx_msg void OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized);
 	virtual BOOL Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID, CCreateContext* pContext = NULL);
+
+  void DefaultInitializeButton();
+
+  void FillStruct();
+
 public:
 	void UpdateButtonStat();
 	void ReCalcBtnPos();

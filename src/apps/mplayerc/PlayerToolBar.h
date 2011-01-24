@@ -68,6 +68,56 @@ public:
   std::vector<AddButton* > addbuttonvec;
 };
 
+class CToolBarButtonPositon
+{
+public:
+
+  CToolBarButtonPositon(CSUIBtnList* btnl, std::wstring flnm);
+  ~CToolBarButtonPositon();
+
+  std::vector<ToolBarButton* > m_struct_vec;
+  CSUIButton* m_btnVolTm;
+  CSUIButton* m_btnVolBG;
+  CSUIButton* m_btnSubSwitch;
+  CSUIButton* m_close;
+
+  BOOL ReadFromFile();
+  void LineStringToVector();
+  void StringToStruct(std::wstring& buttoninformation, ToolBarButton* buttonstruct);
+  void FillStruct(std::wstring& buttoninformation, ToolBarButton* buttonstruct);
+  void SolveAddalign(std::wstring& buttoninformation, ToolBarButton* buttonstruct);
+  void SetButton();
+
+public:
+
+  void StructToString();
+  std::wstring FillString(ToolBarButton* ttb);
+  std::wstring GetAlignorIdString(int i,std::map<std::wstring, int> mp);
+  std::wstring RectToString(CRect& rc);
+  std::wstring BoolString(BOOL bl);
+  std::wstring GetWidth(int wid);
+  void WriteToFile();
+
+public:
+  CRect GetCRect(std::wstring rectstr);
+  
+public:
+  std::wstring GetFileName();
+
+private:
+
+  CSUIBtnList* m_pbtnList;
+  std::wstring m_filename;
+  BOOL breadfromfile;
+  std::map<std::wstring, int> m_classificationname_map;
+  std::map<std::wstring, int> m_align1_map;
+  std::map<std::wstring, int> m_align2_map;
+  std::map<std::wstring, int> m_id_map;
+  std::map<std::wstring, CSUIButton*> m_pbutton_map;
+  std::vector<std::wstring> m_string_vec;
+  
+
+};
 
 class CPlayerToolBar : public CToolBar
 {
@@ -92,17 +142,10 @@ private:
 	int m_lastLeftText;
 	CSUIButton* btnSubSwitch;
 
+  CToolBarButtonPositon m_bottomtoolbar;
+
   BOOL breadfromfile;
-  std::map<std::wstring, int> m_classificationname_map;
-  std::map<std::wstring, int> m_align1_map;
-  std::map<std::wstring, int> m_align2_map;
-  std::map<std::wstring, int> m_id_map;
-  std::map<std::wstring, CSUIButton*> m_pbutton_map;
-  //std::map<std::wstring, std::pair<CSUIButton*, int> > m_buttoninitlize;
-  //std::vector<ToolBarButton* > m_buttoninitlize;
-  std::vector<std::wstring> m_string_vec;
-  std::vector<ToolBarButton* > m_struct_vec;
-  //struct button m_buttoninitlize[30];
+
 public:
 	CString m_timerstr;
 	CString m_timerqueryedstr;
@@ -163,27 +206,9 @@ protected:
 
 	virtual INT_PTR OnToolHitTest(	CPoint point,TOOLINFO* pTI 	) const;
 
-  BOOL ReadFromFile();
-
-  void LineStringToVector();
-  void StringToStruct(std::wstring& buttoninformation, ToolBarButton* buttonstruct);
-  void FillStruct(std::wstring& buttoninformation, ToolBarButton* buttonstruct);
-  void SolveAddalign(std::wstring& buttoninformation, ToolBarButton* buttonstruct);
-
-  void SetButton();
-
   void DefaultInitializeButton();
 
   void FillStruct();
-  void StructToString();
-  std::wstring FillString(ToolBarButton* ttb);
-  std::wstring GetAlignorIdString(int i,std::map<std::wstring, int> mp);
-  std::wstring RectToString(CRect& rc);
-  std::wstring BoolString(BOOL bl);
-  std::wstring GetWidth(int wid);
-  void WriteToFile();
-
-  CRect GetCRect(std::wstring rectstr);
 
   void ShowButton(ToolBarButton* tbb,BOOL bl);
 
@@ -198,3 +223,4 @@ public:
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
 };
+

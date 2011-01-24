@@ -607,11 +607,23 @@ std::wstring SubTransFormat::GetSubFileByTempid_STL(size_t iTmpID, std::wstring 
         (LPTSTR) &lpMsgBuf,
         0, NULL );
 
+      struct _stat sbuf_d, sbuf_s;
+
+      _wstat(szSource.c_str(), &sbuf_s);
+      _wstat(szTarget.c_str(), &sbuf_d);
+
       // Display the error message and exit the process
 
-      Logging(L"fail to copying subtitle file %x %s from %s to %s",
-         dw, lpMsgBuf, szSource.c_str(), szTarget.c_str()); 
-      
+      Logging(L"fail to copying subtitle file %x %s from %s %f to %s %f",
+         dw, lpMsgBuf, szSource.c_str(), (double)sbuf_s.st_size, 
+         szTarget.c_str(), (double)sbuf_d.st_size); 
+
+      ULARGE_INTEGER free1_s, free1_d, free2_s, free2_d;
+      GetDiskFreeSpaceEx(szSource.c_str(), &free1_s, NULL, &free2_s);
+      GetDiskFreeSpaceEx(szTarget.c_str(), &free1_d, NULL, &free2_d);
+      Logging(L" %f %f %f %f", (double)free1_s.QuadPart, (double)free1_d.QuadPart,
+              (double)free2_s.QuadPart, (double)free2_d.QuadPart);
+
       LocalFree(lpMsgBuf);
     }
     else if (((bIsIdxSub && szSubTmpDetail[0].compare(L"idx") == 0)

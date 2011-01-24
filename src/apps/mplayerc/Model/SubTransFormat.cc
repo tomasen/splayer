@@ -468,6 +468,8 @@ std::wstring SubTransFormat::GetVideoFileBasename(std::wstring szVidPath, std::v
       szaPathInfo -> push_back(szExtName ); //ExtName
       szaPathInfo -> push_back(szDirName); //Dir Name ()
       szaPathInfo -> push_back(szFileName); // file name only
+
+      return szBaseName;
     }
     return szVidPath.substr(posDot);
   }

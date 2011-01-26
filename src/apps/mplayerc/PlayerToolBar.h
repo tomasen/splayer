@@ -23,101 +23,28 @@
 
 #include "SUIButton.h"
 
-#include "VolumeCtrl.h"
+#include "VolumeCtrl.h" 
+#include "ToolBarButtonInitialize.h"
 
-// CPlayerToolBar
+class CPlayerToolBar;
 
-class AddButton
-{
-public: 
-  AddButton();
-  AddButton(int agn, std::wstring pn, CRect rc);
-  ~AddButton();
-  int align;
-  std::wstring pbuttonname;
-  CSUIButton* pbutton;
-  CRect rect;
-};
-
-
-class ToolBarButton  
+class CBottomToolBarInitialize : public CToolBarButtonInitialize
 {
 public:
-  ToolBarButton();
-  ToolBarButton(std::wstring btname, int agn1, CRect rc1);
-  ToolBarButton(std::wstring btname, std::wstring bmp, int agn1, CRect rc1, BOOL bnbutton,
-    int idi, BOOL bhd, int wdt);
-  ToolBarButton(std::wstring btname, std::wstring bmp,int agn1, CRect rc1, 
-    BOOL bnbutton, int idi, BOOL bhd, int wdt, int agn2,
-    std::wstring pbtname,CRect rc2, BOOL badd);
-  ~ToolBarButton();
-  CSUIButton*  mybutton;
-  std::wstring buttonname;
-  std::wstring bmpstr;
-  std::wstring pbuttonname;  
-  int          align1;
-  CRect        rect1;
-  BOOL         bnotbutton;
-  int          id;
-  BOOL         bhide;
-  int          width;
-  int          align2;
-  CRect        rect2;
-  BOOL         baddalign;
-  CSUIButton*  pbutton;
-  std::vector<AddButton* > addbuttonvec;
+  CBottomToolBarInitialize();
+  ~CBottomToolBarInitialize();
+
+public:
+  void FillButtonAttribute();
+
+  void ShowButton(ToolBarButton* tbb,BOOL bl,bool (CPlayerToolBar::*mute)(void),
+                  CPlayerToolBar* playertoolbar);
+  void ShowPlayTime(CDC* dc, AppSettings& s, CRect& rcClient, CFont* m_statft,
+                    CString* m_timerstr);
+  void PlayTimeRect(CRect& frc, CRect rcClient);
+
 };
 
-class CToolBarButtonPositon
-{
-public:
-
-  CToolBarButtonPositon(CSUIBtnList* btnl, std::wstring flnm);
-  ~CToolBarButtonPositon();
-
-  std::vector<ToolBarButton* > m_struct_vec;
-  CSUIButton* m_btnVolTm;
-  CSUIButton* m_btnVolBG;
-  CSUIButton* m_btnSubSwitch;
-  CSUIButton* m_close;
-
-  BOOL ReadFromFile();
-  void LineStringToVector();
-  void StringToStruct(std::wstring& buttoninformation, ToolBarButton* buttonstruct);
-  void FillStruct(std::wstring& buttoninformation, ToolBarButton* buttonstruct);
-  void SolveAddalign(std::wstring& buttoninformation, ToolBarButton* buttonstruct);
-  void SetButton();
-
-public:
-
-  void StructToString();
-  std::wstring FillString(ToolBarButton* ttb);
-  std::wstring GetAlignorIdString(int i,std::map<std::wstring, int> mp);
-  std::wstring RectToString(CRect& rc);
-  std::wstring BoolString(BOOL bl);
-  std::wstring GetWidth(int wid);
-  void WriteToFile();
-
-public:
-  CRect GetCRect(std::wstring rectstr);
-  
-public:
-  std::wstring GetFileName();
-
-private:
-
-  CSUIBtnList* m_pbtnList;
-  std::wstring m_filename;
-  BOOL breadfromfile;
-  std::map<std::wstring, int> m_classificationname_map;
-  std::map<std::wstring, int> m_align1_map;
-  std::map<std::wstring, int> m_align2_map;
-  std::map<std::wstring, int> m_id_map;
-  std::map<std::wstring, CSUIButton*> m_pbutton_map;
-  std::vector<std::wstring> m_string_vec;
-  
-
-};
 
 class CPlayerToolBar : public CToolBar
 {
@@ -136,29 +63,27 @@ private:
 	CSUIButton* m_btnVolTm ;
 	CSUIButton* m_btnVolBG;
 	CSUIButton* btnLogo;
-	CFont m_statft;
+  CFont m_statft;
 	CString m_tooltip ;
 	CPoint m_lastMouseMove;
 	int m_lastLeftText;
 	CSUIButton* btnSubSwitch;
-
-  CToolBarButtonPositon m_bottomtoolbar;
-
-  BOOL breadfromfile;
+  CBottomToolBarInitialize m_bottombar_button;
+  BOOL m_breadfromfile;
 
 public:
 	CString m_timerstr;
-	CString m_timerqueryedstr;
+  CString m_timerqueryedstr;
 	CString m_buffering;
 	BOOL holdStatStr;
 	int m_nLogDPIY;
 	CSUIBtnList m_btnList;
-	 CSUIBtnList* const m_pbtnList;
+	CSUIBtnList* const m_pbtnList;
 	int iButtonWidth;
 	void UpdateButtonStat();
 	CPlayerToolBar();
 	virtual ~CPlayerToolBar();
-	BOOL m_bMouseDown ;
+	BOOL m_bMouseDown;
     int m_nHeight;
 
 	UINT iBottonClicked;
@@ -206,15 +131,6 @@ protected:
 
 	virtual INT_PTR OnToolHitTest(	CPoint point,TOOLINFO* pTI 	) const;
 
-  void DefaultInitializeButton();
-
-  void FillStruct();
-
-  void ShowButton(ToolBarButton* tbb,BOOL bl);
-
-  void ShowPlayTime(CDC* dc, AppSettings& s, CRect& rcClient);
-  void PlayTimeRect(CRect& frc, CRect rcClient);
-	
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 public:

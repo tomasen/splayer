@@ -35,7 +35,6 @@
 #include "MediaFormats.h"
 #include "fakefiltermapper2.h"
 #include "Model\appSQLlite.h"
-
 //#include "..\..\..\Updater\cupdatenetlib.h"
 #include "..\..\filters\switcher\AudioSwitcher\AudioSwitcher.h"
 
@@ -124,7 +123,8 @@ enum
 	CLSW_STARTFROMDMP=CLSW_GENUIINI<<1,
 	CLSW_HTPCMODE=CLSW_STARTFROMDMP<<1,
     CLSW_STARTFULL=CLSW_HTPCMODE<<1,
-	CLSW_UNRECOGNIZEDSWITCH=CLSW_STARTFULL<<1
+	CLSW_UNRECOGNIZEDSWITCH=CLSW_STARTFULL<<1,
+  CLSW_CREATTOOLBARBUTTONFILE = CLSW_UNRECOGNIZEDSWITCH<<1
 };
 
 enum
@@ -368,7 +368,8 @@ public:
 		// cmdline params
 		int nCLSwitches;
 		BOOL bGenUIINIOnExit;
-		CAtlList<CString> slFiles, slDubs, slSubs, slFilters;
+    BOOL m_bcreattoolbarbuttonflie;
+    CAtlList<CString> slFiles, slDubs, slSubs, slFilters;
 		__int64 rtStart;
 		CSize fixedWindowSize;
 		bool HasFixedWindowSize() {return fixedWindowSize.cx > 0 || fixedWindowSize.cy > 0;}

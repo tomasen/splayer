@@ -59,6 +59,8 @@ public:
   void virtual FillButtonAttribute();
   void virtual SetButton();
   BOOL virtual ReturnBReadFromFile();
+  void virtual ButtonAttributeToString();
+  void virtual WriteToFile();
 
   void SetCfgPath(std::wstring file);
   std::wstring GetCfgPath();
@@ -83,9 +85,6 @@ private:
   void virtual DefaultInitializeButton();
   BOOL virtual ReadFromFile();
   void virtual LineStringToVector();
-
-  void virtual ButtonAttributeToString();
-  void virtual WriteToFile();
 
   void virtual StringToButtonAttribute(std::wstring& buttoninformation, ToolBarButton* button);
   void virtual FillButtonAttribute(std::wstring& buttoninformation, ToolBarButton* button);

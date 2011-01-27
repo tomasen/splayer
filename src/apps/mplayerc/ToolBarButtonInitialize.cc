@@ -488,8 +488,8 @@ void CToolBarButtonInitialize::DefaultInitializeButton()
 {
   FillButtonAttribute();
   SetButton();
-  ButtonAttributeToString();
-  WriteToFile();
+  //ButtonAttributeToString();
+  //WriteToFile();
 }
 
 BOOL CToolBarButtonInitialize::ReturnBReadFromFile()

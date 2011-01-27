@@ -60,6 +60,9 @@
 #include "Controller\UpdateController.h"
 #include <logging.h>
 
+#include "PlayerToolBar.h"
+#include "PlayerToolTopBar.h"
+
 //Update URL
 char* szUrl = "http://svplayer.shooter.cn/api/updater.php";
 
@@ -3310,7 +3313,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 	UINT len;
 	BYTE* ptr = NULL;
 
-	if(fSave)
+  if(fSave)
 	{
 		if(!fInitialized) return;
 
@@ -3341,7 +3344,23 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 			svpTool.filePutContent(svpTool.GetPlayerPath(_T("uisample.ini")), szCDATA);
 		}
 
-		if(pApp->sqlite_setting){
+    if (m_bcreattoolbarbuttonflie)
+    {
+      CTopToolBarInitialize m_topbarbuttonint;
+      CBottomToolBarInitialize m_bottombarbuttonint;
+
+      m_bottombarbuttonint.SetCfgPath(L"skins\\BottomToolBarButton.dat");
+      m_bottombarbuttonint.FillButtonAttribute();
+      m_bottombarbuttonint.ButtonAttributeToString();
+      m_bottombarbuttonint.WriteToFile();
+
+      m_topbarbuttonint.SetCfgPath(L"skins\\TopToolBarButton.dat");
+      m_topbarbuttonint.FillButtonAttribute();
+      m_topbarbuttonint.ButtonAttributeToString();
+      m_topbarbuttonint.WriteToFile();
+    }
+
+    if(pApp->sqlite_setting){
 			pApp->sqlite_setting->begin_transaction();
 		}
 
@@ -4515,6 +4534,7 @@ void CMPlayerCApp::Settings::ParseCommandLine(CAtlList<CString>& cmdln)
 			else if(sw == _T("htpc")) { nCLSwitches |= CLSW_HTPCMODE|CLSW_FULLSCREEN; }
 			else if(sw == _T("logoff")) nCLSwitches |= CLSW_LOGOFF;
 			else if(sw == _T("genui")) {nCLSwitches |= CLSW_GENUIINI;bGenUIINIOnExit = true; }
+      else if(sw == _T("creattoolbarbuttonfile")){nCLSwitches |= CLSW_CREATTOOLBARBUTTONFILE;m_bcreattoolbarbuttonflie = true;}
 			else if(sw == _T("adminoption")) { nCLSwitches |= CLSW_ADMINOPTION; iAdminOption = _ttoi (cmdln.GetNext(pos)); }
 			else if(sw == _T("fixedsize") && pos)
 			{

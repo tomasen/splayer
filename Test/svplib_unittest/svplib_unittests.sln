@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "svplib_unittests", "svplib_unittests.vcproj", "{5EB1A5A8-3714-49C4-9B9D-D023AA01B138}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "loglib", "..\..\Thirdparty\loglib\loglib.vcproj", "{3617A3B7-9767-4A44-BC13-1867612298E9}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gtest", "..\..\Thirdparty\gtest\gtest.vcproj", "{C8F6C172-56F2-4E76-B5FA-C3B423B31BE7}"
+EndProject
+Global
+	GlobalSection(DPCodeReviewSolutionGUID) = preSolution
+		DPCodeReviewSolutionGUID = {00000000-0000-0000-0000-000000000000}
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5EB1A5A8-3714-49C4-9B9D-D023AA01B138}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5EB1A5A8-3714-49C4-9B9D-D023AA01B138}.Debug|Win32.Build.0 = Debug|Win32
+		{5EB1A5A8-3714-49C4-9B9D-D023AA01B138}.Release|Win32.ActiveCfg = Release|Win32
+		{5EB1A5A8-3714-49C4-9B9D-D023AA01B138}.Release|Win32.Build.0 = Release|Win32
+		{3617A3B7-9767-4A44-BC13-1867612298E9}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3617A3B7-9767-4A44-BC13-1867612298E9}.Debug|Win32.Build.0 = Debug|Win32
+		{3617A3B7-9767-4A44-BC13-1867612298E9}.Release|Win32.ActiveCfg = Release|Win32
+		{3617A3B7-9767-4A44-BC13-1867612298E9}.Release|Win32.Build.0 = Release|Win32
+		{C8F6C172-56F2-4E76-B5FA-C3B423B31BE7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C8F6C172-56F2-4E76-B5FA-C3B423B31BE7}.Debug|Win32.Build.0 = Debug|Win32
+		{C8F6C172-56F2-4E76-B5FA-C3B423B31BE7}.Release|Win32.ActiveCfg = Release|Win32
+		{C8F6C172-56F2-4E76-B5FA-C3B423B31BE7}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,120 @@
+%class=CFacetLookup
+%preamble
+//
+// generated with VC7Libs\Nonship\Src\Sproxy2\static_hash\static_hash /i facets.in /o FacetMappingTable.h /w
+//
+
+enum FACET_TYPE
+{
+	//
+	// value is timeDuration
+	//
+	FACET_DURATION     = 1,
+
+	//
+	// value is "hex" or "base64"
+	//
+	FACET_ENCODING     = 2,
+
+	//
+	// specified set of values -- this constrains
+	// the datatype to the specified values
+	//
+	FACET_ENUMERATION  = 4,
+
+	//
+	// number of units of length
+	// units of length depends on the data type
+	// value is nonNegativeInteger
+	//
+	FACET_LENGTH       = 8,
+
+	//
+	// Upper bound value (all values are less than this value). 
+	// This value must be the same data type as the inherited data type.
+	//
+	FACET_MAXEXCLUSIVE = 16,
+
+	//
+	// Maximum value. 
+	// This value must be the same data type as the inherited data type.
+	//
+	FACET_MAXINCLUSIVE = 32,
+
+	//
+	// Maximum number of units of length. 
+	// Units of length depends on the data type. 
+	// This value must be nonNegativeInteger.
+	//
+	FACET_MAXLENGTH    = 64,
+
+	//
+	// Lower bound value (all values are greater than this value). 
+	// This value must be the same data type as the inherited data type.
+	//
+	FACET_MINEXCLUSIVE = 128,
+
+	//
+	// Minimum value. 
+	// This value must be the same data type as the inherited data type.
+	//
+	FACET_MININCLUSIVE = 256,
+
+	//
+	// Maximum number of units of length. 
+	// Units of length depends on the data type. 
+	// This value must be nonNegativeInteger.
+	//
+	FACET_MINLENGTH    = 512,
+
+	//
+	// Specific pattern that the data type’s values must match. 
+	// This constrains the data type to literals that match the 
+	// specified pattern. 
+	// The pattern value must be a regular expression.
+	//
+	FACET_PATTERN      = 1024,
+
+	//
+	// Frequency of recurrence for recurringDuration and its derivatives. 
+	// This value must be timeDuration.
+	//
+	FACET_PERIOD       = 2048,
+
+	//
+	// Maximum number of digits for data types derived from decimal. 
+	// This value must a positiveInteger.
+	//
+	FACET_PRECISION    = 4096,
+
+	//
+	// Maximum number of digits in the fractional portion for data types 
+	// derived from decimal. 
+	// This value must a nonNegativeInteger.
+	//
+	FACET_SCALE        = 8192,
+	
+	//
+	// whiteSpace provides for: constraining a value space to the white space
+	// normalization rules.
+	//
+	FACET_WHITESPACE   = 16384
+};
+
+%type=FACET_TYPE
+%data
+duration,FACET_DURATION
+encoding,FACET_ENCODING
+enumeration,FACET_ENUMERATION
+length,FACET_LENGTH
+maxExclusive,FACET_MAXEXCLUSIVE
+maxInclusive,FACET_MAXINCLUSIVE
+maxLength,FACET_MAXLENGTH
+minExclusive,FACET_MINEXCLUSIVE
+minInclusive,FACET_MININCLUSIVE
+minLength,FACET_MINLENGTH
+pattern,FACET_PATTERN
+period,FACET_PERIOD
+precision,FACET_PRECISION
+scale,FACET_SCALE
+whiteSpace,FACET_WHITESPACE

@@ -10887,7 +10887,7 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
 			CAtlArray<CString> subSearchPaths;
 			subSearchPaths.Add(_T("."));
 			subSearchPaths.Add(s.GetSVPSubStorePath());
-			//AfxMessageBox(s.GetSVPSubStorePath());
+			subSearchPaths.Add(svpTool.GetPlayerPath(L"SVPSub"));
 			subSearchPaths.Add(_T(".\\subtitles"));
 			subSearchPaths.Add(_T(".\\Subs"));
 			subSearchPaths.Add(_T("c:\\subtitles"));

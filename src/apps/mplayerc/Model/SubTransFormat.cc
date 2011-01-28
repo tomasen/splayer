@@ -709,6 +709,11 @@ BOOL SubTransFormat::IfDirExist_STL(std::wstring path)
 
 BOOL SubTransFormat::IfDirWritable_STL(std::wstring szDir)
 {
+  ULARGE_INTEGER free1_s;
+  GetDiskFreeSpaceEx(szDir.c_str(), &free1_s, NULL, NULL);
+  if (free1_s.QuadPart < 102400i64)
+    return false;
+
   HANDLE hFile =
     CreateFile(szDir.c_str(), FILE_ADD_FILE|FILE_WRITE_ATTRIBUTES|FILE_READ_ATTRIBUTES,
     FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
@@ -815,9 +820,9 @@ BOOL SubTransFormat::GetAppDataPath(std::wstring& path)
     path.append(L"\\");
 
   path.append(L"SPlayer");
-
   if(path.empty())
     return false;
+  _wmkdir(path.c_str());
   return true;
 }
 

@@ -2375,7 +2375,7 @@ void CMPlayerCApp::Settings::RegGlobalAccelKey(HWND hWnd){
 void CMPlayerCApp::Settings::ThreadedLoading(){
 	
 	CMPlayerCApp * pApp  = AfxGetMyApp();
-	Logging(L"Logging Settings::ThreadedLoading");
+	Logging(L"Logging Settings::ThreadedLoading %s", SVP_REV_STR);
 	CMainFrame* pFrame = (CMainFrame*)pApp->m_pMainWnd;
 	while(!pFrame || pFrame->m_WndSizeInited < 2){
 		Sleep(1000);

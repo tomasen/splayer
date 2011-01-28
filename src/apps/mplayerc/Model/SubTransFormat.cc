@@ -30,6 +30,8 @@
 #define fansub_search_buf 30000
 #define UNIQU_HASH_SIZE 512
 
+std::vector<std::wstring> SubTransFormat::_tempfile_list;
+
 int SubTransFormat::ExtractDataFromAiSubRecvBuffer_STL(std::list<std::wstring> *m_tmphandlemsgs, std::wstring szFilePath,
                                                        std::wstring tmpoutfile, std::vector<std::wstring> &szaSubDescs,
                                                        std::vector<std::wstring> &tmpfiles)
@@ -223,7 +225,10 @@ std::wstring SubTransFormat::GetTempFileName()
   if (::GetTempFileName(GetTempDir().c_str(), L"svp", NULL, tmppath) == 0)
     return L"";
   else
+  {
+    _tempfile_list.push_back(tmppath);
     return tmppath;
+  }
 }
 
 int SubTransFormat::UnpackGZFile(std::wstring fnin, std::wstring fnout)
@@ -501,6 +506,7 @@ std::wstring SubTransFormat::GetSameTmpName(std::wstring fnin)
   if(IfFileExist_STL(fnout))
     return GetTempFileName();
 
+  _tempfile_list.push_back(fnout);
   return fnout;
 }
 

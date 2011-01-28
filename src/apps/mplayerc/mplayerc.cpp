@@ -48,7 +48,7 @@
 #include "DisplaySettingDetector.h"
 
 #include "../../filters/transform/mpcvideodec/CpuId.h"
-
+#include "Model/SubTransFormat.h"
 
 //#define  SPI_GETDESKWALLPAPER 115
 
@@ -2311,12 +2311,17 @@ void CMPlayerCApp::OnAppAbout()
 
 void CMPlayerCApp::OnFileExit()
 {
-	OnAppExit();
+  // clear up temp file
+  for (std::vector<std::wstring>::iterator iter = SubTransFormat::_tempfile_list.begin()+2;
+    iter != SubTransFormat::_tempfile_list.end(); iter++)
+    _wremove(iter->c_str());
+
+  OnAppExit();
 }
 
 void CMPlayerCApp::OnFileRestart()
 {
-  OnAppExit();
+  OnFileExit();
   wchar_t exePath[_MAX_PATH];
 
   if (GetModuleFileName( NULL, exePath, _MAX_PATH ))

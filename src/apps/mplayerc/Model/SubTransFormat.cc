@@ -271,6 +271,21 @@ std::wstring SubTransFormat::GetTempDir()
   wchar_t lpPathBuffer[MAX_PATH];
   GetTempPath(MAX_PATH,  lpPathBuffer); 
 
+  if (!IfDirWritable_STL(lpPathBuffer))
+  {
+    std::wstring temp_dir;
+    GetAppDataPath(temp_dir);
+    if (temp_dir[temp_dir.size()-1] != L'\\')
+      temp_dir.append(L"\\");
+
+    temp_dir.append(L"Temp");
+    _wmkdir(temp_dir.c_str());
+    if (!IfDirWritable_STL(temp_dir)){
+      temp_dir = GetPlayerPath_STL(L"Temp");
+      _wmkdir(temp_dir.c_str());
+    }
+    return temp_dir;
+  }
   return lpPathBuffer;
 }
 
@@ -706,12 +721,13 @@ BOOL SubTransFormat::IfDirWritable_STL(std::wstring szDir)
   fp = _wfopen((szDir + L"svpwrtst").c_str(), L"wb");
   if(fp != NULL)
   {
+    ret = true;
+    if (fwrite("testtest", 1, 8, fp) < 8)
+      ret = false;
+
     fclose( fp );
     _wremove((szDir + L"svpwrtst").c_str());
-    ret = true;
   }
-
-  SetFileTime(hFile, &ftCreate, &ftAccess, &ftWrite);
 
   CloseHandle(hFile);
 

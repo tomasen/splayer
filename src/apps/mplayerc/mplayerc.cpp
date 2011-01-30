@@ -1219,16 +1219,32 @@ MMRESULT  (__stdcall * Real_mixerSetControlDetails)( HMIXEROBJ hmxobj,
 													DWORD fdwDetails)
 													= mixerSetControlDetails;
 
+HINSTANCE (__stdcall * Real_ShellExecuteW)(HWND hwnd, LPCWSTR lpOperation, 
+                                           LPCWSTR lpFile, LPCWSTR lpParameters,
+                                           LPCWSTR lpDirectory, INT nShowCmd) 
+                                           = ShellExecuteW;
+
 #include <Winternl.h>
 typedef NTSTATUS (WINAPI *FUNC_NTQUERYINFORMATIONPROCESS)(HANDLE ProcessHandle, PROCESSINFOCLASS ProcessInformationClass, PVOID ProcessInformation, ULONG ProcessInformationLength, PULONG ReturnLength);
 static FUNC_NTQUERYINFORMATIONPROCESS		Real_NtQueryInformationProcess = NULL;
-/*
-NTSTATUS (* Real_NtQueryInformationProcess) (HANDLE				ProcessHandle, 
-PROCESSINFOCLASS	ProcessInformationClass, 
-PVOID				ProcessInformation, 
-ULONG				ProcessInformationLength, 
-PULONG				ReturnLength)
-= NULL;*/
+
+static void ShellExecuteEx_Thread(void* t){ShellExecuteExW((SHELLEXECUTEINFO*)t);free(t);}
+HINSTANCE WINAPI Mine_ShellExecuteW(HWND hwnd, LPCWSTR lpOperation, 
+                             LPCWSTR lpFile, LPCWSTR lpParameters,
+                             LPCWSTR lpDirectory, INT nShowCmd)
+{
+
+  SHELLEXECUTEINFO* sexi = (SHELLEXECUTEINFO*)calloc(1, sizeof(SHELLEXECUTEINFO));
+  sexi->cbSize = sizeof( SHELLEXECUTEINFO );
+  sexi->hwnd = hwnd;
+  sexi->lpVerb = lpOperation;
+  sexi->lpFile = lpFile;
+  sexi->lpParameters = lpParameters;
+  sexi->lpDirectory = lpDirectory;
+  sexi->nShow = nShowCmd;
+  ::_beginthread(ShellExecuteEx_Thread, 0, sexi);
+  return NULL;
+}
 
 BOOL WINAPI Mine_IsDebuggerPresent()
 {
@@ -1905,6 +1921,7 @@ BOOL CMPlayerCApp::InitInstance()
 	DetourTransactionBegin();
 	DetourUpdateThread(GetCurrentThread());
 
+	DetourAttach(&(PVOID&)Real_ShellExecuteW, (PVOID)Mine_ShellExecuteW);
 	DetourAttach(&(PVOID&)Real_IsDebuggerPresent, (PVOID)Mine_IsDebuggerPresent);
 	DetourAttach(&(PVOID&)Real_ChangeDisplaySettingsExA, (PVOID)Mine_ChangeDisplaySettingsExA);
 	DetourAttach(&(PVOID&)Real_ChangeDisplaySettingsExW, (PVOID)Mine_ChangeDisplaySettingsExW);

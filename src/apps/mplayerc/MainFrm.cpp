@@ -8321,30 +8321,14 @@ void CMainFrame::OnPlaySubtitles(UINT nID)
 	}
 	else if(i >= 0) //选择字幕
 	{
-    std::wstring szFileHash = HashController::GetInstance()->GetSPHash(m_fnCurPlayingFile);
-
-    CString FPath = szFileHash.c_str();
-
-        CString szSQLUpdate, szSQLInsert;
-
-        int tNow = time(NULL);
-
         //TODO Save Subselection
 		if(secondSub){
 			m_iSubtitleSel2 = i;
 			UpdateSubtitle2();
-            szSQLInsert.Format(L"INSERT INTO histories  ( fpath, subid2, modtime ) VALUES ( \"%s\", '%d', '%d') ", FPath, m_iSubtitleSel2, tNow);
-            szSQLUpdate.Format(L"UPDATE histories SET subid2 = '%d' , modtime = '%d' WHERE fpath = \"%s\" ", m_iSubtitleSel2, tNow, FPath);
 		}else{
- 			m_iSubtitleSel = i;
+			m_iSubtitleSel = i;
 			UpdateSubtitle();	
-            szSQLInsert.Format(L"INSERT INTO histories  ( fpath, subid, modtime ) VALUES ( \"%s\", '%d', '%d') ", FPath, m_iSubtitleSel, tNow);
-            szSQLUpdate.Format(L"UPDATE histories SET subid = '%d' , modtime = '%d' WHERE fpath = \"%s\" ", m_iSubtitleSel, tNow, FPath);
 		}
-        if(AfxGetMyApp()->sqlite_local_record )
-            AfxGetMyApp()->sqlite_local_record->exec_insert_update_sql_u(szSQLInsert.GetBuffer(), szSQLUpdate.GetBuffer());
-
-
 	}
 	if(secondSub){
 		AfxGetAppSettings().fEnableSubtitles2 = !(m_iSubtitleSel2 & 0x80000000);
@@ -14222,6 +14206,15 @@ void CMainFrame::SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle, bool 
 		    SVP_LogMsg(szBuf);
 		    SendStatusMessage(szBuf , 4000 );
         }
+
+    std::wstring szFileHash = HashController::GetInstance()->GetSPHash(m_fnCurPlayingFile);
+    CString szSQLUpdate, szSQLInsert;
+    int tNow = time(NULL);
+    szSQLInsert.Format(L"INSERT INTO histories  ( fpath, subid2, modtime ) VALUES ( \"%s\", '%d', '%d') ", szFileHash.c_str(), m_iSubtitleSel2, tNow);
+    szSQLUpdate.Format(L"UPDATE histories SET subid2 = '%d' , modtime = '%d' WHERE fpath = \"%s\" ", m_iSubtitleSel2, tNow, szFileHash.c_str());
+    if(AfxGetMyApp()->sqlite_local_record )
+      AfxGetMyApp()->sqlite_local_record->exec_insert_update_sql_u(szSQLInsert.GetBuffer(), szSQLUpdate.GetBuffer());
+
 		m_pCAP->SetSubPicProvider2(CComQIPtr<ISubPicProvider>(pSubStream));
 		SetSubtitleDelay2(pSubStream->sub_delay_ms); 
 
@@ -14349,6 +14342,15 @@ void CMainFrame::SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle, bool b
 		    SVP_LogMsg(szBuf);
 		    SendStatusMessage(szBuf , 4000 );
         }
+
+    std::wstring szFileHash = HashController::GetInstance()->GetSPHash(m_fnCurPlayingFile);
+    CString szSQLUpdate, szSQLInsert;
+    int tNow = time(NULL);
+    szSQLInsert.Format(L"INSERT INTO histories  ( fpath, subid, modtime ) VALUES ( \"%s\", '%d', '%d') ", szFileHash.c_str(), m_iSubtitleSel, tNow);
+    szSQLUpdate.Format(L"UPDATE histories SET subid = '%d' , modtime = '%d' WHERE fpath = \"%s\" ", m_iSubtitleSel, tNow, szFileHash.c_str());
+    if(AfxGetMyApp()->sqlite_local_record )
+      AfxGetMyApp()->sqlite_local_record->exec_insert_update_sql_u(szSQLInsert.GetBuffer(), szSQLUpdate.GetBuffer());
+
 		m_pCAP->SetSubPicProvider(CComQIPtr<ISubPicProvider>(pSubStream));
 		SetSubtitleDelay(pSubStream->sub_delay_ms); 
 		

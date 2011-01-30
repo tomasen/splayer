@@ -587,6 +587,7 @@ std::wstring SubTransFormat::GetSubFileByTempid_STL(size_t iTmpID, std::wstring 
     wchar_t szTmp[128];
     lstrcpy(szTmp, L"");
     int ilan = 1;
+    int is_samefile = false;
     while(IfFileExist_STL(szTarget))
     {
       //TODO: compare if its the same file
@@ -596,6 +597,7 @@ std::wstring SubTransFormat::GetSubFileByTempid_STL(size_t iTmpID, std::wstring 
       {
         // TODO: if there is a diffrence in delay
         ialreadyExist++; //TODO: 如果idx+sub里面只有一个文件相同怎么办 ？？~~ 
+        is_samefile = true;
         break;
       }
 
@@ -605,7 +607,7 @@ std::wstring SubTransFormat::GetSubFileByTempid_STL(size_t iTmpID, std::wstring 
       ilan++;
     }
 
-    if (!CopyFile(szSource.c_str(), szTarget.c_str(), false))
+    if (!is_samefile && !CopyFile(szSource.c_str(), szTarget.c_str(), false))
     {
       LPVOID lpMsgBuf;
       DWORD dw = GetLastError(); 

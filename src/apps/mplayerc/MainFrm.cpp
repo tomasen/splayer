@@ -15371,19 +15371,15 @@ void CMainFrame::OnVisitbbs()
 	//Visit BBS
 	ShellExecute(m_hWnd, _T("open"), _T("https://bbs.shooter.cn/forumdisplay.php?fid=6"), NULL, NULL, SW_SHOWDEFAULT);
 }
-#include "SearchSubDlg.h"
+
 void CMainFrame::OnFileISDBSearch()
 {
-	CSearchSubDlg ssub;
-	CSVPToolBox svpTool;
-	/*
-	CStringArray szaPathArr;
-	svpTool.getVideoFileBasename(m_fnCurPlayingFile, &szaPathArr);
-		if(szaPathArr.GetCount() >= 4){
-			ssub.m_skeywords = szaPathArr.GetAt(3);	
-		}*/
-	ssub.m_skeywords = svpTool.GetShortFileNameForSearch(m_fnCurPlayingFile);
-	ssub.DoModal();
+  CSVPToolBox svpTool;
+
+  CString url = _T("http://shooter.cn/sub/?searchword=");
+  url += svpTool.GetShortFileNameForSearch(m_fnCurPlayingFile);
+
+  ShellExecute(m_hWnd, _T("open"), url, NULL, NULL, SW_SHOWDEFAULT);
 }
 void CMainFrame::OnCheckDefaultPlayer()
 {

@@ -699,14 +699,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\SearchSubDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\SearchSubDlg.h"
-				>
-			</File>
-			<File
 				RelativePath=".\SeekBarTip.cpp"
 				>
 			</File>

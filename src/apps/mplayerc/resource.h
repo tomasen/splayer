@@ -1334,7 +1334,6 @@
 #define IDD_DIALOG2                     20009
 #define IDD_SVPSUBDOWNUPDLG             20009
 #define IDD_DIALOG3                     20010
-#define IDD_SEARCHSUBDLG                20010
 #define IDD_DIALOG4                     20011
 #define IDD_CHECKUPDATE                 20011
 #define IDD_DIALOG5                     20012

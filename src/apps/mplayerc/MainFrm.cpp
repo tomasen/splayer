@@ -13024,33 +13024,33 @@ void CMainFrame::OnSubMenuToolbar(){
 }
 CString CMainFrame::GetAnEasyToUnderstoodSubtitleName(CString szName)
 {
-	CString szRet, szTransdName;
-	switch(AfxGetAppSettings().iLanguage)
-	{
-		case 0:
-        case 2:
-			if(szName.Find(L"gb") >= 0 || szName.Find(L"chs") >= 0){
-				szTransdName = L"简体中文";
-			}else if(szName.Find(L"cht") >= 0 || szName.Find(L"big5") >= 0)
-			{
-				szTransdName = L"繁体中文";
-			}else if(szName.Find(L"cn") >= 0 || szName.Find(L"chn") >= 0)
-			{
-				szTransdName = L"中文";
-			}else if(szName.Find(L"en") >= 0 ){
-				szTransdName = L"英文";
-			}
-			break;
-		default:
-			
-			break;
-	}
-	if(!szTransdName.IsEmpty()){
-		szRet.Format(L"%s<%s>",szTransdName,szName);
-	}else{
-		szRet = szName;;
-	}
-	return szRet;
+  CString szRet, szTransdName;
+  switch(AfxGetAppSettings().iLanguage)
+  {
+  case 0:
+  case 2:
+    if(szName.Find(L"Unknow") >= 0)
+      szTransdName = L"原生";
+    else if(szName.Find(L"gb") >= 0 || szName.Find(L"chs") >= 0)
+      szTransdName = L"简体中文";
+    else if(szName.Find(L"cht") >= 0 || szName.Find(L"big5") >= 0)
+      szTransdName = L"繁体中文";
+    else if(szName.Find(L"cn") >= 0 || szName.Find(L"chn") >= 0)
+      szTransdName = L"中文";
+    else if(szName.Find(L"en") >= 0 )
+      szTransdName = L"英文";
+
+    break;
+  default:
+
+    break;
+  }
+  if(!szTransdName.IsEmpty()){
+    szRet.Format(L"%s<%s>",szTransdName,szName);
+  }else{
+    szRet = szName;;
+  }
+  return szRet;
 }
 void CMainFrame::SetupSubtitlesSubMenu(int subid)
 {

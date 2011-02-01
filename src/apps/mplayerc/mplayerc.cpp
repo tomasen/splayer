@@ -48,7 +48,7 @@
 #include "DisplaySettingDetector.h"
 
 #include "../../filters/transform/mpcvideodec/CpuId.h"
-
+#include "Model/SubTransFormat.h"
 
 //#define  SPI_GETDESKWALLPAPER 115
 
@@ -693,6 +693,7 @@ BEGIN_MESSAGE_MAP(CMPlayerCApp, CWinApp)
 	//{{AFX_MSG_MAP(CMPlayerCApp)
 	ON_COMMAND(ID_HELP_ABOUT, OnAppAbout)
 	ON_COMMAND(ID_FILE_EXIT, OnFileExit)
+  ON_COMMAND(ID_FILE_RESTART, OnFileRestart)
 	//}}AFX_MSG_MAP
 	ON_COMMAND(ID_HELP_SHOWCOMMANDLINESWITCHES, OnHelpShowcommandlineswitches)
 END_MESSAGE_MAP()
@@ -1221,16 +1222,32 @@ MMRESULT  (__stdcall * Real_mixerSetControlDetails)( HMIXEROBJ hmxobj,
 													DWORD fdwDetails)
 													= mixerSetControlDetails;
 
+HINSTANCE (__stdcall * Real_ShellExecuteW)(HWND hwnd, LPCWSTR lpOperation, 
+                                           LPCWSTR lpFile, LPCWSTR lpParameters,
+                                           LPCWSTR lpDirectory, INT nShowCmd) 
+                                           = ShellExecuteW;
+
 #include <Winternl.h>
 typedef NTSTATUS (WINAPI *FUNC_NTQUERYINFORMATIONPROCESS)(HANDLE ProcessHandle, PROCESSINFOCLASS ProcessInformationClass, PVOID ProcessInformation, ULONG ProcessInformationLength, PULONG ReturnLength);
 static FUNC_NTQUERYINFORMATIONPROCESS		Real_NtQueryInformationProcess = NULL;
-/*
-NTSTATUS (* Real_NtQueryInformationProcess) (HANDLE				ProcessHandle, 
-PROCESSINFOCLASS	ProcessInformationClass, 
-PVOID				ProcessInformation, 
-ULONG				ProcessInformationLength, 
-PULONG				ReturnLength)
-= NULL;*/
+
+static void ShellExecuteEx_Thread(void* t){ShellExecuteExW((SHELLEXECUTEINFO*)t);free(t);}
+HINSTANCE WINAPI Mine_ShellExecuteW(HWND hwnd, LPCWSTR lpOperation, 
+                             LPCWSTR lpFile, LPCWSTR lpParameters,
+                             LPCWSTR lpDirectory, INT nShowCmd)
+{
+
+  SHELLEXECUTEINFO* sexi = (SHELLEXECUTEINFO*)calloc(1, sizeof(SHELLEXECUTEINFO));
+  sexi->cbSize = sizeof( SHELLEXECUTEINFO );
+  sexi->hwnd = hwnd;
+  sexi->lpVerb = lpOperation;
+  sexi->lpFile = lpFile;
+  sexi->lpParameters = lpParameters;
+  sexi->lpDirectory = lpDirectory;
+  sexi->nShow = nShowCmd;
+  ::_beginthread(ShellExecuteEx_Thread, 0, sexi);
+  return NULL;
+}
 
 BOOL WINAPI Mine_IsDebuggerPresent()
 {
@@ -1703,8 +1720,9 @@ SVP_LogMsg5(L"Settings::InitInstanceThreaded 16");
 								}
 								hWnd = NULL;
 
-								if(!dumpMsg.IsEmpty())
-									pFrame->SendStatusMessage(dumpMsg, 4000);
+                // Don't send osd message for this any more
+                // if(!dumpMsg.IsEmpty())
+                // pFrame->SendStatusMessage(dumpMsg, 4000);
 							}
 					}
 					
@@ -1906,6 +1924,7 @@ BOOL CMPlayerCApp::InitInstance()
 	DetourTransactionBegin();
 	DetourUpdateThread(GetCurrentThread());
 
+	DetourAttach(&(PVOID&)Real_ShellExecuteW, (PVOID)Mine_ShellExecuteW);
 	DetourAttach(&(PVOID&)Real_IsDebuggerPresent, (PVOID)Mine_IsDebuggerPresent);
 	DetourAttach(&(PVOID&)Real_ChangeDisplaySettingsExA, (PVOID)Mine_ChangeDisplaySettingsExA);
 	DetourAttach(&(PVOID&)Real_ChangeDisplaySettingsExW, (PVOID)Mine_ChangeDisplaySettingsExW);
@@ -2312,9 +2331,22 @@ void CMPlayerCApp::OnAppAbout()
 
 void CMPlayerCApp::OnFileExit()
 {
-	OnAppExit();
+  // clear up temp file
+  for (std::vector<std::wstring>::iterator iter = SubTransFormat::_tempfile_list.begin()+2;
+    iter != SubTransFormat::_tempfile_list.end(); iter++)
+    _wremove(iter->c_str());
+
+  OnAppExit();
 }
 
+void CMPlayerCApp::OnFileRestart()
+{
+  OnFileExit();
+  wchar_t exePath[_MAX_PATH];
+
+  if (GetModuleFileName( NULL, exePath, _MAX_PATH ))
+    ::ShellExecute(NULL, L"open", exePath, NULL, NULL, SW_SHOW);
+}
 // CMPlayerCApp::Settings
 
 CMPlayerCApp::Settings::Settings() 
@@ -2363,7 +2395,7 @@ void CMPlayerCApp::Settings::RegGlobalAccelKey(HWND hWnd){
 void CMPlayerCApp::Settings::ThreadedLoading(){
 	
 	CMPlayerCApp * pApp  = AfxGetMyApp();
-	Logging(L"Logging Settings::ThreadedLoading");
+	Logging(L"Logging Settings::ThreadedLoading %s", SVP_REV_STR);
 	CMainFrame* pFrame = (CMainFrame*)pApp->m_pMainWnd;
 	while(!pFrame || pFrame->m_WndSizeInited < 2){
 		Sleep(1000);
@@ -5057,6 +5089,8 @@ LPCTSTR CMPlayerCApp::GetSatelliteDll(int nLanguage)
         return _T("lang\\splayer.cht.dll");
     case 3:		// Russian
       return _T("lang\\splayer.ru.dll");
+    case ID_LANGUAGE_FRENCH - ID_LANGUAGE_CHINESE_SIMPLIFIED:
+      return L"lang\\splayer.fr.dll";
     case 14:		// german
       return _T("lang\\splayer.ge.dll");
 	}

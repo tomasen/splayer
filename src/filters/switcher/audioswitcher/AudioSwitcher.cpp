@@ -784,7 +784,6 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 								if(!m_fVolSuggested){
 									
 									::SendMessage(AfxGetApp()->m_pMainWnd->m_hWnd, WM_USER+32, (WPARAM)&f_suggest_sample_mul,(LPARAM)lTotalInputChannels);
-									sample_mul = 1;
 								}
 
 								m_fVolSuggested = TRUE;
@@ -792,7 +791,7 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 								//SVP_LogMsg5(L"SafeVol1 %f %f" , old_sample_mul, m_boost);
 								if(sample_mul <= 1){
 									m_boost = 1;
-								}else{
+								}else if (m_boost > 1){
 									m_boost = pow((double)10, (sample_mul-1));
 								}
 								//SVP_LogMsg5(L"SafeVol2 %f %f" , sample_mul, m_boost);

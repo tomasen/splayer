@@ -25,7 +25,7 @@
 	#error include 'stdafx.h' before including this file for PCH
 #endif
 
-
+ 
 #define ResStr(id) CString(MAKEINTRESOURCE(id))
 
 #include "resource.h"       // main symbols
@@ -702,6 +702,7 @@ public:
 	DECLARE_MESSAGE_MAP()
 	afx_msg void OnAppAbout();
 	afx_msg void OnFileExit();
+  afx_msg void OnFileRestart();
 	afx_msg void OnHelpShowcommandlineswitches();
 	bool m_bMouseIn;
 	bool m_bMouseInOutUnknown;

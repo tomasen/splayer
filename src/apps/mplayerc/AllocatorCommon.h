@@ -176,7 +176,7 @@ namespace DSObjects
 		CCritSec m_VMR9AlphaBitmapLock;
 		void UpdateAlphaBitmap();
 	protected:
-		CMPlayerCApp::Settings::CRendererSettingsEVR m_LastRendererSettings;
+		AppSettings::CRendererSettingsEVR m_LastRendererSettings;
 
 		HRESULT (__stdcall * m_pDwmIsCompositionEnabled)(__out BOOL* pfEnabled);
 		HRESULT (__stdcall * m_pDwmEnableComposition)(UINT uCompositionAction);

@@ -9,6 +9,7 @@
 #include "SPlayerDefs.h"
 #include "../revision.h"
 #include <logging.h>
+// #define TRANSDEBUG
 
 int FindAllSubfile(std::wstring szSubPath , std::vector<std::wstring>* szaSubFiles)
 {
@@ -60,6 +61,8 @@ void SubTransController::WetherNeedUploadSub(refptr<pool> pool, refptr<task> tas
   SinetConfig(cfg, sid);
 
   std::wstring url = GetServerUrl('upsb', sid);
+  req->set_request_url(url.c_str());
+
   req->set_request_method(REQ_POST);
   req->set_postdata(data);
 
@@ -101,17 +104,18 @@ void SubTransController::UploadSubFileByVideoAndHash(refptr<pool> pool,refptr<ta
   for (size_t i = 0; i < iTotalFiles; i++)
   {
     wchar_t szFname[22];
-    /* Fill in the file upload field */
+    // Fill in the file upload field 
     std::wstring szgzFile = SubTransFormat::GetSameTmpName(fnSubPaths->at(i));
-    SubTransFormat::PackGZfile(fnSubPaths->at(i), szgzFile);
+    int gzerr = SubTransFormat::PackGZfile(fnSubPaths->at(i), szgzFile);
 
     wsprintf(szFname, L"subfile[%d]", i);
     refptr<postdataelem> elem = postdataelem::create_instance();
     elem->set_name(szFname);
     elem->setto_file(szgzFile.c_str());
+    Logging(L"gzfile %d %s", gzerr, szgzFile.c_str());
     data->add_elem(elem);
   }
-  
+
   SinetConfig(cfg, sid);
 
   std::wstring url = GetServerUrl('upsb', sid);
@@ -193,7 +197,8 @@ void SubTransController::_thread_download()
 
   std::vector<std::wstring> szaSubDescs, tmpfiles;
   std::wstring szFileHash = HashController::GetInstance()->GetSPHash(m_videofile.c_str());
-  
+  Logging(L"Downloading sub for %s" ,szFileHash.c_str());
+
   refptr<pool> pool = pool::create_instance();
   refptr<task> task = task::create_instance();
   refptr<config> cfg = config::create_instance();
@@ -247,27 +252,24 @@ void SubTransController::_thread_download()
       if (_Exit_state(500))
         return;
     }
-
-    if (req->get_response_errcode() != 0)
-    {
-      if (m_handlemsgs)
-        m_handlemsgs->push_back(ResStr_STL(IDS_LOG_MSG_SVPSUB_NONE_MATCH_SUB));
-      break;
-    }
-#ifdef DEBUG
+   
+#ifdef TRANSDEBUG
     si_stringmap rps_headers = req->get_response_header();
     for (si_stringmap::iterator it = rps_headers.begin(); it != rps_headers.end(); 
          it++)
-    {
       Logging(L"header: %s %s", it->first.c_str(), it->second.c_str());
-    }
 #endif
 
-    if(0 == SubTransFormat::ExtractDataFromAiSubRecvBuffer_STL(m_handlemsgs, m_videofile,
-                              tmpoutfile, szaSubDescs,tmpfiles))
+    if (req->get_response_errcode() == 0)
+    {
+      int ret = SubTransFormat::ExtractDataFromAiSubRecvBuffer_STL(m_handlemsgs, m_videofile,
+        tmpoutfile, szaSubDescs,tmpfiles);
+      if (ret == -404 && m_handlemsgs)
+        m_handlemsgs->push_back(ResStr_STL(IDS_LOG_MSG_SVPSUB_NONE_MATCH_SUB));
       break;
+    }
 
-    if (_Exit_state(500))
+    if (_Exit_state(5000))
       return;
   }
 
@@ -348,6 +350,12 @@ void SubTransController::_thread_upload()
       if (_Exit_state(500))
         return;
     }
+#ifdef TRANSDEBUG
+      si_stringmap rps_headers = req1->get_response_header();
+      for (si_stringmap::iterator itsm = rps_headers.begin(); itsm != rps_headers.end(); 
+           itsm++)
+        Logging(L"header: %s %s", itsm->first.c_str(), itsm->second.c_str());
+#endif
 
     // 200  需要上传该字幕	
     // 404  该字幕服务器上已经存在。不需要再上传	
@@ -365,6 +373,12 @@ void SubTransController::_thread_upload()
         if (_Exit_state(500))
           return;
       }
+#ifdef TRANSDEBUG
+        si_stringmap rps_headers = req2->get_response_header();
+        for (si_stringmap::iterator itsm = rps_headers.begin(); itsm != rps_headers.end(); 
+             itsm++)
+          Logging(L"header: %s %s", itsm->first.c_str(), itsm->second.c_str());
+#endif
 
       if (req2->get_response_errcode() == 0)
       {
@@ -373,7 +387,8 @@ void SubTransController::_thread_upload()
                 szFileHash.c_str(), szSubHash.c_str() );
         return;
       }
-
+      else
+        Logging(L"SUB_UPLOAD_ERROR %d", req2->get_response_errcode());
     }
     //Fail
     if (_Exit_state(2000))

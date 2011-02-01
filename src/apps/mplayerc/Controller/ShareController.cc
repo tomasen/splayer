@@ -35,20 +35,28 @@ void UserShareController::SetCommentPlaneParent(HWND hwnd)
 }
 void UserShareController::CreateCommentPlane()
 {
-  if (m_commentplane.m_hWnd || !m_parentwnd)
+  if (m_commentplane.m_hWnd || !m_parentwnd || _dialogTemplate)
     return;
 
-  DLGTEMPLATE* dialogTemplate = (DLGTEMPLATE*)calloc(1, sizeof(DLGTEMPLATE));
+  // extra space are in order for successfully creating dialog
+  _dialogTemplate = (DLGTEMPLATE*)calloc(1, sizeof(DLGTEMPLATE)+sizeof(DLGITEMTEMPLATE)+10);
 
-  if (dialogTemplate)
+  if (_dialogTemplate)
   {
-    dialogTemplate->style = DS_SETFONT | DS_FIXEDSYS | WS_POPUP;
-    dialogTemplate->dwExtendedStyle = WS_EX_TOPMOST;
+    _dialogTemplate->style = DS_SETFONT | DS_FIXEDSYS | WS_POPUP;
+    _dialogTemplate->dwExtendedStyle = WS_EX_TOPMOST;
 
-    dialogTemplate->cx    = 316;
-    dialogTemplate->cy    = 183;
+    _dialogTemplate->cdit  = 0;
+    _dialogTemplate->cx    = 316;
+    _dialogTemplate->cy    = 183;
 
-    m_commentplane.CreateIndirect(dialogTemplate, CWnd::FromHandle(m_parentwnd));
+
+    if (0 == m_commentplane.CreateIndirect(_dialogTemplate, CWnd::FromHandle(m_parentwnd)))
+    {
+      free(_dialogTemplate);
+      _dialogTemplate = 0;
+      Logging(L"m_commentplane.CreateIndirect failed");
+    }
   }
 }
 
@@ -71,7 +79,6 @@ std::wstring UserShareController::GenerateKey()
 
 void UserShareController::ShareMovie(std::wstring uuid, std::wstring sphash, std::wstring film)
 {
-  CreateCommentPlane();
   _Stop();
   if (uuid.empty() || sphash.empty() || film.empty())
     return;
@@ -137,7 +144,17 @@ void UserShareController::_Thread()
   m_retdata = Strings::Utf8StringToWString(results);
 
   CreateCommentPlane();
-  m_commentplane.Navigate(m_retdata.c_str());
+  for(int i = 0; i < 100; i++) // wait 10 sec till dialog init
+  {
+    if (m_commentplane.m_initialize == 0)
+      Sleep(100);
+    else
+    {
+      m_commentplane.Navigate(m_retdata.c_str());
+      break;
+    }
+  }
+
 }
 
 BOOL UserShareController::ShowCommentPlane()
@@ -152,13 +169,16 @@ BOOL UserShareController::ShowCommentPlane()
 
 void UserShareController::HideCommentPlane()
 {
-  CreateCommentPlane();
+  if (!m_commentplane.m_hWnd || !m_parentwnd)
+    return;
   m_commentplane.HideFrame();
 }
 
 void UserShareController::CalcCommentPlanePos()
 {
-  CreateCommentPlane();
+  if (!m_commentplane.m_hWnd || !m_parentwnd)
+    return;
+
   m_commentplane.CalcWndPos();
   if (m_commentplane.IsWindowVisible())
     m_commentplane.ShowFrame();

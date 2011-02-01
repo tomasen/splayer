@@ -28,6 +28,7 @@ BEGIN_DISPATCH_MAP(MovieComment, CDHtmlDialog)
 END_DISPATCH_MAP()
 
 MovieComment::MovieComment()
+: m_initialize(0)
 {
 
 }
@@ -67,6 +68,7 @@ BOOL MovieComment::OnInitDialog()
   // SetExternalDispatch(GetIDispatch(TRUE));
   // suppress script error
   m_pBrowserApp->put_Silent(VARIANT_TRUE);
+  m_initialize = 1;
   return TRUE;
 }
 

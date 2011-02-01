@@ -4,7 +4,6 @@
 
 
 #pragma once
-
 #include <afxdhtml.h>
 #include <threadhelper.h>
 
@@ -41,6 +40,7 @@ public:
   void ShowFrame();
   void OpenNewLink(LPCTSTR url);
 
+  int m_initialize;
 protected:
   virtual BOOL OnInitDialog();
   virtual BOOL IsExternalDispatchSafe();

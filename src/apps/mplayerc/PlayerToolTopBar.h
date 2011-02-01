@@ -1,5 +1,18 @@
 #pragma once
 #include "SUIButton.h"
+#include "ToolBarButtonInitialize.h"
+
+class CTopToolBarInitialize : public CToolBarButtonInitialize
+{
+public:
+  CTopToolBarInitialize();
+  ~CTopToolBarInitialize();
+
+public:
+  void FillButtonAttribute();
+  
+};
+
 
 // CPlayerToolTopBar
 
@@ -10,6 +23,7 @@ class CPlayerToolTopBar : public CWnd
 	int iLeftBorderPos;
 	CSUIButton* btnClose;
 	enum {IDT_CLOSE, IDT_TIPS};
+
 public:
 	CPlayerToolTopBar();
 	virtual ~CPlayerToolTopBar();
@@ -35,7 +49,7 @@ protected:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	CSUIBtnList m_btnList;
 	CSUIBtnList* const m_pbtnList;
-	afx_msg void OnMove(int x, int y);
+  afx_msg void OnMove(int x, int y);
 	afx_msg void OnPaint();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
@@ -49,6 +63,8 @@ protected:
 	afx_msg void OnEnable(BOOL bEnable);
 	afx_msg void OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized);
 	virtual BOOL Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID, CCreateContext* pContext = NULL);
+
+
 public:
 	void UpdateButtonStat();
 	void ReCalcBtnPos();
@@ -66,6 +82,10 @@ public:
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
 	afx_msg void OnWindowPosChanging(WINDOWPOS* lpwndpos);
 	afx_msg void OnActivateApp(BOOL bActive, DWORD dwThreadID);
+
+private:
+  CTopToolBarInitialize m_topbar_button;
+
 };
 
 

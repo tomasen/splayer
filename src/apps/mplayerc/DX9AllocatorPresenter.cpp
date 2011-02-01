@@ -508,8 +508,8 @@ void CDX9AllocatorPresenter::ThreadBeginDetectVSync(){
 bool CDX9AllocatorPresenter::SettingsNeedResetDevice()
 {
 	AppSettings& s = AfxGetAppSettings();
-	CMPlayerCApp::Settings::CRendererSettingsEVR & New = AfxGetAppSettings().m_RenderSettings;
-	CMPlayerCApp::Settings::CRendererSettingsEVR & Current = m_LastRendererSettings;
+	AppSettings::CRendererSettingsEVR & New = AfxGetAppSettings().m_RenderSettings;
+	AppSettings::CRendererSettingsEVR & Current = m_LastRendererSettings;
 
 	bool bRet = false;
 	if (m_bIsFullscreen)

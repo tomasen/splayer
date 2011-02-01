@@ -101,6 +101,7 @@ STDMETHODIMP CMatroskaSplitterFilter::NonDelegatingQueryInterface(REFIID riid, v
 
 	return 
 		QI(ITrackInfo)
+    QI(IAMStreamSelect)
 		__super::NonDelegatingQueryInterface(riid, ppv);
 }
 
@@ -179,7 +180,8 @@ HRESULT CMatroskaSplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 //					case BI_RLE8: mt.subtype = MEDIASUBTYPE_RGB8; break;
 //					case BI_RLE4: mt.subtype = MEDIASUBTYPE_RGB4; break;
 					}
-					mts.Add(mt);
+          if (!bHasVideo)
+					  mts.Add(mt);
 					bHasVideo = true;
 				}
 				else if(CodecID == "V_UNCOMPRESSED")
@@ -251,7 +253,8 @@ avcsuccess:
 					BYTE* pSequenceHeader = (BYTE*)pm2vi->dwSequenceHeader;
 					memcpy(pSequenceHeader, data.GetData(), data.GetCount());
 					pm2vi->cbSequenceHeader = data.GetCount();
-					mts.Add(mt);
+          if (!bHasVideo)
+					  mts.Add(mt);
 					bHasVideo = true;
 				}
 				else if(CodecID.Find("V_MPEG4/") == 0)
@@ -269,7 +272,8 @@ avcsuccess:
 					BYTE* pSequenceHeader = (BYTE*)pm2vi->dwSequenceHeader;
 					memcpy(pSequenceHeader, pTE->CodecPrivate.GetData(), pTE->CodecPrivate.GetCount());
 					pm2vi->cbSequenceHeader = pTE->CodecPrivate.GetCount();
-					mts.Add(mt);
+          if (!bHasVideo)
+					  mts.Add(mt);
 					bHasVideo = true;
 				}
 				else if(CodecID.Find("V_REAL/RV") == 0)
@@ -283,7 +287,8 @@ avcsuccess:
 					pvih->bmiHeader.biWidth = (LONG)pTE->v.PixelWidth;
 					pvih->bmiHeader.biHeight = (LONG)pTE->v.PixelHeight;
 					pvih->bmiHeader.biCompression = mt.subtype.Data1;
-					mts.Add(mt);
+          if (!bHasVideo)
+					  mts.Add(mt);
 					bHasVideo = true;
 				}
                 else if(CodecID.Find("V_VP8") == 0)
@@ -297,7 +302,8 @@ avcsuccess:
                     pvih->bmiHeader.biWidth = (LONG)pTE->v.PixelWidth;
                     pvih->bmiHeader.biHeight = (LONG)pTE->v.PixelHeight;
                     pvih->bmiHeader.biCompression = mt.subtype.Data1;
-                    mts.Add(mt);
+                    if (!bHasVideo)
+                      mts.Add(mt);
                     bHasVideo = true;
                 }
 				else if(CodecID == "V_DIRAC")
@@ -316,7 +322,8 @@ avcsuccess:
 					memcpy(pSequenceHeader, pTE->CodecPrivate.GetData(), pTE->CodecPrivate.GetCount());
 					dvih->cbSequenceHeader = pTE->CodecPrivate.GetCount();
 
-					mts.Add(mt);
+          if (!bHasVideo)
+					  mts.Add(mt);
 					bHasVideo = true;
 				}
 				else if(CodecID == "V_MPEG2")
@@ -327,7 +334,8 @@ avcsuccess:
 					int h = pTE->v.PixelHeight;
 
 					if(MakeMPEG2MediaType(mt, seqhdr, len, w, h)){
-						mts.Add(mt);
+            if (!bHasVideo)
+						  mts.Add(mt);
 						bHasVideo = true;
 					}
 				}else if(CodecID == "V_THEORA")
@@ -354,8 +362,8 @@ avcsuccess:
 
 					vih->cbSequenceHeader = pTE->CodecPrivate.GetCount();
 					memcpy (&vih->dwSequenceHeader, pTE->CodecPrivate.GetData(), vih->cbSequenceHeader);
-
-					mts.Add(mt);
+          if (!bHasVideo)
+					  mts.Add(mt);
 					bHasVideo = true;
 				}
 /*
@@ -669,7 +677,7 @@ avcsuccess:
 		}
 	}
 
-	Info& info = m_pFile->m_segment.SegmentInfo;
+	MatroskaReader::Info& info = m_pFile->m_segment.SegmentInfo;
 
 	if(m_pFile->IsRandomAccess())
 	{
@@ -854,6 +862,86 @@ void CMatroskaSplitterFilter::SendVorbisHeaderSample()
 				TRACE(_T("ERROR: Vorbis initialization failed for stream %I64d\n"), TrackNumber);
 		}
 	}
+}
+
+// IAMStreamSelect
+
+STDMETHODIMP CMatroskaSplitterFilter::Count(DWORD* pcStreams)
+{
+  CheckPointer(pcStreams, E_POINTER);
+
+  *pcStreams = 0;
+
+  for (int i = 0; i < GetTrackCount(); ++i)
+  {
+    MatroskaReader::TrackEntry *pTrackEntry = GetTrackEntryAt(i);
+    CBaseSplitterOutputPin *pOutputPin = GetOutputPin(pTrackEntry->TrackNumber);
+
+    if ((pTrackEntry->TrackType == TrackEntry::TypeVideo) &&
+        (pOutputPin->IsConnected()))
+    {
+      ++(*pcStreams);
+    }
+  }
+
+  return S_OK;
+}
+
+STDMETHODIMP CMatroskaSplitterFilter::Enable(long lIndex, DWORD dwFlags)
+{
+  if(!(dwFlags & AMSTREAMSELECTENABLE_ENABLE))
+    return E_NOTIMPL;
+
+  MatroskaReader::TrackEntry *pTrackEntry = GetTrackEntryAt(lIndex);
+  if (pTrackEntry == 0)
+  {
+    return E_INVALIDARG;
+  }
+
+  HRESULT hr = RenameOutputPin(pTrackEntry->TrackNumber, 0, 0);
+
+  return hr;
+}
+
+STDMETHODIMP CMatroskaSplitterFilter::Info(long lIndex, AM_MEDIA_TYPE** ppmt, DWORD* pdwFlags, LCID* plcid, DWORD* pdwGroup, WCHAR** ppszName, IUnknown** ppObject, IUnknown** ppUnk)
+{
+  // General
+  MatroskaReader::TrackEntry *pTrackEntry = GetTrackEntryAt(lIndex);
+  CBaseSplitterOutputPin *pOutputPin = GetOutputPin(pTrackEntry->TrackNumber);
+  if (pTrackEntry == 0)
+  {
+    return E_INVALIDARG;
+  }
+
+  // Media type
+  if (ppmt)
+  {
+    //*ppmt = CreateMediaType(m_mtnew[pTrackEntry->TrackNumber]);
+  }
+
+  // Flags
+  if (pdwFlags)
+  {
+    *pdwFlags = GetOutputPin(pTrackEntry->TrackNumber) ? (AMSTREAMSELECTINFO_ENABLED | AMSTREAMSELECTINFO_EXCLUSIVE) : 0;
+  }
+
+  // LCID
+  *plcid = 0;
+
+  // Group
+  *pdwGroup = 0;
+
+  // Stream name
+  if(ppszName && (*ppszName = (WCHAR*)CoTaskMemAlloc((wcslen(pOutputPin->Name())+1)*sizeof(WCHAR))))
+  {
+    wcscpy(*ppszName, pOutputPin->Name());
+  }
+
+  // Object and unknown
+  *ppObject = 0;
+  *ppUnk = 0;
+
+  return S_OK;
 }
 
 bool CMatroskaSplitterFilter::DemuxInit()

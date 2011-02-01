@@ -1235,15 +1235,30 @@ HINSTANCE (__stdcall * Real_ShellExecuteW)(HWND hwnd, LPCWSTR lpOperation,
 typedef NTSTATUS (WINAPI *FUNC_NTQUERYINFORMATIONPROCESS)(HANDLE ProcessHandle, PROCESSINFOCLASS ProcessInformationClass, PVOID ProcessInformation, ULONG ProcessInformationLength, PULONG ReturnLength);
 static FUNC_NTQUERYINFORMATIONPROCESS		Real_NtQueryInformationProcess = NULL;
 
-static void ShellExecuteEx_Thread(void* t){ShellExecuteExW((SHELLEXECUTEINFO*)t);free(t);}
+#define ALLOC_FORTHREAD(x) if(x){LPCWSTR t = (LPCWSTR)calloc(2, wcslen(x)+2);wcscpy((wchar_t*)t,x); x = t;}
+#define FREE_FORTHREAD(x) if(x){free((void*)x);}
+static void ShellExecuteEx_Thread(void* t)
+{
+  SHELLEXECUTEINFO* sexi = (SHELLEXECUTEINFO*)t;
+  ShellExecuteExW(sexi);
+  FREE_FORTHREAD(sexi->lpVerb)
+  FREE_FORTHREAD(sexi->lpFile)
+  FREE_FORTHREAD(sexi->lpParameters)
+  FREE_FORTHREAD(sexi->lpDirectory)
+  free(t);
+}
 HINSTANCE WINAPI Mine_ShellExecuteW(HWND hwnd, LPCWSTR lpOperation, 
                              LPCWSTR lpFile, LPCWSTR lpParameters,
                              LPCWSTR lpDirectory, INT nShowCmd)
 {
-
+  
   SHELLEXECUTEINFO* sexi = (SHELLEXECUTEINFO*)calloc(1, sizeof(SHELLEXECUTEINFO));
   sexi->cbSize = sizeof( SHELLEXECUTEINFO );
   sexi->hwnd = hwnd;
+  ALLOC_FORTHREAD(lpOperation)
+  ALLOC_FORTHREAD(lpFile)
+  ALLOC_FORTHREAD(lpParameters)
+  ALLOC_FORTHREAD(lpDirectory)
   sexi->lpVerb = lpOperation;
   sexi->lpFile = lpFile;
   sexi->lpParameters = lpParameters;

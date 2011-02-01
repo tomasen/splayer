@@ -1141,12 +1141,12 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
     m_lMinFrameWidth = s.GetColorFromTheme(_T("WinFrameMinWidth"), 450);
 
-    SetTimer(TIMER_IDLE_TASK, 30000, NULL);
+   SetTimer(TIMER_IDLE_TASK, 30000, NULL);
    m_WndSizeInited++;
 
    PostMessage(WM_COMMAND, ID_CHECKANDSET_DEFAULT_PLAYER);
 
-   UserShareController::GetInstance()->CreateCommentPlane(m_hWnd);
+   UserShareController::GetInstance()->SetCommentPlaneParent(m_hWnd);
 
 	return 0;
 }
@@ -4685,7 +4685,14 @@ void CMainFrame::OnFilePostOpenmedia()
 		}
 
 	}
-	
+  // send sphash to remote
+  if(IsSomethingLoaded() && !m_fAudioOnly && (UINT)((INT64)rtDur/10000000) > 90)
+  {
+    UserShareController::GetInstance()->HideCommentPlane();
+    m_wndToolBar.HideMovieShareBtn(TRUE);
+    SetTimer(TIMER_MOVIESHARE, 1800, NULL);
+  }
+
 	KillTimer(TIMER_IDLE_TASK);
 }
 
@@ -11842,14 +11849,6 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
       std::wstring szFileHash = HashController::GetInstance()->GetSPHash(m_fnCurPlayingFile);
 
       CString FPath = szFileHash.c_str();
-
-    // send sphash to remote
-    if (m_pCAP && !m_fAudioOnly)
-    {
-      UserShareController::GetInstance()->HideCommentPlane();
-      m_wndToolBar.HideMovieShareBtn(TRUE);
-      SetTimer(TIMER_MOVIESHARE, 10000, NULL);
-    }
 
       if(m_pCAP && (!m_fAudioOnly || m_fRealMediaGraph))
       {

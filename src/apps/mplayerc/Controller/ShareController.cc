@@ -16,6 +16,7 @@
 
 UserShareController::UserShareController() : 
 m_retdata(L""),
+m_parentwnd(NULL),
 _dialogTemplate(NULL)
 {
 
@@ -28,13 +29,15 @@ UserShareController::~UserShareController()
     if (_dialogTemplate)
       free(_dialogTemplate);
 }
-
-void UserShareController::CreateCommentPlane(HWND hwnd)
+void UserShareController::SetCommentPlaneParent(HWND hwnd)
 {
-  if (m_commentplane.m_hWnd)
+  m_parentwnd = hwnd;
+}
+void UserShareController::CreateCommentPlane()
+{
+  if (m_commentplane.m_hWnd || !m_parentwnd)
     return;
 
-  m_parentwnd = hwnd;
   DLGTEMPLATE* dialogTemplate = (DLGTEMPLATE*)calloc(1, sizeof(DLGTEMPLATE));
 
   if (dialogTemplate)
@@ -68,14 +71,15 @@ std::wstring UserShareController::GenerateKey()
 
 void UserShareController::ShareMovie(std::wstring uuid, std::wstring sphash, std::wstring film)
 {
-    _Stop();
-    if (uuid.empty() || sphash.empty() || film.empty())
-      return;
+  CreateCommentPlane();
+  _Stop();
+  if (uuid.empty() || sphash.empty() || film.empty())
+    return;
 
-    m_uuid = uuid;
-    m_sphash = sphash;
-    m_film = film;
-    _Start();
+  m_uuid = uuid;
+  m_sphash = sphash;
+  m_film = film;
+  _Start();
 }
 
 void UserShareController::_Thread()
@@ -132,25 +136,29 @@ void UserShareController::_Thread()
   std::string results = (char*)&buffer[0];
   m_retdata = Strings::Utf8StringToWString(results);
 
+  CreateCommentPlane();
   m_commentplane.Navigate(m_retdata.c_str());
 }
 
 BOOL UserShareController::ShowCommentPlane()
 {
-    if (m_retdata.empty())
-        return FALSE;
+  if (m_retdata.empty())
+      return FALSE;
 
-    m_commentplane.ShowFrame();
-    return TRUE;
+  CreateCommentPlane();
+  m_commentplane.ShowFrame();
+  return TRUE;
 }
 
 void UserShareController::HideCommentPlane()
 {
-    m_commentplane.HideFrame();
+  CreateCommentPlane();
+  m_commentplane.HideFrame();
 }
 
 void UserShareController::CalcCommentPlanePos()
 {
+  CreateCommentPlane();
   m_commentplane.CalcWndPos();
   if (m_commentplane.IsWindowVisible())
     m_commentplane.ShowFrame();

@@ -20,7 +20,8 @@ public:
     void _Thread();
     void ShareMovie(std::wstring uuid, std::wstring sphash, std::wstring film);
 
-    void CreateCommentPlane(HWND hwnd);
+    void SetCommentPlaneParent(HWND hwnd);
+    void CreateCommentPlane();
     void CalcCommentPlanePos();
     BOOL ShowCommentPlane();
     void HideCommentPlane();

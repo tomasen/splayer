@@ -2339,7 +2339,7 @@ void CMPlayerCApp::OnAppAbout()
 void CMPlayerCApp::OnFileExit()
 {
   // clear up temp file
-  for (std::vector<std::wstring>::iterator iter = SubTransFormat::_tempfile_list.begin()+2;
+  for (std::vector<std::wstring>::iterator iter = SubTransFormat::_tempfile_list.begin();
     iter != SubTransFormat::_tempfile_list.end(); iter++)
     _wremove(iter->c_str());
 

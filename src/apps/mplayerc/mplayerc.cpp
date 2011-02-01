@@ -2352,7 +2352,7 @@ void CMPlayerCApp::OnFileRestart()
   wchar_t exePath[_MAX_PATH];
 
   if (GetModuleFileName( NULL, exePath, _MAX_PATH ))
-    ::ShellExecute(NULL, L"open", exePath, NULL, NULL, SW_SHOW);
+    Real_ShellExecuteW(NULL, L"open", exePath, NULL, NULL, SW_SHOW);
 }
 // CMPlayerCApp::Settings
 

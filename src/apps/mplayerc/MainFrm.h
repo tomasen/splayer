@@ -994,4 +994,5 @@ private:
   void _HandleTimer_StreamPosPoller();
   void _StartSnap();
   SubTransController  m_subcontrl;
+  DWORD m_secret_switch;
 };

@@ -636,10 +636,11 @@ CMainFrame::CMainFrame() :
 	pTBL(NULL),
 	m_lastSeekAction(0),
 	m_wndLycShowBox(NULL),
-    m_ThreadSVPSub(NULL),
-    m_l_been_playing_sec(0),
-    m_is_resume_from_last_exit_point(false),
-    m_lyricDownloadThread(NULL)
+  m_ThreadSVPSub(NULL),
+  m_l_been_playing_sec(0),
+  m_is_resume_from_last_exit_point(false),
+  m_lyricDownloadThread(NULL),
+  m_secret_switch(NULL)
 {
 	m_wndFloatToolBar = new CPlayerFloatToolBar();
 }
@@ -1146,7 +1147,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
    PostMessage(WM_COMMAND, ID_CHECKANDSET_DEFAULT_PLAYER);
 
-   UserShareController::GetInstance()->SetCommentPlaneParent(m_hWnd);
+  UserShareController::GetInstance()->SetCommentPlaneParent(m_hWnd);
 
 	return 0;
 }
@@ -2667,10 +2668,15 @@ void CMainFrame::OnTimer(UINT nIDEvent)
   case TIMER_MOVIESHARE:
     {
       KillTimer(TIMER_MOVIESHARE);
-      std::wstring uuid, moviehash;
-      SPlayerGUID::GenerateGUID(uuid);
-      moviehash = HashController::GetInstance()->GetSPHash(m_fnCurPlayingFile);
-      UserShareController::GetInstance()->ShareMovie(uuid, moviehash, m_fnCurPlayingFile.GetString());
+      if (!(m_secret_switch & 0x01))
+        break;
+      if (IsSomethingLoaded() && !m_fAudioOnly)
+      {
+        std::wstring uuid, moviehash;
+        SPlayerGUID::GenerateGUID(uuid);
+        moviehash = HashController::GetInstance()->GetSPHash(m_fnCurPlayingFile);
+        UserShareController::GetInstance()->ShareMovie(uuid, moviehash, m_fnCurPlayingFile.GetString());
+      }
     }
     break;
   case TIMER_SNAP:
@@ -4685,10 +4691,10 @@ void CMainFrame::OnFilePostOpenmedia()
 		}
 
 	}
+  UserShareController::GetInstance()->HideCommentPlane();
   // send sphash to remote
   if(IsSomethingLoaded() && !m_fAudioOnly && (UINT)((INT64)rtDur/10000000) > 90)
   {
-    UserShareController::GetInstance()->HideCommentPlane();
     m_wndToolBar.HideMovieShareBtn(TRUE);
     SetTimer(TIMER_MOVIESHARE, 1800, NULL);
   }
@@ -7088,11 +7094,21 @@ void CMainFrame::OnUpdateViewOntop(CCmdUI* pCmdUI)
 {
 	pCmdUI->SetRadio(AfxGetAppSettings().iOnTop == (pCmdUI->m_nID - ID_ONTOP_NEVER));
 }
-void CMainFrame::OnShowDrawStats(){
-	AfxGetMyApp()->m_fDisplayStats = !AfxGetMyApp()->m_fDisplayStats;
-	//if(AfxGetMyApp()->m_fDisplayStats > 3){
-		//AfxGetMyApp()->m_fDisplayStats = 0;
-	//}
+// this is now become secret test shortcut
+void CMainFrame::OnShowDrawStats()
+{
+  m_secret_switch = !m_secret_switch;
+  CString msg;
+  msg.Format(L"Secret option @ %x", m_secret_switch);
+  SendStatusMessage(msg, 2000);
+  if (m_secret_switch)
+  {
+    UserShareController::GetInstance()->CreateCommentPlane();
+    SetTimer(TIMER_MOVIESHARE, 1, NULL);
+  }
+  else
+    AfxGetMyApp()->m_fDisplayStats = !AfxGetMyApp()->m_fDisplayStats;
+
 }
 void CMainFrame::OnSetAudioNumberOfSpeaker(){
 	ShowOptions(OPTIONDLG_ADVANCED);

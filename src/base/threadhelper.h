@@ -30,12 +30,13 @@ public:
   ~ThreadHelperImpl() {_Stop();}
 
   // Create a new thread
-  void _Start()
+  void _Start(int nPriority = THREAD_PRIORITY_IDLE)
   {
     if (_Is_alive())
       return;
 
     m_thread = (HANDLE)::_beginthread(Logic, 0, (T*)this);
+    m_priority = nPriority;
   }
 
   // Stop the thread
@@ -88,15 +89,23 @@ public:
     m_thread = NULL;
     ::ResetEvent(m_stopevent);
   }
-
+  int    m_priority;
 private:
   static void Logic(void* t)
   {
-     static_cast<T*>(t)->_Thread();
-     static_cast<T*>(t)->_ResetThread();
+    HANDLE thread_cur = GetCurrentThread();
+    if (static_cast<T*>(t)->m_priority == THREAD_PRIORITY_IDLE)
+      SetThreadPriority(thread_cur, THREAD_MODE_BACKGROUND_BEGIN);
+
+    SetThreadPriority(thread_cur, static_cast<T*>(t)->m_priority);
+
+    static_cast<T*>(t)->_Thread();
+    static_cast<T*>(t)->_ResetThread();
+
   }
 
 private:
   HANDLE m_thread;
   HANDLE m_stopevent;
+
 };

@@ -121,17 +121,19 @@ void MovieComment::CalcWndPos()
 {
   RECT rc;
   GetParent()->GetWindowRect(&rc);
-  SetWindowPos(NULL, rc.left+20, rc.bottom-420, 240, 320, SWP_NOACTIVATE);
+  SetWindowPos(NULL, rc.left+20, rc.bottom-420, 240, 320, SWP_NOZORDER|SWP_NOACTIVATE);
 }
 
 void MovieComment::HideFrame()
 {
   ShowWindow(SW_HIDE);
+  ModifyStyle(0, WS_DISABLED);
 }
 
 void MovieComment::ShowFrame()
 {
-  ShowWindow(SW_SHOW);
+  ModifyStyle(WS_DISABLED, 0);
+  ShowWindow(SW_SHOWNOACTIVATE);
 }
 
 void ThreadNewLink::SetOpenUrl(std::wstring url)

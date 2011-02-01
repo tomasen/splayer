@@ -63,9 +63,10 @@ BOOL MovieComment::OnInitDialog()
          | DOCHOSTUIFLAG_DISABLE_HELP_MENU | DOCHOSTUIFLAG_DIALOG | DOCHOSTUIFLAG_DISABLE_SCRIPT_INACTIVE
          | DOCHOSTUIFLAG_OVERRIDEBEHAVIORFACTORY);
 
-//   EnableAutomation();
-//   SetExternalDispatch(GetIDispatch(TRUE));
-
+  // EnableAutomation();
+  // SetExternalDispatch(GetIDispatch(TRUE));
+  // suppress script error
+  m_pBrowserApp->put_Silent(VARIANT_TRUE);
   return TRUE;
 }
 

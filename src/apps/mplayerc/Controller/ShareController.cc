@@ -14,7 +14,9 @@
 #include "base64.h"
 #include "logging.h"
 
-UserShareController::UserShareController() : m_retdata(L"")
+UserShareController::UserShareController() : 
+m_retdata(L""),
+_dialogTemplate(NULL)
 {
 
 }
@@ -22,6 +24,9 @@ UserShareController::UserShareController() : m_retdata(L"")
 UserShareController::~UserShareController()
 {
     _Stop();
+
+    if (_dialogTemplate)
+      free(_dialogTemplate);
 }
 
 void UserShareController::CreateCommentPlane(HWND hwnd)
@@ -30,8 +35,18 @@ void UserShareController::CreateCommentPlane(HWND hwnd)
     return;
 
   m_parentwnd = hwnd;
-  m_commentplane.Create(IDD_SHARE_DLG, CWnd::FromHandle(m_parentwnd));
-  m_commentplane.Navigate(L"about:blank");
+  DLGTEMPLATE* dialogTemplate = (DLGTEMPLATE*)calloc(1, sizeof(DLGTEMPLATE));
+
+  if (dialogTemplate)
+  {
+    dialogTemplate->style = DS_SETFONT | DS_FIXEDSYS | WS_POPUP;
+    dialogTemplate->dwExtendedStyle = WS_EX_TOPMOST;
+
+    dialogTemplate->cx    = 316;
+    dialogTemplate->cy    = 183;
+
+    m_commentplane.CreateIndirect(dialogTemplate, CWnd::FromHandle(m_parentwnd));
+  }
 }
 
 std::wstring UserShareController::GetResponseData()

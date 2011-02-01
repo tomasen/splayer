@@ -29,6 +29,7 @@ public:
     std::wstring GetResponseData();
 
 private:
+    DLGTEMPLATE* _dialogTemplate;
 
     std::wstring m_uuid;
     std::wstring m_sphash;

@@ -8219,7 +8219,7 @@ void CMainFrame::OnPlayAudio(UINT nID)
 
         int tNow = time(NULL);
         //TODO Save Subselection
-        szSQLInsert.Format(L"INSERT INTO histories  ( fpath, audioid, modtime ) VALUES ( \"%s\", '%d', '%d') ", szFileHash, i, tNow);
+        szSQLInsert.Format(L"INSERT OR IGNORE INTO histories  ( fpath, audioid, modtime ) VALUES ( \"%s\", '%d', '%d') ", szFileHash, i, tNow);
         szSQLUpdate.Format(L"UPDATE histories SET audioid = '%d' , modtime = '%d'  WHERE fpath = \"%s\" ", i, tNow, szFileHash);
         
         if(AfxGetMyApp()->sqlite_local_record)
@@ -14248,7 +14248,7 @@ void CMainFrame::SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle, bool 
     std::wstring szFileHash = HashController::GetInstance()->GetSPHash(m_fnCurPlayingFile);
     CString szSQLUpdate, szSQLInsert;
     int tNow = time(NULL);
-    szSQLInsert.Format(L"INSERT INTO histories  ( fpath, subid2, modtime ) VALUES ( \"%s\", '%d', '%d') ", szFileHash.c_str(), m_iSubtitleSel2, tNow);
+    szSQLInsert.Format(L"INSERT OR IGNORE INTO histories  ( fpath, subid2, modtime ) VALUES ( \"%s\", '%d', '%d') ", szFileHash.c_str(), m_iSubtitleSel2, tNow);
     szSQLUpdate.Format(L"UPDATE histories SET subid2 = '%d' , modtime = '%d' WHERE fpath = \"%s\" ", m_iSubtitleSel2, tNow, szFileHash.c_str());
     if(AfxGetMyApp()->sqlite_local_record )
       AfxGetMyApp()->sqlite_local_record->exec_insert_update_sql_u(szSQLInsert.GetBuffer(), szSQLUpdate.GetBuffer());
@@ -14384,7 +14384,7 @@ void CMainFrame::SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle, bool b
     std::wstring szFileHash = HashController::GetInstance()->GetSPHash(m_fnCurPlayingFile);
     CString szSQLUpdate, szSQLInsert;
     int tNow = time(NULL);
-    szSQLInsert.Format(L"INSERT INTO histories  ( fpath, subid, modtime ) VALUES ( \"%s\", '%d', '%d') ", szFileHash.c_str(), m_iSubtitleSel, tNow);
+    szSQLInsert.Format(L"INSERT OR IGNORE INTO histories  ( fpath, subid, modtime ) VALUES ( \"%s\", '%d', '%d') ", szFileHash.c_str(), m_iSubtitleSel, tNow);
     szSQLUpdate.Format(L"UPDATE histories SET subid = '%d' , modtime = '%d' WHERE fpath = \"%s\" ", m_iSubtitleSel, tNow, szFileHash.c_str());
     if(AfxGetMyApp()->sqlite_local_record )
       AfxGetMyApp()->sqlite_local_record->exec_insert_update_sql_u(szSQLInsert.GetBuffer(), szSQLUpdate.GetBuffer());

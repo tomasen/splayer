@@ -79,6 +79,12 @@ DECLARE_LAZYINSTANCE(MediaCenterController);
 DECLARE_LAZYINSTANCE(UserShareController);
 
 /////////
+
+HINSTANCE (__stdcall * Real_ShellExecuteW)(HWND hwnd, LPCWSTR lpOperation, 
+                                           LPCWSTR lpFile, LPCWSTR lpParameters,
+                                           LPCWSTR lpDirectory, INT nShowCmd) 
+                                           = ShellExecuteW;
+
 typedef BOOL (WINAPI* MINIDUMPWRITEDUMP)(HANDLE hProcess, DWORD dwPid, HANDLE hFile, MINIDUMP_TYPE DumpType,
 										 CONST PMINIDUMP_EXCEPTION_INFORMATION ExceptionParam,
 										 CONST PMINIDUMP_USER_STREAM_INFORMATION UserStreamParam,
@@ -298,7 +304,7 @@ _EXCEPTION_POINTERS ExceptionInfo;
 								
 								wcscpy( PathFindFileName(sUpdaterPath), _T("Updater.exe"));
 								_stprintf( sUpPerm, _T(" /dmp splayer_hanged_%s_%s.dmp "), SVP_REV_STR ,szTimestamp);
-								(int)::ShellExecute(NULL, _T("open"), sUpdaterPath, sUpPerm, NULL, SW_HIDE);
+								(int)Real_ShellExecuteW(NULL, _T("open"), sUpdaterPath, sUpPerm, NULL, SW_HIDE);
 
 								
 							}
@@ -1225,11 +1231,6 @@ MMRESULT  (__stdcall * Real_mixerSetControlDetails)( HMIXEROBJ hmxobj,
 													LPMIXERCONTROLDETAILS pmxcd, 
 													DWORD fdwDetails)
 													= mixerSetControlDetails;
-
-HINSTANCE (__stdcall * Real_ShellExecuteW)(HWND hwnd, LPCWSTR lpOperation, 
-                                           LPCWSTR lpFile, LPCWSTR lpParameters,
-                                           LPCWSTR lpDirectory, INT nShowCmd) 
-                                           = ShellExecuteW;
 
 #include <Winternl.h>
 typedef NTSTATUS (WINAPI *FUNC_NTQUERYINFORMATIONPROCESS)(HANDLE ProcessHandle, PROCESSINFOCLASS ProcessInformationClass, PVOID ProcessInformation, ULONG ProcessInformationLength, PULONG ReturnLength);

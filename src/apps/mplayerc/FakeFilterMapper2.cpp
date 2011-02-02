@@ -319,6 +319,14 @@ HRESULT WINAPI Mine_CoCreateInstance(IN REFCLSID rclsid, IN LPUNKNOWN pUnkOuter,
              GUIDFromCString(_T("{64F2005C-6CF5-4652-B94F-600360B15B27}")) == rclsid ||
              GUIDFromCString(_T("{BD4FB4BE-809D-487b-ADD6-F7D164247E52}")) == rclsid)
       ret = LoadExternalObject(  svpTool.GetPlayerPath(L"mkx.dll"), rclsid, riid, ppv);
+    else if (GUIDFromCString(L"{09571A4B-F1FE-4C60-9760-DE6D310C7C31}") == rclsid ||
+             GUIDFromCString(L"{F23B1F18-CB1A-47ED-A1FE-B60494A626D0}") == rclsid ||
+             GUIDFromCString(L"{BBA35D2A-A374-4CDF-9C5D-BF31DE970B54}") == rclsid ||
+             GUIDFromCString(L"{3FD76A83-DAA1-403B-B388-26EFFF652725}") == rclsid ||
+             GUIDFromCString(L"{C9783F9D-7E56-4205-9CA1-225CD9349BD7}") == rclsid)
+      ret = LoadExternalObject(  svpTool.GetPlayerPath(L"codec\cavc2.ax"), rclsid, riid, ppv);
+    else if (GUIDFromCString(L"{ED3110F3-5211-11DF-94AF-0026B977EEAA}") == rclsid)
+      ret = LoadExternalObject(  svpTool.GetPlayerPath(L"vp8decoder.dll"), rclsid, riid, ppv);
     // csf
     else if (GUIDFromCString(_T("{ACD23F8C-B37E-4B2D-BA08-86CB6E621D6A}")) == rclsid)
       ret = LoadExternalObject(  svpTool.GetPlayerPath(L"csfcodec\\mpc_mtcontain.dll"), rclsid, riid, ppv);

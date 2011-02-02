@@ -75,8 +75,9 @@ BOOL MovieComment::OnInitDialog()
 void MovieComment::OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl)
 {
   std::wstring url(szUrl);
-  if (url.find(L"http:") != std::string::npos)
+  if (url.find(L"http:") != std::string::npos && url.length() > 8)
     ::PostMessage(GetParent()->m_hWnd, WM_COMMAND, ID_MOVIESHARE_RESPONSE, NULL);
+
 }
 
 BOOL MovieComment::OnEventNewLink(IDispatch **ppDisp, VARIANT_BOOL *Cancel,
@@ -113,7 +114,7 @@ HRESULT MovieComment::OnEventClose(IHTMLElement* /*pElement*/)
 void MovieComment::OpenNewLink(LPCTSTR url)
 {
   std::wstring str(url);
-  if (str.find(L"http://") != std::string::npos)
+  if (str.find(L"http://") != std::string::npos && str.length() > 8)
     ShellExecute(NULL, L"open", str.c_str(), L"", L"", SW_SHOW);
 }
 

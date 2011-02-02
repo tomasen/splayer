@@ -44,7 +44,7 @@ void UserShareController::CreateCommentPlane()
   if (_dialogTemplate)
   {
     _dialogTemplate->style = DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_DISABLED;
-    _dialogTemplate->dwExtendedStyle = WS_EX_TOPMOST|WS_EX_NOACTIVATE;
+    _dialogTemplate->dwExtendedStyle = WS_EX_NOACTIVATE; //WS_EX_TOPMOST
 
     _dialogTemplate->cdit  = 0;
     _dialogTemplate->cx    = 316;

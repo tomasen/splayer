@@ -83,9 +83,7 @@ void MovieComment::OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl)
 BOOL MovieComment::OnEventNewLink(IDispatch **ppDisp, VARIANT_BOOL *Cancel,
                  DWORD dwFlags, BSTR bstrUrlContext, BSTR bstrUrl)
 {
-  m_newlink._Stop();
-  m_newlink.SetOpenUrl(bstrUrl);
-  m_newlink._Start();
+  OpenNewLink(bstrUrl);
 
   *Cancel = VARIANT_TRUE;
 
@@ -135,17 +133,4 @@ void MovieComment::ShowFrame()
 {
   ModifyStyle(WS_DISABLED, 0);
   ShowWindow(SW_SHOWNOACTIVATE);
-}
-
-void ThreadNewLink::SetOpenUrl(std::wstring url)
-{
-  if (url.empty() || url.find(L"http://") == std::string::npos)
-    return;
-
-  m_url = url;
-}
-
-void ThreadNewLink::_Thread()
-{
-  ShellExecute(NULL, L"open", m_url.c_str(), L"", L"", SW_SHOW);
 }

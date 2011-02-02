@@ -156,7 +156,13 @@ void UserShareController::_Thread()
   }
 
 }
-
+void UserShareController::ToggleCommentPlane()
+{
+  if (m_commentplane.m_hWnd && m_commentplane.IsWindowEnabled())
+    HideCommentPlane();
+  else
+    ShowCommentPlane();
+}
 BOOL UserShareController::ShowCommentPlane()
 {
   if (m_retdata.empty())

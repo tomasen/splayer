@@ -25,6 +25,7 @@ public:
     void CalcCommentPlanePos();
     BOOL ShowCommentPlane();
     void HideCommentPlane();
+    void ToggleCommentPlane();
 
     std::wstring GenerateKey();
     std::wstring GetResponseData();

@@ -574,8 +574,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_WM_PAINT()
 	ON_WM_WINDOWPOSCHANGING()
 	ON_WM_KEYUP()
-    ON_COMMAND(ID_MOVIESHARE, OnMovieShare)
-    ON_COMMAND(ID_MOVIESHARE_RESPONSE, OnMovieShareResponse)
+  ON_COMMAND(ID_MOVIESHARE, OnMovieShare)
+  ON_COMMAND(ID_MOVIESHARE_RESPONSE, OnMovieShareResponse)
 	END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -17404,7 +17404,7 @@ void CMainFrame::AutoSaveImage(LPCTSTR fn, bool shrink_inhalf)
 
 void CMainFrame::OnMovieShare()
 {
-  UserShareController::GetInstance()->ShowCommentPlane();
+  UserShareController::GetInstance()->ToggleCommentPlane();
 }
 
 void CMainFrame::OnMovieShareResponse()

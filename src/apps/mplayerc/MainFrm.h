@@ -66,13 +66,11 @@ public:
   CGraphThread* m_pGraphThread;
 
   friend class CTextPassThruFilter;
-  void SetupIViAudReg();
-  void CleanGraph();
+  void AddTextPassThruFilter();
 
   bool m_fCustomGraph;
   bool m_fRealMediaGraph, m_fShockwaveGraph, m_fQuicktimeGraph;
 
-  void AddTextPassThruFilter();
 
   CInterfaceArray<IUnknown, &IID_IUnknown> m_pparray;
   CInterfaceArray<IAMStreamSelect> m_ssarray;

@@ -103,27 +103,6 @@ static UINT WM_NOTIFYICON = RegisterWindowMessage(TEXT("MYWM_NOTIFYICON"));
 bool g_bNoDuration = false;
 bool g_bExternalSubtitleTime = false;
 
-class CSubClock : public CUnknown, public ISubClock
-{
-  STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void** ppv)
-  {
-    return 
-      QI(ISubClock)
-      CUnknown::NonDelegatingQueryInterface(riid, ppv);
-  }
-
-  REFERENCE_TIME m_rt;
-
-public:
-  CSubClock() : CUnknown(NAME("CSubClock"), NULL) {m_rt = 0;}
-
-  DECLARE_IUNKNOWN;
-
-  // ISubClock
-  STDMETHODIMP SetTime(REFERENCE_TIME rt) {m_rt = rt; return S_OK;}
-  STDMETHODIMP_(REFERENCE_TIME) GetTime() {return(m_rt);}
-};
-
 //
 
 #define SaveMediaState \
@@ -10321,50 +10300,6 @@ void CMainFrame::SetBalance(int balance)
     pBA->put_Balance(balance);
 }
 
-void CMainFrame::SetupIViAudReg()
-{
-  return;
-  //if(!AfxGetAppSettings().fAutoSpeakerConf) 
-
-  DWORD spc = 0, defchnum = 0;
-
-  if(AfxGetAppSettings().fAutoSpeakerConf)
-  {
-    CComPtr<IDirectSound> pDS;
-    if(SUCCEEDED(DirectSoundCreate(NULL, &pDS, NULL))
-      && SUCCEEDED(pDS->SetCooperativeLevel(m_hWnd, DSSCL_NORMAL)))
-    {
-      if(SUCCEEDED(pDS->GetSpeakerConfig(&spc)))
-      {
-        switch(spc)
-        {
-        case DSSPEAKER_DIRECTOUT: defchnum = 6; break;
-        case DSSPEAKER_HEADPHONE: defchnum = 2; break;
-        case DSSPEAKER_MONO: defchnum = 1; break;
-        case DSSPEAKER_QUAD: defchnum = 4; break;
-        default:
-        case DSSPEAKER_STEREO: defchnum = 2; break;
-        case DSSPEAKER_SURROUND: defchnum = 2; break;
-        case DSSPEAKER_5POINT1: defchnum = 5; break;
-        case DSSPEAKER_7POINT1: defchnum = 5; break;
-        }
-      }
-    }
-  }
-  else
-  {
-    defchnum = 2;
-  }
-
-  CRegKey iviaud;
-  if(ERROR_SUCCESS == iviaud.Create(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\InterVideo\\Common\\AudioDec")))
-  {
-    DWORD chnum = 0;
-    if(FAILED(iviaud.QueryDWORDValue(_T("AUDIO"), chnum))) chnum = 0;
-    if(chnum <= defchnum) // check if the user has already set it..., but we won't skip if it's lower than sensible :P
-      iviaud.SetDWORDValue(_T("AUDIO"), defchnum);
-  }
-}
 
 //
 // Open/Close
@@ -11185,22 +11120,6 @@ void CMainFrame::OpenCustomizeGraph()
 
     m_pRefClock->QueryInterface(IID_ISyncClock, reinterpret_cast<void**>(&m_pSyncClock));
   }
-  /*if(m_iPlaybackMode == PM_DVD)
-  {
-  BeginEnumFilters(pGB, pEF, pBF)
-  {
-  if(CComQIPtr<IDirectVobSub2> pDVS2 = pBF)
-  {
-  //				pDVS2->AdviseSubClock(m_pSubClock = new CSubClock);
-  //				break;
-
-  // TODO: test multiple dvobsub instances with one clock
-  if(!m_pSubClock) m_pSubClock = new CSubClock;
-  pDVS2->AdviseSubClock(m_pSubClock);
-  }
-  }
-  EndEnumFilters
-  }*/
 
   BeginEnumFilters(pGB, pEF, pBF)
   {
@@ -11709,10 +11628,6 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
       if(m_fOpeningAborted) throw aborted;
 
       OpenCreateGraphObject(pOMD);
-
-      if(m_fOpeningAborted) throw aborted;
-
-      SetupIViAudReg();
 
       if(m_fOpeningAborted) throw aborted;
 
@@ -14375,36 +14290,6 @@ REFERENCE_TIME CMainFrame::GetDur()
   return(m_iMediaLoadState == MLS_LOADED ? stop : 0);
 }
 
-void CMainFrame::CleanGraph()
-{
-  if(!pGB) return;
-
-  BeginEnumFilters(pGB, pEF, pBF)
-  {
-    CComQIPtr<IAMFilterMiscFlags> pAMMF(pBF);
-    if(pAMMF && (pAMMF->GetMiscFlags()&AM_FILTER_MISC_FLAGS_IS_SOURCE))
-      continue;
-
-    // some capture filters forget to set AM_FILTER_MISC_FLAGS_IS_SOURCE 
-    // or to implement the IAMFilterMiscFlags interface
-    if(pBF == pVidCap || pBF == pAudCap) 
-      continue;
-
-    if(CComQIPtr<IFileSourceFilter>(pBF))
-      continue;
-
-    int nIn, nOut, nInC, nOutC;
-    if(CountPins(pBF, nIn, nOut, nInC, nOutC) > 0 && (nInC+nOutC) == 0)
-    {
-      TRACE(CStringW(L"Removing: ") + GetFilterName(pBF) + '\n');
-
-      pGB->RemoveFilter(pBF);
-      pEF->Reset();
-    }
-  }
-  EndEnumFilters
-}
-
 #define AUDIOBUFFERLEN 500
 
 static void SetLatency(IBaseFilter* pBF, int cbBuffer)
@@ -14933,8 +14818,6 @@ void CMainFrame::AddCurDevToPlaylist()
   }
 }
 
-static int s_fOpenedThruThread = false;
-
 void CMainFrame::OpenMedia(CAutoPtr<OpenMediaData> pOMD)
 {
   // shortcut
@@ -14977,15 +14860,10 @@ void CMainFrame::OpenMedia(CAutoPtr<OpenMediaData> pOMD)
 
   if(m_pGraphThread && fUseThread
     && AfxGetAppSettings().fEnableWorkerThreadForOpening)
-  {
     m_pGraphThread->PostThreadMessage(CGraphThread::TM_OPEN, 0, (LPARAM)pOMD.Detach());
-    s_fOpenedThruThread = true;
-  }
   else
-  {
     OpenMediaPrivate(pOMD);
-    s_fOpenedThruThread = false;
-  }
+
 }
 int CMainFrame::SVPMessageBox(LPCTSTR lpszText, UINT nType  ,	UINT   , UINT idWMCommandMsg )
 {
@@ -15023,12 +14901,6 @@ void CMainFrame::CloseMedia()
       if(pGB) pGB->Abort(); // TODO: lock on graph objects somehow, this is not thread safe
       SVP_LogMsg5(L"OpenAbort");
       break;
-      //MessageBeep(MB_ICONEXCLAMATION);
-      //TRACE(_T("CRITICAL ERROR: !!! Must kill opener thread !!!"));
-      //TerminateThread(m_pGraphThread->m_hThread, -1);
-      //m_pGraphThread = (CGraphThread*)AfxBeginThread(RUNTIME_CLASS(CGraphThread));
-      //s_fOpenedThruThread = false;
-      //break;
     }
 
     Sleep(50);
@@ -15045,16 +14917,8 @@ void CMainFrame::CloseMedia()
 
   OnFilePostClosemedia();
 
-
-  /*	if(m_wndView.m_cover && !m_wndView.m_cover->IsNull()){
-  m_wndView.m_cover->Destroy();
-  m_wndView.m_cover = NULL;
-  m_wndView.Invalidate();
-  }
-  */
-  if(m_pGraphThread && s_fOpenedThruThread)
+  if(m_pGraphThread )
   {
-
 
     CAMEvent e;
     m_pGraphThread->PostThreadMessage(CGraphThread::TM_CLOSE, 0, (LPARAM)&e);
@@ -15066,7 +14930,7 @@ void CMainFrame::CloseMedia()
       m_pGraphThread = (CGraphThread*)AfxBeginThread(RUNTIME_CLASS(CGraphThread));
       if(m_pGraphThread)
         m_pGraphThread->SetMainFrame(this);
-      s_fOpenedThruThread = false;
+
     }
   }
   else
@@ -15080,7 +14944,6 @@ void CMainFrame::CloseMedia()
 
   m_iRedrawAfterCloseCounter = 0;
   SetTimer(TIMER_REDRAW_WINDOW,120,NULL);
-
 
 }
 

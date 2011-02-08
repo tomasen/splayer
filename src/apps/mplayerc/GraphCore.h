@@ -63,6 +63,14 @@ public:
   ~CGraphCore(void);
 
 
+  enum {MLS_CLOSED, MLS_LOADING, MLS_LOADED, MLS_CLOSING};
+
+  // we need open / play pause / seek / close / vol control / sub control / audio and video switching where
+
+
+  // should be private
+  void CleanGraph();
+
   CComQIPtr<IMediaControl> pMC;
   CComQIPtr<IMediaEventEx> pME;
   CComQIPtr<IVideoWindow> pVW;
@@ -111,7 +119,5 @@ public:
 
   CComPtr<IBaseFilter> m_pRefClock; // Adjustable reference clock. GothSync
   CComPtr<ISyncClock> m_pSyncClock;
-
-  enum {MLS_CLOSED, MLS_LOADING, MLS_LOADED, MLS_CLOSING};
 
 };

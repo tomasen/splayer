@@ -301,12 +301,11 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_FILE_SAVE_COPY, OnFileSaveAs)
 	ON_UPDATE_COMMAND_UI(ID_FILE_SAVE_COPY, OnUpdateFileSaveAs)
 	ON_COMMAND(ID_FILE_SAVE_IMAGE, OnFileSaveImage)
-  ON_COMMAND(ID_SCREEN_SNAPSHOT, OnScreenSnapshot)
   ON_COMMAND(ID_CONTROLLER_SAVE_IMAGE, OnControllerSaveImage)
   ON_COMMAND(ID_COMPLETE_QUERY_SUBTITLE, OnCompleteQuerySubtitle)
-	ON_COMMAND(ID_FILE_COPYTOCLIPBOARD, OnFileCopyImageToCLipBoard)
+	ON_COMMAND(ID_SCREENSNAPSHOT, OnScreenSnapshot)
 	ON_UPDATE_COMMAND_UI(ID_FILE_SAVE_IMAGE, OnUpdateFileSaveImage)
-	ON_UPDATE_COMMAND_UI(ID_FILE_COPYTOCLIPBOARD, OnUpdateFileSaveImage)
+	ON_UPDATE_COMMAND_UI(ID_SCREENSNAPSHOT, OnUpdateFileSaveImage)
 	ON_COMMAND(ID_FILE_SAVE_IMAGE_AUTO, OnFileSaveImageAuto)
 	ON_UPDATE_COMMAND_UI(ID_FILE_SAVE_IMAGE_AUTO, OnUpdateFileSaveImage)
 	ON_COMMAND(ID_FILE_SAVE_THUMBNAILS, OnFileSaveThumbnails)
@@ -5822,9 +5821,7 @@ void CMainFrame::SaveDIB(LPCTSTR fn, BYTE* pData, long size)
     szMsg.Format(ResStr(IDS_OSD_MSG_IMAGE_CAPTURE_TO),(LPCTSTR)p);
 	  SendStatusMessage(szMsg, 3000);
 }
-void CMainFrame::OnFileCopyImageToCLipBoard(){
-	SaveImage();
-}
+
 void CMainFrame::SaveImage(LPCTSTR fn)
 {
 	BYTE* pData = NULL;
@@ -6195,7 +6192,11 @@ void CMainFrame::OnScreenSnapshot()
     bResumePlay = true;
   }
 
-  CSnapshot_Win wndSnapshot;
+  AppSettings& s = AfxGetAppSettings();
+  CPath psrc(s.SnapShotPath);
+  psrc.Combine(s.SnapShotPath, MakeSnapshotFileName(_T("snapshot")));
+
+  CSnapshot_Win wndSnapshot((LPCTSTR)psrc);
   wndSnapshot.DoModal();
 
   if (bResumePlay)

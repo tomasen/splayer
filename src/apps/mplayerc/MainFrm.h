@@ -703,7 +703,6 @@ public:
   afx_msg void OnScreenSnapshot();
   afx_msg void OnControllerSaveImage();
   afx_msg void OnCompleteQuerySubtitle();
-	afx_msg void OnFileCopyImageToCLipBoard();
 	afx_msg void OnFileSaveImageAuto();
 	afx_msg void OnUpdateFileSaveImage(CCmdUI* pCmdUI);
 	afx_msg void OnFileSaveThumbnails();

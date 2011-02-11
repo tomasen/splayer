@@ -13,6 +13,52 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+CSnapshot_Win::CSnapshot_Win(const std::wstring &sSavePath)
+: m_sSavePath(sSavePath)
+{
+  m_pdialogTemplate = (DLGTEMPLATE*)::calloc(1, sizeof(DLGTEMPLATE)+sizeof(DLGITEMTEMPLATE)+10);
+  m_pdialogTemplate->style = DS_SETFONT | DS_FIXEDSYS | WS_POPUP;
+  m_pdialogTemplate->dwExtendedStyle = 0;
+  m_pdialogTemplate->cdit = 0;
+  m_pdialogTemplate->x = 0;
+  m_pdialogTemplate->y = 0;
+  m_pdialogTemplate->cx = 0;
+  m_pdialogTemplate->cy = 0;
+}
+
+CSnapshot_Win::~CSnapshot_Win()
+{
+  if (m_pdialogTemplate)
+  {
+    ::free(m_pdialogTemplate);
+  }
+}
+
+INT_PTR CSnapshot_Win::DoModal(HWND hWndParent, LPARAM dwInitParam)
+{
+  BOOL result;
+
+  ATLASSUME(m_hWnd == NULL);
+
+  // Allocate the thunk structure here, where we can fail
+  // gracefully.
+
+  result = m_thunk.Init(NULL,NULL);
+  if (result == FALSE) 
+  {
+    SetLastError(ERROR_OUTOFMEMORY);
+    return -1;
+  }
+
+  _AtlWinModule.AddCreateWndData(&m_thunk.cd, (CDialogImplBaseT< CWindow >*)this);
+#ifdef _DEBUG
+  m_bModal = true;
+#endif //_DEBUG
+
+  return ::DialogBoxIndirectParam(_AtlBaseModule.GetModuleInstance(), m_pdialogTemplate,
+    hWndParent, __super::StartDialogProc, dwInitParam);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Message handler
 BOOL CSnapshot_Win::OnInitDialog(CWindow wndFocus, LPARAM lInitParam)
@@ -25,7 +71,7 @@ BOOL CSnapshot_Win::OnInitDialog(CWindow wndFocus, LPARAM lInitParam)
   int nScreenHeight = ::GetSystemMetrics(SM_CYSCREEN);
 
   ModifyStyle(WS_OVERLAPPEDWINDOW, 0, 0);
-  //::SetWindowPos(m_hWnd, HWND_TOPMOST, 0, 0, 500, 500, 0);
+  //::SetWindowPos(m_hWnd, HWND_TOPMOST, 0, 0, 500, 500, 0);   // for test
   ::SetWindowPos(m_hWnd, HWND_TOPMOST, 0, 0, nScreenWidth, nScreenHeight, 0);
 
   // Start GDI+ and load the background image
@@ -78,6 +124,8 @@ void CSnapshot_Win::OnPaint(WTL::CDCHandle dc)
   using Gdiplus::SolidBrush;
   using Gdiplus::Pen;
   using Gdiplus::Color;
+  using Gdiplus::Font;
+  using Gdiplus::PointF;
 
   // General
   CRect rcClient;
@@ -103,26 +151,42 @@ void CSnapshot_Win::OnPaint(WTL::CDCHandle dc)
   Pen pnGreen(Color(255, 0, 200, 0));
   gpMem.DrawRectangle(&pnGreen, rcViewfinder.left, rcViewfinder.top, rcViewfinder.Width() - 1, rcViewfinder.Height() -1);  // Rectangle
 
-  //int nPointFactor = 3;
-  //int nLineFactor = 2;
-  //SolidBrush sbGreen(Color(255, 0, 200, 0));
-  //gpMem.FillRectangle(&sbGreen, rcViewfinder.left - nPointFactor, rcViewfinder.top - nPointFactor,
-  //                    2 * nPointFactor, 2 * nPointFactor);  // NWPoint rectangle
-  //gpMem.FillRectangle(&sbGreen, rcViewfinder.right - nPointFactor, rcViewfinder.top - nPointFactor,
-  //                    2 * nPointFactor, 2 * nPointFactor);  // NEPoint rectangle
-  //gpMem.FillRectangle(&sbGreen, rcViewfinder.right - nPointFactor, rcViewfinder.bottom - nPointFactor,
-  //                    2 * nPointFactor, 2 * nPointFactor);  // SEPoint rectangle
-  //gpMem.FillRectangle(&sbGreen, rcViewfinder.left - nPointFactor, rcViewfinder.bottom - nPointFactor,
-  //                    2 * nPointFactor, 2 * nPointFactor);  // SWPoint rectangle
+  // Tooltip to the user
+  if (!rcViewfinder.IsRectEmpty())
+  {
+    CRect rcTooltip;
+    rcTooltip.left = rcViewfinder.left;
+    
+    // Adjust the tooltip's rect
+    CSize szIdealSize(140, 45);
+    if (rcViewfinder.top < (szIdealSize.cy + 7))
+    {
+      // Put tooltip inside the viewfinder
+      rcTooltip.top = rcViewfinder.top + 3;
+    } 
+    else
+    {
+      // Put tooltip outside the viewfinder
+      rcTooltip.top = rcViewfinder.top - szIdealSize.cy - 7;
+    }
 
-  //gpMem.FillRectangle(&sbGreen, rcViewfinder.right - rcViewfinder.Width() / 2 - nLineFactor, rcViewfinder.top - nLineFactor,
-  //                    2 * nLineFactor, 2 * nLineFactor); // TopLine middle point
-  //gpMem.FillRectangle(&sbGreen, rcViewfinder.right - nLineFactor, rcViewfinder.bottom - rcViewfinder.Height() / 2 - nLineFactor,
-  //                    2 * nLineFactor, 2 * nLineFactor); // RightLine middle point
-  //gpMem.FillRectangle(&sbGreen, rcViewfinder.right - rcViewfinder.Width() / 2 - nLineFactor, rcViewfinder.bottom - nLineFactor,
-  //                    2 * nLineFactor, 2 * nLineFactor); // BottomLine middle point
-  //gpMem.FillRectangle(&sbGreen, rcViewfinder.left - nLineFactor, rcViewfinder.bottom - rcViewfinder.Height() / 2 - nLineFactor,
-  //                    2 * nLineFactor, 2 * nLineFactor); // LeftLine middle point
+    rcTooltip.right = rcTooltip.left + szIdealSize.cx;
+    rcTooltip.bottom = rcTooltip.top + szIdealSize.cy;
+
+    SolidBrush brDarkGray(Color(180, 90, 90, 90));
+    gpMem.FillRectangle(&brDarkGray, rcTooltip.left, rcTooltip.top, rcTooltip.Width(), rcTooltip.Height());
+
+    CString sCurArea;
+    sCurArea.Format(L"当前大小: %d*%d", rcViewfinder.Width(), rcViewfinder.Height());
+
+    CString sUserTip;
+    sUserTip.Format(L"双击即可完成截图");
+
+    Font fnTooltip(L"Tahoma", 9);
+    SolidBrush brWhite(Color(200, 255, 255, 255));
+    gpMem.DrawString((LPCTSTR)sCurArea, -1, &fnTooltip, PointF(rcTooltip.left + 7, rcTooltip.top + 7), &brWhite);
+    gpMem.DrawString((LPCTSTR)sUserTip, -1, &fnTooltip, PointF(rcTooltip.left + 7, rcTooltip.top + 27), &brWhite);
+  }
 
   // Determine the update rect
   CRect rcUpdateArea;
@@ -165,6 +229,9 @@ void CSnapshot_Win::OnMouseMove(UINT nFlags, CPoint point)
     {
       // Union the old and new rect
       rcToUpdate.UnionRect(&rcLastViewfinder, &(m_pwndViewfinder->m_rcViewfinder));
+
+      // Include the tooltip area
+      rcToUpdate.InflateRect(150, 150, 150, 150);
     }
 
     //CString sss;
@@ -215,41 +282,57 @@ void CSnapshot_Win::OnLButtonDblClk(UINT nFlags, CPoint point)
     gpResult.DrawImage(m_pigBKImage.get(), 0, 0, rcViewfinder.left, rcViewfinder.top,
                        rcViewfinder.Width(), rcViewfinder.Height(), UnitPixel);
 
-    // Show file save dialog
-    WTL::CFileDialog fd(FALSE, 0, 0, OFN_OVERWRITEPROMPT,
-                        L"png(*.png)\0*.png\0gif(*.gif)\0*.gif\0bmp(*.bmp)\0*.bmp\0jpeg(*.jpg;*.jpeg)\0*.jpg;*.jpeg\0all types(*.*)\0*.*\0");
-    if (fd.DoModal() == IDOK)
+    // Save image to default path and clipboard
+    CImage igViewfinder;
+
+    // Save to default path
+    HBITMAP hbmResult = 0;
+    bmResult.GetHBITMAP(Color(255, 255, 255, 255), &hbmResult);
+    igViewfinder.Attach(hbmResult);
+    igViewfinder.Save(m_sSavePath.c_str());
+
+    // Save to clipboard
+    BITMAP bmpScreen = {0};
+    ::GetObject(hbmResult, sizeof(BITMAP), &bmpScreen);
+
+    BITMAPINFOHEADER   bi;
+    bi.biSize = sizeof(BITMAPINFOHEADER);    
+    bi.biWidth = bmpScreen.bmWidth;    
+    bi.biHeight = bmpScreen.bmHeight;  
+    bi.biPlanes = 1;    
+    bi.biBitCount = 32;    
+    bi.biCompression = BI_RGB;    
+    bi.biSizeImage = 0;  
+    bi.biXPelsPerMeter = 0;    
+    bi.biYPelsPerMeter = 0;    
+    bi.biClrUsed = 0;    
+    bi.biClrImportant = 0;
+
+    DWORD dwBmpSize = ((bmpScreen.bmWidth * bi.biBitCount + 31) / 32) * 4 * bmpScreen.bmHeight;
+
+    BYTE *pData = new BYTE[dwBmpSize];
+    ::GetDIBits(GetDC(), hbmResult, 0, (UINT)bmpScreen.bmHeight, pData, (BITMAPINFO *)&bi, DIB_RGB_COLORS);
+
+    HANDLE hMem = GlobalAlloc(GMEM_DDESHARE | GMEM_MOVEABLE, dwBmpSize + sizeof(bi));
+    if(hMem)
     {
-      CImage igViewfinder;
+      void *pMem = GlobalLock(hMem);
 
-      wstring sFileName = fd.m_ofn.lpstrFile;
-      wstring sFileExt = ::PathFindExtension(sFileName.c_str());
-      if (sFileExt.empty())
+      CopyMemory((BYTE *)pMem, &bi, sizeof(bi));               // DIB header info
+      CopyMemory((BYTE *)pMem + sizeof(bi), pData, dwBmpSize); // DIB bits
+
+      OpenClipboard();
+      EmptyClipboard();
+
+      HANDLE hHandle = SetClipboardData(CF_DIB, pMem);
+      if(!hHandle)
       {
-        // Don't select a extension
-        switch (fd.m_ofn.nFilterIndex)
-        {
-        case 1:
-          sFileName += L".png";
-          break;
-        case 2:
-          sFileName += L".gif";
-          break;
-        case 3:
-          sFileName += L".bmp";
-          break;
-        case 4:
-          sFileName += L".jpg";
-          break;
-        }
+        AfxMessageBox(_T("SetClipboardData Failed"));
       }
-
-      HBITMAP hbmResult = 0;
-      bmResult.GetHBITMAP(Color(255, 255, 255, 255), &hbmResult);
-      igViewfinder.Attach(hbmResult);
-      igViewfinder.Save(sFileName.c_str());
-
-      EndDialog(0);
+      CloseClipboard();
+      GlobalUnlock(hMem);
     }
+
+    EndDialog(0);
   }
 }

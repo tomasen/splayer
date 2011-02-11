@@ -4,19 +4,26 @@
 #include <atlimage.h>
 #include <memory>
 #include "Snapshot_Viewfinder.h"
-#include "..\..\..\..\..\..\SPlayer\src\apps\mplayerc\Resource.h"
 
-class CSnapshot_Win : public ATL::CDialogImpl<CSnapshot_Win>
+class CSnapshot_Win : public CDialogImpl<CSnapshot_Win>
 {
 // Normal part
 public:
-  enum { IDD = IDD_SCREEN_SNAPSHOT };
+  CSnapshot_Win(const std::wstring &sSavePath);
+  ~CSnapshot_Win();
 
 // Internal part
 private:
   std::tr1::shared_ptr<Gdiplus::Bitmap>      m_pigBKImage;
   std::tr1::shared_ptr<Gdiplus::Bitmap>      m_pigMemImage;
   std::tr1::shared_ptr<CSnapshot_Viewfinder> m_pwndViewfinder;
+
+  LPDLGTEMPLATE                              m_pdialogTemplate;
+  std::wstring                               m_sSavePath;
+
+// Reimpl
+public:
+  INT_PTR DoModal(HWND hWndParent = ::GetActiveWindow(), LPARAM dwInitParam = NULL);
 
 // Message handler
 public:

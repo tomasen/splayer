@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="gb2312"?>
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="9.00"
+	Name="splayer_rsc"
+	ProjectGUID="{B29116D8-3B09-42A7-8F73-F306D0D7E4D1}"
+	RootNamespace="splayer_rsc"
+	TargetFrameworkVersion="196613"
+	>
+	<Platforms>
+		<Platform
+			Name="Win32"
+		/>
+	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
+	<Configurations>
+		<Configuration
+			Name="Debug|Win32"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="10"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+				CommandLine="$(SolutionDir)tools\python_bin\python $(InputDir)compile_rsc.py -i $(InputDir)splayer_rsc.yaml&#x0D;&#x0A;copy /y $(InputDir)splayer_rsc.yaml_bz $(SolutionDir)..\splayer.rsc&#x0D;&#x0A;copy /y $(InputDir)splayer_rsc.yaml_bz $(OutDir)\splayer.rsc"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="10"
+			CharacterSet="2"
+			WholeProgramOptimization="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+				CommandLine="$(SolutionDir)tools\python_bin\python $(InputDir)compile_rsc.py -i $(InputDir)splayer_rsc.yaml&#x0D;&#x0A;copy /y $(InputDir)splayer_rsc.yaml_bz $(SolutionDir)..\splayer.rsc&#x0D;&#x0A;copy /y $(InputDir)splayer_rsc.yaml_bz $(OutDir)\splayer.rsc"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+	</Configurations>
+	<References>
+	</References>
+	<Files>
+	</Files>
+	<Globals>
+	</Globals>
+</VisualStudioProject>

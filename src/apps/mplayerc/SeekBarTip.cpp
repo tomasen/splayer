@@ -121,12 +121,14 @@ void CSeekBarTip::SetTips(CString szText, BOOL bMove , CPoint* mPoint, UINT dela
 			//}
 
 			MoveWindow(rcTip);
-      ShowWindow(SW_SHOW | SW_SHOWNOACTIVATE);
+      ShowWindow(SW_SHOWNOACTIVATE);
+      SetWindowPos(&wndTop, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE);
 			Invalidate();
 			KillTimer(IDT_CLOSTTIPS);
 			SetTimer(IDT_CLOSTTIPS, 3000, NULL);
 		}
 	}
+	
 }
 CSize CSeekBarTip::CountSize(){
 	CSize mSize ;

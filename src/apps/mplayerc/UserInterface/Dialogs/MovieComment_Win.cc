@@ -28,6 +28,7 @@ BEGIN_DISPATCH_MAP(MovieComment, CDHtmlDialog)
 END_DISPATCH_MAP()
 
 MovieComment::MovieComment()
+: m_initialize(0)
 {
 
 }
@@ -63,25 +64,26 @@ BOOL MovieComment::OnInitDialog()
          | DOCHOSTUIFLAG_DISABLE_HELP_MENU | DOCHOSTUIFLAG_DIALOG | DOCHOSTUIFLAG_DISABLE_SCRIPT_INACTIVE
          | DOCHOSTUIFLAG_OVERRIDEBEHAVIORFACTORY);
 
-//   EnableAutomation();
-//   SetExternalDispatch(GetIDispatch(TRUE));
-
+  // EnableAutomation();
+  // SetExternalDispatch(GetIDispatch(TRUE));
+  // suppress script error
+  m_pBrowserApp->put_Silent(VARIANT_TRUE);
+  m_initialize = 1;
   return TRUE;
 }
 
 void MovieComment::OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl)
 {
   std::wstring url(szUrl);
-  if (url.find(L"http:") != std::string::npos)
+  if (url.find(L"http:") != std::string::npos && url.length() > 8)
     ::PostMessage(GetParent()->m_hWnd, WM_COMMAND, ID_MOVIESHARE_RESPONSE, NULL);
+
 }
 
 BOOL MovieComment::OnEventNewLink(IDispatch **ppDisp, VARIANT_BOOL *Cancel,
                  DWORD dwFlags, BSTR bstrUrlContext, BSTR bstrUrl)
 {
-  m_newlink._Stop();
-  m_newlink.SetOpenUrl(bstrUrl);
-  m_newlink._Start();
+  OpenNewLink(bstrUrl);
 
   *Cancel = VARIANT_TRUE;
 
@@ -110,7 +112,7 @@ HRESULT MovieComment::OnEventClose(IHTMLElement* /*pElement*/)
 void MovieComment::OpenNewLink(LPCTSTR url)
 {
   std::wstring str(url);
-  if (str.find(L"http://") != std::string::npos)
+  if (str.find(L"http://") != std::string::npos && str.length() > 8)
     ShellExecute(NULL, L"open", str.c_str(), L"", L"", SW_SHOW);
 }
 
@@ -118,28 +120,17 @@ void MovieComment::CalcWndPos()
 {
   RECT rc;
   GetParent()->GetWindowRect(&rc);
-  SetWindowPos(NULL, rc.left+20, rc.bottom-420, 240, 320, SWP_NOACTIVATE);
+  SetWindowPos(NULL, rc.left+20, rc.bottom-420, 240, 320, SWP_NOZORDER|SWP_NOACTIVATE);
 }
 
 void MovieComment::HideFrame()
 {
   ShowWindow(SW_HIDE);
+  ModifyStyle(0, WS_DISABLED);
 }
 
 void MovieComment::ShowFrame()
 {
-  ShowWindow(SW_SHOW);
-}
-
-void ThreadNewLink::SetOpenUrl(std::wstring url)
-{
-  if (url.empty() || url.find(L"http://") == std::string::npos)
-    return;
-
-  m_url = url;
-}
-
-void ThreadNewLink::_Thread()
-{
-  ShellExecute(NULL, L"open", m_url.c_str(), L"", L"", SW_SHOW);
+  ModifyStyle(WS_DISABLED, 0);
+  ShowWindow(SW_SHOWNOACTIVATE);
 }

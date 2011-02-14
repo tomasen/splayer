@@ -42,6 +42,7 @@
 #include "Ap4Sample.h"
 #include "Ap4SampleEntry.h"
 #include "Ap4Atom.h"
+#include <logging.h>
 
 /*----------------------------------------------------------------------
 |       AP4_AtomSampleTable::AP4_AtomSampleTable
@@ -77,6 +78,8 @@ AP4_AtomSampleTable::AP4_AtomSampleTable(AP4_ContainerAtom* stbl,
 				AP4_UI32 SamplesPerPacket = ase->GetSamplesPerPacket();
 				AP4_UI32 BytesPerFrame = ase->GetBytesPerFrame();
 				AP4_UI32 BitsPerSample = ase->GetSampleSize();
+        AP4_Atom::Type AtomType = ase->GetType();
+        AP4_UI16 ChannelCount = ase->GetChannelCount();
 
 				if(SamplesPerPacket > 0 && BytesPerFrame > 0)
 				{
@@ -96,9 +99,13 @@ AP4_AtomSampleTable::AP4_AtomSampleTable(AP4_ContainerAtom* stbl,
 					m_SttsAtom->m_Entries[0].m_SampleCount = m_StszAtom->m_SampleCount;
 					m_SttsAtom->m_Entries[0].m_SampleDuration = SamplesPerPacket;
 				}
-				else if(BitsPerSample > 8)
+				else if(BitsPerSample > 8 && AtomType != AP4_ATOM_TYPE_ULAW)
+        {
 					m_StszAtom->m_SampleSize = BitsPerSample / 8;
-				
+          if (ChannelCount > 1 && 
+              (AtomType == AP4_ATOM_TYPE_TWOS || AtomType == AP4_ATOM_TYPE_SOWT))
+            m_StszAtom->m_SampleSize *= ChannelCount;
+        }
 			}
 		}
 	}

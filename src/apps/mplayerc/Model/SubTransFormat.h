@@ -24,6 +24,7 @@ public:
   static int UnpackGZFile(std::wstring fnin, std::wstring fnout);
   static BOOL IfDirWritable_STL(std::wstring szDir);
 
+  static std::vector<std::wstring> _tempfile_list;
 private:
   static int HandleSubPackage(FILE* fp, std::vector<std::wstring> &szaSubDescs,
                               std::vector<std::wstring> &tmpfiles);

@@ -4,7 +4,7 @@
 #include "MediaComm.h"
 #include <algorithm>
 #include "..\Controller\PlayerPreference.h"
-#include "..\..\SPlayer\src\apps\mplayerc\Controller\SPlayerDefs.h"
+#include "..\Controller\SPlayerDefs.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Note: All the path must use '\' for their delimiter

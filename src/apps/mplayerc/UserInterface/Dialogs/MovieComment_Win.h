@@ -4,22 +4,10 @@
 
 
 #pragma once
-
 #include <afxdhtml.h>
 #include <threadhelper.h>
 
 #define ID_MOVIESHARE_RESPONSE 32932
-
-class ThreadNewLink :
-  public ThreadHelperImpl<ThreadNewLink>
-{
-public:
-  void _Thread();
-  void SetOpenUrl(std::wstring url);
-
-private:
-  std::wstring m_url;
-};
 
 class MovieComment : public CDHtmlDialog
 {
@@ -41,6 +29,7 @@ public:
   void ShowFrame();
   void OpenNewLink(LPCTSTR url);
 
+  int m_initialize;
 protected:
   virtual BOOL OnInitDialog();
   virtual BOOL IsExternalDispatchSafe();
@@ -50,8 +39,6 @@ protected:
   DECLARE_EVENTSINK_MAP()
   DECLARE_DISPATCH_MAP()
 
-public:
-  ThreadNewLink m_newlink;
 };
 
 

@@ -112,7 +112,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine=""
+				CommandLine="$(SolutionDir)BuildScript/post-build.cmd"
 				ExcludedFromBuild="false"
 			/>
 		</Configuration>
@@ -699,14 +699,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\SearchSubDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\SearchSubDlg.h"
-				>
-			</File>
-			<File
 				RelativePath=".\SeekBarTip.cpp"
 				>
 			</File>
@@ -791,14 +783,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\SVPSubDownUpDialog.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\SVPSubDownUpDialog.h"
-				>
-			</File>
-			<File
 				RelativePath=".\SVPSubUploadDlg.cpp"
 				>
 			</File>
@@ -812,6 +796,14 @@
 			</File>
 			<File
 				RelativePath=".\SVPSubVoteControlBar.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ToolBarButtonInitialize.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\ToolBarButtonInitialize.h"
 				>
 			</File>
 			<File
@@ -1197,10 +1189,6 @@
 			</File>
 			<File
 				RelativePath=".\res\icon\DVD.ico"
-				>
-			</File>
-			<File
-				RelativePath=".\res\ecio.icons\dvd.ico"
 				>
 			</File>
 			<File
@@ -2253,6 +2241,22 @@
 			</File>
 			<File
 				RelativePath=".\FGManager.h"
+				>
+			</File>
+			<File
+				RelativePath=".\GraphCore.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\GraphCore.h"
+				>
+			</File>
+			<File
+				RelativePath=".\GraphThread.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\GraphThread.h"
 				>
 			</File>
 			<File

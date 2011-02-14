@@ -4280,6 +4280,7 @@ void CMainFrame::SetupVideoMenu(CMenu *pVideoMenu)
   {
     pSS->Count(&dwStreamCount);
 
+    wstring streamname;
     for (DWORD i = 0; i < dwStreamCount; ++i)
     {
       AM_MEDIA_TYPE *pmt = 0;
@@ -4290,23 +4291,18 @@ void CMainFrame::SetupVideoMenu(CMenu *pVideoMenu)
         if (pmt && (pmt->majortype == MEDIATYPE_Video))
         {
           ++dwVideoStreamCount;
+          streamname.assign(psName);
+          ::CoTaskMemFree(psName);
+          
+          if (streamname.empty())
+            streamname = L"无标题";
 
           CString sVideoStreamFinalName;
-          sVideoStreamFinalName.Format(L"%s%d：<%s>", (LPCTSTR)(ResStr(IDS_MENU_ITEM_VIDEO_STREAM)), dwVideoStreamCount, psName);
+          sVideoStreamFinalName.Format(L"%s%d：<%s>", (LPCTSTR)(ResStr(IDS_MENU_ITEM_VIDEO_STREAM)), dwVideoStreamCount, streamname.c_str());
 
           vtVideoStreamName.push_back((LPCTSTR)sVideoStreamFinalName);
         }
-
-        // clean
-        if (psName)
-        {
-          ::CoTaskMemFree(psName);
-        }
-
-        if (pmt)
-        {
-          ::DeleteMediaType(pmt);
-        }
+        ::DeleteMediaType(pmt);
       }
     }
   }

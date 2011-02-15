@@ -16,12 +16,16 @@ public:
     MSG_WM_INITDIALOG(OnInitDialog)
     MSG_WM_DESTROY(OnDestroy)
     COMMAND_HANDLER_EX(IDC_LIST, LBN_SELCHANGE, OnSubtitleStyleChange)
+    COMMAND_HANDLER_EX(IDC_BUTTON_SAVESUBTITLE_CUSTOM_FOLDER, BN_CLICKED, OnBrowserForFolder)
+    COMMAND_HANDLER_EX(IDC_RADIO_SAVESUBTITLE_SAME_FOLDER, BN_CLICKED, OnSelectSameFolder)
+    COMMAND_HANDLER_EX(IDC_RADIO_SAVESUBTITLE_CUSTOM_FOLDER, BN_CLICKED, OnSelectCustomFolder)
     CHAIN_MSG_MAP(WTL::CPropertyPageImpl<OptionSubtitlePage>)
     CHAIN_MSG_MAP(WTL::COwnerDraw<OptionSubtitlePage>)
   END_MSG_MAP()
 
   BEGIN_DDX_MAP(OptionSubtitlePage)
     DDX_CHECK(IDC_CHECK_AUTOMATCHSUBTITLE, m_fetchsubtitlefromshooter)
+    DDX_TEXT(IDC_EDIT_SAVESUBTITLE_CUSTOM_FOLDER, m_sCustomPath)
   END_DDX_MAP()
 
   // message handlers
@@ -29,6 +33,10 @@ public:
   void OnDestroy();
 
   void OnSubtitleStyleChange(UINT uNotifyCode, int nID, CWindow wndCtl);
+
+  void OnBrowserForFolder(UINT uNotifyCode, int nID, CWindow wndCtl);
+  void OnSelectSameFolder(UINT uNotifyCode, int nID, CWindow wndCtl);
+  void OnSelectCustomFolder(UINT uNotifyCode, int nID, CWindow wndCtl);
 
   // owner-draw logic for subtitle styles
   void DrawItem(LPDRAWITEMSTRUCT lpdis);
@@ -44,6 +52,8 @@ private:
   WTL::CComboBox  m_secsubtitlestyle;
   WTL::CListBox   m_subtitlestyle;
 
+  WTL::CString    m_sCustomPath;
+
   int m_mainstyle;
   int m_secstyle;
 
@@ -53,6 +63,7 @@ private:
   int m_fetchsubtitlefromshooter;
 
   void ApplySubtitleStyle();
+  void ApplySubtitleSavePath();
 };
 
 #endif // OPTIONSUBTITLEPAGE_WIN_H

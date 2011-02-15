@@ -28,6 +28,9 @@
 #define STRVAR_APIURL               1006
 #define STRVAR_LASTSPIDERPATH       1007
 
+#define STRVAR_SUBTITLE_SAVEMETHOD  1008        // "same","custom"
+#define STRVAR_SUBTITLE_SAVE_CUSTOMPATH 1009    // "custom path"
+
 // string array variables
 #define STRARRAY_PLAYLIST           1000
 

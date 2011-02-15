@@ -35,6 +35,9 @@ PlayerPreference::PlayerPreference(void):
   m_map_strvar[STRVAR_UPLOADUSRBHVURL]      = L"http://webpj:8080/test_logfile.php";
   m_map_strvar[STRVAR_UPLOADUSRBHVURL_ACT]  = L"?action=ensureupload";
   m_map_strvar[STRVAR_APIURL]               = L"https://www.shooter.cn/api/v2";
+
+  m_map_strvar[STRVAR_SUBTITLE_SAVEMETHOD]  = GetProfileString(L"Settings", L"SubtitleSaveMethod", L"same");  // subtitle save method
+  m_map_strvar[STRVAR_SUBTITLE_SAVE_CUSTOMPATH] = GetProfileString(L"Settings", L"SubtitleSaveFolder", L"");  // subtitle save folder
 }
 
 PlayerPreference::~PlayerPreference(void)
@@ -56,6 +59,8 @@ PlayerPreference::~PlayerPreference(void)
   WriteProfileInt(ResStr(IDS_R_SETTINGS), L"CheckFileAssocOnStartUp", m_map_intvar[INTVAR_CHECKFILEASSOCONSTARTUP]);
 
   WriteProfileString(L"Settings", L"HotkeyScheme", m_map_strvar[STRVAR_HOTKEYSCHEME].c_str());
+  WriteProfileString(L"Settings", L"SubtitleSaveMethod", m_map_strvar[STRVAR_SUBTITLE_SAVEMETHOD].c_str());     // subtitle save method
+  WriteProfileString(L"Settings", L"SubtitleSaveFolder", m_map_strvar[STRVAR_SUBTITLE_SAVE_CUSTOMPATH].c_str());  // subtitle save folder
 
   Uninit();
 }

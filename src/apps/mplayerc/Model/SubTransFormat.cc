@@ -16,6 +16,8 @@
 
 #include "..\Controller\HashController.h"
 #include <logging.h>
+#include "../Controller/PlayerPreference.h"
+#include "../Controller/SPlayerDefs.h"
 
 #define CHAR4TOINT(szBuf) \
   ( ((int)szBuf[0] & 0xff) << 24) | ( ((int)szBuf[1] & 0xff) << 16) | ( ((int)szBuf[2] & 0xff) << 8) |  szBuf[3] & 0xff
@@ -525,22 +527,41 @@ std::wstring SubTransFormat::GetSubFileByTempid_STL(size_t iTmpID, std::wstring 
   if(StoreDir.empty() || !IfDirExist_STL(StoreDir) || 
     !IfDirWritable_STL(StoreDir))
   {
-    GetAppDataPath(StoreDir);
-    if (StoreDir[StoreDir.size()-1] != L'\\')
+    // set store folder according to Player Preference settings
+    std::wstring sSaveFolderMethod = PlayerPreference::GetInstance()->GetStringVar(STRVAR_SUBTITLE_SAVEMETHOD);
+    if (sSaveFolderMethod == L"same")
+    {
+      // store the subtitle to the current media file's same folder
+      StoreDir = szVidPathInfo.at(SVPATH_DIRNAME);
+    }
+    else if (sSaveFolderMethod == L"custom")
+    {
+      // store the subtitle to the custom folder
+      StoreDir = PlayerPreference::GetInstance()->GetStringVar(STRVAR_SUBTITLE_SAVE_CUSTOMPATH);
+    }
+    else
+    {
+      // if go here, it means user didn't select save option yet
+      // so we let the first option to be the default
+      PlayerPreference::GetInstance()->SetStringVar(STRVAR_SUBTITLE_SAVEMETHOD, std::wstring(L"same"));
+
+      // store the subtitle to the current media file's same folder
+      StoreDir = szVidPathInfo.at(SVPATH_DIRNAME);
+    }
+
+    // Re-check the StoreDir to see if it's valid
+    if (StoreDir[StoreDir.size() - 1] != L'\\')
       StoreDir.append(L"\\");
 
-    StoreDir.append(L"SVPSub");
     _wmkdir(StoreDir.c_str());
-    if(StoreDir.empty() || !IfDirExist_STL(StoreDir) || 
-      !IfDirWritable_STL(StoreDir))
+
+    if (StoreDir.empty() || !IfDirExist_STL(StoreDir) || !IfDirWritable_STL(StoreDir))
     {
-      StoreDir = GetPlayerPath_STL(L"SVPSub");
+      // If we can't use above two save method, we save subtitle to the app data folder
+      GetAppDataPath(StoreDir); 
+      StoreDir.append(L"SVPSub");
+
       _wmkdir(StoreDir.c_str());
-      if(StoreDir.empty() || !IfDirExist_STL(StoreDir) || 
-        !IfDirWritable_STL(StoreDir))
-      {   
-        //WTF cant create fordler ?
-      }
     }
   }
 

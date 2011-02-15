@@ -3808,8 +3808,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 				fVMDetected = 0;
 			}
 		}
-		bOldLumaControl = 0;
-		
+
 		bIsIVM = false;
 		szCurrentExtension.Empty();
 

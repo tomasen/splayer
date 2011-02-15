@@ -649,7 +649,6 @@ public:
 		bool fWebServerLocalhostOnly;
 		CString WebRoot, WebDefIndex;
 		BYTE lAeroTransparent;
-		BOOL bOldLumaControl;
 		CString WebServerCGI;
 		CString SVPSubStoreDir;
 

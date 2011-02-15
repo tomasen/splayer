@@ -70,6 +70,14 @@ public:
 
   // should be private
   void CleanGraph();
+  BOOL SetVMR9ColorControl(float Brightness, float Contrast, float Hue,
+                           float Saturation, BOOL silent = false);
+
+  bool m_fCustomGraph;
+  bool m_fRealMediaGraph, m_fShockwaveGraph, m_fQuicktimeGraph;
+
+  CInterfaceArray<IUnknown, &IID_IUnknown> m_pparray;
+  CInterfaceArray<IAMStreamSelect> m_ssarray;
 
   CComQIPtr<IMediaControl> pMC;
   CComQIPtr<IMediaEventEx> pME;

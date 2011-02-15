@@ -561,8 +561,6 @@ m_nLoops(0),
 m_iSubtitleSel(-1),
 m_ZoomX(1), m_ZoomY(1), m_PosX(0.5), m_PosY(0.5),
 m_AngleX(0), m_AngleY(0), m_AngleZ(0),
-m_fCustomGraph(false),
-m_fRealMediaGraph(false), m_fShockwaveGraph(false), m_fQuicktimeGraph(false),
 m_fFrameSteppingActive(false),
 m_fEndOfStream(false),
 m_fCapturing(false),
@@ -10321,71 +10319,14 @@ void CMainFrame::RepaintVideo()
   }
 }
 
-void CMainFrame::SetVMR9ColorControl(float dBrightness, float dContrast, float dHue, float dSaturation, BOOL silent)
+void CMainFrame::OsdMsg_SetShader(CString* appendmsg)
 {
-
-  AppSettings& s = AfxGetAppSettings();
-  CString  szMsg;
-  if(s.bOldLumaControl){
-    VMR9ProcAmpControl		ClrControl;
-
-    szMsg = ResStr(IDS_MSG_RENDER_NOT_SUPPORT_BRIGHT_CONTROL);
-    if(m_pMC ) // Fuck fVMR9MixerYUV && !AfxGetAppSettings().fVMR9MixerYUV
-    {
-
-      ClrControl.dwSize		= sizeof(ClrControl);
-      ClrControl.dwFlags		= ProcAmpControl9_Mask;
-      ClrControl.Brightness	= dBrightness;
-      ClrControl.Contrast		= dContrast;
-      ClrControl.Hue			= 0;
-      ClrControl.Saturation	= 1;
-
-
-      if(S_OK == m_pMC->SetProcAmpControl (0, &ClrControl) )
-        szMsg.Format(ResStr(IDS_OSD_MSG_BRIGHT_CONTRAST_CHANGE),dBrightness,dContrast);
-      else
-        szMsg = ResStr(IDS_MSG_DEVICE_NOT_SUPPORT_BRIGHT_CONTRAST_CHANGE);
-
-
-    }
-
-  }else{
-
-    szMsg.Format(ResStr(IDS_OSD_MSG_BRIGHT_CONTRAST_CHANGED),dBrightness,dContrast);
-
-    if(m_pCAPR) {
-
-      if(!silent){
-        m_pCAPR->SetPixelShader(NULL, NULL);
-        if (m_pCAP2)
-          m_pCAP2->SetPixelShader2(NULL, NULL, true);
-      }
-
-      if( dContrast != 1.0 || dBrightness != 100.0 ){
-
-        CStringA szSrcData;
-        szSrcData.Format( ("sampler s0:register(s0);float4 p0 : register(c0);float4 main(float2 tex : TEXCOORD0) : COLOR { return (tex2D(s0,tex) - 0.3) * %0.3f + 0.3 + %0.3f; }")
-          , dContrast , dBrightness / 100 - 1.0  );
-
-        HRESULT hr = m_pCAPR->SetPixelShader(szSrcData, ("ps_2_0"));
-        if(FAILED(hr)){
-          if(!AfxGetMyApp()->GetD3X9Dll())
-            szMsg = ResStr(IDS_MSG_NEED_D3D9X_DLL);
-          else
-            szMsg = ResStr(IDS_MSG_NEED_HARDWARE_PIXEL_SHADER_2) ;
-        }
-      }
-
-
-    }
-    if(!silent)
-      SetShaders(true);
-
-
-  }
-
-  if(!silent) SendStatusMessage( szMsg , 3000);
+  if(!AfxGetMyApp()->GetD3X9Dll())
+    SendStatusMessage(ResStr(IDS_OSD_MSG_PLS_USE_UPDATER_UPDATE_D3D9X_DLL) + *appendmsg, 3000);
+  else
+    SendStatusMessage(ResStr(IDS_OSD_MSG_REQUIRE_PIXEL_SHADER_2) + *appendmsg, 3000);
 }
+
 void CMainFrame::SetShaders( BOOL silent )
 {
   if(!m_pCAPR) return;
@@ -10428,13 +10369,10 @@ void CMainFrame::SetShaders( BOOL silent )
         if(FAILED(hr)){
           //	if (m_pCAP2)
           //		m_pCAP2->SetPixelShader2(NULL, NULL, true,  !silent);
-          if(!silent){
-            if(!AfxGetMyApp()->GetD3X9Dll())
-              SendStatusMessage(ResStr(IDS_OSD_MSG_PLS_USE_UPDATER_UPDATE_D3D9X_DLL) + pShader->label, 3000);
-            else
-              SendStatusMessage(ResStr(IDS_OSD_MSG_REQUIRE_PIXEL_SHADER_2) + pShader->label, 3000);
-
-
+          if(!silent)
+          {
+            CString label = pShader->label;
+            OsdMsg_SetShader(&label);
           }
         }
         return;
@@ -10451,7 +10389,8 @@ void CMainFrame::SetShaders( BOOL silent )
     if(!silent) SendStatusMessage(_T("Shader: ") + str, 3000);
   }
   if(!silent){
-    SetVMR9ColorControl(s.dBrightness , s.dContrast, 0, 0, true);
+    if (SetVMR9ColorControl(s.dBrightness , s.dContrast, 0, 0, true) == FALSE)
+      OsdMsg_SetShader();
   }
 }
 
@@ -11635,7 +11574,15 @@ void CMainFrame::OnColorControl(UINT nID){
       s.dBrightness += 1; 
     }
     s.dBrightness = min( max(s.dBrightness, ClrRange.MinValue) , ClrRange.MaxValue);
-    SetVMR9ColorControl(s.dBrightness,s.dContrast,s.dHue,s.dSaturation);
+    if (SetVMR9ColorControl(s.dBrightness,s.dContrast,s.dHue,s.dSaturation) == FALSE)
+      OsdMsg_SetShader();
+    else
+    {
+      CString  szMsg;
+      szMsg.Format(ResStr(IDS_OSD_MSG_BRIGHT_CONTRAST_CHANGED), s.dBrightness, s.dContrast);
+      SendStatusMessage(szMsg, 3000);
+    }
+    SetShaders(true);
   }else if(m_pCAPR) {
 
     if(act == 2){
@@ -11645,8 +11592,15 @@ void CMainFrame::OnColorControl(UINT nID){
     }else{
       s.dBrightness += 1; 
     }
-    SetVMR9ColorControl(s.dBrightness,s.dContrast,s.dHue,s.dSaturation);
-
+    if (SetVMR9ColorControl(s.dBrightness,s.dContrast,s.dHue,s.dSaturation) == FALSE)
+      OsdMsg_SetShader();
+    else
+    {
+      CString  szMsg;
+      szMsg.Format(ResStr(IDS_OSD_MSG_BRIGHT_CONTRAST_CHANGED), s.dBrightness, s.dContrast);
+      SendStatusMessage(szMsg, 3000);
+    }
+    SetShaders(true);
   }else{
     SendStatusMessage(ResStr(IDS_OSD_MSG_NEED_ENABLE_COLOR_CONTROL_IN_SETTING_PANNEL) , 5000);
   }
@@ -11863,7 +11817,15 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 
       if (m_pMC)
       {
-        SetVMR9ColorControl(s.dBrightness, s.dContrast, s.dHue, s.dSaturation);
+        if (SetVMR9ColorControl(s.dBrightness, s.dContrast, s.dHue, s.dSaturation) == FALSE)
+          OsdMsg_SetShader();
+        else
+        {
+          CString  szMsg;
+          szMsg.Format(ResStr(IDS_OSD_MSG_BRIGHT_CONTRAST_CHANGED), s.dBrightness, s.dContrast);
+          SendStatusMessage(szMsg, 3000);
+        }
+        SetShaders(true);
       }
       // === EVR !
       pGB->FindInterface(__uuidof(IMFVideoDisplayControl), (void**)&m_pMFVDC,  TRUE);

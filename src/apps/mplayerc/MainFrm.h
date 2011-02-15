@@ -60,22 +60,12 @@ public:
   };
 
   // Graph              Functions and Variables
-
   friend class CGraphThread;
   friend class CGraphCore;
   CGraphThread* m_pGraphThread;
 
   friend class CTextPassThruFilter;
   void AddTextPassThruFilter();
-
-  bool m_fCustomGraph;
-  bool m_fRealMediaGraph, m_fShockwaveGraph, m_fQuicktimeGraph;
-
-
-  CInterfaceArray<IUnknown, &IID_IUnknown> m_pparray;
-  CInterfaceArray<IAMStreamSelect> m_ssarray;
-
-  void		SetVMR9ColorControl(float Brightness, float Contrast, float Hue, float Saturation, BOOL silent = false);
 
   int m_iPlaybackMode;
   bool  m_bMustUseExternalTimer;
@@ -213,6 +203,9 @@ public:
   // UI                 Functions and Variables
   friend class CPPageFileInfoSheet;
   friend class CPPageLogo;
+
+  // OSD Messages
+  void OsdMsg_SetShader(CString* appendmsg = NULL);
 
   //   windowing
   CRect m_lastWindowRect;

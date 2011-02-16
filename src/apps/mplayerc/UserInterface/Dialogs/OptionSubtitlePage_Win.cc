@@ -60,10 +60,8 @@ BOOL OptionSubtitlePage::OnInitDialog(HWND hwnd, LPARAM lParam)
   CWindow edtCustomPath = (CWindow)GetDlgItem(IDC_EDIT_SAVESUBTITLE_CUSTOM_FOLDER);
   CWindow btnCustomPath = (CWindow)GetDlgItem(IDC_BUTTON_SAVESUBTITLE_CUSTOM_FOLDER);
 
-  if (PlayerPreference::GetInstance()->GetStringVar(STRVAR_SUBTITLE_SAVEMETHOD).empty())
-  {
-    PlayerPreference::GetInstance()->SetStringVar(STRVAR_SUBTITLE_SAVEMETHOD, wstring(L"same"));
-  }
+  // default subtitle save path in appdata dir.
+  PlayerPreference::GetInstance()->SetStringVar(STRVAR_SUBTITLE_SAVEMETHOD, wstring(L"custom"));
 
   wstring sSubtitleSaveOption = PlayerPreference::GetInstance()->GetStringVar(STRVAR_SUBTITLE_SAVEMETHOD);
   if (sSubtitleSaveOption == L"same")
@@ -223,12 +221,11 @@ int OptionSubtitlePage::ApplySubtitleSavePath()
 int OptionSubtitlePage::OnApply()
 {
   ApplySubtitleStyle();
-  int nRet = ApplySubtitleSavePath();
-
-  if (nRet == PSNRET_INVALID)
-  {
-    return PSNRET_INVALID;
-  }
+//   int nRet = ApplySubtitleSavePath();
+//   if (nRet == PSNRET_INVALID)
+//   {
+//     return PSNRET_INVALID;
+//   }
 
   return PSNRET_NOERROR;
 }

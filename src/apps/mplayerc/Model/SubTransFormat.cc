@@ -539,37 +539,22 @@ std::wstring SubTransFormat::GetSubFileByTempid_STL(size_t iTmpID, std::wstring 
       // store the subtitle to the custom folder
       StoreDir = PlayerPreference::GetInstance()->GetStringVar(STRVAR_SUBTITLE_SAVE_CUSTOMPATH);
     }
-    else
-    {
-      // if go here, it means user didn't select save option yet
-      // so we let the first option to be the default
-      PlayerPreference::GetInstance()->SetStringVar(STRVAR_SUBTITLE_SAVEMETHOD, std::wstring(L"same"));
 
-      // store the subtitle to the current media file's same folder
-      StoreDir = szVidPathInfo.at(SVPATH_DIRNAME);
+    // if dir is empty, then we save the subtitle to the app data path
+    if (StoreDir.empty())
+    {
+      GetAppDataPath(StoreDir);
+
+      if (StoreDir[StoreDir.size() - 1] != L'\\')
+        StoreDir.append(L"\\");
+      StoreDir.append(L"SVPSub\\");
     }
 
-    // Re-check the StoreDir to see if it's valid
+    // make the target folder
     if (StoreDir[StoreDir.size() - 1] != L'\\')
       StoreDir.append(L"\\");
-
     _wmkdir(StoreDir.c_str());
-
-    if (StoreDir.empty() || !IfDirExist_STL(StoreDir) || !IfDirWritable_STL(StoreDir))
-    {
-      // If we can't use above two save method, we save subtitle to the app data folder
-      GetAppDataPath(StoreDir); 
-      StoreDir.append(L"SVPSub");
-
-      _wmkdir(StoreDir.c_str());
-    }
   }
-
-
-  if (StoreDir[StoreDir.size() - 1] != L'\\')
-    StoreDir.append(L"\\");
-
-  GetVideoFileBasename(szVidPath, &szVidPathInfo);
 
   std::wstring szBasename(StoreDir);
   szBasename.append(szVidPathInfo.at(SVPATH_FILENAME).c_str());

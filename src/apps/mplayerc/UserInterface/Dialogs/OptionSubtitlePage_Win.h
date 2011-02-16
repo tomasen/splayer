@@ -63,7 +63,7 @@ private:
   int m_fetchsubtitlefromshooter;
 
   void ApplySubtitleStyle();
-  void ApplySubtitleSavePath();
+  int ApplySubtitleSavePath();
 };
 
 #endif // OPTIONSUBTITLEPAGE_WIN_H

@@ -188,11 +188,13 @@ void OptionSubtitlePage::ApplySubtitleStyle()
   pFrame->UpdateSubtitle2(true);
 }
 
-void OptionSubtitlePage::ApplySubtitleSavePath()
+int OptionSubtitlePage::ApplySubtitleSavePath()
 {
   DoDataExchange(TRUE);
   CWindow rdoSameFolder = GetDlgItem(IDC_RADIO_SAVESUBTITLE_SAME_FOLDER);
   CWindow rdoCustomFolder = GetDlgItem(IDC_RADIO_SAVESUBTITLE_CUSTOM_FOLDER);
+
+  int nRet = PSNRET_NOERROR;
 
   if (IsDlgButtonChecked(IDC_RADIO_SAVESUBTITLE_SAME_FOLDER) & BST_CHECKED)
   {
@@ -201,16 +203,32 @@ void OptionSubtitlePage::ApplySubtitleSavePath()
   }
   else if (IsDlgButtonChecked(IDC_RADIO_SAVESUBTITLE_CUSTOM_FOLDER) & BST_CHECKED)
   {
-    // save subtitle to the custom folder
-    PlayerPreference::GetInstance()->SetStringVar(STRVAR_SUBTITLE_SAVEMETHOD, wstring(L"custom"));
-    PlayerPreference::GetInstance()->SetStringVar(STRVAR_SUBTITLE_SAVE_CUSTOMPATH, wstring((LPCTSTR)m_sCustomPath));
+    if (m_sCustomPath.IsEmpty())
+    {
+      // if custom path is empty then set it to be the app data path
+      AfxMessageBox(ResStr(IDS_MSG_SUBTITLE_SAVEPATH_EMPTY));
+      nRet = PSNRET_INVALID;
+    }
+    else
+    {
+      // save subtitle to the custom folder
+      PlayerPreference::GetInstance()->SetStringVar(STRVAR_SUBTITLE_SAVEMETHOD, wstring(L"custom"));
+      PlayerPreference::GetInstance()->SetStringVar(STRVAR_SUBTITLE_SAVE_CUSTOMPATH, wstring((LPCTSTR)m_sCustomPath));
+    }
   }
+
+  return nRet;
 }
 
 int OptionSubtitlePage::OnApply()
 {
   ApplySubtitleStyle();
-  ApplySubtitleSavePath();
+  int nRet = ApplySubtitleSavePath();
+
+  if (nRet == PSNRET_INVALID)
+  {
+    return PSNRET_INVALID;
+  }
 
   return PSNRET_NOERROR;
 }

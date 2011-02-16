@@ -24,27 +24,6 @@
 #include "SUIButton.h"
 
 #include "VolumeCtrl.h" 
-#include "ToolBarButtonInitialize.h"
-
-class CPlayerToolBar;
-
-class CBottomToolBarInitialize : public CToolBarButtonInitialize
-{
-public:
-  CBottomToolBarInitialize();
-  ~CBottomToolBarInitialize();
-
-public:
-  void FillButtonAttribute();
-
-  void ShowButton(ToolBarButton* tbb,BOOL bl,bool (CPlayerToolBar::*mute)(void),
-                  CPlayerToolBar* playertoolbar);
-  void ShowPlayTime(CDC* dc, AppSettings& s, CRect& rcClient, CFont* m_statft,
-                    CString* m_timerstr);
-  void PlayTimeRect(CRect& frc, CRect rcClient);
-
-};
-
 
 class CPlayerToolBar : public CToolBar
 {
@@ -63,12 +42,12 @@ private:
 	CSUIButton* m_btnVolTm ;
 	CSUIButton* m_btnVolBG;
 	CSUIButton* btnLogo;
+  CSUIButton* m_btnplaytime;
   CFont m_statft;
 	CString m_tooltip ;
 	CPoint m_lastMouseMove;
 	int m_lastLeftText;
 	CSUIButton* btnSubSwitch;
-  CBottomToolBarInitialize m_bottombar_button;
   BOOL m_breadfromfile;
 
 public:
@@ -139,6 +118,8 @@ public:
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
   void HideMovieShareBtn(BOOL hide);
+
+  void DefaultButtonManage();
 private:
   int m_movieshare_hidestat;
 };

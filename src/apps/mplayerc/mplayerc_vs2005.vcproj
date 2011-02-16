@@ -383,6 +383,14 @@
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
 			<File
+				RelativePath=".\ButtonManage.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ButtonManage.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ChildView.cpp"
 				>
 			</File>
@@ -468,6 +476,14 @@
 			</File>
 			<File
 				RelativePath="GoToDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\GUIConfigManage.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\GUIConfigManage.h"
 				>
 			</File>
 			<File
@@ -796,14 +812,6 @@
 			</File>
 			<File
 				RelativePath=".\SVPSubVoteControlBar.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ToolBarButtonInitialize.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\ToolBarButtonInitialize.h"
 				>
 			</File>
 			<File

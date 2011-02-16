@@ -62,8 +62,8 @@
 #include "Controller\ShareController.h"
 #include <logging.h>
 
-#include "PlayerToolBar.h"
-#include "PlayerToolTopBar.h"
+#include "ButtonManage.h"
+#include "GUIConfigManage.h"
 
 //Update URL
 char* szUrl = "http://svplayer.shooter.cn/api/updater.php";
@@ -3401,18 +3401,25 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 
     if (m_bcreattoolbarbuttonflie)
     {
-      CTopToolBarInitialize m_topbarbuttonint;
-      CBottomToolBarInitialize m_bottombarbuttonint;
+      CPlayerToolBar playbottombar;
+      CPlayerToolTopBar playtopbar;
+      ButtonManage cfgbtn;
+      GUIConfigManage cfgfile;
+      std::vector<std::wstring> vec;
 
-      m_bottombarbuttonint.SetCfgPath(L"skins\\BottomToolBarButton.dat");
-      m_bottombarbuttonint.FillButtonAttribute();
-      m_bottombarbuttonint.ButtonAttributeToString();
-      m_bottombarbuttonint.WriteToFile();
+      playbottombar.DefaultButtonManage();
+      cfgbtn.SetParse(vec,&playbottombar.m_btnList);
+      cfgbtn.ParseBtnToStr();
+      cfgfile.SetCfgFilePath(L"skins\\BottomToolBarButton.dat");
+      cfgfile.SetCfgString(cfgbtn.GetCfgString());
+      cfgfile.WriteToFile();
 
-      m_topbarbuttonint.SetCfgPath(L"skins\\TopToolBarButton.dat");
-      m_topbarbuttonint.FillButtonAttribute();
-      m_topbarbuttonint.ButtonAttributeToString();
-      m_topbarbuttonint.WriteToFile();
+      playtopbar.DefaultButtonManage();
+      cfgbtn.SetParse(vec,&playtopbar.m_btnList);
+      cfgbtn.ParseBtnToStr();
+      cfgfile.SetCfgFilePath(L"skins\\TopToolBarButton.dat");
+      cfgfile.SetCfgString(cfgbtn.GetCfgString());
+      cfgfile.WriteToFile();
     }
 
     if(pApp->sqlite_setting){

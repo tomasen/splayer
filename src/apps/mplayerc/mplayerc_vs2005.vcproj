@@ -984,6 +984,10 @@
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 			>
 			<File
+				RelativePath="..\..\..\..\..\Users\Staff\Desktop\allcycle.bmp"
+				>
+			</File>
+			<File
 				RelativePath="res\ani.avi"
 				>
 			</File>
@@ -1025,6 +1029,10 @@
 			</File>
 			<File
 				RelativePath=".\res\web\bg-h.gif"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\bitmap1.bmp"
 				>
 			</File>
 			<File
@@ -1197,6 +1205,10 @@
 			</File>
 			<File
 				RelativePath=".\res\icon\DVD.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\ecio.icons\dvd.ico"
 				>
 			</File>
 			<File
@@ -1468,6 +1480,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\newui\TOP_ALLCYCLE.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\newui\TOP_AUDIO.bmp"
 				>
 			</File>
@@ -1508,11 +1524,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\newui\TOP_RANDOM.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\newui\TOP_RESTORE.bmp"
 				>
 			</File>
 			<File
 				RelativePath=".\res\newui\TOP_ROTATE.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\TOP_SINGLECYCLE.bmp"
 				>
 			</File>
 			<File

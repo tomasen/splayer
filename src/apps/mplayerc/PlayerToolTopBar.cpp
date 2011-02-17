@@ -143,6 +143,15 @@ BOOL CPlayerToolTopBar::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 					case ID_SHOWCOLORCONTROLBAR:
 						toolTip = ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_BRIGHT_CONTROL);
 						break;
+          case ID_PLAYBACK_LOOP_PLAYLIST:
+            toolTip = ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_RANDOM_CONTROL);
+            break;
+          case ID_PLAYBACK_LOOP_RANDOM:
+            toolTip = ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_SINGLECYCLE_CONTROL);
+            break;
+          case ID_PLAYBACK_LOOP_CURRENT:
+            toolTip = ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_ALLCYCLE_CONTROL);
+            break;
 					default:
 						toolTip = ResStr(m_nItemToTrack);
 						break;
@@ -283,6 +292,56 @@ void CPlayerToolTopBar::UpdateButtonStat(){
 
   if(AfxGetMyApp()->IsVista() && s.bUserAeroUI())
     m_btnList.SetHideStat(L"TOP_TRANS.BMP", TRUE);
+
+
+  if (pFrame->m_wndPlaylistBar.GetCount() == 0)
+  {
+    m_btnList.SetHideStat(L"TOP_ALLCYCLE.BMP", TRUE);
+    m_btnList.SetHideStat(L"TOP_RANDOM.BMP", TRUE);
+    m_btnList.SetHideStat(L"TOP_SINGLECYCLE.BMP", TRUE);
+  }
+  else if (pFrame->m_wndPlaylistBar.GetCount() == 1)
+  {
+    
+    switch (pFrame->m_nLoopSetting)
+    {
+    case ID_PLAYBACK_LOOP_CURRENT:
+      m_btnList.SetHideStat(L"TOP_ALLCYCLE.BMP", TRUE);
+      m_btnList.SetHideStat(L"TOP_RANDOM.BMP", TRUE);
+      break;
+    case ID_PLAYBACK_LOOP_RANDOM:
+      m_btnList.SetHideStat(L"TOP_ALLSINGLECYCLE.BMP", TRUE);
+      m_btnList.SetHideStat(L"TOP_SINGLECYCLE.BMP", TRUE);
+      break;
+    default:
+      m_btnList.SetHideStat(L"TOP_SINGLECYCLE.BMP", TRUE);
+      m_btnList.SetHideStat(L"TOP_RANDOM.BMP", TRUE);
+      break;
+    }
+  }
+  else if (pFrame->m_wndPlaylistBar.GetCount() > 1)
+  {
+    switch (pFrame->m_nLoopSetting)
+    {
+    case ID_PLAYBACK_LOOP_PLAYLIST:
+      m_btnList.SetHideStat(L"TOP_RANDOM.BMP", TRUE);
+      m_btnList.SetHideStat(L"TOP_SINGLECYCLE.BMP", TRUE);
+      break;
+    case ID_PLAYBACK_LOOP_RANDOM:
+      m_btnList.SetHideStat(L"TOP_ALLCYCLE.BMP", TRUE);
+      m_btnList.SetHideStat(L"TOP_SINGLECYCLE.BMP", TRUE);
+      break;
+    case ID_PLAYBACK_LOOP_CURRENT:
+      m_btnList.SetHideStat(L"TOP_ALLCYCLE.BMP", TRUE);
+      m_btnList.SetHideStat(L"TOP_RANDOM.BMP", TRUE);
+      break;
+    default:
+      m_btnList.SetHideStat(L"TOP_RANDOM.BMP", TRUE);
+      m_btnList.SetHideStat(L"TOP_SINGLECYCLE.BMP", TRUE);
+      break;
+    }
+  }
+
 }
 void CPlayerToolTopBar::OnMove(int x, int y)
 {
@@ -735,6 +794,11 @@ void CPlayerToolTopBar::DefaultButtonManage()
 
   CONFIGBUTTON(GAMMA,TOP_GAMMA.BMP,ALIGN_TOPRIGHT,CRect(1,1,1,1),0,ID_SHOWCOLORCONTROLBAR,FALSE,0,ALIGN_RIGHT,CAPTURE,CRect(1,1,1,1))
   CONFIGADDALIGN(GAMMA,ALIGN_RIGHT,TRANS,CRect(1,1,1,1))
+
+  CONFIGBUTTON(ALLCYCLE, TOP_ALLCYCLE.BMP, ALIGN_TOPRIGHT, CRect(1,1,1,1), 0, ID_PLAYBACK_LOOP_CURRENT, FALSE, 0, ALIGN_RIGHT, GAMMA, CRect(1,1,1,1))
+  CONFIGBUTTON(RANDOM, TOP_RANDOM.BMP, ALIGN_TOPRIGHT, CRect(1,1,1,1), 0, ID_PLAYBACK_LOOP_PLAYLIST, FALSE, 0, ALIGN_RIGHT, GAMMA, CRect(1,1,1,1))
+  CONFIGBUTTON(SINGLECYCLE, TOP_SINGLECYCLE.BMP, ALIGN_TOPRIGHT, CRect(1,1,1,1), 0, ID_PLAYBACK_LOOP_RANDOM, FALSE, 0, ALIGN_RIGHT, GAMMA, CRect(1,1,1,1))
+
 	
 /*
 #define ID_VIEW_VF_STRETCH              838

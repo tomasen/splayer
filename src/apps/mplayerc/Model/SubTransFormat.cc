@@ -16,6 +16,8 @@
 
 #include "..\Controller\HashController.h"
 #include <logging.h>
+#include "../Controller/PlayerPreference.h"
+#include "../Controller/SPlayerDefs.h"
 
 #define CHAR4TOINT(szBuf) \
   ( ((int)szBuf[0] & 0xff) << 24) | ( ((int)szBuf[1] & 0xff) << 16) | ( ((int)szBuf[2] & 0xff) << 8) |  szBuf[3] & 0xff
@@ -130,7 +132,7 @@ int SubTransFormat::ExtractSubFiles(FILE* fp, std::vector<std::wstring> &tmpfile
   if ( fread(szSBuff , sizeof(char), 4, fp) < 4)
     return -1;
 
-  size_t iFileDataLength = CHAR4TOINT(szSBuff); //È·ÈÏÊÇ·ñÈ·ÊµÓÐÎÄ¼þÏÂÔØ
+  size_t iFileDataLength = CHAR4TOINT(szSBuff); //È·ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½
   if (!iFileDataLength)
     return 0;
 
@@ -427,7 +429,7 @@ BOOL SubTransFormat::IfFileExist_STL(std::wstring szPathname, BOOL evenSlowDrive
     szPathExt.begin(), tolower);
   if (szPathExt ==  L"rar://")
   {
-    //RARTODO: ¼ì²ârarÄÚµÄÎÄ¼þÊÇ·ñ´æÔÚ //Done
+    //RARTODO: ï¿½rarï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ //Done
     std::wstring fnrar, fninrar;
     if(SplitPath_STL(szPathname, fnrar, fninrar))
       szPathname = fnrar;
@@ -526,30 +528,34 @@ std::wstring SubTransFormat::GetSubFileByTempid_STL(size_t iTmpID, std::wstring 
   if(StoreDir.empty() || !IfDirExist_STL(StoreDir) || 
     !IfDirWritable_STL(StoreDir))
   {
-    GetAppDataPath(StoreDir);
-    if (StoreDir[StoreDir.size()-1] != L'\\')
-      StoreDir.append(L"\\");
-
-    StoreDir.append(L"SVPSub");
-    _wmkdir(StoreDir.c_str());
-    if(StoreDir.empty() || !IfDirExist_STL(StoreDir) || 
-      !IfDirWritable_STL(StoreDir))
+    // set store folder according to Player Preference settings
+    std::wstring sSaveFolderMethod = PlayerPreference::GetInstance()->GetStringVar(STRVAR_SUBTITLE_SAVEMETHOD);
+    if (sSaveFolderMethod == L"same")
     {
-      StoreDir = GetPlayerPath_STL(L"SVPSub");
-      _wmkdir(StoreDir.c_str());
-      if(StoreDir.empty() || !IfDirExist_STL(StoreDir) || 
-        !IfDirWritable_STL(StoreDir))
-      {   
-        //WTF cant create fordler ?
-      }
+      // store the subtitle to the current media file's same folder
+      StoreDir = szVidPathInfo.at(SVPATH_DIRNAME);
     }
+    else if (sSaveFolderMethod == L"custom")
+    {
+      // store the subtitle to the custom folder
+      StoreDir = PlayerPreference::GetInstance()->GetStringVar(STRVAR_SUBTITLE_SAVE_CUSTOMPATH);
+    }
+
+    // if dir is empty, then we save the subtitle to the app data path
+    if (StoreDir.empty())
+    {
+      GetAppDataPath(StoreDir);
+
+      if (StoreDir[StoreDir.size() - 1] != L'\\')
+        StoreDir.append(L"\\");
+      StoreDir.append(L"SVPSub\\");
+    }
+
+    // make the target folder
+    if (StoreDir[StoreDir.size() - 1] != L'\\')
+      StoreDir.append(L"\\");
+    _wmkdir(StoreDir.c_str());
   }
-
-
-  if (StoreDir[StoreDir.size() - 1] != L'\\')
-    StoreDir.append(L"\\");
-
-  GetVideoFileBasename(szVidPath, &szVidPathInfo);
 
   std::wstring szBasename(StoreDir);
   szBasename.append(szVidPathInfo.at(SVPATH_FILENAME).c_str());
@@ -597,7 +603,7 @@ std::wstring SubTransFormat::GetSubFileByTempid_STL(size_t iTmpID, std::wstring 
       if(szTargetMD5 == szSourceMD5)
       {
         // TODO: if there is a diffrence in delay
-        ialreadyExist++; //TODO: Èç¹ûidx+subÀïÃæÖ»ÓÐÒ»¸öÎÄ¼þÏàÍ¬ÔõÃ´°ì £¿£¿~~ 
+        ialreadyExist++; //TODO: ï¿½idx+subï¿½ï¿½Ö»ï¿½Ò»ï¿½Ä¼ï¿½Í¬ï¿½Ã´ï¿½~~ 
         is_samefile = true;
         break;
       }

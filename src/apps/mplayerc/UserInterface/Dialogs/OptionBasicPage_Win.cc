@@ -7,6 +7,7 @@
 #include "../../Controller/Hotkey_Controller.h"
 #include "../../Controller/PlayerPreference.h"
 #include "../../Controller/SPlayerDefs.h"
+#include "../../MainFrm.h"
 
 BOOL OptionBasicPage::OnInitDialog(HWND hwnd, LPARAM lParam)
 {
@@ -180,6 +181,14 @@ int OptionBasicPage::OnApply()
       hotkeyscheme = m_files[index];
   }
   pref->SetStringVar(STRVAR_HOTKEYSCHEME, hotkeyscheme);
+
+  // reset the hotkey scheme
+  AfxGetAppSettings().hAccel = GetAcceleratorTable();
+  CMainFrame *pMainFrame = (CMainFrame *)AfxGetMainWnd();
+  if (pMainFrame)
+  {
+    pMainFrame->m_hAccelTable = AfxGetAppSettings().hAccel;
+  }
 
   return PSNRET_NOERROR;
 }

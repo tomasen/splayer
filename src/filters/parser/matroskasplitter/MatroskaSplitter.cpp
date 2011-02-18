@@ -86,6 +86,10 @@ CFilterApp theApp;
 // CMatroskaSplitterFilter
 //
 
+int CMatroskaSplitterFilter::m_nCurVideoStreamTrack = -1;
+
+// Init current video stream to a invalid number
+// will be set in CreateOutputs function
 CMatroskaSplitterFilter::CMatroskaSplitterFilter(LPUNKNOWN pUnk, HRESULT* phr)
 	: CBaseSplitterFilter(NAME("CMatroskaSplitterFilter"), pUnk, phr, __uuidof(this))
 {
@@ -116,6 +120,9 @@ HRESULT CMatroskaSplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 	m_pFile.Free();
 	m_pTrackEntryMap.RemoveAll();
 	m_pOrderedTrackArray.RemoveAll();
+  
+  // Empty the video stream map and the cur video stream track
+  m_vtAllStreamsInfo.clear();
 
 	m_pFile.Attach(new CMatroskaFile(pAsyncReader, hr));
 	if(!m_pFile) return E_OUTOFMEMORY;
@@ -180,7 +187,7 @@ HRESULT CMatroskaSplitterFilter::CreateOutputs(IAsyncReader* pAsyncReader)
 //					case BI_RLE8: mt.subtype = MEDIASUBTYPE_RGB8; break;
 //					case BI_RLE4: mt.subtype = MEDIASUBTYPE_RGB4; break;
 					}
-          if (!bHasVideo)
+          //if (!bHasVideo)
 					  mts.Add(mt);
 					bHasVideo = true;
 				}
@@ -253,7 +260,7 @@ avcsuccess:
 					BYTE* pSequenceHeader = (BYTE*)pm2vi->dwSequenceHeader;
 					memcpy(pSequenceHeader, data.GetData(), data.GetCount());
 					pm2vi->cbSequenceHeader = data.GetCount();
-          if (!bHasVideo)
+          //if (!bHasVideo)
 					  mts.Add(mt);
 					bHasVideo = true;
 				}
@@ -272,7 +279,7 @@ avcsuccess:
 					BYTE* pSequenceHeader = (BYTE*)pm2vi->dwSequenceHeader;
 					memcpy(pSequenceHeader, pTE->CodecPrivate.GetData(), pTE->CodecPrivate.GetCount());
 					pm2vi->cbSequenceHeader = pTE->CodecPrivate.GetCount();
-          if (!bHasVideo)
+          //if (!bHasVideo)
 					  mts.Add(mt);
 					bHasVideo = true;
 				}
@@ -287,7 +294,7 @@ avcsuccess:
 					pvih->bmiHeader.biWidth = (LONG)pTE->v.PixelWidth;
 					pvih->bmiHeader.biHeight = (LONG)pTE->v.PixelHeight;
 					pvih->bmiHeader.biCompression = mt.subtype.Data1;
-          if (!bHasVideo)
+          //if (!bHasVideo)
 					  mts.Add(mt);
 					bHasVideo = true;
 				}
@@ -322,7 +329,7 @@ avcsuccess:
 					memcpy(pSequenceHeader, pTE->CodecPrivate.GetData(), pTE->CodecPrivate.GetCount());
 					dvih->cbSequenceHeader = pTE->CodecPrivate.GetCount();
 
-          if (!bHasVideo)
+          //if (!bHasVideo)
 					  mts.Add(mt);
 					bHasVideo = true;
 				}
@@ -334,7 +341,7 @@ avcsuccess:
 					int h = pTE->v.PixelHeight;
 
 					if(MakeMPEG2MediaType(mt, seqhdr, len, w, h)){
-            if (!bHasVideo)
+            //if (!bHasVideo)
 						  mts.Add(mt);
 						bHasVideo = true;
 					}
@@ -362,7 +369,7 @@ avcsuccess:
 
 					vih->cbSequenceHeader = pTE->CodecPrivate.GetCount();
 					memcpy (&vih->dwSequenceHeader, pTE->CodecPrivate.GetData(), vih->cbSequenceHeader);
-          if (!bHasVideo)
+          //if (!bHasVideo)
 					  mts.Add(mt);
 					bHasVideo = true;
 				}
@@ -667,6 +674,33 @@ avcsuccess:
 
 			HRESULT hr;
 
+      // store all the stream info
+      tagAllStreamsInfo streamInfo = {0};
+      streamInfo.pTrackEntry = pTE;
+      streamInfo.mt = mts[0];
+      m_vtAllStreamsInfo.push_back(streamInfo);
+
+      // set the current video stream track
+      if (mts[0].majortype == MEDIATYPE_Video)
+      {
+        // set m_nCurVideoStreamTrack to first video track
+        if (m_nCurVideoStreamTrack == -1)
+        {
+          // set only once
+          m_nCurVideoStreamTrack = pTE->TrackNumber;
+        }
+
+        // if current video track is not pTE->TrackNumber
+        // then continue the loop
+        // Only allow one video stream run at one moment
+        if (pTE->TrackNumber != m_nCurVideoStreamTrack)
+        {
+          m_pTrackEntryMap[(DWORD)pTE->TrackNumber] = pTE;				
+          m_pOrderedTrackArray.Add(pTE);
+          continue;
+        }
+      }
+
 			CAutoPtr<CBaseSplitterOutputPin> pPinOut(new CMatroskaSplitterOutputPin((int)pTE->MinCache, pTE->DefaultDuration/100, mts, Name, this, this, &hr));
 			if(!pTE->Name.IsEmpty()) pPinOut->SetProperty(L"NAME", pTE->Name);
 			if(pTE->Language.GetLength() == 3) pPinOut->SetProperty(L"LANG", CStringW(CString(pTE->Language)));
@@ -676,6 +710,9 @@ avcsuccess:
 			m_pOrderedTrackArray.Add(pTE);
 		}
 	}
+
+  // Reset video stream track
+  m_nCurVideoStreamTrack = -1;
 
 	MatroskaReader::Info& info = m_pFile->m_segment.SegmentInfo;
 
@@ -866,80 +903,100 @@ void CMatroskaSplitterFilter::SendVorbisHeaderSample()
 
 // IAMStreamSelect
 
+// Return all the stream number(a file may contain various video streams)
+// but only one video stream is connected at once
+// pcStream stands for the number of all streams
 STDMETHODIMP CMatroskaSplitterFilter::Count(DWORD* pcStreams)
 {
   CheckPointer(pcStreams, E_POINTER);
 
-  *pcStreams = 0;
-
-  for (int i = 0; i < GetTrackCount(); ++i)
-  {
-    MatroskaReader::TrackEntry *pTrackEntry = GetTrackEntryAt(i);
-    CBaseSplitterOutputPin *pOutputPin = GetOutputPin(pTrackEntry->TrackNumber);
-
-    if ((pTrackEntry->TrackType == TrackEntry::TypeVideo) &&
-        (pOutputPin->IsConnected()))
-    {
-      ++(*pcStreams);
-    }
-  }
+  *pcStreams = m_vtAllStreamsInfo.size();
 
   return S_OK;
 }
 
-STDMETHODIMP CMatroskaSplitterFilter::Enable(long lIndex, DWORD dwFlags)
+// lIndex 代表是第几个video stream（在所有的video stream中计数）
+// Ignore the dwFlags
+// When enable lIndex video stream, will automatically disable all other video streams
+STDMETHODIMP CMatroskaSplitterFilter::Enable(long lIndex, DWORD /* dwFlags */)
 {
-  if(!(dwFlags & AMSTREAMSELECTENABLE_ENABLE))
-    return E_NOTIMPL;
-
-  MatroskaReader::TrackEntry *pTrackEntry = GetTrackEntryAt(lIndex);
-  if (pTrackEntry == 0)
+  // Enable the video stream
+  int nCurVideoIndex = -1;
+  for (size_t i = 0; i < m_vtAllStreamsInfo.size(); ++i)
   {
-    return E_INVALIDARG;
+    if (m_vtAllStreamsInfo[i].mt.majortype == MEDIATYPE_Video)
+    {
+      ++nCurVideoIndex;
+
+      if (nCurVideoIndex == lIndex)
+      {
+        m_nCurVideoStreamTrack = m_vtAllStreamsInfo[i].pTrackEntry->TrackNumber;  // set the track number
+
+        return S_OK;
+      }
+    }
   }
 
-  HRESULT hr = RenameOutputPin(pTrackEntry->TrackNumber, 0, 0);
-
-  return hr;
+  return E_INVALIDARG;  // Not find the video track number
 }
 
+// lIndex stands for the track index in the m_vtAllStreamsInfo
 STDMETHODIMP CMatroskaSplitterFilter::Info(long lIndex, AM_MEDIA_TYPE** ppmt, DWORD* pdwFlags, LCID* plcid, DWORD* pdwGroup, WCHAR** ppszName, IUnknown** ppObject, IUnknown** ppUnk)
 {
   // General
-  MatroskaReader::TrackEntry *pTrackEntry = GetTrackEntryAt(lIndex);
-  CBaseSplitterOutputPin *pOutputPin = GetOutputPin(pTrackEntry->TrackNumber);
-  if (pTrackEntry == 0)
+  if ((lIndex < 0) || (lIndex > m_vtAllStreamsInfo.size() - 1))
   {
     return E_INVALIDARG;
   }
+
+  TrackEntry *pTrackEntry = m_vtAllStreamsInfo[lIndex].pTrackEntry;
+  AM_MEDIA_TYPE mt = m_vtAllStreamsInfo[lIndex].mt;
 
   // Media type
   if (ppmt)
   {
-    //*ppmt = CreateMediaType(m_mtnew[pTrackEntry->TrackNumber]);
+    *ppmt = ::CreateMediaType(&mt);
   }
 
   // Flags
+  CBaseSplitterOutputPin *pOutputPin = GetOutputPin(pTrackEntry->TrackNumber);
   if (pdwFlags)
   {
-    *pdwFlags = GetOutputPin(pTrackEntry->TrackNumber) ? (AMSTREAMSELECTINFO_ENABLED | AMSTREAMSELECTINFO_EXCLUSIVE) : 0;
+    *pdwFlags = pOutputPin ? AMSTREAMSELECTINFO_ENABLED : 0;
   }
 
   // LCID
-  *plcid = 0;
+  if (plcid)
+  {
+    *plcid = 0;
+  }
 
   // Group
-  *pdwGroup = 0;
+  if (pdwGroup)
+  {
+    *pdwGroup = 0;
+  }
 
   // Stream name
-  if(ppszName && (*ppszName = (WCHAR*)CoTaskMemAlloc((wcslen(pOutputPin->Name())+1)*sizeof(WCHAR))))
+  if (ppszName)
   {
-    wcscpy(*ppszName, pOutputPin->Name());
+    *ppszName = (WCHAR *)CoTaskMemAlloc((pTrackEntry->Name.GetLength() + 1) * sizeof(WCHAR));
+    if(*ppszName)
+    {
+      ::wcscpy(*ppszName, (LPCTSTR)pTrackEntry->Name);
+    }
   }
 
   // Object and unknown
-  *ppObject = 0;
-  *ppUnk = 0;
+  if (ppObject)
+  {
+    *ppObject = 0;
+  }
+
+  if (ppUnk)
+  {
+    *ppUnk = 0;
+  }
 
   return S_OK;
 }

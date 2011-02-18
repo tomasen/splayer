@@ -26,6 +26,7 @@
 #include "MatroskaFile.h"
 #include "..\BaseSplitter\BaseSplitter.h"
 #include "..\..\..\..\include\ITrackInfo.h"
+#include <vector>
 
 class MatroskaPacket : public Packet
 {
@@ -119,6 +120,13 @@ public:
   STDMETHODIMP Enable(long lIndex, DWORD dwFlags); 
   STDMETHODIMP Info(long lIndex, AM_MEDIA_TYPE** ppmt, DWORD* pdwFlags, LCID* plcid, DWORD* pdwGroup, WCHAR** ppszName, IUnknown** ppObject, IUnknown** ppUnk);  
 
+  static int m_nCurVideoStreamTrack;  // -1: use first video track, non -1:use this values as video track
+  struct tagAllStreamsInfo
+  {
+    MatroskaReader::TrackEntry *pTrackEntry;
+    AM_MEDIA_TYPE               mt;
+  };
+  std::vector<tagAllStreamsInfo> m_vtAllStreamsInfo;  // All stream's info
 };
 
 

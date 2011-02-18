@@ -4,6 +4,8 @@
 #include "../Support/SubtitleStyle.h"
 #include "../../mplayerc.h"
 #include "../../MainFrm.h"
+#include "../../Controller/SPlayerDefs.h"
+#include "../../Controller/PlayerPreference.h"
 
 OptionSubtitlePage::OptionSubtitlePage(void):
   m_mainstyle(0),
@@ -51,6 +53,36 @@ BOOL OptionSubtitlePage::OnInitDialog(HWND hwnd, LPARAM lParam)
   m_secsubtitlestyle.SetCurSel((s.subdefstyle2.scrAlignment == 2)?1:0);
 
   m_fetchsubtitlefromshooter = s.autoDownloadSVPSub;
+
+  // Init the subtitle save path radio buttons
+  WTL::CButton rdoSaveSame = (WTL::CButton)GetDlgItem(IDC_RADIO_SAVESUBTITLE_SAME_FOLDER);
+  WTL::CButton rdoSaveCustom = (WTL::CButton)GetDlgItem(IDC_RADIO_SAVESUBTITLE_CUSTOM_FOLDER);
+  CWindow edtCustomPath = (CWindow)GetDlgItem(IDC_EDIT_SAVESUBTITLE_CUSTOM_FOLDER);
+  CWindow btnCustomPath = (CWindow)GetDlgItem(IDC_BUTTON_SAVESUBTITLE_CUSTOM_FOLDER);
+
+  // default subtitle save path in appdata dir.
+  PlayerPreference::GetInstance()->SetStringVar(STRVAR_SUBTITLE_SAVEMETHOD, wstring(L"custom"));
+
+  wstring sSubtitleSaveOption = PlayerPreference::GetInstance()->GetStringVar(STRVAR_SUBTITLE_SAVEMETHOD);
+  if (sSubtitleSaveOption == L"same")
+  {
+    rdoSaveSame.SetCheck(BST_CHECKED);
+    rdoSaveCustom.SetCheck(BST_UNCHECKED);
+    edtCustomPath.EnableWindow(FALSE);
+    btnCustomPath.EnableWindow(FALSE);
+
+    m_sCustomPath = PlayerPreference::GetInstance()->GetStringVar(STRVAR_SUBTITLE_SAVE_CUSTOMPATH).c_str();
+  }
+  else if (sSubtitleSaveOption == L"custom")
+  {
+    rdoSaveSame.SetCheck(BST_UNCHECKED);
+    rdoSaveCustom.SetCheck(BST_CHECKED);
+    edtCustomPath.EnableWindow(TRUE);
+    btnCustomPath.EnableWindow(TRUE);
+
+    m_sCustomPath = PlayerPreference::GetInstance()->GetStringVar(STRVAR_SUBTITLE_SAVE_CUSTOMPATH).c_str();
+  }
+
   DoDataExchange();
 
   return TRUE;
@@ -65,6 +97,44 @@ void OptionSubtitlePage::OnDestroy()
 void OptionSubtitlePage::OnSubtitleStyleChange(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
   m_mainstyle = m_subtitlestyle.GetCurSel();
+}
+
+// Let user select the save path
+void OptionSubtitlePage::OnBrowserForFolder(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+  LPITEMIDLIST   lpitem = 0;  
+  BROWSEINFO bf = {0};
+  bf.hwndOwner = m_hWnd;
+  bf.lpszTitle = L"Select path:";
+  bf.ulFlags = BIF_RETURNONLYFSDIRS;
+  lpitem = ::SHBrowseForFolder(&bf);
+
+  WCHAR szBuffer[MAX_PATH] = {0};
+  if (lpitem)
+  {
+    ::SHGetPathFromIDList(lpitem, szBuffer); 
+
+    m_sCustomPath = szBuffer;
+    DoDataExchange();
+  }
+}
+
+void OptionSubtitlePage::OnSelectSameFolder(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+  CWindow edtCustomFolder = GetDlgItem(IDC_EDIT_SAVESUBTITLE_CUSTOM_FOLDER);
+  edtCustomFolder.EnableWindow(FALSE);
+
+  CWindow btnCustomFolder = GetDlgItem(IDC_BUTTON_SAVESUBTITLE_CUSTOM_FOLDER);
+  btnCustomFolder.EnableWindow(FALSE);
+}
+
+void OptionSubtitlePage::OnSelectCustomFolder(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+  CWindow edtCustomFolder = GetDlgItem(IDC_EDIT_SAVESUBTITLE_CUSTOM_FOLDER);
+  edtCustomFolder.EnableWindow(TRUE);
+
+  CWindow btnCustomFolder = GetDlgItem(IDC_BUTTON_SAVESUBTITLE_CUSTOM_FOLDER);
+  btnCustomFolder.EnableWindow(TRUE);
 }
 
 void OptionSubtitlePage::DrawItem(LPDRAWITEMSTRUCT lpdis)
@@ -116,9 +186,46 @@ void OptionSubtitlePage::ApplySubtitleStyle()
   pFrame->UpdateSubtitle2(true);
 }
 
+int OptionSubtitlePage::ApplySubtitleSavePath()
+{
+  DoDataExchange(TRUE);
+  CWindow rdoSameFolder = GetDlgItem(IDC_RADIO_SAVESUBTITLE_SAME_FOLDER);
+  CWindow rdoCustomFolder = GetDlgItem(IDC_RADIO_SAVESUBTITLE_CUSTOM_FOLDER);
+
+  int nRet = PSNRET_NOERROR;
+
+  if (IsDlgButtonChecked(IDC_RADIO_SAVESUBTITLE_SAME_FOLDER) & BST_CHECKED)
+  {
+    // save subtitle to the media file's folder
+    PlayerPreference::GetInstance()->SetStringVar(STRVAR_SUBTITLE_SAVEMETHOD, wstring(L"same"));
+  }
+  else if (IsDlgButtonChecked(IDC_RADIO_SAVESUBTITLE_CUSTOM_FOLDER) & BST_CHECKED)
+  {
+    if (m_sCustomPath.IsEmpty())
+    {
+      // if custom path is empty then set it to be the app data path
+      AfxMessageBox(ResStr(IDS_MSG_SUBTITLE_SAVEPATH_EMPTY));
+      nRet = PSNRET_INVALID;
+    }
+    else
+    {
+      // save subtitle to the custom folder
+      PlayerPreference::GetInstance()->SetStringVar(STRVAR_SUBTITLE_SAVEMETHOD, wstring(L"custom"));
+      PlayerPreference::GetInstance()->SetStringVar(STRVAR_SUBTITLE_SAVE_CUSTOMPATH, wstring((LPCTSTR)m_sCustomPath));
+    }
+  }
+
+  return nRet;
+}
+
 int OptionSubtitlePage::OnApply()
 {
   ApplySubtitleStyle();
+//   int nRet = ApplySubtitleSavePath();
+//   if (nRet == PSNRET_INVALID)
+//   {
+//     return PSNRET_INVALID;
+//   }
 
   return PSNRET_NOERROR;
 }

@@ -62,8 +62,8 @@
 #include "Controller\ShareController.h"
 #include <logging.h>
 
-#include "PlayerToolBar.h"
-#include "PlayerToolTopBar.h"
+#include "ButtonManage.h"
+#include "GUIConfigManage.h"
 
 //Update URL
 char* szUrl = "http://svplayer.shooter.cn/api/updater.php";
@@ -3401,18 +3401,25 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 
     if (m_bcreattoolbarbuttonflie)
     {
-      CTopToolBarInitialize m_topbarbuttonint;
-      CBottomToolBarInitialize m_bottombarbuttonint;
+      CPlayerToolBar playbottombar;
+      CPlayerToolTopBar playtopbar;
+      ButtonManage cfgbtn;
+      GUIConfigManage cfgfile;
+      std::vector<std::wstring> vec;
 
-      m_bottombarbuttonint.SetCfgPath(L"skins\\BottomToolBarButton.dat");
-      m_bottombarbuttonint.FillButtonAttribute();
-      m_bottombarbuttonint.ButtonAttributeToString();
-      m_bottombarbuttonint.WriteToFile();
+      playbottombar.DefaultButtonManage();
+      cfgbtn.SetParse(vec,&playbottombar.m_btnList);
+      cfgbtn.ParseBtnToStr();
+      cfgfile.SetCfgFilePath(L"skins\\BottomToolBarButton.dat");
+      cfgfile.SetCfgString(cfgbtn.GetCfgString());
+      cfgfile.WriteToFile();
 
-      m_topbarbuttonint.SetCfgPath(L"skins\\TopToolBarButton.dat");
-      m_topbarbuttonint.FillButtonAttribute();
-      m_topbarbuttonint.ButtonAttributeToString();
-      m_topbarbuttonint.WriteToFile();
+      playtopbar.DefaultButtonManage();
+      cfgbtn.SetParse(vec,&playtopbar.m_btnList);
+      cfgbtn.ParseBtnToStr();
+      cfgfile.SetCfgFilePath(L"skins\\TopToolBarButton.dat");
+      cfgfile.SetCfgString(cfgbtn.GetCfgString());
+      cfgfile.WriteToFile();
     }
 
     if(pApp->sqlite_setting){
@@ -3808,8 +3815,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 				fVMDetected = 0;
 			}
 		}
-		bOldLumaControl = 0;
-		
+
 		bIsIVM = false;
 		szCurrentExtension.Empty();
 
@@ -4276,30 +4282,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		}
 
     // create accelerator table according to HotkeyController
-    std::vector<ACCEL> accel;
-    HotkeyController* con = HotkeyController::GetInstance();
-    // load hotkeyscheme
-    PlayerPreference* pref = PlayerPreference::GetInstance();
-    std::wstring hotkey_file = pref->GetStringVar(STRVAR_HOTKEYSCHEME);
-    if (hotkey_file.empty())
-      hotkey_file = L"\\hotkey\\SPlayer.key";
-
-    wchar_t path[256];
-    GetModuleFileName(NULL, path, 256);
-    PathRemoveFileSpec(path);
-    wcscat_s(path, 256, hotkey_file.c_str());
-    con->UpdateSchemeFromFile(path);
-    
-    std::vector<HotkeyCmd> scheme = con->GetScheme();
-    accel.resize(scheme.size());
-
-    if (accel.size() > 0)
-    {
-      for (size_t i = 0; i < accel.size(); i++)
-        accel[i] = scheme[i];
-
-      hAccel = CreateAcceleratorTable(&accel[0], accel.size());
-    }
+    hAccel = GetAcceleratorTable();
 
 		WinLircAddr = pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_WINLIRCADDR), _T("127.0.0.1:8765"));
 		fWinLirc = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_WINLIRC), 0);
@@ -4989,6 +4972,37 @@ void GetSystemFontWithScale(CFont* pFont, double dDefaultSize, int iWeight, CStr
 		_T("MS Sans Serif"));
 
 	
+}
+
+HACCEL GetAcceleratorTable()
+{
+  std::vector<ACCEL> accel;
+  HotkeyController* con = HotkeyController::GetInstance();
+  // load hotkeyscheme
+  PlayerPreference* pref = PlayerPreference::GetInstance();
+  std::wstring hotkey_file = pref->GetStringVar(STRVAR_HOTKEYSCHEME);
+  if (hotkey_file.empty())
+    hotkey_file = L"\\hotkey\\SPlayer.key";
+
+  wchar_t path[256];
+  GetModuleFileName(NULL, path, 256);
+  PathRemoveFileSpec(path);
+  wcscat_s(path, 256, hotkey_file.c_str());
+  con->UpdateSchemeFromFile(path);
+
+  std::vector<HotkeyCmd> scheme = con->GetScheme();
+  accel.resize(scheme.size());
+
+  HACCEL hAccel = 0;
+  if (accel.size() > 0)
+  {
+    for (size_t i = 0; i < accel.size(); i++)
+      accel[i] = scheme[i];
+
+    hAccel = CreateAcceleratorTable(&accel[0], accel.size());
+  }
+
+  return hAccel;
 }
 
 void CMPlayerCApp::GainAdminPrivileges(UINT idd, BOOL bWait){

@@ -62,6 +62,7 @@ extern HICON LoadIcon(CString fn, bool fSmall);
 extern bool LoadType(CString fn, CString& type);
 extern bool LoadResource(UINT resid, CStringA& str, LPCTSTR restype);
 extern void GetSystemFontWithScale(CFont* pFont, double dDefaultSize = 14.0, int iWeight = FW_NORMAL, CString szTryFontName = _T(""));
+extern HACCEL GetAcceleratorTable();
 
 struct eq_perset_setting
 {
@@ -649,7 +650,6 @@ public:
 		bool fWebServerLocalhostOnly;
 		CString WebRoot, WebDefIndex;
 		BYTE lAeroTransparent;
-		BOOL bOldLumaControl;
 		CString WebServerCGI;
 		CString SVPSubStoreDir;
 
@@ -732,7 +732,6 @@ public:
 	// Sets an arbitrary binary value to INI file or registry.
 	BOOL WriteProfileBinary(LPCTSTR lpszSection, LPCTSTR lpszEntry,
 		LPBYTE pData, UINT nBytes);
-	
 };
 extern const UINT WM_MOUSEMOVEIN;
 extern const UINT WM_MOUSEMOVEOUT;

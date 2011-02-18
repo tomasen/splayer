@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="gb2312"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="sphash"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		AdditionalIncludeDirectories="&quot;$(SolutionDir)Thirdparty\pkg&quot;;&quot;$(SolutionDir)Thirdparty\pkg\trunk\sphash\sphash&quot;"
+	/>
+	<Tool
+		Name="VCLinkerTool"
+		AdditionalDependencies="sphash.lib"
+		AdditionalLibraryDirectories="&quot;$(SolutionDir)Thirdparty\pkg&quot;;&quot;$(SolutionDir)Thirdparty\pkg\trunk\sphash\Release&quot;"
+	/>
+</VisualStudioPropertySheet>

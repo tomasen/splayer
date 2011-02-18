@@ -1314,7 +1314,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
       DWORD dnCS = s.nCS;
       CPoint ptop(point);
       MapWindowPoints(&m_wndView, &ptop, 1);
-      if(ptop.y < 20 && ( ( (IsSomethingLoaded() && !m_fAudioOnly) || !IsSomethingLoaded()) || IsCaptionMenuHidden() ) ){//
+      if(ptop.y < 20 && ( ( /*(IsSomethingLoaded() && !m_fAudioOnly) ||*/ IsSomethingLoaded() || !IsSomethingLoaded()) || IsCaptionMenuHidden() ) ){//
         if(!m_wndToolTopBar.IsWindowVisible()){
           m_wndToolTopBar.ShowWindow(SW_SHOWNOACTIVATE);
           if(( (IsSomethingLoaded() && !m_fAudioOnly) || !IsSomethingLoaded())){
@@ -3062,7 +3062,7 @@ LRESULT CMainFrame::OnGraphNotify(WPARAM wParam, LPARAM lParam)
       {
         m_nLoops++;
 
-        if((s.fLoopForever || m_nLoops < s.nLoops) && m_nLoopSetting != ID_PLAYBACK_LOOP_NORMAL || ID_PLAYBACK_LOOP_PLAYLIST == m_nLoopSetting)
+        if((s.fLoopForever || m_nLoops < s.nLoops) && m_nLoopSetting != ID_PLAYBACK_LOOP_NORMAL || ID_PLAYBACK_LOOP_PLAYLIST == m_nLoopSetting || ID_PLAYBACK_LOOP_CURRENT == m_nLoopSetting)
         {
           if(GetMediaState() == State_Stopped)
           {
@@ -3119,7 +3119,9 @@ LRESULT CMainFrame::OnGraphNotify(WPARAM wParam, LPARAM lParam)
         }else if(m_nLoopSetting == ID_PLAYBACK_LOOP_RANDOM){
           PostMessage(WM_COMMAND, ID_NAVIGATE_SKIPRANDOM);
 
-        }else{
+        }else if (m_nLoopSetting == ID_PLAYBACK_LOOP_NORMAL)
+           PostMessage(WM_COMMAND, ID_PLAY_STOP);
+        else{
 
           if(m_wndPlaylistBar.IsAtEnd())
           {
@@ -3988,14 +3990,22 @@ void CMainFrame::OnInitMenuPopup(CMenu * pPopupMenu, UINT nIndex, BOOL bSysMenu)
         m_playbackmenu.AppendMenu(MF_STRING|MF_ENABLED, ID_PLAYBACK_LOOP_NORMAL, ResStr(IDS_MENU_ITEM_PLAYLOOP_NOLOOP));
 
 
-        if(m_wndPlaylistBar.GetCount() > 1){
+        if(m_wndPlaylistBar.GetCount() > 1)
+        {
           m_playbackmenu.AppendMenu(MF_STRING|MF_ENABLED, ID_PLAYBACK_LOOP_PLAYLIST, ResStr(IDS_MENU_ITEM_PLAYLOOP_PLAYLIST));
           m_playbackmenu.AppendMenu(MF_STRING|MF_ENABLED, ID_PLAYBACK_LOOP_CURRENT, ResStr(IDS_MENU_ITEM_PLAYLOOP_CURRENT));
           m_playbackmenu.AppendMenu(MF_STRING|MF_ENABLED, ID_PLAYBACK_LOOP_RANDOM, ResStr(IDS_MENU_ITEM_PLAYLOOP_RANDOM_PLAYLIST));
-        }else{
+        }
+        else if (m_wndPlaylistBar.GetCount()  == 1)
+        {
+          m_playbackmenu.AppendMenu(MF_STRING|MF_ENABLED, ID_PLAYBACK_LOOP_PLAYLIST, ResStr(IDS_MENU_ITEM_PLAYLOOP_PLAYLIST));
+          m_playbackmenu.AppendMenu(MF_STRING|MF_ENABLED, ID_PLAYBACK_LOOP_CURRENT, ResStr(IDS_MENU_ITEM_PLAYLOOP_CURRENT));
+        }
+        else
+        {
           m_playbackmenu.AppendMenu(MF_STRING|MF_ENABLED, ID_PLAYBACK_LOOP_PLAYLIST, ResStr(IDS_MENU_ITEM_PLAYLOOP_NORMAL));
         }
-      }
+       }
 
       MenuMerge( &m_playbackmenu , m_playback_resmenu.GetSubMenu(1) );
 

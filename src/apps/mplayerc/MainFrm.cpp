@@ -4711,12 +4711,11 @@ void CMainFrame::OnFilePostOpenmedia()
 
   }
   UserShareController::GetInstance()->HideCommentPlane();
+  m_wndToolBar.HideMovieShareBtn(TRUE);
   // send sphash to remote
   if(IsSomethingLoaded() && !m_fAudioOnly && (UINT)((INT64)rtDur/10000000) > 90)
-  {
-    m_wndToolBar.HideMovieShareBtn(TRUE);
     SetTimer(TIMER_MOVIESHARE, 1800, NULL);
-  }
+  
 
   KillTimer(TIMER_IDLE_TASK);
 }

@@ -1,0 +1,201 @@
+//Microsoft Developer Studio generated resource script.
+//
+// Copyright (c) Microsoft Corporation.  All rights reserved.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// SRF
+//
+
+IDR_SPROXYSRF           SRF                     "sproxy.srf"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// VERSION
+//
+#ifdef RC_INVOKED
+
+#define VER_FILETYPE	VFT_APP
+
+#define VER_FILEDESCRIPTION_STR "Microsoft \256 Native Web Service Proxy Generator"
+
+#define VER_INTERNALNAME_STR "SPROXY"
+
+#define VER_ORIGINALFILENAME_STR "SPROXY.EXE"
+
+#define VER_COPYRIGHTSTARTYEAR_STR	"1999"
+
+#include "ver_.rc"
+
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_SDL_HEADER          "Microsoft (R) Native Web Service Proxy Generator " _LIBS_USER_PRODUCT_VERSION_MAJOR "." _LIBS_USER_PRODUCT_VERSION_MINOR "." _LIBS_USER_BUILD "\r\nCopyright (C) Microsoft Corporation 1999-" VER_COPYRIGHTENDYEAR_STR ". All rights reserved.\r\n"
+    IDS_SDL_SUCCESS         "\r\n/out:%ws\r\n"
+    IDS_SDL_USAGE           "\r\nusage : sproxy [ option... ] [ /out:<outputfile> ] <input_location>\r\n"
+	IDS_SDL_USAGE_EX
+"\r\n\
+options:\r\n\r\n  \
+/? or /help        Display this usage message\r\n  \
+/nologo            Suppress copyright message\r\n  \
+/nowarn            Disable all warnings\r\n  \
+/nopragma          Do not inject '#pragma once' into output file\r\n  \
+/noclobber         Do not overwrite output file if it already exists\r\n  \
+/nonamespace       Do not inject namespace for proxy class\r\n  \
+/nowchar_t         Emit unsigned short instead of wchar_t for s:unsignedShort\r\n  \
+/namespace:<name>  Name of injected namespace (emtpy implies no namespace)\r\n  \
+/wsdl              Process WSDL input instead of a discomap file\r\n
+\r\ninput:\r\n\r\n  \
+/out:<outputfile>  File to create for web service proxy class\r\n  \
+<input_location>   File path or URL for discomap file or WSDL input\r\n"
+
+#if 0
+"\r\n\
+options:\r\n\r\n  \
+/? or /help            Display this usage message\r\n\
+* @<commandfile>         Read command-line options from <commandfile>\r\n  \
+/nologo                Suppress copyright message\r\n  \
+/nowarn                Disable all warnings\r\n  \
+/nopragma              Do not inject '#pragma once' into output file\r\n  \
+/noclobber             Do not overwrite output file if it already exists\r\n  \
+/string:[type]         Specify the string type\r\n  \
+/atlarray:[opt,[opt]]  Treat array parameters as CAtlArray's\r\n  \
+/namespace:[<name>]    Specify the C++ namespace for the proxy class\r\n  \
+/nonamespace           Do not generate a C++ namespace for the proxy class\r\n  \
+/class:<name>          Specify the name for proxy class\r\n\
+* /server                Generate a ATL Server Web Service server\r\n  \
+/noheader              Do not generate #includes, date/time, or other headers\r\n  \
+/stdout                Output generated code to stdout\r\n  \
+/nocomment             Do not generate comments for the generated code\r\n  \
+/nosizeis              Do not return array size information from functions\r\n\
+\r\ninput:\r\n\r\n  \
+/out:<outputfile>      File to create for web service proxy class\r\n  \
+<input_location>    File path or URL for discomap file or WSDL input\r\n"
+#endif
+ 
+    IDS_SDL_PROCESS_FAILURE "failure in processing WSDL file: ""%ws"".\r\n"
+    IDS_SDL_GENERATE_FAILURE "failure in generating output file: ""%ws""\r\n"
+    IDS_SDL_INTERNAL        "ISE : Internal Sproxy Error.  Please contact technical support.\r\n"
+    IDS_SDL_PARSE_WARNING   "%ws"
+    IDS_SDL_PARSE_ERROR     "%ws"
+    IDS_SDL_UNRECOGNIZED_TAG 
+                            "unrecognized tag, with\r\n  [\r\n    namespace = ""%ws""\r\n    tag = ""%ws""\r\n  ]\r\n"
+
+    IDS_SDL_MISSING_ATTRIBUTE 
+                            "missing required attribute, with\r\n  [\r\n    namespace = ""%ws""\r\n    attribute = ""%ws""\r\n  ]\r\n"
+    IDS_SDL_MSXML           "MSXML error.  Please check your installation of MSXML."
+    IDS_SDL_UNRECOGNIZED_DOC 
+                            "unrecognized document type : ""%ws"".  Unknown root node, with\r\n  [\r\n    namespace = ""%ws""\r\n    tag = ""%ws""\r\n  ]\r\n"
+    IDS_SDL_UNRESOLVED_ELEM "could not resolve element, with\r\n  [\r\n    namespace = ""%ws""\r\n    name = ""%ws""\r\n  ]\r\n"
+    IDS_SDL_UNRESOLVED_NAMESPACE "could not resolve namespace : ""%ws"""
+    IDS_SDL_ONE_PORT        "only one SOAP port will be processed."
+    IDS_SDL_UNSUPPORTED_TAG "skipping currently unsupported element, with\r\n  [\r\n    namespace = ""%ws""\r\n    name = ""%ws""\r\n  ]\r\n"
+    IDS_SDL_CMDLINE_FAILURE "Failure processing command line arguments - Error No %d.\r\n"
+    IDS_SDL_UNRESOLVED_ELEM2 
+                            "could not resolve %s, with\r\n  [\r\n    namespace = ""%ws""\r\n    name = ""%ws""\r\n  ]\r\n"
+    IDS_SDL_INVALID_VALUE   "invalid ""%s"" value : ""%ws"""
+    IDS_SDL_SOAP_PORT_ONLY  "only SOAP ports are supported."
+    IDS_SDL_SOAP_BINDING_ONLY "only SOAP bindings are supported."
+    IDS_SDL_INVALID_ARRAY_DESC "invalid array description, treating as string."
+	IDS_SDL_RECURSIVE_TYPE  "recursively defined types are not supported, with\r\n  [\r\n    namespace = ""%ws""\r\n    name = ""%ws""\r\n  ]\r\n"
+	IDS_SDL_IGNORE_CMDITEM  "ignoring unknown parameter: %ws"
+	IDS_SDL_MISSING_OPTION  "missing required parameter: %s"
+    IDS_SDL_UNSUPPORTED_STRING 
+                            "treating as string, with\r\n  [\r\n    namespace = ""%ws""\r\n    tag = ""%ws""\r\n  ]\r\n\r\n"
+    IDS_SDL_FAILED_WSDL_OPEN "could not open WSDL location: ""%ws"".\r\n"
+	IDS_SDL_UNRESOLVED_MSGPART "could not find message part ""%ws"" in message with\r\n  [\r\n    namespace = ""%ws""\r\n    name=""%ws""\r\n  ]\r\n\r\n"
+	IDS_SDL_SOAPHEADER_DUPNAME "cannot have multiple ""in"" headers with the same name, with\r\n  [\r\n    namespace = ""%ws""\r\n    name=""%ws""\r\n  ]\r\n"
+	IDS_SDL_CMDLINE "\r\nsproxy : command line %s "
+	IDS_SDL_PARSE " parse "
+	IDS_SDL_SCHEMALEVEL_NAME """%s"" tags at the schema level must have a name attribute\r\n"
+	IDS_SDL_PAD_TYPE "document/literal can only reference one message part that has the 'type' attribute.\r\n"
+	IDS_SDL_PAD_INVALID_SOAP "document/literal cannot reference message parts with the 'type' where the referenced type is not a complexType, it results in an invalid SOAP message.\r\n"
+	IDS_SDL_RPC_ENCODED_TYPE "rpc/encoded message parts require the 'type' attribute.\r\n"
+	IDS_SDL_DOC_ENCODED "document/encoded is not supported by sproxy.exe.\r\n"
+	IDS_SDL_ENCODINGSTYLE "unsupported encodingStyle : ""%ws"".\r\n"
+	
+	IDS_SDL_SKIP_EXTENSIBILITY
+                            "skipping unrecognized extensibility element, with\r\n  [\r\n    namespace = ""%ws""\r\n    tag = ""%ws""\r\n  ]\r\n"
+	IDS_SDL_IO_DIFF_NAMESPACES "input/output operations with different namespaces are not supported."
+	IDS_SDL_RPC_LITERAL "rpc/literal is not supported by sproxy.exe.\r\n"
+	IDS_SDL_HEADER_DIFF_NAMESPACES "headers with different namespaces than their parent operations are not supported."
+	
+	IDS_SDL_INVALID_ARRAY_DESC_ERR "invalid array description."
+	IDS_SDL_NO_GENERATE "no web service methods to generate."
+	IDS_SDL_CUSTOM_TYPE "treating custom type as string, with\r\n  [\r\n    namespace = ""%ws""\r\n    name = ""%ws""\r\n  ]\r\n"
+	IDS_SDL_BASE_EXTENSION "sproxy.exe does not support extension of complexType.\r\n"
+	IDS_SDL_NO_ATTRIBUTES "sproxy.exe does not fully support attributes.\r\n"
+	IDS_SDL_FAILED_DM_OPEN  "could not open discomap location: ""%ws"".\r\n"
+	IDS_SDL_PROCESS_DM_FAILURE "failure in processing discomap file: ""%ws"".\r\n"
+	IDS_SDL_DEFAULT_TYPE "treating default type as string.\r\n"
+	
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="windows-1250"?>
+<VisualStudioProject
+	ProjectType="Intel C++ Project"
+	Version="11.1"
+	Name="MpaDecFilter"
+	ProjectGUID="{DFB11DB0-888B-487A-9307-D9611340CE11}"
+	VCNestedProjectGUID="{4421516D-10A6-41C1-ADF3-099573BBB0C6}"
+	VCNestedProjectFileName="MpaDecFilter_vs2005.vcproj">
+	<Configurations>
+		<Configuration
+			Name="Release Unicode lib|Win32">
+			<Tool
+				Name="CppCmplrTool"
+				EnableEnhancedInstructionSet="1001"/>
+		</Configuration>
+	</Configurations>
+	<Files/>
+</VisualStudioProject>

@@ -1,0 +1,106 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// VERSION
+//
+#ifdef RC_INVOKED
+
+#define VER_FILETYPE	VFT_APP
+
+#define VER_FILEDESCRIPTION_STR "Microsoft \256 ATL Server Command Line Stencil Processor"
+
+#define VER_INTERNALNAME_STR "CLSTENCIL"
+
+#define VER_ORIGINALFILENAME_STR "CLSTENCIL.EXE"
+
+#define VER_COPYRIGHTSTARTYEAR_STR	"1999"
+
+#include "ver_.rc"
+
+#endif
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_HEADER              "Microsoft (R) Command Line Stencil Processor 7.00.9128\r\nCopyright (c) Microsoft Corporation 2005. All rights reserved.\r\n\r\n"
+    IDS_NOTSUPPORTED        "%s not supported in command line mode.\n"
+    IDS_USAGE               "Usage: clstencil -i inputfile -o outputfile [-n] [-q ""querystring""] [-f forminput] [-e errorlog] [-c content-type] [-v verb]\n-i inputfile      : the .srf or .dll to process\n-n                : suppress startup banner\n-o outputfile     : the file to write to (defaults to stdout)\n-q ""querystring""  : the query string to pass to the processor\n-f forminput      : the input file for user data (e.g. form data) (defaults to stdin)\n-e errorlog       : the file where errors are written (defaults to stderr)\n-c ""content-type"" : the content type of the request\n-v verb           : the request verb\n"
+    IDS_ERROR               "Error: %s\n"
+    IDS_UNKNOWN_PARAM       "Unknown Parameter: %s"
+    IDS_INPUT_FILE          "You must provide an input file"
+    IDS_INVALID_ARGS        "Invalid number of arguments"
+    IDS_INIT_FAILED         "ERROR: Failed to initialize extension\n"
+    IDS_SERVER_VARIABLE_NOT_FOUND 
+                            "WARNING: GetServerVariable: variable %s not found in the environment\n"
+    IDS_QS_TOO_LONG         "ERROR: querystring too long"
+    IDS_CT_TOO_LONG         "ERROR: content-type of the request too long"
+    IDS_VERB_TOO_LONG       "ERROR: request verb too long"
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

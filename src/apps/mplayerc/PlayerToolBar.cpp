@@ -35,7 +35,8 @@
 #include "ButtonManage.h"
 
 typedef HRESULT (__stdcall * SetWindowThemeFunct)(HWND hwnd, LPCWSTR pszSubAppName, LPCWSTR pszSubIdList);
-
+#define TIMER_ADPLAYSWITCH 7013
+#define TIMER_ADPLAY 7014
 #define ID_VOLUME_THUMB 126356
 
 #define CONFIGBUTTON(btnname,bmp,fixalign,fixcrect,notbutton,id,hide,hidewidth,relativealign,pbuttonname,relativecrect) \
@@ -104,7 +105,8 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
   m_btnplaytime = m_btnList.GetButton(L"PLAYTIME");
 
   cursorHand = ::LoadCursor(NULL, IDC_HAND);
-
+  SetTimer(TIMER_ADPLAY, 100, NULL);
+  SetTimer(TIMER_ADPLAYSWITCH, 2000, NULL);
   //GetSystemFontWithScale(&m_statft, 14.0);
   LOGFONT lf;
 
@@ -325,7 +327,6 @@ void CPlayerToolBar::OnPaint()
   CRect rcBottomSqu = rcClient;
   rcBottomSqu.top = rcBottomSqu.bottom - 10;
 
-
   CRect rcUpperSqu = rcClient;
 
   hdc.FillSolidRect(rcUpperSqu, s.GetColorFromTheme(_T("ToolBarBG"), NEWUI_COLOR_TOOLBAR_UPPERBG));
@@ -341,18 +342,23 @@ void CPlayerToolBar::OnPaint()
   {
     hdc.SetTextColor(s.GetColorFromTheme(_T("ToolBarTimeText"), 0xffffff) );
     
-    m_btnplaytime->SetString(m_timerstr);
+    if (!m_adctrl.GetVisible())
+    {
+      m_btnplaytime->SetString(m_timerstr);
+    }
   }
-
 
   UpdateButtonStat();
 
   int volume = min( m_volctrl.GetPos() , m_volctrl.GetRangeMax() );
   m_btnVolTm->m_rcHitest.MoveToXY(m_btnVolBG->m_rcHitest.left +  ( m_btnVolBG->m_rcHitest.Width() * volume / m_volctrl.GetRangeMax() ) - m_btnVolTm->m_rcHitest.Width()/2
     , m_btnVolBG->m_rcHitest.top + (m_btnVolBG->m_rcHitest.Height() -  m_btnVolTm->m_rcHitest.Height() ) / 2 );
-
-  m_btnList.PaintAll(&hdc, rc);
   
+  m_btnList.PaintAll(&hdc, rc);
+
+  m_adctrl.SetRect(m_btnplaytime->m_rcHitest - rc.TopLeft(), &hdc);
+  m_adctrl.Paint(&hdc);
+
   hdc.SelectObject(holdft);
 }
 void CPlayerToolBar::UpdateButtonStat(){
@@ -394,7 +400,7 @@ void CPlayerToolBar::SetStatusTimer(CString str , UINT timer )
   if(m_timerstr == str) return;
 
   str.Trim();
-
+  
   if(holdStatStr && !timer){
     m_timerqueryedstr = str;
   }else{
@@ -589,6 +595,17 @@ void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point)
   CRect rc;
   GetWindowRect(&rc);
   point += rc.TopLeft() ;
+
+  // if move on ads
+  static const HCURSOR hOrgCursor = (HCURSOR)::GetClassLong(GetSafeHwnd(), GCL_HCURSOR);
+  if (m_adctrl.GetVisible())
+  {
+    CRect rcAd = m_btnplaytime->m_rcHitest - rc.TopLeft();
+    CPoint pi = point;
+    ScreenToClient(&pi);
+    if (rcAd.PtInRect(pi))
+      SetCursor(cursorHand);
+  }
 
   if(m_nItemToTrack == ID_VOLUME_THUMB && m_bMouseDown)
   {
@@ -834,6 +851,16 @@ void CPlayerToolBar::OnLButtonDown(UINT nFlags, CPoint point)
   CRect rc;
   GetWindowRect(&rc);
 
+  // if on ad
+  if (m_adctrl.GetVisible())
+  {
+    CRect rcAd = m_btnplaytime->m_rcHitest - rc.TopLeft();
+    if (rcAd.PtInRect(point))
+    {
+      SetCursor(cursorHand);
+    }
+  }
+
   point += rc.TopLeft() ;
   UINT ret = m_btnList.OnHitTest(point,rc,true);
   if( m_btnList.HTRedrawRequired ){
@@ -876,6 +903,17 @@ void CPlayerToolBar::OnLButtonUp(UINT nFlags, CPoint point)
 
   CRect rc;
   GetWindowRect(&rc);
+
+  // if click on ads
+  if (m_adctrl.GetVisible())
+  {
+    CRect rcAd = m_btnplaytime->m_rcHitest - rc.TopLeft();
+    if (rcAd.PtInRect(point))
+    {
+      SetCursor(cursorHand);
+      m_adctrl.OnAdClick();
+    }
+  }
 
   CPoint xpoint = point + rc.TopLeft() ;
   UINT ret = m_btnList.OnHitTest(xpoint,rc,false);
@@ -947,6 +985,30 @@ void CPlayerToolBar::OnLButtonUp(UINT nFlags, CPoint point)
 }
 void CPlayerToolBar::OnTimer(UINT nIDEvent){
   switch(nIDEvent){
+    case TIMER_ADPLAY:
+      {
+        m_adctrl.AllowAnimate(true);
+
+        Invalidate();
+        break;
+      }
+    case TIMER_ADPLAYSWITCH:
+      {
+        // 查看广告是否显示完，如果还在显示则等待下一次2秒
+        if (m_btnplaytime->GetString().IsEmpty() && m_adctrl.IsCurAdShownDone())
+        {
+          m_adctrl.SetVisible(false);
+        }
+        else if (!m_btnplaytime->GetString().IsEmpty())
+        {
+          m_btnplaytime->SetString(L"");
+          m_adctrl.SetVisible(true);
+          m_adctrl.ShowNextAd();
+        }
+
+        Invalidate();
+        break;
+      }
     case TIMER_STATERASER:
       KillTimer(TIMER_STATERASER);
       if(!m_timerqueryedstr.IsEmpty()){

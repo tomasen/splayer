@@ -22,7 +22,7 @@
 #pragma once
 
 #include "SUIButton.h"
-
+#include "Controller/AdController.h"
 #include "VolumeCtrl.h" 
 
 class CPlayerToolBar : public CToolBar
@@ -43,6 +43,7 @@ private:
 	CSUIButton* m_btnVolBG;
 	CSUIButton* btnLogo;
   CSUIButton* m_btnplaytime;
+  AdController m_adctrl;
   CFont m_statft;
 	CString m_tooltip ;
 	CPoint m_lastMouseMove;

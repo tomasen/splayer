@@ -128,6 +128,7 @@ public:
   void SetCurrentHideState(long iWidth,double skinsRate,int m_nLogDPIY);
 
   void SetString(CString str);
+  CString GetString();
 
   void SetStrSize(CSize sz);
 

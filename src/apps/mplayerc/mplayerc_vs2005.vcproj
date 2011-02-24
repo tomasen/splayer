@@ -1900,6 +1900,14 @@
 			Name="Controller"
 			>
 			<File
+				RelativePath=".\Controller\AdController.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Controller\AdController.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Controller\HashController.cc"
 				>
 			</File>

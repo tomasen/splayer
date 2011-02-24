@@ -298,6 +298,11 @@ void CSUIButton::SetString(CString str)
   m_playtimestr = str;
 }
 
+CString CSUIButton::GetString()
+{
+  return m_playtimestr;
+}
+
 void CSUIButton::SetStrSize(CSize sz)
 {
   m_btnSize = sz;

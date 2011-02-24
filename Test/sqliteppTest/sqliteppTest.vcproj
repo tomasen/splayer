@@ -95,7 +95,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
-			InheritedPropertySheets="..\..\src\common.vsprops;..\..\src\release.vsprops;..\..\src\apps\mplayerc\wtl_integration.vsprops;..\..\src\apps\mplayerc\atlserver_integration.vsprops;..\..\Thirdparty\sinet.vsprops;..\..\Thirdparty\sqlitepp.vsprops;..\..\Thirdparty\sphash.vsprops;..\..\Thirdparty\unrar_dll.vsprops"
+			InheritedPropertySheets="$(SolutionDir)src\common.vsprops;$(SolutionDir)src\release.vsprops;$(SolutionDir)src\apps\mplayerc\wtl_integration.vsprops;$(SolutionDir)src\apps\mplayerc\atlserver_integration.vsprops;$(SolutionDir)Thirdparty\sinet.vsprops;$(SolutionDir)Thirdparty\sqlitepp.vsprops;$(SolutionDir)Thirdparty\sphash.vsprops;$(SolutionDir)Thirdparty\unrar_dll.vsprops"
 			UseOfMFC="0"
 			UseOfATL="0"
 			CharacterSet="1"

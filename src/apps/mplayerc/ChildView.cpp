@@ -57,7 +57,7 @@ m_vrect(0,0,0,0)
 		m_btnList.AddTail( btnFileOpen);
 
 	}
-	
+	m_mediacenter = MediaCenterController::GetInstance();
 	//m_btnList.AddTail( new CSUIButton(L"BTN_OPENADV.BMP" ,ALIGN_TOPLEFT, CRect(-50 , -62, 0,0)  , FALSE, ID_FILE_OPENMEDIA, FALSE, ALIGN_LEFT,btnFileOpen,  CRect(3,3,3,3) ) ) ;
 	
 	m_btnList.AddTail( new CSUIButton(L"WATERMARK2.BMP" , ALIGN_BOTTOMRIGHT, CRect(6 , 6, 0,6)  , TRUE, 0, FALSE  ) );
@@ -93,69 +93,73 @@ BOOL CChildView::PreCreateWindow(CREATESTRUCT& cs)
 }
 
 BOOL CChildView::PreTranslateMessage(MSG* pMsg)
-{	
-	
+{
+  if (m_mediacenter->GetPlaneState())
+    m_mediacenter->ListenMsg(pMsg);
 
-	if(pMsg->message >= WM_MOUSEFIRST && pMsg->message <= WM_MYMOUSELAST)
-	{
-		CWnd* pParent = GetParent();
-		CPoint p(pMsg->lParam);
-		::MapWindowPoints(pMsg->hwnd, pParent->m_hWnd, &p, 1);
+  else
+  {
+	  if(pMsg->message >= WM_MOUSEFIRST && pMsg->message <= WM_MYMOUSELAST)
+	  {
+		  CWnd* pParent = GetParent();
+		  CPoint p(pMsg->lParam);
+		  ::MapWindowPoints(pMsg->hwnd, pParent->m_hWnd, &p, 1);
 
-		bool fDblClick = false;
+		  bool fDblClick = false;
 
-		bool fInteractiveVideo = ((CMainFrame*)AfxGetMainWnd())->IsInteractiveVideo();
-/*
-		if(fInteractiveVideo)
-		{
-			if(pMsg->message == WM_LBUTTONDOWN)
-			{
-				if((pMsg->time - m_lastlmdowntime) <= GetDoubleClickTime()
-				&& abs(pMsg->pt.x - m_lastlmdownpoint.x) <= GetSystemMetrics(SM_CXDOUBLECLK)
-				&& abs(pMsg->pt.y - m_lastlmdownpoint.y) <= GetSystemMetrics(SM_CYDOUBLECLK))
-				{
-					fDblClick = true;
-					m_lastlmdowntime = 0;
-					m_lastlmdownpoint.SetPoint(0, 0);
-				}
-				else
-				{
-					m_lastlmdowntime = pMsg->time;
-					m_lastlmdownpoint = pMsg->pt;
-				}
-			}
-			else if(pMsg->message == WM_LBUTTONDBLCLK)
-			{
-				m_lastlmdowntime = pMsg->time;
-				m_lastlmdownpoint = pMsg->pt;
-			}
-		}
-*/
-		if((pMsg->message == WM_LBUTTONDOWN || pMsg->message == WM_LBUTTONUP || pMsg->message == WM_MOUSEMOVE)
-		&& fInteractiveVideo)
-		{
-			if(pMsg->message == WM_MOUSEMOVE)
-			{
-				pParent->PostMessage(pMsg->message, pMsg->wParam, MAKELPARAM(p.x, p.y));
-			}
+		  bool fInteractiveVideo = ((CMainFrame*)AfxGetMainWnd())->IsInteractiveVideo();
+  /*
+		  if(fInteractiveVideo)
+		  {
+			  if(pMsg->message == WM_LBUTTONDOWN)
+			  {
+				  if((pMsg->time - m_lastlmdowntime) <= GetDoubleClickTime()
+				  && abs(pMsg->pt.x - m_lastlmdownpoint.x) <= GetSystemMetrics(SM_CXDOUBLECLK)
+				  && abs(pMsg->pt.y - m_lastlmdownpoint.y) <= GetSystemMetrics(SM_CYDOUBLECLK))
+				  {
+					  fDblClick = true;
+					  m_lastlmdowntime = 0;
+					  m_lastlmdownpoint.SetPoint(0, 0);
+				  }
+				  else
+				  {
+					  m_lastlmdowntime = pMsg->time;
+					  m_lastlmdownpoint = pMsg->pt;
+				  }
+			  }
+			  else if(pMsg->message == WM_LBUTTONDBLCLK)
+			  {
+				  m_lastlmdowntime = pMsg->time;
+				  m_lastlmdownpoint = pMsg->pt;
+			  }
+		  }
+  */
+		  if((pMsg->message == WM_LBUTTONDOWN || pMsg->message == WM_LBUTTONUP || pMsg->message == WM_MOUSEMOVE)
+		  && fInteractiveVideo)
+		  {
+			  if(pMsg->message == WM_MOUSEMOVE)
+			  {
+				  pParent->PostMessage(pMsg->message, pMsg->wParam, MAKELPARAM(p.x, p.y));
+			  }
 
-			if(fDblClick)
-			{
-				pParent->PostMessage(WM_LBUTTONDOWN, pMsg->wParam, MAKELPARAM(p.x, p.y));
-				pParent->PostMessage(WM_LBUTTONDBLCLK, pMsg->wParam, MAKELPARAM(p.x, p.y));
-			}
-		}
-		else
-		{
-			pParent->PostMessage(pMsg->message, pMsg->wParam, MAKELPARAM(p.x, p.y));
-			return TRUE;
-		}
-	}
-	else{
-		//CMainFrame* pFrame = (CMainFrame*)GetParentFrame();
-		//if(pFrame->m_wndToolTopBar.IsWindowVisible())
-		//	return TRUE;
-	}
+			  if(fDblClick)
+			  {
+				  pParent->PostMessage(WM_LBUTTONDOWN, pMsg->wParam, MAKELPARAM(p.x, p.y));
+				  pParent->PostMessage(WM_LBUTTONDBLCLK, pMsg->wParam, MAKELPARAM(p.x, p.y));
+			  }
+		  }
+		  else
+		  {
+			  pParent->PostMessage(pMsg->message, pMsg->wParam, MAKELPARAM(p.x, p.y));
+			  return TRUE;
+		  }
+	  }
+	  else{
+		  //CMainFrame* pFrame = (CMainFrame*)GetParentFrame();
+		  //if(pFrame->m_wndToolTopBar.IsWindowVisible())
+		  //	return TRUE;
+	  }
+  }
 	return CWnd::PreTranslateMessage(pMsg);
 }
 
@@ -312,8 +316,17 @@ void CChildView::OnPaint()
     return;
 	pFrame->RepaintVideo();
 
-	
-	if(!pFrame->IsSomethingLoaded() || (pFrame->IsSomethingLoaded() && (pFrame->m_fAudioOnly || pFrame->IsSomethingLoading())) ){
+	CRect rcClient;
+  GetClientRect(&rcClient);
+  
+	if(!pFrame->IsSomethingLoaded() || (pFrame->IsSomethingLoaded() && (pFrame->m_fAudioOnly || pFrame->IsSomethingLoading())) )
+  {
+    if (m_mediacenter->GetPlaneState())
+    {
+      m_mediacenter->PaintPlane(dc.m_hDC, rcClient);
+      return;
+    }
+
 		AppSettings& s = AfxGetAppSettings();
 
 		CRect rcWnd;
@@ -322,7 +335,7 @@ void CChildView::OnPaint()
 		GetClientRect(&rcClient);
 		CMemoryDC hdc(&dc, rcClient);
 		hdc.FillSolidRect( rcClient, s.GetColorFromTheme(_T("MainBackgroundColor"),0));
-        CRect rcLoading(rcClient);
+    CRect rcLoading(rcClient);
 
 		/*if(m_cover && !m_cover->IsNull()){
 			BITMAP bm;
@@ -428,7 +441,6 @@ void CChildView::OnPaint()
 			}
 		}
 
-
         if( pFrame->IsSomethingLoading() )
         {
             //rcLoading.top += rcLoading.Height()/2;
@@ -517,8 +529,11 @@ void CChildView::OnSize(UINT nType, int cx, int cy)
 	CWnd::OnSize(nType, cx, cy);
 
 	((CMainFrame*)GetParentFrame())->MoveVideoWindow();
-
 	ReCalcBtn();
+
+  RECT rc;
+  GetClientRect(&rc);
+  m_mediacenter->CalcOnSize(rc);
 }
 
 
@@ -580,7 +595,9 @@ int CChildView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	GetSystemFontWithScale(&m_font, 14.0);
     GetSystemFontWithScale(&m_font_lyric, 20.0, FW_BOLD, s.subdefstyle.fontName); //
 	// TODO:  Add your specialized creation code here
-	
+  RECT margin = {20, 5, 5, 5};
+  m_mediacenter->CreatePlane(m_hWnd, 100, 100, margin);
+  m_mediacenter->ShowPlane();
 	return 0;
 }
 
@@ -677,7 +694,7 @@ void CChildView::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 void CChildView::OnTimer(UINT_PTR nIDEvent)
 {
     // TODO: Add your message handler code here and/or call default
-    if( TIMER_CLEAR_LYRIC_CHILDVIEW == nIDEvent)
+    if(TIMER_CLEAR_LYRIC_CHILDVIEW == nIDEvent)
     {
         m_strAudioInfo.Empty(); 
 

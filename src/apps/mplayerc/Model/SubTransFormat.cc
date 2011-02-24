@@ -15,7 +15,7 @@
 #include <fstream>
 
 #include "..\Controller\HashController.h"
-
+#include <logging.h>
 
 #define CHAR4TOINT(szBuf) \
   ( ((int)szBuf[0] & 0xff) << 24) | ( ((int)szBuf[1] & 0xff) << 16) | ( ((int)szBuf[2] & 0xff) << 8) |  szBuf[3] & 0xff
@@ -29,6 +29,8 @@
 
 #define fansub_search_buf 30000
 #define UNIQU_HASH_SIZE 512
+
+std::vector<std::wstring> SubTransFormat::_tempfile_list;
 
 int SubTransFormat::ExtractDataFromAiSubRecvBuffer_STL(std::list<std::wstring> *m_tmphandlemsgs, std::wstring szFilePath,
                                                        std::wstring tmpoutfile, std::vector<std::wstring> &szaSubDescs,
@@ -49,7 +51,7 @@ int SubTransFormat::ExtractDataFromAiSubRecvBuffer_STL(std::list<std::wstring> *
   if (iStatCode <= 0)
   {
     if (iStatCode == -1)
-      ret = -2;
+      ret = -404;
     else
       ret = -1;
     goto releaseALL;
@@ -199,6 +201,7 @@ int SubTransFormat::ExtractEachSubFile(FILE* fp, std::vector<std::wstring> &tmpf
   of1 = otmpfilename;
   of2 = otmpfilenameraw;
   int gzret = UnpackGZFile(of1 , of2);
+  Logging(L"UnpackGZFile %s %s %d", of1.c_str(), of2.c_str(), gzret);
 
   // add filename and tmp name to szaTmpFileNames
   std::wstring str;
@@ -223,7 +226,10 @@ std::wstring SubTransFormat::GetTempFileName()
   if (::GetTempFileName(GetTempDir().c_str(), L"svp", NULL, tmppath) == 0)
     return L"";
   else
+  {
+    _tempfile_list.push_back(tmppath);
     return tmppath;
+  }
 }
 
 int SubTransFormat::UnpackGZFile(std::wstring fnin, std::wstring fnout)
@@ -235,9 +241,9 @@ int SubTransFormat::UnpackGZFile(std::wstring fnin, std::wstring fnout)
     return -1; //output file open error
   }
 
-  std::string szFnin = Strings::WStringToUtf8String(fnin).c_str();
+  std::string szFnin = Strings::WStringToString(fnin);
 
-  gzFile gzfIn = gzopen( szFnin.c_str() , "rb");	
+  gzFile gzfIn = gzopen( szFnin.c_str(), "rb");	
   if (gzfIn){
 
     char buff[4096];
@@ -271,6 +277,21 @@ std::wstring SubTransFormat::GetTempDir()
   wchar_t lpPathBuffer[MAX_PATH];
   GetTempPath(MAX_PATH,  lpPathBuffer); 
 
+  if (!IfDirWritable_STL(lpPathBuffer))
+  {
+    std::wstring temp_dir;
+    GetAppDataPath(temp_dir);
+    if (temp_dir[temp_dir.size()-1] != L'\\')
+      temp_dir.append(L"\\");
+
+    temp_dir.append(L"Temp");
+    _wmkdir(temp_dir.c_str());
+    if (!IfDirWritable_STL(temp_dir)){
+      temp_dir = GetPlayerPath_STL(L"Temp");
+      _wmkdir(temp_dir.c_str());
+    }
+    return temp_dir;
+  }
   return lpPathBuffer;
 }
 
@@ -468,6 +489,8 @@ std::wstring SubTransFormat::GetVideoFileBasename(std::wstring szVidPath, std::v
       szaPathInfo -> push_back(szExtName ); //ExtName
       szaPathInfo -> push_back(szDirName); //Dir Name ()
       szaPathInfo -> push_back(szFileName); // file name only
+
+      return szBaseName;
     }
     return szVidPath.substr(posDot);
   }
@@ -476,23 +499,15 @@ std::wstring SubTransFormat::GetVideoFileBasename(std::wstring szVidPath, std::v
 
 std::wstring SubTransFormat::GetSameTmpName(std::wstring fnin)
 {
-  std::vector<std::wstring> szaPathinfo;
-  GetVideoFileBasename(fnin, &szaPathinfo);
-  std::wstring fntdir = GetTempDir();
-  std::wstring fnout(fntdir.c_str());
-  fnout += szaPathinfo.at(3).c_str();
-  fnout += szaPathinfo.at(1).c_str();
-  int i = 0;
-  while(IfFileExist_STL(fnout))
-  {
-    i++;
-    wchar_t str[100];
-    wsprintf(str, L".svr%d", i);
-    fnout = fntdir.c_str();
-    fnout += szaPathinfo.at(3).c_str();
-    fnout += str;
-    fnout += szaPathinfo.at(1).c_str();
-  }
+  std::vector<std::wstring> szVidPathInfo;
+  std::wstring fnout = GetTempDir();
+  GetVideoFileBasename(fnin, &szVidPathInfo);
+  fnout += szVidPathInfo.at(SVPATH_FILENAME) + szVidPathInfo.at(SVPATH_EXTNAME) ;
+  _wunlink(fnout.c_str());
+  if(IfFileExist_STL(fnout))
+    return GetTempFileName();
+
+  _tempfile_list.push_back(fnout);
   return fnout;
 }
 
@@ -573,6 +588,7 @@ std::wstring SubTransFormat::GetSubFileByTempid_STL(size_t iTmpID, std::wstring 
     wchar_t szTmp[128];
     lstrcpy(szTmp, L"");
     int ilan = 1;
+    int is_samefile = false;
     while(IfFileExist_STL(szTarget))
     {
       //TODO: compare if its the same file
@@ -582,6 +598,7 @@ std::wstring SubTransFormat::GetSubFileByTempid_STL(size_t iTmpID, std::wstring 
       {
         // TODO: if there is a diffrence in delay
         ialreadyExist++; //TODO: 如果idx+sub里面只有一个文件相同怎么办 ？？~~ 
+        is_samefile = true;
         break;
       }
 
@@ -591,9 +608,41 @@ std::wstring SubTransFormat::GetSubFileByTempid_STL(size_t iTmpID, std::wstring 
       ilan++;
     }
 
-    if (!CopyFile(szSource.c_str(), szTarget.c_str(), false))
+    if (!is_samefile && !CopyFile(szSource.c_str(), szTarget.c_str(), false))
+    {
+      LPVOID lpMsgBuf;
+      DWORD dw = GetLastError(); 
       szDefaultSubPath = szSource;
 
+      FormatMessage(
+        FORMAT_MESSAGE_ALLOCATE_BUFFER | 
+        FORMAT_MESSAGE_FROM_SYSTEM |
+        FORMAT_MESSAGE_IGNORE_INSERTS,
+        NULL,
+        dw,
+        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+        (LPTSTR) &lpMsgBuf,
+        0, NULL );
+
+      struct _stat sbuf_d, sbuf_s;
+
+      _wstat(szSource.c_str(), &sbuf_s);
+      _wstat(szTarget.c_str(), &sbuf_d);
+
+      // Display the error message and exit the process
+
+      Logging(L"fail to copying subtitle file %x %s from %s %f to %s %f",
+         dw, lpMsgBuf, szSource.c_str(), (double)sbuf_s.st_size, 
+         szTarget.c_str(), (double)sbuf_d.st_size); 
+
+      ULARGE_INTEGER free1_s, free1_d, free2_s, free2_d;
+      GetDiskFreeSpaceEx(szSource.c_str(), &free1_s, NULL, &free2_s);
+      GetDiskFreeSpaceEx(szTarget.c_str(), &free1_d, NULL, &free2_d);
+      Logging(L" %f %f %f %f", (double)free1_s.QuadPart, (double)free1_d.QuadPart,
+              (double)free2_s.QuadPart, (double)free2_d.QuadPart);
+
+      LocalFree(lpMsgBuf);
+    }
     else if (((bIsIdxSub && szSubTmpDetail[0].compare(L"idx") == 0)
       || !bIsIdxSub) && szDefaultSubPath.empty())
       szDefaultSubPath = szTarget;
@@ -663,6 +712,11 @@ BOOL SubTransFormat::IfDirExist_STL(std::wstring path)
 
 BOOL SubTransFormat::IfDirWritable_STL(std::wstring szDir)
 {
+  ULARGE_INTEGER free1_s;
+  GetDiskFreeSpaceEx(szDir.c_str(), &free1_s, NULL, NULL);
+  if (free1_s.QuadPart < 102400i64)
+    return false;
+
   HANDLE hFile =
     CreateFile(szDir.c_str(), FILE_ADD_FILE|FILE_WRITE_ATTRIBUTES|FILE_READ_ATTRIBUTES,
     FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
@@ -681,12 +735,13 @@ BOOL SubTransFormat::IfDirWritable_STL(std::wstring szDir)
   fp = _wfopen((szDir + L"svpwrtst").c_str(), L"wb");
   if(fp != NULL)
   {
+    ret = true;
+    if (fwrite("testtest", 1, 8, fp) < 8)
+      ret = false;
+
     fclose( fp );
     _wremove((szDir + L"svpwrtst").c_str());
-    ret = true;
   }
-
-  SetFileTime(hFile, &ftCreate, &ftAccess, &ftWrite);
 
   CloseHandle(hFile);
 
@@ -768,9 +823,9 @@ BOOL SubTransFormat::GetAppDataPath(std::wstring& path)
     path.append(L"\\");
 
   path.append(L"SPlayer");
-
   if(path.empty())
     return false;
+  _wmkdir(path.c_str());
   return true;
 }
 

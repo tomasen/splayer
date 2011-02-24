@@ -1,6 +1,5 @@
-#ifndef BASE_THREADHELPER_H
-#define BASE_THREADHELPER_H
-
+#pragma once
+#include "logging.h"
 /* 
  * This file include:
  *  1. class ThreadHelperImpl
@@ -31,14 +30,21 @@ public:
   ~ThreadHelperImpl() {_Stop();}
 
   // Create a new thread
-  void _Start()
+  void _Start(int nPriority = THREAD_PRIORITY_IDLE)
   {
-    m_thread = (HANDLE)::_beginthread(Logic, 0, (void*)this);
+    if (_Is_alive())
+      return;
+
+    m_thread = (HANDLE)::_beginthread(Logic, 0, (T*)this);
+    m_priority = nPriority;
   }
 
   // Stop the thread
   void _Stop(int wait_msec = 300, int times = 6)
   {
+    if (!_Is_alive())
+      return;
+
     ::SetEvent(m_stopevent);
     if (wait_msec && times)
       for(int i = 0; i < times; i++)
@@ -47,9 +53,8 @@ public:
     
     if (_Is_alive())
       TerminateThread(m_thread, 0); // very bad bad bad
-
-    m_thread = NULL;
-    ::ResetEvent(m_stopevent);
+    
+    _ResetThread();
   }
 
   // Use thread do something
@@ -74,15 +79,33 @@ public:
       thread_exitcode == STILL_ACTIVE) ? true : false;
   }
 
+  DWORD _GetThreadId()
+  {
+    return ::GetCurrentThreadId();
+  }
+
+  void _ResetThread()
+  {
+    m_thread = NULL;
+    ::ResetEvent(m_stopevent);
+  }
+  int    m_priority;
 private:
   static void Logic(void* t)
   {
-     static_cast<T*>(t)->_Thread();
+    HANDLE thread_cur = GetCurrentThread();
+    if (static_cast<T*>(t)->m_priority == THREAD_PRIORITY_IDLE)
+      SetThreadPriority(thread_cur, THREAD_MODE_BACKGROUND_BEGIN);
+
+    SetThreadPriority(thread_cur, static_cast<T*>(t)->m_priority);
+
+    static_cast<T*>(t)->_Thread();
+    static_cast<T*>(t)->_ResetThread();
+
   }
 
 private:
   HANDLE m_thread;
   HANDLE m_stopevent;
-};
 
-#endif // BASE_THREADHELPER_H
+};

@@ -240,6 +240,8 @@ class __declspec(uuid("537DCACA-2812-4a4f-B2C6-1A34C17ADEB0")) CRenderedTextSubt
     int m_bIsTradChinese;
     int m_bNotChinese;
     bool m_bHavnShowIConvOSD;
+  double m_chineseFontSize;
+  int m_autosize_english;
 
 	void ParseEffect(CSubtitle* sub, CString str);
 	void ParseString(CSubtitle* sub, CStringW str, STSStyle& style);

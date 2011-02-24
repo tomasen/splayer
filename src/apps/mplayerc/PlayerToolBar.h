@@ -23,9 +23,28 @@
 
 #include "SUIButton.h"
 
-#include "VolumeCtrl.h"
+#include "VolumeCtrl.h" 
+#include "ToolBarButtonInitialize.h"
 
-// CPlayerToolBar
+class CPlayerToolBar;
+
+class CBottomToolBarInitialize : public CToolBarButtonInitialize
+{
+public:
+  CBottomToolBarInitialize();
+  ~CBottomToolBarInitialize();
+
+public:
+  void FillButtonAttribute();
+
+  void ShowButton(ToolBarButton* tbb,BOOL bl,bool (CPlayerToolBar::*mute)(void),
+                  CPlayerToolBar* playertoolbar);
+  void ShowPlayTime(CDC* dc, AppSettings& s, CRect& rcClient, CFont* m_statft,
+                    CString* m_timerstr);
+  void PlayTimeRect(CRect& frc, CRect rcClient);
+
+};
+
 
 class CPlayerToolBar : public CToolBar
 {
@@ -44,24 +63,27 @@ private:
 	CSUIButton* m_btnVolTm ;
 	CSUIButton* m_btnVolBG;
 	CSUIButton* btnLogo;
-	CFont m_statft;
+  CFont m_statft;
 	CString m_tooltip ;
 	CPoint m_lastMouseMove;
 	int m_lastLeftText;
 	CSUIButton* btnSubSwitch;
+  CBottomToolBarInitialize m_bottombar_button;
+  BOOL m_breadfromfile;
+
 public:
 	CString m_timerstr;
-	CString m_timerqueryedstr;
+  CString m_timerqueryedstr;
 	CString m_buffering;
 	BOOL holdStatStr;
 	int m_nLogDPIY;
 	CSUIBtnList m_btnList;
-	 CSUIBtnList* const m_pbtnList;
+	CSUIBtnList* const m_pbtnList;
 	int iButtonWidth;
 	void UpdateButtonStat();
 	CPlayerToolBar();
 	virtual ~CPlayerToolBar();
-	BOOL m_bMouseDown ;
+	BOOL m_bMouseDown;
     int m_nHeight;
 
 	UINT iBottonClicked;
@@ -108,7 +130,7 @@ protected:
 	afx_msg BOOL OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult);
 
 	virtual INT_PTR OnToolHitTest(	CPoint point,TOOLINFO* pTI 	) const;
-	
+
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 public:
@@ -116,4 +138,9 @@ public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
+  void HideMovieShareBtn(BOOL hide);
+private:
+  int m_movieshare_hidestat;
 };
+
+

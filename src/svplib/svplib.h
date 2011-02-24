@@ -43,4 +43,13 @@
 #define SVP_LogMsg6(...) Logging(__VA_ARGS__)
 #endif
 
+#ifdef SVP_DEBUG
+#define SVP_ASSERT(x)       \
+    if (!(x)) {             \
+        __debugbreak();     \
+    }
+#else
+#define SVP_ASSERT(x)
+#endif
+
 bool SVP_CanUseCoreAvcCUDA(bool useCUDA);

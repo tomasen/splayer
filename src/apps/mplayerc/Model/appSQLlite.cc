@@ -6,7 +6,7 @@
 #include <iostream>
 
 #include <Strings.h>
-
+#include <logging.h>
 
 using namespace sqlitepp;
 
@@ -57,12 +57,13 @@ int SQLliteapp::exec_sql(std::wstring s_exe)
       vdata.push_back(str);
       str.clear();
     }
-
     nrow = vdata.size();
-    return true;
+    return nrow;
   }
-  catch(...)
+  catch(std::runtime_error const& err)
   {
+    Logging("SQL error %s", err.what());
+    Logging(L"SQL %s", s_exe.c_str());
   }
   return false;
 }

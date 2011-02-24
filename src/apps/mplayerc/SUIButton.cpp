@@ -1,7 +1,7 @@
-
 #include "SUIButton.h"
 #include "../../svplib/svplib.h"
 #include "../../svplib/SVPToolBox.h"
+#include <ResLoader.h>
 
 CSUIButton::CSUIButton(LPCTSTR szBmpName, int iAlign, CRect marginTownd 
 					   , BOOL bNotButton, UINT htMsgID, BOOL bHide 
@@ -13,31 +13,17 @@ m_lastBtnDownStat(0)
 	m_marginTownd  = marginTownd;
 	m_iAlign = iAlign;
 	m_htMsgID = htMsgID;
-	CString szBmpPath(szBmpName);
-	szBmpPath = CString(_T("skins\\")) + szBmpPath.Left(szBmpPath.GetLength()-4) + _T(".png");
-	CSVPToolBox svpToolBox;
-	szBmpPath = svpToolBox.GetPlayerPath(szBmpPath);
-	BOOL bExtLoaded = false;
-	//SVP_LogMsg(szBmpPath);
-	if(svpToolBox.ifFileExist( szBmpPath)){
-		m_png.Load( szBmpPath );
-		if(m_png.IsDIBSection()){
-			this->Attach((HBITMAP)m_png);
-			bExtLoaded = true;
-		}
-	}
-	if(!bExtLoaded)
-		this->LoadImage(szBmpName);
+
+  ResLoader rlResLoader;
+  HBITMAP hBitmap = rlResLoader.LoadBitmap(szBmpName);
+  this->Attach(hBitmap);
 	
 	m_szBmpName = szBmpName;
 	m_hide = bHide;
-
-
 	
 	CountDPI();
 	
 	addAlignRelButton(alignToButton, relativeToButton , marginToBtn);
-	
 }
 
 void CSUIButton::CountDPI(){
@@ -88,17 +74,35 @@ LONG CSUIButton::CalcRealMargin(LONG Mlen, LONG bW, LONG wW)
 		return ( wW * Mlen / 100) - bW / 2;
 	}
 }
+
 int CSUIButton::OnHitTest(CPoint pt , int bLBtnDown){
-	if(m_hide || m_NotButton || m_stat == 3){
+	if(m_hide || m_NotButton || m_stat == 3)
+  {
 		return 0;
 	}
+
 	int old_stat = m_stat;
-	if(bLBtnDown < 0){
+	if(bLBtnDown < 0)
+  {
 		bLBtnDown = m_lastBtnDownStat;
-	}else{
+	}
+  else
+  {
 		m_lastBtnDownStat = bLBtnDown;
 	}
-	if (m_rcHitest.PtInRect(pt) && bLBtnDown)  m_stat = 2; else if (m_rcHitest.PtInRect(pt)) m_stat = 1; else m_stat = 0;
+
+	if (m_rcHitest.PtInRect(pt) && bLBtnDown)
+  {
+    m_stat = 2;
+  }
+  else if (m_rcHitest.PtInRect(pt))
+  {
+    m_stat = 1;
+  }
+  else
+  {
+    m_stat = 0;
+  }
 	
 	if(m_stat == old_stat){
 		return -1;
@@ -285,7 +289,7 @@ void CSUIBtnList::SetDisableStat(UINT iMsgID, BOOL bDisable){
 		CSUIButton* cBtn =  GetNext(pos);
 		if( iMsgID == cBtn->m_htMsgID ){
 			if(bDisable)
-				cBtn->m_stat = 3;
+      cBtn->m_stat = 3;
 			else
 				cBtn->m_stat = 0;
 			break;

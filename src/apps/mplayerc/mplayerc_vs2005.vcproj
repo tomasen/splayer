@@ -112,7 +112,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine=""
+				CommandLine="$(SolutionDir)BuildScript/post-build.cmd"
 				ExcludedFromBuild="false"
 			/>
 		</Configuration>
@@ -699,14 +699,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\SearchSubDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\SearchSubDlg.h"
-				>
-			</File>
-			<File
 				RelativePath=".\SeekBarTip.cpp"
 				>
 			</File>
@@ -812,6 +804,14 @@
 			</File>
 			<File
 				RelativePath=".\SVPSubVoteControlBar.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ToolBarButtonInitialize.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\ToolBarButtonInitialize.h"
 				>
 			</File>
 			<File
@@ -1132,6 +1132,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\newui\BTN_SHARE.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\newui\BTN_STEP.bmp"
 				>
 			</File>
@@ -1189,10 +1193,6 @@
 			</File>
 			<File
 				RelativePath=".\res\icon\DV_Video.ico"
-				>
-			</File>
-			<File
-				RelativePath=".\res\icon\DVD.ico"
 				>
 			</File>
 			<File
@@ -1536,11 +1536,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon\video.ico"
+				RelativePath=".\res\ecio.icons\video.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\ecio.icons\video.ico"
+				RelativePath=".\res\icon\video.ico"
 				>
 			</File>
 			<File
@@ -1679,6 +1679,14 @@
 				Name="Dialogs"
 				>
 				<File
+					RelativePath=".\UserInterface\Dialogs\MovieComment_Win.cc"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Dialogs\MovieComment_Win.h"
+					>
+				</File>
+				<File
 					RelativePath=".\UserInterface\Dialogs\OptionAdvancedPage_Win.cc"
 					>
 				</File>
@@ -1744,6 +1752,30 @@
 				>
 				<File
 					RelativePath=".\UserInterface\Renderer\LayeredWindowUtils_Win.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Renderer\MediaCenterView.cc"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Renderer\MediaCenterView.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Renderer\MediaListView.cc"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Renderer\MediaListView.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Renderer\MediaScrollbar.cc"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Renderer\MediaScrollbar.h"
 					>
 				</File>
 				<File
@@ -1836,6 +1868,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Controller\MediaCenterController.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Controller\MediaCenterController.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Controller\NetworkControlerImpl.cc"
 				>
 			</File>
@@ -1919,6 +1959,18 @@
 				RelativePath=".\Controller\UsrBehaviorController.h"
 				>
 			</File>
+			<Filter
+				Name="User"
+				>
+				<File
+					RelativePath=".\Controller\ShareController.cc"
+					>
+				</File>
+				<File
+					RelativePath=".\Controller\ShareController.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Model"
@@ -1948,6 +2000,30 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Model\MediaComm.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Model\MediaModel.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Model\MediaModel.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Model\MediaSpiderAbstract.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Model\MediaSpiderDisk.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Model\MediaSpiderDisk.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Model\PlaylistItem.cc"
 				>
 			</File>
@@ -1961,6 +2037,10 @@
 			</File>
 			<File
 				RelativePath=".\Model\PlaylistParser.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Model\SourceModel.h"
 				>
 			</File>
 			<File

@@ -43,7 +43,7 @@ std::wstring NetworkControlerImpl::GetServerUrl(int req_type , int tryid)
   switch(req_type)
   {
     case 'upda':
-      apiurl += L"api/updater.php";
+      apiurl = L"https://updater.shooter.cn/api/updater.php";
       break;
     case 'upsb':
       apiurl += L"api/subup.php";

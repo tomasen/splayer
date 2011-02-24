@@ -204,7 +204,7 @@ void CMediaFormats::UpdateData(bool fSave)
 		ADDFMT((_T("Windows Media Audio file"), _T("wma"), _T("audio"), IDI_AUDIO_FILE, true));
 		ADDFMT((_T("Video file"), _T("avi"), _T("video"), IDI_VIDEO));
 		ADDFMT((_T("Audio file"), _T("wav"), _T("audio"), IDI_AUDIO_FILE, true));
-		ADDFMT((_T("MPEG Media file"), _T("mpg mpeg mpe m1v m2v mpv2 mp2v"), _T("video"), IDI_VIDEO));
+		ADDFMT((_T("MPEG Media file"), _T("mpg mpeg mpe m1v m2v mpv2 mp2v mod"), _T("video"), IDI_VIDEO));
 		ADDFMT((_T("VCD MPEG Data file"), _T("dat"), _T("video"), IDI_VIDEO,-1));
 		ADDFMT((_T("Collegesoft Media file"), _T("csf"), _T("video"), IDI_VIDEO));
 		ADDFMT((_T("MPEG Transport-Stream file"), _T("ts tp tpr pva pss m2ts m2t mts evo m2p"), _T("video"), IDI_HD));
@@ -240,7 +240,7 @@ void CMediaFormats::UpdateData(bool fSave)
 		ADDFMT((_T("Musepack file"), _T("mpc"), _T("video"), IDI_VIDEO, true));
 		ADDFMT((_T("FLAC Audio file"), _T("flac"), _T("audio"), IDI_AUDIO_FILE, true));
 		ADDFMT((_T("ALAC Audio file"), _T("alac"), _T("audio"), IDI_AUDIO_FILE, true));
-		ADDFMT((_T("Flash Video file"), _T("flv iflv f4v"), _T("video"), IDI_VIDEO));
+		ADDFMT((_T("Flash Video file"), _T("flv iflv f4v hlv"), _T("video"), IDI_VIDEO));
 		ADDFMT((_T("Shockwave Flash file"), _T("swf"), _T("video"), IDI_VIDEO, -1, _T("ShockWave ActiveX control"), ShockWave));
 		ADDFMT((_T("Shockwave Audio file"), _T("swa"), _T("audio"), IDI_AUDIO_FILE, true, _T("ShockWave ActiveX control"), ShockWave));
 		ADDFMT((_T("Quicktime file"), _T("mov qt amr 3g2 3gp2"), _T("video"), IDI_VIDEO, false, _T("QuickTime or codec pack")));//QuickTime

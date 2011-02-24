@@ -1359,6 +1359,7 @@ HANDLE WINAPI Mine_CreateFileA(LPCSTR p1, DWORD p2, DWORD p3, LPSECURITY_ATTRIBU
 	//int i = fn.Find(".part");
 	//if(i > 0 && i == fn.GetLength() - 5)
 	p3 |= FILE_SHARE_WRITE;
+	p6 |= FILE_FLAG_SEQUENTIAL_SCAN;
 	//if(strstr(p1, ("SVPDebug")) == 0)  SVP_LogMsg6(("Mine_CreateFileA %s") , p1);
     //if( strcmp (p1 + nLen-4, ".ini") == 0)
         //SVP_LogMsg5(L"Mine_CreateFileW %s", p1);
@@ -1465,6 +1466,7 @@ HANDLE WINAPI Mine_CreateFileW(LPCWSTR p1, DWORD p2, DWORD p3, LPSECURITY_ATTRIB
 	 //   SVP_LogMsg5(L"Mine_CreateFileW %s", p1);
 
 	p3 |= FILE_SHARE_WRITE;
+	p6 |= FILE_FLAG_SEQUENTIAL_SCAN;
 
 	if (nLen>=4 && _wcsicmp (p1 + nLen-4, L".ifo") == 0)
 	{
@@ -1684,10 +1686,12 @@ SVP_LogMsg5(L"Settings::InitInstanceThreaded 16");
 				if(!m_cnetupdater)
 					m_cnetupdater = new cupdatenetlib();
 
-				if(m_cnetupdater->downloadList()){
-					m_cnetupdater->downloadFiles();
-					m_cnetupdater->tryRealUpdate(TRUE);
-				}
+        // why execute the updater.exe before do this?
+        // updater.exe has include it and cupdatenetlib has been destory.
+// 				if(m_cnetupdater->downloadList()){
+// 					m_cnetupdater->downloadFiles();
+// 					m_cnetupdater->tryRealUpdate(TRUE);
+// 				}
 				if(!pFrame->m_bCheckingUpdater){
 					pFrame->m_bCheckingUpdater = true;
           UpdateController::GetInstance()->CheckUpdateEXEUpdate();

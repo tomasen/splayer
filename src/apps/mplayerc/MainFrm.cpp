@@ -9438,12 +9438,12 @@ void CMainFrame::OnUpdateFavoritesDevice(CCmdUI* pCmdUI)
 
 void CMainFrame::OnHelpHomepage()
 {
-  ShellExecute(m_hWnd, _T("open"), _T("http://shooter.cn/splayer/"), NULL, NULL, SW_SHOWDEFAULT);
+	ShellExecute(m_hWnd, _T("open"), _T("http://splayer.org/"), NULL, NULL, SW_SHOWDEFAULT);
 }
 
 void CMainFrame::OnHelpDocumentation()
 {
-  ShellExecute(m_hWnd, _T("open"), _T("http://www.shooter.cn/wiki/Category:%E5%B0%84%E6%89%8B%E6%92%AD%E6%94%BE%E5%99%A8"), NULL, NULL, SW_SHOWDEFAULT);
+	ShellExecute(m_hWnd, _T("open"), _T("http://hg.splayer.org/splayer/wiki/Home"), NULL, NULL, SW_SHOWDEFAULT);
 }
 
 //////////////////////////////////

@@ -180,7 +180,7 @@ BOOL CMultiFiles::OpenPart(int nPart)
 		ClosePart();
 
 		fn			= m_strFiles.GetAt(nPart);
-		m_hFile		= CreateFile (fn, GENERIC_READ, FILE_SHARE_DELETE|FILE_SHARE_READ|FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
+		m_hFile		= CreateFile (fn, GENERIC_READ, FILE_SHARE_DELETE|FILE_SHARE_READ|FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
 
 		if (m_hFile != INVALID_HANDLE_VALUE)
 		{

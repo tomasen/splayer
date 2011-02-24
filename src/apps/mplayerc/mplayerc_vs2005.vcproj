@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="windows-1250"?>
+﻿<?xml version="1.0" encoding="windows-1250"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
@@ -1204,11 +1204,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\ecio.icons\dvd.ico"
+				RelativePath=".\res\icon\DVD.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon\DVD.ico"
+				RelativePath=".\res\ecio.icons\dvd.ico"
 				>
 			</File>
 			<File

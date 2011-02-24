@@ -11,6 +11,8 @@ public:
   void SetVisible(bool bVisible);
   bool GetVisible();
 
+  std::wstring GetCurAd();
+
   void GetAds(const std::wstring &sURL);
   void AllowAnimate(bool b);
   void ShowNextAd();

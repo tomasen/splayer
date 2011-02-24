@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include "stdafx.h"
@@ -53,7 +53,7 @@ public:
 	}
 	UINT iAlign;
 	INT_PTR bBtn;
-	CRect marginToBtn; //Ïà¶ÔÓÚÁíÒ»¸ö°´Å¥µÄÎ»ÖÃ
+	CRect marginToBtn; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 };
 
 #define ALIGN_TOPLEFT 3
@@ -79,12 +79,12 @@ static int nLogDPIX = 0,  nLogDPIY = 0;
 class CSUIButton {
 
 public:
-	CSize m_btnSize; //°´Å¥µÄ´óÐ¡³ß´ç
-	CSize m_orgbtnSize; //°´Å¥µÄ´óÐ¡³ß´ç
-	int m_iAlign; //Óë´°¿Ú¶ÔÆë·½Ïò
-	CRect m_marginTownd; //°´Å¥Ïà¶ÔÓÚ´°¿ÚµÄÎ»ÖÃ£¬ 0Îª²»Ç¿ÖÆ ¸ºÊýÎª°Ù·Ö±È
-	CRect m_rcHitest; //°´Å¥µÄÓÐÐ§·¶Î§£¬ÓÃÓÚhittest
-	CBitmap m_bitmap; //Í¼Æ¬´æ´¢Î»ÖÃ
+	CSize m_btnSize; //Å¥Ä´ï¿½ß´ï¿½
+	CSize m_orgbtnSize; //Å¥Ä´ï¿½ß´ï¿½
+	int m_iAlign; //ï¿½Ú¶ï¿½ë·½ï¿½
+	CRect m_marginTownd; //Å¥ï¿½ï¿½Ú´Úµï¿½ï¿½ 0ÎªÇ¿ï¿½ ï¿½ÎªÙ·Ö±ï¿½
+	CRect m_rcHitest; //Å¥ï¿½ï¿½Î§ï¿½ï¿½hittest
+	CBitmap m_bitmap; //Í¼Æ¬æ´¢Î»ï¿½
 	int m_stat; //0 normal ; 1 hove ; 2 clicked ; 3 disabled
 	UINT m_htMsgID;
 	BOOL m_hide;
@@ -138,6 +138,7 @@ private:
 	int m_lastBtnDownStat;
 
   CString m_playtimestr;
+
 };
 
 
@@ -169,5 +170,7 @@ public:
   void SetCurrentHideState(long iWidth,double skinsRate,int m_nLogDPIY);
 
   CSUIButton* GetButton(CString s);
+
+  int GetRelativeMinLength(CRect WndRect, CSUIButton* btn);
 };
 

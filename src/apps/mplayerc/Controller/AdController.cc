@@ -30,6 +30,16 @@ bool AdController::GetVisible()
   return m_bVisible;
 }
 
+std::wstring AdController::GetCurAd()
+{
+  if ((m_nCurAd < 0) || (m_nCurAd > m_vtAds.size() - 1))
+  {
+    return L"";
+  }
+
+  return m_vtAds[m_nCurAd].sName;
+}
+
 void AdController::SetRect(const RECT &rc, CMemoryDC *pDC)
 {
   if ((m_rc.left != rc.left) || (m_rc.top != rc.top) || (m_rc.right != rc.right) || (m_rc.bottom != rc.bottom))

@@ -323,8 +323,9 @@ CSUIBtnList::~CSUIBtnList()
   POSITION pos = GetHeadPosition();
   while(pos)
   {
-    CSUIButton* btn = GetNext(pos);
-    delete btn;
+    CSUIButton* cBtn =  GetNext(pos);
+    if (cBtn)
+      delete cBtn;
   }
 }
 int CSUIBtnList::GetMaxHeight(){

@@ -137,6 +137,7 @@ private:
 	int m_lastBtnDownStat;
 
   CString m_playtimestr;
+
 };
 
 
@@ -168,5 +169,7 @@ public:
   void SetCurrentHideState(long iWidth,double skinsRate,int m_nLogDPIY);
 
   CSUIButton* GetButton(CString s);
+
+  int GetRelativeMinLength(CRect WndRect, CSUIButton* btn);
 };
 

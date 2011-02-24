@@ -333,14 +333,11 @@ void CPlayerToolBar::OnPaint()
 
 
   HFONT holdft = (HFONT)hdc.SelectObject(m_statft);
-  CSize size = dc.GetTextExtent(m_timerstr);
-  size.cx = min( rcClient.Width() /3, size.cx);
-  if (m_btnplaytime)
-    m_btnplaytime->SetStrSize(size);
+
   if (!m_timerstr.IsEmpty() && pFrame && pFrame->IsSomethingLoaded())
   {
-    hdc.SetTextColor(s.GetColorFromTheme(_T("ToolBarTimeText"), 0xffffff) );
     
+    hdc.SetTextColor(s.GetColorFromTheme(_T("ToolBarTimeText"), 0xffffff) );
     m_btnplaytime->SetString(m_timerstr);
   }
 
@@ -350,8 +347,23 @@ void CPlayerToolBar::OnPaint()
   int volume = min( m_volctrl.GetPos() , m_volctrl.GetRangeMax() );
   m_btnVolTm->m_rcHitest.MoveToXY(m_btnVolBG->m_rcHitest.left +  ( m_btnVolBG->m_rcHitest.Width() * volume / m_volctrl.GetRangeMax() ) - m_btnVolTm->m_rcHitest.Width()/2
     , m_btnVolBG->m_rcHitest.top + (m_btnVolBG->m_rcHitest.Height() -  m_btnVolTm->m_rcHitest.Height() ) / 2 );
-
+  
   m_btnList.PaintAll(&hdc, rc);
+
+  CSize size = dc.GetTextExtent(m_timerstr);
+
+  size.cx =  m_btnList.GetRelativeMinLength(rc, m_btnplaytime) - 10;
+
+  if (size.cx < 20)
+    size.cx = rcClient.Width() /3 - 10;
+
+  if (m_btnplaytime)
+  {
+    m_btnplaytime->SetStrSize(size);
+    m_btnplaytime->OnPaint(&hdc, rc);
+  }
+
+  
   
   hdc.SelectObject(holdft);
 }
@@ -373,6 +385,7 @@ void CPlayerToolBar::UpdateButtonStat(){
   m_btnList.SetDisableStat( ID_SUBDELAYINC, !bSub);
   m_btnList.SetDisableStat( ID_SUBDELAYDEC, !bSub);
   ReCalcBtnPos();
+  
 }
 void CPlayerToolBar::OnNcPaint() // when using XP styles the NC area isn't drawn for our toolbar...
 {
@@ -1142,10 +1155,13 @@ void CPlayerToolBar::DefaultButtonManage()
 
   CONFIGBUTTON(VOLUMETM,VOLUME_TM.BMP,ALIGN_TOPRIGHT,CRect(3,-50,65,3),FALSE,ID_VOLUME_THUMB,FALSE,0,0,0,CRect(0,0,0,0))
 
-  CONFIGBUTTON(PLAYTIME,NOBMP,ALIGN_TOPLEFT,CRect(3,-50,105,3),TRUE,0,FALSE,0,0,0,CRect(0,0,0,0))
+  
 
-  CONFIGBUTTON(SHARE,BTN_SHARE.BMP,ALIGN_TOPLEFT,CRect(3,-50,3,3),FALSE,ID_MOVIESHARE,FALSE,0,ALIGN_LEFT,PLAYTIME,CRect(1,1,1,1))
-  CONFIGADDALIGN(SHARE, ALIGN_RIGHT, FASTBACKWORD, CRect(1,1,1,1))
+  CONFIGBUTTON(SHARE,BTN_SHARE.BMP,ALIGN_TOPLEFT,CRect(3,-50,3,3),FALSE,ID_MOVIESHARE,FALSE,0,0,0,CRect(0,0,0,0))
+  //CONFIGADDALIGN(SHARE, ALIGN_RIGHT, FASTBACKWORD, CRect(1,1,1,1))
+  //CONFIGADDALIGN(SHARE, ALIGN_RIGHT, SUBINCREASE, CRect(1,1,1,1))
+
+  CONFIGBUTTON(PLAYTIME,NOBMP,ALIGN_TOPLEFT,CRect(3,-50,105,3),TRUE,0,FALSE,0,ALIGN_LEFT,SHARE,CRect(1,1,1,1))
   
 }
 /*

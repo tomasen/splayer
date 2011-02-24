@@ -166,6 +166,8 @@ void CSUIButton::OnSize(CRect WndRect)
 			
 			break;
 	}
+  
+
 	
 	POSITION pos = btnAlignList.GetHeadPosition();
 	while(pos){
@@ -214,9 +216,9 @@ void CSUIButton::OnSize(CRect WndRect)
 void CSUIButton::OnPaint(CMemoryDC *hDC, CRect rc){
 	if(m_currenthide) return;
   rc = m_rcHitest - rc.TopLeft();
-  if (m_buttonname == L"PLAYTIME")
+
+  if (m_buttonname == L"PLAYTIME" )
   {
-    
     ::DrawText(*hDC, m_playtimestr, m_playtimestr.GetLength(), rc,  DT_LEFT|DT_END_ELLIPSIS|DT_SINGLELINE| DT_VCENTER);
     return;
   }
@@ -302,6 +304,8 @@ void CSUIButton::SetStrSize(CSize sz)
 {
   m_btnSize = sz;
 }
+
+
 
 
 /*CSUIBtnList*/
@@ -453,4 +457,24 @@ CSUIButton* CSUIBtnList::GetButton(CString s)
       return cbtn;
   }
   return 0;
+}
+
+int CSUIBtnList::GetRelativeMinLength(CRect WndRect, CSUIButton* btn)
+{
+  CRect rc = btn->m_rcHitest - WndRect.TopLeft();
+  int min = MAXINT;
+  POSITION pos = GetHeadPosition();
+  while(pos){
+    CSUIButton* cBtn =  GetNext(pos);
+    if (cBtn->m_currenthide)
+      continue;
+   
+    CRect rtrc = cBtn->m_rcHitest - WndRect.TopLeft();
+
+    int i = rtrc.left - rc.left;
+
+    if (i > 0 && i < min)
+      min = i;
+  }
+  return min;
 }

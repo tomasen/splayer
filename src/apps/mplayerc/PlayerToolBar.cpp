@@ -105,8 +105,10 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
   m_btnplaytime = m_btnList.GetButton(L"PLAYTIME");
 
   cursorHand = ::LoadCursor(NULL, IDC_HAND);
+
   SetTimer(TIMER_ADPLAY, 100, NULL);
   SetTimer(TIMER_ADPLAYSWITCH, 2000, NULL);
+
   //GetSystemFontWithScale(&m_statft, 14.0);
   LOGFONT lf;
 
@@ -1001,6 +1003,12 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
   switch(nIDEvent){
     case TIMER_ADPLAY:
       {
+        // If no ads exists, then didn't show ads, otherwise show ads
+        if (m_adctrl.IsAdsEmpty())
+        {
+          break;
+        }
+
         m_adctrl.AllowAnimate(true);
 
         Invalidate();
@@ -1008,11 +1016,15 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
       }
     case TIMER_ADPLAYSWITCH:
       {
+        // If no ads exists, then didn't show ads, otherwise show ads
+        if (m_adctrl.IsAdsEmpty())
+        {
+          break;
+        }
+
         // 查看广告是否显示完，如果还在显示则等待下一次2秒
         if (m_btnplaytime->GetString().IsEmpty() && m_adctrl.IsCurAdShownDone())
-        {
           m_adctrl.SetVisible(false);
-        }
         else if (!m_btnplaytime->GetString().IsEmpty())
         {
           m_btnplaytime->SetString(L"");
@@ -1020,7 +1032,6 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
           m_adctrl.ShowNextAd();
         }
 
-        Invalidate();
         break;
       }
     case TIMER_STATERASER:

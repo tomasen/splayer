@@ -1,17 +1,21 @@
 #pragma once
 
 #include "../SUIButton.h"
+#include "threadhelper.h"
 
-class AdController
+class AdController : public ThreadHelperImpl<AdController>
 {
 public:
   AdController();
   ~AdController();
 
+  void _Thread();
+
   void SetVisible(bool bVisible);
   bool GetVisible();
 
   std::wstring GetCurAd();
+  bool IsAdsEmpty();
 
   void GetAds(const std::wstring &sURL);
   void AllowAnimate(bool b);
@@ -33,6 +37,8 @@ private:
   int m_nCurX;   // current ad's x
   int m_nCurY;   // current ad's y
   CSize m_szCurAd;
+
+  std::wstring m_sURL;
 
   RECT m_rc;                         // display area
   bool m_bVisible;                   // is display area visible?

@@ -27,7 +27,8 @@ IMPLEMENT_DYNAMIC(CPlayerToolTopBar, CWnd)
 CPlayerToolTopBar::CPlayerToolTopBar():
 m_hovering(0),
 m_pbtnList(&m_btnList),
-m_nHeight(20)
+m_nHeight(20),
+m_bSendStatusMsg(false)
 {
 }
 
@@ -352,6 +353,27 @@ void CPlayerToolTopBar::UpdateButtonStat(){
     }
   }
 
+  // send status message
+  if (m_bSendStatusMsg)
+  {
+    switch (pFrame->m_nLoopSetting)
+    {
+    case ID_PLAYBACK_LOOP_NORMAL:
+      pFrame->SendStatusMessage(ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_NOCYCLE_CONTROL), 3000);
+      break;
+    case ID_PLAYBACK_LOOP_PLAYLIST:
+      pFrame->SendStatusMessage(ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_ALLCYCLE_CONTROL), 3000);
+      break;
+    case ID_PLAYBACK_LOOP_CURRENT:
+      pFrame->SendStatusMessage(ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_SINGLECYCLE_CONTROL), 3000);
+      break;
+    case ID_PLAYBACK_LOOP_RANDOM:
+      pFrame->SendStatusMessage(ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_RANDOM_CONTROL), 3000);
+      break;
+    }
+
+    m_bSendStatusMsg = false;
+  }
 }
 void CPlayerToolTopBar::OnMove(int x, int y)
 {
@@ -479,7 +501,10 @@ void CPlayerToolTopBar::OnLButtonUp(UINT nFlags, CPoint point)
 	UINT ret = m_btnList.OnHitTest(xpoint,rc,false);
 	if( m_btnList.HTRedrawRequired ){
 		if(ret)
+    {
 			pFrame->PostMessage( WM_COMMAND, ret);
+      m_bSendStatusMsg = true;
+    }
     m_toolTip.SendMessage(TTM_TRACKACTIVATE, FALSE, (LPARAM)&m_ti);
 		
 		Invalidate();

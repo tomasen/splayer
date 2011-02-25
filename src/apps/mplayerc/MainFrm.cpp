@@ -2674,8 +2674,10 @@ void CMainFrame::OnTimer(UINT nIDEvent)
       {
         std::wstring uuid, moviehash;
         SPlayerGUID::GenerateGUID(uuid);
+        UserShareController* usc = UserShareController::GetInstance();
+        usc->CreateCommentPlane();
         moviehash = HashController::GetInstance()->GetSPHash(m_fnCurPlayingFile);
-        UserShareController::GetInstance()->ShareMovie(uuid, moviehash, m_fnCurPlayingFile.GetString());
+        usc->ShareMovie(uuid, moviehash, m_fnCurPlayingFile.GetString());
       }
     }
     break;
@@ -4691,11 +4693,13 @@ void CMainFrame::OnFilePostOpenmedia()
 		}
 
 	}
-  UserShareController::GetInstance()->HideCommentPlane();
+
   // send sphash to remote
+  m_wndToolBar.HideMovieShareBtn(TRUE);
+  UserShareController::GetInstance()->HideCommentPlane();
   if(IsSomethingLoaded() && !m_fAudioOnly && (UINT)((INT64)rtDur/10000000) > 90)
   {
-    m_wndToolBar.HideMovieShareBtn(TRUE);
+    m_secret_switch = 0x01;
     SetTimer(TIMER_MOVIESHARE, 1800, NULL);
   }
 
@@ -7101,11 +7105,8 @@ void CMainFrame::OnShowDrawStats()
   CString msg;
   msg.Format(L"Secret option @ %x", m_secret_switch);
   SendStatusMessage(msg, 2000);
-  if (m_secret_switch)
-  {
-    UserShareController::GetInstance()->CreateCommentPlane();
+  if (0 && m_secret_switch)
     SetTimer(TIMER_MOVIESHARE, 1, NULL);
-  }
   else
     AfxGetMyApp()->m_fDisplayStats = !AfxGetMyApp()->m_fDisplayStats;
 

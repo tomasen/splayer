@@ -989,6 +989,9 @@ BOOL CPlayerToolBar::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
         case ID_SUBFONTDOWNBOTH:
           toolTip = ResStr(IDS_TOOLTIP_TOOLBAR_BUTTON_SUB_FONT_DECREASE);
           break;	
+        case ID_MOVIESHARE:
+          toolTip = ResStr(IDS_TOOLTIP_TOOLBAR_BUTTON_MOVIESHARE);
+          break;	
         default:
           toolTip = ResStr(nID);
           break;

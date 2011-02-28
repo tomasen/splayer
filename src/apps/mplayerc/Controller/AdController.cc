@@ -16,7 +16,7 @@ AdController::AdController()
 , m_nCurX(0)
 , m_nCurY(0)
 {
-  GetAds(L"http://webpj:8080/misc/splayerads.php");
+  GetAds(L"https://www.shooter.cn/api/v2/prom.php");
   m_szCurAd.SetSize(0, 0);
 }
 

@@ -112,42 +112,52 @@ void AdController::_Thread()
   std::wstring sCurDate = std::wstring() + szYear + szMonth + szDay;
   std::wstring sAdDate;
   if (sAds.size() > 8)  // must greater than 8, because has a date prefix
-  {
     sAdDate.assign(sAds.begin(), sAds.begin() + 8);
-  }
-  if (sAds.empty() || (sCurDate != sAdDate))
+
+  while (true)
   {
-    // Get ads from web
-    sinet::refptr<sinet::pool>    net_pool = sinet::pool::create_instance();
-    sinet::refptr<sinet::task>    net_task = sinet::task::create_instance();
-    sinet::refptr<sinet::request> net_rqst = sinet::request::create_instance();
-    sinet::refptr<sinet::config>  net_cfg  = sinet::config::create_instance();
-
-    net_task->use_config(net_cfg);
-
-    net_rqst->set_request_url(m_sURL.c_str());
-    net_rqst->set_request_method(REQ_GET);
-
-    net_task->append_request(net_rqst);
-
-    net_pool->execute(net_task);
-
-    while (net_pool->is_running_or_queued(net_task))
+    if (sAds.empty() || (sCurDate != sAdDate))
     {
-      if (_Exit_state(100))
-        return;
+      // Get ads from web
+      sinet::refptr<sinet::pool>    net_pool = sinet::pool::create_instance();
+      sinet::refptr<sinet::task>    net_task = sinet::task::create_instance();
+      sinet::refptr<sinet::request> net_rqst = sinet::request::create_instance();
+      sinet::refptr<sinet::config>  net_cfg  = sinet::config::create_instance();
+
+      net_task->use_config(net_cfg);
+
+      net_rqst->set_request_url(m_sURL.c_str());
+      net_rqst->set_request_method(REQ_GET);
+
+      net_task->append_request(net_rqst);
+
+      net_pool->execute(net_task);
+
+      while (net_pool->is_running_or_queued(net_task))
+      {
+        if (_Exit_state(5000))  // can wait 5s until done this job
+        {
+          ::Sleep(7000);  // sleep for a moment
+          continue;  // continue next try
+        }
+      }
+      if (net_rqst->get_response_errcode() != 0)  // judge if successful
+      {
+          ::Sleep(7000);  // sleep for a moment
+          continue;  // continue next try
+      }
+
+      std::vector<unsigned char> st_buffer = net_rqst->get_response_buffer();
+      if (st_buffer[st_buffer.size() - 1] != '\0')
+        st_buffer.push_back('\0');
+
+      sAds = Strings::Utf8StringToWString(std::string(st_buffer.begin(), st_buffer.end()));
+      sAds = sCurDate + sAds;
+
+      PlayerPreference::GetInstance()->SetStringVar(STRVAR_AD, sAds);
     }
-    if (net_rqst->get_response_errcode() != 0)
-      return;
 
-    std::vector<unsigned char> st_buffer = net_rqst->get_response_buffer();
-    if (st_buffer[st_buffer.size() - 1] != '\0')
-      st_buffer.push_back('\0');
-
-    sAds = Strings::Utf8StringToWString(std::string(st_buffer.begin(), st_buffer.end()));
-    sAds = sCurDate + sAds;
-
-    PlayerPreference::GetInstance()->SetStringVar(STRVAR_AD, sAds);
+    break;  // jump out the download loop
   }
 
   // split the sAds and store them into m_vtAds

@@ -15260,7 +15260,7 @@ case ID_SUB2FONTDOWN:
       UpdateSubtitle(true); 
     }
     if(bSubChg2){
-      str2.Format(ResStr(IDS_OSD_MSG_CHANGE_2NDSUB_FONTSIZE), s.subdefstyle.fontSize);
+      str2.Format(ResStr(IDS_OSD_MSG_CHANGE_2NDSUB_FONTSIZE), s.subdefstyle2.fontSize);
       UpdateSubtitle2(true);
     }
     str3.Format(_T("(%d%%)"), (int)(s.dGSubFontRatio*100));

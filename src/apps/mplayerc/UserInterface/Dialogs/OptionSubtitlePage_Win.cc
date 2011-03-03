@@ -6,10 +6,15 @@
 #include "../../MainFrm.h"
 #include "../../Controller/SPlayerDefs.h"
 #include "../../Controller/PlayerPreference.h"
+#include <sstream>
 
-OptionSubtitlePage::OptionSubtitlePage(void):
-  m_mainstyle(0),
-  m_secstyle(0)
+OptionSubtitlePage::OptionSubtitlePage()
+: m_mainstyle(0)
+, m_secstyle(0)
+, m_dOldMainSize(-1)
+, m_dOldSecondSize(-1)
+, m_crOldMainColor(0)
+, m_crOldSecondColor(0)
 {
   // init style entry height
   m_styleentry_height = ::GetSystemMetrics(SM_CYICON)*7/5;
@@ -27,32 +32,72 @@ BOOL OptionSubtitlePage::OnInitDialog(HWND hwnd, LPARAM lParam)
     it != text_ar.end(); it++)
     m_secsubtitlestyle.AddString(it->c_str());
   RECT rc_stylelist;
-  m_subtitlestyle.Attach(GetDlgItem(IDC_LIST));
+
+  m_subtitlestyle.SubclassWindow(GetDlgItem(IDC_LIST));
   m_subtitlestyle.GetWindowRect(&rc_stylelist);
   m_styleentry_width = rc_stylelist.right - rc_stylelist.left;
   RefreshStyles();
 
   AppSettings& s = AfxGetAppSettings();
-  // calculate current settings according to AppSettings class s.subdefstyle
-  // retrieve subtitle style settings, and check which available style is closest to
-  // the given settings, then set |m_mainstyle| to corresponding one.
-  // s.subdefstyle compare font type, font color, border color shadow color
+
+  // main style
   for (int i = 0; i < SubtitleStyle::GetStyleCount(); i++)
   {
     SubtitleStyle::STYLEPARAM* sp = NULL;
-    if (SubtitleStyle::GetStyleParams(i, -1, &sp) && sp->fontcolor == s.subdefstyle.colors[0] 
-    && sp->strokecolor == s.subdefstyle.colors[2] && sp->shadowcolor == s.subdefstyle.colors[3] 
-    && (sp->_fontname == SubtitleStyle::DetectFontType((LPCTSTR)s.subdefstyle.fontName)) //×ÖÌå
-      )
+    if (SubtitleStyle::GetStyleParams(i, -1, &sp) && s.subdefstyle.fontName == sp->fontname)
     {
       m_subtitlestyle.SetCurSel(i);
+      m_mainstyle = i;
       break;
     }
   }
 
+  if (m_subtitlestyle.GetCount() > 0 && m_subtitlestyle.GetCurSel() < 0)
+  {
+    m_subtitlestyle.SetCurSel(0);
+    m_mainstyle = 0;
+  }
+
+  // second style
+  for (int i = 0; i < SubtitleStyle::GetStyleCount(); i++)
+  {
+    SubtitleStyle::STYLEPARAM* sp = NULL;
+    if (SubtitleStyle::GetStyleParams(-1, i, &sp) && s.subdefstyle2.fontName == sp->fontname)
+    {
+      m_secstyle = i;
+      break;
+    }
+  }
+
+  if (m_secstyle == -1)
+    m_secstyle = 0;
+
   m_secsubtitlestyle.SetCurSel((s.subdefstyle2.scrAlignment == 2)?1:0);
 
   m_fetchsubtitlefromshooter = s.autoDownloadSVPSub;
+
+  // init which subtitle should be set combo box
+  std::wstring sSetSubtitle = (LPCTSTR)ResStr(IDS_SET_SUBTITLE);
+  std::wstring sSetSubtitlePart1(sSetSubtitle.begin(), sSetSubtitle.begin() + sSetSubtitle.find(L'|'));
+  std::wstring sSetSubtitlePart2(sSetSubtitle.begin() + sSetSubtitle.find(L'|') + 1, sSetSubtitle.end());
+  m_cmbSetSubtitle.Attach(GetDlgItem(IDC_CMB_SET_SUBTITLE));
+  m_cmbSetSubtitle.AddString(sSetSubtitlePart1.c_str());
+  m_cmbSetSubtitle.AddString(sSetSubtitlePart2.c_str());
+  m_cmbSetSubtitle.SetCurSel(0);
+
+  // init the subtitle's old size and color
+  m_dOldMainSize = s.subdefstyle.fontSize;
+  m_dOldSecondSize = s.subdefstyle2.fontSize;
+  m_crOldMainColor = s.subdefstyle.colors[0];
+  m_crOldSecondColor = s.subdefstyle2.colors[0];
+
+  // init the subtitle's size and color controls
+  m_edtFontSize.Attach(GetDlgItem(IDC_EDIT_SUBTITLE_FONTSIZE));
+  m_btnFontColor.Attach(GetDlgItem(IDC_BUTTON_SUBTITLE_FONTCOLOR));
+  m_spnFontSize.Attach(GetDlgItem(IDC_SPIN_SUBTITLE_FONTSIZE));
+
+  m_spnFontSize.SetRange(10, 25);
+  m_spnFontSize.SetPos(s.subdefstyle.fontSize);
 
   // Init the subtitle save path radio buttons
   WTL::CButton rdoSaveSame = (WTL::CButton)GetDlgItem(IDC_RADIO_SAVESUBTITLE_SAME_FOLDER);
@@ -92,11 +137,29 @@ void OptionSubtitlePage::OnDestroy()
 {
   m_secsubtitlestyle.Detach();
   m_subtitlestyle.Detach();
+  m_edtFontSize.Detach();
+  m_spnFontSize.Detach();
+  m_btnFontColor.Detach();
 }
 
 void OptionSubtitlePage::OnSubtitleStyleChange(UINT uNotifyCode, int nID, CWindow wndCtl)
 {
-  m_mainstyle = m_subtitlestyle.GetCurSel();
+  switch (m_cmbSetSubtitle.GetCurSel())
+  {
+  case 0:
+    {
+      // set the main subtitle style
+      m_mainstyle = m_subtitlestyle.GetCurSel();
+      break;
+    }
+
+  case 1:
+    {
+      // set the second subtitle style
+      m_secstyle = m_subtitlestyle.GetCurSel();
+      break;
+    }
+  }
 }
 
 // Let user select the save path
@@ -137,10 +200,151 @@ void OptionSubtitlePage::OnSelectCustomFolder(UINT uNotifyCode, int nID, CWindow
   btnCustomFolder.EnableWindow(TRUE);
 }
 
+// change subtitle's size
+void OptionSubtitlePage::OnSubtitleSizeChange(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+  AppSettings &s = AfxGetAppSettings();
+
+  switch (m_cmbSetSubtitle.GetCurSel())
+  {
+  case 0:
+    {
+      // main subtitle
+      // m_dOldMainSize must init before do the following job
+      if (m_dOldMainSize == -1)
+        return;
+
+      wchar_t szSize[32] = {0};
+      m_edtFontSize.GetWindowText(szSize, 31);
+      s.subdefstyle.fontSize = ::_wtol(szSize);
+
+      m_subtitlestyle.Invalidate();
+      break;
+    }
+
+  case 1:
+    {
+      // second subtitle
+      // m_dOldSecondSize must init before do the following job
+      if (m_dOldSecondSize == -1)
+        return;
+
+      wchar_t szSize[32] = {0};
+      m_edtFontSize.GetWindowText(szSize, 31);
+      s.subdefstyle2.fontSize = ::_wtol(szSize);
+
+      m_subtitlestyle.Invalidate();
+      break;
+    }
+  }
+}
+
+// change subtitle's color
+void OptionSubtitlePage::OnSubtitleColorChange(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+  AppSettings &s = AfxGetAppSettings();
+
+  switch (m_cmbSetSubtitle.GetCurSel())
+  {
+  case 0:
+    {
+      // main subtitle
+      WTL::CColorDialog dlgColor(s.subdefstyle.colors[0]);
+      if (dlgColor.DoModal() == IDOK)
+      {
+        s.subdefstyle.colors[0] = s.subdefstyle.colors[1] = dlgColor.GetColor();
+
+        m_subtitlestyle.Invalidate();
+        m_btnFontColor.Invalidate();
+      }
+      break;
+    }
+
+  case 1:
+    {
+      // second subtitle
+      WTL::CColorDialog dlgColor(s.subdefstyle2.colors[0]);
+      if (dlgColor.DoModal() == IDOK)
+      {
+        s.subdefstyle2.colors[0] = s.subdefstyle2.colors[1] = dlgColor.GetColor();
+
+        m_subtitlestyle.Invalidate();
+        m_btnFontColor.Invalidate();
+      }
+      break;
+    }
+  }
+}
+
+void OptionSubtitlePage::OnComboSetSubtitleChange(UINT uNotifyCode, int nID, CWindow wndCtl)
+{
+  AppSettings &s = AfxGetAppSettings();
+
+  switch (m_cmbSetSubtitle.GetCurSel())
+  {
+  case 0:
+    {
+      // main subtitle
+      m_spnFontSize.SetPos(s.subdefstyle.fontSize);
+      m_btnFontColor.Invalidate();
+      m_subtitlestyle.SetCurSel(m_mainstyle);
+      m_subtitlestyle.Invalidate();
+      break;
+    }
+
+  case 1:
+    {
+      // second subtitle
+      m_spnFontSize.SetPos(s.subdefstyle2.fontSize);
+      m_btnFontColor.Invalidate();
+      m_subtitlestyle.SetCurSel(m_secstyle);
+      m_subtitlestyle.Invalidate();
+      break;
+    }
+  }
+}
+
 void OptionSubtitlePage::DrawItem(LPDRAWITEMSTRUCT lpdis)
 {
-  SubtitleStyle::Paint(lpdis->hDC, &lpdis->rcItem, lpdis->itemID, -1,
-    (lpdis->itemState & ODS_SELECTED)?true:false);
+  AppSettings &s = AfxGetAppSettings();
+  switch (lpdis->CtlID)
+  {
+  case IDC_LIST:
+    {
+      if (m_cmbSetSubtitle.GetCurSel() == 0)
+      {
+        // main subtitle
+        SubtitleStyle::Paint(lpdis->hDC, &lpdis->rcItem, lpdis->itemID, -1,
+          (lpdis->itemState & ODS_SELECTED)?true:false);
+      } 
+      else
+      {
+        // second subtitle
+        SubtitleStyle::Paint(lpdis->hDC, &lpdis->rcItem, -1, lpdis->itemID,
+          (lpdis->itemState & ODS_SELECTED)?true:false);
+      }
+      break;
+    }
+
+  case IDC_BUTTON_SUBTITLE_FONTCOLOR:
+    {
+      WTL::CRect rcColorButton;
+      m_btnFontColor.GetClientRect(&rcColorButton);
+      WTL::CDC dc(lpdis->hDC);
+      if (m_cmbSetSubtitle.GetCurSel() == 0)
+      {
+        // main subtitle
+        dc.FillSolidRect(rcColorButton, s.subdefstyle.colors[0]);
+      } 
+      else
+      {
+        // second subtitle
+        dc.FillSolidRect(rcColorButton, s.subdefstyle2.colors[0]);
+      }
+
+      break;
+    }
+  }
 }
 
 void OptionSubtitlePage::MeasureItem(LPMEASUREITEMSTRUCT lpmis)
@@ -149,32 +353,44 @@ void OptionSubtitlePage::MeasureItem(LPMEASUREITEMSTRUCT lpmis)
     lpmis->itemHeight = m_styleentry_height;
 }
 
-int OptionSubtitlePage::OnSetActive()
-{
-  return 0;
-}
-
 void OptionSubtitlePage::ApplySubtitleStyle()
 {
   DoDataExchange(TRUE);
   AppSettings& s = AfxGetAppSettings();
-  // retrieve variables from screen
-  SubtitleStyle::STYLEPARAM* sp = NULL;
-  if (SubtitleStyle::GetStyleParams(m_subtitlestyle.GetCurSel(), -1, &sp))
+
+  SubtitleStyle::STYLEPARAM* sp_main = 0;
+  SubtitleStyle::STYLEPARAM* sp_sec = 0;
+  SubtitleStyle::GetStyleParams(m_mainstyle, -1, &sp_main);
+  SubtitleStyle::GetStyleParams(-1, m_secstyle, &sp_sec);
+
+  if (sp_main)
   {
-    s.subdefstyle.colors[0] = s.subdefstyle.colors[1] = sp->fontcolor;
-    s.subdefstyle.colors[2] = sp->strokecolor;
-    s.subdefstyle.colors[3] = sp->shadowcolor;
-    s.subdefstyle.fontName = sp->fontname;
-    s.subdefstyle.fontSize = sp->fontsize;
-    s.subdefstyle.fontWeight = (sp->fontname == L"WenQuanYi Micro Hei" 
-                                || sp->fontname == L"\x6587\x6CC9\x9A7F\x5FAE\x737C\x9ED1"  // Chinese for "WenQuanYi Micro Hei"
+    s.subdefstyle.colors[0] = s.subdefstyle.colors[1] = sp_main->fontcolor;
+    s.subdefstyle.colors[2] = sp_main->strokecolor;
+    s.subdefstyle.colors[3] = sp_main->shadowcolor;
+    s.subdefstyle.fontName = sp_main->fontname;
+    s.subdefstyle.fontSize = sp_main->fontsize;
+    s.subdefstyle.fontWeight = (sp_main->fontname == L"WenQuanYi Micro Hei" 
+                                || sp_main->fontname == L"\x6587\x6CC9\x9A7F\x5FAE\x737C\x9ED1"  // Chinese for "WenQuanYi Micro Hei"
                                 )?FW_BOLD:FW_NORMAL; // Using BOLD if it is font WenQuanYi
     s.subdefstyle.scrAlignment = 2;
-    s.subdefstyle.shadowDepthX = s.subdefstyle.shadowDepthY = sp->shadowoffset;
-    s.subdefstyle.outlineWidthX = s.subdefstyle.outlineWidthY = sp->strokesize;
+    s.subdefstyle.shadowDepthX = s.subdefstyle.shadowDepthY = sp_main->shadowoffset;
+    s.subdefstyle.outlineWidthX = s.subdefstyle.outlineWidthY = sp_main->strokesize;
+  }
 
-    s.subdefstyle2 = s.subdefstyle;
+  if (sp_sec)
+  {
+    s.subdefstyle2.colors[0] = s.subdefstyle2.colors[1] = sp_sec->fontcolor;
+    s.subdefstyle2.colors[2] = sp_sec->strokecolor;
+    s.subdefstyle2.colors[3] = sp_sec->shadowcolor;
+    s.subdefstyle2.fontName = sp_sec->fontname;
+    s.subdefstyle2.fontSize = sp_sec->fontsize;
+    s.subdefstyle2.fontWeight = (sp_sec->fontname == L"WenQuanYi Micro Hei" 
+                                || sp_sec->fontname == L"\x6587\x6CC9\x9A7F\x5FAE\x737C\x9ED1"  // Chinese for "WenQuanYi Micro Hei"
+                                )?FW_BOLD:FW_NORMAL; // Using BOLD if it is font WenQuanYi
+    s.subdefstyle2.scrAlignment = 2;
+    s.subdefstyle2.shadowDepthX = s.subdefstyle2.shadowDepthY = sp_sec->shadowoffset;
+    s.subdefstyle2.outlineWidthX = s.subdefstyle2.outlineWidthY = sp_sec->strokesize;
   }
   s.subdefstyle2.scrAlignment = ( m_secsubtitlestyle.GetCurSel() == 1)?2:8;
 
@@ -235,4 +451,16 @@ void OptionSubtitlePage::RefreshStyles()
   // insert bogus entries
   m_subtitlestyle.SetCount(SubtitleStyle::GetStyleCount(false));
   m_subtitlestyle.Invalidate();
+}
+
+BOOL OptionSubtitlePage::OnQueryCancel()
+{
+  // restore the font size and color
+  AppSettings& s = AfxGetAppSettings();
+  s.subdefstyle.fontSize = m_dOldMainSize;
+  s.subdefstyle.colors[0] = s.subdefstyle2.colors[1] = m_crOldMainColor;
+  s.subdefstyle2.fontSize = m_dOldSecondSize;
+  s.subdefstyle2.colors[0] = s.subdefstyle2.colors[1] = m_crOldSecondColor;
+
+  return FALSE;  // FALSE = allow cancel, TRUE = prevent cancel
 }

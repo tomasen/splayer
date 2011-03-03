@@ -4700,7 +4700,7 @@ void CMainFrame::OnFilePostOpenmedia()
   if(IsSomethingLoaded() && !m_fAudioOnly && (UINT)((INT64)rtDur/10000000) > 90)
   {
     m_secret_switch = 0x01;
-    SetTimer(TIMER_MOVIESHARE, 1800, NULL);
+    SetTimer(TIMER_MOVIESHARE, 5800, NULL);
   }
 
 	KillTimer(TIMER_IDLE_TASK);
@@ -4770,6 +4770,7 @@ void CMainFrame::OnFilePostClosemedia()
 	SetupNavChaptersSubMenu();
 	SetupFavoritesSubMenu();
 
+  KillTimer(TIMER_MOVIESHARE);
 	KillTimer(TIMER_IDLE_TASK);
   SetTimer(TIMER_IDLE_TASK, 30000, NULL);
 }

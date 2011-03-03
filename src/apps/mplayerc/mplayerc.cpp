@@ -1506,6 +1506,24 @@ BOOL WINAPI Mine_DeviceIoControl(HANDLE hDevice, DWORD dwIoControlCode, LPVOID l
 	return ret;
 }
 
+int (__stdcall * Real_MessageBoxA)(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType)
+                                     = ::MessageBoxA;
+int (__stdcall * Real_MessageBoxW)(HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption, UINT uType)
+                                     = ::MessageBoxW;
+int WINAPI Mine_MessageBoxA(HWND hWnd,  LPCSTR lpText,  LPCSTR lpCaption,  UINT uType)
+{
+  if (NULL == strstr(lpCaption, "Internet Explorer"))
+    return Real_MessageBoxA(hWnd, lpText, lpCaption, uType);
+  return IDOK;
+}
+int WINAPI Mine_MessageBoxW( HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption, UINT uType)
+{
+  if (NULL == wcsstr(lpCaption, L"Internet Explorer"))
+    return Real_MessageBoxW(hWnd, lpText, lpCaption, uType);
+  return IDOK;
+}
+
+
 #include "../../subtitles/SSF.h"
 #include "../../subtitles/RTS.h"
 #include "../../subpic/MemSubPic.h"
@@ -1975,6 +1993,9 @@ BOOL CMPlayerCApp::InitInstance()
 
 	DetourAttach(&(PVOID&)Real_SetUnhandledExceptionFilter, (PVOID)Mine_SetUnhandledExceptionFilter);
 
+  DetourAttach(&(PVOID&)Real_MessageBoxA, (PVOID)Mine_MessageBoxA);
+  DetourAttach(&(PVOID&)Real_MessageBoxW, (PVOID)Mine_MessageBoxW);
+
 #ifndef _DEBUG
 	HMODULE hNTDLL	=	LoadLibrary (_T("ntdll.dll"));
 	if (hNTDLL)
@@ -1997,6 +2018,7 @@ BOOL CMPlayerCApp::InitInstance()
         AfxMessageBox(_T("OleInitialize failed!"));
 		return FALSE;
 	}
+
 
   //////////////////////////////////////////////////////////////////////////
   // WTL/ATL supporting logic

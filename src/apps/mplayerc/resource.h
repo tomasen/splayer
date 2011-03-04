@@ -1540,6 +1540,7 @@
 #define ID_LANGUAGE_SWEDISH             32903
 #define ID_LANGUAGE_PORTUGUESE_BR       32904
 #define ID_LANGUAGE_LAST                32929
+#define ID_MOVIESHARE_OPEN              32933
 #define IDS_MPADECSETTINGSWND_0         33135
 #define IDS_MPADECSETTINGSWND_1         33136
 #define IDS_MPA_CHANNEL_1               33137

@@ -576,6 +576,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_WM_KEYUP()
   ON_COMMAND(ID_MOVIESHARE, OnMovieShare)
   ON_COMMAND(ID_MOVIESHARE_RESPONSE, OnMovieShareResponse)
+  ON_COMMAND(ID_MOVIESHARE_OPEN, OnOpenShooterMedia)
 	END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -17411,4 +17412,9 @@ void CMainFrame::OnMovieShare()
 void CMainFrame::OnMovieShareResponse()
 {
   m_wndToolBar.HideMovieShareBtn(FALSE);
+}
+
+void CMainFrame::OnOpenShooterMedia()
+{
+  UserShareController::GetInstance()->OpenShooterMedia();
 }

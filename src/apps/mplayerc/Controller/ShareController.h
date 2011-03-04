@@ -27,6 +27,7 @@ public:
     void HideCommentPlane();
     void ToggleCommentPlane();
 
+    BOOL OpenShooterMedia();
     std::wstring GenerateKey();
     std::wstring GetResponseData();
 

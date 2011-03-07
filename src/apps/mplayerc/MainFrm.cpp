@@ -17315,6 +17315,45 @@ void CMainFrame::OnCompleteQuerySubtitle()
     m_subcontrl.Start((LPCTSTR)m_fnCurPlayingFile, SubTransController::DownloadSubtitle,
                        language, 2);
   }
+  else
+  {
+    // save subtitle to media file folder
+    CSVPToolBox svpTool;
+    int selsubtitle = m_iSubtitleSel;
+    std::wstring subtitlename = PathFindFileName(getCurPlayingSubfile());
+    std::wstring savesubpath = svpTool.GetDirFromPath(m_fnCurPlayingFile);
+    savesubpath += subtitlename;
+    POSITION pos = m_pSubStreams.GetHeadPosition();
+    while(pos && selsubtitle >= 0)
+    {
+      CComPtr<ISubStream> pSubStream = m_pSubStreams.GetNext(pos);
+
+      if(selsubtitle < pSubStream->GetStreamCount())
+      {
+        CLSID clsid;
+        if(FAILED(pSubStream->GetClassID(&clsid)))
+          continue;
+
+        if(clsid == __uuidof(CVobSubFile))
+        {
+          CVobSubFile* pVSF = (CVobSubFile*)(ISubStream*)pSubStream;
+
+          CAutoLock cAutoLock(&m_csSubLock);
+          pVSF->Save(savesubpath.c_str());
+          break;
+        }
+        else if(clsid == __uuidof(CRenderedTextSubtitle))
+        {
+          CRenderedTextSubtitle* pRTS = (CRenderedTextSubtitle*)(ISubStream*)pSubStream;
+
+          CAutoLock cAutoLock(&m_csSubLock);
+          pRTS->SaveAs(savesubpath.c_str(), EXTSRT, m_pCAP->GetFPS(), pRTS->m_encoding);
+          break;
+        }
+      }
+      selsubtitle -= pSubStream->GetStreamCount();
+    }
+  }
 
 }
 

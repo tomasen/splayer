@@ -107,13 +107,13 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
   cursorHand = ::LoadCursor(NULL, IDC_HAND);
 
   SetTimer(TIMER_ADPLAY, 100, NULL);
-  SetTimer(TIMER_ADPLAYSWITCH, 2000, NULL);
+  SetTimer(TIMER_ADPLAYSWITCH, 5000, NULL);
 
   //GetSystemFontWithScale(&m_statft, 14.0);
   LOGFONT lf;
 
   lf.lfWidth = 0;
-  lf.lfHeight = 13;
+  lf.lfHeight = 14;
   lf.lfEscapement = 0;
   lf.lfWeight = 0;
   lf.lfPitchAndFamily = 0;
@@ -1024,15 +1024,19 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
         {
           break;
         }
-
+        KillTimer(TIMER_ADPLAYSWITCH);
         // 查看广告是否显示完，如果还在显示则等待下一次2秒
         if (m_btnplaytime->GetString().IsEmpty() && m_adctrl.IsCurAdShownDone())
+        {
+          SetTimer(TIMER_ADPLAYSWITCH, 5000, NULL);
           m_adctrl.SetVisible(false);
+        }
         else if (!m_btnplaytime->GetString().IsEmpty())
         {
           m_btnplaytime->SetString(L"");
           m_adctrl.SetVisible(true);
           m_adctrl.ShowNextAd();
+          SetTimer(TIMER_ADPLAYSWITCH, 2000, NULL);
         }
 
         break;

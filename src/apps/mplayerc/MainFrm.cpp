@@ -2620,8 +2620,6 @@ void CMainFrame::OnTimer(UINT nIDEvent)
   case TIMER_MOVIESHARE:
     {
       KillTimer(TIMER_MOVIESHARE);
-      if (!(m_secret_switch & 0x01))
-        break;
       if (IsSomethingLoaded() && !m_fAudioOnly)
       {
         std::wstring uuid, moviehash;

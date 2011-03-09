@@ -26,6 +26,9 @@ public:
 
   void OnAdClick();
 
+protected:
+  bool TryNextLoopWhenFail();
+
 private:
   struct tagAd
   {
@@ -43,4 +46,6 @@ private:
   RECT m_rc;                         // display area
   bool m_bVisible;                   // is display area visible?
   bool m_bAllowAnimate;
+
+  bool m_bTryNextLoopWhenFail;       // should try next loop when download ad failure?
 };

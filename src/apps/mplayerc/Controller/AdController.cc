@@ -15,6 +15,7 @@ AdController::AdController()
 , m_nCurAd(-1)
 , m_nCurX(0)
 , m_nCurY(0)
+, m_bTryNextLoopWhenFail(false)
 {
   GetAds(L"https://www.shooter.cn/api/v2/prom.php");
   m_szCurAd.SetSize(0, 0);
@@ -137,14 +138,20 @@ void AdController::_Thread()
       {
         if (_Exit_state(5000))  // can wait 5s until done this job
         {
-          ::Sleep(7000);  // sleep for a moment
-          continue;  // continue next try
+          ::Sleep(2000);  // sleep for a moment
+          if (TryNextLoopWhenFail())
+            continue;  // continue next try
+          else
+            break;
         }
       }
       if (net_rqst->get_response_errcode() != 0)  // judge if successful
       {
-          ::Sleep(7000);  // sleep for a moment
-          continue;  // continue next try
+          ::Sleep(2000);  // sleep for a moment
+          if (TryNextLoopWhenFail())
+            continue;  // continue next try
+          else
+            break;
       }
 
       std::vector<unsigned char> st_buffer = net_rqst->get_response_buffer();
@@ -252,4 +259,9 @@ void AdController::OnAdClick()
     return;
 
   ::ShellExecute(0, L"open", m_vtAds[m_nCurAd].sLink.c_str(), 0, 0, SW_SHOW);
+}
+
+bool AdController::TryNextLoopWhenFail()
+{
+  return m_bTryNextLoopWhenFail;
 }

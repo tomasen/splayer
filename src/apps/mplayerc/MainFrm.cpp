@@ -17316,7 +17316,8 @@ void CMainFrame::OnCompleteQuerySubtitle()
     m_subcontrl.Start((LPCTSTR)m_fnCurPlayingFile, SubTransController::DownloadSubtitle,
                        language, 2);
   }
-  else
+  
+  if(s.bSaveSVPSubWithVideo)
   {
     // save subtitle to media file folder
     CSVPToolBox svpTool;

@@ -2954,7 +2954,7 @@ bool CSimpleTextSubtitle::SaveAs(CString fn, exttype et, double fps, CTextFile::
 //	Sort(true);
 
   int signtimes = 0;
-  std::wstring signstring  = L"\n(Download subtitle from http://shooter.cn by SPlayer)\n\n\u2122";
+  std::wstring signstring  = L"\n(subtitle from http://shooter.cn by SPlayer)\n\n\u2122";
 	for(ptrdiff_t i = 0, j = GetCount(), k = 0; i < j; i++)
 	{
 		STSEntry& stse = GetAt(i);

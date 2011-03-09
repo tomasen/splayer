@@ -166,7 +166,8 @@ void AdController::_Thread()
 
     break;  // jump out the download loop
   }
-
+  if (sAds.length() < 15)
+    return;
   // split the sAds and store them into m_vtAds
   std::tr1::wregex rx(L"([^;]*);([^\\n]*)\\n");
   std::tr1::wsmatch mt;

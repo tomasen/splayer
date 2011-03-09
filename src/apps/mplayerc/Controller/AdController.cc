@@ -17,7 +17,6 @@ AdController::AdController()
 , m_nCurY(0)
 , m_bTryNextLoopWhenFail(false)
 {
-  GetAds(L"https://www.shooter.cn/api/v2/prom.php");
   m_szCurAd.SetSize(0, 0);
 }
 

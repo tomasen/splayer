@@ -37,6 +37,7 @@
 typedef HRESULT (__stdcall * SetWindowThemeFunct)(HWND hwnd, LPCWSTR pszSubAppName, LPCWSTR pszSubIdList);
 #define TIMER_ADPLAYSWITCH 7013
 #define TIMER_ADPLAY 7014
+#define TIMER_ADFETCHING 7015
 #define ID_VOLUME_THUMB 126356
 
 #define CONFIGBUTTON(btnname,bmp,fixalign,fixcrect,notbutton,id,hide,hidewidth,relativealign,pbuttonname,relativecrect) \
@@ -108,7 +109,7 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 
   SetTimer(TIMER_ADPLAY, 100, NULL);
   SetTimer(TIMER_ADPLAYSWITCH, 5000, NULL);
-
+  SetTimer(TIMER_ADFETCHING, 15000, NULL);
   //GetSystemFontWithScale(&m_statft, 14.0);
   LOGFONT lf;
 
@@ -1004,6 +1005,10 @@ void CPlayerToolBar::OnLButtonUp(UINT nFlags, CPoint point)
 }
 void CPlayerToolBar::OnTimer(UINT nIDEvent){
   switch(nIDEvent){
+    case TIMER_ADFETCHING:
+      KillTimer(TIMER_ADFETCHING);
+      m_adctrl.GetAds(L"https://www.shooter.cn/api/v2/prom.php");
+      break;
     case TIMER_ADPLAY:
       {
         // If no ads exists, then didn't show ads, otherwise show ads

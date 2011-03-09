@@ -1,17 +1,5 @@
 #pragma once
 #include "SUIButton.h"
-#include "ToolBarButtonInitialize.h"
-
-class CTopToolBarInitialize : public CToolBarButtonInitialize
-{
-public:
-  CTopToolBarInitialize();
-  ~CTopToolBarInitialize();
-
-public:
-  void FillButtonAttribute();
-  
-};
 
 
 // CPlayerToolTopBar
@@ -23,6 +11,8 @@ class CPlayerToolTopBar : public CWnd
 	int iLeftBorderPos;
 	CSUIButton* btnClose;
 	enum {IDT_CLOSE, IDT_TIPS};
+
+  bool m_bSendStatusMsg;  // send status message when status changed
 
 public:
 	CPlayerToolTopBar();
@@ -41,15 +31,16 @@ public:
 
 	CFont m_statft;
 	CPoint m_lastMouseMove;
+
+  CSUIBtnList m_btnList;
+  CSUIBtnList* const m_pbtnList;
 protected:
 	DECLARE_MESSAGE_MAP()
 	afx_msg BOOL OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult);
 
 
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-	CSUIBtnList m_btnList;
-	CSUIBtnList* const m_pbtnList;
-  afx_msg void OnMove(int x, int y);
+	afx_msg void OnMove(int x, int y);
 	afx_msg void OnPaint();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
@@ -83,8 +74,7 @@ public:
 	afx_msg void OnWindowPosChanging(WINDOWPOS* lpwndpos);
 	afx_msg void OnActivateApp(BOOL bActive, DWORD dwThreadID);
 
-private:
-  CTopToolBarInitialize m_topbar_button;
+  void DefaultButtonManage();
 
 };
 

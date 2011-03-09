@@ -9,146 +9,16 @@
 // PlayerToolTopBar.cpp : implementation file
 #include "MainFrm.h"
 #include "../../svplib/svplib.h"
+#include "ButtonManage.h"
+#include "GUIConfigManage.h"
 
-CTopToolBarInitialize::CTopToolBarInitialize()
-{
-#define ADDID(x) m_id_map[L#x] = x
+#define CONFIGBUTTON(btnname,bmp,fixalign,fixcrect,notbutton,id,hide,hidewidth,relativealign,pbuttonname,relativecrect) \
+  m_btnList.AddTail(new CSUIButton(L#bmp,fixalign,fixcrect,notbutton,id,hide,relativealign,m_btnList.GetButton(L#pbuttonname), \
+  relativecrect,hidewidth,L#btnname)); \
 
-  ADDID(ID_FILE_EXIT);
-  ADDID(ID_VIEW_FULLSCREEN);
-  ADDID(ID_ONTOP_ALWAYS);
-  ADDID(ID_ONTOP_NEVER);
-  ADDID(ID_ROTATE_90);
-  ADDID(ID_ROTATE_V);
-  ADDID(ID_FILE_SAVE_IMAGE);
-  ADDID(ID_SHOWTRANSPRANTBAR);
-  ADDID(ID_SHOWCOLORCONTROLBAR);
-  ADDID(ID_VIEW_ZOOM_100);
-  ADDID(ID_VIEW_ZOOM_200);
-  ADDID(ID_VIEW_VF_FROMINSIDE);
-  ADDID(ID_VIEW_VF_FROMOUTSIDE);
-  ADDID(ID_MENU_AUDIO);
-  ADDID(ID_MENU_VIDEO);
-}
 
-CTopToolBarInitialize::~CTopToolBarInitialize()
-{
-}
-
-void CTopToolBarInitialize::FillButtonAttribute()
-{
-  ToolBarButton* button;
-  AddButton* addbutton;
-
-  button = new ToolBarButton(L"CLOSE",L"TOP_CLOSE.BMP", ALIGN_TOPRIGHT, CRect(1,1,1,1), FALSE, ID_FILE_EXIT, TRUE, 0);
-  m_button_vec.push_back(button);
-
-  button = new ToolBarButton(L"RESTORE", L"TOP_RESTORE.BMP", ALIGN_TOPRIGHT, CRect(1,1,1,1), FALSE, 
-                             ID_VIEW_FULLSCREEN, TRUE, 0, ALIGN_RIGHT, L"CLOSE", CRect(1,1,1,1), FALSE) ;
-  m_button_vec.push_back(button);
-
-  button = new ToolBarButton(L"PINAIL", L"PINAIL.BMP", ALIGN_TOPRIGHT, CRect(1 , 1, 1,1), FALSE, 
-                             ID_ONTOP_ALWAYS, FALSE, 0, ALIGN_RIGHT,  L"CLOSE", CRect(1,1,1,1), TRUE);
-  addbutton = new AddButton(ALIGN_RIGHT, L"RESTORE", CRect(1,1,1,1));
-  button->m_addbuttonvec.push_back(addbutton);
-  m_button_vec.push_back(button);
-
-  button = new ToolBarButton(L"PINAIL2", L"PINAIL2.BMP", ALIGN_TOPRIGHT, CRect(1,1,1,1), FALSE, 
-                               ID_ONTOP_NEVER, TRUE, 0,  ALIGN_RIGHT,  L"CLOSE", CRect(1,1,1,1), TRUE);
-  addbutton = new AddButton(ALIGN_RIGHT,  L"RESTORE", CRect(1,1,1,1));
-  button->m_addbuttonvec.push_back(addbutton);
-  m_button_vec.push_back(button);
-
-  button = new ToolBarButton(L"FULLSCREEN", L"TOP_FULLSCREEN.BMP", ALIGN_TOPRIGHT, CRect(1,1,1,1), FALSE, 
-                               ID_VIEW_FULLSCREEN, FALSE, 0, ALIGN_RIGHT,  L"PINAIL", CRect(1,1,1,1), TRUE);
-  addbutton = new AddButton(ALIGN_RIGHT, L"PINAIL2", CRect(1,1,1,1));
-  button->m_addbuttonvec.push_back(addbutton);
-  m_button_vec.push_back(button);
-/*
-  buttonstruct = new ToolBarButton(L"ROTATE", L"TOP_ROTATE.BMP", ALIGN_TOPRIGHT, CRect(1,1,1,1), FALSE, 
-                                   ID_ROTATE_90, TRUE, 0, ALIGN_RIGHT, L"RESTORE", CRect(1,1,1,1), TRUE);
-  addbutton = new AddButton(ALIGN_RIGHT, L"PINAIL", CRect(1,1,1,1));
-  buttonstruct->m_addbuttonvec.push_back(addbutton);
-  addbutton = new AddButton(ALIGN_RIGHT, L"PINAIL1", CRect(1,1,1,1));
-  buttonstruct->m_addbuttonvec.push_back(addbutton);
-  addbutton = new AddButton(ALIGN_RIGHT, L"FULLSCREEN", CRect(1,1,1,1));
-  buttonstruct->m_addbuttonvec.push_back(addbutton);
-  m_button_vec.push_back(buttonstruct);
-
-  buttonstruct = new ToolBarButton(L"FLIP", L"TOP_FLIP.BMP", ALIGN_TOPRIGHT, CRect(1,1,1,1), FALSE, 
-                                   ID_ROTATE_V, TRUE, 0, ALIGN_RIGHT, L"RESTORE", CRect(1,1,1,1), TRUE);
-  addbutton = new AddButton(ALIGN_RIGHT, L"PINAIL", CRect(1,1,1,1));
-  buttonstruct->m_addbuttonvec.push_back(addbutton);
-  addbutton = new AddButton(ALIGN_RIGHT, L"PINAIL2", CRect(1,1,1,1));
-  buttonstruct->m_addbuttonvec.push_back(addbutton);
-  addbutton = new AddButton(ALIGN_RIGHT, L"FULLSCREEN", CRect(1,1,1,1));
-  buttonstruct->m_addbuttonvec.push_back(addbutton);
-  addbutton = new AddButton(ALIGN_RIGHT, L"ROTATE", CRect(1,1,1,1));
-  buttonstruct->m_addbuttonvec.push_back(addbutton);
-  m_button_vec.push_back(buttonstruct);*/ // BMP has been deleted;
-
-  button = new ToolBarButton(L"CAPTURE", L"TOP_CAPTURE.BMP", ALIGN_TOPRIGHT, CRect(1 , 1, 1,1), FALSE, 
-                             ID_FILE_SAVE_IMAGE, FALSE, 0, ALIGN_RIGHT, L"RESTORE", CRect(1,1,1,1), TRUE);
-  addbutton = new AddButton(ALIGN_RIGHT, L"PINAIL", CRect(1,1,1,1));
-  button->m_addbuttonvec.push_back(addbutton);
-  addbutton = new AddButton(ALIGN_RIGHT, L"PINAIL2", CRect(1,1,1,1));
-  button->m_addbuttonvec.push_back(addbutton);
-  addbutton = new AddButton(ALIGN_RIGHT, L"FULLSCREEN", CRect(1,1,1,1));
-  button->m_addbuttonvec.push_back(addbutton);
-  addbutton = new AddButton(ALIGN_RIGHT, L"ROTATE", CRect(1,1,1,1));
-  button->m_addbuttonvec.push_back(addbutton);
-  addbutton = new AddButton(ALIGN_RIGHT, L"FLIP", CRect(1,1,1,1));
-  button->m_addbuttonvec.push_back(addbutton);
-  m_button_vec.push_back(button); 
-
-  button = new ToolBarButton(L"TRANS", L"TOP_TRANS.BMP", ALIGN_TOPRIGHT, CRect(1,1,1,1), FALSE, 
-                             ID_SHOWTRANSPRANTBAR, TRUE, 0, ALIGN_RIGHT, L"CAPTURE", CRect(1,1,1,1), FALSE);
-  m_button_vec.push_back(button);
-
-  button = new ToolBarButton(L"GAMMA", L"TOP_GAMMA.BMP", ALIGN_TOPRIGHT, CRect(1,1,1,1), FALSE, 
-                             ID_SHOWCOLORCONTROLBAR, FALSE, 0, ALIGN_RIGHT, L"CAPTURE", CRect(1,1,1,1), TRUE);
-  addbutton = new AddButton(ALIGN_RIGHT, L"TRANS", CRect(1,1,1,1));
-  button->m_addbuttonvec.push_back(addbutton);
-  m_button_vec.push_back(button);
-
-  button = new ToolBarButton(L"1X", L"TOP_1X.BMP", ALIGN_TOPLEFT, CRect(1,1,1,1), FALSE,
-                             ID_VIEW_ZOOM_100, FALSE, 0);
-  m_button_vec.push_back(button);
-
-  button = new ToolBarButton(L"2X", L"TOP_2X.BMP", ALIGN_TOPLEFT, CRect(1,1,1,1), FALSE, 
-                             ID_VIEW_ZOOM_200, FALSE, 0, ALIGN_LEFT, L"1X", CRect(1,1,1,1), FALSE);
-  m_button_vec.push_back(button);
-
-  button = new ToolBarButton(L"NORMAL", L"TOP_NORMAL.BMP", ALIGN_TOPLEFT, CRect(1,1,1,1), FALSE, 
-                             ID_VIEW_VF_FROMINSIDE, FALSE, 0, ALIGN_LEFT, L"2X", CRect(1,1,1,1), FALSE);
-  m_button_vec.push_back(button);
-
-  button = new ToolBarButton(L"NORMALWIDER", L"TOP_NORMAL_WIDER.BMP", ALIGN_TOPLEFT, CRect(1,1,1,1), FALSE, 
-                             ID_VIEW_VF_FROMINSIDE, TRUE, 0, ALIGN_LEFT, L"2X", CRect(1,1,1,1), FALSE);
-  m_button_vec.push_back(button);
-
-  button = new ToolBarButton(L"LETTERBOX", L"TOP_LETTERBOX.BMP", ALIGN_TOPLEFT, CRect(1,1,1,1), FALSE, 
-                             ID_VIEW_VF_FROMOUTSIDE, TRUE, 0, ALIGN_LEFT, L"2X", CRect(1,1,1,1), FALSE);
-  m_button_vec.push_back(button);
-
-  button = new ToolBarButton(L"LETTERBOXWIDER", L"TOP_LETTERBOX_WIDER.BMP", ALIGN_TOPLEFT, CRect(1,1,1,1), FALSE, 
-                             ID_VIEW_VF_FROMOUTSIDE, TRUE, 0, ALIGN_LEFT, L"2X", CRect(1,1,1,1), FALSE);
-  m_button_vec.push_back(button);
-
-  button = new ToolBarButton(L"AUDIO", L"TOP_AUDIO.BMP", ALIGN_TOPLEFT, CRect(1,1,1,1), FALSE, 
-                             ID_MENU_AUDIO, FALSE, 0, ALIGN_LEFT, L"LETTERBOX", CRect(5,1,1,1), TRUE);
-  addbutton = new AddButton(ALIGN_LEFT, L"LETTERBOXWIDER", CRect(5,1,1,1));
-  button->m_addbuttonvec.push_back(addbutton);
-  addbutton = new AddButton(ALIGN_LEFT, L"NORMALWIDER", CRect(5,1,1,1));
-  button->m_addbuttonvec.push_back(addbutton);
-  addbutton = new AddButton( ALIGN_LEFT, L"NORMAL", CRect(5,1,1,1));
-  button->m_addbuttonvec.push_back(addbutton);
-  m_button_vec.push_back(button);
-
-  button = new ToolBarButton(L"VIDEO", L"TOP_VIDEO.BMP", ALIGN_TOPLEFT, CRect(1,1,1,1), FALSE, 
-                             ID_MENU_VIDEO, FALSE, 0, ALIGN_LEFT, L"AUDIO", CRect(1,1,1,1), FALSE);
-  m_button_vec.push_back(button);
-}
+#define CONFIGADDALIGN(pbtnname,relativealign,pbuttonname,relativecrect) \
+  m_btnList.GetButton(L#pbtnname)->addAlignRelButton(relativealign,m_btnList.GetButton(L#pbuttonname),relativecrect);
 
 // CPlayerToolTopBar
 
@@ -157,7 +27,8 @@ IMPLEMENT_DYNAMIC(CPlayerToolTopBar, CWnd)
 CPlayerToolTopBar::CPlayerToolTopBar():
 m_hovering(0),
 m_pbtnList(&m_btnList),
-m_nHeight(20)
+m_nHeight(20),
+m_bSendStatusMsg(false)
 {
 }
 
@@ -269,10 +140,20 @@ BOOL CPlayerToolTopBar::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 					case ID_SHOWTRANSPRANTBAR:
 						toolTip = ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_TRANSPARENT_CONTROL_BAR);
 						break;
-					
 					case ID_SHOWCOLORCONTROLBAR:
 						toolTip = ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_BRIGHT_CONTROL);
 						break;
+          case ID_PLAYBACK_LOOP_PLAYLIST:
+            toolTip = ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_NOCYCLE_CONTROL);
+            break;
+          case ID_PLAYBACK_LOOP_RANDOM:
+            toolTip = ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_SINGLECYCLE_CONTROL);
+            break;
+          case ID_PLAYBACK_LOOP_CURRENT:
+            toolTip = ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_ALLCYCLE_CONTROL);
+            break;
+          case ID_PLAYBACK_LOOP_NORMAL:
+            toolTip = ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_RANDOM_CONTROL);
 					default:
 						toolTip = ResStr(m_nItemToTrack);
 						break;
@@ -318,10 +199,20 @@ int CPlayerToolTopBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	m_nLogDPIY = pFrame->m_nLogDPIY;
 
-  m_topbar_button.SetBtnList(&m_btnList);
-  m_topbar_button.HackTopToolBar(&btnClose);
-  m_topbar_button.SetCfgPath(L"skins\\TopToolBarButton.dat");
-  m_topbar_button.ButtonInitialize();
+  GUIConfigManage cfgfile;
+  ButtonManage  cfgbtn;
+  cfgfile.SetCfgFilePath(L"skins\\TopToolBarButton.dat");
+  cfgfile.ReadFromFile();
+  if (cfgfile.IsFileExist())
+  {
+    cfgbtn.SetParse(cfgfile.GetCfgString(), &m_btnList);
+    cfgbtn.ParseConfig();
+    
+  }
+  else
+    DefaultButtonManage();
+  
+  btnClose = m_btnList.GetButton(L"CLOSE");
 
   m_toolTip.Create(this);
 	m_ti.cbSize = sizeof(m_ti);
@@ -363,7 +254,14 @@ void CPlayerToolTopBar::UpdateButtonStat(){
 	BOOL fullscreen = pFrame->m_fFullScreen;
 	BOOL bCaptionHidden = pFrame->IsCaptionMenuHidden();
 	
-	m_btnList.SetHideStat( ID_ONTOP_NEVER , !ontop );
+  CRect rc;
+  GetWindowRect(&rc);
+  long iWidth = rc.Width();
+  CMainFrame* pfrm = ((CMainFrame*)AfxGetMainWnd());
+  double skinsRate = (double)pfrm->m_lMinFrameWidth / 310;
+  m_btnList.SetCurrentHideState(rc.Width(),skinsRate,m_nLogDPIY);
+
+  m_btnList.SetHideStat( ID_ONTOP_NEVER , !ontop );
 	m_btnList.SetHideStat( ID_ONTOP_ALWAYS , ontop );
 
 	m_btnList.SetHideStat( ID_FILE_EXIT , !fullscreen && !bCaptionHidden );
@@ -378,13 +276,13 @@ void CPlayerToolTopBar::UpdateButtonStat(){
 	m_btnList.SetHideStat( L"TOP_NORMAL_WIDER.BMP" , pFrame->m_fScreenHigherThanVideo || !bViewFROMOUTSIDE);
 	m_btnList.SetHideStat( L"TOP_NORMAL.BMP" , !pFrame->m_fScreenHigherThanVideo || !bViewFROMOUTSIDE);
 
-/*
+
 	m_btnList.SetHideStat( L"TOP_NORMAL_WIDER.BMP" , pFrame->m_fScreenHigherThanVideo || bViewFROMOUTSIDE);
 	m_btnList.SetHideStat( L"TOP_NORMAL.BMP" , !pFrame->m_fScreenHigherThanVideo || bViewFROMOUTSIDE);
 	m_btnList.SetHideStat( L"TOP_LETTERBOX_WIDER.BMP" , pFrame->m_fScreenHigherThanVideo || !bViewFROMOUTSIDE);
 	m_btnList.SetHideStat( L"TOP_NORMAL.BMP" , !pFrame->m_fScreenHigherThanVideo || !bViewFROMOUTSIDE);
 
-	*/
+	
 	if(s.htpcmode){
 		m_btnList.SetHideStat(L"TOP_RESTORE.BMP", 1);
 		//m_btnList.SetHideStat( L"PINAIL.BMP" ,1 );
@@ -396,6 +294,86 @@ void CPlayerToolTopBar::UpdateButtonStat(){
 
   if(AfxGetMyApp()->IsVista() && s.bUserAeroUI())
     m_btnList.SetHideStat(L"TOP_TRANS.BMP", TRUE);
+
+
+  if (pFrame->m_wndPlaylistBar.GetCount() == 0)
+  {
+    m_btnList.SetHideStat(L"TOP_ALLCYCLE.BMP", TRUE);
+    m_btnList.SetHideStat(L"TOP_RANDOM.BMP", TRUE);
+    m_btnList.SetHideStat(L"TOP_SINGLECYCLE.BMP", TRUE);
+    m_btnList.SetHideStat(L"TOP_NOCYCLE.BMP", TRUE);
+  }
+  else if (pFrame->m_wndPlaylistBar.GetCount() == 1)
+  {
+    
+    switch (pFrame->m_nLoopSetting)
+    {
+    case ID_PLAYBACK_LOOP_CURRENT:
+      m_btnList.SetHideStat(L"TOP_ALLCYCLE.BMP", TRUE);
+      m_btnList.SetHideStat(L"TOP_RANDOM.BMP", TRUE);
+      m_btnList.SetHideStat(L"TOP_NOCYCLE.BMP", TRUE);
+      break;
+    case ID_PLAYBACK_LOOP_PLAYLIST:
+      m_btnList.SetHideStat(L"TOP_RANDOM.BMP", TRUE);
+      m_btnList.SetHideStat(L"TOP_SINGLECYCLE.BMP", TRUE);
+      m_btnList.SetHideStat(L"TOP_NOCYCLE.BMP", TRUE);
+      break;
+    default:
+      m_btnList.SetHideStat(L"TOP_SINGLECYCLE.BMP", TRUE);
+      m_btnList.SetHideStat(L"TOP_RANDOM.BMP", TRUE);
+      m_btnList.SetHideStat(L"TOP_ALLCYCLE.BMP", TRUE);
+      ::SendMessage(pFrame->m_hWnd, WM_COMMAND, MAKEWPARAM(ID_PLAYBACK_LOOP_NORMAL, 0), 0);
+      break;
+    }
+  }
+  else if (pFrame->m_wndPlaylistBar.GetCount() > 1)
+  {
+    switch (pFrame->m_nLoopSetting)
+    {
+    case ID_PLAYBACK_LOOP_PLAYLIST:
+      m_btnList.SetHideStat(L"TOP_RANDOM.BMP", TRUE);
+      m_btnList.SetHideStat(L"TOP_SINGLECYCLE.BMP", TRUE);
+      m_btnList.SetHideStat(L"TOP_NOCYCLE.BMP", TRUE);
+      break;
+    case ID_PLAYBACK_LOOP_RANDOM:
+      m_btnList.SetHideStat(L"TOP_ALLCYCLE.BMP", TRUE);
+      m_btnList.SetHideStat(L"TOP_SINGLECYCLE.BMP", TRUE);
+      m_btnList.SetHideStat(L"TOP_NOCYCLE.BMP", TRUE);
+      break;
+    case ID_PLAYBACK_LOOP_CURRENT:
+      m_btnList.SetHideStat(L"TOP_ALLCYCLE.BMP", TRUE);
+      m_btnList.SetHideStat(L"TOP_RANDOM.BMP", TRUE);
+      m_btnList.SetHideStat(L"TOP_NOCYCLE.BMP", TRUE);
+      break;
+    case ID_PLAYBACK_LOOP_NORMAL:
+      m_btnList.SetHideStat(L"TOP_RANDOM.BMP", TRUE);
+      m_btnList.SetHideStat(L"TOP_SINGLECYCLE.BMP", TRUE);
+      m_btnList.SetHideStat(L"TOP_ALLCYCLE.BMP", TRUE);
+      break;
+    }
+  }
+
+  // send status message
+  if (m_bSendStatusMsg)
+  {
+    switch (pFrame->m_nLoopSetting)
+    {
+    case ID_PLAYBACK_LOOP_NORMAL:
+      pFrame->SendStatusMessage(ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_NOCYCLE_CONTROL), 3000);
+      break;
+    case ID_PLAYBACK_LOOP_PLAYLIST:
+      pFrame->SendStatusMessage(ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_ALLCYCLE_CONTROL), 3000);
+      break;
+    case ID_PLAYBACK_LOOP_CURRENT:
+      pFrame->SendStatusMessage(ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_SINGLECYCLE_CONTROL), 3000);
+      break;
+    case ID_PLAYBACK_LOOP_RANDOM:
+      pFrame->SendStatusMessage(ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_RANDOM_CONTROL), 3000);
+      break;
+    }
+
+    m_bSendStatusMsg = false;
+  }
 }
 void CPlayerToolTopBar::OnMove(int x, int y)
 {
@@ -523,7 +501,10 @@ void CPlayerToolTopBar::OnLButtonUp(UINT nFlags, CPoint point)
 	UINT ret = m_btnList.OnHitTest(xpoint,rc,false);
 	if( m_btnList.HTRedrawRequired ){
 		if(ret)
+    {
 			pFrame->PostMessage( WM_COMMAND, ret);
+      m_bSendStatusMsg = true;
+    }
     m_toolTip.SendMessage(TTM_TRACKACTIVATE, FALSE, (LPARAM)&m_ti);
 		
 		Invalidate();
@@ -802,4 +783,81 @@ void CPlayerToolTopBar::OnActivateApp(BOOL bActive, DWORD dwThreadID)
 	CWnd::OnActivateApp(bActive, dwThreadID);
 
 	// TODO: Add your message handler code here
+}
+
+void CPlayerToolTopBar::DefaultButtonManage()
+{
+  CONFIGBUTTON(CLOSE,TOP_CLOSE.BMP,ALIGN_TOPRIGHT,CRect(1,1,1,1),0,ID_FILE_EXIT,FALSE,0,0,0,CRect(0,0,0,0))
+
+  CONFIGBUTTON(RESTORE,TOP_RESTORE.BMP,ALIGN_TOPRIGHT,CRect(1,1,1,1),0,ID_VIEW_FULLSCREEN,FALSE,0,ALIGN_RIGHT,CLOSE,CRect(1,1,1,1))
+
+  CONFIGBUTTON(PINAIL,PINAIL.BMP,ALIGN_TOPRIGHT,CRect(1,1,1,1),0,ID_ONTOP_ALWAYS,FALSE,0,ALIGN_RIGHT,CLOSE,CRect(1,1,1,1))
+  CONFIGADDALIGN(PINAIL,ALIGN_RIGHT,RESTORE,CRect(1,1,1,1))
+
+  CONFIGBUTTON(PINAIL2,PINAIL2.BMP,ALIGN_TOPRIGHT,CRect(1,1,1,1),0,ID_ONTOP_NEVER,FALSE,0,ALIGN_RIGHT,CLOSE,CRect(1,1,1,1))
+  CONFIGADDALIGN(PINAIL2,ALIGN_RIGHT,RESTORE,CRect(1,1,1,1))
+
+  CONFIGBUTTON(FULLSCREEN,TOP_FULLSCREEN.BMP,ALIGN_TOPRIGHT,CRect(1,1,1,1),0,ID_VIEW_FULLSCREEN,FALSE,0,ALIGN_RIGHT,PINAIL,CRect(1,1,1,1))
+  CONFIGADDALIGN(FULLSCREEN,ALIGN_RIGHT,PINAIL2,CRect(1,1,1,1))
+
+  AppSettings& s = AfxGetAppSettings();
+/*	CSUIButton* btnFlip = NULL;
+	if(bExtenedBtn){
+		CSUIButton* btnRotate  = new CSUIButton(L"TOP_ROTATE.BMP" , ALIGN_TOPRIGHT, CRect(1 , 1, 1,1)  , 0, ID_ROTATE_90, FALSE, ALIGN_RIGHT, btnFull  , CRect(1,1,1,1),0,L"ROTATE") ;
+		btnRotate->addAlignRelButton( ALIGN_RIGHT, btnRestore  , CRect(1,1,1,1)  );
+		btnRotate->addAlignRelButton( ALIGN_RIGHT, btnPin1  , CRect(1,1,1,1)  );
+		btnRotate->addAlignRelButton( ALIGN_RIGHT, btnPin2  , CRect(1,1,1,1)  );
+		m_btnList.AddTail(btnRotate);
+	}
+	if(0){//s.iSVPRenderType == 0
+		
+		btnFlip = new CSUIButton(L"TOP_FLIP.BMP" , ALIGN_TOPRIGHT, CRect(1 , 1, 1,1)  , 0, ID_ROTATE_V, FALSE, ALIGN_RIGHT,btnFull , CRect(1,1,1,1),0,L"FLIP");
+		btnFlip->addAlignRelButton( ALIGN_RIGHT, btnRestore  , CRect(1,1,1,1)  );
+		btnFlip->addAlignRelButton( ALIGN_RIGHT, btnPin1  , CRect(1,1,1,1)  );
+		btnFlip->addAlignRelButton( ALIGN_RIGHT, btnPin2  , CRect(1,1,1,1)  );
+		m_btnList.AddTail( btnFlip  );
+
+	}*/
+
+  CONFIGBUTTON(CAPTURE,TOP_CAPTURE.BMP,ALIGN_TOPRIGHT,CRect(1,1,1,1),0,ID_FILE_SAVE_IMAGE,FALSE,0,ALIGN_RIGHT,FULLSCREEN,CRect(1,1,1,1))
+  CONFIGADDALIGN(CAPTURE,ALIGN_RIGHT,RESTORE,CRect(1,1,1,1))
+  CONFIGADDALIGN(CAPTURE,ALIGN_RIGHT,PINAIL,CRect(1,1,1,1))
+  CONFIGADDALIGN(CAPTURE,ALIGN_RIGHT,PINAIL2,CRect(1,1,1,1))
+
+  if(AfxGetMyApp()->IsVista() && s.bUserAeroUI())
+    CONFIGBUTTON(TRANS,TOP_TRANS.BMP,ALIGN_TOPRIGHT,CRect(1,1,1,1),0,ID_SHOWTRANSPRANTBAR,FALSE,0,ALIGN_RIGHT,CAPTURE,CRect(1,1,1,1))
+
+  CONFIGBUTTON(GAMMA,TOP_GAMMA.BMP,ALIGN_TOPRIGHT,CRect(1,1,1,1),0,ID_SHOWCOLORCONTROLBAR,FALSE,0,ALIGN_RIGHT,CAPTURE,CRect(1,1,1,1))
+  CONFIGADDALIGN(GAMMA,ALIGN_RIGHT,TRANS,CRect(1,1,1,1))
+
+  CONFIGBUTTON(ALLCYCLE, TOP_ALLCYCLE.BMP, ALIGN_TOPRIGHT, CRect(1,1,1,1), 0, ID_PLAYBACK_LOOP_CURRENT, FALSE, 0, ALIGN_RIGHT, GAMMA, CRect(1,1,1,1))
+  CONFIGBUTTON(RANDOM, TOP_RANDOM.BMP, ALIGN_TOPRIGHT, CRect(1,1,1,1), 0, ID_PLAYBACK_LOOP_NORMAL, FALSE, 0, ALIGN_RIGHT, GAMMA, CRect(1,1,1,1))
+  CONFIGBUTTON(SINGLECYCLE, TOP_SINGLECYCLE.BMP, ALIGN_TOPRIGHT, CRect(1,1,1,1), 0, ID_PLAYBACK_LOOP_RANDOM, FALSE, 0, ALIGN_RIGHT, GAMMA, CRect(1,1,1,1))
+  CONFIGBUTTON(NOCYCLE, TOP_NOCYCLE.BMP, ALIGN_TOPRIGHT, CRect(1,1,1,1), 0, ID_PLAYBACK_LOOP_PLAYLIST, FALSE, 0, ALIGN_RIGHT, GAMMA, CRect(1,1,1,1))
+
+	
+/*
+#define ID_VIEW_VF_STRETCH              838
+#define ID_VIEW_VF_FROMINSIDE           839
+#define ID_VIEW_VF_FROMOUTSIDE          840
+#define ID_VIEW_VF_KEEPASPECTRATIO      841*/
+
+  CONFIGBUTTON(TOP1X,TOP_1X.BMP,ALIGN_TOPLEFT,CRect(1,1,1,1),0,ID_VIEW_ZOOM_100,FALSE,0,0,0,CRect(0,0,0,0))
+  
+  CONFIGBUTTON(TOP2X,TOP_2X.BMP,ALIGN_TOPLEFT,CRect(1,1,1,1),0,ID_VIEW_ZOOM_200,FALSE,0,ALIGN_LEFT,TOP1X,CRect(1,1,1,1))
+
+  CONFIGBUTTON(NORMAL,TOP_NORMAL.BMP,ALIGN_TOPLEFT,CRect(1,1,1,1),0,ID_VIEW_VF_FROMINSIDE,FALSE,0,ALIGN_LEFT,TOP2X,CRect(1,1,1,1))
+
+  CONFIGBUTTON(NORMALWIDER,TOP_NORMAL_WIDER.BMP,ALIGN_TOPLEFT,CRect(1,1,1,1),0,ID_VIEW_VF_FROMINSIDE,TRUE,0,ALIGN_LEFT,TOP2X,CRect(1,1,1,1))
+
+  CONFIGBUTTON(LETTERBOX,TOP_LETTERBOX.BMP,ALIGN_TOPLEFT,CRect(1,1,1,1),0,ID_VIEW_VF_FROMOUTSIDE,TRUE,0,ALIGN_LEFT,TOP2X,CRect(1,1,1,1))
+
+  CONFIGBUTTON(LETTERBOXWIDER,TOP_LETTERBOX_WIDER.BMP,ALIGN_TOPLEFT,CRect(1,1,1,1),0,ID_VIEW_VF_FROMOUTSIDE,TRUE,0,ALIGN_LEFT,TOP2X,CRect(1,1,1,1))
+
+  CONFIGBUTTON(AUDIO,TOP_AUDIO.BMP,ALIGN_TOPLEFT,CRect(1,1,1,1),0,ID_MENU_AUDIO,FALSE,0,ALIGN_LEFT,LETTERBOX,CRect(5,1,1,1))
+  CONFIGADDALIGN(AUDIO,ALIGN_LEFT,LETTERBOXWIDER,CRect(5,1,1,1))
+	CONFIGADDALIGN(AUDIO,ALIGN_LEFT,NORMALWIDER,CRect(5,1,1,1))
+  CONFIGADDALIGN(AUDIO,ALIGN_LEFT,NORMAL,CRect(5,1,1,1))
+
+  CONFIGBUTTON(VIDEO,TOP_VIDEO.BMP,ALIGN_TOPLEFT,CRect(1,1,1,1),0,ID_MENU_VIDEO,FALSE,0,ALIGN_LEFT,AUDIO,CRect(1,1,1,1))
 }

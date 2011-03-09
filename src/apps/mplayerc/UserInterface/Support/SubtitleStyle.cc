@@ -4,193 +4,110 @@
 #include "../../mplayerc.h"
 #include "../../resource.h"
 
-// built-in definition for main subtitle styles
-static SubtitleStyle::STYLEPARAM g_styleparams[] = 
-{
-  {SubtitleStyle::SimHei, L"SimHei", 20, 0x00FFFFFF, 1, 0x00333333, 0, 0, 90, 50},
-  {SubtitleStyle::SimHei, L"SimHei", 20, 0x00FFFFFF, 2, 0x00333333, 1, 0x00333333, 90, 50},
-  {SubtitleStyle::SimHei, L"SimHei", 20, 0x00FFFFFF, 1, 0x00996633, 1, 0x00333333, 90, 50},
-#ifdef _WINDOWS_
-  {SubtitleStyle::SimSun, L"SimSun", 16, 0x00FFFFFF, 2, 0x00996633, 0, 0x00000000, 90, 50},
-  {SubtitleStyle::SimHei, L"SimHei", 20, 0x0000ecec, 2, 0x000f0f0f, 1, 0x00333333, 90, 50},
-  {SubtitleStyle::KaiTi, L"KaiTi", 16, 0x0086E1FF, 2, 0x0006374A, 1, 0x00333333, 90, 50},
-#endif
-};
-
-// built-in definition for secondary subtitle styles
-static SubtitleStyle::STYLEPARAM g_secstyleparams[] =
-{
-  {SubtitleStyle::None, L"", 0, 0, 0, 0, 0, 0, 10, 50},
-  {SubtitleStyle::None, L"", 0, 0, 0, 0, 0, 0, 91, 50}
-};
-
+// defined for use with EnumFontProc
 static bool g_styleparams_inited = false;
 
-const static wchar_t* fontlist_simhei[] = {
-  L"Microsoft YaHei",
-  L"WenQuanYi Micro Hei",
-  L"SimHei",
-  L"\x5FAE\x8F6F\x96C5\x9ED1",              // Chinese for "Microsoft YaHei"
-  L"\x6587\x6CC9\x9A7F\x5FAE\x737C\x9ED1",  // Chinese for "WenQuanYi Micro Hei"
-  L"\x9ED1\x4F53"                           // Chinese for "SimHei"
-  L"Segoe UI",
-  L"Arial"
-};
-
-const static wchar_t* fontlist_simsun[] = {
-  L"SimSun",
-  L"\x5B8B\x4F53",                          // Chinese for "SimSun"
-  L"Trebuchet MS"
-};
-
-const static wchar_t* fontlist_kaiti[] = {
-  L"KaiTi",
-  L"\x6977\x4F53",                          // Chinese for "KaiTi"
-  L"\x6977\x4F53_GB2312",                   // Chinese for "KaiTi_GB2312"
-  L"Georgia"
-};
-
-std::vector<std::wstring> g_sampletexts;  // text pieces to paint samples in SubtitleStyle::Paint
-
-// defined for use with EnumFontProc
-typedef struct _ENUMPARAMS {
-  int*    fontcount;
-  wchar_t realname[32];
-}ENUMPARAMS;
+static std::vector<SubtitleStyle::STYLEPARAM > g_vtStyleParams;  // main subtitle
+static std::vector<SubtitleStyle::STYLEPARAM > g_vtSecStyleParams; // second subtitle
 
 int CALLBACK EnumFontProc(ENUMLOGFONTEX* lpelfe, NEWTEXTMETRICEX* lpntme, DWORD FontType, LPARAM lParam)
 {
-  // EnumFontProc is called only when a font is enumerated, so we knew
-  // this font is available.
-  ENUMPARAMS* ep = (ENUMPARAMS*)lParam;
-  (*ep->fontcount)++;
-  wcscpy_s(ep->realname, 32, lpelfe->elfFullName);
-  return 0; // stop enum
+  // enum only Chinese font(font name is also Chinese)
+  //if ((unsigned char)(*(lpelfe->elfFullName)) > (unsigned char)('z'))
+  if (*(lpelfe->elfFullName) > L'~')
+  {
+    // dynamic create main and second subtitle styles
+    SubtitleStyle::STYLEPARAM styleparam;
+    ::wcscpy(styleparam.fontname, lpelfe->elfFullName);
+    styleparam.fontsize = 20;  // default is 20, will be changed
+    styleparam.fontcolor = 0x00FFFFFF; // will be changed
+    styleparam.strokesize = 1;
+    styleparam.strokecolor = 0x00333333;
+    styleparam.shadowoffset = 1;
+    styleparam.shadowcolor = 0x00333333;
+    styleparam.pos_vert = 90;
+    styleparam.pos_horz = 50;
+
+    g_vtStyleParams.push_back(styleparam);
+    g_vtSecStyleParams.push_back(styleparam);
+  }
+
+  return 1;
 }
 
-bool SubtitleStyle::GetStyleParams(int index_main, int index_sec, STYLEPARAM** param_refout)
+void InitStyleParams()
 {
-  // initialize fonts first time this method is called
   if (!g_styleparams_inited)
   {
-    // this process determines if our preferred fonts are available in system
-    // if so, we choose to copy the preferred font name to STYLEPARAM.fontname
-#ifdef _WINDOWS_
+    // init main and second subtitle style
     WTL::CDC      dc;
     WTL::CLogFont lf;
     dc.CreateCompatibleDC();
 
-    lf.lfCharSet        = DEFAULT_CHARSET;
+    lf.lfCharSet        = GB2312_CHARSET;  // only enum Chinese font
     lf.lfPitchAndFamily = 0;
+    lf.lfFaceName[0] = '\0';
+    ::EnumFontFamiliesEx(dc, &lf, (FONTENUMPROC)EnumFontProc, 0, 0);
 
-    int stylecount = GetStyleCount();
-    for (int i = 0; i < stylecount; i++)
-    {
-      wchar_t** fontlist = NULL;
-      int fontlist_count = 0;
-      switch (g_styleparams[i]._fontname)
-      {
-      case SimHei:
-        fontlist = (wchar_t**)fontlist_simhei;
-        fontlist_count = sizeof(fontlist_simhei)/sizeof(fontlist_simhei[0]);
-        break;
-      case SimSun:
-        fontlist = (wchar_t**)fontlist_simsun;
-        fontlist_count = sizeof(fontlist_simsun)/sizeof(fontlist_simsun[0]);
-        break;
-      case KaiTi:
-        fontlist = (wchar_t**)fontlist_kaiti;
-        fontlist_count = sizeof(fontlist_kaiti)/sizeof(fontlist_kaiti[0]);
-        break;
-      }
-
-      if (!fontlist)
-        continue;
-
-      for (int j = 0; j < fontlist_count; j++)
-      {
-        int font_count = 0;
-        ENUMPARAMS ep = {&font_count, L""};
-        wcscpy_s(lf.lfFaceName, 32, fontlist[j]);
-        ::EnumFontFamiliesEx(dc, &lf, (FONTENUMPROC)EnumFontProc, (LPARAM)&ep, 0);
-        if (font_count > 0)
-        {
-          wcscpy_s(g_styleparams[i].fontname, 128, ep.realname);
-          break;
-        }
-      }
-    }
-#endif
     g_styleparams_inited = true;
   }
+}
 
-  if (index_main < 0 || index_main >= sizeof(g_styleparams)/sizeof(g_styleparams[0]))
-    return false;
+std::vector<std::wstring> g_sampletexts;  // text pieces to paint samples in SubtitleStyle::Paint
 
-  *param_refout = (STYLEPARAM*)&g_styleparams[index_main];
+bool SubtitleStyle::GetStyleParams(int index_main, int index_sec, STYLEPARAM** param_refout)
+{
+  // initialize fonts first time this method is called
+  InitStyleParams();
 
-  // are we retrieving a secondary entry?
-  if (index_sec >= 0)
+  // get the main style
+  if (index_main >= 0 && index_main <= g_vtStyleParams.size() - 1)
   {
-    if (index_sec < 0 || index_sec >= sizeof(g_secstyleparams)/sizeof(g_secstyleparams[0]))
-      return false;
+    // get the default style, but will change its size and color according to the appsettings
+    *param_refout = &(g_vtStyleParams[index_main]);
 
-    *param_refout = (STYLEPARAM*)&g_secstyleparams[index_sec];
+    AppSettings &s = AfxGetAppSettings();
+    if (s.subdefstyle.fontSize > 0)
+      (*param_refout)->fontsize = s.subdefstyle.fontSize;
+    (*param_refout)->fontcolor = s.subdefstyle.colors[0];
+
     return true;
   }
 
-  return true;
+  // are we retrieving a secondary entry?
+  if (index_sec >= 0 && index_sec <= g_vtSecStyleParams.size() - 1)
+  {
+    *param_refout = &g_vtSecStyleParams[index_sec];
+
+    AppSettings &s = AfxGetAppSettings();
+    if (s.subdefstyle2.fontSize > 0)
+      (*param_refout)->fontsize = s.subdefstyle2.fontSize;
+    (*param_refout)->fontcolor = s.subdefstyle2.colors[0];
+
+    return true;
+  }
+
+  return false;
 }
 
 int SubtitleStyle::GetStyleCount(bool secondary /* = false */)
 {
+  // initialize fonts first time this method is called
+  InitStyleParams();
+
   if (secondary)
-    return sizeof(g_secstyleparams)/sizeof(g_secstyleparams[0]);
-  return sizeof(g_styleparams)/sizeof(g_styleparams[0]);
+    return g_vtSecStyleParams.size();
+  return g_vtStyleParams.size();
 }
 
-int SubtitleStyle::DetectFontType(std::wstring fontname)
-{
-  for (int fonttype = SimHei; fonttype < KaiTi; fonttype++)
-  {
-    wchar_t** fontlist = NULL;
-    int fontlist_count = 0;
-    switch (fonttype)
-    {
-    case SimHei:
-      fontlist = (wchar_t**)fontlist_simhei;
-      fontlist_count = sizeof(fontlist_simhei)/sizeof(fontlist_simhei[0]);
-      break;
-    case SimSun:
-      fontlist = (wchar_t**)fontlist_simsun;
-      fontlist_count = sizeof(fontlist_simsun)/sizeof(fontlist_simsun[0]);
-      break;
-    case KaiTi:
-      fontlist = (wchar_t**)fontlist_kaiti;
-      fontlist_count = sizeof(fontlist_kaiti)/sizeof(fontlist_kaiti[0]);
-      break;
-    }
-
-    if (!fontlist)
-      continue;
-
-    for (int i = 0; i < fontlist_count; i++)
-    {
-      if (fontname == fontlist[i])
-        return fonttype;
-    }
-  }
-
-  return None;
-}
 void SubtitleStyle::Paint(HDC dc, RECT* rc, int index_main, int index_sec, bool selected /* = false */)
 {
-  STYLEPARAM* sp_main = NULL;
-  STYLEPARAM* sp_sec = NULL;
-  if (!GetStyleParams(index_main, -1, &sp_main))
-    return;
-  if (index_sec >= 0)
-    GetStyleParams(index_main, index_sec, &sp_sec);
+  STYLEPARAM* sp_main = 0;
+  STYLEPARAM* sp_sec = 0;
+  GetStyleParams(index_main, -1, &sp_main);
+  GetStyleParams(-1, index_sec, &sp_sec);
+  if ((!sp_main && !sp_sec) || (sp_main && sp_sec))
+    return;  // only allow paint main subtitle or second subtitle
 
   // there is a trick in this routine to achieve better appearance with GDI font rendering
   // we create a memory dc that is 4x as large as the target rectangle, paint the large
@@ -235,13 +152,6 @@ void SubtitleStyle::Paint(HDC dc, RECT* rc, int index_main, int index_sec, bool 
     ::GradientFill(mdc, vert, 2, &gRect, 1, GRADIENT_FILL_RECT_V);
   }
 
-  // create font
-  WTL::CLogFont lf;
-  lf.lfHeight   = sp_main->fontsize*5/2;
-  lf.lfQuality  = ANTIALIASED_QUALITY;
-  lf.lfCharSet  = DEFAULT_CHARSET;
-  wcscpy_s(lf.lfFaceName, 32, sp_main->fontname);
-
   // load sample text
   if (g_sampletexts.size() == 0)
   {
@@ -249,30 +159,18 @@ void SubtitleStyle::Paint(HDC dc, RECT* rc, int index_main, int index_sec, bool 
     text.LoadString(IDS_SUBTITLESTYLES);
     Strings::Split(text, L"|", g_sampletexts);
   }
+  std::wstring sSampleText = sp_main ? g_sampletexts[0] : g_sampletexts[1];
 
-  // determine actual text to paint
-  std::wstring sample_text = g_sampletexts[0];
-  // paint secondary subtitle?
-  if (index_sec >= 0)
-  {
-    if (sp_sec->pos_vert <= 50)
-      sample_text = g_sampletexts[1];
-    else if (sp_sec->pos_vert > sp_main->pos_vert)
-    {
-      sample_text += L"\r\n";
-      sample_text += g_sampletexts[1];
-      // in secondary subtitle painting, we choose to make the font smaller a bit
-      lf.lfHeight = lf.lfHeight*2/3;
-    }
-    else
-    {
-      sample_text = g_sampletexts[1];
-      sample_text += L"\r\n";
-      sample_text += g_sampletexts[0];
-      // in secondary subtitle painting, we choose to make the font smaller a bit
-      lf.lfHeight = lf.lfHeight*2/3;
-    }
-  }
+  // some pre-paint jobs
+  STYLEPARAM *pPaintStyleParam = 0;
+  pPaintStyleParam = sp_main ? sp_main : sp_sec;
+
+  // create font
+  WTL::CLogFont lf;
+  lf.lfHeight   = pPaintStyleParam->fontsize * 5 / 2;
+  lf.lfQuality  = ANTIALIASED_QUALITY;
+  lf.lfCharSet  = DEFAULT_CHARSET;
+  wcscpy_s(lf.lfFaceName, 32, pPaintStyleParam->fontname);
 
   WTL::CFont font;
   font.CreateFontIndirect(&lf);
@@ -283,18 +181,18 @@ void SubtitleStyle::Paint(HDC dc, RECT* rc, int index_main, int index_sec, bool 
   // determine vertical and horizontal center of the |rc|
   WTL::CRect rc_textraw(0, 0, bmp_width, bmp_height);
   mdc.SetBkMode(TRANSPARENT);
-  mdc.DrawText(sample_text.c_str(), -1, &rc_textraw, DT_CALCRECT|DT_EDITCONTROL);
+  mdc.DrawText(sSampleText.c_str(), -1, &rc_textraw, DT_CALCRECT|DT_EDITCONTROL);
   int offset_y = (bmp_height - rc_textraw.Height())/2;
   int offset_x = ::GetSystemMetrics(SM_CXSMICON);
   rc_textraw.OffsetRect(offset_x, offset_y);
   // now we have |rc_textraw| as the center position of sample text
 
   // paint logic 1. shadow
-  if (sp_main->shadowoffset > 0)
+  if (pPaintStyleParam->shadowoffset > 0)
   {
-    rc_textraw.OffsetRect(sp_main->shadowoffset*3, sp_main->shadowoffset*3);
+    rc_textraw.OffsetRect(pPaintStyleParam->shadowoffset*3, pPaintStyleParam->shadowoffset*3);
     // blend the shadow lighter a bit
-    int color = (0x00FFFFFF + sp_main->shadowcolor)/2;
+    int color = (0x00FFFFFF + pPaintStyleParam->shadowcolor)/2;
     mdc.SetTextColor(color);
     // we choose to apply 1 pixel stroke for the shadow to make it look nicer
     // * + = original text dot position
@@ -307,16 +205,16 @@ void SubtitleStyle::Paint(HDC dc, RECT* rc, int index_main, int index_sec, bool 
     for (int i = 0; i < sizeof(seq_x)/sizeof(seq_x[0]); i++)
     {
       rc_textraw.OffsetRect(seq_x[i], seq_y[i]);
-      mdc.DrawText(sample_text.c_str(), -1, &rc_textraw, DT_EDITCONTROL);
+      mdc.DrawText(sSampleText.c_str(), -1, &rc_textraw, DT_EDITCONTROL);
     }
     rc_textraw.OffsetRect(-1, 0);
-    rc_textraw.OffsetRect(-sp_main->shadowoffset*3, -sp_main->shadowoffset*3);
+    rc_textraw.OffsetRect(-pPaintStyleParam->shadowoffset*3, -pPaintStyleParam->shadowoffset*3);
   }
 
   // paint logic 2. stroke
-  if (sp_main->strokesize > 0)
+  if (pPaintStyleParam->strokesize > 0)
   {
-    mdc.SetTextColor(sp_main->strokecolor);
+    mdc.SetTextColor(pPaintStyleParam->strokecolor);
     // we only support two kinds of stroke, 1 pixel, and 2 pixels
     // for 1 pixel stroke, simulation strategy is:
     // * + = original text dot position
@@ -324,14 +222,14 @@ void SubtitleStyle::Paint(HDC dc, RECT* rc, int index_main, int index_sec, bool 
     // [S] [S] [S]          [1] [5] [2]
     // [S] [+] [S]    =>    [7] [+] [8]
     // [S] [S] [S]          [4] [6] [3]
-    if (sp_main->strokesize == 1)
+    if (pPaintStyleParam->strokesize == 1)
     {
       int seq_x[] = {-1, 2, 0, -2,  1/*5*/, 0, -1, 2};
       int seq_y[] = {-1, 0, 2,  0, -2/*5*/, 2, -1, 0};
       for (int i = 0; i < sizeof(seq_x)/sizeof(seq_x[0]); i++)
       {
         rc_textraw.OffsetRect(seq_x[i], seq_y[i]);
-        mdc.DrawText(sample_text.c_str(), -1, &rc_textraw, DT_EDITCONTROL);
+        mdc.DrawText(sSampleText.c_str(), -1, &rc_textraw, DT_EDITCONTROL);
       }
       rc_textraw.OffsetRect(-1, 0);
     }
@@ -348,15 +246,15 @@ void SubtitleStyle::Paint(HDC dc, RECT* rc, int index_main, int index_sec, bool 
       for (int i = 0; i < sizeof(seq_x)/sizeof(seq_x[0]); i++)
       {
         rc_textraw.OffsetRect(seq_x[i], seq_y[i]);
-        mdc.DrawText(sample_text.c_str(), -1, &rc_textraw, DT_EDITCONTROL);
+        mdc.DrawText(sSampleText.c_str(), -1, &rc_textraw, DT_EDITCONTROL);
       }
       rc_textraw.OffsetRect(2, 0);
     }
   }
 
   // paint logic 3. body
-  mdc.SetTextColor(sp_main->fontcolor);
-  mdc.DrawText(sample_text.c_str(), -1, &rc_textraw, DT_EDITCONTROL);
+  mdc.SetTextColor(pPaintStyleParam->fontcolor);
+  mdc.DrawText(sSampleText.c_str(), -1, &rc_textraw, DT_EDITCONTROL);
 
   // restore context
   mdc.SelectFont(old_font);
@@ -366,6 +264,6 @@ void SubtitleStyle::Paint(HDC dc, RECT* rc, int index_main, int index_sec, bool 
   POINT OldOrg = {0};
   ::SetBrushOrgEx(dc, 0, 0, &OldOrg);
   ::StretchBlt(dc, rc->left, rc->top, bmp_width/2, bmp_height/2, 
-    mdc, 0, 0, bmp_width, bmp_height, SRCCOPY);
+               mdc, 0, 0, bmp_width, bmp_height, SRCCOPY);
   mdc.SelectBitmap(old_bmp);
 }

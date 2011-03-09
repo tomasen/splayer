@@ -31,278 +31,22 @@
 #include "MainFrm.h"
 #include <fstream>
 #include "../../svplib/svplib.h"
+#include "GUIConfigManage.h"
+#include "ButtonManage.h"
 
 typedef HRESULT (__stdcall * SetWindowThemeFunct)(HWND hwnd, LPCWSTR pszSubAppName, LPCWSTR pszSubIdList);
-
+#define TIMER_ADPLAYSWITCH 7013
+#define TIMER_ADPLAY 7014
 #define ID_VOLUME_THUMB 126356
 
-CBottomToolBarInitialize::CBottomToolBarInitialize()
-{
+#define CONFIGBUTTON(btnname,bmp,fixalign,fixcrect,notbutton,id,hide,hidewidth,relativealign,pbuttonname,relativecrect) \
+  m_btnList.AddTail(new CSUIButton(L#bmp,fixalign,fixcrect,notbutton,id,hide,relativealign,m_btnList.GetButton(L#pbuttonname), \
+  relativecrect,hidewidth,L#btnname)); \
+  
 
-#define ADDID(x) m_id_map[L#x] = x
+#define CONFIGADDALIGN(pbtnname,relativealign,pbuttonname,relativecrect) \
+  m_btnList.GetButton(L#pbtnname)->addAlignRelButton(relativealign,m_btnList.GetButton(L#pbuttonname),relativecrect);
 
-  ADDID(ID_PLAY_PLAY);
-  ADDID(ID_PLAY_PAUSE);
-  ADDID(ID_PLAY_MANUAL_STOP);
-  ADDID(ID_PLAY_FRAMESTEP);
-  ADDID(ID_PLAY_FWD);
-  ADDID(ID_PLAY_BWD);
-  ADDID(ID_NAVIGATE_SKIPBACK);
-  ADDID(ID_NAVIGATE_SKIPFORWARD);
-  ADDID(ID_SUBTOOLBARBUTTON);
-  ADDID(ID_SUBDELAYDEC);
-  ADDID(ID_SUBDELAYINC);
-  ADDID(ID_VOLUME_MUTE);
-  ADDID(ID_VIEW_OPTIONS);
-  ADDID(ID_VIEW_PLAYLIST);
-  ADDID(ID_FILE_SAVE_IMAGE_AUTO);
-  ADDID(ID_FILE_OPENQUICK);
-  ADDID(ID_VOLUME_THUMB);
-}
-
-CBottomToolBarInitialize::~CBottomToolBarInitialize()
-{
-}
-
-void CBottomToolBarInitialize::FillButtonAttribute()
-{
-  ToolBarButton* button;
-  AddButton* addbutton;
-
-  button = new ToolBarButton(L"VOLUMEBG", L"VOLUME_BG.BMP", ALIGN_TOPRIGHT,
-    CRect(3,-50,15,3), TRUE, 0, FALSE,0);
-  m_button_vec.push_back(button);
-
-  button = new ToolBarButton(L"VOLUMETM", L"VOLUME_TM.BMP", ALIGN_TOPRIGHT,
-    CRect(3,-50,65,3),FALSE,ID_VOLUME_THUMB,FALSE,0);
-  m_button_vec.push_back(button);
-
-  button = new ToolBarButton(L"PLAY", L"BTN_PLAY.BMP", ALIGN_TOPLEFT, CRect(-50,-50,3,3),
-    FALSE,ID_PLAY_PLAY,FALSE,0);
-  m_button_vec.push_back(button);
-
-  button = new ToolBarButton(L"PAUSE",L"BTN_PAUSE.BMP",ALIGN_TOPLEFT,CRect(-50,-50,3,3),
-    FALSE,ID_PLAY_PAUSE,TRUE,0);
-  m_button_vec.push_back(button);
-
-  button = new ToolBarButton(L"STOP",L"BTN_STOP.BMP",ALIGN_TOPLEFT,CRect(-50,-50,3,3),
-    FALSE,ID_PLAY_MANUAL_STOP,FALSE,660,ALIGN_RIGHT,L"PAUSE",
-    CRect(1,1,1,1),TRUE);
-  addbutton = new AddButton(ALIGN_RIGHT, L"PLAY", CRect(1,1,1,1));
-  button->m_addbuttonvec.push_back(addbutton);
-  m_button_vec.push_back(button);
-
-  button = new ToolBarButton(L"STEP",L"BTN_STEP.BMP",ALIGN_TOPLEFT,CRect(-50,-50,3,3),
-    FALSE,ID_PLAY_FRAMESTEP,FALSE,660,ALIGN_LEFT,L"PAUSE",
-    CRect(1,1,1,1),TRUE);
-  addbutton = new AddButton(ALIGN_LEFT,L"PLAY",CRect(1,1,1,1));
-  button->m_addbuttonvec.push_back(addbutton);
-  m_button_vec.push_back(button);
-
-  button = new ToolBarButton(L"FASTFORWORD",L"FAST_FORWORD.BMP",ALIGN_TOPLEFT,CRect(-50,-50,3,3),FALSE,
-    ID_PLAY_FWD,FALSE,440,ALIGN_LEFT,L"PAUSE",CRect(1,1,1,1),TRUE);
-  addbutton = new AddButton(ALIGN_LEFT,L"PLAY",CRect(1,1,1,1));
-  button->m_addbuttonvec.push_back(addbutton);
-  addbutton = new AddButton(ALIGN_LEFT,L"STEP",CRect(1,1,1,1));
-  button->m_addbuttonvec.push_back(addbutton);
-  m_button_vec.push_back(button);
-
-  button = new ToolBarButton(L"FASTBACKWORD",L"FAST_BACKWORD.BMP",ALIGN_TOPLEFT,CRect(-50,-50,3,3),FALSE,ID_PLAY_BWD,FALSE,
-    440,ALIGN_RIGHT,L"PAUSE",CRect(1,1,1,1),TRUE);
-  addbutton = new AddButton(ALIGN_RIGHT,L"PLAY",CRect(1,1,1,1));
-  button->m_addbuttonvec.push_back(addbutton);
-  addbutton = new AddButton(ALIGN_RIGHT,L"STOP",CRect(1,1,1,1));
-  button->m_addbuttonvec.push_back(addbutton);
-  m_button_vec.push_back(button);
-
-  button = new ToolBarButton(L"SHARE",L"BTN_SHARE.BMP", ALIGN_TOPLEFT, CRect(14,-50, 3,3),
-    FALSE,ID_MOVIESHARE,TRUE,0);
-  m_button_vec.push_back(button);
-
-  button = new ToolBarButton(L"PREV",L"BTN_PREV.BMP",ALIGN_TOPLEFT,CRect(-50,-50,3,3),FALSE,ID_NAVIGATE_SKIPBACK,FALSE,
-    440,ALIGN_RIGHT,L"FASTBACKWORD",CRect(1,1,1,1),TRUE);
-  addbutton = new AddButton(ALIGN_RIGHT,L"PLAY",CRect(1,1,1,1));
-  button->m_addbuttonvec.push_back(addbutton);
-  addbutton = new AddButton(ALIGN_RIGHT,L"PAUSE",CRect(1,1,1,1));
-  button->m_addbuttonvec.push_back(addbutton);
-  m_button_vec.push_back(button);
-
-  button = new ToolBarButton(L"NEXT",L"BTN_NEXT.BMP",ALIGN_TOPLEFT,CRect(-50,-50,3,3),FALSE,
-    ID_NAVIGATE_SKIPFORWARD,FALSE,440,ALIGN_LEFT,L"FASTFORWORD",
-    CRect(1,1,1,1),TRUE);
-  addbutton = new AddButton(ALIGN_LEFT,L"PLAY",CRect(1,1,1,1));
-  button->m_addbuttonvec.push_back(addbutton);
-  addbutton =new AddButton(ALIGN_LEFT,L"PAUSE",CRect(1,1,1,1));
-  button->m_addbuttonvec.push_back(addbutton);
-  m_button_vec.push_back(button);
-
-  button = new ToolBarButton(L"LOGO",L"SPLAYER.BMP",ALIGN_TOPLEFT,CRect(14,-50,3,3),TRUE,0,FALSE,0);
-  m_button_vec.push_back(button);
-
-  button = new ToolBarButton(L"VOLUME",L"VOLUME.BMP",ALIGN_TOPRIGHT,CRect(3,-50,105,3),FALSE,
-    ID_VOLUME_MUTE,FALSE,440,ALIGN_RIGHT,L"VOLUMEBG",CRect(3,3,3,3),FALSE);
-  m_button_vec.push_back(button);
-
-  button = new ToolBarButton(L"MUTED",L"MUTED.BMP",ALIGN_TOPRIGHT,CRect(3,-50,105,3),FALSE,
-    ID_VOLUME_MUTE,TRUE,440,ALIGN_RIGHT,L"VOLUMEBG",CRect(3,3,3,3),FALSE);
-  m_button_vec.push_back(button);
-
-  button = new ToolBarButton(L"SETTING",L"BTN_SETTING.BMP",ALIGN_TOPRIGHT,CRect(-70,-50,105,3),FALSE,
-    ID_VIEW_OPTIONS,TRUE,600,ALIGN_RIGHT,L"MUTED",CRect(3,10,3,10),TRUE);
-  addbutton = new AddButton(ALIGN_RIGHT,L"VOLUME",CRect(3,10,3,10));
-  button->m_addbuttonvec.push_back(addbutton);
-  m_button_vec.push_back(button);
-
-  button = new ToolBarButton(L"PLAYLIST",L"BTN_PLAYLIST.BMP",ALIGN_TOPRIGHT,CRect(3,-50,33,3),FALSE,ID_VIEW_PLAYLIST,
-    FALSE,540,ALIGN_RIGHT,L"SETTING",CRect(3,10,3,10),TRUE);
-  addbutton = new AddButton(ALIGN_RIGHT,L"VOLUME",CRect(3,10,3,10));
-  button->m_addbuttonvec.push_back(addbutton);
-  addbutton = new AddButton(ALIGN_RIGHT,L"MUTED",CRect(3,10,3,10));
-  button->m_addbuttonvec.push_back(addbutton);
-  addbutton = new AddButton(ALIGN_RIGHT,L"VOLUMEBG",CRect(3,10,3,10));
-  button->m_addbuttonvec.push_back(addbutton);
-  m_button_vec.push_back(button);
-
-  button = new ToolBarButton(L"CAPTURE",L"BTN_CAPTURE.BMP",ALIGN_TOPRIGHT,CRect(3,-50,105,3),FALSE,
-    ID_FILE_SAVE_IMAGE_AUTO,TRUE,MAXINT,ALIGN_RIGHT,L"PLAYLIST",
-    CRect(3,10,3,10),FALSE);
-  m_button_vec.push_back(button);
-
-  button = new ToolBarButton(L"OPENFILE",L"BTN_OPENFILE_SMALL.BMP",ALIGN_TOPRIGHT,CRect(3,-50,105,3),FALSE,
-    ID_FILE_OPENQUICK,TRUE,660,ALIGN_RIGHT,L"CAPTURE",CRect(3,10,3,10),TRUE);
-  addbutton = new AddButton(ALIGN_RIGHT,L"PLAYLIST",CRect(3,10,3,10));
-  button->m_addbuttonvec.push_back(addbutton);
-  m_button_vec.push_back(button);
-
-  button = new ToolBarButton(L"SUBSWITCH",L"BTN_SUB.BMP",ALIGN_TOPLEFT,CRect(-23,-50,3,3),FALSE,
-    ID_SUBTOOLBARBUTTON,TRUE,540,ALIGN_RIGHT,L"FASTBACKWORD",CRect(20,10,22,10),
-    TRUE);
-  addbutton = new AddButton(ALIGN_LEFT,L"LOGO",CRect(15,10,10,10));
-  button->m_addbuttonvec.push_back(addbutton);
-  addbutton = new AddButton(ALIGN_RIGHT,L"PREV",CRect(20,10,22,10));
-  button->m_addbuttonvec.push_back(addbutton);
-  m_button_vec.push_back(button);
-
-  button = new ToolBarButton(L"SUBDELAYREDUCE",L"BTN_SUB_DELAY_REDUCE.BMP",ALIGN_TOPLEFT,CRect(-42,-50,3,3),FALSE,
-    ID_SUBDELAYDEC,TRUE,540,ALIGN_RIGHT,L"SUBSWITCH",CRect(2,3,2,3),FALSE);
-  m_button_vec.push_back(button);
-
-  button = new ToolBarButton(L"SUBDELAYINCREASE",L"BTN_SUB_DELAY_INCREASE.BMP",ALIGN_TOPLEFT,CRect(-10,-50,3,3),FALSE,
-    ID_SUBDELAYINC,TRUE,540,ALIGN_LEFT,L"SUBSWITCH",CRect(2,3,2,3),FALSE);
-  m_button_vec.push_back(button);
-
-  button = new ToolBarButton(L"PLAYTIME",ALIGN_TOPLEFT,CRect(52,15,3,3));
-  addbutton = new AddButton(ALIGN_LEFT,L"LOGO",CRect(15,10,10,10));
-  button->m_addbuttonvec.push_back(addbutton);
-  addbutton = new AddButton(ALIGN_LEFT,L"SHARE",CRect(15,10,10,10));
-  button->m_addbuttonvec.push_back(addbutton);
-  m_button_vec.push_back(button);
-}
-
-void CBottomToolBarInitialize::ShowButton(ToolBarButton* tbb,BOOL bl,bool (CPlayerToolBar::*mute)(void),
-                                          CPlayerToolBar* playertoolbar)
-{
-
-  m_pbtnList->SetHideStat(tbb->m_id, tbb->m_bhide);
-
-  switch (tbb->m_id)
-  {
-  case ID_VOLUME_MUTE:
-
-    if((playertoolbar->*mute)())
-    {
-      m_pbtnList->SetHideStat(L"VOLUME.BMP", TRUE);
-      m_pbtnList->SetHideStat(L"MUTED.BMP", FALSE | tbb->m_bhide);
-    }else
-    {
-      m_pbtnList->SetHideStat(L"VOLUME.BMP", FALSE | tbb->m_bhide);
-      m_pbtnList->SetHideStat(L"MUTED.BMP", TRUE);
-    }
-    break;
-  case ID_PLAY_FWD:
-  case ID_PLAY_BWD:
-  case ID_NAVIGATE_SKIPBACK:
-  case ID_NAVIGATE_SKIPFORWARD:
-    if (bl)
-    {
-      m_pbtnList->SetHideStat(tbb->m_id, tbb->m_bhide);
-      m_pbtnList->SetHideStat(ID_NAVIGATE_SKIPBACK , 0);
-      m_pbtnList->SetHideStat(ID_NAVIGATE_SKIPFORWARD , 0);
-    }
-    else
-    {
-      m_pbtnList->SetHideStat(tbb->m_id, tbb->m_bhide);
-      m_pbtnList->SetHideStat(ID_PLAY_FWD , 0);
-      m_pbtnList->SetHideStat(ID_PLAY_BWD , 0);
-    }
-    break;
-  }
-
-}
-
-void CBottomToolBarInitialize::ShowPlayTime(CDC* dc, AppSettings& s, CRect& rcClient, CFont* m_statft,
-                                            CString* m_timerstr)
-{
-  HFONT holdft = (HFONT)dc->SelectObject(*m_statft);
-
-  dc->SetTextColor(s.GetColorFromTheme(_T("ToolBarTimeText"), 0xa0a0a0) );
-  CSize size = dc->GetTextExtent(*m_timerstr);
-  CRect frc;
-  int   textalign;
-  size.cx = min( rcClient.Width() /3, size.cx);
-  for (std::vector<ToolBarButton*>::iterator ite = m_button_vec.begin(); ite != m_button_vec.end();
-    ++ite)
-    if ((*ite)->m_buttonname == L"PLAYTIME")
-    {
-      frc = (*ite)->m_rect1;
-      textalign = (*ite)->m_align1;
-      break;
-    }
-
-  PlayTimeRect(frc, rcClient);
-
-  switch (textalign)
-  {
-  case ALIGN_TOPLEFT:
-    frc = CRect ( rcClient.left + frc.left,
-      rcClient.top + frc.top,
-      rcClient.left + size.cx + frc.left,
-      rcClient.top+ frc.top+size.cy);
-    break;
-  case ALIGN_TOPRIGHT:
-    frc = CRect ( rcClient.right - size.cx - frc.right,
-      rcClient.top + frc.top,
-      rcClient.right-frc.right,
-      rcClient.top+ frc.top+size.cy);
-    break;
-  case ALIGN_BOTTOMLEFT:
-    frc = CRect ( rcClient.left + frc.left,
-      rcClient.bottom - size.cy - frc.bottom,
-      rcClient.left + size.cx + frc.left,
-      rcClient.bottom - frc.bottom);
-    break;
-  case ALIGN_BOTTOMRIGHT:
-    frc = CRect ( rcClient.right - size.cx - frc.right,
-      rcClient.bottom - size.cy - frc.bottom,
-      rcClient.right-frc.right,
-      rcClient.bottom - frc.bottom);
-    break;
-  }
-  ::DrawText(*dc, *m_timerstr, (*m_timerstr).GetLength(), frc,  DT_LEFT|DT_END_ELLIPSIS|DT_SINGLELINE| DT_VCENTER);
-  dc->SelectObject(holdft);
-}
-
-void CBottomToolBarInitialize::PlayTimeRect(CRect& frc, CRect rcClient)
-{
-  if (frc.left < 0)
-    frc.left = (-frc.left)*rcClient.Width()/100;
-  if (frc.right < 0)
-    frc.right = (-frc.right)*rcClient.Width()/100;
-  if (frc.top < 0)
-    frc.top = (-frc.top)*rcClient.Height()/100;
-  if (frc.bottom < 0)
-    frc.bottom = (-frc.top)*rcClient.Height()/100;
-}
 // CPlayerToolBar
 
 IMPLEMENT_DYNAMIC(CPlayerToolBar, CToolBar)
@@ -343,17 +87,31 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 
   GetToolBarCtrl().SetExtendedStyle(TBSTYLE_EX_DRAWDDARROWS);
 
-  m_bottombar_button.SetBtnList(&m_btnList);
-  m_bottombar_button.SetCfgPath(L"skins\\BottomToolBarButton.dat");
-  m_bottombar_button.ButtonInitialize();
-  m_bottombar_button.HackBottomToolBar(&m_btnVolBG, &m_btnVolTm, &btnSubSwitch);
-  m_breadfromfile = m_bottombar_button.ReturnBReadFromFile();
+  GUIConfigManage cfgfile;
+  ButtonManage  cfgbtn;
+  cfgfile.SetCfgFilePath(L"skins\\BottomToolBarButton.dat");
+  cfgfile.ReadFromFile();
+  if (cfgfile.IsFileExist())
+  {
+    cfgbtn.SetParse(cfgfile.GetCfgString(), &m_btnList);
+    cfgbtn.ParseConfig();
+  }
+  else
+    DefaultButtonManage();
 
+  m_btnVolBG = m_btnList.GetButton(L"VOLUMEBG");
+  m_btnVolTm = m_btnList.GetButton(L"VOLUMETM");
+  btnLogo = m_btnList.GetButton(L"LOGO");
+  m_btnplaytime = m_btnList.GetButton(L"PLAYTIME");
 
   cursorHand = ::LoadCursor(NULL, IDC_HAND);
 
+  SetTimer(TIMER_ADPLAY, 100, NULL);
+  SetTimer(TIMER_ADPLAYSWITCH, 2000, NULL);
+
   //GetSystemFontWithScale(&m_statft, 14.0);
   LOGFONT lf;
+
   lf.lfWidth = 0;
   lf.lfHeight = 13;
   lf.lfEscapement = 0;
@@ -429,86 +187,23 @@ void CPlayerToolBar::ArrangeControls()
   double skinsRate = (double)pFrame->m_lMinFrameWidth / 310;
   BOOL isaudio = (pFrame && pFrame->IsSomethingLoaded() && pFrame->m_fAudioOnly)?TRUE:FALSE;
 
-  if (m_breadfromfile)
-  {
-    for (std::vector<ToolBarButton*>::iterator ite = m_bottombar_button.m_button_vec.begin(); 
-      ite != m_bottombar_button.m_button_vec.end();
-      ++ite)
-    {
-      if (iWidth > ((*ite)->m_width * skinsRate * m_nLogDPIY / 96))
-        (*ite)->m_bhide = FALSE;
-      else
-        (*ite)->m_bhide = TRUE;
+  m_btnList.SetCurrentHideState(rc.Width(),skinsRate,m_nLogDPIY);
 
-      m_bottombar_button.ShowButton(*ite,isaudio,&CPlayerToolBar::IsMuted,this);
-    }
-
-    m_btnList.OnSize(rc);
-    return;
-  }
-
-  BOOL hideT1 = TRUE;
-  BOOL hideT15 = TRUE;
-  BOOL hideT2 = TRUE;
-  BOOL hideT3 = TRUE;
-  BOOL hideT4 = TRUE;
-  if( iWidth > (440 * skinsRate * m_nLogDPIY / 96) ){
-    hideT1 = false;
-  }
-  if( iWidth > (480 * skinsRate * m_nLogDPIY / 96) ){
-    hideT15 = false;
-  }
-  if( iWidth > (540 * skinsRate * m_nLogDPIY / 96) ){
-    hideT2 = false;
-  }
-  if( iWidth > (600 * skinsRate * m_nLogDPIY / 96) ){
-    hideT3 = false;
-  }
-  if( iWidth > (660 * skinsRate * m_nLogDPIY / 96) ){
-    hideT4 = false;
-  }
-  if(IsMuted()){
-    m_btnList.SetHideStat(L"VOLUME.BMP", TRUE|hideT1);
-    m_btnList.SetHideStat(L"MUTED.BMP", FALSE|hideT1);
-  }else{
-    m_btnList.SetHideStat(L"VOLUME.BMP", FALSE|hideT1);
-    m_btnList.SetHideStat(L"MUTED.BMP", TRUE|hideT1);
-  }
-
+  if(IsMuted())
+    m_btnList.SetHideStat(L"VOLUME.BMP", TRUE);
+  else
+    //m_btnList.SetHideStat(L"VOLUME.BMP", FALSE|hideT1);
+    m_btnList.SetHideStat(L"MUTED.BMP", TRUE);
+  
   if(pFrame && pFrame->IsSomethingLoaded() && pFrame->m_fAudioOnly)
   {
-    m_btnList.SetHideStat(ID_PLAY_FWD , hideT1);
-    m_btnList.SetHideStat(ID_PLAY_BWD , hideT1);
     m_btnList.SetHideStat(ID_NAVIGATE_SKIPBACK , 0);
     m_btnList.SetHideStat(ID_NAVIGATE_SKIPFORWARD , 0);
     m_btnList.SetHideStat(ID_MOVIESHARE, 1);
-    m_btnList.SetHideStat(ID_VIEW_PLAYLIST , hideT2);
   }
 
   m_btnList.SetHideStat(ID_PLAY_FWD , 0);
   m_btnList.SetHideStat(ID_PLAY_BWD , 0);
-  m_btnList.SetHideStat(ID_NAVIGATE_SKIPBACK , hideT1);
-  m_btnList.SetHideStat(ID_NAVIGATE_SKIPFORWARD , hideT1);
-  m_btnList.SetHideStat(ID_VIEW_PLAYLIST , hideT2);
-
-  m_btnList.SetHideStat(ID_SUBTOOLBARBUTTON , hideT2);
-  m_btnList.SetHideStat(ID_SUBDELAYDEC , hideT2);
-  m_btnList.SetHideStat(ID_SUBDELAYINC , hideT2);
-
-  m_btnList.SetHideStat(ID_FILE_SAVE_IMAGE , hideT4);
-  m_btnList.SetHideStat(ID_VIEW_OPTIONS , hideT3);
-
-
-  m_btnList.SetHideStat(ID_SUBSETFONTBOTH , hideT4);
-  m_btnList.SetHideStat(ID_SUBFONTUPBOTH , hideT4);
-  m_btnList.SetHideStat(ID_SUBFONTDOWNBOTH , hideT4);
-
-  m_btnList.SetHideStat(ID_FILE_OPENQUICK , hideT4);
-
-  m_btnList.SetHideStat(ID_PLAY_FRAMESTEP , hideT4);
-  m_btnList.SetHideStat(ID_PLAY_MANUAL_STOP , hideT4);
-
-
 
   m_btnList.OnSize(rc);
 
@@ -634,24 +329,52 @@ void CPlayerToolBar::OnPaint()
   CRect rcBottomSqu = rcClient;
   rcBottomSqu.top = rcBottomSqu.bottom - 10;
 
-
   CRect rcUpperSqu = rcClient;
 
   hdc.FillSolidRect(rcUpperSqu, s.GetColorFromTheme(_T("ToolBarBG"), NEWUI_COLOR_TOOLBAR_UPPERBG));
   CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
 
-  if (!m_timerstr.IsEmpty() && pFrame && pFrame->IsSomethingLoaded())
-    m_bottombar_button.ShowPlayTime(&hdc, s, rcClient, &m_statft, &m_timerstr);
 
+  HFONT holdft = (HFONT)hdc.SelectObject(m_statft);
+
+  if (!m_timerstr.IsEmpty() && pFrame && pFrame->IsSomethingLoaded())
+  {
+    hdc.SetTextColor(s.GetColorFromTheme(_T("ToolBarTimeText"), 0xffffff) );
+    if (!m_adctrl.GetVisible())
+      m_btnplaytime->SetString(m_timerstr);
+  }
 
   UpdateButtonStat();
 
   int volume = min( m_volctrl.GetPos() , m_volctrl.GetRangeMax() );
   m_btnVolTm->m_rcHitest.MoveToXY(m_btnVolBG->m_rcHitest.left +  ( m_btnVolBG->m_rcHitest.Width() * volume / m_volctrl.GetRangeMax() ) - m_btnVolTm->m_rcHitest.Width()/2
     , m_btnVolBG->m_rcHitest.top + (m_btnVolBG->m_rcHitest.Height() -  m_btnVolTm->m_rcHitest.Height() ) / 2 );
-
+  
   m_btnList.PaintAll(&hdc, rc);
 
+  std::wstring sTimeBtnString;
+  if (m_adctrl.GetVisible())
+    sTimeBtnString = m_adctrl.GetCurAd();
+  else
+    sTimeBtnString = (LPCTSTR)m_timerstr;
+
+  CSize size = dc.GetTextExtent(sTimeBtnString.c_str());
+
+  size.cx =  m_btnList.GetRelativeMinLength(rc, m_btnplaytime) - 10;
+
+  if (size.cx < 20)
+    size.cx = rcClient.Width() /3 - 10;
+
+  if (m_btnplaytime)
+  {
+    m_btnplaytime->SetStrSize(size);
+    m_btnplaytime->OnPaint(&hdc, rc);
+  }
+
+  m_adctrl.SetRect(m_btnplaytime->m_rcHitest - rc.TopLeft(), &hdc);
+  m_adctrl.Paint(&hdc);  
+  
+  hdc.SelectObject(holdft);
 }
 void CPlayerToolBar::UpdateButtonStat(){
   CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
@@ -671,6 +394,7 @@ void CPlayerToolBar::UpdateButtonStat(){
   m_btnList.SetDisableStat( ID_SUBDELAYINC, !bSub);
   m_btnList.SetDisableStat( ID_SUBDELAYDEC, !bSub);
   ReCalcBtnPos();
+  
 }
 void CPlayerToolBar::OnNcPaint() // when using XP styles the NC area isn't drawn for our toolbar...
 {
@@ -692,7 +416,7 @@ void CPlayerToolBar::SetStatusTimer(CString str , UINT timer )
   if(m_timerstr == str) return;
 
   str.Trim();
-
+  
   if(holdStatStr && !timer){
     m_timerqueryedstr = str;
   }else{
@@ -887,6 +611,17 @@ void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point)
   CRect rc;
   GetWindowRect(&rc);
   point += rc.TopLeft() ;
+
+  // if move on ads
+  static const HCURSOR hOrgCursor = (HCURSOR)::GetClassLong(GetSafeHwnd(), GCL_HCURSOR);
+  if (m_adctrl.GetVisible())
+  {
+    CRect rcAd = m_btnplaytime->m_rcHitest - rc.TopLeft();
+    CPoint pi = point;
+    ScreenToClient(&pi);
+    if (rcAd.PtInRect(pi))
+      SetCursor(cursorHand);
+  }
 
   if(m_nItemToTrack == ID_VOLUME_THUMB && m_bMouseDown)
   {
@@ -1135,6 +870,16 @@ void CPlayerToolBar::OnLButtonDown(UINT nFlags, CPoint point)
   CRect rc;
   GetWindowRect(&rc);
 
+  // if on ad
+  if (m_adctrl.GetVisible())
+  {
+    CRect rcAd = m_btnplaytime->m_rcHitest - rc.TopLeft();
+    if (rcAd.PtInRect(point))
+    {
+      SetCursor(cursorHand);
+    }
+  }
+
   point += rc.TopLeft() ;
   UINT ret = m_btnList.OnHitTest(point,rc,true);
   if( m_btnList.HTRedrawRequired ){
@@ -1177,6 +922,17 @@ void CPlayerToolBar::OnLButtonUp(UINT nFlags, CPoint point)
 
   CRect rc;
   GetWindowRect(&rc);
+
+  // if click on ads
+  if (m_adctrl.GetVisible())
+  {
+    CRect rcAd = m_btnplaytime->m_rcHitest - rc.TopLeft();
+    if (rcAd.PtInRect(point))
+    {
+      SetCursor(cursorHand);
+      m_adctrl.OnAdClick();
+    }
+  }
 
   CPoint xpoint = point + rc.TopLeft() ;
   UINT ret = m_btnList.OnHitTest(xpoint,rc,false);
@@ -1248,6 +1004,39 @@ void CPlayerToolBar::OnLButtonUp(UINT nFlags, CPoint point)
 }
 void CPlayerToolBar::OnTimer(UINT nIDEvent){
   switch(nIDEvent){
+    case TIMER_ADPLAY:
+      {
+        // If no ads exists, then didn't show ads, otherwise show ads
+        if (m_adctrl.IsAdsEmpty())
+        {
+          break;
+        }
+
+        m_adctrl.AllowAnimate(true);
+
+        Invalidate();
+        break;
+      }
+    case TIMER_ADPLAYSWITCH:
+      {
+        // If no ads exists, then didn't show ads, otherwise show ads
+        if (m_adctrl.IsAdsEmpty())
+        {
+          break;
+        }
+
+        // 查看广告是否显示完，如果还在显示则等待下一次2秒
+        if (m_btnplaytime->GetString().IsEmpty() && m_adctrl.IsCurAdShownDone())
+          m_adctrl.SetVisible(false);
+        else if (!m_btnplaytime->GetString().IsEmpty())
+        {
+          m_btnplaytime->SetString(L"");
+          m_adctrl.SetVisible(true);
+          m_adctrl.ShowNextAd();
+        }
+
+        break;
+      }
     case TIMER_STATERASER:
       KillTimer(TIMER_STATERASER);
       if(!m_timerqueryedstr.IsEmpty()){
@@ -1369,6 +1158,89 @@ BOOL CPlayerToolBar::PreTranslateMessage(MSG* pMsg)
   return CToolBar::PreTranslateMessage(pMsg);
 }
 
+void CPlayerToolBar::DefaultButtonManage()
+{
+  
+  CONFIGBUTTON(PLAY,BTN_PLAY.BMP,ALIGN_TOPLEFT,CRect(-50 , -50, 3,3),0,ID_PLAY_PLAY,FALSE,0,0,0,CRect(0,0,0,0))
+
+  CONFIGBUTTON(PAUSE,BTN_PAUSE.BMP,ALIGN_TOPLEFT, CRect(-50 , -50, 3,3) , 0,ID_PLAY_PAUSE, FALSE,0,0,0,CRect(0,0,0,0))
+
+  CONFIGBUTTON(STOP,BTN_STOP.BMP,ALIGN_TOPLEFT, CRect(-50,-50,3,3),0,ID_PLAY_MANUAL_STOP,FALSE,660,ALIGN_RIGHT,PAUSE,DEFAULT_MARGIN_TOBUTTON)
+  CONFIGADDALIGN(STOP,ALIGN_RIGHT, PLAY , DEFAULT_MARGIN_TOBUTTON)
+
+  CONFIGBUTTON(STEP,BTN_STEP.BMP,ALIGN_TOPLEFT,CRect(-50,-50,3,3), 0,ID_PLAY_FRAMESTEP,FALSE,660,ALIGN_LEFT,PAUSE,DEFAULT_MARGIN_TOBUTTON)
+  CONFIGADDALIGN(STEP,ALIGN_LEFT,PLAY, DEFAULT_MARGIN_TOBUTTON)
+
+  CONFIGBUTTON(FASTFORWORD,FAST_FORWORD.BMP,ALIGN_TOPLEFT,CRect(-50,-50,3,3),0,ID_PLAY_FWD,FALSE,440,ALIGN_LEFT,PAUSE,DEFAULT_MARGIN_TOBUTTON)
+  CONFIGADDALIGN(FASTFORWORD,ALIGN_LEFT,PLAY,DEFAULT_MARGIN_TOBUTTON)
+  CONFIGADDALIGN(FASTFORWORD,ALIGN_LEFT,STEP, DEFAULT_MARGIN_TOBUTTON)
+
+  CONFIGBUTTON(FASTBACKWORD,FAST_BACKWORD.BMP,ALIGN_TOPLEFT,CRect(-50,-50,3,3),0,ID_PLAY_BWD,FALSE,440,ALIGN_RIGHT,PAUSE,DEFAULT_MARGIN_TOBUTTON)
+  CONFIGADDALIGN(FASTBACKWORD,ALIGN_RIGHT,PLAY,DEFAULT_MARGIN_TOBUTTON)
+  CONFIGADDALIGN(FASTBACKWORD,ALIGN_RIGHT,STOP,DEFAULT_MARGIN_TOBUTTON)
+  
+  CONFIGBUTTON(PREV,BTN_PREV.BMP,ALIGN_TOPLEFT,CRect(-50,-50,3,3),0,ID_NAVIGATE_SKIPBACK,FALSE,440,ALIGN_RIGHT,FASTBACKWORD,DEFAULT_MARGIN_TOBUTTON)
+  CONFIGADDALIGN(PREV,ALIGN_RIGHT,PLAY,DEFAULT_MARGIN_TOBUTTON)
+  CONFIGADDALIGN(PREV,ALIGN_RIGHT,PAUSE,DEFAULT_MARGIN_TOBUTTON)
+
+  CONFIGBUTTON(NEXT,BTN_NEXT.BMP,ALIGN_TOPLEFT,CRect(-50,-50,3,3),0,ID_NAVIGATE_SKIPFORWARD,FALSE,440,ALIGN_LEFT,FASTFORWORD,DEFAULT_MARGIN_TOBUTTON)
+  CONFIGADDALIGN(NEXT,ALIGN_LEFT,PLAY,DEFAULT_MARGIN_TOBUTTON)
+  CONFIGADDALIGN(NEXT,ALIGN_LEFT,PAUSE,DEFAULT_MARGIN_TOBUTTON)
+
+  CONFIGBUTTON(LOGO,SPLAYER.BMP,ALIGN_TOPLEFT,CRect(15,-50,3,3),TRUE,0,FALSE,0,0,0,CRect(0,0,0,0))
+
+  //CONFIGBUTTON(SHARE,BTN_SHARE.BMP,ALIGN_TOPLEFT,CRect(15,-50,3,3),FALSE,ID_MOVIESHARE,FALSE,0,0,0,CRect(0,0,0,0))
+
+/*
+  CSUIButton* btnSubFont =   new CSUIButton(L"BTN_FONT.BMP" , ALIGN_TOPLEFT, CRect(-35 , -50, 3,3)  , 0, ID_SUBSETFONTBOTH, TRUE, ALIGN_RIGHT, btnPrev , CRect(20 , 10 , 20, 10) );
+  btnSubFont->addAlignRelButton(ALIGN_RIGHT, btnFFBack   , CRect(20 , 10 , 20, 10) );
+  m_btnList.AddTail( btnSubFont );
+
+  CSUIButton* btnSubFontPlus =   new CSUIButton(L"BTN_FONT_PLUS.BMP" , ALIGN_TOPLEFT, CRect(-10 , -40, 3,3)  , 0, ID_SUBFONTUPBOTH , TRUE, ALIGN_LEFT, btnSubFont , CRect(3 , 10 , 3, 10) );
+  m_btnList.AddTail( btnSubFontPlus );
+
+  CSUIButton* btnSubFontMinus =   new CSUIButton(L"BTN_FONT_MINUS.BMP" , ALIGN_TOPLEFT, CRect(-10 , -55, 3,3)  , 0, ID_SUBFONTDOWNBOTH , TRUE, ALIGN_LEFT, btnSubFont , CRect(3 , 10 , 3, 10) );
+  btnSubFontMinus->addAlignRelButton(ALIGN_TOP, btnSubFontPlus ,  CRect(3 , 0 , 3, 0) );
+  m_btnList.AddTail( btnSubFontMinus );*/
+
+  CONFIGBUTTON(SUBSWITCH,BTN_SUB.BMP,ALIGN_TOPLEFT,CRect(-23,-50,3,3),0,ID_SUBTOOLBARBUTTON,FALSE,560,ALIGN_RIGHT,FASTBACKWORD,CRect(20,10,22,10))
+  CONFIGADDALIGN(SUBSWITCH,ALIGN_LEFT,LOGO,CRect(15,10,10,10))
+  CONFIGADDALIGN(SUBSWITCH,ALIGN_RIGHT,PREV,CRect(20,10,22,10))
+
+  CONFIGBUTTON(SUBREDUCE,BTN_SUB_DELAY_REDUCE.BMP,ALIGN_TOPLEFT,CRect(-42,-50,3,3),0,ID_SUBDELAYDEC,FALSE,560,ALIGN_RIGHT,SUBSWITCH,CRect(2,3,2,3))
+  
+  CONFIGBUTTON(SUBINCREASE,BTN_SUB_DELAY_INCREASE.BMP,ALIGN_TOPLEFT,CRect(-10,-50,3,3),0,ID_SUBDELAYINC,FALSE,560,ALIGN_LEFT,SUBSWITCH,CRect(2,3,2,3))
+
+  CONFIGBUTTON(VOLUMEBG,VOLUME_BG.BMP,ALIGN_TOPRIGHT,CRect(3,-50,15,3),TRUE,0,FALSE,0,0,0,CRect(0,0,0,0))
+
+  CONFIGBUTTON(MUTED,MUTED.BMP,ALIGN_TOPRIGHT,CRect(3,-50,105,3),FALSE,ID_VOLUME_MUTE,FALSE,440,ALIGN_RIGHT,VOLUMEBG,CRect(3,3,3,3))
+
+  CONFIGBUTTON(VOLUME,VOLUME.BMP,ALIGN_TOPRIGHT,CRect(3,-50,105,3),FALSE,ID_VOLUME_MUTE,FALSE,440,ALIGN_RIGHT,VOLUMEBG,CRect(3,3,3,3))
+
+  CONFIGBUTTON(SETTING,BTN_SETTING.BMP,ALIGN_TOPRIGHT,CRect(-70,-50,105,3),FALSE,ID_VIEW_OPTIONS,FALSE,600,ALIGN_RIGHT,MUTED,CRect(3,10,3,10))
+  CONFIGADDALIGN(SETTING,ALIGN_RIGHT,VOLUME,CRect(3,10,3,10))
+
+  CONFIGBUTTON(PLAYLIST,BTN_PLAYLIST.BMP,ALIGN_TOPRIGHT,CRect(3,-50,33,3),FALSE,ID_VIEW_PLAYLIST,FALSE,540,ALIGN_RIGHT,SETTING,CRect(3,10,3,10))
+  CONFIGADDALIGN(PLAYLIST,ALIGN_RIGHT,VOLUME,CRect(3,10,3,10))
+  CONFIGADDALIGN(PLAYLIST,ALIGN_RIGHT,MUTED,CRect(3,10,3,10))
+  CONFIGADDALIGN(PLAYLIST,ALIGN_RIGHT,VOLUMEBG,CRect(3,10,3,10))
+/*
+  CSUIButton* btnCapture = new CSUIButton(L"BTN_CAPTURE.BMP" , ALIGN_TOPRIGHT, CRect(3 , -50, 105,3)  , FALSE, ID_FILE_SAVE_IMAGE_AUTO, TRUE , ALIGN_RIGHT, btnPlayList , CRect(3 , 10 , 3, 10)) ;
+  m_btnList.AddTail( btnCapture );*/
+
+  CONFIGBUTTON(OPENFILE,BTN_OPENFILE_SMALL.BMP,ALIGN_TOPRIGHT,CRect(3,-50,105,3),FALSE,ID_FILE_OPENQUICK,FALSE,660,ALIGN_RIGHT,PLAYLIST,CRect(3,10,3,10))
+
+  CONFIGBUTTON(VOLUMETM,VOLUME_TM.BMP,ALIGN_TOPRIGHT,CRect(3,-50,65,3),FALSE,ID_VOLUME_THUMB,FALSE,0,0,0,CRect(0,0,0,0))
+
+  
+
+  CONFIGBUTTON(SHARE,BTN_SHARE.BMP,ALIGN_TOPLEFT,CRect(10,-50,3,3),FALSE,ID_MOVIESHARE,FALSE,0,0,0,CRect(0,0,0,0))
+  //CONFIGADDALIGN(SHARE, ALIGN_RIGHT, FASTBACKWORD, CRect(1,1,1,1))
+  //CONFIGADDALIGN(SHARE, ALIGN_RIGHT, SUBINCREASE, CRect(1,1,1,1))
+
+  CONFIGBUTTON(PLAYTIME, "NOBMP" ,ALIGN_TOPLEFT,CRect(10,-50,105,3),TRUE,0,FALSE,0,ALIGN_LEFT,SHARE,CRect(10,10,10,10))
+  
+}
 /*
 BottomToolBarButton.dat
 

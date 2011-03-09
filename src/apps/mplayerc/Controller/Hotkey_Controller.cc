@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "../Model/HotkeySchemeParser.h"
 #include "Hotkey_Controller.h"
+#include <sstream>
 
 HotkeyController::HotkeyController(void)
 {
@@ -121,5 +122,24 @@ void HotkeyController::EnumAvailableSchemes(std::vector<std::wstring>& files_out
     wcscat_s(path, 256, (*it).c_str());
     parser.ReadFromFile(path);
     names_out.push_back(parser.GetSchemeName());
+  }
+
+  // Modify the names_out when has multiple names
+  // Make the names in names_out to be unique
+  for (size_t i = 0; i < names_out.size(); ++i)
+  {
+    int nSuffix = 1;
+    for (size_t j = i + 1; j < names_out.size(); ++j)
+    {
+      if (names_out[j] == names_out[i])
+      {
+        std::wstringstream ssSuffix;
+        ssSuffix << nSuffix;
+
+        names_out[j] += L"_" + ssSuffix.str();
+
+        ++nSuffix;
+      }
+    }
   }
 }

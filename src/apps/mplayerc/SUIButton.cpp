@@ -1,11 +1,12 @@
-#include "SUIButton.h"
+﻿#include "SUIButton.h"
 #include "../../svplib/svplib.h"
 #include "../../svplib/SVPToolBox.h"
 #include <ResLoader.h>
 
 CSUIButton::CSUIButton(LPCTSTR szBmpName, int iAlign, CRect marginTownd 
 					   , BOOL bNotButton, UINT htMsgID, BOOL bHide 
-					   ,UINT alignToButton  , CSUIButton * relativeToButton , CRect marginToBtn ) : 
+					   ,UINT alignToButton  , CSUIButton * relativeToButton , CRect marginToBtn
+             ,int  hidewidth, CString buttonname) : 
 m_stat(0) ,
 m_lastBtnDownStat(0)
 {
@@ -18,12 +19,19 @@ m_lastBtnDownStat(0)
 	m_htMsgID = htMsgID;
 
   ResLoader rlResLoader;
-  HBITMAP hBitmap = rlResLoader.LoadBitmap(szBmpName);
-  this->Attach(hBitmap);
-	
-	m_szBmpName = szBmpName;
+  
+  if (szBmpName != L"NOBMP")
+  {
+    HBITMAP hBitmap = rlResLoader.LoadBitmap(szBmpName);
+    
+    this->Attach(hBitmap);
+  }
+
+  
+  m_szBmpName = szBmpName;
 	m_hide = bHide;
-	
+	m_hidewidth = hidewidth;
+  m_buttonname = buttonname;
 	CountDPI();
 	
 	addAlignRelButton(alignToButton, relativeToButton , marginToBtn);
@@ -43,15 +51,16 @@ void CSUIButton::CountDPI(){
 }
 CSUIButton::CSUIButton(UINT Imgid, int iAlign, CRect marginTownd 
 					   , BOOL bNotButton, UINT htMsgID, BOOL bHide 
-					   ,UINT alignToButton  , CSUIButton * relativeToButton  , CRect marginToBtn) : 
+					   ,UINT alignToButton  , CSUIButton * relativeToButton  , CRect marginToBtn
+             ,int  hidewidth, CString buttonname) : 
 m_stat(0) 
 {
 	m_NotButton = bNotButton;
 	m_marginTownd  = marginTownd;
 	m_iAlign = iAlign;
 	m_htMsgID = htMsgID;
-	
-	if( m_png.LoadFromResource( Imgid ) ){
+
+  if( m_png.LoadFromResource( Imgid ) ){
 		if(m_png.IsDIBSection()){
 			this->Attach((HBITMAP)m_png);
 		}
@@ -61,6 +70,8 @@ m_stat(0)
 	//m_szBmpName = MAKEINTRESOURCE(Imgid);
 
 	m_hide = bHide;
+  m_hidewidth = hidewidth;
+  m_buttonname = buttonname;
 	addAlignRelButton(alignToButton, relativeToButton , marginToBtn);
 
 }
@@ -79,7 +90,7 @@ LONG CSUIButton::CalcRealMargin(LONG Mlen, LONG bW, LONG wW)
 }
 
 int CSUIButton::OnHitTest(CPoint pt , int bLBtnDown){
-	if(m_hide || m_NotButton || m_stat == 3)
+	if(m_currenthide || m_NotButton || m_stat == 3)
   {
 		return 0;
 	}
@@ -158,37 +169,39 @@ void CSUIButton::OnSize(CRect WndRect)
 			
 			break;
 	}
+  
+
 	
 	POSITION pos = btnAlignList.GetHeadPosition();
 	while(pos){
 		CBtnAlign* bAlignInfo = btnAlignList.GetNext(pos);
 		CSUIButton* bRBtn = (CSUIButton*) bAlignInfo->bBtn;
-		if( bRBtn->m_hide ){
+		if( bRBtn->m_currenthide ){
 			continue;
 		}
 
-		if( bAlignInfo->iAlign&ALIGN_TOP){
+		if( bAlignInfo->iAlign==ALIGN_TOP){
 			int mTop = bAlignInfo->marginToBtn.top;
 			if(mTop <= 0){ mTop = DEFAULT_MARGIN; }
 			if( (bRBtn->m_rcHitest.bottom + mTop) > m_rcHitest.top){
 				m_rcHitest.MoveToY( bRBtn->m_rcHitest.bottom  + mTop);
 			}
 		}
-		if(bAlignInfo->iAlign&ALIGN_BOTTOM){
+		if(bAlignInfo->iAlign==ALIGN_BOTTOM){
 			int mBottom = bAlignInfo->marginToBtn.bottom;
 			if(mBottom <= 0){ mBottom = DEFAULT_MARGIN; }
 			if( (bRBtn->m_rcHitest.top - mBottom)  < m_rcHitest.bottom){
 				m_rcHitest.MoveToY( bRBtn->m_rcHitest.top - mBottom - m_rcHitest.Height() );
 			}
 		}
-		if(bAlignInfo->iAlign&ALIGN_LEFT){
+		if(bAlignInfo->iAlign==ALIGN_LEFT){
 			int mLeft = bAlignInfo->marginToBtn.left;
 			if(mLeft <= 0){ mLeft = DEFAULT_MARGIN; }
 			if( (bRBtn->m_rcHitest.right + mLeft) > m_rcHitest.left){
 				m_rcHitest.MoveToX( bRBtn->m_rcHitest.right + mLeft);
 			}
 		}
-		if(bAlignInfo->iAlign&ALIGN_RIGHT){
+		if(bAlignInfo->iAlign==ALIGN_RIGHT){
 			int mRight = bAlignInfo->marginToBtn.right;
 			if(mRight <= 0){ mRight = DEFAULT_MARGIN; }
 			if( (bRBtn->m_rcHitest.left - mRight)  < m_rcHitest.right){
@@ -204,8 +217,15 @@ void CSUIButton::OnSize(CRect WndRect)
 	//SVP_LogMsg(szLog);
 }
 void CSUIButton::OnPaint(CMemoryDC *hDC, CRect rc){
-	if(m_hide) return;
-	rc = m_rcHitest - rc.TopLeft();
+	if(m_currenthide) return;
+  rc = m_rcHitest - rc.TopLeft();
+
+  if (m_buttonname == L"PLAYTIME" )
+  {
+    ::DrawText(*hDC, m_playtimestr, m_playtimestr.GetLength(), rc,  DT_LEFT|DT_END_ELLIPSIS|DT_SINGLELINE| DT_VCENTER);
+    return;
+  }
+	
 	BLENDFUNCTION bf = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};//
 	CDC dcBmp;
 	dcBmp.CreateCompatibleDC(hDC);
@@ -268,6 +288,33 @@ void CSUIButton::PreMultiplyBitmap( CBitmap& bmp , CSize& sizeBmp, BOOL NotButto
 	}
 }
 
+void CSUIButton::SetCurrentHideState(long iWidth,double skinsRate,int m_nLogDPIY)
+{
+  if (m_hide)
+    m_currenthide = TRUE;
+  else if (iWidth > m_hidewidth * skinsRate * m_nLogDPIY / 96)
+    m_currenthide = FALSE;
+  else
+    m_currenthide = TRUE;
+}
+
+void CSUIButton::SetString(CString str)
+{
+  m_playtimestr = str;
+}
+
+CString CSUIButton::GetString()
+{
+  return m_playtimestr;
+}
+
+void CSUIButton::SetStrSize(CSize sz)
+{
+  m_btnSize = sz;
+}
+
+
+
 
 /*CSUIBtnList*/
 CSUIBtnList::CSUIBtnList()
@@ -276,6 +323,13 @@ CSUIBtnList::CSUIBtnList()
 
 CSUIBtnList::~CSUIBtnList()
 {
+  POSITION pos = GetHeadPosition();
+  while(pos)
+  {
+    CSUIButton* cBtn =  GetNext(pos);
+    if (cBtn)
+      delete cBtn;
+  }
 }
 int CSUIBtnList::GetMaxHeight(){
     int nHeight = 0;
@@ -327,7 +381,7 @@ void CSUIBtnList::SetClickedStat(UINT iMsgID, BOOL bClicked){
 void CSUIBtnList::SetHideStat(POSITION pos, BOOL bHide){
 	CSUIButton* cBtn = GetAt(pos);
 	if(cBtn)
-		cBtn->m_hide = bHide;
+		cBtn->m_currenthide = bHide;
 
 	
 }
@@ -336,7 +390,7 @@ void CSUIBtnList::SetHideStat(UINT iMsgID, BOOL bHide){
 	while(pos){
 		CSUIButton* cBtn =  GetNext(pos);
 		if( iMsgID == cBtn->m_htMsgID ){
-			cBtn->m_hide = bHide;
+			cBtn->m_currenthide = bHide;
 			//break;
 		}
 	}
@@ -347,7 +401,7 @@ void CSUIBtnList::SetHideStat(LPCTSTR szBmpName, BOOL bHide){
 	while(pos){
 		CSUIButton* cBtn =  GetNext(pos);
 		if( cBtn->m_szBmpName.Compare(szBmpName) == 0 ){
-			cBtn->m_hide = bHide;
+			cBtn->m_currenthide = bHide;
 			break;
 		}
 	}
@@ -390,4 +444,46 @@ void CSUIBtnList::PaintAll(CMemoryDC *hDC, CRect rc){
 		CSUIButton* cBtn =  GetNext(pos);
 		cBtn->OnPaint(hDC,  rc);
 	}
+}
+
+void CSUIBtnList::SetCurrentHideState(long iWidth,double skinsRate,int m_nLogDPIY)
+{
+  POSITION pos = GetHeadPosition();
+  while(pos)
+  {
+    CSUIButton* cbtn = GetNext(pos);
+    cbtn->SetCurrentHideState(iWidth, skinsRate, m_nLogDPIY);
+  }
+}
+
+CSUIButton* CSUIBtnList::GetButton(CString s)
+{
+  POSITION pos = GetHeadPosition();
+  while(pos)
+  {
+    CSUIButton* cbtn = GetNext(pos);
+    if (cbtn->m_buttonname == s)
+      return cbtn;
+  }
+  return 0;
+}
+
+int CSUIBtnList::GetRelativeMinLength(CRect WndRect, CSUIButton* btn)
+{
+  CRect rc = btn->m_rcHitest - WndRect.TopLeft();
+  int min = MAXINT;
+  POSITION pos = GetHeadPosition();
+  while(pos){
+    CSUIButton* cBtn =  GetNext(pos);
+    if (cBtn->m_currenthide)
+      continue;
+   
+    CRect rtrc = cBtn->m_rcHitest - WndRect.TopLeft();
+
+    int i = rtrc.left - rc.left;
+
+    if (i > 0 && i < min)
+      min = i;
+  }
+  return min;
 }

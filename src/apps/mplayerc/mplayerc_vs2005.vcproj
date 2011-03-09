@@ -383,6 +383,14 @@
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
 			<File
+				RelativePath=".\ButtonManage.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ButtonManage.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ChildView.cpp"
 				>
 			</File>
@@ -468,6 +476,14 @@
 			</File>
 			<File
 				RelativePath="GoToDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\GUIConfigManage.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\GUIConfigManage.h"
 				>
 			</File>
 			<File
@@ -783,14 +799,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\SVPSubDownUpDialog.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\SVPSubDownUpDialog.h"
-				>
-			</File>
-			<File
 				RelativePath=".\SVPSubUploadDlg.cpp"
 				>
 			</File>
@@ -804,14 +812,6 @@
 			</File>
 			<File
 				RelativePath=".\SVPSubVoteControlBar.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ToolBarButtonInitialize.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\ToolBarButtonInitialize.h"
 				>
 			</File>
 			<File
@@ -984,6 +984,10 @@
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 			>
 			<File
+				RelativePath="..\..\..\..\..\Users\Staff\Desktop\allcycle.bmp"
+				>
+			</File>
+			<File
 				RelativePath="res\ani.avi"
 				>
 			</File>
@@ -1025,6 +1029,10 @@
 			</File>
 			<File
 				RelativePath=".\res\web\bg-h.gif"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\bitmap1.bmp"
 				>
 			</File>
 			<File
@@ -1193,6 +1201,10 @@
 			</File>
 			<File
 				RelativePath=".\res\icon\DV_Video.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\icon\DVD.ico"
 				>
 			</File>
 			<File
@@ -1468,6 +1480,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\newui\TOP_ALLCYCLE.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\newui\TOP_AUDIO.bmp"
 				>
 			</File>
@@ -1500,6 +1516,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\newui\TOP_NOCYCLE.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\newui\TOP_NORMAL.bmp"
 				>
 			</File>
@@ -1508,11 +1528,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\newui\TOP_RANDOM.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\newui\TOP_RESTORE.bmp"
 				>
 			</File>
 			<File
 				RelativePath=".\res\newui\TOP_ROTATE.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\TOP_SINGLECYCLE.bmp"
 				>
 			</File>
 			<File
@@ -1536,11 +1564,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\ecio.icons\video.ico"
+				RelativePath=".\res\icon\video.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon\video.ico"
+				RelativePath=".\res\ecio.icons\video.ico"
 				>
 			</File>
 			<File
@@ -1726,6 +1754,38 @@
 					RelativePath=".\UserInterface\Dialogs\OptionSubtitlePage_Win.h"
 					>
 				</File>
+				<File
+					RelativePath=".\UserInterface\Dialogs\Snapshot_FloatTip.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Dialogs\Snapshot_FloatTip.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Dialogs\Snapshot_Viewfinder.cc"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Dialogs\Snapshot_Viewfinder.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Dialogs\Snapshot_Win.cc"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Dialogs\Snapshot_Win.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Dialogs\SubtitleListBox.cc"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Dialogs\SubtitleListBox.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Support"
@@ -1847,6 +1907,14 @@
 		<Filter
 			Name="Controller"
 			>
+			<File
+				RelativePath=".\Controller\AdController.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Controller\AdController.h"
+				>
+			</File>
 			<File
 				RelativePath=".\Controller\HashController.cc"
 				>
@@ -2225,6 +2293,22 @@
 			</File>
 			<File
 				RelativePath=".\FGManager.h"
+				>
+			</File>
+			<File
+				RelativePath=".\GraphCore.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\GraphCore.h"
+				>
+			</File>
+			<File
+				RelativePath=".\GraphThread.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\GraphThread.h"
 				>
 			</File>
 			<File

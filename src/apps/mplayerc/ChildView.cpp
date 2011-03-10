@@ -94,71 +94,65 @@ BOOL CChildView::PreCreateWindow(CREATESTRUCT& cs)
 
 BOOL CChildView::PreTranslateMessage(MSG* pMsg)
 {
-  if (m_mediacenter->GetPlaneState())
-    m_mediacenter->ListenMsg(pMsg);
-
-  else
+  if(pMsg->message >= WM_MOUSEFIRST && pMsg->message <= WM_MYMOUSELAST)
   {
-	  if(pMsg->message >= WM_MOUSEFIRST && pMsg->message <= WM_MYMOUSELAST)
+	  CWnd* pParent = GetParent();
+	  CPoint p(pMsg->lParam);
+	  ::MapWindowPoints(pMsg->hwnd, pParent->m_hWnd, &p, 1);
+
+	  bool fDblClick = false;
+
+	  bool fInteractiveVideo = ((CMainFrame*)AfxGetMainWnd())->IsInteractiveVideo();
+/*
+	  if(fInteractiveVideo)
 	  {
-		  CWnd* pParent = GetParent();
-		  CPoint p(pMsg->lParam);
-		  ::MapWindowPoints(pMsg->hwnd, pParent->m_hWnd, &p, 1);
-
-		  bool fDblClick = false;
-
-		  bool fInteractiveVideo = ((CMainFrame*)AfxGetMainWnd())->IsInteractiveVideo();
-  /*
-		  if(fInteractiveVideo)
+		  if(pMsg->message == WM_LBUTTONDOWN)
 		  {
-			  if(pMsg->message == WM_LBUTTONDOWN)
+			  if((pMsg->time - m_lastlmdowntime) <= GetDoubleClickTime()
+			  && abs(pMsg->pt.x - m_lastlmdownpoint.x) <= GetSystemMetrics(SM_CXDOUBLECLK)
+			  && abs(pMsg->pt.y - m_lastlmdownpoint.y) <= GetSystemMetrics(SM_CYDOUBLECLK))
 			  {
-				  if((pMsg->time - m_lastlmdowntime) <= GetDoubleClickTime()
-				  && abs(pMsg->pt.x - m_lastlmdownpoint.x) <= GetSystemMetrics(SM_CXDOUBLECLK)
-				  && abs(pMsg->pt.y - m_lastlmdownpoint.y) <= GetSystemMetrics(SM_CYDOUBLECLK))
-				  {
-					  fDblClick = true;
-					  m_lastlmdowntime = 0;
-					  m_lastlmdownpoint.SetPoint(0, 0);
-				  }
-				  else
-				  {
-					  m_lastlmdowntime = pMsg->time;
-					  m_lastlmdownpoint = pMsg->pt;
-				  }
+				  fDblClick = true;
+				  m_lastlmdowntime = 0;
+				  m_lastlmdownpoint.SetPoint(0, 0);
 			  }
-			  else if(pMsg->message == WM_LBUTTONDBLCLK)
+			  else
 			  {
 				  m_lastlmdowntime = pMsg->time;
 				  m_lastlmdownpoint = pMsg->pt;
 			  }
 		  }
-  */
-		  if((pMsg->message == WM_LBUTTONDOWN || pMsg->message == WM_LBUTTONUP || pMsg->message == WM_MOUSEMOVE)
-		  && fInteractiveVideo)
+		  else if(pMsg->message == WM_LBUTTONDBLCLK)
 		  {
-			  if(pMsg->message == WM_MOUSEMOVE)
-			  {
-				  pParent->PostMessage(pMsg->message, pMsg->wParam, MAKELPARAM(p.x, p.y));
-			  }
-
-			  if(fDblClick)
-			  {
-				  pParent->PostMessage(WM_LBUTTONDOWN, pMsg->wParam, MAKELPARAM(p.x, p.y));
-				  pParent->PostMessage(WM_LBUTTONDBLCLK, pMsg->wParam, MAKELPARAM(p.x, p.y));
-			  }
+			  m_lastlmdowntime = pMsg->time;
+			  m_lastlmdownpoint = pMsg->pt;
 		  }
-		  else
+	  }
+*/
+	  if((pMsg->message == WM_LBUTTONDOWN || pMsg->message == WM_LBUTTONUP || pMsg->message == WM_MOUSEMOVE)
+	  && fInteractiveVideo)
+	  {
+		  if(pMsg->message == WM_MOUSEMOVE)
 		  {
 			  pParent->PostMessage(pMsg->message, pMsg->wParam, MAKELPARAM(p.x, p.y));
-			  return TRUE;
+		  }
+
+		  if(fDblClick)
+		  {
+			  pParent->PostMessage(WM_LBUTTONDOWN, pMsg->wParam, MAKELPARAM(p.x, p.y));
+			  pParent->PostMessage(WM_LBUTTONDBLCLK, pMsg->wParam, MAKELPARAM(p.x, p.y));
 		  }
 	  }
-	  else{
-		  //CMainFrame* pFrame = (CMainFrame*)GetParentFrame();
-		  //if(pFrame->m_wndToolTopBar.IsWindowVisible())
-		  //	return TRUE;
+	  else
+	  {
+		  pParent->PostMessage(pMsg->message, pMsg->wParam, MAKELPARAM(p.x, p.y));
+		  return TRUE;
 	  }
+  }
+  else{
+	  //CMainFrame* pFrame = (CMainFrame*)GetParentFrame();
+	  //if(pFrame->m_wndToolTopBar.IsWindowVisible())
+	  //	return TRUE;
   }
 	return CWnd::PreTranslateMessage(pMsg);
 }
@@ -321,12 +315,6 @@ void CChildView::OnPaint()
   
 	if(!pFrame->IsSomethingLoaded() || (pFrame->IsSomethingLoaded() && (pFrame->m_fAudioOnly || pFrame->IsSomethingLoading())) )
   {
-    if (m_mediacenter->GetPlaneState())
-    {
-      m_mediacenter->PaintPlane(dc.m_hDC, rcClient);
-      return;
-    }
-
 		AppSettings& s = AfxGetAppSettings();
 
 		CRect rcWnd;
@@ -334,9 +322,17 @@ void CChildView::OnPaint()
 		CRect rcClient;
 		GetClientRect(&rcClient);
 		CMemoryDC hdc(&dc, rcClient);
+
+    // only response of media center messages(WM_PAINT)
+    if (m_mediacenter->GetPlaneState())
+    {
+      m_mediacenter->m_plane.DoPaint(hdc.m_hDC, rcClient);
+      return;
+    }
+
 		hdc.FillSolidRect( rcClient, s.GetColorFromTheme(_T("MainBackgroundColor"),0));
     CRect rcLoading(rcClient);
-
+    
 		/*if(m_cover && !m_cover->IsNull()){
 			BITMAP bm;
 			GetObject(*m_cover, sizeof(bm), &bm);
@@ -531,9 +527,14 @@ void CChildView::OnSize(UINT nType, int cx, int cy)
 	((CMainFrame*)GetParentFrame())->MoveVideoWindow();
 	ReCalcBtn();
 
-  RECT rc;
-  GetClientRect(&rc);
-  m_mediacenter->CalcOnSize(rc);
+  if (m_mediacenter->GetPlaneState())
+  {
+    RECT rc;
+    GetClientRect(&rc);
+    m_mediacenter->m_plane.SetClientrc(rc);
+    m_mediacenter->m_plane.AutoBreakline();
+    Invalidate();
+  }
 }
 
 
@@ -595,9 +596,7 @@ int CChildView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	GetSystemFontWithScale(&m_font, 14.0);
     GetSystemFontWithScale(&m_font_lyric, 20.0, FW_BOLD, s.subdefstyle.fontName); //
 	// TODO:  Add your specialized creation code here
-  RECT margin = {20, 5, 5, 5};
-  m_mediacenter->CreatePlane(m_hWnd, 100, 100, margin);
-  m_mediacenter->ShowPlane();
+
 	return 0;
 }
 
@@ -618,7 +617,15 @@ void CChildView::OnMouseMove(UINT nFlags, CPoint point)
 		UINT ret = m_btnList.OnHitTest(point,rc,-1);
 		m_nItemToTrack = ret;
 		
-			
+    if (m_mediacenter->GetPlaneState())
+    {
+      RECT uprc;
+      POINT pt = {point.x, point.y};
+      ScreenToClient(&pt);
+      m_mediacenter->m_plane.SelectBlockEffect(pt, uprc);
+      m_mediacenter->m_plane.DragScrollBar(pt);
+      Invalidate();
+    }
 			if( m_btnList.HTRedrawRequired ){
 				Invalidate();
 			}
@@ -645,6 +652,16 @@ void CChildView::OnLButtonDown(UINT nFlags, CPoint point)
 	}
 	m_nItemToTrack = ret;
 
+  if (m_mediacenter->GetPlaneState())
+  {
+    POINT curr;
+    ::GetCursorPos(&curr);
+    ScreenToClient(&curr);
+    SetCapture();
+    m_mediacenter->m_plane.SelectScrollBar(curr, m_scrollbarrect);
+    m_mediacenter->ClickEvent();
+  }
+
 	CWnd::OnLButtonDown(nFlags, point);
 }
 
@@ -668,6 +685,12 @@ void CChildView::OnLButtonUp(UINT nFlags, CPoint point)
 	}
 	m_nItemToTrack = ret;
 
+  if (m_mediacenter->GetPlaneState())
+  {
+    m_mediacenter->m_plane.UnDragScrollBar();
+    ReleaseCapture();
+    InvalidateRect(&m_scrollbarrect);
+  }
 	//	__super::OnLButtonUp(nFlags, point);
 	m_bMouseDown = FALSE;
 }

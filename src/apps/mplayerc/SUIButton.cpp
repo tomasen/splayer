@@ -15,6 +15,9 @@ m_lastBtnDownStat(0)
 	m_iAlign = iAlign;
 	m_htMsgID = htMsgID;
 
+  m_btnSize.SetSize(0, 0);
+  m_orgbtnSize.SetSize(0, 0);
+
   ResLoader rlResLoader;
   
   if (szBmpName != L"NOBMP")
@@ -41,7 +44,7 @@ void CSUIButton::CountDPI(){
 		nLogDPIX = ScreenDC.GetDeviceCaps(LOGPIXELSX), nLogDPIY = ScreenDC.GetDeviceCaps(LOGPIXELSY);
 	}
 
-	m_orgbtnSize = m_btnSize;
+  m_orgbtnSize = m_btnSize;
 
 	m_btnSize.cx = nLogDPIX  * m_orgbtnSize.cx / 96;
 	m_btnSize.cy = nLogDPIY * m_orgbtnSize.cy / 96;

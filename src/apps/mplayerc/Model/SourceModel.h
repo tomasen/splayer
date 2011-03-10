@@ -11,7 +11,7 @@ public:
 
     void Find(std::vector<TDATA>& data, const TCONDITION& condition, int limit_start, int limit_end) {}
     void FindOne(TDATA& data, const TCONDITION& condition) {}
-
+    void FindAll(TDATA& data) {}
     void Delete(const TCONDITION& condition) {}
     void DeleteAll() {}
 };

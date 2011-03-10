@@ -7,9 +7,16 @@
 // When search the media, use this to judge if the media should be searched
 typedef struct
 {
-    int uniqueid;
+    long long uniqueid;
     std::wstring filename;
 } MediaFindCondition;
+
+typedef struct
+{
+  long long uniqueid;
+  std::wstring path;
+  int merit;
+} MediaPathCondition;
 
 // An implement class to add, find and delete media data in the sqlite database
 class MediaModel :
@@ -22,8 +29,14 @@ public:
 public:
     int GetCount();
 
-    void Add(const MediaData& mdData);
-    void Add(const MediaDatas& data);
+    void Add(MediaData& mdData);
+    void Add(MediaDatas& data);
+
+    void Add(MediaPath& mdData);
+    void Add(MediaPaths& data);
+
+    void FindAll(MediaPaths& data);
+    void FindAll(MediaDatas& data);
 
     void FindOne(MediaData& data, const MediaFindCondition& condition);
     void Find(MediaDatas& data,

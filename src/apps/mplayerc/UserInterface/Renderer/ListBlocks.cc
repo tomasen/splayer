@@ -1,10 +1,12 @@
 #include "stdafx.h"
 #include "ListBlocks.h"
+#include <sstream>
 
 ListBlocks::ListBlocks():
 m_selectblock(NULL),
 m_scrollbar(NULL),
 m_showscrollbar(FALSE),
+m_clickselblock(NULL),
 m_candragscrollbar(FALSE)
 {
   m_headblockpt.x = 0;
@@ -30,9 +32,9 @@ ListBlocks::~ListBlocks()
   delete m_scrollbar;
 }
 
-void ListBlocks::AddBlock(RECT& updaterect)
+UILayerBlock* ListBlocks::AddBlock(std::wstring& blockname, RECT& updaterect)
 {
-  UILayerBlock* block = new UILayerBlock;
+  UILayerBlock* block = new UILayerBlock(blockname);
 
   block->AddUILayer(L"mark", new UILayer(L"\\skin\\mark.png"));
   block->AddUILayer(L"def", new UILayer(L"\\skin\\def.png"));
@@ -54,6 +56,7 @@ void ListBlocks::AddBlock(RECT& updaterect)
 
   CalcBreakline(m_tailblockpt);
   m_blocks.push_back(block);
+  return block;
 }
 
 void ListBlocks::DelBlock(UILayerBlock* block)
@@ -141,15 +144,39 @@ void ListBlocks::CalcLayer(POINT& layerpt, UILayerBlock* block)
   del->SetTexturePos(delpt);
 }
 
+void ListBlocks::DoPaint(HDC& dc, RECT& rc)
+{
+  if (!CanPaint())
+    return;
+
+  WTL::CMemoryDC mdc(dc, rc);
+  HBRUSH hbrush = ::CreateSolidBrush(RGB(231, 231, 231));
+  mdc.FillRect(&rc, hbrush);
+  DoPaint(mdc);
+}
+
+void ListBlocks::SetPaintState(BOOL canpaint)
+{
+  m_dopaint = canpaint;
+}
+
+BOOL ListBlocks::CanPaint()
+{
+  return m_dopaint;
+}
+
 void ListBlocks::DoPaint(WTL::CDC& dc)
 {
+  if (!CanPaint())
+    return;
+
   POINT blockpt;
   UILayer* layer = NULL;
   std::list<UILayerBlock*>::iterator it;
 
   RECT rc;
   std::wstring str;
-  
+
   dc.SetBkMode(TRANSPARENT);
 
   for (it = m_blocks.begin(); it != m_blocks.end(); it++)
@@ -161,14 +188,11 @@ void ListBlocks::DoPaint(WTL::CDC& dc)
     if (blockpt.x == 0 && blockpt.y == 0 || blockpt.y > m_clientrc.bottom)
       break;
 
-    str = L"block_";
+    (*it)->GetBlockName(str);
     rc.left = blockpt.x;
     rc.top = blockpt.y + (m_blockrc.bottom-m_blockrc.top);
     rc.right = blockpt.x + (m_blockrc.right-m_blockrc.left);
     rc.bottom = blockpt.y+160;
-    wchar_t addr[10];
-    wsprintf(addr, L"%d\n", *it);
-    str += addr;
     dc.DrawText(str.c_str(), str.size(), &rc, DT_SINGLELINE|DT_CENTER|DT_VCENTER|DT_END_ELLIPSIS);
 
     (*it)->DoPaint(dc);
@@ -240,14 +264,30 @@ void ListBlocks::AutoBreakline()
   UpdateScrollBar(pos);
 }
 
-BOOL ListBlocks::SelectBlockClick(HWND hwnd)
+void ListBlocks::GetClickSelBlock(UILayerBlock** block)
 {
-  if (m_selectblock && m_selectdellayer)
-    DelBlock(m_selectblock);
-  else if (m_selectblock)
-    MessageBox(hwnd, L"player", L"", MB_OK);
+  *block = m_clickselblock;
+  m_clickselblock = NULL;
+}
 
-  return TRUE;
+int ListBlocks::SelectBlockClick()
+{
+  int ret = 0;
+
+  if (m_selectblock && m_selectdellayer)
+  {
+    m_clickselblock = m_selectblock;
+    ret = 1;
+  }
+  else if (m_selectblock)
+  {
+    m_clickselblock = m_selectblock;
+    ret = 2;
+  }
+  else
+    m_clickselblock = NULL;
+
+  return ret;
 }
 
 BOOL ListBlocks::IsSelectBlock(POINT& curr, POINT& pos, RECT& updaterc)

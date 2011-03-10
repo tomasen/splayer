@@ -4,7 +4,8 @@
 #include "../Model/MediaComm.h"
 #include "../Model/MediaModel.h"
 #include "../Model/MediaSpiderDisk.h"
-#include "../UserInterface/Renderer/MediaCenterView.h"
+#include "../UserInterface/Renderer/ListBlocks.h"
+#include <map>
 
 class MediaCenterController:
   public LazyInstanceImpl<MediaCenterController>
@@ -13,33 +14,32 @@ public:
     MediaCenterController();
     ~MediaCenterController();
 
-    void AddMedia(const MediaData& data);
+    void AddMedia(MediaData& data, BOOL todb = TRUE);
+    void DelMedia(UILayerBlock* block);
     void Playback(const MediaData& data);
+    void Playback(std::wstring file);
 
+    void ClickEvent();
     void GetMediaData(MediaDatas& data, int limit_start, int limit_end);
 
     void SpiderStart();
     void SpiderStop();
+    void AddMediaPath(std::wstring& path);
 
-    void NewDataNotice(MediaDatas& newdata);
-
-    void SetFrame(HWND hwnd);
-    // Gui
-    HWND GetPlaneWnd();
+    // Gui control
     void ShowPlane();
     void HidePlane();
 
     BOOL GetPlaneState();
-    void CreatePlane(HWND hwnd, int width, int height, RECT& margin);
-    void ListenMsg(MSG* msg);
-    void PaintPlane(HDC& dc, RECT rect);
-    void CalcOnSize(const RECT& rc);
+    void SetFrame(HWND hwnd);
 
+    void Update();
+    ListBlocks m_plane;
 private:
-    MediaCenterView m_plane;
+    MediaDatas m_mediadata;
+    std::map<UILayerBlock*, MediaFindCondition> m_medialist;
     MediaSpiderDisk m_spider;
     MediaModel m_model;
-    HWND m_parentwnd;
     BOOL m_planestate;
-    BOOL m_createsuccess;
+    HWND m_hwnd;
 };

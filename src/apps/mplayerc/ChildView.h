@@ -44,6 +44,7 @@ class CChildView : public CWnd
 	CFont m_font;
     CFont m_font_lyric;
     DWORD m_lastLyricColor;
+    RECT m_scrollbarrect;
 public:
 	CChildView();
 	virtual ~CChildView();

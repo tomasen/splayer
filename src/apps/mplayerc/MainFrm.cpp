@@ -731,6 +731,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
     return -1;
   }
 
+  MediaCenterController::GetInstance()->SetFrame(m_wndView.m_hWnd);
   WNDCLASSEX layeredClass;
   layeredClass.cbSize        = sizeof(WNDCLASSEX);
   layeredClass.style         = CS_HREDRAW | CS_VREDRAW;
@@ -3744,6 +3745,10 @@ void CMainFrame::OnRButtonDown(UINT nFlags, CPoint point)
 
 void CMainFrame::OnRButtonUp(UINT nFlags, CPoint point)
 {
+  if (MediaCenterController::GetInstance()->GetPlaneState())
+    MediaCenterController::GetInstance()->HidePlane();
+  else
+    MediaCenterController::GetInstance()->ShowPlane();
   if(!OnButton(HotkeyCmd::RUP, nFlags, point))
     __super::OnRButtonUp(nFlags, point);
 }
@@ -14882,7 +14887,7 @@ void CMainFrame::OpenCurPlaylistItem(REFERENCE_TIME rtStart)
   }
   CAutoPtr<OpenMediaData> p(m_wndPlaylistBar.GetCurOMD(rtStart));
 
-
+  MediaCenterController::GetInstance()->Playback(pli.m_fns.GetHead().GetString());
   if(p) OpenMedia(p);
 
 }

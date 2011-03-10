@@ -1,14 +1,24 @@
 #include "stdafx.h"
 #include "UILayerBlock.h"
 
-UILayerBlock::UILayerBlock()
+UILayerBlock::UILayerBlock(void) :
+  m_blockname(L"")
 {
+}
 
+UILayerBlock::UILayerBlock(std::wstring& name) :
+  m_blockname(name)
+{
 }
 
 UILayerBlock::~UILayerBlock()
 {
 
+}
+
+void UILayerBlock::GetBlockName(std::wstring& out)
+{
+  out = m_blockname;
 }
 
 BOOL UILayerBlock::GetUILayer(std::wstring key, UILayer** layer)

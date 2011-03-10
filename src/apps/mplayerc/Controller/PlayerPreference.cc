@@ -38,6 +38,8 @@ PlayerPreference::PlayerPreference(void):
 
   m_map_strvar[STRVAR_SUBTITLE_SAVEMETHOD]  = GetProfileString(L"Settings", L"SubtitleSaveMethod", L"same");  // subtitle save method
   m_map_strvar[STRVAR_SUBTITLE_SAVE_CUSTOMPATH] = GetProfileString(L"Settings", L"SubtitleSaveFolder", L"");  // subtitle save folder
+
+  m_map_strvar[STRVAR_LASTSPIDERPATH] = GetProfileString(L"Settings", L"LastSpiderPath", L"");  // last spider path
 }
 
 PlayerPreference::~PlayerPreference(void)
@@ -61,6 +63,8 @@ PlayerPreference::~PlayerPreference(void)
   WriteProfileString(L"Settings", L"HotkeyScheme", m_map_strvar[STRVAR_HOTKEYSCHEME].c_str());
   WriteProfileString(L"Settings", L"SubtitleSaveMethod", m_map_strvar[STRVAR_SUBTITLE_SAVEMETHOD].c_str());     // subtitle save method
   WriteProfileString(L"Settings", L"SubtitleSaveFolder", m_map_strvar[STRVAR_SUBTITLE_SAVE_CUSTOMPATH].c_str());  // subtitle save folder
+
+  WriteProfileString(L"Settings", L"LastSpiderPath", m_map_strvar[STRVAR_LASTSPIDERPATH].c_str());  // last spider path
 
   Uninit();
 }

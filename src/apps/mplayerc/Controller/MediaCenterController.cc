@@ -1,12 +1,18 @@
 #include "StdAfx.h"
 #include "MediaCenterController.h"
 
-MediaCenterController::MediaCenterController() : 
-    m_parentwnd(NULL),
-    m_planestate(FALSE),
-    m_createsuccess(FALSE)
+MediaCenterController::MediaCenterController() :
+    m_planestate(FALSE)
 {
+  m_plane.SetPaintState(FALSE);
 
+  MediaPaths mps;
+  MediaPaths::iterator it;
+  m_model.FindAll(mps);
+  for (it = mps.begin(); it != mps.end(); ++it)
+    m_spider.AddDetectPath((*it).path);
+
+  m_model.FindAll(m_mediadata);
 }
 
 MediaCenterController::~MediaCenterController()
@@ -14,14 +20,88 @@ MediaCenterController::~MediaCenterController()
 
 }
 
-void MediaCenterController::AddMedia(const MediaData& data)
+void MediaCenterController::AddMediaPath(std::wstring& path)
 {
+  ATL::CPath p(path.c_str());
+  std::wstring dir = path.substr(0, p.FindFileName());
+  if (m_spider.AddDetectPath(dir.c_str()))
+  {
+    MediaPath mp = {0, dir, 0};
+    m_model.Add(mp);
+  }
+}
 
+void MediaCenterController::AddMedia(MediaData& data, BOOL todb)
+{
+  RECT rect;
+  UILayerBlock* block;
+  block = m_plane.AddBlock(data.filename, rect);
+  
+  MediaFindCondition c = {data.uniqueid, data.filename};
+  m_medialist[block] = c;
+
+  if (todb)
+  {
+    m_model.Add(data);  
+    InvalidateRect(m_hwnd, &rect, FALSE);
+  }
+}
+
+// this design too bad
+void MediaCenterController::DelMedia(UILayerBlock* block)
+{
+  MediaFindCondition c = m_medialist[block];
+  m_model.Delete(c);
+  m_medialist.erase(block);
+}
+
+void MediaCenterController::Playback(std::wstring file)
+{
+  if (!m_spider.IsSupportExtension(file))
+    return;
+
+  AddMediaPath(file);
+  std::wstring name(::PathFindFileName(file.c_str()));
+  MediaFindCondition mc = {0, name};
+  MediaData mdc;
+  m_model.FindOne(mdc, mc);
+  if (mdc.uniqueid == 0)
+  {
+    MediaData md = {0, file, name, L"", 0};
+    AddMedia(md);
+  }
 }
 
 void MediaCenterController::Playback(const MediaData& data)
 {
+  ::MessageBox(m_hwnd, L"playback,ohhh", L"", MB_OK);
+}
 
+void MediaCenterController::ClickEvent()
+{
+  int eventcode = m_plane.SelectBlockClick();
+
+  if (eventcode == 0)
+    return;
+
+  else if (eventcode == 1)
+  {
+    // delete
+    UILayerBlock* block = NULL;
+    m_plane.GetClickSelBlock(&block);
+    DelMedia(block);
+    m_plane.DelBlock(block);
+  }
+  else if (eventcode == 2)
+  {
+    // playback
+    UILayerBlock* block = NULL;
+    m_plane.GetClickSelBlock(&block);
+    MediaFindCondition c = m_medialist[block];
+    MediaData md;
+    m_model.FindOne(md, c);
+    Playback(md);
+  }
 }
 
 void MediaCenterController::GetMediaData(MediaDatas& data, int limit_start, int limit_end)
@@ -31,22 +111,12 @@ void MediaCenterController::GetMediaData(MediaDatas& data, int limit_start, int 
 
 void MediaCenterController::SpiderStart()
 {
-
+  m_spider._Start();
 }
 
 void MediaCenterController::SpiderStop()
 {
-
-}
-
-HWND MediaCenterController::GetPlaneWnd()
-{
-  return m_plane.m_hWnd;
-}
-
-void MediaCenterController::NewDataNotice(MediaDatas& newdata)
-{
-
+  m_spider._Stop();
 }
 
 BOOL MediaCenterController::GetPlaneState()
@@ -56,62 +126,36 @@ BOOL MediaCenterController::GetPlaneState()
 
 void MediaCenterController::ShowPlane()
 {
-  if (m_createsuccess)
-    m_planestate = TRUE;
-  else
-    m_planestate = FALSE;
+  m_planestate = TRUE;
+  m_plane.SetPaintState(TRUE);
+  if (!m_mediadata.empty())
+  {
+    for (MediaDatas::iterator it=m_mediadata.begin(); it != m_mediadata.end(); ++it)
+      AddMedia(*it, FALSE);
+    Update();
+  }
+}
+
+void MediaCenterController::Update()
+{
+  ::InvalidateRect(m_hwnd, NULL, TRUE);
+  ::PostMessage(m_hwnd, WM_SIZE, NULL, NULL);
 }
 
 void MediaCenterController::HidePlane()
 {
   m_planestate = FALSE;
+  m_plane.SetPaintState(FALSE);
+  Update();
 }
 
 void MediaCenterController::SetFrame(HWND hwnd)
 {
-  m_parentwnd = hwnd;
-}
+  m_hwnd = hwnd;
 
-void MediaCenterController::PaintPlane(HDC& dc, RECT rect)
-{
-  WTL::CMemoryDC mdc(dc, rect);
-  m_plane.CalcWnd();
-  m_plane.MediaListView::DrawListView(mdc, m_plane.GetOffsetVal());
-  m_plane.MediaScrollbar::DrawScrollbar(mdc);
-}
-
-void MediaCenterController::CalcOnSize(const RECT& rc)
-{
-  if (m_planestate == FALSE)
-    return;
-
-  int width, hight;
-  m_plane.MediaListView::SetClientRect(rc);
-  m_plane.MediaListView::GetPlantWH(width, hight);
-  m_plane.MediaScrollbar::SetListPlane(width, hight);
-  m_plane.MediaScrollbar::SetClientRect(rc);
-}
-
-void MediaCenterController::CreatePlane(HWND hwnd, int width, int height, RECT& margin)
-{  
-  SetFrame(hwnd);
-  if (!m_parentwnd)
-    return;
-
-  m_createsuccess = m_plane.ShowMediaCenter(m_parentwnd, width, height, margin);
-  m_plane.AddListView(hwnd);
-  m_plane.AddScrollbar(hwnd);
-}
-
-void MediaCenterController::ListenMsg(MSG* msg)
-{ 
-  if (m_planestate == FALSE)
-    return;
-
-  if (!m_parentwnd)
-    return;
-
-  LRESULT wtlbHandled;
-  m_plane.MediaListView::ProcessWindowMessage(m_parentwnd, msg->message, msg->wParam, msg->lParam, wtlbHandled, 0);
-  m_plane.MediaScrollbar::ProcessWindowMessage(m_parentwnd, msg->message, msg->wParam, msg->lParam, wtlbHandled, 0);
+  RECT block;
+  RECT margin = {5, 20, 64, 64};
+  block.left = 0;block.top = 0;
+  block.right = 138;block.bottom = 138;
+  m_plane.SetOption(block, margin, 30);
 }

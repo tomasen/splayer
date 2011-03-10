@@ -28,33 +28,20 @@ static std::wstring GetModuleFolder(HMODULE hModuleHandle = 0)
 MediaModel::MediaModel()
 {
   // Create the database if it's not exist
-  if (!::PathFileExists((::GetModuleFolder() + L"media_data.db").c_str()))
+  try
   {
-    try
-    {
-      m_db.open(::GetModuleFolder() + L"media_data.db");
+    m_db.open(::GetModuleFolder() + L"media.db");
 
-      m_db << L"create table media_data ("
-        L"uniqueid integer PRIMARY KEY, path text, filename text,"
-        L"thumbnailpath text, videotime integer)";
-    }
-    catch (sqlitepp::exception* e)
-    {
-      e;
-      Logging(L"MediaModel::MediaModel create database fail");
-    }
+    m_db << L"CREATE TABLE IF NOT EXISTS media_data ("
+            L"uniqueid integer PRIMARY KEY, path text, filename text,"
+            L"thumbnailpath text, videotime integer)";
+    m_db << L"CREATE TABLE IF NOT EXISTS detect_path (" \
+            L"uniqueid integer PRIMARY KEY, path text, merit integer)";
   }
-  else
+  catch (sqlitepp::exception* e)
   {
-    try
-    {
-      m_db.open(::GetModuleFolder() + L"media_data.db");
-    }
-    catch (sqlitepp::exception* e)
-    {
-      e;
-      Logging(L"MediaModel::MediaModel open database fail");
-    }
+    e;
+    Logging(L"MediaModel::MediaModel open database fail");
   }
 }
 
@@ -84,13 +71,18 @@ int MediaModel::GetCount()
   return nCount;
 }
 
-void MediaModel::Add(const MediaData& mdData)
+void MediaModel::Add(MediaPath& mdData)
 {
+  // insert unique record
   try
   {
-    m_db << L"insert into media_data values(null, '"
-      << mdData.path << L"', '" << mdData.filename << L"', '"
-      << mdData.thumbnailpath << L"', " << mdData.videotime << L")";
+    m_db << L"INSERT INTO detect_path(path, merit)"
+      << L" SELECT :path, :merit FROM detect_path"
+      << L" WHERE NOT EXISTS(SELECT * FROM detect_path"
+      << L" WHERE path='" << mdData.path << L"' and merit=" << mdData.merit << L")"
+      , sqlitepp::use(mdData.path), sqlitepp::use(mdData.merit);
+
+    mdData.uniqueid = m_db.last_insert_rowid();
   }
   catch (sqlitepp::exception* e)
   {
@@ -99,15 +91,77 @@ void MediaModel::Add(const MediaData& mdData)
   }
 }
 
-void MediaModel::Add(const MediaDatas& data)
+void MediaModel::Add(MediaPaths& data)
 {
-  MediaDatas::const_iterator it = data.begin();
+  MediaPaths::iterator it = data.begin();
   while (it != data.end())
   {
     Add(*it);
-
     ++it;
   }
+}
+
+void MediaModel::Add(MediaData& mdData)
+{
+  // insert unique record
+  try
+  {
+    m_db << L"INSERT INTO media_data(path, filename, thumbnailpath, videotime)"
+      << L" SELECT :path, :filename, :thumbnailpath, :videotime FROM media_data"
+      << L" WHERE NOT EXISTS(SELECT * FROM media_data"
+      << L" WHERE path='" << mdData.path << L"' and filename='" << mdData.filename << L"')"
+      , sqlitepp::use(mdData.path), sqlitepp::use(mdData.filename)
+      , sqlitepp::use(mdData.thumbnailpath), sqlitepp::use(mdData.videotime);
+
+    mdData.uniqueid = m_db.last_insert_rowid();
+  }
+  catch (sqlitepp::exception* e)
+  {
+    e;
+    Logging(L"MediaModel::Add fail");
+  }
+}
+
+void MediaModel::Add(MediaDatas& data)
+{
+  MediaDatas::iterator it = data.begin();
+  while (it != data.end())
+  {
+    Add(*it);
+    ++it;
+  }
+}
+
+void MediaModel::FindAll(MediaPaths& data)
+{
+  MediaPath mdTemp = {0};
+
+  sqlitepp::statement st(m_db);
+  st << L"select uniqueid, path, merit from "
+    << L"detect_path"
+    , sqlitepp::into(mdTemp.uniqueid)
+    , sqlitepp::into(mdTemp.path)
+    , sqlitepp::into(mdTemp.merit);
+
+  while (st.exec())
+    data.push_back(mdTemp);
+}
+
+void MediaModel::FindAll(MediaDatas& data)
+{
+  MediaData mdTemp = {0};
+
+  sqlitepp::statement st(m_db);
+  st << L"select uniqueid, path, filename, thumbnailpath, videotime from "
+    << L"media_data"
+    , sqlitepp::into(mdTemp.uniqueid)
+    , sqlitepp::into(mdTemp.path)
+    , sqlitepp::into(mdTemp.filename)
+    , sqlitepp::into(mdTemp.thumbnailpath)
+    , sqlitepp::into(mdTemp.videotime);
+
+  while (st.exec())
+    data.push_back(mdTemp);
 }
 
 void MediaModel::FindOne(MediaData& data, const MediaFindCondition& condition)
@@ -175,17 +229,6 @@ void MediaModel::FindOne(MediaData& data, const MediaFindCondition& condition)
 void MediaModel::Find(MediaDatas& data, const MediaFindCondition& condition,
           int limit_start, int limit_end)
 {
-//   for (int i=0;i<limit_end;i++)
-//   {
-//     wchar_t filename[80], imgpath[80];
-//     wsprintf(filename, L"filename_%d", i);
-//     wsprintf(imgpath, L"thumbnailpath_%d", i);
-//     MediaData rs;
-//     rs.filename = filename;
-//     rs.thumbnailpath = imgpath;
-//     data.push_back(rs);
-//   }
-//   return;
   // Use the unique id
   if (condition.uniqueid > 0)
   {

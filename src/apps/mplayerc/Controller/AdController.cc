@@ -100,7 +100,10 @@ void AdController::_Thread()
   while (true)
   {
     if (sCurDate == sAdDate)
+    {
+      SplitAdData(sAds);
       return;
+    }
 
     Logging("fetching ads");
     sAds = sCurDate;
@@ -152,11 +155,17 @@ void AdController::_Thread()
   if (sAds.length() < 15)
     return;
 
-  // split the sAds and store them into m_vtAds
+  SplitAdData(sAds);
+}
+
+void AdController::SplitAdData(const std::wstring& data)
+{
+  // split the data and store them into m_vtAds
+  m_vtAds.clear();
   std::tr1::wregex rx(L"([^;]*);([^\\n]*)\\n");
   std::tr1::wsmatch mt;
-  std::wstring::const_iterator itS = sAds.begin() + 8;   // not include the date prefix
-  std::wstring::const_iterator itE = sAds.end();
+  std::wstring::const_iterator itS = data.begin() + 8;   // not include the date prefix
+  std::wstring::const_iterator itE = data.end();
   bool bMatched = std::tr1::regex_search(itS, itE, mt, rx);
   while (bMatched)
   {
@@ -166,7 +175,7 @@ void AdController::_Thread()
     m_vtAds.push_back(ad);
 
     itS = mt[0].second;
-    itE = sAds.end();
+    itE = data.end();
     bMatched = std::tr1::regex_search(itS, itE, mt, rx);
   }
 }

@@ -28,6 +28,7 @@ public:
 
 protected:
   bool TryNextLoopWhenFail();
+  void SplitAdData(const std::wstring& data);
 
 private:
   struct tagAd

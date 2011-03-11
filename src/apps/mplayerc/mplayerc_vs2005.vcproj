@@ -1204,11 +1204,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon\DVD.ico"
+				RelativePath=".\res\ecio.icons\dvd.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\ecio.icons\dvd.ico"
+				RelativePath=".\res\icon\DVD.ico"
 				>
 			</File>
 			<File
@@ -2052,15 +2052,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Model\MediaCheckDB.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Model\MediaCheckDB.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Model\MediaComm.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Model\MediaDealWithDB.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Model\MediaDealWithDB.h"
 				>
 			</File>
 			<File
@@ -2081,6 +2081,14 @@
 			</File>
 			<File
 				RelativePath=".\Model\MediaSpiderDisk.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Model\MediaSQLite.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Model\MediaSQLite.h"
 				>
 			</File>
 			<File

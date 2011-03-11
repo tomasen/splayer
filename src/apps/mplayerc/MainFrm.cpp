@@ -732,6 +732,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
   }
 
   MediaCenterController::GetInstance()->SetFrame(m_wndView.m_hWnd);
+  MediaCenterController::GetInstance()->SpiderStart();   // start the spider
   WNDCLASSEX layeredClass;
   layeredClass.cbSize        = sizeof(WNDCLASSEX);
   layeredClass.style         = CS_HREDRAW | CS_VREDRAW;
@@ -1685,6 +1686,8 @@ void CMainFrame::OnResetSetting(){
 }
 void CMainFrame::OnDestroy()
 {
+  MediaCenterController::GetInstance()->SpiderStop(); // stop the spider
+
   //AfxMessageBox(_T("2"));
   ShowTrayIcon(false);
 

@@ -64,6 +64,7 @@
 
 #include "ButtonManage.h"
 #include "GUIConfigManage.h"
+#include "Model/MediaSQLite.h"
 
 //Update URL
 char* szUrl = "http://svplayer.shooter.cn/api/updater.php";
@@ -77,6 +78,7 @@ DECLARE_LAZYINSTANCE(UsrBehaviorController);
 DECLARE_LAZYINSTANCE(UpdateController);
 DECLARE_LAZYINSTANCE(MediaCenterController);
 DECLARE_LAZYINSTANCE(UserShareController);
+DECLARE_LAZYINSTANCE(MediaSQLite);
 
 /////////
 

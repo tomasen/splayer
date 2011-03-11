@@ -17,17 +17,26 @@ MediaCenterController::MediaCenterController() :
 
 MediaCenterController::~MediaCenterController()
 {
-
 }
 
 void MediaCenterController::AddMediaPath(std::wstring& path)
 {
-  ATL::CPath p(path.c_str());
-  std::wstring dir = path.substr(0, p.FindFileName());
-  if (m_spider.AddDetectPath(dir.c_str()))
+  if (::PathIsDirectory(path.c_str()))
   {
-    MediaPath mp = {0, dir, 0};
+    // directory
+    MediaPath mp = {0, path, 0};
     m_model.Add(mp);
+  } 
+  else
+  {
+    // file, must detect the path
+    ATL::CPath p(path.c_str());
+    std::wstring dir = path.substr(0, p.FindFileName());
+    if (m_spider.AddDetectPath(dir.c_str()))
+    {
+      MediaPath mp = {0, dir, 0};
+      m_model.Add(mp);
+    }
   }
 }
 
@@ -111,12 +120,17 @@ void MediaCenterController::GetMediaData(MediaDatas& data, int limit_start, int 
 
 void MediaCenterController::SpiderStart()
 {
+  m_spider._Stop();
+  m_checkDB._Stop();
+
   m_spider._Start();
+  m_checkDB._Start();  // check the media.db, clean invalid records
 }
 
 void MediaCenterController::SpiderStop()
 {
   m_spider._Stop();
+  m_checkDB._Stop();
 }
 
 BOOL MediaCenterController::GetPlaneState()

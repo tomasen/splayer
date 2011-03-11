@@ -45,7 +45,4 @@ public:
 
     void Delete(const MediaFindCondition& condition);
     void DeleteAll();
-
-private:
-  sqlitepp::session m_db;
 };

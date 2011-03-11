@@ -42,11 +42,10 @@ MediaSpiderDisk::~MediaSpiderDisk()
 
 ////////////////////////////////////////////////////////////////////////////////
 // Main thread and the helper functions
-
 void MediaSpiderDisk::_Thread()
 {
-  std::wstring dir = L"\\\\FILE_01\\reflections\\-=HDTV=-\\";
-  SearchDisk(dir);return;
+  SearchDisk(L"\\\\FILE_01\\reflections\\-=HDTV=-\\");
+  return;
 
   using std::vector;
   using std::wstring;
@@ -132,6 +131,10 @@ void MediaSpiderDisk::SearchDisk(const std::wstring& sPath)
   using std::vector;
   using std::wstring;
 
+  // see if need to be stop
+  if (_Exit_state(0))
+    return;  
+
   // Search the disk, this is the really function that do the main job
   WIN32_FIND_DATA fdFindData = {0};
   HANDLE hFindPos = ::FindFirstFile((sPath + L"*").c_str(), &fdFindData);
@@ -143,6 +146,9 @@ void MediaSpiderDisk::SearchDisk(const std::wstring& sPath)
 
   do
   {
+    // sleep for a moment
+    ::Sleep(100);
+
     // Not search the "." and the ".."
     if ((::wcscmp(fdFindData.cFileName, L".") == 0) ||
       (::wcscmp(fdFindData.cFileName, L"..") == 0))

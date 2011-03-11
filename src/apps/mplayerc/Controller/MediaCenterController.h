@@ -6,6 +6,7 @@
 #include "../Model/MediaSpiderDisk.h"
 #include "../UserInterface/Renderer/ListBlocks.h"
 #include <map>
+#include "../Model/MediaCheckDB.h"
 
 class MediaCenterController:
   public LazyInstanceImpl<MediaCenterController>
@@ -39,6 +40,7 @@ private:
     MediaDatas m_mediadata;
     std::map<UILayerBlock*, MediaFindCondition> m_medialist;
     MediaSpiderDisk m_spider;
+    MediaCheckDB m_checkDB;
     MediaModel m_model;
     BOOL m_planestate;
     HWND m_hwnd;

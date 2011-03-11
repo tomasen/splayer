@@ -67,6 +67,10 @@ LRESULT SkinPreviewDlg::OnSkinDelete(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
   AppSettings& s = AfxGetAppSettings();
   if (s.skinname.c_str() == str)
     ::PostMessage(GetParent(), WM_COMMAND, ID_SKIN_FIRST, 0);
+  
+  ChangeCLinkCtrlStr();
+
+  ChangeCStaticPicture();
 
   return 0;
 }
@@ -116,19 +120,24 @@ LRESULT SkinPreviewDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/,
   for (std::map<std::wstring, std::wstring>::iterator ite = m_skinoption->begin();
        ite != m_skinoption->end(); ++ite)
     m_skinlist.AddString(ite->first.c_str());
-    
+
   HWND picturehwnd = GetDlgItem(IDD_SKINPREVIEW_PICTURE);
   if (picturehwnd)
     m_skinpicture.Attach(picturehwnd);
   m_skinpicture.ModifyStyle(0xF,SS_BITMAP|SS_CENTERIMAGE);
 
-  HWND homepage = GetDlgItem(IDD_SKINPREVIEW_HOMEPAGE);
+  HWND makerhwnd = GetDlgItem(IDD_SKINPREVIEW_MAKERSTR);
+  m_pmaker.Attach(makerhwnd);
+  
+  HWND homepage = GetDlgItem(IDD_SKINPREVIEW_HOMEPAGESTR);
   m_phomepage.Attach(homepage);
   m_phomepage.SetWindowText(_T("<A HREF=\"http://www.splayer.org/\">http://www.splayer.org</A>"));
-
-  HWND mail = GetDlgItem(IDD_SKINPREVIEW_MAIL);
+  
+  HWND mail = GetDlgItem(IDD_SKINPREVIEW_MAILSTR);
   m_pmail.Attach(mail);
   m_pmail.SetWindowText(_T("<A HREF=\"http://shooter.cn/\">http://shooter.cn</A>"));
+
+  ChangeCLinkCtrlStr();
 
   int index = 0;
   for (int i = 0; i != m_skinlist.GetCount(); ++i)
@@ -180,31 +189,6 @@ LRESULT SkinPreviewDlg::OnLbnSelchangeList(WORD /*wNotifyCode*/, WORD /*wID*/, H
 
   HBITMAP hbitmap = (HBITMAP)LoadImage(0, picturpath.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
  
-//   if (hbitmap)
-//   {
-//     CDC dc;
-//     dc.Attach(m_skinpicture.GetDC());
-//     CRect rc;
-//     m_skinpicture.GetClientRect(&rc);
-//     CDC dcBmp;
-//     dcBmp.CreateCompatibleDC(&dc);
-//     CBitmap cbm;
-//     cbm.Attach(hbitmap);
-//     HBITMAP oldbm = (HBITMAP)dcBmp.SelectObject(cbm);
-//     BITMAP bm;
-//     cbm.GetBitmap(&bm);
-//     dc.SetStretchBltMode(HALFTONE);
-//     dc.SetBrushOrg(0, 0);
-//     dc.StretchBlt(0, 0, rc.Width(), rc.Height(), &dcBmp, 0, 0, bm.bmWidth, bm.bmHeight, SRCCOPY);
-//     dcBmp.SelectObject(oldbm);
-//     HBITMAP hbm = (HBITMAP)cbm.Detach();
-//     DeleteObject(hbm);
-//     
-//     dcBmp.DeleteDC();
-//     dc.DeleteDC();
-//     
-//     //m_skinpicture.SetBitmap(hbitmap);
-//   }
   if (hbitmap)
     m_skinpicture.SetBitmap(hbitmap);
 
@@ -280,5 +264,46 @@ LRESULT SkinPreviewDlg::OnUpdataSkinSelections(UINT /*uMsg*/, WPARAM wParam,
     m_skinlist.AddString(newskin.c_str());
   }
 
+  ChangeCLinkCtrlStr();
+
   return 0;
+}
+
+void SkinPreviewDlg::ChangeCLinkCtrlStr()
+{
+  if (m_skinlist.GetCount() == 0)
+  {
+    m_pmaker.ShowWindow(SW_HIDE);
+    m_phomepage.ModifyStyle(0, WS_DISABLED);
+    m_pmail.ModifyStyle(0, WS_DISABLED);
+    m_phomepage.ShowWindow(SW_HIDE);
+    m_pmail.ShowWindow(SW_HIDE);
+
+    GetDlgItem(IDD_SKINPREVIEW_MAKER).ShowWindow(SW_HIDE);
+    GetDlgItem(IDD_SKINPREVIEW_HOMEPAGE).ShowWindow(SW_HIDE);
+    GetDlgItem(IDD_SKINPREVIEW_MAIL).ShowWindow(SW_HIDE);
+  }
+  else
+  {
+    m_pmaker.ShowWindow(SW_SHOWNORMAL);
+    m_phomepage.ModifyStyle(WS_DISABLED, 0);
+    m_pmail.ModifyStyle(WS_DISABLED, 0);
+    m_phomepage.ShowWindow(SW_SHOWNORMAL);
+    m_pmail.ShowWindow(SW_SHOWNORMAL);
+
+    GetDlgItem(IDD_SKINPREVIEW_MAKER).ShowWindow(SW_SHOWNORMAL);
+    GetDlgItem(IDD_SKINPREVIEW_HOMEPAGE).ShowWindow(SW_SHOWNORMAL);
+    GetDlgItem(IDD_SKINPREVIEW_MAIL).ShowWindow(SW_SHOWNORMAL);
+  }
+}
+
+void SkinPreviewDlg::ChangeCStaticPicture()
+{
+  if (m_skinlist.GetCount() == 0)
+    m_skinpicture.SetBitmap(0);
+  else
+  {
+    m_skinlist.SetCurSel(0);
+    PostMessage(WM_COMMAND, MAKEWPARAM(IDD_SKINPREVIEW_LIST, LBN_SELCHANGE), 0);
+  }
 }

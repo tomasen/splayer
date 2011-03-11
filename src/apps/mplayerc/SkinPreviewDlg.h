@@ -57,6 +57,10 @@ public:
 
   LRESULT OnDownloadDlgClose(UINT /*uMsg*/, WPARAM /*wParam*/, 
                                  LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
+  void ChangeCLinkCtrlStr();
+
+  void ChangeCStaticPicture();
 private:
   std::map<std::wstring, std::wstring>* m_skinoption;
   std::map<UINT, std::wstring> m_skinIDtoName_map;
@@ -69,7 +73,7 @@ private:
 
   CLinkCtrl     m_phomepage;
   CLinkCtrl     m_pmail;
-
+  CStatic       m_pmaker;
   std::wstring  m_newskinname;
 
 };

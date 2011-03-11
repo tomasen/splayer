@@ -1127,55 +1127,16 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
   UserShareController::GetInstance()->SetCommentPlaneParent(m_hWnd);
 
-//   ResLoader rlResLoader;
-// 
-//   std::wstring bmpath(L"skins\\");
-//   bmpath += s.skinname;
-//   bmpath += L"\\FRAMECORNER.bmp";
-//   m_framecorner = rlResLoader.LoadBitmapFromDisk(bmpath);
-// 
-//   bmpath.clear();
-//   bmpath += L"skins\\";
-//   bmpath += s.skinname;
-//   bmpath += L"\\CAPTION.bmp";
-//   m_captionhmp = rlResLoader.LoadBitmapFromDisk(bmpath);
-// 
-//   bmpath.clear();
-//   bmpath += L"skins\\";
-//   bmpath += s.skinname;
-//   bmpath += L"CAPTIONTEXT.bmp";
-//   m_captiontext = rlResLoader.LoadBitmapFromDisk(bmpath);
-
   BOOL bload = LoadRes(s.skinid, s.skinname);
   if (!bload)
   {
+    if (s.skinid != 0)
+      SendStatusMessage(L"该皮肤文件已损坏，请选择其他的皮肤。", 1000);
     s.skinid = ID_SKIN_FIRST;
     s.skinname = L"";
-    SendStatusMessage(L"该皮肤文件已损坏，请选择其他的皮肤。", 1000);
     LoadRes(s.skinid, s.skinname);
   }
 
-/*  
-  BOOL bload1, bload2, bload3, bload4;
-  if (s.skinid != ID_SKIN_FIRST)
-  {
-    
-    bload1 = m_btnList.ResReload(s.skinname, TRUE);
-    bload2 = m_wndToolBar.m_btnList.ResReload(s.skinname, TRUE);
-    bload3 = m_wndToolTopBar.m_btnList.ResReload(s.skinname, TRUE);
-    bload4 = m_wndView.m_btnList.ResReload(s.skinname, TRUE);
-  }
-  if (bload1 && bload2 && bload3 && bload4)
-    SendMessage(WM_MOVE);
-  else
-  {
-    SendStatusMessage(L"该皮肤文件已损坏，请选择其他的皮肤。", 1000);
-    m_btnList.ResReload(s.skinname, FALSE);
-    m_wndToolBar.m_btnList.ResReload(s.skinname, FALSE);
-    m_wndToolTopBar.m_btnList.ResReload(s.skinname, FALSE);
-    m_wndView.m_btnList.ResReload(s.skinname, FALSE);
-  }*/
-  
   return 0;
 }
 

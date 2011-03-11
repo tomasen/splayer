@@ -77,6 +77,8 @@
 #include <Strings.h>
 #include "Utils/SPlayerGUID.h"
 
+#include "SkinPreviewDlg.h"
+#include "ResLoader.h"
 
 // begin,
 // the following headers are included because HotkeyController mechanism broke the original inclusion
@@ -148,7 +150,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 
   ON_REGISTERED_MESSAGE(s_uTaskbarRestart, OnTaskBarRestart)
   ON_REGISTERED_MESSAGE(WM_NOTIFYICON, OnNotifyIcon)
-
+  
   ON_WM_SETFOCUS()
   ON_WM_GETMINMAXINFO()
   ON_WM_MOVE()
@@ -170,7 +172,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_MESSAGE(WM_USER+31, OnStatusMessage)
   ON_MESSAGE(WM_USER+32, OnSuggestVolume)
   ON_MESSAGE(WM_USER+33, OnFailedInDXVA )
-
+  
   ON_MESSAGE(WM_IME_SETCONTEXT, OnImeSetContext)
 
   ON_MESSAGE_VOID(WM_DISPLAYCHANGE, OnDisplayChange)
@@ -533,6 +535,11 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_WM_KEYUP()
   ON_COMMAND(ID_MOVIESHARE, OnMovieShare)
   ON_COMMAND(ID_MOVIESHARE_RESPONSE, OnMovieShareResponse)
+
+  ON_COMMAND_RANGE(ID_SKIN_FIRST, ID_SKIN_TENTH, OnSkinSelection)
+  ON_UPDATE_COMMAND_UI_RANGE(ID_SKIN_FIRST, ID_SKIN_TENTH, OnUpdateSkinSelection)
+
+  ON_COMMAND(ID_SKIN_MORESELECTION, OnSkinMoreSelection)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -594,7 +601,8 @@ m_wndLycShowBox(NULL),
 m_l_been_playing_sec(0),
 m_is_resume_from_last_exit_point(false),
 m_lyricDownloadThread(NULL),
-m_secret_switch(NULL)
+m_secret_switch(NULL),
+m_bmenuinitialize(FALSE)
 {
   m_wndFloatToolBar = new CPlayerFloatToolBar();
 }
@@ -712,6 +720,22 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
   if(__super::OnCreate(lpCreateStruct) == -1)
     return -1;
 
+//   TCHAR szModuleFullPath[MAX_PATH];
+//   ::GetModuleFileName(0, szModuleFullPath, MAX_PATH);
+//   TCHAR szDrive[10] = {0};
+//   TCHAR szDir[MAX_PATH] = {0};
+//   ::_wsplitpath(szModuleFullPath, szDrive, szDir, 0, 0);
+//   CString skinpath;
+//   skinpath += szDrive;
+//   skinpath += szDir;
+//   skinpath += L"skins\\";
+//   m_skinmanage.SetSkinPath(skinpath);
+//   m_skinmanage.SeachFile(skinpath.GetBuffer());
+
+  SearchSkinFolder();
+
+  AppSettings& s = AfxGetAppSettings();
+
   CDC ScreenDC;
   ScreenDC.CreateIC(_T("DISPLAY"), NULL, NULL, NULL);
   m_nLogDPIY = ScreenDC.GetDeviceCaps(LOGPIXELSY);
@@ -747,7 +771,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
   RegisterClassEx(&layeredClass) ;
 
   // static bars
-  AppSettings& s = AfxGetAppSettings();
+  //AppSettings& s = AfxGetAppSettings();
   CWnd* pParent = this;
   if(s.bUserAeroUI()){
     if(m_wndFloatToolBar->CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, _T("SVPLayered"), _T("FLOATWND"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0))//WS_EX_NOACTIVATE
@@ -898,7 +922,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
   //////////////////////////////////////////////////////////////////////////
   // an alternative way of pre-multiplying bitmap data
-  CRect btnMargin(3,7,15,3);
+  CRect btnMargin(3,5,15,3);
   CSize btnSize(21,17);//IDM_CLOSE_PNG
   CSUIButton* bClose = new CSUIButton( L"CLOSE.BMP",ALIGN_TOPRIGHT, btnMargin  , 0,  MYHTCLOSE);
   m_btnList.AddTail(bClose );
@@ -1103,6 +1127,55 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
   UserShareController::GetInstance()->SetCommentPlaneParent(m_hWnd);
 
+//   ResLoader rlResLoader;
+// 
+//   std::wstring bmpath(L"skins\\");
+//   bmpath += s.skinname;
+//   bmpath += L"\\FRAMECORNER.bmp";
+//   m_framecorner = rlResLoader.LoadBitmapFromDisk(bmpath);
+// 
+//   bmpath.clear();
+//   bmpath += L"skins\\";
+//   bmpath += s.skinname;
+//   bmpath += L"\\CAPTION.bmp";
+//   m_captionhmp = rlResLoader.LoadBitmapFromDisk(bmpath);
+// 
+//   bmpath.clear();
+//   bmpath += L"skins\\";
+//   bmpath += s.skinname;
+//   bmpath += L"CAPTIONTEXT.bmp";
+//   m_captiontext = rlResLoader.LoadBitmapFromDisk(bmpath);
+
+  BOOL bload = LoadRes(s.skinid, s.skinname);
+  if (!bload)
+  {
+    s.skinid = ID_SKIN_FIRST;
+    s.skinname = L"";
+    SendStatusMessage(L"该皮肤文件已损坏，请选择其他的皮肤。", 1000);
+    LoadRes(s.skinid, s.skinname);
+  }
+
+/*  
+  BOOL bload1, bload2, bload3, bload4;
+  if (s.skinid != ID_SKIN_FIRST)
+  {
+    
+    bload1 = m_btnList.ResReload(s.skinname, TRUE);
+    bload2 = m_wndToolBar.m_btnList.ResReload(s.skinname, TRUE);
+    bload3 = m_wndToolTopBar.m_btnList.ResReload(s.skinname, TRUE);
+    bload4 = m_wndView.m_btnList.ResReload(s.skinname, TRUE);
+  }
+  if (bload1 && bload2 && bload3 && bload4)
+    SendMessage(WM_MOVE);
+  else
+  {
+    SendStatusMessage(L"该皮肤文件已损坏，请选择其他的皮肤。", 1000);
+    m_btnList.ResReload(s.skinname, FALSE);
+    m_wndToolBar.m_btnList.ResReload(s.skinname, FALSE);
+    m_wndToolTopBar.m_btnList.ResReload(s.skinname, FALSE);
+    m_wndView.m_btnList.ResReload(s.skinname, FALSE);
+  }*/
+  
   return 0;
 }
 
@@ -3885,7 +3958,7 @@ void CMainFrame::OnInitMenuPopup(CMenu * pPopupMenu, UINT nIndex, BOOL bSysMenu)
   __super::OnInitMenuPopup(pPopupMenu, nIndex, bSysMenu);
 
   static CAtlStringMap<UINT> transl;
-
+  
   if(transl.IsEmpty())
   {
     transl[_T("Navigate")] = IDS_NAVIGATE_POPUP;
@@ -3923,7 +3996,7 @@ void CMainFrame::OnInitMenuPopup(CMenu * pPopupMenu, UINT nIndex, BOOL bSysMenu)
 
   MENUITEMINFO mii;
   mii.cbSize = sizeof(mii);
-
+  CMenu* menupre = new CMenu;
   for(UINT i = 0, j = pPopupMenu->GetMenuItemCount(); i < j; i++)
   {
     CString str;
@@ -4102,7 +4175,7 @@ void CMainFrame::OnInitMenuPopup(CMenu * pPopupMenu, UINT nIndex, BOOL bSysMenu)
       pSubMenu = &m_favorites;
     }
     else if(str == ResStr(IDS_MENU_ITEM_RECENT_PALYED))
-    {
+    { 
       SetupRecentFileSubMenu();
       pSubMenu = &m_recentfiles;
     }
@@ -4110,6 +4183,46 @@ void CMainFrame::OnInitMenuPopup(CMenu * pPopupMenu, UINT nIndex, BOOL bSysMenu)
     {
       SetupShadersSubMenu();
       pSubMenu = &m_shaders;
+    }
+    else if (str == ResStr(IDS_MENU_ITEM_SKIN))
+    {
+       AppSettings& s = AfxGetAppSettings();
+       if (s.bAeroGlass)
+         return;
+       if (!m_bmenuinitialize)
+       {
+        m_skinorg = new CMenu;
+        m_skinorg->CreateMenu();
+        MenuMerge(m_skinorg, pPopupMenu->GetSubMenu(i));
+        //m_skinorg = pPopupMenu->GetSubMenu(i);
+       }
+
+      CMenu menuappend;
+      menuappend.CreateMenu();
+      menuappend.AppendMenu(MF_ENABLED | MF_STRING, ID_SKIN_FIRST, ResStr(IDS_MENU_ITEM_SKIN_DEFAULT));
+      id = ID_SKIN_SECOND;
+      if (!SkinFolderManager::ReturnSkinMap().empty())
+      {
+        std::map<std::wstring, std::wstring> skinmap = SkinFolderManager::ReturnSkinMap();
+        
+        for (std::map<std::wstring, std::wstring>::iterator ite = skinmap.begin();
+          ite != skinmap.end(); ++ite)
+        {
+          m_skin_map[id] = ite->first;
+          menuappend.AppendMenu(MF_ENABLED | MF_STRING, id++, ite->first.c_str());
+        }
+      }
+      menuappend.AppendMenu(MF_SEPARATOR | MF_ENABLED);
+      menuappend.AppendMenu(MF_ENABLED | MF_STRING, ID_SKIN_MORESELECTION, ResStr(IDS_RS_SKIN_MORESELECTION));
+      
+      if (m_bmenuinitialize)
+        menupre->DestroyMenu();
+      menupre->CreateMenu();  
+      MenuMerge(menupre, m_skinorg);
+      MenuMerge(menupre, &menuappend);
+      pSubMenu = menupre;
+      m_bmenuinitialize = TRUE;
+      menuappend.DestroyMenu();
     }
 
     if(pSubMenu)
@@ -9952,6 +10065,7 @@ void CMainFrame::rePosOSD(){
 
 
   CRect rcView,rc;
+  CRect rcclient;
   m_wndView.GetWindowRect(&rcView);
   if( ::GetWindowRect( m_wndView.m_hWnd, &rcView ) ){
     GetWindowRect(&rc);
@@ -12374,6 +12488,7 @@ void CMainFrame::OnThemeChangeMenu(UINT nID){
   switch(nID){
     case ID_THEME_AEROGLASS:
       s.bAeroGlass = !s.bAeroGlass && s.bAeroGlassAvalibility;
+      SendMessage(WM_COMMAND, ID_SKIN_FIRST);
       SendMessage(WM_COMMAND, ID_VIEW_PRESETS_NORMAL);
       SendMessage(WM_COMMAND, ID_FILE_RESTART);
       break;
@@ -15952,18 +16067,13 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
   }else{
     SetWindowRgn(NULL,TRUE);   
   }
-
-
-
+  
   //SVP_LogMsg3("Winsized @ %I64d", AfxGetMyApp()->GetPerfCounter());
-
 }
 
 LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 {
   AppSettings& s = AfxGetAppSettings();
-
-
 
   CString szWindowText ;
   if(m_bDxvaInUse){
@@ -16068,85 +16178,91 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 
     // establish double buffered painting
     CMemoryDC hdc(dc, rc);
+    ResLoader rlResLoader;
     // 		CBrush brush;
     // 		brush.CreateSolidBrush(RGB(0xff,0x00,0x00));
     // 		HBRUSH holdbrush = (HBRUSH)hdc.SelectObject(brush);
     if (wp.showCmd != SW_MAXIMIZE && !m_fFullScreen){
       //hdc.RoundRect(rc.left+1, rc.top+1, rc.right-1, rc.bottom-1, 3, 3);
-      int bSpace = 1;
-      CPen pen;
-      pen.CreatePen(PS_SOLID, 1, s.GetColorFromTheme(_T("WinFrame1"), RGB(0x7f,0x7f,0x7f)));
-      HPEN holdpen = (HPEN)hdc.SelectObject(pen);
-      hdc.MoveTo(rc.left+bSpace, rc.bottom-bSpace);
-      hdc.LineTo(rc.left+bSpace, rc.top+bSpace);
-      hdc.LineTo(rc.right-bSpace-1, rc.top+bSpace);
-      hdc.LineTo(rc.right-bSpace-1, rc.bottom-bSpace-1);
-      hdc.LineTo(rc.left+bSpace, rc.bottom-bSpace-1);
-
-      hdc.SelectObject(holdpen);
-      bSpace++;
-      CPen pen2;
-      pen2.CreatePen(PS_SOLID, 1, s.GetColorFromTheme(_T("WinFrame2"),RGB(0xf0,0xf0,0xf0)));
-      holdpen = (HPEN)hdc.SelectObject(pen2);
-      hdc.MoveTo(rc.left+bSpace, rc.bottom-bSpace);
-      hdc.LineTo(rc.left+bSpace, rc.top+bSpace);
-      hdc.LineTo(rc.right-bSpace-1, rc.top+bSpace);
-      hdc.LineTo(rc.right-bSpace-1, rc.bottom-bSpace-1);
-      hdc.LineTo(rc.left+bSpace, rc.bottom-bSpace-1);
-
-      hdc.SelectObject(holdpen);
-      bSpace++;
-      CPen pen3;
-      pen3.CreatePen(PS_SOLID, 1, s.GetColorFromTheme(_T("WinFrame3"),RGB(0xe0,0xe0,0xe0)));
-      holdpen = (HPEN)hdc.SelectObject(pen3);
-      hdc.MoveTo(rc.left+bSpace, rc.bottom-bSpace);
-      hdc.LineTo(rc.left+bSpace, rc.top+bSpace);
-      hdc.LineTo(rc.right-bSpace-1, rc.top+bSpace);
-
-      hdc.MoveTo(rc.left+bSpace, rc.top+1+bSpace);
-      hdc.LineTo(rc.right-bSpace-1, rc.top+1+bSpace);
-      hdc.MoveTo(rc.left+bSpace, rc.top+2+bSpace);
-      hdc.LineTo(rc.right-bSpace-1, rc.top+2+bSpace);
-
-      hdc.LineTo(rc.right-bSpace-1, rc.bottom-bSpace-1);
-      hdc.LineTo(rc.left+bSpace, rc.bottom-bSpace-1);
-      hdc.MoveTo(rc.right-bSpace-1, rc.bottom-bSpace-2);
-      hdc.LineTo(rc.left+bSpace, rc.bottom-bSpace-2);
-      hdc.MoveTo(rc.right-bSpace-1, rc.bottom-bSpace-3);
-      hdc.LineTo(rc.left+bSpace, rc.bottom-bSpace-3);
-
-      hdc.SelectObject(holdpen);
-      bSpace++;
-      CPen pen4;
-      pen4.CreatePen(PS_SOLID, 1, s.GetColorFromTheme(_T("WinFrame4"),RGB(0x73,0x73,0x73)));
-      holdpen = (HPEN)hdc.SelectObject(pen4);
-      hdc.MoveTo(rc.left+bSpace, rc.bottom-bSpace);
-      hdc.LineTo(rc.left+bSpace, rc.top+2+bSpace);
-      hdc.LineTo(rc.right-bSpace-1, rc.top+2+bSpace);
-      hdc.LineTo(rc.right-bSpace-1, rc.bottom-bSpace-1-2);
-      hdc.LineTo(rc.left+bSpace, rc.bottom-bSpace-1-2);
-
-      hdc.SelectObject(holdpen);
-      BOOL bToolBarOn = m_wndToolBar.IsVisible();
-
-      CDC dcBmp;
-      dcBmp.CreateCompatibleDC(&hdc);
-      HBITMAP hbmpold = (HBITMAP)dcBmp.SelectObject(m_bmpBCorner);
-      hdc.SetStretchBltMode(HALFTONE);
-      hdc.SetBrushOrg(0, 0);
-      int tx = rc.Width() - 2;
-      int ty = rc.Height() - 2;
 
       int pos_of_hor_splite = s.GetColorFromTheme(_T("WinFrameCornerHorSplit"), 5);
       int pos_of_ver_splite = s.GetColorFromTheme(_T("WinFrameCornerVerSplit"), 7);
-      hdc.StretchBlt(0,0,pos_of_hor_splite,pos_of_ver_splite, &dcBmp, 0,0,
-        pos_of_hor_splite,pos_of_ver_splite, SRCCOPY); // TopLeft
-      hdc.StretchBlt(tx-pos_of_hor_splite,0,pos_of_hor_splite,pos_of_ver_splite, &dcBmp, 
-        pos_of_hor_splite,0,pos_of_hor_splite,pos_of_ver_splite, SRCCOPY); // Top Right
-      hdc.StretchBlt(0,ty-pos_of_ver_splite,pos_of_hor_splite,pos_of_ver_splite, &dcBmp, 0,
-        pos_of_ver_splite,pos_of_hor_splite,pos_of_ver_splite, SRCCOPY);
-      hdc.StretchBlt(tx-pos_of_hor_splite,ty-pos_of_ver_splite,pos_of_hor_splite,pos_of_ver_splite, &dcBmp, 
-        pos_of_hor_splite,pos_of_ver_splite,pos_of_hor_splite,pos_of_ver_splite, SRCCOPY);
+
+      if (s.skinid == ID_SKIN_FIRST)
+      {
+        int bSpace = 1;
+        CPen pen;
+        pen.CreatePen(PS_SOLID, 1, s.GetColorFromTheme(_T("WinFrame1"), RGB(0x7f,0x7f,0x7f)));
+        HPEN holdpen = (HPEN)hdc.SelectObject(pen);
+        hdc.MoveTo(rc.left+bSpace, rc.bottom-bSpace);
+        hdc.LineTo(rc.left+bSpace, rc.top+bSpace);
+        hdc.LineTo(rc.right-bSpace-1, rc.top+bSpace);
+        hdc.LineTo(rc.right-bSpace-1, rc.bottom-bSpace-1);
+        hdc.LineTo(rc.left+bSpace, rc.bottom-bSpace-1);
+
+        hdc.SelectObject(holdpen);
+        bSpace++;
+        CPen pen2;
+        pen2.CreatePen(PS_SOLID, 1, s.GetColorFromTheme(_T("WinFrame2"),RGB(0xf0,0xf0,0xf0)));
+        holdpen = (HPEN)hdc.SelectObject(pen2);
+        hdc.MoveTo(rc.left+bSpace, rc.bottom-bSpace);
+        hdc.LineTo(rc.left+bSpace, rc.top+bSpace);
+        hdc.LineTo(rc.right-bSpace-1, rc.top+bSpace);
+        hdc.LineTo(rc.right-bSpace-1, rc.bottom-bSpace-1);
+        hdc.LineTo(rc.left+bSpace, rc.bottom-bSpace-1);
+
+        hdc.SelectObject(holdpen);
+        bSpace++;
+        CPen pen3;
+        pen3.CreatePen(PS_SOLID, 1, s.GetColorFromTheme(_T("WinFrame3"),RGB(0xe0,0xe0,0xe0)));
+        holdpen = (HPEN)hdc.SelectObject(pen3);
+        hdc.MoveTo(rc.left+bSpace, rc.bottom-bSpace);
+        hdc.LineTo(rc.left+bSpace, rc.top+bSpace);
+        hdc.LineTo(rc.right-bSpace-1, rc.top+bSpace);
+
+        hdc.MoveTo(rc.left+bSpace, rc.top+1+bSpace);
+        hdc.LineTo(rc.right-bSpace-1, rc.top+1+bSpace);
+        hdc.MoveTo(rc.left+bSpace, rc.top+2+bSpace);
+        hdc.LineTo(rc.right-bSpace-1, rc.top+2+bSpace);
+
+        hdc.LineTo(rc.right-bSpace-1, rc.bottom-bSpace-1);
+        hdc.LineTo(rc.left+bSpace, rc.bottom-bSpace-1);
+        hdc.MoveTo(rc.right-bSpace-1, rc.bottom-bSpace-2);
+        hdc.LineTo(rc.left+bSpace, rc.bottom-bSpace-2);
+        hdc.MoveTo(rc.right-bSpace-1, rc.bottom-bSpace-3);
+        hdc.LineTo(rc.left+bSpace, rc.bottom-bSpace-3);
+
+        hdc.SelectObject(holdpen);
+        bSpace++;
+        CPen pen4;
+        pen4.CreatePen(PS_SOLID, 1, s.GetColorFromTheme(_T("WinFrame4"),RGB(0x73,0x73,0x73)));
+        holdpen = (HPEN)hdc.SelectObject(pen4);
+        hdc.MoveTo(rc.left+bSpace, rc.bottom-bSpace);
+        hdc.LineTo(rc.left+bSpace, rc.top+2+bSpace);
+        hdc.LineTo(rc.right-bSpace-1, rc.top+2+bSpace);
+        hdc.LineTo(rc.right-bSpace-1, rc.bottom-bSpace-1-2);
+        hdc.LineTo(rc.left+bSpace, rc.bottom-bSpace-1-2);
+
+        hdc.SelectObject(holdpen);
+        BOOL bToolBarOn = m_wndToolBar.IsVisible();
+
+        CDC dcBmp;
+        dcBmp.CreateCompatibleDC(&hdc);
+        HBITMAP hbmpold = (HBITMAP)dcBmp.SelectObject(m_bmpBCorner);
+        hdc.SetStretchBltMode(HALFTONE);
+        hdc.SetBrushOrg(0, 0);
+        int tx = rc.Width() - 2;
+        int ty = rc.Height() - 2;
+
+        hdc.StretchBlt(0,0,pos_of_hor_splite,pos_of_ver_splite, &dcBmp, 0,0,
+          pos_of_hor_splite,pos_of_ver_splite, SRCCOPY); // TopLeft
+        hdc.StretchBlt(tx-pos_of_hor_splite,0,pos_of_hor_splite,pos_of_ver_splite, &dcBmp, 
+          pos_of_hor_splite,0,pos_of_hor_splite,pos_of_ver_splite, SRCCOPY); // Top Right
+        hdc.StretchBlt(0,ty-pos_of_ver_splite,pos_of_hor_splite,pos_of_ver_splite, &dcBmp, 0,
+          pos_of_ver_splite,pos_of_hor_splite,pos_of_ver_splite, SRCCOPY);
+        hdc.StretchBlt(tx-pos_of_hor_splite,ty-pos_of_ver_splite,pos_of_hor_splite,pos_of_ver_splite, &dcBmp, 
+          pos_of_hor_splite,pos_of_ver_splite,pos_of_hor_splite,pos_of_ver_splite, SRCCOPY);
+        dcBmp.SelectObject(hbmpold);
       /*
 
       if(bToolBarOn && 0){
@@ -16158,7 +16274,28 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
       hdc.StretchBlt(tx-5,ty-15,5,1, &dcBmp, 5,7,5,1, SRCCOPY);
       }
       */
-      dcBmp.SelectObject(hbmpold);
+      }
+      else
+      {
+        CBitmap* cbm = CBitmap::FromHandle(m_framecornerhbm);
+        CDC bmpDc;
+        bmpDc.CreateCompatibleDC(&hdc);
+        HBITMAP oldhbm = (HBITMAP)bmpDc.SelectObject(cbm);
+        hdc.SetStretchBltMode(HALFTONE);
+        hdc.SetBrushOrg(0, 0);
+        //BITMAP btmp;
+        //cbm->GetBitmap(&btmp);
+        hdc.StretchBlt(0, 0, 4, rc.Height(), &bmpDc, 0, 4, 4, 1, SRCCOPY);
+        hdc.StretchBlt(0, 0, rc.Width(), 4, &bmpDc, 4, 0, 1, 4, SRCCOPY);
+        hdc.StretchBlt(0, rc.Height() - 4 -5, rc.Width(), 9, &bmpDc, 4, 5, 1, 4, SRCCOPY);
+        hdc.StretchBlt(rc.Width() - 4 -2, 0, 4, rc.Height(), &bmpDc, 5, 4, 4, 1, SRCCOPY);
+
+        hdc.StretchBlt(0, 0, 4, 4, &bmpDc, 0, 0, 4, 4, SRCCOPY);
+        hdc.StretchBlt(rc.Width() - 4 -2, 0, 4, 4, &bmpDc, 5, 0, 4, 4, SRCCOPY);
+        hdc.StretchBlt(0, rc.Height() - 4 -5, 4, 9, &bmpDc, 0, 5, 4, 4, SRCCOPY);
+        hdc.StretchBlt(rc.Width() - 4 -2, rc.Height() - 4 -5, 4, 9, &bmpDc, 5, 5, 4, 4, SRCCOPY);
+        bmpDc.SelectObject(oldhbm);
+      }
     }else if(currentStyle&WS_CAPTION) {
       //hdc.FillRect(&rc, &brush);
     }
@@ -16197,27 +16334,6 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
       // and the title
 
       // painting the caption bar
-      CDC dcBmp;
-      dcBmp.CreateCompatibleDC(&hdc);
-      HBITMAP hbmpold = (HBITMAP)dcBmp.SelectObject(m_bmpCaption);
-      hdc.SetStretchBltMode(HALFTONE);
-      if(GetForegroundWindow() != this){
-        COLORADJUSTMENT cadj;
-        hdc.GetColorAdjustment(&cadj);
-        cadj.caRedGamma = 15000;
-        cadj.caGreenGamma = 15000;
-        cadj.caBlueGamma = 15000;
-        cadj.caSize = sizeof(cadj);
-        hdc.SetColorAdjustment(&cadj);
-      }
-      hdc.SetBrushOrg(0, 0);
-      hdc.StretchBlt(0, 0, 4, nTotalCaptionHeight, &dcBmp, 0, 0, 4, 25, SRCCOPY); 
-      hdc.StretchBlt(4, 0, rc.Width()-4*2 , nTotalCaptionHeight, &dcBmp, 4, 0, 6, 25, SRCCOPY);// why not correct in windows 2000
-      //SVP_LogMsg3("rc %d %d ", rc.Width(), rc.Height());
-      hdc.StretchBlt(rc.Width()-2-4, 0, 4, nTotalCaptionHeight, &dcBmp, 10, 0, 4, 25, SRCCOPY);
-      dcBmp.SelectObject(hbmpold);
-
-      HFONT holdft = (HFONT)hdc.SelectObject(m_hft);
 
       RECT rcWindowText = {0};
       rcWindowText.top = rc.top+GetSystemMetrics(SM_CYFRAME)/2;
@@ -16229,17 +16345,60 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
       CRect btnMenuRect = m_btnList.GetHTRect(MYHTMINTOTRAY);
       rcWindowText.right = rcWindowText.right - ( rcWnd.right - btnMenuRect.left + 10 );
 
-      //GetWindowText(szWindowText);
-      //if(m_bHasDrawShadowText )
-      //	::DrawShadowText(hdc, szWindowText, szWindowText.GetLength(), &rcWindowText, DT_LEFT|DT_SINGLELINE | DT_VCENTER, 0x00525d66, RGB(255,255,255), 1,1);
-      //else{
-      hdc.SetTextColor(s.GetColorFromTheme(_T("WinFrameTitleText"),0x00525d66));
-      hdc.SetBkMode(TRANSPARENT);
-      //hdc.SetBkColor( 0x00d6d7ce);
-      DrawText(hdc, szWindowText, szWindowText.GetLength(), &rcWindowText, DT_LEFT|DT_SINGLELINE | DT_VCENTER );
-      //}
-      hdc.SelectObject(holdft);
+      if (s.skinid == ID_SKIN_FIRST)
+      {
+        CDC dcBmp;
+        dcBmp.CreateCompatibleDC(&hdc);
+        HBITMAP hbmpold = (HBITMAP)dcBmp.SelectObject(m_bmpCaption);
+        BITMAP bmm;
+        m_bmpCaption.GetBitmap(&bmm);
+        hdc.SetStretchBltMode(HALFTONE);
+        if(GetForegroundWindow() != this){
+          COLORADJUSTMENT cadj;
+          hdc.GetColorAdjustment(&cadj);
+          cadj.caRedGamma = 15000;
+          cadj.caGreenGamma = 15000;
+          cadj.caBlueGamma = 15000;
+          cadj.caSize = sizeof(cadj);
+          hdc.SetColorAdjustment(&cadj);
+        }
+        hdc.SetBrushOrg(0, 0);
+        hdc.StretchBlt(0, 0, 4, nTotalCaptionHeight, &dcBmp, 0, 0, 4, 25, SRCCOPY); 
+        hdc.StretchBlt(4, 0, rc.Width()-4*2 , nTotalCaptionHeight, &dcBmp, 4, 0, 6, 25, SRCCOPY);// why not correct in windows 2000
+        //SVP_LogMsg3("rc %d %d ", rc.Width(), rc.Height());
+        hdc.StretchBlt(rc.Width()-2-4, 0, 4, nTotalCaptionHeight, &dcBmp, 10, 0, 4, 25, SRCCOPY);
+        dcBmp.SelectObject(hbmpold);
 
+        HFONT holdft = (HFONT)hdc.SelectObject(m_hft);
+        hdc.SetTextColor(s.GetColorFromTheme(_T("WinFrameTitleText"),0x00525d66));
+        hdc.SetBkMode(TRANSPARENT);
+        DrawText(hdc, szWindowText, szWindowText.GetLength(), &rcWindowText, DT_LEFT|DT_SINGLELINE | DT_VCENTER );
+        hdc.SelectObject(holdft);
+      }
+      else
+      {
+        CBitmap* cbm = CBitmap::FromHandle(m_captionhbm);
+        CDC bmpDC;
+        bmpDC.CreateCompatibleDC(&hdc);
+        HBITMAP hbmpold = (HBITMAP)bmpDC.SelectObject(*cbm);
+        bmpDC.SetStretchBltMode(HALFTONE);
+        bmpDC.SetBrushOrg(0, 0);
+        BITMAP bm;
+        cbm->GetBitmap(&bm);
+        hdc.StretchBlt(0, 0, 4, nTotalCaptionHeight, &bmpDC, 0, 0, 4, bm.bmHeight, SRCCOPY);
+        hdc.StretchBlt(4, 0, rc.Width() - 8, nTotalCaptionHeight, &bmpDC, 4, 0, 1, bm.bmHeight, SRCCOPY);
+        hdc.StretchBlt(rc.Width() - 4 -2, 0, 4, nTotalCaptionHeight, &bmpDC, 5, 0, 4, bm.bmHeight, SRCCOPY);
+        bmpDC.SelectObject(hbmpold);
+        
+        cbm = CBitmap::FromHandle(m_captiontexthbm);
+        hbmpold = (HBITMAP)bmpDC.SelectObject(*cbm);
+        cbm->GetBitmap(&bm);
+        hdc.StretchBlt(4, 0, bm.bmWidth, bm.bmHeight - 1,
+          &bmpDC, 0, 0, bm.bmWidth, bm.bmHeight, SRCCOPY);
+        bmpDC.SelectObject(hbmpold);
+        
+      }
+       
       // min/max/close buttons
       //LONG lPaintParamArray[][5] = {{1,0},{1,1},{1,2},{1,3}};
       GetWindowRect(&rc);
@@ -17292,4 +17451,133 @@ void CMainFrame::OnMovieShare()
 void CMainFrame::OnMovieShareResponse()
 {
   m_wndToolBar.HideMovieShareBtn(FALSE);
+}
+
+void CMainFrame::OnSkinSelection(UINT nID)
+{
+  AppSettings& s = AfxGetAppSettings();
+  m_preskinid = s.skinid;
+  m_preskinname = s.skinname;;
+  s.skinid = nID;
+  s.skinname = m_skin_map[nID];
+
+  BOOL bload = LoadRes(s.skinid, s.skinname);
+
+  if (!bload)
+  {
+    SendStatusMessage(L"该皮肤文件已损坏，请选择其他的皮肤。", 1000);
+    if (m_preskinid == s.skinid)
+    {
+      s.skinid = ID_SKIN_FIRST;
+      s.skinname = L"";
+    }
+    else
+    {
+      s.skinid = m_preskinid;
+      s.skinname = m_preskinname;
+    }
+    LoadRes(s.skinid, s.skinname);
+  }
+
+  CRect rc;
+  GetWindowRect(&rc);
+  // compel all items in the window to update;
+  rc.InflateRect(1,1);
+  MoveWindow(&rc);
+  rc.InflateRect(-1,-1);
+  MoveWindow(&rc);
+}
+
+void CMainFrame::OnUpdateSkinSelection(CCmdUI* pCmdUI)
+{
+  AppSettings& s = AfxGetAppSettings();
+  pCmdUI->SetRadio(s.skinid == pCmdUI->m_nID);
+}
+
+void CMainFrame::OnSkinMoreSelection()
+{
+  SkinPreviewDlg* skindlg = new SkinPreviewDlg;
+  skindlg->SetSkinIDtoNameMap(m_skin_map);
+  skindlg->SetSkinOption(&(m_skinmanage.ReturnSkinMap()));
+  //skindlg->SetWillChangeMenu(&m_skin);
+  skindlg->Create(m_hWnd, 0);
+  skindlg->ShowWindow(SW_SHOWNORMAL);
+}
+
+BOOL CMainFrame::LoadRes(int id, std::wstring folder)
+{
+  AppSettings& s = AfxGetAppSettings();
+  ResLoader rlResLoader;
+  BOOL bload;
+  BOOL bloadsuccess1, bloadsuccess2, bloadsuccess3, bloadsuccess4;
+  if (id == ID_SKIN_FIRST)
+  {
+    m_wndToolBar.m_btnList.RemoveAll();
+    m_wndToolBar.DefaultButtonManage();
+    m_wndToolBar.PointVolumeBtn();
+    bloadsuccess2 = TRUE;
+    m_wndToolTopBar.m_btnList.RemoveAll();
+    bloadsuccess3 = TRUE;
+    m_wndToolTopBar.DefaultButtonManage();
+    m_wndToolTopBar.PointCloseBtn();
+    bload = FALSE;
+  }
+  else
+  {
+    bload = TRUE;
+    bloadsuccess2 = m_wndToolBar.m_btnList.ResReload(folder, bload, L"BottomToolBarButton.dat");
+    bloadsuccess3 = m_wndToolTopBar.m_btnList.ResReload(folder, bload, L"TopToolBarButton.dat");
+    
+    std::wstring bmpath(L"skins\\");
+    std::wstring bmpathtmp;
+    bmpath += s.skinname;
+    
+    bmpathtmp = bmpath;
+    bmpathtmp += L"\\FRAMECORNER.bmp";
+    m_framecornerhbm = rlResLoader.LoadBitmapFromDisk(bmpathtmp);
+
+    bmpathtmp = bmpath;
+    bmpathtmp += L"\\CAPTION.bmp";
+    m_captionhbm = rlResLoader.LoadBitmapFromDisk(bmpathtmp);
+
+    bmpathtmp = bmpath;
+    bmpathtmp += L"\\CAPTIONTEXT.bmp";
+    m_captiontexthbm = rlResLoader.LoadBitmapFromDisk(bmpathtmp);
+    
+    bmpathtmp = bmpath;
+    bmpathtmp += L"\\BOTTOMBACKGROUND.bmp";
+    m_btoolbarbg = rlResLoader.LoadBitmapFromDisk(bmpathtmp);
+
+    bmpathtmp = bmpath;
+    bmpathtmp += L"\\TOPBACKGROUND.bmp";
+    m_ttoolbarbg = rlResLoader.LoadBitmapFromDisk(bmpathtmp);
+  }
+  
+  bloadsuccess1 = m_btnList.ResReload(folder, bload, L"");
+  bloadsuccess4 = m_wndView.m_btnList.ResReload(folder, bload, L"");
+  
+  m_wndToolBar.ResizeToolbarHeight();
+  m_wndToolTopBar.ResizeToolbarHeight();
+  if (bloadsuccess1 && bloadsuccess2 && bloadsuccess3 && bloadsuccess4)
+    return TRUE;
+  else
+    return FALSE;
+}
+
+void CMainFrame::SearchSkinFolder()
+{
+  if (!m_skinmanage.ReturnSkinMap().empty())
+    m_skinmanage.ClearMap();
+  TCHAR szModuleFullPath[MAX_PATH];
+  ::GetModuleFileName(0, szModuleFullPath, MAX_PATH);
+  TCHAR szDrive[10] = {0};
+  TCHAR szDir[MAX_PATH] = {0};
+  ::_wsplitpath(szModuleFullPath, szDrive, szDir, 0, 0);
+  CString skinpath;
+  skinpath += szDrive;
+  skinpath += szDir;
+  skinpath += L"skins\\";
+  m_skinmanage.SetSkinPath(skinpath);
+  m_skinmanage.SeachFile(skinpath.GetBuffer(MAX_PATH));
+  skinpath.ReleaseBuffer();
 }

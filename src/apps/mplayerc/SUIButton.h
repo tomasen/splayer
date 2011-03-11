@@ -1,5 +1,6 @@
 
-#pragma once
+#ifndef SUIBUTTON_H
+#define SUIBUTTON_H
 
 #include "stdafx.h"
 
@@ -14,7 +15,6 @@
 #define NEWUI_COLOR_PEN_DARK RGB(154,154,154)
 #define NEWUI_COLOR_TOOLBAR_UPPERBG  RGB(0x17,0x17,0x17)
 #define NEWUI_COLOR_SEEKBAR_PLAYED RGB(0x54,0x54,0x54)
-
 class CMemoryDC : public CDC
 {
 public:
@@ -84,7 +84,7 @@ public:
 	int m_iAlign; //与窗口对齐方向
 	CRect m_marginTownd; //按钮相对于窗口的位置， 0为不强制 负数为百分比
 	CRect m_rcHitest; //按钮的有效范围，用于hittest
-	CBitmap m_bitmap; //图片存储位置
+  CBitmap m_bitmap; //图片存储位置
 	int m_stat; //0 normal ; 1 hove ; 2 clicked ; 3 disabled
 	UINT m_htMsgID;
 	BOOL m_hide;
@@ -94,9 +94,10 @@ public:
   CString m_buttonname;
 
 	static HBITMAP SUILoadImage(LPCTSTR szBmpName);
-	static void PreMultiplyBitmap( CBitmap& bmp , CSize& sizeBmp, BOOL NotButton);
+  static void PreMultiplyBitmap(CBitmap& bmp , CSize& sizeBmp, BOOL NotButton);
 
 	CString m_szBmpName;
+  CDC*    m_dc;
 
 	CList<CBtnAlign*> btnAlignList;
 
@@ -157,7 +158,7 @@ public:
     int GetMaxHeight();
 	UINT OnHitTest(CPoint pt , CRect rc, int bLBtnDown = -1);
 
-	void SetDisableStat(UINT iMsgID, BOOL bDisable);
+	void SetDisableStat(UINT iMsgID, BOOL bDisable, BOOL bhittest);
 	void SetClickedStat(UINT iMsgID, BOOL bClicked);
 	CRect GetHTRect(UINT iMsgID);
 	void SetHideStat(POSITION pos, BOOL bHide); //By Position
@@ -171,5 +172,9 @@ public:
   CSUIButton* GetButton(CString s);
 
   int GetRelativeMinLength(CRect WndRect, CSUIButton* btn);
+
+  BOOL ResReload(std::wstring folder, BOOL bl, std::wstring cfgfilename);
+
 };
 
+#endif

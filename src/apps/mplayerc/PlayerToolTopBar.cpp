@@ -11,6 +11,7 @@
 #include "../../svplib/svplib.h"
 #include "ButtonManage.h"
 #include "GUIConfigManage.h"
+#include "ResLoader.h"
 
 #define CONFIGBUTTON(btnname,bmp,fixalign,fixcrect,notbutton,id,hide,hidewidth,relativealign,pbuttonname,relativecrect) \
   m_btnList.AddTail(new CSUIButton(L#bmp,fixalign,fixcrect,notbutton,id,hide,relativealign,m_btnList.GetButton(L#pbuttonname), \
@@ -198,20 +199,25 @@ int CPlayerToolTopBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	m_nLogDPIY = pFrame->m_nLogDPIY;
 
+  AppSettings& s = AfxGetAppSettings();
   GUIConfigManage cfgfile;
   ButtonManage  cfgbtn;
-  cfgfile.SetCfgFilePath(L"skins\\TopToolBarButton.dat");
+  std::wstring cfgfilepath(L"skins\\");
+  cfgfilepath += s.skinname;
+  cfgfilepath += L"\\TopToolBarButton.dat";
+
+  //cfgfile.SetCfgFilePath(L"skins\\TopToolBarButton.dat");
+  cfgfile.SetCfgFilePath(cfgfilepath);
   cfgfile.ReadFromFile();
   if (cfgfile.IsFileExist())
   {
     cfgbtn.SetParse(cfgfile.GetCfgString(), &m_btnList);
-    cfgbtn.ParseConfig();
-    
+    cfgbtn.ParseConfig(FALSE);
   }
   else
     DefaultButtonManage();
   
-  btnClose = m_btnList.GetButton(L"CLOSE");
+  PointCloseBtn();
 
   m_toolTip.Create(this);
 	m_ti.cbSize = sizeof(m_ti);
@@ -232,8 +238,7 @@ int CPlayerToolTopBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
         m_nHeight += 4;
   }
 
-  
-	return 0;
+  return 0;
 }
 void CPlayerToolTopBar::ReCalcBtnPos(){
 	UpdateButtonStat();
@@ -381,9 +386,24 @@ void CPlayerToolTopBar::OnPaint()
 	CRect rcUpperSqu = rcClient;
 	rcUpperSqu.bottom--;
 	//rcUpperSqu.right--;
-	hdc.FillSolidRect(rcUpperSqu, s.GetColorFromTheme(_T("TopToolBarBG"), RGB(61,65,69) ));
+  if (s.skinid == ID_SKIN_FIRST)
+  {
+	  hdc.FillSolidRect(rcUpperSqu, s.GetColorFromTheme(_T("TopToolBarBG"), RGB(61,65,69) ));
+    hdc.FillSolidRect(rcBottomSqu,s.GetColorFromTheme(_T("TopToolBarBorder"), RGB(89,89,89)));
+  }
+  else
+  {
 
-	hdc.FillSolidRect(rcBottomSqu,s.GetColorFromTheme(_T("TopToolBarBorder"), RGB(89,89,89)));
+    CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
+    CBitmap* cbm = CBitmap::FromHandle(pFrame->m_ttoolbarbg);
+    CDC bmpDc;
+    bmpDc.CreateCompatibleDC(&hdc);
+    HBITMAP oldhbm = (HBITMAP)bmpDc.SelectObject(cbm);
+    BITMAP btmp;
+    cbm->GetBitmap(&btmp);
+    hdc.StretchBlt(0, 0, rcUpperSqu.Width(), rcUpperSqu.Height(), &bmpDc, 0, 0, btmp.bmWidth, btmp.bmHeight, SRCCOPY);
+    bmpDc.SelectObject(oldhbm);
+  }
 
 	if(iLeftBorderPos >= 0)
 	{
@@ -835,4 +855,16 @@ void CPlayerToolTopBar::DefaultButtonManage()
   CONFIGADDALIGN(AUDIO,ALIGN_LEFT,NORMAL,CRect(5,1,1,1))
 
   CONFIGBUTTON(VIDEO,TOP_VIDEO.BMP,ALIGN_TOPLEFT,CRect(1,1,1,1),0,ID_MENU_VIDEO,FALSE,0,ALIGN_LEFT,AUDIO,CRect(1,1,1,1))
+}
+
+void CPlayerToolTopBar::PointCloseBtn()
+{
+  btnClose = m_btnList.GetButton(L"CLOSE");
+}
+
+void CPlayerToolTopBar::ResizeToolbarHeight()
+{
+  m_nHeight = max(20, m_btnList.GetMaxHeight());
+  if (m_nHeight > 20)
+    m_nHeight += 2;
 }

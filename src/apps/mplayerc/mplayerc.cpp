@@ -3550,6 +3550,9 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		
 		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SHADERLIST), strShaderList);
 
+    pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SKIN_ID), skinid);
+    pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SKIN_NAME), skinname.c_str());
+
 		{
 			for(int i = 0; ; i++)
 			{
@@ -4391,6 +4394,9 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		//	bAeroGlass = false;
 
 		bSaveSVPSubWithVideo  = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SAVESVPSUBWITHVIDEO), 0);
+
+    skinid = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SKIN_ID), 0);
+    skinname = pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SKIN_NAME), 0);
 
 		CString MyPictures;
 

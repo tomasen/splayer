@@ -299,8 +299,8 @@ public:
 
 	CString		m_strD3DX9Version;
 	LONGLONG	m_PerfFrequency;
-	
-	void ShowCmdlnSwitches();
+
+  void ShowCmdlnSwitches();
 
 	bool StoreSettingsToIni();
 	bool StoreSettingsToRegistry();
@@ -423,8 +423,10 @@ public:
 		int iRMVideoRendererType;
 		int iQTVideoRendererType;
 		int iSVPRenderType;
-		
-		bool bExternalSubtitleTime;
+    int skinid;
+    std::wstring skinname;
+  
+	  bool bExternalSubtitleTime;
 		bool bDisableSoftCAVC;
 		bool bDisableSoftCAVCForce;
 		bool bDontNeedSVPSubFilter;
@@ -731,7 +733,7 @@ public:
 	// Sets an arbitrary binary value to INI file or registry.
 	BOOL WriteProfileBinary(LPCTSTR lpszSection, LPCTSTR lpszEntry,
 		LPBYTE pData, UINT nBytes);
-	
+
 };
 extern const UINT WM_MOUSEMOVEIN;
 extern const UINT WM_MOUSEMOVEOUT;

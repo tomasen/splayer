@@ -110,6 +110,7 @@ protected:
 
 	virtual INT_PTR OnToolHitTest(	CPoint point,TOOLINFO* pTI 	) const;
 
+  afx_msg void OnMouseLeave();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 public:
@@ -120,8 +121,12 @@ public:
   void HideMovieShareBtn(BOOL hide);
 
   void DefaultButtonManage();
+  void PointVolumeBtn();
+
+  void ResizeToolbarHeight();
 private:
   int m_movieshare_hidestat;
+
 };
 
 

@@ -50,8 +50,10 @@ void ButtonManage::SetParse(const std::vector<std::wstring>& vec, CSUIBtnList* b
   m_pbtnlist = btnlist;
 }
 
-void ButtonManage::ParseConfig()
+void ButtonManage::ParseConfig(BOOL bl)
 {
+  m_bnotinitialize = bl;
+
   for (std::vector<std::wstring>::const_iterator ite = m_cfgfilestr_vec.begin();
     ite != m_cfgfilestr_vec.end(); ++ite)
   {
@@ -69,7 +71,7 @@ void ButtonManage::ParseStrToBtn(std::wstring& buttoninformation)
   std::wstring classificationname;
   int pos;
   std::wstring bmpstr;
-  int align1,align2;
+  int align1 = 0, align2 = 0;
   CRect rect1,rect2(0,0,0,0);
   BOOL bnotbutton,bhide;
   int id;
@@ -137,10 +139,22 @@ void ButtonManage::ParseStrToBtn(std::wstring& buttoninformation)
     buttoninformation = buttoninformation.substr(pos + 1);
 
   }
-  CSUIButton* newbtn = new CSUIButton(bmpstr.c_str(), align1, rect1, bnotbutton, id, bhide,align2, pbutton, rect2,width,m_buttonname.c_str());
+  CSUIButton* newbtn = 0;
+  buttonattribute btnstructtmp = {align1, rect1, bhide, width};
+  if (align2 != 0 && pbutton != 0 && rect2 != CRect(0,0,0,0))
+  {
+    relativebuttonattribute rtbtnstructtmp = {align2, pbutton, rect2};
+    btnstructtmp.relativevec.push_back(rtbtnstructtmp);
+  }
+  if (!m_bnotinitialize)
+    newbtn = new CSUIButton(bmpstr.c_str(), align1, rect1, bnotbutton, id, bhide,align2, pbutton, rect2,width,m_buttonname.c_str());
+  else
+    m_btnstruct = btnstructtmp;
   if (baddalign)
     ParseStrToBtnAddalign(buttoninformation, newbtn);
-  m_pbtnlist->AddTail(newbtn);
+  if (!m_bnotinitialize)
+    m_pbtnlist->AddTail(newbtn);
+  m_attribute_map[m_buttonname] = m_btnstruct;
 }
 
 void ButtonManage::ParseStrToBtnAddalign(std::wstring& buttoninformation, CSUIButton* newbtn)
@@ -175,8 +189,11 @@ void ButtonManage::ParseStrToBtnAddalign(std::wstring& buttoninformation, CSUIBu
     buttoninformation = buttoninformation.substr(pos + 1);
     if ((align2 != 0) && (pbuttonname != L"") && (rect2 != CRect(0,0,0,0)))
     {
-      newbtn->addAlignRelButton(align2, pbutton, rect2);
-
+      relativebuttonattribute relativebtn = {align2, pbutton, rect2};
+      if (!m_bnotinitialize)
+        newbtn->addAlignRelButton(align2, pbutton, rect2);
+      else
+        m_btnstruct.relativevec.push_back(relativebtn);
       align2 = 0;
       pbuttonname = L"";
       rect2 = CRect(0,0,0,0);
@@ -331,4 +348,9 @@ CSUIButton* ButtonManage::GetButton(std::wstring s)
 std::vector<std::wstring>& ButtonManage::GetCfgString()
 {
   return m_cfgfilestr_vec;
+}
+
+std::map<std::wstring, buttonattribute>& ButtonManage::GetBtnAttributeStruct()
+{
+  return m_attribute_map;
 }

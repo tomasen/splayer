@@ -2,7 +2,8 @@
 #include "../../svplib/svplib.h"
 #include "../../svplib/SVPToolBox.h"
 #include <ResLoader.h>
-
+#include "GUIConfigManage.h"
+#include "ButtonManage.h"
 CSUIButton::CSUIButton(LPCTSTR szBmpName, int iAlign, CRect marginTownd 
 					   , BOOL bNotButton, UINT htMsgID, BOOL bHide 
 					   ,UINT alignToButton  , CSUIButton * relativeToButton , CRect marginToBtn
@@ -35,7 +36,7 @@ m_lastBtnDownStat(0)
 }
 
 void CSUIButton::CountDPI(){
-	if(!nLogDPIX){
+	if(nLogDPIX == 0){
 		CDC ScreenDC;
 		ScreenDC.CreateIC(_T("DISPLAY"), NULL, NULL, NULL);
 		nLogDPIX = ScreenDC.GetDeviceCaps(LOGPIXELSX), nLogDPIY = ScreenDC.GetDeviceCaps(LOGPIXELSY);
@@ -87,6 +88,7 @@ LONG CSUIButton::CalcRealMargin(LONG Mlen, LONG bW, LONG wW)
 }
 
 int CSUIButton::OnHitTest(CPoint pt , int bLBtnDown){
+
 	if(m_currenthide || m_NotButton || m_stat == 3)
   {
 		return 0;
@@ -114,8 +116,8 @@ int CSUIButton::OnHitTest(CPoint pt , int bLBtnDown){
   {
     m_stat = 0;
   }
-	
-	if(m_stat == old_stat){
+
+  if(m_stat == old_stat){
 		return -1;
 	}else{
 		return 1; //require redraw
@@ -166,9 +168,7 @@ void CSUIButton::OnSize(CRect WndRect)
 			
 			break;
 	}
-  
 
-	
 	POSITION pos = btnAlignList.GetHeadPosition();
 	while(pos){
 		CBtnAlign* bAlignInfo = btnAlignList.GetNext(pos);
@@ -214,7 +214,10 @@ void CSUIButton::OnSize(CRect WndRect)
 	//SVP_LogMsg(szLog);
 }
 void CSUIButton::OnPaint(CMemoryDC *hDC, CRect rc){
-	if(m_currenthide) return;
+  m_dc = hDC;
+	if (m_currenthide)
+    return;
+  
   rc = m_rcHitest - rc.TopLeft();
 
   if (m_buttonname == L"PLAYTIME" )
@@ -222,17 +225,18 @@ void CSUIButton::OnPaint(CMemoryDC *hDC, CRect rc){
     ::DrawText(*hDC, m_playtimestr, m_playtimestr.GetLength(), rc,  DT_LEFT|DT_END_ELLIPSIS|DT_SINGLELINE| DT_VCENTER);
     return;
   }
-	
+
 	BLENDFUNCTION bf = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};//
 	CDC dcBmp;
 	dcBmp.CreateCompatibleDC(hDC);
-	HBITMAP holdBmp = (HBITMAP)dcBmp.SelectObject(m_bitmap);
+//  Logging(L"CSUIButton::OnPaint ===%s: w:%d, h:%d", m_buttonname, m_bitmap.GetBitmapDimension().cx, m_bitmap.GetBitmapDimension().cy);
+  HBITMAP holdBmp = (HBITMAP)dcBmp.SelectObject(m_bitmap);
 	BOOL ret = hDC->AlphaBlend(rc.left, rc.top, rc.Width(), rc.Height(),
-		&dcBmp, 0, m_orgbtnSize.cy * m_stat, m_orgbtnSize.cx, m_orgbtnSize.cy, bf);
-	dcBmp.SelectObject(holdBmp);
-	dcBmp.DeleteDC();
-	
-	//SVP_LogMsg5(_T("%d %d %d %d %d %d %d %d %d Paint %s"),ret , rc.left, rc.top, rc.Width(), rc.Height(),
+		  &dcBmp, 0, m_orgbtnSize.cy * m_stat, m_orgbtnSize.cx, m_orgbtnSize.cy, bf);
+  dcBmp.SelectObject(holdBmp);
+  dcBmp.DeleteDC();
+  
+  //SVP_LogMsg5(_T("%d %d %d %d %d %d %d %d %d Paint %s"),ret , rc.left, rc.top, rc.Width(), rc.Height(),
 		//0, m_btnSize.cy * m_stat, m_btnSize.cx, m_btnSize.cy, m_szBmpName);
 }
 HBITMAP CSUIButton::SUILoadImage(LPCTSTR szBmpName){
@@ -255,11 +259,12 @@ void CSUIButton::LoadImage(LPCTSTR szBmpName){
 }
 
 void CSUIButton::Attach(HBITMAP bmp){
+  m_bitmap.Detach();
 	m_bitmap.Attach(bmp);
 	
 	PreMultiplyBitmap(m_bitmap,m_btnSize,m_NotButton);
 }
-void CSUIButton::PreMultiplyBitmap( CBitmap& bmp , CSize& sizeBmp, BOOL NotButton)
+void CSUIButton::PreMultiplyBitmap(CBitmap& bmp , CSize& sizeBmp, BOOL NotButton)
 {
 
 	BITMAP bm;
@@ -272,7 +277,8 @@ void CSUIButton::PreMultiplyBitmap( CBitmap& bmp , CSize& sizeBmp, BOOL NotButto
 	if(bm.bmBitsPixel != 32){
 		return;
 	}
-	for (int y=0; y<bm.bmHeight; y++)
+
+  for (int y=0; y<bm.bmHeight; y++)
 	{
 		BYTE * pPixel = (BYTE *) bm.bmBits + bm.bmWidth * 4 * y;
 		for (int x=0; x<bm.bmWidth; x++)
@@ -304,7 +310,19 @@ void CSUIButton::SetStrSize(CSize sz)
 {
   m_btnSize = sz;
 }
-
+/*
+void CSUIButton::ChangeBtnAttribute(std::map<std::wstring, buttonattribute>& mp)
+{
+  buttonattribute btnstruct = mp[m_buttonname];
+  m_marginTownd  = btnstruct.fixrect
+  m_iAlign = btnstruct.fixalign;
+  m_hide = btnstruct.hide;
+  m_hidewidth = btnstruct.hidewidth;
+  for (std::vector<relativebuttonattribute>::iterator ite = btnstruct.relativevec.begin();
+       ite != btnstruct.relativevec.end(); ++ite)
+    addAlignRelButton(ite->relativealign, ite->relativebutton, ite->relativerect);
+}
+*/
 
 
 
@@ -319,7 +337,8 @@ CSUIBtnList::~CSUIBtnList()
   while(pos)
   {
     CSUIButton* btn = GetNext(pos);
-    delete btn;
+    if (btn)
+      delete btn;
   }
 }
 int CSUIBtnList::GetMaxHeight(){
@@ -331,7 +350,9 @@ int CSUIBtnList::GetMaxHeight(){
     }
     return nHeight;
 }
-void CSUIBtnList::SetDisableStat(UINT iMsgID, BOOL bDisable){
+void CSUIBtnList::SetDisableStat(UINT iMsgID, BOOL bDisable, BOOL bHittest){
+  if (bHittest)
+    return;
 	POSITION pos = GetHeadPosition();
 	while(pos){
 		CSUIButton* cBtn =  GetNext(pos);
@@ -477,4 +498,86 @@ int CSUIBtnList::GetRelativeMinLength(CRect WndRect, CSUIButton* btn)
       min = i;
   }
   return min;
+}
+
+BOOL CSUIBtnList::ResReload(std::wstring folder, BOOL bl, std::wstring cfgfilename)
+{
+  
+  std::wstring cfgfilepath(L"skins\\");
+  cfgfilepath += folder;
+  cfgfilepath += L"\\";
+  cfgfilepath += cfgfilename;
+  
+  GUIConfigManage cfgfile;
+  ButtonManage  cfgbtn;
+  cfgfile.SetCfgFilePath(cfgfilepath);
+  cfgfile.ReadFromFile();
+  if (cfgfile.IsFileExist())
+  {
+    cfgbtn.SetParse(cfgfile.GetCfgString(), this);
+    cfgbtn.ParseConfig(TRUE);
+  }
+  std::map<std::wstring, buttonattribute>& btnattribute 
+    = cfgbtn.GetBtnAttributeStruct();
+
+  ResLoader rlResLoader;
+  BOOL bloadsuccess = FALSE;
+  POSITION pos = GetHeadPosition();
+  while(pos)
+  {
+    CSUIButton* cbtn = GetNext(pos);
+    std::wstring bmpname(L"skins\\");
+    bmpname += folder;
+    bmpname += L"\\";
+    bmpname += cbtn->m_szBmpName;
+    if (cbtn->m_buttonname != L"PLAYTIME")
+    {
+      HBITMAP hbitmap;
+      if (bl)
+        hbitmap = rlResLoader.LoadBitmapFromDisk(bmpname);
+      else
+        hbitmap = rlResLoader.LoadBitmapFromModule(cbtn->m_szBmpName.GetString());
+      
+      if (hbitmap)
+      {
+       cbtn->Attach(hbitmap);
+       cbtn->CountDPI();
+       bloadsuccess = TRUE;
+      
+      } 
+      else
+      {
+        
+        bloadsuccess = FALSE;
+        break;
+      }
+    }
+
+    if (!btnattribute.empty() && cbtn->m_buttonname != L"PLAYTIME")
+    {
+      buttonattribute btnstruct = btnattribute[cbtn->m_buttonname.GetString()];
+      cbtn->m_marginTownd  = btnstruct.fixrect;
+      cbtn->m_iAlign = btnstruct.fixalign;
+      cbtn->m_hide = btnstruct.hide;
+      cbtn->m_hidewidth = btnstruct.hidewidth;
+      
+      if (!btnstruct.relativevec.empty())
+      {  
+        
+        POSITION pos = cbtn->btnAlignList.GetHeadPosition();
+        while (pos)
+        {
+          delete (cbtn->btnAlignList.GetNext(pos));
+        }
+        cbtn->btnAlignList.RemoveAll();
+        
+        for (std::vector<relativebuttonattribute>::iterator ite = btnstruct.relativevec.begin();
+             ite != btnstruct.relativevec.end(); ++ite)
+          cbtn->addAlignRelButton(ite->relativealign, ite->relativebutton, ite->relativerect);
+          
+      }
+    }
+  }
+
+  return bloadsuccess;
 }

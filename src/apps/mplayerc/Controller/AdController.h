@@ -49,4 +49,5 @@ private:
   bool m_bAllowAnimate;
 
   bool m_bTryNextLoopWhenFail;       // should try next loop when download ad failure?
+  time_t m_lastAdTime;
 };

@@ -15,6 +15,7 @@ AdController::AdController()
 , m_nCurAd(-1)
 , m_nCurX(0)
 , m_nCurY(0)
+, m_lastAdTime(0)
 , m_bTryNextLoopWhenFail(false)
 {
   m_szCurAd.SetSize(0, 0);
@@ -29,6 +30,8 @@ AdController::~AdController()
 // operations
 void AdController::SetVisible(bool bVisible)
 {
+  if (bVisible && m_bVisible != bVisible)
+    m_lastAdTime = time(NULL);
   m_bVisible = bVisible;
 }
 
@@ -208,11 +211,15 @@ void AdController::ShowNextAd()
 
   m_nCurX = m_rc.left;
   m_nCurY = m_rc.top;
+
 }
 
 bool AdController::IsCurAdShownDone()
 {
   if ((m_nCurAd < 0) || (m_nCurAd > m_vtAds.size() - 1))
+    return true;
+
+  if ((time(NULL) - m_lastAdTime) > 5)
     return true;
 
   if (m_nCurX + m_szCurAd.cx <= m_rc.right)

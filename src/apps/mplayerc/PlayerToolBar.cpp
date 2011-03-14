@@ -1013,23 +1013,22 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
       {
         // If no ads exists, then didn't show ads, otherwise show ads
         if (m_adctrl.IsAdsEmpty())
-        {
           break;
-        }
 
         m_adctrl.AllowAnimate(true);
-
         Invalidate();
         break;
       }
     case TIMER_ADPLAYSWITCH:
       {
-        // If no ads exists, then didn't show ads, otherwise show ads
+        // If no ads exists, then don't show ads
         if (m_adctrl.IsAdsEmpty())
         {
+          m_adctrl.SetVisible(false);
           break;
         }
         KillTimer(TIMER_ADPLAYSWITCH);
+        // otherwise show ads
         // 查看广告是否显示完，如果还在显示则等待下一次2秒
         if (m_btnplaytime->GetString().IsEmpty() && m_adctrl.IsCurAdShownDone())
         {

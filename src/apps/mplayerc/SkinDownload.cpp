@@ -132,6 +132,9 @@ void SkinDownload::_Thread()
 
   std::wstring savepath = GetModuleFolder();
   savepath += L"skins\\";
+  BOOL bl = CreateDirectory(savepath.c_str(), 0);
+  if (bl == ERROR_PATH_NOT_FOUND)
+    return;
   savepath += m_filename;
   HANDLE hFile=CreateFile(savepath.c_str(),GENERIC_WRITE,0,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL);
   if(hFile==NULL)

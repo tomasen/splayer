@@ -25,6 +25,8 @@ LRESULT SkinPreviewDlg::OnSkinSelect(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
 {
   
   int index = m_skinlist.GetCurSel();
+  if (index == LB_ERR)
+    return 0;
   CString itemstr;
   m_skinlist.GetText(index, itemstr.GetBuffer(MAX_PATH));
   itemstr.ReleaseBuffer();
@@ -265,6 +267,7 @@ LRESULT SkinPreviewDlg::OnUpdataSkinSelections(UINT /*uMsg*/, WPARAM wParam,
   }
 
   ChangeCLinkCtrlStr();
+  ChangeCStaticPicture();
 
   return 0;
 }
@@ -303,7 +306,7 @@ void SkinPreviewDlg::ChangeCStaticPicture()
     m_skinpicture.SetBitmap(0);
   else
   {
-    m_skinlist.SetCurSel(0);
+    m_skinlist.SetCurSel(m_skinlist.GetCount() - 1);
     PostMessage(WM_COMMAND, MAKEWPARAM(IDD_SKINPREVIEW_LIST, LBN_SELCHANGE), 0);
   }
 }

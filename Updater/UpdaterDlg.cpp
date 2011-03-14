@@ -214,7 +214,7 @@ BOOL CUpdaterDlg::OnInitDialog()
 
 
 	
-	Shell_NotifyIcon(NIM_ADD, &tnid); 
+	// Shell_NotifyIcon(NIM_ADD, &tnid); 
 
 
 
@@ -355,10 +355,10 @@ void CUpdaterDlg::OnTimer(UINT_PTR nIDEvent)
 						cs_stat.SetWindowText(_T("You already have latest version, there is no need to update.\r\nUpdater will exit in 30 sec."));
 						csCurTask.SetWindowText(_T("Current Task: Closing..."));
 					}else{
-						cs_stat.SetWindowText(_T("您已经拥有最新版的射手播放器，目前无需升级。\r\n升级程序将在30秒后退出"));
+						cs_stat.SetWindowText(_T("您已经拥有最新版的射手播放器，目前无需升级。\r\n升级程序将在5秒后关闭"));
 						csCurTask.SetWindowText(_T("当前任务：正在准备关闭..."));
 					}
-					SetTimer(IDT_CLOSE_DLG, 30000, NULL);
+					SetTimer(IDT_CLOSE_DLG, 5000, NULL);
 				}
 
 			}
@@ -463,7 +463,7 @@ void CUpdaterDlg::OnTimer(UINT_PTR nIDEvent)
 						szTmp = (L"You have finished updating to latest version of SPlayer.\r\nUpdater will exit in 30 sec.");
 						csCurTask.SetWindowText(_T("Current Task: Finished"));
 					}else{
-						szTmp = _T("射手影音播放器已经更新到最新版本！\r\n本程序将在半分钟内关闭");
+						szTmp = _T("射手影音播放器已经更新到最新版本！\r\n升级程序将在5秒后关闭");
 						csCurTask.SetWindowText(_T("当前任务： 更新已结束"));
 					}
 					cs_stat.SetWindowText(szTmp);
@@ -476,14 +476,13 @@ void CUpdaterDlg::OnTimer(UINT_PTR nIDEvent)
 					KillTimer(IDT_SHOW_INTRO);
 
 					//cb_backgd.SetWindowText(_T("关闭"));
-					SetTimer(IDT_CLOSE_DLG, 15000, NULL);
+					SetTimer(IDT_CLOSE_DLG, 5000, NULL);
 				}
 			}
 			break;
 		case IDT_CLOSE_DLG:
 			KillTimer(IDT_CLOSE_DLG);
-			Shell_NotifyIcon(NIM_DELETE, &tnid); 
-			OnOK();
+      OnClose();
 			break;
 	}
 	CDialog::OnTimer(nIDEvent);
@@ -504,7 +503,7 @@ void CUpdaterDlg::OnBnClickedOk()
 void CUpdaterDlg::OnClose()
 {
 	// TODO: Add your message handler code here and/or call default
-	Shell_NotifyIcon(NIM_DELETE, &tnid); 
+	//Shell_NotifyIcon(NIM_DELETE, &tnid); 
 	OnOK();
 	//CDialog::OnClose();
 }

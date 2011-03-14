@@ -533,6 +533,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_WM_KEYUP()
   ON_COMMAND(ID_MOVIESHARE, OnMovieShare)
   ON_COMMAND(ID_MOVIESHARE_RESPONSE, OnMovieShareResponse)
+  ON_COMMAND(ID_MOVIESHARE_OPEN, OnOpenShooterMedia)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -2619,14 +2620,14 @@ void CMainFrame::OnTimer(UINT nIDEvent)
   case TIMER_MOVIESHARE:
     {
       KillTimer(TIMER_MOVIESHARE);
-      if (!(m_secret_switch & 0x01))
-        break;
       if (IsSomethingLoaded() && !m_fAudioOnly)
       {
         std::wstring uuid, moviehash;
         SPlayerGUID::GenerateGUID(uuid);
+        UserShareController* usc = UserShareController::GetInstance();
+        usc->CreateCommentPlane();
         moviehash = HashController::GetInstance()->GetSPHash(m_fnCurPlayingFile);
-        UserShareController::GetInstance()->ShareMovie(uuid, moviehash, m_fnCurPlayingFile.GetString());
+        usc->ShareMovie(uuid, moviehash, m_fnCurPlayingFile.GetString());
       }
     }
     break;
@@ -4602,7 +4603,8 @@ void CMainFrame::OnFilePostOpenmedia()
         if (!m_fFullScreen)
         {
           PlayerPreference* pref = PlayerPreference::GetInstance();
-          if (pref->GetIntVar(INTVAR_TOGGLEFULLSCRENWHENPLAYBACKSTARTED))
+         m_fFullScreen = pref->GetIntVar(INTVAR_TOGGLEFULLSCRENWHENPLAYBACKSTARTED);
+         if (m_fFullScreen)
           {
             ToggleFullscreen(true, true);
             SetCursor(NULL);
@@ -4710,11 +4712,12 @@ void CMainFrame::OnFilePostOpenmedia()
     }
 
   }
-  UserShareController::GetInstance()->HideCommentPlane();
-  m_wndToolBar.HideMovieShareBtn(TRUE);
+
   // send sphash to remote
+  m_wndToolBar.HideMovieShareBtn(TRUE);
+  UserShareController::GetInstance()->HideCommentPlane();
   if(IsSomethingLoaded() && !m_fAudioOnly && (UINT)((INT64)rtDur/10000000) > 90)
-    SetTimer(TIMER_MOVIESHARE, 1800, NULL);
+    SetTimer(TIMER_MOVIESHARE, 5800, NULL);
   
 
   KillTimer(TIMER_IDLE_TASK);
@@ -4784,6 +4787,7 @@ void CMainFrame::OnFilePostClosemedia()
   SetupNavChaptersSubMenu();
   SetupFavoritesSubMenu();
 
+  KillTimer(TIMER_MOVIESHARE);
   KillTimer(TIMER_IDLE_TASK);
   SetTimer(TIMER_IDLE_TASK, 30000, NULL);
 }
@@ -7141,11 +7145,8 @@ void CMainFrame::OnShowDrawStats()
   CString msg;
   msg.Format(L"Secret option @ %x", m_secret_switch);
   SendStatusMessage(msg, 2000);
-  if (m_secret_switch)
-  {
-    UserShareController::GetInstance()->CreateCommentPlane();
+  if (0 && m_secret_switch)
     SetTimer(TIMER_MOVIESHARE, 1, NULL);
-  }
   else
     AfxGetMyApp()->m_fDisplayStats = !AfxGetMyApp()->m_fDisplayStats;
 
@@ -9438,12 +9439,12 @@ void CMainFrame::OnUpdateFavoritesDevice(CCmdUI* pCmdUI)
 
 void CMainFrame::OnHelpHomepage()
 {
-  ShellExecute(m_hWnd, _T("open"), _T("http://shooter.cn/splayer/"), NULL, NULL, SW_SHOWDEFAULT);
+	ShellExecute(m_hWnd, _T("open"), _T("http://splayer.org/"), NULL, NULL, SW_SHOWDEFAULT);
 }
 
 void CMainFrame::OnHelpDocumentation()
 {
-  ShellExecute(m_hWnd, _T("open"), _T("http://www.shooter.cn/wiki/Category:%E5%B0%84%E6%89%8B%E6%92%AD%E6%94%BE%E5%99%A8"), NULL, NULL, SW_SHOWDEFAULT);
+	ShellExecute(m_hWnd, _T("open"), _T("http://hg.splayer.org/splayer/wiki/Home"), NULL, NULL, SW_SHOWDEFAULT);
 }
 
 //////////////////////////////////
@@ -17195,6 +17196,46 @@ void CMainFrame::OnCompleteQuerySubtitle()
     m_subcontrl.Start((LPCTSTR)m_fnCurPlayingFile, SubTransController::DownloadSubtitle,
       language, 2);
   }
+  
+  if(s.bSaveSVPSubWithVideo)
+  {
+    // save subtitle to media file folder
+    CSVPToolBox svpTool;
+    int selsubtitle = m_iSubtitleSel;
+    std::wstring subtitlename = PathFindFileName(getCurPlayingSubfile());
+    std::wstring savesubpath = svpTool.GetDirFromPath(m_fnCurPlayingFile);
+    savesubpath += subtitlename;
+    POSITION pos = m_pSubStreams.GetHeadPosition();
+    while(pos && selsubtitle >= 0)
+    {
+      CComPtr<ISubStream> pSubStream = m_pSubStreams.GetNext(pos);
+
+      if(selsubtitle < pSubStream->GetStreamCount())
+      {
+        CLSID clsid;
+        if(FAILED(pSubStream->GetClassID(&clsid)))
+          continue;
+
+        if(clsid == __uuidof(CVobSubFile))
+        {
+          CVobSubFile* pVSF = (CVobSubFile*)(ISubStream*)pSubStream;
+
+          CAutoLock cAutoLock(&m_csSubLock);
+          pVSF->Save(savesubpath.c_str());
+          break;
+        }
+        else if(clsid == __uuidof(CRenderedTextSubtitle))
+        {
+          CRenderedTextSubtitle* pRTS = (CRenderedTextSubtitle*)(ISubStream*)pSubStream;
+
+          CAutoLock cAutoLock(&m_csSubLock);
+          pRTS->SaveAs(savesubpath.c_str(), EXTSRT, m_pCAP->GetFPS(), pRTS->m_encoding);
+          break;
+        }
+      }
+      selsubtitle -= pSubStream->GetStreamCount();
+    }
+  }
 
 }
 
@@ -17292,4 +17333,9 @@ void CMainFrame::OnMovieShare()
 void CMainFrame::OnMovieShareResponse()
 {
   m_wndToolBar.HideMovieShareBtn(FALSE);
+}
+
+void CMainFrame::OnOpenShooterMedia()
+{
+  UserShareController::GetInstance()->OpenShooterMedia();
 }

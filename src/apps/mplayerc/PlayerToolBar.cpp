@@ -30,6 +30,7 @@
 #include "PlayerToolBar.h"
 #include "MainFrm.h"
 #include <fstream>
+#include <Strings.h>
 #include "../../svplib/svplib.h"
 #include "GUIConfigManage.h"
 #include "ButtonManage.h"
@@ -37,6 +38,7 @@
 typedef HRESULT (__stdcall * SetWindowThemeFunct)(HWND hwnd, LPCWSTR pszSubAppName, LPCWSTR pszSubIdList);
 #define TIMER_ADPLAYSWITCH 7013
 #define TIMER_ADPLAY 7014
+#define TIMER_ADFETCHING 7015
 #define ID_VOLUME_THUMB 126356
 
 #define CONFIGBUTTON(btnname,bmp,fixalign,fixcrect,notbutton,id,hide,hidewidth,relativealign,pbuttonname,relativecrect) \
@@ -107,13 +109,13 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
   cursorHand = ::LoadCursor(NULL, IDC_HAND);
 
   SetTimer(TIMER_ADPLAY, 100, NULL);
-  SetTimer(TIMER_ADPLAYSWITCH, 2000, NULL);
-
+  SetTimer(TIMER_ADPLAYSWITCH, 5000, NULL);
+  SetTimer(TIMER_ADFETCHING, 15000, NULL);
   //GetSystemFontWithScale(&m_statft, 14.0);
   LOGFONT lf;
 
   lf.lfWidth = 0;
-  lf.lfHeight = 13;
+  lf.lfHeight = 14;
   lf.lfEscapement = 0;
   lf.lfWeight = 0;
   lf.lfPitchAndFamily = 0;
@@ -724,6 +726,9 @@ BOOL CPlayerToolBar::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
         case ID_SUBFONTDOWNBOTH:
           toolTip = ResStr(IDS_TOOLTIP_TOOLBAR_BUTTON_SUB_FONT_DECREASE);
           break;	
+        case ID_MOVIESHARE:
+          toolTip = ResStr(IDS_TOOLTIP_TOOLBAR_BUTTON_MOVIESHARE);
+          break;	
         default:
           toolTip = ResStr(nID);
           break;
@@ -1001,35 +1006,45 @@ void CPlayerToolBar::OnLButtonUp(UINT nFlags, CPoint point)
 }
 void CPlayerToolBar::OnTimer(UINT nIDEvent){
   switch(nIDEvent){
+    case TIMER_ADFETCHING:
+      {
+        KillTimer(TIMER_ADFETCHING);
+        std::wstring ad_uri = Strings::Format(L"https://www.shooter.cn/api/v2/prom.php?lang=%d", AfxGetAppSettings().iLanguage);
+        m_adctrl.GetAds(ad_uri.c_str());
+      }
+      break;
     case TIMER_ADPLAY:
       {
         // If no ads exists, then didn't show ads, otherwise show ads
         if (m_adctrl.IsAdsEmpty())
-        {
           break;
-        }
 
         m_adctrl.AllowAnimate(true);
-
         Invalidate();
         break;
       }
     case TIMER_ADPLAYSWITCH:
       {
-        // If no ads exists, then didn't show ads, otherwise show ads
+        // If no ads exists, then don't show ads
         if (m_adctrl.IsAdsEmpty())
         {
+          m_adctrl.SetVisible(false);
           break;
         }
-
+        KillTimer(TIMER_ADPLAYSWITCH);
+        // otherwise show ads
         // 查看广告是否显示完，如果还在显示则等待下一次2秒
         if (m_btnplaytime->GetString().IsEmpty() && m_adctrl.IsCurAdShownDone())
+        {
+          SetTimer(TIMER_ADPLAYSWITCH, 5000, NULL);
           m_adctrl.SetVisible(false);
+        }
         else if (!m_btnplaytime->GetString().IsEmpty())
         {
           m_btnplaytime->SetString(L"");
           m_adctrl.SetVisible(true);
           m_adctrl.ShowNextAd();
+          SetTimer(TIMER_ADPLAYSWITCH, 2000, NULL);
         }
 
         break;

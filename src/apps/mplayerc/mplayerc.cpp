@@ -1359,6 +1359,7 @@ HANDLE WINAPI Mine_CreateFileA(LPCSTR p1, DWORD p2, DWORD p3, LPSECURITY_ATTRIBU
 	//int i = fn.Find(".part");
 	//if(i > 0 && i == fn.GetLength() - 5)
 	p3 |= FILE_SHARE_WRITE;
+	p6 |= FILE_FLAG_SEQUENTIAL_SCAN;
 	//if(strstr(p1, ("SVPDebug")) == 0)  SVP_LogMsg6(("Mine_CreateFileA %s") , p1);
     //if( strcmp (p1 + nLen-4, ".ini") == 0)
         //SVP_LogMsg5(L"Mine_CreateFileW %s", p1);
@@ -1465,6 +1466,7 @@ HANDLE WINAPI Mine_CreateFileW(LPCWSTR p1, DWORD p2, DWORD p3, LPSECURITY_ATTRIB
 	 //   SVP_LogMsg5(L"Mine_CreateFileW %s", p1);
 
 	p3 |= FILE_SHARE_WRITE;
+	p6 |= FILE_FLAG_SEQUENTIAL_SCAN;
 
 	if (nLen>=4 && _wcsicmp (p1 + nLen-4, L".ifo") == 0)
 	{
@@ -1503,6 +1505,24 @@ BOOL WINAPI Mine_DeviceIoControl(HANDLE hDevice, DWORD dwIoControlCode, LPVOID l
 
 	return ret;
 }
+
+int (__stdcall * Real_MessageBoxA)(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType)
+                                     = ::MessageBoxA;
+int (__stdcall * Real_MessageBoxW)(HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption, UINT uType)
+                                     = ::MessageBoxW;
+int WINAPI Mine_MessageBoxA(HWND hWnd,  LPCSTR lpText,  LPCSTR lpCaption,  UINT uType)
+{
+  if (NULL == strstr(lpCaption, "Internet Explorer"))
+    return Real_MessageBoxA(hWnd, lpText, lpCaption, uType);
+  return IDOK;
+}
+int WINAPI Mine_MessageBoxW( HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption, UINT uType)
+{
+  if (NULL == wcsstr(lpCaption, L"Internet Explorer"))
+    return Real_MessageBoxW(hWnd, lpText, lpCaption, uType);
+  return IDOK;
+}
+
 
 #include "../../subtitles/SSF.h"
 #include "../../subtitles/RTS.h"
@@ -1973,6 +1993,9 @@ BOOL CMPlayerCApp::InitInstance()
 
 	DetourAttach(&(PVOID&)Real_SetUnhandledExceptionFilter, (PVOID)Mine_SetUnhandledExceptionFilter);
 
+  DetourAttach(&(PVOID&)Real_MessageBoxA, (PVOID)Mine_MessageBoxA);
+  DetourAttach(&(PVOID&)Real_MessageBoxW, (PVOID)Mine_MessageBoxW);
+
 #ifndef _DEBUG
 	HMODULE hNTDLL	=	LoadLibrary (_T("ntdll.dll"));
 	if (hNTDLL)
@@ -1995,6 +2018,7 @@ BOOL CMPlayerCApp::InitInstance()
         AfxMessageBox(_T("OleInitialize failed!"));
 		return FALSE;
 	}
+
 
   //////////////////////////////////////////////////////////////////////////
   // WTL/ATL supporting logic
@@ -3678,7 +3702,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DONTNEEDSVPSUBFILTER), bDontNeedSVPSubFilter);
 
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_PRIORITY), priority);
-		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LAUNCHFULLSCREEN), launchfullscreen);
+		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), L"ToggleFullScreenWhenPlaybackStarted", launchfullscreen);
 
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_WEBSERVERPORT), nWebServerPort);
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_WEBSERVERPRINTDEBUGINFO), fWebServerPrintDebugInfo);
@@ -4350,7 +4374,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 
 		priority = HIGH_PRIORITY_CLASS;//pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_PRIORITY), NORMAL_PRIORITY_CLASS);
 		::SetPriorityClass(::GetCurrentProcess(), priority);
-		launchfullscreen = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LAUNCHFULLSCREEN), FALSE);
+		launchfullscreen = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), L"ToggleFullScreenWhenPlaybackStarted", FALSE);
 
 		nWebServerPort = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_WEBSERVERPORT), 13579);
 		fWebServerPrintDebugInfo = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_WEBSERVERPRINTDEBUGINFO), FALSE);

@@ -7,14 +7,17 @@
 // built-in definition for main subtitle styles
 static SubtitleStyle::STYLEPARAM g_styleparams[] = 
 {
+  // blue border
+  {SubtitleStyle::SimHei, L"SimHei", 20, 0x00FFFFFF, 1, 0x00996633, 1, 0x00333333, 90, 50},
+  {SubtitleStyle::SimSun, L"SimSun", 16, 0x00FFFFFF, 2, 0x00996633, 0, 0x00000000, 90, 50},
+  // white
   {SubtitleStyle::SimHei, L"SimHei", 20, 0x00FFFFFF, 1, 0x00333333, 0, 0, 90, 50},
   {SubtitleStyle::SimHei, L"SimHei", 20, 0x00FFFFFF, 2, 0x00333333, 1, 0x00333333, 90, 50},
-  {SubtitleStyle::SimHei, L"SimHei", 20, 0x00FFFFFF, 1, 0x00996633, 1, 0x00333333, 90, 50},
-#ifdef _WINDOWS_
-  {SubtitleStyle::SimSun, L"SimSun", 16, 0x00FFFFFF, 2, 0x00996633, 0, 0x00000000, 90, 50},
+  // yellow
   {SubtitleStyle::SimHei, L"SimHei", 20, 0x0000ecec, 2, 0x000f0f0f, 1, 0x00333333, 90, 50},
   {SubtitleStyle::KaiTi, L"KaiTi", 16, 0x0086E1FF, 2, 0x0006374A, 1, 0x00333333, 90, 50},
-#endif
+  {SubtitleStyle::KaiTi, L"KaiTi", 16, 0x00FFFFFF, 2, 0x00996633, 0, 0x00000000, 90, 50},
+
 };
 
 // built-in definition for secondary subtitle styles

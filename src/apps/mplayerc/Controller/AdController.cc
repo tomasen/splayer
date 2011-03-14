@@ -15,8 +15,9 @@ AdController::AdController()
 , m_nCurAd(-1)
 , m_nCurX(0)
 , m_nCurY(0)
+, m_lastAdTime(0)
+, m_bTryNextLoopWhenFail(false)
 {
-  GetAds(L"https://www.shooter.cn/api/v2/prom.php");
   m_szCurAd.SetSize(0, 0);
 }
 
@@ -29,6 +30,8 @@ AdController::~AdController()
 // operations
 void AdController::SetVisible(bool bVisible)
 {
+  if (bVisible && m_bVisible != bVisible)
+    m_lastAdTime = time(NULL);
   m_bVisible = bVisible;
 }
 
@@ -61,30 +64,13 @@ void AdController::SetRect(const RECT &rc, CMemoryDC *pDC)
 
 void AdController::_Thread()
 {
-  ////////////////////////////////////////////////////////////////////////////////
-  //// Demo
-  //tagAd adxxx;
-  //adxxx.sLink = L"http://splayer.org";
-  //adxxx.sName = L"我用射手影音，就是这么自信2 -- 我用射手影音，就是这么自信";
-  //m_vtAds.push_back(adxxx);
-
-  //adxxx.sName = L"用射手影音，明智的选择";
-  //m_vtAds.push_back(adxxx);
-
-  //adxxx.sName = L"今天你射了没有？没有？赶快点我下载播放器";
-  //m_vtAds.push_back(adxxx);
-
-  //adxxx.sName = L"看电影，用射手影音吧";
-  //m_vtAds.push_back(adxxx);
-
-  //return;
-  ////////////////////////////////////////////////////////////////////////////////
-
   //////////////////////////////////////////////////////////////////////////////
   // Note:
   // "20110215firstad;http://#\nsecondad;http://#\n", first 8 characters are date
   // only get ad once per day
   // get the ads string
+
+  
   std::wstring sAds = PlayerPreference::GetInstance()->GetStringVar(STRVAR_AD);
 
   // check if need to download ad
@@ -111,60 +97,81 @@ void AdController::_Thread()
 
   std::wstring sCurDate = std::wstring() + szYear + szMonth + szDay;
   std::wstring sAdDate;
-  if (sAds.size() > 8)  // must greater than 8, because has a date prefix
+  if (sAds.size() >= 8)  // must greater than 8, because has a date prefix
     sAdDate.assign(sAds.begin(), sAds.begin() + 8);
 
   while (true)
   {
-    if (sAds.empty() || (sCurDate != sAdDate))
+    if (sCurDate == sAdDate)
     {
-      // Get ads from web
-      sinet::refptr<sinet::pool>    net_pool = sinet::pool::create_instance();
-      sinet::refptr<sinet::task>    net_task = sinet::task::create_instance();
-      sinet::refptr<sinet::request> net_rqst = sinet::request::create_instance();
-      sinet::refptr<sinet::config>  net_cfg  = sinet::config::create_instance();
-
-      net_task->use_config(net_cfg);
-
-      net_rqst->set_request_url(m_sURL.c_str());
-      net_rqst->set_request_method(REQ_GET);
-
-      net_task->append_request(net_rqst);
-
-      net_pool->execute(net_task);
-
-      while (net_pool->is_running_or_queued(net_task))
-      {
-        if (_Exit_state(5000))  // can wait 5s until done this job
-        {
-          ::Sleep(7000);  // sleep for a moment
-          continue;  // continue next try
-        }
-      }
-      if (net_rqst->get_response_errcode() != 0)  // judge if successful
-      {
-          ::Sleep(7000);  // sleep for a moment
-          continue;  // continue next try
-      }
-
-      std::vector<unsigned char> st_buffer = net_rqst->get_response_buffer();
-      if (st_buffer[st_buffer.size() - 1] != '\0')
-        st_buffer.push_back('\0');
-
-      sAds = Strings::Utf8StringToWString(std::string(st_buffer.begin(), st_buffer.end()));
-      sAds = sCurDate + sAds;
-
-      PlayerPreference::GetInstance()->SetStringVar(STRVAR_AD, sAds);
+      SplitAdData(sAds);
+      return;
     }
 
+    Logging("fetching ads");
+    sAds = sCurDate;
+    // Get ads from web
+    sinet::refptr<sinet::pool>    net_pool = sinet::pool::create_instance();
+    sinet::refptr<sinet::task>    net_task = sinet::task::create_instance();
+    sinet::refptr<sinet::request> net_rqst = sinet::request::create_instance();
+    sinet::refptr<sinet::config>  net_cfg  = sinet::config::create_instance();
+
+    net_task->use_config(net_cfg);
+
+    net_rqst->set_request_url(m_sURL.c_str());
+    net_rqst->set_request_method(REQ_GET);
+
+    net_task->append_request(net_rqst);
+
+    net_pool->execute(net_task);
+
+    while (net_pool->is_running_or_queued(net_task))
+    {
+      if (_Exit_state(5000))  // can wait 5s until done this job
+      {
+        ::Sleep(2000);  // sleep for a moment
+        if (TryNextLoopWhenFail())
+          continue;  // continue next try
+        else
+          break;
+      }
+    }
+    if (net_rqst->get_response_errcode() != 0)  // judge if successful
+    {
+      ::Sleep(2000);  // sleep for a moment
+      if (TryNextLoopWhenFail())
+        continue;  // continue next try
+      else
+        break;
+    }
+
+    std::vector<unsigned char> st_buffer = net_rqst->get_response_buffer();
+    if (st_buffer.size() <= 15)
+      break;
+
+    if (st_buffer[st_buffer.size() - 1] != '\0')
+      st_buffer.push_back('\0');
+
+    sAds += Strings::Utf8StringToWString(std::string(st_buffer.begin(), st_buffer.end()));
     break;  // jump out the download loop
   }
 
-  // split the sAds and store them into m_vtAds
+  PlayerPreference::GetInstance()->SetStringVar(STRVAR_AD, sAds);
+
+  if (sAds.length() < 15)
+    return;
+
+  SplitAdData(sAds);
+}
+
+void AdController::SplitAdData(const std::wstring& data)
+{
+  // split the data and store them into m_vtAds
+  m_vtAds.clear();
   std::tr1::wregex rx(L"([^;]*);([^\\n]*)\\n");
   std::tr1::wsmatch mt;
-  std::wstring::const_iterator itS = sAds.begin() + 8;   // not include the date prefix
-  std::wstring::const_iterator itE = sAds.end();
+  std::wstring::const_iterator itS = data.begin() + 8;   // not include the date prefix
+  std::wstring::const_iterator itE = data.end();
   bool bMatched = std::tr1::regex_search(itS, itE, mt, rx);
   while (bMatched)
   {
@@ -174,7 +181,7 @@ void AdController::_Thread()
     m_vtAds.push_back(ad);
 
     itS = mt[0].second;
-    itE = sAds.end();
+    itE = data.end();
     bMatched = std::tr1::regex_search(itS, itE, mt, rx);
   }
 }
@@ -204,11 +211,15 @@ void AdController::ShowNextAd()
 
   m_nCurX = m_rc.left;
   m_nCurY = m_rc.top;
+
 }
 
 bool AdController::IsCurAdShownDone()
 {
   if ((m_nCurAd < 0) || (m_nCurAd > m_vtAds.size() - 1))
+    return true;
+
+  if ((time(NULL) - m_lastAdTime) > 5)
     return true;
 
   if (m_nCurX + m_szCurAd.cx <= m_rc.right)
@@ -252,4 +263,9 @@ void AdController::OnAdClick()
     return;
 
   ::ShellExecute(0, L"open", m_vtAds[m_nCurAd].sLink.c_str(), 0, 0, SW_SHOW);
+}
+
+bool AdController::TryNextLoopWhenFail()
+{
+  return m_bTryNextLoopWhenFail;
 }

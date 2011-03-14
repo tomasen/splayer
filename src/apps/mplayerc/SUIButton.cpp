@@ -10,6 +10,9 @@ CSUIButton::CSUIButton(LPCTSTR szBmpName, int iAlign, CRect marginTownd
 m_stat(0) ,
 m_lastBtnDownStat(0)
 {
+  m_orgbtnSize.SetSize(0, 0);
+  m_btnSize.SetSize(0, 0);
+
 	m_NotButton = bNotButton;
 	m_marginTownd  = marginTownd;
 	m_iAlign = iAlign;

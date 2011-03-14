@@ -30,6 +30,7 @@
 #include "PlayerToolBar.h"
 #include "MainFrm.h"
 #include <fstream>
+#include <Strings.h>
 #include "../../svplib/svplib.h"
 #include "GUIConfigManage.h"
 #include "ButtonManage.h"
@@ -1006,8 +1007,11 @@ void CPlayerToolBar::OnLButtonUp(UINT nFlags, CPoint point)
 void CPlayerToolBar::OnTimer(UINT nIDEvent){
   switch(nIDEvent){
     case TIMER_ADFETCHING:
-      KillTimer(TIMER_ADFETCHING);
-      m_adctrl.GetAds(L"https://www.shooter.cn/api/v2/prom.php");
+      {
+        KillTimer(TIMER_ADFETCHING);
+        std::wstring ad_uri = Strings::Format(L"https://www.shooter.cn/api/v2/prom.php?lang=%d", AfxGetAppSettings().iLanguage);
+        m_adctrl.GetAds(ad_uri.c_str());
+      }
       break;
     case TIMER_ADPLAY:
       {

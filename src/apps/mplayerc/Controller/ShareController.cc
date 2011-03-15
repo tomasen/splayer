@@ -167,6 +167,13 @@ BOOL UserShareController::OpenShooterMedia()
   return TRUE;
 }
 
+BOOL UserShareController::CloseShooterMedia()
+{
+  if (m_commentplane.m_hWnd && m_commentplane.m_initialize)
+    m_commentplane.ClearFrame();
+  return TRUE;
+}
+
 void UserShareController::ToggleCommentPlane()
 {
   if (m_commentplane.m_hWnd && m_commentplane.IsWindowEnabled())

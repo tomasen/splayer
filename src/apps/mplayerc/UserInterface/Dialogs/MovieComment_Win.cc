@@ -71,6 +71,14 @@ BOOL MovieComment::OnInitDialog()
   // suppress script error
   m_pBrowserApp->put_Silent(VARIANT_TRUE);
   m_initialize = 1;
+  ClearFrame();
+
+  return TRUE;
+}
+void MovieComment::ClearFrame()
+{
+  if (!m_hWnd || !m_initialize)
+    return;
 
   CString strResourceURL;
   LPTSTR lpszModule = new TCHAR[_MAX_PATH];
@@ -83,10 +91,7 @@ BOOL MovieComment::OnInitDialog()
   }
   else
     Navigate(L"about:blank");
-
-  return TRUE;
 }
-
 void MovieComment::OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl)
 {
 

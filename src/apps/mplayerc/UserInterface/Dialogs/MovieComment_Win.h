@@ -24,6 +24,7 @@ public:
     DWORD dwFlags, BSTR bstrUrlContext, BSTR bstrUrl);
   HRESULT OpenNewLink(IHTMLElement *pElement);
   HRESULT OnEventClose(IHTMLElement *pElement);
+  void ClearFrame();
   void CalcWndPos();
   void HideFrame();
   void ShowFrame();

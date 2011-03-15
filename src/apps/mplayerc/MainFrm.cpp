@@ -4717,6 +4717,7 @@ void CMainFrame::OnFilePostOpenmedia()
   // send sphash to remote
   m_wndToolBar.HideMovieShareBtn(TRUE);
   UserShareController::GetInstance()->HideCommentPlane();
+  UserShareController::GetInstance()->CloseShooterMedia();
   if(IsSomethingLoaded() && !m_fAudioOnly && (UINT)((INT64)rtDur/10000000) > 90)
   {
     m_movieShared = false;
@@ -4792,6 +4793,9 @@ void CMainFrame::OnFilePostClosemedia()
   SetupFavoritesSubMenu();
 
   KillTimer(TIMER_MOVIESHARE);
+  m_wndToolBar.HideMovieShareBtn(TRUE);
+  UserShareController::GetInstance()->HideCommentPlane();
+
   KillTimer(TIMER_IDLE_TASK);
   SetTimer(TIMER_IDLE_TASK, 30000, NULL);
 }

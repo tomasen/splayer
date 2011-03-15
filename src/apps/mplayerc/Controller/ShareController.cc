@@ -176,8 +176,8 @@ void UserShareController::ToggleCommentPlane()
 }
 BOOL UserShareController::ShowCommentPlane()
 {
-  if (m_retdata.empty())
-      return FALSE;
+  //if (m_retdata.empty())
+  //    return FALSE;
 
   CreateCommentPlane();
   m_commentplane.ShowFrame();

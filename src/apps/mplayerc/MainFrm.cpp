@@ -532,7 +532,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_WM_WINDOWPOSCHANGING()
   ON_WM_KEYUP()
   ON_COMMAND(ID_MOVIESHARE, OnMovieShare)
-  ON_COMMAND(ID_MOVIESHARE_RESPONSE, OnMovieShareResponse)
   ON_COMMAND(ID_MOVIESHARE_OPEN, OnOpenShooterMedia)
 END_MESSAGE_MAP()
 
@@ -595,7 +594,8 @@ m_wndLycShowBox(NULL),
 m_l_been_playing_sec(0),
 m_is_resume_from_last_exit_point(false),
 m_lyricDownloadThread(NULL),
-m_secret_switch(NULL)
+m_secret_switch(NULL),
+m_movieShared(false)
 {
   m_wndFloatToolBar = new CPlayerFloatToolBar();
 }
@@ -2620,8 +2620,9 @@ void CMainFrame::OnTimer(UINT nIDEvent)
   case TIMER_MOVIESHARE:
     {
       KillTimer(TIMER_MOVIESHARE);
-      if (IsSomethingLoaded() && !m_fAudioOnly)
+      if (IsSomethingLoaded() && !m_fAudioOnly && !m_movieShared)
       {
+        m_movieShared = true;
         std::wstring uuid, moviehash;
         SPlayerGUID::GenerateGUID(uuid);
         UserShareController* usc = UserShareController::GetInstance();
@@ -4717,8 +4718,11 @@ void CMainFrame::OnFilePostOpenmedia()
   m_wndToolBar.HideMovieShareBtn(TRUE);
   UserShareController::GetInstance()->HideCommentPlane();
   if(IsSomethingLoaded() && !m_fAudioOnly && (UINT)((INT64)rtDur/10000000) > 90)
+  {
+    m_movieShared = false;
+    m_wndToolBar.HideMovieShareBtn(FALSE);
     SetTimer(TIMER_MOVIESHARE, 5800, NULL);
-  
+  }
 
   KillTimer(TIMER_IDLE_TASK);
 }
@@ -17327,12 +17331,9 @@ void CMainFrame::AutoSaveImage(LPCTSTR fn, bool shrink_inhalf)
 
 void CMainFrame::OnMovieShare()
 {
+  KillTimer(TIMER_MOVIESHARE);
+  SetTimer(TIMER_MOVIESHARE, 1, NULL);
   UserShareController::GetInstance()->ToggleCommentPlane();
-}
-
-void CMainFrame::OnMovieShareResponse()
-{
-  m_wndToolBar.HideMovieShareBtn(FALSE);
 }
 
 void CMainFrame::OnOpenShooterMedia()

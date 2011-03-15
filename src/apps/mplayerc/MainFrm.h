@@ -779,7 +779,8 @@ public:
   afx_msg void OnWindowPosChanging(WINDOWPOS* lpwndpos);
 
   afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
-  afx_msg void OnMovieShareResponse();
   afx_msg void OnAudioSettingUpdated();
   afx_msg void OnOpenShooterMedia();
+private:
+  int          m_movieShared;
 };

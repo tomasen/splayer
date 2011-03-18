@@ -1,15 +1,18 @@
+#include "stdafx.h"
 #include "SUIButton.h"
 #include "../../svplib/svplib.h"
 #include "../../svplib/SVPToolBox.h"
 #include <ResLoader.h>
 #include "GUIConfigManage.h"
 #include "ButtonManage.h"
+#include "MakeMultiplyBmp.h"
 CSUIButton::CSUIButton(LPCTSTR szBmpName, int iAlign, CRect marginTownd 
 					   , BOOL bNotButton, UINT htMsgID, BOOL bHide 
 					   ,UINT alignToButton  , CSUIButton * relativeToButton , CRect marginToBtn
              ,int  hidewidth, CString buttonname) : 
 m_stat(0) ,
-m_lastBtnDownStat(0)
+m_lastBtnDownStat(0),
+m_bsingleormultiply(0)
 {
 	m_NotButton = bNotButton;
 	m_marginTownd  = marginTownd;
@@ -17,15 +20,12 @@ m_lastBtnDownStat(0)
 	m_htMsgID = htMsgID;
 
   ResLoader rlResLoader;
-  
   if (szBmpName != L"NOBMP")
-  {
-    HBITMAP hBitmap = rlResLoader.LoadBitmap(szBmpName);
-    
-    this->Attach(hBitmap);
+  {  
+    HBITMAP hbitmap = rlResLoader.LoadBitmap(szBmpName);
+    this->Attach(hbitmap);
   }
 
-  
   m_szBmpName = szBmpName;
 	m_hide = bHide;
 	m_hidewidth = hidewidth;
@@ -260,8 +260,16 @@ void CSUIButton::LoadImage(LPCTSTR szBmpName){
 
 void CSUIButton::Attach(HBITMAP bmp){
   m_bitmap.Detach();
-	m_bitmap.Attach(bmp);
-	
+  if (m_bsingleormultiply)
+  {
+    MakeMultiplyBmp mmbmp;
+    mmbmp.SetBmpAlpha(200);
+    mmbmp.SetBmpBrightness(1.4);
+    HBITMAP hbitmp = mmbmp.MakeMultiplyBmpFromSingleBmp(bmp);
+    m_bitmap.Attach(hbitmp);
+  }
+	else
+    m_bitmap.Attach(bmp);
 	PreMultiplyBitmap(m_bitmap,m_btnSize,m_NotButton);
 }
 void CSUIButton::PreMultiplyBitmap(CBitmap& bmp , CSize& sizeBmp, BOOL NotButton)
@@ -271,6 +279,7 @@ void CSUIButton::PreMultiplyBitmap(CBitmap& bmp , CSize& sizeBmp, BOOL NotButton
 	bmp.GetBitmap(&bm);
 	sizeBmp.cx = bm.bmWidth;
 	sizeBmp.cy = bm.bmHeight;
+
 	if(!NotButton){
 		sizeBmp.cy = sizeBmp.cy /4;
 	}
@@ -283,7 +292,7 @@ void CSUIButton::PreMultiplyBitmap(CBitmap& bmp , CSize& sizeBmp, BOOL NotButton
 		BYTE * pPixel = (BYTE *) bm.bmBits + bm.bmWidth * 4 * y;
 		for (int x=0; x<bm.bmWidth; x++)
 		{
-			pPixel[0] = pPixel[0] * pPixel[3] / 255; 
+      pPixel[0] = pPixel[0] * pPixel[3] / 255; 
 			pPixel[1] = pPixel[1] * pPixel[3] / 255; 
 			pPixel[2] = pPixel[2] * pPixel[3] / 255; 
 			pPixel += 4;
@@ -310,22 +319,8 @@ void CSUIButton::SetStrSize(CSize sz)
 {
   m_btnSize = sz;
 }
-/*
-void CSUIButton::ChangeBtnAttribute(std::map<std::wstring, buttonattribute>& mp)
-{
-  buttonattribute btnstruct = mp[m_buttonname];
-  m_marginTownd  = btnstruct.fixrect
-  m_iAlign = btnstruct.fixalign;
-  m_hide = btnstruct.hide;
-  m_hidewidth = btnstruct.hidewidth;
-  for (std::vector<relativebuttonattribute>::iterator ite = btnstruct.relativevec.begin();
-       ite != btnstruct.relativevec.end(); ++ite)
-    addAlignRelButton(ite->relativealign, ite->relativebutton, ite->relativerect);
-}
-*/
 
-
-
+extern BOOL CheckMultiplyBmpOrSingle(std::wstring& bmpname);
 /*CSUIBtnList*/
 CSUIBtnList::CSUIBtnList()
 {
@@ -526,7 +521,7 @@ BOOL CSUIBtnList::ResReload(std::wstring folder, BOOL bl, std::wstring cfgfilena
   while(pos)
   {
     CSUIButton* cbtn = GetNext(pos);
-    std::wstring bmpname(L"skins\\");
+    std::wstring bmpname;//(L"skins\\");
     bmpname += folder;
     bmpname += L"\\";
     bmpname += cbtn->m_szBmpName;
@@ -534,10 +529,17 @@ BOOL CSUIBtnList::ResReload(std::wstring folder, BOOL bl, std::wstring cfgfilena
     {
       HBITMAP hbitmap;
       if (bl)
+      {
+        cbtn->m_bsingleormultiply = CheckMultiplyBmpOrSingle(bmpname);
+        bmpname = L"skins\\" + bmpname;
         hbitmap = rlResLoader.LoadBitmapFromDisk(bmpname);
+      }
       else
+      {
         hbitmap = rlResLoader.LoadBitmapFromModule(cbtn->m_szBmpName.GetString());
-      
+        cbtn->m_bsingleormultiply = FALSE;
+      }
+
       if (hbitmap)
       {
        cbtn->Attach(hbitmap);
@@ -547,9 +549,8 @@ BOOL CSUIBtnList::ResReload(std::wstring folder, BOOL bl, std::wstring cfgfilena
       } 
       else
       {
-        
-        bloadsuccess = FALSE;
-        break;
+       bloadsuccess = FALSE;
+       break;
       }
     }
 
@@ -580,4 +581,32 @@ BOOL CSUIBtnList::ResReload(std::wstring folder, BOOL bl, std::wstring cfgfilena
   }
 
   return bloadsuccess;
+}
+
+static BOOL CheckMultiplyBmpOrSingle(std::wstring& bmpname)
+{
+  BOOL beMultiplyOrSingle = FALSE;
+  CSVPToolBox csvptbox;
+  std::wstring fullpath = csvptbox.GetPlayerPath(L"skins\\");
+  fullpath += bmpname;
+  if (::PathFileExists(fullpath.c_str()))
+    beMultiplyOrSingle = FALSE;
+  else
+  {
+    int pos = bmpname.find_last_of('.');
+    if (pos != std::wstring::npos)
+    {
+      std::wstring bmpNameNew = bmpname.substr(0, pos);
+      std::wstring suffix(bmpname.substr(pos));
+      bmpNameNew += L"_single";
+      bmpNameNew += suffix;
+      bmpname = bmpNameNew;
+      fullpath = csvptbox.GetPlayerPath(L"skins\\");
+      fullpath += bmpname;
+    }
+    if (::PathFileExists(fullpath.c_str()))
+      beMultiplyOrSingle = TRUE;
+  }
+
+  return beMultiplyOrSingle;
 }

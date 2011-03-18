@@ -92,6 +92,7 @@ public:
   int  m_hidewidth;
 	BOOL m_NotButton;
   CString m_buttonname;
+  BOOL m_bsingleormultiply;
 
 	static HBITMAP SUILoadImage(LPCTSTR szBmpName);
   static void PreMultiplyBitmap(CBitmap& bmp , CSize& sizeBmp, BOOL NotButton);

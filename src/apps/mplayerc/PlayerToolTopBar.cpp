@@ -491,7 +491,7 @@ void CPlayerToolTopBar::OnLButtonUp(UINT nFlags, CPoint point)
 	CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
 	
 	ReleaseCapture();
-
+  
 	CRect rc;
 	GetWindowRect(&rc);
 
@@ -507,6 +507,8 @@ void CPlayerToolTopBar::OnLButtonUp(UINT nFlags, CPoint point)
 	m_nItemToTrack = ret;
 
 	KillTimer(IDT_CLOSE);
+
+  
 	//SetTimer(IDT_CLOSE, 8000 , NULL);
 
 
@@ -519,20 +521,22 @@ void CPlayerToolTopBar::OnLButtonUp(UINT nFlags, CPoint point)
 void CPlayerToolTopBar::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	// TODO: Add your message handler code here and/or call default
-	
+	SetCapture();
 	CRect rc;
 	GetWindowRect(&rc);
-
-	point += rc.TopLeft() ;
+  Logging("-----------------------leftbuttondown");
+  point += rc.TopLeft() ;
 	UINT ret = m_btnList.OnHitTest(point,rc,true);
-	if( m_btnList.HTRedrawRequired ){
-		//if(ret)
-		//	SetCapture();
+	if ( m_btnList.HTRedrawRequired ){
+// 		if (ret)
+// 		SetCapture();
 		Invalidate();
 	}
 	m_nItemToTrack = ret;
 
 	KillTimer(IDT_CLOSE);
+
+  
 	//SetTimer(IDT_CLOSE, 8000 , NULL);
 
 	//__super::OnLButtonDown(nFlags, point);
@@ -596,7 +600,7 @@ void CPlayerToolTopBar::OnMouseMove(UINT nFlags, CPoint point)
 
 	if( bMouseMoved){
 
-		UINT ret = m_btnList.OnHitTest(point,rc,-1);
+		UINT ret = m_btnList.OnHitTest(point,rc, -1);
 		m_nItemToTrack = ret;
 		if(ret){
 			if( GetCursor() == NULL )
@@ -614,8 +618,8 @@ void CPlayerToolTopBar::OnMouseMove(UINT nFlags, CPoint point)
 			Invalidate();
 		}
 	}
-
-	__super::OnMouseMove(nFlags, point);
+ 
+  __super::OnMouseMove(nFlags, point);
 }
 
 INT_PTR CPlayerToolTopBar::OnToolHitTest(CPoint point, TOOLINFO* pTI) const
@@ -720,7 +724,8 @@ void CPlayerToolTopBar::OnMouseLeave()
 	// TODO: Add your message handler code here and/or call default
 	m_toolTip.SendMessage(TTM_TRACKACTIVATE, FALSE, (LPARAM)&m_ti);
 	m_nItemToTrack = 0 ;
-	CWnd::OnMouseLeave();
+
+  CWnd::OnMouseLeave();
 }
 
 void CPlayerToolTopBar::OnShowWindow(BOOL bShow, UINT nStatus)

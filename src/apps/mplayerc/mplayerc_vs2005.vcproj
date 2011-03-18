@@ -511,6 +511,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\MakeMultiplyBmp.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MakeMultiplyBmp.h"
+				>
+			</File>
+			<File
 				RelativePath="MediaFormats.cpp"
 				>
 			</File>
@@ -956,14 +964,6 @@
 				<File
 					RelativePath=".\SUIButton.cpp"
 					>
-					<FileConfiguration
-						Name="Release Unicode|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath=".\SUIButton.h"

@@ -143,6 +143,9 @@ void AdController::_Thread()
     }
 
     std::vector<unsigned char> st_buffer = net_rqst->get_response_buffer();
+    if (st_buffer.size() <= 15)
+      break;
+
     if (st_buffer[st_buffer.size() - 1] != '\0')
       st_buffer.push_back('\0');
 

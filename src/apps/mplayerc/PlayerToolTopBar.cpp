@@ -524,7 +524,6 @@ void CPlayerToolTopBar::OnLButtonDown(UINT nFlags, CPoint point)
 	SetCapture();
 	CRect rc;
 	GetWindowRect(&rc);
-  Logging("-----------------------leftbuttondown");
   point += rc.TopLeft() ;
 	UINT ret = m_btnList.OnHitTest(point,rc,true);
 	if ( m_btnList.HTRedrawRequired ){

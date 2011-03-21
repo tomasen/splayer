@@ -1,6 +1,13 @@
 #include "stdafx.h"
 #include "MakeMultiplyBmp.h"
 
+
+////////////////////////////////////////////////////////////////////
+////This class can make a multiply bitmap from a single bitmap,
+////this bitmap is a 32 bits picture with alpha blending.
+////A multiply bitmap has 4 pictures for button's 4 stat one by one.
+////////////////////////////////////////////////////////////////////
+
 MakeMultiplyBmp::MakeMultiplyBmp(void):
 m_alpha(255),
 m_brightness(1.0)
@@ -18,6 +25,9 @@ HBITMAP MakeMultiplyBmp::MakeMultiplyBmpFromSingleBmp(HBITMAP hbmpold)
   BYTE* newbits = (BYTE*)malloc(bmold.bmWidthBytes * bmold.bmHeight);
   BYTE* oldbits = (BYTE*)bmold.bmBits;
 
+  if (bmold.bmBitsPixel != 32)
+    return 0;
+
   BITMAPINFOHEADER bmih;
   HBITMAP hbmpnew;
   memset(&bmih, 0, sizeof(bmih));
@@ -29,44 +39,75 @@ HBITMAP MakeMultiplyBmp::MakeMultiplyBmpFromSingleBmp(HBITMAP hbmpold)
   bmih.biCompression = BI_RGB;
   hbmpnew = CreateDIBSection(NULL, (BITMAPINFO*)&bmih, DIB_RGB_COLORS, (void**)&newbits, 0, 0);
 
-  int part = 0;
-  for (int ynew = 0, yold = 0; ynew != bmold.bmHeight * 4; ++ynew, ++yold)
-  {
-    BYTE* newPixel = newbits + bmold.bmWidthBytes * ynew;
-    if (yold == bmold.bmHeight)
-    {
-      ++part;
-      yold = 0;
-    }
-    BYTE* oldPixel = oldbits + bmold.bmWidthBytes * yold;
+  MakeDifferentStatBitmap(newbits, oldbits, 0, bmold.bmWidth, bmold.bmHeight);
+  MakeDifferentStatBitmap(newbits + bmold.bmWidth * bmold.bmHeight * 4, 
+    oldbits, 1, bmold.bmWidth, bmold.bmHeight);
+  MakeDifferentStatBitmap(newbits + bmold.bmWidth * bmold.bmHeight * 4 * 2,
+    oldbits, 2, bmold.bmWidth, bmold.bmHeight);
+  MakeDifferentStatBitmap(newbits + bmold.bmWidth * bmold.bmHeight * 4 * 3,
+    oldbits, 3, bmold.bmWidth, bmold.bmHeight);
 
-    for (int x = 0; x != bmold.bmWidth; ++x)
-    {
-      newPixel[0] = oldPixel[0];
-      newPixel[1] = oldPixel[1];
-      newPixel[2] = oldPixel[2];
-      newPixel[3] = oldPixel[3];
-
-      switch (part)
-      {
-      case 1:
-        ChangeBmpAlpha(newPixel);
-        break;
-      case 2:
-        ChangeBmpBrightness(newPixel);
-        break;
-      default:
-        break;
-      }
-
-      newPixel += 4;
-      oldPixel += 4;
-    }
-  }
-  
   DeleteObject(hbmpold);
   if (hbmpnew)
     return hbmpnew;
+}
+
+void MakeMultiplyBmp::MakeDifferentStatBitmap(BYTE* newbits, BYTE* oldbits, int stat, 
+                                              int bmWidth, int bmHeight)
+{
+  switch (stat)
+  {
+  case 0:
+  case 2:
+  case 3:
+    for (int ynew = 0, yold = 0; ynew != bmHeight; ++ynew, ++yold)
+    {
+      BYTE* newPixel = newbits + bmWidth * 4 * ynew;
+      BYTE* oldPixel = oldbits + bmWidth * 4 * yold;
+      for (int x = 0; x != bmWidth; ++x)
+      {
+        newPixel[0] = oldPixel[0];
+        newPixel[1] = oldPixel[1];
+        newPixel[2] = oldPixel[2];
+        newPixel[3] = oldPixel[3];
+        if (stat == 2)
+         ChangeBmpBrightness(newPixel);
+        newPixel += 4;
+        oldPixel += 4;
+      }
+    }
+    break;
+  case 1:
+    for (int ynew = 0, yold = 1; ynew != bmHeight; ++ynew, ++yold)
+    {
+      BYTE* newPixel = newbits + bmWidth * 4 * ynew;
+      BYTE* oldPixel = oldbits + bmWidth * 4 * yold;
+      
+      for (int x = 0; x != bmWidth; ++x)
+      {
+        if (ynew == bmHeight - 1)
+        {
+          newPixel[0] = 0;
+          newPixel[1] = 0;
+          newPixel[2] = 0;
+          newPixel[3] = 0;
+        }
+        else
+        {
+          newPixel[0] = oldPixel[0];
+          newPixel[1] = oldPixel[1];
+          newPixel[2] = oldPixel[2];
+          newPixel[3] = oldPixel[3];
+          ChangeBmpAlpha(newPixel);
+          newPixel += 4;
+          oldPixel += 4;
+        }
+      }
+    }
+    break;
+  default:
+    break;
+  }
 }
 
 void MakeMultiplyBmp::ChangeBmpAlpha(BYTE* pPixel)

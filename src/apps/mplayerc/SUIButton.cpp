@@ -120,7 +120,7 @@ int CSUIButton::OnHitTest(CPoint pt , int bLBtnDown){
   if(m_stat == old_stat){
 		return -1;
 	}else{
-		return 1; //require redraw
+    return 1; //require redraw
 	}
 	
 }
@@ -229,9 +229,8 @@ void CSUIButton::OnPaint(CMemoryDC *hDC, CRect rc){
 	BLENDFUNCTION bf = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};//
 	CDC dcBmp;
 	dcBmp.CreateCompatibleDC(hDC);
-//  Logging(L"CSUIButton::OnPaint ===%s: w:%d, h:%d", m_buttonname, m_bitmap.GetBitmapDimension().cx, m_bitmap.GetBitmapDimension().cy);
   HBITMAP holdBmp = (HBITMAP)dcBmp.SelectObject(m_bitmap);
-	BOOL ret = hDC->AlphaBlend(rc.left, rc.top, rc.Width(), rc.Height(),
+  BOOL ret = hDC->AlphaBlend(rc.left, rc.top, rc.Width(), rc.Height(),
 		  &dcBmp, 0, m_orgbtnSize.cy * m_stat, m_orgbtnSize.cx, m_orgbtnSize.cy, bf);
   dcBmp.SelectObject(holdBmp);
   dcBmp.DeleteDC();

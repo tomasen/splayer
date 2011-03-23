@@ -25,7 +25,7 @@ public:
   void Paint(CMemoryDC *pDC); // re-Paint the display area
 
   void OnAdClick();
-
+  time_t _mouseover_time;
 protected:
   bool TryNextLoopWhenFail();
   void SplitAdData(const std::wstring& data);

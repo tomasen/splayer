@@ -633,7 +633,10 @@ void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point)
     CPoint pi = point;
     ScreenToClient(&pi);
     if (rcAd.PtInRect(pi))
+    {
       SetCursor(cursorHand);
+      m_adctrl._mouseover_time = time(NULL);
+    }
   }
 
   if(m_nItemToTrack == ID_VOLUME_THUMB && m_bMouseDown)
@@ -1047,8 +1050,13 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
         // 查看广告是否显示完，如果还在显示则等待下一次2秒
         if (m_btnplaytime->GetString().IsEmpty() && m_adctrl.IsCurAdShownDone())
         {
-          SetTimer(TIMER_ADPLAYSWITCH, 5000, NULL);
-          m_adctrl.SetVisible(false);
+          if ((time(NULL) - m_adctrl._mouseover_time) > 3)
+          {
+            SetTimer(TIMER_ADPLAYSWITCH, 5000, NULL);
+            m_adctrl.SetVisible(false);
+          }
+          else
+            SetTimer(TIMER_ADPLAYSWITCH, 3000, NULL);
         }
         else if (!m_btnplaytime->GetString().IsEmpty())
         {
@@ -1057,6 +1065,7 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
           m_adctrl.ShowNextAd();
           SetTimer(TIMER_ADPLAYSWITCH, 2000, NULL);
         }
+
 
         break;
       }

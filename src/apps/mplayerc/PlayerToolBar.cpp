@@ -111,19 +111,26 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
   SetTimer(TIMER_ADPLAY, 100, NULL);
   SetTimer(TIMER_ADPLAYSWITCH, 5000, NULL);
   SetTimer(TIMER_ADFETCHING, 15000, NULL);
-  //GetSystemFontWithScale(&m_statft, 14.0);
-  LOGFONT lf;
+  
+  CSVPToolBox svptoolbox;
+  if (svptoolbox.bFontExist(L"Comic Sans MS"))
+  {
+    LOGFONT lf;
+    lf.lfWidth = 0;
+    lf.lfHeight = 15.0;
+    lf.lfEscapement = 0;
+    lf.lfWeight = 0;
+    lf.lfPitchAndFamily = 0;
+    lf.lfStrikeOut = FALSE;
+    lf.lfItalic = FALSE;
+    lf.lfUnderline = FALSE;
+    wsprintf(lf.lfFaceName, L"Comic Sans MS");
+    m_statft.CreateFontIndirect(&lf);
+  }
+  else
+    GetSystemFontWithScale(&m_statft, 13.0);
 
-  lf.lfWidth = 0;
-  lf.lfHeight = 14;
-  lf.lfEscapement = 0;
-  lf.lfWeight = 0;
-  lf.lfPitchAndFamily = 0;
-  lf.lfStrikeOut = FALSE;
-  lf.lfItalic = FALSE;
-  lf.lfUnderline = FALSE;
-  wsprintf(lf.lfFaceName, L"Comic Sans MS");
-  m_statft.CreateFontIndirect(&lf);
+  GetSystemFontWithScale(&m_adsft, 14.0);
 
   CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
   m_nLogDPIY = pFrame->m_nLogDPIY;
@@ -337,7 +344,11 @@ void CPlayerToolBar::OnPaint()
   CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
 
 
-  HFONT holdft = (HFONT)hdc.SelectObject(m_statft);
+  HFONT holdft = NULL;
+  if (m_adctrl.GetVisible())
+    holdft = (HFONT)hdc.SelectObject(m_adsft);
+  else
+    holdft = (HFONT)hdc.SelectObject(m_statft);
 
   if (!m_timerstr.IsEmpty() && pFrame && pFrame->IsSomethingLoaded())
   {

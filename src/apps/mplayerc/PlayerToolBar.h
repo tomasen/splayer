@@ -45,6 +45,7 @@ private:
   CSUIButton* m_btnplaytime;
   AdController m_adctrl;
   CFont m_statft;
+  CFont m_adsft;
 	CString m_tooltip ;
 	CPoint m_lastMouseMove;
 	int m_lastLeftText;

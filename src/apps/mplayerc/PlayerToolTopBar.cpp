@@ -123,6 +123,7 @@ BOOL CPlayerToolTopBar::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 						toolTip = ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_VIDEO);
 						break;
 					case ID_ONTOP_ALWAYS:
+          case ID_ONTOP_WHILEPLAYING:
 						toolTip = ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_PIN_ONTOP);
 						break;
 					case ID_ONTOP_NEVER:
@@ -262,7 +263,9 @@ void CPlayerToolTopBar::UpdateButtonStat(){
   m_btnList.SetCurrentHideState(rc.Width(),skinsRate,m_nLogDPIY);
 
   m_btnList.SetHideStat( ID_ONTOP_NEVER , !ontop );
-	m_btnList.SetHideStat( ID_ONTOP_ALWAYS , ontop );
+  m_btnList.SetHideStat( ID_ONTOP_ALWAYS , ontop );
+  m_btnList.SetHideStat( ID_ONTOP_WHILEPLAYING , ontop );
+
 
 	m_btnList.SetHideStat( ID_FILE_EXIT , !fullscreen && !bCaptionHidden );
 	//

@@ -14,6 +14,7 @@
 #define INTVAR_CURSNAPTIME                          1009
 #define INTVAR_CURPLAYEDTIME                        1010
 #define INTVAR_CURTOTALPLAYTIME                     1011
+#define INTVAR_PLAYAD                               1012
 
 // int64 variables
 #define INT64VAR_MAINWINDOW         1000

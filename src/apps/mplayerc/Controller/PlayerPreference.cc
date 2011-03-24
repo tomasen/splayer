@@ -28,6 +28,7 @@ PlayerPreference::PlayerPreference(void):
   m_map_intvar[INTVAR_TOGGLEFULLSCRENWHENPLAYBACKSTARTED]  = GetProfileInt(ResStr(IDS_R_SETTINGS), L"ToggleFullScreenWhenPlaybackStarted", FALSE);
   m_map_intvar[INTVAR_MAP_CENTERCH2LR]                  = GetProfileInt(ResStr(IDS_R_SETTINGS), L"MapCenterChToLR", TRUE);
   m_map_intvar[INTVAR_CHECKFILEASSOCONSTARTUP]             = GetProfileInt(ResStr(IDS_R_SETTINGS), L"CheckFileAssocOnStartUp", 0);
+  m_map_intvar[INTVAR_PLAYAD]               = GetProfileInt(ResStr(IDS_R_SETTINGS), L"DisableAds", 0);
 
   m_map_strvar[STRVAR_HOTKEYSCHEME]         = GetProfileString(L"Settings", L"HotkeyScheme", L"");
   m_map_strvar[STRVAR_GETSNAPTIMEURL]       = L"http://webpj:8080/test_snapshot.php";
@@ -59,7 +60,8 @@ PlayerPreference::~PlayerPreference(void)
   WriteProfileInt(ResStr(IDS_R_SETTINGS), L"LeftClickToPause", m_map_intvar[INTVAR_LEFTCLICK2PAUSE]);
   WriteProfileInt(ResStr(IDS_R_SETTINGS), L"MapCenterChToLR", m_map_intvar[INTVAR_MAP_CENTERCH2LR]);
   WriteProfileInt(ResStr(IDS_R_SETTINGS), L"CheckFileAssocOnStartUp", m_map_intvar[INTVAR_CHECKFILEASSOCONSTARTUP]);
-
+  WriteProfileInt(ResStr(IDS_R_SETTINGS), L"DisableAds", m_map_intvar[INTVAR_PLAYAD]);
+  
   WriteProfileString(L"Settings", L"HotkeyScheme", m_map_strvar[STRVAR_HOTKEYSCHEME].c_str());
   WriteProfileString(L"Settings", L"SubtitleSaveMethod", m_map_strvar[STRVAR_SUBTITLE_SAVEMETHOD].c_str());     // subtitle save method
   WriteProfileString(L"Settings", L"SubtitleSaveFolder", m_map_strvar[STRVAR_SUBTITLE_SAVE_CUSTOMPATH].c_str());  // subtitle save folder

@@ -70,7 +70,8 @@ void AdController::_Thread()
   // "20110215firstad;http://#\nsecondad;http://#\n", first 8 characters are date
   // only get ad once per day
   // get the ads string
-
+  if (PlayerPreference::GetInstance()->GetIntVar(INTVAR_PLAYAD))
+    return;
   
   std::wstring sAds = PlayerPreference::GetInstance()->GetStringVar(STRVAR_AD);
 

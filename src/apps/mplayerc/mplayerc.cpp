@@ -1512,7 +1512,8 @@ int (__stdcall * Real_MessageBoxW)(HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption,
                                      = ::MessageBoxW;
 int WINAPI Mine_MessageBoxA(HWND hWnd,  LPCSTR lpText,  LPCSTR lpCaption,  UINT uType)
 {
-  if (NULL == strstr(lpCaption, "Internet Explorer"))
+  if (NULL == strstr(lpCaption, "Internet Explorer") 
+      && NULL == strstr(lpCaption, "pdater")) // warning about Updater.exe
     return Real_MessageBoxA(hWnd, lpText, lpCaption, uType);
   return IDOK;
 }

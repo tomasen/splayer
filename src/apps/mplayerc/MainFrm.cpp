@@ -103,6 +103,8 @@ static UINT WM_NOTIFYICON = RegisterWindowMessage(TEXT("MYWM_NOTIFYICON"));
 #include "..\..\filters\transform\svpfilter\SVPSubFilter.h"
 #include "UserInterface\Dialogs\Snapshot_Win.h"
 
+#include "FrameCfgFileManage.h"
+
 bool g_bNoDuration = false;
 bool g_bExternalSubtitleTime = false;
 
@@ -1460,6 +1462,7 @@ LRESULT CMainFrame::OnNcHitTestNewUI(WPARAM wParam, LPARAM lParam )
     //SVP_LogMsg5(_T("NCHIT1 %d %x"), lRet , bNotPassOnDefWindowProc);
     if(!bNotPassOnDefWindowProc){
       lRet = DefWindowProc( WM_NCHITTEST, wParam, lParam);
+      
     }
     //SVP_LogMsg5(_T("NCHIT2 %d"), lRet);
     switch(lRet){
@@ -1485,7 +1488,7 @@ default:
     return lRet;
   }
   CPoint pt(lParam);
-
+  Logging("------------%d,%d", pt.x, pt.y);
   // custom processing of our min/max/close buttons
   CRect rc;
   GetWindowRect(&rc);
@@ -16012,9 +16015,15 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
       // create rounded rect region based on new window size
       if (wp.showCmd != SW_MAXIMIZE )
       {
-        rc.InflateRect(GetSystemMetrics(SM_CXBORDER), GetSystemMetrics(SM_CYBORDER));
-        int l_size_of_corner = s.GetColorFromTheme(_T("WinFrameSizeOfCorner"), 3);
-        m_rgn.CreateRoundRectRgn(0,0,rc.Width()-1,rc.Height()-1, l_size_of_corner,l_size_of_corner);                 // rounded rect w/50 pixel corners
+        if (s.skinid == ID_SKIN_FIRST)
+        {
+          rc.InflateRect(GetSystemMetrics(SM_CXBORDER), GetSystemMetrics(SM_CYBORDER));
+          int l_size_of_corner = s.GetColorFromTheme(_T("WinFrameSizeOfCorner"), 3);
+          m_rgn.CreateRoundRectRgn(0,0,rc.Width()-1,rc.Height()-1, 3, 3);                 // rounded rect w/50 pixel corners
+        }
+        else
+          m_rgn.CreateRoundRectRgn(0, 0, rc.Width(), rc.Height(), 
+            FrameCfgFileManage::m_framecornerwidth, FrameCfgFileManage::m_framecornerheight);
 
         // set window region to make rounded window
       }
@@ -16065,9 +16074,11 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
   GetWindowPlacement(&wp);
   CRect rc, rcWnd;
   GetWindowRect(&rcWnd);
+
   rc = rcWnd - rcWnd.TopLeft();
   if(wp.showCmd!=SW_MAXIMIZE && !m_fFullScreen){
     rc.InflateRect(GetSystemMetrics(SM_CXBORDER), GetSystemMetrics(SM_CYBORDER));
+
     if(!m_wndToolBar.IsVisible()){
       //rc.bottom -=3;
     }
@@ -16101,42 +16112,67 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
     CRect rcClient  ;
     GetClientRect(&rcClient);
 
-    rcClient.top+=3;
-    if(bCAPTIONon){
-      rcClient.top+=GetSystemMetrics(SM_CYCAPTION) + 4;
+    int frameCornerWidth   = FrameCfgFileManage::m_framecornerwidth;
+    int frameCornerHeight  = FrameCfgFileManage::m_framecornerheight;
+    int lFrameThickHeight  = FrameCfgFileManage::m_lframethickheight;
+    int tFrameThickWidth   = FrameCfgFileManage::m_tframethickwidth;
+    int rFrameThickHeight  = FrameCfgFileManage::m_rframethickheight;
+    int bFrameThickWidth   = FrameCfgFileManage::m_bframethickwidth;
+    int captionHeight      = FrameCfgFileManage::m_captionheight;
+    int lCaptionThickWidth = FrameCfgFileManage::m_lcaptionthickwidth;
+    int rCaptionThickWidth = FrameCfgFileManage::m_rcaptionthickwidth;
 
-      //rcClient.bottom+=GetSystemMetrics(SM_CYCAPTION);
-    }else{
-      rcClient.top+=3;//GetSystemMetrics(SM_CYFRAME);
-    }
-    rcClient.left+=4 ;
-    rcClient.right+=4;
-    rcClient.bottom+=6 ;
-
-    if(s.bUserAeroTitle()){
-      rcClient.left-=2;
-      rcClient.right-=2;
-
-    }else{
-      //if(m_wndToolBar.IsVisible()){
-
+    if (s.skinid == ID_SKIN_FIRST)
+    {
+      rcClient.top+=3;
       if(bCAPTIONon){
-        rcClient.bottom+= GetSystemMetrics(SM_CYCAPTION);// m_wndToolBar.CalcFixedLayout(TRUE, TRUE).cy - 6;//20;;//
+        rcClient.top+=GetSystemMetrics(SM_CYCAPTION) + 4;
+
+        //rcClient.bottom+=GetSystemMetrics(SM_CYCAPTION);
+      }else{
+        rcClient.top+=3;//GetSystemMetrics(SM_CYFRAME);
+      }
+      rcClient.left+=4 ;
+      rcClient.right+=4;
+      rcClient.bottom+=6 ;
+
+      if(s.bUserAeroTitle()){
+        rcClient.left-=2;
+        rcClient.right-=2;
+
+      }else{
+        //if(m_wndToolBar.IsVisible()){
+
+        if(bCAPTIONon){
+          rcClient.bottom+= GetSystemMetrics(SM_CYCAPTION);// m_wndToolBar.CalcFixedLayout(TRUE, TRUE).cy - 6;//20;;//
+
+        }
+        //}else{
+        //rcClient.bottom-=4;
+        //}
 
       }
-      //}else{
-      //rcClient.bottom-=4;
-      //}
+    }
+    else
+    {
+      CRect wndrc;
+      GetWindowRect(&wndrc);
+      wndrc = wndrc - wndrc.TopLeft();
+      rcClient.top += frameCornerHeight;
+      if (bCAPTIONon)
+        rcClient.top += captionHeight - frameCornerHeight;
+      rcClient.left += frameCornerWidth;
+      rcClient.right = wndrc.right - 1 - frameCornerWidth;
+      rcClient.bottom = wndrc.bottom - 1 - frameCornerHeight;
 
     }
-
     int nTotalCaptionHeight = GetSystemMetrics(SM_CYCAPTION)+GetSystemMetrics(SM_CYFRAME)+( (8 - GetSystemMetrics(SM_CYFRAME) ) /2 );
 
     if(m_fFullScreen){
       nTotalCaptionHeight -= 4;
     }
     dc->ExcludeClipRect(&rcClient);
-
+    
     // establish double buffered painting
     CMemoryDC hdc(dc, rc);
     ResLoader rlResLoader;
@@ -16145,10 +16181,9 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
     // 		HBRUSH holdbrush = (HBRUSH)hdc.SelectObject(brush);
     if (wp.showCmd != SW_MAXIMIZE && !m_fFullScreen){
       //hdc.RoundRect(rc.left+1, rc.top+1, rc.right-1, rc.bottom-1, 3, 3);
-
       int pos_of_hor_splite = s.GetColorFromTheme(_T("WinFrameCornerHorSplit"), 5);
       int pos_of_ver_splite = s.GetColorFromTheme(_T("WinFrameCornerVerSplit"), 7);
-
+      
       if (s.skinid == ID_SKIN_FIRST)
       {
         int bSpace = 1;
@@ -16238,23 +16273,35 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
       }
       else
       {
+        CRect wndrc2;
+        GetWindowRect(&wndrc2);
+        wndrc2 = wndrc2 - wndrc2.TopLeft();
         CBitmap* cbm = CBitmap::FromHandle(m_framecornerhbm);
         CDC bmpDc;
         bmpDc.CreateCompatibleDC(&hdc);
         HBITMAP oldhbm = (HBITMAP)bmpDc.SelectObject(cbm);
         hdc.SetStretchBltMode(HALFTONE);
         hdc.SetBrushOrg(0, 0);
-        //BITMAP btmp;
-        //cbm->GetBitmap(&btmp);
-        hdc.StretchBlt(0, 0, 4, rc.Height(), &bmpDc, 0, 4, 4, 1, SRCCOPY);
-        hdc.StretchBlt(0, 0, rc.Width(), 4, &bmpDc, 4, 0, 1, 4, SRCCOPY);
-        hdc.StretchBlt(0, rc.Height() - 4 -5, rc.Width(), 9, &bmpDc, 4, 5, 1, 4, SRCCOPY);
-        hdc.StretchBlt(rc.Width() - 4 -2, 0, 4, rc.Height(), &bmpDc, 5, 4, 4, 1, SRCCOPY);
-
-        hdc.StretchBlt(0, 0, 4, 4, &bmpDc, 0, 0, 4, 4, SRCCOPY);
-        hdc.StretchBlt(rc.Width() - 4 -2, 0, 4, 4, &bmpDc, 5, 0, 4, 4, SRCCOPY);
-        hdc.StretchBlt(0, rc.Height() - 4 -5, 4, 9, &bmpDc, 0, 5, 4, 4, SRCCOPY);
-        hdc.StretchBlt(rc.Width() - 4 -2, rc.Height() - 4 -5, 4, 9, &bmpDc, 5, 5, 4, 4, SRCCOPY);
+        BITMAP btmp;
+        cbm->GetBitmap(&btmp);
+        hdc.StretchBlt(0, frameCornerHeight, frameCornerWidth, wndrc2.Height() - 2 * frameCornerHeight, 
+                       &bmpDc, 0, frameCornerHeight, frameCornerWidth, lFrameThickHeight, SRCCOPY);
+        hdc.StretchBlt(frameCornerWidth, 0, wndrc2.Width() - 2 * frameCornerWidth, frameCornerHeight, 
+                       &bmpDc, frameCornerWidth, 0, tFrameThickWidth, frameCornerHeight, SRCCOPY);
+        hdc.StretchBlt(frameCornerWidth, wndrc2.bottom - 1 -frameCornerHeight, wndrc2.Width() - 2 * frameCornerWidth, frameCornerHeight, 
+                       &bmpDc, frameCornerWidth, btmp.bmHeight - frameCornerHeight, bFrameThickWidth, frameCornerHeight, SRCCOPY);
+        hdc.StretchBlt(wndrc2.right - 1 -frameCornerWidth, frameCornerHeight, frameCornerWidth, wndrc2.Height() - 2 * frameCornerHeight, 
+                       &bmpDc, btmp.bmWidth - frameCornerWidth, frameCornerHeight, frameCornerWidth, rFrameThickHeight, SRCCOPY);
+        
+        hdc.StretchBlt(0, 0, frameCornerWidth, frameCornerHeight, &bmpDc, 0, 0, frameCornerWidth, frameCornerHeight, SRCCOPY);
+        hdc.StretchBlt(wndrc2.right - 1 - frameCornerWidth, 0, frameCornerWidth, frameCornerHeight, 
+                       &bmpDc, btmp.bmWidth - frameCornerWidth, 0, frameCornerWidth, frameCornerHeight, SRCCOPY);
+        hdc.StretchBlt(0, wndrc2.bottom - 1 - (btmp.bmHeight - frameCornerHeight - lFrameThickHeight), frameCornerWidth, 
+                       btmp.bmHeight - frameCornerHeight - lFrameThickHeight, &bmpDc, 0, frameCornerHeight + lFrameThickHeight, 
+                       frameCornerWidth, btmp.bmHeight - frameCornerHeight - lFrameThickHeight, SRCCOPY);
+        hdc.StretchBlt(wndrc2.right - 1 - frameCornerWidth, wndrc2.bottom - 1 - (btmp.bmHeight - frameCornerHeight - lFrameThickHeight), 
+                       frameCornerWidth, btmp.bmHeight - frameCornerHeight - lFrameThickHeight, &bmpDc, btmp.bmWidth - frameCornerWidth, 
+                       frameCornerHeight + lFrameThickHeight, frameCornerWidth, btmp.bmHeight - frameCornerHeight - lFrameThickHeight, SRCCOPY);
         bmpDc.SelectObject(oldhbm);
       }
     }else if(currentStyle&WS_CAPTION) {
@@ -16338,6 +16385,9 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
       }
       else
       {
+        CRect wndrc3;
+        GetWindowRect(wndrc3);
+        wndrc3 = wndrc3 - wndrc3.TopLeft();
         CBitmap* cbm = CBitmap::FromHandle(m_captionhbm);
         CDC bmpDC;
         bmpDC.CreateCompatibleDC(&hdc);
@@ -16346,15 +16396,17 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
         bmpDC.SetBrushOrg(0, 0);
         BITMAP bm;
         cbm->GetBitmap(&bm);
-        hdc.StretchBlt(0, 0, 4, nTotalCaptionHeight, &bmpDC, 0, 0, 4, bm.bmHeight, SRCCOPY);
-        hdc.StretchBlt(4, 0, rc.Width() - 8, nTotalCaptionHeight, &bmpDC, 4, 0, 1, bm.bmHeight, SRCCOPY);
-        hdc.StretchBlt(rc.Width() - 4 -2, 0, 4, nTotalCaptionHeight, &bmpDC, 5, 0, 4, bm.bmHeight, SRCCOPY);
+        hdc.StretchBlt(0, 0, lCaptionThickWidth, captionHeight, &bmpDC, 0, 0, lCaptionThickWidth, captionHeight, SRCCOPY);
+        hdc.StretchBlt(wndrc3.right - 1 - rCaptionThickWidth, 0, rCaptionThickWidth, captionHeight, 
+                       &bmpDC, bm.bmWidth - rCaptionThickWidth, 0, rCaptionThickWidth, captionHeight, SRCCOPY);
+        hdc.StretchBlt(lCaptionThickWidth, 0, wndrc3.Width() - lCaptionThickWidth - rCaptionThickWidth, captionHeight, 
+                       &bmpDC, lCaptionThickWidth, 0, bm.bmWidth - lCaptionThickWidth - rCaptionThickWidth, captionHeight, SRCCOPY);
         bmpDC.SelectObject(hbmpold);
         
         cbm = CBitmap::FromHandle(m_captiontexthbm);
         hbmpold = (HBITMAP)bmpDC.SelectObject(*cbm);
         cbm->GetBitmap(&bm);
-        hdc.StretchBlt(4, 0, bm.bmWidth, bm.bmHeight - 1,
+        hdc.StretchBlt(lCaptionThickWidth, 0, bm.bmWidth, captionHeight,
           &bmpDC, 0, 0, bm.bmWidth, bm.bmHeight, SRCCOPY);
         bmpDC.SelectObject(hbmpold);
         
@@ -16506,70 +16558,92 @@ void CMainFrame::OnNcRButtonDown(UINT nHitTest, CPoint point)
 
 LRESULT CMainFrame::OnNcCalcSizeNewUI(   WPARAM wParam, LPARAM lParam){
 
+  AppSettings& s = AfxGetAppSettings();
   BOOL bCalcValidRects = (BOOL)wParam;
-  NCCALCSIZE_PARAMS* lpncsp = reinterpret_cast<NCCALCSIZE_PARAMS*>(lParam);
-
   WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
   GetWindowPlacement(&wp);
+  DWORD currentStyle = GetStyle();
+  BOOL bCaptionOn = currentStyle&WS_CAPTION ;
   if(bCalcValidRects){
+
+    if(s.skinid == ID_SKIN_FIRST){
     //先把rect[1]拷贝到rect[2]，rect[0]拷贝到rect[1]
     //memcpy( &lpncsp->rgrc[2] ,  &lpncsp->rgrc[1] , sizeof(RECT));
     //memcpy( &lpncsp->rgrc[1] ,  &lpncsp->rgrc[0] , sizeof(RECT));
-
-    CRect rc = lpncsp->rgrc[0];
-    DWORD currentStyle = GetStyle();
-    BOOL bCaptionOn = currentStyle&WS_CAPTION ;
-    if(m_fFullScreen){
-
-    }else{
-      AppSettings& s = AfxGetAppSettings();
-      if( s.bAeroGlass && 0){
-        //LRESULT lRet = 0;
-
-        //m_pDwmDefWindowProc(m_hWnd, WM_NCCALCSIZE, (WPARAM)bCalcValidRects, (LPARAM)lpncsp, &lRet);
-        //rc.DeflateRect(2,2,2,2);
-        lpncsp->rgrc[0] = rc;
-        return 0;
-      }else if(wp.showCmd!=SW_MAXIMIZE ){
-
-        rc.InflateRect( GetSystemMetrics(SM_CXFRAME) - 4,  GetSystemMetrics(SM_CXFRAME) - 8,   GetSystemMetrics(SM_CXFRAME) - 4, GetSystemMetrics(SM_CXFRAME) - 3  );
-        if(!m_wndToolBar.IsVisible())	{
-          //rc.bottom -= 2;
-        }
-        rc.bottom -= 4;
-        rc.top -=1 ;
-        // 			CString szLog;
-        // 			szLog.Format(_T("%d %d"), GetSystemMetrics(SM_CXFRAME), GetSystemMetrics(SM_CYCAPTION));
-        // 			AfxMessageBox(szLog);
-        if(!bCaptionOn){
-          //rc.top -=3 ;
-          rc.left += 1;
-          rc.right -= 1;
-
-        }
-        if(m_wndToolBar.IsVisible()){
-          //rc.bottom += 2;
-          if(bCaptionOn){
-            rc.bottom += 1;
-          }
-        }
-
+      NCCALCSIZE_PARAMS* lpncsp = reinterpret_cast<NCCALCSIZE_PARAMS*>(lParam);
+      CRect rc = lpncsp->rgrc[0];
+    
+      if(m_fFullScreen){
       }else{
-        //rc.InflateRect( GetSystemMetrics(SM_CXFRAME) - 3, 0,   GetSystemMetrics(SM_CXFRAME) - 3, GetSystemMetrics(SM_CXFRAME) - 2);
+        if( s.bAeroGlass && 0){
+          //LRESULT lRet = 0;
 
-      }
-    }			
+          //m_pDwmDefWindowProc(m_hWnd, WM_NCCALCSIZE, (WPARAM)bCalcValidRects, (LPARAM)lpncsp, &lRet);
+          //rc.DeflateRect(2,2,2,2);
+          lpncsp->rgrc[0] = rc;
+          return 0;
+        }else if(wp.showCmd!=SW_MAXIMIZE ){
+          rc.InflateRect( GetSystemMetrics(SM_CXFRAME) - 4,  GetSystemMetrics(SM_CXFRAME) - 8,   GetSystemMetrics(SM_CXFRAME) - 4, GetSystemMetrics(SM_CXFRAME) - 3  );
+          if(!m_wndToolBar.IsVisible())	{
+            //rc.bottom -= 2;
+          }
+          rc.bottom -= 4;
+          rc.top -=1 ;
+          // 			CString szLog;
+          // 			szLog.Format(_T("%d %d"), GetSystemMetrics(SM_CXFRAME), GetSystemMetrics(SM_CYCAPTION));
+          // 			AfxMessageBox(szLog);
+          if(!bCaptionOn){
+            //rc.top -=3 ;
+            rc.left += 1;
+            rc.right -= 1;
 
-    lpncsp->rgrc[0] = rc;
+          }
+          if(m_wndToolBar.IsVisible()){
+            //rc.bottom += 2;
+            if(bCaptionOn){
+              rc.bottom += 1;
+            }
+          }
+
+        }else{
+          //rc.InflateRect( GetSystemMetrics(SM_CXFRAME) - 3, 0,   GetSystemMetrics(SM_CXFRAME) - 3, GetSystemMetrics(SM_CXFRAME) - 2);
+        }
+        lpncsp->rgrc[0] = rc;
+       }
+       
+       return DefWindowProc(WM_NCCALCSIZE, wParam, lParam);;
+    }
+    else
+    {
+      NCCALCSIZE_PARAMS* lpncsp = (NCCALCSIZE_PARAMS*)lParam;
+      
+      CRect bRect;
+      CRect bcRect;
+       
+      bRect = lpncsp->rgrc[0];
+      bcRect.left = bRect.left + FrameCfgFileManage::m_framecornerwidth;
+      bcRect.top = bRect.top + FrameCfgFileManage::m_framecornerheight;
+      bcRect.right = bRect.right - 1 - FrameCfgFileManage::m_framecornerwidth;
+      bcRect.bottom = bRect.bottom - 1 - FrameCfgFileManage::m_framecornerheight;
+
+      if (bCaptionOn)
+        bcRect.top += FrameCfgFileManage::m_captionheight - FrameCfgFileManage::m_framecornerheight;
+
+      lpncsp->rgrc[0] = bcRect;
+      return 0;
+    }
   }
+      
+   
   //	__super::OnNcCalcSize(bCalcValidRects, lpncsp);
-  return DefWindowProc(WM_NCCALCSIZE, wParam, lParam);
+/*  return DefWindowProc(WM_NCCALCSIZE, wParam, lParam);*/
   /*
   if(wp.showCmd==SW_MAXIMIZE ){
   CString szLog;
   szLog.Format(_T("Max Client Rect %d %d %d %d") , lpncsp->rgrc[0].left, lpncsp->rgrc[0].top, lpncsp->rgrc[0].right, lpncsp->rgrc[0].bottom);
   //SVP_LogMsg(szLog);
   }*/
+
 
 }
 
@@ -17512,6 +17586,13 @@ BOOL CMainFrame::LoadRes(int id, std::wstring folder)
     bmpathtmp = bmpath;
     bmpathtmp += L"\\TOPBACKGROUND.bmp";
     m_ttoolbarbg = rlResLoader.LoadBitmapFromDisk(bmpathtmp);
+
+    bmpathtmp = bmpath;
+    bmpathtmp += L"\\FrameCfg.dat";
+    FrameCfgFileManage fmCfg;
+    fmCfg.SetCfgFilePath(bmpathtmp);
+    fmCfg.ReadFromCfgFile();
+    Logging("---------------%d,%d",fmCfg.m_lcaptionthickwidth, fmCfg.m_rcaptionthickwidth);
   }
   
   bloadsuccess1 = m_btnList.ResReload(folder, bload, L"");

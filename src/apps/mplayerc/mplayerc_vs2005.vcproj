@@ -471,6 +471,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\FrameCfgFileManage.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\FrameCfgFileManage.h"
+				>
+			</File>
+			<File
 				RelativePath="GoToDlg.cpp"
 				>
 			</File>
@@ -1236,11 +1244,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\ecio.icons\dvd.ico"
+				RelativePath=".\res\icon\DVD.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon\DVD.ico"
+				RelativePath=".\res\ecio.icons\dvd.ico"
 				>
 			</File>
 			<File

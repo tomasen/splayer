@@ -1,6 +1,7 @@
 // Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
+#include "..\..\..\..\include\Version.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -13,13 +14,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -27,8 +26,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,5
- PRODUCTVERSION 1,0,0,5
+ FILEVERSION MPC_VERSION
+ PRODUCTVERSION MPC_VERSION
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -36,28 +35,36 @@ VS_VERSION_INFO VERSIONINFO
  FILEFLAGS 0x0L
 #endif
  FILEOS 0x4L
- FILETYPE 0x7L
+ FILETYPE 0x2L
  FILESUBTYPE 0x0L
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "Comments", ""
-            VALUE "CompanyName", "Gabest"
+            VALUE "Comments", "http://sourceforge.net/projects/mpc-hc/"
+            VALUE "CompanyName", MPC_COMP_NAME
             VALUE "FileDescription", "Mpeg Splitter"
-            VALUE "FileVersion", "1, 0, 0, 5"
+            VALUE "FileVersion", MPC_VERSION_STR
             VALUE "InternalName", "Mpeg Splitter"
-            VALUE "LegalCopyright", "Copyright (C) 2003-2008 Gabest"
+            VALUE "LegalCopyright", MPC_COPYRIGHT
             VALUE "OriginalFilename", "MpegSplitter.ax"
             VALUE "ProductName", "Mpeg Splitter"
-            VALUE "ProductVersion", "1, 0, 0, 5"
+            VALUE "ProductVersion", MPC_VERSION_STR
         END
     END
     BLOCK "VarFileInfo"
     BEGIN
         VALUE "Translation", 0x409, 1200
     END
+END
+
+STRINGTABLE
+BEGIN
+	IDS_OPTIONS_CAPTION     "Options"
+	IDS_MPEGSPLITTER_FSTREAM_CHANGE	"Fast stream change"
+	IDS_MPEGSPLITTER_LANG_ORDER	"Audio language order:"
+	IDS_MPEGSPLITTER_SUB_ORDER	"Subtitles language order:"
 END
 
 
@@ -86,7 +93,7 @@ END
 
 #endif    // APSTUDIO_INVOKED
 
-#endif    // English (U.S.) resources
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -100,5 +107,4 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
-
 

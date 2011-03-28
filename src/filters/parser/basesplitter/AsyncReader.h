@@ -35,6 +35,7 @@ interface __declspec(uuid("6DDB4EE7-45A0-4459-A508-BD77B32C91B2")) ISyncReader :
 interface __declspec(uuid("7D55F67A-826E-40B9-8A7D-3DF0CBBD272D")) IFileHandle : public IUnknown
 {
 	STDMETHOD_(HANDLE, GetFileHandle)() = 0;
+  STDMETHOD_(LPCTSTR, GetFileName)() = 0;
 };
 
 class CAsyncFileReader : public CUnknown, public CMultiFiles, public IAsyncReader, public ISyncReader, public IFileHandle
@@ -83,7 +84,7 @@ public:
 	// IFileHandle
 
 	STDMETHODIMP_(HANDLE) GetFileHandle();
-
+	STDMETHODIMP_(LPCTSTR) GetFileName();
 };
 
 class CAsyncUrlReader : public CAsyncFileReader, protected CAMThread

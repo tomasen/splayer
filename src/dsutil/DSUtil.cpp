@@ -2454,3 +2454,72 @@ DWORD YCrCbToRGB_Rec709(BYTE A, BYTE Y, BYTE Cr, BYTE Cb)
 
   return D3DCOLOR_ARGB (A, (BYTE)fabs(rp), (BYTE)fabs(gp), (BYTE)fabs(bp));
 }
+
+
+const wchar_t *StreamTypeToName(PES_STREAM_TYPE _Type)
+{
+  switch (_Type) {
+    case VIDEO_STREAM_MPEG1:
+      return L"MPEG-1";
+    case VIDEO_STREAM_MPEG2:
+      return L"MPEG-2";
+    case AUDIO_STREAM_MPEG1:
+      return L"MPEG-1";
+    case AUDIO_STREAM_MPEG2:
+      return L"MPEG-2";
+    case VIDEO_STREAM_H264:
+      return L"H264";
+    case AUDIO_STREAM_LPCM:
+      return L"LPCM";
+    case AUDIO_STREAM_AC3:
+      return L"Dolby Digital";
+    case AUDIO_STREAM_DTS:
+      return L"DTS";
+    case AUDIO_STREAM_AC3_TRUE_HD:
+      return L"Dolby TrueHD";
+    case AUDIO_STREAM_AC3_PLUS:
+      return L"Dolby Digital Plus";
+    case AUDIO_STREAM_DTS_HD:
+      return L"DTS-HD High Resolution Audio";
+    case AUDIO_STREAM_DTS_HD_MASTER_AUDIO:
+      return L"DTS-HD Master Audio";
+    case PRESENTATION_GRAPHICS_STREAM:
+      return L"Presentation Graphics Stream";
+    case INTERACTIVE_GRAPHICS_STREAM:
+      return L"Interactive Graphics Stream";
+    case SUBTITLE_STREAM:
+      return L"Subtitle";
+    case SECONDARY_AUDIO_AC3_PLUS:
+      return L"Secondary Dolby Digital Plus";
+    case SECONDARY_AUDIO_DTS_HD:
+      return L"Secondary DTS-HD High Resolution Audio";
+    case VIDEO_STREAM_VC1:
+      return L"VC-1";
+  }
+  return NULL;
+}
+
+//
+// Usage: SetThreadName (-1, "MainThread");
+//
+typedef struct tagTHREADNAME_INFO {
+  DWORD dwType; // must be 0x1000
+  LPCSTR szName; // pointer to name (in user addr space)
+  DWORD dwThreadID; // thread ID (-1=caller thread)
+  DWORD dwFlags; // reserved for future use, must be zero
+} THREADNAME_INFO;
+
+void SetThreadName( DWORD dwThreadID, LPCSTR szThreadName)
+{
+  THREADNAME_INFO info;
+  info.dwType = 0x1000;
+  info.szName = szThreadName;
+  info.dwThreadID = dwThreadID;
+  info.dwFlags = 0;
+
+  __try {
+    RaiseException( 0x406D1388, 0, sizeof(info)/sizeof(DWORD), (ULONG_PTR*)&info );
+  }
+  __except(EXCEPTION_CONTINUE_EXECUTION) {
+  }
+}

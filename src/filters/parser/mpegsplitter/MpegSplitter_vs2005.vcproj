@@ -541,6 +541,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\..\..\..\-=SVN=-\svplayer\src\filters\parser\mpegsplitter\MpegSplitterSettingsWnd.cpp"
+				>
+			</File>
+			<File
 				RelativePath="stdafx.cpp"
 				>
 				<FileConfiguration
@@ -614,11 +618,19 @@
 			Filter="h;hpp;hxx;hm;inl;inc"
 			>
 			<File
+				RelativePath="..\..\..\..\..\..\-=SVN=-\svplayer\src\filters\parser\mpegsplitter\IMpegSplitterFilter.h"
+				>
+			</File>
+			<File
 				RelativePath=".\MpegSplitter.h"
 				>
 			</File>
 			<File
 				RelativePath=".\MpegSplitterFile.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\..\-=SVN=-\svplayer\src\filters\parser\mpegsplitter\MpegSplitterSettingsWnd.h"
 				>
 			</File>
 			<File

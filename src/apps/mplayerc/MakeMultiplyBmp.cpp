@@ -25,6 +25,9 @@ HBITMAP MakeMultiplyBmp::MakeMultiplyBmpFromSingleBmp(HBITMAP hbmpold)
   BYTE* newbits = (BYTE*)malloc(bmold.bmWidthBytes * bmold.bmHeight);
   BYTE* oldbits = (BYTE*)bmold.bmBits;
 
+  if (bmold.bmBitsPixel != 32)
+    return 0;
+
   BITMAPINFOHEADER bmih;
   HBITMAP hbmpnew;
   memset(&bmih, 0, sizeof(bmih));

@@ -3118,12 +3118,10 @@ LRESULT CMainFrame::OnGraphNotify(WPARAM wParam, LPARAM lParam)
               SendMessage(WM_COMMAND, ID_PLAY_PLAY);
             }
           }
-        }else if(m_nLoopSetting == ID_PLAYBACK_LOOP_RANDOM){
+        }
+        else if(m_nLoopSetting == ID_PLAYBACK_LOOP_RANDOM)
           PostMessage(WM_COMMAND, ID_NAVIGATE_SKIPRANDOM);
-
-        }else if (m_nLoopSetting == ID_PLAYBACK_LOOP_NORMAL)
-           PostMessage(WM_COMMAND, ID_PLAY_STOP);
-        else{
+        else{ //ID_PLAYBACK_LOOP_NORMAL
 
           if(m_wndPlaylistBar.IsAtEnd())
           {

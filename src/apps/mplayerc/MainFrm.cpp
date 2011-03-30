@@ -12852,71 +12852,62 @@ void CMainFrame::SetupAudioSwitcherSubMenu()
 
       }
 
-      // Mod by cjbw1234
-      szaAudioStreamArray.RemoveAll();
-      CUIntArray sziAudioStreamArray;
-      BeginEnumFilters(pGB, pEF, pBF)
+      try 
       {
-
-        CLSID clsid = GetCLSID(pBF);
-
-        if(clsid == CLSID_AVIDec)
-          CComPtr<IPin> pPin = GetFirstPin(pBF);
-        else if(clsid == CLSID_ACMWrapper)
-          CComPtr<IPin> pPin = GetFirstPin(pBF);
-        else if(clsid == __uuidof(CTextPassThruFilter) || clsid == __uuidof(CNullTextRenderer)
-          || clsid == GUIDFromCString(_T("{48025243-2D39-11CE-875D-00608CB78066}"))) // ISCR
-          continue;
-
-        CComQIPtr<IAMStreamSelect> pSS2 = pBF;
-        if(pSS2)
+        szaAudioStreamArray.RemoveAll();
+        CUIntArray sziAudioStreamArray;
+        BeginEnumFilters(pGB, pEF, pBF)
         {
-          DWORD nStreams = 0, flags, group, prevgroup = -1;
-          LCID lcid;
-          WCHAR* wname = NULL;
-          CComPtr<IUnknown> pObj, pUnk;
-          pSS2->Count(&nStreams);
-          for(DWORD i = 0; i < nStreams; i++, pObj = NULL, pUnk = NULL)
+          CLSID clsid = GetCLSID(pBF);
+          if(clsid == __uuidof(CTextPassThruFilter) || clsid == __uuidof(CNullTextRenderer)
+            || clsid == GUIDFromCString(_T("{48025243-2D39-11CE-875D-00608CB78066}"))) // ISCR
+            continue;
+
+          CComQIPtr<IAMStreamSelect> pSS2 = pBF;
+          if(pSS2)
           {
-            m_ssarray.Add(pSS2);
-            flags = group = 0;
-            wname = NULL;
-            pSS2->Info(i, NULL, &flags, &lcid, &group, &wname, &pObj, &pUnk);
-            if(!wname) 
+            DWORD nStreams = 0, flags, group, prevgroup = -1;
+            LCID lcid;
+            WCHAR* wname = NULL;
+            CComPtr<IUnknown> pObj, pUnk;
+            pSS2->Count(&nStreams);
+            for(DWORD i = 0; i < nStreams; i++, pObj = NULL, pUnk = NULL)
             {
-              CStringW stream(L"Unknown Stream");
-              wname = (WCHAR*)CoTaskMemAlloc((stream.GetLength()+3+1)*sizeof(WCHAR));
-              swprintf(wname, L"%s %d", stream, min(i+1,999));
+              m_ssarray.Add(pSS2);
+              flags = group = 0;
+              wname = NULL;
+              pSS2->Info(i, NULL, &flags, &lcid, &group, &wname, &pObj, &pUnk);
+              if(!wname) { idl++; continue; }
+              CString name(wname);
+              if( name.Find(_T("A")) == 0  || name.Find(_T("声")) == 0 || name.Find(_T("音")) == 0 ){
+                name.Replace(_T("&"), _T("&&"));
+                Logging(L" Audio Menu %d %s", idl, name);
+                szaAudioStreamArray.Add( name );
+                sziAudioStreamArray.Add( idl );
+              }
+              idl++;
+              CoTaskMemFree(wname);
             }
-            CString name(wname);
-            name.Replace(_T("&"), _T("&&"));
-            if( name.Find(_T("A")) == 0  || name.Find(_T("声")) == 0 || name.Find(_T("音")) == 0 ){
-              Logging(L" Audio Menu %d %s", idl, name);
-              szaAudioStreamArray.Add( name );
-              sziAudioStreamArray.Add( idl );
-            }
-            idl++;
-            CoTaskMemFree(wname);
+            if(nStreams == 0) pSS2.Release();
           }
-          if(nStreams == 0) pSS2.Release();
         }
-      }
-      EndEnumFilters
+        EndEnumFilters
 
-      if(szaAudioStreamArray.GetCount() > 1){
-        for(int i = 0; i < szaAudioStreamArray.GetCount(); i++){
-          szAudioStreamNameBuff.Format(ResStr(IDS_MENU_ITEM_AUDIO_STREAM_NAME), ++iAudioStreamCount, GetAnEasyToUnderstoodAudioStreamName(szaAudioStreamArray.GetAt(i)) );
-          pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, sziAudioStreamArray.GetAt(i),szAudioStreamNameBuff) ;
+        if(szaAudioStreamArray.GetCount() > 1){
+          for(int i = 0; i < szaAudioStreamArray.GetCount(); i++){
+            szAudioStreamNameBuff.Format(ResStr(IDS_MENU_ITEM_AUDIO_STREAM_NAME), ++iAudioStreamCount, GetAnEasyToUnderstoodAudioStreamName(szaAudioStreamArray.GetAt(i)) );
+            pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, sziAudioStreamArray.GetAt(i),szAudioStreamNameBuff) ;
+          }
+          pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED); 
         }
-        pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED); 
-      }
+      } catch(...) {}
 
-        pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPNORMAL, ResStr(IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_DEAULT));
-        pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPLEFT,  ResStr(IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_LEFT));
-        pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPRIGHT,  ResStr(IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_RIGHT));
-        pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPCENTER,  ResStr(IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_CENTER));
-        pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED);
-        pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_AUDIO_SUBITEM_START, ResStr(IDS_MENU_ITEM_AUDIO_SETTING));
+      pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPNORMAL, ResStr(IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_DEAULT));
+      pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPLEFT,  ResStr(IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_LEFT));
+      pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPRIGHT,  ResStr(IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_RIGHT));
+      pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPCENTER,  ResStr(IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_CENTER));
+      pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED);
+      pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_AUDIO_SUBITEM_START, ResStr(IDS_MENU_ITEM_AUDIO_SETTING));
 
     }
   }
@@ -13089,7 +13080,7 @@ void CMainFrame::SetupSubtitlesSubMenu(int subid)
   }else{
     id = ID_SUBTITLES_SUBITEM_START;
 
-    /* TODO: ts subtitles seems to be not working
+    // TODO: ts subtitles seems to be not working
     UINT idl = ID_FILTERSTREAMS_SUBITEM_START;
 
     int iSubtitleStreamCount = 0;
@@ -13098,64 +13089,58 @@ void CMainFrame::SetupSubtitlesSubMenu(int subid)
 
     if(m_iMediaLoadState == MLS_LOADED)
     {
-      CStringArray szaSubtitleStreamArray;
-      CUIntArray sziSubtitleStreamArray;
-      BeginEnumFilters(pGB, pEF, pBF)
+      try 
       {
-        CLSID clsid = GetCLSID(pBF);
-
-        if(clsid == CLSID_AVIDec)
-          CComPtr<IPin> pPin = GetFirstPin(pBF);
-        else if(clsid == CLSID_ACMWrapper)
-          CComPtr<IPin> pPin = GetFirstPin(pBF);
-        else if(clsid == __uuidof(CTextPassThruFilter) || clsid == __uuidof(CNullTextRenderer)
-          || clsid == GUIDFromCString(_T("{48025243-2D39-11CE-875D-00608CB78066}"))) // ISCR
-          continue;
-        
-        CComQIPtr<IAMStreamSelect> pSS2 = pBF;
-        if(pSS2)
+        CStringArray szaSubtitleStreamArray;
+        CUIntArray sziSubtitleStreamArray;
+        BeginEnumFilters(pGB, pEF, pBF)
         {
-          DWORD nStreams = 0, flags, group, prevgroup = -1;
-          LCID lcid;
-          WCHAR* wname = NULL;
-          CComPtr<IUnknown> pObj, pUnk;
-          pSS2->Count(&nStreams);
-          for(DWORD i = 0; i < nStreams; i++, pObj = NULL, pUnk = NULL)
-          {
-            m_ssarray.Add(pSS2);
-            flags = group = 0;
-            wname = NULL;
-            pSS2->Info(i, NULL, &flags, &lcid, &group, &wname, &pObj, &pUnk);
-            if(!wname) 
-            {
-              CStringW stream(L"Unknown Stream");
-              wname = (WCHAR*)CoTaskMemAlloc((stream.GetLength()+3+1)*sizeof(WCHAR));
-              swprintf(wname, L"%s %d", stream, min(i+1,999));
-            }
-            CString name(wname);
-            name.Replace(_T("&"), _T("&&"));
-            if( name.Find(_T("S")) == 0  || name.Find(_T("字幕")) == 0){
-              Logging(L" Subtitle Menu %d %s", idl, name);
-              szaSubtitleStreamArray.Add( name );
-              sziSubtitleStreamArray.Add( idl );
-            }
-            idl++;
-            CoTaskMemFree(wname);
-          }
-          if(nStreams == 0) pSS2.Release();
-        }
-      }
-      EndEnumFilters
+          CLSID clsid = GetCLSID(pBF);
+          if(clsid == __uuidof(CTextPassThruFilter) || clsid == __uuidof(CNullTextRenderer)
+            || clsid == GUIDFromCString(_T("{48025243-2D39-11CE-875D-00608CB78066}"))) // ISCR
+            continue;
 
-      if(szaSubtitleStreamArray.GetCount() > 1){
-        for(int i = 0; i < szaSubtitleStreamArray.GetCount(); i++){
-          szSubtitleStreamNameBuff.Format(ResStr(IDS_MENU_ITEM_SUBTITLE_STREAM_NAME), ++iSubtitleStreamCount, GetAnEasyToUnderstoodAudioStreamName(szaSubtitleStreamArray.GetAt(i)) );
-          pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, sziSubtitleStreamArray.GetAt(i),szSubtitleStreamNameBuff) ;
+          CComQIPtr<IAMStreamSelect> pSS2 = pBF;
+          if(pSS2)
+          {
+            DWORD nStreams = 0, flags, group, prevgroup = -1;
+            LCID lcid;
+            WCHAR* wname = NULL;
+            CComPtr<IUnknown> pObj, pUnk;
+            pSS2->Count(&nStreams);
+            for(DWORD i = 0; i < nStreams; i++, pObj = NULL, pUnk = NULL)
+            {
+              m_ssarray.Add(pSS2);
+              flags = group = 0;
+              wname = NULL;
+              pSS2->Info(i, NULL, &flags, &lcid, &group, &wname, &pObj, &pUnk);
+              if(!wname) { idl++; continue; }
+              CString name(wname);
+              if( name.Find(_T("S")) == 0  || name.Find(_T("字幕")) == 0 ){
+                name.Replace(_T("&"), _T("&&"));
+                Logging(L" Subtitle Menu %d %s", idl, name);
+                szaSubtitleStreamArray.Add( name );
+                sziSubtitleStreamArray.Add( idl );
+              }
+              idl++;
+              CoTaskMemFree(wname);
+            }
+            if(nStreams == 0) pSS2.Release();
+          }
         }
-        pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED); 
-      }
+        EndEnumFilters
+
+        if(szaSubtitleStreamArray.GetCount() > 1){
+          for(int i = 0; i < szaSubtitleStreamArray.GetCount(); i++){
+            szSubtitleStreamNameBuff.Format(ResStr(IDS_MENU_ITEM_SUBTITLE_STREAM_NAME), ++iSubtitleStreamCount, GetAnEasyToUnderstoodAudioStreamName(szaSubtitleStreamArray.GetAt(i)) );
+            pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, sziSubtitleStreamArray.GetAt(i),szSubtitleStreamNameBuff) ;
+          }
+          pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED); 
+        }
+      } catch(...) {}
+      //*/
     }
-    */
+    
   }
 
   POSITION pos = m_pSubStreams.GetHeadPosition();

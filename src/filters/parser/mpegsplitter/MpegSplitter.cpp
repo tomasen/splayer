@@ -1308,7 +1308,8 @@ STDMETHODIMP CMpegSplitterFilter::Info(long lIndex, AM_MEDIA_TYPE** ppmt, DWORD*
 
 				if (i == CMpegSplitterFile::subpic && s.pid == NO_SUBTITLE_PID) {
 					str		= _T("No subtitles");
-					*plcid	= (LCID)LCID_NOSUBTITLES;
+          if (plcid)
+					  *plcid	= (LCID)LCID_NOSUBTITLES;
 				} else {
 					int iProgram;
 					const CHdmvClipInfo::Stream *pClipInfo;

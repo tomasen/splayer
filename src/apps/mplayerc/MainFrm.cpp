@@ -4721,7 +4721,7 @@ void CMainFrame::OnFilePostOpenmedia()
   {
     m_movieShared = false;
     m_wndToolBar.HideMovieShareBtn(FALSE);
-    SetTimer(TIMER_MOVIESHARE, 5800, NULL);
+    SetTimer(TIMER_MOVIESHARE, 300000, NULL);
   }
 
   KillTimer(TIMER_IDLE_TASK);

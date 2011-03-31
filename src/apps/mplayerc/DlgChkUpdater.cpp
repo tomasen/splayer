@@ -99,13 +99,19 @@ void CDlgChkUpdater::OnTimer(UINT_PTR nIDEvent)
       }
       break;
     case IDT_CHECK_WND: 
-
-      HWND hWndPrevious = ::FindWindow( NULL , ResStr(IDS_UPDATER_DIALOG_TITLE_KEYWORD));// ::GetDesktopWindow(),GW_CHILD);
-      if(::IsWindow(hWndPrevious)){
-        ::ShowWindow(hWndPrevious,SW_SHOWNORMAL);
-        ::SetWindowPos(hWndPrevious, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE);
-        KillTimer(IDT_CHECK_WND);
+      {
+        HWND hWndPrevious = ::FindWindow( NULL , ResStr(IDS_UPDATER_DIALOG_TITLE_KEYWORD));// ::GetDesktopWindow(),GW_CHILD);
+        if(::IsWindow(hWndPrevious)){
+          ::ShowWindow(hWndPrevious,SW_SHOWNORMAL);
+          ::SetWindowPos(hWndPrevious, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE);
+          KillTimer(IDT_CHECK_WND);
+        }
+        SetTimer(IDT_CLOSE_WND, 9000, NULL);
       }
+      break;
+    case IDT_CLOSE_WND:
+      KillTimer(IDT_CLOSE_WND);
+      OnCancel();
       break;
   }
 

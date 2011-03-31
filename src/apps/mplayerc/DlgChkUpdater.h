@@ -15,7 +15,7 @@ public:
 
 // Dialog Data
 	enum { IDD = IDD_CHECKUPDATE };
-	enum { IDT_CHECK_TICK = 74, IDT_CHECK_WND = 75 };
+	enum { IDT_CHECK_TICK = 74, IDT_CHECK_WND = 75 , IDT_CLOSE_WND = 76 };
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support

@@ -1928,6 +1928,34 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Controller\MediaCheckDB.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Controller\MediaCheckDB.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Controller\MediaSpiderAbstract.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Controller\MediaSpiderDisk.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Controller\MediaSpiderDisk.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Controller\MediaSpiderFolderTree.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Controller\MediaSpiderFolderTree.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Controller\NetworkControlerImpl.cc"
 				>
 			</File>
@@ -2052,15 +2080,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Model\MediaCheckDB.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Model\MediaCheckDB.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Model\MediaComm.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Model\MediaDB.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Model\MediaDB.h"
 				>
 			</File>
 			<File
@@ -2072,23 +2100,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Model\MediaSpiderAbstract.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Model\MediaSpiderDisk.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\Model\MediaSpiderDisk.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Model\MediaSQLite.cc"
 				>
 			</File>
 			<File
 				RelativePath=".\Model\MediaSQLite.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Model\MediaTreeModel.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\Model\MediaTreeModel.h"
 				>
 			</File>
 			<File

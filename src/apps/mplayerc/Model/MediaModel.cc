@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "MediaModel.h"
 #include <logging.h>
-#include "MediaSQLite.h"
+#include "MediaDB.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Normal part
@@ -21,7 +21,7 @@ int MediaModel::GetCount()
 {
   int nCount = 0;
 
-  MediaSQLite::GetInstance()->exec(L"SELECT count(*) FROM media_data", nCount);
+  MediaDB<int>::exec(L"SELECT count(*) FROM media_data", &nCount);
 
   return nCount;
 }
@@ -34,7 +34,7 @@ void MediaModel::Add(MediaPath& mdData)
 
   ss << L"SELECT count(*) FROM detect_path WHERE path='"
      << mdData.path << L"' and merit=" << mdData.merit;
-  MediaSQLite::GetInstance()->exec(ss.str(), nRecordCount);
+  MediaDB<int>::exec(ss.str(), &nRecordCount);
 
   if (nRecordCount == 0)
   {
@@ -42,9 +42,8 @@ void MediaModel::Add(MediaPath& mdData)
     ss << L"INSERT INTO detect_path(path, merit)"
        << L" VALUES('" << mdData.path << L"', " << mdData.merit << L")";
 
-    MediaSQLite::GetInstance()->exec(ss.str());
-
-    mdData.uniqueid = MediaSQLite::GetInstance()->last_insert_rowid();
+    MediaDB<>::exec(ss.str());
+    MediaDB<>::last_insert_rowid(mdData.uniqueid);
   }
 }
 
@@ -60,13 +59,17 @@ void MediaModel::Add(MediaPaths& data)
 
 void MediaModel::Add(MediaData& mdData)
 {
+  // add backslash
+  if (mdData.path[mdData.path.size() - 1] != L'\\')
+    mdData.path += L"\\";
+
   // insert unique record
   int nRecordCount = 0;
   std::wstringstream ss;
 
   ss << L"SELECT count(*) FROM media_data WHERE path='"
     << mdData.path << L"' and filename='" << mdData.filename << L"'";
-  MediaSQLite::GetInstance()->exec(ss.str(), nRecordCount);
+  MediaDB<int>::exec(ss.str(), &nRecordCount);
 
   if (nRecordCount == 0)
   {
@@ -75,9 +78,8 @@ void MediaModel::Add(MediaData& mdData)
        << L" VALUES('" << mdData.path << L"', '" << mdData.filename << L"', '"
        << mdData.thumbnailpath << L"', " << mdData.videotime << L")";
 
-    MediaSQLite::GetInstance()->exec(ss.str());
-
-    mdData.uniqueid = MediaSQLite::GetInstance()->last_insert_rowid();
+    MediaDB<>::exec(ss.str());
+    MediaDB<>::last_insert_rowid(mdData.uniqueid);
   }
 }
 
@@ -97,13 +99,13 @@ void MediaModel::FindAll(MediaPaths& data)
   std::vector<std::wstring > vtPath;
   std::vector<int> vtMerit;
 
-  MediaSQLite::GetInstance()->exec(L"SELECT uniqueid FROM detect_path", vtUniqueID);
-  MediaSQLite::GetInstance()->exec(L"SELECT path FROM detect_path", vtPath);
-  MediaSQLite::GetInstance()->exec(L"SELECT merit FROM detect_path", vtMerit);
+  typedef MediaDB<long long, std::wstring, int> tpdMediaDBDB;
+  tpdMediaDBDB::exec(L"SELECT uniqueid, path, merit FROM detect_path",
+                      &vtUniqueID,  &vtPath,  &vtMerit);
 
   for (size_t i = 0; i < vtUniqueID.size(); ++i)
   {
-    MediaPath mp = {0};
+    MediaPath mp;
     mp.uniqueid = vtUniqueID[i];
     mp.path = vtPath[i];
     mp.merit = vtMerit[i];
@@ -116,19 +118,17 @@ void MediaModel::FindAll(MediaDatas& data)
 {
   std::vector<long long> vtUniqueID;
   std::vector<std::wstring > vtPath;
-  std::vector<std::wstring> vtFilename;
+  std::vector<std::wstring > vtFilename;
   std::vector<std::wstring > vtThumbnailPath;
   std::vector<int> vtVideoTime;
 
-  MediaSQLite::GetInstance()->exec(L"SELECT uniqueid FROM media_data", vtUniqueID);
-  MediaSQLite::GetInstance()->exec(L"SELECT path FROM media_data", vtPath);
-  MediaSQLite::GetInstance()->exec(L"SELECT filename FROM media_data", vtFilename);
-  MediaSQLite::GetInstance()->exec(L"SELECT thumbnailpath FROM media_data", vtThumbnailPath);
-  MediaSQLite::GetInstance()->exec(L"SELECT videotime FROM media_data", vtVideoTime);
+  typedef MediaDB<long long, std::wstring, std::wstring, std::wstring, int> tpdMediaDBDB;
+  tpdMediaDBDB::exec(L"SELECT uniqueid, path, filename, thumbnailpath, videotime FROM media_data",
+                       &vtUniqueID,  &vtPath,  &vtFilename,  &vtThumbnailPath,  &vtVideoTime);
 
   for (size_t i = 0; i < vtUniqueID.size(); ++i)
   {
-    MediaData md = {0};
+    MediaData md;
     md.uniqueid = vtUniqueID[i];
     md.path = vtPath[i];
     md.filename = vtFilename[i];
@@ -146,19 +146,18 @@ void MediaModel::FindOne(MediaData& data, const MediaFindCondition& condition)
   {
     try
     {
-      long long nUniqueID;
+      long long nUniqueID = 0;
       std::wstring sPath;
       std::wstring sFilename;
       std::wstring sThumbnailPath;
-      int nVideoTime;
+      int nVideoTime = 0;
 
       std::wstringstream ss;
       ss << L" WHERE uniqueid=" << condition.uniqueid;
-      MediaSQLite::GetInstance()->exec(L"SELECT uniqueid FROM media_data" + ss.str(), nUniqueID);
-      MediaSQLite::GetInstance()->exec(L"SELECT path FROM media_data" + ss.str(), sPath);
-      MediaSQLite::GetInstance()->exec(L"SELECT filename FROM media_data" + ss.str(), sFilename);
-      MediaSQLite::GetInstance()->exec(L"SELECT thumbnailpath FROM media_data" + ss.str(), sThumbnailPath);
-      MediaSQLite::GetInstance()->exec(L"SELECT videotime FROM media_data" + ss.str(), nVideoTime);
+
+      typedef MediaDB<long long, std::wstring, std::wstring, std::wstring, int> tpdMediaDBDB;
+      tpdMediaDBDB::exec(L"SELECT uniqueid, path, filename, thumbnailpath, videotime FROM media_data" + ss.str()
+                        , &nUniqueID, &sPath, &sFilename, &sThumbnailPath, &nVideoTime);
 
       data.uniqueid = nUniqueID;
       data.path = sPath;
@@ -179,19 +178,18 @@ void MediaModel::FindOne(MediaData& data, const MediaFindCondition& condition)
   {
     try
     {
-      long long nUniqueID;
+      long long nUniqueID = 0;
       std::wstring sPath;
       std::wstring sFilename;
       std::wstring sThumbnailPath;
-      int nVideoTime;
+      int nVideoTime = 0;
 
       std::wstringstream ss;
       ss << L" WHERE filename='" << condition.filename << L"'";
-      MediaSQLite::GetInstance()->exec(L"SELECT uniqueid FROM media_data" + ss.str(), nUniqueID);
-      MediaSQLite::GetInstance()->exec(L"SELECT path FROM media_data" + ss.str(), sPath);
-      MediaSQLite::GetInstance()->exec(L"SELECT filename FROM media_data" + ss.str(), sFilename);
-      MediaSQLite::GetInstance()->exec(L"SELECT thumbnailpath FROM media_data" + ss.str(), sThumbnailPath);
-      MediaSQLite::GetInstance()->exec(L"SELECT videotime FROM media_data" + ss.str(), nVideoTime);
+
+      typedef MediaDB<long long, std::wstring, std::wstring, std::wstring, int> tpdMediaDBDB;
+      tpdMediaDBDB::exec(L"SELECT uniqueid, path, filename, thumbnailpath, videotime FROM media_data" + ss.str()
+                        , &nUniqueID, &sPath, &sFilename, &sThumbnailPath, &nVideoTime);
 
       data.uniqueid = nUniqueID;
       data.path = sPath;
@@ -217,22 +215,21 @@ void MediaModel::Find(MediaDatas& data, const MediaFindCondition& condition,
   {
     std::vector<long long> vtUniqueID;
     std::vector<std::wstring > vtPath;
-    std::vector<std::wstring> vtFilename;
+    std::vector<std::wstring > vtFilename;
     std::vector<std::wstring > vtThumbnailPath;
     std::vector<int> vtVideoTime;
 
     std::wstringstream ss;
     ss << L" WHERE uniqueid=" << condition.uniqueid
        << L" limit " << limit_start << L"," << limit_end;
-    MediaSQLite::GetInstance()->exec(L"SELECT uniqueid FROM media_data" + ss.str(), vtUniqueID);
-    MediaSQLite::GetInstance()->exec(L"SELECT path FROM media_data" + ss.str(), vtPath);
-    MediaSQLite::GetInstance()->exec(L"SELECT filename FROM media_data" + ss.str(), vtFilename);
-    MediaSQLite::GetInstance()->exec(L"SELECT thumbnailpath FROM media_data" + ss.str(), vtThumbnailPath);
-    MediaSQLite::GetInstance()->exec(L"SELECT videotime FROM media_data" + ss.str(), vtVideoTime);
+
+    typedef MediaDB<long long, std::wstring, std::wstring, std::wstring, int> tpdMediaDBDB;
+    tpdMediaDBDB::exec(L"SELECT uniqueid, path, filename, thumbnailpath, videotime FROM media_data" + ss.str()
+                      , &vtUniqueID, &vtPath, &vtFilename, &vtThumbnailPath, &vtVideoTime);
 
     for (size_t i = 0; i < vtUniqueID.size(); ++i)
     {
-      MediaData md = {0};
+      MediaData md;
       md.uniqueid = vtUniqueID[i];
       md.path = vtPath[i];
       md.filename = vtFilename[i];
@@ -257,15 +254,14 @@ void MediaModel::Find(MediaDatas& data, const MediaFindCondition& condition,
     std::wstringstream ss;
     ss << L" WHERE filename='" << condition.filename << L"'"
       << L" limit " << limit_start << L"," << limit_end;
-    MediaSQLite::GetInstance()->exec(L"SELECT uniqueid FROM media_data" + ss.str(), vtUniqueID);
-    MediaSQLite::GetInstance()->exec(L"SELECT path FROM media_data" + ss.str(), vtPath);
-    MediaSQLite::GetInstance()->exec(L"SELECT filename FROM media_data" + ss.str(), vtFilename);
-    MediaSQLite::GetInstance()->exec(L"SELECT thumbnailPath FROM media_data" + ss.str(), vtThumbnailPath);
-    MediaSQLite::GetInstance()->exec(L"SELECT videotime FROM media_data" + ss.str(), vtVideoTime);
+
+    typedef MediaDB<long long, std::wstring, std::wstring, std::wstring, int> tpdMediaDBDB;
+    tpdMediaDBDB::exec(L"SELECT uniqueid, path, filename, thumbnailpath, videotime FROM media_data" + ss.str()
+                      , &vtUniqueID, &vtPath, &vtFilename, &vtThumbnailPath, &vtVideoTime);
 
     for (size_t i = 0; i < vtUniqueID.size(); ++i)
     {
-      MediaData md = {0};
+      MediaData md;
       md.uniqueid = vtUniqueID[i];
       md.path = vtPath[i];
       md.filename = vtFilename[i];
@@ -286,7 +282,7 @@ void MediaModel::Delete(const MediaFindCondition& condition)
   {
     std::wstringstream ss;
     ss << L"delete from media_data where uniqueid = " << condition.uniqueid;
-    MediaSQLite::GetInstance()->exec(ss.str());
+    MediaDB<>::exec(ss.str());
 
     return;
   }
@@ -296,7 +292,7 @@ void MediaModel::Delete(const MediaFindCondition& condition)
   {
     std::wstringstream ss;
     ss << L"delete from media_data where filename = '" << condition.filename << L"'";
-    MediaSQLite::GetInstance()->exec(ss.str());
+    MediaDB<>::exec(ss.str());
 
     return;
   }
@@ -306,5 +302,5 @@ void MediaModel::DeleteAll()
 {
   std::wstringstream ss;
   ss << L"delete from media_data";
-  MediaSQLite::GetInstance()->exec(ss.str());
+  MediaDB<>::exec(ss.str());
 }

@@ -1,8 +1,29 @@
 #include "StdAfx.h"
 #include "MediaCenterController.h"
+#include <boost/filesystem.hpp>
 
-MediaCenterController::MediaCenterController() :
-    m_planestate(FALSE)
+//void cDebug(const std::wstring &sDebugInfo, bool bAutoBreak = true)
+//{
+//  if (::GetStdHandle(STD_OUTPUT_HANDLE) == 0)
+//    ::AllocConsole();
+//
+//  HANDLE h = ::GetStdHandle(STD_OUTPUT_HANDLE);
+//
+//  if (bAutoBreak)
+//  {
+//    ::WriteConsole(h, sDebugInfo.c_str(), sDebugInfo.size(), 0, 0);
+//    ::WriteConsole(h, L"\n", 1, 0, 0);
+//  } 
+//  else
+//  {
+//    ::WriteConsole(h, sDebugInfo.c_str(), sDebugInfo.size(), 0, 0);
+//  }
+//}
+
+////////////////////////////////////////////////////////////////////////////////
+// normal part
+MediaCenterController::MediaCenterController()
+: m_planestate(FALSE)
 {
   m_plane.SetPaintState(FALSE);
 
@@ -10,7 +31,7 @@ MediaCenterController::MediaCenterController() :
   MediaPaths::iterator it;
   m_model.FindAll(mps);
   for (it = mps.begin(); it != mps.end(); ++it)
-    m_spider.AddDetectPath((*it).path);
+    m_treeModel.addFolder(*it);
 
   m_model.FindAll(m_mediadata);
 }
@@ -19,42 +40,85 @@ MediaCenterController::~MediaCenterController()
 {
 }
 
-void MediaCenterController::AddMediaPath(std::wstring& path)
-{
-  if (::PathIsDirectory(path.c_str()))
-  {
-    // directory
-    MediaPath mp = {0, path, 0};
-    m_model.Add(mp);
-  } 
-  else
-  {
-    // file, must detect the path
-    ATL::CPath p(path.c_str());
-    std::wstring dir = path.substr(0, p.FindFileName());
-    if (m_spider.AddDetectPath(dir.c_str()))
-    {
-      MediaPath mp = {0, dir, 0};
-      m_model.Add(mp);
-    }
-  }
-}
+////////////////////////////////////////////////////////////////////////////////
+// GUI control
+//void MediaCenterController::AddMediaToDB(MediaData& data)
+//{
+//  m_model.Add(data);  
+//}
+//
+//void MediaCenterController::AddMediaToTree(MediaData& data)
+//{
+//  // add data to tree
+//  m_folderTree.addFile(data.path, data.filename);
+//
+//  // we only add unique data, so we check it
+//  std::map<UILayerBlock*, MediaFindCondition>::iterator itCur = m_medialist.begin();
+//  while (itCur != m_medialist.end())
+//  {
+//    if (itCur->second.filename == data.filename)
+//      return;
+//
+//    ++itCur;
+//  }
+//
+//  // add data to UI
+//  RECT rect;
+//  UILayerBlock* block;
+//  block = m_plane.AddBlock(data.filename, rect);
+//  
+//  MediaFindCondition c = {data.uniqueid, data.filename};
+//  m_medialist[block] = c;
+//
+//  InvalidateRect(m_hwnd, &rect, FALSE);
+//}
 
-void MediaCenterController::AddMedia(MediaData& data, BOOL todb)
-{
-  RECT rect;
-  UILayerBlock* block;
-  block = m_plane.AddBlock(data.filename, rect);
-  
-  MediaFindCondition c = {data.uniqueid, data.filename};
-  m_medialist[block] = c;
-
-  if (todb)
-  {
-    m_model.Add(data);  
-    InvalidateRect(m_hwnd, &rect, FALSE);
-  }
-}
+//void MediaCenterController::AddMediaPathToDB(MediaPath &mp)
+//{
+//  using namespace boost::filesystem;
+//
+//  if (!is_directory(mp.path))
+//  {
+//    wpath pt(mp.path);
+//    mp.path = pt.parent_path().wstring();
+//    if (mp.path[mp.path.size() - 1] != L'\\')
+//      mp.path += L"\\";
+//  }
+//  m_model.Add(mp);
+//}
+//
+//void MediaCenterController::AddMediaPathToTree(MediaPath &mp)
+//{
+//  using namespace boost::filesystem;
+//
+//  if (!is_directory(mp.path))
+//  {
+//    wpath pt(mp.path);
+//    mp.path = pt.parent_path().wstring();
+//    if (mp.path[mp.path.size() - 1] != L'\\')
+//      mp.path += L"\\";
+//  }
+//
+//  // analysis the path and add it to the detect_path table
+//  std::wstring sTemp(mp.path);
+//
+//  while (!sTemp.empty() && sTemp != L"\\\\")
+//  {
+//    // deal with the path
+//    if (is_directory(sTemp))
+//      m_folderTree.addPath(sTemp);
+//
+//    // remove the back slash to avoid dead loop
+//    if (sTemp[sTemp.size() - 1] == L'\\')
+//      sTemp.erase(sTemp.end() - 1, sTemp.end());
+//
+//    // remove the last suffix
+//    if (sTemp.find_last_of(L'\\') != std::wstring::npos)
+//      sTemp.erase(sTemp.begin() + sTemp.find_last_of(L'\\') + 1, sTemp.end());
+//    else
+//      sTemp.clear();
+//  }
+//}
 
 // this design too bad
 void MediaCenterController::DelMedia(UILayerBlock* block)
@@ -69,15 +133,22 @@ void MediaCenterController::Playback(std::wstring file)
   if (!m_spider.IsSupportExtension(file))
     return;
 
-  AddMediaPath(file);
+  MediaPath mp;
+  mp.path = file;
+  m_treeModel.addFolder(mp);
+  m_treeModel.increaseMerit(mp.path);
+
   std::wstring name(::PathFindFileName(file.c_str()));
   MediaFindCondition mc = {0, name};
   MediaData mdc;
   m_model.FindOne(mdc, mc);
   if (mdc.uniqueid == 0)
   {
-    MediaData md = {0, file, name, L"", 0};
-    AddMedia(md);
+    MediaData md;
+    md.path = file;
+    md.filename = name;
+
+    m_treeModel.addFile(md);
   }
 }
 
@@ -118,6 +189,49 @@ void MediaCenterController::GetMediaData(MediaDatas& data, int limit_start, int 
 
 }
 
+void MediaCenterController::ShowPlane()
+{
+  m_planestate = TRUE;
+  m_plane.SetPaintState(TRUE);
+  if (!m_mediadata.empty())
+  {
+    for (MediaDatas::iterator it=m_mediadata.begin(); it != m_mediadata.end(); ++it)
+      m_treeModel.addFile(*it);
+    Update();
+  }
+}
+
+void MediaCenterController::HidePlane()
+{
+  m_planestate = FALSE;
+  m_plane.SetPaintState(FALSE);
+  Update();
+}
+
+BOOL MediaCenterController::GetPlaneState()
+{
+  return m_planestate;
+}
+
+void MediaCenterController::SetFrame(HWND hwnd)
+{
+  m_hwnd = hwnd;
+
+  RECT block;
+  RECT margin = {5, 20, 64, 64};
+  block.left = 0;block.top = 0;
+  block.right = 138;block.bottom = 138;
+  m_plane.SetOption(block, margin, 30);
+}
+
+void MediaCenterController::Update()
+{
+  ::InvalidateRect(m_hwnd, NULL, TRUE);
+  ::PostMessage(m_hwnd, WM_SIZE, NULL, NULL);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// data control
 void MediaCenterController::SpiderStart()
 {
   m_spider._Stop();
@@ -131,45 +245,5 @@ void MediaCenterController::SpiderStop()
 {
   m_spider._Stop();
   m_checkDB._Stop();
-}
-
-BOOL MediaCenterController::GetPlaneState()
-{
-  return m_planestate;
-}
-
-void MediaCenterController::ShowPlane()
-{
-  m_planestate = TRUE;
-  m_plane.SetPaintState(TRUE);
-  if (!m_mediadata.empty())
-  {
-    for (MediaDatas::iterator it=m_mediadata.begin(); it != m_mediadata.end(); ++it)
-      AddMedia(*it, FALSE);
-    Update();
-  }
-}
-
-void MediaCenterController::Update()
-{
-  ::InvalidateRect(m_hwnd, NULL, TRUE);
-  ::PostMessage(m_hwnd, WM_SIZE, NULL, NULL);
-}
-
-void MediaCenterController::HidePlane()
-{
-  m_planestate = FALSE;
-  m_plane.SetPaintState(FALSE);
-  Update();
-}
-
-void MediaCenterController::SetFrame(HWND hwnd)
-{
-  m_hwnd = hwnd;
-
-  RECT block;
-  RECT margin = {5, 20, 64, 64};
-  block.left = 0;block.top = 0;
-  block.right = 138;block.bottom = 138;
-  m_plane.SetOption(block, margin, 30);
+  m_treeModel.saveToDB();
 }

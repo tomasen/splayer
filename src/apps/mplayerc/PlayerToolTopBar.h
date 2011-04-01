@@ -75,6 +75,9 @@ public:
 	afx_msg void OnActivateApp(BOOL bActive, DWORD dwThreadID);
 
   void DefaultButtonManage();
+  void PointCloseBtn();
+
+  void ResizeToolbarHeight();
 
 };
 

@@ -34,6 +34,7 @@
 #include "../../svplib/svplib.h"
 #include "GUIConfigManage.h"
 #include "ButtonManage.h"
+#include "ResLoader.h"
 
 typedef HRESULT (__stdcall * SetWindowThemeFunct)(HWND hwnd, LPCWSTR pszSubAppName, LPCWSTR pszSubIdList);
 #define TIMER_ADPLAYSWITCH 7013
@@ -89,22 +90,25 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 
   GetToolBarCtrl().SetExtendedStyle(TBSTYLE_EX_DRAWDDARROWS);
 
+  AppSettings& s = AfxGetAppSettings();
   GUIConfigManage cfgfile;
   ButtonManage  cfgbtn;
-  cfgfile.SetCfgFilePath(L"skins\\BottomToolBarButton.dat");
+  std::wstring cfgfilepath(L"skins\\");
+  cfgfilepath += s.skinname;
+  cfgfilepath += L"\\BottomToolBarButton.dat";
+
+  //cfgfile.SetCfgFilePath(L"skins\\BottomToolBarButton.dat");
+  cfgfile.SetCfgFilePath(cfgfilepath);
   cfgfile.ReadFromFile();
   if (cfgfile.IsFileExist())
   {
     cfgbtn.SetParse(cfgfile.GetCfgString(), &m_btnList);
-    cfgbtn.ParseConfig();
+    cfgbtn.ParseConfig(FALSE);
   }
   else
     DefaultButtonManage();
 
-  m_btnVolBG = m_btnList.GetButton(L"VOLUMEBG");
-  m_btnVolTm = m_btnList.GetButton(L"VOLUMETM");
-  btnLogo = m_btnList.GetButton(L"LOGO");
-  m_btnplaytime = m_btnList.GetButton(L"PLAYTIME");
+  PointVolumeBtn();
 
   cursorHand = ::LoadCursor(NULL, IDC_HAND);
 
@@ -135,14 +139,9 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
   CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
   m_nLogDPIY = pFrame->m_nLogDPIY;
 
-
-
   m_volctrl.Create(this);
 
   EnableToolTips(TRUE);
-
-
-
 
   m_nHeight = max(45, m_btnList.GetMaxHeight());
   if (m_nHeight > 45)
@@ -274,6 +273,7 @@ BEGIN_MESSAGE_MAP(CPlayerToolBar, CToolBar)
   ON_NOTIFY_EX(TTN_NEEDTEXT, 0, OnTtnNeedText)
   ON_WM_RBUTTONUP()
   ON_WM_RBUTTONDOWN()
+  ON_WM_MOUSELEAVE()
 END_MESSAGE_MAP()
 
 // CPlayerToolBar message handlers
@@ -324,6 +324,7 @@ void CPlayerToolBar::OnPaint()
   CRect rcClient;
   GetClientRect(&rcClient);
   CMemoryDC hdc(&dc, rcClient);
+  hdc.SetBkMode(TRANSPARENT);
 
   CRect rc;
   GetWindowRect(&rc);
@@ -340,10 +341,22 @@ void CPlayerToolBar::OnPaint()
 
   CRect rcUpperSqu = rcClient;
 
-  hdc.FillSolidRect(rcUpperSqu, s.GetColorFromTheme(_T("ToolBarBG"), NEWUI_COLOR_TOOLBAR_UPPERBG));
   CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
 
+  if (s.skinid == ID_SKIN_FIRST)
+    hdc.FillSolidRect(rcUpperSqu, s.GetColorFromTheme(_T("ToolBarBG"), NEWUI_COLOR_TOOLBAR_UPPERBG));
+  else
+  {
 
+    CBitmap* cbm = CBitmap::FromHandle(pFrame->m_btoolbarbg);
+    CDC bmpDc;
+    bmpDc.CreateCompatibleDC(&hdc);
+    HBITMAP oldhbm = (HBITMAP)bmpDc.SelectObject(cbm);
+    BITMAP btmp;
+    cbm->GetBitmap(&btmp);
+    hdc.StretchBlt(0, 0, rcUpperSqu.Width(), rcUpperSqu.Height(), &bmpDc, 0, 0, btmp.bmWidth, btmp.bmHeight - 2, SRCCOPY);
+    bmpDc.SelectObject(oldhbm);
+  }
   HFONT holdft = NULL;
   if (m_adctrl.GetVisible())
     holdft = (HFONT)hdc.SelectObject(m_adsft);
@@ -388,6 +401,7 @@ void CPlayerToolBar::OnPaint()
   m_adctrl.Paint(&hdc);  
   
   hdc.SelectObject(holdft);
+
 }
 void CPlayerToolBar::UpdateButtonStat(){
   CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
@@ -404,8 +418,8 @@ void CPlayerToolBar::UpdateButtonStat(){
     m_timerstr.Empty();
 
   BOOL bSub = pFrame->IsSubLoaded();
-  m_btnList.SetDisableStat( ID_SUBDELAYINC, !bSub);
-  m_btnList.SetDisableStat( ID_SUBDELAYDEC, !bSub);
+  m_btnList.SetDisableStat( ID_SUBDELAYINC, !bSub, m_nItemToTrack == ID_SUBDELAYINC);
+  m_btnList.SetDisableStat( ID_SUBDELAYDEC, !bSub, m_nItemToTrack == ID_SUBDELAYDEC);
   ReCalcBtnPos();
   
 }
@@ -623,7 +637,7 @@ void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point)
 
   CRect rc;
   GetWindowRect(&rc);
-  point += rc.TopLeft() ;
+  point += rc.TopLeft();
 
   // if move on ads
   static const HCURSOR hOrgCursor = (HCURSOR)::GetClassLong(GetSafeHwnd(), GCL_HCURSOR);
@@ -695,6 +709,11 @@ void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point)
     //m_bMouseDown = FALSE;
   }
 
+  TRACKMOUSEEVENT tmet;
+  tmet.cbSize = sizeof(TRACKMOUSEEVENT);
+  tmet.dwFlags = TME_LEAVE;
+  tmet.hwndTrack = m_hWnd;
+  _TrackMouseEvent(&tmet);
   return;
 }
 
@@ -1270,8 +1289,31 @@ void CPlayerToolBar::DefaultButtonManage()
   //CONFIGADDALIGN(SHARE, ALIGN_RIGHT, FASTBACKWORD, CRect(1,1,1,1))
   //CONFIGADDALIGN(SHARE, ALIGN_RIGHT, SUBINCREASE, CRect(1,1,1,1))
 
-  CONFIGBUTTON(PLAYTIME, "NOBMP" ,ALIGN_TOPLEFT,CRect(10,-50,105,3),TRUE,0,FALSE,0,ALIGN_LEFT,SHARE,CRect(10,10,10,10))
+  CONFIGBUTTON(PLAYTIME,"NOBMP",ALIGN_TOPLEFT,CRect(3,-50,105,3),TRUE,0,FALSE,0,ALIGN_LEFT,SHARE,CRect(1,1,1,1))
   
+}
+
+void CPlayerToolBar::PointVolumeBtn()
+{
+  m_btnVolBG = m_btnList.GetButton(L"VOLUMEBG");
+  m_btnVolTm = m_btnList.GetButton(L"VOLUMETM");
+  btnLogo = m_btnList.GetButton(L"LOGO");
+  m_btnplaytime = m_btnList.GetButton(L"PLAYTIME");
+}
+
+void CPlayerToolBar::OnMouseLeave()
+{
+  CRect rc;
+  GetWindowRect(&rc);
+  m_btnList.OnHitTest(CPoint(0,0), rc, -1);
+  Invalidate();
+}
+
+void CPlayerToolBar::ResizeToolbarHeight()
+{
+  m_nHeight = max(45, m_btnList.GetMaxHeight());
+  if (m_nHeight > 45)
+    m_nHeight += 4;
 }
 /*
 BottomToolBarButton.dat

@@ -300,7 +300,7 @@ public:
 
 	CString		m_strD3DX9Version;
 	LONGLONG	m_PerfFrequency;
-	
+
 	void ShowCmdlnSwitches();
 
 	bool StoreSettingsToIni();
@@ -424,6 +424,8 @@ public:
 		int iRMVideoRendererType;
 		int iQTVideoRendererType;
 		int iSVPRenderType;
+    int skinid;
+    std::wstring skinname;
 		
 		bool bExternalSubtitleTime;
 		bool bDisableSoftCAVC;

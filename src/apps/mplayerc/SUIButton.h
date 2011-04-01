@@ -79,12 +79,12 @@ static int nLogDPIX = 0,  nLogDPIY = 0;
 class CSUIButton {
 
 public:
-	CSize m_btnSize; //ťĴ�ߴ�
-	CSize m_orgbtnSize; //ťĴ�ߴ�
-	int m_iAlign; //�ڶ�뷽�
-	CRect m_marginTownd; //ť��ڴڵ�� 0Ϊǿ� �Ϊٷֱ�
-	CRect m_rcHitest; //ť��Χ��hittest
-	CBitmap m_bitmap; //ͼƬ洢λ�
+	CSize m_btnSize; //按钮的大小尺寸
+	CSize m_orgbtnSize; //按钮的大小尺寸
+	int m_iAlign; //与窗口对齐方向
+	CRect m_marginTownd; //按钮相对于窗口的位置， 0为不强制 负数为百分比
+	CRect m_rcHitest; //按钮的有效范围，用于hittest
+  CBitmap m_bitmap; //图片存储位置
 	int m_stat; //0 normal ; 1 hove ; 2 clicked ; 3 disabled
 	UINT m_htMsgID;
 	BOOL m_hide;
@@ -92,11 +92,13 @@ public:
   int  m_hidewidth;
 	BOOL m_NotButton;
   CString m_buttonname;
+  BOOL m_bsingleormultiply;
 
 	static HBITMAP SUILoadImage(LPCTSTR szBmpName);
 	static void PreMultiplyBitmap( CBitmap& bmp , CSize& sizeBmp, BOOL NotButton);
 
 	CString m_szBmpName;
+  CDC*    m_dc;
 
 	CList<CBtnAlign*> btnAlignList;
 
@@ -158,7 +160,7 @@ public:
     int GetMaxHeight();
 	UINT OnHitTest(CPoint pt , CRect rc, int bLBtnDown = -1);
 
-	void SetDisableStat(UINT iMsgID, BOOL bDisable);
+	void SetDisableStat(UINT iMsgID, BOOL bDisable, BOOL bhittest);
 	void SetClickedStat(UINT iMsgID, BOOL bClicked);
 	CRect GetHTRect(UINT iMsgID);
 	void SetHideStat(POSITION pos, BOOL bHide); //By Position
@@ -172,5 +174,8 @@ public:
   CSUIButton* GetButton(CString s);
 
   int GetRelativeMinLength(CRect WndRect, CSUIButton* btn);
+
+  BOOL ResReload(std::wstring folder, BOOL bl, std::wstring cfgfilename);
+
 };
 

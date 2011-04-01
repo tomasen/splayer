@@ -143,7 +143,7 @@ BOOL CChildView::PreTranslateMessage(MSG* pMsg)
 		  }
 		  else
 		  {
-			  pParent->PostMessage(pMsg->message, pMsg->wParam, MAKELPARAM(p.x, p.y));
+        pParent->PostMessage(pMsg->message, pMsg->wParam, MAKELPARAM(p.x, p.y));
 			  return TRUE;
 		  }
 	  }
@@ -533,7 +533,7 @@ void CChildView::OnSize(UINT nType, int cx, int cy)
 void CChildView::OnWindowPosChanged(WINDOWPOS* lpwndpos)
 {
 	CWnd::OnWindowPosChanged(lpwndpos);
-
+  
 	((CMainFrame*)GetParentFrame())->MoveVideoWindow();
 }
 
@@ -615,22 +615,34 @@ void CChildView::OnMouseMove(UINT nFlags, CPoint point)
 			if( m_btnList.HTRedrawRequired ){
 				Invalidate();
 			}
-		
-	}
-	CWnd::OnMouseMove(nFlags, point);
+  }
+
+  if (::GetKeyState(VK_LBUTTON) & 0x8000)
+  {
+    // The left button is still pressed
+  } 
+  else if (m_bMouseDown)
+  {
+    // The left button is released and the Windows don't send the WM_LBUTTONUP
+    // and WM_MOVE
+    PostMessage(WM_LBUTTONUP, 0, MAKELPARAM(point.x, point.y));
+    PostMessage(WM_MOVE, 0, MAKELPARAM(point.x, point.y));
+  }
+  
+  CWnd::OnMouseMove(nFlags, point);
 }
 void CChildView::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	// TODO: Add your message handler code here and/or call default
-
+  
 	CMainFrame* pFrame = ((CMainFrame*)GetParentFrame());
 	iBottonClicked = -1;
 	m_bMouseDown = TRUE;
 	CRect rc;
 	GetWindowRect(&rc);
-
+  
 	point += rc.TopLeft() ;
-	UINT ret = m_btnList.OnHitTest(point,rc,true);
+	UINT ret = m_btnList.OnHitTest(point,rc,TRUE);
 	if( m_btnList.HTRedrawRequired ){
 		if(ret)
 			SetCapture();
@@ -650,9 +662,9 @@ void CChildView::OnLButtonUp(UINT nFlags, CPoint point)
 
 	CRect rc;
 	GetWindowRect(&rc);
-
+  
 	CPoint xpoint = point + rc.TopLeft() ;
-	UINT ret = m_btnList.OnHitTest(xpoint,rc,false);
+	UINT ret = m_btnList.OnHitTest(xpoint,rc,FALSE);
 	if( m_btnList.HTRedrawRequired ){
 		if(ret){
 			pFrame->PostMessage( WM_COMMAND, ret);

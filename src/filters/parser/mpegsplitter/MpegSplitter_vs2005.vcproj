@@ -541,7 +541,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\..\..\-=SVN=-\svplayer\src\filters\parser\mpegsplitter\MpegSplitterSettingsWnd.cpp"
+				RelativePath=".\MpegSplitterSettingsWnd.cpp"
 				>
 			</File>
 			<File
@@ -630,7 +630,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\..\..\-=SVN=-\svplayer\src\filters\parser\mpegsplitter\MpegSplitterSettingsWnd.h"
+				RelativePath=".\MpegSplitterSettingsWnd.h"
 				>
 			</File>
 			<File

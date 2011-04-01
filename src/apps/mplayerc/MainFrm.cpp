@@ -2688,7 +2688,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
       {
         CSVPToolBox svpTool;
         //clean stored sub file which havn't been used for 30 days
-        svpTool.CleanUpOldFiles(AfxGetAppSettings().GetSVPSubStorePath(), 30, 5);
+        svpTool.CleanUpOldFiles(AfxGetAppSettings().GetSVPSubStorePath(true), 30, 5);
         SetTimer(TIMER_IDLE_TASK, 30000, NULL);
       }
     }

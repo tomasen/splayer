@@ -667,7 +667,7 @@ public:
 		CString szFGMLog;
 		CAtlMap<CString, COLORREF , CStringElementTraits<CString>> colorsTheme;
   private:
-    CString SVPSubStoreDir;
+    CString SVPSubStoreDir; //must not use this directly
 
 	public:
 		Settings();

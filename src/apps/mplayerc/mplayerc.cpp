@@ -3335,10 +3335,10 @@ void CMPlayerCApp::Settings::ChangeChannelMapByCustomSetting()
 	
 	return;	
 }
-CString CMPlayerCApp::Settings::GetSVPSubStorePath(){
+CString CMPlayerCApp::Settings::GetSVPSubStorePath(BOOL spdefault){
 	CString StoreDir = SVPSubStoreDir;
 	CSVPToolBox svpTool;
-	if(StoreDir.IsEmpty() || !svpTool.ifDirExist(StoreDir) || !svpTool.ifDirWritable(StoreDir)){
+	if(StoreDir.IsEmpty() || !svpTool.ifDirExist(StoreDir) || !svpTool.ifDirWritable(StoreDir) || spdefault){
 		svpTool.GetAppDataPath(StoreDir);
 		CPath tmPath(StoreDir);
 		tmPath.RemoveBackslash();

@@ -77,6 +77,8 @@
 #include <Strings.h>
 #include "Utils/SPlayerGUID.h"
 
+#include "SkinPreviewDlg.h"
+#include "ResLoader.h"
 
 // begin,
 // the following headers are included because HotkeyController mechanism broke the original inclusion
@@ -100,6 +102,8 @@ static UINT WM_NOTIFYICON = RegisterWindowMessage(TEXT("MYWM_NOTIFYICON"));
 
 #include "..\..\filters\transform\svpfilter\SVPSubFilter.h"
 #include "UserInterface\Dialogs\Snapshot_Win.h"
+
+#include "FrameCfgFileManage.h"
 
 bool g_bNoDuration = false;
 bool g_bExternalSubtitleTime = false;
@@ -148,7 +152,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 
   ON_REGISTERED_MESSAGE(s_uTaskbarRestart, OnTaskBarRestart)
   ON_REGISTERED_MESSAGE(WM_NOTIFYICON, OnNotifyIcon)
-
+  
   ON_WM_SETFOCUS()
   ON_WM_GETMINMAXINFO()
   ON_WM_MOVE()
@@ -170,7 +174,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_MESSAGE(WM_USER+31, OnStatusMessage)
   ON_MESSAGE(WM_USER+32, OnSuggestVolume)
   ON_MESSAGE(WM_USER+33, OnFailedInDXVA )
-
+  
   ON_MESSAGE(WM_IME_SETCONTEXT, OnImeSetContext)
 
   ON_MESSAGE_VOID(WM_DISPLAYCHANGE, OnDisplayChange)
@@ -532,7 +536,12 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_WM_WINDOWPOSCHANGING()
   ON_WM_KEYUP()
   ON_COMMAND(ID_MOVIESHARE, OnMovieShare)
-  ON_COMMAND(ID_MOVIESHARE_RESPONSE, OnMovieShareResponse)
+  ON_COMMAND(ID_MOVIESHARE_OPEN, OnOpenShooterMedia)
+
+  ON_COMMAND_RANGE(ID_SKIN_FIRST, ID_SKIN_TENTH, OnSkinSelection)
+  ON_UPDATE_COMMAND_UI_RANGE(ID_SKIN_FIRST, ID_SKIN_TENTH, OnUpdateSkinSelection)
+
+  ON_COMMAND(ID_SKIN_MORESELECTION, OnSkinMoreSelection)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -594,7 +603,9 @@ m_wndLycShowBox(NULL),
 m_l_been_playing_sec(0),
 m_is_resume_from_last_exit_point(false),
 m_lyricDownloadThread(NULL),
-m_secret_switch(NULL)
+m_secret_switch(NULL),
+m_movieShared(false),
+m_bmenuinitialize(FALSE)
 {
   m_wndFloatToolBar = new CPlayerFloatToolBar();
 }
@@ -712,6 +723,22 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
   if(__super::OnCreate(lpCreateStruct) == -1)
     return -1;
 
+//   TCHAR szModuleFullPath[MAX_PATH];
+//   ::GetModuleFileName(0, szModuleFullPath, MAX_PATH);
+//   TCHAR szDrive[10] = {0};
+//   TCHAR szDir[MAX_PATH] = {0};
+//   ::_wsplitpath(szModuleFullPath, szDrive, szDir, 0, 0);
+//   CString skinpath;
+//   skinpath += szDrive;
+//   skinpath += szDir;
+//   skinpath += L"skins\\";
+//   m_skinmanage.SetSkinPath(skinpath);
+//   m_skinmanage.SeachFile(skinpath.GetBuffer());
+
+  SearchSkinFolder();
+
+  AppSettings& s = AfxGetAppSettings();
+
   CDC ScreenDC;
   ScreenDC.CreateIC(_T("DISPLAY"), NULL, NULL, NULL);
   m_nLogDPIY = ScreenDC.GetDeviceCaps(LOGPIXELSY);
@@ -749,7 +776,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
   RegisterClassEx(&layeredClass) ;
 
   // static bars
-  AppSettings& s = AfxGetAppSettings();
+  //AppSettings& s = AfxGetAppSettings();
   CWnd* pParent = this;
   if(s.bUserAeroUI()){
     if(m_wndFloatToolBar->CreateEx(WS_EX_NOACTIVATE|WS_EX_TOPMOST, _T("SVPLayered"), _T("FLOATWND"), WS_POPUP, CRect( 20,20,21,21 ) , this,  0))//WS_EX_NOACTIVATE
@@ -900,7 +927,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
   //////////////////////////////////////////////////////////////////////////
   // an alternative way of pre-multiplying bitmap data
-  CRect btnMargin(3,7,15,3);
+  CRect btnMargin(3,5,15,3);
   CSize btnSize(21,17);//IDM_CLOSE_PNG
   CSUIButton* bClose = new CSUIButton( L"CLOSE.BMP",ALIGN_TOPRIGHT, btnMargin  , 0,  MYHTCLOSE);
   m_btnList.AddTail(bClose );
@@ -1104,6 +1131,16 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
   PostMessage(WM_COMMAND, ID_CHECKANDSET_DEFAULT_PLAYER);
 
   UserShareController::GetInstance()->SetCommentPlaneParent(m_hWnd);
+
+  BOOL bload = LoadRes(s.skinid, s.skinname);
+  if (!bload)
+  {
+    if (s.skinid != 0)
+      SendStatusMessage(L"该皮肤文件已损坏，请选择其他的皮肤。", 1000);
+    s.skinid = ID_SKIN_FIRST;
+    s.skinname = L"";
+    LoadRes(s.skinid, s.skinname);
+  }
 
   return 0;
 }
@@ -1428,6 +1465,7 @@ LRESULT CMainFrame::OnNcHitTestNewUI(WPARAM wParam, LPARAM lParam )
     //SVP_LogMsg5(_T("NCHIT1 %d %x"), lRet , bNotPassOnDefWindowProc);
     if(!bNotPassOnDefWindowProc){
       lRet = DefWindowProc( WM_NCHITTEST, wParam, lParam);
+      
     }
     //SVP_LogMsg5(_T("NCHIT2 %d"), lRet);
     switch(lRet){
@@ -1453,7 +1491,7 @@ default:
     return lRet;
   }
   CPoint pt(lParam);
-
+  //Logging("------------%d,%d", pt.x, pt.y);
   // custom processing of our min/max/close buttons
   CRect rc;
   GetWindowRect(&rc);
@@ -2623,14 +2661,15 @@ void CMainFrame::OnTimer(UINT nIDEvent)
   case TIMER_MOVIESHARE:
     {
       KillTimer(TIMER_MOVIESHARE);
-      if (!(m_secret_switch & 0x01))
-        break;
-      if (IsSomethingLoaded() && !m_fAudioOnly)
+      if (IsSomethingLoaded() && !m_fAudioOnly && !m_movieShared)
       {
+        m_movieShared = true;
         std::wstring uuid, moviehash;
         SPlayerGUID::GenerateGUID(uuid);
+        UserShareController* usc = UserShareController::GetInstance();
+        usc->CreateCommentPlane();
         moviehash = HashController::GetInstance()->GetSPHash(m_fnCurPlayingFile);
-        UserShareController::GetInstance()->ShareMovie(uuid, moviehash, m_fnCurPlayingFile.GetString());
+        usc->ShareMovie(uuid, moviehash, m_fnCurPlayingFile.GetString());
       }
     }
     break;
@@ -2690,7 +2729,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
       {
         CSVPToolBox svpTool;
         //clean stored sub file which havn't been used for 30 days
-        svpTool.CleanUpOldFiles(AfxGetAppSettings().SVPSubStoreDir, 30, 5);
+        svpTool.CleanUpOldFiles(AfxGetAppSettings().GetSVPSubStorePath(), 30, 5);
         SetTimer(TIMER_IDLE_TASK, 30000, NULL);
       }
     }
@@ -3120,12 +3159,10 @@ LRESULT CMainFrame::OnGraphNotify(WPARAM wParam, LPARAM lParam)
               SendMessage(WM_COMMAND, ID_PLAY_PLAY);
             }
           }
-        }else if(m_nLoopSetting == ID_PLAYBACK_LOOP_RANDOM){
+        }
+        else if(m_nLoopSetting == ID_PLAYBACK_LOOP_RANDOM)
           PostMessage(WM_COMMAND, ID_NAVIGATE_SKIPRANDOM);
-
-        }else if (m_nLoopSetting == ID_PLAYBACK_LOOP_NORMAL)
-           PostMessage(WM_COMMAND, ID_PLAY_STOP);
-        else{
+        else{ //ID_PLAYBACK_LOOP_NORMAL
 
           if(m_wndPlaylistBar.IsAtEnd())
           {
@@ -3748,10 +3785,10 @@ void CMainFrame::OnRButtonDown(UINT nFlags, CPoint point)
 
 void CMainFrame::OnRButtonUp(UINT nFlags, CPoint point)
 {
-  if (MediaCenterController::GetInstance()->GetPlaneState())
-    MediaCenterController::GetInstance()->HidePlane();
-  else
-    MediaCenterController::GetInstance()->ShowPlane();
+//   if (MediaCenterController::GetInstance()->GetPlaneState())
+//     MediaCenterController::GetInstance()->HidePlane();
+//   else
+//     MediaCenterController::GetInstance()->ShowPlane();
   if(!OnButton(HotkeyCmd::RUP, nFlags, point))
     __super::OnRButtonUp(nFlags, point);
 }
@@ -3893,7 +3930,7 @@ void CMainFrame::OnInitMenuPopup(CMenu * pPopupMenu, UINT nIndex, BOOL bSysMenu)
   __super::OnInitMenuPopup(pPopupMenu, nIndex, bSysMenu);
 
   static CAtlStringMap<UINT> transl;
-
+  
   if(transl.IsEmpty())
   {
     transl[_T("Navigate")] = IDS_NAVIGATE_POPUP;
@@ -3931,7 +3968,7 @@ void CMainFrame::OnInitMenuPopup(CMenu * pPopupMenu, UINT nIndex, BOOL bSysMenu)
 
   MENUITEMINFO mii;
   mii.cbSize = sizeof(mii);
-
+  CMenu* menupre = new CMenu;
   for(UINT i = 0, j = pPopupMenu->GetMenuItemCount(); i < j; i++)
   {
     CString str;
@@ -4110,7 +4147,7 @@ void CMainFrame::OnInitMenuPopup(CMenu * pPopupMenu, UINT nIndex, BOOL bSysMenu)
       pSubMenu = &m_favorites;
     }
     else if(str == ResStr(IDS_MENU_ITEM_RECENT_PALYED))
-    {
+    { 
       SetupRecentFileSubMenu();
       pSubMenu = &m_recentfiles;
     }
@@ -4118,6 +4155,46 @@ void CMainFrame::OnInitMenuPopup(CMenu * pPopupMenu, UINT nIndex, BOOL bSysMenu)
     {
       SetupShadersSubMenu();
       pSubMenu = &m_shaders;
+    }
+    else if (str == ResStr(IDS_MENU_ITEM_SKIN))
+    {
+       AppSettings& s = AfxGetAppSettings();
+       if (s.bAeroGlass)
+         return;
+       if (!m_bmenuinitialize)
+       {
+        m_skinorg = new CMenu;
+        m_skinorg->CreateMenu();
+        MenuMerge(m_skinorg, pPopupMenu->GetSubMenu(i));
+        //m_skinorg = pPopupMenu->GetSubMenu(i);
+       }
+
+      CMenu menuappend;
+      menuappend.CreateMenu();
+      menuappend.AppendMenu(MF_ENABLED | MF_STRING, ID_SKIN_FIRST, ResStr(IDS_MENU_ITEM_SKIN_DEFAULT));
+      id = ID_SKIN_SECOND;
+      if (!SkinFolderManager::ReturnSkinMap().empty())
+      {
+        std::map<std::wstring, std::wstring> skinmap = SkinFolderManager::ReturnSkinMap();
+        
+        for (std::map<std::wstring, std::wstring>::iterator ite = skinmap.begin();
+          ite != skinmap.end(); ++ite)
+        {
+          m_skin_map[id] = ite->first;
+          menuappend.AppendMenu(MF_ENABLED | MF_STRING, id++, ite->first.c_str());
+        }
+      }
+      menuappend.AppendMenu(MF_SEPARATOR | MF_ENABLED);
+      menuappend.AppendMenu(MF_ENABLED | MF_STRING, ID_SKIN_MORESELECTION, ResStr(IDS_RS_SKIN_MORESELECTION));
+      
+      if (m_bmenuinitialize)
+        menupre->DestroyMenu();
+      menupre->CreateMenu();  
+      MenuMerge(menupre, m_skinorg);
+      MenuMerge(menupre, &menuappend);
+      pSubMenu = menupre;
+      m_bmenuinitialize = TRUE;
+      menuappend.DestroyMenu();
     }
 
     if(pSubMenu)
@@ -4290,6 +4367,7 @@ void CMainFrame::SetupVideoMenu(CMenu *pVideoMenu)
   vector<wstring> vtVideoStreamName;
   int id = ID_VIDEO_SUBITEM_START;
   CComQIPtr<IAMStreamSelect> pSS = FindFilter(__uuidof(CMatroskaSourceFilter), pGB);
+  if (!pSS) pSS = FindFilter(__uuidof(CMpegSourceFilter), pGB);
   DWORD dwStreamCount = 0;
   DWORD dwVideoStreamCount = 0;
   if (pSS)
@@ -4610,7 +4688,8 @@ void CMainFrame::OnFilePostOpenmedia()
         if (!m_fFullScreen)
         {
           PlayerPreference* pref = PlayerPreference::GetInstance();
-          if (pref->GetIntVar(INTVAR_TOGGLEFULLSCRENWHENPLAYBACKSTARTED))
+         m_fFullScreen = pref->GetIntVar(INTVAR_TOGGLEFULLSCRENWHENPLAYBACKSTARTED);
+         if (m_fFullScreen)
           {
             ToggleFullscreen(true, true);
             SetCursor(NULL);
@@ -4718,12 +4797,17 @@ void CMainFrame::OnFilePostOpenmedia()
     }
 
   }
-  UserShareController::GetInstance()->HideCommentPlane();
-  m_wndToolBar.HideMovieShareBtn(TRUE);
+
   // send sphash to remote
+  m_wndToolBar.HideMovieShareBtn(TRUE);
+  UserShareController::GetInstance()->HideCommentPlane();
+  UserShareController::GetInstance()->CloseShooterMedia();
   if(IsSomethingLoaded() && !m_fAudioOnly && (UINT)((INT64)rtDur/10000000) > 90)
-    SetTimer(TIMER_MOVIESHARE, 1800, NULL);
-  
+  {
+    m_movieShared = false;
+    m_wndToolBar.HideMovieShareBtn(FALSE);
+    SetTimer(TIMER_MOVIESHARE, 300000, NULL);
+  }
 
   KillTimer(TIMER_IDLE_TASK);
 }
@@ -4791,6 +4875,10 @@ void CMainFrame::OnFilePostClosemedia()
   SetupRecentFileSubMenu();
   SetupNavChaptersSubMenu();
   SetupFavoritesSubMenu();
+
+  KillTimer(TIMER_MOVIESHARE);
+  m_wndToolBar.HideMovieShareBtn(TRUE);
+  UserShareController::GetInstance()->HideCommentPlane();
 
   KillTimer(TIMER_IDLE_TASK);
   SetTimer(TIMER_IDLE_TASK, 30000, NULL);
@@ -7149,11 +7237,8 @@ void CMainFrame::OnShowDrawStats()
   CString msg;
   msg.Format(L"Secret option @ %x", m_secret_switch);
   SendStatusMessage(msg, 2000);
-  if (m_secret_switch)
-  {
-    UserShareController::GetInstance()->CreateCommentPlane();
+  if (0 && m_secret_switch)
     SetTimer(TIMER_MOVIESHARE, 1, NULL);
-  }
   else
     AfxGetMyApp()->m_fDisplayStats = !AfxGetMyApp()->m_fDisplayStats;
 
@@ -8248,6 +8333,7 @@ void CMainFrame::OnPlayVideo(UINT nID)
   int i = nID - ID_VIDEO_SUBITEM_START;
 
   CComQIPtr<IAMStreamSelect> pSS = FindFilter(__uuidof(CMatroskaSourceFilter), pGB);
+  if (!pSS) pSS = FindFilter(__uuidof(CMpegSourceFilter), pGB);
   if (pSS)
   {
     LONGLONG dwCurPos = 0;
@@ -8270,6 +8356,7 @@ void CMainFrame::OnUpdatePlayVideo(CCmdUI* pCmdUI)
   int nVideoStreamIndex = pCmdUI->m_nID - ID_VIDEO_SUBITEM_START;
 
   CComQIPtr<IAMStreamSelect> pSS = FindFilter(__uuidof(CMatroskaSourceFilter), pGB);
+  if (!pSS) pSS = FindFilter(__uuidof(CMpegSourceFilter), pGB);
   if (pSS)
   {
     DWORD dwStreamCount = 0;
@@ -9960,6 +10047,7 @@ void CMainFrame::rePosOSD(){
 
 
   CRect rcView,rc;
+  CRect rcclient;
   m_wndView.GetWindowRect(&rcView);
   if( ::GetWindowRect( m_wndView.m_hWnd, &rcView ) ){
     GetWindowRect(&rc);
@@ -12382,6 +12470,7 @@ void CMainFrame::OnThemeChangeMenu(UINT nID){
   switch(nID){
     case ID_THEME_AEROGLASS:
       s.bAeroGlass = !s.bAeroGlass && s.bAeroGlassAvalibility;
+      SendMessage(WM_COMMAND, ID_SKIN_FIRST);
       SendMessage(WM_COMMAND, ID_VIEW_PRESETS_NORMAL);
       SendMessage(WM_COMMAND, ID_FILE_RESTART);
       break;
@@ -12848,106 +12937,62 @@ void CMainFrame::SetupAudioSwitcherSubMenu()
 
       }
 
-      // Mod by cjbw1234
-      //szaAudioStreamArray.RemoveAll();
-      //CUIntArray sziAudioStreamArray;
-      //BeginEnumFilters(pGB, pEF, pBF)
-      //{
+      try 
+      {
+        szaAudioStreamArray.RemoveAll();
+        CUIntArray sziAudioStreamArray;
+        BeginEnumFilters(pGB, pEF, pBF)
+        {
+          CLSID clsid = GetCLSID(pBF);
+          if(clsid == __uuidof(CTextPassThruFilter) || clsid == __uuidof(CNullTextRenderer)
+            || clsid == GUIDFromCString(_T("{48025243-2D39-11CE-875D-00608CB78066}"))) // ISCR
+            continue;
 
-      //  CLSID clsid = GetCLSID(pBF);
+          CComQIPtr<IAMStreamSelect> pSS2 = pBF;
+          if(pSS2)
+          {
+            DWORD nStreams = 0, flags, group, prevgroup = -1;
+            LCID lcid;
+            WCHAR* wname = NULL;
+            CComPtr<IUnknown> pObj, pUnk;
+            pSS2->Count(&nStreams);
+            for(DWORD i = 0; i < nStreams; i++, pObj = NULL, pUnk = NULL)
+            {
+              m_ssarray.Add(pSS2);
+              flags = group = 0;
+              wname = NULL;
+              pSS2->Info(i, NULL, &flags, &lcid, &group, &wname, &pObj, &pUnk);
+              if(!wname) { idl++; continue; }
+              CString name(wname);
+              if( name.Find(_T("A")) == 0  || name.Find(_T("声")) == 0 || name.Find(_T("音")) == 0 ){
+                name.Replace(_T("&"), _T("&&"));
+                Logging(L" Audio Menu %d %s", idl, name);
+                szaAudioStreamArray.Add( name );
+                sziAudioStreamArray.Add( idl );
+              }
+              idl++;
+              CoTaskMemFree(wname);
+            }
+            if(nStreams == 0) pSS2.Release();
+          }
+        }
+        EndEnumFilters
 
-      //  if(clsid == CLSID_AVIDec)
-      //  {
-      //    CComPtr<IPin> pPin = GetFirstPin(pBF);
-      //  }
-      //  else if(clsid == CLSID_ACMWrapper)
-      //  {
-      //    CComPtr<IPin> pPin = GetFirstPin(pBF);
+        if(szaAudioStreamArray.GetCount() > 1){
+          for(int i = 0; i < szaAudioStreamArray.GetCount(); i++){
+            szAudioStreamNameBuff.Format(ResStr(IDS_MENU_ITEM_AUDIO_STREAM_NAME), ++iAudioStreamCount, GetAnEasyToUnderstoodAudioStreamName(szaAudioStreamArray.GetAt(i)) );
+            pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, sziAudioStreamArray.GetAt(i),szAudioStreamNameBuff) ;
+          }
+          pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED); 
+        }
+      } catch(...) {}
 
-      //  }
-      //  else if(clsid == __uuidof(CTextPassThruFilter) || clsid == __uuidof(CNullTextRenderer)
-      //    || clsid == GUIDFromCString(_T("{48025243-2D39-11CE-875D-00608CB78066}"))) // ISCR
-      //  {
-      //    // hide these
-      //    continue;
-      //  }
-      //  BeginEnumPins(pBF, pEP, pPin)
-      //  {
-
-      //  }
-      //  EndEnumPins
-
-
-      //    CComQIPtr<IAMStreamSelect> pSS2 = pBF;
-      //  if(pSS2)
-      //  {
-      //    DWORD nStreams = 0, flags, group, prevgroup = -1;
-      //    LCID lcid;
-      //    WCHAR* wname = NULL;
-      //    CComPtr<IUnknown> pObj, pUnk;
-
-      //    pSS2->Count(&nStreams);
-
-
-
-
-      //    for(DWORD i = 0; i < nStreams; i++, pObj = NULL, pUnk = NULL)
-      //    {
-      //      m_ssarray.Add(pSS2);
-
-
-
-      //      flags = group = 0;
-      //      wname = NULL;
-      //      pSS2->Info(i, NULL, &flags, &lcid, &group, &wname, &pObj, &pUnk);
-
-
-      //      if(!wname) 
-      //      {
-      //        CStringW stream(L"Unknown Stream");
-      //        wname = (WCHAR*)CoTaskMemAlloc((stream.GetLength()+3+1)*sizeof(WCHAR));
-      //        swprintf(wname, L"%s %d", stream, min(i+1,999));
-      //      }
-
-      //      CString name(wname);
-      //      name.Replace(_T("&"), _T("&&"));
-      //      if( name.Find(_T("A")) == 0  || name.Find(_T("声")) == 0 || name.Find(_T("音")) == 0 ){
-
-      //        //CString szLog;
-      //        //szLog.Format(L" Audio Menu %d %s", idl, name);
-      //        //SVP_LogMsg(szLog);
-      //        szaAudioStreamArray.Add( name );
-      //        sziAudioStreamArray.Add( idl );
-      //        //szAudioStreamNameBuff.Format(ResStr(IDS_MENU_ITEM_AUDIO_STREAM_NAME), ++iAudioStreamCount, GetAnEasyToUnderstoodAudioStreamName(name) );
-      //        //pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, idl,szAudioStreamNameBuff) ;
-
-      //      }
-      //      idl++;
-
-      //      CoTaskMemFree(wname);
-      //    }
-
-      //    if(nStreams == 0) pSS2.Release();
-      //  }
-
-
-
-      //}
-      //EndEnumFilters
-
-        //if(szaAudioStreamArray.GetCount() > 1){
-        //  for(int i = 0; i < szaAudioStreamArray.GetCount(); i++){
-        //    szAudioStreamNameBuff.Format(ResStr(IDS_MENU_ITEM_AUDIO_STREAM_NAME), ++iAudioStreamCount, GetAnEasyToUnderstoodAudioStreamName(szaAudioStreamArray.GetAt(i)) );
-        //    pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, sziAudioStreamArray.GetAt(i),szAudioStreamNameBuff) ;
-        //  }
-        //  pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED); 
-        //}
-        pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPNORMAL, ResStr(IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_DEAULT));
-        pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPLEFT,  ResStr(IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_LEFT));
-        pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPRIGHT,  ResStr(IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_RIGHT));
-        pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPCENTER,  ResStr(IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_CENTER));
-        pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED);
-        pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_AUDIO_SUBITEM_START, ResStr(IDS_MENU_ITEM_AUDIO_SETTING));
+      pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPNORMAL, ResStr(IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_DEAULT));
+      pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPLEFT,  ResStr(IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_LEFT));
+      pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPRIGHT,  ResStr(IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_RIGHT));
+      pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, IDS_AUDIOCHANNALMAPCENTER,  ResStr(IDS_MENU_ITEM_AUDIOCHANNEL_SELECT_CENTER));
+      pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED);
+      pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, ID_AUDIO_SUBITEM_START, ResStr(IDS_MENU_ITEM_AUDIO_SETTING));
 
     }
   }
@@ -13119,6 +13164,68 @@ void CMainFrame::SetupSubtitlesSubMenu(int subid)
     loadID = ID_FILE_LOAD_SUBTITLE2;
   }else{
     id = ID_SUBTITLES_SUBITEM_START;
+
+    // TODO: ts subtitles seems to be not working
+    UINT idl = ID_FILTERSTREAMS_SUBITEM_START;
+
+    int iSubtitleStreamCount = 0;
+    CString szSubtitleStreamNameBuff ;
+    m_ssarray.RemoveAll();
+
+    if(m_iMediaLoadState == MLS_LOADED)
+    {
+      try 
+      {
+        CStringArray szaSubtitleStreamArray;
+        CUIntArray sziSubtitleStreamArray;
+        BeginEnumFilters(pGB, pEF, pBF)
+        {
+          CLSID clsid = GetCLSID(pBF);
+          if(clsid == __uuidof(CTextPassThruFilter) || clsid == __uuidof(CNullTextRenderer)
+            || clsid == GUIDFromCString(_T("{48025243-2D39-11CE-875D-00608CB78066}"))) // ISCR
+            continue;
+
+          CComQIPtr<IAMStreamSelect> pSS2 = pBF;
+          if(pSS2)
+          {
+            DWORD nStreams = 0, flags, group, prevgroup = -1;
+            LCID lcid;
+            WCHAR* wname = NULL;
+            CComPtr<IUnknown> pObj, pUnk;
+            pSS2->Count(&nStreams);
+            for(DWORD i = 0; i < nStreams; i++, pObj = NULL, pUnk = NULL)
+            {
+              m_ssarray.Add(pSS2);
+              flags = group = 0;
+              wname = NULL;
+              pSS2->Info(i, NULL, &flags, &lcid, &group, &wname, &pObj, &pUnk);
+              if(!wname) { idl++; continue; }
+              CString name(wname);
+              if( name.Find(_T("S")) == 0  || name.Find(_T("字幕")) == 0 ){
+                name.Replace(_T("&"), _T("&&"));
+                Logging(L" Subtitle Menu %d %s", idl, name);
+                szaSubtitleStreamArray.Add( name );
+                sziSubtitleStreamArray.Add( idl );
+              }
+              idl++;
+              CoTaskMemFree(wname);
+            }
+            if(nStreams == 0) pSS2.Release();
+          }
+        }
+        EndEnumFilters
+
+        if(szaSubtitleStreamArray.GetCount() > 1){
+          for(int i = 0; i < szaSubtitleStreamArray.GetCount(); i++){
+            szSubtitleStreamNameBuff.Format(ResStr(IDS_MENU_ITEM_SUBTITLE_STREAM_NAME), ++iSubtitleStreamCount, GetAnEasyToUnderstoodAudioStreamName(szaSubtitleStreamArray.GetAt(i)) );
+            pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, sziSubtitleStreamArray.GetAt(i),szSubtitleStreamNameBuff) ;
+          }
+          pSub->AppendMenu(MF_SEPARATOR|MF_ENABLED); 
+        }
+      } catch(...) {}
+      //*/
+    }
+    
   }
 
   POSITION pos = m_pSubStreams.GetHeadPosition();
@@ -15185,7 +15292,7 @@ case ID_SUB2FONTDOWN:
       UpdateSubtitle(true); 
     }
     if(bSubChg2){
-      str2.Format(ResStr(IDS_OSD_MSG_CHANGE_2NDSUB_FONTSIZE), s.subdefstyle.fontSize);
+      str2.Format(ResStr(IDS_OSD_MSG_CHANGE_2NDSUB_FONTSIZE), s.subdefstyle2.fontSize);
       UpdateSubtitle2(true);
     }
     str3.Format(_T("(%d%%)"), (int)(s.dGSubFontRatio*100));
@@ -15861,9 +15968,15 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
       // create rounded rect region based on new window size
       if (wp.showCmd != SW_MAXIMIZE )
       {
+        if (s.skinid == ID_SKIN_FIRST)
+        {
         rc.InflateRect(GetSystemMetrics(SM_CXBORDER), GetSystemMetrics(SM_CYBORDER));
         int l_size_of_corner = s.GetColorFromTheme(_T("WinFrameSizeOfCorner"), 3);
-        m_rgn.CreateRoundRectRgn(0,0,rc.Width()-1,rc.Height()-1, l_size_of_corner,l_size_of_corner);                 // rounded rect w/50 pixel corners
+          m_rgn.CreateRoundRectRgn(0,0,rc.Width()-1,rc.Height()-1, 3, 3);                 // rounded rect w/50 pixel corners
+        }
+        else
+          m_rgn.CreateRoundRectRgn(0, 0, rc.Width(), rc.Height(), 
+            FrameCfgFileManage::m_framecornerwidth, FrameCfgFileManage::m_framecornerheight);
 
         // set window region to make rounded window
       }
@@ -15877,18 +15990,13 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
   }else{
     SetWindowRgn(NULL,TRUE);   
   }
-
-
-
+  
   //SVP_LogMsg3("Winsized @ %I64d", AfxGetMyApp()->GetPerfCounter());
-
 }
 
 LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
 {
   AppSettings& s = AfxGetAppSettings();
-
-
 
   CString szWindowText ;
   if(m_bDxvaInUse){
@@ -15919,9 +16027,11 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
   GetWindowPlacement(&wp);
   CRect rc, rcWnd;
   GetWindowRect(&rcWnd);
+
   rc = rcWnd - rcWnd.TopLeft();
   if(wp.showCmd!=SW_MAXIMIZE && !m_fFullScreen){
     rc.InflateRect(GetSystemMetrics(SM_CXBORDER), GetSystemMetrics(SM_CYBORDER));
+
     if(!m_wndToolBar.IsVisible()){
       //rc.bottom -=3;
     }
@@ -15955,6 +16065,18 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
     CRect rcClient  ;
     GetClientRect(&rcClient);
 
+    int frameCornerWidth   = FrameCfgFileManage::m_framecornerwidth;
+    int frameCornerHeight  = FrameCfgFileManage::m_framecornerheight;
+    int lFrameThickHeight  = FrameCfgFileManage::m_lframethickheight;
+    int tFrameThickWidth   = FrameCfgFileManage::m_tframethickwidth;
+    int rFrameThickHeight  = FrameCfgFileManage::m_rframethickheight;
+    int bFrameThickWidth   = FrameCfgFileManage::m_bframethickwidth;
+    int captionHeight      = FrameCfgFileManage::m_captionheight;
+    int lCaptionThickWidth = FrameCfgFileManage::m_lcaptionthickwidth;
+    int rCaptionThickWidth = FrameCfgFileManage::m_rcaptionthickwidth;
+
+    if (s.skinid == ID_SKIN_FIRST)
+    {
     rcClient.top+=3;
     if(bCAPTIONon){
       rcClient.top+=GetSystemMetrics(SM_CYCAPTION) + 4;
@@ -15983,21 +16105,40 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
       //}
 
     }
+    }
+    else
+    {
+      CRect wndrc;
+      GetWindowRect(&wndrc);
+      wndrc = wndrc - wndrc.TopLeft();
+      rcClient.top += frameCornerHeight;
+      if (bCAPTIONon)
+        rcClient.top += captionHeight - frameCornerHeight;
+      rcClient.left += frameCornerWidth;
+      rcClient.right = wndrc.right - 1 - frameCornerWidth;
+      rcClient.bottom = wndrc.bottom - 1 - frameCornerHeight;
 
+    }
     int nTotalCaptionHeight = GetSystemMetrics(SM_CYCAPTION)+GetSystemMetrics(SM_CYFRAME)+( (8 - GetSystemMetrics(SM_CYFRAME) ) /2 );
 
     if(m_fFullScreen){
       nTotalCaptionHeight -= 4;
     }
     dc->ExcludeClipRect(&rcClient);
-
+    
     // establish double buffered painting
     CMemoryDC hdc(dc, rc);
+    ResLoader rlResLoader;
     // 		CBrush brush;
     // 		brush.CreateSolidBrush(RGB(0xff,0x00,0x00));
     // 		HBRUSH holdbrush = (HBRUSH)hdc.SelectObject(brush);
     if (wp.showCmd != SW_MAXIMIZE && !m_fFullScreen){
       //hdc.RoundRect(rc.left+1, rc.top+1, rc.right-1, rc.bottom-1, 3, 3);
+      int pos_of_hor_splite = s.GetColorFromTheme(_T("WinFrameCornerHorSplit"), 5);
+      int pos_of_ver_splite = s.GetColorFromTheme(_T("WinFrameCornerVerSplit"), 7);
+      
+      if (s.skinid == ID_SKIN_FIRST)
+      {
       int bSpace = 1;
       CPen pen;
       pen.CreatePen(PS_SOLID, 1, s.GetColorFromTheme(_T("WinFrame1"), RGB(0x7f,0x7f,0x7f)));
@@ -16062,8 +16203,6 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
       int tx = rc.Width() - 2;
       int ty = rc.Height() - 2;
 
-      int pos_of_hor_splite = s.GetColorFromTheme(_T("WinFrameCornerHorSplit"), 5);
-      int pos_of_ver_splite = s.GetColorFromTheme(_T("WinFrameCornerVerSplit"), 7);
       hdc.StretchBlt(0,0,pos_of_hor_splite,pos_of_ver_splite, &dcBmp, 0,0,
         pos_of_hor_splite,pos_of_ver_splite, SRCCOPY); // TopLeft
       hdc.StretchBlt(tx-pos_of_hor_splite,0,pos_of_hor_splite,pos_of_ver_splite, &dcBmp, 
@@ -16072,6 +16211,7 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
         pos_of_ver_splite,pos_of_hor_splite,pos_of_ver_splite, SRCCOPY);
       hdc.StretchBlt(tx-pos_of_hor_splite,ty-pos_of_ver_splite,pos_of_hor_splite,pos_of_ver_splite, &dcBmp, 
         pos_of_hor_splite,pos_of_ver_splite,pos_of_hor_splite,pos_of_ver_splite, SRCCOPY);
+        dcBmp.SelectObject(hbmpold);
       /*
 
       if(bToolBarOn && 0){
@@ -16083,7 +16223,40 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
       hdc.StretchBlt(tx-5,ty-15,5,1, &dcBmp, 5,7,5,1, SRCCOPY);
       }
       */
-      dcBmp.SelectObject(hbmpold);
+      }
+      else
+      {
+        CRect wndrc2;
+        GetWindowRect(&wndrc2);
+        wndrc2 = wndrc2 - wndrc2.TopLeft();
+        CBitmap* cbm = CBitmap::FromHandle(m_framecornerhbm);
+        CDC bmpDc;
+        bmpDc.CreateCompatibleDC(&hdc);
+        HBITMAP oldhbm = (HBITMAP)bmpDc.SelectObject(cbm);
+        hdc.SetStretchBltMode(HALFTONE);
+        hdc.SetBrushOrg(0, 0);
+        BITMAP btmp;
+        cbm->GetBitmap(&btmp);
+        hdc.StretchBlt(0, frameCornerHeight, frameCornerWidth, wndrc2.Height() - 2 * frameCornerHeight, 
+                       &bmpDc, 0, frameCornerHeight, frameCornerWidth, lFrameThickHeight, SRCCOPY);
+        hdc.StretchBlt(frameCornerWidth, 0, wndrc2.Width() - 2 * frameCornerWidth, frameCornerHeight, 
+                       &bmpDc, frameCornerWidth, 0, tFrameThickWidth, frameCornerHeight, SRCCOPY);
+        hdc.StretchBlt(frameCornerWidth, wndrc2.bottom - 1 -frameCornerHeight, wndrc2.Width() - 2 * frameCornerWidth, frameCornerHeight, 
+                       &bmpDc, frameCornerWidth, btmp.bmHeight - frameCornerHeight, bFrameThickWidth, frameCornerHeight, SRCCOPY);
+        hdc.StretchBlt(wndrc2.right - 1 -frameCornerWidth, frameCornerHeight, frameCornerWidth, wndrc2.Height() - 2 * frameCornerHeight, 
+                       &bmpDc, btmp.bmWidth - frameCornerWidth, frameCornerHeight, frameCornerWidth, rFrameThickHeight, SRCCOPY);
+        
+        hdc.StretchBlt(0, 0, frameCornerWidth, frameCornerHeight, &bmpDc, 0, 0, frameCornerWidth, frameCornerHeight, SRCCOPY);
+        hdc.StretchBlt(wndrc2.right - 1 - frameCornerWidth, 0, frameCornerWidth, frameCornerHeight, 
+                       &bmpDc, btmp.bmWidth - frameCornerWidth, 0, frameCornerWidth, frameCornerHeight, SRCCOPY);
+        hdc.StretchBlt(0, wndrc2.bottom - 1 - (btmp.bmHeight - frameCornerHeight - lFrameThickHeight), frameCornerWidth, 
+                       btmp.bmHeight - frameCornerHeight - lFrameThickHeight, &bmpDc, 0, frameCornerHeight + lFrameThickHeight, 
+                       frameCornerWidth, btmp.bmHeight - frameCornerHeight - lFrameThickHeight, SRCCOPY);
+        hdc.StretchBlt(wndrc2.right - 1 - frameCornerWidth, wndrc2.bottom - 1 - (btmp.bmHeight - frameCornerHeight - lFrameThickHeight), 
+                       frameCornerWidth, btmp.bmHeight - frameCornerHeight - lFrameThickHeight, &bmpDc, btmp.bmWidth - frameCornerWidth, 
+                       frameCornerHeight + lFrameThickHeight, frameCornerWidth, btmp.bmHeight - frameCornerHeight - lFrameThickHeight, SRCCOPY);
+        bmpDc.SelectObject(oldhbm);
+      }
     }else if(currentStyle&WS_CAPTION) {
       //hdc.FillRect(&rc, &brush);
     }
@@ -16122,9 +16295,24 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
       // and the title
 
       // painting the caption bar
+
+      RECT rcWindowText = {0};
+      rcWindowText.top = rc.top+GetSystemMetrics(SM_CYFRAME)/2;
+      rcWindowText.left = rc.left+7+GetSystemMetrics(SM_CXFRAME);
+      rcWindowText.bottom = rc.top+nTotalCaptionHeight;
+      rcWindowText.right = rc.right;
+
+
+      CRect btnMenuRect = m_btnList.GetHTRect(MYHTMINTOTRAY);
+      rcWindowText.right = rcWindowText.right - ( rcWnd.right - btnMenuRect.left + 10 );
+
+      if (s.skinid == ID_SKIN_FIRST)
+      {
       CDC dcBmp;
       dcBmp.CreateCompatibleDC(&hdc);
       HBITMAP hbmpold = (HBITMAP)dcBmp.SelectObject(m_bmpCaption);
+        BITMAP bmm;
+        m_bmpCaption.GetBitmap(&bmm);
       hdc.SetStretchBltMode(HALFTONE);
       if(GetForegroundWindow() != this){
         COLORADJUSTMENT cadj;
@@ -16143,28 +16331,40 @@ LRESULT CMainFrame::OnNcPaint(  WPARAM wParam, LPARAM lParam )
       dcBmp.SelectObject(hbmpold);
 
       HFONT holdft = (HFONT)hdc.SelectObject(m_hft);
-
-      RECT rcWindowText = {0};
-      rcWindowText.top = rc.top+GetSystemMetrics(SM_CYFRAME)/2;
-      rcWindowText.left = rc.left+7+GetSystemMetrics(SM_CXFRAME);
-      rcWindowText.bottom = rc.top+nTotalCaptionHeight;
-      rcWindowText.right = rc.right;
-
-
-      CRect btnMenuRect = m_btnList.GetHTRect(MYHTMINTOTRAY);
-      rcWindowText.right = rcWindowText.right - ( rcWnd.right - btnMenuRect.left + 10 );
-
-      //GetWindowText(szWindowText);
-      //if(m_bHasDrawShadowText )
-      //	::DrawShadowText(hdc, szWindowText, szWindowText.GetLength(), &rcWindowText, DT_LEFT|DT_SINGLELINE | DT_VCENTER, 0x00525d66, RGB(255,255,255), 1,1);
-      //else{
       hdc.SetTextColor(s.GetColorFromTheme(_T("WinFrameTitleText"),0x00525d66));
       hdc.SetBkMode(TRANSPARENT);
-      //hdc.SetBkColor( 0x00d6d7ce);
       DrawText(hdc, szWindowText, szWindowText.GetLength(), &rcWindowText, DT_LEFT|DT_SINGLELINE | DT_VCENTER );
-      //}
       hdc.SelectObject(holdft);
-
+      }
+      else
+      {
+        CRect wndrc3;
+        GetWindowRect(wndrc3);
+        wndrc3 = wndrc3 - wndrc3.TopLeft();
+        CBitmap* cbm = CBitmap::FromHandle(m_captionhbm);
+        CDC bmpDC;
+        bmpDC.CreateCompatibleDC(&hdc);
+        HBITMAP hbmpold = (HBITMAP)bmpDC.SelectObject(*cbm);
+        bmpDC.SetStretchBltMode(HALFTONE);
+        bmpDC.SetBrushOrg(0, 0);
+        BITMAP bm;
+        cbm->GetBitmap(&bm);
+        hdc.StretchBlt(0, 0, lCaptionThickWidth, captionHeight, &bmpDC, 0, 0, lCaptionThickWidth, captionHeight, SRCCOPY);
+        hdc.StretchBlt(wndrc3.right - 1 - rCaptionThickWidth, 0, rCaptionThickWidth, captionHeight, 
+                       &bmpDC, bm.bmWidth - rCaptionThickWidth, 0, rCaptionThickWidth, captionHeight, SRCCOPY);
+        hdc.StretchBlt(lCaptionThickWidth, 0, wndrc3.Width() - lCaptionThickWidth - rCaptionThickWidth, captionHeight, 
+                       &bmpDC, lCaptionThickWidth, 0, bm.bmWidth - lCaptionThickWidth - rCaptionThickWidth, captionHeight, SRCCOPY);
+        bmpDC.SelectObject(hbmpold);
+        
+        cbm = CBitmap::FromHandle(m_captiontexthbm);
+        hbmpold = (HBITMAP)bmpDC.SelectObject(*cbm);
+        cbm->GetBitmap(&bm);
+        hdc.StretchBlt(lCaptionThickWidth, 0, bm.bmWidth, captionHeight,
+          &bmpDC, 0, 0, bm.bmWidth, bm.bmHeight, SRCCOPY);
+        bmpDC.SelectObject(hbmpold);
+        
+      }
+       
       // min/max/close buttons
       //LONG lPaintParamArray[][5] = {{1,0},{1,1},{1,2},{1,3}};
       GetWindowRect(&rc);
@@ -16311,23 +16511,23 @@ void CMainFrame::OnNcRButtonDown(UINT nHitTest, CPoint point)
 
 LRESULT CMainFrame::OnNcCalcSizeNewUI(   WPARAM wParam, LPARAM lParam){
 
+  AppSettings& s = AfxGetAppSettings();
   BOOL bCalcValidRects = (BOOL)wParam;
-  NCCALCSIZE_PARAMS* lpncsp = reinterpret_cast<NCCALCSIZE_PARAMS*>(lParam);
-
   WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
   GetWindowPlacement(&wp);
+  DWORD currentStyle = GetStyle();
+  BOOL bCaptionOn = currentStyle&WS_CAPTION ;
   if(bCalcValidRects){
+
+    if(s.skinid == ID_SKIN_FIRST){
     //先把rect[1]拷贝到rect[2]，rect[0]拷贝到rect[1]
     //memcpy( &lpncsp->rgrc[2] ,  &lpncsp->rgrc[1] , sizeof(RECT));
     //memcpy( &lpncsp->rgrc[1] ,  &lpncsp->rgrc[0] , sizeof(RECT));
-
+      NCCALCSIZE_PARAMS* lpncsp = reinterpret_cast<NCCALCSIZE_PARAMS*>(lParam);
     CRect rc = lpncsp->rgrc[0];
-    DWORD currentStyle = GetStyle();
-    BOOL bCaptionOn = currentStyle&WS_CAPTION ;
+    
     if(m_fFullScreen){
-
     }else{
-      AppSettings& s = AfxGetAppSettings();
       if( s.bAeroGlass && 0){
         //LRESULT lRet = 0;
 
@@ -16336,7 +16536,6 @@ LRESULT CMainFrame::OnNcCalcSizeNewUI(   WPARAM wParam, LPARAM lParam){
         lpncsp->rgrc[0] = rc;
         return 0;
       }else if(wp.showCmd!=SW_MAXIMIZE ){
-
         rc.InflateRect( GetSystemMetrics(SM_CXFRAME) - 4,  GetSystemMetrics(SM_CXFRAME) - 8,   GetSystemMetrics(SM_CXFRAME) - 4, GetSystemMetrics(SM_CXFRAME) - 3  );
         if(!m_wndToolBar.IsVisible())	{
           //rc.bottom -= 2;
@@ -16361,20 +16560,43 @@ LRESULT CMainFrame::OnNcCalcSizeNewUI(   WPARAM wParam, LPARAM lParam){
 
       }else{
         //rc.InflateRect( GetSystemMetrics(SM_CXFRAME) - 3, 0,   GetSystemMetrics(SM_CXFRAME) - 3, GetSystemMetrics(SM_CXFRAME) - 2);
-
       }
-    }			
-
     lpncsp->rgrc[0] = rc;
   }
+       
+       return DefWindowProc(WM_NCCALCSIZE, wParam, lParam);;
+    }
+    else
+    {
+      NCCALCSIZE_PARAMS* lpncsp = (NCCALCSIZE_PARAMS*)lParam;
+      
+      CRect bRect;
+      CRect bcRect;
+       
+      bRect = lpncsp->rgrc[0];
+      bcRect.left = bRect.left + FrameCfgFileManage::m_framecornerwidth;
+      bcRect.top = bRect.top + FrameCfgFileManage::m_framecornerheight;
+      bcRect.right = bRect.right - 1 - FrameCfgFileManage::m_framecornerwidth;
+      bcRect.bottom = bRect.bottom - 1 - FrameCfgFileManage::m_framecornerheight;
+
+      if (bCaptionOn)
+        bcRect.top += FrameCfgFileManage::m_captionheight - FrameCfgFileManage::m_framecornerheight;
+
+      lpncsp->rgrc[0] = bcRect;
+      return 0;
+    }
+  }
+      
+   
   //	__super::OnNcCalcSize(bCalcValidRects, lpncsp);
-  return DefWindowProc(WM_NCCALCSIZE, wParam, lParam);
+/*  return DefWindowProc(WM_NCCALCSIZE, wParam, lParam);*/
   /*
   if(wp.showCmd==SW_MAXIMIZE ){
   CString szLog;
   szLog.Format(_T("Max Client Rect %d %d %d %d") , lpncsp->rgrc[0].left, lpncsp->rgrc[0].top, lpncsp->rgrc[0].right, lpncsp->rgrc[0].bottom);
   //SVP_LogMsg(szLog);
   }*/
+
 
 }
 
@@ -17120,6 +17342,46 @@ void CMainFrame::OnCompleteQuerySubtitle()
     m_subcontrl.Start((LPCTSTR)m_fnCurPlayingFile, SubTransController::DownloadSubtitle,
       language, 2);
   }
+  
+  if(s.bSaveSVPSubWithVideo)
+  {
+    // save subtitle to media file folder
+    CSVPToolBox svpTool;
+    int selsubtitle = m_iSubtitleSel;
+    std::wstring subtitlename = PathFindFileName(getCurPlayingSubfile());
+    std::wstring savesubpath = svpTool.GetDirFromPath(m_fnCurPlayingFile);
+    savesubpath += subtitlename;
+    POSITION pos = m_pSubStreams.GetHeadPosition();
+    while(pos && selsubtitle >= 0)
+    {
+      CComPtr<ISubStream> pSubStream = m_pSubStreams.GetNext(pos);
+
+      if(selsubtitle < pSubStream->GetStreamCount())
+      {
+        CLSID clsid;
+        if(FAILED(pSubStream->GetClassID(&clsid)))
+          continue;
+
+        if(clsid == __uuidof(CVobSubFile))
+        {
+          CVobSubFile* pVSF = (CVobSubFile*)(ISubStream*)pSubStream;
+
+          CAutoLock cAutoLock(&m_csSubLock);
+          pVSF->Save(savesubpath.c_str());
+          break;
+        }
+        else if(clsid == __uuidof(CRenderedTextSubtitle))
+        {
+          CRenderedTextSubtitle* pRTS = (CRenderedTextSubtitle*)(ISubStream*)pSubStream;
+
+          CAutoLock cAutoLock(&m_csSubLock);
+          pRTS->SaveAs(savesubpath.c_str(), EXTSRT, m_pCAP->GetFPS(), pRTS->m_encoding);
+          break;
+        }
+      }
+      selsubtitle -= pSubStream->GetStreamCount();
+    }
+  }
 
 }
 
@@ -17211,10 +17473,148 @@ void CMainFrame::AutoSaveImage(LPCTSTR fn, bool shrink_inhalf)
 
 void CMainFrame::OnMovieShare()
 {
+  KillTimer(TIMER_MOVIESHARE);
+  SetTimer(TIMER_MOVIESHARE, 1, NULL);
   UserShareController::GetInstance()->ToggleCommentPlane();
 }
 
-void CMainFrame::OnMovieShareResponse()
+void CMainFrame::OnOpenShooterMedia()
 {
-  m_wndToolBar.HideMovieShareBtn(FALSE);
+  UserShareController::GetInstance()->OpenShooterMedia();
+}
+
+void CMainFrame::OnSkinSelection(UINT nID)
+{
+  AppSettings& s = AfxGetAppSettings();
+  m_preskinid = s.skinid;
+  m_preskinname = s.skinname;;
+  s.skinid = nID;
+  s.skinname = m_skin_map[nID];
+
+  BOOL bload = LoadRes(s.skinid, s.skinname);
+
+  if (!bload)
+  {
+    SendStatusMessage(L"该皮肤文件已损坏，请选择其他的皮肤。", 1000);
+    if (m_preskinid == s.skinid)
+    {
+      s.skinid = ID_SKIN_FIRST;
+      s.skinname = L"";
+    }
+    else
+    {
+      s.skinid = m_preskinid;
+      s.skinname = m_preskinname;
+    }
+    LoadRes(s.skinid, s.skinname);
+  }
+
+  CRect rc;
+  GetWindowRect(&rc);
+  // compel all items in the window to update;
+  rc.InflateRect(1,1);
+  MoveWindow(&rc);
+  rc.InflateRect(-1,-1);
+  MoveWindow(&rc);
+}
+
+void CMainFrame::OnUpdateSkinSelection(CCmdUI* pCmdUI)
+{
+  AppSettings& s = AfxGetAppSettings();
+  pCmdUI->SetRadio(s.skinid == pCmdUI->m_nID);
+}
+
+void CMainFrame::OnSkinMoreSelection()
+{
+  SkinPreviewDlg* skindlg = new SkinPreviewDlg;
+  skindlg->SetSkinIDtoNameMap(m_skin_map);
+  skindlg->SetSkinOption(&(m_skinmanage.ReturnSkinMap()));
+  //skindlg->SetWillChangeMenu(&m_skin);
+  skindlg->Create(m_hWnd, 0);
+  skindlg->ShowWindow(SW_SHOWNORMAL);
+}
+
+BOOL CMainFrame::LoadRes(int id, std::wstring folder)
+{
+  AppSettings& s = AfxGetAppSettings();
+  ResLoader rlResLoader;
+  BOOL bload;
+  BOOL bloadsuccess1, bloadsuccess2, bloadsuccess3, bloadsuccess4;
+  if (id == ID_SKIN_FIRST)
+  {
+    m_wndToolBar.m_btnList.RemoveAll();
+    m_wndToolBar.DefaultButtonManage();
+    m_wndToolBar.PointVolumeBtn();
+    bloadsuccess2 = TRUE;
+    m_wndToolTopBar.m_btnList.RemoveAll();
+    bloadsuccess3 = TRUE;
+    m_wndToolTopBar.DefaultButtonManage();
+    m_wndToolTopBar.PointCloseBtn();
+    bload = FALSE;
+  }
+  else
+  {
+    bload = TRUE;
+    bloadsuccess2 = m_wndToolBar.m_btnList.ResReload(folder, bload, L"BottomToolBarButton.dat");
+    bloadsuccess3 = m_wndToolTopBar.m_btnList.ResReload(folder, bload, L"TopToolBarButton.dat");
+    
+    std::wstring bmpath(L"skins\\");
+    std::wstring bmpathtmp;
+    bmpath += s.skinname;
+    
+    bmpathtmp = bmpath;
+    bmpathtmp += L"\\FRAMECORNER.bmp";
+    m_framecornerhbm = rlResLoader.LoadBitmapFromDisk(bmpathtmp);
+
+    bmpathtmp = bmpath;
+    bmpathtmp += L"\\CAPTION.bmp";
+    m_captionhbm = rlResLoader.LoadBitmapFromDisk(bmpathtmp);
+
+    bmpathtmp = bmpath;
+    bmpathtmp += L"\\CAPTIONTEXT.bmp";
+    m_captiontexthbm = rlResLoader.LoadBitmapFromDisk(bmpathtmp);
+    
+    bmpathtmp = bmpath;
+    bmpathtmp += L"\\BOTTOMBACKGROUND.bmp";
+    m_btoolbarbg = rlResLoader.LoadBitmapFromDisk(bmpathtmp);
+
+    bmpathtmp = bmpath;
+    bmpathtmp += L"\\TOPBACKGROUND.bmp";
+    m_ttoolbarbg = rlResLoader.LoadBitmapFromDisk(bmpathtmp);
+
+    bmpathtmp = bmpath;
+    bmpathtmp += L"\\FrameCfg.dat";
+    FrameCfgFileManage fmCfg;
+    fmCfg.SetCfgFilePath(bmpathtmp);
+    fmCfg.ReadFromCfgFile();
+    // Logging("---------------%d,%d",fmCfg.m_lcaptionthickwidth, fmCfg.m_rcaptionthickwidth);
+  }
+  
+  bloadsuccess1 = m_btnList.ResReload(folder, bload, L"");
+  bloadsuccess4 = m_wndView.m_btnList.ResReload(folder, bload, L"");
+  
+  m_wndToolBar.ResizeToolbarHeight();
+  m_wndToolTopBar.ResizeToolbarHeight();
+  if (bloadsuccess1 && bloadsuccess2 && bloadsuccess3 && bloadsuccess4)
+    return TRUE;
+  else
+    return FALSE;
+}
+
+void CMainFrame::SearchSkinFolder()
+{
+  if (!m_skinmanage.ReturnSkinMap().empty())
+    m_skinmanage.ClearMap();
+  TCHAR szModuleFullPath[MAX_PATH];
+  ::GetModuleFileName(0, szModuleFullPath, MAX_PATH);
+  TCHAR szDrive[10] = {0};
+  TCHAR szDir[MAX_PATH] = {0};
+  ::_wsplitpath(szModuleFullPath, szDrive, szDir, 0, 0);
+  CString skinpath;
+  skinpath += szDrive;
+  skinpath += szDir;
+  skinpath += L"skins\\";
+  m_skinmanage.SetSkinPath(skinpath);
+  m_skinmanage.SeachFile(skinpath.GetBuffer(MAX_PATH));
+  skinpath.ReleaseBuffer();
 }

@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include "stdafx.h"
@@ -53,7 +53,7 @@ public:
 	}
 	UINT iAlign;
 	INT_PTR bBtn;
-	CRect marginToBtn; //Ïà¶ÔÓÚÁíÒ»¸ö°´Å¥µÄÎ»ÖÃ
+	CRect marginToBtn; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 };
 
 #define ALIGN_TOPLEFT 3
@@ -79,12 +79,12 @@ static int nLogDPIX = 0,  nLogDPIY = 0;
 class CSUIButton {
 
 public:
-	CSize m_btnSize; //°´Å¥µÄ´óĞ¡³ß´ç
-	CSize m_orgbtnSize; //°´Å¥µÄ´óĞ¡³ß´ç
-	int m_iAlign; //Óë´°¿Ú¶ÔÆë·½Ïò
-	CRect m_marginTownd; //°´Å¥Ïà¶ÔÓÚ´°¿ÚµÄÎ»ÖÃ£¬ 0Îª²»Ç¿ÖÆ ¸ºÊıÎª°Ù·Ö±È
-	CRect m_rcHitest; //°´Å¥µÄÓĞĞ§·¶Î§£¬ÓÃÓÚhittest
-	CBitmap m_bitmap; //Í¼Æ¬´æ´¢Î»ÖÃ
+	CSize m_btnSize; //æŒ‰é’®çš„å¤§å°å°ºå¯¸
+	CSize m_orgbtnSize; //æŒ‰é’®çš„å¤§å°å°ºå¯¸
+	int m_iAlign; //ä¸çª—å£å¯¹é½æ–¹å‘
+	CRect m_marginTownd; //æŒ‰é’®ç›¸å¯¹äºçª—å£çš„ä½ç½®ï¼Œ 0ä¸ºä¸å¼ºåˆ¶ è´Ÿæ•°ä¸ºç™¾åˆ†æ¯”
+	CRect m_rcHitest; //æŒ‰é’®çš„æœ‰æ•ˆèŒƒå›´ï¼Œç”¨äºhittest
+  CBitmap m_bitmap; //å›¾ç‰‡å­˜å‚¨ä½ç½®
 	int m_stat; //0 normal ; 1 hove ; 2 clicked ; 3 disabled
 	UINT m_htMsgID;
 	BOOL m_hide;
@@ -92,11 +92,13 @@ public:
   int  m_hidewidth;
 	BOOL m_NotButton;
   CString m_buttonname;
+  BOOL m_bsingleormultiply;
 
 	static HBITMAP SUILoadImage(LPCTSTR szBmpName);
 	static void PreMultiplyBitmap( CBitmap& bmp , CSize& sizeBmp, BOOL NotButton);
 
 	CString m_szBmpName;
+  CDC*    m_dc;
 
 	CList<CBtnAlign*> btnAlignList;
 
@@ -128,6 +130,7 @@ public:
   void SetCurrentHideState(long iWidth,double skinsRate,int m_nLogDPIY);
 
   void SetString(CString str);
+  CString GetString();
 
   void SetStrSize(CSize sz);
 
@@ -137,6 +140,7 @@ private:
 	int m_lastBtnDownStat;
 
   CString m_playtimestr;
+
 };
 
 
@@ -156,7 +160,7 @@ public:
     int GetMaxHeight();
 	UINT OnHitTest(CPoint pt , CRect rc, int bLBtnDown = -1);
 
-	void SetDisableStat(UINT iMsgID, BOOL bDisable);
+	void SetDisableStat(UINT iMsgID, BOOL bDisable, BOOL bhittest);
 	void SetClickedStat(UINT iMsgID, BOOL bClicked);
 	CRect GetHTRect(UINT iMsgID);
 	void SetHideStat(POSITION pos, BOOL bHide); //By Position
@@ -168,5 +172,10 @@ public:
   void SetCurrentHideState(long iWidth,double skinsRate,int m_nLogDPIY);
 
   CSUIButton* GetButton(CString s);
+
+  int GetRelativeMinLength(CRect WndRect, CSUIButton* btn);
+
+  BOOL ResReload(std::wstring folder, BOOL bl, std::wstring cfgfilename);
+
 };
 

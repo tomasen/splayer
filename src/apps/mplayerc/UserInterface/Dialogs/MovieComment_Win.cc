@@ -6,6 +6,7 @@
 #include "MovieComment_Win.h"
 #include <exdispid.h>
 #include "logging.h"
+#include "../../resource.h"
 
 IMPLEMENT_DYNAMIC(MovieComment, CDHtmlDialog)
 
@@ -61,22 +62,38 @@ BOOL MovieComment::OnInitDialog()
 //   SetWindowRgn(rgn, TRUE);
 
   SetHostFlags(DOCHOSTUIFLAG_THEME | DOCHOSTUIFLAG_SCROLL_NO | DOCHOSTUIFLAG_NO3DBORDER
-         | DOCHOSTUIFLAG_DISABLE_HELP_MENU | DOCHOSTUIFLAG_DIALOG | DOCHOSTUIFLAG_DISABLE_SCRIPT_INACTIVE
-         | DOCHOSTUIFLAG_OVERRIDEBEHAVIORFACTORY);
+         | DOCHOSTUIFLAG_DISABLE_HELP_MENU | DOCHOSTUIFLAG_DIALOG | DOCHOSTUIFLAG_ENABLE_ACTIVEX_INACTIVATE_MODE
+         | DOCHOSTUIFLAG_DISABLE_SCRIPT_INACTIVE | DOCHOSTUIFLAG_OVERRIDEBEHAVIORFACTORY
+         );
 
   // EnableAutomation();
   // SetExternalDispatch(GetIDispatch(TRUE));
   // suppress script error
   m_pBrowserApp->put_Silent(VARIANT_TRUE);
   m_initialize = 1;
+  ClearFrame();
+
   return TRUE;
 }
+void MovieComment::ClearFrame()
+{
+  if (!m_hWnd || !m_initialize)
+    return;
 
+  CString strResourceURL;
+  LPTSTR lpszModule = new TCHAR[_MAX_PATH];
+
+  if (GetModuleFileName(NULL, lpszModule, _MAX_PATH))
+  {
+    // load resource html regardless by language
+    strResourceURL.Format(_T("res://%s/%d"), lpszModule, IDR_HTML_BUSY);
+    Navigate(strResourceURL, 0, 0, 0);
+  }
+  else
+    Navigate(L"about:blank");
+}
 void MovieComment::OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl)
 {
-  std::wstring url(szUrl);
-  if (url.find(L"http:") != std::string::npos && url.length() > 8)
-    ::PostMessage(GetParent()->m_hWnd, WM_COMMAND, ID_MOVIESHARE_RESPONSE, NULL);
 
 }
 

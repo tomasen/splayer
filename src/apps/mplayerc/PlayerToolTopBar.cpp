@@ -11,6 +11,7 @@
 #include "../../svplib/svplib.h"
 #include "ButtonManage.h"
 #include "GUIConfigManage.h"
+#include "ResLoader.h"
 
 #define CONFIGBUTTON(btnname,bmp,fixalign,fixcrect,notbutton,id,hide,hidewidth,relativealign,pbuttonname,relativecrect) \
   m_btnList.AddTail(new CSUIButton(L#bmp,fixalign,fixcrect,notbutton,id,hide,relativealign,m_btnList.GetButton(L#pbuttonname), \
@@ -27,7 +28,8 @@ IMPLEMENT_DYNAMIC(CPlayerToolTopBar, CWnd)
 CPlayerToolTopBar::CPlayerToolTopBar():
 m_hovering(0),
 m_pbtnList(&m_btnList),
-m_nHeight(20)
+m_nHeight(20),
+m_bSendStatusMsg(false)
 {
 }
 
@@ -122,6 +124,7 @@ BOOL CPlayerToolTopBar::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 						toolTip = ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_VIDEO);
 						break;
 					case ID_ONTOP_ALWAYS:
+          case ID_ONTOP_WHILEPLAYING:
 						toolTip = ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_PIN_ONTOP);
 						break;
 					case ID_ONTOP_NEVER:
@@ -198,20 +201,25 @@ int CPlayerToolTopBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	m_nLogDPIY = pFrame->m_nLogDPIY;
 
+  AppSettings& s = AfxGetAppSettings();
   GUIConfigManage cfgfile;
   ButtonManage  cfgbtn;
-  cfgfile.SetCfgFilePath(L"skins\\TopToolBarButton.dat");
+  std::wstring cfgfilepath(L"skins\\");
+  cfgfilepath += s.skinname;
+  cfgfilepath += L"\\TopToolBarButton.dat";
+
+  //cfgfile.SetCfgFilePath(L"skins\\TopToolBarButton.dat");
+  cfgfile.SetCfgFilePath(cfgfilepath);
   cfgfile.ReadFromFile();
   if (cfgfile.IsFileExist())
   {
     cfgbtn.SetParse(cfgfile.GetCfgString(), &m_btnList);
-    cfgbtn.ParseConfig();
-    
+    cfgbtn.ParseConfig(FALSE);
   }
   else
     DefaultButtonManage();
   
-  btnClose = m_btnList.GetButton(L"CLOSE");
+  PointCloseBtn();
 
   m_toolTip.Create(this);
 	m_ti.cbSize = sizeof(m_ti);
@@ -232,8 +240,7 @@ int CPlayerToolTopBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
         m_nHeight += 4;
   }
 
-  
-	return 0;
+  return 0;
 }
 void CPlayerToolTopBar::ReCalcBtnPos(){
 	UpdateButtonStat();
@@ -261,7 +268,9 @@ void CPlayerToolTopBar::UpdateButtonStat(){
   m_btnList.SetCurrentHideState(rc.Width(),skinsRate,m_nLogDPIY);
 
   m_btnList.SetHideStat( ID_ONTOP_NEVER , !ontop );
-	m_btnList.SetHideStat( ID_ONTOP_ALWAYS , ontop );
+  m_btnList.SetHideStat( ID_ONTOP_ALWAYS , ontop );
+  m_btnList.SetHideStat( ID_ONTOP_WHILEPLAYING , ontop );
+
 
 	m_btnList.SetHideStat( ID_FILE_EXIT , !fullscreen && !bCaptionHidden );
 	//
@@ -352,6 +361,27 @@ void CPlayerToolTopBar::UpdateButtonStat(){
     }
   }
 
+  // send status message
+  if (m_bSendStatusMsg)
+  {
+    switch (pFrame->m_nLoopSetting)
+    {
+    case ID_PLAYBACK_LOOP_NORMAL:
+      pFrame->SendStatusMessage(ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_NOCYCLE_CONTROL), 3000);
+      break;
+    case ID_PLAYBACK_LOOP_PLAYLIST:
+      pFrame->SendStatusMessage(ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_ALLCYCLE_CONTROL), 3000);
+      break;
+    case ID_PLAYBACK_LOOP_CURRENT:
+      pFrame->SendStatusMessage(ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_SINGLECYCLE_CONTROL), 3000);
+      break;
+    case ID_PLAYBACK_LOOP_RANDOM:
+      pFrame->SendStatusMessage(ResStr(IDS_TOOLTIP_TOPTOOLBAR_BUTTON_RANDOM_CONTROL), 3000);
+      break;
+    }
+
+    m_bSendStatusMsg = false;
+  }
 }
 void CPlayerToolTopBar::OnMove(int x, int y)
 {
@@ -381,9 +411,24 @@ void CPlayerToolTopBar::OnPaint()
 	CRect rcUpperSqu = rcClient;
 	rcUpperSqu.bottom--;
 	//rcUpperSqu.right--;
-	hdc.FillSolidRect(rcUpperSqu, s.GetColorFromTheme(_T("TopToolBarBG"), RGB(61,65,69) ));
+  if (s.skinid == ID_SKIN_FIRST)
+  {
+	  hdc.FillSolidRect(rcUpperSqu, s.GetColorFromTheme(_T("TopToolBarBG"), RGB(61,65,69) ));
+    hdc.FillSolidRect(rcBottomSqu,s.GetColorFromTheme(_T("TopToolBarBorder"), RGB(89,89,89)));
+  }
+  else
+  {
 
-	hdc.FillSolidRect(rcBottomSqu,s.GetColorFromTheme(_T("TopToolBarBorder"), RGB(89,89,89)));
+    CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
+    CBitmap* cbm = CBitmap::FromHandle(pFrame->m_ttoolbarbg);
+    CDC bmpDc;
+    bmpDc.CreateCompatibleDC(&hdc);
+    HBITMAP oldhbm = (HBITMAP)bmpDc.SelectObject(cbm);
+    BITMAP btmp;
+    cbm->GetBitmap(&btmp);
+    hdc.StretchBlt(0, 0, rcUpperSqu.Width(), rcUpperSqu.Height(), &bmpDc, 0, 0, btmp.bmWidth, btmp.bmHeight, SRCCOPY);
+    bmpDc.SelectObject(oldhbm);
+  }
 
 	if(iLeftBorderPos >= 0)
 	{
@@ -471,7 +516,7 @@ void CPlayerToolTopBar::OnLButtonUp(UINT nFlags, CPoint point)
 	CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
 	
 	ReleaseCapture();
-
+  
 	CRect rc;
 	GetWindowRect(&rc);
 
@@ -479,7 +524,10 @@ void CPlayerToolTopBar::OnLButtonUp(UINT nFlags, CPoint point)
 	UINT ret = m_btnList.OnHitTest(xpoint,rc,false);
 	if( m_btnList.HTRedrawRequired ){
 		if(ret)
+    {
 			pFrame->PostMessage( WM_COMMAND, ret);
+      m_bSendStatusMsg = true;
+    }
     m_toolTip.SendMessage(TTM_TRACKACTIVATE, FALSE, (LPARAM)&m_ti);
 		
 		Invalidate();
@@ -487,6 +535,8 @@ void CPlayerToolTopBar::OnLButtonUp(UINT nFlags, CPoint point)
 	m_nItemToTrack = ret;
 
 	KillTimer(IDT_CLOSE);
+
+  
 	//SetTimer(IDT_CLOSE, 8000 , NULL);
 
 
@@ -499,20 +549,21 @@ void CPlayerToolTopBar::OnLButtonUp(UINT nFlags, CPoint point)
 void CPlayerToolTopBar::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	// TODO: Add your message handler code here and/or call default
-	
+	SetCapture();
 	CRect rc;
 	GetWindowRect(&rc);
-
-	point += rc.TopLeft() ;
+  point += rc.TopLeft() ;
 	UINT ret = m_btnList.OnHitTest(point,rc,true);
-	if( m_btnList.HTRedrawRequired ){
-		//if(ret)
-		//	SetCapture();
+	if ( m_btnList.HTRedrawRequired ){
+// 		if (ret)
+// 		SetCapture();
 		Invalidate();
 	}
 	m_nItemToTrack = ret;
 
 	KillTimer(IDT_CLOSE);
+
+  
 	//SetTimer(IDT_CLOSE, 8000 , NULL);
 
 	//__super::OnLButtonDown(nFlags, point);
@@ -576,7 +627,7 @@ void CPlayerToolTopBar::OnMouseMove(UINT nFlags, CPoint point)
 
 	if( bMouseMoved){
 
-		UINT ret = m_btnList.OnHitTest(point,rc,-1);
+		UINT ret = m_btnList.OnHitTest(point,rc, -1);
 		m_nItemToTrack = ret;
 		if(ret){
 			if( GetCursor() == NULL )
@@ -594,8 +645,8 @@ void CPlayerToolTopBar::OnMouseMove(UINT nFlags, CPoint point)
 			Invalidate();
 		}
 	}
-
-	__super::OnMouseMove(nFlags, point);
+ 
+  __super::OnMouseMove(nFlags, point);
 }
 
 INT_PTR CPlayerToolTopBar::OnToolHitTest(CPoint point, TOOLINFO* pTI) const
@@ -700,7 +751,8 @@ void CPlayerToolTopBar::OnMouseLeave()
 	// TODO: Add your message handler code here and/or call default
 	m_toolTip.SendMessage(TTM_TRACKACTIVATE, FALSE, (LPARAM)&m_ti);
 	m_nItemToTrack = 0 ;
-	CWnd::OnMouseLeave();
+
+  CWnd::OnMouseLeave();
 }
 
 void CPlayerToolTopBar::OnShowWindow(BOOL bShow, UINT nStatus)
@@ -766,7 +818,7 @@ void CPlayerToolTopBar::DefaultButtonManage()
 
   CONFIGBUTTON(RESTORE,TOP_RESTORE.BMP,ALIGN_TOPRIGHT,CRect(1,1,1,1),0,ID_VIEW_FULLSCREEN,FALSE,0,ALIGN_RIGHT,CLOSE,CRect(1,1,1,1))
 
-  CONFIGBUTTON(PINAIL,PINAIL.BMP,ALIGN_TOPRIGHT,CRect(1,1,1,1),0,ID_ONTOP_ALWAYS,FALSE,0,ALIGN_RIGHT,CLOSE,CRect(1,1,1,1))
+  CONFIGBUTTON(PINAIL,PINAIL.BMP,ALIGN_TOPRIGHT,CRect(1,1,1,1),0,ID_ONTOP_WHILEPLAYING,FALSE,0,ALIGN_RIGHT,CLOSE,CRect(1,1,1,1))
   CONFIGADDALIGN(PINAIL,ALIGN_RIGHT,RESTORE,CRect(1,1,1,1))
 
   CONFIGBUTTON(PINAIL2,PINAIL2.BMP,ALIGN_TOPRIGHT,CRect(1,1,1,1),0,ID_ONTOP_NEVER,FALSE,0,ALIGN_RIGHT,CLOSE,CRect(1,1,1,1))
@@ -835,4 +887,16 @@ void CPlayerToolTopBar::DefaultButtonManage()
   CONFIGADDALIGN(AUDIO,ALIGN_LEFT,NORMAL,CRect(5,1,1,1))
 
   CONFIGBUTTON(VIDEO,TOP_VIDEO.BMP,ALIGN_TOPLEFT,CRect(1,1,1,1),0,ID_MENU_VIDEO,FALSE,0,ALIGN_LEFT,AUDIO,CRect(1,1,1,1))
+}
+
+void CPlayerToolTopBar::PointCloseBtn()
+{
+  btnClose = m_btnList.GetButton(L"CLOSE");
+}
+
+void CPlayerToolTopBar::ResizeToolbarHeight()
+{
+  m_nHeight = max(20, m_btnList.GetMaxHeight());
+  if (m_nHeight > 20)
+    m_nHeight += 2;
 }

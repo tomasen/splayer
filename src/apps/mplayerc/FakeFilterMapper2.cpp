@@ -27,6 +27,7 @@
 #include "..\..\DSUtil\DSUtil.h"
 
 #include <initguid.h>
+#include "mplayerc.h"
 //#include <qedit.h>
 
 
@@ -379,7 +380,8 @@ HRESULT WINAPI Mine_CoCreateInstance(IN REFCLSID rclsid, IN LPUNKNOWN pUnkOuter,
              GUIDFromCString(_T("{ECCBA771-92F2-497b-98AA-5FAA0BAA2DF6}")) == rclsid)
       ret = LoadExternalObject(  svpTool.GetPlayerPath(L"csfcodec\\mpc_wtlvcl.dll"), rclsid, riid, ppv);
     // csf end */
-    else if (GUIDFromCString(_T("{2EEB4ADF-4578-4D10-BCA7-BB955F56320A}")) == rclsid)
+    else if (GUIDFromCString(_T("{2EEB4ADF-4578-4D10-BCA7-BB955F56320A}")) == rclsid && !AfxGetMyApp()->IsVista()
+      && !svpTool.FindSystemFile(L"wmadmod.dll"))
       ret = LoadExternalObject(  svpTool.GetPlayerPath(L"wmadmod.dll"), rclsid, riid, ppv);
 
     if (pUnkOuter)

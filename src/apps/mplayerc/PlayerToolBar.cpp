@@ -30,12 +30,16 @@
 #include "PlayerToolBar.h"
 #include "MainFrm.h"
 #include <fstream>
+#include <Strings.h>
 #include "../../svplib/svplib.h"
 #include "GUIConfigManage.h"
 #include "ButtonManage.h"
+#include "ResLoader.h"
 
 typedef HRESULT (__stdcall * SetWindowThemeFunct)(HWND hwnd, LPCWSTR pszSubAppName, LPCWSTR pszSubIdList);
-
+#define TIMER_ADPLAYSWITCH 7013
+#define TIMER_ADPLAY 7014
+#define TIMER_ADFETCHING 7015
 #define ID_VOLUME_THUMB 126356
 
 #define CONFIGBUTTON(btnname,bmp,fixalign,fixcrect,notbutton,id,hide,hidewidth,relativealign,pbuttonname,relativecrect) \
@@ -86,50 +90,58 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 
   GetToolBarCtrl().SetExtendedStyle(TBSTYLE_EX_DRAWDDARROWS);
 
+  AppSettings& s = AfxGetAppSettings();
   GUIConfigManage cfgfile;
   ButtonManage  cfgbtn;
-  cfgfile.SetCfgFilePath(L"skins\\BottomToolBarButton.dat");
+  std::wstring cfgfilepath(L"skins\\");
+  cfgfilepath += s.skinname;
+  cfgfilepath += L"\\BottomToolBarButton.dat";
+
+  //cfgfile.SetCfgFilePath(L"skins\\BottomToolBarButton.dat");
+  cfgfile.SetCfgFilePath(cfgfilepath);
   cfgfile.ReadFromFile();
   if (cfgfile.IsFileExist())
   {
     cfgbtn.SetParse(cfgfile.GetCfgString(), &m_btnList);
-    cfgbtn.ParseConfig();
+    cfgbtn.ParseConfig(FALSE);
   }
   else
     DefaultButtonManage();
 
-  m_btnVolBG = m_btnList.GetButton(L"VOLUMEBG");
-  m_btnVolTm = m_btnList.GetButton(L"VOLUMETM");
-  btnLogo = m_btnList.GetButton(L"LOGO");
-  m_btnplaytime = m_btnList.GetButton(L"PLAYTIME");
+  PointVolumeBtn();
 
   cursorHand = ::LoadCursor(NULL, IDC_HAND);
 
-  //GetSystemFontWithScale(&m_statft, 14.0);
-  LOGFONT lf;
+  SetTimer(TIMER_ADPLAY, 100, NULL);
+  SetTimer(TIMER_ADPLAYSWITCH, 5000, NULL);
+  SetTimer(TIMER_ADFETCHING, 15000, NULL);
+  
+  CSVPToolBox svptoolbox;
+  if (svptoolbox.bFontExist(L"Comic Sans MS"))
+  {
+    LOGFONT lf;
+    lf.lfWidth = 0;
+    lf.lfHeight = 15.0;
+    lf.lfEscapement = 0;
+    lf.lfWeight = 0;
+    lf.lfPitchAndFamily = 0;
+    lf.lfStrikeOut = FALSE;
+    lf.lfItalic = FALSE;
+    lf.lfUnderline = FALSE;
+    wsprintf(lf.lfFaceName, L"Comic Sans MS");
+    m_statft.CreateFontIndirect(&lf);
+  }
+  else
+    GetSystemFontWithScale(&m_statft, 13.0);
 
-  lf.lfWidth = 0;
-  lf.lfHeight = 13;
-  lf.lfEscapement = 0;
-  lf.lfWeight = 0;
-  lf.lfPitchAndFamily = 0;
-  lf.lfStrikeOut = FALSE;
-  lf.lfItalic = FALSE;
-  lf.lfUnderline = FALSE;
-  wsprintf(lf.lfFaceName, L"Comic Sans MS");
-  m_statft.CreateFontIndirect(&lf);
+  GetSystemFontWithScale(&m_adsft, 14.0);
 
   CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
   m_nLogDPIY = pFrame->m_nLogDPIY;
 
-
-
   m_volctrl.Create(this);
 
   EnableToolTips(TRUE);
-
-
-
 
   m_nHeight = max(45, m_btnList.GetMaxHeight());
   if (m_nHeight > 45)
@@ -261,6 +273,7 @@ BEGIN_MESSAGE_MAP(CPlayerToolBar, CToolBar)
   ON_NOTIFY_EX(TTN_NEEDTEXT, 0, OnTtnNeedText)
   ON_WM_RBUTTONUP()
   ON_WM_RBUTTONDOWN()
+  ON_WM_MOUSELEAVE()
 END_MESSAGE_MAP()
 
 // CPlayerToolBar message handlers
@@ -311,6 +324,7 @@ void CPlayerToolBar::OnPaint()
   CRect rcClient;
   GetClientRect(&rcClient);
   CMemoryDC hdc(&dc, rcClient);
+  hdc.SetBkMode(TRANSPARENT);
 
   CRect rc;
   GetWindowRect(&rc);
@@ -325,35 +339,69 @@ void CPlayerToolBar::OnPaint()
   CRect rcBottomSqu = rcClient;
   rcBottomSqu.top = rcBottomSqu.bottom - 10;
 
-
   CRect rcUpperSqu = rcClient;
 
-  hdc.FillSolidRect(rcUpperSqu, s.GetColorFromTheme(_T("ToolBarBG"), NEWUI_COLOR_TOOLBAR_UPPERBG));
   CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
 
+  if (s.skinid == ID_SKIN_FIRST)
+    hdc.FillSolidRect(rcUpperSqu, s.GetColorFromTheme(_T("ToolBarBG"), NEWUI_COLOR_TOOLBAR_UPPERBG));
+  else
+  {
 
-  HFONT holdft = (HFONT)hdc.SelectObject(m_statft);
-  CSize size = dc.GetTextExtent(m_timerstr);
-  size.cx = min( rcClient.Width() /3, size.cx);
-  if (m_btnplaytime)
-    m_btnplaytime->SetStrSize(size);
+    CBitmap* cbm = CBitmap::FromHandle(pFrame->m_btoolbarbg);
+    CDC bmpDc;
+    bmpDc.CreateCompatibleDC(&hdc);
+    HBITMAP oldhbm = (HBITMAP)bmpDc.SelectObject(cbm);
+    BITMAP btmp;
+    cbm->GetBitmap(&btmp);
+    hdc.StretchBlt(0, 0, rcUpperSqu.Width(), rcUpperSqu.Height(), &bmpDc, 0, 0, btmp.bmWidth, btmp.bmHeight - 2, SRCCOPY);
+    bmpDc.SelectObject(oldhbm);
+  }
+  HFONT holdft = NULL;
+  if (m_adctrl.GetVisible())
+    holdft = (HFONT)hdc.SelectObject(m_adsft);
+  else
+    holdft = (HFONT)hdc.SelectObject(m_statft);
+
   if (!m_timerstr.IsEmpty() && pFrame && pFrame->IsSomethingLoaded())
   {
     hdc.SetTextColor(s.GetColorFromTheme(_T("ToolBarTimeText"), 0xffffff) );
-    
-    m_btnplaytime->SetString(m_timerstr);
+    if (!m_adctrl.GetVisible())
+      m_btnplaytime->SetString(m_timerstr);
   }
-
 
   UpdateButtonStat();
 
   int volume = min( m_volctrl.GetPos() , m_volctrl.GetRangeMax() );
   m_btnVolTm->m_rcHitest.MoveToXY(m_btnVolBG->m_rcHitest.left +  ( m_btnVolBG->m_rcHitest.Width() * volume / m_volctrl.GetRangeMax() ) - m_btnVolTm->m_rcHitest.Width()/2
     , m_btnVolBG->m_rcHitest.top + (m_btnVolBG->m_rcHitest.Height() -  m_btnVolTm->m_rcHitest.Height() ) / 2 );
-
+  
   m_btnList.PaintAll(&hdc, rc);
+
+  std::wstring sTimeBtnString;
+  if (m_adctrl.GetVisible())
+    sTimeBtnString = m_adctrl.GetCurAd();
+  else
+    sTimeBtnString = (LPCTSTR)m_timerstr;
+
+  CSize size = dc.GetTextExtent(sTimeBtnString.c_str());
+
+  size.cx =  m_btnList.GetRelativeMinLength(rc, m_btnplaytime) - 10;
+
+  if (size.cx < 20)
+    size.cx = rcClient.Width() /3 - 10;
+
+  if (m_btnplaytime)
+  {
+    m_btnplaytime->SetStrSize(size);
+    m_btnplaytime->OnPaint(&hdc, rc);
+  }
+
+  m_adctrl.SetRect(m_btnplaytime->m_rcHitest - rc.TopLeft(), &hdc);
+  m_adctrl.Paint(&hdc);  
   
   hdc.SelectObject(holdft);
+
 }
 void CPlayerToolBar::UpdateButtonStat(){
   CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
@@ -370,9 +418,10 @@ void CPlayerToolBar::UpdateButtonStat(){
     m_timerstr.Empty();
 
   BOOL bSub = pFrame->IsSubLoaded();
-  m_btnList.SetDisableStat( ID_SUBDELAYINC, !bSub);
-  m_btnList.SetDisableStat( ID_SUBDELAYDEC, !bSub);
+  m_btnList.SetDisableStat( ID_SUBDELAYINC, !bSub, m_nItemToTrack == ID_SUBDELAYINC);
+  m_btnList.SetDisableStat( ID_SUBDELAYDEC, !bSub, m_nItemToTrack == ID_SUBDELAYDEC);
   ReCalcBtnPos();
+  
 }
 void CPlayerToolBar::OnNcPaint() // when using XP styles the NC area isn't drawn for our toolbar...
 {
@@ -394,7 +443,7 @@ void CPlayerToolBar::SetStatusTimer(CString str , UINT timer )
   if(m_timerstr == str) return;
 
   str.Trim();
-
+  
   if(holdStatStr && !timer){
     m_timerqueryedstr = str;
   }else{
@@ -588,7 +637,21 @@ void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point)
 
   CRect rc;
   GetWindowRect(&rc);
-  point += rc.TopLeft() ;
+  point += rc.TopLeft();
+
+  // if move on ads
+  static const HCURSOR hOrgCursor = (HCURSOR)::GetClassLong(GetSafeHwnd(), GCL_HCURSOR);
+  if (m_adctrl.GetVisible())
+  {
+    CRect rcAd = m_btnplaytime->m_rcHitest - rc.TopLeft();
+    CPoint pi = point;
+    ScreenToClient(&pi);
+    if (rcAd.PtInRect(pi))
+    {
+      SetCursor(cursorHand);
+      m_adctrl._mouseover_time = time(NULL);
+    }
+  }
 
   if(m_nItemToTrack == ID_VOLUME_THUMB && m_bMouseDown)
   {
@@ -646,6 +709,11 @@ void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point)
     //m_bMouseDown = FALSE;
   }
 
+  TRACKMOUSEEVENT tmet;
+  tmet.cbSize = sizeof(TRACKMOUSEEVENT);
+  tmet.dwFlags = TME_LEAVE;
+  tmet.hwndTrack = m_hWnd;
+  _TrackMouseEvent(&tmet);
   return;
 }
 
@@ -690,6 +758,9 @@ BOOL CPlayerToolBar::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
           break;	
         case ID_SUBFONTDOWNBOTH:
           toolTip = ResStr(IDS_TOOLTIP_TOOLBAR_BUTTON_SUB_FONT_DECREASE);
+          break;	
+        case ID_MOVIESHARE:
+          toolTip = ResStr(IDS_TOOLTIP_TOOLBAR_BUTTON_MOVIESHARE);
           break;	
         default:
           toolTip = ResStr(nID);
@@ -834,6 +905,16 @@ void CPlayerToolBar::OnLButtonDown(UINT nFlags, CPoint point)
   CRect rc;
   GetWindowRect(&rc);
 
+  // if on ad
+  if (m_adctrl.GetVisible())
+  {
+    CRect rcAd = m_btnplaytime->m_rcHitest - rc.TopLeft();
+    if (rcAd.PtInRect(point))
+    {
+      SetCursor(cursorHand);
+    }
+  }
+
   point += rc.TopLeft() ;
   UINT ret = m_btnList.OnHitTest(point,rc,true);
   if( m_btnList.HTRedrawRequired ){
@@ -876,6 +957,17 @@ void CPlayerToolBar::OnLButtonUp(UINT nFlags, CPoint point)
 
   CRect rc;
   GetWindowRect(&rc);
+
+  // if click on ads
+  if (m_adctrl.GetVisible())
+  {
+    CRect rcAd = m_btnplaytime->m_rcHitest - rc.TopLeft();
+    if (rcAd.PtInRect(point))
+    {
+      SetCursor(cursorHand);
+      m_adctrl.OnAdClick();
+    }
+  }
 
   CPoint xpoint = point + rc.TopLeft() ;
   UINT ret = m_btnList.OnHitTest(xpoint,rc,false);
@@ -947,6 +1039,55 @@ void CPlayerToolBar::OnLButtonUp(UINT nFlags, CPoint point)
 }
 void CPlayerToolBar::OnTimer(UINT nIDEvent){
   switch(nIDEvent){
+    case TIMER_ADFETCHING:
+      {
+        KillTimer(TIMER_ADFETCHING);
+        std::wstring ad_uri = Strings::Format(L"https://www.shooter.cn/api/v2/prom.php?lang=%d", AfxGetAppSettings().iLanguage);
+        m_adctrl.GetAds(ad_uri.c_str());
+      }
+      break;
+    case TIMER_ADPLAY:
+      {
+        // If no ads exists, then didn't show ads, otherwise show ads
+        if (m_adctrl.IsAdsEmpty())
+          break;
+
+        m_adctrl.AllowAnimate(true);
+        Invalidate();
+        break;
+      }
+    case TIMER_ADPLAYSWITCH:
+      {
+        // If no ads exists, then don't show ads
+        if (m_adctrl.IsAdsEmpty())
+        {
+          m_adctrl.SetVisible(false);
+          break;
+        }
+        KillTimer(TIMER_ADPLAYSWITCH);
+        // otherwise show ads
+        // 查看广告是否显示完，如果还在显示则等待下一次2秒
+        if (m_btnplaytime->GetString().IsEmpty() && m_adctrl.IsCurAdShownDone())
+        {
+          if ((time(NULL) - m_adctrl._mouseover_time) > 3)
+          {
+            SetTimer(TIMER_ADPLAYSWITCH, 5000, NULL);
+            m_adctrl.SetVisible(false);
+          }
+          else
+            SetTimer(TIMER_ADPLAYSWITCH, 3000, NULL);
+        }
+        else if (!m_btnplaytime->GetString().IsEmpty())
+        {
+          m_btnplaytime->SetString(L"");
+          m_adctrl.SetVisible(true);
+          m_adctrl.ShowNextAd();
+          SetTimer(TIMER_ADPLAYSWITCH, 2000, NULL);
+        }
+
+
+        break;
+      }
     case TIMER_STATERASER:
       KillTimer(TIMER_STATERASER);
       if(!m_timerqueryedstr.IsEmpty()){
@@ -1142,11 +1283,37 @@ void CPlayerToolBar::DefaultButtonManage()
 
   CONFIGBUTTON(VOLUMETM,VOLUME_TM.BMP,ALIGN_TOPRIGHT,CRect(3,-50,65,3),FALSE,ID_VOLUME_THUMB,FALSE,0,0,0,CRect(0,0,0,0))
 
-  CONFIGBUTTON(PLAYTIME,NOBMP,ALIGN_TOPLEFT,CRect(3,-50,105,3),TRUE,0,FALSE,0,0,0,CRect(0,0,0,0))
-
-  CONFIGBUTTON(SHARE,BTN_SHARE.BMP,ALIGN_TOPLEFT,CRect(3,-50,3,3),FALSE,ID_MOVIESHARE,FALSE,0,ALIGN_LEFT,PLAYTIME,CRect(1,1,1,1))
-  CONFIGADDALIGN(SHARE, ALIGN_RIGHT, FASTBACKWORD, CRect(1,1,1,1))
   
+
+  CONFIGBUTTON(SHARE,BTN_SHARE.BMP,ALIGN_TOPLEFT,CRect(10,-50,3,3),FALSE,ID_MOVIESHARE,FALSE,0,0,0,CRect(0,0,0,0))
+  //CONFIGADDALIGN(SHARE, ALIGN_RIGHT, FASTBACKWORD, CRect(1,1,1,1))
+  //CONFIGADDALIGN(SHARE, ALIGN_RIGHT, SUBINCREASE, CRect(1,1,1,1))
+
+  CONFIGBUTTON(PLAYTIME,"NOBMP",ALIGN_TOPLEFT,CRect(3,-50,105,3),TRUE,0,FALSE,0,ALIGN_LEFT,SHARE,CRect(1,1,1,1))
+  
+}
+
+void CPlayerToolBar::PointVolumeBtn()
+{
+  m_btnVolBG = m_btnList.GetButton(L"VOLUMEBG");
+  m_btnVolTm = m_btnList.GetButton(L"VOLUMETM");
+  btnLogo = m_btnList.GetButton(L"LOGO");
+  m_btnplaytime = m_btnList.GetButton(L"PLAYTIME");
+}
+
+void CPlayerToolBar::OnMouseLeave()
+{
+  CRect rc;
+  GetWindowRect(&rc);
+  m_btnList.OnHitTest(CPoint(0,0), rc, -1);
+  Invalidate();
+}
+
+void CPlayerToolBar::ResizeToolbarHeight()
+{
+  m_nHeight = max(45, m_btnList.GetMaxHeight());
+  if (m_nHeight > 45)
+    m_nHeight += 4;
 }
 /*
 BottomToolBarButton.dat

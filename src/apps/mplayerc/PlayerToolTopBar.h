@@ -12,6 +12,8 @@ class CPlayerToolTopBar : public CWnd
 	CSUIButton* btnClose;
 	enum {IDT_CLOSE, IDT_TIPS};
 
+  bool m_bSendStatusMsg;  // send status message when status changed
+
 public:
 	CPlayerToolTopBar();
 	virtual ~CPlayerToolTopBar();
@@ -73,6 +75,9 @@ public:
 	afx_msg void OnActivateApp(BOOL bActive, DWORD dwThreadID);
 
   void DefaultButtonManage();
+  void PointCloseBtn();
+
+  void ResizeToolbarHeight();
 
 };
 

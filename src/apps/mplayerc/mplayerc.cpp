@@ -1506,6 +1506,25 @@ BOOL WINAPI Mine_DeviceIoControl(HANDLE hDevice, DWORD dwIoControlCode, LPVOID l
 	return ret;
 }
 
+int (__stdcall * Real_MessageBoxA)(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType)
+                                     = ::MessageBoxA;
+int (__stdcall * Real_MessageBoxW)(HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption, UINT uType)
+                                     = ::MessageBoxW;
+int WINAPI Mine_MessageBoxA(HWND hWnd,  LPCSTR lpText,  LPCSTR lpCaption,  UINT uType)
+{
+  if (NULL == strstr(lpCaption, "Internet Explorer") 
+      && NULL == strstr(lpCaption, "pdater")) // warning about Updater.exe
+    return Real_MessageBoxA(hWnd, lpText, lpCaption, uType);
+  return IDOK;
+}
+int WINAPI Mine_MessageBoxW( HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption, UINT uType)
+{
+  if (NULL == wcsstr(lpCaption, L"Internet Explorer"))
+    return Real_MessageBoxW(hWnd, lpText, lpCaption, uType);
+  return IDOK;
+}
+
+
 #include "../../subtitles/SSF.h"
 #include "../../subtitles/RTS.h"
 #include "../../subpic/MemSubPic.h"
@@ -1977,6 +1996,9 @@ BOOL CMPlayerCApp::InitInstance()
 
 	DetourAttach(&(PVOID&)Real_SetUnhandledExceptionFilter, (PVOID)Mine_SetUnhandledExceptionFilter);
 
+  DetourAttach(&(PVOID&)Real_MessageBoxA, (PVOID)Mine_MessageBoxA);
+  DetourAttach(&(PVOID&)Real_MessageBoxW, (PVOID)Mine_MessageBoxW);
+
 #ifndef _DEBUG
 	HMODULE hNTDLL	=	LoadLibrary (_T("ntdll.dll"));
 	if (hNTDLL)
@@ -1999,6 +2021,7 @@ BOOL CMPlayerCApp::InitInstance()
         AfxMessageBox(_T("OleInitialize failed!"));
 		return FALSE;
 	}
+
 
   //////////////////////////////////////////////////////////////////////////
   // WTL/ATL supporting logic
@@ -2386,7 +2409,9 @@ CMPlayerCApp::Settings::Settings()
 	, htpcmode(0)
 	, bNoMoreDXVAForThisFile(0)
 	, bDisableSoftCAVC(false)
-    , bUsePowerDVD()
+  , bUsePowerDVD()
+  , skinid(0)
+  , skinname(L"")
 {
 
 }
@@ -3314,10 +3339,10 @@ void CMPlayerCApp::Settings::ChangeChannelMapByCustomSetting()
 	
 	return;	
 }
-CString CMPlayerCApp::Settings::GetSVPSubStorePath(){
+CString CMPlayerCApp::Settings::GetSVPSubStorePath(BOOL spdefault){
 	CString StoreDir = SVPSubStoreDir;
 	CSVPToolBox svpTool;
-	if(StoreDir.IsEmpty() || !svpTool.ifDirExist(StoreDir) || !svpTool.ifDirWritable(StoreDir)){
+	if(StoreDir.IsEmpty() || !svpTool.ifDirExist(StoreDir) || !svpTool.ifDirWritable(StoreDir) || spdefault){
 		svpTool.GetAppDataPath(StoreDir);
 		CPath tmPath(StoreDir);
 		tmPath.RemoveBackslash();
@@ -3554,6 +3579,9 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		
 		pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SHADERLIST), strShaderList);
 
+    pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SKIN_ID), skinid);
+    pApp->WriteProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SKIN_NAME), skinname.c_str());
+
 		{
 			for(int i = 0; ; i++)
 			{
@@ -3682,7 +3710,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_DONTNEEDSVPSUBFILTER), bDontNeedSVPSubFilter);
 
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_PRIORITY), priority);
-		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LAUNCHFULLSCREEN), launchfullscreen);
+		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), L"ToggleFullScreenWhenPlaybackStarted", launchfullscreen);
 
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_WEBSERVERPORT), nWebServerPort);
 		pApp->WriteProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_WEBSERVERPRINTDEBUGINFO), fWebServerPrintDebugInfo);
@@ -4354,7 +4382,7 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 
 		priority = HIGH_PRIORITY_CLASS;//pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_PRIORITY), NORMAL_PRIORITY_CLASS);
 		::SetPriorityClass(::GetCurrentProcess(), priority);
-		launchfullscreen = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_LAUNCHFULLSCREEN), FALSE);
+		launchfullscreen = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), L"ToggleFullScreenWhenPlaybackStarted", FALSE);
 
 		nWebServerPort = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_WEBSERVERPORT), 13579);
 		fWebServerPrintDebugInfo = !!pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_WEBSERVERPRINTDEBUGINFO), FALSE);
@@ -4372,6 +4400,9 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
 		//	bAeroGlass = false;
 
 		bSaveSVPSubWithVideo  = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SAVESVPSUBWITHVIDEO), 0);
+
+    skinid = pApp->GetProfileInt(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SKIN_ID), 0);
+    skinname = pApp->GetProfileString(ResStr(IDS_R_SETTINGS), ResStr(IDS_RS_SKIN_NAME), 0);
 
 		CString MyPictures;
 

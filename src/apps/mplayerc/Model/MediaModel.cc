@@ -29,14 +29,22 @@ int MediaModel::GetCount()
 void MediaModel::Add(MediaPath& mdData)
 {
   // insert unique record
-  int nRecordCount = 0;
+  int uniqueid = 0;
   std::wstringstream ss;
 
-  ss << L"SELECT count(*) FROM detect_path WHERE path='"
-     << mdData.path << L"' and merit=" << mdData.merit;
-  MediaDB<int>::exec(ss.str(), &nRecordCount);
+  ss << L"SELECT uniqueid FROM detect_path WHERE path='"
+     << mdData.path << L"'";
+  MediaDB<int>::exec(ss.str(), &uniqueid);
 
-  if (nRecordCount == 0)
+  if (uniqueid)
+  {
+    ss.str(L"");
+    ss << L"UPDATE detect_path set merit = " << mdData.merit
+      << L" WHERE path = '" << mdData.path << L"'";
+    MediaDB<>::exec(ss.str());
+    mdData.uniqueid = uniqueid;
+  }
+  else
   {
     ss.str(L"");
     ss << L"INSERT INTO detect_path(path, merit)"

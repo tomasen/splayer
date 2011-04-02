@@ -22,7 +22,7 @@
 #pragma once
 
 #include "SUIButton.h"
-
+#include "Controller/AdController.h"
 #include "VolumeCtrl.h" 
 
 class CPlayerToolBar : public CToolBar
@@ -43,7 +43,9 @@ private:
 	CSUIButton* m_btnVolBG;
 	CSUIButton* btnLogo;
   CSUIButton* m_btnplaytime;
+  AdController m_adctrl;
   CFont m_statft;
+  CFont m_adsft;
 	CString m_tooltip ;
 	CPoint m_lastMouseMove;
 	int m_lastLeftText;
@@ -110,6 +112,7 @@ protected:
 
 	virtual INT_PTR OnToolHitTest(	CPoint point,TOOLINFO* pTI 	) const;
 
+  afx_msg void OnMouseLeave();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 public:
@@ -120,8 +123,12 @@ public:
   void HideMovieShareBtn(BOOL hide);
 
   void DefaultButtonManage();
+  void PointVolumeBtn();
+
+  void ResizeToolbarHeight();
 private:
   int m_movieshare_hidestat;
+
 };
 
 

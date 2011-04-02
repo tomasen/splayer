@@ -7,15 +7,15 @@
 MediaCenterController::MediaCenterController()
 : m_planestate(FALSE)
 {
-  m_plane.SetPaintState(FALSE);
-
+//   m_plane.SetPaintState(FALSE);
+// 
   MediaPaths mps;
   MediaPaths::iterator it;
   m_model.FindAll(mps);
   for (it = mps.begin(); it != mps.end(); ++it)
     m_treeModel.addFolder(*it);
 
-  m_model.FindAll(m_mediadata);
+  //m_model.FindAll(m_mediadata);
 }
 
 MediaCenterController::~MediaCenterController()
@@ -103,13 +103,13 @@ MediaCenterController::~MediaCenterController()
 //}
 
 // this design too bad
-void MediaCenterController::DelMedia(UILayerBlock* block)
-{
-  MediaFindCondition c = m_medialist[block];
-  m_model.Delete(c);
-  m_medialist.erase(block);
-}
-
+// void MediaCenterController::DelMedia(UILayerBlock* block)
+// {
+//   MediaFindCondition c = m_medialist[block];
+//   m_model.Delete(c);
+//   m_medialist.erase(block);
+// }
+// 
 void MediaCenterController::Playback(std::wstring file)
 {
   if (!m_spider.IsSupportExtension(file))
@@ -133,77 +133,77 @@ void MediaCenterController::Playback(std::wstring file)
     m_treeModel.addFile(md);
   }
 }
-
-void MediaCenterController::Playback(const MediaData& data)
-{
-  ::MessageBox(m_hwnd, L"playback,ohhh", L"", MB_OK);
-}
-
-void MediaCenterController::ClickEvent()
-{
-  int eventcode = m_plane.SelectBlockClick();
-
-  if (eventcode == 0)
-    return;
-
-  else if (eventcode == 1)
-  {
-    // delete
-    UILayerBlock* block = NULL;
-    m_plane.GetClickSelBlock(&block);
-    DelMedia(block);
-    m_plane.DelBlock(block);
-  }
-  else if (eventcode == 2)
-  {
-    // playback
-    UILayerBlock* block = NULL;
-    m_plane.GetClickSelBlock(&block);
-    MediaFindCondition c = m_medialist[block];
-    MediaData md;
-    m_model.FindOne(md, c);
-    Playback(md);
-  }
-}
-
-void MediaCenterController::GetMediaData(MediaDatas& data, int limit_start, int limit_end)
-{
-
-}
-
-void MediaCenterController::ShowPlane()
-{
-  m_planestate = TRUE;
-  m_plane.SetPaintState(TRUE);
-  if (!m_mediadata.empty())
-  {
-    for (MediaDatas::iterator it=m_mediadata.begin(); it != m_mediadata.end(); ++it)
-      m_treeModel.addFile(*it);
-    Update();
-  }
-}
-
-void MediaCenterController::HidePlane()
-{
-  m_planestate = FALSE;
-  m_plane.SetPaintState(FALSE);
-  Update();
-}
-
-BOOL MediaCenterController::GetPlaneState()
-{
-  return m_planestate;
-}
+// 
+// void MediaCenterController::Playback(const MediaData& data)
+// {
+//   ::MessageBox(m_hwnd, L"playback,ohhh", L"", MB_OK);
+// }
+// 
+// void MediaCenterController::ClickEvent()
+// {
+//   int eventcode = m_plane.SelectBlockClick();
+// 
+//   if (eventcode == 0)
+//     return;
+// 
+//   else if (eventcode == 1)
+//   {
+//     // delete
+//     UILayerBlock* block = NULL;
+//     m_plane.GetClickSelBlock(&block);
+//     DelMedia(block);
+//     m_plane.DelBlock(block);
+//   }
+//   else if (eventcode == 2)
+//   {
+//     // playback
+//     UILayerBlock* block = NULL;
+//     m_plane.GetClickSelBlock(&block);
+//     MediaFindCondition c = m_medialist[block];
+//     MediaData md;
+//     m_model.FindOne(md, c);
+//     Playback(md);
+//   }
+// }
+// 
+// void MediaCenterController::GetMediaData(MediaDatas& data, int limit_start, int limit_end)
+// {
+// 
+// }
+// 
+// void MediaCenterController::ShowPlane()
+// {
+//   m_planestate = TRUE;
+//   m_plane.SetPaintState(TRUE);
+//   if (!m_mediadata.empty())
+//   {
+//     for (MediaDatas::iterator it=m_mediadata.begin(); it != m_mediadata.end(); ++it)
+//       m_treeModel.addFile(*it);
+//     Update();
+//   }
+// }
+// 
+// void MediaCenterController::HidePlane()
+// {
+//   m_planestate = FALSE;
+//   m_plane.SetPaintState(FALSE);
+//   Update();
+// }
+// 
+// BOOL MediaCenterController::GetPlaneState()
+// {
+//   return m_planestate;
+// }
 
 void MediaCenterController::SetFrame(HWND hwnd)
 {
   m_hwnd = hwnd;
 
-  RECT block;
-  RECT margin = {5, 20, 64, 64};
-  block.left = 0;block.top = 0;
-  block.right = 138;block.bottom = 138;
-  m_plane.SetOption(block, margin, 30);
+//   RECT block;
+//   RECT margin = {5, 20, 64, 64};
+//   block.left = 0;block.top = 0;
+//   block.right = 138;block.bottom = 138;
+//   m_plane.SetOption(block, margin, 30);
 }
 
 void MediaCenterController::Update()

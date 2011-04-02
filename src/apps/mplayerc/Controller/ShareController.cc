@@ -33,6 +33,7 @@ void UserShareController::SetCommentPlaneParent(HWND hwnd)
 {
   m_parentwnd = hwnd;
 }
+
 void UserShareController::CreateCommentPlane()
 {
   if (m_commentplane.m_hWnd || !m_parentwnd || _dialogTemplate)
@@ -150,12 +151,29 @@ void UserShareController::_Thread()
       Sleep(100);
     else
     {
-      m_commentplane.Navigate(m_retdata.c_str());
+      ::PostMessage(m_parentwnd, WM_COMMAND, ID_MOVIESHARE_OPEN, NULL);
       break;
     }
   }
 
 }
+
+BOOL UserShareController::OpenShooterMedia()
+{
+  if (m_retdata.empty())
+    return FALSE;
+
+  m_commentplane.Navigate(m_retdata.c_str());
+  return TRUE;
+}
+
+BOOL UserShareController::CloseShooterMedia()
+{
+  if (m_commentplane.m_hWnd && m_commentplane.m_initialize)
+    m_commentplane.ClearFrame();
+  return TRUE;
+}
+
 void UserShareController::ToggleCommentPlane()
 {
   if (m_commentplane.m_hWnd && m_commentplane.IsWindowEnabled())
@@ -165,8 +183,8 @@ void UserShareController::ToggleCommentPlane()
 }
 BOOL UserShareController::ShowCommentPlane()
 {
-  if (m_retdata.empty())
-      return FALSE;
+  //if (m_retdata.empty())
+  //    return FALSE;
 
   CreateCommentPlane();
   m_commentplane.ShowFrame();

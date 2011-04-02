@@ -14,6 +14,7 @@
 #define INTVAR_CURSNAPTIME                          1009
 #define INTVAR_CURPLAYEDTIME                        1010
 #define INTVAR_CURTOTALPLAYTIME                     1011
+#define INTVAR_PLAYAD                               1012
 
 // int64 variables
 #define INT64VAR_MAINWINDOW         1000
@@ -30,6 +31,8 @@
 
 #define STRVAR_SUBTITLE_SAVEMETHOD  1008        // "same","custom"
 #define STRVAR_SUBTITLE_SAVE_CUSTOMPATH 1009    // "custom path"
+
+#define STRVAR_AD                   1010        // string to get ads
 
 // string array variables
 #define STRARRAY_PLAYLIST           1000

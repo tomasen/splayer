@@ -300,7 +300,7 @@ public:
 
 	CString		m_strD3DX9Version;
 	LONGLONG	m_PerfFrequency;
-	
+
 	void ShowCmdlnSwitches();
 
 	bool StoreSettingsToIni();
@@ -424,6 +424,8 @@ public:
 		int iRMVideoRendererType;
 		int iQTVideoRendererType;
 		int iSVPRenderType;
+    int skinid;
+    std::wstring skinname;
 		
 		bool bExternalSubtitleTime;
 		bool bDisableSoftCAVC;
@@ -651,7 +653,6 @@ public:
 		CString WebRoot, WebDefIndex;
 		BYTE lAeroTransparent;
 		CString WebServerCGI;
-		CString SVPSubStoreDir;
 
 		CString SnapShotPath, SnapShotExt;
 		int ThumbRows, ThumbCols, ThumbWidth;
@@ -667,7 +668,9 @@ public:
 		CString	strShaderList;
 		CString szFGMLog;
 		CAtlMap<CString, COLORREF , CStringElementTraits<CString>> colorsTheme;
-		
+  private:
+    CString SVPSubStoreDir;
+
 	public:
 		Settings();
 		virtual ~Settings();
@@ -678,7 +681,7 @@ public:
 		BOOL bUserAeroUI();
         BOOL bIsChineseUIUser();
 		BOOL bShouldUseGPUAcel();
-		CString GetSVPSubStorePath();
+		CString GetSVPSubStorePath(BOOL spdefault = false);
 		void InitChannelMap();
 		void InitEQPerset();
 		void ChangeChannelMapByCustomSetting();

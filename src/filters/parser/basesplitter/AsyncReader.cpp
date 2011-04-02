@@ -316,6 +316,12 @@ STDMETHODIMP_(HANDLE) CAsyncFileReader::GetFileHandle()
 		return m_hFile;
 	}
 }
+
+STDMETHODIMP_(LPCTSTR) CAsyncFileReader::GetFileName()
+{
+  return m_nCurPart != -1 ? m_strFiles[m_nCurPart] : m_strFiles[0];
+}
+
 CAsyncFileReader::~CAsyncFileReader(){
 	if(m_bIsRAR && m_hRar){
 		try{

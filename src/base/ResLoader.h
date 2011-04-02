@@ -11,14 +11,15 @@ public:
 
 public:
   // Automatically choose a load function below
-  HBITMAP LoadBitmap(const std::wstring& sBitmapPath,
-                     const std::wstring& sResModuleName = L"");
+  HBITMAP LoadBitmap(const std::wstring& sBitmapPath);
 
   // sBitmapPath is a relative path
   HBITMAP LoadBitmapFromDisk(const std::wstring& sBitmapPath);
 
   // sBitmapName is the resource name in the module
   // sResModuleName is the resource module name, L"" indicate it's the exe
-  HBITMAP LoadBitmapFromModule(const std::wstring& sBitmapName,
-                        const std::wstring& sResModuleName = L"");
+  HBITMAP LoadBitmapFromModule(const std::wstring& sBitmapName);
+
+  static HINSTANCE hResourceHandle;
+  static HINSTANCE hMainInstance;
 };

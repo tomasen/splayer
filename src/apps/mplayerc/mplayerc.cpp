@@ -64,6 +64,7 @@
 
 #include "ButtonManage.h"
 #include "GUIConfigManage.h"
+#include <ResLoader.h>
 
 //Update URL
 char* szUrl = "http://svplayer.shooter.cn/api/updater.php";
@@ -5233,6 +5234,8 @@ void CMPlayerCApp::SetLanguage (int nLanguage)
 	svpTool.filePutContent(szLangDefault,szLangSeting );
 	AfxSetResourceHandle(hMod);
   Strings::SetResourceHandle(hMod);
+  ResLoader::hResourceHandle = hMod;
+  ResLoader::hMainInstance =  AfxGetApp()->m_hInstance;
 
 #if (_ATL_VER >= 0x0700)
   ATL::_AtlBaseModule.SetResourceInstance(hMod);

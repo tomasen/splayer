@@ -4,6 +4,7 @@
 	Version="9.00"
 	Name="MediaCenterGui"
 	ProjectGUID="{7FBB4E25-145E-4219-9BD9-53436F5EF6E7}"
+	RootNamespace="MediaCenterGui"
 	TargetFrameworkVersion="196613"
 	>
 	<Platforms>
@@ -154,7 +155,6 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="foundation.lib"
 				LinkIncremental="1"
 				SubSystem="2"
 				TargetMachine="1"

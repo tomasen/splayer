@@ -5,6 +5,9 @@
 #include <atlimage.h>
 #pragma comment(lib, "shlwapi.lib")
 
+HINSTANCE ResLoader::hResourceHandle = NULL;
+HINSTANCE ResLoader::hMainInstance = NULL;
+
 ////////////////////////////////////////////////////////////////////////////////
 // Global helper functions
 static std::wstring GetModuleFolder(HMODULE hModuleHandle = 0)
@@ -39,8 +42,7 @@ ResLoader::~ResLoader()
 
 ////////////////////////////////////////////////////////////////////////////////
 // Load bitmap
-HBITMAP ResLoader::LoadBitmap(const std::wstring& sBitmapPath,
-                              const std::wstring& sResModuleName /* = L"" */)
+HBITMAP ResLoader::LoadBitmap(const std::wstring& sBitmapPath)
 {
   std::wstring sFullPath = GetModuleFolder() + sBitmapPath;
 
@@ -50,16 +52,7 @@ HBITMAP ResLoader::LoadBitmap(const std::wstring& sBitmapPath,
     return LoadBitmapFromDisk(sBitmapPath);
   } 
   else
-  {
-    // If the file is in exe
-    TCHAR szFileName[MAX_PATH] = {0};
-    TCHAR szExt[MAX_PATH] = {0};
-
-    ::_wsplitpath(sFullPath.c_str(), 0, 0, szFileName, szExt);
-    ::wcscat(szFileName, szExt);
-
-    return LoadBitmapFromModule(szFileName, sResModuleName);
-  }
+    return LoadBitmapFromModule(sBitmapPath);
 
   // Nothing found or load failure, return NULL
   return 0;
@@ -79,13 +72,20 @@ HBITMAP ResLoader::LoadBitmapFromDisk(const std::wstring& sBitmapPath)
   return hBitmap;
 }
 
-HBITMAP ResLoader::LoadBitmapFromModule(const std::wstring& sBitmapName,
-                             const std::wstring& sResModuleName /* = L"" */)
+HBITMAP ResLoader::LoadBitmapFromModule(const std::wstring& sBitmapName)
 {
-  LPCTSTR pcsz = sResModuleName.empty() ? 0 :sResModuleName.c_str();
-  HBITMAP hBitmap = 0;
-  hBitmap = (HBITMAP)::LoadImage(::GetModuleHandle(pcsz),
-          sBitmapName.c_str(), IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR | LR_CREATEDIBSECTION);
-
+  HINSTANCE hInstance = hResourceHandle;
+  HBITMAP hBitmap = NULL;
+  if (hInstance)
+    hBitmap = (HBITMAP)::LoadImage(hInstance, sBitmapName.c_str(), IMAGE_BITMAP, 0, 0, 
+                                   LR_DEFAULTCOLOR | LR_CREATEDIBSECTION);
+  if (!hBitmap)
+  {
+    hInstance = hMainInstance;
+    if (!hInstance)
+      hMainInstance = GetModuleHandle(NULL);
+    hBitmap = (HBITMAP)::LoadImage(hInstance, sBitmapName.c_str(), IMAGE_BITMAP, 0, 0, 
+                                   LR_DEFAULTCOLOR | LR_CREATEDIBSECTION);
+  }
   return hBitmap;
 }

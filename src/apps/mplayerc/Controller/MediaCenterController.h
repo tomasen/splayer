@@ -18,20 +18,10 @@ public:
 
 public:
   // Gui control, should not for other use
-  // void DelMedia(UILayerBlock* block);
-//   void Playback(const MediaData& data);
-   void Playback(std::wstring file);
-// 
-//   void ClickEvent();
-//   void GetMediaData(MediaDatas& data, int limit_start, int limit_end);
-// 
-//   void ShowPlane();
-//   void HidePlane();
-// 
-//   BOOL GetPlaneState();
-  void SetFrame(HWND hwnd);
 
-  void Update();
+   void SetFrame(HWND hwnd);
+
+   void Playback(std::wstring file);
 
 public:
   // Data control
@@ -43,10 +33,6 @@ private:
   HWND m_hwnd;
   BOOL m_planestate;
   MediaDatas m_mediadata;
-  //std::map<UILayerBlock*, MediaFindCondition> m_medialist;
-
-public:
-  // ListBlocks m_plane;
 
   // Data
   MediaModel            m_model;

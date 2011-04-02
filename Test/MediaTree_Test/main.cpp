@@ -34,30 +34,33 @@ int _tmain(int argc, _TCHAR* argv[])
   vector<MediaData> vtMDs;  // media data(include path and filename)
 
   MediaPath mp;
-  mp.path = L"C:\\cjbw1234\\";
+  mp.path = L"C:\\test\\New folder (2)\\";
   vtMPs.push_back(mp);
 
   MediaData md;
-  md.path = L"C:\\cjbw1234\\";
-  md.filename = L"2条非连续track视频流.mkv";
+  md.path = L"C:\\cjbw1234\\New folder (2)\\";
+  md.filename = L"splaa.mkv";
 
   //// ---------------------------------------------------------------------------
   //// test addPath's ability
+  //wcout << L"test addPath's ability" << endl;
   //boost::thread tr(boost::bind(show));
 
-  //wcout << L"start 1000000 times test for addPath" << endl;
+  //wcout << L"start 100000 times test for addPath" << endl;
   //clock_t tStartAddPath = ::clock();
 
-  //for (i = 0; i < 1000000; ++i)
+  //for (i = 0; i < 100000; ++i)
   //{
   //  model.addFolder(mp);
   //}
 
   //clock_t tEndAddPath = ::clock();
   //wcout << L"addPath's elapsed time is " << tEndAddPath - tStartAddPath << L"ms" << endl;
+  //wcout << L"test addPath's ability end" << endl << endl;
 
   // ---------------------------------------------------------------------------
   // test addFile's ability
+  wcout << L"test addFile's ability" << endl;
   boost::thread tr(boost::bind(show));
 
   wcout << L"start 100000 times test for addFile" << endl;
@@ -70,8 +73,13 @@ int _tmain(int argc, _TCHAR* argv[])
 
   clock_t tEndAddFile = ::clock();
   wcout << L"addFile's elapsed time is " << tEndAddFile - tStartAddFile << L"ms" << endl;
+  wcout << L"test addFile's ability end" << endl << endl;
 
+  // ---------------------------------------------------------------------------
+  // test spider's correctness
+
+  wcout << L"***************END***************" << endl;
+  //tr.join();
   ::system("pause");
-  tr.join();
 	return 0;
 }

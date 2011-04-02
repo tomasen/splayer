@@ -2,24 +2,6 @@
 #include "MediaCenterController.h"
 #include <boost/filesystem.hpp>
 
-//void cDebug(const std::wstring &sDebugInfo, bool bAutoBreak = true)
-//{
-//  if (::GetStdHandle(STD_OUTPUT_HANDLE) == 0)
-//    ::AllocConsole();
-//
-//  HANDLE h = ::GetStdHandle(STD_OUTPUT_HANDLE);
-//
-//  if (bAutoBreak)
-//  {
-//    ::WriteConsole(h, sDebugInfo.c_str(), sDebugInfo.size(), 0, 0);
-//    ::WriteConsole(h, L"\n", 1, 0, 0);
-//  } 
-//  else
-//  {
-//    ::WriteConsole(h, sDebugInfo.c_str(), sDebugInfo.size(), 0, 0);
-//  }
-//}
-
 ////////////////////////////////////////////////////////////////////////////////
 // normal part
 MediaCenterController::MediaCenterController()

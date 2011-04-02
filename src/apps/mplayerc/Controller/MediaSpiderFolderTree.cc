@@ -3,6 +3,8 @@
 #include "..\Controller\PlayerPreference.h"
 #include "..\Controller\SPlayerDefs.h"
 #include <boost/filesystem.hpp>
+#include <boost/lambda/lambda.hpp>
+#include <boost/lambda/bind.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Normal part
@@ -42,8 +44,27 @@ bool _sort_tree_folders(const MediaTreeFolder &treeFolder1, const MediaTreeFolde
   return treeFolder1.nMerit > treeFolder2.nMerit;  // descending order
 }
 
+//void cDebug(const std::wstring &sDebugInfo, bool bAutoBreak = true)
+//{
+//  if (::GetStdHandle(STD_OUTPUT_HANDLE) == 0)
+//    ::AllocConsole();
+//
+//  HANDLE h = ::GetStdHandle(STD_OUTPUT_HANDLE);
+//
+//  if (bAutoBreak)
+//  {
+//    ::WriteConsole(h, sDebugInfo.c_str(), sDebugInfo.size(), 0, 0);
+//    ::WriteConsole(h, L"\n", 1, 0, 0);
+//  } 
+//  else
+//  {
+//    ::WriteConsole(h, sDebugInfo.c_str(), sDebugInfo.size(), 0, 0);
+//  }
+//}
+
 void MediaSpiderFolderTree::_Thread()
 {
+  using namespace boost::lambda;
   using std::wstring;
   using std::vector;
   using std::list;
@@ -56,7 +77,19 @@ void MediaSpiderFolderTree::_Thread()
 
     // sort the path according the merit by descending order
     MediaTreeFolders treeFolders = m_treeModel.mediaTreeFolders();
-    treeFolders.sort(_sort_tree_folders);
+    treeFolders.sort(bind(&MediaTreeFolder::nMerit, _1) > bind(&MediaTreeFolder::nMerit, _2));
+
+    //// for test
+    //MediaTreeFolders::const_iterator itTest = treeFolders.begin();
+    //while (itTest != treeFolders.end())
+    //{
+    //  std::wstringstream ss;
+    //  ss << L"folder = " << itTest->sFolderPath << L", tFolderCreateTime = " << itTest->tFolderCreateTime;
+    //  cDebug(ss.str());
+
+    //  ++itTest;
+    //}
+    //cDebug(L"");
 
     // search the media files
     MediaTreeFolders::const_iterator it = treeFolders.begin();

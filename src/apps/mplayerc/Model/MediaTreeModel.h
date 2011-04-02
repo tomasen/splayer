@@ -22,6 +22,7 @@ public:
   void splitPath(const std::wstring &sPath, std::vector<std::wstring> &vtResult);
 
 protected:
+  void assignMerit(const MediaPath &mp);
   std::wstring makePathPreferred(const std::wstring &sPath);
 
 private:

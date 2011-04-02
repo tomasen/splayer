@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "MediaTreeModel.h"
 #include <boost/filesystem.hpp>
+#include <boost/lambda/lambda.hpp>
+#include <boost/lambda/bind.hpp>
 #include <regex>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -26,6 +28,7 @@ MediaTreeFolders MediaTreeModel::mediaTreeFolders() const
 // add media info to the tree and save the info to the database
 void MediaTreeModel::addFolder(const MediaPath &mp)
 {
+  using namespace boost::lambda;
   using std::wstring;
   using std::vector;
 
@@ -34,21 +37,13 @@ void MediaTreeModel::addFolder(const MediaPath &mp)
   vector<wstring> vtSplitPaths;
   splitPath(sPreferredPath, vtSplitPaths);
 
-  for (int i = 0; i < vtSplitPaths.size(); ++i)
+  for (size_t i = 0; i < vtSplitPaths.size(); ++i)
   {
     // if the path is exist in the list, then return
-    bool bIsExist = false;
-    MediaTreeFolders::iterator it = m_lsFolderTree.begin();
-    while (it != m_lsFolderTree.end())
-    {
-      if (it->sFolderPath == vtSplitPaths[i])
-      {
-        bIsExist = true;
-        break;
-      }
-
-      ++it;
-    }
+    MediaTreeFolders::iterator itFind;
+    itFind = std::find_if(m_lsFolderTree.begin(), m_lsFolderTree.end(),
+                          bind(&MediaTreeFolder::sFolderPath, _1) == vtSplitPaths[i]);
+    bool bIsExist = itFind == m_lsFolderTree.end() ? false : true;
 
     // add path
     if (!bIsExist)
@@ -60,6 +55,10 @@ void MediaTreeModel::addFolder(const MediaPath &mp)
 
       m_lsFolderTree.push_back(treefolder);
     }
+
+    // assign merit to the path
+    if (!bIsExist && vtSplitPaths[i] == mp.path)
+      assignMerit(mp);
   }
 }
 
@@ -183,6 +182,17 @@ void MediaTreeModel::splitPath(const std::wstring &sPath, std::vector<std::wstri
 
 ////////////////////////////////////////////////////////////////////////////////
 // helper functions
+void MediaTreeModel::assignMerit(const MediaPath &mp)
+{
+  using namespace boost::lambda;
+
+  MediaTreeFolders::iterator it;
+  it = std::find_if(m_lsFolderTree.begin(), m_lsFolderTree.end(),
+                    bind(&MediaTreeFolder::sFolderPath, _1) == mp.path);
+  if (it != m_lsFolderTree.end())
+    it->nMerit = mp.merit;
+}
+
 std::wstring MediaTreeModel::makePathPreferred(const std::wstring &sPath)
 {
   using namespace boost::filesystem;

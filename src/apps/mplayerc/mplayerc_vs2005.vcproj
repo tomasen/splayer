@@ -1204,11 +1204,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\ecio.icons\dvd.ico"
+				RelativePath=".\res\icon\DVD.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon\DVD.ico"
+				RelativePath=".\res\ecio.icons\dvd.ico"
 				>
 			</File>
 			<File
@@ -1937,14 +1937,6 @@
 			</File>
 			<File
 				RelativePath=".\Controller\MediaSpiderAbstract.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Controller\MediaSpiderDisk.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\Controller\MediaSpiderDisk.h"
 				>
 			</File>
 			<File

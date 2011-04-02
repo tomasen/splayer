@@ -16,7 +16,7 @@ protected:
   bool ShouldExit();
   void CheckDetectPath();
   void CheckMediaData();
-  void AddInfoToDetectPath();
+  //void AddInfoToDetectPath();
 
 private:
   MediaTreeModel m_treeModel;

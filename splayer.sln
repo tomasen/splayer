@@ -1,4 +1,4 @@
-Microsoft Visual Studio Solution File, Format Version 10.00
+﻿Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Filters", "Filters", "{F127F305-5EF5-4B69-B35F-8B30021B175D}"
 EndProject
@@ -413,6 +413,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "res_french", "src\apps\lang\res_french\res_french.vcproj", "{BD6502B7-5734-4415-8F87-9F8FEAA79157}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MediaCenterGui", "Prototype\MediaCenterGui\MediaCenterGui.vcproj", "{7FBB4E25-145E-4219-9BD9-53436F5EF6E7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F675096B-6B52-4605-992D-9653005D9C29} = {F675096B-6B52-4605-992D-9653005D9C29}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SPlayer", "SPlayer", "{5CBDD95F-B327-4328-BB83-50BFAA6A3817}"
 EndProject

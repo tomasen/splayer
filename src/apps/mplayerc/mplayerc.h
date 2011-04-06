@@ -1,4 +1,4 @@
-/* 
+﻿/* 
  *	Copyright (C) 2003-2006 Gabest
  *	http://www.gabest.org
  *
@@ -669,7 +669,7 @@ public:
 		CString szFGMLog;
 		CAtlMap<CString, COLORREF , CStringElementTraits<CString>> colorsTheme;
   private:
-    CString SVPSubStoreDir;
+    CString SVPSubStoreDir; //must not use this directly
 
 	public:
 		Settings();

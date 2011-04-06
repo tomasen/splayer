@@ -64,6 +64,7 @@
 
 #include "ButtonManage.h"
 #include "GUIConfigManage.h"
+#include <ResLoader.h>
 
 //Update URL
 char* szUrl = "http://svplayer.shooter.cn/api/updater.php";
@@ -3340,33 +3341,32 @@ void CMPlayerCApp::Settings::ChangeChannelMapByCustomSetting()
 	return;	
 }
 CString CMPlayerCApp::Settings::GetSVPSubStorePath(BOOL spdefault){
-	CString StoreDir = SVPSubStoreDir;
-	CSVPToolBox svpTool;
-	if(StoreDir.IsEmpty() || !svpTool.ifDirExist(StoreDir) || !svpTool.ifDirWritable(StoreDir) || spdefault){
-		svpTool.GetAppDataPath(StoreDir);
-		CPath tmPath(StoreDir);
-		tmPath.RemoveBackslash();
-		tmPath.AddBackslash();
-		tmPath.Append( _T("SVPSub"));
-		StoreDir = (CString)tmPath;
-		_wmkdir(StoreDir);
-		if(StoreDir.IsEmpty() || !svpTool.ifDirExist(StoreDir) || !svpTool.ifDirWritable(StoreDir)){
-			StoreDir =  svpTool.GetPlayerPath(_T("SVPSub"));
-			_wmkdir(StoreDir);
-			if(StoreDir.IsEmpty() || !svpTool.ifDirExist(StoreDir) || !svpTool.ifDirWritable(StoreDir)){
-
-				//WTF cant create fordler ?
-				StoreDir = _T("%temp%");
-				
-			}else{
-				SVPSubStoreDir = StoreDir;
-			}
-		}else{
-			SVPSubStoreDir = StoreDir;
-		}
-	}
-
-	return StoreDir;
+  CString StoreDir = SVPSubStoreDir;
+  CSVPToolBox svpTool;
+  if(StoreDir.IsEmpty() || !svpTool.ifDirExist(StoreDir) || !svpTool.ifDirWritable(StoreDir) || spdefault)
+  {
+    svpTool.GetAppDataPath(StoreDir);
+    CPath tmPath(StoreDir);
+    tmPath.RemoveBackslash();
+    tmPath.AddBackslash();
+    tmPath.Append( _T("SVPSub"));
+    StoreDir = (CString)tmPath;
+    _wmkdir(StoreDir);
+    if(StoreDir.IsEmpty() || !svpTool.ifDirExist(StoreDir) || !svpTool.ifDirWritable(StoreDir))
+    {
+      StoreDir =  svpTool.GetPlayerPath(_T("SVPSub"));
+      _wmkdir(StoreDir);
+      if (spdefault)
+        return StoreDir;
+      if(StoreDir.IsEmpty() || !svpTool.ifDirExist(StoreDir) || !svpTool.ifDirWritable(StoreDir))
+        StoreDir = _T("%temp%"); //WTF cant create fordler ?
+      else
+        SVPSubStoreDir = StoreDir;
+    }
+    else
+      SVPSubStoreDir = StoreDir;
+  }
+  return StoreDir;
 }
 BOOL CMPlayerCApp::Settings::bShouldUseGPUAcel(){
 	return  useGPUAcel && !bNoMoreDXVAForThisFile ;
@@ -5244,6 +5244,8 @@ void CMPlayerCApp::SetLanguage (int nLanguage)
 	svpTool.filePutContent(szLangDefault,szLangSeting );
 	AfxSetResourceHandle(hMod);
   Strings::SetResourceHandle(hMod);
+  ResLoader::hResourceHandle = hMod;
+  ResLoader::hMainInstance =  AfxGetApp()->m_hInstance;
 
 #if (_ATL_VER >= 0x0700)
   ATL::_AtlBaseModule.SetResourceInstance(hMod);

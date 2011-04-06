@@ -955,6 +955,11 @@ CString CSVPToolBox::GetDirFromPath(CString path){
 }
 int CSVPToolBox::CleanUpOldFiles(CString szDir, int parm, int ilimit, int byNumber)
 {
+  CString allowDir1, allowDir2;
+  GetAppDataPath(allowDir1);
+  allowDir2 =  GetPlayerPath(_T("SVPSub"));
+  if (szDir.Find(allowDir1) < 0 && szDir.Find(allowDir2) < 0 )
+    return 0;
 
     CFileFind finder;
 

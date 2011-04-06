@@ -4665,18 +4665,27 @@ void CMainFrame::OnFilePostOpenmedia()
   // this point, it will deadlock when OpenMediaPrivate is
   // still running and the renderer window was created on
   // the same worker-thread
-
-  if(s.fEnableSubtitles && AfxGetMyApp()->sqlite_local_record ){
+  if (AfxGetMyApp()->sqlite_local_record)
+  {
     std::wstring szFileHash = HashController::GetInstance()->GetSPHash(m_fnCurPlayingFile);
     CString FPath = szFileHash.c_str();
     CString szSQL;
-    szSQL.Format(L"SELECT subid FROM histories_stream WHERE fpath = \"%s\" ", FPath);
-    int subid = AfxGetMyApp()->sqlite_local_record->get_single_int_from_sql(szSQL.GetBuffer(), -1);
-    if(subid > 0){
-      OnPlayLanguage(subid);
+    if (s.fEnableSubtitles ){
+      szSQL.Format(L"SELECT subid FROM histories_stream WHERE fpath = \"%s\" ", FPath);
+      int subid = AfxGetMyApp()->sqlite_local_record->get_single_int_from_sql(szSQL.GetBuffer(), -1);
+      if(subid > 0){
+        OnPlayLanguage(subid);
+      }
     }
-  }
+    szSQL.Format(L"SELECT audioid FROM histories_stream WHERE fpath = \"%s\" ", FPath);
+    int audid = AfxGetMyApp()->sqlite_local_record->get_single_int_from_sql(szSQL.GetBuffer(), -1);
+    if(audid > 0){
+      OnPlayLanguage(audid);
+    }
 
+
+  }
+  
   {
     WINDOWPLACEMENT wp;
     wp.length = sizeof(wp);
@@ -8247,17 +8256,24 @@ void CMainFrame::OnPlayLanguage(UINT nID)
   
   if(FAILED(pAMSS->Enable(nID-i, AMSTREAMSELECTENABLE_ENABLE)))
     strMsg = ResStr(IDS_OSD_MSG_CHANGE_STREAM_AUDIO_FAILED);
-  else
+  else if (AfxGetMyApp()->sqlite_local_record)
   {
+    CString name(wname);
+    CString parm = L"subid";
+    if( name.Find(_T("A")) == 0  || name.Find(_T("声")) == 0 || name.Find(_T("音")) == 0 )
+      parm = L"audioid";
+
     //save language stream
     std::wstring szFileHash = HashController::GetInstance()->GetSPHash(m_fnCurPlayingFile);
     CString szSQLInsert, szSQLUpdate;
-    szSQLInsert.Format(L"INSERT OR IGNORE INTO histories_stream  ( fpath, subid ) VALUES ( \"%s\", '%d') ", szFileHash.c_str(), oID);
-    szSQLUpdate.Format(L"UPDATE histories_stream SET subid = '%d'  WHERE fpath = \"%s\" ", oID,  szFileHash.c_str());
+    szSQLInsert.Format(L"INSERT OR IGNORE INTO histories_stream  ( fpath, %s ) VALUES ( \"%s\", '%d') ", parm, szFileHash.c_str(), oID);
+    szSQLUpdate.Format(L"UPDATE histories_stream SET %s = '%d'  WHERE fpath = \"%s\" ", parm, oID,  szFileHash.c_str());
 
-    if(AfxGetMyApp()->sqlite_local_record)
-      AfxGetMyApp()->sqlite_local_record->exec_insert_update_sql_u(szSQLInsert.GetBuffer(), szSQLUpdate.GetBuffer());
+    AfxGetMyApp()->sqlite_local_record->exec_insert_update_sql_u(szSQLInsert.GetBuffer(), szSQLUpdate.GetBuffer());
   }
+
+  if (wname)
+    CoTaskMemFree(wname);
 
   SendStatusMessage(strMsg, 4000);
 

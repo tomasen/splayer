@@ -310,6 +310,10 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath="..\..\..\..\-=SVN=-\svplayer\src\subpic\SubPicProviderImpl.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -337,6 +341,10 @@
 			</File>
 			<File
 				RelativePath="stdafx.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\-=SVN=-\svplayer\src\subpic\SubPicProviderImpl.h"
 				>
 			</File>
 		</Filter>

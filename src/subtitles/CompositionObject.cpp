@@ -93,9 +93,9 @@ void CompositionObject::RenderHdmv(SubPicDesc& spd)
   BYTE			nPaletteIndex = 0;
   SHORT			nCount;
   SHORT			nX	= 0;
-  SHORT			nY	= 0;
+  SHORT			nY	= max(spd.h - m_height - 30, 0);
 
-  while ((nY < m_height) && !GBuffer.IsEOF()) {
+  while ((nY < spd.h) && !GBuffer.IsEOF()) {
     bTemp = GBuffer.ReadByte();
     if (bTemp != 0) {
       nPaletteIndex = bTemp;

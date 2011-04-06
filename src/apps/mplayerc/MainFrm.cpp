@@ -4682,11 +4682,12 @@ void CMainFrame::OnFilePostOpenmedia()
       }else{
         ZoomVideoWindow();
 
+        // m_fFullScreen意思现在是指当前播放模式是全屏还是非全屏，如果是全屏就会在Toogle中变为非全屏，反之亦然
         if (!m_fFullScreen)
         {
           PlayerPreference* pref = PlayerPreference::GetInstance();
-         m_fFullScreen = pref->GetIntVar(INTVAR_TOGGLEFULLSCRENWHENPLAYBACKSTARTED);
-         if (m_fFullScreen)
+          bool bToBeFullScreen = pref->GetIntVar(INTVAR_TOGGLEFULLSCRENWHENPLAYBACKSTARTED);
+          if (bToBeFullScreen)
           {
             ToggleFullscreen(true, true);
             SetCursor(NULL);

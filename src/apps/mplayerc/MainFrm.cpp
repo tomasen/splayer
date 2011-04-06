@@ -9912,7 +9912,11 @@ void CMainFrame::ToggleFullscreen(bool fToNearest, bool fSwitchScreenResWhenHasT
 
   MoveVideoWindow();
 
-  ::SetWindowPos(m_hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOREDRAW|SWP_NOSIZE|SWP_NOMOVE);
+  // insert after the HWND_TOP if the player is not full screen
+  if (m_fFullScreen)
+    ::SetWindowPos(m_hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOREDRAW|SWP_NOSIZE|SWP_NOMOVE);
+  else
+    ::SetWindowPos(m_hWnd, HWND_TOP, 0, 0, 0, 0, SWP_NOREDRAW|SWP_NOSIZE|SWP_NOMOVE);
 }
 
 void CMainFrame::MoveVideoWindow(bool fShowStats)

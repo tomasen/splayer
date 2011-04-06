@@ -4666,6 +4666,17 @@ void CMainFrame::OnFilePostOpenmedia()
   // still running and the renderer window was created on
   // the same worker-thread
 
+  if(s.fEnableSubtitles && AfxGetMyApp()->sqlite_local_record ){
+    std::wstring szFileHash = HashController::GetInstance()->GetSPHash(m_fnCurPlayingFile);
+    CString FPath = szFileHash.c_str();
+    CString szSQL;
+    szSQL.Format(L"SELECT subid FROM histories_stream WHERE fpath = \"%s\" ", FPath);
+    int subid = AfxGetMyApp()->sqlite_local_record->get_single_int_from_sql(szSQL.GetBuffer(), -1);
+    if(subid > 0){
+      OnPlayLanguage(subid);
+    }
+  }
+
   {
     WINDOWPLACEMENT wp;
     wp.length = sizeof(wp);
@@ -8211,8 +8222,10 @@ void CMainFrame::OnUpdatePlayShaders(CCmdUI* pCmdUI)
 
 void CMainFrame::OnPlayLanguage(UINT nID)
 {
-
+  UINT oID = nID;
   nID -= ID_FILTERSTREAMS_SUBITEM_START;
+  if (!m_ssarray.GetCount()) SetupFiltersSubMenu();
+
   if(nID >= m_ssarray.GetCount()){
     return;
   }
@@ -8231,10 +8244,20 @@ void CMainFrame::OnPlayLanguage(UINT nID)
   pAMSS->Info(nID-i, NULL, &flags, &lcid, &group, &wname, &pObj, &pUnk);
 
   strMsg.Format(ResStr(IDS_OSD_MSG_CHANGING_STREAM) , wname);
-
-
+  
   if(FAILED(pAMSS->Enable(nID-i, AMSTREAMSELECTENABLE_ENABLE)))
     strMsg = ResStr(IDS_OSD_MSG_CHANGE_STREAM_AUDIO_FAILED);
+  else
+  {
+    //save language stream
+    std::wstring szFileHash = HashController::GetInstance()->GetSPHash(m_fnCurPlayingFile);
+    CString szSQLInsert, szSQLUpdate;
+    szSQLInsert.Format(L"INSERT OR IGNORE INTO histories_stream  ( fpath, subid ) VALUES ( \"%s\", '%d') ", szFileHash.c_str(), oID);
+    szSQLUpdate.Format(L"UPDATE histories_stream SET subid = '%d'  WHERE fpath = \"%s\" ", oID,  szFileHash.c_str());
+
+    if(AfxGetMyApp()->sqlite_local_record)
+      AfxGetMyApp()->sqlite_local_record->exec_insert_update_sql_u(szSQLInsert.GetBuffer(), szSQLUpdate.GetBuffer());
+  }
 
   SendStatusMessage(strMsg, 4000);
 
@@ -8437,8 +8460,8 @@ void CMainFrame::OnPlayAudio(UINT nID)
 
     int tNow = time(NULL);
     //TODO Save Subselection
-    szSQLInsert.Format(L"INSERT OR IGNORE INTO histories  ( fpath, audioid, modtime ) VALUES ( \"%s\", '%d', '%d') ", szFileHash, i, tNow);
-    szSQLUpdate.Format(L"UPDATE histories SET audioid = '%d' , modtime = '%d'  WHERE fpath = \"%s\" ", i, tNow, szFileHash);
+    szSQLInsert.Format(L"INSERT OR IGNORE INTO histories  ( fpath, audioid, modtime ) VALUES ( \"%s\", '%d', '%d') ", szFileHash.c_str(), i, tNow);
+    szSQLUpdate.Format(L"UPDATE histories SET audioid = '%d' , modtime = '%d'  WHERE fpath = \"%s\" ", i, tNow, szFileHash.c_str());
 
     if(AfxGetMyApp()->sqlite_local_record)
       AfxGetMyApp()->sqlite_local_record->exec_insert_update_sql_u(szSQLInsert.GetBuffer(), szSQLUpdate.GetBuffer());
@@ -14274,7 +14297,7 @@ void CMainFrame::SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle, bool 
       CoTaskMemFree(pName);
     }
 
-    if(bShowOSD){
+    if(bShowOSD  && subName != L"No subtitles"){
       szBuf.Format(ResStr(IDS_OSD_MSG_CURRENT_2NDSUB_INFO), GetAnEasyToUnderstoodSubtitleName(subName), pSubStream->sub_delay_ms, s.nVerPos2);
       SVP_LogMsg(szBuf);
       SendStatusMessage(szBuf , 4000 );
@@ -14410,7 +14433,7 @@ void CMainFrame::SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle, bool b
       CoTaskMemFree(pName);
     }
 
-    if(bShowOSD){
+    if(bShowOSD && subName != L"No subtitles"){
       szBuf.Format(ResStr(IDS_OSD_MSG_CURRENT_MAINSUB_INFO), GetAnEasyToUnderstoodSubtitleName( subName),  pSubStream->sub_delay_ms,s.nVerPos);
       SVP_LogMsg(szBuf);
       SendStatusMessage(szBuf , 4000 );

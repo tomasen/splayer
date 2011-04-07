@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="windows-1250"?>
+<VisualStudioProject
+	ProjectType="Intel C++ Project"
+	Version="11.1"
+	Name="RealMediaSplitter"
+	ProjectGUID="{4599AB47-4AEC-4080-ABE9-1FFDF89C5F68}"
+	VCNestedProjectGUID="{53CF9195-19DB-457D-8F55-8DB1706DFA84}"
+	VCNestedProjectFileName="RealMediaSplitter_vs2005.vcproj">
+	<Configurations>
+		<Configuration
+			Name="Release Unicode lib|Win32">
+			<Tool
+				Name="CppCmplrTool"
+				EnableEnhancedInstructionSet="1001"/>
+		</Configuration>
+	</Configurations>
+	<Files/>
+</VisualStudioProject>

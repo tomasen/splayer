@@ -24,12 +24,10 @@ m_bsingleormultiply(0)
 	m_htMsgID = htMsgID;
 
   ResLoader rlResLoader;
-  if (szBmpName != L"NOBMP")
-  {  
-    HBITMAP hbitmap = rlResLoader.LoadBitmap(szBmpName);
-    if (hbitmap)
-      this->Attach(hbitmap);
-  }
+
+  HBITMAP hbitmap = rlResLoader.LoadBitmap(szBmpName);
+  if (hbitmap)
+    this->Attach(hbitmap);
 
   m_szBmpName = szBmpName;
 	m_hide = bHide;
@@ -225,13 +223,7 @@ void CSUIButton::OnPaint(CMemoryDC *hDC, CRect rc){
   
   rc = m_rcHitest - rc.TopLeft();
 
-  if (m_buttonname == L"PLAYTIME" )
-  {
-    ::DrawText(*hDC, m_playtimestr, m_playtimestr.GetLength(), rc,  DT_LEFT|DT_END_ELLIPSIS|DT_SINGLELINE| DT_VCENTER);
-    return;
-  }
-
-	BLENDFUNCTION bf = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};//
+  BLENDFUNCTION bf = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};//
 	CDC dcBmp;
 	dcBmp.CreateCompatibleDC(hDC);
 	HBITMAP holdBmp = (HBITMAP)dcBmp.SelectObject(m_bitmap);
@@ -534,36 +526,35 @@ BOOL CSUIBtnList::ResReload(std::wstring folder, BOOL bl, std::wstring cfgfilena
     bmpname += folder;
     bmpname += L"\\";
     bmpname += cbtn->m_szBmpName;
-    if (cbtn->m_buttonname != L"PLAYTIME")
-    {
-      HBITMAP hbitmap;
-      if (bl)
-      {
-        cbtn->m_bsingleormultiply = CheckMultiplyBmpOrSingle(bmpname);
-        bmpname = L"skins\\" + bmpname;
-        hbitmap = rlResLoader.LoadBitmapFromDisk(bmpname);
-      }
-      else
-      {
-        hbitmap = rlResLoader.LoadBitmapFromModule(cbtn->m_szBmpName.GetString());
-        cbtn->m_bsingleormultiply = FALSE;
-      }
 
-      if (hbitmap)
-      {
-       cbtn->Attach(hbitmap);
-       cbtn->CountDPI();
-       bloadsuccess = TRUE;
-      
-      } 
-      else
-      {
-       bloadsuccess = FALSE;
-       break;
-      }
+    HBITMAP hbitmap;
+    if (bl)
+    {
+      cbtn->m_bsingleormultiply = CheckMultiplyBmpOrSingle(bmpname);
+      bmpname = L"skins\\" + bmpname;
+      hbitmap = rlResLoader.LoadBitmapFromDisk(bmpname);
+    }
+    else
+    {
+      hbitmap = rlResLoader.LoadBitmapFromModule(cbtn->m_szBmpName.GetString());
+      cbtn->m_bsingleormultiply = FALSE;
     }
 
-    if (!btnattribute.empty() && cbtn->m_buttonname != L"PLAYTIME")
+    if (hbitmap)
+    {
+      cbtn->Attach(hbitmap);
+      cbtn->CountDPI();
+      bloadsuccess = TRUE;
+      
+    } 
+    else
+    {
+      bloadsuccess = FALSE;
+      break;
+    }
+
+
+    if (!btnattribute.empty()/* && cbtn->m_buttonname != L"PLAYTIME"*/)
     {
       buttonattribute btnstruct = btnattribute[cbtn->m_buttonname.GetString()];
       cbtn->m_marginTownd  = btnstruct.fixrect;

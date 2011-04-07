@@ -383,8 +383,8 @@ void CPlayerToolBar::OnPaint()
 
     CSUIButton* cbtn = m_btnList.GetButton(L"SHARE");
     CRect btnrc = cbtn->m_rcHitest - rc.TopLeft();
-    btnrc.left = btnrc.right + 2;
-    int width = m_btnList.GetRelativeMinLength(rc, cbtn) - cbtn->m_rcHitest.Width() - 4;
+    btnrc.left = btnrc.right + 8;
+    int width = m_btnList.GetRelativeMinLength(rc, cbtn) - cbtn->m_rcHitest.Width() - 8;
     if (size.cx > 0)
       btnrc.right = btnrc.left + min(width, size.cx);
     else

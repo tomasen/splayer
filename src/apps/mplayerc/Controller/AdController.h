@@ -22,6 +22,7 @@ public:
   void ShowNextAd();
   bool IsCurAdShownDone();
   void SetRect(const RECT &rc, CMemoryDC *pDC);  // set the display rect
+  const RECT& GetRect();
   void Paint(CMemoryDC *pDC); // re-Paint the display area
 
   void OnAdClick();

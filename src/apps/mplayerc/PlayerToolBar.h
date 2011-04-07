@@ -42,7 +42,7 @@ private:
 	CSUIButton* m_btnVolTm ;
 	CSUIButton* m_btnVolBG;
 	CSUIButton* btnLogo;
-  CSUIButton* m_btnplaytime;
+/*  CSUIButton* m_btnplaytime;*/
   AdController m_adctrl;
   CFont m_statft;
   CFont m_adsft;

@@ -362,13 +362,7 @@ void CPlayerToolBar::OnPaint()
     holdft = (HFONT)hdc.SelectObject(m_adsft);
   else
     holdft = (HFONT)hdc.SelectObject(m_statft);
-
-  if (!m_timerstr.IsEmpty() && pFrame && pFrame->IsSomethingLoaded())
-  {
-    hdc.SetTextColor(s.GetColorFromTheme(_T("ToolBarTimeText"), 0xffffff) );
-    if (!m_adctrl.GetVisible())
-      m_btnplaytime->SetString(m_timerstr);
-  }
+  hdc.SetTextColor(s.GetColorFromTheme(_T("ToolBarTimeText"), 0xffffff) );
 
   UpdateButtonStat();
 
@@ -378,26 +372,24 @@ void CPlayerToolBar::OnPaint()
   
   m_btnList.PaintAll(&hdc, rc);
 
-  std::wstring sTimeBtnString;
-  if (m_adctrl.GetVisible())
-    sTimeBtnString = m_adctrl.GetCurAd();
+  std::wstring sTimeBtnString = m_adctrl.GetCurAd();
+
+  CSize size(0,0);
+  if (!sTimeBtnString.empty())
+    size = dc.GetTextExtent(sTimeBtnString.c_str());
+
+  CSUIButton* cbtn = m_btnList.GetButton(L"SHARE");
+  CRect btnrc = cbtn->m_rcHitest - rc.TopLeft();
+  btnrc.left = btnrc.right + 2;
+  int width = m_btnList.GetRelativeMinLength(rc, cbtn) - cbtn->m_rcHitest.Width() - 4;
+  if (size.cx > 0)
+    btnrc.right = btnrc.left + min(width, size.cx);
   else
-    sTimeBtnString = (LPCTSTR)m_timerstr;
+    btnrc.right = btnrc.left;
+  btnrc.top = (rc.Height() - size.cy) / 2;
+  btnrc.bottom = btnrc.top + size.cy;
 
-  CSize size = dc.GetTextExtent(sTimeBtnString.c_str());
-
-  size.cx =  m_btnList.GetRelativeMinLength(rc, m_btnplaytime) - 10;
-
-  if (size.cx < 20)
-    size.cx = rcClient.Width() /3 - 10;
-
-  if (m_btnplaytime)
-  {
-    m_btnplaytime->SetStrSize(size);
-    m_btnplaytime->OnPaint(&hdc, rc);
-  }
-
-  m_adctrl.SetRect(m_btnplaytime->m_rcHitest - rc.TopLeft(), &hdc);
+  m_adctrl.SetRect(btnrc, &hdc);
   m_adctrl.Paint(&hdc);  
   
   hdc.SelectObject(holdft);
@@ -643,7 +635,8 @@ void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point)
   static const HCURSOR hOrgCursor = (HCURSOR)::GetClassLong(GetSafeHwnd(), GCL_HCURSOR);
   if (m_adctrl.GetVisible())
   {
-    CRect rcAd = m_btnplaytime->m_rcHitest - rc.TopLeft();
+/*    CRect rcAd = m_btnplaytime->m_rcHitest - rc.TopLeft();*/
+    CRect rcAd = m_adctrl.GetRect();
     CPoint pi = point;
     ScreenToClient(&pi);
     if (rcAd.PtInRect(pi))
@@ -908,7 +901,7 @@ void CPlayerToolBar::OnLButtonDown(UINT nFlags, CPoint point)
   // if on ad
   if (m_adctrl.GetVisible())
   {
-    CRect rcAd = m_btnplaytime->m_rcHitest - rc.TopLeft();
+    CRect rcAd = m_adctrl.GetRect();
     if (rcAd.PtInRect(point))
     {
       SetCursor(cursorHand);
@@ -961,7 +954,7 @@ void CPlayerToolBar::OnLButtonUp(UINT nFlags, CPoint point)
   // if click on ads
   if (m_adctrl.GetVisible())
   {
-    CRect rcAd = m_btnplaytime->m_rcHitest - rc.TopLeft();
+    CRect rcAd = m_adctrl.GetRect();
     if (rcAd.PtInRect(point))
     {
       SetCursor(cursorHand);
@@ -1064,28 +1057,22 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
           m_adctrl.SetVisible(false);
           break;
         }
+        else
+          m_adctrl.SetVisible(TRUE);
         KillTimer(TIMER_ADPLAYSWITCH);
         // otherwise show ads
         // 查看广告是否显示完，如果还在显示则等待下一次2秒
-        if (m_btnplaytime->GetString().IsEmpty() && m_adctrl.IsCurAdShownDone())
+        if (m_adctrl.IsCurAdShownDone())
         {
           if ((time(NULL) - m_adctrl._mouseover_time) > 3)
           {
-            SetTimer(TIMER_ADPLAYSWITCH, 5000, NULL);
-            m_adctrl.SetVisible(false);
+            m_adctrl.ShowNextAd();
+            SetTimer(TIMER_ADPLAYSWITCH, 2000, NULL);
           }
           else
             SetTimer(TIMER_ADPLAYSWITCH, 3000, NULL);
+          break;
         }
-        else if (!m_btnplaytime->GetString().IsEmpty())
-        {
-          m_btnplaytime->SetString(L"");
-          m_adctrl.SetVisible(true);
-          m_adctrl.ShowNextAd();
-          SetTimer(TIMER_ADPLAYSWITCH, 2000, NULL);
-        }
-
-
         break;
       }
     case TIMER_STATERASER:
@@ -1289,7 +1276,7 @@ void CPlayerToolBar::DefaultButtonManage()
   //CONFIGADDALIGN(SHARE, ALIGN_RIGHT, FASTBACKWORD, CRect(1,1,1,1))
   //CONFIGADDALIGN(SHARE, ALIGN_RIGHT, SUBINCREASE, CRect(1,1,1,1))
 
-  CONFIGBUTTON(PLAYTIME,NOBMP,ALIGN_TOPLEFT,CRect(3,-50,105,3),TRUE,0,FALSE,0,ALIGN_LEFT,SHARE,CRect(1,1,1,1))
+/*  CONFIGBUTTON(PLAYTIME,NOBMP,ALIGN_TOPLEFT,CRect(3,-50,105,3),TRUE,0,FALSE,0,ALIGN_LEFT,SHARE,CRect(1,1,1,1))*/
   
 }
 
@@ -1298,7 +1285,7 @@ void CPlayerToolBar::PointVolumeBtn()
   m_btnVolBG = m_btnList.GetButton(L"VOLUMEBG");
   m_btnVolTm = m_btnList.GetButton(L"VOLUMETM");
   btnLogo = m_btnList.GetButton(L"LOGO");
-  m_btnplaytime = m_btnList.GetButton(L"PLAYTIME");
+/*  m_btnplaytime = m_btnList.GetButton(L"PLAYTIME");*/
 }
 
 void CPlayerToolBar::OnMouseLeave()

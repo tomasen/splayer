@@ -57,10 +57,15 @@ void AdController::SetRect(const RECT &rc, CMemoryDC *pDC)
   {
     m_rc = rc;
 
-    m_nCurAd = -1;
+/*    m_nCurAd = -1;*/
     m_nCurX = m_rc.left;
     m_nCurY = m_rc.top;
   }
+}
+
+const RECT& AdController::GetRect()
+{
+  return m_rc;
 }
 
 void AdController::_Thread()
@@ -239,7 +244,7 @@ void AdController::Paint(CMemoryDC *pDC)
   //
   if ((m_nCurAd < 0) || (m_nCurAd > m_vtAds.size() - 1))
     return;
-
+  
   //
   if (m_bAllowAnimate)
   {

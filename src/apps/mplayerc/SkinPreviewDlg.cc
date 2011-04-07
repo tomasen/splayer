@@ -100,7 +100,7 @@ LRESULT SkinPreviewDlg::OnSkinMore(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCt
         free(_dialogTemplate);
         _dialogTemplate = NULL;
       }
-      skindown.Navigate(L"http://webpj:8080/misc/skin.php");
+      skindown.Navigate(L"http://splayer.org/skins/");
     }
   }
   skindown.ShowFrame();

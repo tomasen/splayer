@@ -2321,7 +2321,6 @@ BOOL CMPlayerCApp::InitInstance()
 int CMPlayerCApp::ExitInstance()
 {
 
-
   if(sqlite_local_record){
     CString szSQL;
     szSQL.Format(L"DELETE FROM histories WHERE modtime < '%d' ", time(NULL)-3600*24*30);
@@ -2332,7 +2331,7 @@ int CMPlayerCApp::ExitInstance()
   }
   
 	m_s.UpdateData(true);
-
+  PlayerPreference::GetInstance()->Update();
 
 	if(!IsVista()){
 		BOOL bDropShadow = TRUE;

@@ -43,7 +43,7 @@ PlayerPreference::PlayerPreference(void):
   m_map_strvar[STRVAR_AD] = GetProfileString(L"Settings", L"Ad", L"");   // ad
 }
 
-PlayerPreference::~PlayerPreference(void)
+void PlayerPreference::Update()
 {
   // write into registry
   //////////////////////////////////////////////////////////////////////////
@@ -61,14 +61,17 @@ PlayerPreference::~PlayerPreference(void)
   WriteProfileInt(ResStr(IDS_R_SETTINGS), L"MapCenterChToLR", m_map_intvar[INTVAR_MAP_CENTERCH2LR]);
   WriteProfileInt(ResStr(IDS_R_SETTINGS), L"CheckFileAssocOnStartUp", m_map_intvar[INTVAR_CHECKFILEASSOCONSTARTUP]);
   WriteProfileInt(ResStr(IDS_R_SETTINGS), L"DisableAds", m_map_intvar[INTVAR_PLAYAD]);
-  
+
   WriteProfileString(L"Settings", L"HotkeyScheme", m_map_strvar[STRVAR_HOTKEYSCHEME].c_str());
   WriteProfileString(L"Settings", L"SubtitleSaveMethod", m_map_strvar[STRVAR_SUBTITLE_SAVEMETHOD].c_str());     // subtitle save method
   WriteProfileString(L"Settings", L"SubtitleSaveFolder", m_map_strvar[STRVAR_SUBTITLE_SAVE_CUSTOMPATH].c_str());  // subtitle save folder
 
   WriteProfileString(L"Settings", L"LastSpiderPath", m_map_strvar[STRVAR_LASTSPIDERPATH].c_str());  // last spider path
   WriteProfileString(L"Settings", L"Ad", m_map_strvar[STRVAR_AD].c_str());
+}
 
+PlayerPreference::~PlayerPreference(void)
+{
   Uninit();
 }
 

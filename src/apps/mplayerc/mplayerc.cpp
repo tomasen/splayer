@@ -1651,13 +1651,12 @@ void CMPlayerCApp::InitInstanceThreaded(INT64 CLS64){
       }
 
       if(sqlite_local_record){
-        // sqlite_local_record->exec_sql("CREATE TABLE  IF NOT EXISTS favrec (\"favtype\" INTEGER, \"favpath\" TEXT, \"favtime\" TEXT, \"addtime\" INTEGER, \"favrecent\" INTEGER )");
-        // sqlite_local_record->exec_sql("CREATE UNIQUE INDEX  IF NOT EXISTS \"favpk\" on favrec (favtype ASC, favpath ASC, favrecent ASC)");
-        // sqlite_local_record->exec_sql("CREATE INDEX  IF NOT EXISTS \"favord\" on favrec (addtime ASC)");
+        sqlite_local_record->exec_sql(L"CREATE TABLE  IF NOT EXISTS histories_stream (\"fpath\" TEXT, \"subid\" INTEGER, \"subid2\" INTEGER, \"audioid\" INTEGER, \"videoid\" INTEGER )");
+        sqlite_local_record->exec_sql(L"CREATE UNIQUE INDEX  IF NOT EXISTS \"hispks\" on histories_stream (fpath ASC)");
+
         sqlite_local_record->exec_sql(L"CREATE TABLE  IF NOT EXISTS histories (\"fpath\" TEXT, \"subid\" INTEGER, \"subid2\" INTEGER, \"audioid\" INTEGER, \"stoptime\" INTEGER, \"modtime\" INTEGER )");
         sqlite_local_record->exec_sql(L"CREATE UNIQUE INDEX  IF NOT EXISTS \"hispk\" on histories (fpath ASC)");
         sqlite_local_record->exec_sql(L"CREATE INDEX  IF NOT EXISTS \"modtime\" on histories (modtime ASC)");
-        sqlite_local_record->exec_sql(L"PRAGMA synchronous=OFF");
 
         sqlite_local_record->exec_sql(L"CREATE TABLE  IF NOT EXISTS settingstring (\"hkey\" TEXT, \"sect\" TEXT, \"vstring\" TEXT )");
         sqlite_local_record->exec_sql(L"PRAGMA synchronous=OFF");
@@ -2322,7 +2321,6 @@ BOOL CMPlayerCApp::InitInstance()
 int CMPlayerCApp::ExitInstance()
 {
 
-
   if(sqlite_local_record){
     CString szSQL;
     szSQL.Format(L"DELETE FROM histories WHERE modtime < '%d' ", time(NULL)-3600*24*30);
@@ -2333,7 +2331,7 @@ int CMPlayerCApp::ExitInstance()
   }
   
 	m_s.UpdateData(true);
-
+  PlayerPreference::GetInstance()->Update();
 
 	if(!IsVista()){
 		BOOL bDropShadow = TRUE;

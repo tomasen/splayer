@@ -60,6 +60,9 @@ void ButtonManage::ParseConfig(BOOL bl)
     std::wstring buttoninformation = *ite;
     int pos = buttoninformation.find_first_of(L":");
     m_buttonname = buttoninformation.substr(0, pos);
+    // for user use old splayer
+    if (m_buttonname == L"PLAYTIME")
+      continue;
     buttoninformation = buttoninformation.substr(pos + 1);
     ParseStrToBtn(buttoninformation);
   }

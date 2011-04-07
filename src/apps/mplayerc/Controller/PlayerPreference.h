@@ -28,6 +28,8 @@ public:
   void SetStrArray(int id, std::vector<std::wstring> &value_in);
 
   SQLliteapp* GetSqliteSettingPtr() {return sqlite_setting;}
+  void Update();
+
 private:
   void Init();
   void Uninit();

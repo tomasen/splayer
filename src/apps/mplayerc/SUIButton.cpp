@@ -23,14 +23,12 @@ m_bsingleormultiply(0)
 	m_iAlign = iAlign;
 	m_htMsgID = htMsgID;
 
-  m_btnSize.SetSize(0, 0);
-  m_orgbtnSize.SetSize(0, 0);
-
   ResLoader rlResLoader;
   if (szBmpName != L"NOBMP")
   {  
     HBITMAP hbitmap = rlResLoader.LoadBitmap(szBmpName);
-    this->Attach(hbitmap);
+    if (hbitmap)
+      this->Attach(hbitmap);
   }
 
   m_szBmpName = szBmpName;

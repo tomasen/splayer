@@ -374,24 +374,24 @@ void CPlayerToolBar::OnPaint()
 
   std::wstring sTimeBtnString = m_adctrl.GetCurAd();
 
-  CSize size(0,0);
   if (!sTimeBtnString.empty())
-    size = dc.GetTextExtent(sTimeBtnString.c_str());
+  {
+    CSize size = dc.GetTextExtent(sTimeBtnString.c_str());
 
-  CSUIButton* cbtn = m_btnList.GetButton(L"SHARE");
-  CRect btnrc = cbtn->m_rcHitest - rc.TopLeft();
-  btnrc.left = btnrc.right + 2;
-  int width = m_btnList.GetRelativeMinLength(rc, cbtn) - cbtn->m_rcHitest.Width() - 4;
-  if (size.cx > 0)
-    btnrc.right = btnrc.left + min(width, size.cx);
-  else
-    btnrc.right = btnrc.left;
-  btnrc.top = (rc.Height() - size.cy) / 2;
-  btnrc.bottom = btnrc.top + size.cy;
+    CSUIButton* cbtn = m_btnList.GetButton(L"SHARE");
+    CRect btnrc = cbtn->m_rcHitest - rc.TopLeft();
+    btnrc.left = btnrc.right + 2;
+    int width = m_btnList.GetRelativeMinLength(rc, cbtn) - cbtn->m_rcHitest.Width() - 4;
+    if (size.cx > 0)
+      btnrc.right = btnrc.left + min(width, size.cx);
+    else
+      btnrc.right = btnrc.left;
+    btnrc.top = (rc.Height() - size.cy) / 2;
+    btnrc.bottom = btnrc.top + size.cy;
 
-  m_adctrl.SetRect(btnrc, &hdc);
-  m_adctrl.Paint(&hdc);  
-  
+    m_adctrl.SetRect(btnrc, &hdc);
+    m_adctrl.Paint(&hdc);  
+  }
   hdc.SelectObject(holdft);
 
 }
@@ -1051,27 +1051,25 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
       }
     case TIMER_ADPLAYSWITCH:
       {
+        m_adctrl.SetVisible(true);
+
         // If no ads exists, then don't show ads
         if (m_adctrl.IsAdsEmpty())
         {
           m_adctrl.SetVisible(false);
           break;
         }
-        else
-          m_adctrl.SetVisible(TRUE);
+
         KillTimer(TIMER_ADPLAYSWITCH);
         // otherwise show ads
         // 查看广告是否显示完，如果还在显示则等待下一次2秒
         if (m_adctrl.IsCurAdShownDone())
         {
+          m_adctrl.ShowNextAd();
           if ((time(NULL) - m_adctrl._mouseover_time) > 3)
-          {
-            m_adctrl.ShowNextAd();
-            SetTimer(TIMER_ADPLAYSWITCH, 2000, NULL);
-          }
+            SetTimer(TIMER_ADPLAYSWITCH, 5000, NULL);
           else
             SetTimer(TIMER_ADPLAYSWITCH, 3000, NULL);
-          break;
         }
         break;
       }

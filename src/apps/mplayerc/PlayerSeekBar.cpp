@@ -188,7 +188,7 @@ BEGIN_MESSAGE_MAP(CPlayerSeekBar, CDialogBar)
 	ON_WM_SIZE()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()
-	//ON_WM_MOUSEMOVE()
+	ON_WM_MOUSEMOVE()
 	ON_WM_ERASEBKGND()
 	//}}AFX_MSG_MAP
 //	ON_NOTIFY_EX(TTN_NEEDTEXT, 0, OnTtnNeedText)
@@ -624,12 +624,10 @@ void CPlayerSeekBar::SetTimecodeTip(){
 	GetCursorPos(&point);
 	screenPos = point;
 	ScreenToClient(&point);
-	CRect rcClient;
-	if( !rcClient.PtInRect(point)){
 
-		//return;
-	}
 	CRect r = GetChannelRect();
+  if( !r.PtInRect(point))
+    return;
 
 	if(r.left <= r.right){
 

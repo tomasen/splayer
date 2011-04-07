@@ -512,7 +512,7 @@ public:
   afx_msg void OnUpdatePlayerStatus(CCmdUI* pCmdUI);
 
   afx_msg void OnFilePostOpenmedia();
-  afx_msg void OnUpdateFilePostOpenmedia(CCmdUI* pCmdUI);
+
   afx_msg void OnFilePostClosemedia();
   afx_msg void OnUpdateFilePostClosemedia(CCmdUI* pCmdUI);
 

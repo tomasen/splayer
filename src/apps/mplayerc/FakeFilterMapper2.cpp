@@ -388,8 +388,11 @@ HRESULT WINAPI Mine_CoCreateInstance(IN REFCLSID rclsid, IN LPUNKNOWN pUnkOuter,
       Logging(L"Fake_CoCreateInstance %x %x %x %s %s", ret, pUnkOuter, ppv, 
               CStringFromGUID(rclsid), CStringFromGUID(riid));
 
-    if (FAILED(ret))
-      ret = Real_CoCreateInstance(rclsid, pUnkOuter, dwClsContext, riid, ppv);
+    try {
+      if (FAILED(ret))
+        ret = Real_CoCreateInstance(rclsid, pUnkOuter, dwClsContext, riid, ppv);
+    }
+    catch (...) {return E_FAIL;};
     
     return ret;
 }

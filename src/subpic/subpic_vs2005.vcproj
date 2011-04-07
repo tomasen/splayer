@@ -311,7 +311,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\..\..\-=SVN=-\svplayer\src\subpic\SubPicProviderImpl.cpp"
+				RelativePath=".\SubPicProviderImpl.cpp"
 				>
 			</File>
 		</Filter>
@@ -344,7 +344,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\-=SVN=-\svplayer\src\subpic\SubPicProviderImpl.h"
+				RelativePath=".\SubPicProviderImpl.h"
 				>
 			</File>
 		</Filter>

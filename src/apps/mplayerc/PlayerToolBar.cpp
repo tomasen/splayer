@@ -1052,15 +1052,17 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
     case TIMER_ADPLAYSWITCH:
       {
         m_adctrl.SetVisible(true);
-
+        CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
         // If no ads exists, then don't show ads
-        if (m_adctrl.IsAdsEmpty())
+        if (m_adctrl.IsAdsEmpty() ||
+            pFrame->m_iMediaLoadState == CMainFrame::MLS_CLOSED)
         {
           m_adctrl.SetVisible(false);
           break;
         }
 
         KillTimer(TIMER_ADPLAYSWITCH);
+
         // otherwise show ads
         // 查看广告是否显示完，如果还在显示则等待下一次2秒
         if (m_adctrl.IsCurAdShownDone())

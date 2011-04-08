@@ -179,13 +179,13 @@ HRESULT CMpegSplitterFile::Init(IAsyncReader* pAsyncReader)
     return E_FAIL;
   }
 
-  /* shouldn't need this fallback any more
+  // shouldn't need this fallback any more
   if(m_type == ts && m_streams[audio].GetCount() <= 0)
   {
     Logging(L"ts has no audio");
     return E_FAIL;
   }
-  */
+
 	Seek(0);
 
 	return S_OK;

@@ -179,12 +179,13 @@ HRESULT CMpegSplitterFile::Init(IAsyncReader* pAsyncReader)
     return E_FAIL;
   }
 
-  // shouldn't need this fallback any more
+  /* shouldn't need this fallback any more
   if(m_type == ts && m_streams[audio].GetCount() <= 0)
   {
     Logging(L"ts has no audio");
     return E_FAIL;
   }
+  */
 
 	Seek(0);
 
@@ -531,6 +532,14 @@ DWORD CMpegSplitterFile::AddStream(WORD pid, BYTE pesid, DWORD len)
 						type = subpic;
 					}
 				}
+
+        Seek(pos);
+        if(type == unknown) {
+          CMpegSplitterFile::aachdr h;
+          if(Read(h, len, &s.mt)) {
+            type = audio;
+          }
+        }
 
 				int iProgram;
 				const CHdmvClipInfo::Stream *pClipInfo;

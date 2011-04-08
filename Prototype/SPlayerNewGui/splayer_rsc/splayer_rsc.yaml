@@ -1,0 +1,41 @@
+﻿# Consult http://en.wikipedia.org/wiki/YAML for information about file format
+# A script will read in this file and replace the <<<filename.png>>> by its
+# base64 encoded real file contents, then zip the entire new yaml using zlib.
+# This file is encoded in UTF-8 with BOM.
+#
+# Note, all PNG images in the binary section are all assumed to be 32bit.
+# Although PNG decoder is capable of loading other color format, the front
+# end BitmapService class uses only AlphaBlend APIs to paint regardless of
+# color format.
+---
+string:
+  test:         This is a test string, white-spaces will be truncated
+  test_newline: |
+    In this test string, new lines
+    will be preserved as is.
+  test_folded: >
+    In this test string, new lines
+    will be folded as if there are
+    no return characters and white
+    spaces in this paragraph.
+  test@ja: >
+    Upper implementation will treat @ character as the marker for multilingual support.
+    If locale is set to "ja" retrieving /string/test will get this text. If not, or this
+    @ja marker isn't defined, it'll fall back to /string/test with no marker
+    automatically. 日本語
+  window_title: I'm SPlayer
+  window_title@ja:  俺はエスプレーヤー
+
+bin:
+  test_bkgnd.2_2_2_2_2.png: <<<test_bkgnd.2_2_2_2_2.png>>>
+  splash.png: <<<splash.png>>>
+  sample_btn.1_8_6_7_8.png: <<<sample_btn.1_8_6_7_8.png>>>
+  sample_btn2.1_14_12_15_14.png: <<<sample_btn2.1_14_12_15_14.png>>>
+  window_style.3_10_20_10_10.png: <<<window_style.3_10_20_10_10.png>>>
+  btn_restore.4.png: <<<btn_restore.4.png>>>
+  btn_min.4.png: <<<btn_min.4.png>>>
+  btn_max.4.png: <<<btn_max.4.png>>>
+  btn_close.4.png: <<<btn_close.4.png>>>
+  window_etch.1_1_1_1_1.png: <<<window_etch.1_1_1_1_1.png>>>
+  shade.1_0_12.png: <<<shade.1_0_12.png>>>
+  ts.png: <<<ts.png>>>

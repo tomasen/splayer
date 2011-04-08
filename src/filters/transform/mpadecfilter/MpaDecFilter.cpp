@@ -483,7 +483,7 @@ HRESULT CMpaDecFilter::Receive(IMediaSample* pIn)
 	len += bufflen;
 
 	SVP_LogMsg6("CMpaDecFilter::Receive2");
-
+  
 	if(subtype == MEDIASUBTYPE_AMR || subtype == MEDIASUBTYPE_SAMR)
 		hr = ProcessFfmpeg(CODEC_ID_AMR_NB);
 	else if(subtype == MEDIASUBTYPE_SAWB)
@@ -1011,12 +1011,12 @@ HRESULT CMpaDecFilter::ProcessAC3()
 {
 	SVP_LogMsg5(L"ProcessAC3 %d", m_DolbyDigitalMode);
     
-    HRESULT hr;
+  HRESULT hr;
 	BYTE* p = m_buff.GetData();
 	BYTE* base = p;
 	BYTE* end = p + m_buff.GetCount();
 
-	while(end - p >= AC3_HEADER_SIZE)
+	while(p < end && end - p >= AC3_HEADER_SIZE)
 	{
 		int		size = 0;
 		bool	fEnoughData = true;
@@ -1034,6 +1034,7 @@ HRESULT CMpaDecFilter::ProcessAC3()
 				DeliverFfmpeg(CODEC_ID_EAC3, p, end-p, size);
 				if (size > 0)
 					m_DolbyDigitalMode = DD_EAC3;
+        if (size<0) size = end-p;
 			}
 			else
 			{
@@ -1077,15 +1078,16 @@ HRESULT CMpaDecFilter::ProcessAC3()
 			continue;
 		}
 
-		// Update buffer position
+    // Update buffer position
 		if (fEnoughData)
 		{
 			ASSERT (size <= end-p);
-			if (size <= 0) break;
+			if (size <= 0 || size > end-p) break;
 			p += size;
 		}
-		memmove(base, p, end - p);
-		end = base + (end - p);
+
+    memmove(base, p, end - p);
+    end = base + (end - p);
 		p = base;
 		if(!fEnoughData)
 			break;

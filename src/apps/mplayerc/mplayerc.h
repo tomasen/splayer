@@ -281,6 +281,8 @@ public:
 	CMPlayerCApp();
 	UINT GetBottomSubOffset();
 
+  VS_FIXEDFILEINFO* m_Verinfo;
+
 
 	BOOL (__stdcall * m_pGetLayeredWindowAttributes)(__in HWND hwnd,__out_opt COLORREF* pcrKey,	__out_opt BYTE* pbAlpha,__out_opt DWORD* pdwFlags);
 	HRESULT (__stdcall * m_pDwmIsCompositionEnabled)(__out BOOL* pfEnabled);

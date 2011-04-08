@@ -631,44 +631,9 @@ public:
 	virtual BOOL OnInitDialog()
 	{
 		UpdateData();
-//#ifdef UNICODE
-	//	m_appname += _T(" (unicode build)");
-//#endif
-		//cs_version.GetWindowText(m_strRevision);
-		CString path;
-		GetModuleFileName(NULL, path.GetBuffer(MAX_PATH), MAX_PATH);
-		path.ReleaseBuffer();
-		
-			DWORD             dwHandle;
-			UINT              dwLen;
-//			UINT              uLen;
-			UINT              cbTranslate = sizeof(VS_FIXEDFILEINFO);
-//			LPVOID            lpBuffer;
-
-			dwLen  = GetFileVersionInfoSize(path, &dwHandle);
-
-			TCHAR * lpData = (TCHAR*) malloc(dwLen);
-			if(!lpData)
-				return TRUE;
-			memset((char*)lpData, 0 , dwLen);
-			VS_FIXEDFILEINFO* lpVerinfo;
-
-			/* GetFileVersionInfo() requires a char *, but the api doesn't
-			* indicate that it will modify it */
-			if(GetFileVersionInfo(path, dwHandle, dwLen, lpData) != 0)
-			{
-				VerQueryValue(lpData, 
-					TEXT("\\"),
-					(LPVOID*)&lpVerinfo,
-					&cbTranslate);
-
-				// Read the file description for each language and code page.
-
-				
-			}
-		
-			m_strRevision.Format(L"%s: %d.%d (Build %s)",ResStr( IDS_ABOUT_DIALOG_VERSION_LABEL ) , HIWORD(lpVerinfo->dwProductVersionMS),
-				LOWORD(lpVerinfo->dwProductVersionMS) ,  SVP_REV_STR );
+    if (AfxGetMyApp()->m_Verinfo)
+		  m_strRevision.Format(L"%s: %d.%d (Build %s)",ResStr( IDS_ABOUT_DIALOG_VERSION_LABEL ) , HIWORD(AfxGetMyApp()->m_Verinfo->dwProductVersionMS),
+			  LOWORD(AfxGetMyApp()->m_Verinfo->dwProductVersionMS) ,  SVP_REV_STR );
 		UpdateData(FALSE);
 		return TRUE;
 	}
@@ -740,7 +705,8 @@ CMPlayerCApp::CMPlayerCApp()
 , m_fTearingTest(0)
 , m_fResetStats(0)
 , sqlite_setting(NULL)
-,sqlite_local_record(NULL)
+, sqlite_local_record(NULL)
+, m_Verinfo(NULL)
 {
 	m_pMainWnd = NULL;
 	_invalid_parameter_handler oldHandler, newHandler;
@@ -1612,7 +1578,33 @@ void CMPlayerCApp::InitInstanceThreaded(INT64 CLS64){
 
     SVP_LogMsg5(L"Settings::InitInstanceThreaded");
 	//SVP_LogMsg5(L"%x %d xx ",CLS64 ,(CLS64&CLSW_STARTFROMDMP) );
+  {
+    CString path;
+    GetModuleFileName(NULL, path.GetBuffer(MAX_PATH), MAX_PATH);
+    path.ReleaseBuffer();
 
+    DWORD             dwHandle;
+    UINT              dwLen;
+    //			UINT              uLen;
+    UINT              cbTranslate = sizeof(VS_FIXEDFILEINFO);
+    //			LPVOID            lpBuffer;
+
+    dwLen  = GetFileVersionInfoSize(path, &dwHandle);
+
+    TCHAR * lpData = (TCHAR*) malloc(dwLen);
+    if(lpData)
+    {
+      memset((char*)lpData, 0 , dwLen);
+      
+      /* GetFileVersionInfo() requires a char *, but the api doesn't
+      * indicate that it will modify it */
+      if(GetFileVersionInfo(path, dwHandle, dwLen, lpData) != 0)
+      {
+        VerQueryValue(lpData, TEXT("\\"), (LPVOID*)&m_Verinfo, &cbTranslate);
+      }
+      free(lpData);
+    }
+  }
 
 	//avoid crash by lame acm
 	RegDelnode(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\MediaResources\\msacm\\msacm.lameacm");

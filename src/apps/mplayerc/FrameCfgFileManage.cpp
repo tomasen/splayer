@@ -59,7 +59,7 @@ void FrameCfgFileManage::ParseCfgString(std::wstring cfgstr)
     m_tframethickwidth = ParseStrToInt(cfgstr);
   if (substr == L"RFRAMETHICKHEIGHT")
     m_rframethickheight = ParseStrToInt(cfgstr);
-  if (substr == L"BFRAMETHICKHEIGHT")
+  if (substr == L"BFRAMETHICKWIDHT")
     m_bframethickwidth = ParseStrToInt(cfgstr);
   if (substr == L"CAPTIONHEIGHT")
     m_captionheight = ParseStrToInt(cfgstr);

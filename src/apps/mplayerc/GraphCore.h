@@ -55,18 +55,27 @@ public:
   int vinput, vchannel, ainput;
 };
 
-
 class CGraphCore
 {
 public:
   CGraphCore(void);
   ~CGraphCore(void);
 
+  /************************************************************************/
+  // MainFrm
+
+  CString m_fnCurPlayingFile;
+  time_t  m_tPlayStartTime;
+
+  virtual CString GetAnEasyToUnderstoodSubtitleName(CString szName) = 0;
+  virtual void SendStatusMessage(CString msg, int nTimeOut, int iAlign = 0) = 0;
+  virtual CString getCurPlayingSubfile(int * iSubDelayMS = NULL,int subid = 0) = 0;
+
+  /************************************************************************/
 
   enum {MLS_CLOSED, MLS_LOADING, MLS_LOADED, MLS_CLOSING};
 
   // we need open / play pause / seek / close / vol control / sub control / audio and video switching where
-
 
   // should be private
   void CleanGraph();
@@ -76,6 +85,22 @@ public:
 
   // Subtitles
   bool LoadSubtitle(CString fn, int sub_delay_ms = 0, BOOL bIsForPlayList = false);
+  void UpdateSubtitle(bool fApplyDefStyle = true);
+  void SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle = true, bool bShowOSD = true);
+  void SetSubtitleDelay(int delay_ms);
+
+  void UpdateSubtitle2(bool fApplyDefStyle = true);
+  void SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle = true, bool bShowOSD = true);
+  void ReplaceSubtitle(ISubStream* pSubStreamOld, ISubStream* pSubStreamNew, int secondSub = 0);
+  void InvalidateSubtitle(DWORD_PTR nSubtitleId = -1, REFERENCE_TIME rtInvalidate = -1);
+  void ReloadSubtitle();
+
+  void SetSubtitleDelay2(int delay_ms);
+
+  int m_iSubtitleSel;
+  int m_iSubtitleSel2;
+  DWORD_PTR m_nSubtitleId;
+  DWORD_PTR m_nSubtitleId2;
 
   bool m_fCustomGraph;
   bool m_fRealMediaGraph, m_fShockwaveGraph, m_fQuicktimeGraph;

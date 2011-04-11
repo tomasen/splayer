@@ -89,23 +89,6 @@ public:
   double m_ZoomX, m_ZoomY, m_PosX, m_PosY;
   int m_AngleX, m_AngleY, m_AngleZ;
 
-  // Subtitles
-  void UpdateSubtitle(bool fApplyDefStyle = true);
-  void UpdateSubtitle2(bool fApplyDefStyle = true);
-  void SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle = true, bool bShowOSD = true);
-  void SetSubtitle2(ISubStream* pSubStream, bool fApplyDefStyle = true, bool bShowOSD = true);
-  void ReplaceSubtitle(ISubStream* pSubStreamOld, ISubStream* pSubStreamNew, int secondSub = 0);
-  void InvalidateSubtitle(DWORD_PTR nSubtitleId = -1, REFERENCE_TIME rtInvalidate = -1);
-  void ReloadSubtitle();
-
-  void		SetSubtitleDelay(int delay_ms);
-  void		SetSubtitleDelay2(int delay_ms);
-
-  int m_iSubtitleSel; // if(m_iSubtitleSel&(1<<31)): disabled
-  int m_iSubtitleSel2;
-  DWORD_PTR m_nSubtitleId;
-  DWORD_PTR m_nSubtitleId2;
-
   // Operations
   bool OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD);
   void CloseMediaPrivate();
@@ -181,10 +164,8 @@ public:
   bool m_fLiveWM;
   bool m_fUpdateInfoBar;
 
-  time_t  m_tPlayStartTime;
   time_t  m_tPlayPauseTime;
   time_t  m_tLastLogTick;
-  CString m_fnCurPlayingFile;
   CString m_fnsAlreadyUploadedSubfile;
 
   std::wstring m_playingmsg, m_closingmsg;
@@ -350,6 +331,9 @@ public:
   HBITMAP m_ttoolbarbg;
   int     m_preskinid;
   std::wstring m_preskinname;
+
+  BOOL LoadRes(int id, std::wstring folder);
+  void SearchSkinFolder();
 private:
   CString m_szTitle;
   CString getCurPlayingSubfile(int * iSubDelayMS = NULL,int subid = 0 );
@@ -358,6 +342,7 @@ private:
   int m_iRedrawAfterCloseCounter;
   CSize m_original_size_of_current_video;
   CSize m_last_size_of_current_kind_of_video;
+  int m_movieShared;
 public:
   void SVPSubDownloadByVPath(CString szVPath, CAtlList<CString>* szaStatMsgs = NULL);
   void SVP_UploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString szSubPath, int iDelayMS = 0, CAtlList<CString>* szaStatMsgs = NULL, CStringArray* szaPostTerms = NULL);
@@ -797,9 +782,6 @@ public:
   afx_msg void OnUpdateSkinSelection(CCmdUI* pCmdUI);
 
   afx_msg void OnSkinMoreSelection();
-  BOOL LoadRes(int id, std::wstring folder);
-  void SearchSkinFolder();
   afx_msg void OnOpenShooterMedia();
-private:
-  int          m_movieShared;
+
 };

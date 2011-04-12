@@ -5052,7 +5052,7 @@ void CMainFrame::OnFilePostOpenmedia()
   m_wndToolBar.HideMovieShareBtn(TRUE);
   UserShareController::GetInstance()->HideCommentPlane();
   UserShareController::GetInstance()->CloseShooterMedia();
-  if(IsSomethingLoaded() && !m_fAudioOnly && (UINT)((INT64)rtDur/10000000) > 90)
+  if(IsSomethingLoaded() && !m_fAudioOnly)
   {
     m_movieShared = false;
     m_wndToolBar.HideMovieShareBtn(FALSE);

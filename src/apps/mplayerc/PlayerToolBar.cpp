@@ -195,7 +195,7 @@ void CPlayerToolBar::ArrangeControls()
   GetWindowRect(&rc);
   long iWidth = rc.Width();
   CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
-  double skinsRate = (double)pFrame->m_lMinFrameWidth / 310;
+  double skinsRate = 1.0;
   BOOL isaudio = (pFrame && pFrame->IsSomethingLoaded() && pFrame->m_fAudioOnly)?TRUE:FALSE;
 
   m_btnList.SetCurrentHideState(rc.Width(),skinsRate,m_nLogDPIY);
@@ -1244,9 +1244,9 @@ void CPlayerToolBar::DefaultButtonManage()
   btnSubFontMinus->addAlignRelButton(ALIGN_TOP, btnSubFontPlus ,  CRect(3 , 0 , 3, 0) );
   m_btnList.AddTail( btnSubFontMinus );*/
 
-  CONFIGBUTTON(SUBSWITCH,BTN_SUB.BMP,ALIGN_TOPLEFT,CRect(-23,-50,3,3),0,ID_SUBTOOLBARBUTTON,FALSE,560,ALIGN_RIGHT,FASTBACKWORD,CRect(20,10,22,10))
+  CONFIGBUTTON(SUBSWITCH,BTN_SUB.BMP,ALIGN_TOPLEFT,CRect(-33,-50,3,3),0,ID_SUBTOOLBARBUTTON,FALSE,560,ALIGN_RIGHT,FASTBACKWORD,CRect(20,10,42,10))
   CONFIGADDALIGN(SUBSWITCH,ALIGN_LEFT,LOGO,CRect(15,10,10,10))
-  CONFIGADDALIGN(SUBSWITCH,ALIGN_RIGHT,PREV,CRect(20,10,22,10))
+  CONFIGADDALIGN(SUBSWITCH,ALIGN_RIGHT,PREV,CRect(20,10,42,10))
 
   CONFIGBUTTON(SUBREDUCE,BTN_SUB_DELAY_REDUCE.BMP,ALIGN_TOPLEFT,CRect(-42,-50,3,3),0,ID_SUBDELAYDEC,FALSE,560,ALIGN_RIGHT,SUBSWITCH,CRect(2,3,2,3))
   

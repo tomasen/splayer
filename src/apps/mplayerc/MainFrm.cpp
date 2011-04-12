@@ -15514,7 +15514,7 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
     }
     CRect rc;
     GetWindowRect(&rc);
-    double skinsRate = m_lMinFrameWidth / 310;
+    double skinsRate = 1.0;
     m_btnList.SetCurrentHideState(rc.Width(),skinsRate,m_nLogDPIY);
     m_btnList.OnSize( rc);
   }

@@ -264,7 +264,7 @@ void CPlayerToolTopBar::UpdateButtonStat(){
   GetWindowRect(&rc);
   long iWidth = rc.Width();
   CMainFrame* pfrm = ((CMainFrame*)AfxGetMainWnd());
-  double skinsRate = (double)pfrm->m_lMinFrameWidth / 310;
+  double skinsRate = 1.0; 
   m_btnList.SetCurrentHideState(rc.Width(),skinsRate,m_nLogDPIY);
 
   m_btnList.SetHideStat( ID_ONTOP_NEVER , !ontop );

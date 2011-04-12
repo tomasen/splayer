@@ -280,17 +280,18 @@ void CPlayerSeekBar::OnPaint()
   TimeBmpManage tbmn;
   if (pFrame && pFrame->IsSomethingLoaded())
   {
-    CRect rc;
-    GetClientRect(&rc);
     dccur.CreateCompatibleDC(&dc);
     dcrmn.CreateCompatibleDC(&dc);
-    cbmpcur.CreateCompatibleBitmap(&dc, rc.Width(), rc.Height());
-    cbmprmn.CreateCompatibleBitmap(&dc, rc.Width(), rc.Height());
+
+    cbmpcur.Attach(CreateDigitalDIB());
     oldbmpcur = (HBITMAP)dccur.SelectObject(cbmpcur);
+    cbmprmn.Attach(CreateDigitalDIB());
     oldbmprmn = (HBITMAP)dcrmn.SelectObject(cbmprmn);
+
     TimeBmpManage tbmn;
     tbmn.SetPlaytime(m_posreal, m_stop);
     m_curbm = tbmn.CreateTimeBmp(dccur, FALSE);
+
     tbmn.SetPlaytime(m_stop - m_posreal, m_stop);
     m_rmnbm = tbmn.CreateTimeBmp(dcrmn, TRUE);
   }
@@ -720,4 +721,21 @@ BOOL CPlayerSeekBar::PreTranslateMessage(MSG* pMsg)
 		}
 	}
 	return CDialogBar::PreTranslateMessage(pMsg);
+}
+
+HBITMAP CPlayerSeekBar::CreateDigitalDIB()
+{
+  CRect rc;
+  GetClientRect(&rc);
+  BITMAPINFOHEADER bmih;
+  HBITMAP hbmpnew;
+  memset(&bmih, 0, sizeof(bmih));
+  bmih.biSize = sizeof(BITMAPINFOHEADER);
+  bmih.biWidth = rc.Width();
+  bmih.biHeight = rc.Height();
+  bmih.biPlanes = 1;
+  bmih.biBitCount = 32;
+  bmih.biCompression = BI_RGB;
+  hbmpnew = CreateDIBSection(NULL, (BITMAPINFO*)&bmih, DIB_RGB_COLORS, 0, 0, 0);
+  return hbmpnew;
 }

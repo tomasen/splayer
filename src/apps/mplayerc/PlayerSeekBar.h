@@ -45,6 +45,8 @@ private:
 	CRect GetThumbRect();
 	CRect GetInnerThumbRect();
 	void SetTimecodeTip();
+
+  HBITMAP CreateDigitalDIB();
 public:
 	CPlayerSeekBar();
 	virtual ~CPlayerSeekBar();

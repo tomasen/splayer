@@ -41,10 +41,17 @@ BITMAP TimeBmpManage::CreateTimeBmp(CDC& dc, BOOL bRemain)
     i = 1;
   for (; i != 3; ++i)
   {
-    CDC* dcmem = CreateDigitalBmp(time[i], dc, bm);
+    HBITMAP oldbmp;
+    std::wstring firststr;
+    std::wstring secondstr;
+    ParseDigital(time[i], firststr, secondstr);
+    CDC* dcmem = CreateBmp(dc, bm, firststr, oldbmp);
     dc.AlphaBlend(paintwidth, 0, bm.bmWidth, bm.bmHeight, dcmem, 0, 0, bm.bmWidth, bm.bmHeight, bf);
-    dcmem->DeleteDC();
-    delete dcmem;
+    DeleteDcMem(dcmem, oldbmp);
+    paintwidth += bm.bmWidth;
+    dcmem = CreateBmp(dc, bm, secondstr, oldbmp);
+    dc.AlphaBlend(paintwidth, 0, bm.bmWidth, bm.bmHeight, dcmem, 0, 0, bm.bmWidth, bm.bmHeight, bf);
+    DeleteDcMem(dcmem, oldbmp);
     paintwidth += bm.bmWidth;
 
     if (i != 2)
@@ -93,43 +100,21 @@ void TimeBmpManage::DeleteDcMem(CDC* dcmem, HBITMAP oldbmp)
   delete dcmem;
 }
 
-CDC* TimeBmpManage::CreateDigitalBmp(BYTE time, CDC& dc, BITMAP& bm)
+void TimeBmpManage::ParseDigital(BYTE time, std::wstring& firststr, std::wstring& secondstr)
 {
-  BLENDFUNCTION bf = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
-  CDC* dcmem = new CDC;
-  dcmem->CreateCompatibleDC(&dc);
-
   int decimal = time / 10;
   wchar_t s[10];
   _itow(decimal, s, 10);
   std::wstring bmpname(L"playtime_");
   bmpname += s;
   bmpname += L".bmp";
+  firststr = bmpname;
 
-  BITMAP bm1;
-  HBITMAP oldbmp1;
-  CDC* dctomem1 = CreateBmp(dc, bm1, bmpname, oldbmp1);
-  
   bmpname = bmpname.substr(0, bmpname.find(s));
   int single = time % 10;
   _itow(single, s, 10);
   bmpname += s;
   bmpname += L".bmp";
-
-  BITMAP bm2;
-  HBITMAP oldbmp2;
-  CDC* dctomem2 = CreateBmp(*dcmem, bm2, bmpname, oldbmp2);
-  
-  CBitmap cbmp;
-  cbmp.CreateCompatibleBitmap(&dc, bm1.bmWidth + bm2.bmWidth, max(bm1.bmHeight, bm2.bmHeight));
-  dcmem->SelectObject(cbmp);
-  dcmem->AlphaBlend(0, 0, bm1.bmWidth, bm1.bmHeight, dctomem1, 0, 0, bm1.bmWidth, bm1.bmHeight, bf);
-  dcmem->AlphaBlend(bm1.bmWidth, 0, bm2.bmWidth, bm2.bmHeight, dctomem2, 0, 0, bm2.bmWidth, bm2.bmHeight, bf);
-  DeleteDcMem(dctomem1, oldbmp1);
-  DeleteDcMem(dctomem2, oldbmp2);
-
-  bm.bmWidth = bm1.bmWidth + bm2.bmWidth;
-  bm.bmHeight = max(bm1.bmHeight, bm2.bmHeight);
-
-  return dcmem;
+  secondstr = bmpname;
 }
+

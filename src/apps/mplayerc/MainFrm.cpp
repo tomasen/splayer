@@ -2876,14 +2876,15 @@ void CMainFrame::OnTimer(UINT nIDEvent)
           str += ch;
         }
         //m_wndStatusBar.SetStatusTimer(str);
-        m_wndToolBar.SetStatusTimer(str);
+        //m_wndToolBar.SetStatusTimer(str);
+        m_szTitle = str;
       }
       else
       {
         double pRate;
         if (E_NOTIMPL == pMS->GetRate(&pRate))
           pRate = 0;
-        m_wndToolBar.SetStatusTimer(pos, stop, 0, &tf, pRate);
+        //m_wndToolBar.SetStatusTimer(pos, stop, 0, &tf, pRate);
         //m_wndToolBar.SetStatusTimer(str);
       }
 
@@ -5052,7 +5053,7 @@ void CMainFrame::OnFilePostOpenmedia()
   m_wndToolBar.HideMovieShareBtn(TRUE);
   UserShareController::GetInstance()->HideCommentPlane();
   UserShareController::GetInstance()->CloseShooterMedia();
-  if(IsSomethingLoaded() && !m_fAudioOnly && (UINT)((INT64)rtDur/10000000) > 90)
+  if(IsSomethingLoaded() && !m_fAudioOnly)
   {
     m_movieShared = false;
     m_wndToolBar.HideMovieShareBtn(FALSE);
@@ -7710,7 +7711,7 @@ void CMainFrame::OnPlayStop()
       m_wndSeekBar.GetRange(start, stop);
       GUID tf;
       pMS->GetTimeFormat(&tf);
-      m_wndToolBar.SetStatusTimer(m_wndSeekBar.GetPosReal(), stop, 0, &tf);
+      //m_wndToolBar.SetStatusTimer(m_wndSeekBar.GetPosReal(), stop, 0, &tf);
 
       SetAlwaysOnTop(AfxGetAppSettings().iOnTop);
     }
@@ -15514,7 +15515,7 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
     }
     CRect rc;
     GetWindowRect(&rc);
-    double skinsRate = m_lMinFrameWidth / 310;
+    double skinsRate = 1.0;
     m_btnList.SetCurrentHideState(rc.Width(),skinsRate,m_nLogDPIY);
     m_btnList.OnSize( rc);
   }

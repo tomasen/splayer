@@ -60,15 +60,16 @@ public:
     TIMER_MOVIESHARE
   };
 
-  // Graph              Functions and Variables
-  friend class CGraphThread;
+  CMainFrame* GetMainFrame();
+  CPlayerCaptureBar* GetCaptureBar();
+  CPlayerPlaylistBar* GetPlaylistBar();
+  CPlayerSeekBar* GetSeekBar();
+  CPlayerToolBar* GetToolBar();
+  CChildView* GetVideoView();
+
+  // Graph Functions and Variables
   friend class CGraphCore;
-  CGraphThread* m_pGraphThread;
 
-  friend class CTextPassThruFilter;
-  void AddTextPassThruFilter();
-
-  int m_iPlaybackMode;
   bool  m_bMustUseExternalTimer;
 
   bool IsSomethingLoaded() {return(m_iMediaLoadState != MLS_CLOSED);}
@@ -76,31 +77,18 @@ public:
   bool IsSubLoaded();
 
   bool IsInteractiveVideo() {return(AfxGetAppSettings().fIntRealMedia && m_fRealMediaGraph || m_fShockwaveGraph);}
-  bool m_fAudioOnly;
 
   CString GetCurPlayingFileName();
-  int m_iMediaLoadState;
+
   dispmode m_dmBeforeFullscreen;
 
-  DVD_DOMAIN m_iDVDDomain;
+
   DWORD m_iDVDTitle;
-  int m_iSpeedLevel;
+  bool m_fBuffering;
 
   double m_ZoomX, m_ZoomY, m_PosX, m_PosY;
   int m_AngleX, m_AngleY, m_AngleZ;
 
-  // Operations
-  bool OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD);
-  void CloseMediaPrivate();
-
-  void OpenCreateGraphObject(OpenMediaData* pOMD);
-  HRESULT OpenMMSUrlStream(CString szFn);
-  void OpenFile(OpenFileData* pOFD);
-  void OpenDVD(OpenDVDData* pODD);
-  void OpenCapture(OpenDeviceData* pODD);
-  void OpenCustomizeGraph();
-  void OpenSetupVideo();
-  void OpenSetupAudio();
 
   std::map<int, std::wstring> m_clipinfo;
   void SetClipInfo(int id, std::wstring &value_in)
@@ -115,12 +103,6 @@ public:
     return L"";
   };
 
-  CAtlArray<REFERENCE_TIME> m_kfs;
-  bool m_fOpeningAborted;
-
-  void OpenMedia(CAutoPtr<OpenMediaData> pOMD);
-  void CloseMedia();
-
   CSize GetVideoSize();
   void RepaintVideo();
 
@@ -132,9 +114,6 @@ public:
   CString m_DXVAMode;
   BOOL m_bEVRInUse;
 
-  // shaders
-  CAtlList<CString> m_shaderlabels;
-  void SetShaders( BOOL silent = false);
   void UpdateShaders(CString label);
 
   // capturing
@@ -150,27 +129,16 @@ public:
   //  Playback Control  Functions and Variables
   void SetBalance(int balance);
 
-  // chapters (file mode)
-  void SetupChapters();
-
   int m_nLoops;
   int m_nLoopSetting;
 
   int m_fFrameSteppingActive;
   int m_VolumeBeforeFrameStepping;
 
-  bool m_fEndOfStream;
-  bool m_fBuffering;
-  bool m_fLiveWM;
-  bool m_fUpdateInfoBar;
 
   time_t  m_tPlayPauseTime;
   time_t  m_tLastLogTick;
   CString m_fnsAlreadyUploadedSubfile;
-
-  std::wstring m_playingmsg, m_closingmsg;
-  CString m_lastUrl;
-  REFERENCE_TIME m_rtDurationOverride;
 
   //  Snapshot
   bool GetDIB(BYTE** ppData, long& size, bool fSilent = false);
@@ -314,7 +282,6 @@ public:
 
   // Unclassified       Functions and Variables
   DWORD m_dwRegister;
-  CStringW m_VidDispName, m_AudDispName;
   CStringArray m_AudioDevice;
   HMONITOR m_HLastMonitor;
 
@@ -339,7 +306,6 @@ private:
   CString getCurPlayingSubfile(int * iSubDelayMS = NULL,int subid = 0 );
   CPoint m_pLastClickPoint;
   CPoint m_pDragFuncStartPoint;
-  int m_iRedrawAfterCloseCounter;
   CSize m_original_size_of_current_video;
   CSize m_last_size_of_current_kind_of_video;
   int m_movieShared;
@@ -382,11 +348,10 @@ public:
   bool DoAfterPlaybackEvent();
 
 public:
-  BOOL m_is_resume_from_last_exit_point;
   UINT m_lastSeekAction;
   UINT m_l_been_playing_sec;
   void OnFavoritesAddReal( BOOL bRecent = FALSE , BOOL bForceDel = FALSE );
-  UINT m_iAudioChannelMaping;
+
   bool m_bAllowVolumeSuggestForThisPlaylist;
 
   //Lyric Thing

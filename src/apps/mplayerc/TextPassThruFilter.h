@@ -24,6 +24,7 @@
 #pragma once
 
 class CTextPassThruInputPin;
+class CGraphCore;
 
 class __declspec(uuid("E2BA9B7B-B65D-4804-ACB2-89C3E55511DB"))
 CTextPassThruFilter : public CBaseFilter, public CCritSec
@@ -34,10 +35,10 @@ CTextPassThruFilter : public CBaseFilter, public CCritSec
   CTextPassThruInputPin* m_pInput;
   CTextPassThruOutputPin* m_pOutput;
 
-  CMainFrame* m_pMainFrame;
+  CGraphCore* m_graphcore;
 
 public:
-  CTextPassThruFilter(CMainFrame* pMainFrame);
+  CTextPassThruFilter(CGraphCore* gc);
   virtual ~CTextPassThruFilter();
 
   DECLARE_IUNKNOWN;

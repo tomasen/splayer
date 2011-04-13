@@ -103,13 +103,16 @@ public:
   // we need open / play pause / seek / close / vol control / sub control / audio and video switching where
 
   CGraphThread* m_pGraphThread;
-  void AddTextPassThruFilter();
 
-  // should be private
   void CleanGraph();
-
+  CSize GetVideoSize();
+  OAFilterState GetMediaState();
+  void AddTextPassThruFilter();
   BOOL SetVMR9ColorControl(float Brightness, float Contrast, float Hue,
                            float Saturation, BOOL silent = false);
+
+  //  Playback Control  Functions and Variables
+  void SetBalance(int balance);
 
   // Subtitles
   bool LoadSubtitle(CString fn, int sub_delay_ms = 0, BOOL bIsForPlayList = false);
@@ -136,6 +139,7 @@ public:
   // shaders
   CAtlList<CString> m_shaderlabels;
   void SetShaders( BOOL silent = false);
+  void UpdateShaders(CString label);
 
   // Operations
   void OpenMedia(CAutoPtr<OpenMediaData> pOMD);
@@ -164,6 +168,21 @@ public:
   CString m_lastUrl;
   REFERENCE_TIME m_rtDurationOverride;
   BOOL m_is_resume_from_last_exit_point;
+
+  // Capturing
+  bool m_fCapturing;
+  // pBF: 0 buff, 1 enc, 2 mux, pmt is for 1 enc
+  HRESULT BuildCapture(IPin* pPin, IBaseFilter* pBF[3],
+                  const GUID& majortype, AM_MEDIA_TYPE* pmt); 
+  bool BuildToCapturePreviewPin(IBaseFilter* pVidCap, IPin** pVidCapPin, IPin** pVidPrevPin, 
+    IBaseFilter* pAudCap, IPin** pAudCapPin, IPin** pAudPrevPin);
+  bool BuildGraphVideoAudio(int fVPreview, bool fVCapture, int fAPreview, bool fACapture);
+
+  //  Snapshot
+  bool GetDIB(BYTE** ppData, long& size, bool fSilent = false);
+  void SaveDIB(LPCTSTR fn, BYTE* pData, long size);
+  void SaveThumbnails(LPCTSTR fn);
+  int m_VolumeBeforeFrameStepping;
 
   bool m_fCustomGraph;
   bool m_fRealMediaGraph, m_fShockwaveGraph, m_fQuicktimeGraph;

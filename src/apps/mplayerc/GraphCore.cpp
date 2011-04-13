@@ -5,6 +5,7 @@
 #include "MainFrm.h"
 #include "Controller/HashController.h"
 
+#include "jpeg.h"
 #include "FGManager.h"
 #include "KeyProvider.h"
 #include "MediaTypesDlg.h"
@@ -24,6 +25,7 @@ CGraphCore::CGraphCore(void):
   m_fQuicktimeGraph(false),
   m_iSubtitleSel(-1),
   m_fAudioOnly(0),
+  m_fCapturing(false),
   m_iAudioChannelMaping(0),
   m_fOpeningAborted(false),
   m_iMediaLoadState(MLS_CLOSED),
@@ -2095,4 +2097,905 @@ void CGraphCore::CloseMedia()
 
   m_iRedrawAfterCloseCounter = 0;
   GetMainFrame()->SetTimer(CMainFrame::TIMER_REDRAW_WINDOW,120,NULL);
+}
+
+CSize CGraphCore::GetVideoSize()
+{
+  bool fKeepAspectRatio = AfxGetAppSettings().fKeepAspectRatio;
+
+  CSize ret(0,0);
+  if(m_iMediaLoadState != MLS_LOADED || m_fAudioOnly)
+    return ret;
+
+  CSize wh(0, 0), arxy(0, 0);
+
+  if (m_pMFVDC)
+  {
+    m_pMFVDC->GetNativeVideoSize(&wh, &arxy);	// TODO : check AR !!
+  }
+  else if(m_pCAPR)
+  {
+    wh = m_pCAPR->GetVideoSize(false);
+    arxy = m_pCAPR->GetVideoSize(fKeepAspectRatio);
+
+
+  }
+  else
+  {
+    pBV->GetVideoSize(&wh.cx, &wh.cy);
+
+    long arx = 0, ary = 0;
+    CComQIPtr<IBasicVideo2> pBV2 = pBV;
+    if(pBV2 && SUCCEEDED(pBV2->GetPreferredAspectRatio(&arx, &ary)) && arx > 0 && ary > 0)
+      arxy.SetSize(arx, ary);
+  }
+
+  //CString szLog;
+  //szLog.Format(_T("vSize %d %d %d %d") , wh.cx, wh.cy , arxy.cx , arxy.cy);
+  //SVP_LogMsg(szLog);
+
+  if(wh.cx <= 0 || wh.cy <= 0)
+    return ret;
+
+  // with the overlay mixer IBasicVideo2 won't tell the new AR when changed dynamically
+  DVD_VideoAttributes VATR;
+  if(m_iPlaybackMode == PM_DVD && SUCCEEDED(pDVDI->GetCurrentVideoAttributes(&VATR)))
+    arxy.SetSize(VATR.ulAspectX, VATR.ulAspectY);
+
+  CSize& ar = AfxGetAppSettings().AspectRatio;
+  if(ar.cx && ar.cy) arxy = ar;
+
+  ret = (!fKeepAspectRatio || arxy.cx <= 0 || arxy.cy <= 0)
+    ? wh
+    : CSize(MulDiv(wh.cy, arxy.cx, arxy.cy), wh.cy);
+
+    return ret;
+}
+
+void CGraphCore::UpdateShaders(CString label)
+{
+  if(!m_pCAP) return;
+
+  if(m_shaderlabels.GetCount() <= 1)
+    m_shaderlabels.RemoveAll();
+
+  if(m_shaderlabels.IsEmpty() && !label.IsEmpty())
+    m_shaderlabels.AddTail(label);
+
+  bool fUpdate = m_shaderlabels.IsEmpty();
+
+  POSITION pos = m_shaderlabels.GetHeadPosition();
+  while(pos)
+  {
+    if(label == m_shaderlabels.GetNext(pos))
+    {
+      fUpdate = true;
+      break;
+    }
+  }
+
+  if(fUpdate)
+    SetShaders();
+
+}
+
+HRESULT CGraphCore::BuildCapture(IPin* pPin, IBaseFilter* pBF[3],
+                                 const GUID& majortype, AM_MEDIA_TYPE* pmt)
+{
+  IBaseFilter* pBuff = pBF[0];
+  IBaseFilter* pEnc = pBF[1];
+  IBaseFilter* pMux = pBF[2];
+
+  if(!pPin || !pMux) return E_FAIL;
+
+  CString err;
+
+  HRESULT hr = S_OK;
+
+  CFilterInfo fi;
+  if(FAILED(pMux->QueryFilterInfo(&fi)) || !fi.pGraph)
+    pGB->AddFilter(pMux, L"Multiplexer");
+
+  CStringW prefix, prefixl;
+  if(majortype == MEDIATYPE_Video) prefix = L"Video ";
+  else if(majortype == MEDIATYPE_Audio) prefix = L"Audio ";
+  prefixl = prefix;
+  prefixl.MakeLower();
+
+  if(pBuff)
+  {
+    hr = pGB->AddFilter(pBuff, prefix + L"Buffer");
+    if(FAILED(hr))
+    {
+      err = _T("Can't add ") + CString(prefixl) + _T("buffer filter");
+      AfxMessageBox(err);
+      return hr;
+    }
+
+    hr = pGB->ConnectFilter(pPin, pBuff);
+    if(FAILED(hr))
+    {
+      err = _T("Error connecting the ") + CString(prefixl) + _T("buffer filter");
+      AfxMessageBox(err);
+      return(hr);
+    }
+
+    pPin = GetFirstPin(pBuff, PINDIR_OUTPUT);
+  }
+
+  if(pEnc)
+  {
+    hr = pGB->AddFilter(pEnc, prefix + L"Encoder");
+    if(FAILED(hr))
+    {
+      err = _T("Can't add ") + CString(prefixl) + _T("encoder filter");
+      AfxMessageBox(err);
+      return hr;
+    }
+
+    hr = pGB->ConnectFilter(pPin, pEnc);
+    if(FAILED(hr))
+    {
+      err = _T("Error connecting the ") + CString(prefixl) + _T("encoder filter");
+      AfxMessageBox(err);
+      return(hr);
+    }
+
+    pPin = GetFirstPin(pEnc, PINDIR_OUTPUT);
+
+    if(CComQIPtr<IAMStreamConfig> pAMSC = pPin)
+    {
+      if(pmt->majortype == majortype)
+      {
+        hr = pAMSC->SetFormat(pmt);
+        if(FAILED(hr))
+        {
+          err = _T("Can't set compression format on the ") + CString(prefixl) + _T("encoder filter");
+          AfxMessageBox(err);
+          return(hr);
+        }
+      }
+    }
+
+  }
+
+  //	if(pMux)
+  {
+    hr = pGB->ConnectFilter(pPin, pMux);
+    if(FAILED(hr))
+    {
+      err = _T("Error connecting ") + CString(prefixl) + _T(" to the muliplexer filter");
+      AfxMessageBox(err);
+      return(hr);
+    }
+  }
+
+  CleanGraph();
+
+  return S_OK;
+}
+
+bool CGraphCore::BuildToCapturePreviewPin(
+  IBaseFilter* pVidCap, IPin** ppVidCapPin, IPin** ppVidPrevPin, 
+  IBaseFilter* pAudCap, IPin** ppAudCapPin, IPin** ppAudPrevPin)
+{
+  HRESULT hr;
+
+  *ppVidCapPin = *ppVidPrevPin = NULL; 
+  *ppAudCapPin = *ppAudPrevPin = NULL;
+
+  CComPtr<IPin> pDVAudPin;
+
+  if(pVidCap)
+  {
+    CComPtr<IPin> pPin;
+    if(!pAudCap // only look for interleaved stream when we don't use any other audio capture source
+      && SUCCEEDED(pCGB->FindPin(pVidCap, PINDIR_OUTPUT, &PIN_CATEGORY_CAPTURE, &MEDIATYPE_Interleaved, TRUE, 0, &pPin)))
+    {
+      CComPtr<IBaseFilter> pDVSplitter;
+      hr = pDVSplitter.CoCreateInstance(CLSID_DVSplitter);
+      hr = pGB->AddFilter(pDVSplitter, L"DV Splitter");
+
+      hr = pCGB->RenderStream(NULL, &MEDIATYPE_Interleaved, pPin, NULL, pDVSplitter);
+
+      pPin = NULL;
+      hr = pCGB->FindPin(pDVSplitter, PINDIR_OUTPUT, NULL, &MEDIATYPE_Video, TRUE, 0, &pPin);
+      hr = pCGB->FindPin(pDVSplitter, PINDIR_OUTPUT, NULL, &MEDIATYPE_Audio, TRUE, 0, &pDVAudPin);
+
+      CComPtr<IBaseFilter> pDVDec;
+      hr = pDVDec.CoCreateInstance(CLSID_DVVideoCodec);
+      hr = pGB->AddFilter(pDVDec, L"DV Video Decoder");
+
+      hr = pGB->ConnectFilter(pPin, pDVDec);
+
+      pPin = NULL;
+      hr = pCGB->FindPin(pDVDec, PINDIR_OUTPUT, NULL, &MEDIATYPE_Video, TRUE, 0, &pPin);
+    }
+    else if(SUCCEEDED(pCGB->FindPin(pVidCap, PINDIR_OUTPUT, &PIN_CATEGORY_CAPTURE, &MEDIATYPE_Video, TRUE, 0, &pPin)))
+    {
+    }
+    else
+    {
+      AfxMessageBox(_T("No video capture pin was found"));
+      return(false);
+    }
+
+    CComPtr<IBaseFilter> pSmartTee;
+    hr = pSmartTee.CoCreateInstance(CLSID_SmartTee);
+    hr = pGB->AddFilter(pSmartTee, L"Smart Tee (video)");
+
+    hr = pGB->ConnectFilter(pPin, pSmartTee);
+
+    hr = pSmartTee->FindPin(L"Preview", ppVidPrevPin);
+    hr = pSmartTee->FindPin(L"Capture", ppVidCapPin);
+  }
+
+  if(pAudCap || pDVAudPin)
+  {
+    CComPtr<IPin> pPin;
+    if(pDVAudPin)
+    {
+      pPin = pDVAudPin;
+    }
+    else if(SUCCEEDED(pCGB->FindPin(pAudCap, PINDIR_OUTPUT, &PIN_CATEGORY_CAPTURE, &MEDIATYPE_Audio, TRUE, 0, &pPin)))
+    {
+    }
+    else
+    {
+      AfxMessageBox(_T("No audio capture pin was found"));
+      return(false);
+    }
+
+    CComPtr<IBaseFilter> pSmartTee;
+    hr = pSmartTee.CoCreateInstance(CLSID_SmartTee);
+    hr = pGB->AddFilter(pSmartTee, L"Smart Tee (audio)");
+
+    hr = pGB->ConnectFilter(pPin, pSmartTee);
+
+    hr = pSmartTee->FindPin(L"Preview", ppAudPrevPin);
+    hr = pSmartTee->FindPin(L"Capture", ppAudCapPin);
+  }
+
+  return true;
+}
+
+#define SaveMediaState \
+  OAFilterState __fs = GetMediaState(); \
+  \
+  REFERENCE_TIME __rt = 0; \
+  if(m_iMediaLoadState == MLS_LOADED) __rt = GetMainFrame()->GetPos(); \
+  \
+  if(__fs != State_Stopped) \
+  GetMainFrame()->SendMessage(WM_COMMAND, ID_PLAY_STOP); \
+
+
+#define RestoreMediaState \
+  if(m_iMediaLoadState == MLS_LOADED) \
+{ \
+  GetMainFrame()->SeekTo(__rt); \
+  \
+  if(__fs == State_Stopped) \
+  GetMainFrame()->SendMessage(WM_COMMAND, ID_PLAY_STOP); \
+    else if(__fs == State_Paused) \
+    GetMainFrame()->SendMessage(WM_COMMAND, ID_PLAY_PAUSE); \
+    else if(__fs == State_Running) \
+    GetMainFrame()->SendMessage(WM_COMMAND, ID_PLAY_PLAY); \
+} 
+#define AUDIOBUFFERLEN 500
+
+static void SetLatency(IBaseFilter* pBF, int cbBuffer)
+{
+  BeginEnumPins(pBF, pEP, pPin)
+  {
+    if(CComQIPtr<IAMBufferNegotiation> pAMBN = pPin)
+    {
+      ALLOCATOR_PROPERTIES ap;
+      ap.cbAlign = -1;  // -1 means no preference.
+      ap.cbBuffer = cbBuffer;
+      ap.cbPrefix = -1;
+      ap.cBuffers = -1;
+      pAMBN->SuggestAllocatorProperties(&ap);
+    }
+  }
+  EndEnumPins
+}
+
+bool CGraphCore::BuildGraphVideoAudio(int fVPreview, bool fVCapture, int fAPreview, bool fACapture)
+{
+  if(!pCGB) return(false);
+
+  SaveMediaState;
+
+  HRESULT hr;
+
+  pGB->NukeDownstream(pVidCap);
+  pGB->NukeDownstream(pAudCap);
+
+  CleanGraph();
+  
+  if(pAMVSCCap) hr = pAMVSCCap->SetFormat(&(GetCaptureBar()->m_capdlg.m_mtv));
+  if(pAMVSCPrev) hr = pAMVSCPrev->SetFormat(&(GetCaptureBar()->m_capdlg.m_mtv));
+  if(pAMASC) hr = pAMASC->SetFormat(&(GetCaptureBar()->m_capdlg.m_mta));
+
+  CComPtr<IBaseFilter> pVidBuffer = GetCaptureBar()->m_capdlg.m_pVidBuffer;
+  CComPtr<IBaseFilter> pAudBuffer = GetCaptureBar()->m_capdlg.m_pAudBuffer;
+  CComPtr<IBaseFilter> pVidEnc = GetCaptureBar()->m_capdlg.m_pVidEnc;
+  CComPtr<IBaseFilter> pAudEnc = GetCaptureBar()->m_capdlg.m_pAudEnc;
+  CComPtr<IBaseFilter> pMux = GetCaptureBar()->m_capdlg.m_pMux;
+  CComPtr<IBaseFilter> pDst = GetCaptureBar()->m_capdlg.m_pDst;
+  CComPtr<IBaseFilter> pAudMux = GetCaptureBar()->m_capdlg.m_pAudMux;
+  CComPtr<IBaseFilter> pAudDst = GetCaptureBar()->m_capdlg.m_pAudDst;
+
+  bool fFileOutput = (pMux && pDst) || (pAudMux && pAudDst);
+  bool fCapture = (fVCapture || fACapture);
+
+  if(pAudCap)
+  {
+    AM_MEDIA_TYPE* pmt = &(GetCaptureBar()->m_capdlg.m_mta);
+    int ms = (fACapture && fFileOutput && GetCaptureBar()->m_capdlg.m_fAudOutput) ? AUDIOBUFFERLEN : 60;
+    if(pMux != pAudMux && fACapture) SetLatency(pAudCap, -1);
+    else if(pmt->pbFormat) SetLatency(pAudCap, ((WAVEFORMATEX*)pmt->pbFormat)->nAvgBytesPerSec * ms / 1000);
+  }
+
+  CComPtr<IPin> pVidCapPin, pVidPrevPin, pAudCapPin, pAudPrevPin;
+  BuildToCapturePreviewPin(pVidCap, &pVidCapPin, &pVidPrevPin, pAudCap, &pAudCapPin, &pAudPrevPin);
+
+  //	if(pVidCap)
+  {
+    bool fVidPrev = pVidPrevPin && fVPreview;
+    bool fVidCap = pVidCapPin && fVCapture && fFileOutput && GetCaptureBar()->m_capdlg.m_fVidOutput;
+
+    if(fVPreview == 2 && !fVidCap && pVidCapPin)
+    {
+      pVidPrevPin = pVidCapPin;
+      pVidCapPin = NULL;
+    }
+
+    if(fVidPrev)
+    {
+      m_pCAP = NULL;
+      m_pCAP2 = NULL;
+      m_pCAPR = NULL;
+      pGB->Render(pVidPrevPin);
+      pGB->FindInterface(__uuidof(ISubPicAllocatorPresenter), (void**)&m_pCAP, FALSE);
+      pGB->FindInterface(__uuidof(ISubPicAllocatorPresenterRender), (void**)&m_pCAPR, TRUE);
+      pGB->FindInterface(__uuidof(ISubPicAllocatorPresenter2), (void**)&m_pCAP2, TRUE);
+    }
+
+    if(fVidCap)
+    {
+      IBaseFilter* pBF[3] = {pVidBuffer, pVidEnc, pMux};
+      HRESULT hr = BuildCapture(pVidCapPin, pBF, MEDIATYPE_Video, &(GetCaptureBar()->m_capdlg.m_mtcv));
+    }
+
+    pAMDF = NULL;
+    pCGB->FindInterface(&PIN_CATEGORY_CAPTURE, &MEDIATYPE_Video, pVidCap, IID_IAMDroppedFrames, (void**)&pAMDF);
+  }
+
+  //	if(pAudCap)
+  {
+    bool fAudPrev = pAudPrevPin && fAPreview;
+    bool fAudCap = pAudCapPin && fACapture && fFileOutput && GetCaptureBar()->m_capdlg.m_fAudOutput;
+
+    if(fAPreview == 2 && !fAudCap && pAudCapPin)
+    {
+      pAudPrevPin = pAudCapPin;
+      pAudCapPin = NULL;
+    }
+
+    if(fAudPrev)
+    {
+      pGB->Render(pAudPrevPin);
+    }
+
+    if(fAudCap)
+    {
+      IBaseFilter* pBF[3] = {pAudBuffer, pAudEnc, pAudMux ? pAudMux : pMux};
+      HRESULT hr = BuildCapture(pAudCapPin, pBF, MEDIATYPE_Audio, &(GetCaptureBar()->m_capdlg.m_mtca));
+    }
+  }
+
+  if((pVidCap || pAudCap) && fCapture && fFileOutput)
+  {
+    if(pMux != pDst)
+    {
+      hr = pGB->AddFilter(pDst, L"File Writer V/A");
+      hr = pGB->ConnectFilter(GetFirstPin(pMux, PINDIR_OUTPUT), pDst);
+    }
+
+    if(CComQIPtr<IConfigAviMux> pCAM = pMux)
+    {
+      int nIn, nOut, nInC, nOutC;
+      CountPins(pMux, nIn, nOut, nInC, nOutC);
+      pCAM->SetMasterStream(nInC-1);
+      //			pCAM->SetMasterStream(-1);
+      pCAM->SetOutputCompatibilityIndex(FALSE);
+    }
+
+    if(CComQIPtr<IConfigInterleaving> pCI = pMux)
+    {
+      //			if(FAILED(pCI->put_Mode(INTERLEAVE_CAPTURE)))
+      if(FAILED(pCI->put_Mode(INTERLEAVE_NONE_BUFFERED)))
+        pCI->put_Mode(INTERLEAVE_NONE);
+
+      REFERENCE_TIME rtInterleave = 10000i64*AUDIOBUFFERLEN, rtPreroll = 0;//10000i64*500
+      pCI->put_Interleaving(&rtInterleave, &rtPreroll);
+    }
+
+    if(pMux != pAudMux && pAudMux != pAudDst)
+    {
+      hr = pGB->AddFilter(pAudDst, L"File Writer A");
+      hr = pGB->ConnectFilter(GetFirstPin(pAudMux, PINDIR_OUTPUT), pAudDst);
+    }
+  }
+
+  REFERENCE_TIME stop = MAX_TIME;
+  hr = pCGB->ControlStream(&PIN_CATEGORY_CAPTURE, NULL, NULL, NULL, &stop, 0, 0); // stop in the infinite
+
+  CleanGraph();
+
+  OpenSetupVideo();
+  OpenSetupAudio();
+
+  RestoreMediaState;
+
+  return true;
+}
+
+void CGraphCore::SetBalance(int balance)
+{
+  AfxGetAppSettings().nBalance = balance;
+
+  int sign = balance>0?-1:1;
+  balance = max(100-abs(balance), 1);
+  balance = (int)((log10(1.0*balance)-2)*5000*sign);
+  balance = max(min(balance, 10000), -10000);
+
+  if(m_iMediaLoadState == MLS_LOADED) 
+    pBA->put_Balance(balance);
+}
+
+OAFilterState CGraphCore::GetMediaState()
+{
+  OAFilterState ret = -1;
+  if(m_iMediaLoadState == MLS_LOADED) pMC->GetState(0, &ret);
+  return(ret);
+}
+
+bool CGraphCore::GetDIB(BYTE** ppData, long& size, bool fSilent)
+{
+  if(!ppData) return false;
+
+  *ppData = NULL;
+  size = 0;
+
+  bool fNeedsToPause = !m_pCAP;
+  if(fNeedsToPause) fNeedsToPause = !IsVMR7InGraph(pGB);
+  if(fNeedsToPause) fNeedsToPause = !IsVMR9InGraph(pGB);
+
+  OAFilterState fs = GetMediaState();
+
+  if(!(m_iMediaLoadState == MLS_LOADED && !m_fAudioOnly && (fs == State_Paused || fs == State_Running)))
+    return false;
+
+  if(fs == State_Running && fNeedsToPause)
+  {
+    pMC->Pause();
+    GetMediaState(); // wait for completion of the pause command
+  }
+
+  HRESULT hr = S_OK;
+  CString errmsg;
+
+  do
+  {
+    if(m_pCAP)
+    {
+      hr = m_pCAP->GetDIB(NULL, (DWORD*)&size);
+      if(FAILED(hr))
+      {
+        GetMainFrame()->OnPlayPause();
+        GetMediaState(); // Pause and retry to support ffdshow queueing.
+        int retry = 0;
+        while(FAILED(hr) && retry < 20)
+        {
+          hr = m_pCAP->GetDIB(*ppData, (DWORD*)&size);
+          if(SUCCEEDED(hr)) break;
+          Sleep(1);
+          retry++;
+        }
+        if(FAILED(hr))
+        {errmsg.Format(_T("GetDIB failed, hr = %08x"), hr); break;}
+      }
+
+      if(!(*ppData = new BYTE[size])) return false;
+
+      hr = m_pCAP->GetDIB(*ppData, (DWORD*)&size);
+      if(FAILED(hr)) {errmsg.Format(_T("GetDIB failed, hr = %08x"), hr); break;}
+    }
+    else
+    {
+      hr = pBV->GetCurrentImage(&size, NULL);
+      if(FAILED(hr) || size == 0) {errmsg.Format(_T("GetCurrentImage failed, hr = %08x"), hr); break;}
+
+      if(!(*ppData = new BYTE[size])) return false;
+
+      hr = pBV->GetCurrentImage(&size, (long*)*ppData);
+      if(FAILED(hr)) {errmsg.Format(_T("GetCurrentImage failed, hr = %08x"), hr); break;}
+    }
+  }
+  while(0);
+
+  if(!fSilent)
+  {
+    if(!errmsg.IsEmpty())
+    {
+      AfxMessageBox(errmsg, MB_OK);
+    }
+  }
+
+  if(fs == State_Running && GetMediaState() != State_Running)
+  {
+    pMC->Run();
+  }
+
+  if(FAILED(hr))
+  {
+    if(*ppData) {ASSERT(0); delete [] *ppData; *ppData = NULL;} // huh?
+    return false;
+  }
+
+  return true;
+}
+
+void CGraphCore::SaveDIB(LPCTSTR fn, BYTE* pData, long size)
+{
+  CString ext = CString(CPath(fn).GetExtension()).MakeLower();
+
+  if(ext == _T(".bmp"))
+  {
+    if(FILE* f = _tfopen(fn, _T("wb")))
+    {
+      BITMAPINFO* bi = (BITMAPINFO*)pData;
+
+      BITMAPFILEHEADER bfh;
+      bfh.bfType = 'MB';
+      bfh.bfOffBits = sizeof(bfh) + sizeof(bi->bmiHeader);
+      bfh.bfSize = sizeof(bfh) + size;
+      bfh.bfReserved1 = bfh.bfReserved2 = 0;
+
+      if(bi->bmiHeader.biBitCount <= 8)
+      {
+        if(bi->bmiHeader.biClrUsed) bfh.bfOffBits += bi->bmiHeader.biClrUsed * sizeof(bi->bmiColors[0]);
+        else bfh.bfOffBits += (1 << bi->bmiHeader.biBitCount) * sizeof(bi->bmiColors[0]);
+      }
+
+      fwrite(&bfh, 1, sizeof(bfh), f);
+      fwrite(pData, 1, size, f);
+
+      fclose(f);
+    }
+    else
+    {
+      AfxMessageBox(_T("Cannot create file"), MB_OK);
+    }
+  }
+  else if(ext == _T(".jpg"))
+  {
+    CJpegEncoderFile(fn).Encode(pData);
+  }
+
+  CPath p(fn);
+  /*
+
+  if(CDC* pDC = m_wndStatusBar.m_status.GetDC())
+  {
+  CRect r;
+  //m_wndStatusBar.m_status.GetClientRect(r);
+
+  m_wndStatusBar.m_status.ReleaseDC(pDC);
+  }*/
+
+  /*
+  CRect rcView;
+  GetClientRect(rcView);
+  if(HDC hDC = ::GetDC(0))
+  {
+  p.CompactPath(hDC, rcView.Width()/3);
+  ::ReleaseDC(0, hDC);
+  }*/
+
+
+  CString szMsg;
+
+  szMsg.Format(ResStr(IDS_OSD_MSG_IMAGE_CAPTURE_TO),(LPCTSTR)p);
+  SendStatusMessage(szMsg, 3000);
+}
+
+void CGraphCore::SaveThumbnails(LPCTSTR fn)
+{
+  if(!pMC || !pMS || m_iPlaybackMode != PM_FILE /*&& m_iPlaybackMode != PM_DVD*/) 
+    return;
+
+  REFERENCE_TIME rtPos = GetMainFrame()->GetPos();
+  REFERENCE_TIME rtDur = GetMainFrame()->GetDur();
+
+  if(rtDur <= 0)
+  {
+    AfxMessageBox(_T("Cannot create thumbnails for files with no duration"));
+    return;
+  }
+
+  pMC->Pause();
+  GetMediaState(); // wait for completion of the pause command
+
+  //
+
+  CSize video, wh(0, 0), arxy(0, 0);
+
+  if (m_pMFVDC)
+  {
+    m_pMFVDC->GetNativeVideoSize(&wh, &arxy);
+  }
+  else if(m_pCAPR)
+  {
+    wh = m_pCAPR->GetVideoSize(false);
+    arxy = m_pCAPR->GetVideoSize(true);
+  }
+  else
+  {
+    pBV->GetVideoSize(&wh.cx, &wh.cy);
+
+    long arx = 0, ary = 0;
+    CComQIPtr<IBasicVideo2> pBV2 = pBV;
+    if(pBV2 && SUCCEEDED(pBV2->GetPreferredAspectRatio(&arx, &ary)) && arx > 0 && ary > 0)
+      arxy.SetSize(arx, ary);
+  }
+
+  if(wh.cx <= 0 || wh.cy <= 0)
+  {
+    AfxMessageBox(_T("Failed to get video frame size"));
+    return;
+  }
+
+  // with the overlay mixer IBasicVideo2 won't tell the new AR when changed dynamically
+  DVD_VideoAttributes VATR;
+  if(m_iPlaybackMode == PM_DVD && SUCCEEDED(pDVDI->GetCurrentVideoAttributes(&VATR)))
+    arxy.SetSize(VATR.ulAspectX, VATR.ulAspectY);
+
+  video = (arxy.cx <= 0 || arxy.cy <= 0) ? wh : CSize(MulDiv(wh.cy, arxy.cx, arxy.cy), wh.cy);
+
+  //
+
+  AppSettings& s = AfxGetAppSettings();
+
+  int cols = max(1, min(8, s.ThumbCols));
+  int rows = max(1, min(8, s.ThumbRows));
+
+  int margin = 5;
+  int infoheight = 70;
+  int width = max(256, min(2048, s.ThumbWidth));
+  int height = width * video.cy / video.cx * rows / cols + infoheight;
+
+  int dibsize = sizeof(BITMAPINFOHEADER) + width*height*4;
+
+  CAutoVectorPtr<BYTE> dib;
+  if(!dib.Allocate(dibsize))
+  {
+    AfxMessageBox(_T("Out of memory, go buy some more!"));
+    return;
+  }
+
+  BITMAPINFOHEADER* bih = (BITMAPINFOHEADER*)(BYTE*)dib;
+  memset(bih, 0, sizeof(BITMAPINFOHEADER));
+  bih->biSize = sizeof(BITMAPINFOHEADER);
+  bih->biWidth = width;
+  bih->biHeight = height;
+  bih->biPlanes = 1;
+  bih->biBitCount = 32;
+  bih->biCompression = BI_RGB;
+  bih->biSizeImage = width*height*4;
+  memsetd(bih + 1, 0xffffff, bih->biSizeImage);
+
+  SubPicDesc spd;
+  spd.w = width;
+  spd.h = height;
+  spd.bpp = 32;
+  spd.pitch = -width*4;
+  spd.bits = (BYTE*)(bih + 1) + (width*4)*(height-1);
+
+  {
+    BYTE* p = (BYTE*)spd.bits;
+    for(int y = 0; y < spd.h; y++, p += spd.pitch)
+      for(int x = 0; x < spd.w; x++)
+        ((DWORD*)p)[x] = 0x010101 * (0xe0 + 0x08*y/spd.h + 0x18*(spd.w-x)/spd.w);
+  }
+
+  CCritSec csSubLock;
+  RECT bbox;
+
+  for(int i = 1, pics = cols*rows; i <= pics; i++)
+  {
+    REFERENCE_TIME rt = rtDur * i / (pics+1);
+    DVD_HMSF_TIMECODE hmsf = RT2HMSF(rt, 25);
+
+    GetMainFrame()->SeekTo(rt, 0);
+
+    m_VolumeBeforeFrameStepping = GetToolBar()->Volume;
+    pBA->put_Volume(-10000);
+
+    HRESULT hr = pFS ? pFS->Step(1, NULL) : E_FAIL;
+
+    if(FAILED(hr))
+    {
+      pBA->put_Volume(m_VolumeBeforeFrameStepping);
+      AfxMessageBox(_T("Cannot frame step, try a different video renderer."));
+      return;
+    }
+
+    HANDLE hGraphEvent = NULL;
+    pME->GetEventHandle((OAEVENT*)&hGraphEvent);
+
+    while(hGraphEvent && WaitForSingleObject(hGraphEvent, INFINITE) == WAIT_OBJECT_0)
+    {
+      LONG evCode = 0, evParam1, evParam2;
+      while(SUCCEEDED(pME->GetEvent(&evCode, (LONG_PTR*)&evParam1, (LONG_PTR*)&evParam2, 0)))
+      {
+        pME->FreeEventParams(evCode, evParam1, evParam2);
+        if(EC_STEP_COMPLETE == evCode) hGraphEvent = NULL;
+      }
+    }
+
+    pBA->put_Volume(m_VolumeBeforeFrameStepping);
+
+    int col = (i-1)%cols;
+    int row = (i-1)/cols;
+
+    CSize s((width-margin*2)/cols, (height-margin*2-infoheight)/rows);
+    CPoint p(margin+col*s.cx, margin+row*s.cy+infoheight);
+    CRect r(p, s);
+    r.DeflateRect(margin, margin);
+
+    CRenderedTextSubtitle rts(&csSubLock);
+    rts.CreateDefaultStyle(0);
+    rts.m_dstScreenSize.SetSize(width, height);
+    STSStyle* style = new STSStyle();
+    style->marginRect.SetRectEmpty();
+    rts.AddStyle(_T("thumbs"), style);
+
+    CStringW str;
+    str.Format(L"{\\an7\\1c&Hffffff&\\4a&Hb0&\\bord1\\shad4\\be1}{\\p1}m %d %d l %d %d %d %d %d %d{\\p}", 
+      r.left, r.top, r.right, r.top, r.right, r.bottom, r.left, r.bottom);
+    rts.Add(str, true, 0, 1, _T("thumbs"));
+    str.Format(L"{\\an3\\1c&Hffffff&\\3c&H000000&\\alpha&H80&\\fs16\\b1\\bord2\\shad0\\pos(%d,%d)}%02d:%02d:%02d", 
+      r.right-5, r.bottom-3, hmsf.bHours, hmsf.bMinutes, hmsf.bSeconds);
+    rts.Add(str, true, 1, 2, _T("thumbs"));
+
+    rts.Render(spd, 0, 25, bbox);
+
+    BYTE* pData = NULL;
+    long size = 0;
+    if(!GetDIB(&pData, size)) return;
+
+    BITMAPINFO* bi = (BITMAPINFO*)pData;
+
+    if(bi->bmiHeader.biBitCount != 32)
+    {
+      delete [] pData;
+      CString str;
+      str.Format(ResStr(IDS_MSG_WARN_NOT_CAPABLE_IMAGE_CAPTURE), bi->bmiHeader.biBitCount);
+      AfxMessageBox(str);
+      return;
+    }
+
+    int sw = bi->bmiHeader.biWidth;
+    int sh = abs(bi->bmiHeader.biHeight);
+    int sp = sw*4;
+    const BYTE* src = pData + sizeof(bi->bmiHeader);
+    if(bi->bmiHeader.biHeight >= 0) {src += sp*(sh-1); sp = -sp;}
+
+    int dw = spd.w;
+    int dh = spd.h;
+    int dp = spd.pitch;
+    BYTE* dst = (BYTE*)spd.bits + spd.pitch*r.top + r.left*4;
+
+    for(DWORD h = r.bottom - r.top, y = 0, yd = (sh<<8)/h; h > 0; y += yd, h--)
+    {
+      DWORD yf = y&0xff;
+      DWORD yi = y>>8;
+
+      DWORD* s0 = (DWORD*)(src + yi*sp);
+      DWORD* s1 = (DWORD*)(src + yi*sp + sp);
+      DWORD* d = (DWORD*)dst;
+
+      for(DWORD w = r.right - r.left, x = 0, xd = (sw<<8)/w; w > 0; x += xd, w--)
+      {
+        DWORD xf = x&0xff;
+        DWORD xi = x>>8;
+
+        DWORD c0 = s0[xi];
+        DWORD c1 = s0[xi+1];
+        DWORD c2 = s1[xi];
+        DWORD c3 = s1[xi+1];
+
+        c0 = ((c0&0xff00ff) + ((((c1&0xff00ff) - (c0&0xff00ff)) * xf) >> 8)) & 0xff00ff
+          | ((c0&0x00ff00) + ((((c1&0x00ff00) - (c0&0x00ff00)) * xf) >> 8)) & 0x00ff00;
+
+        c2 = ((c2&0xff00ff) + ((((c3&0xff00ff) - (c2&0xff00ff)) * xf) >> 8)) & 0xff00ff
+          | ((c2&0x00ff00) + ((((c3&0x00ff00) - (c2&0x00ff00)) * xf) >> 8)) & 0x00ff00;
+
+        c0 = ((c0&0xff00ff) + ((((c2&0xff00ff) - (c0&0xff00ff)) * yf) >> 8)) & 0xff00ff
+          | ((c0&0x00ff00) + ((((c2&0x00ff00) - (c0&0x00ff00)) * yf) >> 8)) & 0x00ff00;
+
+        *d++ = c0;
+      }
+
+      dst += dp;
+    }
+
+    rts.Render(spd, 10000, 25, bbox);
+
+    delete [] pData;
+  }
+
+  {
+    CRenderedTextSubtitle rts(&csSubLock);
+    rts.CreateDefaultStyle(0);
+    rts.m_dstScreenSize.SetSize(width, height);
+    STSStyle* style = new STSStyle();
+    style->marginRect.SetRect(margin*2, margin*2, margin*2, height-infoheight-margin);
+    style->fontName = s.subdefstyle.fontName;
+    rts.AddStyle(_T("thumbs"), style);
+
+    CStringW str;
+    str.Format(L"{\\an9\\fs%d\\b0\\bord0\\shad0\\1c&H555555x&}%s", infoheight-10,  
+      width >= 550 ? 	ResStr(IDR_MAINFRAME): ResStr(IDR_MAINFRAME_SHORTNAME));
+
+    rts.Add(str, true, 0, 1, _T("thumbs"), _T(""), _T(""), CRect(0,0,0,0), -1);
+
+    DVD_HMSF_TIMECODE hmsf = RT2HMSF(rtDur, 25);
+
+    CPath path(GetPlaylistBar()->GetCur());
+    path.StripPath();
+    CStringW fn = (LPCTSTR)path;
+
+    CStringW fs;
+    WIN32_FIND_DATA wfd;
+    HANDLE hFind = FindFirstFile(GetPlaylistBar()->GetCur(), &wfd);
+    if(hFind != INVALID_HANDLE_VALUE)
+    {
+      FindClose(hFind);
+
+      __int64 size = (__int64(wfd.nFileSizeHigh)<<32)|wfd.nFileSizeLow;
+      __int64 shortsize = size;
+      CStringW measure = _T("B");
+      if(shortsize > 10240) shortsize /= 1024, measure = L"KB";
+      if(shortsize > 10240) shortsize /= 1024, measure = L"MB";
+      if(shortsize > 10240) shortsize /= 1024, measure = L"GB";
+      fs.Format(ResStr(IDS_FORMAT_FILE_SIZE), shortsize, measure, size);
+    }
+
+    CStringW ar;
+    if(arxy.cx > 0 && arxy.cy > 0 && arxy.cx != wh.cx && arxy.cy != wh.cy)
+      ar.Format(L"(%d:%d)", arxy.cx, arxy.cy);
+
+    CString szRt = L"\\N";;
+    if(fn.GetLength() > 15){
+      szRt = L"   ";
+    }
+
+    // use bigger font size for english language
+    int font_size = (s.iLanguage == 0 || s.iLanguage == 2) ? 18 : 30;
+    str.Format(L"{\\an7\\1c&H000000&\\fs%d\\b0\\bord0\\shad0}%s %s\\N%s%s%dx%d %s%s%s %02d:%02d:%02d", 
+      font_size, ResStr(IDS_THUMBNAIL_FILENAME),fn, fs,ResStr(IDS_THUMBNAIL_RESOLUTION), 
+      wh.cx, wh.cy, ar,szRt, ResStr(IDS_THUMBNAIL_LENGTH), hmsf.bHours,
+      hmsf.bMinutes, hmsf.bSeconds);
+    rts.Add(str, true, 0, 1, _T("thumbs"));
+
+    rts.Render(spd, 0, 25, bbox);
+  }
+
+  SaveDIB(fn, (BYTE*)dib, dibsize);
+
+  GetMainFrame()->SeekTo(rtPos);
 }

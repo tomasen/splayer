@@ -106,7 +106,6 @@ public:
   CSize GetVideoSize();
   void RepaintVideo();
 
-  OAFilterState GetMediaState();
   REFERENCE_TIME GetPos(), GetDur();
   void SeekTo(REFERENCE_TIME rt, int fSeekToKeyFrame = -99, REFERENCE_TIME maxStep = 0); // -1 => bwd , 1 => fwd
 
@@ -114,40 +113,23 @@ public:
   CString m_DXVAMode;
   BOOL m_bEVRInUse;
 
-  void UpdateShaders(CString label);
-
   // capturing
-  bool m_fCapturing;
-  HRESULT BuildCapture(IPin* pPin, IBaseFilter* pBF[3], const GUID& majortype, AM_MEDIA_TYPE* pmt); // pBF: 0 buff, 1 enc, 2 mux, pmt is for 1 enc
-  bool BuildToCapturePreviewPin(IBaseFilter* pVidCap, IPin** pVidCapPin, IPin** pVidPrevPin, 
-    IBaseFilter* pAudCap, IPin** pAudCapPin, IPin** pAudPrevPin);
-  bool BuildGraphVideoAudio(int fVPreview, bool fVCapture, int fAPreview, bool fACapture);
   bool DoCapture(), StartCapture(), StopCapture();
-
   void ReRenderOrLoadMedia(BOOL bNoMoreDXVAForThisMedia = FALSE);
-
-  //  Playback Control  Functions and Variables
-  void SetBalance(int balance);
 
   int m_nLoops;
   int m_nLoopSetting;
 
   int m_fFrameSteppingActive;
-  int m_VolumeBeforeFrameStepping;
-
 
   time_t  m_tPlayPauseTime;
   time_t  m_tLastLogTick;
   CString m_fnsAlreadyUploadedSubfile;
 
-  //  Snapshot
-  bool GetDIB(BYTE** ppData, long& size, bool fSilent = false);
-  void SaveDIB(LPCTSTR fn, BYTE* pData, long size);
+//   //  Snapshot
   BOOL IsRendererCompatibleWithSaveImage();
   void SaveImage(LPCTSTR fn = NULL);
   void AutoSaveImage(LPCTSTR fn, bool istoobig = false);
-  void SaveThumbnails(LPCTSTR fn);
-
 
   // UI                 Functions and Variables
   friend class CPPageFileInfoSheet;
@@ -306,6 +288,7 @@ private:
   CString getCurPlayingSubfile(int * iSubDelayMS = NULL,int subid = 0 );
   CPoint m_pLastClickPoint;
   CPoint m_pDragFuncStartPoint;
+  int m_iRedrawAfterCloseCounter;
   CSize m_original_size_of_current_video;
   CSize m_last_size_of_current_kind_of_video;
   int m_movieShared;

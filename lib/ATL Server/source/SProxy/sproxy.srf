@@ -1,0 +1,659 @@
+//
+// sproxy.exe generated file
+// do not modify this file
+//
+// Created: {{GetDateTime}}
+//
+
+{{if EmitPragma}}
+#pragma once
+
+{{endif}}
+{{if GenProxy}}
+
+#if !defined(_WIN32_WINDOWS) && !defined(_WIN32_WINNT) && !defined(_WIN32_WCE)
+#pragma message("warning: defining _WIN32_WINDOWS = 0x0410")
+#define _WIN32_WINDOWS 0x0410
+#endif
+
+#include <atlsoap.h>
+{{endif}}
+
+{{if EmitNamespace}}
+namespace {{GetCppNamespace}}
+{
+
+{{endif}}
+{{while GetNextEnum}}
+enum {{GetEnumCppName}} { {{while GetNextEnumElement}}{{GetEnumElementCppName}} = {{GetEnumElementValue}}, {{endwhile}}};{{ResetCounter}}
+
+{{endwhile}}
+{{while GetNextStruct}}
+struct {{GetStructCppName}}
+{
+{{while GetNextStructField}}
+	{{GetStructFieldCppType}} {{if IsFieldDynamicArray}}*{{endif}}{{GetStructFieldCppName}}{{GetStructFieldSuffix}};
+{{if IsFieldDynamicArray}}
+{{if FieldHasSizeIs}}
+{{else}}
+	int __{{GetStructFieldCppName}}_nSizeIs;
+{{endif}}
+{{endif}}
+{{endwhile}}
+};
+
+{{endwhile}}
+{{if GenProxy}}
+template <typename TClient = CSoapSocketClientT<> >
+class {{GetClassName}}T : 
+	public TClient, 
+	public CSoapRootHandler
+{
+{{if ClassHasHeaders}}
+public:
+
+	//
+	// SOAP headers
+	//
+	
+{{while GetNextMember}}
+	{{GetMemberCppType}} {{GetMemberCppName}}{{GetMemberSuffix}};
+{{endwhile}}
+
+{{endif}}
+protected:
+
+	const _soapmap ** GetFunctionMap();
+	const _soapmap ** GetHeaderMap();
+	void * GetHeaderValue();
+	const wchar_t * GetNamespaceUri();
+	const char * GetServiceName();
+	const char * GetNamespaceUriA();
+	HRESULT CallFunction(
+		void *pvParam, 
+		const wchar_t *wszLocalName, int cchLocalName,
+		size_t nItem);
+	HRESULT GetClientReader(ISAXXMLReader **ppReader);
+
+public:
+
+	HRESULT __stdcall QueryInterface(REFIID riid, void **ppv)
+	{
+		if (ppv == NULL)
+		{
+			return E_POINTER;
+		}
+
+		*ppv = NULL;
+
+		if (InlineIsEqualGUID(riid, IID_IUnknown) ||
+			InlineIsEqualGUID(riid, IID_ISAXContentHandler))
+		{
+			*ppv = static_cast<ISAXContentHandler *>(this);
+			return S_OK;
+		}
+
+		return E_NOINTERFACE;
+	}
+
+	ULONG __stdcall AddRef()
+	{
+		return 1;
+	}
+
+	ULONG __stdcall Release()
+	{
+		return 1;
+	}
+
+	{{GetClassName}}T(ISAXXMLReader *pReader = NULL)
+		:TClient(_T("{{GetURL}}"))
+	{
+		SetClient(true);
+		SetReader(pReader);
+{{if ClassHasHeaders}}
+
+		//
+		// initialize headers
+		//
+
+{{while GetNextMember}}
+{{if IsMemberFixedArray}}
+		memset({{GetMemberCppName}}, 0x00, sizeof({{GetMemberCppType}}{{GetMemberSuffix}}));
+{{else}}
+{{if IsMemberUDT}}
+		memset(&{{GetMemberCppName}}, 0x00, sizeof({{GetMemberCppType}}));
+{{else}}
+{{if IsMemberEnum}}
+		{{GetMemberCppName}} = ({{GetMemberCppType}})0;
+{{else}}
+		{{GetMemberCppName}} = 0;
+{{endif}}
+{{endif}}
+{{endif}}
+{{endwhile}}
+{{endif}}
+	}
+	
+	~{{GetClassName}}T()
+	{
+		Uninitialize();
+	}
+	
+	void Uninitialize()
+	{
+		UninitializeSOAP();
+{{if ClassHasHeaders}}
+
+		//
+		// uninitialize headers
+		//
+
+{{while GetNextMember}}
+{{if IsMemberFixedArray}}
+		AtlCleanupArrayEx({{GetMemberCppName}}, (sizeof({{GetMemberCppType}}{{GetMemberSuffix}}))/(sizeof({{GetMemberCppType}})), GetMemMgr());
+{{else}}
+		AtlCleanupValueEx(&{{GetMemberCppName}}, GetMemMgr());
+{{endif}}
+{{endwhile}}
+{{endif}}
+	}	
+{{while GetNextFunction}}
+
+	HRESULT {{GetFunctionCppName}}(
+{{while GetNextParameter}}
+		{{GetParameterCppType}}{{if IsParameterDynamicArray}}*{{endif}}{{if IsOutParameter}}{{if NotIsParameterFixedArray}}*{{endif}}{{endif}} {{GetParameterCppName}}{{GetParameterSuffix}}{{if IsParameterDynamicArray}}, int{{if IsOutParameter}}*{{endif}} {{GetParameterCppName}}_nSizeIs{{endif}}{{if NotIsLastParameter}}, {{endif}}
+
+{{endwhile}}	);
+{{endwhile}}
+};
+
+typedef {{GetClassName}}T<> {{GetClassName}};
+{{while GetNextEnum}}
+
+__if_not_exists(__{{GetEnumSafeCppQName}}_entries)
+{
+extern __declspec(selectany) const _soapmapentry __{{GetEnumSafeCppQName}}_entries[] =
+{
+{{while GetNextEnumElement}}
+	{ {{GetEnumElementHashW}}, "{{GetEnumElementName}}", L"{{GetEnumElementName}}", sizeof("{{GetEnumElementName}}")-1, {{GetEnumElementValue}}, SOAPFLAG_FIELD, 0, NULL, NULL, -1 },
+{{endwhile}}
+	{ 0x00000000 }
+};
+
+extern __declspec(selectany) const _soapmap __{{GetEnumSafeCppQName}}_map =
+{
+	{{GetEnumNameHashW}},
+	"{{GetEnumName}}",
+	L"{{GetEnumName}}",
+	sizeof("{{GetEnumName}}")-1,
+	sizeof("{{GetEnumName}}")-1,
+	SOAPMAP_ENUM,
+	__{{GetEnumSafeCppQName}}_entries,
+	sizeof({{GetEnumCppQName}}),
+	1,
+	-1,
+	SOAPFLAG_NONE,
+	{{GetEnumNamespaceHashW}},
+	"{{GetEnumNamespace}}",
+	L"{{GetEnumNamespace}}",
+	sizeof("{{GetEnumNamespace}}")-1
+};
+}
+{{ResetCounter}}{{endwhile}}
+{{while GetNextStruct}}
+
+__if_not_exists(__{{GetStructSafeCppQName}}_entries)
+{
+{{while GetNextStructField}}
+{{if IsFieldFixedArray}}
+extern __declspec(selectany) const int __{{GetStructSafeCppQName}}_{{GetStructFieldCppName}}_dims[] = {{GetStructFieldDimsDecl}};
+
+{{endif}}
+{{endwhile}}
+extern __declspec(selectany) const _soapmapentry __{{GetStructSafeCppQName}}_entries[] =
+{
+{{while GetNextStructField}}
+	{ 
+		{{GetStructFieldHashW}}, 
+		"{{GetStructFieldName}}", 
+		L"{{GetStructFieldName}}", 
+		sizeof("{{GetStructFieldName}}")-1, 
+		{{GetStructFieldAtlSoapType}}, 
+		SOAPFLAG_FIELD{{if IsFieldFixedArray}} | SOAPFLAG_FIXEDARR{{endif}}{{if IsFieldDynamicArray}} | SOAPFLAG_DYNARR{{endif}}{{if IsFieldDynamicArrayWrapper}} | SOAPFLAG_DYNARRWRAPPER{{endif}}{{if IsFieldNullable}} | SOAPFLAG_NULLABLE{{endif}}{{if IsFieldSizeIs}} | SOAPFLAG_SIZEIS{{endif}}, 
+		offsetof({{GetStructCppQName}}, {{GetStructFieldCppName}}),
+		{{if IsFieldFixedArray}}__{{GetStructSafeCppQName}}_{{GetStructFieldCppName}}_dims{{else}}NULL{{endif}}, 
+		{{if IsFieldUDT}}&__{{GetStructFieldTypeSafeCppQName}}_map{{else}}NULL{{endif}}, 
+		{{if IsFieldDynamicArray}}{{if FieldHasSizeIs}}{{GetFieldSizeIsIndex}}{{else}}{{GetCurrentFieldIndex}}+1{{endif}}{{else}}-1{{endif}} 
+	},
+{{if IsFieldDynamicArray}}
+{{if FieldHasSizeIs}}
+{{else}}
+	{ 
+		{{GetStructFieldHashW}}, 
+		"{{GetStructFieldName}}", 
+		L"{{GetStructFieldName}}", 
+		sizeof("{{GetStructFieldName}}")-1, 
+		SOAPTYPE_INT, 
+		SOAPFLAG_FIELD | SOAPFLAG_NOMARSHAL, 
+		offsetof({{GetStructCppQName}}, __{{GetStructFieldCppName}}_nSizeIs),
+		NULL, 
+		NULL, 
+		-1
+	},
+{{endif}}
+{{endif}}
+{{endwhile}}
+	{ 0x00000000 }
+};
+
+extern __declspec(selectany) const _soapmap __{{GetStructSafeCppQName}}_map =
+{
+	{{GetStructNameHashW}},
+	"{{GetStructName}}",
+	L"{{GetStructName}}",
+	sizeof("{{GetStructName}}")-1,
+	sizeof("{{GetStructName}}")-1,
+	SOAPMAP_STRUCT,
+	__{{GetStructSafeCppQName}}_entries,
+	sizeof({{GetStructCppQName}}),
+	{{GetStructFieldCount}},
+	-1,
+	SOAPFLAG_NONE,
+	{{GetStructNamespaceHashW}},
+	"{{GetStructNamespace}}",
+	L"{{GetStructNamespace}}",
+	sizeof("{{GetStructNamespace}}")-1
+};
+}
+{{endwhile}}
+{{while GetNextFunction}}
+
+{{while GetNextParameter}}
+{{if IsParameterFixedArray}}
+extern __declspec(selectany) const int __{{GetClassSafeQName}}_{{GetFunctionCppName}}_{{GetParameterCppName}}_dims[] = {{GetParameterDimsDecl}};
+
+{{endif}}
+{{endwhile}}
+struct __{{GetClassSafeQName}}_{{GetFunctionCppName}}_struct
+{
+{{while GetNextParameter}}
+	{{GetParameterCppType}} {{if IsParameterDynamicArray}}*{{endif}}{{GetParameterCppName}}{{GetParameterSuffix}};
+{{if IsParameterDynamicArray}}
+	int __{{GetParameterCppName}}_nSizeIs;
+{{endif}}
+{{endwhile}}
+};
+
+extern __declspec(selectany) const _soapmapentry __{{GetClassSafeQName}}_{{GetFunctionCppName}}_entries[] =
+{
+{{if HasRetval}}
+{{GetRetval}}
+	{
+		{{GetParameterHashW}}, 
+		"{{GetParameterName}}", 
+		L"{{GetParameterName}}", 
+		sizeof("{{GetParameterName}}")-1, 
+		{{GetParameterAtlSoapType}}, 
+		SOAPFLAG_RETVAL{{if IsInParameter}} | SOAPFLAG_IN{{endif}}{{if IsOutParameter}} | SOAPFLAG_OUT{{endif}}{{if IsParameterDynamicArray}} | SOAPFLAG_DYNARR{{endif}}{{if IsParameterFixedArray}} | SOAPFLAG_FIXEDARR{{endif}}{{if IsParameterNullable}} | SOAPFLAG_NULLABLE{{endif}},
+		offsetof(__{{GetClassSafeQName}}_{{GetFunctionCppName}}_struct, {{GetParameterCppName}}),
+		{{if IsParameterFixedArray}}__{{GetClassSafeQName}}_{{GetFunctionCppName}}_{{GetParameterCppName}}_dims{{else}}NULL{{endif}},
+		{{if IsParameterUDT}}&__{{GetParameterTypeCppQName}}_map{{else}}NULL{{endif}},
+		{{if IsParameterDynamicArray}}{{GetSizeIsIndex}}{{else}}-1{{endif}},
+	},
+{{endif}}
+{{ResetParameterIndex}}
+{{while GetNextParameter}}
+{{if NotIsRetval}}
+	{
+		{{GetParameterHashW}}, 
+		"{{GetParameterNameRaw}}", 
+		L"{{GetParameterNameRaw}}", 
+		sizeof("{{GetParameterNameRaw}}")-1, 
+		{{GetParameterAtlSoapType}}, 
+		SOAPFLAG_NONE{{if IsInParameter}} | SOAPFLAG_IN{{endif}}{{if IsOutParameter}} | SOAPFLAG_OUT{{endif}}{{if IsParameterDynamicArray}} | SOAPFLAG_DYNARR{{endif}}{{if IsParameterFixedArray}} | SOAPFLAG_FIXEDARR{{endif}}{{if IsPAD}} | SOAPFLAG_PAD{{if IsChain}} | SOAPFLAG_CHAIN{{endif}}{{endif}}{{if IsPID}} | SOAPFLAG_PID{{endif}}{{if IsDocument}} | SOAPFLAG_DOCUMENT{{endif}}{{if IsRpc}} | SOAPFLAG_RPC{{endif}}{{if IsLiteral}} | SOAPFLAG_LITERAL{{endif}}{{if IsEncoded}} | SOAPFLAG_ENCODED{{endif}}{{if IsParameterNullable}} | SOAPFLAG_NULLABLE{{endif}},
+		offsetof(__{{GetClassSafeQName}}_{{GetFunctionCppName}}_struct, {{GetParameterCppName}}),
+		{{if IsParameterFixedArray}}__{{GetClassSafeQName}}_{{GetFunctionCppName}}_{{GetParameterCppName}}_dims{{else}}NULL{{endif}},
+		{{if IsParameterUDT}}&__{{GetParameterTypeCppQName}}_map{{else}}NULL{{endif}},
+		{{if IsParameterDynamicArray}}{{GetCurrentParameterIndex}}+1{{else}}-1{{endif}},
+	},
+{{if IsParameterDynamicArray}}
+	{
+		{{GetParameterHashW}},
+		"__{{GetParameterNameRaw}}_nSizeIs",
+		L"__{{GetParameterNameRaw}}_nSizeIs",
+		sizeof("__{{GetParameterNameRaw}}_nSizeIs")-1,
+		SOAPTYPE_INT,
+		SOAPFLAG_NOMARSHAL,
+		offsetof(__{{GetClassSafeQName}}_{{GetFunctionCppName}}_struct, __{{GetParameterCppName}}_nSizeIs),
+		NULL,
+		NULL,
+		-1
+	},
+{{endif}}
+{{endif}}
+{{endwhile}}
+	{ 0x00000000 }
+};
+
+extern __declspec(selectany) const _soapmap __{{GetClassSafeQName}}_{{GetFunctionCppName}}_map =
+{
+	{{GetFunctionResultNameHashW}},
+	"{{GetFunctionSendName}}",
+	L"{{GetFunctionResultName}}",
+	sizeof("{{GetFunctionSendName}}")-1,
+	sizeof("{{GetFunctionResultName}}")-1,
+	SOAPMAP_FUNC,
+	__{{GetClassSafeQName}}_{{GetFunctionCppName}}_entries,
+	sizeof(__{{GetClassSafeQName}}_{{GetFunctionCppName}}_struct),
+	{{GetExpectedParameterCount}},
+{{if HasRetval}}
+	0,
+{{else}}
+	-1,
+{{endif}}
+	SOAPFLAG_NONE{{if IsPAD}} | SOAPFLAG_PAD{{if IsChain}} | SOAPFLAG_CHAIN{{endif}}{{endif}}{{if IsPID}} | SOAPFLAG_PID{{endif}}{{if IsDocument}} | SOAPFLAG_DOCUMENT{{endif}}{{if IsRpc}} | SOAPFLAG_RPC{{endif}}{{if IsLiteral}} | SOAPFLAG_LITERAL{{endif}}{{if IsEncoded}} | SOAPFLAG_ENCODED{{endif}},
+	{{GetFunctionNamespaceHashW}},
+	"{{GetFunctionNamespace}}",
+	L"{{GetFunctionNamespace}}",
+	sizeof("{{GetFunctionNamespace}}")-1
+};
+
+{{endwhile}}
+extern __declspec(selectany) const _soapmap * __{{GetClassSafeQName}}_funcs[] =
+{
+{{while GetNextFunction}}
+	&__{{GetClassSafeQName}}_{{GetFunctionCppName}}_map,
+{{endwhile}}
+	NULL
+};
+{{while GetNextFunction}}
+
+template <typename TClient>
+inline HRESULT {{GetClassName}}T<TClient>::{{GetFunctionCppName}}(
+{{while GetNextParameter}}
+		{{GetParameterCppType}}{{if IsParameterDynamicArray}}*{{endif}}{{if IsOutParameter}}{{if NotIsParameterFixedArray}}*{{endif}}{{endif}} {{GetParameterCppName}}{{GetParameterSuffix}}{{if IsParameterDynamicArray}}, int{{if IsOutParameter}}*{{endif}} __{{GetParameterCppName}}_nSizeIs{{endif}}{{if NotIsLastParameter}}, {{endif}}
+
+{{endwhile}}	)
+{
+{{while GetNextParameter}}{{if IsParameterDynamicArray}}{{if IsOutParameter}}    if ( {{GetParameterCppName}}{{GetParameterSuffix}} == NULL )
+		return E_POINTER;
+	if( __{{GetParameterCppName}}_nSizeIs == NULL )
+		return E_POINTER;
+{{endif}}
+{{else}}
+{{if IsOutParameter}}{{if NotIsParameterFixedArray}}    if ( {{GetParameterCppName}}{{GetParameterSuffix}} == NULL )
+		return E_POINTER;
+{{endif}}{{endif}}
+{{endif}}
+{{endwhile}}
+
+	HRESULT __atlsoap_hr = InitializeSOAP(NULL);
+	if (FAILED(__atlsoap_hr))
+	{
+		SetClientError(SOAPCLIENT_INITIALIZE_ERROR);
+		return __atlsoap_hr;
+	}
+	
+	CleanupClient();
+
+	CComPtr<IStream> __atlsoap_spReadStream;
+	__{{GetClassSafeQName}}_{{GetFunctionCppName}}_struct __params;
+	memset(&__params, 0x00, sizeof(__params));
+{{while GetNextParameter}}
+{{if IsInParameter}}
+{{if NotIsParameterFixedArray}}
+	__params.{{GetParameterCppName}} = {{if IsOutParameter}}*{{endif}}{{GetParameterCppName}};
+{{else}}
+	memcpy(__params.{{GetParameterCppName}}, {{GetParameterCppName}}, {{GetParameterFixedArraySize}}*sizeof({{GetParameterCppType}}));
+{{endif}}
+{{if IsParameterDynamicArray}}
+	__params.__{{GetParameterCppName}}_nSizeIs = {{if IsOutParameter}}*{{endif}}__{{GetParameterCppName}}_nSizeIs;
+{{endif}}
+{{endif}}
+{{endwhile}}
+
+	__atlsoap_hr = SetClientStruct(&__params, {{GetFunctionIndex}});
+	if (FAILED(__atlsoap_hr))
+	{
+		SetClientError(SOAPCLIENT_OUTOFMEMORY);
+		goto __skip_cleanup;
+	}
+	
+	__atlsoap_hr = GenerateResponse(GetWriteStream());
+	if (FAILED(__atlsoap_hr))
+	{
+		SetClientError(SOAPCLIENT_GENERATE_ERROR);
+		goto __skip_cleanup;
+	}
+	
+	__atlsoap_hr = SendRequest(_T("SOAPAction: \"{{GetSoapAction}}\"\r\n"));
+	if (FAILED(__atlsoap_hr))
+	{
+		goto __skip_cleanup;
+	}
+{{if IsOneWay}}
+	if (GetStatusCode() != 202)
+	{
+		SetClientError(SOAPCLIENT_SERVER_ERROR);
+		__atlsoap_hr = E_FAIL;
+	}
+{{else}}
+	__atlsoap_hr = GetReadStream(&__atlsoap_spReadStream);
+	if (FAILED(__atlsoap_hr))
+	{
+		SetClientError(SOAPCLIENT_READ_ERROR);
+		goto __skip_cleanup;
+	}
+	
+	// cleanup any in/out-params and out-headers from previous calls
+	Cleanup();
+	__atlsoap_hr = BeginParse(__atlsoap_spReadStream);
+	if (FAILED(__atlsoap_hr))
+	{
+		SetClientError(SOAPCLIENT_PARSE_ERROR);
+		goto __cleanup;
+	}
+
+{{while GetNextParameter}}
+{{if IsOutParameter}}
+{{if NotIsParameterFixedArray}}
+	*{{GetParameterCppName}} = __params.{{GetParameterCppName}};
+{{else}}
+	memcpy({{GetParameterCppName}}, __params.{{GetParameterCppName}}, {{GetParameterFixedArraySize}}*sizeof({{GetParameterCppType}}));
+{{endif}}
+{{if IsParameterDynamicArray}}
+	*__{{GetParameterCppName}}_nSizeIs = __params.__{{GetParameterCppName}}_nSizeIs;
+{{endif}}
+{{endif}}
+{{endwhile}}
+{{endif}}
+	goto __skip_cleanup;
+	
+__cleanup:
+	Cleanup();
+__skip_cleanup:
+	ResetClientState(true);
+	memset(&__params, 0x00, sizeof(__params));
+	return __atlsoap_hr;
+}
+{{endwhile}}
+
+template <typename TClient>
+ATL_NOINLINE inline const _soapmap ** {{GetClassName}}T<TClient>::GetFunctionMap()
+{
+	return __{{GetClassSafeQName}}_funcs;
+}
+
+template <typename TClient>
+ATL_NOINLINE inline const _soapmap ** {{GetClassName}}T<TClient>::GetHeaderMap()
+{
+{{while GetNextFunction}}
+{{while GetNextHeader}}
+{{if IsHeaderFixedArray}}
+
+__if_not_exists(__{{GetClassSafeQName}}_{{GetHeaderCppValue}}_dims)
+{
+	static const int __{{GetClassSafeQName}}_{{GetHeaderCppValue}}_dims[] = {{GetHeaderDimsDecl}};
+}
+
+{{endif}}
+{{endwhile}}
+	static const _soapmapentry __{{GetClassSafeQName}}_{{GetFunctionCppName}}_atlsoapheader_entries[] =
+	{
+{{while GetNextHeader}}
+		{
+			{{GetHeaderHashW}},
+			"{{GetHeaderValue}}",
+			L"{{GetHeaderValue}}",
+			sizeof("{{GetHeaderValue}}")-1,
+			{{GetHeaderAtlSoapType}},
+			SOAPFLAG_NONE{{if IsInHeader}} | SOAPFLAG_IN{{endif}}{{if IsOutHeader}} | SOAPFLAG_OUT{{endif}}{{if IsRequiredHeader}} | SOAPFLAG_MUSTUNDERSTAND{{endif}}{{if IsHeaderFixedArray}} | SOAPFLAG_FIXEDARR{{endif}}{{if IsHeaderNullable}} | SOAPFLAG_NULLABLE{{endif}},
+			offsetof({{GetClassName}}T, {{GetHeaderCppValue}}),
+			{{if IsHeaderFixedArray}}__{{GetClassSafeQName}}_{{GetHeaderCppValue}}_dims{{else}}NULL{{endif}},
+			{{if IsHeaderUDT}}&__{{GetHeaderTypeCppQName}}_map{{else}}NULL{{endif}},
+			-1,
+{{if IsHeaderUDT}}
+{{else}}
+{{if HeaderHasNamespace}}
+			{{GetHeaderNamespaceHashW}},
+			"{{GetHeaderNamespace}}",
+			L"{{GetHeaderNamespace}}",
+			sizeof("{{GetHeaderNamespace}}")-1
+{{endif}}
+{{endif}}
+		},
+{{endwhile}}
+		{ 0x00000000 }
+	};
+
+	static const _soapmap __{{GetClassSafeQName}}_{{GetFunctionCppName}}_atlsoapheader_map = 
+	{
+		{{GetFunctionResultNameHashW}},
+		"{{GetFunctionSendName}}",
+		L"{{GetFunctionResultName}}",
+		sizeof("{{GetFunctionSendName}}")-1,
+		sizeof("{{GetFunctionResultName}}")-1,
+		SOAPMAP_HEADER,
+		__{{GetClassSafeQName}}_{{GetFunctionCppName}}_atlsoapheader_entries,
+		0,
+		{{GetExpectedHeaderCount}},
+		-1,
+		SOAPFLAG_NONE{{if IsPAD}} | SOAPFLAG_PAD{{if IsChain}} | SOAPFLAG_CHAIN{{endif}}{{endif}}{{if IsPID}} | SOAPFLAG_PID{{endif}}{{if IsDocument}} | SOAPFLAG_DOCUMENT{{endif}}{{if IsRpc}} | SOAPFLAG_RPC{{endif}}{{if IsLiteral}} | SOAPFLAG_LITERAL{{endif}}{{if IsEncoded}} | SOAPFLAG_ENCODED{{endif}},
+		{{GetFunctionNamespaceHashW}},
+		"{{GetFunctionNamespace}}",
+		L"{{GetFunctionNamespace}}",
+		sizeof("{{GetFunctionNamespace}}")-1
+	};
+
+{{endwhile}}
+
+	static const _soapmap * __{{GetClassSafeQName}}_headers[] =
+	{
+{{while GetNextFunction}}
+		&__{{GetClassSafeQName}}_{{GetFunctionCppName}}_atlsoapheader_map,
+{{endwhile}}
+		NULL
+	};
+	
+	return __{{GetClassSafeQName}}_headers;
+}
+
+template <typename TClient>
+ATL_NOINLINE inline void * {{GetClassName}}T<TClient>::GetHeaderValue()
+{
+	return this;
+}
+
+template <typename TClient>
+ATL_NOINLINE inline const wchar_t * {{GetClassName}}T<TClient>::GetNamespaceUri()
+{
+	return L"{{GetNamespace}}";
+}
+
+template <typename TClient>
+ATL_NOINLINE inline const char * {{GetClassName}}T<TClient>::GetServiceName()
+{
+	return NULL;
+}
+
+template <typename TClient>
+ATL_NOINLINE inline const char * {{GetClassName}}T<TClient>::GetNamespaceUriA()
+{
+	return "{{GetNamespace}}";
+}
+
+template <typename TClient>
+ATL_NOINLINE inline HRESULT {{GetClassName}}T<TClient>::CallFunction(
+	void *, 
+	const wchar_t *, int,
+	size_t)
+{
+	return E_NOTIMPL;
+}
+
+template <typename TClient>
+ATL_NOINLINE inline HRESULT {{GetClassName}}T<TClient>::GetClientReader(ISAXXMLReader **ppReader)
+{
+	if (ppReader == NULL)
+	{
+		return E_INVALIDARG;
+	}
+	
+	CComPtr<ISAXXMLReader> spReader = GetReader();
+	if (spReader.p != NULL)
+	{
+		*ppReader = spReader.Detach();
+		return S_OK;
+	}
+	return TClient::GetClientReader(ppReader);
+}
+{{if EmitNamespace}}
+
+} // namespace {{GetCppNamespace}}
+{{endif}}
+{{while GetNextStruct}}
+
+template<>
+inline HRESULT AtlCleanupValue<{{if EmitNamespace}}{{GetCppNamespace}}::{{endif}}{{GetStructCppName}}>({{if EmitNamespace}}{{GetCppNamespace}}::{{endif}}{{GetStructCppName}} *pVal)
+{
+	pVal;
+{{while GetNextStructField}}
+{{if IsFieldFixedArray}}
+	AtlCleanupArrayMD(pVal->{{GetStructFieldCppName}}, {{if EmitNamespace}}{{GetCppNamespace}}::{{endif}}__{{GetStructSafeCppQName}}_{{GetStructFieldCppName}}_dims);
+{{else}}
+{{if IsFieldDynamicArray}}
+	AtlCleanupArray(pVal->{{GetStructFieldCppName}}, pVal->{{if FieldHasSizeIs}}{{GetFieldSizeIsName}}{{else}}__{{GetStructFieldCppName}}_nSizeIs{{endif}});	
+{{else}}
+	AtlCleanupValue(&pVal->{{GetStructFieldCppName}});
+{{endif}}
+{{endif}}
+{{endwhile}}
+	return S_OK;
+}
+
+template<>
+inline HRESULT AtlCleanupValueEx<{{if EmitNamespace}}{{GetCppNamespace}}::{{endif}}{{GetStructCppName}}>({{if EmitNamespace}}{{GetCppNamespace}}::{{endif}}{{GetStructCppName}} *pVal, IAtlMemMgr *pMemMgr)
+{
+	pVal;
+	pMemMgr;
+	
+{{while GetNextStructField}}
+{{if IsFieldFixedArray}}
+	AtlCleanupArrayMDEx(pVal->{{GetStructFieldCppName}}, {{if EmitNamespace}}{{GetCppNamespace}}::{{endif}}__{{GetStructSafeCppQName}}_{{GetStructFieldCppName}}_dims, pMemMgr);
+{{else}}
+{{if IsFieldDynamicArray}}
+	if (pVal->{{GetStructFieldCppName}} != NULL)
+	{
+		AtlCleanupArrayEx(pVal->{{GetStructFieldCppName}}, pVal->{{if FieldHasSizeIs}}{{GetFieldSizeIsName}}{{else}}__{{GetStructFieldCppName}}_nSizeIs{{endif}}, pMemMgr);		
+		pMemMgr->Free(pVal->{{GetStructFieldCppName}});
+	}
+{{else}}
+	AtlCleanupValueEx(&pVal->{{GetStructFieldCppName}}, pMemMgr);
+{{endif}}
+{{endif}}
+{{endwhile}}
+	return S_OK;
+}
+{{endwhile}}
+{{endif}}

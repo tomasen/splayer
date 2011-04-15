@@ -15503,6 +15503,11 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
   {//New UI
     m_btnList.SetHideStat(MYHTMINTOTRAY, s.fTrayIcon);
 
+    CRect rc;
+    GetWindowRect(&rc);
+    double skinsRate = 1.0;
+    m_btnList.SetCurrentHideState(rc.Width(),skinsRate,m_nLogDPIY);
+
     if(m_fFullScreen || SIZE_MAXIMIZED == nType)
     {
       m_btnList.SetHideStat(L"MAXIMIZE.BMP", TRUE);
@@ -15513,10 +15518,7 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
       m_btnList.SetHideStat(L"BTN_FULLSCREEN.BMP", false);
       m_btnList.SetHideStat(L"RESTORE.BMP", true);
     }
-    CRect rc;
-    GetWindowRect(&rc);
-    double skinsRate = 1.0;
-    m_btnList.SetCurrentHideState(rc.Width(),skinsRate,m_nLogDPIY);
+
     m_btnList.OnSize( rc);
   }
 

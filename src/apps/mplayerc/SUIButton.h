@@ -111,7 +111,7 @@ public:
 		,UINT alignToButton = 0 , CSUIButton * relativeToButton = 0 , CRect marginToBtn = DEFAULT_MARGIN_TOBUTTON
     ,int  hidewidth = 0, CString buttonname = L"");
 
-	CPngImage m_png;
+  svp::CPngImage m_png;
 
 	
 	void LoadImage(LPCTSTR szBmpName);

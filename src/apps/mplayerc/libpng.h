@@ -30,6 +30,8 @@ extern "C" unsigned char* DecompressPNG(struct png_t* png, int* w, int* h);
 #include <atlimage.h>
 #include "mplayerc.h"
 
+namespace svp{
+
 class CPngImage : public CImage
 {
 public:
@@ -100,6 +102,8 @@ public:
 
 		return ret;
 	}
+
+};
 
 };
 #endif

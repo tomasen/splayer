@@ -33,7 +33,7 @@ class CChildView : public CWnd
 	CPoint m_lastlmdownpoint;
 
 	CCritSec m_csLogo;
-	CPngImage m_logo;
+  svp::CPngImage m_logo;
 	CBitmap m_logo_bitmap;
 
 	//CPngImage m_watermark;

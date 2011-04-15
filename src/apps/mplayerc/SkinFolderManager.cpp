@@ -70,9 +70,10 @@ void SkinFolderManager::SeachFile(const wchar_t* lpath)
       {
         std::wstring dir = lpath;
         dir += filename;
-        wchar_t val[MAX_PATH];
-        GetPrivateProfileSection(L"name", val, MAX_PATH, dir.c_str());
-        AddSkinName(m_foldername, L"", val);
+        char val[MAX_PATH];
+        GetPrivateProfileSectionA("name", val, MAX_PATH, Strings::WStringToString(dir).c_str());
+
+        AddSkinName(m_foldername, L"", Strings::Utf8StringToWString(std::string(val)));
       }
       // load resource
       std::wstring res = filename.substr(0, filename.find(L"."));

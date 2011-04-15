@@ -256,14 +256,20 @@ LRESULT SkinPreviewDlg::OnUpdataSkinSelections(UINT /*uMsg*/, WPARAM wParam,
     if (ite->first != newskin)
     {
       pFrame->m_skin_map[++id] = ite->first;
-      m_skinlist.AddString(ite->first.c_str());
+      std::wstring skinname = SkinFolderManager::GetSkinName(ite->first, L"");
+      if (skinname.empty())
+        skinname = ite->first;
+      m_skinlist.AddString(skinname.c_str());
     }
   }
   if (newskin != L"")
   {
     pFrame->m_skin_map[++id] = newskin;
-    newskin += L"(new)";
-    m_skinlist.AddString(newskin.c_str());
+    std::wstring newskinname = SkinFolderManager::GetSkinName(newskin, L"");
+    if (newskinname.empty())
+      newskinname = newskin;
+    newskinname += L"(new)";
+    m_skinlist.AddString(newskinname.c_str());
   }
 
   ChangeCLinkCtrlStr();

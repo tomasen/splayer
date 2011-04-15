@@ -4179,8 +4179,10 @@ void CMainFrame::OnInitMenuPopup(CMenu * pPopupMenu, UINT nIndex, BOOL bSysMenu)
         ite != skinmap.end(); ++ite)
         {
           m_skin_map[id] = ite->first;
-
-          m_skinorg->AppendMenu(MF_ENABLED | MF_STRING, id++, ite->first.c_str());
+          std::wstring skinname = SkinFolderManager::GetSkinName(ite->first, L"");
+          if (skinname.empty())
+            skinname = ite->first;
+          m_skinorg->AppendMenu(MF_ENABLED | MF_STRING, id++, skinname.c_str());
         }
       }
 

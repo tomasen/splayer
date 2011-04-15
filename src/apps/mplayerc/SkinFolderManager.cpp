@@ -6,6 +6,7 @@
 
 std::wstring SkinFolderManager::m_path = L"";
 std::map<std::wstring, std::wstring> SkinFolderManager::m_skinnametobmp_map;
+std::map<std::wstring, std::pair<std::wstring, std::wstring> > SkinFolderManager::m_skinnames;
 
 SkinFolderManager::SkinFolderManager(void):m_count(0),m_bfolderempty(TRUE)
 {
@@ -65,6 +66,14 @@ void SkinFolderManager::SeachFile(const wchar_t* lpath)
     }
     else if (!filename.empty())
     {
+      if (filename == L"skin.ini")
+      {
+        std::wstring dir = lpath;
+        dir += filename;
+        wchar_t val[MAX_PATH];
+        GetPrivateProfileSection(L"name", val, MAX_PATH, dir.c_str());
+        AddSkinName(m_foldername, L"", val);
+      }
       // load resource
       std::wstring res = filename.substr(0, filename.find(L"."));
       if (m_foldername == res)
@@ -91,6 +100,19 @@ BOOL SkinFolderManager::IsFolderEmpty()
 std::map<std::wstring, std::wstring>& SkinFolderManager::ReturnSkinMap()
 {
   return m_skinnametobmp_map;
+}
+
+void SkinFolderManager::AddSkinName(std::wstring tag, std::wstring language, std::wstring name)
+{
+  m_skinnames[tag] = std::make_pair(language, name);
+}
+
+std::wstring SkinFolderManager::GetSkinName(std::wstring tag, std::wstring language)
+{
+  std::wstring name;
+  if (m_skinnames.find(tag) != m_skinnames.end())
+    name = m_skinnames[tag].second;
+  return name;
 }
 
 void SkinFolderManager::SetSkinPath(CString lpFoldername)

@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "SkinFolderManager.h"
 #include "UnCompressZip.h"
+#include "Strings.h"
+#include "logging.h"
 
 std::wstring SkinFolderManager::m_path = L"";
 std::map<std::wstring, std::wstring> SkinFolderManager::m_skinnametobmp_map;
@@ -13,83 +15,66 @@ SkinFolderManager::~SkinFolderManager(void)
 {
 }
 
-void SkinFolderManager::SeachFile(wchar_t* lpath)
+std::wstring SkinFolderManager::UnSkinzip(std::wstring path)
 {
-  UnCompressZip unzip;
-  wchar_t szFind[MAX_PATH];
-  WIN32_FIND_DATA FindFileData;
-  wcscpy(szFind,lpath);
-  wcscat(szFind,L"*.*");
+  UnCompressZip zip;
 
-  HANDLE hFind=::FindFirstFile(szFind,&FindFileData);
+  std::transform(path.begin(), path.end(), path.begin(), tolower);
+  std::wstring dir = path.substr(0, path.find(L".zip"));
+  dir += L"\\";
+
+  zip.SetUnCompressPath(dir.c_str());
+  zip.unzOpen64(Strings::WStringToString(path).c_str());
+  ::DeleteFile(path.c_str());
+
+  return dir;
+}
+
+void SkinFolderManager::SeachFile(const wchar_t* lpath)
+{
+  WIN32_FIND_DATA FindFileData;
+  std::wstring searchpath = lpath;
+  searchpath += L"*.*";
+
+  HANDLE hFind=::FindFirstFile(searchpath.c_str(), &FindFileData);
   if (INVALID_HANDLE_VALUE == hFind)
     return;
 
-  while(TRUE)
+  do
   {
-    std::wstring skinbmp = L"";
+    std::wstring filename = FindFileData.cFileName;
     if (FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
     {
-      if (FindFileData.cFileName[0] != '.' && FindFileData.cFileName[0] != '$')
-      {
-        m_bfolderempty = FALSE;
-        ++m_count;
-        //m_foldername.push_back(FindFileData.cFileName);
-        m_foldername = FindFileData.cFileName;
-        CString path(lpath);
-        path += FindFileData.cFileName;
-        path += L"\\";
-        SeachFile(path.GetBuffer(MAX_PATH));
-        path.ReleaseBuffer();
-      }
+      if (filename == L"." || filename == L"..")
+        continue;
+      std::wstring dir = lpath;
+      dir += filename;
+      dir += L"\\";
+      // Only support single-level directory
+      m_foldername = filename;
+      SeachFile(dir.c_str());
     }
-    else
+    else if ((std::transform(filename.begin(), filename.end(), filename.begin(), tolower)
+            , filename.find(L".zip")) != std::wstring::npos)
     {
-      m_bfolderempty = FALSE;
-      std::wstring scwstr(FindFileData.cFileName);
-      //if (scwstr.Right(scwstr.Find('.')) == L"zip")
-      if (scwstr.find(L".zip") != std::wstring::npos)
-      {
-        //CString folderstr = scwstr.Left(scwstr.Find('.'));
-        int pos = scwstr.find(L".");
-        std::wstring folderstr = scwstr.substr(0, pos);
-        m_foldername = folderstr;
-        folderstr = lpath + folderstr;
-        scwstr = lpath + scwstr;
-        char* scstr;
-      
-        DWORD  num = WideCharToMultiByte(CP_ACP,0,scwstr.c_str(),-1,NULL,0,NULL,0);
-        scstr = (char*)calloc(num + 1,sizeof(char));
-        memset(scstr, 0, num*sizeof(char));
-        WideCharToMultiByte(CP_ACP,0, scwstr.c_str(), -1, scstr, num,NULL,0);
-        scstr[num] = '\0';
-      
-        unzip.SetUnCompressPath(folderstr.c_str());
-        unzip.unzOpen64(scstr);
+      std::wstring dir = lpath;
+      dir += filename;
 
-        ::DeleteFile(scwstr.c_str());
-        ++m_count;
-        folderstr += L"\\";
-        CString path = folderstr.c_str();
-        SeachFile(path.GetBuffer(MAX_PATH));
-        path.ReleaseBuffer();
-      }
-      else
+      m_foldername = filename.substr(0, filename.find(L".zip"));
+      SeachFile(UnSkinzip(dir).c_str());
+    }
+    else if (!filename.empty())
+    {
+      // load resource
+      std::wstring res = filename.substr(0, filename.find(L"."));
+      if (m_foldername == res)
       {
-        //CString bmp = scwstr.Left(scwstr.Find('.'));
-        std::wstring bmp = scwstr.substr(0, scwstr.find(L"."));
-        if (bmp == m_foldername)
-          skinbmp = lpath + scwstr;
+        res = lpath + filename;
+        m_skinnametobmp_map[m_foldername] = res;
       }
     }
-
-    if (m_foldername != L"" && skinbmp != L"")
-      m_skinnametobmp_map[m_foldername] = skinbmp;
-
-    if (!FindNextFile(hFind,&FindFileData))  
-      break;
   }
-    
+  while(FindNextFile(hFind, &FindFileData));
   FindClose(hFind);
 }
 

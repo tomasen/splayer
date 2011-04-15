@@ -6,7 +6,7 @@ public:
   SkinFolderManager(void);
   ~SkinFolderManager(void);
   
-  void SeachFile(wchar_t* lpath);
+  void SeachFile(const wchar_t* lpath);
 
   int  GetFileCount();
 
@@ -24,6 +24,8 @@ public:
 
   int m_count;
 private:
+  std::wstring UnSkinzip(std::wstring path);
+
   BOOL m_bfolderempty;
   //std::vector<CString> m_foldername;
   static std::map<std::wstring, std::wstring> m_skinnametobmp_map;

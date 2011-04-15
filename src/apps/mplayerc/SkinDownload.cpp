@@ -167,7 +167,7 @@ void SkinDownload::_Thread()
   skinpath += szDir;
   skinpath += L"skins\\";
   SkinFolderManager skmn;
-  skmn.ReturnSkinMap().clear();
+  skmn.ClearMap();
   skmn.SetSkinPath(skinpath);
   skmn.SeachFile(skinpath.GetBuffer(MAX_PATH));
   skinpath.ReleaseBuffer();

@@ -533,6 +533,7 @@ public:
   afx_msg void OnUpdateFileSaveAs(CCmdUI* pCmdUI);
   afx_msg void OnFileSaveImage();
   afx_msg void OnScreenSnapshot();
+  afx_msg void OnScreenSnapshotToClipBoard();
   afx_msg void OnControllerSaveImage();
   afx_msg void OnCompleteQuerySubtitle();
   afx_msg void OnFileSaveImageAuto();

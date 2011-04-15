@@ -1672,11 +1672,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon\video.ico"
+				RelativePath=".\res\ecio.icons\video.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\ecio.icons\video.ico"
+				RelativePath=".\res\icon\video.ico"
 				>
 			</File>
 			<File

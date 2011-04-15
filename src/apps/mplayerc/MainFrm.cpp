@@ -261,6 +261,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_COMMAND(ID_CONTROLLER_SAVE_IMAGE, OnControllerSaveImage)
   ON_COMMAND(ID_COMPLETE_QUERY_SUBTITLE, OnCompleteQuerySubtitle)
 	ON_COMMAND(ID_SCREENSNAPSHOT, OnScreenSnapshot)
+  ON_COMMAND(ID_SCREENSNAPSHOTTOCLIPBOARD, OnScreenSnapshotToClipBoard)
   ON_UPDATE_COMMAND_UI(ID_FILE_SAVE_IMAGE, OnUpdateFileSaveImage)
 	ON_UPDATE_COMMAND_UI(ID_SCREENSNAPSHOT, OnUpdateFileSaveImage)
   ON_COMMAND(ID_FILE_SAVE_IMAGE_AUTO, OnFileSaveImageAuto)
@@ -6558,7 +6559,10 @@ BOOL CMainFrame::IsRendererCompatibleWithSaveImage()
   }
   return result;
 }
-
+void CMainFrame::OnScreenSnapshotToClipBoard()
+{
+  SaveImage();
+}
 void CMainFrame::OnScreenSnapshot()
 {
   OAFilterState fs = GetMediaState();

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Snapshot_Win.h"
-
+#include "../../resource.h"
+#define ResStr(id) CString(MAKEINTRESOURCE(id))
 ////////////////////////////////////////////////////////////////////////////////
 // Note:
 // The Viewfinder looks like this:
@@ -177,10 +178,9 @@ void CSnapshot_Win::OnPaint(WTL::CDCHandle dc)
     gpMem.FillRectangle(&brDarkGray, rcTooltip.left, rcTooltip.top, rcTooltip.Width(), rcTooltip.Height());
 
     CString sCurArea;
-    sCurArea.Format(L"当前大小: %d*%d", rcViewfinder.Width(), rcViewfinder.Height());
+    sCurArea.Format(ResStr(IDS_SNAPSHOT_CURRENT_RECT), rcViewfinder.Width(), rcViewfinder.Height());
 
-    CString sUserTip;
-    sUserTip.Format(L"双击即可完成截图");
+    CString sUserTip = ResStr(IDS_SNAPSHOT_CURRENT_HINT);
 
     Font fnTooltip(L"Tahoma", 9);
     SolidBrush brWhite(Color(200, 255, 255, 255));

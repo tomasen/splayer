@@ -147,11 +147,11 @@ void SkinFolderManager::DeleteFile(LPCTSTR lpath)
     {
       if (FindFileData.cFileName[0] != '.' && FindFileData.cFileName[0] != '$')
       {
-        CString path(lpath);
+        std::wstring path(lpath);
         path += FindFileData.cFileName;
         path += L"\\";
-        SeachFile(path.GetBuffer());
-        RemoveDirectory(path);
+        SeachFile(path.c_str());
+        RemoveDirectory(path.c_str());
       }
     }
     else
@@ -171,4 +171,21 @@ void SkinFolderManager::DeleteFile(LPCTSTR lpath)
 void SkinFolderManager::ClearMap()
 {
   m_skinnametobmp_map.clear();
+}
+
+std::wstring  SkinFolderManager::RemoveSkinName(std::wstring skinname)
+{
+  std::wstring tag;
+  std::map<std::wstring, std::pair<std::wstring, std::wstring> >::iterator it;
+  for (it = m_skinnames.begin(); it != m_skinnames.end(); ++it)
+  {
+    if (it->second.second == skinname)
+    {
+      tag = it->first;
+      m_skinnames.erase(it);
+      break;
+    }
+
+  }
+  return tag;
 }

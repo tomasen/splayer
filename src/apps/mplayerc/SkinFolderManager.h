@@ -24,7 +24,7 @@ public:
 
   void ClearMap();
   static std::wstring GetSkinName(std::wstring tag, std::wstring language);
-
+  static std::wstring RemoveSkinName(std::wstring skinname);
   int m_count;
 private:
   std::wstring UnSkinzip(std::wstring path);

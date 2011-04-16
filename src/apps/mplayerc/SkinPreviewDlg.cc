@@ -30,6 +30,7 @@ LRESULT SkinPreviewDlg::OnSkinSelect(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
   CString itemstr;
   m_skinlist.GetText(index, itemstr.GetBuffer(MAX_PATH));
   itemstr.ReleaseBuffer();
+
   UINT id = FindMenuID(itemstr);
   ::PostMessage(GetParent(), WM_COMMAND, id, NULL);
   return 0;
@@ -38,14 +39,18 @@ LRESULT SkinPreviewDlg::OnSkinSelect(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
 LRESULT SkinPreviewDlg::OnSkinDelete(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
                                      BOOL& /*bHandled*/)
 {
+  AppSettings& s = AfxGetAppSettings();
   int index = m_skinlist.GetCurSel();
   CString str;
   m_skinlist.GetText(index, str.GetBuffer(MAX_PATH));
   str.ReleaseBuffer();
   if (str.Find(L"(new)") != -1)
     str = str.Left(str.Find('('));
+  
   m_skinlist.DeleteString(index);
 
+  str = SkinFolderManager::RemoveSkinName(str.GetBuffer()).c_str();
+  str.ReleaseBuffer();
   for (std::map<std::wstring, std::wstring>::iterator optionite = m_skinoption->begin();
        optionite != m_skinoption->end(); ++optionite)
     if (optionite->first.c_str() == str)
@@ -66,7 +71,6 @@ LRESULT SkinPreviewDlg::OnSkinDelete(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
   SkinFolderManager skinmn;
   skinmn.DeleteFolder(str);
 
-  AppSettings& s = AfxGetAppSettings();
   if (s.skinname.c_str() == str)
     ::PostMessage(GetParent(), WM_COMMAND, ID_SKIN_FIRST, 0);
   
@@ -121,7 +125,7 @@ LRESULT SkinPreviewDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/,
 
   for (std::map<std::wstring, std::wstring>::iterator ite = m_skinoption->begin();
        ite != m_skinoption->end(); ++ite)
-    m_skinlist.AddString(ite->first.c_str());
+    m_skinlist.AddString(SkinFolderManager::GetSkinName(ite->first, L"").c_str());
 
   HWND picturehwnd = GetDlgItem(IDD_SKINPREVIEW_PICTURE);
   if (picturehwnd)
@@ -146,7 +150,7 @@ LRESULT SkinPreviewDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/,
   {
     TCHAR liststr[MAX_PATH];
     m_skinlist.GetText(i, liststr);
-    if (s.skinname == liststr)
+    if (SkinFolderManager::GetSkinName(s.skinname, L"").c_str() == liststr)
     {
       index = i;
       break;
@@ -186,14 +190,18 @@ LRESULT SkinPreviewDlg::OnLbnSelchangeList(WORD /*wNotifyCode*/, WORD /*wID*/, H
   std::wstring picturpath;
   for (std::map<std::wstring, std::wstring>::iterator ite = m_skinoption->begin();
        ite != m_skinoption->end(); ++ite)
-    if (ite->first.c_str() == s)
-      picturpath = ite->second;
+       if (SkinFolderManager::GetSkinName(ite->first, L"").c_str() == s)
+          picturpath = ite->second;
 
-  HBITMAP hbitmap = (HBITMAP)LoadImage(0, picturpath.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
- 
-  if (hbitmap)
-    m_skinpicture.SetBitmap(hbitmap);
+  if (!picturpath.empty())
+  {
 
+    HBITMAP hbitmap = (HBITMAP)LoadImage(0, picturpath.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+   
+    if (hbitmap)
+      m_skinpicture.SetBitmap(hbitmap);
+
+  }
   return 0;
 }
 
@@ -205,7 +213,7 @@ UINT SkinPreviewDlg::FindMenuID(CString itemname)
   m_skinIDtoName_map = pFrame->m_skin_map;
   for (std::map<UINT, std::wstring>::iterator ite = m_skinIDtoName_map.begin();
        ite != m_skinIDtoName_map.end(); ++ite)
-    if (ite->second.c_str() == itemname)
+    if (SkinFolderManager::GetSkinName(ite->second, L"").c_str() == itemname)
       return ite->first;
   
   return 0;
@@ -225,7 +233,7 @@ LRESULT SkinPreviewDlg::OnClickSyslink(int /*wParam*/, LPNMHDR lParam, BOOL& /*b
 }
 
 LRESULT SkinPreviewDlg::OnUpdataSkinSelections(UINT /*uMsg*/, WPARAM wParam, 
-                                    LPARAM /*lParam*/, BOOL& /*bHandled*/)
+                                    LPARAM /*lParam*/, BOOL& bHandled)
 {
   m_skinoption = &SkinFolderManager::ReturnSkinMap();
   
@@ -272,9 +280,10 @@ LRESULT SkinPreviewDlg::OnUpdataSkinSelections(UINT /*uMsg*/, WPARAM wParam,
     m_skinlist.AddString(newskinname.c_str());
   }
 
+  m_skinlist.SetFocus();
   ChangeCLinkCtrlStr();
   ChangeCStaticPicture();
-
+  OnSkinSelect(NULL, NULL, NULL, bHandled);
   return 0;
 }
 

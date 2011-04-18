@@ -2954,7 +2954,7 @@ bool CSimpleTextSubtitle::SaveAs(CString fn, exttype et, double fps, CTextFile::
 //	Sort(true);
 
   int signtimes = 0;
-  std::wstring signstring  = L"\n(subtitle from http://shooter.cn by SPlayer)\n\n\u2122";
+  std::wstring signstring  = L"\n(subtitle from http://shooter.cn by SPlayer\u2122)";
 	for(ptrdiff_t i = 0, j = GetCount(), k = 0; i < j; i++)
 	{
 		STSEntry& stse = GetAt(i);
@@ -2977,20 +2977,11 @@ bool CSimpleTextSubtitle::SaveAs(CString fn, exttype et, double fps, CTextFile::
 			? GetStrW(i, et == EXTSSA || et == EXTASS)
 			: GetStrWA(i, et == EXTSSA || et == EXTASS);
 
-    if (signtimes > 0 && signtimes < 4)
-      str += signstring.c_str();
 
-    if (i == (int)(j/2) || i == (j - 15)) 
+    if (i >= (j - 2) && signtimes < 2) //i == (int)(j/2) || 
     {
       str += signstring.c_str();
-      signtimes = 1;
-    }
-
-    if (signtimes > 0)
-    {
       signtimes++;
-      if (signtimes > 3)
-        signtimes = 0;
     }
 
 		CStringW str2;

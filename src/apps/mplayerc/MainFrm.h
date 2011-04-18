@@ -64,6 +64,7 @@ public:
   friend class CGraphThread;
   friend class CGraphCore;
   CGraphThread* m_pGraphThread;
+  int s_fOpenedThruThread;
 
   friend class CTextPassThruFilter;
   void AddTextPassThruFilter();

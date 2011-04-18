@@ -14657,9 +14657,13 @@ void CMainFrame::OpenMedia(CAutoPtr<OpenMediaData> pOMD)
 
   }
 
+  s_fOpenedThruThread = false;
   if(m_pGraphThread && fUseThread
     && AfxGetAppSettings().fEnableWorkerThreadForOpening)
+  {
+    s_fOpenedThruThread = true;
     m_pGraphThread->PostThreadMessage(CGraphThread::TM_OPEN, 0, (LPARAM)pOMD.Detach());
+  }
   else
     OpenMediaPrivate(pOMD);
 
@@ -14716,7 +14720,7 @@ void CMainFrame::CloseMedia()
 
   OnFilePostClosemedia();
 
-  if(m_pGraphThread )
+  if(m_pGraphThread && s_fOpenedThruThread)
   {
 
     CAMEvent e;
@@ -14729,7 +14733,7 @@ void CMainFrame::CloseMedia()
       m_pGraphThread = (CGraphThread*)AfxBeginThread(RUNTIME_CLASS(CGraphThread));
       if(m_pGraphThread)
         m_pGraphThread->SetMainFrame(this);
-
+      s_fOpenedThruThread = false;
     }
   }
   else

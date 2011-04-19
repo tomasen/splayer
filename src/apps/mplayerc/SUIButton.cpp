@@ -31,6 +31,7 @@ m_bsingleormultiply(0)
 
   m_szBmpName = szBmpName;
 	m_hide = bHide;
+  m_currenthide = m_hide;
 	m_hidewidth = hidewidth;
   m_buttonname = buttonname;
 	CountDPI();

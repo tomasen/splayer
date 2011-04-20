@@ -4137,11 +4137,11 @@ void CMainFrame::OnInitMenuPopup(CMenu * pPopupMenu, UINT nIndex, BOOL bSysMenu)
     {
       AppSettings& s = AfxGetAppSettings();
       if (s.bAeroGlass)
-       return;
+       continue;
       
       if (!AfxGetMyApp()->m_Verinfo || (HIWORD(AfxGetMyApp()->m_Verinfo->dwProductVersionMS) <= 3 &&
            LOWORD(AfxGetMyApp()->m_Verinfo->dwProductVersionMS <= 6)))
-          return;
+          continue;
       m_skinorg = pPopupMenu->GetSubMenu(i);
       if (!m_bmenuinitialize)
        m_skincount = m_skinorg->GetMenuItemCount();

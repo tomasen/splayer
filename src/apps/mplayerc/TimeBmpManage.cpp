@@ -50,15 +50,25 @@ BITMAP TimeBmpManage::CreateRightTimeBmp(CDC& dc)
       HBITMAP oldbmp;
       std::wstring firststr;
       std::wstring secondstr;
-      ParseDigital(time[i], firststr, secondstr);
-      CDC* dcmem = CreateBmp(dc, bm, firststr, oldbmp);
-      dc.AlphaBlend(paintwidth, 0, bm.bmWidth, bm.bmHeight, dcmem, 0, 0, bm.bmWidth, bm.bmHeight, bf);
-      DeleteDcMem(dcmem, oldbmp);
-      paintwidth += bm.bmWidth;
-      dcmem = CreateBmp(dc, bm, secondstr, oldbmp);
-      dc.AlphaBlend(paintwidth, 0, bm.bmWidth, bm.bmHeight, dcmem, 0, 0, bm.bmWidth, bm.bmHeight, bf);
-      DeleteDcMem(dcmem, oldbmp);
-      paintwidth += bm.bmWidth;
+      std::wstring unused;
+      ParseDigital(time[i], firststr, secondstr, unused);
+
+      CDC* dcmem = 0;
+      if (!firststr.empty())
+      {
+        dcmem = CreateBmp(dc, bm, firststr, oldbmp);
+        dc.AlphaBlend(paintwidth, 0, bm.bmWidth, bm.bmHeight, dcmem, 0, 0, bm.bmWidth, bm.bmHeight, bf);
+        DeleteDcMem(dcmem, oldbmp);
+        paintwidth += bm.bmWidth;
+      }
+
+      if (!secondstr.empty())
+      {
+        dcmem = CreateBmp(dc, bm, secondstr, oldbmp);
+        dc.AlphaBlend(paintwidth, 0, bm.bmWidth, bm.bmHeight, dcmem, 0, 0, bm.bmWidth, bm.bmHeight, bf);
+        DeleteDcMem(dcmem, oldbmp);
+        paintwidth += bm.bmWidth;
+      }
 
       if (i != 2)
       {
@@ -86,15 +96,25 @@ BITMAP TimeBmpManage::CreateRightTimeBmp(CDC& dc)
       HBITMAP oldbmp;
       std::wstring firststr;
       std::wstring secondstr;
-      ParseDigital(time[i], firststr, secondstr);
-      CDC* dcmem = CreateBmp(dc, bm, firststr, oldbmp);
-      dc.AlphaBlend(paintwidth, 0, bm.bmWidth, bm.bmHeight, dcmem, 0, 0, bm.bmWidth, bm.bmHeight, bf);
-      DeleteDcMem(dcmem, oldbmp);
-      paintwidth += bm.bmWidth;
-      dcmem = CreateBmp(dc, bm, secondstr, oldbmp);
-      dc.AlphaBlend(paintwidth, 0, bm.bmWidth, bm.bmHeight, dcmem, 0, 0, bm.bmWidth, bm.bmHeight, bf);
-      DeleteDcMem(dcmem, oldbmp);
-      paintwidth += bm.bmWidth;
+      std::wstring unused;
+      ParseDigital(time[i], firststr, secondstr, unused);
+
+      CDC* dcmem = 0;
+      if (!firststr.empty())
+      {
+        dcmem = CreateBmp(dc, bm, firststr, oldbmp);
+        dc.AlphaBlend(paintwidth, 0, bm.bmWidth, bm.bmHeight, dcmem, 0, 0, bm.bmWidth, bm.bmHeight, bf);
+        DeleteDcMem(dcmem, oldbmp);
+        paintwidth += bm.bmWidth;
+      }
+
+      if (!secondstr.empty())
+      {
+        dcmem = CreateBmp(dc, bm, secondstr, oldbmp);
+        dc.AlphaBlend(paintwidth, 0, bm.bmWidth, bm.bmHeight, dcmem, 0, 0, bm.bmWidth, bm.bmHeight, bf);
+        DeleteDcMem(dcmem, oldbmp);
+        paintwidth += bm.bmWidth;
+      }
 
       if (i != 2)
       {
@@ -131,17 +151,32 @@ BITMAP TimeBmpManage::CreateRightTimeBmp(CDC& dc)
 
       std::wstring firststr;
       std::wstring secondstr;
-      ParseDigital(status.BatteryLifePercent, firststr, secondstr);
+      std::wstring thirdstr;
+      ParseDigital(status.BatteryLifePercent, firststr, secondstr, thirdstr);
 
-      dcBatteryMem = CreateBmp(dc, bm, firststr, oldbmp);
-      dc.AlphaBlend(paintwidth, 0, bm.bmWidth, bm.bmHeight, dcBatteryMem, 0, 0, bm.bmWidth, bm.bmHeight, bf);
-      DeleteDcMem(dcBatteryMem, oldbmp);
-      paintwidth += bm.bmWidth;
+      if (!firststr.empty())
+      {
+        dcBatteryMem = CreateBmp(dc, bm, firststr, oldbmp);
+        dc.AlphaBlend(paintwidth, 0, bm.bmWidth, bm.bmHeight, dcBatteryMem, 0, 0, bm.bmWidth, bm.bmHeight, bf);
+        DeleteDcMem(dcBatteryMem, oldbmp);
+        paintwidth += bm.bmWidth;
+      }
 
-      dcBatteryMem = CreateBmp(dc, bm, secondstr, oldbmp);
-      dc.AlphaBlend(paintwidth, 0, bm.bmWidth, bm.bmHeight, dcBatteryMem, 0, 0, bm.bmWidth, bm.bmHeight, bf);
-      DeleteDcMem(dcBatteryMem, oldbmp);
-      paintwidth += bm.bmWidth;
+      if (!secondstr.empty())
+      {
+        dcBatteryMem = CreateBmp(dc, bm, secondstr, oldbmp);
+        dc.AlphaBlend(paintwidth, 0, bm.bmWidth, bm.bmHeight, dcBatteryMem, 0, 0, bm.bmWidth, bm.bmHeight, bf);
+        DeleteDcMem(dcBatteryMem, oldbmp);
+        paintwidth += bm.bmWidth;
+      }
+
+      if (!thirdstr.empty())
+      {
+        dcBatteryMem = CreateBmp(dc, bm, thirdstr, oldbmp);
+        dc.AlphaBlend(paintwidth, 0, bm.bmWidth, bm.bmHeight, dcBatteryMem, 0, 0, bm.bmWidth, bm.bmHeight, bf);
+        DeleteDcMem(dcBatteryMem, oldbmp);
+        paintwidth += bm.bmWidth;
+      }
 
       bm.bmWidth = paintwidth;
     }
@@ -172,15 +207,25 @@ BITMAP TimeBmpManage::CreateLeftTimeBmp(CDC& dc)
     HBITMAP oldbmp;
     std::wstring firststr;
     std::wstring secondstr;
-    ParseDigital(time[i], firststr, secondstr);
-    CDC* dcmem = CreateBmp(dc, bm, firststr, oldbmp);
-    dc.AlphaBlend(paintwidth, 0, bm.bmWidth, bm.bmHeight, dcmem, 0, 0, bm.bmWidth, bm.bmHeight, bf);
-    DeleteDcMem(dcmem, oldbmp);
-    paintwidth += bm.bmWidth;
-    dcmem = CreateBmp(dc, bm, secondstr, oldbmp);
-    dc.AlphaBlend(paintwidth, 0, bm.bmWidth, bm.bmHeight, dcmem, 0, 0, bm.bmWidth, bm.bmHeight, bf);
-    DeleteDcMem(dcmem, oldbmp);
-    paintwidth += bm.bmWidth;
+    std::wstring unused;
+    ParseDigital(time[i], firststr, secondstr, unused);
+
+    CDC* dcmem = 0;
+   if (!firststr.empty())
+    {
+      dcmem = CreateBmp(dc, bm, firststr, oldbmp);
+      dc.AlphaBlend(paintwidth, 0, bm.bmWidth, bm.bmHeight, dcmem, 0, 0, bm.bmWidth, bm.bmHeight, bf);
+      DeleteDcMem(dcmem, oldbmp);
+      paintwidth += bm.bmWidth;
+    }
+
+    if (!secondstr.empty())
+    {
+      dcmem = CreateBmp(dc, bm, secondstr, oldbmp);
+      dc.AlphaBlend(paintwidth, 0, bm.bmWidth, bm.bmHeight, dcmem, 0, 0, bm.bmWidth, bm.bmHeight, bf);
+      DeleteDcMem(dcmem, oldbmp);
+      paintwidth += bm.bmWidth;
+    }
 
     if (i != 2)
     {
@@ -228,8 +273,19 @@ void TimeBmpManage::DeleteDcMem(CDC* dcmem, HBITMAP oldbmp)
   delete dcmem;
 }
 
-void TimeBmpManage::ParseDigital(BYTE time, std::wstring& firststr, std::wstring& secondstr)
+void TimeBmpManage::ParseDigital(BYTE time, std::wstring& firststr, std::wstring& secondstr, std::wstring &thirdstr)
 {
+  if (time > 100)
+    return;
+
+  if (time == 100)
+  {
+    firststr = L"playtime_1.bmp";
+    secondstr = L"playtime_0.bmp";
+    thirdstr = L"playtime_0.bmp";
+    return;
+  }
+
   int decimal = time / 10;
   wchar_t s[10];
   _itow(decimal, s, 10);

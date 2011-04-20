@@ -15,7 +15,7 @@ public:
 
   void SetPlaytime(REFERENCE_TIME rTimeCur, REFERENCE_TIME rTimeStop);
 
-  void ParseDigital(BYTE time, std::wstring& firststr, std::wstring& secondstr);
+  void ParseDigital(BYTE time, std::wstring& firststr, std::wstring& secondstr, std::wstring &thirdstr);
   void ToggleDisplayType();
   int GetRightTimeBmpWidth();
 

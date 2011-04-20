@@ -13,6 +13,8 @@
 #include <evr.h>
 #include <evr9.h>
 
+#include "textpassthrufilter.h"
+
 #include "../../filters/misc/SyncClock/Interfaces.h"
 #include "../../filters/transform/svpfilter/SVPSubFilter.h"
 
@@ -55,6 +57,14 @@ public:
   int vinput, vchannel, ainput;
 };
 
+
+class CMainFrame;
+class CChildView;
+class CPlayerCaptureBar;
+class CPlayerPlaylistBar;
+class CPlayerSeekBar;
+class CPlayerToolBar;
+
 class CGraphCore
 {
 public:
@@ -66,22 +76,43 @@ public:
 
   CString m_fnCurPlayingFile;
   time_t  m_tPlayStartTime;
+  bool m_fUpdateInfoBar;
+  bool m_fOpeningAborted;
+  std::wstring m_playingmsg, m_closingmsg;
+  int m_iPlaybackMode;
+
+  virtual CMainFrame* GetMainFrame() = 0;
+  virtual CPlayerCaptureBar* GetCaptureBar() = 0;
+  virtual CPlayerPlaylistBar* GetPlaylistBar() = 0;
+  virtual CPlayerSeekBar* GetSeekBar() = 0;
+  virtual CPlayerToolBar* GetToolBar() = 0;
+  virtual CChildView* GetVideoView() = 0;
 
   virtual CString GetAnEasyToUnderstoodSubtitleName(CString szName) = 0;
   virtual void SendStatusMessage(CString msg, int nTimeOut, int iAlign = 0) = 0;
   virtual CString getCurPlayingSubfile(int * iSubDelayMS = NULL,int subid = 0) = 0;
-
+  virtual void OnPlayStop() = 0;
+  virtual void SVPSubDownloadByVPath(CString szVPath, CAtlList<CString>* szaStatMsgs = NULL) = 0;
+  virtual void OsdMsg_SetShader(CString* appendmsg = NULL) = 0;
+  virtual void OpenSetupWindowTitle(CString fn = _T("")) = 0;
+  virtual void OnFavoritesAddReal( BOOL bRecent = FALSE , BOOL bForceDel = FALSE ) = 0;
   /************************************************************************/
 
   enum {MLS_CLOSED, MLS_LOADING, MLS_LOADED, MLS_CLOSING};
 
   // we need open / play pause / seek / close / vol control / sub control / audio and video switching where
 
-  // should be private
-  void CleanGraph();
+  CGraphThread* m_pGraphThread;
 
+  void CleanGraph();
+  CSize GetVideoSize();
+  OAFilterState GetMediaState();
+  void AddTextPassThruFilter();
   BOOL SetVMR9ColorControl(float Brightness, float Contrast, float Hue,
                            float Saturation, BOOL silent = false);
+
+  //  Playback Control  Functions and Variables
+  void SetBalance(int balance);
 
   // Subtitles
   bool LoadSubtitle(CString fn, int sub_delay_ms = 0, BOOL bIsForPlayList = false);
@@ -102,8 +133,62 @@ public:
   DWORD_PTR m_nSubtitleId;
   DWORD_PTR m_nSubtitleId2;
 
+  // chapters (file mode)
+  void SetupChapters();
+  
+  // shaders
+  CAtlList<CString> m_shaderlabels;
+  void SetShaders( BOOL silent = false);
+  void UpdateShaders(CString label);
+
+  // Operations
+  void OpenMedia(CAutoPtr<OpenMediaData> pOMD);
+  void CloseMedia();
+  bool OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD);
+  void CloseMediaPrivate();
+  void OpenCreateGraphObject(OpenMediaData* pOMD);
+  HRESULT OpenMMSUrlStream(CString szFn);
+  void OpenFile(OpenFileData* pOFD);
+  void OpenDVD(OpenDVDData* pODD);
+  void OpenCustomizeGraph();
+  void OpenCapture(OpenDeviceData* pODD);
+  void OpenSetupVideo();
+  void OpenSetupAudio();
+
+  int m_iRedrawAfterCloseCounter;
+  DVD_DOMAIN m_iDVDDomain;
+  int m_iMediaLoadState;
+  CAtlArray<REFERENCE_TIME> m_kfs;
+  UINT m_iAudioChannelMaping;
+  bool m_fAudioOnly;
+  CStringW m_VidDispName, m_AudDispName;
+  int m_iSpeedLevel;
+  bool m_fEndOfStream;
+  bool m_fLiveWM;
+  CString m_lastUrl;
+  REFERENCE_TIME m_rtDurationOverride;
+  BOOL m_is_resume_from_last_exit_point;
+
+  // Capturing
+  bool m_fCapturing;
+  // pBF: 0 buff, 1 enc, 2 mux, pmt is for 1 enc
+  HRESULT BuildCapture(IPin* pPin, IBaseFilter* pBF[3],
+                  const GUID& majortype, AM_MEDIA_TYPE* pmt); 
+  bool BuildToCapturePreviewPin(IBaseFilter* pVidCap, IPin** pVidCapPin, IPin** pVidPrevPin, 
+    IBaseFilter* pAudCap, IPin** pAudCapPin, IPin** pAudPrevPin);
+  bool BuildGraphVideoAudio(int fVPreview, bool fVCapture, int fAPreview, bool fACapture);
+
+  //  Snapshot
+  bool GetDIB(BYTE** ppData, long& size, bool fSilent = false);
+  void SaveDIB(LPCTSTR fn, BYTE* pData, long size);
+  void SaveThumbnails(LPCTSTR fn);
+  int m_VolumeBeforeFrameStepping;
+
   bool m_fCustomGraph;
   bool m_fRealMediaGraph, m_fShockwaveGraph, m_fQuicktimeGraph;
+
+  // thread switch on opened or closed
+  BOOL m_fOpenedThruThread;
 
   CInterfaceArray<IUnknown, &IID_IUnknown> m_pparray;
   CInterfaceArray<IAMStreamSelect> m_ssarray;
@@ -157,4 +242,7 @@ public:
   CComPtr<IBaseFilter> m_pRefClock; // Adjustable reference clock. GothSync
   CComPtr<ISyncClock> m_pSyncClock;
 
+private:
+  void MediaTypeDlg();
+  void ApplyOptionToCaptureBar(OpenDeviceData* p);
 };

@@ -44,7 +44,7 @@ protected:
   void AddSubStream(ISubStream* pSubStream) {
     if(m_pSubStreamOld) {
       if(pSubStream) {
-        m_pTPTFilter->m_pMainFrame->ReplaceSubtitle(m_pSubStreamOld, pSubStream);
+        m_pTPTFilter->m_graphcore->ReplaceSubtitle(m_pSubStreamOld, pSubStream);
       }
       m_pSubStreamOld = NULL;
     }
@@ -55,7 +55,7 @@ protected:
   }
 
   void InvalidateSubtitle(REFERENCE_TIME rtStart, ISubStream* pSubStream) {
-    m_pTPTFilter->m_pMainFrame->InvalidateSubtitle((DWORD_PTR)pSubStream, rtStart);
+    m_pTPTFilter->m_graphcore->InvalidateSubtitle((DWORD_PTR)pSubStream, rtStart);
   }
 
 public:
@@ -213,12 +213,12 @@ HRESULT CTextPassThruOutputPin::GetMediaType(int iPosition, CMediaType* pmt)
 // CTextPassThruFilter
 //
 
-CTextPassThruFilter::CTextPassThruFilter(CMainFrame* pMainFrame)
+CTextPassThruFilter::CTextPassThruFilter(CGraphCore* gc)
 : CBaseFilter(NAME("CTextPassThruFilter"), NULL, this, __uuidof(this))
-, m_pMainFrame(pMainFrame)
+, m_graphcore(gc)
 {
   HRESULT hr;
-  m_pInput = DNew CTextPassThruInputPin(this, this, &m_pMainFrame->m_csSubLock, &hr);
+  m_pInput = DNew CTextPassThruInputPin(this, this, &m_graphcore->m_csSubLock, &hr);
   m_pOutput = DNew CTextPassThruOutputPin(this, this, &hr);
 }
 

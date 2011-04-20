@@ -6,42 +6,52 @@
 #include "../Model/appSQLlite.h"
 #include "logging.h"
 #include "pcid/pcid/PCIDCalculator.h"
+#include "../mplayerc.h"
+
+static std::wstring uuid_cache;
 
 int SPlayerGUID::GenerateGUID(std::wstring& uuidstring)
 {
-  UUID splayeruuid;
-  RPC_WSTR uuidstr;
-  std::wstring dbpath;
-  wchar_t apppath[MAX_PATH];
-
-  ::GetEnvironmentVariable(L"APPDATA", apppath, MAX_PATH);
-  dbpath = apppath;
-  dbpath += L"\\SPlayer\\local.db";
-
-  SQLliteapp* cfgdb = new SQLliteapp(dbpath);
-  CString cfguuid = cfgdb->GetProfileString(L"SPlayerGUID", L"GenerateGUID");
-  if (cfguuid.IsEmpty())
+  if (!uuid_cache.empty())
+    uuidstring = uuid_cache;
+  else
   {
-    RPC_STATUS hr = UuidCreateSequential(&splayeruuid);
 
-    if (hr != RPC_S_OK && hr != RPC_S_UUID_LOCAL_ONLY)
-      uuidstring = RandMakeGUID();
-    else if (UuidToString(&splayeruuid, &uuidstr) == RPC_S_OK)
+    UUID splayeruuid;
+    RPC_WSTR uuidstr;
+    std::wstring dbpath;
+    
+    SQLliteapp* cfgdb = AfxGetMyApp()->sqlite_local_record;
+    CString cfguuid;
+    if (cfgdb)
+      cfguuid= cfgdb->GetProfileString(L"SPlayerGUID", L"GenerateGUID");
+    if (cfguuid.IsEmpty())
     {
-      // RPC_WSTR is unsigned short*.  wchar_t is a built-in type of Visual C++,
-      // so the type cast is necessary.
-      uuidstring.assign(reinterpret_cast<wchar_t*>(uuidstr));
-      RpcStringFree(&uuidstr);
+      RPC_STATUS hr = UuidCreateSequential(&splayeruuid);
+
+      if (hr != RPC_S_OK && hr != RPC_S_UUID_LOCAL_ONLY)
+        uuidstring = RandMakeGUID();
+      else if (UuidToString(&splayeruuid, &uuidstr) == RPC_S_OK)
+      {
+        // RPC_WSTR is unsigned short*.  wchar_t is a built-in type of Visual C++,
+        // so the type cast is necessary.
+        uuidstring.assign(reinterpret_cast<wchar_t*>(uuidstr));
+        RpcStringFree(&uuidstr);
+      }
+      else
+        uuidstring = RandMakeGUID();
+
+      uuidstring += L"_" + GetComputerID();
+      if (cfgdb)
+        cfgdb->WriteProfileString(L"SPlayerGUID", L"GenerateGUID", uuidstring.c_str());
     }
     else
-      uuidstring = RandMakeGUID();
+      uuidstring = cfguuid;
 
-    cfgdb->WriteProfileString(L"SPlayerGUID", L"GenerateGUID", uuidstring.c_str());
+    Logging(L"uuid %s", uuidstring.c_str());
+    uuid_cache = uuidstring;
   }
-  else
-    uuidstring = cfguuid;
-
-  delete cfgdb;
+  
   return 0;
 }
 

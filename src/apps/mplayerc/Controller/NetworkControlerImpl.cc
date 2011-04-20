@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "NetworkControlerImpl.h"
 #include "../revision.h"
+#include "../Utils/SPlayerGUID.h"
 
 NetworkControlerImpl::NetworkControlerImpl(void)
 : m_oemtitle(L"")
@@ -57,10 +58,12 @@ std::wstring NetworkControlerImpl::GetServerUrl(int req_type , int tryid)
 void NetworkControlerImpl::SinetConfig(sinet::refptr<sinet::config> cfg, int retryid)
 {
   wchar_t agentbuff[MAX_PATH];
+  std::wstring splayer_uuid;
+  SPlayerGUID::GenerateGUID(splayer_uuid);
   if(m_oemtitle.empty())
-    wsprintf(agentbuff, L"SPlayer Build %d", SVP_REV_NUMBER);
+    wsprintf(agentbuff, L"SPlayer Build %d %s", SVP_REV_NUMBER, splayer_uuid.c_str());
   else
-    wsprintf(agentbuff, L"SPlayer Build %d OEM%s", SVP_REV_NUMBER ,m_oemtitle.c_str());
+    wsprintf(agentbuff, L"SPlayer Build %d OEM%s %s", SVP_REV_NUMBER ,m_oemtitle.c_str(), splayer_uuid.c_str());
   cfg->set_strvar(CFG_STR_AGENT, agentbuff);
 
   std::wstring proxy;

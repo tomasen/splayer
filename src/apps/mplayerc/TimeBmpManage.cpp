@@ -142,19 +142,14 @@ BITMAP TimeBmpManage::CreateRightTimeBmp(CDC& dc)
       CDC *dcBatteryMem = CreateBmp(dc, bm, L"playtime_battery.bmp", oldbmp);
       dc.AlphaBlend(paintwidth, 0, bm.bmWidth, bm.bmHeight, dcBatteryMem, 0, 0, bm.bmWidth, bm.bmHeight, bf);
       DeleteDcMem(dcBatteryMem, oldbmp);
-      paintwidth += bm.bmWidth + 2;
-
-      dcBatteryMem = CreateBmp(dc, bm, L"playtime_percent.bmp", oldbmp);
-      dc.AlphaBlend(paintwidth, 0, bm.bmWidth, bm.bmHeight, dcBatteryMem, 0, 0, bm.bmWidth, bm.bmHeight, bf);
-      DeleteDcMem(dcBatteryMem, oldbmp);
-      paintwidth += bm.bmWidth + 1;
+      paintwidth += bm.bmWidth + 4;
 
       std::wstring firststr;
       std::wstring secondstr;
       std::wstring thirdstr;
       ParseDigital(status.BatteryLifePercent, firststr, secondstr, thirdstr);
 
-      if (!firststr.empty())
+      if (!firststr.empty() && status.BatteryLifePercent >= 10)
       {
         dcBatteryMem = CreateBmp(dc, bm, firststr, oldbmp);
         dc.AlphaBlend(paintwidth, 0, bm.bmWidth, bm.bmHeight, dcBatteryMem, 0, 0, bm.bmWidth, bm.bmHeight, bf);
@@ -177,6 +172,11 @@ BITMAP TimeBmpManage::CreateRightTimeBmp(CDC& dc)
         DeleteDcMem(dcBatteryMem, oldbmp);
         paintwidth += bm.bmWidth;
       }
+
+      dcBatteryMem = CreateBmp(dc, bm, L"playtime_percent.bmp", oldbmp);
+      dc.AlphaBlend(paintwidth, 0, bm.bmWidth, bm.bmHeight, dcBatteryMem, 0, 0, bm.bmWidth, bm.bmHeight, bf);
+      DeleteDcMem(dcBatteryMem, oldbmp);
+      paintwidth += bm.bmWidth + 1;
 
       bm.bmWidth = paintwidth;
     }

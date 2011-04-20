@@ -60,14 +60,12 @@
 #include "Controller\UpdateController.h"
 #include "Controller\MediaCenterController.h"
 #include "Controller\ShareController.h"
+#include "Controller\PingPongController.h"
 #include <logging.h>
 
 #include "ButtonManage.h"
 #include "GUIConfigManage.h"
 #include <ResLoader.h>
-
-//Update URL
-char* szUrl = "http://svplayer.shooter.cn/api/updater.php";
 
 DECLARE_LAZYINSTANCE(HotkeyController);
 DECLARE_LAZYINSTANCE(PlayerPreference);
@@ -78,6 +76,7 @@ DECLARE_LAZYINSTANCE(UsrBehaviorController);
 DECLARE_LAZYINSTANCE(UpdateController);
 DECLARE_LAZYINSTANCE(MediaCenterController);
 DECLARE_LAZYINSTANCE(UserShareController);
+DECLARE_LAZYINSTANCE(PingPongController);
 
 /////////
 
@@ -823,22 +822,6 @@ bool CMPlayerCApp::StoreSettingsToIni()
   sqlite_setting = PlayerPreference::GetInstance()->GetSqliteSettingPtr();
 
 	return StoreSettingsToRegistry();
-/*
-	
-		CString ini = GetIniPath();
-	
-		FILE* f;
-		if(!(f = _tfopen(ini, _T("r+"))) && !(f = _tfopen(ini, _T("w"))))
-			return StoreSettingsToRegistry();
-		fclose(f);
-	
-		if(m_pszRegistryKey) free((void*)m_pszRegistryKey);
-		m_pszRegistryKey = NULL;
-		if(m_pszProfileName) free((void*)m_pszProfileName);
-		m_pszProfileName = _tcsdup(ini);
-	
-		return(true);*/
-	
 }
 
 bool CMPlayerCApp::StoreSettingsToRegistry()
@@ -1572,32 +1555,54 @@ void SVPRegWriteStr(HKEY key_root, CString szKey, TCHAR* valKey, TCHAR* val){
 
 }
 void CMPlayerCApp::InitInstanceThreaded(INT64 CLS64){
-	
-	CSVPToolBox svpToolBox;
-	CStringArray csaDll;
 
-    SVP_LogMsg5(L"Settings::InitInstanceThreaded");
-	//SVP_LogMsg5(L"%x %d xx ",CLS64 ,(CLS64&CLSW_STARTFROMDMP) );
+  CSVPToolBox svpToolBox;
+  CStringArray csaDll;
+
+  SVP_LogMsg5(L"Settings::InitInstanceThreaded");
+
+  if(!sqlite_local_record) // saving play record 
+  {
+    int iDescLen;
+    CString recordPath;
+    svpToolBox.GetAppDataPath(recordPath);
+    CPath tmPath(recordPath);
+    tmPath.RemoveBackslash();
+    tmPath.AddBackslash();
+    tmPath.Append( _T("local.db"));
+
+    sqlite_local_record = new SQLliteapp(tmPath.m_strPath.GetBuffer());
+    if(!sqlite_local_record->db_open){
+      delete sqlite_local_record;
+      sqlite_local_record = NULL;
+    }
+
+    if(sqlite_local_record){
+      sqlite_local_record->exec_sql(L"CREATE TABLE  IF NOT EXISTS histories_stream (\"fpath\" TEXT, \"subid\" INTEGER, \"subid2\" INTEGER, \"audioid\" INTEGER, \"videoid\" INTEGER )");
+      sqlite_local_record->exec_sql(L"CREATE UNIQUE INDEX  IF NOT EXISTS \"hispks\" on histories_stream (fpath ASC)");
+
+      sqlite_local_record->exec_sql(L"CREATE TABLE  IF NOT EXISTS histories (\"fpath\" TEXT, \"subid\" INTEGER, \"subid2\" INTEGER, \"audioid\" INTEGER, \"stoptime\" INTEGER, \"modtime\" INTEGER )");
+      sqlite_local_record->exec_sql(L"CREATE UNIQUE INDEX  IF NOT EXISTS \"hispk\" on histories (fpath ASC)");
+      sqlite_local_record->exec_sql(L"CREATE INDEX  IF NOT EXISTS \"modtime\" on histories (modtime ASC)");
+
+      sqlite_local_record->exec_sql(L"CREATE TABLE  IF NOT EXISTS settingstring (\"hkey\" TEXT, \"sect\" TEXT, \"vstring\" TEXT )");
+      sqlite_local_record->exec_sql(L"PRAGMA synchronous=OFF");
+    }
+  }
+  SVP_LogMsg5(L"Settings::InitInstanceThreaded 5");
   {
     CString path;
     GetModuleFileName(NULL, path.GetBuffer(MAX_PATH), MAX_PATH);
     path.ReleaseBuffer();
 
     DWORD             dwHandle;
-    UINT              dwLen;
-    //			UINT              uLen;
     UINT              cbTranslate = sizeof(VS_FIXEDFILEINFO);
-    //			LPVOID            lpBuffer;
-
-    dwLen  = GetFileVersionInfoSize(path, &dwHandle);
+    UINT dwLen  = GetFileVersionInfoSize(path, &dwHandle);
 
     TCHAR * lpData = (TCHAR*) malloc(dwLen);
     if(lpData)
     {
       memset((char*)lpData, 0 , dwLen);
-      
-      /* GetFileVersionInfo() requires a char *, but the api doesn't
-      * indicate that it will modify it */
       if(GetFileVersionInfo(path, dwHandle, dwLen, lpData) != 0)
       {
         VerQueryValue(lpData, TEXT("\\"), (LPVOID*)&m_Verinfo, &cbTranslate);
@@ -1606,184 +1611,122 @@ void CMPlayerCApp::InitInstanceThreaded(INT64 CLS64){
     }
   }
 
-	//avoid crash by lame acm
-	RegDelnode(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\MediaResources\\msacm\\msacm.lameacm");
-	SVPRegDeleteValueEx( HKEY_LOCAL_MACHINE , L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\drivers.desc",L"LameACM.acm");
-	SVPRegDeleteValueEx( HKEY_LOCAL_MACHINE , L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\drivers32",L"msacm.lameacm");
+  //avoid crash by lame acm
+  RegDelnode(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\MediaResources\\msacm\\msacm.lameacm");
+  SVPRegDeleteValueEx( HKEY_LOCAL_MACHINE , L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\drivers.desc",L"LameACM.acm");
+  SVPRegDeleteValueEx( HKEY_LOCAL_MACHINE , L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\drivers32",L"msacm.lameacm");
 
   Logging(L"Settings::InitInstanceThreaded 4");
-	m_bSystemParametersInfo[0] = FALSE;
-	if(!IsVista()){
-		BOOL bDropShadow = FALSE;
+  m_bSystemParametersInfo[0] = FALSE;
+  if(!IsVista()){
+    BOOL bDropShadow = FALSE;
 
-		if (SystemParametersInfo(SPI_GETDROPSHADOW , 0,    &bDropShadow,	0)){
-			if(bDropShadow){
-				if( SystemParametersInfo(SPI_SETDROPSHADOW , 0,    FALSE,	0) )
-					m_bSystemParametersInfo[0] = TRUE;
-			}
-		}
-
-	}
-    SVP_LogMsg5(L"Settings::InitInstanceThreaded 5");
-
-    if(!sqlite_local_record){ // TODO: save play record to local sql db
-      //AfxMessageBox(L"0");
-      int iDescLen;
-      CString recordPath;
-      svpToolBox.GetAppDataPath(recordPath);
-      CPath tmPath(recordPath);
-      tmPath.RemoveBackslash();
-      tmPath.AddBackslash();
-      tmPath.Append( _T("local.db"));
-
-      sqlite_local_record = new SQLliteapp(tmPath.m_strPath.GetBuffer());
-      if(!sqlite_local_record->db_open){
-        delete sqlite_local_record;
-        sqlite_local_record = NULL;
+    if (SystemParametersInfo(SPI_GETDROPSHADOW , 0,    &bDropShadow,	0)){
+      if(bDropShadow){
+        if( SystemParametersInfo(SPI_SETDROPSHADOW , 0,    FALSE,	0) )
+          m_bSystemParametersInfo[0] = TRUE;
       }
-
-      if(sqlite_local_record){
-        sqlite_local_record->exec_sql(L"CREATE TABLE  IF NOT EXISTS histories_stream (\"fpath\" TEXT, \"subid\" INTEGER, \"subid2\" INTEGER, \"audioid\" INTEGER, \"videoid\" INTEGER )");
-        sqlite_local_record->exec_sql(L"CREATE UNIQUE INDEX  IF NOT EXISTS \"hispks\" on histories_stream (fpath ASC)");
-
-        sqlite_local_record->exec_sql(L"CREATE TABLE  IF NOT EXISTS histories (\"fpath\" TEXT, \"subid\" INTEGER, \"subid2\" INTEGER, \"audioid\" INTEGER, \"stoptime\" INTEGER, \"modtime\" INTEGER )");
-        sqlite_local_record->exec_sql(L"CREATE UNIQUE INDEX  IF NOT EXISTS \"hispk\" on histories (fpath ASC)");
-        sqlite_local_record->exec_sql(L"CREATE INDEX  IF NOT EXISTS \"modtime\" on histories (modtime ASC)");
-
-        sqlite_local_record->exec_sql(L"CREATE TABLE  IF NOT EXISTS settingstring (\"hkey\" TEXT, \"sect\" TEXT, \"vstring\" TEXT )");
-        sqlite_local_record->exec_sql(L"PRAGMA synchronous=OFF");
-        //sqlite_local_record->end_transaction();
-      }
-      
     }
 
-    SVP_LogMsg5(L"Settings::InitInstanceThreaded 12");
-		CMainFrame* pFrame = (CMainFrame*)m_pMainWnd;
-		
+  }
+  
+  SVP_LogMsg5(L"Settings::InitInstanceThreaded 12");
+  CMainFrame* pFrame = (CMainFrame*)m_pMainWnd;
 
-		if(pFrame){
-			if(CLS64&CLSW_STARTFROMDMP){
-				
-				pFrame->SendStatusMessage(ResStr(IDS_OSD_MSG_JUST_RECOVER_FROM_CRASH), 6000);
-			}
-				
-            SVP_LogMsg5(L"Settings::InitInstanceThreaded 15");
-			//检查文件关联
-			//if ( m_s.fCheckFileAsscOnStartup ){
-			//	ChkDefPlayerControlBar dlg_chkdefplayer;
-			//	if( ! dlg_chkdefplayer.IsDefaultPlayer() ){
-			//		if(m_s.fPopupStartUpExtCheck || (IsVista() && !IsUserAnAdmin())){
-			//			dlg_chkdefplayer.ShowWindow(SW_SHOWNOACTIVATE);
-			//		}else{
-			//			dlg_chkdefplayer.SetDefaultPlayer();
-			//		}
-			//	}
-			//	//	dlg_chkdefplayer.setDefaultPlayer();
-
-			//}
-SVP_LogMsg5(L"Settings::InitInstanceThreaded 16");
-			if ( time(NULL) > (m_s.tLastCheckUpdater + m_s.tCheckUpdaterInterleave) || m_s.tLastCheckUpdater == 0){
-			
-
-				if(m_s.tLastCheckUpdater == 0 && !svpToolBox.FindSystemFile( _T("wmvcore.dll") )){
-					pFrame->SendStatusMessage(_T("您的系统中缺少必要的wmv/asf媒体组件，正在下载（约2MB）..."), 4000);
-				}
-				//if(m_s.tLastCheckUpdater == 0 &&  !svpToolBox.bFontExist(_T("微软雅黑")) && !svpToolBox.bFontExist(_T("Microsoft YaHei")) ){ 
-				//	pFrame->SendStatusMessage(_T("您的系统中缺少字体组件，正在下载（约8MB）..."), 4000);
-				//}
-				m_s.tLastCheckUpdater = (UINT)time(NULL); 
-				m_s.UpdateData(true);
-
-				if(!m_cnetupdater)
-					m_cnetupdater = new cupdatenetlib();
-
-        // why execute the updater.exe before do this?
-        // updater.exe has include it and cupdatenetlib has been destory.
-// 				if(m_cnetupdater->downloadList()){
-// 					m_cnetupdater->downloadFiles();
-// 					m_cnetupdater->tryRealUpdate(TRUE);
-// 				}
-				if(!pFrame->m_bCheckingUpdater){
-					pFrame->m_bCheckingUpdater = true;
-          UpdateController::GetInstance()->CheckUpdateEXEUpdate();
-
-				}
-				SVP_LogMsg5(L"Settings::InitInstanceThreaded 17");
-				m_cnetupdater->bSVPCU_DONE = TRUE;
-			}
-			
-			//AfxMessageBox(_T("GO"));
-			HWND hWnd = NULL;
-			while(1)
-			{
-				Sleep(1000);
-				hWnd = ::FindWindowEx(NULL, hWnd, MPC_WND_CLASS_NAME, NULL);
-				if(!hWnd)
-					break;
-
-				//AfxMessageBox(_T("GO1"));
-				//Sleep(3000);
-				if(hWnd != pFrame->m_hWnd) {
-					CString dumpMsg;
-
-					Sleep(1000);
-				//					AfxMessageBox(_T("GO1.5"));
-					DWORD pId = NULL;
-					DWORD dwTid = GetWindowThreadProcessId(hWnd, &pId);
-					if(pId == GetCurrentProcessId())
-						continue;
-
-					m_bGotResponse = FALSE;
-					if(SendMessageCallback(hWnd,WM_NULL,(WPARAM) NULL, NULL, 
-						HungWindowResponseCallback,	(ULONG_PTR)(this))){
-
-							MSG tMsg;
-							for(int i =0;i< 10; i++){
-								PeekMessage(&tMsg, hWnd, 0,0,0);
-								if(m_bGotResponse){
-									//AfxMessageBox(_T("m_bGotResponse true 2"));
-									break;
-								}
-								Sleep(320);
-							}
+  if(pFrame){
+    if(CLS64&CLSW_STARTFROMDMP)
+      pFrame->SendStatusMessage(ResStr(IDS_OSD_MSG_JUST_RECOVER_FROM_CRASH), 6000);
 
 
-							if(m_bGotResponse != true){
-								//		AfxMessageBox(_T("GO3"));
-								HANDLE deadProcess = OpenProcess( PROCESS_TERMINATE  , false , pId);
-								if(deadProcess){
-									dumpMsg = DebugMiniDumpProcess(deadProcess, pId, dwTid);
-									TerminateProcess(deadProcess, 0);
-									CloseHandle(deadProcess);
-								}
-								hWnd = NULL;
+    SVP_LogMsg5(L"Settings::InitInstanceThreaded 16");
+    if ( time(NULL) > (m_s.tLastCheckUpdater + m_s.tCheckUpdaterInterleave) || m_s.tLastCheckUpdater == 0){
 
-                // Don't send osd message for this any more
-                // if(!dumpMsg.IsEmpty())
-                // pFrame->SendStatusMessage(dumpMsg, 4000);
-							}
-					}
-					
-				}
+
+      if(m_s.tLastCheckUpdater == 0 && !svpToolBox.FindSystemFile( _T("wmvcore.dll") )){
+        pFrame->SendStatusMessage(_T("您的系统中缺少必要的wmv/asf媒体组件，正在下载（约2MB）..."), 4000);
+      }
+
+      m_s.tLastCheckUpdater = (UINT)time(NULL); 
+      m_s.UpdateData(true);
+
+      if(!m_cnetupdater)
+        m_cnetupdater = new cupdatenetlib();
+
+      if(!pFrame->m_bCheckingUpdater){
+        pFrame->m_bCheckingUpdater = true;
+        UpdateController::GetInstance()->CheckUpdateEXEUpdate();
+      }
+      SVP_LogMsg5(L"Settings::InitInstanceThreaded 17");
+      m_cnetupdater->bSVPCU_DONE = TRUE;
+    }
+
+    HWND hWnd = NULL;
+    while(1)
+    {
+      Sleep(1000);
+      hWnd = ::FindWindowEx(NULL, hWnd, MPC_WND_CLASS_NAME, NULL);
+      if(!hWnd)
         break;
-			}
-            SVP_LogMsg5(L"Settings::InitInstanceThreaded 18");
-            if(!IsVista()){
-			    CDisplaySettingDetector cdsd;
-                cdsd.init();
-                int valevel = cdsd.GetVideoAccelLevel();
-                SVP_LogMsg6("Video %s valevel %d", cdsd.Video0Name, valevel);
-                
-                if(valevel != 0)
-                {
-                    pFrame->SendStatusMessage(ResStr(IDS_OSD_MSG_VIDEO_CARD_ACCELERATION_LEVEL_TOO_LOW), 6000);
-                    cdsd.SetVideoAccelLevel(0);
-                    SVP_LogMsg5(L"Settings::InitInstanceThreaded 19");
-                }
+
+      if(hWnd != pFrame->m_hWnd) {
+        CString dumpMsg;
+
+        Sleep(1000);
+        DWORD pId = NULL;
+        DWORD dwTid = GetWindowThreadProcessId(hWnd, &pId);
+        if(pId == GetCurrentProcessId())
+          continue;
+
+        m_bGotResponse = FALSE;
+        if(SendMessageCallback(hWnd,WM_NULL,(WPARAM) NULL, NULL, 
+          HungWindowResponseCallback,	(ULONG_PTR)(this))){
+
+            MSG tMsg;
+            for(int i =0;i< 10; i++){
+              PeekMessage(&tMsg, hWnd, 0,0,0);
+              if(m_bGotResponse){
+                break;
+              }
+              Sleep(320);
             }
-            
-		}
-        SVP_LogMsg5(L"Settings::InitInstanceThreaded 22");
+
+
+            if(m_bGotResponse != true){
+              HANDLE deadProcess = OpenProcess( PROCESS_TERMINATE  , false , pId);
+              if(deadProcess){
+                dumpMsg = DebugMiniDumpProcess(deadProcess, pId, dwTid);
+                TerminateProcess(deadProcess, 0);
+                CloseHandle(deadProcess);
+              }
+              hWnd = NULL;
+
+            }
+        }
+
+      }
+      break;
+    }
+    SVP_LogMsg5(L"Settings::InitInstanceThreaded 18");
+    if(!IsVista()){
+      CDisplaySettingDetector cdsd;
+      cdsd.init();
+      int valevel = cdsd.GetVideoAccelLevel();
+      SVP_LogMsg6("Video %s valevel %d", cdsd.Video0Name, valevel);
+
+      if(valevel != 0)
+      {
+        pFrame->SendStatusMessage(ResStr(IDS_OSD_MSG_VIDEO_CARD_ACCELERATION_LEVEL_TOO_LOW), 6000);
+        cdsd.SetVideoAccelLevel(0);
+        SVP_LogMsg5(L"Settings::InitInstanceThreaded 19");
+      }
+    }
+  }
+  SVP_LogMsg5(L"Settings::InitInstanceThreaded 22");
+
+  Sleep(1000);
+  PingPongController::GetInstance()->PingPong();
+
+  SVP_LogMsg5(L"Settings::InitInstanceThreaded 23");
 }
 
 UINT __cdecl Thread_InitInstance( LPVOID lpParam ) 

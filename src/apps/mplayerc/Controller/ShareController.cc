@@ -13,6 +13,7 @@
 #include "../../../zlib/zlib.h"
 #include "base64.h"
 #include "logging.h"
+#include "../Utils/SPlayerGUID.h"
 
 UserShareController::UserShareController() : 
 m_retdata(L""),
@@ -116,8 +117,13 @@ void UserShareController::_Thread()
     m_sphash.c_str(), m_uuid.c_str(), (postform[L"spkey"]).c_str());
   url += getdata;
 
+  std::wstring pcname = SPlayerGUID::GetComputerName();
+  std::string pcnamestr =  Strings::WStringToUtf8String(pcname);
+  pcnamestr = base64_encode((unsigned char*)pcnamestr.c_str(), pcnamestr.length());
+
   si_stringmap rps_headers;
   rps_headers[L"Film"] =  Strings::Utf8StringToWString(filmstr);
+  rps_headers[L"PcName"] = Strings::Utf8StringToWString(pcnamestr);
   req->set_request_header(rps_headers);
 
   SinetConfig(cfg, -1);

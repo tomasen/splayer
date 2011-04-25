@@ -147,7 +147,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy &quot;$(OutDir)\pcid.dll&quot; &quot;$(SolutionDir)..\&quot;"
+				CommandLine=""
 			/>
 		</Configuration>
 	</Configurations>

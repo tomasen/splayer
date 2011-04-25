@@ -19,6 +19,8 @@
 #include "../Controller/PlayerPreference.h"
 #include "../Controller/SPlayerDefs.h"
 
+#include "../mplayerc.h"
+
 #define CHAR4TOINT(szBuf) \
   ( ((int)szBuf[0] & 0xff) << 24) | ( ((int)szBuf[1] & 0xff) << 16) | ( ((int)szBuf[2] & 0xff) << 8) |  szBuf[3] & 0xff
 
@@ -522,7 +524,7 @@ std::wstring SubTransFormat::GetSubFileByTempid_STL(size_t iTmpID, std::wstring 
   std::wstring szTargetBaseName = L"";
   std::wstring szDefaultSubPath = L"";
 
-  std::wstring StoreDir;
+  std::wstring StoreDir = AppSettings().GetSVPSubStorePath();
   GetVideoFileBasename(szVidPath, &szVidPathInfo); 
 
   if(StoreDir.empty() || !IfDirExist_STL(StoreDir) || 
@@ -551,11 +553,13 @@ std::wstring SubTransFormat::GetSubFileByTempid_STL(size_t iTmpID, std::wstring 
       StoreDir.append(L"SVPSub\\");
     }
 
-    // make the target folder
-    if (StoreDir[StoreDir.size() - 1] != L'\\')
-      StoreDir.append(L"\\");
-    _wmkdir(StoreDir.c_str());
   }
+
+  // make the target folder
+  if (!StoreDir.empty() && StoreDir[StoreDir.size() - 1] != L'\\')
+    StoreDir.append(L"\\");
+  if (!IfDirExist_STL(StoreDir))
+    _wmkdir(StoreDir.c_str());
 
   std::wstring szBasename(StoreDir);
   szBasename.append(szVidPathInfo.at(SVPATH_FILENAME).c_str());

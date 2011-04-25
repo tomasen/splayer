@@ -3944,7 +3944,7 @@ void CMainFrame::OnInitMenuPopup(CMenu * pPopupMenu, UINT nIndex, BOOL bSysMenu)
     transl[ResStr(IDS_MENU_ITEM_ZOOM)] = IDS_ZOOM_POPUP;
   }
 
-  MENUITEMINFO mii;
+  MENUITEMINFO mii = {0};
   mii.cbSize = sizeof(mii);
 
   for(UINT i = 0, j = pPopupMenu->GetMenuItemCount(); i < j; i++)
@@ -3958,12 +3958,12 @@ void CMainFrame::OnInitMenuPopup(CMenu * pPopupMenu, UINT nIndex, BOOL bSysMenu)
     CMenu* pSubMenu = NULL;
 
 
-    UINT id;
+    UINT id = 0;
     if(transl.Lookup(lookupstr, id))
     {
       str = ResStr(id);
       // pPopupMenu->ModifyMenu(i, MF_BYPOSITION|MF_STRING, 0, str);
-      MENUITEMINFO mii;
+      MENUITEMINFO mii = {0};
       mii.cbSize = sizeof(mii);
       mii.fMask = MIIM_STRING;
       mii.dwTypeData = (LPTSTR)(LPCTSTR)str;
@@ -4134,8 +4134,13 @@ void CMainFrame::OnInitMenuPopup(CMenu * pPopupMenu, UINT nIndex, BOOL bSysMenu)
       SetupShadersSubMenu();
       pSubMenu = &m_shaders;
     }
-    else if (str == ResStr(IDS_MENU_ITEM_SKIN))
+    else if ((str == ResStr(IDS_MENU_ITEM_SKIN)) && (!str.IsEmpty()))
     {
+      // if the str is empty or null, the menu will not show normally
+      LPCTSTR pszStr = (LPCTSTR)str;
+      if (str.IsEmpty() || (pszStr == 0))
+        continue;
+
       AppSettings& s = AfxGetAppSettings();
       if (s.bAeroGlass)
        continue;

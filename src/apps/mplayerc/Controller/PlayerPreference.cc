@@ -37,7 +37,7 @@ PlayerPreference::PlayerPreference(void):
   m_map_strvar[STRVAR_UPLOADUSRBHVURL_ACT]  = L"?action=ensureupload";
   m_map_strvar[STRVAR_APIURL]               = L"https://www.shooter.cn/api/v2";
 
-  m_map_strvar[STRVAR_SUBTITLE_SAVEMETHOD]  = GetProfileString(L"Settings", L"SubtitleSaveMethod", L"same");  // subtitle save method
+  m_map_strvar[STRVAR_SUBTITLE_SAVEMETHOD]  = GetProfileString(L"Settings", L"SubtitleSaveMethod", L"");  // subtitle save method
   m_map_strvar[STRVAR_SUBTITLE_SAVE_CUSTOMPATH] = GetProfileString(L"Settings", L"SubtitleSaveFolder", L"");  // subtitle save folder
 
   m_map_strvar[STRVAR_AD] = GetProfileString(L"Settings", L"Ad", L"");   // ad

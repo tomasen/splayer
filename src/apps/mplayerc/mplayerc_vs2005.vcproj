@@ -53,7 +53,7 @@
 				AdditionalOptions="/D &quot;CURL_STATICLIB&quot;  /MP"
 				Optimization="2"
 				AdditionalIncludeDirectories="..\..\ZenLib\Source;..\..\..\include;..\..\mediainfo\Source\;..\..\mediainfo\Source\MediaInfo\;..\..\filters\BaseClasses;..\..\filters\transform\webm\vp8_sdk\include;..\..\filters\transform\webm\IDL;..\..\filters\transform\webm\common;..\..\filters\transform\mpcvideodec;..\..\svplib;..\..\..\thirdparty;..\..\..\include\dx"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;ZMQ_STATIC"
 				EnableEnhancedInstructionSet="0"
 				OpenMP="false"
 				UsePrecompiledHeader="2"
@@ -75,7 +75,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386  /LTCG "
-				AdditionalDependencies="subpicru.lib Rpcrt4.lib lzma_sdk.lib base.lib courgette_lib.lib Winmm.lib Wbemuuid.lib Dsound.lib Imm32.lib Dbghelp.lib Psapi.lib libssfru.lib detours.lib unrar.lib sphash.lib qtmlClient.lib dxguid.lib libsamplerate-0.lib libpHash.lib libzmq.lib"
+				AdditionalDependencies="subpicru.lib Rpcrt4.lib lzma_sdk.lib base.lib courgette_lib.lib Winmm.lib Wbemuuid.lib Dsound.lib Imm32.lib Dbghelp.lib Psapi.lib libssfru.lib detours.lib unrar.lib sphash.lib qtmlClient.lib dxguid.lib libsamplerate.a libzmq.lib libphashaudio.a"
 				OutputFile="$(SolutionDir)..\splayer.exe"
 				AdditionalLibraryDirectories="../../../Thirdparty/sqlitepp/lib;../../../lib;../../../lib/wm7;../../../lib/qt6;../../../lib/detours;../../../thirdparty/courgette\Release\"
 				GenerateManifest="true"

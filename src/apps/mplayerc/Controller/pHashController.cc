@@ -162,7 +162,7 @@ HRESULT pHashController::_thread_MonopHash()
           if (cs[i] > max_cs)
             max_cs = cs[i];
         }
-        sphash_freemem2(cs);
+        ph_freemem_cs(cs);
       }   
     }
   }
@@ -172,7 +172,7 @@ HRESULT pHashController::_thread_MonopHash()
 
 void pHashController::ReleasePhash(UINT pos)
 {
-  sphash_freemem(NULL, m_hashes[pos]);
+  ph_freemem_hash(NULL, m_hashes[pos]);
   m_hashes[pos] = NULL;
   m_lens[pos] = 0;
   if (pos == (g_phash_collectcfg[CFG_PHASHTIMES] - 1))
@@ -281,12 +281,12 @@ void pHashController::_thread_GetAudiopHash()
               max_cs = cs[i];
           }
           Logging(L"Confidence Score: %f",max_cs);
-          sphash_freemem2(cs);
+          ph_freemem_cs(cs);
           cs = NULL;
         }
         // free space
-        sphash_freemem(NULL, m_hashes[index]);
-        sphash_freemem(NULL, m_hashes[index+step]);
+        ph_freemem_hash(NULL, m_hashes[index]);
+        ph_freemem_hash(NULL, m_hashes[index+step]);
         m_hashes[index] = NULL;
         m_hashes[index+step] = NULL;
         m_lens[index] = 0;
@@ -381,7 +381,7 @@ void pHashController::IspHashInNeed(const wchar_t* filepath, int& result)
   st_buffer.push_back(0);
   std::string reply =  (char*)&st_buffer[0];
   std::string ret = reply.substr(0, reply.find_first_of("\n"));
-  
+  Logging("phashcontroller: ret=%s", ret.c_str());
   if ( ret == "1")
     result = 1;
   else if (ret == "0")
@@ -447,7 +447,7 @@ HRESULT pHashController::_thread_DigestpHashData()
 
   int buflen = m_phashblock.phashdata.size();
   float *buf = new float[buflen];
-
+  Logging("OrginalSize: %d", m_phashblock.phashdata.size());
   int samplebyte = (m_phashblock.format.wBitsPerSample >> 3);                             // the size of one sample in Byte unit
   int nsample = m_phashblock.phashdata.size()/m_phashblock.format.nChannels/samplebyte;       // each channel sample amount
   int samples = nsample * m_phashblock.format.nChannels;                                  // all channels sample amount

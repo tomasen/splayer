@@ -25,33 +25,19 @@
 #ifndef _PHASH_H
 #define _PHASH_H
 
-#include "pHash-config.h"
+
 #include <limits.h>
 #include <math.h>
-//#include <dirent.h>
-#include <unistd.h>
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-//#include <sys/mman.h>
 #include <fcntl.h>
 #include <string.h>
-#include <iostream>
 #include <malloc.h>
 
 #define __STDC_CONSTANT_MACROS
 
-//#include <stdint.h>
-//#include "CImg.h"
 
-#ifdef HAVE_PTHREAD
-#include <pthread.h>
-#endif
-
-#ifndef __GLIBC__
-#include <sys/param.h>
-//#include <sys/sysctl.h>
-#endif
 
 using namespace std;
 
@@ -82,32 +68,9 @@ typedef signed long long long64;
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-typedef enum ph_hashtype {
-    BYTEARRAY   = 1,          /* refers to bitwidth of the hash value */
-    UINT16ARRAY = 2,
-    UINT32ARRAY = 4,
-    UINT64ARRAY = 8,
-}HashType;
-
-/* structure for a single hash */
-typedef struct ph_datapoint {
-    char *id;
-    void *hash;
-    float *path;
-    uint32_t hash_length;
-    uint8_t hash_type;
-}DP;
-
+// test only function
+int SampleAddInt(int i1, int i2);
 #define ROTATELEFT(x, bits)  (((x)<<(bits)) | ((x)>>(64-bits)))
-
-#ifdef HAVE_PTHREAD
-int ph_num_threads();
-#endif
-
-/*! /brief copyright information
- */
-//const char* ph_about();
 
 #ifdef __cplusplus
 }

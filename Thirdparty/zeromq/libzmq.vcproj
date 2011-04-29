@@ -90,7 +90,7 @@
 			Name="Release|Win32"
 			OutputDirectory="..\zeromq\release"
 			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="2"
+			ConfigurationType="4"
 			CharacterSet="2"
 			WholeProgramOptimization="1"
 			>
@@ -116,7 +116,8 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)Thirdparty&quot;;&quot;$(SolutionDir)include&quot;"
-				RuntimeLibrary="2"
+				PreprocessorDefinitions="ZMQ_STATIC"
+				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="3"
 				DebugInformationFormat="3"
@@ -131,19 +132,10 @@
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="Ws2_32.lib Rpcrt4.lib"
-				OutputFile="..\zeromq\release\libzmq.dll"
-				GenerateDebugInformation="true"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				TargetMachine="1"
+				Name="VCLibrarianTool"
 			/>
 			<Tool
 				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -155,11 +147,8 @@
 				Name="VCFxCopTool"
 			/>
 			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy ..\zeromq\release\libzmq.lib $(SolutionDir)lib\libzmq.lib&#x0D;&#x0A;copy ..\zeromq\release\libzmq.dll $(SolutionDir)..\libzmq.dll&#x0D;&#x0A;"
+				CommandLine="cp $(ProjectDir)Release\$(ProjectName).lib $(ProjectDir)..\..\lib\$(ProjectName).lib"
 			/>
 		</Configuration>
 		<Configuration
@@ -763,6 +752,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\include\zmq\zmq.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\zmq\zmq.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\zmq_connecter.hpp"
 				>
 			</File>
@@ -776,6 +773,14 @@
 			</File>
 			<File
 				RelativePath=".\zmq_listener.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\zmq\zmq_utils.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\zmq\zmqhelper.h"
 				>
 			</File>
 		</Filter>

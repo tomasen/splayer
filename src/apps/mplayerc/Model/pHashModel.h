@@ -47,8 +47,8 @@ const int g_phash_collectcfg[] = {
   20,
   // start collect time;
   0,  // this is a placeholder
-  0,
-  30,
+  10,
+  50,
   20,
   30
 };

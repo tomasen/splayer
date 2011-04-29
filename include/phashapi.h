@@ -68,8 +68,8 @@ int SampleAddInt(int i1, int i2);
  * /param cs – confidence score
  * /return nothing
  */
-void sphash_freemem(float* buf, uint32_t* hash);
-void sphash_freemem2(double* cs);
+void ph_freemem_hash(float* buf, uint32_t* hash);
+void ph_freemem_cs(double* cs);
 
 /*  /brief count number of samples in file
  *

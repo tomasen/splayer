@@ -23,7 +23,6 @@
 */
 #ifndef _FFT_H
 #define _FFT_H
-//#include<complex>
 
 #define PI 3.1415926535897932
 
@@ -31,8 +30,6 @@
 #include "complex.h"
 #include <stdlib.h>
 
-
-//typedef complex<double> scomplex;
 typedef _Complex double scomplex;
 
 int fft(double *x, int N, scomplex *X);

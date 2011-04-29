@@ -30,9 +30,7 @@
 #include <stdint.h>
 #include <zmq/zmq.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+namespace{
 
 void free_fn(void *data, void *hint)
 {
@@ -188,8 +186,6 @@ int flushall_msg_parts(void *skt)
   return 0;
 }
 
-#ifdef __cplusplus
 }
-#endif
 
 #endif // ZMQHELPERH_H

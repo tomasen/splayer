@@ -203,6 +203,8 @@
 				AdditionalDependencies="libavcodec_gcc.lib libgcc.a libmingwex.a"
 				OutputFile="..\..\..\..\lib\$(ProjectName)RU.lib"
 				AdditionalLibraryDirectories="..\..\..\..\lib"
+				IgnoreAllDefaultLibraries="false"
+				IgnoreDefaultLibraryNames=""
 			/>
 			<Tool
 				Name="VCALinkTool"

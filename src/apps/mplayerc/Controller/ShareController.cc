@@ -91,6 +91,13 @@ void UserShareController::ShareMovie(std::wstring uuid, std::wstring sphash, std
   _Start();
 }
 
+std::wstring UserShareController::EncodeString(std::wstring str)
+{
+  std::string tmpstr =  Strings::WStringToUtf8String(str);
+  tmpstr = base64_encode((unsigned char*)tmpstr.c_str(), tmpstr.length());
+  return Strings::Utf8StringToWString(tmpstr);
+}
+
 void UserShareController::_Thread()
 {
   refptr<pool> pool = pool::create_instance();
@@ -100,9 +107,6 @@ void UserShareController::_Thread()
   refptr<postdata> data = postdata::create_instance();
   std::map<std::wstring, std::wstring> postform;
   PlayerPreference* pref = PlayerPreference::GetInstance();
-  
-  std::string filmstr =  Strings::WStringToUtf8String(m_film);
-  filmstr = base64_encode((unsigned char*)filmstr.c_str(), filmstr.length());
 
   postform[L"uuid"] = m_uuid;
   postform[L"sphash"] = m_sphash;
@@ -118,12 +122,12 @@ void UserShareController::_Thread()
   url += getdata;
 
   std::wstring pcname = SPlayerGUID::GetComputerName();
-  std::string pcnamestr =  Strings::WStringToUtf8String(pcname);
-  pcnamestr = base64_encode((unsigned char*)pcnamestr.c_str(), pcnamestr.length());
+  std::wstring loginuser = SPlayerGUID::GetUserName();
 
   si_stringmap rps_headers;
-  rps_headers[L"Film"] =  Strings::Utf8StringToWString(filmstr);
-  rps_headers[L"PcName"] = Strings::Utf8StringToWString(pcnamestr);
+  rps_headers[L"Film"] =  EncodeString(m_film);
+  rps_headers[L"PcName"] = EncodeString(pcname);
+  rps_headers[L"User"] = EncodeString(loginuser);
   req->set_request_header(rps_headers);
 
   SinetConfig(cfg, -1);

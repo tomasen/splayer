@@ -14,32 +14,35 @@ class UserShareController:
 {
 public:
 
-    UserShareController();
-    ~UserShareController();
+  UserShareController();
+  ~UserShareController();
 
-    void _Thread();
-    void ShareMovie(std::wstring uuid, std::wstring sphash, std::wstring film);
+  void _Thread();
+  void ShareMovie(std::wstring uuid, std::wstring sphash, std::wstring film);
 
-    void SetCommentPlaneParent(HWND hwnd);
-    void CreateCommentPlane();
-    void CalcCommentPlanePos();
-    BOOL ShowCommentPlane();
-    void HideCommentPlane();
-    void ToggleCommentPlane();
+  void SetCommentPlaneParent(HWND hwnd);
+  void CreateCommentPlane();
+  void CalcCommentPlanePos();
+  BOOL ShowCommentPlane();
+  void HideCommentPlane();
+  void ToggleCommentPlane();
 
-    BOOL OpenShooterMedia();
-    BOOL CloseShooterMedia();
-    std::wstring GenerateKey();
-    std::wstring GetResponseData();
+  BOOL OpenShooterMedia();
+  BOOL CloseShooterMedia();
+  std::wstring GenerateKey();
+  std::wstring GetResponseData();
 
 private:
-    DLGTEMPLATE* _dialogTemplate;
+  std::wstring EncodeString(std::wstring str);
 
-    std::wstring m_uuid;
-    std::wstring m_sphash;
-    std::wstring m_film;
-    std::wstring m_retdata;
+private:
+  DLGTEMPLATE* _dialogTemplate;
 
-    MovieComment m_commentplane;
-    HWND m_parentwnd;
+  std::wstring m_uuid;
+  std::wstring m_sphash;
+  std::wstring m_film;
+  std::wstring m_retdata;
+
+  MovieComment m_commentplane;
+  HWND m_parentwnd;
 };

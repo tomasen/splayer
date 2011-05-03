@@ -68,7 +68,8 @@ typedef signed long long long64;
 #ifdef __cplusplus
 extern "C" {
 #endif
-// test only function
+
+
 int SampleAddInt(int i1, int i2);
 #define ROTATELEFT(x, bits)  (((x)<<(bits)) | ((x)>>(64-bits)))
 

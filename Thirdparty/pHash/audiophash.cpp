@@ -24,9 +24,7 @@
 #include "audiophash.h"
 #include "ph_fft.c"
 
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
+
 
 void ph_freemem_hash(float* buf, uint32_t* hash)
 {
@@ -96,8 +94,8 @@ uint32_t* ph_audiohash(float *buf, int N, int sr, int &nb_frames)
         binbarks[i] = 6*asinh(i*sr/nfft_half/600.0);
         freqs[i] = i*sr/nfft_half;
     }
+ 
     double **wts = (double **)calloc(nfilts, sizeof(double*));
-
     for (int i=0; i<nfilts; i++)
     {
       wts[i] = (double*)malloc(sizeof(double)*nfft_half);
@@ -119,8 +117,8 @@ uint32_t* ph_audiohash(float *buf, int N, int sr, int &nb_frames)
             double barkdiff = binbarks[j] - f_bark_mid;
             lof = -2.5*(barkdiff/barkwidth - 0.5);
             hif = barkdiff/barkwidth + 0.5;
-            double m = double_min(lof,hif);
-            m = double_min(0.0,m);
+            double m = std::min(lof,hif);
+            m = std::min(0.0,m);
             m = pow(10,m);
             wts[i][j] = m;
         }
@@ -185,9 +183,11 @@ uint32_t* ph_audiohash(float *buf, int N, int sr, int &nb_frames)
     //fftw_destroy_plan(p);
     //fftw_free(pF);
     free(pF);
+    pF = NULL;
     for (int i=0; i<nfilts; i++)
     {
        free(wts[i]);
+       wts[i] = NULL;
     }
     free(wts);
     wts = NULL;
@@ -257,7 +257,7 @@ double* ph_audio_distance_ber(uint32_t *hash_a , const int Na, uint32_t *hash_b,
     for (int i=0; i < Nc; i++)
     {
 
-        M = (int)floor(double_min(N1,N2-i)/block_size);
+        M = (int)floor(std::min(N1,N2-i)/block_size);
 
         pha = ptrA;
         phb = ptrB + i;

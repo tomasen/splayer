@@ -23,7 +23,7 @@
 */
 
 #include "ph_fft.h"
-
+#include <Windows.h>
 scomplex polar_to_complex(const double r, const double theta)
 {
     scomplex result;
@@ -52,6 +52,7 @@ void fft_calc(const int N,const double *x,scomplex  *X,scomplex *P,const int ste
         X[k]     = S[k] + P[k];
         X[k+N/2] = S[k] - P[k];
     }
+    
 
 }
 
@@ -68,7 +69,7 @@ int fft(double *x, int N, scomplex *X)
         twiddle_factors[k] = polar_to_complex(1.0, 2.0*PI*k/N);
     }
     fft_calc(N, x, X, Xt, 1, twiddle_factors);
-
+    Sleep(1);
     free(twiddle_factors);
     free(Xt);
 

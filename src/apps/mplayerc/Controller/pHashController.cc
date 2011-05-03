@@ -447,7 +447,7 @@ HRESULT pHashController::_thread_DigestpHashData()
 
   int buflen = m_phashblock.phashdata.size();
   float *buf = new float[buflen];
-  Logging("OrginalSize: %d", m_phashblock.phashdata.size());
+//  Logging("OrginalSize: %d", m_phashblock.phashdata.size());
   int samplebyte = (m_phashblock.format.wBitsPerSample >> 3);                             // the size of one sample in Byte unit
   int nsample = m_phashblock.phashdata.size()/m_phashblock.format.nChannels/samplebyte;       // each channel sample amount
   int samples = nsample * m_phashblock.format.nChannels;                                  // all channels sample amount

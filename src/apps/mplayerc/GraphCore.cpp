@@ -618,6 +618,8 @@ long find_string_in_buf ( char *buf, size_t len,
 
 bool CGraphCore::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
 {
+
+
   CString err, aborted(_T("Aborted"));
   AppSettings& s = AfxGetAppSettings();
 
@@ -762,6 +764,21 @@ bool CGraphCore::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
         }
         SetShaders(true);
       }
+
+      // Setup pHash Env
+      if(pMS)
+      {
+        __int64 rtDur = 0;
+        pMS->GetDuration(&rtDur);
+        pHashController::GetInstance()->CheckEnv(rtDur);
+      }
+
+      // for collect phash
+      CComQIPtr<IAudioSwitcherFilter> pASF = FindFilter(__uuidof(CAudioSwitcherFilter), pGB);
+      pHashController::GetInstance()->Init(pASF, m_fnCurPlayingFile.GetBuffer());
+      m_fnCurPlayingFile.ReleaseBuffer();
+
+
       // === EVR !
       pGB->FindInterface(__uuidof(IMFVideoDisplayControl), (void**)&m_pMFVDC,  TRUE);
       if (m_pMFVDC)
@@ -821,18 +838,7 @@ bool CGraphCore::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
         POSITION pos = pOMD->subs.GetHeadPosition();
         while(pos){ LoadSubtitle(pOMD->subs.GetNext(pos));}
 
-        // Setup pHash Env
-        if(pMS)
-        {
-          __int64 rtDur = 0;
-          pMS->GetDuration(&rtDur);
-          pHashController::GetInstance()->CheckEnv(rtDur);
-        }
-
-        // for collect phash
-        CComQIPtr<IAudioSwitcherFilter> pASF = FindFilter(__uuidof(CAudioSwitcherFilter), pGB);
-        pHashController::GetInstance()->Init(pASF, m_fnCurPlayingFile.GetBuffer());
-        m_fnCurPlayingFile.ReleaseBuffer();
+       
 
       }
 

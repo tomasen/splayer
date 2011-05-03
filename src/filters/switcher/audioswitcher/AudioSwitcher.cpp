@@ -1388,14 +1388,17 @@ void FingerPrint::FPCollect(IMediaSample* pIn, BYTE* pDataIn, WAVEFORMATEX* wfe,
           m_pHashPtr->format.nSamplesPerSec, dataout, firstlen);
         FillData4pHash(dataout, (pIn->GetActualDataLength()-firstlen));
         REFERENCE_TIME Dur = 10000000i64*(pIn->GetActualDataLength()-firstlen)/wfe->nSamplesPerSec/wfe->nChannels/(wfe->wBitsPerSample>>3);
+     //   Logging(L"first part of data: %f [rtStart] %f should equal to [m_rtStartpHash] %f", (double)Dur, (double)rtStart, (double)m_rtStartpHash);
       }
       else if (rtStart == m_rtStartpHash)
       {
+    //    Logging(L"first part of data: %f [rtStart] %f should equal to [m_rtStartpHash] %f", -1.0, (double)rtStart, (double)m_rtStartpHash);
         FillData4pHash(pDataIn, pIn->GetActualDataLength());
       }
       else if (rtStart == m_rtEndpHash)
       {
         m_pHashPtr->phashcnt += 1;
+    //    Logging(L"last part of data: [endtime] %f should equal to [m_rtEndpHash] %f", (double)rtStart, (double)m_rtEndpHash);
         PostMessage(AfxGetApp()->m_pMainWnd->m_hWnd, WM_COMMAND, ID_PHASH_COLLECTEND, NULL);
       }
       else if ((rtDur + rtStart) > m_rtEndpHash && rtStart < m_rtEndpHash 
@@ -1411,6 +1414,7 @@ void FingerPrint::FPCollect(IMediaSample* pIn, BYTE* pDataIn, WAVEFORMATEX* wfe,
         REFERENCE_TIME Dur = 10000000i64*(lastlen)/wfe->nSamplesPerSec/wfe->nChannels/(wfe->wBitsPerSample>>3);
         // send a message and finish phash
         m_pHashPtr->phashcnt += 1;
+      //  Logging(L"last part of data: %f, [endtime] %f should equal to [m_rtEndpHash] %f", (double)Dur, (double)(rtDur+rtStart), (double)(m_rtEndpHash));
         PostMessage(AfxGetApp()->m_pMainWnd->m_hWnd, WM_COMMAND, ID_PHASH_COLLECTEND, NULL);
       }
       else if (rtStart > m_rtStartpHash && (rtDur + rtStart) < m_rtEndpHash )       // the middle part of data

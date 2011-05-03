@@ -6200,6 +6200,7 @@ void CMainFrame::OnFileSaveImageAuto()
 
   CString fn;
   fn.Format(_T("%s\\%s"), AfxGetAppSettings().SnapShotPath, MakeSnapshotFileName(_T("snapshot")));
+  m_lastcapturepath = fn;
   SaveImage(fn);
 }
 

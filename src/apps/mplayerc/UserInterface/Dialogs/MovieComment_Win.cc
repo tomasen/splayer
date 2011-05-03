@@ -7,6 +7,10 @@
 #include <exdispid.h>
 #include "logging.h"
 #include "../../resource.h"
+#include "../../MainFrm.h"
+#include "base64.h"
+#include "strings.h"
+#include <fstream>
 
 IMPLEMENT_DYNAMIC(MovieComment, CDHtmlDialog)
 
@@ -16,6 +20,7 @@ END_MESSAGE_MAP()
 BEGIN_DHTML_EVENT_MAP(MovieComment)
   DHTML_EVENT_ONCLICK(L"close_wnd", OnEventClose)
   //DHTML_EVENT_ONCLICK(L"open_newlink", OpenNewLink)
+  DHTML_EVENT_ONCLICK(L"cut-image-btn", OnEventCapture)
 END_DHTML_EVENT_MAP()
 
 BEGIN_EVENTSINK_MAP(MovieComment, CDHtmlDialog)
@@ -95,6 +100,63 @@ void MovieComment::ClearFrame()
 void MovieComment::OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl)
 {
 
+}
+
+HRESULT MovieComment::OnEventCapture(IHTMLElement* pElement)
+{
+  try
+  {
+    CMainFrame* cmf = (CMainFrame*)AfxGetMainWnd();
+    cmf->OnFileSaveImageAuto();
+    std::wstring imgpath = cmf->m_lastcapturepath;
+    if (imgpath.empty())
+      return S_FALSE;
+
+    IHTMLElement* imgele = NULL;
+    IHTMLStyle* style = NULL;
+    GetElement(L"cut-image-div", &imgele);
+
+    CComVariant imgsrc = imgpath.c_str();
+    if (S_FALSE == imgele->setAttribute(L"src", imgsrc))
+      return S_FALSE;
+
+    IHTMLStyle* imgstyle = NULL;
+    imgele->get_style(&imgstyle);
+    imgstyle->put_display(L"");
+
+    std::ifstream fs;
+    fs.open(imgpath.c_str(), std::ios::binary|std::ios::in);
+    if (fs.bad())
+      return S_FALSE;
+
+    fs.seekg(0, std::ios::end);
+    UINT filesize = fs.tellg();
+    fs.seekg(0, std::ios_base::beg);
+
+    unsigned char* buf = new unsigned char[filesize];
+
+    fs.read((char*)buf, filesize);
+    fs.close();
+
+    std::string bufstr = base64_encode(buf, filesize);
+    delete [] buf;
+
+    IHTMLElement* dataele = NULL;
+    IHTMLElement* extele = NULL;
+    GetElement(L"cut-image-data", &dataele);
+    GetElement(L"cut-image-ext", &extele);
+
+    CComVariant imgdata = Strings::Utf8StringToWString(bufstr).c_str();
+    dataele->setAttribute(L"value", imgdata);
+    CComVariant imgext = AfxGetAppSettings().SnapShotExt;
+    extele->setAttribute(L"value", imgext);
+  }
+  catch (...)
+  {
+    ;
+  }
+
+  return S_FALSE;
 }
 
 BOOL MovieComment::OnEventNewLink(IDispatch **ppDisp, VARIANT_BOOL *Cancel,

@@ -72,6 +72,7 @@ public:
   // Graph Functions and Variables
   friend class CGraphCore;
 
+  std::wstring m_lastcapturepath;
   bool  m_bMustUseExternalTimer;
 
   bool IsSomethingLoaded() {return(m_iMediaLoadState != MLS_CLOSED);}

@@ -33,6 +33,9 @@ public:
   void ShowFrame();
   void OpenNewLink(LPCTSTR url);
 
+  BSTR CallSPlayer(LPCTSTR p, LPCTSTR param);
+
+  std::wstring GetMovieTime(int i);
   int m_initialize;
 protected:
   virtual BOOL OnInitDialog();

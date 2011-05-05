@@ -11,6 +11,7 @@
 #include "base64.h"
 #include "strings.h"
 #include <fstream>
+#include "../../Controller/ShareController.h"
 
 IMPLEMENT_DYNAMIC(MovieComment, CDHtmlDialog)
 
@@ -18,19 +19,20 @@ BEGIN_MESSAGE_MAP(MovieComment, CDHtmlDialog)
 END_MESSAGE_MAP()
 
 BEGIN_DHTML_EVENT_MAP(MovieComment)
-  DHTML_EVENT_ONCLICK(L"close_wnd", OnEventClose)
+  //DHTML_EVENT_ONCLICK(L"close_wnd", OnEventClose)
   //DHTML_EVENT_ONCLICK(L"open_newlink", OpenNewLink)
-  DHTML_EVENT_ONCLICK(L"cut-image-btn", OnEventCapture)
+  //DHTML_EVENT_ONCLICK(L"cut-image-btn", OnEventCapture)
 END_DHTML_EVENT_MAP()
 
 BEGIN_EVENTSINK_MAP(MovieComment, CDHtmlDialog)
-  ON_EVENT(MovieComment, AFX_IDC_BROWSER, DISPID_NEWWINDOW3, OnEventNewLink, VTS_DISPATCH VTS_PBOOL VTS_UI4 VTS_BSTR VTS_BSTR)
+  //ON_EVENT(MovieComment, AFX_IDC_BROWSER, DISPID_NEWWINDOW3, OnEventNewLink, VTS_DISPATCH VTS_PBOOL VTS_UI4 VTS_BSTR VTS_BSTR)
 END_EVENTSINK_MAP()
 
 BEGIN_DISPATCH_MAP(MovieComment, CDHtmlDialog)
 //   DISP_FUNCTION(MovieComment, "close_sharewnd", HideFrame, VT_EMPTY, VTS_NONE)
 //   DISP_FUNCTION(MovieComment, "open_sharewnd", ShowFrame, VT_EMPTY, VTS_NONE)
 //   DISP_FUNCTION(MovieComment, "open_newlink", OpenNewLink, VT_EMPTY, VTS_BSTR)
+  DISP_FUNCTION(MovieComment, "CallSPlayer", CallSPlayer, VT_BSTR, VTS_BSTR VTS_BSTR)
 END_DISPATCH_MAP()
 
 MovieComment::MovieComment()
@@ -42,6 +44,51 @@ MovieComment::MovieComment()
 MovieComment::~MovieComment()
 {
   DestroyWindow();
+}
+
+BSTR MovieComment::CallSPlayer(LPCTSTR p, LPCTSTR param)
+{
+  CString ret = L"0";
+  std::wstring cmd(p);
+
+  if (cmd.empty())
+    ret = L"-1";
+  else if (cmd == L"rev")
+    ret = L"1";
+  else if (cmd == L"reload")
+  {
+    UserShareController::GetInstance()->_Stop();
+    UserShareController::GetInstance()->_Start();
+  }
+  else if (cmd == L"open")
+    ShowFrame();
+  else if (cmd == L"close")
+    HideFrame();
+  else if (cmd == L"openlink")
+    OpenNewLink(param);
+  else if (cmd == L"snapshoot") 
+    OnEventCapture(NULL);
+  else if (cmd == L"curtime")
+    ret = GetMovieTime(1).c_str();
+  else if (cmd == L"totaltime")
+    ret = GetMovieTime(0).c_str();
+  else
+    ret = L"-1";
+
+  return ret.AllocSysString();
+}
+
+std::wstring MovieComment::GetMovieTime(int i)
+{
+  __int64 rtDur = 0;
+  CMainFrame* mf = (CMainFrame*)AfxGetMainWnd();
+
+  i==0 ? mf->pMS->GetDuration(&rtDur) :
+    mf->pMS->GetCurrentPosition(&rtDur);
+
+  wchar_t buf[64];
+  _i64tow(rtDur, buf, 10);
+  return std::wstring(buf);
 }
 
 HRESULT STDMETHODCALLTYPE MovieComment::ShowContextMenu(DWORD /*dwID*/, POINT *ppt, IUnknown* /*pcmdtReserved*/, IDispatch* /*pdispReserved*/)
@@ -60,19 +107,14 @@ BOOL MovieComment::OnInitDialog()
 
   CalcWndPos();
   HideFrame();
-//   RECT rc;
-//   HRGN rgn;
-//   GetClientRect(&rc);
-//   rgn = ::CreateRoundRectRgn(0, 0, rc.right-rc.left, rc.bottom-rc.top, 5, 5);
-//   SetWindowRgn(rgn, TRUE);
 
   SetHostFlags(DOCHOSTUIFLAG_THEME | DOCHOSTUIFLAG_SCROLL_NO | DOCHOSTUIFLAG_NO3DBORDER
          | DOCHOSTUIFLAG_DISABLE_HELP_MENU | DOCHOSTUIFLAG_DIALOG | DOCHOSTUIFLAG_ENABLE_ACTIVEX_INACTIVATE_MODE
          | DOCHOSTUIFLAG_DISABLE_SCRIPT_INACTIVE | DOCHOSTUIFLAG_OVERRIDEBEHAVIORFACTORY
          );
 
-  // EnableAutomation();
-  // SetExternalDispatch(GetIDispatch(TRUE));
+  EnableAutomation();
+  SetExternalDispatch(GetIDispatch(TRUE));
   // suppress script error
   m_pBrowserApp->put_Silent(VARIANT_TRUE);
   m_initialize = 1;
@@ -115,6 +157,8 @@ HRESULT MovieComment::OnEventCapture(IHTMLElement* pElement)
     IHTMLElement* imgele = NULL;
     IHTMLStyle* style = NULL;
     GetElement(L"cut-image-div", &imgele);
+    if (!imgele)
+      return S_FALSE;
 
     CComVariant imgsrc = imgpath.c_str();
     if (S_FALSE == imgele->setAttribute(L"src", imgsrc))
@@ -122,6 +166,9 @@ HRESULT MovieComment::OnEventCapture(IHTMLElement* pElement)
 
     IHTMLStyle* imgstyle = NULL;
     imgele->get_style(&imgstyle);
+    if (!imgstyle)
+      return S_FALSE;
+
     imgstyle->put_display(L"");
 
     std::ifstream fs;
@@ -145,6 +192,8 @@ HRESULT MovieComment::OnEventCapture(IHTMLElement* pElement)
     IHTMLElement* extele = NULL;
     GetElement(L"cut-image-data", &dataele);
     GetElement(L"cut-image-ext", &extele);
+    if (!dataele || !extele)
+      return S_FALSE;
 
     CComVariant imgdata = Strings::Utf8StringToWString(bufstr).c_str();
     dataele->setAttribute(L"value", imgdata);

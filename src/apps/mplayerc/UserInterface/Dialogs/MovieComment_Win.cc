@@ -148,27 +148,32 @@ HRESULT MovieComment::OnEventCapture(IHTMLElement* pElement)
 {
   try
   {
+    IHTMLStyle* imgstyle = NULL;
+
+    IHTMLElement* imgele = NULL;
+    IHTMLElement* dataele = NULL;
+    IHTMLElement* extele = NULL;
+    IHTMLElement* test = NULL;
+
+    GetElement(L"cut-image-data", &dataele);
+    GetElement(L"cut-image-ext", &extele);
+    GetElement(L"cut-image-div", &imgele);
+    if (!dataele || !extele || !imgele)
+      return S_FALSE;
+
+    imgele->get_style(&imgstyle);
+    if (!imgstyle)
+      return S_FALSE;
+
     CMainFrame* cmf = (CMainFrame*)AfxGetMainWnd();
     cmf->OnFileSaveImageAuto();
     std::wstring imgpath = cmf->m_lastcapturepath;
     if (imgpath.empty())
       return S_FALSE;
 
-    IHTMLElement* imgele = NULL;
-    IHTMLStyle* style = NULL;
-    GetElement(L"cut-image-div", &imgele);
-    if (!imgele)
-      return S_FALSE;
-
     CComVariant imgsrc = imgpath.c_str();
     if (S_FALSE == imgele->setAttribute(L"src", imgsrc))
       return S_FALSE;
-
-    IHTMLStyle* imgstyle = NULL;
-    imgele->get_style(&imgstyle);
-    if (!imgstyle)
-      return S_FALSE;
-
     imgstyle->put_display(L"");
 
     std::ifstream fs;
@@ -187,13 +192,6 @@ HRESULT MovieComment::OnEventCapture(IHTMLElement* pElement)
 
     std::string bufstr = base64_encode(buf, filesize);
     delete [] buf;
-
-    IHTMLElement* dataele = NULL;
-    IHTMLElement* extele = NULL;
-    GetElement(L"cut-image-data", &dataele);
-    GetElement(L"cut-image-ext", &extele);
-    if (!dataele || !extele)
-      return S_FALSE;
 
     CComVariant imgdata = Strings::Utf8StringToWString(bufstr).c_str();
     dataele->setAttribute(L"value", imgdata);

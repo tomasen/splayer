@@ -133,6 +133,7 @@ public:
   BOOL IsRendererCompatibleWithSaveImage();
   void SaveImage(LPCTSTR fn = NULL);
   void AutoSaveImage(LPCTSTR fn, bool istoobig = false);
+  void SnapShootImage(std::wstring path, BOOL half);
 
   // UI                 Functions and Variables
   friend class CPPageFileInfoSheet;

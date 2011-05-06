@@ -12,6 +12,7 @@
 #include "strings.h"
 #include <fstream>
 #include "../../Controller/ShareController.h"
+#include "..\..\svplib\SVPToolBox.h"
 
 IMPLEMENT_DYNAMIC(MovieComment, CDHtmlDialog)
 
@@ -165,11 +166,19 @@ HRESULT MovieComment::OnEventCapture(IHTMLElement* pElement)
     if (!imgstyle)
       return S_FALSE;
 
+    CSVPToolBox svptool;
+    std::wstring imgpath;
+    CString tpath;
+
+    svptool.GetAppDataPath(imgpath);
+    imgpath += L"\\SVPSub";
+    _wmkdir(imgpath.c_str());
+
+    tpath.Format(L"%s\\tmp_smst_%d.jpg", imgpath.c_str(), time(NULL));
+    imgpath = tpath;
+
     CMainFrame* cmf = (CMainFrame*)AfxGetMainWnd();
-    cmf->OnFileSaveImageAuto();
-    std::wstring imgpath = cmf->m_lastcapturepath;
-    if (imgpath.empty())
-      return S_FALSE;
+    cmf->SnapShootImage(imgpath, (cmf->GetVideoSize().cx > 960)?TRUE:FALSE);
 
     CComVariant imgsrc = imgpath.c_str();
     if (S_FALSE == imgele->setAttribute(L"src", imgsrc))

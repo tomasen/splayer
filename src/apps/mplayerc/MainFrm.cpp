@@ -6188,6 +6188,31 @@ void CMainFrame::OnFileSaveImage()
   }
 }
 
+void CMainFrame::SnapShootImage(std::wstring path, BOOL half)
+{
+  if (path.empty())
+    return;
+
+  /* Check if a compatible renderer is being used */
+  if(!IsRendererCompatibleWithSaveImage()) {
+    SendStatusMessage(ResStr(IDS_OSD_MSG_RENDER_NOT_COMPATE_IMAGE_CAPTURE) , 3000);
+    return;
+  }
+
+  BYTE* pData = NULL;
+  long size;
+
+  if (!GetDIB(&pData, size))
+    return;
+
+  if (!half)
+    CJpegEncoderFile(path.c_str()).Encode(pData);
+  else
+    CJpegEncoderFile(path.c_str()).EncodeHalf(pData);
+
+  delete [] pData;
+}
+
 void CMainFrame::OnFileSaveImageAuto()
 {
   AppSettings& s = AfxGetAppSettings();

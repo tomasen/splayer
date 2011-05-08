@@ -116,7 +116,7 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
   {
     SetTimer(TIMER_ADPLAY, 100, NULL);
     SetTimer(TIMER_ADPLAYSWITCH, 5000, NULL);
-    SetTimer(TIMER_ADFETCHING, 5000, NULL);
+    SetTimer(TIMER_ADFETCHING, 3000, NULL);
   }
   
   CSVPToolBox svptoolbox;
@@ -382,15 +382,20 @@ void CPlayerToolBar::OnPaint()
     CSize size = dc.GetTextExtent(sTimeBtnString.c_str());
 
     CSUIButton* cbtn = m_btnList.GetButton(L"SHARE");
+    int prom_margin = 8;
     if (cbtn->m_currenthide)
+    {
       cbtn = m_btnList.GetButton(L"LOGO");
+      prom_margin = -10;
+    }
     CRect btnrc = cbtn->m_rcHitest - rc.TopLeft();
-    btnrc.left = btnrc.right + 8;
+    btnrc.left = btnrc.right + prom_margin;
     int width = m_btnList.GetRelativeMinLength(rc, cbtn) - cbtn->m_rcHitest.Width() - 8;
     if (size.cx > 0)
       btnrc.right = btnrc.left + min(width, size.cx);
     else
       btnrc.right = btnrc.left;
+    btnrc.right -= 5;
     btnrc.top = (rc.Height() - size.cy) / 2;
     btnrc.bottom = btnrc.top + size.cy;
 
@@ -407,16 +412,22 @@ void CPlayerToolBar::UpdateButtonStat(){
   //m_btnList.SetHideStat( ID_PLAY_MANUAL_STOP , !fShow );
   //m_btnList.SetHideStat( ID_PLAY_FRAMESTEP , !fShow );
   m_btnList.SetHideStat( ID_PLAY_PAUSE , !fShow );
-  BOOL bLogo = pFrame->IsSomethingLoaded() ;
-  m_btnList.SetHideStat(_T("SPLAYER.BMP"), bLogo);
+  BOOL bLoaded = pFrame->IsSomethingLoaded() ;
+  m_btnList.SetHideStat(_T("SPLAYER.BMP"), bLoaded);
   m_btnList.SetHideStat( ID_MOVIESHARE , m_movieshare_hidestat);
-  //m_btnList.SetDisableStat(ID_SUBTOOLBARBUTTON, !bLogo);
-  if(!bLogo)
-    m_timerstr.Empty();
 
-  BOOL bSub = pFrame->IsSubLoaded();
-  m_btnList.SetDisableStat( ID_SUBDELAYINC, !bSub, m_nItemToTrack == ID_SUBDELAYINC);
-  m_btnList.SetDisableStat( ID_SUBDELAYDEC, !bSub, m_nItemToTrack == ID_SUBDELAYDEC);
+  m_btnList.SetHideStat( ID_SUBTOOLBARBUTTON, !bLoaded);
+  m_btnList.SetHideStat( ID_SUBDELAYINC, !bLoaded);
+  m_btnList.SetHideStat( ID_SUBDELAYDEC, !bLoaded);
+
+  if(!bLoaded)
+    m_timerstr.Empty();
+  else 
+  {
+    BOOL bSub = pFrame->IsSubLoaded();
+    m_btnList.SetHideStat( ID_SUBDELAYINC, !bSub);
+    m_btnList.SetHideStat( ID_SUBDELAYDEC, !bSub);
+  }
   ReCalcBtnPos();
   
 }

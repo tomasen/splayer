@@ -631,8 +631,8 @@ public:
 	{
 		UpdateData();
     if (AfxGetMyApp()->m_Verinfo)
-		  m_strRevision.Format(L"%s: %d.%d (Build %s)",ResStr( IDS_ABOUT_DIALOG_VERSION_LABEL ) , HIWORD(AfxGetMyApp()->m_Verinfo->dwProductVersionMS),
-			  LOWORD(AfxGetMyApp()->m_Verinfo->dwProductVersionMS) ,  SVP_REV_STR );
+		  m_strRevision.Format(L"%s: %d.%d (Build %s)",ResStr( IDS_ABOUT_DIALOG_VERSION_LABEL ) , (int)HIWORD(AfxGetMyApp()->m_Verinfo->dwProductVersionMS),
+			  (int)LOWORD(AfxGetMyApp()->m_Verinfo->dwProductVersionMS) ,  SVP_REV_STR );
 		UpdateData(FALSE);
 		return TRUE;
 	}
@@ -1596,8 +1596,9 @@ void CMPlayerCApp::InitInstanceThreaded(INT64 CLS64){
     path.ReleaseBuffer();
 
     DWORD             dwHandle;
-    UINT              cbTranslate = sizeof(VS_FIXEDFILEINFO);
+    UINT              cbLen = 0;
     UINT dwLen  = GetFileVersionInfoSize(path, &dwHandle);
+    VS_FIXEDFILEINFO* verInfo = NULL;
 
     TCHAR * lpData = (TCHAR*) malloc(dwLen);
     if(lpData)
@@ -1605,7 +1606,12 @@ void CMPlayerCApp::InitInstanceThreaded(INT64 CLS64){
       memset((char*)lpData, 0 , dwLen);
       if(GetFileVersionInfo(path, dwHandle, dwLen, lpData) != 0)
       {
-        VerQueryValue(lpData, TEXT("\\"), (LPVOID*)&m_Verinfo, &cbTranslate);
+        VerQueryValue(lpData, TEXT("\\"), (LPVOID*)&verInfo, &cbLen);
+        if (cbLen > 0 && !m_Verinfo)
+        {
+          m_Verinfo = (VS_FIXEDFILEINFO*)malloc(cbLen);
+          memcpy_s(m_Verinfo, cbLen, verInfo, cbLen);
+        }
       }
       free(lpData);
     }

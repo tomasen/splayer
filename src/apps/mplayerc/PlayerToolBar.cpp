@@ -116,7 +116,7 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
   {
     SetTimer(TIMER_ADPLAY, 100, NULL);
     SetTimer(TIMER_ADPLAYSWITCH, 5000, NULL);
-    SetTimer(TIMER_ADFETCHING, 15000, NULL);
+    SetTimer(TIMER_ADFETCHING, 5000, NULL);
   }
   
   CSVPToolBox svptoolbox;
@@ -382,6 +382,8 @@ void CPlayerToolBar::OnPaint()
     CSize size = dc.GetTextExtent(sTimeBtnString.c_str());
 
     CSUIButton* cbtn = m_btnList.GetButton(L"SHARE");
+    if (cbtn->m_currenthide)
+      cbtn = m_btnList.GetButton(L"LOGO");
     CRect btnrc = cbtn->m_rcHitest - rc.TopLeft();
     btnrc.left = btnrc.right + 8;
     int width = m_btnList.GetRelativeMinLength(rc, cbtn) - cbtn->m_rcHitest.Width() - 8;
@@ -1057,8 +1059,7 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
         m_adctrl.SetVisible(true);
         CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
         // If no ads exists, then don't show ads
-        if (m_adctrl.IsAdsEmpty() ||
-            pFrame->m_iMediaLoadState == CMainFrame::MLS_CLOSED)
+        if (m_adctrl.IsAdsEmpty() )
         {
           m_adctrl.SetVisible(false);
           break;

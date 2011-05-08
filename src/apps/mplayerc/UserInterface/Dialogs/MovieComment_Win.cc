@@ -84,8 +84,9 @@ std::wstring MovieComment::GetMovieTime(int i)
   __int64 rtDur = 0;
   CMainFrame* mf = (CMainFrame*)AfxGetMainWnd();
 
-  i==0 ? mf->pMS->GetDuration(&rtDur) :
-    mf->pMS->GetCurrentPosition(&rtDur);
+  if (mf && mf->pMC)
+    i==0 ? mf->pMS->GetDuration(&rtDur) :
+           mf->pMS->GetCurrentPosition(&rtDur);
 
   wchar_t buf[64];
   _i64tow(rtDur, buf, 10);

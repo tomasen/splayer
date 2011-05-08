@@ -37,11 +37,12 @@ void UserShareController::SetCommentPlaneParent(HWND hwnd)
 
 void UserShareController::CreateCommentPlane()
 {
-  if (m_commentplane.m_hWnd || !m_parentwnd || _dialogTemplate)
+  if (m_commentplane.m_hWnd || !m_parentwnd)
     return;
 
   // extra space are in order for successfully creating dialog
-  _dialogTemplate = (DLGTEMPLATE*)calloc(1, sizeof(DLGTEMPLATE)+sizeof(DLGITEMTEMPLATE)+10);
+  if (!_dialogTemplate)
+    _dialogTemplate = (DLGTEMPLATE*)calloc(1, sizeof(DLGTEMPLATE)+sizeof(DLGITEMTEMPLATE)+10);
 
   if (_dialogTemplate)
   {
@@ -154,18 +155,7 @@ void UserShareController::_Thread()
   std::string results = (char*)&buffer[0];
   m_retdata = Strings::Utf8StringToWString(results);
 
-  CreateCommentPlane();
-  for(int i = 0; i < 100; i++) // wait 10 sec till dialog init
-  {
-    if (m_commentplane.m_initialize == 0)
-      Sleep(100);
-    else
-    {
-      ::PostMessage(m_parentwnd, WM_COMMAND, ID_MOVIESHARE_OPEN, NULL);
-      break;
-    }
-  }
-
+  ::PostMessage(m_parentwnd, WM_COMMAND, ID_MOVIESHARE_OPEN, NULL);
 }
 
 BOOL UserShareController::OpenShooterMedia()
@@ -173,14 +163,19 @@ BOOL UserShareController::OpenShooterMedia()
   if (m_retdata.empty())
     return FALSE;
 
-  m_commentplane.Navigate(m_retdata.c_str());
+  if (m_commentplane.m_hWnd && m_commentplane.m_initialize)
+    m_commentplane.Navigate(m_retdata.c_str());
   return TRUE;
 }
 
 BOOL UserShareController::CloseShooterMedia()
 {
   if (m_commentplane.m_hWnd && m_commentplane.m_initialize)
-    m_commentplane.ClearFrame();
+  {
+    m_commentplane.DestroyWindow();
+    m_commentplane.m_hWnd = NULL;
+    m_commentplane.m_initialize = NULL;
+  }
   return TRUE;
 }
 

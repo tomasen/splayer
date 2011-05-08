@@ -2647,7 +2647,6 @@ void CMainFrame::OnTimer(UINT nIDEvent)
         std::wstring uuid, moviehash;
         SPlayerGUID::GenerateGUID(uuid);
         UserShareController* usc = UserShareController::GetInstance();
-        usc->CreateCommentPlane();
         moviehash = HashController::GetInstance()->GetSPHash(m_fnCurPlayingFile);
         usc->ShareMovie(uuid, moviehash, m_fnCurPlayingFile.GetString());
       }
@@ -5046,7 +5045,7 @@ void CMainFrame::OnFilePostOpenmedia()
   {
     m_movieShared = false;
     m_wndToolBar.HideMovieShareBtn(FALSE);
-    SetTimer(TIMER_MOVIESHARE, 300000, NULL);
+    SetTimer(TIMER_MOVIESHARE, 10000, NULL);
   }
 
   KillTimer(TIMER_IDLE_TASK);
@@ -14692,6 +14691,7 @@ void CMainFrame::OnMovieShare()
   KillTimer(TIMER_MOVIESHARE);
   SetTimer(TIMER_MOVIESHARE, 1, NULL);
   UserShareController::GetInstance()->ToggleCommentPlane();
+  PostMessage(WM_COMMAND, ID_MOVIESHARE_OPEN);
 }
 
 void CMainFrame::OnOpenShooterMedia()

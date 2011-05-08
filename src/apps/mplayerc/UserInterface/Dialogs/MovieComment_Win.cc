@@ -17,6 +17,7 @@
 IMPLEMENT_DYNAMIC(MovieComment, CDHtmlDialog)
 
 BEGIN_MESSAGE_MAP(MovieComment, CDHtmlDialog)
+  ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 BEGIN_DHTML_EVENT_MAP(MovieComment)
@@ -45,6 +46,30 @@ MovieComment::MovieComment()
 MovieComment::~MovieComment()
 {
   DestroyWindow();
+}
+
+void MovieComment::OnSize(UINT nType, int cx, int cy)
+{
+  __super::OnSize(nType, cx, cy);
+
+  CRect rc;
+  WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
+  GetWindowPlacement(&wp);
+  GetWindowRect(&rc);
+  rc-=rc.TopLeft();
+
+  // destroy old region
+  if((HRGN)m_rgn)
+    m_rgn.DeleteObject();
+
+  // create rounded rect region based on new window size
+  if (wp.showCmd != SW_MAXIMIZE )
+    m_rgn.CreateRoundRectRgn(0, 0, rc.Width(), rc.Height(), 7, 7);
+  else
+    m_rgn.CreateRectRgn( 0,0, rc.Width(), rc.Height() );
+
+  SetWindowRgn(m_rgn,TRUE);
+
 }
 
 BSTR MovieComment::CallSPlayer(LPCTSTR p, LPCTSTR param)

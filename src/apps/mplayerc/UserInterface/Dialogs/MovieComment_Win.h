@@ -37,6 +37,10 @@ public:
 
   std::wstring GetMovieTime(int i);
   int m_initialize;
+
+  void OnSize(UINT nType, int cx, int cy);
+  CRgn m_rgn;
+
 protected:
   virtual BOOL OnInitDialog();
   virtual BOOL IsExternalDispatchSafe();

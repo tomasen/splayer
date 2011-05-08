@@ -629,7 +629,12 @@ void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point)
     if(pFrame->IsSomethingLoaded() && pFrame->m_fFullScreen){
       SetTimer(TIMER_CLOSETOOLBAR, 5000, NULL);
     }
-
+  }
+  if (bMouseMoved)
+  {
+    pFrame->KillTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER);
+    if(pFrame->IsSomethingLoaded())
+      pFrame->SetTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER, 8000, NULL); 
   }
 
   CRect rc;
@@ -1056,15 +1061,13 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
       }
     case TIMER_ADPLAYSWITCH:
       {
-        m_adctrl.SetVisible(true);
-        CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
         // If no ads exists, then don't show ads
         if (m_adctrl.IsAdsEmpty() )
         {
           m_adctrl.SetVisible(false);
           break;
         }
-
+        m_adctrl.SetVisible(true);
         KillTimer(TIMER_ADPLAYSWITCH);
 
         // otherwise show ads
@@ -1077,6 +1080,9 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
           else
             SetTimer(TIMER_ADPLAYSWITCH, 3000, NULL);
         }
+        else
+          SetTimer(TIMER_ADPLAYSWITCH, 2000, NULL);
+
         break;
       }
     case TIMER_STATERASER:

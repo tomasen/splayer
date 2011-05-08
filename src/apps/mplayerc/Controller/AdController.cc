@@ -212,9 +212,13 @@ void AdController::AllowAnimate(bool b)
 
 void AdController::ShowNextAd()
 {
-  ++m_nCurAd;
-  if (m_nCurAd > m_vtAds.size() - 1)
+  int old_ad = m_nCurAd;
+
+  if (++m_nCurAd > m_vtAds.size() - 1)
     m_nCurAd = 0;
+
+  if (old_ad != m_nCurAd)
+    m_lastAdTime = time(NULL);
 
   m_nCurX = m_rc.left;
   m_nCurY = m_rc.top;
@@ -226,7 +230,7 @@ bool AdController::IsCurAdShownDone()
   if ((m_nCurAd < 0) || (m_nCurAd > m_vtAds.size() - 1))
     return true;
 
-  if ((time(NULL) - m_lastAdTime) > 5)
+  if ((time(NULL) - m_lastAdTime) > 15)
     return true;
 
   if (m_nCurX + m_szCurAd.cx <= m_rc.right)

@@ -20,8 +20,8 @@ BEGIN_MESSAGE_MAP(MovieComment, CDHtmlDialog)
 END_MESSAGE_MAP()
 
 BEGIN_DHTML_EVENT_MAP(MovieComment)
-  //DHTML_EVENT_ONCLICK(L"close_wnd", OnEventClose)
-  //DHTML_EVENT_ONCLICK(L"open_newlink", OpenNewLink)
+  DHTML_EVENT_ONCLICK(L"close_wnd", OnEventClose)
+  DHTML_EVENT_ONCLICK(L"open_newlink", OpenNewLink)
   //DHTML_EVENT_ONCLICK(L"cut-image-btn", OnEventCapture)
 END_DHTML_EVENT_MAP()
 

@@ -11057,7 +11057,7 @@ void CMainFrame::SetupAudioSwitcherSubMenu()
         }
         EndEnumFilters
 
-        if(szaAudioStreamArray.GetCount() > 1){
+        if(szaAudioStreamArray.GetCount() >= 1){
           for(int i = 0; i < szaAudioStreamArray.GetCount(); i++){
             szAudioStreamNameBuff.Format(ResStr(IDS_MENU_ITEM_AUDIO_STREAM_NAME), ++iAudioStreamCount, GetAnEasyToUnderstoodAudioStreamName(szaAudioStreamArray.GetAt(i)) );
             pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, sziAudioStreamArray.GetAt(i),szAudioStreamNameBuff) ;
@@ -11210,6 +11210,8 @@ CString CMainFrame::GetAnEasyToUnderstoodSubtitleName(CString szName)
       szTransdName = L"中文";
     else if(szName.Find(L"en") >= 0 )
       szTransdName = L"英文";
+    else if(szName.Find(L"No subtitle") >= 0 )
+      szTransdName = L"无字幕";
 
     break;
   default:
@@ -11236,6 +11238,7 @@ void CMainFrame::SetupSubtitlesSubMenu(int subid)
   else while(pSub->RemoveMenu(0, MF_BYPOSITION));
 
   UINT loadID = ID_FILE_LOAD_SUBTITLE;
+  int iSubtitleStreamCount = 0;
 
   UINT id ;
   if (subid == 2){
@@ -11247,7 +11250,6 @@ void CMainFrame::SetupSubtitlesSubMenu(int subid)
     // TODO: ts subtitles seems to be not working
     UINT idl = ID_FILTERSTREAMS_SUBITEM_START;
 
-    int iSubtitleStreamCount = 0;
     CString szSubtitleStreamNameBuff ;
     m_ssarray.RemoveAll();
 
@@ -11280,7 +11282,7 @@ void CMainFrame::SetupSubtitlesSubMenu(int subid)
               pSS2->Info(i, NULL, &flags, &lcid, &group, &wname, &pObj, &pUnk);
               if(!wname) { idl++; continue; }
               CString name(wname);
-              if( name.Find(_T("S")) == 0  || name.Find(_T("字幕")) == 0 ){
+              if( name.Find(_T("S")) == 0  || name.MakeLower().Find(_T("ubtitle")) >= 0 || name.Find(_T("字幕")) == 0 ){
                 name.Replace(_T("&"), _T("&&"));
                 Logging(L" Subtitle Menu %d %s", idl, name);
                 szaSubtitleStreamArray.Add( name );
@@ -11294,7 +11296,7 @@ void CMainFrame::SetupSubtitlesSubMenu(int subid)
         }
         EndEnumFilters
 
-        if(szaSubtitleStreamArray.GetCount() > 1){
+        if(szaSubtitleStreamArray.GetCount() >= 1){
           for(int i = 0; i < szaSubtitleStreamArray.GetCount(); i++){
             szSubtitleStreamNameBuff.Format(ResStr(IDS_MENU_ITEM_SUBTITLE_STREAM_NAME), ++iSubtitleStreamCount, GetAnEasyToUnderstoodAudioStreamName(szaSubtitleStreamArray.GetAt(i)) );
             pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, sziSubtitleStreamArray.GetAt(i),szSubtitleStreamNameBuff) ;
@@ -11319,7 +11321,7 @@ void CMainFrame::SetupSubtitlesSubMenu(int subid)
     pSub->AppendMenu(MF_SEPARATOR);
   }
   BOOL HavSubs = FALSE;
-  int subcount = 0;
+  int subcount = iSubtitleStreamCount;
 
   while(pos)
   {
@@ -11335,7 +11337,7 @@ void CMainFrame::SetupSubtitlesSubMenu(int subid)
       {
         CString name(pName);
         name.Replace(_T("&"), _T("&&"));
-
+        Logging(name);
         szBuf.Format(ResStr(IDS_MENU_ITEM_SUBTITLE_STREAM_NAME), ++subcount, GetAnEasyToUnderstoodSubtitleName(name));
         pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, id++, szBuf);
         HavSubs = true;

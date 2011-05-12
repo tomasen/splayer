@@ -28,7 +28,7 @@
 #if (0)		// Set to 1 to activate HDMV subtitles traces
 #define TRACE_HDMVSUB		TRACE
 #else
-#define TRACE_HDMVSUB Logging
+#define TRACE_HDMVSUB __noop //Logging
 #endif
 
 
@@ -308,7 +308,7 @@ void CHdmvSub::Render(SubPicDesc& spd, REFERENCE_TIME rt, RECT& bbox)
       pObject->m_width, pObject->m_height, spd.w, spd.h);
     pObject->RenderHdmv(spd);
 
-    bbox.left	= 0;
+    bbox.left	= max((spd.w - pObject->m_width)/2, 0);;
     bbox.top	= max(spd.h - pObject->m_height - 30, 0);
     bbox.right	= bbox.left + pObject->m_width;
     bbox.bottom	= bbox.top  + pObject->m_height;

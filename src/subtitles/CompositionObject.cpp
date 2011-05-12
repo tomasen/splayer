@@ -92,7 +92,8 @@ void CompositionObject::RenderHdmv(SubPicDesc& spd)
 
   BYTE			nPaletteIndex = 0;
   SHORT			nCount;
-  SHORT			nX	= 0;
+  SHORT     leftMargin = max((spd.w - m_width)/2, 0);
+  SHORT			nX	= leftMargin;
   SHORT			nY	= max(spd.h - m_height - 30, 0);
 
   while ((nY < spd.h) && !GBuffer.IsEOF()) {
@@ -130,7 +131,7 @@ void CompositionObject::RenderHdmv(SubPicDesc& spd)
       nX += nCount;
     } else {
       nY++;
-      nX = 0;
+      nX = leftMargin;
     }
   }
 }

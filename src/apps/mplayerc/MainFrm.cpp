@@ -5756,6 +5756,45 @@ void CMainFrame::OnFileOpendvd()
 
   ShowWindow(SW_SHOW);
 
+  // Try BD Disks
+  TCHAR szTemp[10241] = {0};
+  memset(szTemp,0,sizeof(TCHAR)*10241);
+  if (GetLogicalDriveStrings(10240, szTemp)) 
+  {
+    TCHAR szName[MAX_PATH];
+    TCHAR* p = szTemp;
+    do 
+    {
+      TCHAR*szDrive = p;
+      UINT uNameLen = _tcslen(szDrive);
+      if (uNameLen < MAX_PATH && uNameLen > 0) 
+      {
+        UINT driver_type = GetDriveType(szDrive);
+        Logging(L"DRIVER(BD)  %s\n", szDrive);
+        if(driver_type == DRIVE_CDROM || driver_type == DRIVE_REMOVABLE)
+        {
+          // try to open BD
+          CHdmvClipInfo		ClipInfo;
+          CString				strPlaylistFile;
+          CAtlList<CHdmvClipInfo::PlaylistItem>	MainPlaylist;
+
+          if (SUCCEEDED (ClipInfo.FindMainMovie (szDrive, strPlaylistFile, MainPlaylist)))
+          {
+            CAutoPtr<OpenFileData> p(DNew OpenFileData());
+            p->fns.AddTail(strPlaylistFile);
+            OpenMedia(p);
+            return;
+          }
+        }
+      }
+      else
+        break;
+
+      // Go to the next NULL character.
+      while (*p++);
+    } while (*p); // end of string
+  }
+
   CAutoPtr<OpenDVDData> p(new OpenDVDData());
   if(p)
   {

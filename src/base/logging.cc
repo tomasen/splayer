@@ -27,7 +27,7 @@ void LogController::Log(const wchar_t* fmt, ...)
   wchar_t buf[2048];
   va_list args;
   va_start(args, fmt);
-  vswprintf_s(buf,2048,fmt,args);
+  _vswprintf_s_l(buf,2048,fmt,NULL,args);
   LogLine(buf);
   va_end(args);
 }
@@ -37,7 +37,7 @@ void LogController::Log(const char* fmt, ...)
   char buf[2048];
   va_list args;
   va_start(args, fmt);
-  vsprintf_s(buf,2048, fmt,args);
+  _vsprintf_s_l(buf,2048, fmt,NULL,args);
   LogLine(buf);
   va_end(args);
 }

@@ -10,7 +10,7 @@
 
 using namespace sqlitepp;
 
-SQLliteapp::SQLliteapp(std::wstring dbfile)
+SQLliteapp::SQLliteapp(std::wstring dbfile):db_open(0)
 {
   try
   {
@@ -18,10 +18,7 @@ SQLliteapp::SQLliteapp(std::wstring dbfile)
     m_db.open(m_dbfile);
     db_open=1;
   }
-  catch(...)
-  {
-    db_open = 0;
-  }
+  catch(...){ }
 }
 
 SQLliteapp::~SQLliteapp(void)

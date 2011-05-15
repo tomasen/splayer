@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "GraphCore.h"
+#include <Strings.h>
 
 #include "mplayerc.h"
 #include "MainFrm.h"
@@ -17,6 +18,7 @@
 // TODO try to remove
 #include "..\..\svplib\SVPToolBox.h"
 #include "../../svplib/SVPRarLib.h"
+
 
 CGraphCore::CGraphCore(void):
   m_fCustomGraph(false),
@@ -36,7 +38,8 @@ CGraphCore::CGraphCore(void):
   m_rtDurationOverride(-1),
   m_fOpenedThruThread(FALSE),
   m_iPlaybackMode(PM_NONE),
-  m_iSubtitleSel2(-1)
+  m_iSubtitleSel2(-1),
+  _skip_ui(0)
 {
 }
 
@@ -749,7 +752,7 @@ bool CGraphCore::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
         }
       }
 
-      if (m_pMC)
+      if (m_pMC && !_skip_ui)
       {
         if (SetVMR9ColorControl(s.dBrightness, s.dContrast, s.dHue, s.dSaturation) == FALSE)
           OsdMsg_SetShader();
@@ -794,6 +797,9 @@ bool CGraphCore::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
       m_iMediaLoadState = MLS_LOADED;
 
       time(&m_tPlayStartTime);
+
+      if (_skip_ui)
+       return true;
 
       GetMainFrame()->PostMessage(WM_COMMAND, ID_PLAY_PAUSE);
 
@@ -965,7 +971,76 @@ void CGraphCore::CloseMediaPrivate()
   SetThreadExecutionState(0); //this is the right way, only this work under vista . no ES_CONTINUOUS  so it can goes to sleep when not playing
 
 }
+void CGraphCore::GetSnapShotSliently(CString fn)
+{
+  OpenFileData* p = new OpenFileData();
+  if (!p)
+    return;
+  _skip_ui = true;
 
+  p->fns.AddTail(fn);
+  p->rtStart = 0;
+  CloseMedia();
+  // disable graph thread
+  AppSettings& s = AfxGetAppSettings();
+  s.fEnableWorkerThreadForOpening = 0;
+  s.fMute = true;
+  s.useGPUAcel = false;
+  // skip read/write setting/playlist/download sub
+  CAutoPtr<OpenMediaData> pOMD((OpenMediaData*)p);
+  OpenMedia(pOMD);
+  s.fEnableWorkerThreadForOpening = 1;
+  if(!pMS)
+    return;
+  __int64 rtDur = 0;
+  pMS->GetDuration(&rtDur);
+  rtDur/=10;
+  if (rtDur > 1000)
+    pMS->SetPositions(&rtDur, AM_SEEKING_AbsolutePositioning|AM_SEEKING_SeekToKeyFrame, NULL, AM_SEEKING_NoPositioning);
+
+  HRESULT hr = pFS ? pFS->Step(3, NULL) : E_FAIL;
+
+  HANDLE hGraphEvent = NULL;
+  pME->GetEventHandle((OAEVENT*)&hGraphEvent);
+
+  while(hGraphEvent && WaitForSingleObject(hGraphEvent, 5000) == WAIT_OBJECT_0)
+  {
+    LONG evCode = 0, evParam1, evParam2;
+    while(SUCCEEDED(pME->GetEvent(&evCode, (LONG_PTR*)&evParam1, (LONG_PTR*)&evParam2, 0)))
+    {
+      pME->FreeEventParams(evCode, evParam1, evParam2);
+      if(EC_STEP_COMPLETE == evCode) hGraphEvent = NULL;
+    }
+  }
+
+  BYTE* pData = NULL;
+  long size = 0;
+  bool dib_stat = GetDIB(&pData, size, true);
+
+  CloseMediaPrivate();
+
+  if (!dib_stat)
+    return;
+
+  std::string szFileHash = Strings::WStringToUtf8String(HashController::GetInstance()->GetSPHash(fn));
+  std::wstring szJpgName = HashController::GetInstance()->GetMD5Hash(szFileHash.c_str(), szFileHash.length());
+
+  CSVPToolBox svpTool;
+  std::wstring app_path;
+  svpTool.GetAppDataPath(app_path);
+  app_path += L"\\mc";
+  _wmkdir(app_path.c_str());
+  app_path += L"\\cover";
+  _wmkdir(app_path.c_str());
+  std::wstring snapshot_fn = app_path + L"\\" + szJpgName + L".jpg";
+
+  BITMAPINFO* bi = (BITMAPINFO*)pData;
+  if (bi->bmiHeader.biWidth > 960)
+    CJpegEncoderFile(snapshot_fn.c_str()).EncodeHalf(pData);
+  else
+    CJpegEncoderFile(snapshot_fn.c_str()).Encode(pData);
+
+}
 void CGraphCore::OpenCreateGraphObject(OpenMediaData* pOMD)
 {
   ASSERT(pGB == NULL);

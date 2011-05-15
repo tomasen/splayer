@@ -5602,6 +5602,16 @@ BOOL CMainFrame::OnCopyData(CWnd* pWnd, COPYDATASTRUCT* pCDS)
 
   s.ParseCommandLine(cmdln);
 
+  if (s.nCLSwitches&CLSW_SNAPSHOT)
+  {
+    if (s.slFiles.GetCount() > 0)
+      GetSnapShotSliently(s.slFiles.GetHead());
+
+    // not safe exit, but save a lot coding, so sue me
+    exit(0);
+    return FALSE;
+  }
+
   POSITION pos = s.slFilters.GetHeadPosition();
   while(pos)
   {

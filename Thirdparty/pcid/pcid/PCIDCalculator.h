@@ -24,5 +24,5 @@ By wangrui 2011.3.25
 在驱动之家的代码基础上增加一个普通函数.方便其他人使用
 */
 
-extern "C" int __declspec(dllexport) GetPCID(char buf[16], char flag);
-extern "C" int __declspec(dllexport) GetFullPCID(char buf[16]);
+extern "C" int GetPCID(char buf[16], char flag);
+extern "C" int GetFullPCID(char buf[16]);

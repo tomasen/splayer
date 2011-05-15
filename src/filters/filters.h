@@ -54,8 +54,19 @@
 #include ".\parser\FLVSplitter\FLVSplitter.h"
 #include ".\parser\WMVSpliter\WMVSpliter.h"
 #include ".\parser\SSFSplitter\SSFSplitter.h"
+
 //#include ".\transform\vsfilter\DirectVobSubFilter.h"
 #include ".\renderer\MpcAudioRenderer\MpcAudioRenderer.h"
 
+
+#include "..\..\Thirdparty\wavpack-ds-wavpack-directshow\wavpack\wputils.h"
+#include "..\..\Thirdparty\wavpack-ds-wavpack-directshow\wavpacklib\wavpack_common.h"
+#include "..\..\Thirdparty\wavpack-ds-wavpack-directshow\wavpacklib\wavpack_frame.h"
+#include "..\..\Thirdparty\wavpack-ds-wavpack-directshow\wavpacklib\wavpack_parser.h"
+#include "..\..\Thirdparty\wavpack-ds-wavpack-directshow\wavpacklib\wavpack_buffer_decoder.h"
+#include "..\..\Thirdparty\wavpack-ds-wavpack-directshow\WavPackDS_GUID.h"
+#include "..\..\Thirdparty\wavpack-ds-wavpack-directshow\WavPackDSSplitter\WavPackDSSplitter.h"
+#include "..\..\Thirdparty\wavpack-ds-wavpack-directshow\WavPackDSDecoder\IWavPackDSDecoder.h"
+#include "..\..\Thirdparty\wavpack-ds-wavpack-directshow\WavPackDSDecoder\WavPackDSDecoder.h"
 //Unfinished
 //#include ".\parser\EASplitter\EASpliter.h"

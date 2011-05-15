@@ -220,6 +220,7 @@ void CMediaFormats::UpdateData(bool fSave)
 		ADDFMT((_T("AU Format Sound"), _T("au snd"), _T("audio"), IDI_AUDIO_FILE, true));
 		ADDFMT((_T("Ogg Media file"), _T("ogm ogv"), _T("video"), IDI_VIDEO));
 		ADDFMT((_T("Ogg Vorbis Audio file"), _T("ogg"), _T("audio"), IDI_AUDIO_FILE, true));
+		ADDFMT((_T("WavPack Audio file"), _T("wv wvc"), _T("audio"), IDI_AUDIO_FILE, true));
 		ADDFMT((_T("CD Audio Track"), _T("cda"), _T("audio"), IDI_AUDIO_FILE, true, _T("Windows 2000/XP or better")));
 		ADDFMT((_T("FLIC file"), _T("fli flc flic"), _T("audio"), IDI_AUDIO_FILE));
 		ADDFMT((_T("DVD2AVI Project file"), _T("d2v"), _T("video"), IDI_VIDEO));

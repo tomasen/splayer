@@ -349,10 +349,25 @@ HRESULT CFGManager::EnumSourceFilters(LPCWSTR lpcwstrFileName, CFGFilterList& fl
 			}
 		}
 
+    if(hFile != INVALID_HANDLE_VALUE && CheckBytes(hFile, L"0,4,,7776706B"))
+    {
+      if (ext.CompareNoCase(L".wv") == 0)
+      {
+        CFGFilter* pFGF = new CFGFilterRegistry(CLSID_AsyncReader);
+        pFGF->AddType(MEDIATYPE_Stream, MEDIASUBTYPE_WAVPACK_Stream);
+        fl.Insert(pFGF, 8);
+      }
+      else if (ext.CompareNoCase(L".wvc") == 0)
+      {
+        CFGFilter* pFGF = new CFGFilterRegistry(CLSID_AsyncReader);
+        pFGF->AddType(MEDIATYPE_Stream, MEDIASUBTYPE_WAVPACK_CORRECTION_Stream);
+        fl.Insert(pFGF, 8);
+      }
+    }
+
 		if(!ext.IsEmpty() && !s.fBUltraFastMode)  //¼±ËÙÄ£Ê½
 		{
 			// file extension
-
 			CRegKey key;
 			if(ERROR_SUCCESS == key.Open(HKEY_CLASSES_ROOT, _T("Media Type\\Extensions\\") + CString(ext), KEY_READ))
 			{
@@ -1526,6 +1541,12 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 		m_source.AddTail(pFGF);
 	}
 
+  pFGF = new CFGFilterRegistry(CLSID_AsyncReader);
+  pFGF->m_chkbytes.AddTail(L"0,4,,7776706B");
+  pFGF->m_extensions.AddTail(_T(".wv"));
+  pFGF->m_extensions.AddTail(_T(".wvc"));
+  m_source.AddTail(pFGF);
+
 	__if_exists(CEASourceFilter)
 	{
 		pFGF = new CFGFilterInternal<CEASourceFilter>(_T("CEASourceFilter"), MERIT64_ABOVE_DSHOW);
@@ -1660,7 +1681,19 @@ CFGManagerCustom::CFGManagerCustom(LPCTSTR pName, LPUNKNOWN pUnk, UINT src, UINT
 	pFGF->AddType(MEDIATYPE_Stream, MEDIASUBTYPE_RealMedia);
 	pFGF->AddType(MEDIATYPE_Stream, GUID_NULL);
 	m_transform.AddTail(pFGF);
+
+ 
+  pFGF = new CFGFilterInternal<CWavPackDSSplitter>(L"CWavPackDSSplitter", MERIT64_ABOVE_DSHOW);
+  pFGF->AddType(MEDIATYPE_Stream, MEDIASUBTYPE_WAVPACK_Stream);
+  pFGF->AddType(MEDIATYPE_Stream, MEDIASUBTYPE_WAVPACK_CORRECTION_Stream);
+	pFGF->AddType(MEDIATYPE_Stream, GUID_NULL);
+  m_transform.AddTail(pFGF);
 	
+  pFGF = new CFGFilterInternal<CWavPackDSDecoder>(L"CWavPackDSDecoder", MERIT64_ABOVE_DSHOW);
+  pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_WAVPACK);
+  pFGF->AddType(MEDIATYPE_Audio, MEDIASUBTYPE_WavpackHybrid);
+  m_transform.AddTail(pFGF);
+
 	if(src & SRC_AVI)	{
 		pFGF = new CFGFilterInternal<CAviSplitterFilter>(L"Avi Splitter", MERIT64_ABOVE_DSHOW);
 	} else {

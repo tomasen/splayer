@@ -17,50 +17,19 @@
 
 UserShareController::UserShareController() : 
 m_retdata(L""),
-m_parentwnd(NULL),
-_dialogTemplate(NULL)
+m_parentwnd(NULL)
 {
 
 }
 
 UserShareController::~UserShareController()
 {
-    _Stop();
-
-    if (_dialogTemplate)
-      free(_dialogTemplate);
+  _Stop();
 }
+
 void UserShareController::SetCommentPlaneParent(HWND hwnd)
 {
   m_parentwnd = hwnd;
-}
-
-void UserShareController::CreateCommentPlane()
-{
-  if (m_commentplane.m_hWnd || !m_parentwnd)
-    return;
-
-  // extra space are in order for successfully creating dialog
-  if (!_dialogTemplate)
-    _dialogTemplate = (DLGTEMPLATE*)calloc(1, sizeof(DLGTEMPLATE)+sizeof(DLGITEMTEMPLATE)+10);
-
-  if (_dialogTemplate)
-  {
-    _dialogTemplate->style = DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_DISABLED;
-    _dialogTemplate->dwExtendedStyle = WS_EX_NOACTIVATE; //WS_EX_TOPMOST
-
-    _dialogTemplate->cdit  = 0;
-    _dialogTemplate->cx    = 316;
-    _dialogTemplate->cy    = 183;
-
-
-    if (0 == m_commentplane.CreateIndirect(_dialogTemplate, CWnd::FromHandle(m_parentwnd)))
-    {
-      free(_dialogTemplate);
-      _dialogTemplate = 0;
-      Logging(L"m_commentplane.CreateIndirect failed");
-    }
-  }
 }
 
 std::wstring UserShareController::GetResponseData()
@@ -188,10 +157,9 @@ void UserShareController::ToggleCommentPlane()
 }
 BOOL UserShareController::ShowCommentPlane()
 {
-  //if (m_retdata.empty())
-  //    return FALSE;
+  if (!m_commentplane.m_hWnd)
+    m_commentplane.CreateFrame(DS_SETFONT|DS_FIXEDSYS|WS_POPUP|WS_DISABLED,WS_EX_NOACTIVATE);
 
-  CreateCommentPlane();
   m_commentplane.ShowFrame();
   return TRUE;
 }

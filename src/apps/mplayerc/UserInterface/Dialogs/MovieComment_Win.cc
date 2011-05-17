@@ -23,29 +23,24 @@ END_MESSAGE_MAP()
 BEGIN_DHTML_EVENT_MAP(MovieComment)
   DHTML_EVENT_ONCLICK(L"close_wnd", OnEventClose)
   DHTML_EVENT_ONCLICK(L"open_newlink", OpenNewLink)
-  //DHTML_EVENT_ONCLICK(L"cut-image-btn", OnEventCapture)
 END_DHTML_EVENT_MAP()
 
-BEGIN_EVENTSINK_MAP(MovieComment, CDHtmlDialog)
-  //ON_EVENT(MovieComment, AFX_IDC_BROWSER, DISPID_NEWWINDOW3, OnEventNewLink, VTS_DISPATCH VTS_PBOOL VTS_UI4 VTS_BSTR VTS_BSTR)
-END_EVENTSINK_MAP()
-
 BEGIN_DISPATCH_MAP(MovieComment, CDHtmlDialog)
-//   DISP_FUNCTION(MovieComment, "close_sharewnd", HideFrame, VT_EMPTY, VTS_NONE)
-//   DISP_FUNCTION(MovieComment, "open_sharewnd", ShowFrame, VT_EMPTY, VTS_NONE)
-//   DISP_FUNCTION(MovieComment, "open_newlink", OpenNewLink, VT_EMPTY, VTS_BSTR)
   DISP_FUNCTION(MovieComment, "CallSPlayer", CallSPlayer, VT_BSTR, VTS_BSTR VTS_BSTR)
 END_DISPATCH_MAP()
 
 MovieComment::MovieComment()
 : m_initialize(0)
 {
-
+  SupportContextMenu(FALSE);
+  HostFlags(DOCHOSTUIFLAG_THEME | DOCHOSTUIFLAG_SCROLL_NO | DOCHOSTUIFLAG_NO3DBORDER
+    | DOCHOSTUIFLAG_DISABLE_HELP_MENU | DOCHOSTUIFLAG_DIALOG | DOCHOSTUIFLAG_ENABLE_ACTIVEX_INACTIVATE_MODE
+    | DOCHOSTUIFLAG_DISABLE_SCRIPT_INACTIVE | DOCHOSTUIFLAG_OVERRIDEBEHAVIORFACTORY
+    );
 }
 
 MovieComment::~MovieComment()
 {
-  DestroyWindow();
 }
 
 void MovieComment::OnSize(UINT nType, int cx, int cy)
@@ -118,32 +113,14 @@ std::wstring MovieComment::GetMovieTime(int i)
   return std::wstring(buf);
 }
 
-HRESULT STDMETHODCALLTYPE MovieComment::ShowContextMenu(DWORD /*dwID*/, POINT *ppt, IUnknown* /*pcmdtReserved*/, IDispatch* /*pdispReserved*/)
-{
-  return S_OK;
-}
-
-BOOL MovieComment::IsExternalDispatchSafe()
-{
-  return TRUE;
-}
-
 BOOL MovieComment::OnInitDialog()
 {
-  CDHtmlDialog::OnInitDialog();
+  DhtmlDlgBase::OnInitDialog();
 
   CalcWndPos();
   HideFrame();
 
-  SetHostFlags(DOCHOSTUIFLAG_THEME | DOCHOSTUIFLAG_SCROLL_NO | DOCHOSTUIFLAG_NO3DBORDER
-         | DOCHOSTUIFLAG_DISABLE_HELP_MENU | DOCHOSTUIFLAG_DIALOG | DOCHOSTUIFLAG_ENABLE_ACTIVEX_INACTIVATE_MODE
-         | DOCHOSTUIFLAG_DISABLE_SCRIPT_INACTIVE | DOCHOSTUIFLAG_OVERRIDEBEHAVIORFACTORY
-         );
-
-  EnableAutomation();
-  SetExternalDispatch(GetIDispatch(TRUE));
-  // suppress script error
-  m_pBrowserApp->put_Silent(VARIANT_TRUE);
+  SupportJSCallBack();
   m_initialize = 1;
   ClearFrame();
 
@@ -157,7 +134,7 @@ void MovieComment::ClearFrame()
   CString strResourceURL;
   LPTSTR lpszModule = new TCHAR[_MAX_PATH];
 
-  if (GetModuleFileName(NULL, lpszModule, _MAX_PATH))
+  if (lpszModule && GetModuleFileName(NULL, lpszModule, _MAX_PATH))
   {
     // load resource html regardless by language
     strResourceURL.Format(_T("res://%s/%d"), lpszModule, IDR_HTML_BUSY);
@@ -165,10 +142,6 @@ void MovieComment::ClearFrame()
   }
   else
     Navigate(L"about:blank");
-}
-void MovieComment::OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl)
-{
-
 }
 
 HRESULT MovieComment::OnEventCapture(IHTMLElement* pElement)
@@ -204,6 +177,9 @@ HRESULT MovieComment::OnEventCapture(IHTMLElement* pElement)
     imgpath = tpath;
 
     CMainFrame* cmf = (CMainFrame*)AfxGetMainWnd();
+    if (!cmf)
+      return S_FALSE;
+
     cmf->SnapShootImage(imgpath, (cmf->GetVideoSize().cx > 960)?TRUE:FALSE);
 
     CComVariant imgsrc = imgpath.c_str();
@@ -221,6 +197,8 @@ HRESULT MovieComment::OnEventCapture(IHTMLElement* pElement)
     fs.seekg(0, std::ios_base::beg);
 
     unsigned char* buf = new unsigned char[filesize];
+    if (!buf)
+      return S_FALSE;
 
     fs.read((char*)buf, filesize);
     fs.close();
@@ -241,16 +219,6 @@ HRESULT MovieComment::OnEventCapture(IHTMLElement* pElement)
   return S_FALSE;
 }
 
-BOOL MovieComment::OnEventNewLink(IDispatch **ppDisp, VARIANT_BOOL *Cancel,
-                 DWORD dwFlags, BSTR bstrUrlContext, BSTR bstrUrl)
-{
-  OpenNewLink(bstrUrl);
-
-  *Cancel = VARIANT_TRUE;
-
-  return S_OK;  
-}
-
 HRESULT MovieComment::OpenNewLink(IHTMLElement *pElement)
 {
   CComBSTR tagName;
@@ -259,14 +227,10 @@ HRESULT MovieComment::OpenNewLink(IHTMLElement *pElement)
   pElement->get_tagName(&tagName);
   pElement->getAttribute(L"href", 0, &v);
   v.CopyTo(&url);
+  
   if (tagName == L"A" && url)
-    ShellExecute(NULL, L"open", url, L"", L"", SW_SHOW);
-  return S_OK;
-}
+    OpenNewLink(url);
 
-HRESULT MovieComment::OnEventClose(IHTMLElement* /*pElement*/)
-{
-  HideFrame();
   return S_OK;
 }
 
@@ -277,21 +241,21 @@ void MovieComment::OpenNewLink(LPCTSTR url)
     ShellExecute(NULL, L"open", str.c_str(), L"", L"", SW_SHOW);
 }
 
+HRESULT MovieComment::OnEventClose(IHTMLElement* /*pElement*/)
+{
+  HideFrame();
+  return S_OK;
+}
+
 void MovieComment::CalcWndPos()
 {
   RECT rc;
   GetParent()->GetWindowRect(&rc);
-  SetWindowPos(NULL, rc.left+20, rc.bottom-420, 240, 320, SWP_NOZORDER|SWP_NOACTIVATE);
-}
+  
+  rc.top = rc.left + 20;
+  rc.left = rc.bottom - 420;
+  rc.right = 240;
+  rc.bottom = 320;
 
-void MovieComment::HideFrame()
-{
-  ShowWindow(SW_HIDE);
-  ModifyStyle(0, WS_DISABLED);
-}
-
-void MovieComment::ShowFrame()
-{
-  ModifyStyle(WS_DISABLED, 0);
-  ShowWindow(SW_SHOWNOACTIVATE);
+  SetFramePos(rc);
 }

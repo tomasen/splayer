@@ -10,6 +10,8 @@ public:
   OAuthDlg();
   virtual ~OAuthDlg();
 
+  void CalcOauthPos();
+
 protected:
   virtual BOOL OnInitDialog();
 

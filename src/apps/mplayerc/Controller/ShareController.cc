@@ -180,3 +180,21 @@ void UserShareController::CalcCommentPlanePos()
   if (m_commentplane.IsWindowVisible())
     m_commentplane.ShowFrame();
 }
+
+BOOL UserShareController::CloseShareWnd()
+{
+  BOOL ret = FALSE;
+  if (m_commentplane.IsWindowVisible())
+  {
+    ret = TRUE;
+    m_commentplane.HideFrame();
+  }
+
+  if (m_commentplane.m_oadlg && m_commentplane.m_oadlg->IsWindowVisible())
+  {
+    ret = TRUE;
+    m_commentplane.CloseOAuth();
+  }
+
+  return ret;
+}

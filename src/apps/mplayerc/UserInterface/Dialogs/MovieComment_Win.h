@@ -3,6 +3,7 @@
 #pragma once
 
 #include "DhtmlDlgBase.h"
+#include "OAuthDlg.h"
 
 #define ID_MOVIESHARE_RESPONSE 32932
 
@@ -19,6 +20,10 @@ public:
 
   HRESULT OnEventCapture(IHTMLElement* pElement);
 
+  void CloseOAuth();
+  void OpenOAuth();
+
+  void ShowFrame();
   void ClearFrame();
   void CalcWndPos();
   void OpenNewLink(LPCTSTR url);
@@ -28,8 +33,10 @@ public:
   std::wstring GetMovieTime(int i);
   int m_initialize;
 
+  BOOL AdjustMainWnd();
   void OnSize(UINT nType, int cx, int cy);
   CRgn m_rgn;
+  OAuthDlg* m_oadlg;
 
 protected:
   virtual BOOL OnInitDialog();
@@ -38,6 +45,8 @@ protected:
   DECLARE_DHTML_EVENT_MAP()
   DECLARE_DISPATCH_MAP()
 
+private:
+  RECT m_mainrc;
 };
 
 

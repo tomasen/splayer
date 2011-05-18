@@ -52,7 +52,7 @@ void DhtmlDlgBase::HostFlags(DWORD flags)
 
 void DhtmlDlgBase::SetFramePos(RECT& rc)
 {
-  SetWindowPos(NULL, rc.top, rc.left, rc.right, rc.bottom, SWP_NOZORDER|SWP_NOACTIVATE);
+  SetWindowPos(NULL, rc.left, rc.top, rc.right, rc.bottom, SWP_NOZORDER|SWP_NOACTIVATE);
 }
 
 void DhtmlDlgBase::HideFrame()

@@ -30,7 +30,8 @@ BEGIN_DISPATCH_MAP(MovieComment, CDHtmlDialog)
 END_DISPATCH_MAP()
 
 MovieComment::MovieComment()
-: m_initialize(0)
+: m_initialize(0),
+  m_oadlg(NULL)
 {
   SupportContextMenu(FALSE);
   HostFlags(DOCHOSTUIFLAG_THEME | DOCHOSTUIFLAG_SCROLL_NO | DOCHOSTUIFLAG_NO3DBORDER
@@ -41,6 +42,7 @@ MovieComment::MovieComment()
 
 MovieComment::~MovieComment()
 {
+  CloseOAuth();
 }
 
 void MovieComment::OnSize(UINT nType, int cx, int cy)
@@ -64,7 +66,6 @@ void MovieComment::OnSize(UINT nType, int cx, int cy)
     m_rgn.CreateRectRgn( 0,0, rc.Width(), rc.Height() );
 
   SetWindowRgn(m_rgn,TRUE);
-
 }
 
 BSTR MovieComment::CallSPlayer(LPCTSTR p, LPCTSTR param)
@@ -82,9 +83,16 @@ BSTR MovieComment::CallSPlayer(LPCTSTR p, LPCTSTR param)
     UserShareController::GetInstance()->_Start();
   }
   else if (cmd == L"open")
+  {
+    AdjustMainWnd();
     ShowFrame();
+  }
   else if (cmd == L"close")
     HideFrame();
+  else if (cmd == L"openoauth")
+    OpenOAuth();
+  else if (cmd == L"closeoauth")
+    CloseOAuth();
   else if (cmd == L"openlink")
     OpenNewLink(param);
   else if (cmd == L"snapshoot") 
@@ -231,7 +239,7 @@ HRESULT MovieComment::OpenNewLink(IHTMLElement *pElement)
   if (tagName == L"A" && url)
     OpenNewLink(url);
 
-  return S_OK;
+  return S_FALSE;
 }
 
 void MovieComment::OpenNewLink(LPCTSTR url)
@@ -247,15 +255,74 @@ HRESULT MovieComment::OnEventClose(IHTMLElement* /*pElement*/)
   return S_OK;
 }
 
+void MovieComment::ShowFrame()
+{
+  AdjustMainWnd();
+  DhtmlDlgBase::ShowFrame();
+}
+
+BOOL MovieComment::AdjustMainWnd()
+{
+  RECT rc;
+  GetParent()->GetWindowRect(&rc);
+  CRect rect(rc);
+  BOOL ret = FALSE;
+
+  if (rect.Width() <= 500 || rect.Height() <= 450)
+  {
+    int x,y;
+    x = (GetSystemMetrics(SM_CXSCREEN)-800)/2; 
+    y = (GetSystemMetrics(SM_CYSCREEN)-600)/2;
+    GetParent()->MoveWindow(x, y, 800, 600);
+    ret = TRUE;
+  }
+  return ret;
+}
+
 void MovieComment::CalcWndPos()
 {
   RECT rc;
   GetParent()->GetWindowRect(&rc);
-  
-  rc.top = rc.left + 20;
-  rc.left = rc.bottom - 420;
+
+  CRect c1(m_mainrc);
+  CRect c2(rc);
+  BOOL movewnd = FALSE;
+
+  if (m_oadlg && m_oadlg->IsWindowVisible() || IsWindowVisible())
+    movewnd = AdjustMainWnd();
+
+  if (!movewnd && c1.Width() != c2.Width() && c1.Height() != c2.Height())
+  {
+    CloseOAuth();
+    HideFrame();
+  }
+
+  m_mainrc = rc;
+  rc.top = rc.bottom - 420;
+  rc.left = rc.left + 20;
   rc.right = 240;
   rc.bottom = 320;
 
   SetFramePos(rc);
+
+  if (m_oadlg)
+    m_oadlg->CalcOauthPos();
+}
+
+void MovieComment::CloseOAuth()
+{
+  delete m_oadlg;
+  m_oadlg = NULL;
+}
+
+void MovieComment::OpenOAuth()
+{
+  if (m_oadlg)
+    return;
+
+  AdjustMainWnd();
+  m_oadlg = new OAuthDlg;
+  m_oadlg->CreateFrame(DS_SETFONT|DS_FIXEDSYS|WS_POPUP|WS_DISABLED,WS_EX_NOACTIVATE);
+  m_oadlg->ShowFrame();
+  m_oadlg->CalcOauthPos();
 }

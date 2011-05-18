@@ -30,6 +30,7 @@ public:
   BOOL CloseShooterMedia();
   std::wstring GenerateKey();
   std::wstring GetResponseData();
+  BOOL CloseShareWnd();
 
 private:
   std::wstring EncodeString(std::wstring str);

@@ -10,7 +10,7 @@
 IMPLEMENT_DYNAMIC(OAuthDlg, CDHtmlDialog)
 
 BEGIN_MESSAGE_MAP(OAuthDlg, CDHtmlDialog)
-  //ON_WM_SIZE()
+//  ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 BEGIN_DHTML_EVENT_MAP(OAuthDlg)
@@ -42,4 +42,19 @@ BOOL OAuthDlg::OnInitDialog()
   Navigate(L"http://jay.webpj.com:8888/oauths/geturl/sina", 0, 0, agent.c_str());
 
   return TRUE;
+}
+
+void OAuthDlg::CalcOauthPos()
+{
+  if (!IsWindowVisible())
+    return;
+
+  RECT rc;
+  GetParent()->GetWindowRect(&rc);
+
+  rc.top += (rc.bottom-rc.top-400)/2;
+  rc.left += (rc.right-rc.left-500)/2;
+  rc.right = 500;
+  rc.bottom = 400;
+  SetFramePos(rc);
 }

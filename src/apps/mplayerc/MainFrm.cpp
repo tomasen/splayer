@@ -3470,6 +3470,11 @@ bool CMainFrame::GetNoResponseRect(CRgn& pRgn){
 void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 {
   //SVP_LogMsg5(L"IsMenuUp %d", IsMenuUp());
+  if (UserShareController::GetInstance()->CloseShareWnd())
+  {
+    __super::OnLButtonDown(nFlags, point);
+    return;
+  }
 
   CRgn rcStop ;
   GetNoResponseRect(rcStop);

@@ -25,6 +25,10 @@ BEGIN_DHTML_EVENT_MAP(MovieComment)
   DHTML_EVENT_ONCLICK(L"open_newlink", OpenNewLink)
 END_DHTML_EVENT_MAP()
 
+BEGIN_EVENTSINK_MAP(MovieComment, CDHtmlDialog)
+  ON_EVENT(MovieComment, AFX_IDC_BROWSER, DISPID_NEWWINDOW3, OnEventNewLink, VTS_DISPATCH VTS_PBOOL VTS_UI4 VTS_BSTR VTS_BSTR)
+END_EVENTSINK_MAP()
+
 BEGIN_DISPATCH_MAP(MovieComment, CDHtmlDialog)
   DISP_FUNCTION(MovieComment, "CallSPlayer", CallSPlayer, VT_BSTR, VTS_BSTR VTS_BSTR)
 END_DISPATCH_MAP()
@@ -43,6 +47,16 @@ MovieComment::MovieComment()
 MovieComment::~MovieComment()
 {
   CloseOAuth();
+}
+
+BOOL MovieComment::OnEventNewLink(IDispatch **ppDisp, VARIANT_BOOL *Cancel,
+                                  DWORD dwFlags, BSTR bstrUrlContext, BSTR bstrUrl)
+{
+  OpenNewLink(bstrUrl);
+
+  *Cancel = VARIANT_TRUE;
+
+  return S_OK;  
 }
 
 void MovieComment::OnSize(UINT nType, int cx, int cy)

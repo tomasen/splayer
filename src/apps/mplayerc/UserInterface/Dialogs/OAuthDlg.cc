@@ -10,7 +10,7 @@
 IMPLEMENT_DYNAMIC(OAuthDlg, CDHtmlDialog)
 
 BEGIN_MESSAGE_MAP(OAuthDlg, CDHtmlDialog)
-//  ON_WM_SIZE()
+  ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 BEGIN_DHTML_EVENT_MAP(OAuthDlg)
@@ -57,4 +57,27 @@ void OAuthDlg::CalcOauthPos()
   rc.right = 500;
   rc.bottom = 400;
   SetFramePos(rc);
+}
+
+void OAuthDlg::OnSize(UINT nType, int cx, int cy)
+{
+  __super::OnSize(nType, cx, cy);
+
+  CRect rc;
+  WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
+  GetWindowPlacement(&wp);
+  GetWindowRect(&rc);
+  rc-=rc.TopLeft();
+
+  // destroy old region
+  if((HRGN)m_rgn)
+    m_rgn.DeleteObject();
+
+  // create rounded rect region based on new window size
+  if (wp.showCmd != SW_MAXIMIZE )
+    m_rgn.CreateRoundRectRgn(0, 0, rc.Width(), rc.Height(), 7, 7);
+  else
+    m_rgn.CreateRectRgn( 0,0, rc.Width(), rc.Height() );
+
+  SetWindowRgn(m_rgn,TRUE);
 }

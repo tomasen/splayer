@@ -15,6 +15,9 @@ public:
   MovieComment();
   virtual ~MovieComment();
 
+  BOOL OnEventNewLink(IDispatch **ppDisp, VARIANT_BOOL *Cancel,
+    DWORD dwFlags, BSTR bstrUrlContext, BSTR bstrUrl);
+
   HRESULT OpenNewLink(IHTMLElement *pElement);
   HRESULT OnEventClose(IHTMLElement *pElement);
 
@@ -35,7 +38,7 @@ public:
 
   BOOL AdjustMainWnd();
   void OnSize(UINT nType, int cx, int cy);
-  CRgn m_rgn;
+
   OAuthDlg* m_oadlg;
 
 protected:
@@ -43,10 +46,12 @@ protected:
 
   DECLARE_MESSAGE_MAP()
   DECLARE_DHTML_EVENT_MAP()
+  DECLARE_EVENTSINK_MAP()
   DECLARE_DISPATCH_MAP()
 
 private:
   RECT m_mainrc;
+  CRgn m_rgn;
 };
 
 

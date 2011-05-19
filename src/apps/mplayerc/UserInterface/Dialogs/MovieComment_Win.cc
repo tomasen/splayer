@@ -104,7 +104,7 @@ BSTR MovieComment::CallSPlayer(LPCTSTR p, LPCTSTR param)
   else if (cmd == L"close")
     HideFrame();
   else if (cmd == L"openoauth")
-    OpenOAuth();
+    OpenOAuth(param);
   else if (cmd == L"closeoauth")
     CloseOAuth();
   else if (cmd == L"openlink")
@@ -329,14 +329,19 @@ void MovieComment::CloseOAuth()
   m_oadlg = NULL;
 }
 
-void MovieComment::OpenOAuth()
+void MovieComment::OpenOAuth(LPCTSTR str)
 {
   if (m_oadlg)
+    return;
+
+  std::wstring url(str);
+  if (url.empty() || url.find(L"http://") == std::string::npos)
     return;
 
   AdjustMainWnd();
   m_oadlg = new OAuthDlg;
   m_oadlg->CreateFrame(DS_SETFONT|DS_FIXEDSYS|WS_POPUP|WS_DISABLED,WS_EX_NOACTIVATE);
+  m_oadlg->SetUrl(url);
   m_oadlg->ShowFrame();
   m_oadlg->CalcOauthPos();
 }

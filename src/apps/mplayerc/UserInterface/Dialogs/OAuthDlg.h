@@ -12,7 +12,8 @@ public:
 
   void CalcOauthPos();
   void OnSize(UINT nType, int cx, int cy);
-  
+  void SetUrl(std::wstring url);
+
 protected:
   virtual BOOL OnInitDialog();
 

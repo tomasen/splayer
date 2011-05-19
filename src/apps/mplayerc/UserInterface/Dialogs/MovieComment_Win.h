@@ -24,7 +24,7 @@ public:
   HRESULT OnEventCapture(IHTMLElement* pElement);
 
   void CloseOAuth();
-  void OpenOAuth();
+  void OpenOAuth(LPCTSTR str);
 
   void ShowFrame();
   void ClearFrame();

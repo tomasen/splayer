@@ -6,6 +6,7 @@
 #include <exdispid.h>
 #include "OAuthDlg.h"
 #include "logging.h"
+#include "../../resource.h"
 
 IMPLEMENT_DYNAMIC(OAuthDlg, CDHtmlDialog)
 
@@ -38,8 +39,18 @@ BOOL OAuthDlg::OnInitDialog()
 {
   DhtmlDlgBase::OnInitDialog();
 
-  std::wstring agent = L"User-Agent: Mozilla/5.0 (Linux; U; Android 0.5; en-us) AppleWebKit/522+ (KHTML, like Gecko) Safari/419.3";
-  Navigate(L"http://jay.webpj.com:8888/oauths/geturl/sina", 0, 0, agent.c_str());
+  CString strResourceURL;
+  LPTSTR lpszModule = new TCHAR[_MAX_PATH];
+
+  if (lpszModule && GetModuleFileName(NULL, lpszModule, _MAX_PATH))
+  {
+    // load resource html regardless by language
+    strResourceURL.Format(_T("res://%s/%d"), lpszModule, IDR_HTML_BUSY);
+    Navigate(strResourceURL, 0, 0, 0);
+  }
+  else
+    Navigate(L"about:blank");
+
 
   return TRUE;
 }
@@ -80,4 +91,14 @@ void OAuthDlg::OnSize(UINT nType, int cx, int cy)
     m_rgn.CreateRectRgn( 0,0, rc.Width(), rc.Height() );
 
   SetWindowRgn(m_rgn,TRUE);
+}
+
+void OAuthDlg::SetUrl(std::wstring url)
+{
+  if (url.empty())
+    return;
+
+  std::wstring agent = L"User-Agent: Mozilla/5.0 (Linux; U; Android 0.5; en-us) AppleWebKit/522+ (KHTML, like Gecko) Safari/419.3";
+
+  Navigate(url.c_str(), 0, 0, agent.c_str());
 }

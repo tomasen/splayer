@@ -16,7 +16,8 @@
   m_phashblock.phashdata.clear(); \
   m_phashblock.phashdata.resize(0);
 
-#define PHASH_SERVER "tcp://192.168.10.45:5000"
+#define PHASH_INSERT_SERVER "tcp://192.168.10.33:5000"
+#define PHASH_LOOKUP_SERVER "tcp://192.168.10.33:5001"
 
 pHashController::pHashController(void) :
   m_buffer(NULL),
@@ -371,9 +372,9 @@ void pHashController::IspHashInNeed(const wchar_t* filepath, int& result)
   //error code dealing
   if (net_rqst->get_response_errcode()!= 0)
   {
-    Logging(L"ERROR: sending failed");
+    Logging(L"PHASH ERROR: request sending failed");
     result = -1;
-    return;
+//    return;
   }
 
   // response data
@@ -381,6 +382,12 @@ void pHashController::IspHashInNeed(const wchar_t* filepath, int& result)
   st_buffer.push_back(0);
   std::string reply =  (char*)&st_buffer[0];
   std::string ret = reply.substr(0, reply.find_first_of("\n"));
+  if (ret.empty())
+  {
+    Logging("ret is empty");
+    result = 1; // set temporary value
+    return;
+  }
   Logging("phashcontroller: ret=%s", ret.c_str());
   if ( ret == "1")
     result = 1;
@@ -637,20 +644,36 @@ int pHashSender::SendOnepHashFrame()
     Logging(L"zmq_init error");
     return -1;
   }
-
-  void* client = socket_connect(context, ZMQ_REQ, PHASH_SERVER);
-  if (!client)
+  void* client = NULL;
+  if (m_phashbox->cmd == pHashController::INSERT)
   {
-    Logging(L"Client connection failed");
-    return -1;
+    client = socket_connect(context, ZMQ_REQ, PHASH_INSERT_SERVER);
+    if (!client)
+    {
+      Logging(L"[insert]Client connection failed");
+      return -1;
+    }
   }
- 
+  else if (m_phashbox->cmd == pHashController::LOOKUP)
+  {
+    client = socket_connect(context, ZMQ_REQ, PHASH_LOOKUP_SERVER);
+    if (!client)
+    {
+      Logging(L"[lookup]Client connection failed");
+      return -2;
+    }
+  }
+
   // sending all phashes  
   sendmore_msg_vsm(client, &m_phashbox->cmd, sizeof(uint8_t));
   if (m_phashbox->cmd == pHashController::INSERT)
   {
-    std::string sphash = Strings::WStringToString(m_sphash);
-    sendmore_msg_data(client, &sphash[0], sphash.length(), NULL, NULL);
+    std::string s = Strings::WStringToString(m_sphash);
+    char* hashstr = new char[s.length()];
+    memcpy_s(hashstr, s.length(), &s[0], s.length());
+    Logging("sphash: %s, s.lengh %d", hashstr, s.length());
+    sendmore_msg_data(client, hashstr, s.length(), NULL, NULL);
+    delete[] hashstr;
   }
   sendmore_msg_vsm(client, &m_phashbox->earlyendflag, sizeof(uint8_t));
   sendmore_msg_vsm(client, &m_phashbox->amount, sizeof(uint8_t));
@@ -669,10 +692,11 @@ int pHashSender::SendOnepHashFrame()
   int64_t more;
   size_t msg_size, more_size = sizeof(int64_t);
   int err = 0;
+  int sphashlen = sizeof(char)*131;
   if (m_phashbox->cmd == pHashController::INSERT)
   {
-    uint32_t posid = 0;
-    // Receive only positon ID
+    char sphash[132] = {0};
+    // Receive only sphash
     err = recieve_msg_timeout(client, &msg_size, &more, &more_size, (void**)&data, m_timeout);
     if (err != 0)
     {
@@ -682,10 +706,11 @@ int pHashSender::SendOnepHashFrame()
       zmq_term(context);
       return -1;
     }
-    if (msg_size == sizeof(uint32_t))
+    if (msg_size == sphashlen)
     {
-      memcpy(&posid, data, sizeof(uint32_t));
-      Logging("Get Postion ID:%d", posid);
+      memcpy_s(sphash, sphashlen, data, sphashlen);
+      sphash[sphashlen] = '\0';
+      Logging("Get sphash :%s", sphash);
     }
     free(data);
     data = NULL;
@@ -694,7 +719,7 @@ int pHashSender::SendOnepHashFrame()
   } 
   else if (m_phashbox->cmd == pHashController::LOOKUP)
   {
-    uint32_t posid = 0;
+    std::string sphash;
     float cs = -1.0;
     // Receive positon ID and cs value
     err = recieve_msg_timeout(client, &msg_size, &more, &more_size, (void**)&data, m_timeout);
@@ -707,10 +732,10 @@ int pHashSender::SendOnepHashFrame()
       return -1;
     }
 
-    if (msg_size == sizeof(uint32_t))
+    if (msg_size == sphashlen)
     {
-      memcpy(&posid, data, sizeof(uint32_t));
-      Logging("Get Postion ID: %d", posid);
+      memcpy(&sphash[0], data, sphashlen);
+      Logging("Get replied sphash: %s", sphash.c_str());
     }
     free(data);
     data = NULL;

@@ -1,0 +1,485 @@
+%class=CXSDTypeLookup
+%preamble
+//
+// generated with VC7Libs\Nonship\Src\Sproxy2\static_hash\static_hash /i xsdtypes.in /o XSDMappingTable.h /w
+//
+
+enum FACET_TYPE
+{
+	//
+	// value is timeDuration
+	//
+	FACET_DURATION     = 1,
+
+	//
+	// value is "hex" or "base64"
+	//
+	FACET_ENCODING     = 2,
+
+	//
+	// specified set of values -- this constrains
+	// the datatype to the specified values
+	//
+	FACET_ENUMERATION  = 4,
+
+	//
+	// number of units of length
+	// units of length depends on the data type
+	// value is nonNegativeInteger
+	//
+	FACET_LENGTH       = 8,
+
+	//
+	// Upper bound value (all values are less than this value). 
+	// This value must be the same data type as the inherited data type.
+	//
+	FACET_MAXEXCLUSIVE = 16,
+
+	//
+	// Maximum value. 
+	// This value must be the same data type as the inherited data type.
+	//
+	FACET_MAXINCLUSIVE = 32,
+
+	//
+	// Maximum number of units of length. 
+	// Units of length depends on the data type. 
+	// This value must be nonNegativeInteger.
+	//
+	FACET_MAXLENGTH    = 64,
+
+	//
+	// Lower bound value (all values are greater than this value). 
+	// This value must be the same data type as the inherited data type.
+	//
+	FACET_MINEXCLUSIVE = 128,
+
+	//
+	// Minimum value. 
+	// This value must be the same data type as the inherited data type.
+	//
+	FACET_MININCLUSIVE = 256,
+
+	//
+	// Maximum number of units of length. 
+	// Units of length depends on the data type. 
+	// This value must be nonNegativeInteger.
+	//
+	FACET_MINLENGTH    = 512,
+
+	//
+	// Specific pattern that the data type’s values must match. 
+	// This constrains the data type to literals that match the 
+	// specified pattern. 
+	// The pattern value must be a regular expression.
+	//
+	FACET_PATTERN      = 1024,
+
+	//
+	// Frequency of recurrence for recurringDuration and its derivatives. 
+	// This value must be timeDuration.
+	//
+	FACET_PERIOD       = 2048,
+
+	//
+	// Maximum number of digits for data types derived from decimal. 
+	// This value must a positiveInteger.
+	//
+	FACET_PRECISION    = 4096,
+
+	//
+	// Maximum number of digits in the fractional portion for data types 
+	// derived from decimal. 
+	// This value must a nonNegativeInteger.
+	//
+	FACET_SCALE        = 8192,
+	
+	//
+	// whiteSpace provides for: constraining a value space to the white space
+	// normalization rules.
+	//
+	FACET_WHITESPACE   = 16384
+};
+
+enum XSDTYPE
+{
+	XSDTYPE_ERR = -2,
+	XSDTYPE_UNK = -1,
+	
+	//
+	// string
+	//
+	XSDTYPE_STRING = 0,
+	
+	//
+	// boolean
+	//
+	XSDTYPE_BOOLEAN,
+	
+	//
+	// Represents single-precision 32-bit floating point numbers.
+	//
+	XSDTYPE_FLOAT,
+	
+	//
+	// Represents double-precision 64-bit floating point numbers.
+	//
+	XSDTYPE_DOUBLE,
+	
+	//
+	// Represents arbitrary precision numbers.
+	//
+	XSDTYPE_DECIMAL,
+	
+	//
+	// Represents a duration of time.
+	//
+	XSDTYPE_DURATION,
+
+#if 0
+/* removed */
+	//
+	// Represents a timeDuration that recurs at a specific 
+	// timeDuration, starting from a specific origin. 
+	// This data type cannot be used directly in a schema. 
+	// Only derived data types that specify duration and period can be used.
+	//
+	XSDTYPE_UNK, // abstract
+#endif
+	
+	//
+	// Represents binary data. 
+	//
+	XSDTYPE_HEXBINARY,
+	
+	//
+	// Represents binary data. 
+	//
+	XSDTYPE_BASE64BINARY,
+	
+	//
+	// Represents a Uniform Resource Identifier 
+	// (URI) as defined by RFC 2396.
+	//
+	XSDTYPE_ANYURI,
+	
+	//
+	// Represents the ID attribute type defined in the XML 1.0 
+	// Recommendation. The ID must be an NCName and must be 
+	// unique within an XML document.
+	//
+	XSDTYPE_ID,
+	
+	//
+	// Represents a reference to an element that has an ID attribute 
+	// that matches the specified ID. An IDREF must be an NCName and 
+	// must be a value of an element or attribute of type ID within 
+	// the XML document.
+	//
+	XSDTYPE_IDREF,
+	
+	//
+	// Represents the ENTITY attribute type in XML 1.0 Recommendation. 
+	// This is a reference to an unparsed entity with a name that matches 
+	// the specified name. An ENTITY must be an NCName and must be 
+	// declared in the schema as an unparsed entity name.
+	//
+	XSDTYPE_ENTITY,
+	
+	//
+	// Represents the NOTATION attribute type in XML 1.0 Recommendation. 
+	// This is a reference to a notation with a name that matches the 
+	// specified name. A NOTATION must be an NCName and must be declared 
+	// in the schema as a notation name.
+	//
+	XSDTYPE_NOTATION,
+	
+	//
+	// Represents a qualified name. A qualified name is composed of a prefix 
+	// and a local name separated by a colon. Both the prefix and local names 
+	// must be of type NCName. The prefix must be associated with a namespace 
+	// URI reference, using a namespace declaration.
+	//
+	XSDTYPE_QNAME,
+	
+	//
+	//	Begin Derived Types
+	//
+	
+	//
+	// CDATA represents white space normalized strings.  The value space of CDATA
+	// is the set of strings that do not contain the carriage-return (#xD), line-feed
+	// (#xA), nor tab (#x9) characters.  The lexical space of CDATA is the set of
+	// strings that do not cotain the newline (#xD) nor tab (#x9) characters
+	//
+	XSDTYPE_NORMALIZEDSTRING,
+	
+	//
+	// token represents tokenized strings.  The value space of token is the set of
+	// strings that do not contain the line-feed (#xA) nor tab (#x9) characters,
+	// that have no leading or trailing spaces (#x20) and that have no internal sequences
+	// of two or more spaces.  The lexical space of token is the set of strings
+	// that do not contain the line-feed (#xA) nor tab (#x9) characters, that have
+	// no trailing or leading spaces (#x20) and that have no internal sequences
+	// of two or more spaces
+	XSDTYPE_TOKEN,
+	
+	
+	//
+	// Represents natural language identifiers (defined by RFC 1766).
+	//
+	XSDTYPE_LANGUAGE,
+	
+	//
+	// Represents the IDREFS attribute type. IDREFS contains a 
+	// set of values of type IDREF.
+	//
+	XSDTYPE_IDREFS,
+	
+	//
+	// Represents the ENTITIES attribute type. ENTITIES 
+	// contains a set of values of type ENTITY.
+	//
+	XSDTYPE_ENTITIES,
+	
+	//
+	// Represents the NMTOKEN attribute type. An NMTOKEN 
+	// is set of name characters (letters, digits, and other 
+	// characters) in any combination. Unlike Name and NCName, 
+	// NMTOKEN has no restrictions on the starting character.
+	//
+	XSDTYPE_NMTOKEN,
+	
+	//
+	// Represents the NMTOKENS attribute type. NMTOKENS contains 
+	// a set of values of type NMTOKEN.
+	//
+	XSDTYPE_NMTOKENS,
+	
+	//
+	// Represents names in XML. A Name is a token that begins with 
+	// a letter, underscore, or colon and continues with name 
+	// characters (letters, digits, and other characters).
+	//
+	XSDTYPE_NAME,
+	
+	//
+	// Represents “non-colonized” names. This data type is the 
+	// same as Name—except it cannot begin with a colon.
+	//
+	XSDTYPE_NCNAME,
+	
+	//
+	// Represents a sequence of decimal digits with an optional leading 
+	// sign (+ or -). This data type is derived from decimal.
+	//
+	XSDTYPE_INTEGER,
+	
+	//
+	// Represents an integer that is less than or equal to zero. A 
+	// nonPositiveInteger consists of a negative sign (-) and sequence 
+	// of decimal digits. This data type is derived from integer.
+	//
+	XSDTYPE_NONPOSITIVEINTEGER,
+	
+	//
+	// Represents an integer that is less than zero. A negativeInteger 
+	// consists of a negative sign (-) and sequence of decimal digits. 
+	// This data type is derived from nonPositiveInteger.
+	//
+	XSDTYPE_NEGATIVEINTEGER,
+	
+	//
+	// Represents an integer with a minimum value of -9223372036854775808 
+	// and maximum of 9223372036854775807. This data type is derived from integer.
+	//
+	XSDTYPE_LONG,
+	
+	//
+	// Represents an integer with a minimum value of -32768 and maximum of 32767. 
+	// This data type is derived from long.
+	//
+	XSDTYPE_INT,
+	
+	//
+	// Represents an integer with a minimum value of -2147483648 and maximum of 2147483647. 
+	// This data type is derived from int.
+	//
+	XSDTYPE_SHORT,
+	
+	//
+	// Represents an integer with a minimum value of -128 and maximum of 127. 
+	// This data type is derived from short.
+	//
+	XSDTYPE_BYTE,
+	
+	//
+	// Represents an integer that is greater than or equal to zero. 
+	// This data type is derived from integer.
+	//
+	XSDTYPE_NONNEGATIVEINTEGER,
+	
+	//
+	// Represents an integer with a minimum of zero and maximum of 18446744073709551615. 
+	// This data type is derived from nonNegativeInteger.
+	//
+	XSDTYPE_UNSIGNEDLONG,
+	
+	//
+	// Represents an integer with a minimum of zero and maximum of 4294967295. 
+	// This data type is derived from unsignedLong.
+	//
+	XSDTYPE_UNSIGNEDINT,
+	
+	//
+	// Represents an integer with a minimum of zero and maximum of 65535. 
+	// This data type is derived from unsignedInt.
+	//
+	XSDTYPE_UNSIGNEDSHORT,
+	
+	//
+	// Represents an integer with a minimum of zero and maximum of 255. 
+	// This data type is derived from unsignedShort.
+	//
+	XSDTYPE_UNSIGNEDBYTE,
+	
+	//
+	// Represents an integer that is greater than zero. 
+	// This data type is derived from nonNegativeInteger.
+	//
+	XSDTYPE_POSITIVEINTEGER,
+	
+	//
+	// Represents an instant of time. 
+	// This data type is derived from recurringDuration.
+	//
+	XSDTYPE_DATETIME,
+	
+	//
+	// Represents the time of day. 
+	// This data type is derived from recurringDuration.
+	//
+	XSDTYPE_TIME,
+	
+#if 0
+/* removed ??? */
+	//
+	// Represents a period of time with a start and an end. 
+	// This data type is derived from recurringDuration. 
+	// This data type cannot be used directly in a schema. 
+	// Only derived data types that specify duration can be used.
+	//
+	XSDTYPE_TIMEPERIOD,
+#endif
+	
+	//
+	// Represents a timePeriod that begins at midnight of the specified 
+	// day and ends at midnight the following day. 
+	// This data type is derived from timePeriod. 
+	// The format of the date is CCYY-MM-DD. 
+	// Example: 2000-09-27
+	//
+	XSDTYPE_DATE,
+	
+	//
+	// Represents a timePeriod that begins at midnight of the first day of 
+	// the specified month and ends at midnight of the last day. This data type 
+	// is independent of the number days in the month. 
+	// This data type is derived from timePeriod.
+	//
+	XSDTYPE_GMONTH,
+	XSDTYPE_GYEARMONTH,
+	
+	//
+	// Represents a timePeriod that begins at midnight of the first day of 
+	// the specified year and ends at midnight of the last day. This data 
+	// type is independent of the number days in the year. 
+	// This data type is derived from timePeriod.
+	//
+	XSDTYPE_GYEAR,
+	
+#if 0
+/* removed */
+	//
+	// Represents a timePeriod that begins at midnight of the first day of the 
+	// specified century and ends at midnight of the last day. 
+	// This data type is derived from timePeriod.
+	//
+	XSDTYPE_CENTURY,
+#endif
+	
+	//
+	// Represents a recurring day in the year. 
+	// This data type is derived from recurringDuration.
+	//
+	XSDTYPE_GMONTHDAY,
+	
+	//
+	// Represents a recurring day in the month. 
+	// This data type is derived from recurringDuration.
+	//
+	XSDTYPE_GDAY
+};
+
+enum XSDFLAGS
+{
+	XSDFLAG_NONE = 0,
+	XSDFLAG_ABSTRACT = 1,
+	XSDFLAG_PRIMITIVE = 2,
+	XSDFLAG_DERIVED = 4
+};
+
+struct _xsdtypemapping
+{
+	XSDTYPE xsdType;
+	XSDTYPE baseType;
+	DWORD   dwFlags;
+	DWORD   dwAllowableFacets;
+};
+
+%type=_xsdtypemapping
+%data
+string,{XSDTYPE_STRING, XSDTYPE_UNK, XSDFLAG_PRIMITIVE, FACET_LENGTH | FACET_MINLENGTH | FACET_MAXLENGTH | FACET_PATTERN | FACET_ENUMERATION}
+boolean,{XSDTYPE_BOOLEAN, XSDTYPE_UNK, XSDFLAG_PRIMITIVE, FACET_LENGTH | FACET_MINLENGTH | FACET_MAXLENGTH | FACET_PATTERN | FACET_PATTERN}
+float,{XSDTYPE_FLOAT, XSDTYPE_UNK, XSDFLAG_PRIMITIVE, FACET_PATTERN | FACET_ENUMERATION | FACET_MAXINCLUSIVE | FACET_MAXEXCLUSIVE | FACET_MININCLUSIVE | FACET_MINEXCLUSIVE}
+double,{XSDTYPE_DOUBLE, XSDTYPE_UNK, XSDFLAG_PRIMITIVE, FACET_PATTERN | FACET_ENUMERATION | FACET_MAXINCLUSIVE | FACET_MAXEXCLUSIVE | FACET_MININCLUSIVE | FACET_MINEXCLUSIVE}
+decimal,{XSDTYPE_DECIMAL, XSDTYPE_UNK, XSDFLAG_PRIMITIVE, FACET_PRECISION | FACET_SCALE | FACET_PATTERN | FACET_ENUMERATION | FACET_MAXINCLUSIVE | FACET_MAXEXCLUSIVE | FACET_MININCLUSIVE | FACET_MINEXCLUSIVE}
+duration,{XSDTYPE_DURATION, XSDTYPE_UNK, XSDFLAG_PRIMITIVE, FACET_PATTERN | FACET_ENUMERATION | FACET_MAXINCLUSIVE | FACET_MAXEXCLUSIVE | FACET_MININCLUSIVE | FACET_MINEXCLUSIVE}
+hexBinary,{XSDTYPE_HEXBINARY, XSDTYPE_UNK, XSDFLAG_ABSTRACT | XSDFLAG_PRIMITIVE, FACET_ENCODING | FACET_LENGTH | FACET_PATTERN | FACET_MINLENGTH | FACET_MAXLENGTH | FACET_ENUMERATION}
+base64Binary,{XSDTYPE_BASE64BINARY, XSDTYPE_UNK, XSDFLAG_ABSTRACT | XSDFLAG_PRIMITIVE, FACET_ENCODING | FACET_LENGTH | FACET_PATTERN | FACET_MINLENGTH | FACET_MAXLENGTH | FACET_ENUMERATION}
+anyURI,{XSDTYPE_ANYURI, XSDTYPE_UNK, XSDFLAG_PRIMITIVE, FACET_LENGTH | FACET_PATTERN | FACET_MINLENGTH | FACET_MAXLENGTH | FACET_ENUMERATION}
+ID,{XSDTYPE_ID, XSDTYPE_UNK, XSDFLAG_PRIMITIVE, FACET_LENGTH | FACET_MINLENGTH | FACET_MAXLENGTH | FACET_PATTERN | FACET_ENUMERATION | FACET_MAXINCLUSIVE | FACET_MAXEXCLUSIVE | FACET_MININCLUSIVE | FACET_MINEXCLUSIVE}
+IDREF,{XSDTYPE_IDREF, XSDTYPE_UNK, XSDFLAG_PRIMITIVE, FACET_LENGTH | FACET_MINLENGTH | FACET_MAXLENGTH | FACET_PATTERN | FACET_ENUMERATION | FACET_MAXINCLUSIVE | FACET_MAXEXCLUSIVE | FACET_MININCLUSIVE | FACET_MINEXCLUSIVE}
+ENTITY,{XSDTYPE_ENTITY, XSDTYPE_UNK, XSDFLAG_PRIMITIVE, FACET_LENGTH | FACET_MINLENGTH | FACET_MAXLENGTH | FACET_PATTERN | FACET_ENUMERATION | FACET_MAXINCLUSIVE | FACET_MAXEXCLUSIVE | FACET_MININCLUSIVE | FACET_MINEXCLUSIVE}
+QName,{XSDTYPE_QNAME, XSDTYPE_UNK, XSDFLAG_PRIMITIVE, FACET_LENGTH | FACET_MINLENGTH | FACET_MAXLENGTH | FACET_PATTERN | FACET_ENUMERATION | FACET_MAXINCLUSIVE | FACET_MAXEXCLUSIVE | FACET_MININCLUSIVE | FACET_MINEXCLUSIVE}
+NOTATION,{XSDTYPE_NOTATION, XSDTYPE_QNAME, XSDFLAG_DERIVED, FACET_LENGTH | FACET_MINLENGTH | FACET_MAXLENGTH | FACET_PATTERN | FACET_ENUMERATION | FACET_MAXINCLUSIVE | FACET_MAXEXCLUSIVE | FACET_MININCLUSIVE | FACET_MINEXCLUSIVE}
+normalizedString,{XSDTYPE_NORMALIZEDSTRING, XSDTYPE_STRING, XSDFLAG_DERIVED, FACET_LENGTH | FACET_MINLENGTH | FACET_MAXLENGTH | FACET_PATTERN | FACET_ENUMERATION | FACET_WHITESPACE}
+token,{XSDTYPE_TOKEN, XSDTYPE_NORMALIZEDSTRING, XSDFLAG_DERIVED, FACET_LENGTH | FACET_MINLENGTH | FACET_MAXLENGTH | FACET_PATTERN | FACET_ENUMERATION | FACET_WHITESPACE}
+language,{XSDTYPE_LANGUAGE, XSDTYPE_TOKEN, XSDFLAG_DERIVED, FACET_LENGTH | FACET_MINLENGTH | FACET_MAXLENGTH | FACET_PATTERN | FACET_ENUMERATION | FACET_WHITESPACE}
+IDREFS,{XSDTYPE_IDREFS, XSDTYPE_IDREF, XSDFLAG_DERIVED, FACET_LENGTH | FACET_MINLENGTH | FACET_MAXLENGTH | FACET_ENUMERATION | FACET_WHITESPACE}
+ENTITIES,{XSDTYPE_ENTITIES, XSDTYPE_IDREF, XSDFLAG_DERIVED, FACET_LENGTH | FACET_MINLENGTH | FACET_MAXLENGTH | FACET_ENUMERATION | FACET_WHITESPACE}
+NMTOKEN,{XSDTYPE_NMTOKEN, XSDTYPE_TOKEN, XSDFLAG_DERIVED, FACET_LENGTH | FACET_MINLENGTH | FACET_MAXLENGTH | FACET_PATTERN | FACET_ENUMERATION | FACET_WHITESPACE}
+NMTOKENS,{XSDTYPE_NMTOKENS, XSDTYPE_NMTOKEN, XSDFLAG_DERIVED, FACET_LENGTH | FACET_MINLENGTH | FACET_MAXLENGTH | FACET_ENUMERATION | FACET_WHITESPACE}
+Name,{XSDTYPE_NAME, XSDTYPE_TOKEN, XSDFLAG_DERIVED, FACET_LENGTH | FACET_MINLENGTH | FACET_MAXLENGTH | FACET_PATTERN | FACET_ENUMERATION | FACET_WHITESPACE}
+NCName,{XSDTYPE_NMTOKEN, XSDTYPE_NAME, XSDFLAG_DERIVED, FACET_LENGTH | FACET_MINLENGTH | FACET_MAXLENGTH | FACET_PATTERN | FACET_ENUMERATION | FACET_WHITESPACE}
+integer,{XSDTYPE_INTEGER, XSDTYPE_DECIMAL, XSDFLAG_DERIVED, FACET_PRECISION | FACET_SCALE | FACET_PATTERN | FACET_ENUMERATION | FACET_MAXINCLUSIVE | FACET_MAXEXCLUSIVE | FACET_MININCLUSIVE | FACET_MINEXCLUSIVE | FACET_WHITESPACE}
+nonPositiveInteger,{XSDTYPE_NONPOSITIVEINTEGER, XSDTYPE_INTEGER, XSDFLAG_DERIVED, FACET_PRECISION | FACET_SCALE | FACET_PATTERN | FACET_ENUMERATION | FACET_MAXINCLUSIVE | FACET_MAXEXCLUSIVE | FACET_MININCLUSIVE | FACET_MINEXCLUSIVE | FACET_WHITESPACE}
+negativeInteger,{XSDTYPE_NEGATIVEINTEGER, XSDTYPE_NONPOSITIVEINTEGER, XSDFLAG_DERIVED, FACET_PRECISION | FACET_SCALE | FACET_PATTERN | FACET_ENUMERATION | FACET_MAXINCLUSIVE | FACET_MAXEXCLUSIVE | FACET_MININCLUSIVE | FACET_MINEXCLUSIVE | FACET_WHITESPACE}
+long,{XSDTYPE_LONG, XSDTYPE_INTEGER, XSDFLAG_DERIVED, FACET_PRECISION | FACET_SCALE | FACET_PATTERN | FACET_ENUMERATION | FACET_MAXINCLUSIVE | FACET_MAXEXCLUSIVE | FACET_MININCLUSIVE | FACET_MINEXCLUSIVE | FACET_WHITESPACE}
+int,{XSDTYPE_INT, XSDTYPE_LONG, XSDFLAG_DERIVED, FACET_PRECISION | FACET_SCALE | FACET_PATTERN | FACET_ENUMERATION | FACET_MAXINCLUSIVE | FACET_MAXEXCLUSIVE | FACET_MININCLUSIVE | FACET_MINEXCLUSIVE | FACET_WHITESPACE}
+short,{XSDTYPE_SHORT, XSDTYPE_INT, XSDFLAG_DERIVED, FACET_PRECISION | FACET_SCALE | FACET_PATTERN | FACET_ENUMERATION | FACET_MAXINCLUSIVE | FACET_MAXEXCLUSIVE | FACET_MININCLUSIVE | FACET_MINEXCLUSIVE | FACET_WHITESPACE}
+byte,{XSDTYPE_BYTE, XSDTYPE_SHORT, XSDFLAG_DERIVED, FACET_PRECISION | FACET_SCALE | FACET_PATTERN | FACET_ENUMERATION | FACET_MAXINCLUSIVE | FACET_MAXEXCLUSIVE | FACET_MININCLUSIVE | FACET_MINEXCLUSIVE | FACET_WHITESPACE}
+nonNegativeInteger,{XSDTYPE_NONNEGATIVEINTEGER, XSDTYPE_INTEGER, XSDFLAG_DERIVED, FACET_PRECISION | FACET_SCALE | FACET_PATTERN | FACET_ENUMERATION | FACET_MAXINCLUSIVE | FACET_MAXEXCLUSIVE | FACET_MININCLUSIVE | FACET_MINEXCLUSIVE | FACET_WHITESPACE}
+unsignedLong,{XSDTYPE_UNSIGNEDLONG, XSDTYPE_NONNEGATIVEINTEGER, XSDFLAG_DERIVED, FACET_PRECISION | FACET_SCALE | FACET_PATTERN | FACET_ENUMERATION | FACET_MAXINCLUSIVE | FACET_MAXEXCLUSIVE | FACET_MININCLUSIVE | FACET_MINEXCLUSIVE | FACET_WHITESPACE}
+unsignedInt,{XSDTYPE_UNSIGNEDINT, XSDTYPE_UNSIGNEDLONG, XSDFLAG_DERIVED, FACET_PRECISION | FACET_SCALE | FACET_PATTERN | FACET_ENUMERATION | FACET_MAXINCLUSIVE | FACET_MAXEXCLUSIVE | FACET_MININCLUSIVE | FACET_MINEXCLUSIVE | FACET_WHITESPACE}
+unsignedShort,{XSDTYPE_UNSIGNEDSHORT, XSDTYPE_UNSIGNEDINT, XSDFLAG_DERIVED, FACET_PRECISION | FACET_SCALE | FACET_PATTERN | FACET_ENUMERATION | FACET_MAXINCLUSIVE | FACET_MAXEXCLUSIVE | FACET_MININCLUSIVE | FACET_MINEXCLUSIVE | FACET_WHITESPACE}
+unsignedByte,{XSDTYPE_UNSIGNEDBYTE, XSDTYPE_UNSIGNEDSHORT, XSDFLAG_DERIVED, FACET_PRECISION | FACET_SCALE | FACET_PATTERN | FACET_ENUMERATION | FACET_MAXINCLUSIVE | FACET_MAXEXCLUSIVE | FACET_MININCLUSIVE | FACET_MINEXCLUSIVE | FACET_WHITESPACE}
+positiveInteger,{XSDTYPE_POSITIVEINTEGER, XSDTYPE_NONNEGATIVEINTEGER, XSDFLAG_DERIVED, FACET_PRECISION | FACET_SCALE | FACET_PATTERN | FACET_ENUMERATION | FACET_MAXINCLUSIVE | FACET_MAXEXCLUSIVE | FACET_MININCLUSIVE | FACET_MINEXCLUSIVE | FACET_WHITESPACE}
+dateTime,{XSDTYPE_DATETIME, XSDTYPE_UNK, XSDFLAG_DERIVED, FACET_DURATION | FACET_PERIOD | FACET_PATTERN | FACET_ENUMERATION | FACET_MAXINCLUSIVE | FACET_MAXEXCLUSIVE | FACET_MININCLUSIVE | FACET_MINEXCLUSIVE | FACET_WHITESPACE}
+time,{XSDTYPE_TIME, XSDTYPE_UNK, XSDFLAG_DERIVED, FACET_DURATION | FACET_PERIOD | FACET_PATTERN | FACET_ENUMERATION | FACET_MAXINCLUSIVE | FACET_MAXEXCLUSIVE | FACET_MININCLUSIVE | FACET_MINEXCLUSIVE | FACET_WHITESPACE}
+date,{XSDTYPE_DATE, XSDTYPE_DATE, XSDFLAG_DERIVED, FACET_DURATION | FACET_PERIOD | FACET_PATTERN | FACET_ENUMERATION | FACET_MAXINCLUSIVE | FACET_MAXEXCLUSIVE | FACET_MININCLUSIVE | FACET_MINEXCLUSIVE | FACET_WHITESPACE}
+gMonth,{XSDTYPE_GMONTH, XSDTYPE_UNK, XSDFLAG_DERIVED, FACET_DURATION | FACET_PERIOD | FACET_PATTERN | FACET_ENUMERATION | FACET_MAXINCLUSIVE | FACET_MAXEXCLUSIVE | FACET_MININCLUSIVE | FACET_MINEXCLUSIVE | FACET_WHITESPACE}
+gYearMonth,{XSDTYPE_GYEARMONTH, XSDTYPE_UNK, XSDFLAG_DERIVED, FACET_DURATION | FACET_PERIOD | FACET_PATTERN | FACET_ENUMERATION | FACET_MAXINCLUSIVE | FACET_MAXEXCLUSIVE | FACET_MININCLUSIVE | FACET_MINEXCLUSIVE | FACET_WHITESPACE}
+gYear,{XSDTYPE_GYEAR, XSDTYPE_UNK, XSDFLAG_DERIVED, FACET_DURATION | FACET_PERIOD | FACET_PATTERN | FACET_ENUMERATION | FACET_MAXINCLUSIVE | FACET_MAXEXCLUSIVE | FACET_MININCLUSIVE | FACET_MINEXCLUSIVE | FACET_WHITESPACE}
+gMonthDay,{XSDTYPE_GMONTHDAY, XSDTYPE_UNK, XSDFLAG_DERIVED, FACET_DURATION | FACET_PERIOD | FACET_PATTERN | FACET_ENUMERATION | FACET_MAXINCLUSIVE | FACET_MAXEXCLUSIVE | FACET_MININCLUSIVE | FACET_MINEXCLUSIVE | FACET_WHITESPACE}
+gDay,{XSDTYPE_GDAY, XSDTYPE_UNK, XSDFLAG_DERIVED, FACET_DURATION | FACET_PERIOD | FACET_PATTERN | FACET_ENUMERATION | FACET_MAXINCLUSIVE | FACET_MAXEXCLUSIVE | FACET_MININCLUSIVE | FACET_MINEXCLUSIVE | FACET_WHITESPACE}

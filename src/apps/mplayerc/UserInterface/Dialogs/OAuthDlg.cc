@@ -63,7 +63,7 @@ void OAuthDlg::CalcOauthPos()
   RECT rc;
   GetParent()->GetWindowRect(&rc);
 
-  rc.top += (rc.bottom-rc.top-400)/2;
+  rc.top += (rc.bottom-rc.top-400)/2-10;
   rc.left += (rc.right-rc.left-500)/2;
   rc.right = 500;
   rc.bottom = 400;

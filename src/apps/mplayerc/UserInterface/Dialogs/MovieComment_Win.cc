@@ -271,8 +271,8 @@ HRESULT MovieComment::OnEventClose(IHTMLElement* /*pElement*/)
 
 void MovieComment::ShowFrame()
 {
-  AdjustMainWnd();
   DhtmlDlgBase::ShowFrame();
+  AdjustMainWnd();
 }
 
 BOOL MovieComment::AdjustMainWnd()
@@ -282,13 +282,32 @@ BOOL MovieComment::AdjustMainWnd()
   CRect rect(rc);
   BOOL ret = FALSE;
 
-  if (rect.Width() <= 500 || rect.Height() <= 450)
+  int width = 0;
+  int height = 0;
+  if (m_oadlg && m_oadlg->IsWindowVisible())
   {
-    int x,y;
-    x = (GetSystemMetrics(SM_CXSCREEN)-800)/2; 
-    y = (GetSystemMetrics(SM_CYSCREEN)-600)/2;
-    GetParent()->MoveWindow(x, y, 800, 600);
-    ret = TRUE;
+      width = 600;
+      height = 550;
+      ret = TRUE;
+  }
+  else if (IsWindowVisible())
+  {
+      width = 300;
+      height = 470;
+      ret = TRUE;
+  }
+
+  if (ret && rect.Width() < width || rect.Height() < height)
+  {
+    if (rect.Width() >= width)
+      width = rect.Width();
+    if (rect.Height() >= height)
+      height = rect.Height();
+    m_mainrc.left = (GetSystemMetrics(SM_CXSCREEN)-width)/2; 
+    m_mainrc.top = (GetSystemMetrics(SM_CYSCREEN)-height)/2;
+    m_mainrc.right = m_mainrc.left+width;
+    m_mainrc.bottom = m_mainrc.top+height;
+    GetParent()->MoveWindow(&m_mainrc);
   }
   return ret;
 }
@@ -300,19 +319,18 @@ void MovieComment::CalcWndPos()
 
   CRect c1(m_mainrc);
   CRect c2(rc);
-  BOOL movewnd = FALSE;
 
   if (m_oadlg && m_oadlg->IsWindowVisible() || IsWindowVisible())
-    movewnd = AdjustMainWnd();
-
-  if (!movewnd && c1.Width() != c2.Width() && c1.Height() != c2.Height())
   {
-    CloseOAuth();
-    HideFrame();
+    if (c1.Width() != c2.Width() || c1.Height() != c2.Height())
+    {
+      CloseOAuth();
+      HideFrame();
+    }
   }
 
   m_mainrc = rc;
-  rc.top = rc.bottom - 420;
+  rc.top = rc.bottom - 410;
   rc.left = rc.left + 20;
   rc.right = 240;
   rc.bottom = 320;
@@ -338,10 +356,10 @@ void MovieComment::OpenOAuth(LPCTSTR str)
   if (url.empty() || url.find(L"http://") == std::string::npos)
     return;
 
-  AdjustMainWnd();
   m_oadlg = new OAuthDlg;
   m_oadlg->CreateFrame(DS_SETFONT|DS_FIXEDSYS|WS_POPUP|WS_DISABLED,WS_EX_NOACTIVATE);
   m_oadlg->SetUrl(url);
   m_oadlg->ShowFrame();
+  AdjustMainWnd();
   m_oadlg->CalcOauthPos();
 }

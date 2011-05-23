@@ -213,10 +213,7 @@ void CPlayerToolBar::ArrangeControls()
       m_btnList.SetHideStat(ID_NAVIGATE_SKIPBACK , 0);
       m_btnList.SetHideStat(ID_NAVIGATE_SKIPFORWARD , 0);
       m_btnList.SetHideStat(ID_MOVIESHARE, 1);
-      m_btnList.SetHideStat(ID_SUBTOOLBARBUTTON, 1);
     }
-    else
-      m_btnList.SetHideStat(ID_SUBTOOLBARBUTTON, 0);
   }  
 
   m_btnList.OnSize(rc);
@@ -383,14 +380,17 @@ void CPlayerToolBar::OnPaint()
   if (!sTimeBtnString.empty())
   {
     int prom_margin = 8;
-    //prom_margin = -10;
     CSize size = dc.GetTextExtent(sTimeBtnString.c_str());
 
     CSUIButton* cbtn = m_btnList.GetButton(L"SHARE");
     
-    if (cbtn->m_currenthide)
+    if (cbtn && cbtn->m_currenthide)
+    {
       cbtn = m_btnList.GetButton(L"LOGO");
-    if (cbtn->m_currenthide)
+      if (cbtn && !cbtn->m_currenthide)
+        prom_margin = -10;
+    }
+    if (cbtn && cbtn->m_currenthide)
       cbtn = NULL;
     
     CRect btnrc(prom_margin, 0, 0, 0);
@@ -423,19 +423,21 @@ void CPlayerToolBar::OnPaint()
 }
 void CPlayerToolBar::UpdateButtonStat(){
   CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
+  if (!pFrame) return;
+
   BOOL fShow = pFrame->GetUIStat( ID_PLAY_MANUAL_STOP );
   m_btnList.SetHideStat( ID_PLAY_PLAY , fShow );
   //m_btnList.SetHideStat( ID_PLAY_MANUAL_STOP , !fShow );
   //m_btnList.SetHideStat( ID_PLAY_FRAMESTEP , !fShow );
   m_btnList.SetHideStat( ID_PLAY_PAUSE , !fShow );
-  BOOL bLoaded = pFrame->IsSomethingLoaded();
-  BOOL bAutio = pFrame->m_fAudioOnly;
+  BOOL bLoaded = pFrame->IsSomethingLoaded() ;
+  BOOL bShowSub = bLoaded && !pFrame->IsSomethingLoading() && !pFrame->m_fAudioOnly;
   m_btnList.SetHideStat(_T("SPLAYER.BMP"), bLoaded);
   m_btnList.SetHideStat( ID_MOVIESHARE , m_movieshare_hidestat);
 
-  m_btnList.SetHideStat(ID_SUBTOOLBARBUTTON, !bLoaded);
-  m_btnList.SetHideStat( ID_SUBDELAYINC, !bLoaded);
-  m_btnList.SetHideStat( ID_SUBDELAYDEC, !bLoaded);
+  m_btnList.SetHideStat(ID_SUBTOOLBARBUTTON, !bShowSub);
+  m_btnList.SetHideStat( ID_SUBDELAYINC, !bShowSub);
+  m_btnList.SetHideStat( ID_SUBDELAYDEC, !bShowSub);
 
   if(!bLoaded)
     m_timerstr.Empty();

@@ -331,15 +331,16 @@ void pHashController::Init(CComQIPtr<IAudioSwitcherFilter> pASF, std::wstring m_
     IspHashInNeed(m_fnCurPlayingFile.c_str(), result);
     switch(result)
     {
-    case NOCALCHASH:
-      Execute(FALSE);
-      break;
     case CALPHASH:
       // do insert 
       HookData(pASF);
       Execute(TRUE);
       uint8_t cmd = (result == 1) ? INSERT : LOOKUP;
       SetCmd(cmd);
+      break;
+    case NOCALCHASH:
+    default:
+      Execute(FALSE);
       break;
     }
   }

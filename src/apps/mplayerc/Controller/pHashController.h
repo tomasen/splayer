@@ -7,10 +7,14 @@
 //  phash for the current playback video file.
 //
 //  Soleo
-//  
-//  Status: This is a demo with phash support. In this demo, we calculated 2 file's phash, and compared with each other. 
-//          Each file deliverd four times decoded data which begin at 10 secs, 30 secs, 50secs, 110secs. The duration is 10secs.
-//          We use audio phash following to the steps:  
+//
+//   Status: Now we use class pHashController to get set, calc pHash, 
+//           and use class pHashSender to send pHash to Server.
+//
+//   pHash Demo: This is a demo with phash support.(Test Only) In this demo, we calculated 2 file's phash, and compared with each other. 
+//               Each file deliverd four times decoded data which begin at 10 secs, 30 secs, 50secs, 110secs. The duration is 
+//               10secs. We use audio phash following to the steps:
+//   Related Key Methods: _thread_GetAudiopHash(), _thread_DigestpHashData()        
 //
 //   FILE 1: Samples to float --> Normalization and channels merged --> Reduce samplerate to 8kHz --> Calc pHash --
 //                                                                                                                 |---> Comparing two phashes
@@ -44,11 +48,8 @@ public:
   pHashController(void);
   ~pHashController(void);
   enum {
-    ONLYPHASH      = 0x01 << 0,   // 0000 0001
-    PHASHANDSPHASH = 0x01 << 1,   // 0000 0010
     LOOKUP         = 0x01 << 2,   // 0000 0100
     INSERT         = 0x01 << 3,   // 0000 1000
- //   NOCALCHASH     = 0x01 << 4    // 0001 0000
   };
   enum {NOCALCHASH = 0, CALPHASH};
   void _thread_GetAudiopHash();

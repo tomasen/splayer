@@ -21,6 +21,8 @@ public:
 
   void SetFramePos(RECT& rc);
   void HostFlags(DWORD flags);
+  
+  void SetUserAgent(std::string agent);
 
 protected:
   virtual HRESULT STDMETHODCALLTYPE ShowContextMenu(DWORD /*dwID*/, POINT *ppt,

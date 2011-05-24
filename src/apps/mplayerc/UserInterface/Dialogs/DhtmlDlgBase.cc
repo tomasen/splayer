@@ -22,6 +22,12 @@ DhtmlDlgBase::~DhtmlDlgBase()
   FreeFrame();
 }
 
+void DhtmlDlgBase::SetUserAgent(std::string agent)
+{
+  if (!agent.empty())
+    UrlMkSetSessionOption(URLMON_OPTION_USERAGENT, (LPVOID)agent.c_str(), agent.length(), 0);
+}
+
 HRESULT STDMETHODCALLTYPE DhtmlDlgBase::ShowContextMenu(DWORD /*dwID*/, POINT *ppt, IUnknown* /*pcmdtReserved*/, IDispatch* /*pdispReserved*/)
 {
   return (m_allowContextMenu) ? S_FALSE : S_OK;
@@ -92,7 +98,6 @@ void DhtmlDlgBase::CreateFrame(DWORD style, DWORD styleEx)
     _dialogTemplate->cdit  = 0;
     _dialogTemplate->cx    = 316;
     _dialogTemplate->cy    = 183;
-
 
     if (0 == CreateIndirect(_dialogTemplate))
     {

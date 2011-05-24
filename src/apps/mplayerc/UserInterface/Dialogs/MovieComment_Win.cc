@@ -343,14 +343,17 @@ void MovieComment::CalcWndPos()
 
 void MovieComment::CloseOAuth()
 {
-  delete m_oadlg;
-  m_oadlg = NULL;
+  if (m_oadlg)
+  {
+    delete m_oadlg;
+    m_oadlg = NULL;
+  }
 }
 
 void MovieComment::OpenOAuth(LPCTSTR str)
 {
   if (m_oadlg)
-    return;
+    CloseOAuth();
 
   std::wstring url(str);
   if (url.empty() || url.find(L"http://") == std::string::npos)

@@ -39,6 +39,8 @@ BOOL OAuthDlg::OnInitDialog()
 {
   DhtmlDlgBase::OnInitDialog();
 
+  SetUserAgent("Mozilla/5.0 (Linux; U; Android 0.5; en-us) AppleWebKit/522+ (KHTML, like Gecko) Safari/419.3");
+
   CString strResourceURL;
   LPTSTR lpszModule = new TCHAR[_MAX_PATH];
 
@@ -98,7 +100,5 @@ void OAuthDlg::SetUrl(std::wstring url)
   if (url.empty())
     return;
 
-  std::wstring agent = L"User-Agent: Mozilla/5.0 (Linux; U; Android 0.5; en-us) AppleWebKit/522+ (KHTML, like Gecko) Safari/419.3";
-
-  Navigate(url.c_str(), 0, 0, agent.c_str());
+  Navigate(url.c_str());
 }

@@ -102,3 +102,35 @@ void OAuthDlg::SetUrl(std::wstring url)
 
   Navigate(url.c_str());
 }
+
+STDMETHODIMP OAuthDlg::TranslateAccelerator(LPMSG lpMsg, const GUID* /*pguidCmdGroup*/, DWORD /*nCmdID*/)
+{
+  switch (lpMsg->message)
+  {
+  case WM_CHAR:
+    switch (lpMsg->wParam)
+    {
+    case ' ':			// SPACE - Activate a link
+      return S_FALSE;	// S_FALSE = Let the control process the key stroke.
+    }
+    break;
+  case WM_KEYDOWN:
+  case WM_KEYUP:
+  case WM_SYSKEYDOWN:
+  case WM_SYSKEYUP:
+    switch (lpMsg->wParam)
+    {
+    case VK_TAB:		// Cycling through controls which can get the focus
+    case VK_SPACE:		// Activate a link
+      return S_FALSE; // S_FALSE = Let the control process the key stroke.
+    case VK_ESCAPE:
+      DestroyWindow();
+      FreeFrame();
+      break;
+    }
+    break;
+  }
+
+  // Avoid any IE shortcuts (especially F5 (Refresh) which messes up the content)
+  return S_OK;	// S_OK = Don't let the control process the key stroke.
+}

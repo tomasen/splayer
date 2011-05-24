@@ -43,6 +43,7 @@ public:
 
 protected:
   virtual BOOL OnInitDialog();
+  STDMETHOD(TranslateAccelerator)(LPMSG lpMsg, const GUID* pguidCmdGroup, DWORD nCmdID);
 
   DECLARE_MESSAGE_MAP()
   DECLARE_DHTML_EVENT_MAP()

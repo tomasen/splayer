@@ -124,8 +124,7 @@ STDMETHODIMP OAuthDlg::TranslateAccelerator(LPMSG lpMsg, const GUID* /*pguidCmdG
     case VK_SPACE:		// Activate a link
       return S_FALSE; // S_FALSE = Let the control process the key stroke.
     case VK_ESCAPE:
-      DestroyWindow();
-      FreeFrame();
+      HideFrame();
       break;
     }
     break;

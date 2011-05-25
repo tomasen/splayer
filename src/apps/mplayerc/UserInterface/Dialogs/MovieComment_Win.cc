@@ -90,7 +90,7 @@ BSTR MovieComment::CallSPlayer(LPCTSTR p, LPCTSTR param)
   if (cmd.empty())
     ret = L"-1";
   else if (cmd == L"rev")
-    ret = L"1";
+    ret = L"2";
   else if (cmd == L"reload")
   {
     UserShareController::GetInstance()->_Stop();
@@ -394,6 +394,5 @@ STDMETHODIMP MovieComment::TranslateAccelerator(LPMSG lpMsg, const GUID* /*pguid
     break;
   }
 
-  // Avoid any IE shortcuts (especially F5 (Refresh) which messes up the content)
-  return S_OK;	// S_OK = Don't let the control process the key stroke.
+  return S_FALSE;
 }

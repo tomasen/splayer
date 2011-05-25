@@ -131,6 +131,5 @@ STDMETHODIMP OAuthDlg::TranslateAccelerator(LPMSG lpMsg, const GUID* /*pguidCmdG
     break;
   }
 
-  // Avoid any IE shortcuts (especially F5 (Refresh) which messes up the content)
-  return S_OK;	// S_OK = Don't let the control process the key stroke.
+  return S_FALSE;
 }

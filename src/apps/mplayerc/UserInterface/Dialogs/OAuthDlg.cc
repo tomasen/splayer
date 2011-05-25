@@ -7,11 +7,89 @@
 #include "OAuthDlg.h"
 #include "logging.h"
 #include "../../resource.h"
+#include <ResLoader.h>
+
+IMPLEMENT_DYNAMIC(CircleBtn, CBitmapButton)
+
+BEGIN_MESSAGE_MAP(CircleBtn, CBitmapButton)
+	ON_WM_SIZE()
+	ON_WM_LBUTTONUP()
+	ON_WM_LBUTTONDOWN()
+	ON_MESSAGE(WM_MOUSEMOVE, OnMouseMove)
+	ON_MESSAGE(WM_MOUSELEAVE, OnMouseLeave)
+	ON_WM_PAINT()
+END_MESSAGE_MAP()
+CircleBtn::CircleBtn() :
+	m_trackleave(FALSE)
+{
+	m_out.LoadBitmap(IDB_OAUTHCLOSEOUT);
+	m_over.LoadBitmap(IDB_OAUTHCLOSEOVER);
+}
+CircleBtn::~CircleBtn()
+{
+
+}
+void CircleBtn::SetCircleWnd()
+{
+	CRgn rgn;
+	rgn.CreateEllipticRgn(1, 1, 40, 40);
+	SetWindowRgn(rgn, TRUE);
+}
+
+void CircleBtn::OnSize(UINT nType, int cx, int cy)
+{
+	__super::OnSize(nType, cx, cy);
+	SetCircleWnd();
+}
+
+void CircleBtn::OnLButtonDown(UINT nFlags, CPoint point)
+{
+}
+
+void CircleBtn::OnLButtonUp(UINT nFlags, CPoint point)
+{
+	GetParent()->ShowWindow(SW_HIDE);
+}
+
+LRESULT CircleBtn::OnMouseLeave(WPARAM, LPARAM)
+{
+	m_trackleave = FALSE;
+	Invalidate(TRUE);
+	return S_FALSE;
+}
+
+LRESULT CircleBtn::OnMouseMove(WPARAM, LPARAM)
+{
+	if (!m_trackleave)
+	{
+		TRACKMOUSEEVENT tl;
+		tl.cbSize = sizeof(tl);
+		tl.hwndTrack = m_hWnd;
+		tl.dwFlags = TME_LEAVE;
+		tl.dwHoverTime = 1;
+		m_trackleave = TrackMouseEvent(&tl);
+		Invalidate(TRUE);
+	}
+	return S_FALSE;
+}
+
+void CircleBtn::OnPaint()
+{
+	CPaintDC dc(this);
+
+	CDC mdc;
+	mdc.CreateCompatibleDC(&dc);
+
+	HBITMAP hold = (HBITMAP)mdc.SelectObject(&(m_trackleave?m_over:m_out));
+	dc.BitBlt(0, 0, 40, 40, &mdc, 0, 0, SRCCOPY);
+	mdc.SelectObject(hold);
+}
 
 IMPLEMENT_DYNAMIC(OAuthDlg, CDHtmlDialog)
 
 BEGIN_MESSAGE_MAP(OAuthDlg, CDHtmlDialog)
   ON_WM_SIZE()
+  ON_WM_CREATE()
 END_MESSAGE_MAP()
 
 BEGIN_DHTML_EVENT_MAP(OAuthDlg)
@@ -33,6 +111,13 @@ OAuthDlg::OAuthDlg()
 
 OAuthDlg::~OAuthDlg()
 {
+}
+
+int OAuthDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
+{
+	m_btnclose.Create(NULL, L"oauthclose", WS_CHILD|WS_VISIBLE , CRect(450, 5, 500, 50), this, 1);
+
+	return __super::OnCreate(lpCreateStruct);
 }
 
 BOOL OAuthDlg::OnInitDialog()

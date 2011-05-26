@@ -41,6 +41,7 @@ public:
   void OnSize(UINT nType, int cx, int cy);
   void SetUrl(std::wstring url);
 
+  BSTR CallSPlayer(LPCTSTR p, LPCTSTR param);
   afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 
 protected:

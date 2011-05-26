@@ -39,7 +39,7 @@ void CircleBtn::SetCircleWnd()
 void CircleBtn::OnSize(UINT nType, int cx, int cy)
 {
 	__super::OnSize(nType, cx, cy);
-	SetCircleWnd();
+	//SetCircleWnd();
 }
 
 void CircleBtn::OnLButtonDown(UINT nFlags, CPoint point)
@@ -81,7 +81,8 @@ void CircleBtn::OnPaint()
 	mdc.CreateCompatibleDC(&dc);
 
 	HBITMAP hold = (HBITMAP)mdc.SelectObject(&(m_trackleave?m_over:m_out));
-	dc.BitBlt(0, 0, 40, 40, &mdc, 0, 0, SRCCOPY);
+	BLENDFUNCTION bf = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
+	dc.AlphaBlend(0, 0, 34, 29, &mdc, 0, 0, 34, 29, bf);
 	mdc.SelectObject(hold);
 }
 
@@ -97,7 +98,7 @@ BEGIN_DHTML_EVENT_MAP(OAuthDlg)
 END_DHTML_EVENT_MAP()
 
 BEGIN_DISPATCH_MAP(OAuthDlg, CDHtmlDialog)
-
+	DISP_FUNCTION(OAuthDlg, "CallSPlayer", CallSPlayer, VT_BSTR, VTS_BSTR VTS_BSTR)
 END_DISPATCH_MAP()
 
 OAuthDlg::OAuthDlg()
@@ -113,9 +114,22 @@ OAuthDlg::~OAuthDlg()
 {
 }
 
+BSTR OAuthDlg::CallSPlayer(LPCTSTR p, LPCTSTR param)
+{
+	CString ret = L"0";
+	std::wstring cmd(p);
+	if (cmd.empty())
+		ret = L"-1";
+	else if (cmd == L"close")
+		ShowWindow(SW_HIDE);
+	else
+		ret = L"-1";
+	return ret.AllocSysString();
+}
+
 int OAuthDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
-	m_btnclose.Create(NULL, L"oauthclose", WS_CHILD|WS_VISIBLE , CRect(450, 5, 500, 50), this, 1);
+	m_btnclose.Create(NULL, L"oauthclose", WS_CHILD|WS_VISIBLE , CRect(450, 5, 484, 34), this, 1);
 
 	return __super::OnCreate(lpCreateStruct);
 }
@@ -124,6 +138,7 @@ BOOL OAuthDlg::OnInitDialog()
 {
   DhtmlDlgBase::OnInitDialog();
 
+  SupportJSCallBack();
   SetUserAgent("Mozilla/5.0 (Linux; U; Android 0.5; en-us) AppleWebKit/522+ (KHTML, like Gecko) Safari/419.3");
 
   CString strResourceURL;

@@ -1414,7 +1414,7 @@ int CSVPToolBox::GetWMIGPURam()
 	return iGPUMAXRAM;
 }
 int CSVPToolBox::GetGPUString(CStringArray * szaGPUString){
-  int ret = 0; //no gpu
+  int ret = -1; //no gpu
   IDirect3D9* pD3D;
   int m_nPCIVendor = 0;
   int m_nPCIDevice = 0;
@@ -1497,7 +1497,9 @@ int CSVPToolBox::GetGPUString(CStringArray * szaGPUString){
             ret = 1; // G45
           }else if(m_nPCIDevice >= 0x2a40 && m_nPCIDevice <= 0x2a4f){
             ret = 1; // G45 移动版
-          }
+          }else if(m_nPCIDevice == 0x116) // hang on DXVA HD3000
+		    ret = 0; 
+
         }
 
         if(ret)
@@ -1520,11 +1522,13 @@ int CSVPToolBox::GetGPUString(CStringArray * szaGPUString){
     if(ret > 0){
       if(iGPURam < 256)
         ret = 0;
-    }else if(iGPURam > 256)
+    }else if(ret < 0 && iGPURam > 256)
     {
       ret = 1;
     }
   }
+  if (ret < 0)
+	  ret = 0;
   return ret;
 }
 BOOL CSVPToolBox::ifDirWritable(CString szDir)

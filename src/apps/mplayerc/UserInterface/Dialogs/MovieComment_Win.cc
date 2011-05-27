@@ -373,7 +373,7 @@ void MovieComment::OnTimer(UINT_PTR nIDEvent)
 		{
 			RECT rc = m_oadlg->m_currect;
 			rc.bottom = m_oauthHeight;
-			m_oadlg->SetFramePos(rc);
+			m_oadlg->MoveWindow(rc.left, rc.top, rc.right, rc.bottom);
 		}
 	}
 
@@ -383,7 +383,7 @@ void MovieComment::OnTimer(UINT_PTR nIDEvent)
 		KillTimer(2);
 		RECT rc = m_oadlg->m_currect;
 		rc.bottom = 400;
-		m_oadlg->SetFramePos(rc);
+		m_oadlg->MoveWindow(rc.left, rc.top, rc.right, rc.bottom);
 	}
 }
 
@@ -408,11 +408,11 @@ void MovieComment::OpenOAuth(LPCTSTR str)
   m_oadlg->CalcOauthPos(FALSE);
 
   RECT rc = m_oadlg->m_currect;
-  rc.bottom = 1;
-  m_oadlg->SetFramePos(rc);
+  rc.bottom = 0;
+  m_oadlg->MoveWindow(rc.left, rc.top, rc.right, rc.bottom);
 
   m_st = m_ut = timeGetTime();
-  m_dt = 200.0f;
+  m_dt = 1000.0f;
 
   m_oauthHeight = 0;
   m_detalt = 0;

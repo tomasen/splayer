@@ -96,8 +96,8 @@ void DhtmlDlgBase::CreateFrame(DWORD style, DWORD styleEx)
     _dialogTemplate->dwExtendedStyle = styleEx;
 
     _dialogTemplate->cdit  = 0;
-    _dialogTemplate->cx    = 316;
-    _dialogTemplate->cy    = 183;
+    _dialogTemplate->cx    = 0;
+    _dialogTemplate->cy    = 0;
 
     if (0 == CreateIndirect(_dialogTemplate))
     {

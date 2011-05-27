@@ -385,9 +385,9 @@ void MovieComment::OpenOAuth(LPCTSTR str)
 
   m_oadlg = new OAuthDlg;
   m_oadlg->CreateFrame(DS_SETFONT|DS_FIXEDSYS|WS_POPUP|WS_DISABLED,WS_EX_NOACTIVATE);
-  m_oauthurl = url;
-  m_oadlg->SetUrl(m_oauthurl);
+  //m_oauthurl = url;
   m_oadlg->ClearFrame();
+  m_oadlg->SetUrl(url);
   m_oadlg->ShowFrame();
   AdjustMainWnd();
   m_oadlg->CalcOauthPos(FALSE);

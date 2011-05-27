@@ -15,6 +15,7 @@ public:
 
   void ShowFrame();
   void HideFrame();
+  void ClearFrame();
 
   void SupportJSCallBack();
   void SupportContextMenu(BOOL flag);

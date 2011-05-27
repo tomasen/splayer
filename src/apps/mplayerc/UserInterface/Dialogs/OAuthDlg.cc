@@ -94,6 +94,7 @@ IMPLEMENT_DYNAMIC(OAuthDlg, CDHtmlDialog)
 BEGIN_MESSAGE_MAP(OAuthDlg, CDHtmlDialog)
   ON_WM_SIZE()
   ON_WM_CREATE()
+  ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 BEGIN_DHTML_EVENT_MAP(OAuthDlg)
@@ -115,6 +116,12 @@ OAuthDlg::OAuthDlg()
 
 OAuthDlg::~OAuthDlg()
 {
+}
+
+BOOL OAuthDlg::OnEraseBkgnd(CDC* pDC)
+{
+	pDC->SetBkColor(RGB(100,103,108));
+	return TRUE;
 }
 
 BSTR OAuthDlg::CallSPlayer(LPCTSTR p, LPCTSTR param)
@@ -143,20 +150,6 @@ BOOL OAuthDlg::OnInitDialog()
 
   SupportJSCallBack();
   SetUserAgent("Mozilla/5.0 (Linux; U; Android 0.5; en-us) AppleWebKit/522+ (KHTML, like Gecko) Safari/419.3");
-
-  CString strResourceURL;
-  LPTSTR lpszModule = new TCHAR[_MAX_PATH];
-
-  if (lpszModule && GetModuleFileName(NULL, lpszModule, _MAX_PATH))
-  {
-    // load resource html regardless by language
-    strResourceURL.Format(_T("res://%s/%d"), lpszModule, IDR_HTML_BUSY);
-    Navigate(strResourceURL, 0, 0, 0);
-  }
-  else
-    Navigate(L"about:blank");
-
-
   return TRUE;
 }
 

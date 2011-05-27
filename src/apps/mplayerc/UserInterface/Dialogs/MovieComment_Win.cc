@@ -6,7 +6,6 @@
 #include "MovieComment_Win.h"
 #include <exdispid.h>
 #include "logging.h"
-#include "../../resource.h"
 #include "../../MainFrm.h"
 #include "base64.h"
 #include "strings.h"
@@ -151,20 +150,10 @@ BOOL MovieComment::OnInitDialog()
 }
 void MovieComment::ClearFrame()
 {
-  if (!m_hWnd || !m_initialize)
-    return;
+	if (!m_hWnd || !m_initialize)
+		return;
 
-  CString strResourceURL;
-  LPTSTR lpszModule = new TCHAR[_MAX_PATH];
-
-  if (lpszModule && GetModuleFileName(NULL, lpszModule, _MAX_PATH))
-  {
-    // load resource html regardless by language
-    strResourceURL.Format(_T("res://%s/%d"), lpszModule, IDR_HTML_BUSY);
-    Navigate(strResourceURL, 0, 0, 0);
-  }
-  else
-    Navigate(L"about:blank");
+	DhtmlDlgBase::ClearFrame();
 }
 
 HRESULT MovieComment::OnEventCapture(IHTMLElement* pElement)
@@ -368,22 +357,16 @@ void MovieComment::OnTimer(UINT_PTR nIDEvent)
 	}
 	// render
 	else if (nIDEvent == 2)
-	{
-		if (m_oadlg)
-		{
-			RECT rc = m_oadlg->m_currect;
-			rc.bottom = m_oauthHeight;
-			m_oadlg->MoveWindow(rc.left, rc.top, rc.right, rc.bottom);
-		}
-	}
+		RenderAni();
 
 	if (timeGetTime()-m_st >= m_dt)
 	{
 		KillTimer(1);
 		KillTimer(2);
-		RECT rc = m_oadlg->m_currect;
-		rc.bottom = 400;
-		m_oadlg->MoveWindow(rc.left, rc.top, rc.right, rc.bottom);
+		m_oauthHeight = 400;
+		RenderAni();
+// 		if (m_oadlg)
+// 			m_oadlg->SetUrl(m_oauthurl);
 	}
 }
 
@@ -402,17 +385,19 @@ void MovieComment::OpenOAuth(LPCTSTR str)
 
   m_oadlg = new OAuthDlg;
   m_oadlg->CreateFrame(DS_SETFONT|DS_FIXEDSYS|WS_POPUP|WS_DISABLED,WS_EX_NOACTIVATE);
-  m_oadlg->SetUrl(url);
+  m_oauthurl = url;
+  m_oadlg->SetUrl(m_oauthurl);
+  m_oadlg->ClearFrame();
   m_oadlg->ShowFrame();
   AdjustMainWnd();
   m_oadlg->CalcOauthPos(FALSE);
 
   RECT rc = m_oadlg->m_currect;
   rc.bottom = 0;
-  m_oadlg->MoveWindow(rc.left, rc.top, rc.right, rc.bottom);
+  m_oadlg->SetFramePos(rc);
 
   m_st = m_ut = timeGetTime();
-  m_dt = 1000.0f;
+  m_dt = 300.0f;
 
   m_oauthHeight = 0;
   m_detalt = 0;
@@ -449,4 +434,15 @@ STDMETHODIMP MovieComment::TranslateAccelerator(LPMSG lpMsg, const GUID* /*pguid
   }
 
   return S_FALSE;
+}
+
+void MovieComment::RenderAni()
+{
+	if (m_oadlg)
+	{
+		RECT rc = m_oadlg->m_currect;
+		rc.bottom = m_oauthHeight;
+		m_oadlg->SetWindowPos(NULL, rc.left, rc.top, rc.right, rc.bottom,
+			SWP_NOMOVE|SWP_NOOWNERZORDER|SWP_NOREDRAW|SWP_NOREPOSITION|SWP_NOZORDER);
+	}
 }

@@ -45,7 +45,7 @@ public:
 
   BSTR CallSPlayer(LPCTSTR p, LPCTSTR param);
   afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-
+  afx_msg BOOL OnEraseBkgnd(CDC* pDC);
   CRect m_currect;
 protected:
   virtual BOOL OnInitDialog();

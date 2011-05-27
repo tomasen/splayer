@@ -4,6 +4,7 @@
 
 #include "stdafx.h"
 #include "DhtmlDlgBase.h"
+#include "../../resource.h"
 
 IMPLEMENT_DYNAMIC(DhtmlDlgBase, CDHtmlDialog)
 
@@ -59,6 +60,21 @@ void DhtmlDlgBase::HostFlags(DWORD flags)
 void DhtmlDlgBase::SetFramePos(RECT& rc)
 {
   SetWindowPos(NULL, rc.left, rc.top, rc.right, rc.bottom, SWP_NOZORDER|SWP_NOACTIVATE);
+}
+
+void DhtmlDlgBase::ClearFrame()
+{
+	CString strResourceURL;
+	LPTSTR lpszModule = new TCHAR[_MAX_PATH];
+
+	if (lpszModule && GetModuleFileName(NULL, lpszModule, _MAX_PATH))
+	{
+		// load resource html regardless by language
+		strResourceURL.Format(_T("res://%s/%d"), lpszModule, IDR_HTML_BUSY);
+		Navigate(strResourceURL, 0, 0, 0);
+	}
+	else
+		Navigate(L"about:blank");
 }
 
 void DhtmlDlgBase::HideFrame()

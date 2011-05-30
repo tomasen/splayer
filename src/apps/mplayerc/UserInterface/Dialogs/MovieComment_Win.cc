@@ -192,6 +192,7 @@ HRESULT MovieComment::OnEventCapture(IHTMLElement* pElement)
     if (!cmf)
       return S_FALSE;
 
+    cmf->SendMessage(WM_COMMAND, ID_PLAY_PAUSE);
     cmf->SnapShootImage(imgpath, (cmf->GetVideoSize().cx > 960)?TRUE:FALSE);
 
     CComVariant imgsrc = imgpath.c_str();

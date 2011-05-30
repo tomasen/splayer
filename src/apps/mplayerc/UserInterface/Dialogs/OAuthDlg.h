@@ -47,6 +47,7 @@ public:
   afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
   afx_msg BOOL OnEraseBkgnd(CDC* pDC);
   CRect m_currect;
+  CircleBtn m_btnclose;
 protected:
   virtual BOOL OnInitDialog();
   STDMETHOD(TranslateAccelerator)(LPMSG lpMsg, const GUID* pguidCmdGroup, DWORD nCmdID);
@@ -57,5 +58,4 @@ protected:
 
 private:
   CRgn m_rgn;
-  CircleBtn m_btnclose;
 };

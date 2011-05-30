@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="windows-1250"?>
+<VisualStudioProject
+	ProjectType="Intel C++ Project"
+	Version="11.1"
+	Name="MPCVideoDec"
+	ProjectGUID="{39DCC1DB-5CAD-4B63-9599-040128AF60B4}"
+	VCNestedProjectGUID="{58E36BF5-4A06-47E4-BD40-4CCEF8C634DF}"
+	VCNestedProjectFileName="MPCVideoDec.vcproj">
+	<Configurations>
+		<Configuration
+			Name="Release Unicode|Win32">
+			<Tool
+				Name="CppCmplrTool"
+				GlobalOptimizations="true"
+				InterproceduralOptimization="2"
+				OptimizeForWindowsApplication="true"
+				EnableEnhancedInstructionSet="1001"
+				OpenMP="1000"
+				Parallelization="true"/>
+		</Configuration>
+	</Configurations>
+	<Files/>
+</VisualStudioProject>

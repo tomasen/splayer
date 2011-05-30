@@ -4,30 +4,30 @@
 
 class CircleBtn : public CWnd
 {
-	DECLARE_DYNAMIC(CircleBtn)
+  DECLARE_DYNAMIC(CircleBtn)
 public:
-	CircleBtn();
-	~CircleBtn();
+  CircleBtn();
+  ~CircleBtn();
 
-	void SetCircleWnd();
-	void OnPaint();
+  void SetCircleWnd();
+  void OnPaint();
 
-	CBitmap m_over;
-	CBitmap m_out;
+  CBitmap m_over;
+  CBitmap m_out;
 
   void OnShowWindow(BOOL bShow, UINT nStatus);
 
 protected:
-	virtual LRESULT OnMouseLeave(WPARAM, LPARAM);
-	virtual LRESULT OnMouseMove(WPARAM, LPARAM);
+  virtual LRESULT OnMouseLeave(WPARAM, LPARAM);
+  virtual LRESULT OnMouseMove(WPARAM, LPARAM);
 
-	void OnSize(UINT nType, int cx, int cy);
-	void OnLButtonDown(UINT nFlags, CPoint point);
-	void OnLButtonUp(UINT nFlags, CPoint point);
+  void OnSize(UINT nType, int cx, int cy);
+  void OnLButtonDown(UINT nFlags, CPoint point);
+  void OnLButtonUp(UINT nFlags, CPoint point);
 
-	DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 private:
-	BOOL m_trackleave;
+  BOOL m_trackleave;
 };
 
 

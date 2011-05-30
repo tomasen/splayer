@@ -410,25 +410,14 @@ STDMETHODIMP MovieComment::TranslateAccelerator(LPMSG lpMsg, const GUID* /*pguid
 {
   switch (lpMsg->message)
   {
-  case WM_CHAR:
-    switch (lpMsg->wParam)
-    {
-    case ' ':			// SPACE - Activate a link
-      return S_FALSE;	// S_FALSE = Let the control process the key stroke.
-    }
-    break;
   case WM_KEYDOWN:
-  case WM_KEYUP:
-  case WM_SYSKEYDOWN:
-  case WM_SYSKEYUP:
     switch (lpMsg->wParam)
     {
-    case VK_TAB:		// Cycling through controls which can get the focus
-    case VK_SPACE:		// Activate a link
-      return S_FALSE; // S_FALSE = Let the control process the key stroke.
+    case VK_RETURN:
+      return S_OK;
     case VK_ESCAPE:
       HideFrame();
-      break;
+      return S_OK;  // let me handle
     }
     break;
   }

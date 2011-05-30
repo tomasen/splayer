@@ -65,9 +65,6 @@ void CircleBtn::OnLButtonDown(UINT nFlags, CPoint point)
 void CircleBtn::OnLButtonUp(UINT nFlags, CPoint point)
 {
   GetParent()->ShowWindow(SW_HIDE);
-  CMainFrame* cmf = (CMainFrame*)AfxGetMainWnd();
-  if (cmf && cmf->GetMediaState() == State_Paused)
-    cmf->OnPlayPlay();
 }
 
 LRESULT CircleBtn::OnMouseLeave(WPARAM, LPARAM)

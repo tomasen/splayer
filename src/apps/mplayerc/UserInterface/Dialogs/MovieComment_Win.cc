@@ -365,8 +365,8 @@ void MovieComment::OnTimer(UINT_PTR nIDEvent)
 		KillTimer(2);
 		m_oauthHeight = 400;
 		RenderAni();
-// 		if (m_oadlg)
-// 			m_oadlg->SetUrl(m_oauthurl);
+		if (m_oadlg)
+			m_oadlg->m_btnclose.ShowWindow(SW_SHOW);
 	}
 }
 
@@ -385,7 +385,7 @@ void MovieComment::OpenOAuth(LPCTSTR str)
 
   m_oadlg = new OAuthDlg;
   m_oadlg->CreateFrame(DS_SETFONT|DS_FIXEDSYS|WS_POPUP|WS_DISABLED,WS_EX_NOACTIVATE);
-  //m_oauthurl = url;
+
   m_oadlg->ClearFrame();
   m_oadlg->SetUrl(url);
   m_oadlg->ShowFrame();

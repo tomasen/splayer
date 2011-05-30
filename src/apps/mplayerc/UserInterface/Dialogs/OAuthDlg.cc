@@ -139,7 +139,7 @@ BSTR OAuthDlg::CallSPlayer(LPCTSTR p, LPCTSTR param)
 
 int OAuthDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
-	m_btnclose.Create(NULL, L"oauthclose", WS_CHILD|WS_VISIBLE , CRect(450, 5, 486, 41), this, 1);
+	m_btnclose.Create(NULL, L"oauthclose", WS_CHILD , CRect(450, 5, 486, 41), this, 1);
 
 	return __super::OnCreate(lpCreateStruct);
 }

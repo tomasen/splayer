@@ -54,7 +54,6 @@ protected:
 private:
   void RenderAni();
 
-  std::wstring m_oauthurl;
   RECT m_mainrc;
   CRgn m_rgn;
 

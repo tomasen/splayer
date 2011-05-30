@@ -33,7 +33,21 @@ CircleBtn::~CircleBtn()
 void CircleBtn::SetCircleWnd()
 {
 	CRgn rgn;
-	rgn.CreateEllipticRgn(1, 1, 35, 35);
+	rgn.CreateEllipticRgn(2, 3, 34, 34);
+  /* 
+  POINT lpt[9];
+
+  lpt[0].x = 5;lpt[0].y = 24;
+  lpt[1].x = 5;lpt[1].y = 13;
+  lpt[2].x = 12;lpt[2].y = 5;
+  lpt[3].x = 24;lpt[3].y = 5;
+  lpt[4].x = 32;lpt[4].y = 12;
+  lpt[5].x = 32;lpt[5].y = 24;
+  lpt[6].x = 24;lpt[6].y = 32;
+  lpt[7].x = 13;lpt[7].y = 32;
+  lpt[8].x = 5;lpt[8].y = 24;
+  rgn.CreatePolygonRgn(lpt, 9, WINDING);
+  */
 	SetWindowRgn(rgn, TRUE);
 }
 

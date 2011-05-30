@@ -19,6 +19,7 @@ BEGIN_MESSAGE_MAP(CircleBtn, CBitmapButton)
 	ON_MESSAGE(WM_MOUSEMOVE, OnMouseMove)
 	ON_MESSAGE(WM_MOUSELEAVE, OnMouseLeave)
 	ON_WM_PAINT()
+  ON_WM_SHOWWINDOW()
 END_MESSAGE_MAP()
 CircleBtn::CircleBtn() :
 	m_trackleave(FALSE)
@@ -94,7 +95,8 @@ LRESULT CircleBtn::OnMouseMove(WPARAM, LPARAM)
 void CircleBtn::OnPaint()
 {
 	CPaintDC dc(this);
-
+  if (!IsWindowVisible())
+    return;
 	CDC mdc;
 	mdc.CreateCompatibleDC(&dc);
 
@@ -102,7 +104,10 @@ void CircleBtn::OnPaint()
 	dc.BitBlt(0,0,36,36,&mdc,0,0,SRCCOPY);
 	mdc.SelectObject(hold);
 }
-
+void CircleBtn::OnShowWindow(BOOL bShow, UINT nStatus)
+{
+  __super::OnShowWindow(bShow, nStatus);
+}
 IMPLEMENT_DYNAMIC(OAuthDlg, CDHtmlDialog)
 
 BEGIN_MESSAGE_MAP(OAuthDlg, CDHtmlDialog)
@@ -114,6 +119,13 @@ END_MESSAGE_MAP()
 BEGIN_DHTML_EVENT_MAP(OAuthDlg)
 
 END_DHTML_EVENT_MAP()
+
+BEGIN_EVENTSINK_MAP(OAuthDlg, CDHtmlDialog)
+ON_EVENT(OAuthDlg, AFX_IDC_BROWSER, DISPID_DOCUMENTCOMPLETE,
+         OnDocumentComplete, VTS_DISPATCH VTS_PVARIANT)
+ON_EVENT(OAuthDlg, AFX_IDC_BROWSER, DISPID_BEFORENAVIGATE2, OnBeforeNavigate2,
+         VTS_DISPATCH VTS_PVARIANT VTS_PVARIANT VTS_PVARIANT VTS_PVARIANT VTS_PVARIANT VTS_PBOOL)
+END_EVENTSINK_MAP()
 
 BEGIN_DISPATCH_MAP(OAuthDlg, CDHtmlDialog)
 	DISP_FUNCTION(OAuthDlg, "CallSPlayer", CallSPlayer, VT_BSTR, VTS_BSTR VTS_BSTR)
@@ -153,7 +165,7 @@ BSTR OAuthDlg::CallSPlayer(LPCTSTR p, LPCTSTR param)
 
 int OAuthDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
-	m_btnclose.Create(NULL, L"oauthclose", WS_CHILD , CRect(450, 5, 486, 41), this, 1);
+	m_btnclose.Create(NULL, L"oauthclose", WS_CHILD|WS_VISIBLE, CRect(450, 5, 486, 41), this, 1);
 
 	return __super::OnCreate(lpCreateStruct);
 }
@@ -164,11 +176,37 @@ BOOL OAuthDlg::OnInitDialog()
 
   SupportJSCallBack();
   SetUserAgent("Mozilla/5.0 (Linux; U; Android 0.5; en-us) AppleWebKit/522+ (KHTML, like Gecko) Safari/419.3");
+  m_btnclose.ShowWindow(SW_MINIMIZE);
+
   return TRUE;
+}
+
+void OAuthDlg::OnBeforeNavigate2(LPDISPATCH pDisp, VARIANT FAR* URL, VARIANT FAR* Flags,
+                                     VARIANT FAR* TargetFrameName, VARIANT FAR* PostData, VARIANT FAR* Headers, BOOL FAR* Cancel)
+{
+  if (URL->bstrVal)
+  {
+    std::wstring url = V_BSTR(URL);
+    if (url.find(L"res://") != std::wstring::npos)
+      m_btnclose.ShowWindow(SW_MINIMIZE); // SW_HIDE Not working on CWnd created button 
+  }
+}
+void OAuthDlg::OnDocumentComplete(IDispatch **ppDisp, VARIANT FAR *URL)
+{
+  if (URL->bstrVal)
+  {
+    std::wstring url = V_BSTR(URL);
+    //Logging(L"OnDocumentComplete %s", url.c_str());
+    if (url.find(L"res://") == std::wstring::npos)
+      m_btnclose.ShowWindow(SW_SHOWNORMAL);
+  }
+
+  return;
 }
 
 void OAuthDlg::HideFrame()
 {
+  m_btnclose.ShowWindow(SW_HIDE);
 	DhtmlDlgBase::HideFrame();
 	CMainFrame* cmf = (CMainFrame*)AfxGetMainWnd();
 	if (cmf && cmf->GetMediaState() == State_Paused)
@@ -220,7 +258,9 @@ void OAuthDlg::SetUrl(std::wstring url)
   if (url.empty())
     return;
 
+  m_btnclose.ShowWindow(SW_HIDE);
   Navigate(url.c_str());
+
 }
 
 STDMETHODIMP OAuthDlg::TranslateAccelerator(LPMSG lpMsg, const GUID* /*pguidCmdGroup*/, DWORD /*nCmdID*/)

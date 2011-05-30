@@ -15,6 +15,8 @@ public:
 	CBitmap m_over;
 	CBitmap m_out;
 
+  void OnShowWindow(BOOL bShow, UINT nStatus);
+
 protected:
 	virtual LRESULT OnMouseLeave(WPARAM, LPARAM);
 	virtual LRESULT OnMouseMove(WPARAM, LPARAM);
@@ -48,12 +50,18 @@ public:
   afx_msg BOOL OnEraseBkgnd(CDC* pDC);
   CRect m_currect;
   CircleBtn m_btnclose;
+
+  void OnDocumentComplete(IDispatch **ppDisp, VARIANT FAR*URL);
+  void OnBeforeNavigate2(LPDISPATCH pDisp, VARIANT FAR* URL, VARIANT FAR* Flags,
+    VARIANT FAR* TargetFrameName, VARIANT FAR* PostData, VARIANT FAR* Headers, BOOL FAR* Cancel);
+
 protected:
   virtual BOOL OnInitDialog();
   STDMETHOD(TranslateAccelerator)(LPMSG lpMsg, const GUID* pguidCmdGroup, DWORD nCmdID);
 
   DECLARE_MESSAGE_MAP()
   DECLARE_DHTML_EVENT_MAP()
+  DECLARE_EVENTSINK_MAP()
   DECLARE_DISPATCH_MAP()
 
 private:

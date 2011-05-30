@@ -34,21 +34,24 @@ CircleBtn::~CircleBtn()
 void CircleBtn::SetCircleWnd()
 {
   CRgn rgn;
-  rgn.CreateEllipticRgn(2, 3, 34, 34);
-  /* 
-  POINT lpt[9];
+  /*
+  rgn.CreateEllipticRgn(2, 3, 34, 34); // Round
+   
+  POINT lpt[9]; // Octagon
 
   lpt[0].x = 5;lpt[0].y = 24;
-  lpt[1].x = 5;lpt[1].y = 13;
+  lpt[1].x = 5;lpt[1].y = 12;
   lpt[2].x = 12;lpt[2].y = 5;
-  lpt[3].x = 24;lpt[3].y = 5;
+  lpt[3].x = 25;lpt[3].y = 5;
   lpt[4].x = 32;lpt[4].y = 12;
   lpt[5].x = 32;lpt[5].y = 24;
-  lpt[6].x = 24;lpt[6].y = 32;
-  lpt[7].x = 13;lpt[7].y = 32;
-  lpt[8].x = 5;lpt[8].y = 24;
-  rgn.CreatePolygonRgn(lpt, 9, WINDING);
+  lpt[6].x = 25;lpt[6].y = 31;
+  lpt[7].x = 12;lpt[7].y = 31;
+  lpt[8].x = lpt[0].x;lpt[8].y = lpt[0].y;
+  rgn.CreatePolygonRgn(lpt, 8, WINDING);
   */
+  rgn.CreateRoundRectRgn(3, 4, 34, 34, 10, 10);
+
   SetWindowRgn(rgn, TRUE);
 }
 

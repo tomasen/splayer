@@ -344,7 +344,6 @@ void CGraphCore::SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle, bool b
 
     if(bShowOSD && subName != L"No subtitles"){
       szBuf.Format(ResStr(IDS_OSD_MSG_CURRENT_MAINSUB_INFO), GetAnEasyToUnderstoodSubtitleName( subName),  pSubStream->sub_delay_ms,s.nVerPos);
-      SVP_LogMsg(szBuf);
       SendStatusMessage(szBuf , 4000 );
     }
 

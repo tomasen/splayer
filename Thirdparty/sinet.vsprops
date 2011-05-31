@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="gb2312"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="sinet"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		AdditionalIncludeDirectories="$(SolutionDir)Thirdparty\sinet"
+	/>
+	<Tool
+		Name="VCLinkerTool"
+		AdditionalDependencies="sinet_dyn_wrapper.lib sinet_dyn.lib"
+		AdditionalLibraryDirectories="$(SolutionDir)Thirdparty\sinet"
+		DelayLoadDLLs="sinet.dll"
+	/>
+</VisualStudioPropertySheet>

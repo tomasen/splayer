@@ -192,6 +192,7 @@ HRESULT MovieComment::OnEventCapture(IHTMLElement* pElement)
     if (!cmf)
       return S_FALSE;
 
+    cmf->SendMessage(WM_COMMAND, ID_PLAY_PAUSE);
     cmf->SnapShootImage(imgpath, (cmf->GetVideoSize().cx > 960)?TRUE:FALSE);
 
     CComVariant imgsrc = imgpath.c_str();
@@ -337,12 +338,9 @@ void MovieComment::CloseOAuth()
   {
     delete m_oadlg;
     m_oadlg = NULL;
-	m_oauthHeight = 0;
-	m_detalt = 0;
-	m_offset = 0;
-	CMainFrame* cmf = (CMainFrame*)AfxGetMainWnd();
-	if (cmf && cmf->GetMediaState() == State_Paused)
-		cmf->OnPlayPlay();
+	  m_oauthHeight = 0;
+	  m_detalt = 0;
+	  m_offset = 0;
   }
 }
 
@@ -365,8 +363,8 @@ void MovieComment::OnTimer(UINT_PTR nIDEvent)
 		KillTimer(2);
 		m_oauthHeight = 400;
 		RenderAni();
-// 		if (m_oadlg)
-// 			m_oadlg->SetUrl(m_oauthurl);
+		if (m_oadlg)
+			m_oadlg->m_btnclose.ShowWindow(SW_SHOW);
 	}
 }
 
@@ -385,9 +383,9 @@ void MovieComment::OpenOAuth(LPCTSTR str)
 
   m_oadlg = new OAuthDlg;
   m_oadlg->CreateFrame(DS_SETFONT|DS_FIXEDSYS|WS_POPUP|WS_DISABLED,WS_EX_NOACTIVATE);
-  m_oauthurl = url;
-  m_oadlg->SetUrl(m_oauthurl);
+
   m_oadlg->ClearFrame();
+  m_oadlg->SetUrl(url);
   m_oadlg->ShowFrame();
   AdjustMainWnd();
   m_oadlg->CalcOauthPos(FALSE);
@@ -410,25 +408,14 @@ STDMETHODIMP MovieComment::TranslateAccelerator(LPMSG lpMsg, const GUID* /*pguid
 {
   switch (lpMsg->message)
   {
-  case WM_CHAR:
-    switch (lpMsg->wParam)
-    {
-    case ' ':			// SPACE - Activate a link
-      return S_FALSE;	// S_FALSE = Let the control process the key stroke.
-    }
-    break;
   case WM_KEYDOWN:
-  case WM_KEYUP:
-  case WM_SYSKEYDOWN:
-  case WM_SYSKEYUP:
     switch (lpMsg->wParam)
     {
-    case VK_TAB:		// Cycling through controls which can get the focus
-    case VK_SPACE:		// Activate a link
-      return S_FALSE; // S_FALSE = Let the control process the key stroke.
+    case VK_RETURN:
+      return S_OK;
     case VK_ESCAPE:
       HideFrame();
-      break;
+      return S_OK;  // let me handle
     }
     break;
   }

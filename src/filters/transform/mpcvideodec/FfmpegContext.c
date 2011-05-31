@@ -308,8 +308,10 @@ int FFH264CheckCompatibility(int nWidth, int nHeight, struct AVCodecContext* pAV
 	if (cur_sps != NULL)
 	{
 		*refFrameCount = cur_sps->ref_frame_count;
-        
-        
+
+    if(0x8086 == nPCIVendor && m_nPCIDevice == 0x116) // hang on DXVA HD3000
+      return 1; 
+
 		if (nPCIVendor == 4318) { //NV
 			// nVidia cards support level 5.1 since drivers v6.14.11.7800 for XP and drivers v7.15.11.7800 for Vista
 			// vA.B.C.D

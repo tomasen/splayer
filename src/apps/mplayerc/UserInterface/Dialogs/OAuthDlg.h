@@ -4,28 +4,30 @@
 
 class CircleBtn : public CWnd
 {
-	DECLARE_DYNAMIC(CircleBtn)
+  DECLARE_DYNAMIC(CircleBtn)
 public:
-	CircleBtn();
-	~CircleBtn();
+  CircleBtn();
+  ~CircleBtn();
 
-	void SetCircleWnd();
-	void OnPaint();
+  void SetCircleWnd();
+  void OnPaint();
 
-	CBitmap m_over;
-	CBitmap m_out;
+  CBitmap m_over;
+  CBitmap m_out;
+
+  void OnShowWindow(BOOL bShow, UINT nStatus);
 
 protected:
-	virtual LRESULT OnMouseLeave(WPARAM, LPARAM);
-	virtual LRESULT OnMouseMove(WPARAM, LPARAM);
+  virtual LRESULT OnMouseLeave(WPARAM, LPARAM);
+  virtual LRESULT OnMouseMove(WPARAM, LPARAM);
 
-	void OnSize(UINT nType, int cx, int cy);
-	void OnLButtonDown(UINT nFlags, CPoint point);
-	void OnLButtonUp(UINT nFlags, CPoint point);
+  void OnSize(UINT nType, int cx, int cy);
+  void OnLButtonDown(UINT nFlags, CPoint point);
+  void OnLButtonUp(UINT nFlags, CPoint point);
 
-	DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 private:
-	BOOL m_trackleave;
+  BOOL m_trackleave;
 };
 
 
@@ -47,15 +49,21 @@ public:
   afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
   afx_msg BOOL OnEraseBkgnd(CDC* pDC);
   CRect m_currect;
+  CircleBtn m_btnclose;
+
+  void OnDocumentComplete(IDispatch **ppDisp, VARIANT FAR*URL);
+  void OnBeforeNavigate2(LPDISPATCH pDisp, VARIANT FAR* URL, VARIANT FAR* Flags,
+    VARIANT FAR* TargetFrameName, VARIANT FAR* PostData, VARIANT FAR* Headers, BOOL FAR* Cancel);
+
 protected:
   virtual BOOL OnInitDialog();
   STDMETHOD(TranslateAccelerator)(LPMSG lpMsg, const GUID* pguidCmdGroup, DWORD nCmdID);
 
   DECLARE_MESSAGE_MAP()
   DECLARE_DHTML_EVENT_MAP()
+  DECLARE_EVENTSINK_MAP()
   DECLARE_DISPATCH_MAP()
 
 private:
   CRgn m_rgn;
-  CircleBtn m_btnclose;
 };

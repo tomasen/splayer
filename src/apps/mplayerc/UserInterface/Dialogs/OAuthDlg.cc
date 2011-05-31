@@ -13,18 +13,19 @@
 IMPLEMENT_DYNAMIC(CircleBtn, CBitmapButton)
 
 BEGIN_MESSAGE_MAP(CircleBtn, CBitmapButton)
-	ON_WM_SIZE()
-	ON_WM_LBUTTONUP()
-	ON_WM_LBUTTONDOWN()
-	ON_MESSAGE(WM_MOUSEMOVE, OnMouseMove)
-	ON_MESSAGE(WM_MOUSELEAVE, OnMouseLeave)
-	ON_WM_PAINT()
+  ON_WM_SIZE()
+  ON_WM_LBUTTONUP()
+  ON_WM_LBUTTONDOWN()
+  ON_MESSAGE(WM_MOUSEMOVE, OnMouseMove)
+  ON_MESSAGE(WM_MOUSELEAVE, OnMouseLeave)
+  ON_WM_PAINT()
+  ON_WM_SHOWWINDOW()
 END_MESSAGE_MAP()
 CircleBtn::CircleBtn() :
-	m_trackleave(FALSE)
+m_trackleave(FALSE)
 {
-	m_out.LoadBitmap(IDB_OAUTHCLOSEOUT);
-	m_over.LoadBitmap(IDB_OAUTHCLOSEOVER);
+  m_out.LoadBitmap(IDB_OAUTHCLOSEOUT);
+  m_over.LoadBitmap(IDB_OAUTHCLOSEOVER);
 }
 CircleBtn::~CircleBtn()
 {
@@ -32,15 +33,32 @@ CircleBtn::~CircleBtn()
 }
 void CircleBtn::SetCircleWnd()
 {
-	CRgn rgn;
-	rgn.CreateEllipticRgn(1, 1, 35, 35);
-	SetWindowRgn(rgn, TRUE);
+  CRgn rgn;
+  /*
+  rgn.CreateEllipticRgn(2, 3, 34, 34); // Round
+   
+  POINT lpt[9]; // Octagon
+
+  lpt[0].x = 5;lpt[0].y = 24;
+  lpt[1].x = 5;lpt[1].y = 12;
+  lpt[2].x = 12;lpt[2].y = 5;
+  lpt[3].x = 25;lpt[3].y = 5;
+  lpt[4].x = 32;lpt[4].y = 12;
+  lpt[5].x = 32;lpt[5].y = 24;
+  lpt[6].x = 25;lpt[6].y = 31;
+  lpt[7].x = 12;lpt[7].y = 31;
+  lpt[8].x = lpt[0].x;lpt[8].y = lpt[0].y;
+  rgn.CreatePolygonRgn(lpt, 8, WINDING);
+  */
+  rgn.CreateRoundRectRgn(3, 4, 34, 34, 10, 10);
+
+  SetWindowRgn(rgn, TRUE);
 }
 
 void CircleBtn::OnSize(UINT nType, int cx, int cy)
 {
-	__super::OnSize(nType, cx, cy);
-	SetCircleWnd();
+  __super::OnSize(nType, cx, cy);
+  SetCircleWnd();
 }
 
 void CircleBtn::OnLButtonDown(UINT nFlags, CPoint point)
@@ -49,46 +67,47 @@ void CircleBtn::OnLButtonDown(UINT nFlags, CPoint point)
 
 void CircleBtn::OnLButtonUp(UINT nFlags, CPoint point)
 {
-	GetParent()->ShowWindow(SW_HIDE);
-	CMainFrame* cmf = (CMainFrame*)AfxGetMainWnd();
-	if (cmf && cmf->GetMediaState() == State_Paused)
-		cmf->OnPlayPlay();
+  GetParent()->ShowWindow(SW_HIDE);
 }
 
 LRESULT CircleBtn::OnMouseLeave(WPARAM, LPARAM)
 {
-	m_trackleave = FALSE;
-	Invalidate(TRUE);
-	return S_FALSE;
+  m_trackleave = FALSE;
+  Invalidate(TRUE);
+  return S_FALSE;
 }
 
 LRESULT CircleBtn::OnMouseMove(WPARAM, LPARAM)
 {
-	if (!m_trackleave)
-	{
-		TRACKMOUSEEVENT tl;
-		tl.cbSize = sizeof(tl);
-		tl.hwndTrack = m_hWnd;
-		tl.dwFlags = TME_LEAVE;
-		tl.dwHoverTime = 1;
-		m_trackleave = TrackMouseEvent(&tl);
-		Invalidate(TRUE);
-	}
-	return S_FALSE;
+  if (!m_trackleave)
+  {
+    TRACKMOUSEEVENT tl;
+    tl.cbSize = sizeof(tl);
+    tl.hwndTrack = m_hWnd;
+    tl.dwFlags = TME_LEAVE;
+    tl.dwHoverTime = 1;
+    m_trackleave = TrackMouseEvent(&tl);
+    Invalidate(TRUE);
+  }
+  return S_FALSE;
 }
 
 void CircleBtn::OnPaint()
 {
-	CPaintDC dc(this);
+  CPaintDC dc(this);
+  if (!IsWindowVisible())
+    return;
+  CDC mdc;
+  mdc.CreateCompatibleDC(&dc);
 
-	CDC mdc;
-	mdc.CreateCompatibleDC(&dc);
-
-	HBITMAP hold = (HBITMAP)mdc.SelectObject(&(m_trackleave?m_over:m_out));
-	dc.BitBlt(0,0,36,36,&mdc,0,0,SRCCOPY);
-	mdc.SelectObject(hold);
+  HBITMAP hold = (HBITMAP)mdc.SelectObject(&(m_trackleave?m_over:m_out));
+  dc.BitBlt(0,0,36,36,&mdc,0,0,SRCCOPY);
+  mdc.SelectObject(hold);
 }
-
+void CircleBtn::OnShowWindow(BOOL bShow, UINT nStatus)
+{
+  __super::OnShowWindow(bShow, nStatus);
+}
 IMPLEMENT_DYNAMIC(OAuthDlg, CDHtmlDialog)
 
 BEGIN_MESSAGE_MAP(OAuthDlg, CDHtmlDialog)
@@ -101,8 +120,15 @@ BEGIN_DHTML_EVENT_MAP(OAuthDlg)
 
 END_DHTML_EVENT_MAP()
 
+BEGIN_EVENTSINK_MAP(OAuthDlg, CDHtmlDialog)
+  ON_EVENT(OAuthDlg, AFX_IDC_BROWSER, DISPID_DOCUMENTCOMPLETE,
+  OnDocumentComplete, VTS_DISPATCH VTS_PVARIANT)
+  ON_EVENT(OAuthDlg, AFX_IDC_BROWSER, DISPID_BEFORENAVIGATE2, OnBeforeNavigate2,
+  VTS_DISPATCH VTS_PVARIANT VTS_PVARIANT VTS_PVARIANT VTS_PVARIANT VTS_PVARIANT VTS_PBOOL)
+END_EVENTSINK_MAP()
+
 BEGIN_DISPATCH_MAP(OAuthDlg, CDHtmlDialog)
-	DISP_FUNCTION(OAuthDlg, "CallSPlayer", CallSPlayer, VT_BSTR, VTS_BSTR VTS_BSTR)
+  DISP_FUNCTION(OAuthDlg, "CallSPlayer", CallSPlayer, VT_BSTR, VTS_BSTR VTS_BSTR)
 END_DISPATCH_MAP()
 
 OAuthDlg::OAuthDlg()
@@ -120,28 +146,28 @@ OAuthDlg::~OAuthDlg()
 
 BOOL OAuthDlg::OnEraseBkgnd(CDC* pDC)
 {
-	pDC->SetBkColor(RGB(100,103,108));
-	return TRUE;
+  pDC->SetBkColor(RGB(100,103,108));
+  return TRUE;
 }
 
 BSTR OAuthDlg::CallSPlayer(LPCTSTR p, LPCTSTR param)
 {
-	CString ret = L"0";
-	std::wstring cmd(p);
-	if (cmd.empty())
-		ret = L"-1";
-	else if (cmd == L"close")
-		HideFrame();
-	else
-		ret = L"-1";
-	return ret.AllocSysString();
+  CString ret = L"0";
+  std::wstring cmd(p);
+  if (cmd.empty())
+    ret = L"-1";
+  else if (cmd == L"close")
+    HideFrame();
+  else
+    ret = L"-1";
+  return ret.AllocSysString();
 }
 
 int OAuthDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
-	m_btnclose.Create(NULL, L"oauthclose", WS_CHILD|WS_VISIBLE , CRect(450, 5, 486, 41), this, 1);
+  m_btnclose.Create(NULL, L"oauthclose", WS_CHILD|WS_VISIBLE, CRect(450, 5, 486, 41), this, 1);
 
-	return __super::OnCreate(lpCreateStruct);
+  return __super::OnCreate(lpCreateStruct);
 }
 
 BOOL OAuthDlg::OnInitDialog()
@@ -150,15 +176,38 @@ BOOL OAuthDlg::OnInitDialog()
 
   SupportJSCallBack();
   SetUserAgent("Mozilla/5.0 (Linux; U; Android 0.5; en-us) AppleWebKit/522+ (KHTML, like Gecko) Safari/419.3");
+  m_btnclose.ShowWindow(SW_MINIMIZE);
+
   return TRUE;
+}
+
+void OAuthDlg::OnBeforeNavigate2(LPDISPATCH pDisp, VARIANT FAR* URL, VARIANT FAR* Flags,
+                                 VARIANT FAR* TargetFrameName, VARIANT FAR* PostData, VARIANT FAR* Headers, BOOL FAR* Cancel)
+{
+  if (URL->bstrVal)
+  {
+    std::wstring url = V_BSTR(URL);
+    if (url.find(L"res://") != std::wstring::npos)
+      m_btnclose.ShowWindow(SW_MINIMIZE); // SW_HIDE Not working on CWnd created button 
+  }
+}
+void OAuthDlg::OnDocumentComplete(IDispatch **ppDisp, VARIANT FAR *URL)
+{
+  if (URL->bstrVal)
+  {
+    std::wstring url = V_BSTR(URL);
+    //Logging(L"OnDocumentComplete %s", url.c_str());
+    if (url.find(L"res://") == std::wstring::npos)
+      m_btnclose.ShowWindow(SW_SHOWNORMAL);
+  }
+
+  return;
 }
 
 void OAuthDlg::HideFrame()
 {
-	DhtmlDlgBase::HideFrame();
-	CMainFrame* cmf = (CMainFrame*)AfxGetMainWnd();
-	if (cmf && cmf->GetMediaState() == State_Paused)
-		cmf->OnPlayPlay();
+  m_btnclose.ShowWindow(SW_HIDE);
+  DhtmlDlgBase::HideFrame();
 }
 
 void OAuthDlg::CalcOauthPos(BOOL display)
@@ -175,7 +224,7 @@ void OAuthDlg::CalcOauthPos(BOOL display)
   rc.bottom = 400;
   m_currect = rc;
   if (display)
-	SetFramePos(rc);
+    SetFramePos(rc);
 }
 
 void OAuthDlg::OnSize(UINT nType, int cx, int cy)
@@ -206,32 +255,23 @@ void OAuthDlg::SetUrl(std::wstring url)
   if (url.empty())
     return;
 
+  m_btnclose.ShowWindow(SW_HIDE);
   Navigate(url.c_str());
+
 }
 
 STDMETHODIMP OAuthDlg::TranslateAccelerator(LPMSG lpMsg, const GUID* /*pguidCmdGroup*/, DWORD /*nCmdID*/)
 {
   switch (lpMsg->message)
   {
-  case WM_CHAR:
-    switch (lpMsg->wParam)
-    {
-    case ' ':			// SPACE - Activate a link
-      return S_FALSE;	// S_FALSE = Let the control process the key stroke.
-    }
-    break;
   case WM_KEYDOWN:
-  case WM_KEYUP:
-  case WM_SYSKEYDOWN:
-  case WM_SYSKEYUP:
     switch (lpMsg->wParam)
     {
-    case VK_TAB:		// Cycling through controls which can get the focus
-    case VK_SPACE:		// Activate a link
-      return S_FALSE; // S_FALSE = Let the control process the key stroke.
+    case VK_RETURN:
+      return S_OK;
     case VK_ESCAPE:
       HideFrame();
-      break;
+      return S_OK;  // let me handle
     }
     break;
   }

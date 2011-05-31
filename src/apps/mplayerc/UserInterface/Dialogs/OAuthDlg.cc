@@ -208,9 +208,6 @@ void OAuthDlg::HideFrame()
 {
   m_btnclose.ShowWindow(SW_HIDE);
   DhtmlDlgBase::HideFrame();
-  CMainFrame* cmf = (CMainFrame*)AfxGetMainWnd();
-  if (cmf && cmf->GetMediaState() == State_Paused)
-    cmf->OnPlayPlay();
 }
 
 void OAuthDlg::CalcOauthPos(BOOL display)

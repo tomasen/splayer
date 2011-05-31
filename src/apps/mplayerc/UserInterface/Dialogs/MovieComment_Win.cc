@@ -338,12 +338,9 @@ void MovieComment::CloseOAuth()
   {
     delete m_oadlg;
     m_oadlg = NULL;
-	m_oauthHeight = 0;
-	m_detalt = 0;
-	m_offset = 0;
-	CMainFrame* cmf = (CMainFrame*)AfxGetMainWnd();
-	if (cmf && cmf->GetMediaState() == State_Paused)
-		cmf->OnPlayPlay();
+	  m_oauthHeight = 0;
+	  m_detalt = 0;
+	  m_offset = 0;
   }
 }
 

@@ -2702,7 +2702,7 @@ OAFilterState CGraphCore::GetMediaState()
   return(ret);
 }
 
-bool CGraphCore::GetDIB(BYTE** ppData, long& size, bool fSilent)
+bool CGraphCore::GetDIB(BYTE** ppData, long& size, bool fSilent, bool with_sub)
 {
   if(!ppData) return false;
 
@@ -2731,7 +2731,7 @@ bool CGraphCore::GetDIB(BYTE** ppData, long& size, bool fSilent)
   {
     if(m_pCAP)
     {
-      hr = m_pCAP->GetDIB(NULL, (DWORD*)&size);
+      hr = m_pCAP->GetDIB(NULL, (DWORD*)&size, with_sub);
       if(FAILED(hr))
       {
         GetMainFrame()->OnPlayPause();
@@ -2739,7 +2739,7 @@ bool CGraphCore::GetDIB(BYTE** ppData, long& size, bool fSilent)
         int retry = 0;
         while(FAILED(hr) && retry < 20)
         {
-          hr = m_pCAP->GetDIB(*ppData, (DWORD*)&size);
+          hr = m_pCAP->GetDIB(*ppData, (DWORD*)&size, with_sub);
           if(SUCCEEDED(hr)) break;
           Sleep(1);
           retry++;
@@ -2750,7 +2750,7 @@ bool CGraphCore::GetDIB(BYTE** ppData, long& size, bool fSilent)
 
       if(!(*ppData = new BYTE[size])) return false;
 
-      hr = m_pCAP->GetDIB(*ppData, (DWORD*)&size);
+      hr = m_pCAP->GetDIB(*ppData, (DWORD*)&size, with_sub);
       if(FAILED(hr)) {errmsg.Format(_T("GetDIB failed, hr = %08x"), hr); break;}
     }
     else

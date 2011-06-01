@@ -478,7 +478,7 @@ namespace DSObjects
 		// ISubPicAllocatorPresenter
 		STDMETHODIMP CreateRenderer(IUnknown** ppRenderer);
 		STDMETHODIMP_(bool) Paint(bool fAll);
-		STDMETHODIMP GetDIB(BYTE* lpDib, DWORD* size);
+		STDMETHODIMP GetDIB(BYTE* lpDib, DWORD* size, BOOL with_sub = 0);
 		STDMETHODIMP SetPixelShader(LPCSTR pSrcData, LPCSTR pTarget);
 		STDMETHODIMP SetPixelShader2(LPCSTR pSrcData, LPCSTR pTarget, bool bScreenSpace);
 	};
@@ -649,7 +649,7 @@ namespace DSObjects
 		STDMETHODIMP_(void) SetPosition(RECT w, RECT v);
 		STDMETHODIMP_(SIZE) GetVideoSize(bool fCorrectAR);
 		STDMETHODIMP_(bool) Paint(bool fAll);
-		STDMETHODIMP GetDIB(BYTE* lpDib, DWORD* size);
+		STDMETHODIMP GetDIB(BYTE* lpDib, DWORD* size, BOOL with_sub = 0);
 		STDMETHODIMP SetPixelShader(LPCSTR pSrcData, LPCSTR pTarget);
 	};
 
@@ -725,7 +725,7 @@ namespace DSObjects
 		STDMETHODIMP_(void) SetPosition(RECT w, RECT v);
 		STDMETHODIMP_(SIZE) GetVideoSize(bool fCorrectAR);
 		STDMETHODIMP_(bool) Paint(bool fAll);
-		STDMETHODIMP GetDIB(BYTE* lpDib, DWORD* size);
+		STDMETHODIMP GetDIB(BYTE* lpDib, DWORD* size, BOOL with_sub = 0);
 		STDMETHODIMP SetPixelShader(LPCSTR pSrcData, LPCSTR pTarget);
 	};
 }

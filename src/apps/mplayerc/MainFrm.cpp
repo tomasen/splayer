@@ -6278,7 +6278,7 @@ void CMainFrame::SnapShootImage(std::wstring path, BOOL half)
   BYTE* pData = NULL;
   long size;
 
-  if (!GetDIB(&pData, size))
+  if (!GetDIB(&pData, size, true, true))
     return;
 
   if (!half)

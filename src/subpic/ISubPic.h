@@ -399,7 +399,7 @@ interface __declspec(uuid("CF75B1F0-535C-4074-8869-B15F177F944E")) ISubPicAlloca
 	STDMETHOD_(void, SetSubPicProvider2) (ISubPicProvider* pSubPicProvider) PURE;
 	STDMETHOD_(void, Invalidate) (REFERENCE_TIME rtInvalidate = -1) PURE;
 
-	STDMETHOD (GetDIB) (BYTE* lpDib, DWORD* size) PURE;
+	STDMETHOD (GetDIB) (BYTE* lpDib, DWORD* size, BOOL with_sub = 0) PURE;
 
 	
 };
@@ -481,7 +481,7 @@ public:
 	STDMETHODIMP_(void) SetSubPicProvider2(ISubPicProvider* pSubPicProvider);	
 	STDMETHODIMP_(void) Invalidate(REFERENCE_TIME rtInvalidate = -1);
 
-	STDMETHODIMP GetDIB(BYTE* lpDib, DWORD* size) {return E_NOTIMPL;}
+	STDMETHODIMP GetDIB(BYTE* lpDib, DWORD* size, BOOL with_sub = 0) {return E_NOTIMPL;}
 
 	STDMETHODIMP SetVideoAngle(Vector v, bool fRepaint = true);
 	STDMETHODIMP SetPixelShader(LPCSTR pSrcData, LPCSTR pTarget) {return E_NOTIMPL;}

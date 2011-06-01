@@ -679,9 +679,8 @@ HRESULT CDX9AllocatorPresenter::CreateDevice( )
 		pp.BackBufferCount = 3; 
 		pp.SwapEffect = D3DSWAPEFFECT_DISCARD;
 		pp.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
-		pp.Flags = D3DPRESENTFLAG_VIDEO;
-		if (s.m_RenderSettings.iVMR9FullscreenGUISupport && !m_bHighColorResolution)
-			pp.Flags |= D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
+		pp.Flags = D3DPRESENTFLAG_VIDEO|D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
+
 		if (m_bHighColorResolution)
 			pp.BackBufferFormat = D3DFMT_A2R10G10B10;
 		else
@@ -734,7 +733,7 @@ HRESULT CDX9AllocatorPresenter::CreateDevice( )
 		pp.Windowed = TRUE;
 		pp.hDeviceWindow = m_hWnd;
 		pp.SwapEffect = D3DSWAPEFFECT_COPY;
-		pp.Flags = D3DPRESENTFLAG_VIDEO;
+		pp.Flags = D3DPRESENTFLAG_VIDEO|D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
 		pp.BackBufferCount = 1; 
 		pp.BackBufferWidth = m_ScreenSize.cx;
 		pp.BackBufferHeight = m_ScreenSize.cy;
@@ -2286,12 +2285,13 @@ void CDX9AllocatorPresenter::EstimateRefreshTimings()
 	}
 }
 
-STDMETHODIMP CDX9AllocatorPresenter::GetDIB(BYTE* lpDib, DWORD* size)
+STDMETHODIMP CDX9AllocatorPresenter::GetDIB(BYTE* lpDib, DWORD* size, BOOL with_sub)
 {
 	CheckPointer(size, E_POINTER);
 
 	HRESULT hr;
 
+  D3DLOCKED_RECT r;
 	D3DSURFACE_DESC desc;
 	memset(&desc, 0, sizeof(desc));
 	m_pVideoSurface[m_nCurSurface]->GetDesc(&desc);
@@ -2301,16 +2301,36 @@ STDMETHODIMP CDX9AllocatorPresenter::GetDIB(BYTE* lpDib, DWORD* size)
 	if(*size < required) return E_OUTOFMEMORY;
 	*size = required;
 
-	CComPtr<IDirect3DSurface9> pSurface = m_pVideoSurface[m_nCurSurface];
-	D3DLOCKED_RECT r;
-	if(FAILED(hr = pSurface->LockRect(&r, NULL, D3DLOCK_READONLY)))
-	{
-		pSurface = NULL;
-		if(FAILED(hr = m_pD3DDev->CreateOffscreenPlainSurface(desc.Width, desc.Height, desc.Format, D3DPOOL_SYSTEMMEM, &pSurface, NULL))
-		|| FAILED(hr = m_pD3DDev->GetRenderTargetData(m_pVideoSurface[m_nCurSurface], pSurface))
-		|| FAILED(hr = pSurface->LockRect(&r, NULL, D3DLOCK_READONLY)))
-			return hr;
-	}
+  CComPtr<IDirect3DSurface9> pSurface = NULL;
+  if (with_sub)
+  {
+    CAutoLock cRenderLock(&m_RenderLock);
+
+    m_pD3DDev->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &pSurface);
+    m_pD3DDev->SetRenderTarget(0, pSurface);
+
+    hr = m_pD3DDev->BeginScene();
+    hr = m_pD3DDev->Clear(0, NULL, D3DCLEAR_TARGET, 0, 1.0f, 0);
+    CRect rSrcVid(0,0,desc.Width,desc.Height);
+    hr = m_pD3DDev->StretchRect(m_pVideoSurface[m_nCurSurface], rSrcVid, 
+      pSurface,rSrcVid, D3DTEXF_LINEAR);
+    AlphaBltSubPic(rSrcVid.Size());
+    hr = m_pD3DDev->EndScene();
+    if(FAILED(hr = pSurface->LockRect(&r, NULL, D3DLOCK_READONLY)))
+      return hr;
+  }
+  else
+  {
+    pSurface = m_pVideoSurface[m_nCurSurface];
+    if(FAILED(hr = pSurface->LockRect(&r, NULL, D3DLOCK_READONLY)))
+    {
+      pSurface = NULL;
+      if(FAILED(hr = m_pD3DDev->CreateOffscreenPlainSurface(desc.Width, desc.Height, desc.Format, D3DPOOL_SYSTEMMEM, &pSurface, NULL))
+        || FAILED(hr = m_pD3DDev->GetRenderTargetData(m_pVideoSurface[m_nCurSurface], pSurface))
+        || FAILED(hr = pSurface->LockRect(&r, NULL, D3DLOCK_READONLY)))
+        return hr;
+    }
+  }
 
 	BITMAPINFOHEADER* bih = (BITMAPINFOHEADER*)lpDib;
 	memset(bih, 0, sizeof(BITMAPINFOHEADER));
@@ -3763,7 +3783,7 @@ STDMETHODIMP_(bool) CDXRAllocatorPresenter::Paint(bool fAll)
 	return false; // TODO
 }
 
-STDMETHODIMP CDXRAllocatorPresenter::GetDIB(BYTE* lpDib, DWORD* size)
+STDMETHODIMP CDXRAllocatorPresenter::GetDIB(BYTE* lpDib, DWORD* size, BOOL with_sub)
 {
 	HRESULT hr = E_NOTIMPL;
 	if(CComQIPtr<IBasicVideo> pBV = m_pDXR)
@@ -3956,7 +3976,7 @@ STDMETHODIMP_(bool) CmadVRAllocatorPresenter::Paint(bool fAll)
 	return false; // TODO
 }
 
-STDMETHODIMP CmadVRAllocatorPresenter::GetDIB(BYTE* lpDib, DWORD* size)
+STDMETHODIMP CmadVRAllocatorPresenter::GetDIB(BYTE* lpDib, DWORD* size, BOOL with_sub)
 {
 	HRESULT hr = E_NOTIMPL;
 	if(CComQIPtr<IBasicVideo> pBV = m_pDXR)

@@ -72,7 +72,7 @@ public:
 	// ISubPicAllocatorPresenter
 	STDMETHODIMP CreateRenderer(IUnknown** ppRenderer);
 	STDMETHODIMP_(bool) Paint(bool fAll);
-	STDMETHODIMP GetDIB(BYTE* lpDib, DWORD* size);
+	STDMETHODIMP GetDIB(BYTE* lpDib, DWORD* size, BOOL with_sub = 0);
 };
 
 class CVMR7AllocatorPresenter
@@ -601,7 +601,7 @@ STDMETHODIMP_(bool) CDX7AllocatorPresenter::Paint(bool fAll)
 	return(true);
 }
 
-STDMETHODIMP CDX7AllocatorPresenter::GetDIB(BYTE* lpDib, DWORD* size)
+STDMETHODIMP CDX7AllocatorPresenter::GetDIB(BYTE* lpDib, DWORD* size, BOOL with_sub)
 {
 	CheckPointer(size, E_POINTER);
 

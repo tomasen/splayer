@@ -1016,7 +1016,7 @@ void CMPlayerCApp::PreProcessCommandLine()
 			CFileStatus fs;
 			if(!str2.IsEmpty() && CFileGetStatus(str2, fs)) str = str2;
 		}
-    if (str.CompareNoCase(L"snapshot")) _skip_db = true;
+    if (str.CompareNoCase(L"/snapshot") == 0) _skip_db = true;
 
 		m_cmdln.AddTail(str);
 	}

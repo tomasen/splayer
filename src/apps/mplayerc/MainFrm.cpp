@@ -259,6 +259,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_COMMAND(ID_FILE_CLOSEMEDIA, OnFileCloseMedia)
   ON_UPDATE_COMMAND_UI(ID_FILE_CLOSEPLAYLIST, OnUpdateFileClose)
   ON_UPDATE_COMMAND_UI(ID_FILE_CLOSEMEDIA, OnUpdateFileClose)
+  ON_COMMAND(ID_USER_SHARE, OnUserShare)
+  ON_UPDATE_COMMAND_UI(ID_USER_SHARE, OnUpdateUserShare)
 
   ON_COMMAND(ID_VIEW_CAPTIONMENU, OnViewCaptionmenu)
   ON_UPDATE_COMMAND_UI(ID_VIEW_CAPTIONMENU, OnUpdateViewCaptionmenu)
@@ -561,7 +563,8 @@ m_l_been_playing_sec(0),
 m_lyricDownloadThread(NULL),
 m_secret_switch(NULL),
 m_movieShared(false),
-m_bmenuinitialize(FALSE)
+m_bmenuinitialize(FALSE),
+m_pUserAccountDlg(0)
 {
   m_wndFloatToolBar = new CPlayerFloatToolBar();
 }
@@ -739,6 +742,13 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
   MediaCenterController::GetInstance()->SetFrame(m_wndView.m_hWnd);
   // MediaCenterController::GetInstance()->SpiderStart();
+
+  // create the UserAccountDlg dialog
+  m_pUserAccountDlg = new UserAccountDlg;
+  m_pUserAccountDlg->CreateFrame(DS_SETFONT|DS_FIXEDSYS|WS_POPUP|WS_DISABLED,WS_EX_NOACTIVATE);
+  m_pUserAccountDlg->ClearFrame();
+  m_pUserAccountDlg->SetFramePos(CRect(0, 0, 0, 0));
+  m_pUserAccountDlg->HideFrame();
 
   WNDCLASSEX layeredClass;
   layeredClass.cbSize        = sizeof(WNDCLASSEX);
@@ -1370,6 +1380,18 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 
 void CMainFrame::OnMove(int x, int y)
 {
+  // change the size of the user account dialog
+  if (m_pUserAccountDlg->IsWindowVisible())
+  {
+    RECT rc;
+    GetWindowRect(&rc);
+    rc.top += (rc.bottom-rc.top-400)/2-10;
+    rc.left += (rc.right-rc.left-500)/2;
+    rc.right = 500;
+    rc.bottom = 400;
+    m_pUserAccountDlg->SetFramePos(rc);
+  }
+
   m_lTransparentToolbarPosStat = 0;
 
   HMONITOR hMonitor = MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST);
@@ -1705,6 +1727,11 @@ void CMainFrame::OnResetSetting(){
 void CMainFrame::OnDestroy()
 {
   // MediaCenterController::GetInstance()->SpiderStop();
+
+  // destroy the UserAccount dialog
+  m_pUserAccountDlg->DestroyWindow();
+  delete m_pUserAccountDlg;
+  m_pUserAccountDlg = 0;
 
   //AfxMessageBox(_T("2"));
   ShowTrayIcon(false);
@@ -4183,6 +4210,40 @@ void CMainFrame::OnInitMenuPopup(CMenu * pPopupMenu, UINT nIndex, BOOL bSysMenu)
       pSubMenu = m_skinorg;
       m_bmenuinitialize = TRUE;
     }
+    else if (pPopupMenu->GetMenuItemID(i) == ID_FILE_PROPERTIES)
+    {
+      // using user share menu instead of info menu
+      if (m_iMediaLoadState == MLS_CLOSED)
+      {
+        std::wstring sUserShareLogName;
+        sUserShareLogName = PlayerPreference::GetInstance()->GetStringVar(STRVAR_USER_ACCOUNT_NAME);
+
+        pPopupMenu->RemoveMenu(i, MF_BYPOSITION);  // remove the 'info' menu
+        if (sUserShareLogName == L"false")
+        {
+          // user don't login
+          pPopupMenu->InsertMenu(i, MF_BYPOSITION | MF_STRING
+                               , ID_USER_SHARE, ResStr(IDS_USER_SHARE_LOGGEDOUT));  // using user share instead of 'info' menu
+        } 
+        else
+        {
+          // user login
+          CString sFormat;
+          sFormat.Format(ResStr(IDS_USER_SHARE_LOGGEDIN), sUserShareLogName.c_str());
+          pPopupMenu->InsertMenu(i, MF_BYPOSITION | MF_STRING
+                               , ID_USER_SHARE, sFormat);  // using user share instead of 'info' menu
+        }
+      }
+    }
+    else if (pPopupMenu->GetMenuItemID(i) == ID_USER_SHARE)
+    {
+      if (m_iMediaLoadState != MLS_CLOSED)
+      {
+        // using info menu instead of user share menu
+        pPopupMenu->RemoveMenu(i, MF_BYPOSITION); // remove user share menu
+        pPopupMenu->InsertMenu(i, MF_BYPOSITION | MF_STRING, ID_FILE_PROPERTIES, ResStr(IDS_MENU_ITEM_FILE_PROPERTIES));
+      }
+    }
 
     if(pSubMenu)
     {
@@ -6628,6 +6689,52 @@ void CMainFrame::OnUpdateFileProperties(CCmdUI* pCmdUI)
 void CMainFrame::OnFileCloseMedia()
 {
   CloseMedia();
+}
+
+void CMainFrame::OnUserShare()
+{
+  m_pUserAccountDlg->ClearFrame();
+
+  std::wstring sUserShareLogName;
+  sUserShareLogName = PlayerPreference::GetInstance()->GetStringVar(STRVAR_USER_ACCOUNT_NAME);
+  if (sUserShareLogName == L"false")
+  {
+    // user don't login, show login web here
+    m_pUserAccountDlg->SetUrl(L"http://m.shooter.cn/users/splayerlogin");
+  } 
+  else
+  {
+    // user login, show account manage web here
+    std::wstring splayer_uuid;
+    SPlayerGUID::GenerateGUID(splayer_uuid);
+    m_pUserAccountDlg->SetUrl(L"http://m.shooter.cn/users/splayeracccenter/" + splayer_uuid);
+  }
+
+  RECT rc;
+  GetWindowRect(&rc);
+  rc.top += (rc.bottom-rc.top-400)/2-10;
+  rc.left += (rc.right-rc.left-500)/2;
+  rc.right = 500;
+  rc.bottom = 400;
+
+  m_pUserAccountDlg->ShowFrame();
+  m_pUserAccountDlg->SetFramePos(rc);
+}
+
+void CMainFrame::OnUpdateUserShare(CCmdUI* pCmdUI)
+{
+  std::wstring sUserShareLogName(L"");
+  sUserShareLogName = PlayerPreference::GetInstance()->GetStringVar(STRVAR_USER_ACCOUNT_NAME);
+  if (sUserShareLogName == L"false")
+  {
+    pCmdUI->SetText(ResStr(IDS_USER_SHARE_LOGGEDOUT));
+  } 
+  else
+  {
+    CString sFormat;
+    sFormat.Format(ResStr(IDS_USER_SHARE_LOGGEDIN), sUserShareLogName.c_str());
+    pCmdUI->SetText(sFormat);
+  }
 }
 
 void CMainFrame::OnFileClosePlaylist()
@@ -13174,6 +13281,8 @@ void CMainFrame::OnPaint()
 
 void CMainFrame::OnSize(UINT nType, int cx, int cy)
 {
+  // hide the user account dialog if drag the main frame
+  m_pUserAccountDlg->HideFrame();
 
   AppSettings& s = AfxGetAppSettings();
   //the SeekBarTip may not have been created.

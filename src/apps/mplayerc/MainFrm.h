@@ -31,6 +31,7 @@
 #include "GraphCore.h"
 
 #include "SkinFolderManager.h"
+#include "UserInterface/Dialogs/UserAccountDlg.h"
 
 
 class CMainFrame : public CFrameWnd, public CDropTarget , public CGraphCore
@@ -296,6 +297,7 @@ private:
   CSize m_original_size_of_current_video;
   CSize m_last_size_of_current_kind_of_video;
   int m_movieShared;
+  UserAccountDlg *m_pUserAccountDlg;
 public:
   void SVPSubDownloadByVPath(CString szVPath, CAtlList<CString>* szaStatMsgs = NULL);
   void SVP_UploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString szSubPath, int iDelayMS = 0, CAtlList<CString>* szaStatMsgs = NULL, CStringArray* szaPostTerms = NULL);
@@ -512,6 +514,8 @@ public:
   afx_msg void OnFileClosePlaylist();
   afx_msg void OnFileCloseMedia(); // no menu item
   afx_msg void OnUpdateFileClose(CCmdUI* pCmdUI);
+  afx_msg void OnUserShare();  // show the user's logging status
+  afx_msg void OnUpdateUserShare(CCmdUI* pCmdUI);
 
   afx_msg void OnViewCaptionmenu();
   afx_msg void OnUpdateViewCaptionmenu(CCmdUI* pCmdUI);

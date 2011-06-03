@@ -66,6 +66,7 @@
 #include "ButtonManage.h"
 #include "GUIConfigManage.h"
 #include <ResLoader.h>
+#include "Controller/UserAccountController.h"
 
 DECLARE_LAZYINSTANCE(HotkeyController);
 DECLARE_LAZYINSTANCE(PlayerPreference);
@@ -77,6 +78,7 @@ DECLARE_LAZYINSTANCE(UpdateController);
 DECLARE_LAZYINSTANCE(MediaCenterController);
 DECLARE_LAZYINSTANCE(UserShareController);
 DECLARE_LAZYINSTANCE(PingPongController);
+DECLARE_LAZYINSTANCE(UserAccountController);
 
 /////////
 static bool _skip_db = false;
@@ -1723,6 +1725,10 @@ void CMPlayerCApp::InitInstanceThreaded(INT64 CLS64){
 
   Sleep(1000);
   PingPongController::GetInstance()->PingPong();
+
+  // get the user account info from web
+  UserAccountController::GetInstance()->_Stop();
+  UserAccountController::GetInstance()->_Start();
 
   SVP_LogMsg5(L"Settings::InitInstanceThreaded 23");
 }

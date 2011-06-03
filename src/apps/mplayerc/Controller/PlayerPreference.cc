@@ -42,6 +42,8 @@ PlayerPreference::PlayerPreference(void):
 
   m_map_strvar[STRVAR_AD] = GetProfileString(L"Settings", L"Ad", L"");   // ad
   m_map_strvar[STRVAR_TIMEBMP_TYPE] = GetProfileString(L"Settings", L"TimeBmpType", L"Display_TimeLeft");
+
+  m_map_strvar[STRVAR_USER_ACCOUNT_NAME] = GetProfileString(L"Settings", L"UserAccountName", L"false");  // default value is 'false'
 }
 
 void PlayerPreference::Update()

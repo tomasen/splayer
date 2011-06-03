@@ -39,6 +39,29 @@ UserAccountDlg::~UserAccountDlg()
 {
 }
 
+void UserAccountDlg::OnSize(UINT nType, int cx, int cy)
+{
+  __super::OnSize(nType, cx, cy);
+
+  CRect rc;
+  WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
+  GetWindowPlacement(&wp);
+  GetWindowRect(&rc);
+  rc-=rc.TopLeft();
+
+  // destroy old region
+  if((HRGN)m_rgn)
+    m_rgn.DeleteObject();
+
+  // create rounded rect region based on new window size
+  if (wp.showCmd != SW_MAXIMIZE )
+    m_rgn.CreateRoundRectRgn(0, 0, rc.Width(), rc.Height(), 7, 7);
+  else
+    m_rgn.CreateRectRgn( 0,0, rc.Width(), rc.Height() );
+
+  SetWindowRgn(m_rgn,TRUE);
+}
+
 void UserAccountDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 {
   if (!bShow)

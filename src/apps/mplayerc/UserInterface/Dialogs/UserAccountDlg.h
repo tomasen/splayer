@@ -11,6 +11,7 @@ public:
   UserAccountDlg();
   virtual ~UserAccountDlg();
 
+  void OnSize(UINT nType, int cx, int cy);
   void SetUrl(std::wstring url);
   void HideFrame();
 

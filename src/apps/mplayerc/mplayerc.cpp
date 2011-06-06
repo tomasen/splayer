@@ -2354,6 +2354,7 @@ CMPlayerCApp::Settings::Settings()
   , bUsePowerDVD()
   , skinid(0)
   , skinname(L"")
+  , i3DStereo(0)
 {
 
 }

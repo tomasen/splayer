@@ -453,6 +453,7 @@ public:
 		bool fVMR9MixerYUV;
 		bool fFasterSeeking;
 		int				iLanguage;
+    int  i3DStereo;
 
 		int nVolume;
 		int nBalance;

@@ -250,6 +250,8 @@ namespace DSObjects
 		CAtlList<CExternalPixelShader> m_pPixelShadersScreenSpace;
 		CComPtr<IDirect3DPixelShader9> m_pResizerPixelShader[4]; // bl, bc1, bc2_1, bc2_2
 		CComPtr<IDirect3DTexture9> m_pScreenSizeTemporaryTexture[2];
+    CComPtr<IDirect3DPixelShader9> m_p3DStereoPixelShader;
+    int                            m_i3DStereo;
 
 		D3DFORMAT m_SurfaceType;
 		D3DFORMAT m_BackbufferType;
@@ -268,6 +270,7 @@ namespace DSObjects
 
 		float m_bicubicA;
 		HRESULT InitResizers(float bicubicA, bool bNeedScreenSizeTexture);
+    HRESULT Init3DStereo(int i3DStereo);
 
 		// Functions to trace timing performance
 		void SyncStats(LONGLONG syncTime);

@@ -1,0 +1,20 @@
+#define CROSS_3D (_CROSS_3D_)
+
+sampler s0 : register(s0);
+float4 p0 : register(c0);
+
+float4 main(float2 tex : TEXCOORD0) : COLOR
+{
+	float4 left = tex2D(s0, tex - float2(tex.x/2,0));
+	float4 right = tex2D(s0, tex + float2((1-tex.x)/2,0));
+	float4 org = tex2D(s0, tex);
+	
+	float left_c = dot(left, float4(0.299, 0.587, 0.114, 0));
+	float right_c = dot(right, float4(0.299, 0.587, 0.114, 0));
+#if CROSS_3D
+  float4 swap = left;
+  left = right;
+  right = swap;
+#endif
+  return float4(left.x,right.y,right.z,right.w);
+}

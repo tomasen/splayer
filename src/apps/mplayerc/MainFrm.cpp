@@ -438,6 +438,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 
   ON_COMMAND_RANGE(ID_BRIGHTINC, ID_BRIGHTDEC, OnColorControl )
 
+  ON_COMMAND_RANGE(ID_3DSTEREO_MENU_START, ID_3DSTEREO_MENU_END, On3DStereoControl )
+  ON_UPDATE_COMMAND_UI_RANGE(ID_3DSTEREO_MENU_START, ID_3DSTEREO_MENU_END, OnUpdate3DStereoControl )
 
   ON_COMMAND_RANGE(ID_THEME_AEROGLASS, ID_THEME_COLORMENU, OnThemeChangeMenu )
   ON_UPDATE_COMMAND_UI_RANGE(ID_THEME_AEROGLASS, ID_THEME_COLORMENU, OnUpdateThemeChangeMenu )
@@ -8120,7 +8122,24 @@ void CMainFrame::OnUpdatePlayFilters(CCmdUI* pCmdUI)
 {
   pCmdUI->Enable(!m_fCapturing);
 }
-
+void CMainFrame::On3DStereoControl(UINT nID)
+{
+  AppSettings& s = AfxGetAppSettings();
+  UINT p = nID - ID_3DSTEREO_MENU_START + 1;
+  if (s.i3DStereo == p)
+    s.i3DStereo = 0;
+  else
+  {
+    s.i3DStereo = p;
+    if(!m_pCAP) OnEnableDX9();
+  }
+  MoveVideoWindow();
+}
+void CMainFrame::OnUpdate3DStereoControl(CCmdUI *pCmdUI)
+{
+  if (pCmdUI->m_nID >= ID_3DSTEREO_MENU_START && pCmdUI->m_nID <= ID_3DSTEREO_MENU_END)
+    pCmdUI->SetCheck((pCmdUI->m_nID - ID_3DSTEREO_MENU_START + 1) == AfxGetAppSettings().i3DStereo);
+}
 void CMainFrame::OnPlayShaders(UINT nID)
 {
   if(nID == ID_SHADERS_START+2)
@@ -9901,6 +9920,14 @@ void CMainFrame::MoveVideoWindow(bool fShowStats)
     if(fs == State_Paused || fs == State_Running || fs == State_Stopped && (m_fShockwaveGraph || m_fQuicktimeGraph))
     {
       CSize arxy = GetVideoSize();
+
+      switch(AfxGetAppSettings().i3DStereo)
+      {
+        case ID_3DSTEREO_MENU_LEFTRIGHT-ID_3DSTEREO_MENU_START+1:
+        case ID_3DSTEREO_MENU_RIGHTLEFT-ID_3DSTEREO_MENU_START+1:
+          arxy.cx/=2;
+          break;
+      }
 
       int iDefaultVideoSize = AfxGetAppSettings().iDefaultVideoSize;
 

@@ -390,7 +390,8 @@ CDX9AllocatorPresenter::CDX9AllocatorPresenter(HWND hWnd, HRESULT& hr, bool bIsE
 	m_dFrameCycle(0.0),
 	m_dOptimumDisplayCycle(0.0),
 	m_dCycleDifference(1.0),
-	m_VSyncDetectThread(NULL)
+	m_VSyncDetectThread(NULL),
+  m_i3DStereo(0)
 {
 	if(FAILED(hr)) 
 	{
@@ -996,7 +997,33 @@ static bool ClipToSurface(IDirect3DSurface9* pSurface, CRect& s, CRect& d)
 	if(d.top < 0) {s.top += (0-d.top)*sh/dh; d.top = 0;}   
 	return(true);
 }
+HRESULT CDX9AllocatorPresenter::Init3DStereo(int i3DStereo)
+{
+  if (i3DStereo == m_i3DStereo && m_p3DStereoPixelShader)
+    return S_OK;
+  m_i3DStereo = i3DStereo;
+  if (i3DStereo <= 0)
+  {
+    if (m_p3DStereoPixelShader)
+      m_p3DStereoPixelShader = NULL;
+    return S_OK;
+  }
+  HRESULT hr = S_OK;
+  CStringA str;
+  if(!LoadResource(IDF_SHADER_3DSTEREO, str, _T("FILE"))) return E_FAIL;
 
+  if (m_i3DStereo == 2)
+    str.Replace("_CROSS_3D_", "1");
+  else
+    str.Replace("_CROSS_3D_", "0");
+  CString ErrorMessage;
+  CString DissAssembly;
+  hr = m_pPSC->CompileShader(str, "main", "ps_2_0", 0, &m_p3DStereoPixelShader, &DissAssembly, &ErrorMessage);
+  if(FAILED(hr)) 
+    Logging("%ws", ErrorMessage.GetString());
+
+  return hr;
+}
 HRESULT CDX9AllocatorPresenter::InitResizers(float bicubicA, bool bNeedScreenSizeTexture)
 {
 	HRESULT hr;
@@ -1555,8 +1582,11 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 		if(m_pVideoTexture[m_nCurSurface])
 		{
 			CComPtr<IDirect3DTexture9> pVideoTexture = m_pVideoTexture[m_nCurSurface];
+      // Set 3D Stereo
+      Init3DStereo(s.i3DStereo);
+
 			// If there is a pixel shader
-			if(m_pVideoTexture[m_nDXSurface] && m_pVideoTexture[m_nDXSurface+1] && !m_pPixelShaders.IsEmpty())
+			if(m_pVideoTexture[m_nDXSurface] && m_pVideoTexture[m_nDXSurface+1] && (!m_pPixelShaders.IsEmpty() || m_p3DStereoPixelShader))
 			{
 				static __int64 counter = 0;
 				static long start = clock();
@@ -1589,6 +1619,15 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 					src		= dst;
 					if(++dst >= m_nDXSurface+2) dst = m_nDXSurface;
 				}
+        if (m_p3DStereoPixelShader)
+        {
+          pVideoTexture = m_pVideoTexture[dst];
+          hr = m_pD3DDev->SetRenderTarget(0, m_pVideoSurface[dst]);
+          hr = m_pD3DDev->SetPixelShader(m_p3DStereoPixelShader);
+          TextureCopy(m_pVideoTexture[src]);
+          src		= dst;
+          if(++dst >= m_nDXSurface+2) dst = m_nDXSurface;
+        }
 				hr = m_pD3DDev->SetRenderTarget(0, pRT);
 				hr = m_pD3DDev->SetPixelShader(NULL);
 			}

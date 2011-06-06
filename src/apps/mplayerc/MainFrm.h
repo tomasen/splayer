@@ -686,6 +686,9 @@ public:
   afx_msg void OnLanguage(UINT nID);
   afx_msg void OnColorControl(UINT nID);
 
+  afx_msg void On3DStereoControl(UINT nID);
+  afx_msg void OnUpdate3DStereoControl(CCmdUI *pCmdUI);
+
   afx_msg void OnShowSUBVoteControlBar();
   afx_msg void OnShowEQControlBar();
   afx_msg void OnShowChannelNormalizerBar();

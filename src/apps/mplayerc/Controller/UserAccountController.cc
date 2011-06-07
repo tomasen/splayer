@@ -44,6 +44,10 @@ void UserAccountController::_Thread()
     return;
 
   std::vector<unsigned char> st_buffer = req->get_response_buffer();
+
+  if (st_buffer.empty())
+    return;
+
   if (st_buffer[st_buffer.size() - 1] != '\0')
     st_buffer.push_back('\0');
 

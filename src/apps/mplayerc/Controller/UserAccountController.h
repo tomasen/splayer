@@ -14,4 +14,8 @@ public:
   ~UserAccountController();
 
   void _Thread();
+  bool IsChecking();  // determine the thread is logging
+
+private:
+  bool m_bIsChecking;
 };

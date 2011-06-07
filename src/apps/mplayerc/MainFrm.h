@@ -31,7 +31,7 @@
 #include "GraphCore.h"
 
 #include "SkinFolderManager.h"
-#include "UserInterface/Dialogs/UserAccountDlg.h"
+#include "UserInterface/Dialogs/OAuthDlg.h"
 
 
 class CMainFrame : public CFrameWnd, public CDropTarget , public CGraphCore
@@ -297,7 +297,7 @@ private:
   CSize m_original_size_of_current_video;
   CSize m_last_size_of_current_kind_of_video;
   int m_movieShared;
-  UserAccountDlg *m_pUserAccountDlg;
+  OAuthDlg *m_pUserAccountDlg;
 public:
   void SVPSubDownloadByVPath(CString szVPath, CAtlList<CString>* szaStatMsgs = NULL);
   void SVP_UploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString szSubPath, int iDelayMS = 0, CAtlList<CString>* szaStatMsgs = NULL, CStringArray* szaPostTerms = NULL);

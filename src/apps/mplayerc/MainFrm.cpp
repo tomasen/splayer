@@ -96,6 +96,7 @@ static UINT WM_NOTIFYICON = RegisterWindowMessage(TEXT("MYWM_NOTIFYICON"));
 #include "UserInterface\Dialogs\Snapshot_Win.h"
 
 #include "FrameCfgFileManage.h"
+#include "Controller\UserAccountController.h"
 
 bool g_bNoDuration = false;
 bool g_bExternalSubtitleTime = false;
@@ -748,8 +749,8 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
   MediaCenterController::GetInstance()->SetFrame(m_wndView.m_hWnd);
   // MediaCenterController::GetInstance()->SpiderStart();
 
-  // create the UserAccountDlg dialog
-  m_pUserAccountDlg = new UserAccountDlg;
+  // create the UserAccount dialog
+  m_pUserAccountDlg = new OAuthDlg;
   m_pUserAccountDlg->CreateFrame(DS_SETFONT|DS_FIXEDSYS|WS_POPUP|WS_DISABLED,WS_EX_NOACTIVATE);
   m_pUserAccountDlg->ClearFrame();
   m_pUserAccountDlg->SetFramePos(CRect(0, 0, 0, 0));
@@ -4220,23 +4221,32 @@ void CMainFrame::OnInitMenuPopup(CMenu * pPopupMenu, UINT nIndex, BOOL bSysMenu)
       // using user share menu instead of info menu
       if (m_iMediaLoadState == MLS_CLOSED)
       {
+        pPopupMenu->RemoveMenu(i, MF_BYPOSITION);  // remove the 'info' menu
+
         std::wstring sUserShareLogName;
         sUserShareLogName = PlayerPreference::GetInstance()->GetStringVar(STRVAR_USER_ACCOUNT_NAME);
-
-        pPopupMenu->RemoveMenu(i, MF_BYPOSITION);  // remove the 'info' menu
-        if (sUserShareLogName == L"false")
+        bool bIsChecking = UserAccountController::GetInstance()->IsChecking();
+        if (bIsChecking)
         {
-          // user don't login
-          pPopupMenu->InsertMenu(i, MF_BYPOSITION | MF_STRING
-                               , ID_USER_SHARE, ResStr(IDS_USER_SHARE_LOGGEDOUT));  // using user share instead of 'info' menu
+          pPopupMenu->InsertMenu(i, MF_BYPOSITION | MF_STRING | MF_DISABLED | MF_GRAYED
+                               , ID_USER_SHARE, ResStr(IDS_USER_SHARE_CHECKING));  // using user share instead of 'info' menu
         } 
         else
         {
-          // user login
-          CString sFormat;
-          sFormat.Format(ResStr(IDS_USER_SHARE_LOGGEDIN), sUserShareLogName.c_str());
-          pPopupMenu->InsertMenu(i, MF_BYPOSITION | MF_STRING
-                               , ID_USER_SHARE, sFormat);  // using user share instead of 'info' menu
+          if (sUserShareLogName == L"false")
+          {
+            // user don't login
+            pPopupMenu->InsertMenu(i, MF_BYPOSITION | MF_STRING
+                                 , ID_USER_SHARE, ResStr(IDS_USER_SHARE_LOGGEDOUT));  // using user share instead of 'info' menu
+          } 
+          else
+          {
+            // user login
+            CString sFormat;
+            sFormat.Format(ResStr(IDS_USER_SHARE_LOGGEDIN), sUserShareLogName.c_str());
+            pPopupMenu->InsertMenu(i, MF_BYPOSITION | MF_STRING
+                                 , ID_USER_SHARE, sFormat);  // using user share instead of 'info' menu
+          }
         }
       }
     }
@@ -6702,16 +6712,16 @@ void CMainFrame::OnUserShare()
 
   std::wstring sUserShareLogName;
   sUserShareLogName = PlayerPreference::GetInstance()->GetStringVar(STRVAR_USER_ACCOUNT_NAME);
+  std::wstring splayer_uuid;
+  SPlayerGUID::GenerateGUID(splayer_uuid);
   if (sUserShareLogName == L"false")
   {
-    // user don't login, show login web here
-    m_pUserAccountDlg->SetUrl(L"http://m.shooter.cn/users/splayerlogin");
+    // user don't login, show login web here 
+    m_pUserAccountDlg->SetUrl(L"http://m.shooter.cn/users/splayerlogin/" + splayer_uuid);
   } 
   else
   {
     // user login, show account manage web here
-    std::wstring splayer_uuid;
-    SPlayerGUID::GenerateGUID(splayer_uuid);
     m_pUserAccountDlg->SetUrl(L"http://m.shooter.cn/users/splayeracccenter/" + splayer_uuid);
   }
 
@@ -6728,17 +6738,27 @@ void CMainFrame::OnUserShare()
 
 void CMainFrame::OnUpdateUserShare(CCmdUI* pCmdUI)
 {
-  std::wstring sUserShareLogName(L"");
-  sUserShareLogName = PlayerPreference::GetInstance()->GetStringVar(STRVAR_USER_ACCOUNT_NAME);
-  if (sUserShareLogName == L"false")
+  bool bIsChecking = UserAccountController::GetInstance()->IsChecking();
+  if (bIsChecking)
   {
-    pCmdUI->SetText(ResStr(IDS_USER_SHARE_LOGGEDOUT));
+    pCmdUI->Enable(FALSE);
+    pCmdUI->SetText(ResStr(IDS_USER_SHARE_CHECKING));
   } 
   else
   {
-    CString sFormat;
-    sFormat.Format(ResStr(IDS_USER_SHARE_LOGGEDIN), sUserShareLogName.c_str());
-    pCmdUI->SetText(sFormat);
+    pCmdUI->Enable(TRUE);
+    std::wstring sUserShareLogName(L"");
+    sUserShareLogName = PlayerPreference::GetInstance()->GetStringVar(STRVAR_USER_ACCOUNT_NAME);
+    if (sUserShareLogName == L"false")
+    {
+      pCmdUI->SetText(ResStr(IDS_USER_SHARE_LOGGEDOUT));
+    } 
+    else
+    {
+      CString sFormat;
+      sFormat.Format(ResStr(IDS_USER_SHARE_LOGGEDIN), sUserShareLogName.c_str());
+      pCmdUI->SetText(sFormat);
+    }
   }
 }
 
@@ -13324,6 +13344,7 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy)
 {
   // hide the user account dialog if drag the main frame
   m_pUserAccountDlg->HideFrame();
+  m_pUserAccountDlg->SetFramePos(CRect(0, 0, 0, 0));
 
   AppSettings& s = AfxGetAppSettings();
   //the SeekBarTip may not have been created.

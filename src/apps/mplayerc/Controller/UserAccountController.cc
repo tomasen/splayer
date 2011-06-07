@@ -6,6 +6,7 @@
 #include "SPlayerDefs.h"
 
 UserAccountController::UserAccountController()
+: m_bIsChecking(true)
 {
 
 }
@@ -17,6 +18,10 @@ UserAccountController::~UserAccountController()
 
 void UserAccountController::_Thread()
 {
+  // change status
+  m_bIsChecking = true;
+
+  // do main job
   refptr<pool> pool = pool::create_instance();
   refptr<task> task = task::create_instance();
   refptr<config> cfg = config::create_instance();
@@ -38,19 +43,39 @@ void UserAccountController::_Thread()
   while (pool->is_running_or_queued(task))
   {
     if (_Exit_state(100))
+    {
+      // change status
+      m_bIsChecking = false;
       return;
+    }
   }
   if (req->get_response_errcode() != 0)
+  {
+    // change status
+    m_bIsChecking = false;
     return;
+  }
 
   std::vector<unsigned char> st_buffer = req->get_response_buffer();
 
   if (st_buffer.empty())
+  {
+    // change status
+    m_bIsChecking = false;
     return;
+  }
 
   if (st_buffer[st_buffer.size() - 1] != '\0')
     st_buffer.push_back('\0');
 
   std::wstring sAccountName = Strings::Utf8StringToWString(std::string(st_buffer.begin(), st_buffer.end()));
   PlayerPreference::GetInstance()->SetStringVar(STRVAR_USER_ACCOUNT_NAME, sAccountName);
+
+  // change status
+  m_bIsChecking = false;
+}
+
+bool UserAccountController::IsChecking()
+{
+  return m_bIsChecking;
 }

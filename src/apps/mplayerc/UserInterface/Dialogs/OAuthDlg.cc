@@ -173,10 +173,10 @@ int OAuthDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 BOOL OAuthDlg::OnInitDialog()
 {
+  SetUserAgent("Mozilla/5.0 (Linux; U; Android 0.5; en-us) AppleWebKit/522+ (KHTML, like Gecko) Safari/419.3");
   DhtmlDlgBase::OnInitDialog();
 
   SupportJSCallBack();
-  SetUserAgent("Mozilla/5.0 (Linux; U; Android 0.5; en-us) AppleWebKit/522+ (KHTML, like Gecko) Safari/419.3");
   m_btnclose.ShowWindow(SW_MINIMIZE);
 
   return TRUE;

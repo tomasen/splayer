@@ -690,6 +690,7 @@ public:
   afx_msg void OnUpdate3DStereoControl(CCmdUI *pCmdUI);
   afx_msg void On3DStereoKeepAR();
   afx_msg void OnUpdate3DStereoKeepAR(CCmdUI *pCmdUI);
+  void Save3DStereoPerference();
   
   afx_msg void OnShowSUBVoteControlBar();
   afx_msg void OnShowEQControlBar();

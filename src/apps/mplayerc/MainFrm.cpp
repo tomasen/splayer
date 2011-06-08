@@ -4954,6 +4954,7 @@ void CMainFrame::OnFilePostOpenmedia()
         pSS->Enable(audid, AMSTREAMSELECTENABLE_ENABLE);
         SendStatusMessage(ResStr(IDS_OSD_MSG_RESTORE_TO_LAST_REMEMBER_AUDIO_TRACK),3000);
       }
+
     }
   }
 
@@ -4975,6 +4976,20 @@ void CMainFrame::OnFilePostOpenmedia()
     }
   }
 
+  if (AfxGetMyApp()->sqlite_local_record)
+  {
+    CString szSQL;
+    szSQL.Format(L"SELECT arg1 FROM histories_stereo WHERE fpath = \"%s\" ", FPath);
+    int arg = AfxGetMyApp()->sqlite_local_record->get_single_int_from_sql(szSQL.GetBuffer(), -1);
+    if (arg >= 0)
+      s.i3DStereo = arg;
+    szSQL.Format(L"SELECT arg2 FROM histories_stereo WHERE fpath = \"%s\" ", FPath);
+    arg = AfxGetMyApp()->sqlite_local_record->get_single_int_from_sql(szSQL.GetBuffer(), -1);
+    if (arg >= 0)
+      s.i3DStereoKeepAspectRatio = arg;
+    if (s.i3DStereo)
+      MoveVideoWindow();
+  }
   if(!m_pCAP && m_fAudioOnly){ //this is where we first detect this is audio only file
 
     m_wndView.m_strAudioInfo.Empty();
@@ -8148,6 +8163,7 @@ void CMainFrame::On3DStereoKeepAR()
 {
   AfxGetAppSettings().i3DStereoKeepAspectRatio = !AfxGetAppSettings().i3DStereoKeepAspectRatio;
   MoveVideoWindow();
+  Save3DStereoPerference();
 }
 void CMainFrame::OnUpdate3DStereoKeepAR(CCmdUI *pCmdUI)
 {
@@ -8165,7 +8181,21 @@ void CMainFrame::On3DStereoControl(UINT nID)
     s.i3DStereo = p;
     if(!m_pCAP) OnEnableDX9();
   }
+  Save3DStereoPerference();
   MoveVideoWindow();
+}
+void CMainFrame::Save3DStereoPerference()
+{
+  AppSettings& s = AfxGetAppSettings();
+  //save 3d perference
+  std::wstring szFileHash = HashController::GetInstance()->GetSPHash(m_fnCurPlayingFile);
+  CString szSQLInsert, szSQLUpdate;
+  szSQLInsert.Format(L"INSERT OR IGNORE INTO histories_stereo  ( fpath, arg1, arg2 ) VALUES ( \"%s\", '%d', '%d') ", szFileHash.c_str(), s.i3DStereo, s.i3DStereoKeepAspectRatio);
+  szSQLUpdate.Format(L"UPDATE histories_stereo SET arg1 = '%d' , arg2 = '%d'  WHERE fpath = \"%s\" ", s.i3DStereo, s.i3DStereoKeepAspectRatio, szFileHash.c_str());
+
+  if(AfxGetMyApp()->sqlite_local_record)
+    AfxGetMyApp()->sqlite_local_record->exec_insert_update_sql_u(szSQLInsert.GetBuffer(), szSQLUpdate.GetBuffer());
+
 }
 void CMainFrame::OnUpdate3DStereoControl(CCmdUI *pCmdUI)
 {

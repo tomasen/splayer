@@ -2340,10 +2340,13 @@ STDMETHODIMP CDX9AllocatorPresenter::GetDIB(BYTE* lpDib, DWORD* size, BOOL with_
 	if(*size < required) return E_OUTOFMEMORY;
 	*size = required;
 
+  CAutoLock cRenderLock(&m_RenderLock);
+
+  CComPtr<IDirect3DSurface9> pRTOld = NULL;
+  hr = m_pD3DDev->GetRenderTarget(0, &pRTOld);
   CComPtr<IDirect3DSurface9> pSurface = NULL;
   if (with_sub)
   {
-    CAutoLock cRenderLock(&m_RenderLock);
 
     m_pD3DDev->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &pSurface);
     m_pD3DDev->SetRenderTarget(0, pSurface);
@@ -2386,7 +2389,7 @@ STDMETHODIMP CDX9AllocatorPresenter::GetDIB(BYTE* lpDib, DWORD* size, BOOL with_
 		(BYTE*)r.pBits + r.Pitch*(desc.Height-1), -(int)r.Pitch, 32);
 
 	pSurface->UnlockRect();
-
+  m_pD3DDev->SetRenderTarget(0, pRTOld);
 	return S_OK;
 }
 

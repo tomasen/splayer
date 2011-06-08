@@ -2350,12 +2350,19 @@ STDMETHODIMP CDX9AllocatorPresenter::GetDIB(BYTE* lpDib, DWORD* size, BOOL with_
 
     m_pD3DDev->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &pSurface);
     m_pD3DDev->SetRenderTarget(0, pSurface);
+    D3DSURFACE_DESC desc_dst;
+    memset(&desc_dst, 0, sizeof(desc_dst));
+    pSurface->GetDesc(&desc_dst);
 
     hr = m_pD3DDev->BeginScene();
     hr = m_pD3DDev->Clear(0, NULL, D3DCLEAR_TARGET, 0, 1.0f, 0);
+    
     CRect rSrcVid(0,0,desc.Width,desc.Height);
+    desc.Width = min(desc.Width, desc_dst.Width);
+    desc.Height = min(desc.Height, desc_dst.Height);
+    CRect rDstVid(0,0,desc.Width,desc.Height);
     hr = m_pD3DDev->StretchRect(m_pVideoSurface[m_nCurSurface], rSrcVid, 
-      pSurface,rSrcVid, D3DTEXF_LINEAR);
+      pSurface,rDstVid, D3DTEXF_LINEAR);
     AlphaBltSubPic(rSrcVid.Size());
     hr = m_pD3DDev->EndScene();
     if(FAILED(hr = pSurface->LockRect(&r, NULL, D3DLOCK_READONLY)))

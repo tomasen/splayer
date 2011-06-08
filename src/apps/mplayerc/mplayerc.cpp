@@ -1575,6 +1575,9 @@ void CMPlayerCApp::InitInstanceThreaded(INT64 CLS64){
       sqlite_local_record->exec_sql(L"CREATE TABLE  IF NOT EXISTS histories_stream (\"fpath\" TEXT, \"subid\" INTEGER, \"subid2\" INTEGER, \"audioid\" INTEGER, \"videoid\" INTEGER )");
       sqlite_local_record->exec_sql(L"CREATE UNIQUE INDEX  IF NOT EXISTS \"hispks\" on histories_stream (fpath ASC)");
 
+      sqlite_local_record->exec_sql(L"CREATE TABLE  IF NOT EXISTS histories_stereo (\"fpath\" TEXT, \"arg1\" INTEGER, \"arg2\" INTEGER, \"arg3\" INTEGER, \"arg4\" INTEGER )");
+      sqlite_local_record->exec_sql(L"CREATE UNIQUE INDEX  IF NOT EXISTS \"hispkd\" on histories_stereo (fpath ASC)");
+
       sqlite_local_record->exec_sql(L"CREATE TABLE  IF NOT EXISTS histories (\"fpath\" TEXT, \"subid\" INTEGER, \"subid2\" INTEGER, \"audioid\" INTEGER, \"stoptime\" INTEGER, \"modtime\" INTEGER )");
       sqlite_local_record->exec_sql(L"CREATE UNIQUE INDEX  IF NOT EXISTS \"hispk\" on histories (fpath ASC)");
       sqlite_local_record->exec_sql(L"CREATE INDEX  IF NOT EXISTS \"modtime\" on histories (modtime ASC)");

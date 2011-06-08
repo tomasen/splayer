@@ -933,8 +933,13 @@ void CGraphCore::CloseMediaPrivate()
   m_pRefClock = NULL;
   m_pSyncClock = NULL;
 
+  AppSettings& s = AfxGetAppSettings();
+
+  s.i3DStereo = 0;
+  s.i3DStereoKeepAspectRatio = 0;
+
   try{
-    if (AfxGetAppSettings().szCurrentExtension != L".csf")
+    if (s.szCurrentExtension != L".csf")
     {
       if(pGB) pGB->RemoveFromROT();
       //UnloadExternalObjects();
@@ -962,9 +967,9 @@ void CGraphCore::CloseMediaPrivate()
   m_closingmsg = ResStr(IDS_CONTROLS_CLOSED);
 
 
-  AfxGetAppSettings().bIsIVM = false;
-  AfxGetAppSettings().szCurrentExtension.Empty();
-  AfxGetAppSettings().nCLSwitches &= CLSW_OPEN|CLSW_PLAY|CLSW_AFTERPLAYBACK_MASK|CLSW_NOFOCUS|CLSW_HTPCMODE;
+  s.bIsIVM = false;
+  s.szCurrentExtension.Empty();
+  s.nCLSwitches &= CLSW_OPEN|CLSW_PLAY|CLSW_AFTERPLAYBACK_MASK|CLSW_NOFOCUS|CLSW_HTPCMODE;
 
   m_iMediaLoadState = MLS_CLOSED;
 

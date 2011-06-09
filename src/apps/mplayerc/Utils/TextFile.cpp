@@ -23,6 +23,8 @@
 #include <atlbase.h>
 #include <afxinet.h>
 #include "TextFile.h"
+#include <sstream>
+#include "Strings.h"
 
 CTextFile::CTextFile(enc e)
 {
@@ -197,8 +199,8 @@ void CTextFile::WriteString(LPCWSTR lpsz/*CStringW str*/)
 	else if(m_encoding == ANSI)
 	{
 		str.Replace(L"\n", L"\r\n");
-		CStringA stra = CStringA(CString(str)); // TODO: codepage
-		Write((LPCSTR)stra, stra.GetLength());
+    std::string stra= Strings::WStringToString((LPCTSTR)str);
+		Write(stra.c_str(), stra.size());
 	}
 	else if(m_encoding == UTF8)
 	{
@@ -346,8 +348,8 @@ BOOL CTextFile::ReadString(CStringW& str)
 			if(c == '\n') break;
 			stra += c;
 		}
-		str = CStringW(CString(stra)); // TODO: codepage
-	}
+		str = Strings::StringToWString((LPCSTR)stra).c_str();
+ 	}
 	else if(m_encoding == UTF8)
 	{
 		BYTE b;

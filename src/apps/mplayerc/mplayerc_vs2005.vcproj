@@ -21,7 +21,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
-			InheritedPropertySheets=".\wtl_integration.vsprops;$(SolutionDir)src\apps\mplayerc\atlserver_integration.vsprops;..\..\common.vsprops;$(SolutionDir)src\release.vsprops;$(SolutionDir)Thirdparty\sinet.vsprops;$(SolutionDir)Thirdparty\sqlitepp.vsprops;$(SolutionDir)Thirdparty\sphash.vsprops;$(SolutionDir)Thirdparty\unrar_dll.vsprops;$(SolutionDir)Thirdparty\boost.vsprops;..\..\..\Thirdparty\tcl.vsprops"
+			InheritedPropertySheets=".\wtl_integration.vsprops;$(SolutionDir)src\apps\mplayerc\atlserver_integration.vsprops;$(SolutionDir)src\common.vsprops;$(SolutionDir)src\release.vsprops;$(SolutionDir)Thirdparty\sinet.vsprops;..\..\..\Thirdparty\sqlitepp.vsprops;$(SolutionDir)Thirdparty\sphash.vsprops;$(SolutionDir)Thirdparty\unrar_dll.vsprops;..\..\..\Thirdparty\boost.vsprops;..\..\..\Thirdparty\tcl.vsprops;..\..\..\Thirdparty\librhash.vsprops"
 			UseOfMFC="1"
 			UseOfATL="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -1248,11 +1248,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\ecio.icons\dvd.ico"
+				RelativePath=".\res\icon\DVD.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon\DVD.ico"
+				RelativePath=".\res\ecio.icons\dvd.ico"
 				>
 			</File>
 			<File
@@ -1676,11 +1676,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\ecio.icons\video.ico"
+				RelativePath=".\res\icon\video.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon\video.ico"
+				RelativePath=".\res\ecio.icons\video.ico"
 				>
 			</File>
 			<File

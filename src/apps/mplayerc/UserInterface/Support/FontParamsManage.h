@@ -15,6 +15,7 @@ public:
   void EnumFontToVec(std::vector<StyleParam*>& vec);
   void ReadProfile();
   void ParseStringToParams(std::vector<StyleParam*>& vec, const std::wstring& wstr);
+  void CheckFontIsExist(std::vector<StyleParam*>& vec);
   void WriteProfile();
   std::wstring TranslateParamsToString(const std::vector<StyleParam*>& vec);
   int  GetStyleCount();

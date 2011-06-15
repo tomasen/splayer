@@ -10,10 +10,12 @@
 
 OptionSubtitlePage::OptionSubtitlePage(void):
   m_mainstyle(0),
-  m_secstyle(0)
+  m_secstyle(0),
+  m_mainsubsample(L"主字幕样式   Main Subtitle Style"),
+  m_seconsubsmple(L"第二字幕样式 Secondary Subtitle Sytle")
 {
   // init style entry height
-  m_styleentry_height = 73;//::GetSystemMetrics(SM_CYICON)*7/5;
+  m_styleentry_height = 75;//::GetSystemMetrics(SM_CYICON)*7/5;
 }
 
 BOOL OptionSubtitlePage::OnInitDialog(HWND hwnd, LPARAM lParam)
@@ -173,7 +175,7 @@ void OptionSubtitlePage::DrawItem(LPDRAWITEMSTRUCT lpdis)
   if (spmain)
   {
     m_subtitle.SetFont(*m_fontparams.GetFontParam(lpdis->itemID));
-    m_subtitle.SetSampleText(L"MainSubtitleStyle");
+    m_subtitle.SetSampleText(m_mainsubsample);
     m_subtitle.Paint(dc, mainrc);
   }
  
@@ -184,7 +186,7 @@ void OptionSubtitlePage::DrawItem(LPDRAWITEMSTRUCT lpdis)
   if (spsecondary)
   {
     m_subtitle.SetFont(*m_fontparams.GetFontParam(lpdis->itemID, FALSE));
-    m_subtitle.SetSampleText(L"SecondarySubtitleSytle");
+    m_subtitle.SetSampleText(m_seconsubsmple);
     m_subtitle.Paint(dc, seconrc);
   }
 
@@ -387,14 +389,14 @@ void OptionSubtitlePage::OnListDoubleClick(UINT uNotifyCode, int nID, CWindow wn
   if (PtInRect(&mainrc, pt))
   {
     param = m_fontparams.GetFontParam(index);
-    wstr = L"MainSubtitleStyle";
+    wstr = m_mainsubsample;
     mainorsecon = TRUE;
   }
   
   if (PtInRect(&seconrc, pt))
   {
     param = m_fontparams.GetFontParam(index, FALSE);
-    wstr = L"SecondarySubtitleSytle";
+    wstr = m_seconsubsmple;
     mainorsecon = FALSE;
   }
   

@@ -171,9 +171,48 @@ void FontParamsManage::ReadProfile()
   std::wstring secondstr = PlayerPreference::GetInstance()->GetStringVar(STRVAR_SECONDARYSUBTITLEFONT);
   
   if (!mainstr.empty())
+  {
     ParseStringToParams(m_mainsp, mainstr);
+    CheckFontIsExist(m_mainsp);
+  }
   if (!secondstr.empty())
+  {
+    CheckFontIsExist(m_mainsp);
     ParseStringToParams(m_secondarysp, secondstr);
+  }
+}
+
+void FontParamsManage::CheckFontIsExist(std::vector<StyleParam*>& vec)
+{
+  HDC dc = GetDC(NULL);
+
+  std::vector<StyleParam*>::iterator it = vec.begin();
+  while (it !=vec.end())
+  {
+    int font_count = 0;
+    ENUMPARAMS ep = {&font_count, L""};
+    LOGFONT lf;
+    memset(&lf, 0, sizeof(lf));
+    lf.lfCharSet = DEFAULT_CHARSET;
+    wcscpy_s(lf.lfFaceName, 32, ((*it)->fontname).c_str());
+    lf.lfPitchAndFamily = 0;
+    ::EnumFontFamiliesEx(dc, &lf, (FONTENUMPROC)EnumFontProc, (LPARAM)&ep, 0);
+    if (ep.fontcount == 0)
+    {
+      if (it == vec.begin())
+      {
+        vec.erase(it);
+        it = vec.begin();
+      }
+      else
+      {
+        std::vector<StyleParam*>::iterator tempit = it--;
+        vec.erase(tempit);
+      }
+    }
+    
+    ++it;
+  }
 }
 
 void FontParamsManage::ParseStringToParams(std::vector<StyleParam*>& vec, const std::wstring& wstr)

@@ -10,10 +10,13 @@
 
 OptionSubtitlePage::OptionSubtitlePage(void):
   m_mainstyle(0),
-  m_secstyle(0),
-  m_mainsubsample(L"主字幕样式   Main Subtitle Style"),
-  m_seconsubsmple(L"第二字幕样式 Secondary Subtitle Sytle")
+  m_secstyle(0)
 {
+  // init font sample string
+  WTL::CString text;
+  text.LoadString(IDS_SUBTITLESTYLES);
+  Strings::Split(text, L"|", m_samplevec);
+  
   // init style entry height
   m_styleentry_height = 75;//::GetSystemMetrics(SM_CYICON)*7/5;
 }
@@ -175,7 +178,7 @@ void OptionSubtitlePage::DrawItem(LPDRAWITEMSTRUCT lpdis)
   if (spmain)
   {
     m_subtitle.SetFont(*m_fontparams.GetFontParam(lpdis->itemID));
-    m_subtitle.SetSampleText(m_mainsubsample);
+    m_subtitle.SetSampleText(m_samplevec[0]);
     m_subtitle.Paint(dc, mainrc);
   }
  
@@ -186,7 +189,7 @@ void OptionSubtitlePage::DrawItem(LPDRAWITEMSTRUCT lpdis)
   if (spsecondary)
   {
     m_subtitle.SetFont(*m_fontparams.GetFontParam(lpdis->itemID, FALSE));
-    m_subtitle.SetSampleText(m_seconsubsmple);
+    m_subtitle.SetSampleText(m_samplevec[1]);
     m_subtitle.Paint(dc, seconrc);
   }
 
@@ -384,34 +387,39 @@ void OptionSubtitlePage::OnListDoubleClick(UINT uNotifyCode, int nID, CWindow wn
   m_subtitlestyle.GetClientRect(&rc);
 
   BOOL mainorsecon;
-  StyleParam* param = NULL;
-  std::wstring wstr;
+  int  vecindex = MAXINT;
+  
+  WTL::CString text;
+  std::vector<std::wstring> vec;
+  text.LoadString(IDS_CUSTOMIZEFONT_TITLE);
+  Strings::Split(text, L"|", vec);
+
   if (PtInRect(&mainrc, pt))
   {
-    param = m_fontparams.GetFontParam(index);
-    wstr = m_mainsubsample;
     mainorsecon = TRUE;
+    vecindex = 0;
   }
   
   if (PtInRect(&seconrc, pt))
   {
-    param = m_fontparams.GetFontParam(index, FALSE);
-    wstr = m_seconsubsmple;
     mainorsecon = FALSE;
+    vecindex = 1;
   }
   
-  if (param)
+  if (vecindex != MAXINT)
   {
     CustomizeFontDlg fdlg;
-    fdlg.SetFontParam(param, wstr);
+    fdlg.SetTitleText(vec[vecindex]);
+    fdlg.SetSampleText(m_samplevec[0], m_samplevec[1]);
+    fdlg.SetFontParam(m_fontparams.GetFontParam(index), m_fontparams.GetFontParam(index, FALSE), mainorsecon);
     if (fdlg.DoModal() == IDC_FONTOK_BUTTON)
     {
-      StyleParam* sp = fdlg.GetFontParam();
-      if (sp)
-      {
-        m_fontparams.ModifyFontParam(index, sp, mainorsecon);
+//       StyleParam* sp = fdlg.GetFontParam();
+//       if (sp)
+//       {
+        //m_fontparams.ModifyFontParam(index, sp, mainorsecon);
         m_fontparams.WriteProfile();
-      }
+      //}
       
     }
   } 

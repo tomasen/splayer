@@ -43,9 +43,15 @@ DrawSubtitle::DrawSubtitle():
   // paint logic 1. shadow
   if (m_styleparam.shadowsize > 0)
   {
-    rc_textraw.OffsetRect(m_styleparam.shadowsize*3, m_styleparam.shadowsize*3);
+    rc_textraw.OffsetRect(m_styleparam.shadowsize * 2, m_styleparam.shadowsize * 2);
     // blend the shadow lighter a bit
-    int color = (0x00FFFFFF + m_styleparam.shadowcolor)/2;
+    //int color = (0x00FFFFFF + m_styleparam.shadowcolor)/2;
+    int r = GetRValue(m_styleparam.shadowcolor);
+    int g = GetGValue(m_styleparam.shadowcolor);
+    int b = GetBValue(m_styleparam.shadowcolor);
+
+    COLORREF color = RGB((r + 255) / 2,  (g + 255) / 2, (b + 255) / 2);
+
     //int color = m_styleparam.shadowcolor;
     SetTextColor(dc, color);
     // we choose to apply 1 pixel stroke for the shadow to make it look nicer
@@ -62,7 +68,7 @@ DrawSubtitle::DrawSubtitle():
       DrawText(dc, m_sptext.c_str(), -1, &rc_textraw, DT_EDITCONTROL);
     }
     rc_textraw.OffsetRect(-1, 0);
-    rc_textraw.OffsetRect(-m_styleparam.shadowsize*3, -m_styleparam.shadowsize*3);
+    rc_textraw.OffsetRect(-m_styleparam.shadowsize * 2, -m_styleparam.shadowsize * 2);
   }
 
   // paint logic 2. stroke
@@ -94,7 +100,7 @@ DrawSubtitle::DrawSubtitle():
     // [ ] [S] [+] [S] [ ]    =>    [D] [9] [+] [8] [C]
     // [S] [S] [S] [S] [S]          [4] [3] [2] [1] [0]
     // [ ] [S] [ ] [S] [ ]          [ ] [6] [B] [5] [ ]
-    else
+    else if (m_styleparam.strokesize == 2)
     {
       int seq_x[] = {-2, 2, 1, -1, -1, -1, -1, 3, -2, 3/*0*/, -1, -1, -1, -1, 3, -2/*6*/,  1, 0,  2, -4};
       int seq_y[] = {-2, 0, 1,  0,  0,  0,  0, 1,  0, 1/*0*/,  0,  0,  0,  0, 1,  0/*6*/, -4, 4, -2,  0};
@@ -104,6 +110,34 @@ DrawSubtitle::DrawSubtitle():
         DrawText(dc, m_sptext.c_str(), -1, &rc_textraw, DT_EDITCONTROL);
       }
       rc_textraw.OffsetRect(2, 0);
+    }
+    // for 3 pixels stroke simulation strategy is:
+    // [ ][S][S][ ][S][S][ ]       [  ][ 1][ 2][41][ 3][ 4][  ]
+    // [S][S][S][S][S][S][S]       [11][10][ 9][ 8][ 7][ 6][ 5]
+    // [S][S][S][S][S][S][S]       [18][17][16][15][14][13][12]
+    // [ ][S][S][+][S][S][ ]   =>  [44][22][21][ +][20][19][43]
+    // [S][S][S][S][S][S][S]       [29][28][27][26][25][24][23]
+    // [S][S][S][S][S][S][S]       [36][35][34][33][32][31][30]
+    // [ ][S][S][ ][S][S][ ]       [  ][40][39][42][38][37][  ]
+    else
+    {
+      int seq_x[] = {-2, 1, 2, 1, 1, -1, -1, -1, -1, -1/*10*/, -1, 6, -1, -1, -1, -1, -1, -1, 5, -1/*20*/, -2, -1, 5,
+                     -1, -1, -1, -1, -1, -1, 6/*30*/, -1, -1, -1, -1, -1, -1, 5, -1, -2, -1,  2, 0,  3, -6};
+      int seq_y[] = {-3, 0, 0, 0, 1,  0,  0,  0,  0,  0/*10*/,  0, 1,  0,  0,  0,  0,  0,  0, 1,  0/*20*/,  0,  0, 1,
+                      0,  0,  0,  0,  0,  0, 1/*30*/,  0,  0,  0,  0,  0,  0, 1,  0,  0,  0, -6, 6, -3,  0};
+
+      if (sizeof(seq_x) / sizeof(seq_x[0]) != 44)
+        return;
+      if (sizeof(seq_y) / sizeof(seq_y[0]) != 44)
+        return;
+
+      for (int i = 0; i < sizeof(seq_x)/sizeof(seq_x[0]); i++)
+      {
+        rc_textraw.OffsetRect(seq_x[i], seq_y[i]);
+        DrawText(dc, m_sptext.c_str(), -1, &rc_textraw, DT_EDITCONTROL);
+      }
+      rc_textraw.OffsetRect(3, 0);
+
     }
   }
 

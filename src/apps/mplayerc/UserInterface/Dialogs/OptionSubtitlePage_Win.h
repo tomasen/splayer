@@ -74,8 +74,7 @@ private:
   FontParamsManage m_fontparams;
   DrawSubtitle m_subtitle;
   std::vector<WTL::CRect> m_rcvec;
-  std::wstring m_mainsubsample;
-  std::wstring m_seconsubsmple;
+  std::vector<std::wstring> m_samplevec;
 
   void ApplySubtitleStyle();
   int ApplySubtitleSavePath();

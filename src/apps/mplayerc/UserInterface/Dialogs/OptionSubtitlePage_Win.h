@@ -53,7 +53,7 @@ public:
   void RefreshStyles();
 
   // before draw list items.
-  void PreserveItemDivideRect(WTL::CRect rc, int index, BOOL bdivide);
+  int PreserveItemDivideRect(WTL::CRect rc, int index, BOOL bdivide);
   WTL::CRect GetItemDivideRect(int index);
   void PaintListItemBackground(HDC dc, int width, int height);
 

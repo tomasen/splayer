@@ -18,7 +18,9 @@ OptionSubtitlePage::OptionSubtitlePage(void):
   Strings::Split(text, L"|", m_samplevec);
   
   // init style entry height
-  m_styleentry_height = 75;//::GetSystemMetrics(SM_CYICON)*7/5;
+  m_styleentry_height = 80;//::GetSystemMetrics(SM_CYICON)*7/5;
+
+  m_rcvec.clear();   
 }
 
 BOOL OptionSubtitlePage::OnInitDialog(HWND hwnd, LPARAM lParam)
@@ -153,10 +155,12 @@ void OptionSubtitlePage::DrawItem(LPDRAWITEMSTRUCT lpdis)
   StyleParam* spsecondary = NULL;
   spmain = m_fontparams.GetFontParam(lpdis->itemID, TRUE);
   spsecondary = m_fontparams.GetFontParam(lpdis->itemID, FALSE);
+
+  int top = 0;
   if (spsecondary)
-    PreserveItemDivideRect(lpdis->rcItem, lpdis->itemID, TRUE);
+    top = PreserveItemDivideRect(lpdis->rcItem, lpdis->itemID, TRUE);
   else
-    PreserveItemDivideRect(lpdis->rcItem, lpdis->itemID, FALSE);
+    top = PreserveItemDivideRect(lpdis->rcItem, lpdis->itemID, FALSE);
 
   //WTL::CMemoryDC dc(lpdis->hDC, lpdis->rcItem);
   WTL::CDC dc;
@@ -172,9 +176,11 @@ void OptionSubtitlePage::DrawItem(LPDRAWITEMSTRUCT lpdis)
   if (lpdis->itemState & ODS_SELECTED)
     PaintListItemBackground(dc, rc.Width(), rc.Height());
  
-  WTL::CRect mainrc = GetItemDivideRect(lpdis->itemID);
-  mainrc.bottom = 2 * (mainrc.bottom - mainrc.top);
-  mainrc.top = 0;
+  WTL::CRect mainrc = GetItemDivideRect( 2 * lpdis->itemID);
+  int height = mainrc.Height();
+  mainrc.top = 2 * top;
+  mainrc.bottom = mainrc.top + 2 * height;
+  
   if (spmain)
   {
     m_subtitle.SetFont(*m_fontparams.GetFontParam(lpdis->itemID));
@@ -182,10 +188,10 @@ void OptionSubtitlePage::DrawItem(LPDRAWITEMSTRUCT lpdis)
     m_subtitle.Paint(dc, mainrc);
   }
  
-  WTL::CRect seconrc = GetItemDivideRect(lpdis->itemID + 1);
-  int height = seconrc.Height();
+  WTL::CRect seconrc = GetItemDivideRect(2 * lpdis->itemID + 1);
+  int height2 = seconrc.Height();
   seconrc.top = mainrc.bottom;
-  seconrc.bottom = seconrc.top + 2 * height;
+  seconrc.bottom = seconrc.top + 2 * height2;
   if (spsecondary)
   {
     m_subtitle.SetFont(*m_fontparams.GetFontParam(lpdis->itemID, FALSE));
@@ -311,31 +317,40 @@ void OptionSubtitlePage::RefreshStyles()
   // insert bogus entries
   m_subtitlestyle.SetCount(m_fontparams.GetStyleCount());
   m_subtitlestyle.Invalidate();
+  m_subtitlestyle.UpdateWindow();
 }
 
-void OptionSubtitlePage::PreserveItemDivideRect(WTL::CRect rc, int index, BOOL bdivide)
+int OptionSubtitlePage::PreserveItemDivideRect(WTL::CRect rc, int index, BOOL bdivide)
 {
   WTL::CRect mainrc = rc;
   WTL::CRect secondaryrc = rc;
 
-  if (bdivide)
-  {
-    mainrc.bottom = rc.top + rc.Height() / 2;
-    secondaryrc.top = rc.top + rc.Height() / 2;
-  }
-  else
-    secondaryrc = WTL::CRect(0, 0, 0, 0);
+  StyleParam* mainstyle = m_fontparams.GetFontParam(index);
+  StyleParam* seconstyle = m_fontparams.GetFontParam(index, FALSE);
 
+  int mainheight = mainstyle->fontsize + mainstyle->strokesize + mainstyle->shadowsize;
+  int seconheight = seconstyle->fontsize + seconstyle->strokesize + seconstyle->shadowsize;
+
+  if (!bdivide)
+    seconheight = 0;
+
+  mainrc.top = rc.top + (rc.Height() - mainheight - seconheight) / 2;
+  mainrc.bottom = mainrc.top + mainheight + 3;
+  secondaryrc.top = mainrc.bottom;
+  secondaryrc.bottom = secondaryrc.top + seconheight;
+  
   if (m_rcvec.size() / 2 > index)
   {
-    m_rcvec[index] = mainrc;
-    m_rcvec[index + 1] = secondaryrc;
+    m_rcvec[2 * index] = mainrc;
+    m_rcvec[2 * index + 1] = secondaryrc;
   }
   else
   {
     m_rcvec.push_back(mainrc);
     m_rcvec.push_back(secondaryrc);
   }
+
+  return (rc.Height() - mainheight - seconheight) / 2;
 }
 
 WTL::CRect OptionSubtitlePage::GetItemDivideRect(int index)
@@ -381,8 +396,8 @@ void OptionSubtitlePage::OnListDoubleClick(UINT uNotifyCode, int nID, CWindow wn
   ::ScreenToClient(m_subtitlestyle.m_hWnd, &pt);
   
   int index = m_subtitlestyle.GetCurSel();
-  WTL::CRect mainrc = GetItemDivideRect(index);
-  WTL::CRect seconrc = GetItemDivideRect(index + 1);
+  WTL::CRect mainrc = GetItemDivideRect(2 * index);
+  WTL::CRect seconrc = GetItemDivideRect(2 * index + 1);
   WTL::CRect rc;
   m_subtitlestyle.GetClientRect(&rc);
 
@@ -413,14 +428,6 @@ void OptionSubtitlePage::OnListDoubleClick(UINT uNotifyCode, int nID, CWindow wn
     fdlg.SetSampleText(m_samplevec[0], m_samplevec[1]);
     fdlg.SetFontParam(m_fontparams.GetFontParam(index), m_fontparams.GetFontParam(index, FALSE), mainorsecon);
     if (fdlg.DoModal() == IDC_FONTOK_BUTTON)
-    {
-//       StyleParam* sp = fdlg.GetFontParam();
-//       if (sp)
-//       {
-        //m_fontparams.ModifyFontParam(index, sp, mainorsecon);
-        m_fontparams.WriteProfile();
-      //}
-      
-    }
+      m_fontparams.WriteProfile();
   } 
 }

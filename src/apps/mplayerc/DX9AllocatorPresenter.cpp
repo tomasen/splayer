@@ -1012,10 +1012,33 @@ HRESULT CDX9AllocatorPresenter::Init3DStereo(int i3DStereo)
   CStringA str;
   if(!LoadResource(IDF_SHADER_3DSTEREO, str, _T("FILE"))) return E_FAIL;
 
-  if (m_i3DStereo == 2)
-    str.Replace("_CROSS_3D_", "1");
-  else
-    str.Replace("_CROSS_3D_", "0");
+  switch (m_i3DStereo)
+  {
+  case ID_3DSTEREO_MENU_LEFTRIGHT - ID_3DSTEREO_MENU_START + 1:
+    str.Replace("_LEFT_2_RIGHT_", "1");
+    str.Replace("_RIGHT_2_LEFT_", "0");
+    str.Replace("_TOP_2_BOTTOM_", "0");
+    str.Replace("_BOTTOM_2_TOP_", "0");
+   break;
+  case ID_3DSTEREO_MENU_RIGHTLEFT - ID_3DSTEREO_MENU_START + 1:
+    str.Replace("_LEFT_2_RIGHT_", "0");
+    str.Replace("_RIGHT_2_LEFT_", "1");
+    str.Replace("_TOP_2_BOTTOM_", "0");
+    str.Replace("_BOTTOM_2_TOP_", "0");
+    break;
+  case ID_3DSTEREO_MENU_TOPBOTTOM - ID_3DSTEREO_MENU_START + 1:
+    str.Replace("_LEFT_2_RIGHT_", "0");
+    str.Replace("_RIGHT_2_LEFT_", "0");
+    str.Replace("_TOP_2_BOTTOM_", "1");
+    str.Replace("_BOTTOM_2_TOP_", "0");
+    break;
+  case ID_3DSTEREO_MENU_BOTTOMTOP - ID_3DSTEREO_MENU_START + 1:
+    str.Replace("_LEFT_2_RIGHT_", "0");
+    str.Replace("_RIGHT_2_LEFT_", "0");
+    str.Replace("_TOP_2_BOTTOM_", "0");
+    str.Replace("_BOTTOM_2_TOP_", "1");
+    break;
+  }
   CString ErrorMessage;
   CString DissAssembly;
   hr = m_pPSC->CompileShader(str, "main", "ps_2_0", 0, &m_p3DStereoPixelShader, &DissAssembly, &ErrorMessage);

@@ -9990,6 +9990,10 @@ void CMainFrame::MoveVideoWindow(bool fShowStats)
           case ID_3DSTEREO_MENU_RIGHTLEFT-ID_3DSTEREO_MENU_START+1:
             arxy.cx/=2;
             break;
+          case ID_3DSTEREO_MENU_TOPBOTTOM-ID_3DSTEREO_MENU_START+1:
+          case ID_3DSTEREO_MENU_BOTTOMTOP-ID_3DSTEREO_MENU_START+1:
+            arxy.cy/=2;
+            break;
         }
 
       int iDefaultVideoSize = s.iDefaultVideoSize;

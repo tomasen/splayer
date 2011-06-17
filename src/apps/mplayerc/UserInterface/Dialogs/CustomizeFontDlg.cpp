@@ -50,6 +50,7 @@ BOOL CustomizeFontDlg::OnInitDialog(HWND hwnd, LPARAM lParam)
 
 BOOL CustomizeFontDlg::OnClose()
 {
+  *m_fontpamcurr = m_fontpamorg;
   EndDialog(NULL);
   return 0;
 }

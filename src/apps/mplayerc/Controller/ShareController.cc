@@ -148,13 +148,20 @@ BOOL UserShareController::CloseShooterMedia()
   return TRUE;
 }
 
-void UserShareController::ToggleCommentPlane()
+BOOL UserShareController::ToggleCommentPlane()
 {
+  BOOL ret = TRUE;
   if (m_commentplane.m_hWnd && m_commentplane.IsWindowEnabled())
+  {
     HideCommentPlane();
+    ret = FALSE;
+  }
   else
     ShowCommentPlane();
+
+  return ret;
 }
+
 BOOL UserShareController::ShowCommentPlane()
 {
   if (!m_commentplane.m_hWnd)

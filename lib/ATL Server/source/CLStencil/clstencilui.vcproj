@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="clstencilui"
+	ProjectGUID="{9A27D633-9C74-4C4E-93FB-F9DFCCEFEDBE}"
+	RootNamespace="clstencilui"
+	Keyword="MakeFileProj"
+	>
+	<Platforms>
+		<Platform
+			Name="Win32"
+		/>
+		<Platform
+			Name="Itanium"
+		/>
+		<Platform
+			Name="x64"
+		/>
+	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
+	<Configurations>
+		<Configuration
+			Name="Debug|Win32"
+			OutputDirectory="Debug"
+			IntermediateDirectory="Debug"
+			ConfigurationType="0"
+			BuildLogFile="$(IntDir)\BuildLogUI.htm"
+			>
+			<Tool
+				Name="VCNMakeTool"
+				BuildCommandLine="nmake /f clstencilui.mak"
+				ReBuildCommandLine="nmake /f clstencilui.mak"
+				CleanCommandLine="nmake /f clstencilui.mak clean"
+				Output="makprj.exe"
+				PreprocessorDefinitions="WIN32;_DEBUG"
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
+		</Configuration>
+		<Configuration
+			Name="Debug|Itanium"
+			OutputDirectory="ia64\$(ConfigurationName)"
+			IntermediateDirectory="ia64\$(ConfigurationName)"
+			ConfigurationType="0"
+			BuildLogFile="$(IntDir)\BuildLogUI.htm"
+			>
+			<Tool
+				Name="VCNMakeTool"
+				BuildCommandLine="nmake /f clstencilui.mak TARGET=ia64"
+				ReBuildCommandLine="nmake /f clstencilui.mak TARGET=ia64"
+				CleanCommandLine="nmake /f clstencilui.mak clean"
+				Output="makprj.exe"
+				PreprocessorDefinitions="WIN32;_DEBUG;WIN64"
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
+		</Configuration>
+		<Configuration
+			Name="Debug|x64"
+			OutputDirectory="x64\$(ConfigurationName)"
+			IntermediateDirectory="x64\$(ConfigurationName)"
+			ConfigurationType="0"
+			BuildLogFile="$(IntDir)\BuildLogUI.htm"
+			>
+			<Tool
+				Name="VCNMakeTool"
+				BuildCommandLine="nmake /f clstencilui.mak TARGET=x64"
+				ReBuildCommandLine="nmake /f clstencilui.mak TARGET=x64"
+				CleanCommandLine="nmake /f clstencilui.mak clean"
+				Output="makprj.exe"
+				PreprocessorDefinitions="WIN32;_DEBUG;WIN64"
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory="Release"
+			IntermediateDirectory="Release"
+			ConfigurationType="0"
+			BuildLogFile="$(IntDir)\BuildLogUI.htm"
+			>
+			<Tool
+				Name="VCNMakeTool"
+				BuildCommandLine="nmake /f clstencilui.mak DEBUG=0"
+				ReBuildCommandLine="nmake /f clstencilui.mak DEBUG=0"
+				CleanCommandLine="nmake /f clstencilui.mak DEBUG=0 clean"
+				Output="makprj.exe"
+				PreprocessorDefinitions="WIN32;NDEBUG"
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|Itanium"
+			OutputDirectory="ia64\$(ConfigurationName)"
+			IntermediateDirectory="ia64\$(ConfigurationName)"
+			ConfigurationType="0"
+			BuildLogFile="$(IntDir)\BuildLogUI.htm"
+			>
+			<Tool
+				Name="VCNMakeTool"
+				BuildCommandLine="nmake /f clstencilui.mak DEBUG=0 TARGET=ia64"
+				ReBuildCommandLine="nmake /f clstencilui.mak DEBUG=0 TARGET=ia64"
+				CleanCommandLine="nmake /f clstencilui.mak DEBUG=0 clean"
+				Output="makprj.exe"
+				PreprocessorDefinitions="WIN32;NDEBUG;WIN64"
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|x64"
+			OutputDirectory="x64\$(ConfigurationName)"
+			IntermediateDirectory="x64\$(ConfigurationName)"
+			ConfigurationType="0"
+			BuildLogFile="$(IntDir)\BuildLogUI.htm"
+			>
+			<Tool
+				Name="VCNMakeTool"
+				BuildCommandLine="nmake /f clstencilui.mak DEBUG=0 TARGET=x64"
+				ReBuildCommandLine="nmake /f clstencilui.mak DEBUG=0 TARGET=x64"
+				CleanCommandLine="nmake /f clstencilui.mak DEBUG=0 clean"
+				Output="makprj.exe"
+				PreprocessorDefinitions="WIN32;NDEBUG;WIN64"
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
+		</Configuration>
+	</Configurations>
+	<References>
+	</References>
+	<Files>
+		<Filter
+			Name="Source Files"
+			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
+			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
+			>
+		</Filter>
+		<Filter
+			Name="Header Files"
+			Filter="h;hpp;hxx;hm;inl;inc;xsd"
+			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
+			>
+		</Filter>
+		<Filter
+			Name="Resource Files"
+			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
+			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
+			>
+			<File
+				RelativePath=".\clstencil.rc"
+				>
+			</File>
+		</Filter>
+		<File
+			RelativePath=".\ReadMe.htm"
+			DeploymentContent="false"
+			>
+		</File>
+	</Files>
+	<Globals>
+	</Globals>
+</VisualStudioProject>

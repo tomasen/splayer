@@ -128,6 +128,8 @@ void OptionSubtitlePage::OnMouseMove(UINT wParma, CPoint pt)
     if (m_highlightstat == 1)
       return;
 
+    SetClassLong(m_subtitlestyle.m_hWnd, GCL_HCURSOR, (LONG)LoadCursor(NULL, IDC_HAND));
+    ::SetCursor(LoadCursor(NULL, IDC_HAND));
     m_highlightstat = 1;
     m_subtitlestyle.SetCurSel(m_subtitlestyle.GetCurSel());
     return;
@@ -138,6 +140,8 @@ void OptionSubtitlePage::OnMouseMove(UINT wParma, CPoint pt)
     if (m_highlightstat == 2)
       return;
 
+    SetClassLong(m_subtitlestyle.m_hWnd, GCL_HCURSOR, (LONG)LoadCursor(NULL, IDC_HAND));
+    SetCursor(LoadCursor(NULL, IDC_HAND));
     m_highlightstat = 2;
     m_subtitlestyle.SetCurSel(m_subtitlestyle.GetCurSel());
     return;
@@ -145,6 +149,9 @@ void OptionSubtitlePage::OnMouseMove(UINT wParma, CPoint pt)
 
   int bhightlightorg = m_highlightstat;
   m_highlightstat = 0;
+
+  SetClassLong(m_subtitlestyle.m_hWnd, GCL_HCURSOR, (LONG)LoadCursor(NULL, IDC_ARROW));
+  SetCursor(LoadCursor(NULL, IDC_ARROW));
 
   if (bhightlightorg != m_highlightstat)
     m_subtitlestyle.SetCurSel(m_subtitlestyle.GetCurSel());

@@ -45,6 +45,9 @@ BOOL CustomizeFontDlg::OnInitDialog(HWND hwnd, LPARAM lParam)
   InitStrokeSizeComboBox();
   InitShadowSizeComboBox();
 
+  ::ShowWindow(GetDlgItem(IDC_FONTCOLOR_BUTTON2), SW_HIDE);
+  ::ShowWindow(GetDlgItem(IDC_FONTCOLOR_BUTTON3), SW_HIDE);
+
   return 0;
 }
 

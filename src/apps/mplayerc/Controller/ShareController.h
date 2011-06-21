@@ -24,7 +24,7 @@ public:
   void CalcCommentPlanePos();
   BOOL ShowCommentPlane();
   void HideCommentPlane();
-  void ToggleCommentPlane();
+  BOOL ToggleCommentPlane();
 
   BOOL OpenShooterMedia();
   BOOL CloseShooterMedia();

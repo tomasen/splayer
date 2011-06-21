@@ -14974,10 +14974,15 @@ void CMainFrame::AutoSaveImage(LPCTSTR fn, bool shrink_inhalf)
 
 void CMainFrame::OnMovieShare()
 {
-  KillTimer(TIMER_MOVIESHARE);
-  SetTimer(TIMER_MOVIESHARE, 1, NULL);
-  UserShareController::GetInstance()->ToggleCommentPlane();
-  PostMessage(WM_COMMAND, ID_MOVIESHARE_OPEN);
+  if (UserShareController::GetInstance()->ToggleCommentPlane())
+  {
+    KillTimer(TIMER_MOVIESHARE);
+    SetTimer(TIMER_MOVIESHARE, 1, NULL);
+    PostMessage(WM_COMMAND, ID_MOVIESHARE_OPEN);
+
+    if (GetMediaState() != State_Paused)
+      SendMessage(WM_COMMAND, ID_PLAY_PAUSE);
+  }
 }
 
 void CMainFrame::OnOpenShooterMedia()

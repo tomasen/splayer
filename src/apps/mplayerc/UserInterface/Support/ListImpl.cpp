@@ -45,7 +45,7 @@ void CListImpl::OnMouseMove(UINT wParam, WTL::CPoint pt)
     SetClassLong(m_hWnd, GCL_HCURSOR, (LONG)LoadCursor(NULL, IDC_HAND));
     ::SetCursor(LoadCursor(NULL, IDC_HAND));
     m_highlightstat = 1;
-    InvalidateRect(mainrc, false);
+    Invalidate(FALSE);
     return;
   }
 
@@ -57,7 +57,7 @@ void CListImpl::OnMouseMove(UINT wParam, WTL::CPoint pt)
     SetClassLong(m_hWnd, GCL_HCURSOR, (LONG)LoadCursor(NULL, IDC_HAND));
     SetCursor(LoadCursor(NULL, IDC_HAND));
     m_highlightstat = 2;
-    InvalidateRect(seconrc, FALSE);
+    Invalidate(FALSE);
     return;
   }
 

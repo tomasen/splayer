@@ -40,22 +40,54 @@ BOOL OptionSubtitlePage::OnInitDialog(HWND hwnd, LPARAM lParam)
   // retrieve subtitle style settings, and check which available style is closest to
   // the given settings, then set |m_mainstyle| to corresponding one.
   // s.subdefstyle compare font type, font color, border color shadow color
+  int cursel = -1;
+  FontParamsManage fpm;
   for (int i = 0; i < m_subtitlestyle.GetCount(); i++)
   {
     StyleParam* mainsp = NULL;
     StyleParam* secondsp = NULL;
+    StyleParam* settingsp1 = fpm.DetectFontType((LPCTSTR)s.subdefstyle.fontName);
+    StyleParam* settingsp2 = fpm.DetectFontType((LPCTSTR)s.subdefstyle2.fontName);
     m_subtitlestyle.GetItemData(i, &mainsp, &secondsp);
-    if (mainsp->fontcolor == s.subdefstyle.colors[0] && mainsp->strokecolor == s.subdefstyle.colors[2] 
+    if (mainsp->fontcolor == s.subdefstyle.colors[0] 
+        && mainsp->strokecolor == s.subdefstyle.colors[2] 
         && mainsp->shadowcolor == s.subdefstyle.colors[3] 
-        /*&& (sp->_fontname == SubtitleStyle::DetectFontType((LPCTSTR)s.subdefstyle.fontName))*/ //×ÖÌå
+        && settingsp1 && mainsp->fontname == settingsp1->fontname //×ÖÌå
+        && secondsp->fontcolor == s.subdefstyle2.colors[0] 
+        && secondsp->strokecolor == s.subdefstyle2.colors[2] 
+        && secondsp->shadowcolor == s.subdefstyle2.colors[3] 
+        && settingsp2 && secondsp->fontname == settingsp2->fontname 
        )
     {
-      m_subtitlestyle.SetCurSel(i);
+      cursel = i;
       break;
     }
-    else
-      m_subtitlestyle.SetCurSel(0);
   }
+  if (cursel < 0)
+  {
+    //lossy match
+    for (int i = 0; i < m_subtitlestyle.GetCount(); i++)
+    {
+      StyleParam* mainsp = NULL;
+      StyleParam* secondsp = NULL;
+      StyleParam* settingsp1 = fpm.DetectFontType((LPCTSTR)s.subdefstyle.fontName);
+      StyleParam* settingsp2 = fpm.DetectFontType((LPCTSTR)s.subdefstyle2.fontName);
+      m_subtitlestyle.GetItemData(i, &mainsp, &secondsp);
+      if (mainsp->fontcolor == s.subdefstyle.colors[0] 
+          && settingsp1 && mainsp->fontname == settingsp1->fontname //×ÖÌå
+          && secondsp->fontcolor == s.subdefstyle2.colors[0] 
+          && settingsp2 && secondsp->fontname == settingsp2->fontname 
+         )
+      {
+        cursel = i;
+        break;
+      }
+    }
+
+    if (cursel < 0)
+      cursel = 0;
+  }
+  m_subtitlestyle.SetCurSel(cursel);
 
   m_secsubtitlestyle.SetCurSel((s.subdefstyle2.scrAlignment == 2)?1:0);
 

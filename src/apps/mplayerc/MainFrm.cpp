@@ -6918,6 +6918,11 @@ void CMainFrame::OnUpdateViewNormal(CCmdUI* pCmdUI)
 
 void CMainFrame::OnViewFullscreen()
 {
+  if (IsSomethingLoaded())
+    AfxGetAppSettings().nCS |= CS_SEEKBAR; // show seekbar when playback
+  else
+    AfxGetAppSettings().nCS &= ~CS_SEEKBAR; // hide seekbar when not playback
+
   ToggleFullscreen(true, true);
 }
 

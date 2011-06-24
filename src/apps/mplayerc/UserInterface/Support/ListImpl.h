@@ -34,6 +34,7 @@ public:
 private:
   int m_styleentry_height;
 
+  WTL::CPoint m_last_pt;
   FontParamsManage m_fontparams;
   DrawSubtitle m_subtitle;
   std::vector<WTL::CRect>   m_listtextrc;

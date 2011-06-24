@@ -30,6 +30,9 @@ void CListImpl::InitializeList()
 
 void CListImpl::OnMouseMove(UINT wParam, WTL::CPoint pt)
 {
+  if (m_last_pt == pt) // not moving
+    return;
+  m_last_pt = pt;
   int index = GetCurSel();
   WTL::CRect mainrc = GetHittestDivideRect(2 * index);
   WTL::CRect seconrc = GetHittestDivideRect(2 * index + 1);
@@ -42,7 +45,7 @@ void CListImpl::OnMouseMove(UINT wParam, WTL::CPoint pt)
     SetClassLong(m_hWnd, GCL_HCURSOR, (LONG)LoadCursor(NULL, IDC_HAND));
     ::SetCursor(LoadCursor(NULL, IDC_HAND));
     m_highlightstat = 1;
-    SetCurSel(GetCurSel());
+    InvalidateRect(mainrc, false);
     return;
   }
 
@@ -54,7 +57,7 @@ void CListImpl::OnMouseMove(UINT wParam, WTL::CPoint pt)
     SetClassLong(m_hWnd, GCL_HCURSOR, (LONG)LoadCursor(NULL, IDC_HAND));
     SetCursor(LoadCursor(NULL, IDC_HAND));
     m_highlightstat = 2;
-    SetCurSel(GetCurSel());
+    InvalidateRect(seconrc, FALSE);
     return;
   }
 
@@ -65,7 +68,7 @@ void CListImpl::OnMouseMove(UINT wParam, WTL::CPoint pt)
   SetCursor(LoadCursor(NULL, IDC_ARROW));
 
   if (bhightlightorg != m_highlightstat)
-    SetCurSel(GetCurSel());
+    Invalidate(FALSE);
 
 }
 

@@ -71,7 +71,7 @@ BOOL OptionSubtitlePage::OnInitDialog(HWND hwnd, LPARAM lParam)
       StyleParam* mainsp = NULL;
       StyleParam* secondsp = NULL;
       StyleParam* settingsp1 = fpm.DetectFontType((LPCTSTR)s.subdefstyle.fontName);
-      StyleParam* settingsp2 = fpm.DetectFontType((LPCTSTR)s.subdefstyle2.fontName);
+      StyleParam* settingsp2 = fpm.DetectFontType((LPCTSTR)s.subdefstyle2.fontName, FALSE);
       m_subtitlestyle.GetItemData(i, &mainsp, &secondsp);
       if (mainsp->fontcolor == s.subdefstyle.colors[0] 
           && settingsp1 && mainsp->fontname == settingsp1->fontname //×ÖÌו

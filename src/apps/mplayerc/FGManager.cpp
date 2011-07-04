@@ -783,6 +783,7 @@ STDMETHODIMP CFGManager::Connect(IPin* pPinOut, IPin* pPinIn)
 			
 				if (szFName.Find(_T("DirectVobSub")) >= 0 ) continue;
 				
+        if (FGID == GUIDFromCString(_T("{E32C3B01-C81B-4D01-8AD4-2B93F7FA544C}"))  ) continue; //"Moonlight Odio Dekoda"
         if (FGID == GUIDFromCString(_T("{238D0F23-5DC9-45A6-9BE2-666160C324DD}"))  ) continue; //"RealVideo Decoder"
         if (FGID == GUIDFromCString(_T("{238D0F23-5DC9-45A7-9BE2-666160C324DD}"))  ) continue; //"RealVideo Decoder"
         

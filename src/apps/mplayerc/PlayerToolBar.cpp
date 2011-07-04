@@ -116,7 +116,7 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
   {
     SetTimer(TIMER_ADPLAY, 100, NULL);
     SetTimer(TIMER_ADPLAYSWITCH, 5000, NULL);
-    SetTimer(TIMER_ADFETCHING, 15000, NULL);
+    SetTimer(TIMER_ADFETCHING, 3000, NULL);
   }
   
   CSVPToolBox svptoolbox;
@@ -214,7 +214,7 @@ void CPlayerToolBar::ArrangeControls()
       m_btnList.SetHideStat(ID_NAVIGATE_SKIPFORWARD , 0);
       m_btnList.SetHideStat(ID_MOVIESHARE, 1);
     }
-  }
+  }  
 
   m_btnList.OnSize(rc);
 
@@ -379,19 +379,42 @@ void CPlayerToolBar::OnPaint()
 
   if (!sTimeBtnString.empty())
   {
+    int prom_margin = 8;
     CSize size = dc.GetTextExtent(sTimeBtnString.c_str());
 
     CSUIButton* cbtn = m_btnList.GetButton(L"SHARE");
-    CRect btnrc = cbtn->m_rcHitest - rc.TopLeft();
-    btnrc.left = btnrc.right + 8;
-    int width = m_btnList.GetRelativeMinLength(rc, cbtn) - cbtn->m_rcHitest.Width() - 8;
+    
+    if (cbtn && cbtn->m_currenthide)
+    {
+      cbtn = m_btnList.GetButton(L"LOGO");
+      if (cbtn && !cbtn->m_currenthide)
+        prom_margin = -10;
+    }
+    if (cbtn && cbtn->m_currenthide)
+      cbtn = NULL;
+    
+    CRect btnrc(prom_margin, 0, 0, 0);
+    if (cbtn)
+    {
+      btnrc = cbtn->m_rcHitest - rc.TopLeft();
+      btnrc.left = btnrc.right + prom_margin;
+    }
+    
+    int width = m_btnList.GetRelativeMinLength(rc, cbtn) - prom_margin;
+    if (cbtn)
+      width -= cbtn->m_rcHitest.Width();
+
+    if (width < 30)
+      width = 0;
+   
     if (size.cx > 0)
       btnrc.right = btnrc.left + min(width, size.cx);
     else
       btnrc.right = btnrc.left;
+    //btnrc.right -= 5;
     btnrc.top = (rc.Height() - size.cy) / 2;
     btnrc.bottom = btnrc.top + size.cy;
-
+    
     m_adctrl.SetRect(btnrc, &hdc);
     m_adctrl.Paint(&hdc);  
   }
@@ -400,21 +423,30 @@ void CPlayerToolBar::OnPaint()
 }
 void CPlayerToolBar::UpdateButtonStat(){
   CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
+  if (!pFrame) return;
+
   BOOL fShow = pFrame->GetUIStat( ID_PLAY_MANUAL_STOP );
   m_btnList.SetHideStat( ID_PLAY_PLAY , fShow );
   //m_btnList.SetHideStat( ID_PLAY_MANUAL_STOP , !fShow );
   //m_btnList.SetHideStat( ID_PLAY_FRAMESTEP , !fShow );
   m_btnList.SetHideStat( ID_PLAY_PAUSE , !fShow );
-  BOOL bLogo = pFrame->IsSomethingLoaded() ;
-  m_btnList.SetHideStat(_T("SPLAYER.BMP"), bLogo);
+  BOOL bLoaded = pFrame->IsSomethingLoaded() ;
+  BOOL bShowSub = bLoaded && !pFrame->IsSomethingLoading() && !pFrame->m_fAudioOnly;
+  m_btnList.SetHideStat(_T("SPLAYER.BMP"), bLoaded);
   m_btnList.SetHideStat( ID_MOVIESHARE , m_movieshare_hidestat);
-  //m_btnList.SetDisableStat(ID_SUBTOOLBARBUTTON, !bLogo);
-  if(!bLogo)
-    m_timerstr.Empty();
 
-  BOOL bSub = pFrame->IsSubLoaded();
-  m_btnList.SetDisableStat( ID_SUBDELAYINC, !bSub, m_nItemToTrack == ID_SUBDELAYINC);
-  m_btnList.SetDisableStat( ID_SUBDELAYDEC, !bSub, m_nItemToTrack == ID_SUBDELAYDEC);
+  m_btnList.SetHideStat(ID_SUBTOOLBARBUTTON, !bShowSub);
+  m_btnList.SetHideStat( ID_SUBDELAYINC, !bShowSub);
+  m_btnList.SetHideStat( ID_SUBDELAYDEC, !bShowSub);
+
+  if(!bLoaded)
+    m_timerstr.Empty();
+  else 
+  {
+    BOOL bSub = pFrame->IsSubLoaded();
+    m_btnList.SetHideStat( ID_SUBDELAYINC, !bSub);
+    m_btnList.SetHideStat( ID_SUBDELAYDEC, !bSub);
+  }
   ReCalcBtnPos();
   
 }
@@ -627,7 +659,12 @@ void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point)
     if(pFrame->IsSomethingLoaded() && pFrame->m_fFullScreen){
       SetTimer(TIMER_CLOSETOOLBAR, 5000, NULL);
     }
-
+  }
+  if (bMouseMoved)
+  {
+    pFrame->KillTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER);
+    if(pFrame->IsSomethingLoaded())
+      pFrame->SetTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER, 8000, NULL); 
   }
 
   CRect rc;
@@ -1054,16 +1091,13 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
       }
     case TIMER_ADPLAYSWITCH:
       {
-        m_adctrl.SetVisible(true);
-        CMainFrame* pFrame = ((CMainFrame*)AfxGetMainWnd());
         // If no ads exists, then don't show ads
-        if (m_adctrl.IsAdsEmpty() ||
-            pFrame->m_iMediaLoadState == CMainFrame::MLS_CLOSED)
+        if (m_adctrl.IsAdsEmpty() )
         {
           m_adctrl.SetVisible(false);
           break;
         }
-
+        m_adctrl.SetVisible(true);
         KillTimer(TIMER_ADPLAYSWITCH);
 
         // otherwise show ads
@@ -1076,6 +1110,9 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
           else
             SetTimer(TIMER_ADPLAYSWITCH, 3000, NULL);
         }
+        else
+          SetTimer(TIMER_ADPLAYSWITCH, 2000, NULL);
+
         break;
       }
     case TIMER_STATERASER:

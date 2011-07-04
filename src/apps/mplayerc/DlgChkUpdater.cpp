@@ -89,24 +89,33 @@ void CDlgChkUpdater::OnTimer(UINT_PTR nIDEvent)
 
         HANDLE hMutex = OpenMutex(MUTEX_ALL_ACCESS,	FALSE, _T("SPLAYER_REAL_UPDATER"));
         if (hMutex ) {
+          SetForegroundWindow();
           KillTimer(IDT_CHECK_TICK);
-          cprog_chker.ShowWindow(SW_HIDE);
-          cs_stat.ShowWindow(SW_SHOW);
-          cb_close.SetWindowText(ResStr(IDS_DIABLOG_CLOSE_BUTTON));
-
           SetTimer(IDT_CHECK_WND, 700, NULL);
         }
       }
       break;
     case IDT_CHECK_WND: 
       {
+        KillTimer(IDT_CHECK_WND);
         HWND hWndPrevious = ::FindWindow( NULL , ResStr(IDS_UPDATER_DIALOG_TITLE_KEYWORD));// ::GetDesktopWindow(),GW_CHILD);
-        if(::IsWindow(hWndPrevious)){
-          ::ShowWindow(hWndPrevious,SW_SHOWNORMAL);
-          ::SetWindowPos(hWndPrevious, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE);
-          KillTimer(IDT_CHECK_WND);
+        if(hWndPrevious && ::IsWindow(hWndPrevious)){
+
+          cprog_chker.ShowWindow(SW_HIDE);
+          cs_stat.ShowWindow(SW_SHOW);
+          cb_close.SetWindowText(ResStr(IDS_DIABLOG_CLOSE_BUTTON));
+
+          ::ShowWindow(hWndPrevious, SW_SHOWNOACTIVATE);
+          ::ShowWindow(hWndPrevious, SW_RESTORE);
+          if (::IsWindowVisible(hWndPrevious))
+          {
+            ::SetForegroundWindow(hWndPrevious);
+            KillTimer(IDT_CHECK_WND);
+            OnCancel();
+          }
         }
-        SetTimer(IDT_CLOSE_WND, 9000, NULL);
+        SetTimer(IDT_CHECK_WND, 700, NULL);
+        SetTimer(IDT_CLOSE_WND, 3000, NULL);
       }
       break;
     case IDT_CLOSE_WND:

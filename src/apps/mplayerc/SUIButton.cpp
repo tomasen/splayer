@@ -479,7 +479,9 @@ CSUIButton* CSUIBtnList::GetButton(CString s)
 
 int CSUIBtnList::GetRelativeMinLength(CRect WndRect, CSUIButton* btn)
 {
-  CRect rc = btn->m_rcHitest - WndRect.TopLeft();
+  CRect rc(0, 0, 0, 0);
+  if (btn)
+    rc = btn->m_rcHitest - WndRect.TopLeft();
   int min = MAXINT;
   POSITION pos = GetHeadPosition();
   while(pos){

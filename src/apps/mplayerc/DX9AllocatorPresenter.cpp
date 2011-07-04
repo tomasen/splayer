@@ -390,7 +390,8 @@ CDX9AllocatorPresenter::CDX9AllocatorPresenter(HWND hWnd, HRESULT& hr, bool bIsE
 	m_dFrameCycle(0.0),
 	m_dOptimumDisplayCycle(0.0),
 	m_dCycleDifference(1.0),
-	m_VSyncDetectThread(NULL)
+	m_VSyncDetectThread(NULL),
+  m_i3DStereo(0)
 {
 	if(FAILED(hr)) 
 	{
@@ -679,9 +680,8 @@ HRESULT CDX9AllocatorPresenter::CreateDevice( )
 		pp.BackBufferCount = 3; 
 		pp.SwapEffect = D3DSWAPEFFECT_DISCARD;
 		pp.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
-		pp.Flags = D3DPRESENTFLAG_VIDEO;
-		if (s.m_RenderSettings.iVMR9FullscreenGUISupport && !m_bHighColorResolution)
-			pp.Flags |= D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
+		pp.Flags = D3DPRESENTFLAG_VIDEO|D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
+
 		if (m_bHighColorResolution)
 			pp.BackBufferFormat = D3DFMT_A2R10G10B10;
 		else
@@ -734,7 +734,7 @@ HRESULT CDX9AllocatorPresenter::CreateDevice( )
 		pp.Windowed = TRUE;
 		pp.hDeviceWindow = m_hWnd;
 		pp.SwapEffect = D3DSWAPEFFECT_COPY;
-		pp.Flags = D3DPRESENTFLAG_VIDEO;
+		pp.Flags = D3DPRESENTFLAG_VIDEO|D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
 		pp.BackBufferCount = 1; 
 		pp.BackBufferWidth = m_ScreenSize.cx;
 		pp.BackBufferHeight = m_ScreenSize.cy;
@@ -997,7 +997,56 @@ static bool ClipToSurface(IDirect3DSurface9* pSurface, CRect& s, CRect& d)
 	if(d.top < 0) {s.top += (0-d.top)*sh/dh; d.top = 0;}   
 	return(true);
 }
+HRESULT CDX9AllocatorPresenter::Init3DStereo(int i3DStereo)
+{
+  if (i3DStereo == m_i3DStereo && m_p3DStereoPixelShader)
+    return S_OK;
+  m_i3DStereo = i3DStereo;
+  if (i3DStereo <= 0)
+  {
+    if (m_p3DStereoPixelShader)
+      m_p3DStereoPixelShader = NULL;
+    return S_OK;
+  }
+  HRESULT hr = S_OK;
+  CStringA str;
+  if(!LoadResource(IDF_SHADER_3DSTEREO, str, _T("FILE"))) return E_FAIL;
 
+  switch (m_i3DStereo)
+  {
+  case ID_3DSTEREO_MENU_LEFTRIGHT - ID_3DSTEREO_MENU_START + 1:
+    str.Replace("_LEFT_2_RIGHT_", "1");
+    str.Replace("_RIGHT_2_LEFT_", "0");
+    str.Replace("_TOP_2_BOTTOM_", "0");
+    str.Replace("_BOTTOM_2_TOP_", "0");
+   break;
+  case ID_3DSTEREO_MENU_RIGHTLEFT - ID_3DSTEREO_MENU_START + 1:
+    str.Replace("_LEFT_2_RIGHT_", "0");
+    str.Replace("_RIGHT_2_LEFT_", "1");
+    str.Replace("_TOP_2_BOTTOM_", "0");
+    str.Replace("_BOTTOM_2_TOP_", "0");
+    break;
+  case ID_3DSTEREO_MENU_TOPBOTTOM - ID_3DSTEREO_MENU_START + 1:
+    str.Replace("_LEFT_2_RIGHT_", "0");
+    str.Replace("_RIGHT_2_LEFT_", "0");
+    str.Replace("_TOP_2_BOTTOM_", "1");
+    str.Replace("_BOTTOM_2_TOP_", "0");
+    break;
+  case ID_3DSTEREO_MENU_BOTTOMTOP - ID_3DSTEREO_MENU_START + 1:
+    str.Replace("_LEFT_2_RIGHT_", "0");
+    str.Replace("_RIGHT_2_LEFT_", "0");
+    str.Replace("_TOP_2_BOTTOM_", "0");
+    str.Replace("_BOTTOM_2_TOP_", "1");
+    break;
+  }
+  CString ErrorMessage;
+  CString DissAssembly;
+  hr = m_pPSC->CompileShader(str, "main", "ps_2_0", 0, &m_p3DStereoPixelShader, &DissAssembly, &ErrorMessage);
+  if(FAILED(hr)) 
+    Logging("%ws", ErrorMessage.GetString());
+
+  return hr;
+}
 HRESULT CDX9AllocatorPresenter::InitResizers(float bicubicA, bool bNeedScreenSizeTexture)
 {
 	HRESULT hr;
@@ -1556,8 +1605,11 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 		if(m_pVideoTexture[m_nCurSurface])
 		{
 			CComPtr<IDirect3DTexture9> pVideoTexture = m_pVideoTexture[m_nCurSurface];
+      // Set 3D Stereo
+      Init3DStereo(s.i3DStereo);
+
 			// If there is a pixel shader
-			if(m_pVideoTexture[m_nDXSurface] && m_pVideoTexture[m_nDXSurface+1] && !m_pPixelShaders.IsEmpty())
+			if(m_pVideoTexture[m_nDXSurface] && m_pVideoTexture[m_nDXSurface+1] && (!m_pPixelShaders.IsEmpty() || m_p3DStereoPixelShader))
 			{
 				static __int64 counter = 0;
 				static long start = clock();
@@ -1590,6 +1642,15 @@ STDMETHODIMP_(bool) CDX9AllocatorPresenter::Paint(bool fAll)
 					src		= dst;
 					if(++dst >= m_nDXSurface+2) dst = m_nDXSurface;
 				}
+        if (m_p3DStereoPixelShader)
+        {
+          pVideoTexture = m_pVideoTexture[dst];
+          hr = m_pD3DDev->SetRenderTarget(0, m_pVideoSurface[dst]);
+          hr = m_pD3DDev->SetPixelShader(m_p3DStereoPixelShader);
+          TextureCopy(m_pVideoTexture[src]);
+          src		= dst;
+          if(++dst >= m_nDXSurface+2) dst = m_nDXSurface;
+        }
 				hr = m_pD3DDev->SetRenderTarget(0, pRT);
 				hr = m_pD3DDev->SetPixelShader(NULL);
 			}
@@ -2286,12 +2347,13 @@ void CDX9AllocatorPresenter::EstimateRefreshTimings()
 	}
 }
 
-STDMETHODIMP CDX9AllocatorPresenter::GetDIB(BYTE* lpDib, DWORD* size)
+STDMETHODIMP CDX9AllocatorPresenter::GetDIB(BYTE* lpDib, DWORD* size, BOOL with_sub)
 {
 	CheckPointer(size, E_POINTER);
 
 	HRESULT hr;
 
+  D3DLOCKED_RECT r;
 	D3DSURFACE_DESC desc;
 	memset(&desc, 0, sizeof(desc));
 	m_pVideoSurface[m_nCurSurface]->GetDesc(&desc);
@@ -2301,16 +2363,46 @@ STDMETHODIMP CDX9AllocatorPresenter::GetDIB(BYTE* lpDib, DWORD* size)
 	if(*size < required) return E_OUTOFMEMORY;
 	*size = required;
 
-	CComPtr<IDirect3DSurface9> pSurface = m_pVideoSurface[m_nCurSurface];
-	D3DLOCKED_RECT r;
-	if(FAILED(hr = pSurface->LockRect(&r, NULL, D3DLOCK_READONLY)))
-	{
-		pSurface = NULL;
-		if(FAILED(hr = m_pD3DDev->CreateOffscreenPlainSurface(desc.Width, desc.Height, desc.Format, D3DPOOL_SYSTEMMEM, &pSurface, NULL))
-		|| FAILED(hr = m_pD3DDev->GetRenderTargetData(m_pVideoSurface[m_nCurSurface], pSurface))
-		|| FAILED(hr = pSurface->LockRect(&r, NULL, D3DLOCK_READONLY)))
-			return hr;
-	}
+  CAutoLock cRenderLock(&m_RenderLock);
+
+  CComPtr<IDirect3DSurface9> pRTOld = NULL;
+  hr = m_pD3DDev->GetRenderTarget(0, &pRTOld);
+  CComPtr<IDirect3DSurface9> pSurface = NULL;
+  if (with_sub)
+  {
+
+    m_pD3DDev->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &pSurface);
+    m_pD3DDev->SetRenderTarget(0, pSurface);
+    D3DSURFACE_DESC desc_dst;
+    memset(&desc_dst, 0, sizeof(desc_dst));
+    pSurface->GetDesc(&desc_dst);
+
+    hr = m_pD3DDev->BeginScene();
+    hr = m_pD3DDev->Clear(0, NULL, D3DCLEAR_TARGET, 0, 1.0f, 0);
+    
+    CRect rSrcVid(0,0,desc.Width,desc.Height);
+    desc.Width = min(desc.Width, desc_dst.Width);
+    desc.Height = min(desc.Height, desc_dst.Height);
+    CRect rDstVid(0,0,desc.Width,desc.Height);
+    hr = m_pD3DDev->StretchRect(m_pVideoSurface[m_nCurSurface], rSrcVid, 
+      pSurface,rDstVid, D3DTEXF_LINEAR);
+    AlphaBltSubPic(rSrcVid.Size());
+    hr = m_pD3DDev->EndScene();
+    if(FAILED(hr = pSurface->LockRect(&r, NULL, D3DLOCK_READONLY)))
+      return hr;
+  }
+  else
+  {
+    pSurface = m_pVideoSurface[m_nCurSurface];
+    if(FAILED(hr = pSurface->LockRect(&r, NULL, D3DLOCK_READONLY)))
+    {
+      pSurface = NULL;
+      if(FAILED(hr = m_pD3DDev->CreateOffscreenPlainSurface(desc.Width, desc.Height, desc.Format, D3DPOOL_SYSTEMMEM, &pSurface, NULL))
+        || FAILED(hr = m_pD3DDev->GetRenderTargetData(m_pVideoSurface[m_nCurSurface], pSurface))
+        || FAILED(hr = pSurface->LockRect(&r, NULL, D3DLOCK_READONLY)))
+        return hr;
+    }
+  }
 
 	BITMAPINFOHEADER* bih = (BITMAPINFOHEADER*)lpDib;
 	memset(bih, 0, sizeof(BITMAPINFOHEADER));
@@ -2327,7 +2419,7 @@ STDMETHODIMP CDX9AllocatorPresenter::GetDIB(BYTE* lpDib, DWORD* size)
 		(BYTE*)r.pBits + r.Pitch*(desc.Height-1), -(int)r.Pitch, 32);
 
 	pSurface->UnlockRect();
-
+  m_pD3DDev->SetRenderTarget(0, pRTOld);
 	return S_OK;
 }
 
@@ -3763,7 +3855,7 @@ STDMETHODIMP_(bool) CDXRAllocatorPresenter::Paint(bool fAll)
 	return false; // TODO
 }
 
-STDMETHODIMP CDXRAllocatorPresenter::GetDIB(BYTE* lpDib, DWORD* size)
+STDMETHODIMP CDXRAllocatorPresenter::GetDIB(BYTE* lpDib, DWORD* size, BOOL with_sub)
 {
 	HRESULT hr = E_NOTIMPL;
 	if(CComQIPtr<IBasicVideo> pBV = m_pDXR)
@@ -3956,7 +4048,7 @@ STDMETHODIMP_(bool) CmadVRAllocatorPresenter::Paint(bool fAll)
 	return false; // TODO
 }
 
-STDMETHODIMP CmadVRAllocatorPresenter::GetDIB(BYTE* lpDib, DWORD* size)
+STDMETHODIMP CmadVRAllocatorPresenter::GetDIB(BYTE* lpDib, DWORD* size, BOOL with_sub)
 {
 	HRESULT hr = E_NOTIMPL;
 	if(CComQIPtr<IBasicVideo> pBV = m_pDXR)

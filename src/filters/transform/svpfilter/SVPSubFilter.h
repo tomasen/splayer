@@ -88,7 +88,7 @@ public:
 	STDMETHODIMP_(void) SetSubPicProvider (ISubPicProvider* pSubPicProvider) ;
 	STDMETHODIMP_(void) SetSubPicProvider2 (ISubPicProvider* pSubPicProvider) ;
 	STDMETHODIMP_(void) Invalidate (REFERENCE_TIME rtInvalidate = -1) ;
-	STDMETHODIMP GetDIB (BYTE* lpDib, DWORD* size) ;
+	STDMETHODIMP GetDIB (BYTE* lpDib, DWORD* size, BOOL with_sub = 0) ;
 
 	
 	HRESULT SetMediaType(PIN_DIRECTION dir, const CMediaType* pMediaType);
@@ -117,6 +117,7 @@ public:
 
 private:
 	void InitSubPicQueue();
+  bool AlphaBltSub(SubPicDesc& spd, REFERENCE_TIME rt_sub1, REFERENCE_TIME rt_sub2, bool fFlipSub);
 	bool AdjustFrameSize(CSize& s);
 	int m_l_add_more_height;
 	double m_d_stretch_sub_hor;

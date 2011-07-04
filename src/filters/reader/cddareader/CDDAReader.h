@@ -28,17 +28,17 @@
 #include "..\asyncreader\asyncio.h"
 #include "..\asyncreader\asyncrdr.h"
 
-typedef struct {UINT chunkID; long chunkSize;} ChunkHeader;
+typedef struct {UINT chunkID; long chunkSize;} ChunkHeaderCDDA;
 
 #define RIFFID 'FFIR' 
 #define WAVEID 'EVAW' 
-typedef struct {ChunkHeader hdr; UINT WAVE;} RIFFChunk;
+typedef struct {ChunkHeaderCDDA hdr; UINT WAVE;} RIFFChunk;
 
 #define FormatID ' tmf' 
-typedef struct {ChunkHeader hdr; PCMWAVEFORMAT pcm;} FormatChunk;
+typedef struct {ChunkHeaderCDDA hdr; PCMWAVEFORMAT pcm;} FormatChunk;
 
 #define DataID 'atad'
-typedef struct {ChunkHeader hdr;} DataChunk;
+typedef struct {ChunkHeaderCDDA hdr;} DataChunk;
 
 typedef struct {RIFFChunk riff; FormatChunk frm; DataChunk data;} WAVEChunck;
 

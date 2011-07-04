@@ -2,6 +2,9 @@
 #define OPTIONSUBTITLEPAGE_WIN_H
 
 #include "../../resource.h"
+#include "../Support/FontParamsManage.h"
+#include "../Support/SubtitleStyle.h"
+#include "../Support/ListImpl.h"
 
 class OptionSubtitlePage:
   public WTL::CPropertyPageImpl<OptionSubtitlePage>,
@@ -31,8 +34,9 @@ public:
   // message handlers
   BOOL OnInitDialog(HWND hwnd, LPARAM lParam);
   void OnDestroy();
-
+  
   void OnSubtitleStyleChange(UINT uNotifyCode, int nID, CWindow wndCtl);
+  void OnListDoubleClick(UINT uNotifyCode, int nID, CWindow wndCtl);
 
   void OnBrowserForFolder(UINT uNotifyCode, int nID, CWindow wndCtl);
   void OnSelectSameFolder(UINT uNotifyCode, int nID, CWindow wndCtl);
@@ -50,7 +54,7 @@ public:
 
 private:
   WTL::CComboBox  m_secsubtitlestyle;
-  WTL::CListBox   m_subtitlestyle;
+  CListImpl       m_subtitlestyle;
 
   WTL::CString    m_sCustomPath;
 

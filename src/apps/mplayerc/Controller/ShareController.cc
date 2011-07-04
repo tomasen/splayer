@@ -17,49 +17,19 @@
 
 UserShareController::UserShareController() : 
 m_retdata(L""),
-m_parentwnd(NULL),
-_dialogTemplate(NULL)
+m_parentwnd(NULL)
 {
 
 }
 
 UserShareController::~UserShareController()
 {
-    _Stop();
-
-    if (_dialogTemplate)
-      free(_dialogTemplate);
+  _Stop();
 }
+
 void UserShareController::SetCommentPlaneParent(HWND hwnd)
 {
   m_parentwnd = hwnd;
-}
-
-void UserShareController::CreateCommentPlane()
-{
-  if (m_commentplane.m_hWnd || !m_parentwnd || _dialogTemplate)
-    return;
-
-  // extra space are in order for successfully creating dialog
-  _dialogTemplate = (DLGTEMPLATE*)calloc(1, sizeof(DLGTEMPLATE)+sizeof(DLGITEMTEMPLATE)+10);
-
-  if (_dialogTemplate)
-  {
-    _dialogTemplate->style = DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_DISABLED;
-    _dialogTemplate->dwExtendedStyle = WS_EX_NOACTIVATE; //WS_EX_TOPMOST
-
-    _dialogTemplate->cdit  = 0;
-    _dialogTemplate->cx    = 316;
-    _dialogTemplate->cy    = 183;
-
-
-    if (0 == m_commentplane.CreateIndirect(_dialogTemplate, CWnd::FromHandle(m_parentwnd)))
-    {
-      free(_dialogTemplate);
-      _dialogTemplate = 0;
-      Logging(L"m_commentplane.CreateIndirect failed");
-    }
-  }
 }
 
 std::wstring UserShareController::GetResponseData()
@@ -91,6 +61,13 @@ void UserShareController::ShareMovie(std::wstring uuid, std::wstring sphash, std
   _Start();
 }
 
+std::wstring UserShareController::EncodeString(std::wstring str)
+{
+  std::string tmpstr =  Strings::WStringToUtf8String(str);
+  tmpstr = base64_encode((unsigned char*)tmpstr.c_str(), tmpstr.length());
+  return Strings::Utf8StringToWString(tmpstr);
+}
+
 void UserShareController::_Thread()
 {
   refptr<pool> pool = pool::create_instance();
@@ -100,9 +77,6 @@ void UserShareController::_Thread()
   refptr<postdata> data = postdata::create_instance();
   std::map<std::wstring, std::wstring> postform;
   PlayerPreference* pref = PlayerPreference::GetInstance();
-  
-  std::string filmstr =  Strings::WStringToUtf8String(m_film);
-  filmstr = base64_encode((unsigned char*)filmstr.c_str(), filmstr.length());
 
   postform[L"uuid"] = m_uuid;
   postform[L"sphash"] = m_sphash;
@@ -118,12 +92,12 @@ void UserShareController::_Thread()
   url += getdata;
 
   std::wstring pcname = SPlayerGUID::GetComputerName();
-  std::string pcnamestr =  Strings::WStringToUtf8String(pcname);
-  pcnamestr = base64_encode((unsigned char*)pcnamestr.c_str(), pcnamestr.length());
+  std::wstring loginuser = SPlayerGUID::GetUserName();
 
   si_stringmap rps_headers;
-  rps_headers[L"Film"] =  Strings::Utf8StringToWString(filmstr);
-  rps_headers[L"PcName"] = Strings::Utf8StringToWString(pcnamestr);
+  rps_headers[L"Film"] =  EncodeString(m_film);
+  rps_headers[L"PcName"] = EncodeString(pcname);
+  rps_headers[L"User"] = EncodeString(loginuser);
   req->set_request_header(rps_headers);
 
   SinetConfig(cfg, -1);
@@ -150,18 +124,7 @@ void UserShareController::_Thread()
   std::string results = (char*)&buffer[0];
   m_retdata = Strings::Utf8StringToWString(results);
 
-  CreateCommentPlane();
-  for(int i = 0; i < 100; i++) // wait 10 sec till dialog init
-  {
-    if (m_commentplane.m_initialize == 0)
-      Sleep(100);
-    else
-    {
-      ::PostMessage(m_parentwnd, WM_COMMAND, ID_MOVIESHARE_OPEN, NULL);
-      break;
-    }
-  }
-
+  ::PostMessage(m_parentwnd, WM_COMMAND, ID_MOVIESHARE_OPEN, NULL);
 }
 
 BOOL UserShareController::OpenShooterMedia()
@@ -169,30 +132,41 @@ BOOL UserShareController::OpenShooterMedia()
   if (m_retdata.empty())
     return FALSE;
 
-  m_commentplane.Navigate(m_retdata.c_str());
+  if (m_commentplane.m_hWnd && m_commentplane.m_initialize)
+    m_commentplane.Navigate(m_retdata.c_str());
   return TRUE;
 }
 
 BOOL UserShareController::CloseShooterMedia()
 {
   if (m_commentplane.m_hWnd && m_commentplane.m_initialize)
-    m_commentplane.ClearFrame();
+  {
+    m_commentplane.DestroyWindow();
+    m_commentplane.m_hWnd = NULL;
+    m_commentplane.m_initialize = NULL;
+  }
   return TRUE;
 }
 
-void UserShareController::ToggleCommentPlane()
+BOOL UserShareController::ToggleCommentPlane()
 {
+  BOOL ret = TRUE;
   if (m_commentplane.m_hWnd && m_commentplane.IsWindowEnabled())
+  {
     HideCommentPlane();
+    ret = FALSE;
+  }
   else
     ShowCommentPlane();
+
+  return ret;
 }
+
 BOOL UserShareController::ShowCommentPlane()
 {
-  //if (m_retdata.empty())
-  //    return FALSE;
+  if (!m_commentplane.m_hWnd)
+    m_commentplane.CreateFrame(DS_SETFONT|DS_FIXEDSYS|WS_POPUP|WS_DISABLED,WS_EX_NOACTIVATE);
 
-  CreateCommentPlane();
   m_commentplane.ShowFrame();
   return TRUE;
 }
@@ -212,4 +186,22 @@ void UserShareController::CalcCommentPlanePos()
   m_commentplane.CalcWndPos();
   if (m_commentplane.IsWindowVisible())
     m_commentplane.ShowFrame();
+}
+
+BOOL UserShareController::CloseShareWnd()
+{
+  BOOL ret = FALSE;
+  if (m_commentplane.IsWindowVisible())
+  {
+    ret = TRUE;
+    m_commentplane.HideFrame();
+  }
+
+  if (m_commentplane.m_oadlg && m_commentplane.m_oadlg->IsWindowVisible())
+  {
+    ret = TRUE;
+    m_commentplane.CloseOAuth();
+  }
+
+  return ret;
 }

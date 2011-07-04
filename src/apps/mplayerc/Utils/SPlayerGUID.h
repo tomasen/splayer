@@ -9,4 +9,5 @@ public:
 
   static std::wstring GetComputerName();
   static std::wstring GetComputerID();
+  static std::wstring GetUserName();
 };

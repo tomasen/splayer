@@ -1,0 +1,37 @@
+#define LEFT_2_RIGHT _LEFT_2_RIGHT_
+#define RIGHT_2_LEFT _RIGHT_2_LEFT_
+#define TOP_2_BOTTOM _TOP_2_BOTTOM_
+#define BOTTOM_2_TOP _BOTTOM_2_TOP_
+
+sampler s0 : register(s0);
+float4 p0 : register(c0);
+
+float4 main(float2 tex : TEXCOORD0) : COLOR
+{
+	float4 left = tex2D(s0, tex - float2(tex.x/2,0));
+	float4 right = tex2D(s0, tex + float2((1-tex.x)/2,0));
+	float4 top = tex2D(s0, tex - float2(0, tex.y/2));
+	float4 bottom = tex2D(s0, tex + float2(0, (1-tex.y)/2));
+	float4 org = tex2D(s0, tex);
+	
+	float left_c = dot(left, float4(0.299, 0.587, 0.114, 0));
+	float right_c = dot(right, float4(0.299, 0.587, 0.114, 0));
+	float top_c = dot(top, float4(0.299, 0.587, 0.114, 0));
+	float bottom_c = dot(bottom, float4(0.299, 0.587, 0.114, 0));
+
+	#if LEFT_2_RIGHT
+		return float4(left_c,right.y,right.z,right.w);
+	#endif
+
+	#if RIGHT_2_LEFT
+		return float4(right_c,left.y,left.z,left.w);
+	#endif
+
+	#if TOP_2_BOTTOM
+		return float4(top_c,bottom.y,bottom.z,bottom.w);
+	#endif
+
+	#if BOTTOM_2_TOP
+		return float4(bottom_c,top.y,top.z,top.w);
+	#endif
+}

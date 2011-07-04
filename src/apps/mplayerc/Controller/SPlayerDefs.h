@@ -35,6 +35,10 @@
 #define STRVAR_AD                   1010        // string to get ads
 #define STRVAR_TIMEBMP_TYPE         1011        // "Display_TimeLeft", "Display_TimeTotal", "Display_Power"
 
+#define STRVAR_USER_ACCOUNT_NAME    1012   // used to record the user share's logging name, don't save to database
+
+#define STRVAR_MAINSUBTITLEFONT     1013
+#define STRVAR_SECONDARYSUBTITLEFONT 1014
 // string array variables
 #define STRARRAY_PLAYLIST           1000
 

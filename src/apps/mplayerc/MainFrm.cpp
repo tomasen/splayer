@@ -96,6 +96,7 @@ static UINT WM_NOTIFYICON = RegisterWindowMessage(TEXT("MYWM_NOTIFYICON"));
 #include "UserInterface\Dialogs\Snapshot_Win.h"
 
 #include "FrameCfgFileManage.h"
+#include "Controller\UserAccountController.h"
 
 bool g_bNoDuration = false;
 bool g_bExternalSubtitleTime = false;
@@ -259,6 +260,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_COMMAND(ID_FILE_CLOSEMEDIA, OnFileCloseMedia)
   ON_UPDATE_COMMAND_UI(ID_FILE_CLOSEPLAYLIST, OnUpdateFileClose)
   ON_UPDATE_COMMAND_UI(ID_FILE_CLOSEMEDIA, OnUpdateFileClose)
+  ON_COMMAND(ID_USER_SHARE, OnUserShare)
+  ON_UPDATE_COMMAND_UI(ID_USER_SHARE, OnUpdateUserShare)
 
   ON_COMMAND(ID_VIEW_CAPTIONMENU, OnViewCaptionmenu)
   ON_UPDATE_COMMAND_UI(ID_VIEW_CAPTIONMENU, OnUpdateViewCaptionmenu)
@@ -436,6 +439,11 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 
   ON_COMMAND_RANGE(ID_BRIGHTINC, ID_BRIGHTDEC, OnColorControl )
 
+  ON_COMMAND_RANGE(ID_3DSTEREO_MENU_START, ID_3DSTEREO_MENU_END, On3DStereoControl )
+  ON_UPDATE_COMMAND_UI_RANGE(ID_3DSTEREO_MENU_START, ID_3DSTEREO_MENU_END, OnUpdate3DStereoControl )
+
+  ON_COMMAND(ID_3DSTEREO_KEEP_AR, On3DStereoKeepAR)
+  ON_UPDATE_COMMAND_UI(ID_3DSTEREO_KEEP_AR, OnUpdate3DStereoKeepAR)
 
   ON_COMMAND_RANGE(ID_THEME_AEROGLASS, ID_THEME_COLORMENU, OnThemeChangeMenu )
   ON_UPDATE_COMMAND_UI_RANGE(ID_THEME_AEROGLASS, ID_THEME_COLORMENU, OnUpdateThemeChangeMenu )
@@ -562,7 +570,8 @@ m_l_been_playing_sec(0),
 m_lyricDownloadThread(NULL),
 m_secret_switch(NULL),
 m_movieShared(false),
-m_bmenuinitialize(FALSE)
+m_bmenuinitialize(FALSE),
+m_pUserAccountDlg(0)
 {
   m_wndFloatToolBar = new CPlayerFloatToolBar();
 }
@@ -740,6 +749,12 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
   MediaCenterController::GetInstance()->SetFrame(m_wndView.m_hWnd);
   // MediaCenterController::GetInstance()->SpiderStart();
+
+  // create the UserAccount dialog
+  m_pUserAccountDlg = new OAuthDlg;
+  m_pUserAccountDlg->CreateFrame(DS_SETFONT|DS_FIXEDSYS|WS_POPUP|WS_DISABLED,WS_EX_NOACTIVATE);
+  m_pUserAccountDlg->ClearFrame();
+  m_pUserAccountDlg->SetFramePos(CRect(0, 0, 0, 0));
 
   WNDCLASSEX layeredClass;
   layeredClass.cbSize        = sizeof(WNDCLASSEX);
@@ -1371,6 +1386,18 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point)
 
 void CMainFrame::OnMove(int x, int y)
 {
+  // change the size of the user account dialog
+  if (m_pUserAccountDlg->IsWindowVisible())
+  {
+    RECT rc;
+    GetWindowRect(&rc);
+    rc.top += (rc.bottom-rc.top-400)/2-10;
+    rc.left += (rc.right-rc.left-500)/2;
+    rc.right = 500;
+    rc.bottom = 400;
+    m_pUserAccountDlg->SetFramePos(rc);
+  }
+
   m_lTransparentToolbarPosStat = 0;
 
   HMONITOR hMonitor = MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST);
@@ -1706,6 +1733,11 @@ void CMainFrame::OnResetSetting(){
 void CMainFrame::OnDestroy()
 {
   // MediaCenterController::GetInstance()->SpiderStop();
+
+  // destroy the UserAccount dialog
+  m_pUserAccountDlg->DestroyWindow();
+  delete m_pUserAccountDlg;
+  m_pUserAccountDlg = 0;
 
   //AfxMessageBox(_T("2"));
   ShowTrayIcon(false);
@@ -2648,7 +2680,6 @@ void CMainFrame::OnTimer(UINT nIDEvent)
         std::wstring uuid, moviehash;
         SPlayerGUID::GenerateGUID(uuid);
         UserShareController* usc = UserShareController::GetInstance();
-        usc->CreateCommentPlane();
         moviehash = HashController::GetInstance()->GetSPHash(m_fnCurPlayingFile);
         usc->ShareMovie(uuid, moviehash, m_fnCurPlayingFile.GetString());
       }
@@ -3472,6 +3503,11 @@ bool CMainFrame::GetNoResponseRect(CRgn& pRgn){
 void CMainFrame::OnLButtonDown(UINT nFlags, CPoint point)
 {
   //SVP_LogMsg5(L"IsMenuUp %d", IsMenuUp());
+  if (UserShareController::GetInstance()->CloseShareWnd())
+  {
+    __super::OnLButtonDown(nFlags, point);
+    return;
+  }
 
   CRgn rcStop ;
   GetNoResponseRect(rcStop);
@@ -4180,6 +4216,49 @@ void CMainFrame::OnInitMenuPopup(CMenu * pPopupMenu, UINT nIndex, BOOL bSysMenu)
       pSubMenu = m_skinorg;
       m_bmenuinitialize = TRUE;
     }
+    else if (pPopupMenu->GetMenuItemID(i) == ID_FILE_PROPERTIES)
+    {
+      // using user share menu instead of info menu
+      if (m_iMediaLoadState == MLS_CLOSED)
+      {
+        pPopupMenu->RemoveMenu(i, MF_BYPOSITION);  // remove the 'info' menu
+
+        std::wstring sUserShareLogName;
+        sUserShareLogName = PlayerPreference::GetInstance()->GetStringVar(STRVAR_USER_ACCOUNT_NAME);
+        bool bIsChecking = UserAccountController::GetInstance()->IsChecking();
+        if (bIsChecking)
+        {
+          pPopupMenu->InsertMenu(i, MF_BYPOSITION | MF_STRING | MF_DISABLED | MF_GRAYED
+                               , ID_USER_SHARE, ResStr(IDS_USER_SHARE_CHECKING));  // using user share instead of 'info' menu
+        } 
+        else
+        {
+          if (sUserShareLogName == L"false")
+          {
+            // user don't login
+            pPopupMenu->InsertMenu(i, MF_BYPOSITION | MF_STRING
+                                 , ID_USER_SHARE, ResStr(IDS_USER_SHARE_LOGGEDOUT));  // using user share instead of 'info' menu
+          } 
+          else
+          {
+            // user login
+            CString sFormat;
+            sFormat.Format(ResStr(IDS_USER_SHARE_LOGGEDIN), sUserShareLogName.c_str());
+            pPopupMenu->InsertMenu(i, MF_BYPOSITION | MF_STRING
+                                 , ID_USER_SHARE, sFormat);  // using user share instead of 'info' menu
+          }
+        }
+      }
+    }
+    else if (pPopupMenu->GetMenuItemID(i) == ID_USER_SHARE)
+    {
+      if (m_iMediaLoadState != MLS_CLOSED)
+      {
+        // using info menu instead of user share menu
+        pPopupMenu->RemoveMenu(i, MF_BYPOSITION); // remove user share menu
+        pPopupMenu->InsertMenu(i, MF_BYPOSITION | MF_STRING, ID_FILE_PROPERTIES, ResStr(IDS_MENU_ITEM_FILE_PROPERTIES));
+      }
+    }
 
     if(pSubMenu)
     {
@@ -4876,6 +4955,7 @@ void CMainFrame::OnFilePostOpenmedia()
         pSS->Enable(audid, AMSTREAMSELECTENABLE_ENABLE);
         SendStatusMessage(ResStr(IDS_OSD_MSG_RESTORE_TO_LAST_REMEMBER_AUDIO_TRACK),3000);
       }
+
     }
   }
 
@@ -4897,6 +4977,20 @@ void CMainFrame::OnFilePostOpenmedia()
     }
   }
 
+  if (AfxGetMyApp()->sqlite_local_record)
+  {
+    CString szSQL;
+    szSQL.Format(L"SELECT arg1 FROM histories_stereo WHERE fpath = \"%s\" ", FPath);
+    int arg = AfxGetMyApp()->sqlite_local_record->get_single_int_from_sql(szSQL.GetBuffer(), -1);
+    if (arg >= 0)
+      s.i3DStereo = arg;
+    szSQL.Format(L"SELECT arg2 FROM histories_stereo WHERE fpath = \"%s\" ", FPath);
+    arg = AfxGetMyApp()->sqlite_local_record->get_single_int_from_sql(szSQL.GetBuffer(), -1);
+    if (arg >= 0)
+      s.i3DStereoKeepAspectRatio = arg;
+    if (s.i3DStereo)
+      MoveVideoWindow();
+  }
   if(!m_pCAP && m_fAudioOnly){ //this is where we first detect this is audio only file
 
     m_wndView.m_strAudioInfo.Empty();
@@ -5047,7 +5141,7 @@ void CMainFrame::OnFilePostOpenmedia()
   {
     m_movieShared = false;
     m_wndToolBar.HideMovieShareBtn(FALSE);
-    SetTimer(TIMER_MOVIESHARE, 300000, NULL);
+    SetTimer(TIMER_MOVIESHARE, 10000, NULL);
   }
 
   KillTimer(TIMER_IDLE_TASK);
@@ -5604,6 +5698,39 @@ BOOL CMainFrame::OnCopyData(CWnd* pWnd, COPYDATASTRUCT* pCDS)
 
   s.ParseCommandLine(cmdln);
 
+  if (s.nCLSwitches&CLSW_SNAPSHOT)
+  {
+    if (s.slFiles.GetCount() > 0)
+    {
+      // deal argument
+      std::vector<std::wstring> args;
+      POSITION pos = s.slFiles.GetHeadPosition();
+      while (pos)
+      {
+        CString sTemp = s.slFiles.GetNext(pos);
+        args.push_back((LPCTSTR)sTemp);
+      }
+
+      if (args.size() == 1)
+      {
+        args.push_back(L"");
+        args.push_back(L"");
+      }
+      else if (args.size() == 2)
+      {
+        args.push_back(L"");
+      }
+
+      // do snapshot
+      MediaCenterController::GetInstance()->SpiderStop();
+      GetSnapShotSliently(args);
+    }
+
+    // not safe exit, but save a lot coding, so sue me
+    exit(0);
+    return FALSE;
+  }
+
   POSITION pos = s.slFilters.GetHeadPosition();
   while(pos)
   {
@@ -5757,6 +5884,45 @@ void CMainFrame::OnFileOpendvd()
   SetForegroundWindow();
 
   ShowWindow(SW_SHOW);
+
+  // Try BD Disks
+  TCHAR szTemp[10241] = {0};
+  memset(szTemp,0,sizeof(TCHAR)*10241);
+  if (GetLogicalDriveStrings(10240, szTemp)) 
+  {
+    TCHAR szName[MAX_PATH];
+    TCHAR* p = szTemp;
+    do 
+    {
+      TCHAR*szDrive = p;
+      UINT uNameLen = _tcslen(szDrive);
+      if (uNameLen < MAX_PATH && uNameLen > 0) 
+      {
+        UINT driver_type = GetDriveType(szDrive);
+        Logging(L"DRIVER(BD)  %s\n", szDrive);
+        if(driver_type == DRIVE_CDROM || driver_type == DRIVE_REMOVABLE)
+        {
+          // try to open BD
+          CHdmvClipInfo		ClipInfo;
+          CString				strPlaylistFile;
+          CAtlList<CHdmvClipInfo::PlaylistItem>	MainPlaylist;
+
+          if (SUCCEEDED (ClipInfo.FindMainMovie (szDrive, strPlaylistFile, MainPlaylist)))
+          {
+            CAutoPtr<OpenFileData> p(DNew OpenFileData());
+            p->fns.AddTail(strPlaylistFile);
+            OpenMedia(p);
+            return;
+          }
+        }
+      }
+      else
+        break;
+
+      // Go to the next NULL character.
+      while (*p++);
+    } while (*p); // end of string
+  }
 
   CAutoPtr<OpenDVDData> p(new OpenDVDData());
   if(p)
@@ -6189,6 +6355,31 @@ void CMainFrame::OnFileSaveImage()
   }
 }
 
+void CMainFrame::SnapShootImage(std::wstring path, BOOL half)
+{
+  if (path.empty())
+    return;
+
+  /* Check if a compatible renderer is being used */
+  if(!IsRendererCompatibleWithSaveImage()) {
+    SendStatusMessage(ResStr(IDS_OSD_MSG_RENDER_NOT_COMPATE_IMAGE_CAPTURE) , 3000);
+    return;
+  }
+
+  BYTE* pData = NULL;
+  long size;
+
+  if (!GetDIB(&pData, size, true, true))
+    return;
+
+  if (!half)
+    CJpegEncoderFile(path.c_str()).Encode(pData);
+  else
+    CJpegEncoderFile(path.c_str()).EncodeHalf(pData);
+
+  delete [] pData;
+}
+
 void CMainFrame::OnFileSaveImageAuto()
 {
   AppSettings& s = AfxGetAppSettings();
@@ -6201,6 +6392,7 @@ void CMainFrame::OnFileSaveImageAuto()
 
   CString fn;
   fn.Format(_T("%s\\%s"), AfxGetAppSettings().SnapShotPath, MakeSnapshotFileName(_T("snapshot")));
+  m_lastcapturepath = fn;
   SaveImage(fn);
 }
 
@@ -6529,6 +6721,62 @@ void CMainFrame::OnFileCloseMedia()
   CloseMedia();
 }
 
+void CMainFrame::OnUserShare()
+{
+  m_pUserAccountDlg->ClearFrame();
+
+  std::wstring sUserShareLogName;
+  sUserShareLogName = PlayerPreference::GetInstance()->GetStringVar(STRVAR_USER_ACCOUNT_NAME);
+  std::wstring splayer_uuid;
+  SPlayerGUID::GenerateGUID(splayer_uuid);
+  if (sUserShareLogName == L"false")
+  {
+    // user don't login, show login web here 
+    m_pUserAccountDlg->SetUrl(L"http://m.shooter.cn/users/splayerlogin/" + splayer_uuid);
+  } 
+  else
+  {
+    // user login, show account manage web here
+    m_pUserAccountDlg->SetUrl(L"http://m.shooter.cn/users/splayeracccenter/" + splayer_uuid);
+  }
+
+  RECT rc;
+  GetWindowRect(&rc);
+  rc.top += (rc.bottom-rc.top-400)/2-10;
+  rc.left += (rc.right-rc.left-500)/2;
+  rc.right = 500;
+  rc.bottom = 400;
+
+  m_pUserAccountDlg->ShowFrame();
+  m_pUserAccountDlg->SetFramePos(rc);
+}
+
+void CMainFrame::OnUpdateUserShare(CCmdUI* pCmdUI)
+{
+  bool bIsChecking = UserAccountController::GetInstance()->IsChecking();
+  if (bIsChecking)
+  {
+    pCmdUI->Enable(FALSE);
+    pCmdUI->SetText(ResStr(IDS_USER_SHARE_CHECKING));
+  } 
+  else
+  {
+    pCmdUI->Enable(TRUE);
+    std::wstring sUserShareLogName(L"");
+    sUserShareLogName = PlayerPreference::GetInstance()->GetStringVar(STRVAR_USER_ACCOUNT_NAME);
+    if (sUserShareLogName == L"false")
+    {
+      pCmdUI->SetText(ResStr(IDS_USER_SHARE_LOGGEDOUT));
+    } 
+    else
+    {
+      CString sFormat;
+      sFormat.Format(ResStr(IDS_USER_SHARE_LOGGEDIN), sUserShareLogName.c_str());
+      pCmdUI->SetText(sFormat);
+    }
+  }
+}
+
 void CMainFrame::OnFileClosePlaylist()
 {
   SendMessage(WM_COMMAND, ID_FILE_CLOSEMEDIA);
@@ -6671,6 +6919,11 @@ void CMainFrame::OnUpdateViewNormal(CCmdUI* pCmdUI)
 
 void CMainFrame::OnViewFullscreen()
 {
+  if (IsSomethingLoaded())
+    AfxGetAppSettings().nCS |= CS_SEEKBAR; // show seekbar when playback
+  else
+    AfxGetAppSettings().nCS &= ~CS_SEEKBAR; // hide seekbar when not playback
+
   ToggleFullscreen(true, true);
 }
 
@@ -7912,7 +8165,49 @@ void CMainFrame::OnUpdatePlayFilters(CCmdUI* pCmdUI)
 {
   pCmdUI->Enable(!m_fCapturing);
 }
+void CMainFrame::On3DStereoKeepAR()
+{
+  AfxGetAppSettings().i3DStereoKeepAspectRatio = !AfxGetAppSettings().i3DStereoKeepAspectRatio;
+  MoveVideoWindow();
+  Save3DStereoPerference();
+}
+void CMainFrame::OnUpdate3DStereoKeepAR(CCmdUI *pCmdUI)
+{
+  pCmdUI->SetCheck(AfxGetAppSettings().i3DStereoKeepAspectRatio);
+}
 
+void CMainFrame::On3DStereoControl(UINT nID)
+{
+  AppSettings& s = AfxGetAppSettings();
+  UINT p = nID - ID_3DSTEREO_MENU_START + 1;
+  if (s.i3DStereo == p)
+    s.i3DStereo = 0;
+  else
+  {
+    s.i3DStereo = p;
+    if(!m_pCAP) OnEnableDX9();
+  }
+  Save3DStereoPerference();
+  MoveVideoWindow();
+}
+void CMainFrame::Save3DStereoPerference()
+{
+  AppSettings& s = AfxGetAppSettings();
+  //save 3d perference
+  std::wstring szFileHash = HashController::GetInstance()->GetSPHash(m_fnCurPlayingFile);
+  CString szSQLInsert, szSQLUpdate;
+  szSQLInsert.Format(L"INSERT OR IGNORE INTO histories_stereo  ( fpath, arg1, arg2 ) VALUES ( \"%s\", '%d', '%d') ", szFileHash.c_str(), s.i3DStereo, s.i3DStereoKeepAspectRatio);
+  szSQLUpdate.Format(L"UPDATE histories_stereo SET arg1 = '%d' , arg2 = '%d'  WHERE fpath = \"%s\" ", s.i3DStereo, s.i3DStereoKeepAspectRatio, szFileHash.c_str());
+
+  if(AfxGetMyApp()->sqlite_local_record)
+    AfxGetMyApp()->sqlite_local_record->exec_insert_update_sql_u(szSQLInsert.GetBuffer(), szSQLUpdate.GetBuffer());
+
+}
+void CMainFrame::OnUpdate3DStereoControl(CCmdUI *pCmdUI)
+{
+  if (pCmdUI->m_nID >= ID_3DSTEREO_MENU_START && pCmdUI->m_nID <= ID_3DSTEREO_MENU_END)
+    pCmdUI->SetCheck((pCmdUI->m_nID - ID_3DSTEREO_MENU_START + 1) == AfxGetAppSettings().i3DStereo);
+}
 void CMainFrame::OnPlayShaders(UINT nID)
 {
   if(nID == ID_SHADERS_START+2)
@@ -9694,7 +9989,20 @@ void CMainFrame::MoveVideoWindow(bool fShowStats)
     {
       CSize arxy = GetVideoSize();
 
-      int iDefaultVideoSize = AfxGetAppSettings().iDefaultVideoSize;
+      if (s.i3DStereoKeepAspectRatio)
+        switch(s.i3DStereo)
+        {
+          case ID_3DSTEREO_MENU_LEFTRIGHT-ID_3DSTEREO_MENU_START+1:
+          case ID_3DSTEREO_MENU_RIGHTLEFT-ID_3DSTEREO_MENU_START+1:
+            arxy.cx/=2;
+            break;
+          case ID_3DSTEREO_MENU_TOPBOTTOM-ID_3DSTEREO_MENU_START+1:
+          case ID_3DSTEREO_MENU_BOTTOMTOP-ID_3DSTEREO_MENU_START+1:
+            arxy.cy/=2;
+            break;
+        }
+
+      int iDefaultVideoSize = s.iDefaultVideoSize;
 
       CSize ws = 
         iDefaultVideoSize == DVS_HALF ? CSize(arxy.cx/2, arxy.cy/2) :
@@ -11033,7 +11341,7 @@ void CMainFrame::SetupAudioSwitcherSubMenu()
         }
         EndEnumFilters
 
-        if(szaAudioStreamArray.GetCount() > 1){
+        if(szaAudioStreamArray.GetCount() >= 1){
           for(int i = 0; i < szaAudioStreamArray.GetCount(); i++){
             szAudioStreamNameBuff.Format(ResStr(IDS_MENU_ITEM_AUDIO_STREAM_NAME), ++iAudioStreamCount, GetAnEasyToUnderstoodAudioStreamName(szaAudioStreamArray.GetAt(i)) );
             pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, sziAudioStreamArray.GetAt(i),szAudioStreamNameBuff) ;
@@ -11186,6 +11494,8 @@ CString CMainFrame::GetAnEasyToUnderstoodSubtitleName(CString szName)
       szTransdName = L"中文";
     else if(szName.Find(L"en") >= 0 )
       szTransdName = L"英文";
+    else if(szName.Find(L"No subtitle") >= 0 )
+      szTransdName = L"无字幕";
 
     break;
   default:
@@ -11212,6 +11522,7 @@ void CMainFrame::SetupSubtitlesSubMenu(int subid)
   else while(pSub->RemoveMenu(0, MF_BYPOSITION));
 
   UINT loadID = ID_FILE_LOAD_SUBTITLE;
+  int iSubtitleStreamCount = 0;
 
   UINT id ;
   if (subid == 2){
@@ -11223,7 +11534,6 @@ void CMainFrame::SetupSubtitlesSubMenu(int subid)
     // TODO: ts subtitles seems to be not working
     UINT idl = ID_FILTERSTREAMS_SUBITEM_START;
 
-    int iSubtitleStreamCount = 0;
     CString szSubtitleStreamNameBuff ;
     m_ssarray.RemoveAll();
 
@@ -11256,7 +11566,7 @@ void CMainFrame::SetupSubtitlesSubMenu(int subid)
               pSS2->Info(i, NULL, &flags, &lcid, &group, &wname, &pObj, &pUnk);
               if(!wname) { idl++; continue; }
               CString name(wname);
-              if( name.Find(_T("S")) == 0  || name.Find(_T("字幕")) == 0 ){
+              if( name.Find(_T("S")) == 0  || name.MakeLower().Find(_T("ubtitle")) >= 0 || name.Find(_T("字幕")) == 0 ){
                 name.Replace(_T("&"), _T("&&"));
                 Logging(L" Subtitle Menu %d %s", idl, name);
                 szaSubtitleStreamArray.Add( name );
@@ -11270,7 +11580,7 @@ void CMainFrame::SetupSubtitlesSubMenu(int subid)
         }
         EndEnumFilters
 
-        if(szaSubtitleStreamArray.GetCount() > 1){
+        if(szaSubtitleStreamArray.GetCount() >= 1){
           for(int i = 0; i < szaSubtitleStreamArray.GetCount(); i++){
             szSubtitleStreamNameBuff.Format(ResStr(IDS_MENU_ITEM_SUBTITLE_STREAM_NAME), ++iSubtitleStreamCount, GetAnEasyToUnderstoodAudioStreamName(szaSubtitleStreamArray.GetAt(i)) );
             pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, sziSubtitleStreamArray.GetAt(i),szSubtitleStreamNameBuff) ;
@@ -11295,7 +11605,7 @@ void CMainFrame::SetupSubtitlesSubMenu(int subid)
     pSub->AppendMenu(MF_SEPARATOR);
   }
   BOOL HavSubs = FALSE;
-  int subcount = 0;
+  int subcount = iSubtitleStreamCount;
 
   while(pos)
   {
@@ -11311,7 +11621,7 @@ void CMainFrame::SetupSubtitlesSubMenu(int subid)
       {
         CString name(pName);
         name.Replace(_T("&"), _T("&&"));
-
+        Logging(name);
         szBuf.Format(ResStr(IDS_MENU_ITEM_SUBTITLE_STREAM_NAME), ++subcount, GetAnEasyToUnderstoodSubtitleName(name));
         pSub->AppendMenu(MF_BYCOMMAND|MF_STRING|MF_ENABLED, id++, szBuf);
         HavSubs = true;
@@ -13075,6 +13385,12 @@ void CMainFrame::OnPaint()
 
 void CMainFrame::OnSize(UINT nType, int cx, int cy)
 {
+  // hide the user account dialog if drag the main frame
+  if (m_pUserAccountDlg->IsWindowVisible())
+  {
+    m_pUserAccountDlg->HideFrame();
+    m_pUserAccountDlg->SetFramePos(CRect(0, 0, 0, 0));
+  }
 
   AppSettings& s = AfxGetAppSettings();
   //the SeekBarTip may not have been created.
@@ -14668,9 +14984,15 @@ void CMainFrame::AutoSaveImage(LPCTSTR fn, bool shrink_inhalf)
 
 void CMainFrame::OnMovieShare()
 {
-  KillTimer(TIMER_MOVIESHARE);
-  SetTimer(TIMER_MOVIESHARE, 1, NULL);
-  UserShareController::GetInstance()->ToggleCommentPlane();
+  if (UserShareController::GetInstance()->ToggleCommentPlane())
+  {
+    KillTimer(TIMER_MOVIESHARE);
+    SetTimer(TIMER_MOVIESHARE, 1, NULL);
+    PostMessage(WM_COMMAND, ID_MOVIESHARE_OPEN);
+
+    if (GetMediaState() != State_Paused)
+      SendMessage(WM_COMMAND, ID_PLAY_PAUSE);
+  }
 }
 
 void CMainFrame::OnOpenShooterMedia()

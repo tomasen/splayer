@@ -66,6 +66,7 @@
 #include "ButtonManage.h"
 #include "GUIConfigManage.h"
 #include <ResLoader.h>
+#include "Controller/UserAccountController.h"
 
 DECLARE_LAZYINSTANCE(HotkeyController);
 DECLARE_LAZYINSTANCE(PlayerPreference);
@@ -78,7 +79,9 @@ DECLARE_LAZYINSTANCE(MediaCenterController);
 DECLARE_LAZYINSTANCE(UserShareController);
 DECLARE_LAZYINSTANCE(PingPongController);
 DECLARE_LAZYINSTANCE(pHashController);
+DECLARE_LAZYINSTANCE(UserAccountController);
 /////////
+static bool _skip_db = false;
 
 HINSTANCE (__stdcall * Real_ShellExecuteW)(HWND hwnd, LPCWSTR lpOperation, 
                                            LPCWSTR lpFile, LPCWSTR lpParameters,
@@ -631,8 +634,8 @@ public:
 	{
 		UpdateData();
     if (AfxGetMyApp()->m_Verinfo)
-		  m_strRevision.Format(L"%s: %d.%d (Build %s)",ResStr( IDS_ABOUT_DIALOG_VERSION_LABEL ) , HIWORD(AfxGetMyApp()->m_Verinfo->dwProductVersionMS),
-			  LOWORD(AfxGetMyApp()->m_Verinfo->dwProductVersionMS) ,  SVP_REV_STR );
+		  m_strRevision.Format(L"%s: %d.%d (Build %s)",ResStr( IDS_ABOUT_DIALOG_VERSION_LABEL ) , (int)HIWORD(AfxGetMyApp()->m_Verinfo->dwProductVersionMS),
+			  (int)LOWORD(AfxGetMyApp()->m_Verinfo->dwProductVersionMS) ,  SVP_REV_STR );
 		UpdateData(FALSE);
 		return TRUE;
 	}
@@ -1015,6 +1018,7 @@ void CMPlayerCApp::PreProcessCommandLine()
 			CFileStatus fs;
 			if(!str2.IsEmpty() && CFileGetStatus(str2, fs)) str = str2;
 		}
+    if (str.CompareNoCase(L"/snapshot") == 0) _skip_db = true;
 
 		m_cmdln.AddTail(str);
 	}
@@ -1304,31 +1308,28 @@ LONG WINAPI Mine_ChangeDisplaySettingsExW(LPCWSTR lpszDeviceName, LPDEVMODEW lpD
 
 HANDLE WINAPI Mine_CreateFileA(LPCSTR p1, DWORD p2, DWORD p3, LPSECURITY_ATTRIBUTES p4, DWORD p5, DWORD p6, HANDLE p7)
 {
-	//CStringA fn(p1);
-	//fn.MakeLower();
-	//int i = fn.Find(".part");
-	//if(i > 0 && i == fn.GetLength() - 5)
-	p3 |= FILE_SHARE_WRITE;
-	p6 |= FILE_FLAG_SEQUENTIAL_SCAN;
-	//if(strstr(p1, ("SVPDebug")) == 0)  SVP_LogMsg6(("Mine_CreateFileA %s") , p1);
-    //if( strcmp (p1 + nLen-4, ".ini") == 0)
-        //SVP_LogMsg5(L"Mine_CreateFileW %s", p1);
+  p3 |= FILE_SHARE_WRITE;
+  p6 |= FILE_FLAG_SEQUENTIAL_SCAN;
 
-	return Real_CreateFileA(p1, p2, p3, p4, p5, p6, p7);
+  return Real_CreateFileA(p1, p2, p3, p4, p5, p6, p7);
 }
 #include "Ifo.h"
-BOOL CreateFakeVideoTS(LPCWSTR strIFOPath, LPWSTR strFakeFile, size_t nFakeFileSize)
+BOOL CreateFakeVideoTSorFile(LPCWSTR strIFOPath, LPWSTR strFakeFile, size_t nFakeFileSize)
 {
 	BOOL		bRet = FALSE;
 	WCHAR		szTempPath[MAX_PATH];
 	WCHAR		strFileName[MAX_PATH];
-	WCHAR		strExt[10];
+	WCHAR		strExt[MAX_PATH];
 	CIfo		Ifo;
 
 	if (!GetTempPathW(MAX_PATH, szTempPath)) return FALSE;
 
 	_wsplitpath_s (strIFOPath, NULL, 0, NULL, 0, strFileName, countof(strFileName), strExt, countof(strExt));
 	_snwprintf_s  (strFakeFile, nFakeFileSize, _TRUNCATE, L"%sMPC%s%s", szTempPath, strFileName, strExt);
+
+  int		nLen  = wcslen(strIFOPath);
+  if (nLen >= 4 && _wcsicmp (strIFOPath + nLen-4, L".ifo") != 0)
+    return TRUE;
 
 	if (Ifo.OpenFile (strIFOPath) &&
 		Ifo.RemoveUOPs()  &&
@@ -1408,30 +1409,23 @@ BOOL WINAPI Mine_WritePrivateProfileStringA(
 
 HANDLE WINAPI Mine_CreateFileW(LPCWSTR p1, DWORD p2, DWORD p3, LPSECURITY_ATTRIBUTES p4, DWORD p5, DWORD p6, HANDLE p7)
 {
-	HANDLE	hFile = INVALID_HANDLE_VALUE;
-	WCHAR	strFakeFile[MAX_PATH];
-	int		nLen  = wcslen(p1);
+  HANDLE	hFile = INVALID_HANDLE_VALUE;
+  WCHAR	strFakeFile[MAX_PATH];
+  int		nLen  = wcslen(p1);
 
-    //if(CString(p1).Find( L"SVPDebug") < 0)
-	 //   SVP_LogMsg5(L"Mine_CreateFileW %s", p1);
+  p3 |= FILE_SHARE_WRITE;
+  p6 |= FILE_FLAG_SEQUENTIAL_SCAN;
 
-	p3 |= FILE_SHARE_WRITE;
-	p6 |= FILE_FLAG_SEQUENTIAL_SCAN;
+  if (nLen>=4 && (_wcsicmp (p1 + nLen-4, L".ifo") == 0 || 
+      (_skip_db && (_wcsicmp (p1 + nLen-3, L".db") == 0 || 
+       (nLen > 11 && _wcsicmp (p1 + nLen-11, L".db-journal") == 0)))))
+    if (CreateFakeVideoTSorFile(p1, strFakeFile, countof(strFakeFile)))
+      hFile = Real_CreateFileW(strFakeFile, p2, p3, p4, p5, p6, p7);
 
-	if (nLen>=4 && _wcsicmp (p1 + nLen-4, L".ifo") == 0)
-	{
-		if (CreateFakeVideoTS(p1, strFakeFile, countof(strFakeFile)))
-		{
-			hFile = Real_CreateFileW(strFakeFile, p2, p3, p4, p5, p6, p7);
-		}
-	}
+  if (hFile == INVALID_HANDLE_VALUE)
+    hFile = Real_CreateFileW(p1, p2, p3, p4, p5, p6, p7);
 
-	if (hFile == INVALID_HANDLE_VALUE)
-		hFile = Real_CreateFileW(p1, p2, p3, p4, p5, p6, p7);
-
-	//if(wcsstr(p1, _T("SVPDebug")) == 0)  SVP_LogMsg5(_T("Mine_CreateFileW %s") , p1);
-
-	return hFile;
+  return hFile;
 }
 
 
@@ -1581,6 +1575,9 @@ void CMPlayerCApp::InitInstanceThreaded(INT64 CLS64){
       sqlite_local_record->exec_sql(L"CREATE TABLE  IF NOT EXISTS histories_stream (\"fpath\" TEXT, \"subid\" INTEGER, \"subid2\" INTEGER, \"audioid\" INTEGER, \"videoid\" INTEGER )");
       sqlite_local_record->exec_sql(L"CREATE UNIQUE INDEX  IF NOT EXISTS \"hispks\" on histories_stream (fpath ASC)");
 
+      sqlite_local_record->exec_sql(L"CREATE TABLE  IF NOT EXISTS histories_stereo (\"fpath\" TEXT, \"arg1\" INTEGER, \"arg2\" INTEGER, \"arg3\" INTEGER, \"arg4\" INTEGER )");
+      sqlite_local_record->exec_sql(L"CREATE UNIQUE INDEX  IF NOT EXISTS \"hispkd\" on histories_stereo (fpath ASC)");
+
       sqlite_local_record->exec_sql(L"CREATE TABLE  IF NOT EXISTS histories (\"fpath\" TEXT, \"subid\" INTEGER, \"subid2\" INTEGER, \"audioid\" INTEGER, \"stoptime\" INTEGER, \"modtime\" INTEGER )");
       sqlite_local_record->exec_sql(L"CREATE UNIQUE INDEX  IF NOT EXISTS \"hispk\" on histories (fpath ASC)");
       sqlite_local_record->exec_sql(L"CREATE INDEX  IF NOT EXISTS \"modtime\" on histories (modtime ASC)");
@@ -1596,8 +1593,9 @@ void CMPlayerCApp::InitInstanceThreaded(INT64 CLS64){
     path.ReleaseBuffer();
 
     DWORD             dwHandle;
-    UINT              cbTranslate = sizeof(VS_FIXEDFILEINFO);
+    UINT              cbLen = 0;
     UINT dwLen  = GetFileVersionInfoSize(path, &dwHandle);
+    VS_FIXEDFILEINFO* verInfo = NULL;
 
     TCHAR * lpData = (TCHAR*) malloc(dwLen);
     if(lpData)
@@ -1605,7 +1603,12 @@ void CMPlayerCApp::InitInstanceThreaded(INT64 CLS64){
       memset((char*)lpData, 0 , dwLen);
       if(GetFileVersionInfo(path, dwHandle, dwLen, lpData) != 0)
       {
-        VerQueryValue(lpData, TEXT("\\"), (LPVOID*)&m_Verinfo, &cbTranslate);
+        VerQueryValue(lpData, TEXT("\\"), (LPVOID*)&verInfo, &cbLen);
+        if (cbLen > 0 && !m_Verinfo)
+        {
+          m_Verinfo = (VS_FIXEDFILEINFO*)malloc(cbLen);
+          memcpy_s(m_Verinfo, cbLen, verInfo, cbLen);
+        }
       }
       free(lpData);
     }
@@ -1725,6 +1728,10 @@ void CMPlayerCApp::InitInstanceThreaded(INT64 CLS64){
 
   Sleep(1000);
   PingPongController::GetInstance()->PingPong();
+
+  // get the user account info from web
+  UserAccountController::GetInstance()->_Stop();
+  UserAccountController::GetInstance()->_Start();
 
   SVP_LogMsg5(L"Settings::InitInstanceThreaded 23");
 }
@@ -2165,7 +2172,7 @@ BOOL CMPlayerCApp::InitInstance()
 	CString dumpMsg;
 	if(GetLastError() == ERROR_ALREADY_EXISTS
 	&& (!(m_s.fAllowMultipleInst || (m_s.nCLSwitches&CLSW_NEW) || m_cmdln.IsEmpty())
-		|| (m_s.nCLSwitches&CLSW_ADD)))
+		|| (m_s.nCLSwitches&CLSW_ADD)) && !(CLSW_SNAPSHOT&m_s.nCLSwitches))
 	{
 		if(HWND hWnd = ::FindWindow(MPC_WND_CLASS_NAME, NULL))
 		{
@@ -2230,13 +2237,19 @@ BOOL CMPlayerCApp::InitInstance()
 	pFrame->RestoreFloatingControlBars();
 	pFrame->SetIcon(AfxGetApp()->LoadIcon(IDR_MAINFRAME), TRUE);
 	pFrame->DragAcceptFiles();
-	pFrame->ShowWindow((m_s.nCLSwitches&CLSW_MINIMIZED)?SW_SHOWMINIMIZED:SW_SHOW);
-	pFrame->UpdateWindow();
 	pFrame->m_hAccelTable = m_s.hAccel;
+  if (m_s.nCLSwitches&CLSW_SNAPSHOT)
+    pFrame->ShowWindow(SW_HIDE);
+  else
+  {
+	  pFrame->ShowWindow((m_s.nCLSwitches&CLSW_MINIMIZED)?SW_SHOWMINIMIZED:SW_SHOW);
+	  CWinThread* th_InitInstance = AfxBeginThread(Thread_InitInstance , this,  THREAD_PRIORITY_LOWEST, 0, CREATE_SUSPENDED);
+	  th_InitInstance->m_pMainWnd = AfxGetMainWnd();
+	  th_InitInstance->ResumeThread();
 
-	CWinThread* th_InitInstance = AfxBeginThread(Thread_InitInstance , this,  THREAD_PRIORITY_LOWEST, 0, CREATE_SUSPENDED);
-	th_InitInstance->m_pMainWnd = AfxGetMainWnd();
-	th_InitInstance->ResumeThread();
+    pFrame->SetFocus();
+  }
+  pFrame->UpdateWindow();
 
 // 	m_s.WinLircClient.SetHWND(m_pMainWnd->m_hWnd);
 // 	if(m_s.fWinLirc) m_s.WinLircClient.Connect(m_s.WinLircAddr);
@@ -2244,8 +2257,6 @@ BOOL CMPlayerCApp::InitInstance()
 // 	if(m_s.fUIce) m_s.UIceClient.Connect(m_s.UIceAddr);
 
 	SendCommandLine(m_pMainWnd->m_hWnd);
-
-	pFrame->SetFocus();
 
 	if(!dumpMsg.IsEmpty())
 		pFrame->SendStatusMessage(dumpMsg, 5000);
@@ -2346,6 +2357,8 @@ CMPlayerCApp::Settings::Settings()
   , bUsePowerDVD()
   , skinid(0)
   , skinname(L"")
+  , i3DStereo(0)
+  , i3DStereoKeepAspectRatio(0)
 {
 
 }
@@ -4553,10 +4566,11 @@ void CMPlayerCApp::Settings::ParseCommandLine(CAtlList<CString>& cmdln)
 						nCLSwitches |= CLSW_FIXEDSIZE;
 				}
 			}
+      else if(sw == _T("snapshot")) nCLSwitches |= CLSW_SNAPSHOT;
 			else if(sw == _T("monitor") && pos) {iMonitor = _tcstol(cmdln.GetNext(pos), NULL, 10); nCLSwitches |= CLSW_MONITOR;}
 			else nCLSwitches |= CLSW_HELP|CLSW_UNRECOGNIZEDSWITCH;
 		}
-		else
+    else
 		{
 			slFiles.AddTail(param);
 		}
@@ -4832,6 +4846,9 @@ extern BOOL AFXAPI AfxComparePath(LPCTSTR lpszPath1, LPCTSTR lpszPath2);
 
 void CMPlayerCApp::Settings::CRecentFileAndURLList::Add(LPCTSTR lpszPathName)
 {
+  if (_skip_db)
+    return;
+
 	ASSERT(m_arrNames != NULL);
 	ASSERT(lpszPathName != NULL);
 	ASSERT(AfxIsValidString(lpszPathName));

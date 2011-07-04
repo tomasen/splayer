@@ -287,13 +287,13 @@ int  CPCIDCalculator::GetPCMac( char * buf, int buflen )
 
 
 
-int __declspec(dllexport) GetPCID(char buf[16], char flag)
+int GetPCID(char buf[16], char flag)
 {
     CPCIDCalculator  pcid;
 	return pcid.CalculatePCID(buf, flag);
 }
 
-int __declspec(dllexport) GetFullPCID(char buf[16])
+int GetFullPCID(char buf[16])
 {
 	CPCIDCalculator  pcid;
 	return pcid.CalculatePCID(buf, PCID_DISK | PCID_MAC | PCID_CPU | PCID_BIOS);

@@ -9,7 +9,7 @@
 #include "sndfile.h"
 #include "pHashController.h"
 #include "zmq/zmqhelper.h"
-#include "../apps/mplayerc/Model/pHashModel.h"
+#include "../../apps/mplayerc/Model/pHashModel.h"
 #include "../FGManager.h"
 
 #define FREE_PHASHMEM() \
@@ -332,11 +332,13 @@ void pHashController::Init(CComQIPtr<IAudioSwitcherFilter> pASF, std::wstring m_
     switch(result)
     {
     case CALPHASH:
-      // do insert 
-      HookData(pASF);
-      Execute(TRUE);
-      uint8_t cmd = (result == 1) ? INSERT : LOOKUP;
-      SetCmd(cmd);
+      {
+        // do insert 
+        HookData(pASF);
+        Execute(TRUE);
+        uint8_t cmd = (result == 1) ? INSERT : LOOKUP;
+        SetCmd(cmd);
+      }
       break;
     case NOCALCHASH:
     default:

@@ -8,32 +8,54 @@
 //  It also provides Windows GDI based painting capability to draw
 //  mock up rendering for dialog display purposes.
 //
-class SubtitleStyle
+
+typedef enum _FontName {
+  None, SimHei, SimSun, KaiTi
+}FontName;
+
+struct StyleParam
+{
+  StyleParam():_fontname(None), fontname(L""), fontsize(0), fontcolor(0), strokesize(0)
+    , strokecolor(0), shadowsize(0), shadowcolor(0)
+  {
+
+  }
+
+  StyleParam(FontName _fn, std::wstring fn, int fs, int fc, int strokes, int strokec,
+    int shadows, int shadowc):_fontname(_fn), fontname(fn), fontsize(fs)
+    ,fontcolor(fc), strokesize(strokes), strokecolor(strokec), shadowsize(shadows)
+    ,shadowcolor(shadowc)
+  {
+
+  }
+
+  FontName       _fontname;
+  std::wstring   fontname;
+  int            fontsize;
+  int            fontcolor;
+  int            strokesize;
+  int            strokecolor;
+  int            shadowsize;
+  int            shadowcolor;
+//   int            pos_vert;
+//   int            pos_horz;
+};
+
+class DrawSubtitle
 {
 public:
-  typedef enum _FontName {
-    None, SimHei, SimSun, KaiTi
-  }FontName;
+  DrawSubtitle();
 
-  typedef struct _STYLEPARAM{
-    FontName  _fontname;
-    wchar_t   fontname[128];
-    int fontsize;
-    int fontcolor;      // color is 0x00bbggrr
-    int strokesize;
-    int strokecolor;    // color is 0x00bbggrr
-    int shadowoffset;
-    int shadowcolor;    // color is 0x00bbggrr
-    int pos_vert;
-    int pos_horz;
-  }STYLEPARAM;
-
-  static bool GetStyleParams(int index_main, int index_sec, STYLEPARAM** param_refout);
-  static int GetStyleCount(bool secondary = false);
-  static int DetectFontType(std::wstring fontname);
+  void SetFont(StyleParam sp);
+  void SetSampleText(std::wstring text);
 #ifdef _WINDOWS_
-  static void Paint(HDC dc, RECT* rc, int index_main, int index_sec, bool selected = false);
+  void Paint(HDC dc, WTL::CRect rc);
 #endif
+
+private:
+  StyleParam m_styleparam;
+  std::wstring m_sptext;
+  WTL::CBitmap m_bmp;
 };
 
 #endif // SUBTITLESTYLE_H

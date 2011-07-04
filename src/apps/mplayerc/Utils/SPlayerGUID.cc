@@ -83,4 +83,15 @@ std::wstring SPlayerGUID::RandMakeGUID()
 
 std::wstring SPlayerGUID::GetComputerName(){  std::wstring sRet;  DWORD dwSize = MAX_COMPUTERNAME_LENGTH + 1;  wchar_t szComputerName[MAX_COMPUTERNAME_LENGTH + 1 + 1] = {0};  ::GetComputerName(szComputerName, &dwSize);  sRet = szComputerName;  std::transform(sRet.begin(), sRet.end(), sRet.begin(), towupper);  return sRet;}std::wstring SPlayerGUID::GetComputerID(){  char buf[16];  if (!GetPCID(buf, PCID_ALL))    return L"";  wchar_t ret[128] = {0};
   unsigned long* p = (unsigned long*)buf;
-  swprintf_s(ret, 128, L"%0.8X%0.8X%0.8X%0.8X", p[0], p[1], p[2], p[3]);  return ret;}
+  swprintf_s(ret, 128, L"%0.8X%0.8X%0.8X%0.8X", p[0], p[1], p[2], p[3]);  return ret;}std::wstring SPlayerGUID::GetUserName()
+{
+  std::wstring sRet;
+
+  DWORD dwSize = UNLEN + 1;
+  wchar_t szUserName[UNLEN + 1 + 1] = {0};
+  ::GetUserName(szUserName, &dwSize);
+
+  sRet = szUserName;
+
+  return sRet;
+}

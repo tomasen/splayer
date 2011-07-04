@@ -51,7 +51,7 @@ function getBusyOverlay(parent,overlay,busy) {
 		while(cs.display.search(/block|inline-block|table|inline-table|list-item/i)<0) {parent=parent.parentNode; if(parent.currentStyle){cs=parent.currentStyle;}else if(document.defaultView&&document.defaultView.getComputedStyle){cs=document.defaultView.getComputedStyle(parent,"");}else{cs=parent.style;} if(parent.tagName.toUpperCase()=='BODY') {parent="";}}
 		if(typeof(parent)==='object') {
 			if(!overlay) {overlay=new Object(); overlay['opacity']=0; overlay['color']='white'; overlay['text']=''; overlay['style']='';}
-			if(!busy) {busy=new Object(); busy['size']=32; busy['color']='#000'; busy['type']='tube'; busy['iradius']=8; busy['weight']=3; busy['count']=12; busy['speed']=96; busy['minopac']=.25;}
+			if(!busy) {busy=new Object(); busy['size']=32; busy['color']='#ddd'; busy['type']='tube'; busy['iradius']=8; busy['weight']=3; busy['count']=12; busy['speed']=96; busy['minopac']=.25;}
 			opacity=Math.max(0.0,Math.min(1.0,(typeof overlay['opacity']==='number'?overlay['opacity']:0)||0)); color=(typeof overlay['color']==='string'?overlay['color']:'white');
 			text=(typeof overlay['text']==='string'?overlay['text']:''); styles=(typeof overlay['style']==='string'?overlay['style']:'');
 			canvas=document.createElement("canvas"); isCV=canvas.getContext?1:0; 
@@ -244,5 +244,5 @@ function start_busy()
  ctrl = getBusyOverlay("viewport");
 }
 </script>
-<head><body onload="start_busy();" ><div id="viewport" style="height:100%;"></div><body>
+<head><body onload="start_busy();" style="background-color:#64676c" ><div id="viewport" style="height:100%;"></div><body>
 </html> 

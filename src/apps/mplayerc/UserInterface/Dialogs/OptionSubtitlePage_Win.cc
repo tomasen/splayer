@@ -6,13 +6,13 @@
 #include "../../MainFrm.h"
 #include "../../Controller/SPlayerDefs.h"
 #include "../../Controller/PlayerPreference.h"
+#include "CustomizeFontDlg.h"
 
 OptionSubtitlePage::OptionSubtitlePage(void):
-  m_mainstyle(0),
-  m_secstyle(0)
+  m_mainstyle(0)
+, m_secstyle(0)
 {
-  // init style entry height
-  m_styleentry_height = ::GetSystemMetrics(SM_CYICON)*7/5;
+
 }
 
 BOOL OptionSubtitlePage::OnInitDialog(HWND hwnd, LPARAM lParam)
@@ -27,28 +27,67 @@ BOOL OptionSubtitlePage::OnInitDialog(HWND hwnd, LPARAM lParam)
     it != text_ar.end(); it++)
     m_secsubtitlestyle.AddString(it->c_str());
   RECT rc_stylelist;
-  m_subtitlestyle.Attach(GetDlgItem(IDC_LIST));
+  //m_subtitlestyle.Attach(GetDlgItem(IDC_LIST));
+  m_subtitlestyle.SetParent(m_hWnd);
+  m_subtitlestyle.SubclassWindow(GetDlgItem(IDC_LIST));
   m_subtitlestyle.GetWindowRect(&rc_stylelist);
   m_styleentry_width = rc_stylelist.right - rc_stylelist.left;
-  RefreshStyles();
+  m_subtitlestyle.InitializeList();
+  //RefreshStyles();
 
   AppSettings& s = AfxGetAppSettings();
   // calculate current settings according to AppSettings class s.subdefstyle
   // retrieve subtitle style settings, and check which available style is closest to
   // the given settings, then set |m_mainstyle| to corresponding one.
   // s.subdefstyle compare font type, font color, border color shadow color
-  for (int i = 0; i < SubtitleStyle::GetStyleCount(); i++)
+  int cursel = -1;
+  FontParamsManage fpm;
+  for (int i = 0; i < m_subtitlestyle.GetCount(); i++)
   {
-    SubtitleStyle::STYLEPARAM* sp = NULL;
-    if (SubtitleStyle::GetStyleParams(i, -1, &sp) && sp->fontcolor == s.subdefstyle.colors[0] 
-    && sp->strokecolor == s.subdefstyle.colors[2] && sp->shadowcolor == s.subdefstyle.colors[3] 
-    && (sp->_fontname == SubtitleStyle::DetectFontType((LPCTSTR)s.subdefstyle.fontName)) //×ÖÌå
-      )
+    StyleParam* mainsp = NULL;
+    StyleParam* secondsp = NULL;
+    StyleParam* settingsp1 = fpm.DetectFontType((LPCTSTR)s.subdefstyle.fontName);
+    StyleParam* settingsp2 = fpm.DetectFontType((LPCTSTR)s.subdefstyle2.fontName);
+    m_subtitlestyle.GetItemData(i, &mainsp, &secondsp);
+    if (mainsp->fontcolor == s.subdefstyle.colors[0] 
+        && mainsp->strokecolor == s.subdefstyle.colors[2] 
+        && mainsp->shadowcolor == s.subdefstyle.colors[3] 
+        && settingsp1 && mainsp->fontname == settingsp1->fontname //×ÖÌå
+        && secondsp->fontcolor == s.subdefstyle2.colors[0] 
+        && secondsp->strokecolor == s.subdefstyle2.colors[2] 
+        && secondsp->shadowcolor == s.subdefstyle2.colors[3] 
+        && settingsp2 && secondsp->fontname == settingsp2->fontname 
+       )
     {
-      m_subtitlestyle.SetCurSel(i);
+      cursel = i;
       break;
     }
   }
+  if (cursel < 0)
+  {
+    //lossy match
+    for (int i = 0; i < m_subtitlestyle.GetCount(); i++)
+    {
+      StyleParam* mainsp = NULL;
+      StyleParam* secondsp = NULL;
+      StyleParam* settingsp1 = fpm.DetectFontType((LPCTSTR)s.subdefstyle.fontName);
+      StyleParam* settingsp2 = fpm.DetectFontType((LPCTSTR)s.subdefstyle2.fontName, FALSE);
+      m_subtitlestyle.GetItemData(i, &mainsp, &secondsp);
+      if (mainsp->fontcolor == s.subdefstyle.colors[0] 
+          && settingsp1 && mainsp->fontname == settingsp1->fontname //×ÖÌå
+          && secondsp->fontcolor == s.subdefstyle2.colors[0] 
+          && settingsp2 && secondsp->fontname == settingsp2->fontname 
+         )
+      {
+        cursel = i;
+        break;
+      }
+    }
+
+    if (cursel < 0)
+      cursel = 0;
+  }
+  m_subtitlestyle.SetCurSel(cursel);
 
   m_secsubtitlestyle.SetCurSel((s.subdefstyle2.scrAlignment == 2)?1:0);
 
@@ -84,7 +123,7 @@ BOOL OptionSubtitlePage::OnInitDialog(HWND hwnd, LPARAM lParam)
   }
 
   DoDataExchange();
-
+  
   return TRUE;
 }
 
@@ -139,14 +178,13 @@ void OptionSubtitlePage::OnSelectCustomFolder(UINT uNotifyCode, int nID, CWindow
 
 void OptionSubtitlePage::DrawItem(LPDRAWITEMSTRUCT lpdis)
 {
-  SubtitleStyle::Paint(lpdis->hDC, &lpdis->rcItem, lpdis->itemID, -1,
-    (lpdis->itemState & ODS_SELECTED)?true:false);
+  m_subtitlestyle.DrawItem(lpdis);
 }
 
 void OptionSubtitlePage::MeasureItem(LPMEASUREITEMSTRUCT lpmis)
 {
   if (lpmis->CtlID == IDC_LIST)
-    lpmis->itemHeight = m_styleentry_height;
+    m_subtitlestyle.MeasureItem(lpmis);
 }
 
 int OptionSubtitlePage::OnSetActive()
@@ -159,23 +197,42 @@ void OptionSubtitlePage::ApplySubtitleStyle()
   DoDataExchange(TRUE);
   AppSettings& s = AfxGetAppSettings();
   // retrieve variables from screen
-  SubtitleStyle::STYLEPARAM* sp = NULL;
-  if (SubtitleStyle::GetStyleParams(m_subtitlestyle.GetCurSel(), -1, &sp))
+  StyleParam* mainsp;
+  StyleParam* secondsp;
+  m_subtitlestyle.GetItemData(m_subtitlestyle.GetCurSel(), &mainsp, &secondsp);
+
+  if (mainsp)
   {
-    s.subdefstyle.colors[0] = s.subdefstyle.colors[1] = sp->fontcolor;
-    s.subdefstyle.colors[2] = sp->strokecolor;
-    s.subdefstyle.colors[3] = sp->shadowcolor;
-    s.subdefstyle.fontName = sp->fontname;
-    s.subdefstyle.fontSize = sp->fontsize;
-    s.subdefstyle.fontWeight = (sp->fontname == L"WenQuanYi Micro Hei" 
-                                || sp->fontname == L"\x6587\x6CC9\x9A7F\x5FAE\x737C\x9ED1"  // Chinese for "WenQuanYi Micro Hei"
+    s.subdefstyle.colors[0] = s.subdefstyle.colors[1] = mainsp->fontcolor;
+    s.subdefstyle.colors[2] = mainsp->strokecolor;
+    s.subdefstyle.colors[3] = mainsp->shadowcolor;
+    s.subdefstyle.fontName = mainsp->fontname.c_str();
+    s.subdefstyle.fontSize = mainsp->fontsize;
+    s.subdefstyle.fontWeight = (mainsp->fontname == L"WenQuanYi Micro Hei" 
+                                || mainsp->fontname == L"\x6587\x6CC9\x9A7F\x5FAE\x737C\x9ED1"  // Chinese for "WenQuanYi Micro Hei"
                                 )?FW_BOLD:FW_NORMAL; // Using BOLD if it is font WenQuanYi
     s.subdefstyle.scrAlignment = 2;
-    s.subdefstyle.shadowDepthX = s.subdefstyle.shadowDepthY = sp->shadowoffset;
-    s.subdefstyle.outlineWidthX = s.subdefstyle.outlineWidthY = sp->strokesize;
+    s.subdefstyle.shadowDepthX = s.subdefstyle.shadowDepthY = mainsp->shadowsize;
+    s.subdefstyle.outlineWidthX = s.subdefstyle.outlineWidthY = mainsp->strokesize;
 
-    s.subdefstyle2 = s.subdefstyle;
+    //s.subdefstyle2 = s.subdefstyle;
   }
+
+  if (secondsp)
+  {
+    s.subdefstyle2.colors[0] = s.subdefstyle2.colors[1] = secondsp->fontcolor;
+    s.subdefstyle2.colors[2] = secondsp->strokecolor;
+    s.subdefstyle2.colors[3] = secondsp->shadowcolor;
+    s.subdefstyle2.fontName = secondsp->fontname.c_str();
+    s.subdefstyle2.fontSize = secondsp->fontsize;
+    s.subdefstyle2.fontWeight = (secondsp->fontname == L"WenQuanYi Micro Hei" 
+      || secondsp->fontname == L"\x6587\x6CC9\x9A7F\x5FAE\x737C\x9ED1"  // Chinese for "WenQuanYi Micro Hei"
+      )?FW_BOLD:FW_NORMAL; // Using BOLD if it is font WenQuanYi
+    s.subdefstyle2.scrAlignment = 2;
+    s.subdefstyle2.shadowDepthX = s.subdefstyle2.shadowDepthY = secondsp->shadowsize;
+    s.subdefstyle2.outlineWidthX = s.subdefstyle2.outlineWidthY = secondsp->strokesize;
+  }
+
   s.subdefstyle2.scrAlignment = ( m_secsubtitlestyle.GetCurSel() == 1)?2:8;
 
   s.autoDownloadSVPSub = m_fetchsubtitlefromshooter;
@@ -233,6 +290,9 @@ int OptionSubtitlePage::OnApply()
 void OptionSubtitlePage::RefreshStyles()
 {
   // insert bogus entries
-  m_subtitlestyle.SetCount(SubtitleStyle::GetStyleCount(false));
+  //m_subtitlestyle.SetCount(m_fontparams.GetStyleCount());
   m_subtitlestyle.Invalidate();
+  m_subtitlestyle.UpdateWindow();
 }
+
+

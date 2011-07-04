@@ -21,7 +21,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
-			InheritedPropertySheets=".\wtl_integration.vsprops;$(SolutionDir)src\apps\mplayerc\atlserver_integration.vsprops;..\..\common.vsprops;$(SolutionDir)src\release.vsprops;$(SolutionDir)Thirdparty\sinet.vsprops;$(SolutionDir)Thirdparty\sqlitepp.vsprops;$(SolutionDir)Thirdparty\sphash.vsprops;$(SolutionDir)Thirdparty\unrar_dll.vsprops;$(SolutionDir)Thirdparty\boost.vsprops;..\..\..\Thirdparty\tcl.vsprops"
+			InheritedPropertySheets=".\wtl_integration.vsprops;$(SolutionDir)src\apps\mplayerc\atlserver_integration.vsprops;$(SolutionDir)src\common.vsprops;$(SolutionDir)src\release.vsprops;$(SolutionDir)Thirdparty\sinet.vsprops;..\..\..\Thirdparty\sqlitepp.vsprops;$(SolutionDir)Thirdparty\sphash.vsprops;$(SolutionDir)Thirdparty\unrar_dll.vsprops;..\..\..\Thirdparty\boost.vsprops;..\..\..\Thirdparty\tcl.vsprops;..\..\..\Thirdparty\jsoncpp.vsprops;..\..\..\Thirdparty\librhash.vsprops"
 			UseOfMFC="1"
 			UseOfATL="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -1072,18 +1072,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\newui\bitmap1.bmp"
-				>
-			</File>
-			<File
-				RelativePath=".\res\newui\bitmap4.bmp"
-				>
-			</File>
-			<File
-				RelativePath=".\res\newui\bitmap5.bmp"
-				>
-			</File>
-			<File
 				RelativePath=".\res\web\blank.gif"
 				>
 			</File>
@@ -1428,6 +1416,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\newui\oauthcloseout.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\oauthcloseover.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\web\ok.jpg"
 				>
 			</File>
@@ -1496,11 +1492,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\newui\playtime_battery.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\newui\playtime_colon.bmp"
 				>
 			</File>
 			<File
 				RelativePath=".\res\newui\playtime_minus.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newui\playtime_percent.bmp"
 				>
 			</File>
 			<File
@@ -1672,11 +1676,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon\video.ico"
+				RelativePath=".\res\ecio.icons\video.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\res\ecio.icons\video.ico"
+				RelativePath=".\res\icon\video.ico"
 				>
 			</File>
 			<File
@@ -1710,6 +1714,10 @@
 			<Filter
 				Name="shaders"
 				>
+				<File
+					RelativePath=".\res\shaders\3dstereo.psh"
+					>
+				</File>
 				<File
 					RelativePath=".\res\shaders\BT601BT701.psh"
 					>
@@ -2016,6 +2024,14 @@
 				</File>
 				<File
 					RelativePath=".\Controller\ShareController.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Controller\UserAccountController.cc"
+					>
+				</File>
+				<File
+					RelativePath=".\Controller\UserAccountController.h"
 					>
 				</File>
 			</Filter>
@@ -2471,11 +2487,35 @@
 				Name="Dialogs"
 				>
 				<File
+					RelativePath=".\UserInterface\Dialogs\CustomizeFontDlg.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Dialogs\CustomizeFontDlg.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Dialogs\DhtmlDlgBase.cc"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Dialogs\DhtmlDlgBase.h"
+					>
+				</File>
+				<File
 					RelativePath=".\UserInterface\Dialogs\MovieComment_Win.cc"
 					>
 				</File>
 				<File
 					RelativePath=".\UserInterface\Dialogs\MovieComment_Win.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Dialogs\OAuthDlg.cc"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Dialogs\OAuthDlg.h"
 					>
 				</File>
 				<File
@@ -2568,6 +2608,22 @@
 				</File>
 				<File
 					RelativePath=".\UserInterface\Support\BtnEditCtrl.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Support\FontParamsManage.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Support\FontParamsManage.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Support\ListImpl.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface\Support\ListImpl.h"
 					>
 				</File>
 				<File

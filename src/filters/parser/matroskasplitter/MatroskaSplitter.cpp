@@ -447,12 +447,14 @@ avcsuccess:
 			{
 				Name.Format(L"Audio %d", iAudio++);
 
-                mt.majortype = MEDIATYPE_Audio;
+        mt.majortype = MEDIATYPE_Audio;
 				mt.formattype = FORMAT_WaveFormatEx;
 				WAVEFORMATEX* wfe = (WAVEFORMATEX*)mt.AllocFormatBuffer(sizeof(WAVEFORMATEX));
 				memset(wfe, 0, mt.FormatLength());
 				wfe->nChannels = (WORD)pTE->a.Channels;
 				wfe->nSamplesPerSec = (DWORD)pTE->a.SamplingFrequency;
+        if (!wfe->nSamplesPerSec && CodecID == "A_AC3")
+          wfe->nSamplesPerSec = 48000;
 				wfe->wBitsPerSample = (WORD)pTE->a.BitDepth;
 				wfe->nBlockAlign = (WORD)((wfe->nChannels * wfe->wBitsPerSample) / 8);
 				wfe->nAvgBytesPerSec = wfe->nSamplesPerSec * wfe->nBlockAlign;

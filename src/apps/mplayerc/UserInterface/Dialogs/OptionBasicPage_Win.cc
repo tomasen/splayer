@@ -44,7 +44,7 @@ BOOL OptionBasicPage::OnInitDialog(HWND hwnd, LPARAM lParam)
   // s.logostretch 
   // 1 keep aspect ratio
   // 2 stretch to full screen
-  m_autoscalebkgnd = !!(pref->GetIntVar(INTVAR_LOGO_AUTOSTRETCH) & 1);
+  m_autoscalebkgnd = pref->GetIntVar(INTVAR_LOGO_AUTOSTRETCH)>1;
   m_useaero = s.bAeroGlass;
   m_repeat = s.fLoopForever;
   m_mintotray = s.fTrayIcon;

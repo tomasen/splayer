@@ -208,6 +208,9 @@ public:
             ct = sl2.GetHead();
         }
 
+        if (ct.GetLength() > 256) //anti-exploits 
+          ct = L"";
+
         while(body.GetLength() < 256)
         {
           CStringA str;

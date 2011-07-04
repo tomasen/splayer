@@ -566,14 +566,10 @@ void CPlayerSeekBar::OnMouseMove(UINT nFlags, CPoint point)
 	}
 	if(bMouseMoved){
 		CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
+    pFrame->KillTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER);
 		if(pFrame->IsSomethingLoaded()){
-			/*CPoint pt;
-			GetCursorPos(&pt);
-			pt.y -= 20 * pFrame->m_nLogDPIY / 96;
-			pt.x += 8 ;
-			m_toolTip.SendMessage(TTM_TRACKPOSITION, 0, (LPARAM)MAKELPARAM(pt.x, pt.y));
-			m_toolTip.SendMessage(TTM_TRACKACTIVATE, TRUE, (LPARAM)&m_ti);
-			;*/
+      pFrame->SetTimer(pFrame->TIMER_FULLSCREENMOUSEHIDER, 8000, NULL); 
+			
 			if(pFrame->m_tip.IsWindowVisible()){
 				SetTimecodeTip();
 			}else{

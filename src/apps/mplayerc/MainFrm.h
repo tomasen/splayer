@@ -33,6 +33,7 @@
 #include "GraphCore.h"
 
 #include "SkinFolderManager.h"
+#include "UserInterface/Dialogs/OAuthDlg.h"
 
 
 class CMainFrame : public CFrameWnd, public CDropTarget , public CGraphCore
@@ -74,6 +75,7 @@ public:
   // Graph Functions and Variables
   friend class CGraphCore;
 
+  std::wstring m_lastcapturepath;
   bool  m_bMustUseExternalTimer;
 
   bool IsSomethingLoaded() {return(m_iMediaLoadState != MLS_CLOSED);}
@@ -134,6 +136,7 @@ public:
   BOOL IsRendererCompatibleWithSaveImage();
   void SaveImage(LPCTSTR fn = NULL);
   void AutoSaveImage(LPCTSTR fn, bool istoobig = false);
+  void SnapShootImage(std::wstring path, BOOL half);
 
   // UI                 Functions and Variables
   friend class CPPageFileInfoSheet;
@@ -296,6 +299,7 @@ private:
   CSize m_original_size_of_current_video;
   CSize m_last_size_of_current_kind_of_video;
   int m_movieShared;
+  OAuthDlg *m_pUserAccountDlg;
 public:
   void SVPSubDownloadByVPath(CString szVPath, CAtlList<CString>* szaStatMsgs = NULL);
   void SVP_UploadSubFileByVideoAndSubFilePath(CString fnVideoFilePath, CString szSubPath, int iDelayMS = 0, CAtlList<CString>* szaStatMsgs = NULL, CStringArray* szaPostTerms = NULL);
@@ -512,6 +516,8 @@ public:
   afx_msg void OnFileClosePlaylist();
   afx_msg void OnFileCloseMedia(); // no menu item
   afx_msg void OnUpdateFileClose(CCmdUI* pCmdUI);
+  afx_msg void OnUserShare();  // show the user's logging status
+  afx_msg void OnUpdateUserShare(CCmdUI* pCmdUI);
 
   afx_msg void OnViewCaptionmenu();
   afx_msg void OnUpdateViewCaptionmenu(CCmdUI* pCmdUI);
@@ -682,6 +688,12 @@ public:
   afx_msg void OnLanguage(UINT nID);
   afx_msg void OnColorControl(UINT nID);
 
+  afx_msg void On3DStereoControl(UINT nID);
+  afx_msg void OnUpdate3DStereoControl(CCmdUI *pCmdUI);
+  afx_msg void On3DStereoKeepAR();
+  afx_msg void OnUpdate3DStereoKeepAR(CCmdUI *pCmdUI);
+  void Save3DStereoPerference();
+  
   afx_msg void OnShowSUBVoteControlBar();
   afx_msg void OnShowEQControlBar();
   afx_msg void OnShowChannelNormalizerBar();

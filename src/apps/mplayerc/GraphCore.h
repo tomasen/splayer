@@ -179,7 +179,9 @@ public:
   bool BuildGraphVideoAudio(int fVPreview, bool fVCapture, int fAPreview, bool fACapture);
 
   //  Snapshot
-  bool GetDIB(BYTE** ppData, long& size, bool fSilent = false);
+  void GetSnapShotSliently(const std::vector<std::wstring> &args);
+  bool _skip_ui;
+  bool GetDIB(BYTE** ppData, long& size, bool fSilent = false, bool with_sub = false);
   void SaveDIB(LPCTSTR fn, BYTE* pData, long size);
   void SaveThumbnails(LPCTSTR fn);
   int m_VolumeBeforeFrameStepping;

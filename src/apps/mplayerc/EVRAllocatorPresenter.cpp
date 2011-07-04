@@ -408,6 +408,7 @@ private:
   bool m_bEvtQuit;
   HANDLE m_hEvtFlush; // Discard all buffers
   bool m_bEvtFlush;
+  HANDLE m_hEvtRenderStart;
 
   bool m_bUseInternalTimer;
   int32 m_LastSetOutputRange;
@@ -551,6 +552,7 @@ CEVRAllocatorPresenter::CEVRAllocatorPresenter(HWND hWnd, HRESULT& hr )
   m_hEvtQuit = INVALID_HANDLE_VALUE;
   m_hEvtSampleNotify = INVALID_HANDLE_VALUE;
   m_bEvtQuit = 0;
+  m_hEvtRenderStart = INVALID_HANDLE_VALUE;
   m_SampleNotified = true;
   m_HasSampleNotified = 0;
   m_bEvtFlush = 0;
@@ -659,6 +661,7 @@ void CEVRAllocatorPresenter::StartWorkerThreads()
   {
     m_hEvtQuit = CreateEvent(NULL, TRUE, FALSE, NULL);
     m_hEvtFlush = CreateEvent(NULL, TRUE, FALSE, NULL);
+    m_hEvtRenderStart  = CreateEvent(NULL, TRUE, FALSE, NULL);
     m_hEvtSampleNotify = CreateEvent(NULL, TRUE, FALSE, NULL);
     m_hMixerThread = ::CreateThread(NULL, 0, MixerThreadStatic, (LPVOID)this, 0, &dwThreadId);
     SetThreadPriority(m_hMixerThread, THREAD_PRIORITY_HIGHEST);
@@ -695,6 +698,7 @@ void CEVRAllocatorPresenter::StopWorkerThreads()
 
     if (m_hEvtFlush != INVALID_HANDLE_VALUE) CloseHandle (m_hEvtFlush);
     if (m_hEvtQuit != INVALID_HANDLE_VALUE) CloseHandle (m_hEvtQuit);
+    if (m_hEvtRenderStart != INVALID_HANDLE_VALUE) CloseHandle (m_hEvtRenderStart);
 
     m_SampleNotified = true;
     m_HasSampleNotified = 0;
@@ -787,6 +791,7 @@ STDMETHODIMP CEVRAllocatorPresenter::NonDelegatingQueryInterface(REFIID riid, vo
 // IMFClockStateSink
 STDMETHODIMP CEVRAllocatorPresenter::OnClockStart(MFTIME hnsSystemTime,  LONGLONG llClockStartOffset)
 {
+  SetEvent(m_hEvtRenderStart);
   SVP_LogMsg5( L"CEVRAllocatorPresenter::OnClockStart");
   m_nRenderState = Started;
   return S_OK;
@@ -1754,9 +1759,20 @@ void CEVRAllocatorPresenter::MixerThread()
 
             m_dFrameCycle = m_rtFrameCycle / 10000.0;
             m_bInterlaced = ExtractInterlaced(&mt);
-
-            SVP_LogMsg5(L"m_bInterlaced %d %f",m_bInterlaced, m_fps);
+            // SVP_LogMsg5(L"m_bInterlaced %d %f %d ",m_bInterlaced, m_fps, m_nRenderState);
           }
+
+          // Wait till clock started
+          if (m_nRenderState == Shutdown || m_nRenderState == Stopped)
+          {
+            Logging(L"WaitForSingleObject ClockStart ");
+            if (WaitForSingleObject(m_hEvtRenderStart, 10000) == WAIT_OBJECT_0)
+            {
+              ResetEvent(m_hEvtRenderStart);
+              Logging(L"WaitForSingleObject ClockStart End");
+            }
+          }
+
           // Update internal subtitle clock
           if(m_bUseInternalTimer && m_pSubPicQueue)
             m_pSubPicQueue->SetFPS(m_fps);
@@ -1765,11 +1781,9 @@ void CEVRAllocatorPresenter::MixerThread()
             m_pSubPicQueue2->SetFPS(m_fps);
 
         }
-
       }
-      else
-        //SVP_LogMsg6(" (m_hEvtSampleNotify Skip);");
-      
+      //else
+      //  SVP_LogMsg6(" (m_hEvtSampleNotify Skip);");
 
       break;
     }
@@ -1857,9 +1871,8 @@ void CEVRAllocatorPresenter::RenderThread()
               systemTime = 0;
 
               HRESULT hrc =  m_pClock->GetCorrelatedTime(0, &llRefClockTime, &systemTime); // Get zero-based reference clock time. systemTime is not used for anything here
-
               if(llRefClockTime < -10000000i64){
-                SVP_LogMsg5(L"ORG   (LONG)((m_llSampleTime - llRefClockTime) / 10000) %d %d %f %f %d %d %x" ,  (LONG)(m_llSampleTime/10000), (llRefClockTime < 0), double(llRefClockTime), double(systemTime), (LONG)(llRefClockTime/10000), (LONG)((m_llSampleTime - llRefClockTime) / 10000), hrc);
+                SVP_LogMsg5(L"((m_llSampleTime - llRefClockTime) %d %d %f %f %d %d %x" ,  (LONG)(m_llSampleTime/10000), (llRefClockTime < 0), double(llRefClockTime), double(systemTime), (LONG)(llRefClockTime/10000), (LONG)((m_llSampleTime - llRefClockTime) / 10000), hrc);
                 m_bPendingResetDevice = true;
                 llRefClockTime = m_llSampleTime;
                 SVP_LogMsg5(L"Pending reset");
@@ -2051,6 +2064,7 @@ void CEVRAllocatorPresenter::RenderThread()
         if (!g_bExternalSubtitleTime) __super::SetTime (g_tSegmentStart + m_llSampleTime);
         //Logging(L"WaitForMultipleObjects Paint2 %d ",m_nCurSurface );
         Paint(true);
+
         //Logging(L"WaitForMultipleObjects Paint2 end");
         m_pcFramesDrawn++;
 
@@ -2228,8 +2242,6 @@ HRESULT CEVRAllocatorPresenter::BeginStreaming()
     m_VSyncDetectThread->m_pMainWnd = AfxGetMainWnd();
     m_VSyncDetectThread->ResumeThread();
   }
-
-  m_nRenderState = Started;
 
   return S_OK;
 }

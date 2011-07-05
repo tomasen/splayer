@@ -34,8 +34,9 @@ public:
 
   void OnAdClick();
   void DoHideAd();
-  time_t _mouseover_time;
-
+  DWORD  _mouseover_time;
+  bool   _mouseover;
+  
   void CleanUpOlderDatasFromHideAds();
   bool ShouldBeCleanUp(const std::wstring& str);
 

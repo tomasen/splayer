@@ -646,6 +646,7 @@ INT_PTR CPlayerToolBar::OnToolHitTest(	CPoint point,TOOLINFO* pTI 	) const
   return -1;
 
 };
+
 void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point)
 {
   int diffx = m_lastMouseMove.x - point.x;
@@ -682,11 +683,14 @@ void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point)
     if (rc.PtInRect(pi))
     {
       SetCursor(cursorHand);
-      m_adctrl.SetCloseBtnDisplay(true);
-      m_adctrl._mouseover_time = time(NULL);
+      m_adctrl._mouseover = true;
+      m_adctrl._mouseover_time = timeGetTime();
     }
     else
+    {
+      m_adctrl._mouseover = false;
       m_adctrl.SetCloseBtnDisplay(false);
+    }
   }
 
   if(m_nItemToTrack == ID_VOLUME_THUMB && m_bMouseDown)
@@ -1101,6 +1105,9 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
         if (m_adctrl.IsAdsEmpty())
           break;
         
+        if (m_adctrl._mouseover && timeGetTime() - m_adctrl._mouseover_time > 800)
+          m_adctrl.SetCloseBtnDisplay(true);
+
         m_adctrl.AllowAnimate(true);
         Invalidate();
         break;
@@ -1121,7 +1128,7 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
         if (m_adctrl.IsCurAdShownDone())
         {
           m_adctrl.ShowNextAd();
-          if ((time(NULL) - m_adctrl._mouseover_time) > 3)
+          if ((timeGetTime() - m_adctrl._mouseover_time) > 3000)
             SetTimer(TIMER_ADPLAYSWITCH, 5000, NULL);
           else
             SetTimer(TIMER_ADPLAYSWITCH, 3000, NULL);

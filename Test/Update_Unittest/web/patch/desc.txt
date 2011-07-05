@@ -1,0 +1,5 @@
+#patches from MD5 of localfile to the patch file needed
+pathces = {
+    '2fd11376033f148d705ed5718b30a2f2':'1056.patch',
+    '82c04d5e72105095763cc8407878edb6':'1048.patch',
+}

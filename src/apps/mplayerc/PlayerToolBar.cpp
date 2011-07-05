@@ -676,10 +676,10 @@ void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point)
   if (m_adctrl.GetVisible())
   {
 /*    CRect rcAd = m_btnplaytime->m_rcHitest - rc.TopLeft();*/
-    CRect rcAd = m_adctrl.GetRect();
+    CRect rc = m_adctrl.GetRect();
     CPoint pi = point;
     ScreenToClient(&pi);
-    if (rcAd.PtInRect(pi))
+    if (rc.PtInRect(pi))
     {
       SetCursor(cursorHand);
       m_adctrl.SetCloseBtnDisplay(true);
@@ -1012,11 +1012,10 @@ void CPlayerToolBar::OnLButtonUp(UINT nFlags, CPoint point)
         m_adctrl.SetVisible(false);
         InvalidateRect(&m_adctrl.GetRect(), false);
       }
-      return;
     }
-
-    if (rcAd.PtInRect(point))
+    else if (rcAd.PtInRect(point))
       m_adctrl.OnAdClick();
+      
   }
 
   CPoint xpoint = point + rc.TopLeft() ;

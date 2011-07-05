@@ -247,8 +247,8 @@ void AdController::ShowNextAd()
   if (++m_nCurAd > m_vtAds.size() - 1)
     m_nCurAd = 0;
 
-  if (old_ad != m_nCurAd)
-    m_lastAdTime = time(NULL);
+  //if (old_ad != m_nCurAd)
+  m_lastAdTime = time(NULL);
 
   m_nCurX = m_adrc.left;
   m_nCurY = m_adrc.top;
@@ -262,7 +262,7 @@ bool AdController::IsCurAdShownDone()
 
   if ((time(NULL) - m_lastAdTime) > 15)
     return true;
-
+  
   int closeBtnDimention = m_bCloseBtnShow? m_marginStr + m_closeBtnrc.Width() + m_marginBtn:0;
   if (m_nCurX + m_szCurAd.cx + closeBtnDimention <= m_rc.right)
     return true;

@@ -1,7 +1,6 @@
 
 #include "stdafx.h"
 #include <sinet.h>
-
 #include "../../../filters/switcher/audioswitcher/AudioSwitcher.h"
 #include "pHashController.h"
 #include "../Model/PHashComm.h"
@@ -23,7 +22,7 @@ pHashController::pHashController(void)
   // collect times
   PHashCommCfg.cfg.push_back(1);
   // collect duration (secs)
-  PHashCommCfg.cfg.push_back(20);
+  PHashCommCfg.cfg.push_back(10);
   // delimiter (don't modify)
   PHashCommCfg.cfg.push_back(0);
   // collect point of time
@@ -71,8 +70,8 @@ void pHashController::_Thread()
   st_buffer.push_back(0);
   std::string ret =  (char*)&st_buffer[0];
   ret.push_back(0);
- 
-  if (1 || ret.c_str() == "0")
+
+  if (atoi(ret.c_str()) == 1)
   {
     NewData();
     PHashCommCfg.stop = FALSE;
@@ -150,6 +149,9 @@ PHashHandler::PHashHandler(std::vector<BYTE>* data, std::wstring sphash)
 
   m_data = data;
   m_sphash = sphash;
+
+  m_phash = NULL;
+  m_phashlen = 0;
 }
 
 PHashHandler::~PHashHandler(void)
@@ -159,36 +161,23 @@ PHashHandler::~PHashHandler(void)
 
 void PHashHandler::_Thread()
 {
-  if (!ConverDataToFloat())
-  {
-    m_data->clear();
-    m_data->resize(0);
-    pHashController::GetInstance()->UnRefs();
+  if (!SamplesToPhash())
     return;
-  }
 
-  int phashlen = 0;
-  uint32_t* phash = NULL;
-
-  phash = ph_audiohash(m_buffer, m_bufflen, m_sr, phashlen);
-  free(m_buffer);
-  m_buffer = NULL;
-  m_bufflen = 0;
-  
-  if (!phash)
+  if (!m_phashlen || !m_phash)
     return;
 
   void* context = zmq_init(1);
   if (!context)
   {
-    ph_freemem_hash(NULL, phash);
+    ph_freemem_hash(NULL, m_phash);
     return;
   }
 
   void* client = socket_connect(context, ZMQ_REQ, "tcp://192.168.10.18:5000");
   if (!client)
   {
-    ph_freemem_hash(NULL, phash);
+    ph_freemem_hash(NULL, m_phash);
     return;
   }
 
@@ -196,84 +185,96 @@ void PHashHandler::_Thread()
   int sphashlen = sphash.size();
   sendmore_msg_data(client, &sphashlen, sizeof(int), NULL, NULL);
   sendmore_msg_data(client, &sphash[0], sphashlen, NULL, NULL);
-  sendmore_msg_data(client, &phashlen, sizeof(int), NULL, NULL);
-  send_msg_data(client, phash, phashlen*sizeof(uint32_t), NULL, NULL);
+  sendmore_msg_data(client, &m_phashlen, sizeof(int), NULL, NULL);
+  send_msg_data(client, m_phash, m_phashlen*sizeof(uint32_t), NULL, NULL);
 
   void* data;
   size_t msgsize, moresize;
   int64_t more;
   recieve_msg(client, &msgsize, &more, &moresize, (void**)&data);
   
-  ph_freemem_hash(NULL, phash);
+  ph_freemem_hash(NULL, m_phash);
+  m_phash = NULL;
+  m_phashlen = 0;
+
   zmq_close(client);
   zmq_term(context);
 }
 
-BOOL PHashHandler::ConverDataToFloat()
+BOOL PHashHandler::SamplesToPhash()
 {
-  int buflen = m_data->size();
-  float *buf = new float[buflen];
+  size_t buflen = m_data->size();
+  float* buf = new float[buflen];
+  Logging("~~~~~~~~~~~~~~~~~~ [phash] buffer length: %d", buflen);
 
   pHashController* phashctrl = pHashController::GetInstance();
-  int samplebyte = (phashctrl->PHashCommCfg.format.wBitsPerSample >> 3);                             // the size of one sample in Byte unit
-  int nsample = buflen / phashctrl->PHashCommCfg.format.nChannels / samplebyte;                      // each channel sample amount
-  int samples = nsample * phashctrl->PHashCommCfg.format.nChannels;                                  // all channels sample amount
+  int samplebyte = (phashctrl->PHashCommCfg.format.wBitsPerSample >> 3);
+  int nsample = buflen / phashctrl->PHashCommCfg.format.nChannels / samplebyte;
+  int samples = nsample * phashctrl->PHashCommCfg.format.nChannels;
   
-  // alloc input buffer for signal
-  BYTE* indata = &(*m_data)[0];
+  BYTE* indata;
+  BOOL ret;
 
-  // Making all data into float type 
-  if (SampleToFloat(indata, buf, samples, phashctrl->PHashCommCfg.pcmtype) == FALSE)
-  {
-    delete [] buf;
-    return FALSE;
-  }
+  // Making all data into float type
+  indata = &(*m_data)[0];
+  ret = SampleToFloat(indata, buf, samples, phashctrl->PHashCommCfg.pcmtype);
 
   m_data->clear();
   m_data->resize(0);
   pHashController::GetInstance()->UnRefs();
 
+  if (!ret)
+  {
+    delete [] buf;
+    return ret;
+  }
+
   // Mix as Mono channel
   int MonoLen = buflen / phashctrl->PHashCommCfg.format.nChannels;
   float* MonoChannelBuf = new float[MonoLen];
-  if (MixChannels(buf, samples, phashctrl->PHashCommCfg.format.nChannels, nsample, MonoChannelBuf) == TRUE)
-    delete[] buf;
-  else
+  ret = MixChannels(buf, samples, phashctrl->PHashCommCfg.format.nChannels, nsample, MonoChannelBuf);
+  delete[] buf;
+
+  if (!ret)
   {
-    delete[] buf;
     delete[] MonoChannelBuf;
-    return FALSE;
+    return ret;
   }
 
   // Samplerate to 8kHz 
-  float* outmem = NULL;
-  int outnums = 0;
-  if (DownSample(MonoChannelBuf, nsample, m_sr, phashctrl->PHashCommCfg.format.nSamplesPerSec, &outmem, outnums) == TRUE)
-    delete[] MonoChannelBuf;
-  else
-  {
-    free(outmem);
-    delete[] MonoChannelBuf;
-    return FALSE;
-  }
+  float* outbuff = NULL;
+  int bufflen = 0;
+  ret = DownSample(MonoChannelBuf, nsample, m_sr, phashctrl->PHashCommCfg.format.nSamplesPerSec, &outbuff, bufflen);
+  delete[] MonoChannelBuf;
 
-  m_buffer = outmem;
-  m_bufflen = outnums;
+  if (!ret)
+    return ret;
 
-  return TRUE;
+
+  int phashlen = 0;
+  uint32_t* phash = NULL;
+
+  m_phash = ph_audiohash(outbuff, bufflen, m_sr, m_phashlen);
+  delete [] outbuff;
+
+  if (!m_phash)
+    m_phashlen = 0;
+
+  return ret;
 }
 
 BOOL PHashHandler::DownSample(float* inbuf, int nsample, int des_sr, int org_sr, float** outbuf, int& outlen)
 {
   // resample float array , set desired samplerate ratio
-  double sr_ratio = (double)(des_sr)/(double)org_sr;
-  if (src_is_valid_ratio(sr_ratio) == 0)
+  double sr_ratio = (double)des_sr / (double)org_sr;
+  if (!src_is_valid_ratio(sr_ratio))
     return FALSE;
 
   // allocate output buffer for conversion
-  outlen = sr_ratio * nsample;
-  *outbuf = (float*)malloc(outlen * sizeof(float)); 
-  if (!*outbuf)
+  outlen = sr_ratio * (double)nsample;
+  //*outbuf = (float*)malloc(outlen * sizeof(float)); 
+  float* buffer = new float[outlen * sizeof(float)];
+  if (!buffer)
     return FALSE;
 
   int error;
@@ -283,7 +284,7 @@ BOOL PHashHandler::DownSample(float* inbuf, int nsample, int des_sr, int org_sr,
 
   SRC_DATA src_data;
   src_data.data_in = inbuf;
-  src_data.data_out = *outbuf;
+  src_data.data_out = buffer;
   src_data.input_frames = nsample;
   src_data.output_frames = outlen;
   src_data.end_of_input = SF_TRUE;
@@ -292,13 +293,13 @@ BOOL PHashHandler::DownSample(float* inbuf, int nsample, int des_sr, int org_sr,
   // Sample rate conversion
   if (src_process(src_state, &src_data))
   {
-    free(*outbuf);
+    delete [] buffer;
     src_delete(src_state);
     return FALSE;
   }
 
   src_delete(src_state);
-
+  *outbuf = buffer;
   return TRUE;
 }
 
@@ -316,7 +317,7 @@ BOOL PHashHandler::MixChannels(float* buf, int samples, int channels, int nsampl
           MonoChannelBuf[bufindx] += buf[j+i];
         MonoChannelBuf[bufindx++] /= channels;
       }
-    }while (bufindx < nsample);
+    } while (bufindx < nsample);
   }
   else if (channels == 6)
   { // TODO: now i won't work actually

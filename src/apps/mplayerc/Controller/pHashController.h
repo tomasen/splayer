@@ -27,6 +27,7 @@
 
 #include "LazyInstance.h"
 #include <threadhelper.h>
+#include <stdint.h>
 
 class pHashController:
   public LazyInstanceImpl<pHashController>,
@@ -60,7 +61,7 @@ public:
   void _Thread();
 
 private:
-  BOOL ConverDataToFloat();
+  BOOL SamplesToPhash();
   BOOL DownSample(float* inbuf, int nsample, int des_sr,
     int org_sr, float** outbuf, int& outlen);
   BOOL MixChannels(float* buf, int samples, int channels,
@@ -71,7 +72,7 @@ private:
 private:
   std::vector<BYTE>* m_data;
   std::wstring m_sphash;
-  float* m_buffer;
-  int m_bufflen;
+  uint32_t* m_phash;
+  int m_phashlen;
   int m_sr;
 };

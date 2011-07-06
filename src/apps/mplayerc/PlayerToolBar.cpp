@@ -1105,7 +1105,7 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
         if (m_adctrl.IsAdsEmpty())
           break;
         
-        if (m_adctrl._mouseover && timeGetTime() - m_adctrl._mouseover_time > 800)
+        if (m_adctrl._mouseover && timeGetTime() - m_adctrl._mouseover_time > 400)
           m_adctrl.SetCloseBtnDisplay(true);
 
         m_adctrl.AllowAnimate(true);

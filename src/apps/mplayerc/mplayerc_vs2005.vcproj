@@ -1248,10 +1248,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon\DVD.ico"
-				>
-			</File>
-			<File
 				RelativePath=".\res\ecio.icons\dvd.ico"
 				>
 			</File>
@@ -1673,10 +1669,6 @@
 			</File>
 			<File
 				RelativePath=".\res\web\updatesetting_uesetbg_hover.jpg"
-				>
-			</File>
-			<File
-				RelativePath=".\res\icon\video.ico"
 				>
 			</File>
 			<File

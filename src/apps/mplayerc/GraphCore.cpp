@@ -768,20 +768,6 @@ bool CGraphCore::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
         SetShaders(true);
       }
 
-      // Setup pHash Env
-      if(pMS)
-      {
-        __int64 rtDur = 0;
-        pMS->GetDuration(&rtDur);
-        pHashController::GetInstance()->CheckEnv(rtDur);
-      }
-
-      // for collect phash
-      CComQIPtr<IAudioSwitcherFilter> pASF = FindFilter(__uuidof(CAudioSwitcherFilter), pGB);
-      pHashController::GetInstance()->Init(pASF, m_fnCurPlayingFile.GetBuffer());
-      m_fnCurPlayingFile.ReleaseBuffer();
-
-
       // === EVR !
       pGB->FindInterface(__uuidof(IMFVideoDisplayControl), (void**)&m_pMFVDC,  TRUE);
       if (m_pMFVDC)
@@ -830,11 +816,24 @@ bool CGraphCore::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
       {
         if(p->rtStart > 0)
           GetMainFrame()->PostMessage(WM_RESUMEFROMSTATE, (WPARAM)PM_FILE, (LPARAM)(p->rtStart/10000)); // REFERENCE_TIME doesn't fit in LPARAM under a 32bit env.
+        else
+        {
+          if (CComQIPtr<IAudioSwitcherFilter> pASF = FindFilter(__uuidof(CAudioSwitcherFilter), pGB))
+            pHashController::GetInstance()->Check(p->rtStart, pMS, pASF, m_fnCurPlayingFile);
+        }
       }
       else if(OpenDVDData* p = dynamic_cast<OpenDVDData*>(pOMD.m_p))
       {
         if(p->pDvdState)
           GetMainFrame()->PostMessage(WM_RESUMEFROMSTATE, (WPARAM)PM_DVD, (LPARAM)(CComPtr<IDvdState>(p->pDvdState).Detach())); // must be released by the called message handler
+        else
+        {
+          if (CComQIPtr<IAudioSwitcherFilter> pASF = FindFilter(__uuidof(CAudioSwitcherFilter), pGB))
+          {
+            REFERENCE_TIME st = 0;
+            pHashController::GetInstance()->Check(st, pMS, pASF, m_fnCurPlayingFile);
+          }
+        }
       }
       else if(OpenDeviceData* p = dynamic_cast<OpenDeviceData*>(pOMD.m_p))
         ApplyOptionToCaptureBar(p);
@@ -843,9 +842,6 @@ bool CGraphCore::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
       {
         POSITION pos = pOMD->subs.GetHeadPosition();
         while(pos){ LoadSubtitle(pOMD->subs.GetNext(pos));}
-
-       
-
       }
 
       if(::GetCurrentThreadId() == AfxGetApp()->m_nThreadID)
@@ -914,11 +910,9 @@ void CGraphCore::CloseMediaPrivate()
   SVP_LogMsg5(L"CloseMediaPrivate");
   m_iMediaLoadState = MLS_CLOSING;
  
-  pHashController::GetInstance()->Execute(FALSE);
   OnPlayStop(); // SendMessage(WM_COMMAND, ID_PLAY_STOP);
 
-  Logging("Release pHash and reset");
-  pHashController::GetInstance()->ReleasePhashAll();
+  pHashController::GetInstance()->PHashCommCfg.stop = TRUE;
 
   m_iPlaybackMode = PM_NONE;
   m_iSpeedLevel = 0;

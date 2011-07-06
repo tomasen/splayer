@@ -12620,11 +12620,6 @@ void CMainFrame::OpenCurPlaylistItem(REFERENCE_TIME rtStart)
 
   // MediaCenterController::GetInstance()->Playback(pli.m_fns.GetHead().GetString());
   if(p) OpenMedia(p);
-  
-  // if Start point is not zero , turn off phash
-  if (rtStart != 0)
-    pHashController::GetInstance()->SetSwitchStatus(pHashController::NOCALCHASH);
- 
 }
 
 void CMainFrame::AddCurDevToPlaylist()
@@ -15138,12 +15133,5 @@ void CMainFrame::SearchSkinFolder()
 
 void CMainFrame::OnFilledUp4pHash()
 {
-  // Start dealing with the data from audioswitcher filter
-  pHashController* hashctrl = pHashController::GetInstance();  
-  if (hashctrl->GetSwitchStatus() != pHashController::NOCALCHASH)
-  {
-    Logging("Start pHash filled up");
-    hashctrl->_Stop();
-    hashctrl->_Start();
-  }
+  pHashController::GetInstance()->NewData();
 }

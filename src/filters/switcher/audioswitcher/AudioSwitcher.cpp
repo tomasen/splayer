@@ -336,8 +336,7 @@ HRESULT CAudioSwitcherFilter::Transform(IMediaSample* pIn, IMediaSample* pOut)
 	int lTotalInputChannels = wfe->nChannels;
 	int lTotalOutputChannels =  wfeout->nChannels;
   
-  SetTypeOfPCM(iWePCMType);
-  FPCollect(pIn, pDataIn, wfe, rtStart, rtStop, rtDur);
+  PHashCollect(pDataIn, iWePCMType, wfe, pIn, rtDur);
 
 	SVP_LogMsg5(L"Chan %d %d %d %d %d %d %d %d %d",lTotalInputChannels ,lTotalOutputChannels , wfe->nSamplesPerSec , wfeout->nSamplesPerSec, wfe->wBitsPerSample, wfeout->wBitsPerSample
 		,wfe->nBlockAlign , wfeout->nBlockAlign, pIn->GetActualDataLength());
@@ -1291,146 +1290,217 @@ STDMETHODIMP CAudioSwitcherFilter::SetEQControl ( int lEQBandControlPreset, floa
 
 }
 
-STDMETHODIMP CAudioSwitcherFilter::SetpHashControl(PHASHBLOCK* pbPtr)
+STDMETHODIMP CAudioSwitcherFilter::SetPhashCfg(PHashCommCfg_st* cfg)
 {
-  FingerPrint::SetpHashControl(pbPtr);
+  PHashCommCfg = cfg;
   return S_OK;
 }
 
-FingerPrint::FingerPrint():
-   m_pHashFlag(TRUE),
-   m_pHashPtr(NULL)
+FingerCollect::FingerCollect(void)
+{
+  PHashCommCfg = NULL;
+}
+
+FingerCollect::~FingerCollect(void)
 {
 
 }
-FingerPrint::~FingerPrint()
-{
 
-}
-// phash data filler
-HRESULT FingerPrint::FillData4pHash(BYTE* pDataIn, long BufferLen)
+void FingerCollect::PHashCollect(BYTE* pDataIn, int pcmtype, WAVEFORMATEX* wfe, IMediaSample* pIn, REFERENCE_TIME& rtDur)
 {
-  if (m_pHashPtr == NULL)
-    return S_OK;
+  if (!PHashCommCfg || PHashCommCfg->stop)
+    return;
 
-  for (int i = 0; i < BufferLen; i++ )
-    m_pHashPtr->phashdata.push_back(((unsigned char *)pDataIn)[i]); 
-  return S_OK;
+  REFERENCE_TIME rtStart, rtStop;
+  if (VFW_E_SAMPLE_TIME_NOT_SET == pIn->GetTime(&rtStart, &rtStop))
+    return;
+
+  PHashCommCfg->pcmtype = pcmtype;
+  PHashCommCfg->format = *wfe;
+
+  rtStop = rtDur + rtStart;
+
+  if (rtStart < PHashCommCfg->stime && rtStop > PHashCommCfg->stime 
+    && rtStop < PHashCommCfg->etime)                                        // the first part of data
+  {
+    int len = GetRawLength(PHashCommCfg->stime - rtStart, wfe->nChannels, wfe->wBitsPerSample, wfe->nSamplesPerSec);
+    FillRawBuffer(pDataIn+len, pIn->GetActualDataLength() - len);
+  }
+  else if (rtStart == PHashCommCfg->stime)
+    FillRawBuffer(pDataIn, pIn->GetActualDataLength());
+
+  else if (rtStart == PHashCommCfg->etime)
+    PostMessage(AfxGetApp()->m_pMainWnd->m_hWnd, WM_COMMAND, ID_PHASH_COLLECTEND, NULL);
+
+  else if (rtStop > PHashCommCfg->etime && rtStart < PHashCommCfg->etime
+    && rtStart > PHashCommCfg->stime)
+  {
+    int len = GetRawLength(PHashCommCfg->etime - rtStart, wfe->nChannels, wfe->wBitsPerSample, wfe->nSamplesPerSec);
+    FillRawBuffer(pDataIn, len);
+    PostMessage(AfxGetApp()->m_pMainWnd->m_hWnd, WM_COMMAND, ID_PHASH_COLLECTEND, NULL);
+  }
+  else if (rtStart > PHashCommCfg->stime && rtStop < PHashCommCfg->etime)
+    FillRawBuffer(pDataIn, pIn->GetActualDataLength());
 }
 
-void FingerPrint::SetpHashControl(PHASHBLOCK* pbPtr)
+void FingerCollect::FillRawBuffer(BYTE* pDataIn, int len)
 {
-  m_pHashPtr = pbPtr;
+  for (int i = 0; i < len; i++)
+    PHashCommCfg->data->push_back(pDataIn[i]);
 }
+
+int FingerCollect::GetRawLength(REFERENCE_TIME dur, int channels, 
+                                int bitsPerSample, int samplePerSec)
+{
+  if (dur < 0)
+    dur *= -1;
+
+  int bps = channels * (bitsPerSample>>3) * samplePerSec;
+  int len = dur / (double)UNITS * bps;
+
+  return len;
+}
+
+// STDMETHODIMP CAudioSwitcherFilter::SetpHashControl(PHASHBLOCK* pbPtr)
+// {
+//   FingerPrint::SetpHashControl(pbPtr);
+//   return S_OK;
+// }
+
+// FingerPrint::FingerPrint():
+//    m_pHashFlag(TRUE),
+//    m_pHashPtr(NULL)
+// {
+// 
+// }
+// FingerPrint::~FingerPrint()
+// {
+// 
+// }
+// // phash data filler
+// HRESULT FingerPrint::FillData4pHash(BYTE* pDataIn, long BufferLen)
+// {
+//   if (m_pHashPtr == NULL)
+//     return S_OK;
+// 
+//   for (int i = 0; i < BufferLen; i++ )
+//     m_pHashPtr->phashdata.push_back(((unsigned char *)pDataIn)[i]); 
+//   return S_OK;
+// }
+
+// void FingerPrint::SetpHashControl(PHASHBLOCK* pbPtr)
+// {
+//   m_pHashPtr = pbPtr;
+// }
 
 // Get the exact time pointer of the block and the len after start point 
-void FingerPrint::AlignDataBlock(BYTE* datain, REFERENCE_TIME& start, REFERENCE_TIME& rttime, 
-                                          int channels, int bitsPerSample, int samplePerSec,
-                                          BYTE* dataout, int& len)
-{
-  REFERENCE_TIME dur = rttime - start;
-  if (dur < 0)
-    dur = start - rttime;
-  len = channels * (bitsPerSample>>3) * samplePerSec;
-  double len1 = dur/(double)UNITS;
-  double len2 = (double)len * len1;
-  len = (int)len2;
-  dataout = datain + len;
-}
-
-void FingerPrint::FPCollect(IMediaSample* pIn, BYTE* pDataIn, WAVEFORMATEX* wfe, 
-                          REFERENCE_TIME& rtStart, REFERENCE_TIME& rtStop, REFERENCE_TIME& rtDur)
-{
-  if (!m_pHashPtr || !m_pHashPtr->isrun || m_pHashPtr->isseek)
-    return;
-
-  // collect complete
-  if (m_pHashPtr->phashcnt >= g_phash_collectcfg[CFG_PHASHTIMES])
-  {
-    m_pHashPtr->isrun = FALSE;
-    return;
-  }
-  
-  try
-  {
-  
-
-    // MAIN Strategy: if time is Y mins ,the following X secs is what we want, pass them to another function
-    //          Then get downsampled and mixed, pass to phash cal function
-    //          Then send the result to get compared and return a confidence value(0~1) which shows the similarity of two samples
-
-    REFERENCE_TIME rtDurHash = (10000000i64) * g_phash_collectcfg[CFG_PHASHDATASECS];
-
-    // In this part, we use a array g_phash_collectcfg[] to do configuration. 
-    // The first element of the array is the times of phash
-    // The second element of the array is lasting time in sec unit
-    // The following elements are the start time
-    // You can find cfg array in Model/pHashModel.h
-    int timepos = (m_pHashPtr->phashcnt%g_phash_collectcfg[CFG_PHASHTIMES]) + 1;
-    m_rtStartpHash = (10000000i64)*g_phash_collectcfg[CFG_PHASHSTARTTIME+timepos];    // collection start time
-    m_rtEndpHash = m_rtStartpHash + rtDurHash;                                        // collection end time
-
-    if (m_pHashPtr->prevcnt != m_pHashPtr->phashcnt)
-    {
-      m_pHashPtr->prevcnt = m_pHashPtr->phashcnt;
-    }
-
-    m_pHashPtr->format = *wfe;
-    if(SUCCEEDED(pIn->GetTime(&rtStart, &rtStop)))
-    {
-      if (rtStart < m_rtStartpHash && (rtDur + rtStart) > m_rtStartpHash 
-        && (rtDur + rtStart) < m_rtEndpHash)                                        // the first part of data
-      {
-        int firstlen = 0;
-        BYTE* dataout = pDataIn;
-        AlignDataBlock(pDataIn, rtStart, m_rtStartpHash,
-          m_pHashPtr->format.nChannels, m_pHashPtr->format.wBitsPerSample,
-          m_pHashPtr->format.nSamplesPerSec, dataout, firstlen);
-        FillData4pHash(dataout, (pIn->GetActualDataLength()-firstlen));
-        REFERENCE_TIME Dur = 10000000i64*(pIn->GetActualDataLength()-firstlen)/wfe->nSamplesPerSec/wfe->nChannels/(wfe->wBitsPerSample>>3);
-     //   Logging(L"first part of data: %f [rtStart] %f should equal to [m_rtStartpHash] %f", (double)Dur, (double)rtStart, (double)m_rtStartpHash);
-      }
-      else if (rtStart == m_rtStartpHash)
-      {
-    //    Logging(L"first part of data: %f [rtStart] %f should equal to [m_rtStartpHash] %f", -1.0, (double)rtStart, (double)m_rtStartpHash);
-        FillData4pHash(pDataIn, pIn->GetActualDataLength());
-      }
-      else if (rtStart == m_rtEndpHash)
-      {
-        m_pHashPtr->phashcnt += 1;
-    //    Logging(L"last part of data: [endtime] %f should equal to [m_rtEndpHash] %f", (double)rtStart, (double)m_rtEndpHash);
-        PostMessage(AfxGetApp()->m_pMainWnd->m_hWnd, WM_COMMAND, ID_PHASH_COLLECTEND, NULL);
-      }
-      else if ((rtDur + rtStart) > m_rtEndpHash && rtStart < m_rtEndpHash 
-        && rtStart > m_rtStartpHash )                                        // the last part of data
-      { 
-        int lastlen = 0;
-        BYTE* dataout;
-        dataout = pDataIn;
-        AlignDataBlock(pDataIn, rtStart, m_rtEndpHash, m_pHashPtr->format.nChannels, 
-          m_pHashPtr->format.wBitsPerSample, m_pHashPtr->format.nSamplesPerSec, dataout, lastlen);
-        FillData4pHash(pDataIn, lastlen);
-
-        REFERENCE_TIME Dur = 10000000i64*(lastlen)/wfe->nSamplesPerSec/wfe->nChannels/(wfe->wBitsPerSample>>3);
-        // send a message and finish phash
-        m_pHashPtr->phashcnt += 1;
-      //  Logging(L"last part of data: %f, [endtime] %f should equal to [m_rtEndpHash] %f", (double)Dur, (double)(rtDur+rtStart), (double)(m_rtEndpHash));
-        PostMessage(AfxGetApp()->m_pMainWnd->m_hWnd, WM_COMMAND, ID_PHASH_COLLECTEND, NULL);
-      }
-      else if (rtStart > m_rtStartpHash && (rtDur + rtStart) < m_rtEndpHash )       // the middle part of data
-      {
-        FillData4pHash(pDataIn, pIn->GetActualDataLength());
-      }
-    }
-  }
-  catch(...)
-  {
-    ;
-  }
-}
-
-void FingerPrint::SetTypeOfPCM(int type)
-{
-  if (m_pHashPtr)
-    m_pHashPtr->type = type;
-}
+// void FingerPrint::AlignDataBlock(BYTE* datain, REFERENCE_TIME& start, REFERENCE_TIME& rttime, 
+//                                           int channels, int bitsPerSample, int samplePerSec,
+//                                           BYTE* dataout, int& len)
+// {
+//   REFERENCE_TIME dur = rttime - start;
+//   if (dur < 0)
+//     dur = start - rttime;
+//   len = channels * (bitsPerSample>>3) * samplePerSec;
+//   double len1 = dur/(double)UNITS;
+//   double len2 = (double)len * len1;
+//   len = (int)len2;
+//   dataout = datain + len;
+// }
+// 
+// void FingerPrint::FPCollect(IMediaSample* pIn, BYTE* pDataIn, WAVEFORMATEX* wfe, 
+//                           REFERENCE_TIME& rtStart, REFERENCE_TIME& rtStop, REFERENCE_TIME& rtDur)
+// {
+//   if (!m_pHashPtr || !m_pHashPtr->isrun || m_pHashPtr->isseek)
+//     return;
+// 
+//   // collect complete
+//   if (m_pHashPtr->phashcnt >= g_phash_collectcfg[CFG_PHASHTIMES])
+//   {
+//     m_pHashPtr->isrun = FALSE;
+//     return;
+//   }
+//   
+//   try
+//   {
+//   
+// 
+//     // MAIN Strategy: if time is Y mins ,the following X secs is what we want, pass them to another function
+//     //          Then get downsampled and mixed, pass to phash cal function
+//     //          Then send the result to get compared and return a confidence value(0~1) which shows the similarity of two samples
+// 
+//     REFERENCE_TIME rtDurHash = (10000000i64) * g_phash_collectcfg[CFG_PHASHDATASECS];
+// 
+//     // In this part, we use a array g_phash_collectcfg[] to do configuration. 
+//     // The first element of the array is the times of phash
+//     // The second element of the array is lasting time in sec unit
+//     // The following elements are the start time
+//     // You can find cfg array in Model/pHashModel.h
+//     int timepos = (m_pHashPtr->phashcnt%g_phash_collectcfg[CFG_PHASHTIMES]) + 1;
+//     m_rtStartpHash = (10000000i64)*g_phash_collectcfg[CFG_PHASHSTARTTIME+timepos];    // collection start time
+//     m_rtEndpHash = m_rtStartpHash + rtDurHash;                                        // collection end time
+// 
+//     if (m_pHashPtr->prevcnt != m_pHashPtr->phashcnt)
+//     {
+//       m_pHashPtr->prevcnt = m_pHashPtr->phashcnt;
+//     }
+// 
+//     m_pHashPtr->format = *wfe;
+//     if(SUCCEEDED(pIn->GetTime(&rtStart, &rtStop)))
+//     {
+//       if (rtStart < m_rtStartpHash && (rtDur + rtStart) > m_rtStartpHash 
+//         && (rtDur + rtStart) < m_rtEndpHash)                                        // the first part of data
+//       {
+//         int firstlen = 0;
+//         BYTE* dataout = pDataIn;
+//         AlignDataBlock(pDataIn, rtStart, m_rtStartpHash,
+//           m_pHashPtr->format.nChannels, m_pHashPtr->format.wBitsPerSample,
+//           m_pHashPtr->format.nSamplesPerSec, dataout, firstlen);
+//         FillData4pHash(dataout, (pIn->GetActualDataLength()-firstlen));
+//         REFERENCE_TIME Dur = 10000000i64*(pIn->GetActualDataLength()-firstlen)/wfe->nSamplesPerSec/wfe->nChannels/(wfe->wBitsPerSample>>3);
+//      //   Logging(L"first part of data: %f [rtStart] %f should equal to [m_rtStartpHash] %f", (double)Dur, (double)rtStart, (double)m_rtStartpHash);
+//       }
+//       else if (rtStart == m_rtStartpHash)
+//       {
+//     //    Logging(L"first part of data: %f [rtStart] %f should equal to [m_rtStartpHash] %f", -1.0, (double)rtStart, (double)m_rtStartpHash);
+//         FillData4pHash(pDataIn, pIn->GetActualDataLength());
+//       }
+//       else if (rtStart == m_rtEndpHash)
+//       {
+//         m_pHashPtr->phashcnt += 1;
+//     //    Logging(L"last part of data: [endtime] %f should equal to [m_rtEndpHash] %f", (double)rtStart, (double)m_rtEndpHash);
+//         PostMessage(AfxGetApp()->m_pMainWnd->m_hWnd, WM_COMMAND, ID_PHASH_COLLECTEND, NULL);
+//       }
+//       else if ((rtDur + rtStart) > m_rtEndpHash && rtStart < m_rtEndpHash 
+//         && rtStart > m_rtStartpHash )                                        // the last part of data
+//       { 
+//         int lastlen = 0;
+//         BYTE* dataout;
+//         dataout = pDataIn;
+//         AlignDataBlock(pDataIn, rtStart, m_rtEndpHash, m_pHashPtr->format.nChannels, 
+//           m_pHashPtr->format.wBitsPerSample, m_pHashPtr->format.nSamplesPerSec, dataout, lastlen);
+//         FillData4pHash(pDataIn, lastlen);
+// 
+//         REFERENCE_TIME Dur = 10000000i64*(lastlen)/wfe->nSamplesPerSec/wfe->nChannels/(wfe->wBitsPerSample>>3);
+//         // send a message and finish phash
+//         m_pHashPtr->phashcnt += 1;
+//       //  Logging(L"last part of data: %f, [endtime] %f should equal to [m_rtEndpHash] %f", (double)Dur, (double)(rtDur+rtStart), (double)(m_rtEndpHash));
+//         PostMessage(AfxGetApp()->m_pMainWnd->m_hWnd, WM_COMMAND, ID_PHASH_COLLECTEND, NULL);
+//       }
+//       else if (rtStart > m_rtStartpHash && (rtDur + rtStart) < m_rtEndpHash )       // the middle part of data
+//       {
+//         FillData4pHash(pDataIn, pIn->GetActualDataLength());
+//       }
+//     }
+//   }
+//   catch(...)
+//   {
+//     ;
+//   }
+// }
+// 
+// void FingerPrint::SetTypeOfPCM(int type)
+// {
+//   if (m_pHashPtr)
+//     m_pHashPtr->type = type;
+// }

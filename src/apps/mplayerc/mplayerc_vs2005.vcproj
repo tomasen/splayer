@@ -2100,7 +2100,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Model\pHashModel.h"
+				RelativePath=".\Model\PHashComm.h"
 				>
 			</File>
 			<File

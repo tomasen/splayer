@@ -1,5 +1,4 @@
-#ifndef PHASHCONTROLLER_H
-#define PHASHCONTROLLER_H
+
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -24,102 +23,55 @@
 //          But 6 channels vs 2 channels (different channel amount) situation is still a problem.
 //          
 
-#include <threadhelper.h>
-#include <fstream>
-#include <Windows.h>
-#include "LazyInstance.h"
-#include "phashapi.h"
-#include "pHashController.h"
-#include "NetworkControlerImpl.h" 
-#include "../Model/pHashModel.h"
-#include "../MainFrm.h"
-#include "HashController.h"
-#include "Strings.h"
-#define NORMALIZE_DB_MIN -145
-#define NORMALIZE_DB_MAX 60
+#pragma once
 
+#include "LazyInstance.h"
+#include <threadhelper.h>
 
 class pHashController:
   public LazyInstanceImpl<pHashController>,
-  public ThreadHelperImpl<pHashController>,
-  public NetworkControlerImpl
+  public ThreadHelperImpl<pHashController>
 {
 public:
   pHashController(void);
   ~pHashController(void);
-  enum {
-    LOOKUP         = 0x01 << 2,   // 0000 0100
-    INSERT         = 0x01 << 3,   // 0000 1000
-  };
-  enum {NOCALCHASH = 0, CALPHASH};
-  void _thread_GetAudiopHash();
-  void _thread_GetpHash();
-  HRESULT _thread_DigestpHashData();                        // down samplerate and mix
-  HRESULT _thread_MonopHash();                              // test only. Get each channel data and calc phash
-  
-  void Init(CComQIPtr<IAudioSwitcherFilter> pASF, std::wstring m_fnCurPlayingFile);
-  int GetSwitchStatus();
-  void SetSwitchStatus(int status);
-  int GetCmd();
-  void SetCmd(uint8_t cmd);
-  BOOL IsSeek();
-  void SetSeek(BOOL seekflag);
-  void Execute(BOOL isrun);
+
   void _Thread();
-  void CheckEnv(int64_t timelength);
-  void ResetAll();
-  void IspHashInNeed(const wchar_t* filepath, int& result);
-  void ReleasePhash(UINT pos);
-  void ReleasePhashAll();
+  void NewData();
+  void Check(REFERENCE_TIME& time, CComQIPtr<IMediaSeeking> ms,
+    CComQIPtr<IAudioSwitcherFilter> pASF, CString file);
+  void UnRefs();
+
+  PHashCommCfg_st PHashCommCfg;
 private:
-  void HookData(CComQIPtr<IAudioSwitcherFilter> pASF);
-  
-  PHASHBLOCK m_phashblock;
-  uint8_t m_cmd;
+  std::vector<std::vector<BYTE> > m_data;
+  int m_datarefs;
+  CString m_file;
   std::wstring m_sphash;
-  uint32_t** m_hashes;                                     // Storage pHashes
-  int *m_lens;
-  int m_phashlen;
-  float* m_buffer;
-  int m_bufferlen;
-  int m_sr;                                               // sample rate to convert the stream
-  int m_phashswitcher;
-  int m_hashcount;
-  int m_seekflag;
-  CComQIPtr<IAudioSwitcherFilter> m_pASF;
-  // Sample to float and normalized
-  BOOL SampleToFloat(const unsigned char* const indata, float* outdata, int samples, int type);
-  
-  // DownSample
-  BOOL DownSample(float* inbuf, int nsample, int des_sr, int org_sr, float** outbuf, int& outlen);
-  
-  // Mix
-  BOOL MixChannels(float* buf, int samples, int channels, int nsample, float* MonoChannelBuf);
-  void SixchannelsToStereo(float *output, float *input, int n);
-
-  // Upload phash 
-  void _thread_UploadpHash();
-  void _thread_GetpHashAndSend(int cmd);
-  int SendOnepHashFrame(phashbox phashframe);
-
 };
 
-class pHashSender:
-  public ThreadHelperImpl<pHashSender>
+class PHashHandler:
+  public ThreadHelperImpl<PHashHandler>
 {
 public:
-  pHashSender();
-  ~pHashSender();
-  
-  void _Thread();
-  void SetSphash(std::wstring phash);
-  void SetPhash(phashbox*);
-  
-private:
-  std::wstring m_sphash;
-  int SendOnepHashFrame();
-  phashbox* m_phashbox;
-  const static int m_timeout  = 10;
+  PHashHandler(std::vector<BYTE>* data, std::wstring sphash);
+  ~PHashHandler(void);
 
+  void _Thread();
+
+private:
+  BOOL ConverDataToFloat();
+  BOOL DownSample(float* inbuf, int nsample, int des_sr,
+    int org_sr, float** outbuf, int& outlen);
+  BOOL MixChannels(float* buf, int samples, int channels,
+    int nsample, float* MonoChannelBuf);
+  void SixchannelsToStereo(float* output, float* input, int n);
+  BOOL SampleToFloat(const unsigned char* const indata, float* outdata, int samples, int type);
+
+private:
+  std::vector<BYTE>* m_data;
+  std::wstring m_sphash;
+  float* m_buffer;
+  int m_bufflen;
+  int m_sr;
 };
-#endif //PHASHCONTROLLER_H

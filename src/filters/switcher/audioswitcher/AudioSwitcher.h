@@ -20,7 +20,7 @@
 
 #include "StreamSwitcher.h"
 #include "..\..\..\svplib\SVPEqualizer.h"
-#include "..\..\..\apps\mplayerc\Model\pHashModel.h"
+#include "..\..\..\apps\mplayerc\Model\PHashComm.h"
 
 #define MAX_OUTPUT_CHANNELS 18
 #define MAX_INPUT_CHANNELS 18
@@ -45,33 +45,21 @@ interface __declspec(uuid("CEDB2890-53AE-4231-91A3-B0AAFCD1DBDE")) IAudioSwitche
 	STDMETHOD(SetEQControl) ( int lEQBandControlPreset, float pEQBandControl[MAX_EQ_BAND]) = 0;
 
 	STDMETHOD(SetRate) (double dRate) = 0;
-
-  //pHash for pHashController HookData
-  STDMETHOD(SetpHashControl) (PHASHBLOCK *pbPtr) = 0;
+  STDMETHOD(SetPhashCfg) (PHashCommCfg_st* cfg) = 0;
 };
 
-class FingerPrint
+class FingerCollect
 {
 public:
-  FingerPrint();
-  ~FingerPrint();
+  FingerCollect(void);
+  ~FingerCollect(void);
+  void PHashCollect(BYTE* pDataIn, int pcmtype, WAVEFORMATEX* wfe, IMediaSample* pIn, REFERENCE_TIME& rtDur);
 
-  void SetTypeOfPCM(int);
-  void SetpHashControl(PHASHBLOCK* pbPtr);
-  void FPCollect(IMediaSample*, BYTE*, WAVEFORMATEX*, 
-            REFERENCE_TIME&, REFERENCE_TIME&, REFERENCE_TIME&);
-
+  PHashCommCfg_st* PHashCommCfg;
 private:
-  HRESULT FillData4pHash(BYTE* pDataout, long BufferLen);
-  void AlignDataBlock(BYTE* datain, REFERENCE_TIME& start, REFERENCE_TIME& rttime,
-    int channels, int bitsPerSample, int samplePerSec,
-    BYTE* dataout, int& len);
-
-private:
-  PHASHBLOCK* m_pHashPtr;
-  BOOL m_pHashFlag;
-  REFERENCE_TIME m_rtStartpHash;
-  REFERENCE_TIME m_rtEndpHash;
+  void FillRawBuffer(BYTE* pDataout, int len);
+  int GetRawLength(REFERENCE_TIME dur, int channels, 
+    int bitsPerSample, int samplePerSec);
 };
 
 class AudioStreamResampler;
@@ -79,7 +67,7 @@ class AudioStreamResampler;
 
 class __declspec(uuid("18C16B08-6497-420e-AD14-22D21C2CEAB7")) CAudioSwitcherFilter :
                                                   public CStreamSwitcherFilter, 
-                                                  public FingerPrint,
+                                                  public FingerCollect,
                                                   public IAudioSwitcherFilter
 {
 	//typedef struct {DWORD Speaker, Channel;} ChMap;
@@ -175,5 +163,5 @@ public:
 	// IAMStreamSelect
 	STDMETHODIMP Enable(long lIndex, DWORD dwFlags);
 
-  STDMETHODIMP SetpHashControl(PHASHBLOCK* pbPtr);
+  STDMETHODIMP SetPhashCfg(PHashCommCfg_st* cfg);
 };

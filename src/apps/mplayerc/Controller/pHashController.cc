@@ -1,36 +1,37 @@
+
 #include "stdafx.h"
-#include <Strings.h>
-#include <io.h> 
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <string>
-#include <fstream>
+#include <sinet.h>
+
+#include "../../../filters/switcher/audioswitcher/AudioSwitcher.h"
+#include "pHashController.h"
+#include "../Model/PHashComm.h"
+#include "HashController.h"
 #include "samplerate.h"
 #include "sndfile.h"
-#include "pHashController.h"
+#include "phashapi.h"
 #include "zmq/zmqhelper.h"
-#include "../../apps/mplayerc/Model/pHashModel.h"
-#include "../FGManager.h"
+#include "Strings.h"
 
-#define FREE_PHASHMEM() \
-  m_phashblock.phashdata.clear(); \
-  m_phashblock.phashdata.resize(0);
-
-#define PHASH_INSERT_SERVER "tcp://192.168.10.33:5000"
-#define PHASH_LOOKUP_SERVER "tcp://192.168.10.33:5001"
-
-pHashController::pHashController(void) :
-  m_buffer(NULL),
-  m_hashes(NULL),
-  m_lens(NULL),
-  m_sr(8000),
-  m_phashswitcher(CALPHASH),
-  m_bufferlen(0),
-  m_phashlen(0),
-  m_hashcount(0),
-  m_seekflag(false)
+pHashController::pHashController(void)
 {
+  PHashCommCfg.stop = TRUE;
+  PHashCommCfg.index = -1;
   
+  PHashCommCfg.stime = 0;
+  PHashCommCfg.etime = 0;
+
+  // collect times
+  PHashCommCfg.cfg.push_back(1);
+  // collect duration (secs)
+  PHashCommCfg.cfg.push_back(20);
+  // delimiter (don't modify)
+  PHashCommCfg.cfg.push_back(0);
+  // collect point of time
+  PHashCommCfg.cfg.push_back(5);
+  PHashCommCfg.cfg.push_back(20);
+
+  m_data.clear();
+  m_datarefs = 0;
 }
 
 pHashController::~pHashController(void)
@@ -38,330 +39,19 @@ pHashController::~pHashController(void)
 
 }
 
-int pHashController::GetSwitchStatus()
-{
-  return m_phashswitcher;
-}
-
-void pHashController::SetSwitchStatus(int status)
-{
-  m_phashswitcher = status;
-}
-
-int pHashController::GetCmd()
-{
-  return m_cmd;
-}
-void pHashController::SetCmd(uint8_t cmd)
-{
-  m_cmd = cmd;
-}
-BOOL pHashController::IsSeek()
-{
-  return m_phashblock.isseek; 
-}
-
-void pHashController::SetSeek(BOOL seekflag)
-{  
-  m_phashblock.isseek = seekflag;
-}
-void pHashController::Execute(BOOL isrun)
-{
-  m_phashblock.isrun = isrun;
-}
 void pHashController::_Thread()
 {
-  Logging( L"pHashController::_thread enter %x", m_phashswitcher);
-  if (m_phashswitcher != NOCALCHASH)
-  {
-    //_thread_MonopHash();
-    try
-    {
-      _thread_DigestpHashData();
-      _thread_GetpHash();
-    }
-    catch(...)
-    {
-      Logging(L"pHashController thread crash");
-    }
-  }
-  else
-  {
-    Logging(L"m_phashswitcher = NOCALCHASH ");
-  }
-  
-  Logging( L"pHashController::_thread exit %x", m_phashswitcher);
-}
-
-HRESULT pHashController::_thread_MonopHash()
-{
-  int buflen = m_phashblock.phashdata.size();
-  float *buf = new float[buflen];
-
-  int samplebyte = (m_phashblock.format.wBitsPerSample >> 3);                          // the size of one sample in Byte unit
-  int nsample = m_phashblock.phashdata.size()/m_phashblock.format.nChannels/samplebyte;    // each channel sample amount
-  int samples = nsample * m_phashblock.format.nChannels;                               // all channels sample amount
-
-  // input buffer for signal
-  unsigned char* indata = &m_phashblock.phashdata[0];
-
-  // Making all data into float type 
-  if (SampleToFloat(indata, buf, samples, m_phashblock.type) == FALSE)
-  {
-    delete [] buf;
-    FREE_PHASHMEM();
-    return S_FALSE;
-  }
-  
-  int chns = m_phashblock.format.nChannels;
-  float* tmpmem = new float[nsample];
-  
-  for (int n = 0; n < chns; ++n)
-  {
-    memset(tmpmem, 0, sizeof(tmpmem));
-    for (int j = 0; j < nsample; j++)
-      tmpmem[j] = buf[n+chns*j];
-    wfstream fs;
-    wchar_t filepath[80];
-    wsprintf(filepath, L"C:\\Users\\Staff\\Desktop\\splayer_shao\\hash\\txt_chn_%d.txt", n);
-    fs.open(filepath, ios_base::out | ios_base::app);
-    for (int i=0; i < nsample; ++i)
-     fs << tmpmem[i] << L"\r\n";
-    fs.close();
-    float* outmem = NULL;
-    int outnums;
-    DownSample(tmpmem, nsample, m_sr, m_phashblock.format.nSamplesPerSec, &outmem, outnums);
-    m_hashes[m_hashcount] = ph_audiohash(outmem, outnums, m_sr, m_phashlen);
-    m_lens[m_hashcount] = m_phashlen;
-
-    free(outmem);
-    m_hashcount++;
-  }
-  
-  delete [] tmpmem;
-  FREE_PHASHMEM();
-
-  if (m_hashcount < 7)
-    return S_OK;
-
-
-  for (int j = 0; j < 2; ++j)
-  {
-    for (int ii = 0; ii < 6; ++ii)
-    {
-      int nc;
-      double* cs;
-      cs = ph_audio_distance_ber(m_hashes[j], m_lens[j], m_hashes[ii+2], m_lens[ii+2],
-        0.3, 256, nc);                                                             // threshold 0.3 , block_size: 256 
-      if (!cs)
-        ;
-      else
-      {
-        double max_cs = 0.0;
-        for (int i=0;i<nc;i++)
-        {
-          if (cs[i] > max_cs)
-            max_cs = cs[i];
-        }
-        ph_freemem_cs(cs);
-      }   
-    }
-  }
-
-  return S_OK;
-}
-
-void pHashController::ReleasePhash(UINT pos)
-{
-  ph_freemem_hash(NULL, m_hashes[pos]);
-  m_hashes[pos] = NULL;
-  m_lens[pos] = 0;
-  if (pos == (g_phash_collectcfg[CFG_PHASHTIMES] - 1))
-  {
-    ReleasePhashAll();
-    m_phashblock.prevcnt = -1;
-    m_phashblock.phashcnt = 0;
-    Execute(FALSE);
-  }
-}
-
-void pHashController::ResetAll()
-{
-  m_hashes = (uint32_t**)malloc(g_phash_collectcfg[CFG_PHASHTIMES]*sizeof(uint32_t*));
-  m_lens = (int*)malloc(g_phash_collectcfg[CFG_PHASHTIMES]*sizeof(int));
-  m_phashblock.prevcnt = -1;
-  m_phashblock.phashcnt = 0;
-  SetSeek(FALSE);
-}
-
-void pHashController::ReleasePhashAll()
-{
-  if (m_hashes)
-    free(m_hashes);
-  if (m_lens)
-    free(m_lens);
-  m_hashes = NULL;
-  m_lens = NULL;
-  FREE_PHASHMEM();
-}
-void pHashController::_thread_GetpHash()
-{
-  if (IsSeek())
-  {
-    SetSwitchStatus(NOCALCHASH);
-    Execute(FALSE);
-    return;
-  }
-
-  // calc phash
-  UINT pos = m_phashblock.phashcnt-1;
-
-  m_hashes[pos] = ph_audiohash(m_buffer, m_bufferlen, m_sr, m_phashlen);
-  m_lens[pos] = m_phashlen;
-
-  free(m_buffer);
-  m_buffer = NULL;
-  m_bufferlen = 0;
-
-  // send phash
-  pHashSender* sender = new pHashSender;
-
-  phashbox* hashbox = new phashbox;
-  hashbox->cmd = GetCmd();
-  hashbox->amount = g_phash_collectcfg[CFG_PHASHTIMES];
-  hashbox->id = pos;    
-  hashbox->nbframes = m_lens[pos];
-  hashbox->phash = m_hashes[pos];
-  hashbox->earlyendflag = 0;
-
-  if (GetCmd() == INSERT)
-      sender->SetSphash(m_sphash);
-  
-  sender->SetPhash(hashbox);
-
-  sender->_Start();
-}
-
-void pHashController::_thread_GetAudiopHash()
-{
-  int count = g_phash_collectcfg[CFG_PHASHTIMES]*2-1;
-  int step = g_phash_collectcfg[CFG_PHASHTIMES];
-  if (m_phashblock.phashcnt <= count)
-  {
-    int i = m_phashblock.phashcnt;
-    m_hashes[i] = ph_audiohash(m_buffer, m_bufferlen, m_sr, m_phashlen);
-    m_lens[i] = m_phashlen;
-    Logging(L"m_phashblock.phashcnt:%d, length = %d, hashes[0]:%X, m_phashlen:%d",i, m_lens[i], m_hashes[i][0], m_phashlen);
-    free(m_buffer);
-    m_buffer = NULL;
-    m_bufferlen = 0;
-  }
-
-  if (m_phashblock.phashcnt == count)
-  {
-      int nc;
-      double* cs;
-      for (int index = 0; index < step; index++)
-      { 
-
-        Logging(L"m_phash1[%d]:%X,%X,%X,%X mphash1len[%d]:%d",index, m_hashes[index][0], m_hashes[index][1],
-          m_hashes[index][2],m_hashes[index][3], index, m_lens[index] );
-        Logging(L"m_phash2[%d]:%X,%X,%X,%X mphash2len[%d]:%d",index, m_hashes[index+step][0], m_hashes[index+step][1],
-          m_hashes[index+step][2],m_hashes[index+step][3], index, m_lens[index+step] );
-
-        cs = ph_audio_distance_ber(m_hashes[index], m_lens[index], m_hashes[index+step], m_lens[index+step],
-          0.3, 256, nc);                                                         // threshold 0.3 , block_size: 256 
-        if (!cs)
-          return;
-        else
-        {
-          double max_cs = 0.0;
-          for (int i=0;i<nc;i++)
-          {
-            if (cs[i] > max_cs)
-              max_cs = cs[i];
-          }
-          Logging(L"Confidence Score: %f",max_cs);
-          ph_freemem_cs(cs);
-          cs = NULL;
-        }
-        // free space
-        ph_freemem_hash(NULL, m_hashes[index]);
-        ph_freemem_hash(NULL, m_hashes[index+step]);
-        m_hashes[index] = NULL;
-        m_hashes[index+step] = NULL;
-        m_lens[index] = 0;
-        m_lens[index+step] = 0;  
-      }
-      free(m_lens);
-      free(m_hashes);
-  }
-  m_phashblock.prevcnt = m_phashblock.phashcnt;
-  m_phashblock.phashcnt++;
-  if (m_phashblock.phashcnt > count)
-    m_phashblock.phashcnt = 0;
-}
-void pHashController::HookData(CComQIPtr<IAudioSwitcherFilter> pASF)
-{
-  pASF->SetpHashControl(&m_phashblock);
-}
-
-void pHashController::CheckEnv(int64_t timelength)
-{
-  // check timelength
-  if (timelength < (10000000i64)*60*45)
-  {
-    Logging("time length < 45 mins");
-    SetSwitchStatus(FALSE);
-    Execute(FALSE);
-  }
-
-  // TODO: check PC configuration, give up if the configuration is to low
-  
-}
-void pHashController::Init(CComQIPtr<IAudioSwitcherFilter> pASF, std::wstring m_fnCurPlayingFile)
-{
-  if (pASF)
-  {
-    ResetAll();
-    if (GetSwitchStatus() == NOCALCHASH)
-      return;
-
-    int result;
-    IspHashInNeed(m_fnCurPlayingFile.c_str(), result);
-    switch(result)
-    {
-    case CALPHASH:
-      {
-        // do insert 
-        HookData(pASF);
-        Execute(TRUE);
-        uint8_t cmd = (result == 1) ? INSERT : LOOKUP;
-        SetCmd(cmd);
-      }
-      break;
-    case NOCALCHASH:
-    default:
-      Execute(FALSE);
-      break;
-    }
-  }
-}
-
-
-void pHashController::IspHashInNeed(const wchar_t* filepath, int& result)
-{
-  m_sphash = HashController::GetInstance()->GetSPHash(filepath);
+  m_sphash = HashController::GetInstance()->GetSPHash(m_file.GetBuffer());
+  m_file.ReleaseBuffer();
 
   sinet::refptr<sinet::pool>    net_pool = sinet::pool::create_instance();
   sinet::refptr<sinet::task>    net_task = sinet::task::create_instance();
   sinet::refptr<sinet::request> net_rqst = sinet::request::create_instance();
-  sinet::refptr<sinet::config>  net_cfg  = sinet::config::create_instance();
   
-  net_task->use_config(net_cfg);
-  wchar_t tmpurl[512];
-  _snwprintf_s(tmpurl, 512, 512, L"http://webpj:8080/misc/phash.php?req=%d&sphs=%s\n", 1, m_sphash.c_str());
-  net_rqst->set_request_url(tmpurl);
+  wchar_t url[512];
+  wsprintf(url, L"http://webpj:8080/misc/phash.php?req=%d&sphs=%s\n", 1, m_sphash.c_str());
+
+  net_rqst->set_request_url(url);
   net_rqst->set_request_method(REQ_GET);
   net_task->append_request(net_rqst);
   net_pool->execute(net_task);
@@ -373,32 +63,293 @@ void pHashController::IspHashInNeed(const wchar_t* filepath, int& result)
   }
   
   //error code dealing
-  if (net_rqst->get_response_errcode()!= 0)
-  {
-    Logging(L"PHASH ERROR: request sending failed");
-    result = -1;
-//    return;
-  }
+  if (net_rqst->get_response_errcode() != 0)
+    return;
 
   // response data
   std::vector<unsigned char> st_buffer = net_rqst->get_response_buffer();
   st_buffer.push_back(0);
-  std::string reply =  (char*)&st_buffer[0];
-  std::string ret = reply.substr(0, reply.find_first_of("\n"));
-  if (ret.empty())
+  std::string ret =  (char*)&st_buffer[0];
+  ret.push_back(0);
+ 
+  if (1 || ret.c_str() == "0")
   {
-    Logging("ret is empty");
-    result = 1; // set temporary value
-    return;
+    NewData();
+    PHashCommCfg.stop = FALSE;
   }
-  Logging("phashcontroller: ret=%s", ret.c_str());
-  if ( ret == "1")
-    result = 1;
-  else if (ret == "0")
-    result = 0;
 
 }
-BOOL pHashController::SampleToFloat(const unsigned char* const indata, float* outdata, int samples, int type)
+
+void pHashController::UnRefs()
+{
+  if (--m_datarefs < 1)
+  {
+    m_data.clear();
+    m_data.resize(0);
+  }
+}
+
+void pHashController::NewData()
+{
+  if (PHashCommCfg.index >= PHashCommCfg.cfg.front()-1)
+  {
+    PHashCommCfg.stop = TRUE;
+    PHashHandler* handler = new PHashHandler(PHashCommCfg.data, m_sphash);
+    handler->_Start();
+    return;
+  }
+
+  if (PHashCommCfg.index >= 0)
+  {
+    PHashHandler* handler = new PHashHandler(PHashCommCfg.data, m_sphash);
+    handler->_Start();
+  }
+
+  std::vector<BYTE> data;
+  m_data.push_back(data);
+
+  PHashCommCfg.data = &(m_data.back());
+  PHashCommCfg.index += 1;
+
+  int pos = 3 + PHashCommCfg.index;
+  REFERENCE_TIME durtime = (10000000i64) * PHashCommCfg.cfg[1];
+
+  PHashCommCfg.stime = (10000000i64) * PHashCommCfg.cfg[pos];
+  PHashCommCfg.etime = PHashCommCfg.stime + durtime;
+
+  m_datarefs++;
+}
+
+void pHashController::Check(REFERENCE_TIME& time, CComQIPtr<IMediaSeeking> ms,
+                            CComQIPtr<IAudioSwitcherFilter> pASF, CString file)
+{
+  if (m_datarefs > 0)
+    return;
+
+  if (time != 0)
+    return;
+
+  if (!ms)
+    return;
+
+  __int64 totaltime = 0;
+  ms->GetDuration(&totaltime);
+  if (totaltime < (10000000i64)*60*45)
+    return;
+
+  m_file = file;
+  pASF->SetPhashCfg(&PHashCommCfg);
+
+  _Stop();
+  _Start();
+}
+
+PHashHandler::PHashHandler(std::vector<BYTE>* data, std::wstring sphash)
+{
+  m_sr = 8000;
+
+  m_data = data;
+  m_sphash = sphash;
+}
+
+PHashHandler::~PHashHandler(void)
+{
+
+}
+
+void PHashHandler::_Thread()
+{
+  if (!ConverDataToFloat())
+  {
+    m_data->clear();
+    m_data->resize(0);
+    pHashController::GetInstance()->UnRefs();
+    return;
+  }
+
+  int phashlen = 0;
+  uint32_t* phash = NULL;
+
+  phash = ph_audiohash(m_buffer, m_bufflen, m_sr, phashlen);
+  free(m_buffer);
+  m_buffer = NULL;
+  m_bufflen = 0;
+  
+  if (!phash)
+    return;
+
+  void* context = zmq_init(1);
+  if (!context)
+  {
+    ph_freemem_hash(NULL, phash);
+    return;
+  }
+
+  void* client = socket_connect(context, ZMQ_REQ, "tcp://192.168.10.18:5000");
+  if (!client)
+  {
+    ph_freemem_hash(NULL, phash);
+    return;
+  }
+
+  std::string sphash = Strings::WStringToString(m_sphash);
+  int sphashlen = sphash.size();
+  sendmore_msg_data(client, &sphashlen, sizeof(int), NULL, NULL);
+  sendmore_msg_data(client, &sphash[0], sphashlen, NULL, NULL);
+  sendmore_msg_data(client, &phashlen, sizeof(int), NULL, NULL);
+  send_msg_data(client, phash, phashlen*sizeof(uint32_t), NULL, NULL);
+
+  void* data;
+  size_t msgsize, moresize;
+  int64_t more;
+  recieve_msg(client, &msgsize, &more, &moresize, (void**)&data);
+  
+  ph_freemem_hash(NULL, phash);
+  zmq_close(client);
+  zmq_term(context);
+}
+
+BOOL PHashHandler::ConverDataToFloat()
+{
+  int buflen = m_data->size();
+  float *buf = new float[buflen];
+
+  pHashController* phashctrl = pHashController::GetInstance();
+  int samplebyte = (phashctrl->PHashCommCfg.format.wBitsPerSample >> 3);                             // the size of one sample in Byte unit
+  int nsample = buflen / phashctrl->PHashCommCfg.format.nChannels / samplebyte;                      // each channel sample amount
+  int samples = nsample * phashctrl->PHashCommCfg.format.nChannels;                                  // all channels sample amount
+  
+  // alloc input buffer for signal
+  BYTE* indata = &(*m_data)[0];
+
+  // Making all data into float type 
+  if (SampleToFloat(indata, buf, samples, phashctrl->PHashCommCfg.pcmtype) == FALSE)
+  {
+    delete [] buf;
+    return FALSE;
+  }
+
+  m_data->clear();
+  m_data->resize(0);
+  pHashController::GetInstance()->UnRefs();
+
+  // Mix as Mono channel
+  int MonoLen = buflen / phashctrl->PHashCommCfg.format.nChannels;
+  float* MonoChannelBuf = new float[MonoLen];
+  if (MixChannels(buf, samples, phashctrl->PHashCommCfg.format.nChannels, nsample, MonoChannelBuf) == TRUE)
+    delete[] buf;
+  else
+  {
+    delete[] buf;
+    delete[] MonoChannelBuf;
+    return FALSE;
+  }
+
+  // Samplerate to 8kHz 
+  float* outmem = NULL;
+  int outnums = 0;
+  if (DownSample(MonoChannelBuf, nsample, m_sr, phashctrl->PHashCommCfg.format.nSamplesPerSec, &outmem, outnums) == TRUE)
+    delete[] MonoChannelBuf;
+  else
+  {
+    free(outmem);
+    delete[] MonoChannelBuf;
+    return FALSE;
+  }
+
+  m_buffer = outmem;
+  m_bufflen = outnums;
+
+  return TRUE;
+}
+
+BOOL PHashHandler::DownSample(float* inbuf, int nsample, int des_sr, int org_sr, float** outbuf, int& outlen)
+{
+  // resample float array , set desired samplerate ratio
+  double sr_ratio = (double)(des_sr)/(double)org_sr;
+  if (src_is_valid_ratio(sr_ratio) == 0)
+    return FALSE;
+
+  // allocate output buffer for conversion
+  outlen = sr_ratio * nsample;
+  *outbuf = (float*)malloc(outlen * sizeof(float)); 
+  if (!*outbuf)
+    return FALSE;
+
+  int error;
+  SRC_STATE *src_state = src_new(SRC_LINEAR, 1, &error);
+  if (!src_state)
+    return FALSE;
+
+  SRC_DATA src_data;
+  src_data.data_in = inbuf;
+  src_data.data_out = *outbuf;
+  src_data.input_frames = nsample;
+  src_data.output_frames = outlen;
+  src_data.end_of_input = SF_TRUE;
+  src_data.src_ratio = sr_ratio;
+
+  // Sample rate conversion
+  if (src_process(src_state, &src_data))
+  {
+    free(*outbuf);
+    src_delete(src_state);
+    return FALSE;
+  }
+
+  src_delete(src_state);
+
+  return TRUE;
+}
+
+BOOL PHashHandler::MixChannels(float* buf, int samples, int channels, int nsample, float* MonoChannelBuf)
+{
+  int bufindx = 0;
+  if (channels == 2)
+  {
+    do 
+    {
+      for (int j = 0; j < samples; j += channels)
+      {
+        MonoChannelBuf[bufindx] = 0.0f;
+        for (int i = 0; i < channels; ++i)
+          MonoChannelBuf[bufindx] += buf[j+i];
+        MonoChannelBuf[bufindx++] /= channels;
+      }
+    }while (bufindx < nsample);
+  }
+  else if (channels == 6)
+  { // TODO: now i won't work actually
+    float* temp = new float[nsample*2];
+    memset(temp, 0, sizeof(temp));
+    SixchannelsToStereo(temp, buf, nsample);
+    for (int i = 1; i < nsample; i++)
+    {
+       MonoChannelBuf[i] = 0.0f;
+       for (int j = 0; j < 2; j++)
+      {
+        MonoChannelBuf[i] = temp[i+2]; 
+      }
+      MonoChannelBuf[i] /= 2;
+    }
+    delete [] temp;
+  }
+  return TRUE;
+}
+
+void PHashHandler::SixchannelsToStereo(float* output, float* input, int n)
+{
+  float *p = input;
+
+  while(n-- > 0)
+  {
+    *output++ = (p[0] + p[1] + p[3] + p[5]) / 3;
+    *output++ = (p[1] + p[2] + p[4] + p[5]) / 3;
+    p += 6;
+  }
+}
+
+BOOL PHashHandler::SampleToFloat(const unsigned char* const indata, float* outdata, int samples, int type)
 {
   int samplecnt = 0;
   int tmp;
@@ -444,337 +395,4 @@ BOOL pHashController::SampleToFloat(const unsigned char* const indata, float* ou
   }
 
   return TRUE;
-}
-
-// mix into one channel and reduced samplerate to 8000HZ for further cal
-HRESULT pHashController::_thread_DigestpHashData()
-{
-  if (GetSwitchStatus() == NOCALCHASH)
-  { 
-    ReleasePhashAll();
-    return S_FALSE;
-  }
-
-  int buflen = m_phashblock.phashdata.size();
-  float *buf = new float[buflen];
-//  Logging("OrginalSize: %d", m_phashblock.phashdata.size());
-  int samplebyte = (m_phashblock.format.wBitsPerSample >> 3);                             // the size of one sample in Byte unit
-  int nsample = m_phashblock.phashdata.size()/m_phashblock.format.nChannels/samplebyte;       // each channel sample amount
-  int samples = nsample * m_phashblock.format.nChannels;                                  // all channels sample amount
-  
-  // alloc input buffer for signal
-  unsigned char* indata = &m_phashblock.phashdata[0];
-
-  // Making all data into float type 
-  if (SampleToFloat(indata, buf, samples, m_phashblock.type) == FALSE)
-  {
-    delete [] buf;
-    FREE_PHASHMEM();
-    return S_FALSE;
-  }
-  else
-  {
-    FREE_PHASHMEM();
-  }
-
-  // Mix as Mono channel
-  int MonoLen = buflen/m_phashblock.format.nChannels;
-  float* MonoChannelBuf = new float[MonoLen];
-  if (MixChannels(buf, samples, m_phashblock.format.nChannels, nsample, MonoChannelBuf) == TRUE)
-  {
-    delete[] buf;
-    FREE_PHASHMEM();
-  }
-  else
-  {
-    delete[] buf;
-    delete[] MonoChannelBuf;
-    FREE_PHASHMEM();
-    return S_FALSE;
-  }
-
-  // Samplerate to 8kHz 
-  float* outmem = NULL;
-  int outnums = 0;
-  if (DownSample(MonoChannelBuf, nsample, m_sr, m_phashblock.format.nSamplesPerSec, &outmem, outnums) == TRUE)
-  {
-    delete[] MonoChannelBuf;
-    m_buffer = outmem;
-    m_bufferlen = outnums;
-  }
-  else
-  {
-    free(outmem);
-    FREE_PHASHMEM();
-    delete[] MonoChannelBuf;
-    return S_FALSE;
-  }
-
-  return S_OK;
-}
-BOOL pHashController::DownSample(float* inbuf, int nsample, int des_sr, int org_sr, float** outbuf, int& outlen)
-{
-  // resample float array , set desired samplerate ratio
-  double sr_ratio = (double)(des_sr)/(double)org_sr;
-  if (src_is_valid_ratio(sr_ratio) == 0)
-  {
-    Logging(L"sr ratio is invalid,sr_ratio:%f,sr:%d,samplerate:%d",sr_ratio, des_sr, org_sr);
-    FREE_PHASHMEM();
-    return FALSE;
-  }
-
-  // allocate output buffer for conversion
-  outlen = sr_ratio * nsample;
-  *outbuf = (float*)malloc(outlen * sizeof(float)); 
-  if (!outbuf)
-  {
-    Logging(L"outbuffer create failed!");
-    FREE_PHASHMEM();
-    return FALSE;
-  }
-  int error;
-  SRC_STATE *src_state = src_new(SRC_LINEAR, 1, &error);
-  if (!src_state)
-  {
-    free(*outbuf);
-    FREE_PHASHMEM();
-    Logging(L"src_state failed");
-    return FALSE;
-  }
-
-  SRC_DATA src_data;
-  src_data.data_in = inbuf;
-  src_data.data_out = *outbuf;
-  src_data.input_frames = nsample;
-  src_data.output_frames = outlen;
-  src_data.end_of_input = SF_TRUE;
-  src_data.src_ratio = sr_ratio;
-
-  // Sample rate conversion
-  if (src_process(src_state, &src_data))
-  {
-    free(*outbuf);
-    free(inbuf);
-    src_delete(src_state);
-    FREE_PHASHMEM();
-    Logging(L"src_process: failed");
-    return FALSE;
-  }
-  src_delete(src_state);
-  return TRUE;
-}
-BOOL pHashController::MixChannels(float* buf, int samples, int channels, int nsample, float* MonoChannelBuf)
-{
-  int bufindx = 0;
-  if (channels == 2)
-  {
-    do 
-    {
-      for (int j = 0; j < samples; j += channels)
-      {
-        MonoChannelBuf[bufindx] = 0.0f;
-        for (int i = 0; i < channels; ++i)
-          MonoChannelBuf[bufindx] += buf[j+i];
-        MonoChannelBuf[bufindx++] /= channels;
-      }
-    }while (bufindx < nsample);
-  }
-  else if (channels == 6)
-  { // TODO: now i won't work actually
-    float* temp = new float[nsample*2];
-    memset(temp, 0, sizeof(temp));
-    SixchannelsToStereo(temp, buf, nsample);
-    for (int i = 1; i < nsample; i++)
-    {
-       MonoChannelBuf[i] = 0.0f;
-       for (int j = 0; j < 2; j++)
-      {
-        MonoChannelBuf[i] = temp[i+2]; 
-      }
-      MonoChannelBuf[i] /= 2;
-    }
-    delete [] temp;
-  }
-  return TRUE;
-}
-
-void pHashController::SixchannelsToStereo(float* output, float* input, int n)
-{
-  float *p = input;
-
-  while(n-- > 0)
-  {
-     *output++ = (p[0] + p[1] + p[3] + p[5]) / 3;
-     *output++ = (p[1] + p[2] + p[4] + p[5]) / 3;
-    p += 6;
-  }
-}
-
-
-
-pHashSender::pHashSender() :
-        m_phashbox(NULL)
-{
-
-}
-
-pHashSender::~pHashSender()
-{
-
-}
-
-void pHashSender::_Thread()
-{
-  try
-  {
-    Logging(L"pHashSender::_thread enter ");
-    SendOnepHashFrame();
-    Logging(L"pHashSender::_thread exit ");
-  }
-  catch(...)
-  {
-    Logging(L"pHashSender thread crash");
-  }
-  
-}
-
-int pHashSender::SendOnepHashFrame()
-{
-  // connection
-  void* context = zmq_init(1);
-  if (!context)
-  {
-    Logging(L"zmq_init error");
-    return -1;
-  }
-  void* client = NULL;
-  if (m_phashbox->cmd == pHashController::INSERT)
-  {
-    client = socket_connect(context, ZMQ_REQ, PHASH_INSERT_SERVER);
-    if (!client)
-    {
-      Logging(L"[insert]Client connection failed");
-      return -1;
-    }
-  }
-  else if (m_phashbox->cmd == pHashController::LOOKUP)
-  {
-    client = socket_connect(context, ZMQ_REQ, PHASH_LOOKUP_SERVER);
-    if (!client)
-    {
-      Logging(L"[lookup]Client connection failed");
-      return -2;
-    }
-  }
-
-  // sending all phashes  
-  sendmore_msg_vsm(client, &m_phashbox->cmd, sizeof(uint8_t));
-  if (m_phashbox->cmd == pHashController::INSERT)
-  {
-    std::string s = Strings::WStringToString(m_sphash);
-    char* hashstr = new char[s.length()];
-    memcpy_s(hashstr, s.length(), &s[0], s.length());
-    Logging("sphash: %s, s.lengh %d", hashstr, s.length());
-    sendmore_msg_data(client, hashstr, s.length(), NULL, NULL);
-    delete[] hashstr;
-  }
-  sendmore_msg_vsm(client, &m_phashbox->earlyendflag, sizeof(uint8_t));
-  sendmore_msg_vsm(client, &m_phashbox->amount, sizeof(uint8_t));
-  sendmore_msg_vsm(client, &m_phashbox->id, sizeof(uint8_t));
-  sendmore_msg_vsm(client, &m_phashbox->nbframes, sizeof(uint32_t));
-  send_msg_data(client, m_phashbox->phash, m_phashbox->nbframes*sizeof(uint32_t), NULL, NULL);
-
-  if (m_phashbox->earlyendflag == 0)
-  {
-     Logging("send:cmd:%d, earlyendflag:%d, amount:%d, id:%d, nbframes:%d, phash[0]:%X", 
-       m_phashbox->cmd, m_phashbox->earlyendflag, m_phashbox->amount, m_phashbox->id , m_phashbox->nbframes, m_phashbox->phash[0]);
-  }
-
-  // get result
-  uint8* data = NULL;
-  int64_t more;
-  size_t msg_size, more_size = sizeof(int64_t);
-  int err = 0;
-  int sphashlen = sizeof(char)*131;
-  if (m_phashbox->cmd == pHashController::INSERT)
-  {
-    char sphash[132] = {0};
-    // Receive only sphash
-    err = recieve_msg_timeout(client, &msg_size, &more, &more_size, (void**)&data, m_timeout);
-    if (err != 0)
-    {
-      Logging("Timeout");
-      pHashController::GetInstance()->ReleasePhash(m_phashbox->id);
-      zmq_close(client);
-      zmq_term(context);
-      return -1;
-    }
-    if (msg_size == sphashlen)
-    {
-      memcpy_s(sphash, sphashlen, data, sphashlen);
-      sphash[sphashlen] = '\0';
-      Logging("Get sphash :%s", sphash);
-    }
-    free(data);
-    data = NULL;
-    if (more)
-      flushall_msg_parts(client);
-  } 
-  else if (m_phashbox->cmd == pHashController::LOOKUP)
-  {
-    std::string sphash;
-    float cs = -1.0;
-    // Receive positon ID and cs value
-    err = recieve_msg_timeout(client, &msg_size, &more, &more_size, (void**)&data, m_timeout);
-    if (err != 0)
-    {
-      Logging("Timeout");
-      pHashController::GetInstance()->ReleasePhash(m_phashbox->id);
-      zmq_close(client);
-      zmq_term(context);
-      return -1;
-    }
-
-    if (msg_size == sphashlen)
-    {
-      memcpy(&sphash[0], data, sphashlen);
-      Logging("Get replied sphash: %s", sphash.c_str());
-    }
-    free(data);
-    data = NULL;
-
-    err = recieve_msg_timeout(client, &msg_size, &more, &more_size, (void**)&data, m_timeout);
-    if (err != 0)
-    {
-      Logging("Timeout");
-      pHashController::GetInstance()->ReleasePhash(m_phashbox->id);
-      zmq_close(client);
-      zmq_term(context);
-      return -1;
-    }
-
-    if (msg_size == sizeof(float))
-    {
-      memcpy(&cs, data, sizeof(float));
-      Logging("Get cs: %f", cs);
-    }
-    if (more)
-      flushall_msg_parts(client);
-  }
-
-  pHashController::GetInstance()->ReleasePhash(m_phashbox->id);
-  zmq_close(client);
-  zmq_term(context);
-
-  return 0;
-}
-
-void pHashSender::SetSphash(std::wstring phash)
-{
-  m_sphash = phash; 
-}
-
-void pHashSender::SetPhash(phashbox* hash)
-{
-  m_phashbox = hash;
 }

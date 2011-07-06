@@ -20,7 +20,7 @@ pHashController::pHashController(void)
   PHashCommCfg.etime = 0;
 
   // collect times
-  PHashCommCfg.cfg.push_back(1);
+  PHashCommCfg.cfg.push_back(3);
   // collect duration (secs)
   PHashCommCfg.cfg.push_back(10);
   // delimiter (don't modify)
@@ -28,6 +28,9 @@ pHashController::pHashController(void)
   // collect point of time
   PHashCommCfg.cfg.push_back(5);
   PHashCommCfg.cfg.push_back(20);
+  PHashCommCfg.cfg.push_back(40);
+
+  PHashCommCfg.data = NULL;
 
   m_data.clear();
   m_datarefs = 0;
@@ -73,15 +76,15 @@ void pHashController::_Thread()
 
   if (atoi(ret.c_str()) == 1)
   {
-    NewData();
     PHashCommCfg.stop = FALSE;
+    NewData();
   }
 
 }
 
 void pHashController::UnRefs()
 {
-  if (--m_datarefs < 1)
+  if (--m_datarefs <= 0)
   {
     m_data.clear();
     m_data.resize(0);
@@ -93,8 +96,10 @@ void pHashController::NewData()
   if (PHashCommCfg.index >= PHashCommCfg.cfg.front()-1)
   {
     PHashCommCfg.stop = TRUE;
+    PHashCommCfg.index = -1;
     PHashHandler* handler = new PHashHandler(PHashCommCfg.data, m_sphash);
     handler->_Start();
+    PHashCommCfg.data = NULL;
     return;
   }
 
@@ -108,7 +113,7 @@ void pHashController::NewData()
   m_data.push_back(data);
 
   PHashCommCfg.data = &(m_data.back());
-  PHashCommCfg.index += 1;
+  PHashCommCfg.index++;
 
   int pos = 3 + PHashCommCfg.index;
   REFERENCE_TIME durtime = (10000000i64) * PHashCommCfg.cfg[1];
@@ -122,8 +127,15 @@ void pHashController::NewData()
 void pHashController::Check(REFERENCE_TIME& time, CComQIPtr<IMediaSeeking> ms,
                             CComQIPtr<IAudioSwitcherFilter> pASF, CString file)
 {
-  if (m_datarefs > 0)
-    return;
+  PHashCommCfg.stop = TRUE;
+
+  if (PHashCommCfg.data)
+  { // reset
+    PHashCommCfg.data->clear();
+    PHashCommCfg.data->resize(0);
+    PHashCommCfg.data = NULL;
+    PHashCommCfg.index = -1;
+  }
 
   if (time != 0)
     return;
@@ -205,7 +217,6 @@ BOOL PHashHandler::SamplesToPhash()
 {
   size_t buflen = m_data->size();
   float* buf = new float[buflen];
-  Logging("~~~~~~~~~~~~~~~~~~ [phash] buffer length: %d", buflen);
 
   pHashController* phashctrl = pHashController::GetInstance();
   int samplebyte = (phashctrl->PHashCommCfg.format.wBitsPerSample >> 3);

@@ -28,6 +28,7 @@
 #include "LazyInstance.h"
 #include <threadhelper.h>
 #include <stdint.h>
+#include <list>
 
 class pHashController:
   public LazyInstanceImpl<pHashController>,
@@ -45,7 +46,7 @@ public:
 
   PHashCommCfg_st PHashCommCfg;
 private:
-  std::vector<std::vector<BYTE> > m_data;
+  std::list<std::vector<BYTE> > m_data;
   int m_datarefs;
   CString m_file;
   std::wstring m_sphash;

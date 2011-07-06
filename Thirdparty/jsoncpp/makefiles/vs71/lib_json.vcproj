@@ -4,6 +4,7 @@
 	Version="9.00"
 	Name="lib_json"
 	ProjectGUID="{B84F7231-16CE-41D8-8C08-7B523FF4225B}"
+	RootNamespace="lib_json"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
@@ -90,9 +91,9 @@
 			OutputDirectory="../../build/vs71/release/lib_json"
 			IntermediateDirectory="../../build/vs71/release/lib_json"
 			ConfigurationType="4"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			InheritedPropertySheets="$(SolutionDir)src\common.vsprops;$(SolutionDir)src\release.vsprops"
 			CharacterSet="2"
-			WholeProgramOptimization="1"
+			WholeProgramOptimization="0"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -111,20 +112,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="../../include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
-				StringPooling="true"
-				RuntimeLibrary="0"
-				EnableFunctionLevelLinking="true"
-				DisableLanguageExtensions="true"
-				ForceConformanceInForLoopScope="false"
-				RuntimeTypeInfo="true"
-				UsePrecompiledHeader="0"
-				AssemblerOutput="0"
-				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -137,7 +126,6 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/json_vc71_libmt.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"

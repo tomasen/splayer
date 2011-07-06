@@ -676,7 +676,7 @@ public:
 
   afx_msg void OnAudioDeviceChange(UINT nID);
   afx_msg void OnUpdateAudioDeviceChange(CCmdUI *pCmdUI);
-  afx_msg void OnVisitbbs();
+  afx_msg void OnVisitShop();
   afx_msg void OnSendemail();
   afx_msg void OnCheckDefaultPlayer();
   afx_msg void OnCheckAndSetDefaultPlayer();

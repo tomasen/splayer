@@ -426,7 +426,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_UPDATE_COMMAND_UI(ID_SVPSUB_MENUENABLE, &CMainFrame::OnUpdateSvpsubMenuenable)
   ON_COMMAND_RANGE(IDS_AUDIOCHANNALMAPNORMAL,IDS_AUDIOCHANNALMAPEND , &CMainFrame::OnAudioChannalMapMenu)
   ON_UPDATE_COMMAND_UI_RANGE(IDS_AUDIOCHANNALMAPNORMAL, IDS_AUDIOCHANNALMAPEND, &CMainFrame::OnUpdateChannalMapMenu)
-  ON_COMMAND(ID_VISITBBS, &CMainFrame::OnVisitbbs)
+  ON_COMMAND(ID_VISITSHOP, &CMainFrame::OnVisitShop)
   ON_COMMAND(ID_SENDEMAIL, &CMainFrame::OnSendemail)
   ON_COMMAND(ID_CHECK_DEFAULT_PLAYER, OnCheckDefaultPlayer)
   ON_COMMAND(ID_CHECKANDSET_DEFAULT_PLAYER, OnCheckAndSetDefaultPlayer)
@@ -12818,10 +12818,10 @@ void CMainFrame::OnUpdateSvpsubMenuenable(CCmdUI *pCmdUI)
 }
 
 
-void CMainFrame::OnVisitbbs()
+void CMainFrame::OnVisitShop()
 {
   //Visit BBS
-  ShellExecute(m_hWnd, _T("open"), _T("https://bbs.shooter.cn/forumdisplay.php?fid=6"), NULL, NULL, SW_SHOWDEFAULT);
+  ShellExecute(m_hWnd, _T("open"), _T("http://shop.shooter.cn"), NULL, NULL, SW_SHOWDEFAULT);
 }
 
 void CMainFrame::OnFileISDBSearch()

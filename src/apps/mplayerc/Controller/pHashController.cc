@@ -20,13 +20,13 @@ pHashController::pHashController(void)
   PHashCommCfg.etime = 0;
 
   // collect times
-  PHashCommCfg.cfg.push_back(3);
+  PHashCommCfg.cfg.push_back(1);
   // collect duration (secs)
-  PHashCommCfg.cfg.push_back(10);
+  PHashCommCfg.cfg.push_back(20);
   // delimiter (don't modify)
   PHashCommCfg.cfg.push_back(0);
   // collect point of time
-  PHashCommCfg.cfg.push_back(5);
+  PHashCommCfg.cfg.push_back(10);
   PHashCommCfg.cfg.push_back(20);
   PHashCommCfg.cfg.push_back(40);
 
@@ -145,7 +145,7 @@ void pHashController::Check(REFERENCE_TIME& time, CComQIPtr<IMediaSeeking> ms,
 
   __int64 totaltime = 0;
   ms->GetDuration(&totaltime);
-  if (totaltime < (10000000i64)*60*45)
+  if (0 && totaltime < (10000000i64)*60*45)
     return;
 
   m_file = file;
@@ -186,7 +186,7 @@ void PHashHandler::_Thread()
     return;
   }
 
-  void* client = socket_connect(context, ZMQ_REQ, "tcp://192.168.10.18:5000");
+  void* client = socket_connect(context, ZMQ_REQ, "tcp://192.168.10.29:5000");
   if (!client)
   {
     ph_freemem_hash(NULL, m_phash);
@@ -221,7 +221,7 @@ BOOL PHashHandler::SamplesToPhash()
 
   pHashController* phashctrl = pHashController::GetInstance();
   WORD channels = phashctrl->PHashCommCfg.format.nChannels;
-  if (channels != 2 || channels != 6)
+  if (channels != 2 && channels != 6)
     return FALSE;
 
   int samplebyte = (phashctrl->PHashCommCfg.format.wBitsPerSample >> 3);

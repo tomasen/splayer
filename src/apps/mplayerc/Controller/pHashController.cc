@@ -215,16 +215,23 @@ void PHashHandler::_Thread()
 
 BOOL PHashHandler::SamplesToPhash()
 {
-  size_t buflen = m_data->size();
-  float* buf = new float[buflen];
+  long datalen = m_data->size();
+  if (!datalen)
+    return FALSE;
 
   pHashController* phashctrl = pHashController::GetInstance();
+  WORD channels = phashctrl->PHashCommCfg.format.nChannels;
+  if (channels != 2 || channels != 6)
+    return FALSE;
+
   int samplebyte = (phashctrl->PHashCommCfg.format.wBitsPerSample >> 3);
-  int nsample = buflen / phashctrl->PHashCommCfg.format.nChannels / samplebyte;
-  int samples = nsample * phashctrl->PHashCommCfg.format.nChannels;
+  int nsample = datalen / channels / samplebyte;
+  int samples = nsample * channels;
   
   BYTE* indata;
   BOOL ret;
+
+  float* buf = new float[samples];
 
   // Making all data into float type
   indata = &(*m_data)[0];
@@ -241,9 +248,8 @@ BOOL PHashHandler::SamplesToPhash()
   }
 
   // Mix as Mono channel
-  int MonoLen = buflen / phashctrl->PHashCommCfg.format.nChannels;
-  float* MonoChannelBuf = new float[MonoLen];
-  ret = MixChannels(buf, samples, phashctrl->PHashCommCfg.format.nChannels, nsample, MonoChannelBuf);
+  float* MonoChannelBuf;
+  ret = MixChannels(buf, samples, phashctrl->PHashCommCfg.format.nChannels, nsample, &MonoChannelBuf);
   delete[] buf;
 
   if (!ret)
@@ -314,51 +320,40 @@ BOOL PHashHandler::DownSample(float* inbuf, int nsample, int des_sr, int org_sr,
   return TRUE;
 }
 
-BOOL PHashHandler::MixChannels(float* buf, int samples, int channels, int nsample, float* MonoChannelBuf)
+BOOL PHashHandler::MixChannels(float* buf, int samples, int channels, int nsample, float** MonoChannelBuf)
 {
   int bufindx = 0;
   if (channels == 2)
   {
-    do 
+    float* monobuffer = new float[nsample];
+    for (int j = 0; j < samples; j += channels)
     {
-      for (int j = 0; j < samples; j += channels)
-      {
-        MonoChannelBuf[bufindx] = 0.0f;
-        for (int i = 0; i < channels; ++i)
-          MonoChannelBuf[bufindx] += buf[j+i];
-        MonoChannelBuf[bufindx++] /= channels;
-      }
-    } while (bufindx < nsample);
+      monobuffer[bufindx] = 0.0f;
+      for (int i = 0; i < channels; ++i)
+        monobuffer[bufindx] += buf[j+i];
+      monobuffer[bufindx++] /= channels;
+    }
+    *MonoChannelBuf = monobuffer;
   }
   else if (channels == 6)
-  { // TODO: now i won't work actually
-    float* temp = new float[nsample*2];
-    memset(temp, 0, sizeof(temp));
-    SixchannelsToStereo(temp, buf, nsample);
-    for (int i = 1; i < nsample; i++)
-    {
-       MonoChannelBuf[i] = 0.0f;
-       for (int j = 0; j < 2; j++)
-      {
-        MonoChannelBuf[i] = temp[i+2]; 
-      }
-      MonoChannelBuf[i] /= 2;
-    }
-    delete [] temp;
-  }
+    *MonoChannelBuf = SixChannelsToMono(buf, samples);
+
   return TRUE;
 }
 
-void PHashHandler::SixchannelsToStereo(float* output, float* input, int n)
+float* PHashHandler::SixChannelsToMono(float* in, int samples)
 {
-  float *p = input;
+  int chsamples = samples / 6;
+  float* out  = new float[chsamples * 6];
+  int idx = 0;
 
-  while(n-- > 0)
+  for (int s = 0; s < samples; s += 6)
   {
-    *output++ = (p[0] + p[1] + p[3] + p[5]) / 3;
-    *output++ = (p[1] + p[2] + p[4] + p[5]) / 3;
-    p += 6;
+    for (int ch = 0; ch < 6; ch++)
+      out[ch * chsamples + idx] = in[s+ch];
+    idx++;
   }
+  return out;
 }
 
 BOOL PHashHandler::SampleToFloat(const unsigned char* const indata, float* outdata, int samples, int type)

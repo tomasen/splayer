@@ -682,6 +682,7 @@ void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point)
     ScreenToClient(&pi);
     if (rc.PtInRect(pi))
     {
+      SetClassLong(GetSafeHwnd(), GCL_HCURSOR, (LONG)cursorHand);
       SetCursor(cursorHand);
       m_adctrl._mouseover = true;
       m_adctrl._mouseover_time = timeGetTime();
@@ -690,6 +691,7 @@ void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point)
     {
       m_adctrl._mouseover = false;
       m_adctrl.SetCloseBtnDisplay(false);
+      SetClassLong(GetSafeHwnd(), GCL_HCURSOR, (LONG)LoadCursor(NULL, IDC_ARROW));
     }
   }
 
@@ -1014,6 +1016,7 @@ void CPlayerToolBar::OnLButtonUp(UINT nFlags, CPoint point)
       if (m_adctrl.IsAdsEmpty())
       {
         m_adctrl.SetVisible(false);
+        SetClassLong(GetSafeHwnd(), GCL_HCURSOR, (LONG)LoadCursor(NULL, IDC_ARROW));
         InvalidateRect(&m_adctrl.GetRect(), false);
       }
     }

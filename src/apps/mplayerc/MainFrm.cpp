@@ -9345,7 +9345,7 @@ void CMainFrame::OnFavoritesAddReal( BOOL bRecent , BOOL bForceDel )
   BOOL bDelFav = bForceDel;
   if(bRecent && !bForceDel)
   {
-    if(m_l_been_playing_sec < 30){
+    if(m_l_been_playing_sec < 10){
       SVP_LogMsg5(L"OnFavoritesAddReal Skiped Because Just Finish Seeking");
       return;
     }

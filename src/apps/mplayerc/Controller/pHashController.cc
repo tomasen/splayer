@@ -6,6 +6,7 @@
 #include "../Model/PHashComm.h"
 #include "HashController.h"
 #include "samplerate.h"
+
 #include "sndfile.h"
 #include "phashapi.h"
 #include "zmq/zmqhelper.h"
@@ -22,11 +23,11 @@ pHashController::pHashController(void)
   // collect times
   PHashCommCfg.cfg.push_back(1);
   // collect duration (secs)
-  PHashCommCfg.cfg.push_back(20);
+  PHashCommCfg.cfg.push_back(60);
   // delimiter (don't modify)
   PHashCommCfg.cfg.push_back(0);
   // collect point of time
-  PHashCommCfg.cfg.push_back(10);
+  PHashCommCfg.cfg.push_back(60);
   PHashCommCfg.cfg.push_back(20);
   PHashCommCfg.cfg.push_back(40);
 
@@ -232,7 +233,6 @@ BOOL PHashHandler::SamplesToPhash()
   BOOL ret;
 
   float* buf = new float[samples];
-
   // Making all data into float type
   indata = &(*m_data)[0];
   ret = SampleToFloat(indata, buf, samples, phashctrl->PHashCommCfg.pcmtype);
@@ -267,7 +267,6 @@ BOOL PHashHandler::SamplesToPhash()
   if (!ret)
     return ret;
 
-
   int phashlen = 0;
   uint32_t* phash = NULL;
 
@@ -289,7 +288,7 @@ BOOL PHashHandler::DownSample(float* inbuf, int nsample, int des_sr, int org_sr,
 
   // allocate output buffer for conversion
   outlen = sr_ratio * (double)nsample;
-  //*outbuf = (float*)malloc(outlen * sizeof(float)); 
+
   float* buffer = new float[outlen * sizeof(float)];
   if (!buffer)
     return FALSE;
@@ -322,10 +321,10 @@ BOOL PHashHandler::DownSample(float* inbuf, int nsample, int des_sr, int org_sr,
 
 BOOL PHashHandler::MixChannels(float* buf, int samples, int channels, int nsample, float** MonoChannelBuf)
 {
-  int bufindx = 0;
+  float* monobuffer = new float[nsample];
   if (channels == 2)
   {
-    float* monobuffer = new float[nsample];
+    int bufindx = 0;
     for (int j = 0; j < samples; j += channels)
     {
       monobuffer[bufindx] = 0.0f;
@@ -336,24 +335,20 @@ BOOL PHashHandler::MixChannels(float* buf, int samples, int channels, int nsampl
     *MonoChannelBuf = monobuffer;
   }
   else if (channels == 6)
-    *MonoChannelBuf = SixChannelsToMono(buf, samples);
+  {
+    int bufindx = 0;
+
+    for (int i = 0; i < samples; i += channels)
+    {
+      monobuffer[bufindx] = (buf[i] + buf[i+1] + buf[i+3] + buf[i+5]) / 3.f;
+      monobuffer[bufindx] += (buf[i+1] + buf[i+2] + buf[i+4] + buf[i+5]) / 3.f;
+      monobuffer[bufindx++] /= 2.f;
+    }
+      
+    *MonoChannelBuf = monobuffer;
+  }
 
   return TRUE;
-}
-
-float* PHashHandler::SixChannelsToMono(float* in, int samples)
-{
-  int chsamples = samples / 6;
-  float* out  = new float[chsamples * 6];
-  int idx = 0;
-
-  for (int s = 0; s < samples; s += 6)
-  {
-    for (int ch = 0; ch < 6; ch++)
-      out[ch * chsamples + idx] = in[s+ch];
-    idx++;
-  }
-  return out;
 }
 
 BOOL PHashHandler::SampleToFloat(const unsigned char* const indata, float* outdata, int samples, int type)

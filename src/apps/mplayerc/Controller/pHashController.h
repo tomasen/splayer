@@ -67,7 +67,6 @@ private:
     int org_sr, float** outbuf, int& outlen);
   BOOL MixChannels(float* buf, int samples, int channels,
     int nsample, float** MonoChannelBuf);
-  float* SixChannelsToMono(float* in, int samples);
   BOOL SampleToFloat(const unsigned char* const indata, float* outdata, int samples, int type);
 
 private:

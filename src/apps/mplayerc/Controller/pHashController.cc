@@ -52,10 +52,10 @@ void pHashController::_Thread()
   sinet::refptr<sinet::task>    net_task = sinet::task::create_instance();
   sinet::refptr<sinet::request> net_rqst = sinet::request::create_instance();
   
-  wchar_t url[512];
-  wsprintf(url, L"http://webpj:8080/misc/phash.php?req=%d&sphs=%s\n", 1, m_sphash.c_str());
+  std::wstring url = L"https://phash.shooter.cn/api/v2/phash.php?&sphash=";
+  url += m_sphash;
 
-  net_rqst->set_request_url(url);
+  net_rqst->set_request_url(url.c_str());
   net_rqst->set_request_method(REQ_GET);
   net_task->append_request(net_rqst);
   net_pool->execute(net_task);
@@ -189,7 +189,7 @@ void PHashHandler::_Thread()
     return;
   }
 
-  void* client = socket_connect(context, ZMQ_REQ, "tcp://192.168.10.29:5000");
+  void* client = socket_connect(context, ZMQ_REQ, "tcp://phash.shooter.cn:8211");
   if (!client)
   {
     ph_freemem_hash(NULL, m_phash);

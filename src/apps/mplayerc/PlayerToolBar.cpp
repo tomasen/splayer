@@ -408,7 +408,7 @@ void CPlayerToolBar::OnPaint()
       width = 0;
    
     if (size.cx > 0)
-      btnrc.right = btnrc.left + min(width, size.cx);
+      btnrc.right = btnrc.left + width;//min(width, size.cx);
     else
       btnrc.right = btnrc.left;
     //btnrc.right -= 5;
@@ -646,6 +646,7 @@ INT_PTR CPlayerToolBar::OnToolHitTest(	CPoint point,TOOLINFO* pTI 	) const
   return -1;
 
 };
+
 void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point)
 {
   int diffx = m_lastMouseMove.x - point.x;
@@ -676,13 +677,21 @@ void CPlayerToolBar::OnMouseMove(UINT nFlags, CPoint point)
   if (m_adctrl.GetVisible())
   {
 /*    CRect rcAd = m_btnplaytime->m_rcHitest - rc.TopLeft();*/
-    CRect rcAd = m_adctrl.GetRect();
+    CRect rc = m_adctrl.GetRect();
     CPoint pi = point;
     ScreenToClient(&pi);
-    if (rcAd.PtInRect(pi))
+    if (rc.PtInRect(pi))
     {
+      SetClassLong(GetSafeHwnd(), GCL_HCURSOR, (LONG)cursorHand);
       SetCursor(cursorHand);
-      m_adctrl._mouseover_time = time(NULL);
+      m_adctrl._mouseover = true;
+      m_adctrl._mouseover_time = timeGetTime();
+    }
+    else
+    {
+      m_adctrl._mouseover = false;
+      m_adctrl.SetCloseBtnDisplay(false);
+      SetClassLong(GetSafeHwnd(), GCL_HCURSOR, (LONG)LoadCursor(NULL, IDC_ARROW));
     }
   }
 
@@ -994,12 +1003,26 @@ void CPlayerToolBar::OnLButtonUp(UINT nFlags, CPoint point)
   // if click on ads
   if (m_adctrl.GetVisible())
   {
-    CRect rcAd = m_adctrl.GetRect();
-    if (rcAd.PtInRect(point))
-    {
+    CRect rc = m_adctrl.GetRect();
+    CRect rcBtn = m_adctrl.GetCloseBtnRect();
+    CRect rcAd = m_adctrl.GetAdRect();
+
+    if (rc.PtInRect(point))
       SetCursor(cursorHand);
-      m_adctrl.OnAdClick();
+
+    if (rcBtn.PtInRect(point) && m_adctrl.IsCloseBtnCanClick())
+    {
+      m_adctrl.DoHideAd();
+      if (m_adctrl.IsAdsEmpty())
+      {
+        m_adctrl.SetVisible(false);
+        SetClassLong(GetSafeHwnd(), GCL_HCURSOR, (LONG)LoadCursor(NULL, IDC_ARROW));
+        InvalidateRect(&m_adctrl.GetRect(), false);
+      }
     }
+    else if (rcAd.PtInRect(point))
+      m_adctrl.OnAdClick();
+      
   }
 
   CPoint xpoint = point + rc.TopLeft() ;
@@ -1084,11 +1107,14 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
         // If no ads exists, then didn't show ads, otherwise show ads
         if (m_adctrl.IsAdsEmpty())
           break;
+        
+        if (m_adctrl._mouseover && timeGetTime() - m_adctrl._mouseover_time > 400)
+          m_adctrl.SetCloseBtnDisplay(true);
 
         m_adctrl.AllowAnimate(true);
         Invalidate();
         break;
-      }
+      } 
     case TIMER_ADPLAYSWITCH:
       {
         // If no ads exists, then don't show ads
@@ -1105,7 +1131,7 @@ void CPlayerToolBar::OnTimer(UINT nIDEvent){
         if (m_adctrl.IsCurAdShownDone())
         {
           m_adctrl.ShowNextAd();
-          if ((time(NULL) - m_adctrl._mouseover_time) > 3)
+          if ((timeGetTime() - m_adctrl._mouseover_time) > 3000)
             SetTimer(TIMER_ADPLAYSWITCH, 5000, NULL);
           else
             SetTimer(TIMER_ADPLAYSWITCH, 3000, NULL);

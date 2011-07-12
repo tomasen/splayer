@@ -75,7 +75,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386  /LTCG "
-				AdditionalDependencies="subpicru.lib Rpcrt4.lib lzma_sdk.lib base.lib courgette_lib.lib Winmm.lib Wbemuuid.lib Dsound.lib Imm32.lib Dbghelp.lib Psapi.lib libssfru.lib detours.lib unrar.lib sphash.lib qtmlClient.lib dxguid.lib libsamplerate.a libzmq.lib libphashaudio.a"
+				AdditionalDependencies="subpicru.lib Rpcrt4.lib Winmm.lib Wbemuuid.lib Dsound.lib Imm32.lib Dbghelp.lib Psapi.lib libssfru.lib detours.lib unrar.lib sphash.lib qtmlClient.lib dxguid.lib libsamplerate.a libzmq.lib libphashaudio.a"
 				OutputFile="$(SolutionDir)..\splayer.exe"
 				AdditionalLibraryDirectories="../../../Thirdparty/sqlitepp/lib;../../../lib;../../../lib/wm7;../../../lib/qt6;../../../lib/detours;../../../thirdparty/courgette\Release\"
 				GenerateManifest="true"
@@ -1252,10 +1252,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\icon\DVD.ico"
-				>
-			</File>
-			<File
 				RelativePath=".\res\newui\FAST_BACKWORD.bmp"
 				>
 			</File>
@@ -1677,10 +1673,6 @@
 			</File>
 			<File
 				RelativePath=".\res\ecio.icons\video.ico"
-				>
-			</File>
-			<File
-				RelativePath=".\res\icon\video.ico"
 				>
 			</File>
 			<File
@@ -2210,18 +2202,6 @@
 			<Filter
 				Name="Updater"
 				>
-				<File
-					RelativePath="..\..\..\Updater\conrgette_interface.cpp"
-					>
-					<FileConfiguration
-						Name="Release Unicode|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"
-						/>
-					</FileConfiguration>
-				</File>
 				<File
 					RelativePath="..\..\..\Updater\cupdatenetlib.cpp"
 					>

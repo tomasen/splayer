@@ -21,15 +21,16 @@ pHashController::pHashController(void)
   PHashCommCfg.etime = 0;
 
   // collect times
-  PHashCommCfg.cfg.push_back(1);
+  PHashCommCfg.cfg.push_back(4);
   // collect duration (secs)
-  PHashCommCfg.cfg.push_back(60);
+  PHashCommCfg.cfg.push_back(30);
   // delimiter (don't modify)
   PHashCommCfg.cfg.push_back(0);
   // collect point of time
-  PHashCommCfg.cfg.push_back(60);
-  PHashCommCfg.cfg.push_back(20);
-  PHashCommCfg.cfg.push_back(40);
+  PHashCommCfg.cfg.push_back(120);    // 2min
+  PHashCommCfg.cfg.push_back(600);    // 10min
+  PHashCommCfg.cfg.push_back(1200);   // 20min
+  PHashCommCfg.cfg.push_back(1800);   // 30min
 
   PHashCommCfg.data = NULL;
 
@@ -136,6 +137,7 @@ void pHashController::Check(REFERENCE_TIME& time, CComQIPtr<IMediaSeeking> ms,
     PHashCommCfg.data->resize(0);
     PHashCommCfg.data = NULL;
     PHashCommCfg.index = -1;
+    UnRefs();
   }
 
   if (time != 0)

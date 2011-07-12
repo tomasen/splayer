@@ -39,6 +39,8 @@
 
 #define STRVAR_MAINSUBTITLEFONT     1013
 #define STRVAR_SECONDARYSUBTITLEFONT 1014
+
+#define STRVAR_HIDEAD                1015
 // string array variables
 #define STRARRAY_PLAYLIST           1000
 

@@ -51,15 +51,21 @@ void pHashController::_Thread()
   sinet::refptr<sinet::pool>    net_pool = sinet::pool::create_instance();
   sinet::refptr<sinet::task>    net_task = sinet::task::create_instance();
   sinet::refptr<sinet::request> net_rqst = sinet::request::create_instance();
-  
-  std::wstring url = L"https://phash.shooter.cn/api/v2/phash.php?&sphash=";
-  url += m_sphash;
+  sinet::refptr<sinet::postdata> net_post = sinet::postdata::create_instance();
+  sinet::refptr<sinet::postdataelem> net_elem = sinet::postdataelem::create_instance();
+
+  std::wstring url = L"https://phash.shooter.cn/api/v2/phash";
+
+  net_elem->set_name(L"sphash");
+  net_elem->setto_text(m_sphash.c_str());
+  net_post->add_elem(net_elem);
 
   net_rqst->set_request_url(url.c_str());
-  net_rqst->set_request_method(REQ_GET);
+  net_rqst->set_request_method(REQ_POST);
+  net_rqst->set_postdata(net_post);
   net_task->append_request(net_rqst);
   net_pool->execute(net_task);
-    
+
   while (net_pool->is_running_or_queued(net_task))
   {
     if ( _Exit_state(500))
@@ -189,7 +195,7 @@ void PHashHandler::_Thread()
     return;
   }
 
-  void* client = socket_connect(context, ZMQ_REQ, "tcp://phash.shooter.cn:8211");
+  void* client = socket_connect(context, ZMQ_REQ, "tcp://phashserv.shooter.cn:8211");
   if (!client)
   {
     ph_freemem_hash(NULL, m_phash);

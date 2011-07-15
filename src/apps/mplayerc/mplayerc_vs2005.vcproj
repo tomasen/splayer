@@ -53,7 +53,7 @@
 				AdditionalOptions="/D &quot;CURL_STATICLIB&quot;  /MP"
 				Optimization="2"
 				AdditionalIncludeDirectories="..\..\ZenLib\Source;..\..\..\include;..\..\mediainfo\Source\;..\..\mediainfo\Source\MediaInfo\;..\..\filters\BaseClasses;..\..\filters\transform\webm\vp8_sdk\include;..\..\filters\transform\webm\IDL;..\..\filters\transform\webm\common;..\..\filters\transform\mpcvideodec;..\..\svplib;..\..\..\thirdparty;..\..\..\include\dx"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;ZMQ_STATIC"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;"
 				EnableEnhancedInstructionSet="0"
 				OpenMP="false"
 				UsePrecompiledHeader="2"

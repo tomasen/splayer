@@ -133,6 +133,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				OutputFile="../../lib/$(ProjectName).lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -148,7 +149,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="cp $(ProjectDir)Release\$(ProjectName).lib $(ProjectDir)..\..\lib\$(ProjectName).lib"
+				CommandLine=""
 			/>
 		</Configuration>
 		<Configuration

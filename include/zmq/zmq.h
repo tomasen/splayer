@@ -44,7 +44,7 @@ extern "C" {
 #else
 #   define ZMQ_EXPORT
 #endif
-
+#define ZMQ_EXPORT
 
 /******************************************************************************/
 /*  0MQ versioning support.                                                   */

@@ -1311,6 +1311,9 @@ void FingerCollect::PHashCollect(BYTE* pDataIn, int pcmtype, WAVEFORMATEX* wfe, 
   if (!PHashCommCfg || PHashCommCfg->stop)
     return;
 
+  if (wfe->nChannels != 2 && wfe->nChannels != 6)
+    return;
+
   REFERENCE_TIME rtStart, rtStop;
   if (VFW_E_SAMPLE_TIME_NOT_SET == pIn->GetTime(&rtStart, &rtStop))
     return;

@@ -33,9 +33,6 @@ pHashController::pHashController(void)
   PHashCommCfg.cfg.push_back(1800);   // 30min
 
   PHashCommCfg.data = NULL;
-
-  m_data.clear();
-  m_datarefs = 0;
 }
 
 pHashController::~pHashController(void)
@@ -90,15 +87,6 @@ void pHashController::_Thread()
 
 }
 
-void pHashController::UnRefs()
-{
-  if (--m_datarefs <= 0)
-  {
-    m_data.clear();
-    m_data.resize(0);
-  }
-}
-
 void pHashController::NewData()
 {
   if (PHashCommCfg.index >= PHashCommCfg.cfg.front()-1)
@@ -117,10 +105,8 @@ void pHashController::NewData()
     handler->_Start();
   }
 
-  std::vector<BYTE> data;
-  m_data.push_back(data);
-
-  PHashCommCfg.data = &(m_data.back());
+  std::vector<BYTE>* data = new std::vector<BYTE>();
+  PHashCommCfg.data = data;
   PHashCommCfg.index++;
 
   int pos = 3 + PHashCommCfg.index;
@@ -128,8 +114,6 @@ void pHashController::NewData()
 
   PHashCommCfg.stime = (10000000i64) * PHashCommCfg.cfg[pos];
   PHashCommCfg.etime = PHashCommCfg.stime + durtime;
-
-  m_datarefs++;
 }
 
 void pHashController::Check(REFERENCE_TIME& time, CComQIPtr<IMediaSeeking> ms,
@@ -141,9 +125,9 @@ void pHashController::Check(REFERENCE_TIME& time, CComQIPtr<IMediaSeeking> ms,
   { // reset
     PHashCommCfg.data->clear();
     PHashCommCfg.data->resize(0);
+    delete PHashCommCfg.data;
     PHashCommCfg.data = NULL;
     PHashCommCfg.index = -1;
-    UnRefs();
   }
 
   if (time != 0)
@@ -212,8 +196,8 @@ void PHashHandler::_Thread()
   void* data;
   size_t msgsize, moresize;
   int64_t more;
-  recieve_msg(client, &msgsize, &more, &moresize, (void**)&data);
-  
+  recieve_msg_timeout(client, &msgsize, &more, &moresize, (void**)&data, 5);
+
   ph_freemem_hash(NULL, m_phash);
   m_phash = NULL;
   m_phashlen = 0;
@@ -226,12 +210,22 @@ BOOL PHashHandler::SamplesToPhash()
 {
   long datalen = m_data->size();
   if (!datalen)
+  {
+    delete m_data;
+    m_data = NULL;
     return FALSE;
+  }
 
   pHashController* phashctrl = pHashController::GetInstance();
   WORD channels = phashctrl->PHashCommCfg.format.nChannels;
   if (channels != 2 && channels != 6)
+  {
+    m_data->clear();
+    m_data->resize(0);
+    delete m_data;
+    m_data = NULL;
     return FALSE;
+  }
 
   int samplebyte = (phashctrl->PHashCommCfg.format.wBitsPerSample >> 3);
   int nsample = datalen / channels / samplebyte;
@@ -247,7 +241,8 @@ BOOL PHashHandler::SamplesToPhash()
 
   m_data->clear();
   m_data->resize(0);
-  pHashController::GetInstance()->UnRefs();
+  delete m_data;
+  m_data = NULL;
 
   if (!ret)
   {
@@ -261,10 +256,7 @@ BOOL PHashHandler::SamplesToPhash()
   delete[] buf;
 
   if (!ret)
-  {
-    delete[] MonoChannelBuf;
     return ret;
-  }
 
   // Samplerate to 8kHz 
   float* outbuff = NULL;
@@ -329,9 +321,11 @@ BOOL PHashHandler::DownSample(float* inbuf, int nsample, int des_sr, int org_sr,
 
 BOOL PHashHandler::MixChannels(float* buf, int samples, int channels, int nsample, float** MonoChannelBuf)
 {
-  float* monobuffer = new float[nsample];
+  BOOL ret = TRUE;
+
   if (channels == 2)
   {
+    float* monobuffer = new float[nsample];
     int bufindx = 0;
     for (int j = 0; j < samples; j += channels)
     {
@@ -344,6 +338,7 @@ BOOL PHashHandler::MixChannels(float* buf, int samples, int channels, int nsampl
   }
   else if (channels == 6)
   {
+    float* monobuffer = new float[nsample];
     int bufindx = 0;
 
     for (int i = 0; i < samples; i += channels)
@@ -355,8 +350,13 @@ BOOL PHashHandler::MixChannels(float* buf, int samples, int channels, int nsampl
       
     *MonoChannelBuf = monobuffer;
   }
+  else
+  {
+    *MonoChannelBuf = NULL;
+    ret = FALSE;
+  }
 
-  return TRUE;
+  return ret;
 }
 
 BOOL PHashHandler::SampleToFloat(const unsigned char* const indata, float* outdata, int samples, int type)

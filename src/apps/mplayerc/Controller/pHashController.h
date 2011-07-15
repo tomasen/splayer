@@ -42,12 +42,9 @@ public:
   void NewData();
   void Check(REFERENCE_TIME& time, CComQIPtr<IMediaSeeking> ms,
     CComQIPtr<IAudioSwitcherFilter> pASF, CString file);
-  void UnRefs();
 
   PHashCommCfg_st PHashCommCfg;
 private:
-  std::list<std::vector<BYTE> > m_data;
-  int m_datarefs;
   CString m_file;
   std::wstring m_sphash;
 };

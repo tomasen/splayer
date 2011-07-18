@@ -25,20 +25,20 @@
 extern "C" {
 #endif
 
-/*  Handle DSO symbol visibility                                             */
-#if defined _MSC_VER
-#   if defined ZMQ_STATIC
-#       define DLL_EXPORT
-#   endif
-#   if defined DLL_EXPORT
-#       define ZMQ_EXPORT __declspec(dllexport)
-#   else
-#       define ZMQ_EXPORT __declspec(dllimport)
-#   endif
-#else
-#   define ZMQ_EXPORT
-#endif
-
+// /*  Handle DSO symbol visibility                                             */
+// #if defined _MSC_VER
+// #   if defined ZMQ_STATIC
+// #       define DLL_EXPORT
+// #   endif
+// #   if defined DLL_EXPORT
+// #       define ZMQ_EXPORT __declspec(dllexport)
+// #   else
+// #       define ZMQ_EXPORT __declspec(dllimport)
+// #   endif
+// #else
+// #   define ZMQ_EXPORT
+// #endif
+#define ZMQ_EXPORT
 /*  Helper functions are used by perf tests so that they don't have to care   */
 /*  about minutiae of time-related functions on different OS platforms.       */
 

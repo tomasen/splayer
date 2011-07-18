@@ -1493,7 +1493,8 @@ int CSVPToolBox::GetGPUString(CStringArray * szaGPUString){
             ret = 1;
           }else if(imodel > 7000 && imodel < 10000){
             ret = 1;
-          }
+          }else if(szDetect.Find(L"ION") >= 0) // ION
+            ret = 1;
         }else if(szDetect.Find(_T("Intel")) >= 0  || 0x8086 == m_nPCIVendor){
           if(m_nPCIDevice >= 0x2e00 && m_nPCIDevice <= 0x2eff){
             ret = 1; // G45

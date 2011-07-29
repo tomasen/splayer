@@ -33,7 +33,40 @@ void Ed2kController::_Thread()
     // see if has files to be deal with
     if (!m_lsMediaFiles.empty())
     {
-      // fetch a string
+      // -------------------------------------------------------------------------
+      // Note:
+      // sleep according to the disk io traffic
+      // if the disk is too busy, then sleep until the disk is not busy
+      // if the disk is not busy, then sleep just once
+      if (_Exit_state(50))  // First, sleep for a very short time
+        return;
+
+      // Second, start monitoring
+      m_monitor->start_monitoring();
+
+      // Then, check the disk io in a while loop
+      int nTime = 300;
+      while (!_Exit_state(nTime))
+      {
+        // Get the current rate
+        double dRate = m_monitor->get_cur_value();
+
+        // If the rate is greater than 70%, then sleep for a longer time to wait next loop
+        if (dRate > 70.0)
+          nTime += 200;   // add the sleep time
+        else
+          break;
+      }
+
+      // Now, stop monitoring
+      m_monitor->stop_monitoring();
+
+      // Check the exit state again
+      if (_Exit_state(0))
+        return;
+
+      // -----------------------------------------------------------------------
+      // start deal with a file
       m_cs.lock();
       std::wstring cur_path = m_lsMediaFiles.front();
       m_cs.unlock();
@@ -56,38 +89,12 @@ void Ed2kController::_Thread()
       m_lsMediaFiles.pop_front();
       m_cs.unlock();
     }
-
-    // -------------------------------------------------------------------------
-    // Note:
-    // sleep according to the disk io traffic
-    // if the disk is too busy, then sleep until the disk is not busy
-    // if the disk is not busy, then sleep just once
-    if (_Exit_state(50))  // First, sleep for a very short time
-      return;
-
-    // Second, start monitoring
-    m_monitor->start_monitoring();
-
-    // Then, check the disk io in a while loop
-    int nTime = 300;
-    while (!_Exit_state(nTime))
+    else
     {
-      // Get the current rate
-      double dRate = m_monitor->get_cur_value();
-
-      // If the rate is greater than 70%, then sleep for a longer time to wait next loop
-      if (dRate > 70.0)
-        nTime += 200;   // add the sleep time
-      else
-        break;
+      // If no files to be deal with, then just sleep for a short time
+      if (_Exit_state(500))
+        return;
     }
-
-    // Now, stop monitoring
-    m_monitor->stop_monitoring();
-
-    // Check the exit state again
-    if (_Exit_state(0))
-      return;
   }
 }
 

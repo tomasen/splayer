@@ -48,6 +48,10 @@ PlayerPreference::PlayerPreference(void):
 
   m_map_strvar[STRVAR_MAINSUBTITLEFONT] = GetProfileString(L"Settings", L"MainSubtitleFont", L"");
   m_map_strvar[STRVAR_SECONDARYSUBTITLEFONT] = GetProfileString(L"Settings", L"SecondarySubtitleFont", L"");
+
+  // API for check ed2k and upload ed2k
+  m_map_strvar[STRVAR_CHECK_ED2K_EXIST] = GetProfileString(L"Settings", L"CheckEd2kExist", L"https://www.shooter.cn/api/v2/ed2000?action=check&sphash=%s");
+  m_map_strvar[STRVAR_UPLOAD_ED2K] = GetProfileString(L"Settings", L"UploadEd2k", L"https://www.shooter.cn/api/v2/ed2000?action=upload&sphash=%s&hash=%s");
 }
 
 void PlayerPreference::Update()

@@ -1847,6 +1847,38 @@
 				RelativePath=".\Utils\TextFile.h"
 				>
 			</File>
+			<Filter
+				Name="Monitor"
+				>
+				<File
+					RelativePath=".\Utils\Monitor\constant.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Utils\Monitor\factory.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Utils\Monitor\factory.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Utils\Monitor\monitor.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Utils\Monitor\monitor.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Utils\Monitor\notify.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Utils\Monitor\notify.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Controller"
@@ -1857,6 +1889,14 @@
 			</File>
 			<File
 				RelativePath=".\Controller\AdController.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Controller\Ed2kController.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Controller\Ed2kController.h"
 				>
 			</File>
 			<File

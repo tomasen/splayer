@@ -41,6 +41,10 @@
 #define STRVAR_SECONDARYSUBTITLEFONT 1014
 
 #define STRVAR_HIDEAD                1015
+
+#define STRVAR_CHECK_ED2K_EXIST        1016
+#define STRVAR_UPLOAD_ED2K          1017
+
 // string array variables
 #define STRARRAY_PLAYLIST           1000
 

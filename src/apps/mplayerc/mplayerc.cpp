@@ -67,6 +67,7 @@
 #include "GUIConfigManage.h"
 #include <ResLoader.h>
 #include "Controller/UserAccountController.h"
+#include "Controller/Ed2kController.h"
 
 DECLARE_LAZYINSTANCE(HotkeyController);
 DECLARE_LAZYINSTANCE(PlayerPreference);
@@ -80,6 +81,7 @@ DECLARE_LAZYINSTANCE(UserShareController);
 DECLARE_LAZYINSTANCE(PingPongController);
 DECLARE_LAZYINSTANCE(pHashController);
 DECLARE_LAZYINSTANCE(UserAccountController);
+DECLARE_LAZYINSTANCE(Ed2kController);
 /////////
 static bool _skip_db = false;
 

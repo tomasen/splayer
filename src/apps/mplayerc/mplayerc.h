@@ -625,6 +625,7 @@ public:
 		//int disableSmartDrag;
 
 		CString szOEMTitle;
+		CString szOEMFullName;
 
 		bool fWinLirc;
 		CString WinLircAddr;

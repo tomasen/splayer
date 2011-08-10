@@ -112,7 +112,7 @@ BOOL CPlayerToolBar::Create(CWnd* pParentWnd)
 
   cursorHand = ::LoadCursor(NULL, IDC_HAND);
 
-  if (s.szOEMTitle.IsEmpty() || s.szOEMTitle.Find(L"太平洋") >= 0)
+  if (s.szOEMTitle.IsEmpty() || s.szOEMFullName.IsEmpty() || s.szOEMTitle.Find(L"太平洋") >= 0 )
   {
     SetTimer(TIMER_ADPLAY, 100, NULL);
     SetTimer(TIMER_ADPLAYSWITCH, 5000, NULL);

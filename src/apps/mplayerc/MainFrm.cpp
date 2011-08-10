@@ -901,13 +901,15 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
   // end
 
   CString szBuild;
-  if(!s.szOEMTitle.IsEmpty()){
+  if(!s.szOEMTitle.IsEmpty())
     szBuild.Format(_T(" (%s)"), s.szOEMTitle );// Build %s SVP_REV_STR
-  }else{
-    szBuild.Empty();//Format( _T(" (Build %s)"),SVP_REV_STR);
-  }
-  //SetWindowText(CString(ResStr(IDR_MAINFRAME)) + szBuild);
-  m_szTitle = CString(ResStr(IDR_MAINFRAME)) + szBuild;
+  else
+    szBuild.Empty();
+  
+  if(!s.szOEMFullName.IsEmpty())
+    m_szTitle = s.szOEMFullName;
+  else
+    m_szTitle = CString(ResStr(IDR_MAINFRAME)) + szBuild;
 
 
   SetTimer(TIMER_STATUSCHECKER , 10000, NULL);
@@ -5187,8 +5189,10 @@ void CMainFrame::OnFilePostClosemedia()
     szBuild.Empty();//Format( _T(" (Build %s)"),SVP_REV_STR);
   }
 
-  //SetWindowText(CString(ResStr(IDR_MAINFRAME)) + szBuild);
-  m_szTitle = CString(ResStr(IDR_MAINFRAME)) + szBuild;
+  if(!s.szOEMFullName.IsEmpty())
+    m_szTitle = s.szOEMFullName;
+  else
+    m_szTitle = CString(ResStr(IDR_MAINFRAME)) + szBuild;
   RedrawNonClientArea();
 
   SetAlwaysOnTop(AfxGetAppSettings().iOnTop);

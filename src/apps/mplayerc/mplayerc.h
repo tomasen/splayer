@@ -626,6 +626,7 @@ public:
 
 		CString szOEMTitle;
 		CString szOEMFullName;
+    CString szOEMStoreLink;
 
 		bool fWinLirc;
 		CString WinLircAddr;

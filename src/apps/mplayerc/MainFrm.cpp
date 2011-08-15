@@ -12824,8 +12824,10 @@ void CMainFrame::OnUpdateSvpsubMenuenable(CCmdUI *pCmdUI)
 
 void CMainFrame::OnVisitShop()
 {
-  //Visit BBS
-  ShellExecute(m_hWnd, _T("open"), _T("http://shop.shooter.cn"), NULL, NULL, SW_SHOWDEFAULT);
+  if (AfxGetAppSettings().szOEMStoreLink.IsEmpty())  //Visit BBS
+    ShellExecute(m_hWnd, _T("open"), _T("http://shop.shooter.cn"), NULL, NULL, SW_SHOWDEFAULT);
+  else
+    ShellExecute(m_hWnd, _T("open"), AfxGetAppSettings().szOEMStoreLink, NULL, NULL, SW_SHOWDEFAULT);
 }
 
 void CMainFrame::OnFileISDBSearch()

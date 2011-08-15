@@ -3779,6 +3779,12 @@ void CMPlayerCApp::Settings::UpdateData(bool fSave)
         str.ReleaseBuffer(len);
         szOEMFullName = str;
       }
+      if(ERROR_SUCCESS == oem.QueryStringValue(_T("OEMSTORELINK"), str.GetBuffer(len), &len))
+      {
+        str.ReleaseBuffer(len);
+        szOEMStoreLink = str;
+      }
+
 			if(ERROR_SUCCESS == oem.QueryStringValue(_T("OEMSUB"), str.GetBuffer(len), &len))
 			{
 				str.ReleaseBuffer(len);

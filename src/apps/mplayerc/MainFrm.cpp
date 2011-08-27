@@ -262,6 +262,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_UPDATE_COMMAND_UI(ID_FILE_CLOSEMEDIA, OnUpdateFileClose)
   ON_COMMAND(ID_USER_SHARE, OnUserShare)
   ON_UPDATE_COMMAND_UI(ID_USER_SHARE, OnUpdateUserShare)
+  ON_COMMAND(ID_SHARE2_EVERBOX, OnShare2EverBox)
+  ON_UPDATE_COMMAND_UI(ID_SHARE2_EVERBOX, OnUpdateShare2EverBox)
 
   ON_COMMAND(ID_VIEW_CAPTIONMENU, OnViewCaptionmenu)
   ON_UPDATE_COMMAND_UI(ID_VIEW_CAPTIONMENU, OnUpdateViewCaptionmenu)
@@ -574,6 +576,7 @@ m_bmenuinitialize(FALSE),
 m_pUserAccountDlg(0)
 {
   m_wndFloatToolBar = new CPlayerFloatToolBar();
+  m_pEverBoxUploadFile = NULL;
 }
 
 CMainFrame::~CMainFrame()
@@ -1139,6 +1142,14 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
     s.skinname = L"";
     LoadRes(s.skinid, s.skinname);
   }
+
+  int WINAPI UploadFile(const WCHAR* pPathFile, DWORD* pTskID, bool bShowProgress = false);
+
+  HMODULE hEverBoxDll = LoadLibrary(L"EverBoxDll.dll");
+  if(hEverBoxDll){
+    (FARPROC &)m_pEverBoxUploadFile =  GetProcAddress(hEverBoxDll, "UploadFile");
+  }
+
 
   return 0;
 }
@@ -4261,6 +4272,11 @@ void CMainFrame::OnInitMenuPopup(CMenu * pPopupMenu, UINT nIndex, BOOL bSysMenu)
         pPopupMenu->InsertMenu(i, MF_BYPOSITION | MF_STRING, ID_FILE_PROPERTIES, ResStr(IDS_MENU_ITEM_FILE_PROPERTIES));
       }
     }
+    else if (pPopupMenu->GetMenuItemID(i) == ID_SHARE2_EVERBOX)
+    {
+      if (m_pEverBoxUploadFile == NULL)
+        pPopupMenu->RemoveMenu(i, MF_BYPOSITION);
+    }
 
     if(pSubMenu)
     {
@@ -6780,7 +6796,26 @@ void CMainFrame::OnUpdateUserShare(CCmdUI* pCmdUI)
     }
   }
 }
+UINT __cdecl Thread_Share2EverBox( LPVOID lpParam )
+{
+  CString fn(*(CString*)lpParam);
+  DWORD taskID = 0;
+  if (m_pEverBoxUploadFile)
+    m_pEverBoxUploadFile(fn,&taskID,TRUE);
 
+  return 0;
+}
+void CMainFrame::OnShare2EverBox()
+{
+  CWinThread* th_InitSettingInstance = AfxBeginThread( Thread_Share2EverBox, &m_fnCurPlayingFile, THREAD_PRIORITY_LOWEST , 0, CREATE_SUSPENDED);
+  th_InitSettingInstance->m_pMainWnd = AfxGetMainWnd();
+  th_InitSettingInstance->ResumeThread();
+
+}
+void CMainFrame::OnUpdateShare2EverBox(CCmdUI* pCmdUI)
+{
+  pCmdUI->Enable(m_iMediaLoadState == MLS_LOADED || m_iMediaLoadState == MLS_LOADING);
+}
 void CMainFrame::OnFileClosePlaylist()
 {
   SendMessage(WM_COMMAND, ID_FILE_CLOSEMEDIA);

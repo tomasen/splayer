@@ -35,6 +35,8 @@
 #include "UserInterface/Dialogs/OAuthDlg.h"
 
 
+static int (__stdcall * m_pEverBoxUploadFile)(const WCHAR* pPathFile, DWORD* pTskID, bool bShowProgress);
+
 class CMainFrame : public CFrameWnd, public CDropTarget , public CGraphCore
 {
 public:
@@ -517,6 +519,8 @@ public:
   afx_msg void OnUpdateFileClose(CCmdUI* pCmdUI);
   afx_msg void OnUserShare();  // show the user's logging status
   afx_msg void OnUpdateUserShare(CCmdUI* pCmdUI);
+  afx_msg void OnShare2EverBox();
+  afx_msg void OnUpdateShare2EverBox(CCmdUI* pCmdUI);
 
   afx_msg void OnViewCaptionmenu();
   afx_msg void OnUpdateViewCaptionmenu(CCmdUI* pCmdUI);

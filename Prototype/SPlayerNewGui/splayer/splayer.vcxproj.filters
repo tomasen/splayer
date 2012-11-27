@@ -1,0 +1,146 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Essentials">
+      <UniqueIdentifier>{20b0bd5a-594d-4d6b-bd50-e44abe0889ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UserInterface">
+      <UniqueIdentifier>{28e7300b-45d8-4d0c-af54-854bf2cae215}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UserInterface\Base">
+      <UniqueIdentifier>{b812a883-96ab-4986-b78b-8fb43d97d26f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UserInterface\Frame">
+      <UniqueIdentifier>{b6e2e0e4-f15a-434a-8705-debcb9e240b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UserInterface\Widget">
+      <UniqueIdentifier>{aa7bfffc-f994-41ac-9c6a-a46c927ba175}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controller">
+      <UniqueIdentifier>{dff5bbf6-7935-4b49-bbee-698a9b3c8f76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controller\Resource">
+      <UniqueIdentifier>{fa8a171c-3d58-489e-a45d-3614aa849bd5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Model">
+      <UniqueIdentifier>{e6dfaff4-f056-4969-9c0b-41f6e9192152}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{8eac7217-4977-4f02-9a99-27c65a5e8acb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main_frm.cc">
+      <Filter>Essentials</Filter>
+    </ClCompile>
+    <ClCompile Include="splayer.cpp">
+      <Filter>Essentials</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Essentials</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\bitmap_svc.cc">
+      <Filter>UserInterface\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\hud_widget.cc">
+      <Filter>UserInterface\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\playback_widget.cc">
+      <Filter>UserInterface\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\video_widget.cc">
+      <Filter>UserInterface\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\resource_bridge.cc">
+      <Filter>Controller\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Model\rsc_format.cc">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\base64_utils.cc">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\png_utils.cc">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\strings.cc">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\zlib_utils.cc">
+      <Filter>Utils</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="main_frm.h">
+      <Filter>Essentials</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Essentials</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Essentials</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\bitmap_svc.h">
+      <Filter>UserInterface\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\hybrid_childwin_utils.h">
+      <Filter>UserInterface\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\layered_win_utils.h">
+      <Filter>UserInterface\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\generic_app_frm.h">
+      <Filter>UserInterface\Frame</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\splayer_frm_styler.h">
+      <Filter>UserInterface\Frame</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\splayer_widget_host.h">
+      <Filter>UserInterface\Frame</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\wtl_aero.h">
+      <Filter>UserInterface\Frame</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\hud_widget.h">
+      <Filter>UserInterface\Widget</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\playback_widget.h">
+      <Filter>UserInterface\Widget</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\video_widget.h">
+      <Filter>UserInterface\Widget</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\widget_base.h">
+      <Filter>UserInterface\Widget</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\mod_inst.h">
+      <Filter>Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\resource_bridge.h">
+      <Filter>Controller\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Model\rsc_format.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\base64_utils.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\lock.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\png_utils.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\strings.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\zlib_utils.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="splayer.rc">
+      <Filter>Essentials</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

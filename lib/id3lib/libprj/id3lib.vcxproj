@@ -1,0 +1,185 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{7353114C-AF03-48A5-BA32-1E9E76FED896}</ProjectGuid>
+    <RootNamespace>id3lib</RootNamespace>
+    <SccLocalPath>Desktop</SccLocalPath>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>11.0.50727.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>.\Debug\</OutDir>
+    <IntDir>.\Debug\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>.\Release\</OutDir>
+    <IntDir>.\Release\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>.\;..\;..\include;..\include\id3;..\zlib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;WIN32;_LIB;_WINDOWS;HAVE_CONFIG_H;ID3LIB_LINKOPTION=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeaderOutputFile>.\Debug/id3lib.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Debug/</AssemblerListingLocation>
+      <ObjectFileName>.\Debug/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug/</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0809</Culture>
+    </ResourceCompile>
+    <Lib>
+      <OutputFile>.\id3libD.lib</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Lib>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Debug/id3lib.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MinSpace</Optimization>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>.\;..\;..\include;..\include\id3;..\zlib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;WIN32;_LIB;_WINDOWS;HAVE_CONFIG_H;ID3LIB_LINKOPTION=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeaderOutputFile>.\Release/id3lib.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
+      <ObjectFileName>.\Release/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0809</Culture>
+    </ResourceCompile>
+    <Lib>
+      <OutputFile>..\..\id3lib.lib</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Lib>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Release/id3lib.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\c_wrapper.cpp" />
+    <ClCompile Include="..\src\field.cpp" />
+    <ClCompile Include="..\src\field_binary.cpp" />
+    <ClCompile Include="..\src\field_integer.cpp" />
+    <ClCompile Include="..\src\field_string_ascii.cpp" />
+    <ClCompile Include="..\src\field_string_unicode.cpp" />
+    <ClCompile Include="..\src\frame.cpp" />
+    <ClCompile Include="..\src\frame_impl.cpp" />
+    <ClCompile Include="..\src\frame_parse.cpp" />
+    <ClCompile Include="..\src\frame_render.cpp" />
+    <ClCompile Include="..\src\globals.cpp" />
+    <ClCompile Include="..\src\header.cpp" />
+    <ClCompile Include="..\src\header_frame.cpp" />
+    <ClCompile Include="..\src\header_tag.cpp" />
+    <ClCompile Include="..\src\helpers.cpp" />
+    <ClCompile Include="..\src\io.cpp" />
+    <ClCompile Include="..\src\io_decorators.cpp" />
+    <ClCompile Include="..\src\io_helpers.cpp" />
+    <ClCompile Include="..\src\misc_support.cpp" />
+    <ClCompile Include="..\src\mp3_parse.cpp" />
+    <ClCompile Include="..\src\readers.cpp" />
+    <ClCompile Include="..\src\spec.cpp" />
+    <ClCompile Include="..\src\tag.cpp" />
+    <ClCompile Include="..\src\tag_file.cpp" />
+    <ClCompile Include="..\src\tag_find.cpp" />
+    <ClCompile Include="..\src\tag_impl.cpp" />
+    <ClCompile Include="..\src\tag_parse.cpp" />
+    <ClCompile Include="..\src\tag_parse_lyrics3.cpp" />
+    <ClCompile Include="..\src\tag_parse_musicmatch.cpp" />
+    <ClCompile Include="..\src\tag_parse_v1.cpp" />
+    <ClCompile Include="..\src\tag_render.cpp" />
+    <ClCompile Include="..\src\utils.cpp" />
+    <ClCompile Include="..\src\writers.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\config.h" />
+    <ClInclude Include="..\include\id3\field.h" />
+    <ClInclude Include="..\src\field_def.h" />
+    <ClInclude Include="..\src\field_impl.h" />
+    <ClInclude Include="..\src\flags.h" />
+    <ClInclude Include="..\src\frame_def.h" />
+    <ClInclude Include="..\src\frame_impl.h" />
+    <ClInclude Include="..\include\id3\globals.h" />
+    <ClInclude Include="..\src\header.h" />
+    <ClInclude Include="..\src\header_frame.h" />
+    <ClInclude Include="..\src\header_tag.h" />
+    <ClInclude Include="..\include\id3\helpers.h" />
+    <ClInclude Include="..\include\id3.h" />
+    <ClInclude Include="..\include\id3\id3lib_frame.h" />
+    <ClInclude Include="..\include\id3\id3lib_streams.h" />
+    <ClInclude Include="..\include\id3\id3lib_strings.h" />
+    <ClInclude Include="..\include\id3\io_decorators.h" />
+    <ClInclude Include="..\include\id3\io_helpers.h" />
+    <ClInclude Include="..\include\id3\io_strings.h" />
+    <ClInclude Include="..\include\id3\misc_support.h" />
+    <ClInclude Include="..\src\mp3_header.h" />
+    <ClInclude Include="..\include\id3\reader.h" />
+    <ClInclude Include="..\include\id3\readers.h" />
+    <ClInclude Include="..\include\id3\sized_types.h" />
+    <ClInclude Include="..\src\spec.h" />
+    <ClInclude Include="..\include\id3\tag.h" />
+    <ClInclude Include="..\src\tag_impl.h" />
+    <ClInclude Include="..\include\id3\utils.h" />
+    <ClInclude Include="..\include\id3\writer.h" />
+    <ClInclude Include="..\include\id3\writers.h" />
+    <ClInclude Include="..\Zlib\Include\Zlib.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

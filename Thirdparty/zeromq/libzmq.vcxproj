@@ -1,0 +1,276 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="WithOpenPGM|Win32">
+      <Configuration>WithOpenPGM</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{641C5F36-32EE-4323-B740-992B651CF9D6}</ProjectGuid>
+    <RootNamespace>libzmq</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='WithOpenPGM|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='WithOpenPGM|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>11.0.50727.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>..\zeromq\release\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='WithOpenPGM|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <PreBuildEvent>
+      <Command>copy ..\platform.hpp ..\..\..\src</Command>
+    </PreBuildEvent>
+    <ClCompile>
+      <AdditionalOptions>-DDLL_EXPORT -DFD_SETSIZE=1024 %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>Ws2_32.lib;Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>../../../lib/libzmq.dll</OutputFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <PreBuildEvent>
+      <Command />
+    </PreBuildEvent>
+    <ClCompile>
+      <AdditionalOptions>-DDLL_EXPORT -DFD_SETSIZE=1024 %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>$(SolutionDir)Thirdparty;$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>ZMQ_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>../../lib/$(ProjectName).lib</OutputFile>
+    </Lib>
+    <PostBuildEvent>
+      <Command />
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='WithOpenPGM|Win32'">
+    <PreBuildEvent>
+      <Command>copy ..\platform.hpp ..\..\..\src</Command>
+    </PreBuildEvent>
+    <ClCompile>
+      <AdditionalOptions>-DDLL_EXPORT -DFD_SETSIZE=1024 %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>../../../../OpenPGM/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>ZMQ_HAVE_OPENPGM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>Ws2_32.lib;Rpcrt4.lib;libpgm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>../../../lib/libzmq.dll</OutputFile>
+      <AdditionalLibraryDirectories>../../../../OpenPGM/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="clock.cpp" />
+    <ClCompile Include="command.cpp" />
+    <ClCompile Include="connect_session.cpp" />
+    <ClCompile Include="ctx.cpp" />
+    <ClCompile Include="decoder.cpp" />
+    <ClCompile Include="device.cpp" />
+    <ClCompile Include="devpoll.cpp" />
+    <ClCompile Include="dist.cpp" />
+    <ClCompile Include="encoder.cpp" />
+    <ClCompile Include="epoll.cpp" />
+    <ClCompile Include="err.cpp" />
+    <ClCompile Include="fq.cpp" />
+    <ClCompile Include="io_object.cpp" />
+    <ClCompile Include="io_thread.cpp" />
+    <ClCompile Include="ip.cpp" />
+    <ClCompile Include="kqueue.cpp" />
+    <ClCompile Include="lb.cpp" />
+    <ClCompile Include="mailbox.cpp" />
+    <ClCompile Include="named_session.cpp" />
+    <ClCompile Include="object.cpp" />
+    <ClCompile Include="options.cpp" />
+    <ClCompile Include="own.cpp" />
+    <ClCompile Include="pair.cpp" />
+    <ClCompile Include="pgm_receiver.cpp" />
+    <ClCompile Include="pgm_sender.cpp" />
+    <ClCompile Include="pgm_socket.cpp" />
+    <ClCompile Include="pipe.cpp" />
+    <ClCompile Include="poll.cpp" />
+    <ClCompile Include="poller_base.cpp" />
+    <ClCompile Include="pub.cpp" />
+    <ClCompile Include="pull.cpp" />
+    <ClCompile Include="push.cpp" />
+    <ClCompile Include="reaper.cpp" />
+    <ClCompile Include="rep.cpp" />
+    <ClCompile Include="req.cpp" />
+    <ClCompile Include="select.cpp" />
+    <ClCompile Include="session.cpp" />
+    <ClCompile Include="socket_base.cpp" />
+    <ClCompile Include="sub.cpp" />
+    <ClCompile Include="swap.cpp" />
+    <ClCompile Include="tcp_connecter.cpp" />
+    <ClCompile Include="tcp_listener.cpp" />
+    <ClCompile Include="tcp_socket.cpp" />
+    <ClCompile Include="thread.cpp" />
+    <ClCompile Include="transient_session.cpp" />
+    <ClCompile Include="trie.cpp" />
+    <ClCompile Include="uuid.cpp" />
+    <ClCompile Include="xpub.cpp" />
+    <ClCompile Include="xrep.cpp" />
+    <ClCompile Include="xreq.cpp" />
+    <ClCompile Include="xsub.cpp" />
+    <ClCompile Include="zmq.cpp" />
+    <ClCompile Include="zmq_connecter.cpp" />
+    <ClCompile Include="zmq_engine.cpp" />
+    <ClCompile Include="zmq_init.cpp" />
+    <ClCompile Include="zmq_listener.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="array.hpp" />
+    <ClInclude Include="atomic_counter.hpp" />
+    <ClInclude Include="atomic_ptr.hpp" />
+    <ClInclude Include="blob.hpp" />
+    <ClInclude Include="clock.hpp" />
+    <ClInclude Include="command.hpp" />
+    <ClInclude Include="config.hpp" />
+    <ClInclude Include="connect_session.hpp" />
+    <ClInclude Include="ctx.hpp" />
+    <ClInclude Include="decoder.hpp" />
+    <ClInclude Include="device.hpp" />
+    <ClInclude Include="devpoll.hpp" />
+    <ClInclude Include="dist.hpp" />
+    <ClInclude Include="encoder.hpp" />
+    <ClInclude Include="epoll.hpp" />
+    <ClInclude Include="err.hpp" />
+    <ClInclude Include="fd.hpp" />
+    <ClInclude Include="fq.hpp" />
+    <ClInclude Include="i_engine.hpp" />
+    <ClInclude Include="i_inout.hpp" />
+    <ClInclude Include="i_poll_events.hpp" />
+    <ClInclude Include="io_object.hpp" />
+    <ClInclude Include="io_thread.hpp" />
+    <ClInclude Include="ip.hpp" />
+    <ClInclude Include="kqueue.hpp" />
+    <ClInclude Include="lb.hpp" />
+    <ClInclude Include="likely.hpp" />
+    <ClInclude Include="mailbox.hpp" />
+    <ClInclude Include="msg_content.hpp" />
+    <ClInclude Include="mutex.hpp" />
+    <ClInclude Include="named_session.hpp" />
+    <ClInclude Include="object.hpp" />
+    <ClInclude Include="options.hpp" />
+    <ClInclude Include="own.hpp" />
+    <ClInclude Include="pair.hpp" />
+    <ClInclude Include="pgm_receiver.hpp" />
+    <ClInclude Include="pgm_sender.hpp" />
+    <ClInclude Include="pgm_socket.hpp" />
+    <ClInclude Include="pipe.hpp" />
+    <ClInclude Include="platform.hpp" />
+    <ClInclude Include="poll.hpp" />
+    <ClInclude Include="poller.hpp" />
+    <ClInclude Include="poller_base.hpp" />
+    <ClInclude Include="pub.hpp" />
+    <ClInclude Include="pull.hpp" />
+    <ClInclude Include="push.hpp" />
+    <ClInclude Include="reaper.hpp" />
+    <ClInclude Include="rep.hpp" />
+    <ClInclude Include="req.hpp" />
+    <ClInclude Include="select.hpp" />
+    <ClInclude Include="semaphore.hpp" />
+    <ClInclude Include="session.hpp" />
+    <ClInclude Include="socket_base.hpp" />
+    <ClInclude Include="stdint.hpp" />
+    <ClInclude Include="sub.hpp" />
+    <ClInclude Include="swap.hpp" />
+    <ClInclude Include="tcp_connecter.hpp" />
+    <ClInclude Include="tcp_listener.hpp" />
+    <ClInclude Include="tcp_socket.hpp" />
+    <ClInclude Include="thread.hpp" />
+    <ClInclude Include="transient_session.hpp" />
+    <ClInclude Include="trie.hpp" />
+    <ClInclude Include="uuid.hpp" />
+    <ClInclude Include="windows.hpp" />
+    <ClInclude Include="wire.hpp" />
+    <ClInclude Include="xpub.hpp" />
+    <ClInclude Include="xrep.hpp" />
+    <ClInclude Include="xreq.hpp" />
+    <ClInclude Include="xsub.hpp" />
+    <ClInclude Include="ypipe.hpp" />
+    <ClInclude Include="yqueue.hpp" />
+    <ClInclude Include="..\..\include\zmq\zmq.h" />
+    <ClInclude Include="..\..\include\zmq\zmq.hpp" />
+    <ClInclude Include="zmq_connecter.hpp" />
+    <ClInclude Include="zmq_engine.hpp" />
+    <ClInclude Include="zmq_init.hpp" />
+    <ClInclude Include="zmq_listener.hpp" />
+    <ClInclude Include="..\..\include\zmq\zmq_utils.h" />
+    <ClInclude Include="..\..\include\zmq\zmqhelper.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

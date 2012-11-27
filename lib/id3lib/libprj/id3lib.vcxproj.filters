@@ -1,0 +1,209 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{afc685ac-5b9b-437c-aaa4-674b0bfcafed}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Include Files">
+      <UniqueIdentifier>{ebf7b148-255b-49fd-a981-f3d60ec5c528}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\c_wrapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\field.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\field_binary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\field_integer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\field_string_ascii.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\field_string_unicode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\frame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\frame_impl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\frame_parse.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\frame_render.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\globals.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\header.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\header_frame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\header_tag.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\helpers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\io.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\io_decorators.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\io_helpers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\misc_support.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mp3_parse.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\readers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\spec.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tag.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tag_file.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tag_find.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tag_impl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tag_parse.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tag_parse_lyrics3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tag_parse_musicmatch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tag_parse_v1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tag_render.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\writers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\config.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\id3\field.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\field_def.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\field_impl.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\flags.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\frame_def.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\frame_impl.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\id3\globals.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\header.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\header_frame.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\header_tag.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\id3\helpers.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\id3.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\id3\id3lib_frame.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\id3\id3lib_streams.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\id3\id3lib_strings.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\id3\io_decorators.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\id3\io_helpers.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\id3\io_strings.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\id3\misc_support.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mp3_header.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\id3\reader.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\id3\readers.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\id3\sized_types.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\spec.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\id3\tag.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tag_impl.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\id3\utils.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\id3\writer.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\id3\writers.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Zlib\Include\Zlib.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

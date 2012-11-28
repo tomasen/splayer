@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <boost/preprocessor/stringize.hpp>
+#include <boost/ref.hpp>
 #include <boost/mpl/assert.hpp>
 #include <boost/proto/proto_fwd.hpp>
 #include <boost/proto/traits.hpp>
@@ -21,7 +22,7 @@
 
 namespace boost { namespace proto
 {
-    namespace tag
+    namespace tagns_ { namespace tag
     {
     #define BOOST_PROTO_DEFINE_TAG_INSERTION(Tag)                               \
         /** \brief INTERNAL ONLY */                                             \
@@ -79,7 +80,7 @@ namespace boost { namespace proto
         BOOST_PROTO_DEFINE_TAG_INSERTION(function)
 
     #undef BOOST_PROTO_DEFINE_TAG_INSERTION
-    }
+    }}
 
     namespace hidden_detail_
     {
@@ -90,6 +91,9 @@ namespace boost { namespace proto
             {}
 
             std::ostream &sout_;
+
+        private:
+            ostream_wrapper &operator =(ostream_wrapper const &);
         };
 
         struct named_any
@@ -106,6 +110,58 @@ namespace boost { namespace proto
         {
             return sout_wrap.sout_ << t.name_;
         }
+    }
+
+    namespace detail
+    {
+        struct display_expr_impl
+        {
+            explicit display_expr_impl(std::ostream &sout, int depth = 0)
+              : depth_(depth)
+              , first_(true)
+              , sout_(sout)
+            {}
+
+            template<typename Expr>
+            void operator()(Expr const &expr) const
+            {
+                this->impl(expr, mpl::long_<arity_of<Expr>::value>());
+            }
+
+        private:
+            display_expr_impl(display_expr_impl const &);
+            display_expr_impl &operator =(display_expr_impl const &);
+
+            template<typename Expr>
+            void impl(Expr const &expr, mpl::long_<0>) const
+            {
+                using namespace hidden_detail_;
+                typedef typename tag_of<Expr>::type tag;
+                this->sout_.width(this->depth_);
+                this->sout_ << (this->first_? "" : ", ");
+                this->sout_ << tag() << "(" << proto::value(expr) << ")\n";
+                this->first_ = false;
+            }
+
+            template<typename Expr, typename Arity>
+            void impl(Expr const &expr, Arity) const
+            {
+                using namespace hidden_detail_;
+                typedef typename tag_of<Expr>::type tag;
+                this->sout_.width(this->depth_);
+                this->sout_ << (this->first_? "" : ", ");
+                this->sout_ << tag() << "(\n";
+                display_expr_impl display(this->sout_, this->depth_ + 4);
+                fusion::for_each(expr, display);
+                this->sout_.width(this->depth_);
+                this->sout_ << "" << ")\n";
+                this->first_ = false;
+            }
+
+            int depth_;
+            mutable bool first_;
+            std::ostream &sout_;
+        };
     }
 
     namespace functional
@@ -128,7 +184,6 @@ namespace boost { namespace proto
             ///              depth of <tt>depth+4</tt>.
             explicit display_expr(std::ostream &sout = std::cout, int depth = 0)
               : depth_(depth)
-              , first_(true)
               , sout_(sout)
             {}
 
@@ -137,42 +192,12 @@ namespace boost { namespace proto
             template<typename Expr>
             void operator()(Expr const &expr) const
             {
-                this->impl(expr, mpl::long_<arity_of<Expr>::value>());
+                detail::display_expr_impl(this->sout_, this->depth_)(expr);
             }
 
         private:
-            display_expr(display_expr const &);
-            display_expr &operator =(display_expr const &);
-
-            template<typename Expr>
-            void impl(Expr const &expr, mpl::long_<0>) const
-            {
-                using namespace hidden_detail_;
-                typedef typename tag_of<Expr>::type tag;
-                this->sout_.width(this->depth_);
-                this->sout_ << (this->first_? "" : ", ");
-                this->sout_ << tag() << "(" << proto::value(expr) << ")\n";
-                this->first_ = false;
-            }
-
-            template<typename Expr, typename Arity>
-            void impl(Expr const &expr, Arity) const
-            {
-                using namespace hidden_detail_;
-                typedef typename tag_of<Expr>::type tag;
-                this->sout_.width(this->depth_);
-                this->sout_ << (this->first_? "" : ", ");
-                this->sout_ << tag() << "(\n";
-                display_expr display(this->sout_, this->depth_ + 4);
-                fusion::for_each(expr, display);
-                this->sout_.width(this->depth_);
-                this->sout_ << "" << ")\n";
-                this->first_ = false;
-            }
-
             int depth_;
-            mutable bool first_;
-            std::ostream &sout_;
+            reference_wrapper<std::ostream> sout_;
         };
     }
 

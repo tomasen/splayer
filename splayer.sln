@@ -142,6 +142,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dsutil", "src\dsutil\dsutil_vs2005.vcxproj", "{FC70988B-1AE5-4381-866D-4F405E28AC42}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mplayerc", "src\apps\mplayerc\mplayerc_vs2005.vcxproj", "{8CE7E5D0-C821-47AC-A247-28EC95B34670}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D282F31F-E5B5-43B7-8078-21ED89A8A1CC} = {D282F31F-E5B5-43B7-8078-21ED89A8A1CC}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "subpic", "src\subpic\subpic_vs2005.vcxproj", "{D514EA4D-EAFB-47A9-A437-A582CA571251}"
 EndProject

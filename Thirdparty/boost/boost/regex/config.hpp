@@ -163,12 +163,17 @@
  * with MSVC and the /Zc:wchar_t option we place some extra unsigned short versions
  * of the non-inline functions in the library, so that users can still link to the lib,
  * irrespective of whether their own code is built with /Zc:wchar_t.
+ * Note that this does NOT WORK with VC10 when the C++ locale is in effect as
+ * the locale's <unsigned short> facets simply do not compile in that case.
  */
-#if defined(__cplusplus) && (defined(BOOST_MSVC) || defined(__ICL)) && !defined(BOOST_NO_INTRINSIC_WCHAR_T) && defined(BOOST_WINDOWS) && !defined(__SGI_STL_PORT) && !defined(_STLPORT_VERSION) && !defined(BOOST_RWSTD_VER)
+#if defined(__cplusplus) && (defined(BOOST_MSVC) || defined(__ICL)) && !defined(BOOST_NO_INTRINSIC_WCHAR_T) && defined(BOOST_WINDOWS) && !defined(__SGI_STL_PORT) && !defined(_STLPORT_VERSION) && !defined(BOOST_RWSTD_VER) && ((_MSC_VER < 1600) || !defined(BOOST_REGEX_USE_CPP_LOCALE))
 #  define BOOST_REGEX_HAS_OTHER_WCHAR_T
 #  ifdef BOOST_MSVC
 #     pragma warning(push)
-#     pragma warning(disable : 4251 4231 4660)
+#     pragma warning(disable : 4251 4231)
+#     if BOOST_MSVC < 1600
+#        pragma warning(disable : 4660)
+#     endif
 #  endif
 #  if defined(_DLL) && defined(BOOST_MSVC) && (BOOST_MSVC < 1600)
 #     include <string>
@@ -220,7 +225,7 @@
  ****************************************************************************/
 
 #if defined(BOOST_MSVC) && (BOOST_MSVC >= 1200) && defined(_MSC_EXTENSIONS)
-#if defined(_DEBUG) || defined(__MSVC_RUNTIME_CHECKS) || defined(_MANAGED)
+#if defined(_DEBUG) || defined(__MSVC_RUNTIME_CHECKS) || defined(_MANAGED) || defined(BOOST_REGEX_NO_FASTCALL)
 #  define BOOST_REGEX_CALL __cdecl
 #else
 #  define BOOST_REGEX_CALL __fastcall

@@ -21,6 +21,7 @@
 #include <boost/graph/buffer_concepts.hpp>
 #include <boost/concept_check.hpp>
 #include <boost/detail/workaround.hpp>
+#include <boost/concept/assert.hpp>
 
 #include <boost/concept/detail/concept_def.hpp>
 namespace boost
@@ -342,7 +343,7 @@ typename T::ThereReallyIsNoMemberByThisNameInT vertices(T const&);
         }
         G g;
         typename graph_traits<G>::vertex_descriptor v;
-        typename vertex_property<G>::type vp;
+        typename vertex_property_type<G>::type vp;
     };
 
     BOOST_concept(EdgeMutablePropertyGraph,(G))
@@ -356,7 +357,7 @@ typename T::ThereReallyIsNoMemberByThisNameInT vertices(T const&);
         G g;
         std::pair<edge_descriptor, bool> p;
         typename graph_traits<G>::vertex_descriptor u, v;
-        typename edge_property<G>::type ep;
+        typename edge_property_type<G>::type ep;
     };
 
     BOOST_concept(AdjacencyMatrix,(G))
@@ -529,8 +530,8 @@ typename T::ThereReallyIsNoMemberByThisNameInT vertices(T const&);
     {
         BOOST_CONCEPT_USAGE(NumericValue)
         {
-            function_requires< DefaultConstructible<Numeric> >();
-            function_requires< CopyConstructible<Numeric> >();
+            BOOST_CONCEPT_ASSERT(( DefaultConstructible<Numeric> ));
+            BOOST_CONCEPT_ASSERT(( CopyConstructible<Numeric> ));
             numeric_values<Numeric>::zero();
             numeric_values<Numeric>::infinity();
         }

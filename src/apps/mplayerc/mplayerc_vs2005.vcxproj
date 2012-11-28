@@ -109,6 +109,7 @@
     <GenerateManifest>true</GenerateManifest>
     <EmbedManifest>true</EmbedManifest>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
+    <IncludePath>$(DXSDK_DIR)\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">
     <GenerateManifest>false</GenerateManifest>

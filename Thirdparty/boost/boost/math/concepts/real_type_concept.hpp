@@ -6,6 +6,7 @@
 #ifndef BOOST_MATH_REAL_TYPE_CONCEPT_HPP
 #define BOOST_MATH_REAL_TYPE_CONCEPT_HPP
 
+#include <boost/config.hpp>
 #ifdef BOOST_MSVC
 #pragma warning(push)
 #pragma warning(disable: 4100)
@@ -44,17 +45,29 @@ struct RealTypeConcept
       r = o / r;
       bool b;
       b = r == o;
+      suppress_unused_variable_warning(b);
       b = o == r;
+      suppress_unused_variable_warning(b);
       b = r != o;
+      suppress_unused_variable_warning(b);
       b = o != r;
+      suppress_unused_variable_warning(b);
       b = r <= o;
+      suppress_unused_variable_warning(b);
       b = o <= r;
+      suppress_unused_variable_warning(b);
       b = r >= o;
+      suppress_unused_variable_warning(b);
       b = o >= r;
+      suppress_unused_variable_warning(b);
       b = r < o;
+      suppress_unused_variable_warning(b);
       b = o < r;
+      suppress_unused_variable_warning(b);
       b = r > o;
+      suppress_unused_variable_warning(b);
       b = o > r;
+      suppress_unused_variable_warning(b);
    }
 
    void constraints()

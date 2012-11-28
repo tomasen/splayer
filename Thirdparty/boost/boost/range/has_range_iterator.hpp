@@ -13,13 +13,13 @@
 #include <boost/mpl/bool.hpp>
 #include <boost/mpl/has_xxx.hpp>
 #include <boost/range/iterator.hpp>
-#include <boost/utility.hpp>
+#include <boost/utility/enable_if.hpp>
 
 namespace boost
 {
     namespace range_detail
     {
-        BOOST_MPL_HAS_XXX_TRAIT_DEF(type);
+        BOOST_MPL_HAS_XXX_TRAIT_DEF(type)
 
         template<class T, class Enabler = void>
         struct has_range_iterator_impl

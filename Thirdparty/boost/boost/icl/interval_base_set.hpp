@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------+
-Copyright (c) 2007-2009: Joachim Faulhaber
+Copyright (c) 2007-2011: Joachim Faulhaber
 Copyright (c) 1999-2006: Cortex Software GmbH, Kantstrasse 57, Berlin
 +------------------------------------------------------------------------------+
    Distributed under the Boost Software License, Version 1.0.
@@ -11,12 +11,12 @@ Copyright (c) 1999-2006: Cortex Software GmbH, Kantstrasse 57, Berlin
 
 #include <boost/icl/impl_config.hpp>
 
-#if defined(ICL_USE_BOOST_INTERPROCESS_IMPLEMENTATION)
-#include <boost/interprocess/containers/set.hpp>
-#elif defined(ICL_USE_BOOST_MOVE_IMPLEMENTATION)
-#include <boost/container/set.hpp>
-#else 
-#include <set>
+#if defined(ICL_USE_BOOST_MOVE_IMPLEMENTATION)
+#   include <boost/container/set.hpp>
+#elif defined(ICL_USE_STD_IMPLEMENTATION)
+#   include <set>
+#else // Default for implementing containers
+#   include <set>
 #endif
 
 #include <limits>
@@ -44,7 +44,7 @@ template
 <
     typename             SubType,
     typename             DomainT, 
-    ICL_COMPARE Compare  = ICL_COMPARE_INSTANCE(std::less, DomainT),
+    ICL_COMPARE Compare  = ICL_COMPARE_INSTANCE(ICL_COMPARE_DEFAULT, DomainT),
     ICL_INTERVAL(ICL_COMPARE) Interval = ICL_INTERVAL_INSTANCE(ICL_INTERVAL_DEFAULT, DomainT, Compare),
     ICL_ALLOC   Alloc    = std::allocator
 > 
@@ -162,7 +162,11 @@ public:
     interval_base_set(){}
 
     /** Copy constructor */
-    interval_base_set(const interval_base_set& src): _set(src._set){}
+    interval_base_set(const interval_base_set& src): _set(src._set)
+    {
+        BOOST_CONCEPT_ASSERT((DefaultConstructibleConcept<DomainT>));
+        BOOST_CONCEPT_ASSERT((LessThanComparableConcept<DomainT>));
+    }
 
     /** Assignment operator */
     interval_base_set& operator = (const interval_base_set& src) 
@@ -170,6 +174,28 @@ public:
         this->_set = src._set;
         return *this; 
     }
+
+#   ifndef BOOST_NO_RVALUE_REFERENCES
+    //==========================================================================
+    //= Move semantics
+    //==========================================================================
+
+    /** Move constructor */
+    interval_base_set(interval_base_set&& src): _set(boost::move(src._set))
+    {
+        BOOST_CONCEPT_ASSERT((DefaultConstructibleConcept<DomainT>));
+        BOOST_CONCEPT_ASSERT((LessThanComparableConcept<DomainT>));
+    }
+
+    /** Move assignment operator */
+    interval_base_set& operator = (interval_base_set&& src) 
+    { 
+        this->_set = boost::move(src._set);
+        return *this; 
+    }
+
+    //==========================================================================
+#   endif // BOOST_NO_RVALUE_REFERENCES
 
     /** swap the content of containers */
     void swap(interval_base_set& operand) { _set.swap(operand._set); }
@@ -201,15 +227,17 @@ public:
     //= Selection
     //==========================================================================
 
-    /** Find the interval value pair, that contains element \c key */
-    const_iterator find(const element_type& key)const
+    /** Find the interval, that contains element \c key_value */
+    const_iterator find(const element_type& key_value)const
     { 
-        return this->_set.find(icl::singleton<segment_type>(key)); 
+        return icl::find(*this, key_value);
+        //CL return this->_set.find(icl::singleton<segment_type>(key)); 
     }
 
-    const_iterator find(const segment_type& segment)const
+    /** Find the first interval, that collides with interval \c key_interval */
+    const_iterator find(const interval_type& key_interval)const
     { 
-        return this->_set.find(segment); 
+        return this->_set.find(key_interval); 
     }
 
     //==========================================================================
@@ -343,10 +371,17 @@ public:
     { return _set.upper_bound(interval); }
 
     std::pair<iterator,iterator> equal_range(const key_type& interval)
-    { return _set.equal_range(interval); }
+    { 
+        return std::pair<iterator,iterator>
+            (_set.lower_bound(interval), _set.upper_bound(interval)); 
+    }
 
-    std::pair<const_iterator,const_iterator> equal_range(const key_type& interval)const
-    { return _set.equal_range(interval); }
+    std::pair<const_iterator,const_iterator> 
+        equal_range(const key_type& interval)const
+    { 
+        return std::pair<const_iterator,const_iterator>
+            (_set.lower_bound(interval), _set.upper_bound(interval)); 
+    }
 
 private:
     iterator _add(const segment_type& addend);
@@ -499,7 +534,7 @@ inline SubType& interval_base_set<SubType,DomainT,Compare,Interval,Alloc>
     if(icl::is_empty(minuend)) 
         return *that();
 
-    std::pair<iterator, iterator> exterior = this->_set.equal_range(minuend);
+    std::pair<iterator, iterator> exterior = equal_range(minuend);
     if(exterior.first == exterior.second) 
         return *that();
 

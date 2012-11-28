@@ -326,7 +326,7 @@ struct BuildGuardsCases::case_<proto::tag::terminal>
             >,
         proto::when<
             proto::terminal<state_tag>,
-            proto::_
+            get_state_name<proto::_>()
             >,
         proto::when<
             proto::terminal<flag_tag>,
@@ -342,7 +342,7 @@ struct BuildGuardsCases::case_<proto::tag::terminal>
             >,
         proto::when<
             proto::terminal<proto::_>,
-            proto::_child
+            proto::_value
             >
     >
 {};

@@ -15,6 +15,7 @@ Copyright (c) 2010-2010: Joachim Faulhaber
 #include <boost/type_traits/is_same.hpp>
 #include <boost/icl/type_traits/element_type_of.hpp> 
 #include <boost/icl/type_traits/segment_type_of.hpp> 
+#include <boost/icl/type_traits/size_type_of.hpp> 
 #include <boost/icl/type_traits/is_map.hpp> 
 
 namespace boost{ namespace icl
@@ -22,7 +23,6 @@ namespace boost{ namespace icl
     namespace detail
     {
         BOOST_MPL_HAS_XXX_TRAIT_DEF(iterator)
-        BOOST_MPL_HAS_XXX_TRAIT_DEF(size_type)
         BOOST_MPL_HAS_XXX_TRAIT_DEF(reference)
     }
 
@@ -42,8 +42,8 @@ namespace boost{ namespace icl
         BOOST_STATIC_CONSTANT(bool, 
             value = (mpl::and_< is_container<Type> 
                               , detail::has_key_type<Type>
-                              , is_same< typename key_type_of<Type>::type
-                                       , typename value_type_of<Type>::type >
+                              , boost::is_same< typename key_type_of<Type>::type
+                                              , typename value_type_of<Type>::type >
                               , mpl::not_<detail::has_segment_type<Type> >
                               >::value )
         ); 

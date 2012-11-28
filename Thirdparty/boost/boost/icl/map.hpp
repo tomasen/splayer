@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------+
-Copyright (c) 2007-2010: Joachim Faulhaber
+Copyright (c) 2007-2011: Joachim Faulhaber
 +------------------------------------------------------------------------------+
    Distributed under the Boost Software License, Version 1.0.
       (See accompanying file LICENCE.txt or copy at
@@ -10,15 +10,15 @@ Copyright (c) 2007-2010: Joachim Faulhaber
 
 #include <boost/icl/impl_config.hpp>
 
-#if defined(ICL_USE_BOOST_INTERPROCESS_IMPLEMENTATION)
-#include <boost/interprocess/containers/map.hpp>
-#include <boost/interprocess/containers/set.hpp>
-#elif defined(ICL_USE_BOOST_MOVE_IMPLEMENTATION)
-#include <boost/container/map.hpp>
-#include <boost/container/set.hpp>
-#else 
-#include <map>
-#include <set>
+#if defined(ICL_USE_BOOST_MOVE_IMPLEMENTATION)
+#   include <boost/container/map.hpp>
+#   include <boost/container/set.hpp>
+#elif defined(ICL_USE_STD_IMPLEMENTATION)
+#   include <map>
+#   include <set>
+#else // Default for implementing containers
+#   include <map>
+#   include <set>
 #endif
 
 #include <string>
@@ -85,7 +85,7 @@ template
     typename DomainT, 
     typename CodomainT, 
     class Traits = icl::partial_absorber,
-    ICL_COMPARE Compare = ICL_COMPARE_INSTANCE(std::less, DomainT),
+    ICL_COMPARE Compare = ICL_COMPARE_INSTANCE(ICL_COMPARE_DEFAULT, DomainT),
     ICL_COMBINE Combine = ICL_COMBINE_INSTANCE(icl::inplace_plus, CodomainT),
     ICL_SECTION Section = ICL_SECTION_INSTANCE(icl::inter_section, CodomainT), 
     ICL_ALLOC   Alloc   = std::allocator 
@@ -192,7 +192,34 @@ public:
         insert(key_value_pair); 
     }
 
-    map& operator=(const map& src) { base_type::operator=(src); return *this; } 
+    map& operator = (const map& src) 
+    { 
+        base_type::operator=(src);
+        return *this; 
+    } 
+
+#   ifndef BOOST_NO_RVALUE_REFERENCES
+    //==========================================================================
+    //= Move semantics
+    //==========================================================================
+
+    map(map&& src)
+        : base_type(boost::move(src))
+    {
+        BOOST_CONCEPT_ASSERT((DefaultConstructibleConcept<DomainT>));
+        BOOST_CONCEPT_ASSERT((LessThanComparableConcept<DomainT>));
+        BOOST_CONCEPT_ASSERT((DefaultConstructibleConcept<CodomainT>));
+        BOOST_CONCEPT_ASSERT((EqualComparableConcept<CodomainT>));
+    }
+
+    map& operator = (map&& src) 
+    { 
+        base_type::operator=(src);
+        return *this; 
+    } 
+    //==========================================================================
+#   endif // BOOST_NO_RVALUE_REFERENCES
+
     void swap(map& src) { base_type::swap(src); }
 
     //==========================================================================
@@ -306,6 +333,14 @@ public:
             return end();
         else
             return base_type::insert(prior, value_pair);
+    }
+
+    template<class Iterator>
+    iterator insert(Iterator first, Iterator last)
+    {
+        iterator prior = end(), it = first;
+        while(it != last)
+            prior = this->insert(prior, *it++);
     }
 
     /** With <tt>key_value_pair = (k,v)</tt> set value \c v for key \c k */
@@ -431,7 +466,7 @@ private:
     {                // !codomain_is_set, !absorbs_identities
         static void subtract(Type&, typename Type::iterator it_, 
                               const typename Type::codomain_type& )
-        { it_->second = identity_element<typename Type::codomain_type>::value(); }
+        { (*it_).second = identity_element<typename Type::codomain_type>::value(); }
     };
 
     template<class Type>
@@ -449,7 +484,7 @@ private:
         static void subtract(Type&, typename Type::iterator       it_, 
                               const typename Type::codomain_type& co_value)
         { 
-            inverse_codomain_intersect()(it_->second, co_value); 
+            inverse_codomain_intersect()((*it_).second, co_value); 
         }
     };
 
@@ -460,8 +495,8 @@ private:
         static void subtract(Type& object, typename Type::iterator       it_, 
                                      const typename Type::codomain_type& co_value)
         { 
-            inverse_codomain_intersect()(it_->second, co_value); 
-            if(it_->second == identity_element<codomain_type>::value())
+            inverse_codomain_intersect()((*it_).second, co_value); 
+            if((*it_).second == identity_element<codomain_type>::value())
                 object.erase(it_);
         }
     };
@@ -489,7 +524,7 @@ private:
         { 
             object.add(operand);
             ICL_FORALL(typename Type, it_, object)
-                it_->second = identity_element<codomain_type>::value();
+                (*it_).second = identity_element<codomain_type>::value();
         }
     };
 
@@ -583,9 +618,9 @@ typename map<DomainT,CodomainT,Traits,Compare,Combine,Section,Alloc>::iterator
     iterator inserted_ 
         = base_type::insert(prior_, 
                             value_type(addend.first, Combiner::identity_element()));
-    Combiner()(inserted_->second, addend.second);
+    Combiner()((*inserted_).second, addend.second);
 
-    if(on_absorbtion_::is_absorbable(inserted_->second))
+    if(on_absorbtion_::is_absorbable((*inserted_).second))
     {
         erase(inserted_);
         return end();
@@ -609,8 +644,8 @@ map<DomainT,CodomainT,Traits,Compare,Combine,Section,Alloc>&
     iterator it_ = find(minuend.first);
     if(it_ != end())
     {
-        Combiner()(it_->second, minuend.second);
-        if(on_absorbtion_::is_absorbable(it_->second))
+        Combiner()((*it_).second, minuend.second);
+        if(on_absorbtion_::is_absorbable((*it_).second))
             erase(it_);
     }
     return *this;

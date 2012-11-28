@@ -97,7 +97,7 @@ inline RealType pdf(const laplace_distribution<RealType, Policy>& dist, const Re
    BOOST_MATH_STD_USING // for ADL of std functions
 
    // Checking function argument
-   RealType result;
+   RealType result = 0;
    const char* function = "boost::math::pdf(const laplace_distribution<%1%>&, %1%))";
    if (false == dist.check_parameters(function, &result)) return result;
    if (false == detail::check_x(function, x, &result, Policy())) return result;
@@ -126,7 +126,7 @@ inline RealType cdf(const laplace_distribution<RealType, Policy>& dist, const Re
    BOOST_MATH_STD_USING  // for ADL of std functions
 
    // Checking function argument
-   RealType result;
+   RealType result = 0;
    const char* function = "boost::math::cdf(const laplace_distribution<%1%>&, %1%)";
    if (false == dist.check_parameters(function, &result)) return result;
    if (false == detail::check_x(function, x, &result, Policy())) return result;
@@ -143,10 +143,13 @@ inline RealType cdf(const laplace_distribution<RealType, Policy>& dist, const Re
    RealType location( dist.location() );
 
    if (x < location)
+   {
       result = exp( (x-location)/scale )/2;
+   }
    else
+   {
       result = 1 - exp( (location-x)/scale )/2;
-
+   }
    return result;
 } // cdf
 
@@ -157,7 +160,7 @@ inline RealType quantile(const laplace_distribution<RealType, Policy>& dist, con
    BOOST_MATH_STD_USING // for ADL of std functions.
 
    // Checking function argument
-   RealType result;
+   RealType result = 0;
    const char* function = "boost::math::quantile(const laplace_distribution<%1%>&, %1%)";
    if (false == dist.check_parameters(function, &result)) return result;
    if(false == detail::check_probability(function, p, &result, Policy())) return result;
@@ -199,25 +202,28 @@ inline RealType cdf(const complemented2_type<laplace_distribution<RealType, Poli
    RealType x = c.param;
 
    // Checking function argument
-   RealType result;
+   RealType result = 0;
    const char* function = "boost::math::cdf(const complemented2_type<laplace_distribution<%1%>, %1%>&)";
    if(false == detail::check_x(function, x, &result, Policy()))return result;
 
-   // Calculate cdf
+   // Calculate complement of cdf.
 
    // Special cdf value
    if((boost::math::isinf)(x))
    {
      if(x < 0) return 1; // cdf complement -infinity is unity.
-     return 0; // cdf complement +infinity is zero
+     return 0; // cdf complement +infinity is zero.
    }
 
-   // Cdf interval value
-   if (-x < location)
-      result = exp( (-x-location)/scale )/2;
+   // Cdf interval value.
+   if (-x < -location)
+   {
+      result = exp( (-x+location)/scale )/2;
+   }
    else
-      result = 1 - exp( (location+x)/scale )/2;
-
+   {
+      result = 1 - exp( (-location+x)/scale )/2;
+   }
    return result;
 } // cdf complement
 
@@ -225,15 +231,15 @@ inline RealType cdf(const complemented2_type<laplace_distribution<RealType, Poli
 template <class RealType, class Policy>
 inline RealType quantile(const complemented2_type<laplace_distribution<RealType, Policy>, RealType>& c)
 {
-   BOOST_MATH_STD_USING // for ADL of std functions
+   BOOST_MATH_STD_USING // for ADL of std functions.
 
-   // Calculate quantile
+   // Calculate quantile.
    RealType scale = c.dist.scale();
    RealType location = c.dist.location();
    RealType q = c.param;
 
-   // Checking function argument
-   RealType result;
+   // Checking function argument.
+   RealType result = 0;
    const char* function = "quantile(const complemented2_type<laplace_distribution<%1%>, %1%>&)";
    if(false == detail::check_probability(function, q, &result, Policy())) return result;
 

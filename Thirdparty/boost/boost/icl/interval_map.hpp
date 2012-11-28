@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------+
-Copyright (c) 2008-2009: Joachim Faulhaber
+Copyright (c) 2008-2012: Joachim Faulhaber
 +------------------------------------------------------------------------------+
    Distributed under the Boost Software License, Version 1.0.
       (See accompanying file LICENCE.txt or copy at
@@ -28,7 +28,7 @@ template
     typename DomainT,
     typename CodomainT,
     class Traits = icl::partial_absorber,
-    ICL_COMPARE Compare  = ICL_COMPARE_INSTANCE(std::less, DomainT),
+    ICL_COMPARE Compare  = ICL_COMPARE_INSTANCE(ICL_COMPARE_DEFAULT, DomainT),
     ICL_COMBINE Combine  = ICL_COMBINE_INSTANCE(icl::inplace_plus, CodomainT),
     ICL_SECTION Section  = ICL_SECTION_INSTANCE(icl::inter_section, CodomainT), 
     ICL_INTERVAL(ICL_COMPARE) Interval = ICL_INTERVAL_INSTANCE(ICL_INTERVAL_DEFAULT, DomainT, Compare),
@@ -72,11 +72,12 @@ public:
     //==========================================================================
     //= Construct, copy, destruct
     //==========================================================================
+
     /// Default constructor for the empty object
     interval_map(): base_type() {}
+
     /// Copy constructor
     interval_map(const interval_map& src): base_type(src) {}
-
 
     /// Copy constructor for base_type
     template<class SubType>
@@ -90,6 +91,7 @@ public:
 
     explicit interval_map(const value_type& value_pair): base_type()
     { this->add(value_pair); }
+
 
     /// Assignment operator
     template<class SubType>
@@ -106,11 +108,30 @@ public:
         typedef interval_base_map<SubType,DomainT,CodomainT,
                                   Traits,Compare,Combine,Section,Interval,Alloc> base_map_type;
         this->clear();
-        // Can be implemented via _map.insert: Interval joining not necessary.
         iterator prior_ = this->_map.end();
         ICL_const_FORALL(typename base_map_type, it_, src) 
             prior_ = this->add(prior_, *it_); 
     }
+
+#   ifndef BOOST_NO_RVALUE_REFERENCES
+    //==========================================================================
+    //= Move semantics
+    //==========================================================================
+
+    /// Move constructor
+    interval_map(interval_map&& src)
+        : base_type(boost::move(src))
+    {}
+
+    /// Move assignment operator
+    interval_map& operator = (interval_map&& src)
+    { 
+        base_type::operator=(boost::move(src));
+        return *this;
+    }
+
+    //==========================================================================
+#   endif // BOOST_NO_RVALUE_REFERENCES
 
 private:
     // Private functions that shall be accessible by the baseclass:
@@ -132,7 +153,7 @@ private:
     template<class Combiner>
     void handle_left_combined(iterator it_)
     {
-        if(on_absorbtion<type,Combiner,Traits::absorbs_identities>::is_absorbable(it_->second))
+        if(on_absorbtion<type,Combiner,Traits::absorbs_identities>::is_absorbable((*it_).second))
             this->_map.erase(it_);
         else
             segmental::join_left(*this, it_);
@@ -141,7 +162,7 @@ private:
     template<class Combiner>
     void handle_combined(iterator it_)
     {
-        if(on_absorbtion<type,Combiner,Traits::absorbs_identities>::is_absorbable(it_->second))
+        if(on_absorbtion<type,Combiner,Traits::absorbs_identities>::is_absorbable((*it_).second))
             this->_map.erase(it_);
         else
             segmental::join_neighbours(*this, it_);
@@ -150,7 +171,7 @@ private:
     template<class Combiner>
     void handle_preceeded_combined(iterator prior_, iterator& it_)
     {
-        if(on_absorbtion<type,Combiner,Traits::absorbs_identities>::is_absorbable(it_->second))
+        if(on_absorbtion<type,Combiner,Traits::absorbs_identities>::is_absorbable((*it_).second))
         {
             this->_map.erase(it_);
             it_ = prior_;
@@ -162,7 +183,7 @@ private:
     template<class Combiner>
     void handle_succeeded_combined(iterator it_, iterator next_)
     {
-        if(on_absorbtion<type,Combiner,Traits::absorbs_identities>::is_absorbable(it_->second))
+        if(on_absorbtion<type,Combiner,Traits::absorbs_identities>::is_absorbable((*it_).second))
         {
             this->_map.erase(it_);
             segmental::join_right(*this, next_);
@@ -186,7 +207,7 @@ private:
     void gap_insert_at(iterator& it_, iterator prior_, 
                        const interval_type& end_gap, const codomain_type& co_val)
     {
-        if(on_absorbtion<type,Combiner,Traits::absorbs_identities>::is_absorbable(it_->second))
+        if(on_absorbtion<type,Combiner,Traits::absorbs_identities>::is_absorbable((*it_).second))
         {
             this->_map.erase(it_);
             it_ = this->template gap_insert<Combiner>(prior_, end_gap, co_val);

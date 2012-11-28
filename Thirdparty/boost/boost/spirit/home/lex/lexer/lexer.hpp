@@ -265,6 +265,13 @@ namespace boost { namespace spirit { namespace lex
                 return *this;
             }
 
+            // explicitly tell the lexer that the given state will be defined
+            // (useful in conjunction with "*")
+            std::size_t add_state(char_type const* state = 0)
+            {
+                return def.add_state(state ? state : def.initial_state().c_str());
+            }
+
             adder add;
             pattern_adder add_pattern;
 
@@ -278,6 +285,7 @@ namespace boost { namespace spirit { namespace lex
             lexer_def_& operator= (lexer_def_ const&);
         };
 
+#if defined(BOOST_NO_RVALUE_REFERENCES)
         // allow to assign a token definition expression
         template <typename LexerDef, typename Expr>
         inline lexer_def_<LexerDef>&
@@ -292,6 +300,22 @@ namespace boost { namespace spirit { namespace lex
             lexdef.define(xpr);
             return lexdef;
         }
+#else
+        // allow to assign a token definition expression
+        template <typename LexerDef, typename Expr>
+        inline lexer_def_<LexerDef>&
+        operator+= (lexer_def_<LexerDef>& lexdef, Expr&& xpr)
+        {
+            // Report invalid expression error as early as possible.
+            // If you got an error_invalid_expression error message here,
+            // then the expression (expr) is not a valid spirit lex 
+            // expression.
+            BOOST_SPIRIT_ASSERT_MATCH(lex::domain, Expr);
+
+            lexdef.define(xpr);
+            return lexdef;
+        }
+#endif
 
         template <typename LexerDef, typename Expr>
         inline lexer_def_<LexerDef>& 

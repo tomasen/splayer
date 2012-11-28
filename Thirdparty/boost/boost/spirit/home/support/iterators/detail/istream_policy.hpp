@@ -71,7 +71,7 @@ namespace boost { namespace spirit { namespace iterator_policies
             }
 
             template <typename MultiPass>
-            static bool input_is_valid(MultiPass const& mp, value_type const& t) 
+            static bool input_is_valid(MultiPass const& mp, value_type const&) 
             {
                 return mp.shared()->initialized_;
             }
@@ -90,7 +90,9 @@ namespace boost { namespace spirit { namespace iterator_policies
             explicit shared(T& input) 
               : input_(input), curtok_(-1)
               , initialized_(false), eof_reached_(false) 
-            {}
+            {
+                peek_one();   // istreams may be at eof right in the beginning
+            }
 
             void read_one()
             {

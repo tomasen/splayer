@@ -1,7 +1,7 @@
 /*
  *
- * Copyright (c) 1998-2004
- * John Maddock
+ * Copyright (c) 1998-2004 John Maddock
+ * Copyright 2011 Garmin Ltd. or its subsidiaries
  *
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
@@ -36,7 +36,10 @@
 namespace boost{
 #ifdef BOOST_MSVC
 #pragma warning(push)
-#pragma warning(disable : 4251 4231 4660 4800)
+#pragma warning(disable : 4251 4231 4800)
+#if BOOST_MSVC < 1600
+#pragma warning(disable : 4660)
+#endif
 #endif
 
 namespace re_detail{
@@ -234,7 +237,7 @@ public:
    std::pair<const_iterator, const_iterator> BOOST_REGEX_CALL subexpression(std::size_t n)const
    {
       if(n == 0)
-         throw std::out_of_range("0 is not a valid subexpression index.");
+         boost::throw_exception(std::out_of_range("0 is not a valid subexpression index."));
       const std::pair<std::size_t, std::size_t>& pi = this->m_subs.at(n - 1);
       std::pair<const_iterator, const_iterator> p(expression() + pi.first, expression() + pi.second);
       return p;
@@ -243,11 +246,11 @@ public:
    // begin, end:
    const_iterator BOOST_REGEX_CALL begin()const
    { 
-      return (!this->m_status ? 0 : this->m_expression); 
+      return (this->m_status ? 0 : this->m_expression); 
    }
    const_iterator BOOST_REGEX_CALL end()const
    { 
-      return (!this->m_status ? 0 : this->m_expression + this->m_expression_len); 
+      return (this->m_status ? 0 : this->m_expression + this->m_expression_len); 
    }
    flag_type BOOST_REGEX_CALL flags()const
    {
@@ -398,7 +401,7 @@ public:
       typedef typename traits::string_type seq_type;
       seq_type a(arg_first, arg_last);
       if(a.size())
-         assign(&*a.begin(), &*a.begin() + a.size(), f);
+         assign(static_cast<const charT*>(&*a.begin()), static_cast<const charT*>(&*a.begin() + a.size()), f);
       else
          assign(static_cast<const charT*>(0), static_cast<const charT*>(0), f);
    }
@@ -487,7 +490,7 @@ public:
    std::pair<const_iterator, const_iterator> BOOST_REGEX_CALL subexpression(std::size_t n)const
    {
       if(!m_pimpl.get())
-         throw std::logic_error("Can't access subexpressions in an invalid regex.");
+         boost::throw_exception(std::logic_error("Can't access subexpressions in an invalid regex."));
       return m_pimpl->subexpression(n);
    }
    const_iterator BOOST_REGEX_CALL begin()const

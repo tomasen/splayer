@@ -84,7 +84,7 @@ template<typename Chain> class chain_client;
 //
 // Concept name: Chain.
 // Description: Represents a chain of stream buffers which provides access
-//     to the first buffer in the chain and send notifications when the
+//     to the first buffer in the chain and sends notifications when the
 //     streambufs are added to or removed from chain.
 // Refines: Closable device with mode equal to typename Chain::mode.
 // Models: chain, converting_chain.
@@ -314,7 +314,11 @@ private:
               pback_size_(default_pback_buffer_size),
               flags_(f_auto_close)
             { }
-        ~chain_impl() { try { close(); reset(); } catch (...) { } }
+        ~chain_impl()
+            {
+                try { close(); } catch (...) { }
+                try { reset(); } catch (...) { }
+            }
         void close()
             {
                 if ((flags_ & f_open) != 0) {

@@ -20,7 +20,7 @@ namespace boost{namespace icl
 template 
 <
     typename                         DomainT, 
-    ICL_COMPARE                      Compare  = ICL_COMPARE_INSTANCE(std::less, DomainT),
+    ICL_COMPARE                      Compare  = ICL_COMPARE_INSTANCE(ICL_COMPARE_DEFAULT, DomainT),
     ICL_INTERVAL(ICL_COMPARE) Interval = ICL_INTERVAL_INSTANCE(ICL_INTERVAL_DEFAULT, DomainT, Compare),
     ICL_ALLOC                        Alloc    = std::allocator
 > 
@@ -82,7 +82,6 @@ public:
     /// const_iterator for iteration over intervals
     typedef typename ImplSetT::const_iterator const_iterator;
 
-
     enum { fineness = 2 };
 
 public:
@@ -124,6 +123,24 @@ public:
         this->_set.insert(src.begin(), src.end());
     }
 
+#   ifndef BOOST_NO_RVALUE_REFERENCES
+    //==========================================================================
+    //= Move semantics
+    //==========================================================================
+
+    /// Move constructor
+    separate_interval_set(separate_interval_set&& src)
+        : base_type(boost::move(src))
+    {}
+
+    /// Move assignment operator
+    separate_interval_set& operator = (separate_interval_set&& src)
+    { 
+        base_type::operator=(boost::move(src));
+        return *this;
+    }
+    //==========================================================================
+#   endif // BOOST_NO_RVALUE_REFERENCES
 
 private:
     // Private functions that shall be accessible by the baseclass:

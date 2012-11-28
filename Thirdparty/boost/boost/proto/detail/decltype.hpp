@@ -16,6 +16,7 @@
 #include <boost/preprocessor/repetition/enum_params.hpp>
 #include <boost/preprocessor/repetition/enum_trailing_params.hpp>
 #include <boost/preprocessor/repetition/enum_binary_params.hpp>
+#include <boost/preprocessor/repetition/repeat.hpp>
 #include <boost/preprocessor/repetition/repeat_from_to.hpp>
 #include <boost/preprocessor/iteration/local.hpp>
 #include <boost/mpl/if.hpp>
@@ -32,17 +33,25 @@
 #include <boost/utility/addressof.hpp>
 #include <boost/utility/result_of.hpp>
 #include <boost/utility/enable_if.hpp>
-#include <boost/proto/repeat.hpp>
+#include <boost/proto/proto_fwd.hpp>
+#include <boost/proto/detail/any.hpp>
 
-#ifndef BOOST_NO_DECLTYPE
-# define BOOST_PROTO_DECLTYPE_(EXPR, TYPE) typedef decltype(EXPR) TYPE;
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
+# pragma warning(push)
+# pragma warning(disable : 4714) // function 'xxx' marked as __forceinline not inlined
+#endif
+
+// We're STILL using Boost.Typeof on MSVC even for msvc-11.0 because of this bug:
+// https://connect.microsoft.com/VisualStudio/feedback/details/765392/decltype-of-a-pointer-to-member-operator-gets-ref-qualification-wrong
+#if !defined(BOOST_NO_DECLTYPE) && !BOOST_WORKAROUND(BOOST_MSVC, BOOST_TESTED_AT(1700))
+# define BOOST_PROTO_DECLTYPE_(EXPR, TYPE) typedef decltype((EXPR)) TYPE;
 #else
 # define BOOST_PROTO_DECLTYPE_NESTED_TYPEDEF_TPL_(NESTED, EXPR)                                     \
     BOOST_TYPEOF_NESTED_TYPEDEF_TPL(BOOST_PP_CAT(nested_and_hidden_, NESTED), EXPR)                 \
-    static int const sz = sizeof(boost::proto::detail::check_reference(EXPR));                      \
+    static int const BOOST_PP_CAT(sz, NESTED) = sizeof(boost::proto::detail::check_reference(EXPR));\
     struct NESTED                                                                                   \
       : boost::mpl::if_c<                                                                           \
-            1==sz                                                                                   \
+            1 == BOOST_PP_CAT(sz, NESTED)                                                           \
           , typename BOOST_PP_CAT(nested_and_hidden_, NESTED)::type &                               \
           , typename BOOST_PP_CAT(nested_and_hidden_, NESTED)::type                                 \
         >                                                                                           \
@@ -56,68 +65,6 @@ namespace boost { namespace proto
 {
     namespace detail
     {
-        namespace anyns
-        {
-            ////////////////////////////////////////////////////////////////////////////////////////////
-            struct any
-            {
-                any(...);
-                any operator=(any);
-                any operator[](any);
-                #define M0(Z, N, DATA) any operator()(BOOST_PP_ENUM_PARAMS_Z(Z, N, any BOOST_PP_INTERCEPT));
-                BOOST_PP_REPEAT(BOOST_PROTO_MAX_ARITY, M0, ~)
-                #undef M0
-
-                template<typename T>
-                operator T &() const volatile;
-
-                any operator+();
-                any operator-();
-                any operator*();
-                any operator&();
-                any operator~();
-                any operator!();
-                any operator++();
-                any operator--();
-                any operator++(int);
-                any operator--(int);
-
-                friend any operator<<(any, any);
-                friend any operator>>(any, any);
-                friend any operator*(any, any);
-                friend any operator/(any, any);
-                friend any operator%(any, any);
-                friend any operator+(any, any);
-                friend any operator-(any, any);
-                friend any operator<(any, any);
-                friend any operator>(any, any);
-                friend any operator<=(any, any);
-                friend any operator>=(any, any);
-                friend any operator==(any, any);
-                friend any operator!=(any, any);
-                friend any operator||(any, any);
-                friend any operator&&(any, any);
-                friend any operator&(any, any);
-                friend any operator|(any, any);
-                friend any operator^(any, any);
-                friend any operator,(any, any);
-                friend any operator->*(any, any);
-
-                friend any operator<<=(any, any);
-                friend any operator>>=(any, any);
-                friend any operator*=(any, any);
-                friend any operator/=(any, any);
-                friend any operator%=(any, any);
-                friend any operator+=(any, any);
-                friend any operator-=(any, any);
-                friend any operator&=(any, any);
-                friend any operator|=(any, any);
-                friend any operator^=(any, any);
-            };
-        }
-
-        using anyns::any;
-
         ////////////////////////////////////////////////////////////////////////////////////////////
         template<typename T>
         struct as_mutable
@@ -228,7 +175,7 @@ namespace boost { namespace proto
             template<typename T>
             struct has_get_pointer
             {
-                BOOST_STATIC_CONSTANT(bool, value = sizeof(void *) == sizeof(get_pointer(make<T &>())));
+                static const bool value = sizeof(void *) == sizeof(get_pointer(make<T &>()));
                 typedef mpl::bool_<value> type;
             };
         }
@@ -237,28 +184,17 @@ namespace boost { namespace proto
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         template<typename T>
-        struct classtypeof;
+        struct class_member_traits;
 
         template<typename T, typename U>
-        struct classtypeof<T U::*>
+        struct class_member_traits<T U::*>
         {
-            typedef U type;
+            typedef U class_type;
+            typedef T result_type;
         };
 
-        #define BOOST_PP_LOCAL_MACRO(N)                                                             \
-        template<typename T, typename U BOOST_PP_ENUM_TRAILING_PARAMS(N, typename A)>               \
-        struct classtypeof<T (U::*)(BOOST_PP_ENUM_PARAMS(N, A))>                                    \
-        {                                                                                           \
-            typedef U type;                                                                         \
-        };                                                                                          \
-        template<typename T, typename U BOOST_PP_ENUM_TRAILING_PARAMS(N, typename A)>               \
-        struct classtypeof<T (U::*)(BOOST_PP_ENUM_PARAMS(N, A)) const>                              \
-        {                                                                                           \
-            typedef U type;                                                                         \
-        };                                                                                          \
-        /**/
-        #define BOOST_PP_LOCAL_LIMITS (0, BOOST_PROTO_MAX_ARITY)
-        #include BOOST_PP_LOCAL_ITERATE()
+        // Other specializations are generated by the preprocessor
+        #include <boost/proto/detail/class_member_traits.hpp>
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         template<typename T>
@@ -342,8 +278,8 @@ namespace boost { namespace proto
             template<typename T, typename U, typename V>
             struct result_of_<T U::*(V), typename enable_if_c<is_member_object_pointer<T U::*>::value>::type>
             {
-                BOOST_STATIC_CONSTANT(bool, is_V_a_smart_ptr = 2 == sizeof(test_V_is_a_U<U>(&lvalue(make<V>()))));
-                BOOST_STATIC_CONSTANT(bool, is_ptr_to_const = 2 == sizeof(test_ptr_to_const(BOOST_PROTO_GET_POINTER(U, make<V>()))));
+                static const bool is_V_a_smart_ptr = 2 == sizeof(test_V_is_a_U<U>(&lvalue(make<V>())));
+                static const bool is_ptr_to_const = 2 == sizeof(test_ptr_to_const(BOOST_PROTO_GET_POINTER(U, make<V>())));
 
                 // If V is not a U, then it is a (smart) pointer and we can always return an lvalue.
                 // Otherwise, we can only return an lvalue if we are given one.
@@ -389,9 +325,9 @@ namespace boost { namespace proto
             struct mem_ptr_fun<T, U, true>
             {
                 typedef
-                    typename classtypeof<
+                    typename class_member_traits<
                         typename uncvref<U>::type
-                    >::type
+                    >::class_type
                 V;
 
                 BOOST_PROTO_DECLTYPE_(
@@ -485,10 +421,10 @@ namespace boost { namespace proto
         struct memfun
         {
             typedef typename uncvref<PMF>::type pmf_type;
-            typedef typename classtypeof<pmf_type>::type V;
-            typedef typename BOOST_PROTO_RESULT_OF<pmf_type(T)>::type result_type;
+            typedef typename class_member_traits<pmf_type>::class_type V;
+            typedef typename class_member_traits<pmf_type>::result_type result_type;
 
-            memfun(T t, PMF p)
+            memfun(T t, pmf_type p)
               : obj(t)
               , pmf(p)
             {}
@@ -499,24 +435,19 @@ namespace boost { namespace proto
                 return (BOOST_PROTO_GET_POINTER(V, obj) ->* pmf)();
             }
 
-            #define BOOST_PROTO_LOCAL_MACRO(N, typename_A, A_const_ref, A_const_ref_a, a)           \
-            template<typename_A(N)>                                                                 \
-            result_type operator()(A_const_ref_a(N)) const                                          \
-            {                                                                                       \
-                BOOST_PROTO_USE_GET_POINTER();                                                      \
-                return (BOOST_PROTO_GET_POINTER(V, obj) ->* pmf)(a(N));                             \
-            }                                                                                       \
-            /**/
-            #define BOOST_PROTO_LOCAL_a BOOST_PROTO_a
-            #define BOOST_PROTO_LOCAL_LIMITS (1, BOOST_PROTO_MAX_ARITY)
-            #include BOOST_PROTO_LOCAL_ITERATE()
+            // Other overloads generated by the preprocessor
+            #include <boost/proto/detail/memfun_funop.hpp>
 
         private:
             T obj;
-            PMF pmf;
+            pmf_type pmf;
         };
 
     } // namespace detail
 }}
+
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
+# pragma warning(pop)
+#endif
 
 #endif

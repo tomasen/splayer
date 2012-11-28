@@ -1,6 +1,6 @@
 /*=============================================================================
     Copyright (c) 1999-2003 Jaakko Jarvi
-    Copyright (c) 2001-2006 Joel de Guzman
+    Copyright (c) 2001-2011 Joel de Guzman
 
     Distributed under the Boost Software License, Version 1.0. (See accompanying
     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -46,14 +46,14 @@ namespace boost { namespace fusion
         }
 
         template <typename Seq1, typename Seq2>
-        inline typename disable_if<detail::is_native_fusion_sequence<Seq2>, bool>::type
+        inline typename disable_if<traits::is_native_fusion_sequence<Seq2>, bool>::type
         operator<=(sequence_base<Seq1> const& a, Seq2 const& b)
         {
             return less_equal(a.derived(), b);
         }
 
         template <typename Seq1, typename Seq2>
-        inline typename disable_if<detail::is_native_fusion_sequence<Seq1>, bool>::type
+        inline typename disable_if<traits::is_native_fusion_sequence<Seq1>, bool>::type
         operator<=(Seq1 const& a, sequence_base<Seq2> const& b)
         {
             return less_equal(a, b.derived());
@@ -65,7 +65,7 @@ namespace boost { namespace fusion
 
         template <typename Seq1, typename Seq2>
         inline typename
-            enable_if<
+            boost::enable_if<
                 traits::enable_comparison<Seq1, Seq2>
               , bool
             >::type

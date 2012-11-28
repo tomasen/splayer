@@ -109,7 +109,7 @@ namespace boost
       inline bool check_dist_and_x(const char* function, const RealType& alpha, const RealType& beta, RealType x, RealType* result, const Policy& pol)
       {
         return check_dist(function, alpha, beta, result, pol)
-          && check_x(function, x, result, pol);
+          && beta_detail::check_x(function, x, result, pol);
       } // bool check_dist_and_x
 
       template <class RealType, class Policy>
@@ -187,13 +187,12 @@ namespace boost
         RealType variance) // Expected value of variance.
       {
         static const char* function = "boost::math::beta_distribution<%1%>::find_alpha";
-        RealType result; // of error checks.
+        RealType result = 0; // of error checks.
         if(false ==
-          beta_detail::check_mean(
-          function, mean, &result, Policy())
-          &&
-          beta_detail::check_variance(
-          function, variance, &result, Policy())
+            (
+              beta_detail::check_mean(function, mean, &result, Policy())
+              && beta_detail::check_variance(function, variance, &result, Policy())
+            )
           )
         {
           return result;
@@ -206,13 +205,13 @@ namespace boost
         RealType variance) // Expected value of variance.
       {
         static const char* function = "boost::math::beta_distribution<%1%>::find_beta";
-        RealType result; // of error checks.
+        RealType result = 0; // of error checks.
         if(false ==
-          beta_detail::check_mean(
-          function, mean, &result, Policy())
-          &&
-          beta_detail::check_variance(
-          function, variance, &result, Policy())
+            (
+              beta_detail::check_mean(function, mean, &result, Policy())
+              &&
+              beta_detail::check_variance(function, variance, &result, Policy())
+            )
           )
         {
           return result;
@@ -229,16 +228,15 @@ namespace boost
         RealType probability) // cdf
       {
         static const char* function = "boost::math::beta_distribution<%1%>::find_alpha";
-        RealType result; // of error checks.
+        RealType result = 0; // of error checks.
         if(false ==
-          beta_detail::check_prob(
-          function, probability, &result, Policy())
-          &&
-          beta_detail::check_beta(
-          function, beta, &result, Policy())
-          &&
-          beta_detail::check_x(
-          function, x, &result, Policy())
+            (
+             beta_detail::check_prob(function, probability, &result, Policy())
+             &&
+             beta_detail::check_beta(function, beta, &result, Policy())
+             &&
+             beta_detail::check_x(function, x, &result, Policy())
+            )
           )
         {
           return result;
@@ -253,16 +251,15 @@ namespace boost
         RealType probability) // probability cdf.
       {
         static const char* function = "boost::math::beta_distribution<%1%>::find_beta";
-        RealType result; // of error checks.
+        RealType result = 0; // of error checks.
         if(false ==
-          beta_detail::check_prob(
-          function, probability, &result, Policy())
-          &&
-          beta_detail::check_alpha(
-          function, alpha, &result, Policy())
-          &&
-          beta_detail::check_x(
-          function, x, &result, Policy())
+            (
+              beta_detail::check_prob(function, probability, &result, Policy())
+              &&
+              beta_detail::check_alpha(function, alpha, &result, Policy())
+              &&
+              beta_detail::check_x(function, x, &result, Policy())
+            )
           )
         {
           return result;
@@ -376,7 +373,7 @@ namespace boost
       RealType b = dist.beta();
 
       // Argument checks:
-      RealType result;
+      RealType result = 0;
       if(false == beta_detail::check_dist_and_x(
         function,
         a, b, x,
@@ -399,7 +396,7 @@ namespace boost
       RealType b = dist.beta();
 
       // Argument checks:
-      RealType result;
+      RealType result = 0;
       if(false == beta_detail::check_dist_and_x(
         function,
         a, b, x,
@@ -433,7 +430,7 @@ namespace boost
       RealType b = dist.beta();
 
       // Argument checks:
-      RealType result;
+      RealType result = 0;
       if(false == beta_detail::check_dist_and_x(
         function,
         a, b, x,
@@ -468,7 +465,7 @@ namespace boost
 
       static const char* function = "boost::math::quantile(beta_distribution<%1%> const&, %1%)";
 
-      RealType result; // of argument checks:
+      RealType result = 0; // of argument checks:
       RealType a = dist.alpha();
       RealType b = dist.beta();
       if(false == beta_detail::check_dist_and_prob(
@@ -502,7 +499,7 @@ namespace boost
       // Error checks:
       RealType q = c.param;
       const beta_distribution<RealType, Policy>& dist = c.dist;
-      RealType result;
+      RealType result = 0;
       RealType a = dist.alpha();
       RealType b = dist.beta();
       if(false == beta_detail::check_dist_and_prob(

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga  2007-2009
+// (C) Copyright Ion Gaztanaga  2007-2012
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -55,12 +55,6 @@ template <class ValueTraits>
 struct eval_value_traits
 {
    typedef typename ValueTraits::value_traits type;
-};
-
-template <class T>
-struct external_bucket_traits_is_true
-{
-   static const bool value = external_bucket_traits_bool<T>::value == 3;
 };
 
 template <class BucketTraits>
@@ -245,7 +239,7 @@ struct compare
 //!alpha value that does not need floating-point operations.
 //!
 //!If activated, the fixed alpha value is 1/sqrt(2). This
-//!option also saves some space in the container since 
+//!option also saves some space in the container since
 //!the alpha value and some additional data does not need
 //!to be stored in the container.
 //!
@@ -567,7 +561,7 @@ struct compare_hash
 
 //!This option setter specifies if the hash container will use incremental
 //!hashing. With incremental hashing the cost of hash table expansion is spread
-//!out across each hash table insertion operation, as opposed to be incurred all at once. 
+//!out across each hash table insertion operation, as opposed to be incurred all at once.
 //!Therefore linear hashing is well suited for interactive applications or real-time
 //!appplications where the worst-case insertion time of non-incremental hash containers
 //!(rehashing the whole bucket array) is not admisible.
@@ -651,9 +645,9 @@ struct pack_options
             , O9
             >::type
          , O10
-         >::type 
+         >::type
       , O11
-      >::type 
+      >::type
    type;
 };
 #else
@@ -666,7 +660,7 @@ struct index_tuple{};
 template<std::size_t Num, typename Tuple = index_tuple<> >
 struct build_number_seq;
 
-template<std::size_t Num, int... Indexes> 
+template<std::size_t Num, int... Indexes>
 struct build_number_seq<Num, index_tuple<Indexes...> >
    : build_number_seq<Num - 1, index_tuple<Indexes..., sizeof...(Indexes)> >
 {};
@@ -775,7 +769,7 @@ template<class Prev, class ...Others>
 struct do_pack<typelist<Prev, Others...> >
 {
    typedef typename Prev::template pack
-      <typename do_pack<typelist<Others...>>::type> type;
+      <typename do_pack<typelist<Others...> >::type> type;
 };
 
 

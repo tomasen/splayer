@@ -20,7 +20,7 @@ namespace boost{namespace icl
 template 
 <
     typename    DomainT, 
-    ICL_COMPARE Compare  = ICL_COMPARE_INSTANCE(std::less, DomainT),
+    ICL_COMPARE Compare  = ICL_COMPARE_INSTANCE(ICL_COMPARE_DEFAULT, DomainT),
     ICL_INTERVAL(ICL_COMPARE) Interval = ICL_INTERVAL_INSTANCE(ICL_INTERVAL_DEFAULT, DomainT, Compare),
     ICL_ALLOC   Alloc    = std::allocator
 > 
@@ -93,6 +93,7 @@ public:
     //==========================================================================
     /// Default constructor for the empty object
     interval_set(): base_type() {}
+
     /// Copy constructor
     interval_set(const interval_set& src): base_type(src) {}
 
@@ -107,6 +108,7 @@ public:
     /// Constructor for a single element
     explicit interval_set(const domain_type& value): base_type() 
     { this->add(interval_type(value)); }
+
     /// Constructor for a single interval
     explicit interval_set(const interval_type& itv): base_type() 
     { 
@@ -135,6 +137,24 @@ public:
             prior_ = this->add(prior_, *it_);
     }
 
+#   ifndef BOOST_NO_RVALUE_REFERENCES
+    //==========================================================================
+    //= Move semantics
+    //==========================================================================
+
+    /// Move constructor
+    interval_set(interval_set&& src)
+        : base_type(boost::move(src))
+    {}
+
+    /// Move assignment operator
+    interval_set& operator = (interval_set&& src)
+    { 
+        base_type::operator=(boost::move(src));
+        return *this;
+    }
+    //==========================================================================
+#   endif // BOOST_NO_RVALUE_REFERENCES
 
 private:
     // Private functions that shall be accessible by the baseclass:

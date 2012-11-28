@@ -14,8 +14,6 @@
 #include <exception>
 #include <boost/assert.hpp>
 
-#define BOOST_MPL_CFG_NO_PREPROCESSED_HEADERS
-
 #include <boost/mpl/vector.hpp>
 
 #include <boost/msm/row_tags.hpp>
@@ -33,6 +31,7 @@ struct state_machine_def :  public boost::msm::front::detail::state_base<BaseSta
     // tags
     // default: no flag
     typedef ::boost::mpl::vector0<>               flag_list;
+    typedef ::boost::mpl::vector0<>               internal_flag_list;
     //default: no deferred events
     typedef ::boost::mpl::vector0<>               deferred_events;
     // customization (message queue, exceptions)
@@ -199,7 +198,7 @@ struct state_machine_def :  public boost::msm::front::detail::state_base<BaseSta
 protected:
     // Default no-transition handler. Can be replaced in the Derived SM class.
     template <class FSM,class Event>
-    void no_transition(Event const& ,FSM&, int state)
+    void no_transition(Event const& ,FSM&, int )
     {
         BOOST_ASSERT(false);
     }

@@ -1,0 +1,7 @@
+syntax: glob
+*.obj
+*.tlog
+*.sbr
+*.pdb
+*.log
+*.db

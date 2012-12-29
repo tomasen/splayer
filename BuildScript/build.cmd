@@ -1,23 +1,32 @@
 @echo off
 
+set PATH=%CD%/hg_bin;%PATH%
+set TOPDIR=%CD%/../
+
 echo Updating SPlayer Mecurial repo
-hg_bin\hg pull --update -R ../
+hg pull --update -R ../
 
 
 echo Trying to clone splayer-pkg repo
-hg_bin\hg clone https://splayer-pkg.googlecode.com/hg/ ../thirdparty/pkg
+hg clone https://splayer-pkg.googlecode.com/hg/ %TOPDIR%/thirdparty/pkg
+cd %TOPDIR%/thirdparty/pkg
+hg import %TOPDIR%/BuildScript/sphash.vs2012.patch
+cd %TOPDIR%/BuildScript
 
 echo Updating splayer-pkg project ...
-hg_bin\hg pull -u  -R ../thirdparty/pkg
-hg_bin\hg update -c -R ../thirdparty/pkg
+hg pull -u  -R ../thirdparty/pkg
+hg update -c -R ../thirdparty/pkg
 if %ERRORLEVEL% NEQ 0 goto error
 
 echo Trying to clone sinet repo
-hg_bin\hg clone https://sinet-lib.googlecode.com/hg/ ../thirdparty/sinet
+hg clone https://sinet-lib.googlecode.com/hg/ ../thirdparty/sinet
 
 echo Updating sinet project ...
-hg_bin\hg pull -u -R ../thirdparty/sinet
-hg_bin\hg update -c -R ../thirdparty/sinet
+hg pull -u -R ../thirdparty/sinet
+hg update -c -R ../thirdparty/sinet
+cd %TOPDIR%/thirdparty/sinet
+hg import %TOPDIR%/BuildScript/sinet.vs2012.patch
+cd %TOPDIR%/BuildScript
 if %ERRORLEVEL% NEQ 0 goto error
 
 

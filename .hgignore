@@ -5,3 +5,5 @@ syntax: glob
 *.pdb
 *.log
 *.db
+*~
+*.swp

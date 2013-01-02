@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>mplayerc</ProjectName>
+    <ProjectName>splayer</ProjectName>
     <ProjectGuid>{8CE7E5D0-C821-47AC-A247-28EC95B34670}</ProjectGuid>
     <RootNamespace>mplayerc</RootNamespace>
     <Keyword>MFCProj</Keyword>
@@ -166,6 +166,7 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention />
       <SupportUnloadOfDelayLoadedDLL>true</SupportUnloadOfDelayLoadedDLL>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>res\mplayerc.manifest;%(AdditionalManifestFiles)</AdditionalManifestFiles>

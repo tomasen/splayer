@@ -79,10 +79,7 @@
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>..\..\obj\release\lib\</OutDir>
-    <IntDir>Release_static\</IntDir>
-  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
@@ -143,9 +140,7 @@
       <CompileAs>CompileAsC</CompileAs>
       <DisableSpecificWarnings>4267;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
-    <Lib>
-      <OutputFile>..\..\..\..\..\..\..\lib\libflac.lib</OutputFile>
-    </Lib>
+    <Lib />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Midl>
@@ -281,10 +276,10 @@
 </Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ia32/bitreader_asm.nasm;ia32/nasm.h;%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ia32/x64/bitreader_asm.obj;%(Outputs)</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\..\..\..\..\Thirdparty\YASM\yasm.exe -f win32 -d OBJ_FORMAT_win32 -i ia32/ ia32/bitreader_asm.nasm -o ia32/bitreader_asm.obj
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\..\..\..\..\Thirdparty\YASM\yasm.exe -f win32 -d OBJ_FORMAT_win32 -i ia32/ ia32/bitreader_asm.nasm -o $(SolutionDir)\out\obj\$(ProjectName)\bitreader_asm.obj
 </Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ia32/bitreader_asm.nasm;ia32/nasm.h;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ia32/bitreader_asm.obj;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)\out\obj\$(ProjectName)\bitreader_asm.obj;%(Outputs)</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\..\..\..\..\..\Thirdparty\YASM\yasm.exe -f win64 -d OBJ_FORMAT_win32 -i ia32/ ia32/bitreader_asm.nasm -o ia32/x64/bitreader_asm.obj
 </Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ia32/bitreader_asm.nasm;ia32/nasm.h;%(AdditionalInputs)</AdditionalInputs>
@@ -299,10 +294,10 @@
 </Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ia32/cpu_asm.nasm;ia32/nasm.h;%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ia32/x64/cpu_asm.obj;%(Outputs)</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\..\..\..\..\Thirdparty\YASM\yasm.exe -f win32 -d OBJ_FORMAT_win32 -i ia32/ ia32/cpu_asm.nasm -o ia32/cpu_asm.obj
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\..\..\..\..\Thirdparty\YASM\yasm.exe -f win32 -d OBJ_FORMAT_win32 -i ia32/ ia32/cpu_asm.nasm -o $(SolutionDir)\out\obj\$(ProjectName)\cpu_asm.obj
 </Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ia32/cpu_asm.nasm;ia32/nasm.h;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ia32/cpu_asm.obj;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)\out\obj\$(ProjectName)\cpu_asm.obj;%(Outputs)</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\..\..\..\..\..\Thirdparty\YASM\yasm.exe -f win64 -d OBJ_FORMAT_win32 -i ia32/ ia32/cpu_asm.nasm -o ia32/x64/cpu_asm.obj
 </Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ia32/cpu_asm.nasm;ia32/nasm.h;%(AdditionalInputs)</AdditionalInputs>
@@ -317,10 +312,10 @@
 </Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ia32/fixed_asm.nasm;ia32/nasm.h;%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ia32/x64/fixed_asm.obj;%(Outputs)</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\..\..\..\..\Thirdparty\YASM\yasm.exe -f win32 -d OBJ_FORMAT_win32 -i ia32/ ia32/fixed_asm.nasm -o ia32/fixed_asm.obj
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\..\..\..\..\Thirdparty\YASM\yasm.exe -f win32 -d OBJ_FORMAT_win32 -i ia32/ ia32/fixed_asm.nasm -o $(SolutionDir)\out\obj\$(ProjectName)\fixed_asm.obj
 </Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ia32/fixed_asm.nasm;ia32/nasm.h;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ia32/fixed_asm.obj;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)\out\obj\$(ProjectName)\fixed_asm.obj;%(Outputs)</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\..\..\..\..\..\Thirdparty\YASM\yasm.exe -f win64 -d OBJ_FORMAT_win32 -i ia32/ ia32/fixed_asm.nasm -o ia32/x64/fixed_asm.obj
 </Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ia32/fixed_asm.nasm;ia32/nasm.h;%(AdditionalInputs)</AdditionalInputs>
@@ -335,10 +330,10 @@
 </Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ia32/lpc_asm.nasm;ia32/nasm.h;%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ia32/x64/lpc_asm.obj;%(Outputs)</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\..\..\..\..\Thirdparty\YASM\yasm.exe -f win32 -d OBJ_FORMAT_win32 -i ia32/ ia32/lpc_asm.nasm -o ia32/lpc_asm.obj
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\..\..\..\..\Thirdparty\YASM\yasm.exe -f win32 -d OBJ_FORMAT_win32 -i ia32/ ia32/lpc_asm.nasm -o $(SolutionDir)\out\obj\$(ProjectName)\lpc_asm.obj
 </Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ia32/lpc_asm.nasm;ia32/nasm.h;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ia32/lpc_asm.obj;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)\out\obj\$(ProjectName)\lpc_asm.obj;%(Outputs)</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\..\..\..\..\..\Thirdparty\YASM\yasm.exe -f win64 -d OBJ_FORMAT_win32 -i ia32/ ia32/lpc_asm.nasm -o ia32/x64/lpc_asm.obj
 </Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ia32/lpc_asm.nasm;ia32/nasm.h;%(AdditionalInputs)</AdditionalInputs>
@@ -353,10 +348,10 @@
 </Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ia32/stream_encoder_asm.nasm;ia32/nasm.h;%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ia32/x64/stream_encoder_asm.obj;%(Outputs)</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\..\..\..\..\Thirdparty\YASM\yasm.exe -f win32 -d OBJ_FORMAT_win32 -i ia32/ ia32/stream_encoder_asm.nasm -o ia32/stream_encoder_asm.obj
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\..\..\..\..\Thirdparty\YASM\yasm.exe -f win32 -d OBJ_FORMAT_win32 -i ia32/ ia32/stream_encoder_asm.nasm -o $(SolutionDir)\out\obj\$(ProjectName)\stream_encoder_asm.obj
 </Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ia32/stream_encoder_asm.nasm;ia32/nasm.h;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ia32/stream_encoder_asm.obj;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)\out\obj\$(ProjectName)\stream_encoder_asm.obj;%(Outputs)</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\..\..\..\..\..\Thirdparty\YASM\yasm.exe -f win64 -d OBJ_FORMAT_win32 -i ia32/ ia32/stream_encoder_asm.nasm -o ia32/x64/stream_encoder_asm.obj
 </Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ia32/stream_encoder_asm.nasm;ia32/nasm.h;%(AdditionalInputs)</AdditionalInputs>

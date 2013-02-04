@@ -56,9 +56,7 @@
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0413</Culture>
     </ResourceCompile>
-    <Lib>
-      <OutputFile>..\..\..\..\..\..\lib\libfaad2R.lib</OutputFile>
-    </Lib>
+    <Lib />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

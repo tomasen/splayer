@@ -117,7 +117,6 @@
     </ClCompile>
     <Lib>
       <AdditionalDependencies>vfw32.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>../../lib/$(ProjectName)RU.lib</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>

@@ -68,9 +68,7 @@
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <PrecompiledHeader />
     </ClCompile>
-    <Lib>
-      <OutputFile>..\..\lib\$(ProjectName)R.lib</OutputFile>
-    </Lib>
+    <Lib />
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="png.c" />

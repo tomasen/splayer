@@ -61,9 +61,7 @@
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <PrecompiledHeader />
     </ClCompile>
-    <Lib>
-      <OutputFile>../../../../../lib/libdiracR.lib</OutputFile>
-    </Lib>
+    <Lib />
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="libdirac_common\band_codec.cpp" />

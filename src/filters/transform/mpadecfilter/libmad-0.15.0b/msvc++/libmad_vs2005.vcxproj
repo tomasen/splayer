@@ -75,9 +75,7 @@
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
-    <Lib>
-      <OutputFile>..\..\..\..\..\..\lib\libmadR.lib</OutputFile>
-    </Lib>
+    <Lib />
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\bit.c" />

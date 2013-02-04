@@ -99,9 +99,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
-    <Lib>
-      <OutputFile>../../lib/$(ProjectName).lib</OutputFile>
-    </Lib>
+    <Lib />
     <PostBuildEvent>
       <Command />
     </PostBuildEvent>

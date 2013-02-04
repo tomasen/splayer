@@ -87,7 +87,6 @@
     </ProjectReference>
     <Lib>
       <AdditionalDependencies>Kernel32.lib;D3D9.lib;ole32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>../../lib/svplibRU.lib</OutputFile>
       <AdditionalLibraryDirectories>..\..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>

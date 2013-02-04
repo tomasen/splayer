@@ -181,7 +181,7 @@
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>../../../../lib/libdirac.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libdirac.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

@@ -195,7 +195,6 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;INTEGER_SAMPLES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Lib>
-      <OutputFile>../../../../lib/$(ProjectName)RU.lib</OutputFile>
       <AdditionalLibraryDirectories>Avrt.lib ;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
     </Lib>

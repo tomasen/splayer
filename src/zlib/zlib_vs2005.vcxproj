@@ -67,9 +67,7 @@
     <ResourceCompile>
       <Culture>0x0809</Culture>
     </ResourceCompile>
-    <Lib>
-      <OutputFile>../../lib/$(ProjectName)R.lib</OutputFile>
-    </Lib>
+    <Lib />
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Adler32.c" />

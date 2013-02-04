@@ -74,8 +74,7 @@
       <ForcedIncludeFiles>stdafx.h;../../InternalPropertyPage.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>basevideofilterRU.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>../../../../lib/$(ProjectName)RU.lib</OutputFile>
+      <AdditionalDependencies>basevideofilter.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../../../../lib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>

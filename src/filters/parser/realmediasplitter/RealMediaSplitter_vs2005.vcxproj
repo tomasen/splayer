@@ -182,8 +182,7 @@
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>basesplitterRU.lib;basevideofilterRU.lib;libavcodec_gcc.lib;libgcc.a;libmingwex.a;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>../../../../lib/$(ProjectName)RU.lib</OutputFile>
+      <AdditionalDependencies>basesplitter.lib;basevideofilter.lib;libavcodec_gcc.lib;libgcc.a;libmingwex.a;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../../../../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>

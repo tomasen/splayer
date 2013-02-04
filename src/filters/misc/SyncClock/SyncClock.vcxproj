@@ -146,10 +146,7 @@
     <IntDir>$(OutDir)</IntDir>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode lib|Win32'">
-    <OutDir>$(Configuration)\</OutDir>
-    <IntDir>$(OutDir)</IntDir>
-  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode lib|Win32'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode lib|x64'">
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>

@@ -251,8 +251,7 @@
       <OpenMPSupport>false</OpenMPSupport>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>libmpeg2R.lib;basevideofilterRU.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>../../../../lib/$(ProjectName)RU.lib</OutputFile>
+      <AdditionalDependencies>libmpeg2.lib;basevideofilter.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../../../../lib;./libmpeg2/vc++;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>

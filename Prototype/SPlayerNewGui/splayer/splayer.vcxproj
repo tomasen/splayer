@@ -13,6 +13,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{BD0569B4-084B-40D2-B968-F28904716FCF}</ProjectGuid>
     <RootNamespace>splayer</RootNamespace>
+    <ProjectName>splayer_prototype</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -35,9 +36,11 @@
     <Import Project="..\..\..\Thirdparty\yaml-cpp\yaml-cpp.props" />
     <Import Project="..\..\..\Thirdparty\libpng.props" />
     <Import Project="..\..\..\Thirdparty\zlib.props" />
+    <Import Project="..\..\..\src\common.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\src\common.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>

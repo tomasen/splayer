@@ -152,7 +152,6 @@
     <Link>
       <AdditionalOptions>/MACHINE:I386  /LTCG  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>subpic.lib;Rpcrt4.lib;Winmm.lib;Wbemuuid.lib;Dsound.lib;Imm32.lib;Dbghelp.lib;Psapi.lib;libssf.lib;detours.lib;unrar.lib;sphash.lib;qtmlClient.lib;dxguid.lib;libsamplerate.a;libzmq.lib;libphashaudio.a;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(SolutionDir)..\splayer.exe</OutputFile>
       <AdditionalLibraryDirectories>$(SolutionDir)\out\bin;../../../Thirdparty/sqlitepp/lib;../../../lib;../../../lib/wm7;../../../lib/qt6;../../../lib/detours;../../../thirdparty/courgette\Release\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <UACExecutionLevel>AsInvoker</UACExecutionLevel>
       <IgnoreSpecificDefaultLibraries>MSVCRT;nafxcw.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>

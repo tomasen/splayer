@@ -1,9 +1,10 @@
 syntax: glob
-*.obj
-*.tlog
-*.sbr
-*.pdb
-*.log
-*.db
-*~
-*.swp
+out/
+# *.obj
+# *.tlog
+# *.sbr
+# *.pdb
+# *.log
+# *.db
+# *~
+# *.swp

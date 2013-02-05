@@ -103,8 +103,6 @@
     <_ProjectFileVersion>11.0.50727.1</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">
-    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
-    <IntDir>$(Configuration)\</IntDir>
     <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
     <GenerateManifest>true</GenerateManifest>
     <EmbedManifest>true</EmbedManifest>
@@ -153,9 +151,8 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386  /LTCG  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>subpicru.lib;Rpcrt4.lib;Winmm.lib;Wbemuuid.lib;Dsound.lib;Imm32.lib;Dbghelp.lib;Psapi.lib;libssfru.lib;detours.lib;unrar.lib;sphash.lib;qtmlClient.lib;dxguid.lib;libsamplerate.a;libzmq.lib;libphashaudio.a;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(SolutionDir)..\splayer.exe</OutputFile>
-      <AdditionalLibraryDirectories>../../../Thirdparty/sqlitepp/lib;../../../lib;../../../lib/wm7;../../../lib/qt6;../../../lib/detours;../../../thirdparty/courgette\Release\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>subpic.lib;Rpcrt4.lib;Winmm.lib;Wbemuuid.lib;Dsound.lib;Imm32.lib;Dbghelp.lib;Psapi.lib;libssf.lib;detours.lib;unrar.lib;sphash.lib;qtmlClient.lib;dxguid.lib;libsamplerate.a;libzmq.lib;libphashaudio.a;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\out\bin;../../../Thirdparty/sqlitepp/lib;../../../lib;../../../lib/wm7;../../../lib/qt6;../../../lib/detours;../../../thirdparty/courgette\Release\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <UACExecutionLevel>AsInvoker</UACExecutionLevel>
       <IgnoreSpecificDefaultLibraries>MSVCRT;nafxcw.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <DelayLoadDLLs>d3d9.dll;gdiplus.dll;psapi.dll;%(DelayLoadDLLs)</DelayLoadDLLs>

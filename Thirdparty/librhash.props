@@ -11,7 +11,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\librhash\librhash;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(SolutionDir)Release\librhash.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>librhash.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup />

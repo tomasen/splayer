@@ -61,10 +61,7 @@
     <OutDir>../../build/vs71/debug/lib_json\</OutDir>
     <IntDir>../../build/vs71/debug/lib_json\</IntDir>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>../../build/vs71/release/lib_json\</OutDir>
-    <IntDir>../../build/vs71/release/lib_json\</IntDir>
-  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='dummy|Win32'">
     <OutDir>$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>

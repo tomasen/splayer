@@ -141,7 +141,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "decss", "src\decss\decss_vs
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dsutil", "src\dsutil\dsutil_vs2005.vcxproj", "{FC70988B-1AE5-4381-866D-4F405E28AC42}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mplayerc", "src\apps\mplayerc\mplayerc_vs2005.vcxproj", "{8CE7E5D0-C821-47AC-A247-28EC95B34670}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "splayer", "src\apps\mplayerc\mplayerc_vs2005.vcxproj", "{8CE7E5D0-C821-47AC-A247-28EC95B34670}"
 	ProjectSection(ProjectDependencies) = postProject
 		{D282F31F-E5B5-43B7-8078-21ED89A8A1CC} = {D282F31F-E5B5-43B7-8078-21ED89A8A1CC}
 	EndProjectSection
@@ -235,14 +235,14 @@ Global
 		WithOpenPGM|Win32 = WithOpenPGM|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{9F31D122-E84D-485A-A58D-09DAD01A56CE}.Debug|Win32.ActiveCfg = Debug|Win32
-		{9F31D122-E84D-485A-A58D-09DAD01A56CE}.Debug|Win32.Build.0 = Debug|Win32
-		{9F31D122-E84D-485A-A58D-09DAD01A56CE}.dummy|Win32.ActiveCfg = Debug Unicode|Win32
-		{9F31D122-E84D-485A-A58D-09DAD01A56CE}.dummy|Win32.Build.0 = Debug Unicode|Win32
+		{9F31D122-E84D-485A-A58D-09DAD01A56CE}.Debug|Win32.ActiveCfg = Release Unicode|Win32
+		{9F31D122-E84D-485A-A58D-09DAD01A56CE}.Debug|Win32.Build.0 = Release Unicode|Win32
+		{9F31D122-E84D-485A-A58D-09DAD01A56CE}.dummy|Win32.ActiveCfg = Release Unicode|Win32
+		{9F31D122-E84D-485A-A58D-09DAD01A56CE}.dummy|Win32.Build.0 = Release Unicode|Win32
 		{9F31D122-E84D-485A-A58D-09DAD01A56CE}.Release Unicode|Win32.ActiveCfg = Release Unicode|Win32
 		{9F31D122-E84D-485A-A58D-09DAD01A56CE}.Release Unicode|Win32.Build.0 = Release Unicode|Win32
-		{9F31D122-E84D-485A-A58D-09DAD01A56CE}.Release|Win32.ActiveCfg = Release|Win32
-		{9F31D122-E84D-485A-A58D-09DAD01A56CE}.Release|Win32.Build.0 = Release|Win32
+		{9F31D122-E84D-485A-A58D-09DAD01A56CE}.Release|Win32.ActiveCfg = Release Unicode|Win32
+		{9F31D122-E84D-485A-A58D-09DAD01A56CE}.Release|Win32.Build.0 = Release Unicode|Win32
 		{9F31D122-E84D-485A-A58D-09DAD01A56CE}.WithOpenPGM|Win32.ActiveCfg = Release Unicode|Win32
 		{9F31D122-E84D-485A-A58D-09DAD01A56CE}.WithOpenPGM|Win32.Build.0 = Release Unicode|Win32
 		{543D40E9-8CA6-4E4B-9936-90CBA562B268}.Debug|Win32.ActiveCfg = Debug|Win32

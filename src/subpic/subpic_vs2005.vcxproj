@@ -115,7 +115,6 @@
     </ClCompile>
     <Lib>
       <AdditionalDependencies>d3d9.lib;ddraw.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>../../lib/$(ProjectName)RU.lib</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>

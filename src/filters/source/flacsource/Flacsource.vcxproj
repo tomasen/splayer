@@ -186,7 +186,6 @@
     </ClCompile>
     <Lib>
       <AdditionalDependencies>libflac.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>..\..\..\..\lib\$(ProjectName)RU.lib</OutputFile>
       <AdditionalLibraryDirectories>..\..\..\..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>

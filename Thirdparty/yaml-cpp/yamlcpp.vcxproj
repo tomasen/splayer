@@ -1,0 +1,149 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{3104AB4E-CD31-4F47-95E9-0E8D9374E15D}</ProjectGuid>
+    <RootNamespace>yamlcpp</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>11.0.50727.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/D_SCL_SECURE_NO_WARNINGS %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4127;4355;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Lib>
+      <OutputFile>lib\$(ProjectName)d.lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/D_SCL_SECURE_NO_WARNINGS %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader />
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4127;4355;4715;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Lib />
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="src\parser.cpp" />
+    <ClCompile Include="src\parserstate.cpp" />
+    <ClCompile Include="src\aliascontent.cpp" />
+    <ClCompile Include="src\conversion.cpp" />
+    <ClCompile Include="src\iterator.cpp" />
+    <ClCompile Include="src\map.cpp" />
+    <ClCompile Include="src\node.cpp" />
+    <ClCompile Include="src\null.cpp" />
+    <ClCompile Include="src\scalar.cpp" />
+    <ClCompile Include="src\sequence.cpp" />
+    <ClCompile Include="src\tag.cpp" />
+    <ClCompile Include="src\exp.cpp" />
+    <ClCompile Include="src\regex.cpp" />
+    <ClCompile Include="src\scanner.cpp" />
+    <ClCompile Include="src\scanscalar.cpp" />
+    <ClCompile Include="src\scantag.cpp" />
+    <ClCompile Include="src\scantoken.cpp" />
+    <ClCompile Include="src\simplekey.cpp" />
+    <ClCompile Include="src\stream.cpp" />
+    <ClCompile Include="src\emitter.cpp" />
+    <ClCompile Include="src\emitterstate.cpp" />
+    <ClCompile Include="src\emitterutils.cpp" />
+    <ClCompile Include="src\ostream.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\crt.h" />
+    <ClInclude Include="include\exceptions.h" />
+    <ClInclude Include="src\indentation.h" />
+    <ClInclude Include="include\noncopyable.h" />
+    <ClInclude Include="include\yaml.h" />
+    <ClInclude Include="include\parser.h" />
+    <ClInclude Include="include\parserstate.h" />
+    <ClInclude Include="src\aliascontent.h" />
+    <ClInclude Include="src\content.h" />
+    <ClInclude Include="include\conversion.h" />
+    <ClInclude Include="include\iterator.h" />
+    <ClInclude Include="src\iterpriv.h" />
+    <ClInclude Include="src\ltnode.h" />
+    <ClInclude Include="src\map.h" />
+    <ClInclude Include="include\node.h" />
+    <ClInclude Include="src\scalar.h" />
+    <ClInclude Include="src\sequence.h" />
+    <ClInclude Include="src\tag.h" />
+    <ClInclude Include="src\exp.h" />
+    <ClInclude Include="src\regex.h" />
+    <ClInclude Include="src\regeximpl.h" />
+    <ClInclude Include="src\scanner.h" />
+    <ClInclude Include="src\scanscalar.h" />
+    <ClInclude Include="src\scantag.h" />
+    <ClInclude Include="src\stream.h" />
+    <ClInclude Include="src\streamcharsource.h" />
+    <ClInclude Include="src\stringsource.h" />
+    <ClInclude Include="src\token.h" />
+    <ClInclude Include="include\emitter.h" />
+    <ClInclude Include="include\emittermanip.h" />
+    <ClInclude Include="src\emitterstate.h" />
+    <ClInclude Include="src\emitterutils.h" />
+    <ClInclude Include="include\ostream.h" />
+    <ClInclude Include="include\stlemitter.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

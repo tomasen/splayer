@@ -1,0 +1,10 @@
+syntax: glob
+out/
+# *.obj
+# *.tlog
+# *.sbr
+# *.pdb
+# *.log
+# *.db
+# *~
+# *.swp

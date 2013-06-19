@@ -1,0 +1,137 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{3C3484DA-9721-4EF6-928B-7A61FB6D241C}</ProjectGuid>
+    <RootNamespace>sqliteppTest</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseOfAtl>Static</UseOfAtl>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(SolutionDir)src\common.props" />
+    <Import Project="$(SolutionDir)src\release.props" />
+    <Import Project="$(SolutionDir)src\apps\mplayerc\wtl_integration.props" />
+    <Import Project="$(SolutionDir)src\apps\mplayerc\atlserver_integration.props" />
+    <Import Project="$(SolutionDir)Thirdparty\sinet.props" />
+    <Import Project="$(SolutionDir)Thirdparty\sqlitepp.props" />
+    <Import Project="$(SolutionDir)Thirdparty\sphash.props" />
+    <Import Project="$(SolutionDir)Thirdparty\unrar_dll.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>11.0.50727.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/O2 /Ob2 /Oi /Ot /Oy /GL /I "..\..\ZenLib\Source" /I "..\..\..\include" /I "C:\projects\this\splayer\src\apps\mplayerc\Model" /I "C:\projects\this\splayer\Test\sqliteppTest" /I "..\..\mediainfo\Source\\" /I "..\..\mediainfo\Source\MediaInfo\\" /I "..\..\filters\BaseClasses" /I "..\..\filters\transform\webm\vp8_sdk\include" /I "..\..\filters\transform\webm\IDL" /I "..\..\filters\transform\webm\common" /I "..\..\filters\transform\mpcvideodec" /I "..\..\svplib" /I "..\..\..\thirdparty" /I "..\..\..\include\dx" /I "C:\projects\this\splayer\Thirdparty\pkg" /I "C:\projects\this\splayer\Thirdparty\pkg\trunk\sphash\sphash" /I "C:\projects\this\splayer\Thirdparty\sqlitepp\sqlitepp" /I "C:\projects\this\splayer\Thirdparty\sinet" /I "C:\projects\this\splayer\\lib\ATL Server\include" /I "C:\projects\this\splayer\ThirdParty\wtl\include" /I "C:\projects\this\splayer\include\\" /I "C:\projects\this\splayer\src\base" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_LIB" /D "SQLITEPP_UTF16" /D "WINVER=0x0601" /D "_WIN32_WINNT=0x0601" /D "NTDDI_VERSION=NTDDI_WIN7" /D "PSAPI_VERSION=1" /D "_UNICODE" /D "UNICODE" /GF /FD /EHsc /MT /GS- /Gy /Fo"Release\\" /Fd"Release\vc90.pdb" /W3 /nologo /c /Zi /TP /wd4995 /wd4996 /errorReport:prompt %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(SolutionDir)Thirdparty/bin;../../lib;../../lib/wm7;../../lib/qt6;../../lib/detours;../../thirdparty/courgette\Release\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>..\..\ZenLib\Source;..\..\..\include;$(SolutionDir)\src\apps\mplayerc\Model;$(SolutionDir)\Test\sqliteppTest;..\..\mediainfo\Source\;..\..\mediainfo\Source\MediaInfo\;..\..\filters\BaseClasses;..\..\filters\transform\webm\vp8_sdk\include;..\..\filters\transform\webm\IDL;..\..\filters\transform\webm\common;..\..\filters\transform\mpcvideodec;..\..\svplib;..\..\..\thirdparty;..\..\..\include\dx;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader />
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(SolutionDir)Thirdparty/bin;../../lib;../../lib/wm7;../../lib/qt6;../../lib/detours;../../thirdparty/courgette\Release\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\base\base.vcxproj">
+      <Project>{f675096b-6b52-4605-992d-9653005d9c29}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Thirdparty\sqlitepp.vcxproj">
+      <Project>{e98bec31-73d6-4a23-9545-1ec7ecb1b926}</Project>
+      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\apps\mplayerc\Model\appSQLlite.cc" />
+    <ClCompile Include="..\..\Thirdparty\sqlitepp\sqlite\sqlite3.c" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\src\base\Strings.cc" />
+    <ClCompile Include="TestMain.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\apps\mplayerc\Model\appSQLlite.h" />
+    <ClInclude Include="..\..\Thirdparty\sqlitepp\sqlite\sqlite3.h" />
+    <ClInclude Include="..\..\Thirdparty\sqlitepp\sqlite\sqlite3ext.h" />
+    <ClInclude Include="..\..\Thirdparty\sqlitepp\sqlitepp\sqlitepp.hpp" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="..\..\src\base\Strings.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

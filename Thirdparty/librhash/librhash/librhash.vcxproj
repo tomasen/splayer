@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{D282F31F-E5B5-43B7-8078-21ED89A8A1CC}</ProjectGuid>
+    <RootNamespace>librhash</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\boost.props" />
+    <Import Project="..\..\..\src\common.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\src\common.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>11.0.50727.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="aich.c" />
+    <ClCompile Include="algorithms.c" />
+    <ClCompile Include="byte_order.c" />
+    <ClCompile Include="crc32.c" />
+    <ClCompile Include="ed2k.c" />
+    <ClCompile Include="edonr.c" />
+    <ClCompile Include="gost.c" />
+    <ClCompile Include="has160.c" />
+    <ClCompile Include="hex.c" />
+    <ClCompile Include="md4.c" />
+    <ClCompile Include="md5.c" />
+    <ClCompile Include="plug_openssl.c" />
+    <ClCompile Include="rhash.c" />
+    <ClCompile Include="rhash_ex.cpp" />
+    <ClCompile Include="ripemd-160.c" />
+    <ClCompile Include="sha1.c" />
+    <ClCompile Include="sha256.c" />
+    <ClCompile Include="sha512.c" />
+    <ClCompile Include="snefru.c" />
+    <ClCompile Include="test_sums.c" />
+    <ClCompile Include="tiger.c" />
+    <ClCompile Include="tiger_sbox.c" />
+    <ClCompile Include="timing.c" />
+    <ClCompile Include="torrent.c" />
+    <ClCompile Include="tth.c" />
+    <ClCompile Include="util.c" />
+    <ClCompile Include="whirlpool.c" />
+    <ClCompile Include="whirlpool_sbox.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="aich.h" />
+    <ClInclude Include="algorithms.h" />
+    <ClInclude Include="byte_order.h" />
+    <ClInclude Include="config.h" />
+    <ClInclude Include="crc32.h" />
+    <ClInclude Include="dirent.h" />
+    <ClInclude Include="ed2k.h" />
+    <ClInclude Include="edonr.h" />
+    <ClInclude Include="gost.h" />
+    <ClInclude Include="has160.h" />
+    <ClInclude Include="hex.h" />
+    <ClInclude Include="md4.h" />
+    <ClInclude Include="md5.h" />
+    <ClInclude Include="platform-dependent.h" />
+    <ClInclude Include="plug_openssl.h" />
+    <ClInclude Include="rhash.h" />
+    <ClInclude Include="rhash_ex.h" />
+    <ClInclude Include="ripemd-160.h" />
+    <ClInclude Include="sha1.h" />
+    <ClInclude Include="sha256.h" />
+    <ClInclude Include="sha512.h" />
+    <ClInclude Include="snefru.h" />
+    <ClInclude Include="stdint.h" />
+    <ClInclude Include="test_sums.h" />
+    <ClInclude Include="tiger.h" />
+    <ClInclude Include="timing.h" />
+    <ClInclude Include="torrent.h" />
+    <ClInclude Include="tth.h" />
+    <ClInclude Include="unistd.h" />
+    <ClInclude Include="util.h" />
+    <ClInclude Include="whirlpool.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

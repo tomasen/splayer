@@ -1,0 +1,46 @@
+-------------------------------------------------------------------------------
+$Id: README,v 1.6 2000/03/09 03:30:41 gray Exp $
+-------------------------------------------------------------------------------
+
+BACKGROUND:
+
+The Table library is a generic open hash table with buckets and linked
+lists.  It is pretty high performance and includes some interesting
+functions such as the writing a table from memory to disk and then
+reading it back again (however not in real time like gdbm).
+
+You also can mmap a table directly from disk for high performance
+access of read-only hash tables.  To get mmap functions you will need
+to remove the NO_MMAP flag from the Makefile.  You may have the play
+with the mmap defines to get it to compile on your system.
+
+See the table_t.c file for usage examples and table.h for the function
+prototypes and comments.  My apologies for the minimal documentation.
+
+-------------------------------------------------------------------------------
+
+INSTALLATION:
+
+1) Typing 'make' should be enough to build libtable.a and the
+   table_util utility program.
+
+2) Typing 'make tests' should make the table_t test program.
+
+-------------------------------------------------------------------------------
+
+REPOSITORY:
+
+The newest versions of the library are available on the web.
+
+	http://256.com/sources/table/
+
+-------------------------------------------------------------------------------
+
+AUTHOR:
+
+If you have any questions or problems feel free to send me mail.
+
+Gray Watson
+http://256.com/gray/
+
+-------------------------------------------------------------------------------

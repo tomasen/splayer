@@ -1,0 +1,32 @@
+-------------------------------------------------------------------------------
+$Id: NEWS,v 1.6 2000/03/09 03:30:41 gray Exp $
+-------------------------------------------------------------------------------
+
+Version 4.3.0:
+
+	* Moved to 256.com in all headers.
+	* Added external memory pool from lycos.
+	* Lots of changes.  Added new insert sort method.  Much faster.
+
+Version 4.2.0:
+
+	* Added table_order_pos and other pos ordering functions.
+
+Version 4.1.0:
+
+	* Added in internal quicksort routines for table_order.
+
+Version 4.0.1:
+
+	* Fixed the data_buf is NULL feature. It was not handled correctly.
+
+Version 4.0.0:
+
+	* Fixed some off_t casting problems.
+	* Added data alignment code and settings: table_set_data_alignment()
+	* File type 4 to fix some alignment issues.
+	* Moved to table file format type 3.  Reduced memory and disk usage.
+
+Version 3.0.0:
+
+	* Initial external release of library after use since 1990.

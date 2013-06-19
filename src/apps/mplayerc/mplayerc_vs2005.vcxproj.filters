@@ -1,0 +1,1715 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{14c10e5e-ebb1-46f4-8fc8-df09b9a96706}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Source Files\FileInfoProp">
+      <UniqueIdentifier>{d90564f4-e305-44cf-908c-6543aff16bfc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ExpertDebug">
+      <UniqueIdentifier>{048e879c-7739-4758-b256-b3355f155948}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\SVPUI">
+      <UniqueIdentifier>{9021501e-e974-4089-8eea-e27b97ee49c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{9a5db230-971d-422d-b290-610dff622ea2}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+    <Filter Include="Resource Files\shaders">
+      <UniqueIdentifier>{cce6005a-da84-4c62-930f-6d89a96ae20c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{32b6b99c-73d1-4e5d-8832-90514f8b9917}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\Monitor">
+      <UniqueIdentifier>{6608cafb-cdeb-481f-8258-e8a66b092720}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controller">
+      <UniqueIdentifier>{29e975be-862b-4097-b0a7-68165f432d83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controller\User">
+      <UniqueIdentifier>{58488c15-490c-4e1f-b248-47b8d9a7cc6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Model">
+      <UniqueIdentifier>{51b02e33-0970-4f64-b571-f26192ee177f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Deprecated">
+      <UniqueIdentifier>{a300b1c3-3081-4056-aeaf-8cd96176f3bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libraries">
+      <UniqueIdentifier>{58765678-9a47-4d0f-ae74-6c8f7172c2c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libraries\Updater">
+      <UniqueIdentifier>{c428359f-18ae-4048-bcbb-347dc6fb42f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libraries\3dUnrar">
+      <UniqueIdentifier>{aef0df01-9b38-4d21-ba8e-398138ecd223}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graph">
+      <UniqueIdentifier>{10ccd20c-9952-4307-82ae-d9b7d561810f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graph\Filters">
+      <UniqueIdentifier>{652fb4e8-6140-4cc1-a1e4-58ecf483456d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graph\Convert">
+      <UniqueIdentifier>{705f56d9-ed7e-447e-8383-04b5d3c58204}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graph\FilterPropPage">
+      <UniqueIdentifier>{6ee16a6d-f177-47b0-a4e8-4416dba9bafe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graph\Deprecated">
+      <UniqueIdentifier>{58de64d0-6542-410d-9768-713a0d891b40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UserInterface">
+      <UniqueIdentifier>{47e5fe85-8836-49b6-9449-32ec91b9202e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UserInterface\Dialogs">
+      <UniqueIdentifier>{c9b7281d-9975-48a7-98f5-745863555a5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UserInterface\Support">
+      <UniqueIdentifier>{73f31fa7-30c7-42b8-a3c0-9324433fecb0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UserInterface\Renderer">
+      <UniqueIdentifier>{1e95357a-28cb-426c-963e-416f84546098}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ButtonManage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ChildView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ChkDefPlayerControlBar.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomDrawBtn.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DisplaySettingDetector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DlgChkUpdater.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FavoriteAddDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FavoriteOrganizeDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FileDropTarget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FloatEdit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameCfgFileManage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GoToDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIConfigManage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="InfoReport.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="KeyProvider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MainFrm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MakeMultiplyBmp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MediaFormats.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MediaTypesDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mplayerc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NEWOSDWnd.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenCapDeviceDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenFileDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenURLDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PixelShaderCompiler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerCaptureBar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerCaptureDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerChannelNormalizer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerColorControlBar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerEQControlBar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerFloatToolBar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerListCtrl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerPlaylistBar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerSeekBar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerToolBar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerToolTopBar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Playlist.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SaveDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SaveTextFileDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SaveThumbnailsDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SeekBarTip.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinFolderManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StdAfx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SUIVoteStar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SVPLycShowBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SVPSubUploadDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SVPSubVoteControlBar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TimeBmpManage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TransparentControlBar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UnCompressAPI.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UnCompressZip.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VolumeCtrl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PPageBase.cpp">
+      <Filter>Source Files\FileInfoProp</Filter>
+    </ClCompile>
+    <ClCompile Include="PPageFileInfoClip.cpp">
+      <Filter>Source Files\FileInfoProp</Filter>
+    </ClCompile>
+    <ClCompile Include="PPageFileInfoDetails.cpp">
+      <Filter>Source Files\FileInfoProp</Filter>
+    </ClCompile>
+    <ClCompile Include="PPageFileInfoRes.cpp">
+      <Filter>Source Files\FileInfoProp</Filter>
+    </ClCompile>
+    <ClCompile Include="PPageFileInfoSheet.cpp">
+      <Filter>Source Files\FileInfoProp</Filter>
+    </ClCompile>
+    <ClCompile Include="PPageFileMediaInfo.cpp">
+      <Filter>Source Files\FileInfoProp</Filter>
+    </ClCompile>
+    <ClCompile Include="LineNumberEdit.cpp">
+      <Filter>Source Files\ExpertDebug</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerShaderEditorBar.cpp">
+      <Filter>Source Files\ExpertDebug</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderAutoCompleteDlg.cpp">
+      <Filter>Source Files\ExpertDebug</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderCombineDlg.cpp">
+      <Filter>Source Files\ExpertDebug</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderEditorDlg.cpp">
+      <Filter>Source Files\ExpertDebug</Filter>
+    </ClCompile>
+    <ClCompile Include="SUIButton.cpp">
+      <Filter>Source Files\SVPUI</Filter>
+    </ClCompile>
+    <ClCompile Include="SVPButton.cpp">
+      <Filter>Source Files\SVPUI</Filter>
+    </ClCompile>
+    <ClCompile Include="SVPDialog.cpp">
+      <Filter>Source Files\SVPUI</Filter>
+    </ClCompile>
+    <ClCompile Include="SVPSliderCtrl.cpp">
+      <Filter>Source Files\SVPUI</Filter>
+    </ClCompile>
+    <ClCompile Include="SVPStatic.cpp">
+      <Filter>Source Files\SVPUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\ContentType.cc">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\FileAssoc_Win.cc">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\SPlayerGUID.cc">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\TextFile.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\Monitor\factory.cpp">
+      <Filter>Utils\Monitor</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\Monitor\monitor.cpp">
+      <Filter>Utils\Monitor</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\Monitor\notify.cpp">
+      <Filter>Utils\Monitor</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\AdController.cc">
+      <Filter>Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\Ed2kController.cpp">
+      <Filter>Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\HashController.cc">
+      <Filter>Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\Hotkey_Controller.cc">
+      <Filter>Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\MediaCenterController.cc">
+      <Filter>Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\MediaCheckDB.cc">
+      <Filter>Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\MediaSpiderFolderTree.cc">
+      <Filter>Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\NetworkControlerImpl.cc">
+      <Filter>Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\OSDController.cc">
+      <Filter>Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\pHashController.cc">
+      <Filter>Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\PlayerPreference.cc">
+      <Filter>Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\PlaylistController.cc">
+      <Filter>Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\SnapUploadController.cc">
+      <Filter>Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\SubTransController.cc">
+      <Filter>Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\ThemePkgController.cc">
+      <Filter>Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\UbdUploadController.cc">
+      <Filter>Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\UpdateController.cc">
+      <Filter>Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\UsrBehaviorController.cc">
+      <Filter>Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\PingPongController.cc">
+      <Filter>Controller\User</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\ShareController.cc">
+      <Filter>Controller\User</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\UserAccountController.cc">
+      <Filter>Controller\User</Filter>
+    </ClCompile>
+    <ClCompile Include="Model\appSQLlite.cc">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Model\HotkeyCmd.cc">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Model\HotkeySchemeParser.cc">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Model\MediaDB.cc">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Model\MediaModel.cc">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Model\MediaSQLite.cc">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Model\MediaTreeModel.cc">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Model\PlaylistItem.cc">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Model\PlaylistParser.cc">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Model\SubTransFormat.cc">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Model\ThemePkg.cc">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Model\UsrBehaviorData.cc">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="PnSPresetsDlg.cpp">
+      <Filter>Deprecated</Filter>
+    </ClCompile>
+    <ClCompile Include="PPageFormats.cpp">
+      <Filter>Deprecated</Filter>
+    </ClCompile>
+    <ClCompile Include="Ifo.cpp">
+      <Filter>Libraries</Filter>
+    </ClCompile>
+    <ClCompile Include="jpeg.cpp">
+      <Filter>Libraries</Filter>
+    </ClCompile>
+    <ClCompile Include="libpng.c">
+      <Filter>Libraries</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Updater\cupdatenetlib.cpp">
+      <Filter>Libraries\Updater</Filter>
+    </ClCompile>
+    <ClCompile Include="CShockwaveFlash.cpp">
+      <Filter>Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="DX7AllocatorPresenter.cpp">
+      <Filter>Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="DX9AllocatorPresenter.cpp">
+      <Filter>Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="EVRAllocatorPresenter.cpp">
+      <Filter>Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="FakeFilterMapper2.cpp">
+      <Filter>Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="FGFilter.cpp">
+      <Filter>Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="FGManager.cpp">
+      <Filter>Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphCore.cpp">
+      <Filter>Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphThread.cpp">
+      <Filter>Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="IPinHook.cpp">
+      <Filter>Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="MacrovisionKicker.cpp">
+      <Filter>Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="ShockwaveGraph.cpp">
+      <Filter>Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="DeinterlacerFilter.cpp">
+      <Filter>Graph\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="TextPassThruFilter.cpp">
+      <Filter>Graph\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="ConvertChapDlg.cpp">
+      <Filter>Graph\Convert</Filter>
+    </ClCompile>
+    <ClCompile Include="ConvertDlg.cpp">
+      <Filter>Graph\Convert</Filter>
+    </ClCompile>
+    <ClCompile Include="ConvertPropsDlg.cpp">
+      <Filter>Graph\Convert</Filter>
+    </ClCompile>
+    <ClCompile Include="ConvertResDlg.cpp">
+      <Filter>Graph\Convert</Filter>
+    </ClCompile>
+    <ClCompile Include="ComPropertyPage.cpp">
+      <Filter>Graph\FilterPropPage</Filter>
+    </ClCompile>
+    <ClCompile Include="ComPropertySheet.cpp">
+      <Filter>Graph\FilterPropPage</Filter>
+    </ClCompile>
+    <ClCompile Include="AuthDlg.cpp">
+      <Filter>Graph\Deprecated</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseGraph.cpp">
+      <Filter>Graph\Deprecated</Filter>
+    </ClCompile>
+    <ClCompile Include="QuicktimeGraph.cpp">
+      <Filter>Graph\Deprecated</Filter>
+    </ClCompile>
+    <ClCompile Include="RealMediaGraph.cpp">
+      <Filter>Graph\Deprecated</Filter>
+    </ClCompile>
+    <ClCompile Include="RealMediaWindowlessSite.cpp">
+      <Filter>Graph\Deprecated</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\Dialogs\CustomizeFontDlg.cpp">
+      <Filter>UserInterface\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\Dialogs\DhtmlDlgBase.cc">
+      <Filter>UserInterface\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\Dialogs\MovieComment_Win.cc">
+      <Filter>UserInterface\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\Dialogs\OAuthDlg.cc">
+      <Filter>UserInterface\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\Dialogs\OptionAdvancedPage_Win.cc">
+      <Filter>UserInterface\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\Dialogs\OptionAssociationPage_Win.cc">
+      <Filter>UserInterface\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\Dialogs\OptionBasicPage_Win.cc">
+      <Filter>UserInterface\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\Dialogs\OptionDlg_Win.cc">
+      <Filter>UserInterface\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\Dialogs\OptionSubtitlePage_Win.cc">
+      <Filter>UserInterface\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinDownload.cpp">
+      <Filter>UserInterface\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinPreviewDlg.cc">
+      <Filter>UserInterface\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\Dialogs\Snapshot_FloatTip.cpp">
+      <Filter>UserInterface\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\Dialogs\Snapshot_Viewfinder.cc">
+      <Filter>UserInterface\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\Dialogs\Snapshot_Win.cc">
+      <Filter>UserInterface\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\Support\BtnEditCtrl.cc">
+      <Filter>UserInterface\Support</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\Support\FontParamsManage.cpp">
+      <Filter>UserInterface\Support</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\Support\ListImpl.cpp">
+      <Filter>UserInterface\Support</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\Support\SubtitleStyle.cc">
+      <Filter>UserInterface\Support</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\Renderer\MediaCenterView.cc">
+      <Filter>UserInterface\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\Renderer\MediaListView.cc">
+      <Filter>UserInterface\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\Renderer\MediaScrollbar.cc">
+      <Filter>UserInterface\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\Renderer\OSDView_Win.cc">
+      <Filter>UserInterface\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\Renderer\PlaylistView_MfcProxy.cc">
+      <Filter>UserInterface\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\Renderer\PlaylistView_Win.cc">
+      <Filter>UserInterface\Renderer</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ButtonManage.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ChildView.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ChkDefPlayerControlBar.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomDrawBtn.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DisplaySettingDetector.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DlgChkUpdater.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FavoriteAddDlg.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FavoriteOrganizeDlg.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FileDropTarget.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FloatEdit.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameCfgFileManage.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GoToDlg.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIConfigManage.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="InfoReport.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyProvider.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MainFrm.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MakeMultiplyBmp.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MediaFormats.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MediaTypesDlg.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mplayerc.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NEWOSDWnd.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenCapDeviceDlg.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenDlg.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenFileDlg.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenURLDlg.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PixelShaderCompiler.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerCaptureBar.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerCaptureDialog.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerChannelNormalizer.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerColorControlBar.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerEQControlBar.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerFloatToolBar.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerListCtrl.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerPlaylistBar.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerSeekBar.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerToolBar.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerToolTopBar.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Playlist.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="revision.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SaveDlg.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SaveTextFileDialog.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SaveThumbnailsDialog.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SeekBarTip.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinFolderManager.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StdAfx.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Struct.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SUIVoteStar.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SVPLycShowBox.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SVPSubUploadDlg.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SVPSubVoteControlBar.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TimeBmpManage.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TransparentControlBar.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UnCompressAPI.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UnCompressZip.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VolumeCtrl.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PPageBase.h">
+      <Filter>Source Files\FileInfoProp</Filter>
+    </ClInclude>
+    <ClInclude Include="PPageFileInfoClip.h">
+      <Filter>Source Files\FileInfoProp</Filter>
+    </ClInclude>
+    <ClInclude Include="PPageFileInfoDetails.h">
+      <Filter>Source Files\FileInfoProp</Filter>
+    </ClInclude>
+    <ClInclude Include="PPageFileInfoRes.h">
+      <Filter>Source Files\FileInfoProp</Filter>
+    </ClInclude>
+    <ClInclude Include="PPageFileInfoSheet.h">
+      <Filter>Source Files\FileInfoProp</Filter>
+    </ClInclude>
+    <ClInclude Include="PPageFileMediaInfo.h">
+      <Filter>Source Files\FileInfoProp</Filter>
+    </ClInclude>
+    <ClInclude Include="LineNumberEdit.h">
+      <Filter>Source Files\ExpertDebug</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerShaderEditorBar.h">
+      <Filter>Source Files\ExpertDebug</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderAutoCompleteDlg.h">
+      <Filter>Source Files\ExpertDebug</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCombineDlg.h">
+      <Filter>Source Files\ExpertDebug</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderEditorDlg.h">
+      <Filter>Source Files\ExpertDebug</Filter>
+    </ClInclude>
+    <ClInclude Include="SUIButton.h">
+      <Filter>Source Files\SVPUI</Filter>
+    </ClInclude>
+    <ClInclude Include="SVPButton.h">
+      <Filter>Source Files\SVPUI</Filter>
+    </ClInclude>
+    <ClInclude Include="SVPDialog.h">
+      <Filter>Source Files\SVPUI</Filter>
+    </ClInclude>
+    <ClInclude Include="SVPSliderCtrl.h">
+      <Filter>Source Files\SVPUI</Filter>
+    </ClInclude>
+    <ClInclude Include="SVPStatic.h">
+      <Filter>Source Files\SVPUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\ContentType.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\CriticalSection.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\FileAssoc_Win.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\SPlayerGUID.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\TextFile.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Monitor\constant.h">
+      <Filter>Utils\Monitor</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Monitor\factory.h">
+      <Filter>Utils\Monitor</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Monitor\monitor.h">
+      <Filter>Utils\Monitor</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Monitor\notify.h">
+      <Filter>Utils\Monitor</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\AdController.h">
+      <Filter>Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\Ed2kController.h">
+      <Filter>Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\HashController.h">
+      <Filter>Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\Hotkey_Controller.h">
+      <Filter>Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\LazyInstance.h">
+      <Filter>Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\MediaCenterController.h">
+      <Filter>Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\MediaCheckDB.h">
+      <Filter>Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\MediaSpiderAbstract.h">
+      <Filter>Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\MediaSpiderFolderTree.h">
+      <Filter>Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\NetworkControlerImpl.h">
+      <Filter>Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\OSDController.h">
+      <Filter>Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\pHashController.h">
+      <Filter>Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\PlayerPreference.h">
+      <Filter>Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\PlaylistController.h">
+      <Filter>Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\SnapUploadController.h">
+      <Filter>Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\SPlayerDefs.h">
+      <Filter>Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\SubTransController.h">
+      <Filter>Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\ThemePkgController.h">
+      <Filter>Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\UbdUploadController.h">
+      <Filter>Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\UpdateController.h">
+      <Filter>Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\UsrBehaviorController.h">
+      <Filter>Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\PingPongController.h">
+      <Filter>Controller\User</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\ShareController.h">
+      <Filter>Controller\User</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\UserAccountController.h">
+      <Filter>Controller\User</Filter>
+    </ClInclude>
+    <ClInclude Include="Model\appSQLlite.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Model\HotkeyCmd.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Model\HotkeySchemeParser.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Model\MediaComm.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Model\MediaDB.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Model\MediaModel.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Model\MediaSQLite.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Model\MediaTreeModel.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Model\PHashComm.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Model\PlaylistItem.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Model\PlaylistParser.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Model\SourceModel.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Model\SubTransFormat.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Model\ThemePkg.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Model\UsrBehaviorData.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="PnSPresetsDlg.h">
+      <Filter>Deprecated</Filter>
+    </ClInclude>
+    <ClInclude Include="PPageFormats.h">
+      <Filter>Deprecated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\mpc-hc\trunk\src\apps\mplayerc\Ifo.h">
+      <Filter>Libraries</Filter>
+    </ClInclude>
+    <ClInclude Include="jpeg.h">
+      <Filter>Libraries</Filter>
+    </ClInclude>
+    <ClInclude Include="jpeg_tables.h">
+      <Filter>Libraries</Filter>
+    </ClInclude>
+    <ClInclude Include="libpng.h">
+      <Filter>Libraries</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thirdparty\pkg\unrar.hpp">
+      <Filter>Libraries\3dUnrar</Filter>
+    </ClInclude>
+    <ClInclude Include="AllocatorCommon.h">
+      <Filter>Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="CShockwaveFlash.h">
+      <Filter>Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="DX7AllocatorPresenter.h">
+      <Filter>Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="DX9AllocatorPresenter.h">
+      <Filter>Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="EVRAllocatorPresenter.h">
+      <Filter>Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="FakeFilterMapper2.h">
+      <Filter>Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="FGFilter.h">
+      <Filter>Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="FGManager.h">
+      <Filter>Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphCore.h">
+      <Filter>Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphThread.h">
+      <Filter>Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="IGraphBuilder2.h">
+      <Filter>Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="internal_filter_config.h">
+      <Filter>Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="IPinHook.h">
+      <Filter>Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="IQTVideoSurface.h">
+      <Filter>Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="MacrovisionKicker.h">
+      <Filter>Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="ShockwaveGraph.h">
+      <Filter>Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="DeinterlacerFilter.h">
+      <Filter>Graph\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="TextPassThruFilter.h">
+      <Filter>Graph\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="ConvertChapDlg.h">
+      <Filter>Graph\Convert</Filter>
+    </ClInclude>
+    <ClInclude Include="ConvertDlg.h">
+      <Filter>Graph\Convert</Filter>
+    </ClInclude>
+    <ClInclude Include="ConvertPropsDlg.h">
+      <Filter>Graph\Convert</Filter>
+    </ClInclude>
+    <ClInclude Include="ConvertResDlg.h">
+      <Filter>Graph\Convert</Filter>
+    </ClInclude>
+    <ClInclude Include="ComPropertyPage.h">
+      <Filter>Graph\FilterPropPage</Filter>
+    </ClInclude>
+    <ClInclude Include="ComPropertySheet.h">
+      <Filter>Graph\FilterPropPage</Filter>
+    </ClInclude>
+    <ClInclude Include="AuthDlg.h">
+      <Filter>Graph\Deprecated</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseGraph.h">
+      <Filter>Graph\Deprecated</Filter>
+    </ClInclude>
+    <ClInclude Include="QuicktimeGraph.h">
+      <Filter>Graph\Deprecated</Filter>
+    </ClInclude>
+    <ClInclude Include="RealMediaGraph.h">
+      <Filter>Graph\Deprecated</Filter>
+    </ClInclude>
+    <ClInclude Include="RealMediaWindowlessSite.h">
+      <Filter>Graph\Deprecated</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\Dialogs\CustomizeFontDlg.h">
+      <Filter>UserInterface\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\Dialogs\DhtmlDlgBase.h">
+      <Filter>UserInterface\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\Dialogs\MovieComment_Win.h">
+      <Filter>UserInterface\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\Dialogs\OAuthDlg.h">
+      <Filter>UserInterface\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\Dialogs\OptionAdvancedPage_Win.h">
+      <Filter>UserInterface\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\Dialogs\OptionAssociationPage_Win.h">
+      <Filter>UserInterface\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\Dialogs\OptionBasicPage_Win.h">
+      <Filter>UserInterface\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\Dialogs\OptionDlg_Win.h">
+      <Filter>UserInterface\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\Dialogs\OptionSubtitlePage_Win.h">
+      <Filter>UserInterface\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinDownload.h">
+      <Filter>UserInterface\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinPreviewDlg.h">
+      <Filter>UserInterface\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\Dialogs\Snapshot_FloatTip.h">
+      <Filter>UserInterface\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\Dialogs\Snapshot_Viewfinder.h">
+      <Filter>UserInterface\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\Dialogs\Snapshot_Win.h">
+      <Filter>UserInterface\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\Support\BtnEditCtrl.h">
+      <Filter>UserInterface\Support</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\Support\FontParamsManage.h">
+      <Filter>UserInterface\Support</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\Support\ListImpl.h">
+      <Filter>UserInterface\Support</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\Support\SubtitleStyle.h">
+      <Filter>UserInterface\Support</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\Renderer\LayeredWindowUtils_Win.h">
+      <Filter>UserInterface\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\Renderer\MediaCenterView.h">
+      <Filter>UserInterface\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\Renderer\MediaListView.h">
+      <Filter>UserInterface\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\Renderer\MediaScrollbar.h">
+      <Filter>UserInterface\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\Renderer\OSDView_Win.h">
+      <Filter>UserInterface\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\Renderer\PlaylistView_MfcProxy.h">
+      <Filter>UserInterface\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\Renderer\PlaylistView_Win.h">
+      <Filter>UserInterface\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="MainFrameSCmd.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="mplayerc.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\..\..\Users\Staff\Desktop\allcycle.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\web\apply.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\web\apply_hover.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\ecio.icons\audio.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\audio_bg.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icon\Audio_File.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\web\audiosetting_uesetbg.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\web\audiosetting_uesetbg_hover.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\authhdrpic.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icon\avi.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\web\bg-h.gif">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\web\blank.gif">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\BORDER_CORNER.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\BOTTOMBACKGROUND.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\BTN_BIGOPEN.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\BTN_CAPTURE.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\BTN_CLOSE.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\BTN_FONT.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\BTN_FONT_MINUS.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\BTN_FONT_PLUS.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\BTN_FULLSCREEN.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\BTN_MAX.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\BTN_MENU.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\BTN_MIN.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\BTN_MINTOTRAY.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\BTN_NEXT.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\BTN_OPENADV.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\BTN_OPENADV2.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\BTN_OPENFILE.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\BTN_OPENFILE_SMALL.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\BTN_PAUSE.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\BTN_PAUSE2.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\BTN_PLAY.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\BTN_PLAY2.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\BTN_PLAYLIST.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\BTN_PREV.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\BTN_RESTORE.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\BTN_SETTING.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\BTN_SHARE.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\BTN_STEP.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\BTN_STOP.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\BTN_STOP2.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\BTN_SUB.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\BTN_SUB_DELAY_INCREASE.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\BTN_SUB_DELAY_REDUCE.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\web\cancel.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\web\cancel_hover.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\caption.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\ecio.icons\cd.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\default_bg.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\web\donate.gif">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icon\DV_Video.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\ecio.icons\dvd.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\FAST_BACKWORD.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\FAST_FORWORD.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\web\fillassoc.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\web\fillassoc_hover.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\web\fillassoc_uesetbg.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\web\fillassoc_uesetbg_hover.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icon\Flash.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\web\generalseting_uesetbg.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\web\generalseting_uesetbg_hover.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\ecio.icons\hd.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\web\hotkey.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\web\hotkey_hover.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\web\hotkeysetting_uesetbg.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\web\hotkeysetting_uesetbg_hover.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icon.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Icon_114.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Icon_116.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Icon_41.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\id_playe.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\idr_main.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\logo.0.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\logo.0.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\logo.1.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\logo.2.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\logo.3.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\logo.4.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\logo.5.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\logo.6.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\logo.7.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\LYCBACKG.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icon\Midi_File.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icon\mkv.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icon\Mobile_Video.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\mono.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icon\MP3_File.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\multi.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\MUTED.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\noaudio.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icon\Normal_CD.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\oauthcloseout.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\oauthcloseover.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\web\ok.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\web\ok_hover.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\onoff.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\pinail.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\pinail2.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\play.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\ecio.icons\playlist.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\playtime_0.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\playtime_1.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\playtime_2.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\playtime_3.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\playtime_4.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\playtime_5.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\playtime_6.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\playtime_7.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\playtime_8.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\playtime_9.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\playtime_battery.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\playtime_colon.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\playtime_minus.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\playtime_percent.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icon\Quicktime_File.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icon\Real_File.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\web\reset.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\web\reset_hover.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\single.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\SLIDER_TM.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\SPLAYER.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\stereo.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\streamtypes.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\web\subsetting_uesetbg.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\web\subsetting_uesetbg_hover.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\ecio.icons\subtitle.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icon\Subtitle_File.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\web\themesetting_uesetbg.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\web\themesetting_uesetbg_hover.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\web\thumb-n.gif">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\toolbar1.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\toolbar2.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\TOP_1X.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\TOP_2X.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\TOP_ALLCYCLE.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\TOP_AUDIO.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\TOP_CAPTURE.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\TOP_CLOSE.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\TOP_FLIP.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\TOP_FULLSCREEN.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\TOP_GAMMA.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\TOP_LETTERBOX.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\TOP_LETTERBOX_WIDER.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\TOP_NOCYCLE.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\TOP_NORMAL.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\TOP_NORMAL_WIDER.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\TOP_RANDOM.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\TOP_RESTORE.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\TOP_ROTATE.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\TOP_SINGLECYCLE.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\TOP_TRANS.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\TOP_VIDEO.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\TOPBACKGROUND.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icon\ts.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\web\updatesetting_uesetbg.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\web\updatesetting_uesetbg_hover.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\ecio.icons\video.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icon\Video_CD.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\web\videosetting_uesetbg.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\web\videosetting_uesetbg_hover.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\VOLUME.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\VOLUME_BG.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\VOLUME_TM.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\newui\watermark2.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\ani.avi">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\busy.html">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\default1.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\default2.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\shaders\3dstereo.psh">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="res\shaders\BT601BT701.psh">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="res\shaders\BT601BT709.psh">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="res\shaders\contour.psh">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="res\shaders\deinterlace (blend).psh">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="res\shaders\denoise.psh">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="res\shaders\EdgeSharpen.psh">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="res\shaders\emboss.psh">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="res\shaders\empty.psh">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="res\shaders\grayscale.psh">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="res\shaders\invert.psh">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="res\shaders\letterbox.psh">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="res\shaders\levels.psh">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="res\shaders\levels2.psh">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="res\shaders\levels3.psh">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="res\shaders\nightvision.psh">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="res\shaders\procamp.psh">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="res\shaders\resizer.psh">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="res\shaders\sharpen.psh">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="res\shaders\SharpenComplex.psh">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="res\shaders\SharpenComplex2.psh">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="res\shaders\sphere.psh">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="res\shaders\spotlight.psh">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="res\shaders\wave.psh">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="res\shaders\YV12ChromaUpsampling.psh">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="res\mplayerc.manifest">
+      <Filter>Resource Files</Filter>
+    </Manifest>
+  </ItemGroup>
+</Project>

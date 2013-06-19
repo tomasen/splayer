@@ -1,0 +1,489 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{00384d12-296c-46f5-a627-96e8f18ddb5f}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{4e6a3a74-4491-479c-b0cc-d08047e1221c}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{390817d1-1bd6-424b-a223-b4e47fbf66eb}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+    <Filter Include="AP4">
+      <UniqueIdentifier>{1d75e4fb-0612-4d19-acba-1960a019c878}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AP4\Core">
+      <UniqueIdentifier>{27eb60fb-2bda-40a3-907e-0bf4a1bd4ec3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AP4\Config">
+      <UniqueIdentifier>{942e32ac-72a2-423e-9211-2956c3161673}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AP4\Crypto">
+      <UniqueIdentifier>{c733feb5-86e6-41b7-abd1-717229949d25}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="MP4Splitter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MP4SplitterFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4Atom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4AtomFactory.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4AtomSampleTable.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4AvcCAtom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4ByteStream.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4ChplAtom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4CmvdAtom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4Co64Atom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4ContainerAtom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4CttsAtom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4DataAtom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4DataBuffer.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4DcomAtom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4Debug.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4DecoderConfigDescriptor.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4DecoderSpecificInfoDescriptor.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4Descriptor.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4DescriptorFactory.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4DrefAtom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4EsDescriptor.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4EsdsAtom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4File.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4FileWriter.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4FrmaAtom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4FtabAtom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4FtypAtom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4HdlrAtom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4HintTrackReader.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4HmhdAtom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4IkmsAtom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4IsfmAtom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4IsmaCryp.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4MdhdAtom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4MoovAtom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4Movie.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4MvhdAtom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4NmhdAtom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4Processor.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4RtpAtom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4RtpHint.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4Sample.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4SampleDescription.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4SampleEntry.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4SampleTable.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4SchmAtom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4SdpAtom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4SLConfigDescriptor.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4SmhdAtom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4StcoAtom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4StscAtom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4StsdAtom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4StssAtom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4StszAtom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4SttsAtom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4SyntheticSampleTable.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4TimsAtom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4TkhdAtom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4Track.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4TrakAtom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4TrefTypeAtom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4UnknownDescriptor.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4UrlAtom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4Utils.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4VmhdAtom.cpp">
+      <Filter>AP4\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Crypto\Ap4AesBlockCipher.cpp">
+      <Filter>AP4\Crypto</Filter>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Crypto\Ap4StreamCipher.cpp">
+      <Filter>AP4\Crypto</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="MP4Splitter.def">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="MP4Splitter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MP4SplitterFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4Array.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4Atom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4AtomFactory.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4AtomSampleTable.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4AvcCAtom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4ByteStream.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4ChplAtom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4CmvdAtom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4Co64Atom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4Constants.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4ContainerAtom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4CttsAtom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4DataAtom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4DataBuffer.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4DcomAtom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4Debug.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4DecoderConfigDescriptor.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4DecoderSpecificInfoDescriptor.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4Descriptor.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4DescriptorFactory.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4DrefAtom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4EsDescriptor.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4EsdsAtom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4File.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4FileByteStream.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4FileWriter.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4FrmaAtom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4FtabAtom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4FtypAtom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4HdlrAtom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4HintTrackReader.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4HmhdAtom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4IkmsAtom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4Interfaces.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4IsfmAtom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4IsmaCryp.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4List.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4MdhdAtom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4MoovAtom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4Movie.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4MvhdAtom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4NmhdAtom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4Processor.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4Results.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4RtpAtom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4RtpHint.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4Sample.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4SampleDescription.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4SampleEntry.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4SampleTable.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4SchmAtom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4SdpAtom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4SLConfigDescriptor.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4SmhdAtom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4StcoAtom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4StscAtom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4StsdAtom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4StssAtom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4StszAtom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4SttsAtom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4SyntheticSampleTable.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4TimsAtom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4TkhdAtom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4Track.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4TrakAtom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4TrefTypeAtom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4Types.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4UnknownDescriptor.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4UrlAtom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4Utils.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Core\Ap4VmhdAtom.h">
+      <Filter>AP4\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Config\Ap4Config.h">
+      <Filter>AP4\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Crypto\Ap4AesBlockCipher.h">
+      <Filter>AP4\Crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="AP4\Source\Crypto\Ap4StreamCipher.h">
+      <Filter>AP4\Crypto</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MP4Splitter.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="resource.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>

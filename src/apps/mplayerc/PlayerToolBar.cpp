@@ -769,7 +769,8 @@ BOOL CPlayerToolBar::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 
 
   // idFrom is actually the HWND of the tool
-  CString toolTip;
+  static CString toolTip;
+
   switch(nID){
         case ID_SUBDELAYDEC:
           toolTip = ResStr(IDS_TOOLTIP_SUBTITLE_DELAY_REDUCE);

@@ -887,12 +887,15 @@ UINT CSizingControlBar::GetEdgeHTCode(int nEdge)
     return HTNOWHERE;
 }
 
-void CSizingControlBar::GetRowInfo(int& nFirst, int& nLast, int& nThis)
+bool CSizingControlBar::GetRowInfo(int& nFirst, int& nLast, int& nThis)
 {
     ASSERT_VALID(m_pDockBar); // verify bounds
 
     nThis = m_pDockBar->FindBar(this);
-    ASSERT(nThis != -1);
+    if (nThis == -1)
+    {
+        return false;
+    }
 
     int i, nBars = m_pDockBar->m_arrBars.GetSize();
 
@@ -904,37 +907,43 @@ void CSizingControlBar::GetRowInfo(int& nFirst, int& nLast, int& nThis)
         if (m_pDockBar->m_arrBars[i] == NULL)
             nLast = i - 1;
 
-    ASSERT((nLast != -1) && (nFirst != -1));
+    return nLast != -1 && nFirst != -1;
 }
 
-void CSizingControlBar::GetRowSizingBars(CSCBArray& arrSCBars)
+bool CSizingControlBar::GetRowSizingBars(CSCBArray& arrSCBars)
 {
     int nThis; // dummy
-    GetRowSizingBars(arrSCBars, nThis);
+    return GetRowSizingBars(arrSCBars, nThis);
 }
 
-void CSizingControlBar::GetRowSizingBars(CSCBArray& arrSCBars, int& nThis)
+bool CSizingControlBar::GetRowSizingBars(CSCBArray& arrSCBars, int& nThis)
 {
     arrSCBars.RemoveAll();
 
     int nFirstT, nLastT, nThisT;
-    GetRowInfo(nFirstT, nLastT, nThisT);
-
-    nThis = -1;
-    for (int i = nFirstT; i <= nLastT; i++)
+    if (GetRowInfo(nFirstT, nLastT, nThisT))
     {
-        CSizingControlBar* pBar =
-            (CSizingControlBar*) m_pDockBar->m_arrBars[i];
-        if (HIWORD(pBar) == 0) continue; // placeholder
-        if (!pBar->IsVisible()) continue;
-        if (pBar->IsKindOf(RUNTIME_CLASS(CSizingControlBar)))
+        nThis = -1;
+        for (int i = nFirstT; i <= nLastT; i++)
         {
-            if (pBar == this)
-                nThis = arrSCBars.GetSize();
+            CSizingControlBar* pBar =
+                (CSizingControlBar*) m_pDockBar->m_arrBars[i];
+            if (HIWORD(pBar) == 0) continue; // placeholder
+            if (!pBar->IsVisible()) continue;
+            if (pBar->IsKindOf(RUNTIME_CLASS(CSizingControlBar)))
+            {
+                if (pBar == this) {
+                    nThis = arrSCBars.GetSize();
+                }
 
-            arrSCBars.Add(pBar);
+                arrSCBars.Add(pBar);
+            }
         }
+
+        return nThis == -1;
     }
+    
+    return false;
 }
 
 BOOL CSizingControlBar::NegotiateSpace(int nLengthTotal, BOOL bHorz)

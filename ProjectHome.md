@@ -1,0 +1,1 @@
+splayer is migrated from bitbucket for faster accessing via google code.

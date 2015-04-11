@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="windows-1250"?>
+<VisualStudioProject
+	ProjectType="Intel C++ Project"
+	Version="11.1"
+	Name="filters"
+	ProjectGUID="{0B9146F7-3F6F-4301-86AC-03C0E225D827}"
+	VCNestedProjectGUID="{273B3149-3192-4B75-A791-470320B90812}"
+	VCNestedProjectFileName="filters_vs2005.vcproj">
+	<Configurations>
+		<Configuration
+			Name="Release Unicode lib|Win32">
+			<Tool
+				Name="CppCmplrTool"
+				EnableEnhancedInstructionSet="1001"/>
+		</Configuration>
+	</Configurations>
+	<Files/>
+</VisualStudioProject>

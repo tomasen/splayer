@@ -1,0 +1,465 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug lib|Win32">
+      <Configuration>Debug lib</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug Unicode lib|Win32">
+      <Configuration>Debug Unicode lib</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug Unicode|Win32">
+      <Configuration>Debug Unicode</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release lib|Win32">
+      <Configuration>Release lib</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release Unicode lib|Win32">
+      <Configuration>Release Unicode lib</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release Unicode|Win32">
+      <Configuration>Release Unicode</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>MP4Splitter</ProjectName>
+    <ProjectGuid>{9ED4B036-7399-4128-868D-6E71188E0277}</ProjectGuid>
+    <RootNamespace>MP4Splitter</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseOfMfc>Static</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseOfMfc>Static</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseOfMfc>Static</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseOfMfc>Static</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode lib|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseOfMfc>Static</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode lib|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseOfMfc>Static</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release lib|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseOfMfc>Static</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug lib|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseOfMfc>Static</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\common.props" />
+    <Import Project="..\..\..\release.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\common.props" />
+    <Import Project="..\..\..\debug.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\common.props" />
+    <Import Project="..\..\..\release.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\common.props" />
+    <Import Project="..\..\..\debug.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode lib|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\common.props" />
+    <Import Project="..\..\..\release.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode lib|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\common.props" />
+    <Import Project="..\..\..\debug.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release lib|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\common.props" />
+    <Import Project="..\..\..\release.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug lib|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\common.props" />
+    <Import Project="..\..\..\debug.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>11.0.50727.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <GenerateManifest>false</GenerateManifest>
+    <EmbedManifest>false</EmbedManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">
+    <GenerateManifest>false</GenerateManifest>
+    <EmbedManifest>false</EmbedManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode lib|Win32'">
+    <OutDir>$(SolutionDir)\out\bin\</OutDir>
+    <IntDir>$(SolutionDir)\out\obj\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug lib|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>.\AP4\Source\Core;.\AP4\Source\Config;.\AP4\Source\Crypto;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4812;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Lib>
+      <OutputFile>../../../../lib/$(ProjectName)D.lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release lib|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>.\AP4\Source\Core;.\AP4\Source\Config;.\AP4\Source\Crypto;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4812;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Lib>
+      <OutputFile>../../../../lib/$(ProjectName)R.lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode lib|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>.\AP4\Source\Core;.\AP4\Source\Config;.\AP4\Source\Crypto;..\..\..\..\src\filters\BaseClasses;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4812;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Lib>
+      <OutputFile>../../../../lib/$(ProjectName)DU.lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode lib|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>.\AP4\Source\Core;.\AP4\Source\Config;.\AP4\Source\Crypto;..\..\BaseClasses;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <DisableSpecificWarnings>4812;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Lib />
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>.\AP4\Source\Core;.\AP4\Source\Config;.\AP4\Source\Crypto;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>REGISTER_FILTER;WIN32;_DEBUG;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4812;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <RegisterOutput>true</RegisterOutput>
+      <AdditionalDependencies>zlibD.lib;strmbaseD.lib;dsutilD.lib;basesplitterD.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(ProjectName).ax</OutputFile>
+      <AdditionalLibraryDirectories>..\..\..\..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>$(ProjectName).def</ModuleDefinitionFile>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>.\AP4\Source\Core;.\AP4\Source\Config;.\AP4\Source\Crypto;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>REGISTER_FILTER;WIN32;NDEBUG;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4812;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>zlibR.lib;strmbaseR.lib;dsutilR.lib;basesplitterR.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(ProjectName).ax</OutputFile>
+      <AdditionalLibraryDirectories>..\..\..\..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ModuleDefinitionFile>$(ProjectName).def</ModuleDefinitionFile>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>.\AP4\Source\Core;.\AP4\Source\Config;.\AP4\Source\Crypto;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>REGISTER_FILTER;WIN32;_DEBUG;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4812;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <RegisterOutput>true</RegisterOutput>
+      <AdditionalDependencies>zlibD.lib;strmbaseDU.lib;dsutilDU.lib;basesplitterDU.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(ProjectName).ax</OutputFile>
+      <AdditionalLibraryDirectories>..\..\..\..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>libc.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ModuleDefinitionFile>$(ProjectName).def</ModuleDefinitionFile>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>.\AP4\Source\Core;.\AP4\Source\Config;.\AP4\Source\Crypto;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>REGISTER_FILTER;WIN32;NDEBUG;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4812;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>zlibR.lib;strmbaseRU.lib;dsutilRU.lib;basesplitterRU.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(ProjectName).ax</OutputFile>
+      <AdditionalLibraryDirectories>..\..\..\..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ModuleDefinitionFile>$(ProjectName).def</ModuleDefinitionFile>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="MP4Splitter.cpp">
+      <PreprocessToFile Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">false</PreprocessToFile>
+      <PreprocessSuppressLineNumbers Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">false</PreprocessSuppressLineNumbers>
+    </ClCompile>
+    <ClCompile Include="MP4SplitterFile.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Unicode lib|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug lib|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode lib|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release lib|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="AP4\Source\Core\Ap4Atom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4AtomFactory.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4AtomSampleTable.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4AvcCAtom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4ByteStream.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4ChplAtom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4CmvdAtom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4Co64Atom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4ContainerAtom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4CttsAtom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4DataAtom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4DataBuffer.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4DcomAtom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4Debug.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4DecoderConfigDescriptor.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4DecoderSpecificInfoDescriptor.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4Descriptor.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4DescriptorFactory.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4DrefAtom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4EsDescriptor.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4EsdsAtom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4File.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4FileWriter.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4FrmaAtom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4FtabAtom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4FtypAtom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4HdlrAtom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4HintTrackReader.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4HmhdAtom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4IkmsAtom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4IsfmAtom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4IsmaCryp.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4MdhdAtom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4MoovAtom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4Movie.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4MvhdAtom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4NmhdAtom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4Processor.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4RtpAtom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4RtpHint.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4Sample.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4SampleDescription.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4SampleEntry.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4SampleTable.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4SchmAtom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4SdpAtom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4SLConfigDescriptor.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4SmhdAtom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4StcoAtom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4StscAtom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4StsdAtom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4StssAtom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4StszAtom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4SttsAtom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4SyntheticSampleTable.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4TimsAtom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4TkhdAtom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4Track.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4TrakAtom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4TrefTypeAtom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4UnknownDescriptor.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4UrlAtom.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4Utils.cpp" />
+    <ClCompile Include="AP4\Source\Core\Ap4VmhdAtom.cpp" />
+    <ClCompile Include="AP4\Source\Crypto\Ap4AesBlockCipher.cpp" />
+    <ClCompile Include="AP4\Source\Crypto\Ap4StreamCipher.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="MP4Splitter.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="MP4Splitter.h" />
+    <ClInclude Include="MP4SplitterFile.h" />
+    <CustomBuild Include="resource.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode lib|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug lib|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode lib|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release lib|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4Array.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4Atom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4AtomFactory.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4AtomSampleTable.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4AvcCAtom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4ByteStream.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4ChplAtom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4CmvdAtom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4Co64Atom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4Constants.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4ContainerAtom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4CttsAtom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4DataAtom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4DataBuffer.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4DcomAtom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4Debug.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4DecoderConfigDescriptor.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4DecoderSpecificInfoDescriptor.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4Descriptor.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4DescriptorFactory.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4DrefAtom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4EsDescriptor.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4EsdsAtom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4File.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4FileByteStream.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4FileWriter.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4FrmaAtom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4FtabAtom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4FtypAtom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4HdlrAtom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4HintTrackReader.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4HmhdAtom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4IkmsAtom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4Interfaces.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4IsfmAtom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4IsmaCryp.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4List.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4MdhdAtom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4MoovAtom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4Movie.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4MvhdAtom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4NmhdAtom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4Processor.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4Results.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4RtpAtom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4RtpHint.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4Sample.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4SampleDescription.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4SampleEntry.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4SampleTable.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4SchmAtom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4SdpAtom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4SLConfigDescriptor.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4SmhdAtom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4StcoAtom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4StscAtom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4StsdAtom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4StssAtom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4StszAtom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4SttsAtom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4SyntheticSampleTable.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4TimsAtom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4TkhdAtom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4Track.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4TrakAtom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4TrefTypeAtom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4Types.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4UnknownDescriptor.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4UrlAtom.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4Utils.h" />
+    <ClInclude Include="AP4\Source\Core\Ap4VmhdAtom.h" />
+    <ClInclude Include="AP4\Source\Config\Ap4Config.h" />
+    <ClInclude Include="AP4\Source\Crypto\Ap4AesBlockCipher.h" />
+    <ClInclude Include="AP4\Source\Crypto\Ap4StreamCipher.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MP4Splitter.rc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode lib|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug lib|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode lib|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release lib|Win32'">true</ExcludedFromBuild>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\zlib\zlib_vs2005.vcxproj">
+      <Project>{2fcd4b66-9cf9-4c8f-bc70-37cd20002d49}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters_vs2005.vcxproj">
+      <Project>{273b3149-3192-4b75-a791-470320b90812}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\basesplitter\basesplitter_vs2005.vcxproj">
+      <Project>{37768b3f-89bc-4c16-b2a8-767c5da84c3f}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties DevPartner_IsInstrumented="0" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

@@ -1,0 +1,1190 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug Unicode|Win32">
+      <Configuration>Debug Unicode</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release Unicode|Win32">
+      <Configuration>Release Unicode</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>splayer</ProjectName>
+    <ProjectGuid>{8CE7E5D0-C821-47AC-A247-28EC95B34670}</ProjectGuid>
+    <RootNamespace>mplayerc</RootNamespace>
+    <Keyword>MFCProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseOfMfc>Static</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseOfMfc>Static</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseOfMfc>Static</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseOfMfc>Static</UseOfMfc>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\common.props" />
+    <Import Project="..\..\debug.props" />
+    <Import Project="wtl_integration.props" />
+    <Import Project="$(SolutionDir)src\apps\mplayerc\atlserver_integration.props" />
+    <Import Project="$(SolutionDir)Thirdparty\sinet.props" />
+    <Import Project="$(SolutionDir)Thirdparty\unrar_dll.props" />
+    <Import Project="$(SolutionDir)Thirdparty\sphash.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\common.props" />
+    <Import Project="$(SolutionDir)src\release.props" />
+    <Import Project="wtl_integration.props" />
+    <Import Project="$(SolutionDir)src\apps\mplayerc\atlserver_integration.props" />
+    <Import Project="$(SolutionDir)Thirdparty\sinet.props" />
+    <Import Project="$(SolutionDir)Thirdparty\unrar_dll.props" />
+    <Import Project="$(SolutionDir)Thirdparty\sphash.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\common.props" />
+    <Import Project="..\..\debug.props" />
+    <Import Project="wtl_integration.props" />
+    <Import Project="$(SolutionDir)src\apps\mplayerc\atlserver_integration.props" />
+    <Import Project="$(SolutionDir)Thirdparty\sinet.props" />
+    <Import Project="$(SolutionDir)Thirdparty\unrar_dll.props" />
+    <Import Project="$(SolutionDir)Thirdparty\sphash.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="wtl_integration.props" />
+    <Import Project="$(SolutionDir)src\apps\mplayerc\atlserver_integration.props" />
+    <Import Project="$(SolutionDir)src\common.props" />
+    <Import Project="$(SolutionDir)src\release.props" />
+    <Import Project="$(SolutionDir)Thirdparty\sinet.props" />
+    <Import Project="..\..\..\Thirdparty\sqlitepp.props" />
+    <Import Project="$(SolutionDir)Thirdparty\sphash.props" />
+    <Import Project="$(SolutionDir)Thirdparty\unrar_dll.props" />
+    <Import Project="..\..\..\Thirdparty\boost.props" />
+    <Import Project="..\..\..\Thirdparty\tcl.props" />
+    <Import Project="..\..\..\Thirdparty\jsoncpp.props" />
+    <Import Project="..\..\..\Thirdparty\librhash.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>11.0.50727.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">
+    <GenerateManifest>true</GenerateManifest>
+    <EmbedManifest>true</EmbedManifest>
+    <IncludePath>$(DXSDK_DIR)\Include;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)\out\bin\</OutDir>
+    <IntDir>$(SolutionDir)\out\obj\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">
+    <GenerateManifest>false</GenerateManifest>
+    <EmbedManifest>true</EmbedManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <GenerateManifest>false</GenerateManifest>
+    <EmbedManifest>true</EmbedManifest>
+    <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <GenerateManifest>false</GenerateManifest>
+    <EmbedManifest>true</EmbedManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">
+    <PreBuildEvent />
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\Release_unicode/mplayerc.tlb</TypeLibraryName>
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>/D "CURL_STATICLIB"  /MP %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>MaxSpeed</Optimization>
+      <AdditionalIncludeDirectories>..\..\ZenLib\Source;..\..\..\include;..\..\mediainfo\Source\;..\..\mediainfo\Source\MediaInfo\;..\..\filters\BaseClasses;..\..\filters\transform\webm\vp8_sdk\include;..\..\filters\transform\webm\IDL;..\..\filters\transform\webm\common;..\..\filters\transform\mpcvideodec;..\..\svplib;..\..\..\thirdparty;..\..\..\include\dx;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <OpenMPSupport>false</OpenMPSupport>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>$(OutDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalOptions>/MACHINE:I386  /LTCG  %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>subpic.lib;Rpcrt4.lib;Winmm.lib;Wbemuuid.lib;Dsound.lib;Imm32.lib;Dbghelp.lib;Psapi.lib;libssf.lib;detours.lib;unrar.lib;sphash.lib;qtmlClient.lib;dxguid.lib;libsamplerate.a;libzmq.lib;libphashaudio.a;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\out\bin;../../../Thirdparty/sqlitepp/lib;../../../lib;../../../lib/wm7;../../../lib/qt6;../../../lib/detours;../../../thirdparty/courgette\Release\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <UACExecutionLevel>AsInvoker</UACExecutionLevel>
+      <IgnoreSpecificDefaultLibraries>MSVCRT;nafxcw.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <DelayLoadDLLs>d3d9.dll;gdiplus.dll;psapi.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <MidlCommandFile />
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapFileName>$(TargetDir)$(TargetName).map</MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <SupportUnloadOfDelayLoadedDLL>true</SupportUnloadOfDelayLoadedDLL>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+    <Manifest>
+      <AdditionalManifestFiles>res\mplayerc.manifest;%(AdditionalManifestFiles)</AdditionalManifestFiles>
+    </Manifest>
+    <PostBuildEvent />
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">
+    <PreBuildEvent>
+      <Command>if not exist "%25programfiles%25\TortoiseSVN\bin\SubWCRev.exe" goto NoSubWCRev
+"%25programfiles%25\TortoiseSVN\bin\SubWCRev.exe" ..\..\..\ .\SubWCRev.conf .\revision.h
+goto End
+
+:SubWCRev
+echo #pragma once &gt; .\revision.h
+echo #define MPC_REV_STR _T("") &gt;&gt;.\revision.h
+
+:End
+</Command>
+    </PreBuildEvent>
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>$(OutDir)$(ProjectName).tlb</TypeLibraryName>
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>/MP /D "CURL_STATICLIB" /D "WINVER=0x0600" /D "_WIN32_WINNT=0x0600" /D "NTDDI_VERSION=NTDDI_VISTA" /MP %(AdditionalOptions)</AdditionalOptions>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>..\..\ZenLib\Source;..\..\..\include;..\..\mediainfo\Source\;..\..\mediainfo\Source\MediaInfo\;..\..\filters\transform\mpcvideodec;..\..\filters\BaseClasses;..\..\svplib;..\..\..\thirdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;WINVER=0x501;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>$(OutDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>libsqlited.lib;libeay32.lib;ssleay32.lib;Delayimp.lib;psapi.lib;detours.lib;qtmlClient.lib;wmstub.lib;Dsound.lib;dxguid.lib;strmbaseDU.lib;dsutilDU.lib;subpicDU.lib;subtitlesDU.lib;libssfDU.lib;asyncreaderDU.lib;audioswitcherDU.lib;avi2ac3filterDU.lib;bufferfilterDU.lib;cddareaderDU.lib;cdxareaderDU.lib;d2vsourceDU.lib;decssfilterDU.lib;flicsourceDU.lib;dtsac3sourceDU.lib;basesourceDU.lib;subtitlesourceDU.lib;wavdestDU.lib;shoutcastsourceDU.lib;streamdrivethruDU.lib;vtsreaderDU.lib;basesplitterDU.lib;MatroskaSplitterDU.lib;MatroskaMuxerDU.lib;RealMediaSplitterDU.lib;AviSplitterDU.lib;Mpeg2DecFilterDU.lib;MpaDecFilterDU.lib;RoQSplitterDU.lib;OggSplitterDU.lib;NutSplitterDU.lib;MpegSplitterDU.lib;DiracSplitterDU.lib;MpaSplitterDU.lib;DSMSplitterDU.lib;MP4SplitterDU.lib;BaseMuxerDU.lib;DSMMuxerDU.lib;UDPReaderDU.lib;FLVSplitterDU.lib;zlibD.lib;filtersDU.lib;libvorbisidecD.lib;SSFSplitterDU.lib;libpngD.lib;comsuppwd.lib;Imm32.lib;Winmm.lib;Wbemuuid.lib;base.lib;courgette_lib.lib;lzma_sdk.lib;modp_b64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ShowProgress>NotSet</ShowProgress>
+      <OutputFile>..\..\..\..\splayerD.exe</OutputFile>
+      <AdditionalLibraryDirectories>../../../lib;../../../lib/wm7;../../../lib/qt6;../../../lib/detours;../../../thirdparty/courgette\debug\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>MSVCRT;uafxcw.lib;nafxcwd.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <DelayLoadDLLs>d3d9.dll;msimg32.dll;gdiplus.dll;psapi.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <PreBuildEvent>
+      <Command>if not exist "%25programfiles%25\TortoiseSVN\bin\SubWCRev.exe" goto NoSubWCRev
+"%25programfiles%25\TortoiseSVN\bin\SubWCRev.exe" ..\..\..\ .\SubWCRev.conf .\revision.h
+goto End
+
+:SubWCRev
+echo #pragma once &gt; .\revision.h
+echo #define MPC_REV_STR _T("") &gt;&gt;.\revision.h
+
+:End
+</Command>
+    </PreBuildEvent>
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\Release/mplayerc.tlb</TypeLibraryName>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;WINVER=0x501;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>$(OutDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>Delayimp.lib;psapi.lib;detours.lib;qtmlClient.lib;wmstub.lib;Dsound.lib;dxguid.lib;strmbaseR.lib;dsutilR.lib;subpicR.lib;subtitlesR.lib;libssfR.lib;asyncreaderR.lib;audioswitcherR.lib;avi2ac3filterR.lib;bufferfilterR.lib;cddareaderR.lib;cdxareaderR.lib;d2vsourceR.lib;decssfilterR.lib;flicsourceR.lib;dtsac3sourceR.lib;basesourceR.lib;wavdestR.lib;shoutcastsourceR.lib;streamdrivethruR.lib;vtsreaderR.lib;basesplitterR.lib;MatroskaSplitterR.lib;MatroskaMuxerR.lib;RealMediaSplitterR.lib;AviSplitterR.lib;Mpeg2DecFilterR.lib;MpaDecFilterR.lib;RoQSplitterR.lib;OggSplitterR.lib;NutSplitterR.lib;MpegSplitterR.lib;DiracSplitterR.lib;MpaSplitterR.lib;DSMSplitterR.lib;MP4SplitterR.lib;BaseMuxerR.lib;DSMMuxerR.lib;UDPReaderR.lib;FLVSplitterR.lib;zlibR.lib;subtitlesourceR.lib;filtersR.lib;libvorbisidecR.lib;SSFSplitterR.lib;libpngR.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
+      <AdditionalLibraryDirectories>../../../lib;../../../lib/wm7;../../../lib/qt6;../../../lib/detours;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <DelayLoadDLLs>d3d9.dll;gdiplus.dll;psapi.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <SupportUnloadOfDelayLoadedDLL>true</SupportUnloadOfDelayLoadedDLL>
+    </Link>
+    <Manifest>
+      <AdditionalManifestFiles>res\mplayerc.manifest;%(AdditionalManifestFiles)</AdditionalManifestFiles>
+    </Manifest>
+    <PostBuildEvent>
+      <Command>..\..\..\bin\upx.exe --best "$(TargetPath)"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <PreBuildEvent>
+      <Command>if not exist "%25programfiles%25\TortoiseSVN\bin\SubWCRev.exe" goto NoSubWCRev
+"%25programfiles%25\TortoiseSVN\bin\SubWCRev.exe" ..\..\..\ .\SubWCRev.conf .\revision.h
+goto End
+
+:SubWCRev
+echo #pragma once &gt; .\revision.h
+echo #define MPC_REV_STR _T("") &gt;&gt;.\revision.h
+
+:End
+</Command>
+    </PreBuildEvent>
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>$(OutDir)$(ProjectName).tlb</TypeLibraryName>
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions> /MP %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>..\..\..\include;..\..\filters\BaseClasses;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>$(OutDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>Delayimp.lib;psapi.lib;detours.lib;qtmlClient.lib;wmstub.lib;Dsound.lib;dxguid.lib;strmbaseD.lib;dsutilD.lib;subpicD.lib;subtitlesD.lib;libssfD.lib;asyncreaderD.lib;audioswitcherD.lib;avi2ac3filterD.lib;bufferfilterD.lib;cddareaderD.lib;cdxareaderD.lib;d2vsourceD.lib;decssfilterD.lib;flicsourceD.lib;dtsac3sourceD.lib;basesourceD.lib;subtitlesourceD.lib;wavdestD.lib;shoutcastsourceD.lib;streamdrivethruD.lib;vtsreaderD.lib;basesplitterD.lib;MatroskaSplitterD.lib;MatroskaMuxerD.lib;RealMediaSplitterD.lib;AviSplitterD.lib;Mpeg2DecFilterD.lib;MpaDecFilterD.lib;RoQSplitterD.lib;OggSplitterD.lib;NutSplitterD.lib;MpegSplitterD.lib;DiracSplitterD.lib;MpaSplitterD.lib;DSMSplitterD.lib;MP4SplitterD.lib;BaseMuxerD.lib;DSMMuxerD.lib;UDPReaderD.lib;FLVSplitterD.lib;zlibD.lib;filtersD.lib;libvorbisidecD.lib;SSFSplitterD.lib;libpngD.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
+      <AdditionalLibraryDirectories>../../../lib;../../../lib/wm7;../../../lib/qt6;../../../lib/detours;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>MSVCRT;LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <DelayLoadDLLs>d3d9.dll;msimg32.dll;gdiplus.dll;psapi.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="ButtonManage.cpp" />
+    <ClCompile Include="ChildView.cpp" />
+    <ClCompile Include="ChkDefPlayerControlBar.cc" />
+    <ClCompile Include="CustomDrawBtn.cc" />
+    <ClCompile Include="DisplaySettingDetector.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="DlgChkUpdater.cpp" />
+    <ClCompile Include="FavoriteAddDlg.cpp" />
+    <ClCompile Include="FavoriteOrganizeDlg.cpp" />
+    <ClCompile Include="FileDropTarget.cpp" />
+    <ClCompile Include="FloatEdit.cpp" />
+    <ClCompile Include="FrameCfgFileManage.cpp" />
+    <ClCompile Include="GoToDlg.cpp" />
+    <ClCompile Include="GUIConfigManage.cpp" />
+    <ClCompile Include="InfoReport.cpp" />
+    <ClCompile Include="KeyProvider.cpp" />
+    <ClCompile Include="MainFrm.cpp" />
+    <ClCompile Include="MakeMultiplyBmp.cpp" />
+    <ClCompile Include="MediaFormats.cpp" />
+    <ClCompile Include="MediaTypesDlg.cpp" />
+    <ClCompile Include="mplayerc.cpp" />
+    <ClCompile Include="NEWOSDWnd.cpp" />
+    <ClCompile Include="OpenCapDeviceDlg.cpp" />
+    <ClCompile Include="OpenDlg.cpp" />
+    <ClCompile Include="OpenFileDlg.cpp" />
+    <ClCompile Include="OpenURLDlg.cpp" />
+    <ClCompile Include="PixelShaderCompiler.cpp" />
+    <ClCompile Include="PlayerCaptureBar.cpp" />
+    <ClCompile Include="PlayerCaptureDialog.cpp" />
+    <ClCompile Include="PlayerChannelNormalizer.cpp" />
+    <ClCompile Include="PlayerColorControlBar.cpp" />
+    <ClCompile Include="PlayerEQControlBar.cpp" />
+    <ClCompile Include="PlayerFloatToolBar.cpp" />
+    <ClCompile Include="PlayerListCtrl.cpp" />
+    <ClCompile Include="PlayerPlaylistBar.cpp" />
+    <ClCompile Include="PlayerSeekBar.cpp" />
+    <ClCompile Include="PlayerToolBar.cpp" />
+    <ClCompile Include="PlayerToolTopBar.cpp" />
+    <ClCompile Include="Playlist.cpp" />
+    <ClCompile Include="SaveDlg.cpp" />
+    <ClCompile Include="SaveTextFileDialog.cpp" />
+    <ClCompile Include="SaveThumbnailsDialog.cpp" />
+    <ClCompile Include="SeekBarTip.cpp" />
+    <ClCompile Include="SkinFolderManager.cpp" />
+    <ClCompile Include="StdAfx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SUIVoteStar.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SVPLycShowBox.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SVPSubUploadDlg.cpp" />
+    <ClCompile Include="SVPSubVoteControlBar.cpp" />
+    <ClCompile Include="TimeBmpManage.cpp" />
+    <ClCompile Include="TransparentControlBar.cpp" />
+    <ClCompile Include="UnCompressAPI.cc" />
+    <ClCompile Include="UnCompressZip.cpp" />
+    <ClCompile Include="VolumeCtrl.cpp" />
+    <ClCompile Include="PPageBase.cpp" />
+    <ClCompile Include="PPageFileInfoClip.cpp" />
+    <ClCompile Include="PPageFileInfoDetails.cpp" />
+    <ClCompile Include="PPageFileInfoRes.cpp" />
+    <ClCompile Include="PPageFileInfoSheet.cpp" />
+    <ClCompile Include="PPageFileMediaInfo.cpp" />
+    <ClCompile Include="LineNumberEdit.cpp" />
+    <ClCompile Include="PlayerShaderEditorBar.cpp" />
+    <ClCompile Include="ShaderAutoCompleteDlg.cpp" />
+    <ClCompile Include="ShaderCombineDlg.cpp" />
+    <ClCompile Include="ShaderEditorDlg.cpp" />
+    <ClCompile Include="SUIButton.cpp" />
+    <ClCompile Include="SVPButton.cpp" />
+    <ClCompile Include="SVPDialog.cpp" />
+    <ClCompile Include="SVPSliderCtrl.cpp" />
+    <ClCompile Include="SVPStatic.cpp" />
+    <ClCompile Include="Utils\ContentType.cc" />
+    <ClCompile Include="Utils\FileAssoc_Win.cc" />
+    <ClCompile Include="Utils\SPlayerGUID.cc" />
+    <ClCompile Include="Utils\TextFile.cpp" />
+    <ClCompile Include="Utils\Monitor\factory.cpp" />
+    <ClCompile Include="Utils\Monitor\monitor.cpp" />
+    <ClCompile Include="Utils\Monitor\notify.cpp" />
+    <ClCompile Include="Controller\AdController.cc" />
+    <ClCompile Include="Controller\Ed2kController.cpp" />
+    <ClCompile Include="Controller\HashController.cc" />
+    <ClCompile Include="Controller\Hotkey_Controller.cc" />
+    <ClCompile Include="Controller\MediaCenterController.cc" />
+    <ClCompile Include="Controller\MediaCheckDB.cc" />
+    <ClCompile Include="Controller\MediaSpiderFolderTree.cc" />
+    <ClCompile Include="Controller\NetworkControlerImpl.cc" />
+    <ClCompile Include="Controller\OSDController.cc" />
+    <ClCompile Include="Controller\pHashController.cc" />
+    <ClCompile Include="Controller\PlayerPreference.cc" />
+    <ClCompile Include="Controller\PlaylistController.cc" />
+    <ClCompile Include="Controller\SnapUploadController.cc" />
+    <ClCompile Include="Controller\SubTransController.cc" />
+    <ClCompile Include="Controller\ThemePkgController.cc" />
+    <ClCompile Include="Controller\UbdUploadController.cc" />
+    <ClCompile Include="Controller\UpdateController.cc" />
+    <ClCompile Include="Controller\UsrBehaviorController.cc" />
+    <ClCompile Include="Controller\PingPongController.cc" />
+    <ClCompile Include="Controller\ShareController.cc" />
+    <ClCompile Include="Controller\UserAccountController.cc" />
+    <ClCompile Include="Model\appSQLlite.cc" />
+    <ClCompile Include="Model\HotkeyCmd.cc" />
+    <ClCompile Include="Model\HotkeySchemeParser.cc" />
+    <ClCompile Include="Model\MediaDB.cc" />
+    <ClCompile Include="Model\MediaModel.cc" />
+    <ClCompile Include="Model\MediaSQLite.cc" />
+    <ClCompile Include="Model\MediaTreeModel.cc" />
+    <ClCompile Include="Model\PlaylistItem.cc" />
+    <ClCompile Include="Model\PlaylistParser.cc" />
+    <ClCompile Include="Model\SubTransFormat.cc" />
+    <ClCompile Include="Model\ThemePkg.cc" />
+    <ClCompile Include="Model\UsrBehaviorData.cc" />
+    <ClCompile Include="PnSPresetsDlg.cpp" />
+    <ClCompile Include="PPageFormats.cpp" />
+    <ClCompile Include="Ifo.cpp" />
+    <ClCompile Include="jpeg.cpp" />
+    <ClCompile Include="libpng.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Updater\cupdatenetlib.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="CShockwaveFlash.cpp" />
+    <ClCompile Include="DX7AllocatorPresenter.cpp" />
+    <ClCompile Include="DX9AllocatorPresenter.cpp" />
+    <ClCompile Include="EVRAllocatorPresenter.cpp" />
+    <ClCompile Include="FakeFilterMapper2.cpp" />
+    <ClCompile Include="FGFilter.cpp" />
+    <ClCompile Include="FGManager.cpp" />
+    <ClCompile Include="GraphCore.cpp" />
+    <ClCompile Include="GraphThread.cpp" />
+    <ClCompile Include="IPinHook.cpp" />
+    <ClCompile Include="MacrovisionKicker.cpp" />
+    <ClCompile Include="ShockwaveGraph.cpp" />
+    <ClCompile Include="DeinterlacerFilter.cpp" />
+    <ClCompile Include="TextPassThruFilter.cpp" />
+    <ClCompile Include="ConvertChapDlg.cpp" />
+    <ClCompile Include="ConvertDlg.cpp" />
+    <ClCompile Include="ConvertPropsDlg.cpp" />
+    <ClCompile Include="ConvertResDlg.cpp" />
+    <ClCompile Include="ComPropertyPage.cpp" />
+    <ClCompile Include="ComPropertySheet.cpp" />
+    <ClCompile Include="AuthDlg.cpp" />
+    <ClCompile Include="BaseGraph.cpp" />
+    <ClCompile Include="QuicktimeGraph.cpp" />
+    <ClCompile Include="RealMediaGraph.cpp" />
+    <ClCompile Include="RealMediaWindowlessSite.cpp" />
+    <ClCompile Include="UserInterface\Dialogs\CustomizeFontDlg.cpp" />
+    <ClCompile Include="UserInterface\Dialogs\DhtmlDlgBase.cc" />
+    <ClCompile Include="UserInterface\Dialogs\MovieComment_Win.cc" />
+    <ClCompile Include="UserInterface\Dialogs\OAuthDlg.cc" />
+    <ClCompile Include="UserInterface\Dialogs\OptionAdvancedPage_Win.cc" />
+    <ClCompile Include="UserInterface\Dialogs\OptionAssociationPage_Win.cc" />
+    <ClCompile Include="UserInterface\Dialogs\OptionBasicPage_Win.cc" />
+    <ClCompile Include="UserInterface\Dialogs\OptionDlg_Win.cc" />
+    <ClCompile Include="UserInterface\Dialogs\OptionSubtitlePage_Win.cc" />
+    <ClCompile Include="SkinDownload.cpp" />
+    <ClCompile Include="SkinPreviewDlg.cc" />
+    <ClCompile Include="UserInterface\Dialogs\Snapshot_FloatTip.cpp" />
+    <ClCompile Include="UserInterface\Dialogs\Snapshot_Viewfinder.cc" />
+    <ClCompile Include="UserInterface\Dialogs\Snapshot_Win.cc" />
+    <ClCompile Include="UserInterface\Support\BtnEditCtrl.cc" />
+    <ClCompile Include="UserInterface\Support\FontParamsManage.cpp" />
+    <ClCompile Include="UserInterface\Support\ListImpl.cpp" />
+    <ClCompile Include="UserInterface\Support\SubtitleStyle.cc" />
+    <ClCompile Include="UserInterface\Renderer\MediaCenterView.cc" />
+    <ClCompile Include="UserInterface\Renderer\MediaListView.cc" />
+    <ClCompile Include="UserInterface\Renderer\MediaScrollbar.cc" />
+    <ClCompile Include="UserInterface\Renderer\OSDView_Win.cc" />
+    <ClCompile Include="UserInterface\Renderer\PlaylistView_MfcProxy.cc" />
+    <ClCompile Include="UserInterface\Renderer\PlaylistView_Win.cc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ButtonManage.h" />
+    <ClInclude Include="ChildView.h" />
+    <ClInclude Include="ChkDefPlayerControlBar.h" />
+    <ClInclude Include="CustomDrawBtn.h" />
+    <ClInclude Include="DisplaySettingDetector.h" />
+    <ClInclude Include="DlgChkUpdater.h" />
+    <ClInclude Include="FavoriteAddDlg.h" />
+    <ClInclude Include="FavoriteOrganizeDlg.h" />
+    <ClInclude Include="FileDropTarget.h" />
+    <ClInclude Include="FloatEdit.h" />
+    <ClInclude Include="FrameCfgFileManage.h" />
+    <ClInclude Include="GoToDlg.h" />
+    <ClInclude Include="GUIConfigManage.h" />
+    <ClInclude Include="InfoReport.h" />
+    <ClInclude Include="KeyProvider.h" />
+    <ClInclude Include="MainFrm.h" />
+    <ClInclude Include="MakeMultiplyBmp.h" />
+    <ClInclude Include="MediaFormats.h" />
+    <ClInclude Include="MediaTypesDlg.h" />
+    <ClInclude Include="mplayerc.h" />
+    <ClInclude Include="NEWOSDWnd.h" />
+    <ClInclude Include="OpenCapDeviceDlg.h" />
+    <ClInclude Include="OpenDlg.h" />
+    <ClInclude Include="OpenFileDlg.h" />
+    <ClInclude Include="OpenURLDlg.h" />
+    <ClInclude Include="PixelShaderCompiler.h" />
+    <ClInclude Include="PlayerCaptureBar.h" />
+    <ClInclude Include="PlayerCaptureDialog.h" />
+    <ClInclude Include="PlayerChannelNormalizer.h" />
+    <ClInclude Include="PlayerColorControlBar.h" />
+    <ClInclude Include="PlayerEQControlBar.h" />
+    <ClInclude Include="PlayerFloatToolBar.h" />
+    <ClInclude Include="PlayerListCtrl.h" />
+    <ClInclude Include="PlayerPlaylistBar.h" />
+    <ClInclude Include="PlayerSeekBar.h" />
+    <ClInclude Include="PlayerToolBar.h" />
+    <ClInclude Include="PlayerToolTopBar.h" />
+    <ClInclude Include="Playlist.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="revision.h" />
+    <ClInclude Include="SaveDlg.h" />
+    <ClInclude Include="SaveTextFileDialog.h" />
+    <ClInclude Include="SaveThumbnailsDialog.h" />
+    <ClInclude Include="SeekBarTip.h" />
+    <ClInclude Include="SkinFolderManager.h" />
+    <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="Struct.h" />
+    <ClInclude Include="SUIVoteStar.h" />
+    <ClInclude Include="SVPLycShowBox.h" />
+    <ClInclude Include="SVPSubUploadDlg.h" />
+    <ClInclude Include="SVPSubVoteControlBar.h" />
+    <ClInclude Include="TimeBmpManage.h" />
+    <ClInclude Include="TransparentControlBar.h" />
+    <ClInclude Include="UnCompressAPI.h" />
+    <ClInclude Include="UnCompressZip.h" />
+    <ClInclude Include="VolumeCtrl.h" />
+    <ClInclude Include="PPageBase.h" />
+    <ClInclude Include="PPageFileInfoClip.h" />
+    <ClInclude Include="PPageFileInfoDetails.h" />
+    <ClInclude Include="PPageFileInfoRes.h" />
+    <ClInclude Include="PPageFileInfoSheet.h" />
+    <ClInclude Include="PPageFileMediaInfo.h" />
+    <ClInclude Include="LineNumberEdit.h" />
+    <ClInclude Include="PlayerShaderEditorBar.h" />
+    <ClInclude Include="ShaderAutoCompleteDlg.h" />
+    <ClInclude Include="ShaderCombineDlg.h" />
+    <ClInclude Include="ShaderEditorDlg.h" />
+    <ClInclude Include="SUIButton.h" />
+    <ClInclude Include="SVPButton.h" />
+    <ClInclude Include="SVPDialog.h" />
+    <ClInclude Include="SVPSliderCtrl.h" />
+    <ClInclude Include="SVPStatic.h" />
+    <ClInclude Include="Utils\ContentType.h" />
+    <ClInclude Include="Utils\CriticalSection.h" />
+    <ClInclude Include="Utils\FileAssoc_Win.h" />
+    <ClInclude Include="Utils\SPlayerGUID.h" />
+    <ClInclude Include="Utils\TextFile.h" />
+    <ClInclude Include="Utils\Monitor\constant.h" />
+    <ClInclude Include="Utils\Monitor\factory.h" />
+    <ClInclude Include="Utils\Monitor\monitor.h" />
+    <ClInclude Include="Utils\Monitor\notify.h" />
+    <ClInclude Include="Controller\AdController.h" />
+    <ClInclude Include="Controller\Ed2kController.h" />
+    <ClInclude Include="Controller\HashController.h" />
+    <ClInclude Include="Controller\Hotkey_Controller.h" />
+    <ClInclude Include="Controller\LazyInstance.h" />
+    <ClInclude Include="Controller\MediaCenterController.h" />
+    <ClInclude Include="Controller\MediaCheckDB.h" />
+    <ClInclude Include="Controller\MediaSpiderAbstract.h" />
+    <ClInclude Include="Controller\MediaSpiderFolderTree.h" />
+    <ClInclude Include="Controller\NetworkControlerImpl.h" />
+    <ClInclude Include="Controller\OSDController.h" />
+    <ClInclude Include="Controller\pHashController.h" />
+    <ClInclude Include="Controller\PlayerPreference.h" />
+    <ClInclude Include="Controller\PlaylistController.h" />
+    <ClInclude Include="Controller\SnapUploadController.h" />
+    <ClInclude Include="Controller\SPlayerDefs.h" />
+    <ClInclude Include="Controller\SubTransController.h" />
+    <ClInclude Include="Controller\ThemePkgController.h" />
+    <ClInclude Include="Controller\UbdUploadController.h" />
+    <ClInclude Include="Controller\UpdateController.h" />
+    <ClInclude Include="Controller\UsrBehaviorController.h" />
+    <ClInclude Include="Controller\PingPongController.h" />
+    <ClInclude Include="Controller\ShareController.h" />
+    <ClInclude Include="Controller\UserAccountController.h" />
+    <ClInclude Include="Model\appSQLlite.h" />
+    <ClInclude Include="Model\HotkeyCmd.h" />
+    <ClInclude Include="Model\HotkeySchemeParser.h" />
+    <ClInclude Include="Model\MediaComm.h" />
+    <ClInclude Include="Model\MediaDB.h" />
+    <ClInclude Include="Model\MediaModel.h" />
+    <ClInclude Include="Model\MediaSQLite.h" />
+    <ClInclude Include="Model\MediaTreeModel.h" />
+    <ClInclude Include="Model\PHashComm.h" />
+    <ClInclude Include="Model\PlaylistItem.h" />
+    <ClInclude Include="Model\PlaylistParser.h" />
+    <ClInclude Include="Model\SourceModel.h" />
+    <ClInclude Include="Model\SubTransFormat.h" />
+    <ClInclude Include="Model\ThemePkg.h" />
+    <ClInclude Include="Model\UsrBehaviorData.h" />
+    <ClInclude Include="PnSPresetsDlg.h" />
+    <ClInclude Include="PPageFormats.h" />
+    <ClInclude Include="..\..\..\..\mpc-hc\trunk\src\apps\mplayerc\Ifo.h" />
+    <ClInclude Include="jpeg.h" />
+    <ClInclude Include="jpeg_tables.h" />
+    <ClInclude Include="libpng.h" />
+    <ClInclude Include="..\..\..\Thirdparty\pkg\unrar.hpp" />
+    <ClInclude Include="AllocatorCommon.h" />
+    <ClInclude Include="CShockwaveFlash.h" />
+    <ClInclude Include="DX7AllocatorPresenter.h" />
+    <ClInclude Include="DX9AllocatorPresenter.h" />
+    <ClInclude Include="EVRAllocatorPresenter.h" />
+    <ClInclude Include="FakeFilterMapper2.h" />
+    <ClInclude Include="FGFilter.h" />
+    <ClInclude Include="FGManager.h" />
+    <ClInclude Include="GraphCore.h" />
+    <ClInclude Include="GraphThread.h" />
+    <ClInclude Include="IGraphBuilder2.h" />
+    <ClInclude Include="internal_filter_config.h" />
+    <ClInclude Include="IPinHook.h" />
+    <ClInclude Include="IQTVideoSurface.h" />
+    <ClInclude Include="MacrovisionKicker.h" />
+    <ClInclude Include="ShockwaveGraph.h" />
+    <ClInclude Include="DeinterlacerFilter.h" />
+    <ClInclude Include="TextPassThruFilter.h" />
+    <ClInclude Include="ConvertChapDlg.h" />
+    <ClInclude Include="ConvertDlg.h" />
+    <ClInclude Include="ConvertPropsDlg.h" />
+    <ClInclude Include="ConvertResDlg.h" />
+    <ClInclude Include="ComPropertyPage.h" />
+    <ClInclude Include="ComPropertySheet.h" />
+    <ClInclude Include="AuthDlg.h" />
+    <ClInclude Include="BaseGraph.h" />
+    <ClInclude Include="QuicktimeGraph.h" />
+    <ClInclude Include="RealMediaGraph.h" />
+    <ClInclude Include="RealMediaWindowlessSite.h" />
+    <ClInclude Include="UserInterface\Dialogs\CustomizeFontDlg.h" />
+    <ClInclude Include="UserInterface\Dialogs\DhtmlDlgBase.h" />
+    <ClInclude Include="UserInterface\Dialogs\MovieComment_Win.h" />
+    <ClInclude Include="UserInterface\Dialogs\OAuthDlg.h" />
+    <ClInclude Include="UserInterface\Dialogs\OptionAdvancedPage_Win.h" />
+    <ClInclude Include="UserInterface\Dialogs\OptionAssociationPage_Win.h" />
+    <ClInclude Include="UserInterface\Dialogs\OptionBasicPage_Win.h" />
+    <ClInclude Include="UserInterface\Dialogs\OptionDlg_Win.h" />
+    <ClInclude Include="UserInterface\Dialogs\OptionSubtitlePage_Win.h" />
+    <ClInclude Include="SkinDownload.h" />
+    <ClInclude Include="SkinPreviewDlg.h" />
+    <ClInclude Include="UserInterface\Dialogs\Snapshot_FloatTip.h" />
+    <ClInclude Include="UserInterface\Dialogs\Snapshot_Viewfinder.h" />
+    <ClInclude Include="UserInterface\Dialogs\Snapshot_Win.h" />
+    <ClInclude Include="UserInterface\Support\BtnEditCtrl.h" />
+    <ClInclude Include="UserInterface\Support\FontParamsManage.h" />
+    <ClInclude Include="UserInterface\Support\ListImpl.h" />
+    <ClInclude Include="UserInterface\Support\SubtitleStyle.h" />
+    <ClInclude Include="UserInterface\Renderer\LayeredWindowUtils_Win.h" />
+    <ClInclude Include="UserInterface\Renderer\MediaCenterView.h" />
+    <ClInclude Include="UserInterface\Renderer\MediaListView.h" />
+    <ClInclude Include="UserInterface\Renderer\MediaScrollbar.h" />
+    <ClInclude Include="UserInterface\Renderer\OSDView_Win.h" />
+    <ClInclude Include="UserInterface\Renderer\PlaylistView_MfcProxy.h" />
+    <ClInclude Include="UserInterface\Renderer\PlaylistView_Win.h" />
+    <ClInclude Include="MainFrameSCmd.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="mplayerc.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\..\..\Users\Staff\Desktop\allcycle.bmp" />
+    <Image Include="res\web\apply.jpg" />
+    <Image Include="res\web\apply_hover.jpg" />
+    <Image Include="res\ecio.icons\audio.ico" />
+    <Image Include="res\newui\audio_bg.bmp" />
+    <Image Include="res\icon\Audio_File.ico" />
+    <Image Include="res\web\audiosetting_uesetbg.jpg" />
+    <Image Include="res\web\audiosetting_uesetbg_hover.jpg" />
+    <Image Include="res\authhdrpic.bmp" />
+    <Image Include="res\icon\avi.ico" />
+    <Image Include="res\web\bg-h.gif" />
+    <Image Include="res\web\blank.gif" />
+    <Image Include="res\newui\BORDER_CORNER.bmp" />
+    <Image Include="res\newui\BOTTOMBACKGROUND.bmp" />
+    <Image Include="res\newui\BTN_BIGOPEN.bmp" />
+    <Image Include="res\newui\BTN_CAPTURE.bmp" />
+    <Image Include="res\newui\BTN_CLOSE.bmp" />
+    <Image Include="res\newui\BTN_FONT.bmp" />
+    <Image Include="res\newui\BTN_FONT_MINUS.bmp" />
+    <Image Include="res\newui\BTN_FONT_PLUS.bmp" />
+    <Image Include="res\newui\BTN_FULLSCREEN.bmp" />
+    <Image Include="res\newui\BTN_MAX.bmp" />
+    <Image Include="res\newui\BTN_MENU.bmp" />
+    <Image Include="res\newui\BTN_MIN.bmp" />
+    <Image Include="res\newui\BTN_MINTOTRAY.bmp" />
+    <Image Include="res\newui\BTN_NEXT.bmp" />
+    <Image Include="res\newui\BTN_OPENADV.bmp" />
+    <Image Include="res\newui\BTN_OPENADV2.bmp" />
+    <Image Include="res\newui\BTN_OPENFILE.bmp" />
+    <Image Include="res\newui\BTN_OPENFILE_SMALL.bmp" />
+    <Image Include="res\newui\BTN_PAUSE.bmp" />
+    <Image Include="res\newui\BTN_PAUSE2.bmp" />
+    <Image Include="res\newui\BTN_PLAY.bmp" />
+    <Image Include="res\newui\BTN_PLAY2.bmp" />
+    <Image Include="res\newui\BTN_PLAYLIST.bmp" />
+    <Image Include="res\newui\BTN_PREV.bmp" />
+    <Image Include="res\newui\BTN_RESTORE.bmp" />
+    <Image Include="res\newui\BTN_SETTING.bmp" />
+    <Image Include="res\newui\BTN_SHARE.bmp" />
+    <Image Include="res\newui\BTN_STEP.bmp" />
+    <Image Include="res\newui\BTN_STOP.bmp" />
+    <Image Include="res\newui\BTN_STOP2.bmp" />
+    <Image Include="res\newui\BTN_SUB.bmp" />
+    <Image Include="res\newui\BTN_SUB_DELAY_INCREASE.bmp" />
+    <Image Include="res\newui\BTN_SUB_DELAY_REDUCE.bmp" />
+    <Image Include="res\web\cancel.jpg" />
+    <Image Include="res\web\cancel_hover.jpg" />
+    <Image Include="res\newui\caption.bmp" />
+    <Image Include="res\ecio.icons\cd.ico" />
+    <Image Include="res\default_bg.jpg" />
+    <Image Include="res\web\donate.gif" />
+    <Image Include="res\icon\DV_Video.ico" />
+    <Image Include="res\ecio.icons\dvd.ico" />
+    <Image Include="res\newui\FAST_BACKWORD.bmp" />
+    <Image Include="res\newui\FAST_FORWORD.bmp" />
+    <Image Include="res\web\fillassoc.jpg" />
+    <Image Include="res\web\fillassoc_hover.jpg" />
+    <Image Include="res\web\fillassoc_uesetbg.jpg" />
+    <Image Include="res\web\fillassoc_uesetbg_hover.jpg" />
+    <Image Include="res\icon\Flash.ico" />
+    <Image Include="res\web\generalseting_uesetbg.jpg" />
+    <Image Include="res\web\generalseting_uesetbg_hover.jpg" />
+    <Image Include="res\ecio.icons\hd.ico" />
+    <Image Include="res\web\hotkey.jpg" />
+    <Image Include="res\web\hotkey_hover.jpg" />
+    <Image Include="res\web\hotkeysetting_uesetbg.jpg" />
+    <Image Include="res\web\hotkeysetting_uesetbg_hover.jpg" />
+    <Image Include="res\icon.ico" />
+    <Image Include="res\Icon_114.ico" />
+    <Image Include="res\Icon_116.ico" />
+    <Image Include="res\Icon_41.ico" />
+    <Image Include="res\id_playe.bmp" />
+    <Image Include="res\idr_main.ico" />
+    <Image Include="res\logo.0.bmp" />
+    <Image Include="res\logo.0.jpg" />
+    <Image Include="res\logo.1.bmp" />
+    <Image Include="res\logo.2.bmp" />
+    <Image Include="res\logo.3.bmp" />
+    <Image Include="res\logo.4.bmp" />
+    <Image Include="res\logo.5.bmp" />
+    <Image Include="res\logo.6.bmp" />
+    <Image Include="res\logo.7.bmp" />
+    <Image Include="res\LYCBACKG.bmp" />
+    <Image Include="res\icon\Midi_File.ico" />
+    <Image Include="res\icon\mkv.ico" />
+    <Image Include="res\icon\Mobile_Video.ico" />
+    <Image Include="res\mono.bmp" />
+    <Image Include="res\icon\MP3_File.ico" />
+    <Image Include="res\multi.ico" />
+    <Image Include="res\newui\MUTED.bmp" />
+    <Image Include="res\noaudio.bmp" />
+    <Image Include="res\icon\Normal_CD.ico" />
+    <Image Include="res\newui\oauthcloseout.bmp" />
+    <Image Include="res\newui\oauthcloseover.bmp" />
+    <Image Include="res\web\ok.jpg" />
+    <Image Include="res\web\ok_hover.jpg" />
+    <Image Include="res\onoff.bmp" />
+    <Image Include="res\newui\pinail.bmp" />
+    <Image Include="res\newui\pinail2.bmp" />
+    <Image Include="res\play.ico" />
+    <Image Include="res\ecio.icons\playlist.ico" />
+    <Image Include="res\newui\playtime_0.bmp" />
+    <Image Include="res\newui\playtime_1.bmp" />
+    <Image Include="res\newui\playtime_2.bmp" />
+    <Image Include="res\newui\playtime_3.bmp" />
+    <Image Include="res\newui\playtime_4.bmp" />
+    <Image Include="res\newui\playtime_5.bmp" />
+    <Image Include="res\newui\playtime_6.bmp" />
+    <Image Include="res\newui\playtime_7.bmp" />
+    <Image Include="res\newui\playtime_8.bmp" />
+    <Image Include="res\newui\playtime_9.bmp" />
+    <Image Include="res\newui\playtime_battery.bmp" />
+    <Image Include="res\newui\playtime_colon.bmp" />
+    <Image Include="res\newui\playtime_minus.bmp" />
+    <Image Include="res\newui\playtime_percent.bmp" />
+    <Image Include="res\icon\Quicktime_File.ico" />
+    <Image Include="res\icon\Real_File.ico" />
+    <Image Include="res\web\reset.jpg" />
+    <Image Include="res\web\reset_hover.jpg" />
+    <Image Include="res\single.ico" />
+    <Image Include="res\newui\SLIDER_TM.bmp" />
+    <Image Include="res\newui\SPLAYER.bmp" />
+    <Image Include="res\stereo.bmp" />
+    <Image Include="res\streamtypes.bmp" />
+    <Image Include="res\web\subsetting_uesetbg.jpg" />
+    <Image Include="res\web\subsetting_uesetbg_hover.jpg" />
+    <Image Include="res\ecio.icons\subtitle.ico" />
+    <Image Include="res\icon\Subtitle_File.ico" />
+    <Image Include="res\web\themesetting_uesetbg.jpg" />
+    <Image Include="res\web\themesetting_uesetbg_hover.jpg" />
+    <Image Include="res\web\thumb-n.gif" />
+    <Image Include="res\toolbar1.bmp" />
+    <Image Include="res\toolbar2.bmp" />
+    <Image Include="res\newui\TOP_1X.bmp" />
+    <Image Include="res\newui\TOP_2X.bmp" />
+    <Image Include="res\newui\TOP_ALLCYCLE.bmp" />
+    <Image Include="res\newui\TOP_AUDIO.bmp" />
+    <Image Include="res\newui\TOP_CAPTURE.bmp" />
+    <Image Include="res\newui\TOP_CLOSE.bmp" />
+    <Image Include="res\newui\TOP_FLIP.bmp" />
+    <Image Include="res\newui\TOP_FULLSCREEN.bmp" />
+    <Image Include="res\newui\TOP_GAMMA.bmp" />
+    <Image Include="res\newui\TOP_LETTERBOX.bmp" />
+    <Image Include="res\newui\TOP_LETTERBOX_WIDER.bmp" />
+    <Image Include="res\newui\TOP_NOCYCLE.bmp" />
+    <Image Include="res\newui\TOP_NORMAL.bmp" />
+    <Image Include="res\newui\TOP_NORMAL_WIDER.bmp" />
+    <Image Include="res\newui\TOP_RANDOM.bmp" />
+    <Image Include="res\newui\TOP_RESTORE.bmp" />
+    <Image Include="res\newui\TOP_ROTATE.bmp" />
+    <Image Include="res\newui\TOP_SINGLECYCLE.bmp" />
+    <Image Include="res\newui\TOP_TRANS.bmp" />
+    <Image Include="res\newui\TOP_VIDEO.bmp" />
+    <Image Include="res\newui\TOPBACKGROUND.bmp" />
+    <Image Include="res\icon\ts.ico" />
+    <Image Include="res\web\updatesetting_uesetbg.jpg" />
+    <Image Include="res\web\updatesetting_uesetbg_hover.jpg" />
+    <Image Include="res\ecio.icons\video.ico" />
+    <Image Include="res\icon\Video_CD.ico" />
+    <Image Include="res\web\videosetting_uesetbg.jpg" />
+    <Image Include="res\web\videosetting_uesetbg_hover.jpg" />
+    <Image Include="res\newui\VOLUME.bmp" />
+    <Image Include="res\newui\VOLUME_BG.bmp" />
+    <Image Include="res\newui\VOLUME_TM.bmp" />
+    <Image Include="res\newui\watermark2.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\ani.avi" />
+    <None Include="res\busy.html" />
+    <None Include="res\default1.bin" />
+    <None Include="res\default2.bin" />
+    <None Include="res\shaders\3dstereo.psh" />
+    <None Include="res\shaders\BT601BT701.psh" />
+    <None Include="res\shaders\BT601BT709.psh" />
+    <None Include="res\shaders\contour.psh" />
+    <None Include="res\shaders\deinterlace (blend).psh" />
+    <None Include="res\shaders\denoise.psh" />
+    <None Include="res\shaders\EdgeSharpen.psh" />
+    <None Include="res\shaders\emboss.psh" />
+    <None Include="res\shaders\empty.psh" />
+    <None Include="res\shaders\grayscale.psh" />
+    <None Include="res\shaders\invert.psh" />
+    <None Include="res\shaders\letterbox.psh" />
+    <None Include="res\shaders\levels.psh" />
+    <None Include="res\shaders\levels2.psh" />
+    <None Include="res\shaders\levels3.psh" />
+    <None Include="res\shaders\nightvision.psh" />
+    <None Include="res\shaders\procamp.psh" />
+    <None Include="res\shaders\resizer.psh" />
+    <None Include="res\shaders\sharpen.psh" />
+    <None Include="res\shaders\SharpenComplex.psh" />
+    <None Include="res\shaders\SharpenComplex2.psh" />
+    <None Include="res\shaders\sphere.psh" />
+    <None Include="res\shaders\spotlight.psh" />
+    <None Include="res\shaders\wave.psh" />
+    <None Include="res\shaders\YV12ChromaUpsampling.psh" />
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="res\mplayerc.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\lib\lyriclib\lyriclib.vcxproj">
+      <Project>{54ec84fe-d068-435c-9200-820420063f86}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Thirdparty\jsoncpp\makefiles\vs71\lib_json.vcxproj">
+      <Project>{b84f7231-16ce-41d8-8c08-7b523ff4225b}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Thirdparty\pcid\pcid\pcid.vcxproj">
+      <Project>{b0ebb65a-43c9-470c-966e-0d0bef671b25}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Thirdparty\sqlitepp.vcxproj">
+      <Project>{e98bec31-73d6-4a23-9545-1ec7ecb1b926}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Thirdparty\wavpack-ds-wavpack-directshow\wavpack\libwavpack.vcxproj">
+      <Project>{5cccb9cf-0384-458f-ba08-72b73866840f}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Thirdparty\zeromq\libzmq.vcxproj">
+      <Project>{641c5f36-32ee-4323-b740-992b651cf9d6}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\base\base.vcxproj">
+      <Project>{f675096b-6b52-4605-992d-9653005d9c29}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\decss\decss_vs2005.vcxproj">
+      <Project>{1a2dfd1a-3c6c-44d1-909d-294af646b575}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\dsutil\dsutil_vs2005.vcxproj">
+      <Project>{fc70988b-1ae5-4381-866d-4f405e28ac42}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\BaseClasses\baseclasses_vs2005.vcxproj">
+      <Project>{e8a3f6fa-ae1c-4c8e-a0b6-9c8480324eaa}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\filters_vs2005.vcxproj">
+      <Project>{273b3149-3192-4b75-a791-470320b90812}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\misc\SyncClock\SyncClock.vcxproj">
+      <Project>{0b63409d-674d-47f8-a84e-87dbb7783189}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\muxer\basemuxer\BaseMuxer_vs2005.vcxproj">
+      <Project>{db5f93b2-54d0-4474-a588-d259be36c832}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\muxer\dsmmuxer\DSMMuxer_vs2005.vcxproj">
+      <Project>{65361c7c-83d6-42e4-870c-4dc85ae641fe}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\muxer\matroskamuxer\MatroskaMuxer_vs2005.vcxproj">
+      <Project>{67827491-8162-4039-9132-f934abc836a0}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\muxer\wavdest\wavdest_vs2005.vcxproj">
+      <Project>{eb202b68-8029-4985-b914-e94b44d2e230}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\parser\avisplitter\AviSplitter_vs2005.vcxproj">
+      <Project>{9738b023-fc46-48a2-953a-0035fd897678}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\parser\basesplitter\basesplitter_vs2005.vcxproj">
+      <Project>{37768b3f-89bc-4c16-b2a8-767c5da84c3f}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\parser\diracsplitter\DiracSplitter_vs2005.vcxproj">
+      <Project>{ecb1b3b7-196d-4809-a5e2-6f65cdbb6cca}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\parser\diracsplitter\libdirac\libdirac_vs2005.vcxproj">
+      <Project>{12be3440-a1f3-4c48-a229-30cb619ea276}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\parser\dsmsplitter\DSMSplitter_vs2005.vcxproj">
+      <Project>{1e91f58c-0bae-4021-8087-d1864d8ec066}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\parser\EASplitter\EASplitter.vcxproj">
+      <Project>{207f2016-d16a-4764-8e6f-c21b31697bab}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\parser\flvsplitter\FLVSplitter_vs2005.vcxproj">
+      <Project>{e62223ef-8263-41eb-8174-cd78bbeef368}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\parser\matroskasplitter\MatroskaSplitter_vs2005.vcxproj">
+      <Project>{3f5ea225-f4b7-4413-aeb3-4e4e5751e438}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\parser\mp4splitter\MP4Splitter_vs2005.vcxproj">
+      <Project>{9ed4b036-7399-4128-868d-6e71188e0277}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\parser\mpasplitter\MpaSplitter_vs2005.vcxproj">
+      <Project>{c0f7a036-fc2d-40df-9852-c37518db6b3e}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\parser\mpegsplitter\MpegSplitter_vs2005.vcxproj">
+      <Project>{4628c665-ede4-40d2-b525-32be8b8551c8}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\parser\nutsplitter\NutSplitter_vs2005.vcxproj">
+      <Project>{e776d3c2-5bfa-41b9-b998-a35b549af737}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\parser\oggsplitter\OggSplitter_vs2005.vcxproj">
+      <Project>{7fe0a205-3f39-4ac3-bc3c-c2d9e4d02475}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\parser\realmediasplitter\RealMediaSplitter_vs2005.vcxproj">
+      <Project>{53cf9195-19db-457d-8f55-8db1706dfa84}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\parser\roqsplitter\RoQSplitter_vs2005.vcxproj">
+      <Project>{23e1898f-8262-435c-8848-d4d8824e6d71}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\parser\ssfsplitter\SSFSplitter_vs2005.vcxproj">
+      <Project>{cc07b80f-d44f-41a9-9e37-5f2b47b46edc}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\parser\streamdrivethru\streamdrivethru_vs2005.vcxproj">
+      <Project>{ae399b7e-2b2c-4a96-9016-c5c74b0a2fa0}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\parser\WavPackSplitter\WavPackSplitter.vcxproj">
+      <Project>{81fe0c08-a123-4f8c-b4c0-7d1960edcba0}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\parser\WMVSpliter\WMVSplitter.vcxproj">
+      <Project>{e0e96f1e-6289-4b77-b70e-15ef1c4f37a5}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\reader\asyncreader\asyncreader_vs2005.vcxproj">
+      <Project>{9f31d122-e84d-485a-a58d-09dad01a56ce}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\reader\cddareader\cddareader_vs2005.vcxproj">
+      <Project>{543d40e9-8ca6-4e4b-9936-90cba562b268}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\reader\cdxareader\cdxareader_vs2005.vcxproj">
+      <Project>{4d3b4ff4-535a-4201-ab7d-9aec1e737a95}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\reader\udpreader\udpreader_vs2005.vcxproj">
+      <Project>{3020ff9b-8202-488d-b137-11decc510e6e}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\reader\vtsreader\vtsreader_vs2005.vcxproj">
+      <Project>{664e726b-eeee-403a-ac15-345d9c9e1375}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\renderer\MpcAudioRenderer\MpcAudioRendererFilter.vcxproj">
+      <Project>{d0620ef4-1313-40d5-9069-a82f6fe26994}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\source\basesource\basesource_vs2005.vcxproj">
+      <Project>{f50e74c2-5be7-4c9b-b1e7-6ca19cfad34e}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\source\d2vsource\d2vsource_vs2005.vcxproj">
+      <Project>{83cc6b88-a112-4192-bd5a-f2a249af2277}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\source\dtsac3source\dtsac3source_vs2005.vcxproj">
+      <Project>{30d48874-899f-41c6-9b26-a40c96c91102}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\source\flacsource\Flacsource.vcxproj">
+      <Project>{916d0fc1-1d86-487a-82de-37fbee43fb34}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\source\flicsource\flicsource_vs2005.vcxproj">
+      <Project>{431dd5b6-3f2f-47ee-a23f-514bc044b704}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\source\shoutcastsource\shoutcastsource_vs2005.vcxproj">
+      <Project>{42b599d7-bb84-481f-a42a-2dbe0e2e2d7e}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\source\subtitlesource\subtitlesource_vs2005.vcxproj">
+      <Project>{8f998497-9c51-4faa-83e4-1d85b22cba13}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\switcher\audioswitcher\audioswitcher_vs2005.vcxproj">
+      <Project>{d8db3e7e-d50e-4ec3-a9b9-dad18f5fe466}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\transform\avi2ac3filter\avi2ac3filter_vs2005.vcxproj">
+      <Project>{339a4575-e25b-45d6-94a1-d835891740b8}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\transform\basevideofilter\basevideofilter_vs2005.vcxproj">
+      <Project>{54dda60f-e528-4d07-a152-960a1e818680}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\transform\bufferfilter\bufferfilter_vs2005.vcxproj">
+      <Project>{9dcfd02a-16a0-4766-bc18-66163e21929d}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\transform\decssfilter\decssfilter_vs2005.vcxproj">
+      <Project>{f6b06383-3ffd-403b-9867-4aa82a20aa83}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\transform\mpadecfilter\a52dec-0.7.4\vc++\liba52_vs2005.vcxproj">
+      <Project>{62fe6d94-e17c-4a8e-8d3c-7a589a70d865}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\transform\mpadecfilter\dtsdec-0.0.1\vc++\libdts_vs2005.vcxproj">
+      <Project>{54f609fd-a8ce-43cf-94ad-23e877b97c13}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\transform\mpadecfilter\faad2\libfaad\libfaad_vs2005.vcxproj">
+      <Project>{5efcfacb-1835-422c-acda-e3b3a2f51387}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\transform\mpadecfilter\libflac\src\libFLAC\libflac.vcxproj">
+      <Project>{4cefbc84-c215-11db-8314-0800200c9a66}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\transform\mpadecfilter\libmad-0.15.0b\msvc++\libmad_vs2005.vcxproj">
+      <Project>{d8365c15-2166-4db6-8a2d-1c8f0239eb18}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\transform\mpadecfilter\libvorbisidec\libvorbisidec.vcxproj">
+      <Project>{a7134255-dff3-42f7-9bc2-fac6e71cffae}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\transform\mpadecfilter\MpaDecFilter_vs2005.vcxproj">
+      <Project>{4421516d-10a6-41c1-adf3-099573bbb0c6}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\transform\mpcvideodec\MPCVideoDec.vcxproj">
+      <Project>{58e36bf5-4a06-47e4-bd40-4ccef8c634df}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\transform\mpeg2decfilter\Mpeg2DecFilter_vs2005.vcxproj">
+      <Project>{305bab2d-0d75-4fbc-8bcd-a2917392b48c}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\transform\svpfilter\svpfilter.vcxproj">
+      <Project>{8d944019-7997-4efd-8157-4929e6eb2aa8}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\transform\WavPackDecoder\WavPackDecoder.vcxproj">
+      <Project>{8c7b228e-7ef7-4691-8b6c-724209cf031d}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\filters\wavpacklib\wavpacklib.vcxproj">
+      <Project>{b044759a-d87e-4846-8669-a91cb14c1a4a}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\libpng\libpng_vs2005.vcxproj">
+      <Project>{fc8080d1-603c-45ec-bcfa-7172e2f3d989}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\subpic\subpic_vs2005.vcxproj">
+      <Project>{d514ea4d-eafb-47a9-a437-a582ca571251}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\subtitles\libssf\libssf_vs2005.vcxproj">
+      <Project>{dd9d2d92-2241-408a-859e-b85d444b7e3c}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\subtitles\subtitles_vs2005.vcxproj">
+      <Project>{5e56335f-0fb1-4eea-b240-d8dc5e0608e4}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\svplib\svplib.vcxproj">
+      <Project>{fab25039-6d61-4729-9940-76fc6fdc806e}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ui\CmdUI\CmdUI_vs2005.vcxproj">
+      <Project>{03208025-d5c2-426a-b0fa-251d4338f30c}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ui\ResizableLib\ResizableLib_vs2005.vcxproj">
+      <Project>{4cc7ae86-3e0a-430a-bff4-bf00204cafb0}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ui\sizecbar\sizecbar_vs2005.vcxproj">
+      <Project>{61e6eb4d-2f1a-443b-94b0-e8200b26e99f}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ui\TreePropSheet\TreePropSheet_vs2005.vcxproj">
+      <Project>{ab494732-ef6d-44d0-bcf8-80ff04858d10}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\zlib\zlib_vs2005.vcxproj">
+      <Project>{2fcd4b66-9cf9-4c8f-bc70-37cd20002d49}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties DevPartner_IsInstrumented="1" RESOURCE_FILE="mplayerc.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

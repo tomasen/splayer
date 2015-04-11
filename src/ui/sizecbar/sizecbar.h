@@ -133,9 +133,9 @@ protected:
     virtual void NcCalcClient(LPRECT pRc, UINT nDockBarID);
 
     virtual void AlignControlBars();
-    void GetRowInfo(int& nFirst, int& nLast, int& nThis);
-    void GetRowSizingBars(CSCBArray& arrSCBars);
-    void GetRowSizingBars(CSCBArray& arrSCBars, int& nThis);
+    bool GetRowInfo(int& nFirst, int& nLast, int& nThis);
+    bool GetRowSizingBars(CSCBArray& arrSCBars);
+    bool GetRowSizingBars(CSCBArray& arrSCBars, int& nThis);
     BOOL NegotiateSpace(int nLengthTotal, BOOL bHorz);
 
 protected:

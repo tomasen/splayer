@@ -1,3 +1,6 @@
-This is a Mercurial repository;
+### Most-wanted features
 
-Visit http://hg.splayer.org/splayer for more information.
+pull requests are welcome.
+
+* 10bits support
+* H.265/HEVC support

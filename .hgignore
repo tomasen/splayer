@@ -8,3 +8,7 @@ out/
 # *.db
 # *~
 # *.swp
+splayer.sdf
+splayer.opensdf
+Updater/Release/Updater.vcxprojResolveAssemblyReference.cache
+Test/sqliteppTest/Release/sqliteppTest.vcxprojResolveAssemblyReference.cache

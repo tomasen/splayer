@@ -793,9 +793,6 @@ std::wstring CSVPToolBox::DetectSubFileLanguage_STL(std::wstring fn)
   return szRet;
 }
 int CSVPToolBox::DetectFileCharset(CString fn){
-// 	;
-// 	;
-    //
     FILE *stream ;
     if ( _wfopen_s( &stream, fn, _T("rb") ) == 0 ){
         //detect bom?
@@ -944,7 +941,6 @@ BOOL CSVPToolBox::delDirRecursive(CString path){
     sh.lpszProgressTitle = NULL;
 
     return SHFileOperation (&sh);
-
 
 }
 CString CSVPToolBox::GetDirFromPath(CString path){
@@ -1638,7 +1634,6 @@ CString CSVPToolBox::GetTempDir()
     }
         
     return szTmpPath;
-}
 
 int CSVPToolBox::FindAllSubfile(std::wstring szSubPath , std::vector<std::wstring>* szaSubFiles)
 {
@@ -1678,7 +1673,6 @@ int CSVPToolBox::Char4ToInt(char* szBuf){
     int iData =   ( ((int)szBuf[0] & 0xff) << 24) |  ( ((int)szBuf[1] & 0xff) << 16) | ( ((int)szBuf[2] & 0xff) << 8) |  szBuf[3] & 0xff;;
     
     return iData;
-}
 
 char* CSVPToolBox::CStringToUTF8(CString szIn, int* iDescLen, UINT codePage)
 {

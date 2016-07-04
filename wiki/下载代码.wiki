@@ -1,0 +1,5 @@
+== 下载代码 ==
+
+*下载 源码开发包 splayer_trunk.zip(880M) ，开发包中包含源代码Repository ( http:hg.splayer.org/splayer )。
+*将源码文件解压。请注意：'''解压在没有特殊符号（例如等号、减号）的路径下'''，以避免Visual Studio的编译器找不到所需的lib文件
+*'''在解压完毕后运行 BuildScript 目录下的 build.cmd ，会自动更新并编译第三方类库'''

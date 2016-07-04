@@ -1,0 +1,93 @@
+== 编译 ==
+=== 编译环境 ===
+
+*编译SPlayer的代码必须准备以下编译环境
+*Visual Studio 2008 '''SP1'''
+*MS Windows Platform SDK Win 7 SDK或更高版本 http://is.gd/gHijc http://is.gd/gHijL
+*DirextX SDK 最新版 http://seso.me/sTb
+*确认SDK在VS2008的相关环境include和lib路径中处于优先的位置 (菜单 -> Tools -> Options -> Projects and Solutions -> VC++ Directories -> Include Files / Library Files)。或者安装完成后进入程序->Microsoft Windows SDK 7.0->Visual Studio Registration->Windows SDK configure Tool 来确认正确的SDK版本设置。
+
+注：现在你可以 [[http://item.taobao.com/auction/item_detail.htm?item_num_id=8217543159|**直接向我们索取SDK光盘**]] ，包括 Platform SDK、DirectX SDK 和 Visual Studio 2008 Express Edition，开发辅助工具等，只需5元邮寄费用。 注：使用 Visual Studio 2008 的 Express Edition 需要额外的 [[http://file.splayer.org/atlmfc.zip|atlmfc 头文件和类库]]。且打开项目时会报错，但是不影响编译。
+
+
+
+== 下载代码 ==
+
+*下载 [[http://file.splayer.org/splayer_trunk.zip?mercurial.zip|源码开发包 splayer_trunk.zip(880M)]] ，开发包中包含源代码Repository ( http://hg.splayer.org/splayer )。
+*将源码文件解压。请注意：'''解压在没有特殊符号（例如等号、减号）的路径下'''，以避免Visual Studio的编译器找不到所需的lib文件
+*'''在解压完毕后运行 BuildScript 目录下的 build.cmd ，会自动更新并编译第三方类库'''
+
+
+
+== 开始编译 ==
+
+*启动Visual Studio 2008后，打开项目src目录中的主sln项目文件。（首次打开时可能会提示缺少一些vcprj文件，忽略即可）
+*编译类型选择'''Release Unicode'''
+*开始 Build mplayerc
+
+
+
+== 常见问题 ==
+
+*编译时提示缺少 xxxxxx 文件。检查SDK路径和有限顺序。或没有运行 BuildScript/build.cmd 编译第三方类库
+
+
+
+== 加入开发 ==
+
+*参考阅读 [[TODO|TODO List]] 选择一个开发方向
+*对代码作出你的修改。新加入的代码需要符合[[Coding_Style|代码规范]] （现有代码则不需要进行规范化改动，只要不要以功能改动混在一起）
+*使用 SVN 客户端的 Create Patch 功能创建 Patch 文件 （该Patch文件包含你作出的修改，也是一个考核标准）
+*将Bundle文件通过Email发送到 tomasen@gmail.com ，别忘了留下你的联系方式
+*如果Bundle通过评估，将会被合并入当前代码树。
+*提交Bundle并有兴趣加入核心开发的朋友，可以获得 commit 权限和密码
+
+
+
+== 项目模块简介 ==
+
+**项目结构可能会因开发进展而改变，实际以代码为准**
+
+{{{
+|- Apps                                // 应用程序
+|   |- Libraries                       // 类库
+|   |    |-  libpng                    // png类库
+|   |    |-  libssf                    // ssf类库(字幕相关)
+|   |    |-  subtitles                 // 字幕相关类库
+|   |    |-  decss
+|   |    |-  dsutil                    // directshow 工具类库
+|   |    |-  subpic
+|   |    |- svplib                     // 弃用
+|   |    |- curlib                     // 弃用
+|   |    |- libunrar                   // 弃用
+|   |    |- libsqlite                  // 弃用
+|   |    |- lyriclib                   // 歌词匹配类库
+|   |    |- id3lib                     // MP3 ID3 类库
+|   |    |- sqlitepp                   // sqlite++ 类库
+|   |- UI                              // 界面类库  弃用
+|   |- mplayerc                        // 主程序
+|        |- Graph                      // 主要播放逻辑
+|        |- UserInterface              // 界面类库
+|        |- Source Files               // 主程序界面和逻辑等
+|               |- mplayerc.cpp        // 主程序
+|               |- Mainframe.cpp       // 主窗口
+|               |- ChildView.cpp       // 内容窗口
+|               |- PlayerToolbar.cpp   // 控制栏
+|               |- PlayerPlaylistBar.cpp // 播放列表
+|   |- updater                           // 升级程序
+|   |- Language                          // 语言包
+|- Filters                               // DirectShow Filters *
+|   |- Muxer  
+|   |- Parser
+|   |- Libraries                         // 类库
+|   |    |- libmpeg2
+|   |- Reader
+|   |- Transform
+|   |    |- MpaDecFilter                 // 主音频解码器
+|   |    |- MPCVideoDec                  // 主视频解码器
+|   |- Source
+|   |- Switcher
+|   |- misc
+|   |- Render
+|- Test                                  // 单元测试
+}}}

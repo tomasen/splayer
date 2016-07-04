@@ -1,0 +1,9 @@
+===编译环境===
+* 编译SPlayer的代码必须准备以下编译环境
+* Visual Studio 2008 '''SP1''' 
+* MS Windows Platform SDK Win 7 SDK或更高版本  http://is.gd/gHijc  http://is.gd/gHijL
+* DirextX SDK 最新版  http://seso.me/sTb
+* 确认SDK在VS2008的相关环境include和lib路径中处于优先的位置 (菜单 -> Tools -> Options -> Projects and Solutions -> VC++ Directories -> Include Files / Library Files)。或者安装完成后进入程序->Microsoft Windows SDK 7.0->Visual Studio Registration->Windows SDK configure Tool 来确认正确的SDK版本设置。
+
+**注：现在你可以 [[http://item.taobao.com/auction/item_detail.htm?item_num_id=8217543159|直接向我们索取SDK光盘]] ，包括 Platform SDK、DirectX SDK 和 Visual Studio 2008 Express Edition，开发辅助工具等，只需5元邮寄费用。**
+**注：使用 Visual Studio 2008 的 Express Edition 需要额外的 [[http://file.splayer.org/atlmfc.zip|atlmfc 头文件和类库]]。且打开项目时会报错，但是不影响编译。**

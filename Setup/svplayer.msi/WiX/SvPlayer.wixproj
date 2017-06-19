@@ -1,0 +1,74 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>3.0</ProductVersion>
+    <ProjectGuid>{082DDC1F-06B9-426F-BAD8-047D61F8B5B9}</ProjectGuid>
+    <SchemaVersion>2.0</SchemaVersion>
+    <OutputName>SvPlayer</OutputName>
+    <OutputType>Package</OutputType>
+    <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.0\Wix.targets</WixTargetsPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DefineConstants>Debug;locale=1033;codepage=1252</DefineConstants>
+    <Cultures>en-US</Cultures>
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DefineConstants>locale=1033;codepage=1252</DefineConstants>
+    <Cultures>en-US</Cultures>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseJPN|x86' ">
+    <DefineConstants>locale=1041;codepage=932</DefineConstants>
+    <Cultures>ja-JP</Cultures>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseCHS|x86' ">
+    <DefineConstants>locale=2052;codepage=936</DefineConstants>
+    <Cultures>zh-CN</Cultures>
+    <WixVariables>
+    </WixVariables>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseCHT|x86' ">
+    <DefineConstants>locale=1028;codepage=950</DefineConstants>
+    <Cultures>zh-TW</Cultures>
+    <WixVariables>
+    </WixVariables>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseRU|x86' ">
+    <DefineConstants>locale=1049;codepage=1251</DefineConstants>
+    <Cultures>ru-RU</Cultures>
+    <WixVariables>
+    </WixVariables>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+
+  
+  <ItemGroup>
+    <Compile Include="Product.wxs" />
+    <Compile Include="SvPlayer_comp.wxs" />
+    <Content Include="SvPlayerver.wxi" />
+  </ItemGroup>
+  <ItemGroup>
+    <WixExtension Include="WixUIExtension">
+      <HintPath>$(WixExtDir)\WixUIExtension.dll</HintPath>
+    </WixExtension>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="en-us.wxl" />
+    <EmbeddedResource Include="ja-jp.wxl" />
+    <EmbeddedResource Include="zh-cn.wxl" />
+    <EmbeddedResource Include="zh-tw.wxl" />
+  </ItemGroup>
+  <Import Project="$(WixTargetsPath)" />
+</Project>

@@ -1,0 +1,94 @@
+--------------------------------------------------
+Copy and paste the code snippets into your script.
+--------------------------------------------------
+
+-----------------------------------------
+STEP 3. Copy and paste the text below.
+-----------------------------------------
+
+RequestExecutionLevel admin
+
+; Note: Please change "Open Candy Sample" to the name of your product
+!define OC_STR_MY_PRODUCT_NAME "Open Candy Sample"
+; Note: Please change the key and secret on this line to the ones assigned for your specific products
+!define OC_STR_KEY "1401d0bd8048e1f0f4628dbec1a73092"
+!define OC_STR_SECRET "4564bdaf826bbe2115718d1643ecc19e"
+; Note: Please change the registry path to match your company name
+!define OC_STR_REGISTRY_PATH "Software\Your Company\OpenCandy"
+
+-----------------------------------------
+STEP 4. Copy and paste the text below.
+-----------------------------------------
+
+; ****** OpenCandy START ******
+!include "OCSetupHlp.nsh"
+!define MUI_CUSTOMFUNCTION_ABORT "onUserAbort"
+Var UserAborted
+; Declare the OpenCandy Offer page
+PageEx custom
+ PageCallbacks OpenCandyPageStartFn OpenCandyPageLeaveFn 
+PageExEnd
+; ****** OpenCandy END ******
+
+-----------------------------------------
+STEP 5. Copy and paste the text below.
+-----------------------------------------
+
+;--------------------------------
+
+; OnInit
+Function .onInit
+; ****** OpenCandy START ******
+!insertmacro OpenCandyInit "${OC_STR_MY_PRODUCT_NAME}" "${OC_STR_KEY}" "${OC_STR_SECRET}" "${OC_STR_REGISTRY_PATH}"
+IntOp $UserAborted 0 + 0
+; ****** OpenCandy END ******
+FunctionEnd
+;--------------------------------
+; OnInstSuccess
+Function .onInstSuccess
+; ****** OpenCandy START ******
+!insertmacro OpenCandyOnInstSuccess
+; ****** OpenCandy END ******
+FunctionEnd
+;--------------------------------
+; OnInstFailed
+Function .onInstFailed
+; ****** OpenCandy START ******
+!insertmacro OpenCandyOnInstFailed
+; ****** OpenCandy END ******
+FunctionEnd
+;--------------------------------
+; OnUserAbort
+; Note: If your installer does not use
+;       the ModernUI library rename the
+;       following function ".onUserAbort"
+;       (observe leading '.')
+Function onUserAbort
+; ****** OpenCandy START ******
+IntOp $UserAborted 1 + 0
+; ****** OpenCandy END ******
+FunctionEnd
+;--------------------------------
+; OnGUIEnd
+Function .onGUIEnd
+; ****** OpenCandy START ******
+!insertmacro OpenCandyOnGuiEnd
+IntCmp $UserAborted 0 done
+  !insertmacro OpenCandyOnInstFailed
+done:
+; ****** OpenCandy END ******
+FunctionEnd
+
+-----------------------------------------
+STEP 7. Copy and paste the text below.
+-----------------------------------------
+
+!insertmacro OpenCandyInstallDLL
+
+---------------------------------------------
+STEP 8. Sample end user license agreement.
+---------------------------------------------
+
+Jan 26 2010
+
+This installer uses the OpenCandy network to recommend other software you may find valuable during the installation of this software. OpenCandy collects NON-personally identifiable information about this installation and the recommendation process. Collection of this information ONLY occurs during this installation and the recommendation process; in accordance with OpenCandy's Privacy Policy, available at www.opencandy.com/privacy-policy

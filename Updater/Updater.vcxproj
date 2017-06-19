@@ -145,7 +145,7 @@
       <AdditionalOptions>/MACHINE:I386  /LTCG %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>uafxcw.lib;libcpmt.lib;Wbemuuid.lib;svplib.lib;zlibR.lib;Version.lib;base.lib;courgette_lib.lib;lzma_sdk.lib;modp_b64.lib;Dbghelp.lib;../Thirdparty/pkg/unrar.lib;../Thirdparty/pkg/sphash.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\..\$(ProjectName).exe</OutputFile>
-      <AdditionalLibraryDirectories>../lib;..\Thirdparty\courgette\Release\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\out\bin;../lib;..\Thirdparty\courgette\Release\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <UACExecutionLevel>AsInvoker</UACExecutionLevel>
       <IgnoreSpecificDefaultLibraries>nafxcw.lib;MSVCRT;uafxcw.lib;libcpmt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>

@@ -1634,6 +1634,7 @@ CString CSVPToolBox::GetTempDir()
     }
         
     return szTmpPath;
+}
 
 int CSVPToolBox::FindAllSubfile(std::wstring szSubPath , std::vector<std::wstring>* szaSubFiles)
 {
@@ -1673,6 +1674,7 @@ int CSVPToolBox::Char4ToInt(char* szBuf){
     int iData =   ( ((int)szBuf[0] & 0xff) << 24) |  ( ((int)szBuf[1] & 0xff) << 16) | ( ((int)szBuf[2] & 0xff) << 8) |  szBuf[3] & 0xff;;
     
     return iData;
+}
 
 char* CSVPToolBox::CStringToUTF8(CString szIn, int* iDescLen, UINT codePage)
 {

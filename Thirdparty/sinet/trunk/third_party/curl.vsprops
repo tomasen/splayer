@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="gb2312"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="curl"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		AdditionalIncludeDirectories="&quot;$(SolutionDir)third_party\curl\include&quot;"
+		PreprocessorDefinitions="BUILDING_LIBCURL;CURL_STATICLIB;USE_OPENSSL;USE_SSLEAY"
+		DisableSpecificWarnings="4273;4244"
+	/>
+</VisualStudioPropertySheet>

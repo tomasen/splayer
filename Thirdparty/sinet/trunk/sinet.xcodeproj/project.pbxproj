@@ -1,0 +1,415 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 42;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		9D16BA571240C697003DEFD1 /* api_base.h in Headers */ = {isa = PBXBuildFile; fileRef = 9D16BA3E1240C697003DEFD1 /* api_base.h */; };
+		9D16BA581240C697003DEFD1 /* api_refptr.h in Headers */ = {isa = PBXBuildFile; fileRef = 9D16BA3F1240C697003DEFD1 /* api_refptr.h */; };
+		9D16BA591240C697003DEFD1 /* api_types.h in Headers */ = {isa = PBXBuildFile; fileRef = 9D16BA401240C697003DEFD1 /* api_types.h */; };
+		9D16BA5A1240C697003DEFD1 /* config_impl.cc in Sources */ = {isa = PBXBuildFile; fileRef = 9D16BA411240C697003DEFD1 /* config_impl.cc */; };
+		9D16BA5B1240C697003DEFD1 /* config_impl.h in Headers */ = {isa = PBXBuildFile; fileRef = 9D16BA421240C697003DEFD1 /* config_impl.h */; };
+		9D16BA5C1240C697003DEFD1 /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = 9D16BA431240C697003DEFD1 /* config.h */; };
+		9D16BA5D1240C697003DEFD1 /* pch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9D16BA441240C697003DEFD1 /* pch.cpp */; };
+		9D16BA5E1240C697003DEFD1 /* pch.h in Headers */ = {isa = PBXBuildFile; fileRef = 9D16BA451240C697003DEFD1 /* pch.h */; };
+		9D16BA5F1240C697003DEFD1 /* pool_impl.cc in Sources */ = {isa = PBXBuildFile; fileRef = 9D16BA461240C697003DEFD1 /* pool_impl.cc */; };
+		9D16BA601240C697003DEFD1 /* pool_impl.h in Headers */ = {isa = PBXBuildFile; fileRef = 9D16BA471240C697003DEFD1 /* pool_impl.h */; };
+		9D16BA611240C697003DEFD1 /* pool.h in Headers */ = {isa = PBXBuildFile; fileRef = 9D16BA481240C697003DEFD1 /* pool.h */; };
+		9D16BA621240C697003DEFD1 /* postdata_impl.cc in Sources */ = {isa = PBXBuildFile; fileRef = 9D16BA491240C697003DEFD1 /* postdata_impl.cc */; };
+		9D16BA631240C697003DEFD1 /* postdata_impl.h in Headers */ = {isa = PBXBuildFile; fileRef = 9D16BA4A1240C697003DEFD1 /* postdata_impl.h */; };
+		9D16BA641240C697003DEFD1 /* postdata.h in Headers */ = {isa = PBXBuildFile; fileRef = 9D16BA4B1240C697003DEFD1 /* postdata.h */; };
+		9D16BA651240C697003DEFD1 /* postdataelem_impl.cc in Sources */ = {isa = PBXBuildFile; fileRef = 9D16BA4C1240C697003DEFD1 /* postdataelem_impl.cc */; };
+		9D16BA661240C697003DEFD1 /* postdataelem_impl.h in Headers */ = {isa = PBXBuildFile; fileRef = 9D16BA4D1240C697003DEFD1 /* postdataelem_impl.h */; };
+		9D16BA671240C697003DEFD1 /* postdataelem.h in Headers */ = {isa = PBXBuildFile; fileRef = 9D16BA4E1240C697003DEFD1 /* postdataelem.h */; };
+		9D16BA681240C697003DEFD1 /* request_impl.cc in Sources */ = {isa = PBXBuildFile; fileRef = 9D16BA4F1240C697003DEFD1 /* request_impl.cc */; };
+		9D16BA691240C697003DEFD1 /* request_impl.h in Headers */ = {isa = PBXBuildFile; fileRef = 9D16BA501240C697003DEFD1 /* request_impl.h */; };
+		9D16BA6A1240C697003DEFD1 /* request.h in Headers */ = {isa = PBXBuildFile; fileRef = 9D16BA511240C697003DEFD1 /* request.h */; };
+		9D16BA6B1240C697003DEFD1 /* sinet.h in Headers */ = {isa = PBXBuildFile; fileRef = 9D16BA521240C697003DEFD1 /* sinet.h */; };
+		9D16BA6C1240C697003DEFD1 /* task_impl.cc in Sources */ = {isa = PBXBuildFile; fileRef = 9D16BA531240C697003DEFD1 /* task_impl.cc */; };
+		9D16BA6D1240C697003DEFD1 /* task_impl.h in Headers */ = {isa = PBXBuildFile; fileRef = 9D16BA541240C697003DEFD1 /* task_impl.h */; };
+		9D16BA6E1240C697003DEFD1 /* task_observer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9D16BA551240C697003DEFD1 /* task_observer.h */; };
+		9D16BA6F1240C697003DEFD1 /* task.h in Headers */ = {isa = PBXBuildFile; fileRef = 9D16BA561240C697003DEFD1 /* task.h */; };
+		9D47EC3512C9B8910082178A /* strings.cc in Sources */ = {isa = PBXBuildFile; fileRef = 9D47EC3312C9B8910082178A /* strings.cc */; };
+		9D47EC3612C9B8910082178A /* strings.h in Headers */ = {isa = PBXBuildFile; fileRef = 9D47EC3412C9B8910082178A /* strings.h */; };
+		9D47EFF312C9EF2E0082178A /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D47EFF212C9EF2E0082178A /* CoreFoundation.framework */; };
+		9D9D81DC1241ECC8006D828A /* pch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9D9D81DA1241ECC8006D828A /* pch.cpp */; };
+		9D9D81DD1241ECC8006D828A /* sinet_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9D9D81DB1241ECC8006D828A /* sinet_test.cpp */; };
+		9D9D82121241F487006D828A /* libsinet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D16BA391240C64F003DEFD1 /* libsinet.a */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		9D9D820C1241F394006D828A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9D16BA261240C613003DEFD1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9D16BA381240C64F003DEFD1;
+			remoteInfo = sinet;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		9D16BA391240C64F003DEFD1 /* libsinet.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libsinet.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		9D16BA3E1240C697003DEFD1 /* api_base.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = api_base.h; path = sinet/api_base.h; sourceTree = "<group>"; };
+		9D16BA3F1240C697003DEFD1 /* api_refptr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = api_refptr.h; path = sinet/api_refptr.h; sourceTree = "<group>"; };
+		9D16BA401240C697003DEFD1 /* api_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = api_types.h; path = sinet/api_types.h; sourceTree = "<group>"; };
+		9D16BA411240C697003DEFD1 /* config_impl.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = config_impl.cc; path = sinet/config_impl.cc; sourceTree = "<group>"; };
+		9D16BA421240C697003DEFD1 /* config_impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = config_impl.h; path = sinet/config_impl.h; sourceTree = "<group>"; };
+		9D16BA431240C697003DEFD1 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = config.h; path = sinet/config.h; sourceTree = "<group>"; };
+		9D16BA441240C697003DEFD1 /* pch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pch.cpp; path = sinet/pch.cpp; sourceTree = "<group>"; };
+		9D16BA451240C697003DEFD1 /* pch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pch.h; path = sinet/pch.h; sourceTree = "<group>"; };
+		9D16BA461240C697003DEFD1 /* pool_impl.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pool_impl.cc; path = sinet/pool_impl.cc; sourceTree = "<group>"; };
+		9D16BA471240C697003DEFD1 /* pool_impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pool_impl.h; path = sinet/pool_impl.h; sourceTree = "<group>"; };
+		9D16BA481240C697003DEFD1 /* pool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pool.h; path = sinet/pool.h; sourceTree = "<group>"; };
+		9D16BA491240C697003DEFD1 /* postdata_impl.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = postdata_impl.cc; path = sinet/postdata_impl.cc; sourceTree = "<group>"; };
+		9D16BA4A1240C697003DEFD1 /* postdata_impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = postdata_impl.h; path = sinet/postdata_impl.h; sourceTree = "<group>"; };
+		9D16BA4B1240C697003DEFD1 /* postdata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = postdata.h; path = sinet/postdata.h; sourceTree = "<group>"; };
+		9D16BA4C1240C697003DEFD1 /* postdataelem_impl.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = postdataelem_impl.cc; path = sinet/postdataelem_impl.cc; sourceTree = "<group>"; };
+		9D16BA4D1240C697003DEFD1 /* postdataelem_impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = postdataelem_impl.h; path = sinet/postdataelem_impl.h; sourceTree = "<group>"; };
+		9D16BA4E1240C697003DEFD1 /* postdataelem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = postdataelem.h; path = sinet/postdataelem.h; sourceTree = "<group>"; };
+		9D16BA4F1240C697003DEFD1 /* request_impl.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = request_impl.cc; path = sinet/request_impl.cc; sourceTree = "<group>"; };
+		9D16BA501240C697003DEFD1 /* request_impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = request_impl.h; path = sinet/request_impl.h; sourceTree = "<group>"; };
+		9D16BA511240C697003DEFD1 /* request.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = request.h; path = sinet/request.h; sourceTree = "<group>"; };
+		9D16BA521240C697003DEFD1 /* sinet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sinet.h; path = sinet/sinet.h; sourceTree = "<group>"; };
+		9D16BA531240C697003DEFD1 /* task_impl.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = task_impl.cc; path = sinet/task_impl.cc; sourceTree = "<group>"; };
+		9D16BA541240C697003DEFD1 /* task_impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = task_impl.h; path = sinet/task_impl.h; sourceTree = "<group>"; };
+		9D16BA551240C697003DEFD1 /* task_observer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = task_observer.h; path = sinet/task_observer.h; sourceTree = "<group>"; };
+		9D16BA561240C697003DEFD1 /* task.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = task.h; path = sinet/task.h; sourceTree = "<group>"; };
+		9D47EC3312C9B8910082178A /* strings.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = strings.cc; path = sinet/strings.cc; sourceTree = "<group>"; };
+		9D47EC3412C9B8910082178A /* strings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = strings.h; path = sinet/strings.h; sourceTree = "<group>"; };
+		9D47EFF212C9EF2E0082178A /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = /System/Library/Frameworks/CoreFoundation.framework; sourceTree = "<absolute>"; };
+		9D9D81D51241EC91006D828A /* sinet_test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = sinet_test; sourceTree = BUILT_PRODUCTS_DIR; };
+		9D9D81D91241ECC8006D828A /* pch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pch.h; path = tests/sinet_test/pch.h; sourceTree = "<group>"; };
+		9D9D81DA1241ECC8006D828A /* pch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pch.cpp; path = tests/sinet_test/pch.cpp; sourceTree = "<group>"; };
+		9D9D81DB1241ECC8006D828A /* sinet_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sinet_test.cpp; path = tests/sinet_test/sinet_test.cpp; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		9D16BA371240C64F003DEFD1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9D9D81D31241EC91006D828A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9D9D82121241F487006D828A /* libsinet.a in Frameworks */,
+				9D47EFF312C9EF2E0082178A /* CoreFoundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		9D16BA241240C613003DEFD1 = {
+			isa = PBXGroup;
+			children = (
+				9D47EC3312C9B8910082178A /* strings.cc */,
+				9D47EC3412C9B8910082178A /* strings.h */,
+				9D9D81D91241ECC8006D828A /* pch.h */,
+				9D9D81DA1241ECC8006D828A /* pch.cpp */,
+				9D9D81DB1241ECC8006D828A /* sinet_test.cpp */,
+				9D16BA3E1240C697003DEFD1 /* api_base.h */,
+				9D16BA3F1240C697003DEFD1 /* api_refptr.h */,
+				9D16BA401240C697003DEFD1 /* api_types.h */,
+				9D16BA411240C697003DEFD1 /* config_impl.cc */,
+				9D16BA421240C697003DEFD1 /* config_impl.h */,
+				9D16BA431240C697003DEFD1 /* config.h */,
+				9D16BA441240C697003DEFD1 /* pch.cpp */,
+				9D16BA451240C697003DEFD1 /* pch.h */,
+				9D16BA461240C697003DEFD1 /* pool_impl.cc */,
+				9D16BA471240C697003DEFD1 /* pool_impl.h */,
+				9D16BA481240C697003DEFD1 /* pool.h */,
+				9D16BA491240C697003DEFD1 /* postdata_impl.cc */,
+				9D16BA4A1240C697003DEFD1 /* postdata_impl.h */,
+				9D16BA4B1240C697003DEFD1 /* postdata.h */,
+				9D16BA4C1240C697003DEFD1 /* postdataelem_impl.cc */,
+				9D16BA4D1240C697003DEFD1 /* postdataelem_impl.h */,
+				9D16BA4E1240C697003DEFD1 /* postdataelem.h */,
+				9D16BA4F1240C697003DEFD1 /* request_impl.cc */,
+				9D16BA501240C697003DEFD1 /* request_impl.h */,
+				9D16BA511240C697003DEFD1 /* request.h */,
+				9D16BA521240C697003DEFD1 /* sinet.h */,
+				9D16BA531240C697003DEFD1 /* task_impl.cc */,
+				9D16BA541240C697003DEFD1 /* task_impl.h */,
+				9D16BA551240C697003DEFD1 /* task_observer.h */,
+				9D16BA561240C697003DEFD1 /* task.h */,
+				9D16BA3A1240C64F003DEFD1 /* Products */,
+				9D47EFF212C9EF2E0082178A /* CoreFoundation.framework */,
+			);
+			sourceTree = "<group>";
+		};
+		9D16BA3A1240C64F003DEFD1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9D16BA391240C64F003DEFD1 /* libsinet.a */,
+				9D9D81D51241EC91006D828A /* sinet_test */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		9D16BA351240C64F003DEFD1 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9D16BA571240C697003DEFD1 /* api_base.h in Headers */,
+				9D16BA581240C697003DEFD1 /* api_refptr.h in Headers */,
+				9D16BA591240C697003DEFD1 /* api_types.h in Headers */,
+				9D16BA5B1240C697003DEFD1 /* config_impl.h in Headers */,
+				9D16BA5C1240C697003DEFD1 /* config.h in Headers */,
+				9D16BA5E1240C697003DEFD1 /* pch.h in Headers */,
+				9D16BA601240C697003DEFD1 /* pool_impl.h in Headers */,
+				9D16BA611240C697003DEFD1 /* pool.h in Headers */,
+				9D16BA631240C697003DEFD1 /* postdata_impl.h in Headers */,
+				9D16BA641240C697003DEFD1 /* postdata.h in Headers */,
+				9D16BA661240C697003DEFD1 /* postdataelem_impl.h in Headers */,
+				9D16BA671240C697003DEFD1 /* postdataelem.h in Headers */,
+				9D16BA691240C697003DEFD1 /* request_impl.h in Headers */,
+				9D16BA6A1240C697003DEFD1 /* request.h in Headers */,
+				9D16BA6B1240C697003DEFD1 /* sinet.h in Headers */,
+				9D16BA6D1240C697003DEFD1 /* task_impl.h in Headers */,
+				9D16BA6E1240C697003DEFD1 /* task_observer.h in Headers */,
+				9D16BA6F1240C697003DEFD1 /* task.h in Headers */,
+				9D47EC3612C9B8910082178A /* strings.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		9D16BA381240C64F003DEFD1 /* sinet */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9D16BA3D1240C64F003DEFD1 /* Build configuration list for PBXNativeTarget "sinet" */;
+			buildPhases = (
+				9D16BA351240C64F003DEFD1 /* Headers */,
+				9D16BA361240C64F003DEFD1 /* Sources */,
+				9D16BA371240C64F003DEFD1 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = sinet;
+			productName = sinet;
+			productReference = 9D16BA391240C64F003DEFD1 /* libsinet.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		9D9D81D41241EC91006D828A /* sinet_test */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9D9D81DE1241ECC8006D828A /* Build configuration list for PBXNativeTarget "sinet_test" */;
+			buildPhases = (
+				9D9D81D21241EC91006D828A /* Sources */,
+				9D9D81D31241EC91006D828A /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				9D9D820D1241F394006D828A /* PBXTargetDependency */,
+			);
+			name = sinet_test;
+			productName = sinet_test;
+			productReference = 9D9D81D51241EC91006D828A /* sinet_test */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		9D16BA261240C613003DEFD1 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 9D16BA291240C613003DEFD1 /* Build configuration list for PBXProject "sinet" */;
+			compatibilityVersion = "Xcode 2.4";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 9D16BA241240C613003DEFD1;
+			productRefGroup = 9D16BA3A1240C64F003DEFD1 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				9D16BA381240C64F003DEFD1 /* sinet */,
+				9D9D81D41241EC91006D828A /* sinet_test */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		9D16BA361240C64F003DEFD1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9D47EC3512C9B8910082178A /* strings.cc in Sources */,
+				9D16BA5A1240C697003DEFD1 /* config_impl.cc in Sources */,
+				9D16BA5D1240C697003DEFD1 /* pch.cpp in Sources */,
+				9D16BA5F1240C697003DEFD1 /* pool_impl.cc in Sources */,
+				9D16BA621240C697003DEFD1 /* postdata_impl.cc in Sources */,
+				9D16BA651240C697003DEFD1 /* postdataelem_impl.cc in Sources */,
+				9D16BA681240C697003DEFD1 /* request_impl.cc in Sources */,
+				9D16BA6C1240C697003DEFD1 /* task_impl.cc in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9D9D81D21241EC91006D828A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9D9D81DC1241ECC8006D828A /* pch.cpp in Sources */,
+				9D9D81DD1241ECC8006D828A /* sinet_test.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		9D9D820D1241F394006D828A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9D16BA381240C64F003DEFD1 /* sinet */;
+			targetProxy = 9D9D820C1241F394006D828A /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		9D16BA271240C613003DEFD1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_64_BIT_PRE_XCODE_3_1 = x86_64;
+				COPY_PHASE_STRIP = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = _MAC_;
+			};
+			name = Debug;
+		};
+		9D16BA281240C613003DEFD1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_64_BIT_PRE_XCODE_3_1 = x86_64;
+				COPY_PHASE_STRIP = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = _MAC_;
+			};
+			name = Release;
+		};
+		9D16BA3B1240C64F003DEFD1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = sinet/pch.h;
+				GCC_PREPROCESSOR_DEFINITIONS = _MAC_;
+				INSTALL_PATH = /usr/local/lib;
+				PREBINDING = NO;
+				PRODUCT_NAME = sinet;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+			};
+			name = Debug;
+		};
+		9D16BA3C1240C64F003DEFD1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = sinet/pch.h;
+				GCC_PREPROCESSOR_DEFINITIONS = _MAC_;
+				INSTALL_PATH = /usr/local/lib;
+				PREBINDING = NO;
+				PRODUCT_NAME = sinet;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		9D9D81D71241EC92006D828A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = tests/sinet_test/pch.h;
+				GCC_PREPROCESSOR_DEFINITIONS = _MAC_;
+				INSTALL_PATH = /usr/local/bin;
+				OTHER_LDFLAGS = "-lcurl";
+				PREBINDING = NO;
+				PRODUCT_NAME = sinet_test;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+			};
+			name = Debug;
+		};
+		9D9D81D81241EC92006D828A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = tests/sinet_test/pch.h;
+				GCC_PREPROCESSOR_DEFINITIONS = _MAC_;
+				INSTALL_PATH = /usr/local/bin;
+				OTHER_LDFLAGS = "-lcurl";
+				PREBINDING = NO;
+				PRODUCT_NAME = sinet_test;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		9D16BA291240C613003DEFD1 /* Build configuration list for PBXProject "sinet" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9D16BA271240C613003DEFD1 /* Debug */,
+				9D16BA281240C613003DEFD1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9D16BA3D1240C64F003DEFD1 /* Build configuration list for PBXNativeTarget "sinet" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9D16BA3B1240C64F003DEFD1 /* Debug */,
+				9D16BA3C1240C64F003DEFD1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9D9D81DE1241ECC8006D828A /* Build configuration list for PBXNativeTarget "sinet_test" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9D9D81D71241EC92006D828A /* Debug */,
+				9D9D81D81241EC92006D828A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 9D16BA261240C613003DEFD1 /* Project object */;
+}

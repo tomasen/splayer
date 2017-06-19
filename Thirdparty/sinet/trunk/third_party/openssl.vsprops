@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="gb2312"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="openssl"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		AdditionalIncludeDirectories="&quot;$(SolutionDir)\third_party\openssl\include&quot;;&quot;$(SolutionDir)\third_party\openssl&quot;"
+		PreprocessorDefinitions="OPENSSL_SYSNAME_WIN32;L_ENDIAN;DSO_WIN32;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;OPENSSL_NO_CAMELLIA;OPENSSL_NO_SEED;OPENSSL_NO_RC5;OPENSSL_NO_MDC2;OPENSSL_NO_CMS;OPENSSL_NO_JPAKE;OPENSSL_NO_CAPIENG;OPENSSL_NO_KRB5;OPENSSL_NO_DYNAMIC_ENGINE"
+	/>
+	<Tool
+		Name="VCLinkerTool"
+		AdditionalDependencies="libeay32.lib ssleay32.lib"
+		AdditionalLibraryDirectories="&quot;$(SolutionDir)third_party\openssl\out32&quot;"
+	/>
+</VisualStudioPropertySheet>

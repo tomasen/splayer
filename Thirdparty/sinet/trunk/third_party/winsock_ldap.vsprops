@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="gb2312"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="winsock_ldap"
+	>
+	<Tool
+		Name="VCLinkerTool"
+		AdditionalDependencies="Ws2_32.lib Wldap32.lib"
+	/>
+</VisualStudioPropertySheet>

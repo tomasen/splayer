@@ -1,0 +1,5 @@
+Extract OpenSSL source here and compile static version, the output .lib files
+should be located at trunk/third_party/openssl/out32 . The include directory
+must be located at trunk/third_party/openssl/include .
+
+http://www.openssl.org/

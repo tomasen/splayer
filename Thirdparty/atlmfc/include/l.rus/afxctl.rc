@@ -1,0 +1,289 @@
+// This is a part of the Microsoft Foundation Classes C++ library.
+// Copyright (C) Microsoft Corporation
+// All rights reserved.
+//
+// This source code is only intended as a supplement to the
+// Microsoft Foundation Classes Reference and related
+// electronic documentation provided with the library.
+// See these sources for detailed information regarding the
+// Microsoft Foundation Classes product.
+
+#ifndef __AFXCTL_RC__
+#define __AFXCTL_RC__
+
+#ifndef __AFXRES_H__
+	#include <afxres.h>
+#endif
+
+#ifdef APSTUDIO_INVOKED
+// This will prevent the VC++ Resource Editor user from saving this file
+1 TEXTINCLUDE DISCARDABLE
+BEGIN
+"< Изменение стандартных ресурсов MFC не допускается! >\0"
+END
+#endif    // APSTUDIO_INVOKED
+
+#ifndef _AFXDLL
+
+/////////////////////////////////////////////////////////////////////////////
+// OLE Control Resources
+
+#ifndef _AFX_NO_STOCKPPG_RESOURCES
+
+#ifndef _AFX_INTL_RESOURCES
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+AFX_IDB_TRUETYPE        BITMAP  DISCARDABLE     "RES\\TRUETYPE.BMP"
+
+#endif // _AFX_INTL_RESOURCES
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+AFX_IDD_PROPPAGE_FONT DIALOG DISCARDABLE  13, 54, 250, 110
+STYLE WS_CHILD | 0x4
+FONT 8, "MS Shell Dlg"
+BEGIN
+	LTEXT           "&Имя свойства:",IDC_STATIC,3,5,61,8
+	COMBOBOX        AFX_IDC_FONTPROP,65,3,100,71,CBS_DROPDOWNLIST | CBS_SORT |
+					WS_VSCROLL | WS_TABSTOP
+	LTEXT           "&Шрифт:",IDC_STATIC,3,19,91,8
+	COMBOBOX        AFX_IDC_FONTNAMES,3,29,91,77,CBS_SIMPLE |
+					CBS_OWNERDRAWFIXED | CBS_AUTOHSCROLL | CBS_SORT |
+					CBS_HASSTRINGS | CBS_DISABLENOSCROLL | WS_VSCROLL |
+					WS_TABSTOP
+	LTEXT           "&Начертание:",IDC_STATIC,102,19,53,8
+	COMBOBOX        AFX_IDC_FONTSTYLES,104,29,53,53,CBS_DROPDOWNLIST |
+					CBS_DISABLENOSCROLL | WS_VSCROLL | WS_TABSTOP
+	LTEXT           "&Размер:",IDC_STATIC,167,19,40,8
+	COMBOBOX        AFX_IDC_FONTSIZES,167,29,36,53,CBS_DROPDOWN | CBS_SORT |
+					CBS_DISABLENOSCROLL | WS_VSCROLL | WS_TABSTOP
+	GROUPBOX        "Эффекты",IDC_STATIC,104,44,142,24,WS_GROUP
+	CONTROL         "&Зачеркнутый",AFX_IDC_STRIKEOUT,"Button",BS_AUTOCHECKBOX |
+					WS_TABSTOP,109,55,65,10
+	CONTROL         "Под&черкнутый",AFX_IDC_UNDERLINE,"Button",BS_AUTOCHECKBOX |
+					WS_TABSTOP,175,55,65,10
+	GROUPBOX        "Образец",IDC_STATIC,104,71,142,36,WS_GROUP
+	CTEXT           "АаБбЮюЯя",AFX_IDC_SAMPLEBOX,110,80,130,22,SS_NOPREFIX |
+					NOT WS_VISIBLE
+END
+
+AFX_IDD_PROPPAGE_COLOR DIALOG DISCARDABLE  0, 0, 250, 62
+STYLE WS_CHILD | 0x4
+FONT 8, "MS Shell Dlg"
+BEGIN
+	LTEXT           "&Имя свойства:",IDC_STATIC,3,3,100,8
+	COMBOBOX        AFX_IDC_COLORPROP,3,13,100,54,CBS_DROPDOWNLIST |
+					CBS_SORT | WS_VSCROLL | WS_TABSTOP
+	LTEXT           "Системный ц&вет:",IDC_STATIC,3,29,100,8
+	COMBOBOX        AFX_IDC_SYSTEMCOLORS,3,39,100,54,CBS_DROPDOWNLIST |
+					CBS_SORT | WS_VSCROLL | WS_TABSTOP
+	CONTROL         "",AFX_IDC_COLOR_BLACK,"Button",BS_OWNERDRAW | WS_GROUP |
+					WS_TABSTOP,118,4,15,11
+	CONTROL         "",AFX_IDC_COLOR_BLUE,"Button",BS_OWNERDRAW,138,4,15,11
+	CONTROL         "",AFX_IDC_COLOR_CYAN,"Button",BS_OWNERDRAW,158,4,15,11
+	CONTROL         "",AFX_IDC_COLOR_DARKBLUE,"Button",BS_OWNERDRAW,178,4,15,
+					11
+	CONTROL         "",AFX_IDC_COLOR_DARKCYAN,"Button",BS_OWNERDRAW,118,18,
+					15,11
+	CONTROL         "",AFX_IDC_COLOR_DARKGREEN,"Button",BS_OWNERDRAW,138,18,
+					15,11
+	CONTROL         "",AFX_IDC_COLOR_DARKMAGENTA,"Button",BS_OWNERDRAW,158,
+					18,15,11
+	CONTROL         "",AFX_IDC_COLOR_GRAY,"Button",BS_OWNERDRAW,178,18,15,11
+	CONTROL         "",AFX_IDC_COLOR_DARKRED,"Button",BS_OWNERDRAW,118,32,15,
+					11
+	CONTROL         "",AFX_IDC_COLOR_GREEN,"Button",BS_OWNERDRAW,138,32,15,
+					11
+	CONTROL         "",AFX_IDC_COLOR_LIGHTBROWN,"Button",BS_OWNERDRAW,158,32,
+					15,11
+	CONTROL         "",AFX_IDC_COLOR_LIGHTGRAY,"Button",BS_OWNERDRAW,178,32,
+					15,11
+	CONTROL         "",AFX_IDC_COLOR_MAGENTA,"Button",BS_OWNERDRAW,118,46,15,
+					11
+	CONTROL         "",AFX_IDC_COLOR_RED,"Button",BS_OWNERDRAW,138,46,15,11
+	CONTROL         "",AFX_IDC_COLOR_WHITE,"Button",BS_OWNERDRAW,158,46,15,
+					11
+	CONTROL         "",AFX_IDC_COLOR_YELLOW,"Button",BS_OWNERDRAW,178,46,15,
+					11
+END
+
+AFX_IDD_PROPPAGE_PICTURE DIALOG DISCARDABLE  0, 0, 250, 62
+STYLE WS_CHILD | 0x4
+FONT 8, "MS Shell Dlg"
+BEGIN
+	LTEXT           "&Имя свойства:",IDC_STATIC,3,3,100,8
+	COMBOBOX        AFX_IDC_PROPNAME,3,13,100,30,CBS_DROPDOWNLIST | CBS_SORT |
+					WS_VSCROLL | WS_TABSTOP
+	PUSHBUTTON      "Об&зор...",AFX_IDC_BROWSE,3,35,54,14
+	PUSHBUTTON      "О&чистить",AFX_IDC_CLEAR,61,35,54,14
+	RTEXT           "Просмотр:",IDC_STATIC,107,3,42,16
+	CONTROL         "",AFX_IDC_PICTURE,"Static",SS_BLACKFRAME,151,4,93,54
+END
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+AFX_IDD_PROPPAGE_FONT DLGINIT
+BEGIN
+	1002, 0x403, 12, 0
+0x6f42, 0x646c, 0x4920, 0x6174, 0x696c, 0x0063,
+	0
+END
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE
+BEGIN
+	AFX_IDS_PROPPAGE_UNKNOWN "(Нет данных)"
+	AFX_IDS_COLOR_DESKTOP   "Рабочий стол"
+	AFX_IDS_COLOR_APPWORKSPACE "Рабочая область приложения"
+	AFX_IDS_COLOR_WNDBACKGND "Фон окна"
+	AFX_IDS_COLOR_WNDTEXT   "Текст в окне"
+	AFX_IDS_COLOR_MENUBAR   "Главное меню"
+	AFX_IDS_COLOR_MENUTEXT  "Текст меню"
+	AFX_IDS_COLOR_ACTIVEBAR "Заголовок активного окна"
+	AFX_IDS_COLOR_INACTIVEBAR "Заголовок неактивного окна"
+	AFX_IDS_COLOR_ACTIVETEXT "Текст заголовка активного окна"
+	AFX_IDS_COLOR_INACTIVETEXT "Текст заголовка неактивного окна"
+	AFX_IDS_COLOR_ACTIVEBORDER "Граница активного окна"
+	AFX_IDS_COLOR_INACTIVEBORDER "Граница неактивного окна"
+END
+#endif // !_AFX_NO_STOCKPPG_RESOURCES
+
+STRINGTABLE DISCARDABLE
+BEGIN
+#ifndef _AFX_NO_STOCKPPG_RESOURCES
+	AFX_IDS_COLOR_WNDFRAME  "Рамка окна"
+	AFX_IDS_COLOR_SCROLLBARS "Полосы прокрутки"
+	AFX_IDS_COLOR_BTNFACE   "Кнопка"
+	AFX_IDS_COLOR_BTNSHADOW "Тень кнопки"
+	AFX_IDS_COLOR_BTNTEXT   "Текст кнопки"
+	AFX_IDS_COLOR_BTNHIGHLIGHT "Выделенная кнопка"
+	AFX_IDS_COLOR_DISABLEDTEXT "Выключенный текст"
+	AFX_IDS_COLOR_HIGHLIGHT "Выделенная область"
+	AFX_IDS_COLOR_HIGHLIGHTTEXT "Выделенный текст"
+	AFX_IDS_REGULAR         "Обычный"
+	AFX_IDS_BOLD            "Полужирный"
+	AFX_IDS_ITALIC          "Курсив"
+	AFX_IDS_BOLDITALIC      "Полужирный курсив"
+	AFX_IDS_SAMPLETEXT      "АаБбЮюЯя"
+#endif // !_AFX_NO_STOCKPPG_RESOURCES
+	AFX_IDS_DISPLAYSTRING_FONT "(Шрифт)"
+	AFX_IDS_DISPLAYSTRING_COLOR "(Цвет)"
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+	AFX_IDS_DISPLAYSTRING_PICTURE "(Рисунок - %s)"
+#ifndef _AFX_NO_STOCKPPG_RESOURCES
+	AFX_IDS_PICTUREFILTER   "Все типы рисунков|*.bmp;*.cur;*.dib;*.emf;*.ico;*.wmf|Точечные рисунки (*.bmp;*.dib)|*.bmp;*.dib|Значки/курсоры (*.ico;*.cur)|*.ico;*.cur|Метафайлы (*.wmf;*.emf)|*.wmf;*.emf|Все файлы (*.*)|*.*||"
+#endif // !_AFX_NO_STOCKPPG_RESOURCES
+	AFX_IDS_PICTYPE_UNKNOWN "Нет данных"
+	AFX_IDS_PICTYPE_NONE    "Нет"
+	AFX_IDS_PICTYPE_BITMAP  "Точечный рисунок"
+	AFX_IDS_PICTYPE_METAFILE "Метафайл"
+	AFX_IDS_PICTYPE_ICON    "Значок"
+#ifndef _AFX_NO_STOCKPPG_RESOURCES
+	AFX_IDS_COLOR_PPG       "Страница свойств: цвет"
+	AFX_IDS_COLOR_PPG_CAPTION "Цвета"
+	AFX_IDS_FONT_PPG        "Страница свойств: шрифт"
+	AFX_IDS_FONT_PPG_CAPTION "Шрифты"
+	AFX_IDS_PICTURE_PPG     "Страница свойств: рисунок"
+	AFX_IDS_PICTURE_PPG_CAPTION "Рисунки"
+#endif // !_AFX_NO_STOCKPPG_RESOURCES
+	AFX_IDS_BORDERSTYLE_0   "0 - нет"
+	AFX_IDS_BORDERSTYLE_1   "1 - фиксированный отдельный"
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+	AFX_IDS_VERB_EDIT       "&Изменить"
+	AFX_IDS_VERB_PROPERTIES "Сво&йства..."
+END
+
+#ifndef _AFX_NO_STOCKPPG_RESOURCES
+STRINGTABLE DISCARDABLE
+BEGIN
+	AFX_IDP_PICTURECANTOPEN "Невозможно открыть файл рисунка %1. Возможно, файл не существует или его нельзя прочитать."
+	AFX_IDP_PICTURECANTLOAD "Невозможно загрузить файл рисунка %1. Возможно, файл имеет неправильный формат."
+	AFX_IDP_PICTURETOOLARGE "Невозможно загрузить файл рисунка %1. Файл слишком большой, недостаточно памяти."
+	AFX_IDP_PICTUREREADFAILED
+							"Невозможно загрузить файл рисунка %1. Непонятная ошибка чтения."
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+	AFX_IDS_PICTUREBROWSETITLE "Просмотр рисунков"
+END
+#endif // !_AFX_NO_STOCKPPG_RESOURCES
+
+#ifndef _AFX_NO_CTLERROR_RESOURCES
+STRINGTABLE DISCARDABLE
+BEGIN
+	AFX_IDP_E_ILLEGALFUNCTIONCALL "Ошибочный вызов функции"
+	AFX_IDP_E_OVERFLOW      "Переполнение"
+	AFX_IDP_E_OUTOFMEMORY   "Недостаточно памяти"
+	AFX_IDP_E_DIVISIONBYZERO "Деление на ноль"
+	AFX_IDP_E_OUTOFSTRINGSPACE "Недостаточно строкового пространства"
+	AFX_IDP_E_OUTOFSTACKSPACE "Недостаточно места в стеке"
+	AFX_IDP_E_BADFILENAMEORNUMBER "Ошибочный номер или имя файла"
+	AFX_IDP_E_FILENOTFOUND  "Файл не найден"
+	AFX_IDP_E_BADFILEMODE   "Ошибочный режим файла"
+	AFX_IDP_E_FILEALREADYOPEN "Файл уже открыт"
+	AFX_IDP_E_DEVICEIOERROR "Ошибка ввода/вывода"
+	AFX_IDP_E_FILEALREADYEXISTS "Файл уже существует"
+	AFX_IDP_E_BADRECORDLENGTH "Ошибочная длина записи"
+	AFX_IDP_E_DISKFULL      "Нет места на диске"
+	AFX_IDP_E_BADRECORDNUMBER "Ошибочный номер записи"
+	AFX_IDP_E_BADFILENAME   "Неверное имя файла"
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+	AFX_IDP_E_TOOMANYFILES  "Слишком много файлов"
+	AFX_IDP_E_DEVICEUNAVAILABLE "Устройство недоступно"
+	AFX_IDP_E_PERMISSIONDENIED "Доступ запрещен"
+	AFX_IDP_E_DISKNOTREADY  "Диск не готов"
+	AFX_IDP_E_PATHFILEACCESSERROR "Ошибка доступа к пути или файлу"
+	AFX_IDP_E_PATHNOTFOUND  "Путь не найден"
+	AFX_IDP_E_INVALIDPATTERNSTRING "Недопустимая строка шаблона"
+	AFX_IDP_E_INVALIDUSEOFNULL "Недопустимое использование значения null"
+	AFX_IDP_E_INVALIDFILEFORMAT "Недопустимый формат файла"
+	AFX_IDP_E_INVALIDPROPERTYVALUE "Недопустимое значение свойства"
+	AFX_IDP_E_INVALIDPROPERTYARRAYINDEX "Недопустимый индекс массива"
+	AFX_IDP_E_SETNOTSUPPORTEDATRUNTIME "Невозможно задать значение свойства во время выполнения"
+	AFX_IDP_E_SETNOTSUPPORTED "Свойство только для чтения"
+	AFX_IDP_E_NEEDPROPERTYARRAYINDEX
+							"При использовании массива свойств необходимо указать индекс массива"
+	AFX_IDP_E_SETNOTPERMITTED "Невозможно задать значение свойства для этого элемента управления"
+	AFX_IDP_E_GETNOTSUPPORTEDATRUNTIME "Невозможно прочитать значение свойства во время выполнения"
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+	AFX_IDP_E_GETNOTSUPPORTED "Свойство только для записи"
+	AFX_IDP_E_PROPERTYNOTFOUND "Свойство не найдено"
+	AFX_IDP_E_INVALIDCLIPBOARDFORMAT "Недопустимый формат содержимого буфера обмена"
+	AFX_IDP_E_INVALIDPICTURE "Недопустимый рисунок"
+	AFX_IDP_E_PRINTERERROR  "Ошибка принтера"
+	AFX_IDP_E_CANTSAVEFILETOTEMP
+							"Невозможно создать временный файл, необходимый для сохранения"
+	AFX_IDP_E_SEARCHTEXTNOTFOUND "Не найден текст для поиска"
+	AFX_IDP_E_REPLACEMENTSTOOLONG "Слишком длинный текст для замены"
+END
+#endif //!_AFX_NO_CTLERROR_RESOURCES
+
+#endif //!_AFXDLL
+#endif //__AFXOLECL_RC__

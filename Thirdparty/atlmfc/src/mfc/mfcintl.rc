@@ -1,0 +1,66 @@
+// mfcintl.rc : Defines the resources for the MFC Language Specific DLLs
+//
+// This is a part of the Microsoft Foundation Classes C++ library.
+// Copyright (C) Microsoft Corporation
+// All rights reserved.
+//
+// This source code is only intended as a supplement to the
+// Microsoft Foundation Classes Reference and related
+// electronic documentation provided with the library.
+// See these sources for detailed information regarding the
+// Microsoft Foundation Classes product.
+
+#include "afxres.h"
+
+#if (VER_LANGID == 0x0409)
+ #define LOCDIR(f) <f>
+#else
+ #define LOCDIR(f) <l.##LANG##\\f>
+#endif
+
+#define _QUOTELANG(x)	#x
+#define QUOTELANG(x)	_QUOTELANG(x)
+
+#define _AFX_IMPL_RESOURCES
+#define _AFX_INTL_RESOURCES
+
+// include all the standard resources
+#include LOCDIR(afxres.rc)
+#include LOCDIR(afxprint.rc)
+
+// include all the OLE resources
+#include LOCDIR(afxolecl.rc)
+#include LOCDIR(afxolesv.rc)
+
+// include all the DB resources
+#include LOCDIR(afxdb.rc)
+
+// include all the CTL resources
+#include LOCDIR(afxctl.rc)
+
+// include standard status bar strings
+#include LOCDIR(indicate.rc)
+// include _all_ standard command message prompts
+#include LOCDIR(prompts.rc)
+
+// include the ribbon and control bar resources
+#include LOCDIR(afxribbon.rc)
+
+/////////////////////////////////////////////////////////////////////////////
+// Version stamp for this .DLL
+
+#include "winver.h"
+
+#define VER_FILETYPE	VFT_DLL
+
+#define VER_FILEDESCRIPTION_STR	"MFC Language Specific Resources"
+
+#define VER_INTERNALNAME_STR		"MFC" _MFC_FILENAME_VER QUOTELANG(LANG) ".DLL"
+
+#define VER_ORIGINALFILENAME_STR	VER_INTERNALNAME_STR
+
+#define VER_COPYRIGHTSTARTYEAR_STR	"1993"
+
+#include "ver_.rc"
+
+/////////////////////////////////////////////////////////////////////////////

@@ -1,0 +1,31 @@
+// This is a part of the Active Template Library.
+// Copyright (C) Microsoft Corporation
+// All rights reserved.
+//
+// This source code is only intended as a supplement to the
+// Active Template Library Reference and related
+// electronic documentation provided with the library.
+// See these sources for detailed information regarding the	
+// Active Template Library product.
+
+// atl.idl : IDL source for atl90.dll
+//
+
+#include <olectl.h>
+import "oaidl.idl";
+import "atliface.idl";
+import  "ocidl.idl";
+
+[
+	uuid(44EC0535-400F-11D0-9DCD-00A0C90391D3),
+	version(1.0),
+	helpstring("ATL 2.0 Type Library")
+]
+library ATLLib
+{
+	importlib("stdole32.tlb");
+	importlib("stdole2.tlb");
+
+	interface IDocHostUIHandlerDispatch;
+	interface IAxWinAmbientDispatchEx;
+};

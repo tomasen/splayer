@@ -1,0 +1,90 @@
+// mfcdll.rc : Defines the resources for the MFC DLL
+//
+// This is a part of the Microsoft Foundation Classes C++ library.
+// Copyright (C) Microsoft Corporation
+// All rights reserved.
+//
+// This source code is only intended as a supplement to the
+// Microsoft Foundation Classes Reference and related
+// electronic documentation provided with the library.
+// See these sources for detailed information regarding the
+// Microsoft Foundation Classes product.
+
+
+#include "afxres.h"
+
+#define _AFX_IMPL_RESOURCES
+
+// include all the standard resources
+#include "afxres.rc"
+#include "afxprint.rc"
+
+// include standard status bar strings
+#include "indicate.rc"
+// include _all_ standard command message prompts
+#include "prompts.rc"
+
+// include the ribbon/control bar resources
+#include "afxribbon.rc"
+
+#ifdef _AFX_MONOLITHIC
+// include all the standard OLE resources
+#include "afxolecl.rc"
+#include "afxolesv.rc"
+#include "afxctl.rc"
+
+// include all the standard database resources
+#include "afxdb.rc"
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+// Manifest with localized DLL information
+
+#ifdef _X86_
+ID_MFCLOC_MANIFEST    RT_MANIFEST    "INTEL\mfc_loc.manifest"
+#endif
+
+#ifdef _AMD64_
+ID_MFCLOC_MANIFEST    RT_MANIFEST    "AMD64\mfc_loc.manifest"
+#endif
+
+#ifdef _IA64_
+ID_MFCLOC_MANIFEST    RT_MANIFEST    "IA64\mfc_loc.manifest"
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+// Version stamp for this .DLL
+
+#ifdef RC_INVOKED
+
+#include "winver.h"
+
+#define VER_FILETYPE	VFT_DLL
+
+#ifdef _DEBUG
+
+#define VER_FILEDESCRIPTION_STR "MFCDLL Shared Library - Debug Version"
+#ifdef _UNICODE
+#define VER_ORIGINALFILENAME_STR "MFC" _MFC_FILENAME_VER "UD.DLL"
+#else
+#define VER_ORIGINALFILENAME_STR "MFC" _MFC_FILENAME_VER "D.DLL"
+#endif
+
+#else
+
+#define VER_FILEDESCRIPTION_STR "MFCDLL Shared Library - Retail Version"
+#ifdef _UNICODE
+#define VER_ORIGINALFILENAME_STR "MFC" _MFC_FILENAME_VER "U.DLL"
+#else
+#define VER_ORIGINALFILENAME_STR "MFC" _MFC_FILENAME_VER ".DLL"
+#endif
+
+#endif
+
+#define VER_COPYRIGHTSTARTYEAR_STR	"1993"
+
+#include "ver_.rc"
+
+#endif
+
+/////////////////////////////////////////////////////////////////////////////

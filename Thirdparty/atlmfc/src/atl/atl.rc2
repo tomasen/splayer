@@ -1,0 +1,30 @@
+// This is a part of the Active Template Library.
+// Copyright (C) Microsoft Corporation
+// All rights reserved.
+//
+// This source code is only intended as a supplement to the
+// Active Template Library Reference and related
+// electronic documentation provided with the library.
+// See these sources for detailed information regarding the	
+// Active Template Library product.
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+#define VER_FILETYPE			VFT_DLL
+
+#if defined(_DUALOS)
+#define VER_FILEDESCRIPTION_STR	"ATL Module for Windows (Unicode/ANSI)"
+#elif defined(_UNICODE)
+#define VER_FILEDESCRIPTION_STR	"ATL Module for Windows (Unicode)"
+#else
+#define VER_FILEDESCRIPTION_STR	"ATL Module for Windows (ANSI)"
+#endif          
+
+#define VER_ORIGINALFILENAME_STR	"ATL90.DLL"
+
+#define VER_COPYRIGHTSTARTYEAR_STR	"1996"
+
+#include "ver_.rc"

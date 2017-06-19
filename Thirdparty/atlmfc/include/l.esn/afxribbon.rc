@@ -1,0 +1,749 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "afxribbonres.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+
+#include "afxres.h"
+
+#ifndef _AFX_INTL_RESOURCES
+#include "res\RibbonStyle2007Aqua.rc2"
+#include "res\RibbonStyle2007Black.rc2"
+#include "res\RibbonStyle2007Blue.rc2"
+#include "res\RibbonStyle2007Silver.rc2"
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+#ifdef APSTUDIO_INVOKED
+// This will prevent the VC++ Resource Editor user from saving this file
+1 TEXTINCLUDE DISCARDABLE
+BEGIN
+"< Cannot change standard MFC resources! >\0"
+END
+#endif //APSTUDIO_INVOKED
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_AFXBAR_RES_PRINT_PREVIEW DIALOG  0, 0, 72, 15
+STYLE DS_SETFONT | WS_CHILD
+FONT 8, "MS Shell Dlg"
+BEGIN
+    PUSHBUTTON      "ficticio",AFX_ID_PREVIEW_PRINT,2,0,50,13,NOT WS_VISIBLE
+END
+
+IDD_AFXBARRES_TOOLBAR_NAME DIALOG  0, 0, 241, 46
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Nombre de barra de herramientas"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "&Nombre de barra de herramientas:",IDC_STATIC,7,7,48,8
+    EDITTEXT        IDC_AFXBARRES_TOOLBAR_NAME,7,19,155,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "Aceptar",IDOK,184,7,50,14,WS_DISABLED
+    PUSHBUTTON      "Cancelar",IDCANCEL,184,24,50,14
+END
+
+IDD_AFXBARRES_BUTTON_PROPS DIALOGEX 0, 0, 254, 153
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Apariencia del botón"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    CONTROL         "&Solo imagen",IDC_AFXBARRES_IMAGE,"Button",BS_AUTORADIOBUTTON | WS_GROUP,7,7,50,10
+    CONTROL         "Solo &texto",IDC_AFXBARRES_TEXT,"Button",BS_AUTORADIOBUTTON,7,20,45,10
+    CONTROL         "I&magen y texto",IDC_AFXBARRES_IMAGE_TEXT,"Button",BS_AUTORADIOBUTTON,7,34,63,10
+    LTEXT           "Descripción:",IDC_STATIC,7,54,38,8
+    LTEXT           "<descr>",IDC_AFXBARRES_BUTTON_DESCR,7,65,54,59,0,WS_EX_CLIENTEDGE
+    LTEXT           "&Texto del botón:",IDC_STATIC,7,134,37,8
+    EDITTEXT        IDC_AFXBARRES_BUTTON_TEXT,48,132,114,14,ES_AUTOHSCROLL
+    GROUPBOX        "",IDC_STATIC,73,20,173,105,WS_GROUP
+    CONTROL         "Usar &imagen predeterminada: ",IDC_AFXBARRES_DEFAULT_IMAGE,
+                    "Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,83,7,75,10
+    CONTROL         "Seleccionar imagen definida por el &usuario: ",IDC_AFXBARRES_USER_IMAGE,
+                    "Button",BS_AUTORADIOBUTTON,83,20,103,10
+    CONTROL         "Imágenes",IDC_AFXBARRES_IMAGE_LIST,"Button",BS_OWNERDRAW | WS_GROUP | WS_TABSTOP,79,35,121,82
+    CONTROL         "",IDC_AFXBARRES_DEFAULT_IMAGE_AREA,"Static",SS_BLACKFRAME | NOT WS_VISIBLE | WS_GROUP,163,7,20,20
+    PUSHBUTTON      "&Nuevo...",IDC_AFXBARRES_ADD_IMAGE,205,35,36,14,WS_GROUP
+    PUSHBUTTON      "&Editar...",IDC_AFXBARRES_EDIT_IMAGE,205,52,36,14,WS_DISABLED
+    DEFPUSHBUTTON   "Aceptar",IDOK,170,132,37,14,WS_GROUP
+    PUSHBUTTON      "Cancelar",IDCANCEL,210,132,37,14
+END
+
+IDD_AFXBARRES_IMAGE_EDITOR DIALOGEX 0, 0, 211, 206
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Editar imagen del botón"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    LTEXT           "Imagen:",IDC_STATIC,7,7,25,8
+    CONTROL         "Dibujar",IDC_AFXBARRES_DRAW_AREA,"Button",BS_OWNERDRAW | WS_TABSTOP,7,17,110,110
+    LTEXT           "Colores:",IDC_STATIC,138,7,22,8
+    GROUPBOX        "Vista previa: ",IDC_STATIC,7,135,65,36
+    CONTROL         "",IDC_AFXBARRES_PREVIEW_AREA,"Static",SS_GRAYRECT | NOT WS_VISIBLE,29,147,26,16
+    LTEXT           "Herramientas:",IDC_STATIC,138,94,20,8
+    CONTROL         "",IDC_AFXBARRES_PALETTE,"Static",SS_ETCHEDFRAME,138,105,66,58,WS_EX_DLGMODALFRAME
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,7,178,197,1
+    DEFPUSHBUTTON   "Aceptar",IDOK,127,185,36,14
+    PUSHBUTTON      "Cancelar",IDCANCEL,168,185,36,14
+    CONTROL         "",IDC_AFXBARRES_COLORS,"Static",SS_ETCHEDFRAME,138,18,66,72,WS_EX_DLGMODALFRAME
+END
+
+IDD_AFXBARRES_PROPPAGE1 DIALOG  0, 0, 265, 163
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "Comandos"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "Cate&gorías:",IDC_STATIC,7,7,36,8
+    LISTBOX         IDC_AFXBARRES_CATEGORY,7,17,93,104,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Coman&dos:",IDC_STATIC,115,7,38,8
+    LISTBOX         IDC_AFXBARRES_USER_TOOLS,115,17,143,104,LBS_OWNERDRAWVARIABLE | LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Descripción:",IDC_STATIC,7,128,38,8
+    CONTROL         "<descr>",IDC_AFXBARRES_BUTTON_DESCR,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,51,128,207,28
+END
+
+IDD_AFXBARRES_PROPPAGE2 DIALOG  0, 0, 265, 163
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "Barras de herramientas"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "&Barras de herramientas:",IDC_STATIC,7,7,30,8,NOT WS_GROUP
+    LISTBOX         IDC_AFXBARRES_TOOLBAR_LIST,7,18,150,138,LBS_SORT | LBS_OWNERDRAWFIXED | LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "&Restablecer",IDC_AFXBARRES_RESET,173,18,84,14,WS_DISABLED | WS_GROUP
+    PUSHBUTTON      "Restablecer &todo",IDC_AFXBARRES_RESET_ALL,173,37,84,14
+    PUSHBUTTON      "&Nuevo...",IDC_AFXBARRES_NEW_TOOLBAR,173,56,84,14
+    PUSHBUTTON      "Cambiar &nombre...",IDC_AFXBARRES_RENAME_TOOLBAR,173,75,84,14,WS_DISABLED
+    PUSHBUTTON      "&Eliminar",IDC_AFXBARRES_DELETE_TOOLBAR,173,94,84,14,WS_DISABLED
+    CONTROL         "&Mostrar etiquetas de texto",IDC_AFXBARRES_TEXT_LABELS,"Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_GROUP | WS_TABSTOP,173,121,90,10
+END
+
+IDD_AFXBARRES_PROPPAGE3 DIALOG  0, 0, 265, 163
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "Menú"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "&Mostrar menús para:",IDC_STATIC,18,22,54,8
+    COMBOBOX        IDC_AFXBARRES_MENU_LIST,18,33,103,66,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    ICON            "",IDC_AFXBARRES_TEMPL_ICON,81,52,21,20
+    LTEXT           "<.....>",IDC_AFXBARRES_MENU_DESCRIPTION,18,77,103,37
+    LTEXT           "Seleccionar menú &contextual:",IDC_AFXBARRES_CONTEXT_MENU_CAPTION,148,22,100,8
+    COMBOBOX        IDC_AFXBARRES_CONTEXT_MENU_LIST,148,33,103,66,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "R&establecer",IDC_AFXBARRES_RESET_MENU,148,52,50,14,WS_DISABLED
+    GROUPBOX        "Menús de marco de aplicación: ",IDC_STATIC,7,7,123,114
+    GROUPBOX        "Menús contextuales: ",IDC_AFXBARRES_CONTEXT_FRAME,138,7,120,149
+    LTEXT           "Sugerencia: seleccione el menú contextual, cambie la página a 'Comandos' y arrastre los botones de barra de herramientas a la ventana de menús.",IDC_AFXBARRES_CONTEXT_HINT,148,77,103,48
+    PUSHBUTTON      "&Restablecer",IDC_AFXBARRES_RESET_FRAME_MENU,18,52,50,14
+    LTEXT           "Animaciones de &menú:",IDC_AFXBARRES_MENU_ANIMATION_LABEL,7,129,70,8
+    COMBOBOX        IDC_AFXBARRES_MENU_ANIMATION,78,128,52,77,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "&Sombras de menú",IDC_AFXBARRES_MENU_SHADOWS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,146,64,10
+END
+
+IDD_AFXBARRES_PROPPAGE4 DIALOGEX 0, 0, 265, 146
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "Mouse"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    LTEXT           "&Vista:",IDC_STATIC,7,7,18,8
+    CONTROL         "Lista1",IDC_AFXBARRES_LIST_VIEWS,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_NOCOLUMNHEADER | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,7,18,108,120,WS_EX_CLIENTEDGE
+    GROUPBOX        "",IDC_STATIC,122,19,136,119
+    CONTROL         "&No es evento de doble clic",IDC_AFXBARRES_NO_DBLCLIICK,
+                    "Button",BS_AUTORADIOBUTTON,127,7,85,10
+    CONTROL         "&Asociar evento de doble clic con:",IDC_AFXBARRES_USE_DBLCLIICK,
+                    "Button",BS_AUTORADIOBUTTON,127,19,123,10
+    LISTBOX         IDC_AFXBARRES_LIST_OF_COMMANDS,140,34,110,71,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Static",IDC_AFXBARRES_COMMAND_DESCRIPTION,140,113,111,18,0,WS_EX_STATICEDGE
+END
+
+IDD_AFXBARRES_PROPPAGE5 DIALOG  0, 0, 265, 146
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "Teclado"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "&Categoría:",IDC_STATIC,7,7,60,8
+    COMBOBOX        IDC_AFXBARRES_CATEGORY,7,18,85,95,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "C&omandos:",IDC_STATIC,7,35,60,8
+    LISTBOX         IDC_AFXBARRES_COMMANDS_LIST,7,46,85,48,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Descripción:",IDC_STATIC,7,98,60,8
+    LTEXT           "Static",IDC_AFXBARRES_COMMAND_DESCRIPTION,7,109,85,28
+    LTEXT           "Establecer &acelerador para:",IDC_STATIC,108,7,62,8
+    COMBOBOX        IDC_AFXBARRES_VIEW_TYPE,102,18,85,95,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&Teclas actuales:",IDC_STATIC,102,35,60,8
+    LISTBOX         IDC_AFXBARRES_CURRENT_KEYS_LIST,102,46,85,39,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Presionar &nueva tecla de método abreviado:",IDC_STATIC,102,89,85,8
+    EDITTEXT        IDC_AFXBARRES_NEW_SHORTCUT_KEY,102,100,85,14,ES_AUTOHSCROLL | WS_DISABLED
+    LTEXT           "Asignado a:",IDC_AFXBARRES_ASSIGNED_TO_TITLE,102,118,60,8,NOT WS_VISIBLE
+    LTEXT           ".....",IDC_AFXBARRES_ASSIGNED_TO,102,129,85,8
+    ICON            "",IDC_AFXBARRES_VIEW_ICON,197,15,20,20
+    PUSHBUTTON      "&Asignar",IDC_AFXBARRES_ASSIGN,197,46,61,14,WS_DISABLED
+    PUSHBUTTON      "&Quitar",IDC_AFXBARRES_REMOVE,197,65,61,14,WS_DISABLED
+    PUSHBUTTON      "Re&stablecer todo",IDC_AFXBARRES_RESET_SHORTCUTS,197,84,61,14
+END
+
+IDD_AFXBARRES_PROPPAGE6 DIALOGEX 0, 0, 265, 146
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "Opciones"
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    LTEXT           "Barra de herramientas",IDC_STATIC,8,8,108,8
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,120,12,125,1
+    CONTROL         "Mostrar in&formación en pantalla en las barras de herramientas",IDC_AFXBARRES_SHOW_TOOLTIPS,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,19,200,10
+    CONTROL         "Mostrar &teclas de método abreviado en la información en pantalla",IDC_AFXBARRES_SHOW_TOOLTIPS_WITH_KEYS,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,34,33,200,10
+    CONTROL         "&Iconos grandes",IDC_AFXBARRES_LARGE_ICONS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,47,200,10
+    LTEXT           "Menús y barras de herramientas personalizadas",IDC_AFX_RU_MENUS_TITLE,8,78,108,8
+    CONTROL         "",IDC_AFX_RU_MENUS_LINE,"Static",SS_ETCHEDHORZ,120,82,125,1
+    CONTROL         "Los me&nús muestran los comandos usados recientemente primero",IDC_AFXBARRES_SHOW_RECENTLY_USED_MENUS,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,90,200,10
+    CONTROL         "Mostrar menús &completos después de un breve retraso",IDC_AFXBARRES_SHOW_MENUS_DELAY,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,34,104,200,10
+    PUSHBUTTON      "&Restablecer mis datos de uso",IDC_AFXBARRES_RESET_USAGE_DATA,20,124,100,14
+END
+
+IDD_AFXBARRES_WINDOWS_DLG DIALOG  0, 0, 316, 169
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Windows"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "Seleccionar &ventana:",IDC_STATIC,7,7,49,8
+    LISTBOX         IDC_AFXBARRES_LIST,7,18,220,144,LBS_SORT | LBS_OWNERDRAWFIXED | LBS_HASSTRINGS | LBS_USETABSTOPS | LBS_NOINTEGRALHEIGHT | LBS_EXTENDEDSEL | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "&Activar",IDC_AFXBARRES_ACTIVATE,233,7,76,15
+    PUSHBUTTON      "Ac&eptar",IDOK,233,25,76,15
+    PUSHBUTTON      "&Guardar",IDC_AFXBARRES_SAVE,233,43,76,15
+    PUSHBUTTON      "&Cerrar ventanas",IDC_AFXBARRES_CLOSE,233,61,76,15
+    PUSHBUTTON      "Cascada",IDC_AFXBARRES_CASCADE,233,79,76,14
+    PUSHBUTTON      "Mosaico &horizontal",IDC_AFXBARRES_TILEHORZ,233,96,76,14
+    PUSHBUTTON      "Mosaico &vertical",IDC_AFXBARRES_TILEVERT,233,113,76,14
+    PUSHBUTTON      "&Minimizar",IDC_AFXBARRES_MINIMIZE,233,130,76,14
+    PUSHBUTTON      "Ay&uda",ID_HELP,233,148,76,14
+END
+
+IDD_AFXBARRES_COLOR_DLG DIALOG  0, 0, 222, 180
+STYLE DS_SHELLFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Colores"
+FONT 8, "MS Shell Dlg 2"
+BEGIN
+    LTEXT           "Marcador de posición de ficha",IDC_AFXBARRES_STATICPLACEHOLDER,4,4,152,172,NOT WS_VISIBLE | WS_BORDER
+    PUSHBUTTON      "Aceptar",IDOK,164,16,53,14
+    PUSHBUTTON      "Cancelar",IDCANCEL,164,34,53,14
+    PUSHBUTTON      "S&eleccionar...",IDC_AFXBARRES_COLOR_SELECT,164,65,53,14
+    CTEXT           "Nuevo",IDC_STATIC,164,110,53,9,SS_CENTERIMAGE
+    PUSHBUTTON      "Color",IDC_AFXBARRES_COLOURPLACEHOLDER,164,122,53,41
+    CTEXT           "Actual",IDC_STATIC,164,166,53,10,SS_CENTERIMAGE
+END
+
+IDD_AFXBARRES_COLOR_PAGE_ONE DIALOG  0, 0, 147, 161
+STYLE DS_SHELLFONT | WS_CHILD | WS_CAPTION | WS_SYSMENU
+CAPTION "Estándar"
+FONT 8, "MS Shell Dlg 2"
+BEGIN
+    LTEXT           "Colores:",IDC_STATIC,2,4,43,10
+    PUSHBUTTON      "Hexadecimal",IDC_AFXBARRES_HEXPLACEHOLDER,2,17,143,107
+    PUSHBUTTON      "Gris",IDC_AFXBARRES_GREYSCALEPLACEHOLDER,2,131,143,26
+END
+
+IDD_AFXBARRES_COLORPAGE_TWO DIALOG  0, 0, 147, 161
+STYLE DS_SHELLFONT | WS_CHILD | WS_CAPTION | WS_SYSMENU
+CAPTION "Personalizado"
+FONT 8, "MS Shell Dlg 2"
+BEGIN
+    LTEXT           "&Matiz:",IDC_STATIC,2,103,23,8,SS_CENTERIMAGE
+    EDITTEXT        IDC_AFXBARRES_H,26,102,30,13,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin1",IDC_AFXBARRES_SPIN1,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,45,102,11,14
+    LTEXT           "&Sat:",IDC_STATIC,2,120,23,8,SS_CENTERIMAGE
+    EDITTEXT        IDC_AFXBARRES_S,26,119,30,13,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin1",IDC_AFXBARRES_SPIN2,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,45,119,11,14
+    LTEXT           "&Lum:",IDC_STATIC,2,137,23,8,SS_CENTERIMAGE
+    EDITTEXT        IDC_AFXBARRES_L,26,136,30,13,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin1",IDC_AFXBARRES_SPIN3,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,45,135,11,14
+    LTEXT           "&Rojo:",IDC_STATIC,66,103,23,8,SS_CENTERIMAGE
+    EDITTEXT        IDC_AFXBARRES_R,90,102,30,13,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin1",IDC_AFXBARRES_SPIN4,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,109,102,11,14
+    LTEXT           "&Verde:",IDC_STATIC,66,120,23,8,SS_CENTERIMAGE
+    EDITTEXT        IDC_AFXBARRES_G,90,119,30,13,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin1",IDC_AFXBARRES_SPIN5,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,109,119,11,14
+    LTEXT           "&Azul:",IDC_STATIC,66,137,23,8,SS_CENTERIMAGE
+    EDITTEXT        IDC_AFXBARRES_B,90,136,30,13,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin1",IDC_AFXBARRES_SPIN6,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,109,136,11,14
+    LTEXT           "Colores:",IDC_STATIC,2,4,48,9
+    PUSHBUTTON      "Color",IDC_AFXBARRES_COLOURPLACEHOLDER,2,14,100,80
+    PUSHBUTTON      "Lum",IDC_AFXBARRES_LUMINANCEPLACEHOLDER,106,14,18,80
+END
+
+IDD_AFXBARRES_KEYMAP DIALOG  0, 0, 344, 220
+STYLE DS_SETFONT | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Teclado de ayuda"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    CONTROL         "Lista1",IDC_AFXBARRES_KEYLIST,"SysListView32",LVS_REPORT | WS_BORDER | WS_TABSTOP,0,28,342,190
+    PUSHBUTTON      "Imprimir",IDC_AFXBARRES_PRINT_KEYMAP,3,5,15,14,NOT WS_TABSTOP
+    PUSHBUTTON      "Copiar",IDC_AFXBARRES_COPY_KEYMAP,21,5,15,14,NOT WS_TABSTOP
+    LTEXT           "&Categoría:",IDC_STATIC,44,9,31,8
+    COMBOBOX        IDC_AFXBARRES_CATEGORY,76,7,63,131,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Mostrar &acelerador para:",IDC_AFXBARRES_ACCEL_LABEL,148,9,69,8
+    COMBOBOX        IDC_AFXBARRES_VIEW_TYPE,219,7,71,137,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    ICON            "",IDC_AFXBARRES_VIEW_ICON,298,2,20,20
+END
+
+IDD_AFXBARRES_PROPPAGE7 DIALOG  0, 0, 274, 146
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "Herramientas"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "Contenido del &menú:",IDD_AFXBARRES_COMMANDS_LIST,8,8,258,59,WS_TABSTOP
+    LTEXT           "&Comando:",IDC_STATIC,8,77,34,8
+    EDITTEXT        IDD_AFXBARRES_COMMAND,69,75,178,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "&...",IDD_AFXBARRES_BROWSE_COMMAND,253,75,13,14
+    LTEXT           "&Argumentos:",IDC_STATIC,8,95,36,8
+    EDITTEXT        IDD_AFXBARRES_ARGUMENTS,69,93,178,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "",IDD_AFXBARRES_MENU_ARGUMENTS,253,93,13,14,NOT WS_VISIBLE
+    LTEXT           "&Directorio inicial:",IDC_STATIC,8,113,48,8
+    EDITTEXT        IDD_AFXBARRES_INITIAL_DIRECTORY,69,111,178,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "",IDD_AFXBARRES_MENU_INITIAL_DIRECTORY,253,111,13,14,NOT WS_VISIBLE
+END
+
+IDD_AFXBARRES_OUTLOOKBAR_OPTIONS DIALOG  0, 0, 215, 137
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION
+CAPTION "Opciones del panel de navegación"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "Mostrar &botones en este orden",IDC_STATIC,7,7,87,8
+    LISTBOX         IDC_AFXBARRES_LIST,18,21,135,87,LBS_OWNERDRAWFIXED | LBS_HASSTRINGS | LBS_USETABSTOPS | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "&Subir",IDC_AFXBARRES_MOVEUP,162,20,46,14
+    PUSHBUTTON      "&Bajar",IDC_AFXBARRES_MOVEDOWN,162,40,46,14
+    PUSHBUTTON      "&Restablecer",IDC_AFXBARRES_RESET,162,60,46,14
+    DEFPUSHBUTTON   "Aceptar",IDOK,109,115,47,15
+    PUSHBUTTON      "Cancelar",IDCANCEL,162,115,46,15
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,97,11,111,1
+END
+
+IDD_AFXBARRES_POPUP_DLG DIALOG  0, 0, 316, 169
+STYLE DS_SETFONT | WS_CHILD
+FONT 8, "MS Shell Dlg"
+BEGIN
+END
+
+IDD_AFXBARRES_PROPPAGE8 DIALOG  0, 0, 402, 284
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "Personalizar"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "&Elegir comandos de:",IDC_STATIC,8,8,78,8
+    COMBOBOX        IDC_AFXBARRES_CATEGORY,8,19,150,95,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "C&omandos:",IDC_STATIC,8,36,38,8
+    LISTBOX         IDC_AFXBARRES_COMMANDS_LIST,8,47,150,171,LBS_SORT | LBS_OWNERDRAWVARIABLE | LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "&Agregar >>",IDS_AFXBARRES_ADD,168,95,40,14
+    PUSHBUTTON      "&Quitar",IDC_AFXBARRES_REMOVE,168,117,40,14
+    LISTBOX         IDC_AFXBARRES_QAT_COMMANDS_LIST,215,19,150,180,LBS_OWNERDRAWVARIABLE | LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Re&stablecer",IDC_AFXBARRES_RESET,215,204,46,14
+    PUSHBUTTON      "",IDC_AFXBARRES_MOVEUP,375,95,19,14
+    PUSHBUTTON      "",IDC_AFXBARRES_MOVEDOWN,375,117,19,14
+    CONTROL         "&Mostrar barra de herramientas de acceso rápido debajo de la cinta ",IDC_AFXBARRES_QAT_ON_BOTTOM,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,228,163,10
+    PUSHBUTTON      "&Personalizar...",IDC_AFXBARRES_KEYBOARD,79,249,60,14
+    LTEXT           "Métodos abreviados de teclado:",IDC_STATIC,8,250,64,8
+END
+
+IDD_AFXBARRES_RIBBON_KEYBOARD_DLG DIALOG  0, 0, 339, 259
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Personalizar teclado"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "&Categorías:",IDC_STATIC,7,7,36,8
+    LISTBOX         IDC_AFXBARRES_CATEGORY,7,19,155,69,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "C&omandos:",IDC_STATIC,178,7,38,8
+    LISTBOX         IDC_AFXBARRES_COMMANDS_LIST,178,19,154,69,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&Teclas actuales:",IDC_STATIC,7,97,43,8
+    LISTBOX         IDC_AFXBARRES_CURRENT_KEYS_LIST,7,110,155,36,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Presionar &nueva tecla de método abreviado:",IDC_STATIC,178,97,76,8
+    EDITTEXT        IDC_AFXBARRES_NEW_SHORTCUT_KEY,178,111,153,14,ES_AUTOHSCROLL | WS_DISABLED
+    LTEXT           "Asignado a:",IDC_AFXBARRES_ASSIGNED_TO_TITLE,178,132,40,8,NOT WS_VISIBLE
+    LTEXT           ".....",IDC_AFXBARRES_ASSIGNED_TO,178,143,91,8
+    LTEXT           "Establecer &acelerador para:",IDC_STATIC,7,156,62,8
+    COMBOBOX        IDC_AFXBARRES_VIEW_TYPE,7,167,91,95,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Descripción:",IDC_STATIC,7,195,38,8
+    LTEXT           "Static",IDC_AFXBARRES_COMMAND_DESCRIPTION,7,207,325,10
+    DEFPUSHBUTTON   "&Asignar",IDC_AFXBARRES_ASSIGN,7,238,44,14,WS_DISABLED
+    PUSHBUTTON      "&Quitar",IDC_AFXBARRES_REMOVE,59,238,44,14,WS_DISABLED
+    PUSHBUTTON      "Re&stablecer todo",IDC_AFXBARRES_RESET_SHORTCUTS,111,238,44,14
+    PUSHBUTTON      "Cerrar",IDCANCEL,279,238,53,14
+    ICON            "",IDC_AFXBARRES_VIEW_ICON,108,167,20,20
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_AFXBAR_RES_PRINT_PREVIEW, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 13
+    END
+
+    IDD_AFXBARRES_PROPPAGE6, DIALOG
+    BEGIN
+        VERTGUIDE, 242
+        HORZGUIDE, 47
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+#ifndef _AFX_INTL_RESOURCES
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_AFXBARRES_HELP      BITMAP                  "res\\help-pro.bmp"
+IDB_AFXBARRES_MENU_IMAGES BITMAP                  "res\\menuimg-pro.bmp"
+IDR_AFXRES_PALETTE      BITMAP                  "res\\palette-pro.bmp"
+IDR_AFXRES_PALETTE32    BITMAP                  "res\\palette-pro32.bmp"
+IDB_AFXBARRES_NEW       BITMAP                  "res\\new-pro.bmp"
+IDB_AFXBARRES_NEW32     BITMAP                  "res\\new-pro32.bmp"
+IDB_AFXBARRES_DELETE    BITMAP                  "res\\delete-pro.bmp"
+IDB_AFXBARRES_DELETE32  BITMAP                  "res\\delete-pro32.bmp"
+IDB_AFXBARRES_UP        BITMAP                  "res\\up-pro.bmp"
+IDB_AFXBARRES_UP32      BITMAP                  "res\\up-pro32.bmp"
+IDB_AFXBARRES_DOWN      BITMAP                  "res\\down-pro.bmp"
+IDB_AFXBARRES_DOWN32    BITMAP                  "res\\down-pro32.bmp"
+IDR_AFXRES_PRINT_PREVIEW BITMAP                  "res\\PrintPreview-pro.bmp"
+IDR_AFXRES_PRINT_PREVIEW32 BITMAP                  "res\\PrintPreview-pro32.bmp"
+IDB_AFXBARRES_PRINT     BITMAP                  "res\\print-pro.bmp"
+IDB_AFXBARRES_PRINT32   BITMAP                  "res\\print-pro32.bmp"
+IDB_AFXBARRES_COPY      BITMAP                  "res\\copy-pro.bmp"
+IDB_AFXBARRES_COPY32    BITMAP                  "res\\copy-pro32.bmp"
+IDB_AFXBARRES_FONT      BITMAP                  "res\\font-pro.bmp"
+IDB_AFXBARRES_TASKPANE  BITMAP                  "res\\taskpane.bmp"
+IDB_AFXBARRES_TASKPANE32 BITMAP                  "res\\taskpane32.bmp"
+IDB_AFXBARRES_BROWSE    BITMAP                  "res\\browse.bmp"
+IDB_AFXBARRES_BROWSE32  BITMAP                  "res\\browse32.bmp"
+IDB_AFXBARRES_SD_TOP    BITMAP                  "res\\SDtop.bmp"
+IDB_AFXBARRES_SD_BOTTOM BITMAP                  "res\\SDbottom.bmp"
+IDB_AFXBARRES_SD_LEFT   BITMAP                  "res\\SDleft.bmp"
+IDB_AFXBARRES_SD_MIDDLE BITMAP                  "res\\SDmiddle.bmp"
+IDB_AFXBARRES_SD_RIGHT  BITMAP                  "res\\SDright.bmp"
+IDB_AFXBARRES_SD_CENTER BITMAP                  "res\\SDCenter.bmp"
+IDB_AFXBARRES_COLOR_PICKER BITMAP                  "res\\picker.bmp"
+IDB_AFXBARRES_HELP32    BITMAP                  "res\\help-pro32.bmp"
+IDB_AFXBARRES_MENU_IMAGES24 BITMAP                  "res\\menuimg-pro24.bmp"
+IDB_AFXBARRES_RIBBON_PRINT_LARGE BITMAP                  "res\\RibbonPrintL.bmp"
+IDB_AFXBARRES_RIBBON_PRINT_SMALL BITMAP                  "res\\RibbonPrintS.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Cursor
+//
+
+IDC_AFXBARRES_RECT      CURSOR                  "res\\rect-pro.cur"
+IDC_AFXBARRES_ELLIPSE   CURSOR                  "res\\ellipse-pro.cur"
+IDC_AFXBARRES_FILL      CURSOR                  "res\\fill-pro.cur"
+IDC_AFXBARRES_LINE      CURSOR                  "res\\line-pro.cur"
+IDC_AFXBARRES_PEN       CURSOR                  "res\\pen-pro.cur"
+IDC_AFXBARRES_COLOR     CURSOR                  "res\\color-pro.cur"
+IDC_AFXBARRES_DELETE    CURSOR                  "res\\delete-pro.cur"
+IDC_AFXBARRES_MOVE      CURSOR                  "res\\move-pro.cur"
+IDC_AFXBARRES_COPY      CURSOR                  "res\\copy-pro.cur"
+IDC_AFXBARRES_HAND      CURSOR                  "res\\hand-pro.cur"
+IDC_AFXBARRES_MOVE_TAB  CURSOR                  "res\\movetab.cur"
+IDC_AFXBARRES_NO_MOVE_TAB CURSOR                  "res\\nomovetab.cur"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_AFXRES_PALETTE TOOLBAR  16, 15
+BEGIN
+    BUTTON      ID_AFX_TOOL_PEN
+    BUTTON      ID_AFX_TOOL_FILL
+    BUTTON      ID_AFX_TOOL_PICK
+    BUTTON      ID_AFX_TOOL_LINE
+    BUTTON      ID_AFX_TOOL_RECT
+    BUTTON      ID_AFX_TOOL_ELLIPSE
+    SEPARATOR
+    BUTTON      ID_AFX_TOOL_COPY
+    BUTTON      ID_AFX_TOOL_PASTE
+    BUTTON      ID_AFX_TOOL_CLEAR
+END
+
+IDR_AFXRES_PRINT_PREVIEW TOOLBAR  16, 16
+BEGIN
+    BUTTON      AFX_ID_PREVIEW_PRINT
+    BUTTON      AFX_ID_PREVIEW_NEXT
+    BUTTON      AFX_ID_PREVIEW_PREV
+    BUTTON      AFX_ID_PREVIEW_NUMPAGE
+    BUTTON      AFX_ID_PREVIEW_ZOOMIN
+    BUTTON      AFX_ID_PREVIEW_ZOOMOUT
+    BUTTON      AFX_ID_PREVIEW_CLOSE
+    BUTTON      ID_AFXRES_TWO_PAGES_DUMMY
+END
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_AFXRES_TOOL         ICON                    "res\\tool-pro.ico"
+IDI_AFXBARRES_HELP      ICON                    "res\\help-pro.ico"
+IDI_AFXRES_LINK         ICON                    "res\\link.ico"
+IDI_AFXRES_COLORS       ICON                    "res\\colors.ico"
+
+#endif // _AFX_INTL_RESOURCES
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_AFXBARRES_PROPPAGE3 DLGINIT
+BEGIN
+    IDC_AFXBARRES_MENU_ANIMATION, 0x403, 5, 0
+0x6f4e, 0x656e, "\000" 
+    IDC_AFXBARRES_MENU_ANIMATION, 0x403, 7, 0
+0x6e55, 0x6f66, 0x646c, "\000" 
+    IDC_AFXBARRES_MENU_ANIMATION, 0x403, 6, 0
+0x6c53, 0x6469, 0x0065, 
+    IDC_AFXBARRES_MENU_ANIMATION, 0x403, 5, 0
+0x6146, 0x6564, "\000" 
+    IDC_AFXBARRES_MENU_ANIMATION, 0x403, 10, 0
+0x445b, 0x6665, 0x7561, 0x746c, 0x005d, 
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_AFXBARRES_POPUP_AFXTOOL_BAR MENU 
+BEGIN
+    POPUP "_POPUP_"
+    BEGIN
+        MENUITEM "&Restablecer valores predeterminados",           ID_AFXBARRES_TOOLBAR_RESET
+        MENUITEM "&Copiar imagen del botón",          ID_AFXBARRES_COPY_IMAGE
+        MENUITEM "&Eliminar",                     ID_AFXBARRES_TOOLBAR_DELETE
+        MENUITEM SEPARATOR
+        MENUITEM "&Apariencia del botón...",       ID_AFXBARRES_TOOLBAR_APPEARANCE
+        MENUITEM "&Imagen",                      ID_AFXBARRES_TOOLBAR_IMAGE
+        MENUITEM "&Texto",                       ID_AFXBARRES_TOOLBAR_TEXT
+        MENUITEM "I&magen y texto",             ID_AFXBARRES_TOOLBAR_IMAGE_AND_TEXT
+        MENUITEM SEPARATOR
+        MENUITEM "&Grupo de inicio",                ID_AFXBARRES_TOOLBAR_START_GROUP
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDP_AFXBARRES_IMAGE_IS_REQUIRED "Debe seleccionar una imagen."
+    IDP_AFXBARRES_TEXT_IS_REQUIRED "Debe escribir texto."
+    IDP_AFXBARRES_CANNT_CREATE_IMAGE "No se puede crear una nueva imagen."
+    IDP_AFXBARRES_CANT_PASTE_BITMAP 
+                            "No se puede pegar la imagen del mapa de bits del portapapeles."
+    IDS_AFXBARRES_WRONG_IMAGE_SIZE 
+                            "Solamente puede pegar el mapa de bits con el tamaño (%d x %d)."
+    IDS_AFXBARRES_MENU_BAR_TITLE "Barra de menús"
+    IDS_AFXBARRES_NO_MENUBAR "No se pueden personalizar los menús."
+    IDP_AFXBARRES_INTERLAL_ERROR 
+                            "Error interno de la barra de herramientas. Póngase en contacto con el proveedor de la aplicación."
+    IDP_AFXBARRES_UNASSIGNED "[Sin asignar]"
+    IDP_AFXBARRES_CANT_COPY_BITMAP 
+                            "No se puede copiar la imagen del mapa de bits en el portapapeles."
+    IDS_AFXBARRES_HIDE_BAR  "Ocultar ventana acoplada"
+    IDS_AFXBARRES_EXPAND_BAR "Expandir ventana acoplada"
+    IDS_AFXBARRES_CONTRACT_BAR "Contraer ventana acoplada"
+    IDS_AFXBARRES_NEW_MENU  "Nuevo menú"
+    IDS_AFXBARRES_FILE      "Archivo"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_AFXBARRES_FOLDER    "Carpeta"
+    IDS_AFXBARRES_NEW       "Nuevo"
+    IDS_AFXBARRES_EXISTING  "Existente"
+    IDS_AFXBARRES_RECENT    "Reciente"
+    IDS_AFXBARRES_DELETE    "Eliminar"
+    IDS_AFXBARRES_MOVEUP    "Subir elemento"
+    IDS_AFXBARRES_MOVEDN    "Bajar elemento"
+    IDS_AFXBARRES_CMD_FILTER 
+                            "Ejecutable (*.exe)|*.exe|Comando (*.com)|*.com|Información (*.pdf)|*.pdf|Lotes (*.bat)|*.bat|Todos los archivos (*.*)|*.*||"
+    IDS_AFXBARRES_TOO_MANY_TOOLS_FMT "Puede definir hasta %d herramientas."
+    IDS_AFXBARRES_EXPAND_FMT "Expandir (%s)"
+    IDS_AFXBARRES_MORE_BUTTONS "Más botones"
+    IDS_AFXBARRES_NEW_FILE  "Nuevo"
+    IDS_AFX_TEAR_OFF            "Arrastrar para convertir este menú en flotante"
+    IDS_AFXBARRES_COMMAND   "Comando"
+    IDS_AFXBARRES_KEYS      "Teclas"
+    IDS_AFXBARRES_DESCRIPTION "Descripción"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_AFXBARRES_PROPSHT_CAPTION "Personalizar"
+    IDS_AFXBARRES_UNTITLED_TOOLBAR "<Sin título>"
+    IDS_AFXBARRES_CLOSE     "Cerrar"
+    IDS_AFXBARRES_DEFUALT_MENU "Menú predeterminado"
+    IDS_AFXBARRES_DEFAULT_MENU_DESCR 
+                            "Menú de aplicación predeterminado. Aparece cuando no hay documentos abiertos."
+    IDS_AFXBARRES_NO_CONTEXT 
+                            "-------------------------------------------------------------------------------------------"
+    IDS_AFXBARRES_DELETE_TOOLBAR_FMT 
+                            "¿Está seguro de que desea eliminar la barra de herramientas '%s'?"
+    IDS_AFXBARRES_ALL_COMMANDS "Todos los comandos"
+    IDS_AFXBARRES_RESET_TOOLBAR_FMT 
+                            "¡Se perderán todos los cambios! ¿Está seguro de que desea restablecer la barra de herramientas '%s'?"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_AFXBARRES_RESET_ALL_TOOLBARS 
+                            "¡Se perderán todos los cambios! ¿Está seguro de que desea restablecer todas las barras de herramientas y menús?"
+    IDS_AFXBARRES_RESET_MENU_FMT 
+                            "¡Se perderán todos los cambios! ¿Está seguro de que desea restablecer el menú '%s'?"
+    IDS_AFXBARRES_DEFAULT_VIEW "Predeterminado"
+    IDS_AFXBARRES_RESET_KEYBOARD 
+                            "¡Se perderán todos los cambios! ¿Está seguro de que desea restablecer las asignaciones de teclado?"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_AFXBARRES_TOO_MANY_TOOLBARS_FMT 
+                            "No puede crear más de %d barras de herramientas definidas por el usuario."
+    IDS_AFXBARRES_RESET_USAGE_WARNING 
+                            "Se eliminará el registro de comandos usados en esta aplicación y se restaurará el conjunto predeterminado de comandos visibles en los menús y barras de herramientas. No se deshará ninguna personalización explícita. ¿Está seguro de que desea hacer esto?"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_AFX_TOOL_FILL        "Herramienta Rellenar\nRellenar"
+    ID_AFX_TOOL_PEN         "Herramienta Lápiz\nLápiz"
+    ID_AFX_TOOL_PICK        "Herramienta Seleccionar color\nSeleccionar color"
+    ID_AFX_TOOL_LINE        "Herramienta Línea\nLínea"
+    ID_AFX_TOOL_RECT        "Herramienta Reactángulo\nRectángulo"
+    ID_AFX_TOOL_ELLIPSE     "Herramienta Elipse\nElipse"
+    ID_AFX_TOOL_COPY        "Herramienta Copiar\nCopiar"
+    ID_AFX_TOOL_PASTE       "Herramienta Pegar\nPegar"
+    ID_AFX_TOOL_CLEAR       "Herramienta Borrar\nBorrar"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_AFXBARRES_TOOLBAR_OPTIONS "Opciones de barra de herramientas"
+    IDS_AFXBARRES_ADD_REMOVE_BTNS "&Agregar o quitar botones"
+    IDS_AFXBARRES_TASKPANE  "Panel de tareas"
+    ID_AFXBARRES_TASKPANE_BACK "Atrás"
+    ID_AFXBARRES_TASKPANE_FORWARD "Adelante"
+    ID_AFXBARRES_TASKPANE_HOME "Inicio"
+    ID_AFXBARRES_TASKPANE_CLOSE "Cerrar"
+END
+
+STRINGTABLE 
+BEGIN
+    AFX_ID_PREVIEW_CLOSE    "Cerrar vista previa de impresión\n&Cerrar"
+    AFX_ID_PREVIEW_NUMPAGE  "Alternar visualización de una o dos páginas\nAlternar visualización de una o dos páginas"
+    AFX_ID_PREVIEW_NEXT     "Página siguiente\nPágina siguiente"
+    AFX_ID_PREVIEW_PREV     "Página anterior\nPágina anterior"
+    AFX_ID_PREVIEW_PRINT    "Imprimir documento\n&Imprimir"
+    AFX_ID_PREVIEW_ZOOMIN   "Acercar\nAcercar"
+    AFX_ID_PREVIEW_ZOOMOUT  "Alejar\nAlejar"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_AFXBARRES_CLOSEBAR  "Cerrar"
+    IDS_AFXBARRES_AUTOHIDEBAR "Ocultar automáticamente"
+    IDP_AFXBARRES_SCROLL_LEFT "Desplazar a la izquierda"
+    IDP_AFXBARRES_SCROLL_RIGHT "Desplazar a la derecha"
+    IDS_AFXBARRES_AUTOHIDE_ALL "Ocultar automáticamente todo"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_AFXBARRES_RESET_TOOLBAR "&Restablecer barra de herramientas"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_AFXBARRES_TASKPANE_OTHER "Otros paneles de tareas"
+    IDS_AFXBARRES_FULLSCREEN_CLOSE "Cerrar pantalla completa"
+    IDS_AFXBARRES_FULLSCREEN "Pantalla completa"
+    IDS_AFXBARRES_SHOWONEROW "&Mostrar botones en una fila"
+    IDS_AFXBARRES_SHOWTWOROWS "&Mostrar botones en dos filas"
+    IDS_AFXBARRES_SHOW_MORE_BUTTONS "Mostrar más botones"
+    IDS_AFXBARRES_SHOW_FEWER_BUTTONS "Mostrar menos botones"
+    IDS_AFXBARRES_NAV_PANE_OPTIONS "Opciones del panel de navegación..."
+    IDS_AFXBARRES_MENU      "Posición de la ventana"
+    IDS_AFXBARRES_FLOATING  "&Flotante"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_AFXBARRES_DOCKING   "&Acoplamiento"
+    IDS_AFXBARRES_AUTOHIDE  "&Ocultar automáticamente"
+    IDS_AFXBARRES_HIDE      "O&cultar"
+    IDS_AFXBARRES_OPENED_DOCS "Archivos activos"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_AFXBARRES_TABBED    "&Organización por fichas"
+    IDS_AFXBARRES_PRINT_PREVIEW "&Vista previa de impresión"
+    IDS_AFXBARRES_PRINT     "Imprimir"
+    IDS_AFXBARRES_ZOOM      "Zoom"
+    IDS_AFXBARRES_PREVIEW   "Vista previa"
+    IDS_AFXBARRES_QAT_SEPARATOR "<Separador>"
+    IDS_AFXBARRES_CUSTOMIZE_QAT_TOOLTIP "Personalizar la barra de herramientas de acceso rápido"
+    IDS_AFXBARRES_MORE_COMMANDS "Más comandos..."
+    IDS_AFXBARRES_PLACE_BELOW_RIBBON "Mostrar debajo de la cinta"
+    IDS_AFXBARRES_PLACE_ABOVE_RIBBON "Mostrar encima de la cinta"
+    IDS_AFXBARRES_CANCEL    "Cancelar"
+    IDS_AFXBARRES_UNDO_FMT  "Deshacer %d acciones"
+    IDS_AFXBARRES_UNDO_ONE  "Deshacer 1 acción"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_AFXBARRES_MORE      "Más"
+    IDS_AFXBARRES_GALLERY_ROW1_FMT "Fila %d de %d"
+    IDS_AFXBARRES_GALLERY_ROW2_FMT "Fila %d-%d de %d"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_AFXBARRES_PLACE_QAT_BELOW_RIBBON 
+                            "Mostrar barra de herramientas de acceso rápido debajo de la cinta"
+    IDS_AFXBARRES_PLACE_QAT_ABOVE_RIBBON 
+                            "Mostrar barra de herramientas de acceso rápido encima de la cinta "
+    IDS_AFXBARRES_ADD_TO_QAT "Agregar a la barra de herramientas de acceso rápido"
+    IDS_AFXBARRES_REMOVE_FROM_QAT "Quitar de la barra de herramientas de acceso rápido"
+    IDS_AFXBARRES_CUSTOMIZE_QAT "Personalizar la barra de herramientas de acceso rápido..."
+    IDS_AFXBARRES_MINIMIZE_RIBBON "Minimizar la cinta"
+    IDS_AFXBARRES_STATBAR_CUSTOMIZE "Configuración de la barra de estado"
+END
+
+/////////////////////////////////////////////////////////////////////////////
+
+#ifndef APSTUDIO_INVOKED
+
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED

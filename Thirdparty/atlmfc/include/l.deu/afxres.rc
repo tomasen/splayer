@@ -1,0 +1,245 @@
+// This is a part of the Microsoft Foundation Classes C++ library.
+// Copyright (C) Microsoft Corporation
+// All rights reserved.
+//
+// This source code is only intended as a supplement to the
+// Microsoft Foundation Classes Reference and related
+// electronic documentation provided with the library.
+// See these sources for detailed information regarding the
+// Microsoft Foundation Classes product.
+
+#ifndef __AFXRES_RC__
+#define __AFXRES_RC__
+
+#ifndef __AFXRES_H__
+	#include <afxres.h>
+#endif
+
+#ifdef APSTUDIO_INVOKED
+// This will prevent the VC++ Resource Editor user from saving this file
+1 TEXTINCLUDE DISCARDABLE
+BEGIN
+"< Standard-MFC-Ressourcen können nicht geändert werden! >\0"
+END
+#endif //APSTUDIO_INVOKED
+
+#ifndef _AFXDLL
+
+/////////////////////////////////////////////////////////////////////////////
+// Default resource description for MFC applications
+/////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////
+// Strings
+
+STRINGTABLE DISCARDABLE
+BEGIN
+#ifndef _AFX_NO_APPMENU_RESOURCES
+	AFX_IDS_OPENFILE,               "Öffnen"
+	AFX_IDS_SAVEFILE,               "Speichern unter"
+	AFX_IDS_ALLFILTER,              "Alle Dateien (*.*)"
+	AFX_IDS_UNTITLED,               "Unbenannt"
+	AFX_IDS_HIDE,                   "&Ausblenden"
+#endif // !_AFX_NO_APPMENUSTRING_RESOURCES
+
+	AFX_IDS_MEMORY_EXCEPTION,       "Nicht genügend Speicher."
+	AFX_IDS_NOT_SUPPORTED_EXCEPTION,"Es wurde versucht, einen nicht unterstützten Vorgang auszuführen."
+	AFX_IDS_RESOURCE_EXCEPTION,     "Eine erforderliche Ressource ist nicht verfügbar."
+	AFX_IDS_USER_EXCEPTION,         "Ein unerwarteter Fehler ist aufgetreten."
+	AFX_IDS_INVALID_ARG_EXCEPTION	"Es wurde ein falsches Argument festgestellt."
+
+	// General error prompts
+#ifndef _AFX_NO_FILECMD_RESOURCES
+	AFX_IDP_INVALID_FILENAME,       "Falscher Dateiname."
+	AFX_IDP_FAILED_TO_OPEN_DOC,     "Fehler beim Öffnen des Dokuments."
+	AFX_IDP_FAILED_TO_SAVE_DOC,     "Fehler beim Speichern des Dokuments."
+	AFX_IDP_ASK_TO_SAVE,            "Änderungen in %1 speichern?"
+	AFX_IDP_FAILED_TO_CREATE_DOC,   "Fehler beim Erstellen eines leeren Dokuments."
+	AFX_IDP_FILE_TOO_LARGE,         "Die Datei ist zu groß zum Öffnen."
+	AFX_IDP_FAILED_TO_START_PRINT,  "Der Druckauftrag konnte nicht gestartet werden."
+#endif // !_AFX_NO_FILECMD_RESOURCES
+	AFX_IDP_FAILED_TO_LAUNCH_HELP,  "Die Hilfe konnte nicht aufgerufen werden."
+	AFX_IDP_INTERNAL_FAILURE,       "Interner Anwendungsfehler."
+	AFX_IDP_COMMAND_FAILURE,        "Befehl fehlgeschlagen."
+	AFX_IDP_FAILED_MEMORY_ALLOC     "Nicht genügend Speicher vorhanden, um den Vorgang auszuführen."
+	AFX_IDP_GET_NOT_SUPPORTED,      "Lesen ist wegen der Eigenschaft Nur-Schreiben nicht möglich."
+	AFX_IDP_SET_NOT_SUPPORTED,      "Schreiben ist wegen der Eigenschaft Nur-Lesen nicht möglich."
+	AFX_IDP_UNREG_DONE,               "Einträge in der Systemregistrierung wurden entfernt, und die INI-Datei (falls vorhanden) wurde gelöscht."
+	AFX_IDP_UNREG_FAILURE,            "Es wurde nicht jeder Eintrag in der Systemregistrierung (oder die ganze INI-Datei) entfernt."
+	AFX_IDP_DLL_LOAD_FAILED,        "Dieses Programm benötigt die Datei %s, die auf diesem System nicht gefunden wurde."
+	AFX_IDP_DLL_BAD_VERSION,        "Das Programm ist mit Export-%s (fehlt) in Datei %s verbunden. Auf diesem Computer ist evtl. eine nicht kompatible Version von %s installiert."
+
+	// CFile/CArchive error strings for user failure
+#ifndef _AFX_NO_CFILE_RESOURCES
+	AFX_IDP_FAILED_INVALID_FORMAT   "Unerwartetes Dateiformat."
+	AFX_IDP_FAILED_INVALID_PATH     "%1\nDie Datei kann nicht gefunden werden.\nÜberprüfen Sie, ob der korrekte Pfad und Dateiname angegeben wurde."
+	AFX_IDP_FAILED_DISK_FULL        "Das Ziellaufwerk ist voll."
+	AFX_IDP_FAILED_ACCESS_READ      "Von %1 kann nicht gelesen werden, da sie von einem anderen Benutzer geöffnet ist."
+	AFX_IDP_FAILED_ACCESS_WRITE     "In %1 kann nicht geschrieben werden, da sie schreibgeschützt oder von einem anderen Benutzer geöffnet ist."
+	AFX_IDP_FAILED_IO_ERROR_READ    "Unerwarteter Fehler beim Lesen von %1."
+	AFX_IDP_FAILED_IO_ERROR_WRITE   "Unerwarteter Fehler beim Schreiben von %1."
+#endif // !_AFX_NO_CFILE_RESOURCES
+
+	// Parsing error prompts
+	AFX_IDP_PARSE_INT,              "Geben Sie eine ganze Zahl ein."
+	AFX_IDP_PARSE_REAL,             "Geben Sie eine Zahl ein."
+	AFX_IDP_PARSE_INT_RANGE,        "Geben Sie eine ganze Zahl zwischen %1 und %2 ein."
+	AFX_IDP_PARSE_REAL_RANGE,       "Geben Sie eine Zahl zwischen %1 und %2 ein."
+	AFX_IDP_PARSE_STRING_SIZE,      "Geben Sie höchstens %1 Zeichen ein."
+	AFX_IDP_PARSE_RADIO_BUTTON,     "Wählen Sie eine Schaltfläche aus."
+	AFX_IDP_PARSE_BYTE,             "Geben Sie eine ganze Zahl zwischen 0 und 255 ein."
+	AFX_IDP_PARSE_UINT,             "Geben Sie eine positive ganze Zahl ein."
+	AFX_IDP_PARSE_DATETIME,         "Geben Sie ein Datum und/oder eine Uhrzeit ein."
+	AFX_IDP_PARSE_CURRENCY,         "Geben Sie eine Währung ein."
+	AFX_IDP_PARSE_GUID,             "Geben Sie eine GUID ein."
+	AFX_IDP_PARSE_TIME,             "Geben Sie eine Uhrzeit ein."
+	AFX_IDP_PARSE_DATE,             "Geben Sie ein Datum ein."
+
+#ifndef _AFX_NO_OLE_RESOURCES
+	// OLE strings required for both servers and containers
+	AFX_IDS_PASTELINKEDTYPE         "Verknüpft: %s"
+	AFX_IDS_UNKNOWNTYPE             "Unbekannter Typ"
+	AFX_IDP_FAILED_TO_NOTIFY        "%1\nDas Dokument kann nicht registriert werden.\nMöglicherweise wurde das Dokument bereits geöffnet."
+	AFX_IDS_NOT_DOCOBJECT			"Die Datei wird nicht von einem Dokumentobjektserver unterstützt."
+#endif //!_AFX_NO_OLE_RESOURCES
+
+	AFX_IDP_NO_ERROR_AVAILABLE      "Keine Fehlermeldung verfügbar."
+
+#ifndef _AFX_NO_CFILE_RESOURCES
+	AFX_IDP_FILE_NONE                "Kein Fehler aufgetreten."
+	AFX_IDP_FILE_GENERIC             "Unbekannter Fehler beim Zugriff auf %1."
+	AFX_IDP_FILE_NOT_FOUND           "%1 wurde nicht gefunden."
+	AFX_IDP_FILE_BAD_PATH            "%1 enthält eine falsche Pfadangabe."
+	AFX_IDP_FILE_TOO_MANY_OPEN       "%1 konnte nicht geöffnet werden, da zu viele Dateien geöffnet sind."
+	AFX_IDP_FILE_ACCESS_DENIED       "Zugriff auf %1 wurde verweigert."
+	AFX_IDP_FILE_INVALID_FILE        "%1 wurde ein falsches Dateihandle zugeordnet."
+	AFX_IDP_FILE_REMOVE_CURRENT      "Das Verzeichnis %1 konnte nicht entfernt werden, da es das aktuelle Verzeichnis ist. "
+	AFX_IDP_FILE_DIR_FULL            "%1 konnte nicht erstellt werden, da das Verzeichnis voll ist."
+	AFX_IDP_FILE_BAD_SEEK            "Positionierungsfehler auf %1."
+	AFX_IDP_FILE_HARD_IO             "Hardware-E/A-Fehler beim Zugriff auf %1."
+	AFX_IDP_FILE_SHARING             "Freigabeverletzung beim Zugriff auf %1."
+	AFX_IDP_FILE_LOCKING             "Sperrverletzung beim Zugriff auf %1."
+	AFX_IDP_FILE_DISKFULL            "Beim Zugriff auf %1 wurde ein voller Datenträger gemeldet."
+	AFX_IDP_FILE_EOF                 "Es wurde versucht, auf eine Stelle hinter dem Ende von %1 zuzugreifen."
+	AFX_IDS_UNNAMED_FILE             "eine unbenannte Datei"
+#endif // !_AFX_NO_CFILE_RESOURCES
+
+	AFX_IDP_ARCH_NONE               "Kein Fehler aufgetreten."
+	AFX_IDP_ARCH_GENERIC                "Unbekannter Fehler beim Zugriff auf %1."
+	AFX_IDP_ARCH_READONLY           "Es wurde versucht, Daten in den schreibgeschützten Speicherbereich %1 zu schreiben."
+	AFX_IDP_ARCH_ENDOFFILE          "Es wurde versucht, auf eine Stelle hinter dem Ende von %1 zuzugreifen."
+	AFX_IDP_ARCH_WRITEONLY          "Vom Schreibvorgang %1 kann nicht gelesen werden."
+	AFX_IDP_ARCH_BADINDEX           "%1 hat ein falsches Format."
+	AFX_IDP_ARCH_BADCLASS           "%1 enthielt ein unerwartetes Objekt."
+	AFX_IDP_ARCH_BADSCHEMA          "%1 enthält ein falsches Schema."
+
+#ifndef _AFX_NO_MAPI_RESOURCES
+	// MAPI strings / error messages
+	AFX_IDP_FAILED_MAPI_LOAD        "Die Unterstützung für das Mailsystem kann nicht geladen werden."
+	AFX_IDP_INVALID_MAPI_DLL        "Die Mailsystem-DLL ist ungültig."
+	AFX_IDP_FAILED_MAPI_SEND        "Fehler bei \042Nachricht senden\042."
+#endif //!_AFX_NO_MAPI_RESOURCES
+
+#ifndef _AFX_NO_OCC_RESOURCES
+	AFX_IDS_OCC_SCALEUNITS_PIXELS   "Pixel"
+#endif //!_AFX_NO_OCC_RESOURCES
+
+#ifndef _AFX_NO_SCRIPT_RESOURCES
+   AFX_IDP_SCRIPT_ERROR            "%1: %2\nAusführung des Skripts fortsetzen?"
+   AFX_IDP_SCRIPT_DISPATCH_EXCEPTION "Ausnahme auslösen: %1"
+#endif //!_AFX_NO_SCRIPT_RESOURCES
+	AFX_IDS_CHECKLISTBOX_UNCHECK	"Deaktivieren"
+	AFX_IDS_CHECKLISTBOX_CHECK		"Aktivieren"
+	AFX_IDS_CHECKLISTBOX_MIXED		"Gemischt"
+
+END
+
+#ifndef _AFX_INTL_RESOURCES
+
+/////////////////////////////////////////////////////////////////////////////
+// Cursors
+
+AFX_IDC_CONTEXTHELP     CURSOR  DISCARDABLE     "res\\help.cur"
+
+#ifndef _AFX_NO_SPLITTER_RESOURCES
+AFX_IDC_SMALLARROWS     CURSOR  DISCARDABLE     "res\\sarrows.cur"
+AFX_IDC_HSPLITBAR       CURSOR  DISCARDABLE     "res\\splith.cur"
+AFX_IDC_VSPLITBAR       CURSOR  DISCARDABLE     "res\\splitv.cur"
+AFX_IDC_NODROPCRSR      CURSOR  DISCARDABLE     "res\\nodrop.cur"
+#endif //!_AFX_NO_SPLITTER_RESOURCES
+
+#ifndef _AFX_NO_TRACKER_RESOURCES
+AFX_IDC_TRACKNWSE       CURSOR  DISCARDABLE     "res\\trcknwse.cur"
+AFX_IDC_TRACKNESW       CURSOR  DISCARDABLE     "res\\trcknesw.cur"
+AFX_IDC_TRACKNS         CURSOR  DISCARDABLE     "res\\trckns.cur"
+AFX_IDC_TRACKWE         CURSOR  DISCARDABLE     "res\\trckwe.cur"
+AFX_IDC_TRACK4WAY       CURSOR  DISCARDABLE     "res\\trck4way.cur"
+AFX_IDC_MOVE4WAY        CURSOR  DISCARDABLE     "res\\move4way.cur"
+#endif //!_AFX_NO_TRACKER_RESOURCES
+
+#ifndef _AFX_NO_MOUSE_RESOURCES
+// cursors
+AFX_IDC_MOUSE_PAN_N	CURSOR  DISCARDABLE	"res\\im_pann.cur"
+AFX_IDC_MOUSE_PAN_S	CURSOR  DISCARDABLE	"res\\im_pans.cur"
+AFX_IDC_MOUSE_PAN_E	CURSOR  DISCARDABLE	"res\\im_pane.cur"
+AFX_IDC_MOUSE_PAN_W	CURSOR  DISCARDABLE	"res\\im_panw.cur"
+AFX_IDC_MOUSE_PAN_NE	CURSOR  DISCARDABLE	"res\\im_panne.cur"
+AFX_IDC_MOUSE_PAN_NW	CURSOR  DISCARDABLE	"res\\im_pannw.cur"
+AFX_IDC_MOUSE_PAN_SE	CURSOR  DISCARDABLE	"res\\im_panse.cur"
+AFX_IDC_MOUSE_PAN_SW	CURSOR  DISCARDABLE	"res\\im_pansw.cur"
+AFX_IDC_MOUSE_PAN_HORZ	CURSOR  DISCARDABLE	"res\\im_panh.cur"
+AFX_IDC_MOUSE_PAN_VERT	CURSOR  DISCARDABLE	"res\\im_panv.cur"
+AFX_IDC_MOUSE_PAN_HV	CURSOR  DISCARDABLE	"res\\im_panhv.cur"
+
+// anchor bitmaps
+AFX_IDC_MOUSE_ORG_HORZ	CURSOR	DISCARDABLE	"res\\im_orgh.cur"
+AFX_IDC_MOUSE_ORG_VERT	CURSOR	DISCARDABLE	"res\\im_orgv.cur"
+AFX_IDC_MOUSE_ORG_HV	CURSOR	DISCARDABLE	"res\\im_orghv.cur"
+#endif
+
+#endif // _AFX_INTL_RESOURCES
+
+/////////////////////////////////////////////////////////////////////////////
+// Standard Dialogs
+
+#ifndef _AFX_NO_NEWTYPEDLG_RESOURCES
+AFX_IDD_NEWTYPEDLG DIALOG DISCARDABLE  9, 26, 183, 70
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU | 0x04
+CAPTION "Neu"
+FONT 8, "MS Shell Dlg"
+BEGIN
+	LTEXT           "&Neu",IDC_STATIC,6,5,123,8,NOT WS_GROUP
+	LISTBOX         AFX_IDC_LISTBOX,6,15,125,49,WS_VSCROLL | WS_TABSTOP
+	DEFPUSHBUTTON   "OK",IDOK,137,6,40,14
+	PUSHBUTTON      "Abbrechen",IDCANCEL,137,23,40,14
+	PUSHBUTTON      "&Hilfe",ID_HELP,137,43,40,14
+END
+#endif // !_AFX_NO_NEWTYPEDLG_RESOURCES
+
+AFX_IDD_EMPTYDIALOG DIALOG DISCARDABLE  9, 26, 183, 70
+STYLE DS_MODALFRAME | DS_SHELLFONT | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION ""
+FONT 8, "MS Shell Dlg"
+BEGIN	
+END
+
+#ifndef _AFX_INTL_RESOURCES
+
+/////////////////////////////////////////////////////////////////////////////
+// CMiniFrameWnd Bitmap
+
+AFX_IDB_MINIFRAME_MENU      BITMAP  DISCARDABLE     "res\\minifwnd.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+// CCheckListBox Bitmaps
+
+AFX_IDB_CHECKLISTBOX_95     BITMAP  DISCARDABLE     "res\\95check.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+
+#endif // _AFX_INTL_RESOURCES
+
+#endif //!_AFXDLL
+#endif //!__AFXRES_RC__
+
+/////////////////////////////////////////////////////////////////////////////

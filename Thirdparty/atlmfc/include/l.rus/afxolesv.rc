@@ -1,0 +1,53 @@
+// This is a part of the Microsoft Foundation Classes C++ library.
+// Copyright (C) Microsoft Corporation
+// All rights reserved.
+//
+// This source code is only intended as a supplement to the
+// Microsoft Foundation Classes Reference and related
+// electronic documentation provided with the library.
+// See these sources for detailed information regarding the
+// Microsoft Foundation Classes product.
+
+#ifndef __AFXOLESV_RC__
+#define __AFXOLESV_RC__
+
+#ifndef __AFXRES_H__
+	#include <afxres.h>
+#endif
+
+#ifdef APSTUDIO_INVOKED
+// This will prevent the VC++ Resource Editor user from saving this file
+1 TEXTINCLUDE DISCARDABLE
+BEGIN
+"< Изменение стандартных ресурсов MFC не допускается! >\0"
+END
+#endif    // APSTUDIO_INVOKED
+
+#ifndef _AFXDLL
+
+/////////////////////////////////////////////////////////////////////////////
+// OLE Server Resources
+
+// OLE strings
+STRINGTABLE DISCARDABLE
+BEGIN
+	AFX_IDP_ASK_TO_UPDATE,              "Обновить %1 перед обработкой?"
+	AFX_IDP_FAILED_TO_UPDATE,           "Не удалось сохранить внедренный объект OLE в контейнер OLE."
+
+	AFX_IDP_FAILED_TO_REGISTER,         "Не удается зарегистрировать. Возможна неправильная работа функций ActiveX."
+	AFX_IDP_FAILED_TO_AUTO_REGISTER,    "Не удалось обновить системный реестр.\nВоспользуйтесь приложением REGEDIT."
+END
+
+STRINGTABLE PRELOAD
+BEGIN
+	AFX_IDS_APP_TITLE_EMBEDDING,        "%1 в %2"
+	AFX_IDS_OBJ_TITLE_INPLACE,          "%1 - %2"
+	AFX_IDS_EXIT_MENU,                  "В&ыход и возврат в %1"
+	AFX_IDS_UPDATE_MENU,                "О&бновить %1"
+	AFX_IDS_SAVEFILECOPY,               "Сохранить копию как"
+END
+
+/////////////////////////////////////////////////////////////////////////////
+
+#endif //!_AFXDLL
+#endif //__AFXOLESV_RC__

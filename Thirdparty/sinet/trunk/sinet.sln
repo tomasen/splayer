@@ -1,36 +1,21 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{88239666-407A-4510-A4A7-B429C9977C14}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "third_party", "third_party", "{60500ACB-8AE5-4A07-BE54-511E2575407A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sinet", "sinet\sinet.vcproj", "{839056CA-16CA-439C-A475-8239F852DEAF}"
-	ProjectSection(ProjectDependencies) = postProject
-		{D4AB1E3B-9F5A-45A4-BFBF-FBCD68FD53DE} = {D4AB1E3B-9F5A-45A4-BFBF-FBCD68FD53DE}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sinet", "sinet\sinet.vcxproj", "{839056CA-16CA-439C-A475-8239F852DEAF}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sinet_dyn", "sinet_dyn\sinet_dyn.vcproj", "{BEE0FC77-2E9B-497E-A2B6-EC792A70B5CB}"
-	ProjectSection(ProjectDependencies) = postProject
-		{839056CA-16CA-439C-A475-8239F852DEAF} = {839056CA-16CA-439C-A475-8239F852DEAF}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sinet_dyn", "sinet_dyn\sinet_dyn.vcxproj", "{BEE0FC77-2E9B-497E-A2B6-EC792A70B5CB}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sinet_dyn_wrapper", "sinet_dyn_wrapper\sinet_dyn_wrapper.vcproj", "{C4D3B2AC-8C49-4E28-96AB-AD8808C4317C}"
-	ProjectSection(ProjectDependencies) = postProject
-		{BEE0FC77-2E9B-497E-A2B6-EC792A70B5CB} = {BEE0FC77-2E9B-497E-A2B6-EC792A70B5CB}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sinet_dyn_wrapper", "sinet_dyn_wrapper\sinet_dyn_wrapper.vcxproj", "{C4D3B2AC-8C49-4E28-96AB-AD8808C4317C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sinet_test", "tests\sinet_test\sinet_test.vcproj", "{D9C86448-FFBB-4792-A7E4-E266F2027DAA}"
-	ProjectSection(ProjectDependencies) = postProject
-		{839056CA-16CA-439C-A475-8239F852DEAF} = {839056CA-16CA-439C-A475-8239F852DEAF}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sinet_test", "tests\sinet_test\sinet_test.vcxproj", "{D9C86448-FFBB-4792-A7E4-E266F2027DAA}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sinet_test_dyn", "tests\sinet_test_dyn\sinet_test_dyn.vcproj", "{5EFFB604-38E7-41C4-A549-85D5BCBEDA43}"
-	ProjectSection(ProjectDependencies) = postProject
-		{C4D3B2AC-8C49-4E28-96AB-AD8808C4317C} = {C4D3B2AC-8C49-4E28-96AB-AD8808C4317C}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sinet_test_dyn", "tests\sinet_test_dyn\sinet_test_dyn.vcxproj", "{5EFFB604-38E7-41C4-A549-85D5BCBEDA43}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "curl", "third_party\curl\curl.vcproj", "{D4AB1E3B-9F5A-45A4-BFBF-FBCD68FD53DE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "curl", "third_party\curl\curl.vcxproj", "{D4AB1E3B-9F5A-45A4-BFBF-FBCD68FD53DE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

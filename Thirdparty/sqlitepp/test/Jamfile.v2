@@ -1,0 +1,6 @@
+import testing ;
+
+unit-test test
+    : [ glob *.cpp ] ..//sqlitepp 
+	: <include>tut <include>.. <define>SQLITEPP_TEST
+;

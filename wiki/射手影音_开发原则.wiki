@@ -1,0 +1,10 @@
+* 总是遵守代码规范
+* 原则上不对ThirdParty下的文件和代码进行非配置性的修改
+* 使用base中的基本功能类库
+* 不使用MFC/ATL/WTL的非UI类，而使用stl
+* 数据建模放在 Model 目录下
+* 引用头文件时不使用../../...这样相对路径，而是将该路径放在 src/common.vsprop 文件中，之后使用 #include <xxxx.hpp> 来引用
+* 项目随时保证可编译
+* 使用 Logging(L"xxxx %d %s", ....) 来做Log记录输出
+
+(待续)

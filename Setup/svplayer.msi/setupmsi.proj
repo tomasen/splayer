@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+		<project_name>ShooterPlayerMsi</project_name>
+		<SubWCRev>"c:\Program Files\TortoiseSVN\bin\SubWCRev.exe"</SubWCRev>
+		<msitran>msitran</msitran>
+		<wisubstg>scripts\wisubstg.vbs</wisubstg>
+		<WiLangId>scripts\WiLangId.vbs</WiLangId>
+	</PropertyGroup>
+	<ItemGroup>
+		<ProjectsToBuild Include=".\$(project_path)\splayer.sln"/>
+	</ItemGroup>
+	<Target Name="Init">
+		<Exec Command="$(SubWCRev) ..\..\.. .\SvPlayerver.wxi.template .\SvPlayerver.wxi" WorkingDirectory=".\WiX\"/>
+	</Target>
+	<Target Name="BuildMsi" DependsOnTargets="Init">
+    	<MSBuild Projects=".\wix\SvPlayer.wixproj"  Properties="Configuration=Release"/>
+    	<MSBuild Projects=".\wix\SvPlayer.wixproj"  Properties="Configuration=ReleaseCHT"/>
+    	<MSBuild Projects=".\wix\SvPlayer.wixproj"  Properties="Configuration=ReleaseCHS"/>
+    	<MSBuild Projects=".\wix\SvPlayer.wixproj"  Properties="Configuration=ReleaseRU"/>
+	</Target>
+	<Target Name="Transformer" DependsOnTargets="BuildMsi">
+        <Delete Files="..\..\..\splayer.msi" />
+		<Exec Command="$(msitran) -g ..\wix\bin\Release\en-US\SvPlayer.msi ..\wix\bin\ReleaseCHS\zh-CN\SvPlayer.msi chs.mst" WorkingDirectory=".\Transform\"/>
+		<Exec Command="$(msitran) -g ..\wix\bin\Release\en-US\SvPlayer.msi ..\wix\bin\ReleaseCHT\zh-TW\SvPlayer.msi cht.mst" WorkingDirectory=".\Transform\"/>
+		<Exec Command="$(msitran) -g ..\wix\bin\Release\en-US\SvPlayer.msi ..\wix\bin\ReleaseRU\ru-RU\SvPlayer.msi ru.mst" WorkingDirectory=".\Transform\"/>
+        <Copy SourceFiles=".\wix\bin\Release\en-US\SvPlayer.msi"  DestinationFiles="..\..\..\SPlayer.msi"/>
+		<Exec Command="scripts\wisubstg.vbs ..\..\..\..\SPlayer.msi chs.mst 2052" WorkingDirectory=".\Transform\"/>
+		<Exec Command="scripts\wisubstg.vbs ..\..\..\..\SPlayer.msi cht.mst 1028" WorkingDirectory=".\Transform\"/>
+		<Exec Command="scripts\wisubstg.vbs ..\..\..\..\SPlayer.msi ru.mst 1049" WorkingDirectory=".\Transform\"/>
+		<Exec Command="scripts\WiLangId.vbs ..\..\..\..\SPlayer.msi Package 1033,2052,1028,1049" WorkingDirectory=".\Transform\"/>
+	</Target>
+	<Target Name="Build" DependsOnTargets="Transformer">
+		<Message Text="Build Complete"/>
+	</Target>
+</Project>

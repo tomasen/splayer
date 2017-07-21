@@ -1,0 +1,12 @@
+Extract curl into this directory. Make sure "README" and curl.vcproj are in the
+same directory.
+
+http://curl.haxx.se/
+
+change curl/lib/config-win32.h 's
+
+#define HAVE_RAND_SCREEN 1
+
+to
+
+#define HAVE_RAND_SCREEN 0

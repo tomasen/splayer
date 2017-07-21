@@ -1,0 +1,6 @@
+import docutils ; 
+
+html sqlitepp : sqlitepp.rst : <docutils-html>"-gdt --trim-footnote-reference-space --footnote-references=superscript --stylesheet=style.css --link-stylesheet --cloak-email-addresses" ;
+
+stage . : sqlitepp ;
+

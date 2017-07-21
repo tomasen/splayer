@@ -1,0 +1,20 @@
+此处列出在构思中且很有挑战性的的计划。
+
+=== 技术挑战 ===
+* ref count 较大的视频硬解问题
+* ATI 10.4之后的驱动不能正常硬解某些视频的问题  ed2k://|file|ati_new_driver_cant_dxva.mkv|32211719|42C5A4BAB5607BB2A4CB0E4035BD68E7|h=ZTKWLXKLSB7QCU26BYJDJQYOE7KFKQMR|/
+* 和Norton的产品兼容问题
+* libmpeg2的sse2优化不能正常工作的问题 
+× 找不到moov atom的MP4文件 ed2k://|file|Stevie.Wonder.-.[Stevie.Wonder.Live.At.Last].%E6%BC%94%E5%94%B1%E4%BC%9A.(1080p).(ED2000.COM).mp4|4772137979|5C7670AD5D3D71AA774BE04F8164541C|h=6ZX34BYQTJ62POOYUZYWTCQGCIEVLJY2|/
+× 无法被 WMAsfReader 正确处理的 wmv 文件 ed2k://|file|wmv_cant_play.wmv|153407649|D2408E6047D4B0B7936E3D9228766694|h=N2KTNAST2Y7XEFJD5FI2X4ERUBC6J6IA|/
+× 基于ffmpeg paser制作Splitter
+× 兼容性更好更完善的MPEG2/TS/TP Splitter
+× 制作Mac/Linux版本，基于vlc或mplayer
+× 制作iPhone/Android版本
+* 重写h264解码filter并采用基于OpenCL/CUDA加速
+
+===架构挑战===
+* 提高UI的表现能力，例如动画，淡进淡出等等，同时采用模块化架构。
+* UI接口化，可以通过统一接口来实现UI。制作UI代码和完成UI设计。
+* 可扩展的接口。方便开发Add-Ons的接口
+* UI跨平台化

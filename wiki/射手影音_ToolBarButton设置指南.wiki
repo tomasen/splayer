@@ -1,0 +1,81 @@
+                     ==射手影音工具栏按键自定义指南==
+
+  从第一行起，每一行为一个按键位置设置，格式如：\\
+  **格式1:**\\
+  按键名：BMP,图片名；ALIGN1,格式；CRECT1,尺寸；NOTBUTTON,是否是按键；ID,ID号；HIDE,是否隐藏；HIDEWIDTH,隐藏尺寸；\\
+  **例如：**\\
+  VOLUMEBG:BMP,VOLUME_BG.BMP;ALIGN1,ALIGN_TOPRIGHT;CRECT1,3,-50,15,3;NOTBUTTON,TRUE;
+ID,0;HIDE,FALSE;HIDEWIDTH,0;\\
+\\
+  **格式2：**\\
+  按键名：BMP,图片名；ALIGN1,格式；CRECT1,尺寸；NOTBUTTON,是否是按键；ID,ID号；HIDE,是否隐藏；HIDEWIDTH,隐藏尺寸；ALIGN2,格式；BUTTON,按键名；CRECT2,尺寸；\\
+  **例如：**\\
+STOP:BMP,BTN_STOP.BMP;ALIGN1,ALIGN_TOPLEFT;CRECT1,-50,50,3,3;NOTBUTTON,TRUE;ID,
+ID_PLAY_MANUAL_STOP;HIDE,FALSE;HIDEWIDTH,660;ALIGN2,ALIGN_RIGHT;BUTTON,PAUSE;CRECT2,1,1,1,1;\\
+\\
+  **格式3：**\\
+按键名：BMP,图片名；ALIGN1,格式；CRECT1,尺寸；NOTBUTTON,是否是按键；ID,ID号；HIDE,是否隐藏；HIDEWIDTH,隐藏尺寸；ALIGN2,格式；BUTTON,按键名；CRECT2,尺寸；ADDALIGN,ALIGN2,格式；BUTTON,按键名；CRECT2,尺寸；\\
+**例如：**\\
+FASTFORWORD:BMP,FAST_FORWORD.BMP;ALIGN1,ALIGN_TOPLEFT;CRECT1,-50,-50,3,3; NOTBUTTON,FALSE;ID,ID_PLAY_BWD;HIDE,FALSE;HIDEWIDTH,440;ALIGN2,ALIGN_RIGHT;BUTTON,PAUSE;CRECT2,1,1,1,1;\\ADDLIGN,ALIGN2,ALIGN_RIGHT;BUTTON,PLAY;CRECT2,1,1,1,1;\\
+\\
+**格式4：**\\
+按键名：BMP,图片名；ALIGN1,格式；CRECT1,尺寸；NOTBUTTON,是否是按键；ID,ID号；HIDE,是否隐藏；HIDEWIDTH,隐藏尺寸；ALIGN2,格式；BUTTON,按键名；CRECT2,尺寸；ADDALIGN,ALIGN2,格式；BUTTON,按键名；\\
+**例如：**\\
+PREV:BMP,BTN_PREV.BMP;ALIGN1,ALIGN_TOPLEFT;CRECT1,-50,50,3,3;NOTBUTTON,FALSE;ID,ID_NAVIGATE_SKIPBACK;
+HIDE,FALSE;HIDEWIDTH,440;ALIGN2,ALIGN_RIGHT;BUTTON,FASTBACKWORD;CRECT2,1,1,1,1; ADDLIGN,ALIGN2, ALIGN_RIGHT; ;BUTTON,PLAY;CRECT2,1,1,1,1;ALIGN2,ALIGN_RIGHT;BUTTON,PAUSE;CRECT2,1,1,1,1;\\
+\\
+\\
+**其中：**\\
+   **按键名**：可按需求随意修改；\\
+   **BMP**：应按照对应的按键，不可随意修改；\\
+   **ALIGN1**：应为ALIGN_TOPLEFT,ALIGN_TOPRIGHT,ALIGN_BOTTOMLEFT,ALIGN_BOTTOMRIGHT之一；\\
+   **CRECT1**：以逗号隔开的四个数值，确定按键的初始位置，负数为百分比，正数为像素值；\\
+   **NOTBUTTON**:是否是按键；\\
+   **ID**：对应相应按键，不可随意修改；\\
+   **HIDE**:是否隐藏；\\
+   **HIDEWIDTH**：为BottomToolBar按键设置隐藏距离，工具条宽度超出该距离，则显示该按键，最大值可设MAXINT；\\
+   **ALIGN2**：应为ALIGN_TOP,ALIGN_BOTTOM,ALIGN_LEFT,ALIGN_RIGHT之一；\\
+   **BUTTON**：位置相对于按键的名称；\\
+   **CRECT2**：相对于BUTTON的距离，数值同CRECT1相同；\\
+   **ADDALIGN**：若相对于多个按键位置，则设置此项；\\
+\\
+\\
+**另附，官方方案库已定义按钮名对应按钮：**\\
+\\
+VOLUMEBG：音量调节栏；\\
+VOLUMETM：音量调节按钮；\\
+PLAY：播放；\\
+PAUSE：暂停；\\
+STOP：停止；\\
+STEP：步进；\\
+FASTFORWORD：快进；\\
+FASTBACKWORD：快退；\\
+PREV：上一段；\\
+NEXT：下一段；\\
+LOGO：徽标；\\
+VOLUME：非静音；\\
+MUTED：静音；\\
+SETTING：设置面板；\\
+PLAYLIST：播放列表；\\
+CAPTURE：截图；\\
+OPENFILE：打开文件；\\
+SUBSWITCH：字幕；\\
+SUBDELAYREDUCE：字幕左边框；\\
+SUBDELAYINCREASE：字幕右边框；\\
+PLAYTIME：播放时间；\\
+
+**在默认情况下，会自动在skins文件夹下生成dat文件，如没有skins文件夹，请自行创建。请参考官方方案自行设置。
+另，请注意备份dat文件，并使用已提供的默认文件名。**
+
+
+
+
+
+
+
+
+  
+
+
+
+

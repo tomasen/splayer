@@ -1,0 +1,43 @@
+; This is a part of the Microsoft Foundation Classes C++ library.
+; Copyright (C) 1992-2001 Microsoft Corporation
+; All rights reserved.
+;
+; This source code is only intended as a supplement to the
+; Microsoft Foundation Classes Reference and related
+; electronic documentation provided with the library.
+; See these sources for detailed information regarding the
+; Microsoft Foundation Classes product.
+LIBRARY MFCM90Ud 
+; For Win32 DLLs, only EXPORTs really required.
+
+EXPORTS
+ ??0CControlCreationInfoEx@MFC@VisualC@Microsoft@@QAE@XZ @ 256 NONAME
+ ??0CWinFormsControlSite@MFC@VisualC@Microsoft@@QAE@PAVCOleControlContainer@@@Z @ 257 NONAME
+ ??1CControlCreationInfoEx@MFC@VisualC@Microsoft@@QAE@XZ @ 259 NONAME
+ ??1CWinFormsControlSite@MFC@VisualC@Microsoft@@UAE@XZ @ 260 NONAME
+ ?Create@CWinFormsView@MFC@VisualC@Microsoft@@MAEHPB_W0KABUtagRECT@@PAVCWnd@@IPAUCCreateContext@@@Z @ 262 NONAME
+ ?CreateControlCommon@CWinFormsControlSite@MFC@VisualC@Microsoft@@UAEJPAVCWnd@@ABU_GUID@@ABVCControlCreationInfo@@PB_WKPBUtagPOINT@@PBUtagSIZE@@IPAVCFile@@HPA_W@Z @ 263 NONAME
+ ?CreateOrLoad@CWinFormsControlSite@MFC@VisualC@Microsoft@@UAEJABVCControlCreationInfo@@@Z @ 264 NONAME
+ ?DoVerb@CWinFormsControlSite@MFC@VisualC@Microsoft@@UAEJJPAUtagMSG@@@Z @ 265 NONAME
+ ?GetMessageMap@CWinFormsView@MFC@VisualC@Microsoft@@MBEPBUAFX_MSGMAP@@XZ @ 268 NONAME
+ ?GetProperty@CWinFormsControlSite@MFC@VisualC@Microsoft@@UBEXJGPAX@Z @ 269 NONAME
+ ?GetRuntimeClass@CWinFormsView@MFC@VisualC@Microsoft@@UBEPAUCRuntimeClass@@XZ @ 270 NONAME
+ ?GetStyle@CWinFormsControlSite@MFC@VisualC@Microsoft@@UBEKXZ @ 271 NONAME
+ ?GetThisClass@CWinFormsView@MFC@VisualC@Microsoft@@SGPAUCRuntimeClass@@XZ @ 272 NONAME
+ ?GetThisMessageMap@CWinFormsView@MFC@VisualC@Microsoft@@KGPBUAFX_MSGMAP@@XZ @ 273 NONAME
+ ?OnActivateView@CWinFormsView@MFC@VisualC@Microsoft@@MAEXHPAVCView@@0@Z @ 275 NONAME
+ ?OnCmdMsg@CWinFormsView@MFC@VisualC@Microsoft@@MAEHIHPAXPAUAFX_CMDHANDLERINFO@@@Z @ 276 NONAME
+ ?OnHandleCreated@CWinFormsControlSite@MFC@VisualC@Microsoft@@UAEXU?$gcroot@P$AAVObject@System@@@@U?$gcroot@P$AAVEventArgs@System@@@@@Z @ 277 NONAME
+ ?OnHandleDestroyed@CWinFormsControlSite@MFC@VisualC@Microsoft@@UAEXU?$gcroot@P$AAVObject@System@@@@U?$gcroot@P$AAVEventArgs@System@@@@@Z @ 278 NONAME
+ ?OnInitialUpdate@CWinFormsView@MFC@VisualC@Microsoft@@MAEXXZ @ 279 NONAME
+ ?OnSize@CWinFormsView@MFC@VisualC@Microsoft@@IAEXIHH@Z @ 280 NONAME
+ ?OnUpdate@CWinFormsView@MFC@VisualC@Microsoft@@MAEXPAVCView@@JPAVCObject@@@Z @ 281 NONAME
+ ?PreCreateWindow@CWinFormsView@MFC@VisualC@Microsoft@@MAEHAAUtagCREATESTRUCTW@@@Z @ 282 NONAME
+ ?PreTranslateMessage@CWinFormsView@MFC@VisualC@Microsoft@@MAEHPAUtagMSG@@@Z @ 283 NONAME
+ ?SetControlEnabled@CWinFormsControlSite@MFC@VisualC@Microsoft@@QAEX_N@Z @ 284 NONAME
+ ?SetPropertyV@CWinFormsControlSite@MFC@VisualC@Microsoft@@UAEXJGPAD@Z @ 285 NONAME
+ ?classCWinFormsView@CWinFormsView@MFC@VisualC@Microsoft@@2UCRuntimeClass@@B @ 286 NONAME
+ ?OnHandleCreatedHandler@CWinFormsControlSite@MFC@VisualC@Microsoft@@QAEXXZ @ 288 NONAME
+ InitMfcmDll @ 291 NONAME
+ AfxmEnsureManagedInitialization @ 292 NONAME
+ AfxmReleaseManagedReferences @ 293

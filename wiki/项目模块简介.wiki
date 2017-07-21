@@ -1,0 +1,45 @@
+**项目结构可能会因开发进展而改变，实际以代码为准**
+
+{{{
+|- Apps                                // 应用程序
+|   |- Libraries                       // 类库
+|   |    |-  libpng                    // png类库
+|   |    |-  libssf                    // ssf类库(字幕相关)
+|   |    |-  subtitles                 // 字幕相关类库
+|   |    |-  decss
+|   |    |-  dsutil                    // directshow 工具类库
+|   |    |-  subpic
+|   |    |- svplib                     // Depercated
+|   |    |- curlib                     //  Depercated
+|   |    |- libunrar                   // Depercated
+|   |    |- libsqlite                  // Depercated
+|   |    |- lyriclib                   // 歌词匹配类库
+|   |    |- id3lib                     // MP3 ID3 类库
+|   |    |- sqlitepp                   // sqlite++ 类库
+|   |- UI                              // 界面类库  Depercated
+|   |- mplayerc                        // 主程序
+|        |- Graph                      // 主要播放逻辑
+|        |- UserInterface              // 界面类库
+|        |- Source Files               // 主程序界面和逻辑等
+|               |- mplayerc.cpp        // 主程序
+|               |- Mainframe.cpp       // 主窗口
+|               |- ChildView.cpp       // 内容窗口
+|               |- PlayerToolbar.cpp   // 控制栏
+|               |- PlayerPlaylistBar.cpp // 播放列表
+|   |- updater                           // 升级程序
+|   |- Language                          // 语言包
+|- Filters                               // DirectShow Filters *
+|   |- Muxer  
+|   |- Parser
+|   |- Libraries                         // 类库
+|   |    |- libmpeg2
+|   |- Reader
+|   |- Transform
+|   |    |- MpaDecFilter                 // 主音频解码器
+|   |    |- MPCVideoDec                  // 主视频解码器
+|   |- Source
+|   |- Switcher
+|   |- misc
+|   |- Render
+|- Test                                  // 单元测试
+}}}

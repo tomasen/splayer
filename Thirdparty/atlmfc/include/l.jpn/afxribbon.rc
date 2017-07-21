@@ -1,0 +1,749 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "afxribbonres.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+
+#include "afxres.h"
+
+#ifndef _AFX_INTL_RESOURCES
+#include "res\RibbonStyle2007Aqua.rc2"
+#include "res\RibbonStyle2007Black.rc2"
+#include "res\RibbonStyle2007Blue.rc2"
+#include "res\RibbonStyle2007Silver.rc2"
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+#ifdef APSTUDIO_INVOKED
+// This will prevent the VC++ Resource Editor user from saving this file
+1 TEXTINCLUDE DISCARDABLE
+BEGIN
+"< Cannot change standard MFC resources! >\0"
+END
+#endif //APSTUDIO_INVOKED
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_AFXBAR_RES_PRINT_PREVIEW DIALOG  0, 0, 72, 15
+STYLE DS_SETFONT | WS_CHILD
+FONT 8, "MS Shell Dlg"
+BEGIN
+    PUSHBUTTON      "ダミー",AFX_ID_PREVIEW_PRINT,2,0,50,13,NOT WS_VISIBLE
+END
+
+IDD_AFXBARRES_TOOLBAR_NAME DIALOG  0, 0, 241, 46
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "ツール バー名"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "ツール バー名(&T):",IDC_STATIC,7,7,48,8
+    EDITTEXT        IDC_AFXBARRES_TOOLBAR_NAME,7,19,155,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,184,7,50,14,WS_DISABLED
+    PUSHBUTTON      "キャンセル",IDCANCEL,184,24,50,14
+END
+
+IDD_AFXBARRES_BUTTON_PROPS DIALOGEX 0, 0, 254, 153
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "ボタンの外観"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    CONTROL         "イメージのみ表示(&I)",IDC_AFXBARRES_IMAGE,"Button",BS_AUTORADIOBUTTON | WS_GROUP,7,7,50,10
+    CONTROL         "テキストのみ表示(&T)",IDC_AFXBARRES_TEXT,"Button",BS_AUTORADIOBUTTON,7,20,45,10
+    CONTROL         "イメージとテキストを表示(&A)",IDC_AFXBARRES_IMAGE_TEXT,"Button",BS_AUTORADIOBUTTON,7,34,63,10
+    LTEXT           "説明:",IDC_STATIC,7,54,38,8
+    LTEXT           "<説明>",IDC_AFXBARRES_BUTTON_DESCR,7,65,54,59,0,WS_EX_CLIENTEDGE
+    LTEXT           "ボタンの文字(&B):",IDC_STATIC,7,134,37,8
+    EDITTEXT        IDC_AFXBARRES_BUTTON_TEXT,48,132,114,14,ES_AUTOHSCROLL
+    GROUPBOX        "",IDC_STATIC,73,20,173,105,WS_GROUP
+    CONTROL         "既定のイメージを使用(&D):",IDC_AFXBARRES_DEFAULT_IMAGE,
+                    "Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,83,7,75,10
+    CONTROL         "ユーザー定義のイメージを選択(&U):",IDC_AFXBARRES_USER_IMAGE,
+                    "Button",BS_AUTORADIOBUTTON,83,20,103,10
+    CONTROL         "イメージ",IDC_AFXBARRES_IMAGE_LIST,"Button",BS_OWNERDRAW | WS_GROUP | WS_TABSTOP,79,35,121,82
+    CONTROL         "",IDC_AFXBARRES_DEFAULT_IMAGE_AREA,"Static",SS_BLACKFRAME | NOT WS_VISIBLE | WS_GROUP,163,7,20,20
+    PUSHBUTTON      "新規作成(&N)...",IDC_AFXBARRES_ADD_IMAGE,205,35,36,14,WS_GROUP
+    PUSHBUTTON      "編集(&E)...",IDC_AFXBARRES_EDIT_IMAGE,205,52,36,14,WS_DISABLED
+    DEFPUSHBUTTON   "OK",IDOK,170,132,37,14,WS_GROUP
+    PUSHBUTTON      "キャンセル",IDCANCEL,210,132,37,14
+END
+
+IDD_AFXBARRES_IMAGE_EDITOR DIALOGEX 0, 0, 211, 206
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "ボタン イメージの編集"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    LTEXT           "画像:",IDC_STATIC,7,7,25,8
+    CONTROL         "描画",IDC_AFXBARRES_DRAW_AREA,"Button",BS_OWNERDRAW | WS_TABSTOP,7,17,110,110
+    LTEXT           "色:",IDC_STATIC,138,7,22,8
+    GROUPBOX        "プレビュー:",IDC_STATIC,7,135,65,36
+    CONTROL         "",IDC_AFXBARRES_PREVIEW_AREA,"Static",SS_GRAYRECT | NOT WS_VISIBLE,29,147,26,16
+    LTEXT           "ツール:",IDC_STATIC,138,94,20,8
+    CONTROL         "",IDC_AFXBARRES_PALETTE,"Static",SS_ETCHEDFRAME,138,105,66,58,WS_EX_DLGMODALFRAME
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,7,178,197,1
+    DEFPUSHBUTTON   "OK",IDOK,127,185,36,14
+    PUSHBUTTON      "キャンセル",IDCANCEL,168,185,36,14
+    CONTROL         "",IDC_AFXBARRES_COLORS,"Static",SS_ETCHEDFRAME,138,18,66,72,WS_EX_DLGMODALFRAME
+END
+
+IDD_AFXBARRES_PROPPAGE1 DIALOG  0, 0, 265, 163
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "コマンド"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "分類(&G):",IDC_STATIC,7,7,36,8
+    LISTBOX         IDC_AFXBARRES_CATEGORY,7,17,93,104,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "コマンド(&D):",IDC_STATIC,115,7,38,8
+    LISTBOX         IDC_AFXBARRES_USER_TOOLS,115,17,143,104,LBS_OWNERDRAWVARIABLE | LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "説明:",IDC_STATIC,7,128,38,8
+    CONTROL         "<説明>",IDC_AFXBARRES_BUTTON_DESCR,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,51,128,207,28
+END
+
+IDD_AFXBARRES_PROPPAGE2 DIALOG  0, 0, 265, 163
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "ツール バー"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "ツール バー(&T):",IDC_STATIC,7,7,30,8,NOT WS_GROUP
+    LISTBOX         IDC_AFXBARRES_TOOLBAR_LIST,7,18,150,138,LBS_SORT | LBS_OWNERDRAWFIXED | LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "リセット(&R)",IDC_AFXBARRES_RESET,173,18,84,14,WS_DISABLED | WS_GROUP
+    PUSHBUTTON      "すべてリセット(&A)",IDC_AFXBARRES_RESET_ALL,173,37,84,14
+    PUSHBUTTON      "新規作成(&N)...",IDC_AFXBARRES_NEW_TOOLBAR,173,56,84,14
+    PUSHBUTTON      "名前の変更(&M)...",IDC_AFXBARRES_RENAME_TOOLBAR,173,75,84,14,WS_DISABLED
+    PUSHBUTTON      "削除(&D)",IDC_AFXBARRES_DELETE_TOOLBAR,173,94,84,14,WS_DISABLED
+    CONTROL         "テキスト ラベルの表示(&S)",IDC_AFXBARRES_TEXT_LABELS,"Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_GROUP | WS_TABSTOP,173,121,90,10
+END
+
+IDD_AFXBARRES_PROPPAGE3 DIALOG  0, 0, 265, 163
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "メニュー"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "メニューの表示(&S):",IDC_STATIC,18,22,54,8
+    COMBOBOX        IDC_AFXBARRES_MENU_LIST,18,33,103,66,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    ICON            "",IDC_AFXBARRES_TEMPL_ICON,81,52,21,20
+    LTEXT           "<.....>",IDC_AFXBARRES_MENU_DESCRIPTION,18,77,103,37
+    LTEXT           "コンテキスト メニューの表示(&C):",IDC_AFXBARRES_CONTEXT_MENU_CAPTION,148,22,100,8
+    COMBOBOX        IDC_AFXBARRES_CONTEXT_MENU_LIST,148,33,103,66,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "リセット(&E)",IDC_AFXBARRES_RESET_MENU,148,52,50,14,WS_DISABLED
+    GROUPBOX        "アプリケーション フレーム メニュー:",IDC_STATIC,7,7,123,114
+    GROUPBOX        "コンテキスト メニュー:",IDC_AFXBARRES_CONTEXT_FRAME,138,7,120,149
+    LTEXT           "ヒント: コンテキスト メニューをクリックし、ページを [コマンド] に変更します。次に、ツール バーのボタンをメニュー ウィンドウにドラッグします。",IDC_AFXBARRES_CONTEXT_HINT,148,77,103,48
+    PUSHBUTTON      "リセット(&R)",IDC_AFXBARRES_RESET_FRAME_MENU,18,52,50,14
+    LTEXT           "メニュー アニメーション(&M):",IDC_AFXBARRES_MENU_ANIMATION_LABEL,7,129,70,8
+    COMBOBOX        IDC_AFXBARRES_MENU_ANIMATION,78,128,52,77,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "メニューの影(&H)",IDC_AFXBARRES_MENU_SHADOWS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,146,64,10
+END
+
+IDD_AFXBARRES_PROPPAGE4 DIALOGEX 0, 0, 265, 146
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "マウス"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    LTEXT           "ビュー(&V):",IDC_STATIC,7,7,18,8
+    CONTROL         "List1",IDC_AFXBARRES_LIST_VIEWS,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_NOCOLUMNHEADER | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,7,18,108,120,WS_EX_CLIENTEDGE
+    GROUPBOX        "",IDC_STATIC,122,19,136,119
+    CONTROL         "ダブルクリック イベントなし(&N)",IDC_AFXBARRES_NO_DBLCLIICK,
+                    "Button",BS_AUTORADIOBUTTON,127,7,85,10
+    CONTROL         "ダブルクリック イベントの関連付け(&A):",IDC_AFXBARRES_USE_DBLCLIICK,
+                    "Button",BS_AUTORADIOBUTTON,127,19,123,10
+    LISTBOX         IDC_AFXBARRES_LIST_OF_COMMANDS,140,34,110,71,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Static",IDC_AFXBARRES_COMMAND_DESCRIPTION,140,113,111,18,0,WS_EX_STATICEDGE
+END
+
+IDD_AFXBARRES_PROPPAGE5 DIALOG  0, 0, 265, 146
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "キーボード"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "分類(&C):",IDC_STATIC,7,7,60,8
+    COMBOBOX        IDC_AFXBARRES_CATEGORY,7,18,85,95,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "コマンド(&O):",IDC_STATIC,7,35,60,8
+    LISTBOX         IDC_AFXBARRES_COMMANDS_LIST,7,46,85,48,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "説明:",IDC_STATIC,7,98,60,8
+    LTEXT           "Static",IDC_AFXBARRES_COMMAND_DESCRIPTION,7,109,85,28
+    LTEXT           "アクセラレータの設定(&F):",IDC_STATIC,108,7,62,8
+    COMBOBOX        IDC_AFXBARRES_VIEW_TYPE,102,18,85,95,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "現在のキー(&U):",IDC_STATIC,102,35,60,8
+    LISTBOX         IDC_AFXBARRES_CURRENT_KEYS_LIST,102,46,85,39,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "新しいショートカット キーの入力(&N):",IDC_STATIC,102,89,85,8
+    EDITTEXT        IDC_AFXBARRES_NEW_SHORTCUT_KEY,102,100,85,14,ES_AUTOHSCROLL | WS_DISABLED
+    LTEXT           "割り当て先:",IDC_AFXBARRES_ASSIGNED_TO_TITLE,102,118,60,8,NOT WS_VISIBLE
+    LTEXT           ".....",IDC_AFXBARRES_ASSIGNED_TO,102,129,85,8
+    ICON            "",IDC_AFXBARRES_VIEW_ICON,197,15,20,20
+    PUSHBUTTON      "割り当て(&A)",IDC_AFXBARRES_ASSIGN,197,46,61,14,WS_DISABLED
+    PUSHBUTTON      "削除(&R)",IDC_AFXBARRES_REMOVE,197,65,61,14,WS_DISABLED
+    PUSHBUTTON      "すべてリセット(&S)",IDC_AFXBARRES_RESET_SHORTCUTS,197,84,61,14
+END
+
+IDD_AFXBARRES_PROPPAGE6 DIALOGEX 0, 0, 265, 146
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "オプション"
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    LTEXT           "ツール バー",IDC_STATIC,8,8,108,8
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,120,12,125,1
+    CONTROL         "ツール バーにボタン名を表示する(&T)",IDC_AFXBARRES_SHOW_TOOLTIPS,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,19,200,10
+    CONTROL         "ボタン名と一緒にショートカット キーを表示する(&K)",IDC_AFXBARRES_SHOW_TOOLTIPS_WITH_KEYS,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,34,33,200,10
+    CONTROL         "大きいアイコン(&L)",IDC_AFXBARRES_LARGE_ICONS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,47,200,10
+    LTEXT           "パーソナル化されたメニューとツール バー",IDC_AFX_RU_MENUS_TITLE,8,78,108,8
+    CONTROL         "",IDC_AFX_RU_MENUS_LINE,"Static",SS_ETCHEDHORZ,120,82,125,1
+    CONTROL         "最近使用されたコマンドを最初にメニューに表示する(&N)",IDC_AFXBARRES_SHOW_RECENTLY_USED_MENUS,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,90,200,10
+    CONTROL         "少し時間が経過したら、すべてのメニューを表示する(&U)",IDC_AFXBARRES_SHOW_MENUS_DELAY,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,34,104,200,10
+    PUSHBUTTON      "初期状態に戻す(&R)",IDC_AFXBARRES_RESET_USAGE_DATA,20,124,100,14
+END
+
+IDD_AFXBARRES_WINDOWS_DLG DIALOG  0, 0, 316, 169
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "ウィンドウ"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "ウィンドウの選択(&W):",IDC_STATIC,7,7,49,8
+    LISTBOX         IDC_AFXBARRES_LIST,7,18,220,144,LBS_SORT | LBS_OWNERDRAWFIXED | LBS_HASSTRINGS | LBS_USETABSTOPS | LBS_NOINTEGRALHEIGHT | LBS_EXTENDEDSEL | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "アクティブ化(&A)",IDC_AFXBARRES_ACTIVATE,233,7,76,15
+    PUSHBUTTON      "OK(&O)",IDOK,233,25,76,15
+    PUSHBUTTON      "保存(&S)",IDC_AFXBARRES_SAVE,233,43,76,15
+    PUSHBUTTON      "ウィンドウを閉じる(&C)",IDC_AFXBARRES_CLOSE,233,61,76,15
+    PUSHBUTTON      "重ねて表示",IDC_AFXBARRES_CASCADE,233,79,76,14
+    PUSHBUTTON      "上下に並べて表示(&H)",IDC_AFXBARRES_TILEHORZ,233,96,76,14
+    PUSHBUTTON      "左右に並べて表示(&V)",IDC_AFXBARRES_TILEVERT,233,113,76,14
+    PUSHBUTTON      "最小化(&M)",IDC_AFXBARRES_MINIMIZE,233,130,76,14
+    PUSHBUTTON      "ヘルプ(&H)",ID_HELP,233,148,76,14
+END
+
+IDD_AFXBARRES_COLOR_DLG DIALOG  0, 0, 222, 180
+STYLE DS_SHELLFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "カラー"
+FONT 8, "MS Shell Dlg 2"
+BEGIN
+    LTEXT           "タブ プレースホルダ",IDC_AFXBARRES_STATICPLACEHOLDER,4,4,152,172,NOT WS_VISIBLE | WS_BORDER
+    PUSHBUTTON      "OK",IDOK,164,16,53,14
+    PUSHBUTTON      "キャンセル",IDCANCEL,164,34,53,14
+    PUSHBUTTON      "選択(&E)...",IDC_AFXBARRES_COLOR_SELECT,164,65,53,14
+    CTEXT           "新規",IDC_STATIC,164,110,53,9,SS_CENTERIMAGE
+    PUSHBUTTON      "カラー",IDC_AFXBARRES_COLOURPLACEHOLDER,164,122,53,41
+    CTEXT           "処理後",IDC_STATIC,164,166,53,10,SS_CENTERIMAGE
+END
+
+IDD_AFXBARRES_COLOR_PAGE_ONE DIALOG  0, 0, 147, 161
+STYLE DS_SHELLFONT | WS_CHILD | WS_CAPTION | WS_SYSMENU
+CAPTION "標準"
+FONT 8, "MS Shell Dlg 2"
+BEGIN
+    LTEXT           "色:",IDC_STATIC,2,4,43,10
+    PUSHBUTTON      "16 進",IDC_AFXBARRES_HEXPLACEHOLDER,2,17,143,107
+    PUSHBUTTON      "灰色",IDC_AFXBARRES_GREYSCALEPLACEHOLDER,2,131,143,26
+END
+
+IDD_AFXBARRES_COLORPAGE_TWO DIALOG  0, 0, 147, 161
+STYLE DS_SHELLFONT | WS_CHILD | WS_CAPTION | WS_SYSMENU
+CAPTION "カスタム"
+FONT 8, "MS Shell Dlg 2"
+BEGIN
+    LTEXT           "色合い(&U):",IDC_STATIC,2,103,23,8,SS_CENTERIMAGE
+    EDITTEXT        IDC_AFXBARRES_H,26,102,30,13,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin1",IDC_AFXBARRES_SPIN1,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,45,102,11,14
+    LTEXT           "鮮やかさ(&S):",IDC_STATIC,2,120,23,8,SS_CENTERIMAGE
+    EDITTEXT        IDC_AFXBARRES_S,26,119,30,13,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin1",IDC_AFXBARRES_SPIN2,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,45,119,11,14
+    LTEXT           "明るさ(&L):",IDC_STATIC,2,137,23,8,SS_CENTERIMAGE
+    EDITTEXT        IDC_AFXBARRES_L,26,136,30,13,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin1",IDC_AFXBARRES_SPIN3,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,45,135,11,14
+    LTEXT           "赤(&R):",IDC_STATIC,66,103,23,8,SS_CENTERIMAGE
+    EDITTEXT        IDC_AFXBARRES_R,90,102,30,13,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin1",IDC_AFXBARRES_SPIN4,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,109,102,11,14
+    LTEXT           "緑(&G):",IDC_STATIC,66,120,23,8,SS_CENTERIMAGE
+    EDITTEXT        IDC_AFXBARRES_G,90,119,30,13,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin1",IDC_AFXBARRES_SPIN5,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,109,119,11,14
+    LTEXT           "青(&B):",IDC_STATIC,66,137,23,8,SS_CENTERIMAGE
+    EDITTEXT        IDC_AFXBARRES_B,90,136,30,13,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin1",IDC_AFXBARRES_SPIN6,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,109,136,11,14
+    LTEXT           "色:",IDC_STATIC,2,4,48,9
+    PUSHBUTTON      "カラー",IDC_AFXBARRES_COLOURPLACEHOLDER,2,14,100,80
+    PUSHBUTTON      "明るさ",IDC_AFXBARRES_LUMINANCEPLACEHOLDER,106,14,18,80
+END
+
+IDD_AFXBARRES_KEYMAP DIALOG  0, 0, 344, 220
+STYLE DS_SETFONT | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "キーボード ヘルプ"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    CONTROL         "List1",IDC_AFXBARRES_KEYLIST,"SysListView32",LVS_REPORT | WS_BORDER | WS_TABSTOP,0,28,342,190
+    PUSHBUTTON      "印刷",IDC_AFXBARRES_PRINT_KEYMAP,3,5,15,14,NOT WS_TABSTOP
+    PUSHBUTTON      "コピー",IDC_AFXBARRES_COPY_KEYMAP,21,5,15,14,NOT WS_TABSTOP
+    LTEXT           "分類(&C):",IDC_STATIC,44,9,31,8
+    COMBOBOX        IDC_AFXBARRES_CATEGORY,76,7,63,131,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "アクセラレータの表示(&A):",IDC_AFXBARRES_ACCEL_LABEL,148,9,69,8
+    COMBOBOX        IDC_AFXBARRES_VIEW_TYPE,219,7,71,137,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    ICON            "",IDC_AFXBARRES_VIEW_ICON,298,2,20,20
+END
+
+IDD_AFXBARRES_PROPPAGE7 DIALOG  0, 0, 274, 146
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "ツール"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "メニューの内容(&M):",IDD_AFXBARRES_COMMANDS_LIST,8,8,258,59,WS_TABSTOP
+    LTEXT           "コマンド(&C):",IDC_STATIC,8,77,34,8
+    EDITTEXT        IDD_AFXBARRES_COMMAND,69,75,178,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "&...",IDD_AFXBARRES_BROWSE_COMMAND,253,75,13,14
+    LTEXT           "引数(&A):",IDC_STATIC,8,95,36,8
+    EDITTEXT        IDD_AFXBARRES_ARGUMENTS,69,93,178,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "",IDD_AFXBARRES_MENU_ARGUMENTS,253,93,13,14,NOT WS_VISIBLE
+    LTEXT           "初期ディレクトリ(&I):",IDC_STATIC,8,113,48,8
+    EDITTEXT        IDD_AFXBARRES_INITIAL_DIRECTORY,69,111,178,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "",IDD_AFXBARRES_MENU_INITIAL_DIRECTORY,253,111,13,14,NOT WS_VISIBLE
+END
+
+IDD_AFXBARRES_OUTLOOKBAR_OPTIONS DIALOG  0, 0, 215, 137
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION
+CAPTION "ナビゲーション ウィンドウ オプション"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "ボタンを表示する順番(&B)",IDC_STATIC,7,7,87,8
+    LISTBOX         IDC_AFXBARRES_LIST,18,21,135,87,LBS_OWNERDRAWFIXED | LBS_HASSTRINGS | LBS_USETABSTOPS | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "上へ(&U)",IDC_AFXBARRES_MOVEUP,162,20,46,14
+    PUSHBUTTON      "下へ(&D)",IDC_AFXBARRES_MOVEDOWN,162,40,46,14
+    PUSHBUTTON      "リセット(&R)",IDC_AFXBARRES_RESET,162,60,46,14
+    DEFPUSHBUTTON   "OK",IDOK,109,115,47,15
+    PUSHBUTTON      "キャンセル",IDCANCEL,162,115,46,15
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,97,11,111,1
+END
+
+IDD_AFXBARRES_POPUP_DLG DIALOG  0, 0, 316, 169
+STYLE DS_SETFONT | WS_CHILD
+FONT 8, "MS Shell Dlg"
+BEGIN
+END
+
+IDD_AFXBARRES_PROPPAGE8 DIALOG  0, 0, 402, 284
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "カスタマイズ"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "コマンドの選択(&C):",IDC_STATIC,8,8,78,8
+    COMBOBOX        IDC_AFXBARRES_CATEGORY,8,19,150,95,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "コマンド(&O):",IDC_STATIC,8,36,38,8
+    LISTBOX         IDC_AFXBARRES_COMMANDS_LIST,8,47,150,171,LBS_SORT | LBS_OWNERDRAWVARIABLE | LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "追加(&A) >>",IDS_AFXBARRES_ADD,168,95,40,14
+    PUSHBUTTON      "削除(&R)",IDC_AFXBARRES_REMOVE,168,117,40,14
+    LISTBOX         IDC_AFXBARRES_QAT_COMMANDS_LIST,215,19,150,180,LBS_OWNERDRAWVARIABLE | LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "リセット(&S)",IDC_AFXBARRES_RESET,215,204,46,14
+    PUSHBUTTON      "",IDC_AFXBARRES_MOVEUP,375,95,19,14
+    PUSHBUTTON      "",IDC_AFXBARRES_MOVEDOWN,375,117,19,14
+    CONTROL         "クイック アクセス ツール バーをリボンの下に表示する(&H)",IDC_AFXBARRES_QAT_ON_BOTTOM,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,228,163,10
+    PUSHBUTTON      "カスタマイズ(&T)...",IDC_AFXBARRES_KEYBOARD,79,249,60,14
+    LTEXT           "ショートカット キー:",IDC_STATIC,8,250,64,8
+END
+
+IDD_AFXBARRES_RIBBON_KEYBOARD_DLG DIALOG  0, 0, 339, 259
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "キーボードのユーザー設定"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "分類(&C):",IDC_STATIC,7,7,36,8
+    LISTBOX         IDC_AFXBARRES_CATEGORY,7,19,155,69,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "コマンド(&O):",IDC_STATIC,178,7,38,8
+    LISTBOX         IDC_AFXBARRES_COMMANDS_LIST,178,19,154,69,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "現在のキー(&U):",IDC_STATIC,7,97,43,8
+    LISTBOX         IDC_AFXBARRES_CURRENT_KEYS_LIST,7,110,155,36,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "新しいショートカット キーの入力(&N):",IDC_STATIC,178,97,76,8
+    EDITTEXT        IDC_AFXBARRES_NEW_SHORTCUT_KEY,178,111,153,14,ES_AUTOHSCROLL | WS_DISABLED
+    LTEXT           "割り当て先:",IDC_AFXBARRES_ASSIGNED_TO_TITLE,178,132,40,8,NOT WS_VISIBLE
+    LTEXT           ".....",IDC_AFXBARRES_ASSIGNED_TO,178,143,91,8
+    LTEXT           "アクセラレータの設定(&F):",IDC_STATIC,7,156,62,8
+    COMBOBOX        IDC_AFXBARRES_VIEW_TYPE,7,167,91,95,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "説明:",IDC_STATIC,7,195,38,8
+    LTEXT           "Static",IDC_AFXBARRES_COMMAND_DESCRIPTION,7,207,325,10
+    DEFPUSHBUTTON   "割り当て(&A)",IDC_AFXBARRES_ASSIGN,7,238,44,14,WS_DISABLED
+    PUSHBUTTON      "削除(&R)",IDC_AFXBARRES_REMOVE,59,238,44,14,WS_DISABLED
+    PUSHBUTTON      "すべてリセット(&S)",IDC_AFXBARRES_RESET_SHORTCUTS,111,238,44,14
+    PUSHBUTTON      "閉じる",IDCANCEL,279,238,53,14
+    ICON            "",IDC_AFXBARRES_VIEW_ICON,108,167,20,20
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_AFXBAR_RES_PRINT_PREVIEW, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 13
+    END
+
+    IDD_AFXBARRES_PROPPAGE6, DIALOG
+    BEGIN
+        VERTGUIDE, 242
+        HORZGUIDE, 47
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+#ifndef _AFX_INTL_RESOURCES
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_AFXBARRES_HELP      BITMAP                  "res\\help-pro.bmp"
+IDB_AFXBARRES_MENU_IMAGES BITMAP                  "res\\menuimg-pro.bmp"
+IDR_AFXRES_PALETTE      BITMAP                  "res\\palette-pro.bmp"
+IDR_AFXRES_PALETTE32    BITMAP                  "res\\palette-pro32.bmp"
+IDB_AFXBARRES_NEW       BITMAP                  "res\\new-pro.bmp"
+IDB_AFXBARRES_NEW32     BITMAP                  "res\\new-pro32.bmp"
+IDB_AFXBARRES_DELETE    BITMAP                  "res\\delete-pro.bmp"
+IDB_AFXBARRES_DELETE32  BITMAP                  "res\\delete-pro32.bmp"
+IDB_AFXBARRES_UP        BITMAP                  "res\\up-pro.bmp"
+IDB_AFXBARRES_UP32      BITMAP                  "res\\up-pro32.bmp"
+IDB_AFXBARRES_DOWN      BITMAP                  "res\\down-pro.bmp"
+IDB_AFXBARRES_DOWN32    BITMAP                  "res\\down-pro32.bmp"
+IDR_AFXRES_PRINT_PREVIEW BITMAP                  "res\\PrintPreview-pro.bmp"
+IDR_AFXRES_PRINT_PREVIEW32 BITMAP                  "res\\PrintPreview-pro32.bmp"
+IDB_AFXBARRES_PRINT     BITMAP                  "res\\print-pro.bmp"
+IDB_AFXBARRES_PRINT32   BITMAP                  "res\\print-pro32.bmp"
+IDB_AFXBARRES_COPY      BITMAP                  "res\\copy-pro.bmp"
+IDB_AFXBARRES_COPY32    BITMAP                  "res\\copy-pro32.bmp"
+IDB_AFXBARRES_FONT      BITMAP                  "res\\font-pro.bmp"
+IDB_AFXBARRES_TASKPANE  BITMAP                  "res\\taskpane.bmp"
+IDB_AFXBARRES_TASKPANE32 BITMAP                  "res\\taskpane32.bmp"
+IDB_AFXBARRES_BROWSE    BITMAP                  "res\\browse.bmp"
+IDB_AFXBARRES_BROWSE32  BITMAP                  "res\\browse32.bmp"
+IDB_AFXBARRES_SD_TOP    BITMAP                  "res\\SDtop.bmp"
+IDB_AFXBARRES_SD_BOTTOM BITMAP                  "res\\SDbottom.bmp"
+IDB_AFXBARRES_SD_LEFT   BITMAP                  "res\\SDleft.bmp"
+IDB_AFXBARRES_SD_MIDDLE BITMAP                  "res\\SDmiddle.bmp"
+IDB_AFXBARRES_SD_RIGHT  BITMAP                  "res\\SDright.bmp"
+IDB_AFXBARRES_SD_CENTER BITMAP                  "res\\SDCenter.bmp"
+IDB_AFXBARRES_COLOR_PICKER BITMAP                  "res\\picker.bmp"
+IDB_AFXBARRES_HELP32    BITMAP                  "res\\help-pro32.bmp"
+IDB_AFXBARRES_MENU_IMAGES24 BITMAP                  "res\\menuimg-pro24.bmp"
+IDB_AFXBARRES_RIBBON_PRINT_LARGE BITMAP                  "res\\RibbonPrintL.bmp"
+IDB_AFXBARRES_RIBBON_PRINT_SMALL BITMAP                  "res\\RibbonPrintS.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Cursor
+//
+
+IDC_AFXBARRES_RECT      CURSOR                  "res\\rect-pro.cur"
+IDC_AFXBARRES_ELLIPSE   CURSOR                  "res\\ellipse-pro.cur"
+IDC_AFXBARRES_FILL      CURSOR                  "res\\fill-pro.cur"
+IDC_AFXBARRES_LINE      CURSOR                  "res\\line-pro.cur"
+IDC_AFXBARRES_PEN       CURSOR                  "res\\pen-pro.cur"
+IDC_AFXBARRES_COLOR     CURSOR                  "res\\color-pro.cur"
+IDC_AFXBARRES_DELETE    CURSOR                  "res\\delete-pro.cur"
+IDC_AFXBARRES_MOVE      CURSOR                  "res\\move-pro.cur"
+IDC_AFXBARRES_COPY      CURSOR                  "res\\copy-pro.cur"
+IDC_AFXBARRES_HAND      CURSOR                  "res\\hand-pro.cur"
+IDC_AFXBARRES_MOVE_TAB  CURSOR                  "res\\movetab.cur"
+IDC_AFXBARRES_NO_MOVE_TAB CURSOR                  "res\\nomovetab.cur"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_AFXRES_PALETTE TOOLBAR  16, 15
+BEGIN
+    BUTTON      ID_AFX_TOOL_PEN
+    BUTTON      ID_AFX_TOOL_FILL
+    BUTTON      ID_AFX_TOOL_PICK
+    BUTTON      ID_AFX_TOOL_LINE
+    BUTTON      ID_AFX_TOOL_RECT
+    BUTTON      ID_AFX_TOOL_ELLIPSE
+    SEPARATOR
+    BUTTON      ID_AFX_TOOL_COPY
+    BUTTON      ID_AFX_TOOL_PASTE
+    BUTTON      ID_AFX_TOOL_CLEAR
+END
+
+IDR_AFXRES_PRINT_PREVIEW TOOLBAR  16, 16
+BEGIN
+    BUTTON      AFX_ID_PREVIEW_PRINT
+    BUTTON      AFX_ID_PREVIEW_NEXT
+    BUTTON      AFX_ID_PREVIEW_PREV
+    BUTTON      AFX_ID_PREVIEW_NUMPAGE
+    BUTTON      AFX_ID_PREVIEW_ZOOMIN
+    BUTTON      AFX_ID_PREVIEW_ZOOMOUT
+    BUTTON      AFX_ID_PREVIEW_CLOSE
+    BUTTON      ID_AFXRES_TWO_PAGES_DUMMY
+END
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_AFXRES_TOOL         ICON                    "res\\tool-pro.ico"
+IDI_AFXBARRES_HELP      ICON                    "res\\help-pro.ico"
+IDI_AFXRES_LINK         ICON                    "res\\link.ico"
+IDI_AFXRES_COLORS       ICON                    "res\\colors.ico"
+
+#endif // _AFX_INTL_RESOURCES
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_AFXBARRES_PROPPAGE3 DLGINIT
+BEGIN
+    IDC_AFXBARRES_MENU_ANIMATION, 0x403, 5, 0
+0x6f4e, 0x656e, "\000" 
+    IDC_AFXBARRES_MENU_ANIMATION, 0x403, 7, 0
+0x6e55, 0x6f66, 0x646c, "\000" 
+    IDC_AFXBARRES_MENU_ANIMATION, 0x403, 6, 0
+0x6c53, 0x6469, 0x0065, 
+    IDC_AFXBARRES_MENU_ANIMATION, 0x403, 5, 0
+0x6146, 0x6564, "\000" 
+    IDC_AFXBARRES_MENU_ANIMATION, 0x403, 10, 0
+0x445b, 0x6665, 0x7561, 0x746c, 0x005d, 
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_AFXBARRES_POPUP_AFXTOOL_BAR MENU 
+BEGIN
+    POPUP "_POPUP_"
+    BEGIN
+        MENUITEM "既定値にリセット(&R)",           ID_AFXBARRES_TOOLBAR_RESET
+        MENUITEM "ボタン イメージのコピー(&C)",          ID_AFXBARRES_COPY_IMAGE
+        MENUITEM "削除(&D)",                     ID_AFXBARRES_TOOLBAR_DELETE
+        MENUITEM SEPARATOR
+        MENUITEM "ボタンの外観(&B)...",       ID_AFXBARRES_TOOLBAR_APPEARANCE
+        MENUITEM "イメージ(&I)",                      ID_AFXBARRES_TOOLBAR_IMAGE
+        MENUITEM "テキスト(&T)",                       ID_AFXBARRES_TOOLBAR_TEXT
+        MENUITEM "イメージとテキストを表示(&A)",             ID_AFXBARRES_TOOLBAR_IMAGE_AND_TEXT
+        MENUITEM SEPARATOR
+        MENUITEM "スタート グループ(&S)",                ID_AFXBARRES_TOOLBAR_START_GROUP
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDP_AFXBARRES_IMAGE_IS_REQUIRED "イメージを選択してください。"
+    IDP_AFXBARRES_TEXT_IS_REQUIRED "テキストを入力してください。"
+    IDP_AFXBARRES_CANNT_CREATE_IMAGE "新しいイメージを作成できません。"
+    IDP_AFXBARRES_CANT_PASTE_BITMAP 
+                            "クリップボードからビットマップ イメージを貼り付けることができません。"
+    IDS_AFXBARRES_WRONG_IMAGE_SIZE 
+                            "貼り付けることができるビットマップのサイズは %d x %d のみです。"
+    IDS_AFXBARRES_MENU_BAR_TITLE "メニュー バー"
+    IDS_AFXBARRES_NO_MENUBAR "メニューをカスタマイズできません。"
+    IDP_AFXBARRES_INTERLAL_ERROR 
+                            "ツール バーの内部エラーです。アプリケーションの開発元に連絡してください。"
+    IDP_AFXBARRES_UNASSIGNED "[未定義]"
+    IDP_AFXBARRES_CANT_COPY_BITMAP 
+                            "ビットマップ イメージをクリップボードにコピーできません。"
+    IDS_AFXBARRES_HIDE_BAR  "ドッキング ウィンドウを隠す"
+    IDS_AFXBARRES_EXPAND_BAR "ドッキング ウィンドウを展開する"
+    IDS_AFXBARRES_CONTRACT_BAR "ドッキング ウィンドウを縮小する"
+    IDS_AFXBARRES_NEW_MENU  "新しいメニュー"
+    IDS_AFXBARRES_FILE      "ファイル"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_AFXBARRES_FOLDER    "フォルダ"
+    IDS_AFXBARRES_NEW       "新規"
+    IDS_AFXBARRES_EXISTING  "既存"
+    IDS_AFXBARRES_RECENT    "最近使用したファイル"
+    IDS_AFXBARRES_DELETE    "削除"
+    IDS_AFXBARRES_MOVEUP    "項目を上へ移動"
+    IDS_AFXBARRES_MOVEDN    "項目を下へ移動"
+    IDS_AFXBARRES_CMD_FILTER 
+                            "実行可能ファイル (*.exe)|*.exe|コマンド (*.com)|*.com|情報 (*.pdf)|*.pdf|バッチ (*.bat)|*.bat|すべてのファイル (*.*)|*.*||"
+    IDS_AFXBARRES_TOO_MANY_TOOLS_FMT "最大 %d 個のツールを定義できます。"
+    IDS_AFXBARRES_EXPAND_FMT "展開 (%s)"
+    IDS_AFXBARRES_MORE_BUTTONS "その他のボタン"
+    IDS_AFXBARRES_NEW_FILE  "新規"
+    IDS_AFX_TEAR_OFF            "このメニューをドラッグしてフローティング メニューにします"
+    IDS_AFXBARRES_COMMAND   "コマンド"
+    IDS_AFXBARRES_KEYS      "キー"
+    IDS_AFXBARRES_DESCRIPTION "説明"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_AFXBARRES_PROPSHT_CAPTION "カスタマイズ"
+    IDS_AFXBARRES_UNTITLED_TOOLBAR "<無題>"
+    IDS_AFXBARRES_CLOSE     "閉じる"
+    IDS_AFXBARRES_DEFUALT_MENU "既定のメニュー"
+    IDS_AFXBARRES_DEFAULT_MENU_DESCR 
+                            "既定のアプリケーション メニューです。文書が開かれていないときに表示されます。"
+    IDS_AFXBARRES_NO_CONTEXT 
+                            "-------------------------------------------------------------------------------------------"
+    IDS_AFXBARRES_DELETE_TOOLBAR_FMT 
+                            "ツール バー '%s' を削除しますか?"
+    IDS_AFXBARRES_ALL_COMMANDS "すべてのコマンド"
+    IDS_AFXBARRES_RESET_TOOLBAR_FMT 
+                            "変更はすべて失われます。ツール バー '%s' をリセットしますか?"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_AFXBARRES_RESET_ALL_TOOLBARS 
+                            "変更はすべて失われます。すべてのツール バーおよびメニューをリセットしますか?"
+    IDS_AFXBARRES_RESET_MENU_FMT 
+                            "変更はすべて失われます。メニュー '%s' をリセットしますか?"
+    IDS_AFXBARRES_DEFAULT_VIEW "既定値"
+    IDS_AFXBARRES_RESET_KEYBOARD 
+                            "変更はすべて失われます。キーボードの割り当てをリセットしますか?"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_AFXBARRES_TOO_MANY_TOOLBARS_FMT 
+                            "作成できるユーザー定義のツール バーは最大 %d 個です。"
+    IDS_AFXBARRES_RESET_USAGE_WARNING 
+                            "このアプリケーションで使用したコマンドの記録を消去し、メニューとツール バーに表示するコマンドを既定の状態に戻します。ユーザー設定は残ります。実行しますか?"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_AFX_TOOL_FILL        "塗りつぶしツール\n塗りつぶし"
+    ID_AFX_TOOL_PEN         "鉛筆ツール\n鉛筆"
+    ID_AFX_TOOL_PICK        "色の選択ツール\n色の選択"
+    ID_AFX_TOOL_LINE        "線ツール\n線"
+    ID_AFX_TOOL_RECT        "四角形ツール\n四角形"
+    ID_AFX_TOOL_ELLIPSE     "楕円ツール\n楕円"
+    ID_AFX_TOOL_COPY        "コピー ツール\nコピー"
+    ID_AFX_TOOL_PASTE       "貼り付けツール\n貼り付け"
+    ID_AFX_TOOL_CLEAR       "削除ツール\n削除"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_AFXBARRES_TOOLBAR_OPTIONS "ツール バー オプション"
+    IDS_AFXBARRES_ADD_REMOVE_BTNS "ボタンの表示/非表示(&A)"
+    IDS_AFXBARRES_TASKPANE  "作業ウィンドウ"
+    ID_AFXBARRES_TASKPANE_BACK "戻る"
+    ID_AFXBARRES_TASKPANE_FORWARD "次に進む"
+    ID_AFXBARRES_TASKPANE_HOME "ホーム"
+    ID_AFXBARRES_TASKPANE_CLOSE "閉じる"
+END
+
+STRINGTABLE 
+BEGIN
+    AFX_ID_PREVIEW_CLOSE    "印刷プレビューを閉じる\n閉じる(&C)"
+    AFX_ID_PREVIEW_NUMPAGE  "1 ページ表示/2 ページ表示の切り替え\n1 ページ表示/2 ページ表示の切り替え"
+    AFX_ID_PREVIEW_NEXT     "次のページ\n次のページ"
+    AFX_ID_PREVIEW_PREV     "前のページ\n前のページ"
+    AFX_ID_PREVIEW_PRINT    "文書の印刷\n印刷(&P)"
+    AFX_ID_PREVIEW_ZOOMIN   "ズーム イン\nズーム イン"
+    AFX_ID_PREVIEW_ZOOMOUT  "ズーム アウト\nズーム アウト"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_AFXBARRES_CLOSEBAR  "閉じる"
+    IDS_AFXBARRES_AUTOHIDEBAR "自動的に隠す"
+    IDP_AFXBARRES_SCROLL_LEFT "左へスクロール"
+    IDP_AFXBARRES_SCROLL_RIGHT "右へスクロール"
+    IDS_AFXBARRES_AUTOHIDE_ALL "すべて自動的に隠す"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_AFXBARRES_RESET_TOOLBAR "ツール バーのリセット(&R)"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_AFXBARRES_TASKPANE_OTHER "その他の作業ウィンドウ"
+    IDS_AFXBARRES_FULLSCREEN_CLOSE "全画面表示を閉じる"
+    IDS_AFXBARRES_FULLSCREEN "全画面表示"
+    IDS_AFXBARRES_SHOWONEROW "ボタンを 1 行に表示(&H)"
+    IDS_AFXBARRES_SHOWTWOROWS "ボタンを 2 行に表示(&H)"
+    IDS_AFXBARRES_SHOW_MORE_BUTTONS "表示するボタンを増やす"
+    IDS_AFXBARRES_SHOW_FEWER_BUTTONS "表示するボタンを減らす"
+    IDS_AFXBARRES_NAV_PANE_OPTIONS "ナビゲーション ウィンドウ オプション..."
+    IDS_AFXBARRES_MENU      "ウィンドウの位置"
+    IDS_AFXBARRES_FLOATING  "フローティング(&F)"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_AFXBARRES_DOCKING   "ドッキング(&D)"
+    IDS_AFXBARRES_AUTOHIDE  "自動的に隠す(&A)"
+    IDS_AFXBARRES_HIDE      "非表示(&H)"
+    IDS_AFXBARRES_OPENED_DOCS "アクティブなファイル"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_AFXBARRES_TABBED    "タブ付きドキュメント(&T)"
+    IDS_AFXBARRES_PRINT_PREVIEW "印刷プレビュー(&P)"
+    IDS_AFXBARRES_PRINT     "印刷"
+    IDS_AFXBARRES_ZOOM      "ズーム"
+    IDS_AFXBARRES_PREVIEW   "プレビュー"
+    IDS_AFXBARRES_QAT_SEPARATOR "<区切り線>"
+    IDS_AFXBARRES_CUSTOMIZE_QAT_TOOLTIP "クイック アクセス ツール バーのカスタマイズ"
+    IDS_AFXBARRES_MORE_COMMANDS "その他のコマンド..."
+    IDS_AFXBARRES_PLACE_BELOW_RIBBON "リボンの下に表示"
+    IDS_AFXBARRES_PLACE_ABOVE_RIBBON "リボンの上に表示"
+    IDS_AFXBARRES_CANCEL    "キャンセル"
+    IDS_AFXBARRES_UNDO_FMT  "%d 操作元に戻す"
+    IDS_AFXBARRES_UNDO_ONE  "1 操作元に戻す"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_AFXBARRES_MORE      "詳細"
+    IDS_AFXBARRES_GALLERY_ROW1_FMT "%d / %d 行"
+    IDS_AFXBARRES_GALLERY_ROW2_FMT "%d-%d / %d 行"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_AFXBARRES_PLACE_QAT_BELOW_RIBBON 
+                            "クイック アクセス ツール バーをリボンの下に表示する"
+    IDS_AFXBARRES_PLACE_QAT_ABOVE_RIBBON 
+                            "クイック アクセス ツール バーをリボンの上に表示する"
+    IDS_AFXBARRES_ADD_TO_QAT "クイック アクセス ツール バーに追加"
+    IDS_AFXBARRES_REMOVE_FROM_QAT "クイック アクセス ツール バーから削除"
+    IDS_AFXBARRES_CUSTOMIZE_QAT "クイック アクセス ツール バーのカスタマイズ..."
+    IDS_AFXBARRES_MINIMIZE_RIBBON "リボンの最小化"
+    IDS_AFXBARRES_STATBAR_CUSTOMIZE "ステータス バーの構成"
+END
+
+/////////////////////////////////////////////////////////////////////////////
+
+#ifndef APSTUDIO_INVOKED
+
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED

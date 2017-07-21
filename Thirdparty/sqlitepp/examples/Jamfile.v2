@@ -1,0 +1,4 @@
+
+exe ex1 : ex1.cpp ..//sqlitepp : <include>.. ;
+
+exe ex2 : ex2.cpp ..//sqlitepp : <include>.. ;

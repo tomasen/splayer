@@ -1,0 +1,45 @@
+// This is a part of the Active Template Library.
+// Copyright (C) Microsoft Corporation
+// All rights reserved.
+//
+// This source code is only intended as a supplement to the
+// Active Template Library Reference and related
+// electronic documentation provided with the library.
+// See these sources for detailed information regarding the	
+// Active Template Library product.
+
+// Caption of about box
+#ifndef ABOUT_CAPTION
+#error ABOUT_CAPTION not defined
+#endif
+
+// Description on about box
+#ifndef ABOUT_DESCRIPTION
+#error ABOUT_DESCRIPTION not defined
+#endif
+
+// ID of the about box
+#ifndef IDD_ABOUTBOX
+#error IDD_ABOUTBOX not defined
+#endif
+
+// ID of the ICON use on about box
+#ifndef IDI_ABOUTICON
+#error IDI_ABOUTICON not defined
+#endif
+
+#define ABOUT_COPYRIGHT		"Copyright (C) Microsoft Corporation."
+
+IDD_ABOUTBOX DIALOGEX   0, 0, 235, 55
+CAPTION ABOUT_CAPTION
+STYLE DS_MODALFRAME | DS_SHELLFONT | WS_POPUP | WS_CAPTION | WS_SYSMENU
+FONT 8, "MS Shell Dlg"
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+BEGIN
+	ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
+	LTEXT           ABOUT_DESCRIPTION,IDC_STATIC,40,10,119,8,
+                    SS_NOPREFIX
+	LTEXT           ABOUT_COPYRIGHT,IDC_STATIC,40,25,119,8
+	DEFPUSHBUTTON   "OK",IDOK,178,7,50,16,WS_GROUP
+END
+

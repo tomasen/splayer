@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="api">
+      <UniqueIdentifier>{855593ba-99f2-4a89-9c50-8d73aa93d00a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core">
+      <UniqueIdentifier>{a05a1ca0-4100-45fc-a81d-7917273e5180}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="api_base.h">
+      <Filter>api</Filter>
+    </ClInclude>
+    <ClInclude Include="api_refptr.h">
+      <Filter>api</Filter>
+    </ClInclude>
+    <ClInclude Include="api_types.h">
+      <Filter>api</Filter>
+    </ClInclude>
+    <ClInclude Include="config.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="config_impl.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="pool.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="pool_impl.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="postdata.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="postdata_impl.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="postdataelem.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="postdataelem_impl.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="request.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="request_impl.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="strings.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="task.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="task_impl.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="task_observer.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="sinet.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="config_impl.cc">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="pool_impl.cc">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="postdata_impl.cc">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="postdataelem_impl.cc">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="request_impl.cc">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="strings.cc">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="task_impl.cc">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp" />
+  </ItemGroup>
+</Project>

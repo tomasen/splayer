@@ -1,0 +1,19 @@
+------
+
+------
+
+如果你是刚刚开始了解射手影音项目的开发者，请先阅读『[[射手影音 开发流程|开发流程]]』。
+
+===开发相关===
+**[[射手影音 开发流程|开发流程]]**、[[射手影音 开发原则|开发原则]]、[[射手影音 项目代码规范|代码规范]]、[[TODO|TODO任务表]]、[[Challenges|技术挑战]]
+
+===应用相关===
+[[射手影音 HotKey编辑指南|HotKey编辑指南]]、[[射手影音 分支版本说明|分支版本说明]]、[[工具栏按钮自定义指南]]
+
+===使用相关===
+[[射手影音 兼容性问题列表|兼容性问题列表]]、[[射手影音 字幕匹配常见问题|字幕匹配常见问题]]、
+[[射手影音 常见问题|其他常见问题]]、[[射手影音 高清硬件解码的支持列表|硬件加速支持列表]]
+
+关于 DirectShow Filters 可参考 『[[http://blog.splayer.org/index.php/2010/10/directshow_and_splayer/|DirectShow 公开课]]』
+
+|**[[http://splayer.org|主页]]**|**[[http://file.splayer.org/avant/SPlayerSetupInt.exe|国际版 International Edition]]**|**[[http://file.splayer.org/splayer.7z|Portable Edition]]**|[[http://shooter.cn/donate/|捐助]]|[[http://blog.splayer.org/|Blog]]

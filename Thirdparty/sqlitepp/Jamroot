@@ -1,0 +1,19 @@
+# build variants
+variant utf8 : release ;
+variant utf8d : debug ;
+
+variant utf16 : release : <define>SQLITEPP_UTF16 ;
+variant utf16d : debug : <define>SQLITEPP_UTF16 ;
+
+# project 
+project sqlitepp
+    : requirements
+        <toolset>msvc:<define>_CRT_SECURE_NO_DEPRECATE
+        <toolset>gcc:<define>_GLIBCXX_USE_WCHAR_T
+    : build-dir bin
+    : default-build utf8
+;
+
+build-project sqlite ;
+build-project sqlitepp ;
+

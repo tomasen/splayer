@@ -19,10 +19,10 @@
 
 BOOL CALLBACK EnumFamCallBack(LPLOGFONT lplf, LPNEWTEXTMETRIC lpntm, DWORD FontType, LPVOID aFontCount) 
 { 
-	int * aiFontCount = (int *)aFontCount;
-	*aiFontCount = 1;
-	
-	return TRUE;  
+    int * aiFontCount = (int *)aFontCount;
+    *aiFontCount = 1;
+    
+    return TRUE;  
 } 
 
 CSVPToolBox::CSVPToolBox(void)
@@ -123,19 +123,19 @@ std::wstring CSVPToolBox::GetShortFileNameForSearch_STL(std::wstring szFnPath)
   return szFileName;
 }
 BOOL CSVPToolBox::FindSystemFile(CString szFn){
-	TCHAR szBuf[MAX_PATH];
-	int len = GetSystemDirectory(szBuf, MAX_PATH);
-	if(len > 0){
-		//AfxMessageBox(szBuf);
-		CString szTmp;
-		szTmp.SetString(szBuf , len);
-		CPath szPath(szTmp);
-		szPath.RemoveBackslash();
-		szPath.AddBackslash();
-		szPath.Append(szFn);
-		return ifFileExist_STL((LPCTSTR)szPath);
-	}
-	return false;
+    TCHAR szBuf[MAX_PATH];
+    int len = GetSystemDirectory(szBuf, MAX_PATH);
+    if(len > 0){
+        //AfxMessageBox(szBuf);
+        CString szTmp;
+        szTmp.SetString(szBuf , len);
+        CPath szPath(szTmp);
+        szPath.RemoveBackslash();
+        szPath.AddBackslash();
+        szPath.Append(szFn);
+        return ifFileExist_STL((LPCTSTR)szPath);
+    }
+    return false;
 }
 #define SVPATH_BASENAME 0  //Without Dot
 #define SVPATH_EXTNAME 1  //With Dot
@@ -183,13 +183,13 @@ std::wstring CSVPToolBox::getVideoFileBasename(std::wstring szVidPath, std::vect
 }
 
 void CSVPToolBox::MergeAltList( CAtlList<CString>& szaRet,  CAtlList<CString>& szaIn  ){
-	POSITION pos = szaIn.GetHeadPosition();
-	while(pos){
-		CString szBuf = szaIn.GetNext(pos);
-		if ( szaRet.Find( szBuf) == NULL){
-			szaRet.AddTail(szBuf);
-		}
-	}
+    POSITION pos = szaIn.GetHeadPosition();
+    while(pos){
+        CString szBuf = szaIn.GetNext(pos);
+        if ( szaRet.Find( szBuf) == NULL){
+            szaRet.AddTail(szBuf);
+        }
+    }
 }
 
 BOOL CSVPToolBox::isAlaphbet(WCHAR wchr)
@@ -243,76 +243,76 @@ void CSVPToolBox::findMoreFileByFile(CString szFile,
   }
 }
 BOOL CSVPToolBox::GetDirectoryLeft(CPath* tPath, int rCount ){
-	if(!tPath->IsDirectory() && !tPath->IsRoot() && rCount > 0){
-		tPath->RemoveBackslash();
-		tPath->RemoveFileSpec();
-		tPath->AddBackslash();
-		return this->GetDirectoryLeft(tPath, rCount-1);
-	}else{
-		return false;
-	}
+    if(!tPath->IsDirectory() && !tPath->IsRoot() && rCount > 0){
+        tPath->RemoveBackslash();
+        tPath->RemoveFileSpec();
+        tPath->AddBackslash();
+        return this->GetDirectoryLeft(tPath, rCount-1);
+    }else{
+        return false;
+    }
 
 }
 void CSVPToolBox::findMoreFileByDir(  CString szDir, CAtlList<CString>& szaRet,  CAtlArray<CString>& szaExt , BOOL bSubDir ){
-	
-		__time64_t ts = _time64(NULL);
-		CFileFind finder;
-		CString szExtMatch ;
-		for(UINT i = 0; i < szaExt.GetCount(); i++){
-			szExtMatch +=  szaExt.GetAt(i) + _T(";");
-		}
+    
+        __time64_t ts = _time64(NULL);
+        CFileFind finder;
+        CString szExtMatch ;
+        for(UINT i = 0; i < szaExt.GetCount(); i++){
+            szExtMatch +=  szaExt.GetAt(i) + _T(";");
+        }
 
-		BOOL bWorking = finder.FindFile(szDir);
-		while (bWorking)
-		{
-			bWorking = finder.FindNextFile();
+        BOOL bWorking = finder.FindFile(szDir);
+        while (bWorking)
+        {
+            bWorking = finder.FindNextFile();
 
-			if (finder.IsDots())
-				continue;
+            if (finder.IsDots())
+                continue;
 
-			if (finder.IsDirectory()){
-				if(bSubDir){
-					CPath tPath(finder.GetFilePath());
-					tPath.RemoveBackslash();
-					tPath.AddBackslash();
-					tPath.Append(_T("*"));
-					findMoreFileByDir( tPath , szaRet,szaExt, true);
-				}
-				continue;
-			}
-			CString szTmp = finder.GetFilePath();
-			szTmp.MakeLower();
-			if( szTmp.Find(_T("sample")) >= 0){
-				continue;
-			}
-			BOOL matchExt = false;
-			CPath szTPath(szTmp);
-			CString szThisExt  = szTPath.GetExtension();
-			if(szExtMatch.Find( szThisExt + _T(";") ) >= 0){
+            if (finder.IsDirectory()){
+                if(bSubDir){
+                    CPath tPath(finder.GetFilePath());
+                    tPath.RemoveBackslash();
+                    tPath.AddBackslash();
+                    tPath.Append(_T("*"));
+                    findMoreFileByDir( tPath , szaRet,szaExt, true);
+                }
+                continue;
+            }
+            CString szTmp = finder.GetFilePath();
+            szTmp.MakeLower();
+            if( szTmp.Find(_T("sample")) >= 0){
+                continue;
+            }
+            BOOL matchExt = false;
+            CPath szTPath(szTmp);
+            CString szThisExt  = szTPath.GetExtension();
+            if(szExtMatch.Find( szThisExt + _T(";") ) >= 0){
                 //SVP_LogMsg5(L"find %s", finder.GetFilePath());
-				szaRet.AddTail(finder.GetFilePath());
-			}
-			if ( ( _time64(NULL) - ts ) > 12){
-				//搜索文件时间超过12秒，取消搜索
-				break;
-			}
-						
-		}
+                szaRet.AddTail(finder.GetFilePath());
+            }
+            if ( ( _time64(NULL) - ts ) > 12){
+                //搜索文件时间超过12秒，取消搜索
+                break;
+            }
+                        
+        }
 
-		finder.Close();
+        finder.Close();
 
 }
 BOOL CSVPToolBox::bFontExist(CString szFontName, BOOL chkExtFontFile){
-	int aFontCount = 0;
-	BOOL ret;
-	HDC hdc = CreateDC(_T("DISPLAY"), NULL, NULL, NULL);
+    int aFontCount = 0;
+    BOOL ret;
+    HDC hdc = CreateDC(_T("DISPLAY"), NULL, NULL, NULL);
 
-	ret =  EnumFontFamilies(hdc,szFontName, (FONTENUMPROC) EnumFamCallBack, (LPARAM) &aFontCount) ;
+    ret =  EnumFontFamilies(hdc,szFontName, (FONTENUMPROC) EnumFamCallBack, (LPARAM) &aFontCount) ;
 
-	CancelDC(hdc);
-	DeleteDC(hdc);
-	
-	return !!aFontCount;
+    CancelDC(hdc);
+    DeleteDC(hdc);
+    
+    return !!aFontCount;
 }
 
 bool IsFileGziped(CString fnin)
@@ -397,18 +397,18 @@ bool ReadFileToBuffer(CString path, BYTE*& contents, DWORD* pdwsize)
 
 CString CSVPToolBox::fileGetContent(CString szFilePath){
   // Get CString from file even it's ansi encoded
-	CStdioFile f;
+    CStdioFile f;
 
-	CString szBuf;
-	CString szRet;
-	if(f.Open(szFilePath, CFile::modeRead | CFile::typeText))
-	{
-		while( f.ReadString(szBuf) ){
-			szRet.Append(szBuf + _T("\n"));
-		}
-		f.Close();
-	}
-	return szRet.TrimRight();
+    CString szBuf;
+    CString szRet;
+    if(f.Open(szFilePath, CFile::modeRead | CFile::typeText))
+    {
+        while( f.ReadString(szBuf) ){
+            szRet.Append(szBuf + _T("\n"));
+        }
+        f.Close();
+    }
+    return szRet.TrimRight();
 }
 void CSVPToolBox::filePutContent(CString szFilePath, CString szData, BOOL bAppend)
 {
@@ -427,101 +427,101 @@ void CSVPToolBox::filePutContent_STL(std::wstring szFilePath, std::wstring szDat
 }
 DWORD CSVPToolBox::_httoi(const TCHAR *value)
 {
-	struct CHexMap
-	{
-		TCHAR chr;
-		int value;
-	};
+    struct CHexMap
+    {
+        TCHAR chr;
+        int value;
+    };
 
-	CHexMap HexMap[16] =
-	{
-		{'0', 0}, {'1', 1},
-		{'2', 2}, {'3', 3},
-		{'4', 4}, {'5', 5},
-		{'6', 6}, {'7', 7},
-		{'8', 8}, {'9', 9},
-		{'A', 10}, {'B', 11},
-		{'C', 12}, {'D', 13},
-		{'E', 14}, {'F', 15}
-	};
-	TCHAR *mstr = _tcsupr(_tcsdup(value));
-	TCHAR *s = mstr;
-	DWORD result = 0;
-	if (*s == '0' && *(s + 1) == 'X') s += 2;
-	bool firsttime = true;
-	while (*s != '\0')
-	{
-		bool found = false;
-		for (int i = 0; i < 16; i++)
-		{
-			if (*s == HexMap[i].chr)
-			{
-				if (!firsttime) result <<= 4;
-				result |= HexMap[i].value;
-				found = true;
-				break;
-			}
-		}
-		if (!found) break;
-		s++;
-		firsttime = false;
-	}
-	free(mstr);
-	return (result&0xff000000 | ((result&0x000000ff) << 16) | ((result&0x0000ff00)) | ((result&0x00ff0000) >> 16)) ;
+    CHexMap HexMap[16] =
+    {
+        {'0', 0}, {'1', 1},
+        {'2', 2}, {'3', 3},
+        {'4', 4}, {'5', 5},
+        {'6', 6}, {'7', 7},
+        {'8', 8}, {'9', 9},
+        {'A', 10}, {'B', 11},
+        {'C', 12}, {'D', 13},
+        {'E', 14}, {'F', 15}
+    };
+    TCHAR *mstr = _tcsupr(_tcsdup(value));
+    TCHAR *s = mstr;
+    DWORD result = 0;
+    if (*s == '0' && *(s + 1) == 'X') s += 2;
+    bool firsttime = true;
+    while (*s != '\0')
+    {
+        bool found = false;
+        for (int i = 0; i < 16; i++)
+        {
+            if (*s == HexMap[i].chr)
+            {
+                if (!firsttime) result <<= 4;
+                result |= HexMap[i].value;
+                found = true;
+                break;
+            }
+        }
+        if (!found) break;
+        s++;
+        firsttime = false;
+    }
+    free(mstr);
+    return (result&0xff000000 | ((result&0x000000ff) << 16) | ((result&0x0000ff00)) | ((result&0x00ff0000) >> 16)) ;
 
 }
 CString CSVPToolBox::getFileVersionHash(CString szPath){
-	DWORD             dwHandle;
-	UINT              dwLen;
-	UINT              uLen;
-	LPVOID            lpBuffer;
-	VS_FIXEDFILEINFO  *lpBuffer2;
-	
-	dwBuild = 0;
+    DWORD             dwHandle;
+    UINT              dwLen;
+    UINT              uLen;
+    LPVOID            lpBuffer;
+    VS_FIXEDFILEINFO  *lpBuffer2;
+    
+    dwBuild = 0;
 
-	dwLen  = GetFileVersionInfoSize(szPath, &dwHandle);
+    dwLen  = GetFileVersionInfoSize(szPath, &dwHandle);
 
-	TCHAR * lpData = (TCHAR*) malloc(dwLen);
-	if(!lpData)
-		return _T("");
-	memset((char*)lpData, 0 , dwLen);
+    TCHAR * lpData = (TCHAR*) malloc(dwLen);
+    if(!lpData)
+        return _T("");
+    memset((char*)lpData, 0 , dwLen);
 
-	/* GetFileVersionInfo() requires a char *, but the api doesn't
-	* indicate that it will modify it */
-	if(GetFileVersionInfo(szPath, dwHandle, dwLen, lpData) != 0)
-	{
-		if(VerQueryValue(lpData, _T("\\"), &lpBuffer, &uLen) != 0)
-		{
-			lpBuffer2 = (VS_FIXEDFILEINFO *)lpBuffer;
-			dwMajor   = HIWORD(lpBuffer2->dwFileVersionMS);
-			dwMinor   = LOWORD(lpBuffer2->dwFileVersionMS);
-			dwRelease = HIWORD(lpBuffer2->dwFileVersionLS);
-			dwBuild   = LOWORD(lpBuffer2->dwFileVersionLS);
-		}
-	}
-	long iFileLen;
-	int fp;
-	if( _wsopen_s ( &fp, szPath, _O_RDONLY, _SH_DENYNO,
-		_S_IREAD ) == 0 )
-	{
+    /* GetFileVersionInfo() requires a char *, but the api doesn't
+    * indicate that it will modify it */
+    if(GetFileVersionInfo(szPath, dwHandle, dwLen, lpData) != 0)
+    {
+        if(VerQueryValue(lpData, _T("\\"), &lpBuffer, &uLen) != 0)
+        {
+            lpBuffer2 = (VS_FIXEDFILEINFO *)lpBuffer;
+            dwMajor   = HIWORD(lpBuffer2->dwFileVersionMS);
+            dwMinor   = LOWORD(lpBuffer2->dwFileVersionMS);
+            dwRelease = HIWORD(lpBuffer2->dwFileVersionLS);
+            dwBuild   = LOWORD(lpBuffer2->dwFileVersionLS);
+        }
+    }
+    long iFileLen;
+    int fp;
+    if( _wsopen_s ( &fp, szPath, _O_RDONLY, _SH_DENYNO,
+        _S_IREAD ) == 0 )
+    {
 
-		iFileLen = filelength(fp);
-		_close( fp);
+        iFileLen = filelength(fp);
+        _close( fp);
 
-	}
-	
-	CString szRet;
-	szRet.Format(_T("%d.%d.%d.%d.%d"), dwMajor, dwMinor, dwRelease, dwBuild,iFileLen);
-	return szRet;
+    }
+    
+    CString szRet;
+    szRet.Format(_T("%d.%d.%d.%d.%d"), dwMajor, dwMinor, dwRelease, dwBuild,iFileLen);
+    return szRet;
 }
 BOOL CSVPToolBox::isWriteAble(CString szPath){
-	FILE* fp;
-	if ( _wfopen_s( &fp, szPath, _T("ab") ) != 0){
-		return 0; //input file open error
-	}else{
-		fclose(fp);
-	}
-	return 1;
+    FILE* fp;
+    if ( _wfopen_s( &fp, szPath, _T("ab") ) != 0){
+        return 0; //input file open error
+    }else{
+        fclose(fp);
+    }
+    return 1;
 }
 CString CSVPToolBox::getSameTmpName(CString fnin)
 {
@@ -541,101 +541,101 @@ CString CSVPToolBox::getSameTmpName(CString fnin)
 }
 CString CSVPToolBox::getSameTmpExt(CString fnin)
 {
-	std::vector<std::wstring> szaPathinfo;
-	getVideoFileBasename((LPCTSTR)fnin, &szaPathinfo);
-	CString fnout = getTmpFileName();
-	fnout += szaPathinfo.at(1).c_str();
-	return fnout;
+    std::vector<std::wstring> szaPathinfo;
+    getVideoFileBasename((LPCTSTR)fnin, &szaPathinfo);
+    CString fnout = getTmpFileName();
+    fnout += szaPathinfo.at(1).c_str();
+    return fnout;
 }
 int CSVPToolBox::packGZfile(CString fnin , CString fnout)
 {
-	
-	FILE* fp;
-	int ret = 0;
-	if ( _wfopen_s( &fp, fnin, _T("rb") ) != 0){
-		return -1; //input file open error
-	}
-	int iDescLen;
-	char * szFnout = this->CStringToUTF8(fnout, &iDescLen, CP_ACP);
+    
+    FILE* fp;
+    int ret = 0;
+    if ( _wfopen_s( &fp, fnin, _T("rb") ) != 0){
+        return -1; //input file open error
+    }
+    int iDescLen;
+    char * szFnout = this->CStringToUTF8(fnout, &iDescLen, CP_ACP);
 
-	gzFile gzfOut = gzopen( szFnout , "wb9");	
-	if (gzfOut){
+    gzFile gzfOut = gzopen( szFnout , "wb9");	
+    if (gzfOut){
 
-		char buff[4096];
-		int iBuffReadLen ;
-		do{
-			iBuffReadLen = fread( buff, sizeof( char), 4096 ,fp);
-			if(iBuffReadLen > 0 ){
-				if( gzwrite( gzfOut , buff,  iBuffReadLen ) <= 0 ){
-					//gz file compress write error
-					ret = 1;
-				}
-			}else if(iBuffReadLen < 0){
-				ret = -3; //file read error
-				break;
-			}else{
-				break;
-			}
-		}while(1);
+        char buff[4096];
+        int iBuffReadLen ;
+        do{
+            iBuffReadLen = fread( buff, sizeof( char), 4096 ,fp);
+            if(iBuffReadLen > 0 ){
+                if( gzwrite( gzfOut , buff,  iBuffReadLen ) <= 0 ){
+                    //gz file compress write error
+                    ret = 1;
+                }
+            }else if(iBuffReadLen < 0){
+                ret = -3; //file read error
+                break;
+            }else{
+                break;
+            }
+        }while(1);
 
-		fclose(fp);
-		gzclose(gzfOut);
-	}else{
-		ret = -2; //gz file open error
-	}
-	free(szFnout);
+        fclose(fp);
+        gzclose(gzfOut);
+    }else{
+        ret = -2; //gz file open error
+    }
+    free(szFnout);
 
-	if (ret != 0 ){
-		CString szLog ; 
-		szLog.Format(_T("Gz pack file fail: %s to %s ret %d"), fnin , fnout, ret);
-		SVP_LogMsg(szLog);
-	}
-	return ret;
+    if (ret != 0 ){
+        CString szLog ; 
+        szLog.Format(_T("Gz pack file fail: %s to %s ret %d"), fnin , fnout, ret);
+        SVP_LogMsg(szLog);
+    }
+    return ret;
 }
 
 int CSVPToolBox::unpackGZfile(CString fnin , CString fnout)
 {
-	
-	FILE* fout;
-	int ret = 0;
-	if ( _wfopen_s( &fout, fnout, _T("wb") ) != 0){
-		return -1; //output file open error
-	}
-	int iDescLen;
-	char * szFnin = this->CStringToUTF8(fnin, &iDescLen, CP_ACP);
-	
-	gzFile gzfIn = gzopen( szFnin , "rb");	
-	if (gzfIn){
-	
-		char buff[4096];
-		int iBuffReadLen ;
-		do{
-			iBuffReadLen = gzread(gzfIn, buff, 4096 );
-			if(iBuffReadLen > 0 ){
-				if( fwrite(buff, sizeof( char ),  iBuffReadLen, fout) <= 0 ){
-				    //file write error
-					ret = 1;
-				}
-			}else if(iBuffReadLen < 0){
-				ret = -3; //decompress error
-				break;
-			}else{
-				break;
-			}
-		}while(1);
+    
+    FILE* fout;
+    int ret = 0;
+    if ( _wfopen_s( &fout, fnout, _T("wb") ) != 0){
+        return -1; //output file open error
+    }
+    int iDescLen;
+    char * szFnin = this->CStringToUTF8(fnin, &iDescLen, CP_ACP);
+    
+    gzFile gzfIn = gzopen( szFnin , "rb");	
+    if (gzfIn){
+    
+        char buff[4096];
+        int iBuffReadLen ;
+        do{
+            iBuffReadLen = gzread(gzfIn, buff, 4096 );
+            if(iBuffReadLen > 0 ){
+                if( fwrite(buff, sizeof( char ),  iBuffReadLen, fout) <= 0 ){
+                    //file write error
+                    ret = 1;
+                }
+            }else if(iBuffReadLen < 0){
+                ret = -3; //decompress error
+                break;
+            }else{
+                break;
+            }
+        }while(1);
 
-		fclose(fout);
-		gzclose(gzfIn);
-	}else{
-		ret = -2; //gz file open error
-	}
-	free(szFnin);
-	if (ret != 0 ){
-		CString szLog ; 
-		szLog.Format(_T("Gz unpack file fail: %s to %s ret %d"), fnin , fnout, ret);
-		SVP_LogMsg(szLog);
-	}
-	return ret;
+        fclose(fout);
+        gzclose(gzfIn);
+    }else{
+        ret = -2; //gz file open error
+    }
+    free(szFnin);
+    if (ret != 0 ){
+        CString szLog ; 
+        szLog.Format(_T("Gz unpack file fail: %s to %s ret %d"), fnin , fnout, ret);
+        SVP_LogMsg(szLog);
+    }
+    return ret;
 }
 /*
 
@@ -644,123 +644,123 @@ static unsigned int RARpos = 0;
 
 static int PASCAL MyProcessDataProc(unsigned char* Addr, int Size)
 {
-	ASSERT(RARbuff);
+    ASSERT(RARbuff);
 
-	memcpy(&RARbuff[RARpos], Addr, Size);
-	RARpos += Size;
+    memcpy(&RARbuff[RARpos], Addr, Size);
+    RARpos += Size;
 
-	return(1);
+    return(1);
 }*/
 
 CString CSVPToolBox::extractRarFile(CString rarfn){
-	CString szRet = _T("");
-	/*
-	HMODULE h = LoadLibrary(_T("unrar.dll"));
-		if(!h) return szRet;
-	
-		RAROpenArchiveEx OpenArchiveEx = (RAROpenArchiveEx)GetProcAddress(h, "RAROpenArchiveEx");
-		RARCloseArchive CloseArchive = (RARCloseArchive)GetProcAddress(h, "RARCloseArchive");
-		RARReadHeaderEx ReadHeaderEx = (RARReadHeaderEx)GetProcAddress(h, "RARReadHeaderEx");
-		RARProcessFile ProcessFile = (RARProcessFile)GetProcAddress(h, "RARProcessFile");
-		RARSetChangeVolProc SetChangeVolProc = (RARSetChangeVolProc)GetProcAddress(h, "RARSetChangeVolProc");
-		RARSetProcessDataProc SetProcessDataProc = (RARSetProcessDataProc)GetProcAddress(h, "RARSetProcessDataProc");
-		RARSetPassword SetPassword = (RARSetPassword)GetProcAddress(h, "RARSetPassword");
-	
-		if(!(OpenArchiveEx && CloseArchive && ReadHeaderEx && ProcessFile 
-			&& SetChangeVolProc && SetProcessDataProc && SetPassword))
-		{
-			FreeLibrary(h);
-			return szRet;
-		}*/
-	
+    CString szRet = _T("");
+    /*
+    HMODULE h = LoadLibrary(_T("unrar.dll"));
+        if(!h) return szRet;
+    
+        RAROpenArchiveEx OpenArchiveEx = (RAROpenArchiveEx)GetProcAddress(h, "RAROpenArchiveEx");
+        RARCloseArchive CloseArchive = (RARCloseArchive)GetProcAddress(h, "RARCloseArchive");
+        RARReadHeaderEx ReadHeaderEx = (RARReadHeaderEx)GetProcAddress(h, "RARReadHeaderEx");
+        RARProcessFile ProcessFile = (RARProcessFile)GetProcAddress(h, "RARProcessFile");
+        RARSetChangeVolProc SetChangeVolProc = (RARSetChangeVolProc)GetProcAddress(h, "RARSetChangeVolProc");
+        RARSetProcessDataProc SetProcessDataProc = (RARSetProcessDataProc)GetProcAddress(h, "RARSetProcessDataProc");
+        RARSetPassword SetPassword = (RARSetPassword)GetProcAddress(h, "RARSetPassword");
+    
+        if(!(OpenArchiveEx && CloseArchive && ReadHeaderEx && ProcessFile 
+            && SetChangeVolProc && SetProcessDataProc && SetPassword))
+        {
+            FreeLibrary(h);
+            return szRet;
+        }*/
+    
 
-	struct RAROpenArchiveDataEx ArchiveDataEx;
-	memset(&ArchiveDataEx, 0, sizeof(ArchiveDataEx));
+    struct RAROpenArchiveDataEx ArchiveDataEx;
+    memset(&ArchiveDataEx, 0, sizeof(ArchiveDataEx));
 
-	ArchiveDataEx.ArcNameW = (LPTSTR)(LPCTSTR)rarfn;
-	char fnA[MAX_PATH];
-	if(wcstombs(fnA, rarfn, rarfn.GetLength()+1) == -1) fnA[0] = 0;
-	ArchiveDataEx.ArcName = fnA;
+    ArchiveDataEx.ArcNameW = (LPTSTR)(LPCTSTR)rarfn;
+    char fnA[MAX_PATH];
+    if(wcstombs(fnA, rarfn, rarfn.GetLength()+1) == -1) fnA[0] = 0;
+    ArchiveDataEx.ArcName = fnA;
 
-	ArchiveDataEx.OpenMode = RAR_OM_EXTRACT;
-	ArchiveDataEx.CmtBuf = 0;
-	HANDLE hrar = RAROpenArchiveEx(&ArchiveDataEx);
-	if(!hrar) 
-	{
-		//FreeLibrary(h);
-		return szRet;
-	}
+    ArchiveDataEx.OpenMode = RAR_OM_EXTRACT;
+    ArchiveDataEx.CmtBuf = 0;
+    HANDLE hrar = RAROpenArchiveEx(&ArchiveDataEx);
+    if(!hrar) 
+    {
+        //FreeLibrary(h);
+        return szRet;
+    }
 
-	//SetProcessDataProc(hrar, MyProcessDataProc);
+    //SetProcessDataProc(hrar, MyProcessDataProc);
 
-	struct RARHeaderDataEx HeaderDataEx;
-	HeaderDataEx.CmtBuf = NULL;
-	szRet = this->getTmpFileName() ;
-	szRet += _T(".sub");
-	CFile m_sub ( szRet, CFile::modeCreate|CFile::modeReadWrite|CFile::typeBinary );
-
-
-	while(RARReadHeaderEx(hrar, &HeaderDataEx) == 0)
-	{
-
-		CString subfn(HeaderDataEx.FileNameW);
+    struct RARHeaderDataEx HeaderDataEx;
+    HeaderDataEx.CmtBuf = NULL;
+    szRet = this->getTmpFileName() ;
+    szRet += _T(".sub");
+    CFile m_sub ( szRet, CFile::modeCreate|CFile::modeReadWrite|CFile::typeBinary );
 
 
-		if(!subfn.Right(4).CompareNoCase(_T(".sub")))
-		{
-			CAutoVectorPtr<char> buff;
-			if(!buff.Allocate(HeaderDataEx.UnpSize))
-			{
-				RARCloseArchive(hrar);
-				//FreeLibrary(h);
-				return szRet;
-			}
+    while(RARReadHeaderEx(hrar, &HeaderDataEx) == 0)
+    {
 
-			/*
-			RARbuff = buff;
-						RARpos = 0;
-			
-						if(ProcessFile(hrar, RAR_TEST, NULL, NULL))
-						{
-							CloseArchive(hrar);
-							FreeLibrary(h);
-			
-							return szRet;
-						}*/
-			
-			int errRar = RARExtractChunkInit(hrar, HeaderDataEx.FileName);
-			if (errRar != 0) {
-				RARCloseArchive(hrar);
-				//SVP_LogMsg5(L"RARExtractChunkInit Failed");
-				break;
-			}
-
-			RARExtractChunk(hrar, (char*)buff, HeaderDataEx.UnpSize);
-
-			m_sub.SetLength(HeaderDataEx.UnpSize);
-			m_sub.SeekToBegin();
-			m_sub.Write(buff, HeaderDataEx.UnpSize);
-			m_sub.Flush();
-			m_sub.SeekToBegin();
-			m_sub.Close();
+        CString subfn(HeaderDataEx.FileNameW);
 
 
+        if(!subfn.Right(4).CompareNoCase(_T(".sub")))
+        {
+            CAutoVectorPtr<char> buff;
+            if(!buff.Allocate(HeaderDataEx.UnpSize))
+            {
+                RARCloseArchive(hrar);
+                //FreeLibrary(h);
+                return szRet;
+            }
 
-			RARExtractChunkClose(hrar);
+            /*
+            RARbuff = buff;
+                        RARpos = 0;
+            
+                        if(ProcessFile(hrar, RAR_TEST, NULL, NULL))
+                        {
+                            CloseArchive(hrar);
+                            FreeLibrary(h);
+            
+                            return szRet;
+                        }*/
+            
+            int errRar = RARExtractChunkInit(hrar, HeaderDataEx.FileName);
+            if (errRar != 0) {
+                RARCloseArchive(hrar);
+                //SVP_LogMsg5(L"RARExtractChunkInit Failed");
+                break;
+            }
 
-			//free(buff);
-			//RARbuff = NULL;
-			//RARpos = 0;
+            RARExtractChunk(hrar, (char*)buff, HeaderDataEx.UnpSize);
 
-			break;
-		}
+            m_sub.SetLength(HeaderDataEx.UnpSize);
+            m_sub.SeekToBegin();
+            m_sub.Write(buff, HeaderDataEx.UnpSize);
+            m_sub.Flush();
+            m_sub.SeekToBegin();
+            m_sub.Close();
 
-		RARProcessFile(hrar, RAR_SKIP, NULL, NULL);
-	}
 
-	RARCloseArchive(hrar);
-	//FreeLibrary(h);
-	return szRet;
+
+            RARExtractChunkClose(hrar);
+
+            //free(buff);
+            //RARbuff = NULL;
+            //RARpos = 0;
+
+            break;
+        }
+
+        RARProcessFile(hrar, RAR_SKIP, NULL, NULL);
+    }
+
+    RARCloseArchive(hrar);
+    //FreeLibrary(h);
+    return szRet;
 }
 CString CSVPToolBox::DetectSubFileLanguage(CString fn)
 {
@@ -793,122 +793,119 @@ std::wstring CSVPToolBox::DetectSubFileLanguage_STL(std::wstring fn)
   return szRet;
 }
 int CSVPToolBox::DetectFileCharset(CString fn){
-// 	;
-// 	;
-	//
-	FILE *stream ;
-	if ( _wfopen_s( &stream, fn, _T("rb") ) == 0 ){
-		//detect bom?
+    FILE *stream ;
+    if ( _wfopen_s( &stream, fn, _T("rb") ) == 0 ){
+        //detect bom?
 
-		int totalWideChar = 0;
-		int totalGBKChar = 0;
-		int totalBig5Char = 0;
-		
-		int ch, ch2;
-		int xch;
+        int totalWideChar = 0;
+        int totalGBKChar = 0;
+        int totalBig5Char = 0;
+        
+        int ch, ch2;
+        int xch;
         int i=0;
-		for(  i=0;  ( feof( stream ) == 0 ); i++ )
-		{
-			ch = 0xff & fgetc( stream );
-			if (ch >= 0x80 ){
-				totalWideChar++;
-				ch2 = 0xff & fgetc( stream );
+        for(  i=0;  ( feof( stream ) == 0 ); i++ )
+        {
+            ch = 0xff & fgetc( stream );
+            if (ch >= 0x80 ){
+                totalWideChar++;
+                ch2 = 0xff & fgetc( stream );
 
-				if ( ch >= 0xA1 && ch < 0xA9 && ch2 >= 0xA1 && ch2 <= 0xFE ){
-					totalGBKChar++;
-				}else if ( ch >= 0xB0 && ch < 0xF7 && ch2 >= 0xA1 && ch2 <= 0xFE){
-					totalGBKChar++;
-				}
-				
-				xch = ch << 8 | ch2;
-				if ( xch >= 0xa440 && xch <= 0xc67e){
-					totalBig5Char++;
-				}
+                if ( ch >= 0xA1 && ch < 0xA9 && ch2 >= 0xA1 && ch2 <= 0xFE ){
+                    totalGBKChar++;
+                }else if ( ch >= 0xB0 && ch < 0xF7 && ch2 >= 0xA1 && ch2 <= 0xFE){
+                    totalGBKChar++;
+                }
+                
+                xch = ch << 8 | ch2;
+                if ( xch >= 0xa440 && xch <= 0xc67e){
+                    totalBig5Char++;
+                }
 
-			}
-			
-		}
+            }
+            
+        }
 
-		fclose( stream );
+        fclose( stream );
         //TODO: detect Cyrillic
         /*
         * http://en.wikipedia.org/wiki/Windows-1251
         */
         SVP_LogMsg5(L"Charset detect %d %d %d %d %f",i, totalGBKChar , totalBig5Char, totalWideChar, double(totalGBKChar/totalWideChar));
-		if ( totalGBKChar > totalBig5Char && totalGBKChar > totalWideChar*6/7 && totalWideChar > 500){
+        if ( totalGBKChar > totalBig5Char && totalGBKChar > totalWideChar*6/7 && totalWideChar > 500){
             return GB2312_CHARSET;
-		}else if ( totalGBKChar < totalBig5Char && totalBig5Char > totalWideChar*6/7 && totalWideChar > 500 ){
+        }else if ( totalGBKChar < totalBig5Char && totalBig5Char > totalWideChar*6/7 && totalWideChar > 500 ){
             return CHINESEBIG5_CHARSET;
-		}
+        }
         
-	}
-	
-	
+    }
+    
+    
    // AfxMessageBox(L"Default");
 
-	return DEFAULT_CHARSET;
+    return DEFAULT_CHARSET;
 }
 int CSVPToolBox::ClearTmpFiles(){
-	int i;
-	for( i = 0; i < this->szaTmpFileNames.GetCount(); i++){
-		_wremove(szaTmpFileNames.GetAt(i));
-	}
-	return i;
+    int i;
+    for( i = 0; i < this->szaTmpFileNames.GetCount(); i++){
+        _wremove(szaTmpFileNames.GetAt(i));
+    }
+    return i;
 }
 WCHAR* CSVPToolBox::getTmpFileName(){
-	WCHAR* tmpnamex ;
-	int i;
+    WCHAR* tmpnamex ;
+    int i;
 
-	for (i = 0; i < 5; i++) //try 5 times for tmpfile creation
-	{
-		tmpnamex = _wtempnam( this->GetTempDir(), _T("svp") );
-		if (tmpnamex)
-			break;
+    for (i = 0; i < 5; i++) //try 5 times for tmpfile creation
+    {
+        tmpnamex = _wtempnam( this->GetTempDir(), _T("svp") );
+        if (tmpnamex)
+            break;
 
-	}
-	if (!tmpnamex){
-		SVP_LogMsg(_T("TMP FILE name genarater error")); 
-		return 0;
-	}else{
-		//SVP_LogMsg(tmpnamex);
-		return tmpnamex;
-	}
+    }
+    if (!tmpnamex){
+        SVP_LogMsg(_T("TMP FILE name genarater error")); 
+        return 0;
+    }else{
+        //SVP_LogMsg(tmpnamex);
+        return tmpnamex;
+    }
 }
 FILE* CSVPToolBox::getTmpFileSteam(){
-	FILE *stream;
-	WCHAR* tmpnamex = this->getTmpFileName();
-	errno_t err;
-	//SVP_LogMsg5(L"tmpnamex %s", tmpnamex);
-	if (!tmpnamex){
-		SVP_LogMsg(_T("TMP FILE stream name genarater error")); 
-		return 0;
-	}else{
-		
-		err = _wfopen_s(&stream, tmpnamex, _T("wb+"));
-		if(err){
-			SVP_LogMsg(_T("TMP FILE stream Open for Write error")); 
-			stream = 0;
-		}else{
-			this->szaTmpFileNames.Add(tmpnamex);
-			free(tmpnamex);
-		}
-	}
-	return stream;
+    FILE *stream;
+    WCHAR* tmpnamex = this->getTmpFileName();
+    errno_t err;
+    //SVP_LogMsg5(L"tmpnamex %s", tmpnamex);
+    if (!tmpnamex){
+        SVP_LogMsg(_T("TMP FILE stream name genarater error")); 
+        return 0;
+    }else{
+        
+        err = _wfopen_s(&stream, tmpnamex, _T("wb+"));
+        if(err){
+            SVP_LogMsg(_T("TMP FILE stream Open for Write error")); 
+            stream = 0;
+        }else{
+            this->szaTmpFileNames.Add(tmpnamex);
+            free(tmpnamex);
+        }
+    }
+    return stream;
 }
 BOOL CSVPToolBox::CreatDirForFile(CString cPath){
-	return CreatDirRecursive( GetDirFromPath( cPath ) );
+    return CreatDirRecursive( GetDirFromPath( cPath ) );
 }
 BOOL CSVPToolBox::CreatDirRecursive(CString cPath){
-	if(_wmkdir(cPath) < 0 && errno == ENOENT ){
-		CPath parentPath(cPath);
-		parentPath.Canonicalize();
-		parentPath.RemoveBackslash();
-		if( parentPath.RemoveFileSpec() ){
-			CreatDirRecursive(parentPath);
-			return _wmkdir(cPath);
-		}
-	}
-	return TRUE;
+    if(_wmkdir(cPath) < 0 && errno == ENOENT ){
+        CPath parentPath(cPath);
+        parentPath.Canonicalize();
+        parentPath.RemoveBackslash();
+        if( parentPath.RemoveFileSpec() ){
+            CreatDirRecursive(parentPath);
+            return _wmkdir(cPath);
+        }
+    }
+    return TRUE;
 }
 CString CSVPToolBox::GetPlayerPath(CString progName)
 {
@@ -930,28 +927,27 @@ std::wstring CSVPToolBox::GetPlayerPath_STL(std::wstring progName)
   }
 }
 BOOL CSVPToolBox::delDirRecursive(CString path){
-	SHFILEOPSTRUCT sh;
-	CPath cpath(path);
-	cpath.RemoveBackslash();
-	cpath.Append(_T("\0\0"));
+    SHFILEOPSTRUCT sh;
+    CPath cpath(path);
+    cpath.RemoveBackslash();
+    cpath.Append(_T("\0\0"));
 
-	sh.hwnd   = NULL;
-	sh.wFunc  = FO_DELETE;
-	sh.pFrom  = cpath;
-	sh.pTo    = NULL;
-	sh.fFlags = FOF_NOCONFIRMATION | FOF_SILENT;
-	sh.hNameMappings = 0;
-	sh.lpszProgressTitle = NULL;
+    sh.hwnd   = NULL;
+    sh.wFunc  = FO_DELETE;
+    sh.pFrom  = cpath;
+    sh.pTo    = NULL;
+    sh.fFlags = FOF_NOCONFIRMATION | FOF_SILENT;
+    sh.hNameMappings = 0;
+    sh.lpszProgressTitle = NULL;
 
-	return SHFileOperation (&sh);
-
+    return SHFileOperation (&sh);
 
 }
 CString CSVPToolBox::GetDirFromPath(CString path){
-	CPath cpath(path);
-	cpath.RemoveFileSpec();
-	cpath.AddBackslash();
-	return cpath;
+    CPath cpath(path);
+    cpath.RemoveFileSpec();
+    cpath.AddBackslash();
+    return cpath;
 }
 int CSVPToolBox::CleanUpOldFiles(CString szDir, int parm, int ilimit, int byNumber)
 {
@@ -1008,179 +1004,179 @@ int CSVPToolBox::CleanUpOldFiles(CString szDir, int parm, int ilimit, int byNumb
     return 0;
 }
 int CSVPToolBox::HandleSubPackage(FILE* fp){
-	//Extract Package
-	SVP_LogMsg( _T("Extracting Package") );
+    //Extract Package
+    SVP_LogMsg( _T("Extracting Package") );
 
 
-	char szSBuff[8];
-	int err;
-	if ( fread(szSBuff , sizeof(char), 4, fp) < 4){
-		
-		SVP_LogMsg( _T("Fail to retrive Package Data Length ") );
-		return -1;
-	}
-	int iPackageLength = this->Char4ToInt(szSBuff);
-	
-	if ( fread(szSBuff , sizeof(char), 4, fp) < 4){
-		SVP_LogMsg(_T("Fail to retrive Desc Data Length"));
-		return -2;
-	}
+    char szSBuff[8];
+    int err;
+    if ( fread(szSBuff , sizeof(char), 4, fp) < 4){
+        
+        SVP_LogMsg( _T("Fail to retrive Package Data Length ") );
+        return -1;
+    }
+    int iPackageLength = this->Char4ToInt(szSBuff);
+    
+    if ( fread(szSBuff , sizeof(char), 4, fp) < 4){
+        SVP_LogMsg(_T("Fail to retrive Desc Data Length"));
+        return -2;
+    }
 
-	
-	size_t iDescLength = this->Char4ToInt(szSBuff);
+    
+    size_t iDescLength = this->Char4ToInt(szSBuff);
 
-	if(iDescLength > 0){
-		SVP_LogMsg(_T("retriving Desc Data"));
-		char * szDescData = this->ReadToPTCharByLength(fp, iDescLength);
-		if(!szDescData){
-			SVP_LogMsg(_T("Fail to retrive Desc Data"));
-			return -4;
-		}
-		// convert szDescData to Unicode and save to CString
-		szaSubDescs.Add(this->UTF8ToCString( szDescData , iDescLength));
-		free(szDescData);
-	}else{
-		szaSubDescs.Add(_T(""));
-	}
-	err = this->ExtractSubFiles(fp);
-	
+    if(iDescLength > 0){
+        SVP_LogMsg(_T("retriving Desc Data"));
+        char * szDescData = this->ReadToPTCharByLength(fp, iDescLength);
+        if(!szDescData){
+            SVP_LogMsg(_T("Fail to retrive Desc Data"));
+            return -4;
+        }
+        // convert szDescData to Unicode and save to CString
+        szaSubDescs.Add(this->UTF8ToCString( szDescData , iDescLength));
+        free(szDescData);
+    }else{
+        szaSubDescs.Add(_T(""));
+    }
+    err = this->ExtractSubFiles(fp);
+    
 // 	fpos_t pos;
 // 	fgetpos( fp, &pos ) ;
 // 	CString szErr;
 // 	szErr.Format(_T("Reading At %d got next %ld") , pos,iDescLength);
 // 	SVP_LogMsg(szErr);
 
-	
+    
 
-	return 0;
+    return 0;
 
 }
 int CSVPToolBox::ExtractSubFiles(FILE* fp){
-	char szSBuff[8];
-	if ( fread(szSBuff , sizeof(char), 4, fp) < 4){
-		SVP_LogMsg(_T("Fail to retrive File Data Length"));
-		return -1;
-	}
+    char szSBuff[8];
+    if ( fread(szSBuff , sizeof(char), 4, fp) < 4){
+        SVP_LogMsg(_T("Fail to retrive File Data Length"));
+        return -1;
+    }
 
-	size_t iFileDataLength = this->Char4ToInt(szSBuff); //确认是否确实有文件下载
-	if(!iFileDataLength){
-		SVP_LogMsg(_T("No real file released"));
-		return 0;
-	}
+    size_t iFileDataLength = this->Char4ToInt(szSBuff); //确认是否确实有文件下载
+    if(!iFileDataLength){
+        SVP_LogMsg(_T("No real file released"));
+        return 0;
+    }
 
-	if ( fread(szSBuff , sizeof(char), 1, fp) < 1){
-		SVP_LogMsg(_T("Fail to retrive how many Files are there"));
-		return -2;
-	}
-	int iFileCount = szSBuff[0];
-	if( iFileCount <= 0 ){
-		SVP_LogMsg(_T("No file in File Data"));
-		return -3;
-	}
+    if ( fread(szSBuff , sizeof(char), 1, fp) < 1){
+        SVP_LogMsg(_T("Fail to retrive how many Files are there"));
+        return -2;
+    }
+    int iFileCount = szSBuff[0];
+    if( iFileCount <= 0 ){
+        SVP_LogMsg(_T("No file in File Data"));
+        return -3;
+    }
 
-	int iCurrentId = this->szaSubTmpFileList.GetCount();
-	this->szaSubTmpFileList.Add(_T(""));
-	for(int k = 0; k < iFileCount; k++){
-		if(this->ExtractEachSubFile(fp, iCurrentId) ){
-			SVP_LogMsg(_T("File Extract Error ") );
-			return -4;
-		}
-	}
+    int iCurrentId = this->szaSubTmpFileList.GetCount();
+    this->szaSubTmpFileList.Add(_T(""));
+    for(int k = 0; k < iFileCount; k++){
+        if(this->ExtractEachSubFile(fp, iCurrentId) ){
+            SVP_LogMsg(_T("File Extract Error ") );
+            return -4;
+        }
+    }
 
-	return 0;
+    return 0;
 }
 char* CSVPToolBox::ReadToPTCharByLength(FILE* fp, size_t length){
-	char * szBuffData =(char *)calloc( length + 1, sizeof(char));
+    char * szBuffData =(char *)calloc( length + 1, sizeof(char));
 
-	if(!szBuffData){
-		SVP_LogMsg(_T("Fail to calloc Data "));
-		return 0;
-	}
+    if(!szBuffData){
+        SVP_LogMsg(_T("Fail to calloc Data "));
+        return 0;
+    }
 
-	if ( fread(szBuffData , sizeof(char), length, fp) < length){
-		SVP_LogMsg(_T("Fail to retrive  Data "));
-		return 0;
-	}
+    if ( fread(szBuffData , sizeof(char), length, fp) < length){
+        SVP_LogMsg(_T("Fail to retrive  Data "));
+        return 0;
+    }
 
-	return szBuffData;
+    return szBuffData;
 }
 int CSVPToolBox::ExtractEachSubFile(FILE* fp, int iSubPosId){
-	// get file ext name
-	char szSBuff[4096];
-	if ( fread(szSBuff , sizeof(char), 4, fp) < 4){
-		SVP_LogMsg(_T("Fail to retrive Single File Pack Length"));
-		return -1;
-	}
+    // get file ext name
+    char szSBuff[4096];
+    if ( fread(szSBuff , sizeof(char), 4, fp) < 4){
+        SVP_LogMsg(_T("Fail to retrive Single File Pack Length"));
+        return -1;
+    }
 
-	if ( fread(szSBuff , sizeof(char), 4, fp) < 4){
-		SVP_LogMsg(_T("Fail to retrive File Ext Name Length"));
-		return -1;
-	}
+    if ( fread(szSBuff , sizeof(char), 4, fp) < 4){
+        SVP_LogMsg(_T("Fail to retrive File Ext Name Length"));
+        return -1;
+    }
 
-	size_t iExtLength = this->Char4ToInt(szSBuff);
-	char* szExtName = this->ReadToPTCharByLength(fp, iExtLength);
-	if(!szExtName){
-		SVP_LogMsg(_T("Fail to retrive File Ext Name"));
-		return -2;
-	}
-	
-	
-	//get filedata length
-	if ( fread(szSBuff , sizeof(char), 4, fp) < 4){
-		SVP_LogMsg(_T("Fail to retrive File Data Length"));
-		return -1;
-	}
+    size_t iExtLength = this->Char4ToInt(szSBuff);
+    char* szExtName = this->ReadToPTCharByLength(fp, iExtLength);
+    if(!szExtName){
+        SVP_LogMsg(_T("Fail to retrive File Ext Name"));
+        return -2;
+    }
+    
+    
+    //get filedata length
+    if ( fread(szSBuff , sizeof(char), 4, fp) < 4){
+        SVP_LogMsg(_T("Fail to retrive File Data Length"));
+        return -1;
+    }
 
-	size_t iFileLength = this->Char4ToInt(szSBuff);
-	
-	// gen tmp name and tmp file point
-	WCHAR* otmpfilename = this->getTmpFileName();
-	if(!otmpfilename){
-		SVP_LogMsg(_T("TMP FILE name for sub file error")); 
-		return -5;
-	}
-	FILE* fpt;
-	errno_t err = _wfopen_s(&fpt, otmpfilename, _T("wb"));
-	if(err){
-		SVP_LogMsg(_T("TMP FILE stream for sub file  Write error")); 
-		free(otmpfilename);
-		return -4;
-	}
+    size_t iFileLength = this->Char4ToInt(szSBuff);
+    
+    // gen tmp name and tmp file point
+    WCHAR* otmpfilename = this->getTmpFileName();
+    if(!otmpfilename){
+        SVP_LogMsg(_T("TMP FILE name for sub file error")); 
+        return -5;
+    }
+    FILE* fpt;
+    errno_t err = _wfopen_s(&fpt, otmpfilename, _T("wb"));
+    if(err){
+        SVP_LogMsg(_T("TMP FILE stream for sub file  Write error")); 
+        free(otmpfilename);
+        return -4;
+    }
 
-	// copy date to tmp file
-	size_t leftoread = iFileLength;
-	do{
-		size_t needtoread = SVP_MIN( 4096, leftoread );
-		size_t accturead = fread(szSBuff , sizeof(char), needtoread, fp);
-		if(accturead == 0){
-			//wtf
-			break;
-		}
-		leftoread -= accturead;
-		err = fwrite(szSBuff,  sizeof(char), accturead , fpt);
+    // copy date to tmp file
+    size_t leftoread = iFileLength;
+    do{
+        size_t needtoread = SVP_MIN( 4096, leftoread );
+        size_t accturead = fread(szSBuff , sizeof(char), needtoread, fp);
+        if(accturead == 0){
+            //wtf
+            break;
+        }
+        leftoread -= accturead;
+        err = fwrite(szSBuff,  sizeof(char), accturead , fpt);
 
-		
-	}while(leftoread > 0);
-	fclose( fpt );
+        
+    }while(leftoread > 0);
+    fclose( fpt );
 
-	WCHAR* otmpfilenameraw = this->getTmpFileName();
-	CString szLogmsg;
-	int gzret = this->unpackGZfile( otmpfilename , otmpfilenameraw );
-	szLogmsg.Format(_T(" Gzip decompress %s -> %s : %d "),  otmpfilename , otmpfilenameraw , gzret );
+    WCHAR* otmpfilenameraw = this->getTmpFileName();
+    CString szLogmsg;
+    int gzret = this->unpackGZfile( otmpfilename , otmpfilenameraw );
+    szLogmsg.Format(_T(" Gzip decompress %s -> %s : %d "),  otmpfilename , otmpfilenameraw , gzret );
 
-	SVP_LogMsg(szLogmsg);
-	// add filename and tmp name to szaTmpFileNames
-	this->szaSubTmpFileList[iSubPosId].Append( this->UTF8ToCString(szExtName, iExtLength)); //why cant use + ???
-	this->szaSubTmpFileList[iSubPosId].Append(_T("|") );
-	this->szaSubTmpFileList[iSubPosId].Append(otmpfilenameraw);
-	this->szaSubTmpFileList[iSubPosId].Append( _T(";"));
-	//SVP_LogMsg(this->szaSubTmpFileList[iSubPosId] + _T(" is the szaTmpFileName"));
-	//this->szaSubTmpFileList[iSubPosId].SetString( otmpfilename);
-	
-	free(szExtName);
-	free(otmpfilename);
+    SVP_LogMsg(szLogmsg);
+    // add filename and tmp name to szaTmpFileNames
+    this->szaSubTmpFileList[iSubPosId].Append( this->UTF8ToCString(szExtName, iExtLength)); //why cant use + ???
+    this->szaSubTmpFileList[iSubPosId].Append(_T("|") );
+    this->szaSubTmpFileList[iSubPosId].Append(otmpfilenameraw);
+    this->szaSubTmpFileList[iSubPosId].Append( _T(";"));
+    //SVP_LogMsg(this->szaSubTmpFileList[iSubPosId] + _T(" is the szaTmpFileName"));
+    //this->szaSubTmpFileList[iSubPosId].SetString( otmpfilename);
+    
+    free(szExtName);
+    free(otmpfilename);
 
-	return 0;
+    return 0;
 }
 
 std::wstring CSVPToolBox::Implode(std::wstring szTok, std::vector<std::wstring>* szaOut)
@@ -1243,9 +1239,9 @@ BOOL CSVPToolBox::ifDirExist(CString path)
 }
 BOOL CSVPToolBox::ifDirExist_STL(std::wstring path)
 {
-	CPath cpath(path.c_str());
-	cpath.RemoveBackslash();
-	return !_waccess(cpath, 0);
+    CPath cpath(path.c_str());
+    cpath.RemoveBackslash();
+    return !_waccess(cpath, 0);
 
 }
 BOOL CSVPToolBox::ifFileExist(CString szPathname, BOOL evenSlowDriver)
@@ -1282,136 +1278,136 @@ BOOL CSVPToolBox::ifFileExist_STL(std::wstring szPathname, BOOL evenSlowDriver)
         break;
     }
   }
-  struct _stat sbuf;
+  struct _stat32i64 sbuf;
 
-  return (!_wstat(szPathname.c_str(), &sbuf) && _S_IFREG & sbuf.st_mode);
+  return (!_wstat32i64(szPathname.c_str(), &sbuf) && _S_IFREG & sbuf.st_mode);
 }
 BOOL CSVPToolBox::CanUseCUDAforCoreAVC(){
-	//if( !ifFileExist_STL( this->GetPlayerPath_STL(L"codecs\\cavc.ax")) &&   !ifFileExist_STL( this->GetPlayerPath_STL(L"codecs\\CoreAVCDecoder.ax")) )
-	{
-	//	return false;
-	}
-	HMODULE hDll = ::LoadLibrary(_T("nvcuda.dll"));
-	bool canCUDA = false;
-	if (hDll)
-	{
-		CString dllpath;
-		GetModuleFileName(hDll, dllpath.GetBuffer(MAX_PATH), MAX_PATH);
-		dllpath.ReleaseBuffer();
+    //if( !ifFileExist_STL( this->GetPlayerPath_STL(L"codecs\\cavc.ax")) &&   !ifFileExist_STL( this->GetPlayerPath_STL(L"codecs\\CoreAVCDecoder.ax")) )
+    {
+    //	return false;
+    }
+    HMODULE hDll = ::LoadLibrary(_T("nvcuda.dll"));
+    bool canCUDA = false;
+    if (hDll)
+    {
+        CString dllpath;
+        GetModuleFileName(hDll, dllpath.GetBuffer(MAX_PATH), MAX_PATH);
+        dllpath.ReleaseBuffer();
 
-		//get build
-		this->getFileVersionHash(dllpath);
-		struct _stat  fbuf;
-		_wstat ( dllpath, &fbuf );
+        //get build
+        this->getFileVersionHash(dllpath);
+        struct _stat  fbuf;
+        _wstat ( dllpath, &fbuf );
 
-		if(fbuf.st_ctime > 1238112000 ||  fbuf.st_mtime > 1238112000 ){
-			canCUDA = true;
-		}
-		
-		{
-			if ( this->dwBuild ){
-				if(this->dwBuild > 8205 || this->dwBuild < 1105){ // not sure when will build version over 200.xx
-					//ok
-					canCUDA = true;
-				}
-			}
-		}
-		//get version
-		/*
-		NvAPI_Status nvapiStatus;
-		NV_DISPLAY_DRIVER_VERSION version = {0};
-		version.version = NV_DISPLAY_DRIVER_VERSION_VER;
-		nvapiStatus = NvAPI_Initialize();
-		nvapiStatus = NvAPI_GetDisplayDriverVersion (NVAPI_DEFAULT_HANDLE, &version);
-		if(nvapiStatus != NVAPI_OK) {... inform user nvidia card not found ...}
-		if(version.drvVersion < DESIRED_NVIDIA_DRIVER_VERSION) {... inform user nvidia driver version not the one you wanted ...}
-		*/
+        if(fbuf.st_ctime > 1238112000 ||  fbuf.st_mtime > 1238112000 ){
+            canCUDA = true;
+        }
+        
+        {
+            if ( this->dwBuild ){
+                if(this->dwBuild > 8205 || this->dwBuild < 1105){ // not sure when will build version over 200.xx
+                    //ok
+                    canCUDA = true;
+                }
+            }
+        }
+        //get version
+        /*
+        NvAPI_Status nvapiStatus;
+        NV_DISPLAY_DRIVER_VERSION version = {0};
+        version.version = NV_DISPLAY_DRIVER_VERSION_VER;
+        nvapiStatus = NvAPI_Initialize();
+        nvapiStatus = NvAPI_GetDisplayDriverVersion (NVAPI_DEFAULT_HANDLE, &version);
+        if(nvapiStatus != NVAPI_OK) {... inform user nvidia card not found ...}
+        if(version.drvVersion < DESIRED_NVIDIA_DRIVER_VERSION) {... inform user nvidia driver version not the one you wanted ...}
+        */
 
-	}
-	return canCUDA;
+    }
+    return canCUDA;
 }
 #include <wbemidl.h>
 
 int CSVPToolBox::GetWMIGPURam()
 {
-	IWbemLocator* locator = NULL;
+    IWbemLocator* locator = NULL;
 
-	//CoInitialize(NULL);
-	SVP_LogMsg6("GetWMIGPURam Start");
+    //CoInitialize(NULL);
+    SVP_LogMsg6("GetWMIGPURam Start");
 
-	HRESULT hr = CoCreateInstance(CLSID_WbemLocator, NULL, CLSCTX_INPROC_SERVER, IID_IWbemLocator, (void**)&locator);
-	if( FAILED(hr) )
-	{
-		SVP_LogMsg6("WMI Couldn't create locator.\n");
-		return 0;
-	}
+    HRESULT hr = CoCreateInstance(CLSID_WbemLocator, NULL, CLSCTX_INPROC_SERVER, IID_IWbemLocator, (void**)&locator);
+    if( FAILED(hr) )
+    {
+        SVP_LogMsg6("WMI Couldn't create locator.\n");
+        return 0;
+    }
 
-	IWbemServices* services = NULL;
-	hr = locator->ConnectServer(_T("root\\cimv2"), NULL, NULL, NULL, 0, NULL, NULL, &services);
-	locator->Release();
-	if( FAILED(hr) )
-	{
-		SVP_LogMsg6("WMI Couldn't connect.\n");
-		return -1;
-	}
+    IWbemServices* services = NULL;
+    hr = locator->ConnectServer(_T("root\\cimv2"), NULL, NULL, NULL, 0, NULL, NULL, &services);
+    locator->Release();
+    if( FAILED(hr) )
+    {
+        SVP_LogMsg6("WMI Couldn't connect.\n");
+        return -1;
+    }
 
-	hr = CoSetProxyBlanket(services, RPC_C_AUTHN_WINNT, RPC_C_AUTHZ_NONE, NULL, RPC_C_AUTHN_LEVEL_CALL, RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE);
-	if( FAILED(hr) )
-	{
-		services->Release();
-		SVP_LogMsg6("WMI Could not set security.\n");
-		return -2;
-	}
+    hr = CoSetProxyBlanket(services, RPC_C_AUTHN_WINNT, RPC_C_AUTHZ_NONE, NULL, RPC_C_AUTHN_LEVEL_CALL, RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE);
+    if( FAILED(hr) )
+    {
+        services->Release();
+        SVP_LogMsg6("WMI Could not set security.\n");
+        return -2;
+    }
 
-	IEnumWbemClassObject* instanceEnum = NULL;
-	hr = services->CreateInstanceEnum(_T("Win32_VideoController"), WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY, NULL, &instanceEnum);
-	services->Release();
-	if( FAILED(hr) )
-	{
-		SVP_LogMsg6("WMI Couldn't create enumerator.\n");
-		return -3;
-	}
+    IEnumWbemClassObject* instanceEnum = NULL;
+    hr = services->CreateInstanceEnum(_T("Win32_VideoController"), WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY, NULL, &instanceEnum);
+    services->Release();
+    if( FAILED(hr) )
+    {
+        SVP_LogMsg6("WMI Couldn't create enumerator.\n");
+        return -3;
+    }
 
-	IWbemClassObject* instance;
-	ULONG objectsReturned = 0;
-	int iGPUMAXRAM = 0;
-	while( 1 )
-	{
-		hr = instanceEnum->Next(WBEM_INFINITE, 1, &instance, &objectsReturned);
-		if( FAILED(hr) )
-		{
-			instanceEnum->Release();
-			SVP_LogMsg6("WMI Enum->Next() failed.\n");
-			return 4;
-		}
+    IWbemClassObject* instance;
+    ULONG objectsReturned = 0;
+    int iGPUMAXRAM = 0;
+    while( 1 )
+    {
+        hr = instanceEnum->Next(WBEM_INFINITE, 1, &instance, &objectsReturned);
+        if( FAILED(hr) )
+        {
+            instanceEnum->Release();
+            SVP_LogMsg6("WMI Enum->Next() failed.\n");
+            return 4;
+        }
 
-		if( objectsReturned != 1 )
-			break;
+        if( objectsReturned != 1 )
+            break;
 
-		VARIANT v;
-		VariantInit(&v);
-		hr = instance->Get(_T("AdapterRAM"), 0, &v, NULL, NULL);
-		if( FAILED(hr) )
-		{
-			SVP_LogMsg6("Could not retrieve \"AdapterRAM\" property.\n");
-		}
-		else
-		{
-			int iGPURAM = V_UI4(&v);
-			SVP_LogMsg6("AdapterRAM = %d\n", iGPURAM);
-			iGPUMAXRAM = max(iGPUMAXRAM, iGPURAM );
-		}
+        VARIANT v;
+        VariantInit(&v);
+        hr = instance->Get(_T("AdapterRAM"), 0, &v, NULL, NULL);
+        if( FAILED(hr) )
+        {
+            SVP_LogMsg6("Could not retrieve \"AdapterRAM\" property.\n");
+        }
+        else
+        {
+            int iGPURAM = V_UI4(&v);
+            SVP_LogMsg6("AdapterRAM = %d\n", iGPURAM);
+            iGPUMAXRAM = max(iGPUMAXRAM, iGPURAM );
+        }
 
-		VariantClear(&v);
-		instance->Release();
-		instance = NULL;
-	}
+        VariantClear(&v);
+        instance->Release();
+        instance = NULL;
+    }
 
-	instanceEnum->Release();
+    instanceEnum->Release();
 
-	//printf("Completed Successfully.\n");
-	//CoUninitialize();
-	return iGPUMAXRAM;
+    //printf("Completed Successfully.\n");
+    //CoUninitialize();
+    return iGPUMAXRAM;
 }
 int CSVPToolBox::GetGPUString(CStringArray * szaGPUString){
   int ret = -1; //no gpu
@@ -1532,7 +1528,7 @@ int CSVPToolBox::GetGPUString(CStringArray * szaGPUString){
   }
   */
   if (ret < 0)
-	  ret = 0;
+      ret = 0;
   return ret;
 }
 BOOL CSVPToolBox::ifDirWritable(CString szDir)
@@ -1612,32 +1608,32 @@ bool CSVPToolBox::GetAppDataPath(std::wstring& path)
 
   if(path.empty())
     return false;
-	/*
+    /*
 
-	PathCombine(  szPath ,)
-	CPath p;
-	p.Combine(szPath, _T("SPlayer"));
-	path = (LPCTSTR)p;
-	*/
+    PathCombine(  szPath ,)
+    CPath p;
+    p.Combine(szPath, _T("SPlayer"));
+    path = (LPCTSTR)p;
+    */
 
-	return true;
+    return true;
 }
 
 CString CSVPToolBox::PackageSubFiles(CStringArray* szaSubFiles)
 {
-	return _T("");
+    return _T("");
 }
 
 CString CSVPToolBox::GetTempDir()
 {
-	TCHAR lpPathBuffer[MAX_PATH];
-	GetTempPath(MAX_PATH,  lpPathBuffer); 
-	CString szTmpPath (lpPathBuffer);
-	if (szTmpPath.Right(1) != _T("\\") && szTmpPath.Right(1) != _T("/")){
-		szTmpPath.Append(_T("\\"));
-	}
-		
-	return szTmpPath;
+    TCHAR lpPathBuffer[MAX_PATH];
+    GetTempPath(MAX_PATH,  lpPathBuffer); 
+    CString szTmpPath (lpPathBuffer);
+    if (szTmpPath.Right(1) != _T("\\") && szTmpPath.Right(1) != _T("/")){
+        szTmpPath.Append(_T("\\"));
+    }
+        
+    return szTmpPath;
 }
 
 int CSVPToolBox::FindAllSubfile(std::wstring szSubPath , std::vector<std::wstring>* szaSubFiles)
@@ -1675,20 +1671,20 @@ int CSVPToolBox::FindAllSubfile(std::wstring szSubPath , std::vector<std::wstrin
 
 int CSVPToolBox::Char4ToInt(char* szBuf){
 
-	int iData =   ( ((int)szBuf[0] & 0xff) << 24) |  ( ((int)szBuf[1] & 0xff) << 16) | ( ((int)szBuf[2] & 0xff) << 8) |  szBuf[3] & 0xff;;
-	
-	return iData;
+    int iData =   ( ((int)szBuf[0] & 0xff) << 24) |  ( ((int)szBuf[1] & 0xff) << 16) | ( ((int)szBuf[2] & 0xff) << 8) |  szBuf[3] & 0xff;;
+    
+    return iData;
 }
 
 char* CSVPToolBox::CStringToUTF8(CString szIn, int* iDescLen, UINT codePage)
 {
-	char* szOut = 0;
-	int   targetLen = ::WideCharToMultiByte(codePage,0,szIn,-1,szOut,0,NULL,NULL);
-	szOut   =   new   char[targetLen+1];          
-	memset(szOut,0,targetLen+1);                
-	targetLen = ::WideCharToMultiByte(codePage,0,szIn,-1,szOut,targetLen,NULL,NULL);                
-	*iDescLen = targetLen;
-	return szOut;
+    char* szOut = 0;
+    int   targetLen = ::WideCharToMultiByte(codePage,0,szIn,-1,szOut,0,NULL,NULL);
+    szOut   =   new   char[targetLen+1];          
+    memset(szOut,0,targetLen+1);                
+    targetLen = ::WideCharToMultiByte(codePage,0,szIn,-1,szOut,targetLen,NULL,NULL);                
+    *iDescLen = targetLen;
+    return szOut;
 }
 CString CSVPToolBox::AnsiToCString(UINT codepag, char* szIn, int iLength)
 {
@@ -1703,142 +1699,142 @@ CString CSVPToolBox::AnsiToCString(UINT codepag, char* szIn, int iLength)
 
 CString CSVPToolBox::UTF8ToCString(char* szIn, int iLength)
 {
-	int   targetLen = ::MultiByteToWideChar(CP_UTF8,0,szIn,iLength+1,0,0);
-	WCHAR* szOut   =  (WCHAR *)calloc( targetLen + 1, sizeof(WCHAR)); 
+    int   targetLen = ::MultiByteToWideChar(CP_UTF8,0,szIn,iLength+1,0,0);
+    WCHAR* szOut   =  (WCHAR *)calloc( targetLen + 1, sizeof(WCHAR)); 
 
-	::MultiByteToWideChar(CP_UTF8,0,szIn,iLength+1,szOut,targetLen);
-	CString szBuf(szOut,targetLen);
-	free(szOut);
-	return szBuf;
+    ::MultiByteToWideChar(CP_UTF8,0,szIn,iLength+1,szOut,targetLen);
+    CString szBuf(szOut,targetLen);
+    free(szOut);
+    return szBuf;
 }
 
 
 UINT CSVPToolBox::GetAdapter(LPVOID lpD3D)
 {
-	IDirect3D9* pD3D = (IDirect3D9*)lpD3D;
-	if(m_hWnd == NULL || pD3D == NULL) return D3DADAPTER_DEFAULT;
+    IDirect3D9* pD3D = (IDirect3D9*)lpD3D;
+    if(m_hWnd == NULL || pD3D == NULL) return D3DADAPTER_DEFAULT;
 
-	HMONITOR hMonitor = MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST);
-	if(hMonitor == NULL) return D3DADAPTER_DEFAULT;
+    HMONITOR hMonitor = MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST);
+    if(hMonitor == NULL) return D3DADAPTER_DEFAULT;
 
-	for(UINT adp = 0, num_adp = pD3D->GetAdapterCount(); adp < num_adp; ++adp)
-	{
-		HMONITOR hAdpMon = pD3D->GetAdapterMonitor(adp);
-		if(hAdpMon == hMonitor) return adp;
-	}
-	return D3DADAPTER_DEFAULT;
+    for(UINT adp = 0, num_adp = pD3D->GetAdapterCount(); adp < num_adp; ++adp)
+    {
+        HMONITOR hAdpMon = pD3D->GetAdapterMonitor(adp);
+        if(hAdpMon == hMonitor) return adp;
+    }
+    return D3DADAPTER_DEFAULT;
 }
 bool CSVPToolBox::TestD3DCreationAbility(HWND hWnd)
 {
-	//SVP_LogMsg5(L"TestD3DCreationAbility start");
+    //SVP_LogMsg5(L"TestD3DCreationAbility start");
 
-	m_hWnd = hWnd;
-	AppSettings& s = AfxGetAppSettings();
-	bool ret = true;
-	do{
-		CComPtr<IDirect3D9Ex> m_pD3DEx;
-		CComPtr<IDirect3D9> m_pD3D;
-		CComPtr<IDirect3DDevice9Ex> m_pD3DDevEx;
-		CComPtr<IDirect3DDevice9> m_pD3DDev;
+    m_hWnd = hWnd;
+    AppSettings& s = AfxGetAppSettings();
+    bool ret = true;
+    do{
+        CComPtr<IDirect3D9Ex> m_pD3DEx;
+        CComPtr<IDirect3D9> m_pD3D;
+        CComPtr<IDirect3DDevice9Ex> m_pD3DDevEx;
+        CComPtr<IDirect3DDevice9> m_pD3DDev;
 
-		if (AfxGetMyApp()->m_pDirect3DCreate9Ex)
-		{
-			AfxGetMyApp()->m_pDirect3DCreate9Ex(D3D_SDK_VERSION, (LPVOID**)&m_pD3DEx);
-			if(!m_pD3DEx) 
-			{
-				AfxGetMyApp()->m_pDirect3DCreate9Ex(D3D9b_SDK_VERSION, (LPVOID**)&m_pD3DEx);
-				
+        if (AfxGetMyApp()->m_pDirect3DCreate9Ex)
+        {
+            AfxGetMyApp()->m_pDirect3DCreate9Ex(D3D_SDK_VERSION, (LPVOID**)&m_pD3DEx);
+            if(!m_pD3DEx) 
+            {
+                AfxGetMyApp()->m_pDirect3DCreate9Ex(D3D9b_SDK_VERSION, (LPVOID**)&m_pD3DEx);
+                
 
-			}
-		}
-		if(!m_pD3DEx) 
-		{
-			m_pD3D.Attach(Direct3DCreate9(D3D_SDK_VERSION));
-			if(!m_pD3D) 
-			{
-				m_pD3D.Attach(Direct3DCreate9(D3D9b_SDK_VERSION));
-			}
-			if(!m_pD3D) 
-			{
-				//_Error += L"Failed to create D3D9\n";
-				ret = FALSE;
-				break;
-			}
-		}
-		else{
-			m_pD3D = m_pD3DEx;
-			//SVP_LogMsg5(L"HAVE m_pDirect3DCreate9Ex");
-		}
+            }
+        }
+        if(!m_pD3DEx) 
+        {
+            m_pD3D.Attach(Direct3DCreate9(D3D_SDK_VERSION));
+            if(!m_pD3D) 
+            {
+                m_pD3D.Attach(Direct3DCreate9(D3D9b_SDK_VERSION));
+            }
+            if(!m_pD3D) 
+            {
+                //_Error += L"Failed to create D3D9\n";
+                ret = FALSE;
+                break;
+            }
+        }
+        else{
+            m_pD3D = m_pD3DEx;
+            //SVP_LogMsg5(L"HAVE m_pDirect3DCreate9Ex");
+        }
 
-		UINT ulMonitor = GetAdapter(m_pD3D);
+        UINT ulMonitor = GetAdapter(m_pD3D);
 
-		D3DDISPLAYMODE d3ddm;
-		HRESULT hr;
-		ZeroMemory(&d3ddm, sizeof(d3ddm));
-		if(FAILED(m_pD3D->GetAdapterDisplayMode(ulMonitor, &d3ddm)))
-		{
-			//_Error += L"GetAdapterDisplayMode failed\n";
-			ret = FALSE;
-			break;
-		}
-
-
-		CSize m_ScreenSize(32,24);
+        D3DDISPLAYMODE d3ddm;
+        HRESULT hr;
+        ZeroMemory(&d3ddm, sizeof(d3ddm));
+        if(FAILED(m_pD3D->GetAdapterDisplayMode(ulMonitor, &d3ddm)))
+        {
+            //_Error += L"GetAdapterDisplayMode failed\n";
+            ret = FALSE;
+            break;
+        }
 
 
-		D3DPRESENT_PARAMETERS pp;
-		ZeroMemory(&pp, sizeof(pp));
-
-		BOOL bCompositionEnabled = s.bAeroGlassAvalibility;
+        CSize m_ScreenSize(32,24);
 
 
-		{
-			pp.Windowed = TRUE;
-			pp.hDeviceWindow = m_hWnd;
-			pp.SwapEffect = D3DSWAPEFFECT_COPY;
-			pp.Flags = D3DPRESENTFLAG_VIDEO;
-			pp.BackBufferCount = 1; 
-			pp.BackBufferWidth = m_ScreenSize.cx;
-			pp.BackBufferHeight = m_ScreenSize.cy;
+        D3DPRESENT_PARAMETERS pp;
+        ZeroMemory(&pp, sizeof(pp));
 
-			if (bCompositionEnabled)
-			{
-				// Desktop composition takes care of the VSYNC
-				pp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
+        BOOL bCompositionEnabled = s.bAeroGlassAvalibility;
 
-			}
-			else
-			{
-				pp.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
 
-			}
-			if (m_pD3DEx)
-			{
-				hr = m_pD3DEx->CreateDeviceEx(
-					ulMonitor, D3DDEVTYPE_HAL, m_hWnd,
-					D3DCREATE_SOFTWARE_VERTEXPROCESSING|D3DCREATE_MULTITHREADED,
-					&pp, NULL, &m_pD3DDevEx);
-				if (m_pD3DDevEx)
-					m_pD3DDev = m_pD3DDevEx;
-			}
-			else
-			{
-				hr = m_pD3D->CreateDevice(
-					ulMonitor, D3DDEVTYPE_HAL, m_hWnd,
-					D3DCREATE_SOFTWARE_VERTEXPROCESSING|D3DCREATE_MULTITHREADED,
-					&pp, &m_pD3DDev);
-			}
-		}
+        {
+            pp.Windowed = TRUE;
+            pp.hDeviceWindow = m_hWnd;
+            pp.SwapEffect = D3DSWAPEFFECT_COPY;
+            pp.Flags = D3DPRESENTFLAG_VIDEO;
+            pp.BackBufferCount = 1; 
+            pp.BackBufferWidth = m_ScreenSize.cx;
+            pp.BackBufferHeight = m_ScreenSize.cy;
 
-		if(FAILED(hr))
-		{
-			//_Error += L"CreateDevice failed\n";
-			ret = FALSE;
-			break;
-		}
-		break;
-	}while(0);
+            if (bCompositionEnabled)
+            {
+                // Desktop composition takes care of the VSYNC
+                pp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
+
+            }
+            else
+            {
+                pp.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
+
+            }
+            if (m_pD3DEx)
+            {
+                hr = m_pD3DEx->CreateDeviceEx(
+                    ulMonitor, D3DDEVTYPE_HAL, m_hWnd,
+                    D3DCREATE_SOFTWARE_VERTEXPROCESSING|D3DCREATE_MULTITHREADED,
+                    &pp, NULL, &m_pD3DDevEx);
+                if (m_pD3DDevEx)
+                    m_pD3DDev = m_pD3DDevEx;
+            }
+            else
+            {
+                hr = m_pD3D->CreateDevice(
+                    ulMonitor, D3DDEVTYPE_HAL, m_hWnd,
+                    D3DCREATE_SOFTWARE_VERTEXPROCESSING|D3DCREATE_MULTITHREADED,
+                    &pp, &m_pD3DDev);
+            }
+        }
+
+        if(FAILED(hr))
+        {
+            //_Error += L"CreateDevice failed\n";
+            ret = FALSE;
+            break;
+        }
+        break;
+    }while(0);
 
 //	SVP_LogMsg5(L"TestD3DCreationAbility %d", ret);
-	return ret;
+    return ret;
 }

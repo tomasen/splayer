@@ -1,0 +1,67 @@
+== 射手影音HotKey编辑指南 ==
+
+文件中以"//"开头的行为注释行,您可以自行添加或删除说明内容
+
+
+注释行之外的为内容行:
+
+第一行为自定义热键配置名，用符号”[“与”]”包围，如[MyHotkey]
+
+从第二行起每行为一个快捷键设置，格式如：
+**命令名 = 按键名, 组合键标记, 多媒体键盘或多媒体鼠标等设备发送的命令, 鼠标操作{{{//}}}注释**
+\\例如：\\**ID_PLAY_PLAYPAUSE = VK_SPACE, FVIRTKEY|FNOINVERT|FALT, APPCOMMAND_MEDIA_PLAY_PAUSE, LDOWN {{{//}}}播放/暂停**
+
+其中：\\**ID_PLAY_PLAYPAUSE**：命令名，如ID_PLAY_PLAYPAUSE为播放或暂停命令，不可修改;
+
+**VK_SPACE**：按键名，如VK_SPACE表示空格键，可修改为其他您偏好的键位，部分常用的按键名及其描述如下
+
+|=  VK_0 -- VK_9|=数字键0-9|
+|  VK_A -- VK_Z|字母键A-Z |
+|  VK_NUMPAD0 -- VK_NUMPAD9|小键盘0-9键|
+|  VK_F1 -- VK_F12|F1-F12键|
+|  VK_BACK|退格键|
+|  VK_TAB|TAB键|
+|  VK_ESCAPE|ESC键|
+|  VK_RIGHT|右方向键|
+|  VK_LEFT|左方向键|
+|  VK_UP|上方向键|
+|  VK_DOWN|下方向键|
+|  VK_OEM_1|;:键|
+|  VK_OEM_2|/?键|
+|  VK_OEM_3|`~键|
+|  VK_OEM_4|[{键|
+|  VK_OEM_5|\{{{|}}}键|
+|  VK_OEM_6|]}键|
+|  VK_OEM_7|'"键|
+|  VK_OEM_PLUS|+键|
+|  VK_OEM_COMMA|,键|
+|  VK_OEM_MINUS|-键|
+|  VK_OEM_PERIOD|.键|
+
+**FVIRTKEY|FNOINVERT|FALT**：：表示热键为组合键，如此例中热键为ALT键+空格键，FALT可以替换为FSHIFT或FCONTROL表示SHIFT键或CTRL键，仅有FVIRTKEY|FNOINVERT表示非组合键;
+
+**APPCOMMAND_MEDIA_PLAY_PAUSE**（无对应热键时可缺省）：表示多媒体键盘或多媒体鼠标等设备发送的命令，如APPCOMMAND_MEDIA_PLAY_PAUSE表示媒体播放或暂停，部分常用命令及描述如下：
+
+|=   APPCOMMAND_MEDIA_NEXTTRACK|=        下一曲|
+|   APPCOMMAND_MEDIA_PREVIOUSTRACK|    上一曲|
+|   APPCOMMAND_MEDIA_STOP|             停止|
+|   APPCOMMAND_MEDIA_PLAY_PAUSE|       暂停/播放|
+
+**LDOWN**（无对应热键时可缺省）：鼠标操作，如LDOWN表示左键按下，其他可修改的操作及其描述如下：
+
+|=   NONE|=       无操作|
+|   LDOWN|      左键按下|
+|   LUP|        左键弹起|
+|   LDBLCLK|    左键双击|
+|   MDOWN|      中键按下|
+|   MUP|        中键弹起|
+|   MDBLCLK|    中键双击|
+|   RDOWN|      右键按下|
+|   RUP|        右键弹起|
+|   RDBLCLK|    右键双击|
+|   WUP|        滚轮向上滚动|
+|   WDOWN|      滚轮向下滚动|
+
+**{{{//}}}播放/暂停**注释，描述命令的功能，一般情况下无需修改。
+
+**另外，您在修改时不要直接修改原key文件，请复制以创建新的快捷键方案，以防止升级时将您的自定义方案覆盖。\\您可以将您的自定义方案通过EMAIL发送给我们，加入到官方方案库中。**

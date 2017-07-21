@@ -1,0 +1,856 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.5: http://docutils.sourceforge.net/" />
+<title>SQLite++</title>
+<meta name="author" content="Pavel Medvedev" />
+<meta name="date" content="2008-01-24" />
+<meta name="copyright" content="Copyright (c) 2004-2008 Pavel Medvedev" />
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+<div class="document" id="sqlite">
+<h1 class="title">SQLite++</h1>
+<h2 class="subtitle" id="c-wrapper-to-sqlite-library">C++ wrapper to SQLite library</h2>
+<table class="docinfo" frame="void" rules="none">
+<col class="docinfo-name" />
+<col class="docinfo-content" />
+<tbody valign="top">
+<tr><th class="docinfo-name">Author:</th>
+<td>Pavel Medvedev</td></tr>
+<tr><th class="docinfo-name">Contact:</th>
+<td><a class="first last reference" href="mailto:pmedvedev&#37;&#52;&#48;gmail&#46;com">pmedvedev<span>&#64;</span>gmail<span>&#46;</span>com</a></td></tr>
+<tr><th class="docinfo-name">Date:</th>
+<td>2008-01-24</td></tr>
+<tr><th class="docinfo-name">Revision:</th>
+<td>65</td></tr>
+<tr><th class="docinfo-name">Copyright:</th>
+<td>Copyright (c) 2004-2008 Pavel Medvedev</td></tr>
+</tbody>
+</table>
+<div class="contents topic">
+<p class="topic-title first"><a id="table-of-contents" name="table-of-contents">Table of Contents</a></p>
+<ul class="auto-toc simple">
+<li><a class="reference" href="#overview" id="id2" name="id2">1&nbsp;&nbsp;&nbsp;Overview</a></li>
+<li><a class="reference" href="#installation" id="id3" name="id3">2&nbsp;&nbsp;&nbsp;Installation</a><ul class="auto-toc">
+<li><a class="reference" href="#testing" id="id4" name="id4">2.1&nbsp;&nbsp;&nbsp;Testing</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#short-tutorial" id="id5" name="id5">3&nbsp;&nbsp;&nbsp;Short Tutorial</a></li>
+<li><a class="reference" href="#reference" id="id6" name="id6">4&nbsp;&nbsp;&nbsp;Reference</a><ul class="auto-toc">
+<li><a class="reference" href="#string-aha-yet-another-one" id="id7" name="id7">4.1&nbsp;&nbsp;&nbsp;String. Aha, Yet Another One</a></li>
+<li><a class="reference" href="#exceptions" id="id8" name="id8">4.2&nbsp;&nbsp;&nbsp;Exceptions</a></li>
+<li><a class="reference" href="#session" id="id9" name="id9">4.3&nbsp;&nbsp;&nbsp;Session</a></li>
+<li><a class="reference" href="#statement" id="id10" name="id10">4.4&nbsp;&nbsp;&nbsp;Statement</a></li>
+<li><a class="reference" href="#transaction" id="id11" name="id11">4.5&nbsp;&nbsp;&nbsp;Transaction</a></li>
+<li><a class="reference" href="#blob" id="id12" name="id12">4.6&nbsp;&nbsp;&nbsp;BLOB</a></li>
+<li><a class="reference" href="#binders" id="id13" name="id13">4.7&nbsp;&nbsp;&nbsp;Binders</a><ul class="auto-toc">
+<li><a class="reference" href="#into-binders" id="id14" name="id14">4.7.1&nbsp;&nbsp;&nbsp;Into binders</a></li>
+<li><a class="reference" href="#use-binders" id="id15" name="id15">4.7.2&nbsp;&nbsp;&nbsp;Use binders</a></li>
+<li><a class="reference" href="#data-conversion" id="id16" name="id16">4.7.3&nbsp;&nbsp;&nbsp;Data Conversion</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#query" id="id17" name="id17">4.8&nbsp;&nbsp;&nbsp;Query</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id2" id="overview" name="overview">1&nbsp;&nbsp;&nbsp;Overview</a></h1>
+<p>SQLite++ is an object-oriented wrapper library of <a class="reference" href="http://sqlite.org">SQLite</a> version 3.
+The latest sources are available from <a class="reference" href="https://svn.berlios.de/svnroot/repos/sqlitepp/trunk">Subversion repository</a></p>
+<p>The main idea is to use simple variable binding with SQL statements:</p>
+<pre class="literal-block">
+int count;
+db &lt;&lt; &quot;select count(*) from employee&quot;, into(count);
+</pre>
+<p>The library is distributed under Boost Software License (see accompanying
+file <a class="reference" href="../LICENSE_1_0.txt">LICENSE_1_0.txt</a> in the project root). Additional information about
+Boost Software License is available at <a class="reference" href="http://boost.org/more/license_info.html">Boost site</a></p>
+<p>Approaches with binding variables to SQL queries were inspired by
+Maciej Sobczak' <a class="reference" href="http://www.msobczak.com/prog/soci/">SOCI wrapper</a>.</p>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id3" id="installation" name="installation">2&nbsp;&nbsp;&nbsp;Installation</a></h1>
+<p>This section describes how to build and install SQLitepp from released
+source distribution.</p>
+<p>SQLite++ uses <a class="reference" href="http://sourceforge.net/project/showfiles.php?group_id=7586&amp;package_id=72941">Boost Build v2</a>. Refer to the <a class="reference" href="http://boost.org/tools/build/v2/index.html">documentation</a> how to install
+Boost Build v2.</p>
+<p>To build SQLite++ change working dir to the root of this distribution
+and invoke</p>
+<blockquote>
+<tt class="docutils literal"><span class="pre">bjam</span> <span class="pre">[build-variant]</span></tt></blockquote>
+<p>Where build-variant is an optional predefined build variant name.
+There are several predefined variants:</p>
+<table border="1" class="docutils">
+<caption>Build variants</caption>
+<colgroup>
+<col width="24%" />
+<col width="76%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><tt class="docutils literal"><span class="pre">utf8</span></tt></td>
+<td>UTF-8 encoding support. Defaul variant.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">utf8d</span></tt></td>
+<td>UTF-8 encoding support, debug version.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">utf16</span></tt></td>
+<td>UTF-16 encoding support.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">utf16d</span></tt></td>
+<td>UTF-16 encoding support, debug version.</td>
+</tr>
+</tbody>
+</table>
+<p>After successful building two subdirectories will be created:</p>
+<blockquote>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">lib</span></tt>      - with binary library files.</li>
+<li><tt class="docutils literal"><span class="pre">include</span></tt>  -  with header files.</li>
+</ul>
+</blockquote>
+<p>Make them available for a compiler in your favorite way and have fun ;-)</p>
+<div class="section">
+<h2><a class="toc-backref" href="#id4" id="testing" name="testing">2.1&nbsp;&nbsp;&nbsp;Testing</a></h2>
+<p>You might want to run unit-tests of SQLite++. It's simple with bjam:</p>
+<blockquote>
+<tt class="docutils literal"><span class="pre">bjam</span> <span class="pre">test</span> <span class="pre">[build-variant]</span></tt></blockquote>
+<p>Test application uses excellent unit-testing library <a class="reference" href="http://tut-framework.sourceforge.net/">TUT</a></p>
+</div>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id5" id="short-tutorial" name="short-tutorial">3&nbsp;&nbsp;&nbsp;Short Tutorial</a></h1>
+<p>Let's make simple database application. It creates database with table
+<tt class="docutils literal"><span class="pre">employee</span></tt> and adds a record.</p>
+<pre class="literal-block">
+#include &lt;iostream&gt;
+#include &lt;stdexcept&gt;
+#include &lt;string&gt;
+
+#include &lt;sqlitepp/session.hpp&gt;
+
+struct employee
+{
+    std::string name;
+    int age;
+    float salary;
+};
+
+int main()
+{
+    using namespace sqlitepp;
+
+    try
+    {
+        session db(&quot;enterprise.db&quot;);
+
+        db &lt;&lt; &quot;create table employee(id integer primary key, name text,&quot;
+              &quot; age integer, salary real)&quot;;
+        db &lt;&lt; &quot;insert into employee values(null, 'Bob', 31, 5500)&quot;;
+
+        employee const employees[] = { {&quot;Alice&quot;, 23, 3220},
+                                       {&quot;Fred&quot;, 54, 4870} };
+        for (int i = 0; i &lt; 2; ++i)
+        {
+            db &lt;&lt; &quot;insert into employee values(null, '&quot;
+               &lt;&lt; employees[i].name &lt;&lt; &quot;' ,&quot; &lt;&lt; employees[i].age &lt;&lt; &quot;, &quot;
+               &lt;&lt; employees[i].salary &lt;&lt; &quot;)&quot;;
+        }
+
+        std::string const table_name = &quot;employee&quot;;
+        db &lt;&lt; &quot;drop table &quot; &lt;&lt; table_name;
+    }
+    catch(std::runtime_error const&amp; err)
+    {
+        std::cerr &lt;&lt; err.what();
+        return -1;
+    }
+}
+</pre>
+<p>All SQLite-related errors manifest themselves as exceptions of type
+<tt class="docutils literal"><span class="pre">sqlitepp::exception</span></tt> derived from <tt class="docutils literal"><span class="pre">std::runtime_error</span></tt>. This allows
+handling errors within the standard library exception hierarchy.</p>
+<p>Session class encapsulates SQLite database. The session constructor accepts
+database file name. As it should be destructor closes database. SQL statements
+may be executed immediately by session. In this case implicit statement will
+be created and executed. Statement has an ostream-like interface, so an SQL
+text can be composed of many parts, involving any object that supports output
+stream shifting (i.e. custom classes with <tt class="docutils literal"><span class="pre">operator&lt;&lt;</span></tt>).</p>
+<p>Ok, while it seems like just yet another object-oriented database library.
+Next example.</p>
+<pre class="literal-block">
+#include &lt;iostream&gt;
+#include &lt;stdexcept&gt;
+#include &lt;string&gt;
+
+#include &lt;sqlitepp/sqlitepp.hpp&gt;
+
+struct employee
+{
+    std::string name;
+    int age;
+    float salary;
+};
+
+std::ostream&amp; operator&lt;&lt;(std::ostream&amp; os, employee const&amp; e)
+{
+    return os &lt;&lt; e.name &lt;&lt; &quot;: &quot; &lt;&lt; e.age &lt;&lt; &quot;, earns &quot;
+              &lt;&lt; e.salary &lt;&lt; &quot;$ in month&quot;;
+}
+
+std::istream&amp; operator&gt;&gt;(std::istream&amp; is, employee &amp; e)
+{
+    return is &gt;&gt; e.name &gt;&gt; e.age &gt;&gt; e.salary;
+}
+
+int main()
+{
+    using namespace sqlitepp;
+
+    try
+    {
+        // already known things
+        session db(&quot;enterprise.db&quot;);
+        db &lt;&lt; &quot;create table employee(id integer primary key, name text,&quot;
+              &quot; age integer, salary real)&quot;;
+
+        // Heh!
+        employee e;
+        statement st(db);
+
+        // <strong>(1)</strong>
+        st &lt;&lt; &quot;insert into employee values(null, :name, :age, :salary)&quot;,
+           use(e.name), use(e.age), use(e.salary);
+        while ( std::cin &gt;&gt; e )
+        {
+            st.exec(); // <strong>(1.1)</strong>
+        }
+
+        // <strong>(2)</strong>
+        std::cout &lt;&lt; &quot;nt-- Employees --n&quot;;
+        st &lt;&lt; &quot;select name, age, salary from employee&quot;,
+            into(e.name), into(e.age), into(e.salary);
+
+        while ( st.exec() )
+        {
+            std::cout &lt;&lt; e &lt;&lt; std::endl;
+        }
+    }
+    catch(std::runtime_error const&amp; err)
+    {
+        std::cerr &lt;&lt; err.what();
+        return -1;
+    }
+}
+</pre>
+<p>Again usual things happen - we create session and table. Then we create
+statement object <tt class="docutils literal"><span class="pre">st</span></tt>. It is executing in context of database <tt class="docutils literal"><span class="pre">db</span></tt>. In the
+code block marked as (1) we prepare SQL query and bind variable e members to
+SQL values(:name, :age, :salary) of the same name. Next, in loop we ask user
+to enter employee data. In line marked (1.1) the statement is executed and
+data of members``e`` are inserted into the table <tt class="docutils literal"><span class="pre">employee</span></tt>.</p>
+<p>But let's check contents of the <tt class="docutils literal"><span class="pre">employee</span></tt>. The code block marked as (2)
+demonstrates it. Statement <tt class="docutils literal"><span class="pre">st</span></tt> is preparing with new SQL select query. Note
+the members of <tt class="docutils literal"><span class="pre">e</span></tt> are bound to SQL result columns again. Loop counts until
+statement select has data.</p>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id6" id="reference" name="reference">4&nbsp;&nbsp;&nbsp;Reference</a></h1>
+<p>This section provides the information how to use SQLite++.</p>
+<div class="section">
+<h2><a class="toc-backref" href="#id7" id="string-aha-yet-another-one" name="string-aha-yet-another-one">4.1&nbsp;&nbsp;&nbsp;String. Aha, Yet Another One</a></h2>
+<p>Internationalization, code pages, all these things may cause a big headache.
+Fortunately, SQLite stores text fields in UTF-8 or UTF-16 encoded. So,
+actually SQLite++ has to support either one or another. There are 3 types
+of char type:</p>
+<table border="1" class="docutils">
+<caption>Character types</caption>
+<colgroup>
+<col width="64%" />
+<col width="36%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><tt class="docutils literal"><span class="pre">utf8_char</span></tt></td>
+<td>1 byte</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">utf16_char</span></tt></td>
+<td>2 byte</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">utf32_char</span></tt></td>
+<td>4 byte</td>
+</tr>
+</tbody>
+</table>
+<p>and 3 string types:</p>
+<pre class="literal-block">
+typedef std::basic_string&lt;utf8_char&gt;    utf8_string;
+typedef std::basic_string&lt;utf16_char&gt;   utf16_string;
+typedef std::basic_string&lt;utf32_char&gt;   utf32_string;
+</pre>
+<p>So, there is a bunch of string encoding routines.</p>
+<blockquote>
+<ul>
+<li><p class="first">For UTF-8 encoding:</p>
+<pre class="literal-block">
+utf8_string utf8(utf16_char const* str, size_t size = npos);
+utf8_string utf8(utf16_string const&amp; str);
+utf8_string utf8(utf32_char const* str, size_t size = npos);
+utf8_string utf8(utf32_string const&amp; str);
+</pre>
+</li>
+<li><p class="first">For UTF-16 encoding:</p>
+<pre class="literal-block">
+utf16_string utf16(utf8_char const* str, size_t size = npos);
+utf16_string utf16(utf8_string const&amp; str);
+utf16_string utf16(utf32_char const* str, size_t size = npos);
+utf16_string utf16(utf32_string const&amp; str);
+</pre>
+</li>
+<li><p class="first">For UTF-32 encoding:</p>
+<pre class="literal-block">
+utf32_string utf32(utf8_char const* str, size_t size = npos);
+utf32_string utf32(utf8_string const&amp; str);
+utf32_string utf32(utf16_char const* str, size_t size = npos);
+utf32_string utf32(utf16_string const&amp; str);
+</pre>
+</li>
+</ul>
+</blockquote>
+<p>To turn on UTF-16 encoding support define preprocessor symbol
+<tt class="docutils literal"><span class="pre">SQLITEPP_UTF16</span></tt>. Otherwise UTF-8 will be used. The common way to abstract
+from encoding used is to define generalized character type. In SQLite++ is a
+<tt class="docutils literal"><span class="pre">char_t</span></tt>:</p>
+<pre class="literal-block">
+#ifdef SQLITEPP_UTF16
+    typedef utf16_char   char_t;
+    typedef utf16_string string_t;
+#else
+    typedef utf8_char    char_t;
+    typedef utf8_string  string_t;
+#endif // SQLITEPP_UTF16
+</pre>
+<p>Also generalized conversion routines are used:</p>
+<pre class="literal-block">
+string_t utf(utf8_char const* str, size_t size = npos);
+string_t utf(utf8_string const&amp; str);
+string_t utf(utf16_char const* str, size_t size = npos);
+string_t utf(utf16_string const&amp; str);
+string_t utf(utf32_char const* str, size_t size = npos);
+string_t utf(utf32_string const&amp; str);
+</pre>
+<div class="note">
+<p class="first admonition-title">Note</p>
+<p class="last"><tt class="docutils literal"><span class="pre">utf8_char</span></tt> is the C++ char type, therefore it's possible don't
+use UTF-8 encoding at all. SQLite and SQLite++ make no checks and
+interpret a string as a raw byte sequence.</p>
+</div>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id8" id="exceptions" name="exceptions">4.2&nbsp;&nbsp;&nbsp;Exceptions</a></h2>
+<p>All SQLite errors mapped to SQLite++ exceptions.
+Base class is a <tt class="docutils literal"><span class="pre">sqlitepp::exception</span></tt>:</p>
+<pre class="literal-block">
+class exception : public std::runtime_error
+{
+public:
+    // Create exception with UTF encoded message
+    exception(int code, string_t const&amp; msg);
+
+    // SQLite library error code.
+    int code() const; // throw()
+};
+</pre>
+<div class="note">
+<p class="first admonition-title">Note</p>
+<p class="last"><tt class="docutils literal"><span class="pre">sqlitepp::exception::what()</span></tt> returns UTF-8 encoded SQLite error
+message (see <a class="reference" href="http://sqlite.org/capi3ref.html#sqlite3_errmsg">sqlite3_errmsg</a>)</p>
+</div>
+<p>There are some custom SQLite++ exceptions:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="43%" />
+<col width="57%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><tt class="docutils literal"><span class="pre">nested_txn_not_supported</span></tt></td>
+<td><p class="first">This exception is thrown when the user
+tries to run nested transaction. This
+is a SQLite  limitation -  lack of
+nested transactions.</p>
+<pre class="last literal-block">
+// start a transaction
+transaction txn(db);
+{
+  // try start another one
+  // will throw exception
+  // ``nested_txn_not_supported``
+  transaction nested(db);
+}
+</pre>
+</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">no_such_column</span></tt></td>
+<td><p class="first">This exception is thrown when the user
+tries to get statement column by name
+(see statement::column_index):</p>
+<pre class="last literal-block">
+// table zz(int id, name text)
+statement::column_index(&quot;qqq&quot;);
+</pre>
+</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">session_not_open</span></tt></td>
+<td><p class="first">This exception is thrown when the user
+tries to excecute SQL statement in not
+opened session:</p>
+<pre class="last literal-block">
+session s;
+s &lt;&lt; &quot;drop table q&quot;;
+</pre>
+</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">multi_stmt_not_supported</span></tt></td>
+<td><p class="first">This excpetion is thrown when the user
+tries to excecute multiple SQL queries
+in the one statement:</p>
+<pre class="last literal-block">
+statement st(se, &quot;select * from t1;&quot;
+                 &quot; select * from t2&quot;;
+</pre>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id9" id="session" name="session">4.3&nbsp;&nbsp;&nbsp;Session</a></h2>
+<p>Session is a SQLite database abstraction:</p>
+<pre class="literal-block">
+// Database session. Noncopyable.
+class session
+{
+public:
+    // Create a session.
+    session();
+
+    // Create and open session.
+    explicit session(string_t const&amp; file_name);
+
+    // Close session on destroy.
+    ~session();
+
+    // Open database session. Previous one will be closed.
+    void open(string_t const&amp; file_name);
+
+    // Close database session.
+    void close();
+
+    // Is session opened?
+    bool is_open() const; // throw()
+
+    // Is there an active transaction?
+    // Currently SQLite 3 doesn't support nested transactions.
+    // So we can test, is there any transaction in session.
+    // If we have the transaction, we get it or null otherwise.
+    transaction* active_txn() const; // throw()
+
+    // Last insert row ID
+    long long last_insert_rowid() const;
+
+    // The number of rows that were changed (or inserted or deleted)
+    // by the most recent SQL statement
+    size_t last_changes() const;
+
+    // The number of rows that were changed (or inserted or deleted)
+    // since the database was opened
+    size_t total_changes() const;
+
+    // Execute SQL query immediately.
+    // It might be useful for resultless statements like INSERT, UPDATE etc.
+    // T is any output-stream-shiftable type.
+    template&lt;typename T&gt;
+    once_query operator&lt;&lt;(T const&amp; t);
+
+    // Swap session instances
+    friend void swap(session&amp; lhs, session&amp; rhs);
+};
+</pre>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id10" id="statement" name="statement">4.4&nbsp;&nbsp;&nbsp;Statement</a></h2>
+<p>Database statement:</p>
+<pre class="literal-block">
+// Database statement, noncopyable
+class statement
+{
+public:
+    // Create an empty statement. s is a owner session.
+    explicit statement(session&amp; s);
+
+    // Create statement with SQL query text.
+    statement(session&amp; s, string_t const&amp; sql);
+
+    // Finalize statement on destroy.
+    ~statement();
+
+    // Execute statement. Return is true if result exists.
+    bool exec();
+
+    // Prepare statement before execution.
+    void prepare();
+
+    // Finalize statement.
+    void finalize();
+
+    // Is statement prepared.
+    bool is_prepared() const; // throw()
+
+    // Reset statement. Return to prepared state. Optionally rebind values
+    void reset(bool rebind = false);
+
+    // Start statement preparing by collection query data.
+    // T is any output-stream-shiftable type.
+    template&lt;typename T&gt;
+    prepare_query operator&lt;&lt;(T const&amp; t);
+
+    // Statement query.
+    query const&amp; q() const; // throw()
+
+    // Statement query reference.
+    query&amp; q(); // throw()
+
+    // Number of columns in result set of prepared statement.
+    int column_count() const;
+
+    // Column name in result set.
+    string_t column_name(int column) const;
+
+    // Column index in result set.
+    int column_index(string_t const&amp; name) const;
+
+    // Colmn type of result set in prepared statement.
+    enum col_type { COL_INT = 1, COL_FLOAT = 2, COL_TEXT = 3,
+                    COL_BLOB = 4, COL_NULL = 5 };
+
+    // Column type in result set.
+    col_type column_type(int column) const;
+
+    // Get column value as int.
+    void column_value(int column, int&amp; value) const;
+
+    // Get column value as 64-bit int.
+    void column_value(int column, long long&amp; value) const;
+
+    // Get column value as double.
+    void column_value(int column, double&amp; value) const;
+
+    // Get column value as string.
+    void column_value(int column, string_t&amp; value) const;
+
+    // Get column value as BLOB.
+    void column_value(int column, blob&amp; value) const;
+
+    // Get column value as type T.
+    template&lt;typename T&gt;
+    T get(int column) const;
+
+    // Use int value in query.
+    void use_value(int pos, int value);
+
+    // Use 64-bit int value in query.
+    void use_value(int pos, long long value);
+
+    // Use double value in query.
+    void use_value(int pos, double value);
+
+    // Use string value in query.
+    void use_value(int pos, string_t const&amp; value);
+
+    // Use BLOB value in query.
+    void use_value(int pos, blob const&amp; value);
+
+    // Get use position by name in query.
+    int use_pos(string_t const&amp; name) const;
+};
+</pre>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id11" id="transaction" name="transaction">4.5&nbsp;&nbsp;&nbsp;Transaction</a></h2>
+<p>Transaction is a RAII class that starts transaction in constructor and ends
+one in destructor. By default, the transaction is finished with rollback.
+You should call <tt class="docutils literal"><span class="pre">transaction::commit</span></tt> to explicitly make a commit.</p>
+<pre class="literal-block">
+// Transaction. Noncopyable.
+class transaction
+{
+public:
+    // Begin transaction in context of the session s.
+    transaction(session&amp; s);
+
+    // End transaction with rollback if it is not commited.
+    ~transaction();
+
+    // Commit transaction.
+    void commit();
+};
+</pre>
+<div class="note">
+<p class="first admonition-title">Note</p>
+<p class="last">Currently SQLite doesn't support nested transactions.</p>
+</div>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id12" id="blob" name="blob">4.6&nbsp;&nbsp;&nbsp;BLOB</a></h2>
+<p>SQLite tables can contain BLOB columns. BLOB is a simple struct:</p>
+<pre class="literal-block">
+struct blob
+{
+    void const* data; // raw data pointer
+    size_t size;      // data size in bytes
+};
+</pre>
+<p>SQLite++ supports conversion between template <tt class="docutils literal"><span class="pre">std::vector&lt;T&gt;</span></tt> and blob value.
+See &quot;Data Conversion&quot; section below.</p>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id13" id="binders" name="binders">4.7&nbsp;&nbsp;&nbsp;Binders</a></h2>
+<p>Binders are used to bind value into the statement query. There are two types
+of binders:</p>
+<blockquote>
+<ul class="simple">
+<li>into binders</li>
+<li>use binders</li>
+</ul>
+</blockquote>
+<div class="section">
+<h3><a class="toc-backref" href="#id14" id="into-binders" name="into-binders">4.7.1&nbsp;&nbsp;&nbsp;Into binders</a></h3>
+<p>Into binders are used for binding result set values <em>into</em> variables. In the
+following example selected value of column <tt class="docutils literal"><span class="pre">name</span></tt> from table <tt class="docutils literal"><span class="pre">employees</span></tt>
+will be stored in variable <tt class="docutils literal"><span class="pre">name</span></tt>:</p>
+<pre class="literal-block">
+session db(&quot;test.db&quot;);
+statement st(db);
+
+string_t name;
+
+st &lt;&lt; &quot;select name from employees where id = 3&quot;, into(name);
+</pre>
+<p>Into binders are different classes with following interface:</p>
+<pre class="literal-block">
+/// Into binder interface
+class into_binder
+{
+public:
+    virtual ~into_binder();
+
+    // Bind variable to statement st in position pos.
+    int bind(statement&amp; st, int pos);
+
+    // Update bound variable after statement execution.
+    void update(statement&amp; st);
+protected:
+    // Protect from improper using
+    into_binder();
+    into_binder(into_binder const&amp;);
+    into_binder&amp; operator=(into_binder const&amp;);
+private:
+    // Should implement real binding.
+    virtual void do_bind(statement&amp; st, int pos) = 0;
+
+    // Should implement real update.
+    virtual void do_update(statement&amp; st) = 0;
+};
+
+typedef std::auto_ptr&lt;into_binder&gt; into_binder_ptr;
+
+// Create position into binder for variable reference t.
+template&lt;typename T&gt;
+into_binder_ptr into(T&amp; t);
+
+// Create named into binder for variable reference t.
+template&lt;typename T&gt;
+inline into_binder_ptr into(T&amp; t, string_t const&amp; name);
+</pre>
+</div>
+<div class="section">
+<h3><a class="toc-backref" href="#id15" id="use-binders" name="use-binders">4.7.2&nbsp;&nbsp;&nbsp;Use binders</a></h3>
+<p>This binders <em>use</em> variables as parameters for SQL queries. Following code
+uses variable id to select column <tt class="docutils literal"><span class="pre">name</span></tt> from table <tt class="docutils literal"><span class="pre">employees</span></tt>:</p>
+<pre class="literal-block">
+session db(&quot;test.db&quot;);
+statement st(db);
+
+string_t name;
+int id = 3;
+
+st &lt;&lt; &quot;select name from employees where id = :id&quot;, into(name), use(id);
+</pre>
+<p>Use binders are different classes with following interface:</p>
+<pre class="literal-block">
+/// Use binder interface
+class use_binder
+{
+public:
+    virtual ~use_binder();
+
+    // Bind variable to statement st in position pos.
+    int bind(statement&amp; st, int pos);
+protected:
+    // Protect from improper using
+    use_binder();
+    use_binder(use_binder const&amp;);
+    use_binder&amp; operator=(use_binder const&amp;);
+private:
+    // Should implement real binding.
+    virtual void do_bind(statement&amp; st, int pos) = 0;
+};
+
+typedef std::auto_ptr&lt;use_binder&gt; use_binder_ptr;
+
+// Create position use binder for reference t.
+template&lt;typename T&gt;
+inline use_binder_ptr use(T&amp; t);
+
+// Create named use binder for reference t.
+template&lt;typename T&gt;
+inline use_binder_ptr use(T&amp; t, string_t const&amp; name);
+</pre>
+</div>
+<div class="section">
+<h3><a class="toc-backref" href="#id16" id="data-conversion" name="data-conversion">4.7.3&nbsp;&nbsp;&nbsp;Data Conversion</a></h3>
+<p>To convert bound variable from type T into the supported SQLite column type
+and vice versa a set of specialized templates is used:</p>
+<pre class="literal-block">
+template&lt;T&gt;
+struct converter&lt;T&gt;
+{
+    typedef SQLite_column_type base_type; // concrete SQLite column type
+
+
+    // Convert from SQLite column type into the T.
+    static T to(base_type const&amp; b) { return b; }
+
+    // Convert from T into the SQLite column type.
+    static base_type from(T const&amp; t) { return t; }
+};
+</pre>
+<p>There are all arithmetic C++ types, <tt class="docutils literal"><span class="pre">string_t</span></tt> and <tt class="docutils literal"><span class="pre">blob</span></tt> specializations exist.
+The <tt class="docutils literal"><span class="pre">blob</span></tt> converter is partially specialized template for the <tt class="docutils literal"><span class="pre">std::vector&lt;T&gt;</span></tt>
+so it is possible to use <tt class="docutils literal"><span class="pre">std::vector</span></tt> in statement binders:</p>
+<pre class="literal-block">
+db &lt;&lt; &quot;create table employee(id integer primary key, name text,&quot;
+              &quot; age integer, salary real, photo blob)&quot;;
+
+statement st(db);
+employee e;
+std::vector&lt;char&gt; image = e.photo.pixels;
+st &lt;&lt; &quot;insert into employee values(null, :name, :age, :salary :photo)&quot;,
+            use(e.name), use(e.age), use(e.salary), use(image);
+// ...
+
+st &lt;&lt; &quot;select name, age, salary, photo from employee&quot;,
+            into(e.name), into(e.age), into(e.salary), into(image);
+</pre>
+<p>You can define convert for some custom type, if it fits to SQLite column type
+(<tt class="docutils literal"><span class="pre">int</span></tt>, <tt class="docutils literal"><span class="pre">long</span> <span class="pre">long</span></tt>, <tt class="docutils literal"><span class="pre">double</span></tt>, <tt class="docutils literal"><span class="pre">string_t</span></tt>, <tt class="docutils literal"><span class="pre">blob</span></tt>). For example:</p>
+<pre class="literal-block">
+namespace sqlitepp {
+    // specialize converter for the tm struct
+    template&lt;&gt;
+    struct converter&lt;tm&gt;
+    {
+        typedef long long base_type;
+
+        static long long from(tm&amp; src)
+        {
+            return mktime(&amp;src);
+        }
+
+        static tm to(long long src)
+        {
+            time_t tt = src;
+            return *localtime(&amp;tt);
+        }
+    };
+} // namespace sqlitepp
+</pre>
+<p>It is possible to convert C++ enumeration types. You should have <a class="reference" href="http://boost.org">boost</a> library installed and
+<tt class="docutils literal"><span class="pre">#define</span> <span class="pre">SQLITEPP_ENUM_CONVERTER</span></tt> macro in your project.</p>
+</div>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id17" id="query" name="query">4.8&nbsp;&nbsp;&nbsp;Query</a></h2>
+<p>Query is a noncopyable collection of SQL text and variable binders:</p>
+<pre class="literal-block">
+// Query class. Noncopyable
+class query
+{
+public:
+    // Create an empty query.
+    query();
+
+    // Create a query with SQL text.
+    explicit query(string_t const&amp; sql);
+
+
+    // Clear query on destroy.
+    ~query();
+
+    // Current SQL statement.
+    string_t sql() const; // throw()
+
+    // Set a new SQL statement.
+    void sql(string_t const&amp; text);
+
+    // Clear sql text, into and use bindings.
+    void clear(); // throw()
+
+    // Is query empty?
+    bool empty() const; // throw()
+
+    // Into binders container type.
+    typedef std::vector&lt;into_binder*&gt; into_binders;
+
+    // Into binders.
+    into_binders const&amp; intos() const; // throw()
+
+    // Use binders container type.
+    typedef std::vector&lt;use_binder*&gt; use_binders;
+
+    // Use binders.
+    use_binders const&amp; uses() const; // throw()
+
+    // Collect SQL text.
+    template&lt;typename T&gt;
+    query&amp; operator&lt;&lt;(T const&amp; t);
+
+    // Add into binder.
+    query&amp; put(into_binder_ptr i);
+
+    // Add into binder.
+    query&amp; operator,(into_binder_ptr i);
+
+    // Add use binder.
+    query&amp; put(use_binder_ptr i);
+
+    // Add use binder.
+    query&amp; operator,(use_binder_ptr u);
+
+    // Swap queries.
+    friend void swap(query&amp; lhs, query&amp; rhs);
+};
+</pre>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr class="footer" />
+Generated on: 2008-01-24 12:11 UTC.
+Generated by <a class="reference" href="http://docutils.sourceforge.net/">Docutils</a> from <a class="reference" href="http://docutils.sourceforge.net/rst.html">reStructuredText</a> source.
+
+</div>
+</body>
+</html>

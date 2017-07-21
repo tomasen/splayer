@@ -1,0 +1,51 @@
+// mfcm80.rc : Defines the resources for the MFCMIFC80 DLL
+//
+// This is a part of the Microsoft Foundation Classes C++ library.
+// Copyright (C) Microsoft Corporation
+// All rights reserved.
+//
+// This source code is only intended as a supplement to the
+// Microsoft Foundation Classes Reference and related
+// electronic documentation provided with the library.
+// See these sources for detailed information regarding the
+// Microsoft Foundation Classes product.
+
+
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+// Version stamp for this .DLL
+
+#ifdef RC_INVOKED
+
+#include "winver.h"
+
+#define VER_FILETYPE	VFT_DLL
+
+#ifdef _DEBUG
+
+#define VER_FILEDESCRIPTION_STR "MFC Managed Interfaces Library - Debug Version"
+#ifdef _UNICODE
+#define VER_ORIGINALFILENAME_STR "MFCMIFC80UD.DLL"
+#else
+#define VER_ORIGINALFILENAME_STR "MFCMIFC80D.DLL"
+#endif
+
+#else
+
+#define VER_FILEDESCRIPTION_STR "MFC Managed Interfaces Library - Retail Version"
+#ifdef _UNICODE
+#define VER_ORIGINALFILENAME_STR "MFCMIFC80U.DLL"
+#else
+#define VER_ORIGINALFILENAME_STR "MFCMIFC80.DLL"
+#endif
+
+#endif
+
+#define VER_COPYRIGHTSTARTYEAR_STR	"1993"
+
+#include "ver_.rc"
+
+#endif
+
+/////////////////////////////////////////////////////////////////////////////

@@ -1,0 +1,87 @@
+     ==射手影音工具栏按键自定义指南==
+
+  从第一行起，每一行为一个按键位置设置，格式如：\\
+  **按钮名称**:BMP,**图片名称**;FIXALIGN,**固定格式**;FIXCRECT,**固定位置**;NOTBUTTON,**是否不可点击**;ID,**按钮ID**;HIDE,**是否隐藏**;
+HIDEWIDTH,**隐藏距离**;RELATIVEALIGN,**相对格式**;BUTTON,**相对格式对应的按钮**;RELATIVECRECT,**相对位置**;ADDALIGN,RELATIVEALIGN,**相对格式**;BUTTON,**相对格式对应的按钮**;RELATIVECRECT,**相对位置**;\\
+例如：\\
+**NEXT**:BMP,**BTN_NEXT.BMP**;FIXALIGN,**ALIGN_TOPLEFT**;FIXCRECT,**-50,-55,3,3**;NOTBUTTON,**FALSE**;ID,**921**;HIDE,**FALSE**;HIDEWIDTH,**440**;RELATIVEALIGN,**ALIGN_LEFT**;BUTTON,**FASTFORWORD**;RELATIVECRECT,\\**16,16,16,16**;ADDALIGN,RELATIVEALIGN,**ALIGN_LEFT**;BUTTON,**PLAY**;RELATIVECRECT,**16,16,16,16**;\\
+
+按钮自定义文档每一行确定了一个按钮，其中一行中自冒号以后以两两成对的方式确定按钮的每条信息。
+例如：BMP,BTN_NEXT。“BMP”表示该信息为按钮所需要的图片，BTN_NEXT.BMP为图片的名称。
+
+以上面的例子为参照，每个信息的具体含义如下：\\
+**NEXT**: 按钮名称，如NEXT表示下一段，可修改为其他您偏好的键位，部分常用的按键名及其描述如下
+
+|=PLAY |=播放|
+|PAUSE |暂停|
+|STOP |停止|
+|STEP |步进|
+|FASTFORWORD |快进|
+|FASTBACKWORD |快退|
+|PREV |上一段|
+|NEXT |下一段|
+|LOGO |徽标|
+|SUBSWITCH |字幕|
+|SUBREDUCE |增加字幕延时|
+|SUBINCREASE |减少字幕延时|
+|VOLUMEBG |音量条|
+|VOLUMETM |音量控制按钮|
+|MUTED |静音|
+|VOLUME |非静音|
+|SETTING |设置|
+|PLAYLIST |播放列表|
+|OPENFILE |打开文件|
+|SHARE |分享|
+|PLAYTIME |播放时间|
+|CLOSE |关闭|
+|RESTORE |还原|
+|PINAIL |使窗口钉在最前端|
+|PINAIL2 |恢复正常窗口|
+|FULLSCREEN |全屏|
+|CAPTURE |截图|
+|GAMMA |亮度与对比度|
+|ALLCYCLE |列表循环|
+|RANDOM |随即播放|
+|SINGLECYCLE |单曲循环|
+|NOCYCLE |正常|
+|TOP1X  |放大100%|
+|TOP2X |放大200%|
+|NORMAL |正常画面，相对于智能去黑边|
+|NORMALWIDER |正常画面的宽版表现，如果播放器的宽度很长时，会替换NORMAL为NORMALWIDER|
+|LETTERBOX |智能去黑边|
+|LETTERBOXWIDER |智能去黑边的宽版表现，如果播放器的宽度很长时，会替换LETTERBOX为LETTERBOXWIDER|
+|AUDIO |音轨选择|
+|VIDEO |画面增益|
+
+下面以成对的方式讲解，每对的第一个信息为系统提示信息，请勿修改。\\
+**BMP,BTN_NEXT.BMP**: 位图名称，为系统信息设置，请勿修改\\
+**FIXALIGN,ALIGN_TOPLEFT**: 固定格式，可以理解为按钮相对于工具栏的位置。可以修改为以下4种情况之一：\\
+
+|=ALIGN_TOPLEFT |=按钮的位置是以工具栏的左上角为参照的|。
+|ALIGN_TOPRIGHT |=按钮的位置是以工具栏的右上角为参照的|。
+|ALIGN_BOTTOMLEFT |=按钮的位置是以工具栏的左下角为参照的|。
+|ALIGN_BOTTOMRIGHT |=按钮的位置是以工具栏的右下角为参照的|。
+
+**FIXCRECT,-50,-55,3,3**：于FIXALIGN的搭配设置，意为以工具栏为参照的位置。该例以工具栏的左上角为参照，将按钮的位置设置为该按钮到工具栏顶部的距离为工具栏高度的一半，该按钮到工具栏最左边的距离为工具栏宽度的一半，也就是该按钮位于工具栏的正中央，按钮宽度为3，高度为3。请注意，如果数值为数，则以工具栏的宽度和高度为参照设置按钮位置，如为正，单位则为像素值。\\
+**NOTBUTTON,FALSE**：是否为不可点击按钮，TRUE为是，FALSE为否。例如“PLAY”为可点击按钮，"LOGO"就是不可点击的按钮。可自行更改设置。\\
+**ID,921**：按钮ID,每个按钮拥有各自对应的不同ID,请勿修改。\\
+**HIDE,FALSE**：是否隐藏，TRUE为是，FALSE为否，可自行设置更改。\\
+**HIDEWIDTH,440**:隐藏距离，如果"HIDE"设置为否，按钮会根据HIDEWIDTH设置的数值自行调控，如果播放器的宽度大于HIDEWIDTH的数值，则显示按钮。如果该数值设置为0，则一直显示。\\
+**RELATIVEALIGN,ALIGN_LEFT**：按钮的相对位置，于其后的设置相搭配，可以设置按钮相对于按钮之间的距离。可以修改为以下4种情况之一：\\
+
+|=ALIGN_LEFT |=相对的按钮位于该按钮的左边|
+|=LIGN_RIGHT |=相对的按钮位于该按钮的右边|
+|=ALIGN_TOP |=相对的按钮位于该按钮的上边|
+|=ALIGN_BOTTOM |=相对的按钮位于该按钮的下边|
+
+**BUTTON,FASTFORWORD**：相对于按钮的名称，可依据按钮名称自行设置。本例设置为快进键。\\
+**RELATIVECRECT,16,16,16,16**：相对于按钮的距离，本例为，快进键在本按钮的左边，本按钮距离快进键的距离为16。\\
+**ADDALIGN**：如果想设置本按钮相对于多个按钮的位置，可添加该信息，提示系统该按钮拥有多个相对按钮信息，其后可以使用RELATIVEALIGN,BUTTON,RELATIVECRECT进行设置。如无需要，可忽略。\\
+
+**请注意**：\\
+"PLAYTIME"为特殊的按钮，由于PLAYTIME没有位图，所以可以设置为"NOBMP"，其他设置相同。具体设置可以参照如下：\\
+**PLAYTIME**:BMP,**"NOBMP"**;FIXALIGN,**ALIGN_TOPLEFT**;FIXCRECT,**10,-55,105,3**;NOTBUTTON,**TRUE**;ID,**0**;HIDE,**FALSE**;HIDEWIDTH,**0**;RELATIVEALIGN,**ALIGN_LEFT**;BUTTON,**SHARE**;RELATIVECRECT,**10,10,10,10**;
+
+**附注**：\\
+可使用command命令 **-creattoolbarbuttonfile**，会自动在skins文件夹下生成dat文件，如没有skins文件夹，请自行创建。请参考官方方案自行设置。
+另，请注意备份dat文件，并使用已提供的默认文件名。

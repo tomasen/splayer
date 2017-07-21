@@ -1,0 +1,8 @@
+== 加入开发  ==
+* 参考阅读 [[TODO|TODO List]]
+ 选择一个开发方向
+* 对代码作出你的修改。新加入的代码需要符合[[Coding Style|代码规范]] （现有代码则不需要进行规范化改动，只要不要以功能改动混在一起）
+* 使用 SVN 客户端的 Create Patch 功能创建 Patch 文件 （该Patch文件包含你作出的修改，也是一个考核标准）
+* 将Bundle文件通过Email发送到 tomasen@gmail.com  ，别忘了留下你的联系方式
+* 如果Bundle通过评估，将会被合并入当前代码树。
+* 提交Bundle并有兴趣加入核心开发的朋友，可以获得 commit 权限和密码

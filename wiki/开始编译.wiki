@@ -1,0 +1,5 @@
+== 开始编译 ==
+
+*启动Visual Studio 2008后，打开项目src目录中的主sln项目文件。（首次打开时可能会提示缺少一些vcprj文件，忽略即可）
+*编译类型选择'''Release Unicode'''
+*开始 Build mplayerc

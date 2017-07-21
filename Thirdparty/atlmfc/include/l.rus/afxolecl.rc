@@ -1,0 +1,64 @@
+// This is a part of the Microsoft Foundation Classes C++ library.
+// Copyright (C) Microsoft Corporation
+// All rights reserved.
+//
+// This source code is only intended as a supplement to the
+// Microsoft Foundation Classes Reference and related
+// electronic documentation provided with the library.
+// See these sources for detailed information regarding the
+// Microsoft Foundation Classes product.
+
+#ifndef __AFXOLECL_RC__
+#define __AFXOLECL_RC__
+
+#ifndef __AFXRES_H__
+	#include <afxres.h>
+#endif
+
+#ifndef _INC_DLGS
+	#include <dlgs.h>
+#endif
+
+#ifdef APSTUDIO_INVOKED
+// This will prevent the VC++ Resource Editor user from saving this file
+1 TEXTINCLUDE DISCARDABLE
+BEGIN
+"< Изменение стандартных ресурсов MFC не допускается! >\0"
+END
+#endif    // APSTUDIO_INVOKED
+
+#ifndef _AFXDLL
+
+/////////////////////////////////////////////////////////////////////////////
+// OLE Client Resources
+
+/////////////////////////////////////////////////////////////////////////////
+// OLE strings
+
+STRINGTABLE DISCARDABLE
+BEGIN
+	AFX_IDP_STATIC_OBJECT           "Не удается активизировать статический объект ActiveX."
+	AFX_IDP_FAILED_TO_CONNECT       "Не удается установить подключение.\nВозможен разрыв связи."
+	AFX_IDP_SERVER_BUSY             "Не удается обработать команду, сервер занят."
+	AFX_IDP_BAD_VERB                "Не удается выполнить операцию на сервере."
+	AFX_IDP_FAILED_TO_LAUNCH        "Не удается запустить приложение на сервере."
+	AFX_IDS_UPDATING_ITEMS          "Обновление объектов ActiveX"
+	AFX_IDP_FAILED_TO_CONVERT       "Не удалось преобразовать объект ActiveX."
+	AFX_IDP_ASK_TO_DISCARD          "Сохранение объекта ActiveX во время выхода из Windows невозможно!\nОтменить все изменения %1?"
+	AFX_IDP_FAILED_TO_CREATE        "Не удалось создать объект. Убедитесь, что это приложение зарегистрировано в системном реестре."
+
+	AFX_IDS_METAFILE_FORMAT         "Рисунок (метафайл)\nрисунок"
+	AFX_IDS_DIB_FORMAT              "Рисунок в формате DIB\nаппаратно-независимый рисунок"
+	AFX_IDS_BITMAP_FORMAT           "Точечный рисунок\nточечный рисунок"
+	AFX_IDS_LINKSOURCE_FORMAT       "%s\n%s"
+	AFX_IDS_EMBED_FORMAT            "%s\n%s"
+	AFX_IDS_RTF_FORMAT              "Форматированный текст (RTF)\nтекст со шрифтами и форматированием абзацев"
+	AFX_IDS_TEXT_FORMAT             "Неформатированный текст\nтекст без форматирования"
+
+	AFX_IDS_INVALID_CURRENCY        "Недопустимая денежная единица."
+END
+
+/////////////////////////////////////////////////////////////////////////////
+
+#endif //!_AFXDLL
+#endif //__AFXOLECL_RC__

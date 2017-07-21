@@ -1,0 +1,319 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 42;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		9D9EE08612C4975D0084AED8 /* MD5Checksum.h in Headers */ = {isa = PBXBuildFile; fileRef = 9D9EE05A12C496120084AED8 /* MD5Checksum.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9D9EE08712C497600084AED8 /* pch.h in Headers */ = {isa = PBXBuildFile; fileRef = 9D9EE05C12C496120084AED8 /* pch.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9D9EE08812C497630084AED8 /* sphash.h in Headers */ = {isa = PBXBuildFile; fileRef = 9D9EE05F12C496120084AED8 /* sphash.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9D9EE08912C497670084AED8 /* sphash.cc in Sources */ = {isa = PBXBuildFile; fileRef = 9D9EE05D12C496120084AED8 /* sphash.cc */; };
+		9D9EE08A12C497700084AED8 /* pch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9D9EE05B12C496120084AED8 /* pch.cpp */; };
+		9D9EE08B12C497720084AED8 /* MD5Checksum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9D9EE05912C496120084AED8 /* MD5Checksum.cpp */; };
+		9D9EE0A012C497CF0084AED8 /* sphash_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9D9EE09E12C497C80084AED8 /* sphash_test.cpp */; };
+		9D9EE0C212C4C1400084AED8 /* pch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9D9EE0C112C4C1400084AED8 /* pch.cpp */; };
+		9D9EE20912C4DB340084AED8 /* libsphash.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D9EE06512C496440084AED8 /* libsphash.a */; };
+		9D9EE22012C4DBC10084AED8 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D9EE21F12C4DBC10084AED8 /* CoreFoundation.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		9D9EE08412C496CA0084AED8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9D9EE04012C495BA0084AED8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9D9EE06412C496440084AED8;
+			remoteInfo = sphash;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		9D9EE05912C496120084AED8 /* MD5Checksum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MD5Checksum.cpp; path = sphash/MD5Checksum.cpp; sourceTree = "<group>"; };
+		9D9EE05A12C496120084AED8 /* MD5Checksum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MD5Checksum.h; path = sphash/MD5Checksum.h; sourceTree = "<group>"; };
+		9D9EE05B12C496120084AED8 /* pch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pch.cpp; path = sphash/pch.cpp; sourceTree = "<group>"; };
+		9D9EE05C12C496120084AED8 /* pch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pch.h; path = sphash/pch.h; sourceTree = "<group>"; };
+		9D9EE05D12C496120084AED8 /* sphash.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sphash.cc; path = sphash/sphash.cc; sourceTree = "<group>"; };
+		9D9EE05F12C496120084AED8 /* sphash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sphash.h; path = sphash/sphash.h; sourceTree = "<group>"; };
+		9D9EE06512C496440084AED8 /* libsphash.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libsphash.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		9D9EE07F12C496A70084AED8 /* sphash_test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = sphash_test; sourceTree = BUILT_PRODUCTS_DIR; };
+		9D9EE09E12C497C80084AED8 /* sphash_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sphash_test.cpp; path = sphash_test/sphash_test.cpp; sourceTree = "<group>"; };
+		9D9EE0C012C4C1400084AED8 /* pch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pch.h; path = sphash_test/pch.h; sourceTree = "<group>"; };
+		9D9EE0C112C4C1400084AED8 /* pch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pch.cpp; path = sphash_test/pch.cpp; sourceTree = "<group>"; };
+		9D9EE21F12C4DBC10084AED8 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = /System/Library/Frameworks/CoreFoundation.framework; sourceTree = "<absolute>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		9D9EE06312C496440084AED8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9D9EE07D12C496A70084AED8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9D9EE20912C4DB340084AED8 /* libsphash.a in Frameworks */,
+				9D9EE22012C4DBC10084AED8 /* CoreFoundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		9D9EE03E12C495BA0084AED8 = {
+			isa = PBXGroup;
+			children = (
+				9D9EE09E12C497C80084AED8 /* sphash_test.cpp */,
+				9D9EE0C012C4C1400084AED8 /* pch.h */,
+				9D9EE0C112C4C1400084AED8 /* pch.cpp */,
+				9D9EE05912C496120084AED8 /* MD5Checksum.cpp */,
+				9D9EE05A12C496120084AED8 /* MD5Checksum.h */,
+				9D9EE05B12C496120084AED8 /* pch.cpp */,
+				9D9EE05C12C496120084AED8 /* pch.h */,
+				9D9EE05D12C496120084AED8 /* sphash.cc */,
+				9D9EE05F12C496120084AED8 /* sphash.h */,
+				9D9EE06612C496440084AED8 /* Products */,
+				9D9EE21F12C4DBC10084AED8 /* CoreFoundation.framework */,
+			);
+			sourceTree = "<group>";
+		};
+		9D9EE06612C496440084AED8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9D9EE06512C496440084AED8 /* libsphash.a */,
+				9D9EE07F12C496A70084AED8 /* sphash_test */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		9D9EE06112C496440084AED8 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9D9EE08812C497630084AED8 /* sphash.h in Headers */,
+				9D9EE08712C497600084AED8 /* pch.h in Headers */,
+				9D9EE08612C4975D0084AED8 /* MD5Checksum.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		9D9EE06412C496440084AED8 /* sphash */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9D9EE06912C496440084AED8 /* Build configuration list for PBXNativeTarget "sphash" */;
+			buildPhases = (
+				9D9EE06112C496440084AED8 /* Headers */,
+				9D9EE06212C496440084AED8 /* Sources */,
+				9D9EE06312C496440084AED8 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = sphash;
+			productName = sphash;
+			productReference = 9D9EE06512C496440084AED8 /* libsphash.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		9D9EE07E12C496A70084AED8 /* sphash_test */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9D9EE08312C496C60084AED8 /* Build configuration list for PBXNativeTarget "sphash_test" */;
+			buildPhases = (
+				9D9EE07C12C496A70084AED8 /* Sources */,
+				9D9EE07D12C496A70084AED8 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				9D9EE08512C496CA0084AED8 /* PBXTargetDependency */,
+			);
+			name = sphash_test;
+			productName = sphash_test;
+			productReference = 9D9EE07F12C496A70084AED8 /* sphash_test */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		9D9EE04012C495BA0084AED8 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 9D9EE04312C495BA0084AED8 /* Build configuration list for PBXProject "sphash" */;
+			compatibilityVersion = "Xcode 2.4";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 9D9EE03E12C495BA0084AED8;
+			productRefGroup = 9D9EE06612C496440084AED8 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				9D9EE06412C496440084AED8 /* sphash */,
+				9D9EE07E12C496A70084AED8 /* sphash_test */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		9D9EE06212C496440084AED8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9D9EE08B12C497720084AED8 /* MD5Checksum.cpp in Sources */,
+				9D9EE08A12C497700084AED8 /* pch.cpp in Sources */,
+				9D9EE08912C497670084AED8 /* sphash.cc in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9D9EE07C12C496A70084AED8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9D9EE0A012C497CF0084AED8 /* sphash_test.cpp in Sources */,
+				9D9EE0C212C4C1400084AED8 /* pch.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		9D9EE08512C496CA0084AED8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9D9EE06412C496440084AED8 /* sphash */;
+			targetProxy = 9D9EE08412C496CA0084AED8 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		9D9EE04112C495BA0084AED8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				COPY_PHASE_STRIP = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = _MAC_;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+			};
+			name = Debug;
+		};
+		9D9EE04212C495BA0084AED8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				COPY_PHASE_STRIP = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = _MAC_;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+			};
+			name = Release;
+		};
+		9D9EE06712C496440084AED8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = /usr/local/lib;
+				PREBINDING = NO;
+				PRODUCT_NAME = sphash;
+			};
+			name = Debug;
+		};
+		9D9EE06812C496440084AED8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = sphash/pch.h;
+				GCC_PREPROCESSOR_DEFINITIONS = _MAC_;
+				INSTALL_PATH = /usr/local/lib;
+				PREBINDING = NO;
+				PRODUCT_NAME = sphash;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		9D9EE08112C496A80084AED8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = /usr/local/bin;
+				PREBINDING = NO;
+				PRODUCT_NAME = sphash_test;
+			};
+			name = Debug;
+		};
+		9D9EE08212C496A80084AED8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = /usr/local/bin;
+				PREBINDING = NO;
+				PRODUCT_NAME = sphash_test;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		9D9EE04312C495BA0084AED8 /* Build configuration list for PBXProject "sphash" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9D9EE04112C495BA0084AED8 /* Debug */,
+				9D9EE04212C495BA0084AED8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9D9EE06912C496440084AED8 /* Build configuration list for PBXNativeTarget "sphash" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9D9EE06712C496440084AED8 /* Debug */,
+				9D9EE06812C496440084AED8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9D9EE08312C496C60084AED8 /* Build configuration list for PBXNativeTarget "sphash_test" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9D9EE08112C496A80084AED8 /* Debug */,
+				9D9EE08212C496A80084AED8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 9D9EE04012C495BA0084AED8 /* Project object */;
+}
